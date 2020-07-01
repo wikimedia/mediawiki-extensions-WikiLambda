@@ -1,0 +1,49 @@
+{
+	"name": "WikiLambda",
+	"author": [
+		"James D. Forrester"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:WikiLambda",
+	"descriptionmsg": "wikilambda-desc",
+	"license-name": "MIT",
+	"type": "parserhook",
+	"requires": {
+		"MediaWiki": ">= 1.35.0"
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\WikiLambda\\": "includes/"
+	},
+	"config": {
+		"WikiLambdaEnable": {
+			"description": "Enable the extension.",
+			"value": false
+		}
+	},
+	"HookHandlers": {
+		"WikiLambdaHooks": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\Hooks"
+		}
+	},
+	"Hooks": {
+		"BeforePageDisplayHook": "WikiLambdaHooks",
+		"MakeGlobalVariablesScript": "WikiLambdaHooks"
+	},
+	"MessagesDirs": {
+		"WikiLambda": [
+			"i18n"
+		]
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "WikiLambda/resources"
+	},
+	"ResourceModules": {
+		"ext.wikilambda": {
+			"dependencies": [ "oojs-ui-core" ],
+			"messages": [ "wikilambda-desc" ],
+			"styles": [],
+			"scripts": [ "ext.wikiLambda/init.js" ]
+		}
+	},
+	"manifest_version": 2
+}
