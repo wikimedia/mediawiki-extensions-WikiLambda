@@ -10,9 +10,11 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use JsonContentHandler;
 use MWException;
+use Title;
 
-class ZObjectContentHandler extends \JsonContentHandler {
+class ZObjectContentHandler extends JsonContentHandler {
 
 	public function __construct( $modelId ) {
 		if ( $modelId !== CONTENT_MODEL_ZOBJECT ) {
@@ -22,11 +24,15 @@ class ZObjectContentHandler extends \JsonContentHandler {
 		parent::__construct( CONTENT_MODEL_ZOBJECT );
 	}
 
+	public function canBeUsedOn( Title $title ) {
+		return $title->inNamespace( NS_ZOBJECT );
+	}
+
 	/**
 	 * @return ZObject
 	 */
 	public function makeEmptyContent() {
-		return new ZObject( '"\"\""' );
+		return new ZObject( '""' );
 	}
 
 	/**

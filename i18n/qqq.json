@@ -4,5 +4,6 @@
 			"James D. Forrester"
 		]
 	},
-	"wikilambda-desc": "{{desc|name=WikiLambda|url=https://www.mediawiki.org/wiki/Extension:WikiLambda}}"
+	"wikilambda-desc": "{{desc|name=WikiLambda|url=https://www.mediawiki.org/wiki/Extension:WikiLambda}}",
+	"wikilambda-invalidzobject": "Error shown when an invalid ZObject definition edit is made."
 }
