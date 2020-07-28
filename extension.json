@@ -13,6 +13,30 @@
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\WikiLambda\\": "includes/"
 	},
+	"namespaces": [
+		{
+			"id": 2468,
+			"constant": "NS_ZOBJECT",
+			"name": "ZObject",
+			"content": true,
+			"subpages": false,
+			"capitallinkoverride": true,
+			"defaultcontentmodel": "zobject"
+		},
+		{
+			"id": 2469,
+			"constant": "NS_ZOBJECT_TALK",
+			"name": "ZObject_talk",
+			"content": false,
+			"subpages": true,
+			"capitallinkoverride": true,
+			"defaultcontentmodel": "wikitext"
+		}
+	],
+	"callback": "MediaWiki\\Extension\\WikiLambda\\Hooks::registerExtension",
+	"ContentHandlers": {
+		"zobject": "MediaWiki\\Extension\\WikiLambda\\ZObjectContentHandler"
+	},
 	"config": {
 		"WikiLambdaEnable": {
 			"description": "Enable the extension.",
@@ -26,7 +50,8 @@
 	},
 	"Hooks": {
 		"BeforePageDisplayHook": "WikiLambdaHooks",
-		"MakeGlobalVariablesScript": "WikiLambdaHooks"
+		"MakeGlobalVariablesScript": "WikiLambdaHooks",
+		"CodeEditorGetPageLanguage": "MediaWiki\\Extension\\WikiLambda\\Hooks::onCodeEditorGetPageLanguage"
 	},
 	"MessagesDirs": {
 		"WikiLambda": [
