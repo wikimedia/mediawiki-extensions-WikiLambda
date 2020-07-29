@@ -80,7 +80,7 @@ class ZObjectUtils {
 	 */
 	public static function isValidZObjectRecord( object $input ) : bool {
 		$objectVars = get_object_vars( $input );
-		// TODO: This shouldn't hard-code knowledge of the type
+		// TODO: This shouldn't hard-code knowledge of the type?
 		if ( !array_key_exists( 'Z1K1', $objectVars ) ) {
 			// Each ZObject must define its type.
 			return false;

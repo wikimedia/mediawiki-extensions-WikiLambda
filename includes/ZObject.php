@@ -21,10 +21,21 @@ use WikiPage;
 /**
  * This class represents the top-level, persistent ZObject, as stored in MediaWiki.
  */
-class ZObject extends JsonContent {
+class ZObject extends JsonContent implements ZObjectInterface {
+
+	/*
+	 * Type of ZObject, e.g. "ZList" or "ZPersistentObject", as stored in Z1K1 in the serialised
+	 * form if a record (or implicit if a ZString or ZList).
+	 *
+	 * Lazily-set on request.
+	 */
+	private $zObjectType;
+
+	private $value;
 
 	public function __construct( $text = null, $modelId = CONTENT_MODEL_ZOBJECT ) {
-		// FIXME: This needs to be a factory to instantiate a ZFunction or whatever instead.
+		$this->value = ZObjectFactory::createFromSerialisedString( $text );
+
 		parent::__construct( $text, $modelId );
 	}
 
@@ -40,6 +51,12 @@ class ZObject extends JsonContent {
 
 		$contentBlob = $this->getData()->getValue();
 		if ( !ZObjectUtils::isValidZObject( $contentBlob ) ) {
+			return false;
+		}
+
+		try {
+			$this->getType();
+		} catch ( \InvalidArgumentException $e ) {
 			return false;
 		}
 
@@ -72,5 +89,22 @@ class ZObject extends JsonContent {
 		$encoded = FormatJson::encode( $json, true, FormatJson::UTF8_OK );
 
 		return new static( self::normalizeLineEndings( $encoded ) );
+	}
+
+	public function getValue() {
+		if ( $this->value === null ) {
+			$this->value = ZObjectFactory::createFromSerialisedString( $this->getData()->getValue() );
+		}
+		return $this->value;
+	}
+
+	public function getType() {
+		if ( $this->zObjectType === null ) {
+			$registry = ZTypeRegistry::singleton();
+
+			$this->zObjectType = $this->getValue()->getType();
+		}
+
+		return $this->zObjectType;
 	}
 }
