@@ -49,26 +49,12 @@
 		}
 	},
 	"Hooks": {
-		"BeforePageDisplayHook": "WikiLambdaHooks",
-		"MakeGlobalVariablesScript": "WikiLambdaHooks",
 		"CodeEditorGetPageLanguage": "MediaWiki\\Extension\\WikiLambda\\Hooks::onCodeEditorGetPageLanguage"
 	},
 	"MessagesDirs": {
 		"WikiLambda": [
 			"i18n"
 		]
-	},
-	"ResourceFileModulePaths": {
-		"localBasePath": "resources",
-		"remoteExtPath": "WikiLambda/resources"
-	},
-	"ResourceModules": {
-		"ext.wikilambda": {
-			"dependencies": [ "oojs-ui-core" ],
-			"messages": [ "wikilambda-desc" ],
-			"styles": [],
-			"scripts": [ "ext.wikiLambda/init.js" ]
-		}
 	},
 	"manifest_version": 2
 }
