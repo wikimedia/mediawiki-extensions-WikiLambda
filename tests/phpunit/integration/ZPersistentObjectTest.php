@@ -2,12 +2,12 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use MediaWiki\Extension\WikiLambda\ZObject;
+use MediaWiki\Extension\WikiLambda\ZPersistentObject;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObject
+ * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZPersistentObject
  */
-class ZObjectTest extends \MediaWikiIntegrationTestCase {
+class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 
 	protected function setUp() : void {
 		parent::setUp();
@@ -18,7 +18,7 @@ class ZObjectTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getType
 	 */
 	public function testGetType_emptyString() {
-		$testObject = new ZObject( '' );
+		$testObject = new ZPersistentObject( '' );
 		$this->assertSame( $testObject->getType(), 'ZString' );
 	}
 
@@ -26,7 +26,7 @@ class ZObjectTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getType
 	 */
 	public function testGetType_string() {
-		$testObject = new ZObject( 'Test' );
+		$testObject = new ZPersistentObject( 'Test' );
 		$this->assertSame( $testObject->getType(), 'ZString' );
 	}
 
@@ -34,7 +34,7 @@ class ZObjectTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getType
 	 */
 	public function testGetType_list() {
-		$testObject = new ZObject( '["Test"]' );
+		$testObject = new ZPersistentObject( '["Test"]' );
 		$this->assertSame( $testObject->getType(), 'ZList' );
 	}
 
@@ -42,7 +42,7 @@ class ZObjectTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getType
 	 */
 	public function testGetType_record() {
-		$testObject = new ZObject( '{ "Z1K1": "Z1" }' );
+		$testObject = new ZPersistentObject( '{ "Z1K1": "Z1" }' );
 		$this->assertSame( $testObject->getType(), 'ZObject' );
 	}
 
@@ -50,7 +50,7 @@ class ZObjectTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getType
 	 */
 	public function testGetType_invalidThrows() {
-		$testObject = new ZObject( '{ "Z2K1": "Test" }' );
+		$testObject = new ZPersistentObject( '{ "Z2K1": "Test" }' );
 		$this->expectException( \InvalidArgumentException::class );
 		$this->assertSame( $testObject->getType(), 'Invalid so it matters not' );
 	}

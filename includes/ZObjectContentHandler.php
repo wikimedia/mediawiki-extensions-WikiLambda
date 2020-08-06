@@ -29,17 +29,18 @@ class ZObjectContentHandler extends JsonContentHandler {
 	}
 
 	/**
-	 * @return ZObject
+	 * @return ZPersistentObject
 	 */
 	public function makeEmptyContent() {
-		return new ZObject( '""' );
+		// { Z1K1: Z2, Z2K2: "" }
+		return new ZPersistentObject( '{"Z1K1":"Z2","Z2K2":""}' );
 	}
 
 	/**
 	 * @return string
 	 */
 	protected function getContentClass() {
-		return ZObject::class;
+		return ZPersistentObject::class;
 	}
 
 }

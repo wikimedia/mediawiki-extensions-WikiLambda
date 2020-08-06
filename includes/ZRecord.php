@@ -10,7 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-class ZRecord implements ZObjectInterface {
+class ZRecord implements ZObject {
 
 	private $zObjectType;
 
@@ -37,7 +37,7 @@ class ZRecord implements ZObjectInterface {
 		return $this->value;
 	}
 
-	public function isValid() {
+	public function isValid() : bool {
 		// This implicitly checks for Z1K1 being set. Later, we'll care
 		// about other things too.
 		$this->getType();

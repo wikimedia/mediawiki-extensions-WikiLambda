@@ -10,7 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-class ZString implements ZObjectInterface {
+class ZString implements ZObject {
 
 	private $value;
 
@@ -26,7 +26,7 @@ class ZString implements ZObjectInterface {
 		return $this->value;
 	}
 
-	public function isValid() {
+	public function isValid() : bool {
 		return true;
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * WikiLambda ZObject
+ * WikiLambda ZObject utilities class
  *
  * @file
  * @ingroup Extensions

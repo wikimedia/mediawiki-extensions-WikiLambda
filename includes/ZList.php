@@ -10,7 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-class ZList implements ZObjectInterface {
+class ZList implements ZObject {
 
 	private $zObjectType = 'ZList';
 
@@ -28,11 +28,11 @@ class ZList implements ZObjectInterface {
 		return $this->value;
 	}
 
-	public function isValid() {
+	public function isValid() : bool {
 		foreach ( $this->value as $key => $value ) {
 			if (
 				is_object( $value )
-				&& $value instanceof ZObjectInterface
+				&& $value instanceof ZObject
 				&& !$value->isValid()
 			) {
 				return false;

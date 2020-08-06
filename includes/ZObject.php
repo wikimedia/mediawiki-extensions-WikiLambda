@@ -1,6 +1,6 @@
 <?php
 /**
- * WikiLambda ZObject
+ * WikiLambda ZObject interface
  *
  * @file
  * @ingroup Extensions
@@ -10,101 +10,19 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use FormatJson;
-use JsonContent;
-use ParserOptions;
-use Status;
-use Title;
-use User;
-use WikiPage;
-
 /**
- * This class represents the top-level, persistent ZObject, as stored in MediaWiki.
+ * This class represents the generic ZObject concept
  */
-class ZObject extends JsonContent implements ZObjectInterface {
-
-	/*
-	 * Type of ZObject, e.g. "ZList" or "ZPersistentObject", as stored in Z1K1 in the serialised
-	 * form if a record (or implicit if a ZString or ZList).
-	 *
-	 * Lazily-set on request.
-	 */
-	private $zObjectType;
-
-	private $value;
-
-	public function __construct( $text = null, $modelId = CONTENT_MODEL_ZOBJECT ) {
-		$this->value = ZObjectFactory::createFromSerialisedString( $text );
-
-		parent::__construct( $text, $modelId );
-	}
+interface ZObject {
 
 	/**
 	 * Validate this ZObject against our schema, to prevent creation and saving of invalid items.
 	 *
 	 * @return bool Whether content is valid
 	 */
-	public function isValid() {
-		if ( !parent::isValid() ) {
-			return false;
-		}
+	public function isValid() : bool;
 
-		$contentBlob = $this->getData()->getValue();
-		if ( !ZObjectUtils::isValidZObject( $contentBlob ) ) {
-			return false;
-		}
+	public function getType();
 
-		try {
-			$this->getType();
-		} catch ( \InvalidArgumentException $e ) {
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	 * @param WikiPage $page
-	 * @param int $flags
-	 * @param int $parentRevId
-	 * @param User $user
-	 * @return Status
-	 */
-	public function prepareSave( WikiPage $page, $flags, $parentRevId, User $user ) {
-		if ( !$this->isValid() ) {
-			return Status::newFatal( "wikilambda-invalidzobject" );
-		}
-
-		return Status::newGood();
-	}
-
-	public function preSaveTransform( Title $title, User $user, ParserOptions $popts ) {
-		// FIXME: WikiPage::doEditContent invokes PST before validation. As such, native data
-		// may be invalid (though PST result is discarded later in that case).
-		if ( !$this->isValid() ) {
-			return $this;
-		}
-
-		$json = ZObjectUtils::canonicalize( $this->getData()->getValue() );
-		$encoded = FormatJson::encode( $json, true, FormatJson::UTF8_OK );
-
-		return new static( self::normalizeLineEndings( $encoded ) );
-	}
-
-	public function getValue() {
-		if ( $this->value === null ) {
-			$this->value = ZObjectFactory::createFromSerialisedString( $this->getData()->getValue() );
-		}
-		return $this->value;
-	}
-
-	public function getType() {
-		if ( $this->zObjectType === null ) {
-			$registry = ZTypeRegistry::singleton();
-
-			$this->zObjectType = $this->getValue()->getType();
-		}
-
-		return $this->zObjectType;
-	}
+	public function getValue();
 }

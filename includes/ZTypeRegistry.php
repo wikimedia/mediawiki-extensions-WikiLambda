@@ -42,7 +42,7 @@ class ZTypeRegistry {
 
 		// TODO: The built-in objects should register themselves, except (?) Z1.
 		$this->internalRegisterType( 'Z1', 'ZObject' );
-		// $this->internalRegisterType( 'Z2', 'ZPersistentObject' );
+		$this->internalRegisterType( 'Z2', 'ZPersistentObject' );
 		$this->internalRegisterType( 'Z3', 'ZString' );
 		$this->internalRegisterType( 'Z4', 'ZList' );
 		$this->internalRegisterType( 'Z5', 'ZRecord' );
@@ -144,8 +144,11 @@ class ZTypeRegistry {
 			throw new InvalidArgumentException( "ZObject type '$type' already registered as '$conflictingKey'." );
 		}
 
-		if ( !class_exists( 'MediaWiki\Extension\WikiLambda\\' . $type ) ) {
-			throw new InvalidArgumentException( "ZObject type '$type' not a cached class." );
+		if (
+			$type !== 'ZObject'
+			&& !class_exists( 'MediaWiki\Extension\WikiLambda\\' . $type )
+		) {
+			throw new InvalidArgumentException( "ZObject type '$type' not a known class." );
 		}
 
 		$this->zObjectTypes[ $key ] = $type;
