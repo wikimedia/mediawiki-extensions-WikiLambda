@@ -4,5 +4,6 @@
 			"Eduardo Addad de Oliveira"
 		]
 	},
-	"wikilambda-desc": "Fornecendo as wikis da Wikimedia uma função de analisador de wikitexto para chamar a avaliação de funções escritas, gerenciadas e avaliadas em um wiki central."
+	"wikilambda-desc": "Fornecendo as wikis da Wikimedia uma função de analisador de wikitexto para chamar a avaliação de funções escritas, gerenciadas e avaliadas em um wiki central.",
+	"wikilambda-invalidzobject": "O conteúdo fornecido não é um ZObject válido."
 }

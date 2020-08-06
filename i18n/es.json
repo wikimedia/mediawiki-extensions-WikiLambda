@@ -1,8 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
+			"Fitoschido",
 			"KATRINE1993"
 		]
 	},
-	"wikilambda-invalidzobject": "El contenido proveedido no es un ZObject valido."
+	"wikilambda-invalidzobject": "El contenido proporcionado no constituye un ZObject válido."
 }
