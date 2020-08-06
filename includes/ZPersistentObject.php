@@ -11,8 +11,10 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use FormatJson;
+use Html;
 use JsonContent;
 use ParserOptions;
+use ParserOutput;
 use Status;
 use Title;
 use User;
@@ -24,7 +26,7 @@ use WikiPage;
 class ZPersistentObject extends JsonContent implements ZObject {
 
 	/*
-	 * Type of included ZObject, e.g. "ZList" or "ZString", as stored in Z1K1 in the serialised
+	 * Type of included ZObject, e.g. "ZList" or "ZString", as stored in the serialised
 	 * form if a record (or implicit if a ZString or ZList).
 	 *
 	 * Lazily-set on request.
@@ -34,6 +36,8 @@ class ZPersistentObject extends JsonContent implements ZObject {
 	private $value;
 
 	private $validity;
+
+	private $labelSet;
 
 	public function __construct( $text = null, $modelId = CONTENT_MODEL_ZOBJECT ) {
 		try {
@@ -70,7 +74,7 @@ class ZPersistentObject extends JsonContent implements ZObject {
 		// HACK: This gets the value and deserialises it, and throws if invalid, but it's heavy
 		// and not very pretty.
 		try {
-			$this->getZObject();
+			$this->getInnerZObject();
 			$this->getZType();
 		} catch ( \InvalidArgumentException $e ) {
 			$this->validity = false;
@@ -97,8 +101,6 @@ class ZPersistentObject extends JsonContent implements ZObject {
 	}
 
 	public function preSaveTransform( Title $title, User $user, ParserOptions $popts ) {
-		// FIXME: WikiPage::doEditContent invokes PST before validation. As such, native data
-		// may be invalid (though PST result is discarded later in that case).
 		if ( !$this->isValid() ) {
 			return $this;
 		}
@@ -109,24 +111,87 @@ class ZPersistentObject extends JsonContent implements ZObject {
 		return new static( self::normalizeLineEndings( $encoded ) );
 	}
 
-	private function getZObject() {
+	public function getInnerZObject() {
 		if ( $this->value === null ) {
-			$this->value = ZObjectFactory::createFromSerialisedString( $this->getData()->getValue() );
+			$valueObject = get_object_vars( $this->getData()->getValue() );
+			$this->value = ZObjectFactory::createFromSerialisedString( $valueObject[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] );
 		}
 		return $this->value;
 	}
 
 	public function getZValue() {
-		return $this->getZObject()->getZValue();
+		return $this->getInnerZObject()->getZValue();
 	}
 
 	public function getZType() : string {
 		if ( $this->zObjectType === null ) {
 			$registry = ZTypeRegistry::singleton();
 
-			$this->zObjectType = $this->getZObject()->getZType();
+			$this->zObjectType = $this->getInnerZObject()->getZType();
 		}
 
 		return $this->zObjectType;
+	}
+
+	public function getLabel( $language ) {
+		if ( $this->labelSet === null ) {
+			$this->labelSet = new ZMultiLingualString();
+			$valueObject = get_object_vars( $this->getData()->getValue() );
+			if ( array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL, $valueObject ) ) {
+				$this->labelSet = ZObjectFactory::create( $valueObject[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] );
+			}
+		}
+
+		if ( count( $this->labelSet->getZValue() ) === 0 ) {
+			return wfMessage( 'wikilambda-emptylabel' )->inLanguage( $language )->text();
+		}
+
+		return $this->labelSet->getStringForLanguage( $language );
+	}
+
+	/**
+	 * Set the HTML and add the appropriate styles.
+	 *
+	 * <div class="ext-wikilambda-viewpage-header">
+	 *     <span class="ext-wikilambda-viewpage-header-label firstHeading">multiply</h1>
+	 *     <span class="ext-wikilambda-viewpage-header-zid">Z12345</div>
+	 *     <div class="ext-wikilambda-viewpage-header-type">ZFunction…</div>
+	 * </div>
+	 *
+	 * @param Title $title
+	 * @param int $revId
+	 * @param ParserOptions $options
+	 * @param bool $generateHtml
+	 * @param ParserOutput &$output
+	 */
+	protected function fillParserOutput(
+		Title $title, $revId, ParserOptions $options, $generateHtml, ParserOutput &$output
+	) {
+		parent::fillParserOutput( $title, $revId, $options, $generateHtml, $output );
+
+		$label = Html::element(
+			'span', [ 'class' => 'ext-wikilambda-viewpage-header-title' ],
+			$this->getLabel( \RequestContext::getMain()->getLanguage() )
+		);
+		$id = Html::element(
+			'span', [ 'class' => 'ext-wikilambda-viewpage-header-zid' ],
+			$title->getText()
+		);
+
+		$type = Html::element(
+			'div', [ 'class' => 'ext-wikilambda-viewpage-header-type' ],
+			wfMessage( 'wikilambda-persistentzobject' )->inContentLanguage()->text()
+				. wfMessage( 'colon-separator' )->inContentLanguage()->text()
+				. $this->getZType()
+		);
+
+		$header = Html::rawElement(
+			'div',
+			[ 'class' => 'ext-wikilambda-viewpage-header' ],
+			$label . $id . $type
+		);
+
+		$output->addModuleStyles( 'ext.wikilambda.viewpage.styles' );
+		$output->setTitleText( $header );
 	}
 }

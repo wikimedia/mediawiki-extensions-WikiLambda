@@ -24,17 +24,30 @@ class ZTypeRegistry {
 
 	public const Z_OBJECT = 'Z1';
 	public const Z_OBJECT_TYPE = 'Z1K1';
+
 	public const Z_PERSISTENTOBJECT = 'Z2';
 	public const Z_PERSISTENTOBJECT_ID = 'Z2K1';
 	public const Z_PERSISTENTOBJECT_VALUE = 'Z2K2';
 	public const Z_PERSISTENTOBJECT_LABEL = 'Z2K3';
+
 	public const Z_KEY = 'Z3';
+
 	public const Z_RECORD = 'Z5';
+	public const Z_RECORD_VALUE = 'Z5K1';
+
 	public const Z_STRING = 'Z6';
 	public const Z_STRING_VALUE = 'Z6K1';
+
 	public const Z_LIST = 'Z10';
 	public const Z_LIST_HEAD = 'Z10K1';
 	public const Z_LIST_TAIL = 'Z10K2';
+
+	public const Z_MONOLINGUALSTRING = 'Z11';
+	public const Z_MONOLINGUALSTRING_LANGUAGE = 'Z11K1';
+	public const Z_MONOLINGUALSTRING_VALUE = 'Z11K2';
+
+	public const Z_MULTILINGUALSTRING = 'Z12';
+	public const Z_MULTILINGUALSTRING_VALUE = 'Z12K1';
 
 	/** @var RevisionStore */
 	private $revisionStore;
@@ -60,6 +73,9 @@ class ZTypeRegistry {
 		$this->internalRegisterType( self::Z_STRING, 'ZString' );
 		$this->internalRegisterType( self::Z_LIST, 'ZList' );
 		$this->internalRegisterType( self::Z_RECORD, 'ZRecord' );
+
+		$this->internalRegisterType( self::Z_MONOLINGUALSTRING, 'ZMonoLingualString' );
+		$this->internalRegisterType( self::Z_MULTILINGUALSTRING, 'ZMultiLingualString' );
 	}
 
 	/**

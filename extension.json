@@ -40,7 +40,7 @@
 	"config": {
 		"WikiLambdaEnable": {
 			"description": "Enable the extension.",
-			"value": false
+			"value": true
 		}
 	},
 	"HookHandlers": {
@@ -55,6 +55,15 @@
 		"WikiLambda": [
 			"i18n"
 		]
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "WikiLambda/resources"
+	},
+	"ResourceModules": {
+		"ext.wikilambda.viewpage.styles": {
+			"styles": [ "ext.wikilambda.viewpage/ext.wikilambda.viewpage.less" ]
+		}
 	},
 	"manifest_version": 2
 }

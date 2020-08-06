@@ -5,5 +5,8 @@
 		]
 	},
 	"wikilambda-desc": "{{desc|name=WikiLambda|url=https://www.mediawiki.org/wiki/Extension:WikiLambda}}",
-	"wikilambda-invalidzobject": "Error shown when an invalid ZObject definition edit is made."
+	"wikilambda-emptylabel": "Default label shown for a ZObject that doesn't have one yet.",
+	"wikilambda-invalidzobject": "Error shown when an invalid ZObject definition edit is made.",
+	"wikilambda-persistentzobject": "{{Optional}}Label for a top-level ZObject.",
+	"wikilambda-multilingualstring-nofallback": "Message shown when a multi-lingual string doesn't have a label defined for the user's language, nor for any of that language's fallbacks."
 }

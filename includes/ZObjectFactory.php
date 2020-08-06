@@ -85,14 +85,30 @@ class ZObjectFactory {
 			return new ZList( $objectVars[ ZTypeRegistry::Z_LIST_HEAD ], $objectVars[ ZTypeRegistry::Z_LIST_TAIL ] );
 		}
 
+		if ( $type == ZTypeRegistry::Z_MONOLINGUALSTRING ) {
+			if ( !array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE, $objectVars ) ) {
+				throw new \InvalidArgumentException( "ZObject record of a ZMonoLingualString missing the language code key." );
+			}
+			if ( !array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE, $objectVars ) ) {
+				throw new \InvalidArgumentException( "ZObject record of a ZMonoLingualString missing the value key." );
+			}
+			return new ZMonoLingualString( $objectVars[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ], $objectVars[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ] );
+		}
+
+		if ( $type == ZTypeRegistry::Z_MULTILINGUALSTRING ) {
+			if ( !array_key_exists( ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE, $objectVars ) ) {
+				throw new \InvalidArgumentException( "ZObject record of a ZMultiLingualString missing the lingual values key." );
+			}
+			return new ZMultiLingualString( $objectVars[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] );
+		}
+
 		// Must be a generic record:
-		if ( !array_key_exists( 'Z5K1', $objectVars ) ) {
+		if ( !array_key_exists( ZTypeRegistry::Z_RECORD_VALUE, $objectVars ) ) {
 			throw new \InvalidArgumentException( "ZObject record missing a generic value key." );
 		}
 		if ( count( $objectVars ) !== 2 ) {
-			$keys = implode( ', ', array_keys( $objectVars ) );
-			throw new \InvalidArgumentException( "ZObject generic record with extra keys: $keys." );
+			throw new \InvalidArgumentException( "ZObject generic record with extra keys: " . implode( ', ', array_keys( $objectVars ) ) . "." );
 		}
-		return new ZRecord( $type, $objectVars[ 'Z5K1' ] );
+		return new ZRecord( $type, $objectVars[ ZTypeRegistry::Z_RECORD_VALUE ] );
 	}
 }

@@ -98,6 +98,55 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 
 	/**
 	 * @covers ::__construct
+	 * @covers ::getZType
+	 * @covers ::getZValue
+	 * @covers ::getInnerZObject
+	 */
+	public function testCreation_monolingualstring() {
+		$testObject = new ZPersistentObject( '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "Demonstration item" }' );
+
+		$this->assertSame( $testObject->getZType(), 'ZMonoLingualString' );
+		$this->assertSame( $testObject->getZValue(), [ 'en' => 'Demonstration item' ] );
+
+		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "Demonstration item" } }' );
+		$this->assertSame( $testObject->getZType(), 'ZMonoLingualString' );
+		$this->assertSame( $testObject->getZValue(), [ 'en' => 'Demonstration item' ] );
+		$this->assertSame( $testObject->getInnerZObject()->getLanguage(), 'en' );
+		$this->assertSame( $testObject->getInnerZObject()->getString(), 'Demonstration item' );
+	}
+
+	/**
+	 * @covers ::__construct
+	 * @covers ::getZType
+	 * @covers ::getZValue
+	 * @covers ::getInnerZObject
+	 */
+	public function testCreation_multilingualstring() {
+		$services = \MediaWiki\MediaWikiServices::getInstance();
+
+		$english = new \Language( 'en', $services->getLocalisationCache(), $services->getLanguageNameUtils(), $services->getLanguageFallback(), $services->getLanguageConverterFactory(), $services->getHookContainer() );
+		$french = new \Language( 'fr', $services->getLocalisationCache(), $services->getLanguageNameUtils(), $services->getLanguageFallback(), $services->getLanguageConverterFactory(), $services->getHookContainer() );
+
+		$testObject = new ZPersistentObject( '{ "Z1K1": "Z12", "Z12K1": [] }' );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertSame( $testObject->getZType(), 'ZMultiLingualString' );
+		$this->assertSame( $testObject->getZValue(), [] );
+
+		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z12", "Z12K1": [] } }' );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertSame( $testObject->getZType(), 'ZMultiLingualString' );
+		$this->assertSame( $testObject->getZValue(), [] );
+
+		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "Demonstration item" }, { "Z1K1": "Z11", "Z11K1": "fr", "Z11K2": "article pour démonstration" } ] } }' );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertSame( $testObject->getZType(), 'ZMultiLingualString' );
+
+		$this->assertSame( $testObject->getInnerZObject()->getStringForLanguage( $english ), 'Demonstration item' );
+		$this->assertSame( $testObject->getInnerZObject()->getStringForLanguage( $french ), 'article pour démonstration' );
+	}
+
+	/**
+	 * @covers ::__construct
 	 */
 	public function testCreation_contentHandlerEmptyContentIsValid() {
 		$contentHandler = new \MediaWiki\Extension\WikiLambda\ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
@@ -151,7 +200,7 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::__construct
 	 */
 	public function testCreation_invalidThrows_nestedrecordhasnovalue() {
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z1", "Z5K1": { "Z1K1": "Z1" } }' );
+		$testObject = new ZPersistentObject( '{ "Z1K1": "Z5", "Z5K1": { "Z1K1": "Z1" } }' );
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( \Error::class );
 		$this->assertSame( $testObject->getZType(), 'InvalidObjectWillNotHaveAType' );
