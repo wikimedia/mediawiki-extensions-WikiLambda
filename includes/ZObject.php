@@ -10,8 +10,11 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use FormatJson;
 use JsonContent;
+use ParserOptions;
 use Status;
+use Title;
 use User;
 use WikiPage;
 
@@ -56,5 +59,18 @@ class ZObject extends JsonContent {
 		}
 
 		return Status::newGood();
+	}
+
+	public function preSaveTransform( Title $title, User $user, ParserOptions $popts ) {
+		// FIXME: WikiPage::doEditContent invokes PST before validation. As such, native data
+		// may be invalid (though PST result is discarded later in that case).
+		if ( !$this->isValid() ) {
+			return $this;
+		}
+
+		$json = ZObjectUtils::canonicalize( $this->getData()->getValue() );
+		$encoded = FormatJson::encode( $json, true, FormatJson::UTF8_OK );
+
+		return new static( self::normalizeLineEndings( $encoded ) );
 	}
 }
