@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"BaRaN6161 TURK"
+			"BaRaN6161 TURK",
+			"MuratTheTurkish"
 		]
 	},
-	"wikilambda-desc": "Wikimedia vikilerine, merkezi bir vikide yazılan, yönetilen ve değerlendirilen işlevlerin değerlendirilmesi için vikimetin ayrıştırıcı işlevi sağlar."
+	"wikilambda-desc": "Wikimedia vikilerine, merkezi bir vikide yazılan, yönetilen ve değerlendirilen işlevlerin değerlendirilmesi için vikimetin ayrıştırıcı işlevi sağlar.",
+	"wikilambda-invalidzobject": "Sağlanan içerik geçerli bir ZObject değil."
 }
