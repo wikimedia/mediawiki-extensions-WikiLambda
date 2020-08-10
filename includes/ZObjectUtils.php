@@ -10,6 +10,8 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use stdClass;
+
 class ZObjectUtils {
 
 	/**
@@ -106,4 +108,43 @@ class ZObjectUtils {
 	public static function isValidZObjectKey( string $input ) : bool {
 		return preg_match( "/^\s*(Z[1-9]\d*)?K\d+\s*$/", $input );
 	}
+
+	/**
+	 * Canonicalizes a ZObject.
+	 *
+	 * @param string|array|object $input decoded JSON object for a valid ZObject
+	 * @return string|array|object canonical decoded JSON object of same ZObject
+	 */
+	public static function canonicalize( $input ) {
+		if ( is_array( $input ) ) {
+			return array_map( 'self::canonicalize', $input );
+		}
+
+		if ( is_object( $input ) ) {
+			return self::canonicalizeZRecord( $input );
+		}
+
+		return $input;
+	}
+
+	/**
+	 * Canonicalizes a ZRecord.
+	 *
+	 * For now, it just trims the keys. There will be plenty of other thins it
+	 * will eventually do.
+	 *
+	 * @param object $input the decoded JSON object representing a valid ZObject
+	 * @return object canonical decoded JSON object representing the same ZObject
+	 */
+	public static function canonicalizeZRecord( object $input ): object {
+		$trimmed = new stdClass;
+		$input_vars = get_object_vars( $input );
+		foreach ( $input_vars as $key => $value ) {
+			$trimmed_key = trim( $key );
+			$trimmed->$trimmed_key = self::canonicalize( $value );
+		}
+
+		return $trimmed;
+	}
+
 }

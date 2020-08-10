@@ -2,6 +2,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests;
 
+use FormatJson;
+
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**
@@ -67,6 +69,78 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 			'Invalid 0-padded global key' => [ 'Z01K1', false ],
 
 			'Invalid local key' => [ 'ZK1', false ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideCanonicalize
+	 * @covers ::canonicalize
+	 * @covers ::canonicalizeZRecord
+	 */
+	public function testCanonicalize( $input, $expected ) {
+		$this->assertSame(
+			FormatJson::encode(
+			  ZObjectUtils::canonicalize( FormatJson::parse( $input ) )
+			),
+			FormatJson::encode( FormatJson::parse( $expected ) )
+		);
+	}
+
+	public function provideCanonicalize() {
+		return [
+			'empty list' => [ '[]', '[]' ],
+			'list with empty string' => [ '[""]', '[""]' ],
+			'list with two empty strings' => [ '["", ""]', '["", ""]' ],
+			'list with ordered strings' => [ '["a", "b"]', '["a", "b"]' ],
+			'list with unordered strings' => [ '["b", "a"]', '["b", "a"]' ],
+			'list with lists' => [ '[[],[[]], []]', '[[],[[]],[]]' ],
+
+			'empty string' => [ '""', '""' ],
+			'string' => [ '"ab"', '"ab"' ],
+			'string unordered' => [ '"ba"', '"ba"' ],
+			'untrimmed string left' => [ '" a"', '" a"' ],
+			'untrimmed string right' => [ '"a "', '"a "' ],
+			'untrimmed string left two' => [ '"  a"', '"  a"' ],
+			'untrimmed string both' => [ '" a "', '" a "' ],
+
+			'empty record' => [ '{ "Z1K1": "Z1" }', '{ "Z1K1": "Z1" }' ],
+			'simple record' => [
+				'{ "Z1K1": "Z60", "Z60K1": "a" }',
+				'{ "Z1K1": "Z60", "Z60K1": "a" }'
+			],
+			'simple record with left untrimmed key' => [
+				'{ "Z1K1": "Z60", " Z60K1": "a" }',
+				'{ "Z1K1": "Z60", "Z60K1": "a" }'
+			],
+			'simple record with right untrimmed key' => [
+				'{ "Z1K1": "Z60", "Z60K1 ": "a" }',
+				'{ "Z1K1": "Z60", "Z60K1": "a" }'
+			],
+			'simple record with both untrimmed key' => [
+				'{ "Z1K1": "Z60", " Z60K1 ": "a" }',
+				'{ "Z1K1": "Z60", "Z60K1": "a" }'
+			],
+			'simple record with left double untrimmed key' => [
+				'{ "Z1K1": "Z60", "  Z60K1": "a" }',
+				'{ "Z1K1": "Z60", "Z60K1": "a" }'
+			],
+			'simple record with both keys untrimmed' => [
+				'{ " Z1K1 ": "Z60", "Z60K1 ": "a" }',
+				'{ "Z1K1": "Z60", "Z60K1": "a" }'
+			],
+			'simple record with left local untrimmed key' => [
+				'{ "Z1K1": "Z60", " K1": "a" }',
+				'{ "Z1K1": "Z60", "K1": "a" }'
+			],
+
+			'record with embedded record with key untrimmed' => [
+				'{ "Z1K1 ": "Z10", "K1 ": { "Z1K1": "Z60", "Z60K1 ": "a" } }',
+				'{ "Z1K1": "Z10", "K1": { "Z1K1": "Z60", "Z60K1": "a" } }',
+			],
+			'list with record with key untrimmed' => [
+				'[{ " Z1K1 ": "Z60", "Z60K1 ": "a" }]',
+				'[{ "Z1K1": "Z60", "Z60K1": "a" }]'
+			],
 		];
 	}
 }
