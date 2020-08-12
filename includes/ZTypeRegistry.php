@@ -85,7 +85,7 @@ class ZTypeRegistry {
 		$text = $revision->getSlot( SlotRecord::MAIN, RevisionRecord::RAW )->getContent()->getNativeData();
 		$zObject = ZObjectFactory::createFromSerialisedString( $text );
 
-		$pageType = $zObject->getType();
+		$pageType = $zObject->getZType();
 		$this->internalRegisterType( $key, $pageType );
 		return true;
 	}

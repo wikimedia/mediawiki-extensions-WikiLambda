@@ -22,7 +22,7 @@ interface ZObject {
 	 */
 	public function isValid() : bool;
 
-	public function getType();
+	public function getZType() : string;
 
-	public function getValue();
+	public function getZValue();
 }

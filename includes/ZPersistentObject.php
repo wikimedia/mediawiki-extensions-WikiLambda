@@ -33,8 +33,15 @@ class ZPersistentObject extends JsonContent implements ZObject {
 
 	private $value;
 
+	private $validity;
+
 	public function __construct( $text = null, $modelId = CONTENT_MODEL_ZOBJECT ) {
-		$this->value = ZObjectFactory::createFromSerialisedString( $text );
+		try {
+			$this->value = ZObjectFactory::createFromSerialisedString( $text );
+		} catch ( \InvalidArgumentException $e ) {
+			$this->value = $text;
+			$this->validity = false;
+		}
 
 		parent::__construct( $text, $modelId );
 	}
@@ -45,21 +52,32 @@ class ZPersistentObject extends JsonContent implements ZObject {
 	 * @return bool Whether content is valid
 	 */
 	public function isValid() : bool {
+		if ( $this->validity !== null ) {
+			return $this->validity;
+		}
+
 		if ( !parent::isValid() ) {
+			$this->validity = false;
 			return false;
 		}
 
 		$contentBlob = $this->getData()->getValue();
 		if ( !ZObjectUtils::isValidZObject( $contentBlob ) ) {
+			$this->validity = false;
 			return false;
 		}
 
+		// HACK: This gets the value and deserialises it, and throws if invalid, but it's heavy
+		// and not very pretty.
 		try {
-			$this->getType();
+			$this->getZObject();
+			$this->getZType();
 		} catch ( \InvalidArgumentException $e ) {
+			$this->validity = false;
 			return false;
 		}
 
+		$this->validity = true;
 		return true;
 	}
 
@@ -91,18 +109,22 @@ class ZPersistentObject extends JsonContent implements ZObject {
 		return new static( self::normalizeLineEndings( $encoded ) );
 	}
 
-	public function getValue() {
+	private function getZObject() {
 		if ( $this->value === null ) {
 			$this->value = ZObjectFactory::createFromSerialisedString( $this->getData()->getValue() );
 		}
 		return $this->value;
 	}
 
-	public function getType() {
+	public function getZValue() {
+		return $this->getZObject()->getZValue();
+	}
+
+	public function getZType() : string {
 		if ( $this->zObjectType === null ) {
 			$registry = ZTypeRegistry::singleton();
 
-			$this->zObjectType = $this->getValue()->getType();
+			$this->zObjectType = $this->getZObject()->getZType();
 		}
 
 		return $this->zObjectType;
