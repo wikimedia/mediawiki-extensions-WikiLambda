@@ -80,9 +80,9 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 	public function testCanonicalize( $input, $expected ) {
 		$this->assertSame(
 			FormatJson::encode(
-			  ZObjectUtils::canonicalize( FormatJson::parse( $input ) )
+			  ZObjectUtils::canonicalize( FormatJson::parse( $input )->value )
 			),
-			FormatJson::encode( FormatJson::parse( $expected ) )
+			FormatJson::encode( FormatJson::parse( $expected )->value )
 		);
 	}
 
@@ -141,6 +141,43 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 				'[{ " Z1K1 ": "Z60", "Z60K1 ": "a" }]',
 				'[{ "Z1K1": "Z60", "Z60K1": "a" }]'
 			],
+			'simple record with unsorted keys' => [
+				'{ "Z60K1": "a", "Z1K1 ": "Z60" }',
+				'{ "Z1K1": "Z60", "Z60K1": "a" }'
+			],
+			'simple record with unsorted local keys' => [
+				'{ "K1 ": "a", "Z1K1 ": "Z60" }',
+				'{ "Z1K1": "Z60", "K1": "a" }'
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideOrderZKeyIDs
+	 * @covers ::orderZKeyIDs
+	 */
+	public function testOrderZKeyIDs( $left, $right, $expected ) {
+		$this->assertSame(
+			ZObjectUtils::orderZKeyIDs( $left, $right ), $expected
+		);
+		$this->assertSame(
+			ZObjectUtils::orderZKeyIDs( $right, $left ), -1 * $expected
+		);
+	}
+
+	public function provideOrderZKeyIDs() {
+		return [
+			'same local' => [ 'K1', 'K1', 0 ],
+			'same global' => [ 'Z1K1', 'Z1K1', 0 ],
+			'global and local' => [ 'Z1K1', 'K1', -1 ],
+			'same zid' => [ 'Z1K1', 'Z1K2', -1 ],
+			'same zid, high key' => [ 'Z1K10', 'Z1K2', 1 ],
+			'high zid' => [ 'Z2K1', 'Z10K1', -1 ],
+			'different zid' => [ 'Z1K2', 'Z2K1', -1 ],
+			'same zid, high key' => [ 'Z1K10', 'Z1K2', 1 ],
+			'high zid, high key' => [ 'Z10K20', 'Z1K2', 1 ],
+			'different locals' => [ 'K1', 'K2', -1 ],
+			'high locals' => [ 'K10', 'K2', 1 ],
 		];
 	}
 }

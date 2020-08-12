@@ -128,6 +128,52 @@ class ZObjectUtils {
 	}
 
 	/**
+	 * Compares IDs of ZKeys in an order.
+	 *
+	 * First come global ZIDs, then local ones. The globals are sorted first
+	 * numerically by the Z-Number, and the by the K-Number.
+	 *
+	 * @param string $left left key for comparision
+	 * @param string $right right key for comparision
+	 * @return int whether left is smaller (-1) than right or not (+1)
+	 */
+	public static function orderZKeyIDs( string $left, string $right ) : int {
+		if ( $left == $right ) {
+			return 0;
+		}
+		if ( $left[0] == 'Z' && $right[0] == 'K' ) {
+			return -1;
+		}
+		if ( $left[0] == 'K' && $right[0] == 'Z' ) {
+			return 1;
+		}
+		$leftkpos = strpos( $left, 'K' );
+		$rightkpos = strpos( $right, 'K' );
+		if ( $leftkpos == 0 ) {
+			$leftzid = 0;
+		} else {
+			$leftzid = intval( substr( $left, 1, $leftkpos - 1 ) );
+		}
+		if ( $rightkpos == 0 ) {
+			$rightzid = 0;
+		} else {
+			$rightzid = intval( substr( $right, 1, $rightkpos - 1 ) );
+		}
+		if ( $leftzid < $rightzid ) {
+			return -1;
+		}
+		if ( $leftzid > $rightzid ) {
+			return 1;
+		}
+		$leftkid = intval( substr( $left, $leftkpos + 1 ) );
+		$rightkid = intval( substr( $right, $rightkpos + 1 ) );
+		if ( $leftkid < $rightkid ) {
+			return -1;
+		}
+		return 1;
+	}
+
+	/**
 	 * Canonicalizes a ZRecord.
 	 *
 	 * For now, it just trims the keys. There will be plenty of other thins it
@@ -141,10 +187,17 @@ class ZObjectUtils {
 		$input_vars = get_object_vars( $input );
 		foreach ( $input_vars as $key => $value ) {
 			$trimmed_key = trim( $key );
-			$trimmed->$trimmed_key = self::canonicalize( $value );
+			$trimmed->$trimmed_key = $value;
 		}
 
-		return $trimmed;
+		$sorted = new stdClass;
+		$keys = array_keys( get_object_vars( $trimmed ) );
+		usort( $keys, 'self::orderZKeyIDs' );
+		foreach ( $keys as $key ) {
+			$sorted->$key = self::canonicalize( $trimmed->$key );
+		}
+
+		return $sorted;
 	}
 
 }
