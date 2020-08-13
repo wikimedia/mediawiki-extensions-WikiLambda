@@ -57,7 +57,6 @@ class ZTypeRegistry {
 	 * @return string[]
 	 */
 	public function getCachedZObjectKeys() : array {
-		// TODO: Rename to getCached…Keys?
 		return array_keys( $this->zObjectTypes );
 	}
 
@@ -102,7 +101,6 @@ class ZTypeRegistry {
 	 * @return string[]
 	 */
 	public function getCachedZObjectTypes() : array {
-		// TODO: Rename to getCached…Types?
 		return array_values( $this->zObjectTypes );
 	}
 
