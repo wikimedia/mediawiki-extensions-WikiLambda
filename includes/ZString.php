@@ -20,7 +20,7 @@ class ZString implements ZObject {
 		if ( is_string( $value ) ) {
 			$this->value = $value;
 		} else {
-			$this->value = get_object_vars( $value )['Z3K1'];
+			$this->value = get_object_vars( $value )[ ZTypeRegistry::Z_STRING_VALUE ];
 		}
 	}
 

@@ -53,36 +53,36 @@ class ZObjectFactory {
 
 		// TODO: Type-check / form check based on the specific type.
 
-		if ( !array_key_exists( 'Z1K1', $objectVars ) ) {
+		if ( !array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $objectVars ) ) {
 			throw new \InvalidArgumentException( "ZObject record missing a type key." );
 		}
-		$type = $objectVars['Z1K1'];
+		$type = $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ];
 
 		// TODO: This should be handled by the individual classes via the registry.
 
 		// HACK: For ZPersistentObject, we care about the inner object, not the ZPO
-		if ( $type === 'Z2' /* ZPersistentObject */ ) {
-			if ( !array_key_exists( 'Z2K2', $objectVars ) ) {
+		if ( $type === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
+			if ( !array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE, $objectVars ) ) {
 				throw new \InvalidArgumentException( "ZObject record of a ZPersistentObject missing the value key." );
 			}
-			return self::create( $objectVars['Z2K2'] );
+			return self::create( $objectVars[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] );
 		}
 
-		if ( $type == 'Z3' /* ZString */ ) {
-			if ( !array_key_exists( 'Z3K1', $objectVars ) ) {
+		if ( $type == ZTypeRegistry::Z_STRING ) {
+			if ( !array_key_exists( ZTypeRegistry::Z_STRING_VALUE, $objectVars ) ) {
 				throw new \InvalidArgumentException( "ZObject record of a ZString missing the value key." );
 			}
-			return new ZString( $objectVars['Z3K1'] );
+			return new ZString( $objectVars[ ZTypeRegistry::Z_STRING_VALUE ] );
 		}
 
-		if ( $type == 'Z4' /* ZList */ ) {
-			if ( !array_key_exists( 'Z4K1', $objectVars ) ) {
+		if ( $type == ZTypeRegistry::Z_LIST ) {
+			if ( !array_key_exists( ZTypeRegistry::Z_LIST_HEAD, $objectVars ) ) {
 				throw new \InvalidArgumentException( "ZObject record of a ZList missing the head value key." );
 			}
-			if ( !array_key_exists( 'Z4K2', $objectVars ) ) {
+			if ( !array_key_exists( ZTypeRegistry::Z_LIST_TAIL, $objectVars ) ) {
 				throw new \InvalidArgumentException( "ZObject record of a ZList missing the tail value key." );
 			}
-			return new ZList( $objectVars['Z4K1'], $objectVars['Z4K2'] );
+			return new ZList( $objectVars[ ZTypeRegistry::Z_LIST_HEAD ], $objectVars[ ZTypeRegistry::Z_LIST_TAIL ] );
 		}
 
 		// Must be a generic record:
@@ -93,6 +93,6 @@ class ZObjectFactory {
 			$keys = implode( ', ', array_keys( $objectVars ) );
 			throw new \InvalidArgumentException( "ZObject generic record with extra keys: $keys." );
 		}
-		return new ZRecord( $type, $objectVars['Z5K1'] );
+		return new ZRecord( $type, $objectVars[ 'Z5K1' ] );
 	}
 }

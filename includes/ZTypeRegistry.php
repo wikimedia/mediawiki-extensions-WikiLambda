@@ -22,6 +22,19 @@ use Title;
  */
 class ZTypeRegistry {
 
+	public const Z_OBJECT = 'Z1';
+	public const Z_OBJECT_TYPE = 'Z1K1';
+	public const Z_PERSISTENTOBJECT = 'Z2';
+	public const Z_PERSISTENTOBJECT_ID = 'Z2K1';
+	public const Z_PERSISTENTOBJECT_VALUE = 'Z2K2';
+	public const Z_PERSISTENTOBJECT_LABEL = 'Z2K3';
+	public const Z_STRING = 'Z3';
+	public const Z_STRING_VALUE = 'Z3K1';
+	public const Z_LIST = 'Z4';
+	public const Z_LIST_HEAD = 'Z4K1';
+	public const Z_LIST_TAIL = 'Z4K2';
+	public const Z_RECORD = 'Z5';
+
 	/** @var RevisionStore */
 	private $revisionStore;
 
@@ -41,11 +54,11 @@ class ZTypeRegistry {
 		$this->revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
 
 		// TODO: The built-in objects should register themselves, except (?) Z1.
-		$this->internalRegisterType( 'Z1', 'ZObject' );
-		$this->internalRegisterType( 'Z2', 'ZPersistentObject' );
-		$this->internalRegisterType( 'Z3', 'ZString' );
-		$this->internalRegisterType( 'Z4', 'ZList' );
-		$this->internalRegisterType( 'Z5', 'ZRecord' );
+		$this->internalRegisterType( self::Z_OBJECT, 'ZObject' );
+		$this->internalRegisterType( self::Z_PERSISTENTOBJECT, 'ZPersistentObject' );
+		$this->internalRegisterType( self::Z_STRING, 'ZString' );
+		$this->internalRegisterType( self::Z_LIST, 'ZList' );
+		$this->internalRegisterType( self::Z_RECORD, 'ZRecord' );
 	}
 
 	/**

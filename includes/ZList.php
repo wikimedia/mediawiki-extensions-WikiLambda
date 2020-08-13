@@ -17,19 +17,17 @@ class ZList implements ZObject {
 	private $value;
 
 	private $keys = [
-		// HEAD
-		'K1' => [],
-		// TAIL
-		'K2' => []
+		ZTypeRegistry::Z_LIST_HEAD => [],
+		ZTypeRegistry::Z_LIST_TAIL => []
 	];
 
 	public function __construct( $head = [], $tail = null ) {
 		if ( is_array( $head ) && $tail === null ) {
-			$this->keys['K1'] = array_slice( $head, 0, 1 )[ 0 ] ?? null;
-			$this->keys['K2'] = array_slice( $head, 1 );
+			$this->keys[ ZTypeRegistry::Z_LIST_HEAD ] = array_slice( $head, 0, 1 )[ 0 ] ?? null;
+			$this->keys[ ZTypeRegistry::Z_LIST_TAIL ] = array_slice( $head, 1 );
 		} else {
-			$this->keys['K1'] = $head;
-			$this->keys['K2'] = $tail;
+			$this->keys[ ZTypeRegistry::Z_LIST_HEAD ] = $head;
+			$this->keys[ ZTypeRegistry::Z_LIST_TAIL ] = $tail;
 		}
 	}
 
@@ -38,15 +36,15 @@ class ZList implements ZObject {
 	}
 
 	public function getZValue() {
-		return [ $this->keys['K1'], $this->keys['K2'] ];
+		return [ $this->keys[ ZTypeRegistry::Z_LIST_HEAD ], $this->keys[ ZTypeRegistry::Z_LIST_TAIL ] ];
 	}
 
 	public function isValid() : bool {
-		if ( !self::isValidValue( $this->keys['K1'] ) ) {
+		if ( !self::isValidValue( $this->keys[ ZTypeRegistry::Z_LIST_HEAD ] ) ) {
 			return false;
 		}
 
-		foreach ( $this->keys['K2'] as $key => $value ) {
+		foreach ( $this->keys[ ZTypeRegistry::Z_LIST_TAIL ] as $key => $value ) {
 			if ( !self::isValidValue( $value ) ) {
 				return false;
 			}

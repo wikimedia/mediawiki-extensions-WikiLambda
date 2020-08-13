@@ -33,7 +33,7 @@ class ZObjectContentHandler extends JsonContentHandler {
 	 */
 	public function makeEmptyContent() {
 		// { Z1K1: Z2, Z2K2: "" }
-		return new ZPersistentObject( '{"Z1K1":"Z2","Z2K2":""}' );
+		return new ZPersistentObject( '{' . "\n" . '  "' . ZTypeRegistry::Z_OBJECT_TYPE . '": "' . ZTypeRegistry::Z_PERSISTENTOBJECT . '",' . "\n" . '  "' . ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE . '": ""' . "\n" . '}' );
 	}
 
 	/**

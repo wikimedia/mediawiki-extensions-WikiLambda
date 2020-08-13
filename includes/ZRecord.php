@@ -22,6 +22,14 @@ class ZRecord implements ZObject {
 	}
 
 	public function getZType() : string {
+		if ( $this->zObjectType === null ) {
+			$objectVars = get_object_vars( $this->zValue );
+			if ( !array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $objectVars ) ) {
+				throw new \InvalidArgumentException( "ZObject top-level record missing a type key." );
+			}
+			$this->zObjectType = ZTypeRegistry::singleton()->getZObjectTypeFromKey( $objectVars[ZTypeRegistry::Z_OBJECT_TYPE] );
+		}
+
 		return $this->zObjectType;
 	}
 
