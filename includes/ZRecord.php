@@ -12,36 +12,24 @@ namespace MediaWiki\Extension\WikiLambda;
 
 class ZRecord implements ZObject {
 
+	private $zValue;
+
 	private $zObjectType;
 
-	private $value;
-
-	public function __construct( $value ) {
-		// TODO: Type-check / form check.
-		$this->value = $value ?? new \stdClass();
+	public function __construct( $type, $value ) {
+		$this->zObjectType = ZTypeRegistry::singleton()->getZObjectTypeFromKey( $type );
+		$this->zValue = ZObjectFactory::create( $value );
 	}
 
-	public function getType() {
-		if ( $this->zObjectType === null ) {
-			$objectVars = get_object_vars( $this->value );
-			if ( !array_key_exists( 'Z1K1', $objectVars ) ) {
-				throw new \InvalidArgumentException( "ZObject top-level record missing a type key." );
-			}
-			$this->zObjectType = ZTypeRegistry::singleton()->getZObjectTypeFromKey( $objectVars['Z1K1'] );
-		}
-
+	public function getZType() : string {
 		return $this->zObjectType;
 	}
 
-	public function getValue() {
-		return $this->value;
+	public function getZValue() {
+		return $this->zValue;
 	}
 
 	public function isValid() : bool {
-		// This implicitly checks for Z1K1 being set. Later, we'll care
-		// about other things too.
-		$this->getType();
-
 		return true;
 	}
 }
