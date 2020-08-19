@@ -15,14 +15,19 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getZType
 	 * @covers ::getZValue
 	 * @covers ::getStringForLanguage
+	 * @covers ::isValid
 	 */
 	public function testCreation() {
+		$testObject = new ZMultiLingualString( [] );
+		$this->assertTrue( $testObject->isValid() );
+
 		$testObject = new ZMultiLingualString( [
 			new ZMonoLingualString( 'en', 'Demonstration item' ),
 			new ZMonoLingualString( 'it', 'oggetto per dimostrazione' ),
 			new ZMonoLingualString( 'de', 'Gegenstand zur Demonstration' ),
 			new ZMonoLingualString( 'fr', 'article pour démonstration' )
 		] );
+		$this->assertTrue( $testObject->isValid() );
 
 		$this->assertSame( $testObject->getZType(), 'ZMultiLingualString' );
 		$this->assertArrayHasKey( 'en', $testObject->getZValue() );
@@ -62,6 +67,54 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 		$this->assertSame(
 			wfMessage( 'wikilambda-multilingualstring-nofallback' )->inLanguage( $chineseLang )->text(),
 			$testObject->getStringForLanguage( $chineseLang )
+		);
+	}
+
+	/**
+	 * @covers ::setMonoLingualString
+	 * @covers ::setStringForLanguage
+	 * @covers ::removeValue
+	 * @covers ::isValid
+	 */
+	public function testModification() {
+		$testObject = new ZMultiLingualString( [] );
+		$this->assertTrue( $testObject->isValid() );
+
+		$french = $this->makeLanguage( 'fr' );
+		$testObject->setMonoLingualString( new ZMonoLingualString( 'fr', 'Bonjour' ) );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertSame(
+			'Bonjour',
+			$testObject->getStringForLanguage( $french )
+		);
+
+		$testObject->setMonoLingualString( new ZMonoLingualString( 'fr', 'Bonjour' ) );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertSame(
+			'Bonjour',
+			$testObject->getStringForLanguage( $french )
+		);
+
+		$testObject->setStringForLanguage( $french, 'Allo!' );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertSame(
+			'Allo!',
+			$testObject->getStringForLanguage( $french )
+		);
+
+		$invalidLang = $this->makeLanguage( '&&&' );
+		$testObject->setMonoLingualString( new ZMonoLingualString( '&&&', 'Invalid item' ) );
+		$this->assertFalse( $testObject->isValid() );
+		$this->assertSame(
+			'Invalid item',
+			$testObject->getStringForLanguage( $invalidLang )
+		);
+
+		$testObject->removeValue( $invalidLang );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertSame(
+			wfMessage( 'wikilambda-multilingualstring-nofallback' )->inLanguage( $invalidLang )->text(),
+			$testObject->getStringForLanguage( $invalidLang )
 		);
 	}
 

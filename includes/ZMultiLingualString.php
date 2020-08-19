@@ -25,8 +25,7 @@ class ZMultiLingualString implements ZObject {
 			if ( !is_a( $monoLingualString, ZMonoLingualString::class ) ) {
 				$monoLingualString = ZObjectFactory::create( $monoLingualString );
 			}
-
-			$this->keys[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $monoLingualString->getLanguage() ] = $monoLingualString->getString();
+			$this->setMonoLingualString( $monoLingualString );
 		}
 	}
 
@@ -69,7 +68,38 @@ class ZMultiLingualString implements ZObject {
 		return wfMessage( 'wikilambda-multilingualstring-nofallback' )->inLanguage( $language )->text();
 	}
 
+	/**
+	 * @param ZMonoLingualString $value The new value to set.
+	 */
+	public function setMonoLingualString( ZMonoLingualString $value ) : void {
+		$this->keys[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $value->getLanguage() ] = $value->getString();
+	}
+
+	/**
+	 * @param Language $language The MediaWiki language class in which the string is to be set.
+	 * @param string $value The new string to set.
+	 */
+	public function setStringForLanguage( Language $language, string $value ) : void {
+		$languageCode = $language->mCode;
+		$this->keys[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageCode ] = $value;
+	}
+
+	/**
+	 * @param Language $language The MediaWiki language class in which the string is to be unset.
+	 */
+	public function removeValue( Language $language ) : void {
+		if ( $this->isLanguageProvidedValue( $language->mCode ) ) {
+			unset( $this->keys[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $language->mCode ] );
+		}
+	}
+
 	public function isValid() : bool {
+		foreach ( $this->keys[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] as $languageCode => $value ) {
+			if ( !Language::isValidCode( $languageCode ) ) {
+				return false;
+			}
+			// TODO: Do we care about the validity of the values?
+		}
 		return true;
 	}
 }
