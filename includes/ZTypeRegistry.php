@@ -28,12 +28,13 @@ class ZTypeRegistry {
 	public const Z_PERSISTENTOBJECT_ID = 'Z2K1';
 	public const Z_PERSISTENTOBJECT_VALUE = 'Z2K2';
 	public const Z_PERSISTENTOBJECT_LABEL = 'Z2K3';
-	public const Z_STRING = 'Z3';
-	public const Z_STRING_VALUE = 'Z3K1';
-	public const Z_LIST = 'Z4';
-	public const Z_LIST_HEAD = 'Z4K1';
-	public const Z_LIST_TAIL = 'Z4K2';
+	public const Z_KEY = 'Z3';
 	public const Z_RECORD = 'Z5';
+	public const Z_STRING = 'Z6';
+	public const Z_STRING_VALUE = 'Z6K1';
+	public const Z_LIST = 'Z10';
+	public const Z_LIST_HEAD = 'Z10K1';
+	public const Z_LIST_TAIL = 'Z10K2';
 
 	/** @var RevisionStore */
 	private $revisionStore;

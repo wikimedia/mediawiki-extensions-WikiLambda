@@ -28,11 +28,11 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 		$this->assertSame( $testObject->getZType(), 'ZString' );
 		$this->assertSame( $testObject->getZValue(), 'Test' );
 
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z3", "Z3K1": "Test" }' );
+		$testObject = new ZPersistentObject( '{ "Z1K1": "Z6", "Z6K1": "Test" }' );
 		$this->assertSame( $testObject->getZType(), 'ZString' );
 		$this->assertSame( $testObject->getZValue(), 'Test' );
 
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z3", "Z3K1": "Test" } }' );
+		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z6", "Z6K1": "Test" } }' );
 		$this->assertSame( $testObject->getZType(), 'ZString' );
 		$this->assertSame( $testObject->getZValue(), 'Test' );
 	}
