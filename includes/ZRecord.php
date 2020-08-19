@@ -48,6 +48,8 @@ class ZRecord implements ZObject {
 	}
 
 	public function isValid() : bool {
+		// TODO: Right now these are uneditable and guaranteed valid on creation, but when we
+		// add model (API and UX) editing, this will need to actually evaluate.
 		return true;
 	}
 }

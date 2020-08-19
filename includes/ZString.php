@@ -40,6 +40,7 @@ class ZString implements ZObject {
 	}
 
 	public function isValid() : bool {
+		// All strings of any value are by definition valid (including null, which is read as empty).
 		return true;
 	}
 }

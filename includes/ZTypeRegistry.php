@@ -31,6 +31,14 @@ class ZTypeRegistry {
 	public const Z_PERSISTENTOBJECT_LABEL = 'Z2K3';
 
 	public const Z_KEY = 'Z3';
+	public const Z_KEY_TYPE = 'Z3K1';
+	public const Z_KEY_ID = 'Z3K2';
+	public const Z_KEY_LABEL = 'Z3K3';
+
+	public const Z_TYPE = 'Z4';
+	public const Z_TYPE_IDENTITY = 'Z4K1';
+	public const Z_TYPE_KEYS = 'Z4K2';
+	public const Z_TYPE_VALIDATOR = 'Z4K3';
 
 	public const Z_RECORD = 'Z5';
 	public const Z_RECORD_VALUE = 'Z5K1';
@@ -70,8 +78,11 @@ class ZTypeRegistry {
 		// TODO: The built-in objects should register themselves, except (?) Z1.
 		$this->internalRegisterType( self::Z_OBJECT, 'ZObject' );
 		$this->internalRegisterType( self::Z_PERSISTENTOBJECT, 'ZPersistentObject' );
+		$this->internalRegisterType( self::Z_KEY, 'ZKey' );
+		$this->internalRegisterType( self::Z_TYPE, 'ZType' );
 		$this->internalRegisterType( self::Z_STRING, 'ZString' );
 		$this->internalRegisterType( self::Z_LIST, 'ZList' );
+
 		$this->internalRegisterType( self::Z_RECORD, 'ZRecord' );
 
 		$this->internalRegisterType( self::Z_MONOLINGUALSTRING, 'ZMonoLingualString' );
@@ -113,10 +124,16 @@ class ZTypeRegistry {
 		// TODO: This is quite exceptionally expensive. Store this in a metadata DB table, instead of fetching it live?
 		// NOTE: Hard-coding use of MAIN slot; if we're going the MCR route, we may wish to change this (or not).
 		$text = $revision->getSlot( SlotRecord::MAIN, RevisionRecord::RAW )->getContent()->getNativeData();
-		$zObject = ZObjectFactory::createFromSerialisedString( $text );
 
-		$pageType = $zObject->getZType();
-		$this->internalRegisterType( $key, $pageType );
+		$zObject = new ZPersistentObject( $text );
+
+		if ( $zObject->getZType() !== 'ZType' ) {
+			throw new InvalidArgumentException( "ZObject for '$key' is not a ZType object." );
+		}
+
+		// TODO: Do we want to always store English? Or the wiki's contentLanguage? Or something else?
+		$this->internalRegisterType( $key, $zObject->getLabel( new \LanguageEn() ) );
+
 		return true;
 	}
 
@@ -140,7 +157,7 @@ class ZTypeRegistry {
 	}
 
 	public function isZObjectTypeKnown( string $type ) : bool {
-		if ( $this->isZObjectKeyCached( $type ) ) {
+		if ( $this->isZObjectTypeCached( $type ) ) {
 			return true;
 		}
 
@@ -176,7 +193,8 @@ class ZTypeRegistry {
 			$type !== 'ZObject'
 			&& !class_exists( 'MediaWiki\Extension\WikiLambda\\' . $type )
 		) {
-			throw new InvalidArgumentException( "ZObject type '$type' not a known class." );
+			// TODO: Decide what we want to do here; do we need to re-model each of the built-in types (ZList, ZString,…) as ZType implementations on-wiki?
+			// throw new InvalidArgumentException( "ZObject type '$type' not a known class." );
 		}
 
 		$this->zObjectTypes[ $key ] = $type;

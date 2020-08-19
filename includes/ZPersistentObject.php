@@ -145,8 +145,6 @@ class ZPersistentObject extends JsonContent implements ZObject {
 
 	public function getZType() : string {
 		if ( $this->zObjectType === null ) {
-			$registry = ZTypeRegistry::singleton();
-
 			$this->zObjectType = $this->getInnerZObject()->getZType();
 		}
 

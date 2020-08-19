@@ -88,7 +88,7 @@ class ZObjectUtils {
 
 		// TODO: Simplify this to array_reduce(…)
 		foreach ( $input as $key => $value ) {
-			if ( !self::isValidZObjectKey( $key ) ) {
+			if ( !ZKey::isValidZObjectKey( $key ) ) {
 				return false;
 			}
 			// TODO: Properly type-aware arbitrary checking?
@@ -97,16 +97,6 @@ class ZObjectUtils {
 			}
 		}
 		return true;
-	}
-
-	/**
-	 * A ZObject reference key
-	 *
-	 * @param string $input
-	 * @return bool
-	 */
-	public static function isValidZObjectKey( string $input ) : bool {
-		return preg_match( "/^\s*(Z[1-9]\d*)?K\d+\s*$/", $input );
 	}
 
 	/**

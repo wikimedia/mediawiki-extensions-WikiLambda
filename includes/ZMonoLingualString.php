@@ -28,9 +28,13 @@ class ZMonoLingualString implements ZObject {
 		if ( !array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE, $objectVars ) ) {
 			throw new \InvalidArgumentException( "ZMonoLingualString missing the language code key." );
 		}
+		// TODO: Evaluate if the language code key is known to us.
+
 		if ( !array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE, $objectVars ) ) {
 			throw new \InvalidArgumentException( "ZMonoLingualString missing the value key." );
 		}
+		// TODO: Are there validity checks for the value?
+
 		return new ZMonoLingualString( $objectVars[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ], $objectVars[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ] );
 	}
 
@@ -51,6 +55,8 @@ class ZMonoLingualString implements ZObject {
 	}
 
 	public function isValid() : bool {
+		// TODO: Right now these are uneditable and guaranteed valid on creation, but when we
+		// add model (API and UX) editing, this will need to actually evaluate.
 		return true;
 	}
 }
