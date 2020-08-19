@@ -51,64 +51,22 @@ class ZObjectFactory {
 
 		$objectVars = get_object_vars( $object );
 
-		// TODO: Type-check / form check based on the specific type.
-
 		if ( !array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $objectVars ) ) {
 			throw new \InvalidArgumentException( "ZObject record missing a type key." );
 		}
 		$type = $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ];
 
-		// TODO: This should be handled by the individual classes via the registry.
-
-		// HACK: For ZPersistentObject, we care about the inner object, not the ZPO
-		if ( $type === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
-			if ( !array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE, $objectVars ) ) {
-				throw new \InvalidArgumentException( "ZObject record of a ZPersistentObject missing the value key." );
-			}
-			return self::create( $objectVars[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] );
+		$registry = ZTypeRegistry::singleton();
+		if ( !$registry->isZObjectKeyKnown( $type ) ) {
+			throw new \InvalidArgumentException( "ZObject record type '$type' not recognised." );
 		}
 
-		if ( $type == ZTypeRegistry::Z_STRING ) {
-			if ( !array_key_exists( ZTypeRegistry::Z_STRING_VALUE, $objectVars ) ) {
-				throw new \InvalidArgumentException( "ZObject record of a ZString missing the value key." );
-			}
-			return new ZString( $objectVars[ ZTypeRegistry::Z_STRING_VALUE ] );
+		// HACK: Fallback to generic ZRecord if we think we're a ZObject
+		if ( $type === ZTypeRegistry::Z_OBJECT ) {
+			$type = ZTypeRegistry::Z_RECORD;
 		}
 
-		if ( $type == ZTypeRegistry::Z_LIST ) {
-			if ( !array_key_exists( ZTypeRegistry::Z_LIST_HEAD, $objectVars ) ) {
-				throw new \InvalidArgumentException( "ZObject record of a ZList missing the head value key." );
-			}
-			if ( !array_key_exists( ZTypeRegistry::Z_LIST_TAIL, $objectVars ) ) {
-				throw new \InvalidArgumentException( "ZObject record of a ZList missing the tail value key." );
-			}
-			return new ZList( $objectVars[ ZTypeRegistry::Z_LIST_HEAD ], $objectVars[ ZTypeRegistry::Z_LIST_TAIL ] );
-		}
-
-		if ( $type == ZTypeRegistry::Z_MONOLINGUALSTRING ) {
-			if ( !array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE, $objectVars ) ) {
-				throw new \InvalidArgumentException( "ZObject record of a ZMonoLingualString missing the language code key." );
-			}
-			if ( !array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE, $objectVars ) ) {
-				throw new \InvalidArgumentException( "ZObject record of a ZMonoLingualString missing the value key." );
-			}
-			return new ZMonoLingualString( $objectVars[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ], $objectVars[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ] );
-		}
-
-		if ( $type == ZTypeRegistry::Z_MULTILINGUALSTRING ) {
-			if ( !array_key_exists( ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE, $objectVars ) ) {
-				throw new \InvalidArgumentException( "ZObject record of a ZMultiLingualString missing the lingual values key." );
-			}
-			return new ZMultiLingualString( $objectVars[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] );
-		}
-
-		// Must be a generic record:
-		if ( !array_key_exists( ZTypeRegistry::Z_RECORD_VALUE, $objectVars ) ) {
-			throw new \InvalidArgumentException( "ZObject record missing a generic value key." );
-		}
-		if ( count( $objectVars ) !== 2 ) {
-			throw new \InvalidArgumentException( "ZObject generic record with extra keys: " . implode( ', ', array_keys( $objectVars ) ) . "." );
-		}
-		return new ZRecord( $type, $objectVars[ ZTypeRegistry::Z_RECORD_VALUE ] );
+		// Magic:
+		return call_user_func( 'MediaWiki\Extension\WikiLambda\\' . $registry->getZObjectTypeFromKey( $type ) . '::create', $objectVars );
 	}
 }

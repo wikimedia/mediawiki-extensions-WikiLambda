@@ -21,6 +21,16 @@ class ZRecord implements ZObject {
 		$this->zValue = ZObjectFactory::create( $value );
 	}
 
+	public static function create( array $objectVars ) : ZObject {
+		if ( !array_key_exists( ZTypeRegistry::Z_RECORD_VALUE, $objectVars ) ) {
+			throw new \InvalidArgumentException( "ZObject record missing a generic value key." );
+		}
+		if ( count( $objectVars ) !== 2 ) {
+			throw new \InvalidArgumentException( "ZObject generic record with extra keys: " . implode( ', ', array_keys( $objectVars ) ) . "." );
+		}
+		return new ZRecord( $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ], $objectVars[ ZTypeRegistry::Z_RECORD_VALUE ] );
+	}
+
 	public function getZType() : string {
 		if ( $this->zObjectType === null ) {
 			$objectVars = get_object_vars( $this->zValue );

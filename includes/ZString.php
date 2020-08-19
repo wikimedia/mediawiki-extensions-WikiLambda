@@ -24,6 +24,13 @@ class ZString implements ZObject {
 		}
 	}
 
+	public static function create( array $objectVars ) : ZObject {
+		if ( !array_key_exists( ZTypeRegistry::Z_STRING_VALUE, $objectVars ) ) {
+			throw new \InvalidArgumentException( "ZString missing the value key." );
+		}
+		return new ZString( $objectVars[ ZTypeRegistry::Z_STRING_VALUE ] );
+	}
+
 	public function getZType() : string {
 		return $this->zObjectType;
 	}

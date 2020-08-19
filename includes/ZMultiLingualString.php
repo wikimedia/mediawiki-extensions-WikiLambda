@@ -29,6 +29,13 @@ class ZMultiLingualString implements ZObject {
 		}
 	}
 
+	public static function create( array $objectVars ) : ZObject {
+		if ( !array_key_exists( ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE, $objectVars ) ) {
+			throw new \InvalidArgumentException( "ZMultiLingualString missing the lingual values key." );
+		}
+		return new ZMultiLingualString( $objectVars[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] );
+	}
+
 	public function getZType() : string {
 		return $this->zObjectType;
 	}
