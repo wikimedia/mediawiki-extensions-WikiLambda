@@ -55,8 +55,14 @@ class ZPersistentObject extends JsonContent implements ZObject {
 	}
 
 	public static function create( array $objectVars ) : ZObject {
+		if ( !array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_ID, $objectVars ) ) {
+			throw new \InvalidArgumentException( "ZPersistentObject missing the id key." );
+		}
 		if ( !array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE, $objectVars ) ) {
 			throw new \InvalidArgumentException( "ZPersistentObject missing the value key." );
+		}
+		if ( !array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL, $objectVars ) ) {
+			throw new \InvalidArgumentException( "ZPersistentObject missing the label key." );
 		}
 		// NOTE: For ZPersistentObject, we care about the *inner object*, not the ZPO itself
 		return ZObjectFactory::create( $objectVars[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] );

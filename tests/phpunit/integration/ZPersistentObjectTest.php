@@ -32,7 +32,7 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 		$this->assertSame( $testObject->getZType(), 'ZString' );
 		$this->assertSame( $testObject->getZValue(), 'Test' );
 
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z6", "Z6K1": "Test" } }' );
+		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z6", "Z6K1": "Test" }, "Z2K3": [] }' );
 		$this->assertSame( $testObject->getZType(), 'ZString' );
 		$this->assertSame( $testObject->getZValue(), 'Test' );
 	}
@@ -108,7 +108,7 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 		$this->assertSame( $testObject->getZType(), 'ZMonoLingualString' );
 		$this->assertSame( $testObject->getZValue(), [ 'en' => 'Demonstration item' ] );
 
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "Demonstration item" } }' );
+		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "Demonstration item" }, "Z2K3": [] }' );
 		$this->assertSame( $testObject->getZType(), 'ZMonoLingualString' );
 		$this->assertSame( $testObject->getZValue(), [ 'en' => 'Demonstration item' ] );
 		$this->assertSame( $testObject->getInnerZObject()->getLanguage(), 'en' );
@@ -132,12 +132,12 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 		$this->assertSame( $testObject->getZType(), 'ZMultiLingualString' );
 		$this->assertSame( $testObject->getZValue(), [] );
 
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z12", "Z12K1": [] } }' );
+		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z12", "Z12K1": [] }, "Z2K3": [] }' );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( $testObject->getZType(), 'ZMultiLingualString' );
 		$this->assertSame( $testObject->getZValue(), [] );
 
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "Demonstration item" }, { "Z1K1": "Z11", "Z11K1": "fr", "Z11K2": "article pour démonstration" } ] } }' );
+		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "Demonstration item" }, { "Z1K1": "Z11", "Z11K1": "fr", "Z11K2": "article pour démonstration" } ] }, "Z2K3": [] }' );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( $testObject->getZType(), 'ZMultiLingualString' );
 
@@ -190,7 +190,7 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::__construct
 	 */
 	public function testCreation_invalidThrows_nestedrecordhasinvalidkey() {
-		$testObject = new ZPersistentObject( '{"Z1K1":"Z2","Z2K2":{"Z1K1": "Foo"}}' );
+		$testObject = new ZPersistentObject( '{"Z1K1":"Z2","Z2K1":"Z0","Z2K2":{"Z1K1":"Foo"},"Z2K3": []}' );
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( \Error::class );
 		$this->assertSame( $testObject->getZType(), 'InvalidObjectWillNotHaveAType' );
@@ -200,7 +200,17 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::__construct
 	 */
 	public function testCreation_invalidThrows_nestedrecordhasnovalue() {
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z5", "Z5K1": { "Z1K1": "Z1" } }' );
+		$testObject = new ZPersistentObject( '{ "Z1K1": "Z5", "Z5K1": { "Z1K1": "Z1", "Z2K3": [] } }' );
+		$this->assertFalse( $testObject->isValid() );
+		$this->expectException( \Error::class );
+		$this->assertSame( $testObject->getZType(), 'InvalidObjectWillNotHaveAType' );
+	}
+
+	/**
+	 * @covers ::__construct
+	 */
+	public function testCreation_invalidThrows_nestedrecordhasnolabel() {
+		$testObject = new ZPersistentObject( '{ "Z1K1": "Z5", "Z5K1": { "Z1K1": "Z1", "Z2K2": "Foo" } }' );
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( \Error::class );
 		$this->assertSame( $testObject->getZType(), 'InvalidObjectWillNotHaveAType' );

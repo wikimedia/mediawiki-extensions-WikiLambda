@@ -35,7 +35,9 @@ class ZObjectContentHandler extends JsonContentHandler {
 		return new ZPersistentObject(
 			'{' . "\n"
 				. '  "' . ZTypeRegistry::Z_OBJECT_TYPE . '": "' . ZTypeRegistry::Z_PERSISTENTOBJECT . '",'
-				 . "\n" . '  "' . ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE . '": ""' . "\n"
+				 . "\n" . '  "' . ZTypeRegistry::Z_PERSISTENTOBJECT_ID . '": "Z0",' . "\n"
+				 . "\n" . '  "' . ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE . '": "",' . "\n"
+				 . "\n" . '  "' . ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL . '": []' . "\n"
 			. '}'
 		);
 	}
