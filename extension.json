@@ -13,6 +13,9 @@
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\WikiLambda\\": "includes/"
 	},
+	"TestAutoloadNamespaces": {
+		"MediaWiki\\Extension\\WikiLambda\\Tests\\": "tests/"
+	},
 	"namespaces": [
 		{
 			"id": 2468,

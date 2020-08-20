@@ -9,11 +9,6 @@ use MediaWiki\Extension\WikiLambda\ZPersistentObject;
  */
 class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 
-	protected function setUp() : void {
-		parent::setUp();
-		require_once dirname( __DIR__ ) . '/../../includes/defines.php';
-	}
-
 	/**
 	 * @covers ::__construct
 	 * @covers ::getZType

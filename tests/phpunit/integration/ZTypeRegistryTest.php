@@ -2,6 +2,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 /**
@@ -41,6 +43,27 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::isZObjectKeyKnown
+	 */
+	public function testIsZObjectKeyKnown() {
+		$registry = ZTypeRegistry::singleton();
+
+		// NOTE: Hopefully this won't clash with real content on a test DB.
+		$this->assertFalse( $registry->isZObjectKeyKnown( ZTestType::TEST_ZID ), "'" . ZTestType::TEST_ZID . "' is not defined as a built-in, and not found in the DB before it's written." );
+
+		$title = \Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
+		$baseObject = ZTestType::TEST_ENCODING;
+
+		$page = \WikiPage::factory( $title );
+		$content = ZObjectContentHandler::makeContent( $baseObject, $title );
+		$page->doEditContent( $content, "Test creation object" );
+		$page->clear();
+
+		$this->assertTrue( $registry->isZObjectKeyKnown( ZTestType::TEST_ZID ), "'TestingType' is not defined as a built-in, but is read from the DB as key '" . ZTestType::TEST_ZID . "'." );
+		$this->assertEquals( $registry->getZObjectTypeFromKey( ZTestType::TEST_ZID ), 'Demonstration type', "'" . ZTestType::TEST_ZID . "' lookup works to find 'Demonstration type'." );
+	}
+
+	/**
 	 * @covers ::getCachedZObjectTypes
 	 */
 	public function testGetCachedZObjectTypes() {
@@ -60,6 +83,18 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 
 		$this->assertFalse( $registry->isZObjectTypeCached( 'Zero' ), "'Zero' is not defined as a built-in." );
 		$this->assertTrue( $registry->isZObjectTypeCached( 'ZObject' ), "'ZObject' is defined as a built-in." );
+	}
+
+	/**
+	 * TODO: Once this method tests the database, these tests should be expanded to cover DB reads.
+	 *
+	 * @covers ::isZObjectTypeKnown
+	 */
+	public function testIsZObjectTypeKnown() {
+		$registry = ZTypeRegistry::singleton();
+
+		$this->assertFalse( $registry->isZObjectTypeKnown( 'Zero' ), "'Zero' is not defined as a built-in, nor is read from the DB." );
+		$this->assertTrue( $registry->isZObjectTypeKnown( 'ZObject' ), "'ZObject' is defined as a built-in, so isn't read from the DB." );
 	}
 
 	/**
