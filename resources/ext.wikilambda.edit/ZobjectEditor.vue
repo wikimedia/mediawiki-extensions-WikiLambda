@@ -35,11 +35,10 @@ module.exports = {
 		var editingData = mw.config.get( 'extWikilambdaEditingData' ),
 			zobject = editingData.zobject,
 			createNewPage = editingData.createNewPage,
-			submitLabel, zid;
+			submitLabel;
 
 		if ( createNewPage ) {
-			zid = mw.config.get( 'wgTitle' );
-			zobject.Z2K1 = zid;
+			zobject.Z2K1 = editingData.title;
 
 			submitLabel = mw.msg(
 				mw.config.get( 'wgEditSubmitButtonLabelPublish' ) ?
@@ -67,10 +66,11 @@ module.exports = {
 			this.zobject = newZobject;
 		},
 		submit: function () {
-			var page = mw.config.get( 'wgPageName' ),
+			var page = mw.config.get( 'extWikilambdaEditingData' ).page,
 				api = new mw.Api(),
 				self = this;
 			if ( this.createNewPage ) {
+				// TODO: If the page already exists, increment the counter until we get a free one.
 				api.create( page, { summary: self.summary },
 					JSON.stringify( self.zobject )
 				).then( function () {
@@ -94,5 +94,9 @@ module.exports = {
 <style lang="less">
 .ext-wikilambda-editSummary {
 	width: 100%;
+}
+
+.ext-wikilambda-editor-nojswarning {
+	display: none;
 }
 </style>

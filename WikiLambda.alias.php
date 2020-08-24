@@ -11,5 +11,6 @@ $specialPageAliases = [];
 
 /** English (English) */
 $specialPageAliases['en'] = [
+	'CreateZObject' => [ 'CreateZObject' ],
 	'ListDuplicateZObjectLabels' => [ 'ListDuplicateZObjectLabels' ],
 ];

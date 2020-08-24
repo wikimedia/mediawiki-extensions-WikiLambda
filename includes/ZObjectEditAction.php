@@ -23,7 +23,16 @@ class ZObjectEditAction extends Action {
 		$output = $this->getOutput();
 		$output->addModules( 'ext.wikilambda.edit' );
 
-		$userLang = $this->getLanguage()->getCode();
+		$userLang = $this->getLanguage();
+
+		// Fallback no-JS notice.
+		$output->addHtml( Html::element(
+			'div',
+			[ 'class' => [ 'client-nojs', 'ext-wikilambda-editor-nojswarning' ] ],
+			$this->msg( 'wikilambda-special-createzobject-nojs' )->inLanguage( $userLang )->text()
+		) );
+
+		$userLangCode = $userLang->getCode();
 
 		$langUtils = MediaWikiServices::getInstance()->getLanguageNameUtils();
 
@@ -36,13 +45,15 @@ class ZObjectEditAction extends Action {
 		}
 
 		$editingData = [
+			'title' => $this->getTitle()->getBaseText(),
+			'page' => $this->getTitle()->getPrefixedDBkey(),
 			'zobject' => $zObject->getData()->getValue(),
-			'zlang' => $userLang,
+			'zlang' => $userLangCode,
 			// TODO: Use an API request on the JS side to get the known types (maybe just the 'default'
 			// /core ones?) and their label for the user's language, rather than ship in the page
 			// payload.
 			'ztypes' => ZTypeRegistry::TEMP_TYPES_IN_ENGLISH,
-			'zlanguages' => $langUtils->getLanguageNames( $userLang ),
+			'zlanguages' => $langUtils->getLanguageNames( $userLangCode ),
 			// TODO: Use an API request on the JS side to get the keys (and their label for the user's
 			// language) for each type as it's used. Possibly pre-populate for the core ones?
 			'zkeylabels' => ZTypeRegistry::TEMP_KEY_LABELS_IN_ENGLISH,

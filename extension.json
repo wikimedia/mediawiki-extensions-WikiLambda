@@ -117,6 +117,7 @@
 		"wikilambda_searchlabels": "MediaWiki\\Extension\\WikiLambda\\API\\ApiQueryZObjectLabels"
 	},
 	"SpecialPages": {
+		"CreateZObject": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialCreateZObject",
 		"ListDuplicateZObjectLabels": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListDuplicateZObjectLabels"
 	},
 	"manifest_version": 2
