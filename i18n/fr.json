@@ -5,5 +5,6 @@
 		]
 	},
 	"wikilambda-desc": "Fournit aux wikis Wikimedia une fonction d'analyseur syntaxique de wikicode pour appeler l'évaluation des fonctions écrites, gérées et évaluées sur un wiki central.",
+	"wikilambda-emptylabel": "ZObject non labellisé",
 	"wikilambda-invalidzobject": "Le contenu fourni n'est pas un ZObject valide."
 }
