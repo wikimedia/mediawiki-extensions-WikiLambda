@@ -19,64 +19,6 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getZType
 	 * @covers ::getZValue
 	 */
-	public function testCreation_string() {
-		$testObject = new ZPersistentObject( '' );
-		$this->assertSame( $testObject->getZType(), 'ZString' );
-		$this->assertSame( $testObject->getZValue(), '' );
-
-		$testObject = new ZPersistentObject( 'Test' );
-		$this->assertSame( $testObject->getZType(), 'ZString' );
-		$this->assertSame( $testObject->getZValue(), 'Test' );
-
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z6", "Z6K1": "Test" }' );
-		$this->assertSame( $testObject->getZType(), 'ZString' );
-		$this->assertSame( $testObject->getZValue(), 'Test' );
-
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z6", "Z6K1": "Test" }, "Z2K3": [] }' );
-		$this->assertSame( $testObject->getZType(), 'ZString' );
-		$this->assertSame( $testObject->getZValue(), 'Test' );
-	}
-
-	/**
-	 * @covers ::__construct
-	 * @covers ::getZType
-	 * @covers ::getZValue
-	 */
-	public function testCreation_list() {
-		$testObject = new ZPersistentObject( '[]' );
-		$this->assertSame( $testObject->getZType(), 'ZList' );
-		$this->assertSame( $testObject->getZValue(), [ null, [] ] );
-
-		$testObject = new ZPersistentObject( '["Test"]' );
-		$this->assertSame( $testObject->getZType(), 'ZList' );
-		$this->assertSame( $testObject->getZValue(), [ 'Test', 	[] ] );
-
-		$testObject = new ZPersistentObject( '["Test", "Test2"]' );
-		$this->assertSame( $testObject->getZType(), 'ZList' );
-		$this->assertSame( $testObject->getZValue(), [ 'Test', [ 'Test2' ] ] );
-
-		$testObject = new ZPersistentObject( '["Test","Test2","Test3"]' );
-		$this->assertSame( $testObject->getZType(), 'ZList' );
-		$this->assertSame( $testObject->getZValue(), [ 'Test', [ "Test2", "Test3" ] ] );
-
-		$testObject = new ZPersistentObject( '[["Test"],["Test2"],["Test3"]]' );
-		$this->assertSame( $testObject->getZType(), 'ZList' );
-		$this->assertSame( $testObject->getZValue(), [ [ 'Test' ], [ [ "Test2" ], [ "Test3" ] ] ] );
-
-		$testObject = new ZPersistentObject( '[["Test"],["Test2","Test3"]]' );
-		$this->assertSame( $testObject->getZType(), 'ZList' );
-		$this->assertSame( $testObject->getZValue(), [ [ 'Test' ], [ [ "Test2", "Test3" ] ] ] );
-
-		$testObject = new ZPersistentObject( '[["Test", "Test2"],["Test3","Test4"]]' );
-		$this->assertSame( $testObject->getZType(), 'ZList' );
-		$this->assertSame( $testObject->getZValue(), [ [ 'Test', 'Test2' ], [ [ "Test3", "Test4" ] ] ] );
-	}
-
-	/**
-	 * @covers ::__construct
-	 * @covers ::getZType
-	 * @covers ::getZValue
-	 */
 	public function testCreation_record() {
 		$testObject = new ZPersistentObject( '{ "Z1K1": "Z1", "Z5K1": "" }' );
 		$this->assertSame( $testObject->getZType(), 'ZObject' );
@@ -94,55 +36,6 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 		$this->assertSame( $testObject->getZType(), 'ZObject' );
 		$this->assertSame( $testObject->getZValue()->getZType(), 'ZObject' );
 		$this->assertSame( $testObject->getZValue()->getZValue()->getZValue(), [ "Test", [ "Test2", "Test3" ] ] );
-	}
-
-	/**
-	 * @covers ::__construct
-	 * @covers ::getZType
-	 * @covers ::getZValue
-	 * @covers ::getInnerZObject
-	 */
-	public function testCreation_monolingualstring() {
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "Demonstration item" }' );
-
-		$this->assertSame( $testObject->getZType(), 'ZMonoLingualString' );
-		$this->assertSame( $testObject->getZValue(), [ 'en' => 'Demonstration item' ] );
-
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "Demonstration item" }, "Z2K3": [] }' );
-		$this->assertSame( $testObject->getZType(), 'ZMonoLingualString' );
-		$this->assertSame( $testObject->getZValue(), [ 'en' => 'Demonstration item' ] );
-		$this->assertSame( $testObject->getInnerZObject()->getLanguage(), 'en' );
-		$this->assertSame( $testObject->getInnerZObject()->getString(), 'Demonstration item' );
-	}
-
-	/**
-	 * @covers ::__construct
-	 * @covers ::getZType
-	 * @covers ::getZValue
-	 * @covers ::getInnerZObject
-	 */
-	public function testCreation_multilingualstring() {
-		$services = \MediaWiki\MediaWikiServices::getInstance();
-
-		$english = new \Language( 'en', $services->getLocalisationCache(), $services->getLanguageNameUtils(), $services->getLanguageFallback(), $services->getLanguageConverterFactory(), $services->getHookContainer() );
-		$french = new \Language( 'fr', $services->getLocalisationCache(), $services->getLanguageNameUtils(), $services->getLanguageFallback(), $services->getLanguageConverterFactory(), $services->getHookContainer() );
-
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z12", "Z12K1": [] }' );
-		$this->assertTrue( $testObject->isValid() );
-		$this->assertSame( $testObject->getZType(), 'ZMultiLingualString' );
-		$this->assertSame( $testObject->getZValue(), [] );
-
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z12", "Z12K1": [] }, "Z2K3": [] }' );
-		$this->assertTrue( $testObject->isValid() );
-		$this->assertSame( $testObject->getZType(), 'ZMultiLingualString' );
-		$this->assertSame( $testObject->getZValue(), [] );
-
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "Demonstration item" }, { "Z1K1": "Z11", "Z11K1": "fr", "Z11K2": "article pour démonstration" } ] }, "Z2K3": [] }' );
-		$this->assertTrue( $testObject->isValid() );
-		$this->assertSame( $testObject->getZType(), 'ZMultiLingualString' );
-
-		$this->assertSame( $testObject->getInnerZObject()->getStringForLanguage( $english ), 'Demonstration item' );
-		$this->assertSame( $testObject->getInnerZObject()->getStringForLanguage( $french ), 'article pour démonstration' );
 	}
 
 	/**

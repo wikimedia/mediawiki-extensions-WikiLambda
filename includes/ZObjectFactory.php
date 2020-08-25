@@ -67,6 +67,10 @@ class ZObjectFactory {
 		}
 
 		// Magic:
-		return call_user_func( 'MediaWiki\Extension\WikiLambda\\' . $registry->getZObjectTypeFromKey( $type ) . '::create', $objectVars );
+		$newZObject = call_user_func( 'MediaWiki\Extension\WikiLambda\\' . $registry->getZObjectTypeFromKey( $type ) . '::create', $objectVars );
+
+		// var_dump( $newZObject );
+
+		return $newZObject;
 	}
 }
