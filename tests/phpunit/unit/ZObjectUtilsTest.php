@@ -24,6 +24,8 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 
 	public function provideIsValidSerialisedZObject() {
 		return [
+			'invalid JSON' => [ '{ bad JSON! Tut, tut.', false ],
+
 			'empty string' => [ '', true ],
 			'short string' => [ 'Test', true ],
 			'messy string' => [ "This is a [basic] \tcomplicated\ntest {string}!", true ],
