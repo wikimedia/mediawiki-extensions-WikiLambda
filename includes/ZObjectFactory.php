@@ -56,6 +56,10 @@ class ZObjectFactory {
 		}
 		$type = $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ];
 
+		if ( !ZKey::isValidZObjectReference( $type ) ) {
+			throw new \InvalidArgumentException( "ZObject record type '$type' is an invalid key." );
+		}
+
 		$registry = ZTypeRegistry::singleton();
 		if ( !$registry->isZObjectKeyKnown( $type ) ) {
 			throw new \InvalidArgumentException( "ZObject record type '$type' not recognised." );

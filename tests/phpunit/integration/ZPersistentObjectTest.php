@@ -67,6 +67,16 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 	/**
 	 * @covers ::__construct
 	 */
+	public function testCreation_invalidThrows_invalidkey() {
+		$testObject = new ZPersistentObject( '{ "Z1K1": "This is not a valid key!", "Z5K1": "" }' );
+		$this->assertFalse( $testObject->isValid() );
+		$this->expectException( \Error::class );
+		$this->assertSame( $testObject->getZType(), 'InvalidObjectWillNotHaveAType' );
+	}
+
+	/**
+	 * @covers ::__construct
+	 */
 	public function testCreation_invalidThrows_unrecognisedkey() {
 		$testObject = new ZPersistentObject( '{ "Z1K1": "Z1234", "Z5K1": "" }' );
 		$this->assertFalse( $testObject->isValid() );
