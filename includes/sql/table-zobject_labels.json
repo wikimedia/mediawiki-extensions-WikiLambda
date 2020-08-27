@@ -1,0 +1,60 @@
+[
+	{
+		"name": "wikilambda_zobject_labels",
+		"comment": "Stored mapping from the ZObject ID, type, language name tuple to a label.",
+		"columns": [
+			{
+				"name": "wlzl_id",
+				"comment": "Unique ID for index purposes",
+				"type": "bigint",
+				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
+			},
+			{
+				"name": "wlzl_zobject_zid",
+				"comment": "The ZObject's ZID",
+				"type": "binary",
+				"options": { "length": 32, "notnull": true }
+			},
+			{
+				"name": "wlzl_type",
+				"comment": "The ZObject type",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			},
+			{
+				"name": "wlzl_language",
+				"comment": "The language code in which the label applies",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			},
+			{
+				"name": "wlzl_label",
+				"comment": "The user-provided label",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			},
+			{
+				"name": "wlzl_label_normalised",
+				"comment": "The label, normalised, for searching",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			}
+		],
+		"indexes": [
+			{
+				"name": "wlzl_label_searchindex",
+				"columns": [ "wlzl_type", "wlzl_language", "wlzl_label_normalised" ]
+			},
+			{
+				"name": "wlzl_label_searchindex_strict",
+				"columns": [ "wlzl_type", "wlzl_language", "wlzl_label" ]
+			},
+			{
+				"name": "wlzl_label_unique",
+				"columns": [ "wlzl_type", "wlzl_language", "wlzl_label" ],
+				"unique": true
+			}
+		],
+		"pk": [ "wlzl_id" ]
+	}
+]

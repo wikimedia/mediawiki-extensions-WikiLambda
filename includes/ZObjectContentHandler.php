@@ -1,6 +1,6 @@
 <?php
 /**
- * WikiLambda ZObjectContentHanlder
+ * WikiLambda content handler for ZObjects
  *
  * @file
  * @ingroup Extensions
@@ -10,8 +10,10 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use Content;
 use FormatJson;
 use JsonContentHandler;
+use MediaWiki\Revision\SlotRenderingProvider;
 use MWException;
 use Title;
 
@@ -75,4 +77,22 @@ class ZObjectContentHandler extends JsonContentHandler {
 		return $encoded;
 	}
 
+	public function getSecondaryDataUpdates(
+		Title $title,
+		Content $content,
+		$role,
+		SlotRenderingProvider $slotOutput
+	) {
+		return array_merge(
+			parent::getSecondaryDataUpdates( $title, $content, $role, $slotOutput ),
+			[ new ZObjectSecondaryDataUpdate( $title, $content ) ]
+		);
+	}
+
+	public function getDeletionUpdates( Title $title, $role ) {
+		return array_merge(
+			parent::getDeletionUpdates( $title, $role ),
+			[ new ZObjectSecondaryDataRemoval( $title ) ]
+		);
+	}
 }

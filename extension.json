@@ -52,6 +52,7 @@
 		}
 	},
 	"Hooks": {
+		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
 		"CodeEditorGetPageLanguage": "MediaWiki\\Extension\\WikiLambda\\Hooks::onCodeEditorGetPageLanguage"
 	},
 	"MessagesDirs": {
@@ -67,10 +68,17 @@
 	"ResourceModules": {
 		"ext.wikilambda.viewpage.styles": {
 			"styles": [ "ext.wikilambda.viewpage/ext.wikilambda.viewpage.less" ]
+		},
+		"ext.wikilambda.simplesearch": {
+			"scripts": [ "ext.wikilambda.simplesearch/jquery.wikilambda.labelselector.js" ],
+			"dependencies": [ "jquery.ui" ]
 		}
 	},
 	"APIModules": {
 		"wikilambda_fetch": "MediaWiki\\Extension\\WikiLambda\\API\\ApiZObjectFetcher"
+	},
+	"APIListModules": {
+		"wikilambda_searchlabels": "MediaWiki\\Extension\\WikiLambda\\API\\ApiQueryZObjectLabels"
 	},
 	"manifest_version": 2
 }

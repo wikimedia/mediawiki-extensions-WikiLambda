@@ -1,0 +1,147 @@
+<?php
+/**
+ * WikiLambda ZObject labels helper for the query API
+ *
+ * @file
+ * @ingroup Extensions
+ * @copyright 2020 WikiLambda team
+ * @license MIT
+ */
+
+namespace MediaWiki\Extension\WikiLambda\API;
+
+use ApiBase;
+use ApiPageSet;
+use ApiQueryGeneratorBase;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\MediaWikiServices;
+use Wikimedia\ParamValidator\ParamValidator;
+
+class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
+
+	public function __construct( $query, $moduleName ) {
+		parent::__construct( $query, $moduleName, 'wikilambda_' );
+	}
+
+	public function execute() {
+		$this->run();
+	}
+
+	public function executeGenerator( $resultPageSet ) {
+		$this->run( $resultPageSet );
+	}
+
+	/**
+	 * @param ApiPageSet|null $resultPageSet
+	 */
+	private function run( $resultPageSet = null ) {
+		[
+			'search' => $request,
+			'language' => $language,
+			'exact' => $exact,
+			// TODO: Type parameter input
+			'limit' => $limit,
+			'continue' => $continue,
+		] = $this->extractRequestParams();
+
+		$dbr = $this->getDB();
+
+		$this->addTables( 'wikilambda_zobject_labels' );
+		$this->addFields( [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_label' ] );
+
+		$this->addWhere( 'wlzl_language = ' . $dbr->addQuotes( $language ) );
+
+		if ( $exact ) {
+			$searchedColumn = 'wlzl_label';
+			$searchTerm = $request;
+		} else {
+			$searchedColumn = 'wlzl_label_normalised';
+			$searchTerm = ZObjectUtils::comparableString( $request );
+		}
+		$this->addWhere( $searchedColumn . $dbr->buildLike( $dbr->anyString(), $searchTerm, $dbr->anyString() ) );
+
+		if ( $continue !== null ) {
+			$this->addWhere( "wlzl_id >= $continue" );
+		}
+
+		$this->addOption( 'LIMIT', $limit + 1 );
+
+		$res = $this->select( __METHOD__ );
+
+		if ( $res->numRows() > $limit ) {
+			$this->setContinueEnumParameter( 'continue', strval( $continue + $limit ) );
+		}
+
+		$suggestions = [];
+		foreach ( $res as $row ) {
+			$entries = (array)( $row );
+			$suggestions[] = [
+				'page_namespace' => NS_ZOBJECT,
+				'page_title' => $entries['wlzl_zobject_zid'],
+				'page_type' => $entries['wlzl_type'],
+				'label' => $entries['wlzl_label'],
+				'page_id' => 0, // FIXME: Implement, otherwise the generator won't work.
+				'page_is_redirect' => false, // TODO: When we support redirects, implement.
+				'page_content_model' => CONTENT_MODEL_ZOBJECT,
+				'page_lang' => 'en',
+			];
+		}
+
+		if ( $resultPageSet ) {
+			// FIXME: This needs to be an IResultWrapper, not an array of assoc. objects, irritatingly.
+			// $resultPageSet->populateFromQueryResult( $dbr, $suggestions );
+			foreach ( $suggestions as $index => $entry ) {
+				$resultPageSet->setGeneratorData(
+					\Title::makeTitle( $entry['page_namespace'], $entry['page_title'] ),
+					[ 'index' => $index + $continue + 1 ]
+				);
+			}
+		} else {
+			$result = $this->getResult();
+			foreach ( $suggestions as $entry ) {
+				$result->addValue( [ 'query', $this->getModuleName() ], null, $entry );
+			}
+		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function getAllowedParams(): array {
+		return [
+			'search' => [
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_REQUIRED => true,
+			],
+			'language' => [
+				ParamValidator::PARAM_TYPE => array_keys( MediaWikiServices::getInstance()->getLanguageNameUtils()->getLanguageNames() ),
+				ParamValidator::PARAM_REQUIRED => true,
+			],
+			'exact' => [
+				ParamValidator::PARAM_TYPE => 'boolean',
+				ApiBase::PARAM_DFLT => false,
+			],
+			'limit' => [
+				ParamValidator::PARAM_TYPE => 'limit',
+				ApiBase::PARAM_DFLT => 10,
+				ApiBase::PARAM_MIN => 1,
+				ApiBase::PARAM_MAX => ApiBase::LIMIT_BIG1,
+				ApiBase::PARAM_MAX2 => ApiBase::LIMIT_BIG2,
+			],
+			'continue' => [
+				ApiBase::PARAM_HELP_MSG => 'api-help-param-continue',
+			],
+		];
+	}
+
+	/**
+	 * @see ApiBase::getExamplesMessages()
+	 * @return array
+	 */
+	protected function getExamplesMessages() {
+		return [
+			'action=query&list=wikilambda_searchlabels&wikilambda_search=foo&wikilambda_language=en'
+				=> 'apihelp-query+wikilambda-example-simple',
+		];
+	}
+}
