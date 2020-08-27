@@ -13,6 +13,10 @@ namespace MediaWiki\Extension\WikiLambda;
 use FormatJson;
 use Html;
 use JsonContent;
+use MediaWiki\MediaWikiServices;
+use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Revision\RevisionStore;
+use MediaWiki\Revision\SlotRecord;
 use ParserOptions;
 use ParserOutput;
 use Status;
@@ -66,6 +70,38 @@ class ZPersistentObject extends JsonContent implements ZObject {
 		}
 		// NOTE: For ZPersistentObject, we care about the *inner object*, not the ZPO itself
 		return ZObjectFactory::create( $objectVars[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] );
+	}
+
+	/** @var RevisionStore */
+	private static $revisionStore;
+
+	/**
+	 * Fetch a given Title's ZPersistentObject from the database, and inflate it.
+	 *
+	 * @param Title $title The page to fetch.
+	 * @return ZPersistentObject|false The ZPersistentObject requested.
+	 */
+	public static function getObjectFromDB( Title $title ) {
+		if ( !$title->isKnown() ) {
+			return false;
+		}
+
+		if ( self::$revisionStore === null ) {
+			self::$revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
+		}
+
+		$revision = self::$revisionStore->getRevisionById( $title->getLatestRevID() );
+
+		if ( !$revision ) {
+			return false;
+		}
+
+		// NOTE: Hard-coding use of MAIN slot; if we're going the MCR route, we may wish to change this (or not).
+		$text = $revision->getSlot( SlotRecord::MAIN, RevisionRecord::RAW )->getContent()->getNativeData();
+
+		$zObject = new ZPersistentObject( $text );
+
+		return $zObject;
 	}
 
 	/**

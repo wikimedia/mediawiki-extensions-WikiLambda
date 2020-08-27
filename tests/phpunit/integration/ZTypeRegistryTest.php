@@ -61,6 +61,9 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 
 		$this->assertTrue( $registry->isZObjectKeyKnown( ZTestType::TEST_ZID ), "'TestingType' is not defined as a built-in, but is read from the DB as key '" . ZTestType::TEST_ZID . "'." );
 		$this->assertEquals( $registry->getZObjectTypeFromKey( ZTestType::TEST_ZID ), 'Demonstration type', "'" . ZTestType::TEST_ZID . "' lookup works to find 'Demonstration type'." );
+
+		// Cleanup the page we touched.
+		$page->doDeleteArticleReal( $title, $this->getTestSysop()->getUser() );
 	}
 
 	/**

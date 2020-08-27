@@ -11,10 +11,6 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use InvalidArgumentException;
-use MediaWiki\MediaWikiServices;
-use MediaWiki\Revision\RevisionRecord;
-use MediaWiki\Revision\RevisionStore;
-use MediaWiki\Revision\SlotRecord;
 use Title;
 
 /**
@@ -57,9 +53,6 @@ class ZTypeRegistry {
 	public const Z_MULTILINGUALSTRING = 'Z12';
 	public const Z_MULTILINGUALSTRING_VALUE = 'Z12K1';
 
-	/** @var RevisionStore */
-	private $revisionStore;
-
 	/**
 	 * @return ZTypeRegistry
 	 */
@@ -73,8 +66,6 @@ class ZTypeRegistry {
 	}
 
 	private function __construct() {
-		$this->revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
-
 		// TODO: The built-in objects should register themselves, except (?) Z1.
 		$this->internalRegisterType( self::Z_OBJECT, 'ZObject' );
 		$this->internalRegisterType( self::Z_PERSISTENTOBJECT, 'ZPersistentObject' );
@@ -111,21 +102,13 @@ class ZTypeRegistry {
 		}
 
 		$title = Title::newFromText( $key, NS_ZOBJECT );
-		if ( !$title->isKnown() ) {
-			return false;
-		}
-
-		$revision = $this->revisionStore->getRevisionById( $title->getLatestRevID() );
-
-		if ( !$revision ) {
-			return false;
-		}
 
 		// TODO: This is quite exceptionally expensive. Store this in a metadata DB table, instead of fetching it live?
-		// NOTE: Hard-coding use of MAIN slot; if we're going the MCR route, we may wish to change this (or not).
-		$text = $revision->getSlot( SlotRecord::MAIN, RevisionRecord::RAW )->getContent()->getNativeData();
+		$zObject = ZPersistentObject::getObjectFromDB( $title );
 
-		$zObject = new ZPersistentObject( $text );
+		if ( $zObject === false ) {
+			return false;
+		}
 
 		if ( $zObject->getZType() !== 'ZType' ) {
 			throw new InvalidArgumentException( "ZObject for '$key' is not a ZType object." );

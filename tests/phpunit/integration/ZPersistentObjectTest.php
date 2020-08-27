@@ -2,10 +2,13 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZPersistentObject;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZPersistentObject
+ * @group Database
  */
 class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 
@@ -34,10 +37,28 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 	}
 
 	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContentHandler::getExternalRepresentation
+	 */
+	public function testGetExternalRepresentation() {
+		$this->editPage( ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'Test creation', NS_ZOBJECT );
+
+		$title = \Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
+		$page = \WikiPage::factory( $title );
+
+		$externalRepresentation = ZObjectContentHandler::getExternalRepresentation( $title );
+
+		$this->assertFalse( strpos( $externalRepresentation, '"Z2K1": "Z0"' ), "ZPO key is not set to Z0" );
+		$this->assertTrue( (bool)strpos( $externalRepresentation, '"Z2K1": "Z111"' ), "ZPO key is set to the title" );
+
+		// Cleanup the page we touched.
+		$page->doDeleteArticleReal( $title, $this->getTestSysop()->getUser() );
+	}
+
+	/**
 	 * @covers ::__construct
 	 */
 	public function testCreation_contentHandlerEmptyContentIsValid() {
-		$contentHandler = new \MediaWiki\Extension\WikiLambda\ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$contentHandler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 		$testObject = $contentHandler->makeEmptyContent();
 		$this->assertTrue( is_a( $testObject, ZPersistentObject::class ) );
 		$this->assertSame( $testObject->getZType(), 'ZString' );

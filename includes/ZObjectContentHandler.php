@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use FormatJson;
 use JsonContentHandler;
 use MWException;
 use Title;
@@ -47,6 +48,31 @@ class ZObjectContentHandler extends JsonContentHandler {
 	 */
 	protected function getContentClass() {
 		return ZPersistentObject::class;
+	}
+
+	/**
+	 * @param Title $zObjectTitle The page to fetch.
+	 * @return string The external JSON form of the given title.
+	 */
+	public static function getExternalRepresentation( Title $zObjectTitle ) : string {
+		if ( $zObjectTitle->getNamespace() !== NS_ZOBJECT ) {
+			throw new \InvalidArgumentException( "Provided page '$zObjectTitle' is not in the ZObject namespace." );
+		}
+
+		if ( $zObjectTitle->getContentModel() !== CONTENT_MODEL_ZOBJECT ) {
+			throw new \InvalidArgumentException( "Provided page '$zObjectTitle' is not a ZObject content type." );
+		}
+
+		$zObject = ZPersistentObject::getObjectFromDB( $zObjectTitle );
+
+		$json = get_object_vars( ZObjectUtils::canonicalize( $zObject->getData()->getValue() ) );
+
+		// Replace Z2K1: Z0 with the actual page ID.
+		$json['Z2K1'] = $zObjectTitle->getDBkey();
+
+		$encoded = FormatJson::encode( $json, true, FormatJson::UTF8_OK );
+
+		return $encoded;
 	}
 
 }
