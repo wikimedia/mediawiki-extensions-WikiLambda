@@ -5,5 +5,7 @@
 		]
 	},
 	"wikilambda-desc": "Gir Wikimedia-wikier en wikitekst-parserfunksjon for å kjøre evaluering av funksjoner skrevet, behandlet og evaluert på en sentral wiki.",
-	"wikilambda-invalidzobject": "Det gitte innholdet er ikke et gyldig ZObject."
+	"wikilambda-emptylabel": "ZObject uten etikett",
+	"wikilambda-invalidzobject": "Det gitte innholdet er ikke et gyldig ZObject.",
+	"wikilambda-multilingualstring-nofallback": "Ingen etikett definert på dette språket eller godkjente tilbakefallsspråk"
 }
