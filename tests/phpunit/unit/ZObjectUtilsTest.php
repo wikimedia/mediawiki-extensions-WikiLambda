@@ -123,6 +123,50 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 				'{ "K1 ": "a", "Z1K1 ": "Z60" }',
 				'{ "Z1K1": "Z60", "K1": "a" }'
 			],
+			'escaped string' => [
+				'{ "Z1K1": "Z6", "Z6K1": "Z6" }',
+				'{ "Z1K1": "Z6", "Z6K1": "Z6" }'
+			],
+			'unneccessary escaped string' => [
+				'{ "Z1K1": "Z6", "Z6K1": "Z" }',
+				'"Z"'
+			],
+			'escaped string QID' => [
+				'{ "Z1K1": "Z6", "Z6K1": "Q42" }',
+				'{ "Z1K1": "Z6", "Z6K1": "Q42" }'
+			],
+			'unneccessary escaped string key' => [
+				'{ "Z1K1": "Z6", "Z6K1": "Z1K1" }',
+				'"Z1K1"'
+			],
+			'unneccessary escaped string with whitespace' => [
+				'{ "Z1K1": "Z6", "Z6K1": " Z1" }',
+				'" Z1"'
+			],
+			'unneccessary double escaped string' => [
+				'{ "Z1K1": "Z6", "Z6K1": { "Z1K1": "Z6", "Z6K1": "Z" } }',
+				'"Z"'
+			],
+			'string with wrong key' => [
+				'{ "Z1K1": "Z6", "Z6K2": "Z" }',
+				'{ "Z1K1": "Z6", "Z6K2": "Z" }'
+			],
+			'string with no type' => [
+				'{ "Z6K1": "Z" }',
+				'{ "Z6K1": "Z" }'
+			],
+			'array with escaped string' => [
+				'[{ "Z1K1": "Z6", "Z6K1": "Z6" }, { "Z1K1": "Z6", "Z6K1": "Z" }]',
+				'[{ "Z1K1": "Z6", "Z6K1": "Z6" }, "Z" ]'
+			],
+			'object with escaped string' => [
+				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z6", "Z6K1": "Z6" } }',
+				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z6", "Z6K1": "Z6" } }'
+			],
+			'object with unneccessarily escaped string' => [
+				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z6", "Z6K1": "Z" } }',
+				'{ "Z1K1": "Z2", "Z2K2": "Z" }'
+			],
 		];
 	}
 

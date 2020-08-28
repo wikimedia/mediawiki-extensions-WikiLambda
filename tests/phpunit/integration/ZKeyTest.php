@@ -36,4 +36,31 @@ class ZKeyTest extends \MediaWikiIntegrationTestCase {
 			'Invalid local key' => [ 'ZK1', false ],
 		];
 	}
+
+	/**
+	 * @dataProvider provideIsValidId
+	 * @covers ::isValidId
+	 */
+	public function testIsValidId( $input, $expected ) {
+		$this->assertSame( ZKey::isValidId( $input ), $expected );
+	}
+
+	public function provideIsValidId() {
+		return [
+			'empty string' => [ '', false ],
+
+			'Simple ZID' => [ 'Z1', true ],
+			'Big ZID' => [ 'Z1234567890', true ],
+
+			'Simple QID' => [ 'Q1', true ],
+			'Big QID' => [ 'Q1234567890', true ],
+
+			'Whitespace-beset ZID' => [ "Z1 ", false ],
+
+			'Invalid ZID' => [ 'ZK1', false ],
+			'Key' => [ 'Z1K1', false ],
+			'Invalid 0-padded ZID' => [ 'Z01', false ],
+		];
+	}
+
 }

@@ -98,6 +98,16 @@ class ZKey implements ZObject {
 	}
 
 	/**
+	 * A valid possible identifier across WMF projects
+	 *
+	 * @param string $input
+	 * @return bool
+	 */
+	public static function isValidId( string $input ) : bool {
+		return preg_match( "/^[A-Z][1-9]\d*$/", $input );
+	}
+
+	/**
 	 * A ZObject reference key (e.g. Z1K1 or K12345)
 	 *
 	 * @param string $input

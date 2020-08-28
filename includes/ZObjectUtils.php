@@ -111,7 +111,14 @@ class ZObjectUtils {
 		}
 
 		if ( is_object( $input ) ) {
-			return self::canonicalizeZRecord( $input );
+			$output = self::canonicalizeZRecord( $input );
+			if ( property_exists( $output, 'Z1K1' )
+				&& $output->Z1K1 == 'Z6'
+				&& property_exists( $output, 'Z6K1' )
+				&& !ZKey::isValidId( $output->Z6K1 ) ) {
+				return self::canonicalize( $output->Z6K1 );
+			}
+			return $output;
 		}
 
 		return $input;
@@ -166,8 +173,7 @@ class ZObjectUtils {
 	/**
 	 * Canonicalizes a ZRecord.
 	 *
-	 * For now, it just trims the keys. There will be plenty of other thins it
-	 * will eventually do.
+	 * This trims and sorts the keys.
 	 *
 	 * @param object $input the decoded JSON object representing a valid ZObject
 	 * @return object canonical decoded JSON object representing the same ZObject
