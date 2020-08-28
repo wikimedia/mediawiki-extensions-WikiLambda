@@ -6,5 +6,7 @@
 		]
 	},
 	"wikilambda-desc": "Wikimedia vikilerine, merkezi bir vikide yazılan, yönetilen ve değerlendirilen işlevlerin değerlendirilmesi için vikimetin ayrıştırıcı işlevi sağlar.",
-	"wikilambda-invalidzobject": "Sağlanan içerik geçerli bir ZObject değil."
+	"wikilambda-emptylabel": "Etiketsiz ZObject",
+	"wikilambda-invalidzobject": "Sağlanan içerik geçerli bir ZObject değil.",
+	"wikilambda-multilingualstring-nofallback": "Bu dilde tanımlanmış etiket yok veya geri dönüşler kabul edilmiyor"
 }
