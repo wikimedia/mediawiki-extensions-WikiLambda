@@ -14,8 +14,6 @@ class ZList implements ZObject {
 
 	private $zObjectType = 'ZList';
 
-	private $value;
-
 	private $keys = [
 		ZTypeRegistry::Z_LIST_HEAD => [],
 		ZTypeRegistry::Z_LIST_TAIL => []
