@@ -56,7 +56,8 @@
 	},
 	"MessagesDirs": {
 		"WikiLambda": [
-			"i18n"
+			"i18n",
+			"i18n/api"
 		]
 	},
 	"ResourceFileModulePaths": {
@@ -67,6 +68,9 @@
 		"ext.wikilambda.viewpage.styles": {
 			"styles": [ "ext.wikilambda.viewpage/ext.wikilambda.viewpage.less" ]
 		}
+	},
+	"APIModules": {
+		"wikilambda_fetch": "MediaWiki\\Extension\\WikiLambda\\API\\ApiZObjectFetcher"
 	},
 	"manifest_version": 2
 }

@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"James D. Forrester"
+		]
+	},
+	"apihelp-wikilambda_fetch-summary": "Fetch the JSON model of ZObjects.",
+	"apihelp-wikilambda_fetch-param-zids": "The ZObject ZIDs to fetch, seperated by pipes.",
+	"apihelp-wikilambda_fetch-example-single": "Fetch a single ZObject, Z1.",
+	"apihelp-wikilambda_fetch-example-multiple": "Fetch three ZObjects: Z1, Z2, and Z3.",
+	"apierror-wikilambda_fetch-missingzid": "The given ZID '$1' does not exist on this wiki."
+}

@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"James D. Forrester"
+		]
+	},
+	"apihelp-wikilambda_fetch-summary": "{{doc-apihelp-summary|wikilambda_fetch}}",
+	"apihelp-wikilambda_fetch-param-zids": "{{doc-apihelp-param|wikilambda_fetch|zids}}",
+	"apihelp-wikilambda_fetch-example-single": "{{doc-apihelp-example|wikilambda_fetch}}",
+	"apihelp-wikilambda_fetch-example-multiple": "{{doc-apihelp-example|wikilambda_fetch}}",
+	"apierror-wikilambda_fetch-missingzid": "{{doc-apierror}}\n\nParameters:\n* $1 - ZID number not found."
+}
