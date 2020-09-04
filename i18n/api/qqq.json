@@ -8,5 +8,11 @@
 	"apihelp-wikilambda_fetch-param-zids": "{{doc-apihelp-param|wikilambda_fetch|zids}}",
 	"apihelp-wikilambda_fetch-example-single": "{{doc-apihelp-example|wikilambda_fetch}}",
 	"apihelp-wikilambda_fetch-example-multiple": "{{doc-apihelp-example|wikilambda_fetch}}",
-	"apierror-wikilambda_fetch-missingzid": "{{doc-apierror}}\n\nParameters:\n* $1 - ZID number not found."
+	"apierror-wikilambda_fetch-missingzid": "{{doc-apierror}}\n\nParameters:\n* $1 - ZID number not found.",
+	"apihelp-query+wikilambda_searchlabels-summary": "{{doc-apihelp-summary|query+wikilambda_searchlabels}}",
+	"apihelp-query+wikilambda_searchlabels-param-search": "{{doc-apihelp-param|wikilambda_searchlabels|search}}",
+	"apihelp-query+wikilambda_searchlabels-param-language": "{{doc-apihelp-param|wikilambda_searchlabels|language}}",
+	"apihelp-query+wikilambda_searchlabels-param-exact": "{{doc-apihelp-param|wikilambda_searchlabels|exact}}",
+	"apihelp-query+wikilambda_searchlabels-param-limit": "{{doc-apihelp-param|wikilambda_searchlabels|limit}}",
+	"apihelp-query+wikilambda-example-simple": "{{doc-apihelp-example|query+wikilambda}}"
 }

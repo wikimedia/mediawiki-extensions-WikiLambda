@@ -175,8 +175,8 @@ class ZObjectUtils {
 	 *
 	 * This trims and sorts the keys.
 	 *
-	 * @param object $input the decoded JSON object representing a valid ZObject
-	 * @return object canonical decoded JSON object representing the same ZObject
+	 * @param object $input The decoded JSON object representing a valid ZObject
+	 * @return object Canonical decoded JSON object representing the same ZObject
 	 */
 	public static function canonicalizeZRecord( object $input ): object {
 		$trimmed = new stdClass;
@@ -194,6 +194,29 @@ class ZObjectUtils {
 		}
 
 		return $sorted;
+	}
+
+	/**
+	 * Normalise and down-cast a label for database comparison by normalising Unicode, lower-casing,
+	 * and collapsing accents.
+	 *
+	 * TODO: To consider further changes.
+	 *
+	 * @param string $input The input
+	 * @return string
+	 */
+	public static function comparableString( string $input ) : string {
+		// First, lower-case the input (in a multi-byte-aware manner)
+		$output = mb_strtolower( $input );
+
+		// This Transliterator removes Latin accents but e.g. retains Han characters as-is.
+		// Specifically, it does canonical decomposition (NFD); removes non-spacing marks like accents;
+		// then recomposes, e.g. for Korean Hangul syllables.
+		// TODO: Replace with a language-aware transliterator?
+		$transliterator = \Transliterator::create( 'NFD; [:Nonspacing Mark:] Remove; NFC;' );
+		$output = $transliterator->transliterate( mb_strtolower( \Normalizer::normalize( $output ) ) );
+
+		return $output;
 	}
 
 }

@@ -198,4 +198,29 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 			'high locals' => [ 'K10', 'K2', 1 ],
 		];
 	}
+
+	/**
+	 * @dataProvider provideComparableString
+	 * @covers ::comparableString
+	 */
+	public function testComparableString( $input, $output ) {
+		$this->assertSame( ZObjectUtils::comparableString( $input ), $output );
+	}
+
+	public function provideComparableString() {
+		return [
+			'identity blank match' => [ '', '' ],
+			'identity match' => [ 'hello', 'hello' ],
+
+			'Latin lowercasing' => [ 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz' ],
+			'Greek lowercasing' => [ 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ', 'αβγδεζηθικλμνξοπρστυφχψω' ],
+			'Cyrillic lowercasing' => [ 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ', 'абвгдеежзииклмнопрстуфхцчшщъыьэюя' ],
+
+			'Sample Latin lowercasing' => [ 'I really love my iDevice!', 'i really love my idevice!' ],
+			'Accented Latin' => [ '"¡Let\'s keep coöperating in this rôle!", he exclaimed in his naïveté"', '"¡let\'s keep cooperating in this role!", he exclaimed in his naivete"' ],
+
+			'identity Hebrew match' => [ 'פריט להפגנה', 'פריט להפגנה' ],
+			'identity Hangul match' => [ '데모항목', '데모항목' ],
+		];
+	}
 }

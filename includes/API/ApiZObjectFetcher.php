@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\API;
 
 use ApiBase;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
+use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiZObjectFetcher extends ApiBase {
 
@@ -38,8 +39,8 @@ class ApiZObjectFetcher extends ApiBase {
 	protected function getAllowedParams(): array {
 		return [
 			'zids' => [
-				ApiBase::PARAM_TYPE => 'string',
-				ApiBase::PARAM_REQUIRED => true,
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_REQUIRED => true,
 			]
 		];
 	}

@@ -187,7 +187,7 @@ class ZPersistentObject extends JsonContent implements ZObject {
 		return $this->zObjectType;
 	}
 
-	public function getLabel( $language ) {
+	public function getLabels() {
 		if ( $this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] === null ) {
 			$this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = new ZMultiLingualString();
 
@@ -199,11 +199,11 @@ class ZPersistentObject extends JsonContent implements ZObject {
 			}
 		}
 
-		if ( count( $this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ]->getZValue() ) === 0 ) {
-			return wfMessage( 'wikilambda-emptylabel' )->inLanguage( $language )->text();
-		}
+		return $this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ];
+	}
 
-		return $this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ]->getStringForLanguage( $language );
+	public function getLabel( $language ) {
+		return $this->getLabels()->getStringForLanguage( $language );
 	}
 
 	/**

@@ -8,5 +8,11 @@
 	"apihelp-wikilambda_fetch-param-zids": "The ZObject ZIDs to fetch, seperated by pipes.",
 	"apihelp-wikilambda_fetch-example-single": "Fetch a single ZObject, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "Fetch three ZObjects: Z1, Z2, and Z3.",
-	"apierror-wikilambda_fetch-missingzid": "The given ZID '$1' does not exist on this wiki."
+	"apierror-wikilambda_fetch-missingzid": "The given ZID '$1' does not exist on this wiki.",
+	"apihelp-query+wikilambda_searchlabels-summary": "This API query list geenrator lets you search ZObjects for labels in a given language. It principally exists to support the look-ahead search system.",
+	"apihelp-query+wikilambda_searchlabels-param-search": "The search term",
+	"apihelp-query+wikilambda_searchlabels-param-language": "The MediaWiki language code in which to search",
+	"apihelp-query+wikilambda_searchlabels-param-exact": "Whether to search for exact matches. If disabled, input will be taken as a case-insensitive, Unicode-normalised search with accents on Latin characters ignored.",
+	"apihelp-query+wikilambda_searchlabels-param-limit": "The maximum number of results to return",
+	"apihelp-query+wikilambda-example-simple": "Search for ZObjects whose label matches 'foo' in English"
 }
