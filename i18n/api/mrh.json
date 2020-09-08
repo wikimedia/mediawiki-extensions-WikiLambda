@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Teitei Para"
+		]
+	},
+	"apierror-wikilambda_fetch-missingzid": "Piepa ZID '$1' cha he wiki lia y vei.",
+	"apihelp-query+wikilambda_searchlabels-param-search": "Tluana châfâ"
+}

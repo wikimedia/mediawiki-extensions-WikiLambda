@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Pols12"
+		]
+	},
+	"apihelp-wikilambda_fetch-summary": "Extraire le modèle JSON de ZObjects.",
+	"apihelp-wikilambda_fetch-param-zids": "Les ZID des ZObects à extraire, séparés par des barres verticales.",
+	"apihelp-wikilambda_fetch-example-single": "Rechercher un unique ZObject, Z1.",
+	"apihelp-wikilambda_fetch-example-multiple": "Extraire trois ZObjects : Z1, Z2 et Z3.",
+	"apierror-wikilambda_fetch-missingzid": "Le ZID donné « $1 » n’existe pas sur ce wiki.",
+	"apihelp-query+wikilambda_searchlabels-summary": "Ce générateur de listes de requêtes API permet de rechercher des libellés de ZObjects dans une langue donnée. Il existe principalement pour assister le système de recherche anticipée.",
+	"apihelp-query+wikilambda_searchlabels-param-search": "Le terme recherché",
+	"apihelp-query+wikilambda_searchlabels-param-language": "Le code de langue MediaWiki dans laquelle rechercher.",
+	"apihelp-query+wikilambda_searchlabels-param-exact": "Indique s’il faut rechercher uniquement les résultats exacts. Si désactivé, la valeur d’entrée sera traitée comme une recherche insensible à la casse et normalisée Unicode en ignorant les accents sur les caractères latins.",
+	"apihelp-query+wikilambda_searchlabels-param-limit": "Le nombre maximum de résultats à renvoyer.",
+	"apihelp-query+wikilambda-example-simple": "Rechercher les ZObjets dont le libellé correspond à « foo » en anglais."
+}

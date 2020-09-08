@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eduardo Addad de Oliveira"
+		]
+	},
+	"apihelp-query+wikilambda_searchlabels-param-search": "O termo de pesquisa",
+	"apihelp-query+wikilambda_searchlabels-param-language": "O código do idioma MediaWiki no qual pesquisar",
+	"apihelp-query+wikilambda_searchlabels-param-exact": "Se deve pesquisar correspondências exatas. Se desativado, a entrada será considerada como uma pesquisa normalizada Unicode sem distinção entre maiúsculas e minúsculas, com acentos em caracteres latinos ignorados.",
+	"apihelp-query+wikilambda_searchlabels-param-limit": "Número máximo de resultados na exibição"
+}
