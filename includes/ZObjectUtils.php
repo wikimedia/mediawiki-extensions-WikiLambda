@@ -112,12 +112,21 @@ class ZObjectUtils {
 
 		if ( is_object( $input ) ) {
 			$output = self::canonicalizeZRecord( $input );
+
 			if ( property_exists( $output, 'Z1K1' )
 				&& $output->Z1K1 == 'Z6'
 				&& property_exists( $output, 'Z6K1' )
 				&& !ZKey::isValidId( $output->Z6K1 ) ) {
 				return self::canonicalize( $output->Z6K1 );
 			}
+
+			if ( property_exists( $output, 'Z1K1' )
+				&& $output->Z1K1 == 'Z9'
+				&& property_exists( $output, 'Z9K1' )
+				&& ZKey::isValidId( $output->Z9K1 ) ) {
+				return self::canonicalize( $output->Z9K1 );
+			}
+
 			return $output;
 		}
 

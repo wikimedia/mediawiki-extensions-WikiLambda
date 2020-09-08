@@ -167,6 +167,22 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z6", "Z6K1": "Z" } }',
 				'{ "Z1K1": "Z2", "Z2K2": "Z" }'
 			],
+			'explicit reference' => [
+				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z9", "Z9K1": "Z1" } }',
+				'{ "Z1K1": "Z2", "Z2K2": "Z1" }'
+			],
+			'implicit reference' => [
+				'{ "Z1K1": "Z2", "Z2K2": "Z1" }',
+				'{ "Z1K1": "Z2", "Z2K2": "Z1" }'
+			],
+			'explicit QID reference' => [
+				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z9", "Z9K1": "Q96807071" } }',
+				'{ "Z1K1": "Z2", "Z2K2": "Q96807071" }'
+			],
+			'invalid reference' => [
+				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z9", "Z9K1": "ZObject" } }',
+				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z9", "Z9K1": "ZObject" } }'
+			],
 		];
 	}
 
