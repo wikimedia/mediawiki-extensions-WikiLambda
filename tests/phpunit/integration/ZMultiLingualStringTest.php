@@ -5,6 +5,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use MediaWiki\Extension\WikiLambda\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZMultiLingualString
@@ -15,7 +16,9 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::__construct
 	 * @covers ::getZType
 	 * @covers ::getZValue
+	 * @covers ::isLanguageProvidedValue
 	 * @covers ::getStringForLanguage
+	 * @covers ::getStringForLanguageCode
 	 * @covers ::isValid
 	 */
 	public function testCreation() {
@@ -34,9 +37,19 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 		$this->assertArrayHasKey( 'en', $testObject->getZValue() );
 		$this->assertArrayNotHasKey( 'ru', $testObject->getZValue() );
 
+		$this->assertTrue(
+			$testObject->isLanguageProvidedValue( 'en' )
+		);
+		$this->assertFalse(
+			$testObject->isLanguageProvidedValue( 'nonsense' )
+		);
 		$this->assertSame(
 			'Demonstration item',
 			$testObject->getStringForLanguage( $this->makeLanguage( 'en' ) )
+		);
+		$this->assertSame(
+			'Demonstration item',
+			$testObject->getStringForLanguageCode( 'en' )
 		);
 		$this->assertSame(
 			'oggetto per dimostrazione',
@@ -72,8 +85,28 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::create
+	 */
+	public function testStaticCreation() {
+		$testObject = ZMultiLingualString::create( [
+			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [ new ZMonoLingualString( 'en', 'Demonstration item' ) ]
+		] );
+		$this->assertSame( $testObject->getZType(), 'ZMultiLingualString' );
+	}
+
+	/**
+	 * @covers ::create
+	 */
+	public function testStaticCreation_invalidNoValueKey() {
+		$this->expectException( \InvalidArgumentException::class );
+		$invalidObject = ZMultiLingualString::create( [
+		] );
+	}
+
+	/**
 	 * @covers ::setMonoLingualString
 	 * @covers ::setStringForLanguage
+	 * @covers ::isLanguageProvidedValue
 	 * @covers ::removeValue
 	 * @covers ::isValid
 	 */
@@ -82,8 +115,10 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 		$this->assertTrue( $testObject->isValid() );
 
 		$french = $this->makeLanguage( 'fr' );
+		$this->assertFalse( $testObject->isLanguageProvidedValue( 'fr' ) );
 		$testObject->setMonoLingualString( new ZMonoLingualString( 'fr', 'Bonjour' ) );
 		$this->assertTrue( $testObject->isValid() );
+		$this->assertTrue( $testObject->isLanguageProvidedValue( 'fr' ) );
 		$this->assertSame(
 			'Bonjour',
 			$testObject->getStringForLanguage( $french )

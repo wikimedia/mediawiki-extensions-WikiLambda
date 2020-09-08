@@ -44,15 +44,35 @@ class ZMultiLingualString implements ZObject {
 		return $this->keys[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ];
 	}
 
-	private function getStringForLanguageCode( string $languageCode ) : string {
+	/**
+	 * Fetch the ZMultiLingualString's stored value for a given MediaWiki language code (e.g.
+	 * 'en' or 'zh-hant'). Note that this is a raw fetch and does not walk the language fallback
+	 * chain; users are expected to use getStringForLanguage() which does.
+	 *
+	 * @param string $languageCode The MediaWiki language code in which the string is wanted.
+	 * @return string The string, or the empty string if .
+	 */
+	public function getStringForLanguageCode( string $languageCode ) : string {
 		return $this->keys[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageCode ] ?? '';
 	}
 
-	private function isLanguageProvidedValue( string $languageCode ) : bool {
+	/**
+	 * Check if the ZMultiLingualString has a stored value for a given MediaWiki language code (e.g.
+	 * 'en' or 'zh-hant'). Note that this is a raw check and does not walk the language fallback
+	 * chain.
+	 *
+	 * @param string $languageCode The MediaWiki language code in which the string is wanted.
+	 * @return bool If there is a string stored.
+	 */
+	public function isLanguageProvidedValue( string $languageCode ) : bool {
 		return array_key_exists( $languageCode, $this->keys[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] );
 	}
 
 	/**
+	 * Fetch the ZMultiLingualString's stored value for a given MediaWiki language class. This will
+	 * walk the language fallback chain, and provide a fallback message if there is no label defined
+	 * in the given language or any of its fallback languages.
+	 *
 	 * @param Language $language The MediaWiki language class in which the string is wanted.
 	 * @return string The string, or the value of the wikilambda-multilingualstring-nofallback message.
 	 */
