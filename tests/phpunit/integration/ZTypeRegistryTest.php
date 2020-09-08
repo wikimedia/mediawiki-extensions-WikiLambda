@@ -44,6 +44,7 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 
 	/**
 	 * @covers ::isZObjectKeyKnown
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContentHandler::makeContent
 	 */
 	public function testIsZObjectKeyKnown() {
 		$registry = ZTypeRegistry::singleton();

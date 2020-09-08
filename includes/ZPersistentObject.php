@@ -130,6 +130,7 @@ class ZPersistentObject extends JsonContent implements ZObject {
 		try {
 			$this->getInnerZObject();
 			$this->getZType();
+			$this->getLabels();
 		} catch ( \InvalidArgumentException $e ) {
 			$this->validity = false;
 			return false;
@@ -181,6 +182,14 @@ class ZPersistentObject extends JsonContent implements ZObject {
 
 	public function getZType() : string {
 		if ( $this->zObjectType === null ) {
+			$zObject = $this->getInnerZObject();
+			// For situations where the ZPO was created in an invalid state, it's possible to reach
+			// this point. TODO: Consider re-factoring to avoid this secondary check?
+			if ( is_string( $zObject ) ) {
+				$attempt = ZObjectFactory::createFromSerialisedString( $zObject );
+				$this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = $attempt->getZType();
+			}
+
 			$this->zObjectType = $this->getInnerZObject()->getZType();
 		}
 
@@ -191,11 +200,14 @@ class ZPersistentObject extends JsonContent implements ZObject {
 		if ( $this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] === null ) {
 			$this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = new ZMultiLingualString();
 
-			$valueObject = get_object_vars( $this->getData()->getValue() );
-			if ( array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL, $valueObject ) ) {
-				$this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = ZObjectFactory::create(
-					$valueObject[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ]
-				);
+			$content = $this->getData()->getValue();
+			if ( $content ) {
+				$valueObject = get_object_vars( $this->getData()->getValue() );
+				if ( array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL, $valueObject ) ) {
+					$this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = ZObjectFactory::create(
+						$valueObject[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ]
+					);
+				}
 			}
 		}
 
