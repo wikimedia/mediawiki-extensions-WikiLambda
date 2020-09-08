@@ -7,6 +7,13 @@
 	"wikilambda-desc": "{{desc|name=WikiLambda|url=https://www.mediawiki.org/wiki/Extension:WikiLambda}}",
 	"wikilambda-emptylabel": "Default label shown for a ZObject that doesn't have one yet.",
 	"wikilambda-invalidzobject": "Error shown when an invalid ZObject definition edit is made.",
+	"wikilambda-invalidcontenttype": "Error shown when a non-ZObject is attempted to be saved on a ZObject page.",
+	"wikilambda-labelclash": "Error shown when a ZObject is attempted to be saved with a clashing label.\n\nParameters:\n* $1 - The ZID of the clashing page.\n* $2 - The language in which the other page's label clashes.\n",
 	"wikilambda-persistentzobject": "{{Optional}}Label for a top-level ZObject.",
-	"wikilambda-multilingualstring-nofallback": "Message shown when a multi-lingual string doesn't have a label defined for the user's language, nor for any of that language's fallbacks."
+	"wikilambda-multilingualstring-nofallback": "Message shown when a multi-lingual string doesn't have a label defined for the user's language, nor for any of that language's fallbacks.",
+	"listduplicatezobjectlabels": "Description for Special:ListDuplicateZObjectLabels page",
+	"wikilambda-speciallistduplicatezobjectlabels-empty": "Message shown on Special:ListDuplicateZObjectLabels when there are not duplicates.",
+	"wikilambda-speciallistduplicatezobjectlabels-existing": "Column header on Special:ListDuplicateZObjectLabels, showing a link to the original ZObject with the label.",
+	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "Column header on Special:ListDuplicateZObjectLabels, showing a link to the newly-conflicting ZObject with the label.",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Column header on Special:ListDuplicatZObjectLabels, showing the language in  which the two ZObjects have a conflicting label."
 }

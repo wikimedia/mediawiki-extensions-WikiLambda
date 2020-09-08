@@ -7,6 +7,13 @@
 	"wikilambda-desc": "Providing Wikimedia wikis with a wikitext parser function to call evaluation of functions written, managed, and evaluated on a central wiki.",
 	"wikilambda-emptylabel": "Unlabelled ZObject",
 	"wikilambda-invalidzobject": "The provided content is not a valid ZObject.",
+	"wikilambda-invalidcontenttype": "The provided content is not a ZObject class.",
+	"wikilambda-labelclash": "The provided content's label clashes with ZObject '$1' for the label in '$2'.",
 	"wikilambda-persistentzobject": "ZObject",
-	"wikilambda-multilingualstring-nofallback": "No label defined in this language or accepted fallbacks"
+	"wikilambda-multilingualstring-nofallback": "No label defined in this language or accepted fallbacks",
+	"listduplicatezobjectlabels": "ZObject pages with duplicate labels",
+	"wikilambda-speciallistduplicatezobjectlabels-empty": "No ZObjects currently have duplicate labels.",
+	"wikilambda-speciallistduplicatezobjectlabels-existing": "Existing ZObject",
+	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "Clashing ZObject",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Language"
 }

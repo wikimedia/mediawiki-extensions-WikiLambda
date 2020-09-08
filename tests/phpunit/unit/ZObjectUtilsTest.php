@@ -62,7 +62,7 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 		$this->assertSame(
 			FormatJson::encode( FormatJson::parse( $expected )->value ),
 			FormatJson::encode(
-			  ZObjectUtils::canonicalize( FormatJson::parse( $input )->value )
+				ZObjectUtils::canonicalize( FormatJson::parse( $input )->value )
 			)
 		);
 	}

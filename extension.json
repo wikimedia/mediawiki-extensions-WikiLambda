@@ -52,6 +52,7 @@
 		}
 	},
 	"Hooks": {
+		"MultiContentSave": "WikiLambdaHooks",
 		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
 		"CodeEditorGetPageLanguage": "MediaWiki\\Extension\\WikiLambda\\Hooks::onCodeEditorGetPageLanguage"
 	},
@@ -61,6 +62,9 @@
 			"i18n/api"
 		]
 	},
+	"ExtensionMessagesFiles": {
+		"WikiLambdaAliases": "WikiLambda.alias.php"
+	},
 	"ResourceFileModulePaths": {
 		"localBasePath": "resources",
 		"remoteExtPath": "WikiLambda/resources"
@@ -68,6 +72,9 @@
 	"ResourceModules": {
 		"ext.wikilambda.viewpage.styles": {
 			"styles": [ "ext.wikilambda.viewpage/ext.wikilambda.viewpage.less" ]
+		},
+		"ext.wikilambda.specialpages.styles": {
+			"styles": [ "ext.wikilambda.specialpages/ext.wikilambda.specialpages.less" ]
 		},
 		"ext.wikilambda.simplesearch": {
 			"scripts": [ "ext.wikilambda.simplesearch/jquery.wikilambda.labelselector.js" ],
@@ -79,6 +86,9 @@
 	},
 	"APIListModules": {
 		"wikilambda_searchlabels": "MediaWiki\\Extension\\WikiLambda\\API\\ApiQueryZObjectLabels"
+	},
+	"SpecialPages": {
+		"ListDuplicateZObjectLabels": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListDuplicateZObjectLabels"
 	},
 	"manifest_version": 2
 }

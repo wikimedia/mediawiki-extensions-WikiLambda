@@ -16,7 +16,3 @@ CREATE INDEX wlzl_label_searchindex ON /*_*/wikilambda_zobject_labels (
 CREATE INDEX wlzl_label_searchindex_strict ON /*_*/wikilambda_zobject_labels (
   wlzl_type, wlzl_language, wlzl_label
 );
-
-CREATE UNIQUE INDEX wlzl_label_unique ON /*_*/wikilambda_zobject_labels (
-  wlzl_type, wlzl_language, wlzl_label
-);

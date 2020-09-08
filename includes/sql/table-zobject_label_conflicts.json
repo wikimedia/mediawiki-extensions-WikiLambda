@@ -1,0 +1,39 @@
+[
+	{
+		"name": "wikilambda_zobject_label_conflicts",
+		"comment": "Worklist of known conflicting ZObject labels.",
+		"columns": [
+			{
+				"name": "wlzlc_id",
+				"comment": "Unique ID for index purposes",
+				"type": "bigint",
+				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
+			},
+			{
+				"name": "wlzlc_existing_zid",
+				"comment": "The original ZObject's ZID",
+				"type": "binary",
+				"options": { "length": 32, "notnull": true }
+			},
+			{
+				"name": "wlzlc_conflicting_zid",
+				"comment": "The new, conflicting ZObject's ZID",
+				"type": "binary",
+				"options": { "length": 32, "notnull": true }
+			},
+			{
+				"name": "wlzlc_language",
+				"comment": "The language code in which the conflicting label applies",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			}
+		],
+		"indexes": [
+			{
+				"name": "wlzlc_searchindex",
+				"columns": [ "wlzlc_language", "wlzlc_existing_zid" ]
+			}
+		],
+		"pk": [ "wlzlc_id" ]
+	}
+]
