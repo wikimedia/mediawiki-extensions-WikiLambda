@@ -4,6 +4,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZMonoLingualString
@@ -16,6 +17,7 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getLanguage
 	 * @covers ::getString
 	 * @covers ::getZValue
+	 * @covers ::isValid
 	 */
 	public function testCreation() {
 		$testObject = new ZMonoLingualString( 'en', 'Demonstration item' );
@@ -23,6 +25,42 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 		$this->assertSame( $testObject->getLanguage(), 'en' );
 		$this->assertSame( $testObject->getString(), 'Demonstration item' );
 		$this->assertSame( $testObject->getZValue(), [ 'en' => 'Demonstration item' ] );
+		$this->assertTrue( $testObject->isValid() );
+	}
+
+	/**
+	 * @covers ::create
+	 */
+	public function testStaticCreation() {
+		$testObject = ZMonoLingualString::create( [
+			ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => 'en',
+			ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => 'Demonstration item'
+		] );
+		$this->assertSame( $testObject->getZType(), 'ZMonoLingualString' );
+		$this->assertSame( $testObject->getLanguage(), 'en' );
+		$this->assertSame( $testObject->getString(), 'Demonstration item' );
+		$this->assertSame( $testObject->getZValue(), [ 'en' => 'Demonstration item' ] );
+		$this->assertTrue( $testObject->isValid() );
+	}
+
+	/**
+	 * @covers ::create
+	 */
+	public function testStaticCreation_invalidNoLanguageKey() {
+		$this->expectException( \InvalidArgumentException::class );
+		$invalidObject = ZMonoLingualString::create( [
+			ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => 'Demonstration item'
+		] );
+	}
+
+	/**
+	 * @covers ::create
+	 */
+	public function testStaticCreation_invalidNoValueKey() {
+		$this->expectException( \InvalidArgumentException::class );
+		$invalidObject = ZMonoLingualString::create( [
+			ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => 'en'
+		] );
 	}
 
 	/**
@@ -43,5 +81,6 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 		$this->assertSame( $testObject->getZValue(), [ 'en' => 'Demonstration item' ] );
 		$this->assertSame( $testObject->getInnerZObject()->getLanguage(), 'en' );
 		$this->assertSame( $testObject->getInnerZObject()->getString(), 'Demonstration item' );
+		$this->assertTrue( $testObject->isValid() );
 	}
 }
