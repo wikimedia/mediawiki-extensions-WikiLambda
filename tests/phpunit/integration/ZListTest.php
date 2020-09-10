@@ -18,31 +18,31 @@ class ZListTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testPersistentCreation() {
 		$testObject = new ZPersistentObject( '[]' );
-		$this->assertSame( $testObject->getZType(), 'ZList' );
-		$this->assertSame( $testObject->getZValue(), [ null, [] ] );
+		$this->assertSame( 'ZList', $testObject->getZType() );
+		$this->assertSame( [ null, [] ], $testObject->getZValue() );
 
 		$testObject = new ZPersistentObject( '["Test"]' );
-		$this->assertSame( $testObject->getZType(), 'ZList' );
-		$this->assertSame( $testObject->getZValue(), [ 'Test', 	[] ] );
+		$this->assertSame( 'ZList', $testObject->getZType() );
+		$this->assertSame( [ 'Test', [] ], $testObject->getZValue() );
 
 		$testObject = new ZPersistentObject( '["Test", "Test2"]' );
-		$this->assertSame( $testObject->getZType(), 'ZList' );
-		$this->assertSame( $testObject->getZValue(), [ 'Test', [ 'Test2' ] ] );
+		$this->assertSame( 'ZList', $testObject->getZType() );
+		$this->assertSame( [ 'Test', [ 'Test2' ] ], $testObject->getZValue() );
 
 		$testObject = new ZPersistentObject( '["Test","Test2","Test3"]' );
-		$this->assertSame( $testObject->getZType(), 'ZList' );
-		$this->assertSame( $testObject->getZValue(), [ 'Test', [ "Test2", "Test3" ] ] );
+		$this->assertSame( 'ZList', $testObject->getZType() );
+		$this->assertSame( [ 'Test', [ "Test2", "Test3" ] ], $testObject->getZValue() );
 
 		$testObject = new ZPersistentObject( '[["Test"],["Test2"],["Test3"]]' );
-		$this->assertSame( $testObject->getZType(), 'ZList' );
-		$this->assertSame( $testObject->getZValue(), [ [ 'Test' ], [ [ "Test2" ], [ "Test3" ] ] ] );
+		$this->assertSame( 'ZList', $testObject->getZType() );
+		$this->assertSame( [ [ 'Test' ], [ [ "Test2" ], [ "Test3" ] ] ], $testObject->getZValue() );
 
 		$testObject = new ZPersistentObject( '[["Test"],["Test2","Test3"]]' );
-		$this->assertSame( $testObject->getZType(), 'ZList' );
-		$this->assertSame( $testObject->getZValue(), [ [ 'Test' ], [ [ "Test2", "Test3" ] ] ] );
+		$this->assertSame( 'ZList', $testObject->getZType() );
+		$this->assertSame( [ [ 'Test' ], [ [ "Test2", "Test3" ] ] ], $testObject->getZValue() );
 
 		$testObject = new ZPersistentObject( '[["Test", "Test2"],["Test3","Test4"]]' );
-		$this->assertSame( $testObject->getZType(), 'ZList' );
-		$this->assertSame( $testObject->getZValue(), [ [ 'Test', 'Test2' ], [ [ "Test3", "Test4" ] ] ] );
+		$this->assertSame( 'ZList', $testObject->getZType() );
+		$this->assertSame( [ [ 'Test', 'Test2' ], [ [ "Test3", "Test4" ] ] ], $testObject->getZValue() );
 	}
 }

@@ -18,19 +18,19 @@ class ZStringTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testPersistentCreation() {
 		$testObject = new ZPersistentObject( '' );
-		$this->assertSame( $testObject->getZType(), 'ZString' );
-		$this->assertSame( $testObject->getZValue(), '' );
+		$this->assertSame( 'ZString', $testObject->getZType() );
+		$this->assertSame( '', $testObject->getZValue() );
 
 		$testObject = new ZPersistentObject( 'Test' );
-		$this->assertSame( $testObject->getZType(), 'ZString' );
-		$this->assertSame( $testObject->getZValue(), 'Test' );
+		$this->assertSame( 'ZString', $testObject->getZType() );
+		$this->assertSame( 'Test', $testObject->getZValue() );
 
 		$testObject = new ZPersistentObject( '{ "Z1K1": "Z6", "Z6K1": "Test" }' );
-		$this->assertSame( $testObject->getZType(), 'ZString' );
-		$this->assertSame( $testObject->getZValue(), 'Test' );
+		$this->assertSame( 'ZString', $testObject->getZType() );
+		$this->assertSame( 'Test', $testObject->getZValue() );
 
 		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z6", "Z6K1": "Test" }, "Z2K3": [] }' );
-		$this->assertSame( $testObject->getZType(), 'ZString' );
-		$this->assertSame( $testObject->getZValue(), 'Test' );
+		$this->assertSame( 'ZString', $testObject->getZType() );
+		$this->assertSame( 'Test', $testObject->getZValue() );
 	}
 }

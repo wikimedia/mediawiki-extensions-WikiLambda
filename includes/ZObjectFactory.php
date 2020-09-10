@@ -46,7 +46,7 @@ class ZObjectFactory {
 		}
 
 		if ( !is_object( $object ) ) {
-			throw new InvalidArgumentException( "Couldn't create ZObject for given input '$object'; 	unrecognized format." );
+			throw new InvalidArgumentException( "Couldn't create ZObject for given input '$object'; unrecognised format." );
 		}
 
 		$objectVars = get_object_vars( $object );

@@ -25,27 +25,27 @@ class ZTypeTest extends \MediaWikiIntegrationTestCase {
 		$testObject = new ZPersistentObject( '{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":{"Z1K1":"Z4", "Z4K1":"Z111", "Z4K2":[{"Z1K1":"Z3", "Z3K1":"Z6", "Z3K2":"Z111K1", "Z3K3":{"Z1K1":"Z12", "Z12K1":[{"Z1K1":"Z11", "Z11K1":"en", "Z11K2":"Demonstration key"}, {"Z1K1":"Z11", "Z11K1":"fr", "Z11K2":"Index pour démonstration"}]}}, {"Z1K1":"Z3", "Z3K1":"Z6", "Z3K2":"Z111K2", "Z3K3":{"Z1K1":"Z12", "Z12K1":[{"Z1K1":"Z11", "Z11K1":"en", "Z11K2":"Other demonstration key"}, {"Z1K1":"Z11", "Z11K1":"fr", "Z11K2":"Autre index pour démonstration"}]}}], "Z4K3":"Z0"}, "Z2K3":{"Z1K1":"Z12", "Z12K1":[{"Z1K1":"Z11", "Z11K1":"en", "Z11K2":"Demonstration type"}, {"Z1K1":"Z11", "Z11K1":"fr", "Z11K2":"Type pour démonstration"}]}}' );
 
 		$this->assertTrue( $testObject->isValid() );
-		$this->assertSame( $testObject->getZType(), 'ZType' );
+		$this->assertSame( 'ZType', $testObject->getZType() );
 
-		$this->assertSame( $testObject->getLabel( $english ), 'Demonstration type' );
-		$this->assertSame( $testObject->getLabel( $french ), 'Type pour démonstration' );
+		$this->assertSame( 'Demonstration type', $testObject->getLabel( $english ) );
+		$this->assertSame( 'Type pour démonstration', $testObject->getLabel( $french ) );
 
-		$this->assertSame( $testObject->getInnerZObject()->getTypeId(), 'Z111' );
+		$this->assertSame( 'Z111', $testObject->getInnerZObject()->getTypeId() );
 
 		$keys = $testObject->getInnerZObject()->getTypeKeys();
 
 		$this->assertCount( 2, $keys );
-		$this->assertSame( $keys[0]->getKeyType(), 'ZString' );
-		$this->assertSame( $keys[0]->getKeyId(), 'Z111K1' );
-		$this->assertSame( $keys[0]->getKeyLabel()->getStringForLanguage( $english ), 'Demonstration key' );
-		$this->assertSame( $keys[0]->getKeyLabel()->getStringForLanguage( $french ), 'Index pour démonstration' );
+		$this->assertSame( 'ZString', $keys[0]->getKeyType() );
+		$this->assertSame( 'Z111K1', $keys[0]->getKeyId() );
+		$this->assertSame( 'Demonstration key', $keys[0]->getKeyLabel()->getStringForLanguage( $english ) );
+		$this->assertSame( 'Index pour démonstration', $keys[0]->getKeyLabel()->getStringForLanguage( $french ) );
 
-		$this->assertSame( $keys[1]->getKeyType(), 'ZString' );
-		$this->assertSame( $keys[1]->getKeyId(), 'Z111K2' );
-		$this->assertSame( $keys[1]->getKeyLabel()->getStringForLanguage( $english ), 'Other demonstration key' );
-		$this->assertSame( $keys[1]->getKeyLabel()->getStringForLanguage( $french ), 'Autre index pour démonstration' );
+		$this->assertSame( 'ZString', $keys[1]->getKeyType() );
+		$this->assertSame( 'Z111K2', $keys[1]->getKeyId() );
+		$this->assertSame( 'Other demonstration key', $keys[1]->getKeyLabel()->getStringForLanguage( $english ) );
+		$this->assertSame( 'Autre index pour démonstration', $keys[1]->getKeyLabel()->getStringForLanguage( $french ) );
 
 		// TODO: Nonsense result for now; once we implement Functions, will be one of those.
-		$this->assertSame( $testObject->getInnerZObject()->getTypeValidator(), 'Z0' );
+		$this->assertSame( 'Z0', $testObject->getInnerZObject()->getTypeValidator() );
 	}
 }

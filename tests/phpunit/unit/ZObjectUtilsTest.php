@@ -60,10 +60,10 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 	 */
 	public function testCanonicalize( $input, $expected ) {
 		$this->assertSame(
+			FormatJson::encode( FormatJson::parse( $expected )->value ),
 			FormatJson::encode(
 			  ZObjectUtils::canonicalize( FormatJson::parse( $input )->value )
-			),
-			FormatJson::encode( FormatJson::parse( $expected )->value )
+			)
 		);
 	}
 
@@ -199,10 +199,12 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 	 */
 	public function testOrderZKeyIDs( $left, $right, $expected ) {
 		$this->assertSame(
-			ZObjectUtils::orderZKeyIDs( $left, $right ), $expected
+			$expected,
+			ZObjectUtils::orderZKeyIDs( $left, $right )
 		);
 		$this->assertSame(
-			ZObjectUtils::orderZKeyIDs( $right, $left ), -1 * $expected
+			-1 * $expected,
+			ZObjectUtils::orderZKeyIDs( $right, $left )
 		);
 	}
 
@@ -227,7 +229,7 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 	 * @covers ::comparableString
 	 */
 	public function testComparableString( $input, $output ) {
-		$this->assertSame( ZObjectUtils::comparableString( $input ), $output );
+		$this->assertSame( $output, ZObjectUtils::comparableString( $input ) );
 	}
 
 	public function provideComparableString() {

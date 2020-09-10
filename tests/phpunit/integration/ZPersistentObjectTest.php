@@ -19,21 +19,21 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testCreation_record() {
 		$testObject = new ZPersistentObject( '{ "Z1K1": "Z1", "Z5K1": "" }' );
-		$this->assertSame( $testObject->getZType(), 'ZObject' );
-		$this->assertSame( $testObject->getZValue()->getZValue(), '' );
+		$this->assertSame( 'ZObject', $testObject->getZType() );
+		$this->assertSame( '', $testObject->getZValue()->getZValue() );
 
 		$testObject = new ZPersistentObject( '{ "Z1K1": "Z1", "Z5K1": "Test" }' );
-		$this->assertSame( $testObject->getZType(), 'ZObject' );
-		$this->assertSame( $testObject->getZValue()->getZValue(), "Test" );
+		$this->assertSame( 'ZObject', $testObject->getZType() );
+		$this->assertSame( "Test", $testObject->getZValue()->getZValue() );
 
 		$testObject = new ZPersistentObject( '{ "Z1K1": "Z1", "Z5K1": [ "Test" ] }' );
-		$this->assertSame( $testObject->getZType(), 'ZObject' );
-		$this->assertSame( $testObject->getZValue()->getZValue(), [ "Test", [] ] );
+		$this->assertSame( 'ZObject', $testObject->getZType() );
+		$this->assertSame( [ "Test", [] ], $testObject->getZValue()->getZValue() );
 
 		$testObject = new ZPersistentObject( '{ "Z1K1": "Z1", "Z5K1": { "Z1K1": "Z1", "Z5K1": [ "Test", "Test2", "Test3" ] } }' );
-		$this->assertSame( $testObject->getZType(), 'ZObject' );
-		$this->assertSame( $testObject->getZValue()->getZType(), 'ZObject' );
-		$this->assertSame( $testObject->getZValue()->getZValue()->getZValue(), [ "Test", [ "Test2", "Test3" ] ] );
+		$this->assertSame( 'ZObject', $testObject->getZType() );
+		$this->assertSame( 'ZObject', $testObject->getZValue()->getZType() );
+		$this->assertSame( [ "Test", [ "Test2", "Test3" ] ], $testObject->getZValue()->getZValue()->getZValue() );
 	}
 
 	/**
@@ -61,8 +61,8 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 		$contentHandler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 		$testObject = $contentHandler->makeEmptyContent();
 		$this->assertTrue( is_a( $testObject, ZPersistentObject::class ) );
-		$this->assertSame( $testObject->getZType(), 'ZString' );
-		$this->assertSame( $testObject->getZValue(), '' );
+		$this->assertSame( 'ZString', $testObject->getZType() );
+		$this->assertSame( '', $testObject->getZValue() );
 	}
 
 	/**
@@ -72,7 +72,7 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 		$testObject = new ZPersistentObject( '{ "Z5K1": "Test" }' );
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( \Error::class );
-		$this->assertSame( $testObject->getZType(), 'InvalidObjectWillNotHaveAType' );
+		$this->assertSame( 'InvalidObjectWillNotHaveAType', $testObject->getZType() );
 	}
 
 	/**
@@ -82,7 +82,7 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 		$testObject = new ZPersistentObject( '{ "Z1K1": "Z1" }' );
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( \Error::class );
-		$this->assertSame( $testObject->getZType(), 'InvalidObjectWillNotHaveAType' );
+		$this->assertSame( 'InvalidObjectWillNotHaveAType', $testObject->getZType() );
 	}
 
 	/**
@@ -92,7 +92,7 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 		$testObject = new ZPersistentObject( '{ "Z1K1": "This is not a valid key!", "Z5K1": "" }' );
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( \Error::class );
-		$this->assertSame( $testObject->getZType(), 'InvalidObjectWillNotHaveAType' );
+		$this->assertSame( 'InvalidObjectWillNotHaveAType', $testObject->getZType() );
 	}
 
 	/**
@@ -102,7 +102,7 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 		$testObject = new ZPersistentObject( '{ "Z1K1": "Z1234", "Z5K1": "" }' );
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( \Error::class );
-		$this->assertSame( $testObject->getZType(), 'InvalidObjectWillNotHaveAType' );
+		$this->assertSame( 'InvalidObjectWillNotHaveAType', $testObject->getZType() );
 	}
 
 	/**
@@ -112,7 +112,7 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 		$testObject = new ZPersistentObject( '{"Z1K1":"Z2","Z2K1":"Z0","Z2K2":{"Z1K1":"Foo"},"Z2K3": []}' );
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( \Error::class );
-		$this->assertSame( $testObject->getZType(), 'InvalidObjectWillNotHaveAType' );
+		$this->assertSame( 'InvalidObjectWillNotHaveAType', $testObject->getZType() );
 	}
 
 	/**
@@ -122,7 +122,7 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 		$testObject = new ZPersistentObject( '{ "Z1K1": "Z5", "Z5K1": { "Z1K1": "Z1", "Z2K3": [] } }' );
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( \Error::class );
-		$this->assertSame( $testObject->getZType(), 'InvalidObjectWillNotHaveAType' );
+		$this->assertSame( 'InvalidObjectWillNotHaveAType', $testObject->getZType() );
 	}
 
 	/**
@@ -132,6 +132,6 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 		$testObject = new ZPersistentObject( '{ "Z1K1": "Z5", "Z5K1": { "Z1K1": "Z1", "Z2K2": "Foo" } }' );
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( \Error::class );
-		$this->assertSame( $testObject->getZType(), 'InvalidObjectWillNotHaveAType' );
+		$this->assertSame( 'InvalidObjectWillNotHaveAType', $testObject->getZType() );
 	}
 }
