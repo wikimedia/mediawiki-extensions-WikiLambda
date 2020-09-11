@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bjankuloski06"
+		]
+	},
+	"apihelp-wikilambda_fetch-summary": "Дај го JSON-моделот на ZObjects.",
+	"apihelp-wikilambda_fetch-param-zids": "Кои ZID-ја за ZObject да се добијат, одделени со прави црти.",
+	"apihelp-wikilambda_fetch-example-single": "Дај еден ZObject, Z1.",
+	"apihelp-wikilambda_fetch-example-multiple": "Дај три ZObjects: Z1, Z2 и Z3.",
+	"apierror-wikilambda_fetch-missingzid": "Дадениот ZID „$1“ не постои на ова вики.",
+	"apihelp-query+wikilambda_searchlabels-summary": "Создавачот на списоци за барања до приложникот ви овозможува пребарување на ZObjects за натписи на даден јазик. Има главна цел да пружа поддршка на системот за предвидувачко пребарување.",
+	"apihelp-query+wikilambda_searchlabels-param-search": "Поимот за пребарување",
+	"apihelp-query+wikilambda_searchlabels-param-language": "На кој јазичен код да се пребарува",
+	"apihelp-query+wikilambda_searchlabels-param-exact": "Дали да пребарува точни совпаѓања. Ако е оневозможено, ќе се подразбира дека вносот разликува големи и мали букви, а уникодно нормализираното пребарување со акценти врз латиничните знаци ќе се занемари.",
+	"apihelp-query+wikilambda_searchlabels-param-limit": "Највеќе ставки во исходот за прикажување",
+	"apihelp-query+wikilambda-example-simple": "Пребарување на ZObjects чиј натпис одговара на „foo“ на англиски"
+}
