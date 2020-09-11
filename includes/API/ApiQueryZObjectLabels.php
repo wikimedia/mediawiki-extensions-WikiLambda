@@ -74,12 +74,11 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 
 		$suggestions = [];
 		foreach ( $res as $row ) {
-			$entries = (array)( $row );
 			$suggestions[] = [
 				'page_namespace' => NS_ZOBJECT,
-				'page_title' => $entries['wlzl_zobject_zid'],
-				'page_type' => $entries['wlzl_type'],
-				'label' => $entries['wlzl_label'],
+				'page_title' => $row->wlzl_zobject_zid,
+				'page_type' => $row->wlzl_type,
+				'label' => $row->wlzl_label,
 				'page_id' => 0, // FIXME: Implement, otherwise the generator won't work.
 				'page_is_redirect' => false, // TODO: When we support redirects, implement.
 				'page_content_model' => CONTENT_MODEL_ZOBJECT,
