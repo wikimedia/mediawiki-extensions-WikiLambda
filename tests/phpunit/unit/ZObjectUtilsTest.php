@@ -115,8 +115,8 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 			],
 
 			'record with embedded record with key untrimmed' => [
-				'{ "Z1K1 ": "Z10", "K1 ": { "Z1K1": "Z60", "Z60K1 ": "a" } }',
-				'{ "Z1K1": "Z10", "K1": { "Z1K1": "Z60", "Z60K1": "a" } }',
+				'{ "Z1K1 ": "Z60", "Z60K1 ": { "Z1K1": "Z60", "Z60K1 ": "a" } }',
+				'{ "Z1K1": "Z60", "Z60K1": { "Z1K1": "Z60", "Z60K1": "a" } }',
 			],
 			'list with record with key untrimmed' => [
 				'[{ " Z1K1 ": "Z60", "Z60K1 ": "a" }]',
@@ -189,6 +189,74 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 			'invalid reference' => [
 				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z9", "Z9K1": "ZObject" } }',
 				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z9", "Z9K1": "ZObject" } }'
+			],
+			'empty list as array' => [
+				'[]', '[]'
+			],
+			'empty list as ZObject' => [
+				'{ "Z1K1": "Z10" }', '[]'
+			],
+			'single string in list as array' => [
+				'["a"]', '["a"]'
+			],
+			'single string in list as ZObject' => [
+				'{ "Z1K1": "Z10", "Z10K1": "a" }', '["a"]'
+			],
+			'single string in list as ZObject, tail empty array' => [
+				'{ "Z1K1": "Z10", "Z10K1": "a", "Z10K2": [] }', '["a"]'
+			],
+			'single string in list as ZObject, tail ZObject' => [
+				'{ "Z1K1": "Z10", "Z10K1": "a", "Z10K2": { "Z1K1": "Z10" } }',
+				'["a"]'
+			],
+			'two strings in list as array' => [
+				'["a", "b"]', '["a", "b"]'
+			],
+			'two strings in list as ZObject, tail as array' => [
+				'{ "Z1K1": "Z10", "Z10K1": "a", "Z10K2": ["b"] }',
+				'["a", "b"]'
+			],
+			'two strings in list as ZObject, all tails ZObject' => [
+				'{ "Z1K1": "Z10", "Z10K1": "a", "Z10K2":' .
+				'{ "Z1K1": "Z10", "Z10K1": "b", "Z10K2": { "Z1K1": "Z10" } } }',
+				'["a", "b"]'
+			],
+			'two strings in list as ZObject, tails mixed' => [
+				'{ "Z1K1": "Z10", "Z10K1": "a", "Z10K2":' .
+				'{ "Z1K1": "Z10", "Z10K1": "b", "Z10K2": [] } }',
+				'["a", "b"]'
+			],
+			'two strings in list as ZObject, no tail in tail' => [
+				'{ "Z1K1": "Z10", "Z10K1": "a", "Z10K2":' .
+				'{ "Z1K1": "Z10", "Z10K1": "b" } }',
+				'["a", "b"]'
+			],
+			'list in list' => [
+				'[[]]',
+				'[[]]'
+			],
+			'lists in list' => [
+				'[[], []]',
+				'[[], []]'
+			],
+			'empty ZObject in list' => [
+				'[{ "Z1K1": "Z10" }]',
+				'[[]]'
+			],
+			'empty ZObjects in list' => [
+				'[{ "Z1K1": "Z10" }, { "Z1K1": "Z10" }]',
+				'[[], []]'
+			],
+			'empty ZObjects in list, all ZObjects' => [
+				'{ "Z1K1": "Z10", "Z10K1": { "Z1K1": "Z10" }, "Z10K2":' .
+				'{ "Z1K1": "Z10", "Z10K1": { "Z1K1": "Z10" }, "Z10K2":' .
+				'{ "Z1K1": "Z10" } } }',
+				'[[], []]'
+			],
+			'ZObject in list' => [
+				'{ "Z1K1": "Z10", "Z10K1": { "Z1K1": "Z6", "Z6K1": "Z1" },' .
+				'  "Z10K2": { "Z1K1": "Z10" } }',
+				'[{ "Z1K1": "Z6", "Z6K1": "Z1" }]'
 			],
 		];
 	}
