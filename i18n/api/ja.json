@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Omotecho"
+		]
+	},
+	"apihelp-wikilambda_fetch-summary": "ZObjects を JSON モードで取得。",
+	"apihelp-wikilambda_fetch-param-zids": "ZObject ZID をパイプ記号で区切って取得。",
+	"apihelp-wikilambda_fetch-example-single": "単一の ZObject Z1 を取得。",
+	"apihelp-wikilambda_fetch-example-multiple": "3件の ZObjects を取得：Z1、Z2、Z3。",
+	"apierror-wikilambda_fetch-missingzid": "このウィキに指定の ZID '$1' は存在しません。",
+	"apihelp-query+wikilambda_searchlabels-summary": "この API リクエスト作成機能は、指定の言語でZObjects を検索します。主に予測検索システムを支援するためにあります。",
+	"apihelp-query+wikilambda_searchlabels-param-search": "検索語",
+	"apihelp-query+wikilambda_searchlabels-param-language": "検索する MediaWiki 言語コードを指定",
+	"apihelp-query+wikilambda_searchlabels-param-exact": "完全一致のみ検索するかどうか。無効にすると入力の大文字小文字を区別し、Unicode 標準でしますが、ラテン文字のアクセント符号は無視します。",
+	"apihelp-query+wikilambda_searchlabels-param-limit": "返す結果の最大数",
+	"apihelp-query+wikilambda-example-simple": "ラベルが英語で「foo」の ZObjects を検索"
+}
