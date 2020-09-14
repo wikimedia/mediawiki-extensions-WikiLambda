@@ -127,6 +127,25 @@ class ZObjectUtils {
 				return self::canonicalize( $output->Z9K1 );
 			}
 
+			if ( property_exists( $output, 'Z1K1' )
+				&& $output->Z1K1 == 'Z10' ) {
+
+				if ( !property_exists( $output, 'Z10K1' )
+					&& !property_exists( $output, 'Z10K2' ) ) {
+					return [];
+				}
+
+				if ( !property_exists( $output, 'Z10K2' ) ) {
+					return [ self::canonicalize( $output->Z10K1 ) ];
+				}
+
+				return array_merge(
+					[ self::canonicalize( $output->Z10K1 ) ],
+					self::canonicalize( $output->Z10K2 )
+				);
+
+			}
+
 			return $output;
 		}
 
