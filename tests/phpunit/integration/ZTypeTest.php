@@ -38,12 +38,12 @@ class ZTypeTest extends \MediaWikiIntegrationTestCase {
 		$keys = $testObject->getInnerZObject()->getTypeKeys();
 
 		$this->assertCount( 2, $keys );
-		$this->assertSame( 'ZString', $keys[0]->getKeyType() );
+		$this->assertSame( 'Z6', $keys[0]->getKeyType() );
 		$this->assertSame( 'Z111K1', $keys[0]->getKeyId() );
 		$this->assertSame( 'Demonstration key', $keys[0]->getKeyLabel()->getStringForLanguage( $english ) );
 		$this->assertSame( 'Index pour démonstration', $keys[0]->getKeyLabel()->getStringForLanguage( $french ) );
 
-		$this->assertSame( 'ZString', $keys[1]->getKeyType() );
+		$this->assertSame( 'Z6', $keys[1]->getKeyType() );
 		$this->assertSame( 'Z111K2', $keys[1]->getKeyId() );
 		$this->assertSame( 'Other demonstration key', $keys[1]->getKeyLabel()->getStringForLanguage( $english ) );
 		$this->assertSame( 'Autre index pour démonstration', $keys[1]->getKeyLabel()->getStringForLanguage( $french ) );

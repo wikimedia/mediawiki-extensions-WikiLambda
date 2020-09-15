@@ -35,11 +35,15 @@ class ZKey implements ZObject {
 			throw new \InvalidArgumentException( "ZKey missing the type key." );
 		}
 		$keyType = $objectVars[ ZTypeRegistry::Z_KEY_TYPE ];
-		$registry = ZTypeRegistry::singleton();
-		if ( !$registry->isZObjectKeyKnown( $keyType ) ) {
-			throw new \InvalidArgumentException( "ZKey type '$keyType' isn't known." );
-		}
-		$keyType = $registry->getZObjectTypeFromKey( $keyType );
+
+		// TODO: Per the model, we used to dereference this ZReference into the string of its ZType,
+		// but creates recursion issues when evaluating ZKeys of ZTypes that are being created (T262097). For now, just store the string ZReference.
+
+		// $registry = ZTypeRegistry::singleton();
+		// if ( !$registry->isZObjectKeyKnown( $keyType ) ) {
+			// throw new \InvalidArgumentException( "ZKey type '$keyType' isn't known." );
+		// }
+		// $keyType = $registry->getZObjectTypeFromKey( $keyType );
 
 		if ( !array_key_exists( ZTypeRegistry::Z_KEY_ID, $objectVars ) ) {
 			throw new \InvalidArgumentException( "ZKey missing the id key." );
@@ -86,10 +90,14 @@ class ZKey implements ZObject {
 		if ( !self::isValidZObjectReference( $type ) ) {
 			return false;
 		}
+		// TODO: Per the model, we used to dereference this ZReference into the string of its ZType,
+		// but creates recursion issues when evaluating ZKeys of ZTypes that are being created (T262097). For now, just store the string ZReference.
+		/*
 		if ( !ZTypeRegistry::singleton()->isZObjectKeyKnown( $type ) ) {
 			// The ZTypeRegistry will refuse to register unknown types.
 			return false;
 		}
+		*/
 
 		// Identity must be a global reference (LATER: or a built instance of global references)
 		if ( !isset( $this->keys[ ZTypeRegistry::Z_KEY_ID ] ) ) {
