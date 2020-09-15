@@ -99,8 +99,7 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testStaticCreation_invalidNoValueKey() {
 		$this->expectException( \InvalidArgumentException::class );
-		$invalidObject = ZMultiLingualString::create( [
-		] );
+		$invalidObject = ZMultiLingualString::create( [] );
 	}
 
 	/**

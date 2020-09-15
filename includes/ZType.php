@@ -78,8 +78,52 @@ class ZType implements ZObject {
 	}
 
 	public function isValid() : bool {
-		// TODO: Right now these are uneditable and guaranteed valid on creation, but when we
-		// add model (API and UX) editing, this will need to actually evaluate.
+		// Identity must be set to a valid ZKey reference (or special case of 'Z0')
+		if ( !isset( $this->keys[ ZTypeRegistry::Z_TYPE_IDENTITY ] ) ) {
+			return false;
+		}
+		$identity = $this->keys[ ZTypeRegistry::Z_TYPE_IDENTITY ];
+		if ( !ZKey::isValidZObjectReference( $identity ) && $identity !== 'Z0' ) {
+			return false;
+		}
+
+		// Key map must be set to an array or ZList of zero or more ZKeys, all valid, and of our ZID
+		if ( !isset( $this->keys[ ZTypeRegistry::Z_TYPE_KEYS ] ) ) {
+			return false;
+		}
+		$keys = $this->keys[ ZTypeRegistry::Z_TYPE_KEYS ];
+		if ( !is_array( $keys ) ) {
+			if ( is_a( $keys, ZList::class ) ) {
+				if ( !$keys->isValid() ) {
+					return false;
+				}
+				$keys = $keys->getZListAsArray();
+			} else {
+				return false;
+			}
+		}
+		foreach ( $keys as $key ) {
+			if ( !is_a( $key, ZKey::class ) ) {
+				return false;
+			}
+			if ( !$key->isValid() ) {
+				return false;
+			}
+			if ( ZKey::getZObjectReferenceFromKey( $key->getKeyId() ) !== $identity ) {
+				return false;
+			}
+		}
+
+		// Validator must be set to a valid ZKey reference
+		if ( !isset( $this->keys[ ZTypeRegistry::Z_TYPE_VALIDATOR ] ) ) {
+			return false;
+		}
+		$validator = $this->keys[ ZTypeRegistry::Z_TYPE_VALIDATOR ];
+		if ( !ZKey::isValidZObjectReference( $validator ) ) {
+			return false;
+		}
+		// TODO: Actually check that the validator is a ZFunction that applies to us.
+
 		return true;
 	}
 

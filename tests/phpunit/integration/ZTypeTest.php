@@ -2,7 +2,10 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\ZKey;
+use MediaWiki\Extension\WikiLambda\ZList;
 use MediaWiki\Extension\WikiLambda\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZType;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZType
@@ -47,5 +50,47 @@ class ZTypeTest extends \MediaWikiIntegrationTestCase {
 
 		// TODO: Nonsense result for now; once we implement Functions, will be one of those.
 		$this->assertSame( 'Z0', $testObject->getInnerZObject()->getTypeValidator() );
+	}
+
+	/**
+	 * @dataProvider provideIsValid
+	 * @covers ::isValid
+	 */
+	public function testIsValid( $inputIdentity, $inputKeys, $inputValidator, $expected ) {
+		$testObject = new ZType( $inputIdentity, $inputKeys, $inputValidator );
+		$this->assertSame( $expected, $testObject->isValid() );
+	}
+
+	public function provideIsValid() {
+		$validZ4Key = new ZKey( 'Z6', 'Z4K1', [] );
+		$validZ4KeyList = new ZList( [ $validZ4Key ] );
+		$validZ1234Key1 = new ZKey( 'Z6', 'Z1234K1', [] );
+		$validZ1234Key2 = new ZKey( 'Z6', 'Z1234K2', [] );
+		$validZ1234KeyList = new ZList( [ $validZ1234Key1, $validZ1234Key2 ] );
+
+		return [
+			'wholly null' => [ null, null, null, false ],
+
+			'null identity' => [ null, [ $validZ4Key ], 'Z4', false ],
+			'Z4 identity' => [ 'Z4', [ $validZ4Key ], 'Z4', true ],
+			'real identity' => [ 'Z1234', [ $validZ1234Key1 ], 'Z4', true ],
+			'broken identity' => [ 'Test value!', [ $validZ4Key ], 'Z4', false ],
+
+			'null keys' => [ 'Z4', null, 'Z4', false ],
+			'empty keys' => [ 'Z4', [], 'Z4', true ],
+			'non-ZKey keys' => [ 'Z4', [ 'This is not a ZKey!' ], 'Z4', false ],
+			'one ZKey keys' => [ 'Z4', [ $validZ4Key ], 'Z4', true ],
+			'multiple ZKeys keys' => [ 'Z1234', [ $validZ1234Key1,$validZ1234Key2 ], 'Z4', true ],
+
+			'empty ZList keys' => [ 'Z4', new ZList( [] ), 'Z4', true ],
+			'non-ZKey ZList keys' => [ 'Z4', new ZList( [ 'This is not a ZKey!' ] ), 'Z4', false ],
+			'one ZKey ZList keys' => [ 'Z4', $validZ4KeyList, 'Z4', true ],
+			'multiple ZList ZKeys keys' => [ 'Z1234', $validZ1234KeyList, 'Z4', true ],
+
+			'null validator' => [ 'Z4', [ $validZ4Key ], null, false ],
+			'Z4 validator' => [ 'Z4', [ $validZ4Key ], 'Z4', true ],
+			'real validator' => [ 'Z4', [ $validZ4Key ], 'Z1234', true ],
+			'broken validator' => [ 'Z4', [ $validZ4Key ], 'Test value!', false ],
+		];
 	}
 }

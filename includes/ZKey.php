@@ -78,8 +78,47 @@ class ZKey implements ZObject {
 	}
 
 	public function isValid() : bool {
-		// TODO: Right now these are uneditable and guaranteed valid on creation, but when we
-		// add model (API and UX) editing, this will need to actually evaluate.
+		// Type must be set to a valid ZKey reference which is itself a ZType
+		if ( !isset( $this->keys[ ZTypeRegistry::Z_KEY_TYPE ] ) ) {
+			return false;
+		}
+		$type = $this->keys[ ZTypeRegistry::Z_KEY_TYPE ];
+		if ( !self::isValidZObjectReference( $type ) ) {
+			return false;
+		}
+		if ( !ZTypeRegistry::singleton()->isZObjectKeyKnown( $type ) ) {
+			// The ZTypeRegistry will refuse to register unknown types.
+			return false;
+		}
+
+		// Identity must be a global reference (LATER: or a built instance of global references)
+		if ( !isset( $this->keys[ ZTypeRegistry::Z_KEY_ID ] ) ) {
+			return false;
+		}
+		$identity = $this->keys[ ZTypeRegistry::Z_KEY_ID ];
+		if ( !self::isValidZObjectGlobalKey( $identity ) ) {
+			return false;
+		}
+
+		// Label must be an array of valid ZMonoLingualStrings or a valid ZMultiLingualString
+		if ( !isset( $this->keys[ ZTypeRegistry::Z_KEY_LABEL ] ) ) {
+			return false;
+		}
+		$labels = $this->keys[ ZTypeRegistry::Z_KEY_LABEL ];
+		if ( is_a( $labels, ZMultiLingualString::class ) ) {
+			return $labels->isValid();
+		}
+		if ( !is_array( $labels ) ) {
+			return false;
+		}
+		foreach ( $labels as $label ) {
+			if ( !is_a( $label, ZMonoLingualString::class ) ) {
+				return false;
+			}
+			if ( !$label->isValid() ) {
+				return false;
+			}
+		}
 		return true;
 	}
 
@@ -115,6 +154,27 @@ class ZKey implements ZObject {
 	 */
 	public static function isValidZObjectKey( string $input ) : bool {
 		return preg_match( "/^\s*(Z[1-9]\d*)?K\d+\s*$/", $input );
+	}
+
+	/**
+	 * A global ZObject reference key (e.g. Z1K1)
+	 *
+	 * @param string $input
+	 * @return bool
+	 */
+	public static function isValidZObjectGlobalKey( string $input ) : bool {
+		return preg_match( "/^\s*Z[1-9]\d*K\d+\s*$/", $input );
+	}
+
+	/**
+	 * The ZObject reference from a given global reference key (e.g. 'Z1' from 'Z1K1')
+	 *
+	 * @param string $input
+	 * @return string
+	 */
+	public static function getZObjectReferenceFromKey( string $input ) : string {
+		preg_match( "/^\s*(Z[1-9]\d*)?(K\d+)\s*$/", $input, $matches );
+		return $matches[1];
 	}
 
 }

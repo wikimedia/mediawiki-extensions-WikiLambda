@@ -20,9 +20,10 @@ class ZList implements ZObject {
 	];
 
 	public function __construct( $head = [], $tail = null ) {
+		// Special handling for convenience. Possibly not worth the complexity? To re-evaluate.
 		if ( is_array( $head ) && $tail === null ) {
 			$this->keys[ ZTypeRegistry::Z_LIST_HEAD ] = array_slice( $head, 0, 1 )[ 0 ] ?? null;
-			$this->keys[ ZTypeRegistry::Z_LIST_TAIL ] = array_slice( $head, 1 );
+			$this->keys[ ZTypeRegistry::Z_LIST_TAIL ] = array_slice( $head, 1 ) ?? [];
 		} else {
 			$this->keys[ ZTypeRegistry::Z_LIST_HEAD ] = $head;
 			$this->keys[ ZTypeRegistry::Z_LIST_TAIL ] = $tail;
@@ -47,6 +48,17 @@ class ZList implements ZObject {
 		return [ $this->keys[ ZTypeRegistry::Z_LIST_HEAD ], $this->keys[ ZTypeRegistry::Z_LIST_TAIL ] ];
 	}
 
+	public function getZListAsArray() : array {
+		$result = [];
+		if ( isset( $this->keys[ ZTypeRegistry::Z_LIST_HEAD ] ) ) {
+			$result[] = $this->keys[ ZTypeRegistry::Z_LIST_HEAD ];
+		}
+
+		$result = array_merge( $result, (array)$this->keys[ ZTypeRegistry::Z_LIST_TAIL ] );
+
+		return $result;
+	}
+
 	public function isValid() : bool {
 		if ( !self::isValidValue( $this->keys[ ZTypeRegistry::Z_LIST_HEAD ] ) ) {
 			return false;
@@ -61,12 +73,10 @@ class ZList implements ZObject {
 	}
 
 	private function isValidValue( $value ) : bool {
-		if (
-			is_object( $value )
-			&& $value instanceof ZObject
-			&& !$value->isValid()
-		) {
-			return false;
+		if ( is_object( $value ) && $value instanceof ZObject ) {
+			return $value->isValid();
+		} elseif ( $value === null ) {
+			return true;
 		} elseif ( !is_string( $value ) ) {
 			return false;
 		}
