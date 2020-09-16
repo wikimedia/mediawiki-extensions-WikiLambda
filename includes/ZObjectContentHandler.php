@@ -98,4 +98,10 @@ class ZObjectContentHandler extends JsonContentHandler {
 			[ new ZObjectSecondaryDataRemoval( $title ) ]
 		);
 	}
+
+	public function getActionOverrides() {
+		return [
+			'edit' => ZObjectEditAction::class
+		];
+	}
 }
