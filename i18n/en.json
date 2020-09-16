@@ -6,6 +6,8 @@
 	},
 	"wikilambda-desc": "Providing Wikimedia wikis with a wikitext parser function to call evaluation of functions written, managed, and evaluated on a central wiki.",
 	"wikilambda-emptylabel": "Unlabelled ZObject",
+	"wikilambda-systemuser": "WikiLambda system",
+	"wikilambda-bootstrapcreationeditsummary": "Initial WikiLambda content creation",
 	"wikilambda-invalidzobject": "The provided content is not a valid ZObject.",
 	"wikilambda-invalidcontenttype": "The provided content is not a ZObject class.",
 	"wikilambda-labelclash": "The provided content's label clashes with ZObject '$1' for the label in '$2'.",
