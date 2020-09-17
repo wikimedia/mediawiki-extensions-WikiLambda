@@ -7,5 +7,12 @@
 	"wikilambda-desc": "Дава Викимедиини врски со расчленувачка функција за викитекст за повикување на вреднувањето на функции напишани, управувани и вреднувани на централно вики.",
 	"wikilambda-emptylabel": "Неозначен ZObject",
 	"wikilambda-invalidzobject": "Укажаната содржина не претставува важечки ZObject.",
-	"wikilambda-multilingualstring-nofallback": "Нема зададено натпис на овој јазик или прифатените резервни јазици"
+	"wikilambda-invalidcontenttype": "Укажанаа содржина не претставува класа на ZObject.",
+	"wikilambda-labelclash": "Натписот на укажаната содржина се коси со ZObject „$1“ за натписот „$2“.",
+	"wikilambda-multilingualstring-nofallback": "Нема зададено натпис на овој јазик или прифатените резервни јазици",
+	"listduplicatezobjectlabels": "ZObject-страници со дуплирани натписи",
+	"wikilambda-speciallistduplicatezobjectlabels-empty": "Тековно нема ZObjects со дуплирани натписи.",
+	"wikilambda-speciallistduplicatezobjectlabels-existing": "Постоечки ZObject",
+	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "Спротиставен ZObject",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Јазик"
 }
