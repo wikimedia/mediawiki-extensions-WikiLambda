@@ -7,5 +7,6 @@
 	"wikilambda-desc": "Fornecendo as wikis da Wikimedia uma função de analisador de wikitexto para chamar a avaliação de funções escritas, gerenciadas e avaliadas em um wiki central.",
 	"wikilambda-emptylabel": "ZObject sem etiqueta",
 	"wikilambda-invalidzobject": "O conteúdo fornecido não é um ZObject válido.",
-	"wikilambda-multilingualstring-nofallback": "Nenhum rótulo definido neste idioma ou substitutos aceitos"
+	"wikilambda-multilingualstring-nofallback": "Nenhum rótulo definido neste idioma ou substitutos aceitos",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Idioma"
 }

@@ -8,5 +8,12 @@
 	"wikilambda-desc": "Fournit aux wikis Wikimedia une fonction d'analyseur syntaxique de wikicode pour appeler l'évaluation des fonctions écrites, gérées et évaluées sur un wiki central.",
 	"wikilambda-emptylabel": "ZObject non labellisé",
 	"wikilambda-invalidzobject": "Le contenu fourni n'est pas un ZObject valide.",
-	"wikilambda-multilingualstring-nofallback": "Aucun libellé défini dans cette langue ni de valeur par défaut acceptée."
+	"wikilambda-invalidcontenttype": "Le contenu fourni n’est pas une classe ZObject.",
+	"wikilambda-labelclash": "Le libellé du contenu fourni est en conflit avec le ZObject '$1' pour le libellé dans '$2'.",
+	"wikilambda-multilingualstring-nofallback": "Aucun libellé défini dans cette langue ni de valeur par défaut acceptée.",
+	"listduplicatezobjectlabels": "Pages ZObject avec des libellés dupliqués",
+	"wikilambda-speciallistduplicatezobjectlabels-empty": "Aucun ZObject n’a actuellement de libellé dupliqué.",
+	"wikilambda-speciallistduplicatezobjectlabels-existing": "ZObject existant",
+	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "ZObject en conflit",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Langue"
 }

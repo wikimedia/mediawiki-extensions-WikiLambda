@@ -3,5 +3,14 @@
 		"authors": []
 	},
 	"wikilambda-desc": "Bereitstellung einer Wikitext-Parser-Funktion für Wikimedia-Wikis, um die Auswertung von Funktionen aufzurufen, die in einem zentralen Wiki geschrieben, verwaltet und ausgewertet werden.",
-	"wikilambda-invalidzobject": "Der bereitgestellte Inhalt ist kein gültiges ZObjekt."
+	"wikilambda-emptylabel": "ZObject ohne Label",
+	"wikilambda-invalidzobject": "Der bereitgestellte Inhalt ist kein gültiges ZObjekt.",
+	"wikilambda-invalidcontenttype": "Der bereitgestellte Inhalt ist keine ZObject-Klasse.",
+	"wikilambda-labelclash": "Das Label des bereitgestellten Inhalts kollidiert mit dem ZObjekt „$1“ für das Label in „$2“.",
+	"wikilambda-multilingualstring-nofallback": "Kein Label definiert in dieser oder einer akzeptierten Fallback-Sprache",
+	"listduplicatezobjectlabels": "ZObjekt-Seiten mit doppelten Labels",
+	"wikilambda-speciallistduplicatezobjectlabels-empty": "Derzeit haben keine ZObjekte doppelte Labels.",
+	"wikilambda-speciallistduplicatezobjectlabels-existing": "Vorhandenes ZObject",
+	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "Nicht zusammenpassendes ZObject",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Sprache"
 }

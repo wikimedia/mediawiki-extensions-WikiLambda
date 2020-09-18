@@ -1,9 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Nguyễn Mạnh An"
+			"Nguyễn Mạnh An",
+			"Yosari101"
 		]
 	},
 	"wikilambda-emptylabel": "ZObject không được đặt nhãn",
-	"wikilambda-multilingualstring-nofallback": "Không có nhãn nào được xác định bằng ngôn ngữ này hoặc các dự phòng được chấp nhận"
+	"wikilambda-multilingualstring-nofallback": "Không có nhãn nào được xác định bằng ngôn ngữ này hoặc các dự phòng được chấp nhận",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Ngôn ngữ"
 }
