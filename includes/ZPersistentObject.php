@@ -221,11 +221,11 @@ class ZPersistentObject extends JsonContent implements ZObject {
 	/**
 	 * Set the HTML and add the appropriate styles.
 	 *
-	 * <div class="ext-wikilambda-viewpage-header">
+	 * <span class="ext-wikilambda-viewpage-header">
 	 *     <span class="ext-wikilambda-viewpage-header-label firstHeading">multiply</h1>
-	 *     <span class="ext-wikilambda-viewpage-header-zid">Z12345</div>
+	 *     <span class="ext-wikilambda-viewpage-header-zid">Z12345</span>
 	 *     <div class="ext-wikilambda-viewpage-header-type">ZFunction…</div>
-	 * </div>
+	 * </span>
 	 *
 	 * @param Title $title
 	 * @param int $revId
@@ -255,7 +255,7 @@ class ZPersistentObject extends JsonContent implements ZObject {
 		);
 
 		$header = Html::rawElement(
-			'div',
+			'span',
 			[ 'class' => 'ext-wikilambda-viewpage-header' ],
 			$label . $id . $type
 		);
