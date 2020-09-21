@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"MuratTheTurkish"
+		]
+	},
+	"apihelp-query+wikilambda_searchlabels-param-language": "Aramanın yapılacağı MediaWiki dil kodu"
+}

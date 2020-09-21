@@ -4,11 +4,15 @@
 			"Eduardo Addad de Oliveira"
 		]
 	},
+	"apihelp-wikilambda_fetch-summary": "Busque o modelo JSON de ZObjects.",
 	"apihelp-wikilambda_fetch-param-zids": "O ZObject ZIDs para buscar, separados por barras verticais.",
+	"apihelp-wikilambda_fetch-example-single": "Fetch a single ZObject, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "Obtenha três ZObjects: Z1, Z2 e Z3.",
+	"apierror-wikilambda_fetch-missingzid": "O ZID '$1' fornecido não existe nessa wiki.",
 	"apihelp-query+wikilambda_searchlabels-summary": "Este gerador de lista de consulta API permite pesquisar ZObjects para rótulos em um determinado idioma. Ele existe principalmente para oferecer suporte ao sistema de pesquisa antecipada.",
 	"apihelp-query+wikilambda_searchlabels-param-search": "O termo de pesquisa",
 	"apihelp-query+wikilambda_searchlabels-param-language": "O código do idioma MediaWiki no qual pesquisar",
 	"apihelp-query+wikilambda_searchlabels-param-exact": "Se deve pesquisar correspondências exatas. Se desativado, a entrada será considerada como uma pesquisa normalizada Unicode sem distinção entre maiúsculas e minúsculas, com acentos em caracteres latinos ignorados.",
-	"apihelp-query+wikilambda_searchlabels-param-limit": "Número máximo de resultados na exibição"
+	"apihelp-query+wikilambda_searchlabels-param-limit": "Número máximo de resultados na exibição",
+	"apihelp-query+wikilambda-example-simple": "Procure por ZObjects cujo rótulo corresponda a 'foo' em inglês"
 }

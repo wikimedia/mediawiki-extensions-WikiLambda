@@ -7,6 +7,13 @@
 	"wikilambda-desc": "מספקת לאתרי ויקי של ויקימדיה פונקציית מפענח לקוד ויקי לקריאה לפונקציות שנכתבות, מנוהלות, ומוערכות בוויקי מרכזי.",
 	"wikilambda-emptylabel": "עצם Z חסר־תווית",
 	"wikilambda-invalidzobject": "התוכן שסופק אינו עצם Z תקין.",
+	"wikilambda-invalidcontenttype": "תוכן שסופק אינו מחלקה שמייצגת עצם Z.",
+	"wikilambda-labelclash": "התווית של התוכן שסופק מתנגש עם עצם ה־Z בעל המזהה $1 עבור התווית בשפה $2.",
 	"wikilambda-persistentzobject": "עצם Z",
-	"wikilambda-multilingualstring-nofallback": "לא הוגדרה תווית בשפה הזאת וגם לא שפת גיבוי קבילה"
+	"wikilambda-multilingualstring-nofallback": "לא הוגדרה תווית בשפה הזאת וגם לא שפת גיבוי קבילה",
+	"listduplicatezobjectlabels": "עצם Z עם תוויות כפולות",
+	"wikilambda-speciallistduplicatezobjectlabels-empty": "אין שום עצם Z עם תווית כפולה.",
+	"wikilambda-speciallistduplicatezobjectlabels-existing": "עצם Z קיים",
+	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "עצם Z מתנגש",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "שפה"
 }
