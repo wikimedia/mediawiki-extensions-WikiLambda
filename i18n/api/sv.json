@@ -4,5 +4,6 @@
 			"Sabelöga"
 		]
 	},
-	"apihelp-query+wikilambda_searchlabels-param-search": "Söktermen"
+	"apihelp-query+wikilambda_searchlabels-param-search": "Söktermen",
+	"apihelp-query+wikilambda_searchlabels-param-language": "MediaWikis språkkod som du försöker söka i"
 }

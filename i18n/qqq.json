@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"James D. Forrester"
+			"James D. Forrester",
+			"Robby"
 		]
 	},
 	"wikilambda-desc": "{{desc|name=WikiLambda|url=https://www.mediawiki.org/wiki/Extension:WikiLambda}}",
@@ -15,5 +16,5 @@
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "Message shown on Special:ListDuplicateZObjectLabels when there are not duplicates.",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "Column header on Special:ListDuplicateZObjectLabels, showing a link to the original ZObject with the label.",
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "Column header on Special:ListDuplicateZObjectLabels, showing a link to the newly-conflicting ZObject with the label.",
-	"wikilambda-speciallistduplicatezobjectlabels-language": "Column header on Special:ListDuplicatZObjectLabels, showing the language in  which the two ZObjects have a conflicting label."
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Column header on Special:ListDuplicatZObjectLabels, showing the language in  which the two ZObjects have a conflicting label.\n{{identical|Language}}"
 }
