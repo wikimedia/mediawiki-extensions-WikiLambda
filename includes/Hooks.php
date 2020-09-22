@@ -15,6 +15,8 @@ use DatabaseUpdater;
 use MediaWiki\Revision\SlotRecord;
 use Status;
 use Title;
+use User;
+use WikiPage;
 
 class Hooks implements
 	\MediaWiki\Hook\BeforePageDisplayHook,
@@ -137,5 +139,62 @@ class Hooks implements
 		foreach ( $tables as $key => $table ) {
 			$updater->addExtensionTable( 'wikilambda_' . $table, __DIR__ . "/sql/table-$table-generated-$type.sql" );
 		}
+
+		$updater->addExtensionUpdate( [ [ __CLASS__, 'createInitialContent' ] ] );
 	}
+
+	/**
+	 * Installer/Updater callback to create the initial "system" ZObjects on any installation. This
+	 * is a callback so that it runs after the tables have been created/updated.
+	 *
+	 * @param DatabaseUpdater $updater
+	 */
+	public static function createInitialContent( DatabaseUpdater $updater ) {
+		$creatingUserName = wfMessage( 'wikilambda-systemuser' )->inContentLanguage()->text();
+		$creatingUser = User::newSystemUser( $creatingUserName, [ 'steal' => true ] );
+
+		$creatingComment = wfMessage( 'wikilambda-bootstrapcreationeditsummary' )->inContentLanguage()->text();
+
+		if ( !$creatingUser ) {
+			// Something went wrong, give up.
+			return;
+		}
+
+		$initialDataToLoadPath = dirname( __DIR__ ) . '/data/';
+
+		$initialDataToLoadListing = array_filter(
+			scandir( $initialDataToLoadPath ),
+			function ( $key ) {
+				return (bool)preg_match( '/^Z\d+\.json$/', $key );
+			}
+		);
+
+		foreach ( $initialDataToLoadListing as $filename ) {
+			$updateRowName = "create WikiLambda initial content - $filename";
+
+			if ( !$updater->updateRowExists( $updateRowName ) ) {
+				$title = Title::newFromText( substr( $filename, 0, -5 ), NS_ZOBJECT );
+				$page = WikiPage::factory( $title );
+
+				$data = file_get_contents( $initialDataToLoadPath . $filename );
+				if ( !$data ) {
+					// Something went wrong, give up.
+					return;
+				}
+
+				$status = $page->doEditContent(
+					/* Content */ ZObjectContentHandler::makeContent( $data, $title ),
+					/* Edit summary */ $creatingComment,
+					/* Flags */ 0,
+					/* Original revision ID */ false,
+					/* User */ $creatingUser
+				);
+
+				if ( $status->isOK() ) {
+					$updater->insertUpdateRow( $updateRowName );
+				}
+			}
+		}
+	}
+
 }
