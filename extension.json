@@ -92,6 +92,23 @@
 				"ext.wikilambda.edit/FullZobject.vue",
 				"ext.wikilambda.edit/OtherKeys.vue",
 				"ext.wikilambda.edit/ListValue.vue"
+			],
+			"messages": [
+				"wikilambda-publishnew",
+				"wikilambda-savenew",
+				"wikilambda-publishchanges",
+				"wikilambda-savechanges",
+				"wikilambda-summarylabel",
+				"wikilambda-typeselector-label",
+				"wikilambda-typeselector-string-or-reference",
+				"wikilambda-typeselector-object",
+				"wikilambda-typeselector-list",
+				"wikilambda-editor-additem",
+				"wikilambda-editor-removeitem",
+				"wikilambda-editor-zlist-additem-tooltip",
+				"wikilambda-editor-zlist-removeitem-tooltip",
+				"wikilambda-editor-zobject-addkey",
+				"wikilambda-editor-zobject-removekey-tooltip"
 			]
 		}
 	},

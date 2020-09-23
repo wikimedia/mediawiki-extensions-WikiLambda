@@ -19,5 +19,22 @@
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "Message shown on Special:ListDuplicateZObjectLabels when there are not duplicates.",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "Column header on Special:ListDuplicateZObjectLabels, showing a link to the original ZObject with the label.",
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "Column header on Special:ListDuplicateZObjectLabels, showing a link to the newly-conflicting ZObject with the label.",
-	"wikilambda-speciallistduplicatezobjectlabels-language": "Column header on Special:ListDuplicatZObjectLabels, showing the language in  which the two ZObjects have a conflicting label.\n{{identical|Language}}"
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Column header on Special:ListDuplicatZObjectLabels, showing the language in  which the two ZObjects have a conflicting label.\n{{identical|Language}}",
+	"wikilambda-publishnew": "Label for the submit button when creating a ZObject on a public wiki",
+	"wikilambda-savenew": "Label for the submit button when creating a ZObject on a private wiki",
+	"wikilambda-publishchanges": "Label for the submit button when updating an existing ZObject on a public wiki",
+	"wikilambda-savechanges": "Label for the submit button when updating an existing ZObject on a private wiki",
+	"wikilambda-summarylabel": "Label for summary of changes in the edited ZObject",
+	"wikilambda-typeselector-label": "Label for selector for which kind of item to add",
+	"wikilambda-typeselector-string-or-reference": "Option to select for which kind of item to add",
+	"wikilambda-typeselector-string": "Option to select for which kind of item to add",
+	"wikilambda-typeselector-reference": "Option to select for which kind of item to add",
+	"wikilambda-typeselector-object": "Option to select for which kind of item to add",
+	"wikilambda-typeselector-list": "Option to select for which kind of item to add",
+	"wikilambda-editor-additem": "{{ignore}}Label for button to add item",
+	"wikilambda-editor-removeitem": "{{ignore}}Label for button to delete item",
+	"wikilambda-editor-zlist-additem-tooltip": "Tooltip shown on button to add an entry to a ZList",
+	"wikilambda-editor-zlist-removeitem-tooltip": "Tooltip shown on button to remove an entry from a ZList",
+	"wikilambda-editor-zobject-addkey": "Label for button to add a new ZKey to a ZObject.",
+	"wikilambda-editor-zobject-removekey-tooltip": "Tooltip shown on button to remove an entry from a ZObject"
 }

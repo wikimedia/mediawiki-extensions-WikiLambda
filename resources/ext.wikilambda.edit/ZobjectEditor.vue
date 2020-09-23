@@ -5,14 +5,14 @@
 			@input="updateZobject"
 		></full-zobject>
 		<div>
-			<label for="summary">Summary:</label>
+			<label for="summary"> {{ $i18n( 'wikilambda-summarylabel' ) }} </label>
 			<input v-model="summary"
 				class="ext-wikilambda-zedit_summary"
 				name="summary"
 			>
 		</div>
 		<button @click="submit">
-			Save changes
+			{{ submitButtonLabel }}
 		</button>
 		<p>Current ZObject: {{ zobject }} </p>
 	</div>
@@ -27,13 +27,26 @@ module.exports = {
 		var editingData = mw.config.get( 'extWikilambdaEditingData' ),
 			zobject = editingData.zobject,
 			createNewPage = editingData.createNewPage,
-			zid;
+			submitLabel, zid;
+
 		if ( createNewPage ) {
 			zid = mw.config.get( 'wgTitle' );
 			zobject.Z2K1 = zid;
+
+			submitLabel = mw.msg(
+				mw.config.get( 'wgEditSubmitButtonLabelPublish' ) ?
+					'wikilambda-publishnew' : 'wikilambda-savenew'
+			);
+		} else {
+			submitLabel = mw.msg(
+				mw.config.get( 'wgEditSubmitButtonLabelPublish' ) ?
+					'wikilambda-publishchanges' : 'wikilambda-savechanges'
+			);
 		}
+
 		return {
 			zobject: zobject,
+			submitButtonLabel: submitLabel,
 			createNewPage: createNewPage,
 			summary: ''
 		};
