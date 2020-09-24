@@ -1,6 +1,5 @@
 <template>
-	<div>
-		[
+	<div class="ext-wikilambda-zlist">
 		<ul>
 			<li v-for="(item, index) in list" :key="index">
 				<button :title="tooltipRemoveListItem" @click="removeItem(index)">
@@ -24,6 +23,7 @@
 					</option>
 				</select>
 				<input v-else-if="listTypes[index] === 'string'"
+					class="ext-wikilambda-zstring"
 					:value="item"
 					@input="updateStringValue($event, index)"
 				>
@@ -43,7 +43,6 @@
 				</button>
 			</li>
 		</ul>
-		]
 	</div>
 </template>
 
@@ -108,3 +107,26 @@ module.exports = {
 	}
 };
 </script>
+
+<style lang="less">
+.ext-wikilambda-zlist {
+	background: #eee;
+	padding: 0 0.5em;
+}
+
+.ext-wikilambda-zstring {
+	background: #eef;
+}
+
+.ext-wikilambda-zkey {
+	background: #ffe;
+}
+
+.ext-wikilambda-zlist::before {
+	content: '['
+}
+
+.ext-wikilambda-zlist::after {
+	content: ']'
+}
+</style>

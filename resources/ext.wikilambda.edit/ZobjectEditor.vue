@@ -7,7 +7,7 @@
 		<div>
 			<label for="summary"> {{ $i18n( 'wikilambda-summarylabel' ) }} </label>
 			<input v-model="summary"
-				class="ext-wikilambda-zedit_summary"
+				class="ext-wikilambda-editSummary"
 				name="summary"
 			>
 		</div>
@@ -84,7 +84,7 @@ module.exports = {
 </script>
 
 <style lang="less">
-.ext-wikilambda-zedit_summary {
+.ext-wikilambda-editSummary {
 	width: 100%;
 }
 </style>
