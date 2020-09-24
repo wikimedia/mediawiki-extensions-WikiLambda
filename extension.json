@@ -83,6 +83,7 @@
 		"ext.wikilambda.edit": {
 			"dependencies": [
 				"vue",
+				"mediawiki.Title",
 				"mediawiki.api"
 			],
 			"packageFiles": [

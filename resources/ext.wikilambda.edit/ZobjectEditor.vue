@@ -53,7 +53,7 @@ module.exports = {
 				api.create( page, { summary: self.summary },
 					JSON.stringify( self.zobject )
 				).then( function () {
-					window.location.href = '/index.php/' + page;
+					window.location.href = new mw.Title( page ).getUrl();
 				} );
 			} else {
 				api.edit( page, function ( /* revision */ ) {
@@ -62,7 +62,7 @@ module.exports = {
 						summary: self.summary
 					};
 				} ).then( function () {
-					window.location.href = '/index.php/' + page;
+					window.location.href = new mw.Title( page ).getUrl();
 				} );
 			}
 		}
