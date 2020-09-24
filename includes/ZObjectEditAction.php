@@ -27,8 +27,9 @@ class ZObjectEditAction extends Action {
 			$createNewPage = true;
 		}
 
-# I am hoping this can be pulled from a db query or a
-# method on ZTypeReigstry - labels should be based on $userLang also!
+		// TODO: Use an API request on the JS side to get the known types (maybe just the 'default'
+		// /core ones?) and their label for the user's language, rather than ship in the page
+		// payload.
 		$types_list = [
 			ZTypeRegistry::Z_OBJECT => 'ZObject',
 			ZTypeRegistry::Z_PERSISTENTOBJECT => 'Persistent ZObject',
@@ -40,7 +41,9 @@ class ZObjectEditAction extends Action {
 			ZTypeRegistry::Z_MONOLINGUALSTRING => 'Monolingual String',
 			ZTypeRegistry::Z_MULTILINGUALSTRING => 'Multilingual String'
 		];
-# And this similarly...
+
+		// TODO: Use an API request on the JS side to get the keys (and their label for the user's
+		// language) for each type as it's used. Possibly pre-populate for the core ones?
 		$key_labels = [
 			ZTypeRegistry::Z_OBJECT_TYPE => 'type',
 			ZTypeRegistry::Z_PERSISTENTOBJECT_ID => 'id',
