@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Pols12"
+			"Pols12",
+			"Wladek92"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Extraire le modèle JSON de ZObjects.",
@@ -13,6 +14,6 @@
 	"apihelp-query+wikilambda_searchlabels-param-search": "Le terme recherché",
 	"apihelp-query+wikilambda_searchlabels-param-language": "Le code de langue MediaWiki dans laquelle rechercher.",
 	"apihelp-query+wikilambda_searchlabels-param-exact": "Indique s’il faut rechercher uniquement les résultats exacts. Si désactivé, la valeur d’entrée sera traitée comme une recherche insensible à la casse et normalisée Unicode en ignorant les accents sur les caractères latins.",
-	"apihelp-query+wikilambda_searchlabels-param-limit": "Le nombre maximum de résultats à renvoyer.",
-	"apihelp-query+wikilambda-example-simple": "Rechercher les ZObjets dont le libellé correspond à « foo » en anglais."
+	"apihelp-query+wikilambda_searchlabels-param-limit": "Le nombre maximum de résultats à renvoyer",
+	"apihelp-query+wikilambda-example-simple": "Rechercher les ZObjets dont le libellé correspond à « foo » en anglais"
 }
