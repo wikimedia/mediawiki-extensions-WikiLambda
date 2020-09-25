@@ -1,8 +1,8 @@
 <template>
 	<ul>
 		<li v-for="(value, key) in otherkeydata" :key="key">
-			<button @click="removeEntry(key)">
-				-
+			<button :title="tooltipRemoveZObjectKey" @click="removeEntry(key)">
+				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 			</button>
 			<span>{{ zkeylabels[key] }} ({{ key }}):</span>
 			<input v-if="keyTypes[key] === 'string'"
@@ -23,21 +23,22 @@
 					disabled
 					value="None"
 				>
-					Value Type
+					{{ $i18n( 'wikilambda-typeselector-label' ) }}
 				</option>
 				<option value="string">
-					String or Reference
+					{{ $i18n( 'wikilambda-typeselector-string-or-reference' ) }}
 				</option>
 				<option value="zobject">
-					ZObject
+					{{ $i18n( 'wikilambda-typeselector-object' ) }}
 				</option>
 				<option value="list">
-					List
+					{{ $i18n( 'wikilambda-typeselector-list' ) }}
 				</option>
 			</select>
 		</li>
 		<li>
-			+ {{ keylabel }}: <input @change="addNewKey($event)">
+			{{ $i18n( 'wikilambda-editor-zobject-addkey' ) }}
+			<input @change="addNewKey($event)">
 		</li>
 	</ul>
 </template>
@@ -80,7 +81,8 @@ module.exports = {
 			keylabel: ztypes.Z3,
 			keyTypes: keyTypes,
 			otherkeydata: otherkeydata,
-			zkeylabels: zkeylabels
+			zkeylabels: zkeylabels,
+			tooltipRemoveZObjectKey: this.$i18n( 'wikilambda-editor-zobject-removekey-tooltip' )
 		};
 	},
 	methods: {

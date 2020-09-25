@@ -3,24 +3,24 @@
 		[
 		<ul>
 			<li v-for="(item, index) in list" :key="index">
-				<button @click="removeItem(index)">
-					-
+				<button :title="tooltipRemoveListItem" @click="removeItem(index)">
+					{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 				</button>
 				<select v-if="listTypes[index] === 'new'" @change="setNewType($event, index)">
 					<option selected
 						disabled
 						value="None"
 					>
-						Value Type
+						{{ $i18n( 'wikilambda-typeselector-label' ) }}
 					</option>
 					<option value="string">
-						String or Reference
+						{{ $i18n( 'wikilambda-typeselector-string-or-reference' ) }}
 					</option>
 					<option value="zobject">
-						ZObject
+						{{ $i18n( 'wikilambda-typeselector-object' ) }}
 					</option>
 					<option value="list">
-						List
+						{{ $i18n( 'wikilambda-typeselector-list' ) }}
 					</option>
 				</select>
 				<input v-else-if="listTypes[index] === 'string'"
@@ -38,8 +38,8 @@
 				></list-value>
 			</li>
 			<li>
-				<button @click="addNewItem">
-					+
+				<button :title="tooltipAddListItem" @click="addNewItem">
+					{{ $i18n( 'wikilambda-editor-additem' ) }}
 				</button>
 			</li>
 		</ul>
@@ -66,7 +66,9 @@ module.exports = {
 			return type;
 		} );
 		return {
-			listTypes: listTypes
+			listTypes: listTypes,
+			tooltipRemoveListItem: this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' ),
+			tooltipAddListItem: this.$i18n( 'wikilambda-editor-zlist-additem-tooltip' )
 		};
 	},
 	methods: {
