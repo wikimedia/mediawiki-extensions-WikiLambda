@@ -6,6 +6,7 @@
 			</button>
 			<span>{{ zkeylabels[key] }} ({{ key }}):</span>
 			<input v-if="keyTypes[key] === 'string'"
+				class="ext-wikilambda-zstring"
 				:value="value"
 				@input="updateStringKey($event, key)"
 			>
@@ -38,7 +39,7 @@
 		</li>
 		<li>
 			{{ $i18n( 'wikilambda-editor-zobject-addkey' ) }}
-			<input @change="addNewKey($event)">
+			<input class="ext-wikilambda-zkey" @change="addNewKey($event)">
 		</li>
 	</ul>
 </template>

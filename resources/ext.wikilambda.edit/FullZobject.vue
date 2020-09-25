@@ -1,5 +1,5 @@
 <template>
-	<div class="ext-wikilambda-full_zobject_box">
+	<div class="ext-wikilambda-zobject">
 		<span>{{ z1k1label }} (Z1K1): </span>
 		<span v-if="persistent">
 			<span>{{ typeLabel }} ({{ type }})</span>
@@ -83,7 +83,9 @@ module.exports = {
 </script>
 
 <style lang="less">
-.ext-wikilambda-full_zobject_box {
+.ext-wikilambda-zobject {
+	background: #fff;
 	outline: 2px dashed #808080;
+	padding: 1em;
 }
 </style>
