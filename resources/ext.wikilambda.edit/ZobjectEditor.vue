@@ -1,10 +1,12 @@
 <template>
+	<!-- TODO: Add a loading indicator, once T254695 is done upstream. -->
 	<div id="ext-wikilambda-editor">
 		<full-zobject :zobject="zobject"
 			:persistent="true"
 			@input="updateZobject"
 		></full-zobject>
 		<div>
+			<!-- TODO: Replace this with a full save dialog (copywarn, IPwarn, minor edit box, …)? -->
 			<label for="summary"> {{ $i18n( 'wikilambda-summarylabel' ) }} </label>
 			<input v-model="summary"
 				class="ext-wikilambda-editSummary"
