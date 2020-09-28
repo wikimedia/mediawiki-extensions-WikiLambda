@@ -1,8 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
+			"YahyA",
 			"আফতাবুজ্জামান"
 		]
 	},
-	"wikilambda-speciallistduplicatezobjectlabels-language": "ভাষা"
+	"wikilambda-speciallistduplicatezobjectlabels-language": "ভাষা",
+	"wikilambda-publishnew": "প্রকাশ করুন",
+	"wikilambda-savenew": "সংরক্ষণ",
+	"wikilambda-publishchanges": "পরিবর্তন প্রকাশ করুন"
 }

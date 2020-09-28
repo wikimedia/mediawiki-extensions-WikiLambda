@@ -4,5 +4,10 @@
 			"Robby"
 		]
 	},
-	"wikilambda-speciallistduplicatezobjectlabels-language": "Sprooch"
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Sprooch",
+	"wikilambda-publishnew": "Verëffentlechen",
+	"wikilambda-savenew": "Späicheren",
+	"wikilambda-publishchanges": "Ännerunge verëffentlechen",
+	"wikilambda-savechanges": "Ännerunge späicheren",
+	"wikilambda-summarylabel": "Resumé:"
 }

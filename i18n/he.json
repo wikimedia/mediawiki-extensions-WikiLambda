@@ -15,5 +15,20 @@
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "אין שום עצם Z עם תווית כפולה.",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "עצם Z קיים",
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "עצם Z מתנגש",
-	"wikilambda-speciallistduplicatezobjectlabels-language": "שפה"
+	"wikilambda-speciallistduplicatezobjectlabels-language": "שפה",
+	"wikilambda-publishnew": "פרסום",
+	"wikilambda-savenew": "שמירה",
+	"wikilambda-publishchanges": "פרסום השינויים",
+	"wikilambda-savechanges": "שמירת השינויים",
+	"wikilambda-summarylabel": "תקציר:",
+	"wikilambda-typeselector-label": "סוג הערך",
+	"wikilambda-typeselector-string-or-reference": "מחרוזת Z או מקור",
+	"wikilambda-typeselector-string": "מחרוזת Z",
+	"wikilambda-typeselector-reference": "מחרוזת Z",
+	"wikilambda-typeselector-object": "עצם Z",
+	"wikilambda-typeselector-list": "רשימת Z",
+	"wikilambda-editor-zlist-additem-tooltip": "הוספת פריט לרשימת ה־Z הזאת",
+	"wikilambda-editor-zlist-removeitem-tooltip": "הסרת הפריט הזה מרשימת ה־Z הזאת",
+	"wikilambda-editor-zobject-addkey": "הוספת מפתח",
+	"wikilambda-editor-zobject-removekey-tooltip": "הסרת המפתח והערך הזה מעצם ה־Z"
 }

@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ykhwong"
+		]
+	},
+	"apihelp-query+wikilambda_searchlabels-param-search": "검색 용어",
+	"apihelp-query+wikilambda_searchlabels-param-language": "검색할 미디어위키 언어 코드"
+}

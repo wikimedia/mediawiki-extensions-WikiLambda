@@ -12,5 +12,20 @@
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "Derzeit haben keine ZObjekte doppelte Labels.",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "Vorhandenes ZObject",
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "Nicht zusammenpassendes ZObject",
-	"wikilambda-speciallistduplicatezobjectlabels-language": "Sprache"
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Sprache",
+	"wikilambda-publishnew": "Veröffentlichen",
+	"wikilambda-savenew": "Speichern",
+	"wikilambda-publishchanges": "Änderungen veröffentlichen",
+	"wikilambda-savechanges": "Änderungen speichern",
+	"wikilambda-summarylabel": "Zusammenfassung:",
+	"wikilambda-typeselector-label": "Wertetyp",
+	"wikilambda-typeselector-string-or-reference": "ZString oder Referenz",
+	"wikilambda-typeselector-string": "ZString",
+	"wikilambda-typeselector-reference": "ZReference",
+	"wikilambda-typeselector-object": "ZObject",
+	"wikilambda-typeselector-list": "ZList",
+	"wikilambda-editor-zlist-additem-tooltip": "Ein Element zu dieser ZList hinzufügen",
+	"wikilambda-editor-zlist-removeitem-tooltip": "Ein Element von dieser ZList entfernen",
+	"wikilambda-editor-zobject-addkey": "Schlüssel hinzufügen:",
+	"wikilambda-editor-zobject-removekey-tooltip": "Entfernen diesen Schlüssel/Wert von dem ZObject"
 }

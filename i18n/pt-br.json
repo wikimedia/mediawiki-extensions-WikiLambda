@@ -14,5 +14,20 @@
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "Nenhum ZObjects tem rótulos duplicados atualmente.",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "ZObject existente",
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "ZObject conflitante",
-	"wikilambda-speciallistduplicatezobjectlabels-language": "Idioma"
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Idioma",
+	"wikilambda-publishnew": "Publicar",
+	"wikilambda-savenew": "Salvar",
+	"wikilambda-publishchanges": "Publicar alterações",
+	"wikilambda-savechanges": "Salvar alterações",
+	"wikilambda-summarylabel": "Resumo:",
+	"wikilambda-typeselector-label": "Tipo de valor",
+	"wikilambda-typeselector-string-or-reference": "ZString ou referência",
+	"wikilambda-typeselector-string": "ZString",
+	"wikilambda-typeselector-reference": "ZReference",
+	"wikilambda-typeselector-object": "ZObject",
+	"wikilambda-typeselector-list": "ZList",
+	"wikilambda-editor-zlist-additem-tooltip": "Adicione um item na ZList",
+	"wikilambda-editor-zlist-removeitem-tooltip": "Remova este item desta ZList",
+	"wikilambda-editor-zobject-addkey": "Adicionar chave:",
+	"wikilambda-editor-zobject-removekey-tooltip": "Remova esta chave/valor do ZObject"
 }

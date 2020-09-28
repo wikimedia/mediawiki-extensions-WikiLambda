@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Gomoko",
+			"Pols12",
 			"Wladek92"
 		]
 	},
@@ -15,5 +16,20 @@
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "Aucun ZObject n’a actuellement de libellé dupliqué.",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "ZObject existant",
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "ZObject en conflit",
-	"wikilambda-speciallistduplicatezobjectlabels-language": "Langue"
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Langue",
+	"wikilambda-publishnew": "Publier",
+	"wikilambda-savenew": "Enregistrer",
+	"wikilambda-publishchanges": "Publier les modifications",
+	"wikilambda-savechanges": "Enregistrer les modifications",
+	"wikilambda-summarylabel": "Résumé :",
+	"wikilambda-typeselector-label": "Type de valeur",
+	"wikilambda-typeselector-string-or-reference": "ZChaine ou Référence",
+	"wikilambda-typeselector-string": "ZChaine",
+	"wikilambda-typeselector-reference": "ZRéférence",
+	"wikilambda-typeselector-object": "ZObjet",
+	"wikilambda-typeselector-list": "ZListe",
+	"wikilambda-editor-zlist-additem-tooltip": "Ajouter un élément à cette ZListe",
+	"wikilambda-editor-zlist-removeitem-tooltip": "Supprimer cet élément de cette ZListe",
+	"wikilambda-editor-zobject-addkey": "Ajouter une clé :",
+	"wikilambda-editor-zobject-removekey-tooltip": "Supprimer cette clé/valeur du ZObjet"
 }
