@@ -7,20 +7,14 @@
 			<span> {{ zobjectId }} </span>
 		</span>
 		<span v-else>
-			<select v-model="type">
-				<option v-for="ztype in ztypes"
-					:key="ztype"
-					:value="ztype.value"
-				>
-					{{ ztype.label }} ({{ ztype.value }})
-				</option>
-			</select>
+			<type-selector :type="type" @change="updateType"></type-selector>
 		</span>
 		<other-keys :zobject="zobject" @input="updateZobject"></other-keys>
 	</div>
 </template>
 
 <script>
+var TypeSelector = require( './TypeSelector.vue' );
 
 module.exports = {
 	name: 'FullZobject',
@@ -32,16 +26,16 @@ module.exports = {
 		updateZobject: function ( newZobject ) {
 			this.zobject = newZobject;
 			this.$emit( 'input', this.zobject );
+		},
+		updateType: function ( newType ) {
+			this.zobject.Z1K1 = newType;
+			this.$emit( 'input', this.zobject );
 		}
 	},
 	computed: {
 		type: {
 			get: function () {
 				return this.zobject.Z1K1;
-			},
-			set: function ( newValue ) {
-				this.zobject.Z1K1 = newValue;
-				this.$emit( 'input', this.zobject );
 			}
 		},
 		typeLabel: {
@@ -61,23 +55,16 @@ module.exports = {
 		}
 	},
 	data: function () {
-		var index,
-			editingData = mw.config.get( 'extWikilambdaEditingData' ),
-			zkeylabels = editingData.zkeylabels,
-			typeoptions = [];
-
-		for ( index in editingData.ztypes ) {
-			typeoptions.push( {
-				value: index,
-				label: editingData.ztypes[ index ]
-			} );
-		}
+		var editingData = mw.config.get( 'extWikilambdaEditingData' ),
+			zkeylabels = editingData.zkeylabels;
 
 		return {
 			z1k1label: zkeylabels.Z1K1,
-			z2k1label: zkeylabels.Z2K1,
-			ztypes: typeoptions
+			z2k1label: zkeylabels.Z2K1
 		};
+	},
+	components: {
+		'type-selector': TypeSelector
 	}
 };
 </script>

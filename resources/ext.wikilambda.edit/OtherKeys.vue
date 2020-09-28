@@ -5,37 +5,23 @@
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 			</button>
 			<span>{{ zkeylabels[key] }} ({{ key }}):</span>
-			<input v-if="keyTypes[key] === 'string'"
+			<type-selector v-if="!(key in keyTypes)"
+				@change="setKeyType($event, key)"
+			></type-selector>
+			<input v-else-if="keyTypes[key] === 'Z6'"
 				class="ext-wikilambda-zstring"
 				:value="value"
 				@input="updateStringKey($event, key)"
 			>
-			<full-zobject v-else-if="keyTypes[key] === 'zobject'"
+			<list-value v-else-if="keyTypes[key] === 'Z10'"
+				:list="zobject[key]"
+				@input="updateKey($event, key)"
+			></list-value>
+			<full-zobject v-else
 				:zobject="zobject[key]"
 				:persistent="false"
 				@input="updateKey($event, key)"
 			></full-zobject>
-			<list-value v-else-if="keyTypes[key] === 'list'"
-				:list="zobject[key]"
-				@input="updateKey($event, key)"
-			></list-value>
-			<select v-else @change="setKeyType($event, key)">
-				<option selected
-					disabled
-					value="None"
-				>
-					{{ $i18n( 'wikilambda-typeselector-label' ) }}
-				</option>
-				<option value="string">
-					{{ $i18n( 'wikilambda-typeselector-string-or-reference' ) }}
-				</option>
-				<option value="zobject">
-					{{ $i18n( 'wikilambda-typeselector-object' ) }}
-				</option>
-				<option value="list">
-					{{ $i18n( 'wikilambda-typeselector-list' ) }}
-				</option>
-			</select>
 		</li>
 		<li>
 			{{ $i18n( 'wikilambda-editor-zobject-addkey' ) }}
@@ -46,7 +32,8 @@
 
 <script>
 var FullZobject = require( './FullZobject.vue' ),
-	ListValue = require( './ListValue.vue' );
+	ListValue = require( './ListValue.vue' ),
+	TypeSelector = require( './TypeSelector.vue' );
 
 module.exports = {
 	name: 'OtherKeys',
@@ -70,12 +57,14 @@ module.exports = {
 			}
 			if ( typeof ( value ) === 'object' ) {
 				if ( Array.isArray( value ) ) {
-					keyTypes[ key ] = 'list';
+					keyTypes[ key ] = 'Z10';
+				} else if ( 'Z1K1' in value ) {
+					keyTypes[ key ] = value.Z1K1;
 				} else {
 					keyTypes[ key ] = 'zobject';
 				}
 			} else {
-				keyTypes[ key ] = 'string';
+				keyTypes[ key ] = 'Z6';
 			}
 		}
 		return {
@@ -93,20 +82,18 @@ module.exports = {
 				this.$set( this.otherkeydata, key, '' );
 				if ( !( key in this.zkeylabels ) ) {
 					this.$set( this.zkeylabels, key, key );
-					this.$set( this.keyTypes, key, 'new' );
 				}
 			}
 		},
-		setKeyType: function ( event, key ) {
-			var newtype = event.target.value;
-			if ( newtype === 'zobject' ) {
-				this.$set( this.zobject, key, {} );
-			} else if ( newtype === 'list' ) {
+		setKeyType: function ( newType, key ) {
+			if ( newType === 'Z6' ) {
+				this.$set( this.zobject, key, '' );
+			} else if ( newType === 'Z10' ) {
 				this.$set( this.zobject, key, [] );
 			} else {
-				this.$set( this.zobject, key, '' );
+				this.$set( this.zobject, key, { Z1K1: newType } );
 			}
-			this.$set( this.keyTypes, key, newtype );
+			this.$set( this.keyTypes, key, newType );
 		},
 		updateKey: function ( value, key ) {
 			this.$set( this.zobject, key, value );
@@ -125,7 +112,8 @@ module.exports = {
 	},
 	components: {
 		'full-zobject': FullZobject,
-		'list-value': ListValue
+		'list-value': ListValue,
+		'type-selector': TypeSelector
 	}
 };
 </script>

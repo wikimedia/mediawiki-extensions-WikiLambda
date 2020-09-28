@@ -5,37 +5,23 @@
 				<button :title="tooltipRemoveListItem" @click="removeItem(index)">
 					{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 				</button>
-				<select v-if="listTypes[index] === 'new'" @change="setNewType($event, index)">
-					<option selected
-						disabled
-						value="None"
-					>
-						{{ $i18n( 'wikilambda-typeselector-label' ) }}
-					</option>
-					<option value="string">
-						{{ $i18n( 'wikilambda-typeselector-string-or-reference' ) }}
-					</option>
-					<option value="zobject">
-						{{ $i18n( 'wikilambda-typeselector-object' ) }}
-					</option>
-					<option value="list">
-						{{ $i18n( 'wikilambda-typeselector-list' ) }}
-					</option>
-				</select>
-				<input v-else-if="listTypes[index] === 'string'"
+				<type-selector v-if="listTypes[index] === 'new'"
+					@change="setNewType($event, index)"
+				></type-selector>
+				<input v-else-if="listTypes[index] === 'Z6'"
 					class="ext-wikilambda-zstring"
 					:value="item"
 					@input="updateStringValue($event, index)"
 				>
-				<full-zobject v-else-if="listTypes[index] === 'zobject'"
+				<list-value v-else-if="listTypes[index] === 'Z10'"
+					:list="item"
+					@input="updateValue($event, index)"
+				></list-value>
+				<full-zobject v-else
 					:zobject="item"
 					:persistent="false"
 					@input="updateValue($event, index)"
 				></full-zobject>
-				<list-value v-else
-					:list="item"
-					@input="updateValue($event, index)"
-				></list-value>
 			</li>
 			<li>
 				<button :title="tooltipAddListItem" @click="addNewItem">
@@ -47,7 +33,8 @@
 </template>
 
 <script>
-var FullZobject = require( './FullZobject.vue' );
+var FullZobject = require( './FullZobject.vue' ),
+	TypeSelector = require( './TypeSelector.vue' );
 
 module.exports = {
 	name: 'list-value',
@@ -76,16 +63,15 @@ module.exports = {
 			this.listTypes.push( 'new' );
 			this.$emit( 'input', this.list );
 		},
-		setNewType: function ( event, index ) {
-			var newtype = event.target.value;
-			if ( newtype === 'zobject' ) {
-				this.$set( this.list, index, {} );
-			} else if ( newtype === 'list' ) {
+		setNewType: function ( newType, index ) {
+			if ( newType === 'Z6' ) {
+				this.$set( this.list, index, '' );
+			} else if ( newType === 'Z10' ) {
 				this.$set( this.list, index, [] );
 			} else {
-				this.$set( this.list, index, '' );
+				this.$set( this.list, index, { Z1K1: newType } );
 			}
-			this.$set( this.listTypes, index, newtype );
+			this.$set( this.listTypes, index, newType );
 			this.$emit( 'input', this.list );
 		},
 		removeItem: function ( index ) {
@@ -103,7 +89,8 @@ module.exports = {
 		}
 	},
 	components: {
-		'full-zobject': FullZobject
+		'full-zobject': FullZobject,
+		'type-selector': TypeSelector
 	}
 };
 </script>

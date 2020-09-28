@@ -91,7 +91,8 @@
 				"ext.wikilambda.edit/ZobjectEditor.vue",
 				"ext.wikilambda.edit/FullZobject.vue",
 				"ext.wikilambda.edit/OtherKeys.vue",
-				"ext.wikilambda.edit/ListValue.vue"
+				"ext.wikilambda.edit/ListValue.vue",
+				"ext.wikilambda.edit/TypeSelector.vue"
 			],
 			"messages": [
 				"wikilambda-publishnew",
