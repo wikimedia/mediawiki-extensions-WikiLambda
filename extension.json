@@ -76,10 +76,6 @@
 		"ext.wikilambda.specialpages.styles": {
 			"styles": [ "ext.wikilambda.specialpages/ext.wikilambda.specialpages.less" ]
 		},
-		"ext.wikilambda.simplesearch": {
-			"scripts": [ "ext.wikilambda.simplesearch/jquery.wikilambda.labelselector.js" ],
-			"dependencies": [ "jquery.ui" ]
-		},
 		"ext.wikilambda.edit": {
 			"dependencies": [
 				"vue",
