@@ -13,6 +13,7 @@ use MediaWiki\Extension\WikiLambda\ZKey;
 use MediaWiki\Extension\WikiLambda\ZList;
 use MediaWiki\Extension\WikiLambda\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZType;
+use MediaWiki\MediaWikiServices;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZType
@@ -27,7 +28,7 @@ class ZTypeTest extends \MediaWikiIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZPersistentObject::getInnerZObject
 	 */
 	public function testPersistentCreation() {
-		$services = \MediaWiki\MediaWikiServices::getInstance();
+		$services = MediaWikiServices::getInstance();
 
 		$english = new \Language( 'en', $services->getLocalisationCache(), $services->getLanguageNameUtils(), $services->getLanguageFallback(), $services->getLanguageConverterFactory(), $services->getHookContainer() );
 		$french = new \Language( 'fr', $services->getLocalisationCache(), $services->getLanguageNameUtils(), $services->getLanguageFallback(), $services->getLanguageConverterFactory(), $services->getHookContainer() );

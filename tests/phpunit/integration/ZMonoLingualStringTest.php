@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use InvalidArgumentException;
 use MediaWiki\Extension\WikiLambda\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
@@ -54,7 +55,7 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::create
 	 */
 	public function testStaticCreation_invalidNoLanguageKey() {
-		$this->expectException( \InvalidArgumentException::class );
+		$this->expectException( InvalidArgumentException::class );
 		$invalidObject = ZMonoLingualString::create( [
 			ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => 'Demonstration item'
 		] );
@@ -64,7 +65,7 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::create
 	 */
 	public function testStaticCreation_invalidNoValueKey() {
-		$this->expectException( \InvalidArgumentException::class );
+		$this->expectException( InvalidArgumentException::class );
 		$invalidObject = ZMonoLingualString::create( [
 			ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => 'en'
 		] );

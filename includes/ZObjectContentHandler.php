@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use Content;
 use FormatJson;
 use JsonContentHandler;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MWException;
 use Title;
@@ -57,9 +58,10 @@ class ZObjectContentHandler extends JsonContentHandler {
 
 	/**
 	 * @param Title $zObjectTitle The page to fetch.
+	 * @param string|null $languageCode The language in which to return results. If unset, all results are returned.
 	 * @return string The external JSON form of the given title.
 	 */
-	public static function getExternalRepresentation( Title $zObjectTitle ) : string {
+	public static function getExternalRepresentation( Title $zObjectTitle, ?string $languageCode = null ) : string {
 		if ( $zObjectTitle->getNamespace() !== NS_ZOBJECT ) {
 			throw new \InvalidArgumentException( "Provided page '$zObjectTitle' is not in the ZObject namespace." );
 		}
@@ -70,12 +72,35 @@ class ZObjectContentHandler extends JsonContentHandler {
 
 		$zObject = ZPersistentObject::getObjectFromDB( $zObjectTitle );
 
-		$json = get_object_vars( ZObjectUtils::canonicalize( $zObject->getData()->getValue() ) );
+		$object = get_object_vars( ZObjectUtils::canonicalize( $zObject->getData()->getValue() ) );
+
+		if ( $languageCode ) {
+			$services = MediaWikiServices::getInstance();
+
+			if ( !$services->getLanguageNameUtils()->isValidCode( $languageCode ) ) {
+				throw new \InvalidArgumentException( "Provided language code '$languageCode' is not valid." );
+			}
+
+			$fullLabels = $zObject->getLabels();
+			$returnLanguage = new \Language(
+				$languageCode,
+				$services->getLocalisationCache(),
+				$services->getLanguageNameUtils(),
+				$services->getLanguageFallback(),
+				$services->getLanguageConverterFactory(),
+				$services->getHookContainer()
+			);
+			$returnLabel = $fullLabels->getStringForLanguage( $returnLanguage );
+
+			$returnLabelObject = (object)[ 'Z1K1' => 'Z12', 'Z12K1' => [ [ 'Z1K1' => 'Z11', 'Z11K1' => $languageCode, 'Z11K2' => $returnLabel ] ] ];
+			// new ZMultiLingualString( [ new ZMonoLingualString( $languageCode, $returnLabel ) ] );
+			$object['Z2K3'] = $returnLabelObject;
+		}
 
 		// Replace Z2K1: Z0 with the actual page ID.
-		$json['Z2K1'] = $zObjectTitle->getDBkey();
+		$object['Z2K1'] = $zObjectTitle->getDBkey();
 
-		$encoded = FormatJson::encode( $json, true, FormatJson::UTF8_OK );
+		$encoded = FormatJson::encode( $object, true, FormatJson::UTF8_OK );
 
 		return $encoded;
 	}
