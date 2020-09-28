@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue interface module for generic ZObject manipulation.
+
+		@copyright 2020 WikiLambda team; see AUTHORS.txt
+		@license MIT
+	-->
 	<ul>
 		<li v-for="(value, key) in otherkeydata" :key="key">
 			<button :title="tooltipRemoveZObjectKey" @click="removeEntry(key)">

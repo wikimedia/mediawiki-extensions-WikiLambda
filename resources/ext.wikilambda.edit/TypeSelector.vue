@@ -1,5 +1,14 @@
 <template>
-	<select v-model="type" @change="updateType($event)">
+	<!--
+		WikiLambda Vue interface module for selecting a Type
+
+		@copyright 2020 WikiLambda team; see AUTHORS.txt
+		@license MIT
+	-->
+	<select
+		v-model="type"
+		@change="updateType($event)"
+	>
 		<option v-for="ztype in ztypes"
 			:key="ztype.value"
 			:value="ztype.value"

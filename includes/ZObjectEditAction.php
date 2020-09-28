@@ -1,4 +1,13 @@
 <?php
+/**
+ * WikiLambda edit action for ZObjects
+ *
+ * @file
+ * @ingroup Extensions
+ * @copyright 2020 WikiLambda team; see AUTHORS.txt
+ * @license MIT
+ */
+
 namespace MediaWiki\Extension\WikiLambda;
 
 use Action;

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * WikiLambda unit test suite for the ZObjectUtils file
+ *
+ * @copyright 2020 WikiLambda team; see AUTHORS.txt
+ * @license MIT
+ */
+
 namespace MediaWiki\Extension\WikiLambda\Tests;
 
 use FormatJson;

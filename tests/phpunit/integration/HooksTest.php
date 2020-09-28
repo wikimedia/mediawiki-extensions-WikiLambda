@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * WikiLambda integration test suite for hooks
+ *
+ * @copyright 2020 WikiLambda team; see AUTHORS.txt
+ * @license MIT
+ */
+
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use DeferredUpdates;

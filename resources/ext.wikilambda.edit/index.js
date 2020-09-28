@@ -1,3 +1,9 @@
+/*!
+ * WikiLambda Vue editor initialisation code
+ *
+ * @copyright 2020 WikiLambda team; see AUTHORS.txt
+ * @license MIT
+ */
 ( function () {
 	var Vue = require( 'vue' ),
 		ZobjectEditor = require( './ZobjectEditor.vue' );

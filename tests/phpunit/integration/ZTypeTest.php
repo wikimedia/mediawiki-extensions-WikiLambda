@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * WikiLambda example ZType object for use in the integration suite.
+ *
+ * @copyright 2020 WikiLambda team; see AUTHORS.txt
+ * @license MIT
+ */
+
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\ZKey;

@@ -1,0 +1,15 @@
+The WikiLambda team comprises several contributors, of whom those who have committed code are listed below:
+
+* James D. Forrester <jforrester@wikimedia.org>
+* Denny Vrandečić <dvrandecic@wikimedia.org>
+* Arthur P. Smith <arthurpsmith@gmail.com>
+
+… as well as many translation contributors, whose work is represented on TranslateWiki.net.
+
+(This list was generated on 2020-09-28 with `git shortlog -sne --no-merges | grep -v '[BOT]'`.)
+
+This work is based on the vision set out by Denny Vrandečić whilst working at Google Research in his initial paper[0], evolved into an architecture in his subsequent paper[1], and was pioneered in a prototype implementation, AbstractText[2].
+
+[0] - https://research.google/pubs/pub48057/
+[1] - https://arxiv.org/abs/2004.04733
+[2] - https://github.com/google/abstracttext/
