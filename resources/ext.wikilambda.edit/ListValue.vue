@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue interface module for ZList manipulation.
+
+		@copyright 2020 WikiLambda team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div class="ext-wikilambda-zlist">
 		<ul>
 			<li v-for="(item, index) in list" :key="index">

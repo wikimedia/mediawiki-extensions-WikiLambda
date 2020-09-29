@@ -4,7 +4,7 @@
  *
  * @file
  * @ingroup Extensions
- * @copyright 2020 WikiLambda team
+ * @copyright 2020 WikiLambda team; see AUTHORS.txt
  * @license MIT
  */
 

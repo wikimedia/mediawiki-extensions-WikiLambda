@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * WikiLambda integration test suite for the ZString class
+ *
+ * @copyright 2020 WikiLambda team; see AUTHORS.txt
+ * @license MIT
+ */
+
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\ZPersistentObject;
