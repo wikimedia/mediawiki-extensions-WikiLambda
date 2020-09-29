@@ -31,7 +31,7 @@
 		</li>
 		<li>
 			{{ $i18n( 'wikilambda-editor-zobject-addkey' ) }}
-			<input class="ext-wikilambda-zkey" @change="addNewKey($event)">
+			<zkey-input @change="addNewKey($event)"></zkey-input>
 		</li>
 	</ul>
 </template>
@@ -39,6 +39,7 @@
 <script>
 var FullZobject = require( './FullZobject.vue' ),
 	ListValue = require( './ListValue.vue' ),
+	ZKey = require( './ZKey.vue' ),
 	TypeSelector = require( './TypeSelector.vue' );
 
 module.exports = {
@@ -84,11 +85,10 @@ module.exports = {
 	methods: {
 		addNewKey: function ( event ) {
 			var key = event.target.value;
-			if ( key.match( /^Z\d+K\d+$/ ) ) {
-				this.$set( this.otherkeydata, key, '' );
-				if ( !( key in this.zkeylabels ) ) {
-					this.$set( this.zkeylabels, key, key );
-				}
+			// TODO: Only allow if the object doesn't have this key already set.
+			this.$set( this.otherkeydata, key, '' );
+			if ( !( key in this.zkeylabels ) ) {
+				this.$set( this.zkeylabels, key, key );
 			}
 		},
 		setKeyType: function ( newType, key ) {
@@ -119,6 +119,7 @@ module.exports = {
 	components: {
 		'full-zobject': FullZobject,
 		'list-value': ListValue,
+		'zkey-input': ZKey,
 		'type-selector': TypeSelector
 	}
 };
