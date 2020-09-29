@@ -10,7 +10,7 @@
 	"wikilambda-invalidcontenttype": "Der bereitgestellte Inhalt ist keine ZObject-Klasse.",
 	"wikilambda-labelclash": "Das Label des bereitgestellten Inhalts kollidiert mit dem ZObjekt „$1“ für das Label in „$2“.",
 	"wikilambda-multilingualstring-nofallback": "Kein Label definiert in dieser oder einer akzeptierten Fallback-Sprache",
-	"listduplicatezobjectlabels": "ZObjekt-Seiten mit doppelten Labels",
+	"wikilambda-special-listduplicatezobjectlabels": "ZObjekt-Seiten mit doppelten Labels",
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "Derzeit haben keine ZObjekte doppelte Labels.",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "Vorhandenes ZObject",
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "Nicht zusammenpassendes ZObject",

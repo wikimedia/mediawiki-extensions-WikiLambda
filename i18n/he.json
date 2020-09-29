@@ -11,7 +11,7 @@
 	"wikilambda-labelclash": "התווית של התוכן שסופק מתנגש עם עצם ה־Z בעל המזהה $1 עבור התווית בשפה $2.",
 	"wikilambda-persistentzobject": "עצם Z",
 	"wikilambda-multilingualstring-nofallback": "לא הוגדרה תווית בשפה הזאת וגם לא שפת גיבוי קבילה",
-	"listduplicatezobjectlabels": "עצם Z עם תוויות כפולות",
+	"wikilambda-special-listduplicatezobjectlabels": "עצם Z עם תוויות כפולות",
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "אין שום עצם Z עם תווית כפולה.",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "עצם Z קיים",
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "עצם Z מתנגש",

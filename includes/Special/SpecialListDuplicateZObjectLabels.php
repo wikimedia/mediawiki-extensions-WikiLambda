@@ -28,9 +28,16 @@ class SpecialListDuplicateZObjectLabels extends SpecialPage {
 	/**
 	 * @inheritDoc
 	 */
+	public function getDescription() {
+		return $this->msg( 'wikilambda-special-listduplicatezobjectlabels' )->text();
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public function execute( $ignoredSubPage ) {
 		$this->setHeaders();
-		$this->outputHeader();
+		$this->outputHeader( 'wikilambda-special-listduplicatezobjectlabels-summary' );
 
 		$output = $this->getOutput();
 

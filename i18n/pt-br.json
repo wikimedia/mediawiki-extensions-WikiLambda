@@ -10,7 +10,7 @@
 	"wikilambda-invalidcontenttype": "O conteúdo fornecido não é uma classe ZObject.",
 	"wikilambda-labelclash": "O rótulo do conteúdo fornecido entra em conflito com ZObject '$1' para o rótulo em '$2'.",
 	"wikilambda-multilingualstring-nofallback": "Nenhum rótulo definido neste idioma ou substitutos aceitos",
-	"listduplicatezobjectlabels": "Páginas ZObject com rótulos duplicados",
+	"wikilambda-special-listduplicatezobjectlabels": "Páginas ZObject com rótulos duplicados",
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "Nenhum ZObjects tem rótulos duplicados atualmente.",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "ZObject existente",
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "ZObject conflitante",

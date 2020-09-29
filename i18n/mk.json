@@ -10,7 +10,7 @@
 	"wikilambda-invalidcontenttype": "Укажанаа содржина не претставува класа на ZObject.",
 	"wikilambda-labelclash": "Натписот на укажаната содржина се коси со ZObject „$1“ за натписот „$2“.",
 	"wikilambda-multilingualstring-nofallback": "Нема зададено натпис на овој јазик или прифатените резервни јазици",
-	"listduplicatezobjectlabels": "ZObject-страници со дуплирани натписи",
+	"wikilambda-special-listduplicatezobjectlabels": "ZObject-страници со дуплирани натписи",
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "Тековно нема ZObjects со дуплирани натписи.",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "Постоечки ZObject",
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "Спротиставен ZObject",
