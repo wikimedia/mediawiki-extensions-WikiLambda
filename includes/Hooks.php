@@ -55,7 +55,7 @@ class Hooks implements
 	public function onBeforePageDisplay( $out, $skin ) : void {
 		$config = $out->getConfig();
 		if ( $config->get( 'WikiLambdaEnable' ) ) {
-			$out->addModules( 'ext.wikilambda.simplesearch' );
+			// Do something.
 		}
 	}
 
