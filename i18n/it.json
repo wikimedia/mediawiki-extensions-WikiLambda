@@ -4,5 +4,10 @@
 			"Beta16"
 		]
 	},
-	"wikilambda-speciallistduplicatezobjectlabels-language": "Lingua"
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Lingua",
+	"wikilambda-publishnew": "Pubblica",
+	"wikilambda-savenew": "Salva",
+	"wikilambda-publishchanges": "Pubblica modifiche",
+	"wikilambda-savechanges": "Salva modifiche",
+	"wikilambda-editor-zobject-addkey": "Aggiungi chiave:"
 }

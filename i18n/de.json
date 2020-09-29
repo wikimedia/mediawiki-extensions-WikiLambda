@@ -1,6 +1,8 @@
 {
 	"@metadata": {
-		"authors": []
+		"authors": [
+			"Druesenfieber"
+		]
 	},
 	"wikilambda-desc": "Bereitstellung einer Wikitext-Parser-Funktion für Wikimedia-Wikis, um die Auswertung von Funktionen aufzurufen, die in einem zentralen Wiki geschrieben, verwaltet und ausgewertet werden.",
 	"wikilambda-emptylabel": "ZObject ohne Label",
@@ -27,5 +29,5 @@
 	"wikilambda-editor-zlist-additem-tooltip": "Ein Element zu dieser ZList hinzufügen",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Ein Element von dieser ZList entfernen",
 	"wikilambda-editor-zobject-addkey": "Schlüssel hinzufügen:",
-	"wikilambda-editor-zobject-removekey-tooltip": "Entfernen diesen Schlüssel/Wert von dem ZObject"
+	"wikilambda-editor-zobject-removekey-tooltip": "Diesen Schlüssel/Wert vom ZObject entfernen"
 }

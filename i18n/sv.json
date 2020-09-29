@@ -1,8 +1,15 @@
 {
 	"@metadata": {
 		"authors": [
-			"Sabelöga"
+			"Sabelöga",
+			"WikiPhoenix"
 		]
 	},
-	"wikilambda-speciallistduplicatezobjectlabels-language": "Språk"
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Språk",
+	"wikilambda-publishnew": "Publicera",
+	"wikilambda-savenew": "Spara",
+	"wikilambda-savechanges": "Spara ändringar",
+	"wikilambda-summarylabel": "Sammanfattning:",
+	"wikilambda-typeselector-label": "Värdestyp",
+	"wikilambda-editor-zobject-addkey": "Lägg till nyckel:"
 }
