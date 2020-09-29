@@ -111,10 +111,6 @@ module.exports = {
 	background: #eef;
 }
 
-.ext-wikilambda-zkey {
-	background: #ffe;
-}
-
 .ext-wikilambda-zlist::before {
 	content: '['
 }
