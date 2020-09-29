@@ -53,6 +53,38 @@ class ZTypeRegistry {
 	public const Z_MULTILINGUALSTRING = 'Z12';
 	public const Z_MULTILINGUALSTRING_VALUE = 'Z12K1';
 
+	public const TEMP_TYPES_IN_ENGLISH = [
+		self::Z_OBJECT => 'ZObject',
+		self::Z_PERSISTENTOBJECT => 'Persistent ZObject',
+		self::Z_KEY => 'Key',
+		self::Z_TYPE => 'Type',
+		self::Z_RECORD => 'Record',
+		self::Z_STRING => 'String',
+		self::Z_LIST => 'List',
+		self::Z_MONOLINGUALSTRING => 'Monolingual String',
+		self::Z_MULTILINGUALSTRING => 'Multilingual String'
+	];
+
+	public const TEMP_KEY_LABELS_IN_ENGLISH = [
+		self::Z_OBJECT_TYPE => 'type',
+		self::Z_PERSISTENTOBJECT_ID => 'id',
+		self::Z_PERSISTENTOBJECT_VALUE => 'value',
+		self::Z_PERSISTENTOBJECT_LABEL => 'label',
+		self::Z_KEY_TYPE => 'value type',
+		self::Z_KEY_ID => 'key id',
+		self::Z_KEY_LABEL => 'label',
+		self::Z_TYPE_IDENTITY => 'identity',
+		self::Z_TYPE_KEYS => 'keys',
+		self::Z_TYPE_VALIDATOR => 'validator',
+		self::Z_RECORD_VALUE => 'value',
+		self::Z_STRING_VALUE => 'value',
+		self::Z_LIST_HEAD => 'head',
+		self::Z_LIST_TAIL => 'tail',
+		self::Z_MONOLINGUALSTRING_LANGUAGE => 'language',
+		self::Z_MONOLINGUALSTRING_VALUE => 'text',
+		self::Z_MULTILINGUALSTRING_VALUE => 'texts'
+	];
+
 	/**
 	 * @return ZTypeRegistry
 	 */
