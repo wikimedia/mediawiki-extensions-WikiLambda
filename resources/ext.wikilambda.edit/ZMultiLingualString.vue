@@ -124,16 +124,26 @@ module.exports = {
 };
 </script>
 
-<style>
+<style lang="less">
 .ext-wikilambda-multilingual {
 	display: block;
-	outline: 1px solid #808080;
+	padding: 1em;
+	background: #efe;
+	outline: 1px dashed #888;
 }
+
 .ext-wikilambda-monolingual {
 	clear: both;
 }
+
 .ext-wikilambda-cell {
 	float: left;
-	padding: 0%;
+	padding: 0;
+
+	.ext-wikilambda-zstring {
+		vertical-align: bottom;
+		margin-left: 0.5em;
+		margin-top: 4px;
+	}
 }
 </style>
