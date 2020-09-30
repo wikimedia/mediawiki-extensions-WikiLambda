@@ -23,6 +23,10 @@
 				:list="zobject[key]"
 				@input="updateKey($event, key)"
 			></list-value>
+			<multi-lingual-string v-else-if="keyTypes[key] === 'Z12'"
+				:mls-object="zobject[key]"
+				@input="updateKey($event, key)"
+			></multi-lingual-string>
 			<full-zobject v-else
 				:zobject="zobject[key]"
 				:persistent="false"
@@ -40,7 +44,8 @@
 var FullZobject = require( './FullZobject.vue' ),
 	ListValue = require( './ListValue.vue' ),
 	ZKey = require( './ZKey.vue' ),
-	TypeSelector = require( './TypeSelector.vue' );
+	TypeSelector = require( './TypeSelector.vue' ),
+	ZMultiLingualString = require( './ZMultiLingualString.vue' );
 
 module.exports = {
 	name: 'OtherKeys',
@@ -120,7 +125,8 @@ module.exports = {
 		'full-zobject': FullZobject,
 		'list-value': ListValue,
 		'zkey-input': ZKey,
-		'type-selector': TypeSelector
+		'type-selector': TypeSelector,
+		'multi-lingual-string': ZMultiLingualString
 	}
 };
 </script>

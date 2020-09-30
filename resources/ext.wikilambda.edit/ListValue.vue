@@ -23,6 +23,10 @@
 					:list="item"
 					@input="updateValue($event, index)"
 				></list-value>
+				<multi-lingual-string v-else-if="listTypes[index] === 'Z12'"
+					:mls-object="item"
+					@input="updateValue($event, index)"
+				></multi-lingual-string>
 				<full-zobject v-else
 					:zobject="item"
 					:persistent="false"
@@ -40,7 +44,8 @@
 
 <script>
 var FullZobject = require( './FullZobject.vue' ),
-	TypeSelector = require( './TypeSelector.vue' );
+	TypeSelector = require( './TypeSelector.vue' ),
+	ZMultiLingualString = require( './ZMultiLingualString.vue' );
 
 module.exports = {
 	name: 'list-value',
@@ -96,7 +101,8 @@ module.exports = {
 	},
 	components: {
 		'full-zobject': FullZobject,
-		'type-selector': TypeSelector
+		'type-selector': TypeSelector,
+		'multi-lingual-string': ZMultiLingualString
 	}
 };
 </script>

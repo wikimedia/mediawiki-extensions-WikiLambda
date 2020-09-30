@@ -89,7 +89,8 @@
 				"ext.wikilambda.edit/OtherKeys.vue",
 				"ext.wikilambda.edit/ZKey.vue",
 				"ext.wikilambda.edit/ListValue.vue",
-				"ext.wikilambda.edit/TypeSelector.vue"
+				"ext.wikilambda.edit/TypeSelector.vue",
+				"ext.wikilambda.edit/ZMultiLingualString.vue"
 			],
 			"messages": [
 				"wikilambda-publishnew",
@@ -98,11 +99,10 @@
 				"wikilambda-savechanges",
 				"wikilambda-summarylabel",
 				"wikilambda-typeselector-label",
-				"wikilambda-typeselector-string-or-reference",
-				"wikilambda-typeselector-object",
-				"wikilambda-typeselector-list",
 				"wikilambda-editor-additem",
 				"wikilambda-editor-removeitem",
+				"wikilambda-editor-label-addlanguage-label",
+				"wikilambda-editor-label-removelanguage-tooltip",
 				"wikilambda-editor-zlist-additem-tooltip",
 				"wikilambda-editor-zlist-removeitem-tooltip",
 				"wikilambda-editor-zobject-addkey",
