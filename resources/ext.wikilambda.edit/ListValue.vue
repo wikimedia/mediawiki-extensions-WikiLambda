@@ -117,11 +117,11 @@ module.exports = {
 	background: #eef;
 }
 
-.ext-wikilambda-zlist::before {
-	content: '['
+.ext-wikilambda-zlist:before {
+	content: '[';
 }
 
-.ext-wikilambda-zlist::after {
-	content: ']'
+.ext-wikilambda-zlist:after {
+	content: ']';
 }
 </style>

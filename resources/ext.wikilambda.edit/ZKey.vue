@@ -43,6 +43,6 @@ module.exports = {
 
 .ext-wikilambda-zkey-invalid {
 	background: #fee;
-	border: 2px red solid;
+	border: 2px #f00 solid;
 }
 </style>

@@ -17,7 +17,7 @@ module.exports = function ( grunt ) {
 		banana: conf.MessagesDirs,
 		stylelint: {
 			all: [
-				'**/*.{css,less}',
+				'**/*.{css,less,vue}',
 				'!node_modules/**',
 				'!vendor/**'
 			]
