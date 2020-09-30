@@ -9,9 +9,12 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use InvalidArgumentException;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
+use Title;
+use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZTypeRegistry
@@ -59,10 +62,10 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 		// NOTE: Hopefully this won't clash with real content on a test DB.
 		$this->assertFalse( $registry->isZObjectKeyKnown( ZTestType::TEST_ZID ), "'" . ZTestType::TEST_ZID . "' is not defined as a built-in, and not found in the DB before it's written." );
 
-		$title = \Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
 		$baseObject = ZTestType::TEST_ENCODING;
 
-		$page = \WikiPage::factory( $title );
+		$page = WikiPage::factory( $title );
 		$content = ZObjectContentHandler::makeContent( $baseObject, $title );
 		$page->doEditContent( $content, "Test creation object" );
 		$page->clear();
@@ -114,7 +117,7 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 	public function testGetZObjectKeyFromType() {
 		$registry = ZTypeRegistry::singleton();
 
-		$this->expectException( \InvalidArgumentException::class );
+		$this->expectException( InvalidArgumentException::class );
 		$this->assertEquals( $registry->getZObjectKeyFromType( 'Zero' ), 'Undefined', "'Zero' lookup fails as undefined." );
 		$this->assertEquals( $registry->getZObjectKeyFromType( 'ZObject' ), 'Z1', "'ZObject' lookup works." );
 	}
@@ -125,7 +128,7 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 	public function testGetZObjectTypeFromKey() {
 		$registry = ZTypeRegistry::singleton();
 
-		$this->expectException( \InvalidArgumentException::class );
+		$this->expectException( InvalidArgumentException::class );
 		$this->assertEquals( $registry->getZObjectTypeFromKey( 'Z0' ), 'Undefined', "'Z0' lookup fails as undefined." );
 		$this->assertEquals( $registry->getZObjectTypeFromKey( 'Z1' ), 'ZObject', "'Z1' lookup works." );
 	}
@@ -136,10 +139,10 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 	public function testRegisterType() {
 		$registry = ZTypeRegistry::singleton();
 
-		$this->expectException( \InvalidArgumentException::class );
+		$this->expectException( InvalidArgumentException::class );
 		$this->assertEquals( $registry->registerType( 'ZObject' ), 'Undefined', "'ZObject' registration fails as already registered." );
 
-		$this->expectException( \InvalidArgumentException::class );
+		$this->expectException( InvalidArgumentException::class );
 		$this->assertEquals( $registry->registerType( 'Zero' ), 'Undefined', "'Zero' registration fails as no class of that name." );
 
 		$this->assertFalse( $registry->isZObjectTypeCached( 'ZTypeRegistry' ), "'ZTypeRegistry' is not defined as a built-in." );

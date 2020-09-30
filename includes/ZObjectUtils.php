@@ -10,7 +10,9 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use Normalizer;
 use stdClass;
+use Transliterator;
 
 class ZObjectUtils {
 
@@ -241,8 +243,8 @@ class ZObjectUtils {
 		// Specifically, it does canonical decomposition (NFD); removes non-spacing marks like accents;
 		// then recomposes, e.g. for Korean Hangul syllables.
 		// TODO: Replace with a language-aware transliterator?
-		$transliterator = \Transliterator::create( 'NFD; [:Nonspacing Mark:] Remove; NFC;' );
-		$output = $transliterator->transliterate( mb_strtolower( \Normalizer::normalize( $output ) ) );
+		$transliterator = Transliterator::create( 'NFD; [:Nonspacing Mark:] Remove; NFC;' );
+		$output = $transliterator->transliterate( mb_strtolower( Normalizer::normalize( $output ) ) );
 
 		return $output;
 	}

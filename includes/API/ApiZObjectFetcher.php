@@ -12,6 +12,8 @@ namespace MediaWiki\Extension\WikiLambda\API;
 
 use ApiBase;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
+use MediaWiki\MediaWikiServices;
+use Title;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiZObjectFetcher extends ApiBase {
@@ -20,16 +22,19 @@ class ApiZObjectFetcher extends ApiBase {
 	 * @inheritDoc
 	 */
 	public function execute(): void {
-		$ZIDs = explode( '|', $this->extractRequestParams()[ 'zids' ] );
+		$params = $this->extractRequestParams();
+
+		$ZIDs = explode( '|', $params[ 'zids' ] );
+		$language = $params[ 'language' ] ?? null;
 
 		foreach ( $ZIDs as $index => $ZID ) {
-			$title = \Title::newFromText( $ZID, NS_ZOBJECT );
+			$title = Title::newFromText( $ZID, NS_ZOBJECT );
 
 			if ( !$title->exists() ) {
 				$this->dieWithError( [ 'apierror-wikilambda_fetch-missingzid', $ZID ] );
 			}
 
-			$this->getResult()->addValue( $ZID, $this->getModuleName(), ZObjectContentHandler::getExternalRepresentation( $title ) );
+			$this->getResult()->addValue( $ZID, $this->getModuleName(), ZObjectContentHandler::getExternalRepresentation( $title, $language ) );
 		}
 	}
 
@@ -37,10 +42,18 @@ class ApiZObjectFetcher extends ApiBase {
 	 * @inheritDoc
 	 */
 	protected function getAllowedParams(): array {
+		$languageUtils = MediaWikiServices::getInstance()->getLanguageNameUtils();
+
 		return [
 			'zids' => [
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => true,
+			],
+			'language' => [
+				ParamValidator::PARAM_TYPE => array_merge(
+					[ false ],
+					array_keys( $languageUtils->getLanguageNames() ) ),
+				ApiBase::PARAM_DFLT => false,
 			]
 		];
 	}

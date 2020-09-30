@@ -10,6 +10,8 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use InvalidArgumentException;
+
 class ZKey implements ZObject {
 
 	private $zObjectType = 'ZKey';
@@ -28,7 +30,7 @@ class ZKey implements ZObject {
 
 	public static function create( array $objectVars ) : ZObject {
 		if ( $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ] !== ZTypeRegistry::Z_KEY ) {
-			throw new \InvalidArgumentException( "Type of ZKey expected, but instead '" . $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ] . "'." );
+			throw new InvalidArgumentException( "Type of ZKey expected, but instead '" . $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ] . "'." );
 		}
 
 		if ( !array_key_exists( ZTypeRegistry::Z_KEY_TYPE, $objectVars ) ) {

@@ -11,6 +11,9 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\MediaWikiServices;
+use Title;
+use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Hooks
@@ -24,7 +27,7 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 		parent::setUp();
 
 		$firstTitleText = ZTestType::TEST_ZID;
-		$firstTitle = \Title::newFromText( $firstTitleText, NS_ZOBJECT );
+		$firstTitle = Title::newFromText( $firstTitleText, NS_ZOBJECT );
 		$this->titlesTouched[] = $firstTitleText;
 
 		$initialStatus = $this->editPage( $firstTitleText, ZTestType::TEST_ENCODING, 'Test creation', NS_ZOBJECT );
@@ -41,7 +44,7 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 		$this->assertFalse( $invalidZIDStatus->isOK() );
 		$this->assertTrue( $invalidZIDStatus->hasMessage( 'wikilambda-invalidzobjecttitle' ) );
 
-		$invalidTitle = \Title::newFromText( $invalidTitleText, NS_ZOBJECT );
+		$invalidTitle = Title::newFromText( $invalidTitleText, NS_ZOBJECT );
 		$this->assertFalse( $invalidTitle->exists() );
 	}
 
@@ -59,12 +62,12 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testOnMultiContentSave_clashingLabels_caught() {
 		$secondTitleText = ZTestType::TEST_ZID . '0';
-		$secondTitle = \Title::newFromText( $secondTitleText, NS_ZOBJECT );
+		$secondTitle = Title::newFromText( $secondTitleText, NS_ZOBJECT );
 
 		// Force deferred updates from other edits (in this case, the one in setUp()) so we can
 		// conflict with it.
 		DeferredUpdates::doUpdates();
-		\MediaWiki\MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
+		MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
 		$this->assertSame( [], DeferredUpdates::getPendingUpdates() );
 
 		$this->assertFalse( $secondTitle->exists() );
@@ -82,17 +85,19 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 		$this->assertCount( 2, $filteredErrors );
 
 		// Force re-check so it re-fetches from the DB.
-		$this->assertFalse( $secondTitle->exists( \Title::READ_LATEST ) );
+		$this->assertFalse( $secondTitle->exists( Title::READ_LATEST ) );
 	}
 
 	// TODO: Test the uncaught behaviour of MultiContentSave when a a clash happens too late for us to stop it.
 
 	protected function tearDown() : void {
 		// Cleanup the pages we touched.
+		$sysopUser = $this->getTestSysop()->getUser();
+
 		foreach ( $this->titlesTouched as $titleString ) {
-			$title = \Title::newFromText( $titleString, NS_ZOBJECT );
-			$page = \WikiPage::factory( $title );
-			$page->doDeleteArticleReal( $title, $this->getTestSysop()->getUser() );
+			$title = Title::newFromText( $titleString, NS_ZOBJECT );
+			$page = WikiPage::factory( $title );
+			$page->doDeleteArticleReal( $title, $sysopUser );
 		}
 
 		parent::tearDown();

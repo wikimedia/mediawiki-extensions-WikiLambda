@@ -10,6 +10,8 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use InvalidArgumentException;
+
 class ZType implements ZObject {
 
 	private $zObjectType = 'ZType';
@@ -28,19 +30,19 @@ class ZType implements ZObject {
 
 	public static function create( array $objectVars ) : ZObject {
 		if ( $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ] !== ZTypeRegistry::Z_TYPE ) {
-			throw new \InvalidArgumentException( "Type of ZType expected, but instead '" . $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ] . "'." );
+			throw new InvalidArgumentException( "Type of ZType expected, but instead '" . $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ] . "'." );
 		}
 
 		if ( !array_key_exists( ZTypeRegistry::Z_TYPE_IDENTITY, $objectVars ) ) {
-			throw new \InvalidArgumentException( "ZType missing the identity key." );
+			throw new InvalidArgumentException( "ZType missing the identity key." );
 		}
 		$typeId = $objectVars[ ZTypeRegistry::Z_TYPE_IDENTITY ];
 		if ( !ZKey::isValidZObjectReference( $typeId ) ) {
-			throw new \InvalidArgumentException( "ZType id '$typeId' isn't valid." );
+			throw new InvalidArgumentException( "ZType id '$typeId' isn't valid." );
 		}
 
 		if ( !array_key_exists( ZTypeRegistry::Z_TYPE_KEYS, $objectVars ) ) {
-			throw new \InvalidArgumentException( "ZType missing the key." );
+			throw new InvalidArgumentException( "ZType missing the key." );
 		}
 		$typeKeys = [];
 		foreach ( $objectVars[ ZTypeRegistry::Z_TYPE_KEYS ] as $index => $value ) {
@@ -49,7 +51,7 @@ class ZType implements ZObject {
 		}
 
 		if ( !array_key_exists( ZTypeRegistry::Z_TYPE_VALIDATOR, $objectVars ) ) {
-			throw new \InvalidArgumentException( "ZType missing the validator key." );
+			throw new InvalidArgumentException( "ZType missing the validator key." );
 		}
 		$typeValidator = $objectVars[ ZTypeRegistry::Z_TYPE_VALIDATOR ];
 		// TODO: Once we support ZFunctions, this should check that it's a ZFunction.

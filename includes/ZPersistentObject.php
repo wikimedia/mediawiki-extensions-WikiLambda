@@ -13,12 +13,14 @@ namespace MediaWiki\Extension\WikiLambda;
 use FormatJson;
 use Html;
 use JsonContent;
+use Language;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Revision\SlotRecord;
 use ParserOptions;
 use ParserOutput;
+use RequestContext;
 use Status;
 use Title;
 use User;
@@ -196,6 +198,11 @@ class ZPersistentObject extends JsonContent implements ZObject {
 		return $this->zObjectType;
 	}
 
+	/**
+	 * Fetch the label set for this ZPersistentObject.
+	 *
+	 * @return ZMultiLingualString
+	 */
 	public function getLabels() {
 		if ( $this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] === null ) {
 			$this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = new ZMultiLingualString();
@@ -214,6 +221,23 @@ class ZPersistentObject extends JsonContent implements ZObject {
 		return $this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ];
 	}
 
+	/**
+	 * Replace the label set for this instantiation of the ZPersistentObject with the given input.
+	 *
+	 * NOTE: This replacement is not persisted to the MediaWiki back-end.
+	 *
+	 * @param ZMultiLingualString $labelSet
+	 */
+	public function setLabels( ZMultiLingualString $labelSet ) {
+		$this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = $labelSet;
+	}
+
+	/**
+	 * Fetch the label for a given Language (or its fallback).
+	 *
+	 * @param Language $language Language in which to provide the label.
+	 * @return string
+	 */
 	public function getLabel( $language ) {
 		return $this->getLabels()->getStringForLanguage( $language );
 	}
@@ -240,7 +264,7 @@ class ZPersistentObject extends JsonContent implements ZObject {
 
 		$label = Html::element(
 			'span', [ 'class' => 'ext-wikilambda-viewpage-header-title' ],
-			$this->getLabel( \RequestContext::getMain()->getLanguage() )
+			$this->getLabel( RequestContext::getMain()->getLanguage() )
 		);
 		$id = Html::element(
 			'span', [ 'class' => 'ext-wikilambda-viewpage-header-zid' ],
