@@ -132,10 +132,6 @@ class ZKey implements ZObject {
 		return true;
 	}
 
-	public function render() {
-		return null;
-	}
-
 	/**
 	 * A ZObject reference key (e.g. Z1 or Z12345)
 	 *

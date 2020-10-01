@@ -128,8 +128,4 @@ class ZType implements ZObject {
 
 		return true;
 	}
-
-	public function render() {
-		return null;
-	}
 }

@@ -53,8 +53,4 @@ class ZTestType implements ZObject {
 	public function isValid() : bool {
 		return true;
 	}
-
-	public function render() {
-		return null;
-	}
 }
