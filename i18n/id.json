@@ -1,0 +1,28 @@
+{
+	"@metadata": {
+		"authors": [
+			"Daud I.F. Argana"
+		]
+	},
+	"wikilambda-desc": "Menyediakan wiki Wikimedia sebuah fungsi parser teks wiki untuk memanggil evaluasi fungsi yang ditulis, dikelola, dan dievaluasi dari suatu wiki pusat.",
+	"wikilambda-emptylabel": "ZObject tanpa label",
+	"wikilambda-invalidzobject": "Konten yang diberikan bukanlah ZObject yang valid.",
+	"wikilambda-invalidcontenttype": "Konten yang diberikan bukanlah sebuah kelas ZObject.",
+	"wikilambda-labelclash": "Label konten yang diberikan bertentangan dengan ZObject '$1' untuk label dalam '$2'.",
+	"wikilambda-multilingualstring-nofallback": "Tidak ada label yang didefinisikan dalam bahasa ini atau bahasa cadangan yang diterima",
+	"wikilambda-special-listduplicatezobjectlabels": "Halaman ZObject dengan label duplikat",
+	"wikilambda-speciallistduplicatezobjectlabels-empty": "Sedang tidak ada ZObject yang memiliki label duplikat.",
+	"wikilambda-speciallistduplicatezobjectlabels-existing": "ZObject yang ada",
+	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "ZObject yang bertentangan",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Bahasa",
+	"wikilambda-publishnew": "Terbitkan",
+	"wikilambda-savenew": "Simpan",
+	"wikilambda-publishchanges": "Terbitkan perubahan",
+	"wikilambda-savechanges": "Simpan perubahan",
+	"wikilambda-summarylabel": "Ringkasan:",
+	"wikilambda-typeselector-label": "Tipe Nilai",
+	"wikilambda-editor-zlist-additem-tooltip": "Menambahkan sebuah butir ke ZList ini",
+	"wikilambda-editor-zlist-removeitem-tooltip": "Menghapus butir ini dari ZList ini",
+	"wikilambda-editor-zobject-addkey": "Tambahkan kunci:",
+	"wikilambda-editor-zobject-removekey-tooltip": "Hapus kunci/nilai ini dari ZObject"
+}

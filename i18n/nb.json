@@ -14,5 +14,15 @@
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "Ingen ZObject-er har duplikatetiketter.",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "Eksisterende ZObject",
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "Konflikterende ZObject",
-	"wikilambda-speciallistduplicatezobjectlabels-language": "Språk"
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Språk",
+	"wikilambda-publishnew": "Publiser",
+	"wikilambda-savenew": "Lagre",
+	"wikilambda-publishchanges": "Publiser endringer",
+	"wikilambda-savechanges": "Lagre endringer",
+	"wikilambda-summarylabel": "Sammendrag:",
+	"wikilambda-typeselector-label": "Verditype",
+	"wikilambda-editor-zlist-additem-tooltip": "Legg til et element i denne ZList-en",
+	"wikilambda-editor-zlist-removeitem-tooltip": "Fjern dette elementet fra denne ZList-en",
+	"wikilambda-editor-zobject-addkey": "Legg til nøkkel:",
+	"wikilambda-editor-zobject-removekey-tooltip": "Fjern denne nøkkelen/verdien fra ZObject-et"
 }
