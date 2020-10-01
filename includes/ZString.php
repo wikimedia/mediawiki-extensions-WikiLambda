@@ -17,7 +17,9 @@ class ZString implements ZObject {
 	private $value;
 
 	public function __construct( $value = '' ) {
-		if ( is_string( $value ) ) {
+		if ( !isset( $value ) ) {
+			$this->value = null;
+		} elseif ( is_string( $value ) ) {
 			$this->value = $value;
 		} else {
 			$this->value = get_object_vars( $value )[ ZTypeRegistry::Z_STRING_VALUE ];
