@@ -78,28 +78,49 @@ class ZKeyTest extends \MediaWikiIntegrationTestCase {
 	}
 
 	/**
-	 * @dataProvider provideIsValidId
-	 * @covers ::isValidId
+	 * @dataProvider provideIsValidZObjectReference
+	 * @dataProvider provideIsValidZObjectReferenceWithWhitespace
+	 * @covers ::isValidZObjectReference
 	 */
-	public function testIsValidId( $input, $expected ) {
-		$this->assertSame( $expected, ZKey::isValidId( $input ) );
+	public function testIsValidZObjectReference( $input, $expected ) {
+		$this->assertSame( $expected, ZKey::isValidZObjectReference( $input ) );
 	}
 
-	public function provideIsValidId() {
+	public function provideIsValidZObjectReference() {
 		return [
 			'empty string' => [ '', false ],
 
 			'Simple ZID' => [ 'Z1', true ],
 			'Big ZID' => [ 'Z1234567890', true ],
 
-			'Simple QID' => [ 'Q1', true ],
-			'Big QID' => [ 'Q1234567890', true ],
-
-			'Whitespace-beset ZID' => [ "Z1 ", false ],
-
 			'Invalid ZID' => [ 'ZK1', false ],
 			'Key' => [ 'Z1K1', false ],
 			'Invalid 0-padded ZID' => [ 'Z01', false ],
+		];
+	}
+
+	public function provideIsValidZObjectReferenceWithWhitespace() {
+		return [
+			'Whitespace-suffixed ZID' => [ "Z1 ", true ],
+			'Whitespace-prefixed ZID' => [ " Z1", true ],
+			'Whitespace-beset ZID' => [ "\n\t\rZ1\t \t", true ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideIsValidZObjectReference
+	 * @dataProvider provideIsValidNonZObjectId
+	 * @covers ::isValidId
+	 */
+	public function testIsValidId( $input, $expected ) {
+		$this->assertSame( $expected, ZKey::isValidId( $input ) );
+	}
+
+	public function provideIsValidNonZObjectId() {
+		return [
+			'Simple QID' => [ 'Q1', true ],
+			'Big QID' => [ 'Q1234567890', true ],
+			'Whitespace-beset ZID' => [ " Z1 ", false ],
 		];
 	}
 
