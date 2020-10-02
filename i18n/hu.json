@@ -6,5 +6,14 @@
 	},
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Nyelv",
 	"wikilambda-publishnew": "Közzététel",
-	"wikilambda-savenew": "Mentés"
+	"wikilambda-savenew": "Mentés",
+	"wikilambda-publishchanges": "Változtatások közzététele",
+	"wikilambda-savechanges": "Változtatások mentése",
+	"wikilambda-summarylabel": "Összefoglaló:",
+	"wikilambda-typeselector-label": "Érték típusa",
+	"wikilambda-editor-label-addlanguage-label": "Nyelv hozzáadása",
+	"wikilambda-editor-zlist-additem-tooltip": "Elem hozzáadása a ZListhez",
+	"wikilambda-editor-zlist-removeitem-tooltip": "Elem eltávolítása a ZListről",
+	"wikilambda-editor-zobject-addkey": "Kulcs hozzáadása:",
+	"wikilambda-editor-zobject-removekey-tooltip": "Kulcs/érték eltávolítása a Zobjectről"
 }

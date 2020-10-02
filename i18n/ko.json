@@ -4,5 +4,13 @@
 			"Ykhwong"
 		]
 	},
-	"wikilambda-speciallistduplicatezobjectlabels-language": "언어"
+	"wikilambda-speciallistduplicatezobjectlabels-language": "언어",
+	"wikilambda-publishnew": "게시",
+	"wikilambda-savenew": "저장",
+	"wikilambda-publishchanges": "변경사항 게시",
+	"wikilambda-savechanges": "변경사항 저장",
+	"wikilambda-summarylabel": "요약:",
+	"wikilambda-editor-label-addlanguage-label": "언어 추가:",
+	"wikilambda-editor-label-removelanguage-tooltip": "이 레이블에서 이 언어를 제거합니다",
+	"wikilambda-editor-zobject-addkey": "키 추가:"
 }

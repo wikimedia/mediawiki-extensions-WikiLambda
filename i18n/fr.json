@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Ayack",
 			"Gomoko",
 			"Pols12",
 			"Wladek92"
@@ -23,6 +24,8 @@
 	"wikilambda-savechanges": "Enregistrer les modifications",
 	"wikilambda-summarylabel": "Résumé :",
 	"wikilambda-typeselector-label": "Type de valeur",
+	"wikilambda-editor-label-addlanguage-label": "Ajouter une langue :",
+	"wikilambda-editor-label-removelanguage-tooltip": "Enlever cette langue du libellé",
 	"wikilambda-editor-zlist-additem-tooltip": "Ajouter un élément à cette ZListe",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Supprimer cet élément de cette ZListe",
 	"wikilambda-editor-zobject-addkey": "Ajouter une clé :",

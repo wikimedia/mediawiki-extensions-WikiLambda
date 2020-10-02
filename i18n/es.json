@@ -6,5 +6,17 @@
 		]
 	},
 	"wikilambda-invalidzobject": "El contenido proporcionado no constituye un ZObject válido.",
-	"wikilambda-speciallistduplicatezobjectlabels-language": "Idioma"
+	"wikilambda-special-createzobject-nojs": "Para utilizar esta página se necesita JavaScript.",
+	"wikilambda-special-listduplicatezobjectlabels-summary": "Esta página muestra cuáles ZObjects se han creado con etiquetas duplicadas. Como solo el primero figurará en las búsquedas, se deben corregir.",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Idioma",
+	"wikilambda-publishnew": "Publicar",
+	"wikilambda-savenew": "Guardar",
+	"wikilambda-publishchanges": "Publicar cambios",
+	"wikilambda-savechanges": "Guardar cambios",
+	"wikilambda-summarylabel": "Resumen:",
+	"wikilambda-typeselector-label": "Tipo de valor",
+	"wikilambda-editor-label-addlanguage-label": "Añadir idioma:",
+	"wikilambda-editor-label-removelanguage-tooltip": "Quitar este idioma de esta etiqueta",
+	"wikilambda-editor-zlist-removeitem-tooltip": "Quitar este elemento de esta ZList",
+	"wikilambda-editor-zobject-addkey": "Añadir clave:"
 }
