@@ -4,6 +4,9 @@
 			"Hanna Tardos"
 		]
 	},
+	"wikilambda-special-createzobject": "Új ZObject létrehozása",
+	"wikilambda-special-createzobject-nojs": "Az oldal használatához JavaScript szükséges.",
+	"wikilambda-speciallistduplicatezobjectlabels-existing": "Létező ZObject",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Nyelv",
 	"wikilambda-publishnew": "Közzététel",
 	"wikilambda-savenew": "Mentés",

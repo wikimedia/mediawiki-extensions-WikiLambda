@@ -5,11 +5,16 @@
 			"WikiPhoenix"
 		]
 	},
+	"wikilambda-special-createzobject": "Skapa ett nytt ZObject",
+	"wikilambda-special-createzobject-nojs": "Denna sida kräver JavaScript för att användas.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Språk",
 	"wikilambda-publishnew": "Publicera",
 	"wikilambda-savenew": "Spara",
+	"wikilambda-publishchanges": "Publicera ändringar",
 	"wikilambda-savechanges": "Spara ändringar",
 	"wikilambda-summarylabel": "Sammanfattning:",
 	"wikilambda-typeselector-label": "Värdetyp",
+	"wikilambda-editor-label-addlanguage-label": "Lägg till språk:",
+	"wikilambda-editor-zlist-additem-tooltip": "Lägg till objektet i denna ZList",
 	"wikilambda-editor-zobject-addkey": "Lägg till nyckel:"
 }

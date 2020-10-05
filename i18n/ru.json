@@ -5,5 +5,8 @@
 		]
 	},
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Язык",
-	"wikilambda-savenew": "Сохранить"
+	"wikilambda-publishnew": "Опубликовать",
+	"wikilambda-savenew": "Сохранить",
+	"wikilambda-savechanges": "Сохранить изменения",
+	"wikilambda-summarylabel": "Описание:"
 }

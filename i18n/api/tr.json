@@ -4,5 +4,15 @@
 			"MuratTheTurkish"
 		]
 	},
-	"apihelp-query+wikilambda_searchlabels-param-language": "Aramanın yapılacağı MediaWiki dil kodu"
+	"apihelp-wikilambda_fetch-summary": "ZObjects'in JSON modelini getirin.",
+	"apihelp-wikilambda_fetch-param-zids": "Borularla ayrılmış, getirilecek ZObject ZID'leri.",
+	"apihelp-wikilambda_fetch-example-single": "Tek bir ZObject, Z1 getirin.",
+	"apihelp-wikilambda_fetch-example-multiple": "Üç ZObject getirin: Z1, Z2 ve Z3.",
+	"apierror-wikilambda_fetch-missingzid": "Verilen ZID '$1' bu vikide mevcut değil.",
+	"apihelp-query+wikilambda_searchlabels-summary": "Bu API sorgu listesi oluşturucu, belirli bir dildeki etiketler için ZObjects'te arama yapmanızı sağlar. Esasen ileriye dönük arama sistemini desteklemek için vardır.",
+	"apihelp-query+wikilambda_searchlabels-param-search": "Arama terimi",
+	"apihelp-query+wikilambda_searchlabels-param-language": "Aramanın yapılacağı MediaWiki dil kodu",
+	"apihelp-query+wikilambda_searchlabels-param-exact": "Tam eşleşmelerin aranıp aranmayacağı. Devre dışı bırakılırsa, giriş, büyük/küçük harfe duyarlı olmayan, Unicode normalleştirilmiş bir arama olarak alınır ve Latin karakterler üzerindeki aksanlar yok sayılır.",
+	"apihelp-query+wikilambda_searchlabels-param-limit": "Döndürülecek maksimum sonuç sayısı",
+	"apihelp-query+wikilambda-example-simple": "İngilizce'de 'foo' ile eşleşen ZObjects arayın"
 }
