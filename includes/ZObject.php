@@ -22,6 +22,13 @@ interface ZObject {
 	public static function create( array $objectVars ) : ZObject;
 
 	/**
+	 * Provide this ZObject's schema.
+	 *
+	 * @return array It's complicated.
+	 */
+	public static function getDefinition() : array;
+
+	/**
 	 * Validate this ZObject against our schema, to prevent creation and saving of invalid items.
 	 *
 	 * @return bool Whether content is valid

@@ -14,18 +14,32 @@ use InvalidArgumentException;
 
 class ZKey implements ZObject {
 
-	private $zObjectType = 'ZKey';
+	private $data = [];
 
-	private $keys = [
-		ZTypeRegistry::Z_KEY_TYPE => null,
-		ZTypeRegistry::Z_KEY_ID => null,
-		ZTypeRegistry::Z_KEY_LABEL => null
-	];
+	public static function getDefinition() : array {
+		return [
+			'type' => 'ZKey',
+			'keys' => [
+				ZTypeRegistry::Z_KEY_TYPE => [
+					'type' => ZTypeRegistry::Z_TYPE,
+				],
+				ZTypeRegistry::Z_KEY_ID => [
+					// TODO: Per the model, we used to dereference this ZReference into the string
+					// of its ZType, but creates recursion issues when evaluating ZKeys of ZTypes
+					// that are being created (T262097). For now, just store the string ZReference.
+					'type' => ZTypeRegistry::HACK_REFERENCE,
+				],
+				ZTypeRegistry::Z_KEY_LABEL => [
+					'type' => ZTypeRegistry::Z_MULTILINGUALSTRING,
+				],
+			],
+		];
+	}
 
 	public function __construct( $type, $identity, $label ) {
-		$this->keys[ ZTypeRegistry::Z_KEY_TYPE ] = $type;
-		$this->keys[ ZTypeRegistry::Z_KEY_ID ] = $identity;
-		$this->keys[ ZTypeRegistry::Z_KEY_LABEL ] = $label;
+		$this->data[ ZTypeRegistry::Z_KEY_TYPE ] = $type;
+		$this->data[ ZTypeRegistry::Z_KEY_ID ] = $identity;
+		$this->data[ ZTypeRegistry::Z_KEY_LABEL ] = $label;
 	}
 
 	public static function create( array $objectVars ) : ZObject {
@@ -64,31 +78,31 @@ class ZKey implements ZObject {
 	}
 
 	public function getZType() : string {
-		return $this->zObjectType;
+		return static::getDefinition()['type'];
 	}
 
 	public function getZValue() {
-		return $this->keys;
+		return $this->data;
 	}
 
 	public function getKeyType() {
-		return $this->keys[ ZTypeRegistry::Z_KEY_TYPE ];
+		return $this->data[ ZTypeRegistry::Z_KEY_TYPE ];
 	}
 
 	public function getKeyId() {
-		return $this->keys[ ZTypeRegistry::Z_KEY_ID ];
+		return $this->data[ ZTypeRegistry::Z_KEY_ID ];
 	}
 
 	public function getKeyLabel() {
-		return $this->keys[ ZTypeRegistry::Z_KEY_LABEL ];
+		return $this->data[ ZTypeRegistry::Z_KEY_LABEL ];
 	}
 
 	public function isValid() : bool {
 		// Type must be set to a valid ZKey reference which is itself a ZType
-		if ( !isset( $this->keys[ ZTypeRegistry::Z_KEY_TYPE ] ) ) {
+		if ( !isset( $this->data[ ZTypeRegistry::Z_KEY_TYPE ] ) ) {
 			return false;
 		}
-		$type = $this->keys[ ZTypeRegistry::Z_KEY_TYPE ];
+		$type = $this->data[ ZTypeRegistry::Z_KEY_TYPE ];
 		if ( !self::isValidZObjectReference( $type ) ) {
 			return false;
 		}
@@ -102,19 +116,19 @@ class ZKey implements ZObject {
 		*/
 
 		// Identity must be a global reference (LATER: or a built instance of global references)
-		if ( !isset( $this->keys[ ZTypeRegistry::Z_KEY_ID ] ) ) {
+		if ( !isset( $this->data[ ZTypeRegistry::Z_KEY_ID ] ) ) {
 			return false;
 		}
-		$identity = $this->keys[ ZTypeRegistry::Z_KEY_ID ];
+		$identity = $this->data[ ZTypeRegistry::Z_KEY_ID ];
 		if ( !self::isValidZObjectGlobalKey( $identity ) ) {
 			return false;
 		}
 
 		// Label must be an array of valid ZMonoLingualStrings or a valid ZMultiLingualString
-		if ( !isset( $this->keys[ ZTypeRegistry::Z_KEY_LABEL ] ) ) {
+		if ( !isset( $this->data[ ZTypeRegistry::Z_KEY_LABEL ] ) ) {
 			return false;
 		}
-		$labels = $this->keys[ ZTypeRegistry::Z_KEY_LABEL ];
+		$labels = $this->data[ ZTypeRegistry::Z_KEY_LABEL ];
 		if ( is_a( $labels, ZMultiLingualString::class ) ) {
 			return $labels->isValid();
 		}

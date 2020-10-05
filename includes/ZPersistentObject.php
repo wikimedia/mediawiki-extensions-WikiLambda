@@ -41,19 +41,33 @@ class ZPersistentObject extends JsonContent implements ZObject {
 
 	private $validity;
 
-	private $keys = [
-		// TODO: Provide a JSON dump function that substitues the page name for Z_PERSISTENTOBJECT_ID.
-		ZTypeRegistry::Z_PERSISTENTOBJECT_ID => 'Z0',
-		ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE => null,
-		ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL => null
-	];
+	private $data = [];
+
+	public static function getDefinition() : array {
+		return [
+			'type' => 'ZPersistentObject',
+			'keys' => [
+				ZTypeRegistry::Z_PERSISTENTOBJECT_ID => [
+					'type' => ZTypeRegistry::HACK_REFERENCE,
+					'optional' => true,
+					'default' => 'Z0',
+				],
+				ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE => [
+					'type' => ZTypeRegistry::Z_OBJECT,
+				],
+				ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL => [
+					'type' => ZTypeRegistry::Z_MULTILINGUALSTRING,
+				],
+			],
+		];
+	}
 
 	public function __construct( $text = null, $modelId = CONTENT_MODEL_ZOBJECT ) {
 		// NOTE: We don't bother to evaluate the Z_PERSISTENTOBJECT_LABEL at this point.
 		try {
-			$this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = ZObjectFactory::createFromSerialisedString( $text );
+			$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = ZObjectFactory::createFromSerialisedString( $text );
 		} catch ( \InvalidArgumentException $e ) {
-			$this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = $text;
+			$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = $text;
 			$this->validity = false;
 		}
 
@@ -169,13 +183,13 @@ class ZPersistentObject extends JsonContent implements ZObject {
 	}
 
 	public function getInnerZObject() {
-		if ( $this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] === null ) {
+		if ( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] === null ) {
 			$valueObject = get_object_vars( $this->getData()->getValue() );
-			$this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = ZObjectFactory::createFromSerialisedString(
+			$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = ZObjectFactory::createFromSerialisedString(
 				$valueObject[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ]
 			);
 		}
-		return $this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ];
+		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ];
 	}
 
 	public function getZValue() {
@@ -189,7 +203,7 @@ class ZPersistentObject extends JsonContent implements ZObject {
 			// this point. TODO: Consider re-factoring to avoid this secondary check?
 			if ( is_string( $zObject ) ) {
 				$attempt = ZObjectFactory::createFromSerialisedString( $zObject );
-				$this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = $attempt->getZType();
+				$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = $attempt->getZType();
 			}
 
 			$this->zObjectType = $this->getInnerZObject()->getZType();
@@ -204,21 +218,21 @@ class ZPersistentObject extends JsonContent implements ZObject {
 	 * @return ZMultiLingualString
 	 */
 	public function getLabels() {
-		if ( $this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] === null ) {
-			$this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = new ZMultiLingualString();
+		if ( !isset( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] ) || $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] === null ) {
+			$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = new ZMultiLingualString();
 
 			$content = $this->getData()->getValue();
 			if ( $content ) {
 				$valueObject = get_object_vars( $this->getData()->getValue() );
 				if ( array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL, $valueObject ) ) {
-					$this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = ZObjectFactory::create(
+					$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = ZObjectFactory::create(
 						$valueObject[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ]
 					);
 				}
 			}
 		}
 
-		return $this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ];
+		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ];
 	}
 
 	/**
@@ -229,7 +243,7 @@ class ZPersistentObject extends JsonContent implements ZObject {
 	 * @param ZMultiLingualString $labelSet
 	 */
 	public function setLabels( ZMultiLingualString $labelSet ) {
-		$this->keys[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = $labelSet;
+		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = $labelSet;
 	}
 
 	/**

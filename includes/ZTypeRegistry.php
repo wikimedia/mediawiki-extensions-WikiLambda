@@ -18,6 +18,20 @@ use Title;
  */
 class ZTypeRegistry {
 
+	// Is there a better way to represent this direct string (as opposed to a ZString?)
+	public const HACK_STRING = 'String';
+	// Is there a better way to represent this direct array (as opposed to a ZList?)
+	public const HACK_ARRAY = 'Array';
+
+	// Needed until we have a ZReference type
+	public const HACK_REFERENCE = 'Reference';
+	// Needed until we have a ZLanguage type (or similar)
+	public const HACK_LANGUAGE = 'Language';
+
+	// Needed until we have sub-types
+	public const HACK_ARRAY_Z_KEY = 'Array(ZKey)';
+	public const HACK_ARRAY_Z_MONOLINGUALSTRING = 'Array(ZMonoLingualString)';
+
 	public const Z_OBJECT = 'Z1';
 	public const Z_OBJECT_TYPE = 'Z1K1';
 

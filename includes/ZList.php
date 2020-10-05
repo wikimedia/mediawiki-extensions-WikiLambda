@@ -12,21 +12,31 @@ namespace MediaWiki\Extension\WikiLambda;
 
 class ZList implements ZObject {
 
-	private $zObjectType = 'ZList';
+	private $data = [];
 
-	private $keys = [
-		ZTypeRegistry::Z_LIST_HEAD => [],
-		ZTypeRegistry::Z_LIST_TAIL => []
-	];
+	public static function getDefinition() : array {
+		return [
+			'type' => 'ZList',
+			'keys' => [
+				ZTypeRegistry::Z_LIST_HEAD => [
+					'type' => ZTypeRegistry::Z_OBJECT,
+				],
+				ZTypeRegistry::Z_LIST_TAIL => [
+					// TODO: This is an array of ZObjects.
+					'type' => ZTypeRegistry::HACK_ARRAY,
+				],
+			],
+		];
+	}
 
 	public function __construct( $head = [], $tail = null ) {
 		// Special handling for convenience. Possibly not worth the complexity? To re-evaluate.
 		if ( is_array( $head ) && $tail === null ) {
-			$this->keys[ ZTypeRegistry::Z_LIST_HEAD ] = array_slice( $head, 0, 1 )[ 0 ] ?? null;
-			$this->keys[ ZTypeRegistry::Z_LIST_TAIL ] = array_slice( $head, 1 ) ?? [];
+			$this->data[ ZTypeRegistry::Z_LIST_HEAD ] = array_slice( $head, 0, 1 )[ 0 ] ?? null;
+			$this->data[ ZTypeRegistry::Z_LIST_TAIL ] = array_slice( $head, 1 ) ?? [];
 		} else {
-			$this->keys[ ZTypeRegistry::Z_LIST_HEAD ] = $head;
-			$this->keys[ ZTypeRegistry::Z_LIST_TAIL ] = $tail;
+			$this->data[ ZTypeRegistry::Z_LIST_HEAD ] = $head;
+			$this->data[ ZTypeRegistry::Z_LIST_TAIL ] = $tail;
 		}
 	}
 
@@ -41,30 +51,30 @@ class ZList implements ZObject {
 	}
 
 	public function getZType() : string {
-		return $this->zObjectType;
+		return static::getDefinition()['type'];
 	}
 
 	public function getZValue() {
-		return [ $this->keys[ ZTypeRegistry::Z_LIST_HEAD ], $this->keys[ ZTypeRegistry::Z_LIST_TAIL ] ];
+		return [ $this->data[ ZTypeRegistry::Z_LIST_HEAD ], $this->data[ ZTypeRegistry::Z_LIST_TAIL ] ];
 	}
 
 	public function getZListAsArray() : array {
 		$result = [];
-		if ( isset( $this->keys[ ZTypeRegistry::Z_LIST_HEAD ] ) ) {
-			$result[] = $this->keys[ ZTypeRegistry::Z_LIST_HEAD ];
+		if ( isset( $this->data[ ZTypeRegistry::Z_LIST_HEAD ] ) ) {
+			$result[] = $this->data[ ZTypeRegistry::Z_LIST_HEAD ];
 		}
 
-		$result = array_merge( $result, (array)$this->keys[ ZTypeRegistry::Z_LIST_TAIL ] );
+		$result = array_merge( $result, (array)$this->data[ ZTypeRegistry::Z_LIST_TAIL ] );
 
 		return $result;
 	}
 
 	public function isValid() : bool {
-		if ( !self::isValidValue( $this->keys[ ZTypeRegistry::Z_LIST_HEAD ] ) ) {
+		if ( !self::isValidValue( $this->data[ ZTypeRegistry::Z_LIST_HEAD ] ) ) {
 			return false;
 		}
 
-		foreach ( $this->keys[ ZTypeRegistry::Z_LIST_TAIL ] as $key => $value ) {
+		foreach ( $this->data[ ZTypeRegistry::Z_LIST_TAIL ] as $key => $value ) {
 			if ( !self::isValidValue( $value ) ) {
 				return false;
 			}
