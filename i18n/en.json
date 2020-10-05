@@ -15,7 +15,7 @@
 	"wikilambda-multilingualstring-nofallback": "No label defined in this language or accepted fallbacks",
 	"wikilambda-special-createzobject": "Create a new ZObject",
 	"wikilambda-special-createzobject-summary": "This form lets you create a new ZObject, which can represent a Function, its Implementation, a Tester for it, or one of various other kinds of ZObjects. You should read the help documentation and community guidance first.",
-	"wikilambda-special-createzobject-intro": "Make sure that you follow community policies, and copright and patent rules.",
+	"wikilambda-special-createzobject-intro": "Make sure that you follow community policies, and copyright and patent rules.",
 	"wikilambda-special-createzobject-nojs": "This page requires JavaScript to be used.",
 	"wikilambda-special-listduplicatezobjectlabels": "ZObject pages with duplicate labels",
 	"wikilambda-special-listduplicatezobjectlabels-summary": "This page shows which ZObjects have been created with duplicate labels. Only the first one will show up in searches, so these should be fixed.",
