@@ -4,10 +4,10 @@
 			"Amire80"
 		]
 	},
-	"wikilambda-desc": "מספקת לאתרי ויקי של ויקימדיה פונקציית מפענח לקוד ויקי לקריאה לפונקציות שנכתבות, מנוהלות, ומוערכות בוויקי מרכזי.",
+	"wikilambda-desc": "מספקת לאתרי ויקי של ויקימדיה פונקציית מפענח לקוד ויקי לקריאה לפונקציות שנכתבות, מנוהלות, ומבוצעות בוויקי מרכזי.",
 	"wikilambda-emptylabel": "עצם Z חסר־תווית",
 	"wikilambda-invalidzobject": "התוכן שסופק אינו עצם Z תקין.",
-	"wikilambda-invalidcontenttype": "תוכן שסופק אינו מחלקה שמייצגת עצם Z.",
+	"wikilambda-invalidcontenttype": "התוכן שסופק אינו מחלקה שמייצגת עצם Z.",
 	"wikilambda-labelclash": "התווית של התוכן שסופק מתנגש עם עצם ה־Z בעל המזהה $1 עבור התווית בשפה $2.",
 	"wikilambda-persistentzobject": "עצם Z",
 	"wikilambda-multilingualstring-nofallback": "לא הוגדרה תווית בשפה הזאת וגם לא שפת גיבוי קבילה",

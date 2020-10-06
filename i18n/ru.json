@@ -8,5 +8,6 @@
 	"wikilambda-publishnew": "Опубликовать",
 	"wikilambda-savenew": "Сохранить",
 	"wikilambda-savechanges": "Сохранить изменения",
-	"wikilambda-summarylabel": "Описание:"
+	"wikilambda-summarylabel": "Описание:",
+	"wikilambda-editor-label-addlanguage-label": "Добавить язык:"
 }

@@ -5,7 +5,10 @@
 		]
 	},
 	"wikilambda-special-createzobject": "Új ZObject létrehozása",
+	"wikilambda-special-createzobject-summary": "Az űrlap segítségével létrehozhatsz egy új ZObjectet, mely képviselhet Funkciót, Végrehajtást, Tesztert, vagy bármely egyéb ZObject típust. Ajánljuk figyelmedbe a súgót és a közösségi útmutatót.",
+	"wikilambda-special-createzobject-intro": "Kövesd a közösségi irányelveket és tartsd tiszteletben a szabadalmi és szerzői jogokat.",
 	"wikilambda-special-createzobject-nojs": "Az oldal használatához JavaScript szükséges.",
+	"wikilambda-special-listduplicatezobjectlabels-summary": "Ezen az oldalon találod a több címmel rendelkező ZObjecteket. Mivel a keresőben csak az első cím jelenik meg, így ezek javításra szorulnak.",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "Létező ZObject",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Nyelv",
 	"wikilambda-publishnew": "Közzététel",
@@ -15,6 +18,7 @@
 	"wikilambda-summarylabel": "Összefoglaló:",
 	"wikilambda-typeselector-label": "Érték típusa",
 	"wikilambda-editor-label-addlanguage-label": "Nyelv hozzáadása",
+	"wikilambda-editor-label-removelanguage-tooltip": "Nyelv eltávolítása",
 	"wikilambda-editor-zlist-additem-tooltip": "Elem hozzáadása a ZListhez",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Elem eltávolítása a ZListről",
 	"wikilambda-editor-zobject-addkey": "Kulcs hozzáadása:",
