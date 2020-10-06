@@ -12,13 +12,22 @@ namespace MediaWiki\Extension\WikiLambda;
 
 class ZRecord implements ZObject {
 
-	private $zValue;
+	private $data = [];
 
-	private $zObjectType;
+	public static function getDefinition() : array {
+		return [
+			'keys' => [
+				ZTypeRegistry::Z_RECORD_VALUE => [
+					'type' => ZTypeRegistry::Z_OBJECT,
+				],
+			],
+		];
+	}
 
 	public function __construct( $type, $value ) {
-		$this->zObjectType = ZTypeRegistry::singleton()->getZObjectTypeFromKey( $type );
-		$this->zValue = ZObjectFactory::create( $value );
+		// HACK: This will go away when we move this code into ZObject itself somehow (?)
+		$this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] = ZTypeRegistry::singleton()->getZObjectTypeFromKey( $type );
+		$this->data[ ZTypeRegistry::Z_RECORD_VALUE ] = ZObjectFactory::create( $value );
 	}
 
 	public static function create( array $objectVars ) : ZObject {
@@ -32,19 +41,19 @@ class ZRecord implements ZObject {
 	}
 
 	public function getZType() : string {
-		if ( $this->zObjectType === null ) {
-			$objectVars = get_object_vars( $this->zValue );
+		if ( !isset( $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] ) ) {
+			$objectVars = get_object_vars( $this->data[ ZTypeRegistry::Z_RECORD_VALUE ] );
 			if ( !array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $objectVars ) ) {
 				throw new \InvalidArgumentException( "ZObject top-level record missing a type key." );
 			}
-			$this->zObjectType = ZTypeRegistry::singleton()->getZObjectTypeFromKey( $objectVars[ZTypeRegistry::Z_OBJECT_TYPE] );
+			$this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] = ZTypeRegistry::singleton()->getZObjectTypeFromKey( $objectVars[ZTypeRegistry::Z_OBJECT_TYPE] );
 		}
 
-		return $this->zObjectType;
+		return $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ];
 	}
 
 	public function getZValue() {
-		return $this->zValue;
+		return $this->data[ ZTypeRegistry::Z_RECORD_VALUE ];
 	}
 
 	public function isValid() : bool {

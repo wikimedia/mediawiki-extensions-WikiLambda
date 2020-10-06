@@ -12,16 +12,25 @@ namespace MediaWiki\Extension\WikiLambda;
 
 class ZMonoLingualString implements ZObject {
 
-	private $zObjectType = 'ZMonoLingualString';
+	private $data = [];
 
-	private $keys = [
-		ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => '',
-		ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => ''
-	];
+	public static function getDefinition() : array {
+		return [
+			'type' => 'ZMonoLingualString',
+			'keys' => [
+				ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => [
+					'type' => ZTypeRegistry::HACK_LANGUAGE,
+				],
+				ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => [
+					'type' => ZTypeRegistry::HACK_STRING,
+				],
+			],
+		];
+	}
 
 	public function __construct( $langage = '', $value = '' ) {
-		$this->keys[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] = $langage;
-		$this->keys[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ] = $value;
+		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] = $langage;
+		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ] = $value;
 	}
 
 	public static function create( array $objectVars ) : ZObject {
@@ -39,7 +48,7 @@ class ZMonoLingualString implements ZObject {
 	}
 
 	public function getZType() : string {
-		return $this->zObjectType;
+		return static::getDefinition()['type'];
 	}
 
 	public function getZValue() {
@@ -47,11 +56,11 @@ class ZMonoLingualString implements ZObject {
 	}
 
 	public function getLanguage() {
-		return $this->keys[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ];
+		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ];
 	}
 
 	public function getString() {
-		return $this->keys[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ];
+		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ];
 	}
 
 	public function isValid() : bool {

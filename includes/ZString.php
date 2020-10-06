@@ -12,17 +12,27 @@ namespace MediaWiki\Extension\WikiLambda;
 
 class ZString implements ZObject {
 
-	private $zObjectType = 'ZString';
+	private $data = [];
 
-	private $value;
+	public static function getDefinition() : array {
+		return [
+			'type' => 'ZString',
+			'keys' => [
+				ZTypeRegistry::Z_STRING_VALUE => [
+					'type' => ZTypeRegistry::HACK_STRING,
+					'default' => ''
+				],
+			],
+		];
+	}
 
 	public function __construct( $value = '' ) {
-		if ( !isset( $value ) ) {
-			$this->value = null;
-		} elseif ( is_string( $value ) ) {
-			$this->value = $value;
+		if ( is_string( $value ) || $value === null ) {
+			$this->data[ ZTypeRegistry::Z_STRING_VALUE ] = $value;
+		} elseif ( is_array( $value ) ) {
+			$this->data[ ZTypeRegistry::Z_STRING_VALUE ] = $value[0];
 		} else {
-			$this->value = get_object_vars( $value )[ ZTypeRegistry::Z_STRING_VALUE ];
+			$this->data[ ZTypeRegistry::Z_STRING_VALUE ] = get_object_vars( $value )[ ZTypeRegistry::Z_STRING_VALUE ];
 		}
 	}
 
@@ -34,11 +44,11 @@ class ZString implements ZObject {
 	}
 
 	public function getZType() : string {
-		return $this->zObjectType;
+		return static::getDefinition()['type'];
 	}
 
 	public function getZValue() {
-		return $this->value;
+		return $this->data[ ZTypeRegistry::Z_STRING_VALUE ];
 	}
 
 	public function isValid() : bool {

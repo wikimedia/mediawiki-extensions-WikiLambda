@@ -16,9 +16,18 @@ use MediaWiki\MediaWikiServices;
 
 class ZMultiLingualString implements ZObject {
 
-	private $zObjectType = 'ZMultiLingualString';
+	private $data = [];
 
-	private $keys = [ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [] ];
+	public static function getDefinition() : array {
+		return [
+			'type' => 'ZMultiLingualString',
+			'keys' => [
+				ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [
+					'type' => ZTypeRegistry::HACK_ARRAY_Z_MONOLINGUALSTRING,
+				],
+			],
+		];
+	}
 
 	public function __construct( $strings = [] ) {
 		foreach ( $strings as $index => $monoLingualString ) {
@@ -37,11 +46,11 @@ class ZMultiLingualString implements ZObject {
 	}
 
 	public function getZType() : string {
-		return $this->zObjectType;
+		return static::getDefinition()['type'];
 	}
 
 	public function getZValue() {
-		return $this->keys[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ];
+		return $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] ?? [];
 	}
 
 	/**
@@ -53,7 +62,7 @@ class ZMultiLingualString implements ZObject {
 	 * @return string The string, or the empty string if .
 	 */
 	public function getStringForLanguageCode( string $languageCode ) : string {
-		return $this->keys[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageCode ] ?? '';
+		return $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageCode ] ?? '';
 	}
 
 	/**
@@ -65,7 +74,7 @@ class ZMultiLingualString implements ZObject {
 	 * @return bool If there is a string stored.
 	 */
 	public function isLanguageProvidedValue( string $languageCode ) : bool {
-		return array_key_exists( $languageCode, $this->keys[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] );
+		return array_key_exists( $languageCode, $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] ?? [] );
 	}
 
 	/**
@@ -99,7 +108,7 @@ class ZMultiLingualString implements ZObject {
 	 * @param ZMonoLingualString $value The new value to set.
 	 */
 	public function setMonoLingualString( ZMonoLingualString $value ) : void {
-		$this->keys[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $value->getLanguage() ] = $value->getString();
+		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $value->getLanguage() ] = $value->getString();
 	}
 
 	/**
@@ -108,7 +117,7 @@ class ZMultiLingualString implements ZObject {
 	 */
 	public function setStringForLanguage( Language $language, string $value ) : void {
 		$languageCode = $language->mCode;
-		$this->keys[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageCode ] = $value;
+		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageCode ] = $value;
 	}
 
 	/**
@@ -116,12 +125,12 @@ class ZMultiLingualString implements ZObject {
 	 */
 	public function removeValue( Language $language ) : void {
 		if ( $this->isLanguageProvidedValue( $language->mCode ) ) {
-			unset( $this->keys[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $language->mCode ] );
+			unset( $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $language->mCode ] );
 		}
 	}
 
 	public function isValid() : bool {
-		foreach ( $this->keys[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] as $languageCode => $value ) {
+		foreach ( $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] ?? [] as $languageCode => $value ) {
 			if ( !Language::isValidCode( $languageCode ) ) {
 				return false;
 			}
