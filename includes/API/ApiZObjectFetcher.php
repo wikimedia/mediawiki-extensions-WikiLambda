@@ -25,7 +25,7 @@ class ApiZObjectFetcher extends ApiBase {
 		$params = $this->extractRequestParams();
 
 		$ZIDs = explode( '|', $params[ 'zids' ] );
-		$language = $params[ 'language' ] ?? null;
+		$language = $params[ 'language' ];
 
 		foreach ( $ZIDs as $index => $ZID ) {
 			$title = Title::newFromText( $ZID, NS_ZOBJECT );
@@ -34,7 +34,11 @@ class ApiZObjectFetcher extends ApiBase {
 				$this->dieWithError( [ 'apierror-wikilambda_fetch-missingzid', $ZID ] );
 			}
 
-			$this->getResult()->addValue( $ZID, $this->getModuleName(), ZObjectContentHandler::getExternalRepresentation( $title, $language ) );
+			$this->getResult()->addValue(
+				$ZID,
+				$this->getModuleName(),
+				ZObjectContentHandler::getExternalRepresentation( $title, $language )
+			);
 		}
 	}
 
@@ -50,10 +54,8 @@ class ApiZObjectFetcher extends ApiBase {
 				ParamValidator::PARAM_REQUIRED => true,
 			],
 			'language' => [
-				ParamValidator::PARAM_TYPE => array_merge(
-					[ false ],
-					array_keys( $languageUtils->getLanguageNames() ) ),
-				ApiBase::PARAM_DFLT => false,
+				ParamValidator::PARAM_TYPE => array_keys( $languageUtils->getLanguageNames() ),
+				ParamValidator::PARAM_REQUIRED => false,
 			]
 		];
 	}
