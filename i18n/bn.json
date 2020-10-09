@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Al Riaz Uddin Ripon",
 			"YahyA",
 			"আফতাবুজ্জামান"
 		]
@@ -8,5 +9,8 @@
 	"wikilambda-speciallistduplicatezobjectlabels-language": "ভাষা",
 	"wikilambda-publishnew": "প্রকাশ করুন",
 	"wikilambda-savenew": "সংরক্ষণ",
-	"wikilambda-publishchanges": "পরিবর্তন প্রকাশ করুন"
+	"wikilambda-publishchanges": "পরিবর্তন প্রকাশ করুন",
+	"wikilambda-savechanges": "পরিবর্তনসমূহ সংরক্ষণ করুন",
+	"wikilambda-editor-label-addlanguage-label": "ভাষা যোগ করুন",
+	"wikilambda-editor-label-removelanguage-tooltip": "এই লেবেল থেকে ভাষাটি সরিয়ে দিন"
 }
