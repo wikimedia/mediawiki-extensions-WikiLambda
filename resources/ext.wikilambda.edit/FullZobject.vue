@@ -13,9 +13,16 @@
 			<span> {{ zobjectId }} </span>
 		</span>
 		<span v-else>
-			<type-selector :type="type" @change="updateType"></type-selector>
+			<span v-if="viewmode"> {{ typeLabel }} ({{ type }})</span>
+			<type-selector v-else
+				:type="type"
+				@change="updateType"
+			></type-selector>
 		</span>
-		<other-keys :zobject="zobject" @input="updateZobject"></other-keys>
+		<other-keys :zobject="zobject"
+			:viewmode="viewmode"
+			@input="updateZobject"
+		></other-keys>
 	</div>
 </template>
 
@@ -27,7 +34,7 @@ module.exports = {
 	beforeCreate: function () { // Need to delay require of OtherKeys to avoid loop
 		this.$options.components[ 'other-keys' ] = require( './OtherKeys.vue' );
 	},
-	props: [ 'zobject', 'persistent' ],
+	props: [ 'zobject', 'persistent', 'viewmode' ],
 	methods: {
 		updateZobject: function ( newZobject ) {
 			this.zobject = newZobject;

@@ -11,22 +11,26 @@
 			class="ext-wikilambda-monolingual"
 		>
 			<div class="ext-wikilambda-cell">
-				<button :title="tooltipRemoveLang"
+				<button v-if="!viewmode"
+					:title="tooltipRemoveLang"
 					@click="removeLang(index)"
 				>
 					{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 				</button>
-				{{ allLangs[z11Object.Z11K1] }} ({{ z11Object.Z11K1 }})
+				{{ allLangs[z11Object.Z11K1] }} ({{ z11Object.Z11K1 }}):
 			</div>
 			<div class="ext-wikilambda-cell">
-				<input class="ext-wikilambda-zstring"
+				<span v-if="viewmode" class="ext-wikilambda-zstring"> {{ z11Object.Z11K2 }} </span>
+				<input v-else
+					class="ext-wikilambda-zstring"
 					:value="z11Object.Z11K2"
 					@input="updateLangString($event, z11Object)"
 				>
 			</div>
 		</div>
 		<div class="ext-wikilambda-monolingual">
-			<select :value="selectedLang"
+			<select v-if="!viewmode"
+				:value="selectedLang"
 				@change="addNewLang"
 			>
 				<option selected
@@ -50,7 +54,7 @@
 
 module.exports = {
 	name: 'ZMultiLingualString',
-	props: [ 'mlsObject' ],
+	props: [ 'mlsObject', 'viewmode' ],
 	computed: {
 		monolingualStrings: {
 			get: function () {

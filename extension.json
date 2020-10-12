@@ -85,6 +85,7 @@
 			"packageFiles": [
 				"ext.wikilambda.edit/index.js",
 				"ext.wikilambda.edit/ZobjectEditor.vue",
+				"ext.wikilambda.edit/ZobjectViewer.vue",
 				"ext.wikilambda.edit/FullZobject.vue",
 				"ext.wikilambda.edit/OtherKeys.vue",
 				"ext.wikilambda.edit/ZKey.vue",

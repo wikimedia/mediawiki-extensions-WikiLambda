@@ -7,33 +7,42 @@
 	-->
 	<ul>
 		<li v-for="(value, key) in otherkeydata" :key="key">
-			<button :title="tooltipRemoveZObjectKey" @click="removeEntry(key)">
+			<button v-if="!viewmode"
+				:title="tooltipRemoveZObjectKey"
+				@click="removeEntry(key)"
+			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 			</button>
 			<span>{{ zkeylabels[key] }} ({{ key }}):</span>
 			<type-selector v-if="!(key in keyTypes)"
 				@change="setKeyType($event, key)"
 			></type-selector>
-			<input v-else-if="keyTypes[key] === 'Z6'"
-				class="ext-wikilambda-zstring"
-				:value="value"
-				@input="updateStringKey($event, key)"
-			>
+			<span v-else-if="keyTypes[key] === 'Z6'">
+				<span v-if="viewmode">{{ value }}</span>
+				<input v-else
+					class="ext-wikilambda-zstring"
+					:value="value"
+					@input="updateStringKey($event, key)"
+				>
+			</span>
 			<list-value v-else-if="keyTypes[key] === 'Z10'"
 				:list="zobject[key]"
+				:viewmode="viewmode"
 				@input="updateKey($event, key)"
 			></list-value>
 			<multi-lingual-string v-else-if="keyTypes[key] === 'Z12'"
 				:mls-object="zobject[key]"
+				:viewmode="viewmode"
 				@input="updateKey($event, key)"
 			></multi-lingual-string>
 			<full-zobject v-else
 				:zobject="zobject[key]"
 				:persistent="false"
+				:viewmode="viewmode"
 				@input="updateKey($event, key)"
 			></full-zobject>
 		</li>
-		<li>
+		<li v-if="!viewmode">
 			{{ $i18n( 'wikilambda-editor-zobject-addkey' ) }}
 			<zkey-input @change="addNewKey($event)"></zkey-input>
 		</li>
@@ -49,7 +58,7 @@ var FullZobject = require( './FullZobject.vue' ),
 
 module.exports = {
 	name: 'OtherKeys',
-	props: [ 'zobject' ],
+	props: [ 'zobject', 'viewmode' ],
 	data: function () {
 		var editingData = mw.config.get( 'extWikilambdaEditingData' ),
 			ztypes = editingData.ztypes,

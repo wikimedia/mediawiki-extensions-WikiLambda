@@ -276,9 +276,11 @@ class ZPersistentObject extends JsonContent implements ZObject {
 	) {
 		parent::fillParserOutput( $title, $revId, $options, $generateHtml, $output );
 
+		$userLang = RequestContext::getMain()->getLanguage();
+
 		$label = Html::element(
 			'span', [ 'class' => 'ext-wikilambda-viewpage-header-title' ],
-			$this->getLabel( RequestContext::getMain()->getLanguage() )
+			$this->getLabel( $userLang )
 		);
 		$id = Html::element(
 			'span', [ 'class' => 'ext-wikilambda-viewpage-header-zid' ],
@@ -295,10 +297,33 @@ class ZPersistentObject extends JsonContent implements ZObject {
 		$header = Html::rawElement(
 			'span',
 			[ 'class' => 'ext-wikilambda-viewpage-header' ],
-			$label . $id . $type
+			$label . ' ' . $id . $type
 		);
 
 		$output->addModuleStyles( 'ext.wikilambda.viewpage.styles' );
 		$output->setTitleText( $header );
+
+		$output->addModules( 'ext.wikilambda.edit' );
+		$zObject = self::getObjectFromDB( $title );
+		$userLangCode = $userLang->mCode;
+		$langUtils = MediaWikiServices::getInstance()->getLanguageNameUtils();
+		$editingData = [
+			'title' => $title->getBaseText(),
+			'page' => $title->getPrefixedDBkey(),
+			'zobject' => $zObject->getData()->getValue(),
+			'zlang' => $userLangCode,
+			'ztypes' => ZTypeRegistry::TEMP_TYPES_IN_ENGLISH,
+			'zlanguages' => $langUtils->getLanguageNames( $userLangCode ),
+			'zkeylabels' => ZTypeRegistry::TEMP_KEY_LABELS_IN_ENGLISH,
+			'createNewPage' => false
+		];
+
+		$output->addJsConfigVars( 'extWikilambdaEditingData', $editingData );
+
+		$htmlJsonContent = $output->getText();
+		$output->setText(
+			 Html::element( 'div', [ 'id' => 'ext-wikilambda-view' ] )
+			. $htmlJsonContent
+		);
 	}
 }

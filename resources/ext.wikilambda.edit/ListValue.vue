@@ -8,7 +8,10 @@
 	<div class="ext-wikilambda-zlist">
 		<ul>
 			<li v-for="(item, index) in list" :key="index">
-				<button :title="tooltipRemoveListItem" @click="removeItem(index)">
+				<button v-if="!viewmode"
+					:title="tooltipRemoveListItem"
+					@click="removeItem(index)"
+				>
 					{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 				</button>
 				<type-selector v-if="listTypes[index] === 'new'"
@@ -21,19 +24,22 @@
 				>
 				<list-value v-else-if="listTypes[index] === 'Z10'"
 					:list="item"
+					:viewmode="viewmode"
 					@input="updateValue($event, index)"
 				></list-value>
 				<multi-lingual-string v-else-if="listTypes[index] === 'Z12'"
 					:mls-object="item"
+					:viewmode="viewmode"
 					@input="updateValue($event, index)"
 				></multi-lingual-string>
 				<full-zobject v-else
 					:zobject="item"
 					:persistent="false"
+					:viewmode="viewmode"
 					@input="updateValue($event, index)"
 				></full-zobject>
 			</li>
-			<li>
+			<li v-if="!viewmode">
 				<button :title="tooltipAddListItem" @click="addNewItem">
 					{{ $i18n( 'wikilambda-editor-additem' ) }}
 				</button>
@@ -49,7 +55,7 @@ var FullZobject = require( './FullZobject.vue' ),
 
 module.exports = {
 	name: 'list-value',
-	props: [ 'list' ],
+	props: [ 'list', 'viewmode' ],
 	data: function () {
 		var listTypes = this.list.map( function ( item ) {
 			var type = 'string';
@@ -113,7 +119,7 @@ module.exports = {
 	padding: 0 0.5em;
 }
 
-.ext-wikilambda-zstring {
+input.ext-wikilambda-zstring {
 	background: #eef;
 }
 

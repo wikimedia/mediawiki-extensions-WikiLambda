@@ -9,6 +9,7 @@
 	<div id="ext-wikilambda-editor">
 		<full-zobject :zobject="zobject"
 			:persistent="true"
+			:viewmode="false"
 			@input="updateZobject"
 		></full-zobject>
 		<div>
