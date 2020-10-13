@@ -275,6 +275,7 @@ class ZPersistentObject extends JsonContent implements ZObject {
 		Title $title, $revId, ParserOptions $options, $generateHtml, ParserOutput &$output
 	) {
 		parent::fillParserOutput( $title, $revId, $options, $generateHtml, $output );
+		$htmlJsonContent = $output->getText();
 
 		$userLang = RequestContext::getMain()->getLanguage();
 
@@ -320,10 +321,24 @@ class ZPersistentObject extends JsonContent implements ZObject {
 
 		$output->addJsConfigVars( 'extWikilambdaEditingData', $editingData );
 
-		$htmlJsonContent = $output->getText();
 		$output->setText(
-			 Html::element( 'div', [ 'id' => 'ext-wikilambda-view' ] )
-			. $htmlJsonContent
+			// Placeholder div for the Vue template.
+			Html::element( 'div', [ 'id' => 'ext-wikilambda-view' ] )
+			// Fallback div for the HTML version and warning.
+			. Html::rawElement(
+				'div',
+				[
+					'class' => [ 'ext-wikilambda-view-nojsfallback' ],
+				],
+				Html::element(
+					'div',
+					[
+						'class' => [ 'ext-wikilambda-view-nojswarning', 'warning' ],
+					],
+					wfMessage( 'wikilambda-viewmode-nojs' )->inLanguage( $userLang )->text()
+				) .
+				$htmlJsonContent
+			)
 		);
 	}
 }
