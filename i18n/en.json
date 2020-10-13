@@ -13,6 +13,7 @@
 	"wikilambda-labelclash": "The provided content's label clashes with ZObject '$1' for the label in '$2'.",
 	"wikilambda-persistentzobject": "ZObject",
 	"wikilambda-multilingualstring-nofallback": "No label defined in this language or accepted fallbacks",
+	"wikilambda-viewmode-nojs": "This page displays in a limited way without JavaScript.",
 	"wikilambda-special-createzobject": "Create a new ZObject",
 	"wikilambda-special-createzobject-summary": "This form lets you create a new ZObject, which can represent a Function, its Implementation, a Tester for it, or one of various other kinds of ZObjects. You should read the help documentation and community guidance first.",
 	"wikilambda-special-createzobject-intro": "Make sure that you follow community policies, and copyright and patent rules.",

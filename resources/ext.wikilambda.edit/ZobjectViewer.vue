@@ -32,3 +32,14 @@ module.exports = {
 	}
 };
 </script>
+
+<style lang="less">
+.ext-wikilambda-view-nojsfallback {
+	display: none;
+}
+
+.ext-wikilambda-view-nojswarning {
+	font-weight: bold;
+	margin-bottom: 1em;
+}
+</style>
