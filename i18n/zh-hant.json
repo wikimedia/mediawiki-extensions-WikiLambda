@@ -4,6 +4,32 @@
 			"Kly"
 		]
 	},
+	"wikilambda-desc": "為維基媒體的 Wiki 提供 Wiki 語法解析器功能，來呼叫對於在中央 Wiki 上編寫、管理、評估的功能之評估。",
 	"wikilambda-emptylabel": "無標籤的 ZObject",
-	"wikilambda-invalidzobject": "提供內容不是有效的 ZObject。"
+	"wikilambda-invalidzobject": "提供內容不是有效的 ZObject。",
+	"wikilambda-invalidcontenttype": "提供的內容不是 ZObject 類別。",
+	"wikilambda-labelclash": "提供內容裡的標籤，與「$2」裡用於標籤的 ZObject「$1」衝突。",
+	"wikilambda-multilingualstring-nofallback": "在此語言或是此語言的後備沒有標籤被定義",
+	"wikilambda-special-createzobject": "建立一個新的 ZObject",
+	"wikilambda-special-createzobject-summary": "此表單能讓您建立一個新的 ZObject，它可以表現成一個實行的功能、用於此的測試器、或是別種 ZObject 當中之一。您應先閱讀說明文件與社群指南。",
+	"wikilambda-special-createzobject-intro": "請確定您遵循社群規範、版權和專利規則。",
+	"wikilambda-special-createzobject-nojs": "此頁面需要用到 JavaScript。",
+	"wikilambda-special-listduplicatezobjectlabels": "帶有重複標籤的 ZObject 頁面",
+	"wikilambda-special-listduplicatezobjectlabels-summary": "此頁面顯示出已建立且帶有重複標籤的 ZObject。僅有第一個標籤會顯示在搜尋裡，因此應修正。",
+	"wikilambda-speciallistduplicatezobjectlabels-empty": "目前 Zobject 沒有重複標籤。",
+	"wikilambda-speciallistduplicatezobjectlabels-existing": "現有 ZObject",
+	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "衝突的 ZObject",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "語言",
+	"wikilambda-publishnew": "發布",
+	"wikilambda-savenew": "儲存",
+	"wikilambda-publishchanges": "發布變更",
+	"wikilambda-savechanges": "儲存變更",
+	"wikilambda-summarylabel": "摘要：",
+	"wikilambda-typeselector-label": "值類型",
+	"wikilambda-editor-label-addlanguage-label": "增加語言：",
+	"wikilambda-editor-label-removelanguage-tooltip": "從這個標籤移除此語言",
+	"wikilambda-editor-zlist-additem-tooltip": "增加一個項目到 ZList",
+	"wikilambda-editor-zlist-removeitem-tooltip": "從這個 ZList 移除此項目",
+	"wikilambda-editor-zobject-addkey": "增加鍵：",
+	"wikilambda-editor-zobject-removekey-tooltip": "從這個 ZList 移除此鍵/值"
 }
