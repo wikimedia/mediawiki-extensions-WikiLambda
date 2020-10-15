@@ -11,6 +11,7 @@
 	"wikilambda-labelclash": "התווית של התוכן שסופק מתנגש עם עצם ה־Z בעל המזהה $1 עבור התווית בשפה $2.",
 	"wikilambda-persistentzobject": "עצם Z",
 	"wikilambda-multilingualstring-nofallback": "לא הוגדרה תווית בשפה הזאת וגם לא שפת גיבוי קבילה",
+	"wikilambda-viewmode-nojs": "הדף הזה מוצג באופן מוגבל ללא JavaScript",
 	"wikilambda-special-createzobject": "יצירת עצם Z חדש",
 	"wikilambda-special-createzobject-summary": "הטופס הזה מאפשר לך ליצור עצם Z חדש, שיכול לייצג פונקציה, מימוש שלה, בודק שלה, או אחד מהסוגים האחרים של עצמי Z. מומלץ לקרוא את העזרה ואת הנחיות הקהילה תחילה.",
 	"wikilambda-special-createzobject-intro": "נא לוודא שאתם פועלים בהתאם למדיניות הקהילה, וכללי זכויות היוצרים והפטנטים.",

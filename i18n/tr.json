@@ -11,6 +11,7 @@
 	"wikilambda-invalidcontenttype": "Sağlanan içerik bir ZObject sınıfı değil.",
 	"wikilambda-labelclash": "Sağlanan içeriğin etiketi, '$2' etiketindeki ZObject '$1' ile çakışıyor.",
 	"wikilambda-multilingualstring-nofallback": "Bu dilde tanımlanmış etiket yok veya geri dönüşler kabul edilmiyor",
+	"wikilambda-viewmode-nojs": "Bu sayfa, JavaScript olmadan sınırlı bir şekilde görüntülenir.",
 	"wikilambda-special-createzobject": "Yeni bir ZObject oluştur",
 	"wikilambda-special-createzobject-summary": "Bu form, bir İşlevi, Uygulamasını, bunun için bir Test Cihazını veya çeşitli diğer ZObject türlerinden birini temsil edebilen yeni bir ZObject oluşturmanıza olanak tanır. Önce yardım belgelerini ve topluluk rehberini okumalısınız.",
 	"wikilambda-special-createzobject-intro": "Topluluk politikalarına, telif hakkı ve patent kurallarına uyduğunuzdan emin olun.",

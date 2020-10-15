@@ -6,6 +6,7 @@
 	},
 	"apihelp-wikilambda_fetch-summary": "Hent JSON-modullen for ZObjects.",
 	"apihelp-wikilambda_fetch-param-zids": "ZObject-enes ZID-er som skal hentes, atskilt av vertikalstreker.",
+	"apihelp-wikilambda_fetch-param-language": "Språket resultater skal returneres på.",
 	"apihelp-wikilambda_fetch-example-single": "Hent et enkelt ZObject, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "Hent tre ZObject-er: Z1, Z2 og Z3.",
 	"apierror-wikilambda_fetch-missingzid": "Den gitte ZID-en «$1» finnes ikke på denne wikien.",

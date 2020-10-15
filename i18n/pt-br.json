@@ -10,6 +10,7 @@
 	"wikilambda-invalidcontenttype": "O conteúdo fornecido não é uma classe ZObject.",
 	"wikilambda-labelclash": "O rótulo do conteúdo fornecido entra em conflito com ZObject '$1' para o rótulo em '$2'.",
 	"wikilambda-multilingualstring-nofallback": "Nenhum rótulo definido neste idioma ou substitutos aceitos",
+	"wikilambda-viewmode-nojs": "Esta página é exibida de forma limitada sem JavaScript.",
 	"wikilambda-special-createzobject": "Crie um novo ZObject",
 	"wikilambda-special-createzobject-summary": "Este formulário permite criar um novo ZObject, que pode representar uma função, sua implementação, um testador para ela ou um dos vários outros tipos de ZObjects. Você deve ler a documentação de ajuda e as orientações da comunidade primeiro.",
 	"wikilambda-special-createzobject-intro": "Certifique-se de seguir as políticas da comunidade e as regras de direitos autorais e patentes.",

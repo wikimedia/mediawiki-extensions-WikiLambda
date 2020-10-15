@@ -6,6 +6,7 @@
 	},
 	"apihelp-wikilambda_fetch-summary": "אחזור מודל JSON של עצמי Z.",
 	"apihelp-wikilambda_fetch-param-zids": "מזהי Z של עצמי Z שיש לאחזר, מופרדים בתווי מקל.",
+	"apihelp-wikilambda_fetch-param-language": "השפה שבה יוחזרו התוצאות.",
 	"apihelp-wikilambda_fetch-example-single": "אחזור עצם Z בודד, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "אחזור שלושה עצמי Z‏: Z1‏, Z2, ו־Z3.",
 	"apierror-wikilambda_fetch-missingzid": "מזהה ה־Z שניתן \"$1\" אינו קיים בוויקי הזה.",

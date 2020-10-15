@@ -6,6 +6,7 @@
 	},
 	"apihelp-wikilambda_fetch-summary": "ZObjects'in JSON modelini getirin.",
 	"apihelp-wikilambda_fetch-param-zids": "Borularla ayrılmış, getirilecek ZObject ZID'leri.",
+	"apihelp-wikilambda_fetch-param-language": "Sonuçların döndürüleceği dil.",
 	"apihelp-wikilambda_fetch-example-single": "Tek bir ZObject, Z1 getirin.",
 	"apihelp-wikilambda_fetch-example-multiple": "Üç ZObject getirin: Z1, Z2 ve Z3.",
 	"apierror-wikilambda_fetch-missingzid": "Verilen ZID '$1' bu vikide mevcut değil.",
