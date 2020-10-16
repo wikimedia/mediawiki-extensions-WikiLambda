@@ -14,6 +14,7 @@
 	"wikilambda-invalidcontenttype": "Le contenu fourni n’est pas une classe ZObject.",
 	"wikilambda-labelclash": "Le libellé du contenu fourni est en conflit avec le ZObject '$1' pour le libellé dans '$2'.",
 	"wikilambda-multilingualstring-nofallback": "Aucun libellé défini dans cette langue ni de valeur par défaut acceptée.",
+	"wikilambda-viewmode-nojs": "Affichage réduit de cette page sans Javascript.",
 	"wikilambda-special-createzobject": "Créer un nouveau ZObject",
 	"wikilambda-special-createzobject-summary": "Ce formulaire vous laisse créer un nouveau ZObject, qui peut représenter une fonction, son implémentation, un testeur pour elle, ou une des diverses sortes de ZObjets. Vous pouvez d’abord lire la documentation d’aide et le guide de la communauté.",
 	"wikilambda-special-createzobject-intro": "Assurez-vous que vous suivez les politiques de la communauté, ainsi que les règles relatives aux droits d’auteur et aux brevets.",

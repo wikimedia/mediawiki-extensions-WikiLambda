@@ -6,6 +6,7 @@
 	},
 	"wikilambda-invalidcontenttype": "A megadott tartalom nem sorolható be egyetlen ZObject osztályba sem.",
 	"wikilambda-labelclash": "A megadott tartalom címe ütközik a '$1' ZObjecttel '$2' cím miatt.",
+	"wikilambda-viewmode-nojs": "JavaScript hiányában az oldal csökkentett verzióban jelenik meg.",
 	"wikilambda-special-createzobject": "Új ZObject létrehozása",
 	"wikilambda-special-createzobject-summary": "Az űrlap segítségével létrehozhatsz egy új ZObjectet, mely képviselhet Funkciót, Végrehajtást, Tesztert, vagy bármely egyéb ZObject típust. Ajánljuk figyelmedbe a súgót és a közösségi útmutatót.",
 	"wikilambda-special-createzobject-intro": "Kövesd a közösségi irányelveket és tartsd tiszteletben a szabadalmi és szerzői jogokat.",
