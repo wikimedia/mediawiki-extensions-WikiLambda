@@ -2,11 +2,13 @@
 	"@metadata": {
 		"authors": [
 			"Pols12",
+			"Verdy p",
 			"Wladek92"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Extraire le modèle JSON de ZObjects.",
 	"apihelp-wikilambda_fetch-param-zids": "Les ZID des ZObects à extraire, séparés par des barres verticales.",
+	"apihelp-wikilambda_fetch-param-language": "La langue dans laquelle retourner les résultats.",
 	"apihelp-wikilambda_fetch-example-single": "Rechercher un unique ZObject, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "Extraire trois ZObjects : Z1, Z2 et Z3.",
 	"apierror-wikilambda_fetch-missingzid": "Le ZID donné « $1 » n’existe pas sur ce wiki.",
