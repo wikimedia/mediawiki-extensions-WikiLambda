@@ -1,11 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"Eduardo Addad de Oliveira"
+			"Eduardo Addad de Oliveira",
+			"Luk3"
 		]
 	},
 	"wikilambda-desc": "Fornecendo as wikis da Wikimedia uma função de analisador de wikitexto para chamar a avaliação de funções escritas, gerenciadas e avaliadas em um wiki central.",
-	"wikilambda-emptylabel": "ZObject sem etiqueta",
+	"wikilambda-emptylabel": "ZObject sem rótulo",
 	"wikilambda-invalidzobject": "O conteúdo fornecido não é um ZObject válido.",
 	"wikilambda-invalidcontenttype": "O conteúdo fornecido não é uma classe ZObject.",
 	"wikilambda-labelclash": "O rótulo do conteúdo fornecido entra em conflito com ZObject '$1' para o rótulo em '$2'.",
@@ -16,6 +17,7 @@
 	"wikilambda-special-createzobject-intro": "Certifique-se de seguir as políticas da comunidade e as regras de direitos autorais e patentes.",
 	"wikilambda-special-createzobject-nojs": "Esta página requer o uso de JavaScript.",
 	"wikilambda-special-listduplicatezobjectlabels": "Páginas ZObject com rótulos duplicados",
+	"wikilambda-special-listduplicatezobjectlabels-summary": "Esta página mostra quais ZObjects foram criados com rótulos duplicados. Apenas o primeiro aparecerá em pesquisas, então devem ser corrigidos.",
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "Nenhum ZObjects tem rótulos duplicados atualmente.",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "ZObject existente",
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "ZObject conflitante",
@@ -27,6 +29,7 @@
 	"wikilambda-summarylabel": "Resumo:",
 	"wikilambda-typeselector-label": "Tipo de valor",
 	"wikilambda-editor-label-addlanguage-label": "Adicionar idioma:",
+	"wikilambda-editor-label-removelanguage-tooltip": "Remover este idioma deste rótulo",
 	"wikilambda-editor-zlist-additem-tooltip": "Adicione um item na ZList",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Remova este item desta ZList",
 	"wikilambda-editor-zobject-addkey": "Adicionar chave:",

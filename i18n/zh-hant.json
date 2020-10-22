@@ -10,6 +10,7 @@
 	"wikilambda-invalidcontenttype": "提供的內容不是 ZObject 類別。",
 	"wikilambda-labelclash": "提供內容裡的標籤，與「$2」裡用於標籤的 ZObject「$1」衝突。",
 	"wikilambda-multilingualstring-nofallback": "在此語言或是此語言的後備沒有標籤被定義",
+	"wikilambda-viewmode-nojs": "沒有 JavaScript 的情況下，此頁面會以有限的方式顯示。",
 	"wikilambda-special-createzobject": "建立一個新的 ZObject",
 	"wikilambda-special-createzobject-summary": "此表單能讓您建立一個新的 ZObject，它可以表現成一個實行的功能、用於此的測試器、或是別種 ZObject 當中之一。您應先閱讀說明文件與社群指南。",
 	"wikilambda-special-createzobject-intro": "請確定您遵循社群規範、版權和專利規則。",

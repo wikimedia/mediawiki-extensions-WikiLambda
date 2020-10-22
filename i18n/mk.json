@@ -10,6 +10,7 @@
 	"wikilambda-invalidcontenttype": "Укажанаа содржина не претставува класа на ZObject.",
 	"wikilambda-labelclash": "Натписот на укажаната содржина се коси со ZObject „$1“ за натписот „$2“.",
 	"wikilambda-multilingualstring-nofallback": "Нема зададено натпис на овој јазик или прифатените резервни јазици",
+	"wikilambda-viewmode-nojs": "Оваа страница се прикажува на ограничен начин без JavaScript.",
 	"wikilambda-special-createzobject": "Создај нов ZObject",
 	"wikilambda-special-createzobject-summary": "Овој образец би овозможува создавање на нов ZObject, кој може да претставува функција, негова примена, негов испробувач, или еден од разните видови на ZObject-и. Најпрвин ќе треба да ја прочитате документацијата за помош и напатствијата на заедницата.",
 	"wikilambda-special-createzobject-intro": "Ќе мора да ги следите правилата на заедницата, како и авторскоправните и патентните правила.",

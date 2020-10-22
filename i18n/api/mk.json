@@ -6,6 +6,7 @@
 	},
 	"apihelp-wikilambda_fetch-summary": "Дај го JSON-моделот на ZObjects.",
 	"apihelp-wikilambda_fetch-param-zids": "Кои ZID-ја за ZObject да се добијат, одделени со прави црти.",
+	"apihelp-wikilambda_fetch-param-language": "На кој јазик да се даде исходот.",
 	"apihelp-wikilambda_fetch-example-single": "Дај еден ZObject, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "Дај три ZObjects: Z1, Z2 и Z3.",
 	"apierror-wikilambda_fetch-missingzid": "Дадениот ZID „$1“ не постои на ова вики.",
