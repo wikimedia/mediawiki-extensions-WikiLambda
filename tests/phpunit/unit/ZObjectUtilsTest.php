@@ -118,7 +118,7 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 			],
 			'simple record with left local untrimmed key' => [
 				'{ "Z1K1": "Z60", " K1": "a" }',
-				'{ "Z1K1": "Z60", "K1": "a" }'
+				'{ "Z1K1": "Z60", "Z60K1": "a" }'
 			],
 
 			'record with embedded record with key untrimmed' => [
@@ -135,7 +135,7 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 			],
 			'simple record with unsorted local keys' => [
 				'{ "K1 ": "a", "Z1K1 ": "Z60" }',
-				'{ "Z1K1": "Z60", "K1": "a" }'
+				'{ "Z1K1": "Z60", "Z60K1": "a" }'
 			],
 			'escaped string' => [
 				'{ "Z1K1": "Z6", "Z6K1": "Z6" }',
@@ -264,6 +264,14 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 				'{ "Z1K1": "Z10", "Z10K1": { "Z1K1": "Z6", "Z6K1": "Z1" },' .
 				'  "Z10K2": { "Z1K1": "Z10" } }',
 				'[{ "Z1K1": "Z6", "Z6K1": "Z1" }]'
+			],
+			'ZObject with global keys' => [
+				'{ "Z1K1": "Z60", "Z60K1": "test" }',
+				'{ "Z1K1": "Z60", "Z60K1": "test" }',
+			],
+			'ZObject with local keys' => [
+				'{ "Z1K1": "Z60", "K1": "test" }',
+				'{ "Z1K1": "Z60", "Z60K1": "test" }',
 			],
 		];
 	}

@@ -158,7 +158,7 @@ class ZObjectUtils {
 	 * Compares IDs of ZKeys in an order.
 	 *
 	 * First come global ZIDs, then local ones. The globals are sorted first
-	 * numerically by the Z-Number, and the by the K-Number.
+	 * numerically by the Z-Number, and then by the K-Number.
 	 *
 	 * @param string $left left key for comparision
 	 * @param string $right right key for comparision
@@ -205,7 +205,7 @@ class ZObjectUtils {
 	 *
 	 * This trims and sorts the keys.
 	 *
-	 * @param object $input The decoded JSON object representing a valid ZObject
+	 * @param object $input The decoded JSON object of a well-formed ZObject
 	 * @return object Canonical decoded JSON object representing the same ZObject
 	 */
 	public static function canonicalizeZRecord( object $input ): object {
@@ -214,6 +214,22 @@ class ZObjectUtils {
 		foreach ( $input_vars as $key => $value ) {
 			$trimmed_key = trim( $key );
 			$trimmed->$trimmed_key = $value;
+		}
+
+		if ( array_key_exists( 'Z1K1', get_object_vars( $trimmed ) ) ) {
+			$z1k1 = self::canonicalize( $trimmed->Z1K1 );
+			if ( is_string( $z1k1 ) ) {
+				$keys = array_keys( get_object_vars( $trimmed ) );
+				foreach ( $keys as $key ) {
+					if ( preg_match( "/^K[1-9]\d*$/", $key ) ) {
+						$global_key = $z1k1 . $key;
+						if ( !array_key_exists( $global_key, get_object_vars( $trimmed ) ) ) {
+							$trimmed->$global_key = $trimmed->$key;
+							unset( $trimmed->$key );
+						}
+					}
+				}
+			}
 		}
 
 		$sorted = new stdClass;
