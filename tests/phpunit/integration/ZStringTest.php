@@ -33,6 +33,7 @@ class ZStringTest extends \MediaWikiIntegrationTestCase {
 		$this->assertSame( 'ZString', $testObject->getZType() );
 		$this->assertSame( 'Test', $testObject->getZValue() );
 
+		$this->hideDeprecated( '::create' );
 		$testObject = new ZPersistentObject( '{ "Z1K1": "Z6", "Z6K1": "Test" }' );
 		$this->assertSame( 'ZString', $testObject->getZType() );
 		$this->assertSame( 'Test', $testObject->getZValue() );

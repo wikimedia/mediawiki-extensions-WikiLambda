@@ -30,6 +30,7 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 		$firstTitle = Title::newFromText( $firstTitleText, NS_ZOBJECT );
 		$this->titlesTouched[] = $firstTitleText;
 
+		$this->hideDeprecated( '::create' );
 		$initialStatus = $this->editPage( $firstTitleText, ZTestType::TEST_ENCODING, 'Test creation', NS_ZOBJECT );
 	}
 

@@ -61,6 +61,7 @@ class ZKeyTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getKeyLabel
 	 */
 	public function testPersistentCreation() {
+		$this->hideDeprecated( '::create' );
 		$testObject = new ZPersistentObject( '{"Z1K1":"Z2", "Z2K1":"Z0", "Z2K2":{"Z1K1":"Z3", "Z3K1":"Z6", "Z3K2":"Z6K1", "Z3K3":{"Z1K1":"Z12", "Z12K1":[{"Z1K1":"Z11", "Z11K1":"en", "Z11K2":"Key label"}]}}, "Z2K3":[{"Z1K1":"Z11", "Z11K1":"en", "Z11K2":"Key object label"}]}' );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'ZKey', $testObject->getZType() );

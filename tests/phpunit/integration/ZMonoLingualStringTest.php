@@ -79,6 +79,7 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZPersistentObject::getInnerZObject
 	 */
 	public function testPersistentCreation() {
+		$this->hideDeprecated( '::create' );
 		$testObject = new ZPersistentObject( '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "Demonstration item" }' );
 
 		$this->assertSame( 'ZMonoLingualString', $testObject->getZType() );

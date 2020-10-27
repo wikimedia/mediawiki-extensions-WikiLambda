@@ -49,6 +49,7 @@ class ZObjectContentHandlerTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getExternalRepresentation
 	 */
 	public function testGetExternalRepresentation() {
+		$this->hideDeprecated( '::create' );
 		$this->editPage( ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'Test creation', NS_ZOBJECT );
 
 		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );

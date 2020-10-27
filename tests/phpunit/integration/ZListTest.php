@@ -64,6 +64,7 @@ class ZListTest extends \MediaWikiIntegrationTestCase {
 		$this->assertSame( [ [ 'Test', 'Test2' ], [ [ "Test3", "Test4" ] ] ], $testObject->getZValue() );
 		$this->assertSame( [ [ 'Test', 'Test2' ], [ 'Test3', 'Test4' ] ], $testObject->getInnerZObject()->getZListAsArray() );
 
+		$this->hideDeprecated( '::create' );
 		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z10", "Z10K1": "Test", "Z10K2": ["Test2", "Test3"] }, "Z2K3": [] }' );
 		$this->assertSame( 'ZList', $testObject->getZType() );
 		$this->assertSame( [ 'Test', [ "Test2", "Test3" ] ], $testObject->getZValue() );

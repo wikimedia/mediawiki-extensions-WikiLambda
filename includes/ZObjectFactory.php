@@ -33,10 +33,14 @@ class ZObjectFactory {
 	}
 
 	/**
-	 * @param object $object The object to turn into a ZObject
+	 * @param string|array|object $object The item to turn into a ZObject
 	 * @return object A ZObject
 	 */
 	public static function create( $object ) {
+		if ( $object instanceof ZObject ) {
+			return $object;
+		}
+
 		if ( is_string( $object ) ) {
 			return new ZString( $object );
 		}
@@ -70,7 +74,16 @@ class ZObjectFactory {
 			$type = ZTypeRegistry::Z_RECORD;
 		}
 
-		// Magic:
-		return call_user_func( 'MediaWiki\Extension\WikiLambda\\' . $registry->getZObjectTypeFromKey( $type ) . '::create', $objectVars );
+		$typeName = ZTypeRegistry::singleton()->getZObjectTypeFromKey( $type );
+
+		switch ( $type ) {
+			// case ZTypeRegistry::Z_RECORD:
+			// 	return new ZRecord( $objectVars[ ZTypeRegistry::Z_STRING_VALUE ] );
+
+			default:
+				// Magic:
+				// wfDeprecated( '::create for ' . $typeName );
+				return call_user_func( 'MediaWiki\Extension\WikiLambda\\' . $registry->getZObjectTypeFromKey( $type ) . '::create', $objectVars );
+		}
 	}
 }

@@ -66,6 +66,7 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 		$baseObject = ZTestType::TEST_ENCODING;
 
 		$page = WikiPage::factory( $title );
+		$this->hideDeprecated( '::create' );
 		$content = ZObjectContentHandler::makeContent( $baseObject, $title );
 		$page->doEditContent( $content, "Test creation object" );
 		$page->clear();

@@ -33,6 +33,7 @@ class ZTypeTest extends \MediaWikiIntegrationTestCase {
 		$english = new \Language( 'en', $services->getLocalisationCache(), $services->getLanguageNameUtils(), $services->getLanguageFallback(), $services->getLanguageConverterFactory(), $services->getHookContainer() );
 		$french = new \Language( 'fr', $services->getLocalisationCache(), $services->getLanguageNameUtils(), $services->getLanguageFallback(), $services->getLanguageConverterFactory(), $services->getHookContainer() );
 
+		$this->hideDeprecated( '::create' );
 		$testObject = new ZPersistentObject( '{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":{"Z1K1":"Z4", "Z4K1":"Z111", "Z4K2":[{"Z1K1":"Z3", "Z3K1":"Z6", "Z3K2":"Z111K1", "Z3K3":{"Z1K1":"Z12", "Z12K1":[{"Z1K1":"Z11", "Z11K1":"en", "Z11K2":"Demonstration key"}, {"Z1K1":"Z11", "Z11K1":"fr", "Z11K2":"Index pour démonstration"}]}}, {"Z1K1":"Z3", "Z3K1":"Z6", "Z3K2":"Z111K2", "Z3K3":{"Z1K1":"Z12", "Z12K1":[{"Z1K1":"Z11", "Z11K1":"en", "Z11K2":"Other demonstration key"}, {"Z1K1":"Z11", "Z11K1":"fr", "Z11K2":"Autre index pour démonstration"}]}}], "Z4K3":"Z0"}, "Z2K3":{"Z1K1":"Z12", "Z12K1":[{"Z1K1":"Z11", "Z11K1":"en", "Z11K2":"Demonstration type"}, {"Z1K1":"Z11", "Z11K1":"fr", "Z11K2":"Type pour démonstration"}]}}' );
 
 		$this->assertTrue( $testObject->isValid() );
