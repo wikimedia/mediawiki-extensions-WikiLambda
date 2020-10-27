@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use MediaWiki\Extension\WikiLambda\ZKey;
 use MediaWiki\Extension\WikiLambda\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZMultiLingualString;
+use MediaWiki\Extension\WikiLambda\ZPersistentObject;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZKey
@@ -47,6 +48,25 @@ class ZKeyTest extends \MediaWikiIntegrationTestCase {
 		$this->assertSame( $testString1->getString(), $testObject->getKeyLabel()->getStringForLanguageCode( 'en' ) );
 		$this->assertSame( [ 'Z3K1' => 'Z6', 'Z3K2' => 'Z6K1', 'Z3K3' => $testLabelSet ], $testObject->getZValue() );
 		$this->assertTrue( $testObject->isValid() );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\ZPersistentObject::__construct
+	 * @covers \MediaWiki\Extension\WikiLambda\ZPersistentObject::isValid
+	 * @covers \MediaWiki\Extension\WikiLambda\ZPersistentObject::getZType
+	 * @covers \MediaWiki\Extension\WikiLambda\ZPersistentObject::getInnerZObject
+	 * @covers ::isValid
+	 * @covers ::getKeyType
+	 * @covers ::getKeyId
+	 * @covers ::getKeyLabel
+	 */
+	public function testPersistentCreation() {
+		$testObject = new ZPersistentObject( '{"Z1K1":"Z2", "Z2K1":"Z0", "Z2K2":{"Z1K1":"Z3", "Z3K1":"Z6", "Z3K2":"Z6K1", "Z3K3":{"Z1K1":"Z12", "Z12K1":[{"Z1K1":"Z11", "Z11K1":"en", "Z11K2":"Key label"}]}}, "Z2K3":[{"Z1K1":"Z11", "Z11K1":"en", "Z11K2":"Key object label"}]}' );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertSame( 'ZKey', $testObject->getZType() );
+		$this->assertSame( 'Z6', $testObject->getInnerZObject()->getKeyType() );
+		$this->assertSame( 'Z6K1', $testObject->getInnerZObject()->getKeyId() );
+		$this->assertSame( 'Key label', $testObject->getInnerZObject()->getKeyLabel()->getStringForLanguageCode( 'en' ) );
 	}
 
 	/**
