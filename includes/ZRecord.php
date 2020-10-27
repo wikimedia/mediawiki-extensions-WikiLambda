@@ -17,6 +17,9 @@ class ZRecord implements ZObject {
 	public static function getDefinition() : array {
 		return [
 			'keys' => [
+				ZTypeRegistry::Z_OBJECT_TYPE => [
+					'type' => ZTypeRegistry::Z_PERSISTENTOBJECT_ID,
+				],
 				ZTypeRegistry::Z_RECORD_VALUE => [
 					'type' => ZTypeRegistry::Z_OBJECT,
 				],
