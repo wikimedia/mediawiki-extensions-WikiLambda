@@ -16,12 +16,6 @@ namespace MediaWiki\Extension\WikiLambda;
 interface ZObject {
 
 	/**
-	 * @param array $objectVars The raw content of the object from which to create the ZObject.
-	 * @return ZObject A new ZObject of this item.
-	 */
-	public static function create( array $objectVars ) : ZObject;
-
-	/**
 	 * Provide this ZObject's schema.
 	 *
 	 * @return array It's complicated.
