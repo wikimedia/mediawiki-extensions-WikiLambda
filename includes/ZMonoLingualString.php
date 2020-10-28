@@ -33,20 +33,6 @@ class ZMonoLingualString implements ZObject {
 		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ] = $value;
 	}
 
-	public static function create( array $objectVars ) : ZObject {
-		if ( !array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE, $objectVars ) ) {
-			throw new \InvalidArgumentException( "ZMonoLingualString missing the language code key." );
-		}
-		// TODO: Evaluate if the language code key is known to us.
-
-		if ( !array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE, $objectVars ) ) {
-			throw new \InvalidArgumentException( "ZMonoLingualString missing the value key." );
-		}
-		// TODO: Are there validity checks for the value?
-
-		return new ZMonoLingualString( $objectVars[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ], $objectVars[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ] );
-	}
-
 	public function getZType() : string {
 		return static::getDefinition()['type'];
 	}

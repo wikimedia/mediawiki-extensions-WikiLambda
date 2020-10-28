@@ -77,9 +77,9 @@ class ZObjectFactory {
 		$typeName = ZTypeRegistry::singleton()->getZObjectTypeFromKey( $type );
 
 		switch ( $type ) {
+			case ZTypeRegistry::Z_MONOLINGUALSTRING:
 			case ZTypeRegistry::Z_STRING:
 				$objectDefinition = self::validateObjectStructure( $objectVars, $typeName );
-				// var_dump( $objectDefinition );
 				$typeClass = 'MediaWiki\Extension\WikiLambda\\' . $typeName;
 				return new $typeClass( ...$objectDefinition );
 
@@ -149,8 +149,39 @@ class ZObjectFactory {
 				}
 				break;
 
+			case ZTypeRegistry::HACK_LANGUAGE:
+				if ( is_string( $value ) && \Language::isValidCode( $value ) ) {
+					return $value;
+				}
+				break;
+
+			case ZTypeRegistry::Z_MONOLINGUALSTRING:
+				if (
+					is_array( $value )
+					&& array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE, $value )
+					&& is_string( $value[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] )
+					&& \Language::isValidCode( $value[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] )
+					&& array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE, $value )
+					&& is_string( $value[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ] )
+				) {
+					$return = $value;
+				}
+				if ( is_object( $value ) ) {
+					if ( is_a( $value, ZMonoLingualString::class ) ) {
+						return $value;
+					}
+
+					$return = get_object_vars( $value );
+					if ( !(
+						array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE, $return )
+						&& array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE, $return )
+					) ) {
+						break;
+					}
+				}
+				// Intentional fall-through.
+
 			default:
-				// @phan-suppress-next-line PhanImpossibleCondition
 				if ( isset( $return ) ) {
 					$return[ ZTypeRegistry::Z_OBJECT_TYPE ] = $type;
 					return self::create( $return );
