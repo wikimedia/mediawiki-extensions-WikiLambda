@@ -78,6 +78,7 @@ class ZObjectFactory {
 
 		switch ( $type ) {
 			case ZTypeRegistry::Z_MONOLINGUALSTRING:
+			case ZTypeRegistry::Z_MULTILINGUALSTRING:
 			case ZTypeRegistry::Z_STRING:
 				$objectDefinition = self::validateObjectStructure( $objectVars, $typeName );
 				$typeClass = 'MediaWiki\Extension\WikiLambda\\' . $typeName;
@@ -151,6 +152,15 @@ class ZObjectFactory {
 
 			case ZTypeRegistry::HACK_LANGUAGE:
 				if ( is_string( $value ) && \Language::isValidCode( $value ) ) {
+					return $value;
+				}
+				break;
+
+			case ZTypeRegistry::HACK_ARRAY_Z_MONOLINGUALSTRING:
+				if ( is_array( $value ) ) {
+					foreach ( $value as $arrayItem ) {
+						self::validateKeyValue( 'inner', ZTypeRegistry::Z_MONOLINGUALSTRING, $arrayItem );
+					}
 					return $value;
 				}
 				break;
