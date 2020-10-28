@@ -102,7 +102,7 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testCreation_invalidThrows_nestedrecordhasinvalidkey() {
 		$this->hideDeprecated( '::create' );
-		$testObject = new ZPersistentObject( '{"Z1K1":"Z2","Z2K1":"Z0","Z2K2":{"Z1K1":"Foo"},"Z2K3": []}' );
+		$testObject = new ZPersistentObject( '{"Z1K1":"Z2","Z2K1":"Z0","Z2K2":{"Z1K1":"Foo"},"Z2K3": { "Z1K1":"Z12", "Z12K1":[] }}' );
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( InvalidArgumentException::class );
 		$this->assertSame( 'InvalidObjectWillNotHaveAType', $testObject->getZType() );
@@ -113,7 +113,7 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testCreation_invalidThrows_nestedrecordhasnovalue() {
 		$this->hideDeprecated( '::create' );
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z5", "Z5K1": { "Z1K1": "Z1", "Z2K3": [] } }' );
+		$testObject = new ZPersistentObject( '{ "Z1K1": "Z5", "Z5K1": { "Z1K1": "Z1", "Z2K3": { "Z1K1":"Z12", "Z12K1":[] } } }' );
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( InvalidArgumentException::class );
 		$this->assertSame( 'InvalidObjectWillNotHaveAType', $testObject->getZType() );
