@@ -79,9 +79,15 @@ class ZObjectFactory {
 		$typeName = ZTypeRegistry::singleton()->getZObjectTypeFromKey( $type );
 
 		switch ( $type ) {
+			case ZTypeRegistry::Z_KEY:
+			// case ZTypeRegistry::Z_LIST:
 			case ZTypeRegistry::Z_MONOLINGUALSTRING:
 			case ZTypeRegistry::Z_MULTILINGUALSTRING:
+			// case ZTypeRegistry::Z_OBJECT:
+			// case ZTypeRegistry::Z_PERSISTENTOBJECT:
+			// case ZTypeRegistry::Z_RECORD:
 			case ZTypeRegistry::Z_STRING:
+			// case ZTypeRegistry::Z_TYPE:
 				$objectDefinition = self::validateObjectStructure( $objectVars, $typeName );
 				$typeClass = 'MediaWiki\Extension\WikiLambda\\' . $typeName;
 				return new $typeClass( ...$objectDefinition );
@@ -150,6 +156,7 @@ class ZObjectFactory {
 	 */
 	private static function validateKeyValue( string $key, string $type, $value ) {
 		$return = null;
+		$registry = ZTypeRegistry::singleton();
 
 		switch ( $type ) {
 			case ZTypeRegistry::HACK_STRING:
@@ -176,6 +183,34 @@ class ZObjectFactory {
 				}
 				break;
 
+			case ZTypeRegistry::HACK_REFERENCE:
+				if (
+					is_string( $value )
+					&& ZKey::isValidZObjectReference( $value )
+				) {
+					return $value;
+				}
+				break;
+
+			case ZTypeRegistry::HACK_REFERENCE_TYPE:
+				if (
+					is_string( $value )
+					&& ZKey::isValidZObjectReference( $value )
+					&& $registry->isZObjectKeyKnown( $value )
+				) {
+					return $value;
+				}
+				break;
+
+			case ZTypeRegistry::Z_TYPE_IDENTITY:
+				if (
+					is_string( $value )
+					&& ZKey::isValidZObjectKey( $value )
+				) {
+					return $value;
+				}
+				break;
+
 			case ZTypeRegistry::Z_MONOLINGUALSTRING:
 				if ( is_object( $value ) ) {
 					if ( $value instanceof ZMonoLingualString ) {
@@ -196,6 +231,31 @@ class ZObjectFactory {
 				) {
 					break;
 				}
+				return self::spliceReturn( $return, $type );
+
+			case ZTypeRegistry::Z_MULTILINGUALSTRING:
+				if ( is_object( $value ) ) {
+					if ( $value instanceof ZMultiLingualString ) {
+						return $value;
+					}
+					$return = get_object_vars( $value );
+				} else {
+					$return = $value;
+				}
+
+				if (
+					!is_array( $return )
+					|| !array_key_exists( ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE, $return )
+					|| !is_array( $return[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] )
+				) {
+					break;
+				}
+				// Check that the value key is set to a ZList of ZMonoLingualStrings.
+				self::validateKeyValue(
+					'inner',
+					ZTypeRegistry::HACK_ARRAY_Z_MONOLINGUALSTRING,
+					$return[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ]
+				);
 				return self::spliceReturn( $return, $type );
 
 			default:

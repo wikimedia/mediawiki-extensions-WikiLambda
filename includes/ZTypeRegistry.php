@@ -25,6 +25,9 @@ class ZTypeRegistry {
 
 	// Needed until we have a ZReference type
 	public const HACK_REFERENCE = 'Reference';
+	// Needed until we have sub-types
+	public const HACK_REFERENCE_TYPE = 'Reference(Type)';
+
 	// Needed until we have a ZLanguage type (or similar)
 	public const HACK_LANGUAGE = 'Language';
 

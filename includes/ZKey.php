@@ -10,8 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use InvalidArgumentException;
-
 class ZKey implements ZObject {
 
 	/** @var array */
@@ -22,13 +20,13 @@ class ZKey implements ZObject {
 			'type' => 'ZKey',
 			'keys' => [
 				ZTypeRegistry::Z_KEY_TYPE => [
-					'type' => ZTypeRegistry::Z_TYPE,
+					'type' => ZTypeRegistry::HACK_REFERENCE_TYPE,
 				],
 				ZTypeRegistry::Z_KEY_ID => [
 					// TODO: Per the model, we used to dereference this ZReference into the string
 					// of its ZType, but creates recursion issues when evaluating ZKeys of ZTypes
 					// that are being created (T262097). For now, just store the string ZReference.
-					'type' => ZTypeRegistry::HACK_REFERENCE,
+					'type' => ZTypeRegistry::Z_TYPE_IDENTITY,
 				],
 				ZTypeRegistry::Z_KEY_LABEL => [
 					'type' => ZTypeRegistry::Z_MULTILINGUALSTRING,
@@ -41,47 +39,6 @@ class ZKey implements ZObject {
 		$this->data[ ZTypeRegistry::Z_KEY_TYPE ] = $type;
 		$this->data[ ZTypeRegistry::Z_KEY_ID ] = $identity;
 		$this->data[ ZTypeRegistry::Z_KEY_LABEL ] = $label;
-	}
-
-	public static function create( array $objectVars ) : ZObject {
-		if ( $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ] !== ZTypeRegistry::Z_KEY ) {
-			throw new InvalidArgumentException(
-				"Type of ZKey expected, but instead '" . $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ] . "'."
-			);
-		}
-
-		if ( !array_key_exists( ZTypeRegistry::Z_KEY_TYPE, $objectVars ) ) {
-			throw new \InvalidArgumentException( "ZKey missing the type key." );
-		}
-		$keyType = $objectVars[ ZTypeRegistry::Z_KEY_TYPE ];
-
-		// TODO: Per the model, we used to dereference this ZReference into the string of its ZType,
-		// but creates recursion issues when evaluating ZKeys of ZTypes that are being created (T262097).
-		// For now, just store the string ZReference.
-
-		// $registry = ZTypeRegistry::singleton();
-		// if ( !$registry->isZObjectKeyKnown( $keyType ) ) {
-			// throw new \InvalidArgumentException( "ZKey type '$keyType' isn't known." );
-		// }
-		// $keyType = $registry->getZObjectTypeFromKey( $keyType );
-
-		if ( !array_key_exists( ZTypeRegistry::Z_KEY_ID, $objectVars ) ) {
-			throw new \InvalidArgumentException( "ZKey missing the id key." );
-		}
-		$keyId = $objectVars[ ZTypeRegistry::Z_KEY_ID ];
-		if ( !self::isValidZObjectKey( $keyId ) ) {
-			throw new \InvalidArgumentException( "ZKey id '$keyId' isn't valid." );
-		}
-
-		if ( !array_key_exists( ZTypeRegistry::Z_KEY_LABEL, $objectVars ) ) {
-			throw new \InvalidArgumentException( "ZKey missing the label key." );
-		}
-		$keyLabel = $objectVars[ ZTypeRegistry::Z_KEY_LABEL ];
-		if ( !( $keyLabel instanceof ZMultiLingualString ) ) {
-			$keyLabel = ZObjectFactory::create( $keyLabel );
-		}
-
-		return new ZKey( $keyType, $keyId, $keyLabel );
 	}
 
 	public function getZType() : string {
@@ -101,7 +58,16 @@ class ZKey implements ZObject {
 	}
 
 	public function getKeyLabel() {
-		return $this->data[ ZTypeRegistry::Z_KEY_LABEL ];
+		$label = $this->data[ ZTypeRegistry::Z_KEY_LABEL ];
+
+		if ( $label instanceof ZMultiLingualString ) {
+			return $label;
+		} elseif ( $label === null ) {
+			return new ZMultiLingualString( [] );
+		} elseif ( $label instanceof ZList || is_array( $label ) ) {
+			return new ZMultiLingualString( $label );
+		}
+		return null;
 	}
 
 	public function isValid() : bool {

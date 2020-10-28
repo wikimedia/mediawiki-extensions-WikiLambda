@@ -29,23 +29,14 @@ class ZKeyTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::isValid
 	 */
 	public function testCreation() {
-		$testString1 = new ZMonoLingualString( 'en', 'Demonstration item' );
-		$testObject = new ZKey( 'Z6', 'Z6K1', [ $testString1 ] );
-
-		$this->assertSame( 'ZKey', $testObject->getZType() );
-		$this->assertSame( 'Z6', $testObject->getKeyType() );
-		$this->assertSame( 'Z6K1', $testObject->getKeyId() );
-		$this->assertSame( $testString1, $testObject->getKeyLabel()[0] );
-		$this->assertSame( [ 'Z3K1' => 'Z6', 'Z3K2' => 'Z6K1', 'Z3K3' => [ $testString1 ] ], $testObject->getZValue() );
-		$this->assertTrue( $testObject->isValid() );
-
-		$testLabelSet = new ZMultiLingualString( [ $testString1 ] );
+		$testString = new ZMonoLingualString( 'en', 'Demonstration item' );
+		$testLabelSet = new ZMultiLingualString( [ $testString ] );
 		$testObject = new ZKey( 'Z6', 'Z6K1', $testLabelSet );
 
 		$this->assertSame( 'ZKey', $testObject->getZType() );
 		$this->assertSame( 'Z6', $testObject->getKeyType() );
 		$this->assertSame( 'Z6K1', $testObject->getKeyId() );
-		$this->assertSame( $testString1->getString(), $testObject->getKeyLabel()->getStringForLanguageCode( 'en' ) );
+		$this->assertSame( $testString->getString(), $testObject->getKeyLabel()->getStringForLanguageCode( 'en' ) );
 		$this->assertSame( [ 'Z3K1' => 'Z6', 'Z3K2' => 'Z6K1', 'Z3K3' => $testLabelSet ], $testObject->getZValue() );
 		$this->assertTrue( $testObject->isValid() );
 	}
