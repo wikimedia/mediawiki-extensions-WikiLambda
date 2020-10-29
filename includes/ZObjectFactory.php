@@ -160,6 +160,7 @@ class ZObjectFactory {
 				throw new \InvalidArgumentException( "No validation for unknown '$type' type." );
 		}
 		// Fall-through error for known keys where the value don't pass validation.
+		// TODO: We should log this properly, rather than expect the error string to contain an object.
 		ob_start();
 		var_dump( $value );
 		$valueString = ob_get_contents();
