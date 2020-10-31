@@ -22,7 +22,7 @@ class SpecialListDuplicateZObjectLabels extends SpecialPage {
 	 * @inheritDoc
 	 */
 	protected function getGroupName() {
-		return 'maintenance';
+		return 'wikilambda';
 	}
 
 	/**

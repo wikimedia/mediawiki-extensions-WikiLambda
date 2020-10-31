@@ -57,5 +57,6 @@
 	"wikilambda-modeselector-reference": "{{notranslate}}\nLabel for button to select reference",
 	"wikilambda-modeselector-literal": "{{notranslate}}\nLabel for button to select literal",
 	"wikilambda-modeselector-genericliteral": "Label for button to select the generic mode when entering values. Should be similar to the word \"[[:meta:Abstract Wikipedia/Glossary#generic|generic]]\", but as short as possible.\n\n{{doc-wikilambda}}",
-	"wikilambda-modeselector-functioncall": "{{notranslate}}\nLabel for button to select function call"
+	"wikilambda-modeselector-functioncall": "{{notranslate}}\nLabel for button to select function call",
+	"specialpages-group-wikilambda": "{{doc-special-group|that=are related to WikiLambda}}"
 }
