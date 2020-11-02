@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use InvalidArgumentException;
 use MediaWiki\Extension\WikiLambda\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZMultiLingualString;
+use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use MediaWiki\MediaWikiServices;
@@ -94,21 +95,24 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 	}
 
 	/**
-	 * @covers ::create
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 */
 	public function testStaticCreation() {
-		$testObject = ZMultiLingualString::create( [
+		$testObject = ZObjectFactory::create( (object)[
+			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MULTILINGUALSTRING,
 			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [ new ZMonoLingualString( 'en', 'Demonstration item' ) ]
 		] );
 		$this->assertSame( $testObject->getZType(), 'ZMultiLingualString' );
 	}
 
 	/**
-	 * @covers ::create
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 */
 	public function testStaticCreation_invalidNoValueKey() {
 		$this->expectException( InvalidArgumentException::class );
-		$invalidObject = ZMultiLingualString::create( [] );
+		$invalidObject = ZObjectFactory::create( (object)[
+			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MULTILINGUALSTRING
+		] );
 	}
 
 	/**
