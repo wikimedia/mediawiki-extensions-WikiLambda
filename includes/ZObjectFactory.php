@@ -135,7 +135,7 @@ class ZObjectFactory {
 	 * name that it is meant to reflect, and recursively validates the input, returning a ZObject if
 	 * valid, or throwing an error if invalid.
 	 *
-	 * @param string $key The key to validate.
+	 * @param string $key The key to validate (unused except for error / logging purposes).
 	 * @param string $type The ZType against which validate.
 	 * @param mixed $value The input value to validate.
 	 * @return ZObject|array|string Definition
@@ -159,6 +159,9 @@ class ZObjectFactory {
 			case ZTypeRegistry::HACK_ARRAY_Z_MONOLINGUALSTRING:
 				if ( is_array( $value ) ) {
 					foreach ( $value as $arrayItem ) {
+						if ( is_a( $arrayItem, ZMonoLingualString::class ) ) {
+							continue;
+						}
 						self::validateKeyValue( 'inner', ZTypeRegistry::Z_MONOLINGUALSTRING, $arrayItem );
 					}
 					return $value;
@@ -166,37 +169,28 @@ class ZObjectFactory {
 				break;
 
 			case ZTypeRegistry::Z_MONOLINGUALSTRING:
-				if (
-					is_array( $value )
-					&& array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE, $value )
-					&& is_string( $value[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] )
-					&& \Language::isValidCode( $value[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] )
-					&& array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE, $value )
-					&& is_string( $value[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ] )
-				) {
-					$return = $value;
-				}
 				if ( is_object( $value ) ) {
 					if ( is_a( $value, ZMonoLingualString::class ) ) {
 						return $value;
 					}
-
 					$return = get_object_vars( $value );
-					if ( !(
-						array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE, $return )
-						&& array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE, $return )
-					) ) {
-						break;
-					}
+				} else {
+					$return = $value;
 				}
-				// Intentional fall-through.
+
+				if (
+					!is_array( $return )
+					|| !array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE, $return )
+					|| !is_string( $return[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] )
+					|| !\Language::isValidCode( $return[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] )
+					|| !array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE, $return )
+					|| !is_string( $return[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ] )
+				) {
+					break;
+				}
+				return self::spliceReturn( $return, $type );
 
 			default:
-				if ( isset( $return ) ) {
-					$return[ ZTypeRegistry::Z_OBJECT_TYPE ] = $type;
-					return self::create( $return );
-				}
-
 				// Default error.
 				throw new \InvalidArgumentException( "No validation for unknown '$type' type." );
 		}
@@ -207,5 +201,10 @@ class ZObjectFactory {
 		$valueString = ob_get_contents();
 		ob_end_clean();
 		throw new \InvalidArgumentException( "Value '$valueString' for '$key' of type '$type' is invalid." );
+	}
+
+	private static function spliceReturn( $value, $type ) {
+		$value[ ZTypeRegistry::Z_OBJECT_TYPE ] = $type;
+		return self::create( $value );
 	}
 }
