@@ -38,7 +38,7 @@ class ZStringTest extends \MediaWikiIntegrationTestCase {
 		$this->assertSame( 'Test', $testObject->getZValue() );
 
 		$this->hideDeprecated( '::create' );
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z6", "Z6K1": "Test" }, "Z2K3": [] }' );
+		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z6", "Z6K1": "Test" }, "Z2K3": { "Z1K1":"Z12", "Z12K1":[] } }' );
 		$this->assertSame( 'ZString', $testObject->getZType() );
 		$this->assertSame( 'Test', $testObject->getZValue() );
 	}
