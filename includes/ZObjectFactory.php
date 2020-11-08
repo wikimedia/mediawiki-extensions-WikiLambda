@@ -167,7 +167,7 @@ class ZObjectFactory {
 			case ZTypeRegistry::HACK_ARRAY_Z_MONOLINGUALSTRING:
 				if ( is_array( $value ) ) {
 					foreach ( $value as $arrayItem ) {
-						if ( is_a( $arrayItem, ZMonoLingualString::class ) ) {
+						if ( $arrayItem instanceof ZMonoLingualString ) {
 							continue;
 						}
 						self::validateKeyValue( 'inner', ZTypeRegistry::Z_MONOLINGUALSTRING, $arrayItem );
@@ -178,7 +178,7 @@ class ZObjectFactory {
 
 			case ZTypeRegistry::Z_MONOLINGUALSTRING:
 				if ( is_object( $value ) ) {
-					if ( is_a( $value, ZMonoLingualString::class ) ) {
+					if ( $value instanceof ZMonoLingualString ) {
 						return $value;
 					}
 					$return = get_object_vars( $value );

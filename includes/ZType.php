@@ -111,7 +111,7 @@ class ZType implements ZObject {
 		}
 		$keys = $this->data[ ZTypeRegistry::Z_TYPE_KEYS ];
 		if ( !is_array( $keys ) ) {
-			if ( is_a( $keys, ZList::class ) ) {
+			if ( $keys instanceof ZList ) {
 				if ( !$keys->isValid() ) {
 					return false;
 				}
@@ -121,7 +121,7 @@ class ZType implements ZObject {
 			}
 		}
 		foreach ( $keys as $key ) {
-			if ( !is_a( $key, ZKey::class ) ) {
+			if ( !( $key instanceof ZKey ) ) {
 				return false;
 			}
 			if ( !$key->isValid() ) {

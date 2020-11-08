@@ -109,7 +109,7 @@ class ZObjectUtils {
 	 */
 	public static function canonicalize( $input ) {
 		if ( is_array( $input ) ) {
-			return array_map( 'self::canonicalize', $input );
+			return array_map( [ __CLASS__, 'canonicalize' ], $input );
 		}
 
 		if ( is_object( $input ) ) {

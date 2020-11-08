@@ -83,7 +83,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 	}
 
 	public static function getConflictingLabels( $dbr, $labels, $zid, $type ) : array {
-		if ( count( $labels ) === 0 ) {
+		if ( $labels === [] ) {
 			return [];
 		}
 

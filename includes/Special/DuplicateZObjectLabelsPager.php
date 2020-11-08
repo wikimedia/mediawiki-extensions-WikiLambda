@@ -62,7 +62,6 @@ class DuplicateZObjectLabelsPager extends TablePager {
 	 * @throws \MWException
 	 */
 	public function formatValue( $field, $value ) {
-		/** @var object $row */
 		$row = $this->mCurrentRow;
 		$linkRenderer = $this->getLinkRenderer();
 

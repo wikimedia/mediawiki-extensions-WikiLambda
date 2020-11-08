@@ -77,7 +77,7 @@ class ZKey implements ZObject {
 			throw new \InvalidArgumentException( "ZKey missing the label key." );
 		}
 		$keyLabel = $objectVars[ ZTypeRegistry::Z_KEY_LABEL ];
-		if ( !is_a( $keyLabel, ZMultiLingualString::class ) ) {
+		if ( !( $keyLabel instanceof ZMultiLingualString ) ) {
 			$keyLabel = ZObjectFactory::create( $keyLabel );
 		}
 
@@ -137,14 +137,14 @@ class ZKey implements ZObject {
 			return false;
 		}
 		$labels = $this->data[ ZTypeRegistry::Z_KEY_LABEL ];
-		if ( is_a( $labels, ZMultiLingualString::class ) ) {
+		if ( $labels instanceof ZMultiLingualString ) {
 			return $labels->isValid();
 		}
 		if ( !is_array( $labels ) ) {
 			return false;
 		}
 		foreach ( $labels as $label ) {
-			if ( !is_a( $label, ZMonoLingualString::class ) ) {
+			if ( !( $label instanceof ZMonoLingualString ) ) {
 				return false;
 			}
 			if ( !$label->isValid() ) {

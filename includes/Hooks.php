@@ -27,7 +27,7 @@ class Hooks implements
 	{
 
 	public static function registerExtension() {
-		require_once dirname( __DIR__ ) . '/includes/defines.php';
+		require_once __DIR__ . '/defines.php';
 
 		// (T267232) Prevent ZObject: pages from being transcluded; sadly this isn't available as
 		// an extension.json attribute as of yet.
@@ -90,7 +90,7 @@ class Hooks implements
 
 		$content = $renderedRevision->getRevision()->getSlots()->getContent( SlotRecord::MAIN );
 
-		if ( !is_a( $content, ZPersistentObject::class ) ) {
+		if ( !( $content instanceof ZPersistentObject ) ) {
 			$hookStatus->fatal( 'wikilambda-invalidcontenttype' );
 			return false;
 		}
@@ -103,7 +103,7 @@ class Hooks implements
 		// (T260751) Ensure uniqueness of type / label / language triples on save.
 		$newLabels = $content->getLabels()->getZValue();
 
-		if ( count( $newLabels ) === 0 ) {
+		if ( $newLabels === [] ) {
 			// Unlabelled; don't error.
 			return true;
 		}
@@ -113,7 +113,7 @@ class Hooks implements
 			wfGetDB( DB_MASTER ), $newLabels, $zid, $content->getZType()
 		);
 
-		if ( count( $clashes ) === 0 ) {
+		if ( $clashes === [] ) {
 			return true;
 		}
 

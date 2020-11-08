@@ -59,7 +59,7 @@ class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {
 		$contentHandler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 		$this->hideDeprecated( '::create' );
 		$testObject = $contentHandler->makeEmptyContent();
-		$this->assertTrue( is_a( $testObject, ZPersistentObject::class ) );
+		$this->assertInstanceOf( ZPersistentObject::class, $testObject );
 		$this->assertSame( 'ZString', $testObject->getZType() );
 		$this->assertSame( '', $testObject->getZValue() );
 	}

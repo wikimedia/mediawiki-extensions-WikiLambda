@@ -32,7 +32,7 @@ class ZMultiLingualString implements ZObject {
 
 	public function __construct( $strings = [] ) {
 		foreach ( $strings as $index => $monoLingualString ) {
-			if ( !is_a( $monoLingualString, ZMonoLingualString::class ) ) {
+			if ( !( $monoLingualString instanceof ZMonoLingualString ) ) {
 				$monoLingualString = ZObjectFactory::create( $monoLingualString );
 			}
 			$this->setMonoLingualString( $monoLingualString );
