@@ -44,6 +44,9 @@ class DuplicateZObjectLabelsPager extends TablePager {
 		$this->languageUtils = $languageUtils;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	protected function getFieldNames() {
 		return [
 			'wlzlc_existing_zid' => $this->msg( 'wikilambda-speciallistduplicatezobjectlabels-existing' )->text(),
@@ -80,6 +83,9 @@ class DuplicateZObjectLabelsPager extends TablePager {
 		return $result;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function getQueryInfo() {
 		return [
 			'tables' => 'wikilambda_zobject_label_conflicts',
@@ -88,18 +94,30 @@ class DuplicateZObjectLabelsPager extends TablePager {
 		];
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	protected function getTableClass() {
 		return parent::getTableClass() . ' ext-wikilambda-speciallistduplicatezobjectlabels ';
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function getIndexField() {
 		return 'wlzlc_id';
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function getDefaultSort() {
 		return 'wlzlc_id';
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	protected function isFieldSortable( $field ) {
 		return false;
 	}

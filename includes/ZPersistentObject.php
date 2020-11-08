@@ -31,11 +31,13 @@ use WikiPage;
  */
 class ZPersistentObject extends JsonContent implements ZObject {
 
-	/*
+	/**
 	 * Type of included ZObject, e.g. "ZList" or "ZString", as stored in the serialised
 	 * form if a record (or implicit if a ZString or ZList).
 	 *
 	 * Lazily-set on request.
+	 *
+	 * @var string|null
 	 */
 	private $zObjectType;
 

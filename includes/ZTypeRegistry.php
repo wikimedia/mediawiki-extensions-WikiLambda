@@ -207,6 +207,10 @@ class ZTypeRegistry {
 		return $newKey;
 	}
 
+	/**
+	 * @param string $key
+	 * @param string $type
+	 */
 	private function internalRegisterType( string $key, string $type ) : void {
 		if ( $this->isZObjectKeyCached( $key ) ) {
 			$conflictingType = $this->getZObjectKeyFromType( $key );

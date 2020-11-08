@@ -16,7 +16,7 @@ class ZObjectFactory {
 
 	/**
 	 * @param string $text The serialised form in a string
-	 * @return object A ZObject
+	 * @return ZObject
 	 */
 	public static function createFromSerialisedString( string $text ) {
 		if ( $text === '' || ( $text[0] !== '{' && $text[0] !== '[' ) ) {
@@ -34,7 +34,7 @@ class ZObjectFactory {
 
 	/**
 	 * @param string|array|object $object The item to turn into a ZObject
-	 * @return object A ZObject
+	 * @return ZObject
 	 */
 	public static function create( $object ) {
 		if ( $object instanceof ZObject ) {
@@ -203,6 +203,12 @@ class ZObjectFactory {
 		throw new \InvalidArgumentException( "Value '$valueString' for '$key' of type '$type' is invalid." );
 	}
 
+	/**
+	 * @param array $value
+	 * @param string $type
+	 *
+	 * @return ZObject
+	 */
 	private static function spliceReturn( $value, $type ) {
 		$value[ ZTypeRegistry::Z_OBJECT_TYPE ] = $type;
 		return self::create( $value );

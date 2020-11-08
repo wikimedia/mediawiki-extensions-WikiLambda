@@ -60,7 +60,7 @@ class SpecialCreateZObject extends SpecialPage {
 		$output->addHtml( Html::element(
 			'div',
 			[ 'class' => [ 'client-nojs', 'ext-wikilambda-editor-nojswarning' ] ],
-			wfMessage( 'wikilambda-special-createzobject-nojs' )->inLanguage( $userLang )->text()
+			$this->msg( 'wikilambda-special-createzobject-nojs' )->inLanguage( $userLang )->text()
 		) );
 
 		$userLangCode = $userLang->getCode();

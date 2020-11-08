@@ -82,6 +82,11 @@ class ZList implements ZObject {
 		return true;
 	}
 
+	/**
+	 * @param mixed $value
+	 *
+	 * @return bool
+	 */
 	private function isValidValue( $value ) : bool {
 		if ( is_object( $value ) && $value instanceof ZObject ) {
 			return $value->isValid();

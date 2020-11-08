@@ -42,7 +42,7 @@ class ZObjectUtils {
 	}
 
 	/**
-	 * @param string|array|object $input
+	 * @param string|array|stdClass $input
 	 * @return bool
 	 */
 	public static function isValidZObject( $input ) : bool {
@@ -77,10 +77,10 @@ class ZObjectUtils {
 	}
 
 	/**
-	 * @param object $input
+	 * @param stdClass $input
 	 * @return bool
 	 */
-	public static function isValidZObjectRecord( object $input ) : bool {
+	public static function isValidZObjectRecord( stdClass $input ) : bool {
 		$objectVars = get_object_vars( $input );
 		// TODO: This shouldn't hard-code knowledge of the type?
 		if ( !array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $objectVars ) ) {
@@ -205,10 +205,10 @@ class ZObjectUtils {
 	 *
 	 * This trims and sorts the keys.
 	 *
-	 * @param object $input The decoded JSON object of a well-formed ZObject
-	 * @return object Canonical decoded JSON object representing the same ZObject
+	 * @param stdClass $input The decoded JSON object of a well-formed ZObject
+	 * @return stdClass Canonical decoded JSON object representing the same ZObject
 	 */
-	public static function canonicalizeZRecord( object $input ): object {
+	public static function canonicalizeZRecord( stdClass $input ): stdClass {
 		$trimmed = new stdClass;
 		$input_vars = get_object_vars( $input );
 		foreach ( $input_vars as $key => $value ) {
