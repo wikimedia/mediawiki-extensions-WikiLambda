@@ -113,7 +113,9 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 				ParamValidator::PARAM_REQUIRED => true,
 			],
 			'language' => [
-				ParamValidator::PARAM_TYPE => array_keys( MediaWikiServices::getInstance()->getLanguageNameUtils()->getLanguageNames() ),
+				ParamValidator::PARAM_TYPE => array_keys(
+					MediaWikiServices::getInstance()->getLanguageNameUtils()->getLanguageNames()
+				),
 				ParamValidator::PARAM_REQUIRED => true,
 			],
 			'exact' => [

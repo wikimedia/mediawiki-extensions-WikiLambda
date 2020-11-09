@@ -92,7 +92,10 @@ class ZObjectContentHandler extends JsonContentHandler {
 			);
 			$returnLabel = $fullLabels->getStringForLanguage( $returnLanguage );
 
-			$returnLabelObject = (object)[ 'Z1K1' => 'Z12', 'Z12K1' => [ [ 'Z1K1' => 'Z11', 'Z11K1' => $languageCode, 'Z11K2' => $returnLabel ] ] ];
+			$returnLabelObject = (object)[
+				'Z1K1' => 'Z12',
+				'Z12K1' => [ [ 'Z1K1' => 'Z11', 'Z11K1' => $languageCode, 'Z11K2' => $returnLabel ] ]
+			];
 			// new ZMultiLingualString( [ new ZMonoLingualString( $languageCode, $returnLabel ) ] );
 			$object['Z2K3'] = $returnLabelObject;
 		}

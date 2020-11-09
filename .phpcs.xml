@@ -6,12 +6,6 @@
 		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment" />
 	</rule>
 
-	<rule ref="Generic.Files.LineLength">
-		<properties>
-			<property name="lineLimit" value="697" />
-		</properties>
-	</rule>
-
 	<file>.</file>
 	<exclude-pattern>vendor</exclude-pattern>
 </ruleset>

@@ -60,7 +60,10 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 		$registry = ZTypeRegistry::singleton();
 
 		// NOTE: Hopefully this won't clash with real content on a test DB.
-		$this->assertFalse( $registry->isZObjectKeyKnown( ZTestType::TEST_ZID ), "'" . ZTestType::TEST_ZID . "' is not defined as a built-in, and not found in the DB before it's written." );
+		$this->assertFalse(
+			$registry->isZObjectKeyKnown( ZTestType::TEST_ZID ),
+			"'" . ZTestType::TEST_ZID . "' is not defined as a built-in, and not found in the DB before it's written."
+		);
 
 		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
 		$baseObject = ZTestType::TEST_ENCODING;
@@ -71,8 +74,15 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 		$page->doEditContent( $content, "Test creation object" );
 		$page->clear();
 
-		$this->assertTrue( $registry->isZObjectKeyKnown( ZTestType::TEST_ZID ), "'TestingType' is not defined as a built-in, but is read from the DB as key '" . ZTestType::TEST_ZID . "'." );
-		$this->assertEquals( $registry->getZObjectTypeFromKey( ZTestType::TEST_ZID ), 'Demonstration type', "'" . ZTestType::TEST_ZID . "' lookup works to find 'Demonstration type'." );
+		$this->assertTrue(
+			$registry->isZObjectKeyKnown( ZTestType::TEST_ZID ),
+			"'TestingType' is not defined as a built-in, but is read from the DB as key '" . ZTestType::TEST_ZID . "'."
+		);
+		$this->assertEquals(
+			$registry->getZObjectTypeFromKey( ZTestType::TEST_ZID ),
+			'Demonstration type',
+			"'" . ZTestType::TEST_ZID . "' lookup works to find 'Demonstration type'."
+		);
 
 		// Cleanup the page we touched.
 		$page->doDeleteArticleReal( $title, $this->getTestSysop()->getUser() );
@@ -108,8 +118,14 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 	public function testIsZObjectTypeKnown() {
 		$registry = ZTypeRegistry::singleton();
 
-		$this->assertFalse( $registry->isZObjectTypeKnown( 'Zero' ), "'Zero' is not defined as a built-in, nor is read from the DB." );
-		$this->assertTrue( $registry->isZObjectTypeKnown( 'ZObject' ), "'ZObject' is defined as a built-in, so isn't read from the DB." );
+		$this->assertFalse(
+			$registry->isZObjectTypeKnown( 'Zero' ),
+			"'Zero' is not defined as a built-in, nor is read from the DB."
+		);
+		$this->assertTrue(
+			$registry->isZObjectTypeKnown( 'ZObject' ),
+			"'ZObject' is defined as a built-in, so isn't read from the DB."
+		);
 	}
 
 	/**
@@ -119,8 +135,16 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 		$registry = ZTypeRegistry::singleton();
 
 		$this->expectException( InvalidArgumentException::class );
-		$this->assertEquals( $registry->getZObjectKeyFromType( 'Zero' ), 'Undefined', "'Zero' lookup fails as undefined." );
-		$this->assertEquals( $registry->getZObjectKeyFromType( 'ZObject' ), 'Z1', "'ZObject' lookup works." );
+		$this->assertEquals(
+			$registry->getZObjectKeyFromType( 'Zero' ),
+			'Undefined',
+			"'Zero' lookup fails as undefined."
+		);
+		$this->assertEquals(
+			$registry->getZObjectKeyFromType( 'ZObject' ),
+			'Z1',
+			"'ZObject' lookup works."
+		);
 	}
 
 	/**
@@ -141,17 +165,35 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 		$registry = ZTypeRegistry::singleton();
 
 		$this->expectException( InvalidArgumentException::class );
-		$this->assertEquals( $registry->registerType( 'ZObject' ), 'Undefined', "'ZObject' registration fails as already registered." );
+		$this->assertEquals(
+			$registry->registerType( 'ZObject' ),
+			'Undefined',
+			"'ZObject' registration fails as already registered."
+		);
 
 		$this->expectException( InvalidArgumentException::class );
-		$this->assertEquals( $registry->registerType( 'Zero' ), 'Undefined', "'Zero' registration fails as no class of that name." );
+		$this->assertEquals(
+			$registry->registerType( 'Zero' ),
+			'Undefined',
+			"'Zero' registration fails as no class of that name."
+		);
 
-		$this->assertFalse( $registry->isZObjectTypeCached( 'ZTypeRegistry' ), "'ZTypeRegistry' is not defined as a built-in." );
+		$this->assertFalse(
+			$registry->isZObjectTypeCached( 'ZTypeRegistry' ),
+			"'ZTypeRegistry' is not defined as a built-in."
+		);
 
 		$newValue = $registry->registerType( 'ZTypeRegistry' );
 
-		$this->assertTrue( $registry->isZObjectTypeCached( 'ZTypeRegistry' ), "'ZTypeRegistry' is defined once registered." );
+		$this->assertTrue(
+			$registry->isZObjectTypeCached( 'ZTypeRegistry' ),
+			"'ZTypeRegistry' is defined once registered."
+		);
 
-		$this->assertEquals( $registry->getZObjectKeyFromType( 'ZTypeRegistry' ), $newValue, "'ZTypeRegistry' lookup works once registered." );
+		$this->assertEquals(
+			$registry->getZObjectKeyFromType( 'ZTypeRegistry' ),
+			$newValue,
+			"'ZTypeRegistry' lookup works once registered."
+		);
 	}
 }

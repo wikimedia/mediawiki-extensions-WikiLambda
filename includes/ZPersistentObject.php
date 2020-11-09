@@ -67,7 +67,8 @@ class ZPersistentObject extends JsonContent implements ZObject {
 	public function __construct( $text = null, $modelId = CONTENT_MODEL_ZOBJECT ) {
 		// NOTE: We don't bother to evaluate the Z_PERSISTENTOBJECT_LABEL at this point.
 		try {
-			$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = ZObjectFactory::createFromSerialisedString( $text );
+			$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] =
+				ZObjectFactory::createFromSerialisedString( $text );
 		} catch ( \InvalidArgumentException $e ) {
 			$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = $text;
 			$this->validity = false;
@@ -220,7 +221,10 @@ class ZPersistentObject extends JsonContent implements ZObject {
 	 * @return ZMultiLingualString
 	 */
 	public function getLabels() {
-		if ( !isset( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] ) || $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] === null ) {
+		if (
+			!isset( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] )
+			|| $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] === null
+		) {
 			$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = new ZMultiLingualString();
 
 			$content = $this->getData()->getValue();

@@ -30,8 +30,22 @@ class ZTypeTest extends \MediaWikiIntegrationTestCase {
 	public function testPersistentCreation() {
 		$services = MediaWikiServices::getInstance();
 
-		$english = new \Language( 'en', $services->getLocalisationCache(), $services->getLanguageNameUtils(), $services->getLanguageFallback(), $services->getLanguageConverterFactory(), $services->getHookContainer() );
-		$french = new \Language( 'fr', $services->getLocalisationCache(), $services->getLanguageNameUtils(), $services->getLanguageFallback(), $services->getLanguageConverterFactory(), $services->getHookContainer() );
+		$english = new \Language(
+			'en',
+			$services->getLocalisationCache(),
+			$services->getLanguageNameUtils(),
+			$services->getLanguageFallback(),
+			$services->getLanguageConverterFactory(),
+			$services->getHookContainer()
+		);
+		$french = new \Language(
+			'fr',
+			$services->getLocalisationCache(),
+			$services->getLanguageNameUtils(),
+			$services->getLanguageFallback(),
+			$services->getLanguageConverterFactory(),
+			$services->getHookContainer()
+		);
 
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZPersistentObject( json_encode( [

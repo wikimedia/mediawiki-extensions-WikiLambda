@@ -43,7 +43,9 @@ class ZType implements ZObject {
 
 	public static function create( array $objectVars ) : ZObject {
 		if ( $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ] !== ZTypeRegistry::Z_TYPE ) {
-			throw new InvalidArgumentException( "Type of ZType expected, but instead '" . $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ] . "'." );
+			throw new InvalidArgumentException(
+				"Type of ZType expected, but instead '" . $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ] . "'."
+			);
 		}
 
 		if ( !array_key_exists( ZTypeRegistry::Z_TYPE_IDENTITY, $objectVars ) ) {

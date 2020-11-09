@@ -177,17 +177,61 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 		$english = $this->makeLanguage( 'en' );
 		$french = $this->makeLanguage( 'fr' );
 
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z12", "Z12K1": [] }, "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }' );
+		$testObject = new ZPersistentObject(
+			<<<EOT
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z0",
+	"Z2K2": {
+		"Z1K1": "Z12",
+		"Z12K1": []
+	},
+	"Z2K3": {
+		"Z1K1": "Z12",
+		"Z12K1": []
+	}
+}
+EOT
+		 );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'ZMultiLingualString', $testObject->getZType() );
 		$this->assertSame( [], $testObject->getZValue() );
 
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "Demonstration item" }, { "Z1K1": "Z11", "Z11K1": "fr", "Z11K2": "article pour démonstration" } ] }, "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }' );
+		$testObject = new ZPersistentObject(
+			<<<EOT
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z0",
+	"Z2K2": {
+		"Z1K1": "Z12",
+		"Z12K1": [
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "en",
+				"Z11K2": "Demonstration item"
+			},
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "fr",
+				"Z11K2": "article pour démonstration"
+			}
+		]
+	},
+	"Z2K3": {
+		"Z1K1": "Z12",
+		"Z12K1": []
+	}
+}
+EOT
+		);
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'ZMultiLingualString', $testObject->getZType() );
 
 		$this->assertSame( 'Demonstration item', $testObject->getInnerZObject()->getStringForLanguage( $english ) );
-		$this->assertSame( 'article pour démonstration', $testObject->getInnerZObject()->getStringForLanguage( $french ) );
+		$this->assertSame(
+			'article pour démonstration',
+			$testObject->getInnerZObject()->getStringForLanguage( $french )
+		);
 	}
 
 	private function makeLanguage( string $code ) {
