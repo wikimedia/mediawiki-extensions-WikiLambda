@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use CommentStoreComment;
 use DatabaseUpdater;
 use MediaWiki\Revision\SlotRecord;
+use MWNamespace;
 use Status;
 use Title;
 use User;
@@ -20,6 +21,7 @@ use WikiPage;
 
 class Hooks implements
 	\MediaWiki\Hook\BeforePageDisplayHook,
+	\MediaWiki\Hook\NamespaceIsMovableHook,
 	\MediaWiki\Storage\Hook\MultiContentSaveHook,
 	\MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook
 	{
@@ -197,4 +199,20 @@ class Hooks implements
 		}
 	}
 
+	/**
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/NamespaceIsMovable
+	 *
+	 * @param int $index
+	 * @param bool &$result
+	 * @return bool|void
+	 */
+	public function onNamespaceIsMovable( $index, &$result ) {
+		if ( MWNamespace::equals( $index, NS_ZOBJECT ) ) {
+			$result = false;
+			// Over-ride any other extensions which might have other ideas
+			return false;
+		}
+
+		return null;
+	}
 }

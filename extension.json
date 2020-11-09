@@ -54,6 +54,7 @@
 	"Hooks": {
 		"MultiContentSave": "WikiLambdaHooks",
 		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
+		"NamespaceIsMovable": "WikiLambdaHooks",
 		"CodeEditorGetPageLanguage": "MediaWiki\\Extension\\WikiLambda\\Hooks::onCodeEditorGetPageLanguage"
 	},
 	"MessagesDirs": {
