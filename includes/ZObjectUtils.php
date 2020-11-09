@@ -209,37 +209,26 @@ class ZObjectUtils {
 	 * @return stdClass Canonical decoded JSON object representing the same ZObject
 	 */
 	public static function canonicalizeZRecord( stdClass $input ): stdClass {
-		$trimmed = new stdClass;
-		$input_vars = get_object_vars( $input );
-		foreach ( $input_vars as $key => $value ) {
-			$trimmed_key = trim( $key );
-			$trimmed->$trimmed_key = $value;
-		}
+		$record = get_object_vars( $input );
+		$record = array_combine( array_map( 'trim', array_keys( $record ) ), $record );
 
-		if ( array_key_exists( 'Z1K1', get_object_vars( $trimmed ) ) ) {
-			$z1k1 = self::canonicalize( $trimmed->Z1K1 );
-			if ( is_string( $z1k1 ) ) {
-				$keys = array_keys( get_object_vars( $trimmed ) );
-				foreach ( $keys as $key ) {
-					if ( preg_match( "/^K[1-9]\d*$/", $key ) ) {
-						$global_key = $z1k1 . $key;
-						if ( !array_key_exists( $global_key, get_object_vars( $trimmed ) ) ) {
-							$trimmed->$global_key = $trimmed->$key;
-							unset( $trimmed->$key );
-						}
+		$z1k1 = self::canonicalize( $record['Z1K1'] ?? null );
+		if ( is_string( $z1k1 ) ) {
+			foreach ( $record as $key => $value ) {
+				if ( preg_match( '/^K[1-9]\d*$/', $key ) ) {
+					// $key is guaranteed to be unique, so $globalKey is unique as well
+					$globalKey = $z1k1 . $key;
+					if ( !array_key_exists( $globalKey, $record ) ) {
+						$record[$globalKey] = $value;
+						unset( $record[$key] );
 					}
 				}
 			}
 		}
 
-		$sorted = new stdClass;
-		$keys = array_keys( get_object_vars( $trimmed ) );
-		usort( $keys, 'self::orderZKeyIDs' );
-		foreach ( $keys as $key ) {
-			$sorted->$key = self::canonicalize( $trimmed->$key );
-		}
-
-		return $sorted;
+		uksort( $record, [ __CLASS__, 'orderZKeyIDs' ] );
+		$record = array_map( [ __CLASS__, 'canonicalize' ], $record );
+		return (object)$record;
 	}
 
 	/**
