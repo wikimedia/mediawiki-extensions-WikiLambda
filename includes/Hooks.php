@@ -28,6 +28,11 @@ class Hooks implements
 
 	public static function registerExtension() {
 		require_once dirname( __DIR__ ) . '/includes/defines.php';
+
+		// (T267232) Prevent ZObject: pages from being transcluded; sadly this isn't available as
+		// an extension.json attribute as of yet.
+		global $wgNonincludableNamespaces;
+		$wgNonincludableNamespaces[] = NS_ZOBJECT;
 	}
 
 	/**
