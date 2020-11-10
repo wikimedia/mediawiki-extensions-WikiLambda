@@ -14,6 +14,7 @@ use InvalidArgumentException;
 
 class ZType implements ZObject {
 
+	/** @var array */
 	private $data = [];
 
 	public static function getDefinition() : array {

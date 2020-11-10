@@ -16,6 +16,7 @@ use MediaWiki\MediaWikiServices;
 
 class ZMultiLingualString implements ZObject {
 
+	/** @var array */
 	private $data = [];
 
 	public static function getDefinition() : array {

@@ -41,8 +41,10 @@ class ZPersistentObject extends JsonContent implements ZObject {
 	 */
 	private $zObjectType;
 
+	/** @var bool|null */
 	private $validity;
 
+	/** @var array */
 	private $data = [];
 
 	public static function getDefinition() : array {

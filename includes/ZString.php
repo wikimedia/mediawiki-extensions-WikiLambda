@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda;
 
 class ZString implements ZObject {
 
+	/** @var array */
 	private $data = [];
 
 	public static function getDefinition() : array {

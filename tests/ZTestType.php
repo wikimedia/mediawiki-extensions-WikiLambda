@@ -85,6 +85,7 @@ class ZTestType implements ZObject {
 }
 EOT;
 
+	/** @var array */
 	private $data = [];
 
 	public static function getDefinition() : array {
