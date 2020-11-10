@@ -40,7 +40,9 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 	public function testOnMultiContentSave_badTitle() {
 		$invalidTitleText = 'Bad page title';
 
-		$invalidZIDStatus = $this->editPage( $invalidTitleText, ZTestType::TEST_ENCODING, 'Test bad title', NS_ZOBJECT );
+		$invalidZIDStatus = $this->editPage(
+			$invalidTitleText, ZTestType::TEST_ENCODING, 'Test bad title', NS_ZOBJECT
+		);
 
 		$this->assertFalse( $invalidZIDStatus->isOK() );
 		$this->assertTrue( $invalidZIDStatus->hasMessage( 'wikilambda-invalidzobjecttitle' ) );
@@ -74,7 +76,9 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 		$this->assertFalse( $secondTitle->exists() );
 
 		$this->titlesTouched[] = $secondTitleText;
-		$dupeEditStatus = $this->editPage( $secondTitleText, ZTestType::TEST_ENCODING, 'Duplicate creation (blocked)', NS_ZOBJECT );
+		$dupeEditStatus = $this->editPage(
+			$secondTitleText, ZTestType::TEST_ENCODING, 'Duplicate creation (blocked)', NS_ZOBJECT
+		);
 		$this->assertFalse( $dupeEditStatus->isOK() );
 		$this->assertTrue( $dupeEditStatus->hasMessage( 'wikilambda-labelclash' ) );
 

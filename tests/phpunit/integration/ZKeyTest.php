@@ -62,12 +62,46 @@ class ZKeyTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testPersistentCreation() {
 		$this->hideDeprecated( '::create' );
-		$testObject = new ZPersistentObject( '{"Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": {"Z1K1": "Z3", "Z3K1": "Z6", "Z3K2": "Z6K1", "Z3K3": {"Z1K1": "Z12", "Z12K1": [{"Z1K1": "Z11", "Z11K1": "en", "Z11K2": "Key label"}]}}, "Z2K3": {"Z1K1": "Z12", "Z12K1": [{"Z1K1": "Z11", "Z11K1": "en", "Z11K2": "Key object label"}]}}' );
+		$testObject = new ZPersistentObject( <<<EOT
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z0",
+	"Z2K2": {
+		"Z1K1": "Z3",
+		"Z3K1": "Z6",
+		"Z3K2": "Z6K1",
+		"Z3K3": {
+			"Z1K1": "Z12",
+			"Z12K1": [
+				{
+					"Z1K1": "Z11",
+					"Z11K1": "en",
+					"Z11K2": "Key label"
+				}
+			]
+		}
+	},
+	"Z2K3": {
+		"Z1K1": "Z12",
+		"Z12K1": [
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "en",
+				"Z11K2": "Key object label"
+			}
+		]
+	}
+}
+EOT
+		);
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'ZKey', $testObject->getZType() );
-		$this->assertSame( 'Z6', $testObject->getInnerZObject()->getKeyType() );
-		$this->assertSame( 'Z6K1', $testObject->getInnerZObject()->getKeyId() );
-		$this->assertSame( 'Key label', $testObject->getInnerZObject()->getKeyLabel()->getStringForLanguageCode( 'en' ) );
+
+		$innerKey = $testObject->getInnerZObject();
+
+		$this->assertSame( 'Z6', $innerKey->getKeyType() );
+		$this->assertSame( 'Z6K1', $innerKey->getKeyId() );
+		$this->assertSame( 'Key label', $innerKey->getKeyLabel()->getStringForLanguageCode( 'en' ) );
 	}
 
 	/**

@@ -50,7 +50,9 @@ class ZObjectFactory {
 		}
 
 		if ( !is_object( $object ) ) {
-			throw new InvalidArgumentException( "Couldn't create ZObject for given input '$object'; unrecognised format." );
+			throw new InvalidArgumentException(
+				"Couldn't create ZObject for given input '$object'; unrecognised format."
+			);
 		}
 
 		$objectVars = get_object_vars( $object );
@@ -87,7 +89,10 @@ class ZObjectFactory {
 			default:
 				// Magic:
 				// wfDeprecated( '::create for ' . $typeName );
-				return call_user_func( 'MediaWiki\Extension\WikiLambda\\' . $registry->getZObjectTypeFromKey( $type ) . '::create', $objectVars );
+				return call_user_func(
+					'MediaWiki\Extension\WikiLambda\\' . $registry->getZObjectTypeFromKey( $type ) . '::create',
+					$objectVars
+				);
 		}
 	}
 
@@ -107,8 +112,11 @@ class ZObjectFactory {
 
 		$targetZid = ZTypeRegistry::singleton()->getZObjectKeyFromType( $targetType );
 
-		if ( $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ] !== $targetZid && $targetType !== 'ZRecord' ) {
-			throw new \InvalidArgumentException( "Type of '$targetType' expected, but instead '" . $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ] . "' given." );
+		$typeID = $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ];
+		if ( $typeID !== $targetZid && $targetType !== 'ZRecord' ) {
+			throw new \InvalidArgumentException(
+				"Type of '$targetType' expected, but instead '$typeID' given."
+			);
 		}
 
 		$creationArray = [];

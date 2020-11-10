@@ -44,7 +44,9 @@ class ZKey implements ZObject {
 
 	public static function create( array $objectVars ) : ZObject {
 		if ( $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ] !== ZTypeRegistry::Z_KEY ) {
-			throw new InvalidArgumentException( "Type of ZKey expected, but instead '" . $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ] . "'." );
+			throw new InvalidArgumentException(
+				"Type of ZKey expected, but instead '" . $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ] . "'."
+			);
 		}
 
 		if ( !array_key_exists( ZTypeRegistry::Z_KEY_TYPE, $objectVars ) ) {
@@ -53,7 +55,8 @@ class ZKey implements ZObject {
 		$keyType = $objectVars[ ZTypeRegistry::Z_KEY_TYPE ];
 
 		// TODO: Per the model, we used to dereference this ZReference into the string of its ZType,
-		// but creates recursion issues when evaluating ZKeys of ZTypes that are being created (T262097). For now, just store the string ZReference.
+		// but creates recursion issues when evaluating ZKeys of ZTypes that are being created (T262097).
+		// For now, just store the string ZReference.
 
 		// $registry = ZTypeRegistry::singleton();
 		// if ( !$registry->isZObjectKeyKnown( $keyType ) ) {
@@ -110,7 +113,8 @@ class ZKey implements ZObject {
 			return false;
 		}
 		// TODO: Per the model, we used to dereference this ZReference into the string of its ZType,
-		// but creates recursion issues when evaluating ZKeys of ZTypes that are being created (T262097). For now, just store the string ZReference.
+		// but creates recursion issues when evaluating ZKeys of ZTypes that are being created (T262097).
+		// For now, just store the string ZReference.
 		/*
 		if ( !ZTypeRegistry::singleton()->isZObjectKeyKnown( $type ) ) {
 			// The ZTypeRegistry will refuse to register unknown types.
