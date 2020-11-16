@@ -219,6 +219,6 @@ class ZObjectFactory {
 	 */
 	private static function spliceReturn( $value, $type ) {
 		$value[ ZTypeRegistry::Z_OBJECT_TYPE ] = $type;
-		return self::create( $value );
+		return self::create( (object)$value );
 	}
 }
