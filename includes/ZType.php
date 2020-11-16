@@ -63,7 +63,7 @@ class ZType implements ZObject {
 		$typeKeys = [];
 		foreach ( $objectVars[ ZTypeRegistry::Z_TYPE_KEYS ] as $index => $value ) {
 			// TODO: Check that the ZKeys being referenced are for our ZID (which we don't know at this point?)
-			$typeKeys[] = ZKey::create( get_object_vars( $value ) );
+			$typeKeys[] = ZObjectFactory::create( $value );
 		}
 
 		if ( !array_key_exists( ZTypeRegistry::Z_TYPE_VALIDATOR, $objectVars ) ) {
