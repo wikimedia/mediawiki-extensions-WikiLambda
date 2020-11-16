@@ -87,7 +87,7 @@ class ZObjectFactory {
 			// case ZTypeRegistry::Z_PERSISTENTOBJECT:
 			// case ZTypeRegistry::Z_RECORD:
 			case ZTypeRegistry::Z_STRING:
-			// case ZTypeRegistry::Z_TYPE:
+			case ZTypeRegistry::Z_TYPE:
 				$objectDefinition = self::validateObjectStructure( $objectVars, $typeName );
 				$typeClass = 'MediaWiki\Extension\WikiLambda\\' . $typeName;
 				return new $typeClass( ...$objectDefinition );
@@ -187,10 +187,34 @@ class ZObjectFactory {
 				}
 				break;
 
+			case ZTypeRegistry::HACK_ARRAY_Z_KEY:
+				if ( is_array( $value ) ) {
+					foreach ( $value as $key => $arrayItem ) {
+						if ( $arrayItem instanceof ZKey ) {
+							continue;
+						}
+						$value[ $key ] = self::validateKeyValue( 'inner', ZTypeRegistry::Z_KEY, $arrayItem );
+					}
+					return $value;
+				}
+				break;
+
 			case ZTypeRegistry::HACK_REFERENCE:
 				if (
 					is_string( $value )
 					&& ZKey::isValidZObjectReference( $value )
+				) {
+					return $value;
+				}
+				break;
+
+			case ZTypeRegistry::HACK_REFERENCE_NULLABLE:
+				if (
+					is_string( $value )
+					&& (
+						ZKey::isValidZObjectReference( $value )
+						|| $value === 'Z0'
+					)
 				) {
 					return $value;
 				}
@@ -214,6 +238,34 @@ class ZObjectFactory {
 					return $value;
 				}
 				break;
+
+			case ZTypeRegistry::Z_KEY:
+				if ( is_object( $value ) ) {
+					if ( $value instanceof ZKey ) {
+						return $value;
+					}
+					$return = get_object_vars( $value );
+				} else {
+					$return = $value;
+				}
+
+				if (
+					!is_array( $return )
+					|| !array_key_exists( ZTypeRegistry::Z_KEY_TYPE, $return )
+					|| !array_key_exists( ZTypeRegistry::Z_KEY_ID, $return )
+					|| !array_key_exists( ZTypeRegistry::Z_KEY_LABEL, $return )
+				) {
+					break;
+				}
+
+				// Check that the label key is set to a valid ZMultiLingualString
+				self::validateKeyValue(
+					'inner',
+					ZTypeRegistry::Z_MULTILINGUALSTRING,
+					$return[ ZTypeRegistry::Z_KEY_LABEL ]
+				);
+
+				return self::spliceReturn( $return, $type );
 
 			case ZTypeRegistry::Z_MONOLINGUALSTRING:
 				if ( is_object( $value ) ) {
