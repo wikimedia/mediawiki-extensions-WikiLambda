@@ -72,11 +72,10 @@ class ZObjectFactory {
 		}
 
 		// HACK: Fallback to generic ZRecord if we think we're a ZObject
-		if ( $type === ZTypeRegistry::Z_OBJECT ) {
-			$type = ZTypeRegistry::Z_RECORD;
-		}
+		$type = ( $type === ZTypeRegistry::Z_OBJECT ) ? ZTypeRegistry::Z_RECORD : $type;
 
-		$typeName = ZTypeRegistry::singleton()->getZObjectTypeFromKey( $type );
+		$typeName = $registry->getZObjectTypeFromKey( $type );
+		$typeClass = "MediaWiki\\Extension\\WikiLambda\\$typeName";
 
 		switch ( $type ) {
 			case ZTypeRegistry::Z_KEY:
@@ -89,14 +88,13 @@ class ZObjectFactory {
 			case ZTypeRegistry::Z_STRING:
 			case ZTypeRegistry::Z_TYPE:
 				$objectDefinition = self::validateObjectStructure( $objectVars, $typeName );
-				$typeClass = 'MediaWiki\Extension\WikiLambda\\' . $typeName;
 				return new $typeClass( ...$objectDefinition );
 
 			default:
 				// Magic:
 				// wfDeprecated( '::create for ' . $typeName );
 				return call_user_func(
-					'MediaWiki\Extension\WikiLambda\\' . $registry->getZObjectTypeFromKey( $type ) . '::create',
+					$typeClass . '::create',
 					$objectVars
 				);
 		}
