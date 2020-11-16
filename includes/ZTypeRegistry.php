@@ -25,6 +25,8 @@ class ZTypeRegistry {
 
 	// Needed until we have a ZReference type
 	public const HACK_REFERENCE = 'Reference';
+	// Needed until we have a better way to cut the Gordian Knot of Z0 references?
+	public const HACK_REFERENCE_NULLABLE = 'NullableReference';
 	// Needed until we have sub-types
 	public const HACK_REFERENCE_TYPE = 'Reference(Type)';
 
