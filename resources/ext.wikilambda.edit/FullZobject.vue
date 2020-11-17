@@ -8,7 +8,10 @@
 	<div class="ext-wikilambda-zobject">
 		<span>{{ z1k1label }} (Z1K1): </span>
 		<span v-if="persistent">
-			<span>{{ typeLabel }} ({{ type }})</span>
+			<a v-if="type !== zobjectId && viewmode" :href="'./ZObject:' + type">
+				<span>{{ typeLabel }} ({{ type }})</span>
+			</a>
+			<span v-else>{{ typeLabel }} ({{ type }})</span>
 			<span> {{ z2k1label }} (Z2K1): </span>
 			<span> {{ zobjectId }} </span>
 		</span>
