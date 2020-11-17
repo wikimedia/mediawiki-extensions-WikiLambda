@@ -56,6 +56,9 @@ class ZTypeRegistry {
 	public const Z_STRING = 'Z6';
 	public const Z_STRING_VALUE = 'Z6K1';
 
+	public const Z_REFERENCE = 'Z9';
+	public const Z_REFERENCE_VALUE = 'Z9K1';
+
 	public const Z_LIST = 'Z10';
 	public const Z_LIST_HEAD = 'Z10K1';
 	public const Z_LIST_TAIL = 'Z10K2';
@@ -74,6 +77,7 @@ class ZTypeRegistry {
 		self::Z_TYPE => 'Type',
 		self::Z_RECORD => 'Record',
 		self::Z_STRING => 'String',
+		self::Z_REFERENCE => 'Reference',
 		self::Z_LIST => 'List',
 		self::Z_MONOLINGUALSTRING => 'Monolingual String',
 		self::Z_MULTILINGUALSTRING => 'Multilingual String'
@@ -92,6 +96,7 @@ class ZTypeRegistry {
 		self::Z_TYPE_VALIDATOR => 'validator',
 		self::Z_RECORD_VALUE => 'value',
 		self::Z_STRING_VALUE => 'value',
+		self::Z_REFERENCE_VALUE => 'value',
 		self::Z_LIST_HEAD => 'head',
 		self::Z_LIST_TAIL => 'tail',
 		self::Z_MONOLINGUALSTRING_LANGUAGE => 'language',

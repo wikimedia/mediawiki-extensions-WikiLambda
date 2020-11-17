@@ -92,7 +92,8 @@
 				"ext.wikilambda.edit/ZKey.vue",
 				"ext.wikilambda.edit/ListValue.vue",
 				"ext.wikilambda.edit/TypeSelector.vue",
-				"ext.wikilambda.edit/ZMultiLingualString.vue"
+				"ext.wikilambda.edit/ZMultiLingualString.vue",
+				"ext.wikilambda.edit/SelectZobject.vue"
 			],
 			"messages": [
 				"wikilambda-publishnew",
