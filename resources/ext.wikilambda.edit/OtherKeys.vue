@@ -18,7 +18,12 @@
 				@change="setKeyType($event, key)"
 			></type-selector>
 			<span v-else-if="keyTypes[key] === 'Z6'">
-				<span v-if="viewmode">{{ value }}</span>
+				<span v-if="viewmode">
+					<a v-if="value.match(/^Z\d+$/)" :href="'./ZObject:' + value">
+						{{ value }}
+					</a>
+					<template v-else>{{ value }}</template>
+				</span>
 				<input v-else
 					class="ext-wikilambda-zstring"
 					:value="value"
