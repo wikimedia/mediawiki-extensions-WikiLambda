@@ -146,6 +146,12 @@ class ZPersistentObject extends JsonContent implements ZObject {
 			return false;
 		}
 
+		// If the page data is just a string and can't be turned into a JSON object, it's invalid.
+		if ( is_string( $this->getData()->getValue() ) ) {
+			$this->validity = false;
+			return false;
+		}
+
 		// HACK: This gets the value and deserialises it, and throws if invalid, but it's heavy
 		// and not very pretty.
 		try {

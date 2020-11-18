@@ -54,6 +54,20 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 	/**
 	 * @covers ::onMultiContentSave
 	 */
+	public function testOnMultiContentSave_badContent() {
+		$invalidContent = '{"Z1K1": "Z6", "Z6K1": "a T263956 string!"}';
+
+		$invalidZIDStatus = $this->editPage(
+			ZTestType::TEST_ZID, $invalidContent, 'Test bad content', NS_ZOBJECT
+		);
+
+		$this->assertFalse( $invalidZIDStatus->isOK() );
+		$this->assertTrue( $invalidZIDStatus->hasMessage( 'wikilambda-invalidzobject' ) );
+	}
+
+	/**
+	 * @covers ::onMultiContentSave
+	 */
 	public function testOnMultiContentSave_nullEdit() {
 		$nullEditStatus = $this->editPage( ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'No-op edit', NS_ZOBJECT );
 		$this->assertTrue( $nullEditStatus->isOK() );
