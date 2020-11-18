@@ -30,6 +30,11 @@
 					@input="updateStringKey($event, key)"
 				>
 			</span>
+			<select-zobject v-else-if="keyTypes[key] === 'Z9'"
+				:search-text="zobject[key]"
+				:viewmode="viewmode"
+				@input="updateKey($event, key)"
+			></select-zobject>
 			<list-value v-else-if="keyTypes[key] === 'Z10'"
 				:list="zobject[key]"
 				:viewmode="viewmode"
@@ -59,6 +64,7 @@ var FullZobject = require( './FullZobject.vue' ),
 	ListValue = require( './ListValue.vue' ),
 	ZKey = require( './ZKey.vue' ),
 	TypeSelector = require( './TypeSelector.vue' ),
+	SelectZobject = require( './SelectZobject.vue' ),
 	ZMultiLingualString = require( './ZMultiLingualString.vue' );
 
 module.exports = {
@@ -140,6 +146,7 @@ module.exports = {
 		'list-value': ListValue,
 		'zkey-input': ZKey,
 		'type-selector': TypeSelector,
+		'select-zobject': SelectZobject,
 		'multi-lingual-string': ZMultiLingualString
 	}
 };

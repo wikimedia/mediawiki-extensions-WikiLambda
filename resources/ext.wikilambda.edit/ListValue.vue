@@ -22,6 +22,11 @@
 					:value="item"
 					@input="updateStringValue($event, index)"
 				>
+				<select-zobject v-else-if="listTypes[index] === 'Z9'"
+					:search-text="item"
+					:viewmode="viewmode"
+					@input="updateValue($event, index)"
+				></select-zobject>
 				<list-value v-else-if="listTypes[index] === 'Z10'"
 					:list="item"
 					:viewmode="viewmode"
@@ -51,6 +56,7 @@
 <script>
 var FullZobject = require( './FullZobject.vue' ),
 	TypeSelector = require( './TypeSelector.vue' ),
+	SelectZobject = require( './SelectZobject.vue' ),
 	ZMultiLingualString = require( './ZMultiLingualString.vue' );
 
 module.exports = {
@@ -108,6 +114,7 @@ module.exports = {
 	components: {
 		'full-zobject': FullZobject,
 		'type-selector': TypeSelector,
+		'select-zobject': SelectZobject,
 		'multi-lingual-string': ZMultiLingualString
 	}
 };
