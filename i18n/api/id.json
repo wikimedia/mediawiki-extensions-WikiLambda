@@ -6,6 +6,7 @@
 	},
 	"apihelp-wikilambda_fetch-summary": "Ambil model JSON dari ZObject.",
 	"apihelp-wikilambda_fetch-param-zids": "ZID ZObject yang akan diambil, dipisahkan oleh karakter pipa.",
+	"apihelp-wikilambda_fetch-param-language": "Bahasa dari hasil yang diberikan.",
 	"apihelp-wikilambda_fetch-example-single": "Ambil satu ZObject, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "Ambil tiga ZObject: Z1, Z2, dan Z3.",
 	"apierror-wikilambda_fetch-missingzid": "ZID '$1\" yang diberikan tidak ada di wiki ini.",
