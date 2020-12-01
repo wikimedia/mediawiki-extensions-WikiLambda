@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use Content;
 use FormatJson;
 use JsonContentHandler;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MWException;

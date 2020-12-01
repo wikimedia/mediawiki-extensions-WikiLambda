@@ -8,7 +8,9 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda;
+namespace MediaWiki\Extension\WikiLambda\ZObjects;
+
+use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 class ZString implements ZObject {
 

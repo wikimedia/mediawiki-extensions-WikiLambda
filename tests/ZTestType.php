@@ -10,7 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests;
 
-use MediaWiki\Extension\WikiLambda\ZObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 
 class ZTestType implements ZObject {
 

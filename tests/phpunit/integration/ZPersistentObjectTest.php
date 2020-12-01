@@ -11,10 +11,10 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use InvalidArgumentException;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
-use MediaWiki\Extension\WikiLambda\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZPersistentObject
+ * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
  * @group Database
  */
 class ZPersistentObjectTest extends \MediaWikiIntegrationTestCase {

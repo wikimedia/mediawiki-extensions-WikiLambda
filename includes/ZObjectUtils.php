@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use Normalizer;
 use stdClass;
 use Transliterator;

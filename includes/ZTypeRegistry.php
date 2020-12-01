@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use InvalidArgumentException;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use Title;
 
 /**
@@ -234,7 +235,7 @@ class ZTypeRegistry {
 
 		if (
 			$type !== 'ZObject'
-			&& !class_exists( 'MediaWiki\Extension\WikiLambda\\' . $type )
+			&& !class_exists( 'MediaWiki\Extension\WikiLambda\ZObjects\\' . $type )
 		) {
 			// TODO: Decide what we want to do here; do we need to re-model each of the built-in types
 			// (ZList, ZString,…) as ZType implementations on-wiki?

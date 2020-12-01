@@ -12,6 +12,8 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use CommentStoreComment;
 use DatabaseUpdater;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Revision\SlotRecord;
 use MWNamespace;
 use Status;

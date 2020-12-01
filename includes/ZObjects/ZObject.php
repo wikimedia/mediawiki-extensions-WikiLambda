@@ -8,7 +8,7 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda;
+namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 /**
  * This class represents the generic ZObject concept

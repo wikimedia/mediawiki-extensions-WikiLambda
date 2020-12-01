@@ -8,9 +8,11 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda;
+namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use Language;
+use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\MediaWikiServices;
 

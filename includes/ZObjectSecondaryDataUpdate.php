@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use DataUpdate;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use Title;
 
 class ZObjectSecondaryDataUpdate extends DataUpdate {

@@ -11,6 +11,12 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use InvalidArgumentException;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 class ZObjectFactory {
 
@@ -75,7 +81,7 @@ class ZObjectFactory {
 		$type = ( $type === ZTypeRegistry::Z_OBJECT ) ? ZTypeRegistry::Z_RECORD : $type;
 
 		$typeName = $registry->getZObjectTypeFromKey( $type );
-		$typeClass = "MediaWiki\\Extension\\WikiLambda\\$typeName";
+		$typeClass = "MediaWiki\\Extension\\WikiLambda\\ZObjects\\$typeName";
 
 		switch ( $type ) {
 			case ZTypeRegistry::Z_KEY:
@@ -112,7 +118,9 @@ class ZObjectFactory {
 	private static function validateObjectStructure( array $objectVars, string $targetType ) {
 		// TODO: Fetch from DB if there's no class for this.
 		// Magic:
-		$targetDefinition = call_user_func( 'MediaWiki\Extension\WikiLambda\\' . $targetType . '::getDefinition' );
+		$targetDefinition = call_user_func(
+			'MediaWiki\Extension\WikiLambda\ZObjects\\' . $targetType . '::getDefinition'
+		);
 
 		$targetZid = ZTypeRegistry::singleton()->getZObjectKeyFromType( $targetType );
 

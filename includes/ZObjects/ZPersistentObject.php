@@ -8,12 +8,15 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda;
+namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use FormatJson;
 use Html;
 use JsonContent;
 use Language;
+use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
