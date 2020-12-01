@@ -37,15 +37,6 @@ class ZObject {
 		$this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] = ZTypeRegistry::singleton()->getZObjectTypeFromKey( $type );
 	}
 
-	public static function create( array $objectVars ) : ZObject {
-		if ( count( $objectVars ) !== 1 ) {
-			throw new \InvalidArgumentException(
-				"ZObject generic object with extra keys: " . implode( ', ', array_keys( $objectVars ) ) . "."
-			);
-		}
-		return new ZObject( $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ] );
-	}
-
 	/**
 	 * @return string The type of this ZObject
 	 */

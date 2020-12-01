@@ -85,7 +85,7 @@ class ZObjectFactory {
 			// case ZTypeRegistry::Z_LIST:
 			case ZTypeRegistry::Z_MONOLINGUALSTRING:
 			case ZTypeRegistry::Z_MULTILINGUALSTRING:
-			// case ZTypeRegistry::Z_OBJECT:
+			case ZTypeRegistry::Z_OBJECT:
 			// case ZTypeRegistry::Z_PERSISTENTOBJECT:
 			case ZTypeRegistry::Z_STRING:
 			case ZTypeRegistry::Z_TYPE:
