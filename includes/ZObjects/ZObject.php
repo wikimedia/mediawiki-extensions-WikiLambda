@@ -33,8 +33,20 @@ class ZObject {
 		];
 	}
 
-	public function __construct( $type ) {
+	/**
+	 * Construct a new ZObject instance. This top-level class has a number of Type-specific sub-
+	 * classes for built-in representations, and is mostly intended to represent instances of
+	 * wiki-defined types.
+	 *
+	 * This constructor should only be called by ZObjectFactory (and test code), and not directly.
+	 * Validation of inputs to this and all other ZObject constructors is left to ZObjectFactory.
+	 *
+	 * @param string $type ZReference for the specific ZType that is being instantiated (e.g. 'Z3').
+	 */
+	public function __construct( string $type ) {
 		$this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] = ZTypeRegistry::singleton()->getZObjectTypeFromKey( $type );
+		// TODO: If this is a wiki-defined type, fetch the extra arguments passed and affix
+		// them to the $data representation.
 	}
 
 	/**
