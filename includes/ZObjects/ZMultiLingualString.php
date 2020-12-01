@@ -16,7 +16,7 @@ use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\MediaWikiServices;
 
-class ZMultiLingualString implements ZObject {
+class ZMultiLingualString extends ZObject {
 
 	/** @var array */
 	private $data = [];
@@ -39,10 +39,6 @@ class ZMultiLingualString implements ZObject {
 			}
 			$this->setMonoLingualString( $monoLingualString );
 		}
-	}
-
-	public function getZType() : string {
-		return static::getDefinition()['type'];
 	}
 
 	public function getZValue() {

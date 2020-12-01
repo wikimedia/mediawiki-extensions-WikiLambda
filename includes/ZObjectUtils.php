@@ -202,7 +202,7 @@ class ZObjectUtils {
 	}
 
 	/**
-	 * Canonicalizes a ZRecord.
+	 * Canonicalizes a record-like ZObject.
 	 *
 	 * This trims and sorts the keys.
 	 *

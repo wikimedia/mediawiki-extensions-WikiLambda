@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
-class ZType implements ZObject {
+class ZType extends ZObject {
 
 	/** @var array */
 	private $data = [];
@@ -41,10 +41,6 @@ class ZType implements ZObject {
 		$this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ] = $identity;
 		$this->data[ ZTypeRegistry::Z_TYPE_KEYS ] = $keys;
 		$this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ] = $validator;
-	}
-
-	public function getZType() : string {
-		return static::getDefinition()['type'];
 	}
 
 	public function getZValue() {

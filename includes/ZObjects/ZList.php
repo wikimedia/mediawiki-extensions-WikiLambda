@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
-class ZList implements ZObject {
+class ZList extends ZObject {
 
 	/** @var array */
 	private $data = [];
@@ -51,10 +51,6 @@ class ZList implements ZObject {
 			throw new \InvalidArgumentException( "ZList missing the tail value key." );
 		}
 		return new ZList( $objectVars[ ZTypeRegistry::Z_LIST_HEAD ], $objectVars[ ZTypeRegistry::Z_LIST_TAIL ] );
-	}
-
-	public function getZType() : string {
-		return static::getDefinition()['type'];
 	}
 
 	public function getZValue() {

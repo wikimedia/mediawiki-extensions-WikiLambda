@@ -77,9 +77,6 @@ class ZObjectFactory {
 			throw new \InvalidArgumentException( "ZObject record type '$type' not recognised." );
 		}
 
-		// HACK: Fallback to generic ZRecord if we think we're a ZObject
-		$type = ( $type === ZTypeRegistry::Z_OBJECT ) ? ZTypeRegistry::Z_RECORD : $type;
-
 		$typeName = $registry->getZObjectTypeFromKey( $type );
 		$typeClass = "MediaWiki\\Extension\\WikiLambda\\ZObjects\\$typeName";
 
@@ -90,7 +87,6 @@ class ZObjectFactory {
 			case ZTypeRegistry::Z_MULTILINGUALSTRING:
 			// case ZTypeRegistry::Z_OBJECT:
 			// case ZTypeRegistry::Z_PERSISTENTOBJECT:
-			// case ZTypeRegistry::Z_RECORD:
 			case ZTypeRegistry::Z_STRING:
 			case ZTypeRegistry::Z_TYPE:
 				$objectDefinition = self::validateObjectStructure( $objectVars, $typeName );
@@ -125,7 +121,7 @@ class ZObjectFactory {
 		$targetZid = ZTypeRegistry::singleton()->getZObjectKeyFromType( $targetType );
 
 		$typeID = $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ];
-		if ( $typeID !== $targetZid && $targetType !== 'ZRecord' ) {
+		if ( $typeID !== $targetZid ) {
 			throw new \InvalidArgumentException(
 				"Type of '$targetType' expected, but instead '$typeID' given."
 			);

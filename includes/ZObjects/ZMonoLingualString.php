@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
-class ZMonoLingualString implements ZObject {
+class ZMonoLingualString extends ZObject {
 
 	/** @var array */
 	private $data = [];
@@ -34,10 +34,6 @@ class ZMonoLingualString implements ZObject {
 	public function __construct( $langage = '', $value = '' ) {
 		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] = $langage;
 		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ] = $value;
-	}
-
-	public function getZType() : string {
-		return static::getDefinition()['type'];
 	}
 
 	public function getZValue() {

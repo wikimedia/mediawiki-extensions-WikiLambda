@@ -32,7 +32,7 @@ use WikiPage;
 /**
  * This class represents the top-level, persistent ZObject, as stored in MediaWiki.
  */
-class ZPersistentObject extends JsonContent implements ZObject {
+class ZPersistentObject extends JsonContent {
 
 	/**
 	 * Type of included ZObject, e.g. "ZList" or "ZString", as stored in the serialised

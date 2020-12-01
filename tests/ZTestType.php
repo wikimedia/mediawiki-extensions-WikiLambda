@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests;
 
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 
-class ZTestType implements ZObject {
+class ZTestType extends ZObject {
 
 	public const TEST_ZID = 'Z111';
 
@@ -114,10 +114,6 @@ EOT;
 			throw new \InvalidArgumentException( "ZTestType missing the Z111K2 key." );
 		}
 		return new ZTestType( $objectVars[ 'Z111K1' ], $objectVars[ 'Z111K2' ] );
-	}
-
-	public function getZType() : string {
-		return static::getDefinition()['type'];
 	}
 
 	public function getZValue() {

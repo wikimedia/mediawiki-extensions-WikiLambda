@@ -56,9 +56,6 @@ class ZTypeRegistry {
 	public const Z_TYPE_KEYS = 'Z4K2';
 	public const Z_TYPE_VALIDATOR = 'Z4K3';
 
-	public const Z_RECORD = 'Z5';
-	public const Z_RECORD_VALUE = 'Z5K1';
-
 	public const Z_STRING = 'Z6';
 	public const Z_STRING_VALUE = 'Z6K1';
 
@@ -81,7 +78,6 @@ class ZTypeRegistry {
 		self::Z_PERSISTENTOBJECT => 'Persistent ZObject',
 		self::Z_KEY => 'Key',
 		self::Z_TYPE => 'Type',
-		self::Z_RECORD => 'Record',
 		self::Z_STRING => 'String',
 		self::Z_REFERENCE => 'Reference',
 		self::Z_LIST => 'List',
@@ -100,7 +96,6 @@ class ZTypeRegistry {
 		self::Z_TYPE_IDENTITY => 'identity',
 		self::Z_TYPE_KEYS => 'keys',
 		self::Z_TYPE_VALIDATOR => 'validator',
-		self::Z_RECORD_VALUE => 'value',
 		self::Z_STRING_VALUE => 'value',
 		self::Z_REFERENCE_VALUE => 'value',
 		self::Z_LIST_HEAD => 'head',
@@ -130,8 +125,6 @@ class ZTypeRegistry {
 		$this->internalRegisterType( self::Z_TYPE, 'ZType' );
 		$this->internalRegisterType( self::Z_STRING, 'ZString' );
 		$this->internalRegisterType( self::Z_LIST, 'ZList' );
-
-		$this->internalRegisterType( self::Z_RECORD, 'ZRecord' );
 
 		$this->internalRegisterType( self::Z_MONOLINGUALSTRING, 'ZMonoLingualString' );
 		$this->internalRegisterType( self::Z_MULTILINGUALSTRING, 'ZMultiLingualString' );
