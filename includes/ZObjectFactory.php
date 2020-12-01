@@ -82,7 +82,7 @@ class ZObjectFactory {
 
 		switch ( $type ) {
 			case ZTypeRegistry::Z_KEY:
-			// case ZTypeRegistry::Z_LIST:
+			case ZTypeRegistry::Z_LIST:
 			case ZTypeRegistry::Z_MONOLINGUALSTRING:
 			case ZTypeRegistry::Z_MULTILINGUALSTRING:
 			case ZTypeRegistry::Z_OBJECT:
@@ -173,6 +173,22 @@ class ZObjectFactory {
 				}
 				break;
 
+			case ZTypeRegistry::HACK_ARRAY:
+				if ( is_array( $value ) ) {
+					foreach ( $value as $key => $arrayItem ) {
+						if ( $arrayItem instanceof ZObject ) {
+							continue;
+						}
+						$value[ $key ] = self::validateKeyValue(
+							'inner',
+							ZTypeRegistry::Z_OBJECT,
+							$arrayItem
+						);
+					}
+					return $value;
+				}
+				break;
+
 			case ZTypeRegistry::HACK_ARRAY_Z_MONOLINGUALSTRING:
 				if ( is_array( $value ) ) {
 					foreach ( $value as $key => $arrayItem ) {
@@ -240,6 +256,33 @@ class ZObjectFactory {
 					return $value;
 				}
 				break;
+
+			case ZTypeRegistry::Z_OBJECT:
+				if ( is_string( $value ) ) {
+					return $value;
+				}
+
+				if ( is_array( $value ) ) {
+					return $value;
+				}
+
+				if ( is_object( $value ) ) {
+					if ( $value instanceof ZObject ) {
+						return $value;
+					}
+					$return = get_object_vars( $value );
+				} else {
+					$return = $value;
+				}
+
+				if (
+					!is_array( $return )
+					|| !array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $return )
+				) {
+					break;
+				}
+
+				return self::spliceReturn( $return, $return[ ZTypeRegistry::Z_OBJECT_TYPE ] );
 
 			case ZTypeRegistry::Z_KEY:
 				if ( is_object( $value ) ) {

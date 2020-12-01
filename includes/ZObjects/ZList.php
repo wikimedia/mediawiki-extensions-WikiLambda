@@ -43,16 +43,6 @@ class ZList extends ZObject {
 		}
 	}
 
-	public static function create( array $objectVars ) : ZObject {
-		if ( !array_key_exists( ZTypeRegistry::Z_LIST_HEAD, $objectVars ) ) {
-			throw new \InvalidArgumentException( "ZList missing the head value key." );
-		}
-		if ( !array_key_exists( ZTypeRegistry::Z_LIST_TAIL, $objectVars ) ) {
-			throw new \InvalidArgumentException( "ZList missing the tail value key." );
-		}
-		return new ZList( $objectVars[ ZTypeRegistry::Z_LIST_HEAD ], $objectVars[ ZTypeRegistry::Z_LIST_TAIL ] );
-	}
-
 	public function getZValue() {
 		return [ $this->data[ ZTypeRegistry::Z_LIST_HEAD ], $this->data[ ZTypeRegistry::Z_LIST_TAIL ] ];
 	}
