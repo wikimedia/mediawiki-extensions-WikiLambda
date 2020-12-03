@@ -10,6 +10,7 @@
 	"apihelp-wikilambda_fetch-example-single": "Ambil satu ZObject, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "Ambil tiga ZObject: Z1, Z2, dan Z3.",
 	"apierror-wikilambda_fetch-missingzid": "ZID '$1\" yang diberikan tidak ada di wiki ini.",
+	"apihelp-query+wikilambda_searchlabels-summary": "Generator daftar kueri API ini memungkinkan Anda mencari ZObject dengan label dalam bahasa tertentu. Generator ini ada untuk mendukung sistem pencarian lihat-ke-depan.",
 	"apihelp-query+wikilambda_searchlabels-param-search": "Istilah pencarian",
 	"apihelp-query+wikilambda_searchlabels-param-language": "Kode bahasa MediaWiki tempat mencari",
 	"apihelp-query+wikilambda_searchlabels-param-exact": "Mencari kecocokan persis atau tidak. Jika dimatikan, masukan akan dianggap sebagai tidak peka kapital, pencarian Unicode yang dinormalkan dengan aksen karakter Latin diabaikan.",
