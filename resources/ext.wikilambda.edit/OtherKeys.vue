@@ -100,6 +100,7 @@ module.exports = {
 			}
 		}
 		return {
+			zlang: editingData.zlang,
 			keylabel: ztypes.Z3,
 			keyTypes: keyTypes,
 			otherkeydata: otherkeydata,
@@ -148,6 +149,39 @@ module.exports = {
 		'type-selector': TypeSelector,
 		'select-zobject': SelectZobject,
 		'multi-lingual-string': ZMultiLingualString
+	},
+	mounted: function () {
+		var solvedTypes = [],
+			keyType,
+			type,
+			api = new mw.Api(),
+			zkeylabels = this.zkeylabels,
+			zlang = this.zlang;
+		for ( keyType in this.keyTypes ) {
+			type = keyType.match( /(Z\d+)/ )[ 1 ];
+			if ( solvedTypes.indexOf( type ) !== -1 ) {
+				continue;
+			}
+			solvedTypes.push( type );
+			( function ( zid ) {
+				api.get( {
+					action: 'wikilambda_fetch',
+					format: 'json',
+					zids: zid
+				} ).done( function ( data ) {
+					var keys = JSON.parse( data[ zid ].wikilambda_fetch ).Z2K2.Z4K2;
+					keys.forEach( function ( key ) {
+						var labels = key.Z3K3.Z12K1;
+						labels.forEach( function ( label ) {
+							if ( label.Z11K1 === zlang ) {
+								zkeylabels[ key.Z3K2 ] = label.Z11K2;
+								return;
+							}
+						} );
+					} );
+				} );
+			}( type ) );
+		}
 	}
 };
 </script>
