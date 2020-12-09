@@ -10,12 +10,13 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
+use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 class ZObject {
 
 	/** @var array */
-	private $data = [];
+	protected $data = [];
 
 	/**
 	 * Provide this ZObject's schema.
@@ -47,6 +48,25 @@ class ZObject {
 		$this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] = ZTypeRegistry::singleton()->getZObjectTypeFromKey( $type );
 		// TODO: If this is a wiki-defined type, fetch the extra arguments passed and affix
 		// them to the $data representation.
+	}
+
+	/**
+	 * Fetch value of given key from the current ZObject.
+	 *
+	 * @param string $keyQuery The key to search for.
+	 * @return ZObject|null The value of the supplied key as a ZObject, null if key is undefined.
+	 */
+	public function getValueByKey( string $keyQuery ) {
+		$keys = $this->data;
+		if ( array_key_exists( $keyQuery, $keys ) ) {
+			$value = $keys[ $keyQuery ];
+			if ( $value instanceof ZObject ) {
+				return $value;
+			}
+			return ZObjectFactory::create( $value );
+		} else {
+			return null;
+		}
 	}
 
 	/**

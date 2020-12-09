@@ -18,9 +18,6 @@ use MediaWiki\MediaWikiServices;
 
 class ZMultiLingualString extends ZObject {
 
-	/** @var array */
-	private $data = [];
-
 	public static function getDefinition() : array {
 		return [
 			'type' => ZTypeRegistry::Z_MULTILINGUALSTRING,

@@ -14,9 +14,6 @@ use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 class ZKey extends ZObject {
 
-	/** @var array */
-	private $data = [];
-
 	public static function getDefinition() : array {
 		return [
 			'type' => ZTypeRegistry::Z_KEY,
