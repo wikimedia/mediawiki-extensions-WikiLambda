@@ -31,7 +31,11 @@ class ZObjectTypesTest extends \MediaWikiUnitTestCase {
 	}
 
 	public function provideZObjectTypes() {
-		$zPersistentObject = new ZPersistentObject( 'test' ); // Note this will return string type, not Z2
+		// Note this will return the inner object's type, string, not Z2
+		$zPersistentObject = new ZPersistentObject(
+			'{"Z1K1":"Z2", "Z2K1": "Z0", "Z2K2": "test", "Z2K3": {"Z1K1": "Z12", "Z12K1": []}}'
+		);
+
 		$zKey = new ZKey( 'Z6', 'Z999K1', 'test' );
 		$zType = new ZType( 'Z999', [ 'Z999K1' ], 'Z9999' );
 		$zString = new ZString( 'test' );
