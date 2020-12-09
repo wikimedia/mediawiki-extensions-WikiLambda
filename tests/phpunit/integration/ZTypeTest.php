@@ -92,7 +92,7 @@ class ZTypeTest extends \MediaWikiIntegrationTestCase {
 		] ) );
 
 		$this->assertTrue( $testObject->isValid() );
-		$this->assertSame( 'ZType', $testObject->getZType() );
+		$this->assertSame( 'Z4', $testObject->getZType() );
 
 		$this->assertSame( 'Demonstration type', $testObject->getLabel( $english ) );
 		$this->assertSame( 'Type pour démonstration', $testObject->getLabel( $french ) );

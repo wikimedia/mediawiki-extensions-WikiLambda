@@ -43,7 +43,7 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 		] );
 		$this->assertTrue( $testObject->isValid() );
 
-		$this->assertSame( 'ZMultiLingualString', $testObject->getZType() );
+		$this->assertSame( 'Z12', $testObject->getZType() );
 		$this->assertArrayHasKey( 'en', $testObject->getZValue() );
 		$this->assertArrayNotHasKey( 'ru', $testObject->getZValue() );
 
@@ -102,7 +102,7 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MULTILINGUALSTRING,
 			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [ new ZMonoLingualString( 'en', 'Demonstration item' ) ]
 		] );
-		$this->assertSame( $testObject->getZType(), 'ZMultiLingualString' );
+		$this->assertSame( $testObject->getZType(), 'Z12' );
 	}
 
 	/**
@@ -194,7 +194,7 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 EOT
 		 );
 		$this->assertTrue( $testObject->isValid() );
-		$this->assertSame( 'ZMultiLingualString', $testObject->getZType() );
+		$this->assertSame( 'Z12', $testObject->getZType() );
 		$this->assertSame( [], $testObject->getZValue() );
 
 		$testObject = new ZPersistentObject(
@@ -225,7 +225,7 @@ EOT
 EOT
 		);
 		$this->assertTrue( $testObject->isValid() );
-		$this->assertSame( 'ZMultiLingualString', $testObject->getZType() );
+		$this->assertSame( 'Z12', $testObject->getZType() );
 
 		$this->assertSame( 'Demonstration item', $testObject->getInnerZObject()->getStringForLanguage( $english ) );
 		$this->assertSame(

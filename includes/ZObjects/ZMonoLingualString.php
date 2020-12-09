@@ -19,7 +19,7 @@ class ZMonoLingualString extends ZObject {
 
 	public static function getDefinition() : array {
 		return [
-			'type' => 'ZMonoLingualString',
+			'type' => ZTypeRegistry::Z_MONOLINGUALSTRING,
 			'keys' => [
 				ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => [
 					'type' => ZTypeRegistry::HACK_LANGUAGE,

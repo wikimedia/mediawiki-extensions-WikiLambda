@@ -52,7 +52,7 @@ class ZPersistentObject extends JsonContent {
 
 	public static function getDefinition() : array {
 		return [
-			'type' => 'ZPersistentObject',
+			'type' => ZTypeRegistry::Z_PERSISTENTOBJECT,
 			'keys' => [
 				ZTypeRegistry::Z_PERSISTENTOBJECT_ID => [
 					'type' => ZTypeRegistry::HACK_REFERENCE,

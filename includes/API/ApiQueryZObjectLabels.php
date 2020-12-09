@@ -39,7 +39,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 			'search' => $request,
 			'language' => $language,
 			'exact' => $exact,
-			// TODO: Type parameter input
+			'type' => $type,
 			'limit' => $limit,
 			'continue' => $continue,
 		] = $this->extractRequestParams();
@@ -62,6 +62,10 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 
 		if ( $continue !== null ) {
 			$this->addWhere( "wlzl_id >= $continue" );
+		}
+
+		if ( $type != null ) {
+			$this->addWhere( 'wlzl_type = ' . $dbr->addQuotes( $type ) );
 		}
 
 		$this->addOption( 'LIMIT', $limit + 1 );
@@ -110,7 +114,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 		return [
 			'search' => [
 				ParamValidator::PARAM_TYPE => 'string',
-				ParamValidator::PARAM_REQUIRED => true,
+				ApiBase::PARAM_DFLT => '',
 			],
 			'language' => [
 				ParamValidator::PARAM_TYPE => array_keys(
@@ -121,6 +125,9 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 			'exact' => [
 				ParamValidator::PARAM_TYPE => 'boolean',
 				ApiBase::PARAM_DFLT => false,
+			],
+			'type' => [
+				ParamValidator::PARAM_TYPE => 'string',
 			],
 			'limit' => [
 				ParamValidator::PARAM_TYPE => 'limit',
@@ -143,6 +150,8 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 		return [
 			'action=query&list=wikilambda_searchlabels&wikilambda_search=foo&wikilambda_language=en'
 				=> 'apihelp-query+wikilambda-example-simple',
+			'action=query&list=wikilambda_searchlabels&wikilambda_type=Z4&wikilambda_language=en'
+				=> 'apihelp-query+wikilambda-example-type',
 		];
 	}
 }

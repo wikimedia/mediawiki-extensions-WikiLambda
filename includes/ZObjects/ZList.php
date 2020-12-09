@@ -19,7 +19,7 @@ class ZList extends ZObject {
 
 	public static function getDefinition() : array {
 		return [
-			'type' => 'ZList',
+			'type' => ZTypeRegistry::Z_LIST,
 			'keys' => [
 				ZTypeRegistry::Z_LIST_HEAD => [
 					'type' => ZTypeRegistry::Z_OBJECT,

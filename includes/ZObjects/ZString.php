@@ -19,7 +19,7 @@ class ZString extends ZObject {
 
 	public static function getDefinition() : array {
 		return [
-			'type' => 'ZString',
+			'type' => ZTypeRegistry::Z_STRING,
 			'keys' => [
 				ZTypeRegistry::Z_STRING_VALUE => [
 					'type' => ZTypeRegistry::HACK_STRING,

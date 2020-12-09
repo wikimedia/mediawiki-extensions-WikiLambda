@@ -30,7 +30,7 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testCreation() {
 		$testObject = new ZMonoLingualString( 'en', 'Demonstration item' );
-		$this->assertSame( 'ZMonoLingualString', $testObject->getZType() );
+		$this->assertSame( 'Z11', $testObject->getZType() );
 		$this->assertSame( 'en', $testObject->getLanguage() );
 		$this->assertSame( 'Demonstration item', $testObject->getString() );
 		$this->assertSame( [ 'en' => 'Demonstration item' ], $testObject->getZValue() );
@@ -46,7 +46,7 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 			ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => 'en',
 			ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => 'Demonstration item'
 		] );
-		$this->assertSame( 'ZMonoLingualString', $testObject->getZType() );
+		$this->assertSame( 'Z11', $testObject->getZType() );
 		$this->assertSame( 'en', $testObject->getLanguage() );
 		$this->assertSame( 'Demonstration item', $testObject->getString() );
 		$this->assertSame( [ 'en' => 'Demonstration item' ], $testObject->getZValue() );
@@ -86,7 +86,7 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZPersistentObject( '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "Demonstration item" }' );
 
-		$this->assertSame( 'ZMonoLingualString', $testObject->getZType() );
+		$this->assertSame( 'Z11', $testObject->getZType() );
 		$this->assertSame( [ 'en' => 'Demonstration item' ], $testObject->getZValue() );
 
 		$testObject = new ZPersistentObject(
@@ -106,7 +106,7 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 }
 EOT
 		);
-		$this->assertSame( 'ZMonoLingualString', $testObject->getZType() );
+		$this->assertSame( 'Z11', $testObject->getZType() );
 		$this->assertSame( [ 'en' => 'Demonstration item' ], $testObject->getZValue() );
 		$this->assertSame( 'en', $testObject->getInnerZObject()->getLanguage() );
 		$this->assertSame( 'Demonstration item', $testObject->getInnerZObject()->getString() );

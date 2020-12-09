@@ -33,7 +33,7 @@ class ZKeyTest extends \MediaWikiIntegrationTestCase {
 		$testLabelSet = new ZMultiLingualString( [ $testString ] );
 		$testObject = new ZKey( 'Z6', 'Z6K1', $testLabelSet );
 
-		$this->assertSame( 'ZKey', $testObject->getZType() );
+		$this->assertSame( 'Z3', $testObject->getZType() );
 		$this->assertSame( 'Z6', $testObject->getKeyType() );
 		$this->assertSame( 'Z6K1', $testObject->getKeyId() );
 		$this->assertSame( $testString->getString(), $testObject->getKeyLabel()->getStringForLanguageCode( 'en' ) );
@@ -86,7 +86,7 @@ class ZKeyTest extends \MediaWikiIntegrationTestCase {
 EOT
 		);
 		$this->assertTrue( $testObject->isValid() );
-		$this->assertSame( 'ZKey', $testObject->getZType() );
+		$this->assertSame( 'Z3', $testObject->getZType() );
 
 		$innerKey = $testObject->getInnerZObject();
 

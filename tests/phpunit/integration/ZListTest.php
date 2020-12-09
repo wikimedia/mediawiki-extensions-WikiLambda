@@ -30,27 +30,27 @@ class ZListTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testPersistentCreation() {
 		$testObject = new ZPersistentObject( '[]' );
-		$this->assertSame( 'ZList', $testObject->getZType() );
+		$this->assertSame( 'Z10', $testObject->getZType() );
 		$this->assertSame( [ null, [] ], $testObject->getZValue() );
 		$this->assertSame( [], $testObject->getInnerZObject()->getZListAsArray() );
 
 		$testObject = new ZPersistentObject( '["Test"]' );
-		$this->assertSame( 'ZList', $testObject->getZType() );
+		$this->assertSame( 'Z10', $testObject->getZType() );
 		$this->assertSame( [ 'Test', [] ], $testObject->getZValue() );
 		$this->assertSame( [ 'Test' ], $testObject->getInnerZObject()->getZListAsArray() );
 
 		$testObject = new ZPersistentObject( '["Test", "Test2"]' );
-		$this->assertSame( 'ZList', $testObject->getZType() );
+		$this->assertSame( 'Z10', $testObject->getZType() );
 		$this->assertSame( [ 'Test', [ 'Test2' ] ], $testObject->getZValue() );
 		$this->assertSame( [ 'Test', 'Test2' ], $testObject->getInnerZObject()->getZListAsArray() );
 
 		$testObject = new ZPersistentObject( '["Test","Test2","Test3"]' );
-		$this->assertSame( 'ZList', $testObject->getZType() );
+		$this->assertSame( 'Z10', $testObject->getZType() );
 		$this->assertSame( [ 'Test', [ "Test2", "Test3" ] ], $testObject->getZValue() );
 		$this->assertSame( [ 'Test', 'Test2', 'Test3' ], $testObject->getInnerZObject()->getZListAsArray() );
 
 		$testObject = new ZPersistentObject( '[["Test"],["Test2"],["Test3"]]' );
-		$this->assertSame( 'ZList', $testObject->getZType() );
+		$this->assertSame( 'Z10', $testObject->getZType() );
 		$this->assertSame( [ [ 'Test' ], [ [ "Test2" ], [ "Test3" ] ] ], $testObject->getZValue() );
 		$this->assertSame(
 			[ [ 'Test' ], [ 'Test2' ], [ 'Test3' ] ],
@@ -58,12 +58,12 @@ class ZListTest extends \MediaWikiIntegrationTestCase {
 		);
 
 		$testObject = new ZPersistentObject( '[["Test"],["Test2","Test3"]]' );
-		$this->assertSame( 'ZList', $testObject->getZType() );
+		$this->assertSame( 'Z10', $testObject->getZType() );
 		$this->assertSame( [ [ 'Test' ], [ [ "Test2", "Test3" ] ] ], $testObject->getZValue() );
 		$this->assertSame( [ [ 'Test' ], [ 'Test2', 'Test3' ] ], $testObject->getInnerZObject()->getZListAsArray() );
 
 		$testObject = new ZPersistentObject( '[["Test", "Test2"],["Test3","Test4"]]' );
-		$this->assertSame( 'ZList', $testObject->getZType() );
+		$this->assertSame( 'Z10', $testObject->getZType() );
 		$this->assertSame( [ [ 'Test', 'Test2' ], [ [ "Test3", "Test4" ] ] ], $testObject->getZValue() );
 		$this->assertSame(
 			[ [ 'Test', 'Test2' ], [ 'Test3', 'Test4' ] ],
@@ -91,7 +91,7 @@ class ZListTest extends \MediaWikiIntegrationTestCase {
 }
 EOT
 		);
-		$this->assertSame( 'ZList', $testObject->getZType() );
+		$this->assertSame( 'Z10', $testObject->getZType() );
 		$this->assertSame( [ 'Test', [ "Test2", "Test3" ] ], $testObject->getZValue() );
 		$this->assertSame( [ 'Test', 'Test2', 'Test3' ], $testObject->getInnerZObject()->getZListAsArray() );
 	}
@@ -102,10 +102,10 @@ EOT
 	 */
 	public function testGetZType() {
 		$testObject = new ZList( [ 'Test' ] );
-		$this->assertSame( 'ZList', $testObject->getZType(), 'ZType of directly-created ZList' );
+		$this->assertSame( 'Z10', $testObject->getZType(), 'ZType of directly-created ZList' );
 
 		$testObject = new ZPersistentObject( '["Test"]' );
-		$this->assertSame( 'ZList', $testObject->getZType(), 'ZType of indirectly-created ZList' );
+		$this->assertSame( 'Z10', $testObject->getZType(), 'ZType of indirectly-created ZList' );
 	}
 
 	/**

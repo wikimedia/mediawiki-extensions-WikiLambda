@@ -26,15 +26,15 @@ class ZStringTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testPersistentCreation() {
 		$testObject = new ZPersistentObject( '' );
-		$this->assertSame( 'ZString', $testObject->getZType() );
+		$this->assertSame( 'Z6', $testObject->getZType() );
 		$this->assertSame( '', $testObject->getZValue() );
 
 		$testObject = new ZPersistentObject( 'Test' );
-		$this->assertSame( 'ZString', $testObject->getZType() );
+		$this->assertSame( 'Z6', $testObject->getZType() );
 		$this->assertSame( 'Test', $testObject->getZValue() );
 
 		$testObject = new ZPersistentObject( '{ "Z1K1": "Z6", "Z6K1": "Test" }' );
-		$this->assertSame( 'ZString', $testObject->getZType() );
+		$this->assertSame( 'Z6', $testObject->getZType() );
 		$this->assertSame( 'Test', $testObject->getZValue() );
 
 		$this->hideDeprecated( '::create' );
@@ -46,7 +46,7 @@ class ZStringTest extends \MediaWikiIntegrationTestCase {
 				. '"Z2K3": { "Z1K1":"Z12", "Z12K1":[] } '
 			. '}'
 		);
-		$this->assertSame( 'ZString', $testObject->getZType() );
+		$this->assertSame( 'Z6', $testObject->getZType() );
 		$this->assertSame( 'Test', $testObject->getZValue() );
 	}
 
@@ -56,10 +56,10 @@ class ZStringTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testGetZType() {
 		$testObject = new ZString( 'Test' );
-		$this->assertSame( 'ZString', $testObject->getZType(), 'ZType of directly-created ZStrings' );
+		$this->assertSame( 'Z6', $testObject->getZType(), 'ZType of directly-created ZStrings' );
 
 		$testObject = new ZPersistentObject( 'Test' );
-		$this->assertSame( 'ZString', $testObject->getZType(), 'ZType of indirectly-created ZStrings' );
+		$this->assertSame( 'Z6', $testObject->getZType(), 'ZType of indirectly-created ZStrings' );
 	}
 
 	/**

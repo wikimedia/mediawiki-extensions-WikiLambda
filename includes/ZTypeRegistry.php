@@ -160,7 +160,7 @@ class ZTypeRegistry {
 			return false;
 		}
 
-		if ( $zObject->getZType() !== 'ZType' ) {
+		if ( $zObject->getZType() !== self::Z_TYPE ) {
 			throw new InvalidArgumentException( "ZObject for '$key' is not a ZType object." );
 		}
 

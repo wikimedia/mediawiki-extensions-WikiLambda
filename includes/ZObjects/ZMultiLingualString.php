@@ -23,7 +23,7 @@ class ZMultiLingualString extends ZObject {
 
 	public static function getDefinition() : array {
 		return [
-			'type' => 'ZMultiLingualString',
+			'type' => ZTypeRegistry::Z_MULTILINGUALSTRING,
 			'keys' => [
 				ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [
 					'type' => ZTypeRegistry::HACK_ARRAY_Z_MONOLINGUALSTRING,
