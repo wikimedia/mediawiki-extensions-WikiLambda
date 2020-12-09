@@ -131,10 +131,12 @@ class ZObjectFactory {
 
 		foreach ( $targetDefinition['keys'] as $key => $settings ) {
 			if ( !array_key_exists( $key, $objectVars ) ) {
+				if ( !array_key_exists( 'optional', $settings ) ) {
+					throw new \InvalidArgumentException( "$targetType missing the required '$key' key." );
+				}
+
 				if ( array_key_exists( 'default', $settings ) ) {
 					$objectVars[$key] = $settings['default'];
-				} elseif ( !array_key_exists( 'optional', $settings ) ) {
-					throw new \InvalidArgumentException( "$targetType missing the required '$key' key." );
 				}
 			}
 
