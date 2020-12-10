@@ -14,6 +14,8 @@
 	"apihelp-query+wikilambda_searchlabels-param-search": "מילת החיפוש",
 	"apihelp-query+wikilambda_searchlabels-param-language": "קוד מדיה־ויקי של שפה שבה ייעשה החיפוש",
 	"apihelp-query+wikilambda_searchlabels-param-exact": "האם לחפש התאמות מדויקות. אם זה כבוי, הקלט יטופל בתור מחרוזת בלתי־תלוי ברישיות, עם נרמול יוניקוד, ועם התעלמות מתגים על תווים לטיניים.",
+	"apihelp-query+wikilambda_searchlabels-param-type": "להגביל את ההתאמות לסוג מסוים של עצם Z.",
 	"apihelp-query+wikilambda_searchlabels-param-limit": "מספר התוצאות המרבי להחזרה",
-	"apihelp-query+wikilambda-example-simple": "חיפוש עצמי Z שהתווית שלהם תואמת \"foo\" באנגלית"
+	"apihelp-query+wikilambda-example-simple": "חיפוש עצמי Z שהתווית שלהם תואמת \"foo\" באנגלית",
+	"apihelp-query+wikilambda-example-type": "חיפוש עצם Z מסוג Z4, והחזרת תוויות באנגלית"
 }

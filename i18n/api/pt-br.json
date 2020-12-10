@@ -14,6 +14,8 @@
 	"apihelp-query+wikilambda_searchlabels-param-search": "O termo de pesquisa",
 	"apihelp-query+wikilambda_searchlabels-param-language": "O código do idioma MediaWiki no qual pesquisar",
 	"apihelp-query+wikilambda_searchlabels-param-exact": "Se deve pesquisar correspondências exatas. Se desativado, a entrada será considerada como uma pesquisa normalizada Unicode sem distinção entre maiúsculas e minúsculas, com acentos em caracteres latinos ignorados.",
+	"apihelp-query+wikilambda_searchlabels-param-type": "Restringir correspondências a um tipo específico de ZObject.",
 	"apihelp-query+wikilambda_searchlabels-param-limit": "Número máximo de resultados na exibição",
-	"apihelp-query+wikilambda-example-simple": "Procure por ZObjects cujo rótulo corresponda a 'foo' em inglês"
+	"apihelp-query+wikilambda-example-simple": "Procure por ZObjects cujo rótulo corresponda a 'foo' em inglês",
+	"apihelp-query+wikilambda-example-type": "Pesquise ZObjects do tipo 'Z4', retornando rótulos em inglês"
 }

@@ -14,6 +14,8 @@
 	"apihelp-query+wikilambda_searchlabels-param-search": "搜尋項",
 	"apihelp-query+wikilambda_searchlabels-param-language": "在其中搜索的 MediaWiki 語言代碼",
 	"apihelp-query+wikilambda_searchlabels-param-exact": "是否完全匹配搜索。若停用的話，輸入內容將被視為不區分大小寫的 Unicode 標準化搜索，且忽略拉丁字元的重音符號。",
+	"apihelp-query+wikilambda_searchlabels-param-type": "匹配 ZObject 特定類型的限制。",
 	"apihelp-query+wikilambda_searchlabels-param-limit": "回傳結果數量上限",
-	"apihelp-query+wikilambda-example-simple": "搜索標籤與英語裡「foo」匹配的 ZObjects"
+	"apihelp-query+wikilambda-example-simple": "搜索標籤與英語裡「foo」匹配的 ZObjects",
+	"apihelp-query+wikilambda-example-type": "搜尋類型為「Z4」的 ZObjects，回傳英語標籤"
 }
