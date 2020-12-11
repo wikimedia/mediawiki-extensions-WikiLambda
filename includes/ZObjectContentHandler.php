@@ -73,6 +73,10 @@ class ZObjectContentHandler extends JsonContentHandler {
 
 		$zObject = ZPersistentObject::getObjectFromDB( $zObjectTitle );
 
+		if ( $zObject === false ) {
+			throw new \InvalidArgumentException( "Provided page '$zObjectTitle' could not be fetched from the DB." );
+		}
+
 		$object = get_object_vars( ZObjectUtils::canonicalize( $zObject->getData()->getValue() ) );
 
 		if ( $languageCode ) {
