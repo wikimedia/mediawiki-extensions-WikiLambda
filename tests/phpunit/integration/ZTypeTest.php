@@ -80,7 +80,7 @@ class ZTypeTest extends \MediaWikiIntegrationTestCase {
 						]
 					]
 				],
-				'Z4K3' => 'Z0'
+				'Z4K3' => 'Z1'
 			],
 			'Z2K3' => [
 				'Z1K1' => 'Z12',
@@ -113,7 +113,7 @@ class ZTypeTest extends \MediaWikiIntegrationTestCase {
 		$this->assertSame( 'Autre index pour démonstration', $keys[1]->getKeyLabel()->getStringForLanguage( $french ) );
 
 		// TODO: Nonsense result for now; once we implement Functions, will be one of those.
-		$this->assertSame( 'Z0', $testObject->getInnerZObject()->getTypeValidator() );
+		$this->assertSame( 'Z1', $testObject->getInnerZObject()->getTypeValidator() );
 	}
 
 	/**

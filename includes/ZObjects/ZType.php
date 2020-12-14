@@ -98,7 +98,7 @@ class ZType extends ZObject {
 			return false;
 		}
 		$validator = $this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ];
-		if ( !ZKey::isValidZObjectReference( $validator ) ) {
+		if ( !ZKey::isValidZObjectReference( $validator ) || $validator === 'Z0' ) {
 			return false;
 		}
 		// TODO: Actually check that the validator is a ZFunction that applies to us.
