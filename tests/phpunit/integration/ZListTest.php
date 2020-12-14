@@ -125,6 +125,9 @@ EOT
 			'singleton string' => [ 'Test', [], true ],
 			'multiple strings' => [ 'Test1', [ 'Test2','Test3' ], true ],
 
+			'singleton array' => [ [ 'Test' ], [], true ],
+			'multiple arrays' => [ [ 'Test1' ], [ [ 'Test2' ],[ 'Test3' ] ], true ],
+
 			'singleton list of a singleton string' => [ new ZList( 'Test', [] ), [], true ],
 			'singleton list of multiple strings' => [ new ZList( 'Test1', [ 'Test2','Test3' ] ), [], true ],
 

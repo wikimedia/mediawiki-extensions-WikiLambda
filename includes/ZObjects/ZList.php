@@ -74,13 +74,26 @@ class ZList extends ZObject {
 	 * @return bool
 	 */
 	private function isValidValue( $value ) : bool {
+		if ( $value === null ) {
+			return true;
+		}
+
 		if ( is_object( $value ) && $value instanceof ZObject ) {
 			return $value->isValid();
-		} elseif ( $value === null ) {
-			return true;
-		} elseif ( !is_string( $value ) ) {
-			return false;
 		}
-		return true;
+
+		if ( is_string( $value ) ) {
+			return true;
+		}
+
+		if ( is_array( $value ) ) {
+			foreach ( $value as $key => $innerValue ) {
+				if ( !self::isValidValue( $innerValue ) ) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 }
