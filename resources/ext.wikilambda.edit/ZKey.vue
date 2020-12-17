@@ -9,7 +9,7 @@
 		v-model="zkey"
 		class="ext-wikilambda-zkey"
 		:class="{ 'ext-wikilambda-zkey-invalid': isInvalid }"
-		@change="updateKey($event)"
+		@change="updateKey"
 	>
 </template>
 
