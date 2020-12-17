@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<select
-		v-model="type"
+		:value="type"
 		@change="updateType($event)"
 	>
 		<option v-for="ztype in ztypes"
@@ -22,28 +22,38 @@
 
 module.exports = {
 	name: 'TypeSelector',
-	props: [ 'type' ],
-	methods: {
-		updateType: function ( event ) {
-			this.type = event.target.value;
-			this.$emit( 'change', this.type );
+	props: {
+		type: {
+			type: String,
+			default: ''
 		}
 	},
 	data: function () {
-		var index,
-			editingData = mw.config.get( 'extWikilambdaEditingData' ),
-			typeoptions = [];
-
-		for ( index in editingData.ztypes ) {
-			typeoptions.push( {
-				value: index,
-				label: editingData.ztypes[ index ]
-			} );
-		}
-
 		return {
-			ztypes: typeoptions
+			ztypes: null
 		};
+	},
+	methods: {
+		loadZTypes: function () {
+			var index,
+				editingData = mw.config.get( 'extWikilambdaEditingData' ),
+				typeoptions = [];
+
+			for ( index in editingData.ztypes ) {
+				typeoptions.push( {
+					value: index,
+					label: editingData.ztypes[ index ]
+				} );
+			}
+
+			this.ztypes = typeoptions;
+		},
+		updateType: function ( event ) {
+			this.$emit( 'change', event.target.value );
+		}
+	},
+	created: function () {
+		this.loadZTypes();
 	}
 };
 </script>
