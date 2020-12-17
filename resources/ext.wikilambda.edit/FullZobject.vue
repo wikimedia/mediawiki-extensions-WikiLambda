@@ -6,13 +6,13 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-zobject">
-		<span>{{ z1k1label }} (Z1K1): </span>
+		<span>{{ z1k1label }} ({{ Constants.Z_OBJECT_TYPE }}): </span>
 		<span v-if="persistent">
 			<a v-if="type !== zobjectId && viewmode" :href="'./ZObject:' + type">
 				<span>{{ typeLabel }} ({{ type }})</span>
 			</a>
 			<span v-else>{{ typeLabel }} ({{ type }})</span>
-			<ul><li> {{ z2k1label }} (Z2K1): {{ zobjectId }} </li></ul>
+			<ul><li> {{ z2k1label }} ({{ Constants.Z_PERSISTENTOBJECT_ID }}): {{ zobjectId }} </li></ul>
 		</span>
 		<span v-else>
 			<span v-if="viewmode"> {{ typeLabel }} ({{ type }})</span>
@@ -29,6 +29,7 @@
 </template>
 
 <script>
+var Constants = require( './Constants.js' );
 var TypeSelector = require( './TypeSelector.vue' );
 
 module.exports = {
@@ -43,14 +44,14 @@ module.exports = {
 			this.$emit( 'input', this.zobject );
 		},
 		updateType: function ( newType ) {
-			this.zobject.Z1K1 = newType;
+			this.zobject[ Constants.Z_OBJECT_TYPE ] = newType;
 			this.$emit( 'input', this.zobject );
 		}
 	},
 	computed: {
 		type: {
 			get: function () {
-				return this.zobject.Z1K1;
+				return this.zobject[ Constants.Z_OBJECT_TYPE ];
 			}
 		},
 		typeLabel: {
@@ -61,10 +62,10 @@ module.exports = {
 		},
 		zobjectId: {
 			get: function () {
-				return this.zobject.Z2K1;
+				return this.zobject[ Constants.Z_PERSISTENTOBJECT_ID ];
 			},
 			set: function ( newValue ) {
-				this.zobject.Z2K1 = newValue;
+				this.zobject[ Constants.Z_PERSISTENTOBJECT_ID ] = newValue;
 				this.$emit( 'input', this.zobject );
 			}
 		}
@@ -74,8 +75,9 @@ module.exports = {
 			zkeylabels = editingData.zkeylabels;
 
 		return {
-			z1k1label: zkeylabels.Z1K1,
-			z2k1label: zkeylabels.Z2K1
+			Constants: Constants,
+			z1k1label: zkeylabels[ Constants.Z_OBJECT_TYPE ],
+			z2k1label: zkeylabels[ Constants.Z_PERSISTENTOBJECT_ID ]
 		};
 	},
 	components: {
