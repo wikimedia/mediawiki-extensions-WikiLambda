@@ -17,21 +17,23 @@
 
 module.exports = {
 	name: 'ZKey',
-	props: [ 'zkey', 'isInvalid' ],
+	data: function () {
+		return {
+			zkey: '',
+			isInvalid: false
+		};
+	},
 	methods: {
 		// TODO: Type-ahead lookup with human strings.
-		updateKey: function ( event ) {
-			this.zkey = event.target.value;
-
+		updateKey: function () {
 			if ( this.zkey.match( /^Z\d+K\d+$/ ) ) {
 				this.isInvalid = false;
-				this.$emit( 'change', event );
+				this.$emit( 'change', this.zkey );
+				this.zkey = null;
 			} else {
-				this.isInvalid = true;
+				this.isInvalid = !!this.zkey;
 			}
 		}
-	},
-	data: {
 	}
 };
 </script>

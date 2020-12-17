@@ -109,8 +109,7 @@ module.exports = {
 		};
 	},
 	methods: {
-		addNewKey: function ( event ) {
-			var key = event.target.value;
+		addNewKey: function ( key ) {
 			// TODO: Only allow if the object doesn't have this key already set.
 			this.$set( this.otherkeydata, key, '' );
 			if ( !( key in this.zkeylabels ) ) {
