@@ -17,22 +17,22 @@
 				<type-selector v-if="listTypes[index] === 'new'"
 					@change="setNewType($event, index)"
 				></type-selector>
-				<input v-else-if="listTypes[index] === 'Z6'"
+				<input v-else-if="listTypes[index] === Constants.Z_STRING"
 					class="ext-wikilambda-zstring"
 					:value="item"
 					@input="updateStringValue($event, index)"
 				>
-				<select-zobject v-else-if="listTypes[index] === 'Z9'"
+				<select-zobject v-else-if="listTypes[index] === Constants.Z_REFERENCE"
 					:search-text="item"
 					:viewmode="viewmode"
 					@input="updateValue($event, index)"
 				></select-zobject>
-				<list-value v-else-if="listTypes[index] === 'Z10'"
+				<list-value v-else-if="listTypes[index] === Constants.Z_LIST"
 					:list="item"
 					:viewmode="viewmode"
 					@input="updateValue($event, index)"
 				></list-value>
-				<multi-lingual-string v-else-if="listTypes[index] === 'Z12'"
+				<multi-lingual-string v-else-if="listTypes[index] === Constants.Z_MULTILINGUALSTRING"
 					:mls-object="item"
 					:viewmode="viewmode"
 					@input="updateValue($event, index)"
@@ -54,7 +54,8 @@
 </template>
 
 <script>
-var FullZobject = require( './FullZobject.vue' ),
+var Constants = require( './Constants.js' ),
+	FullZobject = require( './FullZobject.vue' ),
 	TypeSelector = require( './TypeSelector.vue' ),
 	SelectZobject = require( './SelectZobject.vue' ),
 	ZMultiLingualString = require( './ZMultiLingualString.vue' );
@@ -75,6 +76,7 @@ module.exports = {
 			return type;
 		} );
 		return {
+			Constants: Constants,
 			listTypes: listTypes,
 			tooltipRemoveListItem: this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' ),
 			tooltipAddListItem: this.$i18n( 'wikilambda-editor-zlist-additem-tooltip' )
@@ -87,12 +89,14 @@ module.exports = {
 			this.$emit( 'input', this.list );
 		},
 		setNewType: function ( newType, index ) {
-			if ( newType === 'Z6' ) {
+			var newObj = {};
+			if ( newType === Constants.Z_STRING ) {
 				this.$set( this.list, index, '' );
-			} else if ( newType === 'Z10' ) {
+			} else if ( newType === Constants.Z_LIST ) {
 				this.$set( this.list, index, [] );
 			} else {
-				this.$set( this.list, index, { Z1K1: newType } );
+				newObj[ Constants.Z_OBJECT_TYPE ] = newType;
+				this.$set( this.list, index, newObj );
 			}
 			this.$set( this.listTypes, index, newType );
 			this.$emit( 'input', this.list );

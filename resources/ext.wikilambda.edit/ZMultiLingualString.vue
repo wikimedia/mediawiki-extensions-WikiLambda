@@ -7,7 +7,7 @@
 	-->
 	<div class="ext-wikilambda-multilingual">
 		<div v-for="(z11Object, index) in monolingualStrings"
-			:key="z11Object.Z11K1"
+			:key="z11Object[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]"
 			class="ext-wikilambda-monolingual"
 		>
 			<div class="ext-wikilambda-cell">
@@ -17,13 +17,13 @@
 				>
 					{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 				</button>
-				{{ allLangs[z11Object.Z11K1] }} ({{ z11Object.Z11K1 }}):
+				{{ allLangs[ z11Object[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] ] }} ({{ z11Object[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] }}):
 			</div>
 			<div class="ext-wikilambda-cell">
-				<span v-if="viewmode" class="ext-wikilambda-zstring"> {{ z11Object.Z11K2 }} </span>
+				<span v-if="viewmode" class="ext-wikilambda-zstring"> {{ z11Object[ Constants.Z_MONOLINGUALSTRING_VALUE ] }} </span>
 				<input v-else
 					class="ext-wikilambda-zstring"
-					:value="z11Object.Z11K2"
+					:value="z11Object[ Constants.Z_MONOLINGUALSTRING_VALUE ]"
 					@input="updateLangString($event, z11Object)"
 				>
 			</div>
@@ -51,6 +51,7 @@
 </template>
 
 <script>
+var Constants = require( './Constants.js' );
 
 module.exports = {
 	name: 'ZMultiLingualString',
@@ -59,8 +60,8 @@ module.exports = {
 		monolingualStrings: {
 			get: function () {
 				var monoStrings = [];
-				if ( 'Z12K1' in this.mlsObject ) {
-					monoStrings = this.mlsObject.Z12K1;
+				if ( Constants.Z_MULTILINGUALSTRING_VALUE in this.mlsObject ) {
+					monoStrings = this.mlsObject[ Constants.Z_MULTILINGUALSTRING_VALUE ];
 				}
 				return monoStrings;
 			}
@@ -78,10 +79,10 @@ module.exports = {
 				for ( langCode in this.allLangs ) {
 					unusedLangList[ langCode ] = this.allLangs[ langCode ];
 				}
-				if ( 'Z12K1' in this.mlsObject ) {
-					this.mlsObject.Z12K1.forEach(
+				if ( Constants.Z_MULTILINGUALSTRING_VALUE in this.mlsObject ) {
+					this.mlsObject[ Constants.Z_MULTILINGUALSTRING_VALUE ].forEach(
 						function ( z11Object ) {
-							langCode = z11Object.Z11K1;
+							langCode = z11Object[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ];
 							delete unusedLangList[ langCode ];
 						}
 					);
@@ -92,27 +93,25 @@ module.exports = {
 	},
 	methods: {
 		updateLangString: function ( event, z11Object ) {
-			z11Object.Z11K2 = event.target.value;
+			z11Object[ Constants.Z_MONOLINGUALSTRING_VALUE ] = event.target.value;
 			this.$emit( 'input', this.mlsObject );
 		},
 		addNewLang: function ( event ) {
-			var langId = event.target.value;
+			var langId = event.target.value,
+				pushObj = {};
 			if ( langId !== 'None' ) {
-				if ( !( 'Z12K1' in this.mlsObject ) ) {
-					this.$set( this.mlsObject, 'Z12K1', [] );
+				if ( !( Constants.Z_MULTILINGUALSTRING_VALUE in this.mlsObject ) ) {
+					this.$set( this.mlsObject, Constants.Z_MULTILINGUALSTRING_VALUE, [] );
 				}
-				this.mlsObject.Z12K1.push(
-					{
-						Z1K1: 'Z11',
-						Z11K1: langId,
-						Z11K2: ''
-					}
-				);
+				pushObj[ Constants.Z_OBJECT_TYPE ] = Constants.Z_MONOLINGUALSTRING;
+				pushObj[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] = langId;
+				pushObj[ Constants.Z_MONOLINGUALSTRING_VALUE ] = '';
+				this.mlsObject[ Constants.Z_MULTILINGUALSTRING_VALUE ].push( pushObj );
 			}
 			this.$emit( 'input', this.mlsObject );
 		},
 		removeLang: function ( index ) {
-			this.mlsObject.Z12K1.splice( index, 1 );
+			this.mlsObject[ Constants.Z_MULTILINGUALSTRING_VALUE ].splice( index, 1 );
 			this.$emit( 'input', this.mlsObject );
 		}
 	},
@@ -121,6 +120,7 @@ module.exports = {
 			tooltipRemoveLang = this.$i18n( 'wikilambda-editor-label-removelanguage-tooltip' );
 
 		return {
+			Constants: Constants,
 			allLangs: allLangs,
 			tooltipRemoveLang: tooltipRemoveLang
 		};
