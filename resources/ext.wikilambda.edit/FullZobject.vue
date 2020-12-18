@@ -29,8 +29,8 @@
 </template>
 
 <script>
-var Constants = require( './Constants.js' );
-var TypeSelector = require( './TypeSelector.vue' );
+var Constants = require( './Constants.js' ),
+	TypeSelector = require( './TypeSelector.vue' );
 
 module.exports = {
 	name: 'FullZobject',

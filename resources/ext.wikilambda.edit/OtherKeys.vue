@@ -17,7 +17,7 @@
 			<type-selector v-if="!(key in keyTypes)"
 				@change="setKeyType($event, key)"
 			></type-selector>
-			<span v-else-if="keyTypes[key] === 'Z6'">
+			<span v-else-if="keyTypes[key] === Constants.Z_STRING">
 				<span v-if="viewmode">
 					<a v-if="value.match(/^Z\d+$/)" :href="'./ZObject:' + value">
 						{{ value }}
@@ -30,17 +30,17 @@
 					@input="updateStringKey($event, key)"
 				>
 			</span>
-			<select-zobject v-else-if="keyTypes[key] === 'Z9'"
+			<select-zobject v-else-if="keyTypes[key] === Constants.Z_REFERENCE"
 				:search-text="zobject[key]"
 				:viewmode="viewmode"
 				@input="updateKey($event, key)"
 			></select-zobject>
-			<list-value v-else-if="keyTypes[key] === 'Z10'"
+			<list-value v-else-if="keyTypes[key] === Constants.Z_LIST"
 				:list="zobject[key]"
 				:viewmode="viewmode"
 				@input="updateKey($event, key)"
 			></list-value>
-			<multi-lingual-string v-else-if="keyTypes[key] === 'Z12'"
+			<multi-lingual-string v-else-if="keyTypes[key] === Constants.Z_MULTILINGUALSTRING"
 				:mls-object="zobject[key]"
 				:viewmode="viewmode"
 				@input="updateKey($event, key)"
@@ -60,7 +60,8 @@
 </template>
 
 <script>
-var FullZobject = require( './FullZobject.vue' ),
+var Constants = require( './Constants.js' ),
+	FullZobject = require( './FullZobject.vue' ),
 	ListValue = require( './ListValue.vue' ),
 	ZKey = require( './ZKey.vue' ),
 	TypeSelector = require( './TypeSelector.vue' ),
@@ -79,7 +80,7 @@ module.exports = {
 			key,
 			value;
 		for ( key in this.zobject ) {
-			if ( ( key.substring( 0, 3 ) === 'Z1K' ) || ( key === 'Z2K1' ) ) {
+			if ( ( key.substring( 0, 3 ) === Constants.Z_OBJECT + 'K' ) || ( key === Constants.Z_PERSISTENTOBJECT_ID ) ) {
 				continue;
 			}
 			value = this.zobject[ key ];
@@ -89,19 +90,20 @@ module.exports = {
 			}
 			if ( typeof ( value ) === 'object' ) {
 				if ( Array.isArray( value ) ) {
-					keyTypes[ key ] = 'Z10';
-				} else if ( 'Z1K1' in value ) {
-					keyTypes[ key ] = value.Z1K1;
+					keyTypes[ key ] = Constants.Z_LIST;
+				} else if ( Constants.Z_OBJECT_TYPE in value ) {
+					keyTypes[ key ] = value[ Constants.Z_OBJECT_TYPE ];
 				} else {
 					keyTypes[ key ] = 'zobject';
 				}
 			} else {
-				keyTypes[ key ] = 'Z6';
+				keyTypes[ key ] = Constants.Z_STRING;
 			}
 		}
 		return {
+			Constants: Constants,
 			zlang: editingData.zlang,
-			keylabel: ztypes.Z3,
+			keylabel: ztypes[ Constants.Z_KEY ],
 			keyTypes: keyTypes,
 			otherkeydata: otherkeydata,
 			zkeylabels: zkeylabels,
@@ -118,12 +120,14 @@ module.exports = {
 			}
 		},
 		setKeyType: function ( newType, key ) {
-			if ( newType === 'Z6' ) {
+			var newObj = {};
+			if ( newType === Constants.Z_STRING ) {
 				this.$set( this.zobject, key, '' );
-			} else if ( newType === 'Z10' ) {
+			} else if ( newType === Constants.Z_LIST ) {
 				this.$set( this.zobject, key, [] );
 			} else {
-				this.$set( this.zobject, key, { Z1K1: newType } );
+				newObj[ Constants.Z_OBJECT_TYPE ] = newType;
+				this.$set( this.zobject, key, newObj );
 			}
 			this.$set( this.keyTypes, key, newType );
 		},
@@ -169,12 +173,12 @@ module.exports = {
 					format: 'json',
 					zids: zid
 				} ).done( function ( data ) {
-					var keys = JSON.parse( data[ zid ].wikilambda_fetch ).Z2K2.Z4K2;
+					var keys = JSON.parse( data[ zid ].wikilambda_fetch )[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
 					keys.forEach( function ( key ) {
-						var labels = key.Z3K3.Z12K1;
+						var labels = key[ Constants.Z_KEY_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ];
 						labels.forEach( function ( label ) {
-							if ( label.Z11K1 === zlang ) {
-								zkeylabels[ key.Z3K2 ] = label.Z11K2;
+							if ( label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] === zlang ) {
+								zkeylabels[ key[ Constants.Z_KEY_ID ] ] = label[ Constants.Z_MONOLINGUALSTRING_VALUE ];
 								return;
 							}
 						} );

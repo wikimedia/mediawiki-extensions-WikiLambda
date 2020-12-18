@@ -28,7 +28,8 @@
 </template>
 
 <script>
-var FullZobject = require( './FullZobject.vue' );
+var Constants = require( './Constants.js' ),
+	FullZobject = require( './FullZobject.vue' );
 
 module.exports = {
 	name: 'ZobjectEditor',
@@ -39,7 +40,7 @@ module.exports = {
 			submitLabel;
 
 		if ( createNewPage ) {
-			zobject.Z2K1 = editingData.title;
+			zobject[ Constants.Z_PERSISTENTOBJECT_ID ] = editingData.title;
 
 			submitLabel = mw.msg(
 				mw.config.get( 'wgEditSubmitButtonLabelPublish' ) ?
