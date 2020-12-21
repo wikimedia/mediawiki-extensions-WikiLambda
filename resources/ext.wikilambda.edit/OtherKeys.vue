@@ -13,11 +13,11 @@
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 			</button>
-			<span>{{ zkeylabels[key] }} ({{ key }}):</span>
+			<span>{{ zKeyLabels[key] }} ({{ key }}):</span>
 			<type-selector v-if="!(key in keyTypes)"
 				@change="setKeyType($event, key)"
 			></type-selector>
-			<span v-else-if="keyTypes[key] === Constants.Z_STRING">
+			<span v-else-if="isZString( keyTypes[key] )">
 				<span v-if="viewmode">
 					<a v-if="value.match(/^Z\d+$/)" :href="'./ZObject:' + value">
 						{{ value }}
@@ -30,17 +30,17 @@
 					@input="updateStringKey($event, key)"
 				>
 			</span>
-			<select-zobject v-else-if="keyTypes[key] === Constants.Z_REFERENCE"
+			<select-zobject v-else-if="isZReference( keyTypes[key] )"
 				:search-text="zobject[key]"
 				:viewmode="viewmode"
 				@input="updateKey($event, key)"
 			></select-zobject>
-			<list-value v-else-if="keyTypes[key] === Constants.Z_LIST"
+			<list-value v-else-if="isZList( keyTypes[key] )"
 				:list="zobject[key]"
 				:viewmode="viewmode"
 				@input="updateKey($event, key)"
 			></list-value>
-			<multi-lingual-string v-else-if="keyTypes[key] === Constants.Z_MULTILINGUALSTRING"
+			<multi-lingual-string v-else-if="isZMultilingualString( keyTypes[key] )"
 				:mls-object="zobject[key]"
 				:viewmode="viewmode"
 				@input="updateKey($event, key)"
@@ -66,58 +66,66 @@ var Constants = require( './Constants.js' ),
 	ZKey = require( './ZKey.vue' ),
 	TypeSelector = require( './TypeSelector.vue' ),
 	SelectZobject = require( './SelectZobject.vue' ),
-	ZMultiLingualString = require( './ZMultiLingualString.vue' );
+	ZMultiLingualString = require( './ZMultiLingualString.vue' ),
+	mapState = require( 'vuex' ).mapState,
+	mapMutations = require( 'vuex' ).mapMutations,
+	mapActions = require( 'vuex' ).mapActions;
 
 module.exports = {
 	name: 'OtherKeys',
-	props: [ 'zobject', 'viewmode' ],
-	data: function () {
-		var editingData = mw.config.get( 'extWikilambdaEditingData' ),
-			ztypes = editingData.ztypes,
-			zkeylabels = editingData.zkeylabels,
-			otherkeydata = {},
-			keyTypes = {},
-			key,
-			value;
-		for ( key in this.zobject ) {
-			if ( ( key.substring( 0, 3 ) === Constants.Z_OBJECT + 'K' ) || ( key === Constants.Z_PERSISTENTOBJECT_ID ) ) {
-				continue;
+	components: {
+		'full-zobject': FullZobject,
+		'list-value': ListValue,
+		'zkey-input': ZKey,
+		'type-selector': TypeSelector,
+		'select-zobject': SelectZobject,
+		'multi-lingual-string': ZMultiLingualString
+	},
+	props: {
+		zobject: {
+			type: Object,
+			default: function () {
+				return {};
 			}
-			value = this.zobject[ key ];
-			otherkeydata[ key ] = value;
-			if ( !( key in zkeylabels ) ) {
-				zkeylabels[ key ] = key;
-			}
-			if ( typeof ( value ) === 'object' ) {
-				if ( Array.isArray( value ) ) {
-					keyTypes[ key ] = Constants.Z_LIST;
-				} else if ( Constants.Z_OBJECT_TYPE in value ) {
-					keyTypes[ key ] = value[ Constants.Z_OBJECT_TYPE ];
-				} else {
-					keyTypes[ key ] = 'zobject';
-				}
-			} else {
-				keyTypes[ key ] = Constants.Z_STRING;
-			}
+		},
+		viewmode: {
+			type: Boolean,
+			required: true
 		}
+	},
+	data: function () {
 		return {
-			Constants: Constants,
-			zlang: editingData.zlang,
-			keylabel: ztypes[ Constants.Z_KEY ],
-			keyTypes: keyTypes,
-			otherkeydata: otherkeydata,
-			zkeylabels: zkeylabels,
-			tooltipRemoveZObjectKey: this.$i18n( 'wikilambda-editor-zobject-removekey-tooltip' )
+			zlang: '',
+			keylabel: '',
+			keyTypes: null,
+			otherkeydata: null
 		};
 	},
-	methods: {
+	computed: $.extend( {}, mapState( [
+		'fetchingZKeys',
+		'zKeys',
+		'zKeyLabels'
+	] ), {
+		tooltipRemoveZObjectKey: function () {
+			return this.$i18n( 'wikilambda-editor-zobject-removekey-tooltip' );
+		}
+	} ),
+	methods: $.extend( {}, mapActions( [
+		'fetchZKeys'
+	] ), mapMutations( [
+		'addZKeyLabel'
+	] ), {
 		addNewKey: function ( key ) {
 			// TODO: Only allow if the object doesn't have this key already set.
 			this.$set( this.otherkeydata, key, '' );
-			if ( !( key in this.zkeylabels ) ) {
-				this.$set( this.zkeylabels, key, key );
+			if ( !( key in this.zKeyLabels ) ) {
+				this.addZKeyLabel( {
+					key: key,
+					label: key
+				} );
 			}
 		},
+
 		setKeyType: function ( newType, key ) {
 			var newObj = {};
 			if ( newType === Constants.Z_STRING ) {
@@ -130,60 +138,106 @@ module.exports = {
 			}
 			this.$set( this.keyTypes, key, newType );
 		},
+
 		updateKey: function ( value, key ) {
 			this.$set( this.zobject, key, value );
 			this.$emit( 'input', this.zobject );
 		},
+
 		updateStringKey: function ( event, key ) {
 			this.$set( this.zobject, key, event.target.value );
 			this.$emit( 'input', this.zobject );
 		},
+
 		removeEntry: function ( key ) {
 			this.$delete( this.zobject, key );
 			this.$delete( this.otherkeydata, key );
 			this.$delete( this.keyTypes, key );
 			this.$emit( 'input', this.zobject );
+		},
+
+		isZReference: function ( key ) {
+			return key === Constants.Z_REFERENCE;
+		},
+
+		isZString: function ( key ) {
+			return key === Constants.Z_STRING;
+		},
+
+		isZList: function ( key ) {
+			return key === Constants.Z_LIST;
+		},
+
+		isZMultilingualString: function ( key ) {
+			return key === Constants.Z_MULTILINGUALSTRING;
 		}
-	},
-	components: {
-		'full-zobject': FullZobject,
-		'list-value': ListValue,
-		'zkey-input': ZKey,
-		'type-selector': TypeSelector,
-		'select-zobject': SelectZobject,
-		'multi-lingual-string': ZMultiLingualString
+	} ),
+	created: function () {
+		var editingData = mw.config.get( 'extWikilambdaEditingData' ),
+			otherkeydata = {},
+			keyTypes = {},
+			key,
+			value;
+
+		this.keylabel = editingData.ztypes.Z3;
+		this.zlang = editingData.zlang;
+
+		// We collect otherkeydata, keyTypes and zkeylabels from the zobject prop
+		for ( key in this.zobject ) {
+			if ( ( key.substring( 0, 3 ) === 'Z1K' ) || ( key === 'Z2K1' ) ) {
+				continue;
+			}
+			value = this.zobject[ key ];
+			otherkeydata[ key ] = value;
+			if ( !( key in this.zKeyLabels ) ) {
+				this.addZKeyLabel( {
+					key: key,
+					label: key
+				} );
+			}
+			if ( typeof ( value ) === 'object' ) {
+				if ( Array.isArray( value ) ) {
+					keyTypes[ key ] = 'Z10';
+				} else if ( 'Z1K1' in value ) {
+					keyTypes[ key ] = value.Z1K1;
+				} else {
+					keyTypes[ key ] = 'zobject';
+				}
+			} else {
+				keyTypes[ key ] = 'Z6';
+			}
+		}
+
+		// Set component state
+		this.otherkeydata = otherkeydata;
+		this.keyTypes = keyTypes;
 	},
 	mounted: function () {
 		var solvedTypes = [],
 			keyType,
-			type,
-			api = new mw.Api(),
-			zkeylabels = this.zkeylabels,
-			zlang = this.zlang;
+			type;
+
 		for ( keyType in this.keyTypes ) {
 			type = keyType.match( /(Z\d+)/ )[ 1 ];
-			if ( solvedTypes.indexOf( type ) !== -1 ) {
-				continue;
+
+			// We fetch only the zids that
+			// are not yet available in the state nor
+			// are being fetched currently
+			if (
+				( !( type in this.zKeys ) ) &&
+				( this.fetchingZKeys.indexOf( type ) === -1 ) &&
+				( solvedTypes.indexOf( type ) === -1 )
+			) {
+				solvedTypes.push( type );
 			}
-			solvedTypes.push( type );
-			( function ( zid ) {
-				api.get( {
-					action: 'wikilambda_fetch',
-					format: 'json',
-					zids: zid
-				} ).done( function ( data ) {
-					var keys = JSON.parse( data[ zid ].wikilambda_fetch )[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
-					keys.forEach( function ( key ) {
-						var labels = key[ Constants.Z_KEY_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ];
-						labels.forEach( function ( label ) {
-							if ( label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] === zlang ) {
-								zkeylabels[ key[ Constants.Z_KEY_ID ] ] = label[ Constants.Z_MONOLINGUALSTRING_VALUE ];
-								return;
-							}
-						} );
-					} );
-				} );
-			}( type ) );
+		}
+
+		// Call the store action to fetch the ZIds if there are any
+		if ( solvedTypes.length > 0 ) {
+			this.fetchZKeys( {
+				zids: solvedTypes,
+				zlang: this.zlang
+			} );
 		}
 	}
 };

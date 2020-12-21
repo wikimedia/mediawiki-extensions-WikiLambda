@@ -29,44 +29,41 @@
 
 <script>
 var Constants = require( './Constants.js' ),
-	FullZobject = require( './FullZobject.vue' );
+	FullZobject = require( './FullZobject.vue' ),
+	mapMutations = require( 'vuex' ).mapMutations;
 
 module.exports = {
 	name: 'ZobjectEditor',
-	data: function () {
-		var editingData = mw.config.get( 'extWikilambdaEditingData' ),
-			zobject = editingData.zobject,
-			createNewPage = editingData.createNewPage,
-			submitLabel;
-
-		if ( createNewPage ) {
-			zobject[ Constants.Z_PERSISTENTOBJECT_ID ] = editingData.title;
-
-			submitLabel = mw.msg(
-				mw.config.get( 'wgEditSubmitButtonLabelPublish' ) ?
-					'wikilambda-publishnew' : 'wikilambda-savenew'
-			);
-		} else {
-			submitLabel = mw.msg(
-				mw.config.get( 'wgEditSubmitButtonLabelPublish' ) ?
-					'wikilambda-publishchanges' : 'wikilambda-savechanges'
-			);
-		}
-
-		return {
-			zobject: zobject,
-			submitButtonLabel: submitLabel,
-			createNewPage: createNewPage,
-			summary: ''
-		};
-	},
 	components: {
 		'full-zobject': FullZobject
 	},
-	methods: {
+	data: function () {
+		return {
+			zobject: {},
+			createNewPage: true,
+			summary: ''
+		};
+	},
+	computed: {
+		submitButtonLabel: function () {
+			if ( this.createNewPage ) {
+				return mw.msg(
+					mw.config.get( 'wgEditSubmitButtonLabelPublish' ) ?
+						'wikilambda-publishnew' : 'wikilambda-savenew'
+				);
+			} else {
+				return mw.msg(
+					mw.config.get( 'wgEditSubmitButtonLabelPublish' ) ?
+						'wikilambda-publishchanges' : 'wikilambda-savechanges'
+				);
+			}
+		}
+	},
+	methods: $.extend( {}, mapMutations( [ 'addZKeyLabel' ] ), {
 		updateZobject: function ( newZobject ) {
 			this.zobject = newZobject;
 		},
+
 		submit: function () {
 			var page = mw.config.get( 'extWikilambdaEditingData' ).page,
 				api = new mw.Api(),
@@ -88,6 +85,27 @@ module.exports = {
 					window.location.href = new mw.Title( page ).getUrl();
 				} );
 			}
+		}
+	} ),
+	created: function () {
+		var editingData = mw.config.get( 'extWikilambdaEditingData' ),
+			key;
+		this.createNewPage = editingData.createNewPage;
+
+		// Set zobject
+		// FIXME: Shall we save this object in the global state?
+		this.zobject = editingData.zobject;
+		if ( this.createNewPage ) {
+			this.zobject[ Constants.Z_PERSISTENTOBJECT_ID ] = editingData.title;
+		}
+
+		// Save zKeyLabels in the global state
+		// TODO: Remove zkeylabels from editingData and fetch from API
+		for ( key in editingData.zkeylabels ) {
+			this.addZKeyLabel( {
+				key: key,
+				label: editingData.zkeylabels[ key ]
+			} );
 		}
 	}
 };
