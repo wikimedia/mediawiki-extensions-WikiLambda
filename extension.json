@@ -80,11 +80,17 @@
 		"ext.wikilambda.edit": {
 			"dependencies": [
 				"vue",
+				"vuex",
 				"mediawiki.Title",
 				"mediawiki.api"
 			],
 			"packageFiles": [
 				"ext.wikilambda.edit/index.js",
+				"ext.wikilambda.edit/store/index.js",
+				"ext.wikilambda.edit/store/state.js",
+				"ext.wikilambda.edit/store/actions.js",
+				"ext.wikilambda.edit/store/getters.js",
+				"ext.wikilambda.edit/store/mutations.js",
 				"ext.wikilambda.edit/Constants.js",
 				"ext.wikilambda.edit/ZobjectEditor.vue",
 				"ext.wikilambda.edit/ZobjectViewer.vue",
