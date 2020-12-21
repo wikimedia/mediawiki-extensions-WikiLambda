@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Renamerr"
+		]
+	},
+	"wikilambda-emptylabel": "Неназваний ZObject",
+	"wikilambda-invalidzobject": "Наданий вміст не є правильним ZObject'ом.",
+	"wikilambda-invalidcontenttype": "Наданий вміст не є ZObject-класом.",
+	"wikilambda-special-createzobject": "Створити новий ZObject",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Мова",
+	"wikilambda-savenew": "Зберегти",
+	"wikilambda-publishchanges": "Опублікувати зміни",
+	"wikilambda-savechanges": "Зберегти зміни",
+	"wikilambda-summarylabel": "Опис:",
+	"wikilambda-typeselector-label": "Тип значення",
+	"wikilambda-editor-label-addlanguage-label": "Додати мову:",
+	"wikilambda-editor-zlist-additem-tooltip": "Додати елемент до цього ZList",
+	"wikilambda-editor-zlist-removeitem-tooltip": "Вилучити цей елемент з цього ZList",
+	"wikilambda-editor-zobject-addkey": "Додати ключ:"
+}
