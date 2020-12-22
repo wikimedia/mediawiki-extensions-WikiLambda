@@ -6,18 +6,18 @@
 			"Wladek92"
 		]
 	},
-	"apihelp-wikilambda_fetch-summary": "Extraire le modèle JSON de ZObjects.",
-	"apihelp-wikilambda_fetch-param-zids": "Les ZID des ZObects à extraire, séparés par des barres verticales.",
+	"apihelp-wikilambda_fetch-summary": "Extraire le modèle JSON d’Objets Z.",
+	"apihelp-wikilambda_fetch-param-zids": "Les Z-ID des Objets Z à extraire, séparés par des barres verticales.",
 	"apihelp-wikilambda_fetch-param-language": "La langue dans laquelle retourner les résultats.",
-	"apihelp-wikilambda_fetch-example-single": "Rechercher un unique ZObject, Z1.",
-	"apihelp-wikilambda_fetch-example-multiple": "Extraire trois ZObjects : Z1, Z2 et Z3.",
-	"apierror-wikilambda_fetch-missingzid": "Le ZID donné « $1 » n’existe pas sur ce wiki.",
-	"apihelp-query+wikilambda_searchlabels-summary": "Ce générateur de listes de requêtes API permet de rechercher des libellés de ZObjects dans une langue donnée. Il existe principalement pour assister le système de recherche anticipée.",
+	"apihelp-wikilambda_fetch-example-single": "Récupérer un unique Objet Z, Z1.",
+	"apihelp-wikilambda_fetch-example-multiple": "Récupérer trois Objets Z : Z1, Z2 et Z3.",
+	"apierror-wikilambda_fetch-missingzid": "Le Z-ID donné « $1 » n’existe pas sur ce wiki.",
+	"apihelp-query+wikilambda_searchlabels-summary": "Ce générateur de listes de requêtes API permet de rechercher des libellés d’Objets Z dans une langue donnée. Il existe principalement pour assister le système de recherche anticipée.",
 	"apihelp-query+wikilambda_searchlabels-param-search": "Le terme recherché",
 	"apihelp-query+wikilambda_searchlabels-param-language": "Le code de langue MediaWiki dans laquelle rechercher.",
 	"apihelp-query+wikilambda_searchlabels-param-exact": "Indique s’il faut rechercher uniquement les résultats exacts. Si désactivé, la valeur d’entrée sera traitée comme une recherche insensible à la casse et normalisée Unicode en ignorant les accents sur les caractères latins.",
-	"apihelp-query+wikilambda_searchlabels-param-type": "Restreindre la sélection à un type donné de ZObject.",
+	"apihelp-query+wikilambda_searchlabels-param-type": "Restreindre la sélection à un type donné d’Objet Z.",
 	"apihelp-query+wikilambda_searchlabels-param-limit": "Le nombre maximum de résultats à renvoyer",
-	"apihelp-query+wikilambda-example-simple": "Rechercher les ZObjets dont le libellé correspond à « foo » en anglais",
-	"apihelp-query+wikilambda-example-type": "Chercher les ZObjects de type 'Z4', renvoyer les libellés anglais"
+	"apihelp-query+wikilambda-example-simple": "Rechercher les Objets Z dont le libellé correspond à « foo » en anglais",
+	"apihelp-query+wikilambda-example-type": "Chercher les Objets Z de type « Z4 », renvoyer les libellés anglais"
 }
