@@ -1,7 +1,10 @@
 {
 	"name": "WikiLambda",
 	"author": [
-		"James D. Forrester"
+		"James D. Forrester",
+		"Genoveva Galarza",
+		"Arthur P. Smith",
+		"Denny Vrandečić"
 	],
 	"url": "https://www.mediawiki.org/wiki/Extension:WikiLambda",
 	"descriptionmsg": "wikilambda-desc",
