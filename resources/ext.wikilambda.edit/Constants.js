@@ -6,6 +6,7 @@ var Constants = {
 	Z_KEY: 'Z3',
 	Z_KEY_ID: 'Z3K2',
 	Z_KEY_LABEL: 'Z3K3',
+	Z_TYPE: 'Z4',
 	Z_TYPE_KEYS: 'Z4K2',
 	Z_STRING: 'Z6',
 	Z_REFERENCE: 'Z9',

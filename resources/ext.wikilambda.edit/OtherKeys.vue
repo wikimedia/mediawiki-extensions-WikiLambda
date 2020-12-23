@@ -14,9 +14,10 @@
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 			</button>
 			<span>{{ zKeyLabels[key] }} ({{ key }}):</span>
-			<type-selector v-if="!(key in keyTypes)"
-				@change="setKeyType($event, key)"
-			></type-selector>
+			<select-zobject v-if="!(key in keyTypes)"
+				:type="Constants.Z_TYPE"
+				@input="setKeyType($event, key)"
+			></select-zobject>
 			<span v-else-if="isZString( keyTypes[key] )">
 				<span v-if="viewmode">
 					<a v-if="value.match(/^Z\d+$/)" :href="'./ZObject:' + value">
@@ -64,7 +65,6 @@ var Constants = require( './Constants.js' ),
 	FullZobject = require( './FullZobject.vue' ),
 	ListValue = require( './ListValue.vue' ),
 	ZKey = require( './ZKey.vue' ),
-	TypeSelector = require( './TypeSelector.vue' ),
 	SelectZobject = require( './SelectZobject.vue' ),
 	ZMultiLingualString = require( './ZMultiLingualString.vue' ),
 	mapState = require( 'vuex' ).mapState,
@@ -77,7 +77,6 @@ module.exports = {
 		'full-zobject': FullZobject,
 		'list-value': ListValue,
 		'zkey-input': ZKey,
-		'type-selector': TypeSelector,
 		'select-zobject': SelectZobject,
 		'multi-lingual-string': ZMultiLingualString
 	},
@@ -95,6 +94,7 @@ module.exports = {
 	},
 	data: function () {
 		return {
+			Constants: Constants,
 			zlang: '',
 			keylabel: '',
 			keyTypes: null,

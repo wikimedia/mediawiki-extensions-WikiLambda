@@ -12,13 +12,15 @@
 			v-model="searchText"
 			type="search"
 			@input="updateSearch"
+			@focus="onFocus"
+			@blur="onBlur"
 		>
 		<span v-if="selectedId">({{ selectedId }})</span>
 		<div v-if="showList" class="ext-wikilambda-zobject-list">
 			<div v-for="(label, zid) in searchResults"
 				:key="zid"
 				class="ext-wikilambda-zobject-list-item"
-				@click="onClickResult(zid)"
+				@mousedown.prevent="onClickResult(zid)"
 			>
 				{{ label }} ({{ zid }})
 			</div>
@@ -30,7 +32,7 @@
 
 module.exports = {
 	name: 'SelectZobject',
-	props: [ 'viewmode' ],
+	props: [ 'viewmode', 'type' ],
 	data: function () {
 		return {
 			searchText: '',
@@ -42,7 +44,7 @@ module.exports = {
 	methods: {
 		updateSearch: function () {
 			var self = this;
-			if ( this.searchText === '' ) {
+			if ( this.searchText === '' && ( !this.type ) ) {
 				this.searchResults = {};
 				this.showList = false;
 				this.selectedId = null;
@@ -67,6 +69,8 @@ module.exports = {
 				// eslint-disable-next-line camelcase
 				wikilambda_search: self.searchText,
 				// eslint-disable-next-line camelcase
+				wikilambda_type: self.type,
+				// eslint-disable-next-line camelcase
 				wikilambda_language: 'en'
 			} ).done( function ( data ) {
 				self.searchResults = {};
@@ -90,6 +94,13 @@ module.exports = {
 			this.searchText = this.searchResults[ zid ];
 			this.selectedId = zid;
 			this.$emit( 'input', zid );
+			this.showList = false;
+		},
+		onFocus: function () {
+			this.updateSearch();
+			this.showList = true;
+		},
+		onBlur: function () {
 			this.showList = false;
 		}
 	}

@@ -14,9 +14,10 @@
 				>
 					{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 				</button>
-				<type-selector v-if="listTypes[index] === 'new'"
-					@change="setNewType($event, index)"
-				></type-selector>
+				<select-zobject v-if="listTypes[index] === 'new'"
+					:type="Constants.Z_TYPE"
+					@input="setNewType($event, index)"
+				></select-zobject>
 				<input v-else-if="listTypes[index] === Constants.Z_STRING"
 					class="ext-wikilambda-zstring"
 					:value="item"
@@ -56,7 +57,6 @@
 <script>
 var Constants = require( './Constants.js' ),
 	FullZobject = require( './FullZobject.vue' ),
-	TypeSelector = require( './TypeSelector.vue' ),
 	SelectZobject = require( './SelectZobject.vue' ),
 	ZMultiLingualString = require( './ZMultiLingualString.vue' );
 
@@ -65,13 +65,15 @@ module.exports = {
 	props: [ 'list', 'viewmode' ],
 	data: function () {
 		var listTypes = this.list.map( function ( item ) {
-			var type = 'string';
+			var type = Constants.Z_STRING;
 			if ( typeof ( item ) === 'object' ) {
 				if ( Array.isArray( item ) ) {
-					type = 'list';
+					type = Constants.Z_LIST;
 				} else {
-					type = 'zobject';
+					type = item[ Constants.Z_OBJECT_TYPE ];
 				}
+			} else if ( item.match( /^Z\d+$/ ) ) {
+				type = Constants.Z_REFERENCE;
 			}
 			return type;
 		} );
@@ -117,7 +119,6 @@ module.exports = {
 	},
 	components: {
 		'full-zobject': FullZobject,
-		'type-selector': TypeSelector,
 		'select-zobject': SelectZobject,
 		'multi-lingual-string': ZMultiLingualString
 	}
