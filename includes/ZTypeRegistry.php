@@ -124,6 +124,7 @@ class ZTypeRegistry {
 		$this->internalRegisterType( self::Z_KEY, 'ZKey' );
 		$this->internalRegisterType( self::Z_TYPE, 'ZType' );
 		$this->internalRegisterType( self::Z_STRING, 'ZString' );
+		$this->internalRegisterType( self::Z_REFERENCE, 'ZReference' );
 		$this->internalRegisterType( self::Z_LIST, 'ZList' );
 
 		$this->internalRegisterType( self::Z_MONOLINGUALSTRING, 'ZMonoLingualString' );

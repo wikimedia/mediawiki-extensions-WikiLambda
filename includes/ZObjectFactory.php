@@ -88,6 +88,7 @@ class ZObjectFactory {
 			case ZTypeRegistry::Z_OBJECT:
 			// case ZTypeRegistry::Z_PERSISTENTOBJECT:
 			case ZTypeRegistry::Z_STRING:
+			case ZTypeRegistry::Z_REFERENCE:
 			case ZTypeRegistry::Z_TYPE:
 				$objectDefinition = self::validateObjectStructure( $objectVars, $typeName );
 				return new $typeClass( ...$objectDefinition );
