@@ -39,7 +39,7 @@ class ZObjectFactory {
 	}
 
 	/**
-	 * @param string|array|object $object The item to turn into a ZObject
+	 * @param string|array|ZObject|\stdClass $object The item to turn into a ZObject
 	 * @return ZObject
 	 */
 	public static function create( $object ) {

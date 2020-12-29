@@ -105,8 +105,8 @@ class ZObjectUtils {
 	/**
 	 * Canonicalizes a ZObject.
 	 *
-	 * @param string|array|object $input decoded JSON object for a valid ZObject
-	 * @return string|array|object canonical decoded JSON object of same ZObject
+	 * @param string|array|stdClass $input decoded JSON object for a valid ZObject
+	 * @return string|array|stdClass canonical decoded JSON object of same ZObject
 	 */
 	public static function canonicalize( $input ) {
 		if ( is_array( $input ) ) {
