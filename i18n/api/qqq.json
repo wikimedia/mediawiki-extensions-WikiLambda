@@ -15,9 +15,11 @@
 	"apihelp-query+wikilambda_searchlabels-summary": "{{doc-apihelp-summary|query+wikilambda_searchlabels}}\n\n{{doc-wikilambda}}",
 	"apihelp-query+wikilambda_searchlabels-param-search": "{{doc-apihelp-param|query+wikilambda_searchlabels|search}}",
 	"apihelp-query+wikilambda_searchlabels-param-language": "{{doc-apihelp-param|query+wikilambda_searchlabels|language}}",
+	"apihelp-query+wikilambda_searchlabels-param-nofallback": "{{doc-apihelp-param|query+wikilambda_searchlabels|nofallback}}",
 	"apihelp-query+wikilambda_searchlabels-param-exact": "{{doc-apihelp-param|query+wikilambda_searchlabels|exact}}",
 	"apihelp-query+wikilambda_searchlabels-param-type": "{{doc-apihelp-param|query+wikilambda_searchlabels|type}}",
 	"apihelp-query+wikilambda_searchlabels-param-limit": "{{doc-apihelp-param|query+wikilambda_searchlabels|limit}}",
 	"apihelp-query+wikilambda-example-simple": "{{doc-apihelp-example|query+wikilambda}}\n\n{{doc-wikilambda}}",
+	"apihelp-query+wikilambda-example-nofallback": "{{doc-apihelp-example|query+wikilambda}}\n\n{{doc-wikilambda}}",
 	"apihelp-query+wikilambda-example-type": "{{doc-apihelp-example|query+wikilambda}}\n\n{{doc-wikilambda}}"
 }

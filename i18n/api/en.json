@@ -13,9 +13,11 @@
 	"apihelp-query+wikilambda_searchlabels-summary": "This API query list generator lets you search ZObjects for labels in a given language. It principally exists to support the look-ahead search system.",
 	"apihelp-query+wikilambda_searchlabels-param-search": "The search term",
 	"apihelp-query+wikilambda_searchlabels-param-language": "The MediaWiki language code in which to search",
+	"apihelp-query+wikilambda_searchlabels-param-nofallback": "Whether to search only in the given language and not its fallback languages",
 	"apihelp-query+wikilambda_searchlabels-param-exact": "Whether to search for exact matches. If disabled, input will be taken as a case-insensitive, Unicode-normalised search with accents on Latin characters ignored.",
 	"apihelp-query+wikilambda_searchlabels-param-type": "Restrict matches to a specific type of ZObject.",
 	"apihelp-query+wikilambda_searchlabels-param-limit": "The maximum number of results to return",
 	"apihelp-query+wikilambda-example-simple": "Search for ZObjects whose label matches 'foo' in English",
+	"apihelp-query+wikilambda-example-nofallback": "Search for ZObjects whose label matches 'foo' in French, and don't accept fallback languages",
 	"apihelp-query+wikilambda-example-type": "Search for ZObjects of type 'Z4', returning English labels"
 }

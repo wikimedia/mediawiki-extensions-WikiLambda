@@ -14,6 +14,7 @@ use ApiBase;
 use ApiPageSet;
 use ApiQueryGeneratorBase;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -38,6 +39,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 		[
 			'search' => $request,
 			'language' => $language,
+			'nofallback' => $nofallback,
 			'exact' => $exact,
 			'type' => $type,
 			'limit' => $limit,
@@ -47,9 +49,19 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 		$dbr = $this->getDB();
 
 		$this->addTables( 'wikilambda_zobject_labels' );
-		$this->addFields( [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_label' ] );
+		$this->addFields( [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label' ] );
 
-		$this->addWhere( 'wlzl_language = ' . $dbr->addQuotes( $language ) );
+		$languages = [ $language ];
+		if ( !$nofallback ) {
+			$languages = array_merge(
+				$languages,
+				MediaWikiServices::getInstance()->getLanguageFallback()->getAll(
+					$language,
+					LanguageFallback::MESSAGES /* Try for en, even if it's not an explicit fallback. */
+				)
+			);
+		}
+		$this->addWhere( [ 'wlzl_language' => $languages ] );
 
 		if ( $exact ) {
 			$searchedColumn = 'wlzl_label';
@@ -86,7 +98,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 				'page_id' => 0, // FIXME: Implement, otherwise the generator won't work.
 				'page_is_redirect' => false, // TODO: When we support redirects, implement.
 				'page_content_model' => CONTENT_MODEL_ZOBJECT,
-				'page_lang' => 'en',
+				'page_lang' => $row->wlzl_language,
 			];
 		}
 
@@ -122,6 +134,12 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 				),
 				ParamValidator::PARAM_REQUIRED => true,
 			],
+			// This is the wrong way around logically, but MediaWiki's Action API doesn't allow for
+			// default-true boolean flags to ever be set false.
+			'nofallback' => [
+				ParamValidator::PARAM_TYPE => 'boolean',
+				ApiBase::PARAM_DFLT => false,
+			],
 			'exact' => [
 				ParamValidator::PARAM_TYPE => 'boolean',
 				ApiBase::PARAM_DFLT => false,
@@ -150,6 +168,9 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 		return [
 			'action=query&list=wikilambda_searchlabels&wikilambda_search=foo&wikilambda_language=en'
 				=> 'apihelp-query+wikilambda-example-simple',
+			'action=query&list=wikilambda_searchlabels&wikilambda_search=foo&wikilambda_language=fr'
+				. '&wikilambda_nofallback=true'
+				=> 'apihelp-query+wikilambda-example-nofallback',
 			'action=query&list=wikilambda_searchlabels&wikilambda_type=Z4&wikilambda_language=en'
 				=> 'apihelp-query+wikilambda-example-type',
 		];
