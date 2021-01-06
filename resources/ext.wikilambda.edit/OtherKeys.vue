@@ -118,8 +118,9 @@ module.exports = {
 		mapMutations( [ 'addZKeyLabel' ] ),
 		{
 			addNewKey: function ( key ) {
-				// TODO: Only allow if the object doesn't have this key already set.
-				this.$set( this.otherkeydata, key, '' );
+				if ( !( key in this.otherkeydata ) ) {
+					this.$set( this.otherkeydata, key, '' );
+				}
 				if ( !( key in this.zKeyLabels ) ) {
 					this.addZKeyLabel( {
 						key: key,
@@ -142,18 +143,20 @@ module.exports = {
 			},
 
 			updateKey: function ( value, key ) {
+				this.$set( this.otherkeydata, key, value );
 				this.$set( this.zobject, key, value );
 				this.$emit( 'input', this.zobject );
 			},
 
 			updateStringKey: function ( event, key ) {
+				this.$set( this.otherkeydata, key, event.target.value );
 				this.$set( this.zobject, key, event.target.value );
 				this.$emit( 'input', this.zobject );
 			},
 
 			removeEntry: function ( key ) {
-				this.$delete( this.zobject, key );
 				this.$delete( this.otherkeydata, key );
+				this.$delete( this.zobject, key );
 				this.$delete( this.keyTypes, key );
 				this.$emit( 'input', this.zobject );
 			},
