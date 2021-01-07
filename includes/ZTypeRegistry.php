@@ -85,26 +85,6 @@ class ZTypeRegistry {
 		self::Z_MULTILINGUALSTRING => 'Multilingual String'
 	];
 
-	public const TEMP_KEY_LABELS_IN_ENGLISH = [
-		self::Z_OBJECT_TYPE => 'type',
-		self::Z_PERSISTENTOBJECT_ID => 'id',
-		self::Z_PERSISTENTOBJECT_VALUE => 'value',
-		self::Z_PERSISTENTOBJECT_LABEL => 'label',
-		self::Z_KEY_TYPE => 'value type',
-		self::Z_KEY_ID => 'key id',
-		self::Z_KEY_LABEL => 'label',
-		self::Z_TYPE_IDENTITY => 'identity',
-		self::Z_TYPE_KEYS => 'keys',
-		self::Z_TYPE_VALIDATOR => 'validator',
-		self::Z_STRING_VALUE => 'value',
-		self::Z_REFERENCE_VALUE => 'value',
-		self::Z_LIST_HEAD => 'head',
-		self::Z_LIST_TAIL => 'tail',
-		self::Z_MONOLINGUALSTRING_LANGUAGE => 'language',
-		self::Z_MONOLINGUALSTRING_VALUE => 'text',
-		self::Z_MULTILINGUALSTRING_VALUE => 'texts'
-	];
-
 	/**
 	 * @return ZTypeRegistry
 	 */

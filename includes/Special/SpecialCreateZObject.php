@@ -103,9 +103,6 @@ class SpecialCreateZObject extends SpecialPage {
 			// payload.
 			'ztypes' => ZTypeRegistry::TEMP_TYPES_IN_ENGLISH,
 			'zlanguages' => $langUtils->getLanguageNames( $userLangCode ),
-			// TODO: Use an API request on the JS side to get the keys (and their label for the user's
-			// language) for each type as it's used. Possibly pre-populate for the core ones?
-			'zkeylabels' => ZTypeRegistry::TEMP_KEY_LABELS_IN_ENGLISH,
 			'createNewPage' => true
 		];
 

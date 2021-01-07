@@ -30,6 +30,7 @@
 <script>
 var Constants = require( './Constants.js' ),
 	FullZobject = require( './FullZobject.vue' ),
+	mapActions = require( 'vuex' ).mapActions,
 	mapMutations = require( 'vuex' ).mapMutations;
 
 module.exports = {
@@ -59,54 +60,60 @@ module.exports = {
 			}
 		}
 	},
-	methods: $.extend( {}, mapMutations( [ 'addZKeyLabel' ] ), {
-		updateZobject: function ( newZobject ) {
-			this.zobject = newZobject;
-		},
+	methods: $.extend( {},
+		mapActions( [ 'fetchZKeys' ] ),
+		mapMutations( [ 'addZKeyLabel', 'setZLangs' ] ),
+		{
+			updateZobject: function ( newZobject ) {
+				this.zobject = newZobject;
+			},
 
-		submit: function () {
-			var page = mw.config.get( 'extWikilambdaEditingData' ).page,
-				api = new mw.Api(),
-				self = this;
-			if ( this.createNewPage ) {
-				// TODO: If the page already exists, increment the counter until we get a free one.
-				api.create( page, { summary: self.summary },
-					JSON.stringify( self.zobject )
-				).then( function () {
-					window.location.href = new mw.Title( page ).getUrl();
-				} );
-			} else {
-				api.edit( page, function ( /* revision */ ) {
-					return {
-						text: JSON.stringify( self.zobject ),
-						summary: self.summary
-					};
-				} ).then( function () {
-					window.location.href = new mw.Title( page ).getUrl();
-				} );
+			submit: function () {
+				var page = mw.config.get( 'extWikilambdaEditingData' ).page,
+					api = new mw.Api(),
+					self = this;
+				if ( this.createNewPage ) {
+					// TODO: If the page already exists, increment the counter until we get a free one.
+					api.create( page, { summary: self.summary },
+						JSON.stringify( self.zobject )
+					).then( function () {
+						window.location.href = new mw.Title( page ).getUrl();
+					} );
+				} else {
+					api.edit( page, function ( /* revision */ ) {
+						return {
+							text: JSON.stringify( self.zobject ),
+							summary: self.summary
+						};
+					} ).then( function () {
+						window.location.href = new mw.Title( page ).getUrl();
+					} );
+				}
 			}
 		}
-	} ),
+	),
+
 	created: function () {
 		var editingData = mw.config.get( 'extWikilambdaEditingData' ),
-			key;
+			languageChain;
 		this.createNewPage = editingData.createNewPage;
 
 		// Set zobject
-		// FIXME: Shall we save this object in the global state?
 		this.zobject = editingData.zobject;
 		if ( this.createNewPage ) {
 			this.zobject[ Constants.Z_PERSISTENTOBJECT_ID ] = editingData.title;
 		}
 
-		// Save zKeyLabels in the global state
-		// TODO: Remove zkeylabels from editingData and fetch from API
-		for ( key in editingData.zkeylabels ) {
-			this.addZKeyLabel( {
-				key: key,
-				label: editingData.zkeylabels[ key ]
-			} );
-		}
+		// Set user language
+		languageChain = mw.language.getFallbackLanguageChain();
+		this.setZLangs( languageChain );
+
+		// Fetch Z1 labels to initialize ZObject
+		// We can assume that this is not yet present as this is the root component.
+		this.fetchZKeys( {
+			zids: [ 'Z1' ],
+			zlangs: languageChain
+		} );
 	}
 };
 </script>

@@ -12,8 +12,9 @@ var api = new mw.Api(),
 module.exports = {
 
 	/**
-	 * Call the wikilambda_fetch api to get the information of
-	 * a given set of ZIds
+	 * Call the wikilambda_fetch api to get the information of a given
+	 * of ZIds, and stores the ZId information and the ZKey labels
+	 * in the state.
 	 *
 	 * @param {Object} context
 	 * @param {Object} payload
@@ -28,11 +29,15 @@ module.exports = {
 			action: 'wikilambda_fetch',
 			format: 'json',
 			zids: payload.zids.join( '|' ),
-			language: payload.zlang
+			language: payload.zlangs[ 0 ]
 		} ).then( function ( response ) {
 			var zidInfo,
 				keys,
-				label;
+				label,
+				labels,
+				langs,
+				lang,
+				i;
 
 			payload.zids.forEach( function ( zid ) {
 				zidInfo = JSON.parse( response[ zid ].wikilambda_fetch );
@@ -51,7 +56,30 @@ module.exports = {
 				// Add zKey label information in the user's selected language
 				keys = zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
 				keys.forEach( function ( key ) {
-					label = key[ Constants.Z_KEY_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ][ 0 ];
+					// Dictionary of languages available in the multilingual string
+					langs = {};
+					labels = key[ Constants.Z_KEY_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ];
+					labels.forEach( function ( value, index ) {
+						langs[ value[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] ] = index;
+					} );
+
+					// Select the label to display
+					// 1. Get the label in the first available language following the fallback chain
+					label = null;
+
+					for ( i = 0; i < payload.zlangs.length; i++ ) {
+						lang = payload.zlangs[ i ];
+						if ( lang in langs ) {
+							label = labels[ langs[ lang ] ];
+							break;
+						}
+					}
+
+					// 2. If neither of them are present, get label in any language available
+					if ( !label && ( labels.length > 0 ) ) {
+						label = labels[ 0 ];
+					}
+
 					context.commit( 'addZKeyLabel', {
 						key: key[ Constants.Z_KEY_ID ],
 						label: label[ Constants.Z_MONOLINGUALSTRING_VALUE ]

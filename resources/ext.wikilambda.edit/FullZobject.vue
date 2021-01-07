@@ -30,58 +30,85 @@
 
 <script>
 var Constants = require( './Constants.js' ),
-	TypeSelector = require( './TypeSelector.vue' );
+	TypeSelector = require( './TypeSelector.vue' ),
+	mapActions = require( 'vuex' ).mapActions,
+	mapState = require( 'vuex' ).mapState;
 
 module.exports = {
 	name: 'FullZobject',
-	beforeCreate: function () { // Need to delay require of OtherKeys to avoid loop
-		this.$options.components[ 'other-keys' ] = require( './OtherKeys.vue' );
+	components: {
+		'type-selector': TypeSelector
 	},
 	props: [ 'zobject', 'persistent', 'viewmode' ],
-	methods: {
-		updateZobject: function ( newZobject ) {
-			this.zobject = newZobject;
-			this.$emit( 'input', this.zobject );
-		},
-		updateType: function ( newType ) {
-			this.zobject[ Constants.Z_OBJECT_TYPE ] = newType;
-			this.$emit( 'input', this.zobject );
-		}
+	data: function () {
+		return {
+			Constants: Constants
+		};
 	},
-	computed: {
-		type: {
-			get: function () {
-				return this.zobject[ Constants.Z_OBJECT_TYPE ];
-			}
-		},
-		typeLabel: {
-			get: function () {
-				var ztypes = mw.config.get( 'extWikilambdaEditingData' ).ztypes;
-				return ztypes[ this.type ];
-			}
-		},
-		zobjectId: {
-			get: function () {
-				return this.zobject[ Constants.Z_PERSISTENTOBJECT_ID ];
+	computed: $.extend( {},
+		mapState( [
+			'zLangs',
+			'zKeyLabels',
+			'zKeys',
+			'fetchingZKeys'
+		] ),
+		{
+			type: {
+				get: function () {
+					return this.zobject[ Constants.Z_OBJECT_TYPE ];
+				}
 			},
-			set: function ( newValue ) {
-				this.zobject[ Constants.Z_PERSISTENTOBJECT_ID ] = newValue;
+			typeLabel: {
+				get: function () {
+					var ztypes = mw.config.get( 'extWikilambdaEditingData' ).ztypes;
+					return ztypes[ this.type ];
+				}
+			},
+			zobjectId: {
+				get: function () {
+					return this.zobject[ Constants.Z_PERSISTENTOBJECT_ID ];
+				},
+				set: function ( newValue ) {
+					this.zobject[ Constants.Z_PERSISTENTOBJECT_ID ] = newValue;
+					this.$emit( 'input', this.zobject );
+				}
+			},
+			z1k1label: function () {
+				return this.zKeyLabels[ Constants.Z_OBJECT_TYPE ];
+			},
+			z2k1label: function () {
+				return this.zKeyLabels[ Constants.Z_PERSISTENTOBJECT_ID ];
+			}
+		}
+	),
+	methods: $.extend( {},
+		mapActions( [ 'fetchZKeys' ] ),
+		{
+			updateZobject: function ( newZobject ) {
+				this.zobject = newZobject;
+				this.$emit( 'input', this.zobject );
+			},
+			updateType: function ( newType ) {
+				this.zobject[ Constants.Z_OBJECT_TYPE ] = newType;
 				this.$emit( 'input', this.zobject );
 			}
 		}
+	),
+	beforeCreate: function () { // Need to delay require of OtherKeys to avoid loop
+		this.$options.components[ 'other-keys' ] = require( './OtherKeys.vue' );
 	},
-	data: function () {
-		var editingData = mw.config.get( 'extWikilambdaEditingData' ),
-			zkeylabels = editingData.zkeylabels;
-
-		return {
-			Constants: Constants,
-			z1k1label: zkeylabels[ Constants.Z_OBJECT_TYPE ],
-			z2k1label: zkeylabels[ Constants.Z_PERSISTENTOBJECT_ID ]
-		};
-	},
-	components: {
-		'type-selector': TypeSelector
+	mounted: function () {
+		// Fetch the information of the zid (and relevant
+		// key labels) if it's not yet available.
+		if (
+			( !( this.type in this.zKeys ) ) &&
+			( this.fetchingZKeys.indexOf( this.type ) === -1 )
+		) {
+			this.fetchZKeys( {
+				zids: [ this.type ],
+				zlangs: this.zLangs
+			} );
+		}
 	}
 };
 </script>

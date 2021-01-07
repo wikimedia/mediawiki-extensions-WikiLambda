@@ -95,83 +95,86 @@ module.exports = {
 	data: function () {
 		return {
 			Constants: Constants,
-			zlang: '',
 			keylabel: '',
 			keyTypes: null,
 			otherkeydata: null
 		};
 	},
-	computed: $.extend( {}, mapState( [
-		'fetchingZKeys',
-		'zKeys',
-		'zKeyLabels'
-	] ), {
-		tooltipRemoveZObjectKey: function () {
-			return this.$i18n( 'wikilambda-editor-zobject-removekey-tooltip' );
-		}
-	} ),
-	methods: $.extend( {}, mapActions( [
-		'fetchZKeys'
-	] ), mapMutations( [
-		'addZKeyLabel'
-	] ), {
-		addNewKey: function ( key ) {
-			// TODO: Only allow if the object doesn't have this key already set.
-			this.$set( this.otherkeydata, key, '' );
-			if ( !( key in this.zKeyLabels ) ) {
-				this.addZKeyLabel( {
-					key: key,
-					label: key
-				} );
+	computed: $.extend( {},
+		mapState( [
+			'fetchingZKeys',
+			'zLangs',
+			'zKeys',
+			'zKeyLabels'
+		] ),
+		{
+			tooltipRemoveZObjectKey: function () {
+				return this.$i18n( 'wikilambda-editor-zobject-removekey-tooltip' );
 			}
-		},
-
-		setKeyType: function ( newType, key ) {
-			var newObj = {};
-			if ( newType === Constants.Z_STRING ) {
-				this.$set( this.zobject, key, '' );
-			} else if ( newType === Constants.Z_LIST ) {
-				this.$set( this.zobject, key, [] );
-			} else {
-				newObj[ Constants.Z_OBJECT_TYPE ] = newType;
-				this.$set( this.zobject, key, newObj );
-			}
-			this.$set( this.keyTypes, key, newType );
-		},
-
-		updateKey: function ( value, key ) {
-			this.$set( this.zobject, key, value );
-			this.$emit( 'input', this.zobject );
-		},
-
-		updateStringKey: function ( event, key ) {
-			this.$set( this.zobject, key, event.target.value );
-			this.$emit( 'input', this.zobject );
-		},
-
-		removeEntry: function ( key ) {
-			this.$delete( this.zobject, key );
-			this.$delete( this.otherkeydata, key );
-			this.$delete( this.keyTypes, key );
-			this.$emit( 'input', this.zobject );
-		},
-
-		isZReference: function ( key ) {
-			return key === Constants.Z_REFERENCE;
-		},
-
-		isZString: function ( key ) {
-			return key === Constants.Z_STRING;
-		},
-
-		isZList: function ( key ) {
-			return key === Constants.Z_LIST;
-		},
-
-		isZMultilingualString: function ( key ) {
-			return key === Constants.Z_MULTILINGUALSTRING;
 		}
-	} ),
+	),
+	methods: $.extend( {},
+		mapActions( [ 'fetchZKeys' ] ),
+		mapMutations( [ 'addZKeyLabel' ] ),
+		{
+			addNewKey: function ( key ) {
+				// TODO: Only allow if the object doesn't have this key already set.
+				this.$set( this.otherkeydata, key, '' );
+				if ( !( key in this.zKeyLabels ) ) {
+					this.addZKeyLabel( {
+						key: key,
+						label: key
+					} );
+				}
+			},
+
+			setKeyType: function ( newType, key ) {
+				var newObj = {};
+				if ( newType === Constants.Z_STRING ) {
+					this.$set( this.zobject, key, '' );
+				} else if ( newType === Constants.Z_LIST ) {
+					this.$set( this.zobject, key, [] );
+				} else {
+					newObj[ Constants.Z_OBJECT_TYPE ] = newType;
+					this.$set( this.zobject, key, newObj );
+				}
+				this.$set( this.keyTypes, key, newType );
+			},
+
+			updateKey: function ( value, key ) {
+				this.$set( this.zobject, key, value );
+				this.$emit( 'input', this.zobject );
+			},
+
+			updateStringKey: function ( event, key ) {
+				this.$set( this.zobject, key, event.target.value );
+				this.$emit( 'input', this.zobject );
+			},
+
+			removeEntry: function ( key ) {
+				this.$delete( this.zobject, key );
+				this.$delete( this.otherkeydata, key );
+				this.$delete( this.keyTypes, key );
+				this.$emit( 'input', this.zobject );
+			},
+
+			isZReference: function ( key ) {
+				return key === Constants.Z_REFERENCE;
+			},
+
+			isZString: function ( key ) {
+				return key === Constants.Z_STRING;
+			},
+
+			isZList: function ( key ) {
+				return key === Constants.Z_LIST;
+			},
+
+			isZMultilingualString: function ( key ) {
+				return key === Constants.Z_MULTILINGUALSTRING;
+			}
+		}
+	),
 	created: function () {
 		var editingData = mw.config.get( 'extWikilambdaEditingData' ),
 			otherkeydata = {},
@@ -180,7 +183,6 @@ module.exports = {
 			value;
 
 		this.keylabel = editingData.ztypes.Z3;
-		this.zlang = editingData.zlang;
 
 		// We collect otherkeydata, keyTypes and zkeylabels from the zobject prop
 		for ( key in this.zobject ) {
@@ -236,7 +238,7 @@ module.exports = {
 		if ( solvedTypes.length > 0 ) {
 			this.fetchZKeys( {
 				zids: solvedTypes,
-				zlang: this.zlang
+				zlangs: this.zLangs
 			} );
 		}
 	}

@@ -9,6 +9,11 @@
 module.exports = {
 
 	/**
+	 * User selected language and fallback chain
+	 */
+	zLangs: [],
+
+	/**
 	 * Collection of zKey information
 	 */
 	zKeys: {},

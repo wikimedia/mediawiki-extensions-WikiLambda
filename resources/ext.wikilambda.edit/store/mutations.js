@@ -6,7 +6,19 @@
  */
 'use strict';
 
+var Vue = require( 'vue' );
+
 module.exports = {
+
+	/**
+	 * setZLangs
+	 *
+	 * @param {Object} state
+	 * @param {string} zlang
+	 */
+	setZLangs: function ( state, zlangs ) {
+		state.zLangs = zlangs;
+	},
 
 	/**
 	 * addFetchingZKeys
@@ -42,7 +54,7 @@ module.exports = {
 	 * @param {Object} payload
 	 */
 	addZKeyInfo: function ( state, payload ) {
-		state.zKeys[ payload.zid ] = payload.info;
+		Vue.set( state.zKeys, payload.zid, payload.info );
 	},
 
 	/**
@@ -52,6 +64,6 @@ module.exports = {
 	 * @param {Object} payload
 	 */
 	addZKeyLabel: function ( state, payload ) {
-		state.zKeyLabels[ payload.key ] = payload.label;
+		Vue.set( state.zKeyLabels, payload.key, payload.label );
 	}
 };
