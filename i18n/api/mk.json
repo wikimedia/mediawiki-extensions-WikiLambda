@@ -13,9 +13,11 @@
 	"apihelp-query+wikilambda_searchlabels-summary": "Создавачот на списоци за барања до приложникот ви овозможува пребарување на ZObjects за натписи на даден јазик. Има главна цел да пружа поддршка на системот за предвидувачко пребарување.",
 	"apihelp-query+wikilambda_searchlabels-param-search": "Поимот за пребарување",
 	"apihelp-query+wikilambda_searchlabels-param-language": "На кој јазичен код да се пребарува",
+	"apihelp-query+wikilambda_searchlabels-param-nofallback": "Дали дас е пребарува само на дадениот јазик, а не на резервните јазици",
 	"apihelp-query+wikilambda_searchlabels-param-exact": "Дали да пребарува точни совпаѓања. Ако е оневозможено, ќе се подразбира дека вносот разликува големи и мали букви, а уникодно нормализираното пребарување со акценти врз латиничните знаци ќе се занемари.",
 	"apihelp-query+wikilambda_searchlabels-param-type": "Ограничи ги совпаѓањата на извесен вид на ZObject.",
 	"apihelp-query+wikilambda_searchlabels-param-limit": "Највеќе ставки во исходот за прикажување",
 	"apihelp-query+wikilambda-example-simple": "Пребарување на ZObjects чиј натпис одговара на „foo“ на англиски",
+	"apihelp-query+wikilambda-example-nofallback": "Пребарување на ZObjects чиј натпис одговара на „foo“ на француски, и не прифаќај резервни јазици",
 	"apihelp-query+wikilambda-example-type": "Пребарај ZObjects од видот „Z4“, давајќи натписи на англиски"
 }

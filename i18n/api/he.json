@@ -13,9 +13,11 @@
 	"apihelp-query+wikilambda_searchlabels-summary": "מחולל רשימות שאילתות ה־API הזה מאפשר לך לחפש בעצמי Z תוויות בשפה נתונה. הוא קיים בעיקר כדי לתמוך במערכת החיפוש עם מבט קדימה (look-ahead).",
 	"apihelp-query+wikilambda_searchlabels-param-search": "מילת החיפוש",
 	"apihelp-query+wikilambda_searchlabels-param-language": "קוד מדיה־ויקי של שפה שבה ייעשה החיפוש",
+	"apihelp-query+wikilambda_searchlabels-param-nofallback": "האם לחפש רק בשפה השניתנה ולא בשפות הגיבוי שלה",
 	"apihelp-query+wikilambda_searchlabels-param-exact": "האם לחפש התאמות מדויקות. אם זה כבוי, הקלט יטופל בתור מחרוזת בלתי־תלוי ברישיות, עם נרמול יוניקוד, ועם התעלמות מתגים על תווים לטיניים.",
 	"apihelp-query+wikilambda_searchlabels-param-type": "להגביל את ההתאמות לסוג מסוים של עצם Z.",
 	"apihelp-query+wikilambda_searchlabels-param-limit": "מספר התוצאות המרבי להחזרה",
 	"apihelp-query+wikilambda-example-simple": "חיפוש עצמי Z שהתווית שלהם תואמת \"foo\" באנגלית",
+	"apihelp-query+wikilambda-example-nofallback": "לחפש עצמי Z ששהתווית שלהם מתאימה ל־\"foo\" בצרפתית, ולא לקבל שפות גיבוי",
 	"apihelp-query+wikilambda-example-type": "חיפוש עצם Z מסוג Z4, והחזרת תוויות באנגלית"
 }

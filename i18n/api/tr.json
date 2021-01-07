@@ -13,9 +13,11 @@
 	"apihelp-query+wikilambda_searchlabels-summary": "Bu API sorgu listesi oluşturucu, belirli bir dildeki etiketler için ZObjects'te arama yapmanızı sağlar. Esasen ileriye dönük arama sistemini desteklemek için vardır.",
 	"apihelp-query+wikilambda_searchlabels-param-search": "Arama terimi",
 	"apihelp-query+wikilambda_searchlabels-param-language": "Aramanın yapılacağı MediaWiki dil kodu",
+	"apihelp-query+wikilambda_searchlabels-param-nofallback": "Yedek dillerde değil, yalnızca verilen dilde arama yapılıp yapılmayacağı",
 	"apihelp-query+wikilambda_searchlabels-param-exact": "Tam eşleşmelerin aranıp aranmayacağı. Devre dışı bırakılırsa, giriş, büyük/küçük harfe duyarlı olmayan, Unicode normalleştirilmiş bir arama olarak alınır ve Latin karakterler üzerindeki aksanlar yok sayılır.",
 	"apihelp-query+wikilambda_searchlabels-param-type": "Eşleşmeleri belirli bir ZObject türüyle sınırlayın.",
 	"apihelp-query+wikilambda_searchlabels-param-limit": "Döndürülecek maksimum sonuç sayısı",
 	"apihelp-query+wikilambda-example-simple": "İngilizce'de 'foo' ile eşleşen ZObjects arayın",
+	"apihelp-query+wikilambda-example-nofallback": "Fransızcada 'foo' ile eşleşen ZObjects arayın ve yedek dilleri kabul etmeyin",
 	"apihelp-query+wikilambda-example-type": "İngilizce etiketleri döndüren 'Z4' türündeki ZObject'leri arayın"
 }
