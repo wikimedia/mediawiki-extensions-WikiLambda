@@ -5,6 +5,12 @@
 			"WikiPhoenix"
 		]
 	},
+	"wikilambda-emptylabel": "ZObject utan etikett",
+	"wikilambda-invalidzobject": "Det angivna innehållet är inte ett giltigt ZObject.",
+	"wikilambda-invalidcontenttype": "Det angivna innehållet är inte en ZObject-klass.",
+	"wikilambda-labelclash": "Det angivna innehållets etikett står i konflikt med ZObjectets '$1' för etiketten i '$2'.",
+	"wikilambda-multilingualstring-nofallback": "Ingen etikett har definierats på det här språket eller godkända återfallspråk",
+	"wikilambda-viewmode-nojs": "Den här sidan visas på ett begränsat sätt utan JavaScript",
 	"wikilambda-special-createzobject": "Skapa ett nytt ZObject",
 	"wikilambda-special-createzobject-nojs": "Denna sida kräver JavaScript för att användas.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Språk",
@@ -15,6 +21,9 @@
 	"wikilambda-summarylabel": "Sammanfattning:",
 	"wikilambda-typeselector-label": "Värdetyp",
 	"wikilambda-editor-label-addlanguage-label": "Lägg till språk:",
+	"wikilambda-editor-label-removelanguage-tooltip": "Ta bort det här språket från den här etiketten",
 	"wikilambda-editor-zlist-additem-tooltip": "Lägg till objektet i denna ZList",
-	"wikilambda-editor-zobject-addkey": "Lägg till nyckel:"
+	"wikilambda-editor-zlist-removeitem-tooltip": "Ta bort det här objektet från den här ZListan",
+	"wikilambda-editor-zobject-addkey": "Lägg till nyckel:",
+	"wikilambda-editor-zobject-removekey-tooltip": "Ta bort den här nyckeln från det här ZObjectet"
 }
