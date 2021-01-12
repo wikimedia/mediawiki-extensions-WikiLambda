@@ -23,6 +23,7 @@
 		</span>
 		<other-keys :zobject="zobject"
 			:viewmode="viewmode"
+			ref="otherKeys"
 			@input="updateZobject"
 		></other-keys>
 	</div>
@@ -89,8 +90,22 @@ module.exports = {
 				this.$emit( 'input', this.zobject );
 			},
 			updateType: function ( newType ) {
-				this.zobject[ Constants.Z_OBJECT_TYPE ] = newType;
-				this.$emit( 'input', this.zobject );
+				var api = new mw.Api(),
+					thisComponent = this,
+					keys;
+
+				api.get( {
+					action: 'wikilambda_fetch',
+					format: 'json',
+					zids: newType
+				} ).done( function ( data ) {
+					keys = JSON.parse( data[ newType ].wikilambda_fetch )[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
+					keys.forEach( function ( key ) {
+						thisComponent.$refs.otherKeys.addNewKey( key[ Constants.Z_KEY_ID ] );
+					} );
+					thisComponent.zobject[ Constants.Z_OBJECT_TYPE ] = newType;
+					thisComponent.$emit( 'input', thisComponent.zobject );
+				} );
 			}
 		}
 	),
