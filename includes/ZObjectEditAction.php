@@ -50,10 +50,6 @@ class ZObjectEditAction extends Action {
 			'page' => $this->getTitle()->getPrefixedDBkey(),
 			'zobject' => $zObject->getData()->getValue(),
 			'zlang' => $userLangCode,
-			// TODO: Use an API request on the JS side to get the known types (maybe just the 'default'
-			// /core ones?) and their label for the user's language, rather than ship in the page
-			// payload.
-			'ztypes' => ZTypeRegistry::TEMP_TYPES_IN_ENGLISH,
 			'zlanguages' => $langUtils->getLanguageNames( $userLangCode ),
 			'createNewPage' => $createNewPage
 		];

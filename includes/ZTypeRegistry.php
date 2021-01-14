@@ -73,18 +73,6 @@ class ZTypeRegistry {
 	public const Z_MULTILINGUALSTRING = 'Z12';
 	public const Z_MULTILINGUALSTRING_VALUE = 'Z12K1';
 
-	public const TEMP_TYPES_IN_ENGLISH = [
-		self::Z_OBJECT => 'ZObject',
-		self::Z_PERSISTENTOBJECT => 'Persistent ZObject',
-		self::Z_KEY => 'Key',
-		self::Z_TYPE => 'Type',
-		self::Z_STRING => 'String',
-		self::Z_REFERENCE => 'Reference',
-		self::Z_LIST => 'List',
-		self::Z_MONOLINGUALSTRING => 'Monolingual String',
-		self::Z_MULTILINGUALSTRING => 'Multilingual String'
-	];
-
 	/**
 	 * @return ZTypeRegistry
 	 */

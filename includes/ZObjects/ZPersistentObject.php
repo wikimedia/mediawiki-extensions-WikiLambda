@@ -330,7 +330,6 @@ class ZPersistentObject extends JsonContent {
 			'page' => $title->getPrefixedDBkey(),
 			'zobject' => $zObject->getData()->getValue(),
 			'zlang' => $userLangCode,
-			'ztypes' => ZTypeRegistry::TEMP_TYPES_IN_ENGLISH,
 			'zlanguages' => $langUtils->getLanguageNames( $userLangCode ),
 			'createNewPage' => false
 		];
