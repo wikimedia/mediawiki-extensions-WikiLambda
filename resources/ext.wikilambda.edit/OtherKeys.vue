@@ -95,7 +95,6 @@ module.exports = {
 	data: function () {
 		return {
 			Constants: Constants,
-			keylabel: '',
 			keyTypes: null,
 			otherkeydata: null
 		};
@@ -179,13 +178,10 @@ module.exports = {
 		}
 	),
 	created: function () {
-		var editingData = mw.config.get( 'extWikilambdaEditingData' ),
-			otherkeydata = {},
+		var otherkeydata = {},
 			keyTypes = {},
 			key,
 			value;
-
-		this.keylabel = editingData.ztypes.Z3;
 
 		// We collect otherkeydata, keyTypes and zkeylabels from the zobject prop
 		for ( key in this.zobject ) {

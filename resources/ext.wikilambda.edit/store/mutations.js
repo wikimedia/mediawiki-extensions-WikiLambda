@@ -14,7 +14,7 @@ module.exports = {
 	 * setZLangs
 	 *
 	 * @param {Object} state
-	 * @param {string} zlang
+	 * @param {string[]} zlangs
 	 */
 	setZLangs: function ( state, zlangs ) {
 		state.zLangs = zlangs;

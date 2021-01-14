@@ -6,7 +6,7 @@
 		@copyright 2020 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-select-zobject">
+	<span class="ext-wikilambda-select-zobject">
 		<span v-if="viewmode">{{ searchText }}</span>
 		<input v-else
 			v-model="searchText"
@@ -25,85 +25,102 @@
 				{{ label }} ({{ zid }})
 			</div>
 		</div>
-	</div>
+	</span>
 </template>
 
 <script>
+var mapState = require( 'vuex' ).mapState,
+	mapMutations = require( 'vuex' ).mapMutations;
 
 module.exports = {
 	name: 'SelectZobject',
-	props: [ 'viewmode', 'type' ],
+	props: [ 'viewmode', 'type', 'searchText', 'selectedId' ],
 	data: function () {
 		return {
-			searchText: '',
-			selectedId: null,
 			showList: false,
 			searchResults: {}
 		};
 	},
-	methods: {
-		updateSearch: function () {
-			var self = this;
-			if ( this.searchText === '' && ( !this.type ) ) {
-				this.searchResults = {};
-				this.showList = false;
-				this.selectedId = null;
-			} else if ( /^Z\d+$/.test( this.searchText ) ) {
-				this.selectedId = this.searchText;
-				this.$emit( 'input', this.searchText );
-				this.showList = false;
-			} else {
-				clearTimeout( this.timerId );
-				this.timerId = setTimeout( function () {
-					self.updateSearchUnBounced();
-				}, 200 );
-			}
-		},
-		updateSearchUnBounced: function () {
-			var api = new mw.Api(),
-				self = this,
-				queryType = 'wikilambda_searchlabels';
-			api.get( {
-				action: 'query',
-				list: queryType,
-				// eslint-disable-next-line camelcase
-				wikilambda_search: self.searchText,
-				// eslint-disable-next-line camelcase
-				wikilambda_type: self.type,
-				// eslint-disable-next-line camelcase
-				wikilambda_language: 'en'
-			} ).done( function ( data ) {
-				self.searchResults = {};
-				self.showList = false;
-				self.selectedId = null;
-				if ( 'query' in data &&
-					queryType in data.query
-				) {
-					data.query[ queryType ].forEach(
-						function ( result ) {
-							var zid = result.page_title,
-								label = result.label;
-							self.searchResults[ zid ] = label;
-						}
-					);
-					self.showList = true;
+	computed: $.extend( {},
+		mapState( [
+			'fetchingZKeys',
+			'zLangs',
+			'zKeys',
+			'zKeyLabels'
+		] )
+	),
+	methods: $.extend( {},
+		mapMutations( [ 'addZKeyLabel' ] ),
+		{
+			updateSearch: function () {
+				var self = this;
+				if ( this.searchText === '' && ( !this.type ) ) {
+					this.searchResults = {};
+					this.showList = false;
+					this.selectedId = null;
+				} else if ( /^Z\d+$/.test( this.searchText ) ) {
+					this.selectedId = this.searchText;
+					this.$emit( 'input', this.searchText );
+					this.showList = false;
+				} else {
+					clearTimeout( this.timerId );
+					this.timerId = setTimeout( function () {
+						self.updateSearchUnBounced();
+					}, 200 );
 				}
-			} );
-		},
-		onClickResult: function ( zid ) {
-			this.searchText = this.searchResults[ zid ];
-			this.selectedId = zid;
-			this.$emit( 'input', zid );
-			this.showList = false;
-		},
-		onFocus: function () {
-			this.updateSearch();
-			this.showList = true;
-		},
-		onBlur: function () {
-			this.showList = false;
+			},
+			updateSearchUnBounced: function () {
+				var api = new mw.Api(),
+					self = this,
+					queryType = 'wikilambda_searchlabels';
+				api.get( {
+					action: 'query',
+					list: queryType,
+					// eslint-disable-next-line camelcase
+					wikilambda_search: self.searchText,
+					// eslint-disable-next-line camelcase
+					wikilambda_type: self.type,
+					// eslint-disable-next-line camelcase
+					wikilambda_language: 'en'
+				} ).done( function ( data ) {
+					self.searchResults = {};
+					self.showList = false;
+					self.selectedId = null;
+					if ( 'query' in data &&
+						queryType in data.query
+					) {
+						data.query[ queryType ].forEach(
+							function ( result ) {
+								var zid = result.page_title,
+									label = result.label;
+								self.searchResults[ zid ] = label;
+								if ( !( zid in self.zKeyLabels ) ) {
+									self.addZKeyLabel( {
+										key: zid,
+										label: label
+									} );
+								}
+							}
+						);
+						self.showList = true;
+					}
+				} );
+			},
+			onClickResult: function ( zid ) {
+				this.searchText = this.searchResults[ zid ];
+				this.selectedId = zid;
+				this.$emit( 'input', zid );
+				this.showList = false;
+			},
+			onFocus: function () {
+				this.updateSearch();
+				this.showList = true;
+			},
+			onBlur: function () {
+				this.showList = false;
+			}
 		}
-	}
+	)
 };
 </script>
 

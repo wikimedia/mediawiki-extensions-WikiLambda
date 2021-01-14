@@ -16,10 +16,12 @@
 		</span>
 		<span v-else>
 			<span v-if="viewmode"> {{ typeLabel }} ({{ type }})</span>
-			<type-selector v-else
-				:type="type"
-				@change="updateType"
-			></type-selector>
+			<select-zobject v-else
+				:type="Constants.Z_TYPE"
+				:selected-id="type"
+				:search-text="typeLabel"
+				@input="updateType($event)"
+			></select-zobject>
 		</span>
 		<other-keys :zobject="zobject"
 			:viewmode="viewmode"
@@ -30,14 +32,14 @@
 
 <script>
 var Constants = require( './Constants.js' ),
-	TypeSelector = require( './TypeSelector.vue' ),
+	SelectZobject = require( './SelectZobject.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapState = require( 'vuex' ).mapState;
 
 module.exports = {
 	name: 'FullZobject',
 	components: {
-		'type-selector': TypeSelector
+		'select-zobject': SelectZobject
 	},
 	props: [ 'zobject', 'persistent', 'viewmode' ],
 	data: function () {
@@ -60,8 +62,7 @@ module.exports = {
 			},
 			typeLabel: {
 				get: function () {
-					var ztypes = mw.config.get( 'extWikilambdaEditingData' ).ztypes;
-					return ztypes[ this.type ];
+					return this.zKeyLabels[ this.type ];
 				}
 			},
 			zobjectId: {
