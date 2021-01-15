@@ -1,9 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
+			"Afaz",
 			"Portal18"
 		]
 	},
+	"wikilambda-speciallistduplicatezobjectlabels-language": "言語",
+	"wikilambda-publishnew": "公開",
 	"wikilambda-savenew": "保存",
+	"wikilambda-publishchanges": "変更を公開",
 	"wikilambda-savechanges": "変更を保存"
 }
