@@ -21,6 +21,7 @@ use WikiPage;
  */
 class HooksTest extends \MediaWikiIntegrationTestCase {
 
+	/** @var string[] */
 	private $titlesTouched = [];
 
 	protected function setUp() : void {

@@ -23,6 +23,7 @@ use WikiPage;
  */
 class ZObjectContentHandlerTest extends \MediaWikiIntegrationTestCase {
 
+	/** @var string[] */
 	private $titlesTouched = [];
 
 	/**
