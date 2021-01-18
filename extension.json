@@ -78,7 +78,13 @@
 			"styles": [ "ext.wikilambda.viewpage/ext.wikilambda.viewpage.less" ]
 		},
 		"ext.wikilambda.specialpages.styles": {
-			"styles": [ "ext.wikilambda.specialpages/ext.wikilambda.specialpages.less" ]
+			"styles": [
+				"ext.wikilambda.specialpages/ext.wikilambda.specialpages.less",
+				"ext.wikilambda.edit/base/AutocompleteSearchInput.less",
+				"ext.wikilambda.edit/base/Button.less",
+				"ext.wikilambda.edit/base/Icon.less",
+				"ext.wikilambda.edit/base/SelectMenu.less"
+			]
 		},
 		"ext.wikilambda.edit": {
 			"dependencies": [
@@ -89,11 +95,16 @@
 			],
 			"packageFiles": [
 				"ext.wikilambda.edit/index.js",
+				"lib/icons.js",
 				"ext.wikilambda.edit/store/index.js",
 				"ext.wikilambda.edit/store/state.js",
 				"ext.wikilambda.edit/store/actions.js",
 				"ext.wikilambda.edit/store/getters.js",
 				"ext.wikilambda.edit/store/mutations.js",
+				"ext.wikilambda.edit/base/AutocompleteSearchInput.vue",
+				"ext.wikilambda.edit/base/Button.vue",
+				"ext.wikilambda.edit/base/Icon.vue",
+				"ext.wikilambda.edit/base/SelectMenu.vue",
 				"ext.wikilambda.edit/Constants.js",
 				"ext.wikilambda.edit/ZobjectEditor.vue",
 				"ext.wikilambda.edit/ZobjectViewer.vue",
