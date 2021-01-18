@@ -1,99 +1,135 @@
 <template>
 	<!--
 		WikiLambda Vue interface module for selecting any ZObject,
-		with autocompletion on name
+		with autocompletion on name.
+		Uses the base component AutocompleteSearchInput from MediaSearch
+		Vue.js base components.
+		Receives an input parameter to filter the type of ZObjects that
+		it will search and display (e.g. Z4 for selecting only types)
 
 		@copyright 2020 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->
 	<span class="ext-wikilambda-select-zobject">
-		<span v-if="viewmode">{{ searchText }}</span>
-		<input v-else
-			v-model="searchText"
-			type="search"
-			@input="updateSearch"
-			@focus="onFocus"
+
+		<span v-if="viewmode">{{ selectedId }}</span>
+		<wbmi-autocomplete-search-input
+			v-else
+			name="zobject-selector"
+			:label="placeholder"
+			:placeholder="placeholder"
+			:initial-value="selectedText"
+			:lookup-results="lookupLabels"
+			@input="onInput"
 			@blur="onBlur"
+			@submit="onSubmit"
+			@clear="onClear"
+			@clear-lookup-results="onClearLookupResults"
 		>
-		<span v-if="selectedId">({{ selectedId }})</span>
-		<div v-if="showList" class="ext-wikilambda-zobject-list">
-			<div v-for="(label, zid) in searchResults"
-				:key="zid"
-				class="ext-wikilambda-zobject-list-item"
-				@mousedown.prevent="onClickResult(zid)"
-			>
-				{{ label }} ({{ zid }})
-			</div>
-		</div>
+		</wbmi-autocomplete-search-input>
+
 	</span>
 </template>
 
 <script>
-var mapState = require( 'vuex' ).mapState,
+var WbmiAutocompleteSearchInput = require( './base/AutocompleteSearchInput.vue' ),
+	mapActions = require( 'vuex' ).mapActions,
+	mapState = require( 'vuex' ).mapState,
+	mapGetters = require( 'vuex' ).mapGetters,
 	mapMutations = require( 'vuex' ).mapMutations;
 
 module.exports = {
 	name: 'SelectZobject',
-	props: [ 'viewmode', 'type', 'searchText', 'selectedId' ],
+	props: {
+		viewmode: {
+			type: Boolean,
+			required: true
+		},
+		type: {
+			type: String,
+			default: ''
+		},
+		selectedId: {
+			type: String,
+			default: ''
+		},
+		placeholder: {
+			type: [ String, Object ],
+			default: ''
+		}
+	},
+	components: {
+		'wbmi-autocomplete-search-input': WbmiAutocompleteSearchInput
+	},
 	data: function () {
 		return {
-			showList: false,
-			searchResults: {}
+			lookupResults: {},
+			lookupDelayTimer: null,
+			lookupDelayMs: 300,
+			inputValue: ''
 		};
 	},
 	computed: $.extend( {},
+		mapGetters( [ 'zLang' ] ),
 		mapState( [
-			'fetchingZKeys',
 			'zLangs',
 			'zKeys',
 			'zKeyLabels'
-		] )
+		] ),
+		{
+			lookupLabels: function () {
+				return Object.keys( this.lookupResults );
+			},
+			selectedLabel: function () {
+				return this.zKeyLabels[ this.selectedId ];
+			},
+			selectedText: function () {
+				if ( this.selectedId ) {
+					return this.selectedLabel + ' (' + this.selectedId + ')';
+				} else {
+					return '';
+				}
+			}
+		}
 	),
 	methods: $.extend( {},
+		mapActions( [ 'fetchZKeys' ] ),
 		mapMutations( [ 'addZKeyLabel' ] ),
 		{
-			updateSearch: function () {
-				var self = this;
-				if ( this.searchText === '' && ( !this.type ) ) {
-					this.searchResults = {};
-					this.showList = false;
-					this.selectedId = null;
-				} else if ( /^Z\d+$/.test( this.searchText ) ) {
-					this.selectedId = this.searchText;
-					this.$emit( 'input', this.searchText );
-					this.showList = false;
-				} else {
-					clearTimeout( this.timerId );
-					this.timerId = setTimeout( function () {
-						self.updateSearchUnBounced();
-					}, 200 );
-				}
-			},
-			updateSearchUnBounced: function () {
+			/**
+			 * Once the timeout is done, calls the `wikilambda_searchlabels` API
+			 * with the current value of the input
+			 *
+			 * @param {string} input
+			 */
+			getLookupResults: function ( input ) {
 				var api = new mw.Api(),
 					self = this,
 					queryType = 'wikilambda_searchlabels';
+
 				api.get( {
 					action: 'query',
 					list: queryType,
 					// eslint-disable-next-line camelcase
-					wikilambda_search: self.searchText,
+					wikilambda_search: input,
 					// eslint-disable-next-line camelcase
-					wikilambda_type: self.type,
+					wikilambda_type: this.type,
 					// eslint-disable-next-line camelcase
-					wikilambda_language: 'en'
+					wikilambda_language: this.zLang
 				} ).done( function ( data ) {
-					self.searchResults = {};
-					self.showList = false;
-					self.selectedId = null;
-					if ( 'query' in data &&
-						queryType in data.query
-					) {
+					self.lookupResults = {};
+
+					// If any results available
+					if ( ( 'query' in data ) && ( queryType in data.query ) ) {
 						data.query[ queryType ].forEach(
 							function ( result ) {
 								var zid = result.page_title,
 									label = result.label;
-								self.searchResults[ zid ] = label;
+
+								// Update lookupResults list
+								self.lookupResults[ label + ' (' + zid + ')' ] = zid;
+
+								// Update zKeyLabels in the Vuex store
 								if ( !( zid in self.zKeyLabels ) ) {
 									self.addZKeyLabel( {
 										key: zid,
@@ -106,18 +142,87 @@ module.exports = {
 					}
 				} );
 			},
-			onClickResult: function ( zid ) {
-				this.searchText = this.searchResults[ zid ];
-				this.selectedId = zid;
-				this.$emit( 'input', zid );
-				this.showList = false;
+
+			isValidZidFormat: function ( zid ) {
+				return /^Z\d+$/.test( zid );
 			},
-			onFocus: function () {
-				this.updateSearch();
-				this.showList = true;
+
+			/**
+			 * Allow the field to receive a Zid instead of a label and,
+			 * if valid and it exists, select and submit it.
+			 */
+			validateZidInput: function () {
+				var self = this;
+
+				if ( this.isValidZidFormat( this.inputValue ) ) {
+					this.fetchZKeys( {
+						zids: [ this.inputValue ],
+						zlangs: this.zLangs
+					} ).done( function () {
+						if ( self.inputValue in self.zKeys ) {
+							self.$emit( 'input', self.inputValue );
+						}
+					} );
+				}
 			},
+
+			/**
+			 * On Autocomplete field input, set a timer so that the lookup is not done immediately.
+			 *
+			 * @param {string} input
+			 */
+			onInput: function ( input ) {
+				var self = this;
+				this.inputValue = input;
+
+				// The `input` event is also emitted when the field is emptied.
+				// We handle this case with the `onClearLookupResults` event instead.
+				if ( !input ) {
+					return;
+				}
+
+				clearTimeout( this.lookupDelayTimer );
+				this.lookupDelayTimer = setTimeout( function () {
+					self.getLookupResults( input );
+				}, this.lookupDelayMs );
+			},
+
+			/**
+			 * ZObject is selected, the component emits `input` event
+			 *
+			 * @param {string} item
+			 */
+			onSubmit: function ( item ) {
+				if ( this.lookupResults[ item ] ) {
+					this.$emit( 'input', this.lookupResults[ item ] );
+				} else {
+					this.validateZidInput();
+				}
+			},
+
+			/**
+			 * ZObject is selected, the component emits `input` event
+			 */
+			onClear: function () {
+				this.$emit( 'input', '' );
+			},
+
+			/**
+			 * The autocomplete field is empty or an item is selected,
+			 * so it clears the list of suggestions.
+			 */
+			onClearLookupResults: function () {
+				this.lookupResults = {};
+			},
+
+			/**
+			 * When blurred with a value written in the input, check if it
+			 * matches a ZObject format.
+			 * If so, check if ZObject exists.
+			 * If it exists, select ZObject. Else, clear field.
+			 */
 			onBlur: function () {
-				this.showList = false;
+				this.validateZidInput();
 			}
 		}
 	)
@@ -125,24 +230,9 @@ module.exports = {
 </script>
 
 <style lang="less">
+
 .ext-wikilambda-select-zobject {
-	position: relative;
-}
-
-.ext-wikilambda-select-zobject .ext-wikilambda-zobject-list {
-	position: absolute;
-	background-color: #fff;
-	box-shadow: 0 8px 16px 0 rgba( 0, 0, 0, 0.2 );
-	z-index: 1;
-}
-
-.ext-wikilambda-select-zobject .ext-wikilambda-zobject-list .ext-wikilambda-zobject-list-item {
-	cursor: pointer;
-	margin-left: 0.5em;
-}
-
-.ext-wikilambda-select-zobject .ext-wikilambda-zobject-list .ext-wikilambda-zobject-list-item:hover {
-	background-color: #ddd;
+	display: inline-block;
 }
 
 </style>

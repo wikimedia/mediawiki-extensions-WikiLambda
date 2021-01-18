@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Genoveva Galarza",
 			"James D. Forrester"
 		]
 	},
@@ -30,6 +31,7 @@
 	"wikilambda-savechanges": "Save changes",
 	"wikilambda-summarylabel": "Summary:",
 	"wikilambda-typeselector-label": "Value Type",
+	"wikilambda-zobjectselector-label": "ZObject",
 	"wikilambda-editor-additem": "➕",
 	"wikilambda-editor-removeitem": "🗑️",
 	"wikilambda-editor-label-addlanguage-label" : "Add language:",

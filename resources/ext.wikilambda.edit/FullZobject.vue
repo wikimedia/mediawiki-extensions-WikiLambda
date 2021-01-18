@@ -17,9 +17,10 @@
 		<span v-else>
 			<span v-if="viewmode"> {{ typeLabel }} ({{ type }})</span>
 			<select-zobject v-else
+				:viewmode="viewmode"
 				:type="Constants.Z_TYPE"
+				:placeholder="$i18n( 'wikilambda-typeselector-label' )"
 				:selected-id="type"
-				:search-text="typeLabel"
 				@input="updateType($event)"
 			></select-zobject>
 		</span>
