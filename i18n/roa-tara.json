@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Joetaras"
+		]
+	},
+	"wikilambda-special-createzobject": "Ccreje 'nu ZObject nuève",
+	"wikilambda-speciallistduplicatezobjectlabels-existing": "ZObject esistende",
+	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "ZObject in conflitte",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Lènghe",
+	"wikilambda-publishnew": "Pubbleche",
+	"wikilambda-savenew": "Reggìstre",
+	"wikilambda-publishchanges": "Pubbleche le cangiaminde",
+	"wikilambda-savechanges": "Reggìstre le cangiaminde",
+	"wikilambda-summarylabel": "Riepileghe:",
+	"wikilambda-typeselector-label": "Tipe de valore",
+	"wikilambda-editor-label-addlanguage-label": "Aggiunge 'na lènghe:"
+}
