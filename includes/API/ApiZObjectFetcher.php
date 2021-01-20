@@ -30,15 +30,15 @@ class ApiZObjectFetcher extends ApiBase {
 		foreach ( $ZIDs as $index => $ZID ) {
 			$title = Title::newFromText( $ZID, NS_ZOBJECT );
 
-			if ( !$title->exists() ) {
+			if ( !$title || !is_a( $title, "Title" ) || !$title->exists() ) {
 				$this->dieWithError( [ 'apierror-wikilambda_fetch-missingzid', $ZID ] );
+			} else {
+				$this->getResult()->addValue(
+					$ZID,
+					$this->getModuleName(),
+					ZObjectContentHandler::getExternalRepresentation( $title, $language )
+				);
 			}
-
-			$this->getResult()->addValue(
-				$ZID,
-				$this->getModuleName(),
-				ZObjectContentHandler::getExternalRepresentation( $title, $language )
-			);
 		}
 	}
 
