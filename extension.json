@@ -93,6 +93,12 @@
 				"mediawiki.Title",
 				"mediawiki.api"
 			],
+			"styles": [
+				"ext.wikilambda.edit/base/AutocompleteSearchInput.less",
+				"ext.wikilambda.edit/base/Button.less",
+				"ext.wikilambda.edit/base/Icon.less",
+				"ext.wikilambda.edit/base/SelectMenu.less"
+			],
 			"packageFiles": [
 				"ext.wikilambda.edit/index.js",
 				"lib/icons.js",

@@ -15,7 +15,9 @@
 			</button>
 			<span>{{ zKeyLabels[key] }} ({{ key }}):</span>
 			<select-zobject v-if="!(key in keyTypes)"
+				:viewmode="viewmode"
 				:type="Constants.Z_TYPE"
+				:placeholder="$i18n( 'wikilambda-typeselector-label' )"
 				@input="setKeyType($event, key)"
 			></select-zobject>
 			<span v-else-if="isZString( keyTypes[key] )">
@@ -32,8 +34,9 @@
 				>
 			</span>
 			<select-zobject v-else-if="isZReference( keyTypes[key] )"
-				:search-text="zobject[key]"
 				:viewmode="viewmode"
+				:selected-id="zobject[key]"
+				:placeholder="$i18n( 'wikilambda-zobjectselector-label' )"
 				@input="updateKey($event, key)"
 			></select-zobject>
 			<list-value v-else-if="isZList( keyTypes[key] )"

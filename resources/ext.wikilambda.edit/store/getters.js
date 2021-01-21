@@ -7,4 +7,13 @@
 'use strict';
 
 module.exports = {
+
+	zLang: function ( state ) {
+		if ( state.zLangs.length > 0 ) {
+			return state.zLangs[ 0 ];
+		} else {
+			return 'en';
+		}
+	}
+
 };

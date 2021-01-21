@@ -15,7 +15,9 @@
 					{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 				</button>
 				<select-zobject v-if="listTypes[index] === 'new'"
+					:viewmode="viewmode"
 					:type="Constants.Z_TYPE"
+					:placeholder="$i18n( 'wikilambda-typeselector-label' )"
 					@input="setNewType($event, index)"
 				></select-zobject>
 				<input v-else-if="listTypes[index] === Constants.Z_STRING"
@@ -24,8 +26,9 @@
 					@input="updateStringValue($event, index)"
 				>
 				<select-zobject v-else-if="listTypes[index] === Constants.Z_REFERENCE"
-					:search-text="item"
 					:viewmode="viewmode"
+					:placeholder="$i18n( 'wikilambda-zobjectselector-label' )"
+					:selected-id="item"
 					@input="updateValue($event, index)"
 				></select-zobject>
 				<list-value v-else-if="listTypes[index] === Constants.Z_LIST"
