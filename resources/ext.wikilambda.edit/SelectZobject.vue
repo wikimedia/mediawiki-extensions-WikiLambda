@@ -32,7 +32,8 @@
 </template>
 
 <script>
-var WbmiAutocompleteSearchInput = require( './base/AutocompleteSearchInput.vue' ),
+var Constants = require( './Constants.js' ),
+	WbmiAutocompleteSearchInput = require( './base/AutocompleteSearchInput.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapState = require( 'vuex' ).mapState,
 	mapGetters = require( 'vuex' ).mapGetters,
@@ -96,6 +97,26 @@ module.exports = {
 		mapActions( [ 'fetchZKeys' ] ),
 		mapMutations( [ 'addZKeyLabel' ] ),
 		{
+			isExcludedZType: function ( zid ) {
+				return (
+					( this.type === Constants.Z_TYPE ) &&
+					( Constants.EXCLUDED_Z_TYPES.indexOf( zid ) !== -1 )
+				);
+			},
+
+			isValidZidFormat: function ( zid ) {
+				return /^Z\d+$/.test( zid );
+			},
+
+			hasValidType: function ( zid ) {
+				var zidType = this.zKeys[ zid ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ];
+				return ( !this.type || // Either the selection isn't type restricted
+					(
+						( this.type === zidType ) && // Or the specified type matches de ZObject type
+						!this.isExcludedZType( zid ) // and ZID is not part of the EXCLUDED_Z_TYPES
+					) );
+			},
+
 			/**
 			 * Once the timeout is done, calls the `wikilambda_searchlabels` API
 			 * with the current value of the input
@@ -127,8 +148,11 @@ module.exports = {
 									label = result.label;
 
 								// Update lookupResults list
-								self.lookupResults[ label + ' (' + zid + ')' ] = zid;
-
+								// If we are searching for Types (this.type === 'Z4')
+								// we should exclude Z1, Z2, Z7 and Z9 from the results
+								if ( !self.isExcludedZType( zid ) ) {
+									self.lookupResults[ label + ' (' + zid + ')' ] = zid;
+								}
 								// Update zKeyLabels in the Vuex store
 								if ( !( zid in self.zKeyLabels ) ) {
 									self.addZKeyLabel( {
@@ -143,13 +167,11 @@ module.exports = {
 				} );
 			},
 
-			isValidZidFormat: function ( zid ) {
-				return /^Z\d+$/.test( zid );
-			},
-
 			/**
 			 * Allow the field to receive a Zid instead of a label and,
 			 * if valid and it exists, select and submit it.
+			 * If the selector restricts the type, check that the ZObject
+			 * type fits this restriction.
 			 */
 			validateZidInput: function () {
 				var self = this;
@@ -159,7 +181,10 @@ module.exports = {
 						zids: [ this.inputValue ],
 						zlangs: this.zLangs
 					} ).done( function () {
-						if ( self.inputValue in self.zKeys ) {
+						if (
+							( self.inputValue in self.zKeys ) &&
+							( self.hasValidType( self.inputValue ) )
+						) {
 							self.$emit( 'input', self.inputValue );
 						}
 					} );

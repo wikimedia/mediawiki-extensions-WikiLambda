@@ -1,4 +1,5 @@
 var Constants = {
+	EXCLUDED_Z_TYPES: [ 'Z1', 'Z2', 'Z7', 'Z9' ],
 	Z_OBJECT: 'Z1',
 	Z_OBJECT_TYPE: 'Z1K1',
 	Z_PERSISTENTOBJECT_ID: 'Z2K1',
