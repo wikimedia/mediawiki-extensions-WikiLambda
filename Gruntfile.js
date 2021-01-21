@@ -19,7 +19,8 @@ module.exports = function ( grunt ) {
 			all: [
 				'**/*.{css,less,vue}',
 				'!node_modules/**',
-				'!vendor/**'
+				'!vendor/**',
+				'!resources/lib/**'
 			]
 		}
 	} );
