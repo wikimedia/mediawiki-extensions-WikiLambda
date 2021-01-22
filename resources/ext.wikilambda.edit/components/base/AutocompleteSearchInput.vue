@@ -71,7 +71,7 @@
 var WbmiButton = require( './Button.vue' ),
 	WbmiIcon = require( './Icon.vue' ),
 	WbmiSelectMenu = require( './SelectMenu.vue' ),
-	icons = require( './../../lib/icons.js' );
+	icons = require( './../../../lib/icons.js' );
 
 /**
  * @file AutocompleteSearchInput

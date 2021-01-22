@@ -80,10 +80,10 @@
 		"ext.wikilambda.specialpages.styles": {
 			"styles": [
 				"ext.wikilambda.specialpages/ext.wikilambda.specialpages.less",
-				"ext.wikilambda.edit/base/AutocompleteSearchInput.less",
-				"ext.wikilambda.edit/base/Button.less",
-				"ext.wikilambda.edit/base/Icon.less",
-				"ext.wikilambda.edit/base/SelectMenu.less"
+				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.less",
+				"ext.wikilambda.edit/components/base/Button.less",
+				"ext.wikilambda.edit/components/base/Icon.less",
+				"ext.wikilambda.edit/components/base/SelectMenu.less"
 			]
 		},
 		"ext.wikilambda.edit": {
@@ -94,32 +94,32 @@
 				"mediawiki.api"
 			],
 			"styles": [
-				"ext.wikilambda.edit/base/AutocompleteSearchInput.less",
-				"ext.wikilambda.edit/base/Button.less",
-				"ext.wikilambda.edit/base/Icon.less",
-				"ext.wikilambda.edit/base/SelectMenu.less"
+				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.less",
+				"ext.wikilambda.edit/components/base/Button.less",
+				"ext.wikilambda.edit/components/base/Icon.less",
+				"ext.wikilambda.edit/components/base/SelectMenu.less"
 			],
 			"packageFiles": [
 				"ext.wikilambda.edit/index.js",
-				"lib/icons.js",
+				"ext.wikilambda.edit/Constants.js",
 				"ext.wikilambda.edit/store/index.js",
 				"ext.wikilambda.edit/store/state.js",
 				"ext.wikilambda.edit/store/actions.js",
 				"ext.wikilambda.edit/store/getters.js",
 				"ext.wikilambda.edit/store/mutations.js",
-				"ext.wikilambda.edit/base/AutocompleteSearchInput.vue",
-				"ext.wikilambda.edit/base/Button.vue",
-				"ext.wikilambda.edit/base/Icon.vue",
-				"ext.wikilambda.edit/base/SelectMenu.vue",
-				"ext.wikilambda.edit/Constants.js",
-				"ext.wikilambda.edit/ZobjectEditor.vue",
-				"ext.wikilambda.edit/ZobjectViewer.vue",
-				"ext.wikilambda.edit/FullZobject.vue",
-				"ext.wikilambda.edit/OtherKeys.vue",
-				"ext.wikilambda.edit/ZKey.vue",
-				"ext.wikilambda.edit/ListValue.vue",
-				"ext.wikilambda.edit/ZMultiLingualString.vue",
-				"ext.wikilambda.edit/SelectZobject.vue"
+				"ext.wikilambda.edit/components/ZObjectEditor.vue",
+				"ext.wikilambda.edit/components/ZObjectViewer.vue",
+				"ext.wikilambda.edit/components/ZObject.vue",
+				"ext.wikilambda.edit/components/ZObjectSelector.vue",
+				"ext.wikilambda.edit/components/ZObjectKeyList.vue",
+				"ext.wikilambda.edit/components/ZObjectKeyInput.vue",
+				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.vue",
+				"ext.wikilambda.edit/components/base/Button.vue",
+				"ext.wikilambda.edit/components/base/Icon.vue",
+				"ext.wikilambda.edit/components/base/SelectMenu.vue",
+				"ext.wikilambda.edit/components/types/ZList.vue",
+				"ext.wikilambda.edit/components/types/ZMultilingualString.vue",
+				"lib/icons.js"
 			],
 			"messages": [
 				"wikilambda-publishnew",

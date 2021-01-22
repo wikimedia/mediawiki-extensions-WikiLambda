@@ -14,12 +14,12 @@
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 			</button>
 			<span>{{ zKeyLabels[key] }} ({{ key }}):</span>
-			<select-zobject v-if="!(key in keyTypes)"
+			<z-object-selector v-if="!(key in keyTypes)"
 				:viewmode="viewmode"
 				:type="Constants.Z_TYPE"
 				:placeholder="$i18n( 'wikilambda-typeselector-label' )"
 				@input="setKeyType($event, key)"
-			></select-zobject>
+			></z-object-selector>
 			<span v-else-if="isZString( keyTypes[key] )">
 				<span v-if="viewmode">
 					<a v-if="value.match(/^Z\d+$/)" :href="'./ZObject:' + value">
@@ -33,55 +33,55 @@
 					@input="updateStringKey($event, key)"
 				>
 			</span>
-			<select-zobject v-else-if="isZReference( keyTypes[key] )"
+			<z-object-selector v-else-if="isZReference( keyTypes[key] )"
 				:viewmode="viewmode"
 				:selected-id="zobject[key]"
 				:placeholder="$i18n( 'wikilambda-zobjectselector-label' )"
 				@input="updateKey($event, key)"
-			></select-zobject>
-			<list-value v-else-if="isZList( keyTypes[key] )"
+			></z-object-selector>
+			<z-list v-else-if="isZList( keyTypes[key] )"
 				:list="zobject[key]"
 				:viewmode="viewmode"
 				@input="updateKey($event, key)"
-			></list-value>
-			<multi-lingual-string v-else-if="isZMultilingualString( keyTypes[key] )"
+			></z-list>
+			<z-multilingual-string v-else-if="isZMultilingualString( keyTypes[key] )"
 				:mls-object="zobject[key]"
 				:viewmode="viewmode"
 				@input="updateKey($event, key)"
-			></multi-lingual-string>
-			<full-zobject v-else
+			></z-multilingual-string>
+			<z-object v-else
 				:zobject="zobject[key]"
 				:persistent="false"
 				:viewmode="viewmode"
 				@input="updateKey($event, key)"
-			></full-zobject>
+			></z-object>
 		</li>
 		<li v-if="!viewmode">
 			{{ $i18n( 'wikilambda-editor-zobject-addkey' ) }}
-			<zkey-input @change="addNewKey($event)"></zkey-input>
+			<z-object-key-input @change="addNewKey($event)"></z-object-key-input>
 		</li>
 	</ul>
 </template>
 
 <script>
-var Constants = require( './Constants.js' ),
-	FullZobject = require( './FullZobject.vue' ),
-	ListValue = require( './ListValue.vue' ),
-	ZKey = require( './ZKey.vue' ),
-	SelectZobject = require( './SelectZobject.vue' ),
-	ZMultiLingualString = require( './ZMultiLingualString.vue' ),
+var Constants = require( '../Constants.js' ),
+	ZObject = require( './ZObject.vue' ),
+	ZObjectSelector = require( './ZObjectSelector.vue' ),
+	ZObjectKeyInput = require( './ZObjectKeyInput.vue' ),
+	ZList = require( './types/ZList.vue' ),
+	ZMultilingualString = require( './types/ZMultilingualString.vue' ),
 	mapState = require( 'vuex' ).mapState,
 	mapMutations = require( 'vuex' ).mapMutations,
 	mapActions = require( 'vuex' ).mapActions;
 
 module.exports = {
-	name: 'OtherKeys',
+	name: 'ZObjectKeyList',
 	components: {
-		'full-zobject': FullZobject,
-		'list-value': ListValue,
-		'zkey-input': ZKey,
-		'select-zobject': SelectZobject,
-		'multi-lingual-string': ZMultiLingualString
+		'z-object': ZObject,
+		'z-object-selector': ZObjectSelector,
+		'z-object-key-input': ZObjectKeyInput,
+		'z-list': ZList,
+		'z-multilingual-string': ZMultilingualString
 	},
 	props: {
 		zobject: {

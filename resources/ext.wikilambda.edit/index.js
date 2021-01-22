@@ -7,23 +7,24 @@
 ( function () {
 	var Vue = require( 'vue' ),
 		store = require( './store/index.js' ),
-		ZobjectEditor = require( './ZobjectEditor.vue' ),
-		ZobjectViewer = require( './ZobjectViewer.vue' );
+		ZObjectEditor = require( './components/ZObjectEditor.vue' ),
+		ZObjectViewer = require( './components/ZObjectViewer.vue' );
 
 	// eslint-disable-next-line no-new
 	new Vue( {
 		el: '#ext-wikilambda-editor',
 		store: store,
 		render: function ( h ) {
-			return h( ZobjectEditor );
+			return h( ZObjectEditor );
 		}
 	} );
+
 	// eslint-disable-next-line no-new
 	new Vue( {
 		el: '#ext-wikilambda-view',
 		store: store,
 		render: function ( h ) {
-			return h( ZobjectViewer );
+			return h( ZObjectViewer );
 		}
 	} );
 }() );

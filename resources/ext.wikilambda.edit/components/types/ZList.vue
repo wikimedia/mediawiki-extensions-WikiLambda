@@ -14,39 +14,39 @@
 				>
 					{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 				</button>
-				<select-zobject v-if="listTypes[index] === 'new'"
+				<z-object-selector v-if="listTypes[index] === 'new'"
 					:viewmode="viewmode"
 					:type="Constants.Z_TYPE"
 					:placeholder="$i18n( 'wikilambda-typeselector-label' )"
 					@input="setNewType($event, index)"
-				></select-zobject>
+				></z-object-selector>
 				<input v-else-if="listTypes[index] === Constants.Z_STRING"
 					class="ext-wikilambda-zstring"
 					:value="item"
 					@input="updateStringValue($event, index)"
 				>
-				<select-zobject v-else-if="listTypes[index] === Constants.Z_REFERENCE"
+				<z-object-selector v-else-if="listTypes[index] === Constants.Z_REFERENCE"
 					:viewmode="viewmode"
 					:placeholder="$i18n( 'wikilambda-zobjectselector-label' )"
 					:selected-id="item"
 					@input="updateValue($event, index)"
-				></select-zobject>
-				<list-value v-else-if="listTypes[index] === Constants.Z_LIST"
+				></z-object-selector>
+				<z-list v-else-if="listTypes[index] === Constants.Z_LIST"
 					:list="item"
 					:viewmode="viewmode"
 					@input="updateValue($event, index)"
-				></list-value>
-				<multi-lingual-string v-else-if="listTypes[index] === Constants.Z_MULTILINGUALSTRING"
+				></z-list>
+				<z-multilingual-string v-else-if="listTypes[index] === Constants.Z_MULTILINGUALSTRING"
 					:mls-object="item"
 					:viewmode="viewmode"
 					@input="updateValue($event, index)"
-				></multi-lingual-string>
-				<full-zobject v-else
+				></z-multilingual-string>
+				<z-object v-else
 					:zobject="item"
 					:persistent="false"
 					:viewmode="viewmode"
 					@input="updateValue($event, index)"
-				></full-zobject>
+				></z-object>
 			</li>
 			<li v-if="!viewmode">
 				<button :title="tooltipAddListItem" @click="addNewItem">
@@ -58,13 +58,13 @@
 </template>
 
 <script>
-var Constants = require( './Constants.js' ),
-	FullZobject = require( './FullZobject.vue' ),
-	SelectZobject = require( './SelectZobject.vue' ),
-	ZMultiLingualString = require( './ZMultiLingualString.vue' );
+var Constants = require( '../../Constants.js' ),
+	ZObject = require( '../ZObject.vue' ),
+	ZObjectSelector = require( '../ZObjectSelector.vue' ),
+	ZMultilingualString = require( './ZMultilingualString.vue' );
 
 module.exports = {
-	name: 'list-value',
+	name: 'ZList',
 	props: [ 'list', 'viewmode' ],
 	data: function () {
 		var listTypes = this.list.map( function ( item ) {
@@ -121,9 +121,9 @@ module.exports = {
 		}
 	},
 	components: {
-		'full-zobject': FullZobject,
-		'select-zobject': SelectZobject,
-		'multi-lingual-string': ZMultiLingualString
+		'z-object': ZObject,
+		'z-object-selector': ZObjectSelector,
+		'z-multilingual-string': ZMultilingualString
 	}
 };
 </script>

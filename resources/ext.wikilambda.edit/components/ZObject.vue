@@ -16,32 +16,32 @@
 		</span>
 		<span v-else>
 			<span v-if="viewmode"> {{ typeLabel }} ({{ type }})</span>
-			<select-zobject v-else
+			<z-object-selector v-else
 				:viewmode="viewmode"
 				:type="Constants.Z_TYPE"
 				:placeholder="$i18n( 'wikilambda-typeselector-label' )"
 				:selected-id="type"
 				@input="updateType($event)"
-			></select-zobject>
+			></z-object-selector>
 		</span>
-		<other-keys :zobject="zobject"
+		<z-object-key-list :zobject="zobject"
 			:viewmode="viewmode"
 			ref="otherKeys"
 			@input="updateZobject"
-		></other-keys>
+		></z-object-key-list>
 	</div>
 </template>
 
 <script>
-var Constants = require( './Constants.js' ),
-	SelectZobject = require( './SelectZobject.vue' ),
+var Constants = require( '../Constants.js' ),
+	ZObjectSelector = require( './ZObjectSelector.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapState = require( 'vuex' ).mapState;
 
 module.exports = {
-	name: 'FullZobject',
+	name: 'ZObject',
 	components: {
-		'select-zobject': SelectZobject
+		'z-object-selector': ZObjectSelector
 	},
 	props: [ 'zobject', 'persistent', 'viewmode' ],
 	data: function () {
@@ -111,8 +111,8 @@ module.exports = {
 			}
 		}
 	),
-	beforeCreate: function () { // Need to delay require of OtherKeys to avoid loop
-		this.$options.components[ 'other-keys' ] = require( './OtherKeys.vue' );
+	beforeCreate: function () { // Need to delay require of ZObjectKeyList to avoid loop
+		this.$options.components[ 'z-object-key-list' ] = require( './ZObjectKeyList.vue' );
 	},
 	mounted: function () {
 		// Fetch the information of the zid (and relevant

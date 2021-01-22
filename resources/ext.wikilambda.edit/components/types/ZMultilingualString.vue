@@ -51,10 +51,10 @@
 </template>
 
 <script>
-var Constants = require( './Constants.js' );
+var Constants = require( '../../Constants.js' );
 
 module.exports = {
-	name: 'ZMultiLingualString',
+	name: 'ZMultilingualString',
 	props: [ 'mlsObject', 'viewmode' ],
 	computed: {
 		monolingualStrings: {

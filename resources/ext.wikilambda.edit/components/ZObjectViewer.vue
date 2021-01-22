@@ -7,18 +7,18 @@
 	-->
 	<!-- TODO: Add a loading indicator, once T254695 is done upstream. -->
 	<div id="ext-wikilambda-view">
-		<full-zobject :zobject="zobject"
+		<z-object :zobject="zobject"
 			:persistent="true"
 			:viewmode="true"
-		></full-zobject>
+		></z-object>
 	</div>
 </template>
 
 <script>
-var FullZobject = require( './FullZobject.vue' );
+var ZObject = require( './ZObject.vue' );
 
 module.exports = {
-	name: 'ZobjectViewer',
+	name: 'ZObjectViewer',
 	data: function () {
 		var editingData = mw.config.get( 'extWikilambdaEditingData' ),
 			zobject = editingData.zobject;
@@ -28,7 +28,7 @@ module.exports = {
 		};
 	},
 	components: {
-		'full-zobject': FullZobject
+		'z-object': ZObject
 	}
 };
 </script>

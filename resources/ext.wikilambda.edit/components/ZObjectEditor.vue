@@ -7,11 +7,11 @@
 	-->
 	<!-- TODO: Add a loading indicator, once T254695 is done upstream. -->
 	<div id="ext-wikilambda-editor">
-		<full-zobject :zobject="zobject"
+		<z-object :zobject="zobject"
 			:persistent="true"
 			:viewmode="false"
 			@input="updateZobject"
-		></full-zobject>
+		></z-object>
 		<div>
 			<!-- TODO: Replace this with a full save dialog (copywarn, IPwarn, minor edit box, …)? -->
 			<label for="summary"> {{ $i18n( 'wikilambda-summarylabel' ) }} </label>
@@ -28,15 +28,15 @@
 </template>
 
 <script>
-var Constants = require( './Constants.js' ),
-	FullZobject = require( './FullZobject.vue' ),
+var Constants = require( '../Constants.js' ),
+	ZObject = require( './ZObject.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapMutations = require( 'vuex' ).mapMutations;
 
 module.exports = {
-	name: 'ZobjectEditor',
+	name: 'ZObjectEditor',
 	components: {
-		'full-zobject': FullZobject
+		'z-object': ZObject
 	},
 	data: function () {
 		return {

@@ -32,7 +32,7 @@
 </template>
 
 <script>
-var Constants = require( './Constants.js' ),
+var Constants = require( '../Constants.js' ),
 	WbmiAutocompleteSearchInput = require( './base/AutocompleteSearchInput.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapState = require( 'vuex' ).mapState,
@@ -40,7 +40,7 @@ var Constants = require( './Constants.js' ),
 	mapMutations = require( 'vuex' ).mapMutations;
 
 module.exports = {
-	name: 'SelectZobject',
+	name: 'ZObjectSelector',
 	props: {
 		viewmode: {
 			type: Boolean,

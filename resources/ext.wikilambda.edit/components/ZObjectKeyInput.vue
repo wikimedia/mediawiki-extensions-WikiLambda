@@ -16,7 +16,7 @@
 <script>
 
 module.exports = {
-	name: 'ZKey',
+	name: 'ZObjectKeyInput',
 	data: function () {
 		return {
 			zkey: '',
