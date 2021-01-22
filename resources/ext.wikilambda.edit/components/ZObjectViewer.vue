@@ -19,6 +19,9 @@ var ZObject = require( './ZObject.vue' );
 
 module.exports = {
 	name: 'ZObjectViewer',
+	components: {
+		'z-object': ZObject
+	},
 	data: function () {
 		var editingData = mw.config.get( 'extWikilambdaEditingData' ),
 			zobject = editingData.zobject;
@@ -26,9 +29,6 @@ module.exports = {
 		return {
 			zobject: zobject
 		};
-	},
-	components: {
-		'z-object': ZObject
 	}
 };
 </script>

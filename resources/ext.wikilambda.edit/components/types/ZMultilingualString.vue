@@ -56,6 +56,16 @@ var Constants = require( '../../Constants.js' );
 module.exports = {
 	name: 'ZMultilingualString',
 	props: [ 'mlsObject', 'viewmode' ],
+	data: function () {
+		var allLangs = mw.config.get( 'extWikilambdaEditingData' ).zlanguages,
+			tooltipRemoveLang = this.$i18n( 'wikilambda-editor-label-removelanguage-tooltip' );
+
+		return {
+			Constants: Constants,
+			allLangs: allLangs,
+			tooltipRemoveLang: tooltipRemoveLang
+		};
+	},
 	computed: {
 		monolingualStrings: {
 			get: function () {
@@ -114,16 +124,6 @@ module.exports = {
 			this.mlsObject[ Constants.Z_MULTILINGUALSTRING_VALUE ].splice( index, 1 );
 			this.$emit( 'input', this.mlsObject );
 		}
-	},
-	data: function () {
-		var allLangs = mw.config.get( 'extWikilambdaEditingData' ).zlanguages,
-			tooltipRemoveLang = this.$i18n( 'wikilambda-editor-label-removelanguage-tooltip' );
-
-		return {
-			Constants: Constants,
-			allLangs: allLangs,
-			tooltipRemoveLang: tooltipRemoveLang
-		};
 	}
 };
 </script>

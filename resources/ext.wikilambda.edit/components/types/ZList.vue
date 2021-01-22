@@ -65,6 +65,11 @@ var Constants = require( '../../Constants.js' ),
 
 module.exports = {
 	name: 'ZList',
+	components: {
+		'z-object': ZObject,
+		'z-object-selector': ZObjectSelector,
+		'z-multilingual-string': ZMultilingualString
+	},
 	props: [ 'list', 'viewmode' ],
 	data: function () {
 		var listTypes = this.list.map( function ( item ) {
@@ -119,11 +124,6 @@ module.exports = {
 			this.$set( this.list, index, event.target.value );
 			this.$emit( 'input', this.list );
 		}
-	},
-	components: {
-		'z-object': ZObject,
-		'z-object-selector': ZObjectSelector,
-		'z-multilingual-string': ZMultilingualString
 	}
 };
 </script>

@@ -41,6 +41,9 @@ var Constants = require( '../Constants.js' ),
 
 module.exports = {
 	name: 'ZObjectSelector',
+	components: {
+		'wbmi-autocomplete-search-input': WbmiAutocompleteSearchInput
+	},
 	props: {
 		viewmode: {
 			type: Boolean,
@@ -58,9 +61,6 @@ module.exports = {
 			type: [ String, Object ],
 			default: ''
 		}
-	},
-	components: {
-		'wbmi-autocomplete-search-input': WbmiAutocompleteSearchInput
 	},
 	data: function () {
 		return {
