@@ -43,7 +43,22 @@ module.exports = {
 	components: {
 		'z-object-selector': ZObjectSelector
 	},
-	props: [ 'zobject', 'persistent', 'viewmode' ],
+	props: {
+		zobject: {
+			type: Object,
+			default: function () {
+				return {};
+			}
+		},
+		persistent: {
+			type: Boolean,
+			required: true
+		},
+		viewmode: {
+			type: Boolean,
+			required: true
+		}
+	},
 	data: function () {
 		return {
 			Constants: Constants

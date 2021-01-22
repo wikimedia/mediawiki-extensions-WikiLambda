@@ -55,7 +55,16 @@ var Constants = require( '../../Constants.js' );
 
 module.exports = {
 	name: 'ZMultilingualString',
-	props: [ 'mlsObject', 'viewmode' ],
+	props: {
+		mlsObject: {
+			type: Object,
+			required: true
+		},
+		viewmode: {
+			type: Boolean,
+			required: true
+		}
+	},
 	data: function () {
 		var allLangs = mw.config.get( 'extWikilambdaEditingData' ).zlanguages,
 			tooltipRemoveLang = this.$i18n( 'wikilambda-editor-label-removelanguage-tooltip' );

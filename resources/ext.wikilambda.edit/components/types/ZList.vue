@@ -70,7 +70,18 @@ module.exports = {
 		'z-object-selector': ZObjectSelector,
 		'z-multilingual-string': ZMultilingualString
 	},
-	props: [ 'list', 'viewmode' ],
+	props: {
+		list: {
+			type: Array,
+			default: function () {
+				return [];
+			}
+		},
+		viewmode: {
+			type: Boolean,
+			required: true
+		}
+	},
 	data: function () {
 		var listTypes = this.list.map( function ( item ) {
 			var type = Constants.Z_STRING;
