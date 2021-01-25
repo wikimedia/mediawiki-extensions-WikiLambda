@@ -66,13 +66,9 @@ module.exports = {
 		}
 	},
 	data: function () {
-		var allLangs = mw.config.get( 'extWikilambdaEditingData' ).zlanguages,
-			tooltipRemoveLang = this.$i18n( 'wikilambda-editor-label-removelanguage-tooltip' );
-
 		return {
 			Constants: Constants,
-			allLangs: allLangs,
-			tooltipRemoveLang: tooltipRemoveLang
+			allLangs: {}
 		};
 	},
 	computed: {
@@ -84,6 +80,9 @@ module.exports = {
 				}
 				return monoStrings;
 			}
+		},
+		tooltipRemoveLang: function () {
+			return this.$i18n( 'wikilambda-editor-label-removelanguage-tooltip' );
 		},
 		selectedLang: {
 			get: function () {
@@ -133,6 +132,9 @@ module.exports = {
 			this.mlsObject[ Constants.Z_MULTILINGUALSTRING_VALUE ].splice( index, 1 );
 			this.$emit( 'input', this.mlsObject );
 		}
+	},
+	created: function () {
+		this.allLangs = mw.config.get( 'extWikilambdaEditingData' ).zlanguages;
 	}
 };
 </script>

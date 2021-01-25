@@ -83,25 +83,18 @@ module.exports = {
 		}
 	},
 	data: function () {
-		var listTypes = this.list.map( function ( item ) {
-			var type = Constants.Z_STRING;
-			if ( typeof ( item ) === 'object' ) {
-				if ( Array.isArray( item ) ) {
-					type = Constants.Z_LIST;
-				} else {
-					type = item[ Constants.Z_OBJECT_TYPE ];
-				}
-			} else if ( item.match( /^Z\d+$/ ) ) {
-				type = Constants.Z_REFERENCE;
-			}
-			return type;
-		} );
 		return {
 			Constants: Constants,
-			listTypes: listTypes,
-			tooltipRemoveListItem: this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' ),
-			tooltipAddListItem: this.$i18n( 'wikilambda-editor-zlist-additem-tooltip' )
+			listTypes: []
 		};
+	},
+	computed: {
+		tooltipRemoveListItem: function () {
+			return this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' );
+		},
+		tooltipAddListItem: function () {
+			this.$i18n( 'wikilambda-editor-zlist-additem-tooltip' );
+		}
 	},
 	methods: {
 		addNewItem: function ( /* event */ ) {
@@ -135,6 +128,21 @@ module.exports = {
 			this.$set( this.list, index, event.target.value );
 			this.$emit( 'input', this.list );
 		}
+	},
+	created: function () {
+		this.listTypes = this.list.map( function ( item ) {
+			var type = Constants.Z_STRING;
+			if ( typeof ( item ) === 'object' ) {
+				if ( Array.isArray( item ) ) {
+					type = Constants.Z_LIST;
+				} else {
+					type = item[ Constants.Z_OBJECT_TYPE ];
+				}
+			} else if ( item.match( /^Z\d+$/ ) ) {
+				type = Constants.Z_REFERENCE;
+			}
+			return type;
+		} );
 	}
 };
 </script>

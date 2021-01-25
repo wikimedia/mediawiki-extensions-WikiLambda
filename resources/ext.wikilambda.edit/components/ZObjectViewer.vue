@@ -23,12 +23,13 @@ module.exports = {
 		'z-object': ZObject
 	},
 	data: function () {
-		var editingData = mw.config.get( 'extWikilambdaEditingData' ),
-			zobject = editingData.zobject;
-
 		return {
-			zobject: zobject
+			zobject: {}
 		};
+	},
+	created: function () {
+		var editingData = mw.config.get( 'extWikilambdaEditingData' );
+		this.zobject = editingData.zobject;
 	}
 };
 </script>
