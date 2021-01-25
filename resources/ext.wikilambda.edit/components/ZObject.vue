@@ -26,7 +26,7 @@
 		</span>
 		<z-object-key-list :zobject="zobject"
 			:viewmode="viewmode"
-			ref="otherKeys"
+			ref="keyList"
 			@input="updateZobject"
 		></z-object-key-list>
 	</div>
@@ -61,7 +61,8 @@ module.exports = {
 	},
 	data: function () {
 		return {
-			Constants: Constants
+			Constants: Constants,
+			lastTypeKeys: []
 		};
 	},
 	computed: $.extend( {},
@@ -107,21 +108,23 @@ module.exports = {
 				this.$emit( 'input', this.zobject );
 			},
 			updateType: function ( newType ) {
-				var api = new mw.Api(),
-					thisComponent = this,
-					keys;
+				var self = this,
+					newKeys;
 
-				api.get( {
-					action: 'wikilambda_fetch',
-					format: 'json',
-					zids: newType
-				} ).done( function ( data ) {
-					keys = JSON.parse( data[ newType ].wikilambda_fetch )[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
-					keys.forEach( function ( key ) {
-						thisComponent.$refs.otherKeys.addNewKey( key[ Constants.Z_KEY_ID ] );
+				this.lastTypeKeys.forEach( function ( lastTypeKey ) {
+					self.$refs.keyList.removeEntry( lastTypeKey );
+				} );
+				this.lastTypeKeys = [];
+
+				this.fetchZKeys( {
+					zids: [ newType ],
+					zlangs: this.zLangs
+				} ).done( function () {
+					newKeys = self.zKeys[ newType ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
+					newKeys.forEach( function ( newKey ) {
+						self.$refs.keyList.addNewKey( newKey[ Constants.Z_KEY_ID ] );
+						self.lastTypeKeys.push( newKey[ Constants.Z_KEY_ID ] );
 					} );
-					thisComponent.zobject[ Constants.Z_OBJECT_TYPE ] = newType;
-					thisComponent.$emit( 'input', thisComponent.zobject );
 				} );
 			}
 		}
