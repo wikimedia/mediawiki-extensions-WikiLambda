@@ -114,7 +114,7 @@ class ZPersistentObject extends JsonContent {
 			self::$revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
 		}
 
-		$revision = self::$revisionStore->getRevisionById( $title->getLatestRevID() );
+		$revision = self::$revisionStore->getRevisionByTitle( $title );
 
 		if ( !$revision ) {
 			return false;
