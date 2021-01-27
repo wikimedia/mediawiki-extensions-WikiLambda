@@ -45,9 +45,14 @@ class ZObject {
 	 * @param string $type ZReference for the specific ZType that is being instantiated (e.g. 'Z3').
 	 */
 	public function __construct( string $type ) {
-		$this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] = ZTypeRegistry::singleton()->getZObjectTypeFromKey( $type );
-		// TODO: If this is a wiki-defined type, fetch the extra arguments passed and affix
+		// If this is a wiki-defined type, fetch the extra arguments passed and affix
 		// them to the $data representation.
+		$args = func_get_args();
+		if ( count( $args ) === 1 ) {
+			$this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] = ZTypeRegistry::singleton()->getZObjectTypeFromKey( $type );
+		} else {
+			$this->data = [ ZTypeRegistry::Z_OBJECT_TYPE => $type ] + $args[ 1 ];
+		}
 	}
 
 	/**

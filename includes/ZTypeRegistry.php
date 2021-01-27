@@ -137,7 +137,7 @@ class ZTypeRegistry {
 
 		$title = Title::newFromText( $key, NS_ZOBJECT );
 
-		// TODO: This is quite exceptionally expensive. Store this in a metadata DB table, instead of fetching it live?
+		// TODO: This is quite expensive. Store this in a metadata DB table, instead of fetching it live?
 		$zObject = ZPersistentObject::getObjectFromDB( $title );
 
 		if ( $zObject === false ) {
@@ -149,7 +149,7 @@ class ZTypeRegistry {
 		}
 
 		// TODO: Do we want to always store English? Or the wiki's contentLanguage? Or something else?
-		$this->internalRegisterType( $key, $zObject->getLabel( new \LanguageEn() ) );
+		$this->internalRegisterType( $key, $zObject->getLabels()->getStringForLanguageCode( 'en' ) );
 
 		return true;
 	}

@@ -1,0 +1,180 @@
+<?php
+
+/**
+ * WikiLambda integration test suite for generic ZObjects' re-use of in-built
+ * and bespoke ZTypes.
+ *
+ * @copyright 2020 WikiLambda team; see AUTHORS.txt
+ * @license MIT
+ */
+
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
+
+use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
+use Revision;
+use Title;
+use WikiPage;
+
+/**
+ * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
+ * @group Database
+ */
+class GenericZObjectsTest extends \MediaWikiIntegrationTestCase {
+
+	/** @var string[] */
+	private $titlesTouched = [];
+
+	/**
+	 * This test proves that an on-wiki implementation can be made of a PHP-backed, built-in ZType.
+	 *
+	 * @coversNothing
+	 */
+	public function testInstanceOfZString() {
+		$instanceTitleText = 'Z90';
+		$instanceContent = <<<EOT
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z0",
+	"Z2K2": {
+		"Z1K1": "Z6",
+		"Z6K1": "Tést content!"
+	},
+	"Z2K3": { "Z1K1": "Z12", "Z12K1": [] }
+}
+EOT;
+
+		$instanceStatus = $this->editPage(
+			$instanceTitleText, $instanceContent, 'Test ZString instance', NS_ZOBJECT
+		);
+		$this->titlesTouched[] = $instanceTitleText;
+		$this->assertTrue( $instanceStatus->isOK() );
+		$instanceTitle = Title::newFromText( $instanceTitleText, NS_ZOBJECT );
+		$this->assertTrue( $instanceTitle->exists() );
+		$this->assertTrue( $instanceTitle->getContentModel() === CONTENT_MODEL_ZOBJECT );
+
+		// Test content is correct.
+		$instanceWikiPage = WikiPage::factory( $instanceTitle );
+		$instance = $instanceWikiPage->getContent( Revision::RAW );
+		$this->assertTrue( $instance instanceof ZPersistentObject );
+		$this->assertTrue( $instance->isValid() );
+
+		// Because ZString is built-in type, it gets special native treatment, unlike a DB-provided type, so this is a
+		// ZString and not a ZObject unlike the 'normal' code path.
+		$innerObject = $instance->getInnerZObject();
+		$this->assertTrue( $innerObject->isValid() );
+
+		$value = $innerObject->getZValue();
+		$this->assertEquals( "Tést content!", $value );
+	}
+
+	/**
+	 * This test proves that an on-wiki implementation can be made of a PHP-backed but non-built-in ZType.
+	 *
+	 * @coversNothing
+	 */
+	public function testInstanceOfZTestType() {
+		// Create ZTestType (Z111)
+		$baseTypeTitleText = ZTestType::TEST_ZID;
+		$baseTypeStatus = $this->editPage(
+			$baseTypeTitleText, ZTestType::TEST_ENCODING, 'Create ZTestType', NS_ZOBJECT
+		);
+		$this->titlesTouched[] = $baseTypeTitleText;
+		$this->assertTrue( $baseTypeStatus->isOK() );
+		$baseTypeTitle = Title::newFromText( $baseTypeTitleText, NS_ZOBJECT );
+		$this->assertTrue( $baseTypeTitle->exists() );
+
+		$registry = ZTypeRegistry::singleton();
+		$this->assertTrue(
+			$registry->isZObjectKeyKnown( ZTestType::TEST_ZID ),
+			'ZTestType now known to ZTypeRegistry'
+		);
+		$this->assertSame(
+			$registry->getZObjectTypeFromKey( ZTestType::TEST_ZID ),
+			'Demonstration type',
+			'ZTestType name known to ZTypeRegistry'
+		);
+
+		// Create a valid instance of ZTestType (Z112)
+		$instanceTitleText = 'Z112';
+		$instanceContent = <<<EOT
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z0",
+	"Z2K2": {
+		"Z1K1": "Z111",
+		"Z111K1": "Tést",
+		"Z111K2": "content!"
+	},
+	"Z2K3": { "Z1K1": "Z12", "Z12K1": [] }
+}
+EOT;
+
+		$instanceStatus = $this->editPage(
+			$instanceTitleText, $instanceContent, 'Test ZTestType instance', NS_ZOBJECT
+		);
+		$this->titlesTouched[] = $instanceTitleText;
+		$this->assertTrue( $instanceStatus->isOK() );
+		$instanceTitle = Title::newFromText( $instanceTitleText, NS_ZOBJECT );
+		$this->assertTrue( $instanceTitle->exists() );
+		$this->assertTrue( $instanceTitle->getContentModel() === CONTENT_MODEL_ZOBJECT );
+
+		// Test content is correct.
+		$instanceWikiPage = WikiPage::factory( $instanceTitle );
+		$instance = $instanceWikiPage->getContent( Revision::RAW );
+		$this->assertTrue( $instance instanceof ZPersistentObject );
+		$this->assertTrue( $instance->isValid() );
+
+		// Though ZTestType is a PHP-provided type, it's not marked as built-in, so it falls back to a ZObject
+		// like a DB-provided type would
+		$innerObject = $instance->getInnerZObject();
+		$this->assertTrue( $innerObject->isValid() );
+
+		$value = $innerObject->getZValue();
+		$this->assertCount( 3, $value );
+		$this->assertArrayHasKey( 'Z1K1', $value );
+		$this->assertEquals( 'Z111', $value[ 'Z1K1' ] );
+		$this->assertArrayHasKey( 'Z111K1', $value );
+		$this->assertEquals( 'Tést', $value[ 'Z111K1' ] );
+		$this->assertArrayHasKey( 'Z111K2', $value );
+		$this->assertEquals( 'content!', $value[ 'Z111K2' ] );
+
+		// Create an invalid instance of ZTestType (Z113)
+		$invalidInstanceTitleText = 'Z113';
+		$invalidInstanceContent = <<<EOT
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z0",
+	"Z2K2": {
+		"Z1K1": "Z111",
+		"Z111K1": { "Z1K1": "Z10", "Z10K1": "Invalid", "Z10K2": [ "content", "is", "invalid!" ] },
+		"Z111K2": "Valid content!"
+	},
+	"Z2K3": { "Z1K1": "Z12", "Z12K1": [] }
+}
+EOT;
+
+		$invalidInstanceStatus = $this->editPage(
+			$invalidInstanceTitleText, $invalidInstanceContent, 'Invalid instance of ZTestType', NS_ZOBJECT
+		);
+		$this->titlesTouched[] = $invalidInstanceTitleText; // Just for safety; this should create.
+		$this->assertFalse( $invalidInstanceStatus->isOK() );
+		$invalidInstanceTitle = Title::newFromText( $invalidInstanceTitleText, NS_ZOBJECT );
+		$this->assertFalse( $invalidInstanceTitle->exists() );
+	}
+
+	protected function tearDown() : void {
+		// Cleanup the pages we touched.
+		$sysopUser = $this->getTestSysop()->getUser();
+
+		foreach ( $this->titlesTouched as $titleString ) {
+			$title = Title::newFromText( $titleString, NS_ZOBJECT );
+			$page = WikiPage::factory( $title );
+			$page->doDeleteArticleReal( $title, $sysopUser );
+		}
+
+		parent::tearDown();
+	}
+
+}

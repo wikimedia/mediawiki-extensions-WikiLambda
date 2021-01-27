@@ -18,6 +18,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use Title;
 
 class ZObjectFactory {
 
@@ -80,6 +81,52 @@ class ZObjectFactory {
 		$registry = ZTypeRegistry::singleton();
 		if ( !$registry->isZObjectKeyKnown( $type ) ) {
 			throw new \InvalidArgumentException( "ZObject record type '$type' not recognised." );
+		}
+
+		// Wiki-provided type handling.
+		if ( !$registry->isZTypeBuiltIn( $type ) ) {
+			// TODO: This is quite expensive. Store this in a metadata DB table, instead of fetching it live?
+			$targetTitle = Title::newFromText( $type, NS_ZOBJECT );
+
+			if ( !$targetTitle->exists() ) {
+				throw new InvalidArgumentException(
+					"Couldn't create ZObject based on type '$type'; not built-in, but no such page on wiki."
+				);
+			}
+
+			$targetObject = ZPersistentObject::getObjectFromDB( $targetTitle );
+
+			if ( !$targetObject ) {
+				throw new InvalidArgumentException(
+					"Couldn't create ZObject based on type '$type'; page isn't returned by the wiki."
+				);
+			}
+
+			// We know this is a ZType, because it passed ZTypeRegistry::isZObjectKeyKnown above.
+			$targetType = $targetObject->getInnerZObject();
+			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZType $targetType';
+			foreach ( $targetType->getTypeKeys() as $key ) {
+				// Validate the object definition against its specification in the database
+				$keyId = $key->getKeyId();
+				if ( !array_key_exists( $keyId, $objectVars ) ) {
+					throw new InvalidArgumentException(
+						"Couldn't create ZObject based on type '$type'; key '$keyId' isn't set."
+					);
+				}
+
+				// Validate the provided key values for built-ins using local PHP code
+				$keyType = $key->getKeyType();
+				if ( $registry->isZTypeBuiltIn( $keyType ) ) {
+					if ( !self::validateKeyValue( $keyId, $keyType, $objectVars[ $keyId ] ) ) {
+						throw new InvalidArgumentException(
+							"Couldn't create ZObject based on type '$type'; key '$keyId' isn't a valid '$keyType'."
+						);
+					}
+				} else {
+					// TODO: Validate the provided key values for bespokes using FunctionEvaluator service
+				}
+			}
+			return new ZObject( $type, $objectVars );
 		}
 
 		$typeName = $registry->getZObjectTypeFromKey( $type );
@@ -298,6 +345,30 @@ class ZObjectFactory {
 					ZTypeRegistry::Z_MULTILINGUALSTRING,
 					$return[ ZTypeRegistry::Z_KEY_LABEL ]
 				);
+
+				return self::spliceReturn( $return, $type );
+
+			case ZTypeRegistry::Z_STRING:
+				if ( is_string( $value ) ) {
+					return $value;
+				}
+
+				if ( is_object( $value ) ) {
+					if ( $value instanceof ZString ) {
+						return $value;
+					}
+					$return = get_object_vars( $value );
+				} else {
+					$return = $value;
+				}
+
+				if (
+					!is_array( $return )
+					|| !array_key_exists( ZTypeRegistry::Z_STRING_VALUE, $return )
+					|| !is_string( $return[ ZTypeRegistry::Z_STRING_VALUE ] )
+				) {
+					break;
+				}
 
 				return self::spliceReturn( $return, $type );
 
