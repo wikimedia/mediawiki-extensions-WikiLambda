@@ -19,7 +19,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 	}
 
 	public function addDBDataOnce() {
-		$this->db = wfGetDB( DB_MASTER );
 		$updater = DatabaseUpdater::newForDB( $this->db );
 		Hooks::createInitialContent( $updater );
 	}
