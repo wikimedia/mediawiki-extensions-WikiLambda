@@ -31,6 +31,16 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::isZTypeBuiltIn
+	 */
+	public function testIsZTypeBuiltIn() {
+		$registry = ZTypeRegistry::singleton();
+
+		$this->assertFalse( $registry->isZTypeBuiltIn( 'Z0' ), "'Z0' is not defined as a built-in." );
+		$this->assertTrue( $registry->isZTypeBuiltIn( ZTypeRegistry::Z_OBJECT ), "'Z1' is defined as a built-in." );
+	}
+
+	/**
 	 * @covers ::getCachedZObjectKeys
 	 */
 	public function testGetCachedZObjectKeys() {

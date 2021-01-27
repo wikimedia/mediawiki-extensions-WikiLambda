@@ -73,6 +73,18 @@ class ZTypeRegistry {
 	public const Z_MULTILINGUALSTRING = 'Z12';
 	public const Z_MULTILINGUALSTRING_VALUE = 'Z12K1';
 
+	private const BUILT_IN_TYPES = [
+		self::Z_OBJECT => 'ZObject',
+		self::Z_PERSISTENTOBJECT => 'ZPersistentObject',
+		self::Z_KEY => 'ZKey',
+		self::Z_TYPE => 'ZType',
+		self::Z_STRING => 'ZString',
+		self::Z_REFERENCE => 'ZReference',
+		self::Z_LIST => 'ZList',
+		self::Z_MONOLINGUALSTRING => 'ZMonoLingualString',
+		self::Z_MULTILINGUALSTRING => 'ZMultiLingualString',
+	];
+
 	/**
 	 * @return ZTypeRegistry
 	 */
@@ -86,17 +98,9 @@ class ZTypeRegistry {
 	}
 
 	private function __construct() {
-		// TODO: The built-in objects should register themselves, except (?) Z1.
-		$this->internalRegisterType( self::Z_OBJECT, 'ZObject' );
-		$this->internalRegisterType( self::Z_PERSISTENTOBJECT, 'ZPersistentObject' );
-		$this->internalRegisterType( self::Z_KEY, 'ZKey' );
-		$this->internalRegisterType( self::Z_TYPE, 'ZType' );
-		$this->internalRegisterType( self::Z_STRING, 'ZString' );
-		$this->internalRegisterType( self::Z_REFERENCE, 'ZReference' );
-		$this->internalRegisterType( self::Z_LIST, 'ZList' );
-
-		$this->internalRegisterType( self::Z_MONOLINGUALSTRING, 'ZMonoLingualString' );
-		$this->internalRegisterType( self::Z_MULTILINGUALSTRING, 'ZMultiLingualString' );
+		foreach ( self::BUILT_IN_TYPES as $zKey => $classname ) {
+			$this->internalRegisterType( $zKey, $classname );
+		}
 	}
 
 	/**
@@ -109,6 +113,17 @@ class ZTypeRegistry {
 	 */
 	public function getCachedZObjectKeys() : array {
 		return array_keys( $this->zObjectTypes );
+	}
+
+	/**
+	 * Whether the provided ZType is 'built-in' to the WikiLambda extension, and thus its validator
+	 * is provided in PHP code.
+	 *
+	 * @param string $key The key of the ZType to check.
+	 * @return bool
+	 */
+	public function isZTypeBuiltIn( string $key ) : bool {
+		return array_key_exists( $key, self::BUILT_IN_TYPES );
 	}
 
 	public function isZObjectKeyCached( string $key ) : bool {
@@ -196,12 +211,10 @@ class ZTypeRegistry {
 		}
 
 		if (
-			$type !== 'ZObject'
-			&& !class_exists( 'MediaWiki\Extension\WikiLambda\ZObjects\\' . $type )
+			$this->isZTypeBuiltIn( $key )
+			&& !class_exists( 'MediaWiki\Extension\WikiLambda\ZObjects\\' . self::BUILT_IN_TYPES[ $key ] )
 		) {
-			// TODO: Decide what we want to do here; do we need to re-model each of the built-in types
-			// (ZList, ZString,…) as ZType implementations on-wiki?
-			// throw new InvalidArgumentException( "ZObject type '$type' not a known class." );
+			throw new InvalidArgumentException( "ZObject type '$key' is built-in, but class '$type' is not found." );
 		}
 
 		$this->zObjectTypes[ $key ] = $type;
