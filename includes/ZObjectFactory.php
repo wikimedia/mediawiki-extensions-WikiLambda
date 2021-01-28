@@ -16,6 +16,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 class ZObjectFactory {
@@ -72,6 +73,10 @@ class ZObjectFactory {
 			throw new \InvalidArgumentException( "ZObject record type '$type' is an invalid key." );
 		}
 
+		if ( $type === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
+			return ZPersistentObject::create( $objectVars );
+		}
+
 		$registry = ZTypeRegistry::singleton();
 		if ( !$registry->isZObjectKeyKnown( $type ) ) {
 			throw new \InvalidArgumentException( "ZObject record type '$type' not recognised." );
@@ -79,28 +84,9 @@ class ZObjectFactory {
 
 		$typeName = $registry->getZObjectTypeFromKey( $type );
 		$typeClass = "MediaWiki\\Extension\\WikiLambda\\ZObjects\\$typeName";
-
-		switch ( $type ) {
-			case ZTypeRegistry::Z_KEY:
-			case ZTypeRegistry::Z_LIST:
-			case ZTypeRegistry::Z_MONOLINGUALSTRING:
-			case ZTypeRegistry::Z_MULTILINGUALSTRING:
-			case ZTypeRegistry::Z_OBJECT:
-			// case ZTypeRegistry::Z_PERSISTENTOBJECT:
-			case ZTypeRegistry::Z_STRING:
-			case ZTypeRegistry::Z_REFERENCE:
-			case ZTypeRegistry::Z_TYPE:
-				$objectDefinition = self::validateObjectStructure( $objectVars, $typeName );
-				return new $typeClass( ...$objectDefinition );
-
-			default:
-				// Magic:
-				// wfDeprecated( '::create for ' . $typeName );
-				return call_user_func(
-					$typeClass . '::create',
-					$objectVars
-				);
-		}
+		$objectDefinition = self::validateObjectStructure( $objectVars, $typeName );
+		// Magic:
+		return new $typeClass( ...$objectDefinition );
 	}
 
 	/**
