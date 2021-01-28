@@ -164,6 +164,118 @@ EOT;
 		$this->assertFalse( $invalidInstanceTitle->exists() );
 	}
 
+	/**
+	 * This test proves that no PHP backing is needed to create an on-wiki  ZType and an on-wiki implementation of it.
+	 *
+	 * NOTE: Fundamentally this is still based on ZString; we don't have a mechanism to define a type in other terms.
+	 *
+	 * @coversNothing
+	 */
+	public function testInstanceOfBespokeNonGeneric() {
+		// Create ZInteger (Z91)
+		$baseTypeTitleText = 'Z91';
+		$baseTypeContent = <<<EOT
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z0",
+	"Z2K2": {
+		"Z1K1": "Z4",
+		"Z4K1": "Z91",
+		"Z4K2": [
+			{
+				"Z1K1": "Z3",
+				"Z3K1": "Z6",
+				"Z3K2": "Z91K1",
+				"Z3K3": { "Z1K1": "Z12", "Z12K1": [] }
+			}
+		],
+		"Z4K3": "Z0"
+	},
+	"Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "ZInteger" } ] }
+}
+EOT;
+
+		$baseTypeStatus = $this->editPage(
+			$baseTypeTitleText, $baseTypeContent, 'Create ZInteger', NS_ZOBJECT
+		);
+		$this->titlesTouched[] = $baseTypeTitleText;
+		$this->assertTrue(
+			$baseTypeStatus->isOK(),
+			'ZInteger creation was successful'
+		);
+
+		$baseTypeTitle = Title::newFromText( $baseTypeTitleText, NS_ZOBJECT );
+		$this->assertTrue(
+			$baseTypeTitle->exists(),
+			'ZInteger page was created in the DB'
+		);
+
+		$registry = ZTypeRegistry::singleton();
+		$this->assertTrue(
+			$registry->isZObjectKeyKnown( 'Z91' ),
+			'ZInteger now known to ZTypeRegistry'
+		);
+		$this->assertSame(
+			$registry->getZObjectTypeFromKey( 'Z91' ),
+			'ZInteger',
+			'ZInteger name known to ZTypeRegistry'
+		);
+
+		// Create a valid instance of ZInteger (Z92)
+		$instanceTitleText = 'Z92';
+		$instanceContent = <<<EOT
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z0",
+	"Z2K2": {
+		"Z1K1": "Z91",
+		"Z91K1": "6"
+	},
+	"Z2K3": { "Z1K1": "Z12", "Z12K1": [] }
+}
+EOT;
+
+		$instanceStatus = $this->editPage(
+			$instanceTitleText, $instanceContent, 'Test ZInteger instance', NS_ZOBJECT
+		);
+		$this->titlesTouched[] = $instanceTitleText;
+		$this->assertTrue(
+			$instanceStatus->isOK(),
+			'ZInteger instance creation was successful'
+		);
+
+		$instanceTitle = Title::newFromText( $instanceTitleText, NS_ZOBJECT );
+		$this->assertTrue(
+			$instanceTitle->exists(),
+			'ZInteger instance page was created in the DB'
+		);
+		$this->assertTrue(
+			$instanceTitle->getContentModel() === CONTENT_MODEL_ZOBJECT,
+			'ZInteger instance comes back as the right content model'
+		);
+
+		// Test content is correct.
+		$instanceWikiPage = WikiPage::factory( $instanceTitle );
+		$instance = $instanceWikiPage->getContent( Revision::RAW );
+		$this->assertTrue(
+			$instance instanceof ZPersistentObject,
+			'ZInteger instance comes back as the right content class'
+		);
+		$this->assertTrue(
+			$instance->isValid(), 'ZInteger instance comes back as a valid ZPO'
+		);
+
+		$innerObject = $instance->getInnerZObject();
+		$this->assertTrue( $innerObject->isValid(), 'ZInteger instance inner object comes back as a valid ZObject' );
+
+		$value = $innerObject->getZValue();
+		$this->assertCount( 2, $value, 'ZInteger instance inner object has the right number of keys' );
+		$this->assertArrayHasKey( 'Z1K1', $value, 'ZInteger instance inner object has the type key' );
+		$this->assertEquals( 'Z91', $value[ 'Z1K1' ], 'ZInteger instance inner object has the right type key' );
+		$this->assertArrayHasKey( 'Z91K1', $value, 'ZInteger instance inner object has the value key' );
+		$this->assertSame( '6', $value[ 'Z91K1' ], 'ZInteger instance inner object has the right value key' );
+	}
+
 	protected function tearDown() : void {
 		// Cleanup the pages we touched.
 		$sysopUser = $this->getTestSysop()->getUser();
