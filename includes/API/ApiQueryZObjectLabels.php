@@ -89,7 +89,11 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 		}
 
 		$suggestions = [];
+		$i = 0;
 		foreach ( $res as $row ) {
+			if ( $i >= $limit ) {
+				break;
+			}
 			$suggestions[] = [
 				'page_namespace' => NS_ZOBJECT,
 				'page_title' => $row->wlzl_zobject_zid,
@@ -100,7 +104,9 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 				'page_content_model' => CONTENT_MODEL_ZOBJECT,
 				'page_lang' => $row->wlzl_language,
 			];
+			$i++;
 		}
+		unset( $i );
 
 		if ( $resultPageSet ) {
 			// FIXME: This needs to be an IResultWrapper, not an array of assoc. objects, irritatingly.
