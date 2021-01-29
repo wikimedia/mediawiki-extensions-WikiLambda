@@ -5,71 +5,36 @@
 		@copyright 2020 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->
-	<ul>
-		<li v-for="(value, key) in otherkeydata" :key="key">
+	<ul class="ext-wikilambda-zobject-key-list">
+		<li v-for="( value, key ) in keyFields" :key="key">
 			<button v-if="!viewmode"
 				:title="tooltipRemoveZObjectKey"
-				@click="removeEntry(key)"
+				@click="removeKey( key )"
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 			</button>
-			<span>{{ zKeyLabels[key] }} ({{ key }}):</span>
-			<z-object-selector v-if="!(key in keyTypes)"
+			<z-object-key
 				:viewmode="viewmode"
-				:type="Constants.Z_TYPE"
-				:placeholder="$i18n( 'wikilambda-typeselector-label' )"
-				@input="setKeyType($event, key)"
-			></z-object-selector>
-			<span v-else-if="isZString( keyTypes[key] )">
-				<span v-if="viewmode">
-					<a v-if="value.match(/^Z\d+$/)" :href="'./ZObject:' + value">
-						{{ value }}
-					</a>
-					<template v-else>{{ value }}</template>
-				</span>
-				<input v-else
-					class="ext-wikilambda-zstring"
-					:value="value"
-					@input="updateStringKey($event, key)"
-				>
-			</span>
-			<z-object-selector v-else-if="isZReference( keyTypes[key] )"
-				:viewmode="viewmode"
-				:selected-id="zobject[key]"
-				:placeholder="$i18n( 'wikilambda-zobjectselector-label' )"
-				@input="updateKey($event, key)"
-			></z-object-selector>
-			<z-list v-else-if="isZList( keyTypes[key] )"
-				:list="zobject[key]"
-				:viewmode="viewmode"
-				@input="updateKey($event, key)"
-			></z-list>
-			<z-multilingual-string v-else-if="isZMultilingualString( keyTypes[key] )"
-				:mls-object="zobject[key]"
-				:viewmode="viewmode"
-				@input="updateKey($event, key)"
-			></z-multilingual-string>
-			<z-object v-else
-				:zobject="zobject[key]"
-				:persistent="false"
-				:viewmode="viewmode"
-				@input="updateKey($event, key)"
-			></z-object>
+				:z-key="key"
+				:z-type="value"
+				:zobject="zobject[ key ]"
+				@type-change="onTypeChange( $event, key )"
+				@input="onValueChange( $event, key )"
+			>
+			</z-object-key>
 		</li>
+
+		<!-- Add new key -->
 		<li v-if="!viewmode">
 			{{ $i18n( 'wikilambda-editor-zobject-addkey' ) }}
-			<z-object-key-input @change="addNewKey($event)"></z-object-key-input>
+			<z-object-key-input @change="addKey"></z-object-key-input>
 		</li>
 	</ul>
 </template>
 
 <script>
 var Constants = require( '../Constants.js' ),
-	ZObject = require( './ZObject.vue' ),
-	ZObjectSelector = require( './ZObjectSelector.vue' ),
 	ZObjectKeyInput = require( './ZObjectKeyInput.vue' ),
-	ZList = require( './types/ZList.vue' ),
-	ZMultilingualString = require( './types/ZMultilingualString.vue' ),
 	mapState = require( 'vuex' ).mapState,
 	mapMutations = require( 'vuex' ).mapMutations,
 	mapActions = require( 'vuex' ).mapActions;
@@ -77,11 +42,7 @@ var Constants = require( '../Constants.js' ),
 module.exports = {
 	name: 'ZObjectKeyList',
 	components: {
-		'z-object': ZObject,
-		'z-object-selector': ZObjectSelector,
-		'z-object-key-input': ZObjectKeyInput,
-		'z-list': ZList,
-		'z-multilingual-string': ZMultilingualString
+		'z-object-key-input': ZObjectKeyInput
 	},
 	props: {
 		zobject: {
@@ -97,9 +58,7 @@ module.exports = {
 	},
 	data: function () {
 		return {
-			Constants: Constants,
-			keyTypes: null,
-			otherkeydata: null
+			keyFields: {}
 		};
 	},
 	computed: $.extend( {},
@@ -119,127 +78,185 @@ module.exports = {
 		mapActions( [ 'fetchZKeys' ] ),
 		mapMutations( [ 'addZKeyLabel' ] ),
 		{
-			addNewKey: function ( key ) {
-				if ( !( key in this.otherkeydata ) ) {
-					this.$set( this.otherkeydata, key, '' );
-				}
-				if ( !( key in this.zKeyLabels ) ) {
-					this.addZKeyLabel( {
-						key: key,
-						label: key
-					} );
+			/**
+			 * Checks if the given key should be presented on the key field list.
+			 * The keys excluded are `Z1K1` (Object type) and `Z2K1` (Persistent
+			 * object ID).
+			 *
+			 * @param {string} key
+			 * @return {boolean}
+			 */
+			isKeyField: function ( key ) {
+				return (
+					( key.substring( 0, 3 ) !== Constants.Z_OBJECT_TYPE.substring( 0, 3 ) ) &&
+					( key !== Constants.Z_PERSISTENTOBJECT_ID )
+				);
+			},
+
+			/**
+			 * Adds a new key field to the list.
+			 *
+			 * @param {string} key
+			 */
+			addKey: function ( key ) {
+				// Check if this key is already set in the zobject
+				if ( !( key in this.keyFields ) ) {
+					this.$set( this.keyFields, key, '' );
 				}
 			},
 
-			setKeyType: function ( newType, key ) {
-				var newObj = {};
-				if ( newType === Constants.Z_STRING ) {
-					this.$set( this.zobject, key, '' );
-				} else if ( newType === Constants.Z_LIST ) {
-					this.$set( this.zobject, key, [] );
+			/**
+			 * Returns the initial value for a given ZType.
+			 *
+			 * @param {string} type
+			 * @return {Object|Array|string}
+			 */
+			getInitialValue: function ( type ) {
+				var initialValue;
+
+				if ( type === Constants.Z_STRING ) {
+					initialValue = '';
+				} else if ( type === Constants.Z_LIST ) {
+					initialValue = [];
 				} else {
-					newObj[ Constants.Z_OBJECT_TYPE ] = newType;
-					this.$set( this.zobject, key, newObj );
+					initialValue = {};
+					initialValue[ Constants.Z_OBJECT_TYPE ] = type;
 				}
-				this.$set( this.keyTypes, key, newType );
+				return initialValue;
 			},
 
-			updateKey: function ( value, key ) {
-				this.$set( this.otherkeydata, key, value );
-				this.$set( this.zobject, key, value );
-				this.$emit( 'input', this.zobject );
+			/**
+			 * Sets the type of a ZObject key.
+			 * Fires the event `change` with key and initial
+			 * value for that type so that ZObject updates
+			 * its data.
+			 *
+			 * @param {string} newType
+			 * @param {string} key
+			 * @fires change
+			 */
+			onTypeChange: function ( newType, key ) {
+				// Set the type in the keyFields object
+				this.$set( this.keyFields, key, newType );
+
+				// Emit update to the parent
+				this.$emit( 'change', {
+					key: key,
+					value: this.getInitialValue( newType )
+				} );
 			},
 
-			updateStringKey: function ( event, key ) {
-				this.$set( this.otherkeydata, key, event.target.value );
-				this.$set( this.zobject, key, event.target.value );
-				this.$emit( 'input', this.zobject );
+			/**
+			 * Once the value of a ZObject key changes, it
+			 * fires the event `change` with the key and new
+			 * value of the given key, so that ZObject can update
+			 * its data.
+			 *
+			 * @param {Object|Array|string} newValue
+			 * @param {string} key
+			 * @fires change
+			 */
+			onValueChange: function ( newValue, key ) {
+				this.$emit( 'change', {
+					key: key,
+					value: newValue
+				} );
 			},
 
-			removeEntry: function ( key ) {
-				this.$delete( this.otherkeydata, key );
-				this.$delete( this.zobject, key );
-				this.$delete( this.keyTypes, key );
-				this.$emit( 'input', this.zobject );
+			/**
+			 * Removes one key from the ZObject key list.
+			 * Fires the event `delete` so that ZObject can update
+			 * its data.
+			 *
+			 * @param {string} key
+			 * @fires delete
+			 */
+			removeKey: function ( key ) {
+				this.$delete( this.keyFields, key );
+				this.$emit( 'delete', key );
 			},
 
-			isZReference: function ( key ) {
-				return key === Constants.Z_REFERENCE;
+			/**
+			 * Gets the key type given its initial value.
+			 *
+			 * @param {Object|Array|string} value
+			 * @return {string}
+			 */
+			getKeyType: function ( value ) {
+				if ( typeof ( value ) === 'object' ) {
+					if ( Array.isArray( value ) ) {
+						return Constants.Z_LIST;
+					} else if ( Constants.Z_OBJECT_TYPE in value ) {
+						return value[ Constants.Z_OBJECT_TYPE ];
+					} else {
+						return Constants.Z_OBJECT;
+					}
+				} else {
+					return Constants.Z_STRING;
+				}
 			},
 
-			isZString: function ( key ) {
-				return key === Constants.Z_STRING;
-			},
+			/**
+			 * Looks inside the zobject and fetches the necessary
+			 * ZID to find the labels of its keys and their types.
+			 *
+			 * @return {Array}
+			 */
+			getUnknownZKeys: function () {
+				var unknownZKeys = [],
+					key,
+					zid,
+					type;
 
-			isZList: function ( key ) {
-				return key === Constants.Z_LIST;
-			},
-
-			isZMultilingualString: function ( key ) {
-				return key === Constants.Z_MULTILINGUALSTRING;
+				for ( key in this.keyFields ) {
+					// We fetch only the zids that
+					// are not yet available in the state nor
+					// are being fetched currently
+					zid = key.match( /(Z\d+)/ )[ 1 ];
+					if (
+						( !( zid in this.zKeys ) ) &&
+						( this.fetchingZKeys.indexOf( zid ) === -1 ) &&
+						( unknownZKeys.indexOf( zid ) === -1 )
+					) {
+						unknownZKeys.push( zid );
+					}
+					// We also include the assigned zids of the
+					// existing keys that have not yet been fetched
+					if (
+						( type = this.keyFields[ key ] ) &&
+						( !( type in this.zKeys ) ) &&
+						( this.fetchingZKeys.indexOf( type ) === -1 ) &&
+						( unknownZKeys.indexOf( type ) === -1 )
+					) {
+						unknownZKeys.push( this.keyFields[ key ] );
+					}
+				}
+				return unknownZKeys;
 			}
 		}
 	),
-	created: function () {
-		var otherkeydata = {},
-			keyTypes = {},
-			key,
-			value;
 
-		// We collect otherkeydata, keyTypes and zkeylabels from the zobject prop
-		for ( key in this.zobject ) {
-			if ( ( key.substring( 0, 3 ) === 'Z1K' ) || ( key === 'Z2K1' ) ) {
-				continue;
-			}
-			value = this.zobject[ key ];
-			otherkeydata[ key ] = value;
-			if ( !( key in this.zKeyLabels ) ) {
-				this.addZKeyLabel( {
-					key: key,
-					label: key
-				} );
-			}
-			if ( typeof ( value ) === 'object' ) {
-				if ( Array.isArray( value ) ) {
-					keyTypes[ key ] = 'Z10';
-				} else if ( 'Z1K1' in value ) {
-					keyTypes[ key ] = value.Z1K1;
-				} else {
-					keyTypes[ key ] = 'zobject';
-				}
-			} else {
-				keyTypes[ key ] = 'Z6';
-			}
-		}
-
-		// Set component state
-		this.otherkeydata = otherkeydata;
-		this.keyTypes = keyTypes;
+	beforeCreate: function () {
+		// Need to delay require of ZObjectKey to avoid loop
+		this.$options.components[ 'z-object-key' ] = require( './ZObjectKey.vue' );
 	},
-	mounted: function () {
-		var solvedTypes = [],
-			keyType,
-			type;
 
-		for ( keyType in this.keyTypes ) {
-			type = keyType.match( /(Z\d+)/ )[ 1 ];
-
-			// We fetch only the zids that
-			// are not yet available in the state nor
-			// are being fetched currently
-			if (
-				( !( type in this.zKeys ) ) &&
-				( this.fetchingZKeys.indexOf( type ) === -1 ) &&
-				( solvedTypes.indexOf( type ) === -1 )
-			) {
-				solvedTypes.push( type );
+	created: function () {
+		var key;
+		// We compile all the key fields IDs and types
+		for ( key in this.zobject ) {
+			if ( this.isKeyField( key ) ) {
+				this.$set( this.keyFields, key, this.getKeyType( this.zobject[ key ] ) );
 			}
 		}
+	},
 
+	mounted: function () {
+		var unknownZKeys = this.getUnknownZKeys();
 		// Call the store action to fetch the ZIds if there are any
-		if ( solvedTypes.length > 0 ) {
+		if ( unknownZKeys.length > 0 ) {
 			this.fetchZKeys( {
-				zids: solvedTypes,
+				zids: unknownZKeys,
 				zlangs: this.zLangs
 			} );
 		}

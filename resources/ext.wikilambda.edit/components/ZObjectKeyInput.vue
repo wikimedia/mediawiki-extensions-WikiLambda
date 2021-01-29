@@ -7,8 +7,8 @@
 	-->
 	<input
 		v-model="zkey"
-		class="ext-wikilambda-zkey"
-		:class="{ 'ext-wikilambda-zkey-invalid': isInvalid }"
+		class="ext-wikilambda-zkey-input"
+		:class="{ 'ext-wikilambda-zkey-input-invalid': isInvalid }"
 		@change="updateKey"
 	>
 </template>
@@ -39,11 +39,11 @@ module.exports = {
 </script>
 
 <style lang="less">
-.ext-wikilambda-zkey {
+.ext-wikilambda-zkey-input {
 	background: #ffe;
 }
 
-.ext-wikilambda-zkey-invalid {
+.ext-wikilambda-zkey-input-invalid {
 	background: #fee;
 	border: 2px #f00 solid;
 }

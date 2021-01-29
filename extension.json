@@ -113,6 +113,7 @@
 				"ext.wikilambda.edit/components/ZObject.vue",
 				"ext.wikilambda.edit/components/ZObjectSelector.vue",
 				"ext.wikilambda.edit/components/ZObjectKeyList.vue",
+				"ext.wikilambda.edit/components/ZObjectKey.vue",
 				"ext.wikilambda.edit/components/ZObjectKeyInput.vue",
 				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.vue",
 				"ext.wikilambda.edit/components/base/Button.vue",
@@ -120,6 +121,7 @@
 				"ext.wikilambda.edit/components/base/SelectMenu.vue",
 				"ext.wikilambda.edit/components/types/ZList.vue",
 				"ext.wikilambda.edit/components/types/ZMultilingualString.vue",
+				"ext.wikilambda.edit/components/types/ZString.vue",
 				"lib/icons.js"
 			],
 			"messages": [
