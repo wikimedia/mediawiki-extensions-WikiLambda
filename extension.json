@@ -92,7 +92,8 @@
 				"vue",
 				"vuex",
 				"mediawiki.Title",
-				"mediawiki.api"
+				"mediawiki.api",
+				"es6-promise"
 			],
 			"styles": [
 				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.less",
