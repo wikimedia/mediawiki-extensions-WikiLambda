@@ -1,6 +1,5 @@
 {
-	"extends": [
-		"../../.eslintrc.json",
-		"plugin:vue/recommended"
-	]
+	"rules": {
+		"no-implicit-globals": "off"
+	}
 }
