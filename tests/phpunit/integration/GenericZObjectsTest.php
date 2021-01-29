@@ -4,7 +4,7 @@
  * WikiLambda integration test suite for generic ZObjects' re-use of in-built
  * and bespoke ZTypes.
  *
- * @copyright 2020 WikiLambda team; see AUTHORS.txt
+ * @copyright 2020–2021 WikiLambda team; see AUTHORS.txt
  * @license MIT
  */
 

@@ -7,7 +7,7 @@
 		Receives an input parameter to filter the type of ZObjects that
 		it will search and display (e.g. Z4 for selecting only types)
 
-		@copyright 2020 WikiLambda team; see AUTHORS.txt
+		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->
 	<span class="ext-wikilambda-select-zobject">

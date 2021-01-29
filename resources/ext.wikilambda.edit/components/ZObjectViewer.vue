@@ -2,7 +2,7 @@
 	<!--
 		WikiLambda Vue interface module for top-level view encapsulation.
 
-		@copyright 2020 WikiLambda team; see AUTHORS.txt
+		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->
 	<!-- TODO: Add a loading indicator, once T254695 is done upstream. -->

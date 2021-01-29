@@ -2,7 +2,7 @@
 	<!--
 		WikiLambda Vue interface module for ZList manipulation.
 
-		@copyright 2020 WikiLambda team; see AUTHORS.txt
+		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->
 	<div class="ext-wikilambda-zlist">

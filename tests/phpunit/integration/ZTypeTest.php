@@ -3,7 +3,7 @@
 /**
  * WikiLambda example ZType object for use in the integration suite.
  *
- * @copyright 2020 WikiLambda team; see AUTHORS.txt
+ * @copyright 2020–2021 WikiLambda team; see AUTHORS.txt
  * @license MIT
  */
 
