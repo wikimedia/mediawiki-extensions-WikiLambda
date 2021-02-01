@@ -17,10 +17,13 @@
 				>
 					{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 				</button>
-				{{ allLangs[ z11Object[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] ] }} ({{ z11Object[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] }}):
+				{{ allLangs[ z11Object[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] ] }}
+				({{ z11Object[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] }}):
 			</div>
 			<div class="ext-wikilambda-cell">
-				<span v-if="viewmode" class="ext-wikilambda-zstring"> {{ z11Object[ Constants.Z_MONOLINGUALSTRING_VALUE ] }} </span>
+				<span v-if="viewmode" class="ext-wikilambda-zstring">
+					{{ z11Object[ Constants.Z_MONOLINGUALSTRING_VALUE ] }}
+				</span>
 				<input v-else
 					class="ext-wikilambda-zstring"
 					:value="z11Object[ Constants.Z_MONOLINGUALSTRING_VALUE ]"
