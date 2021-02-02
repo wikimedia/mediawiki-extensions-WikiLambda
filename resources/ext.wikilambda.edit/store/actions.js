@@ -104,5 +104,34 @@ module.exports = {
 				} );
 			} );
 		} );
+	},
+
+	/**
+	 * Call the mediawiki api to get and store the list of languages in the state.
+	 *
+	 * @param {Object} context
+	 * @return {Promise}
+	 */
+	fetchAllLangs: function ( context ) {
+		var allLangs = {},
+			langKey;
+
+		if ( $.isEmptyObject( context.state.allLangs ) && !context.state.fetchingAllLangs ) {
+			context.commit( 'setFetchingAllLangs', true );
+
+			return api.get( {
+				action: 'query',
+				format: 'json',
+				userlang: context.state.zLang,
+				meta: 'languageinfo',
+				liprop: 'code|name'
+			} ).then( function ( response ) {
+				for ( langKey in response.query.languageinfo ) {
+					allLangs[ langKey ] = response.query.languageinfo[ langKey ].name;
+				}
+
+				context.commit( 'setAllLangs', allLangs );
+			} );
+		}
 	}
 };

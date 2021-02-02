@@ -65,5 +65,25 @@ module.exports = {
 	 */
 	addZKeyLabel: function ( state, payload ) {
 		Vue.set( state.zKeyLabels, payload.key, payload.label );
+	},
+
+	/**
+	 * setAllLangs
+	 *
+	 * @param {Object} state
+	 * @param {Object} allLangs
+	 */
+	setAllLangs: function ( state, allLangs ) {
+		state.allLangs = allLangs;
+	},
+
+	/**
+	 * setFetchingAllLangs
+	 *
+	 * @param {Object} state
+	 * @param {boolean} fetchingAllLangs
+	 */
+	setFetchingAllLangs: function ( state, fetchingAllLangs ) {
+		state.fetchingAllLangs = fetchingAllLangs;
 	}
 };

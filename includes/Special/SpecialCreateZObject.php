@@ -12,7 +12,6 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use Html;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
-use MediaWiki\MediaWikiServices;
 use SpecialPage;
 
 class SpecialCreateZObject extends SpecialPage {
@@ -63,7 +62,6 @@ class SpecialCreateZObject extends SpecialPage {
 		) );
 
 		$userLangCode = $userLang->getCode();
-		$langUtils = MediaWikiServices::getInstance()->getLanguageNameUtils();
 		$contentHandler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 		$zObject = $contentHandler->makeEmptyContent();
 
@@ -97,7 +95,6 @@ class SpecialCreateZObject extends SpecialPage {
 			'page' => 'ZObject:' . $targetZid,
 			'zobject' => $zObject->getData()->getValue(),
 			'zlang' => $userLangCode,
-			'zlanguages' => $langUtils->getLanguageNames( $userLangCode ),
 			'createNewPage' => true
 		];
 

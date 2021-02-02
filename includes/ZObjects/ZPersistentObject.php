@@ -324,13 +324,11 @@ class ZPersistentObject extends JsonContent {
 		$output->addModules( 'ext.wikilambda.edit' );
 		$zObject = self::getObjectFromDB( $title );
 		$userLangCode = $userLang->mCode;
-		$langUtils = MediaWikiServices::getInstance()->getLanguageNameUtils();
 		$editingData = [
 			'title' => $title->getBaseText(),
 			'page' => $title->getPrefixedDBkey(),
 			'zobject' => $zObject->getData()->getValue(),
 			'zlang' => $userLangCode,
-			'zlanguages' => $langUtils->getLanguageNames( $userLangCode ),
 			'createNewPage' => false
 		];
 

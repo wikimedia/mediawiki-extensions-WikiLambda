@@ -51,7 +51,10 @@
 </template>
 
 <script>
-var Constants = require( '../../Constants.js' );
+var Constants = require( '../../Constants.js' ),
+	mapState = require( 'vuex' ).mapState,
+	mapGetters = require( 'vuex' ).mapGetters,
+	mapActions = require( 'vuex' ).mapActions;
 
 module.exports = {
 	name: 'ZMultilingualString',
@@ -67,74 +70,80 @@ module.exports = {
 	},
 	data: function () {
 		return {
-			Constants: Constants,
-			allLangs: {}
+			Constants: Constants
 		};
 	},
-	computed: {
-		monolingualStrings: {
-			get: function () {
-				var monoStrings = [];
-				if ( Constants.Z_MULTILINGUALSTRING_VALUE in this.mlsObject ) {
-					monoStrings = this.mlsObject[ Constants.Z_MULTILINGUALSTRING_VALUE ];
+	computed: $.extend( {},
+		mapState( [ 'allLangs' ] ),
+		{
+			monolingualStrings: {
+				get: function () {
+					var monoStrings = [];
+					if ( Constants.Z_MULTILINGUALSTRING_VALUE in this.mlsObject ) {
+						monoStrings = this.mlsObject[ Constants.Z_MULTILINGUALSTRING_VALUE ];
+					}
+					return monoStrings;
 				}
-				return monoStrings;
-			}
-		},
-		tooltipRemoveLang: function () {
-			return this.$i18n( 'wikilambda-editor-label-removelanguage-tooltip' );
-		},
-		selectedLang: {
-			get: function () {
-				return 'None';
-			}
-		},
-		unusedLangList: {
-			get: function () {
-				var langCode,
-					unusedLangList = {};
+			},
+			tooltipRemoveLang: function () {
+				return this.$i18n( 'wikilambda-editor-label-removelanguage-tooltip' );
+			},
+			selectedLang: {
+				get: function () {
+					return 'None';
+				}
+			},
+			unusedLangList: {
+				get: function () {
+					var langCode,
+						unusedLangList = {};
 
-				for ( langCode in this.allLangs ) {
-					unusedLangList[ langCode ] = this.allLangs[ langCode ];
+					for ( langCode in this.allLangs ) {
+						unusedLangList[ langCode ] = this.allLangs[ langCode ];
+					}
+					if ( Constants.Z_MULTILINGUALSTRING_VALUE in this.mlsObject ) {
+						this.mlsObject[ Constants.Z_MULTILINGUALSTRING_VALUE ].forEach(
+							function ( z11Object ) {
+								langCode = z11Object[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ];
+								delete unusedLangList[ langCode ];
+							}
+						);
+					}
+					return unusedLangList;
 				}
-				if ( Constants.Z_MULTILINGUALSTRING_VALUE in this.mlsObject ) {
-					this.mlsObject[ Constants.Z_MULTILINGUALSTRING_VALUE ].forEach(
-						function ( z11Object ) {
-							langCode = z11Object[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ];
-							delete unusedLangList[ langCode ];
-						}
-					);
-				}
-				return unusedLangList;
 			}
 		}
-	},
-	methods: {
-		updateLangString: function ( event, z11Object ) {
-			z11Object[ Constants.Z_MONOLINGUALSTRING_VALUE ] = event.target.value;
-			this.$emit( 'input', this.mlsObject );
-		},
-		addNewLang: function ( event ) {
-			var langId = event.target.value,
-				pushObj = {};
-			if ( langId !== 'None' ) {
-				if ( !( Constants.Z_MULTILINGUALSTRING_VALUE in this.mlsObject ) ) {
-					this.$set( this.mlsObject, Constants.Z_MULTILINGUALSTRING_VALUE, [] );
+	),
+	methods: $.extend( {},
+		mapGetters( [ 'zLang' ] ),
+		mapActions( [ 'fetchAllLangs' ] ),
+		{
+			updateLangString: function ( event, z11Object ) {
+				z11Object[ Constants.Z_MONOLINGUALSTRING_VALUE ] = event.target.value;
+				this.$emit( 'input', this.mlsObject );
+			},
+			addNewLang: function ( event ) {
+				var langId = event.target.value,
+					pushObj = {};
+				if ( langId !== 'None' ) {
+					if ( !( Constants.Z_MULTILINGUALSTRING_VALUE in this.mlsObject ) ) {
+						this.$set( this.mlsObject, Constants.Z_MULTILINGUALSTRING_VALUE, [] );
+					}
+					pushObj[ Constants.Z_OBJECT_TYPE ] = Constants.Z_MONOLINGUALSTRING;
+					pushObj[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] = langId;
+					pushObj[ Constants.Z_MONOLINGUALSTRING_VALUE ] = '';
+					this.mlsObject[ Constants.Z_MULTILINGUALSTRING_VALUE ].push( pushObj );
 				}
-				pushObj[ Constants.Z_OBJECT_TYPE ] = Constants.Z_MONOLINGUALSTRING;
-				pushObj[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] = langId;
-				pushObj[ Constants.Z_MONOLINGUALSTRING_VALUE ] = '';
-				this.mlsObject[ Constants.Z_MULTILINGUALSTRING_VALUE ].push( pushObj );
+				this.$emit( 'input', this.mlsObject );
+			},
+			removeLang: function ( index ) {
+				this.mlsObject[ Constants.Z_MULTILINGUALSTRING_VALUE ].splice( index, 1 );
+				this.$emit( 'input', this.mlsObject );
 			}
-			this.$emit( 'input', this.mlsObject );
-		},
-		removeLang: function ( index ) {
-			this.mlsObject[ Constants.Z_MULTILINGUALSTRING_VALUE ].splice( index, 1 );
-			this.$emit( 'input', this.mlsObject );
 		}
-	},
+	),
 	created: function () {
-		this.allLangs = mw.config.get( 'extWikilambdaEditingData' ).zlanguages;
+		this.fetchAllLangs();
 	}
 };
 </script>
