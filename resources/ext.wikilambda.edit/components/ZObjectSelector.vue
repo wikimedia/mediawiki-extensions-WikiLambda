@@ -12,7 +12,7 @@
 	-->
 	<span class="ext-wikilambda-select-zobject">
 
-		<span v-if="viewmode">{{ selectedId }}</span>
+		<span v-if="viewmode">{{ selectedText }}</span>
 		<wbmi-autocomplete-search-input
 			v-else
 			name="zobject-selector"

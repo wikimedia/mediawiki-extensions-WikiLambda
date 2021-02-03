@@ -192,7 +192,11 @@ module.exports = {
 						return Constants.Z_OBJECT;
 					}
 				} else {
-					return Constants.Z_STRING;
+					if ( value.match( /^Z\d+$/ ) ) {
+						return Constants.Z_REFERENCE;
+					} else {
+						return Constants.Z_STRING;
+					}
 				}
 			},
 
@@ -246,7 +250,11 @@ module.exports = {
 		// We compile all the key fields IDs and types
 		for ( key in this.zobject ) {
 			if ( this.isKeyField( key ) ) {
-				this.$set( this.keyFields, key, this.getKeyType( this.zobject[ key ] ) );
+				if ( key === 'Z2K1' || key === 'Z4K1' ) {
+					this.$set( this.keyFields, key, Constants.Z_STRING );
+				} else {
+					this.$set( this.keyFields, key, this.getKeyType( this.zobject[ key ] ) );
+				}
 			}
 		}
 	},
