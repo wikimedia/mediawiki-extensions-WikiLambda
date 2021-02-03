@@ -9,15 +9,18 @@
 		"Promise": "readonly"
 	},
 	"rules": {
-		"max-len": [ "warn", {
-			"code": 120,
-			"tabWidth": 4,
-			"ignorePattern": "^// eslint-.+",
-			"ignoreUrls": true,
-			"ignoreComments": false,
-			"ignoreRegExpLiterals": true,
-			"ignoreStrings": true,
-			"ignoreTemplateLiterals": true
-		} ]
+		"max-len": [
+			"warn",
+			{
+				"code": 120,
+				"tabWidth": 4,
+				"ignorePattern": "^// eslint-.+",
+				"ignoreUrls": true,
+				"ignoreComments": false,
+				"ignoreRegExpLiterals": true,
+				"ignoreStrings": true,
+				"ignoreTemplateLiterals": true
+			}
+		]
 	}
 }

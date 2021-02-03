@@ -107,7 +107,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'wikilambda_language' => 'it',
 			'wikilambda_type' => 'birdtype',
 		] );
-		$this->assertEquals( 2, count( $precondition_result[0]['query']['wikilambda_searchlabels'] ) );
+		$this->assertCount( 2, $precondition_result[0]['query']['wikilambda_searchlabels'] );
 
 		$result = $this->doApiRequest( [
 			'action' => 'query',
