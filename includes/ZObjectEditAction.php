@@ -13,7 +13,6 @@ namespace MediaWiki\Extension\WikiLambda;
 use Action;
 use Html;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
-use MediaWiki\MediaWikiServices;
 
 class ZObjectEditAction extends Action {
 	public function getName() {
@@ -35,8 +34,6 @@ class ZObjectEditAction extends Action {
 
 		$userLangCode = $userLang->getCode();
 
-		$langUtils = MediaWikiServices::getInstance()->getLanguageNameUtils();
-
 		$createNewPage = false;
 		$zObject = ZPersistentObject::getObjectFromDB( $this->page->getTitle() );
 		if ( !$zObject ) {
@@ -50,7 +47,6 @@ class ZObjectEditAction extends Action {
 			'page' => $this->getTitle()->getPrefixedDBkey(),
 			'zobject' => $zObject->getData()->getValue(),
 			'zlang' => $userLangCode,
-			'zlanguages' => $langUtils->getLanguageNames( $userLangCode ),
 			'createNewPage' => $createNewPage
 		];
 

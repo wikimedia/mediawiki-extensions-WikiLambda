@@ -26,5 +26,15 @@ module.exports = {
 	/**
 	 * ZKeys being fetched, awaiting for API response
 	 */
-	fetchingZKeys: []
+	fetchingZKeys: [],
+
+	/**
+	 * Collection of MediaWiki language information
+	 */
+	allLangs: {},
+
+	/**
+	 * Status of allLangs being fetched
+	 */
+	fetchingAllLangs: false
 };
