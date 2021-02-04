@@ -45,7 +45,7 @@ class ZObjectEditAction extends Action {
 		}
 
 		$editingData = [
-			'zobject' => ZObjectUtils::normalizeZStringsAndZReferences( $zObject->getData()->getValue() ),
+			'zobject' => ZObjectUtils::normalizeZStringsAndZReferences( $zObject->getObject() ),
 			'zlang' => $userLangCode,
 			'createNewPage' => $createNewPage,
 			'viewmode' => false

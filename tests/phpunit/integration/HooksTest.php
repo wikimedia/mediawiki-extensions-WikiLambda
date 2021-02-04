@@ -14,7 +14,7 @@ use DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\Hooks;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\MediaWikiServices;
 use Title;
 use WikiPage;
@@ -112,7 +112,7 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::onMultiContentSave
 	 */
 	public function testOnMultiContentSave_badContent() {
-		$invalidContent = '{"Z1K1": "Z6", "Z6K1": "a T263956 string!"}';
+		$invalidContent = '{"Z1K1": "Z3"}';
 
 		$invalidZIDStatus = $this->editPage(
 			ZTestType::TEST_ZID, $invalidContent, 'Test bad content', NS_ZOBJECT

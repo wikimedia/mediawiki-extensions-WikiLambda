@@ -67,7 +67,7 @@ class SpecialCreateZObject extends SpecialPage {
 		$zObject = $contentHandler->makeEmptyContent();
 
 		$editingData = [
-			'zobject' => ZObjectUtils::normalizeZStringsAndZReferences( $zObject->getData()->getValue() ),
+			'zobject' => ZObjectUtils::normalizeZStringsAndZReferences( $zObject->getObject() ),
 			'zlang' => $userLangCode,
 			'createNewPage' => true,
 			'viewmode' => false

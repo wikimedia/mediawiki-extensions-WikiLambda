@@ -138,6 +138,16 @@ class ZKey extends ZObject {
 	}
 
 	/**
+	 * A ZObject reference key (e.g. Z1 or Z12345)
+	 *
+	 * @param string $input
+	 * @return bool
+	 */
+	public static function isValidOrNullZObjectReference( string $input ) : bool {
+		return ( self::isValidZObjectReference( $input ) || self::isNullReference( $input ) );
+	}
+
+	/**
 	 * A valid possible identifier across WMF projects
 	 *
 	 * @param string $input

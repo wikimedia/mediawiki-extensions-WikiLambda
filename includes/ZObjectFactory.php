@@ -16,28 +16,43 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use Title;
 
 class ZObjectFactory {
 
 	/**
-	 * @param string $text The serialised form in a string
-	 * @return ZObject
+	 * Creates a ZPersistentObject from the given input data.
+	 * If the input already has the ZPersistentObejct keys, it uses
+	 * them to construct the wrapper object. If not, it builds a wrapper
+	 * ZPersistentObject with empty values.
+	 *
+	 * @param string|array|ZObject|\stdClass $input The item to turn into a ZObject
+	 * @return ZPersistentObject
 	 */
-	public static function createFromSerialisedString( string $text ) {
-		if ( $text === '' || ( $text[0] !== '{' && $text[0] !== '[' ) ) {
-			return new ZString( $text );
+	public static function createPersistentContent( $input ) {
+		if ( $input instanceof ZPersistentObject ) {
+			return $input;
 		}
 
-		$evaluatedInput = json_decode( $text );
-		// Compatibility with PHP 7.2; JSON_THROW_ON_ERROR is PHP 7.3+
-		if ( $evaluatedInput === null ) {
-			throw new InvalidArgumentException( "Couldn't create ZObject for given input '$text'; invalid JSON." );
+		if ( is_object( $input ) && !( $input instanceof ZObject ) ) {
+			$objectVars = get_object_vars( $input );
+			if ( !array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $objectVars ) ) {
+				throw new \InvalidArgumentException( "ZObject record missing a type key." );
+			}
+
+			$type = $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ];
+			if ( $type === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
+				$objectDefinition = self::validateObjectStructure( $objectVars, 'ZPersistentObject' );
+				return new ZPersistentObject( ...$objectDefinition );
+			}
 		}
 
-		return self::create( $evaluatedInput );
+		$label = new ZMultiLingualString( [] );
+		$value = self::create( $input );
+		return new ZPersistentObject( ZTypeRegistry::Z_NULL_REFERENCE, $value, $label );
 	}
 
 	/**
@@ -50,7 +65,11 @@ class ZObjectFactory {
 		}
 
 		if ( is_string( $object ) ) {
-			return new ZString( $object );
+			if ( ZKey::isValidOrNullZObjectReference( $object ) ) {
+				return new ZReference( $object );
+			} else {
+				return new ZString( $object );
+			}
 		}
 
 		if ( is_array( $object ) ) {
@@ -72,14 +91,6 @@ class ZObjectFactory {
 
 		if ( !ZKey::isValidZObjectReference( $type ) ) {
 			throw new \InvalidArgumentException( "ZObject record type '$type' is an invalid key." );
-		}
-
-		if ( $type === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
-			// TODO: Maybe doing this differently to make it clear that we are
-			// not creating a ZObjectContent but the ZObject represented inside.
-			// Also, it should not be necessary to capture ZPersistentObject-related
-			// exceptions at this point (which is what we do in ZObjectContent::create).
-			return ZObjectContent::create( $objectVars );
 		}
 
 		$registry = ZTypeRegistry::singleton();
@@ -195,6 +206,9 @@ class ZObjectFactory {
 		$registry = ZTypeRegistry::singleton();
 
 		// Adjust normalization of $value if necessary for references and strings:
+		// FIXME: this is wrong, irrespectively to its format, returns only the value,
+		// so in case of having a string 'Z111' vs a reference 'Z111' we lose the knowledge
+		// of what it is.
 		if ( is_object( $value ) ) {
 			$objectVars = get_object_vars( $value );
 			if (
@@ -292,7 +306,7 @@ class ZObjectFactory {
 					is_string( $value )
 					&& (
 						ZKey::isValidZObjectReference( $value )
-						|| $value === 'Z0'
+						|| $value === ZTypeRegistry::Z_NULL_REFERENCE
 					)
 				) {
 					return $value;
@@ -452,12 +466,10 @@ class ZObjectFactory {
 				// Default error.
 				throw new \InvalidArgumentException( "No validation for unknown '$type' type." );
 		}
+
 		// Fall-through error for known keys where the value don't pass validation.
 		// TODO: We should log this properly, rather than expect the error string to contain an object.
-		ob_start();
-		var_dump( $value );
-		$valueString = ob_get_contents();
-		ob_end_clean();
+		$valueString = is_string( $value ) ? $value : json_encode( $value );
 		throw new \InvalidArgumentException( "Value '$valueString' for '$key' of type '$type' is invalid." );
 	}
 

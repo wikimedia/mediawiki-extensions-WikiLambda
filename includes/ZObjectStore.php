@@ -10,8 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionRecord;
@@ -116,12 +114,8 @@ class ZObjectStore {
 		}
 
 		// NOTE: Hard-coding use of MAIN slot; if we're going the MCR route, we may wish to change this (or not).
-		$text = $revision->getSlot( SlotRecord::MAIN, RevisionRecord::RAW )->getContent()->getNativeData();
-
-		// TODO: Can this conversion from text to ZObjectContent generate errors?
-		$zObject = new ZObjectContent( $text );
-
-		return $zObject;
+		$slot = $revision->getSlot( SlotRecord::MAIN, RevisionRecord::RAW );
+		return $slot->getContent();
 	}
 
 	/**
@@ -133,11 +127,10 @@ class ZObjectStore {
 	 * @return WikiPage|Status Created page if success creation, status if failed
 	 */
 	public function createNewZObject( string $data, string $summary, User $user ) {
-		// $status = new Status();
-
-		// Find all Z0s and Z0 keys and replace those with the next available ZID
+		// Find all placeholder ZIDs and ZKeys and replace those with the next available ZID
 		$zid = $this->getNextAvailableZid();
-		$zObjectString = preg_replace( '/\"Z0(K[1-9]\d*)?\"/', "\"$zid$1\"", $data );
+		$zPlaceholderRegex = '/\"' . ZTypeRegistry::Z_NULL_REFERENCE . '(K[1-9]\d*)?\"/';
+		$zObjectString = preg_replace( $zPlaceholderRegex, "\"$zid$1\"", $data );
 
 		return $this->updateZObject( $zid, $zObjectString, $summary, $user, EDIT_NEW );
 	}
@@ -153,41 +146,32 @@ class ZObjectStore {
 	 * @return WikiPage|Status Updated page if success update, status if failed
 	 */
 	public function updateZObject( string $zid, string $data, string $summary, User $user, int $flags = EDIT_UPDATE ) {
-		// TODO: new ZObjectContent() instead:
-		// 1. It will run ZObjectFactory::createFromSerializedObject and validate both the JSON and the ZObject.
-		// 2. Fix it so that it saves the data of the ZPersistentObject, and we can use it to check the labels.
-
-		// Parse the data string and catch JSON format validity errors.
-		$zObjectNormal = json_decode( $data );
-		if ( $zObjectNormal === null ) {
-			// Error: Invalid JSON
-			return Status::newFatal( 'apierror-wikilambda_edit-invalidjson', $data );
+		$title = $this->titleFactory->newFromText( $zid, NS_ZOBJECT );
+		if ( !( $title instanceof Title ) ) {
+			return Status::newFatal( 'wikilambda-invalidzobjecttitle', $zid );
 		}
 
-		// Canonicalize zObject before saving it
-		$zObject = ZObjectUtils::canonicalize( $zObjectNormal );
-		$zObjectString = json_encode( $zObject );
-
-		// Create the ZObject object to run validation and catch InvalidArgumentException errors
 		try {
-			$zObjectContent = ZObjectFactory::create( $zObject );
+			$content = ZObjectContentHandler::makeContent( $data, $title );
 		} catch ( \InvalidArgumentException $e ) {
-			// Error: Invalid ZObject
+			// Error: Invalid input syntax
 			return Status::newFatal( $e->getMessage() );
 		}
 
+		// Error: ZObject validation errors.
+		if ( !( $content->isValid() ) ) {
+			return $content->getStatus();
+		}
+
 		// Validate that $zid and zObject[Z2K1] are the same
-		// TODO: replace ZObjectUtils::getZPersistentObjectId with ZObjectContent->getId()
-		$zObjectId = ZObjectUtils::getZPersistentObjectId( $zObject );
+		$zObjectId = $content->getZid();
 		if ( $zObjectId !== $zid ) {
 			return Status::newFatal( 'apierror-wikilambda_edit-unmatchingzid', $zid, $zObjectId );
 		}
 
 		// Find the label conflicts.
-		// TODO: Once we fix ZObjectContent to save also the Z2 keys, we can get rid of these two
-		// methods and simply use ZObjectContent->getLabels() and ZObjectContent->getType()
-		$labels = ZObjectUtils::getZPersistentObjectLabels( $zObject );
-		$ztype = ZObjectUtils::getZPersistentObjectType( $zObject );
+		$labels = $content->getLabels()->getZValue();
+		$ztype = $content->getZType();
 		$clashes = $this->findZObjectLabelConflicts( $zid, $ztype, $labels );
 		if ( count( $clashes ) > 0 ) {
 			// Error: Found label conflicts
@@ -196,14 +180,6 @@ class ZObjectStore {
 				$status->fatal( 'wikilambda-labelclash', $clash_zid, $language );
 			}
 			return $status;
-		}
-
-		// Create the content object from the already validated text
-		$title = $this->titleFactory->newFromText( $zid, NS_ZOBJECT );
-
-		// Check that the requested title is a valid ZID, and MediaWiki doesn't complain about it
-		if ( !( ZKey::isValidZObjectReference( $zid ) && $title instanceof Title && $title->canExist() ) ) {
-			return Status::newFatal( 'wikilambda-invalidzobjecttitle', $zid );
 		}
 
 		// Double-check that the user has permissions to edit (should be caught by the lower parts of the stack)
@@ -218,14 +194,6 @@ class ZObjectStore {
 				// so give them the most generic error that MediaWiki has.
 				return Status::newFatal( 'badaccess-group0' );
 			}
-		}
-
-		$page = $this->wikiPageFactory->newFromTitle( $title );
-		$content = ZObjectContentHandler::makeContent( $zObjectString, $title );
-
-		// Somehow we didn't get the right type back from ZObjectContentHandler. This is bad.
-		if ( !( $content instanceof ZObjectContent ) ) {
-			return Status::newFatal( 'wikilambda-invalidzobject' );
 		}
 
 		// Prohibit certain kinds of edit to regular users; system users are allowed to edit anything, as
@@ -245,6 +213,8 @@ class ZObjectStore {
 			// on built-in items)
 		}
 
+		// We prepare the content to be saved
+		$page = $this->wikiPageFactory->newFromTitle( $title );
 		try {
 			$status = $page->doEditContent( $content, $summary, $flags, false, $user );
 		} catch ( \Exception $e ) {

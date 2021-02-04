@@ -4,7 +4,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
 
 use ApiTestCase;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use Title;
 use WikiPage;
@@ -47,7 +47,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	public function testCreateFailed_invalidJson() {
 		$data = '{ invalidJson ]';
 
-		$this->setExpectedApiException( [ 'apierror-wikilambda_edit-invalidjson', $data ] );
+		$this->setExpectedApiException( [ 'ZPersistentObject input is invalid JSON: Syntax error.', $data ] );
 
 		$this->doApiRequest( [
 			'action' => 'wikilambda_edit',
@@ -77,7 +77,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 	public function provideInvalidZObjects() {
 		return [
-			'missing key type' => [ '{}', 'ZObject record missing a type key.' ],
+			'missing key type' => [ '{}', 'ZPersistentObject input ZObject structure is invalid.' ],
 			'invalid key type' => [ '{"Z1K1": "Z09"}', "ZObject record type 'Z09' is an invalid key." ]
 		];
 	}
@@ -134,7 +134,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "unique label" } ] } }';
 
 		// Try to create the second Zobject with the same label
-		$this->setExpectedApiException( [ 'wikilambda-invalidzobjecttitle', $invalidZid ] );
+		$this->setExpectedApiException( [ "Value '$invalidZid' for 'Z2K1' of type 'NullableReference' is invalid." ] );
 		$result = $this->doApiRequest( [
 			'action' => 'wikilambda_edit',
 			'zid' => $invalidZid,
@@ -153,7 +153,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 				. ' "Z1K1": "' . ZTypeRegistry::Z_PERSISTENTOBJECT . '",'
 				. ' "Z2K1": "Z0",'
 				. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "string" },'
-				. ' "Z2K3": {}'
+				. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] }'
 			. '},'
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "trouble" } ] } }';
 
