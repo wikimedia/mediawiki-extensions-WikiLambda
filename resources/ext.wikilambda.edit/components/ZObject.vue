@@ -8,7 +8,7 @@
 	<div :class="classZObject">
 		<!-- Depending on the type, it will render a different component -->
 		<z-string
-			v-if="type === Constants.Z_STRING"
+			v-if="type === Constants.Z_STRING || type === Constants.Z_REFERENCE"
 			:value="zobject"
 			:viewmode="viewmode"
 			@input="setZString"
@@ -84,7 +84,10 @@ module.exports = {
 			return this.getZObjectType( this.zobject );
 		},
 		isInlineComponent: function () {
-			return ( this.type === Constants.Z_STRING );
+			return (
+				( this.type === Constants.Z_STRING ) ||
+				( this.type === Constants.Z_REFERENCE )
+			);
 		},
 		classZObject: function () {
 			return {
