@@ -34,7 +34,7 @@
 	"wikilambda-zobjectselector-label": "ZObject",
 	"wikilambda-editor-additem": "➕",
 	"wikilambda-editor-removeitem": "🗑️",
-	"wikilambda-editor-label-addlanguage-label" : "Add language:",
+	"wikilambda-editor-label-addlanguage-label": "Add language:",
 	"wikilambda-editor-label-removelanguage-tooltip": "Remove this language from this label",
 	"wikilambda-editor-zlist-additem-tooltip": "Add an item to this ZList",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Remove this item from this ZList",
