@@ -13,6 +13,7 @@
 	"wikilambda-viewmode-nojs": "Den här sidan visas på ett begränsat sätt utan JavaScript",
 	"wikilambda-special-createzobject": "Skapa ett nytt ZObject",
 	"wikilambda-special-createzobject-nojs": "Denna sida kräver JavaScript för att användas.",
+	"wikilambda-speciallistduplicatezobjectlabels-existing": "Befintligt ZObject",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Språk",
 	"wikilambda-publishnew": "Publicera",
 	"wikilambda-savenew": "Spara",
