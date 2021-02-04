@@ -175,6 +175,10 @@ module.exports = {
 				zlangs: this.zLangs
 			} );
 		}
+
+		if ( this.type !== Constants.Z_PERSISTENTOBJECT ) {
+			this.updateType( this.type );
+		}
 	}
 };
 </script>
