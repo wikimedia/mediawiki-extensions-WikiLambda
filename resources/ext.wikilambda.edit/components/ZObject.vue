@@ -5,55 +5,62 @@
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-zobject">
-		<span>{{ z1k1label }} ({{ Constants.Z_OBJECT_TYPE }}): </span>
+	<div :class="classZObject">
+		<!-- Depending on the type, it will render a different component -->
+		<z-string
+			v-if="type === Constants.Z_STRING"
+			:value="zobject"
+			:viewmode="viewmode"
+			@input="setZString"
+		></z-string>
 
-		<span v-if="persistent">
-			<a v-if="type !== zobjectId && viewmode" :href="'./ZObject:' + type">
-				<span>{{ typeLabel }} ({{ type }})</span>
-			</a>
-			<span v-else>{{ typeLabel }} ({{ type }})</span>
-			<ul><li> {{ z2k1label }} ({{ Constants.Z_PERSISTENTOBJECT_ID }}): {{ zobjectId }} </li></ul>
-		</span>
+		<z-multilingual-string
+			v-else-if="type === Constants.Z_MULTILINGUALSTRING"
+			:mls-object="zobject"
+			:viewmode="viewmode"
+			@input="setZMultilingualString"
+		></z-multilingual-string>
 
-		<span v-else>
-			<span v-if="viewmode"> {{ typeLabel }} ({{ type }})</span>
-			<z-object-selector
-				v-else
-				:viewmode="viewmode"
-				:type="Constants.Z_TYPE"
-				:placeholder="$i18n( 'wikilambda-typeselector-label' )"
-				:selected-id="type"
-				@input="updateType"
-			></z-object-selector>
-		</span>
-
-		<z-object-key-list
-			ref="keyList"
+		<z-list
+			v-else-if="type === Constants.Z_LIST"
 			:zobject="zobject"
 			:viewmode="viewmode"
-			@change="updateZObjectKey"
-			@delete="deleteZObjectKey"
-		></z-object-key-list>
+			@add-item="addZListItem"
+			@delete-item="deleteZListItem"
+			@change-item="setZListItem"
+		></z-list>
+
+		<z-object-generic
+			v-else
+			:zobject="zobject"
+			:persistent="persistent"
+			:viewmode="viewmode"
+			@change-key="setZObjectKey"
+			@change-type="setZObjectType"
+		></z-object-generic>
 	</div>
 </template>
 
 <script>
 var Constants = require( '../Constants.js' ),
-	ZObjectSelector = require( './ZObjectSelector.vue' ),
-	ZObjectKeyList = require( './ZObjectKeyList.vue' ),
-	mapActions = require( 'vuex' ).mapActions,
-	mapState = require( 'vuex' ).mapState;
+	typeUtils = require( '../mixins/typeUtils.js' ),
+	ZObjectGeneric = require( './ZObjectGeneric.vue' ),
+	ZList = require( './types/ZList.vue' ),
+	ZMultilingualString = require( './types/ZMultilingualString.vue' ),
+	ZString = require( './types/ZString.vue' );
 
 module.exports = {
 	name: 'ZObject',
 	components: {
-		'z-object-key-list': ZObjectKeyList,
-		'z-object-selector': ZObjectSelector
+		'z-list': ZList,
+		'z-multilingual-string': ZMultilingualString,
+		'z-string': ZString,
+		'z-object-generic': ZObjectGeneric
 	},
+	mixins: [ typeUtils ],
 	props: {
 		zobject: {
-			type: Object,
+			type: [ Object, Array, String ],
 			default: function () {
 				return {};
 			}
@@ -69,115 +76,99 @@ module.exports = {
 	},
 	data: function () {
 		return {
-			Constants: Constants,
-			lastTypeKeys: []
+			Constants: Constants
 		};
 	},
-	computed: $.extend( {},
-		mapState( [
-			'zLangs',
-			'zKeyLabels',
-			'zKeys',
-			'fetchingZKeys'
-		] ),
-		{
-			type: {
-				get: function () {
-					return this.zobject[ Constants.Z_OBJECT_TYPE ];
-				}
-			},
-			keys: function () {
-				// Given this.type, returns the expected keys
-				return this.zKeys[ this.type ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
-			},
-			typeLabel: function () {
-				return this.zKeyLabels[ this.type ];
-			},
-			zobjectId: {
-				get: function () {
-					return this.zobject[ Constants.Z_PERSISTENTOBJECT_ID ];
-				},
-				set: function ( newValue ) {
-					this.zobject[ Constants.Z_PERSISTENTOBJECT_ID ] = newValue;
-					this.$emit( 'input', this.zobject );
-				}
-			},
-			z1k1label: function () {
-				return this.zKeyLabels[ Constants.Z_OBJECT_TYPE ];
-			},
-			z2k1label: function () {
-				return this.zKeyLabels[ Constants.Z_PERSISTENTOBJECT_ID ];
+	computed: {
+		type: function () {
+			return this.getZObjectType( this.zobject );
+		},
+		isInlineComponent: function () {
+			return ( this.type === Constants.Z_STRING );
+		},
+		classZObject: function () {
+			return {
+				'ext-wikilambda-zobject': true,
+				'ext-wikilambda-zobject-inline': this.isInlineComponent
+			};
+		}
+	},
+	methods: {
+		// Handlers for ZString
+
+		/**
+		 * Fires a change event with the new string. This is necessary when
+		 * zobject is of String type, as this ZObject is unable to mutate
+		 * directly its value. The parent ZObject will capture this event and
+		 * mutate the property where the string is saved.
+		 *
+		 * @param {string} value
+		 * @fires change
+		 */
+		setZString: function ( value ) {
+			this.$emit( 'change', value );
+		},
+
+		// Handlers for ZMultilingualString events
+		setZMultilingualString: function () {
+			// TODO Update multilingual string from ZObject instead of
+			// directly mutating it in ZMultilingualString component
+		},
+
+		// Handlers for ZObjectGeneric events
+
+		/**
+		 * Mutates the value of a given key in this ZObject.
+		 *
+		 * @param {Object} item
+		 */
+		setZObjectKey: function ( item ) {
+			this.$set( this.zobject, item.key, item.value );
+		},
+
+		/**
+		 * Changes the type (the value of the Z1K1 key) of this ZObject.
+		 *
+		 * @param {Object} newType
+		 */
+		setZObjectType: function ( newType ) {
+			this.$set( this.zobject, Constants.Z_OBJECT_TYPE, newType );
+		},
+
+		// Handlers for ZList events
+
+		/**
+		 * Adds a new item into the list represented by this ZObject.
+		 *
+		 * @param {Object|Array|string} value
+		 */
+		addZListItem: function ( value ) {
+			if ( Array.isArray( this.zobject ) ) {
+				this.zobject.push( value );
 			}
-		}
-	),
-	methods: $.extend( {},
-		mapActions( [ 'fetchZKeys' ] ),
-		{
-			/**
-			 * Updates zobject data with changes on the ZObject Key
-			 * list. The event contains the key and the new value.
-			 *
-			 * @param {Object} newKey
-			 */
-			updateZObjectKey: function ( newKey ) {
-				this.$set( this.zobject, newKey.key, newKey.value );
-			},
+		},
 
-			/**
-			 * Updates zobject data with the deletion of a ZObject
-			 * Key list item. The event contains the key ID.
-			 *
-			 * @param {string} keyId
-			 */
-			deleteZObjectKey: function ( keyId ) {
-				this.$delete( this.zobject, keyId );
-			},
-
-			/**
-			 * Updates the keys in the ZObject Key List when the type
-			 * is changed.
-			 *
-			 * @param {string} newType
-			 */
-			updateType: function ( newType ) {
-				var self = this,
-					newKeys;
-
-				this.$set( this.zobject, Constants.Z_OBJECT_TYPE, newType );
-
-				this.lastTypeKeys.forEach( function ( lastTypeKey ) {
-					self.$refs.keyList.removeKey( lastTypeKey );
-				} );
-				this.lastTypeKeys = [];
-
-				this.fetchZKeys( {
-					zids: [ newType ],
-					zlangs: this.zLangs
-				} ).done( function () {
-					newKeys = self.zKeys[ newType ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
-					newKeys.forEach( function ( newKey ) {
-						self.$refs.keyList.addKey( newKey[ Constants.Z_KEY_ID ] );
-						self.lastTypeKeys.push( newKey[ Constants.Z_KEY_ID ] );
-					} );
-				} );
+		/**
+		 * Deletes an item from the list represented by this ZObject.
+		 *
+		 * @param {number} index
+		 */
+		deleteZListItem: function ( index ) {
+			if ( Array.isArray( this.zobject ) ) {
+				this.zobject.splice( index, 1 );
 			}
-		}
-	),
-	mounted: function () {
-		// Fetch the information of the zid (and relevant
-		// key labels) if it's not yet available.
-		if (
-			( !( this.type in this.zKeys ) ) &&
-			( this.fetchingZKeys.indexOf( this.type ) === -1 )
-		) {
-			this.fetchZKeys( {
-				zids: [ this.type ],
-				zlangs: this.zLangs
-			} );
-		}
+		},
 
-		if ( this.type !== Constants.Z_PERSISTENTOBJECT ) {
-			this.updateType( this.type );
+		/**
+		 * Sets the value for a given item of the list represented
+		 * by this ZObject.
+		 *
+		 * @param {Object} item
+		 */
+		setZListItem: function ( item ) {
+			if ( Array.isArray( this.zobject ) ) {
+				this.$set( this.zobject, item.index, item.value );
+			}
 		}
 	}
 };
@@ -185,8 +176,10 @@ module.exports = {
 
 <style lang="less">
 .ext-wikilambda-zobject {
-	background: #fff;
-	outline: 2px dashed #808080;
-	padding: 1em;
+	display: block;
+
+	.ext-wikilambda-zobject-inline {
+		display: inline-block;
+	}
 }
 </style>

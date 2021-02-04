@@ -18,7 +18,7 @@
 				:z-key="key"
 				:z-type="value"
 				:zobject="zobject[ key ]"
-				@type-change="onTypeChange( $event, key )"
+				@change-type="onTypeChange( $event, key )"
 				@input="onValueChange( $event, key )"
 			>
 			</z-object-key>

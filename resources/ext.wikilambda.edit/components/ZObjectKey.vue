@@ -22,43 +22,11 @@
 		<!-- If there's a type, we render the appropriate component -->
 		<template v-else>
 			<span>{{ zTypeLabel }} ({{ zType }})</span>
-
-			<!-- Depending on the type, the key will render a different component -->
-			<z-string
-				v-if="zType === Constants.Z_STRING"
-				:value="zobject"
-				:viewmode="viewmode"
-				@input="updateKey"
-			></z-string>
-
-			<z-object-selector
-				v-else-if="zType === Constants.Z_REFERENCE"
-				:selected-id="zobject"
-				:placeholder="$i18n( 'wikilambda-zobjectselector-label' )"
-				:viewmode="viewmode"
-				@input="updateKey"
-			></z-object-selector>
-
-			<z-list
-				v-else-if="zType === Constants.Z_LIST"
-				:list="zobject"
-				:viewmode="viewmode"
-				@input="updateKey"
-			></z-list>
-
-			<z-multilingual-string
-				v-else-if="zType === Constants.Z_MULTILINGUALSTRING"
-				:mls-object="zobject"
-				:viewmode="viewmode"
-				@input="updateKey"
-			></z-multilingual-string>
-
 			<z-object
-				v-else
 				:zobject="zobject"
-				:persistent="false"
 				:viewmode="viewmode"
-				@input="updateKey"
+				:persistent="false"
+				@change="updateValue($event, index)"
 			></z-object>
 		</template>
 	</div>
@@ -66,22 +34,14 @@
 
 <script>
 var Constants = require( '../Constants.js' ),
-	ZObject = require( './ZObject.vue' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
-	ZList = require( './types/ZList.vue' ),
-	ZMultilingualString = require( './types/ZMultilingualString.vue' ),
-	ZString = require( './types/ZString.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapState = require( 'vuex' ).mapState;
 
 module.exports = {
 	name: 'ZObjectKey',
 	components: {
-		'z-object': ZObject,
-		'z-object-selector': ZObjectSelector,
-		'z-list': ZList,
-		'z-multilingual-string': ZMultilingualString,
-		'z-string': ZString
+		'z-object-selector': ZObjectSelector
 	},
 	props: {
 		viewmode: {
@@ -129,7 +89,7 @@ module.exports = {
 			 * @fires typeChange
 			 */
 			setKeyType: function ( newType ) {
-				this.$emit( 'type-change', newType );
+				this.$emit( 'change-type', newType );
 			},
 
 			/**
@@ -139,12 +99,11 @@ module.exports = {
 			 * @param {string} value
 			 * @fires input
 			 */
-			updateKey: function ( value ) {
+			updateValue: function ( value ) {
 				this.$emit( 'input', value );
 			}
 		}
 	),
-
 	beforeCreate: function () {
 		this.$options.components[ 'z-object' ] = require( './ZObject.vue' );
 	}
