@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use Action;
 use Html;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 
 class ZObjectEditAction extends Action {
 	public function getName() {
@@ -35,7 +35,7 @@ class ZObjectEditAction extends Action {
 		$userLangCode = $userLang->getCode();
 
 		$createNewPage = false;
-		$zObject = ZPersistentObject::getObjectFromDB( $this->page->getTitle() );
+		$zObject = ZObjectContent::getObjectFromDB( $this->page->getTitle() );
 		if ( !$zObject ) {
 			$contentHandler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 			$zObject = $contentHandler->makeEmptyContent();

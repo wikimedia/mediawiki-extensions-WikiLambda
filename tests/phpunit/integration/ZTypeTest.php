@@ -11,7 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\MediaWikiServices;
 
@@ -21,11 +21,11 @@ use MediaWiki\MediaWikiServices;
 class ZTypeTest extends \MediaWikiIntegrationTestCase {
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::__construct
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::isValid
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getZType
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getZValue
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getInnerZObject
 	 */
 	public function testPersistentCreation() {
 		$services = MediaWikiServices::getInstance();
@@ -48,7 +48,7 @@ class ZTypeTest extends \MediaWikiIntegrationTestCase {
 		);
 
 		$this->hideDeprecated( '::create' );
-		$testObject = new ZPersistentObject( json_encode( [
+		$testObject = new ZObjectContent( json_encode( [
 			'Z1K1' => 'Z2',
 			'Z2K1' => 'Z111',
 			'Z2K2' => [

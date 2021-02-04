@@ -13,7 +13,7 @@ use InvalidArgumentException;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use MediaWiki\MediaWikiServices;
 
@@ -167,17 +167,17 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 	}
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::__construct
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::isValid
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getZType
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getZValue
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getInnerZObject
 	 */
 	public function testPersistentCreation() {
 		$english = $this->makeLanguage( 'en' );
 		$french = $this->makeLanguage( 'fr' );
 
-		$testObject = new ZPersistentObject(
+		$testObject = new ZObjectContent(
 			<<<EOT
 {
 	"Z1K1": "Z2",
@@ -197,7 +197,7 @@ EOT
 		$this->assertSame( 'Z12', $testObject->getZType() );
 		$this->assertSame( [], $testObject->getZValue() );
 
-		$testObject = new ZPersistentObject(
+		$testObject = new ZObjectContent(
 			<<<EOT
 {
 	"Z1K1": "Z2",

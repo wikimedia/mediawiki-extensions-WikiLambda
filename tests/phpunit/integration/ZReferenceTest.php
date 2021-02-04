@@ -9,7 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 
 /**
@@ -18,18 +18,18 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 class ZReferenceTest extends \MediaWikiIntegrationTestCase {
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::__construct
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::isValid
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getZType
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getZValue
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getInnerZObject
 	 */
 	public function testPersistentCreation() {
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z9", "Z9K1": "Z1" }' );
+		$testObject = new ZObjectContent( '{ "Z1K1": "Z9", "Z9K1": "Z1" }' );
 		$this->assertSame( 'Z9', $testObject->getZType() );
 		$this->assertSame( 'Z1', $testObject->getZValue() );
 
-		$testObject = new ZPersistentObject(
+		$testObject = new ZObjectContent(
 			'{ '
 				. '"Z1K1": "Z2", '
 				. '"Z2K1": "Z0", '
@@ -49,7 +49,7 @@ class ZReferenceTest extends \MediaWikiIntegrationTestCase {
 		$testObject = new ZReference( 'Z1' );
 		$this->assertSame( 'Z9', $testObject->getZType(), 'ZType of directly-created ZReference' );
 
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z9", "Z9K1": "Z1" }' );
+		$testObject = new ZObjectContent( '{ "Z1K1": "Z9", "Z9K1": "Z1" }' );
 		$this->assertSame( 'Z9', $testObject->getZType(), 'ZType of indirectly-created ZReference' );
 	}
 
@@ -61,7 +61,7 @@ class ZReferenceTest extends \MediaWikiIntegrationTestCase {
 		$testObject = new ZReference( 'Z1' );
 		$this->assertSame( 'Z1', $testObject->getZValue(), 'Value of directly-created ZReference' );
 
-		$testObject = new ZPersistentObject( '{ "Z1K1": "Z9", "Z9K1": "Z1" }' );
+		$testObject = new ZObjectContent( '{ "Z1K1": "Z9", "Z9K1": "Z1" }' );
 		$this->assertSame( 'Z1', $testObject->getZValue(), 'Value of indirectly-created ZReference' );
 	}
 

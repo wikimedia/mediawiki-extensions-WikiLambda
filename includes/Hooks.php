@@ -13,7 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use CommentStoreComment;
 use DatabaseUpdater;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\Revision\SlotRecord;
 use MWNamespace;
 use Status;
@@ -92,7 +92,7 @@ class Hooks implements
 
 		$content = $renderedRevision->getRevision()->getSlots()->getContent( SlotRecord::MAIN );
 
-		if ( !( $content instanceof ZPersistentObject ) ) {
+		if ( !( $content instanceof ZObjectContent ) ) {
 			$hookStatus->fatal( 'wikilambda-invalidcontenttype' );
 			return false;
 		}

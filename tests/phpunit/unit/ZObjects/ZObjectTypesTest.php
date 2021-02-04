@@ -13,7 +13,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 
@@ -32,7 +32,7 @@ class ZObjectTypesTest extends \MediaWikiUnitTestCase {
 
 	public function provideZObjectTypes() {
 		// Note this will return the inner object's type, string, not Z2
-		$zPersistentObject = new ZPersistentObject(
+		$zPersistentObject = new ZObjectContent(
 			'{"Z1K1":"Z2", "Z2K1": "Z0", "Z2K2": "test", "Z2K3": {"Z1K1": "Z12", "Z12K1": []}}'
 		);
 

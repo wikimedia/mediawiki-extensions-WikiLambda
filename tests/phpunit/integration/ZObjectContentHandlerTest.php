@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use Language;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\MediaWikiServices;
 use Title;
 use WikiPage;
@@ -63,7 +63,7 @@ class ZObjectContentHandlerTest extends \MediaWikiIntegrationTestCase {
 		$this->assertStringContainsString( '"Z2K1": "Z111"', $externalRepresentation, "ZPO key is set to the title" );
 
 		$externalRepresentation = ZObjectContentHandler::getExternalRepresentation( $title, 'fr' );
-		$externalRepresentationLabels = ( new ZPersistentObject( $externalRepresentation ) )->getLabels();
+		$externalRepresentationLabels = ( new ZObjectContent( $externalRepresentation ) )->getLabels();
 
 		$this->assertCount(
 			1, $externalRepresentationLabels->getZValue(),
@@ -79,7 +79,7 @@ class ZObjectContentHandlerTest extends \MediaWikiIntegrationTestCase {
 		);
 
 		$externalRepresentation = ZObjectContentHandler::getExternalRepresentation( $title, 'de' );
-		$externalRepresentationLabels = ( new ZPersistentObject( $externalRepresentation ) )->getLabels();
+		$externalRepresentationLabels = ( new ZObjectContent( $externalRepresentation ) )->getLabels();
 
 		$this->assertCount(
 			1, $externalRepresentationLabels->getZValue(),

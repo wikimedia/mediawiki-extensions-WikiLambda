@@ -1,6 +1,6 @@
 <?php
 /**
- * WikiLambda ZPersistentObject
+ * WikiLambda ZObjectContent
  *
  * @file
  * @ingroup Extensions
@@ -30,9 +30,11 @@ use User;
 use WikiPage;
 
 /**
- * This class represents the top-level, persistent ZObject, as stored in MediaWiki.
+ * This class represents the wrapper for a ZObject, as stored in MediaWiki. Though its form is
+ * intentionally similar to that of a ZObject, representing a 'Persistent ZObject' or Z2, it
+ * has several differences to account for the Content hierarchy.
  */
-class ZPersistentObject extends JsonContent {
+class ZObjectContent extends JsonContent {
 
 	/**
 	 * Type of included ZObject, e.g. "ZList" or "ZString", as stored in the serialised
@@ -84,15 +86,15 @@ class ZPersistentObject extends JsonContent {
 
 	public static function create( array $objectVars ) : ZObject {
 		if ( !array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_ID, $objectVars ) ) {
-			throw new \InvalidArgumentException( "ZPersistentObject missing the id key." );
+			throw new \InvalidArgumentException( "ZObjectContent missing the id key." );
 		}
 		if ( !array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE, $objectVars ) ) {
-			throw new \InvalidArgumentException( "ZPersistentObject missing the value key." );
+			throw new \InvalidArgumentException( "ZObjectContent missing the value key." );
 		}
 		if ( !array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL, $objectVars ) ) {
-			throw new \InvalidArgumentException( "ZPersistentObject missing the label key." );
+			throw new \InvalidArgumentException( "ZObjectContent missing the label key." );
 		}
-		// NOTE: For ZPersistentObject, we care about the *inner object*, not the ZPO itself
+		// NOTE: For ZObjectContent, we care about the *inner object*, not the ZPO itself
 		return ZObjectFactory::create( $objectVars[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] );
 	}
 
@@ -100,10 +102,10 @@ class ZPersistentObject extends JsonContent {
 	private static $revisionStore;
 
 	/**
-	 * Fetch a given Title's ZPersistentObject from the database, and inflate it.
+	 * Fetch a given Title's ZObjectContent from the database, and inflate it.
 	 *
 	 * @param Title $title The page to fetch.
-	 * @return ZPersistentObject|false The ZPersistentObject requested.
+	 * @return ZObjectContent|false The ZObjectContent requested.
 	 */
 	public static function getObjectFromDB( Title $title ) {
 		if ( !$title->isKnown() ) {
@@ -123,7 +125,7 @@ class ZPersistentObject extends JsonContent {
 		// NOTE: Hard-coding use of MAIN slot; if we're going the MCR route, we may wish to change this (or not).
 		$text = $revision->getSlot( SlotRecord::MAIN, RevisionRecord::RAW )->getContent()->getNativeData();
 
-		$zObject = new ZPersistentObject( $text );
+		$zObject = new ZObjectContent( $text );
 
 		return $zObject;
 	}
@@ -227,7 +229,7 @@ class ZPersistentObject extends JsonContent {
 	}
 
 	/**
-	 * Fetch the label set for this ZPersistentObject.
+	 * Fetch the label set for this ZObjectContent.
 	 *
 	 * @return ZMultiLingualString
 	 */
@@ -253,7 +255,7 @@ class ZPersistentObject extends JsonContent {
 	}
 
 	/**
-	 * Replace the label set for this instantiation of the ZPersistentObject with the given input.
+	 * Replace the label set for this instantiation of the ZObjectContent with the given input.
 	 *
 	 * NOTE: This replacement is not persisted to the MediaWiki back-end.
 	 *

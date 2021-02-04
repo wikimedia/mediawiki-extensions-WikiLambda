@@ -10,7 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 /**
@@ -19,37 +19,37 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 class ZListTest extends \MediaWikiIntegrationTestCase {
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::__construct
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::isValid
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getZType
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getZValue
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getInnerZObject
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZList::getZListAsArray
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZList::isValid
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZList::getZValue
 	 */
 	public function testPersistentCreation() {
-		$testObject = new ZPersistentObject( '[]' );
+		$testObject = new ZObjectContent( '[]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
 		$this->assertSame( [ null, [] ], $testObject->getZValue() );
 		$this->assertSame( [], $testObject->getInnerZObject()->getZListAsArray() );
 
-		$testObject = new ZPersistentObject( '["Test"]' );
+		$testObject = new ZObjectContent( '["Test"]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
 		$this->assertSame( [ 'Test', [] ], $testObject->getZValue() );
 		$this->assertSame( [ 'Test' ], $testObject->getInnerZObject()->getZListAsArray() );
 
-		$testObject = new ZPersistentObject( '["Test", "Test2"]' );
+		$testObject = new ZObjectContent( '["Test", "Test2"]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
 		$this->assertSame( [ 'Test', [ 'Test2' ] ], $testObject->getZValue() );
 		$this->assertSame( [ 'Test', 'Test2' ], $testObject->getInnerZObject()->getZListAsArray() );
 
-		$testObject = new ZPersistentObject( '["Test","Test2","Test3"]' );
+		$testObject = new ZObjectContent( '["Test","Test2","Test3"]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
 		$this->assertSame( [ 'Test', [ "Test2", "Test3" ] ], $testObject->getZValue() );
 		$this->assertSame( [ 'Test', 'Test2', 'Test3' ], $testObject->getInnerZObject()->getZListAsArray() );
 
-		$testObject = new ZPersistentObject( '[["Test"],["Test2"],["Test3"]]' );
+		$testObject = new ZObjectContent( '[["Test"],["Test2"],["Test3"]]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
 		$this->assertSame( [ [ 'Test' ], [ [ "Test2" ], [ "Test3" ] ] ], $testObject->getZValue() );
 		$this->assertSame(
@@ -57,12 +57,12 @@ class ZListTest extends \MediaWikiIntegrationTestCase {
 			$testObject->getInnerZObject()->getZListAsArray()
 		);
 
-		$testObject = new ZPersistentObject( '[["Test"],["Test2","Test3"]]' );
+		$testObject = new ZObjectContent( '[["Test"],["Test2","Test3"]]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
 		$this->assertSame( [ [ 'Test' ], [ [ "Test2", "Test3" ] ] ], $testObject->getZValue() );
 		$this->assertSame( [ [ 'Test' ], [ 'Test2', 'Test3' ] ], $testObject->getInnerZObject()->getZListAsArray() );
 
-		$testObject = new ZPersistentObject( '[["Test", "Test2"],["Test3","Test4"]]' );
+		$testObject = new ZObjectContent( '[["Test", "Test2"],["Test3","Test4"]]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
 		$this->assertSame( [ [ 'Test', 'Test2' ], [ [ "Test3", "Test4" ] ] ], $testObject->getZValue() );
 		$this->assertSame(
@@ -71,7 +71,7 @@ class ZListTest extends \MediaWikiIntegrationTestCase {
 		);
 
 		$this->hideDeprecated( '::create' );
-		$testObject = new ZPersistentObject(
+		$testObject = new ZObjectContent(
 			<<<EOT
 {
 	"Z1K1": "Z2",
@@ -104,7 +104,7 @@ EOT
 		$testObject = new ZList( [ 'Test' ] );
 		$this->assertSame( 'Z10', $testObject->getZType(), 'ZType of directly-created ZList' );
 
-		$testObject = new ZPersistentObject( '["Test"]' );
+		$testObject = new ZObjectContent( '["Test"]' );
 		$this->assertSame( 'Z10', $testObject->getZType(), 'ZType of indirectly-created ZList' );
 	}
 

@@ -11,7 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use DataUpdate;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use Title;
 
 class ZObjectSecondaryDataUpdate extends DataUpdate {
@@ -19,7 +19,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 	/** @var Title */
 	private $title;
 
-	/** @var ZPersistentObject */
+	/** @var ZObjectContent */
 	private $zObject;
 
 	public function __construct( Title $title, $zObject ) {

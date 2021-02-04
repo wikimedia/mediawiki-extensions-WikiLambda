@@ -13,7 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use Content;
 use FormatJson;
 use JsonContentHandler;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MWException;
@@ -34,10 +34,10 @@ class ZObjectContentHandler extends JsonContentHandler {
 	}
 
 	/**
-	 * @return ZPersistentObject
+	 * @return ZObjectContent
 	 */
 	public function makeEmptyContent() {
-		return new ZPersistentObject(
+		return new ZObjectContent(
 			'{' . "\n"
 				. '  "' . ZTypeRegistry::Z_OBJECT_TYPE . '": "' . ZTypeRegistry::Z_PERSISTENTOBJECT . '",' . "\n"
 				 . '  "' . ZTypeRegistry::Z_PERSISTENTOBJECT_ID . '": "Z0",' . "\n"
@@ -54,7 +54,7 @@ class ZObjectContentHandler extends JsonContentHandler {
 	 * @return string
 	 */
 	protected function getContentClass() {
-		return ZPersistentObject::class;
+		return ZObjectContent::class;
 	}
 
 	/**
@@ -71,7 +71,7 @@ class ZObjectContentHandler extends JsonContentHandler {
 			throw new \InvalidArgumentException( "Provided page '$zObjectTitle' is not a ZObject content type." );
 		}
 
-		$zObject = ZPersistentObject::getObjectFromDB( $zObjectTitle );
+		$zObject = ZObjectContent::getObjectFromDB( $zObjectTitle );
 
 		if ( $zObject === false ) {
 			throw new \InvalidArgumentException( "Provided page '$zObjectTitle' could not be fetched from the DB." );

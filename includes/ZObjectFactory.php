@@ -16,7 +16,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use Title;
 
@@ -75,7 +75,7 @@ class ZObjectFactory {
 		}
 
 		if ( $type === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
-			return ZPersistentObject::create( $objectVars );
+			return ZObjectContent::create( $objectVars );
 		}
 
 		$registry = ZTypeRegistry::singleton();
@@ -94,7 +94,7 @@ class ZObjectFactory {
 				);
 			}
 
-			$targetObject = ZPersistentObject::getObjectFromDB( $targetTitle );
+			$targetObject = ZObjectContent::getObjectFromDB( $targetTitle );
 
 			if ( !$targetObject ) {
 				throw new InvalidArgumentException(

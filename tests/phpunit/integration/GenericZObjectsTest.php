@@ -11,14 +11,14 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use Revision;
 use Title;
 use WikiPage;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
+ * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent
  * @group Database
  */
 class GenericZObjectsTest extends \MediaWikiIntegrationTestCase {
@@ -57,7 +57,7 @@ EOT;
 		// Test content is correct.
 		$instanceWikiPage = WikiPage::factory( $instanceTitle );
 		$instance = $instanceWikiPage->getContent( Revision::RAW );
-		$this->assertTrue( $instance instanceof ZPersistentObject );
+		$this->assertTrue( $instance instanceof ZObjectContent );
 		$this->assertTrue( $instance->isValid() );
 
 		// Because ZString is built-in type, it gets special native treatment, unlike a DB-provided type, so this is a
@@ -123,7 +123,7 @@ EOT;
 		// Test content is correct.
 		$instanceWikiPage = WikiPage::factory( $instanceTitle );
 		$instance = $instanceWikiPage->getContent( Revision::RAW );
-		$this->assertTrue( $instance instanceof ZPersistentObject );
+		$this->assertTrue( $instance instanceof ZObjectContent );
 		$this->assertTrue( $instance->isValid() );
 
 		// Though ZTestType is a PHP-provided type, it's not marked as built-in, so it falls back to a ZObject
@@ -258,7 +258,7 @@ EOT;
 		$instanceWikiPage = WikiPage::factory( $instanceTitle );
 		$instance = $instanceWikiPage->getContent( Revision::RAW );
 		$this->assertTrue(
-			$instance instanceof ZPersistentObject,
+			$instance instanceof ZObjectContent,
 			'ZInteger instance comes back as the right content class'
 		);
 		$this->assertTrue(

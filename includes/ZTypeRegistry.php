@@ -11,7 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use InvalidArgumentException;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use Title;
 
 /**
@@ -75,7 +75,7 @@ class ZTypeRegistry {
 
 	private const BUILT_IN_TYPES = [
 		self::Z_OBJECT => 'ZObject',
-		self::Z_PERSISTENTOBJECT => 'ZPersistentObject',
+		self::Z_PERSISTENTOBJECT => 'ZObjectContent',
 		self::Z_KEY => 'ZKey',
 		self::Z_TYPE => 'ZType',
 		self::Z_STRING => 'ZString',
@@ -138,7 +138,7 @@ class ZTypeRegistry {
 		$title = Title::newFromText( $key, NS_ZOBJECT );
 
 		// TODO: This is quite expensive. Store this in a metadata DB table, instead of fetching it live?
-		$zObject = ZPersistentObject::getObjectFromDB( $title );
+		$zObject = ZObjectContent::getObjectFromDB( $title );
 
 		if ( $zObject === false ) {
 			return false;
