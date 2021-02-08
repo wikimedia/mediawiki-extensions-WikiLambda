@@ -178,6 +178,9 @@ class Hooks implements
 			}
 		);
 
+		// Naturally sort, so Z2 gets created before Z10 etc.
+		natsort( $initialDataToLoadListing );
+
 		foreach ( $initialDataToLoadListing as $filename ) {
 			$updateRowName = "create WikiLambda initial content - $filename";
 
