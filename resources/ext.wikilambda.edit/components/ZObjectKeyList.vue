@@ -34,6 +34,7 @@
 
 <script>
 var Constants = require( '../Constants.js' ),
+	typeUtils = require( '../mixins/typeUtils.js' ),
 	ZObjectKeyInput = require( './ZObjectKeyInput.vue' ),
 	mapState = require( 'vuex' ).mapState,
 	mapMutations = require( 'vuex' ).mapMutations,
@@ -44,6 +45,7 @@ module.exports = {
 	components: {
 		'z-object-key-input': ZObjectKeyInput
 	},
+	mixins: [ typeUtils ],
 	props: {
 		zobject: {
 			type: Object,
@@ -106,26 +108,6 @@ module.exports = {
 			},
 
 			/**
-			 * Returns the initial value for a given ZType.
-			 *
-			 * @param {string} type
-			 * @return {Object|Array|string}
-			 */
-			getInitialValue: function ( type ) {
-				var initialValue;
-
-				if ( type === Constants.Z_STRING ) {
-					initialValue = '';
-				} else if ( type === Constants.Z_LIST ) {
-					initialValue = [];
-				} else {
-					initialValue = {};
-					initialValue[ Constants.Z_OBJECT_TYPE ] = type;
-				}
-				return initialValue;
-			},
-
-			/**
 			 * Sets the type of a ZObject key.
 			 * Fires the event `change` with key and initial
 			 * value for that type so that ZObject updates
@@ -174,30 +156,6 @@ module.exports = {
 			removeKey: function ( key ) {
 				this.$delete( this.keyFields, key );
 				this.$emit( 'delete', key );
-			},
-
-			/**
-			 * Gets the key type given its initial value.
-			 *
-			 * @param {Object|Array|string} value
-			 * @return {string}
-			 */
-			getKeyType: function ( value ) {
-				if ( typeof ( value ) === 'object' ) {
-					if ( Array.isArray( value ) ) {
-						return Constants.Z_LIST;
-					} else if ( Constants.Z_OBJECT_TYPE in value ) {
-						return value[ Constants.Z_OBJECT_TYPE ];
-					} else {
-						return Constants.Z_OBJECT;
-					}
-				} else {
-					if ( value.match( /^Z\d+$/ ) ) {
-						return Constants.Z_REFERENCE;
-					} else {
-						return Constants.Z_STRING;
-					}
-				}
 			},
 
 			/**
@@ -253,7 +211,7 @@ module.exports = {
 				if ( key === 'Z2K1' || key === 'Z4K1' ) {
 					this.$set( this.keyFields, key, Constants.Z_STRING );
 				} else {
-					this.$set( this.keyFields, key, this.getKeyType( this.zobject[ key ] ) );
+					this.$set( this.keyFields, key, this.getZObjectType( this.zobject[ key ] ) );
 				}
 			}
 		}

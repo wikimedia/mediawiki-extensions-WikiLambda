@@ -109,6 +109,7 @@
 				"ext.wikilambda.edit/store/actions.js",
 				"ext.wikilambda.edit/store/getters.js",
 				"ext.wikilambda.edit/store/mutations.js",
+				"ext.wikilambda.edit/mixins/typeUtils.js",
 				"ext.wikilambda.edit/components/ZObjectEditor.vue",
 				"ext.wikilambda.edit/components/ZObjectViewer.vue",
 				"ext.wikilambda.edit/components/ZObject.vue",
