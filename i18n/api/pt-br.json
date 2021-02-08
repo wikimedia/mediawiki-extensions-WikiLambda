@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Eduardo Addad de Oliveira"
+			"Eduardo Addad de Oliveira",
+			"Eduardoaddad"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Busque o modelo JSON de ZObjects.",
