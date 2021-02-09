@@ -16,9 +16,11 @@
 
 		<z-multilingual-string
 			v-else-if="type === Constants.Z_MULTILINGUALSTRING"
-			:mls-object="zobject"
+			:zobject="zobject"
 			:viewmode="viewmode"
-			@input="setZMultilingualString"
+			@delete-lang="deleteZMonolingualString"
+			@add-lang="addZMonolingualString"
+			@change="setZMonolingualString"
 		></z-multilingual-string>
 
 		<z-list
@@ -113,9 +115,53 @@ module.exports = {
 		},
 
 		// Handlers for ZMultilingualString events
-		setZMultilingualString: function () {
-			// TODO Update multilingual string from ZObject instead of
-			// directly mutating it in ZMultilingualString component
+
+		/**
+		 * Removes a language entry from a Multilingual string.
+		 *
+		 * @param {number} index
+		 */
+		deleteZMonolingualString: function ( index ) {
+			if ( this.zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ] ) {
+				this.zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ].splice( index, 1 );
+			}
+		},
+
+		/**
+		 * Adds a new Monolingual String to the Multilingual String
+		 * values array.
+		 *
+		 * @param {string} lang
+		 */
+		addZMonolingualString: function ( lang ) {
+			var monolingualString = {};
+
+			// Create new ZMonolingual String
+			monolingualString[ Constants.Z_OBJECT_TYPE ] = Constants.Z_MONOLINGUALSTRING;
+			monolingualString[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] = lang;
+			monolingualString[ Constants.Z_MONOLINGUALSTRING_VALUE ] = '';
+
+			// Add it to the value array in the ZMultilingual String
+			if ( !this.zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ] ) {
+				this.$set( this.zobject, Constants.Z_MULTILINGUALSTRING_VALUE, [] );
+			}
+			this.zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ].push( monolingualString );
+		},
+
+		/**
+		 * Sets the value of an existing Monolingual String from the Multilingual
+		 * String values array.
+		 *
+		 * @param {Object} item
+		 */
+		setZMonolingualString: function ( item ) {
+			if ( this.zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ] ) {
+				this.$set(
+					this.zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ][ item.index ],
+					Constants.Z_MONOLINGUALSTRING_VALUE,
+					item.value
+				);
+			}
 		},
 
 		// Handlers for ZObjectGeneric events
