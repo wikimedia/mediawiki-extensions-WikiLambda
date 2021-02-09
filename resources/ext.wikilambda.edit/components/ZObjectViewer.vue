@@ -7,7 +7,8 @@
 	-->
 	<!-- TODO: Add a loading indicator, once T254695 is done upstream. -->
 	<div id="ext-wikilambda-view">
-		<z-object :zobject="zobject"
+		<z-object
+			:zobject="zobject"
 			:persistent="true"
 			:viewmode="true"
 		></z-object>

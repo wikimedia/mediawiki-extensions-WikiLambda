@@ -95,12 +95,13 @@ class SpecialCreateZObject extends SpecialPage {
 			'page' => 'ZObject:' . $targetZid,
 			'zobject' => $zObject->getData()->getValue(),
 			'zlang' => $userLangCode,
-			'createNewPage' => true
+			'createNewPage' => true,
+			'viewmode' => false
 		];
 
 		$output->addJsConfigVars( 'extWikilambdaEditingData', $editingData );
 
 		// Vue app element
-		$output->addHtml( Html::element( 'div', [ 'id' => 'ext-wikilambda-editor' ] ) );
+		$output->addHtml( Html::element( 'div', [ 'id' => 'ext-wikilambda-app' ] ) );
 	}
 }

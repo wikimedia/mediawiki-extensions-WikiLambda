@@ -329,14 +329,15 @@ class ZPersistentObject extends JsonContent {
 			'page' => $title->getPrefixedDBkey(),
 			'zobject' => $zObject->getData()->getValue(),
 			'zlang' => $userLangCode,
-			'createNewPage' => false
+			'createNewPage' => false,
+			'viewmode' => true
 		];
 
 		$output->addJsConfigVars( 'extWikilambdaEditingData', $editingData );
 
 		$output->setText(
 			// Placeholder div for the Vue template.
-			Html::element( 'div', [ 'id' => 'ext-wikilambda-view' ] )
+			Html::element( 'div', [ 'id' => 'ext-wikilambda-app' ] )
 			// Fallback div for the HTML version and warning.
 			. Html::rawElement(
 				'div',

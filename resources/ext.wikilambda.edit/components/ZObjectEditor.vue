@@ -7,7 +7,8 @@
 	-->
 	<!-- TODO: Add a loading indicator, once T254695 is done upstream. -->
 	<div id="ext-wikilambda-editor">
-		<z-object :zobject="zobject"
+		<z-object
+			:zobject="zobject"
 			:persistent="true"
 			:viewmode="false"
 			@input="updateZobject"

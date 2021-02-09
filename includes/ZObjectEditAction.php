@@ -47,13 +47,14 @@ class ZObjectEditAction extends Action {
 			'page' => $this->getTitle()->getPrefixedDBkey(),
 			'zobject' => $zObject->getData()->getValue(),
 			'zlang' => $userLangCode,
-			'createNewPage' => $createNewPage
+			'createNewPage' => $createNewPage,
+			'viewmode' => false
 		];
 
 		$output->addJsConfigVars( 'extWikilambdaEditingData', $editingData );
 
 		// Vue app element
-		$output->addHtml( Html::element( 'div', [ 'id' => 'ext-wikilambda-editor' ] ) );
+		$output->addHtml( Html::element( 'div', [ 'id' => 'ext-wikilambda-app' ] ) );
 	}
 
 	public function doesWrites() {
