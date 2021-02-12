@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Base",
 			"Renamerr"
 		]
 	},
@@ -9,6 +10,7 @@
 	"wikilambda-invalidcontenttype": "Наданий вміст не є ZObject-класом.",
 	"wikilambda-special-createzobject": "Створити новий ZObject",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Мова",
+	"wikilambda-publishnew": "Зберегти",
 	"wikilambda-savenew": "Зберегти",
 	"wikilambda-publishchanges": "Опублікувати зміни",
 	"wikilambda-savechanges": "Зберегти зміни",
