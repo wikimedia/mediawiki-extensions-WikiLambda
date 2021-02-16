@@ -118,7 +118,7 @@ module.exports = {
 			},
 
 			/**
-			 * Once the timeout is done, calls the `wikilambda_searchlabels` API
+			 * Once the timeout is done, calls the `wikilambdasearch_labels` API
 			 * with the current value of the input
 			 *
 			 * @param {string} input
@@ -126,7 +126,7 @@ module.exports = {
 			getLookupResults: function ( input ) {
 				var api = new mw.Api(),
 					self = this,
-					queryType = 'wikilambda_searchlabels';
+					queryType = 'wikilambdasearch_labels';
 
 				api.get( {
 					action: 'query',

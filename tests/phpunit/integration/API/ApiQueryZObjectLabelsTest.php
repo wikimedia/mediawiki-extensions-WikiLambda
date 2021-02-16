@@ -66,10 +66,10 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 	public function testNoResults() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
-			'list' => 'wikilambda_searchlabels',
-			'wikilambda_search' => 'chip',
-			'wikilambda_language' => 'en',
-			'wikilambda_type' => 'theforbiddentype',
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_search' => 'chip',
+			'wikilambdasearch_language' => 'en',
+			'wikilambdasearch_type' => 'theforbiddentype',
 		] );
 		$this->assertEquals( [ 'batchcomplete' => true ], $result[0] );
 	}
@@ -80,14 +80,14 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 	public function testSearchByType() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
-			'list' => 'wikilambda_searchlabels',
-			'wikilambda_language' => 'it',
-			'wikilambda_type' => 'birdtype',
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_language' => 'it',
+			'wikilambdasearch_type' => 'birdtype',
 		] );
 		$expected = [
 			'batchcomplete' => true,
 			'query' => [
-				'wikilambda_searchlabels' => [
+				'wikilambdasearch_labels' => [
 					$this->resultFor( 'Z90' ),
 					$this->resultFor( 'Z91' ),
 				]
@@ -103,27 +103,27 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 	public function testLimit() {
 		$precondition_result = $this->doApiRequest( [
 			'action' => 'query',
-			'list' => 'wikilambda_searchlabels',
-			'wikilambda_language' => 'it',
-			'wikilambda_type' => 'birdtype',
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_language' => 'it',
+			'wikilambdasearch_type' => 'birdtype',
 		] );
-		$this->assertCount( 2, $precondition_result[0]['query']['wikilambda_searchlabels'] );
+		$this->assertCount( 2, $precondition_result[0]['query']['wikilambdasearch_labels'] );
 
 		$result = $this->doApiRequest( [
 			'action' => 'query',
-			'list' => 'wikilambda_searchlabels',
-			'wikilambda_language' => 'it',
-			'wikilambda_type' => 'birdtype',
-			'wikilambda_limit' => 1,  // Limit is off by one?
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_language' => 'it',
+			'wikilambdasearch_type' => 'birdtype',
+			'wikilambdasearch_limit' => 1,  // Limit is off by one?
 		] );
 		$expected = [
 			'batchcomplete' => true,
 			'continue' => [
-				'wikilambda_continue' => '1',
+				'wikilambdasearch_continue' => '1',
 				'continue' => '-||',
 			],
 			'query' => [
-				'wikilambda_searchlabels' => [
+				'wikilambdasearch_labels' => [
 					$this->resultFor( 'Z90' ),
 				]
 			]
@@ -136,14 +136,14 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 	public function testSearchByLanguageNoFallback() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
-			'list' => 'wikilambda_searchlabels',
-			'wikilambda_language' => 'it',
-			// 'wikilambda_nofallback' => true,  // default
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_language' => 'it',
+			// 'wikilambdasearch_nofallback' => true,  // default
 		] );
 		$expected = [
 			'batchcomplete' => true,
 			'query' => [
-				'wikilambda_searchlabels' => [
+				'wikilambdasearch_labels' => [
 					$this->resultFor( 'Z90' ),
 					$this->resultFor( 'Z93' ),  // en is always included because of History
 					$this->resultFor( 'Z91' ),
@@ -161,14 +161,14 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 		// TODO: Remove Broken annotation once Boolean parameters can be false.
 		$result = $this->doApiRequest( [
 			'action' => 'query',
-			'list' => 'wikilambda_searchlabels',
-			'wikilambda_language' => 'egl',
-			'wikilambda_nofallback' => false,
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_language' => 'egl',
+			'wikilambdasearch_nofallback' => false,
 		] );
 		$expected = [
 			'batchcomplete' => true,
 			'query' => [
-				'wikilambda_searchlabels' => [
+				'wikilambdasearch_labels' => [
 					$this->resultFor( 'Z90' ),  // egl falls back to it
 					$this->resultFor( 'Z91' ),  // egl falls back to it
 					$this->resultFor( 'Z92' ),
@@ -187,15 +187,15 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 		// TODO: Remove Broken annotation once Boolean parameters can be false.
 		$result = $this->doApiRequest( [
 			'action' => 'query',
-			'list' => 'wikilambda_searchlabels',
-			'wikilambda_language' => 'it',
-			'wikilambda_search' => 'CHEEP',
-			// 'wikilambda_exact' => false,  // default
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_language' => 'it',
+			'wikilambdasearch_search' => 'CHEEP',
+			// 'wikilambdasearch_exact' => false,  // default
 		] );
 		$expected = [
 			'batchcomplete' => true,
 			'query' => [
-				'wikilambda_searchlabels' => [
+				'wikilambdasearch_labels' => [
 					[
 						$this->resultFor( 'Z90' ),
 						$this->resultFor( 'Z91' ),
@@ -212,15 +212,15 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 	public function testSearchByLabelExact() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
-			'list' => 'wikilambda_searchlabels',
-			'wikilambda_exact' => true,
-			'wikilambda_language' => 'it',
-			'wikilambda_search' => 'CHORP',
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_exact' => true,
+			'wikilambdasearch_language' => 'it',
+			'wikilambdasearch_search' => 'CHORP',
 		] );
 		$expected = [
 			'batchcomplete' => true,
 			'query' => [
-				'wikilambda_searchlabels' => [
+				'wikilambdasearch_labels' => [
 					$this->resultFor( 'Z91' ),
 				]
 			]
@@ -234,15 +234,15 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 	public function testContinue() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
-			'list' => 'wikilambda_searchlabels',
-			'wikilambda_language' => 'it',
-			'wikilambda_nofallback' => false,
-			'wikilambda_continue' => 2,
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_language' => 'it',
+			'wikilambdasearch_nofallback' => false,
+			'wikilambdasearch_continue' => 2,
 		] );
 		$expected = [
 			'batchcomplete' => true,
 			'query' => [
-				'wikilambda_searchlabels' => [
+				'wikilambdasearch_labels' => [
 					$this->resultFor( 'Z91' ),
 				]
 			]

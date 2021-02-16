@@ -255,4 +255,81 @@ class ZObjectUtils {
 		return $output;
 	}
 
+	/**
+	 * Filters ZObject to preferred language.
+	 *
+	 * Given a ZObject, reduces all its ZMultilingualStrings to
+	 * only the preferred language or fallbacks.
+	 *
+	 * @param array|stdClass $input decoded JSON object for a ZObject
+	 * @param string[] $languages array of language codes
+	 * @return string|array|stdClass same ZObject with only selected Monolingual
+	 * string for each of its Multilingual strings
+	 */
+	public static function filterZMultilingualStringsToLanguage( $input, array $languages = [] ) {
+		// For each key of the input ZObject
+		foreach ( $input as $index => $value ) {
+			// If the value of the key is an array, apply language filter
+			// to every element of the array
+			if ( is_array( $value ) ) {
+				$input->$index = array_map( function ( $item ) use ( $languages ) {
+					return self::filterZMultilingualStringsToLanguage( $item, $languages );
+				}, $value );
+			}
+
+			// If the value of the key is an object, apply language filter
+			// to every key in the value object
+			if ( is_object( $value ) ) {
+				$input->$index = self::filterZMultilingualStringsToLanguage( $value, $languages );
+			}
+
+			// If the value is a string, and the type is ZMonolingualString,
+			// select the preferred language out of the available ZMonolingualStrings
+			if (
+				is_string( $value ) &&
+				$index === ZTypeRegistry::Z_OBJECT_TYPE &&
+				$value === ZTypeRegistry::Z_MULTILINGUALSTRING
+			) {
+				$input->{ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE} = self::getPreferredMonolingualString(
+					$input->{ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE},
+					$languages
+				);
+				break;
+			}
+		}
+		return $input;
+	}
+
+	/**
+	 * Filters ZMonolingualString to preferred language.
+	 *
+	 * Returns the preferred ZMonolingualString of a ZMultilingualString given an
+	 * array of preferred languages.
+	 *
+	 * @param array $multilingualStr decoded JSON for a ZMultilingualString value (Z12K1)
+	 * @param string[] $languages array of language codes
+	 * @return array same ZMultilingualString value with only one item of the preferred language
+	 */
+	public static function getPreferredMonolingualString( array $multilingualStr, array $languages ) : array {
+		$availableLangs = [];
+		$selectedIndex = 0;
+
+		if ( count( $multilingualStr ) == 0 ) {
+			return [];
+		}
+
+		foreach ( $multilingualStr as $value ) {
+			$availableLangs[] = $value->{ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE};
+		}
+
+		foreach ( $languages as $lang ) {
+			$index = array_search( $lang, $availableLangs );
+			if ( $index !== false ) {
+				$selectedIndex = $index;
+				break;
+			}
+		}
+
+		return [ $multilingualStr[ $selectedIndex ] ];
+	}
 }

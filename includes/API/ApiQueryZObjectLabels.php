@@ -21,7 +21,7 @@ use Wikimedia\ParamValidator\ParamValidator;
 class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 
 	public function __construct( $query, $moduleName ) {
-		parent::__construct( $query, $moduleName, 'wikilambda_' );
+		parent::__construct( $query, $moduleName, 'wikilambdasearch_' );
 	}
 
 	public function execute() {
@@ -172,12 +172,12 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 	 */
 	protected function getExamplesMessages() {
 		return [
-			'action=query&list=wikilambda_searchlabels&wikilambda_search=foo&wikilambda_language=en'
+			'action=query&list=wikilambdasearch_labels&wikilambdasearch_search=foo&wikilambdasearch_language=en'
 				=> 'apihelp-query+wikilambda-example-simple',
-			'action=query&list=wikilambda_searchlabels&wikilambda_search=foo&wikilambda_language=fr'
-				. '&wikilambda_nofallback=true'
+			'action=query&list=wikilambdasearch_labels&wikilambdasearch_search=foo&wikilambdasearch_language=fr'
+				. '&wikilambdasearch_nofallback=true'
 				=> 'apihelp-query+wikilambda-example-nofallback',
-			'action=query&list=wikilambda_searchlabels&wikilambda_type=Z4&wikilambda_language=en'
+			'action=query&list=wikilambdasearch_labels&wikilambdasearch_type=Z4&wikilambdasearch_language=en'
 				=> 'apihelp-query+wikilambda-example-type',
 		];
 	}
