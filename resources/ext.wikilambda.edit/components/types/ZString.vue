@@ -24,6 +24,8 @@
 </template>
 
 <script>
+var Constants = require( '../../Constants.js' );
+
 module.exports = {
 	name: 'ZString',
 	props: {
@@ -31,9 +33,18 @@ module.exports = {
 			type: Boolean,
 			required: true
 		},
-		value: {
-			type: String,
+		zobject: {
+			type: [ Object, String ],
 			default: ''
+		}
+	},
+	computed: {
+		value: function () {
+			if ( typeof this.zobject === 'string' ) {
+				return this.zobject;
+			} else {
+				return this.zobject[ Constants.Z_STRING_VALUE ];
+			}
 		}
 	},
 	methods: {
@@ -45,6 +56,11 @@ module.exports = {
 		 */
 		onInput: function ( event ) {
 			this.$emit( 'input', event.target.value );
+		}
+	},
+	created: function () {
+		if ( !this.viewmode && ( typeof this.zobject === 'string' ) ) {
+			this.$emit( 'input', this.zobject );
 		}
 	}
 };

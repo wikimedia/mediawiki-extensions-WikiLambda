@@ -44,16 +44,34 @@ module.exports = {
 		 */
 		getInitialValue: function ( type ) {
 			var initialValue;
-
-			if ( type === Constants.Z_STRING ) {
-				initialValue = '';
-			} else if ( type === Constants.Z_LIST ) {
+			if ( type === Constants.Z_LIST ) {
 				initialValue = [];
 			} else {
 				initialValue = {};
 				initialValue[ Constants.Z_OBJECT_TYPE ] = type;
 			}
 			return initialValue;
+		},
+
+		/**
+		 * Returns the normalized form of a canonical ZString or a ZReference
+		 * depending on the string value.
+		 *
+		 * @param {string} value
+		 * @return {Object}
+		 */
+		normalizeZStringZReference: function ( value ) {
+			var normalized = {};
+			// If it matches ZID, normalize as a Z9 (ZReference)
+			// Else, normalize as a Z6 (ZString)
+			if ( value.match( /^Z\d+$/ ) ) {
+				normalized[ Constants.Z_OBJECT_TYPE ] = Constants.Z_REFERENCE;
+				normalized[ Constants.Z_REFERENCE_ID ] = value;
+			} else {
+				normalized[ Constants.Z_OBJECT_TYPE ] = Constants.Z_STRING;
+				normalized[ Constants.Z_STRING_VALUE ] = value;
+			}
+			return normalized;
 		}
 	}
 };
