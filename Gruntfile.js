@@ -26,5 +26,4 @@ module.exports = function ( grunt ) {
 	} );
 
 	grunt.registerTask( 'test', [ 'eslint', 'banana', 'stylelint' ] );
-	grunt.registerTask( 'default', 'test' );
 };
