@@ -5,9 +5,11 @@
  * @file
  */
 
+// Must be explicitly included for LocalisationCache to work on wiki farms
+// (which loads i18n files, without initialising the extension per se).
 require_once __DIR__ . '/includes/defines.php';
 
-// $namespaceNames = [];
+$namespaceNames = [];
 
 /** English */
 $namespaceNames['en'] = [
