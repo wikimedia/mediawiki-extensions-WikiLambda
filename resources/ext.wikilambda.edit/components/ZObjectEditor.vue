@@ -70,7 +70,7 @@ module.exports = {
 			},
 
 			submit: function () {
-				var page = mw.config.get( 'extWikilambdaEditingData' ).page,
+				var page = mw.config.get( 'wgWikiLambda' ).page,
 					api = new mw.Api(),
 					self = this;
 				if ( this.createNewPage ) {
@@ -95,7 +95,7 @@ module.exports = {
 	),
 
 	created: function () {
-		var editingData = mw.config.get( 'extWikilambdaEditingData' ),
+		var editingData = mw.config.get( 'wgWikiLambda' ),
 			languageChain;
 		this.createNewPage = editingData.createNewPage;
 

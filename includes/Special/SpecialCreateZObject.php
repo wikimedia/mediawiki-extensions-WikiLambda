@@ -99,7 +99,7 @@ class SpecialCreateZObject extends SpecialPage {
 			'viewmode' => false
 		];
 
-		$output->addJsConfigVars( 'extWikilambdaEditingData', $editingData );
+		$output->addJsConfigVars( 'wgWikiLambda', $editingData );
 
 		// Vue app element
 		$output->addHtml( Html::element( 'div', [ 'id' => 'ext-wikilambda-app' ] ) );

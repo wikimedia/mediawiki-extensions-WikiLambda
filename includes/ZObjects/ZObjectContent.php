@@ -335,7 +335,7 @@ class ZObjectContent extends JsonContent {
 			'viewmode' => true
 		];
 
-		$output->addJsConfigVars( 'extWikilambdaEditingData', $editingData );
+		$output->addJsConfigVars( 'wgWikiLambda', $editingData );
 
 		$output->setText(
 			// Placeholder div for the Vue template.

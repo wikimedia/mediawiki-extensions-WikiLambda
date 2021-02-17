@@ -29,7 +29,7 @@ module.exports = {
 		};
 	},
 	created: function () {
-		var editingData = mw.config.get( 'extWikilambdaEditingData' );
+		var editingData = mw.config.get( 'wgWikiLambda' );
 		this.viewmode = editingData.viewmode;
 	}
 };
