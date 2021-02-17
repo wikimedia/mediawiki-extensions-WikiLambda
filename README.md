@@ -1,7 +1,22 @@
-This is the WikiLambda MediaWiki extension, which will provide Wikimedia wikis with a wikitext parser function to call evaluation of functions written, managed, and evaluated on a central wiki.
+# WikiLamba extension for MediaWiki
 
-## Development Instructions
-Follow the instructions to bring up a MediaWiki development environment with either [Vagrant](https://www.mediawiki.org/wiki/How_to_become_a_MediaWiki_hacker)
-or [Docker](https://www.mediawiki.org/wiki/MediaWiki-Docker).
+WikiLambda will provide Wikimedia wikis with a wikitext parser function to call evaluation of functions written, managed, and evaluated on a central wiki.
 
-Then clone this repository under the `extensions/` subdirectory, [as described in the MediaWiki core repository](https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/refs/heads/master/extensions/README).
+## Development instructions
+
+* Bring up a [development environment](https://www.mediawiki.org/wiki/How_to_become_a_MediaWiki_hacker) for MediaWiki (e.g. [Docker](https://www.mediawiki.org/wiki/MediaWiki-Docker) or [Vagrant](https://www.mediawiki.org/wiki/MediaWiki-Vagrant)).
+* In your `mediawiki/extensions/` subdirectory, clone the extension as follows:
+  ```
+  git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/WikiLambda
+  ```
+* Add the following to your `LocalSettings.php` file:
+  ```
+  wfLoadExtension( 'WikiLambda' );
+  ```
+* Run `php maintenance/update.php` to provision necessary schemas and initial content.
+
+Done! Navigate to the newly created `ZObject:Z1` page on your wiki to verify that the extension is successfully installed.
+
+## See also
+
+<https://www.mediawiki.org/wiki/Extension:WikiLambda>
