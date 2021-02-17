@@ -5,8 +5,6 @@
  * @file
  */
 
-require_once __DIR__ . '/includes/defines.php';
-
 $specialPageAliases = [];
 
 /** English (English) */
