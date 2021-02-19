@@ -329,7 +329,7 @@ class ZObjectContent extends JsonContent {
 		$editingData = [
 			'title' => $title->getBaseText(),
 			'page' => $title->getPrefixedDBkey(),
-			'zobject' => $zObject->getData()->getValue(),
+			'zobject' => $zObject ? $zObject->getData()->getValue() : null,
 			'zlang' => $userLangCode,
 			'createNewPage' => false,
 			'viewmode' => true
