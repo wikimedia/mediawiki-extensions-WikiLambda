@@ -26,7 +26,7 @@
 				:zobject="zobject"
 				:viewmode="viewmode"
 				:persistent="false"
-				@change="updateValue($event, index)"
+				@change="updateValue"
 			></z-object>
 		</template>
 	</div>
@@ -35,7 +35,6 @@
 <script>
 var Constants = require( '../Constants.js' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
-	mapActions = require( 'vuex' ).mapActions,
 	mapState = require( 'vuex' ).mapState;
 
 module.exports = {
@@ -79,31 +78,28 @@ module.exports = {
 			}
 		}
 	),
-	methods: $.extend( {},
-		mapActions( [ 'fetchZKeys' ] ),
-		{
-			/**
-			 * Fires a typeChange event with the new type of this key.
-			 *
-			 * @param {string} newType
-			 * @fires typeChange
-			 */
-			setKeyType: function ( newType ) {
-				this.$emit( 'change-type', newType );
-			},
+	methods: {
+		/**
+		 * Fires a typeChange event with the new type of this key.
+		 *
+		 * @param {string} newType
+		 * @fires typeChange
+		 */
+		setKeyType: function ( newType ) {
+			this.$emit( 'change-type', newType );
+		},
 
-			/**
-			 * Fires an input event with the updated value
-			 * of the key.
-			 *
-			 * @param {string} value
-			 * @fires input
-			 */
-			updateValue: function ( value ) {
-				this.$emit( 'input', value );
-			}
+		/**
+		 * Fires an input event with the updated value
+		 * of the key.
+		 *
+		 * @param {string} value
+		 * @fires input
+		 */
+		updateValue: function ( value ) {
+			this.$emit( 'input', value );
 		}
-	),
+	},
 	beforeCreate: function () {
 		this.$options.components[ 'z-object' ] = require( './ZObject.vue' );
 	}

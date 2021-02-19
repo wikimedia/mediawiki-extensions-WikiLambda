@@ -92,16 +92,22 @@ module.exports = {
 
 				// State mutation:
 				// Add zKey label information in the user's selected language
-				keys = zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
-				keys.forEach( function ( key ) {
-					context.commit( 'addZKeyLabel', {
-						key: key[ Constants.Z_KEY_ID ],
-						label: labelFromMultilingualString(
-							key[ Constants.Z_KEY_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ],
-							payload.zlangs
-						)
+				// Only if zidInfo[Z2K2] is an object and zidInfo[Z2K2][Z1K1] === Z4
+				if (
+					( typeof zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ] === 'object' ) &&
+					( zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] === Constants.Z_TYPE )
+				) {
+					keys = zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
+					keys.forEach( function ( key ) {
+						context.commit( 'addZKeyLabel', {
+							key: key[ Constants.Z_KEY_ID ],
+							label: labelFromMultilingualString(
+								key[ Constants.Z_KEY_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ],
+								payload.zlangs
+							)
+						} );
 					} );
-				} );
+				}
 			} );
 		} );
 	},
