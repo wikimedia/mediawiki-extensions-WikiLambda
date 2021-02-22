@@ -19,7 +19,7 @@ class ZString extends ZObject {
 			'type' => ZTypeRegistry::Z_STRING,
 			'keys' => [
 				ZTypeRegistry::Z_STRING_VALUE => [
-					'type' => ZTypeRegistry::HACK_STRING,
+					'type' => ZTypeRegistry::BUILTIN_STRING,
 					'default' => ''
 				],
 			],

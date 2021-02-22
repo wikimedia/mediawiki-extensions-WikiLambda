@@ -57,7 +57,7 @@ class ZObjectContent extends JsonContent {
 			'type' => ZTypeRegistry::Z_PERSISTENTOBJECT,
 			'keys' => [
 				ZTypeRegistry::Z_PERSISTENTOBJECT_ID => [
-					'type' => ZTypeRegistry::HACK_REFERENCE,
+					'type' => ZTypeRegistry::BUILTIN_REFERENCE,
 					'optional' => true,
 					'default' => 'Z0',
 				],

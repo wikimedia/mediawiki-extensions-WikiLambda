@@ -20,14 +20,14 @@ use Title;
 class ZTypeRegistry {
 
 	// Is there a better way to represent this direct string (as opposed to a ZString?)
-	public const HACK_STRING = 'String';
+	public const BUILTIN_STRING = 'String';
 	// Is there a better way to represent this direct array (as opposed to a ZList?)
-	public const HACK_ARRAY = 'Array';
+	public const BUILTIN_ARRAY = 'Array';
 
 	// Needed until we have a ZReference type
-	public const HACK_REFERENCE = 'Reference';
+	public const BUILTIN_REFERENCE = 'Reference';
 	// Needed until we have a better way to cut the Gordian Knot of Z0 references?
-	public const HACK_REFERENCE_NULLABLE = 'NullableReference';
+	public const BUILTIN_REFERENCE_NULLABLE = 'NullableReference';
 	// Needed until we have sub-types
 	public const HACK_REFERENCE_TYPE = 'Reference(Type)';
 

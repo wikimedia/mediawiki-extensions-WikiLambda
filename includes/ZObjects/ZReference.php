@@ -19,7 +19,7 @@ class ZReference extends ZObject {
 			'type' => ZTypeRegistry::Z_REFERENCE,
 			'keys' => [
 				ZTypeRegistry::Z_REFERENCE_VALUE => [
-					'type' => ZTypeRegistry::HACK_REFERENCE
+					'type' => ZTypeRegistry::BUILTIN_REFERENCE
 				],
 			],
 		];

@@ -197,7 +197,7 @@ class ZObjectFactory {
 		$registry = ZTypeRegistry::singleton();
 
 		switch ( $type ) {
-			case ZTypeRegistry::HACK_STRING:
+			case ZTypeRegistry::BUILTIN_STRING:
 				if ( is_string( $value ) ) {
 					return $value;
 				}
@@ -209,7 +209,7 @@ class ZObjectFactory {
 				}
 				break;
 
-			case ZTypeRegistry::HACK_ARRAY:
+			case ZTypeRegistry::BUILTIN_ARRAY:
 				if ( is_array( $value ) ) {
 					foreach ( $value as $key => $arrayItem ) {
 						if ( $arrayItem instanceof ZObject ) {
@@ -253,7 +253,7 @@ class ZObjectFactory {
 				}
 				break;
 
-			case ZTypeRegistry::HACK_REFERENCE:
+			case ZTypeRegistry::BUILTIN_REFERENCE:
 				if (
 					is_string( $value )
 					&& ZKey::isValidZObjectReference( $value )
@@ -262,7 +262,7 @@ class ZObjectFactory {
 				}
 				break;
 
-			case ZTypeRegistry::HACK_REFERENCE_NULLABLE:
+			case ZTypeRegistry::BUILTIN_REFERENCE_NULLABLE:
 				if (
 					is_string( $value )
 					&& (
