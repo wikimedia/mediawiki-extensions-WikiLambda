@@ -126,6 +126,7 @@
 				"ext.wikilambda.edit/components/types/ZList.vue",
 				"ext.wikilambda.edit/components/types/ZMultilingualString.vue",
 				"ext.wikilambda.edit/components/types/ZString.vue",
+				"ext.wikilambda.edit/components/types/ZReference.vue",
 				"lib/icons.js"
 			],
 			"messages": [

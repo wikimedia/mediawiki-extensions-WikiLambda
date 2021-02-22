@@ -8,11 +8,18 @@
 	<div :class="classZObject">
 		<!-- Depending on the type, it will render a different component -->
 		<z-string
-			v-if="type === Constants.Z_STRING || type === Constants.Z_REFERENCE"
-			:value="zobject"
+			v-if="type === Constants.Z_STRING"
+			:zobject="zobject"
 			:viewmode="viewmode"
 			@input="setZString"
 		></z-string>
+
+		<z-reference
+			v-else-if="type === Constants.Z_REFERENCE"
+			:zobject="zobject"
+			:viewmode="viewmode"
+			@input="setZReference"
+		></z-reference>
 
 		<z-multilingual-string
 			v-else-if="type === Constants.Z_MULTILINGUALSTRING"
@@ -49,6 +56,7 @@ var Constants = require( '../Constants.js' ),
 	ZObjectGeneric = require( './ZObjectGeneric.vue' ),
 	ZList = require( './types/ZList.vue' ),
 	ZMultilingualString = require( './types/ZMultilingualString.vue' ),
+	ZReference = require( './types/ZReference.vue' ),
 	ZString = require( './types/ZString.vue' );
 
 module.exports = {
@@ -56,6 +64,7 @@ module.exports = {
 	components: {
 		'z-list': ZList,
 		'z-multilingual-string': ZMultilingualString,
+		'z-reference': ZReference,
 		'z-string': ZString,
 		'z-object-generic': ZObjectGeneric
 	},
@@ -102,16 +111,49 @@ module.exports = {
 		// Handlers for ZString
 
 		/**
-		 * Fires a change event with the new string. This is necessary when
-		 * zobject is of String type, as this ZObject is unable to mutate
-		 * directly its value. The parent ZObject will capture this event and
-		 * mutate the property where the string is saved.
+		 * Sets the value of a ZString.
+		 * If the ZString is normalized (property zobject is an object), sets
+		 * the ZString value.
+		 * If the ZString is canonicalized (property zobject is a string), it
+		 * replaces it with its normalized form by sending a change event to its
+		 * ZObject parent. This is necessary because this ZObject is unable to
+		 * mutate directly its properties.
 		 *
 		 * @param {string} value
 		 * @fires change
 		 */
 		setZString: function ( value ) {
-			this.$emit( 'change', value );
+			var initialValue;
+			if ( typeof this.zobject === 'string' ) {
+				initialValue = this.normalizeZStringZReference( value );
+				this.$emit( 'change', initialValue );
+			} else {
+				this.$set( this.zobject, Constants.Z_STRING_VALUE, value );
+			}
+		},
+
+		// Handlers for ZReference
+
+		/**
+		 * Sets the value of a ZReference.
+		 * If the ZReference is normalized (property zobject is an object), sets
+		 * the ZReference ID.
+		 * If the ZReference is canonicalized (property zobject is a string), it
+		 * replaces it with its normalized form by sending a change event to its
+		 * ZObject parent. This is necessary because this ZObject is unable to
+		 * mutate directly its properties.
+		 *
+		 * @param {string} value
+		 * @fires change
+		 */
+		setZReference: function ( value ) {
+			var initialValue;
+			if ( typeof this.zobject === 'string' ) {
+				initialValue = this.normalizeZStringZReference( value );
+				this.$emit( 'change', initialValue );
+			} else {
+				this.$set( this.zobject, Constants.Z_REFERENCE_ID, value );
+			}
 		},
 
 		// Handlers for ZMultilingualString events
