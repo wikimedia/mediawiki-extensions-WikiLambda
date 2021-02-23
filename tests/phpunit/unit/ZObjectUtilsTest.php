@@ -343,4 +343,196 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 			'identity Hangul match' => [ '데모항목', '데모항목' ],
 		];
 	}
+
+	/**
+	 * @dataProvider provideFilterZMultilingualStringsToLanguage
+	 * @covers ::filterZMultilingualStringsToLanguage
+	 */
+	public function testFilterZMultilingualStringsToLanguage( $input, $languages, $expected ) {
+		$this->assertSame(
+			FormatJson::encode( FormatJson::decode( $expected ) ),
+			FormatJson::encode( ZObjectUtils::filterZMultilingualStringsToLanguage(
+				FormatJson::decode( $input ),
+				FormatJson::decode( $languages )
+			) )
+		);
+	}
+
+	public function provideFilterZMultilingualStringsToLanguage() {
+		return [
+			'empty zobject' => [
+				'{}',
+				'[]',
+				'{}'
+			],
+			'zobject with string values' => [
+				'{ "Z1K1": "Z2", "Z2K2": "string value" }',
+				'[]',
+				'{ "Z1K1": "Z2", "Z2K2": "string value" }'
+			],
+			'zobject with array value' => [
+				'{ "Z1K1": "Z2", "Z2K2": [{ "Z1K1": "Z111"}, {"Z1K1": "Z222"}] }',
+				'[]',
+				'{ "Z1K1": "Z2", "Z2K2": [{ "Z1K1": "Z111"}, {"Z1K1": "Z222"}] }'
+			],
+			'zobject with nested zobject' => [
+				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z3", "Z3K3": { "Z1K1": "Z6" } } }',
+				'[]',
+				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z3", "Z3K3": { "Z1K1": "Z6" } } }'
+			],
+
+			'zobject with multilingual string and no languages' => [
+				'{ "Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" }'
+				. '] }',
+				'[]',
+				'{ "Z1K1": "Z12", "Z12K1": [{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }] }'
+			],
+
+			'zobject with multilingual string and language chain' => [
+				'{ "Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" }'
+				. '] }',
+				'["es", "en"]',
+				'{ "Z1K1": "Z12", "Z12K1": [{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" }] }'
+			],
+
+			'zobject with nested multilingual strings' => [
+				'{ "Z1K1": "Z2", "Z2K3": { "Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "label" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "etiqueta" }'
+				. '] }, "Z2K2": { "Z1K1": "Z2", "Z2K3": { "Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "nested label" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "etiqueta anidada" }'
+				. '] } } }',
+				'["es", "en"]',
+				'{ "Z1K1": "Z2", "Z2K3": {"Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "etiqueta" }'
+				. '] }, "Z2K2": { "Z1K1": "Z2", "Z2K3": {"Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "etiqueta anidada" }'
+				. '] } } }'
+			],
+
+			'zobject with array of multilingual strings and same languages' => [
+				'{ "Z1K1": "Z2", "Z2K2": ['
+				. '{ "Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "first text" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "primer texto" }'
+				. '] },'
+				. '{ "Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "second text" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "segundo texto" }'
+				. '] }'
+				. '] }',
+				'["es", "en"]',
+				'{ "Z1K1": "Z2", "Z2K2": ['
+				. '{ "Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "primer texto" }'
+				. '] },'
+				. '{ "Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "segundo texto" }'
+				. '] }'
+				. '] }',
+			],
+
+			'zobject with array of multilingual strings and different languages' => [
+				'{ "Z1K1": "Z2", "Z2K2": ['
+				. '{ "Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "primer texto" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "first text" }'
+				. '] },'
+				. '{ "Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "second text" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "uk", "Z11K2": "другий текст" }'
+				. '] }'
+				. '] }',
+				'["cat", "es", "en"]',
+				'{ "Z1K1": "Z2", "Z2K2": ['
+				. '{ "Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "primer texto" }'
+				. '] },'
+				. '{ "Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "second text" }'
+				. '] }'
+				. '] }',
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideGetPreferredMonolingualString
+	 * @covers ::getPreferredMonolingualString
+	 */
+	public function testGetPreferredMonolingualString( $multilingualStr, $languages, $expected ) {
+		$this->assertSame(
+			FormatJson::encode( FormatJson::decode( $expected ) ),
+			FormatJson::encode( ZObjectUtils::getPreferredMonolingualString(
+				FormatJson::decode( $multilingualStr ),
+				FormatJson::decode( $languages )
+			) )
+		);
+	}
+
+	public function provideGetPreferredMonolingualString() {
+		return [
+			'no monolingual string and no languages' => [ '[]', '[]', '[]', ],
+			'no monolingual string and one languages' => [ '[]', '["en"]', '[]', ],
+			'no monolingual string and many languages' => [ '[]', '["es", "en"]', '[]', ],
+
+			'one monolingual string and no languages' => [
+				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+				'[]',
+				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+			],
+			'one monolingual string and an available language' => [
+				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+				'["en"]',
+				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+			],
+			'one monolingual string and one unavailable language' => [
+				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+				'["fr"]',
+				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+			],
+			'one monolingual string and one unavailable language' => [
+				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+				'["fr"]',
+				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+			],
+
+			'many monolingual strings and no languages' => [
+				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" },'
+				. ' { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+				'[]',
+				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" }]',
+			],
+			'many monolingual strings and one available languages' => [
+				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" },'
+				. ' { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+				'["en"]',
+				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+			],
+		  'many monolingual strings and one unavailable languages' => [
+				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" },'
+				. ' { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+				'["fr"]',
+				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" }]',
+			],
+			'many monolingual strings and some available languages' => [
+				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" },'
+				. ' { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+				'["cat", "es", "en"]',
+				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" }]',
+			],
+			'many monolingual strings and some unavailable languages' => [
+				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" },'
+				. ' { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+				'["uk", "ru"]',
+				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" }]',
+			],
+		];
+	}
+
 }

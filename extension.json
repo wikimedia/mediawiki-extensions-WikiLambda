@@ -152,7 +152,15 @@
 		"wikilambda_fetch": "MediaWiki\\Extension\\WikiLambda\\API\\ApiZObjectFetcher"
 	},
 	"APIListModules": {
-		"wikilambda_searchlabels": "MediaWiki\\Extension\\WikiLambda\\API\\ApiQueryZObjectLabels"
+		"wikilambdasearch_labels": "MediaWiki\\Extension\\WikiLambda\\API\\ApiQueryZObjectLabels",
+		"wikilambdaload_zobjects": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\API\\ApiQueryZObjects",
+			"services": [
+				"LanguageFallback",
+				"LanguageNameUtils",
+				"TitleFactory"
+			]
+		}
 	},
 	"SpecialPages": {
 		"CreateZObject": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialCreateZObject",
