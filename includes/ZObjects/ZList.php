@@ -23,7 +23,7 @@ class ZList extends ZObject {
 				],
 				ZTypeRegistry::Z_LIST_TAIL => [
 					// TODO: This is an array of ZObjects.
-					'type' => ZTypeRegistry::HACK_ARRAY,
+					'type' => ZTypeRegistry::BUILTIN_ARRAY,
 				],
 			],
 		];

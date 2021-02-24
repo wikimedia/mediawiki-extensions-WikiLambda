@@ -20,7 +20,7 @@ class ZType extends ZObject {
 			'keys' => [
 				ZTypeRegistry::Z_TYPE_IDENTITY => [
 					// NOTE: Allows Z0.
-					'type' => ZTypeRegistry::HACK_REFERENCE_NULLABLE,
+					'type' => ZTypeRegistry::BUILTIN_REFERENCE_NULLABLE,
 				],
 				ZTypeRegistry::Z_TYPE_KEYS => [
 					// TODO: Walk the array of ZKeys.
@@ -28,7 +28,7 @@ class ZType extends ZObject {
 				],
 				ZTypeRegistry::Z_TYPE_VALIDATOR => [
 					// NOTE: Allows Z0 until we support ZFunctions.
-					'type' => ZTypeRegistry::HACK_REFERENCE_NULLABLE,
+					'type' => ZTypeRegistry::BUILTIN_REFERENCE_NULLABLE,
 				],
 			],
 		];

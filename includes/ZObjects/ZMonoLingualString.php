@@ -22,7 +22,7 @@ class ZMonoLingualString extends ZObject {
 					'type' => ZTypeRegistry::HACK_LANGUAGE,
 				],
 				ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => [
-					'type' => ZTypeRegistry::HACK_STRING,
+					'type' => ZTypeRegistry::BUILTIN_STRING,
 				],
 			],
 		];
