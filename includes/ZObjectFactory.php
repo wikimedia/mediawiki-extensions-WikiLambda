@@ -196,6 +196,13 @@ class ZObjectFactory {
 		$return = null;
 		$registry = ZTypeRegistry::singleton();
 
+		if ( $key === ZTypeRegistry::Z_TYPE_IDENTITY ) {
+			if ( self::validatingInContext( $value ) ) {
+				// Unexpected loop?
+				self::warnDuplicateCreation( $value );
+			}
+		}
+
 		switch ( $type ) {
 			case ZTypeRegistry::BUILTIN_STRING:
 				if ( is_string( $value ) ) {
@@ -278,7 +285,10 @@ class ZObjectFactory {
 				if (
 					is_string( $value )
 					&& ZKey::isValidZObjectReference( $value )
-					&& $registry->isZObjectKeyKnown( $value )
+					&& (
+						self::validatingInContext( $value )
+						|| $registry->isZObjectKeyKnown( $value )
+					)
 				) {
 					return $value;
 				}
@@ -441,5 +451,32 @@ class ZObjectFactory {
 	private static function spliceReturn( $value, $type ) {
 		$value[ ZTypeRegistry::Z_OBJECT_TYPE ] = $type;
 		return self::create( (object)$value );
+	}
+
+	/**
+	 * @param string $zid
+	 *
+	 * @return bool
+	 */
+	private static function validatingInContext( $zid ) {
+		static $validationContext = null;
+		if ( $validationContext === null ) {
+			$validationContext = [ ZTypeRegistry::Z_PERSISTENTOBJECT => 1 ];
+		}
+		if ( array_key_exists( $zid, $validationContext ) ) {
+			return true;
+		} else {
+			$validationContext[$zid] = 1;
+			return false;
+		}
+	}
+
+	/*
+	 * @param string $zid
+	 *
+	 * @return null
+	 */
+	private static function warnDuplicateCreation( $zid ) {
+		// Do nothing right now, but might be a concern?
 	}
 }

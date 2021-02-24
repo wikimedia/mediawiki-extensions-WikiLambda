@@ -276,6 +276,103 @@ EOT;
 		$this->assertSame( '6', $value[ 'Z91K1' ], 'ZInteger instance inner object has the right value key' );
 	}
 
+	/**
+	 * This test proves that a self-referencing ZType and an on-wiki implementation of it can be created.
+	 *
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
+	 */
+	public function testInstanceOfSelfReferencingType() {
+		// Create ZSelfRefType (Z991)
+		$baseTypeTitleText = 'Z991';
+		$baseTypeContent = <<<EOT
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z0",
+	"Z2K2": {
+		"Z1K1": "Z4",
+		"Z4K1": "Z991",
+		"Z4K2": [
+			{
+				"Z1K1": "Z3",
+				"Z3K1": "Z991",
+				"Z3K2": "Z991K1",
+				"Z3K3": { "Z1K1": "Z12", "Z12K1": [] }
+			}
+		],
+		"Z4K3": "Z0"
+	},
+	"Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "ZSelfRefType" } ] }
+}
+EOT;
+
+		$baseTypeStatus = $this->editPage(
+			$baseTypeTitleText, $baseTypeContent, 'Create ZSelfRefType', NS_ZOBJECT
+		);
+		$this->titlesTouched[] = $baseTypeTitleText;
+		$this->assertTrue(
+			$baseTypeStatus->isOK(),
+			'ZSelfRefType creation was successful'
+		);
+
+		$baseTypeTitle = Title::newFromText( $baseTypeTitleText, NS_ZOBJECT );
+		$this->assertTrue(
+			$baseTypeTitle->exists(),
+			'ZSelfRefType page was created in the DB'
+		);
+
+		$registry = ZTypeRegistry::singleton();
+		$this->assertTrue(
+			$registry->isZObjectKeyKnown( 'Z991' ),
+			'ZSelfRefType now known to ZTypeRegistry'
+		);
+
+		// Create a valid instance of ZSelfRefType (Z992)
+		$instanceTitleText = 'Z992';
+		$instanceContent = <<<EOT
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z0",
+	"Z2K2": {
+		"Z1K1": "Z991",
+		"Z991K1": "Z992"
+	},
+	"Z2K3": { "Z1K1": "Z12", "Z12K1": [] }
+}
+EOT;
+
+		$instanceStatus = $this->editPage(
+			$instanceTitleText, $instanceContent, 'Test ZSelfRefType instance', NS_ZOBJECT
+		);
+		$this->titlesTouched[] = $instanceTitleText;
+		$this->assertTrue(
+			$instanceStatus->isOK(),
+			'ZSelfRefType instance creation was successful'
+		);
+
+		$instanceTitle = Title::newFromText( $instanceTitleText, NS_ZOBJECT );
+		$this->assertTrue(
+			$instanceTitle->exists(),
+			'ZSelfRefType instance page was created in the DB'
+		);
+
+		// Test content is correct.
+		$instanceWikiPage = WikiPage::factory( $instanceTitle );
+		$instance = $instanceWikiPage->getContent( Revision::RAW );
+		$this->assertTrue(
+			$instance instanceof ZObjectContent,
+			'ZSelfRefType instance comes back as the right content class'
+		);
+		$this->assertTrue(
+			$instance->isValid(), 'ZSelfRefType instance comes back as a valid ZPO'
+		);
+
+		$innerObject = $instance->getInnerZObject();
+		$this->assertTrue(
+			$innerObject->isValid(),
+			'ZSelfRefType instance inner object comes back as a valid ZObject'
+		);
+	}
+
 	protected function tearDown() : void {
 		// Cleanup the pages we touched.
 		$sysopUser = $this->getTestSysop()->getUser();
