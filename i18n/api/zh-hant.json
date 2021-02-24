@@ -10,12 +10,12 @@
 	"apihelp-wikilambda_fetch-example-single": "取得單一的 ZObject，Z1。",
 	"apihelp-wikilambda_fetch-example-multiple": "取得三個 ZObjects：Z1、Z2、Z3。",
 	"apierror-wikilambda_fetch-missingzid": "給予的 ZID「$1」不存在此 wiki 上。",
-	"apihelp-query+wikilambda_searchlabels-summary": "此 API 查詢清單產生器讓您可在指定語言裡搜尋標籤 ZObjects。它主要是為支援展望搜索系統而存在。",
-	"apihelp-query+wikilambda_searchlabels-param-search": "搜尋項",
-	"apihelp-query+wikilambda_searchlabels-param-language": "在其中搜索的 MediaWiki 語言代碼",
-	"apihelp-query+wikilambda_searchlabels-param-exact": "是否完全匹配搜索。若停用的話，輸入內容將被視為不區分大小寫的 Unicode 標準化搜索，且忽略拉丁字元的重音符號。",
-	"apihelp-query+wikilambda_searchlabels-param-type": "匹配 ZObject 特定類型的限制。",
-	"apihelp-query+wikilambda_searchlabels-param-limit": "回傳結果數量上限",
+	"apihelp-query+wikilambdasearch_labels-summary": "此 API 查詢清單產生器讓您可在指定語言裡搜尋標籤 ZObjects。它主要是為支援展望搜索系統而存在。",
+	"apihelp-query+wikilambdasearch_labels-param-search": "搜尋項",
+	"apihelp-query+wikilambdasearch_labels-param-language": "在其中搜索的 MediaWiki 語言代碼",
+	"apihelp-query+wikilambdasearch_labels-param-exact": "是否完全匹配搜索。若停用的話，輸入內容將被視為不區分大小寫的 Unicode 標準化搜索，且忽略拉丁字元的重音符號。",
+	"apihelp-query+wikilambdasearch_labels-param-type": "匹配 ZObject 特定類型的限制。",
+	"apihelp-query+wikilambdasearch_labels-param-limit": "回傳結果數量上限",
 	"apihelp-query+wikilambda-example-simple": "搜索標籤與英語裡「foo」匹配的 ZObjects",
 	"apihelp-query+wikilambda-example-type": "搜尋類型為「Z4」的 ZObjects，回傳英語標籤"
 }

@@ -4,5 +4,5 @@
 			"BadDog"
 		]
 	},
-	"apihelp-query+wikilambda_searchlabels-param-search": "Термин за претрагу"
+	"apihelp-query+wikilambdasearch_labels-param-search": "Термин за претрагу"
 }

@@ -10,10 +10,10 @@
 	"apihelp-wikilambda_fetch-example-single": "Hent et enkelt ZObject, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "Hent tre ZObject-er: Z1, Z2 og Z3.",
 	"apierror-wikilambda_fetch-missingzid": "Den gitte ZID-en «$1» finnes ikke på denne wikien.",
-	"apihelp-query+wikilambda_searchlabels-summary": "Denne API-spørringslistegeneratoren lar deg søke i ZObject-er etter etiketter på et gitt språk. Den finnes primært for å støtte look-ahead-søkesystemet",
-	"apihelp-query+wikilambda_searchlabels-param-search": "Søkeordet",
-	"apihelp-query+wikilambda_searchlabels-param-language": "MediaWiki-språkkoden det skal søkes på",
-	"apihelp-query+wikilambda_searchlabels-param-exact": "Hvorvidt det skal søkes etter nøyaktige treff. Hvis denne er slått av vil innputten ignorere forskjeller i store/små bokstaver, og som Unicode-normalisert der diakritiske tegn ignoreres.",
-	"apihelp-query+wikilambda_searchlabels-param-limit": "Maksimalt antall resultater som skal returneres",
+	"apihelp-query+wikilambdasearch_labels-summary": "Denne API-spørringslistegeneratoren lar deg søke i ZObject-er etter etiketter på et gitt språk. Den finnes primært for å støtte look-ahead-søkesystemet",
+	"apihelp-query+wikilambdasearch_labels-param-search": "Søkeordet",
+	"apihelp-query+wikilambdasearch_labels-param-language": "MediaWiki-språkkoden det skal søkes på",
+	"apihelp-query+wikilambdasearch_labels-param-exact": "Hvorvidt det skal søkes etter nøyaktige treff. Hvis denne er slått av vil innputten ignorere forskjeller i store/små bokstaver, og som Unicode-normalisert der diakritiske tegn ignoreres.",
+	"apihelp-query+wikilambdasearch_labels-param-limit": "Maksimalt antall resultater som skal returneres",
 	"apihelp-query+wikilambda-example-simple": "Søk etter ZObject-er der etiketten matcher «foo» på engelsk"
 }
