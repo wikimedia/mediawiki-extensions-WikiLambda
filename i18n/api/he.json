@@ -13,11 +13,17 @@
 	"apihelp-query+wikilambdasearch_labels-summary": "מחולל רשימות שאילתות ה־API הזה מאפשר לך לחפש בעצמי Z תוויות בשפה נתונה. הוא קיים בעיקר כדי לתמוך במערכת החיפוש עם מבט קדימה (look-ahead).",
 	"apihelp-query+wikilambdasearch_labels-param-search": "מילת החיפוש",
 	"apihelp-query+wikilambdasearch_labels-param-language": "קוד מדיה־ויקי של שפה שבה ייעשה החיפוש",
-	"apihelp-query+wikilambdasearch_labels-param-nofallback": "האם לחפש רק בשפה השניתנה ולא בשפות הגיבוי שלה",
-	"apihelp-query+wikilambdasearch_labels-param-exact": "האם לחפש התאמות מדויקות. אם זה כבוי, הקלט יטופל בתור מחרוזת בלתי־תלוי ברישיות, עם נרמול יוניקוד, ועם התעלמות מתגים על תווים לטיניים.",
+	"apihelp-query+wikilambdasearch_labels-param-nofallback": "האם לחפש רק בשפה שניתנה ולא בשפות הגיבוי שלה",
+	"apihelp-query+wikilambdasearch_labels-param-exact": "האם לחפש התאמות מדויקות. אם זה כבוי, הקלט יטופל בתור מחרוזת בלתי־תלויה ברישיות, עם נרמול יוניקוד, ועם התעלמות מתגים על תווים לטיניים.",
 	"apihelp-query+wikilambdasearch_labels-param-type": "להגביל את ההתאמות לסוג מסוים של עצם Z.",
 	"apihelp-query+wikilambdasearch_labels-param-limit": "מספר התוצאות המרבי להחזרה",
 	"apihelp-query+wikilambda-example-simple": "חיפוש עצמי Z שהתווית שלהם תואמת \"foo\" באנגלית",
 	"apihelp-query+wikilambda-example-nofallback": "לחפש עצמי Z ששהתווית שלהם מתאימה ל־\"foo\" בצרפתית, ולא לקבל שפות גיבוי",
-	"apihelp-query+wikilambda-example-type": "חיפוש עצם Z מסוג Z4, והחזרת תוויות באנגלית"
+	"apihelp-query+wikilambda-example-type": "חיפוש עצם Z מסוג Z4, והחזרת תוויות באנגלית",
+	"apihelp-query+wikilambdaload_zobjects-summary": "חיפוש עצמי Z בהינתן מזהה ה־Z שלהם והחזרת מודל ה־JSON שלהם באופן מלא או מסונן לשפה מסוימת או שפות גיבוי. אם מזהה ה־Z שסופק אינו קיים בוויקי, זה יחזיר שגיאת Z5 במקום עצם ב־Z המבוקש.",
+	"apihelp-query+wikilambdaload_zobjects-param-zids": "מזהי Z של עצמי Z לאחזור, מופרדים בתווי מקל.",
+	"apihelp-query+wikilambdaload_zobjects-param-language": "קוד השפה של מדיה־ויקי שבו צריך להחזיר את כל התוויות של עצמי Z.",
+	"apihelp-query+wikilambdaload_zobjects-example-full": "חיפוש עצמי ה־Z עם המזהים Z12 ו־Z4 והחזרת ייצוג ה־JSON המלא שלהם.",
+	"apihelp-query+wikilambdaload_zobjects-example-language": "חיפוש עצמי ה־Z עם המזהים Z12 ו־Z4 והחזרת התוויות שלהם מסוננות לספרדית ושפות גיבוי.",
+	"apihelp-query+wikilambdaload_zobjects-example-error": "חיפוש עצמי ה־Z עם המזהים Z1 ו־Z012345789 שאינו קיים והחזרת התוויות שלהם מסוננות לספרדית ושפות גיבוי."
 }

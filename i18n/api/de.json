@@ -1,6 +1,13 @@
 {
 	"@metadata": {
-		"authors": []
+		"authors": [
+			"FF11"
+		]
 	},
-	"apihelp-wikilambda_fetch-param-language": "Die Sprache, in der die Ergebnisse zurückgegeben werden sollen."
+	"apihelp-wikilambda_fetch-param-language": "Die Sprache, in der die Ergebnisse zurückgegeben werden sollen.",
+	"apihelp-query+wikilambdaload_zobjects-param-zids": "Die abzurufenden ZObject ZIDs, getrennt durch Pipes.",
+	"apihelp-query+wikilambdaload_zobjects-param-language": "Der MediaWiki-Sprachcode, in dem alle ZObject-Labesl ausgegeben werden sollen.",
+	"apihelp-query+wikilambdaload_zobjects-example-full": "Suche nach den ZObjects Z12 und Z4 und gib deren vollständige JSON-Repräsentation zurück.",
+	"apihelp-query+wikilambdaload_zobjects-example-language": "Suche nach den ZObjects Z12 und Z4 und gib deren Labels gefiltert nach Spanisch oder Fallback-Sprachen zurück.",
+	"apihelp-query+wikilambdaload_zobjects-example-error": "Suche nach den ZObjects Z1 und dem nicht existierenden Z0123456789 und gib deren vollständige JSON-Repräsentation zurück."
 }
