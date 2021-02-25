@@ -132,11 +132,11 @@ module.exports = {
 					action: 'query',
 					list: queryType,
 					// eslint-disable-next-line camelcase
-					wikilambda_search: input,
+					wikilambdasearch_search: input,
 					// eslint-disable-next-line camelcase
-					wikilambda_type: this.type,
+					wikilambdasearch_type: this.type,
 					// eslint-disable-next-line camelcase
-					wikilambda_language: this.zLang
+					wikilambdasearch_language: this.zLang
 				} ).done( function ( data ) {
 					self.lookupResults = {};
 
