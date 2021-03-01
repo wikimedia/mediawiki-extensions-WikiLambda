@@ -7,12 +7,7 @@
 	-->
 	<div class="ext-wikilambda-zstring">
 		<span>
-			<span v-if="viewmode">
-				<a v-if="value.match(/^Z\d+$/)" :href="'./ZObject:' + value">
-					{{ value }}
-				</a>
-				<template v-else>{{ value }}</template>
-			</span>
+			<span v-if="viewmode">{{ value }}</span>
 			<input
 				v-else
 				class="ext-wikilambda-zstring"
