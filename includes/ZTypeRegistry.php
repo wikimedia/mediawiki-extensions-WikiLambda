@@ -85,6 +85,13 @@ class ZTypeRegistry {
 		self::Z_MULTILINGUALSTRING => 'ZMultiLingualString',
 	];
 
+	public const IGNORE_KEY_NORMALIZATION = [
+		self::Z_OBJECT_TYPE,
+		self::Z_MONOLINGUALSTRING_LANGUAGE,
+		self::Z_MONOLINGUALSTRING_VALUE,
+		self::Z_MULTILINGUALSTRING_VALUE
+	];
+
 	/**
 	 * @return ZTypeRegistry
 	 */

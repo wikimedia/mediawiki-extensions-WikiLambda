@@ -24,7 +24,9 @@
 	"apihelp-query+wikilambdaload_zobjects-summary": "Search ZObjects given their ZIDs and return their JSON model fully or filtered to a given language or fallbacks. If any of the provided ZIDs does not exist in the wiki, will return a Z5 error instead of the requested ZObject.",
 	"apihelp-query+wikilambdaload_zobjects-param-zids": "The ZObject ZIDs to fetch, separated by pipes.",
 	"apihelp-query+wikilambdaload_zobjects-param-language": "The MediaWiki language code in which to return all the ZObject labels.",
+	"apihelp-query+wikilambdaload_zobjects-param-canonical": "Whether to return the canonical form or, if disabled, the partially normal form of the requested ZObjects. This partial normalization excludes ZLists, ZMonolingual Strings and ZMultilingual Strings.",
 	"apihelp-query+wikilambdaload_zobjects-example-full": "Search for ZObjects Z12 and Z4 and return their full JSON representation.",
 	"apihelp-query+wikilambdaload_zobjects-example-language": "Search for ZObjects Z12 and Z4 and return their labels filtered to Spanish or fallback languages.",
-	"apihelp-query+wikilambdaload_zobjects-example-error": "Search for ZObjects Z1 and the non-existent Z012345789 and return their full JSON representation."
+	"apihelp-query+wikilambdaload_zobjects-example-error": "Search for ZObjects Z1 and the non-existent Z012345789 and return their full JSON representation.",
+	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Search for ZObject Z12 and return its JSON canonical representation."
 }
