@@ -80,15 +80,15 @@ class SpecialCreateZObject extends SpecialPage {
 			]
 		);
 
-		// NOTE: This picks either Z100 or the next ZID after the latest one created; maybe just
+		// NOTE: This picks either Z10000 or the next ZID after the latest one created; maybe just
 		// down-stream this to the editor entirely?
 
-		// If something went wrong with the query, just use Z99 giving us Z100.
-		$maxCurrentZID = $res->numRows() > 0 ? $res->fetchRow()[ 0 ] : 'Z99';
+		// If something went wrong with the query, just use Z9999, giving us Z10000.
+		$maxCurrentZID = $res->numRows() > 0 ? $res->fetchRow()[ 0 ] : 'Z9999';
 
 		// TODO: If a page has been deleted and then undeleted while the original page_id was re-used, &
 		// its undeletion is the most recent page 'create', the ZID returned will be wrong; fix this.
-		$targetZid = 'Z' . ( max( intval( substr( $maxCurrentZID, 1 ) ) + 1, 100 ) );
+		$targetZid = 'Z' . ( max( intval( substr( $maxCurrentZID, 1 ) ) + 1, 10000 ) );
 
 		$editingData = [
 			'title' => $targetZid,
