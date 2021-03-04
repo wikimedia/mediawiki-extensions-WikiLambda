@@ -183,4 +183,50 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 			$this->assertEquals( 'en', $key['Z3K3']['Z12K1'][0]['Z11K1'] );
 		}
 	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
+	 */
+	public function testNormalForm() {
+		$result_normal = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdaload_zobjects',
+			'wikilambdaload_zids' => 'Z111'
+		] );
+
+		$result_canonical = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdaload_zobjects',
+			'wikilambdaload_zids' => 'Z111',
+			'wikilambdaload_canonical' => true,
+		] );
+
+		$z111_normal = $result_normal[0]['query']['wikilambdaload_zobjects']['Z111']['data'];
+		$z111_canonical = $result_canonical[0]['query']['wikilambdaload_zobjects']['Z111']['data'];
+
+		$stringZ0 = [
+			'Z1K1' => 'Z6',
+			'Z6K1' => 'Z0'
+		];
+		$stringZ111K1 = [
+			'Z1K1' => 'Z6',
+			'Z6K1' => 'Z111K1'
+		];
+		$referenceZ6 = [
+			'Z1K1' => 'Z9',
+			'Z9K1' => 'Z6'
+		];
+
+		$this->assertEquals( $z111_canonical['Z2K2']['Z4K3'], 'Z0' );
+		$this->assertEquals( $z111_normal['Z2K2']['Z4K3'], $stringZ0 );
+
+		$this->assertEquals( $z111_canonical['Z2K2']['Z4K2'][0]['Z3K1'], 'Z6' );
+		$this->assertEquals( $z111_normal['Z2K2']['Z4K2'][0]['Z3K1'], $referenceZ6 );
+
+		$this->assertEquals( $z111_canonical['Z2K2']['Z4K2'][0]['Z3K2'], 'Z111K1' );
+		$this->assertEquals( $z111_normal['Z2K2']['Z4K2'][0]['Z3K2'], $stringZ111K1 );
+
+		// Exclude ZMultilingualStrings
+		$this->assertEquals( $z111_canonical['Z2K3']['Z12K1'], $z111_normal['Z2K3']['Z12K1'] );
+	}
 }

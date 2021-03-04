@@ -64,6 +64,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 
 		$ZIDs = explode( '|', $params[ 'zids' ] );
 		$language = $params[ 'language' ];
+		$canonical = $params[ 'canonical' ];
 
 		if ( $language ) {
 			// Get language fallback chain
@@ -113,6 +114,15 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 			if ( is_array( $languages ) ) {
 				$zobject = ZObjectUtils::filterZMultilingualStringsToLanguage( $zobject, $languages );
 			}
+
+			// Normalize Z6 and Z9
+			// TODO: If language parameter is present and canonical is set to false, we are
+			// walking the tree two times. It would be interesting to only walk it once, and
+			// perform all the transformations that are necessary on that same recursive walk.
+			if ( !$canonical ) {
+				$zobject = ZObjectUtils::normalizeZStringsAndZReferences( $zobject );
+			}
+
 			$result = [
 				'success' => true,
 				'data' => $zobject
@@ -142,6 +152,11 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 				ParamValidator::PARAM_TYPE => array_keys( $this->languageNameUtils->getLanguageNames() ),
 				ParamValidator::PARAM_REQUIRED => false,
 			],
+			'canonical' => [
+				ParamValidator::PARAM_TYPE => 'boolean',
+				ParamValidator::PARAM_REQUIRED => false,
+				ParamValidator::PARAM_DEFAULT => false,
+			],
 		];
 	}
 
@@ -158,6 +173,9 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 				=> 'apihelp-query+wikilambdaload_zobjects-example-language',
 			'action=query&format=json&list=wikilambdaload_zobjects&wikilambdaload_zids=Z0123456789%7CZ1'
 				=> 'apihelp-query+wikilambdaload_zobjects-example-error',
+			'action=query&format=json&list=wikilambdaload_zobjects&wikilambdaload_zids=Z12'
+				. '&wikilambdaload_canonical=true'
+				=> 'apihelp-query+wikilambdaload_zobjects-example-canonical',
 		];
 	}
 }
