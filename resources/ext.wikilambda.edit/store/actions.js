@@ -9,39 +9,6 @@
 var api = new mw.Api(),
 	Constants = require( '../Constants.js' );
 
-// Extract label from this multilingual string object using fallbacks
-function labelFromMultilingualString( labels, zlangs ) {
-	var i, label, lang, langs = {};
-
-	// Create dictionary of languages available in the multilingual string
-	labels.forEach( function ( value, index ) {
-		langs[ value[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] ] = index;
-	} );
-
-	// Select the label to display
-	// 1. Get the label in the first available language following the fallback chain
-	label = null;
-
-	for ( i = 0; i < zlangs.length; i++ ) {
-		lang = zlangs[ i ];
-		if ( lang in langs ) {
-			label = labels[ langs[ lang ] ];
-			break;
-		}
-	}
-
-	// 2. If neither of them are present, get label in any language available
-	if ( !label && ( labels.length > 0 ) ) {
-		label = labels[ 0 ];
-	}
-
-	if ( !label ) {
-		return null;
-	}
-
-	return label[ Constants.Z_MONOLINGUALSTRING_VALUE ];
-}
-
 module.exports = {
 
 	/**
@@ -59,16 +26,25 @@ module.exports = {
 		context.commit( 'addFetchingZKeys', payload.zids );
 
 		return api.get( {
-			action: 'wikilambda_fetch',
+			action: 'query',
+			list: 'wikilambdaload_zobjects',
 			format: 'json',
-			zids: payload.zids.join( '|' ),
-			language: payload.zlangs[ 0 ]
+			// eslint-disable-next-line camelcase
+			wikilambdaload_zids: payload.zids.join( '|' ),
+			// eslint-disable-next-line camelcase
+			wikilambdaload_language: payload.zlangs[ 0 ]
 		} ).then( function ( response ) {
-			var zidInfo,
-				keys;
+			var keys,
+				multilingualStr,
+				zidInfo;
 
 			payload.zids.forEach( function ( zid ) {
-				zidInfo = JSON.parse( response[ zid ].wikilambda_fetch );
+				if ( !( 'success' in response.query.wikilambdaload_zobjects[ zid ] ) ) {
+					// TODO add error into error notification pool
+					return;
+				}
+
+				zidInfo = response.query.wikilambdaload_zobjects[ zid ].data;
 
 				// State mutation:
 				// Add zKey information to the collection
@@ -82,12 +58,10 @@ module.exports = {
 
 				// State mutation:
 				// Add zObject label in user's selected language
+				multilingualStr = zidInfo[ Constants.Z_PERSISTENTOBJECT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ];
 				context.commit( 'addZKeyLabel', {
 					key: zid,
-					label: labelFromMultilingualString(
-						zidInfo[ Constants.Z_PERSISTENTOBJECT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ],
-						payload.zlangs
-					)
+					label: multilingualStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ]
 				} );
 
 				// State mutation:
@@ -99,12 +73,10 @@ module.exports = {
 				) {
 					keys = zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
 					keys.forEach( function ( key ) {
+						multilingualStr = key[ Constants.Z_KEY_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ];
 						context.commit( 'addZKeyLabel', {
-							key: key[ Constants.Z_KEY_ID ],
-							label: labelFromMultilingualString(
-								key[ Constants.Z_KEY_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ],
-								payload.zlangs
-							)
+							key: key[ Constants.Z_KEY_ID ][ Constants.Z_STRING_VALUE ],
+							label: multilingualStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ]
 						} );
 					} );
 				}
