@@ -9,4 +9,5 @@
 
 	<file>.</file>
 	<exclude-pattern>vendor</exclude-pattern>
+	<exclude-pattern>resources/lib</exclude-pattern>
 </ruleset>

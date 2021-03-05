@@ -123,10 +123,12 @@
 				"ext.wikilambda.edit/components/base/Button.vue",
 				"ext.wikilambda.edit/components/base/Icon.vue",
 				"ext.wikilambda.edit/components/base/SelectMenu.vue",
+				"ext.wikilambda.edit/components/base/CodeEditor.vue",
 				"ext.wikilambda.edit/components/types/ZList.vue",
 				"ext.wikilambda.edit/components/types/ZMultilingualString.vue",
 				"ext.wikilambda.edit/components/types/ZString.vue",
 				"ext.wikilambda.edit/components/types/ZReference.vue",
+				"lib/ace/ace.js",
 				"lib/icons.js"
 			],
 			"messages": [
