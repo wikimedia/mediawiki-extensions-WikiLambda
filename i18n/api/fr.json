@@ -26,7 +26,9 @@
 	"apihelp-query+wikilambdaload_zobjects-summary": "Rechercher des ZObjects à partir de leur ZID et renvoyer leur modèle JSON complet ou filtré pour une langue donnée ou par défaut. Si un des ZID fournis n’existe pas dans le wiki, renverra une erreur Z5 au lieu du ZObject demandé.",
 	"apihelp-query+wikilambdaload_zobjects-param-zids": "Les ZIDs de ZObject à récupérer, séparés par des barres verticales.",
 	"apihelp-query+wikilambdaload_zobjects-param-language": "Le code de langue MédiaWiki dans lequel renvoyer tous les libellés de ZObject.",
+	"apihelp-query+wikilambdaload_zobjects-param-canonical": "Indique s’il faut retourner la forme canonique ou, si désactivé, la forme partiellement normalisée des Objets-Z demandés. Cette normalisation initiale exclut les Listes-Z et les Chaînes-Z monolingues ou multilingues.",
 	"apihelp-query+wikilambdaload_zobjects-example-full": "Rechercher les ZObjects Z12 et Z4 et renvoyer leur représentation JSON complète.",
 	"apihelp-query+wikilambdaload_zobjects-example-language": "Rechercher les ZObjects Z12 et Z4 et renvoyer leurs libellés filtrés dans les langues espagnol ou par défaut.",
-	"apihelp-query+wikilambdaload_zobjects-example-error": "Rechercher les ZObjects Z1 et non existant Z012345789 et renvoyer leur représentation JSON complète."
+	"apihelp-query+wikilambdaload_zobjects-example-error": "Rechercher les ZObjects Z1 et non existant Z012345789 et renvoyer leur représentation JSON complète.",
+	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Rechercher l’Objet-Z Z12 et retourner sa représentation canonique en JSON."
 }

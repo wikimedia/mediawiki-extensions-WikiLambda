@@ -20,5 +20,6 @@
 	"apihelp-query+wikilambdasearch_labels-param-limit": "Número máximo de resultados na exibição",
 	"apihelp-query+wikilambda-example-simple": "Procure por ZObjects cujo rótulo corresponda a 'foo' em inglês",
 	"apihelp-query+wikilambda-example-nofallback": "Procure por ZObjects cujo rótulo corresponda a 'foo' em francês e não aceite idiomas substitutos",
-	"apihelp-query+wikilambda-example-type": "Pesquise ZObjects do tipo 'Z4', retornando rótulos em inglês"
+	"apihelp-query+wikilambda-example-type": "Pesquise ZObjects do tipo 'Z4', retornando rótulos em inglês",
+	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Pesquise ZObject Z12 e retorne sua representação canônica JSON."
 }
