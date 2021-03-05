@@ -128,12 +128,12 @@ module.exports = {
 			/**
 			 * Updates the keys in the ZObject Key List when the type
 			 * is changed.
-			 * TODO: disallow type change when type is already assigned
 			 *
 			 * @param {string} newType
 			 */
 			updateType: function ( newType ) {
 				var self = this,
+					keyID,
 					newKeys;
 
 				this.$emit( 'change-type', newType );
@@ -149,8 +149,13 @@ module.exports = {
 				} ).done( function () {
 					newKeys = self.zKeys[ newType ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
 					newKeys.forEach( function ( newKey ) {
-						self.$refs.keyList.addKey( newKey[ Constants.Z_KEY_ID ] );
-						self.lastTypeKeys.push( newKey[ Constants.Z_KEY_ID ] );
+						if ( typeof newKey[ Constants.Z_KEY_ID ] === 'string' ) {
+							keyID = newKey[ Constants.Z_KEY_ID ];
+						} else {
+							keyID = newKey[ Constants.Z_KEY_ID ][ Constants.Z_STRING_VALUE ];
+						}
+						self.$refs.keyList.addKey( keyID );
+						self.lastTypeKeys.push( keyID );
 					} );
 				} );
 			}
@@ -169,7 +174,9 @@ module.exports = {
 			} );
 		}
 
-		if ( this.type !== Constants.Z_PERSISTENTOBJECT ) {
+		// TODO: only fetch when we are in edit view and we just created
+		// this component as result of selecting a key type.
+		if ( !this.viewmode && ( this.type !== Constants.Z_PERSISTENTOBJECT ) ) {
 			this.updateType( this.type );
 		}
 	}
