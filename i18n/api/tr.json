@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Joseph",
 			"MuratTheTurkish"
 		]
 	},
@@ -19,5 +20,13 @@
 	"apihelp-query+wikilambdasearch_labels-param-limit": "Döndürülecek maksimum sonuç sayısı",
 	"apihelp-query+wikilambda-example-simple": "İngilizce'de 'foo' ile eşleşen ZObjects arayın",
 	"apihelp-query+wikilambda-example-nofallback": "Fransızcada 'foo' ile eşleşen ZObjects arayın ve yedek dilleri kabul etmeyin",
-	"apihelp-query+wikilambda-example-type": "İngilizce etiketleri döndüren 'Z4' türündeki ZObject'leri arayın"
+	"apihelp-query+wikilambda-example-type": "İngilizce etiketleri döndüren 'Z4' türündeki ZObject'leri arayın",
+	"apihelp-query+wikilambdaload_zobjects-summary": "ZID'lerine göre ZObjects arar ve JSON modelini tam olarak veya verilen bir dile ya da yedek dile göre filtrelenmiş olarak geri döndürür.",
+	"apihelp-query+wikilambdaload_zobjects-param-zids": "Getirilecek ZObject ZID'leri, çubuk ile ayrılmış.",
+	"apihelp-query+wikilambdaload_zobjects-param-language": "Tüm ZObject etiketlerinin döndürüleceği MediaWiki dil kodu.",
+	"apihelp-query+wikilambdaload_zobjects-param-canonical": "İstenen ZObjects için kurallara uygun formun ya da, devre dışı bırakılırsa, kısmi normal formun hangisinin döndürüleceği. Kısmi normalleştirme ZLists'leri, ZMonolingual dizileri ve ZMultilingual dizileri içermez.",
+	"apihelp-query+wikilambdaload_zobjects-example-full": "Z12 ve Z4 ZObjects'lerini arar ve tüm JSON betimini geri döndürür.",
+	"apihelp-query+wikilambdaload_zobjects-example-language": "Z12 ve Z4 ZObjects'lerini arar ve İspanyolcaya ya da yedek dillere göre filtrelenmiş etiketlerini geri döndürür.",
+	"apihelp-query+wikilambdaload_zobjects-example-error": "Z1 ve var olmayan Z012345789 ZObjects'lerini arar ve tüm JSON betimini geri döndürür.",
+	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Z12 ZObject'ini arar ve kurallara uygun JSON betimini geri döndürür."
 }
