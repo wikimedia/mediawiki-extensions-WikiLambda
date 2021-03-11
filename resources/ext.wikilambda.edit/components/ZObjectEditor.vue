@@ -25,25 +25,34 @@
 			{{ submitButtonLabel }}
 		</button>
 		<p>Current ZObject: {{ zobject }} </p>
+		<wbmi-message v-if="message.text" :type="message.type">
+			{{ message.text }}
+		</wbmi-message>
 	</div>
 </template>
 
 <script>
 var Constants = require( '../Constants.js' ),
 	ZObject = require( './ZObject.vue' ),
+	WbmiMessage = require( './base/Message.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapMutations = require( 'vuex' ).mapMutations;
 
 module.exports = {
 	name: 'ZObjectEditor',
 	components: {
-		'z-object': ZObject
+		'z-object': ZObject,
+		'wbmi-message': WbmiMessage
 	},
 	data: function () {
 		return {
 			zobject: {},
 			createNewPage: true,
-			summary: ''
+			summary: '',
+			message: {
+				type: 'error',
+				text: null
+			}
 		};
 	},
 	computed: {
@@ -79,6 +88,8 @@ module.exports = {
 						JSON.stringify( self.zobject )
 					).then( function () {
 						window.location.href = new mw.Title( page ).getUrl();
+					} ).catch( function ( errorCode, result ) {
+						self.showMessage( result.error.info, 'error' );
 					} );
 				} else {
 					api.edit( page, function ( /* revision */ ) {
@@ -88,8 +99,15 @@ module.exports = {
 						};
 					} ).then( function () {
 						window.location.href = new mw.Title( page ).getUrl();
+					} ).catch( function ( errorCode, result ) {
+						self.showMessage( result.error.info, 'error' );
 					} );
 				}
+			},
+			showMessage: function ( text, type ) {
+				type = type || 'notice';
+				this.message.type = type;
+				this.message.text = text;
 			}
 		}
 	),
