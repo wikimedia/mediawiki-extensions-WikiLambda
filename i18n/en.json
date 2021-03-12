@@ -9,6 +9,7 @@
 	"wikilambda-emptylabel": "Unlabelled ZObject",
 	"wikilambda-systemuser": "WikiLambda system",
 	"wikilambda-bootstrapcreationeditsummary": "Initial WikiLambda content creation",
+	"wikilambda-invalidzobjecttitle": "The provided title '$1' is not valid for a ZObject.",
 	"wikilambda-invalidzobject": "The provided content is not a valid ZObject.",
 	"wikilambda-invalidcontenttype": "The provided content is not a ZObject class.",
 	"wikilambda-labelclash": "The provided content's label clashes with ZObject '$1' for the label in '$2'.",
