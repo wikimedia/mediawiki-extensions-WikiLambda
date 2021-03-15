@@ -6,6 +6,7 @@
 	},
 	"wikilambda-desc": "Дава Викимедиини врски со расчленувачка функција за викитекст за повикување на вреднувањето на функции напишани, управувани и вреднувани на централно вики.",
 	"wikilambda-emptylabel": "Неозначен ZObject",
+	"wikilambda-invalidzobjecttitle": "Укажаниот наслов „$1“ не е важечки за ZObject.",
 	"wikilambda-invalidzobject": "Укажаната содржина не претставува важечки ZObject.",
 	"wikilambda-invalidcontenttype": "Укажанаа содржина не претставува класа на ZObject.",
 	"wikilambda-labelclash": "Натписот на укажаната содржина се коси со ZObject „$1“ за натписот „$2“.",

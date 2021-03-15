@@ -6,6 +6,7 @@
 	},
 	"wikilambda-desc": "מספקת לאתרי ויקי של ויקימדיה פונקציית מפענח לקוד ויקי לקריאה לפונקציות שנכתבות, מנוהלות, ומבוצעות בוויקי מרכזי.",
 	"wikilambda-emptylabel": "עצם Z חסר־תווית",
+	"wikilambda-invalidzobjecttitle": "הכותרת המסופקת \"$1\" אינה תקינה עבור עצם Z.",
 	"wikilambda-invalidzobject": "התוכן שסופק אינו עצם Z תקין.",
 	"wikilambda-invalidcontenttype": "התוכן שסופק אינו מחלקה שמייצגת עצם Z.",
 	"wikilambda-labelclash": "התווית של התוכן שסופק מתנגש עם עצם ה־Z בעל המזהה $1 עבור התווית בשפה $2.",

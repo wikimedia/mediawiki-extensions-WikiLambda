@@ -2,11 +2,13 @@
 	"@metadata": {
 		"authors": [
 			"BaRaN6161 TURK",
+			"Joseph",
 			"MuratTheTurkish"
 		]
 	},
 	"wikilambda-desc": "Wikimedia vikilerine, merkezi bir vikide yazılan, yönetilen ve değerlendirilen işlevlerin değerlendirilmesi için vikimetin ayrıştırıcı işlevi sağlar.",
 	"wikilambda-emptylabel": "Etiketsiz ZObject",
+	"wikilambda-invalidzobjecttitle": "Girilen başlık '$1' geçerli bir ZObject değil.",
 	"wikilambda-invalidzobject": "Sağlanan içerik geçerli bir ZObject değil.",
 	"wikilambda-invalidcontenttype": "Sağlanan içerik bir ZObject sınıfı değil.",
 	"wikilambda-labelclash": "Sağlanan içeriğin etiketi, '$2' etiketindeki ZObject '$1' ile çakışıyor.",

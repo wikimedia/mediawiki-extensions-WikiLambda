@@ -8,6 +8,7 @@
 	},
 	"wikilambda-desc": "Fornecendo as wikis da Wikimedia uma função de analisador de wikitexto para chamar a avaliação de funções escritas, gerenciadas e avaliadas em um wiki central.",
 	"wikilambda-emptylabel": "ZObject sem rótulo",
+	"wikilambda-invalidzobjecttitle": "O título fornecido '$1' não é válido para um ZObject.",
 	"wikilambda-invalidzobject": "O conteúdo fornecido não é um ZObject válido.",
 	"wikilambda-invalidcontenttype": "O conteúdo fornecido não é uma classe ZObject.",
 	"wikilambda-labelclash": "O rótulo do conteúdo fornecido entra em conflito com ZObject '$1' para o rótulo em '$2'.",
