@@ -195,6 +195,9 @@ class Hooks implements
 	 * @param DatabaseUpdater $updater
 	 */
 	public static function createInitialContent( DatabaseUpdater $updater ) {
+		// Ensure that the extension is set up (namespace is defined) even when running in update.php outside of MW.
+		self::registerExtension();
+
 		$creatingUserName = wfMessage( 'wikilambda-systemuser' )->inContentLanguage()->text();
 		$creatingUser = User::newSystemUser( $creatingUserName, [ 'steal' => true ] );
 
