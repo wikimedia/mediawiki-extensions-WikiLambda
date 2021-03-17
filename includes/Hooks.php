@@ -198,10 +198,11 @@ class Hooks implements
 		// Ensure that the extension is set up (namespace is defined) even when running in update.php outside of MW.
 		self::registerExtension();
 
-		$creatingUserName = wfMessage( 'wikilambda-systemuser' )->inContentLanguage()->text();
+		// Note: Hard-coding the English version for messages as this can run without a Context and so no language set.
+		$creatingUserName = wfMessage( 'wikilambda-systemuser' )->inLanguage( 'en' )->text();
 		$creatingUser = User::newSystemUser( $creatingUserName, [ 'steal' => true ] );
 
-		$creatingComment = wfMessage( 'wikilambda-bootstrapcreationeditsummary' )->inContentLanguage()->text();
+		$creatingComment = wfMessage( 'wikilambda-bootstrapcreationeditsummary' )->inLanguage( 'en' )->text();
 
 		if ( !$creatingUser ) {
 			// Something went wrong, give up.
