@@ -45,5 +45,6 @@
 	"wikilambda-editor-zlist-additem-tooltip": "Tooltip shown on button to add an entry to a ZList.\n\n{{doc-wikilambda}}",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Tooltip shown on button to remove an entry from a ZList.\n\n{{doc-wikilambda}}",
 	"wikilambda-editor-zobject-addkey": "Label for button to add a new ZKey to a ZObject.\n\n{{doc-wikilambda}}",
-	"wikilambda-editor-zobject-removekey-tooltip": "Tooltip shown on the button to remove an entry from a ZObject.\n\n{{doc-wikilambda}}"
+	"wikilambda-editor-zobject-removekey-tooltip": "Tooltip shown on the button to remove an entry from a ZObject.\n\n{{doc-wikilambda}}",
+	"wikilambda-editor-label-select-programming-language-label": "Label for programming language selection dropdown."
 }

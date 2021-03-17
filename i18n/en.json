@@ -41,5 +41,6 @@
 	"wikilambda-editor-zlist-additem-tooltip": "Add an item to this ZList",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Remove this item from this ZList",
 	"wikilambda-editor-zobject-addkey": "Add key:",
-	"wikilambda-editor-zobject-removekey-tooltip": "Remove this key/value from the ZObject"
+	"wikilambda-editor-zobject-removekey-tooltip": "Remove this key/value from the ZObject",
+	"wikilambda-editor-label-select-programming-language-label": "Select programming language:"
 }

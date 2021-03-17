@@ -41,5 +41,10 @@ module.exports = {
 	/**
 	 * A Regex validation for a zObject
 	 */
-	zRegex: new RegExp( /Z[1-9]\d*(K[1-9]\d*)?/ )
+	zRegex: new RegExp( /Z[1-9]\d*(K[1-9]\d*)?/ ),
+
+	/**
+	 * Collection of ZProgrammingLanguages
+	 */
+	allZProgrammingLangs: []
 };

@@ -85,5 +85,15 @@ module.exports = {
 	 */
 	setFetchingAllLangs: function ( state, fetchingAllLangs ) {
 		state.fetchingAllLangs = fetchingAllLangs;
+	},
+
+	/**
+	 * setAllZProgrammingLangs
+	 *
+	 * @param {Object} state
+	 * @param {Object} allLangs
+	 */
+	setAllZProgrammingLangs: function ( state, allLangs ) {
+		state.allZProgrammingLangs = allLangs;
 	}
 };

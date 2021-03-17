@@ -14,6 +14,10 @@ module.exports = {
 		} else {
 			return 'en';
 		}
+	},
+
+	zProgrammingLangs: function ( state ) {
+		return state.allZProgrammingLangs;
 	}
 
 };

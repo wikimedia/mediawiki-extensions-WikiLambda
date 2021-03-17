@@ -39,6 +39,13 @@
 			@change-item="setZListItem"
 		></z-list>
 
+		<z-code
+			v-else-if="type === Constants.Z_CODE"
+			:zobject="zobject"
+			:viewmode="viewmode"
+			@update="setZCode"
+		></z-code>
+
 		<z-object-generic
 			v-else
 			:zobject="zobject"
@@ -57,7 +64,8 @@ var Constants = require( '../Constants.js' ),
 	ZList = require( './types/ZList.vue' ),
 	ZMultilingualString = require( './types/ZMultilingualString.vue' ),
 	ZReference = require( './types/ZReference.vue' ),
-	ZString = require( './types/ZString.vue' );
+	ZString = require( './types/ZString.vue' ),
+	ZCode = require( './types/ZCode.vue' );
 
 module.exports = {
 	name: 'ZObject',
@@ -66,7 +74,8 @@ module.exports = {
 		'z-multilingual-string': ZMultilingualString,
 		'z-reference': ZReference,
 		'z-string': ZString,
-		'z-object-generic': ZObjectGeneric
+		'z-object-generic': ZObjectGeneric,
+		'z-code': ZCode
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -260,6 +269,10 @@ module.exports = {
 			if ( Array.isArray( this.zobject ) ) {
 				this.$set( this.zobject, item.index, item.value );
 			}
+		},
+
+		setZCode: function ( item ) {
+			this.$set( this.zobject, item.key, item.value );
 		}
 	}
 };
