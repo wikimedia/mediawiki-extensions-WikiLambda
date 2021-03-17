@@ -16,6 +16,7 @@
 		<wbmi-autocomplete-search-input
 			v-else
 			name="zobject-selector"
+			:class="{ 'ext-wikilambda-zkey-input-invalid': validatorIsInvalid }"
 			:label="placeholder"
 			:placeholder="placeholder"
 			:initial-value="selectedText"
@@ -27,13 +28,15 @@
 			@clear-lookup-results="onClearLookupResults"
 		>
 		</wbmi-autocomplete-search-input>
-
+		<wbmi-message v-if="validatorIsInvalid" :inline="true" type="error"> {{ validatorErrorMessage }} </wbmi-message>
 	</span>
 </template>
 
 <script>
 var Constants = require( '../Constants.js' ),
 	WbmiAutocompleteSearchInput = require( './base/AutocompleteSearchInput.vue' ),
+	validator = require( '../mixins/validator.js' ),
+	WbmiMessage = require( './base/Message.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapState = require( 'vuex' ).mapState,
 	mapGetters = require( 'vuex' ).mapGetters,
@@ -42,8 +45,10 @@ var Constants = require( '../Constants.js' ),
 module.exports = {
 	name: 'ZObjectSelector',
 	components: {
-		'wbmi-autocomplete-search-input': WbmiAutocompleteSearchInput
+		'wbmi-autocomplete-search-input': WbmiAutocompleteSearchInput,
+		'wbmi-message': WbmiMessage
 	},
+	mixins: [ validator ],
 	props: {
 		viewmode: {
 			type: Boolean,
@@ -67,7 +72,11 @@ module.exports = {
 			lookupResults: {},
 			lookupDelayTimer: null,
 			lookupDelayMs: 300,
-			inputValue: ''
+			inputValue: '',
+			validatorErrorMessages: [
+				'wikilambda-noresult',
+				'wikilambda-invalidzobject'
+			]
 		};
 	},
 	computed: $.extend( {},
@@ -75,7 +84,8 @@ module.exports = {
 		mapState( [
 			'zLangs',
 			'zKeys',
-			'zKeyLabels'
+			'zKeyLabels',
+			'zRegex'
 		] ),
 		{
 			lookupLabels: function () {
@@ -126,7 +136,8 @@ module.exports = {
 			getLookupResults: function ( input ) {
 				var api = new mw.Api(),
 					self = this,
-					queryType = 'wikilambdasearch_labels';
+					queryType = 'wikilambdasearch_labels',
+					searchedString = input;
 
 				api.get( {
 					action: 'query',
@@ -139,6 +150,10 @@ module.exports = {
 					wikilambdasearch_language: this.zLang
 				} ).done( function ( data ) {
 					self.lookupResults = {};
+					// If the string searched has changed, do not show the search result
+					if ( self.inputValue.indexOf( searchedString ) === -1 ) {
+						return;
+					}
 
 					// If any results available
 					if ( ( 'query' in data ) && ( queryType in data.query ) ) {
@@ -146,7 +161,6 @@ module.exports = {
 							function ( result ) {
 								var zid = result.page_title,
 									label = result.label;
-
 								// Update lookupResults list
 								// If we are searching for Types (this.type === 'Z4')
 								// we should exclude Z1, Z2, Z7 and Z9 from the results
@@ -163,6 +177,8 @@ module.exports = {
 							}
 						);
 						self.showList = true;
+					} else {
+						self.validatorSetError( 'wikilambda-noresult' );
 					}
 				} );
 			},
@@ -174,23 +190,32 @@ module.exports = {
 			 * type fits this restriction.
 			 */
 			validateZidInput: function () {
-				var self = this;
+				var self = this,
+					normalizedSearchValue = self.inputValue.toUpperCase();
 
-				if ( this.isValidZidFormat( this.inputValue ) ) {
-					this.fetchZKeys( {
-						zids: [ this.inputValue ],
-						zlangs: this.zLangs
+				if ( self.isValidZidFormat( normalizedSearchValue ) ) {
+					self.fetchZKeys( {
+						zids: [ normalizedSearchValue ],
+						zlangs: self.zLangs
 					} ).done( function () {
+						var label = '';
+						self.lookupResults = {};
+						// If data is returned, The value will show in the zKeys
 						if (
-							( self.inputValue in self.zKeys ) &&
-							( self.hasValidType( self.inputValue ) )
+							( normalizedSearchValue in self.zKeys ) &&
+							( self.hasValidType( normalizedSearchValue ) )
 						) {
-							self.$emit( 'input', self.inputValue );
+							label = self.zKeyLabels[ normalizedSearchValue ];
+							self.lookupResults[ label + ' (' + normalizedSearchValue + ')' ] = normalizedSearchValue;
+							self.showList = true;
+						} else {
+							self.validatorSetError( 'wikilambda-invalidzobject' );
 						}
 					} );
+				} else {
+					self.validatorSetError( 'wikilambda-invalidzobject' );
 				}
 			},
-
 			/**
 			 * On Autocomplete field input, set a timer so that the lookup is not done immediately.
 			 *
@@ -206,9 +231,20 @@ module.exports = {
 					return;
 				}
 
+				this.validatorResetError();
+
+				// Just search if more than one characters
+				if ( input.length < 2 ) {
+					return;
+				}
+
 				clearTimeout( this.lookupDelayTimer );
 				this.lookupDelayTimer = setTimeout( function () {
-					self.getLookupResults( input );
+					if ( self.isValidZidFormat( input.toUpperCase() ) ) {
+						self.validateZidInput();
+					} else {
+						self.getLookupResults( input );
+					}
 				}, this.lookupDelayMs );
 			},
 
@@ -218,18 +254,59 @@ module.exports = {
 			 * @param {string} item
 			 */
 			onSubmit: function ( item ) {
-				if ( this.lookupResults[ item ] ) {
-					this.$emit( 'input', this.lookupResults[ item ] );
+				var zIds = null,
+					zId = '';
+				this.validatorResetError();
+				if ( item === '' && typeof item === 'object' ) {
+					return;
+				}
+				zIds = item.match( this.zRegex );
+				// The item string is incorrect and does not include a Zobject Id
+				if ( !zIds || zIds.length === 0 ) {
+					return;
+				}
+				// The result of the Regex is an array so we get the first item
+				zId = zIds[ 0 ];
+
+				if ( this.zKeyLabels[ zId ] ) {
+					this.$emit( 'input', zId );
 				} else {
-					this.validateZidInput();
+					this.validatorSetError( 'wikilambda-invalidzobject' );
+				}
+			},
+			/**
+			 * When Blured, if ZObject has been selected, emit 'input' event
+			 */
+			onBlur: function () {
+				var zIds = null,
+					zId = '';
+
+				this.validatorResetError();
+				if ( this.inputValue === '' ) {
+					return;
+				}
+
+				zIds = this.inputValue.match( this.zRegex );
+				// The item string is incorrect and does not include a Zobject Id
+				if ( !zIds || zIds.length === 0 ) {
+					return;
+				}
+				// The result of the Regex is an array so we get the first item
+				zId = zIds[ 0 ];
+
+				if ( this.zKeyLabels[ zId ] ) {
+					this.$emit( 'input', zId );
+				} else {
+					this.validatorSetError( 'wikilambda-invalidzobject' );
 				}
 			},
 
 			/**
-			 * ZObject is selected, the component emits `input` event
+			 * The autocomple field is cleaned
 			 */
 			onClear: function () {
 				this.$emit( 'input', '' );
+				this.validatorResetError();
 			},
 
 			/**
@@ -238,16 +315,6 @@ module.exports = {
 			 */
 			onClearLookupResults: function () {
 				this.lookupResults = {};
-			},
-
-			/**
-			 * When blurred with a value written in the input, check if it
-			 * matches a ZObject format.
-			 * If so, check if ZObject exists.
-			 * If it exists, select ZObject. Else, clear field.
-			 */
-			onBlur: function () {
-				this.validateZidInput();
 			}
 		}
 	)
@@ -258,6 +325,11 @@ module.exports = {
 
 .ext-wikilambda-select-zobject {
 	display: inline-block;
+}
+
+.ext-wikilambda-select-zobject-input-invalid {
+	background: #fee;
+	border: 2px #f00 solid;
 }
 
 </style>

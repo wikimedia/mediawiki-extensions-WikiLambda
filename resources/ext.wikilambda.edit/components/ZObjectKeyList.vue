@@ -26,7 +26,6 @@
 
 		<!-- Add new key -->
 		<li v-if="!viewmode">
-			{{ $i18n( 'wikilambda-editor-zobject-addkey' ) }}
 			<z-object-key-input @change="addKey"></z-object-key-input>
 		</li>
 	</ul>

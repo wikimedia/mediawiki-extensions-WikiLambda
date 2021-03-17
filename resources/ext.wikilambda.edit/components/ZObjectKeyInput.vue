@@ -5,18 +5,26 @@
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->
-	<input
-		v-model="zkey"
-		class="ext-wikilambda-zkey-input"
-		:class="{ 'ext-wikilambda-zkey-input-invalid': isInvalid }"
-		@change="updateKey"
-	>
+	<span>
+		{{ $i18n( 'wikilambda-editor-zobject-addkey' ) }}
+		<input
+			v-model="zkey"
+			class="ext-wikilambda-zkey-input"
+			:class="{ 'ext-wikilambda-zkey-input-invalid': isInvalid }"
+			@change="updateKey"
+		>
+		<wbmi-message v-if="isInvalid" :inline="true" type="error"> {{ $i18n( 'wikilambda-invalidzobject' ) }} </wbmi-message>
+	</span>
 </template>
 
 <script>
+var WbmiMessage = require( './base/Message.vue' );
 
 module.exports = {
 	name: 'ZObjectKeyInput',
+	components: {
+		'wbmi-message': WbmiMessage
+	},
 	data: function () {
 		return {
 			zkey: '',

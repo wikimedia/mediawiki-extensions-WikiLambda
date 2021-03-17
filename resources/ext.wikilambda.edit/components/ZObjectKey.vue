@@ -111,4 +111,10 @@ module.exports = {
 	display: inline-block;
 	vertical-align: top;
 }
+
+.ext-wikilambda-zobject-key > span {
+	display: inline-block;
+	vertical-align: top;
+	margin-top: 5px;
+}
 </style>
