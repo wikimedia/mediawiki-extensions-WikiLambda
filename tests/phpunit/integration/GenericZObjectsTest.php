@@ -373,6 +373,136 @@ EOT;
 		);
 	}
 
+	/**
+	 * This test proves that a ZType with list (Z10) and type (Z4) keys and an implementation of it can be created.
+	 *
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
+	 */
+	public function testInstanceOfListUsingType() {
+		// Create ZListUsingType (Z890)
+		$baseTypeTitleText = 'Z890';
+		$baseTypeContent = <<<EOT
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z0",
+	"Z2K2": {
+		"Z1K1": "Z4",
+		"Z4K1": "Z890",
+		"Z4K2": [
+			{
+				"Z1K1": "Z3",
+				"Z3K1": "Z10",
+				"Z3K2": { "Z1K1": "Z6", "Z6K1": "Z890K1" },
+				"Z3K3": { "Z1K1": "Z12", "Z12K1": [] }
+			},
+			{
+				"Z1K1": "Z3",
+				"Z3K1": "Z4",
+				"Z3K2": { "Z1K1": "Z6", "Z6K1": "Z890K2" },
+				"Z3K3": { "Z1K1": "Z12", "Z12K1": [] }
+			}
+		],
+		"Z4K3": "Z0"
+	},
+	"Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "ZListUsingType" } ] }
+}
+EOT;
+
+		$baseTypeStatus = $this->editPage(
+			$baseTypeTitleText, $baseTypeContent, 'Create ZListUsingType', NS_ZOBJECT
+		);
+		$this->titlesTouched[] = $baseTypeTitleText;
+		$this->assertTrue(
+			$baseTypeStatus->isOK(),
+			'ZListUsingType creation'
+		);
+
+		$baseTypeTitle = Title::newFromText( $baseTypeTitleText, NS_ZOBJECT );
+		$this->assertTrue(
+			$baseTypeTitle->exists(),
+			'ZListUsingType page in the DB'
+		);
+
+		$registry = ZTypeRegistry::singleton();
+		$this->assertTrue(
+			$registry->isZObjectKeyKnown( 'Z890' ),
+			'ZListUsingType known to ZTypeRegistry'
+		);
+
+		// Create a valid instance of ZListUsingType (Z891)
+		$instanceTitleText = 'Z891';
+		$instanceContent = <<<EOT
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z0",
+	"Z2K2": {
+		"Z1K1": "Z890",
+		"Z890K1": ["Test"],
+		"Z890K2": "Z6"
+	},
+	"Z2K3": { "Z1K1": "Z12", "Z12K1": [] }
+}
+EOT;
+
+		$instanceStatus = $this->editPage(
+			$instanceTitleText, $instanceContent, 'Test ZListUsingType instance', NS_ZOBJECT
+		);
+		$this->titlesTouched[] = $instanceTitleText;
+		$this->assertTrue(
+			$instanceStatus->isOK(),
+			'ZListUsingType instance creation'
+		);
+
+		$instanceTitle = Title::newFromText( $instanceTitleText, NS_ZOBJECT );
+		$this->assertTrue(
+			$instanceTitle->exists(),
+			'ZListUsingType instance page in the DB'
+		);
+
+		// Test content is correct.
+		$instanceWikiPage = WikiPage::factory( $instanceTitle );
+		$instance = $instanceWikiPage->getContent( Revision::RAW );
+		$this->assertTrue(
+			$instance instanceof ZObjectContent,
+			'ZListUsingType instance content class'
+		);
+		$this->assertTrue(
+			$instance->isValid(), 'ZListUsingType valid ZPO'
+		);
+
+		$innerObject = $instance->getInnerZObject();
+		$this->assertTrue(
+			$innerObject->isValid(),
+			'ZListUsingType instance inner object valid ZObject'
+		);
+
+		// Create another instance with a reference and empty list (Z892)
+		$instanceTitleText = 'Z892';
+		$instanceContent = <<<EOT
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z0",
+	"Z2K2": {
+		"Z1K1": "Z890",
+		"Z890K1": [],
+		"Z890K2": {
+			"Z1K1": "Z9",
+			"Z9K1": "Z6"
+		}
+	},
+	"Z2K3": { "Z1K1": "Z12", "Z12K1": [] }
+}
+EOT;
+		$instanceStatus = $this->editPage(
+			$instanceTitleText, $instanceContent, 'Test ZListUsingType instance 2', NS_ZOBJECT
+		);
+		$this->titlesTouched[] = $instanceTitleText;
+		$this->assertTrue(
+			$instanceStatus->isOK(),
+			'ZListUsingType instance 2 creation'
+		);
+	}
+
 	protected function tearDown() : void {
 		// Cleanup the pages we touched.
 		$sysopUser = $this->getTestSysop()->getUser();

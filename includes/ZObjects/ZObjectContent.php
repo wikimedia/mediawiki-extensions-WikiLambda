@@ -17,6 +17,7 @@ use Language;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
@@ -72,11 +73,14 @@ class ZObjectContent extends JsonContent {
 	}
 
 	public function __construct( $text = null, $modelId = CONTENT_MODEL_ZOBJECT ) {
+		$logger = LoggerFactory::getInstance( 'WikiLambda' );
 		// NOTE: We don't bother to evaluate the Z_PERSISTENTOBJECT_LABEL at this point.
 		try {
 			$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] =
 				ZObjectFactory::createFromSerialisedString( $text );
 		} catch ( \InvalidArgumentException $e ) {
+			$logger->error( "Invalid Argument Exception: " . $e->getMessage() );
+			$logger->error( "Stack Trace: " . $e->getTraceAsString() );
 			$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = $text;
 			$this->validity = false;
 		}

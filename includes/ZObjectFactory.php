@@ -117,7 +117,7 @@ class ZObjectFactory {
 				// Validate the provided key values for built-ins using local PHP code
 				$keyType = $key->getKeyType();
 				if ( $registry->isZTypeBuiltIn( $keyType ) ) {
-					if ( !self::validateKeyValue( $keyId, $keyType, $objectVars[ $keyId ] ) ) {
+					if ( self::validateKeyValue( $keyId, $keyType, $objectVars[ $keyId ] ) === null ) {
 						throw new InvalidArgumentException(
 							"Couldn't create ZObject based on type '$type'; key '$keyId' isn't a valid '$keyType'."
 						);
@@ -196,6 +196,25 @@ class ZObjectFactory {
 		$return = null;
 		$registry = ZTypeRegistry::singleton();
 
+		// Adjust normalization of $value if necessary for references and strings:
+		if ( is_object( $value ) ) {
+			$objectVars = get_object_vars( $value );
+			if (
+				array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $objectVars ) &&
+				$objectVars[ZTypeRegistry::Z_OBJECT_TYPE] === ZTypeRegistry::Z_REFERENCE &&
+				array_key_exists( ZTypeRegistry::Z_REFERENCE_VALUE, $objectVars )
+			) {
+				$value = $objectVars[ZTypeRegistry::Z_REFERENCE_VALUE];
+			}
+			if (
+				array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $objectVars ) &&
+				$objectVars[ZTypeRegistry::Z_OBJECT_TYPE] === ZTypeRegistry::Z_STRING &&
+				array_key_exists( ZTypeRegistry::Z_STRING_VALUE, $objectVars )
+			) {
+				$value = $objectVars[ZTypeRegistry::Z_STRING_VALUE];
+			}
+		}
+
 		if ( $key === ZTypeRegistry::Z_TYPE_IDENTITY ) {
 			if ( self::validatingInContext( $value ) ) {
 				// Unexpected loop?
@@ -217,6 +236,7 @@ class ZObjectFactory {
 				break;
 
 			case ZTypeRegistry::BUILTIN_ARRAY:
+			case ZTypeRegistry::Z_LIST:
 				if ( is_array( $value ) ) {
 					foreach ( $value as $key => $arrayItem ) {
 						if ( $arrayItem instanceof ZObject ) {
@@ -282,6 +302,7 @@ class ZObjectFactory {
 				break;
 
 			case ZTypeRegistry::HACK_REFERENCE_TYPE:
+			case ZTypeRegistry::Z_TYPE:
 				if (
 					is_string( $value )
 					&& ZKey::isValidZObjectReference( $value )
