@@ -28,92 +28,36 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 	}
 
 	public function doUpdate() {
-		$dbw = wfGetDB( DB_MASTER );
+		// Given this title, gets ZID
+		// Given this zObject, gets ZType
+		// 1. Delete labels from wikilambda_zobject_labels for this ZID
+		// 2. Delete labels from wikilambda_zobject_label_conflicts for this ZID
+		// 3. Gets labels from this zObject (Z2K3 of the ZObjectContent)
+		// 4. Finds conflicting labels, e.g. existing labels from other ZIDs that have same language-value
+		// 5. Saves conflicting labels in wikilambda_zobject_label_conflicts and
+		// 6. Saves non-conflicting labels in wikilambda_zobject_labels
 
 		// TODO: Only re-write the labels if they've changed.
-
 		// TODO: Use a single fancy upsert to remove/update/insert instead?
+
 		$zid = $this->title->getDBkey();
 
-		$dbw->delete(
-			'wikilambda_zobject_labels',
-			[ 'wlzl_zobject_zid' => $zid ]
-		);
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
 
-		$dbw->delete(
-			'wikilambda_zobject_label_conflicts',
-			$dbw->makeList(
-				[
-					'wlzlc_existing_zid' => $zid,
-					'wlzlc_conflicting_zid' => $zid
-				],
-				$dbw::LIST_OR
-			)
-		);
+		$zObjectStore->deleteZObjectLabelsByZid( $zid );
+		$zObjectStore->deleteZObjectLabelConflictsByZid( $zid );
 
 		$labels = $this->zObject->getLabels()->getZValue();
 
 		// TODO: This should write the shortform, encoded type (e.g. `Z4(Z6)`)
 		$ztype = $this->zObject->getZType();
 
-		$clashes = static::getConflictingLabels( $dbw, $labels, $zid, $ztype );
+		$conflicts = $zObjectStore->findZObjectLabelConflicts( $zid, $ztype, $labels );
+		$newLabels = array_filter( $labels, function ( $value, $lang ) use ( $conflicts ) {
+			return !isset( $conflicts[$lang] );
+		}, ARRAY_FILTER_USE_BOTH );
 
-		$updates = [];
-		$clashUpdates = [];
-		foreach ( $labels as $language => $value ) {
-			if ( isset( $clashes[$language] ) ) {
-				$clashUpdates[] = [
-					'wlzlc_existing_zid' => $clashes[ $language ],
-					'wlzlc_conflicting_zid' => $zid,
-					'wlzlc_language' => $language,
-				];
-			} else {
-				$updates[] = [
-					'wlzl_zobject_zid' => $zid,
-					'wlzl_language' => $language,
-					"wlzl_type" => $ztype,
-					'wlzl_label' => $value,
-					'wlzl_label_normalised' => ZObjectUtils::comparableString( $value )
-				];
-			}
-		}
-
-		$dbw->insert( 'wikilambda_zobject_label_conflicts', $clashUpdates );
-
-		$dbw->insert( 'wikilambda_zobject_labels', $updates );
+		$zObjectStore->insertZObjectLabels( $zid, $ztype, $newLabels );
+		$zObjectStore->insertZObjectLabelConflicts( $zid, $conflicts );
 	}
-
-	public static function getConflictingLabels( $dbr, $labels, $zid, $type ) : array {
-		if ( $labels === [] ) {
-			return [];
-		}
-
-		$labelClashConditions = [];
-		foreach ( $labels as $language => $value ) {
-			$labelClashConditions[] = $dbr->makeList( [
-				'wlzl_language' => $language,
-				'wlzl_label' => $value
-			], $dbr::LIST_AND );
-		}
-
-		$res = $dbr->select(
-			/* FROM */ 'wikilambda_zobject_labels',
-			/* SELECT */ [ 'wlzl_zobject_zid', 'wlzl_language' ],
-			/* WHERE */ [
-				'wlzl_zobject_zid != ' . $dbr->addQuotes( $zid ),
-				// TODO: Check against type, once we properly implement that.
-				// 'wlzl_type' => $dbr->addQuotes( $type ),
-				$dbr->makeList( $labelClashConditions, $dbr::LIST_OR )
-			]
-		);
-
-		$clashes = [];
-		foreach ( $res as $row ) {
-			// TODO: What if more than one conflicts with us on each language?
-			$clashes[ $row->wlzl_language ] = $row->wlzl_zobject_zid;
-		}
-
-		return $clashes;
-	}
-
 }

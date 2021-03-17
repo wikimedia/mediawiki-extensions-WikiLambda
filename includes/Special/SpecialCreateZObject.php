@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\Special;
 
 use Html;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use SpecialPage;
 
@@ -65,30 +66,9 @@ class SpecialCreateZObject extends SpecialPage {
 		$contentHandler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 		$zObject = $contentHandler->makeEmptyContent();
 
-		$dbr = wfGetDB( DB_REPLICA );
-		$res = $dbr->select(
-			/* FROM */ 'page',
-			/* SELECT */ [ 'page_title' ],
-			/* WHERE */ [
-				'page_namespace' => NS_ZOBJECT,
-			],
-			__METHOD__,
-			[
-				'GROUP BY' => 'page_id',
-				'ORDER BY' => 'page_id DESC',
-				'LIMIT' => 1,
-			]
-		);
-
-		// NOTE: This picks either Z10000 or the next ZID after the latest one created; maybe just
-		// down-stream this to the editor entirely?
-
-		// If something went wrong with the query, just use Z9999, giving us Z10000.
-		$maxCurrentZID = $res->numRows() > 0 ? $res->fetchRow()[ 0 ] : 'Z9999';
-
-		// TODO: If a page has been deleted and then undeleted while the original page_id was re-used, &
-		// its undeletion is the most recent page 'create', the ZID returned will be wrong; fix this.
-		$targetZid = 'Z' . ( max( intval( substr( $maxCurrentZID, 1 ) ) + 1, 10000 ) );
+		// TODO: We probably should just remove title from editingData
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		$targetZid = $zObjectStore->getNextAvailableZid();
 
 		$editingData = [
 			'title' => $targetZid,

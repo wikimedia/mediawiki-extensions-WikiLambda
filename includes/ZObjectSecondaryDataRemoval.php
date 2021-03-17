@@ -23,24 +23,13 @@ class ZObjectSecondaryDataRemoval extends DataUpdate {
 	}
 
 	public function doUpdate() {
-		$dbw = wfGetDB( DB_MASTER );
-
 		$zid = $this->title->getDBkey();
 
-		$dbw->delete(
-			'wikilambda_zobject_labels',
-			[ 'wlzl_zobject_zid' => $zid ]
-		);
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
 
-		$dbw->delete(
-			'wikilambda_zobject_label_conflicts',
-			$dbw->makeList(
-				[
-					'wlzlc_existing_zid' => $zid,
-					'wlzlc_conflicting_zid' => $zid
-				],
-				$dbw::LIST_OR
-			)
-		);
+		$zObjectStore->deleteZObjectLabelsByZid( $zid );
+		$zObjectStore->deleteZObjectLabelConflictsByZid( $zid );
+
+		// TODO: add clear deleted zobject form ZTypeRegistry cache
 	}
 }

@@ -113,10 +113,8 @@ class Hooks implements
 			return true;
 		}
 
-		// Using DB_MASTER to get the very latest data, to try to avoid conflicts as much as possible.
-		$clashes = ZObjectSecondaryDataUpdate::getConflictingLabels(
-			wfGetDB( DB_MASTER ), $newLabels, $zid, $content->getZType()
-		);
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		$clashes = $zObjectStore->findZObjectLabelConflicts( $zid, $content->getZType(), $newLabels );
 
 		if ( $clashes === [] ) {
 			return true;

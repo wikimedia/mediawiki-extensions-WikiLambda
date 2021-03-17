@@ -13,8 +13,8 @@ namespace MediaWiki\Extension\WikiLambda\API;
 use ApiBase;
 use ApiPageSet;
 use ApiQueryGeneratorBase;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\Languages\LanguageNameUtils;
@@ -110,7 +110,9 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 			}
 
 			// Fetch ZObject and handle ZMultilingualStrings
-			$zobject = ZObjectContent::getObjectFromDB( $title )->getData()->getValue();
+			$zObjectStore = WikiLambdaServices::getZObjectStore();
+			$zobject = $zObjectStore->fetchZObjectByTitle( $title )->getData()->getValue();
+
 			if ( is_array( $languages ) ) {
 				$zobject = ZObjectUtils::filterZMultilingualStringsToLanguage( $zobject, $languages );
 			}

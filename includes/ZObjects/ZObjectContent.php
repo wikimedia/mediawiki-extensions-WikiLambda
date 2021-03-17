@@ -14,14 +14,11 @@ use FormatJson;
 use Html;
 use JsonContent;
 use Language;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
-use MediaWiki\Revision\RevisionRecord;
-use MediaWiki\Revision\RevisionStore;
-use MediaWiki\Revision\SlotRecord;
 use ParserOptions;
 use ParserOutput;
 use RequestContext;
@@ -100,38 +97,6 @@ class ZObjectContent extends JsonContent {
 		}
 		// NOTE: For ZObjectContent, we care about the *inner object*, not the ZPO itself
 		return ZObjectFactory::create( $objectVars[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] );
-	}
-
-	/** @var RevisionStore */
-	private static $revisionStore;
-
-	/**
-	 * Fetch a given Title's ZObjectContent from the database, and inflate it.
-	 *
-	 * @param Title $title The page to fetch.
-	 * @return ZObjectContent|false The ZObjectContent requested.
-	 */
-	public static function getObjectFromDB( Title $title ) {
-		if ( !$title->isKnown() ) {
-			return false;
-		}
-
-		if ( self::$revisionStore === null ) {
-			self::$revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
-		}
-
-		$revision = self::$revisionStore->getRevisionByTitle( $title );
-
-		if ( !$revision ) {
-			return false;
-		}
-
-		// NOTE: Hard-coding use of MAIN slot; if we're going the MCR route, we may wish to change this (or not).
-		$text = $revision->getSlot( SlotRecord::MAIN, RevisionRecord::RAW )->getContent()->getNativeData();
-
-		$zObject = new ZObjectContent( $text );
-
-		return $zObject;
 	}
 
 	/**
@@ -328,7 +293,10 @@ class ZObjectContent extends JsonContent {
 		$output->setTitleText( $header );
 
 		$output->addModules( 'ext.wikilambda.edit' );
-		$zObject = self::getObjectFromDB( $title );
+
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		$zObject = $zObjectStore->fetchZObjectByTitle( $title );
+
 		$userLangCode = $userLang->mCode;
 		$editingData = [
 			'title' => $title->getBaseText(),

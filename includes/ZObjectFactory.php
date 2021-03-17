@@ -94,7 +94,8 @@ class ZObjectFactory {
 				);
 			}
 
-			$targetObject = ZObjectContent::getObjectFromDB( $targetTitle );
+			$zObjectStore = WikiLambdaServices::getZObjectStore();
+			$targetObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
 
 			if ( !$targetObject ) {
 				throw new InvalidArgumentException(

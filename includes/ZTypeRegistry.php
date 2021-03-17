@@ -11,7 +11,6 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use InvalidArgumentException;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use Title;
 
 /**
@@ -145,7 +144,8 @@ class ZTypeRegistry {
 		$title = Title::newFromText( $key, NS_ZOBJECT );
 
 		// TODO: This is quite expensive. Store this in a metadata DB table, instead of fetching it live?
-		$zObject = ZObjectContent::getObjectFromDB( $title );
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		$zObject = $zObjectStore->fetchZObjectByTitle( $title );
 
 		if ( $zObject === false ) {
 			return false;

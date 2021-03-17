@@ -71,7 +71,8 @@ class ZObjectContentHandler extends JsonContentHandler {
 			throw new \InvalidArgumentException( "Provided page '$zObjectTitle' is not a ZObject content type." );
 		}
 
-		$zObject = ZObjectContent::getObjectFromDB( $zObjectTitle );
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		$zObject = $zObjectStore->fetchZObjectByTitle( $zObjectTitle );
 
 		if ( $zObject === false ) {
 			throw new \InvalidArgumentException( "Provided page '$zObjectTitle' could not be fetched from the DB." );
