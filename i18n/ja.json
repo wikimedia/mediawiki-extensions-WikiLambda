@@ -2,9 +2,11 @@
 	"@metadata": {
 		"authors": [
 			"Afaz",
-			"Portal18"
+			"Portal18",
+			"Tamaki Wakita"
 		]
 	},
+	"wikilambda-invalidzobjecttitle": "提供されたタイトル'$1' は  ZObject　には無効です。",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "言語",
 	"wikilambda-publishnew": "公開",
 	"wikilambda-savenew": "保存",
