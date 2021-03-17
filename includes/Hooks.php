@@ -10,11 +10,13 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use ApiMessage;
 use CommentStoreComment;
 use DatabaseUpdater;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\Revision\SlotRecord;
+use MessageSpecifier;
 use MWNamespace;
 use Status;
 use Title;
@@ -25,6 +27,7 @@ class Hooks implements
 	\MediaWiki\Hook\BeforePageDisplayHook,
 	\MediaWiki\Hook\NamespaceIsMovableHook,
 	\MediaWiki\Storage\Hook\MultiContentSaveHook,
+	\MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook,
 	\MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook
 	{
 
@@ -124,6 +127,39 @@ class Hooks implements
 		}
 
 		return false;
+	}
+
+	/**
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/getUserPermissionsErrors
+	 *
+	 * @param Title $title
+	 * @param User $user
+	 * @param string $action
+	 * @param array|string|MessageSpecifier &$result
+	 * @return bool|void
+	 */
+	public function onGetUserPermissionsErrors( $title, $user, $action, &$result ) {
+		if ( !$title->inNamespace( NS_ZOBJECT ) ) {
+			return;
+		}
+
+		// TODO: Is there a nicer way of getting 'all change actions'?
+		if ( !( $action == 'create' || $action == 'edit' || $action == 'upload' ) ) {
+			return;
+		}
+
+		$zid = $title->getDBkey();
+		if ( !ZKey::isValidZObjectReference( $zid ) ) {
+			$result = ApiMessage::create(
+				wfMessage( 'wikilambda-invalidzobjecttitle', $zid ),
+				'wikilambda-invalidzobjecttitle'
+			);
+			return false;
+		}
+
+		// TODO: Per-user rights checks (in getUserPermissionsErrorsExpensive instead)?
+
+		return true;
 	}
 
 	/**
