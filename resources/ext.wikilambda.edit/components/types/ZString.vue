@@ -64,5 +64,6 @@ module.exports = {
 <style lang="less">
 .ext-wikilambda-zstring {
 	display: inline-block;
+	margin-top: 3px;
 }
 </style>
