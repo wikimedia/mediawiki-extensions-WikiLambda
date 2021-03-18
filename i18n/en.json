@@ -17,6 +17,10 @@
 	"wikilambda-persistentzobject": "ZObject",
 	"wikilambda-multilingualstring-nofallback": "No label defined in this language or accepted fallbacks",
 	"wikilambda-viewmode-nojs": "This page displays in a limited way without JavaScript.",
+	"wikilambda-reference": "Reference",
+	"wikilambda-literal": "Literal",
+	"wikilambda-genericliteral": "Generic literal",
+	"wikilambda-functioncall": "Function call",
 	"wikilambda-special-createzobject": "Create a new ZObject",
 	"wikilambda-special-createzobject-summary": "This form lets you create a new ZObject, which can represent a Function, its Implementation, a Tester for it, or one of various other kinds of ZObjects. You should read the help documentation and community guidance first.",
 	"wikilambda-special-createzobject-intro": "Make sure that you follow community policies, and copyright and patent rules.",
@@ -42,5 +46,9 @@
 	"wikilambda-editor-zlist-removeitem-tooltip": "Remove this item from this ZList",
 	"wikilambda-editor-zobject-addkey": "Add key:",
 	"wikilambda-editor-zobject-removekey-tooltip": "Remove this key/value from the ZObject",
-	"wikilambda-editor-label-select-programming-language-label": "Select programming language:"
+	"wikilambda-editor-label-select-programming-language-label": "Select programming language:",
+	"wikilambda-modeselector-reference": "🔗",
+	"wikilambda-modeselector-literal": "x",
+	"wikilambda-modeselector-genericliteral": "gen",
+	"wikilambda-modeselector-functioncall": "f(x)"
 }
