@@ -7,6 +7,7 @@
 		]
 	},
 	"wikilambda-invalidzobjecttitle": "Il titolo '$1' mostrato non è valido per uno ZObject.",
+	"wikilambda-noresult": "La ricerca non ha fornito risultati.",
 	"wikilambda-viewmode-nojs": "Questa pagina viene visualizzata in modo limitato senza JavaScript.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Lingua",
 	"wikilambda-publishnew": "Pubblica",

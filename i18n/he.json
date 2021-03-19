@@ -9,6 +9,7 @@
 	"wikilambda-invalidzobjecttitle": "הכותרת המסופקת \"$1\" אינה תקינה עבור עצם Z.",
 	"wikilambda-invalidzobject": "התוכן שסופק אינו עצם Z תקין.",
 	"wikilambda-invalidcontenttype": "התוכן שסופק אינו מחלקה שמייצגת עצם Z.",
+	"wikilambda-noresult": "החיפוש לא הניב שום תוצאה",
 	"wikilambda-labelclash": "התווית של התוכן שסופק מתנגש עם עצם ה־Z בעל המזהה $1 עבור התווית בשפה $2.",
 	"wikilambda-persistentzobject": "עצם Z",
 	"wikilambda-multilingualstring-nofallback": "לא הוגדרה תווית בשפה הזאת וגם לא שפת גיבוי קבילה",

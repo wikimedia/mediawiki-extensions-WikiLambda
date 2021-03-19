@@ -2,9 +2,11 @@
 	"@metadata": {
 		"authors": [
 			"Amire80",
+			"Dnshitobu",
 			"Musahfm"
 		]
 	},
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "ZObject sheli kani mali yu'bobili.",
-	"wikilambda-speciallistduplicatezobjectlabels-language": "Balli"
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Balli",
+	"wikilambda-editor-label-select-programming-language-label": "Piimi Progaamin Yɛltɔɣa"
 }

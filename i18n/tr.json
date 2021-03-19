@@ -11,6 +11,7 @@
 	"wikilambda-invalidzobjecttitle": "Girilen başlık '$1' geçerli bir ZObject değil.",
 	"wikilambda-invalidzobject": "Sağlanan içerik geçerli bir ZObject değil.",
 	"wikilambda-invalidcontenttype": "Sağlanan içerik bir ZObject sınıfı değil.",
+	"wikilambda-noresult": "Arama bir sonuç vermedi.",
 	"wikilambda-labelclash": "Sağlanan içeriğin etiketi, '$2' etiketindeki ZObject '$1' ile çakışıyor.",
 	"wikilambda-multilingualstring-nofallback": "Bu dilde tanımlanmış etiket yok veya geri dönüşler kabul edilmiyor",
 	"wikilambda-viewmode-nojs": "Bu sayfa, JavaScript olmadan sınırlı bir şekilde görüntülenir.",

@@ -9,6 +9,7 @@
 	"wikilambda-invalidzobjecttitle": "Der angegebene Titel „$1“ ist für ein ZObject nicht gültig.",
 	"wikilambda-invalidzobject": "Der bereitgestellte Inhalt ist kein gültiges ZObjekt.",
 	"wikilambda-invalidcontenttype": "Der bereitgestellte Inhalt ist keine ZObject-Klasse.",
+	"wikilambda-noresult": "Die Suche hat kein Ergebnis geliefert.",
 	"wikilambda-labelclash": "Das Label des bereitgestellten Inhalts kollidiert mit dem ZObjekt „$1“ für das Label in „$2“.",
 	"wikilambda-multilingualstring-nofallback": "Kein Label definiert in dieser oder einer akzeptierten Fallback-Sprache",
 	"wikilambda-viewmode-nojs": "Diese Seite wird ohne JavaScript nur in eingeschränkter Weise angezeigt.",
@@ -33,5 +34,6 @@
 	"wikilambda-editor-zlist-additem-tooltip": "Ein Element zu dieser ZList hinzufügen",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Ein Element von dieser ZList entfernen",
 	"wikilambda-editor-zobject-addkey": "Schlüssel hinzufügen:",
-	"wikilambda-editor-zobject-removekey-tooltip": "Diesen Schlüssel/Wert vom ZObject entfernen"
+	"wikilambda-editor-zobject-removekey-tooltip": "Diesen Schlüssel/Wert vom ZObject entfernen",
+	"wikilambda-editor-label-select-programming-language-label": "Programmiersprache wählen:"
 }
