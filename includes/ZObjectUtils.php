@@ -386,4 +386,65 @@ class ZObjectUtils {
 		}
 		return $input;
 	}
+
+	/**
+	 * Given a ZPersistentObject, returns its labels
+	 * HACK: Remove this method as soon as we have ZObjectContent
+	 * saving ZPersistentObject (Z2) keys (Z2K1, Z2K2 and Z2K3)
+	 *
+	 * @param stdClass $data
+	 * @return array labels
+	 */
+	public static function getZPersistentObjectLabels( $data ) : array {
+		$monolingualStrings = $data
+			->{ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL }
+			->{ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE };
+		$labels = [];
+		foreach ( $monolingualStrings as $s ) {
+			$labels[ $s->{ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE } ] =
+				$s->{ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE };
+		}
+		return $labels;
+	}
+
+	/**
+	 * Given a ZPersistentObject, returns its type
+	 * HACK: Remove this method as soon as we have ZObjectContent
+	 * saving ZPersistentObject (Z2) keys (Z2K1, Z2K2 and Z2K3)
+	 *
+	 * @param stdClass $data
+	 * @return string|null This ZObject ZType
+	 */
+	public static function getZPersistentObjectType( $data ) {
+		if (
+			property_exists( $data, ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ) &&
+			property_exists( $data->{ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE }, ZTypeRegistry::Z_OBJECT_TYPE ) ) {
+			return $data
+				->{ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE }
+				->{ ZTypeRegistry::Z_OBJECT_TYPE };
+		}
+		return null;
+	}
+
+	/**
+	 * Given a ZPersistentObject, returns its ID
+	 * HACK: Remove this method as soon as we have ZObjectContent
+	 * saving ZPersistentObject (Z2) keys (Z2K1, Z2K2 and Z2K3)
+	 *
+	 * @param stdClass $data
+	 * @return string|null This ZObject ZId
+	 */
+	public static function getZPersistentObjectId( $data ) {
+		if ( property_exists( $data, ZTypeRegistry::Z_PERSISTENTOBJECT_ID ) ) {
+			$ref = $data->{ ZTypeRegistry::Z_PERSISTENTOBJECT_ID };
+			if ( is_string( $ref ) ) {
+				return $ref;
+			}
+			if ( property_exists( $ref, ZTypeRegistry::Z_REFERENCE_VALUE ) ) {
+				return $ref->{ ZTypeRegistry::Z_REFERENCE_VALUE };
+			}
+		}
+		return null;
+	}
+
 }

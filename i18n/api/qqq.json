@@ -30,5 +30,13 @@
 	"apihelp-query+wikilambdaload_zobjects-example-full": "{{doc-apihelp-example|query+wikilambdaload_zobjects}}\n\n{{doc-wikilambda}}",
 	"apihelp-query+wikilambdaload_zobjects-example-language": "{{doc-apihelp-example|query+wikilambdaload_zobjects}}\n\n{{doc-wikilambda}}",
 	"apihelp-query+wikilambdaload_zobjects-example-error": "{{doc-apihelp-example|query+wikilambdaload_zobjects}}\n\n{{doc-wikilambda}}",
-	"apihelp-query+wikilambdaload_zobjects-example-canonical": "{{doc-apihelp-example|query+wikilambdaload_zobjects}}\n\n{{doc-wikilambda}}"
+	"apihelp-query+wikilambdaload_zobjects-example-canonical": "{{doc-apihelp-example|query+wikilambdaload_zobjects}}\n\n{{doc-wikilambda}}",
+	"apihelp-wikilambda_edit-example-create": "{{doc-apihelp-example|wikilambda_edit}}\n\n{{doc-wikilambda}}",
+	"apihelp-wikilambda_edit-example-edit-incorrect": "{{doc-apihelp-example|wikilambda_edit}}\n\n{{doc-wikilambda}}",
+	"apihelp-wikilambda_edit-summary": "{{doc-apihelp-summary|wikilambda_edit}}\n\n{{doc-wikilambda}}",
+	"apihelp-wikilambda_edit-param-summary": "{{doc-apihelp-param|wikilambda_edit|summary}}\n\n{{doc-wikilambda}}",
+	"apihelp-wikilambda_edit-param-zid": "{{doc-apihelp-param|wikilambda_edit|zid}}\n\n{{doc-wikilambda}}",
+	"apihelp-wikilambda_edit-param-zobject": "{{doc-apihelp-param|wikilambda_edit|zobject}}\n\n{{doc-wikilambda}}",
+	"apierror-wikilambda_edit-invalidjson": "{{doc-apierror}}\n\nParameters:\n* $1 - Invalid JSON string.\n\n{{doc-wikilambda}}",
+	"apierror-wikilambda_edit-unmatchingzid": "{{doc-apierror}}\n\nParameters:\n* $1 - Value of the api parameter 'zid'\n* $2 - Value of the ZObject key 'Z2K1' (Persistent Object Id)\n\n{{doc-wikilambda}}"
 }

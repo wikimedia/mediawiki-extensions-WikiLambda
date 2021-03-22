@@ -170,7 +170,8 @@
 		}
 	},
 	"APIModules": {
-		"wikilambda_fetch": "MediaWiki\\Extension\\WikiLambda\\API\\ApiZObjectFetcher"
+		"wikilambda_fetch": "MediaWiki\\Extension\\WikiLambda\\API\\ApiZObjectFetcher",
+		"wikilambda_edit": "MediaWiki\\Extension\\WikiLambda\\API\\ApiZObjectEditor"
 	},
 	"APIListModules": {
 		"wikilambdasearch_labels": "MediaWiki\\Extension\\WikiLambda\\API\\ApiQueryZObjectLabels",

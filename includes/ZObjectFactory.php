@@ -75,6 +75,10 @@ class ZObjectFactory {
 		}
 
 		if ( $type === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
+			// TODO: Maybe doing this differently to make it clear that we are
+			// not creating a ZObjectContent but the ZObject represented inside.
+			// Also, it should not be necessary to capture ZPersistentObject-related
+			// exceptions at this point (which is what we do in ZObjectContent::create).
 			return ZObjectContent::create( $objectVars );
 		}
 

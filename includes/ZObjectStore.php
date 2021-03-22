@@ -20,6 +20,7 @@ use Title;
 use TitleFactory;
 use User;
 use Wikimedia\Rdbms\ILoadBalancer;
+use WikiPage;
 
 class ZObjectStore {
 
@@ -65,6 +66,7 @@ class ZObjectStore {
 			/* SELECT */ [ 'page_title' ],
 			/* WHERE */ [
 				'page_namespace' => NS_ZOBJECT,
+				'LENGTH( page_title ) > 5'
 			],
 			__METHOD__,
 			[
@@ -112,18 +114,96 @@ class ZObjectStore {
 	 * @param string $data
 	 * @param string $summary
 	 * @param User $user
-	 * @return Status status
+	 * @return WikiPage|Status Created page if success creation, status if failed
 	 */
-	public function createZObject( string $data, string $summary, User $user ) : Status {
+	public function createNewZObject( string $data, string $summary, User $user ) {
+		// $status = new Status();
+
+		// Find all Z0s and Z0 keys and replace those with the next available ZID
 		$zid = $this->getNextAvailableZid();
-		$title = $this->titleFactory->newFromText( $zid, NS_ZOBJECT );
-		if ( $title instanceof Title ) {
-			$page = $this->wikiPageFactory->newFromTitle( $title );
-			$content = ZObjectContentHandler::makeContent( $data, $title );
-			$status = $page->doEditContent( $content, $summary, EDIT_NEW, false, $user );
+		$zObjectString = preg_replace( '/\"Z0(K[1-9]\d*)?\"/', "\"$zid$1\"", $data );
+
+		return $this->updateZObject( $zid, $zObjectString, $summary, $user, EDIT_NEW );
+	}
+
+	/**
+	 * Create or update a ZObject it in the Database
+	 *
+	 * @param string $zid
+	 * @param string $data
+	 * @param string $summary
+	 * @param User $user
+	 * @param int $flags
+	 * @return WikiPage|Status Updated page if success update, status if failed
+	 */
+	public function updateZObject( string $zid, string $data, string $summary, User $user, int $flags = EDIT_UPDATE ) {
+		// TODO: new ZObjectContent() instead:
+		// 1. It will run ZObjectFactory::createFromSerializedObject and validate both the JSON and the ZObject.
+		// 2. Fix it so that it saves the data of the ZPersistentObject, and we can use it to check the labels.
+
+		// Parse the data string and catch JSON format validity errors.
+		$zObjectNormal = json_decode( $data );
+		if ( $zObjectNormal === null ) {
+			// Error: Invalid JSON
+			return Status::newFatal( 'apierror-wikilambda_edit-invalidjson', $data );
+		}
+
+		// Canonicalize zObject before saving it
+		$zObject = ZObjectUtils::canonicalize( $zObjectNormal );
+		$zObjectString = json_encode( $zObject );
+
+		// Create the ZObject	object to run validation and catch InvalidArgumentException errors
+		try {
+			$zObjectContent = ZObjectFactory::create( $zObject );
+		} catch ( \InvalidArgumentException $e ) {
+			// Error: Invalid ZObject
+			return Status::newFatal( $e->getMessage() );
+		}
+
+		// Validate that $zid and zObject[Z2K1] are the same
+		// TODO: replace ZObjectUtils::getZPersistentObjectId with ZObjectContent->getId()
+		$zObjectId = ZObjectUtils::getZPersistentObjectId( $zObject );
+		if ( $zObjectId !== $zid ) {
+			return Status::newFatal( 'apierror-wikilambda_edit-unmatchingzid', $zid, $zObjectId );
+		}
+
+		// Find the label conflicts.
+		// TODO: Once we fix ZObjectContent to save also the Z2 keys, we can get rid of these two
+		// methods and simply use ZObjectContent->getLabels() and ZObjectContent->getType()
+		$labels = ZObjectUtils::getZPersistentObjectLabels( $zObject );
+		$ztype = ZObjectUtils::getZPersistentObjectType( $zObject );
+		$clashes = $this->findZObjectLabelConflicts( $zid, $ztype, $labels );
+		if ( count( $clashes ) > 0 ) {
+			// Error: Found label conflicts
+			$status = new Status();
+			foreach ( $clashes as $language => $clash_zid ) {
+				$status->fatal( 'wikilambda-labelclash', $clash_zid, $language );
+			}
 			return $status;
 		}
-		return Status::newFatal( 'wikilambda-invalidzojecttitle', $zid );
+
+		// Create the content object from the already validated text
+		$title = $this->titleFactory->newFromText( $zid, NS_ZOBJECT );
+		if ( !( $title instanceof Title ) ) {
+			return Status::newFatal( 'wikilambda-invalidzobjecttitle', $zid );
+		}
+		$page = $this->wikiPageFactory->newFromTitle( $title );
+		$content = ZObjectContentHandler::makeContent( $zObjectString, $title );
+
+		try {
+			$status = $page->doEditContent( $content, $summary, $flags, false, $user );
+		} catch ( \Exception $e ) {
+			// Error: Database error
+			return Status::newFatal( $e->getMessage() );
+		}
+
+		if ( !$status->isOK() ) {
+			// Error: Other doEditContent related errors
+			return $status;
+		}
+
+		// Success: return WikiPage
+		return $page;
 	}
 
 	/**

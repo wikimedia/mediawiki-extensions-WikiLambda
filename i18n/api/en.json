@@ -28,5 +28,13 @@
 	"apihelp-query+wikilambdaload_zobjects-example-full": "Search for ZObjects Z12 and Z4 and return their full JSON representation.",
 	"apihelp-query+wikilambdaload_zobjects-example-language": "Search for ZObjects Z12 and Z4 and return their labels filtered to Spanish or fallback languages.",
 	"apihelp-query+wikilambdaload_zobjects-example-error": "Search for ZObjects Z1 and the non-existent Z012345789 and return their full JSON representation.",
-	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Search for ZObject Z12 and return its JSON canonical representation."
+	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Search for ZObject Z12 and return its JSON canonical representation.",
+	"apihelp-wikilambda_edit-example-create": "Create a new ZObject of type Z6, with value 'value' and labeled 'label'",
+	"apihelp-wikilambda_edit-example-edit-incorrect": "Attempt to update the ZObject Z010 with an incorrect data",
+	"apihelp-wikilambda_edit-summary": "Create or edit a ZObject.",
+	"apihelp-wikilambda_edit-param-summary": "Edit summary message",
+	"apihelp-wikilambda_edit-param-zid": "ZID of the ZObject to edit. If null, the ZObject will be newly created",
+	"apihelp-wikilambda_edit-param-zobject": "JSON representation of the ZObject to save",
+	"apierror-wikilambda_edit-invalidjson": "Couldn't create ZObject for given input '$1'; invalid JSON.",
+	"apierror-wikilambda_edit-unmatchingzid": "The parameter ZID '$1' does not match with the ZObject ID '$2'"
 }
