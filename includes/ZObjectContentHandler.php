@@ -133,6 +133,10 @@ class ZObjectContentHandler extends JsonContentHandler {
 		);
 	}
 
+	public function supportsDirectEditing() {
+		return false;
+	}
+
 	public function getActionOverrides() {
 		return [
 			'edit' => ZObjectEditAction::class
