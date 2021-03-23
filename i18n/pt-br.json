@@ -11,6 +11,7 @@
 	"wikilambda-invalidzobjecttitle": "O título fornecido '$1' não é válido para um ZObject.",
 	"wikilambda-invalidzobject": "O conteúdo fornecido não é um ZObject válido.",
 	"wikilambda-invalidcontenttype": "O conteúdo fornecido não é uma classe ZObject.",
+	"wikilambda-noresult": "A pesquisa não forneceu nenhum resultado.",
 	"wikilambda-labelclash": "O rótulo do conteúdo fornecido entra em conflito com ZObject '$1' para o rótulo em '$2'.",
 	"wikilambda-multilingualstring-nofallback": "Nenhum rótulo definido neste idioma ou substitutos aceitos",
 	"wikilambda-viewmode-nojs": "Esta página é exibida de forma limitada sem JavaScript.",
@@ -35,5 +36,6 @@
 	"wikilambda-editor-zlist-additem-tooltip": "Adicione um item na ZList",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Remova este item desta ZList",
 	"wikilambda-editor-zobject-addkey": "Adicionar chave:",
-	"wikilambda-editor-zobject-removekey-tooltip": "Remova esta chave/valor do ZObject"
+	"wikilambda-editor-zobject-removekey-tooltip": "Remova esta chave/valor do ZObject",
+	"wikilambda-editor-label-select-programming-language-label": "Selecione a linguagem de programação:"
 }

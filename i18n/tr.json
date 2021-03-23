@@ -36,5 +36,6 @@
 	"wikilambda-editor-zlist-additem-tooltip": "Bu ZList'e bir öğe ekleyin",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Bu öğeyi bu ZList'den kaldır",
 	"wikilambda-editor-zobject-addkey": "Anahtar ekle:",
-	"wikilambda-editor-zobject-removekey-tooltip": "Bu anahtarı/değeri ZObject'ten kaldırın"
+	"wikilambda-editor-zobject-removekey-tooltip": "Bu anahtarı/değeri ZObject'ten kaldırın",
+	"wikilambda-editor-label-select-programming-language-label": "Programlama dilini seçin:"
 }

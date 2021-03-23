@@ -16,5 +16,6 @@
 	"wikilambda-savechanges": "Salva modifiche",
 	"wikilambda-editor-label-addlanguage-label": "Aggiungi lingua:",
 	"wikilambda-editor-label-removelanguage-tooltip": "Rimuovi questa lingua da questa etichetta",
-	"wikilambda-editor-zobject-addkey": "Aggiungi chiave:"
+	"wikilambda-editor-zobject-addkey": "Aggiungi chiave:",
+	"wikilambda-editor-label-select-programming-language-label": "Seleziona linguaggio di programmazione:"
 }
