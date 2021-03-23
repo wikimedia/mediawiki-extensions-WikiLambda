@@ -30,6 +30,6 @@ class ZObjectSecondaryDataRemoval extends DataUpdate {
 		$zObjectStore->deleteZObjectLabelsByZid( $zid );
 		$zObjectStore->deleteZObjectLabelConflictsByZid( $zid );
 
-		// TODO: add clear deleted zobject form ZTypeRegistry cache
+		ZTypeRegistry::singleton()->unregisterType( $zid );
 	}
 }

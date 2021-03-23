@@ -170,6 +170,7 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 
 	/**
 	 * @covers ::registerType
+	 * @covers ::internalRegisterType
 	 */
 	public function testRegisterType() {
 		$registry = ZTypeRegistry::singleton();
@@ -205,5 +206,35 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 			$newValue,
 			"'ZTypeRegistry' lookup works once registered."
 		);
+	}
+
+	/**
+	 * @covers ::unregisterType
+	 */
+	public function testUnregisterType() {
+		$registry = ZTypeRegistry::singleton();
+
+		$key = $registry->registerType( 'ZTypeRegistry' );
+
+		$this->assertTrue(
+			$registry->isZObjectTypeCached( 'ZTypeRegistry' ),
+			"'ZTypeRegistry' is registered."
+		);
+
+		$this->assertEquals(
+			$registry->getZObjectKeyFromType( 'ZTypeRegistry' ),
+			$key,
+			"'ZTypeRegistry' lookup works once registered."
+		);
+
+		$registry->unregisterType( $key );
+
+		$this->assertFalse(
+			$registry->isZObjectTypeCached( 'ZTypeRegistry' ),
+			"'ZTypeRegistry' is not chached after unregistering."
+		);
+
+		// We unregister a type that wasn't there. Should not fail.
+		$registry->unregisterType( 'Undefined Type' );
 	}
 }

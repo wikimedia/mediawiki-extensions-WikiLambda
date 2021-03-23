@@ -227,4 +227,13 @@ class ZTypeRegistry {
 		$this->zObjectTypes[ $key ] = $type;
 	}
 
+	/**
+	 * Remove the given type from the type registry array
+	 *
+	 * @param string $type
+	 */
+	public function unregisterType( string $type ) {
+		unset( $this->zObjectTypes[ $type ] );
+	}
+
 }
