@@ -21,6 +21,10 @@
 	"wikilambda-persistentzobject": "{{Optional}}Label for a top-level ZObject.",
 	"wikilambda-multilingualstring-nofallback": "Message shown when a multi-lingual string doesn't have a label defined for the user's language, nor for any of that language's fallbacks.",
 	"wikilambda-viewmode-nojs": "Warning shown on a ZObject page to readers who do not have JavaScript.",
+	"wikilambda-reference": "Label for the word reference",
+	"wikilambda-literal": "Label for the word literal",
+	"wikilambda-genericliteral": "Label for the word generic literal",
+	"wikilambda-functioncall": "Label for the word function call",
 	"wikilambda-special-createzobject": "Description for Special:CreateZObject.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-createzobject-summary": "Introductory summary shown on Special:CreateZObject.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-createzobject-intro": "Warning shown to editors on Special:CreateZObject about following community rules.",
@@ -46,5 +50,9 @@
 	"wikilambda-editor-zlist-removeitem-tooltip": "Tooltip shown on button to remove an entry from a ZList.\n\n{{doc-wikilambda}}",
 	"wikilambda-editor-zobject-addkey": "Label for button to add a new ZKey to a ZObject.\n\n{{doc-wikilambda}}",
 	"wikilambda-editor-zobject-removekey-tooltip": "Tooltip shown on the button to remove an entry from a ZObject.\n\n{{doc-wikilambda}}",
-	"wikilambda-editor-label-select-programming-language-label": "Label for programming language selection dropdown."
+	"wikilambda-editor-label-select-programming-language-label": "Label for programming language selection dropdown.",
+	"wikilambda-modeselector-reference": "Label for button to select reference",
+	"wikilambda-modeselector-literal": "Label for button to select literal",
+	"wikilambda-modeselector-genericliteral": "Label for button to select generic",
+	"wikilambda-modeselector-functioncall": "Label for button to select function call"
 }

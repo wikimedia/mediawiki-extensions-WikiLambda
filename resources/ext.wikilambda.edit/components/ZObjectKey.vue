@@ -35,12 +35,14 @@
 <script>
 var Constants = require( '../Constants.js' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
+	ZKeyModeSelector = require( './ZKeyModeSelector.vue' ),
 	mapState = require( 'vuex' ).mapState;
 
 module.exports = {
 	name: 'ZObjectKey',
 	components: {
-		'z-object-selector': ZObjectSelector
+		'z-object-selector': ZObjectSelector,
+		'z-key-mode-selector': ZKeyModeSelector
 	},
 	props: {
 		viewmode: {

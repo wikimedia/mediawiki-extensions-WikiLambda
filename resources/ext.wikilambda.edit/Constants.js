@@ -30,7 +30,8 @@ var Constants = {
 	Z_FUNCTION_TESTERS: 'Z8K3',
 	Z_FUNCTION_IMPLEMENTATIONS: 'Z8K4',
 	Z_FUNCTION_IDENTITY: 'Z8K5',
-	Z_CODE: 'Z16'
+	Z_CODE: 'Z16',
+	Z_KEY_MODES: { LITERAL: 'literal', REFERENCE: 'reference', FUNCTION_CALL: 'function_call', GENERIC_LITERAL: 'generic_literal' }
 };
 
 module.exports = Constants;
