@@ -17,6 +17,7 @@
 				class="wbmi-input__input"
 				type="text"
 				role="combobox"
+				autocomplete="off"
 				aria-autocomplete="list"
 				:aria-owns="lookupResultsElementId"
 				:aria-expanded="isExpanded"
@@ -72,7 +73,6 @@ var WbmiButton = require( './Button.vue' ),
 	WbmiIcon = require( './Icon.vue' ),
 	WbmiSelectMenu = require( './SelectMenu.vue' ),
 	icons = require( './../../../lib/icons.js' );
-
 /**
  * @file AutocompleteSearchInput
  *
@@ -85,13 +85,11 @@ var WbmiButton = require( './Button.vue' ),
 // @vue/component
 module.exports = {
 	name: 'WbmiAutocompleteSearchInput',
-
 	components: {
 		'wbmi-button': WbmiButton,
 		'wbmi-icon': WbmiIcon,
 		'wbmi-select-menu': WbmiSelectMenu
 	},
-
 	props: {
 		/**
 		 * Name must be provided to ensure unique aria attributes. This probably
@@ -101,7 +99,6 @@ module.exports = {
 			type: String,
 			required: true
 		},
-
 		/**
 		 * Required label for input. Currently, label will always be visually
 		 * hidden, but this could be toggled via a prop in a future iteration.
@@ -110,27 +107,22 @@ module.exports = {
 			type: [ String, Object ],
 			required: true
 		},
-
 		initialValue: {
 			type: [ String, Number ],
 			default: ''
 		},
-
 		placeholder: {
 			type: [ String, Object ],
 			default: null
 		},
-
 		clearTitle: {
 			type: [ String, Object ],
 			default: null
 		},
-
 		buttonLabel: {
 			type: [ String, Object ],
 			default: null
 		},
-
 		lookupResults: {
 			type: Array,
 			default: function () {
@@ -138,7 +130,6 @@ module.exports = {
 			}
 		}
 	},
-
 	data: function () {
 		return {
 			value: this.initialValue,
@@ -148,7 +139,6 @@ module.exports = {
 			activeLookupItemIndex: -1
 		};
 	},
-
 	computed: {
 		/**
 		 * @return {Object}
@@ -159,21 +149,18 @@ module.exports = {
 				'wbmi-input--pending': this.pending
 			};
 		},
-
 		/**
 		 * @return {boolean}
 		 */
 		hasButton: function () {
 			return !!this.buttonLabel;
 		},
-
 		/**
 		 * @return {boolean}
 		 */
 		hasLookupResults: function () {
 			return this.lookupResults.length > 0;
 		},
-
 		/**
 		 * ID of the visually-hidden label.
 		 *
@@ -182,7 +169,6 @@ module.exports = {
 		labelElementId: function () {
 			return this.name + '__label';
 		},
-
 		/**
 		 * ID of the input.
 		 *
@@ -191,7 +177,6 @@ module.exports = {
 		inputElementId: function () {
 			return this.name + '__input';
 		},
-
 		/**
 		 * ID of the lookup results container.
 		 *
@@ -200,7 +185,6 @@ module.exports = {
 		lookupResultsElementId: function () {
 			return this.name + '__lookup-results';
 		},
-
 		/**
 		 * The actual string of the active lookup result item.
 		 *
@@ -213,10 +197,8 @@ module.exports = {
 			) {
 				return false;
 			}
-
 			return this.lookupResults[ this.activeLookupItemIndex ];
 		},
-
 		/**
 		 * The ID of the element of the active lookup result item.
 		 *
@@ -227,7 +209,6 @@ module.exports = {
 				this.lookupResultsElementId + '-item-' + this.activeLookupItemIndex :
 				false;
 		},
-
 		/**
 		 * For the aria-expanded attribute of the input, we need to use strings
 		 * instead of booleans so that aria-expanded will be set to "false" when
@@ -240,7 +221,6 @@ module.exports = {
 			return this.hasLookupResults && this.showLookupResults ? 'true' : 'false';
 		}
 	},
-
 	methods: {
 		/**
 		 * Emit input and enable pending state.
@@ -251,7 +231,6 @@ module.exports = {
 			this.pending = true;
 			this.$emit( 'input', this.value );
 		},
-
 		/**
 		 * If there are existing lookup results, show them on focus.
 		 *
@@ -262,7 +241,6 @@ module.exports = {
 			this.toggleLookupResults( this.lookupResults.length > 0 );
 			this.$emit( 'focus', event );
 		},
-
 		/**
 		 * Hide, but don't delete, lookup results.
 		 *
@@ -273,7 +251,6 @@ module.exports = {
 			this.$emit( 'blur', event );
 			this.toggleLookupResults( false );
 		},
-
 		/**
 		 * Handle enter keypress or button click.
 		 *
@@ -288,8 +265,8 @@ module.exports = {
 			}
 			this.$emit( 'submit', this.value );
 			this.clearLookupResults();
+			this.$refs.input.blur();
 		},
-
 		/**
 		 * Handle lookup item click.
 		 *
@@ -301,7 +278,6 @@ module.exports = {
 			this.$emit( 'submit', this.value );
 			this.clearLookupResults();
 		},
-
 		/**
 		 * Move to the next lookup result. If we're at the end, go back to the
 		 * first item.
@@ -314,7 +290,6 @@ module.exports = {
 					0;
 			}
 		},
-
 		/**
 		 * Move to the previous lookup result. If we're at the beginning, go to
 		 * the last item.
@@ -327,7 +302,6 @@ module.exports = {
 					index - 1;
 			}
 		},
-
 		/**
 		 * Change the active item index based on mouseover or mouseleave.
 		 *
@@ -336,19 +310,16 @@ module.exports = {
 		onActiveItemChange: function ( index ) {
 			this.activeLookupItemIndex = index;
 		},
-
 		/*
 		* Set focus to input if icon is clicked.
 		*/
 		onIconClick: function () {
 			var $input;
-
 			this.$nextTick( function () {
 				$input = this.$refs.input;
 				$input.focus();
 			} );
 		},
-
 		/**
 		 * Handle clear icon click.
 		 */
@@ -358,14 +329,12 @@ module.exports = {
 			this.clearLookupResults();
 			this.$refs.input.focus();
 		},
-
 		/**
 		 * Helper function to reset lookup results to an empty array.
 		 */
 		clearLookupResults: function () {
 			this.$emit( 'clear-lookup-results' );
 		},
-
 		/**
 		 * Show or hide lookup results.
 		 *
@@ -375,7 +344,6 @@ module.exports = {
 			this.showLookupResults = show;
 		}
 	},
-
 	watch: {
 		/**
 		 * When new lookup results are received, remove pending state and reset
@@ -386,7 +354,6 @@ module.exports = {
 			this.activeLookupItemIndex = -1;
 			this.toggleLookupResults( this.lookupResults.length > 0 );
 		},
-
 		/**
 		 * If the search term (passed down here as the "initial value" prop)
 		 * changes for a reason besides the user typing into the input here
@@ -398,7 +365,6 @@ module.exports = {
 		initialValue: function ( newValue ) {
 			this.value = newValue;
 		},
-
 		/**
 		 * Clear lookup results if the user manually delets all characters
 		 *
