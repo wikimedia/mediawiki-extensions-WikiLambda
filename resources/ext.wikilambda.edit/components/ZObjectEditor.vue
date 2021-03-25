@@ -32,9 +32,9 @@
 </template>
 
 <script>
-var Constants = require( '../Constants.js' ),
-	ZObject = require( './ZObject.vue' ),
+var ZObject = require( './ZObject.vue' ),
 	WbmiMessage = require( './base/Message.vue' ),
+	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	mapMutations = require( 'vuex' ).mapMutations;
 
@@ -46,16 +46,14 @@ module.exports = {
 	},
 	data: function () {
 		return {
-			zobject: {},
-			createNewPage: true,
-			summary: '',
-			message: {
-				type: 'error',
-				text: null
-			}
+			summary: ''
 		};
 	},
-	computed: {
+	computed: $.extend( mapGetters( {
+		zobject: 'getCurrentZObject',
+		createNewPage: 'isCreateNewPage',
+		message: 'getZObjectMessage'
+	} ), {
 		submitButtonLabel: function () {
 			if ( this.createNewPage ) {
 				return mw.msg(
@@ -69,9 +67,9 @@ module.exports = {
 				);
 			}
 		}
-	},
+	} ),
 	methods: $.extend( {},
-		mapActions( [ 'fetchZKeys' ] ),
+		mapActions( [ 'fetchZKeys', 'initializeZObject', 'submitZObject' ] ),
 		mapMutations( [ 'addZKeyLabel', 'setZLangs' ] ),
 		{
 			updateZobject: function ( newZobject ) {
@@ -79,52 +77,18 @@ module.exports = {
 			},
 
 			submit: function () {
-				var page = mw.config.get( 'wgWikiLambda' ).page,
-					api = new mw.Api(),
-					self = this;
-				if ( this.createNewPage ) {
-					// TODO: If the page already exists, increment the counter until we get a free one.
-					api.create( page, { summary: self.summary },
-						JSON.stringify( self.zobject )
-					).then( function () {
-						window.location.href = new mw.Title( page ).getUrl();
-					} ).catch( function ( errorCode, result ) {
-						self.showMessage( result.error.info, 'error' );
-					} );
-				} else {
-					api.edit( page, function ( /* revision */ ) {
-						return {
-							text: JSON.stringify( self.zobject ),
-							summary: self.summary
-						};
-					} ).then( function () {
-						window.location.href = new mw.Title( page ).getUrl();
-					} ).catch( function ( errorCode, result ) {
-						self.showMessage( result.error.info, 'error' );
-					} );
-				}
-			},
-			showMessage: function ( text, type ) {
-				type = type || 'notice';
-				this.message.type = type;
-				this.message.text = text;
+				this.submitZObject( this.summary );
 			}
 		}
 	),
 
 	created: function () {
-		var editingData = mw.config.get( 'wgWikiLambda' ),
-			languageChain;
-		this.createNewPage = editingData.createNewPage;
+		var languageChain = mw.language.getFallbackLanguageChain();
 
 		// Set zobject
-		this.zobject = editingData.zobject;
-		if ( this.createNewPage ) {
-			this.zobject[ Constants.Z_PERSISTENTOBJECT_ID ] = editingData.title;
-		}
+		this.initializeZObject();
 
 		// Set user language
-		languageChain = mw.language.getFallbackLanguageChain();
 		this.setZLangs( languageChain );
 
 		// Fetch Z1 labels to initialize ZObject
