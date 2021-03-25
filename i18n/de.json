@@ -13,6 +13,9 @@
 	"wikilambda-labelclash": "Das Label des bereitgestellten Inhalts kollidiert mit dem ZObjekt „$1“ für das Label in „$2“.",
 	"wikilambda-multilingualstring-nofallback": "Kein Label definiert in dieser oder einer akzeptierten Fallback-Sprache",
 	"wikilambda-viewmode-nojs": "Diese Seite wird ohne JavaScript nur in eingeschränkter Weise angezeigt.",
+	"wikilambda-reference": "Referenz",
+	"wikilambda-literal": "Wörtlich",
+	"wikilambda-functioncall": "Funktionsaufruf",
 	"wikilambda-special-createzobject": "Neues ZObject erstellen",
 	"wikilambda-special-createzobject-summary": "Mit diesem Formular kannst du ein neues ZObjekt erstellen, das eine Funktion, ihre Implementierung, einen Tester dafür oder eine von verschiedenen anderen Arten von ZObjekten darstellen kann. Du solltest zuerst die Hilfedokumentation und die Community-Anleitung lesen.",
 	"wikilambda-special-createzobject-intro": "Vergewissere dich, dass du die Gemeinschaftsrichtlinien sowie die Urheberrechts- und Patentvorschriften befolgst.",
@@ -35,5 +38,6 @@
 	"wikilambda-editor-zlist-removeitem-tooltip": "Ein Element von dieser ZList entfernen",
 	"wikilambda-editor-zobject-addkey": "Schlüssel hinzufügen:",
 	"wikilambda-editor-zobject-removekey-tooltip": "Diesen Schlüssel/Wert vom ZObject entfernen",
-	"wikilambda-editor-label-select-programming-language-label": "Programmiersprache wählen:"
+	"wikilambda-editor-label-select-programming-language-label": "Programmiersprache wählen:",
+	"wikilambda-modeselector-genericliteral": "generisch"
 }

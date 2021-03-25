@@ -18,6 +18,10 @@
 	"wikilambda-persistentzobject": "Objet-Z",
 	"wikilambda-multilingualstring-nofallback": "Aucun libellé défini dans cette langue ni de valeur par défaut acceptée.",
 	"wikilambda-viewmode-nojs": "Affichage réduit de cette page sans Javascript.",
+	"wikilambda-reference": "Référence",
+	"wikilambda-literal": "Littéral",
+	"wikilambda-genericliteral": "Littéral générique",
+	"wikilambda-functioncall": "Appel de fonction",
 	"wikilambda-special-createzobject": "Créer un nouvel Objet-Z",
 	"wikilambda-special-createzobject-summary": "Ce formulaire vous laisse créer un nouvel Objet-Z, qui peut représenter une fonction, sa mise en œuvre, un testeur pour elle ou une des diverses sortes d’Objets-Z. Vous pouvez d’abord lire la documentation d’aide et le guide de la communauté.",
 	"wikilambda-special-createzobject-intro": "Assurez-vous que vous suivez les politiques de la communauté, ainsi que les règles relatives aux droits d’auteur et aux brevets.",
@@ -41,5 +45,6 @@
 	"wikilambda-editor-zlist-removeitem-tooltip": "Supprimer cet élément de cette Liste-Z",
 	"wikilambda-editor-zobject-addkey": "Ajouter une clé :",
 	"wikilambda-editor-zobject-removekey-tooltip": "Supprimer cette clé/valeur de l’Objet-Z",
-	"wikilambda-editor-label-select-programming-language-label": "Sélectionner le langage de programmation :"
+	"wikilambda-editor-label-select-programming-language-label": "Sélectionner le langage de programmation :",
+	"wikilambda-modeselector-genericliteral": "gen"
 }
