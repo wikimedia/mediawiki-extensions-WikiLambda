@@ -14,6 +14,10 @@
 	"wikilambda-persistentzobject": "עצם Z",
 	"wikilambda-multilingualstring-nofallback": "לא הוגדרה תווית בשפה הזאת וגם לא שפת גיבוי קבילה",
 	"wikilambda-viewmode-nojs": "הדף הזה מוצג באופן מוגבל ללא JavaScript",
+	"wikilambda-reference": "הפניה",
+	"wikilambda-literal": "מפורש",
+	"wikilambda-genericliteral": "מפורש כללי",
+	"wikilambda-functioncall": "קריאה לפונקציה",
 	"wikilambda-special-createzobject": "יצירת עצם Z חדש",
 	"wikilambda-special-createzobject-summary": "הטופס הזה מאפשר לך ליצור עצם Z חדש, שיכול לייצג פונקציה, מימוש שלה, בודק שלה, או אחד מהסוגים האחרים של עצמי Z. מומלץ לקרוא את העזרה ואת הנחיות הקהילה תחילה.",
 	"wikilambda-special-createzobject-intro": "נא לוודא שאתם פועלים בהתאם למדיניות הקהילה, וכללי זכויות היוצרים והפטנטים.",
@@ -36,5 +40,6 @@
 	"wikilambda-editor-zlist-removeitem-tooltip": "הסרת הפריט הזה מרשימת ה־Z הזאת",
 	"wikilambda-editor-zobject-addkey": "הוספת מפתח:",
 	"wikilambda-editor-zobject-removekey-tooltip": "הסרת המפתח והערך הזה מעצם ה־Z",
-	"wikilambda-editor-label-select-programming-language-label": "{{GENDER:|בחר|בחרי}} שפת תכנות:"
+	"wikilambda-editor-label-select-programming-language-label": "{{GENDER:|בחר|בחרי}} שפת תכנות:",
+	"wikilambda-modeselector-genericliteral": "כללי"
 }
