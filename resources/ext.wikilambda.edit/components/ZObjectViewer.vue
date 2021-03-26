@@ -16,21 +16,25 @@
 </template>
 
 <script>
-var ZObject = require( './ZObject.vue' );
+var ZObject = require( './ZObject.vue' ),
+	mapGetters = require( 'vuex' ).mapGetters,
+	mapActions = require( 'vuex' ).mapActions;
 
 module.exports = {
 	name: 'ZObjectViewer',
 	components: {
 		'z-object': ZObject
 	},
-	data: function () {
-		return {
-			zobject: {}
-		};
-	},
+	computed: $.extend( {},
+		mapGetters( {
+			zobject: 'getCurrentZObject'
+		} )
+	),
+	methods: $.extend( {},
+		mapActions( [ 'initializeZObject' ] )
+	),
 	created: function () {
-		var editingData = mw.config.get( 'wgWikiLambda' );
-		this.zobject = editingData.zobject;
+		this.initializeZObject();
 	}
 };
 </script>
