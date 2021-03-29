@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue interface module for editing ZCode objects.
+
+		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div class="ext-wikilambda-zcode">
 		<select
 			v-model="selectedLanguage"
@@ -24,7 +30,8 @@
 </template>
 
 <script>
-var CodeEditor = require( '../base/CodeEditor.vue' ),
+var Constants = require( '../../Constants.js' ),
+	CodeEditor = require( '../base/CodeEditor.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -43,8 +50,8 @@ module.exports = {
 	computed: $.extend( mapGetters( [ 'zProgrammingLangs' ] ), {
 		selectedLanguage: {
 			get: function () {
-				if ( this.zobject.Z16K1 ) {
-					return this.zobject.Z16K1.Z61K1;
+				if ( this.zobject[ Constants.Z_CODE_LANGUAGE ] ) {
+					return this.zobject[ Constants.Z_CODE_LANGUAGE ][ Constants.Z_PROGRAMMING_LANGUAGE_CODE ];
 				} else {
 					return '';
 				}
@@ -57,16 +64,16 @@ module.exports = {
 	methods: $.extend( mapActions( [ 'fetchAllZProgrammingLanguages' ] ), {
 		selectLanguage: function ( language ) {
 			this.$emit( 'update', {
-				key: 'Z16K1',
+				key: Constants.Z_CODE_LANGUAGE,
 				value: {
-					Z1K1: 'Z61',
+					Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
 					Z61K1: language
 				}
 			} );
 		},
 		updateCode: function ( code ) {
 			this.$emit( 'update', {
-				key: 'Z16K2',
+				key: Constants.Z_CODE_CODE,
 				value: code
 			} );
 		}

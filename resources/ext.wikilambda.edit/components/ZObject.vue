@@ -46,6 +46,13 @@
 			@update="setZCode"
 		></z-code>
 
+		<z-argument
+			v-else-if="type === Constants.Z_ARGUMENT"
+			:zobject="zobject"
+			:viewmode="viewmode"
+			@update="setZCode"
+		></z-argument>
+
 		<z-object-generic
 			v-else
 			:zobject="zobject"
@@ -65,7 +72,8 @@ var Constants = require( '../Constants.js' ),
 	ZMultilingualString = require( './types/ZMultilingualString.vue' ),
 	ZReference = require( './types/ZReference.vue' ),
 	ZString = require( './types/ZString.vue' ),
-	ZCode = require( './types/ZCode.vue' );
+	ZCode = require( './types/ZCode.vue' ),
+	ZArgument = require( './types/ZArgument.vue' );
 
 module.exports = {
 	name: 'ZObject',
@@ -75,7 +83,8 @@ module.exports = {
 		'z-reference': ZReference,
 		'z-string': ZString,
 		'z-object-generic': ZObjectGeneric,
-		'z-code': ZCode
+		'z-code': ZCode,
+		'z-argument': ZArgument
 	},
 	mixins: [ typeUtils ],
 	props: {

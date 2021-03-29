@@ -41,6 +41,7 @@
 	"wikilambda-savechanges": "Label for the submit button when updating an existing ZObject on a private wiki",
 	"wikilambda-summarylabel": "Label for summary of changes in the edited ZObject\n{{identical|Summary}}",
 	"wikilambda-typeselector-label": "Label for selector for which kind of item to add.\n\n{{doc-wikilambda}}",
+	"wikilambda-argument-typeselector-label": "Label for selector for which type an argument will be.\n\n{{doc-wikilambda}}",
 	"wikilambda-zobjectselector-label": "{{optional}}\nLabel for the ZObject selector, that searches using labels and offers a list of existing ZObjects.\n\n{{doc-wikilambda}}",
 	"wikilambda-editor-additem": "{{ignore}}Label for button to add item",
 	"wikilambda-editor-removeitem": "{{ignore}}Label for button to delete item",

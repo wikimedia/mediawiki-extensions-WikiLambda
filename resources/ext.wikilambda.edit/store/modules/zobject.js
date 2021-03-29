@@ -1,4 +1,35 @@
+/*!
+ * WikiLambda Vue editor: ZOBject Vuex module
+ *
+ * @copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+ * @license MIT
+ */
+'use strict';
+
 var Constants = require( '../../Constants.js' );
+
+function findLatestKey( zobject, foundKey ) {
+	var nextKey = foundKey || 0,
+		potentialKey = null;
+
+	Object.keys( zobject ).forEach( function ( key ) {
+		if ( typeof zobject[ key ] === 'object' ) {
+			potentialKey = findLatestKey( zobject[ key ], nextKey );
+			if ( potentialKey > nextKey ) {
+				nextKey = potentialKey;
+			}
+		} else {
+			if ( zobject[ key ].indexOf( 'Z0K' ) >= 0 ) {
+				potentialKey = zobject[ key ].replace( 'Z0K', '' );
+				if ( potentialKey > nextKey ) {
+					nextKey = potentialKey;
+				}
+			}
+		}
+	} );
+
+	return parseInt( nextKey, 10 );
+}
 
 module.exports = {
 	state: {
@@ -18,6 +49,9 @@ module.exports = {
 		},
 		getZObjectMessage: function ( state ) {
 			return state.zobjectMessage;
+		},
+		getNextKey: function ( state ) {
+			return findLatestKey( state.zobject ) + 1;
 		}
 	},
 	mutations: {
