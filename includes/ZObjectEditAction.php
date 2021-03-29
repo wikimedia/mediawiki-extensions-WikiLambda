@@ -45,8 +45,6 @@ class ZObjectEditAction extends Action {
 		}
 
 		$editingData = [
-			'title' => $this->getTitle()->getBaseText(),
-			'page' => $this->getTitle()->getPrefixedDBkey(),
 			'zobject' => $zObject->getData()->getValue(),
 			'zlang' => $userLangCode,
 			'createNewPage' => $createNewPage,

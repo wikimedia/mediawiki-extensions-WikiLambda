@@ -11,7 +11,6 @@
 namespace MediaWiki\Extension\WikiLambda\Special;
 
 use Html;
-use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use SpecialPage;
 
@@ -66,13 +65,7 @@ class SpecialCreateZObject extends SpecialPage {
 		$contentHandler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 		$zObject = $contentHandler->makeEmptyContent();
 
-		// TODO: We probably should just remove title from editingData
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$targetZid = $zObjectStore->getNextAvailableZid();
-
 		$editingData = [
-			'title' => $targetZid,
-			'page' => 'ZObject:' . $targetZid,
 			'zobject' => $zObject->getData()->getValue(),
 			'zlang' => $userLangCode,
 			'createNewPage' => true,

@@ -41,24 +41,26 @@ module.exports = {
 				zobject = editingData.zobject;
 
 			if ( createNewPage ) {
-				zobject[ Constants.Z_PERSISTENTOBJECT_ID ] = editingData.title;
+				zobject[ Constants.Z_PERSISTENTOBJECT_ID ] = Constants.NEW_ZID_PLACEHOLDER;
 			}
 
 			context.commit( 'setCreateNewPage', createNewPage );
 			context.commit( 'setZObject', zobject );
 		},
 		submitZObject: function ( context, summary ) {
-			var page = mw.config.get( 'wgWikiLambda' ).page,
-				api = new mw.Api(),
+			var api = new mw.Api(),
+				action = 'wikilambda_edit',
 				createNewPage = context.getters.isCreateNewPage,
 				zobject = context.getters.getCurrentZObject;
 
 			if ( createNewPage ) {
 				// TODO: If the page already exists, increment the counter until we get a free one.
-				api.create( page, { summary: summary },
-					JSON.stringify( zobject )
-				).then( function () {
-					window.location.href = new mw.Title( page ).getUrl();
+				api.post( {
+					action: action,
+					summary: summary,
+					zobject: JSON.stringify( zobject )
+				} ).then( function ( result ) {
+					window.location.href = new mw.Title( result[ action ].page ).getUrl();
 				} ).catch( function ( errorCode, result ) {
 					context.commit( 'setMessage', {
 						type: 'error',
@@ -66,13 +68,13 @@ module.exports = {
 					} );
 				} );
 			} else {
-				api.edit( page, function ( /* revision */ ) {
-					return {
-						text: JSON.stringify( zobject ),
-						summary: summary
-					};
-				} ).then( function () {
-					window.location.href = new mw.Title( page ).getUrl();
+				api.post( {
+					action: action,
+					summary: summary,
+					zid: zobject[ Constants.Z_PERSISTENTOBJECT_ID ],
+					zobject: JSON.stringify( zobject )
+				} ).then( function ( result ) {
+					window.location.href = new mw.Title( result[ action ].page ).getUrl();
 				} ).catch( function ( errorCode, result ) {
 					context.commit( 'setMessage', {
 						type: 'error',
