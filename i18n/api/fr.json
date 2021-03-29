@@ -3,6 +3,7 @@
 		"authors": [
 			"Gomoko",
 			"Pols12",
+			"Scratcheur-2020Send",
 			"Verdy p",
 			"Wladek92"
 		]
@@ -30,5 +31,13 @@
 	"apihelp-query+wikilambdaload_zobjects-example-full": "Rechercher les Objets-Z Z12 et Z4 et renvoyer leur représentation JSON complète.",
 	"apihelp-query+wikilambdaload_zobjects-example-language": "Rechercher les Objets-Z Z12 et Z4 et renvoyer leurs libellés filtrés dans les langues espagnol ou par défaut.",
 	"apihelp-query+wikilambdaload_zobjects-example-error": "Rechercher les Objets-Z Z1 et l’inexistant Z012345789 et renvoyer leur représentation JSON complète.",
-	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Rechercher l’Objet-Z Z12 et retourner sa représentation canonique en JSON."
+	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Rechercher l’Objet-Z Z12 et retourner sa représentation canonique en JSON.",
+	"apihelp-wikilambda_edit-example-create": "Créer un nouveau ZObject de type Z6, avec la valeur 'valeur' et l'étiquette 'étiquette'.",
+	"apihelp-wikilambda_edit-example-edit-incorrect": "Tentative de mettre à jour le Z-Objet Z010 avec une donnée incorrecte",
+	"apihelp-wikilambda_edit-summary": "Créer ou modifier un ZObject.",
+	"apihelp-wikilambda_edit-param-summary": "Modifier le message de résumé",
+	"apihelp-wikilambda_edit-param-zid": "Le Z-ID de l’Objet-Z à modifier. Si nul, un nouvel Objet-Z sera créé.",
+	"apihelp-wikilambda_edit-param-zobject": "Représentation JSON du ZObject à sauvegarder",
+	"apierror-wikilambda_edit-invalidjson": "Impossible de créer un ZObject avec la valeur '$1' donnée; JSON invalide.",
+	"apierror-wikilambda_edit-unmatchingzid": "Le paramètre ZID '$1' ne correspond pas à l'ID du ZObject '$2'"
 }

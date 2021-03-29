@@ -31,7 +31,7 @@
 	"apihelp-query+wikilambdaload_zobjects-example-language": "{{doc-apihelp-example|query+wikilambdaload_zobjects}}\n\n{{doc-wikilambda}}",
 	"apihelp-query+wikilambdaload_zobjects-example-error": "{{doc-apihelp-example|query+wikilambdaload_zobjects}}\n\n{{doc-wikilambda}}",
 	"apihelp-query+wikilambdaload_zobjects-example-canonical": "{{doc-apihelp-example|query+wikilambdaload_zobjects}}\n\n{{doc-wikilambda}}",
-	"apihelp-wikilambda_edit-example-create": "{{doc-apihelp-example|wikilambda_edit}}\n\n{{doc-wikilambda}}",
+	"apihelp-wikilambda_edit-example-create": "'''Don't translate the words in quotes.'''\n\n{{doc-apihelp-example|wikilambda_edit}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_edit-example-edit-incorrect": "{{doc-apihelp-example|wikilambda_edit}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_edit-summary": "{{doc-apihelp-summary|wikilambda_edit}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_edit-param-summary": "{{doc-apihelp-param|wikilambda_edit|summary}}\n\n{{doc-wikilambda}}",

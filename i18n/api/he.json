@@ -27,5 +27,13 @@
 	"apihelp-query+wikilambdaload_zobjects-example-full": "חיפוש עצמי ה־Z עם המזהים Z12 ו־Z4 והחזרת ייצוג ה־JSON המלא שלהם.",
 	"apihelp-query+wikilambdaload_zobjects-example-language": "חיפוש עצמי ה־Z עם המזהים Z12 ו־Z4 והחזרת התוויות שלהם מסוננות לספרדית ושפות גיבוי.",
 	"apihelp-query+wikilambdaload_zobjects-example-error": "חיפוש עצמי ה־Z עם המזהים Z1 ו־Z012345789 שאינו קיים והחזרת התוויות שלהם מסוננות לספרדית ושפות גיבוי.",
-	"apihelp-query+wikilambdaload_zobjects-example-canonical": "חיפוש עצם Z עם המזהה Z12 והחזרת ייצוג שלו ב־JSON קנוני."
+	"apihelp-query+wikilambdaload_zobjects-example-canonical": "חיפוש עצם Z עם המזהה Z12 והחזרת ייצוג שלו ב־JSON קנוני.",
+	"apihelp-wikilambda_edit-example-create": "יצירת עצם Z חדש מסוג Z6, עם הערך \"value\" והתווית \"label\"",
+	"apihelp-wikilambda_edit-example-edit-incorrect": "לנסות לעדכן את עצם ה־Z בעל המזהה Z010 עם נתונים לא נכונים",
+	"apihelp-wikilambda_edit-summary": "ליצור או לערוך עצם Z.",
+	"apihelp-wikilambda_edit-param-summary": "תקציר העריכה",
+	"apihelp-wikilambda_edit-param-zid": "מזהה ה־Z של עצם ה־Z שרוצים לערוך. אם זה null, עצם ה־Z ייווצר",
+	"apihelp-wikilambda_edit-param-zobject": "ייצוג JSON של עצם ה־Z שרוצים לשמור",
+	"apierror-wikilambda_edit-invalidjson": "לא היה אפשר ליצור עצם Z לקלט הניתן \"$1\"; ה־JSON אינו תקין.",
+	"apierror-wikilambda_edit-unmatchingzid": "פרמטר מזהה ה־Z בעל הערך \"$1\" אינו תואם למזהה עצם ה־Z שערכו \"$2\""
 }

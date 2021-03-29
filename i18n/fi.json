@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
+			"Joquliina",
 			"Pyscowicz"
 		]
 	},
-	"wikilambda-speciallistduplicatezobjectlabels-language": "Kieli"
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Kieli",
+	"wikilambda-editor-label-select-programming-language-label": "Valitse ohjelmointikieli"
 }
