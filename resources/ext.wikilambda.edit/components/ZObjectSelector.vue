@@ -28,7 +28,11 @@
 			@clear-lookup-results="onClearLookupResults"
 		>
 		</wbmi-autocomplete-search-input>
-		<wbmi-message v-if="validatorIsInvalid" :inline="true" type="error"> {{ validatorErrorMessage }} </wbmi-message>
+		<wbmi-message
+			v-if="validatorIsInvalid"
+			:inline="true"
+			type="error"
+		> {{ validatorErrorMessage }} </wbmi-message>
 	</span>
 </template>
 

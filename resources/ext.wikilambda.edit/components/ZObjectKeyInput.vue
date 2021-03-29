@@ -13,7 +13,11 @@
 			:class="{ 'ext-wikilambda-zkey-input-invalid': isInvalid }"
 			@change="updateKey"
 		>
-		<wbmi-message v-if="isInvalid" :inline="true" type="error"> {{ $i18n( 'wikilambda-invalidzobject' ) }} </wbmi-message>
+		<wbmi-message
+			v-if="isInvalid"
+			:inline="true"
+			type="error"
+		> {{ $i18n( 'wikilambda-invalidzobject' ) }} </wbmi-message>
 	</span>
 </template>
 
