@@ -105,7 +105,7 @@ class ZTypeRegistry {
 
 	private function __construct() {
 		foreach ( self::BUILT_IN_TYPES as $zKey => $classname ) {
-			$this->internalRegisterType( $zKey, $classname );
+			$this->registerType( $zKey, $classname );
 		}
 	}
 
@@ -115,7 +115,9 @@ class ZTypeRegistry {
 	private $zObjectTypes = [];
 
 	/**
-	 * @return string[]
+	 * Get the array of the keys of the ZTypes stored in the cache
+	 *
+	 * @return string[] Keys of the ZTypes stored in the cache
 	 */
 	public function getCachedZObjectKeys() : array {
 		return array_keys( $this->zObjectTypes );
@@ -132,10 +134,24 @@ class ZTypeRegistry {
 		return array_key_exists( $key, self::BUILT_IN_TYPES );
 	}
 
+	/**
+	 * Whether the provided ZType is cached.
+	 *
+	 * @param string $key The key of the ZType to check
+	 * @return bool
+	 */
 	public function isZObjectKeyCached( string $key ) : bool {
 		return in_array( $key, $this->getCachedZObjectKeys(), true );
 	}
 
+	/**
+	 * Whether the provided ZType is known, either because it's a registered type
+	 * or because it's persisted in the database. If the type is not yet cached but
+	 * it's a valid type, it registers it.
+	 *
+	 * @param string $key The key of the ZType to check
+	 * @return bool
+	 */
 	public function isZObjectKeyKnown( string $key ) : bool {
 		if ( $this->isZObjectKeyCached( $key ) ) {
 			return true;
@@ -156,11 +172,17 @@ class ZTypeRegistry {
 		}
 
 		// TODO: Do we want to always store English? Or the wiki's contentLanguage? Or something else?
-		$this->internalRegisterType( $key, $zObject->getLabels()->getStringForLanguageCode( 'en' ) );
+		$this->registerType( $key, $zObject->getLabels()->getStringForLanguageCode( 'en' ) );
 
 		return true;
 	}
 
+	/**
+	 * Returns the ZType class name given its ZID
+	 *
+	 * @param string $key The key of the ZType to check
+	 * @return string Class name for the ZType
+	 */
 	public function getZObjectTypeFromKey( string $key ) : string {
 		if ( !$this->isZObjectKeyKnown( $key ) ) {
 			throw new InvalidArgumentException( "ZObject key '$key' is not registered." );
@@ -169,17 +191,32 @@ class ZTypeRegistry {
 	}
 
 	/**
-	 * @return string[]
+	 * Returns the array of names of the cached ZTypes.
+	 *
+	 * @return string[] Array of cached ZTypes
 	 */
 	public function getCachedZObjectTypes() : array {
 		return array_values( $this->zObjectTypes );
 	}
 
+	/**
+	 * Whether the given ZType is saved in the cache.
+	 *
+	 * @param string $type Name of the ZType
+	 * @return bool
+	 */
 	public function isZObjectTypeCached( string $type ) : bool {
 		// TODO: The registry is just a cache; also check the DB given the key.
 		return in_array( $type, $this->getCachedZObjectTypes(), true );
 	}
 
+	/**
+	 * Whether the given ZType is known, either because it's saved in the cache or because
+	 * it is persisted in the database.
+	 *
+	 * @param string $type Name of the ZType
+	 * @return bool
+	 */
 	public function isZObjectTypeKnown( string $type ) : bool {
 		if ( $this->isZObjectTypeCached( $type ) ) {
 			return true;
@@ -189,6 +226,12 @@ class ZTypeRegistry {
 		return false;
 	}
 
+	/**
+	 * Returns the ZType id of a given type.
+	 *
+	 * @param string $type Name of the ZType
+	 * @return string ZID of the ZType
+	 */
 	public function getZObjectKeyFromType( string $type ) : string {
 		if ( !$this->isZObjectTypeKnown( $type ) ) {
 			throw new InvalidArgumentException( "ZObject type '$type' is not registered." );
@@ -196,17 +239,13 @@ class ZTypeRegistry {
 		return array_search( $type, $this->zObjectTypes );
 	}
 
-	public function registerType( string $type ) : string {
-		$newKey = 'Z' . ( intval( substr( array_key_last( $this->zObjectTypes ), 1 ) ) + 1 );
-		$this->internalRegisterType( $newKey, $type );
-		return $newKey;
-	}
-
 	/**
+	 * Registers the given ZType id and name in the type cache.
+	 *
 	 * @param string $key
 	 * @param string $type
 	 */
-	private function internalRegisterType( string $key, string $type ) : void {
+	private function registerType( string $key, string $type ) : void {
 		if ( $this->isZObjectKeyCached( $key ) ) {
 			$conflictingType = $this->getZObjectKeyFromType( $key );
 			throw new InvalidArgumentException( "ZObject key '$key' already used to register as '$conflictingType'." );
@@ -228,12 +267,12 @@ class ZTypeRegistry {
 	}
 
 	/**
-	 * Remove the given type from the type registry array
+	 * Removes the given ZType from the type cache.
 	 *
-	 * @param string $type
+	 * @param string $key
 	 */
-	public function unregisterType( string $type ) {
-		unset( $this->zObjectTypes[ $type ] );
+	public function unregisterType( string $key ) {
+		unset( $this->zObjectTypes[ $key ] );
 	}
 
 }

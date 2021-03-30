@@ -23,6 +23,7 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 
 	/**
 	 * @covers ::singleton
+	 * @covers ::__construct
 	 */
 	public function testSingleton() {
 		$registry = ZTypeRegistry::singleton();
@@ -144,16 +145,17 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 	public function testGetZObjectKeyFromType() {
 		$registry = ZTypeRegistry::singleton();
 
+		$this->assertEquals(
+			$registry->getZObjectKeyFromType( 'ZObject' ),
+			'Z1',
+			"'ZObject' lookup works."
+		);
+
 		$this->expectException( InvalidArgumentException::class );
 		$this->assertEquals(
 			$registry->getZObjectKeyFromType( 'Zero' ),
 			'Undefined',
 			"'Zero' lookup fails as undefined."
-		);
-		$this->assertEquals(
-			$registry->getZObjectKeyFromType( 'ZObject' ),
-			'Z1',
-			"'ZObject' lookup works."
 		);
 	}
 
@@ -163,49 +165,90 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 	public function testGetZObjectTypeFromKey() {
 		$registry = ZTypeRegistry::singleton();
 
-		$this->expectException( InvalidArgumentException::class );
-		$this->assertEquals( $registry->getZObjectTypeFromKey( 'Z0' ), 'Undefined', "'Z0' lookup fails as undefined." );
 		$this->assertEquals( $registry->getZObjectTypeFromKey( 'Z1' ), 'ZObject', "'Z1' lookup works." );
+
+		$this->expectException( InvalidArgumentException::class );
+		$this->assertEquals(
+			$registry->getZObjectTypeFromKey( 'Z0' ),
+			'Undefined',
+			"'Z0' lookup fails as undefined."
+		);
 	}
 
 	/**
 	 * @covers ::registerType
-	 * @covers ::internalRegisterType
+	 */
+	public function testRegisterTypeFailed_keyRegistered() {
+		$registry = ZTypeRegistry::singleton();
+		$reflector = new \ReflectionClass( ZTypeRegistry::class );
+		$method = $reflector->getMethod( 'registerType' );
+		$method->setAccessible( true );
+
+		$type = 'ZUnregisteredType';
+
+		// Expect InvalidArgumentException when the key has already been added with a different type
+		// e.g. registerType( Z1, UnregisteredType )
+		$this->expectException( InvalidArgumentException::class );
+		$this->assertEquals(
+			$method->invokeArgs( $registry, [ 'Z1', $type ] ),
+			'Undefined',
+			"'$type' registration fails as the ZID 'Z1' is already registered."
+		);
+	}
+
+	/**
+	 * @covers ::registerType
+	 */
+	public function testRegisterTypeFailed_typeRegistered() {
+		$registry = ZTypeRegistry::singleton();
+		$reflector = new \ReflectionClass( ZTypeRegistry::class );
+		$method = $reflector->getMethod( 'registerType' );
+		$method->setAccessible( true );
+
+		$key = 'Z222';
+
+		// Expect InvalidArgumentException when the type has already been added with a different key
+		// e.g. registerType( Z34, ZObject )
+		$this->expectException( InvalidArgumentException::class );
+		$this->assertEquals(
+			$method->invokeArgs( $registry, [ $key, 'ZObject' ] ),
+			'Undefined',
+			"'ZObject' registration fails as it's already registered under ZID 'Z1'."
+		);
+	}
+
+	/**
+	 * @covers ::registerType
 	 */
 	public function testRegisterType() {
 		$registry = ZTypeRegistry::singleton();
+		$reflector = new \ReflectionClass( ZTypeRegistry::class );
+		$method = $reflector->getMethod( 'registerType' );
+		$method->setAccessible( true );
 
-		$this->expectException( InvalidArgumentException::class );
-		$this->assertEquals(
-			$registry->registerType( 'ZObject' ),
-			'Undefined',
-			"'ZObject' registration fails as already registered."
-		);
+		$key = 'Z222';
+		$type = 'ZUnregisteredType';
 
-		$this->expectException( InvalidArgumentException::class );
-		$this->assertEquals(
-			$registry->registerType( 'Zero' ),
-			'Undefined',
-			"'Zero' registration fails as no class of that name."
-		);
-
-		$this->assertFalse(
-			$registry->isZObjectTypeCached( 'ZTypeRegistry' ),
-			"'ZTypeRegistry' is not defined as a built-in."
-		);
-
-		$newValue = $registry->registerType( 'ZTypeRegistry' );
+		// Register successfully Z222 => ZUnregisteredType
+		$method->invokeArgs( $registry, [ $key, $type ] );
 
 		$this->assertTrue(
-			$registry->isZObjectTypeCached( 'ZTypeRegistry' ),
-			"'ZTypeRegistry' is defined once registered."
+			$registry->isZObjectTypeCached( $type ),
+			"The type '$type' is cached once registered."
+		);
+
+		$this->assertTrue(
+			$registry->isZObjectKeyCached( $key ),
+			"The key '$key' is cached once registered."
 		);
 
 		$this->assertEquals(
-			$registry->getZObjectKeyFromType( 'ZTypeRegistry' ),
-			$newValue,
-			"'ZTypeRegistry' lookup works once registered."
+			$registry->getZObjectKeyFromType( $type ),
+			$key,
+			"'$type' lookup works once registered."
 		);
+
+		$registry->unregisterType( $key );
 	}
 
 	/**
@@ -213,28 +256,31 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testUnregisterType() {
 		$registry = ZTypeRegistry::singleton();
+		$reflector = new \ReflectionClass( ZTypeRegistry::class );
+		$method = $reflector->getMethod( 'registerType' );
+		$method->setAccessible( true );
 
-		$key = $registry->registerType( 'ZTypeRegistry' );
+		$key = 'Z222';
+
+		$this->assertFalse(
+			$registry->isZObjectKeyCached( $key ),
+			"The key '$key' is not cached before registering."
+		);
+
+		// Register successfully the type
+		$method->invokeArgs( $registry, [ $key, 'ZUnregisteredType' ] );
 
 		$this->assertTrue(
-			$registry->isZObjectTypeCached( 'ZTypeRegistry' ),
-			"'ZTypeRegistry' is registered."
+			$registry->isZObjectKeyCached( $key ),
+			"The key '$key' is cached after registering."
 		);
 
-		$this->assertEquals(
-			$registry->getZObjectKeyFromType( 'ZTypeRegistry' ),
-			$key,
-			"'ZTypeRegistry' lookup works once registered."
-		);
-
+		// Unregister the type
 		$registry->unregisterType( $key );
 
 		$this->assertFalse(
-			$registry->isZObjectTypeCached( 'ZTypeRegistry' ),
-			"'ZTypeRegistry' is not chached after unregistering."
+			$registry->isZObjectKeyCached( $key ),
+			"The key '$key' is not cached after unregistering."
 		);
-
-		// We unregister a type that wasn't there. Should not fail.
-		$registry->unregisterType( 'Undefined Type' );
 	}
 }
