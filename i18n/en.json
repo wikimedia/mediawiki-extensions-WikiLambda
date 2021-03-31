@@ -12,6 +12,7 @@
 	"wikilambda-invalidzobjecttitle": "The provided title '$1' is not valid for a ZObject.",
 	"wikilambda-invalidzobject": "The provided content is not a valid ZObject.",
 	"wikilambda-invalidcontenttype": "The provided content is not a ZObject class.",
+	"wikilambda-prohibitedcreationtype": "The provided ZObject is a type '$1', which is not allowed to be created.",
 	"wikilambda-noresult": "The search has provided no result.",
 	"wikilambda-labelclash": "The provided content's label clashes with ZObject '$1' for the label in '$2'.",
 	"wikilambda-persistentzobject": "ZObject",
