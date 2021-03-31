@@ -18,11 +18,16 @@ use WikiPage;
  */
 class ApiZObjectEditorTest extends ApiTestCase {
 
+	/** @var ZObjectStore */
+	protected $store;
+
 	/** @var string[] */
 	protected $titlesTouched = [];
 
 	public function setUp() : void {
 		parent::setUp();
+
+		$this->store = WikiLambdaServices::getZObjectStore();
 
 		$this->tablesUsed[] = 'wikilambda_zobject_labels';
 		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
@@ -105,14 +110,13 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	 */
 	public function testCreateFailed_labelClash() {
 		$sysopUser = $this->getTestSysop()->getUser();
-		$store = WikiLambdaServices::getZObjectStore();
-		$firstZid = $store->getNextAvailableZid();
+		$firstZid = $this->store->getNextAvailableZid();
 
 		// Create the first Zobject
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "string" },'
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "unique label" } ] } }';
-		$store->createNewZObject( $data, 'First zobject', $sysopUser );
+		$this->store->createNewZObject( $data, 'First zobject', $sysopUser );
 		$this->titlesTouched[] = $firstZid;
 
 		// Try to create the second Zobject with the same label
@@ -157,8 +161,6 @@ class ApiZObjectEditorTest extends ApiTestCase {
 			. '},'
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "trouble" } ] } }';
 
-		$store = WikiLambdaServices::getZObjectStore();
-
 		// Try to create a nested ZPO
 		$this->setExpectedApiException( [ 'wikilambda-prohibitedcreationtype', ZTypeRegistry::Z_PERSISTENTOBJECT ] );
 		$result = $this->doApiRequest( [
@@ -174,8 +176,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore::createNewZObject
 	 */
 	public function testCreateSuccess() {
-		$store = WikiLambdaServices::getZObjectStore();
-		$newZid = $store->getNextAvailableZid();
+		$newZid = $this->store->getNextAvailableZid();
 
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "string" },'
@@ -199,13 +200,12 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	 */
 	public function testUpdateSuccess() {
 		$sysopUser = $this->getTestSysop()->getUser();
-		$store = WikiLambdaServices::getZObjectStore();
-		$newZid = $store->getNextAvailableZid();
+		$newZid = $this->store->getNextAvailableZid();
 
 		// Create the Zobject
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": "New ZObject", "Z2K3":'
 			. ' { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "unique label" } ] } }';
-		$store->createNewZObject( $data, 'New ZObject', $sysopUser );
+		$this->store->createNewZObject( $data, 'New ZObject', $sysopUser );
 		$this->titlesTouched[] = $newZid;
 
 		$data = '{ "Z1K1": "Z2", "Z2K1": "' . $newZid . '", "Z2K2": "New ZObject", "Z2K3":'
@@ -224,7 +224,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 		// Fetch ZObject and check it's been updated
 		$title = Title::newFromText( $newZid, NS_ZOBJECT );
-		$zobject = $store->fetchZObjectByTitle( $title );
+		$zobject = $this->store->fetchZObjectByTitle( $title );
 		$this->assertTrue( $zobject instanceof ZObjectContent );
 		// We compare the JSONs after decoding because it's saved prettified
 		$this->assertEquals( json_decode( $zobject->getText() ), json_decode( $data ) );
