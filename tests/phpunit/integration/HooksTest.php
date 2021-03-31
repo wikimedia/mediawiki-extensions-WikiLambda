@@ -9,8 +9,12 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use DatabaseUpdater;
 use DeferredUpdates;
+use MediaWiki\Extension\WikiLambda\Hooks;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\MediaWikiServices;
 use Title;
 use WikiPage;
@@ -33,6 +37,58 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 
 		$this->hideDeprecated( '::create' );
 		$initialStatus = $this->editPage( $firstTitleText, ZTestType::TEST_ENCODING, 'Test creation', NS_ZOBJECT );
+	}
+
+	public function addDBDataOnce() {
+		$updater = DatabaseUpdater::newForDB( $this->db );
+		Hooks::createInitialContent( $updater );
+	}
+
+	/**
+	 * @covers ::createInitialContent
+	 */
+	public function testCreateInitialContent() {
+		$store = WikiLambdaServices::getZObjectStore();
+
+		// Fetch one arbitrary ZObject from the database
+		$title = Title::newFromText( "Z4", NS_ZOBJECT );
+		$zobject = $store->fetchZObjectByTitle( $title );
+		$this->assertTrue( $zobject instanceof ZObjectContent );
+
+		// Assert that all ZIDs available in the data directory are loaded in the database
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_MASTER );
+		$res = $dbr->select(
+			/* FROM */ 'page',
+			/* SELECT */ [ 'page_title' ],
+			/* WHERE */ [ 'page_namespace' => NS_ZOBJECT ],
+			__METHOD__,
+			[ 'ORDER BY' => 'page_id DESC' ]
+		);
+
+		$loadedZids = [];
+		foreach ( $res as $row ) {
+			$loadedZids[] = $row->page_title;
+		}
+
+		$dataPath = dirname( __DIR__, 3 ) . '/data/';
+		$zidsToLoad = array_filter(
+			scandir( $dataPath ),
+			function ( $key ) {
+				return (bool)preg_match( '/^Z\d+\.json$/', $key );
+			}
+		);
+
+		$zidsToLoad = array_map(
+			function ( $value ) {
+				return explode( '.', $value )[0];
+			},
+			$zidsToLoad
+		);
+
+		$this->assertEquals(
+			natsort( $zidsToLoad ), natsort( $loadedZids ),
+			'All ZObjects from the data directory are loaded'
+		);
 	}
 
 	/**
