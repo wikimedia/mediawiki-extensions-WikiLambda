@@ -40,6 +40,8 @@ var Constants = {
 	Z_PROGRAMMING_LANGUAGE: 'Z61',
 	Z_PROGRAMMING_LANGUAGE_CODE: 'Z61K1',
 	Z_CODE_CODE: 'Z16K2',
+	Z_FUNCTION_CALL: 'Z7',
+	Z_FUNCTION_CALL_FUNCTION: 'Z7K1',
 	Z_KEY_MODES: { LITERAL: 'literal', REFERENCE: 'reference', FUNCTION_CALL: 'function_call', GENERIC_LITERAL: 'generic_literal' }
 };
 

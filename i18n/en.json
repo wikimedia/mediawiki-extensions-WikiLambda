@@ -38,6 +38,7 @@
 	"wikilambda-summarylabel": "Summary:",
 	"wikilambda-typeselector-label": "Value Type",
 	"wikilambda-argument-typeselector-label": "Argument Type",
+	"wikilambda-function-typeselector-label": "Function Type",
 	"wikilambda-zobjectselector-label": "ZObject",
 	"wikilambda-editor-additem": "➕",
 	"wikilambda-editor-removeitem": "🗑️",

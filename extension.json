@@ -137,6 +137,7 @@
 				"ext.wikilambda.edit/components/types/ZReference.vue",
 				"ext.wikilambda.edit/components/types/ZCode.vue",
 				"ext.wikilambda.edit/components/types/ZArgument.vue",
+				"ext.wikilambda.edit/components/types/ZFunctionCall.vue",
 				"lib/ace/ace.js",
 				"lib/icons.js"
 			],
@@ -167,7 +168,8 @@
 				"wikilambda-editor-zobject-addkey",
 				"wikilambda-editor-zobject-removekey-tooltip",
 				"wikilambda-editor-label-select-programming-language-label",
-				"wikilambda-argument-typeselector-label"
+				"wikilambda-argument-typeselector-label",
+				"wikilambda-function-typeselector-label"
 			]
 		}
 	},

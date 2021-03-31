@@ -53,6 +53,13 @@
 			@update="setZCode"
 		></z-argument>
 
+		<z-function-call
+			v-else-if="type === Constants.Z_FUNCTION_CALL"
+			:zobject="zobject"
+			@update="setZCode"
+			@clear="clearZFunctionCall"
+		></z-function-call>
+
 		<z-object-generic
 			v-else
 			:zobject="zobject"
@@ -73,7 +80,8 @@ var Constants = require( '../Constants.js' ),
 	ZReference = require( './types/ZReference.vue' ),
 	ZString = require( './types/ZString.vue' ),
 	ZCode = require( './types/ZCode.vue' ),
-	ZArgument = require( './types/ZArgument.vue' );
+	ZArgument = require( './types/ZArgument.vue' ),
+	ZFunctionCall = require( './types/ZFunctionCall.vue' );
 
 module.exports = {
 	name: 'ZObject',
@@ -84,7 +92,8 @@ module.exports = {
 		'z-string': ZString,
 		'z-object-generic': ZObjectGeneric,
 		'z-code': ZCode,
-		'z-argument': ZArgument
+		'z-argument': ZArgument,
+		'z-function-call': ZFunctionCall
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -282,6 +291,16 @@ module.exports = {
 
 		setZCode: function ( item ) {
 			this.$set( this.zobject, item.key, item.value );
+		},
+
+		clearZFunctionCall: function () {
+			var self = this;
+
+			Object.keys( self.zobject ).forEach( function ( key ) {
+				if ( key !== Constants.Z_OBJECT_TYPE ) {
+					self.$set( self.zobject, key, undefined );
+				}
+			} );
 		}
 	}
 };
