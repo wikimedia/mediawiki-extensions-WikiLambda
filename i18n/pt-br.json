@@ -3,7 +3,8 @@
 		"authors": [
 			"Eduardo Addad de Oliveira",
 			"Eduardoaddad",
-			"Luk3"
+			"Luk3",
+			"Mariagarbin"
 		]
 	},
 	"wikilambda-desc": "Fornecendo as wikis da Wikimedia uma função de analisador de wikitexto para chamar a avaliação de funções escritas, gerenciadas e avaliadas em um wiki central.",
@@ -15,6 +16,10 @@
 	"wikilambda-labelclash": "O rótulo do conteúdo fornecido entra em conflito com ZObject '$1' para o rótulo em '$2'.",
 	"wikilambda-multilingualstring-nofallback": "Nenhum rótulo definido neste idioma ou substitutos aceitos",
 	"wikilambda-viewmode-nojs": "Esta página é exibida de forma limitada sem JavaScript.",
+	"wikilambda-reference": "Referência",
+	"wikilambda-literal": "Literal",
+	"wikilambda-genericliteral": "Literal genérico",
+	"wikilambda-functioncall": "Chamada de função",
 	"wikilambda-special-createzobject": "Crie um novo ZObject",
 	"wikilambda-special-createzobject-summary": "Este formulário permite criar um novo ZObject, que pode representar uma função, sua implementação, um testador para ela ou um dos vários outros tipos de ZObjects. Você deve ler a documentação de ajuda e as orientações da comunidade primeiro.",
 	"wikilambda-special-createzobject-intro": "Certifique-se de seguir as políticas da comunidade e as regras de direitos autorais e patentes.",
@@ -31,11 +36,13 @@
 	"wikilambda-savechanges": "Salvar alterações",
 	"wikilambda-summarylabel": "Resumo:",
 	"wikilambda-typeselector-label": "Tipo de valor",
+	"wikilambda-argument-typeselector-label": "Tipo de Argumento",
 	"wikilambda-editor-label-addlanguage-label": "Adicionar idioma:",
 	"wikilambda-editor-label-removelanguage-tooltip": "Remover este idioma deste rótulo",
 	"wikilambda-editor-zlist-additem-tooltip": "Adicione um item na ZList",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Remova este item desta ZList",
 	"wikilambda-editor-zobject-addkey": "Adicionar chave:",
 	"wikilambda-editor-zobject-removekey-tooltip": "Remova esta chave/valor do ZObject",
-	"wikilambda-editor-label-select-programming-language-label": "Selecione a linguagem de programação:"
+	"wikilambda-editor-label-select-programming-language-label": "Selecione a linguagem de programação:",
+	"wikilambda-modeselector-genericliteral": "gener"
 }

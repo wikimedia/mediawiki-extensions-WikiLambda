@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Eduardo Addad de Oliveira",
-			"Eduardoaddad"
+			"Eduardoaddad",
+			"Mariagarbin"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Busque o modelo JSON de ZObjects.",
@@ -21,5 +22,12 @@
 	"apihelp-query+wikilambda-example-simple": "Procure por ZObjects cujo rótulo corresponda a 'foo' em inglês",
 	"apihelp-query+wikilambda-example-nofallback": "Procure por ZObjects cujo rótulo corresponda a 'foo' em francês e não aceite idiomas substitutos",
 	"apihelp-query+wikilambda-example-type": "Pesquise ZObjects do tipo 'Z4', retornando rótulos em inglês",
-	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Pesquise ZObject Z12 e retorne sua representação canônica JSON."
+	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Pesquise ZObject Z12 e retorne sua representação canônica JSON.",
+	"apihelp-wikilambda_edit-example-create": "Crie um novo ZObject do tipo Z6, com o valor 'value' e rotulado como 'label'",
+	"apihelp-wikilambda_edit-example-edit-incorrect": "Tentativa de atualizar o ZObject Z010 com dados incorretos",
+	"apihelp-wikilambda_edit-summary": "Criar ou editar um ZObject",
+	"apihelp-wikilambda_edit-param-summary": "Editar mensagem de resumo",
+	"apihelp-wikilambda_edit-param-zid": "ZID do ZObject a ser editado. Se nulo, o ZObject será criado novamente",
+	"apihelp-wikilambda_edit-param-zobject": "Representação JSON do ZObject para salvar",
+	"apierror-wikilambda_edit-invalidjson": "Não foi possível criar ZObject para a entrada fornecida '$1'; JSON inválido."
 }

@@ -38,6 +38,7 @@
 	"wikilambda-savechanges": "Enregistrer les modifications",
 	"wikilambda-summarylabel": "Résumé :",
 	"wikilambda-typeselector-label": "Type de valeur",
+	"wikilambda-argument-typeselector-label": "Type d’argument",
 	"wikilambda-zobjectselector-label": "Objet-Z",
 	"wikilambda-editor-label-addlanguage-label": "Ajouter une langue :",
 	"wikilambda-editor-label-removelanguage-tooltip": "Enlever cette langue du libellé",
