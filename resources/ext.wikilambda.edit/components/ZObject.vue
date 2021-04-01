@@ -56,6 +56,7 @@
 		<z-function-call
 			v-else-if="type === Constants.Z_FUNCTION_CALL"
 			:zobject="zobject"
+			:viewmode="viewmode"
 			@update="setZCode"
 			@clear="clearZFunctionCall"
 		></z-function-call>

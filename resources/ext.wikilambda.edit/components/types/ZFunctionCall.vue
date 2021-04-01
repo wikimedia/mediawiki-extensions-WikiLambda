@@ -161,7 +161,7 @@ module.exports = {
 	},
 	mounted: function () {
 		this.fetchZKeys( {
-			zids: [ Constants.Z_FUNCTION_CALL ],
+			zids: [ Constants.Z_FUNCTION_CALL, this.zFunctionId ],
 			zlangs: [ this.zLang ]
 		} );
 	}
