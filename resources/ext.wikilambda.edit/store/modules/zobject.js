@@ -62,6 +62,10 @@ module.exports = {
 			state.createNewPage = payload;
 		},
 		setMessage: function ( state, payload ) {
+			if ( !payload ) {
+				payload = {};
+			}
+
 			state.zobjectMessage = {
 				type: payload.type || 'notice',
 				text: payload.text || null
