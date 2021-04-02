@@ -34,6 +34,8 @@
 	"wikilambda-savechanges": "שמירת השינויים",
 	"wikilambda-summarylabel": "תקציר:",
 	"wikilambda-typeselector-label": "סוג הערך",
+	"wikilambda-argument-typeselector-label": "סוג הארגומנט",
+	"wikilambda-function-typeselector-label": "סוג הפונקציה",
 	"wikilambda-editor-label-addlanguage-label": "הוספת שפה:",
 	"wikilambda-editor-label-removelanguage-tooltip": "הסרת השפה הזאת מהתווית הזאת",
 	"wikilambda-editor-zlist-additem-tooltip": "הוספת פריט לרשימת ה־Z הזאת",

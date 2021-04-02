@@ -2,9 +2,10 @@
 	"@metadata": {
 		"authors": [
 			"Joquliina",
+			"Mediawikitranslator",
 			"Pyscowicz"
 		]
 	},
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Kieli",
-	"wikilambda-editor-label-select-programming-language-label": "Valitse ohjelmointikieli"
+	"wikilambda-editor-label-select-programming-language-label": "Valitse ohjelmointikieli:"
 }

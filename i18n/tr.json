@@ -35,6 +35,8 @@
 	"wikilambda-savechanges": "Değişiklikleri kaydet",
 	"wikilambda-summarylabel": "Özet:",
 	"wikilambda-typeselector-label": "Değer Türü",
+	"wikilambda-argument-typeselector-label": "Değişken Türü",
+	"wikilambda-function-typeselector-label": "İşlev Türü",
 	"wikilambda-editor-label-addlanguage-label": "Dil ekle:",
 	"wikilambda-editor-label-removelanguage-tooltip": "Bu dili bu etiketten kaldır",
 	"wikilambda-editor-zlist-additem-tooltip": "Bu ZList'e bir öğe ekleyin",
