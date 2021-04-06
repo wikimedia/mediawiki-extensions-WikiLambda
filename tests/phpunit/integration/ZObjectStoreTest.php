@@ -103,23 +103,35 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 		$sysopUser = $this->getTestSysop()->getUser();
 		$status = $this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
 
-		if ( $expected ) {
+		if ( $expected === true ) {
 			$this->assertTrue( $status instanceof WikiPage );
 			$this->titlesTouched[] = $status->getTitle()->getBaseText();
 		} else {
 			$this->assertTrue( $status instanceof Status );
 			$this->assertFalse( $status->isOK() );
+			$this->assertTrue( $status->hasMessage( $expected ) );
 		}
 	}
 
 	public function provideCreateNewZObject() {
 		return [
-			'incorrect JSON' => [ '{ "Z1K1"; Z2 ]', false ],
-			'incorrect ZObject' => [ '{ "Z1K1": "Z2" }', false ],
+			'incorrect JSON' => [ '{ "Z1K1"; Z2 ]', 'apierror-wikilambda_edit-invalidjson' ],
+			'incorrect ZObject, no id' => [
+				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" }, "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }',
+				'ZObjectContent missing the id key.'
+			],
+			'incorrect ZObject, no value' => [
+				'{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }',
+				'ZObjectContent missing the value key.'
+			],
+			'incorrect ZObject, no label' => [
+				'{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" } }',
+				'ZObjectContent missing the label key.'
+			],
 			'correct ZObject' => [
 				'{ "Z1K1": "Z2", "Z2K1": "Z0",'
-				. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" },'
-				. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }',
+					. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" },'
+					. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }',
 				true
 			],
 		];
