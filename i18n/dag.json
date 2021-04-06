@@ -1,12 +1,23 @@
 {
 	"@metadata": {
 		"authors": [
+			"Achiri Bitamsimli",
+			"Alhassan Peter",
 			"Amire80",
 			"Dnshitobu",
-			"Musahfm"
+			"Hidrash",
+			"Musahfm",
+			"Ruky Wunpini",
+			"Sir Amugi"
 		]
 	},
+	"wikilambda-reference": "Kundivira",
+	"wikilambda-genericliteral": "Sokam lahabali",
+	"wikilambda-functioncall": "Nafaani booligu",
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "ZObject sheli kani mali yu'bobili.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Balli",
-	"wikilambda-editor-label-select-programming-language-label": "Piimi Progaamin Yɛltɔɣa"
+	"wikilambda-argument-typeselector-label": "Nangbankpeini bal' shɛli",
+	"wikilambda-function-typeselector-label": "Tuma balibu",
+	"wikilambda-editor-label-select-programming-language-label": "Piimi Progaamin zuliya",
+	"wikilambda-modeselector-genericliteral": "Gen"
 }

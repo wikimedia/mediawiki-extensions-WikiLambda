@@ -1,10 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
-			"Sabelöga"
+			"Sabelöga",
+			"WikiPhoenix"
 		]
 	},
 	"apihelp-wikilambda_fetch-param-language": "Språket resultat ska returneras på.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Söktermen",
-	"apihelp-query+wikilambdasearch_labels-param-language": "MediaWikis språkkod som du försöker söka i"
+	"apihelp-query+wikilambdasearch_labels-param-language": "MediaWikis språkkod som du försöker söka i",
+	"apihelp-wikilambda_edit-summary": "Skapa eller redigera en ZObject.",
+	"apihelp-wikilambda_edit-param-summary": "Redigera sammanfattningsmeddelande",
+	"apihelp-wikilambda_edit-param-zobject": "JSON-representation av ZObject att spara"
 }

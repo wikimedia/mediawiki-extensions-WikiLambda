@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Kareyac"
+			"Kareyac",
+			"Nastua Buldakova"
 		]
 	},
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Язык",
@@ -9,5 +10,6 @@
 	"wikilambda-savenew": "Сохранить",
 	"wikilambda-savechanges": "Сохранить изменения",
 	"wikilambda-summarylabel": "Описание:",
+	"wikilambda-function-typeselector-label": "Тип функции",
 	"wikilambda-editor-label-addlanguage-label": "Добавить язык:"
 }

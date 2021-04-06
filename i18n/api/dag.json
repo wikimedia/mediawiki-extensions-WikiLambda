@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Alhassan Peter",
+			"Chirifo"
+		]
+	},
+	"apihelp-wikilambda_edit-summary": "Namma bee malimi a ZObject niŋ",
+	"apihelp-wikilambda_edit-param-summary": "Malimi kolivaai lahabali maa niŋ.",
+	"apierror-wikilambda_edit-unmatchingzid": "ZID ma tarisi"
+}

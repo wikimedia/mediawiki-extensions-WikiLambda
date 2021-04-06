@@ -11,6 +11,8 @@
 	"wikilambda-labelclash": "Det angivna innehållets etikett står i konflikt med ZObjectets '$1' för etiketten i '$2'.",
 	"wikilambda-multilingualstring-nofallback": "Ingen etikett har definierats på det här språket eller godkända återfallspråk",
 	"wikilambda-viewmode-nojs": "Den här sidan visas på ett begränsat sätt utan JavaScript",
+	"wikilambda-reference": "Referens",
+	"wikilambda-functioncall": "Funktionsanrop",
 	"wikilambda-special-createzobject": "Skapa ett nytt ZObject",
 	"wikilambda-special-createzobject-nojs": "Denna sida kräver JavaScript för att användas.",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "Befintligt ZObject",
@@ -21,10 +23,13 @@
 	"wikilambda-savechanges": "Spara ändringar",
 	"wikilambda-summarylabel": "Sammanfattning:",
 	"wikilambda-typeselector-label": "Värdetyp",
+	"wikilambda-argument-typeselector-label": "Argumenttyp",
+	"wikilambda-function-typeselector-label": "Funktionstyp",
 	"wikilambda-editor-label-addlanguage-label": "Lägg till språk:",
 	"wikilambda-editor-label-removelanguage-tooltip": "Ta bort det här språket från den här etiketten",
 	"wikilambda-editor-zlist-additem-tooltip": "Lägg till objektet i denna ZList",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Ta bort det här objektet från den här ZListan",
 	"wikilambda-editor-zobject-addkey": "Lägg till nyckel:",
-	"wikilambda-editor-zobject-removekey-tooltip": "Ta bort den här nyckeln från det här ZObjectet"
+	"wikilambda-editor-zobject-removekey-tooltip": "Ta bort den här nyckeln från det här ZObjectet",
+	"wikilambda-editor-label-select-programming-language-label": "Välj programmeringsspråk:"
 }
