@@ -199,7 +199,7 @@ module.exports = {
 			this.argumentKey = Constants.Z_NEW_KEY_ROOT + this.nextKey;
 		}
 		if ( !this.argumentLabels ) {
-			this.argumentLabels = { Z1K1: [ Constants.Z_MULTILINGUALSTRING ], Z12K1: [] };
+			this.argumentLabels = { Z1K1: Constants.Z_MULTILINGUALSTRING, Z12K1: [] };
 		}
 	}
 };
