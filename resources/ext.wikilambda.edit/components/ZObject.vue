@@ -9,65 +9,54 @@
 		<!-- Depending on the type, it will render a different component -->
 		<z-string
 			v-if="type === Constants.Z_STRING"
-			:zobject="zobject"
+			:zobject-id="zobjectId"
 			:viewmode="viewmode"
-			@input="setZString"
 		></z-string>
 
 		<z-reference
 			v-else-if="type === Constants.Z_REFERENCE"
-			:zobject="zobject"
+			:zobject-id="zobjectId"
 			:viewmode="viewmode"
-			@input="setZReference"
 		></z-reference>
 
 		<z-multilingual-string
 			v-else-if="type === Constants.Z_MULTILINGUALSTRING"
-			:zobject="zobject"
+			:zobject-id="zobjectId"
 			:viewmode="viewmode"
-			@delete-lang="deleteZMonolingualString"
-			@add-lang="addZMonolingualString"
-			@change="setZMonolingualString"
 		></z-multilingual-string>
 
 		<z-list
 			v-else-if="type === Constants.Z_LIST"
-			:zobject="zobject"
+			:zobject-id="zobjectId"
 			:viewmode="viewmode"
-			@add-item="addZListItem"
-			@delete-item="deleteZListItem"
-			@change-item="setZListItem"
 		></z-list>
 
 		<z-code
 			v-else-if="type === Constants.Z_CODE"
-			:zobject="zobject"
+			:zobject-id="zobjectId"
 			:viewmode="viewmode"
-			@update="setZCode"
 		></z-code>
 
 		<z-argument
 			v-else-if="type === Constants.Z_ARGUMENT"
-			:zobject="zobject"
+			:zobject-id="zobjectId"
 			:viewmode="viewmode"
-			@update="setZCode"
 		></z-argument>
 
 		<z-function-call
 			v-else-if="type === Constants.Z_FUNCTION_CALL"
-			:zobject="zobject"
+			:zobject-id="zobjectId"
 			:viewmode="viewmode"
 			@update="setZCode"
 			@clear="clearZFunctionCall"
 		></z-function-call>
 
 		<z-object-generic
-			v-else
-			:zobject="zobject"
+			v-else-if="type !== undefined"
+			:zobject-id="zobjectId"
+			:type="type"
 			:persistent="persistent"
 			:viewmode="viewmode"
-			@change-key="setZObjectKey"
-			@change-type="setZObjectType"
 		></z-object-generic>
 	</div>
 </template>
@@ -82,7 +71,9 @@ var Constants = require( '../Constants.js' ),
 	ZString = require( './types/ZString.vue' ),
 	ZCode = require( './types/ZCode.vue' ),
 	ZArgument = require( './types/ZArgument.vue' ),
-	ZFunctionCall = require( './types/ZFunctionCall.vue' );
+	ZFunctionCall = require( './types/ZFunctionCall.vue' ),
+	mapActions = require( 'vuex' ).mapActions,
+	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = {
 	name: 'ZObject',
@@ -98,11 +89,10 @@ module.exports = {
 	},
 	mixins: [ typeUtils ],
 	props: {
-		zobject: {
-			type: [ Object, Array, String ],
-			default: function () {
-				return {};
-			}
+		zobjectId: {
+			type: Number,
+			required: false,
+			default: 0
 		},
 		persistent: {
 			type: Boolean,
@@ -118,191 +108,48 @@ module.exports = {
 			Constants: Constants
 		};
 	},
-	computed: {
-		type: function () {
-			return this.getZObjectType( this.zobject );
-		},
-		isInlineComponent: function () {
-			return (
-				( this.type === Constants.Z_STRING ) ||
-				( this.type === Constants.Z_REFERENCE )
-			);
-		},
-		classZObject: function () {
-			return {
-				'ext-wikilambda-zobject': true,
-				'ext-wikilambda-zobject-inline': this.isInlineComponent
-			};
-		}
-	},
-	methods: {
-		// Handlers for ZString
-
-		/**
-		 * Sets the value of a ZString.
-		 * If the ZString is normalized (property zobject is an object), sets
-		 * the ZString value.
-		 * If the ZString is canonicalized (property zobject is a string), it
-		 * replaces it with its normalized form by sending a change event to its
-		 * ZObject parent. This is necessary because this ZObject is unable to
-		 * mutate directly its properties.
-		 *
-		 * @param {string} value
-		 * @fires change
-		 */
-		setZString: function ( value ) {
-			var initialValue;
-			if ( typeof this.zobject === 'string' ) {
-				initialValue = this.normalizeZStringZReference( value );
-				this.$emit( 'change', initialValue );
-			} else {
-				this.$set( this.zobject, Constants.Z_STRING_VALUE, value );
-			}
-		},
-
-		// Handlers for ZReference
-
-		/**
-		 * Sets the value of a ZReference.
-		 * If the ZReference is normalized (property zobject is an object), sets
-		 * the ZReference ID.
-		 * If the ZReference is canonicalized (property zobject is a string), it
-		 * replaces it with its normalized form by sending a change event to its
-		 * ZObject parent. This is necessary because this ZObject is unable to
-		 * mutate directly its properties.
-		 *
-		 * @param {string} value
-		 * @fires change
-		 */
-		setZReference: function ( value ) {
-			var initialValue;
-			if ( typeof this.zobject === 'string' ) {
-				initialValue = this.normalizeZStringZReference( value );
-				this.$emit( 'change', initialValue );
-			} else {
-				this.$set( this.zobject, Constants.Z_REFERENCE_ID, value );
-			}
-		},
-
-		// Handlers for ZMultilingualString events
-
-		/**
-		 * Removes a language entry from a Multilingual string.
-		 *
-		 * @param {number} index
-		 */
-		deleteZMonolingualString: function ( index ) {
-			if ( this.zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ] ) {
-				this.zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ].splice( index, 1 );
-			}
-		},
-
-		/**
-		 * Adds a new Monolingual String to the Multilingual String
-		 * values array.
-		 *
-		 * @param {string} lang
-		 */
-		addZMonolingualString: function ( lang ) {
-			var monolingualString = {};
-
-			// Create new ZMonolingual String
-			monolingualString[ Constants.Z_OBJECT_TYPE ] = Constants.Z_MONOLINGUALSTRING;
-			monolingualString[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] = lang;
-			monolingualString[ Constants.Z_MONOLINGUALSTRING_VALUE ] = '';
-
-			// Add it to the value array in the ZMultilingual String
-			if ( !this.zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ] ) {
-				this.$set( this.zobject, Constants.Z_MULTILINGUALSTRING_VALUE, [] );
-			}
-			this.zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ].push( monolingualString );
-		},
-
-		/**
-		 * Sets the value of an existing Monolingual String from the Multilingual
-		 * String values array.
-		 *
-		 * @param {Object} item
-		 */
-		setZMonolingualString: function ( item ) {
-			if ( this.zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ] ) {
-				this.$set(
-					this.zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ][ item.index ],
-					Constants.Z_MONOLINGUALSTRING_VALUE,
-					item.value
+	computed: $.extend( mapGetters( [ 'getZObjectTypeById' ] ),
+		{
+			type: function () {
+				return this.getZObjectTypeById( this.zobjectId );
+			},
+			isInlineComponent: function () {
+				return (
+					( this.type === Constants.Z_STRING ) ||
+					( this.type === Constants.Z_REFERENCE )
 				);
+			},
+			classZObject: function () {
+				return {
+					'ext-wikilambda-zobject': true,
+					'ext-wikilambda-zobject-inline': this.isInlineComponent
+				};
 			}
-		},
+		} ),
+	methods: $.extend( {},
+		mapActions( [ 'fetchZKeys' ] ),
+		{
 
-		// Handlers for ZObjectGeneric events
+			setZCode: function ( item ) {
+				this.$set( this.zobject, item.key, item.value );
+			},
 
-		/**
-		 * Mutates the value of a given key in this ZObject.
-		 *
-		 * @param {Object} item
-		 */
-		setZObjectKey: function ( item ) {
-			this.$set( this.zobject, item.key, item.value );
-		},
+			clearZFunctionCall: function () {
+				var self = this;
 
-		/**
-		 * Changes the type (the value of the Z1K1 key) of this ZObject.
-		 *
-		 * @param {Object} newType
-		 */
-		setZObjectType: function ( newType ) {
-			this.$set( this.zobject, Constants.Z_OBJECT_TYPE, newType );
-		},
-
-		// Handlers for ZList events
-
-		/**
-		 * Adds a new item into the list represented by this ZObject.
-		 *
-		 * @param {Object|Array|string} value
-		 */
-		addZListItem: function ( value ) {
-			if ( Array.isArray( this.zobject ) ) {
-				this.zobject.push( value );
+				Object.keys( self.zobject ).forEach( function ( key ) {
+					if ( key !== Constants.Z_OBJECT_TYPE ) {
+						self.$set( self.zobject, key, undefined );
+					}
+				} );
 			}
-		},
-
-		/**
-		 * Deletes an item from the list represented by this ZObject.
-		 *
-		 * @param {number} index
-		 */
-		deleteZListItem: function ( index ) {
-			if ( Array.isArray( this.zobject ) ) {
-				this.zobject.splice( index, 1 );
-			}
-		},
-
-		/**
-		 * Sets the value for a given item of the list represented
-		 * by this ZObject.
-		 *
-		 * @param {Object} item
-		 */
-		setZListItem: function ( item ) {
-			if ( Array.isArray( this.zobject ) ) {
-				this.$set( this.zobject, item.index, item.value );
-			}
-		},
-
-		setZCode: function ( item ) {
-			this.$set( this.zobject, item.key, item.value );
-		},
-
-		clearZFunctionCall: function () {
-			var self = this;
-
-			Object.keys( self.zobject ).forEach( function ( key ) {
-				if ( key !== Constants.Z_OBJECT_TYPE ) {
-					self.$set( self.zobject, key, undefined );
-				}
-			} );
 		}
+	),
+	mounted: function () {
+		this.fetchZKeys( {
+			zids: [ this.type ],
+			zlangs: [ this.zLang ]
+		} );
 	}
 };
 </script>

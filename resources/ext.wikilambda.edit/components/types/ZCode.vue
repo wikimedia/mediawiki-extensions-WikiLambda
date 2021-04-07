@@ -23,7 +23,8 @@
 		</select>
 		<code-editor
 			:mode="selectedLanguage"
-			:read-only="!selectedLanguage"
+			:read-only="!selectedLanguage || viewmode"
+			:value="codeValue"
 			@change="updateCode"
 		></code-editor>
 	</div>
@@ -31,6 +32,7 @@
 
 <script>
 var Constants = require( '../../Constants.js' ),
+	typeUtils = require( './../../mixins/typeUtils.js' ),
 	CodeEditor = require( '../base/CodeEditor.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
@@ -40,47 +42,100 @@ module.exports = {
 		'code-editor': CodeEditor
 	},
 	props: {
-		zobject: {
-			type: Object,
-			default: function () {
-				return {};
-			}
+		zobjectId: {
+			type: Number,
+			required: true
+		},
+		viewmode: {
+			type: Boolean,
+			required: true
 		}
 	},
-	computed: $.extend( mapGetters( [ 'zProgrammingLangs' ] ), {
-		selectedLanguage: {
-			get: function () {
-				if ( this.zobject[ Constants.Z_CODE_LANGUAGE ] ) {
-					return this.zobject[ Constants.Z_CODE_LANGUAGE ][ Constants.Z_PROGRAMMING_LANGUAGE_CODE ];
-				} else {
-					return '';
-				}
+	data: function () {
+		return {
+			codeValue: ''
+		};
+	},
+	mixins: [ typeUtils ],
+	computed: $.extend(
+		mapGetters( [
+			'zProgrammingLangs',
+			'getZObjectChildrenById'
+		] ),
+		{
+			zobject: function () {
+				return this.getZObjectChildrenById( this.zobjectId );
 			},
-			set: function ( val ) {
-				this.selectLanguage( val );
-			}
-		}
-	} ),
-	methods: $.extend( mapActions( [ 'fetchAllZProgrammingLanguages' ] ), {
-		selectLanguage: function ( language ) {
-			this.$emit( 'update', {
-				key: Constants.Z_CODE_LANGUAGE,
-				value: {
-					Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
-					Z61K1: language
+			zCodeLanguage: function () {
+				return this.findKeyInArray( Constants.Z_CODE_LANGUAGE, this.zobject );
+			},
+			zCodeProgrammingLanguage: function () {
+				var languageChildren,
+					programmingLanguageCodeItem;
+
+				languageChildren = this.getZObjectChildrenById( this.zCodeLanguage.id );
+				if ( languageChildren.length === 0 ) {
+					return;
 				}
-			} );
-		},
-		updateCode: function ( code ) {
-			this.$emit( 'update', {
-				key: Constants.Z_CODE_CODE,
-				value: code
-			} );
-		}
-	} ),
+				programmingLanguageCodeItem = this.findKeyInArray(
+					Constants.Z_PROGRAMMING_LANGUAGE_CODE,
+					languageChildren
+				);
+
+				return programmingLanguageCodeItem;
+			},
+			codeItem: function () {
+				return this.findKeyInArray( Constants.Z_CODE_CODE, this.zobject );
+			},
+			selectedLanguage: {
+				get: function () {
+					if ( this.zCodeProgrammingLanguage ) {
+						return this.zCodeProgrammingLanguage.value;
+					} else {
+						return '';
+					}
+				},
+				set: function ( val ) {
+					this.selectLanguage( val );
+				}
+			}
+		} ),
+	methods: $.extend(
+		mapActions( [
+			'fetchAllZProgrammingLanguages',
+			'setZCodeLanguage',
+			'setZObjectValue'
+		] ),
+		{
+			/**
+			 * Sets the value Z_PROGRAMMING_LANGUAGE_CODE.
+			 *
+			 * @param {string} value
+			 */
+			selectLanguage: function ( value ) {
+				var payload = {
+					id: this.zCodeLanguage.id,
+					value: value
+				};
+				this.setZCodeLanguage( payload );
+			},
+			updateCode: function ( code ) {
+				var payload = {
+					id: this.codeItem.id,
+					value: code
+				};
+				this.setZObjectValue( payload );
+			}
+		} ),
 	mounted: function () {
 		if ( this.zProgrammingLangs.length <= 0 ) {
 			this.fetchAllZProgrammingLanguages();
+		}
+
+		// Assigning the value this way prevents a bug,
+		// that would move the cursor to the end of the string on every keypress
+		if ( this.codeItem.value ) {
+			this.codeValue = this.codeItem.value;
 		}
 	}
 };

@@ -7,16 +7,45 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	ZObject = require( '../../../resources/ext.wikilambda.edit/components/ZObject.vue' );
+	createLocalVue = require( '@vue/test-utils' ).createLocalVue,
+	Vuex = require( 'vuex' ),
+	ZObject = require( '../../../resources/ext.wikilambda.edit/components/ZObject.vue' ),
+	localVue;
+
+localVue = createLocalVue();
+localVue.use( Vuex );
 
 describe( 'ZObject', function () {
+	var getters,
+		actions,
+		store;
+
+	beforeEach( function () {
+		getters = {
+			getZObjectTypeById: function () {
+				return jest.fn( function () {
+					return 'none';
+				} );
+			}
+		};
+		actions = {
+			fetchZKeys: jest.fn()
+		};
+		store = new Vuex.Store( {
+			getters: getters,
+			actions: actions
+		} );
+	} );
+
 	it( 'renders without errors', function () {
 		var wrapper = shallowMount( ZObject, {
 			propsData: {
 				zobject: '',
 				persistent: false,
 				viewmode: false
-			}
+			},
+			store: store,
+			localVue: localVue
 		} );
 
 		expect( wrapper.find( 'div' ) ).toBeTruthy();

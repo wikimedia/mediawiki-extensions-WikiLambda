@@ -6,7 +6,10 @@
 		@license MIT
 	-->
 	<div>
-		({{ argumentKey }}):
+		(<z-string
+			v-if="argumentKeyId"
+			:zobject-id="argumentKeyId"
+			:viewmode="true"></z-string>)
 		<div>
 			{{ typeLabel }}:
 			<z-object-selector
@@ -20,12 +23,9 @@
 		<div>
 			{{ labelsLabel }}:
 			<z-multilingual-string
-				v-if="argumentLabels"
-				:zobject="argumentLabels"
+				v-if="argumentLabelsId"
+				:zobject-id="argumentLabelsId"
 				:viewmode="viewmode"
-				@delete-lang="deleteZMonolingualString"
-				@add-lang="addZMonolingualString"
-				@change="setZMonolingualString"
 			></z-multilingual-string>
 		</div>
 	</div>
@@ -33,160 +33,81 @@
 
 <script>
 var Constants = require( '../../Constants.js' ),
+	typeUtils = require( './../../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	mapState = require( 'vuex' ).mapState,
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
+	ZString = require( './ZString.vue' ),
 	ZMultilingualString = require( './ZMultilingualString.vue' );
 
 module.exports = {
 	components: {
 		'z-object-selector': ZObjectSelector,
-		'z-multilingual-string': ZMultilingualString
+		'z-multilingual-string': ZMultilingualString,
+		'z-string': ZString
 	},
 	props: {
-		zobject: {
-			type: Object,
-			default: function () {
-				return {};
-			}
+		zobjectId: {
+			type: Number,
+			required: true
 		},
 		viewmode: {
 			type: Boolean,
 			required: true
 		}
 	},
-	computed: $.extend( mapGetters( {
-		nextKey: 'getNextKey',
-		zLang: 'zLang'
-	} ),
-	mapState( {
-		zArgument: function ( state ) {
-			return state.zKeys[ Constants.Z_ARGUMENT ];
-		}
-	} ),
-	{
-		Constants: function () {
-			return Constants;
-		},
-		argumentType: {
-			get: function () {
-				return this.zobject[ Constants.Z_ARGUMENT_TYPE ];
+	mixins: [ typeUtils ],
+	computed: $.extend(
+		mapGetters( {
+			nextKey: 'getNextKey',
+			zLang: 'zLang',
+			getZObjectChildrenById: 'getZObjectChildrenById'
+		} ),
+		mapState( {
+			zKeyLabels: 'zKeyLabels'
+		} ),
+		{
+			zobject: function () {
+				return this.getZObjectChildrenById( this.zobjectId );
 			},
-			set: function ( zId ) {
-				this.$emit( 'update', {
-					key: Constants.Z_ARGUMENT_TYPE,
-					value: zId
-				} );
-			}
-		},
-		argumentKey: {
-			get: function () {
-				if ( this.zobject[ Constants.Z_ARGUMENT_KEY ] ) {
-					return this.zobject[ Constants.Z_ARGUMENT_KEY ][ Constants.Z_STRING_VALUE ];
-				} else {
-					return '';
+			Constants: function () {
+				return Constants;
+			},
+			argumentTypeItem: function () {
+				return this.findKeyInArray( Constants.Z_ARGUMENT_TYPE, this.zobject );
+			},
+			argumentType: function () {
+				if ( this.argumentTypeItem ) {
+					return this.argumentTypeItem.value;
 				}
 			},
-			set: function ( key ) {
-				this.$emit( 'update', {
-					key: Constants.Z_ARGUMENT_KEY,
-					value: {
-						Z1K1: Constants.Z_STRING,
-						Z6K1: key
-					}
-				} );
-			}
-		},
-		argumentLabels: {
-			get: function () {
-				return this.zobject[ Constants.Z_ARGUMENT_LABEL ];
+			argumentKeyId: function () {
+				var item = this.findKeyInArray( Constants.Z_ARGUMENT_KEY, this.zobject );
+				if ( item ) {
+					return item.id;
+				}
 			},
-			set: function ( labels ) {
-				this.$emit( 'update', {
-					key: Constants.Z_ARGUMENT_LABEL,
-					value: labels
-				} );
+			argumentLabelsId: function () {
+				var item = this.findKeyInArray( Constants.Z_ARGUMENT_LABEL, this.zobject );
+				if ( item ) {
+					return item.id;
+				}
+			},
+			typeLabel: function () {
+				return this.zKeyLabels[ Constants.Z_ARGUMENT_TYPE ];
+			},
+			labelsLabel: function () {
+				return this.zKeyLabels[ Constants.Z_ARGUMENT_LABEL ];
 			}
-		},
-		zArgumentKeys: function () {
-			if ( this.zArgument ) {
-				return this.zArgument[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
-			}
-
-			return [];
-		},
-		zArgumentKeyLabels: function () {
-			var labels = {};
-
-			this.zArgumentKeys.forEach( function ( keyObject ) {
-				var key = keyObject[ Constants.Z_KEY_ID ][ Constants.Z_STRING_VALUE ];
-				labels[ key ] = keyObject[
-					Constants.Z_KEY_LABEL ][
-					Constants.Z_MULTILINGUALSTRING_VALUE ][
-					0 ][
-					Constants.Z_MONOLINGUALSTRING_VALUE ];
-			} );
-
-			return labels;
-		},
-		typeLabel: function () {
-			return this.zArgumentKeyLabels[ Constants.Z_ARGUMENT_TYPE ];
-		},
-		labelsLabel: function () {
-			return this.zArgumentKeyLabels[ Constants.Z_ARGUMENT_LABEL ];
-		}
-	} ),
-	methods: $.extend( mapActions( [ 'fetchZKeys' ] ), {
-		typeHandler: function ( zid ) {
-			this.argumentType = zid;
-		},
-		// Handlers for ZMultilingualString events
-
-		/**
-		 * Removes a language entry from a Multilingual string.
-		 *
-		 * @param {number} index
-		 */
-		deleteZMonolingualString: function ( index ) {
-			if ( this.argumentLabels[ Constants.Z_MULTILINGUALSTRING_VALUE ] ) {
-				this.argumentLabels[ Constants.Z_MULTILINGUALSTRING_VALUE ].splice( index, 1 );
-			}
-		},
-
-		/**
-		 * Adds a new Monolingual String to the Multilingual String
-		 * values array.
-		 *
-		 * @param {string} lang
-		 */
-		addZMonolingualString: function ( lang ) {
-			var monolingualString = {};
-
-			// Create new ZMonolingual String
-			monolingualString[ Constants.Z_OBJECT_TYPE ] = Constants.Z_MONOLINGUALSTRING;
-			monolingualString[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] = lang;
-			monolingualString[ Constants.Z_MONOLINGUALSTRING_VALUE ] = '';
-
-			// Add it to the value array in the ZMultilingual String
-			this.argumentLabels[ Constants.Z_MULTILINGUALSTRING_VALUE ].push( monolingualString );
-
-			this.$emit( 'update', { key: 'Z17K3', value: this.argumentLabels } );
-		},
-
-		/**
-		 * Sets the value of an existing Monolingual String from the Multilingual
-		 * String values array.
-		 *
-		 * @param {Object} item
-		 */
-		setZMonolingualString: function ( item ) {
-			if ( this.argumentLabels[ Constants.Z_MULTILINGUALSTRING_VALUE ] ) {
-				this.argumentLabels[
-					Constants.Z_MULTILINGUALSTRING_VALUE ][
-					item.index ][
-					Constants.Z_MONOLINGUALSTRING_VALUE ] = item.value;
-			}
+		} ),
+	methods: $.extend( mapActions( [ 'fetchZKeys', 'setZObjectValue' ] ), {
+		typeHandler: function ( type ) {
+			var payload = {
+				id: this.argumentTypeItem.id,
+				value: type
+			};
+			this.setZObjectValue( payload );
 		}
 	} ),
 	mounted: function () {
@@ -194,13 +115,6 @@ module.exports = {
 			zids: [ Constants.Z_ARGUMENT ],
 			zlangs: [ this.zLang ]
 		} );
-
-		if ( !this.argumentKey ) {
-			this.argumentKey = Constants.Z_NEW_KEY_ROOT + this.nextKey;
-		}
-		if ( !this.argumentLabels ) {
-			this.argumentLabels = { Z1K1: Constants.Z_MULTILINGUALSTRING, Z12K1: [] };
-		}
 	}
 };
 </script>

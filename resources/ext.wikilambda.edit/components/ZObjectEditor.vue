@@ -8,7 +8,6 @@
 	<!-- TODO: Add a loading indicator, once T254695 is done upstream. -->
 	<div id="ext-wikilambda-editor">
 		<z-object
-			:zobject="zobject"
 			:persistent="true"
 			:viewmode="false"
 			@input="updateZobject"
@@ -24,9 +23,9 @@
 		<button @click="submit">
 			{{ submitButtonLabel }}
 		</button>
-		<p>Current ZObject: {{ zobject }} </p>
+		<p>Current ZObject: {{ ZObjectJson }} </p>
 		<wbmi-message v-if="message.text" :type="message.type">
-			{{ message.text }}
+			{{ message }}
 		</wbmi-message>
 	</div>
 </template>
@@ -50,9 +49,9 @@ module.exports = {
 		};
 	},
 	computed: $.extend( mapGetters( {
-		zobject: 'getCurrentZObject',
 		createNewPage: 'isCreateNewPage',
-		message: 'getZObjectMessage'
+		message: 'getZObjectMessage',
+		ZObjectJson: 'getZObjectAsJson'
 	} ), {
 		submitButtonLabel: function () {
 			if ( this.createNewPage ) {

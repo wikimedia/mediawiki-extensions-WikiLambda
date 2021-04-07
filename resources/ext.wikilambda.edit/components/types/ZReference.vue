@@ -7,8 +7,8 @@
 	-->
 	<div class="ext-wikilambda-zreference">
 		<span v-if="viewmode">
-			<a :href="'./ZObject:' + referenceId">
-				{{ referenceLabel }} ({{ referenceId }})
+			<a :href="'./ZObject:' + referenceValue">
+				{{ referenceLabel }} ({{ referenceValue }})
 			</a>
 		</span>
 
@@ -16,8 +16,9 @@
 			v-else
 			:viewmode="viewmode"
 			:placeholder="$i18n( 'wikilambda-zobjectselector-label' )"
-			:selected-id="referenceId"
-			@input="setReferenceId"
+			:selected-id="referenceValue"
+			:type="searchType"
+			@input="setZReference"
 		></z-object-selector>
 	</div>
 </template>
@@ -25,7 +26,9 @@
 <script>
 var Constants = require( './../../Constants.js' ),
 	ZObjectSelector = require( './../ZObjectSelector.vue' ),
+	typeUtils = require( './../../mixins/typeUtils.js' ),
 	mapActions = require( 'vuex' ).mapActions,
+	mapGetters = require( 'vuex' ).mapGetters,
 	mapState = require( 'vuex' ).mapState;
 
 module.exports = {
@@ -38,49 +41,63 @@ module.exports = {
 			type: Boolean,
 			required: true
 		},
-		zobject: {
-			type: [ Object, String ],
+		zobjectId: {
+			type: Number,
+			required: true
+		},
+		searchType: {
+			type: String,
 			default: ''
 		}
 	},
+	mixins: [ typeUtils ],
 	computed: $.extend( {},
-		mapState( [ 'zLangs', 'zKeyLabels' ] ),
+		mapState( [
+			'zLangs',
+			'zKeyLabels'
+		] ),
+		mapGetters( [ 'getZObjectChildrenById' ] ),
 		{
-			referenceId: function () {
-				if ( typeof this.zobject === 'string' ) {
-					return this.zobject;
-				} else {
-					return this.zobject[ Constants.Z_REFERENCE_ID ];
-				}
+			zobject: function () {
+				return this.getZObjectChildrenById( this.zobjectId );
+			},
+			referenceItem: function () {
+				return this.findKeyInArray( Constants.Z_REFERENCE_ID, this.zobject );
+			},
+			referenceValue: function () {
+				return this.referenceItem.value;
 			},
 			referenceLabel: function () {
-				return this.zKeyLabels[ this.referenceId ];
+				return this.zKeyLabels[ this.referenceValue ];
 			}
 		}
 	),
 	methods: $.extend( {},
-		mapActions( [ 'fetchZKeys' ] ),
+		mapActions( [
+			'setZObjectValue',
+			'fetchZKeys'
+		] ),
 		{
 			/**
-			 * Fires the `input` event with the value of the selected ZObject
+			 * Sets the value of a ZReference.
 			 *
-			 * @param {string} event
-			 * @fires input
+			 * @param {string} value
 			 */
-			setReferenceId: function ( event ) {
-				this.$emit( 'input', event );
+			setZReference: function ( value ) {
+				var payload = {
+					id: this.referenceItem.id,
+					value: value
+				};
+				this.setZObjectValue( payload );
 			}
 		}
 	),
 	created: function () {
-		if ( this.referenceId ) {
+		if ( this.referenceValue ) {
 			this.fetchZKeys( {
-				zids: [ this.referenceId ],
+				zids: [ this.referenceValue ],
 				zlangs: this.zLangs
 			} );
-		}
-		if ( !this.viewmode && ( typeof this.zobject === 'string' ) ) {
-			this.$emit( 'input', this.zobject );
 		}
 	}
 };

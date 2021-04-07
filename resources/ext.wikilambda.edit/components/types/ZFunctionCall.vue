@@ -17,7 +17,7 @@
 			<li v-for="argument in zFunctionArguments" :key="argument.key">
 				{{ argument.label }} ({{ argument.key }}):
 				<z-object
-					:zobject="zobject[ argument.key ]"
+					:zobject-id="findArgumentId(argument.key)"
 					:viewmode="viewmode"
 					:persistent="false"
 				></z-object>
@@ -40,11 +40,9 @@ module.exports = {
 	},
 	mixins: [ typeUtils ],
 	props: {
-		zobject: {
-			type: Object,
-			default: function () {
-				return {};
-			}
+		zobjectId: {
+			type: Number,
+			required: true
 		},
 		viewmode: {
 			type: Boolean,
@@ -59,37 +57,27 @@ module.exports = {
 			return state.zKeys[ Constants.Z_FUNCTION_CALL ];
 		}
 	} ), mapGetters( {
-		zLang: 'zLang'
+		zLang: 'zLang',
+		getZObjectChildrenById: 'getZObjectChildrenById',
+		getNextObjectId: 'getNextObjectId'
 	} ), {
-		zFunctionId: {
-			get: function () {
-				return this.zobject[ Constants.Z_FUNCTION_CALL_FUNCTION ] || '';
-			},
-			set: function ( val ) {
-				this.$emit( 'clear' );
-				this.$emit( 'update', {
-					key: Constants.Z_FUNCTION_CALL_FUNCTION,
-					value: val
-				} );
-				this.fetchZKeys( {
-					zids: [ val ],
-					zlangs: [ this.zLang ]
-				} );
-			}
+		zobject: function () {
+			return this.getZObjectChildrenById( this.zobjectId );
 		},
 		Constants: function () {
 			return Constants;
+		},
+		zFunctionId: function () {
+			return this.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, this.zobject ).value;
 		},
 		zFunctionCallKeys: function () {
 			if ( this.zFunctionCall ) {
 				return this.zFunctionCall[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
 			}
-
 			return [];
 		},
 		zFunctionCallKeyLabels: function () {
 			var labels = {};
-
 			this.zFunctionCallKeys.forEach( function ( keyObject ) {
 				var key = keyObject[ Constants.Z_KEY_ID ][ Constants.Z_STRING_VALUE ];
 				labels[ key ] = keyObject[
@@ -98,7 +86,6 @@ module.exports = {
 					0 ][
 					Constants.Z_MONOLINGUALSTRING_VALUE ];
 			} );
-
 			return labels;
 		},
 		zFunctionKeys: function () {
@@ -110,7 +97,6 @@ module.exports = {
 		},
 		zFunctionArguments: function () {
 			var labels = [];
-
 			this.zFunctionKeys.forEach( function ( keyObject ) {
 				var key = keyObject[ Constants.Z_ARGUMENT_KEY ][ Constants.Z_STRING_VALUE ],
 					label = keyObject[
@@ -130,9 +116,30 @@ module.exports = {
 			return labels;
 		}
 	} ),
-	methods: $.extend( mapActions( [ 'fetchZKeys' ] ), {
+	methods: $.extend( mapActions( [
+		'fetchZKeys',
+		'resetZObject',
+		'setZObjectValue',
+		'addZObject',
+		'addZObjects'
+	] ), {
 		typeHandler: function ( zid ) {
-			this.zFunctionId = zid;
+			var zFunctionCallFunction = this.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, this.zobject );
+
+			this.resetZObject( this.zobjectId );
+
+			this.setZObjectValue( {
+				id: zFunctionCallFunction.id,
+				value: zid
+			} );
+
+			this.fetchZKeys( {
+				zids: [ zid ],
+				zlangs: [ this.zLang ]
+			} );
+		},
+		findArgumentId: function ( key ) {
+			return this.findKeyInArray( key, this.zobject ).id;
 		}
 	} ),
 	watch: {
@@ -140,19 +147,24 @@ module.exports = {
 			var self = this;
 
 			value.forEach( function ( arg ) {
-				var argValue = {};
+				var nextId = self.getNextObjectId;
 
 				// Don't perform this action if the key already exists
-				if ( self.zobject[ arg.key ] ) {
+				if ( self.findKeyInArray( arg.key, self.zobject ) ) {
 					return;
 				}
 
-				argValue[ Constants.Z_OBJECT_TYPE ] = arg.type[ Constants.Z_REFERENCE_ID ];
-
-				self.$emit( 'update', {
+				self.addZObject( {
 					key: arg.key,
-					value: argValue
+					value: 'object',
+					parent: self.zobjectId
 				} );
+				self.addZObjects( [
+					{ key: Constants.Z_OBJECT_TYPE,
+						value: arg.type[ Constants.Z_REFERENCE_ID ],
+						parent: nextId
+					}
+				] );
 			} );
 		}
 	},

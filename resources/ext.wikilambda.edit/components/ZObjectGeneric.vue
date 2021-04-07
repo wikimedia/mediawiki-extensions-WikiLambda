@@ -13,7 +13,7 @@
 				<span>{{ typeLabel }} ({{ type }})</span>
 			</a>
 			<span v-else>{{ typeLabel }} ({{ type }})</span>
-			<ul><li> {{ z2k1label }} ({{ Constants.Z_PERSISTENTOBJECT_ID }}): {{ zobjectId }} </li></ul>
+			<ul><li> {{ z2k1label }} ({{ Constants.Z_PERSISTENTOBJECT_ID }}): {{ z2K1Value }} </li></ul>
 		</span>
 
 		<span v-else>
@@ -24,16 +24,14 @@
 				:type="Constants.Z_TYPE"
 				:placeholder="$i18n( 'wikilambda-typeselector-label' )"
 				:selected-id="type"
-				@input="updateType"
+				@input="onTypeChange"
 			></z-object-selector>
 		</span>
 
 		<z-object-key-list
 			ref="keyList"
-			:zobject="zobject"
+			:zobject-id="zobjectId"
 			:viewmode="viewmode"
-			@change="updateZObjectKey"
-			@delete="deleteZObjectKey"
 		></z-object-key-list>
 	</div>
 </template>
@@ -43,6 +41,7 @@ var Constants = require( '../Constants.js' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
 	ZObjectKeyList = require( './ZObjectKeyList.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
+	mapGetters = require( 'vuex' ).mapGetters,
 	mapState = require( 'vuex' ).mapState;
 
 module.exports = {
@@ -52,11 +51,13 @@ module.exports = {
 		'z-object-selector': ZObjectSelector
 	},
 	props: {
-		zobject: {
-			type: Object,
-			default: function () {
-				return {};
-			}
+		zobjectId: {
+			type: Number,
+			required: true
+		},
+		type: {
+			type: String,
+			required: true
 		},
 		persistent: {
 			type: Boolean,
@@ -80,84 +81,39 @@ module.exports = {
 			'zKeys',
 			'fetchingZKeys'
 		] ),
+		mapGetters( [
+			'getZObjectChildrenById', 'getCurrentZObjectId'
+		] ),
 		{
-			type: function () {
-				return this.zobject[ Constants.Z_OBJECT_TYPE ];
-			},
-			keys: function () {
-				// Given this.type, returns the expected keys
-				return this.zKeys[ this.type ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
-			},
 			typeLabel: function () {
 				return this.zKeyLabels[ this.type ];
-			},
-			zobjectId: function () {
-				return this.zobject[ Constants.Z_PERSISTENTOBJECT_ID ];
 			},
 			z1k1label: function () {
 				return this.zKeyLabels[ Constants.Z_OBJECT_TYPE ];
 			},
 			z2k1label: function () {
 				return this.zKeyLabels[ Constants.Z_PERSISTENTOBJECT_ID ];
+			},
+			z2K1Value: function () {
+				return this.getCurrentZObjectId;
 			}
 		}
 	),
 	methods: $.extend( {},
-		mapActions( [ 'fetchZKeys' ] ),
+		mapActions( [ 'fetchZKeys', 'changeType' ] ),
 		{
 			/**
-			 * Updates zobject data with changes on the ZObject Key
-			 * list. The event contains the key and the new value.
+			 * Sets the type of a ZObject key.
 			 *
-			 * @param {Object} newKey
+			 * @param {string} type
+			 * @param {number} id
 			 */
-			updateZObjectKey: function ( newKey ) {
-				this.$emit( 'change-key', newKey );
-			},
-
-			/**
-			 * Updates zobject data with the deletion of a ZObject
-			 * Key list item. The event contains the key ID.
-			 *
-			 * @param {string} keyId
-			 */
-			deleteZObjectKey: function ( keyId ) {
-				this.$delete( this.zobject, keyId );
-			},
-
-			/**
-			 * Updates the keys in the ZObject Key List when the type
-			 * is changed.
-			 *
-			 * @param {string} newType
-			 */
-			updateType: function ( newType ) {
-				var self = this,
-					keyID,
-					newKeys;
-
-				this.$emit( 'change-type', newType );
-
-				this.lastTypeKeys.forEach( function ( lastTypeKey ) {
-					self.$refs.keyList.removeKey( lastTypeKey );
-				} );
-				this.lastTypeKeys = [];
-
-				this.fetchZKeys( {
-					zids: [ newType ],
-					zlangs: this.zLangs
-				} ).done( function () {
-					newKeys = self.zKeys[ newType ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
-					newKeys.forEach( function ( newKey ) {
-						if ( typeof newKey[ Constants.Z_KEY_ID ] === 'string' ) {
-							keyID = newKey[ Constants.Z_KEY_ID ];
-						} else {
-							keyID = newKey[ Constants.Z_KEY_ID ][ Constants.Z_STRING_VALUE ];
-						}
-						self.$refs.keyList.addKey( keyID );
-						self.lastTypeKeys.push( keyID );
-					} );
-				} );
+			onTypeChange: function ( type ) {
+				var payload = {
+					id: this.zobjectId,
+					type: type
+				};
+				this.changeType( payload );
 			}
 		}
 	),
@@ -165,6 +121,7 @@ module.exports = {
 		// Fetch the information of the zid (and relevant
 		// key labels) if it's not yet available.
 		if (
+			this.type !== 'root' &&
 			( !( this.type in this.zKeys ) ) &&
 			( this.fetchingZKeys.indexOf( this.type ) === -1 )
 		) {
@@ -172,12 +129,6 @@ module.exports = {
 				zids: [ this.type ],
 				zlangs: this.zLangs
 			} );
-		}
-
-		// TODO: only fetch when we are in edit view and we just created
-		// this component as result of selecting a key type.
-		if ( !this.viewmode && ( this.type !== Constants.Z_PERSISTENTOBJECT ) ) {
-			this.updateType( this.type );
 		}
 	}
 };

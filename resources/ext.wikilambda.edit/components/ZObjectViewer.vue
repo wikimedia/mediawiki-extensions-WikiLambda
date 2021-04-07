@@ -8,7 +8,6 @@
 	<!-- TODO: Add a loading indicator, once T254695 is done upstream. -->
 	<div id="ext-wikilambda-view">
 		<z-object
-			:zobject="zobject"
 			:persistent="true"
 			:viewmode="true"
 		></z-object>
@@ -17,7 +16,6 @@
 
 <script>
 var ZObject = require( './ZObject.vue' ),
-	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
 module.exports = {
@@ -25,11 +23,6 @@ module.exports = {
 	components: {
 		'z-object': ZObject
 	},
-	computed: $.extend( {},
-		mapGetters( {
-			zobject: 'getCurrentZObject'
-		} )
-	),
 	methods: $.extend( {},
 		mapActions( [ 'initializeZObject' ] )
 	),

@@ -3,19 +3,19 @@ var zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/mo
 		Z1K1: 'Z2',
 		Z2K1: 'Z0',
 		Z2K2: { Z1K1: 'Z6', Z6K1: '' },
-		Z2K3: { Z1K1: 'Z12', Z12K1: [] },
-		Z2K4: [
-			{
-				Z1K1: 'Z17',
-				Z17K2: { Z1K1: 'Z6', Z6K1: 'Z0K1' },
-				Z17K3: {
-					Z1K1: [ 'Z12' ],
-					Z12K1: [ { Z1K1: 'Z11', Z11K1: 'en', Z11K2: 'Example Label' } ]
-				},
-				Z17K1: 'Z6'
-			}
-		]
+		Z2K3: { Z1K1: 'Z12', Z12K1: [] }
 	},
+	zobjectTree = [
+		{ id: 0, key: undefined, value: 'object', parent: undefined },
+		{ id: 1, key: 'Z1K1', value: 'Z2', parent: 0 },
+		{ id: 2, key: 'Z2K1', value: 'Z0', parent: 0 },
+		{ id: 3, key: 'Z2K2', value: 'object', parent: 0 },
+		{ id: 4, key: 'Z2K3', value: 'object', parent: 0 },
+		{ id: 5, key: 'Z1K1', value: 'Z6', parent: 3 },
+		{ id: 6, key: 'Z6K1', value: '', parent: 3 },
+		{ id: 10, key: 'Z1K1', value: 'Z12', parent: 4 },
+		{ id: 11, key: 'Z12K1', value: 'array', parent: 4 }
+	],
 	state,
 	context,
 	postMock;
@@ -52,13 +52,46 @@ describe( 'zobject Vuex module', function () {
 				getUrl: jest.fn()
 			};
 		} );
+		mw.config = {
+			get: jest.fn( function () {
+				return {
+					zobject: zobject,
+					createNewPage: true
+				};
+			} )
+		};
 	} );
 
 	describe( 'Getters', function () {
-		it( 'returns current zObject', function () {
-			state.zobject = $.extend( {}, zobject );
+		it( 'Returns current zObject by its ID', function () {
+			var result = { id: 1, key: 'Z1K1', value: 'Z2', parent: 0 };
+			state.zobject = zobjectTree;
 
-			expect( zobjectModule.getters.getCurrentZObject( state ) ).toEqual( zobject );
+			expect( zobjectModule.getters.getZObjectById( state )( 1 ) ).toEqual( result );
+		} );
+
+		it( 'Returns current zObject by its index', function () {
+			var result = 7;
+			state.zobject = zobjectTree;
+
+			expect( zobjectModule.getters.getZObjectIndexById( state )( 10 ) ).toEqual( result );
+		} );
+
+		it( 'Returns empty array if zobject has no children when calling getZObjectChildrenById', function () {
+			var result = [];
+			state.zobject = zobjectTree;
+
+			expect( zobjectModule.getters.getZObjectChildrenById( state )( 10 ) ).toEqual( result );
+		} );
+
+		it( 'Returns zobject children when calling getZObjectChildrenById', function () {
+			var result = [
+				{ id: 10, key: 'Z1K1', value: 'Z12', parent: 4 },
+				{ id: 11, key: 'Z12K1', value: 'array', parent: 4 }
+			];
+			state.zobject = zobjectTree;
+
+			expect( zobjectModule.getters.getZObjectChildrenById( state )( 4 ) ).toEqual( result );
 		} );
 
 		it( 'Returns whether the current state has `createNewPage`', function () {
@@ -83,9 +116,9 @@ describe( 'zobject Vuex module', function () {
 		} );
 
 		it( 'Returns next ID for a key or argument', function () {
-			state.zobject = $.extend( {}, zobject );
+			state.zobject = zobjectTree;
 
-			expect( zobjectModule.getters.getNextKey( state ) ).toEqual( 2 );
+			expect( zobjectModule.getters.getNextKey( state, { getCurrentZObjectId: 'Z0' } ) ).toEqual( 'Z0K1' );
 		} );
 	} );
 
@@ -127,16 +160,23 @@ describe( 'zobject Vuex module', function () {
 
 	describe( 'Actions', function () {
 		it( 'Initialize ZObject, set page details', function () {
+			var result = [
+				{ id: 0, key: undefined, value: 'object', parent: undefined },
+				{ id: 1, key: 'Z1K1', value: 'Z2', parent: 0 },
+				{ id: 2, key: 'Z2K1', value: 'Z0', parent: 0 }
+			];
 			zobjectModule.actions.initializeZObject( context );
 
 			expect( context.commit ).toHaveBeenCalledTimes( 2 );
+			expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.arrayContaining( result ) );
 			expect( context.commit ).toHaveBeenCalledWith( 'setCreateNewPage', true );
-			expect( context.commit ).toHaveBeenCalledWith( 'setZObject', { Z1K1: 'Z2', Z2K1: 'Z0' } );
 		} );
 
 		it( 'Save new zobject', function () {
 			context.getters.isCreateNewPage = true;
-			context.getters.getCurrentZObject = zobject;
+			context.state = {
+				zobject: zobjectTree
+			};
 			zobjectModule.actions.submitZObject( context, 'A summary' );
 
 			expect( mw.Api ).toHaveBeenCalledTimes( 1 );
@@ -150,8 +190,10 @@ describe( 'zobject Vuex module', function () {
 
 		it( 'Save existing zobject', function () {
 			context.getters.isCreateNewPage = false;
-			context.getters.getCurrentZObject = zobject;
-			context.getters.getZid = 'Z0';
+			context.getters.getCurrentZObjectId = 'Z0';
+			context.state = {
+				zobject: zobjectTree
+			};
 			zobjectModule.actions.submitZObject( context, 'A summary' );
 
 			expect( mw.Api ).toHaveBeenCalledTimes( 1 );

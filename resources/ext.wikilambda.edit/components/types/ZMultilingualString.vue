@@ -6,37 +6,13 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-multilingual">
-		<div
-			v-for="(z11Object, index) in monolingualStrings"
-			:key="z11Object[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]"
+		<z-monolingual-string
+			v-for="(z11Object) in monolingualStrings"
+			:key="z11Object.id"
+			:zobject-id="z11Object.id"
+			:viewmode="viewmode"
 			class="ext-wikilambda-monolingual"
-		>
-			<div class="ext-wikilambda-cell">
-				<button
-					v-if="!viewmode"
-					:title="tooltipRemoveLang"
-					@click="removeLang( index )"
-				>
-					{{ $i18n( 'wikilambda-editor-removeitem' ) }}
-				</button>
-				{{ allLangs[ z11Object[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] ] }}
-				({{ z11Object[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] }}):
-			</div>
-			<div class="ext-wikilambda-cell">
-				<span
-					v-if="viewmode"
-					class="ext-wikilambda-zstring"
-				>
-					{{ z11Object[ Constants.Z_MONOLINGUALSTRING_VALUE ] }}
-				</span>
-				<input
-					v-else
-					class="ext-wikilambda-zstring"
-					:value="z11Object[ Constants.Z_MONOLINGUALSTRING_VALUE ]"
-					@change="updateLangString( $event, index )"
-				>
-			</div>
-		</div>
+		></z-monolingual-string>
 		<div class="ext-wikilambda-monolingual">
 			<select v-if="!viewmode"
 				:value="selectedLang"
@@ -63,14 +39,20 @@
 
 <script>
 var Constants = require( '../../Constants.js' ),
+	typeUtils = require( './../../mixins/typeUtils.js' ),
 	mapState = require( 'vuex' ).mapState,
-	mapActions = require( 'vuex' ).mapActions;
+	mapActions = require( 'vuex' ).mapActions,
+	mapGetters = require( 'vuex' ).mapGetters,
+	ZMonolingualString = require( './ZMonolingualString.vue' );
 
 module.exports = {
 	name: 'ZMultilingualString',
+	components: {
+		'z-monolingual-string': ZMonolingualString
+	},
 	props: {
-		zobject: {
-			type: Object,
+		zobjectId: {
+			type: Number,
 			required: true
 		},
 		viewmode: {
@@ -78,6 +60,7 @@ module.exports = {
 			required: true
 		}
 	},
+	mixins: [ typeUtils ],
 	data: function () {
 		return {
 			Constants: Constants
@@ -85,13 +68,29 @@ module.exports = {
 	},
 	computed: $.extend( {},
 		mapState( [ 'allLangs' ] ),
+		mapGetters( {
+			getZObjectChildrenById: 'getZObjectChildrenById',
+			getZObjectAsJsonById: 'getZObjectAsJsonById'
+		} ),
 		{
+			zobject: function () {
+				return this.getZObjectChildrenById( this.zobjectId );
+			},
+			monolingualStringsParentId: function () {
+				var monolingualStringItem = this.findKeyInArray( Constants.Z_MULTILINGUALSTRING_VALUE, this.zobject );
+
+				return monolingualStringItem.id;
+			},
 			monolingualStrings: function () {
-				var monoStrings = [];
-				if ( Constants.Z_MULTILINGUALSTRING_VALUE in this.zobject ) {
-					monoStrings = this.zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ];
+				if ( this.monolingualStringsParentId ) {
+					return this.getZObjectChildrenById( this.monolingualStringsParentId );
 				}
-				return monoStrings;
+			},
+			usedLanguages: function () {
+				var languageJson = this.getZObjectAsJsonById( this.monolingualStringsParentId, true );
+				return languageJson.map( function ( language ) {
+					return language[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ];
+				} );
 			},
 			tooltipRemoveLang: function () {
 				return this.$i18n( 'wikilambda-editor-label-removelanguage-tooltip' );
@@ -104,22 +103,16 @@ module.exports = {
 					unusedLangList = {};
 
 				for ( langCode in this.allLangs ) {
-					unusedLangList[ langCode ] = this.allLangs[ langCode ];
-				}
-				if ( Constants.Z_MULTILINGUALSTRING_VALUE in this.zobject ) {
-					this.zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ].forEach(
-						function ( z11Object ) {
-							langCode = z11Object[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ];
-							delete unusedLangList[ langCode ];
-						}
-					);
+					if ( this.usedLanguages.indexOf( langCode ) === -1 ) {
+						unusedLangList[ langCode ] = this.allLangs[ langCode ];
+					}
 				}
 				return unusedLangList;
 			}
 		}
 	),
 	methods: $.extend( {},
-		mapActions( [ 'fetchAllLangs' ] ),
+		mapActions( [ 'fetchAllLangs', 'addZMonolingualString' ] ),
 		{
 			/**
 			 * Fires a `change` event with the index of a Monolingual String
@@ -136,14 +129,18 @@ module.exports = {
 			},
 
 			/**
-			 * Fires an `add-lang` event with the language code of the new
+			 * Triggers a `addZMonolingualString` action with the language code of the new
 			 * Monolingual String to add to the Multilingual String.
 			 *
 			 * @param {Event} event
 			 */
 			addNewLang: function ( event ) {
-				var lang = event.target.value;
-				this.$emit( 'add-lang', lang );
+				var lang = event.target.value,
+					payload = {
+						lang: lang,
+						parentId: this.monolingualStringsParentId
+					};
+				this.addZMonolingualString( payload );
 			},
 
 			/**
@@ -174,16 +171,5 @@ module.exports = {
 
 .ext-wikilambda-monolingual {
 	clear: both;
-}
-
-.ext-wikilambda-cell {
-	float: left;
-	padding: 0;
-
-	.ext-wikilambda-zstring {
-		vertical-align: bottom;
-		margin-left: 0.5em;
-		margin-top: 4px;
-	}
 }
 </style>

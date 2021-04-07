@@ -7,27 +7,12 @@
 	-->
 	<div class="ext-wikilambda-zlist">
 		<ul>
-			<li v-for="(type, index) in listTypes" :key="index">
-				<button v-if="!viewmode"
-					:title="tooltipRemoveListItem"
-					@click="removeItem(index)"
-				>
-					{{ $i18n( 'wikilambda-editor-removeitem' ) }}
-				</button>
-				<z-object-selector
-					v-if="type === 'new'"
-					:viewmode="viewmode"
-					:type="Constants.Z_TYPE"
-					:placeholder="$i18n( 'wikilambda-typeselector-label' )"
-					@input="setNewType($event, index)"
-				></z-object-selector>
-				<z-object v-else
-					:zobject="zobject[ index ]"
-					:persistent="false"
-					:viewmode="viewmode"
-					@change="updateValue($event, index)"
-				></z-object>
-			</li>
+			<z-list-item
+				v-for="(item) in ZlistItems"
+				:key="item.id"
+				:zobject-id="item.id"
+				:viewmode="viewmode"
+			></z-list-item>
 			<li v-if="!viewmode">
 				<button :title="tooltipAddListItem" @click="addNewItem">
 					{{ $i18n( 'wikilambda-editor-additem' ) }}
@@ -39,23 +24,19 @@
 
 <script>
 var Constants = require( '../../Constants.js' ),
-	typeUtils = require( '../../mixins/typeUtils.js' ),
-	ZObjectSelector = require( '../ZObjectSelector.vue' ),
-	ZMultilingualString = require( './ZMultilingualString.vue' );
+	ZListItem = require( './ZListItem.vue' ),
+	mapActions = require( 'vuex' ).mapActions,
+	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = {
 	name: 'ZList',
 	components: {
-		'z-object-selector': ZObjectSelector,
-		'z-multilingual-string': ZMultilingualString
+		'z-list-item': ZListItem
 	},
-	mixins: [ typeUtils ],
 	props: {
-		zobject: {
-			type: Array,
-			default: function () {
-				return [];
-			}
+		zobjectId: {
+			type: Number,
+			required: true
 		},
 		viewmode: {
 			type: Boolean,
@@ -64,49 +45,37 @@ module.exports = {
 	},
 	data: function () {
 		return {
-			Constants: Constants,
-			listTypes: []
+			Constants: Constants
 		};
 	},
-	computed: {
-		tooltipRemoveListItem: function () {
-			return this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' );
-		},
-		tooltipAddListItem: function () {
-			this.$i18n( 'wikilambda-editor-zlist-additem-tooltip' );
-		}
-	},
-	methods: {
-		addNewItem: function ( /* event */ ) {
-			this.listTypes.push( 'new' );
-		},
-
-		setNewType: function ( newType, index ) {
-			this.$set( this.listTypes, index, newType );
-			this.$emit( 'add-item', this.getInitialValue( newType ) );
-		},
-
-		removeItem: function ( index ) {
-			this.listTypes.splice( index, 1 );
-			this.$emit( 'delete-item', index );
-		},
-
-		updateValue: function ( value, index ) {
-			this.$emit( 'change-item', {
-				index: index,
-				value: value
-			} );
-		}
-	},
-	beforeCreate: function () {
-		this.$options.components[ 'z-object' ] = require( './../ZObject.vue' );
-	},
-	created: function () {
-		var self = this;
-		this.listTypes = this.zobject.map( function ( item ) {
-			return self.getZObjectType( item );
-		} );
-	}
+	computed: $.extend( {},
+		mapGetters( [ 'getZObjectChildrenById' ] ),
+		{
+			ZlistItems: function () {
+				return this.getZObjectChildrenById( this.zobjectId );
+			},
+			ZlistItemsLength: function () {
+				return this.ZlistItems.length;
+			},
+			tooltipRemoveListItem: function () {
+				return this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' );
+			},
+			tooltipAddListItem: function () {
+				this.$i18n( 'wikilambda-editor-zlist-additem-tooltip' );
+			}
+		} ),
+	methods: $.extend( {},
+		mapActions( [ 'addZObject' ] ),
+		{
+			addNewItem: function ( /* event */ ) {
+				var payload = {
+					key: this.ZlistItemsLength,
+					value: 'object',
+					parent: this.zobjectId
+				};
+				this.addZObject( payload );
+			}
+		} )
 };
 </script>
 

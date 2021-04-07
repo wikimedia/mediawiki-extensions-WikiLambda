@@ -7,11 +7,11 @@
 	-->
 	<div class="ext-wikilambda-zstring">
 		<span>
-			<span v-if="viewmode">{{ value }}</span>
+			<span v-if="viewmode">{{ zobjectStringValueItem.value }}</span>
 			<input
 				v-else
 				class="ext-wikilambda-zstring"
-				:value="value"
+				:value="zobjectStringValueItem.value"
 				@change="onInput"
 			>
 		</span>
@@ -19,7 +19,10 @@
 </template>
 
 <script>
-var Constants = require( '../../Constants.js' );
+var Constants = require( './../../Constants.js' ),
+	typeUtils = require( './../../mixins/typeUtils.js' ),
+	mapGetters = require( 'vuex' ).mapGetters,
+	mapActions = require( 'vuex' ).mapActions;
 
 module.exports = {
 	name: 'ZString',
@@ -28,36 +31,44 @@ module.exports = {
 			type: Boolean,
 			required: true
 		},
-		zobject: {
-			type: [ Object, String ],
-			default: ''
+		zobjectId: {
+			type: Number,
+			required: true
 		}
 	},
-	computed: {
-		value: function () {
-			if ( typeof this.zobject === 'string' ) {
-				return this.zobject;
+	mixins: [ typeUtils ],
+	computed: $.extend( mapGetters( {
+		getZObjectById: 'getZObjectById',
+		getZObjectChildrenById: 'getZObjectChildrenById'
+	} ), {
+		zobjectStringValueItem: function () {
+			var stringValueItem = this.findKeyInArray( Constants.Z_STRING_VALUE, this.zobjectChildren );
+			if ( !stringValueItem ) {
+				return {};
 			} else {
-				return this.zobject[ Constants.Z_STRING_VALUE ];
+				return stringValueItem;
 			}
+		},
+		zobjectChildren: function () {
+			return this.getZObjectChildrenById( this.zobjectId );
 		}
-	},
-	methods: {
+	} ),
+	methods: $.extend( {},
+		mapActions( [ 'setZObjectValue' ] ),
+		{
 		/**
-		 * Fires the `input` event with the value of the input field
+		 * called setObjectValueById to update the current zobject entry value
 		 *
 		 * @param {Object} event
-		 * @fires input
 		 */
-		onInput: function ( event ) {
-			this.$emit( 'input', event.target.value );
-		}
-	},
-	created: function () {
-		if ( !this.viewmode && ( typeof this.zobject === 'string' ) ) {
-			this.$emit( 'input', this.zobject );
-		}
-	}
+			onInput: function ( event ) {
+				var payload = {
+					id: this.zobjectStringValueItem.id,
+					value: event.target.value
+				};
+				this.setZObjectValue( payload );
+			}
+		} )
 };
 </script>
 

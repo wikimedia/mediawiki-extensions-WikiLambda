@@ -15,18 +15,16 @@
 			:viewmode="viewmode"
 			:type="Constants.Z_TYPE"
 			:placeholder="$i18n( 'wikilambda-typeselector-label' )"
-			:selected-id="zType"
-			@input="setKeyType"
+			@input="onTypeChange"
 		></z-object-selector>
 
 		<!-- If there's a type, we render the appropriate component -->
 		<template v-else>
 			<span>{{ zTypeLabel }} ({{ zType }})</span>
 			<z-object
-				:zobject="zobject"
+				:zobject-id="zobjectId"
 				:viewmode="viewmode"
 				:persistent="false"
-				@change="updateValue"
 			></z-object>
 		</template>
 	</div>
@@ -35,14 +33,16 @@
 <script>
 var Constants = require( '../Constants.js' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
-	ZKeyModeSelector = require( './ZKeyModeSelector.vue' ),
-	mapState = require( 'vuex' ).mapState;
+	ZReference = require( './types/ZReference.vue' ),
+	mapState = require( 'vuex' ).mapState,
+	mapActions = require( 'vuex' ).mapActions,
+	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = {
 	name: 'ZObjectKey',
 	components: {
 		'z-object-selector': ZObjectSelector,
-		'z-key-mode-selector': ZKeyModeSelector
+		'z-reference': ZReference
 	},
 	props: {
 		viewmode: {
@@ -53,13 +53,9 @@ module.exports = {
 			type: String,
 			required: true
 		},
-		zType: {
-			type: String,
-			default: ''
-		},
-		zobject: {
-			type: [ String, Object, Array ],
-			default: ''
+		zobjectId: {
+			type: Number,
+			required: true
 		}
 	},
 	data: function () {
@@ -71,37 +67,45 @@ module.exports = {
 		mapState( [
 			'zKeyLabels'
 		] ),
+		mapGetters( [
+			'getZObjectChildrenById',
+			'getZObjectTypeById'
+		] ),
 		{
 			zKeyLabel: function () {
 				return this.zKeyLabels[ this.zKey ];
 			},
 			zTypeLabel: function () {
 				return this.zKeyLabels[ this.zType ];
+			},
+			zObject: function () {
+				return this.getZObjectChildrenById( this.zobjectId );
+			},
+			zType: function () {
+				return this.getZObjectTypeById( this.zobjectId );
 			}
 		}
 	),
-	methods: {
-		/**
-		 * Fires a typeChange event with the new type of this key.
-		 *
-		 * @param {string} newType
-		 * @fires typeChange
-		 */
-		setKeyType: function ( newType ) {
-			this.$emit( 'change-type', newType );
-		},
-
-		/**
-		 * Fires an input event with the updated value
-		 * of the key.
-		 *
-		 * @param {string} value
-		 * @fires input
-		 */
-		updateValue: function ( value ) {
-			this.$emit( 'input', value );
-		}
-	},
+	methods: $.extend( {},
+		mapActions( [ 'fetchZKeys', 'changeType' ] ),
+		{
+			/**
+			 * Sets the type of a ZObject key.
+			 *
+			 * @param {string} type
+			 */
+			onTypeChange: function ( type ) {
+				var payload = {
+					id: this.zobjectId,
+					type: type
+				};
+				this.fetchZKeys( {
+					zids: [ type ],
+					zlangs: [ this.zLang ]
+				} );
+				this.changeType( payload );
+			}
+		} ),
 	beforeCreate: function () {
 		this.$options.components[ 'z-object' ] = require( './ZObject.vue' );
 	}
