@@ -5,6 +5,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
 use ApiTestCase;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use Title;
 use WikiPage;
 
@@ -144,6 +145,33 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore::createNewZObject
+	 */
+	public function testCreateFailed_invalidType() {
+		$data = '{ "Z1K1": "Z2", "Z2K1": "Z400",'
+			. ' "Z2K2": { '
+				. ' "Z1K1": "' . ZTypeRegistry::Z_PERSISTENTOBJECT . '",'
+				. ' "Z2K1": "Z0",'
+				. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "string" },'
+				. ' "Z2K3": {}'
+			. '},'
+			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "trouble" } ] } }';
+
+		$store = WikiLambdaServices::getZObjectStore();
+
+		// Try to create a nested ZPO
+		$this->setExpectedApiException( [ 'wikilambda-prohibitedcreationtype', ZTypeRegistry::Z_PERSISTENTOBJECT ] );
+		$result = $this->doApiRequest( [
+			'action' => 'wikilambda_edit',
+			'zid' => 'Z400',
+			'summary' => 'Summary message',
+			'zobject' => $data
+		] );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore::createNewZObject
 	 */
 	public function testCreateSuccess() {
 		$store = WikiLambdaServices::getZObjectStore();
@@ -167,6 +195,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore::updateZObject
 	 */
 	public function testUpdateSuccess() {
 		$sysopUser = $this->getTestSysop()->getUser();

@@ -24,6 +24,20 @@ use WikiPage;
 
 class ZObjectStore {
 
+	/**
+	 * An array of ZTypes which are prohibited from creation by any user. (T278175)
+	 */
+	private const PROHIBITED_Z2_TYPES = [
+		ZTypeRegistry::Z_PERSISTENTOBJECT,
+		ZTypeRegistry::Z_ERROR,
+		ZTypeRegistry::Z_CODE,
+		ZTypeRegistry::Z_ARGUMENTDECLARATION,
+		ZTypeRegistry::Z_ARGUMENTREFERENCE,
+		ZTypeRegistry::Z_NULL,
+		ZTypeRegistry::Z_KEYREFERENCE,
+		ZTypeRegistry::Z_BOOLEAN,
+	];
+
 	/** @var ILoadBalancer */
 	private $loadBalancer;
 
@@ -152,7 +166,7 @@ class ZObjectStore {
 		$zObject = ZObjectUtils::canonicalize( $zObjectNormal );
 		$zObjectString = json_encode( $zObject );
 
-		// Create the ZObject	object to run validation and catch InvalidArgumentException errors
+		// Create the ZObject object to run validation and catch InvalidArgumentException errors
 		try {
 			$zObjectContent = ZObjectFactory::create( $zObject );
 		} catch ( \InvalidArgumentException $e ) {
@@ -190,10 +204,32 @@ class ZObjectStore {
 		$page = $this->wikiPageFactory->newFromTitle( $title );
 		$content = ZObjectContentHandler::makeContent( $zObjectString, $title );
 
+		// Somehow we didn't get the right type back from ZObjectContentHandler. This is bad.
+		if ( !( $content instanceof ZObjectContent ) ) {
+			return Status::newFatal( 'wikilambda-invalidzobject' );
+		}
+
+		// Prohibit certain kinds of edit to regular users; system users are allowed to edit anything, as
+		// otherwise the initial content injection / etc. would fail.
+		if ( !$user->isSystemUser() ) {
+			// (T278175) Prohibit certain kinds of ZTypes from being instantiated as top-level wiki pages
+			if (
+				in_array( $ztype, self::PROHIBITED_Z2_TYPES )
+				// We only care at creation time; edits (e.g. label changes) are OK.
+				&& !$title->exists()
+				) {
+					return Status::newFatal( 'wikilambda-prohibitedcreationtype', $ztype );
+			}
+
+			// (T275940) TODO: Check the user has the right for certain kinds of edit to certain kinds of type
+			// (e.g. limits on creation of Z60/Natural language, Z61/Programming language, …; limits on edits
+			// on built-in items)
+		}
+
 		try {
 			$status = $page->doEditContent( $content, $summary, $flags, false, $user );
 		} catch ( \Exception $e ) {
-			// Error: Database error
+			// Error: Database or a deeper MediaWiki error, e.g. a general editing rate limit
 			return Status::newFatal( $e->getMessage() );
 		}
 

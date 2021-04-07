@@ -84,6 +84,15 @@ class ZTypeRegistry {
 		self::Z_MULTILINGUALSTRING => 'ZMultiLingualString',
 	];
 
+	// These consts are currently only used by ZObjectStore to prohibit creation, and are not (yet) built-in.
+	public const Z_ERROR = 'Z5';
+	public const Z_CODE = 'Z16';
+	public const Z_ARGUMENTDECLARATION = 'Z17';
+	public const Z_ARGUMENTREFERENCE = 'Z18';
+	public const Z_NULL = 'Z23';
+	public const Z_KEYREFERENCE = 'Z39';
+	public const Z_BOOLEAN = 'Z40';
+
 	public const IGNORE_KEY_NORMALIZATION = [
 		self::Z_OBJECT_TYPE,
 		self::Z_MONOLINGUALSTRING_LANGUAGE,
