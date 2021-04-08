@@ -9,6 +9,7 @@
 	"wikilambda-invalidzobjecttitle": "Der angegebene Titel „$1“ ist für ein ZObject nicht gültig.",
 	"wikilambda-invalidzobject": "Der bereitgestellte Inhalt ist kein gültiges ZObjekt.",
 	"wikilambda-invalidcontenttype": "Der bereitgestellte Inhalt ist keine ZObject-Klasse.",
+	"wikilambda-prohibitedcreationtype": "Das bereitgestellte ZObject ist vom Typ „$1“, der nicht angelegt werden darf.",
 	"wikilambda-noresult": "Die Suche hat kein Ergebnis geliefert.",
 	"wikilambda-labelclash": "Das Label des bereitgestellten Inhalts kollidiert mit dem ZObjekt „$1“ für das Label in „$2“.",
 	"wikilambda-multilingualstring-nofallback": "Kein Label definiert in dieser oder einer akzeptierten Fallback-Sprache",

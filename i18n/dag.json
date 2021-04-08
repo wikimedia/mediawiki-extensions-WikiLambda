@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Achiri Bitamsimli",
+			"Alhassan Mohammed Awal",
 			"Alhassan Peter",
 			"Amire80",
 			"Dnshitobu",
@@ -13,11 +14,12 @@
 	},
 	"wikilambda-noresult": "Vihigu maa ka shahara",
 	"wikilambda-reference": "Kundivira",
+	"wikilambda-literal": "Gbunni din yi polo",
 	"wikilambda-genericliteral": "Sokam lahabali",
 	"wikilambda-functioncall": "Nafaani booligu",
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "ZObject sheli kani mali yu'bobili.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Balli",
-	"wikilambda-argument-typeselector-label": "Nangbankpeini bal' shɛli",
+	"wikilambda-argument-typeselector-label": "Nangbankpeeni balibu",
 	"wikilambda-function-typeselector-label": "Tuma balibu",
 	"wikilambda-editor-label-select-programming-language-label": "Piimi Progaamin zuliya",
 	"wikilambda-modeselector-genericliteral": "Gen"

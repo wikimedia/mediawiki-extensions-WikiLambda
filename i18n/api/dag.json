@@ -3,10 +3,12 @@
 		"authors": [
 			"Alhassan Peter",
 			"Chirifo",
+			"Hasslaebetch",
 			"Sir Amugi"
 		]
 	},
 	"apihelp-wikilambda_edit-summary": "Namma bee malimi a ZObject niŋ",
 	"apihelp-wikilambda_edit-param-summary": "Malimi kolivaai lahabali maa niŋ.",
-	"apierror-wikilambda_edit-unmatchingzid": "ZID tarisi bi doli Z Object ID '$2'"
+	"apihelp-wikilambda_edit-param-zobject": "JSON zaŋ ti ZObject di yan malsoŋ",
+	"apierror-wikilambda_edit-unmatchingzid": "ZID tarisi ZID '$1' din bi doli ZObject ID '$2'"
 }
