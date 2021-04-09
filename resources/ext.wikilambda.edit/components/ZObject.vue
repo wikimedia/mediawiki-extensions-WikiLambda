@@ -7,8 +7,16 @@
 	-->
 	<div :class="classZObject">
 		<!-- Depending on the type, it will render a different component -->
+		<z-object-selector
+			v-if="type === Constants.Z_OBJECT"
+			:type="Constants.Z_TYPE"
+			:placeholder="$i18n( 'wikilambda-argument-typeselector-label' )"
+			:viewmode="viewmode"
+			@input="changeZObjectType"
+		></z-object-selector>
+
 		<z-string
-			v-if="type === Constants.Z_STRING"
+			v-else-if="type === Constants.Z_STRING"
 			:zobject-id="zobjectId"
 			:viewmode="viewmode"
 		></z-string>
@@ -47,8 +55,6 @@
 			v-else-if="type === Constants.Z_FUNCTION_CALL"
 			:zobject-id="zobjectId"
 			:viewmode="viewmode"
-			@update="setZCode"
-			@clear="clearZFunctionCall"
 		></z-function-call>
 
 		<z-object-generic
@@ -72,6 +78,7 @@ var Constants = require( '../Constants.js' ),
 	ZCode = require( './types/ZCode.vue' ),
 	ZArgument = require( './types/ZArgument.vue' ),
 	ZFunctionCall = require( './types/ZFunctionCall.vue' ),
+	ZObjectSelector = require( './ZObjectSelector.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -85,7 +92,8 @@ module.exports = {
 		'z-object-generic': ZObjectGeneric,
 		'z-code': ZCode,
 		'z-argument': ZArgument,
-		'z-function-call': ZFunctionCall
+		'z-function-call': ZFunctionCall,
+		'z-object-selector': ZObjectSelector
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -127,20 +135,12 @@ module.exports = {
 			}
 		} ),
 	methods: $.extend( {},
-		mapActions( [ 'fetchZKeys' ] ),
+		mapActions( [ 'fetchZKeys', 'changeType' ] ),
 		{
-
-			setZCode: function ( item ) {
-				this.$set( this.zobject, item.key, item.value );
-			},
-
-			clearZFunctionCall: function () {
-				var self = this;
-
-				Object.keys( self.zobject ).forEach( function ( key ) {
-					if ( key !== Constants.Z_OBJECT_TYPE ) {
-						self.$set( self.zobject, key, undefined );
-					}
+			changeZObjectType: function ( zid ) {
+				this.changeType( {
+					id: this.zobjectId,
+					type: zid
 				} );
 			}
 		}
