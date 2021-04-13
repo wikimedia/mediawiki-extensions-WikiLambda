@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 
 use Html;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use SpecialPage;
 
 class SpecialCreateZObject extends SpecialPage {
@@ -66,7 +67,7 @@ class SpecialCreateZObject extends SpecialPage {
 		$zObject = $contentHandler->makeEmptyContent();
 
 		$editingData = [
-			'zobject' => $zObject->getData()->getValue(),
+			'zobject' => ZObjectUtils::normalizeZStringsAndZReferences( $zObject->getData()->getValue() ),
 			'zlang' => $userLangCode,
 			'createNewPage' => true,
 			'viewmode' => false
