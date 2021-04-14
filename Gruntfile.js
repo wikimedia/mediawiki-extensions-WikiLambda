@@ -20,7 +20,8 @@ module.exports = function ( grunt ) {
 				'**/*.{css,less,vue}',
 				'!node_modules/**',
 				'!vendor/**',
-				'!resources/lib/**'
+				'!resources/lib/**',
+				'!coverage/**'
 			]
 		}
 	} );
