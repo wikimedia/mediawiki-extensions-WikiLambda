@@ -482,6 +482,9 @@ class ZObjectFactory {
 		if ( $validationContext === null ) {
 			$validationContext = [ ZTypeRegistry::Z_PERSISTENTOBJECT => 1 ];
 		}
+		if ( !is_string( $zid ) ) {
+			return false;
+		}
 		if ( array_key_exists( $zid, $validationContext ) ) {
 			return true;
 		} else {
