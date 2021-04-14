@@ -23,6 +23,10 @@
 				></z-object>
 			</li>
 		</ul>
+		<button @click="callFunctionHandler">
+			<label> {{ $i18n( 'wikilambda-call-function' ) }} </label>
+		</button>
+		<p>{{ $i18n( 'wikilambda-orchestrated' ) }}: {{ getOrchestrationResult }}</p>
 	</div>
 </template>
 
@@ -54,7 +58,9 @@ module.exports = {
 		getZObjectChildrenById: 'getZObjectChildrenById',
 		getNextObjectId: 'getNextObjectId',
 		getZObjectTypeById: 'getZObjectTypeById',
-		getZkeys: 'getZkeys'
+		getZkeys: 'getZkeys',
+		getZObjectAsJsonById: 'getZObjectAsJsonById',
+		getOrchestrationResult: 'getOrchestrationResult'
 	} ), {
 		zobject: function () {
 			return this.getZObjectChildrenById( this.zobjectId );
@@ -128,7 +134,8 @@ module.exports = {
 		'resetZObject',
 		'setZObjectValue',
 		'addZObject',
-		'addZObjects'
+		'addZObjects',
+		'callZFunction'
 	] ), {
 		typeHandler: function ( zid ) {
 			var zFunctionCallFunction = this.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, this.zobject );
@@ -144,6 +151,9 @@ module.exports = {
 		},
 		findArgumentId: function ( key ) {
 			return this.findKeyInArray( key, this.zobject ).id;
+		},
+		callFunctionHandler: function () {
+			this.callZFunction( { zobject: this.getZObjectAsJsonById( this.zobjectId ) } );
 		}
 	} ),
 	watch: {

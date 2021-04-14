@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Cory Massaro",
 			"Genoveva Galarza",
 			"James D. Forrester"
 		]
@@ -11,6 +12,9 @@
 	"apihelp-wikilambda_fetch-example-single": "Fetch a single ZObject, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "Fetch three ZObjects: Z1, Z2, and Z3.",
 	"apierror-wikilambda_fetch-missingzid": "The given ZID '$1' does not exist on this wiki.",
+	"apihelp-wikilambda_function_call-param-zobject": "ZObject for function call",
+	"apihelp-wikilambda_function_call-example-full": "Invoke Z802 (If) with false predicate",
+	"apihelp-wikilambda_function_call-summary": "Invoke a function by calling the function-orchestrator",
 	"apihelp-query+wikilambdasearch_labels-summary": "This API query list generator lets you search ZObjects for labels in a given language. It principally exists to support the look-ahead search system.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "The search term",
 	"apihelp-query+wikilambdasearch_labels-param-language": "The MediaWiki language code in which to search",
@@ -35,6 +39,7 @@
 	"apihelp-wikilambda_edit-param-summary": "Edit summary message",
 	"apihelp-wikilambda_edit-param-zid": "ZID of the ZObject to edit. If null, the ZObject will be newly created",
 	"apihelp-wikilambda_edit-param-zobject": "JSON representation of the ZObject to save",
+	"apierror-wikilambda_function_call-not-connected": "Could not resolve host <$1>, probably because the orchestrator is not running. Please consult the README to add the orchestrator to your docker-compose configuration.",
 	"apierror-wikilambda_edit-invalidjson": "Couldn't create ZObject for given input '$1'; invalid JSON.",
 	"apierror-wikilambda_edit-unmatchingzid": "The parameter ZID '$1' does not match with the ZObject ID '$2'"
 }
