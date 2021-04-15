@@ -1,8 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"Alhassan Mohammed Awal"
+			"Alhassan Mohammed Awal",
+			"Samwilson"
 		]
 	},
-	"wikilambda-argument-typeselector-label": "Nangban'kpeeni balibu"
+	"wikilambda-argument-typeselector-label": "Argument Type"
 }
