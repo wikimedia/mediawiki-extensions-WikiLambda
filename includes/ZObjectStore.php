@@ -10,7 +10,9 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
@@ -198,9 +200,26 @@ class ZObjectStore {
 
 		// Create the content object from the already validated text
 		$title = $this->titleFactory->newFromText( $zid, NS_ZOBJECT );
-		if ( !( $title instanceof Title ) ) {
+
+		// Check that the requested title is a valid ZID, and MediaWiki doesn't complain about it
+		if ( !( ZKey::isValidZObjectReference( $zid ) && $title instanceof Title && $title->canExist() ) ) {
 			return Status::newFatal( 'wikilambda-invalidzobjecttitle', $zid );
 		}
+
+		// Double-check that the user has permissions to edit (should be caught by the lower parts of the stack)
+		// TODO: This should use the Authority concept, not the soon-to-be-legacy PermissionManager.
+		$permissionManager = MediaWikiServices::getInstance()->getPermissionManager();
+		if ( !$permissionManager->userCan( 'edit', $user, $title ) ) {
+			if ( !( $title->exists() ) ) {
+				// User is trying to create a page and is prohibited, e.g. logged-out.
+				return Status::newFatal( 'nocreatetext' );
+			} else {
+				// User is trying to edit a page and is prohibited, e.g. blocked, but we don't know why,
+				// so give them the most generic error that MediaWiki has.
+				return Status::newFatal( 'badaccess-group0' );
+			}
+		}
+
 		$page = $this->wikiPageFactory->newFromTitle( $title );
 		$content = ZObjectContentHandler::makeContent( $zObjectString, $title );
 
