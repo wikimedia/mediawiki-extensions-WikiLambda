@@ -89,7 +89,7 @@ class ApiZObjectFetcherTest extends ApiTestCase {
                 }
             }
         ],
-        "Z4K3": "Z30"
+        "Z4K3": "Z101"
     },
     "Z2K3": {
         "Z1K1": "Z12",
@@ -158,7 +158,7 @@ EOF;
                 }
             }
         ],
-        "Z4K3": "Z30"
+        "Z4K3": "Z102"
     },
     "Z2K3": {
         "Z1K1": "Z12",
