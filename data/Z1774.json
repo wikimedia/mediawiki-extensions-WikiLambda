@@ -1,0 +1,23 @@
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z1774",
+	"Z2K2": {
+		"Z1K1": "Z60",
+		"Z60K1": "nl-informal"
+	},
+	"Z2K3": {
+		"Z1K1": "Z12",
+		"Z12K1": [
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "en",
+				"Z11K2": "Nederlands (informeel)‎"
+			},
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "nl-informal",
+				"Z11K2": "Nederlands (informeel)‎"
+			}
+		]
+	}
+}

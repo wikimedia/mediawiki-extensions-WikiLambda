@@ -1,0 +1,23 @@
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z1708",
+	"Z2K2": {
+		"Z1K1": "Z60",
+		"Z60K1": "aeb-latn"
+	},
+	"Z2K3": {
+		"Z1K1": "Z12",
+		"Z12K1": [
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "en",
+				"Z11K2": "Tunisian Arabic (Latin script)"
+			},
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "aeb-latn",
+				"Z11K2": "Tûnsî"
+			}
+		]
+	}
+}

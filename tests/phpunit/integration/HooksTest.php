@@ -135,7 +135,7 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::onMultiContentSave
 	 */
 	public function testOnMultiContentSave_clashingLabels_caught() {
-		$secondTitleText = ZTestType::TEST_ZID . '0';
+		$secondTitleText = ZTestType::TEST_ZID . '000';
 		$secondTitle = Title::newFromText( $secondTitleText, NS_ZOBJECT );
 
 		// Force deferred updates from other edits (in this case, the one in setUp()) so we can

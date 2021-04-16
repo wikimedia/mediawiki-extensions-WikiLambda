@@ -1,0 +1,23 @@
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z1231",
+	"Z2K2": {
+		"Z1K1": "Z60",
+		"Z60K1": "de-formal"
+	},
+	"Z2K3": {
+		"Z1K1": "Z12",
+		"Z12K1": [
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "en",
+				"Z11K2": "German (formal address)"
+			},
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "de-formal",
+				"Z11K2": "Deutsch (Sie-Form)‎"
+			}
+		]
+	}
+}
