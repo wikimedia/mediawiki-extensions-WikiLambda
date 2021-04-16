@@ -301,7 +301,9 @@ class ZObjectContent extends JsonContent {
 		$editingData = [
 			'title' => $title->getBaseText(),
 			'page' => $title->getPrefixedDBkey(),
-			'zobject' => $zObject ? $zObject->getData()->getValue() : null,
+			'zobject' => $zObject
+				? ZObjectUtils::normalizeZStringsAndZReferences( $zObject->getData()->getValue() )
+				: null,
 			'zlang' => $userLangCode,
 			'createNewPage' => false,
 			'viewmode' => true
