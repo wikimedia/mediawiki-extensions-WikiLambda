@@ -204,9 +204,9 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		$z111_normal = $result_normal[0]['query']['wikilambdaload_zobjects']['Z111']['data'];
 		$z111_canonical = $result_canonical[0]['query']['wikilambdaload_zobjects']['Z111']['data'];
 
-		$stringZ0 = [
-			'Z1K1' => 'Z6',
-			'Z6K1' => 'Z0'
+		$nullReference = [
+			'Z1K1' => 'Z9',
+			'Z9K1' => 'Z0'
 		];
 		$stringZ111K1 = [
 			'Z1K1' => 'Z6',
@@ -218,7 +218,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		];
 
 		$this->assertEquals( $z111_canonical['Z2K2']['Z4K3'], 'Z0' );
-		$this->assertEquals( $z111_normal['Z2K2']['Z4K3'], $stringZ0 );
+		$this->assertEquals( $z111_normal['Z2K2']['Z4K3'], $nullReference );
 
 		$this->assertEquals( $z111_canonical['Z2K2']['Z4K2'][0]['Z3K1'], 'Z6' );
 		$this->assertEquals( $z111_normal['Z2K2']['Z4K2'][0]['Z3K1'], $referenceZ6 );

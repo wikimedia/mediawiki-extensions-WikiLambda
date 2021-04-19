@@ -37,6 +37,8 @@ class ZTypeRegistry {
 	public const HACK_ARRAY_Z_KEY = 'Array(ZKey)';
 	public const HACK_ARRAY_Z_MONOLINGUALSTRING = 'Array(ZMonoLingualString)';
 
+	public const Z_NULL_REFERENCE = 'Z0';
+
 	public const Z_OBJECT = 'Z1';
 	public const Z_OBJECT_TYPE = 'Z1K1';
 

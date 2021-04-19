@@ -390,7 +390,7 @@ class ZObjectUtils {
 	 * @return stdClass Normal form of a String or a Reference
 	 */
 	public static function normalizeZStringOrZReference( $input ) {
-		if ( ZKey::isValidZObjectReference( $input ) ) {
+		if ( ZKey::isValidZObjectReference( $input ) || ZKey::isNullReference( $input ) ) {
 			return (object)[
 				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_REFERENCE,
 				ZTypeRegistry::Z_REFERENCE_VALUE => $input

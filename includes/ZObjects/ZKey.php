@@ -126,6 +126,16 @@ class ZKey extends ZObject {
 	}
 
 	/**
+	 * Is a null reference (Z0)
+	 *
+	 * @param string $input
+	 * @return bool
+	 */
+	public static function isNullReference( string $input ) : bool {
+		return ( $input === ZTypeRegistry::Z_NULL_REFERENCE );
+	}
+
+	/**
 	 * A valid possible identifier across WMF projects
 	 *
 	 * @param string $input
