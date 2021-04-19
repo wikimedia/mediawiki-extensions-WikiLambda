@@ -52,6 +52,13 @@ module.exports = {
 		},
 		getNextKey: function ( state ) {
 			return findLatestKey( state.zobject ) + 1;
+		},
+		getZid: function ( state ) {
+			var zid = state.zobject[ Constants.Z_PERSISTENTOBJECT_ID ];
+			if ( typeof zid === 'string' ) {
+				return zid;
+			}
+			return zid[ Constants.Z_REFERENCE_ID ];
 		}
 	},
 	mutations: {
@@ -109,7 +116,7 @@ module.exports = {
 				api.post( {
 					action: action,
 					summary: summary,
-					zid: zobject[ Constants.Z_PERSISTENTOBJECT_ID ],
+					zid: context.getters.getZid,
 					zobject: JSON.stringify( zobject )
 				} ).then( function ( result ) {
 					window.location.href = new mw.Title( result[ action ].page ).getUrl();

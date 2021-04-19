@@ -151,6 +151,7 @@ describe( 'zobject Vuex module', function () {
 		it( 'Save existing zobject', function () {
 			context.getters.isCreateNewPage = false;
 			context.getters.getCurrentZObject = zobject;
+			context.getters.getZid = 'Z0';
 			zobjectModule.actions.submitZObject( context, 'A summary' );
 
 			expect( mw.Api ).toHaveBeenCalledTimes( 1 );
