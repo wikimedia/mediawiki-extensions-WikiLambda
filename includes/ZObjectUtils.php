@@ -339,11 +339,17 @@ class ZObjectUtils {
 	 * Given a canonical ZObject, returns the normal form with the following
 	 * exceptions: ZList, ZMultilingualString, ZMonolingualString
 	 *
-	 * @param array|stdClass $input decoded JSON canonical form of a ZObject
+	 * @param string|array|stdClass $input decoded JSON canonical form of a ZObject
 	 * @return string|array|stdClass same ZObject in normal form except ZLists,
 	 * ZMultilingualStrings and ZMonolingualStrings
 	 */
 	public static function normalizeZStringsAndZReferences( $input ) {
+		// We need this for the case of lists with canonical strings or references
+		// e.g. 'key': [ 'list', 'of', 'canonical', 'strings', 'and', 'Z999' ]
+		if ( is_string( $input ) ) {
+			return self::normalizeZStringOrZReference( $input );
+		}
+
 		// for each key of the input ZObject
 		foreach ( $input as $index => $value ) {
 			// Don't normalize ZObject Type, ZMultilingualString and ZMonolingualString keys.
@@ -371,20 +377,29 @@ class ZObjectUtils {
 
 			// If the value is a string, convert into ZString or ZReference
 			if ( is_string( $value ) ) {
-				if ( ZKey::isValidZObjectReference( $value ) ) {
-					$input->$index = (object)[
-						ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_REFERENCE,
-						ZTypeRegistry::Z_REFERENCE_VALUE => $value
-					];
-				} else {
-					$input->$index = (object)[
-						ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_STRING,
-						ZTypeRegistry::Z_STRING_VALUE => $value
-					];
-				}
+				$input->$index = self::normalizeZStringOrZReference( $value );
 			}
 		}
 		return $input;
+	}
+
+	/**
+	 * Given a string value, checks its format and returns a normal form ZString or ZReference
+	 *
+	 * @param string $input
+	 * @return stdClass Normal form of a String or a Reference
+	 */
+	public static function normalizeZStringOrZReference( $input ) {
+		if ( ZKey::isValidZObjectReference( $input ) ) {
+			return (object)[
+				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_REFERENCE,
+				ZTypeRegistry::Z_REFERENCE_VALUE => $input
+			];
+		}
+		return (object)[
+			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_STRING,
+			ZTypeRegistry::Z_STRING_VALUE => $input
+		];
 	}
 
 	/**

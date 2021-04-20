@@ -538,6 +538,7 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 	/**
 	 * @dataProvider provideNormalizeZStringsAndZReferences
 	 * @covers ::normalizeZStringsAndZReferences
+	 * @covers ::normalizeZStringOrZReference
 	 */
 	public function testNormalizeZStringsAndZReferences( $input, $expected ) {
 		$this->assertSame(
@@ -572,6 +573,14 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 				'{ "Z2K2": ['
 				. '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z9", "Z9K1": "Z111" } },'
 				. '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "string" } }'
+				. '] }'
+			],
+			'normalize zlist of canonical strings and references' => [
+				'{ "Z2K2": [ "canonical", "strings", "Z111" ] }',
+				'{ "Z2K2": ['
+				. '{ "Z1K1": "Z6", "Z6K1": "canonical" },'
+				. '{ "Z1K1": "Z6", "Z6K1": "strings" },'
+				. '{ "Z1K1": "Z9", "Z9K1": "Z111" }'
 				. '] }'
 			],
 			'leave untouched an already normalized string' => [
