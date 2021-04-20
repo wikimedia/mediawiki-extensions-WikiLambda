@@ -620,10 +620,11 @@ module.exports = {
 			zObjectItems = [
 				{ key: Constants.Z_OBJECT_TYPE, value: payload.type, parent: payload.id }
 			];
+
 			context.dispatch( 'addZObjects', zObjectItems );
 
 			// we fetch a list of keys within this generic object
-			if ( context.rootState.zKeys[ payload.type ] ) {
+			if ( payload.type !== Constants.Z_OBJECT && context.rootState.zKeys[ payload.type ] ) {
 				keys = context
 					.rootState
 					.zKeys[ payload.type ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];

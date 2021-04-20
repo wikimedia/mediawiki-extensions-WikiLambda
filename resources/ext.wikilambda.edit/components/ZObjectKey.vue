@@ -72,6 +72,9 @@ module.exports = {
 			'getZObjectTypeById'
 		] ),
 		{
+			zType: function () {
+				return this.zobject[ Constants.Z_OBJECT_TYPE ];
+			},
 			zKeyLabel: function () {
 				return this.zKeyLabels[ this.zKey ];
 			},
@@ -80,9 +83,6 @@ module.exports = {
 			},
 			zObject: function () {
 				return this.getZObjectChildrenById( this.zobjectId );
-			},
-			zType: function () {
-				return this.getZObjectTypeById( this.zobjectId );
 			}
 		}
 	),
