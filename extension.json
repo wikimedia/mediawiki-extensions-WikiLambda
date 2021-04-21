@@ -12,7 +12,7 @@
 	"license-name": "MIT",
 	"type": "parserhook",
 	"requires": {
-		"MediaWiki": ">= 1.35.0"
+		"MediaWiki": ">= 1.36.0"
 	},
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\WikiLambda\\": "includes/"
@@ -95,7 +95,7 @@
 				"vuex",
 				"mediawiki.Title",
 				"mediawiki.api",
-				"es6-promise"
+				"es6-polyfills"
 			],
 			"styles": [
 				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.less",
