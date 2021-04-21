@@ -309,8 +309,12 @@ module.exports = {
 		initializeZObject: function ( context ) {
 			var editingData = mw.config.get( 'wgWikiLambda' ),
 				createNewPage = editingData.createNewPage,
-				zobject = editingData.zobject,
-				zobjectTree = [];
+				zobject = JSON.parse( JSON.stringify( editingData.zobject ) ),
+				zobjectTree = [],
+				innerZobject = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+			if ( innerZobject !== null && createNewPage ) {
+				zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] = null;
+			}
 
 			zobjectTree = convertZObjectToTree( zobject );
 			context.commit( 'setZObject', zobjectTree );
