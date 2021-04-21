@@ -169,6 +169,11 @@ describe( 'zobject Vuex module', function () {
 
 			expect( context.commit ).toHaveBeenCalledTimes( 2 );
 			expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.arrayContaining( result ) );
+			expect( context.commit ).toHaveBeenCalledWith( 'setZObject',
+				expect.not.arrayContaining( [
+					expect.objectContaining( { key: 'Z6K1' } )
+				] )
+			);
 			expect( context.commit ).toHaveBeenCalledWith( 'setCreateNewPage', true );
 		} );
 
