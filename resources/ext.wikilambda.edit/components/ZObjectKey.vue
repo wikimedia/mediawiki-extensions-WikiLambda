@@ -73,7 +73,7 @@ module.exports = {
 		] ),
 		{
 			zType: function () {
-				return this.zobject[ Constants.Z_OBJECT_TYPE ];
+				return this.getZObjectTypeById( this.zobjectId );
 			},
 			zKeyLabel: function () {
 				return this.zKeyLabels[ this.zKey ];
