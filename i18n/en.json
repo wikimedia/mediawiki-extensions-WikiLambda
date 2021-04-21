@@ -53,5 +53,6 @@
 	"wikilambda-modeselector-reference": "🔗",
 	"wikilambda-modeselector-literal": "x",
 	"wikilambda-modeselector-genericliteral": "gen",
-	"wikilambda-modeselector-functioncall": "f(x)"
+	"wikilambda-modeselector-functioncall": "f(x)",
+	"specialpages-group-wikilambda": "Wikifunctions page"
 }

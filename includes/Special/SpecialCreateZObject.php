@@ -25,7 +25,7 @@ class SpecialCreateZObject extends SpecialPage {
 	 * @inheritDoc
 	 */
 	protected function getGroupName() {
-		return 'wiki';
+		return 'wikilambda';
 	}
 
 	/**
