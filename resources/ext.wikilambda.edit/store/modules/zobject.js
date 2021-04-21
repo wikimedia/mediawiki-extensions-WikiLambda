@@ -685,7 +685,9 @@ module.exports = {
 				// we add each key in the tree and also set its type
 				keys.forEach( function ( key ) {
 					objectKey = key[ Constants.Z_KEY_ID ][ Constants.Z_STRING_VALUE ];
-					context.dispatch( 'addZObject', { key: objectKey, value: 'object', parent: payload.id } );
+					if ( objectKey !== Constants.Z_OBJECT_TYPE ) {
+						context.dispatch( 'addZObject', { key: objectKey, value: 'object', parent: payload.id } );
+					}
 				} );
 			}
 
