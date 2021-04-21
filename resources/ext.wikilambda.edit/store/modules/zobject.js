@@ -266,6 +266,19 @@ module.exports = {
 		 */
 		getNextObjectId: function ( state ) {
 			return getNextObjectId( state.zobject );
+		},
+		getStringValueByObjectId: function ( state, getters ) {
+			/**
+			 * Return the string value of a specific Object of type String
+			 * eg. Object {"Z1K1": "Z6", "Z6K1": "string value"} will return String Value
+			 *
+			 * @param {number} objectId
+			 * @return {string} String value
+			 */
+			return function ( objectId ) {
+				var objectChildren = getters.getZObjectChildrenById( objectId );
+				return typeUtils.findKeyInArray( Constants.Z_STRING_VALUE, objectChildren );
+			};
 		}
 	},
 	mutations: {
@@ -383,7 +396,8 @@ module.exports = {
 		 * @param {Object} payload
 		 */
 		setZCodeLanguage: function ( context, payload ) {
-			var zObjectItems = [];
+			var zObjectItems = [],
+				zProgrammingLanguageCodeId = getNextObjectId( context.state.zobject );
 			context.dispatch( 'removeZObjectChildren', payload.id );
 			context.dispatch( 'setZObjectValue', {
 				id: payload.id,
@@ -391,11 +405,12 @@ module.exports = {
 			} );
 
 			zObjectItems = [
-				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_PROGRAMMING_LANGUAGE, parent: payload.id },
-				{ key: Constants.Z_PROGRAMMING_LANGUAGE_CODE, value: payload.value, parent: payload.id }
+				{ key: Constants.Z_PROGRAMMING_LANGUAGE_CODE, value: 'object', parent: payload.id },
+				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_PROGRAMMING_LANGUAGE, parent: payload.id }
 			];
 			context.dispatch( 'addZObjects', zObjectItems );
 
+			context.dispatch( 'addZString', { id: zProgrammingLanguageCodeId, value: payload.value } );
 		},
 		/**
 		 * Remove a specific zobject. This method does NOT remove its children.
