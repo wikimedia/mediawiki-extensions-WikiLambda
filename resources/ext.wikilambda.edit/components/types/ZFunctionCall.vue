@@ -59,7 +59,8 @@ module.exports = {
 	} ), mapGetters( {
 		zLang: 'zLang',
 		getZObjectChildrenById: 'getZObjectChildrenById',
-		getNextObjectId: 'getNextObjectId'
+		getNextObjectId: 'getNextObjectId',
+		getZObjectTypeById: 'getZObjectTypeById'
 	} ), {
 		zobject: function () {
 			return this.getZObjectChildrenById( this.zobjectId );
@@ -68,7 +69,13 @@ module.exports = {
 			return Constants;
 		},
 		zFunctionId: function () {
-			return this.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, this.zobject ).value;
+			var func = this.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, this.zobject );
+
+			if ( func.value === 'object' ) {
+				return this.findKeyInArray( Constants.Z_REFERENCE_ID, this.getZObjectChildrenById( func.id ) ).value;
+			}
+
+			return func.value;
 		},
 		zFunctionCallKeys: function () {
 			if ( this.zFunctionCall ) {
