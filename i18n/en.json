@@ -40,6 +40,7 @@
 	"wikilambda-typeselector-label": "Value Type",
 	"wikilambda-argument-typeselector-label": "Argument Type",
 	"wikilambda-function-typeselector-label": "Function Type",
+	"wikilambda-return-typeselector-label": "Return Type",
 	"wikilambda-zobjectselector-label": "ZObject",
 	"wikilambda-editor-additem": "➕",
 	"wikilambda-editor-removeitem": "🗑️",
@@ -54,5 +55,6 @@
 	"wikilambda-modeselector-literal": "x",
 	"wikilambda-modeselector-genericliteral": "gen",
 	"wikilambda-modeselector-functioncall": "f(x)",
-	"specialpages-group-wikilambda": "Wikifunctions page"
+	"specialpages-group-wikilambda": "Wikifunctions page",
+	"wikilambda-editor-argument-list-label": "Argument List"
 }

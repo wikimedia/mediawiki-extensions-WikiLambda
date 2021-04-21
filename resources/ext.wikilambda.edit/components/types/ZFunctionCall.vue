@@ -99,7 +99,7 @@ module.exports = {
 			if ( !this.selectedFunction ) {
 				return [];
 			} else {
-				return this.selectedFunction[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ID ];
+				return this.selectedFunction[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ];
 			}
 		},
 		zFunctionArguments: function () {
