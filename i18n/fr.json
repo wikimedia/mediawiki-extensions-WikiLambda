@@ -49,5 +49,6 @@
 	"wikilambda-editor-zobject-addkey": "Ajouter une clé :",
 	"wikilambda-editor-zobject-removekey-tooltip": "Supprimer cette clé/valeur de l’Objet-Z",
 	"wikilambda-editor-label-select-programming-language-label": "Sélectionner le langage de programmation :",
-	"wikilambda-modeselector-genericliteral": "gén."
+	"wikilambda-modeselector-genericliteral": "gén.",
+	"specialpages-group-wikilambda": "Page des fonctions du wiki"
 }

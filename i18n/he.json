@@ -44,5 +44,6 @@
 	"wikilambda-editor-zobject-addkey": "הוספת מפתח:",
 	"wikilambda-editor-zobject-removekey-tooltip": "הסרת המפתח והערך הזה מעצם ה־Z",
 	"wikilambda-editor-label-select-programming-language-label": "{{GENDER:|בחר|בחרי}} שפת תכנות:",
-	"wikilambda-modeselector-genericliteral": "כללי"
+	"wikilambda-modeselector-genericliteral": "כללי",
+	"specialpages-group-wikilambda": "דף ויקיפונקציות"
 }

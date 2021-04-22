@@ -43,5 +43,6 @@
 	"wikilambda-editor-zobject-addkey": "Schlüssel hinzufügen:",
 	"wikilambda-editor-zobject-removekey-tooltip": "Diesen Schlüssel/Wert vom ZObject entfernen",
 	"wikilambda-editor-label-select-programming-language-label": "Programmiersprache wählen:",
-	"wikilambda-modeselector-genericliteral": "generisch"
+	"wikilambda-modeselector-genericliteral": "generisch",
+	"specialpages-group-wikilambda": "Wikifunktionenseite"
 }
