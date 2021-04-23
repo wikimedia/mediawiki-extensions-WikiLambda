@@ -57,6 +57,12 @@
 			:viewmode="viewmode"
 		></z-function-call>
 
+		<z-function
+			v-else-if="type === Constants.Z_FUNCTION"
+			:zobject-id="zobjectId"
+			:viewmode="viewmode"
+		></z-function>
+
 		<z-object-generic
 			v-else-if="type !== undefined"
 			:zobject-id="zobjectId"
@@ -79,6 +85,7 @@ var Constants = require( '../Constants.js' ),
 	ZArgument = require( './types/ZArgument.vue' ),
 	ZFunctionCall = require( './types/ZFunctionCall.vue' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
+	ZFunction = require( './types/ZFunction.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -93,7 +100,8 @@ module.exports = {
 		'z-code': ZCode,
 		'z-argument': ZArgument,
 		'z-function-call': ZFunctionCall,
-		'z-object-selector': ZObjectSelector
+		'z-object-selector': ZObjectSelector,
+		'z-function': ZFunction
 	},
 	mixins: [ typeUtils ],
 	props: {

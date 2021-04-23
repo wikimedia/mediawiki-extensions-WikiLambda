@@ -75,7 +75,16 @@ module.exports = {
 				return Constants;
 			},
 			argumentTypeItem: function () {
-				return this.findKeyInArray( Constants.Z_ARGUMENT_TYPE, this.zobject );
+				var argumentType = this.findKeyInArray( Constants.Z_ARGUMENT_TYPE, this.zobject );
+
+				if ( argumentType.value === 'object' ) {
+					return this.findKeyInArray(
+						Constants.Z_REFERENCE_ID,
+						this.getZObjectChildrenById( argumentType.id )
+					);
+				}
+
+				return argumentType;
 			},
 			argumentType: function () {
 				if ( this.argumentTypeItem ) {
@@ -112,7 +121,7 @@ module.exports = {
 	} ),
 	mounted: function () {
 		this.fetchZKeys( {
-			zids: [ Constants.Z_ARGUMENT ],
+			zids: [ Constants.Z_ARGUMENT, this.argumentType || '' ],
 			zlangs: [ this.zLang ]
 		} );
 	}

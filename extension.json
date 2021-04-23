@@ -140,6 +140,8 @@
 				"ext.wikilambda.edit/components/types/ZCode.vue",
 				"ext.wikilambda.edit/components/types/ZArgument.vue",
 				"ext.wikilambda.edit/components/types/ZFunctionCall.vue",
+				"ext.wikilambda.edit/components/types/ZFunction.vue",
+				"ext.wikilambda.edit/components/types/ZArgumentList.vue",
 				"lib/ace/ace.js",
 				"lib/icons.js"
 			],
@@ -171,7 +173,9 @@
 				"wikilambda-editor-zobject-removekey-tooltip",
 				"wikilambda-editor-label-select-programming-language-label",
 				"wikilambda-argument-typeselector-label",
-				"wikilambda-function-typeselector-label"
+				"wikilambda-function-typeselector-label",
+				"wikilambda-return-typeselector-label",
+				"wikilambda-editor-argument-list-label"
 			]
 		}
 	},

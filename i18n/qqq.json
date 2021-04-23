@@ -44,6 +44,7 @@
 	"wikilambda-summarylabel": "Label for summary of changes in the edited ZObject\n{{identical|Summary}}",
 	"wikilambda-typeselector-label": "Label for selector for which kind of item to add.\n\n{{doc-wikilambda}}",
 	"wikilambda-argument-typeselector-label": "Label for selector for which type an argument will be.\n\n{{doc-wikilambda}}",
+	"wikilambda-return-typeselector-label": "Label for selector for which type an function retun will be.\n\n{{doc-wikilambda}}",
 	"wikilambda-function-typeselector-label": "Label for selector for which type a function call will be.\n\n{{doc-wikilambda}}",
 	"wikilambda-zobjectselector-label": "{{optional}}\nLabel for the ZObject selector, that searches using labels and offers a list of existing ZObjects.\n\n{{doc-wikilambda}}",
 	"wikilambda-editor-additem": "{{ignore}}Label for button to add item",
@@ -59,5 +60,6 @@
 	"wikilambda-modeselector-literal": "{{notranslate}}\nLabel for button to select literal",
 	"wikilambda-modeselector-genericliteral": "Label for button to select the generic mode when entering values. Should be similar to the word \"[[:meta:Abstract Wikipedia/Glossary#generic|generic]]\", but as short as possible.\n\n{{doc-wikilambda}}",
 	"wikilambda-modeselector-functioncall": "{{notranslate}}\nLabel for button to select function call",
-	"specialpages-group-wikilambda": "{{doc-special-group|that=are related to Wikifungsi}}"
+	"specialpages-group-wikilambda": "{{doc-special-group|that=are related to Wikifungsi}}",
+	"wikilambda-editor-argument-list-label": "Label for a list of arguments in a function."
 }

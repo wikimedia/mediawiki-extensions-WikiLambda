@@ -438,6 +438,9 @@ module.exports = {
 
 			children = context.getters.getZObjectChildrenById( objectId );
 			childrensId = children.map( function ( child ) {
+				if ( child.value === 'object' ) {
+					context.dispatch( 'removeZObjectChildren', child.id );
+				}
 				return child.id;
 			} );
 
@@ -619,6 +622,37 @@ module.exports = {
 			];
 			context.dispatch( 'addZObjects', zObjectItems );
 		},
+
+		addZFunction: function ( context, objectId ) {
+			var zObjectItems = [],
+				nextId;
+			context.dispatch( 'setZObjectValue', {
+				id: objectId,
+				value: 'object'
+			} );
+			zObjectItems = [
+				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_FUNCTION, parent: objectId },
+				{ key: Constants.Z_FUNCTION_RETURN_TYPE, value: '', parent: objectId },
+				{ key: Constants.Z_FUNCTION_TESTERS, value: 'array', parent: objectId },
+				{ key: Constants.Z_FUNCTION_IMPLEMENTATIONS, value: 'array', parent: objectId }
+			];
+
+			context.dispatch( 'addZObjects', zObjectItems );
+
+			// Add initial ZArgument
+			nextId = getNextObjectId( context.state.zobject );
+			context.dispatch( 'addZObject', { key: Constants.Z_FUNCTION_ARGUMENTS, value: 'array', parent: objectId } );
+			context.dispatch( 'addZObject', { key: 0, value: 'object', parent: nextId } );
+			context.dispatch( 'addZArgument', nextId + 1 );
+
+			// Set identity
+			nextId = getNextObjectId( context.state.zobject );
+			context.dispatch( 'addZObject', { key: Constants.Z_FUNCTION_IDENTITY, value: 'object', parent: objectId } );
+			context.dispatch( 'addZObjects', [
+				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: nextId },
+				{ key: Constants.Z_REFERENCE_ID, value: context.getters.getCurrentZObjectId, parent: nextId }
+			] );
+		},
 		/**
 		 * Create the required entry for a generic object,
 		 * but reading the information from the zKeys store .
@@ -733,6 +767,9 @@ module.exports = {
 					break;
 				case Constants.Z_FUNCTION_CALL:
 					context.dispatch( 'addZFunctionCall', payload.id );
+					break;
+				case Constants.Z_FUNCTION:
+					context.dispatch( 'addZFunction', payload.id );
 					break;
 				default:
 					context.dispatch( 'addGenericObject', payload );
