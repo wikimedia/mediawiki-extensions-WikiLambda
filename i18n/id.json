@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"AJBot2",
 			"Daud I.F. Argana"
 		]
 	},
@@ -32,5 +33,6 @@
 	"wikilambda-editor-zlist-additem-tooltip": "Menambahkan sebuah butir ke ZList ini",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Menghapus butir ini dari ZList ini",
 	"wikilambda-editor-zobject-addkey": "Tambahkan kunci:",
-	"wikilambda-editor-zobject-removekey-tooltip": "Hapus kunci/nilai ini dari ZObject"
+	"wikilambda-editor-zobject-removekey-tooltip": "Hapus kunci/nilai ini dari ZObject",
+	"specialpages-group-wikilambda": "Halaman Wikifungsi"
 }
