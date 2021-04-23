@@ -59,10 +59,13 @@ module.exports = {
 				// State mutation:
 				// Add zObject label in user's selected language
 				multilingualStr = zidInfo[ Constants.Z_PERSISTENTOBJECT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ];
-				context.commit( 'addZKeyLabel', {
-					key: zid,
-					label: multilingualStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ]
-				} );
+
+				if ( multilingualStr && multilingualStr[ 0 ] ) {
+					context.commit( 'addZKeyLabel', {
+						key: zid,
+						label: multilingualStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ]
+					} );
+				}
 
 				// State mutation:
 				// Add zKey label information in the user's selected language
