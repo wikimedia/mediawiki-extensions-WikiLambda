@@ -31,7 +31,8 @@
 </template>
 
 <script>
-var ZObject = require( './ZObject.vue' ),
+var Constants = require( '../Constants.js' ),
+	ZObject = require( './ZObject.vue' ),
 	WbmiMessage = require( './base/Message.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
@@ -90,12 +91,19 @@ module.exports = {
 		// Set user language
 		this.setZLangs( languageChain );
 
-		// Fetch Z1 labels to initialize ZObject
-		// We can assume that this is not yet present as this is the root component.
-		this.fetchZKeys( {
-			zids: [ 'Z1' ],
-			zlangs: languageChain
-		} );
+		// Pre-fetch a list of the most common Zids
+		this.fetchZKeys( [
+			Constants.Z_OBJECT,
+			Constants.Z_PERSISTENTOBJECT,
+			Constants.Z_MULTILINGUALSTRING,
+			Constants.Z_KEY,
+			Constants.Z_TYPE,
+			Constants.Z_STRING,
+			Constants.Z_FUNCTION,
+			Constants.Z_FUNCTION_CALL,
+			Constants.Z_REFERENCE,
+			Constants.Z_LIST
+		] );
 	}
 };
 </script>

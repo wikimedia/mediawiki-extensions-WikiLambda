@@ -32,7 +32,6 @@
 var Constants = require( '../Constants.js' ),
 	typeUtils = require( '../mixins/typeUtils.js' ),
 	ZObjectKeyInput = require( './ZObjectKeyInput.vue' ),
-	mapState = require( 'vuex' ).mapState,
 	mapMutations = require( 'vuex' ).mapMutations,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
@@ -54,12 +53,6 @@ module.exports = {
 		}
 	},
 	computed: $.extend( {},
-		mapState( [
-			'fetchingZKeys',
-			'zLangs',
-			'zKeys',
-			'zKeyLabels'
-		] ),
 		mapGetters( [
 			'getZObjectChildrenById'
 		] ),

@@ -154,10 +154,7 @@ module.exports = {
 		}
 	),
 	mounted: function () {
-		this.fetchZKeys( {
-			zids: [ this.type ],
-			zlangs: [ this.zLang ]
-		} );
+		this.fetchZKeys( [ this.type ] );
 	}
 };
 </script>

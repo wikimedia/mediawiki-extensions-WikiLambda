@@ -50,17 +50,11 @@ module.exports = {
 		}
 	},
 	computed: $.extend( mapState( {
-		selectedFunction: function ( state ) {
-			return state.zKeys[ this.zFunctionId ];
-		},
-		zFunctionCall: function ( state ) {
-			return state.zKeys[ Constants.Z_FUNCTION_CALL ];
-		}
 	} ), mapGetters( {
-		zLang: 'zLang',
 		getZObjectChildrenById: 'getZObjectChildrenById',
 		getNextObjectId: 'getNextObjectId',
-		getZObjectTypeById: 'getZObjectTypeById'
+		getZObjectTypeById: 'getZObjectTypeById',
+		getZkeys: 'getZkeys'
 	} ), {
 		zobject: function () {
 			return this.getZObjectChildrenById( this.zobjectId );
@@ -76,6 +70,12 @@ module.exports = {
 			}
 
 			return func.value;
+		},
+		selectedFunction: function () {
+			return this.getZkeys[ this.zFunctionId ];
+		},
+		zFunctionCall: function () {
+			return this.getZkeys[ Constants.Z_FUNCTION_CALL ];
 		},
 		zFunctionCallKeys: function () {
 			if ( this.zFunctionCall ) {
@@ -140,10 +140,7 @@ module.exports = {
 				value: zid
 			} );
 
-			this.fetchZKeys( {
-				zids: [ zid ],
-				zlangs: [ this.zLang ]
-			} );
+			this.fetchZKeys( [ zid ] );
 		},
 		findArgumentId: function ( key ) {
 			return this.findKeyInArray( key, this.zobject ).id;
@@ -179,10 +176,7 @@ module.exports = {
 		this.$options.components[ 'z-object' ] = require( '../ZObject.vue' );
 	},
 	mounted: function () {
-		this.fetchZKeys( {
-			zids: [ Constants.Z_FUNCTION_CALL, this.zFunctionId ],
-			zlangs: [ this.zLang ]
-		} );
+		this.fetchZKeys( [ Constants.Z_FUNCTION_CALL, this.zFunctionId ] );
 	}
 };
 </script>

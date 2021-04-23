@@ -76,23 +76,22 @@ module.exports = {
 	},
 	computed: $.extend( {},
 		mapState( [
-			'zLangs',
-			'zKeyLabels',
-			'zKeys',
 			'fetchingZKeys'
 		] ),
 		mapGetters( [
-			'getZObjectChildrenById', 'getCurrentZObjectId'
+			'getZObjectChildrenById',
+			'getCurrentZObjectId',
+			'getZkeyLabels'
 		] ),
 		{
 			typeLabel: function () {
-				return this.zKeyLabels[ this.type ];
+				return this.getZkeyLabels[ this.type ];
 			},
 			z1k1label: function () {
-				return this.zKeyLabels[ Constants.Z_OBJECT_TYPE ];
+				return this.getZkeyLabels[ Constants.Z_OBJECT_TYPE ];
 			},
 			z2k1label: function () {
-				return this.zKeyLabels[ Constants.Z_PERSISTENTOBJECT_ID ];
+				return this.getZkeyLabels[ Constants.Z_PERSISTENTOBJECT_ID ];
 			},
 			z2K1Value: function () {
 				return this.getCurrentZObjectId;
@@ -118,17 +117,8 @@ module.exports = {
 		}
 	),
 	mounted: function () {
-		// Fetch the information of the zid (and relevant
-		// key labels) if it's not yet available.
-		if (
-			this.type !== 'root' &&
-			( !( this.type in this.zKeys ) ) &&
-			( this.fetchingZKeys.indexOf( this.type ) === -1 )
-		) {
-			this.fetchZKeys( {
-				zids: [ this.type ],
-				zlangs: this.zLangs
-			} );
+		if ( this.type !== 'root' ) {
+			this.fetchZKeys( [ this.type ] );
 		}
 	}
 };

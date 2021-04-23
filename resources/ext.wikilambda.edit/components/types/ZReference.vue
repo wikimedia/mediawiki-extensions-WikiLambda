@@ -28,8 +28,7 @@ var Constants = require( './../../Constants.js' ),
 	ZObjectSelector = require( './../ZObjectSelector.vue' ),
 	typeUtils = require( './../../mixins/typeUtils.js' ),
 	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters,
-	mapState = require( 'vuex' ).mapState;
+	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = {
 	name: 'ZReference',
@@ -52,11 +51,10 @@ module.exports = {
 	},
 	mixins: [ typeUtils ],
 	computed: $.extend( {},
-		mapState( [
-			'zLangs',
-			'zKeyLabels'
+		mapGetters( [
+			'getZObjectChildrenById',
+			'getZkeyLabels'
 		] ),
-		mapGetters( [ 'getZObjectChildrenById' ] ),
 		{
 			zobject: function () {
 				return this.getZObjectChildrenById( this.zobjectId );
@@ -68,7 +66,7 @@ module.exports = {
 				return this.referenceItem.value;
 			},
 			referenceLabel: function () {
-				return this.zKeyLabels[ this.referenceValue ];
+				return this.getZkeyLabels[ this.referenceValue ];
 			}
 		}
 	),
@@ -94,10 +92,7 @@ module.exports = {
 	),
 	created: function () {
 		if ( this.referenceValue ) {
-			this.fetchZKeys( {
-				zids: [ this.referenceValue ],
-				zlangs: this.zLangs
-			} );
+			this.fetchZKeys( [ this.referenceValue ] );
 		}
 	}
 };

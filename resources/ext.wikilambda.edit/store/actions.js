@@ -6,87 +6,9 @@
  */
 'use strict';
 
-var api = new mw.Api(),
-	Constants = require( '../Constants.js' );
+var api = new mw.Api();
 
 module.exports = {
-
-	/**
-	 * Call the wikilambda_fetch api to get the information of a given
-	 * of ZIds, and stores the ZId information and the ZKey labels
-	 * in the state.
-	 *
-	 * @param {Object} context
-	 * @param {Object} payload
-	 * @return {Promise}
-	 */
-	fetchZKeys: function ( context, payload ) {
-
-		// Add fetching state to the requested zids
-		context.commit( 'addFetchingZKeys', payload.zids );
-
-		return api.get( {
-			action: 'query',
-			list: 'wikilambdaload_zobjects',
-			format: 'json',
-			// eslint-disable-next-line camelcase
-			wikilambdaload_zids: payload.zids.join( '|' ),
-			// eslint-disable-next-line camelcase
-			wikilambdaload_language: payload.zlangs[ 0 ]
-		} ).then( function ( response ) {
-			var keys,
-				multilingualStr,
-				zidInfo;
-
-			payload.zids.forEach( function ( zid ) {
-				if ( !( 'success' in response.query.wikilambdaload_zobjects[ zid ] ) ) {
-					// TODO add error into error notification pool
-					return;
-				}
-
-				zidInfo = response.query.wikilambdaload_zobjects[ zid ].data;
-
-				// State mutation:
-				// Add zKey information to the collection
-				context.commit( 'addZKeyInfo', {
-					zid: zid,
-					info: zidInfo
-				} );
-
-				// Done with fetching state
-				context.commit( 'removeFetchingZKey', zid );
-
-				// State mutation:
-				// Add zObject label in user's selected language
-				multilingualStr = zidInfo[ Constants.Z_PERSISTENTOBJECT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ];
-
-				if ( multilingualStr && multilingualStr[ 0 ] ) {
-					context.commit( 'addZKeyLabel', {
-						key: zid,
-						label: multilingualStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ]
-					} );
-				}
-
-				// State mutation:
-				// Add zKey label information in the user's selected language
-				// Only if zidInfo[Z2K2] is an object and zidInfo[Z2K2][Z1K1] === Z4
-				if (
-					( typeof zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ] === 'object' ) &&
-					( zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] === Constants.Z_TYPE )
-				) {
-					keys = zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
-					keys.forEach( function ( key ) {
-						multilingualStr = key[ Constants.Z_KEY_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ];
-						context.commit( 'addZKeyLabel', {
-							key: key[ Constants.Z_KEY_ID ][ Constants.Z_STRING_VALUE ],
-							label: multilingualStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ]
-						} );
-					} );
-				}
-			} );
-		} );
-	},
-
 	/**
 	 * Call the mediawiki api to get and store the list of languages in the state.
 	 *

@@ -2,7 +2,7 @@
 	<div>
 		<div class="ext-wikilambda-function-definition">
 			{{ scriptFunctionArguments }}: {{
-				zKeyLabels[ zReturnType.value ] || 'Any'
+				getZkeyLabels[ zReturnType.value ] || 'Any'
 			}}
 		</div>
 		<div>
@@ -24,7 +24,6 @@
 
 <script>
 var Constants = require( '../../Constants.js' ),
-	mapState = require( 'vuex' ).mapState,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	ZArgumentList = require( './ZArgumentList.vue' ),
@@ -48,8 +47,12 @@ module.exports = {
 		}
 	},
 	computed: $.extend( {},
-		mapGetters( [ 'getZObjectChildrenById', 'getNextObjectId', 'getZObjectTypeById' ] ),
-		mapState( [ 'zKeyLabels' ] ),
+		mapGetters( [
+			'getZObjectChildrenById',
+			'getNextObjectId',
+			'getZObjectTypeById',
+			'getZkeyLabels'
+		] ),
 		{
 			Constants: function () {
 				return Constants;
@@ -91,7 +94,7 @@ module.exports = {
 						} )[ 0 ],
 						argumentKeyChildren = self.getZObjectChildrenById( argumentKey.id ),
 						argumentId = argumentKeyChildren[ 1 ].value,
-						type = self.zKeyLabels[ argumentType.value ],
+						type = self.getZkeyLabels[ argumentType.value ],
 						key = argumentId ?
 							( argumentId ) + ': ' :
 							'';
@@ -123,10 +126,12 @@ module.exports = {
 		}
 	} ),
 	mounted: function () {
-		this.fetchZKeys( {
-			zids: [ Constants.Z_FUNCTION, this.zReturnType.value || '' ],
-			zlangs: [ this.zLang ]
-		} );
+
+		var zids = [ Constants.Z_ARGUMENT ];
+		if ( this.zReturnType && this.zReturnType.value ) {
+			zids.push( this.zReturnType.value );
+		}
+		this.fetchZKeys( [ zids ] );
 	}
 };
 </script>

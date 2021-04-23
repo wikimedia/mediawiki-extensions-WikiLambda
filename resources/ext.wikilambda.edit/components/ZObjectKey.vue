@@ -58,7 +58,6 @@ var Constants = require( '../Constants.js' ),
 	ZKeyModeSelector = require( './ZKeyModeSelector.vue' ),
 	ZObjectGeneric = require( './ZObjectGeneric.vue' ),
 	ZReference = require( './types/ZReference.vue' ),
-	mapState = require( 'vuex' ).mapState,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -91,23 +90,21 @@ module.exports = {
 		};
 	},
 	computed: $.extend( {},
-		mapState( [
-			'zKeyLabels'
-		] ),
 		mapGetters( [
 			'getZObjectTypeById',
 			'getZkeyLiteralType',
-			'getTypeByMode'
+			'getTypeByMode',
+			'getZkeyLabels'
 		] ),
 		{
 			zType: function () {
 				return this.getZObjectTypeById( this.zobjectId );
 			},
 			zKeyLabel: function () {
-				return this.zKeyLabels[ this.zKey ];
+				return this.getZkeyLabels[ this.zKey ];
 			},
 			zTypeLabel: function () {
-				return this.zKeyLabels[ this.zType ];
+				return this.getZkeyLabels[ this.zType ];
 			},
 			literalType: function () {
 				return this.getZkeyLiteralType( this.zKey );
@@ -129,10 +126,6 @@ module.exports = {
 						id: this.zobjectId,
 						type: type
 					};
-					this.fetchZKeys( {
-						zids: [ type ],
-						zlangs: [ this.zLang ]
-					} );
 					this.changeType( payload );
 				}
 			},

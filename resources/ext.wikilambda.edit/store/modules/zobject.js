@@ -677,10 +677,10 @@ module.exports = {
 			context.dispatch( 'addZObjects', zObjectItems );
 
 			// we fetch a list of keys within this generic object
-			if ( payload.type !== Constants.Z_OBJECT && context.rootState.zKeys[ payload.type ] ) {
+			if ( payload.type !== Constants.Z_OBJECT && context.rootGetters.getZkeys[ payload.type ] ) {
 				keys = context
-					.rootState
-					.zKeys[ payload.type ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
+					.rootGetters
+					.getZkeys[ payload.type ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
 
 				// we add each key in the tree and also set its type
 				keys.forEach( function ( key ) {
@@ -748,6 +748,7 @@ module.exports = {
 		 */
 		changeType: function ( context, payload ) {
 			context.dispatch( 'removeZObjectChildren', payload.id );
+			context.dispatch( 'fetchZKeys', [ payload.type ] );
 			switch ( payload.type ) {
 				case Constants.Z_LIST:
 					context.dispatch( 'addZList', payload.id );

@@ -84,11 +84,13 @@ module.exports = {
 		};
 	},
 	computed: $.extend( {},
-		mapGetters( [ 'zLang' ] ),
+		mapGetters( {
+			zkeyLabels: 'getZkeyLabels',
+			zKeys: 'getZkeys',
+			zLang: 'zLang'
+
+		} ),
 		mapState( [
-			'zLangs',
-			'zKeys',
-			'zKeyLabels',
 			'zRegex'
 		] ),
 		{
@@ -96,7 +98,7 @@ module.exports = {
 				return Object.keys( this.lookupResults );
 			},
 			selectedLabel: function () {
-				return this.zKeyLabels[ this.selectedId ];
+				return this.zkeyLabels[ this.selectedId ];
 			},
 			selectedText: function () {
 				if ( this.selectedId ) {
@@ -172,7 +174,7 @@ module.exports = {
 									self.lookupResults[ label + ' (' + zid + ')' ] = zid;
 								}
 								// Update zKeyLabels in the Vuex store
-								if ( !( zid in self.zKeyLabels ) ) {
+								if ( !( zid in self.zkeyLabels ) ) {
 									self.addZKeyLabel( {
 										key: zid,
 										label: label
@@ -198,10 +200,9 @@ module.exports = {
 					normalizedSearchValue = self.inputValue.toUpperCase();
 
 				if ( self.isValidZidFormat( normalizedSearchValue ) ) {
-					self.fetchZKeys( {
-						zids: [ normalizedSearchValue ],
-						zlangs: self.zLangs
-					} ).done( function () {
+					self.fetchZKeys( [
+						normalizedSearchValue
+					] ).then( function () {
 						var label = '';
 						self.lookupResults = {};
 						// If data is returned, The value will show in the zKeys
@@ -209,7 +210,7 @@ module.exports = {
 							( normalizedSearchValue in self.zKeys ) &&
 							( self.hasValidType( normalizedSearchValue ) )
 						) {
-							label = self.zKeyLabels[ normalizedSearchValue ];
+							label = self.zkeyLabels[ normalizedSearchValue ];
 							self.lookupResults[ label + ' (' + normalizedSearchValue + ')' ] = normalizedSearchValue;
 							self.showList = true;
 						} else {
@@ -272,7 +273,7 @@ module.exports = {
 				// The result of the Regex is an array so we get the first item
 				zId = zIds[ 0 ];
 
-				if ( this.zKeyLabels[ zId ] ) {
+				if ( this.zkeyLabels[ zId ] ) {
 					this.$emit( 'input', zId );
 				} else {
 					this.validatorSetError( 'wikilambda-invalidzobject' );
@@ -298,7 +299,7 @@ module.exports = {
 				// The result of the Regex is an array so we get the first item
 				zId = zIds[ 0 ];
 
-				if ( this.zKeyLabels[ zId ] ) {
+				if ( this.zkeyLabels[ zId ] ) {
 					this.$emit( 'input', zId );
 				} else {
 					this.validatorSetError( 'wikilambda-invalidzobject' );
