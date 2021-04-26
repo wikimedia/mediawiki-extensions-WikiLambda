@@ -36,6 +36,7 @@
 	"wikilambda-typeselector-label": "Wertetyp",
 	"wikilambda-argument-typeselector-label": "Argumenttyp",
 	"wikilambda-function-typeselector-label": "Funktionstyp",
+	"wikilambda-return-typeselector-label": "Rückgabetyp",
 	"wikilambda-editor-label-addlanguage-label": "Sprache hinzufügen:",
 	"wikilambda-editor-label-removelanguage-tooltip": "Entfernen diese Spracher von dieser Bezeichnung",
 	"wikilambda-editor-zlist-additem-tooltip": "Ein Element zu dieser ZList hinzufügen",
@@ -44,5 +45,6 @@
 	"wikilambda-editor-zobject-removekey-tooltip": "Diesen Schlüssel/Wert vom ZObject entfernen",
 	"wikilambda-editor-label-select-programming-language-label": "Programmiersprache wählen:",
 	"wikilambda-modeselector-genericliteral": "generisch",
-	"specialpages-group-wikilambda": "Wikifunktionenseite"
+	"specialpages-group-wikilambda": "Wikifunktionenseite",
+	"wikilambda-editor-argument-list-label": "Argumentliste"
 }

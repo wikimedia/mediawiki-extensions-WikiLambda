@@ -3,6 +3,7 @@
 		"authors": [
 			"Al Riaz Uddin Ripon",
 			"R4356th",
+			"Tahmid",
 			"WikiAbuHuraira",
 			"YahyA",
 			"Yahya",
@@ -17,5 +18,6 @@
 	"wikilambda-savechanges": "পরিবর্তন সংরক্ষণ",
 	"wikilambda-editor-label-addlanguage-label": "ভাষা যোগ করুন:",
 	"wikilambda-editor-label-removelanguage-tooltip": "এই লেবেল থেকে ভাষাটি সরিয়ে দিন",
-	"wikilambda-editor-label-select-programming-language-label": "প্রোগ্রামিং ভাষা নির্বাচন করুন:"
+	"wikilambda-editor-label-select-programming-language-label": "প্রোগ্রামিং ভাষা নির্বাচন করুন:",
+	"specialpages-group-wikilambda": "উইকিফাংশন পাতা"
 }

@@ -3,6 +3,7 @@
 		"authors": [
 			"Ayack",
 			"Gomoko",
+			"JenyxGym",
 			"Pols12",
 			"Verdy p",
 			"Wladek92"
@@ -50,5 +51,6 @@
 	"wikilambda-editor-zobject-removekey-tooltip": "Supprimer cette clé/valeur de l’Objet-Z",
 	"wikilambda-editor-label-select-programming-language-label": "Sélectionner le langage de programmation :",
 	"wikilambda-modeselector-genericliteral": "gén.",
-	"specialpages-group-wikilambda": "Page de Wikifonctions"
+	"specialpages-group-wikilambda": "Page de Wikifonctions",
+	"wikilambda-editor-argument-list-label": "Liste d’arguments"
 }
