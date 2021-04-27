@@ -42,6 +42,7 @@
 	"wikilambda-typeselector-label": "Type de valeur",
 	"wikilambda-argument-typeselector-label": "Type d’argument",
 	"wikilambda-function-typeselector-label": "Type de fonction",
+	"wikilambda-return-typeselector-label": "Type de retour",
 	"wikilambda-zobjectselector-label": "Objet-Z",
 	"wikilambda-editor-label-addlanguage-label": "Ajouter une langue :",
 	"wikilambda-editor-label-removelanguage-tooltip": "Enlever cette langue du libellé",
