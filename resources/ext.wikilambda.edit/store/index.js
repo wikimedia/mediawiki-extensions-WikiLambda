@@ -12,7 +12,8 @@ var Vue = require( 'vue' ),
 	actions = require( './actions.js' ),
 	mutations = require( './mutations.js' ),
 	getters = require( './getters.js' ),
-	zobjectModule = require( './modules/zobject.js' );
+	zobjectModule = require( './modules/zobject.js' ),
+	zobjectModes = require( './modules/zobjectModes.js' );
 
 Vue.use( Vuex );
 
@@ -22,6 +23,8 @@ module.exports = new Vuex.Store( {
 	mutations: mutations,
 	getters: getters,
 	modules: {
-		zobjectModule: zobjectModule
+		zobjectModule: zobjectModule,
+		zobjectModes: zobjectModes
+
 	}
 } );

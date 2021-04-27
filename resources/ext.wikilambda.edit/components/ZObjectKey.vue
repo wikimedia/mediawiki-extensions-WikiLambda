@@ -21,7 +21,29 @@
 		<!-- If there's a type, we render the appropriate component -->
 		<template v-else>
 			<span>{{ zTypeLabel }} ({{ zType }})</span>
+			<z-key-mode-selector
+				v-if="!viewmode"
+				:mode="selectedMode"
+				@change="onModeChange"
+			></z-key-mode-selector>
+			<z-object-generic
+				v-if="selectedMode === Constants.Z_KEY_MODES.GENERIC_LITERAL"
+				:zobject-id="zobjectId"
+				:type="zType"
+				:persistent="false"
+				:viewmode="viewmode"
+			></z-object-generic>
+			<z-reference
+				v-else-if="selectedMode === Constants.Z_KEY_MODES.REFERENCE"
+				class="ext-wikilambda-zobject-key-inline"
+				:zobject-id="zobjectId"
+				:viewmode="viewmode"
+				:search-type="literalType"
+			></z-reference>
+			<!-- Constants.Z_KEY_MODES.FUNCTION_CALL -->
+			<!-- Constants.Z_KEY_MODES.LITERAL -->
 			<z-object
+				v-else
 				:zobject-id="zobjectId"
 				:viewmode="viewmode"
 				:persistent="false"
@@ -33,6 +55,8 @@
 <script>
 var Constants = require( '../Constants.js' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
+	ZKeyModeSelector = require( './ZKeyModeSelector.vue' ),
+	ZObjectGeneric = require( './ZObjectGeneric.vue' ),
 	ZReference = require( './types/ZReference.vue' ),
 	mapState = require( 'vuex' ).mapState,
 	mapActions = require( 'vuex' ).mapActions,
@@ -42,7 +66,9 @@ module.exports = {
 	name: 'ZObjectKey',
 	components: {
 		'z-object-selector': ZObjectSelector,
-		'z-reference': ZReference
+		'z-reference': ZReference,
+		'z-key-mode-selector': ZKeyModeSelector,
+		'z-object-generic': ZObjectGeneric
 	},
 	props: {
 		viewmode: {
@@ -60,7 +86,8 @@ module.exports = {
 	},
 	data: function () {
 		return {
-			Constants: Constants
+			Constants: Constants,
+			selectedMode: Constants.Z_KEY_MODES.LITERAL
 		};
 	},
 	computed: $.extend( {},
@@ -68,8 +95,9 @@ module.exports = {
 			'zKeyLabels'
 		] ),
 		mapGetters( [
-			'getZObjectChildrenById',
-			'getZObjectTypeById'
+			'getZObjectTypeById',
+			'getZkeyLiteralType',
+			'getTypeByMode'
 		] ),
 		{
 			zType: function () {
@@ -81,8 +109,8 @@ module.exports = {
 			zTypeLabel: function () {
 				return this.zKeyLabels[ this.zType ];
 			},
-			zObject: function () {
-				return this.getZObjectChildrenById( this.zobjectId );
+			literalType: function () {
+				return this.getZkeyLiteralType( this.zKey );
 			}
 		}
 	),
@@ -95,15 +123,23 @@ module.exports = {
 			 * @param {string} type
 			 */
 			onTypeChange: function ( type ) {
-				var payload = {
-					id: this.zobjectId,
-					type: type
-				};
-				this.fetchZKeys( {
-					zids: [ type ],
-					zlangs: [ this.zLang ]
-				} );
-				this.changeType( payload );
+				var payload;
+				if ( type ) {
+					payload = {
+						id: this.zobjectId,
+						type: type
+					};
+					this.fetchZKeys( {
+						zids: [ type ],
+						zlangs: [ this.zLang ]
+					} );
+					this.changeType( payload );
+				}
+			},
+			onModeChange: function ( mode ) {
+				var selectedModeType = this.getTypeByMode( { selectedMode: mode, literalType: this.literalType } );
+				this.selectedMode = mode;
+				this.changeType( { id: this.zobjectId, type: selectedModeType } );
 			}
 		} ),
 	beforeCreate: function () {
@@ -122,5 +158,9 @@ module.exports = {
 	display: inline-block;
 	vertical-align: top;
 	margin-top: 5px;
+}
+
+.ext-wikilambda-zobject-key-inline {
+	display: inline-block;
 }
 </style>

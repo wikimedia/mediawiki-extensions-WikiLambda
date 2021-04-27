@@ -11,30 +11,18 @@
 		@change="updateMode"
 	>
 		<option
-			v-for="mode in modeList"
+			v-for="mode in getAllModes"
 			:key="mode.key"
 			:value="mode.key"
-			:title="mode.label"
+			:title="translate( mode.label )"
 		>
-			{{ mode.value }}
+			{{ translate( mode.value ) }}
 		</option>
 	</select>
 </template>
 
 <script>
-var Constants = require( '../Constants.js' ),
-	validateMode = function ( selectedMode ) {
-		var modeKeys = Object.keys( Constants.Z_KEY_MODES ),
-			modeIdValid = false;
-
-		modeKeys.forEach( function ( key ) {
-			if ( Constants.Z_KEY_MODES[ key ] === selectedMode ) {
-				modeIdValid = true;
-			}
-		} );
-
-		return modeIdValid;
-	};
+var mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = {
 	name: 'ZKeyModeSelector',
@@ -42,30 +30,32 @@ module.exports = {
 		mode: {
 			type: String,
 			required: true,
-			validator: validateMode
+			validator: this.modeIsValid
 		}
 	},
 	methods: {
 		updateMode: function ( event ) {
-			var modeKey = event.target.value;
-			this.$emit( 'change', modeKey );
+			var modeValue = event.target.value;
+
+			this.$emit( 'change', modeValue );
+		},
+		translate: function ( value ) {
+			return this.$i18n( value );
 		}
 	},
-	computed: {
-		modeList: function () {
-			return [
-				{ key: Constants.Z_KEY_MODES.REFERENCE, value: this.$i18n( 'wikilambda-modeselector-reference' ), label: this.$i18n( 'wikilambda-reference' ) },
-				{ key: Constants.Z_KEY_MODES.LITERAL, value: this.$i18n( 'wikilambda-modeselector-literal' ), label: this.$i18n( 'wikilambda-literal' ) },
-				{ key: Constants.Z_KEY_MODES.GENERIC_LITERAL, value: this.$i18n( 'wikilambda-modeselector-genericliteral' ), label: this.$i18n( 'wikilambda-genericliteral' ) },
-				{ key: Constants.Z_KEY_MODES.FUNCTION_CALL, value: this.$i18n( 'wikilambda-modeselector-functioncall' ), label: this.$i18n( 'wikilambda-functioncall' ) }
-			];
-		}
-	}
+	computed: $.extend( {},
+		mapGetters( {
+			getAllModes: 'getAllModes',
+			modeIsValid: 'getModeIsValid'
+		} )
+	)
 };
 </script>
 
 <style lang="less">
 .ext-wikilambda-zkey-modeselector {
-	height: 24px;
+	height: 22px;
+	vertical-align: top;
+	margin-top: 5px;
 }
 </style>
