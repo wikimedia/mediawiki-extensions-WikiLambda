@@ -10,7 +10,7 @@ describe( 'zobjectModes Vuex module', function () {
 					parentType: 'testParentType',
 					literalType: 'testLiteralType'
 				};
-				expect( zobjectModes.getters.getAllModes()( payload ).length ).toBe( 4 );
+				expect( zobjectModes.getters.getAllModes()( payload ).length ).toBe( 5 );
 				expect( Object.keys( zobjectModes.getters.getAllModes()( payload )[ 0 ] ) ).toEqual( [ 'key', 'value', 'label', 'type' ] );
 			} );
 			it( 'It return just two types when parent and literal type are the same (recursion)', function () {

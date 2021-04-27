@@ -22,7 +22,7 @@
 		<template v-else>
 			<span>{{ zTypeLabel }} ({{ zType }})</span>
 			<z-key-mode-selector
-				v-if="!viewmode"
+				v-if="!viewmode && selectedMode"
 				:mode="selectedMode"
 				:parent-type="parentType"
 				:literal-type="literalType"
@@ -42,6 +42,11 @@
 				:viewmode="viewmode"
 				:search-type="literalType"
 			></z-reference>
+			<z-object-json
+				v-else-if="selectedMode === Constants.Z_KEY_MODES.JSON"
+				:zobject-id="zobjectId"
+				:viewmode="viewmode"
+			></z-object-json>
 			<!-- Constants.Z_KEY_MODES.FUNCTION_CALL -->
 			<!-- Constants.Z_KEY_MODES.LITERAL -->
 			<z-object
@@ -60,6 +65,7 @@ var Constants = require( '../Constants.js' ),
 	ZKeyModeSelector = require( './ZKeyModeSelector.vue' ),
 	ZObjectGeneric = require( './ZObjectGeneric.vue' ),
 	ZReference = require( './types/ZReference.vue' ),
+	ZObjectJson = require( './ZObjectJson.vue' ),
 	mapState = require( 'vuex' ).mapState,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
@@ -70,7 +76,8 @@ module.exports = {
 		'z-object-selector': ZObjectSelector,
 		'z-reference': ZReference,
 		'z-key-mode-selector': ZKeyModeSelector,
-		'z-object-generic': ZObjectGeneric
+		'z-object-generic': ZObjectGeneric,
+		'z-object-json': ZObjectJson
 	},
 	props: {
 		viewmode: {
@@ -106,6 +113,9 @@ module.exports = {
 			) {
 				this.literalType = literal;
 			}
+		},
+		zType: function ( type ) {
+			this.literalType = type;
 		}
 	},
 	computed: $.extend( {},
@@ -153,6 +163,7 @@ module.exports = {
 			},
 			onModeChange: function ( mode ) {
 				var selectedModeType = this.getTypeByMode( { selectedMode: mode, literalType: this.literalType } );
+
 				this.selectedMode = mode;
 				if ( selectedModeType !== this.zType ) {
 					this.changeType( { id: this.zobjectId, type: selectedModeType } );

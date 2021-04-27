@@ -392,6 +392,37 @@ module.exports = {
 			context.commit( 'setZObjectValue', payload );
 		},
 		/**
+		 * Handles the conversion and initization of a zObject.
+		 * The Object received by the server is in JSON format, so we convert it
+		 * to our Tree structure.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 */
+		injectZObject: function ( context, payload ) {
+			var zobjectTree = convertZObjectToTree(
+					payload.zobject,
+					payload.key,
+					payload.id,
+					payload.parent
+				),
+				zobjectRoot = zobjectTree.shift();
+
+			context.dispatch( 'removeZObjectChildren', payload.id );
+			context.dispatch( 'setZObjectValue', zobjectRoot );
+			zobjectTree.forEach( function ( zobject ) {
+				var nextId = context.getters.getNextObjectId;
+				zobjectTree.forEach( function ( childZObject ) {
+					if ( !childZObject.matched && childZObject.parent === zobject.id ) {
+						childZObject.parent = nextId;
+						childZObject.matched = true;
+					}
+				} );
+				zobject.id = nextId;
+				context.dispatch( 'addZObject', zobject );
+			} );
+		},
+		/**
 		 * Set the programing language for a specific zCode object.
 		 * The entry will result in a json representation equal to:
 		 * { Z1K1: Z61, Z61K1: payload.value }

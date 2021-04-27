@@ -39,6 +39,10 @@ describe( 'zobject Vuex module', function () {
 			commit: jest.fn( function ( mutationType, payload ) {
 				return;
 			} ),
+			// eslint-disable-next-line no-unused-vars
+			dispatch: jest.fn( function ( actionType, payload ) {
+				return;
+			} ),
 			getters: {}
 		} );
 
@@ -209,6 +213,43 @@ describe( 'zobject Vuex module', function () {
 				zobject: JSON.stringify( zobject )
 			} );
 			expect( context.commit ).toHaveBeenCalledTimes( 0 );
+		} );
+
+		it( 'Inject arbitrary JSON into zobject', function () {
+			var updatedZObjectTree = [
+				{ id: 0, key: undefined, value: 'object', parent: undefined },
+				{ id: 1, key: 'Z1K1', value: 'Z2', parent: 0 },
+				{ id: 2, key: 'Z2K1', value: 'Z0', parent: 0 },
+				{ id: 3, key: 'Z2K2', value: 'object', parent: 0 },
+				{ id: 4, key: 'Z2K3', value: 'object', parent: 0 },
+				{ id: 10, key: 'Z1K1', value: 'Z12', parent: 4 },
+				{ id: 11, key: 'Z12K1', value: 'array', parent: 4 },
+				{ id: 12, key: 'Z1K1', value: 'Z9', parent: 3 },
+				{ id: 13, key: 'Z9K1', value: 'Z6', parent: 3 }
+			];
+			context.state = {
+				zobject: zobjectTree
+			};
+			context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
+			context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
+			context.commit = jest.fn( function ( mutationType, payload ) {
+				zobjectModule.mutations[ mutationType ]( context.state, payload );
+			} );
+			context.dispatch = jest.fn( function ( actionType, payload ) {
+				zobjectModule.actions[ actionType ]( context, payload );
+			} );
+
+			zobjectModule.actions.injectZObject( context, {
+				zobject: {
+					Z1K1: 'Z9',
+					Z9K1: 'Z6'
+				},
+				key: 'Z2K2',
+				id: 3,
+				parent: 0
+			} );
+
+			expect( context.state.zobject ).toEqual( updatedZObjectTree );
 		} );
 	} );
 } );

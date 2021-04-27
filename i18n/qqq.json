@@ -29,6 +29,7 @@
 	"wikilambda-call-function": "Label for button that calls a function{{doc-wikilambda}}",
 	"wikilambda-functioncall": "Label for the word [[:meta:Abstract Wikipedia/Glossary#function call|function call]].\n\n{{doc-wikilambda}}",
 	"wikilambda-orchestrated": "Label for the result of orchestration.\n\n{{doc-wikilambda}}",
+	"wikilambda-json": "Label for the word [[:meta:Abstract Wikipedia/Glossary#json|json]].\n\n{{doc-wikilambda}}",
 	"wikilambda-special-callfunction": "Description for Special:CallFunction.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-callfunction-summary": "Introductory summary shown on Special:CallFunction.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-callfunction-intro": "Warning shown to editors on Special:CallFunction about following community rules.",
@@ -66,6 +67,7 @@
 	"wikilambda-modeselector-literal": "{{notranslate}}\nLabel for button to select literal",
 	"wikilambda-modeselector-genericliteral": "Label for button to select the generic mode when entering values. Should be similar to the word \"[[:meta:Abstract Wikipedia/Glossary#generic|generic]]\", but as short as possible.\n\n{{doc-wikilambda}}",
 	"wikilambda-modeselector-functioncall": "{{notranslate}}\nLabel for button to select function call",
+	"wikilambda-modeselector-json": "{{notranslate}}\nLabel for button to select JSON",
 	"specialpages-group-wikilambda": "{{doc-special-group|that=are related to Wikifungsi}}",
 	"wikilambda-editor-argument-list-label": "Label for a list of arguments in a function."
 }

@@ -152,6 +152,7 @@
 				"ext.wikilambda.edit/components/types/ZFunctionCall.vue",
 				"ext.wikilambda.edit/components/types/ZFunction.vue",
 				"ext.wikilambda.edit/components/types/ZArgumentList.vue",
+				"ext.wikilambda.edit/components/ZObjectJson.vue",
 				"lib/ace/ace.js",
 				"lib/icons.js"
 			],
@@ -169,6 +170,7 @@
 				"wikilambda-call-function",
 				"wikilambda-orchestrated",
 				"wikilambda-functioncall",
+				"wikilambda-json",
 				"wikilambda-typeselector-label",
 				"wikilambda-zobjectselector-label",
 				"wikilambda-editor-additem",
@@ -177,6 +179,7 @@
 				"wikilambda-modeselector-literal",
 				"wikilambda-modeselector-genericliteral",
 				"wikilambda-modeselector-functioncall",
+				"wikilambda-modeselector-json",
 				"wikilambda-editor-label-addlanguage-label",
 				"wikilambda-editor-label-removelanguage-tooltip",
 				"wikilambda-editor-zlist-additem-tooltip",

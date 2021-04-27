@@ -3,7 +3,8 @@ var Constants = require( '../../Constants.js' ),
 		{ key: Constants.Z_KEY_MODES.REFERENCE, value: 'wikilambda-modeselector-reference', label: 'wikilambda-reference', type: Constants.Z_REFERENCE },
 		{ key: Constants.Z_KEY_MODES.FUNCTION_CALL, value: 'wikilambda-modeselector-functioncall', label: 'wikilambda-functioncall', type: Constants.Z_FUNCTION_CALL },
 		{ key: Constants.Z_KEY_MODES.LITERAL, value: 'wikilambda-modeselector-literal', label: 'wikilambda-literal', type: null },
-		{ key: Constants.Z_KEY_MODES.GENERIC_LITERAL, value: 'wikilambda-modeselector-genericliteral', label: 'wikilambda-genericliteral', type: null }
+		{ key: Constants.Z_KEY_MODES.GENERIC_LITERAL, value: 'wikilambda-modeselector-genericliteral', label: 'wikilambda-genericliteral', type: null },
+		{ key: Constants.Z_KEY_MODES.JSON, value: 'wikilambda-modeselector-json', label: 'wikilambda-json', type: null }
 	],
 	TypeWithoutLiteral = [ Constants.Z_REFERENCE, Constants.Z_FUNCTION_CALL ];
 

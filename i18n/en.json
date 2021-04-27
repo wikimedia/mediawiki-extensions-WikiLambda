@@ -24,6 +24,7 @@
 	"wikilambda-call-function": "Call Function",
 	"wikilambda-functioncall": "Function call",
 	"wikilambda-orchestrated": "Orchestration result",
+	"wikilambda-json": "JSON",
 	"wikilambda-special-callfunction": "Create and execute a Function Call.",
 	"wikilambda-special-callfunction-summary": "This form lets you create and execute a Function Call. You should read the help documentation and community guidance first.",
 	"wikilambda-special-callfunction-intro": "Make sure that you follow community policies, and copyright and patent rules.",
@@ -61,6 +62,7 @@
 	"wikilambda-modeselector-literal": "x",
 	"wikilambda-modeselector-genericliteral": "gen",
 	"wikilambda-modeselector-functioncall": "f(x)",
+	"wikilambda-modeselector-json": "{..}",
 	"specialpages-group-wikilambda": "Wikifunctions page",
 	"wikilambda-editor-argument-list-label": "Argument List"
 }

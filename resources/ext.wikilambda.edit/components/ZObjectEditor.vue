@@ -36,13 +36,15 @@ var Constants = require( '../Constants.js' ),
 	WbmiMessage = require( './base/Message.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	mapMutations = require( 'vuex' ).mapMutations;
+	mapMutations = require( 'vuex' ).mapMutations,
+	ZObjectJson = require( './ZObjectJson.vue' );
 
 module.exports = {
 	name: 'ZObjectEditor',
 	components: {
 		'z-object': ZObject,
-		'wbmi-message': WbmiMessage
+		'wbmi-message': WbmiMessage,
+		'z-object-json': ZObjectJson
 	},
 	data: function () {
 		return {
