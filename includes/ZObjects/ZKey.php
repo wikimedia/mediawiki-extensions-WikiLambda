@@ -20,12 +20,14 @@ class ZKey extends ZObject {
 			'keys' => [
 				ZTypeRegistry::Z_KEY_TYPE => [
 					'type' => ZTypeRegistry::HACK_REFERENCE_TYPE,
+					'required' => true,
 				],
 				ZTypeRegistry::Z_KEY_ID => [
 					// TODO: Per the model, we used to dereference this ZReference into the string
 					// of its ZType, but creates recursion issues when evaluating ZKeys of ZTypes
 					// that are being created (T262097). For now, just store the string ZReference.
 					'type' => ZTypeRegistry::Z_TYPE_IDENTITY,
+					'required' => true,
 				],
 				ZTypeRegistry::Z_KEY_LABEL => [
 					'type' => ZTypeRegistry::Z_MULTILINGUALSTRING,

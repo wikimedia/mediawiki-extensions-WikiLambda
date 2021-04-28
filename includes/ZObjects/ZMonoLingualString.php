@@ -20,9 +20,11 @@ class ZMonoLingualString extends ZObject {
 			'keys' => [
 				ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => [
 					'type' => ZTypeRegistry::HACK_LANGUAGE,
+					'required' => true,
 				],
 				ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => [
 					'type' => ZTypeRegistry::BUILTIN_STRING,
+					'required' => true,
 				],
 			],
 		];

@@ -113,22 +113,19 @@ class ZObjectFactory {
 			foreach ( $targetType->getTypeKeys() as $key ) {
 				// Validate the object definition against its specification in the database
 				$keyId = $key->getKeyId();
-				if ( !array_key_exists( $keyId, $objectVars ) ) {
-					throw new InvalidArgumentException(
-						"Couldn't create ZObject based on type '$type'; key '$keyId' isn't set."
-					);
-				}
+				if ( array_key_exists( $keyId, $objectVars ) ) {
 
-				// Validate the provided key values for built-ins using local PHP code
-				$keyType = $key->getKeyType();
-				if ( $registry->isZTypeBuiltIn( $keyType ) ) {
-					if ( self::validateKeyValue( $keyId, $keyType, $objectVars[ $keyId ] ) === null ) {
-						throw new InvalidArgumentException(
-							"Couldn't create ZObject based on type '$type'; key '$keyId' isn't a valid '$keyType'."
-						);
+					// Validate the provided key values for built-ins using local PHP code
+					$keyType = $key->getKeyType();
+					if ( $registry->isZTypeBuiltIn( $keyType ) ) {
+						if ( self::validateKeyValue( $keyId, $keyType, $objectVars[ $keyId ] ) === null ) {
+							throw new InvalidArgumentException(
+								"Couldn't create ZObject based on type '$type'; key '$keyId' isn't a valid '$keyType'."
+							);
+						}
+					} else {
+						// TODO: Validate the provided key values for bespokes using FunctionEvaluator service
 					}
-				} else {
-					// TODO: Validate the provided key values for bespokes using FunctionEvaluator service
 				}
 			}
 			return new ZObject( $type, $objectVars );
@@ -169,18 +166,14 @@ class ZObjectFactory {
 		$creationArray = [];
 
 		foreach ( $targetDefinition['keys'] as $key => $settings ) {
-			if ( !array_key_exists( $key, $objectVars ) ) {
-				if ( !array_key_exists( 'optional', $settings ) || !$settings['optional'] ) {
-					throw new \InvalidArgumentException( "$targetType missing the required '$key' key." );
-				}
-
-				if ( array_key_exists( 'default', $settings ) ) {
-					$objectVars[$key] = $settings['default'];
-				}
-			}
-
 			if ( array_key_exists( $key, $objectVars ) ) {
 				$creationArray[] = self::validateKeyValue( $key, $settings['type'], $objectVars[$key] );
+			} else {
+				if ( array_key_exists( 'required', $settings ) && ( $settings['required'] ) ) {
+					throw new InvalidArgumentException(
+						"$targetType missing required '$key' key."
+					);
+				}
 			}
 		}
 

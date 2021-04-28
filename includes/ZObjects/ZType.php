@@ -25,6 +25,7 @@ class ZType extends ZObject {
 				ZTypeRegistry::Z_TYPE_KEYS => [
 					// TODO: Walk the array of ZKeys.
 					'type' => ZTypeRegistry::HACK_ARRAY_Z_KEY,
+					'required' => true,
 				],
 				ZTypeRegistry::Z_TYPE_VALIDATOR => [
 					// NOTE: Allows Z0 until we support ZFunctions.

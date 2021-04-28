@@ -24,6 +24,7 @@ class ZMultiLingualString extends ZObject {
 			'keys' => [
 				ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [
 					'type' => ZTypeRegistry::HACK_ARRAY_Z_MONOLINGUALSTRING,
+					'required' => true,
 				],
 			],
 		];
