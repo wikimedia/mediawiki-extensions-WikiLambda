@@ -38,6 +38,7 @@
 	"wikilambda-typeselector-label": "Değer Türü",
 	"wikilambda-argument-typeselector-label": "Değişken Türü",
 	"wikilambda-function-typeselector-label": "İşlev Türü",
+	"wikilambda-return-typeselector-label": "Geri Dönüş Türü",
 	"wikilambda-editor-label-addlanguage-label": "Dil ekle:",
 	"wikilambda-editor-label-removelanguage-tooltip": "Bu dili bu etiketten kaldır",
 	"wikilambda-editor-zlist-additem-tooltip": "Bu ZList'e bir öğe ekleyin",
@@ -45,5 +46,7 @@
 	"wikilambda-editor-zobject-addkey": "Anahtar ekle:",
 	"wikilambda-editor-zobject-removekey-tooltip": "Bu anahtarı/değeri ZObject'ten kaldırın",
 	"wikilambda-editor-label-select-programming-language-label": "Programlama dilini seçin:",
-	"wikilambda-modeselector-genericliteral": "gen"
+	"wikilambda-modeselector-genericliteral": "gen",
+	"specialpages-group-wikilambda": "Vikiişlev sayfası",
+	"wikilambda-editor-argument-list-label": "Değişken Listesi"
 }
