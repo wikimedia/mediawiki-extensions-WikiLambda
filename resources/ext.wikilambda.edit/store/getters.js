@@ -21,15 +21,15 @@ module.exports = {
 		return state.allZProgrammingLangs;
 	},
 
-	getZkeyLiteralType: function ( state ) {
+	getZkeyLiteralType: function ( state, getters ) {
 		return function ( parentKey ) {
 			var type = parentKey.match( /Z[1-9]\d*/ )[ 0 ],
 				keysArray,
 				currentKeyLiteralType = null;
 
-			if ( state.zKeys[ type ] ) {
+			if ( getters.getZkeys[ type ] ) {
 
-				keysArray = state.zKeys[ type ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
+				keysArray = getters.getZkeys[ type ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
 
 				keysArray.forEach( function ( key ) {
 					if ( key[ Constants.Z_KEY_ID ][ Constants.Z_STRING_VALUE ] === parentKey ) {

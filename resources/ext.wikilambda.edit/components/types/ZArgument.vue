@@ -36,7 +36,6 @@ var Constants = require( '../../Constants.js' ),
 	typeUtils = require( './../../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	mapState = require( 'vuex' ).mapState,
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	ZString = require( './ZString.vue' ),
 	ZMultilingualString = require( './ZMultilingualString.vue' );
@@ -61,11 +60,9 @@ module.exports = {
 	computed: $.extend(
 		mapGetters( {
 			nextKey: 'getNextKey',
-			zLang: 'zLang',
-			getZObjectChildrenById: 'getZObjectChildrenById'
-		} ),
-		mapState( {
-			zKeyLabels: 'zKeyLabels'
+			getZObjectChildrenById: 'getZObjectChildrenById',
+			zKeyLabels: 'getZkeyLabels'
+
 		} ),
 		{
 			zobject: function () {
@@ -120,10 +117,11 @@ module.exports = {
 		}
 	} ),
 	mounted: function () {
-		this.fetchZKeys( {
-			zids: [ Constants.Z_ARGUMENT, this.argumentType || '' ],
-			zlangs: [ this.zLang ]
-		} );
+		var zids = [ Constants.Z_ARGUMENT ];
+		if ( this.argumentType ) {
+			zids.push( this.argumentType );
+		}
+		this.fetchZKeys( [ zids ] );
 	}
 };
 </script>

@@ -114,6 +114,7 @@
 				"ext.wikilambda.edit/store/mutations.js",
 				"ext.wikilambda.edit/store/modules/zobject.js",
 				"ext.wikilambda.edit/store/modules/zobjectModes.js",
+				"ext.wikilambda.edit/store/modules/zKeys.js",
 				"ext.wikilambda.edit/mixins/typeUtils.js",
 				"ext.wikilambda.edit/mixins/validator.js",
 				"ext.wikilambda.edit/components/App.vue",

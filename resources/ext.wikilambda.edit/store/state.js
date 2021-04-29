@@ -14,21 +14,6 @@ module.exports = {
 	zLangs: [],
 
 	/**
-	 * Collection of zKey information
-	 */
-	zKeys: {},
-
-	/**
-	 * Collection of zKey labels in the user selected language
-	 */
-	zKeyLabels: {},
-
-	/**
-	 * ZKeys being fetched, awaiting for API response
-	 */
-	fetchingZKeys: [],
-
-	/**
 	 * Collection of MediaWiki language information
 	 */
 	allLangs: {},
