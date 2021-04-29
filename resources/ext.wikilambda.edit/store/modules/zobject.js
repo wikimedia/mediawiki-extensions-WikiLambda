@@ -471,7 +471,6 @@ module.exports = {
 				{ key: Constants.Z_MONOLINGUALSTRING_VALUE, parent: nextId }
 			];
 			context.dispatch( 'addZObjects', zObjectItems );
-
 		},
 		/**
 		 * Create the required entry in the zobject array for a zMultilingualString.
@@ -482,16 +481,21 @@ module.exports = {
 		 * @param {Object} objectId
 		 */
 		addZMultilingualString: function ( context, objectId ) {
-			var zObjectItems = [];
+			var nextId;
 			context.dispatch( 'setZObjectValue', {
 				id: objectId,
 				value: 'object'
 			} );
-			zObjectItems = [
-				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_MULTILINGUALSTRING, parent: objectId },
-				{ key: Constants.Z_MULTILINGUALSTRING_VALUE, value: 'array', parent: objectId }
-			];
-			context.dispatch( 'addZObjects', zObjectItems );
+
+			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: Constants.Z_MULTILINGUALSTRING, parent: objectId } );
+
+			nextId = getNextObjectId( context.state.zobject );
+			context.dispatch( 'addZObject', { key: Constants.Z_MULTILINGUALSTRING_VALUE, value: 'array', parent: objectId } );
+
+			context.dispatch( 'addZMonolingualString', {
+				parentId: nextId,
+				lang: context.getters.zLang
+			} );
 		},
 		/**
 		 * Create the required entry in the zobject array for a zList.
