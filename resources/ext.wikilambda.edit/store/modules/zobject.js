@@ -668,7 +668,9 @@ module.exports = {
 		addGenericObject: function ( context, payload ) {
 			var zObjectItems = [],
 				keys = [],
-				objectKey;
+				objectKey,
+				objectKeyType,
+				nextId;
 			context.dispatch( 'setZObjectValue', {
 				id: payload.id,
 				value: 'object'
@@ -689,8 +691,16 @@ module.exports = {
 				// we add each key in the tree and also set its type
 				keys.forEach( function ( key ) {
 					objectKey = key[ Constants.Z_KEY_ID ][ Constants.Z_STRING_VALUE ];
+					objectKeyType = key[ Constants.Z_KEY_TYPE ][ Constants.Z_REFERENCE_ID ];
+					nextId = getNextObjectId( context.state.zobject );
 					if ( objectKey !== Constants.Z_OBJECT_TYPE ) {
 						context.dispatch( 'addZObject', { key: objectKey, value: 'object', parent: payload.id } );
+					}
+					// We need to stop recursiveness.
+					if ( objectKeyType !== payload.type ) {
+						context.dispatch( 'changeType', { id: nextId, type: objectKeyType } );
+					} else {
+						context.dispatch( 'changeType', { id: nextId, type: Constants.Z_REFERENCE } );
 					}
 				} );
 			}

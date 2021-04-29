@@ -24,6 +24,8 @@
 			<z-key-mode-selector
 				v-if="!viewmode"
 				:mode="selectedMode"
+				:parent-type="parentType"
+				:literal-type="literalType"
 				@change="onModeChange"
 			></z-key-mode-selector>
 			<z-object-generic
@@ -58,6 +60,7 @@ var Constants = require( '../Constants.js' ),
 	ZKeyModeSelector = require( './ZKeyModeSelector.vue' ),
 	ZObjectGeneric = require( './ZObjectGeneric.vue' ),
 	ZReference = require( './types/ZReference.vue' ),
+	mapState = require( 'vuex' ).mapState,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -81,20 +84,41 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
+		},
+		parentType: {
+			type: String,
+			required: true
 		}
 	},
 	data: function () {
 		return {
 			Constants: Constants,
-			selectedMode: Constants.Z_KEY_MODES.LITERAL
+			selectedMode: null,
+			literalType: Constants.Z_KEY_MODES.LITERAL
 		};
 	},
+	watch: {
+		getZkeys: function () {
+			var literal = this.getZkeyLiteralType( this.zKey );
+			if ( literal &&
+				this.literalType !== literal &&
+				literal !== Constants.Z_OBJECT
+			) {
+				this.literalType = literal;
+			}
+		}
+	},
 	computed: $.extend( {},
+		mapState( [
+			'zKeys'
+		] ),
 		mapGetters( [
 			'getZObjectTypeById',
 			'getZkeyLiteralType',
 			'getTypeByMode',
-			'getZkeyLabels'
+			'getZkeyLabels',
+			'getZkeys',
+			'getModeByType'
 		] ),
 		{
 			zType: function () {
@@ -105,9 +129,6 @@ module.exports = {
 			},
 			zTypeLabel: function () {
 				return this.getZkeyLabels[ this.zType ];
-			},
-			literalType: function () {
-				return this.getZkeyLiteralType( this.zKey );
 			}
 		}
 	),
@@ -126,17 +147,28 @@ module.exports = {
 						id: this.zobjectId,
 						type: type
 					};
+					this.literalType = type;
 					this.changeType( payload );
 				}
 			},
 			onModeChange: function ( mode ) {
 				var selectedModeType = this.getTypeByMode( { selectedMode: mode, literalType: this.literalType } );
 				this.selectedMode = mode;
-				this.changeType( { id: this.zobjectId, type: selectedModeType } );
+				if ( selectedModeType !== this.zType ) {
+					this.changeType( { id: this.zobjectId, type: selectedModeType } );
+				}
 			}
 		} ),
 	beforeCreate: function () {
 		this.$options.components[ 'z-object' ] = require( './ZObject.vue' );
+	},
+	mounted: function () {
+		// We set the current Literal to the current Ztype (if set),
+		// this may be chjanged later when the zKeys are fetched.
+		// This is needed for cases like Z2K2 to keep the String value
+		this.literalType = this.zType;
+
+		this.selectedMode = this.getModeByType( this.zType );
 	}
 };
 </script>

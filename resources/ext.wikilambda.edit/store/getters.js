@@ -26,7 +26,6 @@ module.exports = {
 			var type = parentKey.match( /Z[1-9]\d*/ )[ 0 ],
 				keysArray,
 				currentKeyLiteralType = null;
-
 			if ( getters.getZkeys[ type ] ) {
 
 				keysArray = getters.getZkeys[ type ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
@@ -36,7 +35,7 @@ module.exports = {
 						currentKeyLiteralType = key[ Constants.Z_KEY_TYPE ][ Constants.Z_REFERENCE_ID ];
 					}
 				} );
-				return currentKeyLiteralType || Constants.Z_KEY;
+				return currentKeyLiteralType;
 			}
 
 		};

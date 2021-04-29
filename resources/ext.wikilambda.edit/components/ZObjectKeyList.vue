@@ -17,6 +17,7 @@
 				:viewmode="viewmode"
 				:z-key="value.key"
 				:zobject-id="value.id"
+				:parent-type="zObjectType"
 			>
 			</z-object-key>
 		</li>
@@ -54,7 +55,8 @@ module.exports = {
 	},
 	computed: $.extend( {},
 		mapGetters( [
-			'getZObjectChildrenById'
+			'getZObjectChildrenById',
+			'getZObjectTypeById'
 		] ),
 		{
 			tooltipRemoveZObjectKey: function () {
@@ -70,6 +72,9 @@ module.exports = {
 
 					return !isObjectType && !isPersistentObjectId;
 				} );
+			},
+			zObjectType: function () {
+				return this.getZObjectTypeById( this.zobjectId );
 			}
 		}
 	),
@@ -81,21 +86,6 @@ module.exports = {
 		] ),
 		mapMutations( [ 'addZKeyLabel' ] ),
 		{
-			/**
-			 * Checks if the given key should be presented on the key field list.
-			 * The keys excluded are `Z1K1` (Object type) and `Z2K1` (Persistent
-			 * object ID).
-			 *
-			 * @param {string} key
-			 * @return {boolean}
-			 */
-			isKeyField: function ( key ) {
-				return (
-					( key.substring( 0, 3 ) !== Constants.Z_OBJECT_TYPE.substring( 0, 3 ) ) &&
-					( key !== Constants.Z_PERSISTENTOBJECT_ID )
-				);
-			},
-
 			/**
 			 * Adds a new key field to the list.
 			 *
