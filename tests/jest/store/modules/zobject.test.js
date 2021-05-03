@@ -169,6 +169,9 @@ describe( 'zobject Vuex module', function () {
 				{ id: 1, key: 'Z1K1', value: 'Z2', parent: 0 },
 				{ id: 2, key: 'Z2K1', value: 'Z0', parent: 0 }
 			];
+			context.state = {
+				zobject: zobjectTree
+			};
 			zobjectModule.actions.initializeZObject( context );
 
 			expect( context.commit ).toHaveBeenCalledTimes( 2 );

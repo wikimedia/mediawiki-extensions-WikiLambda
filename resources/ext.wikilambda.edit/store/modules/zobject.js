@@ -324,7 +324,9 @@ module.exports = {
 				createNewPage = editingData.createNewPage,
 				zobject = JSON.parse( JSON.stringify( editingData.zobject ) ),
 				zobjectTree = [],
-				innerZobject = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				innerZobject = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ],
+				zMultilingualStringObject;
+
 			if ( innerZobject !== null && createNewPage ) {
 				zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] = null;
 			}
@@ -332,6 +334,17 @@ module.exports = {
 			zobjectTree = convertZObjectToTree( zobject );
 			context.commit( 'setZObject', zobjectTree );
 			context.commit( 'setCreateNewPage', createNewPage );
+
+			if ( createNewPage ) {
+				zMultilingualStringObject = context.state.zobject.filter( function ( innerObject ) {
+					return innerObject.key === Constants.Z_PERSISTENTOBJECT_LABEL;
+				} )[ 0 ];
+
+				context.dispatch( 'changeType', {
+					id: zMultilingualStringObject.id,
+					type: Constants.Z_MULTILINGUALSTRING
+				} );
+			}
 		},
 		/**
 		 * Submit a zObject to the api.
