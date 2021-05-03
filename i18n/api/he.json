@@ -10,6 +10,7 @@
 	"apihelp-wikilambda_fetch-example-single": "אחזור עצם Z בודד, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "אחזור שלושה עצמי Z‏: Z1‏, Z2, ו־Z3.",
 	"apierror-wikilambda_fetch-missingzid": "מזהה ה־Z שניתן \"$1\" אינו קיים בוויקי הזה.",
+	"apihelp-wikilambda_function_call-param-zobject": "עצם ה־Z לקריאה לפונקציה",
 	"apihelp-query+wikilambdasearch_labels-summary": "מחולל רשימות שאילתות ה־API הזה מאפשר לך לחפש בעצמי Z תוויות בשפה נתונה. הוא קיים בעיקר כדי לתמוך במערכת החיפוש עם מבט קדימה (look-ahead).",
 	"apihelp-query+wikilambdasearch_labels-param-search": "מילת החיפוש",
 	"apihelp-query+wikilambdasearch_labels-param-language": "קוד מדיה־ויקי של שפה שבה ייעשה החיפוש",
@@ -34,6 +35,7 @@
 	"apihelp-wikilambda_edit-param-summary": "תקציר העריכה",
 	"apihelp-wikilambda_edit-param-zid": "מזהה ה־Z של עצם ה־Z שרוצים לערוך. אם זה null, עצם ה־Z ייווצר",
 	"apihelp-wikilambda_edit-param-zobject": "ייצוג JSON של עצם ה־Z שרוצים לשמור",
+	"apierror-wikilambda_function_call-not-connected": "לא היה אפשר לפתור את השרת <$1>, כנראה כי המתזמר אינו רץ. נא לבדוק את ה־README ולהוסיף את המתזמר להגדרות ה־docker-compose שלך.",
 	"apierror-wikilambda_edit-invalidjson": "לא היה אפשר ליצור עצם Z לקלט הניתן \"$1\"; ה־JSON אינו תקין.",
 	"apierror-wikilambda_edit-unmatchingzid": "פרמטר מזהה ה־Z בעל הערך \"$1\" אינו תואם למזהה עצם ה־Z שערכו \"$2\""
 }

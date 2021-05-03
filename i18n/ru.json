@@ -2,9 +2,14 @@
 	"@metadata": {
 		"authors": [
 			"Kareyac",
-			"Nastua Buldakova"
+			"Nastua Buldakova",
+			"Rivka Silinsky"
 		]
 	},
+	"wikilambda-call-function": "Функция Звонка",
+	"wikilambda-special-callfunction": "Создать и выполнить функцию звонка",
+	"wikilambda-special-callfunction-intro": "Убедитесь, что вы следуете правила сообщества, авторским правам и патентным правилам.",
+	"wikilambda-special-callfunction-nojs": "Эта страница требует использования JavaScript.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Язык",
 	"wikilambda-publishnew": "Опубликовать",
 	"wikilambda-savenew": "Сохранить",

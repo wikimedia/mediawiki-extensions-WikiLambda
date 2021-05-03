@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Gomoko",
+			"MasterSinge",
 			"Pols12",
 			"Scratcheur-2020Send",
 			"Verdy p",
@@ -38,6 +39,7 @@
 	"apihelp-wikilambda_edit-param-summary": "Modifier le message de résumé",
 	"apihelp-wikilambda_edit-param-zid": "Le Z-ID de l’Objet-Z à modifier. Si nul, un nouvel Objet-Z sera créé.",
 	"apihelp-wikilambda_edit-param-zobject": "Représentation JSON de l’Objet-Z à enregistrer",
+	"apierror-wikilambda_function_call-not-connected": "Impossible de résoudre l'hôte <$1>, probablement parce que l'orchestrateur ne fonctionne pas. Veuillez consulter le README pour ajouter l'orchestrateur à votre configuration docker-compose.",
 	"apierror-wikilambda_edit-invalidjson": "Impossible de créer un Objet-Z avec la valeur « $1 » donnée ; JSON non valide.",
 	"apierror-wikilambda_edit-unmatchingzid": "Le paramètre ZID « $1 » ne correspond pas à l’ID de l’Objet-Z « $2 »"
 }
