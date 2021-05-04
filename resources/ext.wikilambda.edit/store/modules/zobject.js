@@ -411,6 +411,7 @@ module.exports = {
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
+		 * @return {Promise} type
 		 */
 		injectZObject: function ( context, payload ) {
 			var zobjectTree = convertZObjectToTree(
@@ -434,6 +435,10 @@ module.exports = {
 				zobject.id = nextId;
 				context.dispatch( 'addZObject', zobject );
 			} );
+			// We use native Promises with a polyfill, so this should work even in IE11
+			// eslint-disable-next-line compat/compat
+			return Promise.resolve( context.getters.getZObjectTypeById( zobjectRoot.id ) );
+
 		},
 		/**
 		 * Set the programing language for a specific zCode object.

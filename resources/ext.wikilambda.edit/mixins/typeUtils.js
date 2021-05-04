@@ -27,6 +27,15 @@ module.exports = {
 			} else {
 				return result[ 0 ];
 			}
+		},
+		/**
+		 * Validate if a string is a valid Zid
+		 *
+		 * @param {string} zid
+		 * @return {boolean}
+		 */
+		isValidZidFormat: function ( zid ) {
+			return /^Z\d+$/.test( zid );
 		}
 	}
 };

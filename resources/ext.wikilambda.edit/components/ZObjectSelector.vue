@@ -40,6 +40,7 @@
 var Constants = require( '../Constants.js' ),
 	WbmiAutocompleteSearchInput = require( './base/AutocompleteSearchInput.vue' ),
 	validator = require( '../mixins/validator.js' ),
+	typeUtils = require( '../mixins/typeUtils.js' ),
 	WbmiMessage = require( './base/Message.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapState = require( 'vuex' ).mapState,
@@ -52,7 +53,7 @@ module.exports = {
 		'wbmi-autocomplete-search-input': WbmiAutocompleteSearchInput,
 		'wbmi-message': WbmiMessage
 	},
-	mixins: [ validator ],
+	mixins: [ validator, typeUtils ],
 	props: {
 		viewmode: {
 			type: Boolean,
@@ -119,11 +120,6 @@ module.exports = {
 					( Constants.EXCLUDED_Z_TYPES.indexOf( zid ) !== -1 )
 				);
 			},
-
-			isValidZidFormat: function ( zid ) {
-				return /^Z\d+$/.test( zid );
-			},
-
 			hasValidType: function ( zid ) {
 				var zidType = this.zKeys[ zid ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ];
 				return ( !this.type || // Either the selection isn't type restricted

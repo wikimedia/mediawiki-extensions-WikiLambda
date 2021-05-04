@@ -11,12 +11,14 @@
 
 <script>
 var mapGetters = require( 'vuex' ).mapGetters,
+	typeUtils = require( '../mixins/typeUtils.js' ),
 	CodeEditor = require( './base/CodeEditor.vue' );
 
 module.exports = {
 	components: {
 		'code-editor': CodeEditor
 	},
+	mixins: [ typeUtils ],
 	props: {
 		zobjectId: {
 			type: Number,
@@ -52,14 +54,20 @@ module.exports = {
 	watch: {
 		codeEditorState: function () {
 			try {
-				this.$store.dispatch( 'injectZObject', {
+				var self = this;
+
+				self.$store.dispatch( 'injectZObject', {
 					zobject: JSON.parse( this.codeEditorState ),
 					key: this.zobject.key,
 					id: this.zobjectId,
 					parent: this.zobject.parent
+				} ).then( function ( newType ) {
+					if ( self.isValidZidFormat( newType ) ) {
+						self.$emit( 'change-literal', newType );
+					}
 				} );
-			} catch ( err ) {
-				// Do nothing, JSON is invalid
+			} catch ( error ) {
+				// JSON parse failed
 			}
 		}
 	},
