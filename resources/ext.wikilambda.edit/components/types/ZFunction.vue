@@ -84,11 +84,25 @@ module.exports = {
 				var zobject = this.zArgumentList,
 					self = this,
 					functionArgumentsString = '( ';
+
+				function getArgumentType( argumentChildren ) {
+					var argumentType = argumentChildren.filter( function ( item ) {
+						return item.key === Constants.Z_ARGUMENT_TYPE;
+					} )[ 0 ];
+
+					if ( argumentType.value === 'object' ) {
+						return self.findKeyInArray(
+							Constants.Z_REFERENCE_ID,
+							self.getZObjectChildrenById( argumentType.id )
+						);
+					}
+
+					return argumentType;
+				}
+
 				zobject.forEach( function ( argument, index ) {
 					var argumentChildren = self.getZObjectChildrenById( argument.id ),
-						argumentType = argumentChildren.filter( function ( item ) {
-							return item.key === Constants.Z_ARGUMENT_TYPE;
-						} )[ 0 ],
+						argumentType = getArgumentType( argumentChildren ),
 						argumentKey = argumentChildren.filter( function ( item ) {
 							return item.key === Constants.Z_ARGUMENT_KEY;
 						} )[ 0 ],
@@ -131,7 +145,7 @@ module.exports = {
 		if ( this.zReturnType && this.zReturnType.value ) {
 			zids.push( this.zReturnType.value );
 		}
-		this.fetchZKeys( [ zids ] );
+		this.fetchZKeys( zids );
 	}
 };
 </script>
