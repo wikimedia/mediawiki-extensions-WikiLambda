@@ -235,6 +235,9 @@ describe( 'zobject Vuex module', function () {
 			};
 			context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
 			context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
+			context.getters.getZObjectById = zobjectModule.getters.getZObjectById( context.state );
+			// eslint-disable-next-line max-len
+			context.getters.getZObjectTypeById = zobjectModule.getters.getZObjectTypeById( context.state, context.getters );
 			context.commit = jest.fn( function ( mutationType, payload ) {
 				zobjectModule.mutations[ mutationType ]( context.state, payload );
 			} );

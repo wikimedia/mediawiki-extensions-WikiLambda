@@ -46,6 +46,7 @@
 				v-else-if="selectedMode === Constants.Z_KEY_MODES.JSON"
 				:zobject-id="zobjectId"
 				:viewmode="viewmode"
+				@change-literal="onliteralChange"
 			></z-object-json>
 			<!-- Constants.Z_KEY_MODES.FUNCTION_CALL -->
 			<!-- Constants.Z_KEY_MODES.LITERAL -->
@@ -113,9 +114,6 @@ module.exports = {
 			) {
 				this.literalType = literal;
 			}
-		},
-		zType: function ( type ) {
-			this.literalType = type;
 		}
 	},
 	computed: $.extend( {},
@@ -161,6 +159,9 @@ module.exports = {
 					this.changeType( payload );
 				}
 			},
+			onliteralChange: function ( type ) {
+				this.literalType = type;
+			},
 			onModeChange: function ( mode ) {
 				var selectedModeType = this.getTypeByMode( { selectedMode: mode, literalType: this.literalType } );
 
@@ -178,7 +179,6 @@ module.exports = {
 		// this may be chjanged later when the zKeys are fetched.
 		// This is needed for cases like Z2K2 to keep the String value
 		this.literalType = this.zType;
-
 		this.selectedMode = this.getModeByType( this.zType );
 	}
 };
