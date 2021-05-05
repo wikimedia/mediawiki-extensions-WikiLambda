@@ -17,7 +17,13 @@
 	"wikilambda-reference": "Навод",
 	"wikilambda-literal": "Буквално",
 	"wikilambda-genericliteral": "Општонам. буквално",
+	"wikilambda-call-function": "Повикај функција",
 	"wikilambda-functioncall": "Функциски повик",
+	"wikilambda-orchestrated": "Исход од оркестрирањето",
+	"wikilambda-special-callfunction": "Создај или изврши повик на функција.",
+	"wikilambda-special-callfunction-summary": "Овој образец служи за создавање и извршување на повик на функција. Најпрвин треба да ја прочитате помошната документација и напатствијата за заедницата.",
+	"wikilambda-special-callfunction-intro": "Ќе мора да ги следите правилата на заедницата, како и авторскоправните и патентните правила.",
+	"wikilambda-special-callfunction-nojs": "Страницава бара JavaScript за да може да се користи.",
 	"wikilambda-special-createzobject": "Создај нов ZObject",
 	"wikilambda-special-createzobject-summary": "Овој образец би овозможува создавање на нов ZObject, кој може да претставува функција, негова примена, негов испробувач, или еден од разните видови на ZObject-и. Најпрвин ќе треба да ја прочитате документацијата за помош и напатствијата на заедницата.",
 	"wikilambda-special-createzobject-intro": "Ќе мора да ги следите правилата на заедницата, како и авторскоправните и патентните правила.",
@@ -36,6 +42,7 @@
 	"wikilambda-typeselector-label": "Вид на вредност",
 	"wikilambda-argument-typeselector-label": "Вид аргумент",
 	"wikilambda-function-typeselector-label": "Вид функција",
+	"wikilambda-return-typeselector-label": "Вид на поврат",
 	"wikilambda-editor-label-addlanguage-label": "Додај јазик:",
 	"wikilambda-editor-label-removelanguage-tooltip": "Отстрани го јазиков од овој натпис",
 	"wikilambda-editor-zlist-additem-tooltip": "Додај ставка кон овој ZList.",
@@ -43,5 +50,7 @@
 	"wikilambda-editor-zobject-addkey": "Додај клуч:",
 	"wikilambda-editor-zobject-removekey-tooltip": "Отстрани ја оваа вредност/клуч од ZObject-от",
 	"wikilambda-editor-label-select-programming-language-label": "Изберете програмски јазик:",
-	"wikilambda-modeselector-genericliteral": "општ."
+	"wikilambda-modeselector-genericliteral": "општ.",
+	"specialpages-group-wikilambda": "Страница на Викифункции",
+	"wikilambda-editor-argument-list-label": "Список на аргументи"
 }
