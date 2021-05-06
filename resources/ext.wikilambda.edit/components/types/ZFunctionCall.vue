@@ -8,6 +8,7 @@
 	<div>
 		{{ zFunctionCallKeyLabels[ Constants.Z_FUNCTION_CALL_FUNCTION ] }}:
 		<z-object-selector
+			:type="Constants.Z_FUNCTION"
 			:placeholder="$i18n( 'wikilambda-function-typeselector-label' )"
 			:selected-id="zFunctionId"
 			:viewmode="viewmode"

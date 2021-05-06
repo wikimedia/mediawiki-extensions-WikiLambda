@@ -212,6 +212,7 @@
 	},
 	"SpecialPages": {
 		"CreateZObject": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialCreateZObject",
+		"EvaluateFunctionCall": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialEvaluateFunctionCall",
 		"ListDuplicateZObjectLabels": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListDuplicateZObjectLabels"
 	},
 	"ServiceWiringFiles": [

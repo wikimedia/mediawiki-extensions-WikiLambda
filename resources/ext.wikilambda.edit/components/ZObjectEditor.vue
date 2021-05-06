@@ -12,17 +12,19 @@
 			:viewmode="false"
 			@input="updateZobject"
 		></z-object>
-		<div>
-			<!-- TODO: Replace this with a full save dialog (copywarn, IPwarn, minor edit box, …)? -->
-			<label for="summary"> {{ $i18n( 'wikilambda-summarylabel' ) }} </label>
-			<input v-model="summary"
-				class="ext-wikilambda-editSummary"
-				name="summary"
-			>
-		</div>
-		<button @click="submit">
-			{{ submitButtonLabel }}
-		</button>
+		<template v-if="showSaveCommand">
+			<div>
+				<!-- TODO: Replace this with a full save dialog (copywarn, IPwarn, minor edit box, …)? -->
+				<label for="summary"> {{ $i18n( 'wikilambda-summarylabel' ) }} </label>
+				<input v-model="summary"
+					class="ext-wikilambda-editSummary"
+					name="summary"
+				>
+			</div>
+			<button @click="submit">
+				{{ submitButtonLabel }}
+			</button>
+		</template>
 		<p>Current ZObject: {{ ZObjectJson }} </p>
 		<wbmi-message v-if="message.text" :type="message.type">
 			{{ message }}
@@ -68,6 +70,11 @@ module.exports = {
 						'wikilambda-publishchanges' : 'wikilambda-savechanges'
 				);
 			}
+		},
+		showSaveCommand: function () {
+			// TODO: Move this into its own vuex store as things gets more complicated and more view settigns are set
+			// we currently hide the save command for evaluate function call.
+			return mw.config.get( 'wgCanonicalSpecialPageName' ) !== 'EvaluateFunctionCall';
 		}
 	} ),
 	methods: $.extend( {},
