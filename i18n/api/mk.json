@@ -10,6 +10,7 @@
 	"apihelp-wikilambda_fetch-example-single": "Дај еден ZObject, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "Дај три ZObjects: Z1, Z2 и Z3.",
 	"apierror-wikilambda_fetch-missingzid": "Дадениот ZID „$1“ не постои на ова вики.",
+	"apihelp-wikilambda_function_call-param-zobject": "ZObject за повик на функција",
 	"apihelp-query+wikilambdasearch_labels-summary": "Создавачот на списоци за барања до приложникот ви овозможува пребарување на ZObjects за натписи на даден јазик. Има главна цел да пружа поддршка на системот за предвидувачко пребарување.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Поимот за пребарување",
 	"apihelp-query+wikilambdasearch_labels-param-language": "На кој јазичен код да се пребарува",
