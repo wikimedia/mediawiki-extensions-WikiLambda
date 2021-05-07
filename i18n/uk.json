@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Base",
-			"Renamerr"
+			"Renamerr",
+			"Ата"
 		]
 	},
 	"wikilambda-emptylabel": "Неназваний ZObject",
@@ -15,7 +16,7 @@
 	"wikilambda-publishchanges": "Опублікувати зміни",
 	"wikilambda-savechanges": "Зберегти зміни",
 	"wikilambda-summarylabel": "Опис:",
-	"wikilambda-typeselector-label": "Тип значення",
+	"wikilambda-typeselector-label": "Оберіть тип",
 	"wikilambda-editor-label-addlanguage-label": "Додати мову:",
 	"wikilambda-editor-zlist-additem-tooltip": "Додати елемент до цього ZList",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Вилучити цей елемент з цього ZList",

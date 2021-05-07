@@ -15,6 +15,7 @@
 	"wikilambda-savenew": "Сохранить",
 	"wikilambda-savechanges": "Сохранить изменения",
 	"wikilambda-summarylabel": "Описание:",
-	"wikilambda-function-typeselector-label": "Тип функции",
+	"wikilambda-typeselector-label": "Выберите тип",
+	"wikilambda-function-typeselector-label": "Выберите функцию",
 	"wikilambda-editor-label-addlanguage-label": "Добавить язык:"
 }

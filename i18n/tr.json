@@ -3,7 +3,8 @@
 		"authors": [
 			"BaRaN6161 TURK",
 			"Joseph",
-			"MuratTheTurkish"
+			"MuratTheTurkish",
+			"SaldırganSincap"
 		]
 	},
 	"wikilambda-desc": "Wikimedia vikilerine, merkezi bir vikide yazılan, yönetilen ve değerlendirilen işlevlerin değerlendirilmesi için vikimetin ayrıştırıcı işlevi sağlar.",
@@ -41,10 +42,10 @@
 	"wikilambda-publishchanges": "Değişiklikleri yayımla",
 	"wikilambda-savechanges": "Değişiklikleri kaydet",
 	"wikilambda-summarylabel": "Özet:",
-	"wikilambda-typeselector-label": "Değer Türü",
-	"wikilambda-argument-typeselector-label": "Değişken Türü",
-	"wikilambda-function-typeselector-label": "İşlev Türü",
-	"wikilambda-return-typeselector-label": "Geri Dönüş Türü",
+	"wikilambda-typeselector-label": "Bir Tür seçin",
+	"wikilambda-argument-typeselector-label": "Bu bağımsız değişken için bir Tür seçin",
+	"wikilambda-function-typeselector-label": "Bir İşlev seçin",
+	"wikilambda-return-typeselector-label": "Geri dönme için bir Tür seçin",
 	"wikilambda-editor-label-addlanguage-label": "Dil ekle:",
 	"wikilambda-editor-label-removelanguage-tooltip": "Bu dili bu etiketten kaldır",
 	"wikilambda-editor-zlist-additem-tooltip": "Bu ZList'e bir öğe ekleyin",
