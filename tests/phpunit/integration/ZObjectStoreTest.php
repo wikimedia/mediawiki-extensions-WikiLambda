@@ -204,7 +204,7 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z222', 'Z4', $labels );
 		$this->assertTrue( $response );
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_MASTER );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
 		$res = $dbr->select(
 			/* FROM */ 'wikilambda_zobject_labels',
 			/* SELECT */ [ 'wlzl_language', 'wlzl_label' ],
@@ -250,7 +250,7 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 		$response = $this->zobjectStore->insertZObjectLabelConflicts( 'Z333', $conflicts );
 		$this->assertTrue( $response );
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_MASTER );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
 		$res = $dbr->select(
 			/* FROM */ 'wikilambda_zobject_label_conflicts',
 			/* SELECT */ [ 'wlzlc_language' ],
@@ -278,7 +278,7 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 
 		$this->zobjectStore->deleteZObjectLabelsByZid( 'Z222' );
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_MASTER );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
 		$res = $dbr->select(
 			/* FROM */ 'wikilambda_zobject_labels',
 			/* SELECT */ [ 'wlzl_language', 'wlzl_label' ],
@@ -300,7 +300,7 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 
 		$this->zobjectStore->deleteZObjectLabelConflictsByZid( 'Z333' );
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_MASTER );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
 		$res = $dbr->select(
 			/* FROM */ 'wikilambda_zobject_label_conflicts',
 			/* SELECT */ [ 'wlzlc_language' ],

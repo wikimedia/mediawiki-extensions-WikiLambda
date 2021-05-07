@@ -211,7 +211,7 @@ class Hooks implements
 
 		$initialDataToLoadListing = array_filter(
 			scandir( $initialDataToLoadPath ),
-			function ( $key ) {
+			static function ( $key ) {
 				return (bool)preg_match( '/^Z\d+\.json$/', $key );
 			}
 		);

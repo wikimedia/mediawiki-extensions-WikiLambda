@@ -14,7 +14,7 @@ use MediaWiki\MediaWikiServices;
 
 return [
 
-	'WikiLambdaZObjectStore' => function ( MediaWikiServices $services ) {
+	'WikiLambdaZObjectStore' => static function ( MediaWikiServices $services ) {
 		return new ZObjectStore(
 			$services->getDBLoadBalancer(),
 			$services->getTitleFactory(),
