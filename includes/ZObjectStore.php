@@ -76,7 +76,7 @@ class ZObjectStore {
 	 * @return string Next available ZID
 	 */
 	public function getNextAvailableZid() : string {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_MASTER );
+		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
 		$res = $dbr->select(
 			/* FROM */ 'page',
 			/* SELECT */ [ 'page_title' ],
@@ -268,7 +268,7 @@ class ZObjectStore {
 	 * @param string $zid
 	 */
 	public function deleteZObjectLabelsByZid( string $zid ) {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_MASTER );
+		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
 		$dbr->delete(
 			'wikilambda_zobject_labels',
 			[ 'wlzl_zobject_zid' => $zid ]
@@ -282,7 +282,7 @@ class ZObjectStore {
 	 * @param string $zid
 	 */
 	public function deleteZObjectLabelConflictsByZid( string $zid ) {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_MASTER );
+		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
 		$dbr->delete(
 			'wikilambda_zobject_label_conflicts',
 			$dbr->makeList(
@@ -307,7 +307,7 @@ class ZObjectStore {
 	 * @return array Conflicts found in the wikilambda_zobject_labels database
 	 */
 	public function findZObjectLabelConflicts( $zid, $ztype, $labels ) : array {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_MASTER );
+		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
 
 		if ( $labels === [] ) {
 			return [];
@@ -351,7 +351,7 @@ class ZObjectStore {
 	 * @return void|bool
 	 */
 	public function insertZObjectLabels( $zid, $ztype, $labels ) {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_MASTER );
+		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
 
 		$updates = [];
 		foreach ( $labels as $language => $value ) {
@@ -376,7 +376,7 @@ class ZObjectStore {
 	 * @return void|bool
 	 */
 	public function insertZObjectLabelConflicts( $zid, $conflicts ) {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_MASTER );
+		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
 
 		$updates = [];
 		foreach ( $conflicts as $language => $existingZid ) {

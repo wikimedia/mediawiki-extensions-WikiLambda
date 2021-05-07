@@ -53,7 +53,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		$ztype = $this->zObject->getZType();
 
 		$conflicts = $zObjectStore->findZObjectLabelConflicts( $zid, $ztype, $labels );
-		$newLabels = array_filter( $labels, function ( $value, $lang ) use ( $conflicts ) {
+		$newLabels = array_filter( $labels, static function ( $value, $lang ) use ( $conflicts ) {
 			return !isset( $conflicts[$lang] );
 		}, ARRAY_FILTER_USE_BOTH );
 

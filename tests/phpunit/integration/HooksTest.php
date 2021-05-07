@@ -56,7 +56,7 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 		$this->assertTrue( $zobject instanceof ZObjectContent );
 
 		// Assert that all ZIDs available in the data directory are loaded in the database
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_MASTER );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
 		$res = $dbr->select(
 			/* FROM */ 'page',
 			/* SELECT */ [ 'page_title' ],
@@ -73,13 +73,13 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 		$dataPath = dirname( __DIR__, 3 ) . '/data/';
 		$zidsToLoad = array_filter(
 			scandir( $dataPath ),
-			function ( $key ) {
+			static function ( $key ) {
 				return (bool)preg_match( '/^Z\d+\.json$/', $key );
 			}
 		);
 
 		$zidsToLoad = array_map(
-			function ( $value ) {
+			static function ( $value ) {
 				return explode( '.', $value )[0];
 			},
 			$zidsToLoad
@@ -153,7 +153,7 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 		$this->assertFalse( $dupeEditStatus->isOK() );
 		$this->assertTrue( $dupeEditStatus->hasMessage( 'wikilambda-labelclash' ) );
 
-		$only_our_errors = function ( $item ) {
+		$only_our_errors = static function ( $item ) {
 			return $item[0] === 'wikilambda-labelclash';
 		};
 		$filteredErrors = array_filter( $dupeEditStatus->getErrorsArray(), $only_our_errors );
