@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Kly"
+			"Kly",
+			"Neetp7k9"
 		]
 	},
 	"wikilambda-desc": "為維基媒體的 Wiki 提供 Wiki 語法解析器功能，來呼叫對於在中央 Wiki 上編寫、管理、評估的功能之評估。",
@@ -26,7 +27,8 @@
 	"wikilambda-publishchanges": "發布變更",
 	"wikilambda-savechanges": "儲存變更",
 	"wikilambda-summarylabel": "摘要：",
-	"wikilambda-typeselector-label": "值類型",
+	"wikilambda-typeselector-label": "選擇一個型別",
+	"wikilambda-function-typeselector-label": "選擇一個方法",
 	"wikilambda-editor-label-addlanguage-label": "增加語言：",
 	"wikilambda-editor-label-removelanguage-tooltip": "從這個標籤移除此語言",
 	"wikilambda-editor-zlist-additem-tooltip": "增加一個項目到 ZList",

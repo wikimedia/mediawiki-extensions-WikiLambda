@@ -2,10 +2,12 @@
 	"@metadata": {
 		"authors": [
 			"Joquliina",
+			"MITO",
 			"Mediawikitranslator",
 			"Pyscowicz"
 		]
 	},
+	"wikilambda-special-evaluatefunctioncall-intro": "Varmista, että noudatat yhteisön käytäntöjä sekä tekijänoikeus- ja patenttisääntöjä.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Kieli",
 	"wikilambda-editor-label-select-programming-language-label": "Valitse ohjelmointikieli:"
 }

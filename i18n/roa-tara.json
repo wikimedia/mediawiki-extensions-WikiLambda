@@ -13,6 +13,9 @@
 	"wikilambda-publishchanges": "Pubbleche le cangiaminde",
 	"wikilambda-savechanges": "Reggìstre le cangiaminde",
 	"wikilambda-summarylabel": "Riepileghe:",
-	"wikilambda-typeselector-label": "Tipe de valore",
+	"wikilambda-typeselector-label": "Scacchie 'nu tipe",
+	"wikilambda-argument-typeselector-label": "Scacchie 'nu tupe pe stu argomende",
+	"wikilambda-function-typeselector-label": "Scacchie 'na funzione",
+	"wikilambda-return-typeselector-label": "Scacchie 'nu tupe da turnà",
 	"wikilambda-editor-label-addlanguage-label": "Aggiunge 'na lènghe:"
 }

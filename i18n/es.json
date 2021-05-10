@@ -1,12 +1,15 @@
 {
 	"@metadata": {
 		"authors": [
+			"BnSrSa",
 			"Fitoschido",
 			"KATRINE1993"
 		]
 	},
 	"wikilambda-invalidzobject": "El contenido proporcionado no constituye un ZObject válido.",
 	"wikilambda-special-createzobject-nojs": "Para utilizar esta página se necesita JavaScript.",
+	"wikilambda-special-evaluatefunctioncall": "Evalúa una llamada de función",
+	"wikilambda-special-evaluatefunctioncall-intro": "Asegúrate de que sigues las políticas comunitarias, además del copyright y las reglas de patente.",
 	"wikilambda-special-listduplicatezobjectlabels-summary": "Esta página muestra cuáles ZObjects se han creado con etiquetas duplicadas. Como solo el primero figurará en las búsquedas, se deben corregir.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Idioma",
 	"wikilambda-publishnew": "Publicar",

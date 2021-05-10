@@ -1,8 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Fitoschido"
+			"Fitoschido",
+			"Skurz0"
 		]
 	},
+	"wikilambda-special-evaluatefunctioncall": "Avaluar una crida a una funció",
+	"wikilambda-special-evaluatefunctioncall-summary": "Aquest formulari permet avaluar una crida a una funció",
+	"wikilambda-special-evaluatefunctioncall-intro": "Assegura't que segueixes les polítiques de la comunitat, i copyright i regles de patent.",
+	"wikilambda-special-evaluatefunctioncall-nojs": "Aquesta pàgina requereix JavaScript per ser utilitzada.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Llengua"
 }
