@@ -86,7 +86,7 @@ class ZObjectStore {
 			],
 			__METHOD__,
 			[
-				'GROUP BY' => 'page_id',
+				'GROUP BY' => 'page_id,page_title',
 				'ORDER BY' => 'page_id DESC',
 				'LIMIT' => 1,
 			]
