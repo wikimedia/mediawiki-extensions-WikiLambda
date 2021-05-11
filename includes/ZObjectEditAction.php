@@ -34,20 +34,12 @@ class ZObjectEditAction extends Action {
 		$userLangCode = $userLang->getCode();
 
 		$createNewPage = false;
-
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$zObject = $zObjectStore->fetchZObjectByTitle( $this->page->getTitle() );
-
-		if ( !$zObject ) {
-			$contentHandler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
-			$zObject = $contentHandler->makeEmptyContent();
-			$createNewPage = true;
-		}
+		$title = $this->page->getTitle();
 
 		$editingData = [
-			'zobject' => ZObjectUtils::normalizeZStringsAndZReferences( $zObject->getObject() ),
 			'zlang' => $userLangCode,
 			'createNewPage' => $createNewPage,
+			'zId' => $title->getBaseText(),
 			'viewmode' => false
 		];
 

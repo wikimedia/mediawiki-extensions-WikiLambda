@@ -6,15 +6,28 @@
 		@license MIT
 	-->
 	<div id="ext-wikilambda-app">
-		<z-object-editor v-if="viewmode === false"
+		<!--
+			I am using v-show instead than v-if on the template,
+			as the v-show will trigger a render before the object is initialized
+		-->
+		<z-object-editor
+			v-if="viewmode === false"
+			v-show="zObjectInitialized"
 		></z-object-editor>
-		<z-object-viewer v-if="viewmode === true"
+		<z-object-viewer
+			v-if="viewmode === true"
+			v-show="zObjectInitialized"
 		></z-object-viewer>
+		<span v-if="!zObjectInitialized">
+			{{ $i18n( 'wikilambda-loading' ) }}
+		</span>
 	</div>
 </template>
 
 <script>
 var ZObjectEditor = require( './ZObjectEditor.vue' ),
+	mapGetters = require( 'vuex' ).mapGetters,
+	mapActions = require( 'vuex' ).mapActions,
 	ZObjectViewer = require( './ZObjectViewer.vue' );
 
 module.exports = {
@@ -28,9 +41,16 @@ module.exports = {
 			viewmode: null
 		};
 	},
+	computed: mapGetters( {
+		zObjectInitialized: 'getZObjectInitialized'
+	} ),
+	methods: mapActions( [ 'initializeZObject' ] ),
 	created: function () {
 		var editingData = mw.config.get( 'wgWikiLambda' );
 		this.viewmode = editingData.viewmode;
+
+		// Set zobject
+		this.initializeZObject();
 	}
 };
 </script>

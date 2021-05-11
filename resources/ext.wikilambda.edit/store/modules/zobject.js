@@ -116,7 +116,8 @@ module.exports = {
 		zobjectMessage: {
 			type: 'error',
 			text: null
-		}
+		},
+		ZObjectInitialized: false
 	},
 	getters: {
 		isCreateNewPage: function ( state ) {
@@ -279,6 +280,9 @@ module.exports = {
 				var objectChildren = getters.getZObjectChildrenById( objectId );
 				return typeUtils.findKeyInArray( Constants.Z_STRING_VALUE, objectChildren );
 			};
+		},
+		getZObjectInitialized: function ( state ) {
+			return state.ZObjectInitialized;
 		}
 	},
 	mutations: {
@@ -309,6 +313,9 @@ module.exports = {
 				type: payload.type || 'notice',
 				text: payload.text || null
 			};
+		},
+		setZObjectInitialized: function ( state, value ) {
+			state.ZObjectInitialized = value;
 		}
 	},
 	actions: {
@@ -322,29 +329,46 @@ module.exports = {
 		initializeZObject: function ( context ) {
 			var editingData = mw.config.get( 'wgWikiLambda' ),
 				createNewPage = editingData.createNewPage,
-				zobject = JSON.parse( JSON.stringify( editingData.zobject ) ),
+				zobject = {},
 				zobjectTree = [],
-				innerZobject = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ],
-				zMultilingualStringObject;
+				zId = editingData.zId,
+				rootObject;
 
-			if ( innerZobject !== null && createNewPage ) {
-				zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] = null;
-			}
-
-			zobjectTree = convertZObjectToTree( zobject );
-			context.commit( 'setZObject', zobjectTree );
 			context.commit( 'setCreateNewPage', createNewPage );
 
+			// if create new page Z2 of Z0
 			if ( createNewPage ) {
-				zMultilingualStringObject = context.state.zobject.filter( function ( innerObject ) {
-					return innerObject.key === Constants.Z_PERSISTENTOBJECT_LABEL;
-				} )[ 0 ];
+				rootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
+				context.commit( 'addZObject', rootObject );
 
 				context.dispatch( 'changeType', {
-					id: zMultilingualStringObject.id,
-					type: Constants.Z_MULTILINGUALSTRING
+					id: 0,
+					type: Constants.Z_PERSISTENTOBJECT
 				} );
+				context.commit( 'setZObjectInitialized', true );
+			// if Zid is set
+			} else if ( zId ) {
+				context.dispatch( 'fetchZKeys', [ zId ] )
+					.then( function () {
+						zobject = context.getters.getZkeys[ zId ];
+
+						zobjectTree = convertZObjectToTree( zobject );
+						context.commit( 'setZObject', zobjectTree );
+						context.commit( 'setZObjectInitialized', true );
+					} );
+
+			// TODO: improve, this is too weak
+			} else {
+				rootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
+				context.commit( 'addZObject', rootObject );
+
+				context.dispatch( 'changeType', {
+					id: 0,
+					type: Constants.Z_FUNCTION_CALL
+				} );
+				context.commit( 'setZObjectInitialized', true );
 			}
+
 		},
 		/**
 		 * Submit a zObject to the api.
@@ -498,6 +522,37 @@ module.exports = {
 			} );
 		},
 		/**
+		 * Create the required entry in the zobject array for a zPersistenObject.
+		 * The entry will result in a json representation equal to:
+		 * { Z1K1: Z0, Z2K1: { Z1K1: Z9, Z9K1: Z0 }, Z2K2: '', Z2K3: { Z1K1: Z12, Z12K1: [] } }
+		 *
+		 * @param {Object} context
+		 * @param {number} ObjectId
+		 */
+		addZPersistentObject: function ( context, ObjectId ) {
+			var nextId,
+				zObjectItems = [];
+
+			zObjectItems = [
+				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_PERSISTENTOBJECT, parent: ObjectId }
+			];
+			context.dispatch( 'addZObjects', zObjectItems );
+
+			// Reference to Z0
+			nextId = getNextObjectId( context.state.zobject );
+			zObjectItems = [
+				{ key: Constants.Z_PERSISTENTOBJECT_ID, value: 'object', parent: ObjectId },
+				{ key: Constants.Z_PERSISTENTOBJECT_VALUE, value: 'object', parent: ObjectId }
+			];
+			context.dispatch( 'addZObjects', zObjectItems );
+			context.dispatch( 'addZReference', { id: nextId, value: Constants.NEW_ZID_PLACEHOLDER } );
+
+			// Empty Multil;ingual string
+			nextId = getNextObjectId( context.state.zobject );
+			context.dispatch( 'addZObject', { key: Constants.Z_PERSISTENTOBJECT_LABEL, value: 'object', parent: ObjectId } );
+			context.dispatch( 'addZMultilingualString', nextId );
+		},
+		/**
 		 * Create the required entry in the zobject array for a zMonolingualString.
 		 * The entry will result in a json representation equal to:
 		 * { Z1K1: Z11, Z11K1: payload.lang, Z11k2: '' }
@@ -587,17 +642,18 @@ module.exports = {
 		 * { Z1K1: Z9, Z9K1: '' }
 		 *
 		 * @param {Object} context
-		 * @param {number} objectId
+		 * @param {Object} payload
 		 */
-		addZReference: function ( context, objectId ) {
-			var zObjectItems = [];
+		addZReference: function ( context, payload ) {
+			var zObjectItems = [],
+				value = payload.value || '';
 			context.dispatch( 'setZObjectValue', {
-				id: objectId,
+				id: payload.id,
 				value: 'object'
 			} );
 			zObjectItems = [
-				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: objectId },
-				{ key: Constants.Z_REFERENCE_ID, value: '', parent: objectId }
+				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: payload.id },
+				{ key: Constants.Z_REFERENCE_ID, value: value, parent: payload.id }
 			];
 			context.dispatch( 'addZObjects', zObjectItems );
 		},
@@ -836,6 +892,9 @@ module.exports = {
 					break;
 				case Constants.Z_FUNCTION:
 					context.dispatch( 'addZFunction', payload.id );
+					break;
+				case Constants.Z_PERSISTENTOBJECT:
+					context.dispatch( 'addZPersistentObject', payload.id );
 					break;
 				default:
 					context.dispatch( 'addGenericObject', payload );

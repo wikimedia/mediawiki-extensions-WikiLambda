@@ -56,9 +56,10 @@ module.exports = {
 					} catch ( err ) {
 						return this.zobjectRaw;
 					}
-				} else {
+				} else if ( this.zobject ) {
 					return JSON.stringify( this.getZObjectAsJsonById( this.zobjectId, this.zobject.value === 'array' ), null, 4 );
 				}
+				return '';
 			}
 		}
 	),

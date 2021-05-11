@@ -1,4 +1,5 @@
-var zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
+var Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
 	zobject = {
 		Z1K1: 'Z2',
 		Z2K1: 'Z0',
@@ -18,7 +19,8 @@ var zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/mo
 	],
 	state,
 	context,
-	postMock;
+	postMock,
+	getResolveMock;
 
 describe( 'zobject Vuex module', function () {
 	beforeEach( function () {
@@ -34,6 +36,9 @@ describe( 'zobject Vuex module', function () {
 			};
 		} );
 		state = $.extend( {}, zobjectModule.state );
+		getResolveMock = jest.fn( function ( thenFunction ) {
+			return thenFunction();
+		} );
 		context = $.extend( {}, {
 			// eslint-disable-next-line no-unused-vars
 			commit: jest.fn( function ( mutationType, payload ) {
@@ -41,7 +46,9 @@ describe( 'zobject Vuex module', function () {
 			} ),
 			// eslint-disable-next-line no-unused-vars
 			dispatch: jest.fn( function ( actionType, payload ) {
-				return;
+				return {
+					then: getResolveMock
+				};
 			} ),
 			getters: {}
 		} );
@@ -56,14 +63,6 @@ describe( 'zobject Vuex module', function () {
 				getUrl: jest.fn()
 			};
 		} );
-		mw.config = {
-			get: jest.fn( function () {
-				return {
-					zobject: zobject,
-					createNewPage: true
-				};
-			} )
-		};
 	} );
 
 	describe( 'Getters', function () {
@@ -163,25 +162,76 @@ describe( 'zobject Vuex module', function () {
 	} );
 
 	describe( 'Actions', function () {
-		it( 'Initialize ZObject, set page details', function () {
-			var result = [
-				{ id: 0, key: undefined, value: 'object', parent: undefined },
-				{ id: 1, key: 'Z1K1', value: 'Z2', parent: 0 },
-				{ id: 2, key: 'Z2K1', value: 'Z0', parent: 0 }
-			];
+		it( 'Initialize ZObject, create new page', function () {
+			var expectedChangeTypePayload = { id: 0, type: Constants.Z_PERSISTENTOBJECT },
+				expectedRootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
 			context.state = {
 				zobject: zobjectTree
 			};
+			mw.config = {
+				get: jest.fn( function () {
+					return {
+						createNewPage: true
+					};
+				} )
+			};
 			zobjectModule.actions.initializeZObject( context );
 
-			expect( context.commit ).toHaveBeenCalledTimes( 2 );
-			expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expect.arrayContaining( result ) );
-			expect( context.commit ).toHaveBeenCalledWith( 'setZObject',
-				expect.not.arrayContaining( [
-					expect.objectContaining( { key: 'Z6K1' } )
-				] )
-			);
+			expect( context.commit ).toHaveBeenCalledTimes( 3 );
+			expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
 			expect( context.commit ).toHaveBeenCalledWith( 'setCreateNewPage', true );
+			expect( context.commit ).toHaveBeenCalledWith( 'addZObject', expectedRootObject );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedChangeTypePayload );
+			expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
+		} );
+		it( 'Initialize ZObject, existing zobject page', function () {
+			var expectedSetZObjectPayload = [ { id: 0, key: undefined, parent: undefined, value: 'object' }, { id: 1, key: 'Z1K1', parent: 0, value: 'test' }, { id: 2, key: 'Z2K1', parent: 0, value: 'test' } ];
+			context.state = {
+				zobject: zobjectTree
+			};
+			context.getters.getZkeys = {
+				Z1234: { Z1K1: 'test', Z2K1: 'test' }
+			};
+			mw.config = {
+				get: jest.fn( function () {
+					return {
+						createNewPage: false,
+						zId: 'Z1234'
+					};
+				} )
+			};
+			zobjectModule.actions.initializeZObject( context );
+
+			expect( context.commit ).toHaveBeenCalledTimes( 3 );
+			expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+			expect( context.commit ).toHaveBeenCalledWith( 'setCreateNewPage', false );
+			expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expectedSetZObjectPayload );
+			expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
+		} );
+		it( 'Initialize ZObject with Z7 call function when no zids or createNewPage is set', function () {
+			var expectedChangeTypePayload = { id: 0, type: Constants.Z_FUNCTION_CALL },
+				expectedRootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
+			context.state = {
+				zobject: zobjectTree
+			};
+			context.getters.getZkeys = {
+				Z1234: { Z1K1: 'test', Z2K1: 'test' }
+			};
+			mw.config = {
+				get: jest.fn( function () {
+					return {
+						createNewPage: false
+					};
+				} )
+			};
+			zobjectModule.actions.initializeZObject( context );
+
+			expect( context.commit ).toHaveBeenCalledTimes( 3 );
+			expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+			expect( context.commit ).toHaveBeenCalledWith( 'setCreateNewPage', false );
+			expect( context.commit ).toHaveBeenCalledWith( 'addZObject', expectedRootObject );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedChangeTypePayload );
+			expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
 		} );
 
 		it( 'Save new zobject', function () {

@@ -329,11 +329,11 @@ class ZObjectContent extends AbstractContent {
 
 		$userLangCode = $userLang->mCode;
 		$editingData = [
+			// The following paramether may be the same now,
+			// but will surely change in the future as we remove the Zds from the UI
 			'title' => $title->getBaseText(),
+			'zId' => $title->getBaseText(),
 			'page' => $title->getPrefixedDBkey(),
-			'zobject' => $zObject
-				? ZObjectUtils::normalizeZStringsAndZReferences( $zObject->getObject() )
-				: null,
 			'zlang' => $userLangCode,
 			'createNewPage' => false,
 			'viewmode' => true

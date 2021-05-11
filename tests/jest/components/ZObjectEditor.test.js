@@ -40,7 +40,6 @@ describe( 'ZObjectEditor', function () {
 		};
 		actions = {
 			fetchZKeys: jest.fn(),
-			initializeZObject: jest.fn(),
 			submitZObject: jest.fn()
 		};
 		mutations = {
@@ -71,6 +70,5 @@ describe( 'ZObjectEditor', function () {
 		} );
 
 		expect( wrapper.find( 'div' ) ).toBeTruthy();
-		expect( actions.initializeZObject.mock.calls.length ).toBe( 1 );
 	} );
 } );
