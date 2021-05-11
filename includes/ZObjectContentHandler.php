@@ -11,24 +11,30 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use Content;
+use ContentHandler;
 use FormatJson;
-use JsonContentHandler;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MWException;
 use Title;
 
-class ZObjectContentHandler extends JsonContentHandler {
+class ZObjectContentHandler extends ContentHandler {
 
+	/**
+	 * @param string $modelId
+	 */
 	public function __construct( $modelId ) {
 		if ( $modelId !== CONTENT_MODEL_ZOBJECT ) {
 			throw new MWException( __CLASS__ . " initialised for invalid content model" );
 		}
 
-		parent::__construct( CONTENT_MODEL_ZOBJECT );
+		parent::__construct( CONTENT_MODEL_ZOBJECT, [ CONTENT_FORMAT_TEXT ] );
 	}
 
+	/**
+	 * @param Title $title Page to check
+	 * @return bool
+	 */
 	public function canBeUsedOn( Title $title ) {
 		return $title->inNamespace( NS_ZOBJECT );
 	}
@@ -51,10 +57,45 @@ class ZObjectContentHandler extends JsonContentHandler {
 	}
 
 	/**
+	 * @param string $data
+	 * @param Title|null $title
+	 * @param string|null $modelId
+	 * @param string|null $format
+	 * @return ZObjectContent
+	 */
+	public static function makeContent( $data, Title $title = null, $modelId = null, $format = null ) {
+		return parent::makeContent( $data, $title, $modelId, $format );
+	}
+
+	/**
 	 * @return string
 	 */
 	protected function getContentClass() {
 		return ZObjectContent::class;
+	}
+
+	/**
+	 * @param Content $content
+	 * @param string|null $format
+	 * @return string
+	 */
+	public function serializeContent( Content $content, $format = null ) {
+		$this->checkFormat( $format );
+
+		// @phan-suppress-next-line PhanUndeclaredMethod
+		return $content->getText();
+	}
+
+	/**
+	 * @param string $text
+	 * @param string|null $format
+	 * @return ZObjectContent
+	 */
+	public function unserializeContent( $text, $format = null ) {
+		$this->checkFormat( $format );
+
+		$class = $this->getContentClass();
+		return new $class( $text );
 	}
 
 	/**
@@ -78,7 +119,7 @@ class ZObjectContentHandler extends JsonContentHandler {
 			throw new \InvalidArgumentException( "Provided page '$zObjectTitle' could not be fetched from the DB." );
 		}
 
-		$object = get_object_vars( ZObjectUtils::canonicalize( $zObject->getData()->getValue() ) );
+		$object = get_object_vars( ZObjectUtils::canonicalize( $zObject->getObject() ) );
 
 		if ( $languageCode ) {
 			$services = MediaWikiServices::getInstance();

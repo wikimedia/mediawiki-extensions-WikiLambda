@@ -9,7 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 
 /**
@@ -18,14 +18,18 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 class ZReferenceTest extends \MediaWikiIntegrationTestCase {
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getInnerZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::__construct
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZType
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZValue
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getInnerZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZType
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZValue
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
 	 */
 	public function testPersistentCreation() {
 		$testObject = new ZObjectContent( '{ "Z1K1": "Z9", "Z9K1": "Z1" }' );
+		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z9', $testObject->getZType() );
 		$this->assertSame( 'Z1', $testObject->getZValue() );
 
@@ -37,6 +41,8 @@ class ZReferenceTest extends \MediaWikiIntegrationTestCase {
 				. '"Z2K3": { "Z1K1":"Z12", "Z12K1":[] } '
 			. '}'
 		);
+
+		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z9', $testObject->getZType() );
 		$this->assertSame( 'Z1', $testObject->getZValue() );
 	}
@@ -82,5 +88,4 @@ class ZReferenceTest extends \MediaWikiIntegrationTestCase {
 		$testObject = new ZReference( 'Z1K1' );
 		$this->assertFalse( $testObject->isValid(), 'Z1K1 as a ZReference is invalid' );
 	}
-
 }

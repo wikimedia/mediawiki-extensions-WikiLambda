@@ -10,7 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\MediaWikiServices;
 use Status;
 use Title;
@@ -115,18 +115,21 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 
 	public function provideCreateNewZObject() {
 		return [
-			'incorrect JSON' => [ '{ "Z1K1"; Z2 ]', 'apierror-wikilambda_edit-invalidjson' ],
+			'incorrect JSON' => [
+				'{ "Z1K1"; Z2 ]',
+				'ZPersistentObject input is invalid JSON: Syntax error.'
+			],
 			'incorrect ZObject, no id' => [
 				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" }, "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }',
-				'ZObjectContent missing the id key.'
+				'ZPersistentObject missing required \'Z2K1\' key.'
 			],
 			'incorrect ZObject, no value' => [
 				'{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }',
-				'ZObjectContent missing the value key.'
+				'ZPersistentObject missing required \'Z2K2\' key.'
 			],
 			'incorrect ZObject, no label' => [
 				'{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" } }',
-				'ZObjectContent missing the label key.'
+				'ZPersistentObject missing required \'Z2K3\' key.'
 			],
 			'correct ZObject' => [
 				'{ "Z1K1": "Z2", "Z2K1": "Z0",'

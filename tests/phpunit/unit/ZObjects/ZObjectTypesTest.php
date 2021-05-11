@@ -9,11 +9,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests;
 
+use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 

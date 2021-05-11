@@ -14,7 +14,6 @@ use ApiMessage;
 use CommentStoreComment;
 use DatabaseUpdater;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\Revision\SlotRecord;
 use MessageSpecifier;
 use MWNamespace;
@@ -106,7 +105,8 @@ class Hooks implements
 		}
 
 		// (T260751) Ensure uniqueness of type / label / language triples on save.
-		$newLabels = $content->getLabels()->getZValue();
+		$zPersistentObject = $content->getZObject();
+		$newLabels = $zPersistentObject->getLabels()->getZValue();
 
 		if ( $newLabels === [] ) {
 			// Unlabelled; don't error.
@@ -114,7 +114,11 @@ class Hooks implements
 		}
 
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$clashes = $zObjectStore->findZObjectLabelConflicts( $zid, $content->getZType(), $newLabels );
+		$clashes = $zObjectStore->findZObjectLabelConflicts(
+			$zid,
+			$zPersistentObject->getZType(),
+			$newLabels
+		);
 
 		if ( $clashes === [] ) {
 			return true;
@@ -232,8 +236,15 @@ class Hooks implements
 					return;
 				}
 
+				try {
+					$content = ZObjectContentHandler::makeContent( $data, $title );
+				} catch ( \InvalidArgumentException $e ) {
+					// Do nothing
+					continue;
+				}
+
 				$status = $page->doEditContent(
-					/* Content */ ZObjectContentHandler::makeContent( $data, $title ),
+					/* Content */ $content,
 					/* Edit summary */ $creatingComment,
 					/* Flags */ 0,
 					/* Original revision ID */ false,

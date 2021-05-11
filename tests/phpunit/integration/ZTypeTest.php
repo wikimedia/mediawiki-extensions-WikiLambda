@@ -9,9 +9,9 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\MediaWikiServices;
 
@@ -21,11 +21,13 @@ use MediaWiki\MediaWikiServices;
 class ZTypeTest extends \MediaWikiIntegrationTestCase {
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getInnerZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::__construct
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZType
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getInnerZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZType
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
 	 */
 	public function testPersistentCreation() {
 		$services = MediaWikiServices::getInstance();

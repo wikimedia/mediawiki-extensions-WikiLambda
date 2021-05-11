@@ -10,11 +10,11 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use InvalidArgumentException;
+use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent
+ * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectContent
  * @group Database
  */
 class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
@@ -49,11 +49,9 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::__construct
 	 */
 	public function testCreation_invalidThrows_nokey() {
-		$testObject = new ZObjectContent(
-			'{}'
-		);
-		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( InvalidArgumentException::class );
+		$testObject = new ZObjectContent( '{}' );
+		$this->assertFalse( $testObject->isValid() );
 		$this->assertSame( 'InvalidObjectWillNotHaveAType', $testObject->getZType() );
 	}
 
@@ -87,7 +85,7 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 	public function testCreation_invalidThrows_nestedrecordhasinvalidkey() {
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent(
-			'{"Z1K1":"Z2","Z2K1":"Z0","Z2K2":{"Z1K1":"Foo"},"Z2K3": { "Z1K1":"Z12", "Z12K1":[] }}'
+			'{ "Z1K1":"Z2", "Z2K1":"Z0", "Z2K2": { "Z1K1": "Foo" }, "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
 		);
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( InvalidArgumentException::class );
@@ -100,7 +98,7 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 	public function testCreation_invalidThrows_nestedrecordhasnovalue() {
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent(
-			'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z1", "Z2K3": { "Z1K1":"Z12", "Z12K1":[] } } }'
+			'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z1" }, "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
 		);
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( InvalidArgumentException::class );

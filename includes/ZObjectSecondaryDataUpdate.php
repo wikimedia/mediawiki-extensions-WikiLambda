@@ -10,8 +10,8 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use Content;
 use DataUpdate;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use Title;
 
 class ZObjectSecondaryDataUpdate extends DataUpdate {
@@ -22,6 +22,10 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 	/** @var ZObjectContent */
 	private $zObject;
 
+	/**
+	 * @param Title $title
+	 * @param Content $zObject
+	 */
 	public function __construct( Title $title, $zObject ) {
 		$this->title = $title;
 		$this->zObject = $zObject;

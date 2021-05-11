@@ -9,10 +9,10 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZKey
@@ -42,10 +42,13 @@ class ZKeyTest extends \MediaWikiIntegrationTestCase {
 	}
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getInnerZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::__construct
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZType
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getInnerZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZType
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZValue
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
 	 * @covers ::isValid
 	 * @covers ::getKeyType
 	 * @covers ::getKeyId

@@ -10,9 +10,9 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use InvalidArgumentException;
+use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 /**
@@ -76,16 +76,19 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 	}
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getInnerZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::__construct
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZType
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZValue
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getInnerZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZType
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZValue
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
 	 */
 	public function testPersistentCreation() {
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent( '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "Demonstration item" }' );
-
+		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z11', $testObject->getZType() );
 		$this->assertSame( [ 'en' => 'Demonstration item' ], $testObject->getZValue() );
 
@@ -106,10 +109,11 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 }
 EOT
 		);
+
+		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z11', $testObject->getZType() );
 		$this->assertSame( [ 'en' => 'Demonstration item' ], $testObject->getZValue() );
 		$this->assertSame( 'en', $testObject->getInnerZObject()->getLanguage() );
 		$this->assertSame( 'Demonstration item', $testObject->getInnerZObject()->getString() );
-		$this->assertTrue( $testObject->isValid() );
 	}
 }

@@ -111,7 +111,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 
 			// Fetch ZObject and handle ZMultilingualStrings
 			$zObjectStore = WikiLambdaServices::getZObjectStore();
-			$zobject = $zObjectStore->fetchZObjectByTitle( $title )->getData()->getValue();
+			$zobject = $zObjectStore->fetchZObjectByTitle( $title )->getObject();
 
 			if ( is_array( $languages ) ) {
 				$zobject = ZObjectUtils::filterZMultilingualStringsToLanguage( $zobject, $languages );

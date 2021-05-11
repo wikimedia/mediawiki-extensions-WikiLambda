@@ -9,7 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 /**
@@ -18,22 +18,28 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 class ZStringTest extends \MediaWikiIntegrationTestCase {
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObjectContent::getInnerZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::__construct
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZType
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZValue
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getInnerZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZType
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZValue
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
 	 */
 	public function testPersistentCreation() {
-		$testObject = new ZObjectContent( '' );
+		$testObject = new ZObjectContent( '""' );
+		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z6', $testObject->getZType() );
 		$this->assertSame( '', $testObject->getZValue() );
 
-		$testObject = new ZObjectContent( 'Test' );
+		$testObject = new ZObjectContent( '"Test"' );
+		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z6', $testObject->getZType() );
 		$this->assertSame( 'Test', $testObject->getZValue() );
 
 		$testObject = new ZObjectContent( '{ "Z1K1": "Z6", "Z6K1": "Test" }' );
+		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z6', $testObject->getZType() );
 		$this->assertSame( 'Test', $testObject->getZValue() );
 
@@ -46,6 +52,7 @@ class ZStringTest extends \MediaWikiIntegrationTestCase {
 				. '"Z2K3": { "Z1K1":"Z12", "Z12K1":[] } '
 			. '}'
 		);
+		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z6', $testObject->getZType() );
 		$this->assertSame( 'Test', $testObject->getZValue() );
 	}
@@ -58,7 +65,7 @@ class ZStringTest extends \MediaWikiIntegrationTestCase {
 		$testObject = new ZString( 'Test' );
 		$this->assertSame( 'Z6', $testObject->getZType(), 'ZType of directly-created ZStrings' );
 
-		$testObject = new ZObjectContent( 'Test' );
+		$testObject = new ZObjectContent( '"Test"' );
 		$this->assertSame( 'Z6', $testObject->getZType(), 'ZType of indirectly-created ZStrings' );
 	}
 

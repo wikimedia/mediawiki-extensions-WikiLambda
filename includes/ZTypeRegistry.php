@@ -76,7 +76,7 @@ class ZTypeRegistry {
 
 	private const BUILT_IN_TYPES = [
 		self::Z_OBJECT => 'ZObject',
-		self::Z_PERSISTENTOBJECT => 'ZObjectContent',
+		self::Z_PERSISTENTOBJECT => 'ZPersistentObject',
 		self::Z_KEY => 'ZKey',
 		self::Z_TYPE => 'ZType',
 		self::Z_STRING => 'ZString',
