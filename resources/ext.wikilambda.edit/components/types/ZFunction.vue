@@ -51,7 +51,9 @@ module.exports = {
 			'getZObjectChildrenById',
 			'getNextObjectId',
 			'getZObjectTypeById',
-			'getZkeyLabels'
+			'getZkeyLabels',
+			'getZObjectAsJsonById',
+			'zLang'
 		] ),
 		{
 			Constants: function () {
@@ -103,14 +105,24 @@ module.exports = {
 				zobject.forEach( function ( argument, index ) {
 					var argumentChildren = self.getZObjectChildrenById( argument.id ),
 						argumentType = getArgumentType( argumentChildren ),
-						argumentKey = argumentChildren.filter( function ( item ) {
-							return item.key === Constants.Z_ARGUMENT_KEY;
-						} )[ 0 ],
-						argumentKeyChildren = self.getZObjectChildrenById( argumentKey.id ),
-						argumentId = argumentKeyChildren[ 1 ].value,
+						argumentLabels = self.getZObjectAsJsonById(
+							self.findKeyInArray(
+								Constants.Z_MULTILINGUALSTRING_VALUE,
+								self.getZObjectChildrenById(
+									self.findKeyInArray(
+										Constants.Z_ARGUMENT_LABEL,
+										argumentChildren
+									).id
+								)
+							).id,
+							true
+						),
+						userLangLabel = argumentLabels.filter( function ( label ) {
+							return label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] === self.zLang;
+						} )[ 0 ] || argumentLabels[ 0 ],
 						type = self.getZkeyLabels[ argumentType.value ],
-						key = argumentId ?
-							( argumentId ) + ': ' :
+						key = userLangLabel ?
+							( userLangLabel[ Constants.Z_MONOLINGUALSTRING_VALUE ] ) + ': ' :
 							'';
 
 					if ( type === undefined ) {
