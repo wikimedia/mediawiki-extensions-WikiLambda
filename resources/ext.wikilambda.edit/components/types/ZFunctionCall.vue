@@ -27,7 +27,13 @@
 		<button @click="callFunctionHandler">
 			<label> {{ $i18n( 'wikilambda-call-function' ) }} </label>
 		</button>
-		<p>{{ $i18n( 'wikilambda-orchestrated' ) }}: {{ getOrchestrationResult }}</p>
+		<div>
+			{{ $i18n( 'wikilambda-orchestrated' ) }}:
+			<z-object-json
+				:viewmode="true"
+				:zobject-raw="getOrchestrationResult"
+			></z-object-json>
+		</div>
 	</div>
 </template>
 
@@ -37,11 +43,13 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapState = require( 'vuex' ).mapState,
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
+	ZObjectJson = require( '../ZObjectJson.vue' ),
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
 module.exports = {
 	components: {
-		'z-object-selector': ZObjectSelector
+		'z-object-selector': ZObjectSelector,
+		'z-object-json': ZObjectJson
 	},
 	mixins: [ typeUtils ],
 	props: {

@@ -25,7 +25,13 @@
 				{{ submitButtonLabel }}
 			</button>
 		</template>
-		<p>Current ZObject: {{ ZObjectJson }} </p>
+		<div>
+			Current ZObject:
+			<z-object-json
+				:viewmode="true"
+				:zobject-raw="ZObjectJson"
+			></z-object-json>
+		</div>
 		<wbmi-message v-if="message.text" :type="message.type">
 			{{ message }}
 		</wbmi-message>

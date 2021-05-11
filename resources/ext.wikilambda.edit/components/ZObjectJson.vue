@@ -21,8 +21,10 @@ module.exports = {
 	mixins: [ typeUtils ],
 	props: {
 		zobjectId: {
-			type: Number,
-			required: true
+			type: Number
+		},
+		zobjectRaw: {
+			type: [ Object, String ]
 		},
 		viewmode: {
 			type: Boolean,
@@ -42,7 +44,21 @@ module.exports = {
 				return this.getZObjectById( this.zobjectId );
 			},
 			zobjectJson: function () {
-				return JSON.stringify( this.getZObjectAsJsonById( this.zobjectId, this.zobject.value === 'array' ), null, 4 );
+				if ( this.zobjectRaw !== undefined ) {
+					try {
+						return JSON.stringify(
+							typeof this.zobjectRaw === 'string' ?
+								JSON.parse( this.zobjectRaw ) :
+								this.zobjectRaw,
+							null,
+							4
+						);
+					} catch ( err ) {
+						return this.zobjectRaw;
+					}
+				} else {
+					return JSON.stringify( this.getZObjectAsJsonById( this.zobjectId, this.zobject.value === 'array' ), null, 4 );
+				}
 			}
 		}
 	),
@@ -53,22 +69,28 @@ module.exports = {
 	},
 	watch: {
 		codeEditorState: function () {
-			try {
-				var self = this;
+			var self = this;
 
-				self.$store.dispatch( 'injectZObject', {
-					zobject: JSON.parse( this.codeEditorState ),
-					key: this.zobject.key,
-					id: this.zobjectId,
-					parent: this.zobject.parent
-				} ).then( function ( newType ) {
-					if ( self.isValidZidFormat( newType ) ) {
-						self.$emit( 'change-literal', newType );
-					}
-				} );
-			} catch ( error ) {
-				// JSON parse failed
+			if ( this.zobjectId !== undefined ) {
+				try {
+					self.$store.dispatch( 'injectZObject', {
+						zobject: JSON.parse( this.codeEditorState ),
+						key: this.zobject.key,
+						id: this.zobjectId,
+						parent: this.zobject.parent
+					} ).then( function ( newType ) {
+						if ( self.isValidZidFormat( newType ) ) {
+							self.$emit( 'change-literal', newType );
+						}
+					} );
+				} catch ( error ) {
+					// JSON parse failed
+				}
 			}
+		},
+		zobjectRaw: function () {
+			this.codeEditorState = this.zobjectJson;
+			this.initialJson = this.zobjectJson;
 		}
 	},
 	mounted: function () {
