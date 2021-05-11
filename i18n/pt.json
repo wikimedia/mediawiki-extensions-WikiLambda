@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Emma Franzen"
+		]
+	},
+	"wikilambda-call-function": "Função de Chamada",
+	"wikilambda-orchestrated": "Resultado de orquestração",
+	"wikilambda-special-callfunction": "Crie e execute uma chamada de função.",
+	"wikilambda-special-callfunction-summary": "Este formulário permite criar e executar uma chamada de função. Você deve ler a documentação de ajuda e a orientação da comunidade primeiro.",
+	"wikilambda-special-callfunction-intro": "Certifique-se de seguir as políticas da comunidade e as regras de direitos autorais e patentes.",
+	"wikilambda-special-callfunction-nojs": "Esta página requer o uso de JavaScript.",
+	"wikilambda-special-evaluatefunctioncall": "Avaliar um chamada de funcao",
+	"wikilambda-special-evaluatefunctioncall-summary": "Este formulario permite avaliar uma chamada de funcao.",
+	"wikilambda-special-evaluatefunctioncall-intro": "Certifique-se de seguir a communidade politicas, da regras de direitos autorais e patentes.",
+	"wikilambda-special-evaluatefunctioncall-nojs": "Este pagina requer o uso de JavaScript.",
+	"wikilambda-typeselector-label": "Selecione um tipo",
+	"wikilambda-argument-typeselector-label": "Selecione um tipo para este argumento",
+	"wikilambda-function-typeselector-label": "Selecione uma função",
+	"wikilambda-return-typeselector-label": "Selecione um tipo para retornar",
+	"wikilambda-editor-argument-list-label": "Lista de Argumentos"
+}

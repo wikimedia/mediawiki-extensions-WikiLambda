@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Emma Franzen"
+		]
+	},
+	"apihelp-wikilambda_function_call-param-zobject": "ZObject para chamada de função",
+	"apihelp-wikilambda_function_call-example-full": "Invoque Z802 (If) com falso predicado",
+	"apihelp-wikilambda_function_call-summary": "Chame uma função chamando o orquestrador de funções",
+	"apierror-wikilambda_function_call-not-connected": "Não foi possível resolver o host <$1>, provavelmente porque o orquestrador não está funcionando. Consulte o README para adicionar o orquestrador à configuração do docker-compose."
+}
