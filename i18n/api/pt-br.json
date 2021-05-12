@@ -14,6 +14,7 @@
 	"apierror-wikilambda_fetch-missingzid": "O ZID '$1' fornecido não existe nessa wiki.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObject para chamada de função",
 	"apihelp-wikilambda_function_call-example-full": "Invoque Z802 (If) com falso predicado",
+	"apihelp-wikilambda_function_call-summary": "Chame uma função chamando o orquestrador de funções",
 	"apihelp-query+wikilambdasearch_labels-summary": "Este gerador de lista de consulta API permite pesquisar ZObjects para rótulos em um determinado idioma. Ele existe principalmente para oferecer suporte ao sistema de pesquisa antecipada.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "O termo de pesquisa",
 	"apihelp-query+wikilambdasearch_labels-param-language": "O código do idioma MediaWiki no qual pesquisar",
@@ -31,5 +32,6 @@
 	"apihelp-wikilambda_edit-param-summary": "Editar mensagem de resumo",
 	"apihelp-wikilambda_edit-param-zid": "ZID do ZObject a ser editado. Se nulo, o ZObject será criado novamente",
 	"apihelp-wikilambda_edit-param-zobject": "Representação JSON do ZObject para salvar",
+	"apierror-wikilambda_function_call-not-connected": "Não foi possível resolver o host <$1>, provavelmente porque o orquestrador não está funcionando. Consulte o README para adicionar o orquestrador à configuração do docker-compose.",
 	"apierror-wikilambda_edit-invalidjson": "Não foi possível criar ZObject para a entrada fornecida '$1'; JSON inválido."
 }
