@@ -234,11 +234,6 @@ module.exports = {
 
 				this.validatorResetError();
 
-				// Just search if more than one characters
-				if ( input.length < 2 ) {
-					return;
-				}
-
 				clearTimeout( this.lookupDelayTimer );
 				this.lookupDelayTimer = setTimeout( function () {
 					if ( self.isValidZidFormat( input.toUpperCase() ) ) {
