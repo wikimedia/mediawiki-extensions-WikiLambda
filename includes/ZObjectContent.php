@@ -115,7 +115,7 @@ class ZObjectContent extends AbstractContent {
 	 * @inheritDoc
 	 */
 	public function isValid() {
-		if ( !$this->status instanceof Status ) {
+		if ( !( $this->status instanceof Status ) ) {
 			$this->validateContent();
 		}
 		return $this->status->isOK();
@@ -281,6 +281,19 @@ class ZObjectContent extends AbstractContent {
 		Title $title, $revId, ParserOptions $options, $generateHtml, ParserOutput &$output
 	) {
 		$userLang = RequestContext::getMain()->getLanguage();
+
+		// Ensure the stored content is valid; this also populates $this->getZObject() for us
+		if ( !$this->isValid() ) {
+			$output->setText(
+				Html::element(
+					'div',
+					[
+						'class' => [ 'ext-wikilambda-view-invalidcontent', 'warning' ],
+					],
+					wfMessage( 'wikilambda-invalidzobject' )->inLanguage( $userLang )->text()
+				)
+			);
+		}
 
 		$zobject = $this->getZObject();
 
