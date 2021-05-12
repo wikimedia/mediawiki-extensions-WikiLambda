@@ -22,7 +22,9 @@
 		],
 		"Z8K2": "Z10",
 		"Z8K3": [],
-		"Z8K4": [],
+		"Z8K4": [
+			"Z211"
+		],
 		"Z8K5": "Z111"
 	},
 	"Z2K3": {
@@ -31,7 +33,7 @@
 			{
 				"Z1K1": "Z11",
 				"Z11K1": "en",
-				"Z11K2": "validate monolingual text"
+				"Z11K2": "Validate monolingual text"
 			}
 		]
 	}
