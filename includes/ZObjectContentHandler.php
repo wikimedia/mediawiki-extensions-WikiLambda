@@ -43,7 +43,8 @@ class ZObjectContentHandler extends ContentHandler {
 	 * @return ZObjectContent
 	 */
 	public function makeEmptyContent() {
-		return new ZObjectContent(
+		$class = $this->getContentClass();
+		return new $class(
 			'{' . "\n"
 				. '  "' . ZTypeRegistry::Z_OBJECT_TYPE . '": "' . ZTypeRegistry::Z_PERSISTENTOBJECT . '",' . "\n"
 				 . '  "' . ZTypeRegistry::Z_PERSISTENTOBJECT_ID . '": "' . ZTypeRegistry::Z_NULL_REFERENCE . '",' . "\n"

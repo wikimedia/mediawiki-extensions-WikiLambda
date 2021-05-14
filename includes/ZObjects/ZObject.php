@@ -25,7 +25,7 @@ class ZObject {
 	 */
 	public static function getDefinition() : array {
 		return [
-			'type' => 'ZObject',
+			'type' => ZTypeRegistry::Z_OBJECT,
 			'keys' => [
 				ZTypeRegistry::Z_OBJECT_TYPE => [
 					'type' => ZTypeRegistry::HACK_REFERENCE_TYPE,
@@ -49,7 +49,7 @@ class ZObject {
 		// them to the $data representation.
 		$args = func_get_args();
 		if ( count( $args ) === 1 ) {
-			$this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] = ZTypeRegistry::singleton()->getZObjectTypeFromKey( $type );
+			$this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] = $type;
 		} else {
 			$this->data = [ ZTypeRegistry::Z_OBJECT_TYPE => $type ] + $args[ 1 ];
 		}
@@ -78,7 +78,7 @@ class ZObject {
 	 * @return string The type of this ZObject
 	 */
 	public function getZType() : string {
-		return static::getDefinition()['type'];
+		return $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] ?? static::getDefinition()['type'];
 	}
 
 	/**

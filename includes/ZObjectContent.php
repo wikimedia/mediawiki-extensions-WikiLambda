@@ -156,7 +156,7 @@ class ZObjectContent extends AbstractContent {
 	}
 
 	/**
-	 * @return Status
+	 * @return Status|null
 	 */
 	public function getStatus() {
 		return $this->status;
@@ -177,7 +177,7 @@ class ZObjectContent extends AbstractContent {
 	}
 
 	/**
-	 * @return ZPersistentObject
+	 * @return ZPersistentObject|null
 	 */
 	public function getZObject() {
 		return $this->zobject;

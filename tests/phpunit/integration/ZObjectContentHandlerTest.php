@@ -9,11 +9,17 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use FormatJson;
 use Language;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
+use MediaWiki\Extension\WikiLambda\ZObjectEditAction;
+use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataRemoval;
+use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Revision\SlotRecord;
+use MediaWiki\Revision\SlotRenderingProvider;
 use Title;
 use WikiPage;
 
@@ -27,12 +33,19 @@ class ZObjectContentHandlerTest extends \MediaWikiIntegrationTestCase {
 	private $titlesTouched = [];
 
 	/**
+	 * @covers ::__construct
+	 */
+	public function testWrongContentModel() {
+		$this->expectException( \MWException::class );
+		new ZObjectContentHandler( CONTENT_MODEL_WIKITEXT );
+	}
+
+	/**
 	 * @dataProvider provideCanBeUsedOn
 	 * @covers ::canBeUsedOn
 	 */
 	public function testCanBeUsedOn( $input, $expected ) {
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
-
 		$this->assertSame( $expected, $handler->canBeUsedOn( Title::newFromText( $input ) ) );
 	}
 
@@ -40,10 +53,77 @@ class ZObjectContentHandlerTest extends \MediaWikiIntegrationTestCase {
 		return [
 			'main NS page' => [ 'Foo', false ],
 			'talk NS page' => [ 'Talk:Foo', false ],
-
 			'valid ZObject page' => [ 'ZObject:Z1', true ],
 			'ZObject talk page' => [ 'ZObject talk:Z1', false ],
 		];
+	}
+
+	/**
+	 * @covers ::makeEmptyContent
+	 * @covers ::getContentClass
+	 */
+	public function testMakeEmptyContent() {
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$testObject = $handler->makeEmptyContent();
+		$this->assertInstanceOf( ZObjectContent::class, $testObject );
+		$this->assertSame( 'Z6', $testObject->getZType() );
+		$this->assertSame( '', $testObject->getZValue() );
+	}
+
+	/**
+	 * @covers ::makeContent
+	 * @covers ::serializeContent
+	 */
+	public function testSerializeContent() {
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$content = $handler->makeEmptyContent();
+		$serialized = $handler->serializeContent( $content );
+		$expected = '{"Z1K1":"Z2","Z2K1":"Z0","Z2K2":"","Z2K3":{"Z1K1":"Z12","Z12K1":[]}}';
+
+		$this->assertTrue( is_string( $serialized ) );
+		$this->assertSame(
+			FormatJson::encode( FormatJson::parse( $serialized )->value ),
+			$expected
+		);
+	}
+
+	/**
+	 * @covers ::getContentClass
+	 * @covers ::unserializeContent
+	 */
+	public function testUnserializeContent() {
+		$serialized = '{"Z1K1":"Z2","Z2K1":"Z0","Z2K2":"","Z2K3":{"Z1K1":"Z12","Z12K1":[]}}';
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$testObject = $handler->unserializeContent( $serialized );
+		$this->assertInstanceOf( ZObjectContent::class, $testObject );
+		$this->assertSame( 'Z6', $testObject->getZType() );
+		$this->assertSame( '', $testObject->getZValue() );
+	}
+
+	/**
+	 * @covers ::getExternalRepresentation
+	 */
+	public function testGetExternalRepresentation_badNamespace() {
+		$qid = 'Q333';
+		$title = Title::newFromText( $qid );
+
+		$this->expectException( \InvalidArgumentException::class );
+		$this->expectExceptionMessage( "Provided page '$qid' is not in the ZObject namespace." );
+
+		ZObjectContentHandler::getExternalRepresentation( $title );
+	}
+
+	/**
+	 * @covers ::getExternalRepresentation
+	 */
+	public function testGetExternalRepresentation_notFound() {
+		$unavailableZid = 'Z333';
+		$title = Title::newFromText( $unavailableZid, NS_ZOBJECT );
+
+		$this->expectException( \InvalidArgumentException::class );
+		$this->expectExceptionMessage( "Provided page 'ZObject:$unavailableZid' could not be fetched from the DB." );
+
+		ZObjectContentHandler::getExternalRepresentation( $title );
 	}
 
 	/**
@@ -111,6 +191,53 @@ class ZObjectContentHandlerTest extends \MediaWikiIntegrationTestCase {
 		);
 	}
 
+	/**
+	 * @covers ::getSecondaryDataUpdates
+	 */
+	public function testGetSecondaryDataUpdates() {
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
+		$content = ZObjectContentHandler::makeContent( ZTestType::TEST_ENCODING, $title );
+		$slotOutput = $this->createMock( SlotRenderingProvider::class );
+
+		$updates = $handler->getSecondaryDataUpdates( $title, $content, SlotRecord::MAIN, $slotOutput );
+		$zobjectUpdates = array_filter( $updates, static function ( $u ) {
+			return $u instanceof ZObjectSecondaryDataUpdate;
+		} );
+		$this->assertCount( 1, $zobjectUpdates );
+	}
+
+	/**
+	 * @covers ::getDeletionUpdates
+	 */
+	public function testGetDeletionUpdates() {
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
+
+		$updates = $handler->getDeletionUpdates( $title, SlotRecord::MAIN );
+		$zobjectUpdates = array_filter( $updates, static function ( $u ) {
+			return $u instanceof ZObjectSecondaryDataRemoval;
+		} );
+		$this->assertCount( 1, $zobjectUpdates );
+	}
+
+	/**
+	 * @covers ::supportsDirectEditing
+	 */
+	public function testSupportsDirectEditing() {
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$this->assertFalse( $handler->supportsDirectEditing() );
+	}
+
+	/**
+	 * @covers ::getActionOverrides
+	 */
+	public function testGetActionOverrides() {
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$overrides = $handler->getActionOverrides();
+		$this->assertSame( $overrides[ 'edit' ], ZObjectEditAction::class );
+	}
+
 	protected function tearDown() : void {
 		// Cleanup the pages we touched.
 		$sysopUser = $this->getTestSysop()->getUser();
@@ -123,5 +250,4 @@ class ZObjectContentHandlerTest extends \MediaWikiIntegrationTestCase {
 
 		parent::tearDown();
 	}
-
 }
