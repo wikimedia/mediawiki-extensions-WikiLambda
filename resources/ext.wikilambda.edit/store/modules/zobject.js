@@ -867,39 +867,41 @@ module.exports = {
 		 */
 		changeType: function ( context, payload ) {
 			context.dispatch( 'removeZObjectChildren', payload.id );
-			context.dispatch( 'fetchZKeys', [ payload.type ] );
-			switch ( payload.type ) {
-				case Constants.Z_LIST:
-					context.dispatch( 'addZList', payload.id );
-					break;
-				case Constants.Z_REFERENCE:
-					context.dispatch( 'addZReference', payload.id );
-					break;
-				case Constants.Z_CODE:
-					context.dispatch( 'addZCode', payload.id );
-					break;
-				case Constants.Z_STRING:
-					context.dispatch( 'addZString', { id: payload.id } );
-					break;
-				case Constants.Z_MULTILINGUALSTRING:
-					context.dispatch( 'addZMultilingualString', payload.id );
-					break;
-				case Constants.Z_ARGUMENT:
-					context.dispatch( 'addZArgument', payload.id );
-					break;
-				case Constants.Z_FUNCTION_CALL:
-					context.dispatch( 'addZFunctionCall', payload.id );
-					break;
-				case Constants.Z_FUNCTION:
-					context.dispatch( 'addZFunction', payload.id );
-					break;
-				case Constants.Z_PERSISTENTOBJECT:
-					context.dispatch( 'addZPersistentObject', payload.id );
-					break;
-				default:
-					context.dispatch( 'addGenericObject', payload );
-					break;
-			}
+			context.dispatch( 'fetchZKeys', [ payload.type ] )
+				.then( function () {
+					switch ( payload.type ) {
+						case Constants.Z_LIST:
+							context.dispatch( 'addZList', payload.id );
+							break;
+						case Constants.Z_REFERENCE:
+							context.dispatch( 'addZReference', payload.id );
+							break;
+						case Constants.Z_CODE:
+							context.dispatch( 'addZCode', payload.id );
+							break;
+						case Constants.Z_STRING:
+							context.dispatch( 'addZString', { id: payload.id } );
+							break;
+						case Constants.Z_MULTILINGUALSTRING:
+							context.dispatch( 'addZMultilingualString', payload.id );
+							break;
+						case Constants.Z_ARGUMENT:
+							context.dispatch( 'addZArgument', payload.id );
+							break;
+						case Constants.Z_FUNCTION_CALL:
+							context.dispatch( 'addZFunctionCall', payload.id );
+							break;
+						case Constants.Z_FUNCTION:
+							context.dispatch( 'addZFunction', payload.id );
+							break;
+						case Constants.Z_PERSISTENTOBJECT:
+							context.dispatch( 'addZPersistentObject', payload.id );
+							break;
+						default:
+							context.dispatch( 'addGenericObject', payload );
+							break;
+					}
+				} );
 		}
 	}
 };
