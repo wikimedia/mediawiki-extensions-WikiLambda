@@ -162,6 +162,7 @@
 				"wikilambda-publishchanges",
 				"wikilambda-savechanges",
 				"wikilambda-summarylabel",
+				"wikilambda-loading",
 				"wikilambda-invalidzobject",
 				"wikilambda-noresult",
 				"wikilambda-reference",

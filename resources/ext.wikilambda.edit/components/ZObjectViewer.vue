@@ -15,19 +15,12 @@
 </template>
 
 <script>
-var ZObject = require( './ZObject.vue' ),
-	mapActions = require( 'vuex' ).mapActions;
+var ZObject = require( './ZObject.vue' );
 
 module.exports = {
 	name: 'ZObjectViewer',
 	components: {
 		'z-object': ZObject
-	},
-	methods: $.extend( {},
-		mapActions( [ 'initializeZObject' ] )
-	),
-	created: function () {
-		this.initializeZObject();
 	}
 };
 </script>

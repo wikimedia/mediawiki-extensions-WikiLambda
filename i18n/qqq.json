@@ -53,6 +53,7 @@
 	"wikilambda-publishchanges": "Label for the submit button when updating an existing ZObject on a public wiki",
 	"wikilambda-savechanges": "Label for the submit button when updating an existing ZObject on a private wiki",
 	"wikilambda-summarylabel": "Label for summary of changes in the edited ZObject\n{{identical|Summary}}",
+	"wikilambda-loading": "Label to inform the user that the content of the page is being loaded",
 	"wikilambda-typeselector-label": "Label for selector for which kind of item to add.\n\n{{doc-wikilambda}}",
 	"wikilambda-argument-typeselector-label": "Label for selector for which type an argument will be.\n\n{{doc-wikilambda}}",
 	"wikilambda-function-typeselector-label": "Label for selector for which type a function call will be.\n\n{{doc-wikilambda}}",

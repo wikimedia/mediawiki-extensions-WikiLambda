@@ -84,7 +84,7 @@ module.exports = {
 		}
 	} ),
 	methods: $.extend( {},
-		mapActions( [ 'fetchZKeys', 'initializeZObject', 'submitZObject' ] ),
+		mapActions( [ 'fetchZKeys', 'submitZObject' ] ),
 		mapMutations( [ 'addZKeyLabel', 'setZLangs' ] ),
 		{
 			updateZobject: function ( newZobject ) {
@@ -99,9 +99,6 @@ module.exports = {
 
 	created: function () {
 		var languageChain = mw.language.getFallbackLanguageChain();
-
-		// Set zobject
-		this.initializeZObject();
 
 		// Set user language
 		this.setZLangs( languageChain );
