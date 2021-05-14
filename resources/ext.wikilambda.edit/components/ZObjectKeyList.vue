@@ -7,14 +7,13 @@
 	-->
 	<ul class="ext-wikilambda-zobject-key-list">
 		<li v-for="( value, key ) in zObjectWithoutPersistent" :key="key">
-			<button v-if="!viewmode"
+			<button v-if="!getViewMode"
 				:title="tooltipRemoveZObjectKey"
 				@click="removeKey( value.id )"
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 			</button>
 			<z-object-key
-				:viewmode="viewmode"
 				:z-key="value.key"
 				:zobject-id="value.id"
 				:parent-type="zObjectType"
@@ -23,7 +22,7 @@
 		</li>
 
 		<!-- Add new key -->
-		<li v-if="!viewmode">
+		<li v-if="!getViewMode">
 			<z-object-key-input @change="addKey"></z-object-key-input>
 		</li>
 	</ul>
@@ -47,16 +46,13 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
-		},
-		viewmode: {
-			type: Boolean,
-			required: true
 		}
 	},
 	computed: $.extend( {},
 		mapGetters( [
 			'getZObjectChildrenById',
-			'getZObjectTypeById'
+			'getZObjectTypeById',
+			'getViewMode'
 		] ),
 		{
 			tooltipRemoveZObjectKey: function () {

@@ -55,10 +55,6 @@ module.exports = {
 	},
 	mixins: [ validator, typeUtils ],
 	props: {
-		viewmode: {
-			type: Boolean,
-			required: true
-		},
 		type: {
 			type: String,
 			default: ''
@@ -88,8 +84,8 @@ module.exports = {
 		mapGetters( {
 			zkeyLabels: 'getZkeyLabels',
 			zKeys: 'getZkeys',
-			zLang: 'zLang'
-
+			zLang: 'zLang',
+			viewmode: 'getViewMode'
 		} ),
 		mapState( [
 			'zRegex'

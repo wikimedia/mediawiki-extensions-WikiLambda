@@ -9,7 +9,6 @@
 	<div id="ext-wikilambda-editor">
 		<z-object
 			:persistent="true"
-			:viewmode="false"
 			@input="updateZobject"
 		></z-object>
 		<template v-if="showSaveCommand">
@@ -28,7 +27,7 @@
 		<div>
 			Current ZObject:
 			<z-object-json
-				:viewmode="true"
+				:readonly="true"
 				:zobject-raw="ZObjectJson"
 			></z-object-json>
 		</div>

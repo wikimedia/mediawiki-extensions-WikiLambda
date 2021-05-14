@@ -11,7 +11,6 @@
 				v-for="(item) in ZlistItems"
 				:key="item.id"
 				:zobject-id="item.id"
-				:viewmode="viewmode"
 			></z-list-item>
 			<li v-if="!viewmode">
 				<button :title="tooltipAddListItem" @click="addNewItem">
@@ -37,10 +36,6 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
-		},
-		viewmode: {
-			type: Boolean,
-			required: true
 		}
 	},
 	data: function () {
@@ -49,7 +44,10 @@ module.exports = {
 		};
 	},
 	computed: $.extend( {},
-		mapGetters( [ 'getZObjectChildrenById' ] ),
+		mapGetters( {
+			getZObjectChildrenById: 'getZObjectChildrenById',
+			viewmode: 'getViewMode'
+		} ),
 		{
 			ZlistItems: function () {
 				return this.getZObjectChildrenById( this.zobjectId );

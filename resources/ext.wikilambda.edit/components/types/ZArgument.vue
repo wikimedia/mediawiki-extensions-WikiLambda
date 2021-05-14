@@ -9,14 +9,13 @@
 		(<z-string
 			v-if="argumentKeyId"
 			:zobject-id="argumentKeyId"
-			:viewmode="true"></z-string>)
+			:readonly="true"></z-string>)
 		<div>
 			{{ typeLabel }}:
 			<z-object-selector
 				:type="Constants.Z_TYPE"
 				:placeholder="$i18n( 'wikilambda-argument-typeselector-label' )"
 				:selected-id="argumentType"
-				:viewmode="viewmode"
 				@input="typeHandler"
 			></z-object-selector>
 		</div>
@@ -25,7 +24,6 @@
 			<z-multilingual-string
 				v-if="argumentLabelsId"
 				:zobject-id="argumentLabelsId"
-				:viewmode="viewmode"
 			></z-multilingual-string>
 		</div>
 	</div>
@@ -50,10 +48,6 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
-		},
-		viewmode: {
-			type: Boolean,
-			required: true
 		}
 	},
 	mixins: [ typeUtils ],
@@ -62,7 +56,6 @@ module.exports = {
 			nextKey: 'getNextKey',
 			getZObjectChildrenById: 'getZObjectChildrenById',
 			zKeyLabels: 'getZkeyLabels'
-
 		} ),
 		{
 			zobject: function () {

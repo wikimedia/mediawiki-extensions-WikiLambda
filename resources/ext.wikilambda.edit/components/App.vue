@@ -36,19 +36,12 @@ module.exports = {
 		'z-object-editor': ZObjectEditor,
 		'z-object-viewer': ZObjectViewer
 	},
-	data: function () {
-		return {
-			viewmode: null
-		};
-	},
 	computed: mapGetters( {
-		zObjectInitialized: 'getZObjectInitialized'
+		zObjectInitialized: 'getZObjectInitialized',
+		viewmode: 'getViewMode'
 	} ),
 	methods: mapActions( [ 'initializeZObject' ] ),
 	created: function () {
-		var editingData = mw.config.get( 'wgWikiLambda' );
-		this.viewmode = editingData.viewmode;
-
 		// Set zobject
 		this.initializeZObject();
 	}

@@ -23,7 +23,7 @@
 		</select>
 		<code-editor
 			:mode="selectedLanguage"
-			:read-only="!selectedLanguage || viewmode"
+			:read-only="!selectedLanguage || getViewMode"
 			:value="codeValue"
 			@change="updateCode"
 		></code-editor>
@@ -45,10 +45,6 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
-		},
-		viewmode: {
-			type: Boolean,
-			required: true
 		}
 	},
 	data: function () {
@@ -61,7 +57,8 @@ module.exports = {
 		mapGetters( [
 			'zProgrammingLangs',
 			'getZObjectChildrenById',
-			'getStringValueByObjectId'
+			'getStringValueByObjectId',
+			'getViewMode'
 		] ),
 		{
 			zobject: function () {

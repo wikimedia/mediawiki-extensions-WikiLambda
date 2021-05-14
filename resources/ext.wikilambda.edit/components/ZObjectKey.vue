@@ -12,7 +12,6 @@
 		<!-- If type isn't selected, show type selector -->
 		<z-object-selector
 			v-if="!zType"
-			:viewmode="viewmode"
 			:type="Constants.Z_TYPE"
 			:placeholder="$i18n( 'wikilambda-typeselector-label' )"
 			@input="onTypeChange"
@@ -22,7 +21,7 @@
 		<template v-else>
 			<span>{{ zTypeLabel }} ({{ zType }})</span>
 			<z-key-mode-selector
-				v-if="!viewmode && selectedMode"
+				v-if="!getViewMode && selectedMode"
 				:mode="selectedMode"
 				:parent-type="parentType"
 				:literal-type="literalType"
@@ -33,19 +32,16 @@
 				:zobject-id="zobjectId"
 				:type="zType"
 				:persistent="false"
-				:viewmode="viewmode"
 			></z-object-generic>
 			<z-reference
 				v-else-if="selectedMode === Constants.Z_KEY_MODES.REFERENCE"
 				class="ext-wikilambda-zobject-key-inline"
 				:zobject-id="zobjectId"
-				:viewmode="viewmode"
 				:search-type="literalType"
 			></z-reference>
 			<z-object-json
 				v-else-if="selectedMode === Constants.Z_KEY_MODES.JSON"
 				:zobject-id="zobjectId"
-				:viewmode="viewmode"
 				@change-literal="onliteralChange"
 			></z-object-json>
 			<!-- Constants.Z_KEY_MODES.FUNCTION_CALL -->
@@ -53,7 +49,6 @@
 			<z-object
 				v-else
 				:zobject-id="zobjectId"
-				:viewmode="viewmode"
 				:persistent="false"
 			></z-object>
 		</template>
@@ -81,10 +76,6 @@ module.exports = {
 		'z-object-json': ZObjectJson
 	},
 	props: {
-		viewmode: {
-			type: Boolean,
-			required: true
-		},
 		zKey: {
 			type: String,
 			required: true
@@ -126,7 +117,8 @@ module.exports = {
 			'getTypeByMode',
 			'getZkeyLabels',
 			'getZkeys',
-			'getModeByType'
+			'getModeByType',
+			'getViewMode'
 		] ),
 		{
 			zType: function () {

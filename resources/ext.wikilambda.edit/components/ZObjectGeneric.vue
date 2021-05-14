@@ -9,7 +9,7 @@
 		<span>{{ z1k1label }} ({{ Constants.Z_OBJECT_TYPE }}): </span>
 
 		<span v-if="persistent">
-			<a v-if="type !== zobjectId && viewmode" :href="'./ZObject:' + type">
+			<a v-if="type !== zobjectId && getViewMode" :href="'./ZObject:' + type">
 				<span>{{ typeLabel }} ({{ type }})</span>
 			</a>
 			<span v-else>{{ typeLabel }} ({{ type }})</span>
@@ -17,10 +17,9 @@
 		</span>
 
 		<span v-else>
-			<span v-if="viewmode || type"> {{ typeLabel }} ({{ type }})</span>
+			<span v-if="getViewMode || type"> {{ typeLabel }} ({{ type }})</span>
 			<z-object-selector
 				v-else
-				:viewmode="viewmode"
 				:type="Constants.Z_TYPE"
 				:placeholder="$i18n( 'wikilambda-typeselector-label' )"
 				:selected-id="type"
@@ -31,7 +30,6 @@
 		<z-object-key-list
 			ref="keyList"
 			:zobject-id="zobjectId"
-			:viewmode="viewmode"
 		></z-object-key-list>
 	</div>
 </template>
@@ -62,10 +60,6 @@ module.exports = {
 		persistent: {
 			type: Boolean,
 			required: true
-		},
-		viewmode: {
-			type: Boolean,
-			required: true
 		}
 	},
 	data: function () {
@@ -81,7 +75,8 @@ module.exports = {
 		mapGetters( [
 			'getZObjectChildrenById',
 			'getCurrentZObjectId',
-			'getZkeyLabels'
+			'getZkeyLabels',
+			'getViewMode'
 		] ),
 		{
 			typeLabel: function () {

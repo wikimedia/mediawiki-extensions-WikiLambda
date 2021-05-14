@@ -11,13 +11,11 @@
 				:type="Constants.Z_FUNCTION"
 				:placeholder="$i18n( 'wikilambda-return-typeselector-label' )"
 				:selected-id="zReturnType.value"
-				:viewmode="viewmode"
 				@input="updateZReturnType"
 			></z-object-selector>
 		</div>
 		<z-argument-list
 			:zobject-id="zArgumentId"
-			:viewmode="viewmode"
 		></z-argument-list>
 	</div>
 </template>
@@ -40,10 +38,6 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
-		},
-		viewmode: {
-			type: Boolean,
-			default: false
 		}
 	},
 	computed: $.extend( {},
