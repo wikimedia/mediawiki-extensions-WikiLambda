@@ -43,6 +43,7 @@
 	"wikilambda-publishchanges": "Änderungen veröffentlichen",
 	"wikilambda-savechanges": "Änderungen speichern",
 	"wikilambda-summarylabel": "Zusammenfassung:",
+	"wikilambda-loading": "Daten werden geladen",
 	"wikilambda-typeselector-label": "Typ auswählen",
 	"wikilambda-argument-typeselector-label": "Wähle einen Typ für dieses Argument",
 	"wikilambda-function-typeselector-label": "Funktion auswählen",

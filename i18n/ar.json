@@ -6,5 +6,6 @@
 	},
 	"wikilambda-publishnew": "نشر",
 	"wikilambda-publishchanges": "نشر التغييرات",
-	"wikilambda-savechanges": "حفظ التغييرات"
+	"wikilambda-savechanges": "حفظ التغييرات",
+	"wikilambda-loading": "يجري تحميل البيانات"
 }

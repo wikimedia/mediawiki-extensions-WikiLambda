@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Ayack",
+			"Fujimaru-kun",
 			"Gomoko",
 			"JenyxGym",
 			"MasterSinge",
@@ -50,6 +51,7 @@
 	"wikilambda-publishchanges": "Publier les modifications",
 	"wikilambda-savechanges": "Enregistrer les modifications",
 	"wikilambda-summarylabel": "Résumé :",
+	"wikilambda-loading": "Chargement des données en cours",
 	"wikilambda-typeselector-label": "Sélectionner un type",
 	"wikilambda-argument-typeselector-label": "Sélectionner un type pour cet argument",
 	"wikilambda-function-typeselector-label": "Sélectionner une fonction",
