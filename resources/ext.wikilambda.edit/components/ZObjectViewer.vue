@@ -9,7 +9,6 @@
 	<div id="ext-wikilambda-view">
 		<z-object
 			:persistent="true"
-			:viewmode="true"
 		></z-object>
 	</div>
 </template>

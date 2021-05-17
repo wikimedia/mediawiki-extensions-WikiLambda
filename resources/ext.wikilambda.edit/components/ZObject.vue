@@ -11,56 +11,47 @@
 			v-if="type === Constants.Z_OBJECT"
 			:type="Constants.Z_TYPE"
 			:placeholder="$i18n( 'wikilambda-argument-typeselector-label' )"
-			:viewmode="viewmode"
 			@input="changeZObjectType"
 		></z-object-selector>
 
 		<z-string
 			v-else-if="type === Constants.Z_STRING"
 			:zobject-id="zobjectId"
-			:viewmode="viewmode"
 		></z-string>
 
 		<z-reference
 			v-else-if="type === Constants.Z_REFERENCE"
 			:zobject-id="zobjectId"
-			:viewmode="viewmode"
 		></z-reference>
 
 		<z-multilingual-string
 			v-else-if="type === Constants.Z_MULTILINGUALSTRING"
 			:zobject-id="zobjectId"
-			:viewmode="viewmode"
 		></z-multilingual-string>
 
 		<z-list
 			v-else-if="type === Constants.Z_LIST"
 			:zobject-id="zobjectId"
-			:viewmode="viewmode"
 		></z-list>
 
 		<z-code
 			v-else-if="type === Constants.Z_CODE"
 			:zobject-id="zobjectId"
-			:viewmode="viewmode"
 		></z-code>
 
 		<z-argument
 			v-else-if="type === Constants.Z_ARGUMENT"
 			:zobject-id="zobjectId"
-			:viewmode="viewmode"
 		></z-argument>
 
 		<z-function-call
 			v-else-if="type === Constants.Z_FUNCTION_CALL"
 			:zobject-id="zobjectId"
-			:viewmode="viewmode"
 		></z-function-call>
 
 		<z-function
 			v-else-if="type === Constants.Z_FUNCTION"
 			:zobject-id="zobjectId"
-			:viewmode="viewmode"
 		></z-function>
 
 		<z-object-generic
@@ -68,7 +59,6 @@
 			:zobject-id="zobjectId"
 			:type="type"
 			:persistent="persistent"
-			:viewmode="viewmode"
 		></z-object-generic>
 	</div>
 </template>
@@ -111,10 +101,6 @@ module.exports = {
 			default: 0
 		},
 		persistent: {
-			type: Boolean,
-			required: true
-		},
-		viewmode: {
 			type: Boolean,
 			required: true
 		}

@@ -7,7 +7,7 @@
 	-->
 	<div class="ext-wikilambda-zstring">
 		<span>
-			<span v-if="viewmode">{{ zobjectStringValueItem.value }}</span>
+			<span v-if="readonly || viewmode">{{ zobjectStringValueItem.value }}</span>
 			<input
 				v-else
 				class="ext-wikilambda-zstring"
@@ -27,7 +27,7 @@ var Constants = require( './../../Constants.js' ),
 module.exports = {
 	name: 'ZString',
 	props: {
-		viewmode: {
+		readonly: {
 			type: Boolean,
 			required: true
 		},
@@ -39,7 +39,8 @@ module.exports = {
 	mixins: [ typeUtils ],
 	computed: $.extend( mapGetters( {
 		getZObjectById: 'getZObjectById',
-		getZObjectChildrenById: 'getZObjectChildrenById'
+		getZObjectChildrenById: 'getZObjectChildrenById',
+		viewmode: 'getViewMode'
 	} ), {
 		zobjectStringValueItem: function () {
 			var stringValueItem = this.findKeyInArray( Constants.Z_STRING_VALUE, this.zobjectChildren );

@@ -14,7 +14,6 @@
 
 		<z-object-selector
 			v-else
-			:viewmode="viewmode"
 			:placeholder="$i18n( 'wikilambda-zobjectselector-label' )"
 			:selected-id="referenceValue"
 			:type="searchType"
@@ -36,10 +35,6 @@ module.exports = {
 		'z-object-selector': ZObjectSelector
 	},
 	props: {
-		viewmode: {
-			type: Boolean,
-			required: true
-		},
 		zobjectId: {
 			type: Number,
 			required: true
@@ -51,10 +46,11 @@ module.exports = {
 	},
 	mixins: [ typeUtils ],
 	computed: $.extend( {},
-		mapGetters( [
-			'getZObjectChildrenById',
-			'getZkeyLabels'
-		] ),
+		mapGetters( {
+			getZObjectChildrenById: 'getZObjectChildrenById',
+			getZkeyLabels: 'getZkeyLabels',
+			viewmode: 'getViewMode'
+		} ),
 		{
 			zobject: function () {
 				return this.getZObjectChildrenById( this.zobjectId );

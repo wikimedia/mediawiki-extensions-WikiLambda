@@ -10,7 +10,6 @@
 			v-for="(z11Object) in monolingualStrings"
 			:key="z11Object.id"
 			:zobject-id="z11Object.id"
-			:viewmode="viewmode"
 			class="ext-wikilambda-monolingual"
 		></z-monolingual-string>
 		<div class="ext-wikilambda-monolingual">
@@ -54,10 +53,6 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
-		},
-		viewmode: {
-			type: Boolean,
-			required: true
 		}
 	},
 	mixins: [ typeUtils ],
@@ -70,7 +65,8 @@ module.exports = {
 		mapState( [ 'allLangs' ] ),
 		mapGetters( {
 			getZObjectChildrenById: 'getZObjectChildrenById',
-			getZObjectAsJsonById: 'getZObjectAsJsonById'
+			getZObjectAsJsonById: 'getZObjectAsJsonById',
+			viewmode: 'getViewMode'
 		} ),
 		{
 			zobject: function () {

@@ -13,6 +13,7 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
 	ZObjectEditor = require( '../../../resources/ext.wikilambda.edit/components/ZObjectEditor.vue' ),
 	ZObjectViewer = require( '../../../resources/ext.wikilambda.edit/components/ZObjectViewer.vue' ),
+	getters = require( '../../../resources/ext.wikilambda.edit/store/getters.js' ),
 	localVue;
 
 localVue = createLocalVue();
@@ -28,7 +29,7 @@ describe( 'App.vue', function () {
 		};
 		store = new Vuex.Store( {
 			actions: actions,
-			getters: {}
+			getters: getters
 		} );
 	} );
 	it( 'Renders nothing when the viewmode is not returned from mw.config', function () {

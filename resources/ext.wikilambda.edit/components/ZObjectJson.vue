@@ -3,7 +3,7 @@
 		<code-editor
 			mode="json"
 			:value="initialJson"
-			:read-only="viewmode"
+			:read-only="readonly || viewmode"
 			@change="codeChangeHandler"
 		></code-editor>
 	</div>
@@ -26,7 +26,7 @@ module.exports = {
 		zobjectRaw: {
 			type: [ Object, String ]
 		},
-		viewmode: {
+		readonly: {
 			type: Boolean,
 			default: false
 		}

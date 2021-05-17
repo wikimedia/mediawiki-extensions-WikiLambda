@@ -11,7 +11,6 @@
 			:type="Constants.Z_FUNCTION"
 			:placeholder="$i18n( 'wikilambda-function-typeselector-label' )"
 			:selected-id="zFunctionId"
-			:viewmode="viewmode"
 			@input="typeHandler"
 		></z-object-selector>
 		<ul>
@@ -19,7 +18,6 @@
 				{{ argument.label }} ({{ argument.key }}):
 				<z-object
 					:zobject-id="findArgumentId(argument.key)"
-					:viewmode="viewmode"
 					:persistent="false"
 				></z-object>
 			</li>
@@ -30,7 +28,7 @@
 		<div>
 			{{ $i18n( 'wikilambda-orchestrated' ) }}:
 			<z-object-json
-				:viewmode="true"
+				:readonly="true"
 				:zobject-raw="getOrchestrationResult"
 			></z-object-json>
 		</div>
@@ -56,10 +54,6 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
-		},
-		viewmode: {
-			type: Boolean,
-			default: false
 		}
 	},
 	computed: $.extend( mapState( {

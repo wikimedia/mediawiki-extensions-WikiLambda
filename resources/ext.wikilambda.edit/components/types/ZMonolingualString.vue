@@ -47,10 +47,6 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
-		},
-		viewmode: {
-			type: Boolean,
-			required: true
 		}
 	},
 	mixins: [ typeUtils ],
@@ -62,7 +58,8 @@ module.exports = {
 	computed: $.extend( {},
 		mapState( [ 'allLangs' ] ),
 		mapGetters( {
-			getZObjectChildrenById: 'getZObjectChildrenById'
+			getZObjectChildrenById: 'getZObjectChildrenById',
+			viewmode: 'getViewMode'
 		} ),
 		{
 			zobject: function () {

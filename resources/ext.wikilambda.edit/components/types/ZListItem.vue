@@ -14,7 +14,6 @@
 		</button>
 		<z-object-selector
 			v-if="isEmptyObject"
-			:viewmode="viewmode"
 			:type="Constants.Z_TYPE"
 			:placeholder="$i18n( 'wikilambda-typeselector-label' )"
 			@input="onTypeChange"
@@ -22,7 +21,6 @@
 		<z-object v-else
 			:zobject-id="zobjectId"
 			:persistent="false"
-			:viewmode="viewmode"
 		></z-object>
 	</li>
 </template>
@@ -44,10 +42,6 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
-		},
-		viewmode: {
-			type: Boolean,
-			required: true
 		}
 	},
 	data: function () {
@@ -57,7 +51,10 @@ module.exports = {
 		};
 	},
 	computed: $.extend( {},
-		mapGetters( [ 'getZObjectChildrenById' ] ),
+		mapGetters( {
+			getZObjectChildrenById: 'getZObjectChildrenById',
+			viewmode: 'getViewMode'
+		} ),
 		{
 			zobject: function () {
 				return this.getZObjectChildrenById( this.zobjectId );
