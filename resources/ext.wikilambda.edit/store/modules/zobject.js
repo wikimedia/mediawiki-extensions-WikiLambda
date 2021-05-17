@@ -874,7 +874,7 @@ module.exports = {
 							context.dispatch( 'addZList', payload.id );
 							break;
 						case Constants.Z_REFERENCE:
-							context.dispatch( 'addZReference', payload.id );
+							context.dispatch( 'addZReference', payload );
 							break;
 						case Constants.Z_CODE:
 							context.dispatch( 'addZCode', payload.id );
