@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Druesenfieber"
+			"Druesenfieber",
+			"FF-11"
 		]
 	},
 	"wikilambda-desc": "Bereitstellung einer Wikitext-Parser-Funktion für Wikimedia-Wikis, um die Auswertung von Funktionen aufzurufen, die in einem zentralen Wiki geschrieben, verwaltet und ausgewertet werden.",
@@ -12,10 +13,10 @@
 	"wikilambda-prohibitedcreationtype": "Das bereitgestellte ZObject ist vom Typ „$1“, der nicht angelegt werden darf.",
 	"wikilambda-noresult": "Die Suche hat kein Ergebnis geliefert.",
 	"wikilambda-labelclash": "Das Label des bereitgestellten Inhalts kollidiert mit dem ZObjekt „$1“ für das Label in „$2“.",
-	"wikilambda-multilingualstring-nofallback": "Kein Label definiert in dieser oder einer akzeptierten Fallback-Sprache",
+	"wikilambda-multilingualstring-nofallback": "Kein Label in dieser oder einer akzeptierten Fallback-Sprache definiert",
 	"wikilambda-viewmode-nojs": "Diese Seite wird ohne JavaScript nur in eingeschränkter Weise angezeigt.",
 	"wikilambda-reference": "Referenz",
-	"wikilambda-literal": "Wörtlich",
+	"wikilambda-literal": "Literal",
 	"wikilambda-genericliteral": "Generisches Literal",
 	"wikilambda-call-function": "Funktion aufrufen",
 	"wikilambda-functioncall": "Funktionsaufruf",
@@ -33,7 +34,7 @@
 	"wikilambda-special-evaluatefunctioncall-intro": "Vergewissere dich, dass du die Gemeinschaftsrichtlinien sowie die Urheberrechts- und Patentvorschriften befolgst.",
 	"wikilambda-special-evaluatefunctioncall-nojs": "Diese Seite erfordert die Verwendung von JavaScript.",
 	"wikilambda-special-listduplicatezobjectlabels": "ZObjekt-Seiten mit doppelten Labels",
-	"wikilambda-special-listduplicatezobjectlabels-summary": "Diese Seite zeigt, welche ZObjekte mit doppelten Bezeichnungen erstellt wurden. Nur das erste wird bei der Suche angezeigt, daher sollten diese behoben werden.",
+	"wikilambda-special-listduplicatezobjectlabels-summary": "Diese Seite zeigt, welche ZObjekte mit doppelten Bezeichnungen erstellt wurden. Nur das erste wird bei der Suche angezeigt, daher sollte dieses korrigiert werden.",
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "Derzeit haben keine ZObjekte doppelte Labels.",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "Vorhandenes ZObject",
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "Nicht zusammenpassendes ZObject",
@@ -49,9 +50,9 @@
 	"wikilambda-function-typeselector-label": "Funktion auswählen",
 	"wikilambda-return-typeselector-label": "Wähle einen Typ zur Rückgabe",
 	"wikilambda-editor-label-addlanguage-label": "Sprache hinzufügen:",
-	"wikilambda-editor-label-removelanguage-tooltip": "Entfernen diese Spracher von dieser Bezeichnung",
+	"wikilambda-editor-label-removelanguage-tooltip": "Entferne diese Sprache von dieser Bezeichnung",
 	"wikilambda-editor-zlist-additem-tooltip": "Ein Element zu dieser ZList hinzufügen",
-	"wikilambda-editor-zlist-removeitem-tooltip": "Ein Element von dieser ZList entfernen",
+	"wikilambda-editor-zlist-removeitem-tooltip": "Dieses Element von dieser ZList entfernen",
 	"wikilambda-editor-zobject-addkey": "Schlüssel hinzufügen:",
 	"wikilambda-editor-zobject-removekey-tooltip": "Diesen Schlüssel/Wert vom ZObject entfernen",
 	"wikilambda-editor-label-select-programming-language-label": "Programmiersprache wählen:",
