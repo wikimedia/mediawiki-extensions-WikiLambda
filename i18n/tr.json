@@ -3,6 +3,7 @@
 		"authors": [
 			"BaRaN6161 TURK",
 			"Joseph",
+			"Melissadilara",
 			"MuratTheTurkish",
 			"SaldırganSincap"
 		]
@@ -31,6 +32,7 @@
 	"wikilambda-special-createzobject-summary": "Bu form, bir İşlevi, Uygulamasını, bunun için bir Test Cihazını veya çeşitli diğer ZObject türlerinden birini temsil edebilen yeni bir ZObject oluşturmanıza olanak tanır. Önce yardım belgelerini ve topluluk rehberini okumalısınız.",
 	"wikilambda-special-createzobject-intro": "Topluluk ilkelerine, telif hakkı ve patent kurallarına uyduğunuzdan emin olun.",
 	"wikilambda-special-createzobject-nojs": "Bu sayfa JavaScript'in kullanılmasını gerektiriyor.",
+	"wikilambda-special-evaluatefunctioncall-nojs": "Bu sayfa JavaScript kullanımını gerektiriyor.",
 	"wikilambda-special-listduplicatezobjectlabels": "Yinelenen etiketlere sahip ZObject sayfaları",
 	"wikilambda-special-listduplicatezobjectlabels-summary": "Bu sayfa, hangi ZObject'lerin yinelenen etiketlerle oluşturulduğunu gösterir. Aramalarda yalnızca ilki görünecektir, bu nedenle bunların düzeltilmesi gerekir.",
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "Şu anda hiçbir ZObject'in yinelenen etiketi yok.",
