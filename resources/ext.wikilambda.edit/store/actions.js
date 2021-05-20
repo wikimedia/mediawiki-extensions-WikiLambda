@@ -6,9 +6,37 @@
  */
 'use strict';
 
-var api = new mw.Api();
+var api = new mw.Api(),
+	Constants = require( '../Constants.js' );
 
 module.exports = {
+	/**
+	 * Initializes the Vuex store
+	 *
+	 * @param {Object} context
+	 */
+	initialize: function ( context ) {
+		var languageChain = mw.language.getFallbackLanguageChain();
+
+		// Set user language
+		context.commit( 'setZLangs', languageChain );
+
+		// Pre-fetch a list of the most common Zids
+		context.dispatch( 'fetchZKeys', [
+			Constants.Z_OBJECT,
+			Constants.Z_PERSISTENTOBJECT,
+			Constants.Z_MULTILINGUALSTRING,
+			Constants.Z_KEY,
+			Constants.Z_TYPE,
+			Constants.Z_STRING,
+			Constants.Z_FUNCTION,
+			Constants.Z_FUNCTION_CALL,
+			Constants.Z_REFERENCE,
+			Constants.Z_LIST,
+			Constants.Z_BOOLEAN_TRUE,
+			Constants.Z_BOOLEAN_FALSE
+		] );
+	},
 	/**
 	 * Call the mediawiki api to get and store the list of languages in the state.
 	 *

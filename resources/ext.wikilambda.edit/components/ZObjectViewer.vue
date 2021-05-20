@@ -14,12 +14,17 @@
 </template>
 
 <script>
-var ZObject = require( './ZObject.vue' );
+var ZObject = require( './ZObject.vue' ),
+	mapActions = require( 'vuex' ).mapActions;
 
 module.exports = {
 	name: 'ZObjectViewer',
 	components: {
 		'z-object': ZObject
+	},
+	methods: mapActions( [ 'initialize' ] ),
+	created: function () {
+		this.initialize();
 	}
 };
 </script>

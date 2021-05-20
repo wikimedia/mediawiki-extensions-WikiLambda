@@ -40,7 +40,11 @@ var Constants = {
 	Z_CODE_CODE: 'Z16K2',
 	Z_FUNCTION_CALL: 'Z7',
 	Z_FUNCTION_CALL_FUNCTION: 'Z7K1',
-	Z_KEY_MODES: { LITERAL: 'literal', REFERENCE: 'reference', FUNCTION_CALL: 'function_call', GENERIC_LITERAL: 'generic_literal', JSON: 'json' }
+	Z_KEY_MODES: { LITERAL: 'literal', REFERENCE: 'reference', FUNCTION_CALL: 'function_call', GENERIC_LITERAL: 'generic_literal', JSON: 'json' },
+	Z_BOOLEAN: 'Z40',
+	Z_BOOLEAN_TRUE: 'Z41',
+	Z_BOOLEAN_FALSE: 'Z42',
+	Z_BOOLEAN_IDENTITY: 'Z40K1'
 };
 
 module.exports = Constants;

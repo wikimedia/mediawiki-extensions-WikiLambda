@@ -1,0 +1,101 @@
+<template>
+	<!--
+		WikiLambda Vue component for boolean values
+
+		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+		@license MIT
+	-->
+	<div>
+		<select
+			v-if="!viewmode"
+			v-model="currentBooleanValue"
+			class="ext-wikilambda-zboolean"
+		>
+			<option value="" disabled>
+				{{ $i18n( "wikilambda-editor-boolean-selector" ) }}
+			</option>
+			<option :value="Constants.Z_BOOLEAN_TRUE">
+				{{ getZkeyLabels[ Constants.Z_BOOLEAN_TRUE ] }}
+			</option>
+			<option :value="Constants.Z_BOOLEAN_FALSE">
+				{{ getZkeyLabels[ Constants.Z_BOOLEAN_FALSE ] }}
+			</option>
+		</select>
+		<template v-else>
+			{{ getZkeyLabels[ selectedBoolean.value ] }}
+		</template>
+	</div>
+</template>
+
+<script>
+var Constants = require( '../../Constants.js' ),
+	typeUtils = require( '../../mixins/typeUtils.js' ),
+	mapGetters = require( 'vuex' ).mapGetters,
+	mapActions = require( 'vuex' ).mapActions;
+
+module.exports = {
+	name: 'ZBoolean',
+	props: {
+		zobjectId: {
+			type: Number,
+			required: true
+		}
+	},
+	mixins: [ typeUtils ],
+	computed: $.extend( mapGetters( {
+		viewmode: 'getViewMode',
+		getZObjectChildrenById: 'getZObjectChildrenById',
+		getZkeyLabels: 'getZkeyLabels'
+	} ),
+	{
+		Constants: function () {
+			return Constants;
+		},
+		zobject: function () {
+			return this.getZObjectChildrenById( this.zobjectId );
+		},
+		selectedBoolean: function () {
+			return this.findKeyInArray(
+				Constants.Z_REFERENCE_ID,
+				this.getZObjectChildrenById(
+					this.findKeyInArray(
+						Constants.Z_BOOLEAN_IDENTITY, this.zobject
+					).id
+				)
+			);
+		},
+		selectedBooleanValue: function () {
+			if ( this.selectedBoolean ) {
+				return this.selectedBoolean.value;
+			} else {
+				return '';
+			}
+		},
+		currentBooleanValue: {
+			get: function () {
+				return this.selectedBooleanValue;
+			},
+			set: function ( value ) {
+				this.setZObjectValue( {
+					id: this.selectedBoolean.id,
+					value: value
+				} );
+			}
+		}
+	} ),
+	methods: $.extend( mapActions( [
+		'setZObjectValue',
+		'fetchZKeys'
+	] ),
+	{
+
+	} )
+};
+</script>
+
+<style lang="less">
+.ext-wikilambda-zboolean {
+	display: inline-block;
+	margin-top: 5px;
+}
+</style>

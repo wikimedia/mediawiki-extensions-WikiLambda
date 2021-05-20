@@ -75,5 +75,6 @@
 	"wikilambda-modeselector-functioncall": "{{notranslate}}\nLabel for button to select function call",
 	"wikilambda-modeselector-json": "{{notranslate}}\nLabel for button to select JSON",
 	"specialpages-group-wikilambda": "{{doc-special-group|that=are related to Wikifungsi}}",
-	"wikilambda-editor-argument-list-label": "Label for a list of arguments in a function."
+	"wikilambda-editor-argument-list-label": "Label for a list of arguments in a function.",
+	"wikilambda-editor-boolean-selector": "Label for selecting a true/false value for a boolean."
 }

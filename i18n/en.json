@@ -69,5 +69,6 @@
 	"wikilambda-modeselector-functioncall": "f(x)",
 	"wikilambda-modeselector-json": "{..}",
 	"specialpages-group-wikilambda": "Wikifunctions page",
-	"wikilambda-editor-argument-list-label": "Argument List"
+	"wikilambda-editor-argument-list-label": "Argument List",
+	"wikilambda-editor-boolean-selector": "Select true/false"
 }

@@ -38,12 +38,10 @@
 </template>
 
 <script>
-var Constants = require( '../Constants.js' ),
-	ZObject = require( './ZObject.vue' ),
+var ZObject = require( './ZObject.vue' ),
 	WbmiMessage = require( './base/Message.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	mapMutations = require( 'vuex' ).mapMutations,
 	ZObjectJson = require( './ZObjectJson.vue' );
 
 module.exports = {
@@ -83,8 +81,7 @@ module.exports = {
 		}
 	} ),
 	methods: $.extend( {},
-		mapActions( [ 'fetchZKeys', 'submitZObject' ] ),
-		mapMutations( [ 'addZKeyLabel', 'setZLangs' ] ),
+		mapActions( [ 'initialize', 'submitZObject' ] ),
 		{
 			updateZobject: function ( newZobject ) {
 				this.zobject = newZobject;
@@ -97,24 +94,7 @@ module.exports = {
 	),
 
 	created: function () {
-		var languageChain = mw.language.getFallbackLanguageChain();
-
-		// Set user language
-		this.setZLangs( languageChain );
-
-		// Pre-fetch a list of the most common Zids
-		this.fetchZKeys( [
-			Constants.Z_OBJECT,
-			Constants.Z_PERSISTENTOBJECT,
-			Constants.Z_MULTILINGUALSTRING,
-			Constants.Z_KEY,
-			Constants.Z_TYPE,
-			Constants.Z_STRING,
-			Constants.Z_FUNCTION,
-			Constants.Z_FUNCTION_CALL,
-			Constants.Z_REFERENCE,
-			Constants.Z_LIST
-		] );
+		this.initialize();
 	}
 };
 </script>

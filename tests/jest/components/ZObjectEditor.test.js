@@ -40,7 +40,8 @@ describe( 'ZObjectEditor', function () {
 		};
 		actions = {
 			fetchZKeys: jest.fn(),
-			submitZObject: jest.fn()
+			submitZObject: jest.fn(),
+			initialize: jest.fn()
 		};
 		mutations = {
 			addZKeyLabel: jest.fn(),
