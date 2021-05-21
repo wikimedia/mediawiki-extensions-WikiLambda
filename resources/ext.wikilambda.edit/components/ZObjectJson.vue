@@ -3,7 +3,7 @@
 		<code-editor
 			mode="json"
 			:value="initialJson"
-			:read-only="readonly || viewmode"
+			:read-only="readonly || getViewMode"
 			@change="codeChangeHandler"
 		></code-editor>
 	</div>
@@ -38,7 +38,7 @@ module.exports = {
 		};
 	},
 	computed: $.extend( {},
-		mapGetters( [ 'getZObjectAsJsonById', 'getZObjectById' ] ),
+		mapGetters( [ 'getZObjectAsJsonById', 'getZObjectById', 'getViewMode' ] ),
 		{
 			zobject: function () {
 				return this.getZObjectById( this.zobjectId );

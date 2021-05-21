@@ -21,7 +21,7 @@
 		<template v-else>
 			<span>{{ zTypeLabel }} ({{ zType }})</span>
 			<z-key-mode-selector
-				v-if="!getViewMode && selectedMode"
+				v-if="!getViewMode && selectedMode && !isIdentityKey"
 				:mode="selectedMode"
 				:parent-type="parentType"
 				:literal-type="literalType"
@@ -64,7 +64,8 @@ var Constants = require( '../Constants.js' ),
 	ZObjectJson = require( './ZObjectJson.vue' ),
 	mapState = require( 'vuex' ).mapState,
 	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters;
+	mapGetters = require( 'vuex' ).mapGetters,
+	typeUtils = require( '../mixins/typeUtils.js' );
 
 module.exports = {
 	name: 'ZObjectKey',
@@ -75,6 +76,7 @@ module.exports = {
 		'z-object-generic': ZObjectGeneric,
 		'z-object-json': ZObjectJson
 	},
+	mixins: [ typeUtils ],
 	props: {
 		zKey: {
 			type: String,
@@ -118,7 +120,9 @@ module.exports = {
 			'getZkeyLabels',
 			'getZkeys',
 			'getModeByType',
-			'getViewMode'
+			'getViewMode',
+			'getCurrentZObjectId',
+			'getZObjectChildrenById'
 		] ),
 		{
 			zType: function () {
@@ -129,6 +133,16 @@ module.exports = {
 			},
 			zTypeLabel: function () {
 				return this.getZkeyLabels[ this.zType ];
+			},
+			referenceValue: function () {
+				return this.findKeyInArray(
+					Constants.Z_REFERENCE_ID,
+					this.getZObjectChildrenById( this.zobjectId ) )
+					.value;
+			},
+			isIdentityKey: function () {
+				return this.zType === Constants.Z_REFERENCE &&
+					this.referenceValue === this.getCurrentZObjectId;
 			}
 		}
 	),

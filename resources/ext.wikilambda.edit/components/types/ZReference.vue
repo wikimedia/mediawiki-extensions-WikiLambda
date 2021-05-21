@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-zreference">
-		<span v-if="viewmode">
+		<span v-if="viewmode || getCurrentZObjectId === referenceValue">
 			<a :href="'./ZObject:' + referenceValue">
 				{{ referenceLabel }} ({{ referenceValue }})
 			</a>
@@ -49,7 +49,8 @@ module.exports = {
 		mapGetters( {
 			getZObjectChildrenById: 'getZObjectChildrenById',
 			getZkeyLabels: 'getZkeyLabels',
-			viewmode: 'getViewMode'
+			viewmode: 'getViewMode',
+			getCurrentZObjectId: 'getCurrentZObjectId'
 		} ),
 		{
 			zobject: function () {

@@ -812,6 +812,41 @@ module.exports = {
 
 		},
 		/**
+		 * Create the required entry in the zobject array for a zType.
+		 * This utilizes the generic object creator, then sets the identity value.
+		 * { "Z1K1": "Z4", "Z4K1": { "Z1K1": "Z9", "Z9K1": "Z0" }, "Z4K2": [], "Z4K3": { "Z1K1": "Z1" } }
+		 *
+		 * @param {Object} context
+		 * @param {number} objectId
+		 */
+		addZType: function ( context, objectId ) {
+			var identity;
+			// This action only runs after `addGenericObject` is complete,
+			// otherwise it has a race condition with setting the reference
+			// value.
+			context.dispatch( 'addGenericObject', { id: objectId, type: Constants.Z_TYPE } )
+				.then( function () {
+					identity = typeUtils.findKeyInArray(
+						Constants.Z_TYPE_IDENTITY,
+						context.getters.getZObjectChildrenById( objectId )
+					);
+
+					context.dispatch( 'removeZObjectChildren', identity.id );
+					context.dispatch( 'addZObjects', [
+						{
+							key: Constants.Z_OBJECT_TYPE,
+							value: Constants.Z_REFERENCE,
+							parent: identity.id
+						},
+						{
+							key: Constants.Z_REFERENCE_ID,
+							value: context.getters.getCurrentZObjectId,
+							parent: identity.id
+						}
+					] );
+				} );
+		},
+		/**
 		 * Add a single entry in the zObject tree.
 		 *
 		 * @param {Object} context
@@ -896,6 +931,9 @@ module.exports = {
 							break;
 						case Constants.Z_PERSISTENTOBJECT:
 							context.dispatch( 'addZPersistentObject', payload.id );
+							break;
+						case Constants.Z_TYPE:
+							context.dispatch( 'addZType', payload.id );
 							break;
 						default:
 							context.dispatch( 'addGenericObject', payload );
