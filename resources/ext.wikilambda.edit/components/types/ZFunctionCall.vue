@@ -59,7 +59,6 @@ module.exports = {
 	computed: $.extend( mapState( {
 	} ), mapGetters( {
 		getZObjectChildrenById: 'getZObjectChildrenById',
-		getNextObjectId: 'getNextObjectId',
 		getZObjectTypeById: 'getZObjectTypeById',
 		getZkeys: 'getZkeys',
 		getZObjectAsJsonById: 'getZObjectAsJsonById',
@@ -77,7 +76,6 @@ module.exports = {
 			if ( func.value === 'object' ) {
 				return this.findKeyInArray( Constants.Z_REFERENCE_ID, this.getZObjectChildrenById( func.id ) ).value;
 			}
-
 			return func.value;
 		},
 		selectedFunction: function () {
@@ -134,23 +132,25 @@ module.exports = {
 	} ),
 	methods: $.extend( mapActions( [
 		'fetchZKeys',
-		'resetZObject',
 		'setZObjectValue',
 		'addZObject',
 		'addZObjects',
-		'callZFunction'
+		'callZFunction',
+		'changeType',
+		'resetZObject'
 	] ), {
 		typeHandler: function ( zid ) {
-			var zFunctionCallFunction = this.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, this.zobject );
-
-			this.resetZObject( this.zobjectId );
-
-			this.setZObjectValue( {
-				id: zFunctionCallFunction.id,
-				value: zid
-			} );
-
-			this.fetchZKeys( [ zid ] );
+			var self = this,
+				zFunctionCallFunction = this.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, this.zobject );
+			self.resetZObject( self.zobjectId )
+				.then( function () {
+					if ( zid ) {
+						self.setZObjectValue( {
+							id: zFunctionCallFunction.id,
+							value: zid
+						} );
+					}
+				} );
 		},
 		findArgumentId: function ( key ) {
 			return this.findKeyInArray( key, this.zobject ).id;
@@ -164,24 +164,22 @@ module.exports = {
 			var self = this;
 
 			value.forEach( function ( arg ) {
-				var nextId = self.getNextObjectId;
-
 				// Don't perform this action if the key already exists
 				if ( self.findKeyInArray( arg.key, self.zobject ) ) {
 					return;
 				}
-
 				self.addZObject( {
 					key: arg.key,
 					value: 'object',
 					parent: self.zobjectId
-				} );
-				self.addZObjects( [
-					{ key: Constants.Z_OBJECT_TYPE,
-						value: arg.type[ Constants.Z_REFERENCE_ID ],
-						parent: nextId
-					}
-				] );
+				} )
+					.then( function ( objectId ) {
+						var payload = {
+							id: objectId,
+							type: arg.type[ Constants.Z_REFERENCE_ID ]
+						};
+						self.changeType( payload );
+					} );
 			} );
 		}
 	},
