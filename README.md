@@ -22,7 +22,8 @@ Done! Navigate to the newly created `ZObject:Z1` page on your wiki to verify tha
 If you would like to use the orchestrator (e.g., to run built-in functions), please perform the following additional steps:
 
 * Copy the `services.function-orchestrator` block in `mediawiki/extensions/WikiLambda/docker-compose.sample.yml` to the analogous `services` block in `mediawiki/docker-compose.override.yml`
-* If you would like to use a local version of the function orchestrator, carry out the following steps.
+* Replace `<TAG>` in the stanza you just copied with the latest build from [the Docker registry](https://docker-registry.wikimedia.org/wikimedia/mediawiki-services-function-orchestrator/tags/).
+* If you would instead like to use a local version of the function orchestrator, carry out the following steps.
 
   ```
   # First, get Blubber: https://wikitech.wikimedia.org/wiki/Blubber/Download#Blubber_as_a_(micro)Service

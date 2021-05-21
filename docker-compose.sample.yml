@@ -1,6 +1,6 @@
 version: '3.7'
 services:
   function-orchestrator:
-    image: docker-registry.wikimedia.org/wikimedia/mediawiki-services-function-orchestrator
+    image: docker-registry.wikimedia.org/wikimedia/mediawiki-services-function-orchestrator:<TAG>
     ports:
       - 6254:6254
