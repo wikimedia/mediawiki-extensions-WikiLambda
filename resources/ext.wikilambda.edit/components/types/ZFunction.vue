@@ -8,7 +8,7 @@
 		<div>
 			{{ $i18n( 'wikilambda-return-typeselector-label' ) }}:
 			<z-object-selector
-				:type="Constants.Z_FUNCTION"
+				:type="Constants.Z_TYPE"
 				:placeholder="$i18n( 'wikilambda-return-typeselector-label' )"
 				:selected-id="zReturnType.value"
 				@input="updateZReturnType"

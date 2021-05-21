@@ -687,29 +687,28 @@ module.exports = {
 		 * @param {number} objectId
 		 */
 		addZArgument: function ( context, objectId ) {
-			var zObjectItems = [],
-				nextId;
+			var nextId;
 			context.dispatch( 'setZObjectValue', {
 				id: objectId,
 				value: 'object'
 			} );
-			zObjectItems = [
-				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_ARGUMENT, parent: objectId },
-				{ key: Constants.Z_ARGUMENT_TYPE, value: '', parent: objectId }
-			];
-			context.dispatch( 'addZObjects', zObjectItems );
+			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: Constants.Z_ARGUMENT, parent: objectId } );
 
-			// We calculate the next id, and create the argument label
 			nextId = getNextObjectId( context.state.zobject );
-			// we create the base object that will be used to scaffold the ZString
-			context.dispatch( 'addZObject', { key: Constants.Z_ARGUMENT_LABEL, value: 'object', parent: objectId } );
-			context.dispatch( 'addZMultilingualString', nextId );
+			context.dispatch( 'addZObject', { key: Constants.Z_ARGUMENT_TYPE, value: 'object', parent: objectId } );
+			context.dispatch( 'addZReference', { id: nextId, value: '' } );
 
 			// We calculate the id again, and set the key
 			nextId = getNextObjectId( context.state.zobject );
 			// we create the base object that will be used to scaffold the ZString
 			context.dispatch( 'addZObject', { key: Constants.Z_ARGUMENT_KEY, value: 'object', parent: objectId } );
 			context.dispatch( 'addZString', { id: nextId, value: context.getters.getNextKey } );
+
+			// We calculate the next id, and create the argument label
+			nextId = getNextObjectId( context.state.zobject );
+			// we create the base object that will be used to scaffold the ZString
+			context.dispatch( 'addZObject', { key: Constants.Z_ARGUMENT_LABEL, value: 'object', parent: objectId } );
+			context.dispatch( 'addZMultilingualString', nextId );
 		},
 		/**
 		 * Create the required entry in the zobject array for a zArgument.
@@ -733,26 +732,30 @@ module.exports = {
 		},
 
 		addZFunction: function ( context, objectId ) {
-			var zObjectItems = [],
-				nextId;
+			var nextId;
 			context.dispatch( 'setZObjectValue', {
 				id: objectId,
 				value: 'object'
 			} );
-			zObjectItems = [
-				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_FUNCTION, parent: objectId },
-				{ key: Constants.Z_FUNCTION_RETURN_TYPE, value: '', parent: objectId },
-				{ key: Constants.Z_FUNCTION_TESTERS, value: 'array', parent: objectId },
-				{ key: Constants.Z_FUNCTION_IMPLEMENTATIONS, value: 'array', parent: objectId }
-			];
 
-			context.dispatch( 'addZObjects', zObjectItems );
+			// Set type
+			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: Constants.Z_FUNCTION, parent: objectId } );
 
 			// Add initial ZArgument
 			nextId = getNextObjectId( context.state.zobject );
 			context.dispatch( 'addZObject', { key: Constants.Z_FUNCTION_ARGUMENTS, value: 'array', parent: objectId } );
 			context.dispatch( 'addZObject', { key: 0, value: 'object', parent: nextId } );
 			context.dispatch( 'addZArgument', nextId + 1 );
+
+			// Add return type
+			nextId = getNextObjectId( context.state.zobject );
+			context.dispatch( 'addZObject', { key: Constants.Z_FUNCTION_RETURN_TYPE, value: 'object', parent: objectId } );
+			context.dispatch( 'addZReference', { id: nextId, value: '' } );
+
+			context.dispatch( 'addZObjects', [
+				{ key: Constants.Z_FUNCTION_TESTERS, value: 'array', parent: objectId },
+				{ key: Constants.Z_FUNCTION_IMPLEMENTATIONS, value: 'array', parent: objectId }
+			] );
 
 			// Set identity
 			nextId = getNextObjectId( context.state.zobject );
