@@ -816,6 +816,7 @@ module.exports = {
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
+		 * @return {number} newObjectId
 		 */
 		addZObject: function ( context, payload ) {
 			if ( payload.key === undefined || isNaN( payload.parent ) ) {
@@ -828,6 +829,7 @@ module.exports = {
 
 			payload.id = getNextObjectId( context.state.zobject );
 			context.commit( 'addZObject', payload );
+			return payload.id;
 		},
 		/**
 		 * Add a multiple entry in the zObject tree.
@@ -846,9 +848,10 @@ module.exports = {
 		 *
 		 * @param {Object} context Vuex context object
 		 * @param {number} zObjectId ZObject ID
+		 * @return {Promise}
 		 */
 		resetZObject: function ( context, zObjectId ) {
-			context.dispatch( 'changeType', {
+			return context.dispatch( 'changeType', {
 				id: zObjectId,
 				type: typeUtils
 					.findKeyInArray(
@@ -864,10 +867,11 @@ module.exports = {
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
+		 * @return {Promise}
 		 */
 		changeType: function ( context, payload ) {
 			context.dispatch( 'removeZObjectChildren', payload.id );
-			context.dispatch( 'fetchZKeys', [ payload.type ] )
+			return context.dispatch( 'fetchZKeys', [ payload.type ] )
 				.then( function () {
 					switch ( payload.type ) {
 						case Constants.Z_LIST:
