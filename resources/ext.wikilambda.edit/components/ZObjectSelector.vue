@@ -22,7 +22,7 @@
 			:initial-value="selectedText"
 			:lookup-results="lookupLabels"
 			@input="onInput"
-			@blur="onBlur"
+			@blur="onSubmit"
 			@submit="onSubmit"
 			@clear="onClear"
 			@clear-lookup-results="onClearLookupResults"
@@ -77,7 +77,8 @@ module.exports = {
 			validatorErrorMessages: [
 				'wikilambda-noresult',
 				'wikilambda-invalidzobject'
-			]
+			],
+			valueEmitted: false
 		};
 	},
 	computed: $.extend( {},
@@ -220,6 +221,7 @@ module.exports = {
 			 */
 			onInput: function ( input ) {
 				var self = this;
+				this.valueEmitted = false;
 				this.inputValue = input;
 
 				// The `input` event is also emitted when the field is emptied.
@@ -230,6 +232,10 @@ module.exports = {
 
 				this.validatorResetError();
 
+				// Just search if more than one characters
+				if ( input.length < 2 ) {
+					return;
+				}
 				clearTimeout( this.lookupDelayTimer );
 				this.lookupDelayTimer = setTimeout( function () {
 					if ( self.isValidZidFormat( input.toUpperCase() ) ) {
@@ -241,44 +247,26 @@ module.exports = {
 			},
 
 			/**
-			 * ZObject is selected, the component emits `input` event
+			 * ZObject is selected, the component emits `input` event.
+			 * This method is emitted on blur and on element click
 			 *
 			 * @param {string} item
 			 */
 			onSubmit: function ( item ) {
 				var zIds = null,
-					zId = '';
+					zId = '',
+					inputValue;
+				// we need to make sure that the input event is not triggered twice
+				if ( this.valueEmitted === true ) {
+					return;
+				}
 				this.validatorResetError();
-				if ( item === '' && typeof item === 'object' ) {
-					return;
-				}
-				zIds = item.match( this.zRegex );
-				// The item string is incorrect and does not include a Zobject Id
-				if ( !zIds || zIds.length === 0 ) {
-					return;
-				}
-				// The result of the Regex is an array so we get the first item
-				zId = zIds[ 0 ];
-
-				if ( this.zkeyLabels[ zId ] ) {
-					this.$emit( 'input', zId );
+				if ( typeof item === 'object' ) {
+					inputValue = this.inputValue;
 				} else {
-					this.validatorSetError( 'wikilambda-invalidzobject' );
+					inputValue = item;
 				}
-			},
-			/**
-			 * When Blured, if ZObject has been selected, emit 'input' event
-			 */
-			onBlur: function () {
-				var zIds = null,
-					zId = '';
-
-				this.validatorResetError();
-				if ( this.inputValue === '' ) {
-					return;
-				}
-
-				zIds = this.inputValue.match( this.zRegex );
+				zIds = inputValue.match( this.zRegex );
 				// The item string is incorrect and does not include a Zobject Id
 				if ( !zIds || zIds.length === 0 ) {
 					return;
@@ -286,8 +274,9 @@ module.exports = {
 				// The result of the Regex is an array so we get the first item
 				zId = zIds[ 0 ];
 
-				if ( this.zkeyLabels[ zId ] ) {
+				if ( this.zkeyLabels[ zId ] && this.hasValidType( zId ) ) {
 					this.$emit( 'input', zId );
+					this.valueEmitted = true;
 				} else {
 					this.validatorSetError( 'wikilambda-invalidzobject' );
 				}
