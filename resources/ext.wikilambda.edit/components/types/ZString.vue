@@ -1,6 +1,6 @@
 <template>
 	<!--
-		WikiLambda Vue interface module for generic ZObject manipulation.
+		WikiLambda Vue interface module for string manipulation
 
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT
@@ -29,7 +29,7 @@ module.exports = {
 	props: {
 		readonly: {
 			type: Boolean,
-			required: true
+			default: false
 		},
 		zobjectId: {
 			type: Number,
