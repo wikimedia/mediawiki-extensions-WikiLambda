@@ -1,6 +1,6 @@
 <template>
 	<!--
-		WikiLambda Vue interface module for ZList manipulation.
+		WikiLambda Vue component for ZObject items in ZLists.
 
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT

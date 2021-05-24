@@ -1,6 +1,6 @@
 <template>
 	<!--
-		WikiLambda Vue component for editing multilingual text
+		WikiLambda Vue component for multilingual text
 
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT

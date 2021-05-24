@@ -1,6 +1,6 @@
 <template>
 	<!--
-		WikiLambda Vue interface module for editing ZArgument objects.
+		WikiLambda Vue component for ZArgument objects.
 
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT

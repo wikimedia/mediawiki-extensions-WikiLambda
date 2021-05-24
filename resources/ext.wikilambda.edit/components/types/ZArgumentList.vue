@@ -1,6 +1,7 @@
 <template>
 	<!--
-		WikiLambda Vue interface module for ZList of ZArgument manipulation.
+		WikiLambda Vue component for ZLists of ZArgument objects.
+
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->

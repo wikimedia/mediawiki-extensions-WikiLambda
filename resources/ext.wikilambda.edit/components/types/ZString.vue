@@ -1,6 +1,6 @@
 <template>
 	<!--
-		WikiLambda Vue interface module for string manipulation
+		WikiLambda Vue component for ZString objects.
 
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT

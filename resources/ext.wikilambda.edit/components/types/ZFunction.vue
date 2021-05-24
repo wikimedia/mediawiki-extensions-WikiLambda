@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for ZFunction objects.
+
+		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div>
 		<div class="ext-wikilambda-function-definition">
 			{{ scriptFunctionArguments }}: {{

@@ -1,6 +1,6 @@
 <template>
 	<!--
-		WikiLambda Vue interface module for generic ZObject manipulation.
+		WikiLambda Vue component for generic ZObjects.
 
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT

@@ -1,6 +1,6 @@
 <template>
 	<!--
-		WikiLambda Vue interface module for editing ZFunction Calls.
+		WikiLambda Vue component for ZFunctionCall objects.
 
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT
