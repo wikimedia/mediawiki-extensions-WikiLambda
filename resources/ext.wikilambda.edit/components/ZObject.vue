@@ -54,6 +54,11 @@
 			:zobject-id="zobjectId"
 		></z-function>
 
+		<z-boolean
+			v-else-if="type === Constants.Z_BOOLEAN"
+			:zobject-id="zobjectId"
+		></z-boolean>
+
 		<z-object-generic
 			v-else-if="type !== undefined"
 			:zobject-id="zobjectId"
@@ -76,6 +81,7 @@ var Constants = require( '../Constants.js' ),
 	ZFunctionCall = require( './types/ZFunctionCall.vue' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
 	ZFunction = require( './types/ZFunction.vue' ),
+	ZBoolean = require( './types/ZBoolean.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -91,7 +97,8 @@ module.exports = {
 		'z-argument': ZArgument,
 		'z-function-call': ZFunctionCall,
 		'z-object-selector': ZObjectSelector,
-		'z-function': ZFunction
+		'z-function': ZFunction,
+		'z-boolean': ZBoolean
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -118,7 +125,8 @@ module.exports = {
 			isInlineComponent: function () {
 				return (
 					( this.type === Constants.Z_STRING ) ||
-					( this.type === Constants.Z_REFERENCE )
+					( this.type === Constants.Z_REFERENCE ) ||
+					( this.type === Constants.Z_BOOLEAN )
 				);
 			},
 			classZObject: function () {

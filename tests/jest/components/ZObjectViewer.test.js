@@ -7,12 +7,33 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	ZObjectViewer = require( '../../../resources/ext.wikilambda.edit/components/ZObjectViewer.vue' );
+	createLocalVue = require( '@vue/test-utils' ).createLocalVue,
+	Vuex = require( 'vuex' ),
+	ZObjectViewer = require( '../../../resources/ext.wikilambda.edit/components/ZObjectViewer.vue' ),
+	localVue;
+
+localVue = createLocalVue();
+localVue.use( Vuex );
 
 describe( 'ZObjectViewer', function () {
+	var actions,
+		store;
+
+	beforeEach( function () {
+		actions = {
+			initialize: jest.fn()
+		};
+
+		store = new Vuex.Store( {
+			actions: actions
+		} );
+	} );
 
 	it( 'renders without errors', function () {
-		var wrapper = shallowMount( ZObjectViewer );
+		var wrapper = shallowMount( ZObjectViewer, {
+			store: store,
+			localVue: localVue
+		} );
 
 		expect( wrapper.find( 'div' ) ).toBeTruthy();
 	} );
