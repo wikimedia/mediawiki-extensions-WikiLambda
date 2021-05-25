@@ -58,5 +58,6 @@
 	"wikilambda-editor-label-select-programming-language-label": "Programmiersprache wählen:",
 	"wikilambda-modeselector-genericliteral": "generisch",
 	"specialpages-group-wikilambda": "Wikifunktionenseite",
-	"wikilambda-editor-argument-list-label": "Argumentliste"
+	"wikilambda-editor-argument-list-label": "Argumentliste",
+	"wikilambda-editor-boolean-selector": "Auswählen true/false"
 }
