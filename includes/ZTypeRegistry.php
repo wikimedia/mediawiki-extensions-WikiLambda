@@ -59,6 +59,10 @@ class ZTypeRegistry {
 	public const Z_TYPE_KEYS = 'Z4K2';
 	public const Z_TYPE_VALIDATOR = 'Z4K3';
 
+	public const Z_ERROR = 'Z5';
+	public const Z_ERROR_TYPE = 'Z5K1';
+	public const Z_ERROR_VALUE = 'Z5K2';
+
 	public const Z_STRING = 'Z6';
 	public const Z_STRING_VALUE = 'Z6K1';
 
@@ -83,6 +87,7 @@ class ZTypeRegistry {
 		self::Z_OBJECT => 'ZObject',
 		self::Z_PERSISTENTOBJECT => 'ZPersistentObject',
 		self::Z_KEY => 'ZKey',
+		self::Z_ERROR => 'ZError',
 		self::Z_TYPE => 'ZType',
 		self::Z_STRING => 'ZString',
 		self::Z_REFERENCE => 'ZReference',
@@ -92,13 +97,13 @@ class ZTypeRegistry {
 	];
 
 	// These consts are currently only used by ZObjectStore to prohibit creation, and are not (yet) built-in.
-	public const Z_ERROR = 'Z5';
 	public const Z_CODE = 'Z16';
 	public const Z_ARGUMENTDECLARATION = 'Z17';
 	public const Z_ARGUMENTREFERENCE = 'Z18';
 	public const Z_NULL = 'Z23';
 	public const Z_KEYREFERENCE = 'Z39';
 	public const Z_BOOLEAN = 'Z40';
+	public const Z_ERRORTYPE = 'Z50';
 
 	public const IGNORE_KEY_NORMALIZATION = [
 		self::Z_OBJECT_TYPE,

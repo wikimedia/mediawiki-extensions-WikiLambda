@@ -205,6 +205,7 @@ class ZObjectFactory {
 		$return = null;
 		$registry = ZTypeRegistry::singleton();
 		$langRegistry = ZLangRegistry::singleton();
+		$errorRegistry = ZErrorTypeRegistry::singleton();
 
 		// Adjust normalization of $value if necessary for references and strings:
 		// FIXME: this is wrong, irrespectively to its format, returns only the value,
@@ -472,6 +473,16 @@ class ZObjectFactory {
 					$return[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ]
 				);
 				return self::spliceReturn( $return, $type );
+
+			case ZTypeRegistry::Z_ERRORTYPE:
+				if (
+					is_string( $value )
+					&& ZObjectUtils::isValidZObjectReference( $value )
+					&& $errorRegistry->isZErrorTypeKnown( $value )
+				) {
+					return $value;
+				}
+				break;
 
 			default:
 				// Default error.
