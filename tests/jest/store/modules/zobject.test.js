@@ -3,7 +3,7 @@ var Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js
 	zobject = {
 		Z1K1: 'Z2',
 		Z2K1: 'Z0',
-		Z2K2: { Z1K1: 'Z6', Z6K1: '' },
+		Z2K2: '',
 		Z2K3: { Z1K1: 'Z12', Z12K1: [] }
 	},
 	zobjectTree = [
@@ -185,12 +185,12 @@ describe( 'zobject Vuex module', function () {
 			expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
 		} );
 		it( 'Initialize ZObject, existing zobject page', function () {
-			var expectedSetZObjectPayload = [ { id: 0, key: undefined, parent: undefined, value: 'object' }, { id: 1, key: 'Z1K1', parent: 0, value: 'test' }, { id: 2, key: 'Z2K1', parent: 0, value: 'test' } ];
+			var expectedSetZObjectPayload = [ { id: 0, key: undefined, parent: undefined, value: 'object' }, { id: 1, key: 'Z1K1', parent: 0, value: 'test' }, { id: 2, key: 'Z1K2', parent: 0, value: 'object' }, { id: 3, key: 'Z1K1', parent: 2, value: 'Z6' }, { id: 4, key: 'Z6K1', parent: 2, value: 'test' } ];
 			context.state = {
 				zobject: zobjectTree
 			};
 			context.getters.getZkeys = {
-				Z1234: { Z1K1: 'test', Z2K1: 'test' }
+				Z1234: { Z1K1: 'test', Z1K2: 'test' }
 			};
 			mw.config = {
 				get: jest.fn( function () {
@@ -235,6 +235,15 @@ describe( 'zobject Vuex module', function () {
 		} );
 
 		it( 'Save new zobject', function () {
+			var expectedZObject = {
+				Z1K1: 'Z2',
+				Z2K1: 'Z0',
+				Z2K2: {
+					Z1K1: 'Z6',
+					Z6K1: ''
+				},
+				Z2K3: { Z1K1: 'Z12', Z12K1: [] }
+			};
 			context.getters.isCreateNewPage = true;
 			context.state = {
 				zobject: zobjectTree
@@ -245,12 +254,21 @@ describe( 'zobject Vuex module', function () {
 			expect( postMock ).toHaveBeenCalledWith( {
 				action: 'wikilambda_edit',
 				summary: 'A summary',
-				zobject: JSON.stringify( zobject )
+				zobject: JSON.stringify( expectedZObject )
 			} );
 			expect( context.commit ).toHaveBeenCalledTimes( 0 );
 		} );
 
 		it( 'Save existing zobject', function () {
+			var expectedZObject = {
+				Z1K1: 'Z2',
+				Z2K1: 'Z0',
+				Z2K2: {
+					Z1K1: 'Z6',
+					Z6K1: ''
+				},
+				Z2K3: { Z1K1: 'Z12', Z12K1: [] }
+			};
 			context.getters.isCreateNewPage = false;
 			context.getters.getCurrentZObjectId = 'Z0';
 			context.state = {
@@ -263,7 +281,7 @@ describe( 'zobject Vuex module', function () {
 				action: 'wikilambda_edit',
 				summary: 'A summary',
 				zid: 'Z0',
-				zobject: JSON.stringify( zobject )
+				zobject: JSON.stringify( expectedZObject )
 			} );
 			expect( context.commit ).toHaveBeenCalledTimes( 0 );
 		} );
@@ -296,10 +314,7 @@ describe( 'zobject Vuex module', function () {
 			} );
 
 			zobjectModule.actions.injectZObject( context, {
-				zobject: {
-					Z1K1: 'Z9',
-					Z9K1: 'Z6'
-				},
+				zobject: 'Z6',
 				key: 'Z2K2',
 				id: 3,
 				parent: 0

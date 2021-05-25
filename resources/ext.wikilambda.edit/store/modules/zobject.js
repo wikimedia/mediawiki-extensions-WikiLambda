@@ -12,19 +12,42 @@ function convertZObjectToTree( zObject, startingKey, startingId, startingParentI
 
 	var zObjectTree = [];
 
-	function tranverseJson( value, key, parentId ) {
-		var valueType = typeof value,
+	function tranverseJson( value, key, parentId, isRawValue ) {
+		var valueType = typeUtils.getZObjectType( value ),
 			currentId = zObjectTree.length,
-			type = Array.isArray( value ) ? 'array' : 'object',
+			type,
 			objectKey;
+		isRawValue = isRawValue || false;
 
-		if ( valueType === 'object' ) {
-			zObjectTree.push( { id: currentId, key: key, value: type, parent: parentId } );
-			for ( objectKey in value ) {
-				tranverseJson( value[ objectKey ], objectKey, currentId );
-			}
-		} else {
-			zObjectTree.push( { id: zObjectTree.length, key: key, value: value, parent: parentId } );
+		if ( isRawValue ) {
+			zObjectTree.push( { id: currentId, key: key, value: value, parent: parentId } );
+			return;
+		}
+
+		switch ( valueType ) {
+			case Constants.Z_REFERENCE:
+			case Constants.Z_STRING:
+				zObjectTree.push( {
+					id: currentId,
+					key: key,
+					value: 'object',
+					parent: parentId
+				} );
+				value = typeUtils.normalizeZStringZReference( value );
+				for ( objectKey in value ) {
+					tranverseJson( value[ objectKey ], objectKey, currentId, true );
+				}
+				break;
+			default:
+				type = valueType === Constants.Z_LIST ? 'array' : 'object';
+				zObjectTree.push( { id: currentId, key: key, value: type, parent: parentId } );
+				for ( objectKey in value ) {
+					// We make sure that the current Key does not expect a raw string
+					isRawValue = Constants.STRING_Z_OBJECTS.indexOf( objectKey ) !== -1;
+
+					tranverseJson( value[ objectKey ], objectKey, currentId, isRawValue );
+				}
+				break;
 		}
 	}
 
@@ -798,8 +821,8 @@ module.exports = {
 
 				// we add each key in the tree and also set its type
 				keys.forEach( function ( key ) {
-					objectKey = key[ Constants.Z_KEY_ID ][ Constants.Z_STRING_VALUE ];
-					objectKeyType = key[ Constants.Z_KEY_TYPE ][ Constants.Z_REFERENCE_ID ];
+					objectKey = key[ Constants.Z_KEY_ID ];
+					objectKeyType = key[ Constants.Z_KEY_TYPE ];
 					nextId = getNextObjectId( context.state.zobject );
 					if ( objectKey !== Constants.Z_OBJECT_TYPE ) {
 						context.dispatch( 'addZObject', { key: objectKey, value: 'object', parent: payload.id } );

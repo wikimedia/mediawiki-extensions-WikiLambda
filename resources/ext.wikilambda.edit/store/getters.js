@@ -31,8 +31,8 @@ module.exports = {
 				keysArray = getters.getZkeys[ type ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
 
 				keysArray.forEach( function ( key ) {
-					if ( key[ Constants.Z_KEY_ID ][ Constants.Z_STRING_VALUE ] === parentKey ) {
-						currentKeyLiteralType = key[ Constants.Z_KEY_TYPE ][ Constants.Z_REFERENCE_ID ];
+					if ( key[ Constants.Z_KEY_ID ] === parentKey ) {
+						currentKeyLiteralType = key[ Constants.Z_KEY_TYPE ];
 					}
 				} );
 				return currentKeyLiteralType;

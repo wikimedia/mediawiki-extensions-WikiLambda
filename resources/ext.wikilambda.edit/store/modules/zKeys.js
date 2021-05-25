@@ -114,7 +114,9 @@ module.exports = {
 				// eslint-disable-next-line camelcase
 				wikilambdaload_zids: zKeystoFetch.join( '|' ),
 				// eslint-disable-next-line camelcase
-				wikilambdaload_language: context.rootGetters.zLang
+				wikilambdaload_language: context.rootGetters.zLang,
+				// eslint-disable-next-line camelcase
+				wikilambdaload_canonical: 'true'
 			} ).then( function ( response ) {
 				var keys,
 					multilingualStr,
@@ -151,7 +153,7 @@ module.exports = {
 						keys.forEach( function ( key ) {
 							multilingualStr = key[ Constants.Z_KEY_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ];
 							context.commit( 'addZKeyLabel', {
-								key: key[ Constants.Z_KEY_ID ][ Constants.Z_STRING_VALUE ],
+								key: key[ Constants.Z_KEY_ID ],
 								label: multilingualStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ]
 							} );
 						} );
