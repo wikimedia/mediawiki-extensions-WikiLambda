@@ -1,9 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Hmgrmb"
+			"Hmgrmb",
+			"Zhang8569"
 		]
 	},
 	"wikilambda-noresult": "搜索没有提供结果。",
-	"wikilambda-editor-label-select-programming-language-label": "选择编程语言："
+	"wikilambda-editor-label-select-programming-language-label": "选择编程语言：",
+	"wikilambda-editor-boolean-selector": "选择真/假"
 }

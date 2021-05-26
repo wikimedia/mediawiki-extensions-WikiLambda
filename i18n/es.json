@@ -3,7 +3,8 @@
 		"authors": [
 			"BnSrSa",
 			"Fitoschido",
-			"KATRINE1993"
+			"KATRINE1993",
+			"Mpayansilva"
 		]
 	},
 	"wikilambda-invalidzobject": "El contenido proporcionado no constituye un ZObject válido.",
@@ -21,5 +22,6 @@
 	"wikilambda-editor-label-addlanguage-label": "Añadir idioma:",
 	"wikilambda-editor-label-removelanguage-tooltip": "Quitar este idioma de esta etiqueta",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Quitar este elemento de esta ZList",
-	"wikilambda-editor-zobject-addkey": "Añadir clave:"
+	"wikilambda-editor-zobject-addkey": "Añadir clave:",
+	"wikilambda-editor-boolean-selector": "Seleccione verdadero/falso"
 }
