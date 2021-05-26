@@ -4,3 +4,7 @@ services:
     image: docker-registry.wikimedia.org/wikimedia/mediawiki-services-function-orchestrator:<TAG>
     ports:
       - 6254:6254
+  function-evaluator:
+    image: docker-registry.wikimedia.org/wikimedia/mediawiki-services-function-evaluator:<TAG>
+    ports:
+      - 6927:6927

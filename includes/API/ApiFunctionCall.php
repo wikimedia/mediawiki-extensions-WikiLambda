@@ -26,18 +26,23 @@ class ApiFunctionCall extends ApiBase {
 	protected $orchestrator;
 
 	/** @var string */
-	private $host;
+	private $orchestratorHost;
+
+	/** @var string */
+	private $evaluatorHost;
 
 	public function __construct( $query, $moduleName ) {
 		parent::__construct( $query, $moduleName, 'wikilambda_function_call_' );
 		if ( defined( 'MW_PHPUNIT_TEST' ) ) {
 			$this->orchestrator = MockOrchestrator::getInstance();
-			$this->host = 'mock';
+			$this->orchestratorHost = 'mock';
+			$this->evaluatorHost = 'mock';
 		} else {
 			$config = MediaWikiServices::getInstance()->
 				getConfigFactory()->makeConfig( 'WikiLambda' );
-			$this->host = $config->get( 'WikiLambdaOrchestratorLocation' );
-			$client = new Client( [ "base_uri" => $this->host ] );
+			$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
+			$this->evaluatorHost = $config->get( 'WikiLambdaEvaluatorLocation' );
+			$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
 			$this->orchestrator = new OrchestratorInterface( $client );
 		}
 	}
@@ -57,14 +62,17 @@ class ApiFunctionCall extends ApiBase {
 		$params = $this->extractRequestParams();
 		$pageResult = $this->getResult();
 		$stringOfAZ = $params[ 'zobject' ];
+		$zObject = json_decode( $stringOfAZ );
+		$jsonQuery = [ 'zobject' => $zObject, 'evaluatorUri' => urlencode( $this->evaluatorHost ) ];
+		$query = json_encode( $jsonQuery );
 		try {
-			$response = $this->orchestrator->orchestrate( $stringOfAZ );
+			$response = $this->orchestrator->orchestrate( $query );
 			$result = [ 'success' => true, 'data' => $response->getBody() ];
 			$pageResult->addValue(
 				// TODO: Remove "Orchestrated".
 				[ 'query', $this->getModuleName() ], "Orchestrated", $result );
 		} catch ( ConnectException $exception ) {
-			$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->host ] );
+			$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
 		} catch ( ClientException $exception ) {
 			$this->dieWithError( [ $exception->getResponse()->getReasonPhrase() ] );
 		}
@@ -88,7 +96,7 @@ class ApiFunctionCall extends ApiBase {
 	 */
 	protected function getExamplesMessages() {
 		// TODO: Collapse this with test logic in orchestrator interface.
-		$inputFile = __DIR__ .
+		$baseDir = __DIR__ .
 			DIRECTORY_SEPARATOR .
 			'..' .
 			DIRECTORY_SEPARATOR .
@@ -98,14 +106,18 @@ class ApiFunctionCall extends ApiBase {
 			DIRECTORY_SEPARATOR .
 			'phpunit' .
 			DIRECTORY_SEPARATOR .
-			'test_data' .
-			DIRECTORY_SEPARATOR .
-			'Z902_false.json';
-		$Z902 = file_get_contents( $inputFile );
+			'test_data';
+		$Z902File = $baseDir . DIRECTORY_SEPARATOR . 'Z902_false.json';
+		$Z902 = file_get_contents( $Z902File );
 		$Z902 = preg_replace( '/[\s\n]/', '', $Z902 );
+		$nativeCodeFile = $baseDir . DIRECTORY_SEPARATOR . 'evaluated.json';
+		$nativeCode = file_get_contents( $nativeCodeFile );
+		$nativeCode = urlencode( preg_replace( '/[\s\n]/', '', $nativeCode ) );
 		return [
 			'action=wikilambda_function_call&wikilambda_function_call_zobject=' . $Z902
-				=> 'apihelp-wikilambda_function_call-example-full',
+				=> 'apihelp-wikilambda_function_call-example-if',
+			'action=wikilambda_function_call&wikilambda_function_call_zobject=' . $nativeCode
+				=> 'apihelp-wikilambda_function_call-example-native-code',
 		];
 	}
 }
