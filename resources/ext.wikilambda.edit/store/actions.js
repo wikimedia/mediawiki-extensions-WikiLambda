@@ -34,7 +34,8 @@ module.exports = {
 			Constants.Z_REFERENCE,
 			Constants.Z_LIST,
 			Constants.Z_BOOLEAN_TRUE,
-			Constants.Z_BOOLEAN_FALSE
+			Constants.Z_BOOLEAN_FALSE,
+			Constants.Z_IMPLEMENTATION
 		] );
 	},
 	/**

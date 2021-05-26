@@ -754,6 +754,35 @@ module.exports = {
 			context.dispatch( 'addZObjects', zObjectItems );
 		},
 
+		addZImplementation: function ( context, objectId ) {
+			var nextId;
+			context.dispatch( 'setZObjectValue', {
+				id: objectId,
+				value: 'object'
+			} );
+			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: Constants.Z_IMPLEMENTATION, parent: objectId } );
+
+			// Add function
+			nextId = getNextObjectId( context.state.zobject );
+			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_FUNCTION, value: 'object', parent: objectId } );
+			context.dispatch( 'addZReference', { id: nextId, value: context.getters.getCurrentZObjectId } );
+
+			// Add dummy composition
+			nextId = getNextObjectId( context.state.zobject );
+			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_COMPOSITION, value: 'object', parent: objectId } );
+			context.dispatch( 'addZReference', { id: nextId, value: context.getters.getCurrentZObjectId } );
+
+			// Add ZCode
+			nextId = getNextObjectId( context.state.zobject );
+			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_CODE, value: 'object', parent: objectId } );
+			context.dispatch( 'addZCode', nextId );
+
+			// Add dummy built-in
+			nextId = getNextObjectId( context.state.zobject );
+			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_BUILT_IN, value: 'object', parent: objectId } );
+			context.dispatch( 'addZString', nextId );
+		},
+
 		addZFunction: function ( context, objectId ) {
 			var nextId;
 			context.dispatch( 'setZObjectValue', {
@@ -964,6 +993,9 @@ module.exports = {
 							break;
 						case Constants.Z_TYPE:
 							context.dispatch( 'addZType', payload.id );
+							break;
+						case Constants.Z_IMPLEMENTATION:
+							context.dispatch( 'addZImplementation', payload.id );
 							break;
 						default:
 							context.dispatch( 'addGenericObject', payload );

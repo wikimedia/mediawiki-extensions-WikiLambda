@@ -158,6 +158,7 @@
 				"ext.wikilambda.edit/components/types/ZArgumentList.vue",
 				"ext.wikilambda.edit/components/ZObjectJson.vue",
 				"ext.wikilambda.edit/components/types/ZBoolean.vue",
+				"ext.wikilambda.edit/components/types/ZImplementationList.vue",
 				"lib/ace/ace.js",
 				"lib/icons.js"
 			],
@@ -197,6 +198,7 @@
 				"wikilambda-function-typeselector-label",
 				"wikilambda-return-typeselector-label",
 				"wikilambda-editor-argument-list-label",
+				"wikilambda-editor-implementation-list-label",
 				"wikilambda-editor-boolean-selector"
 			]
 		}

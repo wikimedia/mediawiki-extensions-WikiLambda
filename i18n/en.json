@@ -70,5 +70,6 @@
 	"wikilambda-modeselector-json": "{..}",
 	"specialpages-group-wikilambda": "Wikifunctions page",
 	"wikilambda-editor-argument-list-label": "Argument List",
+	"wikilambda-editor-implementation-list-label": "Implementation List",
 	"wikilambda-editor-boolean-selector": "Select true/false"
 }

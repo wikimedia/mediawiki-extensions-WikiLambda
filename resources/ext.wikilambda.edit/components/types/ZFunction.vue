@@ -23,6 +23,9 @@
 		<z-argument-list
 			:zobject-id="zArgumentId"
 		></z-argument-list>
+		<z-implementation-list
+			:zobject-id="zImplementationId"
+		></z-implementation-list>
 	</div>
 </template>
 
@@ -31,13 +34,15 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	ZArgumentList = require( './ZArgumentList.vue' ),
+	ZImplementationList = require( './ZImplementationList.vue' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
 module.exports = {
 	components: {
 		'z-argument-list': ZArgumentList,
-		'z-object-selector': ZObjectSelector
+		'z-object-selector': ZObjectSelector,
+		'z-implementation-list': ZImplementationList
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -69,6 +74,14 @@ module.exports = {
 			},
 			zArgumentList: function () {
 				return this.getZObjectChildrenById( this.zArgumentId );
+			},
+			zImplementationId: function () {
+				return this.zobject.filter( function ( item ) {
+					return item.key === Constants.Z_FUNCTION_IMPLEMENTATIONS;
+				} )[ 0 ].id;
+			},
+			zImplementationList: function () {
+				return this.getZObjectChildrenById( this.zImplementationId );
 			},
 			zReturnType: function () {
 				var returnType = this.findKeyInArray( Constants.Z_FUNCTION_RETURN_TYPE, this.zobject );
