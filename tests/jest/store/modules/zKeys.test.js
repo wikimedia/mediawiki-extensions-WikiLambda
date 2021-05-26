@@ -192,7 +192,9 @@ describe( 'zkeys Vuex module', function () {
 					// eslint-disable-next-line camelcase
 					wikilambdaload_zids: 'Z1',
 					// eslint-disable-next-line camelcase
-					wikilambdaload_language: context.rootGetters.zLang
+					wikilambdaload_language: context.rootGetters.zLang,
+					// eslint-disable-next-line camelcase
+					wikilambdaload_canonical: 'true'
 				} );
 			} );
 			it( 'Call api.get with multiple Zids as a string separated by | ', function () {
@@ -208,7 +210,9 @@ describe( 'zkeys Vuex module', function () {
 					// eslint-disable-next-line camelcase
 					wikilambdaload_zids: expectedWikilambdaloadZids,
 					// eslint-disable-next-line camelcase
-					wikilambdaload_language: context.rootGetters.zLang
+					wikilambdaload_language: context.rootGetters.zLang,
+					// eslint-disable-next-line camelcase
+					wikilambdaload_canonical: 'true'
 				} );
 			} );
 			it( 'Will NOT call the APi if the Zids is already part of the zKeys', function () {
@@ -248,7 +252,9 @@ describe( 'zkeys Vuex module', function () {
 					// eslint-disable-next-line camelcase
 					wikilambdaload_zids: expectedWikilambdaloadZids,
 					// eslint-disable-next-line camelcase
-					wikilambdaload_language: context.rootGetters.zLang
+					wikilambdaload_language: context.rootGetters.zLang,
+					// eslint-disable-next-line camelcase
+					wikilambdaload_canonical: 'true'
 				} );
 			} );
 			it( 'Will Update the ZKeys with the API response', function () {

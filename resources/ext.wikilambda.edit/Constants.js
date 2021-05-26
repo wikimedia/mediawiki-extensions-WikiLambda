@@ -1,5 +1,6 @@
 var Constants = {
 	EXCLUDED_Z_TYPES: [ 'Z1', 'Z2', 'Z7' ],
+	STRING_Z_OBJECTS: [ 'Z1K1', 'Z11K1', 'Z11K2' ],
 	NEW_ZID_PLACEHOLDER: 'Z0',
 	Z_OBJECT: 'Z1',
 	Z_OBJECT_TYPE: 'Z1K1',

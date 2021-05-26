@@ -93,7 +93,7 @@ module.exports = {
 		zFunctionCallKeyLabels: function () {
 			var labels = {};
 			this.zFunctionCallKeys.forEach( function ( keyObject ) {
-				var key = keyObject[ Constants.Z_KEY_ID ][ Constants.Z_STRING_VALUE ];
+				var key = keyObject[ Constants.Z_KEY_ID ];
 				labels[ key ] = keyObject[
 					Constants.Z_KEY_LABEL ][
 					Constants.Z_MULTILINGUALSTRING_VALUE ][
@@ -112,7 +112,7 @@ module.exports = {
 		zFunctionArguments: function () {
 			var labels = [];
 			this.zFunctionKeys.forEach( function ( keyObject ) {
-				var key = keyObject[ Constants.Z_ARGUMENT_KEY ][ Constants.Z_STRING_VALUE ],
+				var key = keyObject[ Constants.Z_ARGUMENT_KEY ],
 					label = keyObject[
 						Constants.Z_ARGUMENT_LABEL ][
 						Constants.Z_MULTILINGUALSTRING_VALUE ][
@@ -162,7 +162,6 @@ module.exports = {
 	watch: {
 		zFunctionArguments: function ( value ) {
 			var self = this;
-
 			value.forEach( function ( arg ) {
 				// Don't perform this action if the key already exists
 				if ( self.findKeyInArray( arg.key, self.zobject ) ) {
@@ -176,7 +175,7 @@ module.exports = {
 					.then( function ( objectId ) {
 						var payload = {
 							id: objectId,
-							type: arg.type[ Constants.Z_REFERENCE_ID ]
+							type: arg.type
 						};
 						self.changeType( payload );
 					} );
