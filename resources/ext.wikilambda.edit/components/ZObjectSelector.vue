@@ -274,7 +274,7 @@ module.exports = {
 				// The result of the Regex is an array so we get the first item
 				zId = zIds[ 0 ];
 
-				if ( this.zkeyLabels[ zId ] && this.hasValidType( zId ) ) {
+				if ( this.zkeyLabels[ zId ] ) {
 					this.$emit( 'input', zId );
 					this.valueEmitted = true;
 				} else {
