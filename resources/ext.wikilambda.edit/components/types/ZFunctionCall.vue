@@ -128,6 +128,18 @@ module.exports = {
 			} );
 
 			return labels;
+		},
+		zImplementationLanguages: function () {
+			if ( this.selectedFunction ) {
+				// we check if the function has implementations
+				if ( this.selectedFunction[ Constants.Z_PERSISTENTOBJECT_VALUE ] &&
+					this.selectedFunction[
+						Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_IMPLEMENTATIONS ].length > 0 ) {
+					return this.selectedFunction[
+						Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_IMPLEMENTATIONS ];
+				}
+			}
+			return null;
 		}
 	} ),
 	methods: $.extend( mapActions( [
@@ -156,7 +168,25 @@ module.exports = {
 			return this.findKeyInArray( key, this.zobject ).id;
 		},
 		callFunctionHandler: function () {
-			this.callZFunction( { zobject: this.getZObjectAsJsonById( this.zobjectId ) } );
+			var ZfunctionObject = this.getZObjectAsJsonById( this.zobjectId );
+
+			// remove when the orchestrator is able to fetch custom function directly fdrom the DB
+
+			if ( !this.zImplementationLanguages ) {
+				this.callZFunction( { zobject: ZfunctionObject } );
+			} else {
+				// we replace the Reference to a function to the actual function
+				// using OO.copy to get a deep copy of the function ZObject.
+				ZfunctionObject[ Constants.Z_FUNCTION_CALL_FUNCTION ] =
+					OO.copy( this.selectedFunction[ Constants.Z_PERSISTENTOBJECT_VALUE ] );
+
+				// Remove labels, as the schemata is throwing errors on this.
+				ZfunctionObject.Z7K1.Z8K1.forEach( function ( thing ) {
+					thing.Z17K3.Z12K1 = [];
+				} );
+
+				this.callZFunction( { zobject: ZfunctionObject } );
+			}
 		}
 	} ),
 	watch: {

@@ -106,7 +106,8 @@
 				"vuex",
 				"mediawiki.Title",
 				"mediawiki.api",
-				"es6-polyfills"
+				"es6-polyfills",
+				"oojs"
 			],
 			"styles": [
 				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.less",
