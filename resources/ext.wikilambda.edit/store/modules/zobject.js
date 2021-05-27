@@ -780,7 +780,7 @@ module.exports = {
 			// Add dummy built-in
 			nextId = getNextObjectId( context.state.zobject );
 			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_BUILT_IN, value: 'object', parent: objectId } );
-			context.dispatch( 'addZString', nextId );
+			context.dispatch( 'addZString', { id: nextId, value: 'false' } );
 		},
 
 		addZFunction: function ( context, objectId ) {
