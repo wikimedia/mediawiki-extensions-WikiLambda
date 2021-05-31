@@ -15,5 +15,6 @@
 	"wikilambda-function-typeselector-label": "یک تابع را انتخاب کنید",
 	"wikilambda-return-typeselector-label": "نوع مورد نظر برای برگداندن را انتخاب کنید",
 	"specialpages-group-wikilambda": "صفحهٔ ویکی‌تابع",
-	"wikilambda-editor-argument-list-label": "فهرست آرگومان‌ها"
+	"wikilambda-editor-argument-list-label": "فهرست آرگومان‌ها",
+	"wikilambda-editor-implementation-list-label": "فهرست پیاده‌سازی"
 }

@@ -4,6 +4,7 @@
 			"BaRaN6161 TURK",
 			"Joseph",
 			"Melissadilara",
+			"Mim.saitkilic",
 			"MuratTheTurkish",
 			"SaldırganSincap"
 		]
@@ -32,6 +33,9 @@
 	"wikilambda-special-createzobject-summary": "Bu form, bir İşlevi, Uygulamasını, bunun için bir Test Cihazını veya çeşitli diğer ZObject türlerinden birini temsil edebilen yeni bir ZObject oluşturmanıza olanak tanır. Önce yardım belgelerini ve topluluk rehberini okumalısınız.",
 	"wikilambda-special-createzobject-intro": "Topluluk ilkelerine, telif hakkı ve patent kurallarına uyduğunuzdan emin olun.",
 	"wikilambda-special-createzobject-nojs": "Bu sayfa JavaScript'in kullanılmasını gerektiriyor.",
+	"wikilambda-special-evaluatefunctioncall": "Bir işlev çağrısını değerlendirin",
+	"wikilambda-special-evaluatefunctioncall-summary": "Bu form, bir işlev çağrısını değerlendirmenizi sağlar.",
+	"wikilambda-special-evaluatefunctioncall-intro": "Topluluk politikalarına, telif hakkı ve patent kurallarına uyduğunuzdan emin olun.",
 	"wikilambda-special-evaluatefunctioncall-nojs": "Bu sayfa JavaScript kullanımını gerektiriyor.",
 	"wikilambda-special-listduplicatezobjectlabels": "Yinelenen etiketlere sahip ZObject sayfaları",
 	"wikilambda-special-listduplicatezobjectlabels-summary": "Bu sayfa, hangi ZObject'lerin yinelenen etiketlerle oluşturulduğunu gösterir. Aramalarda yalnızca ilki görünecektir, bu nedenle bunların düzeltilmesi gerekir.",
@@ -44,6 +48,7 @@
 	"wikilambda-publishchanges": "Değişiklikleri yayımla",
 	"wikilambda-savechanges": "Değişiklikleri kaydet",
 	"wikilambda-summarylabel": "Özet:",
+	"wikilambda-loading": "Veri yükleniyor",
 	"wikilambda-typeselector-label": "Bir Tür seçin",
 	"wikilambda-argument-typeselector-label": "Bu bağımsız değişken için bir Tür seçin",
 	"wikilambda-function-typeselector-label": "Bir İşlev seçin",
@@ -57,5 +62,7 @@
 	"wikilambda-editor-label-select-programming-language-label": "Programlama dilini seçin:",
 	"wikilambda-modeselector-genericliteral": "gen",
 	"specialpages-group-wikilambda": "Vikiişlev sayfası",
-	"wikilambda-editor-argument-list-label": "Değişken Listesi"
+	"wikilambda-editor-argument-list-label": "Değişken Listesi",
+	"wikilambda-editor-implementation-list-label": "Uygulama Listesi",
+	"wikilambda-editor-boolean-selector": "doğru/yanlış seç"
 }

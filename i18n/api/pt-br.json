@@ -14,6 +14,7 @@
 	"apierror-wikilambda_fetch-missingzid": "O ZID '$1' fornecido não existe nessa wiki.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObject para chamada de função",
 	"apihelp-wikilambda_function_call-example-if": "Invoque Z802 (If) com falso predicado",
+	"apihelp-wikilambda_function_call-example-native-code": "Invocar código nativo",
 	"apihelp-wikilambda_function_call-summary": "Chame uma função chamando o orquestrador de funções",
 	"apihelp-query+wikilambdasearch_labels-summary": "Este gerador de lista de consulta API permite pesquisar ZObjects para rótulos em um determinado idioma. Ele existe principalmente para oferecer suporte ao sistema de pesquisa antecipada.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "O termo de pesquisa",
