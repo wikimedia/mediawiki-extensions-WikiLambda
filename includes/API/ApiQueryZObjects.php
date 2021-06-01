@@ -14,6 +14,7 @@ use ApiBase;
 use ApiPageSet;
 use ApiQueryGeneratorBase;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Languages\LanguageFallback;
@@ -111,7 +112,14 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 
 			// Fetch ZObject and handle ZMultilingualStrings
 			$zObjectStore = WikiLambdaServices::getZObjectStore();
-			$zobject = $zObjectStore->fetchZObjectByTitle( $title )->getObject();
+			$page = $zObjectStore->fetchZObjectByTitle( $title );
+			if ( !$page ) {
+				$this->dieWithError( [ 'apierror-query+wikilambdaload_zobjects-unloadable', $ZID ] );
+			}
+			if ( !( $page instanceof ZObjectContent ) ) {
+				$this->dieWithError( [ 'apierror-query+wikilambdaload_zobjects-nonzobject', $ZID ] );
+			}
+			$zobject = $page->getObject();
 
 			if ( is_array( $languages ) ) {
 				$zobject = ZObjectUtils::filterZMultilingualStringsToLanguage( $zobject, $languages );
