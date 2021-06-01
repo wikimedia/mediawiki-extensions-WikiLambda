@@ -25,12 +25,27 @@
 		<button @click="callFunctionHandler">
 			<label> {{ $i18n( 'wikilambda-call-function' ) }} </label>
 		</button>
-		<div>
-			{{ $i18n( 'wikilambda-orchestrated' ) }}:
-			<z-object-json
-				:readonly="true"
-				:zobject-raw="getOrchestrationResult"
-			></z-object-json>
+		<div v-if="getOrchestrationResultId" class="ext-wikilambda-orchestrated-result">
+			<span>{{ $i18n( 'wikilambda-orchestrated' ) }}</span>
+			<z-key-mode-selector
+				:mode="orchestratedMode"
+				parent-type="Z7"
+				:available-modes="displayModes"
+				@change="orchestratedMode = $event"
+			></z-key-mode-selector>
+			<div>
+				<z-object-json
+					v-if="orchestratedMode === Constants.Z_KEY_MODES.JSON"
+					:readonly="true"
+					:zobject-raw="getOrchestrationResult"
+				></z-object-json>
+				<z-object-key
+					v-else
+					:zobject-id="getOrchestrationResultId"
+					parent-type="literal"
+					:readonly="true"
+				></z-object-key>
+			</div>
 		</div>
 	</div>
 </template>
@@ -42,12 +57,16 @@ var Constants = require( '../../Constants.js' ),
 	mapState = require( 'vuex' ).mapState,
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	ZObjectJson = require( '../ZObjectJson.vue' ),
+	ZObjectKey = require( '../ZObjectKey.vue' ),
+	ZKeyModeSelector = require( '../ZKeyModeSelector.vue' ),
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
 module.exports = {
 	components: {
 		'z-object-selector': ZObjectSelector,
-		'z-object-json': ZObjectJson
+		'z-object-json': ZObjectJson,
+		'z-object-key': ZObjectKey,
+		'z-key-mode-selector': ZKeyModeSelector
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -56,13 +75,19 @@ module.exports = {
 			required: true
 		}
 	},
+	data: function () {
+		return {
+			orchestratedMode: Constants.Z_KEY_MODES.LITERAL
+		};
+	},
 	computed: $.extend( mapState( {
 	} ), mapGetters( {
 		getZObjectChildrenById: 'getZObjectChildrenById',
 		getZObjectTypeById: 'getZObjectTypeById',
 		getZkeys: 'getZkeys',
 		getZObjectAsJsonById: 'getZObjectAsJsonById',
-		getOrchestrationResult: 'getOrchestrationResult'
+		getOrchestrationResult: 'getOrchestrationResult',
+		getOrchestrationResultId: 'getOrchestrationResultId'
 	} ), {
 		zobject: function () {
 			return this.getZObjectChildrenById( this.zobjectId );
@@ -140,6 +165,11 @@ module.exports = {
 				}
 			}
 			return null;
+		},
+		displayModes: function () {
+			return Constants.Z_MODE_SELECTOR_MODES.filter( function ( mode ) {
+				return [ Constants.Z_KEY_MODES.LITERAL, Constants.Z_KEY_MODES.JSON ].indexOf( mode.key ) > -1;
+			} );
 		}
 	} ),
 	methods: $.extend( mapActions( [
@@ -220,3 +250,18 @@ module.exports = {
 	}
 };
 </script>
+
+<style lang="less">
+.ext-wikilambda-orchestrated-result {
+	display: block;
+	padding: 1em;
+	background: #eef;
+	outline: 1px dashed #888;
+}
+
+.ext-wikilambda-orchestrated-result > span {
+	display: inline-block;
+	vertical-align: top;
+	margin-top: 5px;
+}
+</style>

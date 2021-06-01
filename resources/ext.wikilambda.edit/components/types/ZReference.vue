@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-zreference">
-		<span v-if="viewmode || getCurrentZObjectId === referenceValue">
+		<span v-if="viewmode || readonly || getCurrentZObjectId === referenceValue">
 			<a :href="'./ZObject:' + referenceValue">
 				{{ referenceLabel }} ({{ referenceValue }})
 			</a>
@@ -42,6 +42,10 @@ module.exports = {
 		searchType: {
 			type: String,
 			default: ''
+		},
+		readonly: {
+			type: Boolean,
+			default: false
 		}
 	},
 	mixins: [ typeUtils ],

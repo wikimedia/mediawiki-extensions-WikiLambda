@@ -26,6 +26,7 @@ describe( 'callZFunction Vuex module', function () {
 			commit: jest.fn( function ( mutationType, payload ) {
 				return;
 			} ),
+			dispatch: jest.fn(),
 			getters: {}
 		} );
 
@@ -41,12 +42,20 @@ describe( 'callZFunction Vuex module', function () {
 			state.orchestrationResult = functionCall;
 			expect( callZFunctionModule.getters.getOrchestrationResult( state ) ).toEqual( functionCall );
 		} );
+		it( 'Returns current orchestrationResultId', function () {
+			state.orchestrationResultId = 6;
+			expect( callZFunctionModule.getters.getOrchestrationResultId( state ) ).toEqual( 6 );
+		} );
 	} );
 
 	describe( 'Mutations', function () {
 		it( 'Sets orchestrationResult', function () {
 			callZFunctionModule.mutations.setOrchestrationResult( state, functionCall );
 			expect( state.orchestrationResult ).toEqual( functionCall );
+		} );
+		it( 'Sets orchestrationResultId', function () {
+			callZFunctionModule.mutations.setOrchestrationResultId( state, 6 );
+			expect( state.orchestrationResultId ).toEqual( 6 );
 		} );
 	} );
 
@@ -114,6 +123,61 @@ describe( 'callZFunction Vuex module', function () {
 			} );
 			expect( context.commit ).toHaveBeenCalledTimes( 1 );
 			expect( context.commit ).toHaveBeenCalledWith( 'setOrchestrationResult', error );
+		} );
+	} );
+
+	it( 'Add orchestration result to the zobject tree (no prior result)', function () {
+		var payload = { Z1K1: 'Z6', Z6K1: 'A new string' },
+			nextId = 6;
+		context.getters = {
+			getOrchestrationResultId: null,
+			getNextObjectId: nextId
+		};
+
+		context.commit = jest.fn( function ( mutation, commitPayload ) {
+			if ( mutation === 'setOrchestrationResultId' ) {
+				context.getters.getOrchestrationResultId = commitPayload;
+			}
+
+			return;
+		} );
+
+		callZFunctionModule.actions.addZFunctionResultToTree( context, payload );
+
+		expect( context.commit ).toHaveBeenCalledWith( 'setOrchestrationResultId', nextId );
+		expect( context.commit ).toHaveBeenCalledWith( 'addZObject', { id: nextId, key: undefined, parent: -1, value: 'object' } );
+		expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObject', {
+			zobject: payload,
+			key: '',
+			id: nextId,
+			parent: ''
+		} );
+	} );
+
+	it( 'Add orchestration result to the zobject tree (with prior result)', function () {
+		var payload = { Z1K1: 'Z6', Z6K1: 'A new string' },
+			nextId = 6;
+		context.getters = {
+			getOrchestrationResultId: nextId,
+			getNextObjectId: nextId
+		};
+
+		context.commit = jest.fn( function ( mutation, commitPayload ) {
+			if ( mutation === 'setOrchestrationResultId' ) {
+				context.getters.getOrchestrationResultId = commitPayload;
+			}
+
+			return;
+		} );
+
+		callZFunctionModule.actions.addZFunctionResultToTree( context, payload );
+
+		expect( context.commit ).toHaveBeenCalledTimes( 0 );
+		expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObject', {
+			zobject: payload,
+			key: '',
+			id: nextId,
+			parent: ''
 		} );
 	} );
 } );

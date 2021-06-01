@@ -7,7 +7,7 @@
 	-->
 	<div class="ext-wikilambda-zobject-key">
 		<!-- zKey label -->
-		<span>{{ zKeyLabel }} ({{ zKey }}):</span>
+		<span v-if="zKey">{{ zKeyLabel }} ({{ zKey }}):</span>
 
 		<!-- If type isn't selected, show type selector -->
 		<z-object-selector
@@ -21,7 +21,7 @@
 		<template v-else>
 			<span>{{ zTypeLabel }} ({{ zType }})</span>
 			<z-key-mode-selector
-				v-if="!getViewMode && selectedMode && !isIdentityKey"
+				v-if="!(getViewMode || readonly) && selectedMode && !isIdentityKey"
 				:mode="selectedMode"
 				:parent-type="parentType"
 				:literal-type="literalType"
@@ -32,16 +32,19 @@
 				:zobject-id="zobjectId"
 				:type="zType"
 				:persistent="false"
+				:readonly="readonly"
 			></z-object-generic>
 			<z-reference
 				v-else-if="selectedMode === Constants.Z_KEY_MODES.REFERENCE"
 				class="ext-wikilambda-zobject-key-inline"
 				:zobject-id="zobjectId"
 				:search-type="literalType"
+				:readonly="readonly"
 			></z-reference>
 			<z-object-json
 				v-else-if="selectedMode === Constants.Z_KEY_MODES.JSON"
 				:zobject-id="zobjectId"
+				:readonly="readonly"
 				@change-literal="onliteralChange"
 			></z-object-json>
 			<!-- Constants.Z_KEY_MODES.FUNCTION_CALL -->
@@ -50,6 +53,7 @@
 				v-else
 				:zobject-id="zobjectId"
 				:persistent="false"
+				:readonly="readonly"
 			></z-object>
 		</template>
 	</div>
@@ -79,8 +83,7 @@ module.exports = {
 	mixins: [ typeUtils ],
 	props: {
 		zKey: {
-			type: String,
-			required: true
+			type: String
 		},
 		zobjectId: {
 			type: Number,
@@ -89,6 +92,10 @@ module.exports = {
 		parentType: {
 			type: String,
 			required: true
+		},
+		readonly: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data: function () {

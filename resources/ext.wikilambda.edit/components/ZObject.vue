@@ -17,26 +17,31 @@
 		<z-string
 			v-else-if="type === Constants.Z_STRING"
 			:zobject-id="zobjectId"
+			:readonly="readonly"
 		></z-string>
 
 		<z-reference
 			v-else-if="type === Constants.Z_REFERENCE"
 			:zobject-id="zobjectId"
+			:readonly="readonly"
 		></z-reference>
 
 		<z-multilingual-string
 			v-else-if="type === Constants.Z_MULTILINGUALSTRING"
 			:zobject-id="zobjectId"
+			:readonly="readonly"
 		></z-multilingual-string>
 
 		<z-list
 			v-else-if="type === Constants.Z_LIST"
 			:zobject-id="zobjectId"
+			:readonly="readonly"
 		></z-list>
 
 		<z-code
 			v-else-if="type === Constants.Z_CODE"
 			:zobject-id="zobjectId"
+			:readonly="readonly"
 		></z-code>
 
 		<z-argument
@@ -57,6 +62,7 @@
 		<z-boolean
 			v-else-if="type === Constants.Z_BOOLEAN"
 			:zobject-id="zobjectId"
+			:readonly="readonly"
 		></z-boolean>
 
 		<z-object-generic
@@ -64,6 +70,7 @@
 			:zobject-id="zobjectId"
 			:type="type"
 			:persistent="persistent"
+			:readonly="readonly"
 		></z-object-generic>
 	</div>
 </template>
@@ -110,6 +117,10 @@ module.exports = {
 		persistent: {
 			type: Boolean,
 			required: true
+		},
+		readonly: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data: function () {

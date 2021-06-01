@@ -11,7 +11,7 @@
 		@change="updateMode"
 	>
 		<option
-			v-for="mode in availableModesWithCurrentType"
+			v-for="mode in modes"
 			:key="mode.key"
 			:value="mode.key"
 			:title="translate( mode.label )"
@@ -40,6 +40,10 @@ module.exports = {
 			type: String,
 			required: false,
 			default: ''
+		},
+		availableModes: {
+			type: Array,
+			default: null
 		}
 	},
 	methods: {
@@ -58,6 +62,13 @@ module.exports = {
 			modeIsValid: 'getModeIsValid'
 		} ),
 		{
+			modes: function () {
+				if ( this.availableModes ) {
+					return this.availableModes;
+				} else {
+					return this.availableModesWithCurrentType;
+				}
+			},
 			availableModesWithCurrentType: function () {
 				var payload = {
 					parentType: this.parentType,
