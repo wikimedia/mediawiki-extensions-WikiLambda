@@ -51,7 +51,10 @@ var Constants = {
 		Z_IMPLEMENTATION_FUNCTION: 'Z14K1',
 		Z_IMPLEMENTATION_COMPOSITION: 'Z14K2',
 		Z_IMPLEMENTATION_CODE: 'Z14K3',
-		Z_IMPLEMENTATION_BUILT_IN: 'Z14K4'
+		Z_IMPLEMENTATION_BUILT_IN: 'Z14K4',
+		Z_PAIR: 'Z22',
+		Z_PAIR_FIRST: 'Z22K1',
+		Z_PAIR_SECOND: 'Z22K2'
 	},
 	modes = [
 		{ key: Constants.Z_KEY_MODES.REFERENCE, value: 'wikilambda-modeselector-reference', label: 'wikilambda-reference', type: Constants.Z_REFERENCE },
