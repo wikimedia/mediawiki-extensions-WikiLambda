@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 class ZKey extends ZObject {
@@ -73,7 +74,7 @@ class ZKey extends ZObject {
 			return false;
 		}
 		$type = $this->data[ ZTypeRegistry::Z_KEY_TYPE ];
-		if ( !self::isValidZObjectReference( $type ) ) {
+		if ( !ZObjectUtils::isValidZObjectReference( $type ) ) {
 			return false;
 		}
 		// TODO: Per the model, we used to dereference this ZReference into the string of its ZType,
@@ -91,7 +92,7 @@ class ZKey extends ZObject {
 			return false;
 		}
 		$identity = $this->data[ ZTypeRegistry::Z_KEY_ID ];
-		if ( !self::isValidZObjectGlobalKey( $identity ) ) {
+		if ( !ZObjectUtils::isValidZObjectGlobalKey( $identity ) ) {
 			return false;
 		}
 
@@ -116,76 +117,4 @@ class ZKey extends ZObject {
 		}
 		return true;
 	}
-
-	/**
-	 * A ZObject reference key (e.g. Z1 or Z12345)
-	 *
-	 * @param string $input
-	 * @return bool
-	 */
-	public static function isValidZObjectReference( string $input ) : bool {
-		return preg_match( "/^\s*Z[1-9]\d*\s*$/", $input );
-	}
-
-	/**
-	 * Is a null reference (Z0)
-	 *
-	 * @param string $input
-	 * @return bool
-	 */
-	public static function isNullReference( string $input ) : bool {
-		return ( $input === ZTypeRegistry::Z_NULL_REFERENCE );
-	}
-
-	/**
-	 * A ZObject reference key (e.g. Z1 or Z12345)
-	 *
-	 * @param string $input
-	 * @return bool
-	 */
-	public static function isValidOrNullZObjectReference( string $input ) : bool {
-		return ( self::isValidZObjectReference( $input ) || self::isNullReference( $input ) );
-	}
-
-	/**
-	 * A valid possible identifier across WMF projects
-	 *
-	 * @param string $input
-	 * @return bool
-	 */
-	public static function isValidId( string $input ) : bool {
-		return preg_match( "/^[A-Z][1-9]\d*$/", $input );
-	}
-
-	/**
-	 * A ZObject reference key (e.g. Z1K1 or K12345)
-	 *
-	 * @param string $input
-	 * @return bool
-	 */
-	public static function isValidZObjectKey( string $input ) : bool {
-		return preg_match( "/^\s*(Z[1-9]\d*)?K\d+\s*$/", $input );
-	}
-
-	/**
-	 * A global ZObject reference key (e.g. Z1K1)
-	 *
-	 * @param string $input
-	 * @return bool
-	 */
-	public static function isValidZObjectGlobalKey( string $input ) : bool {
-		return preg_match( "/^\s*Z[1-9]\d*K\d+\s*$/", $input );
-	}
-
-	/**
-	 * The ZObject reference from a given global reference key (e.g. 'Z1' from 'Z1K1')
-	 *
-	 * @param string $input
-	 * @return string
-	 */
-	public static function getZObjectReferenceFromKey( string $input ) : string {
-		preg_match( "/^\s*(Z[1-9]\d*)?(K\d+)\s*$/", $input, $matches );
-		return $matches[1];
-	}
-
 }

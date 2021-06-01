@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 class ZReference extends ZObject {
@@ -34,6 +35,6 @@ class ZReference extends ZObject {
 	}
 
 	public function isValid() : bool {
-		return ZKey::isValidZObjectReference( $this->data[ ZTypeRegistry::Z_REFERENCE_VALUE ] );
+		return ZObjectUtils::isValidZObjectReference( $this->data[ ZTypeRegistry::Z_REFERENCE_VALUE ] );
 	}
 }

@@ -13,7 +13,6 @@ namespace MediaWiki\Extension\WikiLambda;
 use ApiMessage;
 use CommentStoreComment;
 use DatabaseUpdater;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Revision\SlotRecord;
 use MessageSpecifier;
 use MWNamespace;
@@ -87,7 +86,7 @@ class Hooks implements
 		}
 
 		$zid = $title->getDBkey();
-		if ( !ZKey::isValidZObjectReference( $zid ) ) {
+		if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
 			$hookStatus->fatal( 'wikilambda-invalidzobjecttitle', $zid );
 			return false;
 		}
@@ -151,7 +150,7 @@ class Hooks implements
 		}
 
 		$zid = $title->getDBkey();
-		if ( !ZKey::isValidZObjectReference( $zid ) ) {
+		if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
 			$result = ApiMessage::create(
 				wfMessage( 'wikilambda-invalidzobjecttitle', $zid ),
 				'wikilambda-invalidzobjecttitle'

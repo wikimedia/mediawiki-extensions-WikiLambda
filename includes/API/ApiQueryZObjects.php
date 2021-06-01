@@ -16,7 +16,6 @@ use ApiQueryGeneratorBase;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\Languages\LanguageNameUtils;
@@ -84,7 +83,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 		foreach ( $ZIDs as $ZID ) {
 
 			// Check for invalid ZID
-			if ( !ZKey::isValidZObjectReference( $ZID ) ) {
+			if ( !ZObjectUtils::isValidZObjectReference( $ZID ) ) {
 				// TODO: get ZError object that represents invalid ZID
 				$zobject = json_decode( '{"Z1K1": "Z5", "Z5K1": "Error: Invalid ZID"}' );
 				if ( !$resultPageSet ) {

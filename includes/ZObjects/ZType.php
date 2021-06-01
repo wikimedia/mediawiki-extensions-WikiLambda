@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 class ZType extends ZObject {
@@ -63,7 +64,7 @@ class ZType extends ZObject {
 			return false;
 		}
 		$identity = $this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ];
-		if ( !ZKey::isValidZObjectReference( $identity ) && $identity !== ZTypeRegistry::Z_NULL_REFERENCE ) {
+		if ( !ZObjectUtils::isValidZObjectReference( $identity ) && $identity !== ZTypeRegistry::Z_NULL_REFERENCE ) {
 			return false;
 		}
 
@@ -89,7 +90,7 @@ class ZType extends ZObject {
 			if ( !$key->isValid() ) {
 				return false;
 			}
-			if ( ZKey::getZObjectReferenceFromKey( $key->getKeyId() ) !== $identity ) {
+			if ( ZObjectUtils::getZObjectReferenceFromKey( $key->getKeyId() ) !== $identity ) {
 				return false;
 			}
 		}
@@ -99,7 +100,7 @@ class ZType extends ZObject {
 			return false;
 		}
 		$validator = $this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ];
-		if ( !ZKey::isValidZObjectReference( $validator ) || $validator === ZTypeRegistry::Z_NULL_REFERENCE ) {
+		if ( !ZObjectUtils::isValidZObjectReference( $validator ) || $validator === ZTypeRegistry::Z_NULL_REFERENCE ) {
 			return false;
 		}
 		// TODO: Actually check that the validator is a ZFunction that applies to us.

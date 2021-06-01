@@ -65,7 +65,7 @@ class ZObjectFactory {
 		}
 
 		if ( is_string( $object ) ) {
-			if ( ZKey::isValidOrNullZObjectReference( $object ) ) {
+			if ( ZObjectUtils::isValidOrNullZObjectReference( $object ) ) {
 				return new ZReference( $object );
 			} else {
 				return new ZString( $object );
@@ -89,7 +89,7 @@ class ZObjectFactory {
 		}
 		$type = $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ];
 
-		if ( !ZKey::isValidZObjectReference( $type ) ) {
+		if ( !ZObjectUtils::isValidZObjectReference( $type ) ) {
 			throw new \InvalidArgumentException( "ZObject record type '$type' is an invalid key." );
 		}
 
@@ -296,7 +296,7 @@ class ZObjectFactory {
 			case ZTypeRegistry::HACK_REFERENCE_LANGUAGE:
 				if (
 					is_string( $value )
-					&& ZKey::isValidZObjectReference( $value )
+					&& ZObjectUtils::isValidZObjectReference( $value )
 					&& $langRegistry->isValidLanguageZid( $value )
 				) {
 					return $value;
@@ -306,7 +306,7 @@ class ZObjectFactory {
 			case ZTypeRegistry::BUILTIN_REFERENCE:
 				if (
 					is_string( $value )
-					&& ZKey::isValidZObjectReference( $value )
+					&& ZObjectUtils::isValidZObjectReference( $value )
 				) {
 					return $value;
 				}
@@ -316,7 +316,7 @@ class ZObjectFactory {
 				if (
 					is_string( $value )
 					&& (
-						ZKey::isValidZObjectReference( $value )
+						ZObjectUtils::isValidZObjectReference( $value )
 						|| $value === ZTypeRegistry::Z_NULL_REFERENCE
 					)
 				) {
@@ -328,7 +328,7 @@ class ZObjectFactory {
 			case ZTypeRegistry::Z_TYPE:
 				if (
 					is_string( $value )
-					&& ZKey::isValidZObjectReference( $value )
+					&& ZObjectUtils::isValidZObjectReference( $value )
 					&& (
 						self::validatingInContext( $value )
 						|| $registry->isZObjectKeyKnown( $value )
@@ -341,7 +341,7 @@ class ZObjectFactory {
 			case ZTypeRegistry::Z_TYPE_IDENTITY:
 				if (
 					is_string( $value )
-					&& ZKey::isValidZObjectKey( $value )
+					&& ZObjectUtils::isValidZObjectKey( $value )
 				) {
 					return $value;
 				}

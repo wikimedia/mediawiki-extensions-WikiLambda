@@ -11,7 +11,6 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use InvalidArgumentException;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use Title;
 
 /**
@@ -184,7 +183,7 @@ class ZLangRegistry {
 	 * @return bool Is a valid ZLanguage Zid
 	 */
 	public function isValidLanguageZid( $zid ) {
-		if ( !ZKey::isValidZObjectReference( $zid ) ) {
+		if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
 			return false;
 		}
 		try {

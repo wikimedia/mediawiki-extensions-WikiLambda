@@ -10,7 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use Normalizer;
 use stdClass;
 use Transliterator;
@@ -90,7 +89,7 @@ class ZObjectUtils {
 
 		// TODO: Simplify this to array_reduce(…)
 		foreach ( $input as $key => $value ) {
-			if ( !ZKey::isValidZObjectKey( $key ) ) {
+			if ( !self::isValidZObjectKey( $key ) ) {
 				return false;
 			}
 			// TODO: Properly type-aware arbitrary checking?
@@ -118,14 +117,14 @@ class ZObjectUtils {
 			if ( property_exists( $output, 'Z1K1' )
 				&& $output->Z1K1 == 'Z6'
 				&& property_exists( $output, 'Z6K1' )
-				&& !ZKey::isValidId( $output->Z6K1 ) ) {
+				&& !self::isValidId( $output->Z6K1 ) ) {
 				return self::canonicalize( $output->Z6K1 );
 			}
 
 			if ( property_exists( $output, 'Z1K1' )
 				&& $output->Z1K1 == 'Z9'
 				&& property_exists( $output, 'Z9K1' )
-				&& ZKey::isValidId( $output->Z9K1 ) ) {
+				&& self::isValidId( $output->Z9K1 ) ) {
 				return self::canonicalize( $output->Z9K1 );
 			}
 
@@ -389,7 +388,7 @@ class ZObjectUtils {
 	 * @return stdClass Normal form of a String or a Reference
 	 */
 	public static function normalizeZStringOrZReference( $input ) {
-		if ( ZKey::isValidZObjectReference( $input ) || ZKey::isNullReference( $input ) ) {
+		if ( self::isValidZObjectReference( $input ) || self::isNullReference( $input ) ) {
 			return (object)[
 				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_REFERENCE,
 				ZTypeRegistry::Z_REFERENCE_VALUE => $input
@@ -434,5 +433,76 @@ class ZObjectUtils {
 				return $input;
 			}
 		}
+	}
+
+	/**
+	 * Is the input a ZObject reference key (e.g. Z1 or Z12345)?
+	 *
+	 * @param string $input
+	 * @return bool
+	 */
+	public static function isValidZObjectReference( string $input ) : bool {
+		return preg_match( "/^\s*Z[1-9]\d*\s*$/", $input );
+	}
+
+	/**
+	 * Is the input a null reference (Z0)?
+	 *
+	 * @param string $input
+	 * @return bool
+	 */
+	public static function isNullReference( string $input ) : bool {
+		return ( $input === ZTypeRegistry::Z_NULL_REFERENCE );
+	}
+
+	/**
+	 * Is the input a ZObject reference key (e.g. Z1 or Z12345)?
+	 *
+	 * @param string $input
+	 * @return bool
+	 */
+	public static function isValidOrNullZObjectReference( string $input ) : bool {
+		return ( self::isValidZObjectReference( $input ) || self::isNullReference( $input ) );
+	}
+
+	/**
+	 * Is the input a valid possible identifier across WMF projects?
+	 *
+	 * @param string $input
+	 * @return bool
+	 */
+	public static function isValidId( string $input ) : bool {
+		return preg_match( "/^[A-Z][1-9]\d*$/", $input );
+	}
+
+	/**
+	 * Is the input a ZObject reference key (e.g. Z1K1 or K12345)?
+	 *
+	 * @param string $input
+	 * @return bool
+	 */
+	public static function isValidZObjectKey( string $input ) : bool {
+		return preg_match( "/^\s*(Z[1-9]\d*)?K\d+\s*$/", $input );
+	}
+
+	/**
+	 * Is the input a global ZObject reference key (e.g. Z1K1)?
+	 *
+	 * @param string $input
+	 * @return bool
+	 */
+	public static function isValidZObjectGlobalKey( string $input ) : bool {
+		return preg_match( "/^\s*Z[1-9]\d*K\d+\s*$/", $input );
+	}
+
+	/**
+	 * Split out the ZObject reference from a given global reference key (e.g. 'Z1' from 'Z1K1').
+	 *
+	 * @param string $input
+	 * @return string
+	 */
+	public static function getZObjectReferenceFromKey( string $input ) : string {
+		preg_match( "/^\s*(Z[1-9]\d*)?(K\d+)\s*$/", $input, $matches );
+		return $matches[1];
 	}
 }
