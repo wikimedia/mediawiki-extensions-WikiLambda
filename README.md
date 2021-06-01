@@ -21,7 +21,7 @@ Done! Navigate to the newly created `ZObject:Z1` page on your wiki to verify tha
 
 If you would like to use the orchestrator/evaluator (e.g., to run user-defined and built-in functions), please perform the following additional steps:
 
-* Copy the `services.function-orchestrator` block in `mediawiki/extensions/WikiLambda/docker-compose.sample.yml` to the analogous `services` block in `mediawiki/docker-compose.override.yml`
+* Copy the contents of the `services` block in `mediawiki/extensions/WikiLambda/docker-compose.sample.yml` to the analogous `services` block in your `mediawiki/docker-compose.override.yml`
 * Replace `<TAG>` entries in the stanza you just copied with the latest builds from the Docker registry for [the orchestrator](https://docker-registry.wikimedia.org/wikimedia/mediawiki-services-function-orchestrator/tags/) and  [the evaluator](https://docker-registry.wikimedia.org/wikimedia/mediawiki-services-function-evaluator/tags/).
 * If you would instead like to use a local version of the function orchestrator or evaluator, carry out the following steps.
 
