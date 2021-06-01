@@ -12,7 +12,7 @@
 	-->
 	<span class="ext-wikilambda-select-zobject">
 
-		<span v-if="viewmode">{{ selectedText }}</span>
+		<span v-if="readonly || viewmode">{{ selectedText }}</span>
 		<wbmi-autocomplete-search-input
 			v-else
 			name="zobject-selector"
@@ -66,6 +66,10 @@ module.exports = {
 		placeholder: {
 			type: [ String, Object ],
 			default: ''
+		},
+		readonly: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data: function () {

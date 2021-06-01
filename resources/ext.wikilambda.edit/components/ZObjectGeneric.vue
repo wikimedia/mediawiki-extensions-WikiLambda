@@ -9,7 +9,7 @@
 		<span>{{ z1k1label }} ({{ Constants.Z_OBJECT_TYPE }}): </span>
 
 		<span v-if="persistent">
-			<a v-if="type !== zobjectId && getViewMode" :href="'./ZObject:' + type">
+			<a v-if="type !== zobjectId && (getViewMode || readonly)" :href="'./ZObject:' + type">
 				<span>{{ typeLabel }} ({{ type }})</span>
 			</a>
 			<span v-else>{{ typeLabel }} ({{ type }})</span>
@@ -17,7 +17,7 @@
 		</span>
 
 		<span v-else>
-			<span v-if="getViewMode || type"> {{ typeLabel }} ({{ type }})</span>
+			<span v-if="getViewMode || readonly || type"> {{ typeLabel }} ({{ type }})</span>
 			<z-object-selector
 				v-else
 				:type="Constants.Z_TYPE"
@@ -30,6 +30,7 @@
 		<z-object-key-list
 			ref="keyList"
 			:zobject-id="zobjectId"
+			:readonly="readonly"
 		></z-object-key-list>
 	</div>
 </template>
@@ -60,6 +61,10 @@ module.exports = {
 		persistent: {
 			type: Boolean,
 			required: true
+		},
+		readonly: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data: function () {

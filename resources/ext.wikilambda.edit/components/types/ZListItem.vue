@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<li class="ext-wikilambda-zlistItem">
-		<button v-if="!viewmode"
+		<button v-if="!(viewmode || readonly)"
 			:title="tooltipRemoveListItem"
 			@click="removeItem"
 		>
@@ -42,6 +42,10 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
+		},
+		readonly: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data: function () {

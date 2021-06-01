@@ -7,7 +7,7 @@
 	-->
 	<ul class="ext-wikilambda-zobject-key-list">
 		<li v-for="( value, key ) in zObjectWithoutPersistent" :key="key">
-			<button v-if="!getViewMode"
+			<button v-if="!(getViewMode || readonly)"
 				:title="tooltipRemoveZObjectKey"
 				@click="removeKey( value.id )"
 			>
@@ -17,12 +17,13 @@
 				:z-key="value.key"
 				:zobject-id="value.id"
 				:parent-type="zObjectType"
+				:readonly="readonly"
 			>
 			</z-object-key>
 		</li>
 
 		<!-- Add new key -->
-		<li v-if="!getViewMode">
+		<li v-if="!(getViewMode || readonly)">
 			<z-object-key-input @change="addKey"></z-object-key-input>
 		</li>
 	</ul>
@@ -46,6 +47,10 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
+		},
+		readonly: {
+			type: Boolean,
+			default: false
 		}
 	},
 	computed: $.extend( {},

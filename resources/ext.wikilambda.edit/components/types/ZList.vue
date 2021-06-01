@@ -11,8 +11,9 @@
 				v-for="(item) in ZlistItems"
 				:key="item.id"
 				:zobject-id="item.id"
+				:readonly="readonly"
 			></z-list-item>
-			<li v-if="!viewmode">
+			<li v-if="!(viewmode || readonly)">
 				<button :title="tooltipAddListItem" @click="addNewItem">
 					{{ $i18n( 'wikilambda-editor-additem' ) }}
 				</button>
@@ -36,6 +37,10 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
+		},
+		readonly: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data: function () {

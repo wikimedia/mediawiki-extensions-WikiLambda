@@ -8,7 +8,7 @@
 	<div>
 		<div class="ext-wikilambda-cell">
 			<button
-				v-if="!viewmode"
+				v-if="!(viewmode || readonly)"
 				:title="tooltipRemoveLang"
 				@click="removeLang"
 			>
@@ -19,7 +19,7 @@
 		</div>
 		<div class="ext-wikilambda-cell">
 			<span
-				v-if="viewmode"
+				v-if="viewmode || readonly"
 				class="ext-wikilambda-zstring"
 			>
 				{{ monolingualStringValue.value }}
@@ -47,6 +47,10 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
+		},
+		readonly: {
+			type: Boolean,
+			default: false
 		}
 	},
 	mixins: [ typeUtils ],

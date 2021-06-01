@@ -7,7 +7,7 @@
 	-->
 	<div>
 		<select
-			v-if="!viewmode"
+			v-if="!(viewmode || readonly)"
 			v-model="currentBooleanValue"
 			class="ext-wikilambda-zboolean"
 		>
@@ -39,6 +39,10 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
+		},
+		readonly: {
+			type: Boolean,
+			default: false
 		}
 	},
 	mixins: [ typeUtils ],

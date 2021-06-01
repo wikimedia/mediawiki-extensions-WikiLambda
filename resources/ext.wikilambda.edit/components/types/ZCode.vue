@@ -23,7 +23,7 @@
 		</select>
 		<code-editor
 			:mode="selectedLanguage"
-			:read-only="!selectedLanguage || getViewMode"
+			:read-only="!selectedLanguage || getViewMode || readonly"
 			:value="codeValue"
 			@change="updateCode"
 		></code-editor>
@@ -45,6 +45,10 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
+		},
+		readonly: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data: function () {

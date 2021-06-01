@@ -1,5 +1,8 @@
 module.exports = {
-	state: { orchestrationResult: '' },
+	state: {
+		orchestrationResult: '',
+		orchestrationResultId: null
+	},
 	getters: {
 		/**
 		 * Returns the result of orchestration.
@@ -9,6 +12,9 @@ module.exports = {
 		 */
 		getOrchestrationResult: function ( state ) {
 			return state.orchestrationResult;
+		},
+		getOrchestrationResultId: function ( state ) {
+			return state.orchestrationResultId;
 		}
 	},
 	mutations: {
@@ -20,6 +26,9 @@ module.exports = {
 		 */
 		setOrchestrationResult: function ( state, payload ) {
 			state.orchestrationResult = payload;
+		},
+		setOrchestrationResultId: function ( state, id ) {
+			state.orchestrationResultId = id;
 		}
 	},
 	actions: {
@@ -36,8 +45,26 @@ module.exports = {
 				wikilambda_function_call_zobject: JSON.stringify( payload.zobject ) // eslint-disable-line camelcase
 			} ).then( function ( result ) {
 				context.commit( 'setOrchestrationResult', result.query.wikilambda_function_call.Orchestrated.data );
+				context.dispatch(
+					'addZFunctionResultToTree',
+					JSON.parse( result.query.wikilambda_function_call.Orchestrated.data )
+				);
 			} ).catch( function ( error ) {
 				context.commit( 'setOrchestrationResult', error );
+				context.dispatch( 'addZFunctionResultToTree', error );
+			} );
+		},
+		addZFunctionResultToTree: function ( context, payload ) {
+			if ( !context.getters.getOrchestrationResultId ) {
+				context.commit( 'setOrchestrationResultId', context.getters.getNextObjectId );
+				context.commit( 'addZObject', { id: context.getters.getOrchestrationResultId, key: undefined, parent: -1, value: 'object' } );
+			}
+
+			context.dispatch( 'injectZObject', {
+				zobject: payload,
+				key: '',
+				id: context.getters.getOrchestrationResultId,
+				parent: ''
 			} );
 		}
 	}

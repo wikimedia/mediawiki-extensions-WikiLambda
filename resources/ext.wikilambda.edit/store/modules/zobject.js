@@ -143,6 +143,9 @@ module.exports = {
 		ZObjectInitialized: false
 	},
 	getters: {
+		getZObject: function ( state ) {
+			return state.zobject;
+		},
 		isCreateNewPage: function ( state ) {
 			return state.createNewPage;
 		},
