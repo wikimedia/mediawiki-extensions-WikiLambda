@@ -8,19 +8,6 @@
 var Constants = require( '../Constants.js' );
 
 module.exports = {
-
-	zLang: function ( state ) {
-		if ( state.zLangs.length > 0 ) {
-			return state.zLangs[ 0 ];
-		} else {
-			return 'en';
-		}
-	},
-
-	zProgrammingLangs: function ( state ) {
-		return state.allZProgrammingLangs;
-	},
-
 	getZkeyLiteralType: function ( state, getters ) {
 		return function ( parentKey ) {
 			var type = parentKey.match( /Z[1-9]\d*/ )[ 0 ],

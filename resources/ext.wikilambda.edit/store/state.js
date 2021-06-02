@@ -7,29 +7,8 @@
 'use strict';
 
 module.exports = {
-
-	/**
-	 * User selected language and fallback chain
-	 */
-	zLangs: [],
-
-	/**
-	 * Collection of MediaWiki language information
-	 */
-	allLangs: {},
-
-	/**
-	 * Status of allLangs being fetched
-	 */
-	fetchingAllLangs: false,
-
 	/**
 	 * A Regex validation for a zObject
 	 */
-	zRegex: new RegExp( /Z[1-9]\d*(K[1-9]\d*)?/ ),
-
-	/**
-	 * Collection of ZProgrammingLanguages
-	 */
-	allZProgrammingLangs: []
+	zRegex: new RegExp( /Z[1-9]\d*(K[1-9]\d*)?/ )
 };

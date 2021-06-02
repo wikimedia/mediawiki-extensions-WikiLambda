@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
+use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 class ZMonoLingualString extends ZObject {
@@ -19,7 +20,7 @@ class ZMonoLingualString extends ZObject {
 			'type' => ZTypeRegistry::Z_MONOLINGUALSTRING,
 			'keys' => [
 				ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => [
-					'type' => ZTypeRegistry::HACK_LANGUAGE,
+					'type' => ZTypeRegistry::HACK_REFERENCE_LANGUAGE,
 					'required' => true,
 				],
 				ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => [
@@ -48,8 +49,8 @@ class ZMonoLingualString extends ZObject {
 	}
 
 	public function isValid() : bool {
-		// TODO: Right now these are uneditable and guaranteed valid on creation, but when we
-		// add model (API and UX) editing, this will need to actually evaluate.
-		return true;
+		$langs = ZLangRegistry::singleton();
+		// TODO: Do we care about the validity of the values?
+		return $langs->isValidLanguageZid( $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] );
 	}
 }

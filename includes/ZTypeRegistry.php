@@ -29,6 +29,8 @@ class ZTypeRegistry {
 	public const BUILTIN_REFERENCE_NULLABLE = 'NullableReference';
 	// Needed until we have sub-types
 	public const HACK_REFERENCE_TYPE = 'Reference(Type)';
+	// Needed until we have sub-types
+	public const HACK_REFERENCE_LANGUAGE = 'Reference(Language)';
 
 	// Needed until we have a ZLanguage type (or similar)
 	public const HACK_LANGUAGE = 'Language';
@@ -73,6 +75,9 @@ class ZTypeRegistry {
 
 	public const Z_MULTILINGUALSTRING = 'Z12';
 	public const Z_MULTILINGUALSTRING_VALUE = 'Z12K1';
+
+	public const Z_LANGUAGE = 'Z60';
+	public const Z_LANGUAGE_CODE = 'Z60K1';
 
 	private const BUILT_IN_TYPES = [
 		self::Z_OBJECT => 'ZObject',
@@ -278,12 +283,14 @@ class ZTypeRegistry {
 	}
 
 	/**
-	 * Removes the given ZType from the type cache.
+	 * Removes the given ZType from the type cache, except for builtin types.
 	 *
 	 * @param string $key
 	 */
 	public function unregisterType( string $key ) {
-		unset( $this->zObjectTypes[ $key ] );
+		if ( !array_key_exists( $key, self::BUILT_IN_TYPES ) ) {
+			unset( $this->zObjectTypes[ $key ] );
+		}
 	}
 
 }

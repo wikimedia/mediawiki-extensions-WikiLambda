@@ -37,7 +37,6 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	mapState = require( 'vuex' ).mapState,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -60,10 +59,10 @@ module.exports = {
 		};
 	},
 	computed: $.extend( {},
-		mapState( [ 'allLangs' ] ),
 		mapGetters( {
 			getZObjectChildrenById: 'getZObjectChildrenById',
-			viewmode: 'getViewMode'
+			viewmode: 'getViewMode',
+			allLangs: 'getAllLangs'
 		} ),
 		{
 			zobject: function () {

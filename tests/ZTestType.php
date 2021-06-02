@@ -33,12 +33,12 @@ class ZTestType extends ZObject {
 					"Z12K1": [
 						{
 							"Z1K1": "Z11",
-							"Z11K1": "en",
+							"Z11K1": "Z1002",
 							"Z11K2": "Demonstration key"
 						},
 						{
 							"Z1K1": "Z11",
-							"Z11K1": "fr",
+							"Z11K1": "Z1004",
 							"Z11K2": "Index pour démonstration"
 						}
 					]
@@ -53,12 +53,12 @@ class ZTestType extends ZObject {
 					"Z12K1": [
 						{
 							"Z1K1": "Z11",
-							"Z11K1": "en",
+							"Z11K1": "Z1002",
 							"Z11K2": "Other demonstration key"
 						},
 						{
 							"Z1K1": "Z11",
-							"Z11K1": "fr",
+							"Z11K1": "Z1004",
 							"Z11K2": "Autre index pour démonstration"
 						}
 					]
@@ -72,12 +72,12 @@ class ZTestType extends ZObject {
 		"Z12K1": [
 			{
 				"Z1K1": "Z11",
-				"Z11K1": "en",
+				"Z11K1": "Z1002",
 				"Z11K2": "Demonstration type"
 			},
 			{
 				"Z1K1": "Z11",
-				"Z11K1": "fr",
+				"Z11K1": "Z1004",
 				"Z11K2": "Type pour démonstration"
 			}
 		]

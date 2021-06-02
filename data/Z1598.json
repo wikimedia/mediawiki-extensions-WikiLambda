@@ -10,12 +10,12 @@
 		"Z12K1": [
 			{
 				"Z1K1": "Z11",
-				"Z11K1": "en",
+				"Z11K1": "Z1002",
 				"Z11K2": "Saterland Frisian"
 			},
 			{
 				"Z1K1": "Z11",
-				"Z11K1": "stq",
+				"Z11K1": "Z1598",
 				"Z11K2": "Seeltersk"
 			}
 		]

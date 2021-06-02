@@ -4,6 +4,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
 
 use ApiTestCase;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use Title;
@@ -18,22 +19,29 @@ use WikiPage;
  */
 class ApiZObjectEditorTest extends ApiTestCase {
 
+	private const EN = 'Z1002';
+	private const ES = 'Z1003';
+
 	/** @var ZObjectStore */
 	protected $store;
 
 	/** @var string[] */
 	protected $titlesTouched = [];
 
-	public function setUp() : void {
+	protected function setUp() : void {
 		parent::setUp();
 
 		$this->store = WikiLambdaServices::getZObjectStore();
 
 		$this->tablesUsed[] = 'wikilambda_zobject_labels';
 		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
+
+		$langs = ZLangRegistry::singleton();
+		$langs->registerLang( 'en', self::EN );
+		$langs->registerLang( 'es', self::ES );
 	}
 
-	public function tearDown() : void {
+	protected function tearDown() : void {
 		$sysopUser = $this->getTestSysop()->getUser();
 
 		foreach ( $this->titlesTouched as $titleString ) {
@@ -43,6 +51,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 				$page->doDeleteArticleReal( "clean slate for testing", $sysopUser );
 			}
 		}
+
 		parent::tearDown();
 	}
 
@@ -115,12 +124,12 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		// Create the first Zobject
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "string" },'
-			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "unique label" } ] } }';
+			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "unique label" } ] } }';
 		$this->store->createNewZObject( $data, 'First zobject', $sysopUser );
 		$this->titlesTouched[] = $firstZid;
 
 		// Try to create the second Zobject with the same label
-		$this->setExpectedApiException( [ 'wikilambda-labelclash', $firstZid, 'en' ] );
+		$this->setExpectedApiException( [ 'wikilambda-labelclash', $firstZid, self::EN ] );
 		$result = $this->doApiRequest( [
 			'action' => 'wikilambda_edit',
 			'summary' => 'Summary message',
@@ -159,7 +168,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 				. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "string" },'
 				. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] }'
 			. '},'
-			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "trouble" } ] } }';
+			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "trouble" } ] } }';
 
 		// Try to create a nested ZPO
 		$this->setExpectedApiException( [ 'wikilambda-prohibitedcreationtype', ZTypeRegistry::Z_PERSISTENTOBJECT ] );
@@ -180,7 +189,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "string" },'
-			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "new label" } ] } }';
+			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "new label" } ] } }';
 
 		$result = $this->doApiRequest( [
 			'action' => 'wikilambda_edit',
@@ -204,13 +213,13 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 		// Create the Zobject
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": "New ZObject", "Z2K3":'
-			. ' { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "unique label" } ] } }';
+			. ' { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "unique label" } ] } }';
 		$this->store->createNewZObject( $data, 'New ZObject', $sysopUser );
 		$this->titlesTouched[] = $newZid;
 
 		$data = '{ "Z1K1": "Z2", "Z2K1": "' . $newZid . '", "Z2K2": "New ZObject", "Z2K3":'
-			. ' { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "new label" },'
-			. ' { "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "nueva etiqueta" } ] } }';
+			. ' { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "new label" },'
+			. ' { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "nueva etiqueta" } ] } }';
 
 		$result = $this->doApiRequest( [
 			'action' => 'wikilambda_edit',

@@ -1,6 +1,5 @@
 <?php
 
-use MediaWiki\Extension\WikiLambda\Hooks;
 use MediaWiki\MediaWikiServices;
 
 /**
@@ -12,15 +11,28 @@ use MediaWiki\MediaWikiServices;
  */
 class ApiZObjectFetcherTest extends ApiTestCase {
 
-	public function setUp() : void {
+	/** @var string[] */
+	protected $titlesTouched = [];
+
+	protected function setUp() : void {
 		parent::setUp();
+
 		$this->tablesUsed[] = 'wikilambda_zobject_labels';
 		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
 	}
 
-	public function addDBDataOnce() {
-		$updater = DatabaseUpdater::newForDB( $this->db );
-		Hooks::createInitialContent( $updater );
+	protected function tearDown() : void {
+		$sysopUser = $this->getTestSysop()->getUser();
+
+		foreach ( $this->titlesTouched as $titleString ) {
+			$title = Title::newFromText( $titleString, NS_ZOBJECT );
+			$page = WikiPage::factory( $title );
+			if ( $page->exists() ) {
+				$page->doDeleteArticleReal( "clean slate for testing", $sysopUser );
+			}
+		}
+
+		parent::tearDown();
 	}
 
 	/**
@@ -57,6 +69,15 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectFetcher::execute
 	 */
 	public function testSucceedsWithValidZids() {
+		// Insert necessary ZIDs
+		$files = [ 'Z1' => 'Z1.json', 'Z2' => 'Z2.json' ];
+		$dataPath = dirname( __DIR__, 4 ) . '/data/';
+		foreach ( $files as $zid => $filename ) {
+			$data = file_get_contents( $dataPath . $filename );
+			$this->editPage( $zid, $data, 'Test creation', NS_ZOBJECT );
+			$this->titlesTouched[] = $zid;
+		}
+
 		DeferredUpdates::doUpdates();
 		MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
 		$result = $this->doApiRequest( [
@@ -82,7 +103,7 @@ class ApiZObjectFetcherTest extends ApiTestCase {
                     "Z12K1": [
                         {
                             "Z1K1": "Z11",
-                            "Z11K1": "en",
+                            "Z11K1": "Z1002",
                             "Z11K2": "type"
                         }
                     ]
@@ -96,7 +117,7 @@ class ApiZObjectFetcherTest extends ApiTestCase {
         "Z12K1": [
             {
                 "Z1K1": "Z11",
-                "Z11K1": "en",
+                "Z11K1": "Z1002",
                 "Z11K2": "Object"
             }
         ]
@@ -121,7 +142,7 @@ EOF;
                     "Z12K1": [
                         {
                             "Z1K1": "Z11",
-                            "Z11K1": "en",
+                            "Z11K1": "Z1002",
                             "Z11K2": "id"
                         }
                     ]
@@ -136,7 +157,7 @@ EOF;
                     "Z12K1": [
                         {
                             "Z1K1": "Z11",
-                            "Z11K1": "en",
+                            "Z11K1": "Z1002",
                             "Z11K2": "value"
                         }
                     ]
@@ -151,7 +172,7 @@ EOF;
                     "Z12K1": [
                         {
                             "Z1K1": "Z11",
-                            "Z11K1": "en",
+                            "Z11K1": "Z1002",
                             "Z11K2": "label"
                         }
                     ]
@@ -165,7 +186,7 @@ EOF;
         "Z12K1": [
             {
                 "Z1K1": "Z11",
-                "Z11K1": "en",
+                "Z11K1": "Z1002",
                 "Z11K2": "Persistent object"
             }
         ]

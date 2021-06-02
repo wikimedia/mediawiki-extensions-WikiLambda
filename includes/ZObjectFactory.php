@@ -204,6 +204,7 @@ class ZObjectFactory {
 	private static function validateKeyValue( string $key, string $type, $value ) {
 		$return = null;
 		$registry = ZTypeRegistry::singleton();
+		$langRegistry = ZLangRegistry::singleton();
 
 		// Adjust normalization of $value if necessary for references and strings:
 		// FIXME: this is wrong, irrespectively to its format, returns only the value,
@@ -288,6 +289,16 @@ class ZObjectFactory {
 						}
 						$value[ $key ] = self::validateKeyValue( 'inner', ZTypeRegistry::Z_KEY, $arrayItem );
 					}
+					return $value;
+				}
+				break;
+
+			case ZTypeRegistry::HACK_REFERENCE_LANGUAGE:
+				if (
+					is_string( $value )
+					&& ZKey::isValidZObjectReference( $value )
+					&& $langRegistry->isValidLanguageZid( $value )
+				) {
 					return $value;
 				}
 				break;

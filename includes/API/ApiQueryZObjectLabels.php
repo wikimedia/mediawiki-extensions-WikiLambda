@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\API;
 use ApiBase;
 use ApiPageSet;
 use ApiQueryGeneratorBase;
+use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\MediaWikiServices;
@@ -61,7 +62,12 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 				)
 			);
 		}
-		$this->addWhere( [ 'wlzl_language' => $languages ] );
+
+		// Get list of language Zids
+		$langRegistry = ZLangRegistry::singleton();
+		$languageZids = $langRegistry->getLanguageZids( $languages );
+
+		$this->addWhere( [ 'wlzl_language' => $languageZids ] );
 
 		if ( $exact ) {
 			$searchedColumn = 'wlzl_label';

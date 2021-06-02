@@ -89,7 +89,7 @@ module.exports = {
 		mapGetters( {
 			zkeyLabels: 'getZkeyLabels',
 			zKeys: 'getZkeys',
-			zLang: 'zLang',
+			zLang: 'getZLang',
 			viewmode: 'getViewMode'
 		} ),
 		mapState( [

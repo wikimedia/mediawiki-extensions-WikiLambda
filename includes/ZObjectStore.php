@@ -359,4 +359,49 @@ class ZObjectStore {
 
 		return $dbr->insert( 'wikilambda_zobject_label_conflicts', $updates );
 	}
+
+	/**
+	 * Gets from the secondary database a list of all Zids belonging to a given type
+	 *
+	 * @param string $ztype
+	 * @return string[]
+	 */
+	public function fetchZidsOfType( $ztype ) {
+		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$res = $dbr->select(
+			/* FROM */ 'wikilambda_zobject_labels',
+			/* SELECT */ [ 'wlzl_zobject_zid' ],
+			/* WHERE */ [
+				'wlzl_type' => $ztype
+			]
+		);
+
+		$zids = [];
+		foreach ( $res as $row ) {
+			$zids[] = $row->wlzl_zobject_zid;
+		}
+		return $zids;
+	}
+
+	/**
+	 * Get a list of all Zids persisted in the database
+	 *
+	 * @return string[] All persisted Zids
+	 */
+	public function fetchAllZids() {
+		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$res = $dbr->select(
+			/* FROM */ 'page',
+			/* SELECT */ [ 'page_title' ],
+			/* WHERE */ [
+				'page_namespace' => NS_ZOBJECT
+			]
+		);
+
+		$zids = [];
+		foreach ( $res as $row ) {
+			$zids[] = $row->page_title;
+		}
+		return $zids;
+	}
 }

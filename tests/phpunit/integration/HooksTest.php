@@ -31,26 +31,39 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 	protected function setUp() : void {
 		parent::setUp();
 
+		$this->tablesUsed[] = 'wikilambda_zobject_labels';
+		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
+
+		// Insert Z111
 		$firstTitleText = ZTestType::TEST_ZID;
 		$firstTitle = Title::newFromText( $firstTitleText, NS_ZOBJECT );
-		$this->titlesTouched[] = $firstTitleText;
-
 		$this->hideDeprecated( '::create' );
 		$initialStatus = $this->editPage( $firstTitleText, ZTestType::TEST_ENCODING, 'Test creation', NS_ZOBJECT );
+		$this->titlesTouched[] = $firstTitleText;
 	}
 
-	public function addDBDataOnce() {
-		$updater = DatabaseUpdater::newForDB( $this->db );
-		Hooks::createInitialContent( $updater );
+	protected function tearDown() : void {
+		// Cleanup the pages we touched.
+		$sysopUser = $this->getTestSysop()->getUser();
+
+		foreach ( $this->titlesTouched as $titleString ) {
+			$title = Title::newFromText( $titleString, NS_ZOBJECT );
+			$page = WikiPage::factory( $title );
+			$page->doDeleteArticleReal( $title, $sysopUser );
+		}
+
+		parent::tearDown();
 	}
 
 	/**
 	 * @covers ::createInitialContent
 	 */
 	public function testCreateInitialContent() {
-		$store = WikiLambdaServices::getZObjectStore();
+		$updater = DatabaseUpdater::newForDB( $this->db );
+		Hooks::createInitialContent( $updater );
 
 		// Fetch one arbitrary ZObject from the database
+		$store = WikiLambdaServices::getZObjectStore();
 		$title = Title::newFromText( "Z4", NS_ZOBJECT );
 		$zobject = $store->fetchZObjectByTitle( $title );
 		$this->assertTrue( $zobject instanceof ZObjectContent );
@@ -68,6 +81,7 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 		$loadedZids = [];
 		foreach ( $res as $row ) {
 			$loadedZids[] = $row->page_title;
+			$this->titlesTouched[] = $row->page_title;
 		}
 
 		$dataPath = dirname( __DIR__, 3 ) . '/data/';
@@ -165,18 +179,5 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 	}
 
 	// TODO: Test the uncaught behaviour of MultiContentSave when a a clash happens too late for us to stop it.
-
-	protected function tearDown() : void {
-		// Cleanup the pages we touched.
-		$sysopUser = $this->getTestSysop()->getUser();
-
-		foreach ( $this->titlesTouched as $titleString ) {
-			$title = Title::newFromText( $titleString, NS_ZOBJECT );
-			$page = WikiPage::factory( $title );
-			$page->doDeleteArticleReal( $title, $sysopUser );
-		}
-
-		parent::tearDown();
-	}
 
 }

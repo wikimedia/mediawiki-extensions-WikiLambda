@@ -14,7 +14,7 @@
 				{{ $i18n('wikilambda-editor-label-select-programming-language-label') }}
 			</option>
 			<option
-				v-for="zProgrammingLang in zProgrammingLangs"
+				v-for="zProgrammingLang in getAllProgrammingLangs"
 				:key="zProgrammingLang.Z2K1"
 				:value="zProgrammingLang.Z2K2.Z61K1"
 			>
@@ -59,7 +59,7 @@ module.exports = {
 	mixins: [ typeUtils ],
 	computed: $.extend(
 		mapGetters( [
-			'zProgrammingLangs',
+			'getAllProgrammingLangs',
 			'getZObjectChildrenById',
 			'getStringValueByObjectId',
 			'getViewMode'
@@ -130,7 +130,7 @@ module.exports = {
 		} ),
 	mounted: function () {
 		var codeValue;
-		if ( this.zProgrammingLangs.length <= 0 ) {
+		if ( this.getAllProgrammingLangs.length <= 0 ) {
 			this.fetchAllZProgrammingLanguages();
 		}
 

@@ -10,13 +10,30 @@
 namespace MediaWiki\Extension\WikiLambda\Tests;
 
 use FormatJson;
-
+use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectUtils
  */
 class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
+
+	private const EN = 'Z1002';
+	private const ES = 'Z1003';
+	private const FR = 'Z1004';
+	private const RU = 'Z1005';
+	private const UK = 'Z1332';
+	private const CAT = 'Z1789';
+
+	public function addDBDataOnce() {
+		$langs = ZLangRegistry::singleton();
+		$langs->registerLang( 'en', self::EN );
+		$langs->registerLang( 'es', self::ES );
+		$langs->registerLang( 'fr', self::FR );
+		$langs->registerLang( 'ru', self::RU );
+		$langs->registerLang( 'uk', self::UK );
+		$langs->registerLang( 'cat', self::CAT );
+	}
 
 	/**
 	 * @dataProvider provideIsValidSerialisedZObject
@@ -353,7 +370,7 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 			FormatJson::encode( FormatJson::decode( $expected ) ),
 			FormatJson::encode( ZObjectUtils::filterZMultilingualStringsToLanguage(
 				FormatJson::decode( $input ),
-				FormatJson::decode( $languages )
+				$languages
 			) )
 		);
 	}
@@ -362,77 +379,77 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 		return [
 			'empty zobject' => [
 				'{}',
-				'[]',
+				[],
 				'{}'
 			],
 			'zobject with string values' => [
 				'{ "Z1K1": "Z2", "Z2K2": "string value" }',
-				'[]',
+				[],
 				'{ "Z1K1": "Z2", "Z2K2": "string value" }'
 			],
 			'zobject with array value' => [
 				'{ "Z1K1": "Z2", "Z2K2": [{ "Z1K1": "Z111"}, {"Z1K1": "Z222"}] }',
-				'[]',
+				[],
 				'{ "Z1K1": "Z2", "Z2K2": [{ "Z1K1": "Z111"}, {"Z1K1": "Z222"}] }'
 			],
 			'zobject with nested zobject' => [
 				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z3", "Z3K3": { "Z1K1": "Z6" } } }',
-				'[]',
+				[],
 				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z3", "Z3K3": { "Z1K1": "Z6" } } }'
 			],
 
 			'zobject with multilingual string and no languages' => [
 				'{ "Z1K1": "Z12", "Z12K1": ['
-				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" },'
-				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" }'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }'
 				. '] }',
-				'[]',
-				'{ "Z1K1": "Z12", "Z12K1": [{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }] }'
+				[],
+				'{ "Z1K1": "Z12", "Z12K1": [{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }] }'
 			],
 
 			'zobject with multilingual string and language chain' => [
 				'{ "Z1K1": "Z12", "Z12K1": ['
-				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" },'
-				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" }'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }'
 				. '] }',
-				'["es", "en"]',
-				'{ "Z1K1": "Z12", "Z12K1": [{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" }] }'
+				[ self::ES, self::EN ],
+				'{ "Z1K1": "Z12", "Z12K1": [{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }] }'
 			],
 
 			'zobject with nested multilingual strings' => [
 				'{ "Z1K1": "Z2", "Z2K3": { "Z1K1": "Z12", "Z12K1": ['
-				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "label" },'
-				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "etiqueta" }'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "label" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" }'
 				. '] }, "Z2K2": { "Z1K1": "Z2", "Z2K3": { "Z1K1": "Z12", "Z12K1": ['
-				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "nested label" },'
-				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "etiqueta anidada" }'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "nested label" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta anidada" }'
 				. '] } } }',
-				'["es", "en"]',
+				[ self::ES, self::EN ],
 				'{ "Z1K1": "Z2", "Z2K3": {"Z1K1": "Z12", "Z12K1": ['
-				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "etiqueta" }'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" }'
 				. '] }, "Z2K2": { "Z1K1": "Z2", "Z2K3": {"Z1K1": "Z12", "Z12K1": ['
-				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "etiqueta anidada" }'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta anidada" }'
 				. '] } } }'
 			],
 
 			'zobject with array of multilingual strings and same languages' => [
 				'{ "Z1K1": "Z2", "Z2K2": ['
 				. '{ "Z1K1": "Z12", "Z12K1": ['
-				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "first text" },'
-				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "primer texto" }'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "first text" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "primer texto" }'
 				. '] },'
 				. '{ "Z1K1": "Z12", "Z12K1": ['
-				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "second text" },'
-				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "segundo texto" }'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "second text" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "segundo texto" }'
 				. '] }'
 				. '] }',
-				'["es", "en"]',
+				[ self::ES, self::EN ],
 				'{ "Z1K1": "Z2", "Z2K2": ['
 				. '{ "Z1K1": "Z12", "Z12K1": ['
-				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "primer texto" }'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "primer texto" }'
 				. '] },'
 				. '{ "Z1K1": "Z12", "Z12K1": ['
-				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "segundo texto" }'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "segundo texto" }'
 				. '] }'
 				. '] }',
 			],
@@ -440,21 +457,21 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 			'zobject with array of multilingual strings and different languages' => [
 				'{ "Z1K1": "Z2", "Z2K2": ['
 				. '{ "Z1K1": "Z12", "Z12K1": ['
-				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "primer texto" },'
-				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "first text" }'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "primer texto" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "first text" }'
 				. '] },'
 				. '{ "Z1K1": "Z12", "Z12K1": ['
-				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "second text" },'
-				. '{ "Z1K1": "Z11", "Z11K1": "uk", "Z11K2": "другий текст" }'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "second text" },'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1332", "Z11K2": "другий текст" }'
 				. '] }'
 				. '] }',
-				'["cat", "es", "en"]',
+				[ self::CAT, self::ES, self::EN ],
 				'{ "Z1K1": "Z2", "Z2K2": ['
 				. '{ "Z1K1": "Z12", "Z12K1": ['
-				. '{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "primer texto" }'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "primer texto" }'
 				. '] },'
 				. '{ "Z1K1": "Z12", "Z12K1": ['
-				. '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "second text" }'
+				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "second text" }'
 				. '] }'
 				. '] }',
 			],
@@ -470,67 +487,67 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 			FormatJson::encode( FormatJson::decode( $expected ) ),
 			FormatJson::encode( ZObjectUtils::getPreferredMonolingualString(
 				FormatJson::decode( $multilingualStr ),
-				FormatJson::decode( $languages )
+				$languages
 			) )
 		);
 	}
 
 	public function provideGetPreferredMonolingualString() {
 		return [
-			'no monolingual string and no languages' => [ '[]', '[]', '[]', ],
-			'no monolingual string and one languages' => [ '[]', '["en"]', '[]', ],
-			'no monolingual string and many languages' => [ '[]', '["es", "en"]', '[]', ],
+			'no monolingual string and no languages' => [ '[]', [], '[]', ],
+			'no monolingual string and one languages' => [ '[]', [ self::EN ], '[]', ],
+			'no monolingual string and many languages' => [ '[]', [ self::ES, self::EN ], '[]', ],
 
 			'one monolingual string and no languages' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
-				'[]',
-				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				[],
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 			],
 			'one monolingual string and an available language' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
-				'["en"]',
-				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				[ self::EN ],
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 			],
 			'one monolingual string and one unavailable language' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
-				'["fr"]',
-				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				[ self::FR ],
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 			],
 			'one monolingual string and one unavailable language' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
-				'["fr"]',
-				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				[ self::FR ],
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 			],
 
 			'many monolingual strings and no languages' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" },'
-				. ' { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
-				'[]',
-				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" }]',
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
+				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				[],
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }]',
 			],
 			'many monolingual strings and one available languages' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" },'
-				. ' { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
-				'["en"]',
-				'[{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
+				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				[ self::EN ],
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 			],
 		  'many monolingual strings and one unavailable languages' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" },'
-				. ' { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
-				'["fr"]',
-				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" }]',
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
+				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				[ self::FR ],
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }]',
 			],
 			'many monolingual strings and some available languages' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" },'
-				. ' { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
-				'["cat", "es", "en"]',
-				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" }]',
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
+				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				[ self::CAT, self::ES, self::EN ],
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }]',
 			],
 			'many monolingual strings and some unavailable languages' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" },'
-				. ' { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "type" }]',
-				'["uk", "ru"]',
-				'[{ "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "tipo" }]',
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
+				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				[ self::UK, self::RU ],
+				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }]',
 			],
 		];
 	}
@@ -596,30 +613,108 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 				'{ "Z1K1": "Z3" }'
 			],
 			'leave untouched monolingual string keys' => [
-				'{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "label" }',
-				'{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "label" }'
+				'{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "label" }',
+				'{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "label" }'
 			],
 			'leave untouched multilingual string keys' => [
-				'{ "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "etiqueta" } ] }',
-				'{ "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "etiqueta" } ] }',
+				'{ "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" } ] }',
+				'{ "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" } ] }',
 			],
 			'normalize full zobject with type, strings, references and multilingual strings' => [
 				'{ "Z1K1": "Z3",'
 				. ' "Z3K1": "Z6",'
 				. ' "Z3K2": "Z111K1",'
 				. ' "Z3K3": { "Z1K1": "Z12", "Z12K1": ['
-				. ' { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "label" },'
-				. ' { "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "etiqueta" }'
+				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "label" },'
+				. ' { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" }'
 				. ' ] },'
 				. ' "Z3K4": "default value" }',
 				'{ "Z1K1": "Z3",'
 				. ' "Z3K1": { "Z1K1": "Z9", "Z9K1": "Z6" },'
 			  . ' "Z3K2": { "Z1K1": "Z6", "Z6K1": "Z111K1" },'
 			  . ' "Z3K3": { "Z1K1": "Z12", "Z12K1": ['
-				. ' { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "label" },'
-				. ' { "Z1K1": "Z11", "Z11K1": "es", "Z11K2": "etiqueta" }'
+				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "label" },'
+				. ' { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" }'
 				. ' ] },'
 				. ' "Z3K4": { "Z1K1": "Z6", "Z6K1": "default value" } }'
+			]
+		];
+	}
+
+	/**
+	 * @dataProvider provideApplyTransformationToType
+	 * @covers ::applyTransformationToType
+	 */
+	public function testApplyTransformationToType( $input, $type, $transformation, $expected ) {
+		$this->assertSame(
+			FormatJson::encode( FormatJson::decode( $expected ) ),
+			FormatJson::encode(
+				ZObjectUtils::applyTransformationToType( FormatJson::decode( $input ), $type, $transformation )
+			)
+		);
+	}
+
+	public function provideApplyTransformationToType() {
+		return [
+			'transformation to string' => [
+				'"string"', /* input */
+				'Z6',     /* type */
+				static function ( $item ) { return $item;
+				}, /* transformation */
+				'"string"'  /* output */
+			],
+			'transformation to empty array' => [
+				'[]', /* input */
+				'Z6',     /* type */
+				static function ( $item ) { return $item;
+				}, /* transformation */
+				'[]'  /* output */
+			],
+			'transformation to empty zobject' => [
+				'{}', /* input */
+				'Z6', /* type */
+				static function ( $item ) { return $item;
+				}, /* transformation */
+				'{}'  /* output */
+			],
+
+			'transformation to Z6' => [
+				'{ "Z1K1": "Z6", "Z6K1": "to uppercase" }', /* input */
+				'Z6', /* type */
+				static function ( $item ) { $item->Z6K1 = strtoupper( $item->Z6K1 );
+return $item;
+				}, /* transformation */
+				'{ "Z1K1": "Z6", "Z6K1": "TO UPPERCASE" }', /* output */
+			],
+
+			'canonicalization of Z6' => [
+				'{ "Z1K1": "Z2", "Z2K2":{ "Z1K1": "Z6", "Z6K1": "to canonical" }}', /* input */
+				'Z6', /* type */
+				static function ( $item ) { return $item->Z6K1;
+				}, /* transformation */
+				'{ "Z1K1": "Z2", "Z2K2": "to canonical" }', /* output */
+			],
+
+			'canonicalization of many Z6' => [
+				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z6", "Z6K1": "to canonical value" }, '
+					. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", '
+					. ' "Z11K2": { "Z1K1": "Z6", "Z6K1": "to canonical label" } } ] } }', /* input */
+				'Z6', /* type */
+				static function ( $item ) { return $item->Z6K1;
+				}, /* transformation */
+				'{ "Z1K1": "Z2", "Z2K2": "to canonical value", '
+					. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [{ "Z1K1": "Z11", "Z11K1": "Z1002", '
+					. ' "Z11K2": "to canonical label" } ] } }', /* output */
+			],
+
+			'canonicalization of array of Z6' => [
+				'[ { "Z1K1": "Z6", "Z6K1": "first value" },'
+					. ' { "Z1K1": "Z6", "Z6K1": "second value" },'
+					. ' { "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "third value" } } ]', /* input */
+				'Z6', /* type */
+				static function ( $item ) { return $item->Z6K1;
+				}, /* transformation */
+				'[ "first value", "second value", { "Z1K1": "Z2", "Z2K1": "third value" } ]' /* output */
 			]
 		];
 	}

@@ -22,6 +22,26 @@ class OptionalKeysTest extends \MediaWikiIntegrationTestCase {
 	/** @var string[] */
 	private $titlesTouched = [];
 
+	protected function setUp() : void {
+		parent::setUp();
+
+		$this->tablesUsed[] = 'wikilambda_zobject_labels';
+		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
+	}
+
+	protected function tearDown() : void {
+		// Cleanup the pages we touched.
+		$sysopUser = $this->getTestSysop()->getUser();
+
+		foreach ( $this->titlesTouched as $titleString ) {
+			$title = Title::newFromText( $titleString, NS_ZOBJECT );
+			$page = WikiPage::factory( $title );
+			$page->doDeleteArticleReal( $title, $sysopUser );
+		}
+
+		parent::tearDown();
+	}
+
 	/**
 	 * This test proves that an on-wiki implementation can be made of a PHP-backed but non-built-in ZType.
 	 *
@@ -59,7 +79,7 @@ class OptionalKeysTest extends \MediaWikiIntegrationTestCase {
 		],
 		"Z4K3": "Z0"
 	},
-	"Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "ZOptions" } ] }
+	"Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "ZOptions" } ] }
 }
 EOT;
 
@@ -111,18 +131,4 @@ EOT;
 			'ZOptions instance comes back as the right content model'
 		);
 	}
-
-	protected function tearDown() : void {
-		// Cleanup the pages we touched.
-		$sysopUser = $this->getTestSysop()->getUser();
-
-		foreach ( $this->titlesTouched as $titleString ) {
-			$title = Title::newFromText( $titleString, NS_ZOBJECT );
-			$page = WikiPage::factory( $title );
-			$page->doDeleteArticleReal( $title, $sysopUser );
-		}
-
-		parent::tearDown();
-	}
-
 }

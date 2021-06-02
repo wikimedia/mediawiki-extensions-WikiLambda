@@ -26,7 +26,14 @@ class ZObjectTest extends \MediaWikiIntegrationTestCase {
 	/** @var string[] */
 	protected $titlesTouched = [];
 
-	public function tearDown() : void {
+	protected function setUp() : void {
+		parent::setUp();
+
+		$this->tablesUsed[] = 'wikilambda_zobject_labels';
+		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
+	}
+
+	protected function tearDown() : void {
 		$sysopUser = $this->getTestSysop()->getUser();
 
 		foreach ( $this->titlesTouched as $titleString ) {
@@ -36,6 +43,7 @@ class ZObjectTest extends \MediaWikiIntegrationTestCase {
 				$page->doDeleteArticleReal( "clean slate for testing", $sysopUser );
 			}
 		}
+
 		parent::tearDown();
 	}
 

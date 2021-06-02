@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use FormatJson;
 use Language;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectEditAction;
@@ -31,6 +32,23 @@ class ZObjectContentHandlerTest extends \MediaWikiIntegrationTestCase {
 
 	/** @var string[] */
 	private $titlesTouched = [];
+
+	private const EN = 'Z1002';
+	private const FR = 'Z1004';
+	private const DE = 'Z1430';
+
+	protected function setUp() : void {
+		parent::setUp();
+
+		$this->tablesUsed[] = 'wikilambda_zobject_labels';
+		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
+
+		// Register necessary languages
+		$langs = ZLangRegistry::singleton();
+		$langs->registerLang( 'en', self::EN );
+		$langs->registerLang( 'fr', self::FR );
+		$langs->registerLang( 'de', self::DE );
+	}
 
 	/**
 	 * @covers ::__construct

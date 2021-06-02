@@ -128,6 +128,8 @@
 				"ext.wikilambda.edit/store/modules/zobjectModes.js",
 				"ext.wikilambda.edit/store/modules/zKeys.js",
 				"ext.wikilambda.edit/store/modules/callZFunction.js",
+				"ext.wikilambda.edit/store/modules/languages.js",
+				"ext.wikilambda.edit/store/modules/programmingLanguages.js",
 				"ext.wikilambda.edit/mixins/typeUtils.js",
 				"ext.wikilambda.edit/mixins/validator.js",
 				"ext.wikilambda.edit/components/App.vue",

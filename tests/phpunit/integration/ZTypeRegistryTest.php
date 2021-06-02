@@ -18,8 +18,16 @@ use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZTypeRegistry
+ * @group Database
  */
 class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
+
+	protected function setUp() : void {
+		parent::setUp();
+
+		$this->tablesUsed[] = 'wikilambda_zobject_labels';
+		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
+	}
 
 	/**
 	 * @covers ::singleton

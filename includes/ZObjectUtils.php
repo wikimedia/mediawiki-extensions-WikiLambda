@@ -261,7 +261,7 @@ class ZObjectUtils {
 	 * only the preferred language or fallbacks.
 	 *
 	 * @param array|stdClass $input decoded JSON object for a ZObject
-	 * @param string[] $languages array of language codes
+	 * @param string[] $languages array of language Zids
 	 * @return string|array|stdClass same ZObject with only selected Monolingual
 	 * string for each of its Multilingual strings
 	 */
@@ -306,7 +306,7 @@ class ZObjectUtils {
 	 * array of preferred languages.
 	 *
 	 * @param array $multilingualStr decoded JSON for a ZMultilingualString value (Z12K1)
-	 * @param string[] $languages array of language codes
+	 * @param string[] $languages array of language Zids
 	 * @return array same ZMultilingualString value with only one item of the preferred language
 	 */
 	public static function getPreferredMonolingualString( array $multilingualStr, array $languages ) : array {
@@ -399,5 +399,40 @@ class ZObjectUtils {
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_STRING,
 			ZTypeRegistry::Z_STRING_VALUE => $input
 		];
+	}
+
+	/**
+	 * Walks the ZObject tree and when it finds a ZObject with an explicit type that matches the
+	 * type passed as a parameter, it applies the transformation to that sub ZObject. Note that this
+	 * is also the finishing condition for the recursiveness: if another ZObject of the same type is
+	 * a child of the first one found, it will not apply the transformation for the child one.
+	 *
+	 * @param array|stdClass|string $input decoded JSON object for a ZObject
+	 * @param string $type
+	 * @param callable $transformation
+	 * @return array|stdClass|string
+	 */
+	public static function applyTransformationToType( $input, $type, $transformation ) {
+		if ( is_string( $input ) ) {
+			return $input;
+		}
+		if ( is_array( $input ) ) {
+			return array_map( function ( $item ) use ( $type, $transformation ) {
+				return self::applyTransformationToType( $item, $type, $transformation );
+			}, $input );
+		}
+		if ( is_object( $input ) ) {
+			if (
+				property_exists( $input, ZTypeRegistry::Z_OBJECT_TYPE ) &&
+				$input->{ZTypeRegistry::Z_OBJECT_TYPE} == $type
+			) {
+				return $transformation( $input );
+			} else {
+				foreach ( $input as $index => $value ) {
+					$input->$index = self::applyTransformationToType( $value, $type, $transformation );
+				}
+				return $input;
+			}
+		}
 	}
 }

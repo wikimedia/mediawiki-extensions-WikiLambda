@@ -19,8 +19,13 @@ use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectStore
+ * @group Database
  */
 class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
+
+	private const EN = 'Z1002';
+	private const ES = 'Z1003';
+	private const FR = 'Z1004';
 
 	/** @var ZObjectStore */
 	protected $zobjectStore;
@@ -28,7 +33,7 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 	/** @var string[] */
 	protected $titlesTouched = [];
 
-	public function setUp() : void {
+	protected function setUp() : void {
 		parent::setUp();
 
 		$this->tablesUsed[] = 'wikilambda_zobject_labels';
@@ -37,7 +42,7 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 		$this->zobjectStore = WikiLambdaServices::getZObjectStore();
 	}
 
-	public function tearDown() : void {
+	protected function tearDown() : void {
 		$sysopUser = $this->getTestSysop()->getUser();
 
 		foreach ( $this->titlesTouched as $titleString ) {
@@ -47,6 +52,7 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 				$page->doDeleteArticleReal( "clean slate for testing", $sysopUser );
 			}
 		}
+
 		parent::tearDown();
 	}
 
@@ -62,6 +68,7 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 	/**
 	 * @covers ::createNewZObject
 	 * @covers ::fetchZObjectByTitle
+	 * @covers ::fetchAllZids
 	 */
 	public function testFetchZObjectByTitle_valid() {
 		$zid = $this->zobjectStore->getNextAvailableZid();
@@ -82,6 +89,9 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 		// we shall assert that the $zid is equal to $zobject->getId() this way:
 		// $this->assertEquals( $zobject->getId(), $zid );
 		// TODO: Also test that Z2K1 has the title's ZID instead of Z0
+
+		$zids = $this->zobjectStore->fetchAllZids();
+		$this->assertSame( [ $zid ], $zids );
 	}
 
 	/**
@@ -94,6 +104,9 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 
 		$this->assertFalse( $zobject instanceof ZObjectContent );
 		$this->assertFalse( $zobject );
+
+		$zids = $this->zobjectStore->fetchAllZids();
+		$this->assertNotContains( $invalidZid, $zids );
 	}
 
 	/**
@@ -200,9 +213,9 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testInsertZObjectLabels() {
 		$labels = [
-			'en' => 'label',
-			'es' => 'etiqueta',
-			'fr' => 'marque'
+			self::EN => 'label',
+			self::ES => 'etiqueta',
+			self::FR => 'marque'
 		];
 
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z222', 'Z4', $labels );
@@ -229,9 +242,9 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testFindZObjectLabelConflicts() {
 		$labels = [
-			'en' => 'label',
-			'es' => 'etiqueta',
-			'fr' => 'marque'
+			self::EN => 'label',
+			self::ES => 'etiqueta',
+			self::FR => 'marque'
 		];
 
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z222', 'Z4', $labels );
@@ -246,9 +259,9 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testInsertZObjectLabelConflicts() {
 		$conflicts = [
-			'en' => 'Z222',
-			'es' => 'Z222',
-			'fr' => 'Z222'
+			self::EN => 'Z222',
+			self::ES => 'Z222',
+			self::FR => 'Z222'
 		];
 
 		$response = $this->zobjectStore->insertZObjectLabelConflicts( 'Z333', $conflicts );
@@ -272,9 +285,9 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testDeleteZObjectLabelsByZid() {
 		$labels = [
-			'en' => 'label',
-			'es' => 'etiqueta',
-			'fr' => 'marque'
+			self::EN => 'label',
+			self::ES => 'etiqueta',
+			self::FR => 'marque'
 		];
 
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z222', 'Z4', $labels );
@@ -299,8 +312,8 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::deleteZObjectLabelConflictsByZid
 	 */
 	public function testDeleteZObjectLabelConflictsByZid() {
-		$this->zobjectStore->insertZObjectLabelConflicts( 'Z222', [ 'en' => 'Z333' ] );
-		$this->zobjectStore->insertZObjectLabelConflicts( 'Z333', [ 'es' => 'Z444' ] );
+		$this->zobjectStore->insertZObjectLabelConflicts( 'Z222', [ self::EN => 'Z333' ] );
+		$this->zobjectStore->insertZObjectLabelConflicts( 'Z333', [ self::ES => 'Z444' ] );
 
 		$this->zobjectStore->deleteZObjectLabelConflictsByZid( 'Z333' );
 
@@ -319,4 +332,21 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 		$this->assertEquals( $res->numRows(), 0 );
 	}
 
+	/**
+	 * @covers ::fetchZidsOfType
+	 */
+	public function testFetchZidsOfType() {
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z444', 'Z7', [ self::EN => 'label for Z7' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z445', 'Z7', [ self::EN => 'other label for Z7' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z446', 'Z7', [ self::EN => 'one more label for Z7' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z447', 'Z8', [ self::EN => 'label for Z8' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z449', 'Z9', [ self::EN => 'label for Z9' ] );
+
+		$zids = $this->zobjectStore->fetchZidsOfType( 'Z7' );
+		sort( $zids );
+
+		$this->assertSame( $zids, [ 'Z444', 'Z445', 'Z446' ] );
+		$this->assertSame( $this->zobjectStore->fetchZidsOfType( 'Z8' ), [ 'Z447' ] );
+		$this->assertSame( $this->zobjectStore->fetchZidsOfType( 'Z888' ), [] );
+	}
 }

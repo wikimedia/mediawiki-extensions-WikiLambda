@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
@@ -18,6 +19,21 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZKey
  */
 class ZKeyTest extends \MediaWikiIntegrationTestCase {
+
+	private const EN = 'Z1002';
+	private const FR = 'Z1004';
+	private const DE = 'Z1430';
+	private const IT = 'Z1787';
+
+	protected function setUp() : void {
+		parent::setUp();
+
+		$langs = ZLangRegistry::singleton();
+		$langs->registerLang( 'en', self::EN );
+		$langs->registerLang( 'fr', self::FR );
+		$langs->registerLang( 'de', self::DE );
+		$langs->registerLang( 'it', self::IT );
+	}
 
 	/**
 	 * @covers ::__construct
@@ -29,13 +45,14 @@ class ZKeyTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::isValid
 	 */
 	public function testCreation() {
-		$testString = new ZMonoLingualString( 'en', 'Demonstration item' );
+		$testString = new ZMonoLingualString( self::EN, 'Demonstration item' );
 		$testLabelSet = new ZMultiLingualString( [ $testString ] );
 		$testObject = new ZKey( 'Z6', 'Z6K1', $testLabelSet );
 
 		$this->assertSame( 'Z3', $testObject->getZType() );
 		$this->assertSame( 'Z6', $testObject->getKeyType() );
 		$this->assertSame( 'Z6K1', $testObject->getKeyId() );
+
 		$this->assertSame( $testString->getString(), $testObject->getKeyLabel()->getStringForLanguageCode( 'en' ) );
 		$this->assertSame( [ 'Z3K1' => 'Z6', 'Z3K2' => 'Z6K1', 'Z3K3' => $testLabelSet ], $testObject->getZValue() );
 		$this->assertTrue( $testObject->isValid() );
@@ -69,7 +86,7 @@ class ZKeyTest extends \MediaWikiIntegrationTestCase {
 			"Z12K1": [
 				{
 					"Z1K1": "Z11",
-					"Z11K1": "en",
+					"Z11K1": "Z1002",
 					"Z11K2": "Key label"
 				}
 			]
@@ -80,7 +97,7 @@ class ZKeyTest extends \MediaWikiIntegrationTestCase {
 		"Z12K1": [
 			{
 				"Z1K1": "Z11",
-				"Z11K1": "en",
+				"Z11K1": "Z1002",
 				"Z11K2": "Key object label"
 			}
 		]
@@ -232,16 +249,16 @@ EOT
 	}
 
 	public function provideIsValid() {
-		$testString1 = new ZMonoLingualString( 'en', 'Demonstration item' );
-		$testString2 = new ZMonoLingualString( 'fr', 'Demonstration item' );
+		$testString1 = new ZMonoLingualString( self::EN, 'Demonstration item' );
+		$testString2 = new ZMonoLingualString( self::FR, 'Demonstration item' );
 
 		$emptyLabelSet = new ZMultiLingualString( [] );
 
 		$testLabelSet = new ZMultiLingualString( [
-			new ZMonoLingualString( 'en', 'Demonstration item' ),
-			new ZMonoLingualString( 'it', 'oggetto per dimostrazione' ),
-			new ZMonoLingualString( 'de', 'Gegenstand zur Demonstration' ),
-			new ZMonoLingualString( 'fr', 'article pour démonstration' )
+			new ZMonoLingualString( self::EN, 'Demonstration item' ),
+			new ZMonoLingualString( self::IT, 'oggetto per dimostrazione' ),
+			new ZMonoLingualString( self::DE, 'Gegenstand zur Demonstration' ),
+			new ZMonoLingualString( self::FR, 'article pour démonstration' )
 		] );
 
 		return [
@@ -267,5 +284,4 @@ EOT
 			'multiple labelset' => [ 'Z6', 'Z6K1', $testLabelSet, true ],
 		];
 	}
-
 }

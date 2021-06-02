@@ -15,19 +15,23 @@ var Vue = require( 'vue' ),
 	zobjectModule = require( './modules/zobject.js' ),
 	zobjectModes = require( './modules/zobjectModes.js' ),
 	zKeysModule = require( './modules/zKeys.js' ),
-	callZFunctionModule = require( './modules/callZFunction.js' );
+	callZFunctionModule = require( './modules/callZFunction.js' ),
+	languagesModule = require( './modules/languages.js' ),
+	programmingLanguagesModule = require( './modules/programmingLanguages.js' );
 
 Vue.use( Vuex );
 
 module.exports = new Vuex.Store( {
 	state: state,
-	actions: actions,
-	mutations: mutations,
+	actions: actions, /* Empty */
+	mutations: mutations, /* Empty */
 	getters: getters,
 	modules: {
 		zobjectModule: zobjectModule,
 		zobjectModes: zobjectModes,
 		zKeysModule: zKeysModule,
-		callZFunctionModule: callZFunctionModule
+		callZFunctionModule: callZFunctionModule,
+		languagesModule: languagesModule,
+		programmingLanguagesModule: programmingLanguagesModule
 	}
 } );

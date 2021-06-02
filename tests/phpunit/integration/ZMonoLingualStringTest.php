@@ -29,11 +29,11 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::isValid
 	 */
 	public function testCreation() {
-		$testObject = new ZMonoLingualString( 'en', 'Demonstration item' );
+		$testObject = new ZMonoLingualString( 'Z1002', 'Demonstration item' );
 		$this->assertSame( 'Z11', $testObject->getZType() );
-		$this->assertSame( 'en', $testObject->getLanguage() );
+		$this->assertSame( 'Z1002', $testObject->getLanguage() );
 		$this->assertSame( 'Demonstration item', $testObject->getString() );
-		$this->assertSame( [ 'en' => 'Demonstration item' ], $testObject->getZValue() );
+		$this->assertSame( [ 'Z1002' => 'Demonstration item' ], $testObject->getZValue() );
 		$this->assertTrue( $testObject->isValid() );
 	}
 
@@ -43,13 +43,13 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 	public function testStaticCreation() {
 		$testObject = ZObjectFactory::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRING,
-			ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => 'en',
+			ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => 'Z1002',
 			ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => 'Demonstration item'
 		] );
 		$this->assertSame( 'Z11', $testObject->getZType() );
-		$this->assertSame( 'en', $testObject->getLanguage() );
+		$this->assertSame( 'Z1002', $testObject->getLanguage() );
 		$this->assertSame( 'Demonstration item', $testObject->getString() );
-		$this->assertSame( [ 'en' => 'Demonstration item' ], $testObject->getZValue() );
+		$this->assertSame( [ 'Z1002' => 'Demonstration item' ], $testObject->getZValue() );
 		$this->assertTrue( $testObject->isValid() );
 	}
 
@@ -71,7 +71,32 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 		$this->expectException( InvalidArgumentException::class );
 		$invalidObject = ZObjectFactory::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRING,
-			ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => 'en'
+			ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => 'Z1002'
+		] );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
+	 */
+	public function testStaticCreation_invalidLanguageReference() {
+		$this->expectException( InvalidArgumentException::class );
+		$invalidObject = ZObjectFactory::create( (object)[
+			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRING,
+			ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => 'en',
+			ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => 'Demonstration item'
+		] );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
+	 */
+	public function testStaticCreation_invalidLanguageCode() {
+		$this->expectException( InvalidArgumentException::class );
+		$invalidObject = ZObjectFactory::create( (object)[
+			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRING,
+			ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => 'Z999',
+			ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => 'Demonstration item'
 		] );
 	}
 
@@ -87,10 +112,10 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testPersistentCreation() {
 		$this->hideDeprecated( '::create' );
-		$testObject = new ZObjectContent( '{ "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "Demonstration item" }' );
+		$testObject = new ZObjectContent( '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "Demonstration item" }' );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z11', $testObject->getZType() );
-		$this->assertSame( [ 'en' => 'Demonstration item' ], $testObject->getZValue() );
+		$this->assertSame( [ 'Z1002' => 'Demonstration item' ], $testObject->getZValue() );
 
 		$testObject = new ZObjectContent(
 			<<<EOT
@@ -99,7 +124,7 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 	"Z2K1": "Z0",
 	"Z2K2": {
 		"Z1K1": "Z11",
-		"Z11K1": "en",
+		"Z11K1": "Z1002",
 		"Z11K2": "Demonstration item"
 	},
 	"Z2K3": {
@@ -112,8 +137,8 @@ EOT
 
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z11', $testObject->getZType() );
-		$this->assertSame( [ 'en' => 'Demonstration item' ], $testObject->getZValue() );
-		$this->assertSame( 'en', $testObject->getInnerZObject()->getLanguage() );
+		$this->assertSame( [ 'Z1002' => 'Demonstration item' ], $testObject->getZValue() );
+		$this->assertSame( 'Z1002', $testObject->getInnerZObject()->getLanguage() );
 		$this->assertSame( 'Demonstration item', $testObject->getInnerZObject()->getString() );
 	}
 }

@@ -11,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use FormatJson;
 use InvalidArgumentException;
+use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
@@ -26,6 +27,20 @@ use WikiPage;
  * @group Database
  */
 class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
+
+	private const EN = 'Z1002';
+	private const ES = 'Z1003';
+
+	protected function setUp() : void {
+		parent::setUp();
+
+		$this->tablesUsed[] = 'wikilambda_zobject_labels';
+		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
+
+		$langs = ZLangRegistry::singleton();
+		$langs->registerLang( 'en', self::EN );
+		$langs->registerLang( 'es', self::ES );
+	}
 
 	/**
 	 * @covers ::__construct
@@ -328,8 +343,8 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 			. '"Z2K1": { "Z1K1": "Z9", "Z9K1": "Z333" },'
 			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "string value" },'
 			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": ['
-			. '{ "Z1K1": "Z11", "Z11K1":"es", "Z11K2": "etiqueta en castellano" },'
-			. '{ "Z1K1": "Z11", "Z11K1":"en", "Z11K2": "english label" }'
+			. '{ "Z1K1": "Z11", "Z11K1":"Z1003", "Z11K2": "etiqueta en castellano" },'
+			. '{ "Z1K1": "Z11", "Z11K1":"Z1002", "Z11K2": "english label" }'
 			. '] } }';
 		$testObject = new ZObjectContent( $zobjectText );
 		$testObject->isValid();

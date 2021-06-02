@@ -1,5 +1,10 @@
 <?php
 
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
+
+use ApiTestCase;
+use MediaWiki\Extension\WikiLambda\ZLangRegistry;
+
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels
  * @group Database
@@ -9,38 +14,47 @@
  */
 class ApiQueryZObjectLabelsTest extends ApiTestCase {
 
+	private const EN = 'Z1002';
+	private const IT = 'Z1787';
+	private const EGL = 'Z1726';
+
 	private $testData = [
 		'Z90' => [
 			'wlzl_zobject_zid' => 'Z90',
 			'wlzl_type' => 'birdtype',
-			'wlzl_language' => 'it',
+			'wlzl_language' => self::IT,
 			'wlzl_label' => 'CHEEP',
 			'wlzl_label_normalised' => 'cheep',
 		],
 		'Z92' => [
 			'wlzl_zobject_zid' => 'Z92',
 			'wlzl_type' => 'fruittype',
-			'wlzl_language' => 'egl',
+			'wlzl_language' => self::EGL,
 			'wlzl_label' => 'CHOP',
 			'wlzl_label_normalised' => 'chop',
 		],
 		'Z93' => [
 			'wlzl_zobject_zid' => 'Z93',
 			'wlzl_type' => 'badtype',
-			'wlzl_language' => 'en',
+			'wlzl_language' => self::EN,
 			'wlzl_label' => 'CHAP',
 			'wlzl_label_normalised' => 'chap',
 		],
 		'Z91' => [
 			'wlzl_zobject_zid' => 'Z91',
 			'wlzl_type' => 'birdtype',
-			'wlzl_language' => 'it',
+			'wlzl_language' => self::IT,
 			'wlzl_label' => 'CHORP',
 			'wlzl_label_normalised' => 'cheep',
 		],
 	];
 
 	public function addDBDataOnce() : void {
+		$langs = ZLangRegistry::singleton();
+		$langs->registerLang( 'en', self::EN );
+		$langs->registerLang( 'it', self::IT );
+		$langs->registerLang( 'egl', self::EGL );
+
 		foreach ( $this->testData as $key => $testdatum ) {
 			$this->db->insert( 'wikilambda_zobject_labels', $testdatum );
 		}

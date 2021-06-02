@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use Language;
+use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use MediaWiki\Languages\LanguageFallback;
@@ -52,7 +53,12 @@ class ZMultiLingualString extends ZObject {
 	 * @return string The string, or the empty string if .
 	 */
 	public function getStringForLanguageCode( string $languageCode ) : string {
-		return $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageCode ] ?? '';
+		try {
+			$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
+		} catch ( \InvalidArgumentException $e ) {
+			return '';
+		}
+		return $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageZid ] ?? '';
 	}
 
 	/**
@@ -64,7 +70,12 @@ class ZMultiLingualString extends ZObject {
 	 * @return bool If there is a string stored.
 	 */
 	public function isLanguageProvidedValue( string $languageCode ) : bool {
-		return array_key_exists( $languageCode, $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] ?? [] );
+		try {
+			$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
+		} catch ( \InvalidArgumentException $e ) {
+			return false;
+		}
+		return array_key_exists( $languageZid, $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] ?? [] );
 	}
 
 	/**
@@ -107,21 +118,23 @@ class ZMultiLingualString extends ZObject {
 	 */
 	public function setStringForLanguage( Language $language, string $value ) : void {
 		$languageCode = $language->mCode;
-		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageCode ] = $value;
+		$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
+		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageZid ] = $value;
 	}
 
 	/**
 	 * @param Language $language The MediaWiki language class in which the string is to be unset.
 	 */
 	public function removeValue( Language $language ) : void {
-		if ( $this->isLanguageProvidedValue( $language->mCode ) ) {
-			unset( $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $language->mCode ] );
-		}
+		$languageCode = $language->mCode;
+		$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
+		unset( $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageZid ] );
 	}
 
 	public function isValid() : bool {
-		foreach ( $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] ?? [] as $languageCode => $value ) {
-			if ( !Language::isValidCode( $languageCode ) ) {
+		$langs = ZLangRegistry::singleton();
+		foreach ( $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] ?? [] as $languageZid => $value ) {
+			if ( !$langs->isValidLanguageZid( $languageZid ) ) {
 				return false;
 			}
 			// TODO: Do we care about the validity of the values?

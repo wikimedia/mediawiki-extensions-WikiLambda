@@ -129,6 +129,9 @@ class ZObjectContentHandler extends ContentHandler {
 				throw new \InvalidArgumentException( "Provided language code '$languageCode' is not valid." );
 			}
 
+			// If language doesn't have a Zid, throws \InvalidArgumentException
+			$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
+
 			$fullLabels = $zObject->getLabels();
 			$returnLanguage = new \Language(
 				$languageCode,
@@ -142,7 +145,7 @@ class ZObjectContentHandler extends ContentHandler {
 
 			$returnLabelObject = (object)[
 				'Z1K1' => 'Z12',
-				'Z12K1' => [ [ 'Z1K1' => 'Z11', 'Z11K1' => $languageCode, 'Z11K2' => $returnLabel ] ]
+				'Z12K1' => [ [ 'Z1K1' => 'Z11', 'Z11K1' => $languageZid, 'Z11K2' => $returnLabel ] ]
 			];
 			// new ZMultiLingualString( [ new ZMonoLingualString( $languageCode, $returnLabel ) ] );
 			$object['Z2K3'] = $returnLabelObject;

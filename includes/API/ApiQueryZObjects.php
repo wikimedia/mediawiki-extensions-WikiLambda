@@ -14,6 +14,7 @@ use ApiBase;
 use ApiPageSet;
 use ApiQueryGeneratorBase;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -122,7 +123,9 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 			$zobject = $page->getObject();
 
 			if ( is_array( $languages ) ) {
-				$zobject = ZObjectUtils::filterZMultilingualStringsToLanguage( $zobject, $languages );
+				$langRegistry = ZLangRegistry::singleton();
+				$languageZids = $langRegistry->getLanguageZids( $languages );
+				$zobject = ZObjectUtils::filterZMultilingualStringsToLanguage( $zobject, $languageZids );
 			}
 
 			// Normalize Z6 and Z9
