@@ -1,3 +1,5 @@
+var Constants = require( '../../Constants.js' );
+
 module.exports = {
 	state: {
 		orchestrationResult: '',
@@ -47,7 +49,7 @@ module.exports = {
 				context.commit( 'setOrchestrationResult', result.query.wikilambda_function_call.Orchestrated.data );
 				context.dispatch(
 					'addZFunctionResultToTree',
-					JSON.parse( result.query.wikilambda_function_call.Orchestrated.data )
+					JSON.parse( result.query.wikilambda_function_call.Orchestrated.data )[ Constants.Z_PAIR_FIRST ]
 				);
 			} ).catch( function ( error ) {
 				context.commit( 'setOrchestrationResult', error );
