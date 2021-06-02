@@ -33,6 +33,8 @@
 	"apihelp-query+wikilambdaload_zobjects-example-language": "Suche nach den ZObjects Z12 und Z4 und gib deren Labels gefiltert nach Spanisch oder Fallback-Sprachen zurück.",
 	"apihelp-query+wikilambdaload_zobjects-example-error": "Suche nach den ZObjects Z1 und dem nicht existierenden Z0123456789 und gib deren vollständige JSON-Repräsentation zurück.",
 	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Sucht nach dem ZObject Z12 und gibt dessen kanonische JSON-Darstellung zurück.",
+	"apierror-query+wikilambdaload_zobjects-unloadable": "ZObjectStore konnte die Seite für „$1“ nicht laden.",
+	"apierror-query+wikilambdaload_zobjects-notzobject": "ZObjectStore lädt ein Nicht-ZObjekt für „$1“.",
 	"apihelp-wikilambda_edit-example-create": "Erzeugt ein neues ZObjekt vom Typ Z6, mit dem Wert „value“ und der Beschriftung „label“",
 	"apihelp-wikilambda_edit-example-edit-incorrect": "Versuch, das ZObjekt Z010 mit falschen Daten zu aktualisieren",
 	"apihelp-wikilambda_edit-summary": "Erstellt oder bearbeitet ein ZObjekt.",
