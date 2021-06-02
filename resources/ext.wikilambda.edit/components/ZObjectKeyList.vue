@@ -21,11 +21,6 @@
 			>
 			</z-object-key>
 		</li>
-
-		<!-- Add new key -->
-		<li v-if="!(getViewMode || readonly)">
-			<z-object-key-input @change="addKey"></z-object-key-input>
-		</li>
 	</ul>
 </template>
 
@@ -82,7 +77,6 @@ module.exports = {
 	methods: $.extend( {},
 		mapActions( [
 			'addZObject',
-			'removeZObject',
 			'removeZObjectChildren'
 		] ),
 		mapMutations( [ 'addZKeyLabel' ] ),
@@ -116,7 +110,6 @@ module.exports = {
 			 */
 			removeKey: function ( objectId ) {
 				this.removeZObjectChildren( objectId );
-				this.removeZObject( objectId );
 			}
 		}
 	),
