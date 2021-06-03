@@ -66,6 +66,14 @@ module.exports = {
 						Constants.Z_BOOLEAN_IDENTITY, this.zobject
 					).id
 				)
+			) ||
+			this.findKeyInArray(
+				Constants.Z_STRING_VALUE,
+				this.getZObjectChildrenById(
+					this.findKeyInArray(
+						Constants.Z_BOOLEAN_IDENTITY, this.zobject
+					).id
+				)
 			);
 		},
 		selectedBooleanValue: function () {

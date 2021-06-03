@@ -185,7 +185,7 @@ describe( 'zobject Vuex module', function () {
 			expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
 		} );
 		it( 'Initialize ZObject, existing zobject page', function () {
-			var expectedSetZObjectPayload = [ { id: 0, key: undefined, parent: undefined, value: 'object' }, { id: 1, key: 'Z1K1', parent: 0, value: 'test' }, { id: 2, key: 'Z1K2', parent: 0, value: 'object' }, { id: 3, key: 'Z1K1', parent: 2, value: 'Z6' }, { id: 4, key: 'Z6K1', parent: 2, value: 'test' } ];
+			var expectedSetZObjectPayload = [ { id: 0, key: undefined, parent: undefined, value: 'object' }, { id: 1, key: 'Z1K1', parent: 0, value: 'object' }, { id: 2, key: 'Z1K1', parent: 1, value: 'Z6' }, { id: 3, key: 'Z6K1', parent: 1, value: 'test' }, { id: 4, key: 'Z1K2', parent: 0, value: 'object' }, { id: 5, key: 'Z1K1', parent: 4, value: 'Z6' }, { id: 6, key: 'Z6K1', parent: 4, value: 'test' } ];
 			context.state = {
 				zobject: zobjectTree
 			};
@@ -238,10 +238,7 @@ describe( 'zobject Vuex module', function () {
 			var expectedZObject = {
 				Z1K1: 'Z2',
 				Z2K1: 'Z0',
-				Z2K2: {
-					Z1K1: 'Z6',
-					Z6K1: ''
-				},
+				Z2K2: '',
 				Z2K3: { Z1K1: 'Z12', Z12K1: [] }
 			};
 			context.getters.isCreateNewPage = true;
@@ -263,10 +260,7 @@ describe( 'zobject Vuex module', function () {
 			var expectedZObject = {
 				Z1K1: 'Z2',
 				Z2K1: 'Z0',
-				Z2K2: {
-					Z1K1: 'Z6',
-					Z6K1: ''
-				},
+				Z2K2: '',
 				Z2K3: { Z1K1: 'Z12', Z12K1: [] }
 			};
 			context.getters.isCreateNewPage = false;

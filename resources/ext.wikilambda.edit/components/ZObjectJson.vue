@@ -1,6 +1,7 @@
 <template>
 	<div class="ext-wikilambda-json ext-wikilambda-zcode">
 		<code-editor
+			v-clickout="onClickoutHandler"
 			mode="json"
 			:value="initialJson"
 			:read-only="readonly || getViewMode"
@@ -12,13 +13,14 @@
 <script>
 var mapGetters = require( 'vuex' ).mapGetters,
 	typeUtils = require( '../mixins/typeUtils.js' ),
+	schemata = require( '../mixins/schemata.js' ),
 	CodeEditor = require( './base/CodeEditor.vue' );
 
 module.exports = {
 	components: {
 		'code-editor': CodeEditor
 	},
-	mixins: [ typeUtils ],
+	mixins: [ typeUtils, schemata ],
 	props: {
 		zobjectId: {
 			type: Number
@@ -46,57 +48,79 @@ module.exports = {
 			zobjectJson: function () {
 				if ( this.zobjectRaw !== undefined ) {
 					try {
-						return JSON.stringify(
-							typeof this.zobjectRaw === 'string' ?
-								JSON.parse( this.zobjectRaw ) :
-								this.zobjectRaw,
-							null,
-							4
-						);
+						return typeof this.zobjectRaw === 'string' ?
+							JSON.parse( this.zobjectRaw ) :
+							this.zobjectRaw;
 					} catch ( err ) {
 						return this.zobjectRaw;
 					}
 				} else if ( this.zobject ) {
-					return JSON.stringify( this.getZObjectAsJsonById( this.zobjectId, this.zobject.value === 'array' ), null, 4 );
+					return this.getZObjectAsJsonById( this.zobjectId, this.zobject.value === 'array' );
 				}
 				return '';
+			},
+			canonicalJson: function () {
+				return JSON.stringify( this.canonicalizeZObject( this.zobjectJson ), null, 4 );
 			}
 		}
 	),
 	methods: {
 		codeChangeHandler: function ( val ) {
 			this.codeEditorState = val;
+		},
+		onClickoutHandler: function () {
+			var json,
+				self = this;
+			if ( this.zobjectId !== undefined ) {
+				try {
+					json = JSON.parse( this.codeEditorState );
+				} catch ( error ) {
+					// JSON parse failed, do nothing
+					return;
+				}
+
+				this.$store.dispatch( 'injectZObject', {
+					zobject: json,
+					key: this.zobject.key,
+					id: this.zobjectId,
+					parent: this.zobject.parent
+				} ).then( function ( newType ) {
+					if ( self.isValidZidFormat( newType ) ) {
+						self.$emit( 'change-literal', newType );
+					}
+				} ).catch( function ( error ) {
+					throw error;
+				} );
+			}
 		}
 	},
 	watch: {
-		codeEditorState: function () {
-			var self = this;
-
-			if ( this.zobjectId !== undefined ) {
-				try {
-					self.$store.dispatch( 'injectZObject', {
-						zobject: JSON.parse( this.codeEditorState ),
-						key: this.zobject.key,
-						id: this.zobjectId,
-						parent: this.zobject.parent
-					} ).then( function ( newType ) {
-						if ( self.isValidZidFormat( newType ) ) {
-							self.$emit( 'change-literal', newType );
-						}
-					} );
-				} catch ( error ) {
-					// JSON parse failed
-				}
-			}
-		},
 		zobjectRaw: function () {
-			this.codeEditorState = this.zobjectJson;
-			this.initialJson = this.zobjectJson;
+			this.codeEditorState = this.canonicalJson;
+			this.initialJson = this.canonicalJson;
 		}
 	},
 	mounted: function () {
-		this.codeEditorState = this.zobjectJson;
-		this.initialJson = this.zobjectJson;
+		this.codeEditorState = this.canonicalJson;
+		this.initialJson = this.canonicalJson;
+	},
+	directives: {
+		clickout: {
+			bind: function ( el, binding ) {
+				el.clickout = {
+					stop: function ( e ) {
+						e.stopPropagation();
+					}
+				};
+
+				document.body.addEventListener( 'click', binding.value );
+				el.addEventListener( 'click', el.clickout.stop );
+			},
+			unbind: function ( el, binding ) {
+				document.body.removeEventListener( 'click', binding.value );
+				el.removeEventListener( 'click', el.clickout.stop );
+			}
+		}
 	}
 };
 </script>

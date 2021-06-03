@@ -77,10 +77,31 @@ module.exports = {
 			},
 			monolingualStringLanguage: function () {
 				var item = this.findKeyInArray( Constants.Z_MONOLINGUALSTRING_LANGUAGE, this.zobject );
+
+				if ( item.value === 'object' ) {
+					item = this.findKeyInArray(
+						Constants.Z_STRING_VALUE,
+						this.getZObjectChildrenById(
+							item.id
+						)
+					);
+				}
+
 				return item.value;
 			},
 			monolingualStringValue: function () {
-				return this.findKeyInArray( Constants.Z_MONOLINGUALSTRING_VALUE, this.zobject );
+				var item = this.findKeyInArray( Constants.Z_MONOLINGUALSTRING_VALUE, this.zobject );
+
+				if ( item.value === 'object' ) {
+					item = this.findKeyInArray(
+						Constants.Z_STRING_VALUE,
+						this.getZObjectChildrenById(
+							item.id
+						)
+					);
+				}
+
+				return item;
 			}
 		}
 	),

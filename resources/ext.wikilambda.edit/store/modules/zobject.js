@@ -6,20 +6,21 @@
  */
 
 var Constants = require( '../../Constants.js' ),
-	typeUtils = require( '../../mixins/typeUtils.js' ).methods;
+	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
+	normalize = require( '../../mixins/schemata.js' ).methods.normalizeZObject,
+	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
 
 function convertZObjectToTree( zObject, startingKey, startingId, startingParentId ) {
 
 	var zObjectTree = [];
 
-	function tranverseJson( value, key, parentId, isRawValue ) {
+	function tranverseJson( value, key, parentId ) {
 		var valueType = typeUtils.getZObjectType( value ),
 			currentId = zObjectTree.length,
 			type,
 			objectKey;
-		isRawValue = isRawValue || false;
 
-		if ( isRawValue ) {
+		if ( typeof value === 'string' ) {
 			zObjectTree.push( { id: currentId, key: key, value: value, parent: parentId } );
 			return;
 		}
@@ -33,9 +34,8 @@ function convertZObjectToTree( zObject, startingKey, startingId, startingParentI
 					value: 'object',
 					parent: parentId
 				} );
-				value = typeUtils.normalizeZStringZReference( value );
 				for ( objectKey in value ) {
-					tranverseJson( value[ objectKey ], objectKey, currentId, true );
+					tranverseJson( value[ objectKey ], objectKey, currentId );
 				}
 				break;
 			default:
@@ -43,9 +43,8 @@ function convertZObjectToTree( zObject, startingKey, startingId, startingParentI
 				zObjectTree.push( { id: currentId, key: key, value: type, parent: parentId } );
 				for ( objectKey in value ) {
 					// We make sure that the current Key does not expect a raw string
-					isRawValue = Constants.STRING_Z_OBJECTS.indexOf( objectKey ) !== -1;
 
-					tranverseJson( value[ objectKey ], objectKey, currentId, isRawValue );
+					tranverseJson( value[ objectKey ], objectKey, currentId );
 				}
 				break;
 		}
@@ -54,7 +53,7 @@ function convertZObjectToTree( zObject, startingKey, startingId, startingParentI
 	if ( startingId !== undefined ) {
 		zObjectTree.length = startingId;
 	}
-	tranverseJson( zObject, startingKey, startingParentId );
+	tranverseJson( normalize( zObject ), startingKey, startingParentId );
 
 	if ( startingId !== undefined ) {
 		zObjectTree.splice( 0, startingId );
@@ -205,7 +204,7 @@ module.exports = {
 			 * @param {number} id
 			 * @return {string | undefined} type
 			 */
-			return function ( id ) {
+			function findZObjectTypeById( id ) {
 				var type,
 					currentObject = getters.getZObjectById( id ),
 					childrenObject = [];
@@ -224,7 +223,15 @@ module.exports = {
 						childrenObject = getters.getZObjectChildrenById( id );
 						childrenObject.forEach( function ( object ) {
 							if ( object.key === Constants.Z_OBJECT_TYPE ) {
-								type = object.value;
+								if ( object.value === Constants.Z_REFERENCE &&
+									currentObject.key === Constants.Z_OBJECT_TYPE
+								) {
+									type = typeUtils.findKeyInArray( Constants.Z_REFERENCE_ID, childrenObject ).value;
+								} else if ( [ 'array', 'object' ].indexOf( object.value ) === -1 ) {
+									type = object.value;
+								} else {
+									type = findZObjectTypeById( object.id );
+								}
 							}
 						} );
 						break;
@@ -232,9 +239,10 @@ module.exports = {
 						type = undefined;
 						break;
 				}
-
 				return type;
-			};
+			}
+
+			return findZObjectTypeById;
 		},
 		getZObjectAsJson: function ( state ) {
 			/**
@@ -407,7 +415,7 @@ module.exports = {
 			var api = new mw.Api(),
 				action = 'wikilambda_edit',
 				createNewPage = context.getters.isCreateNewPage,
-				zobject = convertZObjectTreetoJson( context.state.zobject );
+				zobject = canonicalize( convertZObjectTreetoJson( context.state.zobject ) );
 
 			if ( createNewPage ) {
 				// TODO: If the page already exists, increment the counter until we get a free one.
@@ -598,7 +606,7 @@ module.exports = {
 				{ key: numberOfLanguageInArray, value: 'object', parent: payload.parentId },
 				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_MONOLINGUALSTRING, parent: nextId },
 				{ key: Constants.Z_MONOLINGUALSTRING_LANGUAGE, value: payload.lang, parent: nextId },
-				{ key: Constants.Z_MONOLINGUALSTRING_VALUE, parent: nextId }
+				{ key: Constants.Z_MONOLINGUALSTRING_VALUE, value: '', parent: nextId }
 			];
 			context.dispatch( 'addZObjects', zObjectItems );
 		},
@@ -692,17 +700,26 @@ module.exports = {
 		 * @param {number} objectId
 		 */
 		addZCode: function ( context, objectId ) {
-			var zObjectItems = [];
+			var nextId;
 			context.dispatch( 'setZObjectValue', {
 				id: objectId,
 				value: 'object'
 			} );
-			zObjectItems = [
-				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_CODE, parent: objectId },
-				{ key: Constants.Z_CODE_LANGUAGE, value: 'object', parent: objectId },
-				{ key: Constants.Z_CODE_CODE, value: '', parent: objectId }
-			];
-			context.dispatch( 'addZObjects', zObjectItems );
+			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: Constants.Z_CODE, parent: objectId } );
+
+			nextId = context.getters.getNextObjectId;
+			context.dispatch( 'addZObject', { key: Constants.Z_CODE_LANGUAGE, value: 'object', parent: objectId } );
+			context.dispatch( 'addZObjects', [
+				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_PROGRAMMING_LANGUAGE, parent: nextId },
+				{ key: Constants.Z_PROGRAMMING_LANGUAGE_CODE, value: '', parent: nextId }
+			] );
+
+			nextId = context.getters.getNextObjectId;
+			context.dispatch( 'addZObject', { key: Constants.Z_CODE_CODE, value: 'object', parent: objectId } );
+			context.dispatch( 'addZObjects', [
+				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_STRING, parent: nextId },
+				{ key: Constants.Z_STRING_VALUE, value: '', parent: nextId }
+			] );
 		},
 		/**
 		 * Create the required entry in the zobject array for a zArgument.

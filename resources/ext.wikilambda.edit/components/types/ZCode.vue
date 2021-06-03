@@ -91,7 +91,7 @@ module.exports = {
 			selectedLanguage: {
 				get: function () {
 					if ( this.zCodeProgrammingLanguage ) {
-						return this.zCodeProgrammingLanguage.value;
+						return this.zCodeProgrammingLanguage.value || '';
 					} else {
 						return '';
 					}

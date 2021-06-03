@@ -71,6 +71,10 @@ module.exports = {
 					return this.findKeyInArray(
 						Constants.Z_REFERENCE_ID,
 						this.getZObjectChildrenById( argumentType.id )
+					) ||
+					this.findKeyInArray(
+						Constants.Z_STRING_VALUE,
+						this.getZObjectChildrenById( argumentType.id )
 					);
 				}
 

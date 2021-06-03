@@ -90,6 +90,10 @@ module.exports = {
 					return this.findKeyInArray(
 						Constants.Z_REFERENCE_ID,
 						this.getZObjectChildrenById( returnType.id )
+					) ||
+					this.findKeyInArray(
+						Constants.Z_STRING_VALUE,
+						this.getZObjectChildrenById( returnType.id )
 					);
 				}
 
@@ -101,13 +105,19 @@ module.exports = {
 					functionArgumentsString = '( ';
 
 				function getArgumentType( argumentChildren ) {
-					var argumentType = argumentChildren.filter( function ( item ) {
-						return item.key === Constants.Z_ARGUMENT_TYPE;
-					} )[ 0 ];
+					var argumentType = self.findKeyInArray( Constants.Z_ARGUMENT_TYPE, argumentChildren );
+
+					if ( !argumentType ) {
+						return 'Any';
+					}
 
 					if ( argumentType.value === 'object' ) {
 						return self.findKeyInArray(
 							Constants.Z_REFERENCE_ID,
+							self.getZObjectChildrenById( argumentType.id )
+						) ||
+						self.findKeyInArray(
+							Constants.Z_STRING_VALUE,
 							self.getZObjectChildrenById( argumentType.id )
 						);
 					}
@@ -130,12 +140,17 @@ module.exports = {
 							).id,
 							true
 						),
-						userLangLabel = argumentLabels.filter( function ( label ) {
-							return label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] === self.zLang;
+						userLang = argumentLabels.filter( function ( label ) {
+							return label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] === self.zLang ||
+								label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_STRING_VALUE ] ===
+									self.zLang;
 						} )[ 0 ] || argumentLabels[ 0 ],
+						userLangLabel = typeof userLang[ Constants.Z_MONOLINGUALSTRING_VALUE ] === 'object' ?
+							userLang[ Constants.Z_MONOLINGUALSTRING_VALUE ][ Constants.Z_STRING_VALUE ] :
+							userLang[ Constants.Z_MONOLINGUALSTRING_VALUE ],
 						type = self.getZkeyLabels[ argumentType.value ],
 						key = userLangLabel ?
-							( userLangLabel[ Constants.Z_MONOLINGUALSTRING_VALUE ] ) + ': ' :
+							( userLangLabel ) + ': ' :
 							'';
 
 					if ( type === undefined ) {
