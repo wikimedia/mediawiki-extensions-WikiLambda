@@ -12,7 +12,7 @@
 			}}
 		</div>
 		<div>
-			{{ $i18n( 'wikilambda-return-typeselector-label' ) }}:
+			{{ zReturnTypeLabel }}:
 			<z-object-selector
 				:type="Constants.Z_TYPE"
 				:placeholder="$i18n( 'wikilambda-return-typeselector-label' )"
@@ -98,6 +98,9 @@ module.exports = {
 				}
 
 				return returnType;
+			},
+			zReturnTypeLabel: function () {
+				return this.getZkeyLabels[ Constants.Z_FUNCTION_RETURN_TYPE ];
 			},
 			scriptFunctionArguments: function () {
 				var zobject = this.zArgumentList,

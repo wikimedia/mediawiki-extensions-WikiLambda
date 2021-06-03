@@ -6,7 +6,9 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-zcode">
+		<span v-if="getViewMode || readonly">{{ selectedLanguage }}</span>
 		<select
+			v-else
 			v-model="selectedLanguage"
 			class="ext-wikilambda-zcode__language-selector"
 		>
