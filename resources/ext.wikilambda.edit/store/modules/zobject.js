@@ -414,38 +414,21 @@ module.exports = {
 		submitZObject: function ( context, summary ) {
 			var api = new mw.Api(),
 				action = 'wikilambda_edit',
-				createNewPage = context.getters.isCreateNewPage,
 				zobject = canonicalize( convertZObjectTreetoJson( context.state.zobject ) );
 
-			if ( createNewPage ) {
-				// TODO: If the page already exists, increment the counter until we get a free one.
-				api.post( {
-					action: action,
-					summary: summary,
-					zobject: JSON.stringify( zobject )
-				} ).then( function ( result ) {
-					window.location.href = new mw.Title( result[ action ].page ).getUrl();
-				} ).catch( function ( errorCode, result ) {
-					context.commit( 'setMessage', {
-						type: 'error',
-						text: result.error.info
-					} );
+			api.post( {
+				action: action,
+				summary: summary,
+				zid: context.getters.getCurrentZObjectId,
+				zobject: JSON.stringify( zobject )
+			} ).then( function ( result ) {
+				window.location.href = new mw.Title( result[ action ].page ).getUrl();
+			} ).catch( function ( errorCode, result ) {
+				context.commit( 'setMessage', {
+					type: 'error',
+					text: result.error.info
 				} );
-			} else {
-				api.post( {
-					action: action,
-					summary: summary,
-					zid: context.getters.getCurrentZObjectId,
-					zobject: JSON.stringify( zobject )
-				} ).then( function ( result ) {
-					window.location.href = new mw.Title( result[ action ].page ).getUrl();
-				} ).catch( function ( errorCode, result ) {
-					context.commit( 'setMessage', {
-						type: 'error',
-						text: result.error.info
-					} );
-				} );
-			}
+			} );
 		},
 		/**
 		 * Set the value of a specific Zobject. This method is called multiple times when adding a nested object.
