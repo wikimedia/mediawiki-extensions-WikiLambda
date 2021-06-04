@@ -40,7 +40,7 @@ describe( 'ZObject', function () {
 	it( 'renders without errors', function () {
 		var wrapper = shallowMount( ZObject, {
 			propsData: {
-				zobject: '',
+				zobjectId: 0,
 				persistent: false,
 				viewmode: false
 			},
