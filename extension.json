@@ -162,6 +162,7 @@
 				"ext.wikilambda.edit/components/ZObjectJson.vue",
 				"ext.wikilambda.edit/components/types/ZBoolean.vue",
 				"ext.wikilambda.edit/components/types/ZImplementationList.vue",
+				"ext.wikilambda.edit/components/types/ZImplementation.vue",
 				"ext.wikilambda.edit/mixins/schemata.js",
 				"lib/ace/ace.js",
 				"lib/icons.js"

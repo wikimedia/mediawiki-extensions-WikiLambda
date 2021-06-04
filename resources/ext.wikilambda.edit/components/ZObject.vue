@@ -65,6 +65,11 @@
 			:readonly="readonly"
 		></z-boolean>
 
+		<z-implementation
+			v-else-if="type === Constants.Z_IMPLEMENTATION"
+			:zobject-id="zobjectId"
+		></z-implementation>
+
 		<z-object-generic
 			v-else-if="type !== undefined"
 			:zobject-id="zobjectId"
@@ -89,6 +94,7 @@ var Constants = require( '../Constants.js' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
 	ZFunction = require( './types/ZFunction.vue' ),
 	ZBoolean = require( './types/ZBoolean.vue' ),
+	ZImplementation = require( './types/ZImplementation.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -105,7 +111,8 @@ module.exports = {
 		'z-function-call': ZFunctionCall,
 		'z-object-selector': ZObjectSelector,
 		'z-function': ZFunction,
-		'z-boolean': ZBoolean
+		'z-boolean': ZBoolean,
+		'z-implementation': ZImplementation
 	},
 	mixins: [ typeUtils ],
 	props: {
