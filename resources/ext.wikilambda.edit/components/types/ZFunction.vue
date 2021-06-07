@@ -58,7 +58,7 @@ module.exports = {
 			'getZObjectTypeById',
 			'getZkeyLabels',
 			'getZObjectAsJsonById',
-			'zLang'
+			'getUserZlangZID'
 		] ),
 		{
 			Constants: function () {
@@ -144,9 +144,9 @@ module.exports = {
 							true
 						),
 						userLang = argumentLabels.filter( function ( label ) {
-							return label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] === self.zLang ||
+							return label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] === self.getUserZlangZID ||
 								label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_STRING_VALUE ] ===
-									self.zLang;
+									self.getUserZlangZID;
 						} )[ 0 ] || argumentLabels[ 0 ],
 						userLangLabel = typeof userLang[ Constants.Z_MONOLINGUALSTRING_VALUE ] === 'object' ?
 							userLang[ Constants.Z_MONOLINGUALSTRING_VALUE ][ Constants.Z_STRING_VALUE ] :

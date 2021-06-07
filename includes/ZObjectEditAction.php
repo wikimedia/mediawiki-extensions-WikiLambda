@@ -38,6 +38,7 @@ class ZObjectEditAction extends Action {
 
 		$editingData = [
 			'zlang' => $userLangCode,
+			'zlangZid' => ZLangRegistry::singleton()->getLanguageZidFromCode( $userLangCode ),
 			'createNewPage' => $createNewPage,
 			'zId' => $title->getBaseText(),
 			'viewmode' => false

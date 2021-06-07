@@ -335,6 +335,7 @@ class ZObjectContent extends AbstractContent {
 			'zId' => $title->getBaseText(),
 			'page' => $title->getPrefixedDBkey(),
 			'zlang' => $userLangCode,
+			'zlangZid' => ZLangRegistry::singleton()->getLanguageZidFromCode( $userLangCode ),
 			'createNewPage' => false,
 			'viewmode' => true
 		];

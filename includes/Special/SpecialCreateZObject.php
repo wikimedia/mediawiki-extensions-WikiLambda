@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\Special;
 
 use Html;
+use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use SpecialPage;
 
 class SpecialCreateZObject extends SpecialPage {
@@ -64,6 +65,7 @@ class SpecialCreateZObject extends SpecialPage {
 
 		$editingData = [
 			'zlang' => $userLangCode,
+			'zlangZid' => ZLangRegistry::singleton()->getLanguageZidFromCode( $userLangCode ),
 			'createNewPage' => true,
 			'viewmode' => false
 		];

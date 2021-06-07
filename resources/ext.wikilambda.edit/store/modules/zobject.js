@@ -632,7 +632,7 @@ module.exports = {
 
 			context.dispatch( 'addZMonolingualString', {
 				parentId: nextId,
-				lang: context.getters.zLang
+				lang: context.getters.getUserZlangZID
 			} );
 		},
 		/**

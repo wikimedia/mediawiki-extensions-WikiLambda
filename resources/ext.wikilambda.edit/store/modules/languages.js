@@ -45,6 +45,15 @@ module.exports = {
 		 */
 		getAllLangs: function ( state ) {
 			return state.allLangs;
+		},
+
+		/**
+		 * Get user's ZLang ZID
+		 *
+		 * @return {string}
+		 */
+		getUserZlangZID: function () {
+			return mw.config.get( 'wgWikiLambda' ).zlangZid;
 		}
 	},
 	mutations: {
