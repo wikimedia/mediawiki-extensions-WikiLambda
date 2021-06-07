@@ -79,7 +79,7 @@ module.exports = {
 
 				if ( item.value === 'object' ) {
 					item = this.findKeyInArray(
-						Constants.Z_STRING_VALUE,
+						Constants.Z_REFERENCE_ID,
 						this.getZObjectChildrenById(
 							item.id
 						)
