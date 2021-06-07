@@ -310,7 +310,7 @@ class ZObjectContent extends AbstractContent {
 			'div', [ 'class' => 'ext-wikilambda-viewpage-header-type' ],
 			wfMessage( 'wikilambda-persistentzobject' )->inContentLanguage()->text()
 				. wfMessage( 'colon-separator' )->inContentLanguage()->text()
-				. $zobject->getZType()
+				. $zobject->getInternalZType()
 		);
 
 		$header = Html::rawElement(
