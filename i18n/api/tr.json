@@ -34,6 +34,8 @@
 	"apihelp-query+wikilambdaload_zobjects-example-language": "Z12 ve Z4 ZObjects'lerini arar ve İspanyolcaya ya da yedek dillere göre filtrelenmiş etiketlerini geri döndürür.",
 	"apihelp-query+wikilambdaload_zobjects-example-error": "Z1 ve var olmayan Z012345789 ZObjects'lerini arar ve tüm JSON betimini geri döndürür.",
 	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Z12 ZObject'ini arar ve kurallara uygun JSON betimini geri döndürür.",
+	"apierror-query+wikilambdaload_zobjects-unloadable": "'$1' için ZObjectStore sayfayı yükleyemiyor.",
+	"apierror-query+wikilambdaload_zobjects-notzobject": "'$1' için ZObjectStore, ZObject olmayan bir nesne yükledi.",
 	"apihelp-wikilambda_edit-example-create": "Z6 türünde, 'value' değerinde ve 'label' olarak etiketlenmiş yeni bir ZObject oluştur.",
 	"apihelp-wikilambda_edit-example-edit-incorrect": "Z010 ZObject'i yanlış veriyle güncellenmeye çalışılıyor",
 	"apihelp-wikilambda_edit-summary": "Bir ZObject oluştur ya da değiştir.",
