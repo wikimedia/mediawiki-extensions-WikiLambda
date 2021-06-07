@@ -12,6 +12,10 @@
 			:selected-id="zFunction.value"
 			@input="updateZFunctionType"
 		></z-object-selector>
+		<z-function-signature
+			:return-type="selectedFunctionReturnType"
+			:arguments="selectedFunctionArguments"
+		></z-function-signature>
 		<z-code
 			:zobject-id="zCodeId"
 		></z-code>
@@ -24,12 +28,14 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	ZCode = require( './ZCode.vue' ),
-	ZObjectSelector = require( '../ZObjectSelector.vue' );
+	ZObjectSelector = require( '../ZObjectSelector.vue' ),
+	ZFunctionSignature = require( '../ZFunctionSignature.vue' );
 
 module.exports = {
 	components: {
 		'z-code': ZCode,
-		'z-object-selector': ZObjectSelector
+		'z-object-selector': ZObjectSelector,
+		'z-function-signature': ZFunctionSignature
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -39,7 +45,7 @@ module.exports = {
 		}
 	},
 	computed: $.extend( {},
-		mapGetters( [ 'getZObjectChildrenById', 'getZkeyLabels' ] ),
+		mapGetters( [ 'getZObjectChildrenById', 'getZkeyLabels', 'getZkeys' ] ),
 		{
 			Constants: function () {
 				return Constants;
@@ -60,11 +66,51 @@ module.exports = {
 			},
 			functionLabel: function () {
 				return this.getZkeyLabels[ Constants.Z_IMPLEMENTATION_FUNCTION ];
+			},
+			selectedFunctionJson: function () {
+				return this.getZkeys[ this.zFunction.value ];
+			},
+			selectedFunctionReturnType: function () {
+				if ( this.selectedFunctionJson ) {
+					return this.getZkeyLabels[ this.selectedFunctionJson[
+						Constants.Z_PERSISTENTOBJECT_VALUE ][
+						Constants.Z_FUNCTION_RETURN_TYPE ] ];
+				}
+				return;
+			},
+			selectedFunctionArguments: function () {
+				var self = this;
+
+				if ( this.selectedFunctionJson ) {
+					return this.selectedFunctionJson[
+						Constants.Z_PERSISTENTOBJECT_VALUE ][
+						Constants.Z_FUNCTION_ARGUMENTS ]
+						.reduce( function ( argumentString, argument ) {
+							var argumentLabels = argument[ Constants.Z_ARGUMENT_LABEL ][
+									Constants.Z_MULTILINGUALSTRING_VALUE ],
+								userLang = argumentLabels.filter( function ( label ) {
+									return label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] === self.getUserZlangZID ||
+								label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_STRING_VALUE ] ===
+									self.getUserZlangZID;
+								} )[ 0 ] || argumentLabels[ 0 ],
+								userLangLabel = userLang[ Constants.Z_MONOLINGUALSTRING_VALUE ],
+								type = self.getZkeyLabels[ argument[ Constants.Z_ARGUMENT_TYPE ] ],
+								key = userLangLabel ?
+									( userLangLabel ) + ': ' :
+									'';
+
+							return argumentString.length ?
+								argumentString + ', ' + key + type :
+								argumentString + key + type;
+						}, '' );
+				}
+
+				return;
 			}
 		}
 	),
 	methods: $.extend( {},
-		mapActions( [ 'setZObjectValue' ] ),
+		mapActions( [ 'fetchZKeys', 'setZObjectValue' ] ),
 		{
 			updateZFunctionType: function ( val ) {
 				this.setZObjectValue( {

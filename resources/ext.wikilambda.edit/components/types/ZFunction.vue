@@ -6,11 +6,10 @@
 		@license MIT
 	-->
 	<div>
-		<div class="ext-wikilambda-function-definition">
-			{{ scriptFunctionArguments }}: {{
-				getZkeyLabels[ zReturnType.value ] || 'Any'
-			}}
-		</div>
+		<z-function-signature
+			:arguments="scriptFunctionArguments"
+			:return-type="getZkeyLabels[ zReturnType.value ]"
+		></z-function-signature>
 		<div>
 			{{ zReturnTypeLabel }}:
 			<z-object-selector
@@ -36,13 +35,15 @@ var Constants = require( '../../Constants.js' ),
 	ZArgumentList = require( './ZArgumentList.vue' ),
 	ZImplementationList = require( './ZImplementationList.vue' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
-	typeUtils = require( '../../mixins/typeUtils.js' );
+	typeUtils = require( '../../mixins/typeUtils.js' ),
+	ZFunctionSignature = require( '../ZFunctionSignature.vue' );
 
 module.exports = {
 	components: {
 		'z-argument-list': ZArgumentList,
 		'z-object-selector': ZObjectSelector,
-		'z-implementation-list': ZImplementationList
+		'z-implementation-list': ZImplementationList,
+		'z-function-signature': ZFunctionSignature
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -105,7 +106,7 @@ module.exports = {
 			scriptFunctionArguments: function () {
 				var zobject = this.zArgumentList,
 					self = this,
-					functionArgumentsString = '( ';
+					functionArgumentsString = '';
 
 				function getArgumentType( argumentChildren ) {
 					var argumentType = self.findKeyInArray( Constants.Z_ARGUMENT_TYPE, argumentChildren );
@@ -167,7 +168,6 @@ module.exports = {
 						functionArgumentsString += ', ';
 					}
 				} );
-				functionArgumentsString += ')';
 				return functionArgumentsString;
 			}
 		}
@@ -192,13 +192,3 @@ module.exports = {
 	}
 };
 </script>
-
-<style lang="less">
-.ext-wikilambda-function-definition {
-	font-family: 'Courier New', 'Courier', monospace;
-	padding: 1em;
-	margin-bottom: 1em;
-	background: #efe;
-	outline: 1px dashed #888;
-}
-</style>
