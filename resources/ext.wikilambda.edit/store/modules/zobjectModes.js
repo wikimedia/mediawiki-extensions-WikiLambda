@@ -1,6 +1,5 @@
 var Constants = require( '../../Constants.js' ),
-	modes = Constants.Z_MODE_SELECTOR_MODES,
-	TypeWithoutLiteral = [ Constants.Z_REFERENCE, Constants.Z_FUNCTION_CALL ];
+	modes = Constants.Z_MODE_SELECTOR_MODES;
 
 module.exports = {
 	getters: {
@@ -10,13 +9,20 @@ module.exports = {
 				// If literal and parents are the same, it means it is its own identity,
 				// or if the type is Reference or FunctionCall
 				// mode selector it does not have a generic or literal view
-				if ( typeIsItsOwnIdentity || TypeWithoutLiteral.indexOf( payload.literalType ) !== -1 ) {
-					return modes.filter( function ( mode ) {
+				return modes.filter( function ( mode ) {
+					if ( typeIsItsOwnIdentity ) {
 						return mode.type !== null;
-					} );
-				} else {
-					return modes;
-				}
+					}
+					switch ( payload.literalType ) {
+						case Constants.Z_REFERENCE:
+						case Constants.Z_FUNCTION_CALL:
+							return mode.key !== Constants.Z_KEY_MODES.LITERAL;
+						case Constants.Z_STRING:
+							return mode.key !== Constants.Z_KEY_MODES.GENERIC_LITERAL;
+					}
+
+					return true;
+				} );
 			};
 		},
 		getModeIsValid: function () {

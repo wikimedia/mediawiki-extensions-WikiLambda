@@ -15,7 +15,8 @@ module.exports = {
 				currentKeyLiteralType = null;
 			if ( getters.getZkeys[ type ] ) {
 
-				keysArray = getters.getZkeys[ type ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
+				keysArray = getters.getZkeys[ type ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ] ||
+					[];
 
 				keysArray.forEach( function ( key ) {
 					if ( key[ Constants.Z_KEY_ID ] === parentKey ) {

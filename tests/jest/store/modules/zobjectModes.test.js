@@ -21,20 +21,20 @@ describe( 'zobjectModes Vuex module', function () {
 				expect( zobjectModes.getters.getAllModes()( payload ).length ).toBe( 2 );
 				expect( Object.keys( zobjectModes.getters.getAllModes()( payload )[ 0 ] ) ).toEqual( [ 'key', 'value', 'label', 'type' ] );
 			} );
-			it( 'It return just two types if the literalType is a reference', function () {
+			it( 'It return just four types if the literalType is a reference', function () {
 				var payload = {
 					parentType: 'sameType',
 					literalType: Constants.Z_REFERENCE
 				};
-				expect( zobjectModes.getters.getAllModes()( payload ).length ).toBe( 2 );
+				expect( zobjectModes.getters.getAllModes()( payload ).length ).toBe( 4 );
 				expect( Object.keys( zobjectModes.getters.getAllModes()( payload )[ 0 ] ) ).toEqual( [ 'key', 'value', 'label', 'type' ] );
 			} );
-			it( 'It return just two types if the literalType is a Function Call', function () {
+			it( 'It return just four types if the literalType is a Function Call', function () {
 				var payload = {
 					parentType: 'sameType',
 					literalType: Constants.Z_FUNCTION_CALL
 				};
-				expect( zobjectModes.getters.getAllModes()( payload ).length ).toBe( 2 );
+				expect( zobjectModes.getters.getAllModes()( payload ).length ).toBe( 4 );
 				expect( Object.keys( zobjectModes.getters.getAllModes()( payload )[ 0 ] ) ).toEqual( [ 'key', 'value', 'label', 'type' ] );
 			} );
 		} );

@@ -15,11 +15,13 @@
 		></z-object-selector>
 		<ul>
 			<li v-for="argument in zFunctionArguments" :key="argument.key">
-				{{ argument.label }} ({{ argument.key }}):
-				<z-object
+				{{ argument.label }}:
+				<z-object-key
 					:zobject-id="findArgumentId(argument.key)"
 					:persistent="false"
-				></z-object>
+					:parent-type="Constants.Z_FUNCTION_CALL"
+					:z-key="argument.key"
+				></z-object-key>
 			</li>
 		</ul>
 		<button @click="callFunctionHandler">
@@ -42,7 +44,7 @@
 				<z-object-key
 					v-else
 					:zobject-id="getOrchestrationResultId"
-					parent-type="literal"
+					:parent-type="Constants.Z_PAIR"
 					:readonly="true"
 				></z-object-key>
 			</div>
@@ -54,7 +56,6 @@
 var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
-	mapState = require( 'vuex' ).mapState,
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	ZObjectJson = require( '../ZObjectJson.vue' ),
 	ZObjectKey = require( '../ZObjectKey.vue' ),
@@ -80,8 +81,7 @@ module.exports = {
 			orchestratedMode: Constants.Z_KEY_MODES.LITERAL
 		};
 	},
-	computed: $.extend( mapState( {
-	} ), mapGetters( {
+	computed: $.extend( mapGetters( {
 		getZObjectChildrenById: 'getZObjectChildrenById',
 		getZObjectTypeById: 'getZObjectTypeById',
 		getZkeys: 'getZkeys',
