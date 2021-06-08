@@ -20,6 +20,7 @@ use Title;
 use TitleFactory;
 use User;
 use Wikimedia\Rdbms\ILoadBalancer;
+use Wikimedia\Rdbms\IResultWrapper;
 use WikiPage;
 
 class ZObjectStore {
@@ -403,5 +404,55 @@ class ZObjectStore {
 			$zids[] = $row->page_title;
 		}
 		return $zids;
+	}
+
+	/**
+	 * Search labels in the secondary database, filtering by language Zids, type or label string.
+	 *
+	 * @param string $label Term to search in the label database
+	 * @param bool $exact Whether to search by exact match
+	 * @param string[] $languages List of language Zids to filter by
+	 * @param string|null $type Zid of the type to filter by. If null, don't filter by type.
+	 * @param string|null $continue Id to start. If null, start from the first result.
+	 * @param int $limit Maximum number of results to return.
+	 * @return IResultWrapper
+	 */
+	public function fetchZObjectLabels( $label, $exact, $languages, $type, $continue, $limit ) {
+		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+
+		// Set language filter
+		$conditions = [ 'wlzl_language' => $languages ];
+
+		// Set type filter
+		if ( $type != null ) {
+			$conditions[] = 'wlzl_type = ' . $dbr->addQuotes( $type );
+		}
+
+		// Set minimum id bound if we are continuing a paged result
+		if ( $continue != null ) {
+			$conditions[] = "wlzl_id >= $continue";
+		}
+
+		// Set search Term
+		if ( $exact ) {
+			$searchedColumn = 'wlzl_label';
+			$searchTerm = $label;
+		} else {
+			$searchedColumn = 'wlzl_label_normalised';
+			$searchTerm = ZObjectUtils::comparableString( $label );
+		}
+		$conditions[] = $searchedColumn . $dbr->buildLike( $dbr->anyString(), $searchTerm, $dbr->anyString() );
+
+		// $dbr->addOption( 'LIMIT', $limit + 1 );
+		return $dbr->select(
+			/* FROM */ 'wikilambda_zobject_labels',
+			/* SELECT */ [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_id' ],
+			/* WHERE */ $dbr->makeList( $conditions, $dbr::LIST_AND ),
+			__METHOD__,
+			[
+				'ORDER BY' => 'wlzl_id ASC',
+				'LIMIT' => $limit,
+			]
+		);
 	}
 }
