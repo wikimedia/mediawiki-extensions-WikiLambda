@@ -13,8 +13,8 @@ namespace MediaWiki\Extension\WikiLambda\API;
 use ApiBase;
 use ApiPageSet;
 use ApiQueryGeneratorBase;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZLangRegistry;
-use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\ParamValidator\ParamValidator;
@@ -38,7 +38,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 	 */
 	private function run( $resultPageSet = null ) {
 		[
-			'search' => $request,
+			'search' => $searchTerm,
 			'language' => $language,
 			'nofallback' => $nofallback,
 			'exact' => $exact,
@@ -47,11 +47,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 			'continue' => $continue,
 		] = $this->extractRequestParams();
 
-		$dbr = $this->getDB();
-
-		$this->addTables( 'wikilambda_zobject_labels' );
-		$this->addFields( [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label' ] );
-
+		// Make list of language Zids
 		$languages = [ $language ];
 		if ( !$nofallback ) {
 			$languages = array_merge(
@@ -62,40 +58,22 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 				)
 			);
 		}
-
-		// Get list of language Zids
 		$langRegistry = ZLangRegistry::singleton();
 		$languageZids = $langRegistry->getLanguageZids( $languages );
 
-		$this->addWhere( [ 'wlzl_language' => $languageZids ] );
-
-		if ( $exact ) {
-			$searchedColumn = 'wlzl_label';
-			$searchTerm = $request;
-		} else {
-			$searchedColumn = 'wlzl_label_normalised';
-			$searchTerm = ZObjectUtils::comparableString( $request );
-		}
-		$this->addWhere( $searchedColumn . $dbr->buildLike( $dbr->anyString(), $searchTerm, $dbr->anyString() ) );
-
-		if ( $continue !== null ) {
-			$this->addWhere( "wlzl_id >= $continue" );
-		}
-
-		if ( $type != null ) {
-			$this->addWhere( 'wlzl_type = ' . $dbr->addQuotes( $type ) );
-		}
-
-		$this->addOption( 'LIMIT', $limit + 1 );
-
-		$res = $this->select( __METHOD__ );
-
-		if ( $res->numRows() > $limit ) {
-			$this->setContinueEnumParameter( 'continue', strval( $continue + $limit ) );
-		}
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		$res = $zObjectStore->fetchZObjectLabels(
+			$searchTerm,
+			$exact,
+			$languageZids,
+			$type,
+			$continue,
+			$limit + 1
+		);
 
 		$suggestions = [];
 		$i = 0;
+		$lastId = 0;
 		foreach ( $res as $row ) {
 			if ( $i >= $limit ) {
 				break;
@@ -110,9 +88,14 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 				'page_content_model' => CONTENT_MODEL_ZOBJECT,
 				'page_lang' => $row->wlzl_language,
 			];
+			$lastId = $row->wlzl_id;
 			$i++;
 		}
 		unset( $i );
+
+		if ( $res->numRows() > $limit ) {
+			$this->setContinueEnumParameter( 'continue', strval( $lastId + 1 ) );
+		}
 
 		if ( $resultPageSet ) {
 			// FIXME: This needs to be an IResultWrapper, not an array of assoc. objects, irritatingly.

@@ -15,6 +15,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\MediaWikiServices;
 use Status;
 use Title;
+use Wikimedia\Rdbms\IResultWrapper;
 use WikiPage;
 
 /**
@@ -348,5 +349,131 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 		$this->assertSame( $zids, [ 'Z444', 'Z445', 'Z446' ] );
 		$this->assertSame( $this->zobjectStore->fetchZidsOfType( 'Z8' ), [ 'Z447' ] );
 		$this->assertSame( $this->zobjectStore->fetchZidsOfType( 'Z888' ), [] );
+	}
+
+	/**
+	 * @covers ::fetchZObjectLabels
+	 */
+	public function testFetchZObjectLabels_exactMatch() {
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z450', 'Z7', [ self::EN => 'example' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z451', 'Z7', [ self::EN => 'Example label' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z452', 'Z7', [ self::EN => 'Some more examples' ] );
+
+		$res = $this->zobjectStore->fetchZObjectLabels(
+			'Example',
+			true,
+			[ self::EN ],
+			null,
+			null,
+			5000
+		);
+		$this->assertInstanceOf( IResultWrapper::class, $res );
+		$this->assertSame( 1, $res->numRows() );
+
+		$res = $this->zobjectStore->fetchZObjectLabels(
+			'Example',
+			false,
+			[ self::EN ],
+			null,
+			null,
+			5000
+		);
+		$this->assertInstanceOf( IResultWrapper::class, $res );
+		$this->assertSame( 3, $res->numRows() );
+	}
+
+	/**
+	 * @covers ::fetchZObjectLabels
+	 */
+	public function testFetchZObjectLabels_type() {
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z453', 'Z7', [ self::EN => 'example' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z454', 'Z7', [ self::EN => 'Example label' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z455', 'Z6', [ self::EN => 'Some more examples' ] );
+
+		$res = $this->zobjectStore->fetchZObjectLabels(
+			'example',
+			false,
+			[ self::EN ],
+			'Z7',
+			null,
+			5000
+		);
+		$this->assertInstanceOf( IResultWrapper::class, $res );
+		$this->assertSame( 2, $res->numRows() );
+
+		$res = $this->zobjectStore->fetchZObjectLabels(
+			'example',
+			false,
+			[ self::EN ],
+			'Z6',
+			null,
+			5000
+		);
+		$this->assertInstanceOf( IResultWrapper::class, $res );
+		$this->assertSame( 1, $res->numRows() );
+	}
+
+	/**
+	 * @covers ::fetchZObjectLabels
+	 */
+	public function testFetchZObjectLabels_languages() {
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z456', 'Z6', [ self::EN => 'txt' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z457', 'Z6', [ self::ES => 'txt' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z458', 'Z6', [ self::FR => 'txt' ] );
+
+		$res = $this->zobjectStore->fetchZObjectLabels(
+			'txt',
+			false,
+			[ self::EN, self::FR ],
+			null,
+			null,
+			5000
+		);
+
+		$this->assertInstanceOf( IResultWrapper::class, $res );
+		$this->assertSame( 2, $res->numRows() );
+		$this->assertSame( self::EN, $res->fetchRow()[ 'wlzl_language' ] );
+		$this->assertSame( self::FR, $res->fetchRow()[ 'wlzl_language' ] );
+	}
+
+	/**
+	 * @covers ::fetchZObjectLabels
+	 */
+	public function testFetchZObjectLabels_pagination() {
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z459', 'Z6', [ self::EN => 'label one' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z460', 'Z6', [ self::EN => 'label two' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z461', 'Z6', [ self::EN => 'label three' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z462', 'Z6', [ self::EN => 'label four' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z463', 'Z6', [ self::EN => 'label five' ] );
+
+		// First page
+		$res = $this->zobjectStore->fetchZObjectLabels( 'label', false, [ self::EN ], null, null, 2 );
+
+		$this->assertInstanceOf( IResultWrapper::class, $res );
+		$this->assertSame( 2, $res->numRows() );
+		$first = $res->fetchRow();
+		$second = $res->fetchRow();
+		$this->assertSame( 'label one', $first[ 'wlzl_label' ] );
+		$this->assertSame( 'label two', $second[ 'wlzl_label' ] );
+
+		$continue = strval( $second[ 'wlzl_id' ] + 1 );
+
+		// Second page
+		$res = $this->zobjectStore->fetchZObjectLabels( 'label', false, [ self::EN ], null, $continue, 2 );
+
+		$this->assertInstanceOf( IResultWrapper::class, $res );
+		$this->assertSame( 2, $res->numRows() );
+		$first = $res->fetchRow();
+		$second = $res->fetchRow();
+		$this->assertSame( 'label three', $first[ 'wlzl_label' ] );
+		$this->assertSame( 'label four', $second[ 'wlzl_label' ] );
+
+		$continue = strval( $second[ 'wlzl_id' ] + 1 );
+
+		// Third page
+		$res = $this->zobjectStore->fetchZObjectLabels( 'label', false, [ self::EN ], null, $continue, 2 );
+		$this->assertInstanceOf( IResultWrapper::class, $res );
+		$this->assertSame( 1, $res->numRows() );
+		$this->assertSame( 'label five', $res->fetchRow()[ 'wlzl_label' ] );
 	}
 }
