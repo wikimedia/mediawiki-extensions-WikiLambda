@@ -107,17 +107,26 @@ class ApiFunctionCall extends ApiBase {
 			'phpunit' .
 			DIRECTORY_SEPARATOR .
 			'test_data';
+
 		$Z902File = $baseDir . DIRECTORY_SEPARATOR . 'Z902_false.json';
 		$Z902 = file_get_contents( $Z902File );
 		$Z902 = preg_replace( '/[\s\n]/', '', $Z902 );
-		$nativeCodeFile = $baseDir . DIRECTORY_SEPARATOR . 'evaluated.json';
-		$nativeCode = file_get_contents( $nativeCodeFile );
-		$nativeCode = urlencode( preg_replace( '/[\s\n]/', '', $nativeCode ) );
+
+		$nativeJavaScriptCodeFile = $baseDir . DIRECTORY_SEPARATOR . 'evaluated-js.json';
+		$nativeJavaScriptCode = file_get_contents( $nativeJavaScriptCodeFile );
+		$nativeJavaScriptCode = urlencode( preg_replace( '/[\s\n]/', '', $nativeJavaScriptCode ) );
+
+		$nativePythonCodeFile = $baseDir . DIRECTORY_SEPARATOR . 'evaluated-python.json';
+		$nativePythonCode = file_get_contents( $nativePythonCodeFile );
+		$nativePythonCode = urlencode( preg_replace( '/[\s\n]/', '', $nativePythonCode ) );
+
 		return [
 			'action=wikilambda_function_call&wikilambda_function_call_zobject=' . $Z902
 				=> 'apihelp-wikilambda_function_call-example-if',
-			'action=wikilambda_function_call&wikilambda_function_call_zobject=' . $nativeCode
-				=> 'apihelp-wikilambda_function_call-example-native-code',
+			'action=wikilambda_function_call&wikilambda_function_call_zobject=' . $nativeJavaScriptCode
+				=> 'apihelp-wikilambda_function_call-example-native-js-code',
+			'action=wikilambda_function_call&wikilambda_function_call_zobject=' . $nativePythonCode
+				=> 'apihelp-wikilambda_function_call-example-native-python-code',
 		];
 	}
 }
