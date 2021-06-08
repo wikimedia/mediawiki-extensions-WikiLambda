@@ -99,7 +99,10 @@ module.exports = {
 			var func = this.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, this.zobject );
 
 			if ( func.value === 'object' ) {
-				return this.findKeyInArray( Constants.Z_REFERENCE_ID, this.getZObjectChildrenById( func.id ) ).value;
+				return this.findKeyInArray(
+					[ Constants.Z_REFERENCE_ID, Constants.Z_STRING_VALUE ],
+					this.getZObjectChildrenById( func.id )
+				).value;
 			}
 			return func.value;
 		},

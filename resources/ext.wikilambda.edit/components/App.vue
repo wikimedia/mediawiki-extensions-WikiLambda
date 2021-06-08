@@ -10,15 +10,15 @@
 			I am using v-show instead than v-if on the template,
 			as the v-show will trigger a render before the object is initialized
 		-->
-		<z-object-editor
-			v-if="viewmode === false"
-			v-show="zObjectInitialized"
-		></z-object-editor>
-		<z-object-viewer
-			v-if="viewmode === true"
-			v-show="zObjectInitialized"
-		></z-object-viewer>
-		<span v-if="!zObjectInitialized">
+		<template v-if="zObjectInitialized">
+			<z-object-editor
+				v-if="viewmode === false"
+			></z-object-editor>
+			<z-object-viewer
+				v-if="viewmode === true"
+			></z-object-viewer>
+		</template>
+		<span v-else>
 			{{ $i18n( 'wikilambda-loading' ) }}
 		</span>
 	</div>

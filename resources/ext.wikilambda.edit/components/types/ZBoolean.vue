@@ -60,21 +60,13 @@ module.exports = {
 		},
 		selectedBoolean: function () {
 			return this.findKeyInArray(
-				Constants.Z_REFERENCE_ID,
+				[ Constants.Z_REFERENCE_ID, Constants.Z_STRING_VALUE ],
 				this.getZObjectChildrenById(
 					this.findKeyInArray(
 						Constants.Z_BOOLEAN_IDENTITY, this.zobject
 					).id
 				)
-			) ||
-			this.findKeyInArray(
-				Constants.Z_STRING_VALUE,
-				this.getZObjectChildrenById(
-					this.findKeyInArray(
-						Constants.Z_BOOLEAN_IDENTITY, this.zobject
-					).id
-				)
-			);
+			) || '';
 		},
 		selectedBooleanValue: function () {
 			if ( this.selectedBoolean ) {
