@@ -83,7 +83,11 @@ class ZObjectContentHandler extends ContentHandler {
 	public function serializeContent( Content $content, $format = null ) {
 		$this->checkFormat( $format );
 
-		// @phan-suppress-next-line PhanUndeclaredMethod
+		if ( !( $content instanceof ZObjectContent ) ) {
+			// Throw?
+			return '';
+		}
+
 		return $content->getText();
 	}
 
