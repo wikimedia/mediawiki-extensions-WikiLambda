@@ -1,39 +1,15 @@
 var Constants = require( '../../Constants.js' );
 
 module.exports = {
-	state: {
-		orchestrationResult: '',
-		orchestrationResultId: null
-	},
-	getters: {
-		/**
-		 * Returns the result of orchestration.
-		 *
-		 * @param {Object} state
-		 * @return {string} orchestrationResult
-		 */
-		getOrchestrationResult: function ( state ) {
-			return state.orchestrationResult;
-		},
-		getOrchestrationResultId: function ( state ) {
-			return state.orchestrationResultId;
-		}
-	},
-	mutations: {
-		/**
-		 * Sets orchestrationResult after invoking orchestrator.
-		 *
-		 * @param {Object} state
-		 * @param {Object} payload
-		 */
-		setOrchestrationResult: function ( state, payload ) {
-			state.orchestrationResult = payload;
-		},
-		setOrchestrationResultId: function ( state, id ) {
-			state.orchestrationResultId = id;
-		}
-	},
 	actions: {
+		initializeResultId: function ( context, payload ) {
+			var resultId = payload || context.getters.getNextObjectId;
+			if ( resultId === context.getters.getNextObjectId ) {
+				context.commit( 'addZObject', { id: resultId, key: undefined, parent: -1, value: 'object' } );
+			}
+
+			return resultId;
+		},
 		/**
 		 * Calls orchestrator and sets orchestrationResult
 		 *
@@ -46,26 +22,27 @@ module.exports = {
 				action: 'wikilambda_function_call',
 				wikilambda_function_call_zobject: JSON.stringify( payload.zobject ) // eslint-disable-line camelcase
 			} ).then( function ( result ) {
-				context.commit( 'setOrchestrationResult', result.query.wikilambda_function_call.Orchestrated.data );
 				context.dispatch(
 					'addZFunctionResultToTree',
-					JSON.parse( result.query.wikilambda_function_call.Orchestrated.data )[ Constants.Z_PAIR_FIRST ]
+					{
+						result: JSON.parse(
+							result.query.wikilambda_function_call.Orchestrated.data
+						)[ Constants.Z_PAIR_FIRST ],
+						resultId: payload.resultId
+					}
 				);
 			} ).catch( function ( error ) {
-				context.commit( 'setOrchestrationResult', error );
-				context.dispatch( 'addZFunctionResultToTree', error );
+				context.dispatch( 'addZFunctionResultToTree', {
+					result: error,
+					resultId: payload.resultId
+				} );
 			} );
 		},
 		addZFunctionResultToTree: function ( context, payload ) {
-			if ( !context.getters.getOrchestrationResultId ) {
-				context.commit( 'setOrchestrationResultId', context.getters.getNextObjectId );
-				context.commit( 'addZObject', { id: context.getters.getOrchestrationResultId, key: undefined, parent: -1, value: 'object' } );
-			}
-
 			context.dispatch( 'injectZObject', {
-				zobject: payload,
+				zobject: payload.result,
 				key: '',
-				id: context.getters.getOrchestrationResultId,
+				id: payload.resultId,
 				parent: ''
 			} );
 		}

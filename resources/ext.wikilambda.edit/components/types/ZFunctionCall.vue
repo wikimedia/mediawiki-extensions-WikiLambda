@@ -27,7 +27,7 @@
 		<button @click="callFunctionHandler">
 			<label> {{ $i18n( 'wikilambda-call-function' ) }} </label>
 		</button>
-		<div v-if="getOrchestrationResultId" class="ext-wikilambda-orchestrated-result">
+		<div v-if="resultId" class="ext-wikilambda-orchestrated-result">
 			<span>{{ $i18n( 'wikilambda-orchestrated' ) }}</span>
 			<z-key-mode-selector
 				:mode="orchestratedMode"
@@ -39,11 +39,11 @@
 				<z-object-json
 					v-if="orchestratedMode === Constants.Z_KEY_MODES.JSON"
 					:readonly="true"
-					:zobject-raw="getOrchestrationResult"
+					:zobject-id="resultId"
 				></z-object-json>
 				<z-object-key
 					v-else
-					:zobject-id="getOrchestrationResultId"
+					:zobject-id="resultId"
 					:parent-type="Constants.Z_PAIR"
 					:readonly="true"
 				></z-object-key>
@@ -78,16 +78,15 @@ module.exports = {
 	},
 	data: function () {
 		return {
-			orchestratedMode: Constants.Z_KEY_MODES.LITERAL
+			orchestratedMode: Constants.Z_KEY_MODES.LITERAL,
+			resultId: null
 		};
 	},
 	computed: $.extend( mapGetters( {
 		getZObjectChildrenById: 'getZObjectChildrenById',
 		getZObjectTypeById: 'getZObjectTypeById',
 		getZkeys: 'getZkeys',
-		getZObjectAsJsonById: 'getZObjectAsJsonById',
-		getOrchestrationResult: 'getOrchestrationResult',
-		getOrchestrationResultId: 'getOrchestrationResultId'
+		getZObjectAsJsonById: 'getZObjectAsJsonById'
 	} ), {
 		zobject: function () {
 			return this.getZObjectChildrenById( this.zobjectId );
@@ -176,10 +175,12 @@ module.exports = {
 		'fetchZKeys',
 		'setZObjectValue',
 		'addZObject',
-		'addZObjects',
 		'callZFunction',
 		'changeType',
-		'resetZObject'
+		'resetZObject',
+		'initializeResultId',
+		'removeZObjectChildren',
+		'removeZObject'
 	] ), {
 		typeHandler: function ( zid ) {
 			var self = this,
@@ -198,25 +199,29 @@ module.exports = {
 			return this.findKeyInArray( key, this.zobject ).id;
 		},
 		callFunctionHandler: function () {
-			var ZfunctionObject = this.getZObjectAsJsonById( this.zobjectId );
+			var self = this,
+				ZfunctionObject = this.getZObjectAsJsonById( this.zobjectId );
 
-			// remove when the orchestrator is able to fetch custom function directly fdrom the DB
+			this.initializeResultId( this.resultId )
+				.then( function ( resultId ) {
+					self.resultId = resultId;
 
-			if ( !this.zImplementationLanguages ) {
-				this.callZFunction( { zobject: ZfunctionObject } );
-			} else {
-				// we replace the Reference to a function to the actual function
-				// using OO.copy to get a deep copy of the function ZObject.
-				ZfunctionObject[ Constants.Z_FUNCTION_CALL_FUNCTION ] =
-					OO.copy( this.selectedFunction[ Constants.Z_PERSISTENTOBJECT_VALUE ] );
+					if ( !self.zImplementationLanguages ) {
+						self.callZFunction( { zobject: ZfunctionObject } );
+					} else {
+						// we replace the Reference to a function to the actual function
+						// using OO.copy to get a deep copy of the function ZObject.
+						ZfunctionObject[ Constants.Z_FUNCTION_CALL_FUNCTION ] =
+							OO.copy( self.selectedFunction[ Constants.Z_PERSISTENTOBJECT_VALUE ] );
 
-				// Remove labels, as the schemata is throwing errors on this.
-				ZfunctionObject.Z7K1.Z8K1.forEach( function ( thing ) {
-					thing.Z17K3.Z12K1 = [];
+						// Remove labels, as the schemata is throwing errors on this.
+						ZfunctionObject.Z7K1.Z8K1.forEach( function ( thing ) {
+							thing.Z17K3.Z12K1 = [];
+						} );
+
+						self.callZFunction( { zobject: ZfunctionObject, resultId: self.resultId } );
+					}
 				} );
-
-				this.callZFunction( { zobject: ZfunctionObject } );
-			}
 		}
 	} ),
 	watch: {

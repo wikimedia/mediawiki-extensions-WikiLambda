@@ -14,13 +14,11 @@ var callZFunctionModule = require( '../../../../resources/ext.wikilambda.edit/st
 		}
 	},
 	expectedData = '{ "Z1K1": "Z6", "Z6K1": "present" }',
-	state,
 	context,
 	postMock;
 
 describe( 'callZFunction Vuex module', function () {
 	beforeEach( function () {
-		state = $.extend( {}, callZFunctionModule.state );
 		context = $.extend( {}, {
 			// eslint-disable-next-line no-unused-vars
 			commit: jest.fn( function ( mutationType, payload ) {
@@ -34,28 +32,6 @@ describe( 'callZFunction Vuex module', function () {
 			return {
 				post: postMock
 			};
-		} );
-	} );
-
-	describe( 'Getters', function () {
-		it( 'Returns current orchestrationResult', function () {
-			state.orchestrationResult = functionCall;
-			expect( callZFunctionModule.getters.getOrchestrationResult( state ) ).toEqual( functionCall );
-		} );
-		it( 'Returns current orchestrationResultId', function () {
-			state.orchestrationResultId = 6;
-			expect( callZFunctionModule.getters.getOrchestrationResultId( state ) ).toEqual( 6 );
-		} );
-	} );
-
-	describe( 'Mutations', function () {
-		it( 'Sets orchestrationResult', function () {
-			callZFunctionModule.mutations.setOrchestrationResult( state, functionCall );
-			expect( state.orchestrationResult ).toEqual( functionCall );
-		} );
-		it( 'Sets orchestrationResultId', function () {
-			callZFunctionModule.mutations.setOrchestrationResultId( state, 6 );
-			expect( state.orchestrationResultId ).toEqual( 6 );
 		} );
 	} );
 
@@ -91,8 +67,6 @@ describe( 'callZFunction Vuex module', function () {
 				wikilambda_function_call_zobject: JSON.stringify( functionCall )
 			} );
 			expect( resolveMock ).toHaveBeenCalledTimes( 1 );
-			expect( context.commit ).toHaveBeenCalledTimes( 1 );
-			expect( context.commit ).toHaveBeenCalledWith( 'setOrchestrationResult', expectedData );
 		} );
 
 		it( 'Call MW API for function orchestration; set error as orchestrationResult', function () {
@@ -121,33 +95,26 @@ describe( 'callZFunction Vuex module', function () {
 				// eslint-disable-next-line camelcase
 				wikilambda_function_call_zobject: JSON.stringify( functionCall )
 			} );
-			expect( context.commit ).toHaveBeenCalledTimes( 1 );
-			expect( context.commit ).toHaveBeenCalledWith( 'setOrchestrationResult', error );
 		} );
 	} );
 
 	it( 'Add orchestration result to the zobject tree (no prior result)', function () {
-		var payload = { Z1K1: 'Z6', Z6K1: 'A new string' },
+		var result = { Z1K1: 'Z6', Z6K1: 'A new string' },
+			payload = { result: result, resultId: 6 },
 			nextId = 6;
 		context.getters = {
 			getOrchestrationResultId: null,
 			getNextObjectId: nextId
 		};
 
-		context.commit = jest.fn( function ( mutation, commitPayload ) {
-			if ( mutation === 'setOrchestrationResultId' ) {
-				context.getters.getOrchestrationResultId = commitPayload;
-			}
-
+		context.commit = jest.fn( function () {
 			return;
 		} );
 
 		callZFunctionModule.actions.addZFunctionResultToTree( context, payload );
 
-		expect( context.commit ).toHaveBeenCalledWith( 'setOrchestrationResultId', nextId );
-		expect( context.commit ).toHaveBeenCalledWith( 'addZObject', { id: nextId, key: undefined, parent: -1, value: 'object' } );
 		expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObject', {
-			zobject: payload,
+			zobject: result,
 			key: '',
 			id: nextId,
 			parent: ''
@@ -155,18 +122,15 @@ describe( 'callZFunction Vuex module', function () {
 	} );
 
 	it( 'Add orchestration result to the zobject tree (with prior result)', function () {
-		var payload = { Z1K1: 'Z6', Z6K1: 'A new string' },
+		var result = { Z1K1: 'Z6', Z6K1: 'A new string' },
+			payload = { result: result, resultId: 6 },
 			nextId = 6;
 		context.getters = {
 			getOrchestrationResultId: nextId,
 			getNextObjectId: nextId
 		};
 
-		context.commit = jest.fn( function ( mutation, commitPayload ) {
-			if ( mutation === 'setOrchestrationResultId' ) {
-				context.getters.getOrchestrationResultId = commitPayload;
-			}
-
+		context.commit = jest.fn( function () {
 			return;
 		} );
 
@@ -174,7 +138,7 @@ describe( 'callZFunction Vuex module', function () {
 
 		expect( context.commit ).toHaveBeenCalledTimes( 0 );
 		expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObject', {
-			zobject: payload,
+			zobject: result,
 			key: '',
 			id: nextId,
 			parent: ''
