@@ -242,6 +242,7 @@ describe( 'zobject Vuex module', function () {
 				Z2K3: { Z1K1: 'Z12', Z12K1: [] }
 			};
 			context.getters.isCreateNewPage = true;
+			context.getters.getCurrentZObjectId = 'Z0';
 			context.state = {
 				zobject: zobjectTree
 			};
@@ -251,6 +252,7 @@ describe( 'zobject Vuex module', function () {
 			expect( postMock ).toHaveBeenCalledWith( {
 				action: 'wikilambda_edit',
 				summary: 'A summary',
+				zid: 'Z0',
 				zobject: JSON.stringify( expectedZObject )
 			} );
 			expect( context.commit ).toHaveBeenCalledTimes( 0 );
