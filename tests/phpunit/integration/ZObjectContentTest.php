@@ -11,12 +11,15 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use FormatJson;
 use InvalidArgumentException;
+use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use ParserOptions;
 use Status;
 use Title;
@@ -40,6 +43,22 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 		$langs = ZLangRegistry::singleton();
 		$langs->registerLang( 'en', self::EN );
 		$langs->registerLang( 'es', self::ES );
+	}
+
+	/** @var string[] */
+	protected $titlesTouched = [];
+
+	public function tearDown() : void {
+		$sysopUser = $this->getTestSysop()->getUser();
+
+		foreach ( $this->titlesTouched as $titleString ) {
+			$title = Title::newFromText( $titleString, NS_ZOBJECT );
+			$page = WikiPage::factory( $title );
+			if ( $page->exists() ) {
+				$page->doDeleteArticleReal( "clean slate for testing", $sysopUser );
+			}
+		}
+		parent::tearDown();
 	}
 
 	/**
@@ -414,5 +433,37 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 			$exceptions,
 			'All ZPersistentObject wrapper methods raise exception when the ZObject created was invalid.'
 		);
+	}
+
+	/**
+	 * @covers ::getTypeString
+	 * @covers ::getZType
+	 */
+	public function testGetTypeString() {
+		$registry = ZTypeRegistry::singleton();
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
+		$content = ZObjectContentHandler::makeContent( ZTestType::TEST_ENCODING, $title );
+		$page = WikiPage::factory( $title );
+		$page->doEditContent( $content, "Test creation object" );
+		$this->titlesTouched[] = ZTestType::TEST_ZID;
+		$page->clear();
+
+		$this->assertTrue(
+			$registry->isZObjectKeyKnown( ZTestType::TEST_ZID ),
+			"'TestingType' found in DB"
+		);
+
+		$zobjectText = '{ "Z1K1": "Z2",'
+			. '"Z2K1": "Z0",'
+			. '"Z2K2": { "Z1K1": "' . ZTestType::TEST_ZID
+			. '", "Z111K1": "string value", "Z111K2": "Other string" },'
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": ['
+			. '{ "Z1K1": "Z11", "Z11K1":"Z1003", "Z11K2": "etiqueta en castellano" },'
+			. '{ "Z1K1": "Z11", "Z11K1":"Z1002", "Z11K2": "english label" }'
+			. '] } }';
+		$testObject = new ZObjectContent( $zobjectText );
+		$english = new \Language();
+		$this->assertSame( 'Demonstration type (Z111)',
+			$testObject->getTypeString( $english ) );
 	}
 }
