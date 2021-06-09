@@ -53,7 +53,6 @@ module.exports = {
 	mixins: [ typeUtils ],
 	computed: $.extend(
 		mapGetters( {
-			nextKey: 'getNextKey',
 			getZObjectChildrenById: 'getZObjectChildrenById',
 			zKeyLabels: 'getZkeyLabels'
 		} ),
@@ -69,11 +68,7 @@ module.exports = {
 
 				if ( argumentType.value === 'object' ) {
 					return this.findKeyInArray(
-						Constants.Z_REFERENCE_ID,
-						this.getZObjectChildrenById( argumentType.id )
-					) ||
-					this.findKeyInArray(
-						Constants.Z_STRING_VALUE,
+						[ Constants.Z_REFERENCE_ID, Constants.Z_STRING_VALUE ],
 						this.getZObjectChildrenById( argumentType.id )
 					);
 				}

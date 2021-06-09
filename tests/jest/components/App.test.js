@@ -124,8 +124,7 @@ describe( 'App.vue', function () {
 			}
 		} );
 
-		expect( wrapper.findComponent( ZObjectViewer ).exists() ).toBe( true );
-		expect( wrapper.findComponent( ZObjectViewer ).isVisible() ).toBe( false );
+		expect( wrapper.findComponent( ZObjectViewer ).exists() ).toBe( false );
 		expect( wrapper.findComponent( ZObjectEditor ).exists() ).toBe( false );
 		expect( $i18n ).toHaveBeenCalledWith( 'wikilambda-loading' );
 

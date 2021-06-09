@@ -89,11 +89,7 @@ module.exports = {
 
 				if ( returnType.value === 'object' ) {
 					return this.findKeyInArray(
-						Constants.Z_REFERENCE_ID,
-						this.getZObjectChildrenById( returnType.id )
-					) ||
-					this.findKeyInArray(
-						Constants.Z_STRING_VALUE,
+						[ Constants.Z_REFERENCE_ID, Constants.Z_STRING_VALUE ],
 						this.getZObjectChildrenById( returnType.id )
 					);
 				}
@@ -117,11 +113,7 @@ module.exports = {
 
 					if ( argumentType.value === 'object' ) {
 						return self.findKeyInArray(
-							Constants.Z_REFERENCE_ID,
-							self.getZObjectChildrenById( argumentType.id )
-						) ||
-						self.findKeyInArray(
-							Constants.Z_STRING_VALUE,
+							[ Constants.Z_REFERENCE_ID, Constants.Z_STRING_VALUE ],
 							self.getZObjectChildrenById( argumentType.id )
 						);
 					}

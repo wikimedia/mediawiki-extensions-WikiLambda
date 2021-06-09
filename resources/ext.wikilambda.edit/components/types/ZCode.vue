@@ -63,7 +63,6 @@ module.exports = {
 		mapGetters( [
 			'getAllProgrammingLangs',
 			'getZObjectChildrenById',
-			'getStringValueByObjectId',
 			'getViewMode'
 		] ),
 		{
@@ -74,18 +73,15 @@ module.exports = {
 				return this.findKeyInArray( Constants.Z_CODE_LANGUAGE, this.zobject );
 			},
 			zCodeProgrammingLanguage: function () {
-				var languageChildren,
-					programmingLanguageCodeItem;
-				languageChildren = this.getZObjectChildrenById( this.zCodeLanguage.id );
-				if ( languageChildren.length === 0 ) {
-					return;
-				}
-				programmingLanguageCodeItem = this.findKeyInArray(
-					Constants.Z_PROGRAMMING_LANGUAGE_CODE,
-					languageChildren
+				return this.findKeyInArray(
+					Constants.Z_STRING_VALUE,
+					this.getZObjectChildrenById(
+						this.findKeyInArray(
+							Constants.Z_PROGRAMMING_LANGUAGE_CODE,
+							this.getZObjectChildrenById( this.zCodeLanguage.id )
+						).id
+					)
 				);
-
-				return this.getStringValueByObjectId( programmingLanguageCodeItem.id );
 			},
 			codeItem: function () {
 				return this.findKeyInArray( Constants.Z_CODE_CODE, this.zobject );
@@ -138,7 +134,10 @@ module.exports = {
 
 		// Assigning the value this way prevents a bug,
 		// that would move the cursor to the end of the string on every keypress
-		codeValue = this.getStringValueByObjectId( this.codeItem.id );
+		codeValue = this.findKeyInArray(
+			Constants.Z_STRING_VALUE,
+			this.getZObjectChildrenById( this.codeItem.id )
+		);
 		if ( codeValue ) {
 			this.codeValue = codeValue.value;
 		}

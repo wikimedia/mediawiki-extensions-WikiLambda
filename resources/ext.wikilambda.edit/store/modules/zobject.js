@@ -142,9 +142,6 @@ module.exports = {
 		ZObjectInitialized: false
 	},
 	getters: {
-		getZObject: function ( state ) {
-			return state.zobject;
-		},
 		isCreateNewPage: function ( state ) {
 			return state.createNewPage;
 		},
@@ -301,19 +298,6 @@ module.exports = {
 		 */
 		getNextObjectId: function ( state ) {
 			return getNextObjectId( state.zobject );
-		},
-		getStringValueByObjectId: function ( state, getters ) {
-			/**
-			 * Return the string value of a specific Object of type String
-			 * eg. Object {"Z1K1": "Z6", "Z6K1": "string value"} will return String Value
-			 *
-			 * @param {number} objectId
-			 * @return {string} String value
-			 */
-			return function ( objectId ) {
-				var objectChildren = getters.getZObjectChildrenById( objectId );
-				return typeUtils.findKeyInArray( Constants.Z_STRING_VALUE, objectChildren );
-			};
 		},
 		getZObjectInitialized: function ( state ) {
 			return state.ZObjectInitialized;
@@ -490,21 +474,17 @@ module.exports = {
 		 * @param {Object} payload
 		 */
 		setZCodeLanguage: function ( context, payload ) {
-			var zObjectItems = [],
-				zProgrammingLanguageCodeId = getNextObjectId( context.state.zobject );
-			context.dispatch( 'removeZObjectChildren', payload.id );
-			context.dispatch( 'setZObjectValue', {
+			var zobject = context.getters.getZObjectById( payload.id );
+
+			context.dispatch( 'injectZObject', {
+				zobject: {
+					Z1K1: 'Z61',
+					Z61K1: payload.value
+				},
+				key: 'Z16K1',
 				id: payload.id,
-				value: 'object'
+				parent: zobject.parent
 			} );
-
-			zObjectItems = [
-				{ key: Constants.Z_PROGRAMMING_LANGUAGE_CODE, value: 'object', parent: payload.id },
-				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_PROGRAMMING_LANGUAGE, parent: payload.id }
-			];
-			context.dispatch( 'addZObjects', zObjectItems );
-
-			context.dispatch( 'addZString', { id: zProgrammingLanguageCodeId, value: payload.value } );
 		},
 		/**
 		 * Remove a specific zobject. This method does NOT remove its children.
@@ -675,36 +655,6 @@ module.exports = {
 			context.dispatch( 'addZObjects', zObjectItems );
 		},
 		/**
-		 * Create the required entry in the zobject array for a zCode.
-		 * The entry will result in a json representation equal to:
-		 * { Z1K1: Z16, Z16K1: {}, Z16K2: '' }
-		 *
-		 * @param {Object} context
-		 * @param {number} objectId
-		 */
-		addZCode: function ( context, objectId ) {
-			var nextId;
-			context.dispatch( 'setZObjectValue', {
-				id: objectId,
-				value: 'object'
-			} );
-			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: Constants.Z_CODE, parent: objectId } );
-
-			nextId = context.getters.getNextObjectId;
-			context.dispatch( 'addZObject', { key: Constants.Z_CODE_LANGUAGE, value: 'object', parent: objectId } );
-			context.dispatch( 'addZObjects', [
-				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_PROGRAMMING_LANGUAGE, parent: nextId },
-				{ key: Constants.Z_PROGRAMMING_LANGUAGE_CODE, value: '', parent: nextId }
-			] );
-
-			nextId = context.getters.getNextObjectId;
-			context.dispatch( 'addZObject', { key: Constants.Z_CODE_CODE, value: 'object', parent: objectId } );
-			context.dispatch( 'addZObjects', [
-				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_STRING, parent: nextId },
-				{ key: Constants.Z_STRING_VALUE, value: '', parent: nextId }
-			] );
-		},
-		/**
 		 * Create the required entry in the zobject array for a zArgument.
 		 * The entry will result in a json representation equal to:
 		 * { Z1K1: Z17, Z17K1: '', Z17K2: { Z1K1: Z6, Z6K1: Z0K1 }, K17K3: { Z1K1: Z12, Z12K1: [] }   }
@@ -778,7 +728,7 @@ module.exports = {
 			// Add ZCode
 			nextId = getNextObjectId( context.state.zobject );
 			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_CODE, value: 'object', parent: objectId } );
-			context.dispatch( 'addZCode', nextId );
+			context.dispatch( 'changeType', { id: nextId, type: Constants.Z_CODE } );
 
 			// Add dummy built-in
 			nextId = getNextObjectId( context.state.zobject );
@@ -972,9 +922,6 @@ module.exports = {
 							break;
 						case Constants.Z_REFERENCE:
 							context.dispatch( 'addZReference', payload );
-							break;
-						case Constants.Z_CODE:
-							context.dispatch( 'addZCode', payload.id );
 							break;
 						case Constants.Z_STRING:
 							context.dispatch( 'addZString', { id: payload.id } );
