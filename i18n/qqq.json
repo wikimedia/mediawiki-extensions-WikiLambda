@@ -77,5 +77,7 @@
 	"specialpages-group-wikilambda": "{{doc-special-group|that=are related to Wikifungsi}}",
 	"wikilambda-editor-argument-list-label": "Label for a list of arguments in a function.",
 	"wikilambda-editor-implementation-list-label": "Label for a list of implementations in a function.",
-	"wikilambda-editor-boolean-selector": "Label for selecting a true/false value for a boolean."
+	"wikilambda-editor-boolean-selector": "Label for selecting a true/false value for a boolean.",
+	"wikilambda-implementation-selector-code": "Label for selecting an implementation type of 'code'",
+	"wikilambda-implementation-selector-composition": "Label for selecting an implementation type of 'composition'"
 }

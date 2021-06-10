@@ -205,7 +205,9 @@
 				"wikilambda-return-typeselector-label",
 				"wikilambda-editor-argument-list-label",
 				"wikilambda-editor-implementation-list-label",
-				"wikilambda-editor-boolean-selector"
+				"wikilambda-editor-boolean-selector",
+				"wikilambda-implementation-selector-code",
+				"wikilambda-implementation-selector-composition"
 			]
 		}
 	},

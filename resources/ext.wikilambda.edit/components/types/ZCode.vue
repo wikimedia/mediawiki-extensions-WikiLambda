@@ -55,7 +55,8 @@ module.exports = {
 	},
 	data: function () {
 		return {
-			codeValue: ''
+			codeValue: '',
+			allowCodeValueOverride: true
 		};
 	},
 	mixins: [ typeUtils ],
@@ -103,7 +104,8 @@ module.exports = {
 		mapActions( [
 			'fetchAllZProgrammingLanguages',
 			'setZCodeLanguage',
-			'addZString'
+			'addZString',
+			'injectZObject'
 		] ),
 		{
 			/**
@@ -112,6 +114,8 @@ module.exports = {
 			 * @param {string} value
 			 */
 			selectLanguage: function ( value ) {
+				this.allowCodeValueOverride = true;
+
 				var payload = {
 					id: this.zCodeLanguage.id,
 					value: value
@@ -120,26 +124,40 @@ module.exports = {
 			},
 			updateCode: function ( code ) {
 				var payload = {
+					zobject: {
+						Z1K1: Constants.Z_STRING,
+						Z6K1: code
+					},
 					id: this.codeItem.id,
-					value: code
+					key: Constants.Z_CODE_CODE,
+					parent: this.zobjectId
 				};
-				this.addZString( payload );
+
+				this.injectZObject( payload );
 			}
 		} ),
+	watch: {
+		codeItem: {
+			immediate: true,
+			handler: function () {
+				var codeValue;
+
+				// Assigning the value this way prevents a bug,
+				// that would move the cursor to the end of the string on every keypress
+				codeValue = this.findKeyInArray(
+					Constants.Z_STRING_VALUE,
+					this.getZObjectChildrenById( this.codeItem.id )
+				);
+				if ( codeValue && this.allowCodeValueOverride ) {
+					this.codeValue = codeValue.value;
+					this.allowCodeValueOverride = false;
+				}
+			}
+		}
+	},
 	mounted: function () {
-		var codeValue;
 		if ( this.getAllProgrammingLangs.length <= 0 ) {
 			this.fetchAllZProgrammingLanguages();
-		}
-
-		// Assigning the value this way prevents a bug,
-		// that would move the cursor to the end of the string on every keypress
-		codeValue = this.findKeyInArray(
-			Constants.Z_STRING_VALUE,
-			this.getZObjectChildrenById( this.codeItem.id )
-		);
-		if ( codeValue ) {
-			this.codeValue = codeValue.value;
 		}
 	}
 };

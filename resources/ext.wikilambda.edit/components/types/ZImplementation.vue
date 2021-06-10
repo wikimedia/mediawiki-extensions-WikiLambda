@@ -6,17 +6,30 @@
 		@license MIT
 	-->
 	<div>
-		{{ functionLabel }}: <z-object-selector
-			:type="Constants.Z_FUNCTION"
-			:placeholder="$i18n( 'wikilambda-function-typeselector-label' )"
-			:selected-id="zFunction.value"
-			@input="updateZFunctionType"
-		></z-object-selector>
+		<div>
+			{{ functionLabel }}: <z-object-selector
+				:type="Constants.Z_FUNCTION"
+				:placeholder="$i18n( 'wikilambda-function-typeselector-label' )"
+				:selected-id="zFunction.value"
+				@input="updateZFunctionType"
+			></z-object-selector>
+		</div>
+		<div>
+			<select v-model="implMode">
+				<option value="code">
+					{{ $i18n( 'wikilambda-implementation-selector-code' ) }}
+				</option>
+				<option value="composition">
+					{{ $i18n( 'wikilambda-implementation-selector-composition' ) }}
+				</option>
+			</select>
+		</div>
 		<z-function-signature
 			:return-type="selectedFunctionReturnType"
-			:arguments="selectedFunctionArguments"
+			:arguments="selectedFunctionArgumentString"
 		></z-function-signature>
 		<z-code
+			v-if="implMode === 'code'"
 			:zobject-id="zCodeId"
 		></z-code>
 	</div>
@@ -44,6 +57,11 @@ module.exports = {
 			required: true
 		}
 	},
+	data: function () {
+		return {
+			implMode: 'code'
+		};
+	},
 	computed: $.extend( {},
 		mapGetters( [ 'getZObjectChildrenById', 'getZkeyLabels', 'getZkeys' ] ),
 		{
@@ -63,6 +81,22 @@ module.exports = {
 			},
 			zCodeId: function () {
 				return this.findKeyInArray( Constants.Z_IMPLEMENTATION_CODE, this.zobject ).id;
+			},
+			zCodeLanguage: function () {
+				return this.findKeyInArray(
+					Constants.Z_STRING_VALUE,
+					this.getZObjectChildrenById(
+						this.findKeyInArray(
+							Constants.Z_PROGRAMMING_LANGUAGE_CODE,
+							this.getZObjectChildrenById(
+								this.findKeyInArray(
+									Constants.Z_CODE_LANGUAGE,
+									this.getZObjectChildrenById( this.zCodeId )
+								).id
+							)
+						).id
+					)
+				).value;
 			},
 			functionLabel: function () {
 				return this.getZkeyLabels[ Constants.Z_IMPLEMENTATION_FUNCTION ];
@@ -85,7 +119,7 @@ module.exports = {
 					return this.selectedFunctionJson[
 						Constants.Z_PERSISTENTOBJECT_VALUE ][
 						Constants.Z_FUNCTION_ARGUMENTS ]
-						.reduce( function ( argumentString, argument ) {
+						.map( function ( argument ) {
 							var argumentLabels = argument[ Constants.Z_ARGUMENT_LABEL ][
 									Constants.Z_MULTILINGUALSTRING_VALUE ],
 								userLang = argumentLabels.filter( function ( label ) {
@@ -99,18 +133,32 @@ module.exports = {
 									( userLangLabel ) + ': ' :
 									'';
 
-							return argumentString.length ?
-								argumentString + ', ' + key + type :
-								argumentString + key + type;
-						}, '' );
+							return {
+								label: userLangLabel,
+								zid: argument[ Constants.Z_ARGUMENT_KEY ],
+								key: key,
+								type: type
+							};
+						} );
 				}
 
-				return;
+				return [];
+			},
+			selectedFunctionArgumentString: function () {
+				return this.selectedFunctionArguments
+					.reduce( function ( argumentString, argument ) {
+						var key = argument.key,
+							type = argument.type;
+
+						return argumentString.length ?
+							argumentString + ', ' + key + type :
+							argumentString + key + type;
+					}, '' );
 			}
 		}
 	),
 	methods: $.extend( {},
-		mapActions( [ 'fetchZKeys', 'setZObjectValue' ] ),
+		mapActions( [ 'fetchZKeys', 'setZObjectValue', 'initializeZCodeFunction' ] ),
 		{
 			updateZFunctionType: function ( val ) {
 				this.setZObjectValue( {
@@ -119,6 +167,16 @@ module.exports = {
 				} );
 			}
 		}
-	)
+	),
+	watch: {
+		zCodeLanguage: function () {
+			this.initializeZCodeFunction( {
+				zCodeId: this.zCodeId,
+				language: this.zCodeLanguage,
+				functionId: this.zFunction.value,
+				argumentList: this.selectedFunctionArguments
+			} );
+		}
+	}
 };
 </script>
