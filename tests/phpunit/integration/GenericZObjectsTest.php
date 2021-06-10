@@ -13,7 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
-use Revision;
+use MediaWiki\Revision\RevisionRecord;
 use Title;
 use WikiPage;
 
@@ -79,7 +79,7 @@ EOT;
 
 		// Test content is correct.
 		$instanceWikiPage = WikiPage::factory( $instanceTitle );
-		$instance = $instanceWikiPage->getContent( Revision::RAW );
+		$instance = $instanceWikiPage->getContent( RevisionRecord::RAW );
 		$this->assertTrue( $instance instanceof ZObjectContent );
 		$this->assertTrue( $instance->isValid() );
 
@@ -149,7 +149,7 @@ EOT;
 
 		// Test content is correct.
 		$instanceWikiPage = WikiPage::factory( $instanceTitle );
-		$instance = $instanceWikiPage->getContent( Revision::RAW );
+		$instance = $instanceWikiPage->getContent( RevisionRecord::RAW );
 		$this->assertTrue( $instance instanceof ZObjectContent );
 		$this->assertTrue( $instance->isValid() );
 
@@ -286,7 +286,7 @@ EOT;
 
 		// Test content is correct.
 		$instanceWikiPage = WikiPage::factory( $instanceTitle );
-		$instance = $instanceWikiPage->getContent( Revision::RAW );
+		$instance = $instanceWikiPage->getContent( RevisionRecord::RAW );
 		$this->assertTrue(
 			$instance instanceof ZObjectContent,
 			'ZInteger instance comes back as the right content class'
@@ -391,7 +391,7 @@ EOT;
 
 		// Test content is correct.
 		$instanceWikiPage = WikiPage::factory( $instanceTitle );
-		$instance = $instanceWikiPage->getContent( Revision::RAW );
+		$instance = $instanceWikiPage->getContent( RevisionRecord::RAW );
 		$this->assertTrue(
 			$instance instanceof ZObjectContent,
 			'ZSelfRefType instance comes back as the right content class'
@@ -499,7 +499,7 @@ EOT;
 
 		// Test content is correct.
 		$instanceWikiPage = WikiPage::factory( $instanceTitle );
-		$instance = $instanceWikiPage->getContent( Revision::RAW );
+		$instance = $instanceWikiPage->getContent( RevisionRecord::RAW );
 		$this->assertTrue(
 			$instance instanceof ZObjectContent,
 			'ZListUsingType instance content class'
