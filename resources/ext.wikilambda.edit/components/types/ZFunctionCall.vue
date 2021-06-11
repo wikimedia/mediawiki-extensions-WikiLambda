@@ -176,27 +176,21 @@ module.exports = {
 	} ),
 	methods: $.extend( mapActions( [
 		'fetchZKeys',
-		'setZObjectValue',
 		'addZObject',
 		'callZFunction',
 		'changeType',
-		'resetZObject',
 		'initializeResultId',
-		'removeZObjectChildren',
-		'removeZObject'
+		'injectZObject'
 	] ), {
 		typeHandler: function ( zid ) {
-			var self = this,
-				zFunctionCallFunction = this.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, this.zobject );
-			self.resetZObject( self.zobjectId )
-				.then( function () {
-					if ( zid ) {
-						self.setZObjectValue( {
-							id: zFunctionCallFunction.id,
-							value: zid
-						} );
-					}
-				} );
+			var zFunctionCallFunction = this.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, this.zobject );
+
+			this.injectZObject( {
+				zobject: zid,
+				key: 'Z7K1',
+				id: zFunctionCallFunction.id,
+				parent: this.zobjectId
+			} );
 		},
 		findArgumentId: function ( key ) {
 			return this.findKeyInArray( key, this.zobject ).id;
@@ -249,9 +243,6 @@ module.exports = {
 					} );
 			} );
 		}
-	},
-	beforeCreate: function () {
-		this.$options.components[ 'z-object' ] = require( '../ZObject.vue' );
 	},
 	mounted: function () {
 		this.fetchZKeys( [ Constants.Z_FUNCTION_CALL, this.zFunctionId ] );
