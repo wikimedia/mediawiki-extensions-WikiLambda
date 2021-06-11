@@ -60,5 +60,7 @@
 	"specialpages-group-wikilambda": "Wikifunktionenseite",
 	"wikilambda-editor-argument-list-label": "Argumentliste",
 	"wikilambda-editor-implementation-list-label": "Implementierungsliste",
-	"wikilambda-editor-boolean-selector": "Auswählen true/false"
+	"wikilambda-editor-boolean-selector": "Auswählen true/false",
+	"wikilambda-implementation-selector-code": "Code",
+	"wikilambda-implementation-selector-composition": "Zusammenstellung"
 }
