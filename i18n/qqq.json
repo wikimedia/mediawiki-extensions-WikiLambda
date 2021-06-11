@@ -18,6 +18,7 @@
 	"wikilambda-invalidzobjecttitle": "Error shown when a user tries to create a ZObject with an invalid title.\n\nParameters:\n* $1 - The given, invalid title.\n\n{{doc-wikilambda}}",
 	"wikilambda-invalidzobject": "Error shown when an invalid ZObject definition edit is made.\n\n{{doc-wikilambda}}",
 	"wikilambda-invalidcontenttype": "Error shown when a non-ZObject is attempted to be saved on a ZObject page.\n\n{{doc-wikilambda}}",
+	"wikilambda-typeunavailable": "Label shown on ZObject pages when its type could not be determined.\n\n{{doc-wikilambda}}",
 	"wikilambda-prohibitedcreationtype": "Error shown when a user tries to create a prohibited type of ZObject, such as a boolean.\n\n{{doc-wikilambda}}",
 	"wikilambda-noresult": "Error shown when a search has provided no result.",
 	"wikilambda-labelclash": "Error shown when a ZObject is attempted to be saved with a clashing label.\n\nParameters:\n* $1 - The ZID of the clashing page.\n* $2 - The language in which the other page's label clashes.\n\n{{doc-wikilambda}}",

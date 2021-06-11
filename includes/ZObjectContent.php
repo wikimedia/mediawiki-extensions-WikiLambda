@@ -210,6 +210,27 @@ class ZObjectContent extends AbstractContent {
 	}
 
 	/**
+	 * String representation of the type of this ZObject
+	 * @param Language $language Language in which to provide the string.
+	 * @return string
+	 * @throws \InvalidArgumentException
+	 */
+	public function getTypeString( $language ) : string {
+		$type = $this->getZType();
+		$typeTitle = Title::newFromText( $type, NS_ZOBJECT );
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		$typeObject = $zObjectStore->fetchZObjectByTitle( $typeTitle );
+		if ( $typeObject ) {
+			$label = $typeObject->getLabel( $language );
+		} else {
+			$label = wfMessage( 'wikilambda-typeunavailable' )->inContentLanguage()->text();
+		}
+		return $label
+			. wfMessage( 'word-separator' )->inContentLanguage()->text()
+			. wfMessage( 'parentheses' )->rawParams( $this->getZType() )->text();
+	}
+
+	/**
 	 * Wrapper for ZPersistentObject getInternalZType method. Returns the ZType of the internal ZObject.
 	 *
 	 * @return string
@@ -308,9 +329,7 @@ class ZObjectContent extends AbstractContent {
 
 		$type = Html::element(
 			'div', [ 'class' => 'ext-wikilambda-viewpage-header-type' ],
-			wfMessage( 'wikilambda-persistentzobject' )->inContentLanguage()->text()
-				. wfMessage( 'colon-separator' )->inContentLanguage()->text()
-				. $zobject->getInternalZType()
+			$this->getTypeString( $userLang )
 		);
 
 		$header = Html::rawElement(
