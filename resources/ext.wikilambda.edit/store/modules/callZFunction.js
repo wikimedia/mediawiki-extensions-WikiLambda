@@ -1,4 +1,5 @@
-var Constants = require( '../../Constants.js' );
+var Constants = require( '../../Constants.js' ),
+	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
 
 module.exports = {
 	actions: {
@@ -20,14 +21,21 @@ module.exports = {
 			var api = new mw.Api();
 			api.post( {
 				action: 'wikilambda_function_call',
-				wikilambda_function_call_zobject: JSON.stringify( payload.zobject ) // eslint-disable-line camelcase
+				// eslint-disable-next-line camelcase
+				wikilambda_function_call_zobject: JSON.stringify(
+					canonicalize( payload.zobject )
+				)
 			} ).then( function ( result ) {
+				var canonicalZObject = canonicalize(
+					JSON.parse(
+						result.query.wikilambda_function_call.Orchestrated.data
+					)
+				);
+
 				context.dispatch(
 					'addZFunctionResultToTree',
 					{
-						result: JSON.parse(
-							result.query.wikilambda_function_call.Orchestrated.data
-						)[ Constants.Z_PAIR_FIRST ],
+						result: canonicalZObject[ Constants.Z_PAIR_FIRST ] || canonicalZObject,
 						resultId: payload.resultId
 					}
 				);
