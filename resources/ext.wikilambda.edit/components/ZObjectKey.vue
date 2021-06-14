@@ -118,10 +118,6 @@ module.exports = {
 		zType: {
 			immediate: true,
 			handler: function () {
-				// We set the current Literal to the current Ztype (if set),
-				// this may be chjanged later when the zKeys are fetched.
-				// This is needed for cases like Z2K2 to keep the String value
-				this.literalType = this.zType;
 				this.selectedMode = this.getModeByType( this.zType );
 			}
 		}
@@ -196,6 +192,12 @@ module.exports = {
 		} ),
 	beforeCreate: function () {
 		this.$options.components[ 'z-object' ] = require( './ZObject.vue' );
+	},
+	mounted: function () {
+		// We set the current Literal to the current Ztype (if set),
+		// this may be chjanged later when the zKeys are fetched.
+		// This is needed for cases like Z2K2 to keep the String value
+		this.literalType = this.zType;
 	}
 };
 </script>
