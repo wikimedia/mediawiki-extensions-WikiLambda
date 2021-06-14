@@ -13,6 +13,9 @@ var callZFunctionModule = require( '../../../../resources/ext.wikilambda.edit/st
 			Z6K1: 'past'
 		}
 	},
+	canonicalFunctionCall = {
+		Z1K1: 'Z7', Z7K1: 'Z110', Z110K1: 'past'
+	},
 	expectedData = '{ "Z1K1": "Z6", "Z6K1": "present" }',
 	context,
 	postMock;
@@ -64,7 +67,7 @@ describe( 'callZFunction Vuex module', function () {
 			expect( postMock ).toHaveBeenCalledWith( {
 				action: 'wikilambda_function_call',
 				// eslint-disable-next-line camelcase
-				wikilambda_function_call_zobject: JSON.stringify( functionCall )
+				wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall )
 			} );
 			expect( resolveMock ).toHaveBeenCalledTimes( 1 );
 		} );
@@ -93,7 +96,7 @@ describe( 'callZFunction Vuex module', function () {
 			expect( postMock ).toHaveBeenCalledWith( {
 				action: 'wikilambda_function_call',
 				// eslint-disable-next-line camelcase
-				wikilambda_function_call_zobject: JSON.stringify( functionCall )
+				wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall )
 			} );
 		} );
 	} );

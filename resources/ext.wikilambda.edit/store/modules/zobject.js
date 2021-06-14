@@ -121,7 +121,7 @@ function findLatestKey( zObject, zid ) {
 	var nextKey = 0,
 		potentialKey = null;
 	zObject.forEach( function ( item ) {
-		if ( item.value && item.value.match( /Z([0-9])+K([0-9])+/g ) ) {
+		if ( item.value && item.value.match( /^Z([0-9])+K([0-9])+$/g ) ) {
 			potentialKey = item.value.replace( zid + 'K', '' );
 			if ( potentialKey > nextKey ) {
 				nextKey = potentialKey;
@@ -720,20 +720,10 @@ module.exports = {
 			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_FUNCTION, value: 'object', parent: objectId } );
 			context.dispatch( 'addZReference', { id: nextId, value: context.getters.getCurrentZObjectId } );
 
-			// Add dummy composition
-			nextId = getNextObjectId( context.state.zobject );
-			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_COMPOSITION, value: 'object', parent: objectId } );
-			context.dispatch( 'addZReference', { id: nextId, value: context.getters.getCurrentZObjectId } );
-
 			// Add ZCode
 			nextId = getNextObjectId( context.state.zobject );
 			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_CODE, value: 'object', parent: objectId } );
 			context.dispatch( 'changeType', { id: nextId, type: Constants.Z_CODE } );
-
-			// Add dummy built-in
-			nextId = getNextObjectId( context.state.zobject );
-			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_BUILT_IN, value: 'object', parent: objectId } );
-			context.dispatch( 'addZString', { id: nextId, value: 'false' } );
 		},
 
 		addZFunction: function ( context, objectId ) {
