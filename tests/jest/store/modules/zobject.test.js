@@ -1,3 +1,11 @@
+/*!
+ * WikiLambda unit test suite for the zobject Vuex module
+ *
+ * @copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+ * @license MIT
+ */
+'use strict';
+
 var Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
 	zobject = {
@@ -252,7 +260,7 @@ describe( 'zobject Vuex module', function () {
 			expect( postMock ).toHaveBeenCalledWith( {
 				action: 'wikilambda_edit',
 				summary: 'A summary',
-				zid: 'Z0',
+				zid: undefined,
 				zobject: JSON.stringify( expectedZObject )
 			} );
 			expect( context.commit ).toHaveBeenCalledTimes( 0 );

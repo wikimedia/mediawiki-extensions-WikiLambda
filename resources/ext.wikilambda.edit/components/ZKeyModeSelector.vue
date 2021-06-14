@@ -26,6 +26,9 @@ var mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = {
 	name: 'ZKeyModeSelector',
+	inject: {
+		allowArgRefMode: { default: false }
+	},
 	props: {
 		mode: {
 			type: String,
@@ -59,7 +62,8 @@ module.exports = {
 	computed: $.extend( {},
 		mapGetters( {
 			getAllModes: 'getAllModes',
-			modeIsValid: 'getModeIsValid'
+			modeIsValid: 'getModeIsValid',
+			getZarguments: 'getZarguments'
 		} ),
 		{
 			modes: function () {
@@ -72,7 +76,8 @@ module.exports = {
 			availableModesWithCurrentType: function () {
 				var payload = {
 					parentType: this.parentType,
-					literalType: this.literalType
+					literalType: this.literalType,
+					allowZArgumentRefMode: this.allowArgRefMode && !!Object.keys( this.getZarguments ).length
 				};
 				return this.getAllModes( payload );
 			}

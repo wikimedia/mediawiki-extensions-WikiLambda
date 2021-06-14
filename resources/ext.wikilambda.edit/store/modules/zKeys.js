@@ -25,7 +25,11 @@ module.exports = {
 		/**
 		 * ZKeys being fetched, awaiting for API response
 		 */
-		fetchingZKeys: []
+		fetchingZKeys: [],
+		/**
+		 * Collection of arguments
+		 */
+		zArguments: {}
 	},
 	getters: {
 		getZkeys: function ( state ) {
@@ -33,6 +37,9 @@ module.exports = {
 		},
 		getZkeyLabels: function ( state ) {
 			return state.zKeyLabels;
+		},
+		getZarguments: function ( state ) {
+			return state.zArguments;
 		}
 	},
 	mutations: {
@@ -78,6 +85,12 @@ module.exports = {
 		 */
 		addZKeyLabel: function ( state, payload ) {
 			Vue.set( state.zKeyLabels, payload.key, payload.label );
+		},
+		addZArgumentInfo: function ( state, payload ) {
+			state.zArguments[ payload.zid ] = payload;
+		},
+		resetZArgumentInfo: function ( state ) {
+			state.zArguments = {};
 		}
 	},
 	actions: {
@@ -159,6 +172,13 @@ module.exports = {
 						} );
 					}
 				} );
+			} );
+		},
+		setAvailableZArguments: function ( context, payload ) {
+			context.commit( 'resetZArgumentInfo' );
+
+			payload.forEach( function ( arg ) {
+				context.commit( 'addZArgumentInfo', arg );
 			} );
 		}
 	}

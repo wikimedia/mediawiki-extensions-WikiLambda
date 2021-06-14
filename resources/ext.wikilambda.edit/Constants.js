@@ -41,7 +41,14 @@ var Constants = {
 		Z_CODE_CODE: 'Z16K2',
 		Z_FUNCTION_CALL: 'Z7',
 		Z_FUNCTION_CALL_FUNCTION: 'Z7K1',
-		Z_KEY_MODES: { LITERAL: 'literal', REFERENCE: 'reference', FUNCTION_CALL: 'function_call', GENERIC_LITERAL: 'generic_literal', JSON: 'json' },
+		Z_KEY_MODES: {
+			LITERAL: 'literal',
+			REFERENCE: 'reference',
+			FUNCTION_CALL: 'function_call',
+			GENERIC_LITERAL: 'generic_literal',
+			JSON: 'json',
+			ARGUMENT_REF: 'argument_ref'
+		},
 		Z_BOOLEAN: 'Z40',
 		Z_BOOLEAN_TRUE: 'Z41',
 		Z_BOOLEAN_FALSE: 'Z42',
@@ -53,14 +60,18 @@ var Constants = {
 		Z_IMPLEMENTATION_BUILT_IN: 'Z14K4',
 		Z_PAIR: 'Z22',
 		Z_PAIR_FIRST: 'Z22K1',
-		Z_PAIR_SECOND: 'Z22K2'
+		Z_PAIR_SECOND: 'Z22K2',
+		Z_ARGUMENT_REFERENCE: 'Z18',
+		Z_ARGUMENT_REFERENCE_KEY: 'Z18K1',
+		Z_NOTHING: 'Z23'
 	},
 	modes = [
 		{ key: Constants.Z_KEY_MODES.REFERENCE, value: 'wikilambda-modeselector-reference', label: 'wikilambda-reference', type: Constants.Z_REFERENCE },
 		{ key: Constants.Z_KEY_MODES.FUNCTION_CALL, value: 'wikilambda-modeselector-functioncall', label: 'wikilambda-functioncall', type: Constants.Z_FUNCTION_CALL },
 		{ key: Constants.Z_KEY_MODES.LITERAL, value: 'wikilambda-modeselector-literal', label: 'wikilambda-literal', type: null },
 		{ key: Constants.Z_KEY_MODES.GENERIC_LITERAL, value: 'wikilambda-modeselector-genericliteral', label: 'wikilambda-genericliteral', type: null },
-		{ key: Constants.Z_KEY_MODES.JSON, value: 'wikilambda-modeselector-json', label: 'wikilambda-json', type: null }
+		{ key: Constants.Z_KEY_MODES.JSON, value: 'wikilambda-modeselector-json', label: 'wikilambda-json', type: null },
+		{ key: Constants.Z_KEY_MODES.ARGUMENT_REF, value: 'wikilambda-modeselector-argref', label: 'wikilambda-argref', type: Constants.Z_ARGUMENT_REFERENCE }
 	];
 
 Constants.Z_MODE_SELECTOR_MODES = modes;

@@ -403,7 +403,7 @@ module.exports = {
 			api.post( {
 				action: action,
 				summary: summary,
-				zid: context.getters.getCurrentZObjectId,
+				zid: context.getters.isCreateNewPage ? undefined : context.getters.getCurrentZObjectId,
 				zobject: JSON.stringify( zobject )
 			} ).then( function ( result ) {
 				window.location.href = new mw.Title( result[ action ].page ).getUrl();
@@ -486,6 +486,38 @@ module.exports = {
 				parent: zobject.parent
 			} );
 		},
+		setZImplementationType: function ( context, payload ) {
+			var zobject = context.getters.getZObjectById( payload.zobjectId ),
+				zobjectParent = context.getters.getZObjectById( zobject.parent ),
+				json = context.getters.getZObjectAsJsonById( payload.zobjectId );
+
+			switch ( payload.mode ) {
+				case 'code':
+					json[ Constants.Z_IMPLEMENTATION_CODE ] = {
+						Z1K1: 'Z16',
+						Z16K1: {
+							Z1K1: 'Z61',
+							Z61K1: ''
+						},
+						Z16K2: ''
+					};
+					json[ Constants.Z_IMPLEMENTATION_COMPOSITION ] = undefined;
+					break;
+				case 'composition':
+					json[ Constants.Z_IMPLEMENTATION_CODE ] = undefined;
+					json[ Constants.Z_IMPLEMENTATION_COMPOSITION ] = {
+						Z1K1: 'Z7',
+						Z7K1: ''
+					};
+			}
+
+			context.dispatch( 'injectZObject', {
+				zobject: json,
+				key: zobjectParent.key,
+				id: payload.zobjectId,
+				parent: zobjectParent.id
+			} );
+		},
 		/**
 		 * Remove a specific zobject. This method does NOT remove its children.
 		 *
@@ -505,6 +537,10 @@ module.exports = {
 		removeZObjectChildren: function ( context, objectId ) {
 			var children = [],
 				childrensId = [];
+
+			if ( !objectId ) {
+				return;
+			}
 
 			children = context.getters.getZObjectChildrenById( objectId );
 			childrensId = children.map( function ( child ) {
@@ -708,7 +744,25 @@ module.exports = {
 		},
 
 		addZImplementation: function ( context, objectId ) {
-			var nextId;
+			var nextId,
+				isPersistentImplementation = !typeUtils.findKeyInArray(
+					Constants.Z_REFERENCE_ID,
+					context.getters.getZObjectChildrenById(
+						typeUtils.findKeyInArray(
+							Constants.Z_OBJECT_TYPE,
+							context.getters.getZObjectChildrenById(
+								typeUtils.findKeyInArray(
+									Constants.Z_PERSISTENTOBJECT_VALUE,
+									context.state.zobject
+								).id
+							)
+						).id
+					)
+				),
+				defaultFunctionValue = isPersistentImplementation ?
+					'' :
+					context.getters.getCurrentZObjectId;
+
 			context.dispatch( 'setZObjectValue', {
 				id: objectId,
 				value: 'object'
@@ -718,7 +772,10 @@ module.exports = {
 			// Add function
 			nextId = getNextObjectId( context.state.zobject );
 			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_FUNCTION, value: 'object', parent: objectId } );
-			context.dispatch( 'addZReference', { id: nextId, value: context.getters.getCurrentZObjectId } );
+			context.dispatch( 'addZReference', { id: nextId, value: defaultFunctionValue } );
+
+			// Add Composition
+			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_COMPOSITION, value: 'object', parent: objectId } );
 
 			// Add ZCode
 			nextId = getNextObjectId( context.state.zobject );
@@ -886,12 +943,15 @@ module.exports = {
 		resetZObject: function ( context, zObjectId ) {
 			return context.dispatch( 'changeType', {
 				id: zObjectId,
-				type: typeUtils
-					.findKeyInArray(
-						Constants.Z_OBJECT_TYPE,
-						context.getters.getZObjectChildrenById( zObjectId )
+				type: typeUtils.findKeyInArray(
+					Constants.Z_REFERENCE_ID,
+					context.getters.getZObjectChildrenById(
+						typeUtils.findKeyInArray(
+							Constants.Z_OBJECT_TYPE,
+							context.getters.getZObjectChildrenById( zObjectId )
+						).id
 					)
-					.value
+				).value
 			} );
 		},
 		/**

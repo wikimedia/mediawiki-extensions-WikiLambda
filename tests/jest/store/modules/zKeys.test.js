@@ -1,3 +1,11 @@
+/*!
+ * WikiLambda unit test suite for the zKeys Vuex module
+ *
+ * @copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+ * @license MIT
+ */
+'use strict';
+
 var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zKeys.js' ),
 	mockApiReponse = {
 		batchcomplete: '',
@@ -120,6 +128,7 @@ var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modu
 		Z6: { Z1K1: 'Z2', Z2K1: { Z1K1: 'Z9', Z9K1: 'Z6' }, Z2K2: { Z1K1: 'Z4', Z4K1: { Z1K1: 'Z9', Z9K1: 'Z6' }, Z4K2: [ { Z1K1: 'Z3', Z3K1: { Z1K1: 'Z9', Z9K1: 'Z6' }, Z3K2: { Z1K1: 'Z6', Z6K1: 'Z6K1' }, Z3K3: { Z1K1: 'Z12', Z12K1: [ { Z1K1: 'Z11', Z11K1: 'en', Z11K2: 'value' } ] } } ], Z4K3: { Z1K1: 'Z9', Z9K1: 'Z30' } }, Z2K3: { Z1K1: 'Z12', Z12K1: [ { Z1K1: 'Z11', Z11K1: 'en', Z11K2: 'String' } ] } }
 	},
 	mockZKeyLabels = { Z1: 'Object', Z1K1: 'type', Z2: 'Persistent object', Z2K1: 'id', Z2K2: 'value', Z2K3: 'label', Z12: 'Multilingual text', Z12K1: 'texts', Z3: 'Key', Z3K1: 'value type', Z3K2: 'key id', Z3K3: 'label', Z4: 'Type', Z4K1: 'identity', Z4K2: 'keys', Z4K3: 'validator', Z6: 'String', Z6K1: 'value', Z8: 'Function', Z8K1: 'arguments', Z8K2: 'return type', Z8K3: 'testers', Z8K4: 'implementations', Z8K5: 'identity', Z7: 'Function call', Z7K1: 'function', Z9: 'Reference', Z9K1: 'reference id', Z10: 'List', Z10K1: 'head', Z10K2: 'tail' },
+	mockZArguments = { Z10024K1: { label: 'word', zid: 'Z10024K1', key: 'word: ', type: 'String' } },
 	state,
 	context,
 	getMock,
@@ -135,11 +144,10 @@ describe( 'zkeys Vuex module', function () {
 				then: getResolveMock
 			};
 		} );
-		state = $.extend( {}, zkeysModule.state );
+		state = JSON.parse( JSON.stringify( zkeysModule.state ) );
 		context = $.extend( {}, {
-			// eslint-disable-next-line no-unused-vars
 			commit: jest.fn( function ( mutationType, payload ) {
-				return;
+				return zkeysModule.mutations[ mutationType ]( state, payload );
 			} ),
 			getters: {},
 			state: state,
@@ -174,6 +182,16 @@ describe( 'zkeys Vuex module', function () {
 			it( 'Returns the zKeys defined in the state', function () {
 				state.zKeyLabels = mockZKeyLabels;
 				expect( zkeysModule.getters.getZkeyLabels( state ) ).toEqual( mockZKeyLabels );
+			} );
+		} );
+
+		describe( 'getZarguments', function () {
+			it( 'Returns empty object if no zArguments are defined in the state', function () {
+				expect( zkeysModule.getters.getZarguments( state ) ).toEqual( {} );
+			} );
+			it( 'Returns the zArguments defined in the state', function () {
+				state.zArguments = mockZArguments;
+				expect( zkeysModule.getters.getZarguments( state ) ).toEqual( mockZArguments );
 			} );
 		} );
 	} );
@@ -277,6 +295,15 @@ describe( 'zkeys Vuex module', function () {
 				expect( context.commit ).toHaveBeenCalledTimes( 10 );
 				expect( context.commit ).toHaveBeenNthCalledWith( 3, 'addZKeyInfo', expectedAddZKeyInfoCall );
 				expect( context.commit ).toHaveBeenNthCalledWith( 5, 'addZKeyLabel', expecteaddZKeyLabelInfoCall );
+			} );
+			it( 'Will set the stored ZArguments', function () {
+				var zArguments = [ { label: 'word', zid: 'Z10024K1', key: 'word: ', type: 'String' } ];
+
+				zkeysModule.actions.setAvailableZArguments( context, zArguments );
+
+				expect( context.commit ).toHaveBeenCalledTimes( 2 );
+				expect( context.commit ).toHaveBeenNthCalledWith( 1, 'resetZArgumentInfo' );
+				expect( context.commit ).toHaveBeenNthCalledWith( 2, 'addZArgumentInfo', zArguments[ 0 ] );
 			} );
 		} );
 	} );
