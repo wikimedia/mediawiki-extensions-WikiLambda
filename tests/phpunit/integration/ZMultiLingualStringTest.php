@@ -9,7 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use InvalidArgumentException;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
@@ -131,7 +131,7 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 */
 	public function testStaticCreation_invalidNoValueKey() {
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$invalidObject = ZObjectFactory::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MULTILINGUALSTRING
 		] );
@@ -188,7 +188,7 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 			$testObject->getStringForLanguage( $invalidLang )
 		);
 
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$testObject->removeValue( $invalidLang );
 	}
 

@@ -237,7 +237,7 @@ class Hooks implements
 
 				try {
 					$content = ZObjectContentHandler::makeContent( $data, $title );
-				} catch ( \InvalidArgumentException $e ) {
+				} catch ( ZErrorException $e ) {
 					// Do nothing
 					continue;
 				}

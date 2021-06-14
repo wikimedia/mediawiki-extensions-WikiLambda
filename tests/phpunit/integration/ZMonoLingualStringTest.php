@@ -9,7 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use InvalidArgumentException;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
@@ -57,7 +57,7 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 */
 	public function testStaticCreation_invalidNoLanguageKey() {
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$invalidObject = ZObjectFactory::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRING,
 			ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => 'Demonstration item'
@@ -68,7 +68,7 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 */
 	public function testStaticCreation_invalidNoValueKey() {
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$invalidObject = ZObjectFactory::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRING,
 			ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => 'Z1002'
@@ -79,7 +79,7 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 */
 	public function testStaticCreation_invalidLanguageReference() {
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$invalidObject = ZObjectFactory::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRING,
 			ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => 'en',
@@ -92,7 +92,7 @@ class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
 	 */
 	public function testStaticCreation_invalidLanguageCode() {
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$invalidObject = ZObjectFactory::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRING,
 			ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => 'Z999',

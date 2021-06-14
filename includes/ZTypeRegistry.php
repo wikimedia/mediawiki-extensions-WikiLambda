@@ -10,7 +10,8 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use InvalidArgumentException;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use Title;
 
 /**
@@ -172,6 +173,7 @@ class ZTypeRegistry {
 	 *
 	 * @param string $key The key of the ZType to check
 	 * @return bool
+	 * @throws ZErrorException
 	 */
 	public function isZObjectKeyKnown( string $key ) : bool {
 		if ( $this->isZObjectKeyCached( $key ) ) {
@@ -189,7 +191,13 @@ class ZTypeRegistry {
 		}
 
 		if ( $zObject->getZType() !== self::Z_TYPE ) {
-			throw new InvalidArgumentException( "ZObject for '$key' is not a ZType object." );
+			// Error Z542: unexpected zobject type
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_UNEXPECTED_ZTYPE,
+					new ZString( "ZObject for '$key' is not a ZType object." )
+				)
+			);
 		}
 
 		// TODO: Do we want to always store English? Or the wiki's contentLanguage? Or something else?
@@ -203,10 +211,17 @@ class ZTypeRegistry {
 	 *
 	 * @param string $key The key of the ZType to check
 	 * @return string Class name for the ZType
+	 * @throws ZErrorException
 	 */
 	public function getZObjectTypeFromKey( string $key ) : string {
 		if ( !$this->isZObjectKeyKnown( $key ) ) {
-			throw new InvalidArgumentException( "ZObject key '$key' is not registered." );
+			// Error Z504: Zid not found
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+					new ZString( "ZObject key '$key' is not registered." )
+				)
+			);
 		}
 		return $this->zObjectTypes[ $key ];
 	}
@@ -252,10 +267,17 @@ class ZTypeRegistry {
 	 *
 	 * @param string $type Name of the ZType
 	 * @return string ZID of the ZType
+	 * @throws ZErrorException
 	 */
 	public function getZObjectKeyFromType( string $type ) : string {
 		if ( !$this->isZObjectTypeKnown( $type ) ) {
-			throw new InvalidArgumentException( "ZObject type '$type' is not registered." );
+			// Error Z543: ZType not found
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_ZTYPE_NOT_FOUND,
+					new ZString( "ZObject type '$type' is not registered." )
+				)
+			);
 		}
 		return array_search( $type, $this->zObjectTypes );
 	}
@@ -265,23 +287,39 @@ class ZTypeRegistry {
 	 *
 	 * @param string $key
 	 * @param string $type
+	 * @throws ZErrorException
 	 */
 	private function registerType( string $key, string $type ) : void {
 		if ( $this->isZObjectKeyCached( $key ) ) {
 			$conflictingType = $this->getZObjectKeyFromType( $key );
-			throw new InvalidArgumentException( "ZObject key '$key' already used to register as '$conflictingType'." );
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_CONFLICTING_TYPE_NAMES,
+					new ZString( "ZObject key '$key' already used to register as '$conflictingType'." )
+				)
+			);
 		}
 
 		if ( $this->isZObjectTypeCached( $type ) ) {
 			$conflictingKey = $this->getZObjectTypeFromKey( $type );
-			throw new InvalidArgumentException( "ZObject type '$type' already registered as '$conflictingKey'." );
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_CONFLICTING_TYPE_ZIDS,
+					new ZString( "ZObject type '$type' already registered as '$conflictingKey'." )
+ )
+			);
 		}
 
 		if (
 			$this->isZTypeBuiltIn( $key )
 			&& !class_exists( 'MediaWiki\Extension\WikiLambda\ZObjects\\' . self::BUILT_IN_TYPES[ $key ] )
 		) {
-			throw new InvalidArgumentException( "ZObject type '$key' is built-in, but class '$type' is not found." );
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_BUILTIN_TYPE_NOT_FOUND,
+					new ZString( "ZObject type '$key' is built-in, but class '$type' is not found." )
+				)
+			);
 		}
 
 		$this->zObjectTypes[ $key ] = $type;

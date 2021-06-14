@@ -38,12 +38,19 @@ class ZError extends ZObject {
 		$this->data[ ZTypeRegistry::Z_ERROR_VALUE ] = $value;
 	}
 
-	public function getZValue() {
-		return $this->data;
+	public function getZValue() : ZObject {
+		return $this->data[ ZTypeRegistry::Z_ERROR_VALUE ];
 	}
 
-	public function getMessage() : ZObject {
-		return $this->data[ ZTypeRegistry::Z_ERROR_VALUE ];
+	public function getZErrorType() : string {
+		return $this->data[ ZTypeRegistry::Z_ERROR_TYPE ];
+	}
+
+	public function getMessage() : string {
+		if ( $this->getZValue()->getZType() == ZTypeRegistry::Z_STRING ) {
+			return $this->getZValue()->getZValue();
+		}
+		return ZErrorTypeRegistry::singleton()->getZErrorTypeLabel( $this->getZErrorType() );
 	}
 
 	public function isValid() : bool {
@@ -68,7 +75,6 @@ class ZError extends ZObject {
 		if ( !( $this->data[ ZTypeRegistry::Z_ERROR_VALUE ] instanceof ZObject ) ) {
 			return false;
 		}
-		return $this->getMessage()->isValid();
+		return $this->getZValue()->isValid();
 	}
-
 }

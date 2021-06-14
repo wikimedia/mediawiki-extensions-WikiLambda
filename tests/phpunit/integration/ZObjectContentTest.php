@@ -10,8 +10,8 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use FormatJson;
-use InvalidArgumentException;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
@@ -66,7 +66,7 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testCreation_invalidString() {
 		$this->hideDeprecated( '::create' );
-		$this->expectException( \InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$this->expectExceptionMessage( "ZPersistentObject input is not a string." );
 		$testObject = new ZObjectContent( true );
 	}
@@ -76,7 +76,7 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testCreation_invalidJson() {
 		$this->hideDeprecated( '::create' );
-		$this->expectException( \InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$this->expectExceptionMessage( "ZPersistentObject input is invalid JSON: Syntax error." );
 		$testObject = new ZObjectContent( "{'invalid': JSON]" );
 	}
@@ -86,7 +86,7 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testCreation_invalidThrows_nokey() {
 		$this->hideDeprecated( '::create' );
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$testObject = new ZObjectContent( '{}' );
 	}
 
@@ -137,7 +137,7 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 			'{ "Z1K1": "This is not a valid key!" }'
 		);
 		$this->assertFalse( $testObject->isValid() );
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$this->assertSame( 'InvalidObjectWillNotHaveAType', $testObject->getZType() );
 	}
 
@@ -152,7 +152,7 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 			'{ "Z1K1": "Z1234" }'
 		);
 		$this->assertFalse( $testObject->isValid() );
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$this->assertSame( 'InvalidObjectWillNotHaveAType', $testObject->getZType() );
 	}
 
@@ -168,7 +168,7 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 			'{ "Z1K1":"Z2", "Z2K1":"Z0", "Z2K2": { "Z1K1": "Foo" }, "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
 		);
 		$this->assertFalse( $testObject->isValid() );
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$this->assertSame( 'InvalidObjectWillNotHaveAType', $testObject->getZType() );
 	}
 
@@ -184,7 +184,7 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 			'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z1" }, "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
 		);
 		$this->assertFalse( $testObject->isValid() );
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$this->assertSame( 'InvalidObjectWillNotHaveAType', $testObject->getZType() );
 	}
 
@@ -200,7 +200,7 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 			'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z1", "Z2K2": "Foo" } }'
 		);
 		$this->assertFalse( $testObject->isValid() );
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$this->assertSame( 'InvalidObjectWillNotHaveAType', $testObject->getZType() );
 	}
 
@@ -394,37 +394,37 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 
 		try {
 			$testObject->getInnerZObject();
-		} catch ( \InvalidArgumentException $e ) {
+		} catch ( ZErrorException $e ) {
 			$exceptions[] = $e->getMessage();
 		}
 
 		try {
 			$testObject->getZid();
-		} catch ( \InvalidArgumentException $e ) {
+		} catch ( ZErrorException $e ) {
 			$exceptions[] = $e->getMessage();
 		}
 
 		try {
 			$testObject->getZType();
-		} catch ( \InvalidArgumentException $e ) {
+		} catch ( ZErrorException $e ) {
 			$exceptions[] = $e->getMessage();
 		}
 
 		try {
 			$testObject->getZValue();
-		} catch ( \InvalidArgumentException $e ) {
+		} catch ( ZErrorException $e ) {
 			$exceptions[] = $e->getMessage();
 		}
 
 		try {
 			$testObject->getLabels();
-		} catch ( \InvalidArgumentException $e ) {
+		} catch ( ZErrorException $e ) {
 			$exceptions[] = $e->getMessage();
 		}
 
 		try {
 			$testObject->getLabel( $english );
-		} catch ( \InvalidArgumentException $e ) {
+		} catch ( ZErrorException $e ) {
 			$exceptions[] = $e->getMessage();
 		}
 

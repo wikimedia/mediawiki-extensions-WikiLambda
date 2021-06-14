@@ -14,9 +14,12 @@ use AbstractContent;
 use FormatJson;
 use Html;
 use Language;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\MediaWikiServices;
 use ParserOptions;
 use ParserOutput;
@@ -64,32 +67,50 @@ class ZObjectContent extends AbstractContent {
 	private $status = null;
 
 	/**
+	 * @var ZError[]
+	 */
+	private $errors = [];
+
+	/**
 	 * Builds the Content object that can be saved in the Wiki
 	 * Doesn't validate the ZObject, but checks for syntactical validity
 	 *
 	 * @param string $text
+	 * @throws ZErrorException
 	 */
 	public function __construct( $text ) {
 		parent::__construct( CONTENT_MODEL_ZOBJECT );
 
 		// Check that the input is a valid string
 		if ( !is_string( $text ) ) {
-			throw new \InvalidArgumentException( 'ZPersistentObject input is not a string.' );
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_FORMAT,
+					new ZString( 'ZPersistentObject input is not a string.' )
+				)
+			);
 		}
 
 		// Check that the input is a valid JSON
 		$parseStatus = FormatJson::parse( $text );
 		if ( !$parseStatus->isGood() ) {
-			throw new \InvalidArgumentException(
-				'ZPersistentObject input is invalid JSON: '
-					. wfMessage( $parseStatus->getErrors()[0]['message'] )->inContentLanguage()->text()
-					. '.'
+			$errorMessage = wfMessage( $parseStatus->getErrors()[0]['message'] )->inContentLanguage()->text();
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_JSON,
+					new ZString( "ZPersistentObject input is invalid JSON: $errorMessage." )
+				)
 			);
 		}
 
 		// Check that the input is a syntactically correct ZObject
 		if ( !ZObjectUtils::isValidZObject( $parseStatus->getValue() ) ) {
-			throw new \InvalidArgumentException( 'ZPersistentObject input ZObject structure is invalid.' );
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
+					new ZString( 'ZPersistentObject input ZObject structure is invalid.' )
+				)
+			);
 		}
 
 		// Save the string and object content
@@ -106,8 +127,9 @@ class ZObjectContent extends AbstractContent {
 		$this->status = new Status();
 		try {
 			$this->zobject = ZObjectFactory::createPersistentContent( $this->getObject() );
-		} catch ( \InvalidArgumentException $e ) {
+		} catch ( ZErrorException $e ) {
 			$this->status->fatal( $e->getMessage() );
+			$this->errors[] = $e->getZError();
 		}
 	}
 
@@ -187,11 +209,17 @@ class ZObjectContent extends AbstractContent {
 	 * Wrapper for ZPersistentObject getInnerZObject method. Returns the inner ZObject.
 	 *
 	 * @return ZObject
-	 * @throws \InvalidArgumentException
+	 * @throws ZErrorException
 	 */
 	public function getInnerZObject() : ZObject {
 		if ( !$this->isValid() ) {
-			throw new \InvalidArgumentException( $this->status->getMessage() );
+			// Error 501: Invalid syntax
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
+					new ZList( $this->errors ) // errors is a list of ZErrors
+				)
+			);
 		}
 		return $this->zobject->getInnerZObject();
 	}
@@ -200,11 +228,17 @@ class ZObjectContent extends AbstractContent {
 	 * Wrapper for ZPersistentObject getZid method. Returns the Zid of the persistent object
 	 *
 	 * @return string The persisted (or null) Zid
-	 * @throws \InvalidArgumentException
+	 * @throws ZErrorException
 	 */
 	public function getZid() {
 		if ( !$this->isValid() ) {
-			throw new \InvalidArgumentException( $this->status->getMessage() );
+			// Error 501: Invalid syntax
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
+					new ZList( $this->errors ) // errors is a list of ZErrors
+				)
+			);
 		}
 		return $this->zobject->getZid();
 	}
@@ -213,7 +247,7 @@ class ZObjectContent extends AbstractContent {
 	 * String representation of the type of this ZObject
 	 * @param Language $language Language in which to provide the string.
 	 * @return string
-	 * @throws \InvalidArgumentException
+	 * @throws ZErrorException
 	 */
 	public function getTypeString( $language ) : string {
 		$type = $this->getZType();
@@ -234,11 +268,17 @@ class ZObjectContent extends AbstractContent {
 	 * Wrapper for ZPersistentObject getInternalZType method. Returns the ZType of the internal ZObject.
 	 *
 	 * @return string
-	 * @throws \InvalidArgumentException
+	 * @throws ZErrorException
 	 */
 	public function getZType() : string {
 		if ( !$this->isValid() ) {
-			throw new \InvalidArgumentException( $this->status->getMessage() );
+			// Error 501: Invalid syntax
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
+					new ZList( $this->errors ) // errors is a list of ZErrors
+				)
+			);
 		}
 		return $this->zobject->getInternalZType();
 	}
@@ -247,11 +287,17 @@ class ZObjectContent extends AbstractContent {
 	 * Wrapper for ZPersistentObject getZValue method. Returns the value of the internal ZObject.
 	 *
 	 * @return mixed
-	 * @throws \InvalidArgumentException
+	 * @throws ZErrorException
 	 */
 	public function getZValue() {
 		if ( !$this->isValid() ) {
-			throw new \InvalidArgumentException( $this->status->getMessage() );
+			// Error 501: Invalid syntax
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
+					new ZList( $this->errors ) // errors is a list of ZErrors
+				)
+			);
 		}
 		return $this->zobject->getZValue();
 	}
@@ -260,11 +306,16 @@ class ZObjectContent extends AbstractContent {
 	 * Wrapper for ZPersistentObject getLabels method. Returns the labels of the ZPersistentObject.
 	 *
 	 * @return ZMultilingualString
-	 * @throws \InvalidArgumentException
+	 * @throws ZErrorException
 	 */
 	public function getLabels() : ZMultiLingualString {
 		if ( !$this->isValid() ) {
-			throw new \InvalidArgumentException( $this->status->getMessage() );
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
+					new ZList( $this->errors ) // errors is a list of ZErrors
+				)
+			);
 		}
 		return $this->zobject->getLabels();
 	}
@@ -274,11 +325,16 @@ class ZObjectContent extends AbstractContent {
 	 *
 	 * @param Language $language Language in which to provide the label.
 	 * @return string
-	 * @throws \InvalidArgumentException
+	 * @throws ZErrorException
 	 */
 	public function getLabel( $language ) : string {
 		if ( !$this->isValid() ) {
-			throw new \InvalidArgumentException( $this->status->getMessage() );
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
+					new ZList( $this->errors ) // errors is a list of ZErrors
+				)
+			);
 		}
 		return $this->zobject->getLabel( $language );
 	}

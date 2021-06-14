@@ -13,7 +13,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
-use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use Title;
 use WikiPage;
 
@@ -101,7 +100,7 @@ class ZErrorTest extends \MediaWikiIntegrationTestCase {
 	public function testCreate_valid() {
 		$testObject = new ZError( 'Z501', new ZString( 'error message' ) );
 		$this->assertTrue( $testObject->isValid() );
-		$this->assertSame( 'Z501', $testObject->getZValue()[ ZTypeRegistry::Z_ERROR_TYPE ] );
-		$this->assertInstanceOf( ZObject::class, $testObject->getMessage() );
+		$this->assertSame( 'Z501', $testObject->getZErrorType() );
+		$this->assertInstanceOf( ZObject::class, $testObject->getZValue() );
 	}
 }

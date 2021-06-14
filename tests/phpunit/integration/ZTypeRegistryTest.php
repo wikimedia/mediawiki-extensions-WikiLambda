@@ -9,8 +9,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use InvalidArgumentException;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use Title;
@@ -159,7 +159,7 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 			"'ZObject' lookup works."
 		);
 
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$this->assertEquals(
 			$registry->getZObjectKeyFromType( 'Zero' ),
 			'Undefined',
@@ -175,7 +175,7 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 
 		$this->assertEquals( $registry->getZObjectTypeFromKey( 'Z1' ), 'ZObject', "'Z1' lookup works." );
 
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$this->assertEquals(
 			$registry->getZObjectTypeFromKey( 'Z0' ),
 			'Undefined',
@@ -194,9 +194,9 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 
 		$type = 'ZUnregisteredType';
 
-		// Expect InvalidArgumentException when the key has already been added with a different type
+		// Expect ZErrorException when the key has already been added with a different type
 		// e.g. registerType( Z1, UnregisteredType )
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$this->assertEquals(
 			$method->invokeArgs( $registry, [ 'Z1', $type ] ),
 			'Undefined',
@@ -215,9 +215,9 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 
 		$key = 'Z222';
 
-		// Expect InvalidArgumentException when the type has already been added with a different key
+		// Expect ZErrorException when the type has already been added with a different key
 		// e.g. registerType( Z34, ZObject )
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$this->assertEquals(
 			$method->invokeArgs( $registry, [ $key, 'ZObject' ] ),
 			'Undefined',
