@@ -14,6 +14,7 @@
 	"wikilambda-invalidzobjecttitle": "Girilen başlık '$1' geçerli bir ZObject değil.",
 	"wikilambda-invalidzobject": "Sağlanan içerik geçerli bir ZObject değil.",
 	"wikilambda-invalidcontenttype": "Sağlanan içerik bir ZObject sınıfı değil.",
+	"wikilambda-typeunavailable": "Tanımlanamayan tür",
 	"wikilambda-prohibitedcreationtype": "Belirtilen ZObject, oluşturulmasına izin verilmeyen '$1' türünde.",
 	"wikilambda-noresult": "Arama bir sonuç vermedi.",
 	"wikilambda-labelclash": "Sağlanan içeriğin etiketi, '$2' etiketindeki ZObject '$1' ile çakışıyor.",
@@ -64,5 +65,6 @@
 	"specialpages-group-wikilambda": "Vikiişlev sayfası",
 	"wikilambda-editor-argument-list-label": "Değişken Listesi",
 	"wikilambda-editor-implementation-list-label": "Uygulama Listesi",
-	"wikilambda-editor-boolean-selector": "doğru/yanlış seç"
+	"wikilambda-editor-boolean-selector": "doğru/yanlış seç",
+	"wikilambda-implementation-selector-code": "Kod"
 }

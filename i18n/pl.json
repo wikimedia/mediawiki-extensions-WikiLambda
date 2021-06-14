@@ -8,5 +8,6 @@
 	"wikilambda-publishnew": "Opublikuj",
 	"wikilambda-savenew": "Zapisz",
 	"wikilambda-publishchanges": "Opublikuj zmiany",
-	"wikilambda-editor-label-addlanguage-label": "Dodaj język:"
+	"wikilambda-editor-label-addlanguage-label": "Dodaj język:",
+	"wikilambda-implementation-selector-code": "Kod"
 }

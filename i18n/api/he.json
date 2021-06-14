@@ -34,6 +34,7 @@
 	"apihelp-query+wikilambdaload_zobjects-example-error": "חיפוש עצמי ה־Z עם המזהים Z1 ו־Z012345789 שאינו קיים והחזרת התוויות שלהם מסוננות לספרדית ושפות גיבוי.",
 	"apihelp-query+wikilambdaload_zobjects-example-canonical": "חיפוש עצם Z עם המזהה Z12 והחזרת ייצוג שלו ב־JSON קנוני.",
 	"apierror-query+wikilambdaload_zobjects-unloadable": "ZObjectStore לא הצליח לטעון את הדף עבור \"$1\".",
+	"apierror-query+wikilambdaload_zobjects-notzobject": "ZObjectStore טען משהו שאינו עצם Z עבור \"$1\".",
 	"apihelp-wikilambda_edit-example-create": "יצירת עצם Z חדש מסוג Z6, עם הערך \"value\" והתווית \"label\"",
 	"apihelp-wikilambda_edit-example-edit-incorrect": "לנסות לעדכן את עצם ה־Z בעל המזהה Z010 עם נתונים לא נכונים",
 	"apihelp-wikilambda_edit-summary": "ליצור או לערוך עצם Z.",

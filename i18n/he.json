@@ -9,6 +9,7 @@
 	"wikilambda-invalidzobjecttitle": "הכותרת המסופקת \"$1\" אינה תקינה עבור עצם Z.",
 	"wikilambda-invalidzobject": "התוכן שסופק אינו עצם Z תקין.",
 	"wikilambda-invalidcontenttype": "התוכן שסופק אינו מחלקה שמייצגת עצם Z.",
+	"wikilambda-typeunavailable": "סוג לא מוכר",
 	"wikilambda-prohibitedcreationtype": "עצם ה־Z שסופק הוא מסוג \"$1\", שאין אפשרות ליצור.",
 	"wikilambda-noresult": "החיפוש לא הניב שום תוצאה",
 	"wikilambda-labelclash": "התווית של התוכן שסופק מתנגש עם עצם ה־Z בעל המזהה $1 עבור התווית בשפה $2.",
@@ -60,5 +61,7 @@
 	"specialpages-group-wikilambda": "דף ויקיפונקציות",
 	"wikilambda-editor-argument-list-label": "רשימת הארגומנטים",
 	"wikilambda-editor-implementation-list-label": "רשימת מימושים",
-	"wikilambda-editor-boolean-selector": "בחירת אמת/שקר"
+	"wikilambda-editor-boolean-selector": "בחירת אמת/שקר",
+	"wikilambda-implementation-selector-code": "קוד",
+	"wikilambda-implementation-selector-composition": "הרכבה"
 }

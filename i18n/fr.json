@@ -68,5 +68,7 @@
 	"specialpages-group-wikilambda": "Page de Wikifonctions",
 	"wikilambda-editor-argument-list-label": "Liste d’arguments",
 	"wikilambda-editor-implementation-list-label": "Liste d’implémentation",
-	"wikilambda-editor-boolean-selector": "Sélectionner vrai/faux"
+	"wikilambda-editor-boolean-selector": "Sélectionner vrai/faux",
+	"wikilambda-implementation-selector-code": "Code",
+	"wikilambda-implementation-selector-composition": "Composition"
 }
