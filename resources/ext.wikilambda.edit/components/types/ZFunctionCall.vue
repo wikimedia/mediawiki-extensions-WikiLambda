@@ -180,7 +180,8 @@ module.exports = {
 		'callZFunction',
 		'changeType',
 		'initializeResultId',
-		'injectZObject'
+		'injectZObject',
+		'resetZObject'
 	] ), {
 		typeHandler: function ( zid ) {
 			var zFunctionCallFunction = this.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, this.zobject );
@@ -242,6 +243,13 @@ module.exports = {
 						self.changeType( payload );
 					} );
 			} );
+		},
+		zFunctionId: function () {
+			if ( !this.zFunctionId ) {
+				this.resetZObject( this.zobjectId );
+			} else {
+				this.fetchZKeys( [ this.zFunctionId ] );
+			}
 		}
 	},
 	mounted: function () {
