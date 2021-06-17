@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Agent",
 			"BnSrSa",
 			"Fitoschido",
 			"KATRINE1993",
@@ -8,6 +9,7 @@
 		]
 	},
 	"wikilambda-invalidzobject": "El contenido proporcionado no constituye un ZObject válido.",
+	"wikilambda-typeunavailable": "Tipo no reconocido",
 	"wikilambda-special-createzobject-nojs": "Para utilizar esta página se necesita JavaScript.",
 	"wikilambda-special-evaluatefunctioncall": "Evalúa una llamada de función",
 	"wikilambda-special-evaluatefunctioncall-intro": "Asegúrate de que sigues las políticas comunitarias, además del copyright y las reglas de patente.",
@@ -23,5 +25,7 @@
 	"wikilambda-editor-label-removelanguage-tooltip": "Quitar este idioma de esta etiqueta",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Quitar este elemento de esta ZList",
 	"wikilambda-editor-zobject-addkey": "Añadir clave:",
-	"wikilambda-editor-boolean-selector": "Seleccione verdadero/falso"
+	"wikilambda-editor-boolean-selector": "Seleccione verdadero/falso",
+	"wikilambda-implementation-selector-code": "Código",
+	"wikilambda-implementation-selector-composition": "Composición"
 }
