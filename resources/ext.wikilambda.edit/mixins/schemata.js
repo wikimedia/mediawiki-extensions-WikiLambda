@@ -1,6 +1,26 @@
 var Constants = require( '../Constants.js' ),
 	typeUtils = require( './typeUtils.js' ).methods;
 
+var referenceRe = /^Z[0-9]+(K[0-9]+)?$/;
+
+function canonicalizeZ6OrZ9( zobject ) {
+	var objectType = zobject[ Constants.Z_OBJECT_TYPE ];
+	if ( objectType === Constants.Z_STRING ) {
+		var Z6 = zobject[ Constants.Z_STRING_VALUE ];
+		if ( Z6.match( referenceRe ) ) {
+			return zobject;
+		}
+		return Z6;
+	}
+
+	var Z9 = zobject[ Constants.Z_REFERENCE_ID ];
+	if ( Z9.match( referenceRe ) ) {
+		return Z9;
+	}
+
+	throw Error( 'Z9 contains an invalid reference: ' + Z9 );
+}
+
 function canonicalize( zobject ) {
 	var canon = {};
 
@@ -16,7 +36,7 @@ function canonicalize( zobject ) {
 		[ Constants.Z_REFERENCE, Constants.Z_STRING ]
 			.indexOf( zobject[ Constants.Z_OBJECT_TYPE ] ) > -1
 	) {
-		canon = zobject[ Constants.Z_REFERENCE_ID ] || zobject[ Constants.Z_STRING_VALUE ] || '';
+		canon = canonicalizeZ6OrZ9( zobject );
 	} else {
 		Object.keys( zobject ).forEach( function ( key ) {
 			canon[ key ] = canonicalize( zobject[ key ] );
