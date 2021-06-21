@@ -102,10 +102,6 @@
 					"Z1K1": "Z9",
 					"Z9K1": "Z1000"
 				},
-				"Z14K2": {
-					"Z1K1": "Z9",
-					"Z9K1": "Z1000"
-				},
 				"Z14K3": {
 					"Z1K1": {
 						"Z1K1": "Z9",
@@ -125,10 +121,6 @@
 						"Z1K1": "Z6",
 						"Z6K1": "function Z1000( Z1000K1, Z1000K2 ) { return (parseInt(Z1000K1) + parseInt(Z1000K2)).toString(); }"
 					}
-				},
-				"Z14K4": {
-					"Z1K1": "Z6",
-					"Z6K1": "This is required"
 				}
 			},
 			"Z10K2": {
