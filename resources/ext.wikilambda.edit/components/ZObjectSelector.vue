@@ -11,7 +11,6 @@
 		@license MIT
 	-->
 	<span class="ext-wikilambda-select-zobject">
-
 		<span v-if="readonly || viewmode">{{ selectedText }}</span>
 		<wbmi-autocomplete-search-input
 			v-else
@@ -57,7 +56,7 @@ module.exports = {
 	props: {
 		type: {
 			type: String,
-			default: ''
+			default: Constants.Z_TYPE
 		},
 		selectedId: {
 			type: String,

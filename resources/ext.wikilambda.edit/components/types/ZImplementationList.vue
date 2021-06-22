@@ -8,12 +8,13 @@
 	<div>
 		{{ $i18n( 'wikilambda-editor-implementation-list-label' ) }}:
 		<ul>
-			<z-list-item
+			<z-implementation-list-item
 				v-for="(item) in ZlistItems"
 				:key="item.id"
 				:zobject-id="item.id"
 				:viewmode="viewmode"
-			></z-list-item>
+				:z-type="Constants.Z_IMPLEMENTATION"
+			></z-implementation-list-item>
 			<li v-if="!viewmode">
 				<button :title="tooltipAddListItem" @click="addNewItem">
 					{{ $i18n( 'wikilambda-editor-additem' ) }}
@@ -24,14 +25,25 @@
 </template>
 
 <script>
-var mapActions = require( 'vuex' ).mapActions,
+var Constants = require( '../../Constants.js' ),
+	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
-	ZList = require( './ZList.vue' );
+	ZList = require( './ZList.vue' ),
+	ZImplementationListItem = require( './ZImplementationListItem.vue' );
 
 module.exports = {
 	extends: ZList,
-	computed: mapGetters( [ 'getNextObjectId' ] ),
-	methods: $.extend( mapActions( [ 'addZImplementation' ] ), {
+	components: {
+		'z-implementation-list-item': ZImplementationListItem
+	},
+	computed: $.extend( mapGetters( [ 'getNextObjectId' ] ),
+		{
+			Constants: function () {
+				return Constants;
+			}
+		}
+	),
+	methods: $.extend( mapActions( [ 'addZReference' ] ), {
 		addNewItem: function ( /* event */ ) {
 			var nextId = this.getNextObjectId,
 				payload = {
@@ -41,7 +53,10 @@ module.exports = {
 				};
 			this.addZObject( payload );
 
-			this.addZImplementation( nextId );
+			this.addZReference( {
+				value: '',
+				id: nextId
+			} );
 		}
 	} )
 };

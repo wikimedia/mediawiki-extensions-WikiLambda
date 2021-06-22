@@ -23,8 +23,7 @@
 </template>
 
 <script>
-var Constants = require( '../../Constants.js' ),
-	ZListItem = require( './ZListItem.vue' ),
+var ZListItem = require( './ZListItem.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -42,11 +41,6 @@ module.exports = {
 			type: Boolean,
 			default: false
 		}
-	},
-	data: function () {
-		return {
-			Constants: Constants
-		};
 	},
 	computed: $.extend( {},
 		mapGetters( {

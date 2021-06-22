@@ -204,21 +204,7 @@ module.exports = {
 				.then( function ( resultId ) {
 					self.resultId = resultId;
 
-					if ( !self.zImplementationLanguages ) {
-						self.callZFunction( { zobject: ZfunctionObject } );
-					} else {
-						// we replace the Reference to a function to the actual function
-						// using OO.copy to get a deep copy of the function ZObject.
-						ZfunctionObject[ Constants.Z_FUNCTION_CALL_FUNCTION ] =
-							OO.copy( self.selectedFunction[ Constants.Z_PERSISTENTOBJECT_VALUE ] );
-
-						// Remove labels, as the schemata is throwing errors on this.
-						ZfunctionObject.Z7K1.Z8K1.forEach( function ( thing ) {
-							thing.Z17K3.Z12K1 = [];
-						} );
-
-						self.callZFunction( { zobject: ZfunctionObject, resultId: self.resultId } );
-					}
+					self.callZFunction( { zobject: ZfunctionObject, resultId: self.resultId } );
 				} );
 		}
 	} ),

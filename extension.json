@@ -166,6 +166,7 @@
 				"ext.wikilambda.edit/components/ZFunctionSignature.vue",
 				"ext.wikilambda.edit/components/types/ZArgumentReference.vue",
 				"ext.wikilambda.edit/components/types/ZNothing.vue",
+				"ext.wikilambda.edit/components/types/ZImplementationListItem.vue",
 				"ext.wikilambda.edit/mixins/schemata.js",
 				"lib/ace/ace.js",
 				"lib/icons.js"

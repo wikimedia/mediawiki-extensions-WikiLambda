@@ -14,7 +14,7 @@
 		</button>
 		<z-object-selector
 			v-if="isEmptyObject"
-			:type="Constants.Z_TYPE"
+			:type="zType"
 			:placeholder="$i18n( 'wikilambda-typeselector-label' )"
 			@input="onTypeChange"
 		></z-object-selector>
@@ -46,6 +46,10 @@ module.exports = {
 		readonly: {
 			type: Boolean,
 			default: false
+		},
+		zType: {
+			type: String,
+			default: Constants.Z_TYPE
 		}
 	},
 	data: function () {

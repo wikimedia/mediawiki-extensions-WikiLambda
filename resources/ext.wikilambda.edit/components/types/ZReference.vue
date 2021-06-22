@@ -41,7 +41,7 @@ module.exports = {
 		},
 		searchType: {
 			type: String,
-			default: ''
+			default: Constants.Z_TYPE
 		},
 		readonly: {
 			type: Boolean,
@@ -98,3 +98,9 @@ module.exports = {
 	}
 };
 </script>
+
+<style lang="less">
+.ext-wikilambda-zreference {
+	display: inline;
+}
+</style>
