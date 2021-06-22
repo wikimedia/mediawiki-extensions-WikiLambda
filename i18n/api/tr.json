@@ -3,7 +3,8 @@
 		"authors": [
 			"Joseph",
 			"Mim.saitkilic",
-			"MuratTheTurkish"
+			"MuratTheTurkish",
+			"SaldırganSincap"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "ZObjects'in JSON modelini getirin.",
@@ -13,7 +14,7 @@
 	"apihelp-wikilambda_fetch-example-multiple": "Üç ZObject getirin: Z1, Z2 ve Z3.",
 	"apierror-wikilambda_fetch-missingzid": "Verilen ZID '$1' bu vikide mevcut değil.",
 	"apihelp-wikilambda_function_call-param-zobject": "İşlev çağrısı için ZObject",
-	"apihelp-wikilambda_function_call-example-if": "Z802'yi (If) yanlış yüklemle çağır",
+	"apihelp-wikilambda_function_call-example-if": "Yerleşik Z802'yi (If) yanlış yüklemle çağırın",
 	"apihelp-wikilambda_function_call-summary": "İşlev-düzenleyiciyi çağırarak bir işlevi çalıştır",
 	"apihelp-query+wikilambdasearch_labels-summary": "Bu API sorgu listesi oluşturucu, belirli bir dildeki etiketler için ZObjects'te arama yapmanızı sağlar. Esasen ileriye dönük arama sistemini desteklemek için vardır.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Arama terimi",

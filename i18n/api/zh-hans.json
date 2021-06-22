@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"GuoPC"
+		]
+	},
+	"apihelp-wikilambda_function_call-example-native-js-code": "调用用户编写的JavaScript代码",
+	"apihelp-wikilambda_function_call-example-native-python-code": "调用用户编写的Python 3代码"
+}

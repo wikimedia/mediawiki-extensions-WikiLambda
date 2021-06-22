@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"BaRaN6161 TURK",
+			"Hedda",
 			"Joseph",
 			"Melissadilara",
 			"Mim.saitkilic",
@@ -66,5 +67,6 @@
 	"wikilambda-editor-argument-list-label": "Değişken Listesi",
 	"wikilambda-editor-implementation-list-label": "Uygulama Listesi",
 	"wikilambda-editor-boolean-selector": "doğru/yanlış seç",
-	"wikilambda-implementation-selector-code": "Kod"
+	"wikilambda-implementation-selector-code": "Kod",
+	"wikilambda-implementation-selector-composition": "Kompozisyon"
 }
