@@ -10,6 +10,7 @@ global.mw = {
 				case 'wgWikiLambda':
 					return {
 						createNewPage: true,
+						viewmode: true,
 						zobject: { Z1K1: 'Z2', Z2K1: 'Z0' }
 					};
 				default:
@@ -19,6 +20,11 @@ global.mw = {
 	},
 	user: {
 		isAnon: jest.fn().mockReturnValue( true )
+	},
+	language: {
+		getFallbackLanguageChain: function () {
+			return [ 'en' ];
+		}
 	}
 // other mw properties as needed...
 };

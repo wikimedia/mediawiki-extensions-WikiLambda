@@ -107,6 +107,9 @@ module.exports = {
 	},
 	watch: {
 		getZkeys: function () {
+			if ( !this.zKey ) {
+				return;
+			}
 			var literal = this.getZkeyLiteralType( this.zKey );
 			if ( literal &&
 				this.literalType !== literal &&

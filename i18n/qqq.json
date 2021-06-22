@@ -32,6 +32,7 @@
 	"wikilambda-functioncall": "Label for the word [[:meta:Abstract Wikipedia/Glossary#function call|function call]].\n\n{{doc-wikilambda}}",
 	"wikilambda-orchestrated": "Label for the result of orchestration.\n\n{{doc-wikilambda}}",
 	"wikilambda-json": "Label for the word [[:meta:Abstract Wikipedia/Glossary#json|json]].\n\n{{doc-wikilambda}}",
+	"wikilambda-argref": "Label for button that access argument reference",
 	"wikilambda-special-callfunction": "Description for Special:CallFunction.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-callfunction-summary": "Introductory summary shown on Special:CallFunction.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-callfunction-intro": "Warning shown to editors on Special:CallFunction about following community rules.",
@@ -75,10 +76,12 @@
 	"wikilambda-modeselector-genericliteral": "Label for button to select the generic mode when entering values. Should be similar to the word \"[[:meta:Abstract Wikipedia/Glossary#generic|generic]]\", but as short as possible.\n\n{{doc-wikilambda}}",
 	"wikilambda-modeselector-functioncall": "{{notranslate}}\nLabel for button to select function call",
 	"wikilambda-modeselector-json": "{{notranslate}}\nLabel for button to select JSON",
+	"wikilambda-modeselector-argref": "{{notranslate}}\nLabel for button to select argument reference",
 	"specialpages-group-wikilambda": "{{doc-special-group|that=are related to Wikifungsi}}",
 	"wikilambda-editor-argument-list-label": "Label for a list of arguments in a function.",
 	"wikilambda-editor-implementation-list-label": "Label for a list of implementations in a function.",
 	"wikilambda-editor-boolean-selector": "Label for selecting a true/false value for a boolean.",
 	"wikilambda-implementation-selector-code": "Label for selecting an implementation type of 'code'",
-	"wikilambda-implementation-selector-composition": "Label for selecting an implementation type of 'composition'"
+	"wikilambda-implementation-selector-composition": "Label for selecting an implementation type of 'composition'",
+	"wikilambda-argref-default-label": "Label for selecting an argument in an argument reference."
 }

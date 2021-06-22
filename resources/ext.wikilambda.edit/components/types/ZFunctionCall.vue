@@ -5,7 +5,7 @@
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div>
+	<div class="ext-wikilambda-function-call-block">
 		{{ zFunctionCallKeyLabels[ Constants.Z_FUNCTION_CALL_FUNCTION ] }}:
 		<z-object-selector
 			:type="Constants.Z_FUNCTION"
@@ -259,6 +259,13 @@ module.exports = {
 </script>
 
 <style lang="less">
+.ext-wikilambda-function-call-block {
+	background: rgba( 0, 0, 0, 0.03 );
+	outline: 1px dotted #888;
+	margin: 5px;
+	padding: 5px;
+}
+
 .ext-wikilambda-orchestrated-result {
 	display: block;
 	padding: 1em;

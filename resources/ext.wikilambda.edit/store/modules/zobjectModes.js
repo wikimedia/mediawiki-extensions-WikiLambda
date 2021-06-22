@@ -10,9 +10,18 @@ module.exports = {
 				// or if the type is Reference or FunctionCall
 				// mode selector it does not have a generic or literal view
 				return modes.filter( function ( mode ) {
+					// Do not display the argument reference mode if not allowed
+					if ( mode.key === Constants.Z_KEY_MODES.ARGUMENT_REF ) {
+						return payload.allowZArgumentRefMode;
+					}
+
+					// If the parent and literal types are the same, do not display
+					// reference or generic
 					if ( typeIsItsOwnIdentity ) {
 						return mode.type !== null;
 					}
+
+					// Filter out specific modes depending on type
 					switch ( payload.literalType ) {
 						case Constants.Z_REFERENCE:
 						case Constants.Z_FUNCTION_CALL:

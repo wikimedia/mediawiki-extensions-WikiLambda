@@ -14,7 +14,7 @@
 				@input="updateZFunctionType"
 			></z-object-selector>
 		</div>
-		<div>
+		<div v-if="!getViewMode">
 			<select v-model="implMode">
 				<option value="code">
 					{{ $i18n( 'wikilambda-implementation-selector-code' ) }}
@@ -32,6 +32,11 @@
 			v-if="implMode === 'code'"
 			:zobject-id="zCodeId"
 		></z-code>
+		<z-object
+			v-if="implMode === 'composition'"
+			:zobject-id="zCompositionId"
+			:persistent="false"
+		></z-object>
 	</div>
 </template>
 
@@ -42,15 +47,20 @@ var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	ZCode = require( './ZCode.vue' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
-	ZFunctionSignature = require( '../ZFunctionSignature.vue' );
+	ZFunctionSignature = require( '../ZFunctionSignature.vue' ),
+	ZObjectKey = require( '../ZObjectKey.vue' );
 
 module.exports = {
 	components: {
 		'z-code': ZCode,
 		'z-object-selector': ZObjectSelector,
-		'z-function-signature': ZFunctionSignature
+		'z-function-signature': ZFunctionSignature,
+		'z-object-key': ZObjectKey
 	},
 	mixins: [ typeUtils ],
+	provide: {
+		allowArgRefMode: true
+	},
 	props: {
 		zobjectId: {
 			type: Number,
@@ -59,11 +69,11 @@ module.exports = {
 	},
 	data: function () {
 		return {
-			implMode: 'code'
+			implMode: null
 		};
 	},
 	computed: $.extend( {},
-		mapGetters( [ 'getZObjectChildrenById', 'getZkeyLabels', 'getZkeys' ] ),
+		mapGetters( [ 'getZObjectChildrenById', 'getZkeyLabels', 'getZkeys', 'getViewMode' ] ),
 		{
 			Constants: function () {
 				return Constants;
@@ -81,6 +91,9 @@ module.exports = {
 			},
 			zCodeId: function () {
 				return this.findKeyInArray( Constants.Z_IMPLEMENTATION_CODE, this.zobject ).id;
+			},
+			zCompositionId: function () {
+				return this.findKeyInArray( Constants.Z_IMPLEMENTATION_COMPOSITION, this.zobject ).id;
 			},
 			zCodeLanguage: function () {
 				return this.findKeyInArray(
@@ -158,7 +171,13 @@ module.exports = {
 		}
 	),
 	methods: $.extend( {},
-		mapActions( [ 'fetchZKeys', 'setZObjectValue', 'initializeZCodeFunction' ] ),
+		mapActions( [
+			'fetchZKeys',
+			'setZObjectValue',
+			'initializeZCodeFunction',
+			'setZImplementationType',
+			'setAvailableZArguments'
+		] ),
 		{
 			updateZFunctionType: function ( val ) {
 				this.setZObjectValue( {
@@ -170,12 +189,45 @@ module.exports = {
 	),
 	watch: {
 		zCodeLanguage: function () {
-			this.initializeZCodeFunction( {
-				zCodeId: this.zCodeId,
-				language: this.zCodeLanguage,
-				functionId: this.zFunction.value,
-				argumentList: this.selectedFunctionArguments
+			if ( typeof this.zCodeLanguage !== 'undefined' ) {
+				this.initializeZCodeFunction( {
+					zCodeId: this.zCodeId,
+					language: this.zCodeLanguage,
+					functionId: this.zFunction.value,
+					argumentList: this.selectedFunctionArguments
+				} );
+			}
+		},
+		implMode: function ( mode, prevMode ) {
+			if ( !prevMode ) {
+				return;
+			}
+
+			this.setZImplementationType( {
+				zobjectId: this.zobjectId,
+				mode: mode
 			} );
+		},
+		zFunction: {
+			immediate: true,
+			handler: function () {
+				if ( this.zFunction.value ) {
+					this.fetchZKeys( [ this.zFunction.value ] );
+				}
+			}
+		},
+		selectedFunctionArguments: function () {
+			this.setAvailableZArguments( this.selectedFunctionArguments );
+		}
+	},
+	beforeCreate: function () {
+		this.$options.components[ 'z-object' ] = require( '../ZObject.vue' );
+	},
+	mounted: function () {
+		if ( this.zCodeId ) {
+			this.implMode = 'code';
+		} else if ( this.zCompositionId ) {
+			this.implMode = 'composition';
 		}
 	}
 };

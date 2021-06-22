@@ -1,5 +1,4 @@
-var Constants = require( '../../Constants.js' ),
-	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
+var canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
 
 module.exports = {
 	actions: {
@@ -35,7 +34,7 @@ module.exports = {
 				context.dispatch(
 					'addZFunctionResultToTree',
 					{
-						result: canonicalZObject[ Constants.Z_PAIR_FIRST ] || canonicalZObject,
+						result: canonicalZObject,
 						resultId: payload.resultId
 					}
 				);

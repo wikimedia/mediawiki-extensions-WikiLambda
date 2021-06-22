@@ -70,6 +70,16 @@
 			:zobject-id="zobjectId"
 		></z-implementation>
 
+		<z-argument-reference
+			v-else-if="type === Constants.Z_ARGUMENT_REFERENCE"
+			:zobject-id="zobjectId"
+		></z-argument-reference>
+
+		<z-nothing
+			v-else-if="type === Constants.Z_NOTHING"
+			:zobject-id="zobjectId"
+		></z-nothing>
+
 		<z-object-generic
 			v-else-if="type !== undefined"
 			:zobject-id="zobjectId"
@@ -95,6 +105,8 @@ var Constants = require( '../Constants.js' ),
 	ZFunction = require( './types/ZFunction.vue' ),
 	ZBoolean = require( './types/ZBoolean.vue' ),
 	ZImplementation = require( './types/ZImplementation.vue' ),
+	ZArgumentReference = require( './types/ZArgumentReference.vue' ),
+	ZNothing = require( './types/ZNothing.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -112,7 +124,9 @@ module.exports = {
 		'z-object-selector': ZObjectSelector,
 		'z-function': ZFunction,
 		'z-boolean': ZBoolean,
-		'z-implementation': ZImplementation
+		'z-implementation': ZImplementation,
+		'z-argument-reference': ZArgumentReference,
+		'z-nothing': ZNothing
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -144,7 +158,8 @@ module.exports = {
 				return (
 					( this.type === Constants.Z_STRING ) ||
 					( this.type === Constants.Z_REFERENCE ) ||
-					( this.type === Constants.Z_BOOLEAN )
+					( this.type === Constants.Z_BOOLEAN ) ||
+					( this.type === Constants.Z_ARGUMENT_REFERENCE )
 				);
 			},
 			classZObject: function () {

@@ -164,6 +164,8 @@
 				"ext.wikilambda.edit/components/types/ZImplementationList.vue",
 				"ext.wikilambda.edit/components/types/ZImplementation.vue",
 				"ext.wikilambda.edit/components/ZFunctionSignature.vue",
+				"ext.wikilambda.edit/components/types/ZArgumentReference.vue",
+				"ext.wikilambda.edit/components/types/ZNothing.vue",
 				"ext.wikilambda.edit/mixins/schemata.js",
 				"lib/ace/ace.js",
 				"lib/icons.js"
@@ -184,6 +186,8 @@
 				"wikilambda-orchestrated",
 				"wikilambda-functioncall",
 				"wikilambda-json",
+				"wikilambda-modeselector-argref",
+				"wikilambda-argref",
 				"wikilambda-typeselector-label",
 				"wikilambda-zobjectselector-label",
 				"wikilambda-editor-additem",
@@ -207,7 +211,8 @@
 				"wikilambda-editor-implementation-list-label",
 				"wikilambda-editor-boolean-selector",
 				"wikilambda-implementation-selector-code",
-				"wikilambda-implementation-selector-composition"
+				"wikilambda-implementation-selector-composition",
+				"wikilambda-argref-default-label"
 			]
 		}
 	},

@@ -1,3 +1,11 @@
+/*!
+ * WikiLambda unit test suite for the callZFunction Vuex module
+ *
+ * @copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+ * @license MIT
+ */
+'use strict';
+
 var callZFunctionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/callZFunction.js' ),
 	functionCall = {
 		Z1K1: {
