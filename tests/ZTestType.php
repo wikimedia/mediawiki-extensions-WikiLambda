@@ -10,7 +10,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests;
 
+use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZErrorTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 class ZTestType extends ZObject {
 
@@ -105,10 +109,20 @@ EOT;
 
 	public static function create( array $objectVars ) : ZObject {
 		if ( !array_key_exists( 'Z111K1', $objectVars ) ) {
-			throw new \InvalidArgumentException( "ZTestType missing the Z111K1 key." );
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
+					new ZString( "ZTestType missing the Z111K1 key." )
+				)
+			);
 		}
 		if ( !array_key_exists( 'Z111K2', $objectVars ) ) {
-			throw new \InvalidArgumentException( "ZTestType missing the Z111K2 key." );
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
+					new ZString( "ZTestType missing the Z111K2 key." )
+				)
+			);
 		}
 		return new ZTestType( $objectVars[ 'Z111K1' ], $objectVars[ 'Z111K2' ] );
 	}

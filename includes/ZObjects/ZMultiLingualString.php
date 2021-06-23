@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use Language;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
@@ -55,7 +56,7 @@ class ZMultiLingualString extends ZObject {
 	public function getStringForLanguageCode( string $languageCode ) : string {
 		try {
 			$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
-		} catch ( \InvalidArgumentException $e ) {
+		} catch ( ZErrorException $e ) {
 			return '';
 		}
 		return $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageZid ] ?? '';
@@ -72,7 +73,7 @@ class ZMultiLingualString extends ZObject {
 	public function isLanguageProvidedValue( string $languageCode ) : bool {
 		try {
 			$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
-		} catch ( \InvalidArgumentException $e ) {
+		} catch ( ZErrorException $e ) {
 			return false;
 		}
 		return array_key_exists( $languageZid, $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] ?? [] );

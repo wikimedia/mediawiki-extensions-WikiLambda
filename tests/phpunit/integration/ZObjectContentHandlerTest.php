@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use FormatJson;
 use Language;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
@@ -125,7 +126,7 @@ class ZObjectContentHandlerTest extends \MediaWikiIntegrationTestCase {
 		$qid = 'Q333';
 		$title = Title::newFromText( $qid );
 
-		$this->expectException( \InvalidArgumentException::class );
+		$this->expectException( ZErrorException::class );
 		$this->expectExceptionMessage( "Provided page '$qid' is not in the ZObject namespace." );
 
 		ZObjectContentHandler::getExternalRepresentation( $title );
@@ -138,10 +139,15 @@ class ZObjectContentHandlerTest extends \MediaWikiIntegrationTestCase {
 		$unavailableZid = 'Z333';
 		$title = Title::newFromText( $unavailableZid, NS_ZOBJECT );
 
-		$this->expectException( \InvalidArgumentException::class );
-		$this->expectExceptionMessage( "Provided page 'ZObject:$unavailableZid' could not be fetched from the DB." );
+		try {
+			ZObjectContentHandler::getExternalRepresentation( $title );
+		} catch ( ZErrorException $e ) {
+			$errorType = $e->getZErrorType();
+			$errorMessage = $e->getZErrorMessage()->getZValue();
+		}
 
-		ZObjectContentHandler::getExternalRepresentation( $title );
+		$this->assertSame( 'Z504', $errorType );
+		$this->assertSame( "Provided page 'ZObject:$unavailableZid' could not be fetched from the DB.", $errorMessage );
 	}
 
 	/**

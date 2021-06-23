@@ -154,7 +154,7 @@ class ZObjectStore {
 
 		try {
 			$content = ZObjectContentHandler::makeContent( $data, $title );
-		} catch ( \InvalidArgumentException $e ) {
+		} catch ( ZErrorException $e ) {
 			// Error: Invalid input syntax
 			return Status::newFatal( $e->getMessage() );
 		}

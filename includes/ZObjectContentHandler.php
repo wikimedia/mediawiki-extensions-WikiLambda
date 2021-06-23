@@ -13,6 +13,8 @@ namespace MediaWiki\Extension\WikiLambda;
 use Content;
 use ContentHandler;
 use FormatJson;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MWException;
@@ -107,21 +109,37 @@ class ZObjectContentHandler extends ContentHandler {
 	 * @param Title $zObjectTitle The page to fetch.
 	 * @param string|null $languageCode The language in which to return results. If unset, all results are returned.
 	 * @return string The external JSON form of the given title.
+	 * @throws ZErrorException
 	 */
 	public static function getExternalRepresentation( Title $zObjectTitle, ?string $languageCode = null ) : string {
 		if ( $zObjectTitle->getNamespace() !== NS_ZOBJECT ) {
-			throw new \InvalidArgumentException( "Provided page '$zObjectTitle' is not in the ZObject namespace." );
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_WRONG_NAMESPACE,
+					new ZString( "Provided page '$zObjectTitle' is not in the ZObject namespace." )
+				)
+			);
 		}
 
 		if ( $zObjectTitle->getContentModel() !== CONTENT_MODEL_ZOBJECT ) {
-			throw new \InvalidArgumentException( "Provided page '$zObjectTitle' is not a ZObject content type." );
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_WRONG_NAMESPACE,
+					new ZString( "Provided page '$zObjectTitle' is not in a ZObject content type." )
+				)
+			);
 		}
 
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$zObject = $zObjectStore->fetchZObjectByTitle( $zObjectTitle );
 
 		if ( $zObject === false ) {
-			throw new \InvalidArgumentException( "Provided page '$zObjectTitle' could not be fetched from the DB." );
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+					new ZString( "Provided page '$zObjectTitle' could not be fetched from the DB." )
+				)
+			);
 		}
 
 		$object = get_object_vars( ZObjectUtils::canonicalize( $zObject->getObject() ) );
@@ -130,10 +148,15 @@ class ZObjectContentHandler extends ContentHandler {
 			$services = MediaWikiServices::getInstance();
 
 			if ( !$services->getLanguageNameUtils()->isValidCode( $languageCode ) ) {
-				throw new \InvalidArgumentException( "Provided language code '$languageCode' is not valid." );
+				throw new ZErrorException(
+					new ZError(
+						ZErrorTypeRegistry::Z_ERROR_INVALID_LANG_CODE,
+						new ZString( "Provided language code '$languageCode' is not valid." )
+					)
+				);
 			}
 
-			// If language doesn't have a Zid, throws \InvalidArgumentException
+			// If language doesn't have a Zid, throws ZErrorException (Z541)
 			$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
 
 			$fullLabels = $zObject->getLabels();

@@ -23,13 +23,30 @@ class ZErrorException extends Exception {
 	 * @param ZError $error
 	 */
 	public function __construct( $error ) {
+		// We call the parent construction passing a message so that it can give some information
+		// if the exception is called and printed in php
+		parent::__construct( $error->getMessage() );
 		$this->error = $error;
+	}
+
+	/**
+	 * @return ZError
+	 */
+	public function getZError() : ZError {
+		return $this->error;
 	}
 
 	/**
 	 * @return ZObject
 	 */
 	public function getZErrorMessage() : ZObject {
-		return $this->error->getMessage();
+		return $this->error->getZValue();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getZErrorType() : string {
+		return $this->error->getZErrorType();
 	}
 }

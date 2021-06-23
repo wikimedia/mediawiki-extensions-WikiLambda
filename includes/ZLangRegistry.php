@@ -10,7 +10,8 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use InvalidArgumentException;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use Title;
 
 /**
@@ -46,7 +47,7 @@ class ZLangRegistry {
 	 *
 	 * @param string $zid
 	 * @return string
-	 * @throws InvalidArgumentException
+	 * @throws ZErrorException
 	 */
 	public function getLanguageCodeFromZid( $zid ) : string {
 		$code = array_search( $zid, $this->zLanguageCodes );
@@ -63,7 +64,7 @@ class ZLangRegistry {
 	 *
 	 * @param string $code
 	 * @return string
-	 * @throws InvalidArgumentException
+	 * @throws ZErrorException
 	 */
 	public function getLanguageZidFromCode( $code ) : string {
 		if ( array_key_exists( $code, $this->zLanguageCodes ) ) {
@@ -89,8 +90,12 @@ class ZLangRegistry {
 	 *
 	 * @param string $zid
 	 */
-	public function unregisterLang( string $zid ) {
-		$code = $this->getLanguageCodeFromZid( $zid );
+	public function unregisterLang( string $zid ) : void {
+		try {
+			$code = $this->getLanguageCodeFromZid( $zid );
+		} catch ( ZErrorException $e ) {
+			// do nothing
+		}
 		unset( $this->zLanguageCodes[ $code ] );
 	}
 
@@ -99,7 +104,7 @@ class ZLangRegistry {
 	 *
 	 * @param string $zid
 	 * @return string The language code of the ZLanguage identified by this Zid
-	 * @throws InvalidArgumentException
+	 * @throws ZErrorException
 	 */
 	private function fetchLanguageCodeFromZid( $zid ) : string {
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
@@ -107,12 +112,24 @@ class ZLangRegistry {
 
 		$content = $zObjectStore->fetchZObjectByTitle( $title );
 		if ( !$content ) {
-			throw new InvalidArgumentException( "Language object with zid '$zid' not found" );
+			// Error Z504: Zid not found
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+					new ZString( "Language object with zid '$zid' not found." )
+				)
+			);
 		}
 
 		$code = $this->getLanguageCodeFromContent( $content );
 		if ( !$code ) {
-			throw new InvalidArgumentException( "Language object with zid '$zid' is invalid" );
+			// Error Z511: Key not found (Z60K1)
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
+					new ZString( "Language object with zid '$zid' is invalid: key 'Z60K1' not found." )
+				)
+			);
 		}
 
 		return $code;
@@ -129,7 +146,7 @@ class ZLangRegistry {
 	 *
 	 * @param string $code
 	 * @return string The ZLanguage Zid associated to this language code
-	 * @throws InvalidArgumentException
+	 * @throws ZErrorException
 	 */
 	private function fetchLanguageZidFromCode( $code ) : string {
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
@@ -147,7 +164,13 @@ class ZLangRegistry {
 		}
 
 		if ( !$foundZid ) {
-			throw new InvalidArgumentException( "Language object with language code '$code' not found" );
+			// Error Z541: Unregistered language
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_LANG_NOT_FOUND,
+					new ZString( "Language object with language code '$code' not found" )
+				)
+			);
 		}
 
 		return $foundZid;
@@ -157,7 +180,7 @@ class ZLangRegistry {
 	 * Returns the language code from a ZObjectContent wrapping a Z60.
 	 *
 	 * @param ZObjectContent $content
-	 * @return string|bool Language code or empty string if content object is not valid Z60.
+	 * @return string|bool Language code or false if content object is not valid Z60.
 	 */
 	private function getLanguageCodeFromContent( $content ) {
 		// If we want to validate the ZObject, we can do:
@@ -188,10 +211,10 @@ class ZLangRegistry {
 		}
 		try {
 			$this->getLanguageCodeFromZid( $zid );
-			return true;
-		} catch ( InvalidArgumentException $e ) {
+		} catch ( ZErrorException $e ) {
 			return false;
 		}
+		return true;
 	}
 
 	/**
@@ -205,7 +228,7 @@ class ZLangRegistry {
 		foreach ( $languageCodes as $code ) {
 			try {
 				$languageZids[] = $this->getLanguageZidFromCode( $code );
-			} catch ( \InvalidArgumentException $e ) {
+			} catch ( ZErrorException $e ) {
 				// We ignore the language code if it's not available as Zid
 			}
 		}

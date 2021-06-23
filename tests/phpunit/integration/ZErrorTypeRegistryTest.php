@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorTypeRegistry;
 use Title;
 use WikiPage;
@@ -27,6 +28,20 @@ class ZErrorTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 
 		$this->tablesUsed[] = 'wikilambda_zobject_labels';
 		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
+	}
+
+	protected function insertZids( $zids ) : void {
+		$dataPath = dirname( __DIR__, 3 ) . '/data';
+		foreach ( $zids as $zid ) {
+			$data = file_get_contents( "$dataPath/$zid.json" );
+			$this->editPage( $zid, $data, 'Test creation', NS_ZOBJECT );
+			$this->titlesTouched[] = $zid;
+		}
+	}
+
+	protected function insertZErrorTypes( $errorTypes ) : void {
+		// Insert ZErrorType (Z50) and then all the wanted types
+		$this->insertZids( array_merge( (array)'Z50', $errorTypes ) );
 	}
 
 	protected function tearDown() : void {
@@ -102,19 +117,19 @@ class ZErrorTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testIsZErrorTypeKnown_typeNotValid() {
 		$invalidErrorType = 'Z6';
+		$expectedErrorType = 'Z506';
 		$registry = ZErrorTypeRegistry::singleton();
 
-		// Insert necessary ZIDs
-		$files = [ 'Z6' => 'Z6.json' ];
-		$dataPath = dirname( __DIR__, 3 ) . '/data/';
-		foreach ( $files as $zid => $filename ) {
-			$data = file_get_contents( $dataPath . $filename );
-			$this->editPage( $zid, $data, 'Test creation', NS_ZOBJECT );
-			$this->titlesTouched[] = $zid;
-		}
+		$this->insertZErrorTypes( [ $expectedErrorType ] );
+		$this->insertZids( [ $invalidErrorType ] );
 
-		$this->expectException( \InvalidArgumentException::class );
-		$registry->isZErrorTypeKnown( $invalidErrorType );
+		$errorType = null;
+		try {
+			$registry->isZErrorTypeKnown( $invalidErrorType );
+		} catch ( ZErrorException $e ) {
+			$errorType = $e->getZErrorType();
+		}
+		$this->assertSame( $expectedErrorType, $errorType );
 	}
 
 	/**
@@ -126,15 +141,7 @@ class ZErrorTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 	public function testIsZErrorTypeKnown_valid() {
 		$errorType = 'Z501';
 		$registry = ZErrorTypeRegistry::singleton();
-
-		// Insert necessary ZIDs
-		$files = [ 'Z50' => 'Z50.json', 'Z501' => 'Z501.json' ];
-		$dataPath = dirname( __DIR__, 3 ) . '/data/';
-		foreach ( $files as $zid => $filename ) {
-			$data = file_get_contents( $dataPath . $filename );
-			$this->editPage( $zid, $data, 'Test creation', NS_ZOBJECT );
-			$this->titlesTouched[] = $zid;
-		}
+		$this->insertZErrorTypes( [ $errorType ] );
 
 		$this->assertFalse(
 			$this->runPrivateMethod( $registry, 'isZErrorTypeCached', [ $errorType ] ),

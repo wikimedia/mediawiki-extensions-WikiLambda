@@ -10,7 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use InvalidArgumentException;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
@@ -31,6 +31,7 @@ class ZObjectFactory {
 	 *
 	 * @param string|array|ZObject|\stdClass $input The item to turn into a ZObject
 	 * @return ZPersistentObject
+	 * @throws ZErrorException
 	 */
 	public static function createPersistentContent( $input ) {
 		if ( $input instanceof ZPersistentObject ) {
@@ -40,7 +41,13 @@ class ZObjectFactory {
 		if ( is_object( $input ) && !( $input instanceof ZObject ) ) {
 			$objectVars = get_object_vars( $input );
 			if ( !array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $objectVars ) ) {
-				throw new \InvalidArgumentException( "ZObject record missing a type key." );
+				// Error Z511: Key not found
+				throw new ZErrorException(
+					new ZError(
+						ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
+						new ZString( "ZObject record missing a type key." )
+					)
+				);
 			}
 
 			$type = $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ];
@@ -58,6 +65,7 @@ class ZObjectFactory {
 	/**
 	 * @param string|array|ZObject|\stdClass $object The item to turn into a ZObject
 	 * @return ZObject
+	 * @throws ZErrorException
 	 */
 	public static function create( $object ) {
 		if ( $object instanceof ZObject ) {
@@ -77,25 +85,47 @@ class ZObjectFactory {
 		}
 
 		if ( !is_object( $object ) ) {
-			throw new InvalidArgumentException(
-				"Couldn't create ZObject for given input '$object'; unrecognised format."
+			// Error Z547: Invalid format
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_FORMAT,
+					new ZString( "Couldn't create ZObject for given input '$object'; unrecognised format." )
+				)
 			);
 		}
 
 		$objectVars = get_object_vars( $object );
 
 		if ( !array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $objectVars ) ) {
-			throw new \InvalidArgumentException( "ZObject record missing a type key." );
+			// Error Z511: Missing type
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_MISSING_TYPE,
+					new ZString( "ZObject record missing a type key." )
+				)
+			);
 		}
 		$type = $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ];
 
 		if ( !ZObjectUtils::isValidZObjectReference( $type ) ) {
-			throw new \InvalidArgumentException( "ZObject record type '$type' is an invalid key." );
+			// Error Z549: Invalid reference
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_REFERENCE,
+					new ZString( "ZObject record type '$type' is an invalid key." )
+				)
+			);
 		}
 
 		$registry = ZTypeRegistry::singleton();
 		if ( !$registry->isZObjectKeyKnown( $type ) ) {
-			throw new \InvalidArgumentException( "ZObject record type '$type' not recognised." );
+			// Error Z550: Unknown reference
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_UNKNOWN_REFERENCE,
+					new ZString( "ZObject record type '$type' not recognised." )
+				)
+			);
 		}
 
 		// Wiki-provided type handling.
@@ -104,8 +134,13 @@ class ZObjectFactory {
 			$targetTitle = Title::newFromText( $type, NS_ZOBJECT );
 
 			if ( !$targetTitle->exists() ) {
-				throw new InvalidArgumentException(
-					"Couldn't create ZObject based on type '$type'; not built-in, but no such page on wiki."
+				// Error Z504: Zid not found
+				throw new ZErrorException(
+					new ZError(
+						ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+						new ZString( "Couldn't create ZObject based on type '$type'; "
+						. "not built-in, but no such page on wiki." )
+					)
 				);
 			}
 
@@ -113,8 +148,13 @@ class ZObjectFactory {
 			$targetObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
 
 			if ( !$targetObject ) {
-				throw new InvalidArgumentException(
-					"Couldn't create ZObject based on type '$type'; page isn't returned by the wiki."
+				// Error Z504: Zid not found
+				throw new ZErrorException(
+					new ZError(
+						ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+						new ZString( "Couldn't create ZObject based on type '$type'; "
+						. "page isn't returned by the wiki." )
+					)
 				);
 			}
 
@@ -130,8 +170,13 @@ class ZObjectFactory {
 					$keyType = $key->getKeyType();
 					if ( $registry->isZTypeBuiltIn( $keyType ) ) {
 						if ( self::validateKeyValue( $keyId, $keyType, $objectVars[ $keyId ] ) === null ) {
-							throw new InvalidArgumentException(
-								"Couldn't create ZObject based on type '$type'; key '$keyId' isn't a valid '$keyType'."
+							// Error Z551: Key type mismatch
+							throw new ZErrorException(
+								new ZError(
+									ZErrorTypeRegistry::Z_ERROR_KEY_TYPE_MISMATCH,
+									new ZString( "Couldn't create ZObject based on type '$type'; "
+									. "key '$keyId' isn't a valid '$keyType'." )
+								)
 							);
 						}
 					} else {
@@ -169,8 +214,12 @@ class ZObjectFactory {
 
 		$typeID = $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ];
 		if ( $typeID !== $targetZid ) {
-			throw new \InvalidArgumentException(
-				"Type of '$targetType' expected, but instead '$typeID' given."
+			// Error Z551: Key type mismatch
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_KEY_TYPE_MISMATCH,
+					new ZString( "Type of '$targetType' expected, but instead '$typeID' given." )
+				)
 			);
 		}
 
@@ -181,8 +230,12 @@ class ZObjectFactory {
 				$creationArray[] = self::validateKeyValue( $key, $settings['type'], $objectVars[$key] );
 			} else {
 				if ( array_key_exists( 'required', $settings ) && ( $settings['required'] ) ) {
-					throw new InvalidArgumentException(
-						"$targetType missing required '$key' key."
+					// Error Z511: Missing key
+					throw new ZErrorException(
+						new ZError(
+							ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
+							new ZString( "$targetType missing required '$key' key." )
+						)
 					);
 				}
 			}
@@ -200,6 +253,7 @@ class ZObjectFactory {
 	 * @param string $type The ZType against which validate.
 	 * @param mixed $value The input value to validate.
 	 * @return ZObject|array|string Definition
+	 * @throws ZErrorException
 	 */
 	private static function validateKeyValue( string $key, string $type, $value ) {
 		$return = null;
@@ -485,14 +539,24 @@ class ZObjectFactory {
 				break;
 
 			default:
-				// Default error.
-				throw new \InvalidArgumentException( "No validation for unknown '$type' type." );
+				// Error Z500: Default error.
+				throw new ZErrorException(
+					new ZError(
+						ZErrorTypeRegistry::Z_ERROR_GENERIC,
+						new ZString( "No validation for unknown '$type' type." )
+					)
+				);
 		}
 
 		// Fall-through error for known keys where the value don't pass validation.
 		// TODO: We should log this properly, rather than expect the error string to contain an object.
 		$valueString = is_string( $value ) ? $value : json_encode( $value );
-		throw new \InvalidArgumentException( "Value '$valueString' for '$key' of type '$type' is invalid." );
+		throw new ZErrorException(
+			new ZError(
+				ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
+				new ZString( "Value '$valueString' for '$key' of type '$type' is invalid." )
+			)
+		);
 	}
 
 	/**
