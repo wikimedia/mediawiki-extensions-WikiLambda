@@ -1,11 +1,17 @@
 {
 	"@metadata": {
 		"authors": [
+			"GuoPC",
 			"Hmgrmb",
 			"Zhang8569"
 		]
 	},
+	"wikilambda-typeunavailable": "不可识别种类",
 	"wikilambda-noresult": "搜索没有提供结果。",
+	"wikilambda-argref": "参数参考",
 	"wikilambda-editor-label-select-programming-language-label": "选择编程语言：",
-	"wikilambda-editor-boolean-selector": "选择真/假"
+	"wikilambda-editor-boolean-selector": "选择真/假",
+	"wikilambda-implementation-selector-code": "代码",
+	"wikilambda-implementation-selector-composition": "构成",
+	"wikilambda-argref-default-label": "选择一个参数"
 }

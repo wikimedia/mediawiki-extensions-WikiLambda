@@ -24,6 +24,7 @@
 	"wikilambda-call-function": "Função de chamada",
 	"wikilambda-functioncall": "Chamada de função",
 	"wikilambda-orchestrated": "Resultado de orquestração",
+	"wikilambda-argref": "Referência de argumento",
 	"wikilambda-special-callfunction": "Criar e executar uma chamada de função",
 	"wikilambda-special-callfunction-intro": "Certifique-se de seguir as políticas da comunidade e as regras de direitos autorais e patentes.",
 	"wikilambda-special-callfunction-nojs": "Esta página requer o uso de JavaScript.",
@@ -63,5 +64,6 @@
 	"wikilambda-editor-argument-list-label": "Lista de argumentação",
 	"wikilambda-editor-implementation-list-label": "Lista de implementação",
 	"wikilambda-implementation-selector-code": "Código",
-	"wikilambda-implementation-selector-composition": "Composição"
+	"wikilambda-implementation-selector-composition": "Composição",
+	"wikilambda-argref-default-label": "Selecione um argumento"
 }

@@ -22,6 +22,7 @@
 	"wikilambda-call-function": "Funktion aufrufen",
 	"wikilambda-functioncall": "Funktionsaufruf",
 	"wikilambda-orchestrated": "Ergebnis der Orchestrierung",
+	"wikilambda-argref": "Argument Referenz",
 	"wikilambda-special-callfunction": "Erstellen und Ausführen eines Funktionsaufrufs.",
 	"wikilambda-special-callfunction-summary": "Mit diesem Formular kannst du einen Funktionsaufruf erstellen und ausführen. Du solltest zuerst die Hilfedokumentation und die Anleitung der Community lesen.",
 	"wikilambda-special-callfunction-intro": "Vergewissere dich, dass du die Gemeinschaftsrichtlinien sowie die Urheberrechts- und Patentvorschriften befolgst.",
@@ -63,5 +64,6 @@
 	"wikilambda-editor-implementation-list-label": "Implementierungsliste",
 	"wikilambda-editor-boolean-selector": "Auswählen true/false",
 	"wikilambda-implementation-selector-code": "Code",
-	"wikilambda-implementation-selector-composition": "Zusammenstellung"
+	"wikilambda-implementation-selector-composition": "Zusammenstellung",
+	"wikilambda-argref-default-label": "Wähle ein Argument"
 }
