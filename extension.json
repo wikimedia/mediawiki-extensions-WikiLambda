@@ -56,6 +56,10 @@
 		"WikiLambdaEvaluatorLocation": {
 			"description": "Docker container and port of function evaluator.",
 			"value": "http://mediawiki_function-evaluator_1:6927/1/v1/evaluate/"
+		},
+		"WikiLocation": {
+			"description": "Docker container and port of wiki.",
+			"value": "http://mediawiki-web:8080/w/api.php"
 		}
 	},
 	"ConfigRegistry": {

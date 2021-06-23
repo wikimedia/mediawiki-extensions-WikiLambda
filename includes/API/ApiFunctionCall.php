@@ -31,6 +31,9 @@ class ApiFunctionCall extends ApiBase {
 	/** @var string */
 	private $evaluatorHost;
 
+	/** @var string */
+	private $wikiUri;
+
 	public function __construct( $query, $moduleName ) {
 		parent::__construct( $query, $moduleName, 'wikilambda_function_call_' );
 		if ( defined( 'MW_PHPUNIT_TEST' ) ) {
@@ -42,6 +45,7 @@ class ApiFunctionCall extends ApiBase {
 				getConfigFactory()->makeConfig( 'WikiLambda' );
 			$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
 			$this->evaluatorHost = $config->get( 'WikiLambdaEvaluatorLocation' );
+			$this->wikiUri = $config->get( 'WikiLocation' );
 			$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
 			$this->orchestrator = new OrchestratorInterface( $client );
 		}
@@ -63,7 +67,13 @@ class ApiFunctionCall extends ApiBase {
 		$pageResult = $this->getResult();
 		$stringOfAZ = $params[ 'zobject' ];
 		$zObject = json_decode( $stringOfAZ );
-		$jsonQuery = [ 'zobject' => $zObject, 'evaluatorUri' => urlencode( $this->evaluatorHost ) ];
+		$jsonQuery = [
+			'zobject' => $zObject,
+			'evaluatorUri' => urlencode( $this->evaluatorHost ),
+			'wikiUri' => urlencode( $this->wikiUri ),
+			// TODO: Enable validation once it works :)
+			'doValidate' => false
+		];
 		$query = json_encode( $jsonQuery );
 		try {
 			$response = $this->orchestrator->orchestrate( $query );
@@ -91,11 +101,11 @@ class ApiFunctionCall extends ApiBase {
 	}
 
 	/**
-	 * @see ApiBase::getExamplesMessages()
-	 * @return array
+	 * Generates URL-encoded example function call from JSON file contents.
+	 * @param string $fileName
+	 * @return string URL-encoded contents
 	 */
-	protected function getExamplesMessages() {
-		// TODO: Collapse this with test logic in orchestrator interface.
+	private function createExample( $fileName ) : string {
 		$baseDir = __DIR__ .
 			DIRECTORY_SEPARATOR .
 			'..' .
@@ -107,26 +117,27 @@ class ApiFunctionCall extends ApiBase {
 			'phpunit' .
 			DIRECTORY_SEPARATOR .
 			'test_data';
+		$fullFile = $baseDir . DIRECTORY_SEPARATOR . $fileName;
+		$contents = urlencode( file_get_contents( $fullFile ) );
+		return $contents;
+	}
 
-		$Z902File = $baseDir . DIRECTORY_SEPARATOR . 'Z902_false.json';
-		$Z902 = file_get_contents( $Z902File );
-		$Z902 = preg_replace( '/[\s\n]/', '', $Z902 );
-
-		$nativeJavaScriptCodeFile = $baseDir . DIRECTORY_SEPARATOR . 'evaluated-js.json';
-		$nativeJavaScriptCode = file_get_contents( $nativeJavaScriptCodeFile );
-		$nativeJavaScriptCode = urlencode( preg_replace( '/[\s\n]/', '', $nativeJavaScriptCode ) );
-
-		$nativePythonCodeFile = $baseDir . DIRECTORY_SEPARATOR . 'evaluated-python.json';
-		$nativePythonCode = file_get_contents( $nativePythonCodeFile );
-		$nativePythonCode = urlencode( preg_replace( '/[\s\n]/', '', $nativePythonCode ) );
-
+	/**
+	 * @see ApiBase::getExamplesMessages()
+	 * @return array
+	 */
+	protected function getExamplesMessages() {
 		return [
-			'action=wikilambda_function_call&wikilambda_function_call_zobject=' . $Z902
+			'action=wikilambda_function_call&wikilambda_function_call_zobject='
+				. $this->createExample( 'Z902_false.json' )
 				=> 'apihelp-wikilambda_function_call-example-if',
-			'action=wikilambda_function_call&wikilambda_function_call_zobject=' . $nativeJavaScriptCode
+			'action=wikilambda_function_call&wikilambda_function_call_zobject='
+				. $this->createExample( 'evaluated-js.json' )
 				=> 'apihelp-wikilambda_function_call-example-native-js-code',
-			'action=wikilambda_function_call&wikilambda_function_call_zobject=' . $nativePythonCode
+			'action=wikilambda_function_call&wikilambda_function_call_zobject='
+				. $this->createExample( 'evaluated-python.json' )
 				=> 'apihelp-wikilambda_function_call-example-native-python-code',
 		];
 	}
+
 }
