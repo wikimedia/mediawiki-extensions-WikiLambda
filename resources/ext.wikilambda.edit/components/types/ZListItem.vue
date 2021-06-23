@@ -16,11 +16,13 @@
 			v-if="isEmptyObject"
 			:type="zType"
 			:placeholder="$i18n( 'wikilambda-typeselector-label' )"
+			:readonly="readonly"
 			@input="onTypeChange"
 		></z-object-selector>
 		<z-object v-else
 			:zobject-id="zobjectId"
 			:persistent="false"
+			:readonly="readonly"
 		></z-object>
 	</li>
 </template>
