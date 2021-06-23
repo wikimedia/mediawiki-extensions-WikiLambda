@@ -9,7 +9,9 @@ describe( 'schemata mixin', function () {
 	var normalInitialZObject = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/normalInitialZObject.json' ) ) ),
 		canonicalInitialZObject = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalInitialZObject.json' ) ) ),
 		normalZFunction = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/normalZFunction.json' ) ) ),
-		canonicalZFunction = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalZFunction.json' ) ) );
+		canonicalZFunction = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalZFunction.json' ) ) ),
+		normalZList = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/normalZList.json' ) ) ),
+		canonicalZList = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalZList.json' ) ) );
 
 	it( 'canonicalizes strings', function () {
 		expect( canonicalize( { Z1K1: 'Z6', Z6K1: 'Hello, Test!' } ) ).toEqual( 'Hello, Test!' );
@@ -69,5 +71,10 @@ describe( 'schemata mixin', function () {
 
 	it( 'normalized normal input is identical - ZFunction example', function () {
 		expect( normalize( normalZFunction ) ).toEqual( normalZFunction );
+	} );
+
+	it( 'true normalized ZList is correctly canonicalized', function () {
+		// This doesn't work the other way, because the UI can't create truly normal ZLists.
+		expect( canonicalize( normalZList ) ).toEqual( canonicalZList );
 	} );
 } );

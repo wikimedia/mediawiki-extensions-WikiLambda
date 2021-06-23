@@ -5,6 +5,7 @@ var referenceRe = /^Z[0-9]+(K[0-9]+)?$/;
 
 function canonicalizeZ6OrZ9( zobject ) {
 	var objectType = zobject[ Constants.Z_OBJECT_TYPE ];
+
 	if ( objectType === Constants.Z_STRING ) {
 		var Z6 = zobject[ Constants.Z_STRING_VALUE ];
 		if ( Z6.match( referenceRe ) ) {
@@ -22,6 +23,25 @@ function canonicalizeZ6OrZ9( zobject ) {
 }
 
 function canonicalize( zobject ) {
+	function listifyArray( zlist, arr ) {
+		var head = zlist[ Constants.Z_LIST_HEAD ],
+			tail = zlist[ Constants.Z_LIST_TAIL ];
+
+		if ( typeof arr === 'undefined' ) {
+			arr = [];
+		}
+
+		if ( head ) {
+			arr.push( canonicalize( head ) );
+		}
+
+		if ( tail ) {
+			return listifyArray( tail, arr );
+		} else {
+			return arr;
+		}
+	}
+
 	var canon = {};
 
 	if ( typeof zobject === 'undefined' ) {
@@ -37,6 +57,10 @@ function canonicalize( zobject ) {
 			.indexOf( zobject[ Constants.Z_OBJECT_TYPE ] ) > -1
 	) {
 		canon = canonicalizeZ6OrZ9( zobject );
+	} else if ( zobject[ Constants.Z_OBJECT_TYPE ] &&
+		zobject[ Constants.Z_OBJECT_TYPE ][ Constants.Z_REFERENCE_ID ] === Constants.Z_LIST
+	) {
+		canon = canonicalize( listifyArray( zobject ) );
 	} else {
 		Object.keys( zobject ).forEach( function ( key ) {
 			canon[ key ] = canonicalize( zobject[ key ] );
