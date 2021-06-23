@@ -18,7 +18,7 @@ function canonicalizeZ6OrZ9( zobject ) {
 		return Z9;
 	}
 
-	throw Error( 'Z9 contains an invalid reference: ' + Z9 );
+	return '';
 }
 
 function canonicalize( zobject ) {

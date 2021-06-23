@@ -49,7 +49,7 @@ module.exports = {
 		},
 		zType: {
 			type: String,
-			default: Constants.Z_TYPE
+			default: ''
 		}
 	},
 	data: function () {

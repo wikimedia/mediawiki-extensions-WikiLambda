@@ -56,7 +56,7 @@ module.exports = {
 	props: {
 		type: {
 			type: String,
-			default: Constants.Z_TYPE
+			default: ''
 		},
 		selectedId: {
 			type: String,
