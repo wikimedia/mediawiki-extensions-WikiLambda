@@ -27,8 +27,8 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 	public function addDBDataOnce() {
 		// Register necessary languages
 		$langs = ZLangRegistry::singleton();
-		$langs->registerLang( 'en', self::EN );
-		$langs->registerLang( 'fr', self::FR );
+		$langs->register( self::EN, 'en' );
+		$langs->register( self::FR, 'fr' );
 
 		// Add ZTypeTest multilingual object (Z111)
 		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );

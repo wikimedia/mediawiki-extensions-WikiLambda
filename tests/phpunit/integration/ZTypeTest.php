@@ -28,8 +28,8 @@ class ZTypeTest extends \MediaWikiIntegrationTestCase {
 		parent::setUp();
 
 		$langs = ZLangRegistry::singleton();
-		$langs->registerLang( 'en', self::EN );
-		$langs->registerLang( 'fr', self::FR );
+		$langs->register( self::EN, 'en' );
+		$langs->register( self::FR, 'fr' );
 	}
 
 	/**

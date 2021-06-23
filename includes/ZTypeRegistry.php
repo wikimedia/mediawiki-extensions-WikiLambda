@@ -17,7 +17,7 @@ use Title;
 /**
  * A registry service for ZObject implementations.
  */
-class ZTypeRegistry {
+class ZTypeRegistry extends ZObjectRegistry {
 
 	// Is there a better way to represent this direct string (as opposed to a ZString?)
 	public const BUILTIN_STRING = 'String';
@@ -114,27 +114,70 @@ class ZTypeRegistry {
 	];
 
 	/**
-	 * @return ZTypeRegistry
+	 * Initialize ZTypeRegistry
 	 */
-	public static function singleton() {
-		static $instance = null;
-		if ( $instance === null ) {
-			$instance = new self();
-		}
+	protected function initialize() : void {
+		// Registry for ZObjects of type ZType/Z4
+		$this->type = self::Z_TYPE;
 
-		return $instance;
-	}
-
-	private function __construct() {
 		foreach ( self::BUILT_IN_TYPES as $zKey => $classname ) {
-			$this->registerType( $zKey, $classname );
+			$this->register( $zKey, $classname );
 		}
 	}
 
 	/**
-	 * @var array
+	 * Registers the given ZType id and name in the type cache.
+	 *
+	 * @param string $key
+	 * @param string $type
+	 * @throws ZErrorException
 	 */
-	private $zObjectTypes = [];
+	public function register( string $key, string $type ) : void {
+		if ( $this->isZObjectKeyCached( $key ) ) {
+			$conflictingType = $this->getZObjectKeyFromType( $key );
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_CONFLICTING_TYPE_NAMES,
+					new ZString( "ZObject key '$key' already used to register as '$conflictingType'." )
+				)
+			);
+		}
+
+		if ( $this->isZObjectTypeCached( $type ) ) {
+			$conflictingKey = $this->getZObjectTypeFromKey( $type );
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_CONFLICTING_TYPE_ZIDS,
+					new ZString( "ZObject type '$type' already registered as '$conflictingKey'." )
+				)
+			);
+		}
+
+		if (
+			$this->isZTypeBuiltIn( $key )
+			&& !class_exists( 'MediaWiki\Extension\WikiLambda\ZObjects\\' . self::BUILT_IN_TYPES[ $key ] )
+		) {
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_BUILTIN_TYPE_NOT_FOUND,
+					new ZString( "ZObject type '$key' is built-in, but class '$type' is not found." )
+				)
+			);
+		}
+
+		$this->registry[ $key ] = $type;
+	}
+
+	/**
+	 * Removes the given ZType from the type cache, except for builtin types.
+	 *
+	 * @param string $key
+	 */
+	public function unregister( string $key ) : void {
+		if ( !array_key_exists( $key, self::BUILT_IN_TYPES ) ) {
+			unset( $this->registry[ $key ] );
+		}
+	}
 
 	/**
 	 * Get the array of the keys of the ZTypes stored in the cache
@@ -142,7 +185,7 @@ class ZTypeRegistry {
 	 * @return string[] Keys of the ZTypes stored in the cache
 	 */
 	public function getCachedZObjectKeys() : array {
-		return array_keys( $this->zObjectTypes );
+		return array_keys( $this->registry );
 	}
 
 	/**
@@ -201,7 +244,7 @@ class ZTypeRegistry {
 		}
 
 		// TODO: Do we want to always store English? Or the wiki's contentLanguage? Or something else?
-		$this->registerType( $key, $zObject->getLabels()->getStringForLanguageCode( 'en' ) );
+		$this->register( $key, $zObject->getLabels()->getStringForLanguageCode( 'en' ) );
 
 		return true;
 	}
@@ -223,7 +266,7 @@ class ZTypeRegistry {
 				)
 			);
 		}
-		return $this->zObjectTypes[ $key ];
+		return $this->registry[ $key ];
 	}
 
 	/**
@@ -232,7 +275,7 @@ class ZTypeRegistry {
 	 * @return string[] Array of cached ZTypes
 	 */
 	public function getCachedZObjectTypes() : array {
-		return array_values( $this->zObjectTypes );
+		return array_values( $this->registry );
 	}
 
 	/**
@@ -279,61 +322,7 @@ class ZTypeRegistry {
 				)
 			);
 		}
-		return array_search( $type, $this->zObjectTypes );
-	}
-
-	/**
-	 * Registers the given ZType id and name in the type cache.
-	 *
-	 * @param string $key
-	 * @param string $type
-	 * @throws ZErrorException
-	 */
-	private function registerType( string $key, string $type ) : void {
-		if ( $this->isZObjectKeyCached( $key ) ) {
-			$conflictingType = $this->getZObjectKeyFromType( $key );
-			throw new ZErrorException(
-				new ZError(
-					ZErrorTypeRegistry::Z_ERROR_CONFLICTING_TYPE_NAMES,
-					new ZString( "ZObject key '$key' already used to register as '$conflictingType'." )
-				)
-			);
-		}
-
-		if ( $this->isZObjectTypeCached( $type ) ) {
-			$conflictingKey = $this->getZObjectTypeFromKey( $type );
-			throw new ZErrorException(
-				new ZError(
-					ZErrorTypeRegistry::Z_ERROR_CONFLICTING_TYPE_ZIDS,
-					new ZString( "ZObject type '$type' already registered as '$conflictingKey'." )
- )
-			);
-		}
-
-		if (
-			$this->isZTypeBuiltIn( $key )
-			&& !class_exists( 'MediaWiki\Extension\WikiLambda\ZObjects\\' . self::BUILT_IN_TYPES[ $key ] )
-		) {
-			throw new ZErrorException(
-				new ZError(
-					ZErrorTypeRegistry::Z_ERROR_BUILTIN_TYPE_NOT_FOUND,
-					new ZString( "ZObject type '$key' is built-in, but class '$type' is not found." )
-				)
-			);
-		}
-
-		$this->zObjectTypes[ $key ] = $type;
-	}
-
-	/**
-	 * Removes the given ZType from the type cache, except for builtin types.
-	 *
-	 * @param string $key
-	 */
-	public function unregisterType( string $key ) {
-		if ( !array_key_exists( $key, self::BUILT_IN_TYPES ) ) {
-			unset( $this->zObjectTypes[ $key ] );
-		}
+		return array_search( $type, $this->registry );
 	}
 
 }

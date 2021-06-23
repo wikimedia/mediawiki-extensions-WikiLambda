@@ -29,10 +29,10 @@ class ZKeyTest extends \MediaWikiIntegrationTestCase {
 		parent::setUp();
 
 		$langs = ZLangRegistry::singleton();
-		$langs->registerLang( 'en', self::EN );
-		$langs->registerLang( 'fr', self::FR );
-		$langs->registerLang( 'de', self::DE );
-		$langs->registerLang( 'it', self::IT );
+		$langs->register( self::EN, 'en' );
+		$langs->register( self::FR, 'fr' );
+		$langs->register( self::DE, 'de' );
+		$langs->register( self::IT, 'it' );
 	}
 
 	/**

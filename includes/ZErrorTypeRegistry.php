@@ -17,7 +17,7 @@ use Title;
 /**
  * A registry service for ZErrorType
  */
-class ZErrorTypeRegistry {
+class ZErrorTypeRegistry extends ZObjectRegistry {
 
 	public const Z_ERROR_GENERIC = 'Z500';
 
@@ -43,20 +43,12 @@ class ZErrorTypeRegistry {
 	public const Z_ERROR_KEY_TYPE_MISMATCH = 'Z551';
 
 	/**
-	 * @return ZErrorTypeRegistry
+	 * Initialize ZErrorTypeRegistry
 	 */
-	public static function singleton() {
-		static $instance = null;
-		if ( $instance === null ) {
-			$instance = new self();
-		}
-		return $instance;
+	protected function initialize() : void {
+		// Registry for ZObjects of type ZErrorType/Z500
+		$this->type = ZTypeRegistry::Z_ERRORTYPE;
 	}
-
-	/**
-	 * @var array
-	 */
-	private $zErrorTypes = [];
 
 	/**
 	 * Check if the given Zid belongs to a ZErrorType (Z50)
@@ -91,7 +83,7 @@ class ZErrorTypeRegistry {
 			);
 		}
 
-		$this->registerErrorType( $errorType, $zObject->getLabels()->getStringForLanguageCode( 'en' ) );
+		$this->register( $errorType, $zObject->getLabels()->getStringForLanguageCode( 'en' ) );
 		return true;
 	}
 
@@ -102,7 +94,7 @@ class ZErrorTypeRegistry {
 	 * @return bool
 	 */
 	private function isZErrorTypeCached( string $errorType ) : bool {
-		return array_key_exists( $errorType, $this->zErrorTypes );
+		return array_key_exists( $errorType, $this->registry );
 	}
 
 	/**
@@ -114,28 +106,9 @@ class ZErrorTypeRegistry {
 	 */
 	public function getZErrorTypeLabel( string $errorType ) : string {
 		if ( $this->isZErrorTypeKnown( $errorType ) ) {
-			return $this->zErrorTypes[ $errorType ];
+			return $this->registry[ $errorType ];
 		} else {
 			return "Unknown error";
 		}
-	}
-
-	/**
-	 * Caches the given Zid in the error type registry
-	 *
-	 * @param string $errorType
-	 * @param string $label
-	 */
-	private function registerErrorType( string $errorType, string $label ) {
-		$this->zErrorTypes[ $errorType ] = $label;
-	}
-
-	/**
-	 * Removes the given ZErrorType Zid from the error type registry
-	 *
-	 * @param string $errorType
-	 */
-	public function unregisterErrorType( string $errorType ) {
-		unset( $this->zErrorTypes[ $errorType ] );
 	}
 }
