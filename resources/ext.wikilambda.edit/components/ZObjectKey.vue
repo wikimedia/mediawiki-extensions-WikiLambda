@@ -38,7 +38,6 @@
 				v-else-if="selectedMode === Constants.Z_KEY_MODES.REFERENCE"
 				class="ext-wikilambda-zobject-key-inline"
 				:zobject-id="zobjectId"
-				:search-type="literalType"
 				:readonly="readonly"
 			></z-reference>
 			<z-object-json

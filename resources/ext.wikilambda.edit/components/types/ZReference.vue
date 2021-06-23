@@ -41,7 +41,7 @@ module.exports = {
 		},
 		searchType: {
 			type: String,
-			default: Constants.Z_TYPE
+			default: ''
 		},
 		readonly: {
 			type: Boolean,
