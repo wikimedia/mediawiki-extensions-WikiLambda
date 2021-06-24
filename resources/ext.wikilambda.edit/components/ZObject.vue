@@ -14,79 +14,14 @@
 			@input="changeZObjectType"
 		></z-object-selector>
 
-		<z-string
-			v-else-if="type === Constants.Z_STRING"
-			:zobject-id="zobjectId"
-			:readonly="readonly"
-		></z-string>
-
-		<z-reference
-			v-else-if="type === Constants.Z_REFERENCE"
-			:zobject-id="zobjectId"
-			:readonly="readonly"
-		></z-reference>
-
-		<z-multilingual-string
-			v-else-if="type === Constants.Z_MULTILINGUALSTRING"
-			:zobject-id="zobjectId"
-			:readonly="readonly"
-		></z-multilingual-string>
-
-		<z-list
-			v-else-if="type === Constants.Z_LIST"
-			:zobject-id="zobjectId"
-			:readonly="readonly"
-		></z-list>
-
-		<z-code
-			v-else-if="type === Constants.Z_CODE"
-			:zobject-id="zobjectId"
-			:readonly="readonly"
-		></z-code>
-
-		<z-argument
-			v-else-if="type === Constants.Z_ARGUMENT"
-			:zobject-id="zobjectId"
-		></z-argument>
-
-		<z-function-call
-			v-else-if="type === Constants.Z_FUNCTION_CALL"
-			:zobject-id="zobjectId"
-		></z-function-call>
-
-		<z-function
-			v-else-if="type === Constants.Z_FUNCTION"
-			:zobject-id="zobjectId"
-		></z-function>
-
-		<z-boolean
-			v-else-if="type === Constants.Z_BOOLEAN"
-			:zobject-id="zobjectId"
-			:readonly="readonly"
-		></z-boolean>
-
-		<z-implementation
-			v-else-if="type === Constants.Z_IMPLEMENTATION"
-			:zobject-id="zobjectId"
-		></z-implementation>
-
-		<z-argument-reference
-			v-else-if="type === Constants.Z_ARGUMENT_REFERENCE"
-			:zobject-id="zobjectId"
-		></z-argument-reference>
-
-		<z-nothing
-			v-else-if="type === Constants.Z_NOTHING"
-			:zobject-id="zobjectId"
-		></z-nothing>
-
-		<z-object-generic
+		<component
+			:is="determineComponent"
 			v-else-if="type !== undefined"
 			:zobject-id="zobjectId"
 			:type="type"
 			:persistent="persistent"
 			:readonly="readonly"
-		></z-object-generic>
+		></component>
 	</div>
 </template>
 
@@ -167,6 +102,36 @@ module.exports = {
 					'ext-wikilambda-zobject': true,
 					'ext-wikilambda-zobject-inline': this.isInlineComponent
 				};
+			},
+			determineComponent: function () {
+				switch ( this.type ) {
+					case Constants.Z_STRING:
+						return 'z-string';
+					case Constants.Z_REFERENCE:
+						return 'z-reference';
+					case Constants.Z_MULTILINGUALSTRING:
+						return 'z-multilingual-string';
+					case Constants.Z_LIST:
+						return 'z-list';
+					case Constants.Z_CODE:
+						return 'z-code';
+					case Constants.Z_ARGUMENT:
+						return 'z-argument';
+					case Constants.Z_FUNCTION_CALL:
+						return 'z-function-call';
+					case Constants.Z_FUNCTION:
+						return 'z-function';
+					case Constants.Z_BOOLEAN:
+						return 'z-boolean';
+					case Constants.Z_IMPLEMENTATION:
+						return 'z-implementation';
+					case Constants.Z_ARGUMENT_REFERENCE:
+						return 'z-argument-reference';
+					case Constants.Z_NOTHING:
+						return 'z-nothing';
+					default:
+						return 'z-object-generic';
+				}
 			}
 		} ),
 	methods: $.extend( {},
