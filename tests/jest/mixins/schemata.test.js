@@ -77,4 +77,20 @@ describe( 'schemata mixin', function () {
 		// This doesn't work the other way, because the UI can't create truly normal ZLists.
 		expect( canonicalize( normalZList ) ).toEqual( canonicalZList );
 	} );
+
+	it( 'canonicalize an undefined string value as an empty string', function () {
+		expect( canonicalize( { Z1K1: 'Z6' } ) ).toEqual( '' );
+	} );
+
+	it( 'canonicalize an undefined reference ID as an empty string', function () {
+		expect( canonicalize( { Z1K1: 'Z9' } ) ).toEqual( '' );
+	} );
+
+	it( 'canonicalize an undefined zobject as undefined', function () {
+		expect( canonicalize( undefined ) ).toEqual( undefined );
+	} );
+
+	it( 'normalize an undefined zobject as undefined', function () {
+		expect( normalize( undefined ) ).toEqual( undefined );
+	} );
 } );

@@ -538,7 +538,7 @@ module.exports = {
 			var children = [],
 				childrensId = [];
 
-			if ( !objectId ) {
+			if ( [ undefined, null ].indexOf( objectId ) !== -1 ) {
 				return;
 			}
 
@@ -941,17 +941,18 @@ module.exports = {
 		 * @return {Promise}
 		 */
 		resetZObject: function ( context, zObjectId ) {
+			var objectReferenceId = context.getters.getZObjectChildrenById( zObjectId )
+					.filter( function ( child ) {
+						return child.key === Constants.Z_REFERENCE_ID;
+					} )[ 0 ],
+				objectType = typeUtils
+					.findKeyInArray(
+						Constants.Z_OBJECT_TYPE,
+						context.getters.getZObjectChildrenById( zObjectId )
+					);
 			return context.dispatch( 'changeType', {
 				id: zObjectId,
-				type: typeUtils.findKeyInArray(
-					Constants.Z_REFERENCE_ID,
-					context.getters.getZObjectChildrenById(
-						typeUtils.findKeyInArray(
-							Constants.Z_OBJECT_TYPE,
-							context.getters.getZObjectChildrenById( zObjectId )
-						).id
-					)
-				).value
+				type: ( objectReferenceId || objectType ).value
 			} );
 		},
 		/**

@@ -12,18 +12,33 @@ var Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js
 		Z1K1: 'Z2',
 		Z2K1: 'Z0',
 		Z2K2: '',
-		Z2K3: { Z1K1: 'Z12', Z12K1: [] }
+		Z2K3: {
+			Z1K1: 'Z12',
+			Z12K1: [
+				{
+					Z1K1: 'Z11',
+					Z11K1: 'Z1002',
+					Z11K2: ''
+				}
+			]
+		}
 	},
 	zobjectTree = [
-		{ id: 0, key: undefined, value: 'object', parent: undefined },
-		{ id: 1, key: 'Z1K1', value: 'Z2', parent: 0 },
-		{ id: 2, key: 'Z2K1', value: 'Z0', parent: 0 },
-		{ id: 3, key: 'Z2K2', value: 'object', parent: 0 },
-		{ id: 4, key: 'Z2K3', value: 'object', parent: 0 },
-		{ id: 5, key: 'Z1K1', value: 'Z6', parent: 3 },
-		{ id: 6, key: 'Z6K1', value: '', parent: 3 },
-		{ id: 10, key: 'Z1K1', value: 'Z12', parent: 4 },
-		{ id: 11, key: 'Z12K1', value: 'array', parent: 4 }
+		{ id: 0, value: 'object' },
+		{ key: 'Z1K1', value: 'Z2', parent: 0, id: 1 },
+		{ key: 'Z2K1', value: 'object', parent: 0, id: 2 },
+		{ key: 'Z2K2', value: 'object', parent: 0, id: 3 },
+		{ key: 'Z1K1', value: 'Z9', parent: 2, id: 4 },
+		{ key: 'Z9K1', value: 'Z0', parent: 2, id: 5 },
+		{ key: 'Z2K3', value: 'object', parent: 0, id: 6 },
+		{ key: 'Z1K1', value: 'Z12', parent: 6, id: 7 },
+		{ key: 'Z12K1', value: 'array', parent: 6, id: 8 },
+		{ key: '0', value: 'object', parent: 8, id: 9 },
+		{ key: 'Z1K1', value: 'Z11', parent: 9, id: 10 },
+		{ key: 'Z11K1', value: 'Z1002', parent: 9, id: 11 },
+		{ key: 'Z11K2', value: '', parent: 9, id: 12 },
+		{ key: 'Z1K1', value: 'Z6', parent: 3, id: 13 },
+		{ key: 'Z6K1', value: '', parent: 3, id: 14 }
 	],
 	state,
 	context,
@@ -82,7 +97,7 @@ describe( 'zobject Vuex module', function () {
 		} );
 
 		it( 'Returns current zObject by its index', function () {
-			var result = 7;
+			var result = 10;
 			state.zobject = zobjectTree;
 
 			expect( zobjectModule.getters.getZObjectIndexById( state )( 10 ) ).toEqual( result );
@@ -97,12 +112,12 @@ describe( 'zobject Vuex module', function () {
 
 		it( 'Returns zobject children when calling getZObjectChildrenById', function () {
 			var result = [
-				{ id: 10, key: 'Z1K1', value: 'Z12', parent: 4 },
-				{ id: 11, key: 'Z12K1', value: 'array', parent: 4 }
+				{ key: 'Z1K1', value: 'Z9', parent: 2, id: 4 },
+				{ key: 'Z9K1', value: 'Z0', parent: 2, id: 5 }
 			];
 			state.zobject = zobjectTree;
 
-			expect( zobjectModule.getters.getZObjectChildrenById( state )( 4 ) ).toEqual( result );
+			expect( zobjectModule.getters.getZObjectChildrenById( state )( 2 ) ).toEqual( result );
 		} );
 
 		it( 'Returns whether the current state has `createNewPage`', function () {
@@ -243,12 +258,6 @@ describe( 'zobject Vuex module', function () {
 		} );
 
 		it( 'Save new zobject', function () {
-			var expectedZObject = {
-				Z1K1: 'Z2',
-				Z2K1: 'Z0',
-				Z2K2: '',
-				Z2K3: { Z1K1: 'Z12', Z12K1: [] }
-			};
 			context.getters.isCreateNewPage = true;
 			context.getters.getCurrentZObjectId = 'Z0';
 			context.state = {
@@ -261,18 +270,12 @@ describe( 'zobject Vuex module', function () {
 				action: 'wikilambda_edit',
 				summary: 'A summary',
 				zid: undefined,
-				zobject: JSON.stringify( expectedZObject )
+				zobject: JSON.stringify( zobject )
 			} );
 			expect( context.commit ).toHaveBeenCalledTimes( 0 );
 		} );
 
 		it( 'Save existing zobject', function () {
-			var expectedZObject = {
-				Z1K1: 'Z2',
-				Z2K1: 'Z0',
-				Z2K2: '',
-				Z2K3: { Z1K1: 'Z12', Z12K1: [] }
-			};
 			context.getters.isCreateNewPage = false;
 			context.getters.getCurrentZObjectId = 'Z0';
 			context.state = {
@@ -285,23 +288,12 @@ describe( 'zobject Vuex module', function () {
 				action: 'wikilambda_edit',
 				summary: 'A summary',
 				zid: 'Z0',
-				zobject: JSON.stringify( expectedZObject )
+				zobject: JSON.stringify( zobject )
 			} );
 			expect( context.commit ).toHaveBeenCalledTimes( 0 );
 		} );
 
 		it( 'Inject arbitrary JSON into zobject', function () {
-			var updatedZObjectTree = [
-				{ id: 0, key: undefined, value: 'object', parent: undefined },
-				{ id: 1, key: 'Z1K1', value: 'Z2', parent: 0 },
-				{ id: 2, key: 'Z2K1', value: 'Z0', parent: 0 },
-				{ id: 3, key: 'Z2K2', value: 'object', parent: 0 },
-				{ id: 4, key: 'Z2K3', value: 'object', parent: 0 },
-				{ id: 10, key: 'Z1K1', value: 'Z12', parent: 4 },
-				{ id: 11, key: 'Z12K1', value: 'array', parent: 4 },
-				{ id: 12, key: 'Z1K1', value: 'Z9', parent: 3 },
-				{ id: 13, key: 'Z9K1', value: 'Z6', parent: 3 }
-			];
 			context.state = {
 				zobject: zobjectTree
 			};
@@ -324,7 +316,39 @@ describe( 'zobject Vuex module', function () {
 				parent: 0
 			} );
 
-			expect( context.state.zobject ).toEqual( updatedZObjectTree );
+			expect( context.state.zobject ).toEqual( zobjectTree );
+		} );
+
+		it( 'Reset the root ZObject by ID', function () {
+			context.state = {
+				zobject: zobjectTree
+			};
+			context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
+
+			context.dispatch = jest.fn();
+
+			zobjectModule.actions.resetZObject( context, 0 );
+
+			expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', {
+				id: 0,
+				type: 'Z2'
+			} );
+		} );
+
+		it( 'Reset a given ZObject by ID', function () {
+			context.state = {
+				zobject: zobjectTree
+			};
+			context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
+
+			context.dispatch = jest.fn();
+
+			zobjectModule.actions.resetZObject( context, 3 );
+
+			expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', {
+				id: 3,
+				type: 'Z6'
+			} );
 		} );
 	} );
 } );
