@@ -22,6 +22,7 @@
 	"wikilambda-call-function": "לקרוא לפונקציה",
 	"wikilambda-functioncall": "קריאה לפונקציה",
 	"wikilambda-orchestrated": "תוצאת התזמור",
+	"wikilambda-argref": "הפניה לארגומנט",
 	"wikilambda-special-callfunction": "ליצור ולבצע קריאה לפונקציה.",
 	"wikilambda-special-callfunction-summary": "הטופס הזה מאפשר לך ליצור ולבצע קריאה לפונקציה. מומלץ לקרוא את תיעוד העזרה ואת הנחיות הקהילה לפני־כן.",
 	"wikilambda-special-callfunction-intro": "{{GENDER:|ודא שאתה ממלא|ודאי שאת ממלאת}} את מדיניות הקהילה, ואת כללי זכויות היוצרים והפטנטים.",
@@ -63,5 +64,6 @@
 	"wikilambda-editor-implementation-list-label": "רשימת מימושים",
 	"wikilambda-editor-boolean-selector": "בחירת אמת/שקר",
 	"wikilambda-implementation-selector-code": "קוד",
-	"wikilambda-implementation-selector-composition": "הרכבה"
+	"wikilambda-implementation-selector-composition": "הרכבה",
+	"wikilambda-argref-default-label": "נא לבחור ארגומנט"
 }

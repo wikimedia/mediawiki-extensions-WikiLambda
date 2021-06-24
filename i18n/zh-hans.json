@@ -10,6 +10,7 @@
 	"wikilambda-noresult": "搜索没有提供结果。",
 	"wikilambda-argref": "参数参考",
 	"wikilambda-editor-label-select-programming-language-label": "选择编程语言：",
+	"wikilambda-editor-implementation-list-label": "履行列表",
 	"wikilambda-editor-boolean-selector": "选择真/假",
 	"wikilambda-implementation-selector-code": "代码",
 	"wikilambda-implementation-selector-composition": "构成",
