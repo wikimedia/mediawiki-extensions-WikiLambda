@@ -8,7 +8,9 @@ function canonicalizeZ6OrZ9( zobject ) {
 
 	if ( objectType === Constants.Z_STRING ) {
 		var Z6 = zobject[ Constants.Z_STRING_VALUE ];
-		if ( Z6.match( referenceRe ) ) {
+		if ( !Z6 ) {
+			return '';
+		} else if ( Z6.match( referenceRe ) ) {
 			return zobject;
 		}
 		return Z6;
