@@ -99,15 +99,12 @@ module.exports = {
 				return 'None';
 			},
 			unusedLangList: function () {
-				var langCode,
-					unusedLangList = {};
-
-				for ( langCode in this.allLangs ) {
-					if ( this.usedLanguages.indexOf( langCode ) === -1 ) {
-						unusedLangList[ langCode ] = this.allLangs[ langCode ];
-					}
-				}
-				return unusedLangList;
+				return Object.keys( this.allLangs )
+					.filter( this.isLangCodeAvailable )
+					.reduce( function ( unusedLangList, lang ) {
+						unusedLangList[ lang ] = this.allLangs[ lang ];
+						return unusedLangList;
+					}.bind( this ), {} );
 			}
 		}
 	),
@@ -152,6 +149,16 @@ module.exports = {
 			 */
 			removeLang: function ( index ) {
 				this.$emit( 'delete-lang', index );
+			},
+			isLangCodeAvailable: function ( langCode ) {
+				var usedLangIndex;
+				for ( usedLangIndex in this.usedLanguages ) {
+					if ( this.usedLanguages[ usedLangIndex ][ Constants.Z_REFERENCE_ID ] === langCode ) {
+						return false;
+					}
+				}
+
+				return true;
 			}
 		}
 	),

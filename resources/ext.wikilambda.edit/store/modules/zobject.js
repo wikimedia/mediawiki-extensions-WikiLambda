@@ -588,26 +588,36 @@ module.exports = {
 		/**
 		 * Create the required entry in the zobject array for a zMonolingualString.
 		 * The entry will result in a json representation equal to:
-		 * { Z1K1: Z11, Z11K1: payload.lang, Z11k2: '' }
+		 * { Z1K1: Z11, Z11K1: { Z1K1: Z9, Z9K1: payload.lang }, Z11K2: { Z1K1: Z6, Z6K1: '' } }
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
 		 */
 		addZMonolingualString: function ( context, payload ) {
-			var nextId = getNextObjectId( context.state.zobject ),
+			var parentId = getNextObjectId( context.state.zobject ),
+				nextId,
 				numberOfLanguageInArray = context.getters.getZObjectChildrenById( payload.parentId ).length,
 				zObjectItems = [];
 			if ( !payload.lang || !payload.parentId ) {
 				return;
 			}
 
+			// Create root object
 			zObjectItems = [
 				{ key: numberOfLanguageInArray, value: 'object', parent: payload.parentId },
-				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_MONOLINGUALSTRING, parent: nextId },
-				{ key: Constants.Z_MONOLINGUALSTRING_LANGUAGE, value: payload.lang, parent: nextId },
-				{ key: Constants.Z_MONOLINGUALSTRING_VALUE, value: '', parent: nextId }
+				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_MONOLINGUALSTRING, parent: parentId }
 			];
 			context.dispatch( 'addZObjects', zObjectItems );
+
+			// Set language reference
+			nextId = context.getters.getNextObjectId;
+			context.dispatch( 'addZObject', { key: Constants.Z_MONOLINGUALSTRING_LANGUAGE, value: 'object', parent: parentId } );
+			context.dispatch( 'addZReference', { id: nextId, value: payload.lang } );
+
+			// Set default string
+			nextId = context.getters.getNextObjectId;
+			context.dispatch( 'addZObject', { key: Constants.Z_MONOLINGUALSTRING_VALUE, value: 'object', parent: parentId } );
+			context.dispatch( 'addZString', { id: nextId, value: '' } );
 		},
 		/**
 		 * Create the required entry in the zobject array for a zMultilingualString.
