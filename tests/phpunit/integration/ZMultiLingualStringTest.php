@@ -34,12 +34,12 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 		parent::setUp();
 
 		$langs = ZLangRegistry::singleton();
-		$langs->registerLang( 'en', self::EN );
-		$langs->registerLang( 'es', self::ES );
-		$langs->registerLang( 'fr', self::FR );
-		$langs->registerLang( 'ru', self::RU );
-		$langs->registerLang( 'zh', self::ZH );
-		$langs->registerLang( 'de', self::DE );
+		$langs->register( self::EN, 'en' );
+		$langs->register( self::ES, 'es' );
+		$langs->register( self::FR, 'fr' );
+		$langs->register( self::RU, 'ru' );
+		$langs->register( self::ZH, 'zh' );
+		$langs->register( self::DE, 'de' );
 	}
 
 	/**

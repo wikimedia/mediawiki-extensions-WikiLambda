@@ -14,6 +14,7 @@ use DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\Hooks;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\MediaWikiServices;
 use Title;
@@ -25,11 +26,18 @@ use WikiPage;
  */
 class HooksTest extends \MediaWikiIntegrationTestCase {
 
+	private const EN = 'Z1002';
+	private const FR = 'Z1004';
+
 	/** @var string[] */
 	private $titlesTouched = [];
 
 	protected function setUp() : void {
 		parent::setUp();
+
+		$langs = ZLangRegistry::singleton();
+		$langs->register( self::EN, 'en' );
+		$langs->register( self::FR, 'fr' );
 
 		$this->tablesUsed[] = 'wikilambda_zobject_labels';
 		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';

@@ -17,30 +17,23 @@ use Title;
 /**
  * A registry service for ZLanguage and language codes
  */
-class ZLangRegistry {
+class ZLangRegistry extends ZObjectRegistry {
 
 	private const FALLBACK_LANGUAGE_ZID = 'Z1002';
 	private const FALLBACK_LANGUAGE_CODE = 'en';
 
 	/**
-	 * @return ZLangRegistry
+	 * Initialize ZLangRegistry
 	 */
-	public static function singleton() {
-		static $instance = null;
-		if ( $instance === null ) {
-			$instance = new self();
-		}
-		return $instance;
-	}
+	protected function initialize() : void {
+		// Registry for ZObjects of type ZLanguage/Z60
+		$this->type = ZTypeRegistry::Z_LANGUAGE;
 
-	private function __construct() {
-		$this->registerLang( self::FALLBACK_LANGUAGE_CODE, self::FALLBACK_LANGUAGE_ZID );
+		$this->register(
+			self::FALLBACK_LANGUAGE_ZID,
+			self::FALLBACK_LANGUAGE_CODE
+		);
 	}
-
-	/**
-	 * @var array Correspondance between language codes and their ZLanguage Zid [ code => zid ]
-	 */
-	private $zLanguageCodes = [];
 
 	/**
 	 * Given a ZLanguage Zid, return its language code
@@ -50,12 +43,11 @@ class ZLangRegistry {
 	 * @throws ZErrorException
 	 */
 	public function getLanguageCodeFromZid( $zid ) : string {
-		$code = array_search( $zid, $this->zLanguageCodes );
-		if ( $code ) {
-			return $code;
+		if ( array_key_exists( $zid, $this->registry ) ) {
+			return $this->registry[ $zid ];
 		}
 		$code = $this->fetchLanguageCodeFromZid( $zid );
-		$this->registerLang( $code, $zid );
+		$this->register( $zid, $code );
 		return $code;
 	}
 
@@ -67,36 +59,14 @@ class ZLangRegistry {
 	 * @throws ZErrorException
 	 */
 	public function getLanguageZidFromCode( $code ) : string {
-		if ( array_key_exists( $code, $this->zLanguageCodes ) ) {
-			return $this->zLanguageCodes[ $code ];
+		$zid = array_search( $code, $this->registry );
+		if ( $zid ) {
+			return $zid;
 		}
+
 		$zid = $this->fetchLanguageZidFromCode( $code );
-		$this->registerLang( $code, $zid );
+		$this->register( $zid, $code );
 		return $zid;
-	}
-
-	/**
-	 * Registers a correspondance between language code and its ZLanguage zid
-	 *
-	 * @param string $code
-	 * @param string $zid
-	 */
-	public function registerLang( $code, $zid ) {
-		$this->zLanguageCodes[ $code ] = $zid;
-	}
-
-	/**
-	 * Removes the given ZLanguage lang cache
-	 *
-	 * @param string $zid
-	 */
-	public function unregisterLang( string $zid ) : void {
-		try {
-			$code = $this->getLanguageCodeFromZid( $zid );
-		} catch ( ZErrorException $e ) {
-			// do nothing
-		}
-		unset( $this->zLanguageCodes[ $code ] );
 	}
 
 	/**

@@ -58,6 +58,13 @@ class ZErrorTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 		parent::tearDown();
 	}
 
+	private function runPrivateMethod( $object, $methodName, $args ) {
+		$reflector = new \ReflectionClass( get_class( $object ) );
+		$method = $reflector->getMethod( $methodName );
+		$method->setAccessible( true );
+		return $method->invokeArgs( $object, $args );
+	}
+
 	/**
 	 * @covers ::singleton
 	 */
@@ -67,33 +74,26 @@ class ZErrorTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 		$this->assertEquals( $registry, ZErrorTypeRegistry::singleton() );
 	}
 
-	private function runPrivateMethod( $object, $methodName, $args ) {
-		$reflector = new \ReflectionClass( get_class( $object ) );
-		$method = $reflector->getMethod( $methodName );
-		$method->setAccessible( true );
-		return $method->invokeArgs( $object, $args );
-	}
-
 	/**
-	 * @covers ::registerErrorType
+	 * @covers ::register
 	 * @covers ::isZErrorTypeKnown
 	 * @covers ::isZErrorTypeCached
-	 * @covers ::unregisterErrorType
+	 * @covers ::unregister
 	 */
 	public function testCacheZErrorType() {
 		$errorType = 'Z501';
 		$registry = ZErrorTypeRegistry::singleton();
 
-		$this->runPrivateMethod( $registry, 'registerErrorType', [ $errorType, 'error type' ] );
+		$this->runPrivateMethod( $registry, 'register', [ $errorType, 'error type' ] );
 		$this->assertTrue( $registry->isZErrorTypeKnown( $errorType ) );
 
-		$registry->unregisterErrorType( 'Z505' );
+		$registry->unregister( 'Z505' );
 		$this->assertTrue(
 			$registry->isZErrorTypeKnown( $errorType ),
 			'Unregistering a non-cached error type does throw errors.'
 		);
 
-		$registry->unregisterErrorType( $errorType );
+		$registry->unregister( $errorType );
 		$this->assertFalse( $registry->isZErrorTypeKnown( $errorType ) );
 	}
 
@@ -135,8 +135,8 @@ class ZErrorTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 	/**
 	 * @covers ::isZErrorTypeKnown
 	 * @covers ::isZErrorTypeCached
-	 * @covers ::registerErrorType
-	 * @covers ::unregisterErrorType
+	 * @covers ::register
+	 * @covers ::unregister
 	 */
 	public function testIsZErrorTypeKnown_valid() {
 		$errorType = 'Z501';
@@ -158,7 +158,7 @@ class ZErrorTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 			'The valid ZErrorType Zid is now cached.'
 		);
 
-		$registry->unregisterErrorType( $errorType );
+		$registry->unregister( $errorType );
 		$this->assertFalse(
 			$this->runPrivateMethod( $registry, 'isZErrorTypeCached', [ $errorType ] ),
 			'The valid ZErrorType Zid is not cached after unregistering it.'

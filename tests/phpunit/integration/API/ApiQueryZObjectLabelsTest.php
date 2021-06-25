@@ -51,9 +51,9 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 
 	public function addDBDataOnce() : void {
 		$langs = ZLangRegistry::singleton();
-		$langs->registerLang( 'en', self::EN );
-		$langs->registerLang( 'it', self::IT );
-		$langs->registerLang( 'egl', self::EGL );
+		$langs->register( self::EN, 'en' );
+		$langs->register( self::IT, 'it' );
+		$langs->register( self::EGL, 'egl' );
 
 		foreach ( $this->testData as $key => $testdatum ) {
 			$this->db->insert( 'wikilambda_zobject_labels', $testdatum );

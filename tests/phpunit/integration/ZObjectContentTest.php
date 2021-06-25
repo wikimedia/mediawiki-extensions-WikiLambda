@@ -41,8 +41,8 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
 
 		$langs = ZLangRegistry::singleton();
-		$langs->registerLang( 'en', self::EN );
-		$langs->registerLang( 'es', self::ES );
+		$langs->register( self::EN, 'en' );
+		$langs->register( self::ES, 'es' );
 	}
 
 	/** @var string[] */

@@ -46,9 +46,9 @@ class ZObjectContentHandlerTest extends \MediaWikiIntegrationTestCase {
 
 		// Register necessary languages
 		$langs = ZLangRegistry::singleton();
-		$langs->registerLang( 'en', self::EN );
-		$langs->registerLang( 'fr', self::FR );
-		$langs->registerLang( 'de', self::DE );
+		$langs->register( self::EN, 'en' );
+		$langs->register( self::FR, 'fr' );
+		$langs->register( self::DE, 'de' );
 	}
 
 	/**
