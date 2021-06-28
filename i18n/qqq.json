@@ -83,5 +83,6 @@
 	"wikilambda-editor-boolean-selector": "Label for selecting a true/false value for a boolean.",
 	"wikilambda-implementation-selector-code": "Label for selecting an implementation type of 'code'",
 	"wikilambda-implementation-selector-composition": "Label for selecting an implementation type of 'composition'",
-	"wikilambda-argref-default-label": "Label for selecting an argument in an argument reference."
+	"wikilambda-argref-default-label": "Label for selecting an argument in an argument reference.",
+	"wikilambda-implementation-selector": "Label for selecting an implementation to add to a function."
 }

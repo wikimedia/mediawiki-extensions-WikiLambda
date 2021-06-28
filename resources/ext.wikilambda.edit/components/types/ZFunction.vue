@@ -59,7 +59,8 @@ module.exports = {
 			'getZObjectTypeById',
 			'getZkeyLabels',
 			'getZObjectAsJsonById',
-			'getUserZlangZID'
+			'getUserZlangZID',
+			'getCurrentZObjectId'
 		] ),
 		{
 			Constants: function () {
@@ -164,7 +165,7 @@ module.exports = {
 			}
 		}
 	),
-	methods: $.extend( mapActions( [ 'fetchZKeys', 'setZObjectValue' ] ), {
+	methods: $.extend( mapActions( [ 'fetchZKeys', 'setZObjectValue', 'fetchZImplementations' ] ), {
 		updateZReturnType: function ( type ) {
 			var payload = {
 				id: this.zReturnType.id,
@@ -181,6 +182,8 @@ module.exports = {
 			zids.push( this.zReturnType.value );
 		}
 		this.fetchZKeys( zids );
+
+		this.fetchZImplementations( this.getCurrentZObjectId );
 	}
 };
 </script>

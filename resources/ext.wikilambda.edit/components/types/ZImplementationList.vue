@@ -16,7 +16,11 @@
 				:z-type="Constants.Z_IMPLEMENTATION"
 			></z-implementation-list-item>
 			<li v-if="!viewmode">
-				<button :title="tooltipAddListItem" @click="addNewItem">
+				<button
+					:title="tooltipAddListItem"
+					:disabled="!getZImplementations.length"
+					@click="addNewItem"
+				>
 					{{ $i18n( 'wikilambda-editor-additem' ) }}
 				</button>
 			</li>
@@ -36,7 +40,7 @@ module.exports = {
 	components: {
 		'z-implementation-list-item': ZImplementationListItem
 	},
-	computed: $.extend( mapGetters( [ 'getNextObjectId' ] ),
+	computed: $.extend( mapGetters( [ 'getNextObjectId', 'getZImplementations' ] ),
 		{
 			Constants: function () {
 				return Constants;

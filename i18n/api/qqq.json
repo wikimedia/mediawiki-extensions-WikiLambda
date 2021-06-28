@@ -47,5 +47,9 @@
 	"apihelp-wikilambda_edit-param-zobject": "{{doc-apihelp-param|wikilambda_edit|zobject}}\n\n{{doc-wikilambda}}",
 	"apierror-wikilambda_function_call-not-connected": "Error message when orchestrator is not connected.\n\n{{doc-wikilambda}}",
 	"apierror-wikilambda_edit-invalidjson": "{{doc-apierror}}\n\nParameters:\n* $1 - Invalid JSON string.\n\n{{doc-wikilambda}}",
-	"apierror-wikilambda_edit-unmatchingzid": "{{doc-apierror}}\n\nParameters:\n* $1 - Value of the api parameter 'zid'\n* $2 - Value of the ZObject key 'Z2K1' (Persistent Object Id)\n\n{{doc-wikilambda}}"
+	"apierror-wikilambda_edit-unmatchingzid": "{{doc-apierror}}\n\nParameters:\n* $1 - Value of the api parameter 'zid'\n* $2 - Value of the ZObject key 'Z2K1' (Persistent Object Id)\n\n{{doc-wikilambda}}",
+	"apihelp-query+wikilambdafn_search-summary": "{{doc-apihelp-summary|query+wikilambdafn_search}}\n\n{{doc-wikilambda}}",
+	"apihelp-query+wikilambdafn_search-example-simple": "{{doc-apihelp-example|query+wikilambda}}\n\n{{doc-wikilambda}}",
+	"apihelp-query+wikilambdafn_search-param-zfunction_id": "{{doc-apihelp-param|query+wikilambdafn_search|zfunction_id}}",
+	"apihelp-query+wikilambdafn_search-param-type": "{{doc-apihelp-param|query+wikilambdafn_search|type}}"
 }

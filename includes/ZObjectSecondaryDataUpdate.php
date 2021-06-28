@@ -63,5 +63,14 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 		$zObjectStore->insertZObjectLabels( $zid, $ztype, $newLabels );
 		$zObjectStore->insertZObjectLabelConflicts( $zid, $conflicts );
+
+		if ( $ztype === 'Z14' ) {
+			$zFunction = $this->zObject->getInnerZObject()->getValueByKey( 'Z14K1' );
+
+			if ( $zFunction && $zFunction->getZValue() ) {
+				$zObjectStore->deleteZFunctionReference( $zid );
+				$zObjectStore->insertZFunctionReference( $zid, $zFunction->getZValue(), 'Z14' );
+			}
+		}
 	}
 }

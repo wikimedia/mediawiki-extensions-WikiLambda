@@ -180,6 +180,7 @@ class Hooks implements
 		$tables = [
 			'zobject_labels',
 			'zobject_label_conflicts',
+			'zobject_function_join',
 		];
 
 		foreach ( $tables as $key => $table ) {

@@ -39,6 +39,7 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 
 		$this->tablesUsed[] = 'wikilambda_zobject_labels';
 		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
+		$this->tablesUsed[] = 'wikilambda_zobject_function_join';
 
 		$this->zobjectStore = WikiLambdaServices::getZObjectStore();
 	}
@@ -475,5 +476,80 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 1, $res->numRows() );
 		$this->assertSame( 'label five', $res->fetchRow()[ 'wlzl_label' ] );
+	}
+
+	/**
+	 * @covers ::insertZFunctionReference
+	 */
+	public function testInsertZFunctionReference() {
+		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+		$this->assertTrue( $response );
+
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$res = $dbr->select(
+			/* FROM */ 'wikilambda_zobject_function_join',
+			/* SELECT */ [ 'wlzf_ref_zid' ],
+			/* WHERE */ [
+				'wlzf_zfunction_zid' => 'Z10029',
+				'wlzf_type' => 'Z14'
+			],
+			__METHOD__
+		);
+
+		$this->assertSame( 1, $res->numRows() );
+	}
+
+	/**
+	 * @covers ::insertZFunctionReference
+	 * @covers ::findFirstZImplementationFunction
+	 */
+	public function testFindFirstZImplementationFunction() {
+		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+		$this->assertTrue( $response );
+
+		$zid = $this->zobjectStore->findFirstZImplementationFunction();
+
+		$this->assertEquals( 'Z10029', $zid );
+	}
+
+	/**
+	 * @covers ::insertZFunctionReference
+	 * @covers ::findReferencedZObjectsByZFunctionId
+	 */
+	public function testFindReferencedZObjectsByZFunctionId() {
+		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+		$this->assertTrue( $response );
+
+		$response = $this->zobjectStore->insertZFunctionReference( 'Z10031', 'Z10029', 'Z14' );
+		$this->assertTrue( $response );
+
+		$res = $this->zobjectStore->findReferencedZObjectsByZFunctionId( 'Z10029', 'Z14' );
+
+		$this->assertCount( 2, $res );
+		$this->assertEquals( [ 'Z10030', 'Z10031' ], $res );
+	}
+
+	/**
+	 * @covers ::insertZFunctionReference
+	 * @covers ::deleteZFunctionReference
+	 */
+	public function testDeleteZFunctionReference() {
+		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+		$this->assertTrue( $response );
+
+		$this->zobjectStore->deleteZFunctionReference( 'Z10030' );
+
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$res = $dbr->select(
+			/* FROM */ 'wikilambda_zobject_function_join',
+			/* SELECT */ [ 'wlzf_ref_zid' ],
+			/* WHERE */ [
+				'wlzf_zfunction_zid' => 'Z10029',
+				'wlzf_type' => 'Z14'
+			],
+			__METHOD__
+		);
+
+		$this->assertSame( 0, $res->numRows() );
 	}
 }

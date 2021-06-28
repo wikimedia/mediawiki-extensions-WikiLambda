@@ -77,5 +77,6 @@
 	"wikilambda-editor-boolean-selector": "Select true/false",
 	"wikilambda-implementation-selector-code": "Code",
 	"wikilambda-implementation-selector-composition": "Composition",
-	"wikilambda-argref-default-label": "Select an argument"
+	"wikilambda-argref-default-label": "Select an argument",
+	"wikilambda-implementation-selector": "Select implementation"
 }

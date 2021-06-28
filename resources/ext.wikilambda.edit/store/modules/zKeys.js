@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /*!
  * WikiLambda Vue editor: zKeys Vuex module
  *
@@ -29,7 +30,11 @@ module.exports = {
 		/**
 		 * Collection of arguments
 		 */
-		zArguments: {}
+		zArguments: {},
+		/**
+		 * List of implementation keys
+		 */
+		zImplementations: []
 	},
 	getters: {
 		getZkeys: function ( state ) {
@@ -40,6 +45,18 @@ module.exports = {
 		},
 		getZarguments: function ( state ) {
 			return state.zArguments;
+		},
+		getZImplementations: function ( state, getters, rootState ) {
+			return state.zImplementations.filter( function ( zid ) {
+				var zobject;
+				for ( zobject in rootState.zobjectModule.zobject ) {
+					if ( rootState.zobjectModule.zobject[ zobject ].value === zid ) {
+						return false;
+					}
+				}
+
+				return true;
+			} );
 		}
 	},
 	mutations: {
@@ -91,6 +108,9 @@ module.exports = {
 		},
 		resetZArgumentInfo: function ( state ) {
 			state.zArguments = {};
+		},
+		setZImplementations: function ( state, zImplementations ) {
+			state.zImplementations = zImplementations;
 		}
 	},
 	actions: {
@@ -124,11 +144,8 @@ module.exports = {
 				action: 'query',
 				list: 'wikilambdaload_zobjects',
 				format: 'json',
-				// eslint-disable-next-line camelcase
 				wikilambdaload_zids: zKeystoFetch.join( '|' ),
-				// eslint-disable-next-line camelcase
 				wikilambdaload_language: context.rootGetters.zLang,
-				// eslint-disable-next-line camelcase
 				wikilambdaload_canonical: 'true'
 			} ).then( function ( response ) {
 				var keys,
@@ -179,6 +196,20 @@ module.exports = {
 
 			payload.forEach( function ( arg ) {
 				context.commit( 'addZArgumentInfo', arg );
+			} );
+		},
+		fetchZImplementations: function ( context, zFunctionId ) {
+			var api = new mw.Api();
+
+			api.get( {
+				action: 'query',
+				list: 'wikilambdafn_search',
+				format: 'json',
+				wikilambdafn_zfunction_id: zFunctionId,
+				wikilambdafn_type: 'Z14'
+			} ).then( function ( response ) {
+				context.commit( 'setZImplementations', response.query.wikilambdafn_search );
+				context.dispatch( 'fetchZKeys', response.query.wikilambdafn_search );
 			} );
 		}
 	}

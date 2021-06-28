@@ -456,4 +456,91 @@ class ZObjectStore {
 			]
 		);
 	}
+
+	/**
+	 * Search implementations in the secondary database, return the first one
+	 * This function is primarily used for the example API request
+	 *
+	 * @return string
+	 */
+	public function findFirstZImplementationFunction(): string {
+		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+		$res = $dbr->selectField(
+			/* FROM */ 'wikilambda_zobject_function_join',
+			/* SELECT */ 'wlzf_zfunction_zid',
+			/* WHERE */ [
+				'wlzf_type' => 'Z14',
+			],
+			__METHOD__
+		);
+
+		return $res ? (string)$res : '';
+	}
+
+	/**
+	 * Search implementations in the secondary database and return all matching a given ZID
+	 *
+	 * @param string $zid the ZID of the ZFunction
+	 * @param string $type the type of the ZFunction reference
+	 * @return string[] All ZIDs of referenced ZObjects associated to the ZFunction
+	 */
+	public function findReferencedZObjectsByZFunctionId( $zid, $type ): array {
+		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+		$res = $dbr->select(
+			/* FROM */ 'wikilambda_zobject_function_join',
+			/* SELECT */ [ 'wlzf_ref_zid' ],
+			/* WHERE */ [
+				'wlzf_zfunction_zid' => $zid,
+				'wlzf_type' => $type,
+			],
+			__METHOD__
+		);
+
+		$zids = [];
+		foreach ( $res as $row ) {
+			$zids[] = $row->wlzf_ref_zid;
+		}
+
+		return $zids;
+	}
+
+	/**
+	 * Add a record to the database for a given ZObject ID and ZFunction ID
+	 *
+	 * @param string $refId the ZObject ref ID
+	 * @param string $zFunctionId the ZFunction ID
+	 * @param string $type the type of the ZFunction reference
+	 * @return void|bool
+	 */
+	public function insertZFunctionReference( $refId, $zFunctionId, $type ) {
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+
+		return $dbw->insert(
+			'wikilambda_zobject_function_join',
+			[
+				[
+					'wlzf_ref_zid' => $refId,
+					'wlzf_zfunction_zid' => $zFunctionId,
+					'wlzf_type' => $type
+				]
+			],
+			__METHOD__
+		);
+	}
+
+	/**
+	 * Remove a given ZObject ref from the secondary database
+	 *
+	 * @param string $refId the ZObject ID
+	 * @return void
+	 */
+	public function deleteZFunctionReference( $refId ): void {
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+
+		$dbw->delete(
+			'wikilambda_zobject_function_join',
+			[ 'wlzf_ref_zid' => $refId ],
+			__METHOD__
+		);
+	}
 }

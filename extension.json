@@ -217,7 +217,8 @@
 				"wikilambda-editor-boolean-selector",
 				"wikilambda-implementation-selector-code",
 				"wikilambda-implementation-selector-composition",
-				"wikilambda-argref-default-label"
+				"wikilambda-argref-default-label",
+				"wikilambda-implementation-selector"
 			]
 		}
 	},
@@ -234,6 +235,12 @@
 				"LanguageFallback",
 				"LanguageNameUtils",
 				"TitleFactory"
+			]
+		},
+		"wikilambdafn_search": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\API\\ApiQueryZFunctionReference",
+			"services": [
+				"WikiLambdaZObjectStore"
 			]
 		}
 	},

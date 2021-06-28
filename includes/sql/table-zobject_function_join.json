@@ -1,0 +1,39 @@
+[
+	{
+		"name": "wikilambda_zobject_function_join",
+		"comment": "Stored mapping of various data to their respective functions",
+		"columns": [
+			{
+				"name": "wlzf_id",
+				"comment": "Unique ID for index purposes",
+				"type": "bigint",
+				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
+			},
+			{
+				"name": "wlzf_ref_zid",
+				"comment": "The ZID of the referenced ZObject",
+				"type": "binary",
+				"options": { "length": 32, "notnull": true }
+			},
+			{
+				"name": "wlzf_zfunction_zid",
+				"comment": "The ZFunction's ZID",
+				"type": "binary",
+				"options": { "length": 32, "notnull": true }
+			},
+			{
+				"name": "wlzf_type",
+				"comment": "The type of the referenced ZObject",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			}
+		],
+		"indexes": [
+			{
+				"name": "wlzf_searchindex",
+				"columns": [ "wlzf_type", "wlzf_zfunction_zid" ]
+			}
+		],
+		"pk": [ "wlzf_id" ]
+	}
+]
