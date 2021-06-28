@@ -6,5 +6,6 @@
 	},
 	"apihelp-wikilambda_function_call-example-native-js-code": "调用用户编写的JavaScript代码",
 	"apihelp-wikilambda_function_call-example-native-python-code": "调用用户编写的Python 3代码",
-	"apierror-query+wikilambdaload_zobjects-unloadable": "ZObjectStore无法为“$1”载入页面。"
+	"apierror-query+wikilambdaload_zobjects-unloadable": "ZObjectStore无法为“$1”载入页面。",
+	"apierror-query+wikilambdaload_zobjects-notzobject": "ZObjectStore为“$1”加载了一个非ZObject。"
 }
