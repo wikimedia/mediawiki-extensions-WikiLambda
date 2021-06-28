@@ -8,14 +8,14 @@ function canonicalizeZ6OrZ9( zobject ) {
 
 	if ( objectType === Constants.Z_STRING ) {
 		var Z6 = zobject[ Constants.Z_STRING_VALUE ];
-		if ( Z6 && Z6.match( referenceRe ) ) {
+		if ( Z6 && typeof Z6.match === 'function' && Z6.match( referenceRe ) ) {
 			return zobject;
 		}
 		return Z6 || '';
 	}
 
 	var Z9 = zobject[ Constants.Z_REFERENCE_ID ];
-	if ( Z9 && Z9.match( referenceRe ) ) {
+	if ( Z9 && typeof Z9.match === 'function' && Z9.match( referenceRe ) ) {
 		return Z9;
 	}
 
