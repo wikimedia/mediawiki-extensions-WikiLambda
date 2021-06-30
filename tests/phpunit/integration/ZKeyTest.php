@@ -85,6 +85,10 @@ class ZKeyTest extends WikiLambdaIntegrationTestCase {
 				"Z11K2": "Key object label"
 			}
 		]
+	},
+	"Z2K4": {
+		"Z1K1": "Z32",
+		"Z32K1": []
 	}
 }
 EOT

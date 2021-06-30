@@ -19,6 +19,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualStringSet;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
@@ -328,6 +329,24 @@ class ZObjectContent extends AbstractContent {
 			);
 		}
 		return $this->zobject->getLabel( $language );
+	}
+
+	/**
+	 * Wrapper for ZPersistentObject getAliases method. Returns the aliases of the ZPersistentObject.
+	 *
+	 * @return ZMultiLingualStringSet
+	 * @throws ZErrorException
+	 */
+	public function getAliases(): ZMultiLingualStringSet {
+		if ( !$this->isValid() ) {
+			throw new ZErrorException(
+				new ZError(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
+					new ZList( $this->errors ) // errors is a list of ZErrors
+				)
+			);
+		}
+		return $this->zobject->getAliases();
 	}
 
 	/**

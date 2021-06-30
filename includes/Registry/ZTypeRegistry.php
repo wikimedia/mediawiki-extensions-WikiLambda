@@ -40,7 +40,10 @@ class ZTypeRegistry extends ZObjectRegistry {
 
 	// Needed until we have sub-types
 	public const HACK_ARRAY_Z_KEY = 'Array(ZKey)';
+	// Needed until we have sub-types
 	public const HACK_ARRAY_Z_MONOLINGUALSTRING = 'Array(ZMonoLingualString)';
+	// Needed until we have sub-types
+	public const HACK_ARRAY_Z_MONOLINGUALSTRINGSET = 'Array(ZMonoLingualStringSet)';
 
 	public const Z_NULL_REFERENCE = 'Z0';
 
@@ -51,6 +54,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_PERSISTENTOBJECT_ID = 'Z2K1';
 	public const Z_PERSISTENTOBJECT_VALUE = 'Z2K2';
 	public const Z_PERSISTENTOBJECT_LABEL = 'Z2K3';
+	public const Z_PERSISTENTOBJECT_ALIASES = 'Z2K4';
 
 	public const Z_KEY = 'Z3';
 	public const Z_KEY_TYPE = 'Z3K1';
@@ -83,6 +87,13 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_MULTILINGUALSTRING = 'Z12';
 	public const Z_MULTILINGUALSTRING_VALUE = 'Z12K1';
 
+	public const Z_MONOLINGUALSTRINGSET = 'Z31';
+	public const Z_MONOLINGUALSTRINGSET_LANGUAGE = 'Z31K1';
+	public const Z_MONOLINGUALSTRINGSET_VALUE = 'Z31K2';
+
+	public const Z_MULTILINGUALSTRINGSET = 'Z32';
+	public const Z_MULTILINGUALSTRINGSET_VALUE = 'Z32K1';
+
 	public const Z_LANGUAGE = 'Z60';
 	public const Z_LANGUAGE_CODE = 'Z60K1';
 
@@ -97,6 +108,8 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_LIST => 'ZList',
 		self::Z_MONOLINGUALSTRING => 'ZMonoLingualString',
 		self::Z_MULTILINGUALSTRING => 'ZMultiLingualString',
+		self::Z_MONOLINGUALSTRINGSET => 'ZMonoLingualStringSet',
+		self::Z_MULTILINGUALSTRINGSET => 'ZMultiLingualStringSet',
 	];
 
 	public const SELF_REFERENTIAL_KEYS = [

@@ -55,7 +55,8 @@ class OptionalKeysTest extends WikiLambdaIntegrationTestCase {
 		],
 		"Z4K3": "Z0"
 	},
-	"Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "ZOptions" } ] }
+	"Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "ZOptions" } ] },
+	"Z2K4": { "Z1K1": "Z32", "Z32K1": [ { "Z1K1": "Z31", "Z31K1": "Z1002", "Z31K2": [ "Options!" ] } ] }
 }
 EOT;
 
@@ -83,7 +84,8 @@ EOT;
 		"Z1K1": "Z10101",
 		"Z10101K2": "second key only"
 	},
-	"Z2K3": { "Z1K1": "Z12", "Z12K1": [] }
+	"Z2K3": { "Z1K1": "Z12", "Z12K1": [] },
+	"Z2K4": { "Z1K1": "Z32", "Z32K1": [] }
 }
 EOT;
 

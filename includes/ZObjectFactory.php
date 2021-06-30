@@ -17,7 +17,9 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualStringSet;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualStringSet;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
@@ -69,8 +71,9 @@ class ZObjectFactory {
 		self::trackSelfReference( ZTypeRegistry::Z_NULL_REFERENCE, self::SET_SELF_ZID );
 
 		$label = new ZMultiLingualString( [] );
+		$aliases = new ZMultiLingualStringSet( [] );
 		$value = self::create( $input );
-		$persistentObj = new ZPersistentObject( ZTypeRegistry::Z_NULL_REFERENCE, $value, $label );
+		$persistentObj = new ZPersistentObject( ZTypeRegistry::Z_NULL_REFERENCE, $value, $label, $aliases );
 
 		self::trackSelfReference( ZTypeRegistry::Z_NULL_REFERENCE, self::UNSET_SELF_ZID );
 		return $persistentObj;
@@ -352,6 +355,22 @@ class ZObjectFactory {
 				}
 				break;
 
+			case ZTypeRegistry::HACK_ARRAY_Z_MONOLINGUALSTRINGSET:
+				if ( is_array( $value ) ) {
+					foreach ( $value as $key => $arrayItem ) {
+						if ( $arrayItem instanceof ZMonoLingualStringSet ) {
+							continue;
+						}
+						$value[ $key ] = self::validateKeyValue(
+							'inner',
+							ZTypeRegistry::Z_MONOLINGUALSTRINGSET,
+							$arrayItem
+						);
+					}
+					return $value;
+				}
+				break;
+
 			case ZTypeRegistry::HACK_ARRAY_Z_KEY:
 				if ( is_array( $value ) ) {
 					foreach ( $value as $key => $arrayItem ) {
@@ -522,6 +541,29 @@ class ZObjectFactory {
 				}
 				return self::spliceReturn( $return, $type );
 
+			case ZTypeRegistry::Z_MONOLINGUALSTRINGSET:
+				if ( is_object( $value ) ) {
+					if ( $value instanceof ZMonoLingualStringSet ) {
+						return $value;
+					}
+					$return = get_object_vars( $value );
+				} else {
+					$return = $value;
+				}
+
+				if (
+					!is_array( $return )
+					|| !array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE, $return )
+					|| !is_string( $return[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ] )
+					|| !\Language::isValidCode( $return[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ] )
+					|| !array_key_exists( ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE, $return )
+					|| !is_array( $return[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE ] )
+				) {
+					break;
+				}
+				// TODO: Check that the list is of strings.
+				return self::spliceReturn( $return, $type );
+
 			case ZTypeRegistry::Z_MULTILINGUALSTRING:
 				if ( is_object( $value ) ) {
 					if ( $value instanceof ZMultiLingualString ) {
@@ -544,6 +586,31 @@ class ZObjectFactory {
 					'inner',
 					ZTypeRegistry::HACK_ARRAY_Z_MONOLINGUALSTRING,
 					$return[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ]
+				);
+				return self::spliceReturn( $return, $type );
+
+			case ZTypeRegistry::Z_MULTILINGUALSTRINGSET:
+				if ( is_object( $value ) ) {
+					if ( $value instanceof ZMultiLingualStringSet ) {
+						return $value;
+					}
+					$return = get_object_vars( $value );
+				} else {
+					$return = $value;
+				}
+
+				if (
+					!is_array( $return )
+					|| !array_key_exists( ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE, $return )
+					|| !is_array( $return[ ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE ] )
+				) {
+					break;
+				}
+				// Check that the value key is set to a ZList of ZMonoLingualStringSets.
+				self::validateKeyValue(
+					'inner',
+					ZTypeRegistry::HACK_ARRAY_Z_MONOLINGUALSTRINGSET,
+					$return[ ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE ]
 				);
 				return self::spliceReturn( $return, $type );
 

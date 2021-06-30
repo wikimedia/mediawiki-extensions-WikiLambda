@@ -260,12 +260,16 @@ class ZObjectUtils {
 	 * Given a ZObject, reduces all its ZMultilingualStrings to
 	 * only the preferred language or fallbacks.
 	 *
-	 * @param array|stdClass $input decoded JSON object for a ZObject
+	 * @param array|stdClass|string $input decoded JSON object for a ZObject
 	 * @param string[] $languages array of language Zids
 	 * @return string|array|stdClass same ZObject with only selected Monolingual
 	 * string for each of its Multilingual strings
 	 */
 	public static function filterZMultilingualStringsToLanguage( $input, array $languages = [] ) {
+		if ( is_string( $input ) ) {
+			return $input;
+		}
+
 		// For each key of the input ZObject
 		foreach ( $input as $index => $value ) {
 			// If the value of the key is an array, apply language filter
