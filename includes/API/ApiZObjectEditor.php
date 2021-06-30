@@ -66,6 +66,15 @@ class ApiZObjectEditor extends ApiBase {
 	}
 
 	/**
+	 * @see ApiBase::needsToken
+	 *
+	 * @return string
+	 */
+	public function needsToken(): string {
+		return 'csrf';
+	}
+
+	/**
 	 * @inheritDoc
 	 */
 	protected function getAllowedParams(): array {
