@@ -75,6 +75,7 @@ class ZObjectStore {
 	 * @return string Next available ZID
 	 */
 	public function getNextAvailableZid() : string {
+		// Intentionally use DB_PRIMARY as we need the latest data here.
 		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
 		$res = $dbr->select(
 			/* FROM */ 'page',
@@ -239,8 +240,8 @@ class ZObjectStore {
 	 * @param string $zid
 	 */
 	public function deleteZObjectLabelsByZid( string $zid ) {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
-		$dbr->delete(
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw->delete(
 			'wikilambda_zobject_labels',
 			[ 'wlzl_zobject_zid' => $zid ]
 		);
@@ -253,15 +254,15 @@ class ZObjectStore {
 	 * @param string $zid
 	 */
 	public function deleteZObjectLabelConflictsByZid( string $zid ) {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
-		$dbr->delete(
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw->delete(
 			'wikilambda_zobject_label_conflicts',
-			$dbr->makeList(
+			$dbw->makeList(
 				[
 					'wlzlc_existing_zid' => $zid,
 					'wlzlc_conflicting_zid' => $zid
 				],
-				$dbr::LIST_OR
+				$dbw::LIST_OR
 			)
 		);
 	}
@@ -278,7 +279,7 @@ class ZObjectStore {
 	 * @return array Conflicts found in the wikilambda_zobject_labels database
 	 */
 	public function findZObjectLabelConflicts( $zid, $ztype, $labels ) : array {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
 
 		if ( $labels === [] ) {
 			return [];
@@ -322,7 +323,7 @@ class ZObjectStore {
 	 * @return void|bool
 	 */
 	public function insertZObjectLabels( $zid, $ztype, $labels ) {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
 
 		$updates = [];
 		foreach ( $labels as $language => $value ) {
@@ -335,7 +336,7 @@ class ZObjectStore {
 			];
 		}
 
-		return $dbr->insert( 'wikilambda_zobject_labels', $updates );
+		return $dbw->insert( 'wikilambda_zobject_labels', $updates );
 	}
 
 	/**
@@ -347,7 +348,7 @@ class ZObjectStore {
 	 * @return void|bool
 	 */
 	public function insertZObjectLabelConflicts( $zid, $conflicts ) {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
 
 		$updates = [];
 		foreach ( $conflicts as $language => $existingZid ) {
@@ -358,7 +359,7 @@ class ZObjectStore {
 			];
 		}
 
-		return $dbr->insert( 'wikilambda_zobject_label_conflicts', $updates );
+		return $dbw->insert( 'wikilambda_zobject_label_conflicts', $updates );
 	}
 
 	/**
@@ -368,7 +369,7 @@ class ZObjectStore {
 	 * @return string[]
 	 */
 	public function fetchZidsOfType( $ztype ) {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
 		$res = $dbr->select(
 			/* FROM */ 'wikilambda_zobject_labels',
 			/* SELECT */ [ 'wlzl_zobject_zid' ],
@@ -390,7 +391,7 @@ class ZObjectStore {
 	 * @return string[] All persisted Zids
 	 */
 	public function fetchAllZids() {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
 		$res = $dbr->select(
 			/* FROM */ 'page',
 			/* SELECT */ [ 'page_title' ],
@@ -418,7 +419,7 @@ class ZObjectStore {
 	 * @return IResultWrapper
 	 */
 	public function fetchZObjectLabels( $label, $exact, $languages, $type, $continue, $limit ) {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
 
 		// Set language filter
 		$conditions = [ 'wlzl_language' => $languages ];
