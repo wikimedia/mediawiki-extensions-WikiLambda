@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Beta16",
+			"Lorem Ipsum",
 			"Luca.favorido",
 			"Sofia Stecchi"
 		]
@@ -22,5 +23,6 @@
 	"wikilambda-editor-label-removelanguage-tooltip": "Rimuovi questa lingua da questa etichetta",
 	"wikilambda-editor-zobject-addkey": "Aggiungi chiave:",
 	"wikilambda-editor-label-select-programming-language-label": "Seleziona linguaggio di programmazione:",
-	"wikilambda-implementation-selector-code": "Codice"
+	"wikilambda-implementation-selector-code": "Codice",
+	"wikilambda-argref-default-label": "Seleziona un argomento"
 }
