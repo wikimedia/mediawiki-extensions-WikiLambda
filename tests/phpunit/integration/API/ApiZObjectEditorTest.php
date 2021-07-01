@@ -63,7 +63,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 		$this->setExpectedApiException( [ 'ZPersistentObject input is invalid JSON: Syntax error.', $data ] );
 
-		$this->doApiRequest( [
+		$this->doApiRequestWithToken( [
 			'action' => 'wikilambda_edit',
 			'summary' => 'Summary message',
 			'zobject' => $data
@@ -81,7 +81,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		// returns the messages.
 		$this->setExpectedApiException( $expected );
 
-		$this->doApiRequest( [
+		$this->doApiRequestWithToken( [
 			'uselang' => 'en',
 			'action' => 'wikilambda_edit',
 			'summary' => 'Summary message',
@@ -106,7 +106,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 		$this->setExpectedApiException( [ 'apierror-wikilambda_edit-unmatchingzid', 'Z888', 'Z999' ] );
 
-		$this->doApiRequest( [
+		$this->doApiRequestWithToken( [
 			'action' => 'wikilambda_edit',
 			'summary' => 'Summary message',
 			'zid' => 'Z888',
@@ -130,7 +130,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 		// Try to create the second Zobject with the same label
 		$this->setExpectedApiException( [ 'wikilambda-labelclash', $firstZid, self::EN ] );
-		$result = $this->doApiRequest( [
+		$result = $this->doApiRequestWithToken( [
 			'action' => 'wikilambda_edit',
 			'summary' => 'Summary message',
 			'zobject' => $data
@@ -148,7 +148,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 		// Try to create the second Zobject with the same label
 		$this->setExpectedApiException( [ "Value '$invalidZid' for 'Z2K1' of type 'NullableReference' is invalid." ] );
-		$result = $this->doApiRequest( [
+		$result = $this->doApiRequestWithToken( [
 			'action' => 'wikilambda_edit',
 			'zid' => $invalidZid,
 			'summary' => 'Summary message',
@@ -172,7 +172,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 		// Try to create a nested ZPO
 		$this->setExpectedApiException( [ 'wikilambda-prohibitedcreationtype', ZTypeRegistry::Z_PERSISTENTOBJECT ] );
-		$result = $this->doApiRequest( [
+		$result = $this->doApiRequestWithToken( [
 			'action' => 'wikilambda_edit',
 			'zid' => 'Z400',
 			'summary' => 'Summary message',
@@ -191,7 +191,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 			. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "string" },'
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "new label" } ] } }';
 
-		$result = $this->doApiRequest( [
+		$result = $this->doApiRequestWithToken( [
 			'action' => 'wikilambda_edit',
 			'summary' => 'Summary message',
 			'zobject' => $data
@@ -221,7 +221,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 			. ' { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "new label" },'
 			. ' { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "nueva etiqueta" } ] } }';
 
-		$result = $this->doApiRequest( [
+		$result = $this->doApiRequestWithToken( [
 			'action' => 'wikilambda_edit',
 			'summary' => 'Summary message',
 			'zid' => $newZid,

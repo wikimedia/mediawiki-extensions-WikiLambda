@@ -43,6 +43,7 @@ var Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js
 	state,
 	context,
 	postMock,
+	postWithEditTokenMock,
 	getResolveMock;
 
 describe( 'zobject Vuex module', function () {
@@ -58,6 +59,18 @@ describe( 'zobject Vuex module', function () {
 				} )
 			};
 		} );
+		// eslint-disable-next-line no-unused-vars
+		postWithEditTokenMock = jest.fn( function ( payload ) {
+			return {
+				// eslint-disable-next-line no-unused-vars
+				then: jest.fn( function ( responsePayload ) {
+					return {
+						catch: jest.fn()
+					};
+				} )
+			};
+		} );
+
 		state = $.extend( {}, zobjectModule.state );
 		getResolveMock = jest.fn( function ( thenFunction ) {
 			return thenFunction();
@@ -78,7 +91,8 @@ describe( 'zobject Vuex module', function () {
 
 		mw.Api = jest.fn( function () {
 			return {
-				post: postMock
+				post: postMock,
+				postWithEditToken: postWithEditTokenMock
 			};
 		} );
 		mw.Title = jest.fn( function () {
@@ -266,7 +280,7 @@ describe( 'zobject Vuex module', function () {
 			zobjectModule.actions.submitZObject( context, 'A summary' );
 
 			expect( mw.Api ).toHaveBeenCalledTimes( 1 );
-			expect( postMock ).toHaveBeenCalledWith( {
+			expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
 				action: 'wikilambda_edit',
 				summary: 'A summary',
 				zid: undefined,
@@ -284,7 +298,7 @@ describe( 'zobject Vuex module', function () {
 			zobjectModule.actions.submitZObject( context, 'A summary' );
 
 			expect( mw.Api ).toHaveBeenCalledTimes( 1 );
-			expect( postMock ).toHaveBeenCalledWith( {
+			expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
 				action: 'wikilambda_edit',
 				summary: 'A summary',
 				zid: 'Z0',

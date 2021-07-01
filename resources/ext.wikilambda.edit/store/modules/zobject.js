@@ -400,7 +400,7 @@ module.exports = {
 				action = 'wikilambda_edit',
 				zobject = canonicalize( convertZObjectTreetoJson( context.state.zobject ) );
 
-			api.post( {
+			api.postWithEditToken( {
 				action: action,
 				summary: summary,
 				zid: context.getters.isCreateNewPage ? undefined : context.getters.getCurrentZObjectId,
