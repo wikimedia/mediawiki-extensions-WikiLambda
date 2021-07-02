@@ -288,12 +288,14 @@ class Hooks implements
 		$data = file_get_contents( $initialDataToLoadPath . $filename );
 		if ( !$data ) {
 			// something went wrong, give up.
+			$updater->output( "\t❌ Unable to load file contents for {$title->getPrefixedText()}.\n" );
 			return false;
 		}
 
 		try {
 			$content = ZObjectContentHandler::makeContent( $data, $title );
 		} catch ( ZErrorException $e ) {
+			$updater->output( "\t❌ Unable to make a ZObject for {$title->getPrefixedText()}.\n" );
 			return false;
 		}
 
@@ -305,6 +307,15 @@ class Hooks implements
 
 		if ( $status->isOK() ) {
 			$updater->insertUpdateRow( $updateRowName );
+			if ( !defined( 'MW_PHPUNIT_TEST' ) ) {
+				// Don't log this during unit testing, quibble thinks it means we're broken.
+				$updater->output( "\tSuccessfully created {$title->getPrefixedText()}.\n" );
+			}
+		} else {
+			$firstError = $status->getErrors()[0];
+			$error = wfMessage( $firstError[ 'message' ], $firstError[ 'params' ] );
+			// @phan-suppress-next-line SecurityCheck-DoubleEscaped Error message is just logged, not rendered.
+			$updater->output( "\t❌ Unable to make a page for {$title->getPrefixedText()}: $error\n" );
 		}
 
 		return $status->isOK();
