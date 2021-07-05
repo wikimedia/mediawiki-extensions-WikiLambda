@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Ayack",
+			"DreZhsh",
 			"Fujimaru-kun",
 			"Gomoko",
 			"JenyxGym",
@@ -73,5 +74,6 @@
 	"wikilambda-editor-boolean-selector": "Sélectionner vrai/faux",
 	"wikilambda-implementation-selector-code": "Code",
 	"wikilambda-implementation-selector-composition": "Composition",
-	"wikilambda-argref-default-label": "Sélectionner un argument"
+	"wikilambda-argref-default-label": "Sélectionner un argument",
+	"wikilambda-implementation-selector": "Sélectionnez l'implémentation"
 }

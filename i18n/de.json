@@ -65,5 +65,6 @@
 	"wikilambda-editor-boolean-selector": "Auswählen true/false",
 	"wikilambda-implementation-selector-code": "Code",
 	"wikilambda-implementation-selector-composition": "Zusammenstellung",
-	"wikilambda-argref-default-label": "Wähle ein Argument"
+	"wikilambda-argref-default-label": "Wähle ein Argument",
+	"wikilambda-implementation-selector": "Implementierung auswählen"
 }

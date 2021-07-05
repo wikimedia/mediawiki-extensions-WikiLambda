@@ -1,11 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
+			"Dr. Mohammed",
 			"محمد أحمد عبد الفتاح"
 		]
 	},
 	"wikilambda-publishnew": "نشر",
 	"wikilambda-publishchanges": "نشر التغييرات",
 	"wikilambda-savechanges": "حفظ التغييرات",
-	"wikilambda-loading": "يجري تحميل البيانات"
+	"wikilambda-loading": "يجري تحميل البيانات",
+	"wikilambda-implementation-selector": "حدد التنفيذ"
 }
