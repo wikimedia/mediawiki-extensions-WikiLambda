@@ -4,12 +4,14 @@
 			"Agent",
 			"BnSrSa",
 			"Fitoschido",
+			"Jackiezelaya",
 			"KATRINE1993",
 			"Mpayansilva"
 		]
 	},
 	"wikilambda-invalidzobject": "El contenido proporcionado no constituye un ZObject válido.",
 	"wikilambda-typeunavailable": "Tipo no reconocido",
+	"wikilambda-argref": "Referencia de argumento",
 	"wikilambda-special-createzobject-nojs": "Para utilizar esta página se necesita JavaScript.",
 	"wikilambda-special-evaluatefunctioncall": "Evalúa una llamada de función",
 	"wikilambda-special-evaluatefunctioncall-intro": "Asegúrate de que sigues las políticas comunitarias, además del copyright y las reglas de patente.",
@@ -27,5 +29,7 @@
 	"wikilambda-editor-zobject-addkey": "Añadir clave:",
 	"wikilambda-editor-boolean-selector": "Seleccione verdadero/falso",
 	"wikilambda-implementation-selector-code": "Código",
-	"wikilambda-implementation-selector-composition": "Composición"
+	"wikilambda-implementation-selector-composition": "Composición",
+	"wikilambda-argref-default-label": "Seleccionar un argumento",
+	"wikilambda-implementation-selector": "Seleccionar implementación"
 }

@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Joao Xavier"
+		]
+	},
+	"apihelp-query+wikilambdafn_search-summary": "This API query list searches for the IDs of all ZObjects associated with a provided ZFunction ID",
+	"apihelp-query+wikilambdafn_search-example-simple": "Search for ZImplementation IDs that are associated to a given ZFunction ID",
+	"apihelp-query+wikilambdafn_search-param-zfunction_id": "The ZFunction ID to search for",
+	"apihelp-query+wikilambdafn_search-param-type": "The type of ZObject referenced by the ZFunction to search for"
+}

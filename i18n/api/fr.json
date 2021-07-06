@@ -48,5 +48,9 @@
 	"apihelp-wikilambda_edit-param-zobject": "Représentation JSON de l’Objet-Z à enregistrer",
 	"apierror-wikilambda_function_call-not-connected": "Impossible de résoudre l'hôte <$1>, probablement parce que l'orchestrateur ne fonctionne pas. Veuillez consulter le README pour ajouter l'orchestrateur à votre configuration docker-compose.",
 	"apierror-wikilambda_edit-invalidjson": "Impossible de créer un Objet-Z avec la valeur « $1 » donnée ; JSON non valide.",
-	"apierror-wikilambda_edit-unmatchingzid": "Le paramètre ZID « $1 » ne correspond pas à l’ID de l’Objet-Z « $2 »"
+	"apierror-wikilambda_edit-unmatchingzid": "Le paramètre ZID « $1 » ne correspond pas à l’ID de l’Objet-Z « $2 »",
+	"apihelp-query+wikilambdafn_search-summary": "Cette liste de requête API cherche les ID de tous les ZObjects associés avec un ID de ZFunction",
+	"apihelp-query+wikilambdafn_search-example-simple": "Rechercher les ID de ZImplementation qui sont associés avec un ID de ZFunction donné",
+	"apihelp-query+wikilambdafn_search-param-zfunction_id": "L’ID de ZFunction à rechercher",
+	"apihelp-query+wikilambdafn_search-param-type": "Le type de ZObject référencé par la ZFunction à rechercher"
 }

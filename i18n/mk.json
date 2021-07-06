@@ -9,6 +9,7 @@
 	"wikilambda-invalidzobjecttitle": "Укажаниот наслов „$1“ не е важечки за ZObject.",
 	"wikilambda-invalidzobject": "Укажаната содржина не претставува важечки ZObject.",
 	"wikilambda-invalidcontenttype": "Укажанаа содржина не претставува класа на ZObject.",
+	"wikilambda-typeunavailable": "Непрепознаен тип",
 	"wikilambda-prohibitedcreationtype": "Укажаниот ZObject е од видот „$1“, кој не е дозволено да се создава.",
 	"wikilambda-noresult": "Пребарувањето не даде ништо.",
 	"wikilambda-labelclash": "Натписот на укажаната содржина се коси со ZObject „$1“ за натписот „$2“.",
@@ -20,6 +21,7 @@
 	"wikilambda-call-function": "Повикај функција",
 	"wikilambda-functioncall": "Функциски повик",
 	"wikilambda-orchestrated": "Исход од оркестрирањето",
+	"wikilambda-argref": "Аргументен навод",
 	"wikilambda-special-callfunction": "Создај или изврши повик на функција.",
 	"wikilambda-special-callfunction-summary": "Овој образец служи за создавање и извршување на повик на функција. Најпрвин треба да ја прочитате помошната документација и напатствијата за заедницата.",
 	"wikilambda-special-callfunction-intro": "Ќе мора да ги следите правилата на заедницата, како и авторскоправните и патентните правила.",
@@ -43,6 +45,7 @@
 	"wikilambda-publishchanges": "Објави промени",
 	"wikilambda-savechanges": "Зачувај промени",
 	"wikilambda-summarylabel": "Опис:",
+	"wikilambda-loading": "Податоците се вчитуваат",
 	"wikilambda-typeselector-label": "Изберете вид",
 	"wikilambda-argument-typeselector-label": "Изберете вид на аргумент",
 	"wikilambda-function-typeselector-label": "Изберете функција",
@@ -56,5 +59,11 @@
 	"wikilambda-editor-label-select-programming-language-label": "Изберете програмски јазик:",
 	"wikilambda-modeselector-genericliteral": "општ.",
 	"specialpages-group-wikilambda": "Страница на Викифункции",
-	"wikilambda-editor-argument-list-label": "Список на аргументи"
+	"wikilambda-editor-argument-list-label": "Список на аргументи",
+	"wikilambda-editor-implementation-list-label": "Список за спроведување",
+	"wikilambda-editor-boolean-selector": "Изберете точно/неточно",
+	"wikilambda-implementation-selector-code": "Код",
+	"wikilambda-implementation-selector-composition": "Состав",
+	"wikilambda-argref-default-label": "Изберете аргумент",
+	"wikilambda-implementation-selector": "Изберете спроведување"
 }

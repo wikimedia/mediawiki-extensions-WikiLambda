@@ -65,5 +65,6 @@
 	"wikilambda-editor-implementation-list-label": "Lista de implementação",
 	"wikilambda-implementation-selector-code": "Código",
 	"wikilambda-implementation-selector-composition": "Composição",
-	"wikilambda-argref-default-label": "Selecione um argumento"
+	"wikilambda-argref-default-label": "Selecione um argumento",
+	"wikilambda-implementation-selector": "Selecione a implementação"
 }
