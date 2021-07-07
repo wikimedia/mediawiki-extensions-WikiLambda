@@ -35,7 +35,11 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		$baseObject = ZTestType::TEST_ENCODING;
 		$page = WikiPage::factory( $title );
 		$content = ZObjectContentHandler::makeContent( $baseObject, $title );
-		$page->doEditContent( $content, "Test creation object" );
+		$page->doUserEditContent(
+			$content,
+			$this->getTestSysop()->getUser(),
+			"Test creation object"
+		);
 		$page->clear();
 	}
 

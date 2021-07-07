@@ -91,7 +91,11 @@ class ZObjectTest extends \MediaWikiIntegrationTestCase {
 		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
 		$content = ZObjectContentHandler::makeContent( ZTestType::TEST_ENCODING, $title );
 		$page = WikiPage::factory( $title );
-		$page->doEditContent( $content, "Test creation object" );
+		$page->doUserEditContent(
+			$content,
+			$this->getTestSysop()->getUser(),
+			"Test creation object"
+		);
 		$this->titlesTouched[] = ZTestType::TEST_ZID;
 
 		// Create instance of type Z111

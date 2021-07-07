@@ -99,7 +99,11 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 		$page = WikiPage::factory( $title );
 		$this->hideDeprecated( '::create' );
 		$content = ZObjectContentHandler::makeContent( $baseObject, $title );
-		$page->doEditContent( $content, "Test creation object" );
+		$page->doUserEditContent(
+			$content,
+			$this->getTestSysop()->getUser(),
+			"Test creation object"
+		);
 		$page->clear();
 
 		$this->assertTrue(

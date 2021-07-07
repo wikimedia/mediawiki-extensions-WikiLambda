@@ -218,14 +218,14 @@ class ZObjectStore {
 		// We prepare the content to be saved
 		$page = $this->wikiPageFactory->newFromTitle( $title );
 		try {
-			$status = $page->doEditContent( $content, $summary, $flags, false, $user );
+			$status = $page->doUserEditContent( $content, $user, $summary, $flags );
 		} catch ( \Exception $e ) {
 			// Error: Database or a deeper MediaWiki error, e.g. a general editing rate limit
 			return Status::newFatal( $e->getMessage() );
 		}
 
 		if ( !$status->isOK() ) {
-			// Error: Other doEditContent related errors
+			// Error: Other doUserEditContent related errors
 			return $status;
 		}
 

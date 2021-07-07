@@ -243,12 +243,10 @@ class Hooks implements
 					continue;
 				}
 
-				$status = $page->doEditContent(
+				$status = $page->doUserEditContent(
 					/* Content */ $content,
-					/* Edit summary */ $creatingComment,
-					/* Flags */ 0,
-					/* Original revision ID */ false,
-					/* User */ $creatingUser
+					/* User */ $creatingUser,
+					/* Edit summary */ $creatingComment
 				);
 
 				if ( $status->isOK() ) {
