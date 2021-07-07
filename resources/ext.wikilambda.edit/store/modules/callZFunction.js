@@ -6,6 +6,8 @@ module.exports = {
 			var resultId = payload || context.getters.getNextObjectId;
 			if ( resultId === context.getters.getNextObjectId ) {
 				context.commit( 'addZObject', { id: resultId, key: undefined, parent: -1, value: 'object' } );
+			} else {
+				context.dispatch( 'removeZObjectChildren', resultId );
 			}
 
 			return resultId;
@@ -15,10 +17,11 @@ module.exports = {
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
+		 * @return {Promise}
 		 */
 		callZFunction: function ( context, payload ) {
 			var api = new mw.Api();
-			api.post( {
+			return api.post( {
 				action: 'wikilambda_function_call',
 				// eslint-disable-next-line camelcase
 				wikilambda_function_call_zobject: JSON.stringify(

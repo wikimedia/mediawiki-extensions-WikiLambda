@@ -218,7 +218,8 @@
 				"wikilambda-implementation-selector-code",
 				"wikilambda-implementation-selector-composition",
 				"wikilambda-argref-default-label",
-				"wikilambda-implementation-selector"
+				"wikilambda-implementation-selector",
+				"wikilambda-orchestrated-loading"
 			]
 		}
 	},

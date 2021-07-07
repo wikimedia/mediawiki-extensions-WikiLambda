@@ -27,27 +27,32 @@
 		<button @click="callFunctionHandler">
 			<label> {{ $i18n( 'wikilambda-call-function' ) }} </label>
 		</button>
-		<div v-if="resultId" class="ext-wikilambda-orchestrated-result">
-			<span>{{ $i18n( 'wikilambda-orchestrated' ) }}</span>
-			<z-key-mode-selector
-				:mode="orchestratedMode"
-				parent-type="Z7"
-				:available-modes="displayModes"
-				@change="orchestratedMode = $event"
-			></z-key-mode-selector>
-			<div>
-				<z-object-json
-					v-if="orchestratedMode === Constants.Z_KEY_MODES.JSON"
-					:readonly="true"
-					:zobject-id="resultId"
-				></z-object-json>
-				<z-object-key
-					v-else
-					:zobject-id="resultId"
-					:parent-type="Constants.Z_PAIR"
-					:readonly="true"
-				></z-object-key>
-			</div>
+		<div v-if="resultZObject || orchestrating" class="ext-wikilambda-orchestrated-result">
+			<template v-if="resultZObject">
+				<span>{{ $i18n( 'wikilambda-orchestrated' ) }}</span>
+				<z-key-mode-selector
+					:mode="orchestratedMode"
+					parent-type="Z7"
+					:available-modes="displayModes"
+					@change="orchestratedMode = $event"
+				></z-key-mode-selector>
+				<div>
+					<z-object-json
+						v-if="orchestratedMode === Constants.Z_KEY_MODES.JSON"
+						:readonly="true"
+						:zobject-id="resultId"
+					></z-object-json>
+					<z-object-key
+						v-else
+						:zobject-id="resultId"
+						:parent-type="Constants.Z_PAIR"
+						:readonly="true"
+					></z-object-key>
+				</div>
+			</template>
+			<template v-else-if="orchestrating">
+				<em>{{ $i18n( 'wikilambda-orchestrated-loading' ) }}</em>
+			</template>
 		</div>
 	</div>
 </template>
@@ -79,7 +84,8 @@ module.exports = {
 	data: function () {
 		return {
 			orchestratedMode: Constants.Z_KEY_MODES.LITERAL,
-			resultId: null
+			resultId: null,
+			orchestrating: false
 		};
 	},
 	computed: $.extend( mapGetters( {
@@ -90,6 +96,9 @@ module.exports = {
 	} ), {
 		zobject: function () {
 			return this.getZObjectChildrenById( this.zobjectId );
+		},
+		resultZObject: function () {
+			return this.getZObjectAsJsonById( this.resultId );
 		},
 		Constants: function () {
 			return Constants;
@@ -200,11 +209,16 @@ module.exports = {
 			var self = this,
 				ZfunctionObject = this.getZObjectAsJsonById( this.zobjectId );
 
+			this.orchestrating = true;
+
 			this.initializeResultId( this.resultId )
 				.then( function ( resultId ) {
 					self.resultId = resultId;
 
-					self.callZFunction( { zobject: ZfunctionObject, resultId: self.resultId } );
+					return self.callZFunction( { zobject: ZfunctionObject, resultId: self.resultId } );
+				} )
+				.then( function () {
+					self.orchestrating = false;
 				} );
 		}
 	} ),

@@ -31,6 +31,7 @@
 	"wikilambda-call-function": "Label for button that calls a function{{doc-wikilambda}}",
 	"wikilambda-functioncall": "Label for the word [[:meta:Abstract Wikipedia/Glossary#function call|function call]].\n\n{{doc-wikilambda}}",
 	"wikilambda-orchestrated": "Label for the result of orchestration.\n\n{{doc-wikilambda}}",
+	"wikilambda-orchestrated-loading": "Label for the result of orchestration while it is loading.\n\n{{doc-wikilambda}}",
 	"wikilambda-json": "Label for the word [[:meta:Abstract Wikipedia/Glossary#json|json]].\n\n{{doc-wikilambda}}",
 	"wikilambda-argref": "Label for button that access argument reference",
 	"wikilambda-special-callfunction": "Description for Special:CallFunction.\n\n{{doc-wikilambda}}",
