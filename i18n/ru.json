@@ -18,5 +18,6 @@
 	"wikilambda-typeselector-label": "Выберите тип",
 	"wikilambda-function-typeselector-label": "Выберите функцию",
 	"wikilambda-editor-label-addlanguage-label": "Добавить язык:",
-	"wikilambda-implementation-selector-code": "Код"
+	"wikilambda-implementation-selector-code": "Код",
+	"wikilambda-implementation-selector": "Выберите реализацию"
 }

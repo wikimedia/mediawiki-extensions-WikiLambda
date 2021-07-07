@@ -65,5 +65,6 @@
 	"wikilambda-editor-boolean-selector": "בחירת אמת/שקר",
 	"wikilambda-implementation-selector-code": "קוד",
 	"wikilambda-implementation-selector-composition": "הרכבה",
-	"wikilambda-argref-default-label": "נא לבחור ארגומנט"
+	"wikilambda-argref-default-label": "נא לבחור ארגומנט",
+	"wikilambda-implementation-selector": "בחירת מימוש."
 }
