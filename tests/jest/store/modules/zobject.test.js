@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /*!
  * WikiLambda unit test suite for the zobject Vuex module
  *
@@ -6,7 +7,9 @@
  */
 'use strict';
 
-var Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+var fs = require( 'fs' ),
+	path = require( 'path' ),
+	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
 	zobject = {
 		Z1K1: 'Z2',
@@ -321,6 +324,12 @@ describe( 'zobject Vuex module', function () {
 			} );
 			context.dispatch = jest.fn( function ( actionType, payload ) {
 				zobjectModule.actions[ actionType ]( context, payload );
+
+				return {
+					then: function ( fn ) {
+						return fn();
+					}
+				};
 			} );
 
 			zobjectModule.actions.injectZObject( context, {
@@ -362,6 +371,142 @@ describe( 'zobject Vuex module', function () {
 			expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', {
 				id: 3,
 				type: 'Z6'
+			} );
+		} );
+
+		describe( 'Add ZObjects', function () {
+			beforeEach( function () {
+				context.state = {
+					zobject: [
+						{ id: 0, value: 'object' }
+					]
+				};
+				Object.keys( zobjectModule.getters ).forEach( function ( key ) {
+					context.getters[ key ] = zobjectModule.getters[ key ]( context.state, context.getters );
+				} );
+				context.commit = jest.fn( function ( mutationType, payload ) {
+					zobjectModule.mutations[ mutationType ]( context.state, payload );
+				} );
+				context.dispatch = jest.fn( function ( actionType, payload ) {
+					if ( actionType === 'fetchZKeys' ) {
+						return {
+							then: function ( fn ) {
+								return fn();
+							}
+						};
+					}
+
+					zobjectModule.actions[ actionType ]( context, payload );
+
+					return {
+						then: function ( fn ) {
+							return fn();
+						}
+					};
+				} );
+
+				context.rootGetters = {
+					getZkeys: JSON.parse( fs.readFileSync( path.join( __dirname, './zobject/getZkeys.json' ) ) )
+				};
+			} );
+
+			it( 'adds a valid ZPersistentObject', function () {
+				zobjectModule.actions.addZPersistentObject( context, 0 );
+
+				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z2', Z2K1: { Z1K1: 'Z9', Z9K1: 'Z0' }, Z2K2: undefined, Z2K3: { Z1K1: 'Z12', Z12K1: [] } } );
+			} );
+
+			it( 'adds a valid ZMultilingualString', function () {
+				zobjectModule.actions.addZMultilingualString( context, 0 );
+
+				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z12', Z12K1: [] } );
+			} );
+
+			it( 'adds a valid empty ZString', function () {
+				zobjectModule.actions.addZString( context, { id: 0 } );
+
+				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z6', Z6K1: '' } );
+			} );
+
+			it( 'adds a valid prefilled ZString', function () {
+				zobjectModule.actions.addZString( context, { id: 0, value: 'Hello world' } );
+
+				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z6', Z6K1: 'Hello world' } );
+			} );
+
+			it( 'adds a valid ZList', function () {
+				zobjectModule.actions.addZList( context, 0 );
+
+				expect( context.state.zobject ).toEqual( [
+					{ id: 0, value: 'array' }
+				] );
+
+				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( [] );
+			} );
+
+			it( 'adds a valid empty ZReference', function () {
+				zobjectModule.actions.addZReference( context, { id: 0 } );
+
+				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z9', Z9K1: '' } );
+			} );
+
+			it( 'adds a valid prefilled ZReference', function () {
+				zobjectModule.actions.addZReference( context, { id: 0, value: 'Z1' } );
+
+				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z1' } );
+			} );
+
+			it( 'adds a valid ZArgument', function () {
+				zobjectModule.actions.addZArgument( context, 0 );
+
+				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z17', Z17K1: { Z1K1: 'Z9', Z9K1: '' }, Z17K2: { Z1K1: 'Z6', Z6K1: 'Z0K1' }, Z17K3: { Z1K1: 'Z12', Z12K1: [] } } );
+			} );
+
+			it( 'adds a valid ZFunctionCall', function () {
+				zobjectModule.actions.addZFunctionCall( context, 0 );
+
+				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z7', Z7K1: '' } );
+			} );
+
+			it( 'adds a valid ZImplementation', function () {
+				zobjectModule.actions.addZImplementation( context, 0 );
+
+				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z14', Z14K1: { Z1K1: 'Z9', Z9K1: '' }, Z14K2: undefined, Z14K3: { Z1K1: 'Z16', Z16K1: { Z1K1: 'Z61', Z61K1: { Z1K1: 'Z6', Z6K1: '' } }, Z16K2: { Z1K1: 'Z6', Z6K1: '' } } } );
+			} );
+
+			it( 'adds a valid ZFunction', function () {
+				zobjectModule.actions.addZFunction( context, 0 );
+
+				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( {
+					Z1K1: 'Z8',
+					Z8K1: [
+						{
+							Z1K1: 'Z17',
+							Z17K1: {
+								Z1K1: 'Z9',
+								Z9K1: ''
+							},
+							Z17K2: {
+								Z1K1: 'Z6',
+								Z6K1: 'Z0K1'
+							},
+							Z17K3: {
+								Z1K1: 'Z12',
+								Z12K1: []
+							}
+						}
+					],
+					Z8K2: {
+						Z1K1: 'Z9',
+						Z9K1: ''
+					},
+					Z8K3: [],
+					Z8K4: [],
+					Z8K5: {
+						Z1K1: 'Z9',
+						Z9K1: 'Z0'
+					}
+				} );
 			} );
 		} );
 	} );

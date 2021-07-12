@@ -25,6 +25,7 @@
 	"wikilambda-call-function": "Call Function",
 	"wikilambda-functioncall": "Function call",
 	"wikilambda-orchestrated": "Orchestration result",
+	"wikilambda-orchestrated-loading": "Performing orchestration, please wait",
 	"wikilambda-json": "JSON",
 	"wikilambda-argref": "Argument Reference",
 	"wikilambda-special-callfunction": "Create and execute a Function Call.",

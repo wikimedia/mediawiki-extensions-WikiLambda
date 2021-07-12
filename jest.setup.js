@@ -11,7 +11,8 @@ global.mw = {
 					return {
 						createNewPage: true,
 						viewmode: true,
-						zobject: { Z1K1: 'Z2', Z2K1: 'Z0' }
+						zobject: { Z1K1: 'Z2', Z2K1: 'Z0' },
+						zlangZid: 'Z1002'
 					};
 				default:
 					return {};

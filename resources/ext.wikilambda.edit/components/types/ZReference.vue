@@ -7,7 +7,7 @@
 	-->
 	<div class="ext-wikilambda-zreference">
 		<span v-if="viewmode || readonly || getCurrentZObjectId === referenceValue">
-			<a :href="'./ZObject:' + referenceValue">
+			<a :href="'/wiki/ZObject:' + referenceValue">
 				{{ referenceLabel }} ({{ referenceValue }})
 			</a>
 		</span>
@@ -37,7 +37,11 @@ module.exports = {
 	props: {
 		zobjectId: {
 			type: Number,
-			required: true
+			default: -1
+		},
+		zobjectKey: {
+			type: String,
+			default: ''
 		},
 		searchType: {
 			type: String,
@@ -64,7 +68,7 @@ module.exports = {
 				return this.findKeyInArray( Constants.Z_REFERENCE_ID, this.zobject );
 			},
 			referenceValue: function () {
-				return this.referenceItem.value;
+				return this.zobjectKey || this.referenceItem.value;
 			},
 			referenceLabel: function () {
 				return this.getZkeyLabels[ this.referenceValue ];

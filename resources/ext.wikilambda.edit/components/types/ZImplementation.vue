@@ -7,12 +7,22 @@
 	-->
 	<div>
 		<div>
-			{{ functionLabel }}: <z-object-selector
+			{{ functionLabel }}:{{ ' ' }}
+			<z-object-selector
+				v-if="!getViewMode"
 				:type="Constants.Z_FUNCTION"
 				:placeholder="$i18n( 'wikilambda-function-typeselector-label' )"
 				:selected-id="zFunction.value"
 				@input="updateZFunctionType"
 			></z-object-selector>
+			<template v-else>
+				<z-reference
+					v-if="zFunction.value"
+					:zobject-key="zFunction.value"
+					:readonly="true"
+				></z-reference>
+				<span v-else>{{ $i18n( 'wikilambda-invalidzobject' ) }}</span>
+			</template>
 		</div>
 		<div v-if="!getViewMode">
 			<select v-model="implMode">
@@ -48,14 +58,16 @@ var Constants = require( '../../Constants.js' ),
 	ZCode = require( './ZCode.vue' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	ZFunctionSignature = require( '../ZFunctionSignature.vue' ),
-	ZObjectKey = require( '../ZObjectKey.vue' );
+	ZObjectKey = require( '../ZObjectKey.vue' ),
+	ZReference = require( './ZReference.vue' );
 
 module.exports = {
 	components: {
 		'z-code': ZCode,
 		'z-object-selector': ZObjectSelector,
 		'z-function-signature': ZFunctionSignature,
-		'z-object-key': ZObjectKey
+		'z-object-key': ZObjectKey,
+		'z-reference': ZReference
 	},
 	mixins: [ typeUtils ],
 	provide: {
@@ -73,7 +85,13 @@ module.exports = {
 		};
 	},
 	computed: $.extend( {},
-		mapGetters( [ 'getZObjectChildrenById', 'getZkeyLabels', 'getZkeys', 'getViewMode' ] ),
+		mapGetters( [
+			'getZObjectChildrenById',
+			'getZkeyLabels',
+			'getZkeys',
+			'getViewMode',
+			'getNestedZObjectById'
+		] ),
 		{
 			Constants: function () {
 				return Constants;
@@ -83,7 +101,7 @@ module.exports = {
 			},
 			zFunction: function () {
 				return this.findKeyInArray(
-					Constants.Z_REFERENCE_ID,
+					[ Constants.Z_REFERENCE_ID, Constants.Z_STRING_VALUE ],
 					this.getZObjectChildrenById(
 						this.findKeyInArray( Constants.Z_IMPLEMENTATION_FUNCTION, this.zobject ).id
 					)
@@ -96,20 +114,11 @@ module.exports = {
 				return this.findKeyInArray( Constants.Z_IMPLEMENTATION_COMPOSITION, this.zobject ).id;
 			},
 			zCodeLanguage: function () {
-				return this.findKeyInArray(
-					Constants.Z_STRING_VALUE,
-					this.getZObjectChildrenById(
-						this.findKeyInArray(
-							Constants.Z_PROGRAMMING_LANGUAGE_CODE,
-							this.getZObjectChildrenById(
-								this.findKeyInArray(
-									Constants.Z_CODE_LANGUAGE,
-									this.getZObjectChildrenById( this.zCodeId )
-								).id
-							)
-						).id
-					)
-				).value;
+				return this.getNestedZObjectById( this.zCodeId, [
+					Constants.Z_CODE_LANGUAGE,
+					Constants.Z_PROGRAMMING_LANGUAGE_CODE,
+					Constants.Z_STRING_VALUE
+				] ).value;
 			},
 			functionLabel: function () {
 				return this.getZkeyLabels[ Constants.Z_IMPLEMENTATION_FUNCTION ];

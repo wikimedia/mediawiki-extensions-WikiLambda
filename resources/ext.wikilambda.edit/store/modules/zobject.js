@@ -161,6 +161,33 @@ module.exports = {
 				} )[ 0 ];
 			};
 		},
+		getNestedZObjectById: function ( state, getters ) {
+			/**
+			 * Return a specific zObject given a series of keys.
+			 *
+			 * @param {number} id
+			 * @param {Array} keys
+			 * @return {Object} zObjectItem
+			 */
+			return function ( id, keys ) {
+				var list = getters.getZObjectChildrenById( id ),
+					res,
+					last = keys[ keys.length - 1 ];
+
+				for ( var k = 0; k < keys.length; k++ ) {
+					var key = keys[ k ];
+					res = typeUtils.findKeyInArray( key, list );
+
+					if ( res && key !== last ) {
+						list = getters.getZObjectChildrenById( res.id );
+					} else {
+						break;
+					}
+				}
+
+				return res;
+			};
+		},
 		getZObjectIndexById: function ( state ) {
 			/**
 			 * Return the index of a zObject by its ID. This is mainly used by actions.
@@ -247,7 +274,7 @@ module.exports = {
 			 *
 			 * @return {Array} zObjectJson
 			 */
-			return convertZObjectTreetoJson( state.zobject );
+			return convertZObjectTreetoJson( state.zobject, 0, state.zobject[ 0 ].value === 'array' );
 		},
 		getZObjectAsJsonById: function ( state ) {
 			/**
@@ -557,7 +584,7 @@ module.exports = {
 		/**
 		 * Create the required entry in the zobject array for a zPersistenObject.
 		 * The entry will result in a json representation equal to:
-		 * { Z1K1: Z0, Z2K1: { Z1K1: Z9, Z9K1: Z0 }, Z2K2: '', Z2K3: { Z1K1: Z12, Z12K1: [] } }
+		 * { Z1K1: 'Z2', Z2K1: { Z1K1: 'Z9', Z9K1: 'Z0' }, Z2K2: undefined, Z2K3: { Z1K1: 'Z12', Z12K1: [] } }
 		 *
 		 * @param {Object} context
 		 * @param {number} ObjectId
@@ -703,7 +730,11 @@ module.exports = {
 		/**
 		 * Create the required entry in the zobject array for a zArgument.
 		 * The entry will result in a json representation equal to:
-		 * { Z1K1: Z17, Z17K1: '', Z17K2: { Z1K1: Z6, Z6K1: Z0K1 }, K17K3: { Z1K1: Z12, Z12K1: [] }   }
+		 * { Z1K1: 'Z17',
+		 * Z17K1: { Z1K1: 'Z9', Z9K1: '' },
+		 * Z17K2: { Z1K1: 'Z6', Z6K1: 'Z0K1' },
+		 * Z17K3: { Z1K1: 'Z12', Z12K1: [] }
+		 * }
 		 *
 		 * @param {Object} context
 		 * @param {number} objectId
@@ -752,7 +783,18 @@ module.exports = {
 			];
 			context.dispatch( 'addZObjects', zObjectItems );
 		},
-
+		/**
+		 * Create the required entry in the zobject array for a zImplemnetation.
+		 * The entry will result in a json representation equal to:
+		 * { Z1K1: 'Z14', Z14K1:
+		 * { Z1K1: 'Z9', Z9K1: '' },
+		 * Z14K2: undefined,
+		 * Z14K3:
+		 * { Z1K1: 'Z16', Z16K1: { Z1K1: 'Z61', Z61K1: { Z1K1: 'Z6', Z6K1: '' } }, Z16K2: { Z1K1: 'Z6', Z6K1: '' } } }
+		 *
+		 * @param {Object} context
+		 * @param {number} objectId
+		 */
 		addZImplementation: function ( context, objectId ) {
 			var nextId,
 				isPersistentImplementation = !typeUtils.findKeyInArray(
