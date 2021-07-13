@@ -22,6 +22,7 @@
 	"wikilambda-call-function": "Funktion aufrufen",
 	"wikilambda-functioncall": "Funktionsaufruf",
 	"wikilambda-orchestrated": "Ergebnis der Orchestrierung",
+	"wikilambda-orchestrated-loading": "Instrumentierung wird durchgeführt, bitte warten",
 	"wikilambda-argref": "Argument Referenz",
 	"wikilambda-special-callfunction": "Erstellen und Ausführen eines Funktionsaufrufs.",
 	"wikilambda-special-callfunction-summary": "Mit diesem Formular kannst du einen Funktionsaufruf erstellen und ausführen. Du solltest zuerst die Hilfedokumentation und die Anleitung der Community lesen.",
