@@ -90,12 +90,12 @@ module.exports = {
 				return this.getZObjectTypeById( this.zobjectId );
 			},
 			isInlineComponent: function () {
-				return (
-					( this.type === Constants.Z_STRING ) ||
-					( this.type === Constants.Z_REFERENCE ) ||
-					( this.type === Constants.Z_BOOLEAN ) ||
-					( this.type === Constants.Z_ARGUMENT_REFERENCE )
-				);
+				return [
+					Constants.Z_STRING,
+					Constants.Z_REFERENCE,
+					Constants.Z_BOOLEAN,
+					Constants.Z_ARGUMENT_REFERENCE
+				].indexOf( this.type ) !== -1;
 			},
 			classZObject: function () {
 				return {

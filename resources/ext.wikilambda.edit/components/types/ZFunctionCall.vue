@@ -8,11 +8,25 @@
 	<div class="ext-wikilambda-function-call-block">
 		{{ zFunctionCallKeyLabels[ Constants.Z_FUNCTION_CALL_FUNCTION ] }}:
 		<z-object-selector
+			v-if="!selectedFunction"
 			:type="Constants.Z_FUNCTION"
 			:placeholder="$i18n( 'wikilambda-function-typeselector-label' )"
 			:selected-id="zFunctionId"
 			@input="typeHandler"
 		></z-object-selector>
+		<template v-else>
+			<button
+				:title="$i18n( 'wikilambda-editor-zobject-removekey-tooltip' )"
+				@click="typeHandler"
+			>
+				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
+			</button>
+			<z-reference
+				:zobject-key="selectedFunction[ Constants.Z_PERSISTENTOBJECT_ID ]"
+				search-type="Z8"
+				:readonly="true"
+			></z-reference>
+		</template>
 		<ul>
 			<li v-for="argument in zFunctionArguments" :key="argument.key">
 				{{ argument.label }}:
@@ -65,6 +79,7 @@ var Constants = require( '../../Constants.js' ),
 	ZObjectJson = require( '../ZObjectJson.vue' ),
 	ZObjectKey = require( '../ZObjectKey.vue' ),
 	ZKeyModeSelector = require( '../ZKeyModeSelector.vue' ),
+	ZReference = require( './ZReference.vue' ),
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
 module.exports = {
@@ -72,7 +87,8 @@ module.exports = {
 		'z-object-selector': ZObjectSelector,
 		'z-object-json': ZObjectJson,
 		'z-object-key': ZObjectKey,
-		'z-key-mode-selector': ZKeyModeSelector
+		'z-key-mode-selector': ZKeyModeSelector,
+		'z-reference': ZReference
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -190,17 +206,27 @@ module.exports = {
 		'changeType',
 		'initializeResultId',
 		'injectZObject',
-		'resetZObject'
+		'resetZObject',
+		'removeZObject'
 	] ), {
 		typeHandler: function ( zid ) {
-			var zFunctionCallFunction = this.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, this.zobject );
+			var zFunctionCallFunction = this.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, this.zobject ),
+				argumentKeys = this.zFunctionArguments.map( function ( arg ) {
+					return arg.key;
+				} );
 
 			this.injectZObject( {
 				zobject: zid,
 				key: 'Z7K1',
 				id: zFunctionCallFunction.id,
 				parent: this.zobjectId
-			} );
+			} ).then( function () {
+				this.zobject.forEach( function ( row ) {
+					if ( argumentKeys.indexOf( row.key ) > -1 ) {
+						this.removeZObject( row.id );
+					}
+				}.bind( this ) );
+			}.bind( this ) );
 		},
 		findArgumentId: function ( key ) {
 			return this.findKeyInArray( key, this.zobject ).id;
@@ -245,9 +271,7 @@ module.exports = {
 			} );
 		},
 		zFunctionId: function () {
-			if ( !this.zFunctionId ) {
-				this.resetZObject( this.zobjectId );
-			} else {
+			if ( this.zFunctionId ) {
 				this.fetchZKeys( [ this.zFunctionId ] );
 			}
 		}
