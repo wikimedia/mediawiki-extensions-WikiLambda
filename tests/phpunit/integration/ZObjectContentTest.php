@@ -12,9 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use FormatJson;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
-use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
@@ -29,37 +27,7 @@ use WikiPage;
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectContent
  * @group Database
  */
-class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
-
-	private const EN = 'Z1002';
-	private const ES = 'Z1003';
-
-	protected function setUp() : void {
-		parent::setUp();
-
-		$this->tablesUsed[] = 'wikilambda_zobject_labels';
-		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
-
-		$langs = ZLangRegistry::singleton();
-		$langs->register( self::EN, 'en' );
-		$langs->register( self::ES, 'es' );
-	}
-
-	/** @var string[] */
-	protected $titlesTouched = [];
-
-	public function tearDown() : void {
-		$sysopUser = $this->getTestSysop()->getUser();
-
-		foreach ( $this->titlesTouched as $titleString ) {
-			$title = Title::newFromText( $titleString, NS_ZOBJECT );
-			$page = WikiPage::factory( $title );
-			if ( $page->exists() ) {
-				$page->doDeleteArticleReal( "clean slate for testing", $sysopUser );
-			}
-		}
-		parent::tearDown();
-	}
+class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers ::__construct
@@ -358,6 +326,7 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getLabel
 	 */
 	public function testPersistentGetterWrappers() {
+		$this->registerLangs( [ 'es' ] );
 		$zobjectText = '{ "Z1K1": "Z2",'
 			. '"Z2K1": { "Z1K1": "Z9", "Z9K1": "Z333" },'
 			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "string value" },'
@@ -440,23 +409,18 @@ class ZObjectContentTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getZType
 	 */
 	public function testGetTypeString() {
+		$this->registerLangs( ZTestType::TEST_LANGS );
 		$registry = ZTypeRegistry::singleton();
+
 		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
-		$content = ZObjectContentHandler::makeContent( ZTestType::TEST_ENCODING, $title );
-		$page = WikiPage::factory( $title );
-		$page->doUserEditContent(
-			$content,
-			$this->getTestSysop()->getUser(),
-			"Test creation object"
-		);
-		$this->titlesTouched[] = ZTestType::TEST_ZID;
-		$page->clear();
+		$this->editPage( $title, ZTestType::TEST_ENCODING, "Test creation object", NS_ZOBJECT );
 
 		$this->assertTrue(
 			$registry->isZObjectKeyKnown( ZTestType::TEST_ZID ),
 			"'TestingType' found in DB"
 		);
 
+		$this->registerLangs( [ 'es' ] );
 		$zobjectText = '{ "Z1K1": "Z2",'
 			. '"Z2K1": "Z0",'
 			. '"Z2K2": { "Z1K1": "' . ZTestType::TEST_ZID

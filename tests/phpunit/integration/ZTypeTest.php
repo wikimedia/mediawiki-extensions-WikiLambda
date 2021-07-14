@@ -9,7 +9,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
@@ -19,18 +18,7 @@ use MediaWiki\MediaWikiServices;
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZType
  */
-class ZTypeTest extends \MediaWikiIntegrationTestCase {
-
-	public const EN = 'Z1002';
-	public const FR = 'Z1004';
-
-	protected function setUp() : void {
-		parent::setUp();
-
-		$langs = ZLangRegistry::singleton();
-		$langs->register( self::EN, 'en' );
-		$langs->register( self::FR, 'fr' );
-	}
+class ZTypeTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::__construct
@@ -43,6 +31,7 @@ class ZTypeTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testPersistentCreation() {
 		$services = MediaWikiServices::getInstance();
+		$this->registerLangs( [ 'fr' ] );
 
 		$english = new \Language(
 			'en',
@@ -76,8 +65,8 @@ class ZTypeTest extends \MediaWikiIntegrationTestCase {
 						'Z3K3' => [
 							'Z1K1' => 'Z12',
 							'Z12K1' => [
-								[ 'Z1K1' => 'Z11', 'Z11K1' => self::EN, 'Z11K2' => 'Demonstration key' ],
-								[ 'Z1K1' => 'Z11', 'Z11K1' => self::FR, 'Z11K2' => 'Index pour démonstration' ]
+								[ 'Z1K1' => 'Z11', 'Z11K1' => self::ZLANG['en'], 'Z11K2' => 'Demonstration key' ],
+								[ 'Z1K1' => 'Z11', 'Z11K1' => self::ZLANG['fr'], 'Z11K2' => 'Index pour démonstration' ]
 							]
 						]
 					],
@@ -88,8 +77,15 @@ class ZTypeTest extends \MediaWikiIntegrationTestCase {
 						'Z3K3' => [
 							'Z1K1' => 'Z12',
 							'Z12K1' => [
-								[ 'Z1K1' => 'Z11', 'Z11K1' => self::EN, 'Z11K2' => 'Other demonstration key' ],
-								[ 'Z1K1' => 'Z11', 'Z11K1' => self::FR, 'Z11K2' => 'Autre index pour démonstration' ]
+								[
+									'Z1K1' => 'Z11', 'Z11K1' => self::ZLANG['en'],
+									'Z11K2' => 'Other demonstration key'
+								],
+								[
+									'Z1K1' => 'Z11',
+									'Z11K1' => self::ZLANG['fr'],
+									'Z11K2' => 'Autre index pour démonstration'
+								]
 							]
 						]
 					]
@@ -99,8 +95,8 @@ class ZTypeTest extends \MediaWikiIntegrationTestCase {
 			'Z2K3' => [
 				'Z1K1' => 'Z12',
 				'Z12K1' => [
-					[ 'Z1K1' => 'Z11', 'Z11K1' => self::EN, 'Z11K2' => 'Demonstration type' ],
-					[ 'Z1K1' => 'Z11', 'Z11K1' => self::FR, 'Z11K2' => 'Type pour démonstration' ]
+					[ 'Z1K1' => 'Z11', 'Z11K1' => self::ZLANG['en'], 'Z11K2' => 'Demonstration type' ],
+					[ 'Z1K1' => 'Z11', 'Z11K1' => self::ZLANG['fr'], 'Z11K2' => 'Type pour démonstration' ]
 				]
 			]
 		] ) );

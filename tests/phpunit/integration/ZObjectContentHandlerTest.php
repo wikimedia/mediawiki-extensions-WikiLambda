@@ -13,7 +13,6 @@ use FormatJson;
 use Language;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectEditAction;
@@ -23,33 +22,12 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Revision\SlotRenderingProvider;
 use Title;
-use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectContentHandler
  * @group Database
  */
-class ZObjectContentHandlerTest extends \MediaWikiIntegrationTestCase {
-
-	/** @var string[] */
-	private $titlesTouched = [];
-
-	private const EN = 'Z1002';
-	private const FR = 'Z1004';
-	private const DE = 'Z1430';
-
-	protected function setUp() : void {
-		parent::setUp();
-
-		$this->tablesUsed[] = 'wikilambda_zobject_labels';
-		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
-
-		// Register necessary languages
-		$langs = ZLangRegistry::singleton();
-		$langs->register( self::EN, 'en' );
-		$langs->register( self::FR, 'fr' );
-		$langs->register( self::DE, 'de' );
-	}
+class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers ::__construct
@@ -154,13 +132,10 @@ class ZObjectContentHandlerTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getExternalRepresentation
 	 */
 	public function testGetExternalRepresentation() {
-		$this->hideDeprecated( '::create' );
+		$this->registerLangs( [ 'fr', 'de' ] );
 		$this->editPage( ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'Test creation', NS_ZOBJECT );
 
 		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
-		$page = WikiPage::factory( $title );
-		$this->titlesTouched[] = ZTestType::TEST_ZID;
-
 		$externalRepresentation = ZObjectContentHandler::getExternalRepresentation( $title );
 
 		$this->assertStringNotContainsString( '"Z2K1": "Z0"', $externalRepresentation, "ZPO key is not set to Z0" );
@@ -260,18 +235,5 @@ class ZObjectContentHandlerTest extends \MediaWikiIntegrationTestCase {
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 		$overrides = $handler->getActionOverrides();
 		$this->assertSame( $overrides[ 'edit' ], ZObjectEditAction::class );
-	}
-
-	protected function tearDown() : void {
-		// Cleanup the pages we touched.
-		$sysopUser = $this->getTestSysop()->getUser();
-
-		foreach ( $this->titlesTouched as $titleString ) {
-			$title = Title::newFromText( $titleString, NS_ZOBJECT );
-			$page = WikiPage::factory( $title );
-			$page->doDeleteArticleReal( $title, $sysopUser );
-		}
-
-		parent::tearDown();
 	}
 }

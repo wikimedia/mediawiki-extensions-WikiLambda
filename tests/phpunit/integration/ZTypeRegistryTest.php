@@ -11,31 +11,14 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZLangRegistry;
-use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use Title;
-use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZTypeRegistry
  * @group Database
  */
-class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
-
-	private const EN = 'Z1002';
-	private const FR = 'Z1004';
-
-	protected function setUp() : void {
-		parent::setUp();
-
-		$langs = ZLangRegistry::singleton();
-		$langs->register( self::EN, 'en' );
-		$langs->register( self::FR, 'fr' );
-
-		$this->tablesUsed[] = 'wikilambda_zobject_labels';
-		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
-	}
+class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectRegistry::singleton
@@ -85,6 +68,8 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContentHandler::makeContent
 	 */
 	public function testIsZObjectKeyKnown() {
+		$this->registerLangs( ZTestType::TEST_LANGS );
+
 		$registry = ZTypeRegistry::singleton();
 
 		// NOTE: Hopefully this won't clash with real content on a test DB.
@@ -94,17 +79,7 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 		);
 
 		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
-		$baseObject = ZTestType::TEST_ENCODING;
-
-		$page = WikiPage::factory( $title );
-		$this->hideDeprecated( '::create' );
-		$content = ZObjectContentHandler::makeContent( $baseObject, $title );
-		$page->doUserEditContent(
-			$content,
-			$this->getTestSysop()->getUser(),
-			"Test creation object"
-		);
-		$page->clear();
+		$this->editPage( $title, ZTestType::TEST_ENCODING, "Test creation object", NS_ZOBJECT );
 
 		$this->assertTrue(
 			$registry->isZObjectKeyKnown( ZTestType::TEST_ZID ),
@@ -115,9 +90,6 @@ class ZTypeRegistryTest extends \MediaWikiIntegrationTestCase {
 			'Demonstration type',
 			"'" . ZTestType::TEST_ZID . "' lookup works to find 'Demonstration type'."
 		);
-
-		// Cleanup the page we touched.
-		$page->doDeleteArticleReal( $title, $this->getTestSysop()->getUser() );
 	}
 
 	/**

@@ -11,36 +11,12 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use Title;
-use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectFactory
  * @group Database
  */
-class OptionalKeysTest extends \MediaWikiIntegrationTestCase {
-
-	/** @var string[] */
-	private $titlesTouched = [];
-
-	protected function setUp() : void {
-		parent::setUp();
-
-		$this->tablesUsed[] = 'wikilambda_zobject_labels';
-		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
-	}
-
-	protected function tearDown() : void {
-		// Cleanup the pages we touched.
-		$sysopUser = $this->getTestSysop()->getUser();
-
-		foreach ( $this->titlesTouched as $titleString ) {
-			$title = Title::newFromText( $titleString, NS_ZOBJECT );
-			$page = WikiPage::factory( $title );
-			$page->doDeleteArticleReal( $title, $sysopUser );
-		}
-
-		parent::tearDown();
-	}
+class OptionalKeysTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * This test proves that an on-wiki implementation can be made of a PHP-backed but non-built-in ZType.
@@ -86,7 +62,6 @@ EOT;
 		$baseTypeStatus = $this->editPage(
 			$baseTypeTitleText, $baseTypeContent, 'Create ZOptions', NS_ZOBJECT
 		);
-		$this->titlesTouched[] = $baseTypeTitleText;
 		$this->assertTrue(
 			$baseTypeStatus->isOK(),
 			'ZOptions creation was successful'
@@ -115,7 +90,6 @@ EOT;
 		$instanceStatus = $this->editPage(
 			$instanceTitleText, $instanceContent, 'Test ZOptions instance', NS_ZOBJECT
 		);
-		$this->titlesTouched[] = $instanceTitleText;
 		$this->assertTrue(
 			$instanceStatus->isOK(),
 			'ZOptions instance creation was successful'

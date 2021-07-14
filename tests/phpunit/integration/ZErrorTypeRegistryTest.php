@@ -11,59 +11,12 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorTypeRegistry;
-use Title;
-use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZErrorTypeRegistry
  * @group Database
  */
-class ZErrorTypeRegistryTest extends \MediaWikiIntegrationTestCase {
-
-	/** @var string[] */
-	protected $titlesTouched = [];
-
-	protected function setUp() : void {
-		parent::setUp();
-
-		$this->tablesUsed[] = 'wikilambda_zobject_labels';
-		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
-	}
-
-	protected function insertZids( $zids ) : void {
-		$dataPath = dirname( __DIR__, 3 ) . '/data';
-		foreach ( $zids as $zid ) {
-			$data = file_get_contents( "$dataPath/$zid.json" );
-			$this->editPage( $zid, $data, 'Test creation', NS_ZOBJECT );
-			$this->titlesTouched[] = $zid;
-		}
-	}
-
-	protected function insertZErrorTypes( $errorTypes ) : void {
-		// Insert ZErrorType (Z50) and then all the wanted types
-		$this->insertZids( array_merge( (array)'Z50', $errorTypes ) );
-	}
-
-	protected function tearDown() : void {
-		$sysopUser = $this->getTestSysop()->getUser();
-
-		foreach ( $this->titlesTouched as $titleString ) {
-			$title = Title::newFromText( $titleString, NS_ZOBJECT );
-			$page = WikiPage::factory( $title );
-			if ( $page->exists() ) {
-				$page->doDeleteArticleReal( "clean slate for testing", $sysopUser );
-			}
-		}
-
-		parent::tearDown();
-	}
-
-	private function runPrivateMethod( $object, $methodName, $args ) {
-		$reflector = new \ReflectionClass( get_class( $object ) );
-		$method = $reflector->getMethod( $methodName );
-		$method->setAccessible( true );
-		return $method->invokeArgs( $object, $args );
-	}
+class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers ::singleton

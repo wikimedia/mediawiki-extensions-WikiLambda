@@ -13,66 +13,19 @@ use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use Title;
-use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZLangRegistry
  * @group Database
  */
-class ZLangRegistryTest extends \MediaWikiIntegrationTestCase {
-
-	private const EN = 'Z1002';
-	private const ES = 'Z1003';
-	private const RU = 'Z1005';
-	private const ZH = 'Z1006';
-
-	private const FR = 'Z1004';
-	private const DE = 'Z1430';
+class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 
 	/** @var ZLangRegistry */
-	protected $langRegistry = null;
-
-	/** @var string[] */
-	protected $titlesTouched = [];
+	protected $registry = null;
 
 	protected function setUp() : void {
 		parent::setUp();
-
 		$this->registry = ZLangRegistry::singleton();
-
-		$this->tablesUsed[] = 'wikilambda_zobject_labels';
-		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
-	}
-
-	protected function insertZids( $zids ) : void {
-		$dataPath = dirname( __DIR__, 3 ) . '/data';
-		$sysopUser = $this->getTestSysop()->getUser();
-		foreach ( $zids as $zid ) {
-			$data = file_get_contents( "$dataPath/$zid.json" );
-			$this->editPage( $zid, $data, 'Test creation', NS_ZOBJECT, $sysopUser );
-			$this->titlesTouched[] = $zid;
-		}
-	}
-
-	protected function tearDown() : void {
-		$sysopUser = $this->getTestSysop()->getUser();
-
-		foreach ( $this->titlesTouched as $titleString ) {
-			$title = Title::newFromText( $titleString, NS_ZOBJECT );
-			$page = WikiPage::factory( $title );
-			if ( $page->exists() ) {
-				$page->doDeleteArticleReal( "clean slate for testing", $sysopUser );
-			}
-		}
-
-		parent::tearDown();
-	}
-
-	private function runPrivateMethod( $object, $methodName, $args ) {
-		$reflector = new \ReflectionClass( get_class( $object ) );
-		$method = $reflector->getMethod( $methodName );
-		$method->setAccessible( true );
-		return $method->invokeArgs( $object, $args );
 	}
 
 	/**
@@ -89,7 +42,7 @@ class ZLangRegistryTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getLanguageCodeFromZid
 	 */
 	public function testGetLanguageCodeFromZid_registered() {
-		$code = $this->registry->getLanguageCodeFromZid( self::EN );
+		$code = $this->registry->getLanguageCodeFromZid( self::ZLANG['en'] );
 		$this->assertSame( 'en', $code );
 	}
 
@@ -100,11 +53,11 @@ class ZLangRegistryTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testGetLanguageCodeFromZid_unregistered() {
 		// We make sure that the language is saved in the database but not cached
-		$this->registry->register( self::ES, 'es' );
-		$this->insertZids( [ 'Z60', self::ES ] );
-		$this->registry->unregister( self::ES );
+		$this->registry->register( self::ZLANG['es'], 'es' );
+		$this->insertZids( [ 'Z60', self::ZLANG['es'] ] );
+		$this->registry->unregister( self::ZLANG['es'] );
 
-		$code = $this->registry->getLanguageCodeFromZid( self::ES );
+		$code = $this->registry->getLanguageCodeFromZid( self::ZLANG['es'] );
 		$this->assertSame( 'es', $code );
 	}
 
@@ -136,7 +89,7 @@ class ZLangRegistryTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testGetLanguageZidFromCode_registered() {
 		$zid = $this->registry->getLanguageZidFromCode( 'en' );
-		$this->assertSame( $zid, self::EN );
+		$this->assertSame( $zid, self::ZLANG['en'] );
 	}
 
 	/**
@@ -147,12 +100,12 @@ class ZLangRegistryTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testGetLanguageZidFromCode_unregistered() {
 		// We make sure that the language is saved in the database but not cached
-		$this->registry->register( self::ZH, 'zh' );
-		$this->insertZids( [ 'Z60', self::ZH ] );
-		$this->registry->unregister( self::ZH );
+		$this->registry->register( self::ZLANG['zh'], 'zh' );
+		$this->insertZids( [ 'Z60', self::ZLANG['zh'] ] );
+		$this->registry->unregister( self::ZLANG['zh'] );
 
 		$zid = $this->registry->getLanguageZidFromCode( 'zh' );
-		$this->assertSame( $zid, self::ZH );
+		$this->assertSame( $zid, self::ZLANG['zh'] );
 	}
 
 	/**
@@ -169,7 +122,7 @@ class ZLangRegistryTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getLanguageCodeFromContent
 	 */
 	public function testGetLanguageCodeFromContent_found() {
-		$zid = self::FR;
+		$zid = self::ZLANG['fr'];
 		$dataPath = dirname( __DIR__, 3 ) . '/data';
 		$data = file_get_contents( "$dataPath/$zid.json" );
 		$title = Title::newFromText( $zid, NS_ZOBJECT );
@@ -216,12 +169,11 @@ class ZLangRegistryTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getLanguageZidFromCode
 	 */
 	public function testGetLanguageZids() {
-		$this->registry->register( self::ES, 'es' );
-		$this->registry->register( self::FR, 'fr' );
+		$this->registry->register( self::ZLANG['es'], 'es' );
+		$this->registry->register( self::ZLANG['fr'], 'fr' );
 
 		$zids = $this->registry->getLanguageZids( [ 'en', 'es', 'fr' ] );
-		wfDebugLog( "api", var_export( $zids, true ) );
-		$this->assertSame( $zids, [ self::EN, self::ES, self::FR ] );
+		$this->assertSame( $zids, [ self::ZLANG['en'], self::ZLANG['es'], self::ZLANG['fr'] ] );
 	}
 
 	/**
@@ -229,12 +181,10 @@ class ZLangRegistryTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getLanguageZidFromCode
 	 */
 	public function testGetLanguageZids_incomplete() {
-		$this->registry->register( self::ES, 'es' );
-		$this->registry->register( self::FR, 'fr' );
+		$this->registry->register( self::ZLANG['es'], 'es' );
+		$this->registry->register( self::ZLANG['fr'], 'fr' );
 
 		$zids = $this->registry->getLanguageZids( [ 'bar', 'es', 'fr', 'foo' ] );
-		wfDebugLog( "api", var_export( $zids, true ) );
-		$this->assertSame( $zids, [ self::ES, self::FR ] );
+		$this->assertSame( $zids, [ self::ZLANG['es'], self::ZLANG['fr'] ] );
 	}
-
 }

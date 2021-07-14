@@ -11,28 +11,13 @@ use MediaWiki\MediaWikiServices;
  */
 class ApiZObjectFetcherTest extends ApiTestCase {
 
-	/** @var string[] */
-	protected $titlesTouched = [];
-
 	protected function setUp() : void {
 		parent::setUp();
 
 		$this->tablesUsed[] = 'wikilambda_zobject_labels';
 		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
-	}
-
-	protected function tearDown() : void {
-		$sysopUser = $this->getTestSysop()->getUser();
-
-		foreach ( $this->titlesTouched as $titleString ) {
-			$title = Title::newFromText( $titleString, NS_ZOBJECT );
-			$page = WikiPage::factory( $title );
-			if ( $page->exists() ) {
-				$page->doDeleteArticleReal( "clean slate for testing", $sysopUser );
-			}
-		}
-
-		parent::tearDown();
+		$this->tablesUsed[] = 'wikilambda_zobject_function_join';
+		$this->tablesUsed[] = 'page';
 	}
 
 	/**
