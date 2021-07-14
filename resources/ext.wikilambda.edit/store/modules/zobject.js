@@ -130,6 +130,20 @@ function findLatestKey( zObject, zid ) {
 	} );
 	return parseInt( nextKey, 10 );
 }
+function getParameterByName( name ) {
+	name = name.replace( /[[]]/g, '\\$&' );
+	var regex = new RegExp( '[?&]' + name + '(=([^&#]*)|&|#|$)' ),
+		results = regex.exec( window.location.href );
+	if ( !results ) {
+		return null;
+	}
+
+	if ( !results[ 2 ] ) {
+		return '';
+	}
+
+	return decodeURIComponent( results[ 2 ].replace( /\+/g, ' ' ) );
+}
 
 module.exports = {
 	state: {
@@ -395,7 +409,32 @@ module.exports = {
 				context.dispatch( 'changeType', {
 					id: 0,
 					type: Constants.Z_PERSISTENTOBJECT
+				} ).then( function () {
+					var defaultZid = getParameterByName( 'zid' ),
+						defaultKeys;
+
+					if ( !defaultZid || !defaultZid.match( /Z[1-9]\d*$/ ) ) {
+						return Promise.resolve();
+					}
+
+					return context.dispatch( 'fetchZKeys', [ defaultZid ] )
+						.then( function () {
+							defaultKeys = context.rootGetters.getZkeys[ defaultZid ];
+
+							if ( !defaultKeys ||
+								defaultKeys[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] !==
+								Constants.Z_TYPE
+							) {
+								return Promise.resolve();
+							}
+
+							return context.dispatch( 'changeType', {
+								id: 3,
+								type: defaultZid
+							} );
+						} );
 				} );
+
 				context.commit( 'setZObjectInitialized', true );
 			// if Zid is set
 			} else if ( zId ) {
@@ -835,8 +874,25 @@ module.exports = {
 					)
 				),
 				defaultFunctionValue = isPersistentImplementation ?
-					'' :
+					getParameterByName( Constants.Z_IMPLEMENTATION_FUNCTION ) || '' :
 					context.getters.getCurrentZObjectId;
+
+			function setDefaultFunctionReference( id ) {
+				if ( !defaultFunctionValue || defaultFunctionValue === 'Z0' ) {
+					context.dispatch( 'addZReference', { id: id, value: defaultFunctionValue } );
+				}
+				// fetch zkeys for the zid, then check whether Z2K2.Z1K1 is equal to Constants.Z_FUNCTION
+				return context.dispatch( 'fetchZKeys', [ defaultFunctionValue ] ).then( function () {
+					var keys = context.getters.getZkeys[ defaultFunctionValue ];
+
+					if ( keys &&
+						keys[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] ===
+						Constants.Z_FUNCTION
+					) {
+						context.dispatch( 'addZReference', { id: id, value: defaultFunctionValue } );
+					}
+				} );
+			}
 
 			context.dispatch( 'setZObjectValue', {
 				id: objectId,
@@ -847,7 +903,7 @@ module.exports = {
 			// Add function
 			nextId = getNextObjectId( context.state.zobject );
 			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_FUNCTION, value: 'object', parent: objectId } );
-			context.dispatch( 'addZReference', { id: nextId, value: defaultFunctionValue } );
+			setDefaultFunctionReference( nextId );
 
 			// Add Composition
 			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_COMPOSITION, value: 'object', parent: objectId } );
@@ -915,10 +971,10 @@ module.exports = {
 				{ key: Constants.Z_OBJECT_TYPE, value: payload.type, parent: payload.id }
 			];
 
-			context.dispatch( 'addZObjects', zObjectItems );
-
 			// we fetch a list of keys within this generic object
 			if ( payload.type !== Constants.Z_OBJECT && context.rootGetters.getZkeys[ payload.type ] ) {
+				context.dispatch( 'addZObjects', zObjectItems );
+
 				keys = context
 					.rootGetters
 					.getZkeys[ payload.type ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
@@ -1108,38 +1164,27 @@ module.exports = {
 				.then( function () {
 					switch ( payload.type ) {
 						case Constants.Z_LIST:
-							context.dispatch( 'addZList', payload.id );
-							break;
+							return context.dispatch( 'addZList', payload.id );
 						case Constants.Z_REFERENCE:
-							context.dispatch( 'addZReference', payload );
-							break;
+							return context.dispatch( 'addZReference', payload );
 						case Constants.Z_STRING:
-							context.dispatch( 'addZString', { id: payload.id } );
-							break;
+							return context.dispatch( 'addZString', { id: payload.id } );
 						case Constants.Z_MULTILINGUALSTRING:
-							context.dispatch( 'addZMultilingualString', payload.id );
-							break;
+							return context.dispatch( 'addZMultilingualString', payload.id );
 						case Constants.Z_ARGUMENT:
-							context.dispatch( 'addZArgument', payload.id );
-							break;
+							return context.dispatch( 'addZArgument', payload.id );
 						case Constants.Z_FUNCTION_CALL:
-							context.dispatch( 'addZFunctionCall', payload.id );
-							break;
+							return context.dispatch( 'addZFunctionCall', payload.id );
 						case Constants.Z_FUNCTION:
-							context.dispatch( 'addZFunction', payload.id );
-							break;
+							return context.dispatch( 'addZFunction', payload.id );
 						case Constants.Z_PERSISTENTOBJECT:
-							context.dispatch( 'addZPersistentObject', payload.id );
-							break;
+							return context.dispatch( 'addZPersistentObject', payload.id );
 						case Constants.Z_TYPE:
-							context.dispatch( 'addZType', payload.id );
-							break;
+							return context.dispatch( 'addZType', payload.id );
 						case Constants.Z_IMPLEMENTATION:
-							context.dispatch( 'addZImplementation', payload.id );
-							break;
+							return context.dispatch( 'addZImplementation', payload.id );
 						default:
-							context.dispatch( 'addGenericObject', payload );
-							break;
+							return context.dispatch( 'addGenericObject', payload );
 					}
 				} );
 		}

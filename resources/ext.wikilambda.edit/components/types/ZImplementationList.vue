@@ -25,6 +25,12 @@
 				</button>
 			</li>
 		</ul>
+		<div v-if="viewmode && ZlistItems.length <= 0">
+			{{ $i18n( 'wikilambda-implementation-none-found' ) }}
+		</div>
+		<a :href="createNewImplementationLink" target="_blank">
+			{{ $i18n( 'wikilambda-implementation-create-new' ) }}
+		</a>
 	</div>
 </template>
 
@@ -40,10 +46,13 @@ module.exports = {
 	components: {
 		'z-implementation-list-item': ZImplementationListItem
 	},
-	computed: $.extend( mapGetters( [ 'getNextObjectId', 'getZImplementations' ] ),
+	computed: $.extend( mapGetters( [ 'getNextObjectId', 'getZImplementations', 'getCurrentZObjectId' ] ),
 		{
 			Constants: function () {
 				return Constants;
+			},
+			createNewImplementationLink: function () {
+				return '/wiki/Special:CreateZObject?zid=Z14&Z14K1=' + this.getCurrentZObjectId;
 			}
 		}
 	),

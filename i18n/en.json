@@ -79,5 +79,7 @@
 	"wikilambda-implementation-selector-code": "Code",
 	"wikilambda-implementation-selector-composition": "Composition",
 	"wikilambda-argref-default-label": "Select an argument",
-	"wikilambda-implementation-selector": "Select implementation"
+	"wikilambda-implementation-selector": "Select an implementation",
+	"wikilambda-implementation-none-found": "No implementations found.",
+	"wikilambda-implementation-create-new": "Create a new implementation"
 }

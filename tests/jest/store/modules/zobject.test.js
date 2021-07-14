@@ -202,6 +202,20 @@ describe( 'zobject Vuex module', function () {
 	} );
 
 	describe( 'Actions', function () {
+		var defaultHref = window.location.href;
+		beforeEach( function () {
+			delete window.location;
+			window.location = {
+				href: defaultHref
+			};
+		} );
+		afterAll( function () {
+			delete window.location;
+			window.location = {
+				href: defaultHref
+			};
+		} );
+
 		it( 'Initialize ZObject, create new page', function () {
 			var expectedChangeTypePayload = { id: 0, type: Constants.Z_PERSISTENTOBJECT },
 				expectedRootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
@@ -223,7 +237,131 @@ describe( 'zobject Vuex module', function () {
 			expect( context.commit ).toHaveBeenCalledWith( 'addZObject', expectedRootObject );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedChangeTypePayload );
 			expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
+			expect( context.state.zobject ).toEqual( zobjectTree );
 		} );
+
+		it( 'Initialize ZObject, create new page, initial value for Z2K2', function () {
+			var expectedChangeTypePayload = { id: 0, type: Constants.Z_PERSISTENTOBJECT },
+				expectedZ2K2ChangeTypePayload = { id: 3, type: Constants.Z_BOOLEAN },
+				expectedRootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
+			context.state = {
+				zobject: zobjectTree
+			};
+			context.rootGetters = {
+				getZkeys: {
+					Z40: {
+						Z2K2: {
+							Z1K1: 'Z4'
+						}
+					}
+				}
+			};
+			delete window.location;
+			window.location = {
+				href: 'http://localhost:8080/wiki/Special:CreateZObject?zid=Z40'
+			};
+			mw.config = {
+				get: jest.fn( function () {
+					return {
+						createNewPage: true
+					};
+				} )
+			};
+			zobjectModule.actions.initializeZObject( context );
+
+			expect( context.commit ).toHaveBeenCalledTimes( 3 );
+			expect( context.dispatch ).toHaveBeenCalledTimes( 3 );
+			expect( context.commit ).toHaveBeenCalledWith( 'setCreateNewPage', true );
+			expect( context.commit ).toHaveBeenCalledWith( 'addZObject', expectedRootObject );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedChangeTypePayload );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedZ2K2ChangeTypePayload );
+			expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
+		} );
+
+		it( 'Initialize ZObject, create new page, non-ZID value as initial', function () {
+			var expectedZ2K2ChangeTypePayload = { id: 3, type: 'banana' };
+			context.state = {
+				zobject: zobjectTree
+			};
+			delete window.location;
+			window.location = {
+				href: 'http://localhost:8080/wiki/Special:CreateZObject?zid=banana'
+			};
+			mw.config = {
+				get: jest.fn( function () {
+					return {
+						createNewPage: true
+					};
+				} )
+			};
+			zobjectModule.actions.initializeZObject( context );
+
+			expect( context.dispatch ).not.toHaveBeenCalledWith( 'changeType', expectedZ2K2ChangeTypePayload );
+		} );
+
+		it( 'Initialize ZObject, create new page, lowercase ZID', function () {
+			var expectedZ2K2ChangeTypePayload = { id: 3, type: Constants.Z_REFERENCE };
+			context.state = {
+				zobject: zobjectTree
+			};
+			delete window.location;
+			window.location = {
+				href: 'http://localhost:8080/wiki/Special:CreateZObject?zid=z9'
+			};
+			mw.config = {
+				get: jest.fn( function () {
+					return {
+						createNewPage: true
+					};
+				} )
+			};
+			zobjectModule.actions.initializeZObject( context );
+
+			expect( context.dispatch ).not.toHaveBeenCalledWith( 'changeType', expectedZ2K2ChangeTypePayload );
+		} );
+
+		it( 'Initialize ZObject, create new page, ZObject key passed as initial', function () {
+			var expectedZ2K2ChangeTypePayload = { id: 3, type: Constants.Z_REFERENCE_ID };
+			context.state = {
+				zobject: zobjectTree
+			};
+			delete window.location;
+			window.location = {
+				href: 'http://localhost:8080/wiki/Special:CreateZObject?zid=Z9K1'
+			};
+			mw.config = {
+				get: jest.fn( function () {
+					return {
+						createNewPage: true
+					};
+				} )
+			};
+			zobjectModule.actions.initializeZObject( context );
+
+			expect( context.dispatch ).not.toHaveBeenCalledWith( 'changeType', expectedZ2K2ChangeTypePayload );
+		} );
+
+		it( 'Initialize ZObject, create new page, quasi-valid ZID', function () {
+			var expectedZ2K2ChangeTypePayload = { id: 3, type: 'Z9s' };
+			context.state = {
+				zobject: zobjectTree
+			};
+			delete window.location;
+			window.location = {
+				href: 'http://localhost:8080/wiki/Special:CreateZObject?zid=Z9s'
+			};
+			mw.config = {
+				get: jest.fn( function () {
+					return {
+						createNewPage: true
+					};
+				} )
+			};
+			zobjectModule.actions.initializeZObject( context );
+
+			expect( context.dispatch ).not.toHaveBeenCalledWith( 'changeType', expectedZ2K2ChangeTypePayload );
+		} );
+
 		it( 'Initialize ZObject, existing zobject page', function () {
 			var expectedSetZObjectPayload = [ { id: 0, key: undefined, parent: undefined, value: 'object' }, { id: 1, key: 'Z1K1', parent: 0, value: 'object' }, { id: 2, key: 'Z1K1', parent: 1, value: 'Z6' }, { id: 3, key: 'Z6K1', parent: 1, value: 'test' }, { id: 4, key: 'Z1K2', parent: 0, value: 'object' }, { id: 5, key: 'Z1K1', parent: 4, value: 'Z6' }, { id: 6, key: 'Z6K1', parent: 4, value: 'test' } ];
 			context.state = {
@@ -440,6 +578,7 @@ describe( 'zobject Vuex module', function () {
 				Object.keys( zobjectModule.getters ).forEach( function ( key ) {
 					context.getters[ key ] = zobjectModule.getters[ key ]( context.state, context.getters );
 				} );
+				context.getters.getZkeys = {};
 				context.commit = jest.fn( function ( mutationType, payload ) {
 					zobjectModule.mutations[ mutationType ]( context.state, payload );
 				} );

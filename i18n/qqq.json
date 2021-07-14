@@ -85,5 +85,7 @@
 	"wikilambda-implementation-selector-code": "Label for selecting an implementation type of 'code'",
 	"wikilambda-implementation-selector-composition": "Label for selecting an implementation type of 'composition'",
 	"wikilambda-argref-default-label": "Label for selecting an argument in an argument reference.",
-	"wikilambda-implementation-selector": "Label for selecting an implementation to add to a function."
+	"wikilambda-implementation-selector": "Label for selecting an implementation to add to a function.",
+	"wikilambda-implementation-none-found": "Label for when no implementation for a function has yet been created.",
+	"wikilambda-implementation-create-new": "Label for creating a new implementation for a function."
 }
