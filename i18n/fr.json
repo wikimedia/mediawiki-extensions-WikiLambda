@@ -30,6 +30,7 @@
 	"wikilambda-call-function": "Fonction d'appel",
 	"wikilambda-functioncall": "Appel de fonction",
 	"wikilambda-orchestrated": "Résultat de l'orchestration",
+	"wikilambda-orchestrated-loading": "En cours d’orchestration, veuillez patienter",
 	"wikilambda-argref": "Référence de l’argument",
 	"wikilambda-special-callfunction": "Créer et exécuter une fonction d'appel.",
 	"wikilambda-special-callfunction-summary": "Ce formulaire vous permet de créer et d'exécuter un appel de fonction. Vous devriez d'abord lire la documentation d'aide et les conseils de la communauté.",

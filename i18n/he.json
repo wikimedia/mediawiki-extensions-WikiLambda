@@ -22,6 +22,7 @@
 	"wikilambda-call-function": "לקרוא לפונקציה",
 	"wikilambda-functioncall": "קריאה לפונקציה",
 	"wikilambda-orchestrated": "תוצאת התזמור",
+	"wikilambda-orchestrated-loading": "מתבצע תזמור, נא להמתין",
 	"wikilambda-argref": "הפניה לארגומנט",
 	"wikilambda-special-callfunction": "ליצור ולבצע קריאה לפונקציה.",
 	"wikilambda-special-callfunction-summary": "הטופס הזה מאפשר לך ליצור ולבצע קריאה לפונקציה. מומלץ לקרוא את תיעוד העזרה ואת הנחיות הקהילה לפני־כן.",

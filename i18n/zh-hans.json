@@ -8,6 +8,7 @@
 	},
 	"wikilambda-typeunavailable": "不可识别种类",
 	"wikilambda-noresult": "搜索没有提供结果。",
+	"wikilambda-orchestrated-loading": "正在执行编排，请稍候",
 	"wikilambda-argref": "参数参考",
 	"wikilambda-editor-label-select-programming-language-label": "选择编程语言：",
 	"wikilambda-editor-implementation-list-label": "履行列表",
