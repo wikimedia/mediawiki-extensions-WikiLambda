@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Afaz",
+			"MathXplore",
 			"Portal18",
 			"Tamaki Wakita"
 		]
@@ -13,5 +14,6 @@
 	"wikilambda-savenew": "保存",
 	"wikilambda-publishchanges": "変更を公開",
 	"wikilambda-savechanges": "変更を保存",
-	"wikilambda-editor-label-select-programming-language-label": "プログラミングの言語を選択してください："
+	"wikilambda-editor-label-select-programming-language-label": "プログラミングの言語を選択してください：",
+	"wikilambda-implementation-selector": "実装を選択する"
 }
