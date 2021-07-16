@@ -8,7 +8,6 @@ use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use Title;
-use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor
@@ -25,9 +24,6 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	/** @var ZObjectStore */
 	protected $store;
 
-	/** @var string[] */
-	protected $titlesTouched = [];
-
 	protected function setUp() : void {
 		parent::setUp();
 
@@ -35,24 +31,12 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 		$this->tablesUsed[] = 'wikilambda_zobject_labels';
 		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
+		$this->tablesUsed[] = 'wikilambda_zobject_function_join';
+		$this->tablesUsed[] = 'page';
 
 		$langs = ZLangRegistry::singleton();
 		$langs->register( self::EN, 'en' );
 		$langs->register( self::ES, 'es' );
-	}
-
-	protected function tearDown() : void {
-		$sysopUser = $this->getTestSysop()->getUser();
-
-		foreach ( $this->titlesTouched as $titleString ) {
-			$title = Title::newFromText( $titleString, NS_ZOBJECT );
-			$page = WikiPage::factory( $title );
-			if ( $page->exists() ) {
-				$page->doDeleteArticleReal( "clean slate for testing", $sysopUser );
-			}
-		}
-
-		parent::tearDown();
 	}
 
 	/**
@@ -126,7 +110,6 @@ class ApiZObjectEditorTest extends ApiTestCase {
 			. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "string" },'
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "unique label" } ] } }';
 		$this->store->createNewZObject( $data, 'First zobject', $sysopUser );
-		$this->titlesTouched[] = $firstZid;
 
 		// Try to create the second Zobject with the same label
 		$this->setExpectedApiException( [ 'wikilambda-labelclash', $firstZid, self::EN ] );
@@ -197,7 +180,6 @@ class ApiZObjectEditorTest extends ApiTestCase {
 			'zobject' => $data
 		] );
 
-		$this->titlesTouched[] = $newZid;
 		$this->assertTrue( $result[0]['wikilambda_edit']['success'] );
 		$this->assertEquals( $result[0]['wikilambda_edit']['title'], $newZid );
 		$this->assertEquals( $result[0]['wikilambda_edit']['page'], "ZObject:$newZid" );
@@ -215,7 +197,6 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": "New ZObject", "Z2K3":'
 			. ' { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "unique label" } ] } }';
 		$this->store->createNewZObject( $data, 'New ZObject', $sysopUser );
-		$this->titlesTouched[] = $newZid;
 
 		$data = '{ "Z1K1": "Z2", "Z2K1": "' . $newZid . '", "Z2K2": "New ZObject", "Z2K3":'
 			. ' { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "new label" },'

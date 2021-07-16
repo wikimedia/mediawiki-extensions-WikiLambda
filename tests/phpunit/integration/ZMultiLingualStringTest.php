@@ -10,7 +10,6 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
@@ -21,26 +20,7 @@ use MediaWiki\MediaWikiServices;
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString
  */
-class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
-
-	private const EN = 'Z1002';
-	private const ES = 'Z1003';
-	private const FR = 'Z1004';
-	private const RU = 'Z1005';
-	private const ZH = 'Z1006';
-	private const DE = 'Z1430';
-
-	protected function setUp() : void {
-		parent::setUp();
-
-		$langs = ZLangRegistry::singleton();
-		$langs->register( self::EN, 'en' );
-		$langs->register( self::ES, 'es' );
-		$langs->register( self::FR, 'fr' );
-		$langs->register( self::RU, 'ru' );
-		$langs->register( self::ZH, 'zh' );
-		$langs->register( self::DE, 'de' );
-	}
+class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers ::__construct
@@ -52,20 +32,22 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::isValid
 	 */
 	public function testCreation() {
+		$this->registerLangs( [ 'es', 'de', 'fr' ] );
+
 		$testObject = new ZMultiLingualString( [] );
 		$this->assertTrue( $testObject->isValid() );
 
 		$testObject = new ZMultiLingualString( [
-			new ZMonoLingualString( self::EN, 'Demonstration item' ),
-			new ZMonoLingualString( self::ES, 'Elemento para demostración' ),
-			new ZMonoLingualString( self::DE, 'Gegenstand zur Demonstration' ),
-			new ZMonoLingualString( self::FR, 'Article pour démonstration' )
+			new ZMonoLingualString( self::ZLANG['en'], 'Demonstration item' ),
+			new ZMonoLingualString( self::ZLANG['es'], 'Elemento para demostración' ),
+			new ZMonoLingualString( self::ZLANG['de'], 'Gegenstand zur Demonstration' ),
+			new ZMonoLingualString( self::ZLANG['fr'], 'Article pour démonstration' )
 		] );
 
-	$this->assertTrue( $testObject->isValid() );
+		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z12', $testObject->getZType() );
-		$this->assertArrayHasKey( self::EN, $testObject->getZValue() );
-		$this->assertArrayNotHasKey( self::RU, $testObject->getZValue() );
+		$this->assertArrayHasKey( self::ZLANG['en'], $testObject->getZValue() );
+		$this->assertArrayNotHasKey( self::ZLANG['ru'], $testObject->getZValue() );
 
 		$this->assertTrue(
 			$testObject->isLanguageProvidedValue( 'en' )
@@ -145,12 +127,14 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::isValid
 	 */
 	public function testModification() {
+		$this->registerLangs( [ 'fr', 'es' ] );
+
 		$testObject = new ZMultiLingualString( [] );
 		$this->assertTrue( $testObject->isValid() );
 
 		$french = $this->makeLanguage( 'fr' );
 		$this->assertFalse( $testObject->isLanguageProvidedValue( 'fr' ) );
-		$testObject->setMonoLingualString( new ZMonoLingualString( self::FR, 'Bonjour' ) );
+		$testObject->setMonoLingualString( new ZMonoLingualString( self::ZLANG['fr'], 'Bonjour' ) );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertTrue( $testObject->isLanguageProvidedValue( 'fr' ) );
 		$this->assertSame(
@@ -158,7 +142,7 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 			$testObject->getStringForLanguage( $french )
 		);
 
-		$testObject->setMonoLingualString( new ZMonoLingualString( self::FR, 'Bonjour' ) );
+		$testObject->setMonoLingualString( new ZMonoLingualString( self::ZLANG['fr'], 'Bonjour' ) );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame(
 			'Bonjour',
@@ -203,6 +187,8 @@ class ZMultiLingualStringTest extends \MediaWikiIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
 	 */
 	public function testPersistentCreation() {
+		$this->registerLangs( [ 'fr' ] );
+
 		$english = $this->makeLanguage( 'en' );
 		$french = $this->makeLanguage( 'fr' );
 

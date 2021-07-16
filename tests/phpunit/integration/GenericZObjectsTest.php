@@ -21,31 +21,7 @@ use WikiPage;
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectContent
  * @group Database
  */
-class GenericZObjectsTest extends \MediaWikiIntegrationTestCase {
-
-	/** @var string[] */
-	protected $titlesTouched = [];
-
-	protected function setUp() : void {
-		parent::setUp();
-
-		$this->tablesUsed[] = 'wikilambda_zobject_labels';
-		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
-	}
-
-	protected function tearDown() : void {
-		$sysopUser = $this->getTestSysop()->getUser();
-
-		foreach ( $this->titlesTouched as $titleString ) {
-			$title = Title::newFromText( $titleString, NS_ZOBJECT );
-			$page = WikiPage::factory( $title );
-			if ( $page->exists() ) {
-				$page->doDeleteArticleReal( "clean slate for testing", $sysopUser );
-			}
-		}
-
-		parent::tearDown();
-	}
+class GenericZObjectsTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * This test proves that an on-wiki implementation can be made of a PHP-backed, built-in ZType.
@@ -69,8 +45,6 @@ EOT;
 		$instanceStatus = $this->editPage(
 			$instanceTitleText, $instanceContent, 'Test ZString instance', NS_ZOBJECT
 		);
-
-		$this->titlesTouched[] = $instanceTitleText;
 
 		$this->assertTrue( $instanceStatus->isOK() );
 		$instanceTitle = Title::newFromText( $instanceTitleText, NS_ZOBJECT );
@@ -98,13 +72,13 @@ EOT;
 	 * @coversNothing
 	 */
 	public function testInstanceOfZTestType() {
+		$this->registerLangs( ZTestType::TEST_LANGS );
+
 		// Create ZTestType (Z111)
 		$baseTypeTitleText = ZTestType::TEST_ZID;
 		$baseTypeStatus = $this->editPage(
 			$baseTypeTitleText, ZTestType::TEST_ENCODING, 'Create ZTestType', NS_ZOBJECT
 		);
-
-		$this->titlesTouched[] = ZTestType::TEST_ZID;
 
 		$this->assertTrue( $baseTypeStatus->isOK() );
 		$baseTypeTitle = Title::newFromText( $baseTypeTitleText, NS_ZOBJECT );
@@ -139,8 +113,6 @@ EOT;
 		$instanceStatus = $this->editPage(
 			$instanceTitleText, $instanceContent, 'Test ZTestType instance', NS_ZOBJECT
 		);
-
-		$this->titlesTouched[] = $instanceTitleText;
 
 		$this->assertTrue( $instanceStatus->isOK() );
 		$instanceTitle = Title::newFromText( $instanceTitleText, NS_ZOBJECT );
@@ -225,8 +197,6 @@ EOT;
 			$baseTypeTitleText, $baseTypeContent, 'Create ZInteger', NS_ZOBJECT
 		);
 
-		$this->titlesTouched[] = $baseTypeTitleText;
-
 		$this->assertTrue(
 			$baseTypeStatus->isOK(),
 			'ZInteger creation was successful'
@@ -266,8 +236,6 @@ EOT;
 		$instanceStatus = $this->editPage(
 			$instanceTitleText, $instanceContent, 'Test ZInteger instance', NS_ZOBJECT
 		);
-
-		$this->titlesTouched[] = $instanceTitleText;
 
 		$this->assertTrue(
 			$instanceStatus->isOK(),
@@ -339,8 +307,6 @@ EOT;
 			$baseTypeTitleText, $baseTypeContent, 'Create ZSelfRefType', NS_ZOBJECT
 		);
 
-		$this->titlesTouched[] = $baseTypeTitleText;
-
 		$this->assertTrue(
 			$baseTypeStatus->isOK(),
 			'ZSelfRefType creation was successful'
@@ -375,8 +341,6 @@ EOT;
 		$instanceStatus = $this->editPage(
 			$instanceTitleText, $instanceContent, 'Test ZSelfRefType instance', NS_ZOBJECT
 		);
-
-		$this->titlesTouched[] = $instanceTitleText;
 
 		$this->assertTrue(
 			$instanceStatus->isOK(),
@@ -446,8 +410,6 @@ EOT;
 			$baseTypeTitleText, $baseTypeContent, 'Create ZListUsingType', NS_ZOBJECT
 		);
 
-		$this->titlesTouched[] = $baseTypeTitleText;
-
 		$this->assertTrue(
 			$baseTypeStatus->isOK(),
 			'ZListUsingType creation'
@@ -483,8 +445,6 @@ EOT;
 		$instanceStatus = $this->editPage(
 			$instanceTitleText, $instanceContent, 'Test ZListUsingType instance', NS_ZOBJECT
 		);
-
-		$this->titlesTouched[] = $instanceTitleText;
 
 		$this->assertTrue(
 			$instanceStatus->isOK(),
@@ -534,8 +494,6 @@ EOT;
 		$instanceStatus = $this->editPage(
 			$instanceTitleText, $instanceContent, 'Test ZListUsingType instance 2', NS_ZOBJECT
 		);
-
-		$this->titlesTouched[] = $instanceTitleText;
 
 		$this->assertTrue(
 			$instanceStatus->isOK(),

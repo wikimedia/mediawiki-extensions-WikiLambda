@@ -13,47 +13,12 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
-use Title;
-use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZError
  * @group Database
  */
-class ZErrorTest extends \MediaWikiIntegrationTestCase {
-
-	/** @var string[] */
-	protected $titlesTouched = [];
-
-	protected function setUp() : void {
-		parent::setUp();
-
-		$this->tablesUsed[] = 'wikilambda_zobject_labels';
-		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
-
-		// Insert necessary ZIDs
-		$files = [ 'Z50' => 'Z50.json', 'Z501' => 'Z501.json' ];
-		$dataPath = dirname( __DIR__, 3 ) . '/data/';
-		foreach ( $files as $zid => $filename ) {
-			$data = file_get_contents( $dataPath . $filename );
-			$this->editPage( $zid, $data, 'Test creation', NS_ZOBJECT );
-			$this->titlesTouched[] = $zid;
-		}
-	}
-
-	protected function tearDown() : void {
-		$sysopUser = $this->getTestSysop()->getUser();
-
-		foreach ( $this->titlesTouched as $titleString ) {
-			$title = Title::newFromText( $titleString, NS_ZOBJECT );
-			$page = WikiPage::factory( $title );
-			if ( $page->exists() ) {
-				$page->doDeleteArticleReal( "clean slate for testing", $sysopUser );
-			}
-		}
-
-		parent::tearDown();
-	}
+class ZErrorTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers ::__construct
@@ -78,6 +43,7 @@ class ZErrorTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::isValid
 	 */
 	public function testCreate_wrongValue() {
+		$this->insertZErrorTypes( [ 'Z501' ] );
 		$testObject = new ZError( 'Z501', 'error message' );
 		$this->assertFalse( $testObject->isValid() );
 	}
@@ -87,6 +53,7 @@ class ZErrorTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::isValid
 	 */
 	public function testCreate_invalidValue() {
+		$this->insertZErrorTypes( [ 'Z501' ] );
 		$testObject = new ZError( 'Z501', new ZReference( '' ) );
 		$this->assertFalse( $testObject->isValid() );
 	}
@@ -98,6 +65,7 @@ class ZErrorTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::getMessage
 	 */
 	public function testCreate_valid() {
+		$this->insertZErrorTypes( [ 'Z501' ] );
 		$testObject = new ZError( 'Z501', new ZString( 'error message' ) );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z501', $testObject->getZErrorType() );

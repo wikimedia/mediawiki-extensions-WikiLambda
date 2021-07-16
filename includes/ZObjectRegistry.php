@@ -58,11 +58,42 @@ abstract class ZObjectRegistry {
 		}
 	}
 
-	public function register( string $key, string $value ) : void {
-		$this->registry[ $key ] = $value;
+	/**
+	 * Clears and re-initializes all existing registry instances
+	 */
+	public static function clearAll() : void {
+		foreach ( self::$instances as $class => $registry ) {
+			$registry->clear();
+		}
 	}
 
+	/**
+	 * Generic method to cache a key value in a registry instance,
+	 * where the key is the Zid of the cached ZObject. (E.g. a ZLangRegistry
+	 * will register the ZLanguage Zid and the language code string as its value)
+	 *
+	 * @param string $zid
+	 * @param string $value
+	 */
+	public function register( string $zid, string $value ) : void {
+		$this->registry[ $zid ] = $value;
+	}
+
+	/**
+	 * Generic method to remove a given Zid from a registry instance
+	 *
+	 * @param string $zid
+	 */
 	public function unregister( string $zid ) : void {
 		unset( $this->registry[ $zid ] );
+	}
+
+	/**
+	 * Generic method to clear the whole cache of a registry instance and
+	 * set it to initial values.
+	 */
+	public function clear() : void {
+		$this->registry = [];
+		$this->initialize();
 	}
 }

@@ -89,6 +89,8 @@ class ZTestType extends ZObject {
 }
 EOT;
 
+	public const TEST_LANGS = [ 'en', 'fr' ];
+
 	public static function getDefinition() : array {
 		return [
 			'keys' => [

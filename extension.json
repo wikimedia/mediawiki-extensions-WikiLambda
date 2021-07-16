@@ -18,7 +18,8 @@
 		"MediaWiki\\Extension\\WikiLambda\\": "includes/"
 	},
 	"TestAutoloadNamespaces": {
-		"MediaWiki\\Extension\\WikiLambda\\Tests\\": "tests/"
+		"MediaWiki\\Extension\\WikiLambda\\Tests\\": "tests/",
+		"MediaWiki\\Extension\\WikiLambda\\Tests\\Integration\\": "tests/phpunit/integration/"
 	},
 	"namespaces": [
 		{

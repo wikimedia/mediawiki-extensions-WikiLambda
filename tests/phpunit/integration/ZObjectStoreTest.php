@@ -22,40 +22,14 @@ use WikiPage;
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectStore
  * @group Database
  */
-class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
-
-	private const EN = 'Z1002';
-	private const ES = 'Z1003';
-	private const FR = 'Z1004';
+class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 	/** @var ZObjectStore */
 	protected $zobjectStore;
 
-	/** @var string[] */
-	protected $titlesTouched = [];
-
 	protected function setUp() : void {
 		parent::setUp();
-
-		$this->tablesUsed[] = 'wikilambda_zobject_labels';
-		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
-		$this->tablesUsed[] = 'wikilambda_zobject_function_join';
-
 		$this->zobjectStore = WikiLambdaServices::getZObjectStore();
-	}
-
-	protected function tearDown() : void {
-		$sysopUser = $this->getTestSysop()->getUser();
-
-		foreach ( $this->titlesTouched as $titleString ) {
-			$title = Title::newFromText( $titleString, NS_ZOBJECT );
-			$page = WikiPage::factory( $title );
-			if ( $page->exists() ) {
-				$page->doDeleteArticleReal( "clean slate for testing", $sysopUser );
-			}
-		}
-
-		parent::tearDown();
 	}
 
 	/**
@@ -80,7 +54,6 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" },'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [] } }';
 		$page = $this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
-		$this->titlesTouched[] = $page->getTitle()->getBaseText();
 		$this->assertTrue( $page instanceof WikiPage );
 
 		$title = Title::newFromText( $zid, NS_ZOBJECT );
@@ -121,7 +94,6 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 
 		if ( $expected === true ) {
 			$this->assertTrue( $status instanceof WikiPage );
-			$this->titlesTouched[] = $status->getTitle()->getBaseText();
 		} else {
 			$this->assertTrue( $status instanceof Status );
 			$this->assertFalse( $status->isOK() );
@@ -173,7 +145,6 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 
 		$page = $this->zobjectStore->createNewZObject( $normalZObject, 'Create ZObject', $sysopUser );
 		$this->assertTrue( $page instanceof WikiPage );
-		$this->titlesTouched[] = $zid;
 
 		$zobject = $this->zobjectStore->fetchZObjectByTitle( $title );
 		$this->assertTrue( $zobject instanceof ZObjectContent );
@@ -196,7 +167,6 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 		// We create a new ZObject
 		$this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
 		$zobject = $this->zobjectStore->fetchZObjectByTitle( $title );
-		$this->titlesTouched[] = $zid;
 
 		// We change the text representation of the ZObject to update it in the DB
 		$zobjectNewText = str_replace( "hello", "bye", $zobject->getText() );
@@ -215,9 +185,9 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testInsertZObjectLabels() {
 		$labels = [
-			self::EN => 'label',
-			self::ES => 'etiqueta',
-			self::FR => 'marque'
+			self::ZLANG['en'] => 'label',
+			self::ZLANG['es'] => 'etiqueta',
+			self::ZLANG['fr'] => 'marque'
 		];
 
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z222', 'Z4', $labels );
@@ -244,9 +214,9 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testFindZObjectLabelConflicts() {
 		$labels = [
-			self::EN => 'label',
-			self::ES => 'etiqueta',
-			self::FR => 'marque'
+			self::ZLANG['en'] => 'label',
+			self::ZLANG['es'] => 'etiqueta',
+			self::ZLANG['fr'] => 'marque'
 		];
 
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z222', 'Z4', $labels );
@@ -261,9 +231,9 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testInsertZObjectLabelConflicts() {
 		$conflicts = [
-			self::EN => 'Z222',
-			self::ES => 'Z222',
-			self::FR => 'Z222'
+			self::ZLANG['en'] => 'Z222',
+			self::ZLANG['es'] => 'Z222',
+			self::ZLANG['fr'] => 'Z222'
 		];
 
 		$response = $this->zobjectStore->insertZObjectLabelConflicts( 'Z333', $conflicts );
@@ -287,9 +257,9 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testDeleteZObjectLabelsByZid() {
 		$labels = [
-			self::EN => 'label',
-			self::ES => 'etiqueta',
-			self::FR => 'marque'
+			self::ZLANG['en'] => 'label',
+			self::ZLANG['es'] => 'etiqueta',
+			self::ZLANG['fr'] => 'marque'
 		];
 
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z222', 'Z4', $labels );
@@ -314,8 +284,8 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::deleteZObjectLabelConflictsByZid
 	 */
 	public function testDeleteZObjectLabelConflictsByZid() {
-		$this->zobjectStore->insertZObjectLabelConflicts( 'Z222', [ self::EN => 'Z333' ] );
-		$this->zobjectStore->insertZObjectLabelConflicts( 'Z333', [ self::ES => 'Z444' ] );
+		$this->zobjectStore->insertZObjectLabelConflicts( 'Z222', [ self::ZLANG['en'] => 'Z333' ] );
+		$this->zobjectStore->insertZObjectLabelConflicts( 'Z333', [ self::ZLANG['es'] => 'Z444' ] );
 
 		$this->zobjectStore->deleteZObjectLabelConflictsByZid( 'Z333' );
 
@@ -338,11 +308,21 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::fetchZidsOfType
 	 */
 	public function testFetchZidsOfType() {
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z444', 'Z7', [ self::EN => 'label for Z7' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z445', 'Z7', [ self::EN => 'other label for Z7' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z446', 'Z7', [ self::EN => 'one more label for Z7' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z447', 'Z8', [ self::EN => 'label for Z8' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z449', 'Z9', [ self::EN => 'label for Z9' ] );
+		$response = $this->zobjectStore->insertZObjectLabels(
+			'Z444', 'Z7', [ self::ZLANG['en'] => 'label for Z7' ]
+		);
+		$response = $this->zobjectStore->insertZObjectLabels(
+			'Z445', 'Z7', [ self::ZLANG['en'] => 'other label for Z7' ]
+		);
+		$response = $this->zobjectStore->insertZObjectLabels(
+			'Z446', 'Z7', [ self::ZLANG['en'] => 'one more label for Z7' ]
+		);
+		$response = $this->zobjectStore->insertZObjectLabels(
+			'Z447', 'Z8', [ self::ZLANG['en'] => 'label for Z8' ]
+		);
+		$response = $this->zobjectStore->insertZObjectLabels(
+			'Z449', 'Z9', [ self::ZLANG['en'] => 'label for Z9' ]
+		);
 
 		$zids = $this->zobjectStore->fetchZidsOfType( 'Z7' );
 		sort( $zids );
@@ -356,28 +336,24 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::fetchZObjectLabels
 	 */
 	public function testFetchZObjectLabels_exactMatch() {
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z450', 'Z7', [ self::EN => 'example' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z451', 'Z7', [ self::EN => 'Example label' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z452', 'Z7', [ self::EN => 'Some more examples' ] );
+		$response = $this->zobjectStore->insertZObjectLabels(
+			'Z450', 'Z7', [ self::ZLANG['en'] => 'example' ]
+		);
+		$response = $this->zobjectStore->insertZObjectLabels(
+			'Z451', 'Z7', [ self::ZLANG['en'] => 'Example label' ]
+		);
+		$response = $this->zobjectStore->insertZObjectLabels(
+			'Z452', 'Z7', [ self::ZLANG['en'] => 'Some more examples' ]
+		);
 
 		$res = $this->zobjectStore->fetchZObjectLabels(
-			'Example',
-			true,
-			[ self::EN ],
-			null,
-			null,
-			5000
+			'Example', true, [ self::ZLANG['en'] ], null, null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 1, $res->numRows() );
 
 		$res = $this->zobjectStore->fetchZObjectLabels(
-			'Example',
-			false,
-			[ self::EN ],
-			null,
-			null,
-			5000
+			'Example', false, [ self::ZLANG['en'] ], null, null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 3, $res->numRows() );
@@ -387,28 +363,24 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::fetchZObjectLabels
 	 */
 	public function testFetchZObjectLabels_type() {
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z453', 'Z7', [ self::EN => 'example' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z454', 'Z7', [ self::EN => 'Example label' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z455', 'Z6', [ self::EN => 'Some more examples' ] );
+		$response = $this->zobjectStore->insertZObjectLabels(
+			'Z453', 'Z7', [ self::ZLANG['en'] => 'example' ]
+		);
+		$response = $this->zobjectStore->insertZObjectLabels(
+			'Z454', 'Z7', [ self::ZLANG['en'] => 'Example label' ]
+		);
+		$response = $this->zobjectStore->insertZObjectLabels(
+			'Z455', 'Z6', [ self::ZLANG['en'] => 'Some more examples' ]
+		);
 
 		$res = $this->zobjectStore->fetchZObjectLabels(
-			'example',
-			false,
-			[ self::EN ],
-			'Z7',
-			null,
-			5000
+			'example', false, [ self::ZLANG['en'] ], 'Z7', null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 2, $res->numRows() );
 
 		$res = $this->zobjectStore->fetchZObjectLabels(
-			'example',
-			false,
-			[ self::EN ],
-			'Z6',
-			null,
-			5000
+			'example', false, [ self::ZLANG['en'] ], 'Z6', null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 1, $res->numRows() );
@@ -418,37 +390,32 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::fetchZObjectLabels
 	 */
 	public function testFetchZObjectLabels_languages() {
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z456', 'Z6', [ self::EN => 'txt' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z457', 'Z6', [ self::ES => 'txt' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z458', 'Z6', [ self::FR => 'txt' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z456', 'Z6', [ self::ZLANG['en'] => 'txt' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z457', 'Z6', [ self::ZLANG['es'] => 'txt' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z458', 'Z6', [ self::ZLANG['fr'] => 'txt' ] );
 
 		$res = $this->zobjectStore->fetchZObjectLabels(
-			'txt',
-			false,
-			[ self::EN, self::FR ],
-			null,
-			null,
-			5000
+			'txt', false, [ self::ZLANG['en'], self::ZLANG['fr'] ], null, null, 5000
 		);
 
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 2, $res->numRows() );
-		$this->assertSame( self::EN, $res->fetchRow()[ 'wlzl_language' ] );
-		$this->assertSame( self::FR, $res->fetchRow()[ 'wlzl_language' ] );
+		$this->assertSame( self::ZLANG['en'], $res->fetchRow()[ 'wlzl_language' ] );
+		$this->assertSame( self::ZLANG['fr'], $res->fetchRow()[ 'wlzl_language' ] );
 	}
 
 	/**
 	 * @covers ::fetchZObjectLabels
 	 */
 	public function testFetchZObjectLabels_pagination() {
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z459', 'Z6', [ self::EN => 'label one' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z460', 'Z6', [ self::EN => 'label two' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z461', 'Z6', [ self::EN => 'label three' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z462', 'Z6', [ self::EN => 'label four' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z463', 'Z6', [ self::EN => 'label five' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z459', 'Z6', [ self::ZLANG['en'] => 'label one' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z460', 'Z6', [ self::ZLANG['en'] => 'label two' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z461', 'Z6', [ self::ZLANG['en'] => 'label three' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z462', 'Z6', [ self::ZLANG['en'] => 'label four' ] );
+		$response = $this->zobjectStore->insertZObjectLabels( 'Z463', 'Z6', [ self::ZLANG['en'] => 'label five' ] );
 
 		// First page
-		$res = $this->zobjectStore->fetchZObjectLabels( 'label', false, [ self::EN ], null, null, 2 );
+		$res = $this->zobjectStore->fetchZObjectLabels( 'label', false, [ self::ZLANG['en'] ], null, null, 2 );
 
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 2, $res->numRows() );
@@ -460,7 +427,7 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 		$continue = strval( $second[ 'wlzl_id' ] + 1 );
 
 		// Second page
-		$res = $this->zobjectStore->fetchZObjectLabels( 'label', false, [ self::EN ], null, $continue, 2 );
+		$res = $this->zobjectStore->fetchZObjectLabels( 'label', false, [ self::ZLANG['en'] ], null, $continue, 2 );
 
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 2, $res->numRows() );
@@ -472,7 +439,7 @@ class ZObjectStoreTest extends \MediaWikiIntegrationTestCase {
 		$continue = strval( $second[ 'wlzl_id' ] + 1 );
 
 		// Third page
-		$res = $this->zobjectStore->fetchZObjectLabels( 'label', false, [ self::EN ], null, $continue, 2 );
+		$res = $this->zobjectStore->fetchZObjectLabels( 'label', false, [ self::ZLANG['en'] ], null, $continue, 2 );
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 1, $res->numRows() );
 		$this->assertSame( 'label five', $res->fetchRow()[ 'wlzl_label' ] );

@@ -16,7 +16,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZList
  */
-class ZListTest extends \MediaWikiIntegrationTestCase {
+class ZListTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::__construct

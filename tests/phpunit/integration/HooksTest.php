@@ -14,54 +14,15 @@ use DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\Hooks;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
-use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\MediaWikiServices;
 use Title;
-use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Hooks
  * @group Database
  */
-class HooksTest extends \MediaWikiIntegrationTestCase {
-
-	private const EN = 'Z1002';
-	private const FR = 'Z1004';
-
-	/** @var string[] */
-	private $titlesTouched = [];
-
-	protected function setUp() : void {
-		parent::setUp();
-
-		$langs = ZLangRegistry::singleton();
-		$langs->register( self::EN, 'en' );
-		$langs->register( self::FR, 'fr' );
-
-		$this->tablesUsed[] = 'wikilambda_zobject_labels';
-		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
-
-		// Insert Z111
-		$firstTitleText = ZTestType::TEST_ZID;
-		$firstTitle = Title::newFromText( $firstTitleText, NS_ZOBJECT );
-		$this->hideDeprecated( '::create' );
-		$initialStatus = $this->editPage( $firstTitleText, ZTestType::TEST_ENCODING, 'Test creation', NS_ZOBJECT );
-		$this->titlesTouched[] = $firstTitleText;
-	}
-
-	protected function tearDown() : void {
-		// Cleanup the pages we touched.
-		$sysopUser = $this->getTestSysop()->getUser();
-
-		foreach ( $this->titlesTouched as $titleString ) {
-			$title = Title::newFromText( $titleString, NS_ZOBJECT );
-			$page = WikiPage::factory( $title );
-			$page->doDeleteArticleReal( $title, $sysopUser );
-		}
-
-		parent::tearDown();
-	}
+class HooksTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers ::createInitialContent
@@ -77,8 +38,7 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 		$this->assertTrue( $zobject instanceof ZObjectContent );
 
 		// Assert that all ZIDs available in the data directory are loaded in the database
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
-		$res = $dbr->select(
+		$res = $this->db->select(
 			/* FROM */ 'page',
 			/* SELECT */ [ 'page_title' ],
 			/* WHERE */ [ 'page_namespace' => NS_ZOBJECT ],
@@ -89,7 +49,6 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 		$loadedZids = [];
 		foreach ( $res as $row ) {
 			$loadedZids[] = $row->page_title;
-			$this->titlesTouched[] = $row->page_title;
 		}
 
 		$dataPath = dirname( __DIR__, 3 ) . '/data/';
@@ -148,7 +107,15 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::onMultiContentSave
 	 */
 	public function testOnMultiContentSave_nullEdit() {
-		$nullEditStatus = $this->editPage( ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'No-op edit', NS_ZOBJECT );
+		// Insert ZTestType
+		$this->registerLangs( ZTestType::TEST_LANGS );
+		$this->editPage(
+			ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'First test insertion', NS_ZOBJECT
+		);
+
+		$nullEditStatus = $this->editPage(
+			ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'No-op edit', NS_ZOBJECT
+		);
 		$this->assertTrue( $nullEditStatus->isOK() );
 		$this->assertTrue( $nullEditStatus->hasMessage( 'edit-no-change' ) );
 	}
@@ -157,18 +124,21 @@ class HooksTest extends \MediaWikiIntegrationTestCase {
 	 * @covers ::onMultiContentSave
 	 */
 	public function testOnMultiContentSave_clashingLabels_caught() {
-		$secondTitleText = ZTestType::TEST_ZID . '000';
-		$secondTitle = Title::newFromText( $secondTitleText, NS_ZOBJECT );
+		// Insert ZTestType
+		$this->registerLangs( ZTestType::TEST_LANGS );
+		$this->editPage(
+			ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'First test insertion', NS_ZOBJECT
+		);
 
-		// Force deferred updates from other edits (in this case, the one in setUp()) so we can
-		// conflict with it.
+		// Force deferred updates from other edits so we can conflict with it.
 		DeferredUpdates::doUpdates();
 		MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
 		$this->assertSame( [], DeferredUpdates::getPendingUpdates() );
 
+		$secondTitleText = ZTestType::TEST_ZID . '000';
+		$secondTitle = Title::newFromText( $secondTitleText, NS_ZOBJECT );
 		$this->assertFalse( $secondTitle->exists() );
 
-		$this->titlesTouched[] = $secondTitleText;
 		$dupeEditStatus = $this->editPage(
 			$secondTitleText, ZTestType::TEST_ENCODING, 'Duplicate creation (blocked)', NS_ZOBJECT
 		);

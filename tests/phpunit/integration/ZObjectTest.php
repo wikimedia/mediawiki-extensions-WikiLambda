@@ -10,42 +10,16 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
-use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use Title;
-use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZObject
  * @group Database
  */
-class ZObjectTest extends \MediaWikiIntegrationTestCase {
-
-	/** @var string[] */
-	protected $titlesTouched = [];
-
-	protected function setUp() : void {
-		parent::setUp();
-
-		$this->tablesUsed[] = 'wikilambda_zobject_labels';
-		$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
-	}
-
-	protected function tearDown() : void {
-		$sysopUser = $this->getTestSysop()->getUser();
-
-		foreach ( $this->titlesTouched as $titleString ) {
-			$title = Title::newFromText( $titleString, NS_ZOBJECT );
-			$page = WikiPage::factory( $title );
-			if ( $page->exists() ) {
-				$page->doDeleteArticleReal( "clean slate for testing", $sysopUser );
-			}
-		}
-
-		parent::tearDown();
-	}
+class ZObjectTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers ::getValueByKey
@@ -87,16 +61,9 @@ class ZObjectTest extends \MediaWikiIntegrationTestCase {
 	 */
 	public function testConstruct_customType() {
 		// Create type Z111
-		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$this->registerLangs( ZTestType::TEST_LANGS );
 		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
-		$content = ZObjectContentHandler::makeContent( ZTestType::TEST_ENCODING, $title );
-		$page = WikiPage::factory( $title );
-		$page->doUserEditContent(
-			$content,
-			$this->getTestSysop()->getUser(),
-			"Test creation object"
-		);
-		$this->titlesTouched[] = ZTestType::TEST_ZID;
+		$this->editPage( $title, ZTestType::TEST_ENCODING, "Test creation object", NS_ZOBJECT );
 
 		// Create instance of type Z111
 		$testObject = (object)[
@@ -108,5 +75,4 @@ class ZObjectTest extends \MediaWikiIntegrationTestCase {
 		$this->assertInstanceOf( ZObject::class, $testZObject );
 		$this->assertSame( $testZObject->getZType(), 'Z111' );
 	}
-
 }

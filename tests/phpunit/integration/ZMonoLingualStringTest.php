@@ -18,7 +18,7 @@ use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString
  */
-class ZMonoLingualStringTest extends \MediaWikiIntegrationTestCase {
+class ZMonoLingualStringTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers ::__construct
