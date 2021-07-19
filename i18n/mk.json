@@ -21,6 +21,7 @@
 	"wikilambda-call-function": "Повикај функција",
 	"wikilambda-functioncall": "Функциски повик",
 	"wikilambda-orchestrated": "Исход од оркестрирањето",
+	"wikilambda-orchestrated-loading": "Вршам оркестрација. Почекајте.",
 	"wikilambda-argref": "Аргументен навод",
 	"wikilambda-special-callfunction": "Создај или изврши повик на функција.",
 	"wikilambda-special-callfunction-summary": "Овој образец служи за создавање и извршување на повик на функција. Најпрвин треба да ја прочитате помошната документација и напатствијата за заедницата.",
