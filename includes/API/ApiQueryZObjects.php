@@ -63,7 +63,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 		$languages = null;
 		$pageResult = null;
 
-		$ZIDs = explode( '|', $params[ 'zids' ] );
+		$ZIDs = $params[ 'zids' ];
 		$language = $params[ 'language' ];
 		$canonical = $params[ 'canonical' ];
 
@@ -159,6 +159,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 			'zids' => [
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => true,
+				ParamValidator::PARAM_ISMULTI => true,
 			],
 			'language' => [
 				ParamValidator::PARAM_TYPE => array_keys( $this->languageNameUtils->getLanguageNames() ),

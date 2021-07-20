@@ -39,10 +39,10 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 	}
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectFetcher::execute
+	 * @coversNothing (only core param validation)
 	 */
 	public function testFailsWithEmptyZid() {
-		$this->setExpectedApiException( [ 'apierror-wikilambda_fetch-missingzid', '' ] );
+		$this->setExpectedApiException( [ 'apierror-missingparam', 'zids' ] );
 		$this->doApiRequest( [
 			'action' => 'wikilambda_fetch',
 			'zids' => '|',

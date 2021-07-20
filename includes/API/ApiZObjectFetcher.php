@@ -24,7 +24,7 @@ class ApiZObjectFetcher extends ApiBase {
 	public function execute(): void {
 		$params = $this->extractRequestParams();
 
-		$ZIDs = explode( '|', $params[ 'zids' ] );
+		$ZIDs = $params[ 'zids' ];
 		$language = $params[ 'language' ];
 
 		foreach ( $ZIDs as $index => $ZID ) {
@@ -52,6 +52,7 @@ class ApiZObjectFetcher extends ApiBase {
 			'zids' => [
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => true,
+				ParamValidator::PARAM_ISMULTI => true,
 			],
 			'language' => [
 				ParamValidator::PARAM_TYPE => array_keys( $languageUtils->getLanguageNames() ),
