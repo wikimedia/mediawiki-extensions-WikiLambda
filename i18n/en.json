@@ -81,5 +81,18 @@
 	"wikilambda-argref-default-label": "Select an argument",
 	"wikilambda-implementation-selector": "Select an implementation",
 	"wikilambda-implementation-none-found": "No implementations found.",
-	"wikilambda-implementation-create-new": "Create a new implementation"
+	"wikilambda-implementation-create-new": "Create a new implementation",
+	"wikilambda-editor-tester-list-label": "Tester List",
+	"wikilambda-tester-selector": "Select a tester",
+	"wikilambda-tester-none-found": "No testers found.",
+	"wikilambda-tester-create-new": "Create a new tester",
+	"wikilambda-tester-status-pending": "PENDING...",
+	"wikilambda-tester-status-running": "RUNNING...",
+	"wikilambda-tester-status-passed": "PASSED",
+	"wikilambda-tester-status-failed": "FAILED",
+	"wikilambda-tester-results-title": "Tester Results",
+	"wikilambda-tester-results-caption": "Results of function testers against implementations",
+	"wikilambda-tester-no-results": "No tester results found. Please add an implementation and a tester to see results.",
+	"wikilambda-tester-results-percentage-label": "Total Testers Passing",
+	"wikilambda-tester-run-testers": "Run All Testers"
 }

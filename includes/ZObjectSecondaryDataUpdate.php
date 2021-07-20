@@ -64,12 +64,18 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		$zObjectStore->insertZObjectLabels( $zid, $ztype, $newLabels );
 		$zObjectStore->insertZObjectLabelConflicts( $zid, $conflicts );
 
-		if ( $ztype === 'Z14' ) {
-			$zFunction = $this->zObject->getInnerZObject()->getValueByKey( 'Z14K1' );
+		if ( $ztype === 'Z14' || $ztype === 'Z20' ) {
+			$zFunction = null;
+
+			if ( $ztype === 'Z14' ) {
+				$zFunction = $this->zObject->getInnerZObject()->getValueByKey( 'Z14K1' );
+			} elseif ( $ztype === 'Z20' ) {
+				$zFunction = $this->zObject->getInnerZObject()->getValueByKey( 'Z20K1' )->getValueByKey( 'Z7K1' );
+			}
 
 			if ( $zFunction && $zFunction->getZValue() ) {
 				$zObjectStore->deleteZFunctionReference( $zid );
-				$zObjectStore->insertZFunctionReference( $zid, $zFunction->getZValue(), 'Z14' );
+				$zObjectStore->insertZFunctionReference( $zid, $zFunction->getZValue(), $ztype );
 			}
 		}
 	}

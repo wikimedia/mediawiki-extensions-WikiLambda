@@ -42,6 +42,7 @@ var Constants = require( '../Constants.js' ),
 	ZImplementation = require( './types/ZImplementation.vue' ),
 	ZArgumentReference = require( './types/ZArgumentReference.vue' ),
 	ZNothing = require( './types/ZNothing.vue' ),
+	ZTester = require( './types/ZTester.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -61,7 +62,8 @@ module.exports = {
 		'z-boolean': ZBoolean,
 		'z-implementation': ZImplementation,
 		'z-argument-reference': ZArgumentReference,
-		'z-nothing': ZNothing
+		'z-nothing': ZNothing,
+		'z-tester': ZTester
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -129,6 +131,8 @@ module.exports = {
 						return 'z-argument-reference';
 					case Constants.Z_NOTHING:
 						return 'z-nothing';
+					case Constants.Z_TESTER:
+						return 'z-tester';
 					default:
 						return 'z-object-generic';
 				}

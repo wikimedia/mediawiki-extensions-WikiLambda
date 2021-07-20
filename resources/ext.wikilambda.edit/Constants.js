@@ -65,7 +65,10 @@ var Constants = {
 		Z_PAIR_SECOND: 'Z22K2',
 		Z_ARGUMENT_REFERENCE: 'Z18',
 		Z_ARGUMENT_REFERENCE_KEY: 'Z18K1',
-		Z_NOTHING: 'Z23'
+		Z_NOTHING: 'Z23',
+		Z_TESTER: 'Z20',
+		Z_TESTER_CALL: 'Z20K1',
+		Z_TESTER_VALIDATION: 'Z20K2'
 	},
 	modes = [
 		{ key: Constants.Z_KEY_MODES.REFERENCE, value: 'wikilambda-modeselector-reference', label: 'wikilambda-reference', type: Constants.Z_REFERENCE },

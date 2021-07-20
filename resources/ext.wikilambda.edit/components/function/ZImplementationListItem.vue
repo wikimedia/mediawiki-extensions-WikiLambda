@@ -35,8 +35,8 @@
 
 <script>
 var Constants = require( '../../Constants.js' ),
-	ZListItem = require( './ZListItem.vue' ),
-	ZReference = require( './ZReference.vue' ),
+	ZListItem = require( '../types/ZListItem.vue' ),
+	ZReference = require( '../types/ZReference.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = {

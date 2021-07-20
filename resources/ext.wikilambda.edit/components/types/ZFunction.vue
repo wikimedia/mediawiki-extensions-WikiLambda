@@ -25,6 +25,12 @@
 		<z-implementation-list
 			:zobject-id="zImplementationId"
 		></z-implementation-list>
+		<z-tester-list
+			:zobject-id="zTesterId"
+		></z-tester-list>
+		<z-function-tester-report
+			:zobject-id="zobjectId"
+		></z-function-tester-report>
 	</div>
 </template>
 
@@ -33,17 +39,21 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	ZArgumentList = require( './ZArgumentList.vue' ),
-	ZImplementationList = require( './ZImplementationList.vue' ),
+	ZImplementationList = require( '../function/ZImplementationList.vue' ),
+	ZTesterList = require( '../function/ZTesterList.vue' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	ZFunctionSignature = require( '../ZFunctionSignature.vue' );
+	ZFunctionSignature = require( '../ZFunctionSignature.vue' ),
+	ZFunctionTesterReport = require( '../function/ZFunctionTesterReport.vue' );
 
 module.exports = {
 	components: {
 		'z-argument-list': ZArgumentList,
 		'z-object-selector': ZObjectSelector,
 		'z-implementation-list': ZImplementationList,
-		'z-function-signature': ZFunctionSignature
+		'z-tester-list': ZTesterList,
+		'z-function-signature': ZFunctionSignature,
+		'z-function-tester-report': ZFunctionTesterReport
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -80,6 +90,11 @@ module.exports = {
 			zImplementationId: function () {
 				return this.zobject.filter( function ( item ) {
 					return item.key === Constants.Z_FUNCTION_IMPLEMENTATIONS;
+				} )[ 0 ].id;
+			},
+			zTesterId: function () {
+				return this.zobject.filter( function ( item ) {
+					return item.key === Constants.Z_FUNCTION_TESTERS;
 				} )[ 0 ].id;
 			},
 			zImplementationList: function () {
@@ -165,7 +180,12 @@ module.exports = {
 			}
 		}
 	),
-	methods: $.extend( mapActions( [ 'fetchZKeys', 'setZObjectValue', 'fetchZImplementations' ] ), {
+	methods: $.extend( mapActions( [
+		'fetchZKeys',
+		'setZObjectValue',
+		'fetchZImplementations',
+		'fetchZTesters'
+	] ), {
 		updateZReturnType: function ( type ) {
 			var payload = {
 				id: this.zReturnType.id,
@@ -184,6 +204,7 @@ module.exports = {
 		this.fetchZKeys( zids );
 
 		this.fetchZImplementations( this.getCurrentZObjectId );
+		this.fetchZTesters( this.getCurrentZObjectId );
 	}
 };
 </script>
