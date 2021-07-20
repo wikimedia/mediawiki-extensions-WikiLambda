@@ -1,7 +1,7 @@
 @import 'mediawiki.mixins';
-@import './../../../lib/mediainfo-variables.less';
+@import './../../../lib/sd-base-variables.less';
 
-.wbmi-input {
+.sd-input {
 	box-sizing: border-box;
 	vertical-align: middle;
 
@@ -13,7 +13,7 @@
 	}
 
 	&__label {
-		.wbmi-visually-hidden();
+		.sd-visually-hidden();
 	}
 
 	// Icon and indicator should be absolutely positioned and vertically
@@ -21,32 +21,33 @@
 	&__icon,
 	&__indicator {
 		line-height: 1;
-		padding-left: @wbmi-padding-horizontal-input-text;
+		padding-left: @sd-padding-horizontal-input-text;
 		position: absolute;
 		top: 50%;
 		transform: translateY( -50% );
 	}
 
 	&__icon {
-		padding-left: @wbmi-padding-horizontal-input-text;
+		padding-left: @sd-padding-horizontal-input-text;
+		opacity: 0.67;
 	}
 
 	&__indicator {
-		color: @wbmi-indicator-color;
+		color: @sd-indicator-color;
 		cursor: pointer;
-		padding-right: @wbmi-padding-horizontal-input-text;
+		padding-right: @sd-padding-horizontal-input-text;
 		right: 0;
 
-		.wbmi-icon {
+		.sd-icon {
 			// Icon size is based on font size, so we'll set it here to make the
 			// indicator smaller than the default font size.
 			// Equal to 12px in ems.
-			font-size: unit( @min-size-indicator / @wbmi-font-size-browser / @wbmi-font-size-base, em );
+			font-size: unit( @min-size-indicator / @sd-font-size-browser / @sd-font-size-base, em );
 		}
 	}
 
 	&__input {
-		.box-shadow( inset 0 0 0 1px transparent );
+		box-shadow: inset 0 0 0 1px transparent;
 		.transition( ~'border-color 250ms, box-shadow 250ms' );
 		background-color: @background-color-base;
 		border: @border-width-base @border-style-base @border-color-base;
@@ -55,10 +56,10 @@
 		color: @color-base--emphasized;
 		display: block;
 		font-size: inherit;
-		height: @wbmi-size-base;
-		line-height: @wbmi-line-height-base;
+		height: @sd-size-base;
+		line-height: @sd-line-height-base;
 		margin: 0;
-		padding: @wbmi-padding-input-text;
+		padding: @sd-padding-input-text;
 		width: 100%;
 
 		&::placeholder {
@@ -73,10 +74,18 @@
 			display: none;
 		}
 
+		&:hover {
+			border-color: @sd-border-color-input--hover;
+		}
+
 		&:focus {
-			.box-shadow( @box-shadow-base--focus );
+			box-shadow: @box-shadow-base--focus;
 			border-color: @wmui-color-accent50;
 			outline: 0;
+
+			+ .sd-input__icon {
+				opacity: 1;
+			}
 		}
 
 		&[ type='search' ] {
@@ -90,33 +99,27 @@
 
 	// Apply pending state mixin, which generates a moving striped background,
 	// while autocomplete results are fetched.
-	&--pending .wbmi-input__input {
-		.wbmi-pending-state();
+	&--pending .sd-input__input {
+		.sd-pending-state();
 	}
 
 	&--button {
 		display: flex;
 
 		// Remove the border radii between the input and the button.
-		> .wbmi-input__wrapper .wbmi-input__input {
+		> .sd-input__wrapper .sd-input__input {
 			flex: 1;
 			border-top-right-radius: 0;
 			border-bottom-right-radius: 0;
 		}
 
-		.wbmi-input__button {
+		.sd-input__button {
 			border-top-left-radius: 0;
 			border-bottom-left-radius: 0;
 			border-left-width: 0;
-			height: @wbmi-size-base;
-			line-height: @wbmi-line-height-base;
+			height: @sd-size-base;
+			line-height: @sd-line-height-base;
 			margin: 0; // Undo Safari style.
-		}
-	}
-
-	&:hover {
-		&__input {
-			border-color: @wbmi-border-color-input--hover;
 		}
 	}
 }

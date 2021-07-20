@@ -1,8 +1,8 @@
 <template>
-	<div class="wbmi-select-menu">
+	<div class="sd-select-menu">
 		<ul
 			:id="listboxId"
-			class="wbmi-select-menu__list"
+			class="sd-select-menu__list"
 			role="listbox"
 			:aria-labelledby="labelledBy"
 		>
@@ -10,7 +10,7 @@
 				v-for="( item, index ) in formattedItems"
 				:id="listboxId + '-item-' + index"
 				:key="listboxId + '-item-' + index"
-				class="wbmi-select-menu__list-item"
+				class="sd-select-menu__list-item"
 				:class="getItemClasses( index )"
 				role="option"
 				:aria-selected="isActiveItem( index )"
@@ -132,8 +132,8 @@ module.exports = {
 
 		getItemClasses: function ( index ) {
 			return {
-				'wbmi-select-menu__list-item--active': this.isActiveItem( index ),
-				'wbmi-select-menu__list-item--selected': this.isSelectedItem( index )
+				'sd-select-menu__list-item--active': this.isActiveItem( index ),
+				'sd-select-menu__list-item--selected': this.isSelectedItem( index )
 			};
 		},
 

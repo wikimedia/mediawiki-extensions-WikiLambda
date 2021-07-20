@@ -1,5 +1,5 @@
 <template>
-	<span class="wbmi-icon" :class="builtInClasses">
+	<span class="sd-icon" :class="builtInClasses">
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			width="1em"
@@ -58,7 +58,7 @@
  *    }
  */
 module.exports = {
-	name: 'WbmiIcon',
+	name: 'SdIcon',
 
 	props: {
 		/** The SVG path or an object containing that path plus other data. */
@@ -100,7 +100,7 @@ module.exports = {
 	computed: {
 		builtInClasses: function () {
 			return {
-				'wbmi-icon--flip-for-rtl': this.shouldFlip
+				'sd-icon--flip-for-rtl': this.shouldFlip
 			};
 		},
 

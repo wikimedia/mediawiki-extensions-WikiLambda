@@ -1,29 +1,29 @@
 <template>
 	<button
-		class="wbmi-button"
+		class="sd-button"
 		:class="builtInClasses"
 		:disabled="disabled"
 		@click="$emit( 'click' )"
 	>
-		<wbmi-icon v-if="icon" :icon="icon"></wbmi-icon>
-		<span class="wbmi-button__content">
+		<sd-icon v-if="icon" :icon="icon"></sd-icon>
+		<span class="sd-button__content">
 			<slot></slot>
 		</span>
 	</button>
 </template>
 
 <script>
-var WbmiIcon = require( './Icon.vue' );
+var SdIcon = require( './Icon.vue' );
 
 /**
  * Button with optional icon.
  */
 // @vue/component
 module.exports = {
-	name: 'WbmiButton',
+	name: 'SdButton',
 
 	components: {
-		'wbmi-icon': WbmiIcon
+		'sd-icon': SdIcon
 	},
 
 	props: {
@@ -66,12 +66,12 @@ module.exports = {
 	computed: {
 		builtInClasses: function () {
 			return {
-				'wbmi-button--framed': !this.frameless,
-				'wbmi-button--icon': this.icon,
-				'wbmi-button--invisible-text': this.invisibleText,
-				'wbmi-button--progressive': this.progressive,
-				'wbmi-button--destructive': this.destructive,
-				'wbmi-button--primary': this.primary
+				'sd-button--framed': !this.frameless,
+				'sd-button--icon': this.icon,
+				'sd-button--invisible-text': this.invisibleText,
+				'sd-button--progressive': this.progressive,
+				'sd-button--destructive': this.destructive,
+				'sd-button--primary': this.primary
 			};
 		}
 	}

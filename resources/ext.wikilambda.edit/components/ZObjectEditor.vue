@@ -31,15 +31,15 @@
 				:zobject-raw="ZObjectJson"
 			></z-object-json>
 		</div>
-		<wbmi-message v-if="message.text" :type="message.type">
+		<sd-message v-if="message.text" :type="message.type">
 			{{ message }}
-		</wbmi-message>
+		</sd-message>
 	</div>
 </template>
 
 <script>
 var ZObject = require( './ZObject.vue' ),
-	WbmiMessage = require( './base/Message.vue' ),
+	SdMessage = require( './base/Message.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	ZObjectJson = require( './ZObjectJson.vue' );
@@ -48,7 +48,7 @@ module.exports = {
 	name: 'ZObjectEditor',
 	components: {
 		'z-object': ZObject,
-		'wbmi-message': WbmiMessage,
+		'sd-message': SdMessage,
 		'z-object-json': ZObjectJson
 	},
 	data: function () {

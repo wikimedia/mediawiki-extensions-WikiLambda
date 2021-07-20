@@ -13,21 +13,21 @@
 			:class="{ 'ext-wikilambda-zkey-input-invalid': isInvalid }"
 			@change="updateKey"
 		>
-		<wbmi-message
+		<sd-message
 			v-if="isInvalid"
 			:inline="true"
 			type="error"
-		> {{ $i18n( 'wikilambda-invalidzobject' ) }} </wbmi-message>
+		> {{ $i18n( 'wikilambda-invalidzobject' ) }} </sd-message>
 	</span>
 </template>
 
 <script>
-var WbmiMessage = require( './base/Message.vue' );
+var SdMessage = require( './base/Message.vue' );
 
 module.exports = {
 	name: 'ZObjectKeyInput',
 	components: {
-		'wbmi-message': WbmiMessage
+		'sd-message': SdMessage
 	},
 	data: function () {
 		return {

@@ -1,7 +1,7 @@
 @import 'mediawiki.mixins';
 @import './../../../lib/wikimedia-ui-base.less';
 
-.wbmi-button {
+.sd-button {
 	.transition( ~'background-color 100ms, color 100ms, border-color 100ms, box-shadow 100ms' );
 	background-color: transparent;
 	border: @border-width-base @border-style-base transparent;
@@ -24,7 +24,7 @@
 		outline: 0;
 	}
 
-	.wbmi-icon {
+	.sd-icon {
 		height: 100%;
 		left: 5/14em;
 		position: absolute;
@@ -48,13 +48,13 @@
 			color: @color-base--hover;
 		}
 
-		&.wbmi-button--icon {
+		&.sd-button--icon {
 			padding-left: 38/14em;
 			position: relative;
 		}
 
 		/* stylelint-disable-next-line no-descending-specificity */
-		.wbmi-icon {
+		.sd-icon {
 			left: 11/14em;
 		}
 	}
@@ -66,7 +66,7 @@
 			color: @color-primary--hover;
 		}
 
-		&.wbmi-button--framed {
+		&.sd-button--framed {
 			&:hover {
 				border-color: @color-primary--hover;
 			}
@@ -85,20 +85,20 @@
 			box-shadow: inset 0 0 0 1px @color-destructive;
 		}
 
-		&.wbmi-button--framed {
+		&.sd-button--framed {
 			&:hover {
 				border-color: @color-destructive--hover;
 			}
 
 			&:focus {
-				box-shadow: inset 0 0 0 1px @color-destructive
-					inset 0 0 0 2px @color-base--inverted;
+				box-shadow: inset 0 0 0 1px @color-destructive inset 0 0 0 2px
+					@color-base--inverted;
 			}
 		}
 	}
 
 	&--primary {
-		&.wbmi-button--framed {
+		&.sd-button--framed {
 			// Default to progressive.
 			background-color: @color-primary;
 			border-color: @color-primary;
@@ -113,7 +113,7 @@
 				box-shadow: @box-shadow-primary--focus;
 			}
 
-			&.wbmi-button--destructive {
+			&.sd-button--destructive {
 				background-color: @color-destructive;
 				border-color: @color-destructive;
 
@@ -123,8 +123,8 @@
 				}
 
 				&:focus {
-					box-shadow: inset 0 0 0 1px @color-destructive
-						inset 0 0 0 2px @color-base--inverted;
+					box-shadow: inset 0 0 0 1px @color-destructive inset 0 0 0 2px
+						@color-base--inverted;
 				}
 			}
 		}
@@ -133,7 +133,7 @@
 	&--invisible-text {
 		padding: 30/14em 0 0 30/14em;
 
-		.wbmi-button__content {
+		.sd-button__content {
 			border: 0;
 			clip: rect( 1px, 1px, 1px, 1px );
 			display: block;
@@ -145,7 +145,7 @@
 			width: 1px;
 		}
 
-		.wbmi-icon {
+		.sd-icon {
 			left: 50%;
 			transform: translateX( -50% );
 		}
@@ -160,7 +160,7 @@
 			background-color: @background-color-base;
 		}
 
-		&.wbmi-button--framed {
+		&.sd-button--framed {
 			background-color: @background-color-filled--disabled;
 			border-color: @border-color-base--disabled;
 			color: @color-base--inverted;
@@ -173,7 +173,7 @@
 			}
 		}
 
-		&:not( .wbmi-button--framed ) .wbmi-icon {
+		&:not( .sd-button--framed ) .sd-icon {
 			opacity: @opacity-base--disabled;
 		}
 	}

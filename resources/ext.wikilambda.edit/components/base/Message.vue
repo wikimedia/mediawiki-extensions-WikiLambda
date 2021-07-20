@@ -5,7 +5,7 @@
 		:aria-live="type !== 'error' ? 'polite' : false"
 		:role="type === 'error' ? 'alert' : false"
 	>
-		<wbmi-icon :icon="icon"></wbmi-icon>
+		<sd-icon :icon="icon"></sd-icon>
 		<div class="sd-message__content">
 			<slot></slot>
 		</div>
@@ -13,13 +13,13 @@
 </template>
 
 <script>
-var WbmiIcon = require( './Icon.vue' ),
+var SdIcon = require( './Icon.vue' ),
 	icons = require( './../../../lib/icons.js' ),
 	ICON_MAP = {
-		notice: icons.wbmiIconInfoFilled,
-		error: icons.wbmiIconError,
-		warning: icons.wbmiIconAlert,
-		success: icons.wbmiIconCheck
+		notice: icons.sdIconInfoFilled,
+		error: icons.sdIconError,
+		warning: icons.sdIconAlert,
+		success: icons.sdIconCheck
 	};
 /**
  * User-facing message with icon.
@@ -30,7 +30,7 @@ var WbmiIcon = require( './Icon.vue' ),
 module.exports = {
 	name: 'SdMessage',
 	components: {
-		'wbmi-icon': WbmiIcon
+		'sd-icon': SdIcon
 	},
 	props: {
 		// Should be one of notice, warning, error, or success.

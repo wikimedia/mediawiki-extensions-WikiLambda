@@ -12,7 +12,7 @@
 	-->
 	<span class="ext-wikilambda-select-zobject">
 		<span v-if="readonly || viewmode">{{ selectedText }}</span>
-		<wbmi-autocomplete-search-input
+		<sd-autocomplete-search-input
 			v-else
 			name="zobject-selector"
 			:class="{ 'ext-wikilambda-zkey-input-invalid': validatorIsInvalid }"
@@ -26,21 +26,21 @@
 			@clear="onClear"
 			@clear-lookup-results="onClearLookupResults"
 		>
-		</wbmi-autocomplete-search-input>
-		<wbmi-message
+		</sd-autocomplete-search-input>
+		<sd-message
 			v-if="validatorIsInvalid"
 			:inline="true"
 			type="error"
-		> {{ validatorErrorMessage }} </wbmi-message>
+		> {{ validatorErrorMessage }} </sd-message>
 	</span>
 </template>
 
 <script>
 var Constants = require( '../Constants.js' ),
-	WbmiAutocompleteSearchInput = require( './base/AutocompleteSearchInput.vue' ),
+	SdAutocompleteSearchInput = require( './base/AutocompleteSearchInput.vue' ),
 	validator = require( '../mixins/validator.js' ),
 	typeUtils = require( '../mixins/typeUtils.js' ),
-	WbmiMessage = require( './base/Message.vue' ),
+	SdMessage = require( './base/Message.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapState = require( 'vuex' ).mapState,
 	mapGetters = require( 'vuex' ).mapGetters,
@@ -49,8 +49,8 @@ var Constants = require( '../Constants.js' ),
 module.exports = {
 	name: 'ZObjectSelector',
 	components: {
-		'wbmi-autocomplete-search-input': WbmiAutocompleteSearchInput,
-		'wbmi-message': WbmiMessage
+		'sd-autocomplete-search-input': SdAutocompleteSearchInput,
+		'sd-message': SdMessage
 	},
 	mixins: [ validator, typeUtils ],
 	props: {

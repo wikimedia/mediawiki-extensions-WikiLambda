@@ -1,10 +1,10 @@
 <template>
-	<div class="wbmi-input" :class="rootClasses">
-		<div class="wbmi-input__wrapper">
+	<div class="sd-input" :class="rootClasses">
+		<div class="sd-input__wrapper">
 			<label
 				:id="labelElementId"
 				:for="inputElementId"
-				class="wbmi-input__label"
+				class="sd-input__label"
 			>
 				{{ label }}
 			</label>
@@ -14,7 +14,7 @@
 				ref="input"
 				v-model="value"
 				dir="auto"
-				class="wbmi-input__input"
+				class="sd-input__input"
 				type="text"
 				role="combobox"
 				autocomplete="off"
@@ -31,20 +31,20 @@
 				@keyup.down="onArrowDown"
 			>
 
-			<span class="wbmi-input__icon" @click="onIconClick">
-				<wbmi-icon :icon="icons.wbmiIconSearch"></wbmi-icon>
+			<span class="sd-input__icon" @click="onIconClick">
+				<sd-icon :icon="icons.sdIconSearch"></sd-icon>
 			</span>
 
 			<span
 				v-if="value"
-				class="wbmi-input__indicator"
+				class="sd-input__indicator"
 				role="button"
 				@click="onClear"
 			>
-				<wbmi-icon :icon="icons.wbmiIconClear" :title="clearTitle"></wbmi-icon>
+				<sd-icon :icon="icons.sdIconClear" :title="clearTitle"></sd-icon>
 			</span>
 
-			<wbmi-select-menu
+			<sd-select-menu
 				v-if="hasLookupResults && showLookupResults"
 				:items="lookupResults"
 				:active-item-index="activeLookupItemIndex"
@@ -53,25 +53,25 @@
 				@select="onLookupItemSelect"
 				@active-item-change="onActiveItemChange"
 			>
-			</wbmi-select-menu>
+			</sd-select-menu>
 		</div>
 
-		<wbmi-button
+		<sd-button
 			v-if="hasButton"
-			class="wbmi-input__button"
+			class="sd-input__button"
 			:primary="true"
 			:progressive="true"
 			@click="onSubmit"
 		>
 			{{ $i18n( 'searchbutton' ) }}
-		</wbmi-button>
+		</sd-button>
 	</div>
 </template>
 
 <script>
-var WbmiButton = require( './Button.vue' ),
-	WbmiIcon = require( './Icon.vue' ),
-	WbmiSelectMenu = require( './SelectMenu.vue' ),
+var SdButton = require( './Button.vue' ),
+	SdIcon = require( './Icon.vue' ),
+	SdSelectMenu = require( './SelectMenu.vue' ),
 	icons = require( './../../../lib/icons.js' );
 /**
  * @file AutocompleteSearchInput
@@ -84,11 +84,11 @@ var WbmiButton = require( './Button.vue' ),
  */
 // @vue/component
 module.exports = {
-	name: 'WbmiAutocompleteSearchInput',
+	name: 'SdAutocompleteSearchInput',
 	components: {
-		'wbmi-button': WbmiButton,
-		'wbmi-icon': WbmiIcon,
-		'wbmi-select-menu': WbmiSelectMenu
+		'sd-button': SdButton,
+		'sd-icon': SdIcon,
+		'sd-select-menu': SdSelectMenu
 	},
 	props: {
 		/**
@@ -145,8 +145,8 @@ module.exports = {
 		 */
 		rootClasses: function () {
 			return {
-				'wbmi-input--button': this.hasButton,
-				'wbmi-input--pending': this.pending
+				'sd-input--button': this.hasButton,
+				'sd-input--pending': this.pending
 			};
 		},
 		/**
