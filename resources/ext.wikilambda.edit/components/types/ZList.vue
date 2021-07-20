@@ -14,7 +14,10 @@
 				:readonly="readonly"
 			></z-list-item>
 			<li v-if="!(viewmode || readonly)">
-				<button :title="tooltipAddListItem" @click="addNewItem">
+				<button class="z-list-add"
+					:title="tooltipAddListItem"
+					@click="addNewItem"
+				>
 					{{ $i18n( 'wikilambda-editor-additem' ) }}
 				</button>
 			</li>
@@ -62,7 +65,7 @@ module.exports = {
 			}
 		} ),
 	methods: $.extend( {},
-		mapActions( [ 'addZObject' ] ),
+		mapActions( [ 'addZObject', 'recalculateZListIndex' ] ),
 		{
 			addNewItem: function ( /* event */ ) {
 				var payload = {
@@ -72,7 +75,14 @@ module.exports = {
 				};
 				this.addZObject( payload );
 			}
-		} )
+		} ),
+	watch: {
+		ZlistItems: function ( list, prevList ) {
+			if ( list.length < prevList.length ) {
+				this.recalculateZListIndex( this.zobjectId );
+			}
+		}
+	}
 };
 </script>
 

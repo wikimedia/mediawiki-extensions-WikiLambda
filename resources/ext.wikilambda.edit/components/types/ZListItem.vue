@@ -7,6 +7,7 @@
 	-->
 	<li class="ext-wikilambda-zlistItem">
 		<button v-if="!(viewmode || readonly)"
+			class="z-list-item-remove"
 			:title="tooltipRemoveListItem"
 			@click="removeItem"
 		>

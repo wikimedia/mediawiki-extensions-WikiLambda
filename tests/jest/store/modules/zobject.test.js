@@ -374,6 +374,62 @@ describe( 'zobject Vuex module', function () {
 			} );
 		} );
 
+		// In the event that a ZList item is removed, the indeces of the remaining items need to be updated.
+		// This is to prevent a null value from appearing in the generated JSON array.
+		it( 'Recalculate an existing ZList\'s keys to remove missing indeces', function () {
+			context.state = {
+				zobject: [
+					{ id: 0, value: 'object' },
+					{ key: 'Z1K1', value: 'Z2', parent: 0, id: 1 },
+					{ key: 'Z2K1', value: 'object', parent: 0, id: 2 },
+					{ key: 'Z2K2', value: 'array', parent: 0, id: 3 },
+					{ key: 'Z1K1', value: 'Z9', parent: 2, id: 4 },
+					{ key: 'Z9K1', value: 'Z0', parent: 2, id: 5 },
+					{ key: 'Z2K3', value: 'object', parent: 0, id: 6 },
+					{ key: 'Z1K1', value: 'Z12', parent: 6, id: 7 },
+					{ key: 'Z12K1', value: 'array', parent: 6, id: 8 },
+					{ key: 0, value: 'object', parent: 8, id: 9 },
+					{ key: 'Z1K1', value: 'Z11', parent: 9, id: 10 },
+					{ key: 'Z11K1', value: 'object', parent: 9, id: 11 },
+					{ key: 'Z1K1', value: 'Z9', parent: 11, id: 12 },
+					{ key: 'Z9K1', value: 'Z1002', parent: 11, id: 13 },
+					{ key: 'Z11K2', value: 'object', parent: 9, id: 14 },
+					{ key: 'Z1K1', value: 'Z6', parent: 14, id: 15 },
+					{ key: 'Z6K1', value: '', parent: 14, id: 16 },
+					{ key: 0, value: 'object', parent: 3, id: 17 },
+					{ key: 'Z1K1', value: 'Z6', parent: 17, id: 18 },
+					{ key: 'Z6K1', value: 'first', parent: 17, id: 19 },
+					{ key: 1, value: 'object', parent: 3, id: 20 },
+					{ key: 'Z1K1', value: 'Z6', parent: 20, id: 21 },
+					{ key: 'Z6K1', value: 'second', parent: 20, id: 22 }
+				]
+			};
+			context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
+			context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
+			context.commit = jest.fn( function ( mutationType, payload ) {
+				zobjectModule.mutations[ mutationType ]( context.state, payload );
+			} );
+			context.dispatch = jest.fn( function ( actionType, payload ) {
+				zobjectModule.actions[ actionType ]( context, payload );
+
+				return {
+					then: function ( fn ) {
+						return fn();
+					}
+				};
+			} );
+
+			// Remove index 0 from the ZList
+			zobjectModule.actions.removeZObject( context, 17 );
+
+			// Perform recalculate
+			zobjectModule.actions.recalculateZListIndex( context, 3 );
+
+			// Validate that recalculate correctly updated the index
+			expect( zobjectModule.getters.getZObjectById( context.state )( 20 ) ).toEqual( { key: 0, value: 'object', parent: 3, id: 20 } );
+			expect( zobjectModule.getters.getZObjectAsJson( context.state ).Z2K2 ).toEqual( [ { Z1K1: 'Z6', Z6K1: 'second' } ] );
+		} );
+
 		describe( 'Add ZObjects', function () {
 			beforeEach( function () {
 				context.state = {

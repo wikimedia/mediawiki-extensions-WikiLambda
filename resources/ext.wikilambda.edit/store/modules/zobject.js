@@ -340,6 +340,12 @@ module.exports = {
 
 			state.zobject.splice( payload.index, 1, item );
 		},
+		setZObjectKey: function ( state, payload ) {
+			var item = state.zobject[ payload.index ];
+			item.key = payload.key;
+
+			state.zobject.splice( payload.index, 1, item );
+		},
 		removeZObject: function ( state, index ) {
 			state.zobject.splice( index, 1 );
 		},
@@ -491,6 +497,23 @@ module.exports = {
 			// eslint-disable-next-line compat/compat
 			return Promise.resolve( context.getters.getZObjectTypeById( zobjectRoot.id ) );
 
+		},
+		/**
+		 * Recalculate the keys of a ZList
+		 * This should be used when an item is removed from a ZList
+		 *
+		 * @param {Object} context
+		 * @param {number} zListId
+		 */
+		recalculateZListIndex: function ( context, zListId ) {
+			var zList = context.getters.getZObjectChildrenById( zListId );
+
+			zList.forEach( function ( zObject, index ) {
+				context.commit( 'setZObjectKey', {
+					index: context.getters.getZObjectIndexById( zObject.id ),
+					key: index
+				} );
+			} );
 		},
 		/**
 		 * Set the programing language for a specific zCode object.
