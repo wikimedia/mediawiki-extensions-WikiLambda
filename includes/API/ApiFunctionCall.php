@@ -137,6 +137,9 @@ class ApiFunctionCall extends ApiBase {
 			'action=wikilambda_function_call&wikilambda_function_call_zobject='
 				. $this->createExample( 'evaluated-python.json' )
 				=> 'apihelp-wikilambda_function_call-example-native-python-code',
+			'action=wikilambda_function_call&wikilambda_function_call_zobject='
+				. $this->createExample( 'example-composition.json' )
+				=> 'apihelp-wikilambda_function_call-example-composition',
 		];
 	}
 

@@ -13,6 +13,7 @@
 	"apihelp-wikilambda_fetch-example-multiple": "Fetch three ZObjects: Z1, Z2, and Z3.",
 	"apierror-wikilambda_fetch-missingzid": "The given ZID '$1' does not exist on this wiki.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObject for function call",
+	"apihelp-wikilambda_function_call-example-composition": "Invoke a composition: if first argument is true, sort second; else, return it intact",
 	"apihelp-wikilambda_function_call-example-if": "Invoke built-in Z802 (If) with false predicate",
 	"apihelp-wikilambda_function_call-example-native-js-code": "Invoke user-written JavaScript code",
 	"apihelp-wikilambda_function_call-example-native-python-code": "Invoke user-written Python 3 code",
