@@ -24,10 +24,6 @@ module.exports = {
 		 */
 		zKeyLabels: {},
 		/**
-		 * ZKeys being fetched, awaiting for API response
-		 */
-		fetchingZKeys: [],
-		/**
 		 * Collection of arguments
 		 */
 		zArguments: {},
@@ -60,31 +56,6 @@ module.exports = {
 		}
 	},
 	mutations: {
-		/**
-		 * addFetchingZKeys
-		 *
-		 * @param {Object} state
-		 * @param {Array} zids
-		 */
-		addFetchingZKeys: function ( state, zids ) {
-			zids.forEach( function ( zid ) {
-				if ( state.fetchingZKeys.indexOf( zid ) === -1 ) {
-					state.fetchingZKeys.push( zid );
-				}
-			} );
-		},
-		/**
-		 * removeFetchingZKey
-		 *
-		 * @param {Object} state
-		 * @param {string} zid
-		 */
-		removeFetchingZKey: function ( state, zid ) {
-			state.fetchingZKeys.splice(
-				state.fetchingZKeys.indexOf( zid ),
-				1
-			);
-		},
 		/**
 		 * Add zid info to the state
 		 *
@@ -130,11 +101,10 @@ module.exports = {
 				// Zid has already been fetched
 				// or
 				// Zid is in the process of being fetched
-				if ( ( zId in context.state.zKeys ) || context.state.fetchingZKeys.indexOf( zId ) !== -1 ) {
+				if ( !zId || ( zId in context.state.zKeys ) ) {
 					return;
 				}
 				zKeystoFetch.push( zId );
-				context.commit( 'addFetchingZKeys', zKeystoFetch );
 			} );
 
 			if ( zKeystoFetch.length === 0 ) {
@@ -163,8 +133,6 @@ module.exports = {
 						zid: zid,
 						info: zidInfo
 					} );
-
-					context.commit( 'removeFetchingZKey', zid );
 
 					// State mutation:
 					// Add zObject label in user's selected language

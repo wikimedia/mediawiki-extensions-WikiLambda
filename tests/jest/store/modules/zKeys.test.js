@@ -66,6 +66,75 @@ var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modu
 						}
 					}
 				},
+				Z2: {
+					success: '',
+					data: {
+						Z1K1: 'Z2',
+						Z2K1: 'Z2',
+						Z2K2: {
+							Z1K1: 'Z4',
+							Z4K1: 'Z2',
+							Z4K2: [
+								{
+									Z1K1: 'Z3',
+									Z3K1: 'Z6',
+									Z3K2: 'Z2K1',
+									Z3K3: {
+										Z1K1: 'Z12',
+										Z12K1: [
+											{
+												Z1K1: 'Z11',
+												Z11K1: 'Z1002',
+												Z11K2: 'id'
+											}
+										]
+									}
+								},
+								{
+									Z1K1: 'Z3',
+									Z3K1: 'Z1',
+									Z3K2: 'Z2K2',
+									Z3K3: {
+										Z1K1: 'Z12',
+										Z12K1: [
+											{
+												Z1K1: 'Z11',
+												Z11K1: 'Z1002',
+												Z11K2: 'value'
+											}
+										]
+									}
+								},
+								{
+									Z1K1: 'Z3',
+									Z3K1: 'Z12',
+									Z3K2: 'Z2K3',
+									Z3K3: {
+										Z1K1: 'Z12',
+										Z12K1: [
+											{
+												Z1K1: 'Z11',
+												Z11K1: 'Z1002',
+												Z11K2: 'label'
+											}
+										]
+									}
+								}
+							],
+							Z4K3: 'Z102'
+						},
+						Z2K3: {
+							Z1K1: 'Z12',
+							Z12K1: [
+								{
+									Z1K1: 'Z11',
+									Z11K1: 'Z1002',
+									Z11K2: 'Persistent object'
+								}
+							]
+						}
+					}
+				},
 				Z6: {
 					success: '',
 					data: {
@@ -242,22 +311,12 @@ describe( 'zkeys Vuex module', function () {
 				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 				expect( getMock ).toHaveBeenCalledTimes( 0 );
 			} );
-			it( 'Will NOT call the APi if the Zids is already part of the fetchingZKeys', function () {
-				var zIdsToSearch = [ 'Z1' ];
-				context.state.fetchingZKeys = zIdsToSearch;
-
-				zkeysModule.actions.fetchZKeys( context, zIdsToSearch );
-
-				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
-				expect( getMock ).toHaveBeenCalledTimes( 0 );
-			} );
-			it( 'Will call the APi only with the Zids that are not already in fetchingZKeys, zKeys', function () {
+			it( 'Will call the APi only with the Zids that are not already in zKeys', function () {
 				var zIdsToSearch = [ 'Z1', 'Z2', 'Z6' ],
-					expectedWikilambdaloadZids = 'Z6';
+					expectedWikilambdaloadZids = 'Z2|Z6';
 				context.state.zKeys = {
 					Z1: mockApiZkeys.Z1
 				};
-				context.state.fetchingZKeys = [ 'Z2' ];
 
 				zkeysModule.actions.fetchZKeys( context, zIdsToSearch );
 
@@ -292,9 +351,9 @@ describe( 'zkeys Vuex module', function () {
 				expect( getMock ).toHaveBeenCalledTimes( 1 );
 
 				expect( getResolveMock ).toHaveBeenCalledTimes( 1 );
-				expect( context.commit ).toHaveBeenCalledTimes( 10 );
-				expect( context.commit ).toHaveBeenNthCalledWith( 3, 'addZKeyInfo', expectedAddZKeyInfoCall );
-				expect( context.commit ).toHaveBeenNthCalledWith( 5, 'addZKeyLabel', expecteaddZKeyLabelInfoCall );
+				expect( context.commit ).toHaveBeenCalledTimes( 6 );
+				expect( context.commit ).toHaveBeenCalledWith( 'addZKeyInfo', expectedAddZKeyInfoCall );
+				expect( context.commit ).toHaveBeenCalledWith( 'addZKeyLabel', expecteaddZKeyLabelInfoCall );
 			} );
 			it( 'Will set the stored ZArguments', function () {
 				var zArguments = [ { label: 'word', zid: 'Z10024K1', key: 'word: ', type: 'String' } ];
