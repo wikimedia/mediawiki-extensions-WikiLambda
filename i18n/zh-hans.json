@@ -15,5 +15,8 @@
 	"wikilambda-editor-boolean-selector": "选择真/假",
 	"wikilambda-implementation-selector-code": "代码",
 	"wikilambda-implementation-selector-composition": "构成",
-	"wikilambda-argref-default-label": "选择一个参数"
+	"wikilambda-argref-default-label": "选择一个参数",
+	"wikilambda-implementation-selector": "选择一个实现",
+	"wikilambda-implementation-none-found": "没有找到实现。",
+	"wikilambda-implementation-create-new": "创建一个新的实现"
 }

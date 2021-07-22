@@ -8,7 +8,7 @@
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "ZObjects'in JSON modelini getirin.",
-	"apihelp-wikilambda_fetch-param-zids": "Borularla ayrılmış, getirilecek ZObject ZID'leri.",
+	"apihelp-wikilambda_fetch-param-zids": "Getirecek ZObject ZID'leri.",
 	"apihelp-wikilambda_fetch-param-language": "Sonuçların döndürüleceği dil.",
 	"apihelp-wikilambda_fetch-example-single": "Tek bir ZObject, Z1 getirin.",
 	"apihelp-wikilambda_fetch-example-multiple": "Üç ZObject getirin: Z1, Z2 ve Z3.",
@@ -27,7 +27,7 @@
 	"apihelp-query+wikilambda-example-nofallback": "Fransızcada 'foo' ile eşleşen ZObjects arayın ve yedek dilleri kabul etmeyin",
 	"apihelp-query+wikilambda-example-type": "İngilizce etiketleri döndüren 'Z4' türündeki ZObject'leri arayın",
 	"apihelp-query+wikilambdaload_zobjects-summary": "ZID'lerine göre ZObjects arar ve JSON modelini tam olarak veya verilen bir dile ya da yedek dile göre filtrelenmiş olarak geri döndürür.",
-	"apihelp-query+wikilambdaload_zobjects-param-zids": "Getirilecek ZObject ZID'leri, çubuk ile ayrılmış.",
+	"apihelp-query+wikilambdaload_zobjects-param-zids": "Getirilecek ZObject ZID'leri.",
 	"apihelp-query+wikilambdaload_zobjects-param-language": "Tüm ZObject etiketlerinin döndürüleceği MediaWiki dil kodu.",
 	"apihelp-query+wikilambdaload_zobjects-param-canonical": "İstenen ZObjects için kurallara uygun formun ya da, devre dışı bırakılırsa, kısmi normal formun hangisinin döndürüleceği. Kısmi normalleştirme ZLists'leri, ZMonolingual dizileri ve ZMultilingual dizileri içermez.",
 	"apihelp-query+wikilambdaload_zobjects-example-full": "Z12 ve Z4 ZObjects'lerini arar ve tüm JSON betimini geri döndürür.",
