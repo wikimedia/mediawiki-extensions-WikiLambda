@@ -211,7 +211,7 @@ class Hooks implements
 			return;
 		}
 
-		$initialDataToLoadPath = dirname( __DIR__ ) . '/data/';
+		$initialDataToLoadPath = dirname( __DIR__ ) . '/function-schemata/data/definitions/';
 
 		$initialDataToLoadListing = array_filter(
 			scandir( $initialDataToLoadPath ),

@@ -165,7 +165,7 @@ class UpdateLanguageCodes extends Maintenance {
 	 * code to language Zid transformation to all its ZMonolingualString (Z11).
 	 */
 	private function updateInFiles() {
-		$initialDataToLoadPath = dirname( __DIR__ ) . '/data/';
+		$initialDataToLoadPath = dirname( __DIR__ ) . '/function-schemata/data/definitions/';
 		$initialDataToLoadListing = array_filter(
 			scandir( $initialDataToLoadPath ),
 			static function ( $key ) {

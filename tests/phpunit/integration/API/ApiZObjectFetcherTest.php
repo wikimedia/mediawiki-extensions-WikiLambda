@@ -56,7 +56,7 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 	public function testSucceedsWithValidZids() {
 		// Insert necessary ZIDs
 		$files = [ 'Z1' => 'Z1.json', 'Z2' => 'Z2.json' ];
-		$dataPath = dirname( __DIR__, 4 ) . '/data/';
+		$dataPath = dirname( __DIR__, 4 ) . '/function-schemata/data/definitions/';
 		foreach ( $files as $zid => $filename ) {
 			$data = file_get_contents( $dataPath . $filename );
 			$this->editPage( $zid, $data, 'Test creation', NS_ZOBJECT );

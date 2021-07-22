@@ -42,7 +42,7 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 	 * @param string[] $zids
 	 */
 	protected function insertZids( $zids ) : void {
-		$dataPath = dirname( __DIR__, 3 ) . '/data';
+		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions';
 		foreach ( $zids as $zid ) {
 			$data = file_get_contents( "$dataPath/$zid.json" );
 			$this->editPage( $zid, $data, 'Test ZObject creation', NS_ZOBJECT );

@@ -51,7 +51,7 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 			$loadedZids[] = $row->page_title;
 		}
 
-		$dataPath = dirname( __DIR__, 3 ) . '/data/';
+		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions/';
 		$zidsToLoad = array_filter(
 			scandir( $dataPath ),
 			static function ( $key ) {

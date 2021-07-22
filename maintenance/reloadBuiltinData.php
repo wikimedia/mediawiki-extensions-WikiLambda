@@ -41,7 +41,7 @@ class ReloadBuiltinData extends Maintenance {
 			$services->getRevisionStore()
 		);
 
-		$initialDataToLoadPath = dirname( __DIR__ ) . '/data/';
+		$initialDataToLoadPath = dirname( __DIR__ ) . '/function-schemata/data/definitions/';
 		$initialDataToLoadListing = array_filter(
 			scandir( $initialDataToLoadPath ),
 			static function ( $key ) {

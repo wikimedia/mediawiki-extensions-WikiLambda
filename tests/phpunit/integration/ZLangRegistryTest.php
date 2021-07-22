@@ -123,7 +123,7 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testGetLanguageCodeFromContent_found() {
 		$zid = self::ZLANG['fr'];
-		$dataPath = dirname( __DIR__, 3 ) . '/data';
+		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions';
 		$data = file_get_contents( "$dataPath/$zid.json" );
 		$title = Title::newFromText( $zid, NS_ZOBJECT );
 		$content = ZObjectContentHandler::makeContent( $data, $title );
@@ -137,7 +137,7 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testGetLanguageCodeFromContent_notFound() {
 		$zid = 'Z60';
-		$dataPath = dirname( __DIR__, 3 ) . '/data';
+		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions';
 		$data = file_get_contents( "$dataPath/$zid.json" );
 		$title = Title::newFromText( $zid, NS_ZOBJECT );
 		$content = ZObjectContentHandler::makeContent( $data, $title );
