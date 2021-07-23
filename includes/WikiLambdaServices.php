@@ -17,7 +17,7 @@ class WikiLambdaServices {
 	/**
 	 * @return ZObjectStore
 	 */
-	public static function getZObjectStore() : ZObjectStore {
+	public static function getZObjectStore(): ZObjectStore {
 		return MediaWikiServices::getInstance()->getService( 'WikiLambdaZObjectStore' );
 	}
 

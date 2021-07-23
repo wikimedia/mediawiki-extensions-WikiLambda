@@ -45,7 +45,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	/**
 	 * Initialize ZErrorTypeRegistry
 	 */
-	protected function initialize() : void {
+	protected function initialize(): void {
 		// Registry for ZObjects of type ZErrorType/Z500
 		$this->type = ZTypeRegistry::Z_ERRORTYPE;
 	}
@@ -58,7 +58,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	 * @return bool
 	 * @throws ZErrorException
 	 */
-	public function isZErrorTypeKnown( string $errorType ) : bool {
+	public function isZErrorTypeKnown( string $errorType ): bool {
 		if ( $this->isZErrorTypeCached( $errorType ) ) {
 			return true;
 		}
@@ -93,7 +93,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	 * @param string $errorType
 	 * @return bool
 	 */
-	private function isZErrorTypeCached( string $errorType ) : bool {
+	private function isZErrorTypeCached( string $errorType ): bool {
 		return array_key_exists( $errorType, $this->registry );
 	}
 
@@ -104,7 +104,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	 * @param string $errorType
 	 * @return string
 	 */
-	public function getZErrorTypeLabel( string $errorType ) : string {
+	public function getZErrorTypeLabel( string $errorType ): string {
 		if ( $this->isZErrorTypeKnown( $errorType ) ) {
 			return $this->registry[ $errorType ];
 		} else {

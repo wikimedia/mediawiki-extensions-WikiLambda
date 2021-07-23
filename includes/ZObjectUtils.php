@@ -20,7 +20,7 @@ class ZObjectUtils {
 	 * @param string $input
 	 * @return bool
 	 */
-	public static function isValidSerialisedZObject( string $input ) : bool {
+	public static function isValidSerialisedZObject( string $input ): bool {
 		// ZObject := String | List | Record
 		// String  := "Character*" // to be specific, as in JSON / ECMA-404
 		// List    := [(ZObject(,ZObject)*)]
@@ -45,7 +45,7 @@ class ZObjectUtils {
 	 * @param string|array|stdClass $input
 	 * @return bool
 	 */
-	public static function isValidZObject( $input ) : bool {
+	public static function isValidZObject( $input ): bool {
 		if ( is_string( $input ) ) {
 			return true;
 		}
@@ -65,7 +65,7 @@ class ZObjectUtils {
 	 * @param array $input
 	 * @return bool
 	 */
-	public static function isValidZObjectList( array $input ) : bool {
+	public static function isValidZObjectList( array $input ): bool {
 		// TODO: Simplify this to array_reduce(…)
 		foreach ( $input as $index => $value ) {
 			if ( !self::isValidZObject( $value ) ) {
@@ -79,7 +79,7 @@ class ZObjectUtils {
 	 * @param stdClass $input
 	 * @return bool
 	 */
-	public static function isValidZObjectRecord( stdClass $input ) : bool {
+	public static function isValidZObjectRecord( stdClass $input ): bool {
 		$objectVars = get_object_vars( $input );
 		// TODO: This shouldn't hard-code knowledge of the type?
 		if ( !array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $objectVars ) ) {
@@ -163,7 +163,7 @@ class ZObjectUtils {
 	 * @param string $right right key for comparision
 	 * @return int whether left is smaller (-1) than right or not (+1)
 	 */
-	public static function orderZKeyIDs( string $left, string $right ) : int {
+	public static function orderZKeyIDs( string $left, string $right ): int {
 		if ( $left == $right ) {
 			return 0;
 		}
@@ -239,7 +239,7 @@ class ZObjectUtils {
 	 * @param string $input The input
 	 * @return string
 	 */
-	public static function comparableString( string $input ) : string {
+	public static function comparableString( string $input ): string {
 		// First, lower-case the input (in a multi-byte-aware manner)
 		$output = mb_strtolower( $input );
 
@@ -308,7 +308,7 @@ class ZObjectUtils {
 	 * @param string[] $languages array of language Zids
 	 * @return array same ZMultilingualString value with only one item of the preferred language
 	 */
-	public static function getPreferredMonolingualString( array $multilingualStr, array $languages ) : array {
+	public static function getPreferredMonolingualString( array $multilingualStr, array $languages ): array {
 		$availableLangs = [];
 		$selectedIndex = 0;
 
@@ -441,7 +441,7 @@ class ZObjectUtils {
 	 * @param string $input
 	 * @return bool
 	 */
-	public static function isValidZObjectReference( string $input ) : bool {
+	public static function isValidZObjectReference( string $input ): bool {
 		return preg_match( "/^\s*Z[1-9]\d*\s*$/", $input );
 	}
 
@@ -451,7 +451,7 @@ class ZObjectUtils {
 	 * @param string $input
 	 * @return bool
 	 */
-	public static function isNullReference( string $input ) : bool {
+	public static function isNullReference( string $input ): bool {
 		return ( $input === ZTypeRegistry::Z_NULL_REFERENCE );
 	}
 
@@ -461,7 +461,7 @@ class ZObjectUtils {
 	 * @param string $input
 	 * @return bool
 	 */
-	public static function isValidOrNullZObjectReference( string $input ) : bool {
+	public static function isValidOrNullZObjectReference( string $input ): bool {
 		return ( self::isValidZObjectReference( $input ) || self::isNullReference( $input ) );
 	}
 
@@ -471,7 +471,7 @@ class ZObjectUtils {
 	 * @param string $input
 	 * @return bool
 	 */
-	public static function isValidId( string $input ) : bool {
+	public static function isValidId( string $input ): bool {
 		return preg_match( "/^[A-Z][1-9]\d*$/", $input );
 	}
 
@@ -481,7 +481,7 @@ class ZObjectUtils {
 	 * @param string $input
 	 * @return bool
 	 */
-	public static function isValidZObjectKey( string $input ) : bool {
+	public static function isValidZObjectKey( string $input ): bool {
 		return preg_match( "/^\s*(Z[1-9]\d*)?K\d+\s*$/", $input );
 	}
 
@@ -491,7 +491,7 @@ class ZObjectUtils {
 	 * @param string $input
 	 * @return bool
 	 */
-	public static function isValidZObjectGlobalKey( string $input ) : bool {
+	public static function isValidZObjectGlobalKey( string $input ): bool {
 		return preg_match( "/^\s*Z[1-9]\d*K\d+\s*$/", $input );
 	}
 
@@ -501,7 +501,7 @@ class ZObjectUtils {
 	 * @param string $input
 	 * @return string
 	 */
-	public static function getZObjectReferenceFromKey( string $input ) : string {
+	public static function getZObjectReferenceFromKey( string $input ): string {
 		preg_match( "/^\s*(Z[1-9]\d*)?(K\d+)\s*$/", $input, $matches );
 		return $matches[1];
 	}

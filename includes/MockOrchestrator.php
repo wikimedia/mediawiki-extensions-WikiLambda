@@ -32,7 +32,7 @@ class MockOrchestrator extends OrchestratorBase {
 	 *
 	 * @return MockOrchestrator
 	 */
-	public static function getInstance() : MockOrchestrator {
+	public static function getInstance(): MockOrchestrator {
 		if ( self::$instance == null ) {
 			self::$instance = new MockOrchestrator();
 		}
@@ -44,7 +44,7 @@ class MockOrchestrator extends OrchestratorBase {
 	 *
 	 * @return MockHandler
 	 */
-	public static function mock() : MockHandler {
+	public static function mock(): MockHandler {
 		if ( self::$mock == null ) {
 			self::$mock = new MockHandler();
 		}

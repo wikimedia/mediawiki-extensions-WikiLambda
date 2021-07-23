@@ -11,7 +11,7 @@ use MediaWiki\MediaWikiServices;
  */
 class ApiZObjectFetcherTest extends ApiTestCase {
 
-	protected function setUp() : void {
+	protected function setUp(): void {
 		parent::setUp();
 
 		$this->tablesUsed[] = 'wikilambda_zobject_labels';

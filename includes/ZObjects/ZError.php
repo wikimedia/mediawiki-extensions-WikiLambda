@@ -16,7 +16,7 @@ use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 class ZError extends ZObject {
 
-	public static function getDefinition() : array {
+	public static function getDefinition(): array {
 		return [
 			'type' => ZTypeRegistry::Z_ERROR,
 
@@ -38,22 +38,22 @@ class ZError extends ZObject {
 		$this->data[ ZTypeRegistry::Z_ERROR_VALUE ] = $value;
 	}
 
-	public function getZValue() : ZObject {
+	public function getZValue(): ZObject {
 		return $this->data[ ZTypeRegistry::Z_ERROR_VALUE ];
 	}
 
-	public function getZErrorType() : string {
+	public function getZErrorType(): string {
 		return $this->data[ ZTypeRegistry::Z_ERROR_TYPE ];
 	}
 
-	public function getMessage() : string {
+	public function getMessage(): string {
 		if ( $this->getZValue()->getZType() == ZTypeRegistry::Z_STRING ) {
 			return $this->getZValue()->getZValue();
 		}
 		return ZErrorTypeRegistry::singleton()->getZErrorTypeLabel( $this->getZErrorType() );
 	}
 
-	public function isValid() : bool {
+	public function isValid(): bool {
 		// Type must be a valid Zid that references a ZObject of type Z50
 		if ( !isset( $this->data[ ZTypeRegistry::Z_ERROR_TYPE ] ) ) {
 			return false;

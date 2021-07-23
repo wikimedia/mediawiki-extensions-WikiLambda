@@ -20,7 +20,7 @@ use MediaWiki\MediaWikiServices;
 
 class ZMultiLingualString extends ZObject {
 
-	public static function getDefinition() : array {
+	public static function getDefinition(): array {
 		return [
 			'type' => ZTypeRegistry::Z_MULTILINGUALSTRING,
 			'keys' => [
@@ -53,7 +53,7 @@ class ZMultiLingualString extends ZObject {
 	 * @param string $languageCode The MediaWiki language code in which the string is wanted.
 	 * @return string The string, or the empty string if .
 	 */
-	public function getStringForLanguageCode( string $languageCode ) : string {
+	public function getStringForLanguageCode( string $languageCode ): string {
 		try {
 			$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
 		} catch ( ZErrorException $e ) {
@@ -70,7 +70,7 @@ class ZMultiLingualString extends ZObject {
 	 * @param string $languageCode The MediaWiki language code in which the string is wanted.
 	 * @return bool If there is a string stored.
 	 */
-	public function isLanguageProvidedValue( string $languageCode ) : bool {
+	public function isLanguageProvidedValue( string $languageCode ): bool {
 		try {
 			$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
 		} catch ( ZErrorException $e ) {
@@ -87,7 +87,7 @@ class ZMultiLingualString extends ZObject {
 	 * @param Language $language The MediaWiki language class in which the string is wanted.
 	 * @return string The string, or the value of the wikilambda-multilingualstring-nofallback message.
 	 */
-	public function getStringForLanguage( Language $language ) : string {
+	public function getStringForLanguage( Language $language ): string {
 		if ( $this->isLanguageProvidedValue( $language->mCode ) ) {
 			return $this->getStringForLanguageCode( $language->mCode );
 		}
@@ -109,7 +109,7 @@ class ZMultiLingualString extends ZObject {
 	/**
 	 * @param ZMonoLingualString $value The new value to set.
 	 */
-	public function setMonoLingualString( ZMonoLingualString $value ) : void {
+	public function setMonoLingualString( ZMonoLingualString $value ): void {
 		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $value->getLanguage() ] = $value->getString();
 	}
 
@@ -117,7 +117,7 @@ class ZMultiLingualString extends ZObject {
 	 * @param Language $language The MediaWiki language class in which the string is to be set.
 	 * @param string $value The new string to set.
 	 */
-	public function setStringForLanguage( Language $language, string $value ) : void {
+	public function setStringForLanguage( Language $language, string $value ): void {
 		$languageCode = $language->mCode;
 		$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
 		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageZid ] = $value;
@@ -126,13 +126,13 @@ class ZMultiLingualString extends ZObject {
 	/**
 	 * @param Language $language The MediaWiki language class in which the string is to be unset.
 	 */
-	public function removeValue( Language $language ) : void {
+	public function removeValue( Language $language ): void {
 		$languageCode = $language->mCode;
 		$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
 		unset( $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageZid ] );
 	}
 
-	public function isValid() : bool {
+	public function isValid(): bool {
 		$langs = ZLangRegistry::singleton();
 		foreach ( $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] ?? [] as $languageZid => $value ) {
 			if ( !$langs->isValidLanguageZid( $languageZid ) ) {

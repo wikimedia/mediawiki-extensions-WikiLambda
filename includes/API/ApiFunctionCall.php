@@ -105,7 +105,7 @@ class ApiFunctionCall extends ApiBase {
 	 * @param string $fileName
 	 * @return string URL-encoded contents
 	 */
-	private function createExample( $fileName ) : string {
+	private function createExample( $fileName ): string {
 		$baseDir = __DIR__ .
 			DIRECTORY_SEPARATOR .
 			'..' .

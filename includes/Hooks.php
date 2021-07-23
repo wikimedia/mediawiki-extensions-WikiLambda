@@ -62,7 +62,7 @@ class Hooks implements
 	 * @param \OutputPage $out
 	 * @param \Skin $skin
 	 */
-	public function onBeforePageDisplay( $out, $skin ) : void {
+	public function onBeforePageDisplay( $out, $skin ): void {
 		$config = $out->getConfig();
 		if ( $config->get( 'WikiLambdaEnable' ) ) {
 			// Do something.

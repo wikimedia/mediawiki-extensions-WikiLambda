@@ -23,7 +23,7 @@ class ZObject {
 	 *
 	 * @return array It's complicated.
 	 */
-	public static function getDefinition() : array {
+	public static function getDefinition(): array {
 		return [
 			'type' => ZTypeRegistry::Z_OBJECT,
 			'keys' => [
@@ -77,7 +77,7 @@ class ZObject {
 	/**
 	 * @return string The type of this ZObject
 	 */
-	public function getZType() : string {
+	public function getZType(): string {
 		return $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] ?? static::getDefinition()['type'];
 	}
 
@@ -94,7 +94,7 @@ class ZObject {
 	 *
 	 * @return bool Whether content is valid
 	 */
-	public function isValid() : bool {
+	public function isValid(): bool {
 		// TODO: Right now these are uneditable and guaranteed valid on creation, but when we
 		// add model (API and UX) editing, this will need to actually evaluate.
 		return true;

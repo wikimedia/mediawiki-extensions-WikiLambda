@@ -111,7 +111,7 @@ class ZObjectContentHandler extends ContentHandler {
 	 * @return string The external JSON form of the given title.
 	 * @throws ZErrorException
 	 */
-	public static function getExternalRepresentation( Title $zObjectTitle, ?string $languageCode = null ) : string {
+	public static function getExternalRepresentation( Title $zObjectTitle, ?string $languageCode = null ): string {
 		if ( $zObjectTitle->getNamespace() !== NS_ZOBJECT ) {
 			throw new ZErrorException(
 				new ZError(

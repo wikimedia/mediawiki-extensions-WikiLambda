@@ -41,7 +41,7 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 	 *
 	 * @param string[] $zids
 	 */
-	protected function insertZids( $zids ) : void {
+	protected function insertZids( $zids ): void {
 		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions';
 		foreach ( $zids as $zid ) {
 			$data = file_get_contents( "$dataPath/$zid.json" );
@@ -54,7 +54,7 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 	 *
 	 * @param string[] $zids
 	 */
-	protected function insertZErrorTypes( $zids ) : void {
+	protected function insertZErrorTypes( $zids ): void {
 		// Insert ZErrorType (Z50) and then all the wanted types
 		$this->insertZids( array_merge( (array)'Z50', $zids ) );
 	}
@@ -65,7 +65,7 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 	 *
 	 * @param string[] $langs
 	 */
-	protected function registerLangs( $langs ) : void {
+	protected function registerLangs( $langs ): void {
 		$langRegistry = ZLangRegistry::singleton();
 		foreach ( $langs as $code ) {
 			$zid = self::ZLANG[$code];
@@ -91,7 +91,7 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 	/**
 	 * Make sure that all the different registries are cleared and initialized with their initial values
 	 */
-	protected function tearDown() : void {
+	protected function tearDown(): void {
 		ZObjectRegistry::clearAll();
 		parent::tearDown();
 	}

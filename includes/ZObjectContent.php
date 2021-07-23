@@ -211,7 +211,7 @@ class ZObjectContent extends AbstractContent {
 	 * @return ZObject
 	 * @throws ZErrorException
 	 */
-	public function getInnerZObject() : ZObject {
+	public function getInnerZObject(): ZObject {
 		if ( !$this->isValid() ) {
 			// Error 501: Invalid syntax
 			throw new ZErrorException(
@@ -249,7 +249,7 @@ class ZObjectContent extends AbstractContent {
 	 * @return string
 	 * @throws ZErrorException
 	 */
-	public function getTypeString( $language ) : string {
+	public function getTypeString( $language ): string {
 		$type = $this->getZType();
 		$typeTitle = Title::newFromText( $type, NS_ZOBJECT );
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
@@ -270,7 +270,7 @@ class ZObjectContent extends AbstractContent {
 	 * @return string
 	 * @throws ZErrorException
 	 */
-	public function getZType() : string {
+	public function getZType(): string {
 		if ( !$this->isValid() ) {
 			// Error 501: Invalid syntax
 			throw new ZErrorException(
@@ -308,7 +308,7 @@ class ZObjectContent extends AbstractContent {
 	 * @return ZMultilingualString
 	 * @throws ZErrorException
 	 */
-	public function getLabels() : ZMultiLingualString {
+	public function getLabels(): ZMultiLingualString {
 		if ( !$this->isValid() ) {
 			throw new ZErrorException(
 				new ZError(
@@ -327,7 +327,7 @@ class ZObjectContent extends AbstractContent {
 	 * @return string
 	 * @throws ZErrorException
 	 */
-	public function getLabel( $language ) : string {
+	public function getLabel( $language ): string {
 		if ( !$this->isValid() ) {
 			throw new ZErrorException(
 				new ZError(

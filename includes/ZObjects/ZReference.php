@@ -15,7 +15,7 @@ use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 class ZReference extends ZObject {
 
-	public static function getDefinition() : array {
+	public static function getDefinition(): array {
 		return [
 			'type' => ZTypeRegistry::Z_REFERENCE,
 			'keys' => [
@@ -34,7 +34,7 @@ class ZReference extends ZObject {
 		return $this->data[ ZTypeRegistry::Z_REFERENCE_VALUE ];
 	}
 
-	public function isValid() : bool {
+	public function isValid(): bool {
 		return ZObjectUtils::isValidZObjectReference( $this->data[ ZTypeRegistry::Z_REFERENCE_VALUE ] );
 	}
 }

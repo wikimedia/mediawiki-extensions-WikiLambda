@@ -24,7 +24,7 @@ class ZPersistentObject extends ZObject {
 	 *
 	 * @return array It's complicated.
 	 */
-	public static function getDefinition() : array {
+	public static function getDefinition(): array {
 		return [
 			'type' => ZTypeRegistry::Z_PERSISTENTOBJECT,
 			'keys' => [
@@ -69,7 +69,7 @@ class ZPersistentObject extends ZObject {
 	/**
 	 * @return string The type of the internal ZObject
 	 */
-	public function getInternalZType() : string {
+	public function getInternalZType(): string {
 		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ]->getZType();
 	}
 
@@ -110,7 +110,7 @@ class ZPersistentObject extends ZObject {
 	 *
 	 * @return bool Whether content is valid
 	 */
-	public function isValid() : bool {
+	public function isValid(): bool {
 		// TODO: Right now these are uneditable and guaranteed valid on creation, but when we
 		// add model (API and UX) editing, this will need to actually evaluate.
 		return true;

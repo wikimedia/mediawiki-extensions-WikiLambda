@@ -74,7 +74,7 @@ class ZObjectStore {
 	 *
 	 * @return string Next available ZID
 	 */
-	public function getNextAvailableZid() : string {
+	public function getNextAvailableZid(): string {
 		// Intentionally use DB_PRIMARY as we need the latest data here.
 		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
 		$res = $dbr->select(
@@ -278,7 +278,7 @@ class ZObjectStore {
 	 * is the string representation of the label in that language
 	 * @return array Conflicts found in the wikilambda_zobject_labels database
 	 */
-	public function findZObjectLabelConflicts( $zid, $ztype, $labels ) : array {
+	public function findZObjectLabelConflicts( $zid, $ztype, $labels ): array {
 		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
 
 		if ( $labels === [] ) {

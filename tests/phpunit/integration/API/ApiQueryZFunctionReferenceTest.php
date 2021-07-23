@@ -36,7 +36,7 @@ class ApiQueryZFunctionReferenceTest extends ApiTestCase {
 		]
 	];
 
-	public function addDBDataOnce() : void {
+	public function addDBDataOnce(): void {
 		$langs = ZLangRegistry::singleton();
 		$langs->register( self::EN, 'en' );
 		$langs->register( self::IT, 'it' );

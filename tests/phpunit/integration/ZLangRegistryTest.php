@@ -23,7 +23,7 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 	/** @var ZLangRegistry */
 	protected $registry = null;
 
-	protected function setUp() : void {
+	protected function setUp(): void {
 		parent::setUp();
 		$this->registry = ZLangRegistry::singleton();
 	}

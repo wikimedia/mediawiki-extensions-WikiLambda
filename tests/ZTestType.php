@@ -91,7 +91,7 @@ EOT;
 
 	public const TEST_LANGS = [ 'en', 'fr' ];
 
-	public static function getDefinition() : array {
+	public static function getDefinition(): array {
 		return [
 			'keys' => [
 				'Z111K1' => [
@@ -109,7 +109,7 @@ EOT;
 		$this->data[ 'Z111K2' ] = $b;
 	}
 
-	public static function create( array $objectVars ) : ZObject {
+	public static function create( array $objectVars ): ZObject {
 		if ( !array_key_exists( 'Z111K1', $objectVars ) ) {
 			throw new ZErrorException(
 				new ZError(
@@ -133,7 +133,7 @@ EOT;
 		return [ $this->data[ 'Z111K1' ], $this->data[ 'Z111K2' ] ];
 	}
 
-	public function isValid() : bool {
+	public function isValid(): bool {
 		return true;
 	}
 }

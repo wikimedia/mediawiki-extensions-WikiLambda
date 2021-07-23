@@ -15,7 +15,7 @@ use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 class ZMonoLingualString extends ZObject {
 
-	public static function getDefinition() : array {
+	public static function getDefinition(): array {
 		return [
 			'type' => ZTypeRegistry::Z_MONOLINGUALSTRING,
 			'keys' => [
@@ -48,7 +48,7 @@ class ZMonoLingualString extends ZObject {
 		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ];
 	}
 
-	public function isValid() : bool {
+	public function isValid(): bool {
 		$langs = ZLangRegistry::singleton();
 		// TODO: Do we care about the validity of the values?
 		return $langs->isValidLanguageZid( $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] );

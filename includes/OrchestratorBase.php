@@ -22,7 +22,7 @@ class OrchestratorBase {
 	 * @param string $query
 	 * @return Response response object returned by orchestrator
 	 */
-	public function orchestrate( string $query ) : Response {
+	public function orchestrate( string $query ): Response {
 		// TODO: Use getAsync here.
 		return $this->guzzleClient->get( '/1/v1/evaluate/' . $query );
 	}

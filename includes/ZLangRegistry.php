@@ -25,7 +25,7 @@ class ZLangRegistry extends ZObjectRegistry {
 	/**
 	 * Initialize ZLangRegistry
 	 */
-	protected function initialize() : void {
+	protected function initialize(): void {
 		// Registry for ZObjects of type ZLanguage/Z60
 		$this->type = ZTypeRegistry::Z_LANGUAGE;
 
@@ -42,7 +42,7 @@ class ZLangRegistry extends ZObjectRegistry {
 	 * @return string
 	 * @throws ZErrorException
 	 */
-	public function getLanguageCodeFromZid( $zid ) : string {
+	public function getLanguageCodeFromZid( $zid ): string {
 		if ( array_key_exists( $zid, $this->registry ) ) {
 			return $this->registry[ $zid ];
 		}
@@ -58,7 +58,7 @@ class ZLangRegistry extends ZObjectRegistry {
 	 * @return string
 	 * @throws ZErrorException
 	 */
-	public function getLanguageZidFromCode( $code ) : string {
+	public function getLanguageZidFromCode( $code ): string {
 		$zid = array_search( $code, $this->registry );
 		if ( $zid ) {
 			return $zid;
@@ -76,7 +76,7 @@ class ZLangRegistry extends ZObjectRegistry {
 	 * @return string The language code of the ZLanguage identified by this Zid
 	 * @throws ZErrorException
 	 */
-	private function fetchLanguageCodeFromZid( $zid ) : string {
+	private function fetchLanguageCodeFromZid( $zid ): string {
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$title = Title::newFromText( $zid, NS_ZOBJECT );
 
@@ -118,7 +118,7 @@ class ZLangRegistry extends ZObjectRegistry {
 	 * @return string The ZLanguage Zid associated to this language code
 	 * @throws ZErrorException
 	 */
-	private function fetchLanguageZidFromCode( $code ) : string {
+	private function fetchLanguageZidFromCode( $code ): string {
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$zids = $zObjectStore->fetchZidsOfType( ZTypeRegistry::Z_LANGUAGE );
 		$foundZid = false;

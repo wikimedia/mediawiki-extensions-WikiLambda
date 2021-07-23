@@ -116,7 +116,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	/**
 	 * Initialize ZTypeRegistry
 	 */
-	protected function initialize() : void {
+	protected function initialize(): void {
 		// Registry for ZObjects of type ZType/Z4
 		$this->type = self::Z_TYPE;
 
@@ -132,7 +132,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 * @param string $type
 	 * @throws ZErrorException
 	 */
-	public function register( string $key, string $type ) : void {
+	public function register( string $key, string $type ): void {
 		if ( $this->isZObjectKeyCached( $key ) ) {
 			$conflictingType = $this->getZObjectKeyFromType( $key );
 			throw new ZErrorException(
@@ -173,7 +173,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 *
 	 * @param string $key
 	 */
-	public function unregister( string $key ) : void {
+	public function unregister( string $key ): void {
 		if ( !array_key_exists( $key, self::BUILT_IN_TYPES ) ) {
 			unset( $this->registry[ $key ] );
 		}
@@ -184,7 +184,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 *
 	 * @return string[] Keys of the ZTypes stored in the cache
 	 */
-	public function getCachedZObjectKeys() : array {
+	public function getCachedZObjectKeys(): array {
 		return array_keys( $this->registry );
 	}
 
@@ -195,7 +195,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 * @param string $key The key of the ZType to check.
 	 * @return bool
 	 */
-	public function isZTypeBuiltIn( string $key ) : bool {
+	public function isZTypeBuiltIn( string $key ): bool {
 		return array_key_exists( $key, self::BUILT_IN_TYPES );
 	}
 
@@ -205,7 +205,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 * @param string $key The key of the ZType to check
 	 * @return bool
 	 */
-	public function isZObjectKeyCached( string $key ) : bool {
+	public function isZObjectKeyCached( string $key ): bool {
 		return in_array( $key, $this->getCachedZObjectKeys(), true );
 	}
 
@@ -218,7 +218,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 * @return bool
 	 * @throws ZErrorException
 	 */
-	public function isZObjectKeyKnown( string $key ) : bool {
+	public function isZObjectKeyKnown( string $key ): bool {
 		if ( $this->isZObjectKeyCached( $key ) ) {
 			return true;
 		}
@@ -256,7 +256,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 * @return string Class name for the ZType
 	 * @throws ZErrorException
 	 */
-	public function getZObjectTypeFromKey( string $key ) : string {
+	public function getZObjectTypeFromKey( string $key ): string {
 		if ( !$this->isZObjectKeyKnown( $key ) ) {
 			// Error Z504: Zid not found
 			throw new ZErrorException(
@@ -274,7 +274,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 *
 	 * @return string[] Array of cached ZTypes
 	 */
-	public function getCachedZObjectTypes() : array {
+	public function getCachedZObjectTypes(): array {
 		return array_values( $this->registry );
 	}
 
@@ -284,7 +284,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 * @param string $type Name of the ZType
 	 * @return bool
 	 */
-	public function isZObjectTypeCached( string $type ) : bool {
+	public function isZObjectTypeCached( string $type ): bool {
 		// TODO: The registry is just a cache; also check the DB given the key.
 		return in_array( $type, $this->getCachedZObjectTypes(), true );
 	}
@@ -296,7 +296,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 * @param string $type Name of the ZType
 	 * @return bool
 	 */
-	public function isZObjectTypeKnown( string $type ) : bool {
+	public function isZObjectTypeKnown( string $type ): bool {
 		if ( $this->isZObjectTypeCached( $type ) ) {
 			return true;
 		}
@@ -312,7 +312,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 * @return string ZID of the ZType
 	 * @throws ZErrorException
 	 */
-	public function getZObjectKeyFromType( string $type ) : string {
+	public function getZObjectKeyFromType( string $type ): string {
 		if ( !$this->isZObjectTypeKnown( $type ) ) {
 			// Error Z543: ZType not found
 			throw new ZErrorException(

@@ -32,21 +32,21 @@ class ZErrorException extends Exception {
 	/**
 	 * @return ZError
 	 */
-	public function getZError() : ZError {
+	public function getZError(): ZError {
 		return $this->error;
 	}
 
 	/**
 	 * @return ZObject
 	 */
-	public function getZErrorMessage() : ZObject {
+	public function getZErrorMessage(): ZObject {
 		return $this->error->getZValue();
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getZErrorType() : string {
+	public function getZErrorType(): string {
 		return $this->error->getZErrorType();
 	}
 }

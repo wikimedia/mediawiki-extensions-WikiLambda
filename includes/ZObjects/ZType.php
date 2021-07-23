@@ -15,7 +15,7 @@ use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 class ZType extends ZObject {
 
-	public static function getDefinition() : array {
+	public static function getDefinition(): array {
 		return [
 			'type' => ZTypeRegistry::Z_TYPE,
 			'keys' => [
@@ -58,7 +58,7 @@ class ZType extends ZObject {
 		return $this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ];
 	}
 
-	public function isValid() : bool {
+	public function isValid(): bool {
 		// Identity must be set to a valid ZKey reference (or special case of 'Z0')
 		if ( !isset( $this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ] ) ) {
 			return false;

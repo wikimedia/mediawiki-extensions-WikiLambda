@@ -14,7 +14,7 @@ use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 class ZString extends ZObject {
 
-	public static function getDefinition() : array {
+	public static function getDefinition(): array {
 		return [
 			'type' => ZTypeRegistry::Z_STRING,
 			'keys' => [
@@ -40,7 +40,7 @@ class ZString extends ZObject {
 		return $this->data[ ZTypeRegistry::Z_STRING_VALUE ];
 	}
 
-	public function isValid() : bool {
+	public function isValid(): bool {
 		// All strings of any value are by definition valid (including null, which is read as empty).
 		return true;
 	}

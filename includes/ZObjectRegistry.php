@@ -45,7 +45,7 @@ abstract class ZObjectRegistry {
 	/**
 	 * Initialize method, to be implemented by every registry class
 	 */
-	abstract protected function initialize() : void;
+	abstract protected function initialize(): void;
 
 	/**
 	 * Unregisters the zid from any of the existing registry instances
@@ -61,7 +61,7 @@ abstract class ZObjectRegistry {
 	/**
 	 * Clears and re-initializes all existing registry instances
 	 */
-	public static function clearAll() : void {
+	public static function clearAll(): void {
 		foreach ( self::$instances as $class => $registry ) {
 			$registry->clear();
 		}
@@ -75,7 +75,7 @@ abstract class ZObjectRegistry {
 	 * @param string $zid
 	 * @param string $value
 	 */
-	public function register( string $zid, string $value ) : void {
+	public function register( string $zid, string $value ): void {
 		$this->registry[ $zid ] = $value;
 	}
 
@@ -84,7 +84,7 @@ abstract class ZObjectRegistry {
 	 *
 	 * @param string $zid
 	 */
-	public function unregister( string $zid ) : void {
+	public function unregister( string $zid ): void {
 		unset( $this->registry[ $zid ] );
 	}
 
@@ -92,7 +92,7 @@ abstract class ZObjectRegistry {
 	 * Generic method to clear the whole cache of a registry instance and
 	 * set it to initial values.
 	 */
-	public function clear() : void {
+	public function clear(): void {
 		$this->registry = [];
 		$this->initialize();
 	}

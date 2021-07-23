@@ -24,7 +24,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	/** @var ZObjectStore */
 	protected $store;
 
-	protected function setUp() : void {
+	protected function setUp(): void {
 		parent::setUp();
 
 		$this->store = WikiLambdaServices::getZObjectStore();

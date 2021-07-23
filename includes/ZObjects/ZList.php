@@ -14,7 +14,7 @@ use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 class ZList extends ZObject {
 
-	public static function getDefinition() : array {
+	public static function getDefinition(): array {
 		return [
 			'type' => ZTypeRegistry::Z_LIST,
 			'keys' => [
@@ -44,7 +44,7 @@ class ZList extends ZObject {
 		return [ $this->data[ ZTypeRegistry::Z_LIST_HEAD ], $this->data[ ZTypeRegistry::Z_LIST_TAIL ] ];
 	}
 
-	public function getZListAsArray() : array {
+	public function getZListAsArray(): array {
 		$result = [];
 		if ( isset( $this->data[ ZTypeRegistry::Z_LIST_HEAD ] ) ) {
 			$result[] = $this->data[ ZTypeRegistry::Z_LIST_HEAD ];
@@ -55,7 +55,7 @@ class ZList extends ZObject {
 		return $result;
 	}
 
-	public function isValid() : bool {
+	public function isValid(): bool {
 		if ( !self::isValidValue( $this->data[ ZTypeRegistry::Z_LIST_HEAD ] ) ) {
 			return false;
 		}
@@ -73,7 +73,7 @@ class ZList extends ZObject {
 	 *
 	 * @return bool
 	 */
-	private function isValidValue( $value ) : bool {
+	private function isValidValue( $value ): bool {
 		if ( $value === null ) {
 			return true;
 		}
