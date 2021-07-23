@@ -97,6 +97,12 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_MULTILINGUALSTRING => 'ZMultiLingualString',
 	];
 
+	public const SELF_REFERENTIAL_KEYS = [
+		self::Z_TYPE_IDENTITY,
+		// FIXME: add Z_FUNCTION_IDENTITY when the constant is declared
+		// self::Z_FUNCTION_IDENTITY
+	];
+
 	// These consts are currently only used by ZObjectStore to prohibit creation, and are not (yet) built-in.
 	public const Z_CODE = 'Z16';
 	public const Z_ARGUMENTDECLARATION = 'Z17';

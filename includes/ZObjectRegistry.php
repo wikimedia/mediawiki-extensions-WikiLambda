@@ -96,4 +96,14 @@ abstract class ZObjectRegistry {
 		$this->registry = [];
 		$this->initialize();
 	}
+
+	/**
+	 * Generic method to check if the given Zid is cached in the registry.
+	 *
+	 * @param string $zid
+	 * @return bool
+	 */
+	public function isZidCached( string $zid ): bool {
+		return array_key_exists( $zid, $this->registry );
+	}
 }

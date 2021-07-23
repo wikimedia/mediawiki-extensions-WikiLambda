@@ -40,26 +40,37 @@ class ZObjectFactory {
 
 		if ( is_object( $input ) && !( $input instanceof ZObject ) ) {
 			$objectVars = get_object_vars( $input );
-			if ( !array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $objectVars ) ) {
-				// Error Z511: Key not found
-				throw new ZErrorException(
-					new ZError(
-						ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
-						new ZString( "ZObject record missing a type key." )
-					)
-				);
-			}
-
 			$type = $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ];
+
+			// If input is a JSON object representing a Z2: return new ZPersistentObject
 			if ( $type === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
+				$zid = ZTypeRegistry::Z_NULL_REFERENCE;
+
+				if ( array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_ID, $objectVars ) ) {
+					$ref = $objectVars[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ];
+					$zid = is_string( $ref )
+						? $ref
+						: $ref->{ ZTypeRegistry::Z_REFERENCE_VALUE };
+				}
+
+				self::trackSelfReference( $zid, self::SET_SELF_ZID );
 				$objectDefinition = self::validateObjectStructure( $objectVars, 'ZPersistentObject' );
-				return new ZPersistentObject( ...$objectDefinition );
+				$persistentObj = new ZPersistentObject( ...$objectDefinition );
+
+				self::trackSelfReference( $zid, self::UNSET_SELF_ZID );
+				return $persistentObj;
 			}
 		}
 
+		// If input is a JSON object representing the inner ZObject: wrap in new ZPersistenObject
+		self::trackSelfReference( ZTypeRegistry::Z_NULL_REFERENCE, self::SET_SELF_ZID );
+
 		$label = new ZMultiLingualString( [] );
 		$value = self::create( $input );
-		return new ZPersistentObject( ZTypeRegistry::Z_NULL_REFERENCE, $value, $label );
+		$persistentObj = new ZPersistentObject( ZTypeRegistry::Z_NULL_REFERENCE, $value, $label );
+
+		self::trackSelfReference( ZTypeRegistry::Z_NULL_REFERENCE, self::UNSET_SELF_ZID );
+		return $persistentObj;
 	}
 
 	/**
@@ -117,8 +128,8 @@ class ZObjectFactory {
 			);
 		}
 
-		$registry = ZTypeRegistry::singleton();
-		if ( !$registry->isZObjectKeyKnown( $type ) ) {
+		$typeRegistry = ZTypeRegistry::singleton();
+		if ( !$typeRegistry->isZObjectKeyKnown( $type ) ) {
 			// Error Z550: Unknown reference
 			throw new ZErrorException(
 				new ZError(
@@ -129,7 +140,7 @@ class ZObjectFactory {
 		}
 
 		// Wiki-provided type handling.
-		if ( !$registry->isZTypeBuiltIn( $type ) ) {
+		if ( !$typeRegistry->isZTypeBuiltIn( $type ) ) {
 			// TODO: This is quite expensive. Store this in a metadata DB table, instead of fetching it live?
 			$targetTitle = Title::newFromText( $type, NS_ZOBJECT );
 
@@ -168,7 +179,7 @@ class ZObjectFactory {
 
 					// Validate the provided key values for built-ins using local PHP code
 					$keyType = $key->getKeyType();
-					if ( $registry->isZTypeBuiltIn( $keyType ) ) {
+					if ( $typeRegistry->isZTypeBuiltIn( $keyType ) ) {
 						if ( self::validateKeyValue( $keyId, $keyType, $objectVars[ $keyId ] ) === null ) {
 							// Error Z551: Key type mismatch
 							throw new ZErrorException(
@@ -187,7 +198,7 @@ class ZObjectFactory {
 			return new ZObject( $type, $objectVars );
 		}
 
-		$typeName = $registry->getZObjectTypeFromKey( $type );
+		$typeName = $typeRegistry->getZObjectTypeFromKey( $type );
 		$typeClass = "MediaWiki\\Extension\\WikiLambda\\ZObjects\\$typeName";
 		$objectDefinition = self::validateObjectStructure( $objectVars, $typeName );
 		// Magic:
@@ -257,7 +268,7 @@ class ZObjectFactory {
 	 */
 	private static function validateKeyValue( string $key, string $type, $value ) {
 		$return = null;
-		$registry = ZTypeRegistry::singleton();
+		$typeRegistry = ZTypeRegistry::singleton();
 		$langRegistry = ZLangRegistry::singleton();
 		$errorRegistry = ZErrorTypeRegistry::singleton();
 
@@ -283,8 +294,10 @@ class ZObjectFactory {
 			}
 		}
 
-		if ( $key === ZTypeRegistry::Z_TYPE_IDENTITY ) {
-			if ( self::validatingInContext( $value ) ) {
+		// This expects Z_TYPE_IDENTITY (Z4K3) to define a key
+		// that hasn't been defined in Z2 before.
+		if ( in_array( $key, ZTypeRegistry::SELF_REFERENTIAL_KEYS ) ) {
+			if ( self::trackSelfReference( $value, self::SET_SELF_ZID ) ) {
 				// Unexpected loop?
 				self::warnDuplicateCreation( $value );
 			}
@@ -352,7 +365,10 @@ class ZObjectFactory {
 				if (
 					is_string( $value )
 					&& ZObjectUtils::isValidZObjectReference( $value )
-					&& $langRegistry->isValidLanguageZid( $value )
+					&& (
+						self::trackSelfReference( $value )
+						|| $langRegistry->isValidLanguageZid( $value )
+					)
 				) {
 					return $value;
 				}
@@ -385,8 +401,8 @@ class ZObjectFactory {
 					is_string( $value )
 					&& ZObjectUtils::isValidZObjectReference( $value )
 					&& (
-						self::validatingInContext( $value )
-						|| $registry->isZObjectKeyKnown( $value )
+						self::trackSelfReference( $value )
+						|| $typeRegistry->isZObjectKeyKnown( $value )
 					)
 				) {
 					return $value;
@@ -571,23 +587,36 @@ class ZObjectFactory {
 	}
 
 	/**
-	 * @param string $zid
+	 * @const bool
+	 */
+	private const SET_SELF_ZID = 1;
+	private const UNSET_SELF_ZID = 2;
+	private const CHECK_SELF_ZID = 3;
+
+	/**
+	 * Tracks Zids that appear in the ZObject validation context, which might referenced again from
+	 * another key of the same ZObject. Depending on the mode flag, it sets a newly observed Zid,
+	 * unsets it or just checks its presence.
 	 *
+	 * @param string $zid
+	 * @param int $mode
 	 * @return bool
 	 */
-	private static function validatingInContext( $zid ) {
-		static $validationContext = null;
-		if ( $validationContext === null ) {
-			$validationContext = [ ZTypeRegistry::Z_PERSISTENTOBJECT => 1 ];
-		}
-		if ( !is_string( $zid ) ) {
-			return false;
-		}
-		if ( array_key_exists( $zid, $validationContext ) ) {
-			return true;
-		} else {
-			$validationContext[$zid] = 1;
-			return false;
+	private static function trackSelfReference( $zid, $mode = self::CHECK_SELF_ZID ): bool {
+		static $context = [];
+		$isObserved = array_key_exists( $zid, $context );
+
+		switch ( $mode ) {
+			case self::CHECK_SELF_ZID:
+				return $isObserved;
+			case self::SET_SELF_ZID:
+				$context[ $zid ] = true;
+				return $isObserved;
+			case self::UNSET_SELF_ZID:
+				unset( $context[ $zid ] );
+				return $isObserved;
+			default:
+				return false;
 		}
 	}
 
@@ -599,4 +628,5 @@ class ZObjectFactory {
 	private static function warnDuplicateCreation( $zid ) {
 		// Do nothing right now, but might be a concern?
 	}
+
 }

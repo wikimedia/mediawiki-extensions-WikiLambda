@@ -31,15 +31,15 @@ class ZPersistentObject extends ZObject {
 				ZTypeRegistry::Z_PERSISTENTOBJECT_ID => [
 					'type' => ZTypeRegistry::BUILTIN_REFERENCE_NULLABLE,
 					'required' => true,
- ],
+				],
 				ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE => [
 					'type' => ZTypeRegistry::Z_OBJECT,
 					'required' => true,
- ],
+				],
 				ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL => [
 					'type' => ZTypeRegistry::Z_MULTILINGUALSTRING,
 					'required' => true,
- ],
+				],
 			],
 		];
 	}
