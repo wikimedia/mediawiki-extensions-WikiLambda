@@ -10,7 +10,7 @@
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Extraire le modèle JSON d’Objets-Z.",
-	"apihelp-wikilambda_fetch-param-zids": "Les Z-ID des Objets-Z à extraire, séparés par des barres verticales.",
+	"apihelp-wikilambda_fetch-param-zids": "Les ZID des ZObjets à récupérer.",
 	"apihelp-wikilambda_fetch-param-language": "La langue dans laquelle retourner les résultats.",
 	"apihelp-wikilambda_fetch-example-single": "Récupérer un unique Objet-Z, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "Récupérer trois Objets-Z : Z1, Z2 et Z3.",
