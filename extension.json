@@ -93,9 +93,17 @@
 	},
 	"ResourceModules": {
 		"ext.wikilambda.viewpage.styles": {
+			"targets": [
+				"desktop",
+				"mobile"
+			],
 			"styles": [ "ext.wikilambda.viewpage/ext.wikilambda.viewpage.less" ]
 		},
 		"ext.wikilambda.specialpages.styles": {
+			"targets": [
+				"desktop",
+				"mobile"
+			],
 			"styles": [
 				"ext.wikilambda.specialpages/ext.wikilambda.specialpages.less",
 				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.less",
@@ -106,6 +114,10 @@
 			]
 		},
 		"ext.wikilambda.edit": {
+			"targets": [
+				"desktop",
+				"mobile"
+			],
 			"dependencies": [
 				"vue",
 				"vuex",
