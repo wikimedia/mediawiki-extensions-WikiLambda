@@ -1,0 +1,75 @@
+<template>
+	<!--
+		WikiLambda Vue component for ZObject references to ZTesters in ZLists.
+
+		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+		@license MIT
+	-->
+	<li class="ext-wikilambda-zlistItem">
+		<button v-if="!(viewmode || readonly)"
+			:title="tooltipRemoveListItem"
+			@click="removeItem"
+		>
+			{{ $i18n( 'wikilambda-editor-removeitem' ) }}
+		</button>
+		<select v-if="!hasReference" @change="selectTester">
+			<option disabled selected>
+				{{ $i18n( "wikilambda-tester-selector" ) }}
+			</option>
+			<option
+				v-for="zTesterId in getZTesters"
+				:key="zTesterId"
+				:value="zTesterId"
+			>
+				{{ getZkeyLabels[ zTesterId ] }} ({{ zTesterId }})
+			</option>
+		</select>
+		<z-reference
+			v-else
+			:zobject-id="zobjectId"
+			:search-type="zType"
+			:readonly="true"
+		></z-reference>
+	</li>
+</template>
+
+<script>
+var Constants = require( '../../Constants.js' ),
+	ZListItem = require( '../types/ZListItem.vue' ),
+	ZReference = require( '../types/ZReference.vue' ),
+	mapGetters = require( 'vuex' ).mapGetters,
+	mapActions = require( 'vuex' ).mapActions;
+
+module.exports = {
+	extends: ZListItem,
+	components: {
+		'z-reference': ZReference
+	},
+	computed: $.extend( mapGetters( [ 'getZObjectById', 'getZTesters', 'getZkeyLabels', 'getZkeys', 'getZTesterResults' ] ),
+		{
+			referenceValue: function () {
+				return this.findKeyInArray( Constants.Z_REFERENCE_ID, this.zobject ).value;
+			},
+			hasReference: function () {
+				return !!this.referenceValue;
+			},
+			testerStatus: function () {
+				return this.getZTesterResults[ this.referenceValue ];
+			}
+		}
+	),
+	methods: $.extend( mapActions( [ 'performTest', 'fetchZKeys' ] ), {
+		selectTester: function ( event ) {
+			this.$store.dispatch( 'injectZObject', {
+				zobject: {
+					Z1K1: 'Z9',
+					Z9K1: event.target.value
+				},
+				key: 'Z14K1',
+				id: this.zobjectId,
+				parent: this.getZObjectById( this.zobjectId ).parent
+			} );
+		}
+	} )
+};
+</script>

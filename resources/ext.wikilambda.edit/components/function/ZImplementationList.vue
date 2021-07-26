@@ -38,7 +38,7 @@
 var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
-	ZList = require( './ZList.vue' ),
+	ZList = require( '../types/ZList.vue' ),
 	ZImplementationListItem = require( './ZImplementationListItem.vue' );
 
 module.exports = {

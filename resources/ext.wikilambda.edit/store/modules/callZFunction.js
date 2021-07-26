@@ -1,4 +1,11 @@
-var canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
+/*!
+ * WikiLambda Vue editor: Handle generating records in the ZObject list and storing records of function calls.
+ *
+ * @copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+ * @license MIT
+ */
+
+var performFunctionCall = require( '../../mixins/callZFunction.js' ).methods.performFunctionCall;
 
 module.exports = {
 	actions: {
@@ -20,19 +27,9 @@ module.exports = {
 		 * @return {Promise}
 		 */
 		callZFunction: function ( context, payload ) {
-			var api = new mw.Api();
-			return api.post( {
-				action: 'wikilambda_function_call',
-				// eslint-disable-next-line camelcase
-				wikilambda_function_call_zobject: JSON.stringify(
-					canonicalize( payload.zobject )
-				)
-			} ).then( function ( result ) {
-				var canonicalZObject = canonicalize(
-					JSON.parse(
-						result.query.wikilambda_function_call.Orchestrated.data
-					)
-				);
+			return performFunctionCall( payload.zobject ).then( function ( data ) {
+
+				var canonicalZObject = data.response;
 
 				context.dispatch(
 					'addZFunctionResultToTree',

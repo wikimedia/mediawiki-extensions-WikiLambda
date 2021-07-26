@@ -1,3 +1,14 @@
+/**
+ * WikiLambda Vue editor: schemata mixin
+ * Mixin with functions to canonicalize and normalize ZObjects.
+ * This is distinct from the function-schemata as the UI
+ * relies of slightly different requirements for normalization.
+ *
+ * @copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+ * @license MIT
+ */
+'use strict';
+
 var Constants = require( '../Constants.js' ),
 	typeUtils = require( './typeUtils.js' ).methods;
 

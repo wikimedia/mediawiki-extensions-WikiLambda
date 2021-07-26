@@ -17,7 +17,8 @@ var Vue = require( 'vue' ),
 	zKeysModule = require( './modules/zKeys.js' ),
 	callZFunctionModule = require( './modules/callZFunction.js' ),
 	languagesModule = require( './modules/languages.js' ),
-	programmingLanguagesModule = require( './modules/programmingLanguages.js' );
+	programmingLanguagesModule = require( './modules/programmingLanguages.js' ),
+	zTesterResultsModule = require( './modules/zTesterResults.js' );
 
 Vue.use( Vuex );
 
@@ -32,6 +33,7 @@ module.exports = new Vuex.Store( {
 		zKeysModule: zKeysModule,
 		callZFunctionModule: callZFunctionModule,
 		languagesModule: languagesModule,
-		programmingLanguagesModule: programmingLanguagesModule
+		programmingLanguagesModule: programmingLanguagesModule,
+		zTesterResultsModule: zTesterResultsModule
 	}
 } );

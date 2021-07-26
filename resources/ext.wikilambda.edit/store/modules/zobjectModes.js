@@ -1,3 +1,10 @@
+/*!
+ * WikiLambda Vue editor: Getters for handling ZObject modes in the UI
+ *
+ * @copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+ * @license MIT
+ */
+
 var Constants = require( '../../Constants.js' ),
 	modes = Constants.Z_MODE_SELECTOR_MODES;
 

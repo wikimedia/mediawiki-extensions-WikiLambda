@@ -87,5 +87,18 @@
 	"wikilambda-argref-default-label": "Label for selecting an argument in an argument reference.",
 	"wikilambda-implementation-selector": "Label for selecting an implementation to add to a function.",
 	"wikilambda-implementation-none-found": "Label for when no implementation for a function has yet been created.",
-	"wikilambda-implementation-create-new": "Label for creating a new implementation for a function."
+	"wikilambda-implementation-create-new": "Label for creating a new implementation for a function.",
+	"wikilambda-editor-tester-list-label": "Label for a list of testers associated with a funciton",
+	"wikilambda-tester-selector": "Label for selecting a tester",
+	"wikilambda-tester-none-found": "Label for when no testers are found for a function",
+	"wikilambda-tester-create-new": "Label for creating a new tester",
+	"wikilambda-tester-status-pending": "Label for a pending test runner",
+	"wikilambda-tester-status-running": "Label for a running test runner",
+	"wikilambda-tester-status-passed": "Label for a passing test runner",
+	"wikilambda-tester-status-failed": "Label for a failed test runner",
+	"wikilambda-tester-results-title": "Header for the tester results table",
+	"wikilambda-tester-results-caption": "Caption for the tester results table",
+	"wikilambda-tester-no-results": "Text to display when no test results are available to display",
+	"wikilambda-tester-results-percentage-label": "Label for the count and percentage of passing testers",
+	"wikilambda-tester-run-testers": "Button text to re-run all testers and implementation for a given function."
 }

@@ -48,24 +48,19 @@ describe( 'callZFunction Vuex module', function () {
 
 	describe( 'Actions', function () {
 		it( 'Call MW API for function orchestration; set orchestrationResult', function () {
-			var resolveMock = jest.fn( function ( fn ) {
-				fn( {
-					query: {
-						// eslint-disable-next-line camelcase
-						wikilambda_function_call: {
-							Orchestrated: { data: expectedData }
-						}
-					}
-				} );
-
-				return {
-					catch: jest.fn()
-				};
-			} );
-
 			// eslint-disable-next-line no-unused-vars
 			postMock = jest.fn( function ( payload ) {
-				return { then: resolveMock };
+				// eslint-disable-next-line compat/compat
+				return new Promise( function ( resolve ) {
+					resolve( {
+						query: {
+							// eslint-disable-next-line camelcase
+							wikilambda_function_call: {
+								Orchestrated: { data: expectedData }
+							}
+						}
+					} );
+				} );
 			} );
 
 			callZFunctionModule.actions.callZFunction(
@@ -77,7 +72,6 @@ describe( 'callZFunction Vuex module', function () {
 				// eslint-disable-next-line camelcase
 				wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall )
 			} );
-			expect( resolveMock ).toHaveBeenCalledTimes( 1 );
 		} );
 
 		it( 'Call MW API for function orchestration; set error as orchestrationResult', function () {
@@ -85,16 +79,10 @@ describe( 'callZFunction Vuex module', function () {
 
 			// eslint-disable-next-line no-unused-vars
 			postMock = jest.fn( function ( payload ) {
-				return {
-					// eslint-disable-next-line no-unused-vars
-					then: jest.fn( function ( fn ) {
-						return {
-							catch: jest.fn( function ( func ) {
-								func( error );
-							} )
-						};
-					} )
-				};
+				// eslint-disable-next-line compat/compat
+				return new Promise( function ( resolve, reject ) {
+					reject( error );
+				} );
 			} );
 
 			callZFunctionModule.actions.callZFunction(

@@ -13,6 +13,19 @@ function isZType( zidInfo ) {
 		( zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] === Constants.Z_TYPE );
 }
 
+function filterPresentZids( rootState ) {
+	return function ( zid ) {
+		var zobject;
+		for ( zobject in rootState.zobjectModule.zobject ) {
+			if ( rootState.zobjectModule.zobject[ zobject ].value === zid ) {
+				return false;
+			}
+		}
+
+		return true;
+	};
+}
+
 module.exports = {
 	state: {
 		/**
@@ -30,7 +43,11 @@ module.exports = {
 		/**
 		 * List of implementation keys
 		 */
-		zImplementations: []
+		zImplementations: [],
+		/**
+		 * List of tester keys
+		 */
+		zTesters: []
 	},
 	getters: {
 		getZkeys: function ( state ) {
@@ -43,16 +60,10 @@ module.exports = {
 			return state.zArguments;
 		},
 		getZImplementations: function ( state, getters, rootState ) {
-			return state.zImplementations.filter( function ( zid ) {
-				var zobject;
-				for ( zobject in rootState.zobjectModule.zobject ) {
-					if ( rootState.zobjectModule.zobject[ zobject ].value === zid ) {
-						return false;
-					}
-				}
-
-				return true;
-			} );
+			return state.zImplementations.filter( filterPresentZids( rootState ) );
+		},
+		getZTesters: function ( state, getters, rootState ) {
+			return state.zTesters.filter( filterPresentZids( rootState ) );
 		}
 	},
 	mutations: {
@@ -82,6 +93,9 @@ module.exports = {
 		},
 		setZImplementations: function ( state, zImplementations ) {
 			state.zImplementations = zImplementations;
+		},
+		setZTesters: function ( state, zTesters ) {
+			state.zTesters = zTesters;
 		}
 	},
 	actions: {
@@ -174,9 +188,23 @@ module.exports = {
 				list: 'wikilambdafn_search',
 				format: 'json',
 				wikilambdafn_zfunction_id: zFunctionId,
-				wikilambdafn_type: 'Z14'
+				wikilambdafn_type: Constants.Z_IMPLEMENTATION
 			} ).then( function ( response ) {
 				context.commit( 'setZImplementations', response.query.wikilambdafn_search );
+				context.dispatch( 'fetchZKeys', response.query.wikilambdafn_search );
+			} );
+		},
+		fetchZTesters: function ( context, zFunctionId ) {
+			var api = new mw.Api();
+
+			api.get( {
+				action: 'query',
+				list: 'wikilambdafn_search',
+				format: 'json',
+				wikilambdafn_zfunction_id: zFunctionId,
+				wikilambdafn_type: Constants.Z_TESTER
+			} ).then( function ( response ) {
+				context.commit( 'setZTesters', response.query.wikilambdafn_search );
 				context.dispatch( 'fetchZKeys', response.query.wikilambdafn_search );
 			} );
 		}

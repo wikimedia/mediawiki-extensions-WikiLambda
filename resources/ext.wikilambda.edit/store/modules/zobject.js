@@ -948,6 +948,31 @@ module.exports = {
 				{ key: Constants.Z_REFERENCE_ID, value: context.getters.getCurrentZObjectId, parent: nextId }
 			] );
 		},
+		/** Create the required entry for a ZTester
+		 *
+		 * @param {Object} context
+		 * @param {number} objectId
+		 */
+		addZTester: function ( context, objectId ) {
+			var nextId;
+			context.dispatch( 'setZObjectValue', {
+				id: objectId,
+				value: 'object'
+			} );
+
+			// Set type
+			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: Constants.Z_TESTER, parent: objectId } );
+
+			// Set call as a function call
+			nextId = getNextObjectId( context.state.zobject );
+			context.dispatch( 'addZObject', { key: Constants.Z_TESTER_CALL, value: 'object', parent: objectId } );
+			context.dispatch( 'addZFunctionCall', nextId );
+
+			// Set validation as a reference
+			nextId = getNextObjectId( context.state.zobject );
+			context.dispatch( 'addZObject', { key: Constants.Z_TESTER_VALIDATION, value: 'object', parent: objectId } );
+			context.dispatch( 'addZReference', { id: nextId, value: '' } );
+		},
 		/**
 		 * Create the required entry for a generic object,
 		 * but reading the information from the zKeys store .
@@ -1183,6 +1208,8 @@ module.exports = {
 							return context.dispatch( 'addZType', payload.id );
 						case Constants.Z_IMPLEMENTATION:
 							return context.dispatch( 'addZImplementation', payload.id );
+						case Constants.Z_TESTER:
+							return context.dispatch( 'addZTester', payload.id );
 						default:
 							return context.dispatch( 'addGenericObject', payload );
 					}
