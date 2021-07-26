@@ -43,6 +43,7 @@ var Constants = require( '../Constants.js' ),
 	ZArgumentReference = require( './types/ZArgumentReference.vue' ),
 	ZNothing = require( './types/ZNothing.vue' ),
 	ZTester = require( './types/ZTester.vue' ),
+	ZPersistentObject = require( './types/ZPersistentObject.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -63,7 +64,8 @@ module.exports = {
 		'z-implementation': ZImplementation,
 		'z-argument-reference': ZArgumentReference,
 		'z-nothing': ZNothing,
-		'z-tester': ZTester
+		'z-tester': ZTester,
+		'z-persistentobject': ZPersistentObject
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -107,6 +109,8 @@ module.exports = {
 			},
 			determineComponent: function () {
 				switch ( this.type ) {
+					case Constants.Z_PERSISTENTOBJECT:
+						return 'z-persistentobject';
 					case Constants.Z_STRING:
 						return 'z-string';
 					case Constants.Z_REFERENCE:
