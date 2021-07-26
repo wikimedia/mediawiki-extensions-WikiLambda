@@ -79,14 +79,14 @@ module.exports = {
 						Constants.Z_TESTER_CALL
 					];
 					// Set the function call's function
-					test[ Constants.Z_FUNCTION_CALL_FUNCTION ] = context.getters.getZkeys[
+					test[ Constants.Z_FUNCTION_CALL_FUNCTION ] = JSON.parse( JSON.stringify( context.getters.getZkeys[
 						zTesterObject[
 							Constants.Z_PERSISTENTOBJECT_VALUE ][
 							Constants.Z_TESTER_CALL
 						][
 							Constants.Z_FUNCTION_CALL_FUNCTION
 						]
-					][ Constants.Z_PERSISTENTOBJECT_VALUE ];
+					][ Constants.Z_PERSISTENTOBJECT_VALUE ] ) );
 					// Set the function call's implementation
 					test[ Constants.Z_FUNCTION_CALL_FUNCTION ][
 						Constants.Z_FUNCTION_IMPLEMENTATIONS ] = [
@@ -103,7 +103,7 @@ module.exports = {
 				} )
 				.then( function () {
 					// Get the validator object
-					validator = context.getters.getZkeys[ validatorZid ];
+					validator = JSON.parse( JSON.stringify( context.getters.getZkeys[ validatorZid ] ) );
 
 					// Perform the test runner
 					return context.dispatch( 'performTest', {

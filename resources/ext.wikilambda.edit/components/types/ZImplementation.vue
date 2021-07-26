@@ -47,6 +47,10 @@
 			:zobject-id="zCompositionId"
 			:persistent="false"
 		></z-object>
+		<z-function-tester-report
+			:z-function-id="zFunction.value"
+			:z-implementation-id="zImplementationId"
+		></z-function-tester-report>
 	</div>
 </template>
 
@@ -59,7 +63,8 @@ var Constants = require( '../../Constants.js' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	ZFunctionSignature = require( '../ZFunctionSignature.vue' ),
 	ZObjectKey = require( '../ZObjectKey.vue' ),
-	ZReference = require( './ZReference.vue' );
+	ZReference = require( './ZReference.vue' ),
+	ZFunctionTesterReport = require( '../function/ZFunctionTesterReport.vue' );
 
 module.exports = {
 	components: {
@@ -67,7 +72,8 @@ module.exports = {
 		'z-object-selector': ZObjectSelector,
 		'z-function-signature': ZFunctionSignature,
 		'z-object-key': ZObjectKey,
-		'z-reference': ZReference
+		'z-reference': ZReference,
+		'z-function-tester-report': ZFunctionTesterReport
 	},
 	mixins: [ typeUtils ],
 	provide: {
@@ -86,6 +92,7 @@ module.exports = {
 	},
 	computed: $.extend( {},
 		mapGetters( [
+			'getZObjectById',
 			'getZObjectChildrenById',
 			'getZkeyLabels',
 			'getZkeys',
@@ -98,6 +105,12 @@ module.exports = {
 			},
 			zobject: function () {
 				return this.getZObjectChildrenById( this.zobjectId );
+			},
+			zImplementationId: function () {
+				return this.getNestedZObjectById( this.getZObjectById( this.zobjectId ).parent, [
+					Constants.Z_PERSISTENTOBJECT_ID,
+					Constants.Z_REFERENCE_ID
+				] ).value;
 			},
 			zFunction: function () {
 				return this.findKeyInArray(
