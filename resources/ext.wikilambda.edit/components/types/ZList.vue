@@ -103,4 +103,9 @@ input.ext-wikilambda-zstring {
 .ext-wikilambda-zlist:after {
 	content: ']';
 }
+
+ul.ext-wikilambda-zlist-no-bullets {
+	list-style-type: none;
+	list-style-image: none;
+}
 </style>

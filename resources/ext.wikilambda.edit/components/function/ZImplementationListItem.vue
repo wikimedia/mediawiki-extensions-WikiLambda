@@ -25,11 +25,23 @@
 			</option>
 		</select>
 		<z-reference
-			v-else
+			v-else-if="!(viewmode || readonly)"
 			:zobject-id="zobjectId"
 			:search-type="zType"
 			:readonly="true"
 		></z-reference>
+		<div v-else>
+			<h4>
+				<a :href="'/wiki/ZObject:' + zImplementationId" target="_blank">
+					{{ zImplementationLabel }}
+				</a>
+			</h4>
+			<code-editor
+				:mode="zImplementationCodeLanguage"
+				:read-only="true"
+				:value="zImplementationCode"
+			></code-editor>
+		</div>
 	</li>
 </template>
 
@@ -37,19 +49,67 @@
 var Constants = require( '../../Constants.js' ),
 	ZListItem = require( '../types/ZListItem.vue' ),
 	ZReference = require( '../types/ZReference.vue' ),
+	CodeEditor = require( '../base/CodeEditor.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = {
 	extends: ZListItem,
 	components: {
-		'z-reference': ZReference
+		'z-reference': ZReference,
+		'code-editor': CodeEditor
 	},
-	computed: $.extend( mapGetters( [ 'getZObjectById', 'getZImplementations', 'getZkeyLabels' ] ),
-		{
-			hasReference: function () {
-				return !!this.findKeyInArray( Constants.Z_REFERENCE_ID, this.zobject ).value;
+	computed: $.extend( mapGetters( [
+		'getZObjectById',
+		'getZImplementations',
+		'getZkeyLabels',
+		'getZkeys'
+	] ),
+	{
+		zImplementationId: function () {
+			return this.findKeyInArray( Constants.Z_REFERENCE_ID, this.zobject ).value;
+		},
+		hasReference: function () {
+			return !!this.zImplementationId;
+		},
+		zImplementationLabel: function () {
+			return this.getZkeyLabels[ this.zImplementationId ];
+		},
+		zImplementation: function () {
+			return this.getZkeys[ this.zImplementationId ];
+		},
+		zImplementationCodeLanguage: function () {
+			if ( !this.zImplementation ) {
+				return '';
 			}
+
+			if ( this.zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+				Constants.Z_IMPLEMENTATION_COMPOSITION ]
+			) {
+				return 'json';
+			}
+
+			return this.zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+				Constants.Z_IMPLEMENTATION_CODE ][
+				Constants.Z_CODE_LANGUAGE ][
+				Constants.Z_PROGRAMMING_LANGUAGE_CODE ];
+		},
+		zImplementationCode: function () {
+			if ( !this.zImplementation ) {
+				return '';
+			}
+
+			if ( this.zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+				Constants.Z_IMPLEMENTATION_COMPOSITION ]
+			) {
+				return JSON.stringify( this.zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+					Constants.Z_IMPLEMENTATION_COMPOSITION ], null, 4 );
+			}
+
+			return this.zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+				Constants.Z_IMPLEMENTATION_CODE ][
+				Constants.Z_CODE_CODE ];
 		}
+	}
 	),
 	methods: {
 		selectImplementation: function ( event ) {

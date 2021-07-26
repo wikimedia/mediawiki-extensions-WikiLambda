@@ -6,8 +6,8 @@
 		@license MIT
 	-->
 	<div>
-		{{ $i18n( 'wikilambda-editor-tester-list-label' ) }}:
-		<ul>
+		<h3>{{ $i18n( 'wikilambda-editor-tester-list-label' ) }}</h3>
+		<ul class="ext-wikilambda-zlist-no-bullets">
 			<z-tester-list-item
 				v-for="(item) in ZlistItems"
 				:key="item.id"
