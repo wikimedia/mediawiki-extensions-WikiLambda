@@ -15,7 +15,6 @@ use CommentStoreComment;
 use DatabaseUpdater;
 use MediaWiki\Revision\SlotRecord;
 use MessageSpecifier;
-use MWNamespace;
 use Status;
 use Title;
 use User;
@@ -264,7 +263,7 @@ class Hooks implements
 	 * @return bool|void
 	 */
 	public function onNamespaceIsMovable( $index, &$result ) {
-		if ( MWNamespace::equals( $index, NS_ZOBJECT ) ) {
+		if ( $index === NS_ZOBJECT ) {
 			$result = false;
 			// Over-ride any other extensions which might have other ideas
 			return false;
