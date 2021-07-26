@@ -67,5 +67,7 @@
 	"wikilambda-implementation-selector-code": "קוד",
 	"wikilambda-implementation-selector-composition": "הרכבה",
 	"wikilambda-argref-default-label": "נא לבחור ארגומנט",
-	"wikilambda-implementation-selector": "בחירת מימוש."
+	"wikilambda-implementation-selector": "בחירת מימוש",
+	"wikilambda-implementation-none-found": "לא נמצאו מימושים.",
+	"wikilambda-implementation-create-new": "יציאת מימוש חדש"
 }

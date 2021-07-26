@@ -7,7 +7,7 @@
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Busque o modelo JSON de ZObjects.",
-	"apihelp-wikilambda_fetch-param-zids": "O ZObject ZIDs para buscar, separados por barras verticais.",
+	"apihelp-wikilambda_fetch-param-zids": "O ZObject ZIDs para buscar",
 	"apihelp-wikilambda_fetch-param-language": "O idioma no qual os resultados serão retornados.",
 	"apihelp-wikilambda_fetch-example-single": "Fetch a single ZObject, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "Obtenha três ZObjects: Z1, Z2 e Z3.",
