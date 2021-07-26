@@ -1,4 +1,13 @@
 {
+	"repositories": [
+		{
+			"type": "path",
+			"url": "./function-schemata/"
+		}
+	],
+	"require": {
+		"wikilambda/function-schemata": "*@dev"
+	},
 	"require-dev": {
 		"mediawiki/mediawiki-codesniffer": "37.0.0",
 		"mediawiki/mediawiki-phan-config": "0.10.6",
