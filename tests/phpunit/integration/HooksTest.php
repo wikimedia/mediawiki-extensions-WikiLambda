@@ -13,8 +13,6 @@ use DatabaseUpdater;
 use DeferredUpdates;
 use MediaWiki\Extension\WikiLambda\Hooks;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
-use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
-use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\MediaWikiServices;
 use Title;
 
@@ -30,12 +28,6 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 	public function testCreateInitialContent() {
 		$updater = DatabaseUpdater::newForDB( $this->db );
 		Hooks::createInitialContent( $updater );
-
-		// Fetch one arbitrary ZObject from the database
-		$store = WikiLambdaServices::getZObjectStore();
-		$title = Title::newFromText( "Z4", NS_ZOBJECT );
-		$zobject = $store->fetchZObjectByTitle( $title );
-		$this->assertTrue( $zobject instanceof ZObjectContent );
 
 		// Assert that all ZIDs available in the data directory are loaded in the database
 		$res = $this->db->select(
@@ -66,10 +58,11 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 			$zidsToLoad
 		);
 
-		$this->assertEquals(
-			natsort( $zidsToLoad ), natsort( $loadedZids ),
-			'All ZObjects from the data directory are loaded'
-		);
+		sort( $zidsToLoad );
+		sort( $loadedZids );
+
+		$this->assertCount( count( $zidsToLoad ), $loadedZids );
+		$this->assertSame( json_encode( $zidsToLoad ), json_encode( $loadedZids ) );
 	}
 
 	/**

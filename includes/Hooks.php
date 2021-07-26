@@ -103,8 +103,7 @@ class Hooks implements
 		}
 
 		// (T260751) Ensure uniqueness of type / label / language triples on save.
-		$zPersistentObject = $content->getZObject();
-		$newLabels = $zPersistentObject->getLabels()->getZValue();
+		$newLabels = $content->getLabels()->getZValue();
 
 		if ( $newLabels === [] ) {
 			// Unlabelled; don't error.
@@ -114,7 +113,7 @@ class Hooks implements
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$clashes = $zObjectStore->findZObjectLabelConflicts(
 			$zid,
-			$zPersistentObject->getZType(),
+			$content->getZType(),
 			$newLabels
 		);
 
@@ -212,6 +211,8 @@ class Hooks implements
 
 		$initialDataToLoadPath = dirname( __DIR__ ) . '/function-schemata/data/definitions/';
 
+		$dependencies = json_decode( file_get_contents( $initialDataToLoadPath . 'dependencies.json' ), true );
+
 		$initialDataToLoadListing = array_filter(
 			scandir( $initialDataToLoadPath ),
 			static function ( $key ) {
@@ -223,36 +224,90 @@ class Hooks implements
 		natsort( $initialDataToLoadListing );
 
 		foreach ( $initialDataToLoadListing as $filename ) {
-			$updateRowName = "create WikiLambda initial content - $filename";
+			self::insertContentObject( $updater, $filename, $dependencies, $creatingUser, $creatingComment );
+		}
+	}
 
-			if ( !$updater->updateRowExists( $updateRowName ) ) {
-				$title = Title::newFromText( substr( $filename, 0, -5 ), NS_ZOBJECT );
-				$page = WikiPage::factory( $title );
+	/**
+	 * Inserts into the database the ZObject found in a given filename of the data directory. First checks
+	 * whether the ZObject has any dependencies, according to the dependencies.json manifest file, and if so,
+	 * inserts all the dependencies before trying the current ZObject.
+	 *
+	 * @param DatabaseUpdater $updater
+	 * @param string $filename
+	 * @param array $dependencies
+	 * @param User $user
+	 * @param string $comment
+	 * @param string[] $track
+	 * @return bool Has successfully inserted the content object
+	 */
+	private static function insertContentObject( $updater, $filename, $dependencies, $user, $comment, $track = [] ) {
+		$initialDataToLoadPath = dirname( __DIR__ ) . '/function-schemata/data/definitions/';
+		$updateRowName = "create WikiLambda initial content - $filename";
 
-				$data = file_get_contents( $initialDataToLoadPath . $filename );
-				if ( !$data ) {
-					// Something went wrong, give up.
-					return;
-				}
+		$langReg = ZLangRegistry::singleton();
+		$typeReg = ZTypeRegistry::singleton();
 
-				try {
-					$content = ZObjectContentHandler::makeContent( $data, $title );
-				} catch ( ZErrorException $e ) {
-					// Do nothing
-					continue;
-				}
+		// Zid has already been inserted, return true
+		if ( $updater->updateRowExists( $updateRowName ) ) {
+			return true;
+		}
 
-				$status = $page->doUserEditContent(
-					/* Content */ $content,
-					/* User */ $creatingUser,
-					/* Edit summary */ $creatingComment
-				);
+		// Check dependencies
+		$zid = substr( $filename, 0, -5 );
 
-				if ( $status->isOK() ) {
-					$updater->insertUpdateRow( $updateRowName );
+		if ( array_key_exists( $zid,  $dependencies ) ) {
+			$deps = $dependencies[ $zid ];
+			foreach ( $deps as $dep ) {
+				if (
+					!in_array( $dep, $track ) // Avoid circular dependencies
+					&& !$langReg->isZidCached( $dep )
+					&& !$typeReg->isZidCached( $dep )
+				) {
+					// Call recursively till all dependencies have been added
+					$success = self::insertContentObject(
+						$updater,
+						"$dep.json",
+						$dependencies,
+						$user,
+						$comment,
+						array_merge( $track, (array)$dep )
+					);
+					// If any of the dependencies fail, we desist on the current insertion
+					if ( !$success ) {
+						return false;
+					}
 				}
 			}
 		}
+
+		$zid = substr( $filename, 0, -5 );
+		$title = Title::newFromText( $zid, NS_ZOBJECT );
+		$page = WikiPage::factory( $title );
+
+		$data = file_get_contents( $initialDataToLoadPath . $filename );
+		if ( !$data ) {
+			// something went wrong, give up.
+			return false;
+		}
+
+		try {
+			$content = ZObjectContentHandler::makeContent( $data, $title );
+		} catch ( ZErrorException $e ) {
+			return false;
+		}
+
+		$status = $page->doUserEditContent(
+			/* content */ $content,
+			/* user */ $user,
+			/* edit summary */ $comment
+		);
+
+		if ( $status->isOK() ) {
+			$updater->insertUpdateRow( $updateRowName );
+		}
+
+		return $status->isOK();
 	}
 
 	/**

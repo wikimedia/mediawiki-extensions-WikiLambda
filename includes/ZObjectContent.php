@@ -140,6 +140,7 @@ class ZObjectContent extends AbstractContent {
 		if ( !( $this->status instanceof Status ) ) {
 			$this->validateContent();
 		}
+
 		return $this->status->isOK();
 	}
 
@@ -151,7 +152,7 @@ class ZObjectContent extends AbstractContent {
 	 * @return Status
 	 */
 	public function prepareSave( WikiPage $page, $flags, $parentRevId, User $user ) {
-		if ( !$this->isValid() && !$user->isSystemUser() ) {
+		if ( !$this->isValid() ) {
 			return Status::newFatal( "wikilambda-invalidzobject" );
 		}
 		return Status::newGood();
@@ -166,7 +167,7 @@ class ZObjectContent extends AbstractContent {
 	 * @return ZObjectContent
 	 */
 	public function preSaveTransform( Title $title, User $user, ParserOptions $popts ) {
-		if ( !$this->isValid() && !$user->isSystemUser() ) {
+		if ( !$this->isValid() ) {
 			return $this;
 		}
 
@@ -182,6 +183,13 @@ class ZObjectContent extends AbstractContent {
 	 */
 	public function getStatus() {
 		return $this->status;
+	}
+
+	/**
+	 * @return ZError[]
+	 */
+	public function getErrors() {
+		return $this->errors;
 	}
 
 	/**

@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use MediaWiki\Revision\RevisionRecord;
@@ -280,12 +281,11 @@ EOT;
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 */
 	public function testInstanceOfSelfReferencingType() {
-		// Create ZSelfRefType (Z991)
 		$baseTypeTitleText = 'Z991';
 		$baseTypeContent = <<<EOT
 {
 	"Z1K1": "Z2",
-	"Z2K1": "Z0",
+	"Z2K1": "Z991",
 	"Z2K2": {
 		"Z1K1": "Z4",
 		"Z4K1": "Z991",
@@ -329,7 +329,7 @@ EOT;
 		$instanceContent = <<<EOT
 {
 	"Z1K1": "Z2",
-	"Z2K1": "Z0",
+	"Z2K1": "Z992",
 	"Z2K2": {
 		"Z1K1": "Z991",
 		"Z991K1": "Z992"
@@ -368,6 +368,101 @@ EOT;
 		$this->assertTrue(
 			$innerObject->isValid(),
 			'ZSelfRefType instance inner object comes back as a valid ZObject'
+		);
+	}
+
+	/**
+	 * This test inserts a ZLanguage with a label in the same language (self-reference)
+	 *
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
+	 */
+	public function testInstanceOfSelfReferencingLang() {
+		$status = $this->insertZids( [ 'Z60' ] );
+		$igboContent = <<<EOT
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z1014",
+	"Z2K2": {
+		"Z1K1": "Z60",
+		"Z60K1": "ig"
+	},
+	"Z2K3": {
+		"Z1K1": "Z12",
+		"Z12K1": [
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "Z1014",
+				"Z11K2": "Igbo"
+			}
+		]
+	}
+}
+EOT;
+
+		$status = $this->editPage( 'Z1014', $igboContent, 'Create self-referencing ZLanguage', NS_ZOBJECT );
+		$this->assertTrue(
+			$status->isOK(),
+			'ZLanguage with self-reference has been created'
+		);
+
+		// Create new ZObject using the Store, where self-references are Z0
+		$store = WikiLambdaServices::getZObjectStore();
+		$sysopUser = $this->getTestSysop()->getUser();
+		$newLang = <<<EOT
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z0",
+	"Z2K2": {
+		"Z1K1": "Z60",
+		"Z60K1": "nw-lang"
+	},
+	"Z2K3": {
+		"Z1K1": "Z12",
+		"Z12K1": [
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "Z0",
+				"Z11K2": "New lang"
+			}
+		]
+	}
+}
+EOT;
+		$page = $store->createNewZObject( $newLang, 'New ZLang', $sysopUser );
+		$this->assertTrue(
+			$page instanceof WikiPage,
+			'ZLanguage with null (Z0) self-reference has been created'
+		);
+
+		$newLangZid = $page->getTitle()->getBaseText();
+		$newZObject = <<<EOT
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z0",
+	"Z2K2": {
+		"Z1K1": "Z6",
+		"Z6K1": "test object"
+	},
+	"Z2K3": {
+		"Z1K1": "Z12",
+		"Z12K1": [
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "Z1014",
+				"Z11K2": "Igbo label"
+			}, {
+				"Z1K1": "Z11",
+				"Z11K1": "$newLangZid",
+				"Z11K2": "New language label"
+			}
+		]
+	}
+}
+EOT;
+		$page = $store->createNewZObject( $newZObject, 'New ZObject', $sysopUser );
+		$this->assertTrue(
+			$page instanceof WikiPage,
+			'ZObject with labels in the two previously inserted languages has been created'
 		);
 	}
 
