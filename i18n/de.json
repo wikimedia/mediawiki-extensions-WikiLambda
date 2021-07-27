@@ -58,6 +58,7 @@
 	"wikilambda-editor-zlist-removeitem-tooltip": "Dieses Element von dieser ZList entfernen",
 	"wikilambda-editor-zobject-addkey": "Schlüssel hinzufügen:",
 	"wikilambda-editor-zobject-removekey-tooltip": "Diesen Schlüssel/Wert vom ZObject entfernen",
+	"wikilambda-editor-zobject-clearitem-tooltip": "Diesen Wert leeren",
 	"wikilambda-editor-label-select-programming-language-label": "Programmiersprache wählen:",
 	"wikilambda-modeselector-genericliteral": "generisch",
 	"specialpages-group-wikilambda": "Wikifunktionenseite",
@@ -69,5 +70,18 @@
 	"wikilambda-argref-default-label": "Wähle ein Argument",
 	"wikilambda-implementation-selector": "Eine Implementierung auswählen",
 	"wikilambda-implementation-none-found": "Keine Implementierungen gefunden.",
-	"wikilambda-implementation-create-new": "Eine neue Implementierung erstellen"
+	"wikilambda-implementation-create-new": "Eine neue Implementierung erstellen",
+	"wikilambda-editor-tester-list-label": "Testerliste",
+	"wikilambda-tester-selector": "Einen Tester wählen",
+	"wikilambda-tester-none-found": "Keine Tester gefunden.",
+	"wikilambda-tester-create-new": "Neuen Tester erstellen",
+	"wikilambda-tester-status-pending": "UNERLEDIGT …",
+	"wikilambda-tester-status-running": "LÄUFT …",
+	"wikilambda-tester-status-passed": "BESTANDEN",
+	"wikilambda-tester-status-failed": "GESCHEITERT",
+	"wikilambda-tester-results-title": "Tester-Ergebnisse",
+	"wikilambda-tester-results-caption": "Ergebnisse von Funktionstestern gegen Implementierungen",
+	"wikilambda-tester-no-results": "Keine Testergebnisse gefunden. Füge eine Implementierung und einen Tester hinzu, um die Ergebnisse anzuzeigen.",
+	"wikilambda-tester-results-percentage-label": "Gesamtzahl der Tester, die bestanden haben",
+	"wikilambda-tester-run-testers": "Alle Tester ausführen"
 }
