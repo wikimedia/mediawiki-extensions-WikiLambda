@@ -48,7 +48,7 @@
 			:persistent="false"
 		></z-object>
 		<z-function-tester-report
-			:z-function-id="zFunction.value"
+			:z-function-id="zFunction.value || ''"
 			:z-implementation-id="zImplementationId"
 		></z-function-tester-report>
 	</div>

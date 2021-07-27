@@ -174,4 +174,10 @@ module.exports = {
 		width: 200px;
 	}
 }
+
+@media only screen and ( min-width: 600px ) {
+	.ext-wikilambda-zcode {
+		width: 600px;
+	}
+}
 </style>

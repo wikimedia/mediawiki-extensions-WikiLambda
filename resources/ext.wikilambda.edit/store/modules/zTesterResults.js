@@ -7,7 +7,8 @@
 
 var Vue = require( 'vue' ),
 	Constants = require( '../../Constants.js' ),
-	performFunctionCall = require( '../../mixins/callZFunction.js' ).methods.performFunctionCall;
+	performFunctionCall = require( '../../mixins/callZFunction.js' ).methods.performFunctionCall,
+	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
 
 module.exports = {
 	state: {
@@ -65,6 +66,7 @@ module.exports = {
 
 			var zTesterObject,
 				test,
+				implementation,
 				validatorZid,
 				validator;
 
@@ -72,26 +74,66 @@ module.exports = {
 			context.dispatch( 'fetchZKeys', [ payload.zImplementationId, payload.zTesterId ] )
 				.then( function () {
 					// Get the tester object
-					zTesterObject = JSON.parse( JSON.stringify( context.getters.getZkeys[ [ payload.zTesterId ] ] ) );
+					if ( payload.zTesterId === context.getters.getCurrentZObjectId ) {
+						zTesterObject =
+							canonicalize( JSON.parse( JSON.stringify( context.getters.getZObjectAsJson ) ) );
+					} else {
+						zTesterObject =
+							canonicalize( JSON.parse( JSON.stringify(
+								context.getters.getZkeys[ payload.zTesterId ]
+							) ) );
+					}
+
 					// Get the test function call (Z20K1)
 					test = zTesterObject[
 						Constants.Z_PERSISTENTOBJECT_VALUE ][
 						Constants.Z_TESTER_CALL
 					];
+
+					// Determine implementation
+					if ( payload.zImplementationId === context.getters.getCurrentZObjectId ) {
+						implementation = JSON.parse( JSON.stringify( context.getters.getZObjectAsJson ) )[
+							Constants.Z_PERSISTENTOBJECT_VALUE
+						];
+					} else {
+						implementation = payload.zImplementationId;
+					}
+
 					// Set the function call's function
-					test[ Constants.Z_FUNCTION_CALL_FUNCTION ] = JSON.parse( JSON.stringify( context.getters.getZkeys[
-						zTesterObject[
-							Constants.Z_PERSISTENTOBJECT_VALUE ][
-							Constants.Z_TESTER_CALL
-						][
-							Constants.Z_FUNCTION_CALL_FUNCTION
-						]
-					][ Constants.Z_PERSISTENTOBJECT_VALUE ] ) );
-					// Set the function call's implementation
-					test[ Constants.Z_FUNCTION_CALL_FUNCTION ][
-						Constants.Z_FUNCTION_IMPLEMENTATIONS ] = [
-						payload.zImplementationId
-					];
+					if ( this.zTesterId !== context.getters.getCurrentZObjectId ) {
+						test[ Constants.Z_FUNCTION_CALL_FUNCTION ] = JSON.parse(
+							JSON.stringify( context.getters.getZkeys[
+								zTesterObject[
+									Constants.Z_PERSISTENTOBJECT_VALUE ][
+									Constants.Z_TESTER_CALL
+								][
+									Constants.Z_FUNCTION_CALL_FUNCTION
+								]
+							][ Constants.Z_PERSISTENTOBJECT_VALUE ] ) );
+
+						// Set the function call's implementation
+						test[ Constants.Z_FUNCTION_CALL_FUNCTION ][
+							Constants.Z_FUNCTION_IMPLEMENTATIONS ] = [
+							implementation
+						];
+					} else {
+						test[ Constants.Z_FUNCTION_CALL_FUNCTION ] = JSON.parse(
+							JSON.stringify( context.getters.getZkeys[
+								canonicalize( zTesterObject[
+									Constants.Z_PERSISTENTOBJECT_VALUE ][
+									Constants.Z_TESTER_CALL
+								][
+									Constants.Z_FUNCTION_CALL_FUNCTION
+								] )
+							] ) );
+
+						// Set the function call's implementation
+						test[ Constants.Z_FUNCTION_CALL_FUNCTION ][
+							Constants.Z_FUNCTION_IMPLEMENTATIONS ] = [
+							implementation
+						];
+					}
+
 					// Get the ZID of the validator
 					validatorZid = zTesterObject[
 						Constants.Z_PERSISTENTOBJECT_VALUE ][
@@ -149,14 +191,14 @@ module.exports = {
 						context.commit( 'setZTesterResult', {
 							key: key,
 							// TODO - Replace with false
-							// Currently all tests return false,
-							// this is to see both results in the UI during development
-							result: Math.random() > 0.5 // Storing random result, should be false
+							result: false
 						} );
 					} else {
 						context.commit( 'setZTesterResult', {
 							key: key,
-							result: true
+							result:
+								result[ Constants.Z_BOOLEAN_IDENTITY ][ Constants.Z_REFERENCE_ID ] ===
+									Constants.Z_BOOLEAN_TRUE
 						} );
 					}
 				} )

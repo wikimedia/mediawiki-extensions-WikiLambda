@@ -16,6 +16,10 @@
 			:search-type="Constants.Z_FUNCTION"
 			:zobject-id="zValidation.id"
 		></z-reference>
+		<z-function-tester-report
+			:z-function-id="zFunctionId"
+			:z-tester-id="zTesterId"
+		></z-function-tester-report>
 	</div>
 </template>
 
@@ -25,12 +29,14 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	ZFunctionCall = require( './ZFunctionCall.vue' ),
-	ZReference = require( './ZReference.vue' );
+	ZReference = require( './ZReference.vue' ),
+	ZFunctionTesterReport = require( '../function/ZFunctionTesterReport.vue' );
 
 module.exports = {
 	components: {
 		'z-function-call': ZFunctionCall,
-		'z-reference': ZReference
+		'z-reference': ZReference,
+		'z-function-tester-report': ZFunctionTesterReport
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -44,7 +50,8 @@ module.exports = {
 		'getZkeyLabels',
 		'getZkeys',
 		'getViewMode',
-		'getNestedZObjectById'
+		'getNestedZObjectById',
+		'getZObjectById'
 	] ),
 	{
 		Constants: function () {
@@ -64,6 +71,18 @@ module.exports = {
 		},
 		zValidation: function () {
 			return this.findKeyInArray( Constants.Z_TESTER_VALIDATION, this.zobject );
+		},
+		zFunctionId: function () {
+			return this.getNestedZObjectById( this.zCall.id, [
+				Constants.Z_FUNCTION_CALL_FUNCTION,
+				Constants.Z_REFERENCE_ID
+			] ).value || '';
+		},
+		zTesterId: function () {
+			return this.getNestedZObjectById( this.getZObjectById( this.zobjectId ).parent, [
+				Constants.Z_PERSISTENTOBJECT_ID,
+				Constants.Z_REFERENCE_ID
+			] ).value;
 		}
 	} ),
 	methods: $.extend( mapActions( [
