@@ -168,7 +168,7 @@ module.exports = {
 	display: block;
 	padding: 1em;
 	outline: 1px dashed #888;
-	width: 600px;
+	max-width: 600px;
 
 	&__language-selector {
 		width: 200px;

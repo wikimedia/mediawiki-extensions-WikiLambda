@@ -142,6 +142,8 @@ module.exports = {
 <style lang="less">
 .ext-wikilambda-fn-tester-results {
 	border-spacing: 10px 5px;
+	max-width: 90vw;
+	overflow-x: auto;
 }
 
 .ext-wikilambda-fn-tester-results caption {
