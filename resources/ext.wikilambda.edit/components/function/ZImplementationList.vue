@@ -6,8 +6,10 @@
 		@license MIT
 	-->
 	<div>
-		{{ $i18n( 'wikilambda-editor-implementation-list-label' ) }}:
-		<ul>
+		<h3>
+			{{ $i18n( 'wikilambda-editor-implementation-list-label' ) }}
+		</h3>
+		<ul class="ext-wikilambda-zlist-no-bullets">
 			<z-implementation-list-item
 				v-for="(item) in ZlistItems"
 				:key="item.id"
