@@ -91,7 +91,8 @@ module.exports = {
 		'getViewMode',
 		'getNestedZObjectById',
 		'getZObjectAsJsonById',
-		'getZTesterPercentage'
+		'getZTesterPercentage',
+		'getCurrentZObjectId'
 	] ), {
 		implementations: function () {
 			if ( !this.zFunctionId || !this.getZkeys[ this.zFunctionId ] ) {
@@ -100,6 +101,18 @@ module.exports = {
 
 			if ( this.zImplementationId ) {
 				return [ this.zImplementationId ];
+			}
+
+			if ( this.getCurrentZObjectId === this.zFunctionId ) {
+				return this.getZObjectAsJsonById(
+					this.getNestedZObjectById( 0, [
+						Constants.Z_PERSISTENTOBJECT_VALUE,
+						Constants.Z_FUNCTION_IMPLEMENTATIONS
+					] ).id,
+					true
+				).map( function ( impl ) {
+					return impl[ Constants.Z_REFERENCE_ID ];
+				} );
 			}
 
 			return this.getZkeys[ this.zFunctionId ][
@@ -113,6 +126,18 @@ module.exports = {
 
 			if ( this.zTesterId ) {
 				return [ this.zTesterId ];
+			}
+
+			if ( this.getCurrentZObjectId === this.zFunctionId ) {
+				return this.getZObjectAsJsonById(
+					this.getNestedZObjectById( 0, [
+						Constants.Z_PERSISTENTOBJECT_VALUE,
+						Constants.Z_FUNCTION_TESTERS
+					] ).id,
+					true
+				).map( function ( impl ) {
+					return impl[ Constants.Z_REFERENCE_ID ];
+				} );
 			}
 
 			return this.getZkeys[ this.zFunctionId ][

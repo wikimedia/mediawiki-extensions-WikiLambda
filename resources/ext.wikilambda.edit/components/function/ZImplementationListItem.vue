@@ -37,9 +37,11 @@
 				</a>
 			</h4>
 			<code-editor
+				v-if="!zImplementation || !zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_BUILT_IN ]"
 				:mode="zImplementationCodeLanguage"
 				:read-only="true"
 				:value="zImplementationCode"
+				class="ext-wikilambda-zcode"
 			></code-editor>
 		</div>
 	</li>
@@ -82,8 +84,8 @@ module.exports = {
 				return '';
 			}
 
-			if ( this.zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-				Constants.Z_IMPLEMENTATION_COMPOSITION ]
+			if ( !this.zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+				Constants.Z_IMPLEMENTATION_CODE ]
 			) {
 				return 'json';
 			}
