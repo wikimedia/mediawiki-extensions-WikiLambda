@@ -8,7 +8,7 @@
 	<div>
 		<h2>{{ $i18n( 'wikilambda-tester-results-title' ) }}</h2>
 		<table
-			v-if="implementations.length > 0 && testers.length > 0"
+			v-if="zFunctionId && implementations.length > 0 && testers.length > 0"
 			class="ext-wikilambda-fn-tester-results"
 		>
 			<caption>{{ $i18n( 'wikilambda-tester-results-caption' ) }}</caption>
