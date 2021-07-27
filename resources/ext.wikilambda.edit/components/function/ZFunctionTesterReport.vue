@@ -71,9 +71,17 @@ module.exports = {
 	},
 	mixins: [ typeUtils ],
 	props: {
-		zobjectId: {
-			type: Number,
+		zFunctionId: {
+			type: String,
 			required: true
+		},
+		zImplementationId: {
+			type: String,
+			default: null
+		},
+		zTesterId: {
+			type: String,
+			default: null
 		}
 	},
 	computed: $.extend( mapGetters( [
@@ -85,34 +93,31 @@ module.exports = {
 		'getZObjectAsJsonById',
 		'getZTesterPercentage'
 	] ), {
-		zobject: function () {
-			return this.getZObjectChildrenById( this.zobjectId );
-		},
-		zFunctionId: function () {
-			return this.getNestedZObjectById( this.zobjectId, [
-				Constants.Z_FUNCTION_IDENTITY,
-				Constants.Z_REFERENCE_ID
-			] ).value;
-		},
 		implementations: function () {
-			return this.getZObjectAsJsonById(
-				this.getNestedZObjectById( this.zobjectId, [
-					Constants.Z_FUNCTION_IMPLEMENTATIONS
-				] ).id,
-				true
-			).map( function ( impl ) {
-				return impl[ Constants.Z_REFERENCE_ID ];
-			} );
+			if ( !this.zFunctionId || !this.getZkeys[ this.zFunctionId ] ) {
+				return [];
+			}
+
+			if ( this.zImplementationId ) {
+				return [ this.zImplementationId ];
+			}
+
+			return this.getZkeys[ this.zFunctionId ][
+				Constants.Z_PERSISTENTOBJECT_VALUE ][
+				Constants.Z_FUNCTION_IMPLEMENTATIONS ];
 		},
 		testers: function () {
-			return this.getZObjectAsJsonById(
-				this.getNestedZObjectById( this.zobjectId, [
-					Constants.Z_FUNCTION_TESTERS
-				] ).id,
-				true
-			).map( function ( impl ) {
-				return impl[ Constants.Z_REFERENCE_ID ];
-			} );
+			if ( !this.zFunctionId && !this.getZkeys[ this.zFunctionId ] ) {
+				return [];
+			}
+
+			if ( this.zTesterId ) {
+				return [ this.zTesterId ];
+			}
+
+			return this.getZkeys[ this.zFunctionId ][
+				Constants.Z_PERSISTENTOBJECT_VALUE ][
+				Constants.Z_FUNCTION_TESTERS ];
 		},
 		resultCount: function () {
 			return this.getZTesterPercentage( this.zFunctionId );

@@ -29,7 +29,7 @@
 			:zobject-id="zTesterId"
 		></z-tester-list>
 		<z-function-tester-report
-			:zobject-id="zobjectId"
+			:z-function-id="zFunctionId"
 		></z-function-tester-report>
 	</div>
 </template>
@@ -70,7 +70,8 @@ module.exports = {
 			'getZkeyLabels',
 			'getZObjectAsJsonById',
 			'getUserZlangZID',
-			'getCurrentZObjectId'
+			'getCurrentZObjectId',
+			'getNestedZObjectById'
 		] ),
 		{
 			Constants: function () {
@@ -78,6 +79,12 @@ module.exports = {
 			},
 			zobject: function () {
 				return this.getZObjectChildrenById( this.zobjectId );
+			},
+			zFunctionId: function () {
+				return this.getNestedZObjectById( this.zobjectId, [
+					Constants.Z_FUNCTION_IDENTITY,
+					Constants.Z_REFERENCE_ID
+				] ).value;
 			},
 			zArgumentId: function () {
 				return this.zobject.filter( function ( item ) {
