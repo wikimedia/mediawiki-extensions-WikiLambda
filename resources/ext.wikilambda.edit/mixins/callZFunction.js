@@ -25,8 +25,10 @@ module.exports = {
 				.then( function ( data ) {
 					// eslint-disable-next-line compat/compat
 					return new Promise( function ( resolve ) {
-						var response = JSON.parse(
-								data.query.wikilambda_function_call.Orchestrated.data
+						var response = canonicalize(
+								JSON.parse(
+									data.query.wikilambda_function_call.Orchestrated.data
+								)
 							),
 							result = response[ Constants.Z_PAIR_FIRST ],
 							error = response[ Constants.Z_PAIR_SECOND ];
