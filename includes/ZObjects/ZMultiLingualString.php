@@ -88,13 +88,39 @@ class ZMultiLingualString extends ZObject {
 	 * @return string The string, or the value of the wikilambda-multilingualstring-nofallback message.
 	 */
 	public function getStringForLanguage( Language $language ): string {
+		return $this->internalGetStringForLanguage( $language, false );
+	}
+
+	/**
+	 * Fetch the ZMultiLingualString's stored value for a given MediaWiki language class. This will
+	 * walk the language fallback chain, including English even if that is not one of the langauge's
+	 * defined fallback languages, and only provide a fallback message if there is no label defined
+	 * in the given language or any of its fallback languages or English.
+	 *
+	 * @param Language $language The MediaWiki language class in which the string is wanted.
+	 * @return string The string, or the value of the wikilambda-multilingualstring-nofallback message.
+	 */
+	public function getStringForLanguageOrEnglish( Language $language ): string {
+		return $this->internalGetStringForLanguage( $language, true );
+	}
+
+	/**
+	 * Fetch the ZMultiLingualString's stored value for a given MediaWiki language class. This will
+	 * walk the language fallback chain, and provide a fallback message if there is no label defined
+	 * in the given language or any of its fallback languages.
+	 *
+	 * @param Language $language The MediaWiki language class in which the string is wanted.
+	 * @param bool $withEnglish Whether or not to include English regardless of the fallback chain.
+	 * @return string The string, or the value of the wikilambda-multilingualstring-nofallback message.
+	 */
+	private function internalGetStringForLanguage( Language $language, bool $withEnglish ): string {
 		if ( $this->isLanguageProvidedValue( $language->mCode ) ) {
 			return $this->getStringForLanguageCode( $language->mCode );
 		}
 
 		$fallbacks = MediaWikiServices::getInstance()->getLanguageFallback()->getAll(
 			$language->mCode,
-			LanguageFallback::STRICT /* Don't try for en unless it's an accepted fallback. */
+			$withEnglish ? LanguageFallback::MESSAGES : LanguageFallback::STRICT
 		);
 
 		foreach ( $fallbacks as $index => $languageCode ) {

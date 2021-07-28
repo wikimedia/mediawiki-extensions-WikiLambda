@@ -253,6 +253,7 @@ class ZObjectContent extends AbstractContent {
 
 	/**
 	 * String representation of the type of this ZObject
+	 *
 	 * @param Language $language Language in which to provide the string.
 	 * @return string
 	 * @throws ZErrorException
@@ -263,7 +264,7 @@ class ZObjectContent extends AbstractContent {
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$typeObject = $zObjectStore->fetchZObjectByTitle( $typeTitle );
 		if ( $typeObject ) {
-			$label = $typeObject->getLabel( $language );
+			$label = $typeObject->getLabels()->getStringForLanguageOrEnglish( $language );
 		} else {
 			$label = wfMessage( 'wikilambda-typeunavailable' )->inContentLanguage()->text();
 		}
@@ -384,7 +385,7 @@ class ZObjectContent extends AbstractContent {
 
 		$label = Html::element(
 			'span', [ 'class' => 'ext-wikilambda-viewpage-header-title' ],
-			$zobject->getLabel( $userLang )
+			$zobject->getLabels()->getStringForLanguageOrEnglish( $userLang )
 		);
 		$id = Html::element(
 			'span', [ 'class' => 'ext-wikilambda-viewpage-header-zid' ],
