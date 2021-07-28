@@ -14,7 +14,7 @@ var Constants = require( '../Constants.js' ),
 
 module.exports = {
 	methods: {
-		performFunctionCall: function ( zobject ) {
+		performFunctionCall: function ( zobject, shouldNormalize ) {
 			var api = new mw.Api();
 			return api.post( {
 				action: 'wikilambda_function_call',
@@ -25,11 +25,10 @@ module.exports = {
 				.then( function ( data ) {
 					// eslint-disable-next-line compat/compat
 					return new Promise( function ( resolve ) {
-						var response = canonicalize(
-								JSON.parse(
-									data.query.wikilambda_function_call.Orchestrated.data
-								)
+						var normalResponse = JSON.parse(
+								data.query.wikilambda_function_call.Orchestrated.data
 							),
+							response = !shouldNormalize ? canonicalize( normalResponse ) : normalResponse,
 							result = response[ Constants.Z_PAIR_FIRST ],
 							error = response[ Constants.Z_PAIR_SECOND ];
 

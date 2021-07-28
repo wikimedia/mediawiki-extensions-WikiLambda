@@ -159,8 +159,8 @@ module.exports = {
 		},
 		performTest: function ( context, payload ) {
 			var key = payload.zFunctionId + ':' + payload.zTesterId + ':' + payload.zImplementationId;
-			// Perform function call (Z20K1)
-			performFunctionCall( payload.test )
+			// Perform function call (Z20K1), return normalized form
+			performFunctionCall( payload.test, true )
 				.then( function ( response ) {
 					// Construct function call for validation (Z20K2 -> Z7)
 					var result = response.result,
@@ -197,12 +197,14 @@ module.exports = {
 						context.commit( 'setZTesterResult', {
 							key: key,
 							result:
-								result[ Constants.Z_BOOLEAN_IDENTITY ][ Constants.Z_REFERENCE_ID ] ===
+								result[ Constants.Z_BOOLEAN_IDENTITY ] ===
 									Constants.Z_BOOLEAN_TRUE
 						} );
 					}
 				} )
-				.catch( function () {
+				.catch( function ( error ) {
+					// eslint-disable-next-line no-console
+					console.error( error );
 					// If any errors, store result as false
 					context.commit( 'setZTesterResult', {
 						key: key,
