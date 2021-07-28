@@ -19,6 +19,9 @@ use MediaWiki\Extension\WikiLambda\ZErrorException;
 class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 
 	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::singleton
+	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::__construct
+	 * @covers ::initialize
 	 * @covers ::singleton
 	 */
 	public function testSingleton() {
