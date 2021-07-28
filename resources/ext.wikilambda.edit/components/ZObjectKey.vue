@@ -7,7 +7,7 @@
 	-->
 	<div class="ext-wikilambda-zobject-key">
 		<!-- zKey label -->
-		<span v-if="zKey">{{ zKeyLabel }} ({{ zKey }}):</span>
+		<span v-if="zKey">{{ zKeyLabel }}:</span>
 
 		<!-- If type isn't selected, show type selector -->
 		<z-object-selector
@@ -19,7 +19,7 @@
 
 		<!-- If there's a type, we render the appropriate component -->
 		<template v-else>
-			<span>{{ zTypeLabel }} ({{ zType }})</span>
+			<span>{{ zTypeLabel }}</span>
 			<z-key-mode-selector
 				v-if="!(getViewMode || readonly) && selectedMode && !isIdentityKey && zType !== Constants.Z_OBJECT"
 				:mode="selectedMode"
