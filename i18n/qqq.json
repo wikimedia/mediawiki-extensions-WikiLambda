@@ -90,7 +90,7 @@
 	"wikilambda-implementation-selector": "Label for selecting an implementation to add to a function.",
 	"wikilambda-implementation-none-found": "Label for when no implementation for a function has yet been created.",
 	"wikilambda-implementation-create-new": "Label for creating a new implementation for a function.",
-	"wikilambda-editor-tester-list-label": "Label for a list of testers associated with a funciton",
+	"wikilambda-editor-tester-list-label": "Label for a list of testers associated with a function.\n\n{{doc-wikilambda}}",
 	"wikilambda-tester-selector": "Label for selecting a tester",
 	"wikilambda-tester-none-found": "Label for when no testers are found for a function",
 	"wikilambda-tester-create-new": "Label for creating a new tester",

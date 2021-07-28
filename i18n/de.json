@@ -79,7 +79,7 @@
 	"wikilambda-tester-status-running": "LÄUFT …",
 	"wikilambda-tester-status-passed": "BESTANDEN",
 	"wikilambda-tester-status-failed": "GESCHEITERT",
-	"wikilambda-tester-results-title": "Tester-Ergebnisse",
+	"wikilambda-tester-results-title": "Testergebnisse",
 	"wikilambda-tester-results-caption": "Ergebnisse von Funktionstestern gegen Implementierungen",
 	"wikilambda-tester-no-results": "Keine Testergebnisse gefunden. Füge eine Implementierung und einen Tester hinzu, um die Ergebnisse anzuzeigen.",
 	"wikilambda-tester-results-percentage-label": "Gesamtzahl der Tester, die bestanden haben",

@@ -58,6 +58,7 @@
 	"wikilambda-editor-zlist-removeitem-tooltip": "הסרת הפריט הזה מרשימת ה־Z הזאת",
 	"wikilambda-editor-zobject-addkey": "הוספת מפתח:",
 	"wikilambda-editor-zobject-removekey-tooltip": "הסרת המפתח והערך הזה מעצם ה־Z",
+	"wikilambda-editor-zobject-clearitem-tooltip": "לרוקן את הערך הזה",
 	"wikilambda-editor-label-select-programming-language-label": "{{GENDER:|בחר|בחרי}} שפת תכנות:",
 	"wikilambda-modeselector-genericliteral": "כללי",
 	"specialpages-group-wikilambda": "דף ויקיפונקציות",
@@ -69,5 +70,18 @@
 	"wikilambda-argref-default-label": "נא לבחור ארגומנט",
 	"wikilambda-implementation-selector": "בחירת מימוש",
 	"wikilambda-implementation-none-found": "לא נמצאו מימושים.",
-	"wikilambda-implementation-create-new": "יציאת מימוש חדש"
+	"wikilambda-implementation-create-new": "יציאת מימוש חדש",
+	"wikilambda-editor-tester-list-label": "רשימת בודקים",
+	"wikilambda-tester-selector": "בחירת בודק",
+	"wikilambda-tester-none-found": "לא נמצאו בודקים.",
+	"wikilambda-tester-create-new": "יצירת בודק חדש",
+	"wikilambda-tester-status-pending": "בהמתנה...",
+	"wikilambda-tester-status-running": "בהרצה...",
+	"wikilambda-tester-status-passed": "עבר",
+	"wikilambda-tester-status-failed": "נכשל",
+	"wikilambda-tester-results-title": "תוצאות בודק",
+	"wikilambda-tester-results-caption": "תוצאות של בודקי פונקציות אל מול מימושים",
+	"wikilambda-tester-no-results": "לא נמצאו תוצאות בודקים. נא להוסיף מימוש ובודק כדי לראות תוצאות.",
+	"wikilambda-tester-results-percentage-label": "סך כול הבודקים שעוברים",
+	"wikilambda-tester-run-testers": "הרצת כל הבודקים"
 }

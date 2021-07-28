@@ -58,6 +58,7 @@
 	"wikilambda-editor-zlist-removeitem-tooltip": "Remova este item desta ZList",
 	"wikilambda-editor-zobject-addkey": "Adicionar chave:",
 	"wikilambda-editor-zobject-removekey-tooltip": "Remova esta chave/valor do ZObject",
+	"wikilambda-editor-zobject-clearitem-tooltip": "Em branco este valor",
 	"wikilambda-editor-label-select-programming-language-label": "Selecione a linguagem de programação:",
 	"wikilambda-modeselector-genericliteral": "gener",
 	"specialpages-group-wikilambda": "Página de Wikifunções",
@@ -68,5 +69,12 @@
 	"wikilambda-argref-default-label": "Selecione um argumento",
 	"wikilambda-implementation-selector": "Selecione a implementação",
 	"wikilambda-implementation-none-found": "Nenhuma implementação encontrada.",
-	"wikilambda-implementation-create-new": "Crie uma nova implementação"
+	"wikilambda-implementation-create-new": "Crie uma nova implementação",
+	"wikilambda-editor-tester-list-label": "Lista de testadores",
+	"wikilambda-tester-status-pending": "PENDENTE...",
+	"wikilambda-tester-status-running": "EXECUTANDO...",
+	"wikilambda-tester-status-failed": "FALHOU",
+	"wikilambda-tester-results-title": "Resultados do testador",
+	"wikilambda-tester-results-caption": "Resultados de testadores de função em relação a implementações",
+	"wikilambda-tester-run-testers": "Executar todos os testadores"
 }
