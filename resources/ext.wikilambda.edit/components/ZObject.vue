@@ -44,6 +44,7 @@ var Constants = require( '../Constants.js' ),
 	ZNothing = require( './types/ZNothing.vue' ),
 	ZTester = require( './types/ZTester.vue' ),
 	ZPersistentObject = require( './types/ZPersistentObject.vue' ),
+	ZCharacter = require( './types/ZCharacter.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -65,7 +66,8 @@ module.exports = {
 		'z-argument-reference': ZArgumentReference,
 		'z-nothing': ZNothing,
 		'z-tester': ZTester,
-		'z-persistentobject': ZPersistentObject
+		'z-persistentobject': ZPersistentObject,
+		'z-character': ZCharacter
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -98,7 +100,8 @@ module.exports = {
 					Constants.Z_STRING,
 					Constants.Z_REFERENCE,
 					Constants.Z_BOOLEAN,
-					Constants.Z_ARGUMENT_REFERENCE
+					Constants.Z_ARGUMENT_REFERENCE,
+					Constants.Z_CHARACTER
 				].indexOf( this.type ) !== -1;
 			},
 			classZObject: function () {
@@ -137,6 +140,8 @@ module.exports = {
 						return 'z-nothing';
 					case Constants.Z_TESTER:
 						return 'z-tester';
+					case Constants.Z_CHARACTER:
+						return 'z-character';
 					default:
 						return 'z-object-generic';
 				}

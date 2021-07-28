@@ -191,6 +191,7 @@
 				"ext.wikilambda.edit/components/function/ZFunctionTesterReport.vue",
 				"ext.wikilambda.edit/components/function/ZTesterImplResult.vue",
 				"ext.wikilambda.edit/components/types/ZPersistentObject.vue",
+				"ext.wikilambda.edit/components/types/ZCharacter.vue",
 				"ext.wikilambda.edit/mixins/schemata.js",
 				"ext.wikilambda.edit/mixins/callZFunction.js",
 				"lib/ace/ace.js",
