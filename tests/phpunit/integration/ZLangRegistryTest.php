@@ -85,10 +85,12 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::isLanguageKnownGivenCode
 	 * @covers ::getLanguageZidFromCode
 	 */
 	public function testGetLanguageZidFromCode_registered() {
 		$zid = $this->registry->getLanguageZidFromCode( 'en' );
+		$this->assertTrue( $this->registry->isLanguageKnownGivenCode( 'en' ) );
 		$this->assertSame( $zid, self::ZLANG['en'] );
 	}
 
@@ -96,6 +98,7 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getLanguageZidFromCode
 	 * @covers ::fetchLanguageZidFromCode
 	 * @covers ::getLanguageCodeFromContent
+	 * @covers ::isLanguageKnownGivenCode
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectRegistry::register
 	 */
 	public function testGetLanguageZidFromCode_unregistered() {
@@ -105,15 +108,18 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->registry->unregister( self::ZLANG['zh'] );
 
 		$zid = $this->registry->getLanguageZidFromCode( 'zh' );
+		$this->assertTrue( $this->registry->isLanguageKnownGivenCode( 'zh' ) );
 		$this->assertSame( $zid, self::ZLANG['zh'] );
 	}
 
 	/**
+	 * @covers ::isLanguageKnownGivenCode
 	 * @covers ::getLanguageZidFromCode
 	 * @covers ::fetchLanguageZidFromCode
 	 */
 	public function testGetLanguageZidFromCode_notFound() {
 		$notFoundCode = 'foo';
+		$this->assertFalse( $this->registry->isLanguageKnownGivenCode( $notFoundCode ) );
 		$this->expectException( ZErrorException::class );
 		$this->registry->getLanguageZidFromCode( $notFoundCode );
 	}

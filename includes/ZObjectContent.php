@@ -411,7 +411,16 @@ class ZObjectContent extends AbstractContent {
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$zObject = $zObjectStore->fetchZObjectByTitle( $title );
 
+		$zLangRegistry = ZLangRegistry::singleton();
 		$userLangCode = $userLang->mCode;
+		// If the userLang isn't recognised (e.g. it's qqx, or a language we don't support yet, or it's
+		// nonsense), then fall back to English.
+		$userLangZid = $zLangRegistry->getLanguageZidFromCode(
+			( $zLangRegistry->isLanguageKnownGivenCode( $userLangCode ) )
+				? $userLangCode
+				: 'en'
+			);
+
 		$editingData = [
 			// The following paramether may be the same now,
 			// but will surely change in the future as we remove the Zds from the UI
@@ -419,7 +428,7 @@ class ZObjectContent extends AbstractContent {
 			'zId' => $title->getBaseText(),
 			'page' => $title->getPrefixedDBkey(),
 			'zlang' => $userLangCode,
-			'zlangZid' => ZLangRegistry::singleton()->getLanguageZidFromCode( $userLangCode ),
+			'zlangZid' => $userLangZid,
 			'createNewPage' => false,
 			'viewmode' => true
 		];

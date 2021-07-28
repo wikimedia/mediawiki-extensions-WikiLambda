@@ -70,6 +70,28 @@ class ZLangRegistry extends ZObjectRegistry {
 	}
 
 	/**
+	 * Check if a given language code, is a known ZLanguage Zid
+	 *
+	 * @param string $code
+	 * @return bool
+	 * @throws ZErrorException
+	 */
+	public function isLanguageKnownGivenCode( $code ): bool {
+		if ( array_search( $code, $this->registry ) ) {
+			return true;
+		}
+
+		try {
+			$zid = $this->fetchLanguageZidFromCode( $code );
+		} catch ( ZErrorException $e ) {
+			return false;
+		}
+		// Add it to the register now for faster lookups later
+		$this->register( $zid, $code );
+		return true;
+	}
+
+	/**
 	 * Fetch zid from the database, parse it and return its language code.
 	 *
 	 * @param string $zid
