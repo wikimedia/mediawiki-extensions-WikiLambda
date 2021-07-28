@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use Normalizer;
 use stdClass;
 use Transliterator;

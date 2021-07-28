@@ -10,7 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
-use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 
 class ZString extends ZObject {
 

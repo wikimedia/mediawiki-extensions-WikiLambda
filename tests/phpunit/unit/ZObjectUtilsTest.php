@@ -10,7 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests;
 
 use FormatJson;
-use MediaWiki\Extension\WikiLambda\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**

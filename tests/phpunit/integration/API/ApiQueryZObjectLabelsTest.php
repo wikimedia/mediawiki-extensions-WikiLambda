@@ -3,7 +3,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
 
 use ApiTestCase;
-use MediaWiki\Extension\WikiLambda\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels

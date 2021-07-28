@@ -10,8 +10,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 class ZReference extends ZObject {
 

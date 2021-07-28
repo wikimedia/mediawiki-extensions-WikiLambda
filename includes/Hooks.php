@@ -13,6 +13,8 @@ namespace MediaWiki\Extension\WikiLambda;
 use ApiMessage;
 use CommentStoreComment;
 use DatabaseUpdater;
+use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Revision\SlotRecord;
 use MessageSpecifier;
 use Status;

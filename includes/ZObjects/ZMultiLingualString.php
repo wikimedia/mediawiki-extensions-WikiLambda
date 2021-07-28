@@ -11,10 +11,10 @@
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use Language;
+use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
-use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\MediaWikiServices;
 

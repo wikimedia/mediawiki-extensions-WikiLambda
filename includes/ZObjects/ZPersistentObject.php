@@ -11,8 +11,8 @@
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use Language;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
-use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 
 class ZPersistentObject extends ZObject {
 
