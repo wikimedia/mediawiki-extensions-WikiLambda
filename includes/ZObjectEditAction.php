@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use Action;
 use Html;
+use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 
 class ZObjectEditAction extends Action {
 	public function getName() {

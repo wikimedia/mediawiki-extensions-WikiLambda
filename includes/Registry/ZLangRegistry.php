@@ -4,14 +4,18 @@
  *
  * @file
  * @ingroup Extensions
- * @copyright 2021 WikiLambda team; see AUTHORS.txt
+ * @copyright 2020–2021 WikiLambda team; see AUTHORS.txt
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda;
+namespace MediaWiki\Extension\WikiLambda\Registry;
 
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use Title;
 
 /**
@@ -179,7 +183,7 @@ class ZLangRegistry extends ZObjectRegistry {
 		// return $zobject->getInnerZObject()->getValueByKey( ZTypeRegistry::Z_LANGUAGE_CODE );
 
 		// If we don't validate (faster), we can do:
-		$zobject = $content->getObject()->{ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE};
+		$zobject = $content->getObject()->{ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE };
 		if (
 			( $zobject->{ZTypeRegistry::Z_OBJECT_TYPE} === ZTypeRegistry::Z_LANGUAGE ) &&
 			( property_exists( $zobject, ZTypeRegistry::Z_LANGUAGE_CODE ) )

@@ -9,13 +9,13 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use Title;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZLangRegistry
+ * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry
  * @group Database
  */
 class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
@@ -29,8 +29,8 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectRegistry::singleton
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectRegistry::__construct
+	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::singleton
+	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::__construct
 	 * @covers ::initialize
 	 */
 	public function testSingleton() {
@@ -49,7 +49,7 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @covers ::getLanguageCodeFromZid
 	 * @covers ::fetchLanguageCodeFromZid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectRegistry::register
+	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::register
 	 */
 	public function testGetLanguageCodeFromZid_unregistered() {
 		// We make sure that the language is saved in the database but not cached
@@ -99,7 +99,7 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::fetchLanguageZidFromCode
 	 * @covers ::getLanguageCodeFromContent
 	 * @covers ::isLanguageKnownGivenCode
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectRegistry::register
+	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::register
 	 */
 	public function testGetLanguageZidFromCode_unregistered() {
 		// We make sure that the language is saved in the database but not cached

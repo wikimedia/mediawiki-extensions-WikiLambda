@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use DataUpdate;
+use MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry;
 use Title;
 
 class ZObjectSecondaryDataRemoval extends DataUpdate {

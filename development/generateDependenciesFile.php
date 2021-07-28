@@ -11,7 +11,7 @@
  * @license MIT
  */
 
-use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 
 $IP = getenv( 'MW_INSTALL_PATH' );
 if ( $IP === false ) {

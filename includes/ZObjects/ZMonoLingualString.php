@@ -10,8 +10,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
-use MediaWiki\Extension\WikiLambda\ZLangRegistry;
-use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 
 class ZMonoLingualString extends ZObject {
 

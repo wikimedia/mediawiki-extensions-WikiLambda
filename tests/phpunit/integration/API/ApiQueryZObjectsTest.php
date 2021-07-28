@@ -3,8 +3,8 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
 
 use ApiTestCase;
+use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
-use MediaWiki\Extension\WikiLambda\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use Title;
 use WikiPage;

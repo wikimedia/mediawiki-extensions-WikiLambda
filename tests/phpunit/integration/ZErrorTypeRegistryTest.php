@@ -9,11 +9,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZErrorTypeRegistry;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZErrorTypeRegistry
+ * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry
  * @group Database
  */
 class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {

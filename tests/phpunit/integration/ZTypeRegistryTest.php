@@ -9,20 +9,20 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZTypeRegistry;
 use Title;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZTypeRegistry
+ * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry
  * @group Database
  */
 class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectRegistry::singleton
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectRegistry::__construct
+	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::singleton
+	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::__construct
 	 * @covers ::initialize
 	 */
 	public function testSingleton() {
