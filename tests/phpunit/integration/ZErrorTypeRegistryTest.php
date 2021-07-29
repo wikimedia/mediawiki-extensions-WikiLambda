@@ -91,12 +91,25 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @covers ::isZErrorTypeKnown
 	 * @covers ::isZErrorTypeCached
+	 * @covers ::getZErrorTypeLabel
 	 * @covers ::register
 	 * @covers ::unregister
 	 */
 	public function testIsZErrorTypeKnown_valid() {
 		$errorType = 'Z501';
 		$registry = ZErrorTypeRegistry::singleton();
+
+		$this->assertFalse(
+			$registry->isZErrorTypeKnown( $errorType ),
+			"The unregistered ZErrorType isn't found."
+		);
+
+		$this->assertSame(
+			'Unknown error',
+			$registry->getZErrorTypeLabel( $errorType ),
+			"The unregistered ZErrorType doesn't have a label returned."
+		);
+
 		$this->insertZErrorTypes( [ $errorType ] );
 
 		$this->assertFalse(
@@ -109,6 +122,12 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 			'The valid ZErrorType is found in the database and cached.'
 		);
 
+		$this->assertSame(
+			'JSON syntax error',
+			$registry->getZErrorTypeLabel( $errorType ),
+			'The valid getZErrorTypeLabel is found in the database and cached.'
+		);
+
 		$this->assertTrue(
 			$this->runPrivateMethod( $registry, 'isZErrorTypeCached', [ $errorType ] ),
 			'The valid ZErrorType Zid is now cached.'
@@ -118,6 +137,12 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->assertFalse(
 			$this->runPrivateMethod( $registry, 'isZErrorTypeCached', [ $errorType ] ),
 			'The valid ZErrorType Zid is not cached after unregistering it.'
+		);
+
+		$this->assertSame(
+			'JSON syntax error',
+			$registry->getZErrorTypeLabel( $errorType ),
+			"The existing but now-unregistered ZErrorType still has its label returned."
 		);
 	}
 }

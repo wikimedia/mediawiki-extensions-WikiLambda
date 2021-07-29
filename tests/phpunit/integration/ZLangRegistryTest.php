@@ -105,10 +105,14 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		// We make sure that the language is saved in the database but not cached
 		$this->registry->register( self::ZLANG['zh'], 'zh' );
 		$this->insertZids( [ 'Z60', self::ZLANG['zh'] ] );
+		$this->assertTrue( $this->registry->isZidCached( self::ZLANG['zh'] ) );
 		$this->registry->unregister( self::ZLANG['zh'] );
+
+		$this->assertFalse( $this->registry->isZidCached( self::ZLANG['zh'] ) );
 
 		$zid = $this->registry->getLanguageZidFromCode( 'zh' );
 		$this->assertTrue( $this->registry->isLanguageKnownGivenCode( 'zh' ) );
+		$this->assertTrue( $this->registry->isZidCached( self::ZLANG['zh'] ) );
 		$this->assertSame( $zid, self::ZLANG['zh'] );
 	}
 

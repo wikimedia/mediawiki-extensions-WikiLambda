@@ -24,6 +24,7 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::singleton
 	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::__construct
 	 * @covers ::initialize
+	 * @covers ::register
 	 */
 	public function testSingleton() {
 		$registry = ZTypeRegistry::singleton();
@@ -55,12 +56,15 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers ::isZObjectKeyCached
+	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::isZidCached
 	 */
 	public function testIsZObjectKeyCached() {
 		$registry = ZTypeRegistry::singleton();
 
 		$this->assertFalse( $registry->isZObjectKeyCached( 'Z0' ), "'Z0' is not defined as a built-in." );
+		$this->assertFalse( $registry->isZidCached( 'Z0' ), "'Z0' is not defined as a built-in (upstream method)." );
 		$this->assertTrue( $registry->isZObjectKeyCached( 'Z1' ), "'Z1' is defined as a built-in." );
+		$this->assertTrue( $registry->isZidCached( 'Z1' ), "'Z1' is defined as a built-in (upstream method)." );
 	}
 
 	/**
@@ -262,6 +266,8 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers ::unregister
+	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::clear
+	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::clearAll
 	 */
 	public function testUnregister() {
 		$registry = ZTypeRegistry::singleton();
@@ -284,6 +290,70 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 
 		// Unregister the type
 		$registry->unregister( $zid );
+
+		$this->assertFalse(
+			$registry->isZObjectKeyCached( $zid ),
+			"The key '$zid' is not cached after unregistering."
+		);
+
+		// Re-register successfully the type
+		$registry->register( $zid, $type );
+
+		$this->assertTrue(
+			$registry->isZObjectKeyCached( $zid ),
+			"The key '$zid' is cached after re-registering."
+		);
+
+		// Clear the whole registry
+		$registry->clear();
+
+		$this->assertFalse(
+			$registry->isZObjectKeyCached( $zid ),
+			"The key '$zid' is not cached after clearing the registry."
+		);
+
+		// Re-re-register successfully the type
+		$registry->register( $zid, $type );
+
+		$this->assertTrue(
+			$registry->isZObjectKeyCached( $zid ),
+			"The key '$zid' is cached after re-re-registering."
+		);
+
+		// Clear all registries
+		$registry->clearAll();
+
+		$this->assertFalse(
+			$registry->isZObjectKeyCached( $zid ),
+			"The key '$zid' is not cached after clearing all registries."
+		);
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::unregisterZid
+	 * @covers ::unregister
+	 */
+	public function testUnregisterZid() {
+		$registry = ZTypeRegistry::singleton();
+
+		$zid = 'Z222';
+		$type = 'ZUnregisteredType';
+
+		$this->assertFalse(
+			$registry->isZObjectKeyCached( $zid ),
+			"The key '$zid' is not cached before registering."
+		);
+
+		// Register successfully the type
+		$registry->register( $zid, $type );
+
+		$this->assertTrue(
+			$registry->isZObjectKeyCached( $zid ),
+			"The key '$zid' is cached after registering."
+		);
+
+		// Unregister the type from all registries
+		$registry->unregisterZid( $zid );
 
 		$this->assertFalse(
 			$registry->isZObjectKeyCached( $zid ),
