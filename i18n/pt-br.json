@@ -74,7 +74,7 @@
 	"wikilambda-tester-status-pending": "PENDENTE...",
 	"wikilambda-tester-status-running": "EXECUTANDO...",
 	"wikilambda-tester-status-failed": "FALHOU",
-	"wikilambda-tester-results-title": "Resultados do testador",
+	"wikilambda-tester-results-title": "Resultados do teste",
 	"wikilambda-tester-results-caption": "Resultados de testadores de função em relação a implementações",
 	"wikilambda-tester-run-testers": "Executar todos os testadores"
 }

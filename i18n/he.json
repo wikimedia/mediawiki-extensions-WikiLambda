@@ -79,7 +79,7 @@
 	"wikilambda-tester-status-running": "בהרצה...",
 	"wikilambda-tester-status-passed": "עבר",
 	"wikilambda-tester-status-failed": "נכשל",
-	"wikilambda-tester-results-title": "תוצאות בודק",
+	"wikilambda-tester-results-title": "תוצאות בדיקה",
 	"wikilambda-tester-results-caption": "תוצאות של בודקי פונקציות אל מול מימושים",
 	"wikilambda-tester-no-results": "לא נמצאו תוצאות בודקים. נא להוסיף מימוש ובודק כדי לראות תוצאות.",
 	"wikilambda-tester-results-percentage-label": "סך כול הבודקים שעוברים",
