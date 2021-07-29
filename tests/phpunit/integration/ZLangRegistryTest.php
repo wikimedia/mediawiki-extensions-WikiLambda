@@ -155,6 +155,14 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @covers ::isValidLanguageZid
 	 */
+	public function testIsValidLanguageZid() {
+		$isValid = $this->registry->isValidLanguageZid( 'Z1002' );
+		$this->assertTrue( $isValid );
+	}
+
+	/**
+	 * @covers ::isValidLanguageZid
+	 */
 	public function testIsValidLanguageZid_notValidRef() {
 		$isValid = $this->registry->isValidLanguageZid( 'invalidString' );
 		$this->assertFalse( $isValid );

@@ -93,6 +93,29 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::isZObjectKeyKnown
+	 */
+	public function testIsZObjectKeyKnown_rejectNonTypes() {
+		$this->registerLangs( ZTestType::TEST_LANGS );
+
+		// Ensure that Z40 (Boolean type) and Z41 (True instance of Boolean)
+		$this->insertZids( [ 'Z40', 'Z41' ] );
+
+		$registry = ZTypeRegistry::singleton();
+
+		$this->assertTrue(
+			$registry->isZObjectKeyKnown( 'Z40' ),
+			"'Z40' is a known ZType."
+		);
+
+		$this->expectException(
+			ZErrorException::class,
+			"'Z41' is a known ZObject but an instance rather than a ZType, so this should throw."
+		);
+		$registry->isZObjectKeyKnown( 'Z41' );
+	}
+
+	/**
 	 * @covers ::getCachedZObjectTypes
 	 */
 	public function testGetCachedZObjectTypes() {
