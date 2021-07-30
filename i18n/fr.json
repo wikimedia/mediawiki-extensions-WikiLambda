@@ -67,6 +67,7 @@
 	"wikilambda-editor-zlist-removeitem-tooltip": "Supprimer cet élément de cette Liste-Z",
 	"wikilambda-editor-zobject-addkey": "Ajouter une clé :",
 	"wikilambda-editor-zobject-removekey-tooltip": "Supprimer cette clé/valeur de l’Objet-Z",
+	"wikilambda-editor-zobject-clearitem-tooltip": "Effacer cette valeur",
 	"wikilambda-editor-label-select-programming-language-label": "Sélectionner le langage de programmation :",
 	"wikilambda-modeselector-genericliteral": "gén.",
 	"specialpages-group-wikilambda": "Page de Wikifonctions",
@@ -78,5 +79,18 @@
 	"wikilambda-argref-default-label": "Sélectionner un argument",
 	"wikilambda-implementation-selector": "Sélectionnez une implémentation",
 	"wikilambda-implementation-none-found": "Aucune implémentation trouvée.",
-	"wikilambda-implementation-create-new": "Créer une nouvelle implémentation"
+	"wikilambda-implementation-create-new": "Créer une nouvelle implémentation",
+	"wikilambda-editor-tester-list-label": "Liste des testeurs",
+	"wikilambda-tester-selector": "Sélectionner un testeur",
+	"wikilambda-tester-none-found": "Aucun testeur trouvé.",
+	"wikilambda-tester-create-new": "Créer un nouveau testeur",
+	"wikilambda-tester-status-pending": "EN ATTENTE…",
+	"wikilambda-tester-status-running": "EN COURS…",
+	"wikilambda-tester-status-passed": "PASSÉ",
+	"wikilambda-tester-status-failed": "ÉCHOUÉ",
+	"wikilambda-tester-results-title": "Résultats du test",
+	"wikilambda-tester-results-caption": "Résultats des testeurs de fonction par rapport aux implémentations",
+	"wikilambda-tester-no-results": "Aucun résultat de testeur trouvé. Veuillez ajouter une implémentation et un testeur pour voir les résultats.",
+	"wikilambda-tester-results-percentage-label": "Nombre total de testeurs passant",
+	"wikilambda-tester-run-testers": "Lancer tous les testeurs"
 }
