@@ -62,7 +62,7 @@
 											"Z1K1": "Z61",
 											"Z61K1": "python-3"
 										},
-										"Z16K2": "Z10690K1 = lambda Z10690K1: ''.join(sorted(Z10690K1))"
+										"Z16K2": "Z10690 = lambda Z10690K1: ''.join(sorted(Z10690K1))"
 									}
 								}
 							],
