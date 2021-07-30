@@ -161,26 +161,6 @@ class ZObjectContent extends AbstractContent {
 	}
 
 	/**
-	 * Returns a ZObjectContent object with pre save transformations applied.
-	 *
-	 * @param Title $title
-	 * @param User $user
-	 * @param ParserOptions $popts
-	 * @return ZObjectContent
-	 */
-	public function preSaveTransform( Title $title, User $user, ParserOptions $popts ) {
-		if ( !$this->isValid() ) {
-			return $this;
-		}
-
-		$json = ZObjectUtils::canonicalize( $this->getObject() );
-		$encoded = FormatJson::encode( $json, true, FormatJson::UTF8_OK );
-		$encodedCleanedWhitespace = str_replace( [ "\r\n", "\r" ], "\n", rtrim( $encoded ) );
-
-		return new static( $encodedCleanedWhitespace );
-	}
-
-	/**
 	 * @return Status|null
 	 */
 	public function getStatus() {

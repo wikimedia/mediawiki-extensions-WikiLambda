@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use Content;
 use ContentHandler;
 use FormatJson;
+use MediaWiki\Content\Transform\PreSaveTransformParams;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -216,5 +217,27 @@ class ZObjectContentHandler extends ContentHandler {
 		return [
 			'edit' => ZObjectEditAction::class
 		];
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function preSaveTransform( Content $content, PreSaveTransformParams $pstParams ): Content {
+		'@phan-var ZObjectContent $content';
+
+		if ( !$content->isValid() ) {
+			return $content;
+		}
+
+		$json = ZObjectUtils::canonicalize( $content->getObject() );
+		$encoded = FormatJson::encode( $json, true, FormatJson::UTF8_OK );
+		$encodedCleanedWhitespace = str_replace( [ "\r\n", "\r" ], "\n", rtrim( $encoded ) );
+
+		if ( $content->getText() !== $encodedCleanedWhitespace ) {
+			$contentClass = $this->getContentClass();
+			return new $contentClass( $encodedCleanedWhitespace );
+		}
+
+		return $content;
 	}
 }
