@@ -41,7 +41,7 @@
 			<tfoot>
 				<tr>
 					<td>
-						<button @click="runTesters">
+						<button v-if="!getViewMode" @click="runTesters">
 							{{ $i18n( 'wikilambda-tester-run-testers' ) }}
 						</button>
 					</td>
@@ -120,7 +120,7 @@ module.exports = {
 				Constants.Z_FUNCTION_IMPLEMENTATIONS ];
 		},
 		testers: function () {
-			if ( !this.zFunctionId && !this.getZkeys[ this.zFunctionId ] ) {
+			if ( !this.zFunctionId || !this.getZkeys[ this.zFunctionId ] ) {
 				return [];
 			}
 
@@ -148,19 +148,43 @@ module.exports = {
 			return this.getZTesterPercentage( this.zFunctionId );
 		}
 	} ),
-	methods: $.extend( mapActions( [ 'prepareTest' ] ), {
+	methods: $.extend( mapActions( [ 'fetchZKeys', 'getTestResults' ] ), {
 		runTesters: function () {
-			this.implementations.forEach( function ( implementation ) {
-				this.testers.forEach( function ( tester ) {
-					this.prepareTest( {
-						zFunctionId: this.zFunctionId,
-						zImplementationId: implementation,
-						zTesterId: tester
-					} );
-				}.bind( this ) );
-			}.bind( this ) );
+			this.getTestResults( {
+				zFunctionId: this.zFunctionId,
+				zImplementations: this.implementations,
+				zTesters: this.testers,
+				nocache: true,
+				clearPreviousResults: true
+			} );
 		}
-	} )
+	} ),
+	watch: {
+		implementations: {
+			immediate: true,
+			deep: true,
+			handler: function () {
+				this.fetchZKeys( this.implementations );
+				this.getTestResults( {
+					zFunctionId: this.zFunctionId,
+					zImplementations: this.implementations,
+					zTesters: this.testers
+				} );
+			}
+		},
+		testers: {
+			immediate: true,
+			deep: true,
+			handler: function () {
+				this.fetchZKeys( this.testers );
+				this.getTestResults( {
+					zFunctionId: this.zFunctionId,
+					zImplementations: this.implementations,
+					zTesters: this.testers
+				} );
+			}
+		}
+	}
 };
 </script>
 
