@@ -43,7 +43,7 @@
 	"apihelp-wikilambda_edit-param-summary": "Zusammenfassende Meldung bearbeiten",
 	"apihelp-wikilambda_edit-param-zid": "ZID des zu bearbeitenden ZObjekts. Wenn null, wird das ZObjekt neu erstellt",
 	"apihelp-wikilambda_edit-param-zobject": "JSON-Repräsentation des zu speichernden ZObjects",
-	"apierror-wikilambda_function_call-not-connected": "Konnte Host <$1> nicht auflösen, wahrscheinlich weil der Orchestrator nicht läuft. Bitte lies in der README nach, um den Orchestrator zu einer docker-compose-Konfiguration hinzuzufügen.",
+	"apierror-wikilambda_function_call-not-connected": "Konnte Host „$1“ nicht auflösen, wahrscheinlich weil der Orchestrator nicht läuft. Bitte lies in der README nach, um den Orchestrator zu einer docker-compose-Konfiguration hinzuzufügen.",
 	"apierror-wikilambda_edit-invalidjson": "Konnte ZObject für gegebene Eingabe „$1“ nicht erstellen; ungültiges JSON.",
 	"apierror-wikilambda_edit-unmatchingzid": "Der Parameter ZID „$1“ stimmt nicht mit der ZObject ID „$2“ überein",
 	"apihelp-query+wikilambdafn_search-summary": "Diese API-Abfrageliste sucht nach den IDs aller ZObjects, die einer bereitgestellten ZFunction-ID zugeordnet sind",

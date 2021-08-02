@@ -29,6 +29,7 @@
 	"wikilambda-tester-status-failed": "失敗",
 	"wikilambda-tester-results-title": "テスト結果",
 	"wikilambda-tester-results-caption": "実装に対する関数テスターの結果",
+	"wikilambda-tester-no-results": "テスターの結果は見つかりませんでした。結果を確認するには、実装とテスターを追加してください。",
 	"wikilambda-tester-results-percentage-label": "合格したテスターの総数",
 	"wikilambda-tester-run-testers": "すべてのテスターを実行する"
 }
