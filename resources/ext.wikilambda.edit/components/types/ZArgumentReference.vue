@@ -13,11 +13,11 @@
 				:key="argument.zid"
 				:value="argument.zid"
 			>
-				({{ argument.zid }}) {{ argument.label }}
+				{{ argument.label }}
 			</option>
 		</select>
 		<template v-else>
-			({{ selectedArgument }}) {{ getZarguments[ selectedArgument ].label }}
+			{{ getZarguments[ selectedArgument ].label }}
 		</template>
 	</div>
 </template>

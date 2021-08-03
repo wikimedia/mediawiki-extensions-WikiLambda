@@ -7,7 +7,7 @@
 	-->
 	<div class="ext-wikilambda-zobject-key">
 		<!-- zKey label -->
-		<span v-if="zKey">{{ zKeyLabel }}:</span>
+		<span v-if="zKey">{{ zKeyLabel }}</span>
 
 		<!-- If type isn't selected, show type selector -->
 		<z-object-selector
@@ -144,7 +144,12 @@ module.exports = {
 				return this.getZObjectTypeById( this.zobjectId );
 			},
 			zKeyLabel: function () {
-				return this.getZkeyLabels[ this.zKey ];
+				var label = this.getZkeyLabels[ this.zKey ];
+				if ( label ) {
+					return label + ':';
+				}
+
+				return;
 			},
 			zTypeLabel: function () {
 				return this.getZkeyLabels[ this.zType ];
