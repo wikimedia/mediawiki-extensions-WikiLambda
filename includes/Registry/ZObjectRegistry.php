@@ -27,6 +27,9 @@ abstract class ZObjectRegistry {
 	 */
 	private static $instances = [];
 
+	/**
+	 * @codeCoverageIgnore
+	 */
 	private function __construct() {
 		$class = get_called_class();
 		if ( !array_key_exists( $class, self::$instances ) ) {
