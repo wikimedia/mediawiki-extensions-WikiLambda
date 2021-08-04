@@ -7,7 +7,8 @@
  */
 
 var Vue = require( 'vue' ),
-	Constants = require( '../../Constants.js' );
+	Constants = require( '../../Constants.js' ),
+	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
 function isZType( zidInfo ) {
 	return ( typeof zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ] === 'object' ) &&
 		( zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] === Constants.Z_TYPE );
@@ -58,6 +59,20 @@ module.exports = {
 		},
 		getZarguments: function ( state ) {
 			return state.zArguments;
+		},
+		getZargumentsString: function ( state, getters ) {
+			return Object.keys( getters.getZarguments )
+				.map( function ( key ) {
+					return getters.getZarguments[ key ];
+				} )
+				.reduce( function ( argumentString, argument ) {
+					var key = argument.key,
+						type = argument.type;
+
+					return argumentString.length ?
+						argumentString + ', ' + key + type :
+						argumentString + key + type;
+				}, '' );
 		},
 		getZImplementations: function ( state, getters, rootState ) {
 			return state.zImplementations.filter( filterPresentZids( rootState ) );
@@ -111,6 +126,7 @@ module.exports = {
 		fetchZKeys: function ( context, zids ) {
 			var zKeystoFetch = [],
 				api = new mw.Api();
+
 			zids.forEach( function ( zId ) {
 				// Zid has already been fetched
 				// or
@@ -173,12 +189,62 @@ module.exports = {
 				} );
 			} );
 		},
-		setAvailableZArguments: function ( context, payload ) {
+		setAvailableZArguments: function ( context, zFunctionId ) {
 			context.commit( 'resetZArgumentInfo' );
 
-			payload.forEach( function ( arg ) {
-				context.commit( 'addZArgumentInfo', arg );
-			} );
+			if ( context.getters.getZkeys[ zFunctionId ] ) {
+				var zobject,
+					missingTypes = [];
+
+				if ( context.getters.getCurrentZObjectId === zFunctionId ) {
+					zobject = canonicalize(
+						JSON.parse( JSON.stringify( context.getters.getZObjectAsJson ) )
+					);
+				} else {
+					zobject = context.getters.getZkeys[ zFunctionId ];
+				}
+
+				zobject[
+					Constants.Z_PERSISTENTOBJECT_VALUE ][
+					Constants.Z_FUNCTION_ARGUMENTS ]
+					.forEach( function ( argument ) {
+						var argumentLabels = argument[ Constants.Z_ARGUMENT_LABEL ][
+								Constants.Z_MULTILINGUALSTRING_VALUE ],
+							userLang = argumentLabels.filter( function ( label ) {
+								return label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] ===
+								context.getters.getUserZlangZID ||
+							label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_STRING_VALUE ] ===
+								context.getters.getUserZlangZID;
+							} )[ 0 ] || argumentLabels[ 0 ],
+							userLangLabel = userLang[ Constants.Z_MONOLINGUALSTRING_VALUE ],
+							type = context.getters.getZkeyLabels[ argument[ Constants.Z_ARGUMENT_TYPE ] ],
+							key = userLangLabel ?
+								( userLangLabel ) + ': ' :
+								'',
+							zid = argument[ Constants.Z_ARGUMENT_KEY ];
+
+						if ( typeof zid === 'object' ) {
+							zid = zid[ Constants.Z_STRING_VALUE ];
+						}
+						if ( !type ) {
+							missingTypes.push( argument[ Constants.Z_ARGUMENT_TYPE ] );
+						}
+
+						context.commit( 'addZArgumentInfo', {
+							label: userLangLabel,
+							zid: zid,
+							key: key,
+							type: type
+						} );
+					} );
+
+				// If any argument types are not available, fetch them and rerun the function
+				if ( missingTypes.length ) {
+					context.dispatch( 'fetchZKeys', missingTypes ).then( function () {
+						context.dispatch( 'setAvailableZArguments', zFunctionId );
+					} );
+				}
+			}
 		},
 		fetchZImplementations: function ( context, zFunctionId ) {
 			var api = new mw.Api();

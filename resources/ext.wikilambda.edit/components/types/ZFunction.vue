@@ -7,7 +7,7 @@
 	-->
 	<div>
 		<z-function-signature
-			:arguments="scriptFunctionArguments"
+			:arguments="getZargumentsString"
 			:return-type="getZkeyLabels[ zReturnType.value ]"
 		></z-function-signature>
 		<div>
@@ -71,7 +71,8 @@ module.exports = {
 			'getZObjectAsJsonById',
 			'getUserZlangZID',
 			'getCurrentZObjectId',
-			'getNestedZObjectById'
+			'getNestedZObjectById',
+			'getZargumentsString'
 		] ),
 		{
 			Constants: function () {
@@ -121,69 +122,6 @@ module.exports = {
 			},
 			zReturnTypeLabel: function () {
 				return this.getZkeyLabels[ Constants.Z_FUNCTION_RETURN_TYPE ];
-			},
-			scriptFunctionArguments: function () {
-				var zobject = this.zArgumentList,
-					self = this,
-					functionArgumentsString = '';
-
-				function getArgumentType( argumentChildren ) {
-					var argumentType = self.findKeyInArray( Constants.Z_ARGUMENT_TYPE, argumentChildren );
-
-					if ( !argumentType ) {
-						return 'Any';
-					}
-
-					if ( argumentType.value === 'object' ) {
-						return self.findKeyInArray(
-							[ Constants.Z_REFERENCE_ID, Constants.Z_STRING_VALUE ],
-							self.getZObjectChildrenById( argumentType.id )
-						);
-					}
-
-					return argumentType;
-				}
-
-				zobject.forEach( function ( argument, index ) {
-					var argumentChildren = self.getZObjectChildrenById( argument.id ),
-						argumentType = getArgumentType( argumentChildren ),
-						argumentLabels = self.getZObjectAsJsonById(
-							self.findKeyInArray(
-								Constants.Z_MULTILINGUALSTRING_VALUE,
-								self.getZObjectChildrenById(
-									self.findKeyInArray(
-										Constants.Z_ARGUMENT_LABEL,
-										argumentChildren
-									).id
-								)
-							).id,
-							true
-						),
-						userLang = argumentLabels.filter( function ( label ) {
-							return label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] === self.getUserZlangZID ||
-								label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_STRING_VALUE ] ===
-									self.getUserZlangZID;
-						} )[ 0 ] || argumentLabels[ 0 ],
-						userLangLabel = typeof userLang[ Constants.Z_MONOLINGUALSTRING_VALUE ] === 'object' ?
-							userLang[ Constants.Z_MONOLINGUALSTRING_VALUE ][ Constants.Z_STRING_VALUE ] :
-							userLang[ Constants.Z_MONOLINGUALSTRING_VALUE ],
-						type = self.getZkeyLabels[ argumentType.value ],
-						key = userLangLabel ?
-							( userLangLabel ) + ': ' :
-							'';
-
-					if ( type === undefined ) {
-						type = 'Any';
-					}
-
-					functionArgumentsString += key + type;
-					if ( zobject && zobject.length - 1 === index ) {
-						functionArgumentsString += ' ';
-					} else {
-						functionArgumentsString += ', ';
-					}
-				} );
-				return functionArgumentsString;
 			}
 		}
 	),
@@ -191,7 +129,8 @@ module.exports = {
 		'fetchZKeys',
 		'setZObjectValue',
 		'fetchZImplementations',
-		'fetchZTesters'
+		'fetchZTesters',
+		'setAvailableZArguments'
 	] ), {
 		updateZReturnType: function ( type ) {
 			var payload = {
@@ -202,6 +141,14 @@ module.exports = {
 			this.setZObjectValue( payload );
 		}
 	} ),
+	watch: {
+		zFunctionId: {
+			immediate: true,
+			handler: function () {
+				this.setAvailableZArguments( this.zFunctionId );
+			}
+		}
+	},
 	mounted: function () {
 
 		var zids = [ Constants.Z_ARGUMENT ];

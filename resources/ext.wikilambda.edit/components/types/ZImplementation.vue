@@ -36,7 +36,7 @@
 		</div>
 		<z-function-signature
 			:return-type="selectedFunctionReturnType"
-			:arguments="selectedFunctionArgumentString"
+			:arguments="getZargumentsString"
 		></z-function-signature>
 		<z-code
 			v-if="implMode === 'code'"
@@ -97,7 +97,9 @@ module.exports = {
 			'getZkeyLabels',
 			'getZkeys',
 			'getViewMode',
-			'getNestedZObjectById'
+			'getNestedZObjectById',
+			'getZarguments',
+			'getZargumentsString'
 		] ),
 		{
 			Constants: function () {
@@ -148,47 +150,9 @@ module.exports = {
 				return;
 			},
 			selectedFunctionArguments: function () {
-				var self = this;
-
-				if ( this.selectedFunctionJson ) {
-					return this.selectedFunctionJson[
-						Constants.Z_PERSISTENTOBJECT_VALUE ][
-						Constants.Z_FUNCTION_ARGUMENTS ]
-						.map( function ( argument ) {
-							var argumentLabels = argument[ Constants.Z_ARGUMENT_LABEL ][
-									Constants.Z_MULTILINGUALSTRING_VALUE ],
-								userLang = argumentLabels.filter( function ( label ) {
-									return label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] === self.getUserZlangZID ||
-								label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_STRING_VALUE ] ===
-									self.getUserZlangZID;
-								} )[ 0 ] || argumentLabels[ 0 ],
-								userLangLabel = userLang[ Constants.Z_MONOLINGUALSTRING_VALUE ],
-								type = self.getZkeyLabels[ argument[ Constants.Z_ARGUMENT_TYPE ] ],
-								key = userLangLabel ?
-									( userLangLabel ) + ': ' :
-									'';
-
-							return {
-								label: userLangLabel,
-								zid: argument[ Constants.Z_ARGUMENT_KEY ],
-								key: key,
-								type: type
-							};
-						} );
-				}
-
-				return [];
-			},
-			selectedFunctionArgumentString: function () {
-				return this.selectedFunctionArguments
-					.reduce( function ( argumentString, argument ) {
-						var key = argument.key,
-							type = argument.type;
-
-						return argumentString.length ?
-							argumentString + ', ' + key + type :
-							argumentString + key + type;
-					}, '' );
+				return Object.keys( this.getZarguments ).map( function ( arg ) {
+					return this.getZarguments[ arg ];
+				}.bind( this ) );
 			}
 		}
 	),
@@ -255,12 +219,11 @@ module.exports = {
 						Constants.Z_PERSISTENTOBJECT_VALUE ][
 						Constants.Z_FUNCTION_RETURN_TYPE ] );
 
-					this.fetchZKeys( zKeys );
+					this.fetchZKeys( zKeys ).then( function () {
+						this.setAvailableZArguments( this.zFunction.value );
+					}.bind( this ) );
 				}
 			}
-		},
-		selectedFunctionArguments: function () {
-			this.setAvailableZArguments( this.selectedFunctionArguments );
 		}
 	},
 	beforeCreate: function () {
