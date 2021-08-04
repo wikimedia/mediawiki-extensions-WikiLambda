@@ -6,8 +6,8 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-zreference">
-		<span v-if="viewmode || readonly || getCurrentZObjectId === referenceValue">
-			<a :href="'/wiki/ZObject:' + referenceValue" target="_blank">
+		<span v-if="isReadOnly">
+			<a :href="'/wiki/ZObject:' + referenceValue" :target="referenceLinkTarget">
 				{{ referenceLabel }}
 			</a>
 		</span>
@@ -72,6 +72,19 @@ module.exports = {
 			},
 			referenceLabel: function () {
 				return this.getZkeyLabels[ this.referenceValue ];
+			},
+			isReadOnly: function () {
+				return this.viewmode || this.readonly || this.getCurrentZObjectId === this.referenceValue;
+			},
+			isReadOnlyEditMode: function () {
+				return !this.viewmode && ( this.readonly || this.getCurrentZObjectId === this.referenceValue );
+			},
+			referenceLinkTarget: function () {
+				if ( this.isReadOnlyEditMode ) {
+					return '_blank';
+				}
+
+				return;
 			}
 		}
 	),

@@ -32,7 +32,7 @@
 		></z-reference>
 		<div v-else>
 			<h4>
-				<a :href="'/wiki/ZObject:' + zImplementationId" target="_blank">
+				<a :href="'/wiki/ZObject:' + zImplementationId">
 					{{ zImplementationLabel }}
 				</a>
 			</h4>
