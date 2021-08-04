@@ -63,7 +63,8 @@ module.exports = {
 		mapGetters( {
 			getAllModes: 'getAllModes',
 			modeIsValid: 'getModeIsValid',
-			getZarguments: 'getZarguments'
+			getZarguments: 'getZarguments',
+			isExpertMode: 'isExpertMode'
 		} ),
 		{
 			modes: function () {
@@ -82,7 +83,14 @@ module.exports = {
 				return this.getAllModes( payload );
 			}
 		}
-	)
+	),
+	watch: {
+		isExpertMode: function () {
+			if ( !this.isExpertMode && this.mode === 'json' ) {
+				this.$emit( 'change', 'literal' );
+			}
+		}
+	}
 };
 </script>
 

@@ -24,16 +24,24 @@
 				{{ submitButtonLabel }}
 			</button>
 		</template>
-		<div>
+		<button @click="$store.dispatch( 'toggleExpertMode' )">
+			<template v-if="$store.getters.isExpertMode">
+				{{ $i18n( 'wikilambda-disable-expert-mode' ) }}
+			</template>
+			<template v-else>
+				{{ $i18n( 'wikilambda-enable-expert-mode' ) }}
+			</template>
+		</button>
+		<sd-message v-if="message.text" :type="message.type">
+			{{ message }}
+		</sd-message>
+		<div v-if="$store.getters.isExpertMode">
 			Current ZObject:
 			<z-object-json
 				:readonly="true"
 				:zobject-raw="ZObjectJson"
 			></z-object-json>
 		</div>
-		<sd-message v-if="message.text" :type="message.type">
-			{{ message }}
-		</sd-message>
 	</div>
 </template>
 

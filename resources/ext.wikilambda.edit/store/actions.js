@@ -36,5 +36,8 @@ module.exports = {
 			Constants.Z_BOOLEAN_FALSE,
 			Constants.Z_IMPLEMENTATION
 		] );
+	},
+	toggleExpertMode: function ( context ) {
+		context.commit( 'setExpertMode', !context.getters.isExpertMode );
 	}
 };

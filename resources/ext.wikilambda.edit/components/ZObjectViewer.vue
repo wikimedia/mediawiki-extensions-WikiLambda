@@ -10,18 +10,39 @@
 		<z-object
 			:persistent="true"
 		></z-object>
+		<button @click="$store.dispatch( 'toggleExpertMode' )">
+			<template v-if="$store.getters.isExpertMode">
+				{{ $i18n( 'wikilambda-disable-expert-mode' ) }}
+			</template>
+			<template v-else>
+				{{ $i18n( 'wikilambda-enable-expert-mode' ) }}
+			</template>
+		</button>
+		<div v-if="$store.getters.isExpertMode">
+			Current ZObject:
+			<z-object-json
+				:readonly="true"
+				:zobject-raw="ZObjectJson"
+			></z-object-json>
+		</div>
 	</div>
 </template>
 
 <script>
 var ZObject = require( './ZObject.vue' ),
-	mapActions = require( 'vuex' ).mapActions;
+	mapGetters = require( 'vuex' ).mapGetters,
+	mapActions = require( 'vuex' ).mapActions,
+	ZObjectJson = require( './ZObjectJson.vue' );
 
 module.exports = {
 	name: 'ZObjectViewer',
 	components: {
-		'z-object': ZObject
+		'z-object': ZObject,
+		'z-object-json': ZObjectJson
 	},
+	computed: mapGetters( {
+		ZObjectJson: 'getZObjectAsJson'
+	} ),
 	methods: mapActions( [ 'initialize' ] ),
 	created: function () {
 		this.initialize();

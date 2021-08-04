@@ -22,6 +22,11 @@ describe( 'ZKeyModeSelector', function () {
 
 	beforeAll( function () {
 		store = new Vuex.Store( {
+			getters: {
+				isExpertMode: function () {
+					return true;
+				}
+			},
 			modules: {
 				zobjectModes: zobjectModes
 			}

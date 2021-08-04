@@ -32,7 +32,10 @@ describe( 'ZObjectViewer', function () {
 	it( 'renders without errors', function () {
 		var wrapper = shallowMount( ZObjectViewer, {
 			store: store,
-			localVue: localVue
+			localVue: localVue,
+			mocks: {
+				$i18n: jest.fn()
+			}
 		} );
 
 		expect( wrapper.find( 'div' ) ).toBeTruthy();

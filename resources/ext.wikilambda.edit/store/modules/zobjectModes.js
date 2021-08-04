@@ -10,7 +10,7 @@ var Constants = require( '../../Constants.js' ),
 
 module.exports = {
 	getters: {
-		getAllModes: function () {
+		getAllModes: function ( state, getters ) {
 			return function ( payload ) {
 				var typeIsItsOwnIdentity = payload.parentType === payload.literalType;
 				// If literal and parents are the same, it means it is its own identity,
@@ -26,6 +26,11 @@ module.exports = {
 					// reference or generic
 					if ( typeIsItsOwnIdentity ) {
 						return mode.type !== null;
+					}
+
+					// Do not display the JSON mode if not in expert mode
+					if ( mode.key === Constants.Z_KEY_MODES.JSON ) {
+						return getters.isExpertMode;
 					}
 
 					// Filter out specific modes depending on type
