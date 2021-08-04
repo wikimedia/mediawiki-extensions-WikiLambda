@@ -17,6 +17,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Revision\SlotRecord;
 use MessageSpecifier;
+use RuntimeException;
 use Status;
 use Title;
 use User;
@@ -213,7 +214,14 @@ class Hooks implements
 
 		$initialDataToLoadPath = dirname( __DIR__ ) . '/function-schemata/data/definitions/';
 
-		$dependencies = json_decode( file_get_contents( $initialDataToLoadPath . 'dependencies.json' ), true );
+		$dependenciesFile = file_get_contents( $initialDataToLoadPath . 'dependencies.json' );
+		if ( $dependenciesFile === false ) {
+			throw new RuntimeException(
+				'Could not load dependencies file from function-schemata sub-repository of the WikiLambda extension.'
+					. ' Have you initiated & fetched it? Try `git submodule update --init --recursive`.'
+			);
+		}
+		$dependencies = json_decode( $dependenciesFile, true );
 
 		$initialDataToLoadListing = array_filter(
 			scandir( $initialDataToLoadPath ),
