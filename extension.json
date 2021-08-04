@@ -265,7 +265,13 @@
 	"APIModules": {
 		"wikilambda_fetch": "MediaWiki\\Extension\\WikiLambda\\API\\ApiZObjectFetcher",
 		"wikilambda_edit": "MediaWiki\\Extension\\WikiLambda\\API\\ApiZObjectEditor",
-		"wikilambda_function_call": "MediaWiki\\Extension\\WikiLambda\\API\\ApiFunctionCall"
+		"wikilambda_function_call": "MediaWiki\\Extension\\WikiLambda\\API\\ApiFunctionCall",
+		"wikilambda_perform_test": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\API\\ApiPerformTest",
+			"services": [
+				"WikiLambdaZObjectStore"
+			]
+		}
 	},
 	"APIListModules": {
 		"wikilambdasearch_labels": "MediaWiki\\Extension\\WikiLambda\\API\\ApiQueryZObjectLabels",

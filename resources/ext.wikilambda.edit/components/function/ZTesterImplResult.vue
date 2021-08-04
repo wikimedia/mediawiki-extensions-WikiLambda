@@ -5,11 +5,10 @@
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->
-	<button
+	<div
 		class="ext-wikilambda-tester-result"
 		:class="resultClass"
 		:disabled="!zImplementationId || !zTesterId || typeof testerStatus === 'undefined'"
-		@click="initiateTester"
 	>
 		<template v-if="!zImplementationId || !zTesterId">
 			{{ $i18n( 'wikilambda-tester-status-pending' ) }}
@@ -23,12 +22,11 @@
 		<template v-else>
 			{{ $i18n( 'wikilambda-tester-status-running' ) }}
 		</template>
-	</button>
+	</div>
 </template>
 
 <script>
-var mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions;
+var mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = {
 	props: {
@@ -46,13 +44,16 @@ module.exports = {
 		}
 	},
 	computed: $.extend( mapGetters( [
-		'getZkeys',
 		'getZTesterResults'
 	] ), {
 		testerStatus: function () {
 			return this.getZTesterResults( this.zFunctionId, this.zTesterId, this.zImplementationId );
 		},
 		resultClass: function () {
+			if ( !this.zImplementationId || !this.zTesterId ) {
+				return '';
+			}
+
 			if ( this.testerStatus === true ) {
 				return 'test-passed';
 			}
@@ -63,39 +64,7 @@ module.exports = {
 
 			return '';
 		}
-	} ),
-	methods: $.extend( mapActions( [
-		'fetchZKeys',
-		'prepareTest',
-		'performTest',
-		'resetTestResult'
-	] ), {
-		initiateTester: function () {
-			this.prepareTest( {
-				zFunctionId: this.zFunctionId,
-				zImplementationId: this.zImplementationId,
-				zTesterId: this.zTesterId
-			} );
-		}
-	} ),
-	watch: {
-		zTesterId: function () {
-			this.initiateTester();
-		},
-		zImplementationId: function () {
-			this.initiateTester();
-		}
-	},
-	mounted: function () {
-		this.initiateTester();
-	},
-	beforeDestroy: function () {
-		this.resetTestResult( {
-			zFunctionId: this.zFunctionId,
-			zImplementationId: this.zImplementationId,
-			zTesterId: this.zTesterId
-		} );
-	}
+	} )
 };
 </script>
 

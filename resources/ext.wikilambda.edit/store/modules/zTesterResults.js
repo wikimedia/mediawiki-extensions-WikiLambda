@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /*!
  * WikiLambda Vue editor: Module for storing, retrieving, and running test runners
  *
@@ -7,17 +8,22 @@
 
 var Vue = require( 'vue' ),
 	Constants = require( '../../Constants.js' ),
-	performFunctionCall = require( '../../mixins/callZFunction.js' ).methods.performFunctionCall,
 	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
 
 module.exports = {
 	state: {
-		zTesterResults: {}
+		zTesterResults: {},
+		fetchingTestResults: false,
+		errorState: false
 	},
 	getters: {
 		getZTesterResults: function ( state ) {
 			return function ( zFunctionId, zTesterId, zImplementationId ) {
 				var key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
+
+				if ( state.errorState ) {
+					return false;
+				}
 
 				return state.zTesterResults[ key ];
 			};
@@ -44,6 +50,15 @@ module.exports = {
 	mutations: {
 		setZTesterResult: function ( state, result ) {
 			Vue.set( state.zTesterResults, result.key, result.result );
+		},
+		setFetchingTestResults: function ( state, fetching ) {
+			state.fetchingTestResults = fetching;
+		},
+		clearZTesterResults: function ( state ) {
+			state.zTesterResults = {};
+		},
+		setErrorState: function ( state, error ) {
+			state.errorState = error;
 		}
 	},
 	actions: {
@@ -55,134 +70,58 @@ module.exports = {
 				result: undefined
 			} );
 		},
-		prepareTest: function ( context, payload ) {
-			// If the test has no tester or implementation, skip it
-			if ( !payload.zImplementationId || !payload.zTesterId ) {
+		getTestResults: function ( context, payload ) {
+			var api = new mw.Api();
+
+			if ( context.state.fetchingTestResults ) {
 				return;
 			}
 
-			// Reset test results
-			context.dispatch( 'resetTestResult', payload );
+			context.commit( 'setFetchingTestResults', true );
+			context.commit( 'setErrorState', false );
+			if ( payload.clearPreviousResults ) {
+				context.commit( 'clearZTesterResults' );
+			}
 
-			var zTesterObject,
-				test,
-				implementation,
-				validatorZid,
-				validator;
+			return api.post( {
+				action: 'wikilambda_perform_test',
+				wikilambda_perform_test_zfunction:
+					!context.getters.getViewMode && payload.zFunctionId === context.getters.getCurrentZObjectId ?
+						JSON.stringify( context.getters.getZkeys[ payload.zFunctionId ] ) :
+						payload.zFunctionId,
+				wikilambda_perform_test_zimplementations: JSON.stringify(
+					( payload.zImplementations || [] ).map( function ( impl ) {
+						if ( !context.getters.getViewMode && impl === context.getters.getCurrentZObjectId ) {
+							return canonicalize(
+								JSON.parse( JSON.stringify( context.getters.getZObjectAsJson ) )
+							);
+						}
 
-			// Get the keys for the implementation and tester
-			context.dispatch( 'fetchZKeys', [ payload.zImplementationId, payload.zTesterId ] )
-				.then( function () {
-					// Get the tester object
-					if ( payload.zTesterId === context.getters.getCurrentZObjectId ) {
-						zTesterObject =
-							canonicalize( JSON.parse( JSON.stringify( context.getters.getZObjectAsJson ) ) );
-					} else {
-						zTesterObject =
-							canonicalize( JSON.parse( JSON.stringify(
-								context.getters.getZkeys[ payload.zTesterId ]
-							) ) );
-					}
+						return impl;
+					} ).filter( function ( item ) {
+						return !!item;
+					} ) ),
+				wikilambda_perform_test_ztesters: JSON.stringify(
+					( payload.zTesters || [] ).map( function ( tester ) {
+						if ( !context.getters.getViewMode && tester === context.getters.getCurrentZObjectId ) {
+							return canonicalize(
+								JSON.parse( JSON.stringify( context.getters.getZObjectAsJson ) )
+							);
+						}
 
-					// Get the test function call (Z20K1)
-					test = zTesterObject[
-						Constants.Z_PERSISTENTOBJECT_VALUE ][
-						Constants.Z_TESTER_CALL
-					];
+						return tester;
+					} ).filter( function ( item ) {
+						return !!item;
+					} ) ),
+				wikilambda_perform_test_nocache: payload.nocache || false
+			} ).then( function ( data ) {
+				var results = JSON.parse( data.query.wikilambda_perform_test.Tested.data );
 
-					// Determine implementation
-					if ( payload.zImplementationId === context.getters.getCurrentZObjectId ) {
-						implementation = JSON.parse( JSON.stringify( context.getters.getZObjectAsJson ) )[
-							Constants.Z_PERSISTENTOBJECT_VALUE
-						];
-					} else {
-						implementation = payload.zImplementationId;
-					}
-
-					// Set the function call's function
-					if ( this.zTesterId !== context.getters.getCurrentZObjectId ) {
-						test[ Constants.Z_FUNCTION_CALL_FUNCTION ] = JSON.parse(
-							JSON.stringify( context.getters.getZkeys[
-								zTesterObject[
-									Constants.Z_PERSISTENTOBJECT_VALUE ][
-									Constants.Z_TESTER_CALL
-								][
-									Constants.Z_FUNCTION_CALL_FUNCTION
-								]
-							][ Constants.Z_PERSISTENTOBJECT_VALUE ] ) );
-
-						// Set the function call's implementation
-						test[ Constants.Z_FUNCTION_CALL_FUNCTION ][
-							Constants.Z_FUNCTION_IMPLEMENTATIONS ] = [
-							implementation
-						];
-					} else {
-						test[ Constants.Z_FUNCTION_CALL_FUNCTION ] = JSON.parse(
-							JSON.stringify( context.getters.getZkeys[
-								canonicalize( zTesterObject[
-									Constants.Z_PERSISTENTOBJECT_VALUE ][
-									Constants.Z_TESTER_CALL
-								][
-									Constants.Z_FUNCTION_CALL_FUNCTION
-								] )
-							] ) );
-
-						// Set the function call's implementation
-						test[ Constants.Z_FUNCTION_CALL_FUNCTION ][
-							Constants.Z_FUNCTION_IMPLEMENTATIONS ] = [
-							implementation
-						];
-					}
-
-					// Get the ZID of the validator
-					validatorZid = zTesterObject[
-						Constants.Z_PERSISTENTOBJECT_VALUE ][
-						Constants.Z_TESTER_VALIDATION
-					];
-
-					// Fetch the validator function
-					return context.dispatch( 'fetchZKeys', [ validatorZid ] );
-				} )
-				.then( function () {
-					// Get the validator object
-					validator = JSON.parse( JSON.stringify( context.getters.getZkeys[ validatorZid ] ) );
-
-					// Perform the test runner
-					return context.dispatch( 'performTest', {
-						zFunctionId: payload.zFunctionId,
-						zTesterId: payload.zTesterId,
-						zImplementationId: payload.zImplementationId,
-						test: test,
-						validator: validator
-					} );
-				} );
-		},
-		performTest: function ( context, payload ) {
-			var key = payload.zFunctionId + ':' + payload.zTesterId + ':' + payload.zImplementationId;
-			// Perform function call (Z20K1), return normalized form
-			performFunctionCall( payload.test, true )
-				.then( function ( response ) {
-					// Construct function call for validation (Z20K2 -> Z7)
-					var result = response.result,
-						// Get the argument keys for the validation function
-						validationArgument = payload.validator[
-							Constants.Z_PERSISTENTOBJECT_VALUE ][
-							Constants.Z_FUNCTION_ARGUMENTS ][
-							0 ],
-						// Construct a Z7 for the validation function
-						validationPayload = {
-							Z1K1: Constants.Z_FUNCTION_CALL,
-							Z7K1: payload.validator[ Constants.Z_PERSISTENTOBJECT_VALUE ]
-						};
-					// Set the validation function's argument
-					validationPayload[ validationArgument[ Constants.Z_ARGUMENT_KEY ] ] = result[ validationArgument[ Constants.Z_ARGUMENT_TYPE ] + 'K1' ];
-
-					// Perform validation check
-					return performFunctionCall( validationPayload );
-				} )
-				.then( function ( response ) {
-					var result = response.result,
-						error = response.error;
+				results.forEach( function ( testResult ) {
+					var response = canonicalize( testResult.validationResponse ),
+						result = response[ Constants.Z_PAIR_FIRST ],
+						error = response[ Constants.Z_PAIR_SECOND ],
+						key = testResult.zFunctionId + ':' + testResult.zTesterId + ':' + testResult.zImplementationId;
 
 					// Store result
 					if ( result === Constants.Z_NOTHING ) {
@@ -201,15 +140,15 @@ module.exports = {
 									Constants.Z_BOOLEAN_TRUE
 						} );
 					}
-				} )
+				} );
+
+				context.commit( 'setFetchingTestResults', false );
+			} )
 				.catch( function ( error ) {
 					// eslint-disable-next-line no-console
 					console.error( error );
-					// If any errors, store result as false
-					context.commit( 'setZTesterResult', {
-						key: key,
-						result: false
-					} );
+					context.commit( 'setErrorState', true );
+					context.commit( 'setFetchingTestResults', false );
 				} );
 		}
 	}
