@@ -356,13 +356,120 @@ describe( 'zkeys Vuex module', function () {
 				expect( context.commit ).toHaveBeenCalledWith( 'addZKeyLabel', expecteaddZKeyLabelInfoCall );
 			} );
 			it( 'Will set the stored ZArguments', function () {
-				var zArguments = [ { label: 'word', zid: 'Z10024K1', key: 'word: ', type: 'String' } ];
+				context.getters.getZkeys = {
+					Z10033: {
+						Z1K1: 'Z2',
+						Z2K1: 'Z10033',
+						Z2K2: {
+							Z1K1: 'Z8',
+							Z8K1: [
+								{
+									Z1K1: 'Z17',
+									Z17K1: 'Z40',
+									Z17K2: {
+										Z1K1: 'Z6',
+										Z6K1: 'Z10033K1'
+									},
+									Z17K3: {
+										Z1K1: 'Z12',
+										Z12K1: [
+											{
+												Z1K1: 'Z11',
+												Z11K1: 'Z1002',
+												Z11K2: 'left'
+											}
+										]
+									}
+								},
+								{
+									Z1K1: 'Z17',
+									Z17K1: 'Z40',
+									Z17K2: {
+										Z1K1: 'Z6',
+										Z6K1: 'Z10033K2'
+									},
+									Z17K3: {
+										Z1K1: 'Z12',
+										Z12K1: [
+											{
+												Z1K1: 'Z11',
+												Z11K1: 'Z1002',
+												Z11K2: 'right'
+											}
+										]
+									}
+								}
+							],
+							Z8K2: 'Z40',
+							Z8K3: [],
+							Z8K4: [
+								'Z10034'
+							],
+							Z8K5: 'Z10033'
+						},
+						Z2K3: {
+							Z1K1: 'Z12',
+							Z12K1: [
+								{
+									Z1K1: 'Z11',
+									Z11K1: 'Z1002',
+									Z11K2: 'Nand'
+								}
+							]
+						}
+					},
+					Z40: {
+						Z1K1: 'Z2',
+						Z2K1: 'Z40',
+						Z2K2: {
+							Z1K1: 'Z4',
+							Z4K1: 'Z40',
+							Z4K2: [
+								{
+									Z1K1: 'Z3',
+									Z3K1: 'Z40',
+									Z3K2: 'Z40K1',
+									Z3K3: {
+										Z1K1: 'Z12',
+										Z12K1: [
+											{
+												Z1K1: 'Z11',
+												Z11K1: 'Z1002',
+												Z11K2: 'identity'
+											}
+										]
+									}
+								}
+							],
+							Z4K3: 'Z140'
+						},
+						Z2K3: {
+							Z1K1: 'Z12',
+							Z12K1: [
+								{
+									Z1K1: 'Z11',
+									Z11K1: 'Z1002',
+									Z11K2: 'Boolean'
+								}
+							]
+						}
+					}
+				};
+				context.getters.getZkeyLabels = {
+					Z40: 'Boolean'
+				};
 
-				zkeysModule.actions.setAvailableZArguments( context, zArguments );
+				var zArguments = [
+					{ label: 'left', zid: 'Z10033K1', key: 'left: ', type: 'Boolean' },
+					{ label: 'right', zid: 'Z10033K2', key: 'right: ', type: 'Boolean' }
+				];
 
-				expect( context.commit ).toHaveBeenCalledTimes( 2 );
+				zkeysModule.actions.setAvailableZArguments( context, 'Z10033' );
+
+				expect( context.commit ).toHaveBeenCalledTimes( 3 );
 				expect( context.commit ).toHaveBeenNthCalledWith( 1, 'resetZArgumentInfo' );
 				expect( context.commit ).toHaveBeenNthCalledWith( 2, 'addZArgumentInfo', zArguments[ 0 ] );
+				expect( context.commit ).toHaveBeenNthCalledWith( 3, 'addZArgumentInfo', zArguments[ 1 ] );
 			} );
 		} );
 	} );
