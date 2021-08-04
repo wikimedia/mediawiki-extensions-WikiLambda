@@ -8,7 +8,7 @@
 	<div class="ext-wikilambda-zreference">
 		<span v-if="viewmode || readonly || getCurrentZObjectId === referenceValue">
 			<a :href="'/wiki/ZObject:' + referenceValue" target="_blank">
-				{{ referenceLabel }} ({{ referenceValue }})
+				{{ referenceLabel }}
 			</a>
 		</span>
 

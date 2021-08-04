@@ -14,8 +14,7 @@
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 			</button>
-			{{ languageLabel }}
-			({{ monolingualStringLanguage }}):
+			{{ languageLabel }}:
 		</div>
 		<div class="ext-wikilambda-cell">
 			<span

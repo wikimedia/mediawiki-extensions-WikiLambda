@@ -30,7 +30,7 @@
 					:key="langId"
 					:value="langId"
 				>
-					{{ langName }} ({{ langId }})
+					{{ langName }}
 				</option>
 			</select>
 		</div>

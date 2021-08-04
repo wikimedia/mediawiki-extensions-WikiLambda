@@ -6,10 +6,6 @@
 		@license MIT
 	-->
 	<div>
-		(<z-string
-			v-if="argumentKeyId"
-			:zobject-id="argumentKeyId"
-			:readonly="true"></z-string>)
 		<div>
 			{{ typeLabel }}:
 			<z-object-selector

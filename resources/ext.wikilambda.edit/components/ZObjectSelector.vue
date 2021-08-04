@@ -96,14 +96,16 @@ module.exports = {
 		] ),
 		{
 			lookupLabels: function () {
-				return Object.keys( this.lookupResults );
+				return Object.keys( this.lookupResults ).map( function ( key ) {
+					return this.lookupResults[ key ];
+				}.bind( this ) );
 			},
 			selectedLabel: function () {
 				return this.zkeyLabels[ this.selectedId ];
 			},
 			selectedText: function () {
 				if ( this.selectedId ) {
-					return this.selectedLabel + ' (' + this.selectedId + ')';
+					return this.selectedLabel;
 				} else {
 					return '';
 				}
@@ -167,7 +169,7 @@ module.exports = {
 								// If we are searching for Types (this.type === 'Z4')
 								// we should exclude Z1, Z2, Z7 and Z9 from the results
 								if ( !self.isExcludedZType( zid ) ) {
-									self.lookupResults[ label + ' (' + zid + ')' ] = zid;
+									self.lookupResults[ zid ] = label;
 								}
 								// Update zKeyLabels in the Vuex store
 								if ( !( zid in self.zkeyLabels ) ) {
@@ -256,8 +258,7 @@ module.exports = {
 			 * @param {string} item
 			 */
 			onSubmit: function ( item ) {
-				var zIds = null,
-					zId = '',
+				var zId = '',
 					inputValue;
 				// we need to make sure that the input event is not triggered twice
 				if ( this.valueEmitted === true ) {
@@ -269,14 +270,21 @@ module.exports = {
 				} else {
 					inputValue = item;
 				}
-				zIds = inputValue.match( this.zRegex );
-				// The item string is incorrect and does not include a Zobject Id
-				if ( !zIds || zIds.length === 0 ) {
-					return;
-				}
-				// The result of the Regex is an array so we get the first item
-				zId = zIds[ 0 ];
 
+				// If the input is a valid Zid, set zId
+				// Otherwise check if the text matches a label
+				if ( this.isValidZidFormat( inputValue.toUpperCase() ) ) {
+					zId = inputValue;
+				} else {
+					for ( var key in this.lookupResults ) {
+						var label = this.lookupResults[ key ];
+
+						if ( label === inputValue ) {
+							zId = key;
+							break;
+						}
+					}
+				}
 				if ( this.zkeyLabels[ zId ] ) {
 					this.$emit( 'input', zId );
 					this.valueEmitted = true;

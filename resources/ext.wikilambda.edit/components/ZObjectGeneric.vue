@@ -6,18 +6,18 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-zobject-generic">
-		<span>{{ z1k1label }} ({{ Constants.Z_OBJECT_TYPE }}): </span>
+		<span>{{ z1k1label }}: </span>
 
 		<span v-if="persistent">
 			<a v-if="type !== zobjectId && (getViewMode || readonly)" :href="'./ZObject:' + type">
-				<span>{{ typeLabel }} ({{ type }})</span>
+				<span>{{ typeLabel }}</span>
 			</a>
-			<span v-else>{{ typeLabel }} ({{ type }})</span>
-			<ul><li> {{ z2k1label }} ({{ Constants.Z_PERSISTENTOBJECT_ID }}): {{ z2K1Value }} </li></ul>
+			<span v-else>{{ typeLabel }}</span>
+			<ul><li> {{ z2k1label }}: {{ z2K1Value }} </li></ul>
 		</span>
 
 		<span v-else>
-			<span v-if="getViewMode || readonly || type"> {{ typeLabel }} ({{ type }})</span>
+			<span v-if="getViewMode || readonly || type"> {{ typeLabel }}</span>
 			<z-object-selector
 				v-else
 				:type="Constants.Z_TYPE"
