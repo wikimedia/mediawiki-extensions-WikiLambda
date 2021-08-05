@@ -49,5 +49,11 @@
 	"apihelp-query+wikilambdafn_search-summary": "Diese API-Abfrageliste sucht nach den IDs aller ZObjects, die einer bereitgestellten ZFunction-ID zugeordnet sind",
 	"apihelp-query+wikilambdafn_search-example-simple": "Suchen nach ZImplementation-IDs, die einer bestimmten ZFunction-ID zugeordnet sind",
 	"apihelp-query+wikilambdafn_search-param-zfunction_id": "Die ZFunktion-ID, nach der gesucht werden soll",
-	"apihelp-query+wikilambdafn_search-param-type": "Der Typ des ZObjects, das von der ZFunction referenziert wird und nach dem gesucht werden soll"
+	"apihelp-query+wikilambdafn_search-param-type": "Der Typ des ZObjects, das von der ZFunction referenziert wird und nach dem gesucht werden soll",
+	"apihelp-wikilambda_perform_test-example": "Durchführung von Tests gegen eine vollständig bereitgestellte ZF-Funktion, ZImplementierung und ZTester",
+	"apihelp-wikilambda_perform_test-summary": "Endpunkt zur Abfrage von Testergebnissen für eine ZFunktion. Akzeptiert eine ZFunktion, eine Liste von ZImplementierungen und eine Liste von ZTestern. Akzeptiert entweder eine Liste von ZIDs oder das vollständige ZObject für die Funktion, Implementierungen oder Tester. Akzeptiert auch einen Schlüssel, um einen Backend-Cache zu verwenden oder nicht.",
+	"apihelp-wikilambda_perform_test-param-zfunction": "Die zu testende ZFunktions-ID (oder das Objekt)",
+	"apihelp-wikilambda_perform_test-param-zimplementations": "Die Liste der zu testenden ZImplementierungs-IDs (oder Objekte)",
+	"apihelp-wikilambda_perform_test-param-ztesters": "Die Liste der zu prüfenden ZTester-IDs (oder Objekte)",
+	"apihelp-wikilambda_perform_test-param-nocache": "Ob der Cache verwendet werden soll oder nicht"
 }

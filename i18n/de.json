@@ -83,5 +83,7 @@
 	"wikilambda-tester-results-caption": "Ergebnisse von Funktionstestern gegen Implementierungen",
 	"wikilambda-tester-no-results": "Keine Testergebnisse gefunden. Füge eine Implementierung und einen Tester hinzu, um die Ergebnisse anzuzeigen.",
 	"wikilambda-tester-results-percentage-label": "Gesamtzahl der Tester, die bestanden haben",
-	"wikilambda-tester-run-testers": "Alle Tester ausführen"
+	"wikilambda-tester-run-testers": "Alle Tester ausführen",
+	"wikilambda-enable-expert-mode": "Expertenmodus einschalten",
+	"wikilambda-disable-expert-mode": "Expertenmodus ausschalten"
 }
