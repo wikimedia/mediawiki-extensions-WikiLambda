@@ -38,7 +38,8 @@ class ZReferenceTest extends WikiLambdaIntegrationTestCase {
 				. '"Z1K1": "Z2", '
 				. '"Z2K1": "Z0", '
 				. '"Z2K2": { "Z1K1": "Z9", "Z9K1": "Z1" }, '
-				. '"Z2K3": { "Z1K1":"Z12", "Z12K1":[] } '
+				. '"Z2K3": { "Z1K1":"Z12", "Z12K1":[] }, '
+				. '"Z2K4": { "Z1K1":"Z32", "Z32K1":[] } '
 			. '}'
 		);
 

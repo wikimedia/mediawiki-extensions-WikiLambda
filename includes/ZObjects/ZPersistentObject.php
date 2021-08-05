@@ -40,6 +40,10 @@ class ZPersistentObject extends ZObject {
 					'type' => ZTypeRegistry::Z_MULTILINGUALSTRING,
 					'required' => true,
 				],
+				ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES => [
+					'type' => ZTypeRegistry::Z_MULTILINGUALSTRINGSET,
+					'required' => false,
+				],
 			],
 		];
 	}
@@ -51,18 +55,21 @@ class ZPersistentObject extends ZObject {
 	 *
 	 * @param string $zid
 	 * @param string|array|ZObject|\stdClass $value The item to turn into the internal ZObject
-	 * @param array|ZObject $label The item to turn into this ZPersistentObject label
+	 * @param array|ZObject $label The item to turn into this ZPersistentObject's label
+	 * @param array|ZObject|null $aliases The item to turn into this ZPersistentObject's aliases
 	 */
-	public function __construct( $zid, $value, $label ) {
+	public function __construct( $zid, $value, $label, $aliases = null ) {
+		$aliases = $aliases ?? new ZMultiLingualStringSet( [] );
 		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ] = $zid;
 		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = ZObjectFactory::create( $value );
 		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = ZObjectFactory::create( $label );
+		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES ] = ZObjectFactory::create( $aliases );
 	}
 
 	/**
 	 * @return string The persisted (or null) ZID
 	 */
-	public function getZid() {
+	public function getZid(): string {
 		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ];
 	}
 
@@ -76,14 +83,21 @@ class ZPersistentObject extends ZObject {
 	/**
 	 * @return ZMultilingualString The mulilingual string object with the label
 	 */
-	public function getLabels() {
+	public function getLabels(): ZMultilingualString {
 		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ];
+	}
+
+	/**
+	 * @return ZMultilingualStringSet The mulilingual stringset object with the aliases
+	 */
+	public function getAliases(): ZMultiLingualStringSet {
+		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES ];
 	}
 
 	/**
 	 * @return ZObject The inner ZObject wrapped by this ZPersistentObject
 	 */
-	public function getInnerZObject() {
+	public function getInnerZObject(): ZObject {
 		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ];
 	}
 
@@ -101,7 +115,7 @@ class ZPersistentObject extends ZObject {
 	 * @param Language $language Language in which to provide the label.
 	 * @return string
 	 */
-	public function getLabel( $language ) {
+	public function getLabel( $language ): string {
 		return $this->getLabels()->getStringForLanguage( $language );
 	}
 

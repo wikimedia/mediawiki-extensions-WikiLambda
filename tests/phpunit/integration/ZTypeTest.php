@@ -98,6 +98,13 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 					[ 'Z1K1' => 'Z11', 'Z11K1' => self::ZLANG['en'], 'Z11K2' => 'Demonstration type' ],
 					[ 'Z1K1' => 'Z11', 'Z11K1' => self::ZLANG['fr'], 'Z11K2' => 'Type pour démonstration' ]
 				]
+			],
+			'Z2K4' => [
+				'Z1K1' => 'Z32',
+				'Z32K1' => [
+					[ 'Z1K1' => 'Z31', 'Z31K1' => self::ZLANG['en'], 'Z31K2' => [ 'Demonstration type alias' ] ],
+					[ 'Z1K1' => 'Z31', 'Z31K1' => self::ZLANG['fr'], 'Z31K2' => [ 'Alias de type pour démonstration' ] ]
+				]
 			]
 		] ) );
 
@@ -106,6 +113,15 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertSame( 'Demonstration type', $testObject->getLabel( $english ) );
 		$this->assertSame( 'Type pour démonstration', $testObject->getLabel( $french ) );
+
+		$this->assertSame(
+			[ 'Demonstration type alias' ],
+			$testObject->getAliases()->getAliasesForLanguage( $english )
+		);
+		$this->assertSame(
+			[ 'Alias de type pour démonstration' ],
+			$testObject->getAliases()->getAliasesForLanguage( $french )
+		);
 
 		$this->assertSame( 'Z111', $testObject->getInnerZObject()->getTypeId() );
 

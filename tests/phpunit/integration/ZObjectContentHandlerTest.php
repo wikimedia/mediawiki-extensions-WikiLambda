@@ -75,7 +75,11 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 		$content = $handler->makeEmptyContent();
 		$serialized = $handler->serializeContent( $content );
-		$expected = '{"Z1K1":"Z2","Z2K1":"Z0","Z2K2":"","Z2K3":{"Z1K1":"Z12","Z12K1":[]}}';
+		$expected = '{"Z1K1":"Z2",'
+			. '"Z2K1":"Z0",'
+			. '"Z2K2":"",'
+			. '"Z2K3":{"Z1K1":"Z12","Z12K1":[]},'
+			. '"Z2K4":{"Z1K1":"Z32","Z32K1":[]}}';
 
 		$this->assertTrue( is_string( $serialized ) );
 		$this->assertSame(

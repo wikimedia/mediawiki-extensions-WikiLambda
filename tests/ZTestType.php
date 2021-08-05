@@ -85,6 +85,21 @@ class ZTestType extends ZObject {
 				"Z11K2": "Type pour démonstration"
 			}
 		]
+	},
+	"Z2K4": {
+		"Z1K1": "Z32",
+		"Z32K1": [
+			{
+				"Z1K1": "Z31",
+				"Z31K1": "Z1002",
+				"Z31K2": [ "Demonstration type alias" ]
+			},
+			{
+				"Z1K1": "Z31",
+				"Z31K1": "Z1004",
+				"Z31K2": [ "Alias de type pour démonstration" ]
+			}
+		]
 	}
 }
 EOT;
