@@ -17,6 +17,8 @@
 	"wikilambda-noresult": "The search has provided no result.",
 	"wikilambda-labelclash": "The provided content's label clashes with ZObject '$1' for the label in '$2'.",
 	"wikilambda-persistentzobject": "ZObject",
+	"wikilambda-persistentzobject-metadata": "Labels and Aliases",
+	"wikilambda-persistentzobject-contents": "Contents",
 	"wikilambda-multilingualstring-nofallback": "No label defined in this language or accepted fallbacks",
 	"wikilambda-viewmode-nojs": "This page displays in a limited way without JavaScript.",
 	"wikilambda-reference": "Reference",

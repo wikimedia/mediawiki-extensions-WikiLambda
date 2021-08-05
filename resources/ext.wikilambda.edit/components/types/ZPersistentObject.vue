@@ -7,20 +7,26 @@
 	-->
 	<div>
 		<div>
-			<h2 class="ext-wikilambda-persistentobject-header">
-				{{ labelLabel }}
-			</h2>
-			<z-object-key
-				:key="Constants.Z_PERSISTENTOBJECT_LABEL"
-				:zobject-id="zObjectLabel.id"
-				:parent-type="zObjectType"
-				:readonly="getViewMode || readonly"
-			></z-object-key>
+			<h2 class="ext-wikilambda-persistentobject-header">{{ $i18n( 'wikilambda-persistentzobject-metadata' ) }}</h2>
+			<div>
+				<z-object-key
+					:key="Constants.Z_PERSISTENTOBJECT_LABEL"
+					:zobject-id="zObjectLabel.id"
+					:parent-type="zObjectType"
+					:readonly="getViewMode || readonly"
+				></z-object-key>
+			</div>
+			<div>
+				<z-object-key
+					:key="Constants.Z_PERSISTENTOBJECT_ALIASES"
+					:zobject-id="zObjectAliases.id"
+					:parent-type="zObjectType"
+					:readonly="getViewMode || readonly"
+				></z-object-key>
+			</div>
 		</div>
 		<div>
-			<h2 class="ext-wikilambda-persistentobject-header">
-				{{ valueLabel }}
-			</h2>
+			<h2 class="ext-wikilambda-persistentobject-header">{{ $i18n( 'wikilambda-persistentzobject-contents' ) }}</h2>
 			<div v-if="!(getViewMode || readonly)" class="ext-wikilambda-clear-persistentobject">
 				<button
 					:title="$i18n( 'wikilambda-editor-zobject-clearitem-tooltip' )"
@@ -82,11 +88,8 @@ module.exports = {
 		zObjectLabel: function () {
 			return this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_LABEL, this.zobject );
 		},
-		valueLabel: function () {
-			return this.getZkeyLabels[ this.zObjectValue.key ];
-		},
-		labelLabel: function () {
-			return this.getZkeyLabels[ this.zObjectLabel.key ];
+		zObjectAliases: function () {
+			return this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_ALIASES, this.zobject );
 		}
 	} ),
 	methods: $.extend( mapActions( [
