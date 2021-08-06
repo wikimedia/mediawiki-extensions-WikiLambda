@@ -522,7 +522,7 @@ module.exports = {
 			context.dispatch( 'removeZObjectChildren', payload.id );
 			context.dispatch( 'setZObjectValue', zobjectRoot );
 			zobjectTree.forEach( function ( zobject ) {
-				var nextId = context.getters.getNextObjectId;
+				var nextId = getNextObjectId( context.state.zobject );
 				zobjectTree.forEach( function ( childZObject ) {
 					if ( !childZObject.matched && childZObject.parent === zobject.id ) {
 						childZObject.parent = nextId;
@@ -646,33 +646,49 @@ module.exports = {
 		/**
 		 * Create the required entry in the zobject array for a zPersistenObject.
 		 * The entry will result in a json representation equal to:
-		 * { Z1K1: 'Z2', Z2K1: { Z1K1: 'Z9', Z9K1: 'Z0' }, Z2K2: undefined, Z2K3: { Z1K1: 'Z12', Z12K1: [] } }
+		 * { Z1K1: { Z1K1: 'Z9', Z9K1: 'Z2' },
+		 *      Z2K1: { Z1K1: 'Z9', Z9K1: 'Z0' },
+		 *      Z2K2: undefined,
+		 *      Z2K3: { Z1K1: {
+		 *        Z1K1: 'Z9', Z9K1: 'Z12'
+		 *      }, Z12K1: [] },
+		 *      Z2K4: { Z1K1: {
+		 *        Z1K1: 'Z9', Z9K1: 'Z32'
+		 *      }, Z32K1: [] }
+		 *  }
 		 *
 		 * @param {Object} context
 		 * @param {number} ObjectId
 		 */
 		addZPersistentObject: function ( context, ObjectId ) {
-			var nextId,
-				zObjectItems = [];
-
-			zObjectItems = [
-				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_PERSISTENTOBJECT, parent: ObjectId }
-			];
-			context.dispatch( 'addZObjects', zObjectItems );
-
-			// Reference to Z0
-			nextId = getNextObjectId( context.state.zobject );
-			zObjectItems = [
-				{ key: Constants.Z_PERSISTENTOBJECT_ID, value: 'object', parent: ObjectId },
-				{ key: Constants.Z_PERSISTENTOBJECT_VALUE, value: 'object', parent: ObjectId }
-			];
-			context.dispatch( 'addZObjects', zObjectItems );
-			context.dispatch( 'addZReference', { id: nextId, value: Constants.NEW_ZID_PLACEHOLDER } );
-
-			// Empty Multil;ingual string
-			nextId = getNextObjectId( context.state.zobject );
-			context.dispatch( 'addZObject', { key: Constants.Z_PERSISTENTOBJECT_LABEL, value: 'object', parent: ObjectId } );
-			context.dispatch( 'addZMultilingualString', nextId );
+			context.dispatch( 'injectZObject', {
+				zobject: {
+					Z1K1: Constants.Z_PERSISTENTOBJECT,
+					Z2K1: Constants.NEW_ZID_PLACEHOLDER,
+					Z2K2: {},
+					Z2K3: {
+						Z1K1: Constants.Z_MULTILINGUALSTRING,
+						Z12K1: ( context.getters.getUserZlangZID ? [ {
+							Z1K1: Constants.Z_MONOLINGUALSTRING,
+							Z11K1: context.getters.getUserZlangZID,
+							Z11K2: ''
+						} ] : []
+						)
+					},
+					Z2K4: {
+						Z1K1: Constants.Z_MULTILINGUALSTRINGSET,
+						Z32K1: ( context.getters.getUserZlangZID ? [ {
+							Z1K1: Constants.Z_MONOLINGUALSTRINGSET,
+							Z31K1: context.getters.getUserZlangZID,
+							Z31K2: []
+						} ] : []
+						)
+					}
+				},
+				key: undefined,
+				id: undefined,
+				parent: ObjectId
+			} );
 		},
 		/**
 		 * Create the required entry in the zobject array for a zMonolingualString.

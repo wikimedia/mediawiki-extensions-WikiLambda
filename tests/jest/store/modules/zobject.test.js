@@ -608,7 +608,17 @@ describe( 'zobject Vuex module', function () {
 			it( 'adds a valid ZPersistentObject', function () {
 				zobjectModule.actions.addZPersistentObject( context, 0 );
 
-				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z2', Z2K1: { Z1K1: 'Z9', Z9K1: 'Z0' }, Z2K2: undefined, Z2K3: { Z1K1: 'Z12', Z12K1: [] } } );
+				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual(
+					{ Z1K1: { Z1K1: 'Z9', Z9K1: 'Z2' },
+						Z2K1: { Z1K1: 'Z9', Z9K1: 'Z0' },
+						Z2K2: undefined,
+						Z2K3: { Z1K1: {
+							Z1K1: 'Z9', Z9K1: 'Z12'
+						}, Z12K1: [] },
+						Z2K4: { Z1K1: {
+							Z1K1: 'Z9', Z9K1: 'Z32'
+						}, Z32K1: [] }
+					} );
 			} );
 
 			it( 'adds a valid ZMultilingualString', function () {
