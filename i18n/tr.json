@@ -3,6 +3,7 @@
 		"authors": [
 			"BaRaN6161 TURK",
 			"Hedda",
+			"Jelican9",
 			"Joseph",
 			"Melissadilara",
 			"Mim.saitkilic",
@@ -68,5 +69,7 @@
 	"wikilambda-editor-implementation-list-label": "Uygulama Listesi",
 	"wikilambda-editor-boolean-selector": "doğru/yanlış seç",
 	"wikilambda-implementation-selector-code": "Kod",
-	"wikilambda-implementation-selector-composition": "Kompozisyon"
+	"wikilambda-implementation-selector-composition": "Kompozisyon",
+	"wikilambda-enable-expert-mode": "Uzman Modunu etkinleştir",
+	"wikilambda-disable-expert-mode": "Uzman Modunu Etkisizleştir"
 }

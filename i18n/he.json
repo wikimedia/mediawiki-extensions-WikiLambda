@@ -83,5 +83,7 @@
 	"wikilambda-tester-results-caption": "תוצאות של בודקי פונקציות אל מול מימושים",
 	"wikilambda-tester-no-results": "לא נמצאו תוצאות בודקים. נא להוסיף מימוש ובודק כדי לראות תוצאות.",
 	"wikilambda-tester-results-percentage-label": "סך כול הבודקים שעוברים",
-	"wikilambda-tester-run-testers": "הרצת כל הבודקים"
+	"wikilambda-tester-run-testers": "הרצת כל הבודקים",
+	"wikilambda-enable-expert-mode": "הפעלת מצב מומחה",
+	"wikilambda-disable-expert-mode": "כיבוי מצב מומחה"
 }

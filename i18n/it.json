@@ -24,5 +24,7 @@
 	"wikilambda-editor-zobject-addkey": "Aggiungi chiave:",
 	"wikilambda-editor-label-select-programming-language-label": "Seleziona linguaggio di programmazione:",
 	"wikilambda-implementation-selector-code": "Codice",
-	"wikilambda-argref-default-label": "Seleziona un argomento"
+	"wikilambda-argref-default-label": "Seleziona un argomento",
+	"wikilambda-enable-expert-mode": "Abilità modalità esperto",
+	"wikilambda-disable-expert-mode": "Disabilità modalità esperto"
 }
