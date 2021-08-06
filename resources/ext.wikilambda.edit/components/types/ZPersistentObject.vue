@@ -7,7 +7,9 @@
 	-->
 	<div>
 		<div>
-			<h2 class="ext-wikilambda-persistentobject-header">{{ $i18n( 'wikilambda-persistentzobject-metadata' ) }}</h2>
+			<h2 class="ext-wikilambda-persistentobject-header">
+				{{ $i18n( 'wikilambda-persistentzobject-metadata' ) }}
+			</h2>
 			<div>
 				<z-object-key
 					:key="Constants.Z_PERSISTENTOBJECT_LABEL"
@@ -26,7 +28,9 @@
 			</div>
 		</div>
 		<div>
-			<h2 class="ext-wikilambda-persistentobject-header">{{ $i18n( 'wikilambda-persistentzobject-contents' ) }}</h2>
+			<h2 class="ext-wikilambda-persistentobject-header">
+				{{ $i18n( 'wikilambda-persistentzobject-contents' ) }}
+			</h2>
 			<div v-if="!(getViewMode || readonly)" class="ext-wikilambda-clear-persistentobject">
 				<button
 					:title="$i18n( 'wikilambda-editor-zobject-clearitem-tooltip' )"

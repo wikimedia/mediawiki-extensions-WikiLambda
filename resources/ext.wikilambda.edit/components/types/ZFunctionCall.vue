@@ -96,6 +96,10 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
+		},
+		hideFirstArgument: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data: function () {
@@ -181,6 +185,10 @@ module.exports = {
 				} );
 			} );
 
+			if ( this.hideFirstArgument ) {
+				return labels.slice( 1 );
+			}
+
 			return labels;
 		},
 		zImplementationLanguages: function () {
@@ -251,26 +259,29 @@ module.exports = {
 		}
 	} ),
 	watch: {
-		zFunctionArguments: function ( value ) {
-			var self = this;
-			value.forEach( function ( arg ) {
-				// Don't perform this action if the key already exists
-				if ( self.findKeyInArray( arg.key, self.zobject ) ) {
-					return;
-				}
-				self.addZObject( {
-					key: arg.key,
-					value: 'object',
-					parent: self.zobjectId
-				} )
-					.then( function ( objectId ) {
-						var payload = {
-							id: objectId,
-							type: arg.type
-						};
-						self.changeType( payload );
-					} );
-			} );
+		zFunctionArguments: {
+			immediate: true,
+			handler: function ( value ) {
+				var self = this;
+				value.forEach( function ( arg ) {
+					// Don't perform this action if the key already exists
+					if ( self.findKeyInArray( arg.key, self.zobject ) ) {
+						return;
+					}
+					self.addZObject( {
+						key: arg.key,
+						value: 'object',
+						parent: self.zobjectId
+					} )
+						.then( function ( objectId ) {
+							var payload = {
+								id: objectId,
+								type: arg.type
+							};
+							self.changeType( payload );
+						} );
+				} );
+			}
 		},
 		zFunctionId: function () {
 			if ( this.zFunctionId ) {

@@ -230,6 +230,10 @@ module.exports = {
 			 * @return {Array} zObjectTree
 			 */
 			return function ( parentId ) {
+				if ( parentId === undefined ) {
+					return [];
+				}
+
 				return state.zobject.filter( function ( object ) {
 					return object.parent === parentId;
 				} );
@@ -419,6 +423,8 @@ module.exports = {
 
 					return context.dispatch( 'fetchZKeys', [ defaultZid ] )
 						.then( function () {
+							var Z2K2 =
+								typeUtils.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, context.state.zobject );
 							defaultKeys = context.rootGetters.getZkeys[ defaultZid ];
 
 							if ( !defaultKeys ||
@@ -429,7 +435,7 @@ module.exports = {
 							}
 
 							return context.dispatch( 'changeType', {
-								id: 3,
+								id: Z2K2.id,
 								type: defaultZid
 							} );
 						} );
@@ -981,13 +987,18 @@ module.exports = {
 
 			// Set call as a function call
 			nextId = getNextObjectId( context.state.zobject );
+			context.dispatch( 'addZObject', { key: Constants.Z_TESTER_FUNCTION, value: 'object', parent: objectId } );
+			context.dispatch( 'addZReference', { id: nextId, value: '' } );
+
+			// Set call as a function call
+			nextId = getNextObjectId( context.state.zobject );
 			context.dispatch( 'addZObject', { key: Constants.Z_TESTER_CALL, value: 'object', parent: objectId } );
 			context.dispatch( 'addZFunctionCall', nextId );
 
 			// Set validation as a reference
 			nextId = getNextObjectId( context.state.zobject );
 			context.dispatch( 'addZObject', { key: Constants.Z_TESTER_VALIDATION, value: 'object', parent: objectId } );
-			context.dispatch( 'addZReference', { id: nextId, value: '' } );
+			context.dispatch( 'addZFunctionCall', nextId );
 		},
 		/**
 		 * Create the required entry for a generic object,

@@ -25,17 +25,31 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr v-for="test in testers" :key="test">
-					<th scope="row">
-						{{ getZkeyLabels[ test ] }}
-					</th>
-					<td v-for="implementation in implementations" :key="implementation">
-						<z-tester-impl-result
-							:z-function-id="zFunctionId"
-							:z-implementation-id="implementation"
-							:z-tester-id="test"
-						></z-tester-impl-result>
-					</td>
+				<tr v-for="(test, index) in testers" :key="index">
+					<template v-if="typeof test === 'string'">
+						<th scope="row">
+							{{ getZkeyLabels[ test ] }}
+						</th>
+						<td v-for="implementation in implementations" :key="implementation">
+							<z-tester-impl-result
+								:z-function-id="zFunctionId"
+								:z-implementation-id="implementation"
+								:z-tester-id="test"
+							></z-tester-impl-result>
+						</td>
+					</template>
+					<template v-else>
+						<th scope="row">
+							{{ test.Z2K3.Z12K1[ 0 ].Z11K2.Z6K1 }}
+						</th>
+						<td v-for="implementation in implementations" :key="implementation">
+							<z-tester-impl-result
+								:z-function-id="zFunctionId"
+								:z-implementation-id="implementation"
+								:z-tester-id="test.Z2K1.Z9K1"
+							></z-tester-impl-result>
+						</td>
+					</template>
 				</tr>
 			</tbody>
 			<tfoot>
@@ -92,7 +106,8 @@ module.exports = {
 		'getNestedZObjectById',
 		'getZObjectAsJsonById',
 		'getZTesterPercentage',
-		'getCurrentZObjectId'
+		'getCurrentZObjectId',
+		'getNewTesterZObjects'
 	] ), {
 		implementations: function () {
 			if ( !this.zFunctionId || !this.getZkeys[ this.zFunctionId ] ) {
@@ -129,15 +144,18 @@ module.exports = {
 			}
 
 			if ( this.getCurrentZObjectId === this.zFunctionId ) {
-				return this.getZObjectAsJsonById(
-					this.getNestedZObjectById( 0, [
-						Constants.Z_PERSISTENTOBJECT_VALUE,
-						Constants.Z_FUNCTION_TESTERS
-					] ).id,
-					true
-				).map( function ( impl ) {
-					return impl[ Constants.Z_REFERENCE_ID ];
-				} );
+				var savedTesters = this.getZObjectAsJsonById(
+						this.getNestedZObjectById( 0, [
+							Constants.Z_PERSISTENTOBJECT_VALUE,
+							Constants.Z_FUNCTION_TESTERS
+						] ).id,
+						true
+					).map( function ( impl ) {
+						return impl[ Constants.Z_REFERENCE_ID ];
+					} ),
+					newTesters = this.getNewTesterZObjects;
+
+				return savedTesters.concat( newTesters );
 			}
 
 			return this.getZkeys[ this.zFunctionId ][
@@ -159,31 +177,11 @@ module.exports = {
 			} );
 		}
 	} ),
-	watch: {
-		implementations: {
-			immediate: true,
-			deep: true,
-			handler: function () {
-				this.fetchZKeys( this.implementations );
-				this.getTestResults( {
-					zFunctionId: this.zFunctionId,
-					zImplementations: this.implementations,
-					zTesters: this.testers
-				} );
-			}
-		},
-		testers: {
-			immediate: true,
-			deep: true,
-			handler: function () {
-				this.fetchZKeys( this.testers );
-				this.getTestResults( {
-					zFunctionId: this.zFunctionId,
-					zImplementations: this.implementations,
-					zTesters: this.testers
-				} );
-			}
-		}
+	mounted: function () {
+		this.fetchZKeys( this.implementations.concat( this.testers ) )
+			.then( function () {
+				this.runTesters();
+			}.bind( this ) );
 	}
 };
 </script>

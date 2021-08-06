@@ -121,7 +121,7 @@ module.exports = {
 					var response = canonicalize( testResult.validationResponse ),
 						result = response[ Constants.Z_PAIR_FIRST ],
 						error = response[ Constants.Z_PAIR_SECOND ],
-						key = testResult.zFunctionId + ':' + testResult.zTesterId + ':' + testResult.zImplementationId;
+						key = ( testResult.zFunctionId || 'Z0' ) + ':' + ( testResult.zTesterId || 'Z0' ) + ':' + ( testResult.zImplementationId || 'Z0' );
 
 					// Store result
 					if ( result === Constants.Z_NOTHING ) {
@@ -129,7 +129,6 @@ module.exports = {
 						console.error( error );
 						context.commit( 'setZTesterResult', {
 							key: key,
-							// TODO - Replace with false
 							result: false
 						} );
 					} else {

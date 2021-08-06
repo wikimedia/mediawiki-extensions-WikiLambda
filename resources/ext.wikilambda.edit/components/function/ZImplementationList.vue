@@ -30,7 +30,7 @@
 		<div v-if="viewmode && ZlistItems.length <= 0">
 			{{ $i18n( 'wikilambda-implementation-none-found' ) }}
 		</div>
-		<a :href="createNewImplementationLink" target="_blank">
+		<a :href="createNewImplementationLink">
 			{{ $i18n( 'wikilambda-implementation-create-new' ) }}
 		</a>
 	</div>

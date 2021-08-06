@@ -18,7 +18,8 @@ var Vue = require( 'vue' ),
 	callZFunctionModule = require( './modules/callZFunction.js' ),
 	languagesModule = require( './modules/languages.js' ),
 	programmingLanguagesModule = require( './modules/programmingLanguages.js' ),
-	zTesterResultsModule = require( './modules/zTesterResults.js' );
+	zTesterResultsModule = require( './modules/zTesterResults.js' ),
+	createZTesters = require( './modules/createZTesters.js' );
 
 Vue.use( Vuex );
 
@@ -34,6 +35,7 @@ module.exports = new Vuex.Store( {
 		callZFunctionModule: callZFunctionModule,
 		languagesModule: languagesModule,
 		programmingLanguagesModule: programmingLanguagesModule,
-		zTesterResultsModule: zTesterResultsModule
+		zTesterResultsModule: zTesterResultsModule,
+		createZTesters: createZTesters
 	}
 } );

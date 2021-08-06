@@ -92,11 +92,16 @@ describe( 'ZFunctionTesterReport', function () {
 				$i18n: i18n
 			}
 		} );
-		expect( actions.getTestResults ).toHaveBeenCalled();
-		expect( actions.getTestResults ).toHaveBeenCalledWith( expect.anything(), {
-			zFunctionId: '',
-			zImplementations: [],
-			zTesters: []
+
+		return localVue.nextTick().then( function () {
+			expect( actions.getTestResults ).toHaveBeenCalled();
+			expect( actions.getTestResults ).toHaveBeenCalledWith( expect.anything(), {
+				zFunctionId: '',
+				zImplementations: [],
+				zTesters: [],
+				clearPreviousResults: true,
+				nocache: true
+			} );
 		} );
 	} );
 

@@ -21,7 +21,7 @@
 				:key="zImplementationId"
 				:value="zImplementationId"
 			>
-				{{ getZkeyLabels[ zImplementationId ] }} ({{ zImplementationId }})
+				{{ getZkeyLabels[ zImplementationId ] }}
 			</option>
 		</select>
 		<z-reference
@@ -37,7 +37,8 @@
 				</a>
 			</h4>
 			<code-editor
-				v-if="!zImplementation || !zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_BUILT_IN ]"
+				v-if="!zImplementation ||
+					!zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_BUILT_IN ]"
 				:mode="zImplementationCodeLanguage"
 				:read-only="true"
 				:value="zImplementationCode"

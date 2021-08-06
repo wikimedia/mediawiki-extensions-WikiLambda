@@ -22,15 +22,17 @@
 		<z-argument-list
 			:zobject-id="zArgumentId"
 		></z-argument-list>
-		<z-implementation-list
-			:zobject-id="zImplementationId"
-		></z-implementation-list>
-		<z-tester-list
-			:zobject-id="zTesterId"
-		></z-tester-list>
-		<z-function-tester-report
-			:z-function-id="zFunctionId"
-		></z-function-tester-report>
+		<template v-if="!isCreateNewPage">
+			<z-implementation-list
+				:zobject-id="zImplementationId"
+			></z-implementation-list>
+			<z-tester-list
+				:zobject-id="zTesterId"
+			></z-tester-list>
+			<z-function-tester-report
+				:z-function-id="zFunctionId"
+			></z-function-tester-report>
+		</template>
 	</div>
 </template>
 
@@ -72,7 +74,8 @@ module.exports = {
 			'getUserZlangZID',
 			'getCurrentZObjectId',
 			'getNestedZObjectById',
-			'getZargumentsString'
+			'getZargumentsString',
+			'isCreateNewPage'
 		] ),
 		{
 			Constants: function () {
@@ -143,6 +146,12 @@ module.exports = {
 	} ),
 	watch: {
 		zFunctionId: {
+			immediate: true,
+			handler: function () {
+				this.setAvailableZArguments( this.zFunctionId );
+			}
+		},
+		zArgumentList: {
 			immediate: true,
 			handler: function () {
 				this.setAvailableZArguments( this.zFunctionId );

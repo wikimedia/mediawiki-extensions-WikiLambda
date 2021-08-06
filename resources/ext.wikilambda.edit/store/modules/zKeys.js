@@ -69,6 +69,10 @@ module.exports = {
 					var key = argument.key,
 						type = argument.type;
 
+					if ( type === undefined ) {
+						return argumentString;
+					}
+
 					return argumentString.length ?
 						argumentString + ', ' + key + type :
 						argumentString + key + type;
@@ -192,7 +196,8 @@ module.exports = {
 		setAvailableZArguments: function ( context, zFunctionId ) {
 			context.commit( 'resetZArgumentInfo' );
 
-			if ( context.getters.getZkeys[ zFunctionId ] ) {
+			if ( context.getters.getCurrentZObjectId === zFunctionId ||
+					context.getters.getZkeys[ zFunctionId ] ) {
 				var zobject,
 					missingTypes = [];
 
@@ -239,7 +244,7 @@ module.exports = {
 					} );
 
 				// If any argument types are not available, fetch them and rerun the function
-				if ( missingTypes.length ) {
+				if ( missingTypes.filter( Boolean ).length ) {
 					context.dispatch( 'fetchZKeys', missingTypes ).then( function () {
 						context.dispatch( 'setAvailableZArguments', zFunctionId );
 					} );
@@ -249,7 +254,7 @@ module.exports = {
 		fetchZImplementations: function ( context, zFunctionId ) {
 			var api = new mw.Api();
 
-			api.get( {
+			return api.get( {
 				action: 'query',
 				list: 'wikilambdafn_search',
 				format: 'json',
@@ -257,13 +262,13 @@ module.exports = {
 				wikilambdafn_type: Constants.Z_IMPLEMENTATION
 			} ).then( function ( response ) {
 				context.commit( 'setZImplementations', response.query.wikilambdafn_search );
-				context.dispatch( 'fetchZKeys', response.query.wikilambdafn_search );
+				return context.dispatch( 'fetchZKeys', response.query.wikilambdafn_search );
 			} );
 		},
 		fetchZTesters: function ( context, zFunctionId ) {
 			var api = new mw.Api();
 
-			api.get( {
+			return api.get( {
 				action: 'query',
 				list: 'wikilambdafn_search',
 				format: 'json',
@@ -271,7 +276,7 @@ module.exports = {
 				wikilambdafn_type: Constants.Z_TESTER
 			} ).then( function ( response ) {
 				context.commit( 'setZTesters', response.query.wikilambdafn_search );
-				context.dispatch( 'fetchZKeys', response.query.wikilambdafn_search );
+				return context.dispatch( 'fetchZKeys', response.query.wikilambdafn_search );
 			} );
 		}
 	}
