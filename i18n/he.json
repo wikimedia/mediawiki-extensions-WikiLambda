@@ -14,6 +14,8 @@
 	"wikilambda-noresult": "החיפוש לא הניב שום תוצאה",
 	"wikilambda-labelclash": "התווית של התוכן שסופק מתנגש עם עצם ה־Z בעל המזהה $1 עבור התווית בשפה $2.",
 	"wikilambda-persistentzobject": "עצם Z",
+	"wikilambda-persistentzobject-metadata": "תוויות וכינויים",
+	"wikilambda-persistentzobject-contents": "תוכן",
 	"wikilambda-multilingualstring-nofallback": "לא הוגדרה תווית בשפה הזאת וגם לא שפת גיבוי קבילה",
 	"wikilambda-viewmode-nojs": "הדף הזה מוצג באופן מוגבל ללא JavaScript",
 	"wikilambda-reference": "הפניה",

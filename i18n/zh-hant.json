@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Impartial just",
 			"Kly",
 			"Neetp7k9"
 		]
@@ -10,6 +11,7 @@
 	"wikilambda-invalidzobject": "提供內容不是有效的 ZObject。",
 	"wikilambda-invalidcontenttype": "提供的內容不是 ZObject 類別。",
 	"wikilambda-labelclash": "提供內容裡的標籤，與「$2」裡用於標籤的 ZObject「$1」衝突。",
+	"wikilambda-persistentzobject-contents": "內容",
 	"wikilambda-multilingualstring-nofallback": "在此語言或是此語言的後備沒有標籤被定義",
 	"wikilambda-viewmode-nojs": "沒有 JavaScript 的情況下，此頁面會以有限的方式顯示。",
 	"wikilambda-special-createzobject": "建立一個新的 ZObject",

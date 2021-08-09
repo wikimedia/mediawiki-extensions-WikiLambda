@@ -14,6 +14,8 @@
 	"wikilambda-prohibitedcreationtype": "Das bereitgestellte ZObject ist vom Typ „$1“, der nicht angelegt werden darf.",
 	"wikilambda-noresult": "Die Suche hat kein Ergebnis geliefert.",
 	"wikilambda-labelclash": "Das Label des bereitgestellten Inhalts kollidiert mit dem ZObjekt „$1“ für das Label in „$2“.",
+	"wikilambda-persistentzobject-metadata": "Label und Aliasse",
+	"wikilambda-persistentzobject-contents": "Inhalte",
 	"wikilambda-multilingualstring-nofallback": "Kein Label in dieser oder einer akzeptierten Fallback-Sprache definiert",
 	"wikilambda-viewmode-nojs": "Diese Seite wird ohne JavaScript nur in eingeschränkter Weise angezeigt.",
 	"wikilambda-reference": "Referenz",
