@@ -22,6 +22,8 @@
 	"wikilambda-noresult": "La recherche n’a livré aucun résultat.",
 	"wikilambda-labelclash": "Le libellé du contenu fourni est en conflit avec l’Objet-Z « $1 » pour le libellé dans « $2x ».",
 	"wikilambda-persistentzobject": "Objet-Z",
+	"wikilambda-persistentzobject-metadata": "Libellés et alias",
+	"wikilambda-persistentzobject-contents": "Contenu",
 	"wikilambda-multilingualstring-nofallback": "Aucun libellé défini dans cette langue ni de valeur par défaut acceptée.",
 	"wikilambda-viewmode-nojs": "Affichage réduit de cette page sans Javascript.",
 	"wikilambda-reference": "Référence",
