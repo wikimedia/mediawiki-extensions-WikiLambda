@@ -28,9 +28,15 @@
 		<div v-if="viewmode && ZlistItems.length <= 0">
 			{{ $i18n( 'wikilambda-tester-none-found' ) }}
 		</div>
-		<a :href="createNewTesterLink" target="_blank">
+		<div v-for="tester in getNewTesterIds" :key="tester">
+			<z-tester-ad-hoc
+				:zobject-id="tester"
+				:z-tester-list-id="zobjectId"
+			></z-tester-ad-hoc>
+		</div>
+		<button v-if="!viewmode && getNewTesterIds.length <= 0" @click="createNewTester">
 			{{ $i18n( 'wikilambda-tester-create-new' ) }}
-		</a>
+		</button>
 	</div>
 </template>
 
@@ -39,24 +45,35 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
 	ZList = require( '../types/ZList.vue' ),
-	ZTesterListItem = require( './ZTesterListItem.vue' );
+	ZTesterListItem = require( './ZTesterListItem.vue' ),
+	ZTesterAdHoc = require( './ZTesterAdHoc.vue' );
 
 module.exports = {
 	extends: ZList,
 	components: {
-		'z-tester-list-item': ZTesterListItem
+		'z-tester-list-item': ZTesterListItem,
+		'z-tester-ad-hoc': ZTesterAdHoc
 	},
-	computed: $.extend( mapGetters( [ 'getNextObjectId', 'getCurrentZObjectId', 'getZTesters' ] ),
-		{
-			Constants: function () {
-				return Constants;
-			},
-			createNewTesterLink: function () {
-				return '/wiki/Special:CreateZObject?zid=Z20';
-			}
+	computed: $.extend( mapGetters( [
+		'getNextObjectId',
+		'getCurrentZObjectId',
+		'getZTesters',
+		'getNewTesterIds'
+	] ),
+	{
+		Constants: function () {
+			return Constants;
+		},
+		createNewTesterLink: function () {
+			return '/wiki/Special:CreateZObject?zid=Z20';
 		}
+	}
 	),
-	methods: $.extend( mapActions( [ 'addZReference' ] ), {
+	methods: $.extend( mapActions( [
+		'addZReference',
+		'initializeResultId',
+		'createNewTester'
+	] ), {
 		addNewItem: function ( /* event */ ) {
 			var nextId = this.getNextObjectId,
 				payload = {

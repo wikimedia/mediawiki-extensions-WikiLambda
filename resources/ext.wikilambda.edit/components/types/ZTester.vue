@@ -6,16 +6,22 @@
 		@license MIT
 	-->
 	<div>
+		<div>{{ functionLabel }}:</div>
+		<z-reference
+			:search-type="Constants.Z_FUNCTION"
+			:zobject-id="zFunction.id"
+		></z-reference>
 		<div>{{ callLabel }}:</div>
 		<z-function-call
 			:zobject-id="zCall.id"
 		>
 		</z-function-call>
-		{{ validatorLabel }}:{{ ' ' }}
-		<z-reference
-			:search-type="Constants.Z_FUNCTION"
+		<div>{{ validatorLabel }}:</div>
+		<z-function-call
 			:zobject-id="zValidation.id"
-		></z-reference>
+			hide-first-argument
+		>
+		</z-function-call>
 		<z-function-tester-report
 			:z-function-id="zFunctionId"
 			:z-tester-id="zTesterId"
@@ -57,6 +63,9 @@ module.exports = {
 		Constants: function () {
 			return Constants;
 		},
+		functionLabel: function () {
+			return this.getZkeyLabels[ Constants.Z_TESTER_FUNCTION ];
+		},
 		callLabel: function () {
 			return this.getZkeyLabels[ Constants.Z_TESTER_CALL ];
 		},
@@ -65,6 +74,9 @@ module.exports = {
 		},
 		zobject: function () {
 			return this.getZObjectChildrenById( this.zobjectId );
+		},
+		zFunction: function () {
+			return this.findKeyInArray( Constants.Z_TESTER_FUNCTION, this.zobject );
 		},
 		zCall: function () {
 			return this.findKeyInArray( Constants.Z_TESTER_CALL, this.zobject );

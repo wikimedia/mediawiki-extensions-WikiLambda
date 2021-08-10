@@ -21,7 +21,7 @@
 				:key="zTesterId"
 				:value="zTesterId"
 			>
-				{{ getZkeyLabels[ zTesterId ] }} ({{ zTesterId }})
+				{{ getZkeyLabels[ zTesterId ] }}
 			</option>
 		</select>
 		<z-reference

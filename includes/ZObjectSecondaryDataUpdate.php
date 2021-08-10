@@ -70,7 +70,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			if ( $ztype === 'Z14' ) {
 				$zFunction = $this->zObject->getInnerZObject()->getValueByKey( 'Z14K1' );
 			} elseif ( $ztype === 'Z20' ) {
-				$zFunction = $this->zObject->getInnerZObject()->getValueByKey( 'Z20K1' )->getValueByKey( 'Z7K1' );
+				$zFunction = $this->zObject->getInnerZObject()->getValueByKey( 'Z20K1' );
 			}
 
 			if ( $zFunction && $zFunction->getZValue() ) {

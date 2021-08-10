@@ -72,7 +72,6 @@ module.exports = {
 .ext-wikilambda-tester-result {
 	text-align: center;
 	background: #ddd;
-	cursor: pointer;
 	width: 100%;
 	border: transparent;
 	padding: 5px;
