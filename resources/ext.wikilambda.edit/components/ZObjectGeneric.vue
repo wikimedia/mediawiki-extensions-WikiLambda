@@ -9,7 +9,11 @@
 		<span>{{ z1k1label }}: </span>
 
 		<span v-if="persistent">
-			<a v-if="type !== zobjectId && (getViewMode || readonly)" :href="'./ZObject:' + type">
+			<a
+				v-if="type !== zobjectId && (getViewMode || readonly)"
+				:href="typeLink"
+				:target="!getViewMode ? '_blank' : ''"
+			>
 				<span>{{ typeLabel }}</span>
 			</a>
 			<span v-else>{{ typeLabel }}</span>
@@ -17,7 +21,9 @@
 		</span>
 
 		<span v-else>
-			<span v-if="getViewMode || readonly || type"> {{ typeLabel }}</span>
+			<span v-if="getViewMode || readonly || type">
+				<a :href="typeLink" :target="!getViewMode ? '_blank' : ''">{{ typeLabel }}</a>
+			</span>
 			<z-object-selector
 				v-else
 				:type="Constants.Z_TYPE"
@@ -95,6 +101,9 @@ module.exports = {
 			},
 			z2K1Value: function () {
 				return this.getCurrentZObjectId;
+			},
+			typeLink: function () {
+				return '/wiki/ZObject:' + this.type;
 			}
 		}
 	),

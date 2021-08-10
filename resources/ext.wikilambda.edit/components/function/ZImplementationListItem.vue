@@ -32,7 +32,7 @@
 		></z-reference>
 		<div v-else>
 			<h4>
-				<a :href="'/wiki/ZObject:' + zImplementationId">
+				<a :href="zImplementationLink">
 					{{ zImplementationLabel }}
 				</a>
 			</h4>
@@ -111,6 +111,9 @@ module.exports = {
 			return this.zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][
 				Constants.Z_IMPLEMENTATION_CODE ][
 				Constants.Z_CODE_CODE ];
+		},
+		zImplementationLink: function () {
+			return '/wiki/ZObject:' + this.zImplementationId;
 		}
 	}
 	),

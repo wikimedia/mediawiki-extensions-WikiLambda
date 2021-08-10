@@ -19,7 +19,9 @@
 
 		<!-- If there's a type, we render the appropriate component -->
 		<template v-else>
-			<span>{{ zTypeLabel }}</span>
+			<span>
+				<a :href="zTypeLink" :target="!getViewMode ? '_blank' : ''">{{ zTypeLabel }}</a>
+			</span>
 			<z-key-mode-selector
 				v-if="!(getViewMode || readonly) && selectedMode && !isIdentityKey && zType !== Constants.Z_OBJECT"
 				:mode="selectedMode"
@@ -163,6 +165,9 @@ module.exports = {
 			isIdentityKey: function () {
 				return this.zType === Constants.Z_REFERENCE &&
 					this.referenceValue === this.getCurrentZObjectId;
+			},
+			zTypeLink: function () {
+				return '/wiki/ZObject:' + this.zType;
 			}
 		}
 	),

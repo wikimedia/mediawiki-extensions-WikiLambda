@@ -7,7 +7,7 @@
 	-->
 	<div class="ext-wikilambda-zreference">
 		<span v-if="isReadOnly">
-			<a :href="'/wiki/ZObject:' + referenceValue" :target="referenceLinkTarget">
+			<a :href="referenceLink" :target="referenceLinkTarget">
 				{{ referenceLabel }}
 			</a>
 		</span>
@@ -78,6 +78,9 @@ module.exports = {
 			},
 			isReadOnlyEditMode: function () {
 				return !this.viewmode && ( this.readonly || this.getCurrentZObjectId === this.referenceValue );
+			},
+			referenceLink: function () {
+				return '/wiki/ZObject:' + this.referenceValue;
 			},
 			referenceLinkTarget: function () {
 				if ( this.isReadOnlyEditMode ) {
