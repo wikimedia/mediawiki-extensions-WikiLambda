@@ -37,6 +37,9 @@
 		<button v-if="!viewmode && getNewTesterIds.length <= 0" @click="createNewTester">
 			{{ $i18n( 'wikilambda-tester-create-new' ) }}
 		</button>
+		<a v-if="viewmode" :href="createNewTesterLink">
+			{{ $i18n( 'wikilambda-tester-create-new' ) }}
+		</a>
 	</div>
 </template>
 
