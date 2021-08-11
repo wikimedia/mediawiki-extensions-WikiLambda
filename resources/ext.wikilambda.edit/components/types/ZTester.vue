@@ -14,18 +14,26 @@
 		<div>{{ callLabel }}:</div>
 		<z-function-call
 			:zobject-id="zCall.id"
+			hide-call-button
 		>
 		</z-function-call>
 		<div>{{ validatorLabel }}:</div>
 		<z-function-call
 			:zobject-id="zValidation.id"
 			hide-first-argument
+			hide-call-button
 		>
 		</z-function-call>
 		<z-function-tester-report
 			:z-function-id="zFunctionId"
 			:z-tester-id="zTesterId"
-		></z-function-tester-report>
+		>
+			<template #run-testers="{ click }">
+				<button @click="click">
+					{{ $i18n( 'wikilambda-tester-run-tester' ) }}
+				</button>
+			</template>
+		</z-function-tester-report>
 	</div>
 </template>
 
