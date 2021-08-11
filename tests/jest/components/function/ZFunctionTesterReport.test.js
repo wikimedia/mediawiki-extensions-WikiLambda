@@ -93,15 +93,20 @@ describe( 'ZFunctionTesterReport', function () {
 			}
 		} );
 
-		return localVue.nextTick().then( function () {
-			expect( actions.getTestResults ).toHaveBeenCalled();
-			expect( actions.getTestResults ).toHaveBeenCalledWith( expect.anything(), {
-				zFunctionId: '',
-				zImplementations: [],
-				zTesters: [],
-				clearPreviousResults: true,
-				nocache: true
-			} );
+		// eslint-disable-next-line compat/compat
+		return new Promise( function ( resolve ) {
+			setTimeout( function () {
+				expect( actions.getTestResults ).toHaveBeenCalled();
+				expect( actions.getTestResults ).toHaveBeenCalledWith( expect.anything(), {
+					zFunctionId: '',
+					zImplementations: [],
+					zTesters: [],
+					clearPreviousResults: true,
+					nocache: true
+				} );
+
+				resolve();
+			}, 1500 );
 		} );
 	} );
 

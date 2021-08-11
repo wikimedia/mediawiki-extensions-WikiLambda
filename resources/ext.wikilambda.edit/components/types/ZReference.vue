@@ -34,6 +34,9 @@ module.exports = {
 	components: {
 		'z-object-selector': ZObjectSelector
 	},
+	inject: {
+		viewmode: { default: false }
+	},
 	props: {
 		zobjectId: {
 			type: Number,
@@ -57,7 +60,6 @@ module.exports = {
 		mapGetters( {
 			getZObjectChildrenById: 'getZObjectChildrenById',
 			getZkeyLabels: 'getZkeyLabels',
-			viewmode: 'getViewMode',
 			getCurrentZObjectId: 'getCurrentZObjectId'
 		} ),
 		{

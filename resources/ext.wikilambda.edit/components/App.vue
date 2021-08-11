@@ -6,11 +6,10 @@
 		@license MIT
 	-->
 	<div id="ext-wikilambda-app">
-		<!--
-			I am using v-show instead than v-if on the template,
-			as the v-show will trigger a render before the object is initialized
-		-->
 		<template v-if="zObjectInitialized">
+			<div v-if="isCurrentZObjectExecutable" class="ext-wikilambda-executable">
+				<z-function-evaluator></z-function-evaluator>
+			</div>
 			<z-object-editor
 				v-if="viewmode === false"
 			></z-object-editor>
@@ -28,17 +27,22 @@
 var ZObjectEditor = require( './ZObjectEditor.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	ZObjectViewer = require( './ZObjectViewer.vue' );
+	ZObjectViewer = require( './ZObjectViewer.vue' ),
+	ZFunctionEvaluator = require( './function/ZFunctionEvaluator.vue' );
 
 module.exports = {
 	name: 'App',
+	inject: {
+		viewmode: { default: false }
+	},
 	components: {
 		'z-object-editor': ZObjectEditor,
-		'z-object-viewer': ZObjectViewer
+		'z-object-viewer': ZObjectViewer,
+		'z-function-evaluator': ZFunctionEvaluator
 	},
 	computed: mapGetters( {
 		zObjectInitialized: 'getZObjectInitialized',
-		viewmode: 'getViewMode'
+		isCurrentZObjectExecutable: 'isCurrentZObjectExecutable'
 	} ),
 	methods: mapActions( [ 'initializeZObject' ] ),
 	created: function () {
@@ -47,3 +51,9 @@ module.exports = {
 	}
 };
 </script>
+
+<style lang="less">
+.ext-wikilambda-executable {
+	float: right;
+}
+</style>

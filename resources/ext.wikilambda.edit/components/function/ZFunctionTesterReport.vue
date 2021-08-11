@@ -55,7 +55,7 @@
 			<tfoot>
 				<tr>
 					<td>
-						<button v-if="!getViewMode" @click="runTesters">
+						<button v-if="!viewmode" @click="runTesters">
 							{{ $i18n( 'wikilambda-tester-run-testers' ) }}
 						</button>
 					</td>
@@ -84,6 +84,9 @@ module.exports = {
 		'z-tester-impl-result': ZTesterImplResult
 	},
 	mixins: [ typeUtils ],
+	inject: {
+		viewmode: { default: false }
+	},
 	props: {
 		zFunctionId: {
 			type: String,
@@ -102,7 +105,6 @@ module.exports = {
 		'getZObjectChildrenById',
 		'getZkeyLabels',
 		'getZkeys',
-		'getViewMode',
 		'getNestedZObjectById',
 		'getZObjectAsJsonById',
 		'getZTesterPercentage',
@@ -177,10 +179,18 @@ module.exports = {
 			} );
 		}
 	} ),
+	watch: {
+		implementations: function () {
+			this.fetchZKeys( this.implementations );
+		},
+		testers: function () {
+			this.fetchZKeys( this.testers );
+		}
+	},
 	mounted: function () {
 		this.fetchZKeys( this.implementations.concat( this.testers ) )
 			.then( function () {
-				this.runTesters();
+				setTimeout( this.runTesters, 1000 );
 			}.bind( this ) );
 	}
 };

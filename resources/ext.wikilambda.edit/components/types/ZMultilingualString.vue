@@ -49,6 +49,9 @@ module.exports = {
 	components: {
 		'z-monolingual-string': ZMonolingualString
 	},
+	inject: {
+		viewmode: { default: false }
+	},
 	props: {
 		zobjectId: {
 			type: Number,
@@ -69,7 +72,6 @@ module.exports = {
 		mapGetters( {
 			getZObjectChildrenById: 'getZObjectChildrenById',
 			getZObjectAsJsonById: 'getZObjectAsJsonById',
-			viewmode: 'getViewMode',
 			allLangs: 'getAllLangs'
 		} ),
 		{

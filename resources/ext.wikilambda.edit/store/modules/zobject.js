@@ -346,6 +346,22 @@ module.exports = {
 		},
 		getZObjectInitialized: function ( state ) {
 			return state.ZObjectInitialized;
+		},
+		getCurrentZObjectType: function ( state, getters ) {
+			var zobject = getters.getZObjectAsJson,
+				type;
+
+			if ( zobject ) {
+				type = zobject[
+					Constants.Z_PERSISTENTOBJECT_VALUE ][
+					Constants.Z_OBJECT_TYPE ][
+					Constants.Z_REFERENCE_ID ];
+			}
+
+			return type || false;
+		},
+		isCurrentZObjectExecutable: function ( state, getters ) {
+			return [ Constants.Z_FUNCTION, Constants.Z_IMPLEMENTATION ].indexOf( getters.getCurrentZObjectType ) !== -1;
 		}
 	},
 	mutations: {

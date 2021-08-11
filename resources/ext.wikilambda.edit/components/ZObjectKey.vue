@@ -23,7 +23,7 @@
 				<a :href="zTypeLink" :target="!getViewMode ? '_blank' : ''">{{ zTypeLabel }}</a>
 			</span>
 			<z-key-mode-selector
-				v-if="!(getViewMode || readonly) && selectedMode && !isIdentityKey && zType !== Constants.Z_OBJECT"
+				v-if="!(viewmode || readonly) && selectedMode && !isIdentityKey && zType !== Constants.Z_OBJECT"
 				:mode="selectedMode"
 				:parent-type="parentType"
 				:literal-type="literalType"
@@ -82,6 +82,9 @@ module.exports = {
 		'z-object-json': ZObjectJson
 	},
 	mixins: [ typeUtils ],
+	inject: {
+		viewmode: { default: false }
+	},
 	props: {
 		zKey: {
 			type: String
@@ -137,7 +140,6 @@ module.exports = {
 			'getZkeyLabels',
 			'getZkeys',
 			'getModeByType',
-			'getViewMode',
 			'getCurrentZObjectId',
 			'getZObjectChildrenById'
 		] ),

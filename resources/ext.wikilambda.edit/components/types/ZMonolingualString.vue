@@ -41,6 +41,9 @@ var Constants = require( '../../Constants.js' ),
 
 module.exports = {
 	name: 'ZMonolingualString',
+	inject: {
+		viewmode: { default: false }
+	},
 	props: {
 		zobjectId: {
 			type: Number,
@@ -60,7 +63,6 @@ module.exports = {
 	computed: $.extend( {},
 		mapGetters( {
 			getZObjectChildrenById: 'getZObjectChildrenById',
-			viewmode: 'getViewMode',
 			allLangs: 'getAllLangs'
 		} ),
 		{

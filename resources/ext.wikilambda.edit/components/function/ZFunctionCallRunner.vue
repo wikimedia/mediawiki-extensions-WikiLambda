@@ -1,0 +1,103 @@
+<template>
+	<!--
+		WikiLambda Vue component for ZFunctionCall objects.
+
+		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+		@license MIT
+	-->
+	<div class="ext-wikilambda-function-call-block">
+		{{ zFunctionCallKeyLabels[ Constants.Z_FUNCTION_CALL_FUNCTION ] }}:
+		<z-reference
+			:zobject-key="selectedFunction[ Constants.Z_PERSISTENTOBJECT_ID ]"
+			search-type="Z8"
+			:readonly="true"
+		></z-reference>
+		<ul>
+			<li v-for="argument in zFunctionArguments" :key="argument.key">
+				{{ argument.label }}:
+				<z-object-key
+					:zobject-id="findArgumentId(argument.key)"
+					:persistent="false"
+					:parent-type="Constants.Z_FUNCTION_CALL"
+					:z-key="argument.key"
+				></z-object-key>
+			</li>
+		</ul>
+		<button @click="callFunctionHandler">
+			<label> {{ $i18n( 'wikilambda-call-function' ) }} </label>
+		</button>
+		<div v-if="resultZObject || orchestrating" class="ext-wikilambda-orchestrated-result">
+			<template v-if="resultZObject">
+				<span>{{ $i18n( 'wikilambda-orchestrated' ) }}</span>
+				<z-key-mode-selector
+					:mode="orchestratedMode"
+					parent-type="Z7"
+					:available-modes="displayModes"
+					@change="orchestratedMode = $event"
+				></z-key-mode-selector>
+				<div>
+					<z-object-json
+						v-if="orchestratedMode === Constants.Z_KEY_MODES.JSON"
+						:readonly="true"
+						:zobject-id="resultId"
+					></z-object-json>
+					<z-object-key
+						v-else
+						:zobject-id="resultId"
+						:parent-type="Constants.Z_PAIR"
+						:readonly="true"
+					></z-object-key>
+				</div>
+			</template>
+			<template v-else-if="orchestrating">
+				<em>{{ $i18n( 'wikilambda-orchestrated-loading' ) }}</em>
+			</template>
+		</div>
+	</div>
+</template>
+
+<script>
+var Constants = require( '../../Constants.js' ),
+	ZFunctionCall = require( '../types/ZFunctionCall.vue' ),
+	mapGetters = require( 'vuex' ).mapGetters;
+
+module.exports = {
+	extends: ZFunctionCall,
+	provide: function () {
+		return {
+			viewmode: false
+		};
+	},
+	computed: mapGetters( [
+		'getCurrentZObjectType',
+		'getZObjectAsJson'
+	] ),
+	methods: {
+		callFunctionHandler: function () {
+			var self = this,
+				ZfunctionObject;
+
+			ZfunctionObject = this.getZObjectAsJsonById( this.zobjectId );
+
+			if ( this.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) {
+				var zFunctionId = this.getZObjectAsJson.Z2K2.Z14K1.Z9K1;
+				ZfunctionObject.Z7K1 = this.getZkeys[ zFunctionId ].Z2K2;
+
+				ZfunctionObject.Z7K1.Z8K4 = [ this.getZObjectAsJson.Z2K2 ];
+			}
+
+			this.orchestrating = true;
+
+			this.initializeResultId( this.resultId )
+				.then( function ( resultId ) {
+					self.resultId = resultId;
+
+					return self.callZFunction( { zobject: ZfunctionObject, resultId: self.resultId } );
+				} )
+				.then( function () {
+					self.orchestrating = false;
+				} );
+		}
+	}
+};
+</script>
