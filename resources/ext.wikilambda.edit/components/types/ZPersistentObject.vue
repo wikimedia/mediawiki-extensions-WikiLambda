@@ -15,7 +15,7 @@
 					:key="Constants.Z_PERSISTENTOBJECT_LABEL"
 					:zobject-id="zObjectLabel.id"
 					:parent-type="zObjectType"
-					:readonly="getViewMode || readonly"
+					:readonly="viewmode || readonly"
 				></z-object-key>
 			</div>
 			<div>
@@ -23,7 +23,7 @@
 					:key="Constants.Z_PERSISTENTOBJECT_ALIASES"
 					:zobject-id="zObjectAliases.id"
 					:parent-type="zObjectType"
-					:readonly="getViewMode || readonly"
+					:readonly="viewmode || readonly"
 				></z-object-key>
 			</div>
 		</div>
@@ -31,7 +31,7 @@
 			<h2 class="ext-wikilambda-persistentobject-header">
 				{{ $i18n( 'wikilambda-persistentzobject-contents' ) }}
 			</h2>
-			<div v-if="!(getViewMode || readonly)" class="ext-wikilambda-clear-persistentobject">
+			<div v-if="!(viewmode || readonly)" class="ext-wikilambda-clear-persistentobject">
 				<button
 					:title="$i18n( 'wikilambda-editor-zobject-clearitem-tooltip' )"
 					@click="removeKey( zObjectValue.id )"
@@ -43,7 +43,7 @@
 				:key="Constants.Z_PERSISTENTOBJECT_VALUE"
 				:zobject-id="zObjectValue.id"
 				:parent-type="zObjectType"
-				:readonly="getViewMode || readonly"
+				:readonly="viewmode || readonly"
 			></z-object-key>
 		</div>
 	</div>
@@ -61,6 +61,9 @@ module.exports = {
 		'z-object-key': ZObjectKey
 	},
 	mixins: [ typeUtils ],
+	inject: {
+		viewmode: { default: false }
+	},
 	props: {
 		zobjectId: {
 			type: Number,
@@ -74,8 +77,7 @@ module.exports = {
 	computed: $.extend( mapGetters( [
 		'getZObjectChildrenById',
 		'getZObjectTypeById',
-		'getZkeyLabels',
-		'getViewMode'
+		'getZkeyLabels'
 	] ), {
 		Constants: function () {
 			return Constants;

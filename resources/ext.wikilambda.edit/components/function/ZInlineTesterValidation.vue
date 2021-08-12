@@ -9,7 +9,7 @@
 		></z-object-selector>
 		<template v-else>
 			<button
-				v-if="!getViewMode"
+				v-if="!viewmode"
 				:title="$i18n( 'wikilambda-editor-zobject-removekey-tooltip' )"
 				@click="typeHandler"
 			>

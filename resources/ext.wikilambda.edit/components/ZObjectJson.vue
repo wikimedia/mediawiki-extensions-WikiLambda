@@ -4,7 +4,7 @@
 			v-clickout="onClickoutHandler"
 			mode="json"
 			:value="initialJson"
-			:read-only="readonly || getViewMode"
+			:read-only="readonly || viewmode"
 			@change="codeChangeHandler"
 		></code-editor>
 	</div>
@@ -21,6 +21,9 @@ module.exports = {
 		'code-editor': CodeEditor
 	},
 	mixins: [ typeUtils, schemata ],
+	inject: {
+		viewmode: { default: false }
+	},
 	props: {
 		zobjectId: {
 			type: Number
@@ -40,7 +43,7 @@ module.exports = {
 		};
 	},
 	computed: $.extend( {},
-		mapGetters( [ 'getZObjectAsJsonById', 'getZObjectById', 'getViewMode' ] ),
+		mapGetters( [ 'getZObjectAsJsonById', 'getZObjectById' ] ),
 		{
 			zobject: function () {
 				return this.getZObjectById( this.zobjectId );

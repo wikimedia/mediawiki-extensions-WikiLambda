@@ -26,6 +26,9 @@ var Constants = require( './../../Constants.js' ),
 
 module.exports = {
 	name: 'ZString',
+	inject: {
+		viewmode: { default: false }
+	},
 	props: {
 		readonly: {
 			type: Boolean,
@@ -39,8 +42,7 @@ module.exports = {
 	mixins: [ typeUtils ],
 	computed: $.extend( mapGetters( {
 		getZObjectById: 'getZObjectById',
-		getZObjectChildrenById: 'getZObjectChildrenById',
-		viewmode: 'getViewMode'
+		getZObjectChildrenById: 'getZObjectChildrenById'
 	} ), {
 		zobjectStringValueItem: function () {
 			var stringValueItem = this.findKeyInArray( Constants.Z_STRING_VALUE, this.zobjectChildren );

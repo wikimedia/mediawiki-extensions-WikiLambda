@@ -29,16 +29,15 @@ describe( 'App.vue', function () {
 		};
 		store = new Vuex.Store( {
 			actions: actions,
-			getters: getters
+			getters: $.extend( getters, {
+				isCurrentZObjectExecutable: function () {
+					return false;
+				}
+			} )
 		} );
 	} );
 	it( 'Renders nothing when the viewmode is not returned from mw.config', function () {
 		var wrapper;
-		mw.config.get = jest.fn( function () {
-			return {
-				viewmode: null
-			};
-		} );
 
 		wrapper = shallowMount( App, {
 			store: store,
@@ -47,6 +46,9 @@ describe( 'App.vue', function () {
 				zObjectInitialized: jest.fn( function () {
 					return true;
 				} )
+			},
+			provide: {
+				viewmode: null
 			}
 		} );
 
@@ -56,11 +58,6 @@ describe( 'App.vue', function () {
 
 	it( 'Renders z-object-editor when viewmode === false', function () {
 		var wrapper;
-		mw.config.get = jest.fn( function () {
-			return {
-				viewmode: false
-			};
-		} );
 
 		wrapper = mount( App, {
 			store: store,
@@ -69,6 +66,9 @@ describe( 'App.vue', function () {
 				zObjectInitialized: jest.fn( function () {
 					return true;
 				} )
+			},
+			provide: {
+				viewmode: false
 			}
 		} );
 
@@ -80,11 +80,6 @@ describe( 'App.vue', function () {
 
 	it( 'Renders z-object-viewer when viewmode === true', function () {
 		var wrapper;
-		mw.config.get = jest.fn( function () {
-			return {
-				viewmode: true
-			};
-		} );
 
 		wrapper = shallowMount( App, {
 			store: store,
@@ -93,6 +88,9 @@ describe( 'App.vue', function () {
 				zObjectInitialized: jest.fn( function () {
 					return true;
 				} )
+			},
+			provide: {
+				viewmode: true
 			}
 		} );
 
@@ -105,11 +103,6 @@ describe( 'App.vue', function () {
 	it( 'Renders loading when zObjectInitialized is false', function () {
 		var wrapper,
 			$i18n = jest.fn();
-		mw.config.get = jest.fn( function () {
-			return {
-				viewmode: true
-			};
-		} );
 
 		wrapper = shallowMount( App, {
 			store: store,
@@ -121,12 +114,14 @@ describe( 'App.vue', function () {
 				zObjectInitialized: jest.fn( function () {
 					return false;
 				} )
+			},
+			provide: {
+				viewmode: true
 			}
 		} );
 
 		expect( wrapper.findComponent( ZObjectViewer ).exists() ).toBe( false );
 		expect( wrapper.findComponent( ZObjectEditor ).exists() ).toBe( false );
 		expect( $i18n ).toHaveBeenCalledWith( 'wikilambda-loading' );
-
 	} );
 } );

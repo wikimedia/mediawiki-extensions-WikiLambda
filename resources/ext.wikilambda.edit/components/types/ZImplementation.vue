@@ -9,7 +9,7 @@
 		<div>
 			{{ functionLabel }}:{{ ' ' }}
 			<z-object-selector
-				v-if="!getViewMode"
+				v-if="!viewmode"
 				:type="Constants.Z_FUNCTION"
 				:placeholder="$i18n( 'wikilambda-function-typeselector-label' )"
 				:selected-id="zFunction.value"
@@ -24,7 +24,7 @@
 				<span v-else>{{ $i18n( 'wikilambda-invalidzobject' ) }}</span>
 			</template>
 		</div>
-		<div v-if="!getViewMode">
+		<div v-if="!viewmode">
 			<select v-model="implMode">
 				<option value="code">
 					{{ $i18n( 'wikilambda-implementation-selector-code' ) }}
@@ -79,6 +79,9 @@ module.exports = {
 	provide: {
 		allowArgRefMode: true
 	},
+	inject: {
+		viewmode: { default: false }
+	},
 	props: {
 		zobjectId: {
 			type: Number,
@@ -96,7 +99,6 @@ module.exports = {
 			'getZObjectChildrenById',
 			'getZkeyLabels',
 			'getZkeys',
-			'getViewMode',
 			'getNestedZObjectById',
 			'getZarguments',
 			'getZargumentsString'

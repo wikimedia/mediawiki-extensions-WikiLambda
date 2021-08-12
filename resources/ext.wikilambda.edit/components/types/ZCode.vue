@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-zcode">
-		<span v-if="getViewMode || readonly">{{ selectedLanguage }}</span>
+		<span v-if="viewmode || readonly">{{ selectedLanguage }}</span>
 		<select
 			v-else
 			v-model="selectedLanguage"
@@ -25,7 +25,7 @@
 		</select>
 		<code-editor
 			:mode="selectedLanguage"
-			:read-only="!selectedLanguage || getViewMode || readonly"
+			:read-only="!selectedLanguage || viewmode || readonly"
 			:value="codeValue"
 			@change="updateCode"
 		></code-editor>
@@ -42,6 +42,9 @@ var Constants = require( '../../Constants.js' ),
 module.exports = {
 	components: {
 		'code-editor': CodeEditor
+	},
+	inject: {
+		viewmode: { default: false }
 	},
 	props: {
 		zobjectId: {
@@ -63,8 +66,7 @@ module.exports = {
 	computed: $.extend(
 		mapGetters( [
 			'getAllProgrammingLangs',
-			'getZObjectChildrenById',
-			'getViewMode'
+			'getZObjectChildrenById'
 		] ),
 		{
 			zobject: function () {

@@ -10,9 +10,9 @@
 
 		<span v-if="persistent">
 			<a
-				v-if="type !== zobjectId && (getViewMode || readonly)"
+				v-if="type !== zobjectId && (viewmode || readonly)"
 				:href="typeLink"
-				:target="!getViewMode ? '_blank' : ''"
+				:target="!viewmode ? '_blank' : ''"
 			>
 				<span>{{ typeLabel }}</span>
 			</a>
@@ -21,8 +21,8 @@
 		</span>
 
 		<span v-else>
-			<span v-if="getViewMode || readonly || type">
-				<a :href="typeLink" :target="!getViewMode ? '_blank' : ''">{{ typeLabel }}</a>
+			<span v-if="viewmode || readonly || type">
+				<a :href="typeLink" :target="!viewmode ? '_blank' : ''">{{ typeLabel }}</a>
 			</span>
 			<z-object-selector
 				v-else
@@ -55,6 +55,9 @@ module.exports = {
 		'z-object-key-list': ZObjectKeyList,
 		'z-object-selector': ZObjectSelector
 	},
+	inject: {
+		viewmode: { default: false }
+	},
 	props: {
 		zobjectId: {
 			type: Number,
@@ -86,8 +89,7 @@ module.exports = {
 		mapGetters( [
 			'getZObjectChildrenById',
 			'getCurrentZObjectId',
-			'getZkeyLabels',
-			'getViewMode'
+			'getZkeyLabels'
 		] ),
 		{
 			typeLabel: function () {

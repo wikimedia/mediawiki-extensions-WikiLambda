@@ -55,7 +55,6 @@ module.exports = {
 		'getZObjectChildrenById',
 		'getZkeyLabels',
 		'getZkeys',
-		'getViewMode',
 		'getNestedZObjectById',
 		'getZObjectById'
 	] ),

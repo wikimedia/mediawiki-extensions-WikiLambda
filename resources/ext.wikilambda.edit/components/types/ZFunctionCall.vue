@@ -16,7 +16,7 @@
 		></z-object-selector>
 		<template v-else>
 			<button
-				v-if="!getViewMode"
+				v-if="!viewmode"
 				:title="$i18n( 'wikilambda-editor-zobject-removekey-tooltip' )"
 				@click="typeHandler"
 			>
@@ -92,6 +92,9 @@ module.exports = {
 		'z-reference': ZReference
 	},
 	mixins: [ typeUtils ],
+	inject: {
+		viewmode: { default: false }
+	},
 	props: {
 		zobjectId: {
 			type: Number,
@@ -113,8 +116,7 @@ module.exports = {
 		getZObjectChildrenById: 'getZObjectChildrenById',
 		getZObjectTypeById: 'getZObjectTypeById',
 		getZkeys: 'getZkeys',
-		getZObjectAsJsonById: 'getZObjectAsJsonById',
-		getViewMode: 'getViewMode'
+		getZObjectAsJsonById: 'getZObjectAsJsonById'
 	} ), {
 		zobject: function () {
 			return this.getZObjectChildrenById( this.zobjectId );

@@ -30,6 +30,9 @@ var Constants = require( '../../Constants.js' ),
 
 module.exports = {
 	mixins: [ typeUtils ],
+	inject: {
+		viewmode: { default: false }
+	},
 	props: {
 		zobjectId: {
 			type: Number,
@@ -40,7 +43,6 @@ module.exports = {
 		mapGetters( {
 			getZObjectById: 'getZObjectById',
 			getZObjectChildrenById: 'getZObjectChildrenById',
-			viewmode: 'getViewMode',
 			getZarguments: 'getZarguments'
 		} ),
 		{

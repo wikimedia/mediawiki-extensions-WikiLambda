@@ -35,6 +35,9 @@ var Constants = require( '../../Constants.js' ),
 
 module.exports = {
 	name: 'ZBoolean',
+	inject: {
+		viewmode: { default: false }
+	},
 	props: {
 		zobjectId: {
 			type: Number,
@@ -47,7 +50,6 @@ module.exports = {
 	},
 	mixins: [ typeUtils ],
 	computed: $.extend( mapGetters( {
-		viewmode: 'getViewMode',
 		getZObjectChildrenById: 'getZObjectChildrenById',
 		getZkeyLabels: 'getZkeyLabels'
 	} ),

@@ -17,6 +17,11 @@
 		store: store,
 		render: function ( h ) {
 			return h( App );
+		},
+		provide: function () {
+			return {
+				viewmode: store.getters.getViewMode
+			};
 		}
 	} );
 }() );

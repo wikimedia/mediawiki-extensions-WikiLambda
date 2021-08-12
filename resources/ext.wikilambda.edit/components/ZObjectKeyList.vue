@@ -7,7 +7,7 @@
 	-->
 	<ul class="ext-wikilambda-zobject-key-list">
 		<li v-for="( value, key ) in zObjectWithoutPersistent" :key="key">
-			<button v-if="!(getViewMode || readonly)"
+			<button v-if="!(viewmode || readonly)"
 				:title="tooltipRemoveZObjectKey"
 				@click="removeKey( value.id )"
 			>
@@ -38,6 +38,9 @@ module.exports = {
 		'z-object-key-input': ZObjectKeyInput
 	},
 	mixins: [ typeUtils ],
+	inject: {
+		viewmode: { default: false }
+	},
 	props: {
 		zobjectId: {
 			type: Number,
@@ -51,8 +54,7 @@ module.exports = {
 	computed: $.extend( {},
 		mapGetters( [
 			'getZObjectChildrenById',
-			'getZObjectTypeById',
-			'getViewMode'
+			'getZObjectTypeById'
 		] ),
 		{
 			tooltipRemoveZObjectKey: function () {

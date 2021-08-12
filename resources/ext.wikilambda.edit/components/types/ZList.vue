@@ -35,6 +35,9 @@ module.exports = {
 	components: {
 		'z-list-item': ZListItem
 	},
+	inject: {
+		viewmode: { default: false }
+	},
 	props: {
 		zobjectId: {
 			type: Number,
@@ -47,8 +50,7 @@ module.exports = {
 	},
 	computed: $.extend( {},
 		mapGetters( {
-			getZObjectChildrenById: 'getZObjectChildrenById',
-			viewmode: 'getViewMode'
+			getZObjectChildrenById: 'getZObjectChildrenById'
 		} ),
 		{
 			ZlistItems: function () {

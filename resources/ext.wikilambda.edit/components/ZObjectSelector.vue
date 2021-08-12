@@ -53,6 +53,9 @@ module.exports = {
 		'sd-message': SdMessage
 	},
 	mixins: [ validator, typeUtils ],
+	inject: {
+		viewmode: { default: false }
+	},
 	props: {
 		type: {
 			type: String,
@@ -88,8 +91,7 @@ module.exports = {
 		mapGetters( {
 			zkeyLabels: 'getZkeyLabels',
 			zKeys: 'getZkeys',
-			zLang: 'getZLang',
-			viewmode: 'getViewMode'
+			zLang: 'getZLang'
 		} ),
 		mapState( [
 			'zRegex'
