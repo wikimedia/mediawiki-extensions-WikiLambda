@@ -20,7 +20,7 @@
 		<!-- If there's a type, we render the appropriate component -->
 		<template v-else>
 			<span>
-				<a :href="zTypeLink" :target="!getViewMode ? '_blank' : ''">{{ zTypeLabel }}</a>
+				<a :href="zTypeLink" :target="!viewmode ? '_blank' : ''">{{ zTypeLabel }}</a>
 			</span>
 			<z-key-mode-selector
 				v-if="!(viewmode || readonly) && selectedMode && !isIdentityKey && zType !== Constants.Z_OBJECT"
