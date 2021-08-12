@@ -20,5 +20,7 @@
 	"wikilambda-editor-label-addlanguage-label": "언어 추가:",
 	"wikilambda-editor-label-removelanguage-tooltip": "이 레이블에서 이 언어를 제거합니다",
 	"wikilambda-editor-zobject-addkey": "키 추가:",
-	"wikilambda-editor-label-select-programming-language-label": "프로그래밍 언어 선택:"
+	"wikilambda-editor-label-select-programming-language-label": "프로그래밍 언어 선택:",
+	"wikilambda-enable-expert-mode": "전문가 모드 활성화",
+	"wikilambda-disable-expert-mode": "전문가 모드 비활성화"
 }

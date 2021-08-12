@@ -6,5 +6,6 @@
 	},
 	"apihelp-query+wikilambdasearch_labels-param-search": "검색 용어",
 	"apihelp-query+wikilambdasearch_labels-param-language": "검색할 미디어위키 언어 코드",
-	"apihelp-wikilambda_edit-param-summary": "편집 요약 메시지"
+	"apihelp-wikilambda_edit-param-summary": "편집 요약 메시지",
+	"apihelp-wikilambda_perform_test-param-nocache": "캐시 사용 여부"
 }
