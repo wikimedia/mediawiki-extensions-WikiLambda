@@ -1,4 +1,5 @@
-var canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
+var canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
+	Constants = require( '../../Constants.js' );
 
 module.exports = {
 	state: {
@@ -26,6 +27,18 @@ module.exports = {
 		createNewTester: function ( context ) {
 			context.dispatch( 'initializeResultId', context.getters.getNextObjectId )
 				.then( function ( resultId ) {
+					var returnType = context.getters.getZObjectAsJson[
+							Constants.Z_PERSISTENTOBJECT_VALUE ][
+							Constants.Z_FUNCTION_RETURN_TYPE ][
+							Constants.Z_REFERENCE_ID ],
+						defaultTestValidator = '';
+
+					if ( returnType === Constants.Z_STRING ) {
+						defaultTestValidator = 'Z866';
+					} else if ( returnType === Constants.Z_BOOLEAN ) {
+						defaultTestValidator = 'Z844';
+					}
+
 					context.commit( 'addNewTester', resultId );
 
 					context.dispatch( 'injectZObject', {
@@ -41,7 +54,7 @@ module.exports = {
 								},
 								Z20K3: {
 									Z1K1: 'Z7',
-									Z7K1: ''
+									Z7K1: defaultTestValidator
 								}
 							},
 							Z2K3: {
@@ -51,6 +64,16 @@ module.exports = {
 										Z1K1: 'Z11',
 										Z11K1: context.getters.getUserZlangZID,
 										Z11K2: ''
+									}
+								]
+							},
+							Z2K4: {
+								Z1K1: 'Z32',
+								Z32K1: [
+									{
+										Z1K1: 'Z31',
+										Z31K1: 'Z1002',
+										Z31K2: []
 									}
 								]
 							}
