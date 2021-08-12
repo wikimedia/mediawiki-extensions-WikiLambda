@@ -10,7 +10,7 @@
 			<h2 class="ext-wikilambda-persistentobject-header">
 				{{ $i18n( 'wikilambda-persistentzobject-metadata' ) }}
 			</h2>
-			<div>
+			<div v-if="zObjectLabel.id">
 				<z-object-key
 					:key="Constants.Z_PERSISTENTOBJECT_LABEL"
 					:zobject-id="zObjectLabel.id"
@@ -18,7 +18,7 @@
 					:readonly="getViewMode || readonly"
 				></z-object-key>
 			</div>
-			<div>
+			<div v-if="zObjectAliases.id">
 				<z-object-key
 					:key="Constants.Z_PERSISTENTOBJECT_ALIASES"
 					:zobject-id="zObjectAliases.id"
@@ -27,7 +27,7 @@
 				></z-object-key>
 			</div>
 		</div>
-		<div>
+		<div v-if="zObjectValue.id">
 			<h2 class="ext-wikilambda-persistentobject-header">
 				{{ $i18n( 'wikilambda-persistentzobject-contents' ) }}
 			</h2>
