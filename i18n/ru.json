@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Kareyac",
+			"NR Deblocked",
 			"Nastua Buldakova",
 			"Rivka Silinsky"
 		]
@@ -23,5 +24,7 @@
 	"wikilambda-argref-default-label": "Выберите аргумент",
 	"wikilambda-implementation-selector": "Выберите реализацию",
 	"wikilambda-tester-status-pending": "В ОЖИДАНИИ...",
-	"wikilambda-tester-status-failed": "НЕ УДАЛОСЬ"
+	"wikilambda-tester-status-failed": "НЕ УДАЛОСЬ",
+	"wikilambda-enable-expert-mode": "Включить режим Эксперта",
+	"wikilambda-disable-expert-mode": "Выключить режим эксперта"
 }
