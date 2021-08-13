@@ -39,7 +39,7 @@
 				></z-object-key>
 			</li>
 		</ul>
-		<button @click="callFunctionHandler">
+		<button v-if="!hideCallButton" @click="callFunctionHandler">
 			<label> {{ $i18n( 'wikilambda-call-function' ) }} </label>
 		</button>
 		<div v-if="resultZObject || orchestrating" class="ext-wikilambda-orchestrated-result">
@@ -101,6 +101,10 @@ module.exports = {
 			required: true
 		},
 		hideFirstArgument: {
+			type: Boolean,
+			default: false
+		},
+		hideCallButton: {
 			type: Boolean,
 			default: false
 		}

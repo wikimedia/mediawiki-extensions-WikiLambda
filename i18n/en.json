@@ -99,6 +99,7 @@
 	"wikilambda-tester-no-results": "No tester results found. Please add an implementation and a tester to see results.",
 	"wikilambda-tester-results-percentage-label": "Total Testers Passing",
 	"wikilambda-tester-run-testers": "Run All Testers",
+	"wikilambda-tester-run-tester": "Run Tester",
 	"wikilambda-enable-expert-mode": "Enable Expert Mode",
 	"wikilambda-disable-expert-mode": "Disable Expert Mode"
 }

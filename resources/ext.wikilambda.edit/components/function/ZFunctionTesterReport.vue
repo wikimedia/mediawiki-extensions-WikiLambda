@@ -55,9 +55,11 @@
 			<tfoot>
 				<tr>
 					<td>
-						<button v-if="!viewmode" @click="runTesters">
-							{{ $i18n( 'wikilambda-tester-run-testers' ) }}
-						</button>
+						<slot name="run-testers" :click="runTesters">
+							<button v-if="!viewmode" @click="runTesters">
+								{{ $i18n( 'wikilambda-tester-run-testers' ) }}
+							</button>
+						</slot>
 					</td>
 					<td :colspan="implementations.length" class="results">
 						{{ $i18n( 'wikilambda-tester-results-percentage-label' ) }}:
