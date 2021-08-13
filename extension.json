@@ -15,11 +15,13 @@
 		"MediaWiki": ">= 1.37.0"
 	},
 	"AutoloadNamespaces": {
-		"MediaWiki\\Extension\\WikiLambda\\": "includes/"
+		"MediaWiki\\Extension\\WikiLambda\\": "includes/",
+		"Mediawiki\\Services\\Wikilambda\\FunctionSchemata\\": "function-schemata/php/includes/"
 	},
 	"TestAutoloadNamespaces": {
 		"MediaWiki\\Extension\\WikiLambda\\Tests\\": "tests/",
-		"MediaWiki\\Extension\\WikiLambda\\Tests\\Integration\\": "tests/phpunit/integration/"
+		"MediaWiki\\Extension\\WikiLambda\\Tests\\Integration\\": "tests/phpunit/integration/",
+		"Mediawiki\\Services\\Wikilambda\\FunctionSchemata\\Tests\\": "function-schemata/php/test/"
 	},
 	"callback": "MediaWiki\\Extension\\WikiLambda\\Hooks::registerExtension",
 	"ContentHandlers": {
