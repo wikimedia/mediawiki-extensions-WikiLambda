@@ -10,22 +10,9 @@
 			<h2 class="ext-wikilambda-persistentobject-header">
 				{{ $i18n( 'wikilambda-persistentzobject-metadata' ) }}
 			</h2>
-			<div v-if="zObjectLabel.id">
-				<z-object-key
-					:key="Constants.Z_PERSISTENTOBJECT_LABEL"
-					:zobject-id="zObjectLabel.id"
-					:parent-type="zObjectType"
-					:readonly="viewmode || readonly"
-				></z-object-key>
-			</div>
-			<div v-if="zObjectAliases.id">
-				<z-object-key
-					:key="Constants.Z_PERSISTENTOBJECT_ALIASES"
-					:zobject-id="zObjectAliases.id"
-					:parent-type="zObjectType"
-					:readonly="viewmode || readonly"
-				></z-object-key>
-			</div>
+			<z-metadata
+				:zobject-id="zobjectId"
+			></z-metadata>
 		</div>
 		<div v-if="zObjectValue.id">
 			<h2 class="ext-wikilambda-persistentobject-header">
@@ -54,11 +41,13 @@ var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	ZObjectKey = require( '../ZObjectKey.vue' );
+	ZObjectKey = require( '../ZObjectKey.vue' ),
+	ZMetadata = require( './ZMetadata.vue' );
 
 module.exports = {
 	components: {
-		'z-object-key': ZObjectKey
+		'z-object-key': ZObjectKey,
+		'z-metadata': ZMetadata
 	},
 	mixins: [ typeUtils ],
 	inject: {
@@ -90,12 +79,6 @@ module.exports = {
 		},
 		zObjectValue: function () {
 			return this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, this.zobject );
-		},
-		zObjectLabel: function () {
-			return this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_LABEL, this.zobject );
-		},
-		zObjectAliases: function () {
-			return this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_ALIASES, this.zobject );
 		}
 	} ),
 	methods: $.extend( mapActions( [

@@ -14,25 +14,12 @@
 			:readonly="readonly"
 		></z-monolingual-string>
 		<div class="ext-wikilambda-monolingual">
-			<select v-if="!(viewmode || readonly)"
+			<add-language-dropdown
+				v-if="!(viewmode || readonly)"
+				:used-languages="usedLanguages"
 				:value="selectedLang"
 				@change="addNewLang"
-			>
-				<option
-					selected
-					disabled
-					value="None"
-				>
-					{{ $i18n( 'wikilambda-editor-label-addlanguage-label' ) }}
-				</option>
-				<option
-					v-for="(langName, langId) in unusedLangList"
-					:key="langId"
-					:value="langId"
-				>
-					{{ langName }}
-				</option>
-			</select>
+			></add-language-dropdown>
 		</div>
 	</div>
 </template>
@@ -42,12 +29,14 @@ var Constants = require( '../../Constants.js' ),
 	typeUtils = require( './../../mixins/typeUtils.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
-	ZMonolingualString = require( './ZMonolingualString.vue' );
+	ZMonolingualString = require( './ZMonolingualString.vue' ),
+	AddLanguageDropdown = require( '../base/AddLanguageDropdown.vue' );
 
 module.exports = {
 	name: 'ZMultilingualString',
 	components: {
-		'z-monolingual-string': ZMonolingualString
+		'z-monolingual-string': ZMonolingualString,
+		'add-language-dropdown': AddLanguageDropdown
 	},
 	inject: {
 		viewmode: { default: false }
