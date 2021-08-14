@@ -100,17 +100,23 @@ module.exports = {
 		selectedLanguages: function () {
 			var languageList = [];
 
-			this.zObjectLabels.Z12K1.forEach( function ( label ) {
-				languageList.push( label.Z11K1.Z9K1 );
-			} );
+			// Don't break if the labels are set to {}
+			if ( this.zObjectLabels.Z12K1 ) {
+				this.zObjectLabels.Z12K1.forEach( function ( label ) {
+					languageList.push( label.Z11K1.Z9K1 );
+				} );
+			}
 
-			this.zObjectAliases.Z32K1.forEach( function ( alias ) {
-				var lang = alias.Z31K1.Z9K1;
+			// Don't break if the aliases are set to {}
+			if ( this.zObjectAliases.Z32K1 ) {
+				this.zObjectAliases.Z32K1.forEach( function ( alias ) {
+					var lang = alias.Z31K1.Z9K1;
 
-				if ( languageList.indexOf( lang ) === -1 ) {
-					languageList.push( lang );
-				}
-			} );
+					if ( languageList.indexOf( lang ) === -1 ) {
+						languageList.push( lang );
+					}
+				} );
+			}
 
 			return languageList.map( function ( languageCode ) {
 				return {
