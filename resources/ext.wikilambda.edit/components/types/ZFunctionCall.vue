@@ -39,7 +39,7 @@
 				></z-object-key>
 			</li>
 		</ul>
-		<button v-if="!hideCallButton" @click="callFunctionHandler">
+		<button v-if="!hideCallButton && isRootFunctionCall" @click="callFunctionHandler">
 			<label> {{ $i18n( 'wikilambda-call-function' ) }} </label>
 		</button>
 		<div v-if="resultZObject || orchestrating" class="ext-wikilambda-orchestrated-result">
@@ -92,8 +92,14 @@ module.exports = {
 		'z-reference': ZReference
 	},
 	mixins: [ typeUtils ],
+	provide: function () {
+		return {
+			isRootFunctionCall: false
+		};
+	},
 	inject: {
-		viewmode: { default: false }
+		viewmode: { default: false },
+		isRootFunctionCall: { default: true }
 	},
 	props: {
 		zobjectId: {
