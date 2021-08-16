@@ -622,7 +622,7 @@ describe( 'zobject Vuex module', function () {
 			} );
 
 			it( 'adds a valid ZMultilingualString', function () {
-				zobjectModule.actions.addZMultilingualString( context, { id: 0 } );
+				zobjectModule.actions.addZMultilingualString( context, 0 );
 
 				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z12', Z12K1: [] } );
 			} );
@@ -662,7 +662,7 @@ describe( 'zobject Vuex module', function () {
 			} );
 
 			it( 'adds a valid ZArgument', function () {
-				zobjectModule.actions.addZArgument( context, { id: 0 } );
+				zobjectModule.actions.addZArgument( context, 0 );
 
 				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z17', Z17K1: { Z1K1: 'Z9', Z9K1: '' }, Z17K2: { Z1K1: 'Z6', Z6K1: 'Z0K1' }, Z17K3: { Z1K1: 'Z12', Z12K1: [] } } );
 			} );

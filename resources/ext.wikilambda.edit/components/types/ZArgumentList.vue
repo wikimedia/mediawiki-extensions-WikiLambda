@@ -41,7 +41,7 @@ module.exports = {
 				};
 			this.addZObject( payload );
 
-			this.addZArgument( { id: nextId, initialLabel: this.$i18n( 'wikilambda-default-argument-label' ) } );
+			this.addZArgument( nextId );
 		}
 	} )
 };

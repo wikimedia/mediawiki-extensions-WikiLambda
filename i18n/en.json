@@ -101,6 +101,5 @@
 	"wikilambda-tester-run-testers": "Run All Testers",
 	"wikilambda-tester-run-tester": "Run Tester",
 	"wikilambda-enable-expert-mode": "Enable Expert Mode",
-	"wikilambda-disable-expert-mode": "Disable Expert Mode",
-	"wikilambda-default-argument-label": "input"
+	"wikilambda-disable-expert-mode": "Disable Expert Mode"
 }
