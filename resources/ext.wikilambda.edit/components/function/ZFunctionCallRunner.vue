@@ -5,7 +5,7 @@
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-function-call-block ext-wikilambda-function-call-block--runner">
+	<div class="ext-wikilambda-function-call-block ext-wikilambda-function-call-block__runner">
 		{{ zFunctionCallKeyLabels[ Constants.Z_FUNCTION_CALL_FUNCTION ] }}:
 		<z-reference
 			:zobject-key="selectedFunction[ Constants.Z_PERSISTENTOBJECT_ID ]"
@@ -103,7 +103,7 @@ module.exports = {
 </script>
 
 <style lang="less">
-.ext-wikilambda-function-call-block--runner {
+.ext-wikilambda-function-call-block__runner {
 	max-width: 40vw;
 
 	@media ( max-width: 1200px ) {

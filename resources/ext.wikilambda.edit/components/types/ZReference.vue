@@ -7,7 +7,11 @@
 	-->
 	<div class="ext-wikilambda-zreference">
 		<span v-if="isReadOnly">
-			<a :href="referenceLink" :target="referenceLinkTarget">
+			<a
+				:href="referenceLink"
+				:target="referenceLinkTarget"
+				class="referenced-type"
+			>
 				{{ referenceLabel }}
 			</a>
 		</span>
@@ -63,6 +67,9 @@ module.exports = {
 			getCurrentZObjectId: 'getCurrentZObjectId'
 		} ),
 		{
+			Constants: function () {
+				return Constants;
+			},
 			zobject: function () {
 				return this.getZObjectChildrenById( this.zobjectId );
 			},
@@ -124,5 +131,10 @@ module.exports = {
 <style lang="less">
 .ext-wikilambda-zreference {
 	display: inline;
+
+	.referenced-type {
+		font-style: italic;
+		font-size: 0.9em;
+	}
 }
 </style>

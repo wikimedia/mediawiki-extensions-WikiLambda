@@ -41,10 +41,10 @@ var Constants = require( '../Constants.js' ),
 	ZBoolean = require( './types/ZBoolean.vue' ),
 	ZImplementation = require( './types/ZImplementation.vue' ),
 	ZArgumentReference = require( './types/ZArgumentReference.vue' ),
-	ZNothing = require( './types/ZNothing.vue' ),
 	ZTester = require( './types/ZTester.vue' ),
 	ZPersistentObject = require( './types/ZPersistentObject.vue' ),
 	ZCharacter = require( './types/ZCharacter.vue' ),
+	ZPair = require( './types/ZPair.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -64,10 +64,10 @@ module.exports = {
 		'z-boolean': ZBoolean,
 		'z-implementation': ZImplementation,
 		'z-argument-reference': ZArgumentReference,
-		'z-nothing': ZNothing,
 		'z-tester': ZTester,
 		'z-persistentobject': ZPersistentObject,
-		'z-character': ZCharacter
+		'z-character': ZCharacter,
+		'z-pair': ZPair
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -142,6 +142,8 @@ module.exports = {
 						return 'z-tester';
 					case Constants.Z_CHARACTER:
 						return 'z-character';
+					case Constants.Z_PAIR:
+						return 'z-pair';
 					default:
 						return 'z-object-generic';
 				}

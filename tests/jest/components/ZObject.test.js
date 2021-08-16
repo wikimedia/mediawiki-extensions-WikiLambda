@@ -22,7 +22,6 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	ZBoolean = require( '../../../resources/ext.wikilambda.edit/components/types/ZBoolean.vue' ),
 	ZImplementation = require( '../../../resources/ext.wikilambda.edit/components/types/ZImplementation.vue' ),
 	ZArgumentReference = require( '../../../resources/ext.wikilambda.edit/components/types/ZArgumentReference.vue' ),
-	ZNothing = require( '../../../resources/ext.wikilambda.edit/components/types/ZNothing.vue' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	localVue;
 
@@ -106,5 +105,4 @@ describe( 'ZObject', function () {
 	testMountingComponent( 'ZBoolean', Constants.Z_BOOLEAN, ZBoolean );
 	testMountingComponent( 'ZImplementation', Constants.Z_IMPLEMENTATION, ZImplementation );
 	testMountingComponent( 'ZArgumentReference', Constants.Z_ARGUMENT_REFERENCE, ZArgumentReference );
-	testMountingComponent( 'ZNothing', Constants.Z_NOTHING, ZNothing );
 } );

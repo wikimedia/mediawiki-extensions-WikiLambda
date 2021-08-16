@@ -7,9 +7,6 @@
 	-->
 	<div id="ext-wikilambda-app">
 		<template v-if="zObjectInitialized">
-			<div v-if="isCurrentZObjectExecutable" class="ext-wikilambda-executable">
-				<z-function-evaluator></z-function-evaluator>
-			</div>
 			<z-object-editor
 				v-if="viewmode === false"
 			></z-object-editor>
@@ -27,8 +24,7 @@
 var ZObjectEditor = require( './ZObjectEditor.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	ZObjectViewer = require( './ZObjectViewer.vue' ),
-	ZFunctionEvaluator = require( './function/ZFunctionEvaluator.vue' );
+	ZObjectViewer = require( './ZObjectViewer.vue' );
 
 module.exports = {
 	name: 'App',
@@ -37,12 +33,10 @@ module.exports = {
 	},
 	components: {
 		'z-object-editor': ZObjectEditor,
-		'z-object-viewer': ZObjectViewer,
-		'z-function-evaluator': ZFunctionEvaluator
+		'z-object-viewer': ZObjectViewer
 	},
 	computed: mapGetters( {
-		zObjectInitialized: 'getZObjectInitialized',
-		isCurrentZObjectExecutable: 'isCurrentZObjectExecutable'
+		zObjectInitialized: 'getZObjectInitialized'
 	} ),
 	methods: mapActions( [ 'initializeZObject' ] ),
 	created: function () {
@@ -51,13 +45,3 @@ module.exports = {
 	}
 };
 </script>
-
-<style lang="less">
-.ext-wikilambda-executable {
-	float: right;
-
-	@media ( max-width: 1200px ) {
-		float: none;
-	}
-}
-</style>

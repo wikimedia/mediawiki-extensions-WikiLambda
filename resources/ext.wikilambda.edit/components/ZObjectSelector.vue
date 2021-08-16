@@ -11,7 +11,13 @@
 		@license MIT
 	-->
 	<span class="ext-wikilambda-select-zobject">
-		<span v-if="readonly || viewmode">{{ selectedText }}</span>
+		<a
+			v-if="readonly || viewmode"
+			:href="'/wiki/ZObject:' + type"
+			:target="referenceLinkTarget"
+		>
+			{{ selectedText }}
+		</a>
 		<sd-autocomplete-search-input
 			v-else
 			name="zobject-selector"
@@ -111,6 +117,13 @@ module.exports = {
 				} else {
 					return '';
 				}
+			},
+			referenceLinkTarget: function () {
+				if ( !( this.viewmode || this.readonly ) ) {
+					return '_blank';
+				}
+
+				return;
 			}
 		}
 	),

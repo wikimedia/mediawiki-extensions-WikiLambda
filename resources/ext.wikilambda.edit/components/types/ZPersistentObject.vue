@@ -10,9 +10,12 @@
 			<h2 class="ext-wikilambda-persistentobject-header">
 				{{ $i18n( 'wikilambda-persistentzobject-metadata' ) }}
 			</h2>
-			<z-metadata
-				:zobject-id="zobjectId"
-			></z-metadata>
+			<div class="ext-wikilambda-persistentobject-metadata">
+				<z-metadata
+					:zobject-id="zobjectId"
+				></z-metadata>
+				<z-function-evaluator></z-function-evaluator>
+			</div>
 		</div>
 		<div v-if="zObjectValue.id">
 			<h2 class="ext-wikilambda-persistentobject-header">
@@ -42,12 +45,14 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	ZObjectKey = require( '../ZObjectKey.vue' ),
-	ZMetadata = require( './ZMetadata.vue' );
+	ZMetadata = require( './ZMetadata.vue' ),
+	ZFunctionEvaluator = require( '../function/ZFunctionEvaluator.vue' );
 
 module.exports = {
 	components: {
 		'z-object-key': ZObjectKey,
-		'z-metadata': ZMetadata
+		'z-metadata': ZMetadata,
+		'z-function-evaluator': ZFunctionEvaluator
 	},
 	mixins: [ typeUtils ],
 	inject: {
@@ -66,7 +71,8 @@ module.exports = {
 	computed: $.extend( mapGetters( [
 		'getZObjectChildrenById',
 		'getZObjectTypeById',
-		'getZkeyLabels'
+		'getZkeyLabels',
+		'isCurrentZObjectExecutable'
 	] ), {
 		Constants: function () {
 			return Constants;
@@ -92,6 +98,11 @@ module.exports = {
 </script>
 
 <style>
+.ext-wikilambda-persistentobject-metadata {
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+}
+
 .ext-wikilambda-clear-persistentobject {
 	float: right;
 }
