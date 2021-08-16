@@ -271,7 +271,14 @@
 				"wikilambda-tester-run-testers",
 				"wikilambda-tester-run-tester",
 				"wikilambda-enable-expert-mode",
-				"wikilambda-disable-expert-mode"
+				"wikilambda-disable-expert-mode",
+				"wikilambda-metadata-more-languages",
+				"wikilambda-metadata-language-column",
+				"wikilambda-metadata-label-column",
+				"wikilambda-metadata-aka-column",
+				"wikilambda-metadata-add-alias",
+				"wikilambda-metadata-all-languages",
+				"wikilambda-metadata-fewer-languages"
 			]
 		}
 	},
