@@ -28,6 +28,12 @@
 					<!-- <td></td> -->
 					<td>
 						<div v-for="( alias, index ) in getLanguageAliases( language.Z9K1 )" :key="index">
+							<button
+								v-if="!viewmode"
+								@click="removeAlias( alias )"
+							>
+								{{ $i18n( 'wikilambda-editor-removeitem' ) }}
+							</button>
 							<z-string
 								:zobject-id="alias"
 							></z-string>
@@ -260,6 +266,10 @@ module.exports = {
 				this.removeZObjectChildren( aliasId );
 				this.removeZObject( aliasId );
 			}
+		},
+		removeAlias: function ( alias ) {
+			this.removeZObjectChildren( alias );
+			this.removeZObject( alias );
 		},
 		addAliasForLanguage: function ( language ) {
 			var existingAliasId = this.getLanguageAliasStringsetId( language ),
