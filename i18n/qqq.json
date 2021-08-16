@@ -107,5 +107,12 @@
 	"wikilambda-tester-run-testers": "Button text to re-run all testers and implementation for a given function.",
 	"wikilambda-tester-run-tester": "Button text to run a specific tester.",
 	"wikilambda-enable-expert-mode": "Label for the button to enable expert mode.",
-	"wikilambda-disable-expert-mode": "Label for the button to disable expert mode."
+	"wikilambda-disable-expert-mode": "Label for the button to disable expert mode.",
+	"wikilambda-metadata-more-languages": "Label for button to show more languages in the metadata.",
+	"wikilambda-metadata-language-column": "Label for the language column in the metadata table.",
+	"wikilambda-metadata-label-column": "Label for the label column in the metadata table.",
+	"wikilambda-metadata-aka-column": "Label for the 'Also known as' column in the metadata table.",
+	"wikilambda-metadata-add-alias": "Label for button to add an alias to a ZObject",
+	"wikilambda-metadata-all-languages": "Label for button to show all languages in the metadata.",
+	"wikilambda-metadata-fewer-languages": "Label for button to show fewer languages in the metadata."
 }

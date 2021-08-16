@@ -1,59 +1,96 @@
 <template>
 	<div class="ext-wikilambda-metadata">
-		<table>
-			<thead>
-				<tr>
-					<th>Language</th>
-					<th>Label</th>
-					<!-- <th>Description</th> -->
-					<th>Also known as</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr v-for="language in selectedLanguages" :key="language.Z9K1">
-					<td>
-						<button
-							v-if="!viewmode"
-							@click="removeLang( language.Z9K1 )"
-						>
-							{{ $i18n( 'wikilambda-editor-removeitem' ) }}
-						</button>
-						{{ getAllLangs[ language.Z9K1 ] }}
-					</td>
-					<td>
-						<z-string
-							:zobject-id="getLanguageLabelStringId( language.Z9K1 )"
-						></z-string>
-					</td>
-					<!-- <td></td> -->
-					<td>
-						<div v-for="( alias, index ) in getLanguageAliases( language.Z9K1 )" :key="index">
+		<div class="ext-wikilambda-metadata--alias-string">
+			{{ userLangAliasString }}
+		</div>
+		<a
+			href="#"
+			@click.stop="showMoreLanguages = !showMoreLanguages"
+		>
+			{{ $i18n( 'wikilambda-metadata-more-languages' ) }}
+		</a>
+		<template v-if="showMoreLanguages">
+			<table>
+				<thead>
+					<tr>
+						<th scope="col">
+							{{ $i18n( 'wikilambda-metadata-language-column' ) }}
+						</th>
+						<th scope="col">
+							{{ $i18n( 'wikilambda-metadata-label-column' ) }}
+						</th>
+						<!--
+						<th scope="col">
+							Description
+						</th>
+						-->
+						<th scope="col">
+							{{ $i18n( 'wikilambda-metadata-aka-column' ) }}
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="language in displayedSelectedLanguages" :key="language.Z9K1">
+						<td>
 							<button
 								v-if="!viewmode"
-								@click="removeAlias( alias )"
+								@click="removeLang( language.Z9K1 )"
 							>
 								{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 							</button>
+							{{ getAllLangs[ language.Z9K1 ] }}
+						</td>
+						<td>
 							<z-string
-								:zobject-id="alias"
+								:zobject-id="getLanguageLabelStringId( language.Z9K1 )"
 							></z-string>
-						</div>
-						<div v-if="!viewmode">
-							<button
-								@click="addAliasForLanguage( language.Z9K1 )"
-							>
-								{{ $i18n( 'wikilambda-editor-additem' ) }}
-							</button> Add Alias
-						</div>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-		<add-language-dropdown
-			v-if="!viewmode"
-			:used-languages="selectedLanguages"
-			@change="addNewLang"
-		></add-language-dropdown>
+						</td>
+						<!-- <td></td> -->
+						<td>
+							<div v-for="( alias, index ) in getLanguageAliases( language.Z9K1 )" :key="index">
+								<button
+									v-if="!viewmode"
+									@click="removeAlias( alias )"
+								>
+									{{ $i18n( 'wikilambda-editor-removeitem' ) }}
+								</button>
+								<z-string
+									:zobject-id="alias"
+								></z-string>
+							</div>
+							<div v-if="!viewmode">
+								<button
+									@click="addAliasForLanguage( language.Z9K1 )"
+								>
+									{{ $i18n( 'wikilambda-editor-additem' ) }}
+								</button> {{ $i18n( 'wikilambda-metadata-add-alias' ) }}
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div v-if="selectedLanguages.length > defaultMaxLanguages">
+				<a
+					v-if="!showAllSelectedLanguages"
+					href="#"
+					@click.stop="showAllSelectedLanguages = true"
+				>
+					{{ $i18n( 'wikilambda-metadata-all-languages' ) }}
+				</a>
+				<a
+					v-else
+					href="#"
+					@click.stop="showAllSelectedLanguages = false"
+				>
+					{{ $i18n( 'wikilambda-metadata-fewer-languages' ) }}
+				</a>
+			</div>
+			<add-language-dropdown
+				v-if="!viewmode"
+				:used-languages="selectedLanguages"
+				@change="addNewLang"
+			></add-language-dropdown>
+		</template>
 	</div>
 </template>
 
@@ -80,13 +117,22 @@ module.exports = {
 			required: true
 		}
 	},
+	data: function () {
+		return {
+			defaultMaxLanguages: 4,
+			showMoreLanguages: false,
+			showAllSelectedLanguages: false
+		};
+	},
 	computed: $.extend( mapGetters( [
+		'getZObjectById',
 		'getZObjectAsJsonById',
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
 		'getZkeyLabels',
 		'getAllLangs',
-		'getNextObjectId'
+		'getNextObjectId',
+		'getUserZlangZID'
 	] ), {
 		zobject: function () {
 			return this.getZObjectChildrenById( this.zobjectId );
@@ -131,12 +177,37 @@ module.exports = {
 				};
 			} );
 		},
+		displayedSelectedLanguages: function () {
+			if ( this.showAllSelectedLanguages ) {
+				return this.selectedLanguages;
+			} else {
+				return this.selectedLanguages.slice( 0, this.defaultMaxLanguages );
+			}
+		},
 		getZObjectAliases: function () {
 			return this.getZObjectChildrenById(
 				this.getNestedZObjectById( this.zobjectId, [
 					Constants.Z_PERSISTENTOBJECT_ALIASES,
 					Constants.Z_MULTILINGUALSTRINGSET_VALUE
 				] ).id );
+		},
+		userLangAliasString: function () {
+			var str = '';
+
+			this.getLanguageAliases( this.getUserZlangZID )
+				.forEach( function ( aliasId ) {
+					var alias = this.getNestedZObjectById( aliasId, [
+						Constants.Z_STRING_VALUE
+					] );
+
+					if ( str.length ) {
+						str += '  |  ' + alias.value;
+					} else {
+						str = alias.value;
+					}
+				}.bind( this ) );
+
+			return str;
 		}
 	} ),
 	methods: $.extend( mapActions( [
@@ -254,6 +325,8 @@ module.exports = {
 					parentId: zLabelParentId
 				};
 			this.addZMonolingualString( payload );
+
+			this.showAllSelectedLanguages = true;
 		},
 		removeLang: function ( language ) {
 			var labelId = this.getLanguageLabelId( language ),
@@ -320,6 +393,11 @@ module.exports = {
 
 <style lang="less">
 .ext-wikilambda-metadata {
+	.ext-wikilambda-metadata--alias-string {
+		color: #888;
+		margin: 10px 0;
+	}
+
 	table {
 		width: 100%;
 		margin: 0;
