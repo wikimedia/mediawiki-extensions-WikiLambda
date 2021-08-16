@@ -744,7 +744,7 @@ module.exports = {
 			// Set default string
 			nextId = context.getters.getNextObjectId;
 			context.dispatch( 'addZObject', { key: Constants.Z_MONOLINGUALSTRING_VALUE, value: 'object', parent: parentId } );
-			context.dispatch( 'addZString', { id: nextId, value: payload.initialString || '' } );
+			context.dispatch( 'addZString', { id: nextId, value: '' } );
 		},
 		/**
 		 * Create the required entry in the zobject array for a zMultilingualString.
@@ -752,24 +752,23 @@ module.exports = {
 		 * { Z1K1: Z12, Z12K1: [] }
 		 *
 		 * @param {Object} context
-		 * @param {Object} payload
+		 * @param {Object} objectId
 		 */
-		addZMultilingualString: function ( context, payload ) {
+		addZMultilingualString: function ( context, objectId ) {
 			var nextId;
 			context.dispatch( 'setZObjectValue', {
-				id: payload.id,
+				id: objectId,
 				value: 'object'
 			} );
 
-			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: Constants.Z_MULTILINGUALSTRING, parent: payload.id } );
+			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: Constants.Z_MULTILINGUALSTRING, parent: objectId } );
 
 			nextId = getNextObjectId( context.state.zobject );
-			context.dispatch( 'addZObject', { key: Constants.Z_MULTILINGUALSTRING_VALUE, value: 'array', parent: payload.id } );
+			context.dispatch( 'addZObject', { key: Constants.Z_MULTILINGUALSTRING_VALUE, value: 'array', parent: objectId } );
 
 			context.dispatch( 'addZMonolingualString', {
 				parentId: nextId,
-				lang: context.getters.getUserZlangZID,
-				initialString: payload.initialString
+				lang: context.getters.getUserZlangZID
 			} );
 		},
 		/**
@@ -838,31 +837,31 @@ module.exports = {
 		 * }
 		 *
 		 * @param {Object} context
-		 * @param {number} payload
+		 * @param {number} objectId
 		 */
-		addZArgument: function ( context, payload ) {
+		addZArgument: function ( context, objectId ) {
 			var nextId;
 			context.dispatch( 'setZObjectValue', {
-				id: payload.id,
+				id: objectId,
 				value: 'object'
 			} );
-			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: Constants.Z_ARGUMENT, parent: payload.id } );
+			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: Constants.Z_ARGUMENT, parent: objectId } );
 
 			nextId = getNextObjectId( context.state.zobject );
-			context.dispatch( 'addZObject', { key: Constants.Z_ARGUMENT_TYPE, value: 'object', parent: payload.id } );
+			context.dispatch( 'addZObject', { key: Constants.Z_ARGUMENT_TYPE, value: 'object', parent: objectId } );
 			context.dispatch( 'addZReference', { id: nextId, value: '' } );
 
 			// We calculate the id again, and set the key
 			nextId = getNextObjectId( context.state.zobject );
 			// we create the base object that will be used to scaffold the ZString
-			context.dispatch( 'addZObject', { key: Constants.Z_ARGUMENT_KEY, value: 'object', parent: payload.id } );
+			context.dispatch( 'addZObject', { key: Constants.Z_ARGUMENT_KEY, value: 'object', parent: objectId } );
 			context.dispatch( 'addZString', { id: nextId, value: context.getters.getNextKey } );
 
 			// We calculate the next id, and create the argument label
 			nextId = getNextObjectId( context.state.zobject );
 			// we create the base object that will be used to scaffold the ZString
-			context.dispatch( 'addZObject', { key: Constants.Z_ARGUMENT_LABEL, value: 'object', parent: payload.id } );
-			context.dispatch( 'addZMultilingualString', { id: nextId, initialString: payload.initialLabel } );
+			context.dispatch( 'addZObject', { key: Constants.Z_ARGUMENT_LABEL, value: 'object', parent: objectId } );
+			context.dispatch( 'addZMultilingualString', nextId );
 		},
 		/**
 		 * Create the required entry in the zobject array for a zArgument.
@@ -967,7 +966,7 @@ module.exports = {
 			nextId = getNextObjectId( context.state.zobject );
 			context.dispatch( 'addZObject', { key: Constants.Z_FUNCTION_ARGUMENTS, value: 'array', parent: objectId } );
 			context.dispatch( 'addZObject', { key: 0, value: 'object', parent: nextId } );
-			context.dispatch( 'addZArgument', { id: nextId + 1 } );
+			context.dispatch( 'addZArgument', nextId + 1 );
 
 			// Add return type
 			nextId = getNextObjectId( context.state.zobject );
@@ -1239,9 +1238,9 @@ module.exports = {
 						case Constants.Z_STRING:
 							return context.dispatch( 'addZString', { id: payload.id } );
 						case Constants.Z_MULTILINGUALSTRING:
-							return context.dispatch( 'addZMultilingualString', { id: payload.id } );
+							return context.dispatch( 'addZMultilingualString', payload.id );
 						case Constants.Z_ARGUMENT:
-							return context.dispatch( 'addZArgument', { id: payload.id } );
+							return context.dispatch( 'addZArgument', payload.id );
 						case Constants.Z_FUNCTION_CALL:
 							return context.dispatch( 'addZFunctionCall', payload.id );
 						case Constants.Z_FUNCTION:
