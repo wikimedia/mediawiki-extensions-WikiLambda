@@ -107,5 +107,6 @@
 	"wikilambda-tester-run-testers": "Button text to re-run all testers and implementation for a given function.",
 	"wikilambda-tester-run-tester": "Button text to run a specific tester.",
 	"wikilambda-enable-expert-mode": "Label for the button to enable expert mode.",
-	"wikilambda-disable-expert-mode": "Label for the button to disable expert mode."
+	"wikilambda-disable-expert-mode": "Label for the button to disable expert mode.",
+	"wikilambda-default-argument-label": "Default label generated when an argument is added to a function."
 }

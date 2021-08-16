@@ -271,7 +271,8 @@
 				"wikilambda-tester-run-testers",
 				"wikilambda-tester-run-tester",
 				"wikilambda-enable-expert-mode",
-				"wikilambda-disable-expert-mode"
+				"wikilambda-disable-expert-mode",
+				"wikilambda-default-argument-label"
 			]
 		}
 	},
