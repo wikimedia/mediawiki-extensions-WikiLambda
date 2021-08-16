@@ -5,7 +5,7 @@
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-zobject-key">
+	<div :class="classZObjectKey">
 		<!-- zKey label -->
 		<span v-if="zKey">{{ zKeyLabel }}</span>
 
@@ -38,7 +38,6 @@
 			></z-object-generic>
 			<z-reference
 				v-else-if="selectedMode === Constants.Z_KEY_MODES.REFERENCE"
-				class="ext-wikilambda-zobject-key-inline"
 				:zobject-id="zobjectId"
 				:readonly="readonly"
 			></z-reference>
@@ -144,6 +143,21 @@ module.exports = {
 			'getZObjectChildrenById'
 		] ),
 		{
+			classZObjectKey: function () {
+				return {
+					'ext-wikilambda-zobject-key': true,
+					'ext-wikilambda-zobject-key-inline': this.isInlineType
+				};
+			},
+			isInlineType: function () {
+				return [
+					Constants.Z_FUNCTION_CALL,
+					Constants.Z_STRING,
+					Constants.Z_REFERENCE,
+					Constants.Z_BOOLEAN,
+					Constants.Z_ARGUMENT_REFERENCE
+				].indexOf( this.zType ) !== -1;
+			},
 			zType: function () {
 				return this.getZObjectTypeById( this.zobjectId );
 			},
@@ -229,6 +243,6 @@ module.exports = {
 }
 
 .ext-wikilambda-zobject-key-inline {
-	display: inline-block;
+	display: inline;
 }
 </style>

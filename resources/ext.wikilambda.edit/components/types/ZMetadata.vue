@@ -321,6 +321,7 @@ module.exports = {
 <style lang="less">
 .ext-wikilambda-metadata {
 	table {
+		width: 600px;
 		margin: 0;
 		padding: 0;
 		border: 1px solid #aaa;

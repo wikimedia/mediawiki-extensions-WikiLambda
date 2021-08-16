@@ -55,5 +55,9 @@ module.exports = {
 <style lang="less">
 .ext-wikilambda-executable {
 	float: right;
+
+	@media ( max-width: 1200px ) {
+		float: none;
+	}
 }
 </style>
