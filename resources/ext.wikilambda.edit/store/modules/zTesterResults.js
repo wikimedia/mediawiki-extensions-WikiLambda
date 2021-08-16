@@ -125,8 +125,7 @@ module.exports = {
 
 					// Store result
 					if ( result === Constants.Z_NOTHING ) {
-						// eslint-disable-next-line no-console
-						console.error( error );
+						mw.log.error( 'Tester result was nothing: ' + error );
 						context.commit( 'setZTesterResult', {
 							key: key,
 							result: false
@@ -144,8 +143,7 @@ module.exports = {
 				context.commit( 'setFetchingTestResults', false );
 			} )
 				.catch( function ( error ) {
-					// eslint-disable-next-line no-console
-					console.error( error );
+					mw.log.error( 'Tester API call was nothing: ' + error );
 					context.commit( 'setErrorState', true );
 					context.commit( 'setFetchingTestResults', false );
 				} );
