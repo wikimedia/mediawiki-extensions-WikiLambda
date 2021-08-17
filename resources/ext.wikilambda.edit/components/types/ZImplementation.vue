@@ -34,10 +34,6 @@
 				</option>
 			</select>
 		</div>
-		<z-function-signature
-			:return-type="selectedFunctionReturnType"
-			:arguments="getZargumentsString"
-		></z-function-signature>
 		<z-code
 			v-if="implMode === 'code'"
 			:zobject-id="zCodeId"

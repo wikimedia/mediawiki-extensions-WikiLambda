@@ -35,13 +35,6 @@
 		<sd-message v-if="message.text" :type="message.type">
 			{{ message }}
 		</sd-message>
-		<div v-if="$store.getters.isExpertMode">
-			{{ $i18n( 'wikilambda-expert-mode-json-label' ) }}
-			<z-object-json
-				:readonly="true"
-				:zobject-raw="ZObjectJson"
-			></z-object-json>
-		</div>
 	</div>
 </template>
 

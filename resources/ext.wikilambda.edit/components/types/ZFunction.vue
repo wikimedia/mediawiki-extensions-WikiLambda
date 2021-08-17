@@ -6,12 +6,8 @@
 		@license MIT
 	-->
 	<div>
-		<z-function-signature
-			:arguments="getZargumentsString"
-			:return-type="getZkeyLabels[ zReturnType.value ]"
-		></z-function-signature>
 		<div>
-			{{ zReturnTypeLabel }}:
+			<h3>{{ zReturnTypeLabel }}</h3>
 			<z-object-selector
 				:type="Constants.Z_TYPE"
 				:placeholder="$i18n( 'wikilambda-return-typeselector-label' )"

@@ -351,11 +351,14 @@ module.exports = {
 			var zobject = getters.getZObjectAsJson,
 				type;
 
-			if ( zobject ) {
+			if ( zobject && zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] ) {
 				type = zobject[
 					Constants.Z_PERSISTENTOBJECT_VALUE ][
-					Constants.Z_OBJECT_TYPE ][
-					Constants.Z_REFERENCE_ID ];
+					Constants.Z_OBJECT_TYPE ];
+
+				if ( typeof type === 'object' ) {
+					type = type[ Constants.Z_REFERENCE_ID ];
+				}
 			}
 
 			return type || false;

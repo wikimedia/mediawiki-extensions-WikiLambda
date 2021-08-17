@@ -280,7 +280,10 @@
 				"wikilambda-metadata-aka-column",
 				"wikilambda-metadata-add-alias",
 				"wikilambda-metadata-all-languages",
-				"wikilambda-metadata-fewer-languages"
+				"wikilambda-metadata-fewer-languages",
+				"wikilambda-persistentobject-details-label",
+				"wikilambda-persistentobject-function-signature-label",
+				"wikilambda-persistentobject-evaluate-function"
 			]
 		}
 	},

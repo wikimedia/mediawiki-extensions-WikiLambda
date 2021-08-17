@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<div>
-		{{ $i18n( 'wikilambda-editor-argument-list-label' ) }}:
+		<h3>{{ $i18n( 'wikilambda-editor-argument-list-label' ) }}</h3>
 		<ul class="ext-wikilambda-zlist-no-bullets">
 			<z-list-item
 				v-for="(item) in ZlistItems"

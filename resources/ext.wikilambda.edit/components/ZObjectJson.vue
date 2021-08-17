@@ -1,5 +1,5 @@
 <template>
-	<div class="ext-wikilambda-json ext-wikilambda-zcode">
+	<div class="ext-wikilambda-json">
 		<code-editor
 			v-clickout="onClickoutHandler"
 			mode="json"
