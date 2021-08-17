@@ -19,7 +19,7 @@
 			</template>
 		</button>
 		<div v-if="$store.getters.isExpertMode">
-			Current ZObject:
+			{{ $i18n( 'wikilambda-expert-mode-json-label' ) }}
 			<z-object-json
 				:readonly="true"
 				:zobject-raw="ZObjectJson"
