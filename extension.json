@@ -123,6 +123,7 @@
 				"vuex",
 				"mediawiki.Title",
 				"mediawiki.api",
+				"mediawiki.storage",
 				"es6-polyfills",
 				"oojs"
 			],

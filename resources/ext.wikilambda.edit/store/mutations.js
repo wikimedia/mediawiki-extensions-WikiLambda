@@ -7,6 +7,6 @@
 module.exports = {
 	setExpertMode: function ( state, value ) {
 		state.expertMode = value;
-		localStorage.setItem( 'aw-expert-mode', value );
+		mw.storage.set( 'aw-expert-mode', value );
 	}
 };

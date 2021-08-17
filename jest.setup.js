@@ -2,6 +2,8 @@
 // Assign things to "global" here if you want them to be globally available during tests
 global.$ = require( 'jquery' );
 
+global.mockLocalStorage = {};
+
 // Mock MW object
 global.mw = {
 	config: {
@@ -26,6 +28,18 @@ global.mw = {
 		getFallbackLanguageChain: function () {
 			return [ 'en' ];
 		}
+	},
+	storage: {
+		get: jest.fn( function () {
+			return function ( key ) {
+				return mockLocalStorage[ key ];
+			};
+		} ),
+		set: jest.fn( function () {
+			return function ( key, value ) {
+				mockLocalStorage[ key ] = value;
+			};
+		} )
 	}
 // other mw properties as needed...
 };
