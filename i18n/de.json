@@ -88,5 +88,12 @@
 	"wikilambda-tester-run-testers": "Alle Tester ausführen",
 	"wikilambda-tester-run-tester": "Test ausführen",
 	"wikilambda-enable-expert-mode": "Expertenmodus einschalten",
-	"wikilambda-disable-expert-mode": "Expertenmodus ausschalten"
+	"wikilambda-disable-expert-mode": "Expertenmodus ausschalten",
+	"wikilambda-metadata-more-languages": "In weiteren Sprachen",
+	"wikilambda-metadata-language-column": "Sprache",
+	"wikilambda-metadata-label-column": "Beschriftung",
+	"wikilambda-metadata-aka-column": "Auch bekannt als",
+	"wikilambda-metadata-add-alias": "Alias hinzufügen",
+	"wikilambda-metadata-all-languages": "Alle eingegebenen Sprachen",
+	"wikilambda-metadata-fewer-languages": "Weniger Sprachen"
 }

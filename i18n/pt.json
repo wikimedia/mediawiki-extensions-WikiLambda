@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Emma Franzen"
+			"Emma Franzen",
+			"Hamilton Abreu"
 		]
 	},
 	"wikilambda-call-function": "Função de Chamada",
@@ -10,10 +11,10 @@
 	"wikilambda-special-callfunction-summary": "Este formulário permite criar e executar uma chamada de função. Você deve ler a documentação de ajuda e a orientação da comunidade primeiro.",
 	"wikilambda-special-callfunction-intro": "Certifique-se de seguir as políticas da comunidade e as regras de direitos autorais e patentes.",
 	"wikilambda-special-callfunction-nojs": "Esta página requer o uso de JavaScript.",
-	"wikilambda-special-evaluatefunctioncall": "Avaliar um chamada de funcao",
-	"wikilambda-special-evaluatefunctioncall-summary": "Este formulario permite avaliar uma chamada de funcao.",
-	"wikilambda-special-evaluatefunctioncall-intro": "Certifique-se de seguir a communidade politicas, da regras de direitos autorais e patentes.",
-	"wikilambda-special-evaluatefunctioncall-nojs": "Este pagina requer o uso de JavaScript.",
+	"wikilambda-special-evaluatefunctioncall": "Calcular uma chamada de função",
+	"wikilambda-special-evaluatefunctioncall-summary": "Este formulário permite calcular uma chamada de função.",
+	"wikilambda-special-evaluatefunctioncall-intro": "Certifique-se de que respeita as práticas da comunidade e as regras respeitantes a direitos de autor e patentes.",
+	"wikilambda-special-evaluatefunctioncall-nojs": "Esta página requer o uso de JavaScript.",
 	"wikilambda-typeselector-label": "Selecione um tipo",
 	"wikilambda-argument-typeselector-label": "Selecione um tipo para este argumento",
 	"wikilambda-function-typeselector-label": "Selecione uma função",
