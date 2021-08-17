@@ -61,14 +61,14 @@ class OptionalKeysTest extends WikiLambdaIntegrationTestCase {
 EOT;
 
 		$baseTypeStatus = $this->editPage(
-			$baseTypeTitleText, $baseTypeContent, 'Create ZOptions', NS_ZOBJECT
+			$baseTypeTitleText, $baseTypeContent, 'Create ZOptions', NS_MAIN
 		);
 		$this->assertTrue(
 			$baseTypeStatus->isOK(),
 			'ZOptions creation was successful'
 		);
 
-		$baseTypeTitle = Title::newFromText( $baseTypeTitleText, NS_ZOBJECT );
+		$baseTypeTitle = Title::newFromText( $baseTypeTitleText, NS_MAIN );
 		$this->assertTrue(
 			$baseTypeTitle->exists(),
 			'ZOptions page was created in the DB'
@@ -90,14 +90,14 @@ EOT;
 EOT;
 
 		$instanceStatus = $this->editPage(
-			$instanceTitleText, $instanceContent, 'Test ZOptions instance', NS_ZOBJECT
+			$instanceTitleText, $instanceContent, 'Test ZOptions instance', NS_MAIN
 		);
 		$this->assertTrue(
 			$instanceStatus->isOK(),
 			'ZOptions instance creation was successful'
 		);
 
-		$instanceTitle = Title::newFromText( $instanceTitleText, NS_ZOBJECT );
+		$instanceTitle = Title::newFromText( $instanceTitleText, NS_MAIN );
 		$this->assertTrue(
 			$instanceTitle->exists(),
 			'ZOptions instance page was created in the DB'

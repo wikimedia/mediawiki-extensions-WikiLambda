@@ -82,8 +82,8 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 			"'" . ZTestType::TEST_ZID . "' is not defined as a built-in, and not found in the DB before it's written."
 		);
 
-		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
-		$this->editPage( $title, ZTestType::TEST_ENCODING, "Test creation object", NS_ZOBJECT );
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
+		$this->editPage( $title, ZTestType::TEST_ENCODING, "Test creation object", NS_MAIN );
 
 		$this->assertTrue(
 			$registry->isZObjectKeyKnown( ZTestType::TEST_ZID ),

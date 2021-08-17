@@ -182,7 +182,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 		$this->assertTrue( $result[0]['wikilambda_edit']['success'] );
 		$this->assertEquals( $result[0]['wikilambda_edit']['title'], $newZid );
-		$this->assertEquals( $result[0]['wikilambda_edit']['page'], "ZObject:$newZid" );
+		$this->assertEquals( $result[0]['wikilambda_edit']['page'], $newZid );
 	}
 
 	/**
@@ -210,10 +210,10 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		] );
 		$this->assertTrue( $result[0]['wikilambda_edit']['success'] );
 		$this->assertEquals( $result[0]['wikilambda_edit']['title'], $newZid );
-		$this->assertEquals( $result[0]['wikilambda_edit']['page'], "ZObject:$newZid" );
+		$this->assertEquals( $result[0]['wikilambda_edit']['page'], $newZid );
 
 		// Fetch ZObject and check it's been updated
-		$title = Title::newFromText( $newZid, NS_ZOBJECT );
+		$title = Title::newFromText( $newZid, NS_MAIN );
 		$zobject = $this->store->fetchZObjectByTitle( $title );
 		$this->assertTrue( $zobject instanceof ZObjectContent );
 		// We compare the JSONs after decoding because it's saved prettified

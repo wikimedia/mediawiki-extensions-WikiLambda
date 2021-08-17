@@ -31,7 +31,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		$langs->register( self::FR, 'fr' );
 
 		// Add ZTypeTest multilingual object (Z111)
-		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
 		$baseObject = ZTestType::TEST_ENCODING;
 		$page = WikiPage::factory( $title );
 		$content = ZObjectContentHandler::makeContent( $baseObject, $title );

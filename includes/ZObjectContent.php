@@ -243,7 +243,7 @@ class ZObjectContent extends AbstractContent {
 	 */
 	public function getTypeString( $language ): string {
 		$type = $this->getZType();
-		$typeTitle = Title::newFromText( $type, NS_ZOBJECT );
+		$typeTitle = Title::newFromText( $type, NS_MAIN );
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$typeObject = $zObjectStore->fetchZObjectByTitle( $typeTitle );
 		if ( $typeObject ) {
@@ -457,7 +457,7 @@ class ZObjectContent extends AbstractContent {
 
 		// Add links to other ZObjects
 		foreach ( $this->getInnerZObject()->getLinkedZObjects() as $link ) {
-			$output->addLink( Title::newFromText( $link, NS_ZOBJECT ) );
+			$output->addLink( Title::newFromText( $link, NS_MAIN ) );
 		}
 	}
 

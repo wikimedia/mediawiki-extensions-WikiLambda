@@ -15,7 +15,7 @@ WikiLambda will provide Wikimedia wikis with a wikitext parser function to call 
   ```
 * Run `php maintenance/update.php` to provision necessary schemas and initial content.
 
-Done! Navigate to the newly created `ZObject:Z1` page on your wiki to verify that the extension is successfully installed.
+Done! Navigate to the newly created `Z1` page on your wiki to verify that the extension is successfully installed.
 
 ### Orchestration and evaluation
 

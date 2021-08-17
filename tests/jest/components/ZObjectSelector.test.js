@@ -85,7 +85,7 @@ describe( 'ZObjectSelector', function () {
 							query: {
 								wikilambdasearch_labels: [
 									{
-										page_namespace: 2468,
+										page_namespace: 0,
 										page_title: 'Z20',
 										page_type: 'Z4',
 										label: 'Tester',

@@ -34,10 +34,13 @@ class Hooks implements
 	public static function registerExtension() {
 		require_once __DIR__ . '/defines.php';
 
-		// (T267232) Prevent ZObject: pages from being transcluded; sadly this isn't available as
+		global $wgNamespaceContentModels;
+		$wgNamespaceContentModels[ NS_MAIN ] = CONTENT_MODEL_ZOBJECT;
+
+		// (T267232) Prevent ZObject pages from being transcluded; sadly this isn't available as
 		// an extension.json attribute as of yet.
 		global $wgNonincludableNamespaces;
-		$wgNonincludableNamespaces[] = NS_ZOBJECT;
+		$wgNonincludableNamespaces[] = NS_MAIN;
 	}
 
 	/**
@@ -51,7 +54,7 @@ class Hooks implements
 	public static function onCodeEditorGetPageLanguage( Title $title, &$lang ) {
 		if (
 			$title->hasContentModel( CONTENT_MODEL_ZOBJECT )
-			|| $title->inNamespace( NS_ZOBJECT )
+			|| $title->inNamespace( NS_MAIN )
 		) {
 			$lang = 'json';
 			return false;
@@ -83,7 +86,7 @@ class Hooks implements
 	 */
 	public function onMultiContentSave( $renderedRevision, $user, $summary, $flags, $hookStatus ) {
 		$title = $renderedRevision->getRevision()->getPageAsLinkTarget();
-		if ( !$title->inNamespace( NS_ZOBJECT ) ) {
+		if ( !$title->inNamespace( NS_MAIN ) ) {
 			return true;
 		}
 
@@ -141,7 +144,7 @@ class Hooks implements
 	 * @return bool|void
 	 */
 	public function onGetUserPermissionsErrors( $title, $user, $action, &$result ) {
-		if ( !$title->inNamespace( NS_ZOBJECT ) ) {
+		if ( !$title->inNamespace( NS_MAIN ) ) {
 			return;
 		}
 
@@ -292,7 +295,7 @@ class Hooks implements
 		}
 
 		$zid = substr( $filename, 0, -5 );
-		$title = Title::newFromText( $zid, NS_ZOBJECT );
+		$title = Title::newFromText( $zid, NS_MAIN );
 		$page = WikiPage::factory( $title );
 
 		$data = file_get_contents( $initialDataToLoadPath . $filename );
@@ -339,7 +342,7 @@ class Hooks implements
 	 * @return bool|void
 	 */
 	public function onNamespaceIsMovable( $index, &$result ) {
-		if ( $index === NS_ZOBJECT ) {
+		if ( $index === NS_MAIN ) {
 			$result = false;
 			// Over-ride any other extensions which might have other ideas
 			return false;
