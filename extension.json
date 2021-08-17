@@ -21,26 +21,6 @@
 		"MediaWiki\\Extension\\WikiLambda\\Tests\\": "tests/",
 		"MediaWiki\\Extension\\WikiLambda\\Tests\\Integration\\": "tests/phpunit/integration/"
 	},
-	"namespaces": [
-		{
-			"id": 2468,
-			"constant": "NS_ZOBJECT",
-			"name": "ZObject",
-			"content": true,
-			"subpages": false,
-			"capitallinkoverride": true,
-			"defaultcontentmodel": "zobject"
-		},
-		{
-			"id": 2469,
-			"constant": "NS_ZOBJECT_TALK",
-			"name": "ZObject_talk",
-			"content": false,
-			"subpages": true,
-			"capitallinkoverride": true,
-			"defaultcontentmodel": "wikitext"
-		}
-	],
 	"callback": "MediaWiki\\Extension\\WikiLambda\\Hooks::registerExtension",
 	"ContentHandlers": {
 		"zobject": "MediaWiki\\Extension\\WikiLambda\\ZObjectContentHandler"

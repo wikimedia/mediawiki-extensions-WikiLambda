@@ -8,9 +8,4 @@
  * @license MIT
  */
 
-if ( !defined( 'NS_ZOBJECT' ) ) {
-	define( 'NS_ZOBJECT', 2468 );
-	define( 'NS_ZOBJECT_TALK', 2469 );
-}
-
 define( 'CONTENT_MODEL_ZOBJECT', 'zobject' );
