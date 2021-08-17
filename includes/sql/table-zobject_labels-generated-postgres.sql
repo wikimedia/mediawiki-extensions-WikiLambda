@@ -9,6 +9,7 @@ CREATE TABLE wikilambda_zobject_labels (
   wlzl_language TEXT NOT NULL,
   wlzl_label TEXT NOT NULL,
   wlzl_label_normalised TEXT NOT NULL,
+  wlzl_label_primary SMALLINT DEFAULT 1 NOT NULL,
   PRIMARY KEY(wlzl_id)
 );
 

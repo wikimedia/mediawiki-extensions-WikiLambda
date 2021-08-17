@@ -92,7 +92,10 @@ class ZTestType extends ZObject {
 			{
 				"Z1K1": "Z31",
 				"Z31K1": "Z1002",
-				"Z31K2": [ "Demonstration type alias" ]
+				"Z31K2": [
+					"Demonstration type alias",
+					"Demonstration type second alias"
+ 				]
 			},
 			{
 				"Z1K1": "Z31",
