@@ -120,7 +120,7 @@ module.exports = {
 	data: function () {
 		return {
 			defaultMaxLanguages: 4,
-			showMoreLanguages: false,
+			showMoreLanguages: true,
 			showAllSelectedLanguages: false
 		};
 	},
