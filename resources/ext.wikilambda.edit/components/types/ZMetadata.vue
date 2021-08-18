@@ -3,12 +3,16 @@
 		<div class="ext-wikilambda-metadata--alias-string">
 			{{ userLangAliasString }}
 		</div>
-		<a
-			href="#"
-			@click.stop="showMoreLanguages = !showMoreLanguages"
-		>
-			{{ $i18n( 'wikilambda-metadata-more-languages' ) }}
-		</a>
+		<sd-button
+			:frameless="true"
+			@click="showMoreLanguages = !showMoreLanguages">
+			<template v-if="showMoreLanguages">
+				{{ $i18n( 'wikilambda-metadata-hide-languages' ) }}
+			</template>
+			<template v-else>
+				{{ $i18n( 'wikilambda-metadata-show-languages' ) }}
+			</template>
+		</sd-button>
 		<template v-if="showMoreLanguages">
 			<table>
 				<thead>
@@ -70,20 +74,16 @@
 				</tbody>
 			</table>
 			<div v-if="selectedLanguages.length > defaultMaxLanguages">
-				<a
-					v-if="!showAllSelectedLanguages"
-					href="#"
-					@click.stop="showAllSelectedLanguages = true"
-				>
-					{{ $i18n( 'wikilambda-metadata-all-languages' ) }}
-				</a>
-				<a
-					v-else
-					href="#"
-					@click.stop="showAllSelectedLanguages = false"
-				>
-					{{ $i18n( 'wikilambda-metadata-fewer-languages' ) }}
-				</a>
+				<sd-button
+					:frameless="true"
+					@click="showAllSelectedLanguages = !showAllSelectedLanguages">
+					<template v-if="showAllSelectedLanguages">
+						{{ $i18n( 'wikilambda-metadata-fewer-languages' ) }}
+					</template>
+					<template v-else>
+						{{ $i18n( 'wikilambda-metadata-all-languages' ) }}
+					</template>
+				</sd-button>
 			</div>
 			<add-language-dropdown
 				v-if="!viewmode"
@@ -99,11 +99,13 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	typeUtils = require( '../../mixins/typeUtils.js' ),
+	SdButton = require( '../base/Button.vue' ),
 	AddLanguageDropdown = require( '../base/AddLanguageDropdown.vue' ),
 	ZString = require( './ZString.vue' );
 
 module.exports = {
 	components: {
+		'sd-button': SdButton,
 		'add-language-dropdown': AddLanguageDropdown,
 		'z-string': ZString
 	},
