@@ -454,6 +454,11 @@ class ZObjectContent extends AbstractContent {
 				)
 			)
 		);
+
+		// Add links to other ZObjects
+		foreach ( $this->getInnerZObject()->getLinkedZObjects() as $link ) {
+			$output->addLink( Title::newFromText( $link, NS_ZOBJECT ) );
+		}
 	}
 
 	/**

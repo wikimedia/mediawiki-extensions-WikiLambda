@@ -12,11 +12,15 @@ namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 class ZObject {
 
 	/** @var array */
 	protected $data = [];
+
+	/** @var array */
+	protected $linkedZObjects = [];
 
 	/**
 	 * Provide this ZObject's schema.
@@ -98,5 +102,51 @@ class ZObject {
 		// TODO: Right now these are uneditable and guaranteed valid on creation, but when we
 		// add model (API and UX) editing, this will need to actually evaluate.
 		return true;
+	}
+
+	/**
+	 * @return string[] An array of other ZObjects to which this ZObject links
+	 * for injection into the MediaWiki system as if they were wiki links.
+	 */
+	public function getLinkedZObjects(): array {
+		foreach ( array_values( $this->data ) as $value ) {
+			self::extractLinkedZObjects( $value, $this );
+		}
+		return array_keys( $this->linkedZObjects );
+	}
+
+	/**
+	 * @param string $zReference for the linked ZObject
+	 */
+	public function addLinkedZObject( string $zReference ) {
+		$this->linkedZObjects[ $zReference ] = 1;
+	}
+
+	/**
+	 * Iterate through ZObject values to find reference links
+	 * @param mixed $value value to check for reference links
+	 * @param ZObject $zobject original ZObject to add links
+	 */
+	private static function extractLinkedZObjects( $value, $zobject ) {
+		if ( is_array( $value ) ) {
+			foreach ( array_values( $value ) as $arrayItem ) {
+				self::extractLinkedZObjects( $arrayItem, $zobject );
+			}
+		} elseif ( is_object( $value ) ) {
+			if ( $value instanceof ZReference ) {
+				$zobject->addLinkedZObject( $value->getZValue() );
+			} else {
+				$objectVars = get_object_vars( $value );
+				foreach ( array_values( $objectVars ) as $objectItem ) {
+					self::extractLinkedZObjects( $objectItem, $zobject );
+				}
+			}
+		} elseif ( is_string( $value ) ) {
+			// TODO: Revisit this (probably not needed) when
+			// ZReferences are preserved/created correctly
+			if ( ZObjectUtils::isValidZObjectReference( $value ) ) {
+				$zobject->addLinkedZObject( $value );
+			}
+		}
 	}
 }
