@@ -27,6 +27,8 @@ describe( 'zTesterResults Vuex module', function () {
 			} ),
 			getters: {}
 		};
+
+		mw.log = { error: function () {} };
 	} );
 
 	describe( 'Getters', function () {
