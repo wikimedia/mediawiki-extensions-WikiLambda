@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Kareyac"
+			"Kareyac",
+			"Rail"
 		]
 	},
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Język",
@@ -9,5 +10,7 @@
 	"wikilambda-savenew": "Zapisz",
 	"wikilambda-publishchanges": "Opublikuj zmiany",
 	"wikilambda-editor-label-addlanguage-label": "Dodaj język:",
-	"wikilambda-implementation-selector-code": "Kod"
+	"wikilambda-implementation-selector-code": "Kod",
+	"wikilambda-metadata-more-languages": "W innych językach",
+	"wikilambda-metadata-all-languages": "Wszystkie wprowadzone języki"
 }

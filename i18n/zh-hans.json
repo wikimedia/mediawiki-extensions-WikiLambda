@@ -23,5 +23,12 @@
 	"wikilambda-implementation-create-new": "创建一个新的实现",
 	"wikilambda-tester-run-tester": "运行测试",
 	"wikilambda-enable-expert-mode": "开启专家模式",
-	"wikilambda-disable-expert-mode": "关闭专家模式"
+	"wikilambda-disable-expert-mode": "关闭专家模式",
+	"wikilambda-metadata-more-languages": "在更多语言中",
+	"wikilambda-metadata-language-column": "语言",
+	"wikilambda-metadata-label-column": "标签",
+	"wikilambda-metadata-aka-column": "别名",
+	"wikilambda-metadata-add-alias": "添加化名",
+	"wikilambda-metadata-all-languages": "所有输入的语言",
+	"wikilambda-metadata-fewer-languages": "更少语言"
 }

@@ -88,5 +88,12 @@
 	"wikilambda-tester-run-testers": "הרצת כל הבודקים",
 	"wikilambda-tester-run-tester": "הרצת בודק",
 	"wikilambda-enable-expert-mode": "הפעלת מצב מומחה",
-	"wikilambda-disable-expert-mode": "כיבוי מצב מומחה"
+	"wikilambda-disable-expert-mode": "כיבוי מצב מומחה",
+	"wikilambda-metadata-more-languages": "בשפות נוספות",
+	"wikilambda-metadata-language-column": "שפה",
+	"wikilambda-metadata-label-column": "תווית",
+	"wikilambda-metadata-aka-column": "ידוע גם בשם",
+	"wikilambda-metadata-add-alias": "הוספת כינוי",
+	"wikilambda-metadata-all-languages": "כל השפות שהוכנסו",
+	"wikilambda-metadata-fewer-languages": "פחות שפות"
 }

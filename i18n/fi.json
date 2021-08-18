@@ -10,5 +10,10 @@
 	"wikilambda-special-evaluatefunctioncall-intro": "Varmista, että noudatat yhteisön käytäntöjä sekä tekijänoikeus- ja patenttisääntöjä.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Kieli",
 	"wikilambda-editor-label-select-programming-language-label": "Valitse ohjelmointikieli:",
-	"wikilambda-tester-status-pending": "ODOTTAA..."
+	"wikilambda-tester-status-pending": "ODOTTAA...",
+	"wikilambda-metadata-more-languages": "Muilla kielillä",
+	"wikilambda-metadata-language-column": "Kieli",
+	"wikilambda-metadata-aka-column": "Tunnetaan myös nimellä",
+	"wikilambda-metadata-all-languages": "Kaikki syötetyt kielet",
+	"wikilambda-metadata-fewer-languages": "Vähemmän kieliä"
 }

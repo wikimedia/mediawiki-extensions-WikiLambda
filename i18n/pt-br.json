@@ -76,5 +76,11 @@
 	"wikilambda-tester-status-failed": "FALHOU",
 	"wikilambda-tester-results-title": "Resultados do teste",
 	"wikilambda-tester-results-caption": "Resultados de testadores de função em relação a implementações",
-	"wikilambda-tester-run-testers": "Executar todos os testadores"
+	"wikilambda-tester-run-testers": "Executar todos os testadores",
+	"wikilambda-metadata-more-languages": "Em mais idiomas",
+	"wikilambda-metadata-language-column": "Idioma",
+	"wikilambda-metadata-label-column": "Etiqueta",
+	"wikilambda-metadata-aka-column": "Também conhecido como",
+	"wikilambda-metadata-all-languages": "Todos os idiomas introduzidos",
+	"wikilambda-metadata-fewer-languages": "Menos idiomas"
 }

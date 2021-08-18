@@ -8,7 +8,8 @@
 			"Melissadilara",
 			"Mim.saitkilic",
 			"MuratTheTurkish",
-			"SaldırganSincap"
+			"SaldırganSincap",
+			"Sayginer"
 		]
 	},
 	"wikilambda-desc": "Wikimedia vikilerine, merkezi bir vikide yazılan, yönetilen ve değerlendirilen işlevlerin değerlendirilmesi için vikimetin ayrıştırıcı işlevi sağlar.",
@@ -71,5 +72,10 @@
 	"wikilambda-implementation-selector-code": "Kod",
 	"wikilambda-implementation-selector-composition": "Kompozisyon",
 	"wikilambda-enable-expert-mode": "Uzman Modunu etkinleştir",
-	"wikilambda-disable-expert-mode": "Uzman Modunu Etkisizleştir"
+	"wikilambda-disable-expert-mode": "Uzman Modunu Etkisizleştir",
+	"wikilambda-metadata-more-languages": "Daha fazla dilde",
+	"wikilambda-metadata-language-column": "Dil",
+	"wikilambda-metadata-label-column": "Etiket",
+	"wikilambda-metadata-all-languages": "Tüm diller",
+	"wikilambda-metadata-fewer-languages": "Daha az dil"
 }
