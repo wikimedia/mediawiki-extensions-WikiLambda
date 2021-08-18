@@ -120,7 +120,7 @@ module.exports = {
 	data: function () {
 		return {
 			defaultMaxLanguages: 4,
-			showMoreLanguages: true,
+			showMoreLanguages: !mw.storage.get( 'aw-showMoreLanguages' ) || mw.storage.get( 'aw-showMoreLanguages' ) === 'true',
 			showAllSelectedLanguages: false
 		};
 	},
@@ -216,7 +216,8 @@ module.exports = {
 		'addZString',
 		'injectZObject',
 		'removeZObjectChildren',
-		'removeZObject'
+		'removeZObject',
+		'fetchAllLangs'
 	] ), {
 		getLanguageLabelId: function ( language ) {
 			var labels = this.getZObjectChildrenById(
@@ -387,7 +388,18 @@ module.exports = {
 				} );
 			}
 		}
-	} )
+	} ),
+	watch: {
+		showMoreLanguages: {
+			immediate: true,
+			handler: function () {
+				mw.storage.set( 'aw-showMoreLanguages', this.showMoreLanguages );
+			}
+		}
+	},
+	mounted: function () {
+		this.fetchAllLangs();
+	}
 };
 </script>
 
