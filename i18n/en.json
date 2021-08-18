@@ -102,6 +102,7 @@
 	"wikilambda-tester-run-tester": "Run Tester",
 	"wikilambda-enable-expert-mode": "Enable Expert Mode",
 	"wikilambda-disable-expert-mode": "Disable Expert Mode",
+	"wikilambda-expert-mode-json-label": "Current ZObject:",
 	"wikilambda-metadata-more-languages": "In more languages",
 	"wikilambda-metadata-language-column": "Language",
 	"wikilambda-metadata-label-column": "Label",

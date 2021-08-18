@@ -108,6 +108,7 @@
 	"wikilambda-tester-run-tester": "Button text to run a specific tester.",
 	"wikilambda-enable-expert-mode": "Label for the button to enable expert mode.",
 	"wikilambda-disable-expert-mode": "Label for the button to disable expert mode.",
+	"wikilambda-expert-mode-json-label": "Label for the JSON 'expert mode' view of the ZObject.",
 	"wikilambda-metadata-more-languages": "Label for button to show more languages in the metadata.",
 	"wikilambda-metadata-language-column": "Label for the language column in the metadata table.",
 	"wikilambda-metadata-label-column": "Label for the label column in the metadata table.",

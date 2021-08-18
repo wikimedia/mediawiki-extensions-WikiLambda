@@ -273,6 +273,7 @@
 				"wikilambda-tester-run-tester",
 				"wikilambda-enable-expert-mode",
 				"wikilambda-disable-expert-mode",
+				"wikilambda-expert-mode-json-label",
 				"wikilambda-metadata-more-languages",
 				"wikilambda-metadata-language-column",
 				"wikilambda-metadata-label-column",
