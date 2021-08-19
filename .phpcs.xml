@@ -11,4 +11,5 @@
 	<exclude-pattern>vendor</exclude-pattern>
 	<exclude-pattern>coverage</exclude-pattern>
 	<exclude-pattern>resources/lib</exclude-pattern>
+	<exclude-pattern>function-schemata</exclude-pattern>
 </ruleset>
