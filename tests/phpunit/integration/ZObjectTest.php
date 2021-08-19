@@ -75,4 +75,23 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$this->assertInstanceOf( ZObject::class, $testZObject );
 		$this->assertSame( $testZObject->getZType(), 'Z111' );
 	}
+
+	/**
+	 * @covers ::getLinkedZObjects()
+	 */
+	public function test_getLinkedZObjects() {
+		// Create type Z111
+		$this->registerLangs( ZTestType::TEST_LANGS );
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
+		$this->editPage( $title, ZTestType::TEST_ENCODING, "Test creation object", NS_ZOBJECT );
+
+		// Create instance of type Z111
+		$testObject = (object)[
+			"Z1K1" => "Z111",
+			"Z111K1" => "first demonstration key",
+			"Z111K2" => "second demonstration key"
+		];
+		$testZObject = ZObjectFactory::create( $testObject );
+		$this->assertContains( "Z111", $testZObject->getLinkedZObjects() );
+	}
 }
