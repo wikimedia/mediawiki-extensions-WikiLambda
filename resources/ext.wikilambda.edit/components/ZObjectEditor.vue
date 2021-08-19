@@ -11,27 +11,37 @@
 			:persistent="true"
 			@input="updateZobject"
 		></z-object>
-		<template v-if="showSaveCommand">
-			<div>
-				<!-- TODO: Replace this with a full save dialog (copywarn, IPwarn, minor edit box, …)? -->
-				<label for="summary"> {{ $i18n( 'wikilambda-summarylabel' ) }} </label>
-				<input v-model="summary"
-					class="ext-wikilambda-editSummary"
-					name="summary"
-				>
-			</div>
-			<button @click="submit">
+		<div
+			v-if="showSaveCommand"
+			class="ext-wikilambda-publishControl">
+			<!-- TODO: Replace this with a full save dialog (copywarn, IPwarn, minor edit box, …)? -->
+			<sd-button
+				:primary="true"
+				:progressive="true"
+				:framed="true"
+				@click="submit">
 				{{ submitButtonLabel }}
-			</button>
-		</template>
-		<button @click="$store.dispatch( 'toggleExpertMode' )">
+			</sd-button>
+			<label
+				class="ext-wikilambda-editSummary-label"
+				for="summary"> {{ $i18n( 'wikilambda-summarylabel' ) }}
+			</label>
+			<input v-model="summary"
+				class="ext-wikilambda-editSummary"
+				:placeholder="submitButtonDescriptionPrompt"
+				name="summary"
+			>
+		</div>
+		<sd-button
+			class="ext-wikilambda-expertModeToggle"
+			@click="$store.dispatch( 'toggleExpertMode' )">
 			<template v-if="$store.getters.isExpertMode">
 				{{ $i18n( 'wikilambda-disable-expert-mode' ) }}
 			</template>
 			<template v-else>
 				{{ $i18n( 'wikilambda-enable-expert-mode' ) }}
 			</template>
-		</button>
+		</sd-button>
 		<sd-message v-if="message.text" :type="message.type">
 			{{ message }}
 		</sd-message>
@@ -40,6 +50,7 @@
 
 <script>
 var ZObject = require( './ZObject.vue' ),
+	SdButton = require( './base/Button.vue' ),
 	SdMessage = require( './base/Message.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
@@ -49,6 +60,7 @@ module.exports = {
 	name: 'ZObjectEditor',
 	components: {
 		'z-object': ZObject,
+		'sd-button': SdButton,
 		'sd-message': SdMessage,
 		'z-object-json': ZObjectJson
 	},
@@ -74,6 +86,9 @@ module.exports = {
 						'wikilambda-publishchanges' : 'wikilambda-savechanges'
 				);
 			}
+		},
+		submitButtonDescriptionPrompt: function () {
+			return this.$i18n( 'wikilambda-publish-summary-prompt' );
 		},
 		showSaveCommand: function () {
 			// TODO: Move this into its own vuex store as things gets more complicated and more view settigns are set
@@ -101,8 +116,38 @@ module.exports = {
 </script>
 
 <style lang="less">
-.ext-wikilambda-editSummary {
-	width: 100%;
+@import 'mediawiki.mixins';
+@import './../../lib/sd-base-variables.less';
+@import './../../lib/wikimedia-ui-base.less';
+
+.ext-wikilambda-publishControl {
+	// Be as wide as possible!
+	.flex( 1, 1, auto, 0 );
+	// … but not too wide
+	max-width: 50em;
+
+	.ext-wikilambda-editSummary {
+		min-width: 25em;
+		box-shadow: inset 0 0 0 1px transparent;
+		.transition( ~'border-color 250ms, box-shadow 250ms' );
+		background-color: @background-color-base;
+		border: @border-width-base @border-style-base @border-color-base;
+		border-radius: @border-radius-base;
+		box-sizing: border-box;
+		color: @color-base--emphasized;
+		font-size: inherit;
+		height: @sd-size-base;
+		line-height: @sd-line-height-base;
+
+		&::placeholder {
+			color: @color-placeholder;
+			opacity: 1;
+		}
+	}
+}
+
+.ext-wikilambda-expertModeToggle {
+	margin: 1em 0 0 0;
 }
 
 .ext-wikilambda-editor-nojswarning {
