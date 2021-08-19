@@ -8,13 +8,14 @@
 			@input="typeHandler"
 		></z-object-selector>
 		<template v-else>
-			<button
+			<sd-button
 				v-if="!viewmode"
 				:title="$i18n( 'wikilambda-editor-zobject-removekey-tooltip' )"
+				destructive
 				@click="typeHandler"
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
-			</button>
+			</sd-button>
 			<z-reference
 				:zobject-key="selectedFunction[ Constants.Z_PERSISTENTOBJECT_ID ]"
 				search-type="Z8"

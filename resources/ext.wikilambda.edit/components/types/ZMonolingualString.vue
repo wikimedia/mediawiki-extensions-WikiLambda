@@ -7,13 +7,14 @@
 	-->
 	<div>
 		<div class="ext-wikilambda-cell">
-			<button
+			<sd-button
 				v-if="!(viewmode || readonly)"
 				:title="tooltipRemoveLang"
+				destructive
 				@click="removeLang"
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
-			</button>
+			</sd-button>
 			{{ languageLabel }}:
 		</div>
 		<div class="ext-wikilambda-cell">

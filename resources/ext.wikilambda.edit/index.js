@@ -6,10 +6,14 @@
  */
 'use strict';
 
+var SdButton = require( './components/base/Button.vue' );
+
 ( function () {
 	var Vue = require( 'vue' ),
 		store = require( './store/index.js' ),
 		App = require( './components/App.vue' );
+
+	Vue.component( 'sd-button', SdButton );
 
 	// eslint-disable-next-line no-new
 	new Vue( {
