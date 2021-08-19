@@ -4,6 +4,8 @@
 			"Jeeputer"
 		]
 	},
+	"wikilambda-persistentzobject-metadata": "برچسب‌ها و نام‌های مستعار",
+	"wikilambda-persistentzobject-contents": "محتوا",
 	"wikilambda-call-function": "فراخوانی تابع",
 	"wikilambda-orchestrated": "نتیجهٔ هماهنگ‌سازی",
 	"wikilambda-special-callfunction": "یک فراخوانی تابع را ایجاد و اجرا کنید.",
@@ -34,6 +36,14 @@
 	"wikilambda-tester-no-results": "نتایج آزمایشگر یافت نشد. برای مشاهدهٔ نتایج، لطفاً یک پیاده‌سازی و یک آزمایشگر اضافه کنید.",
 	"wikilambda-tester-results-percentage-label": "مجموع آزمایشگرهای در حال ارسال",
 	"wikilambda-tester-run-testers": "اجرای تمام آزمایشگرها",
+	"wikilambda-tester-run-tester": "راندن آزمایش‌گر",
 	"wikilambda-enable-expert-mode": "فعال‌سازی حالت پیشرفته",
-	"wikilambda-disable-expert-mode": "غیر فعال‌سازی حالت پیشرفته"
+	"wikilambda-disable-expert-mode": "غیر فعال‌سازی حالت پیشرفته",
+	"wikilambda-metadata-more-languages": "به زبان‌های بیشتر",
+	"wikilambda-metadata-language-column": "زبان",
+	"wikilambda-metadata-label-column": "برچسب",
+	"wikilambda-metadata-aka-column": "همچنین شناخته‌شده به‌عنوان",
+	"wikilambda-metadata-add-alias": "افزودن نام مستعار",
+	"wikilambda-metadata-all-languages": "همه زبان‌های وارد شده",
+	"wikilambda-metadata-fewer-languages": "زبان‌های کمتر"
 }

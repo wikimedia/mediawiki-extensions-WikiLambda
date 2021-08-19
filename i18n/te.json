@@ -1,8 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"AVVK Chaitanya"
+			"AVVK Chaitanya",
+			"Pranayraj1985"
 		]
 	},
-	"wikilambda-editor-label-select-programming-language-label": "ప్రోగ్రామింగ్ భాషను ఎంచుకోండి"
+	"wikilambda-editor-label-select-programming-language-label": "ప్రోగ్రామింగ్ భాషను ఎంచుకోండి",
+	"wikilambda-metadata-language-column": "భాష",
+	"wikilambda-metadata-label-column": "సూచిక (లేబెల్)"
 }
