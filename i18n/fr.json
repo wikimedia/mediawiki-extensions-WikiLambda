@@ -98,11 +98,15 @@
 	"wikilambda-tester-run-tester": "Lancer le testeur",
 	"wikilambda-enable-expert-mode": "Activer le mode expert",
 	"wikilambda-disable-expert-mode": "Désactiver le mode expert",
+	"wikilambda-expert-mode-json-label": "ZObject actuel",
 	"wikilambda-metadata-more-languages": "Dans davantage de langues",
 	"wikilambda-metadata-language-column": "Langue",
 	"wikilambda-metadata-label-column": "Libellé",
 	"wikilambda-metadata-aka-column": "Aussi connu comme",
 	"wikilambda-metadata-add-alias": "Ajouter un alias",
 	"wikilambda-metadata-all-languages": "Toutes les langues saisies",
-	"wikilambda-metadata-fewer-languages": "Moins de langues"
+	"wikilambda-metadata-fewer-languages": "Moins de langues",
+	"wikilambda-persistentobject-details-label": "Détails",
+	"wikilambda-persistentobject-function-signature-label": "Signature de la fonction",
+	"wikilambda-persistentobject-evaluate-function": "Évaluer la fonction"
 }

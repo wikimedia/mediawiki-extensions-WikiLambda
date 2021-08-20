@@ -89,11 +89,15 @@
 	"wikilambda-tester-run-tester": "הרצת בודק",
 	"wikilambda-enable-expert-mode": "הפעלת מצב מומחה",
 	"wikilambda-disable-expert-mode": "כיבוי מצב מומחה",
+	"wikilambda-expert-mode-json-label": "עצם Z נוכחי",
 	"wikilambda-metadata-more-languages": "בשפות נוספות",
 	"wikilambda-metadata-language-column": "שפה",
 	"wikilambda-metadata-label-column": "תווית",
 	"wikilambda-metadata-aka-column": "ידוע גם בשם",
 	"wikilambda-metadata-add-alias": "הוספת כינוי",
 	"wikilambda-metadata-all-languages": "כל השפות שהוכנסו",
-	"wikilambda-metadata-fewer-languages": "פחות שפות"
+	"wikilambda-metadata-fewer-languages": "פחות שפות",
+	"wikilambda-persistentobject-details-label": "פרטים",
+	"wikilambda-persistentobject-function-signature-label": "חתימת פונקציה",
+	"wikilambda-persistentobject-evaluate-function": "הערכת פונקציה"
 }

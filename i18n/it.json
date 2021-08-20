@@ -4,6 +4,7 @@
 			"Beta16",
 			"Lorem Ipsum",
 			"Luca.favorido",
+			"Noretta93",
 			"Sofia Stecchi"
 		]
 	},
@@ -33,5 +34,6 @@
 	"wikilambda-metadata-aka-column": "Anche conosciuto come",
 	"wikilambda-metadata-add-alias": "Aggiungi alias",
 	"wikilambda-metadata-all-languages": "Tutte le lingue inserite",
-	"wikilambda-metadata-fewer-languages": "Meno lingue"
+	"wikilambda-metadata-fewer-languages": "Meno lingue",
+	"wikilambda-persistentobject-details-label": "Dettagli"
 }

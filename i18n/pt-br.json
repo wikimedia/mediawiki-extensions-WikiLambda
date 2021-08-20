@@ -82,5 +82,6 @@
 	"wikilambda-metadata-label-column": "Etiqueta",
 	"wikilambda-metadata-aka-column": "Também conhecido como",
 	"wikilambda-metadata-all-languages": "Todos os idiomas introduzidos",
-	"wikilambda-metadata-fewer-languages": "Menos idiomas"
+	"wikilambda-metadata-fewer-languages": "Menos idiomas",
+	"wikilambda-persistentobject-details-label": "Detalhes"
 }
