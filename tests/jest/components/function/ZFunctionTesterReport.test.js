@@ -54,7 +54,10 @@ describe( 'ZFunctionTesterReport', function () {
 					};
 				};
 			} ),
-			getCurrentZObjectId: jest.fn()
+			getCurrentZObjectId: jest.fn(),
+			getZTesterResults: jest.fn( function () {
+				return jest.fn();
+			} )
 		};
 		actions = {
 			fetchZKeys: jest.fn(),

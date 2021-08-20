@@ -37,12 +37,12 @@ describe( 'zTesterResults Vuex module', function () {
 			expect( result ).toBe( undefined );
 		} );
 		it( 'should return the test result when it is found (true)', function () {
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = true;
+			context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = { Z22K1: { Z40K1: 'Z41' } };
 			var result = zTesterResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
 			expect( result ).toBe( true );
 		} );
 		it( 'should return the test result when it is found (false)', function () {
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = false;
+			context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = { Z22K1: { Z40K1: 'Z42' } };
 			var result = zTesterResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
 			expect( result ).toBe( false );
 		} );
@@ -53,11 +53,11 @@ describe( 'zTesterResults Vuex module', function () {
 		} );
 
 		it( 'should return an object with values for the percentage of passing tests by one given ZID', function () {
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = true;
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10003' ] = true;
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10004' ] = true;
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10005' ] = false;
-			context.state.zTesterResults[ 'Z10009:Z10010:Z10006' ] = false;
+			context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = { Z22K1: { Z40K1: 'Z41' } };
+			context.state.zTesterResults[ 'Z10000:Z10001:Z10003' ] = { Z22K1: { Z40K1: 'Z41' } };
+			context.state.zTesterResults[ 'Z10000:Z10001:Z10004' ] = { Z22K1: { Z40K1: 'Z41' } };
+			context.state.zTesterResults[ 'Z10000:Z10001:Z10005' ] = { Z22K1: { Z40K1: 'Z42' } };
+			context.state.zTesterResults[ 'Z10009:Z10010:Z10006' ] = { Z22K1: { Z40K1: 'Z42' } };
 
 			var result = zTesterResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
 
@@ -71,7 +71,7 @@ describe( 'zTesterResults Vuex module', function () {
 
 	describe( 'Mutations', function () {
 		it( 'should set the tester result', function () {
-			zTesterResultsModule.mutations.setZTesterResult( context.state, { key: 'Z10000:Z10001:Z10002', result: true } );
+			zTesterResultsModule.mutations.setZTesterResult( context.state, { key: 'Z10000:Z10001:Z10002', result: { Z22K1: { Z40K1: 'Z41' } } } );
 
 			var result = zTesterResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
 			expect( result ).toBe( true );
@@ -82,7 +82,7 @@ describe( 'zTesterResults Vuex module', function () {
 			expect( context.state.fetchingTestResults ).toBe( true );
 		} );
 		it( 'should allow for clearing the test results', function () {
-			zTesterResultsModule.mutations.setZTesterResult( context.state, { key: 'Z10000:Z10001:Z10002', result: true } );
+			zTesterResultsModule.mutations.setZTesterResult( context.state, { key: 'Z10000:Z10001:Z10002', result: { Z22K1: { Z40K1: 'Z41' } } } );
 
 			expect( Object.keys( context.state.zTesterResults ).length ).toEqual( 1 );
 
@@ -149,7 +149,7 @@ describe( 'zTesterResults Vuex module', function () {
 		} );
 
 		it( 'should allow for resetting a given test result', function () {
-			zTesterResultsModule.mutations.setZTesterResult( context.state, { key: 'Z10000:Z10001:Z10002', result: true } );
+			zTesterResultsModule.mutations.setZTesterResult( context.state, { key: 'Z10000:Z10001:Z10002', result: { Z22K1: { Z40K1: 'Z41' } } } );
 
 			expect( zTesterResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' ) ).toBe( true );
 

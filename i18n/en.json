@@ -94,9 +94,15 @@
 	"wikilambda-tester-create-new": "Create a new tester",
 	"wikilambda-tester-status-pending": "PENDING...",
 	"wikilambda-tester-status-running": "RUNNING...",
-	"wikilambda-tester-status-passed": "PASSED",
-	"wikilambda-tester-status-failed": "FAILED",
+	"wikilambda-tester-status-passed": "PASS",
+	"wikilambda-tester-status-failed": "FAIL",
 	"wikilambda-tester-results-title": "Test Results",
+	"wikilambda-tester-results-subtitle": "Test results for",
+	"wikilambda-tester-status-label": "Test status",
+	"wikilambda-tester-failure-reason": "Failure reason",
+	"wikilambda-tester-failure-expected": "Expected",
+	"wikilambda-tester-failure-actual": "Received",
+	"wikilambda-tester-function-duration": "Duration",
 	"wikilambda-tester-results-caption": "Results of function testers against implementations",
 	"wikilambda-tester-no-results": "No tester results found. Please add an implementation and a tester to see results.",
 	"wikilambda-tester-results-percentage-label": "Total Testers Passing",
@@ -116,4 +122,5 @@
 	"wikilambda-persistentobject-details-label": "Details",
 	"wikilambda-persistentobject-function-signature-label": "Function Signature",
 	"wikilambda-persistentobject-evaluate-function": "Evaluate Function"
+
 }
