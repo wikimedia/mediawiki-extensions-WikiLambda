@@ -54,6 +54,7 @@
 	"wikilambda-publishchanges": "Publish changes",
 	"wikilambda-savechanges": "Save changes",
 	"wikilambda-summarylabel": "Summary:",
+	"wikilambda-publish-summary-prompt": "Describe what you changed",
 	"wikilambda-loading": "Loading data",
 	"wikilambda-typeselector-label": "Select a Type",
 	"wikilambda-argument-typeselector-label": "Select a Type for this argument",
