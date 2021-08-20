@@ -7,12 +7,14 @@
 	-->
 	<ul class="ext-wikilambda-zobject-key-list">
 		<li v-for="( value, key ) in zObjectWithoutPersistent" :key="key">
-			<button v-if="!(viewmode || readonly)"
+			<sd-button
+				v-if="!(viewmode || readonly)"
 				:title="tooltipRemoveZObjectKey"
+				destructive
 				@click="removeKey( value.id )"
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
-			</button>
+			</sd-button>
 			<z-object-key
 				:z-key="value.key"
 				:zobject-id="value.id"

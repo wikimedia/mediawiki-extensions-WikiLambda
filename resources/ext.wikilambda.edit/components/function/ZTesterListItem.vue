@@ -6,12 +6,14 @@
 		@license MIT
 	-->
 	<li class="ext-wikilambda-zlistItem">
-		<button v-if="!(viewmode || readonly)"
+		<sd-button v-if="!(viewmode || readonly)"
+			class="z-list-item-remove"
+			destructive
 			:title="tooltipRemoveListItem"
 			@click="removeItem"
 		>
 			{{ $i18n( 'wikilambda-editor-removeitem' ) }}
-		</button>
+		</sd-button>
 		<select v-if="!hasReference" @change="selectTester">
 			<option disabled selected>
 				{{ $i18n( "wikilambda-tester-selector" ) }}

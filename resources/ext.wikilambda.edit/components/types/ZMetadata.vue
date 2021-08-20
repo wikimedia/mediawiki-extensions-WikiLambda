@@ -36,12 +36,13 @@
 				<tbody>
 					<tr v-for="language in displayedSelectedLanguages" :key="language.Z9K1">
 						<td>
-							<button
+							<sd-button
 								v-if="!viewmode"
+								destructive
 								@click="removeLang( language.Z9K1 )"
 							>
 								{{ $i18n( 'wikilambda-editor-removeitem' ) }}
-							</button>
+							</sd-button>
 							{{ getAllLangs[ language.Z9K1 ] }}
 						</td>
 						<td>
@@ -52,12 +53,13 @@
 						<!-- <td></td> -->
 						<td>
 							<div v-for="( alias, index ) in getLanguageAliases( language.Z9K1 )" :key="index">
-								<button
+								<sd-button
 									v-if="!viewmode"
+									destructive
 									@click="removeAlias( alias )"
 								>
 									{{ $i18n( 'wikilambda-editor-removeitem' ) }}
-								</button>
+								</sd-button>
 								<z-string
 									:zobject-id="alias"
 								></z-string>
