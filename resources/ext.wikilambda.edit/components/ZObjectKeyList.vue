@@ -10,7 +10,7 @@
 			<sd-button
 				v-if="!(viewmode || readonly)"
 				:title="tooltipRemoveZObjectKey"
-				destructive
+				:destructive="true"
 				@click="removeKey( value.id )"
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}

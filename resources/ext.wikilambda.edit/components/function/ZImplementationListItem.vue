@@ -8,7 +8,7 @@
 	<li class="ext-wikilambda-zlistItem">
 		<sd-button v-if="!(viewmode || readonly)"
 			class="z-list-item-remove"
-			destructive
+			:destructive="true"
 			:title="tooltipRemoveListItem"
 			@click="removeItem"
 		>

@@ -11,7 +11,7 @@
 			<sd-button
 				v-if="!viewmode"
 				:title="$i18n( 'wikilambda-editor-zobject-removekey-tooltip' )"
-				destructive
+				:destructive="true"
 				@click="typeHandler"
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}

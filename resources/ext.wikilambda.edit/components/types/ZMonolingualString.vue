@@ -10,7 +10,7 @@
 			<sd-button
 				v-if="!(viewmode || readonly)"
 				:title="tooltipRemoveLang"
-				destructive
+				:destructive="true"
 				@click="removeLang"
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}

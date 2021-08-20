@@ -38,7 +38,7 @@
 						<td>
 							<sd-button
 								v-if="!viewmode"
-								destructive
+								:destructive="true"
 								@click="removeLang( language.Z9K1 )"
 							>
 								{{ $i18n( 'wikilambda-editor-removeitem' ) }}
@@ -55,7 +55,7 @@
 							<div v-for="( alias, index ) in getLanguageAliases( language.Z9K1 )" :key="index">
 								<sd-button
 									v-if="!viewmode"
-									destructive
+									:destructive="true"
 									@click="removeAlias( alias )"
 								>
 									{{ $i18n( 'wikilambda-editor-removeitem' ) }}
