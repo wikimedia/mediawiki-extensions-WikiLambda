@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use Content;
 use ContentHandler;
 use FormatJson;
+use IContextSource;
 use MediaWiki\Content\Transform\PreSaveTransformParams;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
@@ -245,5 +246,28 @@ class ZObjectContentHandler extends ContentHandler {
 		}
 
 		return $content;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function createDifferenceEngine(
+		IContextSource $context,
+		$oldContentRevisionId = 0,
+		$newContentRevisionId = 0,
+		$recentChangesId = 0,
+		$refreshCache = false,
+		$unhide = false
+	) {
+		return new ZObjectContentDifferenceEngine(
+			$context, $oldContentRevisionId, $newContentRevisionId, $recentChangesId, $refreshCache, $unhide
+		);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function getSlotDiffRendererWithOptions( IContextSource $context, $options = [] ) {
+		return new ZObjectSlotDiffRenderer();
 	}
 }

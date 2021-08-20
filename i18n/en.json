@@ -22,6 +22,7 @@
 	"wikilambda-persistentzobject-contents": "Contents",
 	"wikilambda-multilingualstring-nofallback": "No label defined in this language or accepted fallbacks",
 	"wikilambda-viewmode-nojs": "This page displays in a limited way without JavaScript.",
+	"wikilambda-diff-incompatible": "The system cannot display differences between a ZObject and a non-ZObject.",
 	"wikilambda-reference": "Reference",
 	"wikilambda-literal": "Literal",
 	"wikilambda-genericliteral": "Generic literal",
