@@ -1,24 +1,26 @@
 The WikiLambda team comprises several contributors, of whom those who have committed code are listed below:
 
 * James D. Forrester <jforrester@wikimedia.org>
+* Lindsay Wardell <lindsay@thisdot.co>
 * Genoveva Galarza <ggalarzaheredero@wikimedia.org>
 * Denny Vrandečić <dvrandecic@wikimedia.org>
-* Arthur P. Smith <arthurpsmith@gmail.com>
-* Gabriel Lee <chihonglee777@gmail.com>
-* Lindsay Wardell <lindsay@thisdot.co>
 * Simone This Dot <simone@thisdot.co>
+* Arthur P. Smith <arthurpsmith@gmail.com>
 * Cory Massaro <cmassaro@wikimedia.org>
-* Thiemo Kreuz <thiemo.kreuz@wikimedia.de>
+* Gabriel Lee <chihonglee777@gmail.com>
 * Timo Tijhof <krinklemail@gmail.com>
-* Amir E. Aharoni <amir.aharoni@mail.huji.ac.il>
+* Thiemo Kreuz <thiemo.kreuz@wikimedia.de>
 * Lucas Werkmeister <mail@lucaswerkmeister.de>
-* Umherirrender <umherirrender_de.wp@web.de>
+* Amir E. Aharoni <amir.aharoni@mail.huji.ac.il>
 * DannyS712 <DannyS712.wiki@gmail.com>
+* Umherirrender <umherirrender_de.wp@web.de>
+* Željko Filipin <zeljko.filipin@gmail.com>
 * Ammar Abdulhamid <ammarpad@yahoo.com>
+* Alexander Vorwerk <alec@vc-celle.de>
 
 … as well as many translation contributors, whose work is represented on TranslateWiki.net.
 
-(This list was generated on 2021-04-21 with `git shortlog -sne --no-merges | grep -v '\[BOT\]'`.)
+(This list was generated on 2021-08-20 with `git shortlog -sne --no-merges | grep -v '\[BOT\]'`.)
 
 This work is based on the vision set out by Denny Vrandečić whilst working at Google Research in his initial paper[0], evolved into an architecture in his subsequent paper[1], and was pioneered in a prototype implementation, AbstractText[2].
 
