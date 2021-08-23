@@ -13,6 +13,7 @@ var Vue = require( 'vue' ),
 module.exports = {
 	state: {
 		zTesterResults: {},
+		zTesterMetadata: {},
 		fetchingTestResults: false,
 		errorState: false
 	},
@@ -25,7 +26,37 @@ module.exports = {
 					return false;
 				}
 
-				return state.zTesterResults[ key ];
+				var result = state.zTesterResults[ key ];
+				return result &&
+					result[ Constants.Z_PAIR_FIRST ] !== Constants.Z_NOTHING &&
+					result[ Constants.Z_PAIR_FIRST ][ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE;
+			};
+		},
+		getZTesterFailReason: function ( state ) {
+			return function ( zFunctionId, zTesterId, zImplementationId ) {
+				var key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
+
+				if ( state.errorState ) {
+					return 'Internal error';
+				}
+
+				var result = state.zTesterResults[ key ];
+				if ( !result || result[ Constants.Z_PAIR_SECOND ] === Constants.Z_NOTHING ) {
+					return null;
+				}
+
+				return result[ Constants.Z_PAIR_SECOND ].Z5K2;
+			};
+		},
+		getZTesterMetadata: function ( state ) {
+			return function ( zFunctionId, zTesterId, zImplementationId ) {
+				var key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
+
+				if ( state.errorState ) {
+					return false;
+				}
+
+				return state.zTesterMetadata[ key ];
 			};
 		},
 		getZTesterPercentage: function ( state ) {
@@ -35,7 +66,10 @@ module.exports = {
 					} ),
 					total = results.length,
 					passing = results.filter( function ( key ) {
-						return state.zTesterResults[ key ] === true;
+						var result = state.zTesterResults[ key ];
+						return result &&
+						result[ Constants.Z_PAIR_FIRST ] !== Constants.Z_NOTHING &&
+						result[ Constants.Z_PAIR_FIRST ][ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE;
 					} ).length,
 					percentage = Math.round( ( passing / total ) * 100 ) || 0;
 
@@ -50,12 +84,14 @@ module.exports = {
 	mutations: {
 		setZTesterResult: function ( state, result ) {
 			Vue.set( state.zTesterResults, result.key, result.result );
+			Vue.set( state.zTesterMetadata, result.key, result.metadata );
 		},
 		setFetchingTestResults: function ( state, fetching ) {
 			state.fetchingTestResults = fetching;
 		},
 		clearZTesterResults: function ( state ) {
 			state.zTesterResults = {};
+			state.zTesterMetadata = {};
 		},
 		setErrorState: function ( state, error ) {
 			state.errorState = error;
@@ -118,26 +154,18 @@ module.exports = {
 				var results = JSON.parse( data.query.wikilambda_perform_test.Tested.data );
 
 				results.forEach( function ( testResult ) {
-					var response = canonicalize( testResult.validationResponse ),
-						result = response[ Constants.Z_PAIR_FIRST ],
-						error = response[ Constants.Z_PAIR_SECOND ],
-						key = ( testResult.zFunctionId || 'Z0' ) + ':' + ( testResult.zTesterId || 'Z0' ) + ':' + ( testResult.zImplementationId || 'Z0' );
+					var metadata = testResult,
+						response = canonicalize( testResult.validationResponse ),
+						key = ( testResult.zFunctionId || Constants.NEW_ZID_PLACEHOLDER ) + ':' + ( testResult.zTesterId || Constants.NEW_ZID_PLACEHOLDER ) + ':' + ( testResult.zImplementationId || Constants.NEW_ZID_PLACEHOLDER );
+
+					delete metadata.validationResponse;
 
 					// Store result
-					if ( result === Constants.Z_NOTHING ) {
-						mw.log.error( 'Tester result was nothing: ' + error );
-						context.commit( 'setZTesterResult', {
-							key: key,
-							result: false
-						} );
-					} else {
-						context.commit( 'setZTesterResult', {
-							key: key,
-							result:
-								result[ Constants.Z_BOOLEAN_IDENTITY ] ===
-									Constants.Z_BOOLEAN_TRUE
-						} );
-					}
+					context.commit( 'setZTesterResult', {
+						key: key,
+						result: response,
+						metadata: testResult
+					} );
 				} );
 
 				context.commit( 'setFetchingTestResults', false );

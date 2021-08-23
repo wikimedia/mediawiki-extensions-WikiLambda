@@ -7,67 +7,91 @@
 	-->
 	<div>
 		<h2>{{ $i18n( 'wikilambda-tester-results-title' ) }}</h2>
-		<table
-			v-if="zFunctionId && implementations.length > 0 && testers.length > 0"
-			class="ext-wikilambda-fn-tester-results"
-		>
-			<caption>{{ $i18n( 'wikilambda-tester-results-caption' ) }}</caption>
-			<thead>
-				<tr>
-					<th scope="col"></th>
-					<th
-						v-for="implementation in implementations"
-						:key="implementation"
-						scope="col"
-					>
-						{{ getZkeyLabels[ implementation ] }}
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr v-for="(test, index) in testers" :key="index">
-					<template v-if="typeof test === 'string'">
-						<th scope="row">
-							{{ getZkeyLabels[ test ] }}
+		<template v-if="zFunctionId && implementations.length > 0 && testers.length > 0">
+			<table
+				class="ext-wikilambda-fn-tester-results"
+			>
+				<caption>{{ $i18n( 'wikilambda-tester-results-caption' ) }}</caption>
+				<thead>
+					<tr>
+						<th scope="col"></th>
+						<th
+							v-for="implementation in implementations"
+							:key="implementation"
+							scope="col"
+						>
+							{{ getZkeyLabels[ implementation ] }}
 						</th>
-						<td v-for="implementation in implementations" :key="implementation">
-							<z-tester-impl-result
-								:z-function-id="zFunctionId"
-								:z-implementation-id="implementation"
-								:z-tester-id="test"
-							></z-tester-impl-result>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="(test, index) in testers" :key="index">
+						<template v-if="typeof test === 'string'">
+							<th scope="row">
+								{{ getZkeyLabels[ test ] }}
+							</th>
+							<td v-for="implementation in implementations" :key="implementation">
+								<z-tester-impl-result
+									:z-function-id="zFunctionId"
+									:z-implementation-id="implementation"
+									:z-tester-id="test"
+									@set-keys="setActiveTesterKeys"
+								></z-tester-impl-result>
+							</td>
+						</template>
+						<template v-else>
+							<th scope="row">
+								{{ test.Z2K3.Z12K1[ 0 ].Z11K2.Z6K1 }}
+							</th>
+							<td v-for="implementation in implementations" :key="implementation">
+								<z-tester-impl-result
+									:z-function-id="zFunctionId"
+									:z-implementation-id="implementation"
+									:z-tester-id="test.Z2K1.Z9K1"
+									@set-keys="setActiveTesterKeys"
+								></z-tester-impl-result>
+							</td>
+						</template>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td>
+							<slot name="run-testers" :click="runTesters">
+								<button v-if="!viewmode" @click="runTesters">
+									{{ $i18n( 'wikilambda-tester-run-testers' ) }}
+								</button>
+							</slot>
 						</td>
-					</template>
-					<template v-else>
-						<th scope="row">
-							{{ test.Z2K3.Z12K1[ 0 ].Z11K2.Z6K1 }}
-						</th>
-						<td v-for="implementation in implementations" :key="implementation">
-							<z-tester-impl-result
-								:z-function-id="zFunctionId"
-								:z-implementation-id="implementation"
-								:z-tester-id="test.Z2K1.Z9K1"
-							></z-tester-impl-result>
+						<td :colspan="implementations.length" class="results">
+							{{ $i18n( 'wikilambda-tester-results-percentage-label' ) }}:
+							{{ resultCount.passing }}/{{ resultCount.total }} ({{ resultCount.percentage }}%)
 						</td>
-					</template>
-				</tr>
-			</tbody>
-			<tfoot>
-				<tr>
-					<td>
-						<slot name="run-testers" :click="runTesters">
-							<button v-if="!viewmode" @click="runTesters">
-								{{ $i18n( 'wikilambda-tester-run-testers' ) }}
-							</button>
-						</slot>
-					</td>
-					<td :colspan="implementations.length" class="results">
-						{{ $i18n( 'wikilambda-tester-results-percentage-label' ) }}:
-						{{ resultCount.passing }}/{{ resultCount.total }} ({{ resultCount.percentage }}%)
-					</td>
-				</tr>
-			</tfoot>
-		</table>
+					</tr>
+				</tfoot>
+			</table>
+			<div v-if="getZTesterResults( zFunctionId, activeZTesterId, activeZImplementationId ) !== undefined">
+				<h3>
+					{{ $i18n( 'wikilambda-tester-results-subtitle' ) }}
+					{{ getZkeyLabels[ activeZImplementationId ] }}
+					( {{ getZkeyLabels[ activeZTesterId ] || getNewTesterZObjects[ 0 ].Z2K3.Z12K1[ 0 ].Z11K2.Z6K1 }} )
+				</h3>
+				<ul>
+					<li>
+						{{ $i18n( 'wikilambda-tester-status-label' ) }}:
+						{{ activeTesterStatus }}
+					</li>
+					<li v-if="!getZTesterResults( zFunctionId, activeZTesterId, activeZImplementationId )">
+						{{ $i18n( 'wikilambda-tester-failure-reason' ) }}:
+						{{ activeTesterFailReason }}
+					</li>
+					<li>
+						{{ $i18n( 'wikilambda-tester-function-duration' ) }}:
+						{{ getZTesterMetadata( zFunctionId, activeZTesterId, activeZImplementationId ).duration }} ms
+					</li>
+				</ul>
+			</div>
+		</template>
 		<div v-else>
 			<p>{{ $i18n( 'wikilambda-tester-no-results' ) }}</p>
 		</div>
@@ -103,6 +127,12 @@ module.exports = {
 			default: null
 		}
 	},
+	data: function () {
+		return {
+			activeZImplementationId: null,
+			activeZTesterId: null
+		};
+	},
 	computed: $.extend( mapGetters( [
 		'getZObjectChildrenById',
 		'getZkeyLabels',
@@ -111,7 +141,10 @@ module.exports = {
 		'getZObjectAsJsonById',
 		'getZTesterPercentage',
 		'getCurrentZObjectId',
-		'getNewTesterZObjects'
+		'getNewTesterZObjects',
+		'getZTesterResults',
+		'getZTesterMetadata',
+		'getZTesterFailReason'
 	] ), {
 		implementations: function () {
 			if ( !this.zFunctionId || !this.getZkeys[ this.zFunctionId ] ) {
@@ -168,6 +201,36 @@ module.exports = {
 		},
 		resultCount: function () {
 			return this.getZTesterPercentage( this.zFunctionId );
+		},
+		activeTesterStatus: function () {
+			return this.getZTesterResults(
+				this.zFunctionId,
+				this.activeZTesterId,
+				this.activeZImplementationId
+			) === true ?
+				this.$i18n( 'wikilambda-tester-status-passed' ) :
+				this.$i18n( 'wikilambda-tester-status-failed' );
+		},
+		activeTesterFailReason: function () {
+			var reason = this.getZTesterFailReason(
+					this.zFunctionId,
+					this.activeZTesterId,
+					this.activeZImplementationId
+				),
+				expected,
+				actual;
+
+			if ( !reason ) {
+				return '';
+			}
+
+			expected = this.zObjectToString( reason[ 0 ] );
+			actual = this.zObjectToString( reason[ 1 ] );
+
+			return this.$i18n( 'wikilambda-tester-failure-expected' ) + ' ' +
+				expected + '. ' +
+				this.$i18n( 'wikilambda-tester-failure-actual' ) + ' ' +
+				actual + '.';
 		}
 	} ),
 	methods: $.extend( mapActions( [ 'fetchZKeys', 'getTestResults' ] ), {
@@ -179,6 +242,10 @@ module.exports = {
 				nocache: true,
 				clearPreviousResults: true
 			} );
+		},
+		setActiveTesterKeys: function ( keys ) {
+			this.activeZImplementationId = keys.zImplementationId;
+			this.activeZTesterId = keys.zTesterId;
 		}
 	} ),
 	watch: {

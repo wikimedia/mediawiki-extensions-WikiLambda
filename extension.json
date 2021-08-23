@@ -285,7 +285,13 @@
 				"wikilambda-metadata-fewer-languages",
 				"wikilambda-persistentobject-details-label",
 				"wikilambda-persistentobject-function-signature-label",
-				"wikilambda-persistentobject-evaluate-function"
+				"wikilambda-persistentobject-evaluate-function",
+				"wikilambda-tester-results-subtitle",
+				"wikilambda-tester-status-label",
+				"wikilambda-tester-failure-reason",
+				"wikilambda-tester-failure-expected",
+				"wikilambda-tester-failure-actual",
+				"wikilambda-tester-function-duration"
 			]
 		}
 	},

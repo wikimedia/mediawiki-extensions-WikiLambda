@@ -71,6 +71,20 @@ var Constants = require( '../Constants.js' ),
 			 */
 			isValidZidFormat: function ( zid ) {
 				return /^Z\d+$/.test( zid );
+			},
+			zObjectToString: function ( zObject ) {
+				if ( typeof zObject === 'string' ) {
+					return zObject;
+				} else if ( Array.isArray( zObject ) ) {
+					return '[ ' + zObject.map( typeUtils.methods.zObjectToString ).join( ', ' ) + ' ]';
+				} else {
+					switch ( zObject.Z1K1 ) {
+						case Constants.Z_BOOLEAN:
+							return zObject[ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE;
+						default:
+							return JSON.stringify( zObject );
+					}
+				}
 			}
 		}
 	};

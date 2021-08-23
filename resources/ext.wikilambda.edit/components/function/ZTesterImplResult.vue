@@ -5,10 +5,11 @@
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div
+	<button
 		class="ext-wikilambda-tester-result"
 		:class="resultClass"
-		:disabled="!zImplementationId || !zTesterId || typeof testerStatus === 'undefined'"
+		x:disabled="!zImplementationId || !zTesterId || typeof testerStatus === 'undefined'"
+		@click="emitTesterKeys"
 	>
 		<template v-if="!zImplementationId || !zTesterId">
 			{{ $i18n( 'wikilambda-tester-status-pending' ) }}
@@ -22,13 +23,15 @@
 		<template v-else>
 			{{ $i18n( 'wikilambda-tester-status-running' ) }}
 		</template>
-	</div>
+	</button>
 </template>
 
 <script>
-var mapGetters = require( 'vuex' ).mapGetters;
+var mapGetters = require( 'vuex' ).mapGetters,
+	typeUtils = require( '../../mixins/typeUtils.js' );
 
 module.exports = {
+	mixins: [ typeUtils ],
 	props: {
 		zFunctionId: {
 			type: String,
@@ -64,7 +67,15 @@ module.exports = {
 
 			return '';
 		}
-	} )
+	} ),
+	methods: {
+		emitTesterKeys: function () {
+			this.$emit( 'set-keys', {
+				zImplementationId: this.zImplementationId,
+				zTesterId: this.zTesterId
+			} );
+		}
+	}
 };
 </script>
 
@@ -72,6 +83,7 @@ module.exports = {
 .ext-wikilambda-tester-result {
 	text-align: center;
 	background: #ddd;
+	cursor: pointer;
 	width: 100%;
 	border: transparent;
 	padding: 5px;
