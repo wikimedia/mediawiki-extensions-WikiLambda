@@ -69,14 +69,13 @@ class ApiFunctionCall extends ApiBase {
 		$zObject = json_decode( $stringOfAZ );
 		$jsonQuery = [
 			'zobject' => $zObject,
-			'evaluatorUri' => urlencode( $this->evaluatorHost ),
-			'wikiUri' => urlencode( $this->wikiUri ),
+			'evaluatorUri' => $this->evaluatorHost,
+			'wikiUri' => $this->wikiUri,
 			// TODO: Enable validation once it works :)
 			'doValidate' => false
 		];
-		$query = json_encode( $jsonQuery );
 		try {
-			$response = $this->orchestrator->orchestrate( $query );
+			$response = $this->orchestrator->orchestrate( $jsonQuery );
 			$result = [ 'success' => true, 'data' => $response->getBody() ];
 			$pageResult->addValue(
 				// TODO: Remove "Orchestrated".

@@ -19,12 +19,14 @@ class OrchestratorBase {
 	protected $guzzleClient;
 
 	/**
-	 * @param string $query
+	 * @param \stdClass|array $query
 	 * @return Response response object returned by orchestrator
 	 */
-	public function orchestrate( string $query ): Response {
-		// TODO: Use getAsync here.
-		return $this->guzzleClient->get( '/1/v1/evaluate/' . $query );
+	public function orchestrate( $query ): Response {
+		// TODO: Use postAsync here.
+		return $this->guzzleClient->post( '/1/v1/evaluate/', [
+			'json' => $query,
+		] );
 	}
 
 	/**

@@ -37,7 +37,7 @@ class OrchestratorInterfaceTest extends \MediaWikiUnitTestCase {
 		$Z902 = preg_replace( '/[\s\n]/', '', $Z902 );
 
 		$orchestrator = new OrchestratorInterface( $client );
-		$result = $orchestrator->orchestrate( $Z902 )->getBody();
+		$result = $orchestrator->orchestrate( json_decode( $Z902 ) )->getBody();
 		$this->assertEquals( json_decode( $expectedString ), json_decode( $result ) );
 	}
 
