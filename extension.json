@@ -320,7 +320,13 @@
 	"SpecialPages": {
 		"CreateZObject": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialCreateZObject",
 		"EvaluateFunctionCall": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialEvaluateFunctionCall",
-		"ListDuplicateZObjectLabels": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListDuplicateZObjectLabels"
+		"ListDuplicateZObjectLabels": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListDuplicateZObjectLabels",
+		"ObjectsByType": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialObjectsByType",
+			"services": [
+				"WikiLambdaZObjectStore"
+			]
+		}
 	},
 	"ServiceWiringFiles": [
 		"includes/ServiceWiring.php"
