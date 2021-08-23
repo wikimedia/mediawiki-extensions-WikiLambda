@@ -27,5 +27,6 @@
 	"wikilambda-tester-status-failed": "НЕ УДАЛОСЬ",
 	"wikilambda-enable-expert-mode": "Включить режим Эксперта",
 	"wikilambda-disable-expert-mode": "Выключить режим эксперта",
+	"wikilambda-metadata-language-column": "Язык",
 	"wikilambda-metadata-fewer-languages": "Меньше языков"
 }

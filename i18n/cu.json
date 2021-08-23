@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"NR Deblocked"
+		]
+	},
+	"wikilambda-tester-run-tester": "Запꙋстить ​тестеръ​",
+	"wikilambda-expert-mode-json-label": "Текꙋ́щїй ZObject",
+	"wikilambda-metadata-language-column": "ѩꙁꙑкъ",
+	"wikilambda-metadata-label-column": "Ⰵⱅⰹⰽⰵⱅⰽⰰ",
+	"wikilambda-metadata-aka-column": "​та́кже​ и҆звѣ́стный ка́къ",
+	"wikilambda-metadata-add-alias": "Добавить псевдонимъ/Ⰴⱁⰱⰰⰲⰹⱅⱐ ⱂⱄⰵⰲⰴⱁⱀⰹⰿ",
+	"wikilambda-metadata-all-languages": "​всѐ​ ​введенные​ ​ꙗ҆зы́ки​",
+	"wikilambda-metadata-fewer-languages": "дроуꙃи ѩꙁꙑци",
+	"wikilambda-persistentobject-details-label": "Ⱂⱁⰴⱃⱁⰱⱀⱁⱄⱅⰹ",
+	"wikilambda-persistentobject-function-signature-label": "​Подпись​ фꙋнкцїи",
+	"wikilambda-persistentobject-evaluate-function": "Ѻценить фꙋнкцїю"
+}

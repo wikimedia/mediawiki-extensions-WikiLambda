@@ -32,5 +32,9 @@
 	"wikilambda-editor-zlist-removeitem-tooltip": "Ta bort det här objektet från den här ZListan",
 	"wikilambda-editor-zobject-addkey": "Lägg till nyckel:",
 	"wikilambda-editor-zobject-removekey-tooltip": "Ta bort den här nyckeln från det här ZObjectet",
-	"wikilambda-editor-label-select-programming-language-label": "Välj programmeringsspråk:"
+	"wikilambda-editor-label-select-programming-language-label": "Välj programmeringsspråk:",
+	"wikilambda-metadata-show-languages": "Visa etikettruta",
+	"wikilambda-metadata-hide-languages": "Göm etikettruta",
+	"wikilambda-metadata-all-languages": "Visa alla angivna språk",
+	"wikilambda-metadata-fewer-languages": "Visa färre språk"
 }

@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kizule"
+		]
+	},
+	"wikilambda-publish-summary-prompt": "Укратко опишите шта сте променили",
+	"wikilambda-metadata-all-languages": "Прикажи све унесене језике",
+	"wikilambda-persistentobject-details-label": "Детаљи"
+}
