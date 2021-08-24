@@ -47,6 +47,7 @@
 	"wikilambda-publishchanges": "Publicar alterações",
 	"wikilambda-savechanges": "Salvar alterações",
 	"wikilambda-summarylabel": "Resumo:",
+	"wikilambda-publish-summary-prompt": "Descreva o que você mudou",
 	"wikilambda-loading": "Carregando dados",
 	"wikilambda-typeselector-label": "Selecione um tipo",
 	"wikilambda-argument-typeselector-label": "Selecione um tipo para este argumento",
@@ -77,10 +78,12 @@
 	"wikilambda-tester-results-title": "Resultados do teste",
 	"wikilambda-tester-results-caption": "Resultados de testadores de função em relação a implementações",
 	"wikilambda-tester-run-testers": "Executar todos os testadores",
+	"wikilambda-metadata-show-languages": "Mostrar caixa de rótulos",
+	"wikilambda-metadata-hide-languages": "Ocultar caixa de rótulos",
 	"wikilambda-metadata-language-column": "Idioma",
 	"wikilambda-metadata-label-column": "Etiqueta",
 	"wikilambda-metadata-aka-column": "Também conhecido como",
-	"wikilambda-metadata-all-languages": "Todos os idiomas introduzidos",
-	"wikilambda-metadata-fewer-languages": "Menos idiomas",
+	"wikilambda-metadata-all-languages": "Mostrar todos os idiomas inseridos",
+	"wikilambda-metadata-fewer-languages": "Mostrar menos idiomas",
 	"wikilambda-persistentobject-details-label": "Detalhes"
 }

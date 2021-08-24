@@ -5,11 +5,14 @@
 			"Lorem Ipsum",
 			"Luca.favorido",
 			"Noretta93",
-			"Sofia Stecchi"
+			"Sofia Stecchi",
+			"Stefano"
 		]
 	},
 	"wikilambda-invalidzobjecttitle": "Il titolo '$1' mostrato non è valido per uno ZObject.",
 	"wikilambda-noresult": "La ricerca non ha fornito risultati.",
+	"wikilambda-persistentzobject-metadata": "Etichette e Alias",
+	"wikilambda-persistentzobject-contents": "Contenuti",
 	"wikilambda-viewmode-nojs": "Questa pagina viene visualizzata in modo limitato senza JavaScript.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Lingua",
 	"wikilambda-publishnew": "Pubblica",
@@ -28,11 +31,12 @@
 	"wikilambda-argref-default-label": "Seleziona un argomento",
 	"wikilambda-enable-expert-mode": "Abilità modalità esperto",
 	"wikilambda-disable-expert-mode": "Disabilità modalità esperto",
+	"wikilambda-expert-mode-json-label": "ZObject corrente",
 	"wikilambda-metadata-language-column": "Lingua",
 	"wikilambda-metadata-label-column": "Etichetta",
 	"wikilambda-metadata-aka-column": "Anche conosciuto come",
 	"wikilambda-metadata-add-alias": "Aggiungi alias",
-	"wikilambda-metadata-all-languages": "Tutte le lingue inserite",
+	"wikilambda-metadata-all-languages": "Mostra tutte le lingue inserite",
 	"wikilambda-metadata-fewer-languages": "Meno lingue",
 	"wikilambda-persistentobject-details-label": "Dettagli"
 }
