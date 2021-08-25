@@ -380,6 +380,8 @@ class ZObjectContent extends AbstractContent {
 					wfMessage( 'wikilambda-invalidzobject' )->inLanguage( $userLang )->text()
 				)
 			);
+			// Exit early, as the rest of the code relies on the stored content being well-formed and valid.
+			return;
 		}
 
 		$zobject = $this->getZObject();
