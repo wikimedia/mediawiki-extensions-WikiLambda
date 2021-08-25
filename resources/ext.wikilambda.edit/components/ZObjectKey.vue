@@ -234,6 +234,7 @@ module.exports = {
 .ext-wikilambda-zobject-key {
 	display: inline-block;
 	vertical-align: top;
+	width: 100%;
 }
 
 .ext-wikilambda-zobject-key > span {
