@@ -67,14 +67,18 @@ module.exports = {
 	},
 	computed: $.extend( {},
 		mapGetters( {
-			getZObjectChildrenById: 'getZObjectChildrenById'
+			getZObjectChildrenById: 'getZObjectChildrenById',
+			getZObjectTypeById: 'getZObjectTypeById'
 		} ),
 		{
 			zobject: function () {
 				return this.getZObjectChildrenById( this.zobjectId );
 			},
+			zobjectType: function () {
+				return this.getZObjectTypeById( this.zobjectId );
+			},
 			isEmptyObject: function () {
-				return this.zobject.length === 0;
+				return !this.zobjectType;
 			},
 			tooltipRemoveListItem: function () {
 				return this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' );
