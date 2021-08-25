@@ -72,7 +72,7 @@ class SpecialObjectsByType extends SpecialPage {
 			$wikitext .= $this->msg( 'wikilambda-special-objectsbytype-listheader' );
 			$wikitext .= " $typeLabel ($type) ==\n";
 			foreach ( $zobjectList as $zid => $label ) {
-				$title = Title::newFromText( $zid, NS_ZOBJECT );
+				$title = Title::newFromText( $zid, NS_MAIN );
 				$wikitext .= "# [[$title|$label]] ($zid)\n";
 			}
 			if ( count( $zobjectList ) == 0 ) {
