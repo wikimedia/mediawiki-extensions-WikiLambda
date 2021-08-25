@@ -19,6 +19,7 @@
 				:primary="true"
 				:progressive="true"
 				:framed="true"
+				:disabled="!currentZObjectHasLabel"
 				@click="submit">
 				{{ submitButtonLabel }}
 			</sd-button>
@@ -72,7 +73,8 @@ module.exports = {
 	computed: $.extend( mapGetters( {
 		createNewPage: 'isCreateNewPage',
 		message: 'getZObjectMessage',
-		ZObjectJson: 'getZObjectAsJson'
+		ZObjectJson: 'getZObjectAsJson',
+		currentZObjectHasLabel: 'currentZObjectHasLabel'
 	} ), {
 		submitButtonLabel: function () {
 			if ( this.createNewPage ) {

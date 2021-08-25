@@ -365,6 +365,17 @@ module.exports = {
 		},
 		isCurrentZObjectExecutable: function ( state, getters ) {
 			return [ Constants.Z_FUNCTION, Constants.Z_IMPLEMENTATION ].indexOf( getters.getCurrentZObjectType ) !== -1;
+		},
+		currentZObjectHasLabel: function ( state, getters ) {
+			var zobject = getters.getZObjectAsJson;
+
+			return zobject &&
+				zobject[ Constants.Z_PERSISTENTOBJECT_LABEL ][
+					Constants.Z_MULTILINGUALSTRING_VALUE ].filter(
+					function ( value ) {
+						return value[ Constants.Z_MONOLINGUALSTRING_VALUE ][
+							Constants.Z_STRING_VALUE ] !== '';
+					} ).length > 0;
 		}
 	},
 	mutations: {
