@@ -19,12 +19,15 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 	private const EGL = 'Z1726';
 
 	private $testData = [
+	// TODO: Expand this test data to cover aliases
+	// (wlzl_label_primary set to 0 and more than one result per language)
 		'Z90' => [
 			'wlzl_zobject_zid' => 'Z90',
 			'wlzl_type' => 'birdtype',
 			'wlzl_language' => self::IT,
 			'wlzl_label' => 'CHEEP',
 			'wlzl_label_normalised' => 'cheep',
+			'wlzl_label_primary' => 1,
 		],
 		'Z92' => [
 			'wlzl_zobject_zid' => 'Z92',
@@ -32,6 +35,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'wlzl_language' => self::EGL,
 			'wlzl_label' => 'CHOP',
 			'wlzl_label_normalised' => 'chop',
+			'wlzl_label_primary' => 1,
 		],
 		'Z93' => [
 			'wlzl_zobject_zid' => 'Z93',
@@ -39,6 +43,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'wlzl_language' => self::EN,
 			'wlzl_label' => 'CHAP',
 			'wlzl_label_normalised' => 'chap',
+			'wlzl_label_primary' => 1,
 		],
 		'Z91' => [
 			'wlzl_zobject_zid' => 'Z91',
@@ -46,6 +51,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'wlzl_language' => self::IT,
 			'wlzl_label' => 'CHORP',
 			'wlzl_label_normalised' => 'cheep',
+			'wlzl_label_primary' => 1,
 		],
 	];
 
@@ -71,6 +77,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'page_is_redirect' => false,
 			'page_content_model' => CONTENT_MODEL_ZOBJECT,
 			'page_lang' => $db_item['wlzl_language'],
+			'is_primary' => $db_item['wlzl_label_primary']
 		];
 	}
 

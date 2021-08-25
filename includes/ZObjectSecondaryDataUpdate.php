@@ -48,6 +48,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 
+		// Deletes all labels: primary ones and aliases
 		$zObjectStore->deleteZObjectLabelsByZid( $zid );
 		$zObjectStore->deleteZObjectLabelConflictsByZid( $zid );
 
@@ -64,6 +65,13 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		$zObjectStore->insertZObjectLabels( $zid, $ztype, $newLabels );
 		$zObjectStore->insertZObjectLabelConflicts( $zid, $conflicts );
 
+		// (T285368) Write aliases in the labels table
+		$aliases = $this->zObject->getAliases()->getZValue();
+		if ( count( $aliases ) > 0 ) {
+			$zObjectStore->insertZObjectAliases( $zid, $ztype, $aliases );
+		}
+
+		// Save function information in function table
 		if ( $ztype === 'Z14' || $ztype === 'Z20' ) {
 			$zFunction = null;
 

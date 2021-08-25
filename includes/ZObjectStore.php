@@ -269,7 +269,7 @@ class ZObjectStore {
 	}
 
 	/**
-	 * Query the wikilambda_zobject_labels database for labels that have
+	 * Query the wikilambda_zobject_labels database for primary labels that have
 	 * the same combination of language code and value for a different ZID
 	 * than the given in the parameters. These will be considered conflicting labels.
 	 *
@@ -290,7 +290,8 @@ class ZObjectStore {
 		foreach ( $labels as $language => $value ) {
 			$labelConflictConditions[] = $dbr->makeList( [
 				'wlzl_language' => $language,
-				'wlzl_label' => $value
+				'wlzl_label' => $value,
+				'wlzl_label_primary' => true
 			], $dbr::LIST_AND );
 		}
 
@@ -333,7 +334,8 @@ class ZObjectStore {
 				'wlzl_language' => $language,
 				'wlzl_type' => $ztype,
 				'wlzl_label' => $value,
-				'wlzl_label_normalised' => ZObjectUtils::comparableString( $value )
+				'wlzl_label_normalised' => ZObjectUtils::comparableString( $value ),
+				'wlzl_label_primary' => true
 			];
 		}
 
@@ -361,6 +363,35 @@ class ZObjectStore {
 		}
 
 		return $dbw->insert( 'wikilambda_zobject_label_conflicts', $updates );
+	}
+
+	/**
+	 * Insert alias (secondary labels) into the wikilambda_zobject_labels database for a given ZID and Type
+	 *
+	 * @param string $zid
+	 * @param string $ztype
+	 * @param array $aliases Set of labels, where the key is the language code
+	 * and the value is an array of strings
+	 * @return void|bool
+	 */
+	public function insertZObjectAliases( $zid, $ztype, $aliases ) {
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+
+		$updates = [];
+		foreach ( $aliases as $language => $stringset ) {
+			foreach ( $stringset as $value ) {
+				$updates[] = [
+					'wlzl_zobject_zid' => $zid,
+					'wlzl_language' => $language,
+					'wlzl_type' => $ztype,
+					'wlzl_label' => $value,
+					'wlzl_label_normalised' => ZObjectUtils::comparableString( $value ),
+					'wlzl_label_primary' => false
+				];
+			}
+		}
+
+		return $dbw->insert( 'wikilambda_zobject_labels', $updates );
 	}
 
 	/**
@@ -448,7 +479,14 @@ class ZObjectStore {
 		// $dbr->addOption( 'LIMIT', $limit + 1 );
 		return $dbr->select(
 			/* FROM */ 'wikilambda_zobject_labels',
-			/* SELECT */ [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_id' ],
+			/* SELECT */ [
+				'wlzl_zobject_zid',
+				'wlzl_type',
+				'wlzl_language',
+				'wlzl_label',
+				'wlzl_label_primary',
+				'wlzl_id'
+			],
 			/* WHERE */ $dbr->makeList( $conditions, $dbr::LIST_AND ),
 			__METHOD__,
 			[

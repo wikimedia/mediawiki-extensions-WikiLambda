@@ -191,6 +191,14 @@ class Hooks implements
 			$updater->addExtensionTable( 'wikilambda_' . $table, __DIR__ . "/sql/table-$table-generated-$type.sql" );
 		}
 
+		// Database updates:
+		// (T285368) Add primary label field to labels table
+		$updater->addExtensionField(
+			'wikilambda_zobject_labels',
+			'wlzl_label_primary',
+			__DIR__ . "/sql/abstractSchemaChanges/patch-add-primary-label-field-generated-$type.sql"
+		);
+
 		$updater->addExtensionUpdate( [ [ __CLASS__, 'createInitialContent' ] ] );
 	}
 

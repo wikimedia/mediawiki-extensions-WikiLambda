@@ -11,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use DatabaseUpdater;
 use DeferredUpdates;
+use FormatJson;
 use MediaWiki\Extension\WikiLambda\Hooks;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\MediaWikiServices;
@@ -147,6 +148,106 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 
 		// Force re-check so it re-fetches from the DB.
 		$this->assertFalse( $secondTitle->exists( Title::READ_LATEST ) );
+	}
+
+	/**
+	 * @covers ::onMultiContentSave
+	 */
+	public function testOnMultiContentSave_alias() {
+		// Insert ZTestType
+		$this->registerLangs( ZTestType::TEST_LANGS );
+		$this->editPage(
+			ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'Insert test object', NS_MAIN
+		);
+
+		// Force deferred updates from other edits so we can conflict with it.
+		DeferredUpdates::doUpdates();
+		MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
+		$this->assertSame( [], DeferredUpdates::getPendingUpdates() );
+
+		// Check the alias have been inserted in the secondary table
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$res = $dbr->select(
+			/* FROM */ 'wikilambda_zobject_labels',
+			/* SELECT */ [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_label_primary' ],
+			/* WHERE */ [ 'wlzl_zobject_zid' => ZTestType::TEST_ZID ]
+		);
+
+		$this->assertEquals( $res->numRows(), 5 );
+
+		$labels = [];
+		$expectedLabels = [
+			[ "Z4", "Z1002", "Demonstration type" ],
+			[ "Z4", "Z1004", "Type pour démonstration" ]
+		];
+		$aliases = [];
+		$expectedAliases = [
+			[ "Z4", "Z1002", "Demonstration type alias" ],
+			[ "Z4", "Z1002", "Demonstration type second alias" ],
+			[ "Z4", "Z1004", "Alias de type pour démonstration" ]
+		];
+
+		foreach ( $res as $row ) {
+			if ( $row->wlzl_label_primary ) {
+				$labels[] = [ $row->wlzl_type, $row->wlzl_language, $row->wlzl_label ];
+			} else {
+				$aliases[] = [ $row->wlzl_type, $row->wlzl_language, $row->wlzl_label ];
+			}
+		}
+
+		$this->assertSame( $expectedLabels, $labels );
+		$this->assertSame( $expectedAliases, $aliases );
+
+		// Update the page with different aliases and check that
+		// they have been updated instead of adding them again
+		$updated = json_decode( ZTestType::TEST_ENCODING, true );
+
+		// Change the label
+		$updated['Z2K3']['Z12K1'][0]['Z11K2'] = "Edited demonstration type";
+		$updated['Z2K4']['Z32K1'][0]['Z31K2'][1] = "Edited demonstration type alias";
+
+		$this->editPage(
+			ZTestType::TEST_ZID,
+			FormatJson::encode( $updated, true, FormatJson::UTF8_OK ),
+			'Insert test object',
+			NS_MAIN
+		);
+
+		// Force deferred updates from other edits so we can conflict with it.
+		DeferredUpdates::doUpdates();
+		MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
+		$this->assertSame( [], DeferredUpdates::getPendingUpdates() );
+
+		$res = $dbr->select(
+			/* FROM */ 'wikilambda_zobject_labels',
+			/* SELECT */ [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_label_primary' ],
+			/* WHERE */ [ 'wlzl_zobject_zid' => ZTestType::TEST_ZID ]
+		);
+
+		$this->assertEquals( $res->numRows(), 5 );
+
+		$labels = [];
+		$expectedLabels = [
+			[ "Z4", "Z1002", "Edited demonstration type" ],
+			[ "Z4", "Z1004", "Type pour démonstration" ]
+		];
+		$aliases = [];
+		$expectedAliases = [
+			[ "Z4", "Z1002", "Demonstration type alias" ],
+			[ "Z4", "Z1002", "Edited demonstration type alias" ],
+			[ "Z4", "Z1004", "Alias de type pour démonstration" ]
+		];
+
+		foreach ( $res as $row ) {
+			if ( $row->wlzl_label_primary ) {
+				$labels[] = [ $row->wlzl_type, $row->wlzl_language, $row->wlzl_label ];
+			} else {
+				$aliases[] = [ $row->wlzl_type, $row->wlzl_language, $row->wlzl_label ];
+			}
+		}
+
+		$this->assertSame( $expectedLabels, $labels );
+		$this->assertSame( $expectedAliases, $aliases );
 	}
 
 	// TODO: Test the uncaught behaviour of MultiContentSave when a a clash happens too late for us to stop it.

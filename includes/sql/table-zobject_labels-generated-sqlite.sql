@@ -6,7 +6,8 @@ CREATE TABLE /*_*/wikilambda_zobject_labels (
   wlzl_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   wlzl_zobject_zid BLOB NOT NULL, wlzl_type BLOB NOT NULL,
   wlzl_language BLOB NOT NULL, wlzl_label BLOB NOT NULL,
-  wlzl_label_normalised BLOB NOT NULL
+  wlzl_label_normalised BLOB NOT NULL,
+  wlzl_label_primary SMALLINT DEFAULT 1 NOT NULL
 );
 
 CREATE INDEX wlzl_label_searchindex ON /*_*/wikilambda_zobject_labels (

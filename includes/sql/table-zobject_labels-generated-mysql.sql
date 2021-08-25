@@ -9,6 +9,7 @@ CREATE TABLE /*_*/wikilambda_zobject_labels (
   wlzl_language VARBINARY(255) NOT NULL,
   wlzl_label VARBINARY(255) NOT NULL,
   wlzl_label_normalised VARBINARY(255) NOT NULL,
+  wlzl_label_primary TINYINT DEFAULT 1 NOT NULL,
   INDEX wlzl_label_searchindex (
     wlzl_type, wlzl_language, wlzl_label_normalised
   ),
