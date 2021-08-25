@@ -63,7 +63,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 	private function resultFor( $zid ) {
 		$db_item = $this->testData[ $zid ];
 		return [
-			'page_namespace' => NS_ZOBJECT,
+			'page_namespace' => NS_MAIN,
 			'page_title' => $db_item['wlzl_zobject_zid'],
 			'page_type' => $db_item['wlzl_type'],
 			'label' => $db_item['wlzl_label'],

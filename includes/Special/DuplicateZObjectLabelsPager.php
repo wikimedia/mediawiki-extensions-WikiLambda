@@ -75,7 +75,7 @@ class DuplicateZObjectLabelsPager extends TablePager {
 			$result = Html::rawElement(
 				'span',
 				[ 'class' => 'ext-wikilambda-zobject' ],
-				$linkRenderer->makeLink( Title::makeTitleSafe( NS_ZOBJECT, $row->$field ) )
+				$linkRenderer->makeLink( Title::makeTitleSafe( NS_MAIN, $row->$field ) )
 			);
 		}
 

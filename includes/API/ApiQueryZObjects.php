@@ -96,7 +96,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 			}
 
 			// Check for unavailable ZObject
-			$title = $this->titleFactory->newFromText( $ZID, NS_ZOBJECT );
+			$title = $this->titleFactory->newFromText( $ZID, NS_MAIN );
 			if ( !$title || !$title->exists() ) {
 				// TODO: get ZError object that represents ZID Not Found error
 				// TODO: if language is defined, return ZError on the requested language

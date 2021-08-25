@@ -178,7 +178,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	public function testPrepareSave_valid() {
 		$sysopUser = $this->getTestSysop()->getUser();
 		$testZid = 'Z333';
-		$testTitle = Title::newFromText( $testZid, NS_ZOBJECT );
+		$testTitle = Title::newFromText( $testZid, NS_MAIN );
 		$testPage = WikiPage::factory( $testTitle );
 
 		$testObject = new ZObjectContent(
@@ -194,7 +194,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	public function testPrepareSave_invalid() {
 		$sysopUser = $this->getTestSysop()->getUser();
 		$testZid = 'Z333';
-		$testTitle = Title::newFromText( $testZid, NS_ZOBJECT );
+		$testTitle = Title::newFromText( $testZid, NS_MAIN );
 		$testPage = WikiPage::factory( $testTitle );
 
 		$testObject = new ZObjectContent(
@@ -212,7 +212,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 		$sysopUser = $this->getTestSysop()->getUser();
 		$popts = $this->createMock( ParserOptions::class );
 		$testZid = 'Z333';
-		$testTitle = Title::newFromText( $testZid, NS_ZOBJECT );
+		$testTitle = Title::newFromText( $testZid, NS_MAIN );
 
 		// Invalid content because it doesn't have Z2K3 key
 		$testObject = new ZObjectContent(
@@ -238,7 +238,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 		$sysopUser = $this->getTestSysop()->getUser();
 		$popts = $this->createMock( ParserOptions::class );
 		$testZid = 'Z333';
-		$testTitle = Title::newFromText( $testZid, NS_ZOBJECT );
+		$testTitle = Title::newFromText( $testZid, NS_MAIN );
 
 		// Valid content with string and reference in normal form
 		$testObject = new ZObjectContent( '{ "Z1K1": "Z2",'
@@ -412,8 +412,8 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 		$this->registerLangs( ZTestType::TEST_LANGS );
 		$registry = ZTypeRegistry::singleton();
 
-		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
-		$this->editPage( $title, ZTestType::TEST_ENCODING, "Test creation object", NS_ZOBJECT );
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
+		$this->editPage( $title, ZTestType::TEST_ENCODING, "Test creation object", NS_MAIN );
 
 		$this->assertTrue(
 			$registry->isZObjectKeyKnown( ZTestType::TEST_ZID ),

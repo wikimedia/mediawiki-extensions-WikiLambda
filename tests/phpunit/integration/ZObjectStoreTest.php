@@ -56,7 +56,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$page = $this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
 		$this->assertTrue( $page instanceof WikiPage );
 
-		$title = Title::newFromText( $zid, NS_ZOBJECT );
+		$title = Title::newFromText( $zid, NS_MAIN );
 		$zobject = $this->zobjectStore->fetchZObjectByTitle( $title );
 		$this->assertTrue( $zobject instanceof ZObjectContent );
 
@@ -74,7 +74,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testFetchZObjectByTitle_invalid() {
 		$invalidZid = 'Z0999';
-		$title = Title::newFromText( $invalidZid, NS_ZOBJECT );
+		$title = Title::newFromText( $invalidZid, NS_MAIN );
 		$zobject = $this->zobjectStore->fetchZObjectByTitle( $title );
 
 		$this->assertFalse( $zobject instanceof ZObjectContent );
@@ -135,7 +135,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$sysopUser = $this->getTestSysop()->getUser();
 
 		$zid = $this->zobjectStore->getNextAvailableZid();
-		$title = Title::newFromText( $zid, NS_ZOBJECT );
+		$title = Title::newFromText( $zid, NS_MAIN );
 		$normalZObject = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z9", "Z9K1": "Z0" },'
 			. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" },'
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }';
@@ -159,7 +159,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$sysopUser = $this->getTestSysop()->getUser();
 
 		$zid = $this->zobjectStore->getNextAvailableZid();
-		$title = Title::newFromText( $zid, NS_ZOBJECT );
+		$title = Title::newFromText( $zid, NS_MAIN );
 		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" },'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [] } }';

@@ -129,7 +129,7 @@ describe( 'Languages Vuex module', function () {
 					query: {
 						wikilambdasearch_labels: [
 							{
-								page_namespace: 2468,
+								page_namespace: 0,
 								page_title: 'Z1002',
 								page_type: 'Z60',
 								label: 'English',
@@ -138,7 +138,7 @@ describe( 'Languages Vuex module', function () {
 								page_lang: 'Z1002'
 							},
 							{
-								page_namespace: 2468,
+								page_namespace: 0,
 								page_title: 'Z1022',
 								page_type: 'Z60',
 								label: 'Samburu',

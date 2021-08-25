@@ -48,10 +48,10 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 
 	public function provideCanBeUsedOn() {
 		return [
-			'main NS page' => [ 'Foo', false ],
-			'talk NS page' => [ 'Talk:Foo', false ],
-			'valid ZObject page' => [ 'ZObject:Z1', true ],
-			'ZObject talk page' => [ 'ZObject talk:Z1', false ],
+			'Main NS ZObject page' => [ 'Z1', true ],
+			'Main talk page' => [ 'Talk:Z1', false ],
+			'User NS page' => [ 'User:Foo', false ],
+			'User talk NS page' => [ 'User talk:Foo', false ],
 		];
 	}
 
@@ -105,11 +105,11 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getExternalRepresentation
 	 */
 	public function testGetExternalRepresentation_badNamespace() {
-		$qid = 'Q333';
-		$title = Title::newFromText( $qid );
+		$pageTitleText = 'User:Z333';
+		$title = Title::newFromText( $pageTitleText );
 
 		$this->expectException( ZErrorException::class );
-		$this->expectExceptionMessage( "Provided page '$qid' is not in the ZObject namespace." );
+		$this->expectExceptionMessage( "Provided page '$pageTitleText' is not in the main namespace." );
 
 		ZObjectContentHandler::getExternalRepresentation( $title );
 	}
@@ -119,7 +119,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testGetExternalRepresentation_notFound() {
 		$unavailableZid = 'Z333';
-		$title = Title::newFromText( $unavailableZid, NS_ZOBJECT );
+		$title = Title::newFromText( $unavailableZid, NS_MAIN );
 
 		try {
 			ZObjectContentHandler::getExternalRepresentation( $title );
@@ -129,7 +129,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		}
 
 		$this->assertSame( 'Z504', $errorType );
-		$this->assertSame( "Provided page 'ZObject:$unavailableZid' could not be fetched from the DB.", $errorMessage );
+		$this->assertSame( "Provided page '$unavailableZid' could not be fetched from the DB.", $errorMessage );
 	}
 
 	/**
@@ -137,9 +137,9 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testGetExternalRepresentation() {
 		$this->registerLangs( [ 'fr', 'de' ] );
-		$this->editPage( ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'Test creation', NS_ZOBJECT );
+		$this->editPage( ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'Test creation', NS_MAIN );
 
-		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
 		$externalRepresentation = ZObjectContentHandler::getExternalRepresentation( $title );
 
 		$this->assertStringNotContainsString( '"Z2K1": "Z0"', $externalRepresentation, "ZPO key is not set to Z0" );
@@ -199,7 +199,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testGetSecondaryDataUpdates() {
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
-		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
 		$content = ZObjectContentHandler::makeContent( ZTestType::TEST_ENCODING, $title );
 		$slotOutput = $this->createMock( SlotRenderingProvider::class );
 
@@ -215,7 +215,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testGetDeletionUpdates() {
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
-		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
 
 		$updates = $handler->getDeletionUpdates( $title, SlotRecord::MAIN );
 		$zobjectUpdates = array_filter( $updates, static function ( $u ) {

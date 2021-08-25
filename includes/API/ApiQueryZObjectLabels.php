@@ -79,7 +79,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 				break;
 			}
 			$suggestions[] = [
-				'page_namespace' => NS_ZOBJECT,
+				'page_namespace' => NS_MAIN,
 				'page_title' => $row->wlzl_zobject_zid,
 				'page_type' => $row->wlzl_type,
 				'label' => $row->wlzl_label,

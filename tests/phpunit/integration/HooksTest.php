@@ -33,7 +33,7 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 		$res = $this->db->select(
 			/* FROM */ 'page',
 			/* SELECT */ [ 'page_title' ],
-			/* WHERE */ [ 'page_namespace' => NS_ZOBJECT ],
+			/* WHERE */ [ 'page_namespace' => NS_MAIN ],
 			__METHOD__,
 			[ 'ORDER BY' => 'page_id DESC' ]
 		);
@@ -72,13 +72,13 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 		$invalidTitleText = 'Bad page title';
 
 		$invalidZIDStatus = $this->editPage(
-			$invalidTitleText, ZTestType::TEST_ENCODING, 'Test bad title', NS_ZOBJECT
+			$invalidTitleText, ZTestType::TEST_ENCODING, 'Test bad title', NS_MAIN
 		);
 
 		$this->assertFalse( $invalidZIDStatus->isOK() );
 		$this->assertTrue( $invalidZIDStatus->hasMessage( 'wikilambda-invalidzobjecttitle' ) );
 
-		$invalidTitle = Title::newFromText( $invalidTitleText, NS_ZOBJECT );
+		$invalidTitle = Title::newFromText( $invalidTitleText, NS_MAIN );
 		$this->assertFalse( $invalidTitle->exists() );
 	}
 
@@ -89,7 +89,7 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 		$invalidContent = '{"Z1K1": "Z3"}';
 
 		$invalidZIDStatus = $this->editPage(
-			ZTestType::TEST_ZID, $invalidContent, 'Test bad content', NS_ZOBJECT
+			ZTestType::TEST_ZID, $invalidContent, 'Test bad content', NS_MAIN
 		);
 
 		$this->assertFalse( $invalidZIDStatus->isOK() );
@@ -103,11 +103,11 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 		// Insert ZTestType
 		$this->registerLangs( ZTestType::TEST_LANGS );
 		$this->editPage(
-			ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'First test insertion', NS_ZOBJECT
+			ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'First test insertion', NS_MAIN
 		);
 
 		$nullEditStatus = $this->editPage(
-			ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'No-op edit', NS_ZOBJECT
+			ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'No-op edit', NS_MAIN
 		);
 		$this->assertTrue( $nullEditStatus->isOK() );
 		$this->assertTrue( $nullEditStatus->hasMessage( 'edit-no-change' ) );
@@ -120,7 +120,7 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 		// Insert ZTestType
 		$this->registerLangs( ZTestType::TEST_LANGS );
 		$this->editPage(
-			ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'First test insertion', NS_ZOBJECT
+			ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'First test insertion', NS_MAIN
 		);
 
 		// Force deferred updates from other edits so we can conflict with it.
@@ -129,11 +129,11 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( [], DeferredUpdates::getPendingUpdates() );
 
 		$secondTitleText = ZTestType::TEST_ZID . '000';
-		$secondTitle = Title::newFromText( $secondTitleText, NS_ZOBJECT );
+		$secondTitle = Title::newFromText( $secondTitleText, NS_MAIN );
 		$this->assertFalse( $secondTitle->exists() );
 
 		$dupeEditStatus = $this->editPage(
-			$secondTitleText, ZTestType::TEST_ENCODING, 'Duplicate creation (blocked)', NS_ZOBJECT
+			$secondTitleText, ZTestType::TEST_ENCODING, 'Duplicate creation (blocked)', NS_MAIN
 		);
 		$this->assertFalse( $dupeEditStatus->isOK() );
 		$this->assertTrue( $dupeEditStatus->hasMessage( 'wikilambda-labelclash' ) );

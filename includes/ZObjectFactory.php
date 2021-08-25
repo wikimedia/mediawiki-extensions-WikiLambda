@@ -67,7 +67,7 @@ class ZObjectFactory {
 			}
 		}
 
-		// If input is a JSON object representing the inner ZObject: wrap in new ZPersistenObject
+		// If input is a JSON object representing the inner ZObject, wrap in new ZPersistenObject
 		self::trackSelfReference( ZTypeRegistry::Z_NULL_REFERENCE, self::SET_SELF_ZID );
 
 		$label = new ZMultiLingualString( [] );
@@ -148,7 +148,7 @@ class ZObjectFactory {
 		// Wiki-provided type handling.
 		if ( !$typeRegistry->isZTypeBuiltIn( $type ) ) {
 			// TODO: This is quite expensive. Store this in a metadata DB table, instead of fetching it live?
-			$targetTitle = Title::newFromText( $type, NS_ZOBJECT );
+			$targetTitle = Title::newFromText( $type, NS_MAIN );
 
 			if ( !$targetTitle->exists() ) {
 				// Error Z504: Zid not found

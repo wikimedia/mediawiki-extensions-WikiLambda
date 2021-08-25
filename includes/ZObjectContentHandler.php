@@ -43,7 +43,7 @@ class ZObjectContentHandler extends ContentHandler {
 	 * @return bool
 	 */
 	public function canBeUsedOn( Title $title ) {
-		return $title->inNamespace( NS_ZOBJECT );
+		return $title->inNamespace( NS_MAIN );
 	}
 
 	/**
@@ -123,11 +123,11 @@ class ZObjectContentHandler extends ContentHandler {
 	 * @throws ZErrorException
 	 */
 	public static function getExternalRepresentation( Title $zObjectTitle, ?string $languageCode = null ): string {
-		if ( $zObjectTitle->getNamespace() !== NS_ZOBJECT ) {
+		if ( $zObjectTitle->getNamespace() !== NS_MAIN ) {
 			throw new ZErrorException(
 				new ZError(
 					ZErrorTypeRegistry::Z_ERROR_WRONG_NAMESPACE,
-					new ZString( "Provided page '$zObjectTitle' is not in the ZObject namespace." )
+					new ZString( "Provided page '$zObjectTitle' is not in the main namespace." )
 				)
 			);
 		}

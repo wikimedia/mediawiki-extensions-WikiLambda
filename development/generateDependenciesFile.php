@@ -52,7 +52,7 @@ class GenerateDependenciesFile extends Maintenance {
 		foreach ( $initialDataToLoadListing as $filename ) {
 			$zid = substr( $filename, 0, -5 );
 			$trackedZids[] = $zid;
-			$title = Title::newFromText( $zid, NS_ZOBJECT );
+			$title = Title::newFromText( $zid, NS_MAIN );
 			$data = file_get_contents( $initialDataToLoadPath . $filename );
 
 			if ( !$data ) {

@@ -45,7 +45,7 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions';
 		foreach ( $zids as $zid ) {
 			$data = file_get_contents( "$dataPath/$zid.json" );
-			$this->editPage( $zid, $data, 'Test ZObject creation', NS_ZOBJECT );
+			$this->editPage( $zid, $data, 'Test ZObject creation', NS_MAIN );
 		}
 	}
 

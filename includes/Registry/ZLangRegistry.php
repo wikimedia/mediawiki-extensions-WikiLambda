@@ -104,7 +104,7 @@ class ZLangRegistry extends ZObjectRegistry {
 	 */
 	private function fetchLanguageCodeFromZid( $zid ): string {
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$title = Title::newFromText( $zid, NS_ZOBJECT );
+		$title = Title::newFromText( $zid, NS_MAIN );
 
 		$content = $zObjectStore->fetchZObjectByTitle( $title );
 		if ( !$content ) {
@@ -150,7 +150,7 @@ class ZLangRegistry extends ZObjectRegistry {
 		$foundZid = false;
 
 		foreach ( $zids as $zid ) {
-			$title = Title::newFromText( $zid, NS_ZOBJECT );
+			$title = Title::newFromText( $zid, NS_MAIN );
 			$content = $zObjectStore->fetchZObjectByTitle( $title );
 			$foundCode = $this->getLanguageCodeFromContent( $content );
 			if ( $foundCode == $code ) {

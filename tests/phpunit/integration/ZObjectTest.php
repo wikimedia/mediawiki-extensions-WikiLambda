@@ -62,8 +62,8 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 	public function testConstruct_customType() {
 		// Create type Z111
 		$this->registerLangs( ZTestType::TEST_LANGS );
-		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
-		$this->editPage( $title, ZTestType::TEST_ENCODING, "Test creation object", NS_ZOBJECT );
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
+		$this->editPage( $title, ZTestType::TEST_ENCODING, "Test creation object", NS_MAIN );
 
 		// Create instance of type Z111
 		$testObject = (object)[
@@ -82,8 +82,8 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 	public function test_getLinkedZObjects() {
 		// Create type Z111
 		$this->registerLangs( ZTestType::TEST_LANGS );
-		$title = Title::newFromText( ZTestType::TEST_ZID, NS_ZOBJECT );
-		$this->editPage( $title, ZTestType::TEST_ENCODING, "Test creation object", NS_ZOBJECT );
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
+		$this->editPage( $title, ZTestType::TEST_ENCODING, "Test creation object", NS_MAIN );
 
 		// Create instance of type Z111
 		$testObject = (object)[

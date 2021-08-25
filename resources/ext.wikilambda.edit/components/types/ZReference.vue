@@ -89,7 +89,7 @@ module.exports = {
 				return !this.viewmode && ( this.readonly || this.getCurrentZObjectId === this.referenceValue );
 			},
 			referenceLink: function () {
-				return '/wiki/ZObject:' + this.referenceValue;
+				return '/wiki/' + this.referenceValue;
 			},
 			referenceLinkTarget: function () {
 				if ( this.isReadOnlyEditMode ) {

@@ -105,7 +105,7 @@ module.exports = {
 				return this.getCurrentZObjectId;
 			},
 			typeLink: function () {
-				return '/wiki/ZObject:' + this.type;
+				return '/wiki/' + this.type;
 			}
 		}
 	),

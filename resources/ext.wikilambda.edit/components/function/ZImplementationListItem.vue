@@ -115,7 +115,7 @@ module.exports = {
 				Constants.Z_CODE_CODE ];
 		},
 		zImplementationLink: function () {
-			return '/wiki/ZObject:' + this.zImplementationId;
+			return '/wiki/' + this.zImplementationId;
 		}
 	}
 	),

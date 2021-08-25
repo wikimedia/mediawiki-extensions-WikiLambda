@@ -66,7 +66,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 		}
 
 		// TODO: This is quite expensive. Store this in a metadata DB table, instead of fetching it live?
-		$title = Title::newFromText( $errorType, NS_ZOBJECT );
+		$title = Title::newFromText( $errorType, NS_MAIN );
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$zObject = $zObjectStore->fetchZObjectByTitle( $title );
 

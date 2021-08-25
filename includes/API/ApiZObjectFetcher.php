@@ -28,7 +28,7 @@ class ApiZObjectFetcher extends ApiBase {
 		$language = $params[ 'language' ];
 
 		foreach ( $ZIDs as $index => $ZID ) {
-			$title = Title::newFromText( $ZID, NS_ZOBJECT );
+			$title = Title::newFromText( $ZID, NS_MAIN );
 
 			if ( !$title || !is_a( $title, "Title" ) || !$title->exists() ) {
 				$this->dieWithError( [ 'apierror-wikilambda_fetch-missingzid', $ZID ] );

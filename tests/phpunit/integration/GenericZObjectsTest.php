@@ -44,11 +44,11 @@ class GenericZObjectsTest extends WikiLambdaIntegrationTestCase {
 EOT;
 
 		$instanceStatus = $this->editPage(
-			$instanceTitleText, $instanceContent, 'Test ZString instance', NS_ZOBJECT
+			$instanceTitleText, $instanceContent, 'Test ZString instance', NS_MAIN
 		);
 
 		$this->assertTrue( $instanceStatus->isOK() );
-		$instanceTitle = Title::newFromText( $instanceTitleText, NS_ZOBJECT );
+		$instanceTitle = Title::newFromText( $instanceTitleText, NS_MAIN );
 		$this->assertTrue( $instanceTitle->exists() );
 		$this->assertTrue( $instanceTitle->getContentModel() === CONTENT_MODEL_ZOBJECT );
 
@@ -78,11 +78,11 @@ EOT;
 		// Create ZTestType (Z111)
 		$baseTypeTitleText = ZTestType::TEST_ZID;
 		$baseTypeStatus = $this->editPage(
-			$baseTypeTitleText, ZTestType::TEST_ENCODING, 'Create ZTestType', NS_ZOBJECT
+			$baseTypeTitleText, ZTestType::TEST_ENCODING, 'Create ZTestType', NS_MAIN
 		);
 
 		$this->assertTrue( $baseTypeStatus->isOK() );
-		$baseTypeTitle = Title::newFromText( $baseTypeTitleText, NS_ZOBJECT );
+		$baseTypeTitle = Title::newFromText( $baseTypeTitleText, NS_MAIN );
 		$this->assertTrue( $baseTypeTitle->exists() );
 
 		$registry = ZTypeRegistry::singleton();
@@ -112,11 +112,11 @@ EOT;
 EOT;
 
 		$instanceStatus = $this->editPage(
-			$instanceTitleText, $instanceContent, 'Test ZTestType instance', NS_ZOBJECT
+			$instanceTitleText, $instanceContent, 'Test ZTestType instance', NS_MAIN
 		);
 
 		$this->assertTrue( $instanceStatus->isOK() );
-		$instanceTitle = Title::newFromText( $instanceTitleText, NS_ZOBJECT );
+		$instanceTitle = Title::newFromText( $instanceTitleText, NS_MAIN );
 		$this->assertTrue( $instanceTitle->exists() );
 		$this->assertTrue( $instanceTitle->getContentModel() === CONTENT_MODEL_ZOBJECT );
 
@@ -156,10 +156,10 @@ EOT;
 EOT;
 
 		$invalidInstanceStatus = $this->editPage(
-			$invalidInstanceTitleText, $invalidInstanceContent, 'Invalid instance of ZTestType', NS_ZOBJECT
+			$invalidInstanceTitleText, $invalidInstanceContent, 'Invalid instance of ZTestType', NS_MAIN
 		);
 		$this->assertFalse( $invalidInstanceStatus->isOK() );
-		$invalidInstanceTitle = Title::newFromText( $invalidInstanceTitleText, NS_ZOBJECT );
+		$invalidInstanceTitle = Title::newFromText( $invalidInstanceTitleText, NS_MAIN );
 		$this->assertFalse( $invalidInstanceTitle->exists() );
 	}
 
@@ -195,7 +195,7 @@ EOT;
 EOT;
 
 		$baseTypeStatus = $this->editPage(
-			$baseTypeTitleText, $baseTypeContent, 'Create ZInteger', NS_ZOBJECT
+			$baseTypeTitleText, $baseTypeContent, 'Create ZInteger', NS_MAIN
 		);
 
 		$this->assertTrue(
@@ -203,7 +203,7 @@ EOT;
 			'ZInteger creation was successful'
 		);
 
-		$baseTypeTitle = Title::newFromText( $baseTypeTitleText, NS_ZOBJECT );
+		$baseTypeTitle = Title::newFromText( $baseTypeTitleText, NS_MAIN );
 		$this->assertTrue(
 			$baseTypeTitle->exists(),
 			'ZInteger page was created in the DB'
@@ -235,7 +235,7 @@ EOT;
 EOT;
 
 		$instanceStatus = $this->editPage(
-			$instanceTitleText, $instanceContent, 'Test ZInteger instance', NS_ZOBJECT
+			$instanceTitleText, $instanceContent, 'Test ZInteger instance', NS_MAIN
 		);
 
 		$this->assertTrue(
@@ -243,7 +243,7 @@ EOT;
 			'ZInteger instance creation was successful'
 		);
 
-		$instanceTitle = Title::newFromText( $instanceTitleText, NS_ZOBJECT );
+		$instanceTitle = Title::newFromText( $instanceTitleText, NS_MAIN );
 		$this->assertTrue(
 			$instanceTitle->exists(),
 			'ZInteger instance page was created in the DB'
@@ -304,7 +304,7 @@ EOT;
 EOT;
 
 		$baseTypeStatus = $this->editPage(
-			$baseTypeTitleText, $baseTypeContent, 'Create ZSelfRefType', NS_ZOBJECT
+			$baseTypeTitleText, $baseTypeContent, 'Create ZSelfRefType', NS_MAIN
 		);
 
 		$this->assertTrue(
@@ -312,7 +312,7 @@ EOT;
 			'ZSelfRefType creation was successful'
 		);
 
-		$baseTypeTitle = Title::newFromText( $baseTypeTitleText, NS_ZOBJECT );
+		$baseTypeTitle = Title::newFromText( $baseTypeTitleText, NS_MAIN );
 		$this->assertTrue(
 			$baseTypeTitle->exists(),
 			'ZSelfRefType page was created in the DB'
@@ -339,7 +339,7 @@ EOT;
 EOT;
 
 		$instanceStatus = $this->editPage(
-			$instanceTitleText, $instanceContent, 'Test ZSelfRefType instance', NS_ZOBJECT
+			$instanceTitleText, $instanceContent, 'Test ZSelfRefType instance', NS_MAIN
 		);
 
 		$this->assertTrue(
@@ -347,7 +347,7 @@ EOT;
 			'ZSelfRefType instance creation was successful'
 		);
 
-		$instanceTitle = Title::newFromText( $instanceTitleText, NS_ZOBJECT );
+		$instanceTitle = Title::newFromText( $instanceTitleText, NS_MAIN );
 		$this->assertTrue(
 			$instanceTitle->exists(),
 			'ZSelfRefType instance page was created in the DB'
@@ -399,7 +399,7 @@ EOT;
 }
 EOT;
 
-		$status = $this->editPage( 'Z1014', $igboContent, 'Create self-referencing ZLanguage', NS_ZOBJECT );
+		$status = $this->editPage( 'Z1014', $igboContent, 'Create self-referencing ZLanguage', NS_MAIN );
 		$this->assertTrue(
 			$status->isOK(),
 			'ZLanguage with self-reference has been created'
@@ -502,7 +502,7 @@ EOT;
 EOT;
 
 		$baseTypeStatus = $this->editPage(
-			$baseTypeTitleText, $baseTypeContent, 'Create ZListUsingType', NS_ZOBJECT
+			$baseTypeTitleText, $baseTypeContent, 'Create ZListUsingType', NS_MAIN
 		);
 
 		$this->assertTrue(
@@ -510,7 +510,7 @@ EOT;
 			'ZListUsingType creation'
 		);
 
-		$baseTypeTitle = Title::newFromText( $baseTypeTitleText, NS_ZOBJECT );
+		$baseTypeTitle = Title::newFromText( $baseTypeTitleText, NS_MAIN );
 		$this->assertTrue(
 			$baseTypeTitle->exists(),
 			'ZListUsingType page in the DB'
@@ -538,7 +538,7 @@ EOT;
 EOT;
 
 		$instanceStatus = $this->editPage(
-			$instanceTitleText, $instanceContent, 'Test ZListUsingType instance', NS_ZOBJECT
+			$instanceTitleText, $instanceContent, 'Test ZListUsingType instance', NS_MAIN
 		);
 
 		$this->assertTrue(
@@ -546,7 +546,7 @@ EOT;
 			'ZListUsingType instance creation'
 		);
 
-		$instanceTitle = Title::newFromText( $instanceTitleText, NS_ZOBJECT );
+		$instanceTitle = Title::newFromText( $instanceTitleText, NS_MAIN );
 		$this->assertTrue(
 			$instanceTitle->exists(),
 			'ZListUsingType instance page in the DB'
@@ -587,7 +587,7 @@ EOT;
 }
 EOT;
 		$instanceStatus = $this->editPage(
-			$instanceTitleText, $instanceContent, 'Test ZListUsingType instance 2', NS_ZOBJECT
+			$instanceTitleText, $instanceContent, 'Test ZListUsingType instance 2', NS_MAIN
 		);
 
 		$this->assertTrue(

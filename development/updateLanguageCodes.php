@@ -76,7 +76,7 @@ class UpdateLanguageCodes extends Maintenance {
 	private function registerLanguageCodes() {
 		$zids = $this->zObjectStore->fetchZidsOfType( self::Z_LANGUAGE );
 		foreach ( $zids as $zid ) {
-			$title = Title::newFromText( $zid, NS_ZOBJECT );
+			$title = Title::newFromText( $zid, NS_MAIN );
 			$content = $this->zObjectStore->fetchZObjectByTitle( $title );
 			$zobject = $content->getObject()->{ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE};
 			if ( $zobject->{ZTypeRegistry::Z_OBJECT_TYPE} === self::Z_LANGUAGE ) {
@@ -104,7 +104,7 @@ class UpdateLanguageCodes extends Maintenance {
 		$creatingComment = wfMessage( 'wikilambda-bootstrapcreationeditsummary' )->inLanguage( 'en' )->text();
 
 		foreach ( $zids as $zid ) {
-			$title = Title::newFromText( $zid, NS_ZOBJECT );
+			$title = Title::newFromText( $zid, NS_MAIN );
 			try {
 				$content = $this->zObjectStore->fetchZObjectByTitle( $title );
 			} catch ( \Exception $e ) {
@@ -175,7 +175,7 @@ class UpdateLanguageCodes extends Maintenance {
 
 		foreach ( $initialDataToLoadListing as $filename ) {
 			$zid = substr( $filename, 0, -5 );
-			$title = Title::newFromText( $zid, NS_ZOBJECT );
+			$title = Title::newFromText( $zid, NS_MAIN );
 			$data = file_get_contents( $initialDataToLoadPath . $filename );
 
 			if ( !$data ) {

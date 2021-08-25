@@ -183,7 +183,7 @@ module.exports = {
 					this.referenceValue === this.getCurrentZObjectId;
 			},
 			zTypeLink: function () {
-				return '/wiki/ZObject:' + this.zType;
+				return '/wiki/' + this.zType;
 			}
 		}
 	),

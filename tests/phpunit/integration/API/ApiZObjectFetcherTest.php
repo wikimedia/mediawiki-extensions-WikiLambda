@@ -26,7 +26,7 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 	public function testFailsWithoutTitle() {
 		$unnamable = 'nope; can\'t name it';
 		$this->assertFalse(
-			Title::newFromText( $unnamable, NS_ZOBJECT )->exists(),
+			Title::newFromText( $unnamable, NS_MAIN )->exists(),
 			'no title should exist for the string "' . $unnamable . '"' );
 
 		$this->setExpectedApiException( [ 'apierror-wikilambda_fetch-missingzid', $unnamable ] );
@@ -58,11 +58,11 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 		$dataPath = dirname( __DIR__, 4 ) . '/function-schemata/data/definitions/';
 
 		$z1_object = file_get_contents( $dataPath . 'Z1.json' );
-		$this->editPage( 'Z1', $z1_object, 'Test creation', NS_ZOBJECT );
+		$this->editPage( 'Z1', $z1_object, 'Test creation', NS_MAIN );
 		$this->titlesTouched[] = 'Z1';
 
 		$z3_object = file_get_contents( $dataPath . 'Z3.json' );
-		$this->editPage( 'Z3', $z3_object, 'Test creation', NS_ZOBJECT );
+		$this->editPage( 'Z3', $z3_object, 'Test creation', NS_MAIN );
 		$this->titlesTouched[] = 'Z3';
 
 		DeferredUpdates::doUpdates();

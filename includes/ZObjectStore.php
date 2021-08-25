@@ -82,7 +82,7 @@ class ZObjectStore {
 			/* FROM */ 'page',
 			/* SELECT */ [ 'page_title' ],
 			/* WHERE */ [
-				'page_namespace' => NS_ZOBJECT,
+				'page_namespace' => NS_MAIN,
 				'LENGTH( page_title ) > 5'
 			],
 			__METHOD__,
@@ -149,7 +149,7 @@ class ZObjectStore {
 	 * @return WikiPage|Status Updated page if success update, status if failed
 	 */
 	public function updateZObject( string $zid, string $data, string $summary, User $user, int $flags = EDIT_UPDATE ) {
-		$title = $this->titleFactory->newFromText( $zid, NS_ZOBJECT );
+		$title = $this->titleFactory->newFromText( $zid, NS_MAIN );
 		if ( !( $title instanceof Title ) ) {
 			return Status::newFatal( 'wikilambda-invalidzobjecttitle', $zid );
 		}
@@ -397,7 +397,7 @@ class ZObjectStore {
 			/* FROM */ 'page',
 			/* SELECT */ [ 'page_title' ],
 			/* WHERE */ [
-				'page_namespace' => NS_ZOBJECT
+				'page_namespace' => NS_MAIN
 			]
 		);
 
