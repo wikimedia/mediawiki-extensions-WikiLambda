@@ -90,7 +90,7 @@ module.exports = {
 			Constants: Constants
 		};
 	},
-	computed: $.extend( mapGetters( [ 'getZObjectTypeById' ] ),
+	computed: $.extend( mapGetters( [ 'getZObjectTypeById', 'getZObjectById' ] ),
 		{
 			type: function () {
 				return this.getZObjectTypeById( this.zobjectId );

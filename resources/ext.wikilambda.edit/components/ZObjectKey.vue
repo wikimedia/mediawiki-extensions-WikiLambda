@@ -40,6 +40,7 @@
 				v-else-if="selectedMode === Constants.Z_KEY_MODES.REFERENCE"
 				:zobject-id="zobjectId"
 				:readonly="readonly"
+				:search-type="literalType"
 			></z-reference>
 			<z-object-json
 				v-else-if="selectedMode === Constants.Z_KEY_MODES.JSON"
