@@ -51,6 +51,7 @@
 	"apihelp-query+wikilambdafn_search-example-simple": "Search for ZImplementation IDs that are associated to a given ZFunction ID",
 	"apihelp-query+wikilambdafn_search-param-zfunction_id": "The ZFunction ID to search for",
 	"apihelp-query+wikilambdafn_search-param-type": "The type of ZObject referenced by the ZFunction to search for",
+	"apierror-wikilambda_perform_test-not-connected": "Could not resolve host '$1', probably because the orchestrator is not running. Please consult the README to add the orchestrator to your docker-compose configuration.",
 	"apihelp-wikilambda_perform_test-example": "Perform tests against a fully provided ZFunction, ZImplementation, and ZTesters",
 	"apihelp-wikilambda_perform_test-summary": "Endpoint to query test results for a ZFunction. Accepts a ZFunction, a list of ZImplementations, and a list of ZTesters. Accepts either a list of ZIDs or the full ZObject for the function, implementations, or testers. Also accepts a key to utilize a back end cache or not.",
 	"apihelp-wikilambda_perform_test-param-zfunction": "The ZFunction ID (or object) to test",
