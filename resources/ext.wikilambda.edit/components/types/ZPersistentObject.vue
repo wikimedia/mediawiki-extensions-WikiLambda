@@ -13,20 +13,22 @@
 			<h2 class="ext-wikilambda-persistentobject-header">
 				{{ $i18n( 'wikilambda-persistentzobject-contents' ) }}
 			</h2>
-			<div v-if="!(viewmode || readonly)" class="ext-wikilambda-clear-persistentobject">
-				<button
-					:title="$i18n( 'wikilambda-editor-zobject-clearitem-tooltip' )"
-					@click="removeKey( zObjectValue.id )"
-				>
-					{{ $i18n( 'wikilambda-editor-clearitem' ) }}
-				</button>
+			<div class="ext-wikilambda-persistentobject-content">
+				<div v-if="!(viewmode || readonly)" class="ext-wikilambda-clear-persistentobject">
+					<button
+						:title="$i18n( 'wikilambda-editor-zobject-clearitem-tooltip' )"
+						@click="removeKey( zObjectValue.id )"
+					>
+						{{ $i18n( 'wikilambda-editor-clearitem' ) }}
+					</button>
+				</div>
+				<z-object-key
+					:key="Constants.Z_PERSISTENTOBJECT_VALUE"
+					:zobject-id="zObjectValue.id"
+					:parent-type="zObjectType"
+					:readonly="viewmode || readonly"
+				></z-object-key>
 			</div>
-			<z-object-key
-				:key="Constants.Z_PERSISTENTOBJECT_VALUE"
-				:zobject-id="zObjectValue.id"
-				:parent-type="zObjectType"
-				:readonly="viewmode || readonly"
-			></z-object-key>
 		</div>
 		<div v-if="hasDetailsToDisplay" class="ext-wikilambda-sidebar">
 			<div>
@@ -155,8 +157,14 @@ module.exports = {
 	}
 }
 
-.ext-wikilambda-clear-persistentobject {
-	float: right;
+.ext-wikilambda-persistentobject-content {
+	position: relative;
+
+	.ext-wikilambda-clear-persistentobject {
+		position: absolute;
+		top: 0;
+		right: 0;
+	}
 }
 
 .ext-wikilambda-sidebar > div {

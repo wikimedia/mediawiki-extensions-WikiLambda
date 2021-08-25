@@ -132,5 +132,6 @@ module.exports = {
 .ext-wikilambda-json {
 	white-space: pre-wrap;
 	font-family: 'Courier New', 'Courier', monospace;
+	width: 100%;
 }
 </style>
