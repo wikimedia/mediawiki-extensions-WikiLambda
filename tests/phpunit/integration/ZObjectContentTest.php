@@ -9,7 +9,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use FormatJson;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
@@ -18,7 +17,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
-use ParserOptions;
 use Status;
 use Title;
 use WikiPage;
@@ -202,70 +200,6 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 		);
 		$status = $testObject->prepareSave( $testPage, 0, -1, $sysopUser );
 		$this->assertTrue( $status->hasMessage( 'wikilambda-invalidzobject' ) );
-	}
-
-	/**
-	 * @covers ::preSaveTransform
-	 * @covers ::getText
-	 */
-	public function testPrepareSaveTransform_invalid() {
-		$sysopUser = $this->getTestSysop()->getUser();
-		$popts = $this->createMock( ParserOptions::class );
-		$testZid = 'Z333';
-		$testTitle = Title::newFromText( $testZid, NS_MAIN );
-
-		// Invalid content because it doesn't have Z2K3 key
-		$testObject = new ZObjectContent(
-			'{ "Z1K1": "Z2",'
-				. '"Z2K1": { "Z1K1": "Z9", "Z9K1": "Z333" },'
-				. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "string value" } }'
-		);
-		$transformedObject = $testObject->preSaveTransform( $testTitle, $sysopUser, $popts );
-
-		$this->assertInstanceOf( ZObjectContent::class, $transformedObject );
-		$this->assertSame(
-			$transformedObject->getText(),
-			$testObject->getText(),
-			'The ZObject is not transformed as it was found not valid'
-		);
-	}
-
-	/**
-	 * @covers ::preSaveTransform
-	 * @covers ::getText
-	 */
-	public function testPrepareSaveTransform_valid() {
-		$sysopUser = $this->getTestSysop()->getUser();
-		$popts = $this->createMock( ParserOptions::class );
-		$testZid = 'Z333';
-		$testTitle = Title::newFromText( $testZid, NS_MAIN );
-
-		// Valid content with string and reference in normal form
-		$testObject = new ZObjectContent( '{ "Z1K1": "Z2",'
-			. '"Z2K1": { "Z1K1": "Z9", "Z9K1": "Z333" },'
-			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "string value" },'
-			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }' );
-
-		// Expected result: canonical, UTF8, trimmed and standard EOL characters
-		$zObjectTransform = FormatJson::encode( [
-			"Z1K1" => "Z2",
-			"Z2K1" => "Z333",
-			"Z2K2" => "string value",
-			"Z2K3" => [
-				"Z1K1" => "Z12",
-				"Z12K1" => []
-			]
-		], true, FormatJson::UTF8_OK );
-		$zObjectTransform = str_replace( [ "\r\n", "\r" ], "\n", rtrim( $zObjectTransform ) );
-
-		$transformedObject = $testObject->preSaveTransform( $testTitle, $sysopUser, $popts );
-		$this->assertInstanceOf( ZObjectContent::class, $transformedObject );
-		$this->assertSame( $transformedObject->getText(), $zObjectTransform );
-		$this->assertNotSame(
-			$transformedObject->getText(),
-			$testObject->getText(),
-			'The ZObject is transformed as it is valid and in normal form'
-		);
 	}
 
 	/**
