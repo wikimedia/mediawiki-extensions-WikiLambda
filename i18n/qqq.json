@@ -16,6 +16,7 @@
 	"wikilambda-emptylabel": "Default label shown for a ZObject that doesn't have one yet.\n\n{{doc-wikilambda}}",
 	"wikilambda-systemuser": "{{Ignore}}\n\nThe user name of the system user that creates the initial content of the wiki.",
 	"wikilambda-bootstrapcreationeditsummary": "{{Ignore}}\n\nThe edit comment made by the system user when creating the initial content of the wiki.",
+	"wikilambda-history-title": "Title of the page showing the history of edits to a ZObject, similar to {{msg-mw|wikibase-history-title-with-label}}.\n\nParameters:\n* $1 – The title in the user's language, or a fallback language if not set.\n* $2 – The ZID (actual wiki page title) of the page.",
 	"wikilambda-invalidzobjecttitle": "Error shown when a user tries to create a ZObject with an invalid title.\n\nParameters:\n* $1 - The given, invalid title.\n\n{{doc-wikilambda}}",
 	"wikilambda-invalidzobject": "Error shown when an invalid ZObject definition edit is made.\n\n{{doc-wikilambda}}",
 	"wikilambda-invalidcontenttype": "Error shown when a non-ZObject is attempted to be saved on a ZObject page.\n\n{{doc-wikilambda}}",
