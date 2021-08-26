@@ -19,34 +19,34 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 	private const EGL = 'Z1726';
 
 	private $testData = [
-	// TODO: Expand this test data to cover aliases
-	// (wlzl_label_primary set to 0 and more than one result per language)
-		'Z90' => [
-			'wlzl_zobject_zid' => 'Z90',
+		// TODO: Expand this test data to cover aliases
+		// (wlzl_label_primary set to 0 and more than one result per language)
+		'Z490' => [
+			'wlzl_zobject_zid' => 'Z490',
 			'wlzl_type' => 'birdtype',
 			'wlzl_language' => self::IT,
 			'wlzl_label' => 'CHEEP',
 			'wlzl_label_normalised' => 'cheep',
 			'wlzl_label_primary' => 1,
 		],
-		'Z92' => [
-			'wlzl_zobject_zid' => 'Z92',
+		'Z492' => [
+			'wlzl_zobject_zid' => 'Z492',
 			'wlzl_type' => 'fruittype',
 			'wlzl_language' => self::EGL,
 			'wlzl_label' => 'CHOP',
 			'wlzl_label_normalised' => 'chop',
 			'wlzl_label_primary' => 1,
 		],
-		'Z93' => [
-			'wlzl_zobject_zid' => 'Z93',
+		'Z493' => [
+			'wlzl_zobject_zid' => 'Z493',
 			'wlzl_type' => 'badtype',
 			'wlzl_language' => self::EN,
 			'wlzl_label' => 'CHAP',
 			'wlzl_label_normalised' => 'chap',
 			'wlzl_label_primary' => 1,
 		],
-		'Z91' => [
-			'wlzl_zobject_zid' => 'Z91',
+		'Z491' => [
+			'wlzl_zobject_zid' => 'Z491',
 			'wlzl_type' => 'birdtype',
 			'wlzl_language' => self::IT,
 			'wlzl_label' => 'CHORP',
@@ -109,8 +109,8 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'batchcomplete' => true,
 			'query' => [
 				'wikilambdasearch_labels' => [
-					$this->resultFor( 'Z90' ),
-					$this->resultFor( 'Z91' ),
+					$this->resultFor( 'Z490' ),
+					$this->resultFor( 'Z491' ),
 				]
 			]
 		];
@@ -145,7 +145,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			],
 			'query' => [
 				'wikilambdasearch_labels' => [
-					$this->resultFor( 'Z90' ),
+					$this->resultFor( 'Z490' ),
 				]
 			]
 		];
@@ -165,9 +165,9 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'batchcomplete' => true,
 			'query' => [
 				'wikilambdasearch_labels' => [
-					$this->resultFor( 'Z90' ),
-					$this->resultFor( 'Z93' ),  // en is always included because of History
-					$this->resultFor( 'Z91' ),
+					$this->resultFor( 'Z490' ),
+					$this->resultFor( 'Z493' ),  // en is always included because of History
+					$this->resultFor( 'Z491' ),
 				]
 			]
 		];
@@ -190,10 +190,10 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'batchcomplete' => true,
 			'query' => [
 				'wikilambdasearch_labels' => [
-					$this->resultFor( 'Z90' ),  // egl falls back to it
-					$this->resultFor( 'Z91' ),  // egl falls back to it
-					$this->resultFor( 'Z92' ),
-					$this->resultFor( 'Z93' ),  // all languages fall back to en
+					$this->resultFor( 'Z490' ),  // egl falls back to it
+					$this->resultFor( 'Z491' ),  // egl falls back to it
+					$this->resultFor( 'Z492' ),
+					$this->resultFor( 'Z493' ),  // all languages fall back to en
 				]
 			]
 		];
@@ -218,8 +218,8 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'query' => [
 				'wikilambdasearch_labels' => [
 					[
-						$this->resultFor( 'Z90' ),
-						$this->resultFor( 'Z91' ),
+						$this->resultFor( 'Z490' ),
+						$this->resultFor( 'Z491' ),
 					]
 				]
 			]
@@ -242,7 +242,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'batchcomplete' => true,
 			'query' => [
 				'wikilambdasearch_labels' => [
-					$this->resultFor( 'Z91' ),
+					$this->resultFor( 'Z491' ),
 				]
 			]
 		];
@@ -264,7 +264,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'batchcomplete' => true,
 			'query' => [
 				'wikilambdasearch_labels' => [
-					$this->resultFor( 'Z91' ),
+					$this->resultFor( 'Z491' ),
 				]
 			]
 		];
