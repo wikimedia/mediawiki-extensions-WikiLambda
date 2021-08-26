@@ -105,7 +105,14 @@ module.exports = {
 		{
 			lookupLabels: function () {
 				return Object.keys( this.lookupResults ).map( function ( key ) {
-					return this.lookupResults[ key ];
+					var label = this.zkeyLabels[ key ],
+						result = this.lookupResults[ key ];
+
+					if ( label === result ) {
+						return result;
+					} else {
+						return result + ' (' + label + ')';
+					}
 				}.bind( this ) );
 			},
 			selectedLabel: function () {
@@ -168,6 +175,7 @@ module.exports = {
 					// eslint-disable-next-line camelcase
 					wikilambdasearch_language: this.zLang
 				} ).done( function ( data ) {
+					var zKeys = [];
 					self.lookupResults = {};
 					// If the string searched has changed, do not show the search result
 					if ( self.inputValue.indexOf( searchedString ) === -1 ) {
@@ -192,10 +200,14 @@ module.exports = {
 										key: zid,
 										label: label
 									} );
+
+									zKeys.push( zid );
 								}
 							}
 						);
 						self.showList = true;
+
+						self.fetchZKeys( zKeys );
 					} else {
 						self.validatorSetError( 'wikilambda-noresult' );
 					}
@@ -285,6 +297,8 @@ module.exports = {
 				} else {
 					inputValue = item;
 				}
+
+				inputValue = inputValue.split( '(' )[ 0 ].trim();
 
 				// If the input is a valid Zid, set zId
 				// Otherwise check if the text matches a label

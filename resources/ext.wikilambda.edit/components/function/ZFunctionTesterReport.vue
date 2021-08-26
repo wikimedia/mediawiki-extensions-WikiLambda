@@ -74,7 +74,9 @@
 				<h3>
 					{{ $i18n( 'wikilambda-tester-results-subtitle' ) }}
 					{{ getZkeyLabels[ activeZImplementationId ] }}
-					( {{ getZkeyLabels[ activeZTesterId ] || getNewTesterZObjects[ 0 ].Z2K3.Z12K1[ 0 ].Z11K2.Z6K1 }} )
+					( {{ getZkeyLabels[ activeZTesterId ] ||
+						( getNewTesterZObjects[ 0 ] && getNewTesterZObjects[ 0 ].Z2K3.Z12K1[ 0 ].Z11K2.Z6K1)
+					}} )
 				</h3>
 				<ul>
 					<li>
