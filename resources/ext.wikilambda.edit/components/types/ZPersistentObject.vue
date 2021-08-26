@@ -14,7 +14,7 @@
 				{{ $i18n( 'wikilambda-persistentzobject-contents' ) }}
 			</h2>
 			<div class="ext-wikilambda-persistentobject-content">
-				<div v-if="!(viewmode || readonly)" class="ext-wikilambda-clear-persistentobject">
+				<div v-if="showClearButton" class="ext-wikilambda-clear-persistentobject">
 					<button
 						:title="$i18n( 'wikilambda-editor-zobject-clearitem-tooltip' )"
 						@click="removeKey( zObjectValue.id )"
@@ -104,7 +104,8 @@ module.exports = {
 		'getZargumentsString',
 		'getCurrentZObjectType',
 		'getZObjectAsJsonById',
-		'getZObjectAsJson'
+		'getZObjectAsJson',
+		'getCurrentZObjectId'
 	] ), {
 		Constants: function () {
 			return Constants;
@@ -135,6 +136,11 @@ module.exports = {
 		},
 		hasDetailsToDisplay: function () {
 			return this.isCurrentZObjectExecutable || this.$store.getters.isExpertMode;
+		},
+		showClearButton: function () {
+			var zid = parseInt( this.getCurrentZObjectId.replace( 'Z', '' ), 10 );
+
+			return zid >= 10000 && !( this.viewmode || this.readonly );
 		}
 	} ),
 	methods: $.extend( mapActions( [

@@ -9,7 +9,7 @@
 		<div>
 			{{ functionLabel }}:{{ ' ' }}
 			<z-object-selector
-				v-if="!viewmode"
+				v-if="!viewmode && implMode"
 				:type="Constants.Z_FUNCTION"
 				:placeholder="$i18n( 'wikilambda-function-typeselector-label' )"
 				:selected-id="zFunction.value"
@@ -24,7 +24,7 @@
 				<span v-else>{{ $i18n( 'wikilambda-invalidzobject' ) }}</span>
 			</template>
 		</div>
-		<div v-if="!viewmode">
+		<div v-if="!viewmode && implMode">
 			<select v-model="implMode">
 				<option value="code">
 					{{ $i18n( 'wikilambda-implementation-selector-code' ) }}
