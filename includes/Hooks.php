@@ -13,10 +13,14 @@ namespace MediaWiki\Extension\WikiLambda;
 use ApiMessage;
 use CommentStoreComment;
 use DatabaseUpdater;
+use HtmlArmor;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Linker\LinkRenderer;
+use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Revision\SlotRecord;
 use MessageSpecifier;
+use RequestContext;
 use RuntimeException;
 use Status;
 use Title;
@@ -28,7 +32,8 @@ class Hooks implements
 	\MediaWiki\Hook\NamespaceIsMovableHook,
 	\MediaWiki\Storage\Hook\MultiContentSaveHook,
 	\MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook,
-	\MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook
+	\MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook,
+	\MediaWiki\Linker\Hook\HtmlPageLinkRendererEndHook
 	{
 
 	public static function registerExtension() {
@@ -358,4 +363,65 @@ class Hooks implements
 
 		return null;
 	}
+
+	/**
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/HtmlPageLinkRendererEnd
+	 *
+	 * @param LinkRenderer $linkRenderer
+	 * @param LinkTarget $linkTarget
+	 * @param bool $isKnown
+	 * @param string|HtmlArmor &$text
+	 * @param string[] &$attribs
+	 * @param string &$ret
+	 * @return bool|void
+	 */
+	public function onHtmlPageLinkRendererEnd(
+		$linkRenderer, $linkTarget, $isKnown, &$text, &$attribs, &$ret
+	) {
+		$context = RequestContext::getMain();
+		$out = $context->getOutput();
+
+		// Do nothing if any of these apply:
+		if (
+			// … there's no title in the main context
+			!$context->hasTitle()
+			// … there's no title set for the output page
+			|| !$out->getTitle()
+			// … the request is via the API (except for test runs)
+			|| ( defined( 'MW_API' ) && MW_API !== 'TEST' )
+			// … the target isn't known
+			|| !$isKnown
+		) {
+			return;
+		}
+
+		// Convert the slimline LinkTarget into a full-fat Title so we can ask deeper questions
+		$targetTitle = Title::newFromLinkTarget( $linkTarget );
+
+		// Do nothing if any of these apply:
+		if (
+			// … the target isn't one of ours
+			!$targetTitle->inNamespace( NS_MAIN ) || !$targetTitle->hasContentModel( CONTENT_MODEL_ZOBJECT )
+			// … the label is already over-ridden (e.g. for "prev" and "cur" and revision links on history pages)
+			|| ( $text !== null && $targetTitle->getFullText() !== HtmlArmor::getHtml( $text ) )
+			) {
+			return;
+		}
+
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		$targetZObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
+		// Do nothing if somehow after all that it's not loadable.
+		if ( !$targetZObject ) {
+			return;
+		}
+
+		// At this point, we know they're linking to a ZObject page, so show a label, falling back
+		// to English even if that's not in the language's fall-back chain.
+		$label = $targetZObject->getLabels()->getStringForLanguageOrEnglish( $context->getLanguage() );
+
+		// Finally, set the label of the link to the escaped user-supplied label
+		// TODO: Consider also showing the ZID?
+		$text = htmlspecialchars( $label );
+	}
+
 }
