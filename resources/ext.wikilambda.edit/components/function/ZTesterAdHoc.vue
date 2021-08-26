@@ -13,7 +13,7 @@
 		></z-inline-tester-validation>
 		<div>
 			<button @click="saveAdHocTester">
-				{{ $i18n( 'wikilambda-savenew' ) }}
+				{{ submitButtonLabel }}
 			</button>
 		</div>
 	</div>
@@ -72,6 +72,13 @@ module.exports = {
 		},
 		validator: function () {
 			return this.findKeyInArray( Constants.Z_TESTER_VALIDATION, this.zobject );
+		},
+		submitButtonLabel: function () {
+			// Copied from ZObjectEditor; refactor, or use a different label for these?
+			return mw.msg(
+				mw.config.get( 'wgEditSubmitButtonLabelPublish' ) ?
+					'wikilambda-publishnew' : 'wikilambda-savenew'
+			);
 		}
 	} ),
 	methods: $.extend( mapActions( [
