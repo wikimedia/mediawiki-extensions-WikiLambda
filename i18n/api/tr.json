@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Hedda",
 			"Joseph",
 			"Mim.saitkilic",
 			"MuratTheTurkish",
@@ -14,7 +15,10 @@
 	"apihelp-wikilambda_fetch-example-multiple": "Üç ZObject getirin: Z1, Z2 ve Z3.",
 	"apierror-wikilambda_fetch-missingzid": "Verilen ZID '$1' bu vikide mevcut değil.",
 	"apihelp-wikilambda_function_call-param-zobject": "İşlev çağrısı için ZObject",
+	"apihelp-wikilambda_function_call-example-composition": "Derleme çağrısı: ilk argüman doğruysa ikinci sıralayın; aksi takdirde, değiştirmeden geri dönün",
 	"apihelp-wikilambda_function_call-example-if": "Yerleşik Z802'yi (If) yanlış yüklemle çağırın",
+	"apihelp-wikilambda_function_call-example-native-js-code": "Kullanıcı tarafından yazılan JavaScript kodunu çağır",
+	"apihelp-wikilambda_function_call-example-native-python-code": "Kullanıcı tarafından yazılan Python 3 kodunu çağır",
 	"apihelp-wikilambda_function_call-summary": "İşlev-düzenleyiciyi çağırarak bir işlevi çalıştır",
 	"apihelp-query+wikilambdasearch_labels-summary": "Bu API sorgu listesi oluşturucu, belirli bir dildeki etiketler için ZObjects'te arama yapmanızı sağlar. Esasen ileriye dönük arama sistemini desteklemek için vardır.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Arama terimi",
@@ -44,5 +48,15 @@
 	"apihelp-wikilambda_edit-param-zobject": "Kaydedilecek ZObject'in JSON gösterimi",
 	"apierror-wikilambda_function_call-not-connected": "<$1> sunucusu çözümlenemiyor, muhtemelen düzenleyici çalışmıyor. Lütfen, düzenleyiciyi docker-compose yapılandırmanıza eklemek için README dosyasına bakın.",
 	"apierror-wikilambda_edit-invalidjson": "Verilen girdi '$1' ile ZObject oluşturulamıyor; geçersiz JSON.",
-	"apierror-wikilambda_edit-unmatchingzid": "ZID '$1' değişkeni ZObject ID '$2' ile uyuşmuyor"
+	"apierror-wikilambda_edit-unmatchingzid": "ZID '$1' değişkeni ZObject ID '$2' ile uyuşmuyor",
+	"apihelp-query+wikilambdafn_search-summary": "Bu API sorgu listesi, sağlanan bir ZFunction kimliği ile ilişkili tüm ZObject'lerin kimliklerini arar",
+	"apihelp-query+wikilambdafn_search-example-simple": "Belirli bir ZFunction kimliğiyle ilişkili ZImplementation kimliklerini arayın",
+	"apihelp-query+wikilambdafn_search-param-zfunction_id": "Aranacak ZFunction kimliği:",
+	"apihelp-query+wikilambdafn_search-param-type": "Aranacak ZFunction tarafından başvurulan ZObject türü:",
+	"apihelp-wikilambda_perform_test-example": "Tam olarak sağlanan ZFunction, ZImplementation ve ZTester'lara karşı testler yapın",
+	"apihelp-wikilambda_perform_test-summary": "Bir ZFunction için test sonuçlarını sorgulamak için bitiş nokta. Bir ZFunction, bir ZImplementations listesi ve bir ZTester listesi kabul eder. İşlev, uygulamalar veya test kullanıcıları için bir ZID listesi veya tam ZObject'i kabul eder. Ayrıca arka uç önbelleğini kullanmak veya kullanmamak için bir anahtar kabul eder.",
+	"apihelp-wikilambda_perform_test-param-zfunction": "Test edilecek ZFunction Kimliği (veya nesnesi)",
+	"apihelp-wikilambda_perform_test-param-zimplementations": "Test edilecek ZImplementation kimliklerinin (veya nesnelerinin) listesi",
+	"apihelp-wikilambda_perform_test-param-ztesters": "Test edilecek ZTester kimliklerinin (veya nesnelerinin) listesi",
+	"apihelp-wikilambda_perform_test-param-nocache": "Önbelleği kullanıp kullanmama"
 }

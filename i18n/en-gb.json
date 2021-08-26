@@ -1,9 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
+			"Abijeet Patro",
 			"Alhassan Mohammed Awal",
 			"Samwilson"
 		]
 	},
+	"wikilambda-special-objectsbytype-listheader": "1",
 	"wikilambda-argument-typeselector-label": "Select a Type for this argument"
 }
