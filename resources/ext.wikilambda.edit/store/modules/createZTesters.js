@@ -90,8 +90,10 @@ module.exports = {
 				zobject = canonicalize( context.getters.getZObjectAsJsonById( payload.testerId ) ),
 				newZid;
 
+			// TODO: Re-use the code in zobject.submitZObject(), having that emit a Promise rather than change page?
 			api.postWithEditToken( {
 				action: action,
+				// TODO: i18n (and maybe specify the target function, and/or add the user's label for it?)
 				summary: 'New tester',
 				zid: undefined,
 				zobject: JSON.stringify( zobject )
