@@ -1,12 +1,17 @@
 {
 	"@metadata": {
 		"authors": [
-			"Adignyoke"
+			"Adignyoke",
+			"Dnshitobu"
 		]
 	},
 	"wikilambda-publish-summary-prompt": "Pa'ale sela ti fo te",
+	"wikilambda-tester-status-failed": "KoŊe",
+	"wikilambda-tester-failure-actual": "To'e",
+	"wikilambda-tester-function-duration": "SaŊa",
 	"wikilambda-metadata-show-languages": "Pa'ale labole daka",
 	"wikilambda-metadata-hide-languages": "Soge labole daka",
+	"wikilambda-metadata-language-column": "Tɔgum",
 	"wikilambda-metadata-all-languages": "Pa'ale togum Za'a ke",
 	"wikilambda-metadata-fewer-languages": "Pa'ale togum buribuure fii"
 }

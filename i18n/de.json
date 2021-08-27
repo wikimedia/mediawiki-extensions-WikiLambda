@@ -7,6 +7,7 @@
 	},
 	"wikilambda-desc": "Bereitstellung einer Wikitext-Parser-Funktion für Wikimedia-Wikis, um die Auswertung von Funktionen aufzurufen, die in einem zentralen Wiki geschrieben, verwaltet und ausgewertet werden.",
 	"wikilambda-emptylabel": "ZObject ohne Label",
+	"wikilambda-history-title": "Versionsgeschichte von „$1“ ($2)",
 	"wikilambda-invalidzobjecttitle": "Der angegebene Titel „$1“ ist für ein ZObject nicht gültig.",
 	"wikilambda-invalidzobject": "Der bereitgestellte Inhalt ist kein gültiges ZObjekt.",
 	"wikilambda-invalidcontenttype": "Der bereitgestellte Inhalt ist keine ZObject-Klasse.",
