@@ -144,12 +144,17 @@ module.exports = {
 			if ( zKeystoFetch.length === 0 ) {
 				return Promise.resolve();
 			}
+
 			return api.get( {
 				action: 'query',
 				list: 'wikilambdaload_zobjects',
 				format: 'json',
 				wikilambdaload_zids: zKeystoFetch.join( '|' ),
-				wikilambdaload_language: context.getters.getZLang,
+				// Fetch all labels when initially loading the ZObject, otherwise get only the user's languages
+				wikilambdaload_language:
+					context.getters.getCurrentZObjectId !== Constants.NEW_ZID_PLACEHOLDER ?
+						context.getters.getZLang :
+						undefined,
 				wikilambdaload_canonical: 'true'
 			} ).then( function ( response ) {
 				var keys,
