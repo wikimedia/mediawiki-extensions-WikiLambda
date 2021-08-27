@@ -36,7 +36,8 @@ describe( 'ZObjectEditor', function () {
 				return {
 					Z1K1: 'Z1'
 				};
-			} )
+			} ),
+			currentZObjectHasLabel: jest.fn()
 		};
 		actions = {
 			fetchZKeys: jest.fn(),
@@ -44,8 +45,7 @@ describe( 'ZObjectEditor', function () {
 			initialize: jest.fn()
 		};
 		mutations = {
-			addZKeyLabel: jest.fn(),
-			setZLangs: jest.fn()
+			addZKeyLabel: jest.fn()
 		};
 
 		store = new Vuex.Store( {

@@ -8,11 +8,6 @@
 module.exports = {
 	state: {
 		/**
-		 * User selected language and fallback chain
-		 */
-		zLangs: [],
-
-		/**
 		 * Collection of MediaWiki language information
 		 */
 		allLangs: {},
@@ -26,14 +21,15 @@ module.exports = {
 		/**
 		 * Get the user preferred language, which is also the first element of zLangs.
 		 *
-		 * @param {Object} state
 		 * @return {string}
 		 */
-		getZLang: function ( state ) {
-			if ( state.zLangs.length > 0 ) {
-				return state.zLangs[ 0 ];
+		getZLang: function () {
+			var langs = mw.language.getFallbackLanguageChain();
+
+			if ( langs.length > 0 ) {
+				return langs[ 0 ];
 			} else {
-				return 'Z1002';
+				return 'en';
 			}
 		},
 
@@ -57,16 +53,6 @@ module.exports = {
 		}
 	},
 	mutations: {
-		/**
-		 * setZLangs
-		 *
-		 * @param {Object} state
-		 * @param {string[]} zlangs
-		 */
-		setZLangs: function ( state, zlangs ) {
-			state.zLangs = zlangs;
-		},
-
 		/**
 		 * setAllLangs
 		 *

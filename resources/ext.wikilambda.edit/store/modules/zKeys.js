@@ -149,7 +149,7 @@ module.exports = {
 				list: 'wikilambdaload_zobjects',
 				format: 'json',
 				wikilambdaload_zids: zKeystoFetch.join( '|' ),
-				wikilambdaload_language: context.rootGetters.zLang,
+				wikilambdaload_language: context.getters.getZLang,
 				wikilambdaload_canonical: 'true'
 			} ).then( function ( response ) {
 				var keys,

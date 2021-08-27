@@ -15,11 +15,6 @@ module.exports = {
 	 * @param {Object} context
 	 */
 	initialize: function ( context ) {
-		var languageChain = mw.language.getFallbackLanguageChain();
-
-		// Set user language
-		context.commit( 'setZLangs', languageChain );
-
 		// Pre-fetch a list of the most common Zids
 		context.dispatch( 'fetchZKeys', [
 			Constants.Z_OBJECT,

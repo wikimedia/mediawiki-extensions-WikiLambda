@@ -17,9 +17,7 @@ describe( 'Vuex root actions', function () {
 
 		actions.initialize( context );
 
-		expect( context.commit ).toHaveBeenCalledTimes( 1 );
 		expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-		expect( context.commit ).toHaveBeenCalledWith( 'setZLangs', [ 'en' ] );
 		// No need to check specific prefetched keys, just that keys are being fetched
 		expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZKeys', expect.anything() );
 	} );

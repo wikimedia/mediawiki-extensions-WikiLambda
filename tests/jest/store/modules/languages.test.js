@@ -43,13 +43,13 @@ describe( 'Languages Vuex module', function () {
 
 	describe( 'Getters', function () {
 		it( 'should return the user language ZID when defined in state', function () {
-			expect( languagesModule.getters.getZLang( context.state ) ).toBe( 'Z1002' );
+			expect( languagesModule.getters.getZLang( context.state ) ).toBe( 'en' );
 		} );
 
 		it( 'should return the ZID 1002 (english) when not defined in state', function () {
 			context.state.zLangs = [];
 
-			expect( languagesModule.getters.getZLang( context.state ) ).toBe( 'Z1002' );
+			expect( languagesModule.getters.getZLang( context.state ) ).toBe( 'en' );
 		} );
 
 		it( 'should return all langs', function () {
@@ -76,12 +76,6 @@ describe( 'Languages Vuex module', function () {
 					state: state
 				}
 			);
-		} );
-
-		it( 'should set the user language ZID', function () {
-			languagesModule.mutations.setZLangs( context.state, initialState.zLangs );
-
-			expect( context.state.zLangs ).toEqual( initialState.zLangs );
 		} );
 
 		it( 'should set all langs', function () {

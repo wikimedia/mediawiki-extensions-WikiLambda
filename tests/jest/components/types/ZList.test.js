@@ -11,6 +11,7 @@ var mount = require( '@vue/test-utils' ).mount,
 	Vuex = require( 'vuex' ),
 	ZList = require( '../../../../resources/ext.wikilambda.edit/components/types/ZList.vue' ),
 	ZListItem = require( '../../../../resources/ext.wikilambda.edit/components/types/ZListItem.vue' ),
+	Button = require( '../../../../resources/ext.wikilambda.edit/components/base/Button.vue' ),
 	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
 	localVue,
 	zobjectTree = [
@@ -41,6 +42,7 @@ var mount = require( '@vue/test-utils' ).mount,
 
 localVue = createLocalVue();
 localVue.use( Vuex );
+localVue.component( 'sd-button', Button );
 
 describe( 'ZList', function () {
 	var state,
