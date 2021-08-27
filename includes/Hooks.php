@@ -411,7 +411,7 @@ class Hooks implements
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$targetZObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
 		// Do nothing if somehow after all that it's not loadable.
-		if ( !$targetZObject ) {
+		if ( !$targetZObject || !( $targetZObject instanceof ZObjectContent ) || !$targetZObject->isValid() ) {
 			return;
 		}
 
