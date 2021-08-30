@@ -54,10 +54,22 @@ module.exports = {
 		'z-function-tester-report': ZFunctionTesterReport
 	},
 	mixins: [ typeUtils ],
+	inject: {
+		viewmode: { default: false }
+	},
+	provide: function () {
+		return {
+			viewmode: this.viewmode || this.readonly
+		};
+	},
 	props: {
 		zobjectId: {
 			type: Number,
 			required: true
+		},
+		readonly: {
+			type: Boolean,
+			default: false
 		}
 	},
 	computed: $.extend( {},

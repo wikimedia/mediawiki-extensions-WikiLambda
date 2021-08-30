@@ -26,7 +26,7 @@
 					:key="Constants.Z_PERSISTENTOBJECT_VALUE"
 					:zobject-id="zObjectValue.id"
 					:parent-type="zObjectType"
-					:readonly="viewmode || readonly"
+					:readonly="isBuiltIn || (viewmode || readonly)"
 				></z-object-key>
 			</div>
 		</div>
@@ -137,10 +137,13 @@ module.exports = {
 		hasDetailsToDisplay: function () {
 			return this.isCurrentZObjectExecutable || this.$store.getters.isExpertMode;
 		},
-		showClearButton: function () {
+		isBuiltIn: function () {
 			var zid = parseInt( this.getCurrentZObjectId.replace( 'Z', '' ), 10 );
 
-			return zid >= 10000 && !( this.viewmode || this.readonly );
+			return zid !== 0 && zid < 10000;
+		},
+		showClearButton: function () {
+			return !this.isBuiltIn && !( this.viewmode || this.readonly );
 		}
 	} ),
 	methods: $.extend( mapActions( [

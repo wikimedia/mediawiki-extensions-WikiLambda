@@ -363,7 +363,20 @@ describe( 'zobject Vuex module', function () {
 		} );
 
 		it( 'Initialize ZObject, existing zobject page', function () {
-			var expectedSetZObjectPayload = [ { id: 0, key: undefined, parent: undefined, value: 'object' }, { id: 1, key: 'Z1K1', parent: 0, value: 'object' }, { id: 2, key: 'Z1K1', parent: 1, value: 'Z6' }, { id: 3, key: 'Z6K1', parent: 1, value: 'test' }, { id: 4, key: 'Z1K2', parent: 0, value: 'object' }, { id: 5, key: 'Z1K1', parent: 4, value: 'Z6' }, { id: 6, key: 'Z6K1', parent: 4, value: 'test' } ];
+			var expectedSetZObjectPayload = [
+				{ id: 0, key: undefined, parent: undefined, value: 'object' },
+				{ id: 1, key: 'Z1K1', parent: 0, value: 'object' },
+				{ id: 2, key: 'Z1K1', parent: 1, value: 'Z6' },
+				{ id: 3, key: 'Z6K1', parent: 1, value: 'test' },
+				{ id: 4, key: 'Z1K2', parent: 0, value: 'object' },
+				{ id: 5, key: 'Z1K1', parent: 4, value: 'Z6' },
+				{ id: 6, key: 'Z6K1', parent: 4, value: 'test' },
+				{ id: 7, key: 'Z2K4', parent: 0, value: 'object' },
+				{ id: 8, key: 'Z1K1', parent: 7, value: 'object' },
+				{ id: 9, key: 'Z1K1', parent: 8, value: 'Z9' },
+				{ id: 10, key: 'Z9K1', parent: 8, value: 'Z32' },
+				{ id: 11, key: 'Z32K1', parent: 7, value: 'array' }
+			];
 			context.state = {
 				zobject: zobjectTree
 			};

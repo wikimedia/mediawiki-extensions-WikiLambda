@@ -250,7 +250,8 @@ module.exports = {
 				var type,
 					currentObject = getters.getZObjectById( id ),
 					childrenObject = [];
-				if ( !currentObject ) {
+
+				if ( !currentObject || currentObject.id === currentObject.parent ) {
 					return type;
 				}
 
@@ -477,6 +478,12 @@ module.exports = {
 				context.dispatch( 'fetchZKeys', [ zId ] )
 					.then( function () {
 						zobject = context.getters.getZkeys[ zId ];
+						if ( !zobject[ Constants.Z_PERSISTENTOBJECT_ALIASES ] ) {
+							zobject[ Constants.Z_PERSISTENTOBJECT_ALIASES ] = {
+								Z1K1: Constants.Z_MULTILINGUALSTRINGSET,
+								Z32K1: []
+							};
+						}
 
 						zobjectTree = convertZObjectToTree( zobject );
 						context.commit( 'setZObject', zobjectTree );
