@@ -298,7 +298,20 @@ module.exports = {
 					inputValue = item;
 				}
 
-				inputValue = inputValue.split( '(' )[ 0 ].trim();
+				var match = '';
+				var matchPercentage = 0;
+
+				for ( var result in this.lookupResults ) {
+					if (
+						inputValue.indexOf( this.lookupResults[ result ] ) !== -1 &&
+						( matchPercentage < this.lookupResults[ result ].length / inputValue.length )
+					) {
+						match = this.lookupResults[ result ];
+						matchPercentage = this.lookupResults[ result ].length / inputValue.length;
+					}
+				}
+
+				inputValue = match;
 
 				// If the input is a valid Zid, set zId
 				// Otherwise check if the text matches a label
