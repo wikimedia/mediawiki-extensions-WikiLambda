@@ -37,9 +37,18 @@ class ZObjectEditAction extends Action {
 		$createNewPage = false;
 		$title = $this->page->getTitle();
 
+		// If the userLang isn't recognised (e.g. it's qqx, or a language we don't support yet, or it's
+		// nonsense), then fall back to English.
+		$zLangRegistry = ZLangRegistry::singleton();
+		$userLangZid = $zLangRegistry->getLanguageZidFromCode(
+			( $zLangRegistry->isLanguageKnownGivenCode( $userLangCode ) )
+				? $userLangCode
+				: 'en'
+			);
+
 		$editingData = [
 			'zlang' => $userLangCode,
-			'zlangZid' => ZLangRegistry::singleton()->getLanguageZidFromCode( $userLangCode ),
+			'zlangZid' => $userLangZid,
 			'createNewPage' => $createNewPage,
 			'zId' => $title->getBaseText(),
 			'viewmode' => false
