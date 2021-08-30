@@ -15,7 +15,8 @@ module.exports = {
 		zTesterResults: {},
 		zTesterMetadata: {},
 		fetchingTestResults: false,
-		errorState: false
+		errorState: false,
+		errorMessage: ''
 	},
 	getters: {
 		getZTesterResults: function ( state ) {
@@ -37,7 +38,7 @@ module.exports = {
 				var key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
 
 				if ( state.errorState ) {
-					return 'Internal error';
+					return state.errorMessage;
 				}
 
 				var result = state.zTesterResults[ key ];
@@ -53,7 +54,9 @@ module.exports = {
 				var key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
 
 				if ( state.errorState ) {
-					return false;
+					return {
+						duration: 0
+					};
 				}
 
 				return state.zTesterMetadata[ key ];
@@ -94,7 +97,8 @@ module.exports = {
 			state.zTesterMetadata = {};
 		},
 		setErrorState: function ( state, error ) {
-			state.errorState = error;
+			state.errorState = !!error;
+			state.errorMessage = error.toString();
 		}
 	},
 	actions: {
@@ -159,6 +163,10 @@ module.exports = {
 			} ).then( function ( data ) {
 				var results = JSON.parse( data.query.wikilambda_perform_test.Tested.data );
 
+				if ( !Array.isArray( results ) && results.Z22K2 !== Constants.Z_NOTHING ) {
+					throw new Error( results.Z22K2.Z5K2.Z6K1 );
+				}
+
 				results.forEach( function ( testResult ) {
 					var metadata = testResult,
 						response = canonicalize( testResult.validationResponse ),
@@ -178,7 +186,7 @@ module.exports = {
 			} )
 				.catch( function ( error ) {
 					mw.log.error( 'Tester API call was nothing: ' + error );
-					context.commit( 'setErrorState', true );
+					context.commit( 'setErrorState', error );
 					context.commit( 'setFetchingTestResults', false );
 				} );
 		}

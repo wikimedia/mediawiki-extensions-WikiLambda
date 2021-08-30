@@ -227,6 +227,10 @@ module.exports = {
 				return '';
 			}
 
+			if ( typeof reason === 'string' ) {
+				return reason;
+			}
+
 			expected = this.zObjectToString( reason[ 0 ] );
 			actual = this.zObjectToString( reason[ 1 ] );
 

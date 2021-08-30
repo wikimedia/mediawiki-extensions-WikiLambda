@@ -15,6 +15,7 @@ use ApiPageSet;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\ServerException;
 use MediaWiki\Extension\WikiLambda\MockOrchestrator;
 use MediaWiki\Extension\WikiLambda\OrchestratorInterface;
 use MediaWiki\MediaWikiServices;
@@ -81,8 +82,23 @@ class ApiFunctionCall extends ApiBase {
 				[ 'query', $this->getModuleName() ], "Orchestrated", $result );
 		} catch ( ConnectException $exception ) {
 			$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
-		} catch ( ClientException $exception ) {
-			$this->dieWithError( [ $exception->getResponse()->getReasonPhrase() ] );
+		} catch ( ClientException | ServerException $exception ) {
+			$zError = json_encode( [
+				'Z1K1' => 'Z22',
+				'Z22K1' => 'Z23',
+				'Z22K2' => [
+					'Z1K1' => 'Z5',
+					'Z5K2' => [
+						'Z1K1' => 'Z6',
+						'Z6K1' => $exception->getResponse()->getReasonPhrase()
+					]
+				]
+			] );
+
+			$result = [ 'data' => $zError ];
+			$pageResult->addValue(
+				// TODO: Remove "Orchestrated".
+				[ 'query', $this->getModuleName() ], "Orchestrated", $result );
 		}
 	}
 
