@@ -55,7 +55,8 @@ var Constants = require( '../../Constants.js' ),
 	ZListItem = require( '../types/ZListItem.vue' ),
 	ZReference = require( '../types/ZReference.vue' ),
 	CodeEditor = require( '../base/CodeEditor.vue' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	mapGetters = require( 'vuex' ).mapGetters,
+	mapActions = require( 'vuex' ).mapActions;
 
 module.exports = {
 	extends: ZListItem,
@@ -67,7 +68,8 @@ module.exports = {
 		'getZObjectById',
 		'getZImplementations',
 		'getZkeyLabels',
-		'getZkeys'
+		'getZkeys',
+		'getStringifiedZObject'
 	] ),
 	{
 		zImplementationId: function () {
@@ -106,8 +108,18 @@ module.exports = {
 			if ( this.zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][
 				Constants.Z_IMPLEMENTATION_COMPOSITION ]
 			) {
-				return JSON.stringify( this.zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-					Constants.Z_IMPLEMENTATION_COMPOSITION ], null, 4 );
+				var composition = JSON.parse(
+					JSON.stringify(
+						this.zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+							Constants.Z_IMPLEMENTATION_COMPOSITION ]
+					)
+				);
+
+				this.getStringifiedZObject( composition );
+
+				this.fetchZKeys( this.findMissingZids( composition ) );
+
+				return JSON.stringify( composition, null, 4 );
 			}
 
 			return this.zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][
@@ -119,7 +131,7 @@ module.exports = {
 		}
 	}
 	),
-	methods: {
+	methods: $.extend( mapActions( [ 'fetchZKeys' ] ), {
 		selectImplementation: function ( event ) {
 			this.$store.dispatch( 'injectZObject', {
 				zobject: {
@@ -130,7 +142,29 @@ module.exports = {
 				id: this.zobjectId,
 				parent: this.getZObjectById( this.zobjectId ).parent
 			} );
+		},
+		findMissingZids: function ( zobject ) {
+			var zids = [],
+				zIdRegex = new RegExp( /Z[1-9]\d*/ );
+
+			for ( var key in zobject ) {
+				if ( zIdRegex.test( key ) ) {
+					zids.push( key );
+				}
+
+				if ( Array.isArray( zobject[ key ] ) ) {
+					zids = zids.concat( zobject[ key ].map( this.findMissingZids ) );
+				} else if ( typeof zobject[ key ] === 'object' ) {
+					zids = zids.concat( this.findMissingZids( zobject[ key ] ) );
+				} else {
+					if ( zIdRegex.test( zobject[ key ] ) ) {
+						zids.push( zobject[ key ] );
+					}
+				}
+			}
+
+			return zids;
 		}
-	}
+	} )
 };
 </script>
