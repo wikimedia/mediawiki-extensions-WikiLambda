@@ -35,5 +35,6 @@
 	"apihelp-wikilambda_edit-param-zid": "ZID do ZObject a ser editado. Se nulo, o ZObject será criado novamente",
 	"apihelp-wikilambda_edit-param-zobject": "Representação JSON do ZObject para salvar",
 	"apierror-wikilambda_function_call-not-connected": "Não foi possível resolver o host '$1', provavelmente porque o orquestrador não está funcionando. Consulte o README para adicionar o orquestrador à configuração do docker-compose.",
-	"apierror-wikilambda_edit-invalidjson": "Não foi possível criar ZObject para a entrada fornecida '$1'; JSON inválido."
+	"apierror-wikilambda_edit-invalidjson": "Não foi possível criar ZObject para a entrada fornecida '$1'; JSON inválido.",
+	"apierror-wikilambda_perform_test-not-connected": "Não foi possível resolver o host '$1', provavelmente porque o orquestrador não está funcionando. Consulte o README para adicionar o orquestrador à configuração do docker-compose."
 }

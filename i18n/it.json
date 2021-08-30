@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Ajeje Brazorf",
 			"Beta16",
 			"Lorem Ipsum",
 			"Luca.favorido",
@@ -29,6 +30,8 @@
 	"wikilambda-editor-label-select-programming-language-label": "Seleziona linguaggio di programmazione:",
 	"wikilambda-implementation-selector-code": "Codice",
 	"wikilambda-argref-default-label": "Seleziona un argomento",
+	"wikilambda-tester-failure-actual": "Ricevuto",
+	"wikilambda-tester-function-duration": "Durata",
 	"wikilambda-enable-expert-mode": "Abilità modalità esperto",
 	"wikilambda-disable-expert-mode": "Disabilità modalità esperto",
 	"wikilambda-expert-mode-json-label": "ZObject corrente",

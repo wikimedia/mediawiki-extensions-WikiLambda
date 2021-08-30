@@ -10,6 +10,7 @@
 	},
 	"wikilambda-desc": "Fornecendo as wikis da Wikimedia uma função de analisador de wikitexto para chamar a avaliação de funções escritas, gerenciadas e avaliadas em um wiki central.",
 	"wikilambda-emptylabel": "ZObject sem rótulo",
+	"wikilambda-history-title": "Histórico de revisões de \"$1\" ($2)",
 	"wikilambda-invalidzobjecttitle": "O título fornecido '$1' não é válido para um ZObject.",
 	"wikilambda-invalidzobject": "O conteúdo fornecido não é um ZObject válido.",
 	"wikilambda-invalidcontenttype": "O conteúdo fornecido não é uma classe ZObject.",
@@ -85,5 +86,6 @@
 	"wikilambda-metadata-aka-column": "Também conhecido como",
 	"wikilambda-metadata-all-languages": "Mostrar todos os idiomas inseridos",
 	"wikilambda-metadata-fewer-languages": "Mostrar menos idiomas",
-	"wikilambda-persistentobject-details-label": "Detalhes"
+	"wikilambda-persistentobject-details-label": "Detalhes",
+	"wikilambda-persistentobject-function-signature-label": "Assinatura de função"
 }

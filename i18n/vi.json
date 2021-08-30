@@ -7,5 +7,6 @@
 	},
 	"wikilambda-emptylabel": "ZObject không được đặt nhãn",
 	"wikilambda-multilingualstring-nofallback": "Không có nhãn nào được xác định bằng ngôn ngữ này hoặc các dự phòng được chấp nhận",
-	"wikilambda-speciallistduplicatezobjectlabels-language": "Ngôn ngữ"
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Ngôn ngữ",
+	"wikilambda-tester-failure-actual": "Đã nhận"
 }

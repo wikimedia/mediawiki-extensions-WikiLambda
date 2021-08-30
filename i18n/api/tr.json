@@ -53,6 +53,7 @@
 	"apihelp-query+wikilambdafn_search-example-simple": "Belirli bir ZFunction kimliğiyle ilişkili ZImplementation kimliklerini arayın",
 	"apihelp-query+wikilambdafn_search-param-zfunction_id": "Aranacak ZFunction kimliği:",
 	"apihelp-query+wikilambdafn_search-param-type": "Aranacak ZFunction tarafından başvurulan ZObject türü:",
+	"apierror-wikilambda_perform_test-not-connected": "'$1' sunucusu çözümlenemiyor, muhtemelen düzenleyici çalışmıyor. Lütfen, düzenleyiciyi docker-compose yapılandırmanıza eklemek için README dosyasına bakın.",
 	"apihelp-wikilambda_perform_test-example": "Tam olarak sağlanan ZFunction, ZImplementation ve ZTester'lara karşı testler yapın",
 	"apihelp-wikilambda_perform_test-summary": "Bir ZFunction için test sonuçlarını sorgulamak için bitiş nokta. Bir ZFunction, bir ZImplementations listesi ve bir ZTester listesi kabul eder. İşlev, uygulamalar veya test kullanıcıları için bir ZID listesi veya tam ZObject'i kabul eder. Ayrıca arka uç önbelleğini kullanmak veya kullanmamak için bir anahtar kabul eder.",
 	"apihelp-wikilambda_perform_test-param-zfunction": "Test edilecek ZFunction Kimliği (veya nesnesi)",
