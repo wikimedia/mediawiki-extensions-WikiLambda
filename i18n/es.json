@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Agent",
+			"Avengium",
 			"BnSrSa",
 			"Fitoschido",
 			"Jackiezelaya",
@@ -17,6 +18,7 @@
 	"wikilambda-special-evaluatefunctioncall-intro": "Asegúrate de que sigues las políticas comunitarias, además del copyright y las reglas de patente.",
 	"wikilambda-special-listduplicatezobjectlabels-summary": "Esta página muestra cuáles ZObjects se han creado con etiquetas duplicadas. Como solo el primero figurará en las búsquedas, se deben corregir.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Idioma",
+	"wikilambda-special-objectsbytype-typeheader": "Todos los tipos",
 	"wikilambda-publishnew": "Publicar",
 	"wikilambda-savenew": "Guardar",
 	"wikilambda-publishchanges": "Publicar cambios",
@@ -31,5 +33,7 @@
 	"wikilambda-implementation-selector-code": "Código",
 	"wikilambda-implementation-selector-composition": "Composición",
 	"wikilambda-argref-default-label": "Seleccionar un argumento",
-	"wikilambda-implementation-selector": "Seleccionar implementación"
+	"wikilambda-implementation-selector": "Seleccionar implementación",
+	"wikilambda-tester-failure-actual": "Recibido",
+	"wikilambda-tester-function-duration": "Duración"
 }
