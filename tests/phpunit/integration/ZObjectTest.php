@@ -9,10 +9,12 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use FormatJson;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use Title;
 
 /**
@@ -93,5 +95,40 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		];
 		$testZObject = ZObjectFactory::create( $testObject );
 		$this->assertContains( "Z111", $testZObject->getLinkedZObjects() );
+	}
+
+	/**
+	 * @covers ::__toString()
+	 */
+	public function test__toString() {
+		// Create type Z111
+		$this->registerLangs( ZTestType::TEST_LANGS );
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
+		$this->editPage( $title, ZTestType::TEST_ENCODING, "Test creation object", NS_MAIN );
+
+		// Create instance of type Z111
+		$testObject = (object)[
+			"Z1K1" => "Z111",
+			"Z111K1" => "first demonstration key",
+			"Z111K2" => "second demonstration key"
+		];
+		$testZObject = ZObjectFactory::create( $testObject );
+
+		$toStringValue = $testZObject->__toString();
+
+		$this->assertTrue( is_string( $toStringValue ) );
+		$this->assertStringStartsWith( '{', $toStringValue );
+
+		$parseStatus = FormatJson::parse( $toStringValue );
+		$this->assertTrue( $parseStatus->isGood() );
+
+		$reserialisedObject = $parseStatus->getValue();
+		$this->assertTrue( ZObjectUtils::isValidZObject( $reserialisedObject ) );
+		$this->assertTrue( property_exists( $reserialisedObject, 'Z1K1' ) );
+		$this->assertSame( 'Z111', $reserialisedObject->Z1K1 );
+		$this->assertTrue( property_exists( $reserialisedObject, 'Z111K1' ) );
+		$this->assertSame( 'first demonstration key', $reserialisedObject->Z111K1 );
+		$this->assertTrue( property_exists( $reserialisedObject, 'Z111K2' ) );
+		$this->assertSame( 'second demonstration key', $reserialisedObject->Z111K2 );
 	}
 }
