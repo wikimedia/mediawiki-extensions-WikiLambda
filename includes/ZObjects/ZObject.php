@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
+use FormatJson;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -148,5 +149,14 @@ class ZObject {
 				$zobject->addLinkedZObject( $value );
 			}
 		}
+	}
+
+	/**
+	 * Over-ride the default __toString() method to serialise ZObjects into a JSON representation.
+	 *
+	 * @return string
+	 */
+	public function __toString() {
+		return FormatJson::encode( $this->data, true, FormatJson::UTF8_OK );
 	}
 }
