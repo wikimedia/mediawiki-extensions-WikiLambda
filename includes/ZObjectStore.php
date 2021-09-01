@@ -407,6 +407,10 @@ class ZObjectStore {
 			/* SELECT */ [ 'wlzl_zobject_zid' ],
 			/* WHERE */ [
 				'wlzl_type' => $ztype
+			],
+			__METHOD__,
+			[
+				'ORDER BY' => 'wlzl_zobject_zid ASC',
 			]
 		);
 
