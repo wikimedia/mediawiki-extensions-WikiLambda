@@ -49,6 +49,7 @@
 	"apihelp-query+wikilambdafn_search-example-simple": "Знайдіть ідентифікатори ZImplementation, пов'язані з даним ідентифікатором ZFunction",
 	"apihelp-query+wikilambdafn_search-param-zfunction_id": "Ідентифікатор ZFunction для пошуку",
 	"apihelp-query+wikilambdafn_search-param-type": "Тип ZObject, на який посилається ZFunction для пошуку",
+	"apierror-wikilambda_perform_test-not-connected": "Не вдалося вирішити хост «$1», ймовірно, тому що оркестратор не працює. Будь ласка, зверніться до README, щоб додати оркестратор до вашої конфігурації докерування.",
 	"apihelp-wikilambda_perform_test-example": "Виконайте тести щодо повністю передбачених функцій ZFunction, ZImplementation та ZTesters",
 	"apihelp-wikilambda_perform_test-summary": "Кінцева точка для запиту результатів тестування для ZFunction. Приймає ZFunction, список ZImplementations і список ZTesters. Приймає або список ZID, або повний ZObject для функції, реалізації або тестувальників. Також приймає ключ для використання внутрішнього кешу чи ні.",
 	"apihelp-wikilambda_perform_test-param-zfunction": "Ідентифікатор ZFunction (або об’єкт) для перевірки",
