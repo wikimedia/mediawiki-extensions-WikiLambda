@@ -134,5 +134,6 @@
 	"wikilambda-metadata-fewer-languages": "Label for button to show fewer languages in the metadata.",
 	"wikilambda-persistentobject-details-label": "Label for the details section of a persistent object.",
 	"wikilambda-persistentobject-function-signature-label": "Label for the function signature section of a persistent object.",
-	"wikilambda-persistentobject-evaluate-function": "Label for the block to evaluate a function in a persistent object.\n\n{{doc-wikilambda}}"
+	"wikilambda-persistentobject-evaluate-function": "Label for the block to evaluate a function in a persistent object.\n\n{{doc-wikilambda}}",
+	"wikilambda-implementation-selector-none": "Label for an implementation when the type is not code or composition."
 }

@@ -34,6 +34,9 @@
 				</option>
 			</select>
 		</div>
+		<div v-if="implMode === null">
+			<span>{{ $i18n( 'wikilambda-implementation-selector-none' ) }}</span>
+		</div>
 		<z-code
 			v-if="implMode === 'code'"
 			:zobject-id="zCodeId"

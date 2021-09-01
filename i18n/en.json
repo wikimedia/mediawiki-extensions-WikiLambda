@@ -128,6 +128,6 @@
 	"wikilambda-metadata-fewer-languages": "Show fewer languages",
 	"wikilambda-persistentobject-details-label": "Details",
 	"wikilambda-persistentobject-function-signature-label": "Function Signature",
-	"wikilambda-persistentobject-evaluate-function": "Evaluate Function"
-
+	"wikilambda-persistentobject-evaluate-function": "Evaluate Function",
+	"wikilambda-implementation-selector-none": "This is a built-in implementation. The code is part of the core software, and is not displayed here."
 }
