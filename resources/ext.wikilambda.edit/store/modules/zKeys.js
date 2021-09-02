@@ -8,7 +8,11 @@
 
 var Vue = require( 'vue' ),
 	Constants = require( '../../Constants.js' ),
-	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
+	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
+	debounceZKeyFetch = null,
+	zKeystoFetch = [],
+	DEBOUNCE_FETCH_ZKEYS_TIMEOUT = 1;
+
 function isZType( zidInfo ) {
 	return ( typeof zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ] === 'object' ) &&
 		( zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] === Constants.Z_TYPE );
@@ -29,6 +33,10 @@ function filterPresentZids( rootState ) {
 
 module.exports = {
 	state: {
+		/**
+		 * List of keys to fetch
+		 */
+		zKeystoFetch: [],
 		/**
 		 * Collection of zKey information
 		 */
@@ -128,14 +136,11 @@ module.exports = {
 		 * @return {Promise}
 		 */
 		fetchZKeys: function ( context, zids ) {
-			var zKeystoFetch = [],
-				api = new mw.Api();
-
 			zids.forEach( function ( zId ) {
 				// Zid has already been fetched
 				// or
 				// Zid is in the process of being fetched
-				if ( !zId || ( zId in context.state.zKeys ) ) {
+				if ( !zId || ( zId in context.state.zKeys ) || ( zKeystoFetch.indexOf( zId ) !== -1 ) ) {
 					return;
 				}
 				zKeystoFetch.push( zId );
@@ -145,11 +150,24 @@ module.exports = {
 				return Promise.resolve();
 			}
 
+			// eslint-disable-next-line compat/compat
+			return new Promise( function ( resolve ) {
+				clearTimeout( debounceZKeyFetch );
+				debounceZKeyFetch = setTimeout( function () {
+					var payload = zKeystoFetch;
+					zKeystoFetch = [];
+					return context.dispatch( 'performZKeyFetch', payload ).then( resolve );
+				}, DEBOUNCE_FETCH_ZKEYS_TIMEOUT );
+			} );
+		},
+		performZKeyFetch: function ( context, payload ) {
+			var api = new mw.Api();
+
 			return api.get( {
 				action: 'query',
 				list: 'wikilambdaload_zobjects',
 				format: 'json',
-				wikilambdaload_zids: zKeystoFetch.join( '|' ),
+				wikilambdaload_zids: payload.join( '|' ),
 				// Fetch all labels when initially loading the ZObject, otherwise get only the user's languages
 				wikilambdaload_language:
 					context.getters.getCurrentZObjectId !== Constants.NEW_ZID_PLACEHOLDER ?
@@ -160,7 +178,7 @@ module.exports = {
 				var keys,
 					multilingualStr,
 					zidInfo;
-				zKeystoFetch.forEach( function ( zid ) {
+				payload.forEach( function ( zid ) {
 					if ( !( 'success' in response.query.wikilambdaload_zobjects[ zid ] ) ) {
 						// TODO add error into error notification pool
 						return;
@@ -188,7 +206,9 @@ module.exports = {
 					if ( isZType( zidInfo ) ) {
 						keys = zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
 						keys.forEach( function ( key ) {
-							multilingualStr = key[ Constants.Z_KEY_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ];
+							multilingualStr = key[
+								Constants.Z_KEY_LABEL ][
+								Constants.Z_MULTILINGUALSTRING_VALUE ];
 							context.commit( 'addZKeyLabel', {
 								key: key[ Constants.Z_KEY_ID ],
 								label: multilingualStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ]

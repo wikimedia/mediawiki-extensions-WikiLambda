@@ -563,6 +563,14 @@ module.exports = {
 							};
 						}
 
+						// Get language ZIDs for this object.
+						var labels = zobject[ Constants.Z_PERSISTENTOBJECT_LABEL ][
+							Constants.Z_MULTILINGUALSTRING_VALUE ].map( function ( label ) {
+							return label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ];
+						} );
+
+						context.dispatch( 'fetchZKeys', labels );
+
 						zobjectTree = convertZObjectToTree( zobject );
 						context.commit( 'setZObject', zobjectTree );
 						context.commit( 'setZObjectInitialized', true );
@@ -827,6 +835,8 @@ module.exports = {
 			if ( !payload.lang || !payload.parentId ) {
 				return;
 			}
+
+			context.dispatch( 'fetchZKeys', [ payload.lang ] );
 
 			// Create root object
 			zObjectItems = [

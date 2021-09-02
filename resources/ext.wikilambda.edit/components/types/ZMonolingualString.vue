@@ -64,7 +64,7 @@ module.exports = {
 	computed: $.extend( {},
 		mapGetters( {
 			getZObjectChildrenById: 'getZObjectChildrenById',
-			allLangs: 'getAllLangs'
+			getZkeyLabels: 'getZkeyLabels'
 		} ),
 		{
 			zobject: function () {
@@ -74,7 +74,7 @@ module.exports = {
 				return this.$i18n( 'wikilambda-editor-label-removelanguage-tooltip' );
 			},
 			languageLabel: function () {
-				return this.allLangs[ this.monolingualStringLanguage ];
+				return this.getZkeyLabels[ this.monolingualStringLanguage ];
 			},
 			monolingualStringLanguage: function () {
 				var item = this.findKeyInArray( Constants.Z_MONOLINGUALSTRING_LANGUAGE, this.zobject );
@@ -107,7 +107,7 @@ module.exports = {
 		}
 	),
 	methods: $.extend( {},
-		mapActions( [ 'setZObjectValue', 'removeZObject', 'removeZObjectChildren' ] ),
+		mapActions( [ 'setZObjectValue', 'removeZObject', 'removeZObjectChildren', 'fetchZKeys' ] ),
 		{
 			/**
 			 * Remove a specif language and its children from the Zobject
@@ -130,7 +130,10 @@ module.exports = {
 				};
 				this.setZObjectValue( payload );
 			}
-		} )
+		} ),
+	mounted: function () {
+		this.fetchZKeys( [ this.monolingualStringLanguage ] );
+	}
 };
 </script>
 

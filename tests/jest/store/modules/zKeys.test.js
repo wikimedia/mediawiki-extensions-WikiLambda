@@ -1,3 +1,4 @@
+/* eslint-disable compat/compat */
 /*!
  * WikiLambda unit test suite for the zKeys Vuex module
  *
@@ -267,39 +268,48 @@ describe( 'zkeys Vuex module', function () {
 
 	describe( 'Actions', function () {
 		describe( 'fetchZKeys', function () {
+			beforeEach( function () {
+				context.dispatch = jest.fn( function ( key, payload ) {
+					return new Promise( function ( resolve ) {
+						zkeysModule.actions.performZKeyFetch( context, payload );
+						resolve();
+					} );
+				} );
+			} );
+
 			it( 'Call api.get if the zId is not already in the state', function () {
 				var zIdsToSearch = [ 'Z1' ];
-				zkeysModule.actions.fetchZKeys( context, zIdsToSearch );
-
-				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
-				expect( getMock ).toHaveBeenCalledWith( {
-					action: 'query',
-					list: 'wikilambdaload_zobjects',
-					format: 'json',
-					// eslint-disable-next-line camelcase
-					wikilambdaload_zids: 'Z1',
-					// eslint-disable-next-line camelcase
-					wikilambdaload_language: context.rootGetters.zLang,
-					// eslint-disable-next-line camelcase
-					wikilambdaload_canonical: 'true'
+				return zkeysModule.actions.fetchZKeys( context, zIdsToSearch ).then( function () {
+					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
+					expect( getMock ).toHaveBeenCalledWith( {
+						action: 'query',
+						list: 'wikilambdaload_zobjects',
+						format: 'json',
+						// eslint-disable-next-line camelcase
+						wikilambdaload_zids: 'Z1',
+						// eslint-disable-next-line camelcase
+						wikilambdaload_language: context.rootGetters.zLang,
+						// eslint-disable-next-line camelcase
+						wikilambdaload_canonical: 'true'
+					} );
 				} );
 			} );
 			it( 'Call api.get with multiple Zids as a string separated by | ', function () {
 				var zIdsToSearch = [ 'Z1', 'Z6' ],
 					expectedWikilambdaloadZids = 'Z1|Z6';
-				zkeysModule.actions.fetchZKeys( context, zIdsToSearch );
-
-				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
-				expect( getMock ).toHaveBeenCalledWith( {
-					action: 'query',
-					list: 'wikilambdaload_zobjects',
-					format: 'json',
-					// eslint-disable-next-line camelcase
-					wikilambdaload_zids: expectedWikilambdaloadZids,
-					// eslint-disable-next-line camelcase
-					wikilambdaload_language: context.rootGetters.zLang,
-					// eslint-disable-next-line camelcase
-					wikilambdaload_canonical: 'true'
+				return zkeysModule.actions.fetchZKeys( context, zIdsToSearch ).then( function () {
+					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
+					expect( getMock ).toHaveBeenCalledWith( {
+						action: 'query',
+						list: 'wikilambdaload_zobjects',
+						format: 'json',
+						// eslint-disable-next-line camelcase
+						wikilambdaload_zids: expectedWikilambdaloadZids,
+						// eslint-disable-next-line camelcase
+						wikilambdaload_language: context.rootGetters.zLang,
+						// eslint-disable-next-line camelcase
+						wikilambdaload_canonical: 'true'
+					} );
 				} );
 			} );
 			it( 'Will NOT call the APi if the Zids is already part of the zKeys', function () {
@@ -308,7 +318,7 @@ describe( 'zkeys Vuex module', function () {
 
 				zkeysModule.actions.fetchZKeys( context, zIdsToSearch );
 
-				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
+				expect( mw.Api ).toHaveBeenCalledTimes( 0 );
 				expect( getMock ).toHaveBeenCalledTimes( 0 );
 			} );
 			it( 'Will call the APi only with the Zids that are not already in zKeys', function () {
@@ -318,20 +328,22 @@ describe( 'zkeys Vuex module', function () {
 					Z1: mockApiZkeys.Z1
 				};
 
-				zkeysModule.actions.fetchZKeys( context, zIdsToSearch );
+				return zkeysModule.actions.fetchZKeys( context, zIdsToSearch ).then( function () {
+					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
+					expect( getMock ).toHaveBeenCalledTimes( 1 );
+					expect( getMock ).toHaveBeenCalledWith( {
+						action: 'query',
+						list: 'wikilambdaload_zobjects',
+						format: 'json',
+						// eslint-disable-next-line camelcase
+						wikilambdaload_zids: expectedWikilambdaloadZids,
+						// eslint-disable-next-line camelcase
+						wikilambdaload_language: context.rootGetters.zLang,
+						// eslint-disable-next-line camelcase
+						wikilambdaload_canonical: 'true'
+					} );
 
-				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
-				expect( getMock ).toHaveBeenCalledTimes( 1 );
-				expect( getMock ).toHaveBeenCalledWith( {
-					action: 'query',
-					list: 'wikilambdaload_zobjects',
-					format: 'json',
-					// eslint-disable-next-line camelcase
-					wikilambdaload_zids: expectedWikilambdaloadZids,
-					// eslint-disable-next-line camelcase
-					wikilambdaload_language: context.rootGetters.zLang,
-					// eslint-disable-next-line camelcase
-					wikilambdaload_canonical: 'true'
+					Promise.resolve();
 				} );
 			} );
 			it( 'Will Update the ZKeys with the API response', function () {
@@ -345,15 +357,19 @@ describe( 'zkeys Vuex module', function () {
 						label: expect.any( String )
 					} );
 
-				zkeysModule.actions.fetchZKeys( context, zIdsToSearch );
+				zkeysModule.actions.performZKeyFetch( context, zIdsToSearch );
 
-				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
-				expect( getMock ).toHaveBeenCalledTimes( 1 );
+				return new Promise( function ( resolve ) {
+					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
+					expect( getMock ).toHaveBeenCalledTimes( 1 );
 
-				expect( getResolveMock ).toHaveBeenCalledTimes( 1 );
-				expect( context.commit ).toHaveBeenCalledTimes( 6 );
-				expect( context.commit ).toHaveBeenCalledWith( 'addZKeyInfo', expectedAddZKeyInfoCall );
-				expect( context.commit ).toHaveBeenCalledWith( 'addZKeyLabel', expecteaddZKeyLabelInfoCall );
+					expect( getResolveMock ).toHaveBeenCalledTimes( 1 );
+					expect( context.commit ).toHaveBeenCalledTimes( 6 );
+					expect( context.commit ).toHaveBeenCalledWith( 'addZKeyInfo', expectedAddZKeyInfoCall );
+					expect( context.commit ).toHaveBeenCalledWith( 'addZKeyLabel', expecteaddZKeyLabelInfoCall );
+
+					resolve();
+				}, 1000 );
 			} );
 			it( 'Will set the stored ZArguments', function () {
 				context.getters.getZkeys = {

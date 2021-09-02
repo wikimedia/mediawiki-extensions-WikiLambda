@@ -43,7 +43,7 @@
 							>
 								{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 							</sd-button>
-							{{ getAllLangs[ language.Z9K1 ] }}
+							{{ getZkeyLabels[ language.Z9K1 ] }}
 						</td>
 						<td>
 							<z-string
