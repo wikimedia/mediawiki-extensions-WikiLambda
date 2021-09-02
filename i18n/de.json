@@ -114,5 +114,6 @@
 	"wikilambda-metadata-fewer-languages": "Zeige weniger Sprachen",
 	"wikilambda-persistentobject-details-label": "Einzelheiten",
 	"wikilambda-persistentobject-function-signature-label": "Funktionssignatur",
-	"wikilambda-persistentobject-evaluate-function": "Funktion evaluieren"
+	"wikilambda-persistentobject-evaluate-function": "Funktion evaluieren",
+	"wikilambda-implementation-selector-none": "Dies ist eine integrierte Implementierung. Der Code ist Teil der Kernsoftware und wird hier nicht angezeigt."
 }
