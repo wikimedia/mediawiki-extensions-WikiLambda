@@ -114,5 +114,6 @@
 	"wikilambda-metadata-fewer-languages": "הצגת פחות שפות",
 	"wikilambda-persistentobject-details-label": "פרטים",
 	"wikilambda-persistentobject-function-signature-label": "חתימת פונקציה",
-	"wikilambda-persistentobject-evaluate-function": "הערכת פונקציה"
+	"wikilambda-persistentobject-evaluate-function": "הערכת פונקציה",
+	"wikilambda-implementation-selector-none": "זה מימוש מובנה. הקוד הוא חלק מתוכנת הליבה, ואינו מוצג כאן."
 }
