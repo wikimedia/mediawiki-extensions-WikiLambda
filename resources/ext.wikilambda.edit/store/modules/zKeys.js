@@ -10,6 +10,7 @@ var Vue = require( 'vue' ),
 	Constants = require( '../../Constants.js' ),
 	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
 	debounceZKeyFetch = null,
+	resolvePromiseList = [],
 	zKeystoFetch = [],
 	DEBOUNCE_FETCH_ZKEYS_TIMEOUT = 1;
 
@@ -153,10 +154,16 @@ module.exports = {
 			// eslint-disable-next-line compat/compat
 			return new Promise( function ( resolve ) {
 				clearTimeout( debounceZKeyFetch );
+				resolvePromiseList.push( resolve );
 				debounceZKeyFetch = setTimeout( function () {
 					var payload = zKeystoFetch;
 					zKeystoFetch = [];
-					return context.dispatch( 'performZKeyFetch', payload ).then( resolve );
+					return context.dispatch( 'performZKeyFetch', payload ).then( function () {
+						resolvePromiseList.forEach( function ( performResolve ) {
+							performResolve();
+						} );
+						resolvePromiseList = [];
+					} );
 				}, DEBOUNCE_FETCH_ZKEYS_TIMEOUT );
 			} );
 		},
