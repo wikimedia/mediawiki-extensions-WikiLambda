@@ -1,6 +1,6 @@
 <?php
 /**
- * WikiLambda Special:ObjectsByType page
+ * WikiLambda Special:ListZObjectsByType page
  *
  * @file
  * @ingroup Extensions
@@ -17,7 +17,7 @@ use MediaWiki\Languages\LanguageFallback;
 use SpecialPage;
 use Title;
 
-class SpecialObjectsByType extends SpecialPage {
+class SpecialListZObjectsByType extends SpecialPage {
 	/** @var ZObjectStore */
 	protected $zObjectStore;
 
@@ -29,7 +29,7 @@ class SpecialObjectsByType extends SpecialPage {
 	 * @param LanguageFallback $languageFallback
 	 */
 	public function __construct( ZObjectStore $zObjectStore, LanguageFallback $languageFallback ) {
-		parent::__construct( 'ObjectsByType' );
+		parent::__construct( 'ListZObjectsByType' );
 		$this->zObjectStore = $zObjectStore;
 		$this->languageFallback = $languageFallback;
 	}
@@ -98,7 +98,7 @@ class SpecialObjectsByType extends SpecialPage {
 		$wikitext .= $this->msg( 'wikilambda-special-objectsbytype-typeheader' );
 		$wikitext .= " ==\n";
 		foreach ( $typesList as $type => $label ) {
-			$wikitext .= ": [[Special:ObjectsByType/$type|$label]] ($type)\n";
+			$wikitext .= ": [[Special:ListZObjectsByType/$type|$label]] ($type)\n";
 		}
 
 		$output->addWikiTextAsInterface( $wikitext );

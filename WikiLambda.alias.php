@@ -12,5 +12,5 @@ $specialPageAliases['en'] = [
 	'CreateZObject' => [ 'CreateZObject', 'NewZObject' ],
 	'EvaluateFunctionCall' => [ 'EvaluateFunctionCall' ],
 	'ListDuplicateZObjectLabels' => [ 'ListDuplicateZObjectLabels' ],
-	'ObjectsByType' => [ 'ObjectsByType' ],
+	'ListZObjectsByType' => [ 'ListZObjectsByType', 'ObjectsByType' ],
 ];

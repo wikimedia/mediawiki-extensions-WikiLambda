@@ -309,8 +309,8 @@
 		"CreateZObject": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialCreateZObject",
 		"EvaluateFunctionCall": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialEvaluateFunctionCall",
 		"ListDuplicateZObjectLabels": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListDuplicateZObjectLabels",
-		"ObjectsByType": {
-			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialObjectsByType",
+		"ListZObjectsByType": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListZObjectsByType",
 			"services": [
 				"WikiLambdaZObjectStore",
 				"LanguageFallback"
