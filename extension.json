@@ -180,10 +180,10 @@
 				"ext.wikilambda.edit/components/function/ZFunctionEvaluator.vue",
 				"ext.wikilambda.edit/components/function/ZFunctionCallRunner.vue",
 				"ext.wikilambda.edit/components/types/ZMetadata.vue",
-				"ext.wikilambda.edit/components/base/AddLanguageDropdown.vue",
 				"ext.wikilambda.edit/components/types/ZPair.vue",
 				"ext.wikilambda.edit/mixins/schemata.js",
 				"ext.wikilambda.edit/mixins/callZFunction.js",
+				"ext.wikilambda.edit/components/ZNaturalLanguageSelector.vue",
 				"lib/ace/ace.js",
 				"lib/icons.js"
 			],

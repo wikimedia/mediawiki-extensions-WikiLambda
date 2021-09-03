@@ -197,9 +197,18 @@ module.exports = {
 					multilingualStr = zidInfo[ Constants.Z_PERSISTENTOBJECT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ];
 
 					if ( multilingualStr && multilingualStr[ 0 ] ) {
+						var userLanguageFilteredLabels = multilingualStr.filter( function ( data ) {
+							return context.getters.getUserZlangZID === data[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ];
+						} );
+						// If the user's language isn't set, fall back to the first set label
+						var label = (
+							( userLanguageFilteredLabels && userLanguageFilteredLabels[ 0 ] ) ?
+								userLanguageFilteredLabels : multilingualStr
+						)[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ];
+
 						context.commit( 'addZKeyLabel', {
 							key: zid,
-							label: multilingualStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ]
+							label: label
 						} );
 					}
 

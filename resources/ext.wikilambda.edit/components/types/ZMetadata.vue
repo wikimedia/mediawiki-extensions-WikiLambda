@@ -87,11 +87,11 @@
 					</template>
 				</sd-button>
 			</div>
-			<add-language-dropdown
-				v-if="!viewmode"
+			<z-natural-language-selector
+				type="Z60"
 				:used-languages="selectedLanguages"
-				@change="addNewLang"
-			></add-language-dropdown>
+				@input="addNewLang"
+			></z-natural-language-selector>
 		</template>
 	</div>
 </template>
@@ -102,14 +102,14 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	SdButton = require( '../base/Button.vue' ),
-	AddLanguageDropdown = require( '../base/AddLanguageDropdown.vue' ),
-	ZString = require( './ZString.vue' );
+	ZString = require( './ZString.vue' ),
+	ZNaturalLanguageSelector = require( '../ZNaturalLanguageSelector.vue' );
 
 module.exports = {
 	components: {
 		'sd-button': SdButton,
-		'add-language-dropdown': AddLanguageDropdown,
-		'z-string': ZString
+		'z-string': ZString,
+		'z-natural-language-selector': ZNaturalLanguageSelector
 	},
 	mixins: [ typeUtils ],
 	inject: {
@@ -134,7 +134,6 @@ module.exports = {
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
 		'getZkeyLabels',
-		'getAllLangs',
 		'getNextObjectId',
 		'getUserZlangZID'
 	] ), {
@@ -220,8 +219,7 @@ module.exports = {
 		'addZString',
 		'injectZObject',
 		'removeZObjectChildren',
-		'removeZObject',
-		'fetchAllLangs'
+		'removeZObject'
 	] ), {
 		getLanguageLabelId: function ( language ) {
 			var labels = this.getZObjectChildrenById(
@@ -319,8 +317,12 @@ module.exports = {
 				return alias.id;
 			} );
 		},
-		addNewLang: function ( event ) {
-			var lang = event.target.value,
+		addNewLang: function ( zId ) {
+			if ( !zId ) {
+				return;
+			}
+
+			var lang = zId,
 				zLabelParentId = this.findKeyInArray(
 					Constants.Z_MULTILINGUALSTRING_VALUE,
 					this.getZObjectChildrenById( this.zObjectLabelId )
@@ -400,9 +402,6 @@ module.exports = {
 				mw.storage.set( 'aw-showMoreLanguages', this.showMoreLanguages );
 			}
 		}
-	},
-	mounted: function () {
-		this.fetchAllLangs();
 	}
 };
 </script>

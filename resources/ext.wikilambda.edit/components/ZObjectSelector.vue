@@ -328,7 +328,7 @@ module.exports = {
 					}
 				}
 				if ( this.zkeyLabels[ zId ] ) {
-					this.$emit( 'input', zId );
+					this.emitInput( zId );
 					this.valueEmitted = true;
 				} else {
 					this.validatorSetError( 'wikilambda-invalidzobject' );
@@ -339,7 +339,7 @@ module.exports = {
 			 * The autocomple field is cleaned
 			 */
 			onClear: function () {
-				this.$emit( 'input', '' );
+				this.emitInput( '' );
 				this.validatorResetError();
 			},
 
@@ -349,6 +349,9 @@ module.exports = {
 			 */
 			onClearLookupResults: function () {
 				this.lookupResults = {};
+			},
+			emitInput: function ( zId ) {
+				this.$emit( 'input', zId );
 			}
 		}
 	)

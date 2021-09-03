@@ -14,12 +14,11 @@
 			:readonly="readonly"
 		></z-monolingual-string>
 		<div class="ext-wikilambda-monolingual">
-			<add-language-dropdown
+			<z-natural-language-selector
 				v-if="!(viewmode || readonly)"
 				:used-languages="usedLanguages"
-				:value="selectedLang"
-				@change="addNewLang"
-			></add-language-dropdown>
+				@input="addNewLang"
+			></z-natural-language-selector>
 		</div>
 	</div>
 </template>
@@ -30,13 +29,13 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
 	ZMonolingualString = require( './ZMonolingualString.vue' ),
-	AddLanguageDropdown = require( '../base/AddLanguageDropdown.vue' );
+	ZNaturalLanguageSelector = require( '../ZNaturalLanguageSelector.vue' );
 
 module.exports = {
 	name: 'ZMultilingualString',
 	components: {
 		'z-monolingual-string': ZMonolingualString,
-		'add-language-dropdown': AddLanguageDropdown
+		'z-natural-language-selector': ZNaturalLanguageSelector
 	},
 	inject: {
 		viewmode: { default: false }
@@ -60,8 +59,7 @@ module.exports = {
 	computed: $.extend( {},
 		mapGetters( {
 			getZObjectChildrenById: 'getZObjectChildrenById',
-			getZObjectAsJsonById: 'getZObjectAsJsonById',
-			allLangs: 'getAllLangs'
+			getZObjectAsJsonById: 'getZObjectAsJsonById'
 		} ),
 		{
 			zobject: function () {
@@ -88,19 +86,11 @@ module.exports = {
 			},
 			selectedLang: function () {
 				return 'None';
-			},
-			unusedLangList: function () {
-				return Object.keys( this.allLangs )
-					.filter( this.isLangCodeAvailable )
-					.reduce( function ( unusedLangList, lang ) {
-						unusedLangList[ lang ] = this.allLangs[ lang ];
-						return unusedLangList;
-					}.bind( this ), {} );
 			}
 		}
 	),
 	methods: $.extend( {},
-		mapActions( [ 'fetchAllLangs', 'addZMonolingualString' ] ),
+		mapActions( [ 'addZMonolingualString' ] ),
 		{
 			/**
 			 * Fires a `change` event with the index of a Monolingual String
@@ -120,10 +110,14 @@ module.exports = {
 			 * Triggers a `addZMonolingualString` action with the language code of the new
 			 * Monolingual String to add to the Multilingual String.
 			 *
-			 * @param {Event} event
+			 * @param {string} zId
 			 */
-			addNewLang: function ( event ) {
-				var lang = event.target.value,
+			addNewLang: function ( zId ) {
+				if ( !zId ) {
+					return;
+				}
+
+				var lang = zId,
 					payload = {
 						lang: lang,
 						parentId: this.monolingualStringsParentId
@@ -152,10 +146,7 @@ module.exports = {
 				return true;
 			}
 		}
-	),
-	created: function () {
-		this.fetchAllLangs();
-	}
+	)
 };
 </script>
 
