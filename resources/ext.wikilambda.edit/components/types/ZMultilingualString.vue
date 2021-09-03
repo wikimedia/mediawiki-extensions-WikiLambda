@@ -11,11 +11,11 @@
 			:key="z11Object.id"
 			:zobject-id="z11Object.id"
 			class="ext-wikilambda-monolingual"
-			:readonly="readonly"
+			:readonly="getViewMode"
 		></z-monolingual-string>
 		<div class="ext-wikilambda-monolingual">
 			<z-natural-language-selector
-				v-if="!(viewmode || readonly)"
+				v-if="!(getViewMode)"
 				:used-languages="usedLanguages"
 				@input="addNewLang"
 			></z-natural-language-selector>
@@ -37,9 +37,6 @@ module.exports = {
 		'z-monolingual-string': ZMonolingualString,
 		'z-natural-language-selector': ZNaturalLanguageSelector
 	},
-	inject: {
-		viewmode: { default: false }
-	},
 	props: {
 		zobjectId: {
 			type: Number,
@@ -59,7 +56,8 @@ module.exports = {
 	computed: $.extend( {},
 		mapGetters( {
 			getZObjectChildrenById: 'getZObjectChildrenById',
-			getZObjectAsJsonById: 'getZObjectAsJsonById'
+			getZObjectAsJsonById: 'getZObjectAsJsonById',
+			getViewMode: 'getViewMode'
 		} ),
 		{
 			zobject: function () {

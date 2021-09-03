@@ -218,9 +218,20 @@ module.exports = {
 							multilingualStr = key[
 								Constants.Z_KEY_LABEL ][
 								Constants.Z_MULTILINGUALSTRING_VALUE ];
+
+							var userLanguageFilteredKeyLabels = multilingualStr.filter( function ( data ) {
+								return context.getters.getUserZlangZID ===
+									data[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ];
+							} );
+
+							var keyLabel = (
+								( userLanguageFilteredKeyLabels && userLanguageFilteredKeyLabels[ 0 ] ) ?
+									userLanguageFilteredKeyLabels : multilingualStr
+							)[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ];
+
 							context.commit( 'addZKeyLabel', {
 								key: key[ Constants.Z_KEY_ID ],
-								label: multilingualStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ]
+								label: keyLabel
 							} );
 						} );
 					}
