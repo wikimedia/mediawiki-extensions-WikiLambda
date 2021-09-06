@@ -14,6 +14,7 @@
 	},
 	"wikilambda-desc": "Wikimedia vikilerine, merkezi bir vikide yazılan, yönetilen ve değerlendirilen işlevlerin değerlendirilmesi için vikimetin ayrıştırıcı işlevi sağlar.",
 	"wikilambda-emptylabel": "Etiketsiz ZObject",
+	"wikilambda-history-title": "\"$1\" revizyon geçmişi ($2)",
 	"wikilambda-invalidzobjecttitle": "Girilen başlık '$1' geçerli bir ZObject değil.",
 	"wikilambda-invalidzobject": "Sağlanan içerik geçerli bir ZObject değil.",
 	"wikilambda-invalidcontenttype": "Sağlanan içerik bir ZObject sınıfı değil.",
@@ -68,7 +69,7 @@
 	"wikilambda-argument-typeselector-label": "Bu bağımsız değişken için bir Tür seçin",
 	"wikilambda-function-typeselector-label": "Bir İşlev seçin",
 	"wikilambda-return-typeselector-label": "Geri dönme için bir Tür seçin",
-	"wikilambda-editor-label-addlanguage-label": "Dil ekle:",
+	"wikilambda-editor-label-addlanguage-label": "Dil ekle",
 	"wikilambda-editor-label-removelanguage-tooltip": "Bu dili bu etiketten kaldır",
 	"wikilambda-editor-zlist-additem-tooltip": "Bu ZList'e bir öğe ekleyin",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Bu öğeyi bu ZList'den kaldır",
@@ -120,5 +121,6 @@
 	"wikilambda-metadata-fewer-languages": "Daha az dil göster",
 	"wikilambda-persistentobject-details-label": "Ayrıntılar",
 	"wikilambda-persistentobject-function-signature-label": "İşlev İmzası",
-	"wikilambda-persistentobject-evaluate-function": "İşlevi Değerlendir"
+	"wikilambda-persistentobject-evaluate-function": "İşlevi Değerlendir",
+	"wikilambda-implementation-selector-none": "Bu dahili bir uyarlama. Kod, çekirdek yazılımın bir parçası, ve burada görüntülenmiyor."
 }

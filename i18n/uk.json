@@ -67,7 +67,7 @@
 	"wikilambda-function-typeselector-label": "Вибрати функцію",
 	"wikilambda-return-typeselector-label": "Виберіть тип для повернення",
 	"wikilambda-zobjectselector-label": "ZObject",
-	"wikilambda-editor-label-addlanguage-label": "Додати мову:",
+	"wikilambda-editor-label-addlanguage-label": "Додати мову",
 	"wikilambda-editor-label-removelanguage-tooltip": "Видалити цю мову з цієї мітки",
 	"wikilambda-editor-zlist-additem-tooltip": "Додати елемент до цього ZList",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Вилучити цей елемент з цього ZList",
@@ -119,5 +119,6 @@
 	"wikilambda-metadata-fewer-languages": "Показувати менше мов",
 	"wikilambda-persistentobject-details-label": "Деталі",
 	"wikilambda-persistentobject-function-signature-label": "Підпис функції",
-	"wikilambda-persistentobject-evaluate-function": "Оцінити функцію"
+	"wikilambda-persistentobject-evaluate-function": "Оцінити функцію",
+	"wikilambda-implementation-selector-none": "Це вбудована реалізація. Код є частиною основного програмного забезпечення і тут не відображається."
 }

@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Darafsh",
 			"Jeeputer"
 		]
 	},
@@ -43,6 +44,6 @@
 	"wikilambda-metadata-label-column": "برچسب",
 	"wikilambda-metadata-aka-column": "همچنین شناخته‌شده به‌عنوان",
 	"wikilambda-metadata-add-alias": "افزودن نام مستعار",
-	"wikilambda-metadata-all-languages": "همه زبان‌های وارد شده",
-	"wikilambda-metadata-fewer-languages": "زبان‌های کمتر"
+	"wikilambda-metadata-all-languages": "نمایش همهٔ زبان‌های واردشده",
+	"wikilambda-metadata-fewer-languages": "نمایش زبان‌های کمتر"
 }

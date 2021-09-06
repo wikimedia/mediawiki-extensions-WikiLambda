@@ -62,7 +62,7 @@
 	"wikilambda-argument-typeselector-label": "Wähle einen Typ für dieses Argument",
 	"wikilambda-function-typeselector-label": "Funktion auswählen",
 	"wikilambda-return-typeselector-label": "Wähle einen Typ zur Rückgabe",
-	"wikilambda-editor-label-addlanguage-label": "Sprache hinzufügen:",
+	"wikilambda-editor-label-addlanguage-label": "Sprache hinzufügen",
 	"wikilambda-editor-label-removelanguage-tooltip": "Entferne diese Sprache von dieser Bezeichnung",
 	"wikilambda-editor-zlist-additem-tooltip": "Ein Element zu dieser ZList hinzufügen",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Dieses Element von dieser ZList entfernen",

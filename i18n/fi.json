@@ -4,6 +4,7 @@
 			"Joquliina",
 			"MITO",
 			"Mediawikitranslator",
+			"Nwme",
 			"Pyscowicz"
 		]
 	},
@@ -15,7 +16,7 @@
 	"wikilambda-metadata-language-column": "Kieli",
 	"wikilambda-metadata-label-column": "Nimi",
 	"wikilambda-metadata-aka-column": "Tunnetaan myös nimellä",
-	"wikilambda-metadata-all-languages": "Kaikki syötetyt kielet",
-	"wikilambda-metadata-fewer-languages": "Vähemmän kieliä",
+	"wikilambda-metadata-all-languages": "Näytä kaikki syötetyt kielet",
+	"wikilambda-metadata-fewer-languages": "Näytä vähemmän kieliä",
 	"wikilambda-persistentobject-details-label": "Tiedot"
 }
