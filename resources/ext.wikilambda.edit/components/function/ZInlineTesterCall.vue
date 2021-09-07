@@ -13,10 +13,17 @@
 </template>
 
 <script>
-var ZFunctionCall = require( '../types/ZFunctionCall.vue' );
+var ZFunctionCall = require( '../types/ZFunctionCall.vue' ),
+	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = {
-	extends: ZFunctionCall
+	extends: ZFunctionCall,
+	provide: function () {
+		return {
+			viewmode: this.getViewMode
+		};
+	},
+	computed: mapGetters( [ 'getViewMode' ] )
 };
 </script>
 

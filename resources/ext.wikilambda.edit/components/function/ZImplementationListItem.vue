@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<li class="ext-wikilambda-zlistItem">
-		<sd-button v-if="!(viewmode || readonly)"
+		<sd-button v-if="!(getViewMode || readonly)"
 			class="z-list-item-remove"
 			:destructive="true"
 			:title="tooltipRemoveListItem"
@@ -26,27 +26,19 @@
 				{{ getZkeyLabels[ zImplementationId ] }}
 			</option>
 		</select>
-		<z-reference
-			v-else-if="!(viewmode || readonly)"
-			:zobject-id="zobjectId"
-			:search-type="zType"
-			:readonly="true"
-		></z-reference>
-		<div v-else>
-			<h4>
-				<a :href="zImplementationLink">
-					{{ zImplementationLabel }}
-				</a>
-			</h4>
-			<code-editor
-				v-if="!zImplementation ||
-					!zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_BUILT_IN ]"
-				:mode="zImplementationCodeLanguage"
-				:read-only="true"
-				:value="zImplementationCode"
-				class="ext-wikilambda-zcode"
-			></code-editor>
-		</div>
+		<h4 class="ext-wikilambda-inline-list-item-title">
+			<a :href="zImplementationLink">
+				{{ zImplementationLabel }}
+			</a>
+		</h4>
+		<code-editor
+			v-if="!zImplementation ||
+				!zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_BUILT_IN ]"
+			:mode="zImplementationCodeLanguage"
+			:read-only="true"
+			:value="zImplementationCode"
+			class="ext-wikilambda-zcode"
+		></code-editor>
 	</li>
 </template>
 
@@ -69,7 +61,8 @@ module.exports = {
 		'getZImplementations',
 		'getZkeyLabels',
 		'getZkeys',
-		'getStringifiedZObject'
+		'getStringifiedZObject',
+		'getViewMode'
 	] ),
 	{
 		zImplementationId: function () {
@@ -168,3 +161,9 @@ module.exports = {
 	} )
 };
 </script>
+
+<style lang="less">
+.ext-wikilambda-inline-list-item-title {
+	display: inline;
+}
+</style>

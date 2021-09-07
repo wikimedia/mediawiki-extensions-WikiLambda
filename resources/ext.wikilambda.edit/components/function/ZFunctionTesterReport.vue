@@ -58,7 +58,7 @@
 					<tr>
 						<td>
 							<slot name="run-testers" :click="runTesters">
-								<button v-if="!viewmode" @click="runTesters">
+								<button v-if="!getViewMode" @click="runTesters">
 									{{ $i18n( 'wikilambda-tester-run-testers' ) }}
 								</button>
 							</slot>
@@ -146,7 +146,8 @@ module.exports = {
 		'getNewTesterZObjects',
 		'getZTesterResults',
 		'getZTesterMetadata',
-		'getZTesterFailReason'
+		'getZTesterFailReason',
+		'getViewMode'
 	] ), {
 		implementations: function () {
 			if ( !this.zFunctionId || !this.getZkeys[ this.zFunctionId ] ) {

@@ -8,7 +8,7 @@
 	<div>
 		<div class="ext-wikilambda-cell">
 			<sd-button
-				v-if="!(viewmode || readonly)"
+				v-if="!(readonly)"
 				:title="tooltipRemoveLang"
 				:destructive="true"
 				@click="removeLang"
@@ -19,7 +19,7 @@
 		</div>
 		<div class="ext-wikilambda-cell">
 			<span
-				v-if="viewmode || readonly"
+				v-if="readonly"
 				class="ext-wikilambda-zstring"
 			>
 				{{ monolingualStringValue.value }}
@@ -42,9 +42,6 @@ var Constants = require( '../../Constants.js' ),
 
 module.exports = {
 	name: 'ZMonolingualString',
-	inject: {
-		viewmode: { default: false }
-	},
 	props: {
 		zobjectId: {
 			type: Number,

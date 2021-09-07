@@ -41,10 +41,6 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
-		},
-		readonly: {
-			type: Boolean,
-			default: false
 		}
 	},
 	mixins: [ typeUtils ],
