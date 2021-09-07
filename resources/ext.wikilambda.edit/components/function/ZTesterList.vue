@@ -12,10 +12,10 @@
 				v-for="(item) in ZlistItems"
 				:key="item.id"
 				:zobject-id="item.id"
-				:viewmode="viewmode"
+				:viewmode="getViewMode"
 				:z-type="Constants.Z_TESTER"
 			></z-tester-list-item>
-			<li v-if="!viewmode">
+			<li v-if="!getViewMode">
 				<button
 					:title="tooltipAddListItem"
 					:disabled="!getZTesters.length"
@@ -25,7 +25,7 @@
 				</button>
 			</li>
 		</ul>
-		<div v-if="viewmode && ZlistItems.length <= 0">
+		<div v-if="getViewMode && ZlistItems.length <= 0">
 			{{ $i18n( 'wikilambda-tester-none-found' ) }}
 		</div>
 		<div v-for="tester in getNewTesterIds" :key="tester">
@@ -34,10 +34,10 @@
 				:z-tester-list-id="zobjectId"
 			></z-tester-ad-hoc>
 		</div>
-		<button v-if="!viewmode && getNewTesterIds.length <= 0" @click="createNewTester">
+		<button v-if="!getViewMode && getNewTesterIds.length <= 0" @click="createNewTester">
 			{{ $i18n( 'wikilambda-tester-create-new' ) }}
 		</button>
-		<a v-if="viewmode" :href="createNewTesterLink">
+		<a v-if="getViewMode" :href="createNewTesterLink">
 			{{ $i18n( 'wikilambda-tester-create-new' ) }}
 		</a>
 	</div>
@@ -61,7 +61,8 @@ module.exports = {
 		'getNextObjectId',
 		'getCurrentZObjectId',
 		'getZTesters',
-		'getNewTesterIds'
+		'getNewTesterIds',
+		'getViewMode'
 	] ),
 	{
 		Constants: function () {

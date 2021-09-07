@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<li class="ext-wikilambda-zlistItem">
-		<sd-button v-if="!(viewmode || readonly)"
+		<sd-button v-if="!(getViewMode || readonly)"
 			class="z-list-item-remove"
 			:destructive="true"
 			:title="tooltipRemoveListItem"
@@ -47,7 +47,7 @@ module.exports = {
 	components: {
 		'z-reference': ZReference
 	},
-	computed: $.extend( mapGetters( [ 'getZObjectById', 'getZTesters', 'getZkeyLabels', 'getZkeys', 'getZTesterResults' ] ),
+	computed: $.extend( mapGetters( [ 'getZObjectById', 'getZTesters', 'getZkeyLabels', 'getZkeys', 'getZTesterResults', 'getViewMode' ] ),
 		{
 			referenceValue: function () {
 				return this.findKeyInArray( Constants.Z_REFERENCE_ID, this.zobject ).value;

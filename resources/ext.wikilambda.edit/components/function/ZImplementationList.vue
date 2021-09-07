@@ -14,10 +14,10 @@
 				v-for="(item) in ZlistItems"
 				:key="item.id"
 				:zobject-id="item.id"
-				:viewmode="viewmode"
+				:viewmode="getViewMode"
 				:z-type="Constants.Z_IMPLEMENTATION"
 			></z-implementation-list-item>
-			<li v-if="!viewmode">
+			<li v-if="!getViewMode">
 				<button
 					:title="tooltipAddListItem"
 					:disabled="!getZImplementations.length"
@@ -27,7 +27,7 @@
 				</button>
 			</li>
 		</ul>
-		<div v-if="viewmode && ZlistItems.length <= 0">
+		<div v-if="getViewMode && ZlistItems.length <= 0">
 			{{ $i18n( 'wikilambda-implementation-none-found' ) }}
 		</div>
 		<a :href="createNewImplementationLink">
@@ -48,7 +48,7 @@ module.exports = {
 	components: {
 		'z-implementation-list-item': ZImplementationListItem
 	},
-	computed: $.extend( mapGetters( [ 'getNextObjectId', 'getZImplementations', 'getCurrentZObjectId' ] ),
+	computed: $.extend( mapGetters( [ 'getNextObjectId', 'getZImplementations', 'getCurrentZObjectId', 'getViewMode' ] ),
 		{
 			Constants: function () {
 				return Constants;

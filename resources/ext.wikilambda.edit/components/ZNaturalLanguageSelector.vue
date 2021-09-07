@@ -9,7 +9,7 @@
 	-->
 	<span class="ext-wikilambda-select-zobject">
 		<a
-			v-if="readonly || viewmode"
+			v-if="readonly || getViewMode"
 			:href="'/wiki/' + type"
 			:target="referenceLinkTarget"
 		>
@@ -40,7 +40,8 @@
 </template>
 
 <script>
-var ZObjectSelector = require( './ZObjectSelector.vue' );
+var ZObjectSelector = require( './ZObjectSelector.vue' ),
+	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = {
 	extends: ZObjectSelector,
@@ -52,7 +53,7 @@ module.exports = {
 			}
 		}
 	},
-	computed: {
+	computed: $.extend( mapGetters( [ 'getViewMode' ] ), {
 		usedLanguageZids: function () {
 			return this.usedLanguages.map( function ( language ) {
 				return language.Z9K1;
@@ -74,7 +75,7 @@ module.exports = {
 				}
 			}.bind( this ) );
 		}
-	},
+	} ),
 	methods: {
 		emitInput: function ( zId ) {
 			var exists = false;

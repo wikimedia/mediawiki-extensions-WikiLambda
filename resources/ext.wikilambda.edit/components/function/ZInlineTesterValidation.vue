@@ -38,11 +38,17 @@
 
 <script>
 var Constants = require( '../../Constants.js' ),
-	ZFunctionCall = require( '../types/ZFunctionCall.vue' );
+	ZFunctionCall = require( '../types/ZFunctionCall.vue' ),
+	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = {
 	extends: ZFunctionCall,
-	computed: {
+	provide: function () {
+		return {
+			viewmode: this.getViewMode
+		};
+	},
+	computed: $.extend( mapGetters( [ 'getViewMode' ] ), {
 		firstArgument: function () {
 			if ( this.zFunctionArguments.length > 1 ) {
 				return this.zFunctionArguments[ 0 ];
@@ -50,7 +56,7 @@ module.exports = {
 
 			return false;
 		}
-	},
+	} ),
 	watch: {
 		firstArgument: function () {
 			if ( !this.firstArgument ) {
