@@ -114,7 +114,7 @@ module.exports = {
 			Vue.set( state.zKeyLabels, payload.key, payload.label );
 		},
 		addZArgumentInfo: function ( state, payload ) {
-			state.zArguments[ payload.zid ] = payload;
+			Vue.set( state.zArguments, payload.zid, payload );
 		},
 		resetZArgumentInfo: function ( state ) {
 			state.zArguments = {};
