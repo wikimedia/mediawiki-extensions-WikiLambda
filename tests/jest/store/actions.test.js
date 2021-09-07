@@ -12,7 +12,10 @@ describe( 'Vuex root actions', function () {
 	it( 'initialize function performs expected actions', function () {
 		var context = {
 			commit: jest.fn(),
-			dispatch: jest.fn()
+			dispatch: jest.fn(),
+			getters: {
+				getUserZlangZID: jest.fn().mockReturnValue( 'Z1002' )
+			}
 		};
 
 		actions.initialize( context );
