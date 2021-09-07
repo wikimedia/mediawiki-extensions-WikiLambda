@@ -312,7 +312,8 @@
 		"ObjectsByType": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialObjectsByType",
 			"services": [
-				"WikiLambdaZObjectStore"
+				"WikiLambdaZObjectStore",
+				"LanguageFallback"
 			]
 		}
 	},
