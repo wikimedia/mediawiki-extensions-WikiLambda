@@ -135,5 +135,7 @@
 	"wikilambda-persistentobject-details-label": "Label for the details section of a persistent object.",
 	"wikilambda-persistentobject-function-signature-label": "Label for the function signature section of a persistent object.",
 	"wikilambda-persistentobject-evaluate-function": "Label for the block to evaluate a function in a persistent object.\n\n{{doc-wikilambda}}",
-	"wikilambda-implementation-selector-none": "Label for an implementation when the type is not code or composition."
+	"wikilambda-implementation-selector-none": "Label for an implementation when the type is not code or composition.",
+	"wikilambda-function-is-attached": "Label for a persistent object that is associated with a function.",
+	"wikilambda-function-is-not-attached": "Label for a persistent object that is not associated with a function."
 }
