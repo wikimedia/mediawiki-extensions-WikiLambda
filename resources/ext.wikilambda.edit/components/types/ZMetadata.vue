@@ -88,7 +88,6 @@
 				</sd-button>
 			</div>
 			<z-natural-language-selector
-				type="Z60"
 				:used-languages="selectedLanguages"
 				@input="addNewLang"
 			></z-natural-language-selector>
