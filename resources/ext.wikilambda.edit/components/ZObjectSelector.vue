@@ -13,7 +13,7 @@
 	<span class="ext-wikilambda-select-zobject">
 		<a
 			v-if="readonly || viewmode"
-			:href="'/wiki/' + type"
+			:href="'/wiki/' + selectedId"
 			:target="referenceLinkTarget"
 		>
 			{{ selectedText }}
