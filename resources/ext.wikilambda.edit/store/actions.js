@@ -29,7 +29,8 @@ module.exports = {
 			Constants.Z_LIST,
 			Constants.Z_BOOLEAN_TRUE,
 			Constants.Z_BOOLEAN_FALSE,
-			Constants.Z_IMPLEMENTATION
+			Constants.Z_IMPLEMENTATION,
+			context.getters.getUserZlangZID
 		] );
 	},
 	toggleExpertMode: function ( context ) {
