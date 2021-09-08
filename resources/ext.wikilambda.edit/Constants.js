@@ -1,5 +1,5 @@
 var Constants = {
-		EXCLUDED_Z_TYPES: [ 'Z1', 'Z2', 'Z7' ],
+		EXCLUDED_Z_TYPES: [ 'Z2', 'Z7' ],
 		NEW_ZID_PLACEHOLDER: 'Z0',
 		Z_OBJECT: 'Z1',
 		Z_OBJECT_TYPE: 'Z1K1',
@@ -77,7 +77,8 @@ var Constants = {
 		Z_MONOLINGUALSTRINGSET_LANGUAGE: 'Z31K1',
 		Z_MONOLINGUALSTRINGSET_VALUE: 'Z31K2',
 		Z_MULTILINGUALSTRINGSET: 'Z32',
-		Z_MULTILINGUALSTRINGSET_VALUE: 'Z32K1'
+		Z_MULTILINGUALSTRINGSET_VALUE: 'Z32K1',
+		Z_NATURAL_LANGUAGE: 'Z60'
 	},
 	modes = [
 		{ key: Constants.Z_KEY_MODES.REFERENCE, value: 'wikilambda-modeselector-reference', label: 'wikilambda-reference', type: Constants.Z_REFERENCE },

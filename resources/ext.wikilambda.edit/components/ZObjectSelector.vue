@@ -298,6 +298,11 @@ module.exports = {
 					inputValue = item;
 				}
 
+				// if the input value is empty, we don't want to do anything
+				if ( inputValue.length <= 0 ) {
+					return;
+				}
+
 				var match = '';
 				var matchPercentage = 0;
 

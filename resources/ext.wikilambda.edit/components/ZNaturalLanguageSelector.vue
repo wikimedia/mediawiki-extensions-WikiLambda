@@ -40,7 +40,8 @@
 </template>
 
 <script>
-var ZObjectSelector = require( './ZObjectSelector.vue' ),
+var Constants = require( '../Constants.js' ),
+	ZObjectSelector = require( './ZObjectSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = {
@@ -51,6 +52,10 @@ module.exports = {
 			default: function () {
 				return [];
 			}
+		},
+		type: {
+			type: String,
+			default: Constants.Z_NATURAL_LANGUAGE
 		}
 	},
 	computed: $.extend( mapGetters( [ 'getViewMode' ] ), {
