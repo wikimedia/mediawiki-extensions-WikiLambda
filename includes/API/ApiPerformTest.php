@@ -82,8 +82,7 @@ class ApiPerformTest extends ApiBase {
 			'ztesters' => $ztesters,
 			'evaluatorUri' => urlencode( $this->evaluatorHost ),
 			'wikiUri' => urlencode( $this->wikiUri ),
-			// TODO: Enable validation once it works :)
-			'doValidate' => false,
+			'doValidate' => true,
 			'nocache' => $nocache,
 		];
 		$query = json_encode( $jsonQuery );

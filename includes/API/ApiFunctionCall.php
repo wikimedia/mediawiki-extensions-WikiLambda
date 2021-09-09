@@ -71,8 +71,7 @@ class ApiFunctionCall extends ApiBase {
 			'zobject' => $zObject,
 			'evaluatorUri' => $this->evaluatorHost,
 			'wikiUri' => $this->wikiUri,
-			// TODO: Enable validation once it works :)
-			'doValidate' => false
+			'doValidate' => true
 		];
 		try {
 			$response = $this->orchestrator->orchestrate( $jsonQuery );
