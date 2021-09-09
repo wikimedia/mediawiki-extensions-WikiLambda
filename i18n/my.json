@@ -4,5 +4,7 @@
 			"Dr Lotus Black"
 		]
 	},
-	"wikilambda-editor-label-addlanguage-label": "ဘာသာစကား ထည့်သွင်းရန်"
+	"wikilambda-editor-label-addlanguage-label": "ဘာသာစကား ထည့်သွင်းရန်",
+	"wikilambda-tester-failure-actual": "လက်ခံရရှိခဲ့သည်",
+	"wikilambda-tester-function-duration": "ကာလ"
 }

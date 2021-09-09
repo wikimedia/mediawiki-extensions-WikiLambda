@@ -71,7 +71,7 @@
 	"wikilambda-function-typeselector-label": "Sélectionner une fonction",
 	"wikilambda-return-typeselector-label": "Sélectionner un type de retour",
 	"wikilambda-zobjectselector-label": "Objet-Z",
-	"wikilambda-editor-label-addlanguage-label": "Ajouter une langue :",
+	"wikilambda-editor-label-addlanguage-label": "Ajouter une langue ",
 	"wikilambda-editor-label-removelanguage-tooltip": "Enlever cette langue du libellé",
 	"wikilambda-editor-zlist-additem-tooltip": "Ajouter un élément à cette Liste-Z",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Supprimer cet élément de cette Liste-Z",
@@ -123,5 +123,6 @@
 	"wikilambda-metadata-fewer-languages": "Afficher moins de langues",
 	"wikilambda-persistentobject-details-label": "Détails",
 	"wikilambda-persistentobject-function-signature-label": "Signature de la fonction",
-	"wikilambda-persistentobject-evaluate-function": "Évaluer la fonction"
+	"wikilambda-persistentobject-evaluate-function": "Évaluer la fonction",
+	"wikilambda-implementation-selector-none": "Ceci est une implémentation intégrée. Le code fait partie du logiciel cœur, et n’est pas affiché ici."
 }
