@@ -22,6 +22,12 @@
 					:readonly="true"
 				></z-reference>
 				<span v-else>{{ $i18n( 'wikilambda-invalidzobject' ) }}</span>
+				<span class="ext-wikilambda-is-impl-associated">
+					({{ isImplementationAttached ?
+						$i18n( 'wikilambda-function-is-attached') :
+						$i18n( 'wikilambda-function-is-not-attached' )
+					}})
+				</span>
 			</template>
 		</div>
 		<div v-if="!viewmode && implMode">
@@ -154,6 +160,11 @@ module.exports = {
 				return Object.keys( this.getZarguments ).map( function ( arg ) {
 					return this.getZarguments[ arg ];
 				}.bind( this ) );
+			},
+			isImplementationAttached: function () {
+				return this.selectedFunctionJson.Z2K2.Z8K4.filter( function ( zid ) {
+					return zid === this.zImplementationId;
+				}.bind( this ) ).length > 0;
 			}
 		}
 	),
@@ -239,3 +250,10 @@ module.exports = {
 	}
 };
 </script>
+
+<style lang="less">
+.ext-wikilambda-is-impl-associated {
+	font-size: 0.8em;
+	font-style: italic;
+}
+</style>

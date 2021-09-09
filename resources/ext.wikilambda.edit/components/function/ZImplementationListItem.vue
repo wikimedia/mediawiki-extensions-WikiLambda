@@ -32,7 +32,7 @@
 			</a>
 		</h4>
 		<code-editor
-			v-if="!zImplementation ||
+			v-if="zImplementation &&
 				!zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_BUILT_IN ]"
 			:mode="zImplementationCodeLanguage"
 			:read-only="true"

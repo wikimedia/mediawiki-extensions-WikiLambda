@@ -11,6 +11,12 @@
 			:search-type="Constants.Z_FUNCTION"
 			:zobject-id="zFunction.id"
 		></z-reference>
+		<span class="ext-wikilambda-is-tester-associated">
+			({{ isTesterAttached ?
+				$i18n( 'wikilambda-function-is-attached') :
+				$i18n( 'wikilambda-function-is-not-attached' )
+			}})
+		</span>
 		<div>{{ callLabel }}:</div>
 		<z-function-call
 			:zobject-id="zCall.id"
@@ -97,11 +103,19 @@ module.exports = {
 				Constants.Z_REFERENCE_ID
 			] ).value || '';
 		},
+		selectedFunctionJson: function () {
+			return this.getZkeys[ this.zFunctionId ];
+		},
 		zTesterId: function () {
 			return this.getNestedZObjectById( this.getZObjectById( this.zobjectId ).parent, [
 				Constants.Z_PERSISTENTOBJECT_ID,
 				Constants.Z_REFERENCE_ID
 			] ).value;
+		},
+		isTesterAttached: function () {
+			return this.selectedFunctionJson && this.selectedFunctionJson.Z2K2.Z8K3.filter( function ( zid ) {
+				return zid === this.zTesterId;
+			}.bind( this ) ).length > 0;
 		}
 	} ),
 	methods: $.extend( mapActions( [
@@ -110,3 +124,10 @@ module.exports = {
 	] ), {} )
 };
 </script>
+
+<style lang="less">
+.ext-wikilambda-is-tester-associated {
+	font-size: 0.8em;
+	font-style: italic;
+}
+</style>

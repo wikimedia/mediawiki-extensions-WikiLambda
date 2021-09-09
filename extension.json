@@ -273,7 +273,9 @@
 				"wikilambda-tester-failure-expected",
 				"wikilambda-tester-failure-actual",
 				"wikilambda-tester-function-duration",
-				"wikilambda-implementation-selector-none"
+				"wikilambda-implementation-selector-none",
+				"wikilambda-function-is-attached",
+				"wikilambda-function-is-not-attached"
 			]
 		}
 	},
