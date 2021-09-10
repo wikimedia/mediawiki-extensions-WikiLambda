@@ -58,6 +58,7 @@
 		"MultiContentSave": "WikiLambdaHooks",
 		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
 		"NamespaceIsMovable": "WikiLambdaHooks",
+		"ParserFirstCallInit": "WikiLambdaHooks",
 		"HtmlPageLinkRendererEnd": "WikiLambdaHooks",
 		"CodeEditorGetPageLanguage": "MediaWiki\\Extension\\WikiLambda\\Hooks::onCodeEditorGetPageLanguage"
 	},
@@ -68,7 +69,8 @@
 		]
 	},
 	"ExtensionMessagesFiles": {
-		"WikiLambdaAliases": "WikiLambda.alias.php"
+		"WikiLambdaAliases": "WikiLambda.alias.php",
+		"WikiLambdaMagic": "WikiLambda.i18n.magic.php"
 	},
 	"ResourceFileModulePaths": {
 		"localBasePath": "resources",
@@ -322,6 +324,12 @@
 			]
 		}
 	},
+	"TrackingCategories": [
+		"wikilambda-functioncall-error-category",
+		"wikilambda-functioncall-error-unknown-category",
+		"wikilambda-functioncall-error-nonfunction-category",
+		"wikilambda-functioncall-error-nonstring-category"
+	],
 	"ServiceWiringFiles": [
 		"includes/ServiceWiring.php"
 	],
