@@ -115,5 +115,7 @@
 	"wikilambda-persistentobject-details-label": "Einzelheiten",
 	"wikilambda-persistentobject-function-signature-label": "Funktionssignatur",
 	"wikilambda-persistentobject-evaluate-function": "Funktion evaluieren",
-	"wikilambda-implementation-selector-none": "Dies ist eine integrierte Implementierung. Der Code ist Teil der Kernsoftware und wird hier nicht angezeigt."
+	"wikilambda-implementation-selector-none": "Dies ist eine integrierte Implementierung. Der Code ist Teil der Kernsoftware und wird hier nicht angezeigt.",
+	"wikilambda-function-is-attached": "Dieses Objekt ist mit seiner Funktion verbunden.",
+	"wikilambda-function-is-not-attached": "Dieses Objekt ist nicht mit seiner Funktion verbunden."
 }
