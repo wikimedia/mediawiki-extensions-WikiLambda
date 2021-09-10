@@ -104,6 +104,7 @@
 				"vuex",
 				"mediawiki.Title",
 				"mediawiki.api",
+				"mediawiki.router",
 				"mediawiki.storage",
 				"es6-polyfills",
 				"oojs"
