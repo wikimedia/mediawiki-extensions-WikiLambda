@@ -11,7 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
 
 class OrchestratorBase {
 
@@ -20,9 +20,9 @@ class OrchestratorBase {
 
 	/**
 	 * @param \stdClass|array $query
-	 * @return Response response object returned by orchestrator
+	 * @return ResponseInterface response object returned by orchestrator
 	 */
-	public function orchestrate( $query ): Response {
+	public function orchestrate( $query ): ResponseInterface {
 		// TODO: Use postAsync here.
 		return $this->guzzleClient->post( '/1/v1/evaluate/', [
 			'json' => $query,
@@ -31,9 +31,9 @@ class OrchestratorBase {
 
 	/**
 	 * @param string $query
-	 * @return Response response object returned by orchestrator
+	 * @return ResponseInterface response object returned by orchestrator
 	 */
-	public function performTest( string $query ): Response {
+	public function performTest( string $query ): ResponseInterface {
 		// TODO: Use getAsync here.
 		return $this->guzzleClient->get( '/1/v1/evaluate/test/' . $query );
 	}
