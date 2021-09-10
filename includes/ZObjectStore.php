@@ -118,6 +118,7 @@ class ZObjectStore {
 
 		// NOTE: Hard-coding use of MAIN slot; if we're going the MCR route, we may wish to change this (or not).
 		$slot = $revision->getSlot( SlotRecord::MAIN, RevisionRecord::RAW );
+		// @phan-suppress-next-line PhanTypeMismatchReturnSuperType
 		return $slot->getContent();
 	}
 
