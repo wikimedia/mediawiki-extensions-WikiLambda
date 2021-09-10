@@ -24,7 +24,6 @@
 <script>
 var ZObject = require( './ZObject.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions,
 	ZObjectJson = require( './ZObjectJson.vue' );
 
 module.exports = {
@@ -35,11 +34,7 @@ module.exports = {
 	},
 	computed: mapGetters( {
 		ZObjectJson: 'getZObjectAsJson'
-	} ),
-	methods: mapActions( [ 'initialize' ] ),
-	created: function () {
-		this.initialize();
-	}
+	} )
 };
 </script>
 

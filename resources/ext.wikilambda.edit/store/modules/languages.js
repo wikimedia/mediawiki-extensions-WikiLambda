@@ -6,6 +6,9 @@
  */
 
 module.exports = {
+	state: {
+		currentZLanguage: null
+	},
 	getters: {
 		/**
 		 * Get the user preferred language, which is also the first element of zLangs.
@@ -29,6 +32,19 @@ module.exports = {
 		 */
 		getUserZlangZID: function () {
 			return mw.config.get( 'wgWikiLambda' ).zlangZid;
+		},
+		getCurrentZLanguage: function ( state ) {
+			return state.currentZLanguage;
+		}
+	},
+	mutations: {
+		setCurrentZLanguage: function ( state, zLanguage ) {
+			state.currentZLanguage = zLanguage;
+		}
+	},
+	actions: {
+		setCurrentZLanguage: function ( context, zLanguage ) {
+			context.commit( 'setCurrentZLanguage', zLanguage );
 		}
 	}
 };

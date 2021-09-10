@@ -37,16 +37,20 @@
 				</h2>
 				<template v-if="isCurrentZObjectExecutable && getCurrentZObjectReturnType">
 					<h3>
-						{{ $i18n( 'wikilambda-persistentobject-function-signature-label' ) }}
-					</h3>
-					<z-function-signature
-						:arguments="getZargumentsString"
-						:return-type="getCurrentZObjectReturnType"
-					></z-function-signature>
-					<h3>
 						{{ $i18n( 'wikilambda-persistentobject-evaluate-function' ) }}
 					</h3>
 					<z-function-evaluator></z-function-evaluator>
+					<fn-editor-visual-display>
+						<template #input>
+							{{ getZargumentsString }}
+						</template>
+						<template #function>
+							{{ getZkeyLabels[ getCurrentZObjectId ] }}
+						</template>
+						<template #output>
+							{{ getCurrentZObjectReturnType }}
+						</template>
+					</fn-editor-visual-display>
 				</template>
 				<div v-if="$store.getters.isExpertMode">
 					<h3>
@@ -70,16 +74,16 @@ var Constants = require( '../../Constants.js' ),
 	ZObjectKey = require( '../ZObjectKey.vue' ),
 	ZMetadata = require( './ZMetadata.vue' ),
 	ZFunctionEvaluator = require( '../function/ZFunctionEvaluator.vue' ),
-	ZFunctionSignature = require( '../ZFunctionSignature.vue' ),
-	ZObjectJson = require( '../ZObjectJson.vue' );
+	ZObjectJson = require( '../ZObjectJson.vue' ),
+	FnEditorVisualDisplay = require( '../editor/FnEditorVisualDisplay.vue' );
 
 module.exports = {
 	components: {
 		'z-object-key': ZObjectKey,
 		'z-metadata': ZMetadata,
 		'z-function-evaluator': ZFunctionEvaluator,
-		'z-function-signature': ZFunctionSignature,
-		'z-object-json': ZObjectJson
+		'z-object-json': ZObjectJson,
+		'fn-editor-visual-display': FnEditorVisualDisplay
 	},
 	mixins: [ typeUtils ],
 	inject: {

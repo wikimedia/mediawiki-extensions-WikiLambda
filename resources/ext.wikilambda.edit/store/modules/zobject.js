@@ -307,6 +307,25 @@ module.exports = {
 				return convertZObjectTreetoJson( state.zobject, id, isArray );
 			};
 		},
+		getZObjectAsJsonByZID: function ( state, getters ) {
+			return function ( zid ) {
+				function getParentId( id ) {
+					var parent = getters.getZObjectById( id );
+
+					if ( parent.parent > 0 ) {
+						return getParentId( parent.parent );
+					}
+
+					return parent.id;
+				}
+
+				var zobject = state.zobject.filter( function ( item ) {
+					return item.value === zid;
+				} )[ 0 ];
+
+				return getters.getZObjectAsJsonById( getParentId( zobject.id ) );
+			};
+		},
 		/**
 		 * Return the root ZObjectId, equivalend to the Z_REFERENCE_ID of Z_PERSISTENTOBJECT_ID
 		 *
@@ -377,6 +396,30 @@ module.exports = {
 						return value[ Constants.Z_MONOLINGUALSTRING_VALUE ][
 							Constants.Z_STRING_VALUE ] !== '';
 					} ).length > 0;
+		},
+		currentZObjectLanguages: function ( state, getters ) {
+			var languageList = [],
+				zObjectLabels;
+
+			if ( !getters.getZObjectAsJson ) {
+				return;
+			}
+
+			zObjectLabels = getters.getZObjectAsJson[ Constants.Z_PERSISTENTOBJECT_LABEL ];
+
+			// Don't break if the labels are set to {}
+			if ( zObjectLabels.Z12K1 ) {
+				zObjectLabels.Z12K1.forEach( function ( label ) {
+					languageList.push( label.Z11K1.Z9K1 );
+				} );
+			}
+
+			return languageList.map( function ( languageCode ) {
+				return {
+					Z1K1: 'Z9',
+					Z9K1: languageCode
+				};
+			} );
 		},
 		getStringifiedZObject: function ( state, getters ) {
 			function stringifyZObject( zObject ) {

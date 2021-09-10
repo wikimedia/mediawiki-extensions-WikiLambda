@@ -6,26 +6,27 @@
  */
 'use strict';
 
-var SdButton = require( './components/base/Button.vue' );
+var Vue = require( 'vue' ),
+	VueRouter = require( '../lib/vue-router/vue-router.common.js' ),
+	SdButton = require( './components/base/Button.vue' ),
+	router = require( './router.js' ),
+	store = require( './store/index.js' ),
+	App = require( './components/App.vue' );
 
-( function () {
-	var Vue = require( 'vue' ),
-		store = require( './store/index.js' ),
-		App = require( './components/App.vue' );
+Vue.component( 'sd-button', SdButton );
+Vue.use( VueRouter );
 
-	Vue.component( 'sd-button', SdButton );
-
-	// eslint-disable-next-line no-new
-	new Vue( {
-		el: '#ext-wikilambda-app',
-		store: store,
-		render: function ( h ) {
-			return h( App );
-		},
-		provide: function () {
-			return {
-				viewmode: store.getters.getViewMode
-			};
-		}
-	} );
-}() );
+// eslint-disable-next-line no-new
+new Vue( {
+	el: '#ext-wikilambda-app',
+	store: store,
+	router: router,
+	render: function ( h ) {
+		return h( App );
+	},
+	provide: function () {
+		return {
+			viewmode: store.getters.getViewMode
+		};
+	}
+} );

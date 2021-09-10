@@ -35,10 +35,6 @@ function filterPresentZids( rootState ) {
 module.exports = {
 	state: {
 		/**
-		 * List of keys to fetch
-		 */
-		zKeystoFetch: [],
-		/**
 		 * Collection of zKey information
 		 */
 		zKeys: {},
@@ -141,10 +137,13 @@ module.exports = {
 				// Zid has already been fetched
 				// or
 				// Zid is in the process of being fetched
-				if ( !zId || ( zId in context.state.zKeys ) || ( zKeystoFetch.indexOf( zId ) !== -1 ) ) {
-					return;
+				if ( zId &&
+					zId !== Constants.NEW_ZID_PLACEHOLDER &&
+					!( zId in context.state.zKeys ) &&
+					( zKeystoFetch.indexOf( zId ) === -1 )
+				) {
+					zKeystoFetch.push( zId );
 				}
-				zKeystoFetch.push( zId );
 			} );
 
 			if ( zKeystoFetch.length === 0 ) {
@@ -253,12 +252,20 @@ module.exports = {
 				var zobject,
 					missingTypes = [];
 
+				if ( !context.getters.getZObjectAsJson ) {
+					return;
+				}
+
 				if ( context.getters.getCurrentZObjectId === zFunctionId ) {
 					zobject = canonicalize(
 						JSON.parse( JSON.stringify( context.getters.getZObjectAsJson ) )
 					);
 				} else {
 					zobject = context.getters.getZkeys[ zFunctionId ];
+				}
+
+				if ( !zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] ) {
+					return;
 				}
 
 				zobject[

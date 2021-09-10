@@ -289,6 +289,7 @@ module.exports = {
 					inputValue;
 				// we need to make sure that the input event is not triggered twice
 				if ( this.valueEmitted === true ) {
+					this.valueEmitted = false;
 					return;
 				}
 				this.validatorResetError();
@@ -344,6 +345,7 @@ module.exports = {
 			 * The autocomple field is cleaned
 			 */
 			onClear: function () {
+				this.valueEmitted = false;
 				this.emitInput( '' );
 				this.validatorResetError();
 			},

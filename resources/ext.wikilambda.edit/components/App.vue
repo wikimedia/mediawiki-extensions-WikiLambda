@@ -6,13 +6,8 @@
 		@license MIT
 	-->
 	<div id="ext-wikilambda-app">
-		<template v-if="zObjectInitialized">
-			<z-object-editor
-				v-if="viewmode === false"
-			></z-object-editor>
-			<z-object-viewer
-				v-if="viewmode === true"
-			></z-object-viewer>
+		<template v-if="getZObjectInitialized">
+			<router-view></router-view>
 		</template>
 		<span v-else>
 			{{ $i18n( 'wikilambda-loading' ) }}
@@ -21,27 +16,23 @@
 </template>
 
 <script>
-var ZObjectEditor = require( './ZObjectEditor.vue' ),
-	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions,
-	ZObjectViewer = require( './ZObjectViewer.vue' );
+var mapGetters = require( 'vuex' ).mapGetters,
+	mapActions = require( 'vuex' ).mapActions;
 
 module.exports = {
 	name: 'App',
 	inject: {
 		viewmode: { default: false }
 	},
-	components: {
-		'z-object-editor': ZObjectEditor,
-		'z-object-viewer': ZObjectViewer
-	},
-	computed: mapGetters( {
-		zObjectInitialized: 'getZObjectInitialized'
+	computed: $.extend( mapGetters( [
+		'getZObjectInitialized'
+	] ), {
 	} ),
-	methods: mapActions( [ 'initializeZObject' ] ),
+	methods: mapActions( [ 'initializeZObject', 'initialize' ] ),
 	created: function () {
 		// Set zobject
 		this.initializeZObject();
+		this.initialize();
 	}
 };
 </script>

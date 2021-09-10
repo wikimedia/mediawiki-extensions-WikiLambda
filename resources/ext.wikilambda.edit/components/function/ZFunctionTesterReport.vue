@@ -252,11 +252,15 @@ module.exports = {
 		}
 	} ),
 	watch: {
-		implementations: function () {
-			this.fetchZKeys( this.implementations );
+		implementations: function ( newValue, oldValue ) {
+			if ( newValue.length !== oldValue.length ) {
+				this.fetchZKeys( this.implementations );
+			}
 		},
-		testers: function () {
-			this.fetchZKeys( this.testers );
+		testers: function ( newValue, oldValue ) {
+			if ( newValue.length !== oldValue.length ) {
+				this.fetchZKeys( this.testers );
+			}
 		}
 	},
 	mounted: function () {

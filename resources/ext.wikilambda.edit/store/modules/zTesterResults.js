@@ -133,6 +133,12 @@ module.exports = {
 							);
 						}
 
+						if ( impl === Constants.NEW_ZID_PLACEHOLDER ) {
+							return canonicalize(
+								JSON.parse( JSON.stringify( context.getters.getZObjectAsJsonByZID( impl ) ) )
+							);
+						}
+
 						return impl;
 					} ).filter( function ( item ) {
 						return !!item;

@@ -475,6 +475,10 @@ describe( 'zkeys Vuex module', function () {
 					Z40: 'Boolean'
 				};
 
+				context.getters.getZObjectAsJson = jest.fn( function () {
+					return true;
+				} );
+
 				var zArguments = [
 					{ label: 'left', zid: 'Z10033K1', key: 'left: ', type: 'Boolean' },
 					{ label: 'right', zid: 'Z10033K2', key: 'right: ', type: 'Boolean' }

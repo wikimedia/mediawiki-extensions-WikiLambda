@@ -7,102 +7,42 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	mount = require( '@vue/test-utils' ).shallowMount,
 	createLocalVue = require( '@vue/test-utils' ).createLocalVue,
 	Vuex = require( 'vuex' ),
+	VueRouter = require( '../../../resources/lib/vue-router/vue-router.common.js' ),
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
-	ZObjectEditor = require( '../../../resources/ext.wikilambda.edit/components/ZObjectEditor.vue' ),
-	ZObjectViewer = require( '../../../resources/ext.wikilambda.edit/components/ZObjectViewer.vue' ),
 	getters = require( '../../../resources/ext.wikilambda.edit/store/getters.js' ),
 	localVue;
 
 localVue = createLocalVue();
 localVue.use( Vuex );
+localVue.use( VueRouter );
 
 describe( 'App.vue', function () {
 	var actions,
-		store;
+		store,
+		mockIsInitialized;
 
 	beforeEach( function () {
 		actions = {
-			initializeZObject: jest.fn()
+			initializeZObject: jest.fn(),
+			initialize: jest.fn()
 		};
 		store = new Vuex.Store( {
 			actions: actions,
 			getters: $.extend( getters, {
-				isCurrentZObjectExecutable: function () {
-					return false;
+				getZObjectInitialized: function () {
+					return mockIsInitialized;
 				}
 			} )
 		} );
 	} );
-	it( 'Renders nothing when the viewmode is not returned from mw.config', function () {
-		var wrapper;
 
-		wrapper = shallowMount( App, {
-			store: store,
-			localVue: localVue,
-			computed: {
-				zObjectInitialized: jest.fn( function () {
-					return true;
-				} )
-			},
-			provide: {
-				viewmode: null
-			}
-		} );
-
-		expect( wrapper.findComponent( ZObjectEditor ).exists() ).toBe( false );
-		expect( wrapper.findComponent( ZObjectViewer ).exists() ).toBe( false );
-	} );
-
-	it( 'Renders z-object-editor when viewmode === false', function () {
-		var wrapper;
-
-		wrapper = mount( App, {
-			store: store,
-			localVue: localVue,
-			computed: {
-				zObjectInitialized: jest.fn( function () {
-					return true;
-				} )
-			},
-			provide: {
-				viewmode: false
-			}
-		} );
-
-		expect( actions.initializeZObject.mock.calls.length ).toBe( 1 );
-		expect( wrapper.findComponent( ZObjectEditor ).exists() ).toBe( true );
-		expect( wrapper.findComponent( ZObjectEditor ).isVisible() ).toBe( true );
-		expect( wrapper.findComponent( ZObjectViewer ).exists() ).toBe( false );
-	} );
-
-	it( 'Renders z-object-viewer when viewmode === true', function () {
-		var wrapper;
-
-		wrapper = shallowMount( App, {
-			store: store,
-			localVue: localVue,
-			computed: {
-				zObjectInitialized: jest.fn( function () {
-					return true;
-				} )
-			},
-			provide: {
-				viewmode: true
-			}
-		} );
-
-		expect( actions.initializeZObject.mock.calls.length ).toBe( 1 );
-		expect( wrapper.findComponent( ZObjectViewer ).exists() ).toBe( true );
-		expect( wrapper.findComponent( ZObjectViewer ).isVisible() ).toBe( true );
-		expect( wrapper.findComponent( ZObjectEditor ).exists() ).toBe( false );
-	} );
-
-	it( 'Renders loading when zObjectInitialized is false', function () {
+	it( 'Renders loading when getZObjectInitialized is false', function () {
 		var wrapper,
 			$i18n = jest.fn();
+
+		mockIsInitialized = false;
 
 		wrapper = shallowMount( App, {
 			store: store,
@@ -110,18 +50,53 @@ describe( 'App.vue', function () {
 			mocks: {
 				$i18n: $i18n
 			},
-			computed: {
-				zObjectInitialized: jest.fn( function () {
-					return false;
-				} )
+			provide: {
+				viewmode: true
+			}
+		} );
+
+		expect( wrapper.findComponent( { name: 'RouterView' } ).exists() ).toBe( false );
+		expect( $i18n ).toHaveBeenCalledWith( 'wikilambda-loading' );
+	} );
+
+	it( 'Renders the router view when getZObjectInitialized is true', function () {
+		var wrapper,
+			$i18n = jest.fn();
+
+		mockIsInitialized = true;
+
+		wrapper = shallowMount( App, {
+			store: store,
+			localVue: localVue,
+			mocks: {
+				$i18n: $i18n
 			},
 			provide: {
 				viewmode: true
 			}
 		} );
 
-		expect( wrapper.findComponent( ZObjectViewer ).exists() ).toBe( false );
-		expect( wrapper.findComponent( ZObjectEditor ).exists() ).toBe( false );
-		expect( $i18n ).toHaveBeenCalledWith( 'wikilambda-loading' );
+		expect( wrapper.findComponent( { name: 'RouterView' } ).exists() ).toBe( true );
+		expect( $i18n ).not.toHaveBeenCalled();
+	} );
+
+	it( 'Initializes the app on load', function () {
+		var $i18n = jest.fn();
+
+		mockIsInitialized = true;
+
+		shallowMount( App, {
+			store: store,
+			localVue: localVue,
+			mocks: {
+				$i18n: $i18n
+			},
+			provide: {
+				viewmode: true
+			}
+		} );
+
+		expect( actions.initializeZObject ).toHaveBeenCalled();
+		expect( actions.initialize ).toHaveBeenCalled();
 	} );
 } );

@@ -99,7 +99,7 @@ module.exports = {
 		}
 	} ),
 	methods: $.extend( {},
-		mapActions( [ 'initialize', 'submitZObject' ] ),
+		mapActions( [ 'submitZObject' ] ),
 		{
 			updateZobject: function ( newZobject ) {
 				this.zobject = newZobject;
@@ -109,11 +109,7 @@ module.exports = {
 				this.submitZObject( this.summary );
 			}
 		}
-	),
-
-	created: function () {
-		this.initialize();
-	}
+	)
 };
 </script>
 

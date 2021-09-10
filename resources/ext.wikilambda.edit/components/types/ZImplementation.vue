@@ -208,15 +208,18 @@ module.exports = {
 		},
 		zFunction: {
 			immediate: true,
-			handler: function () {
-				if ( this.zFunction.value ) {
+			handler: function ( val, prevVal ) {
+				if ( val.value && ( !prevVal || val.value !== prevVal.value ) ) {
 					this.fetchZKeys( [ this.zFunction.value ] );
 				}
 			}
 		},
 		selectedFunctionJson: {
 			immediate: true,
-			handler: function () {
+			handler: function ( val, prevVal ) {
+				if ( JSON.stringify( val ) === JSON.stringify( prevVal ) ) {
+					return;
+				}
 				if ( this.selectedFunctionJson ) {
 					var zKeys = [];
 
