@@ -465,7 +465,7 @@ class Hooks implements
 			$key = $target . 'K' . ( $i + 1 );
 
 			$callObject[$key] = [
-				'Z1K1' => [ 'Z1K1' => 'Z9', 'Z9K1' => 'Z6' ],
+				'Z1K1' => 'Z6',
 				'Z6K1' => $arguments[ $i ],
 			];
 		}
@@ -602,12 +602,23 @@ class Hooks implements
 				throw new ZErrorException( $zerror );
 			}
 
-			// Shuck the result JSON string
-			$response = $outerResponse['query']['wikilambda_function_call']['Orchestrated'];
+			// Shuck the result JSON string into an object
+			$response = json_decode(
+				$outerResponse['query']['wikilambda_function_call']['Orchestrated']['data'],
+				true
+			);
 
-			// TODO: If the server has responsed with a Z5, show that properly.
-
-			$ret = $response['data'];
+			if ( !$response || $response['Z1K1'] !== 'Z22' ) {
+				// The server's not given us a result!
+				$zerror = new ZError( 'Z507', new ZList( [ 'Server returned a non-result!' ] ) );
+				throw new ZErrorException( $zerror );
+			}
+			if ( $response['Z22K1'] === 'Z23' ) {
+				// If the server has responsed with a Z5, show that properly.
+				$zerror = new ZError( 'Z507', new ZList( [ $response['Z22K2'] ] ) );
+				throw new ZErrorException( $zerror );
+			}
+			$ret = $response['Z22K1'];
 		} catch ( ZErrorException $e ) {
 			$ret = Html::errorBox(
 				wfMessage(
