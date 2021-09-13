@@ -41,5 +41,7 @@
 	"wikilambda-metadata-add-alias": "Aggiungi alias",
 	"wikilambda-metadata-all-languages": "Mostra tutte le lingue inserite",
 	"wikilambda-metadata-fewer-languages": "Mostra meno lingue",
-	"wikilambda-persistentobject-details-label": "Dettagli"
+	"wikilambda-persistentobject-details-label": "Dettagli",
+	"wikilambda-function-is-attached": "Questo oggetto è associato a questa funzione.",
+	"wikilambda-function-is-not-attached": "Questo oggetto non è associato a questa funzione."
 }

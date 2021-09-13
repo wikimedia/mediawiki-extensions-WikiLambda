@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Beunice"
+		]
+	},
+	"wikilambda-functioncall-error-category": "Pages contenant des appels erronés de Wikifonctions",
+	"wikilambda-functioncall-error-nonfunction": "Erreur d'appel de fonction : le ZObject '$1' n'est pas une ZFunction et ne peut donc pas être appelé."
+}

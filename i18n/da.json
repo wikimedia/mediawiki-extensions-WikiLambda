@@ -10,6 +10,7 @@
 	"wikilambda-savenew": "Gem",
 	"wikilambda-typeselector-label": "Vælg en type",
 	"wikilambda-function-typeselector-label": "Vælg en funktion",
+	"wikilambda-editor-label-addlanguage-label": "Tilføj sprog",
 	"wikilambda-implementation-selector-code": "Kode",
 	"wikilambda-metadata-language-column": "Sprog",
 	"wikilambda-metadata-aka-column": "Også kendt som"
