@@ -87,7 +87,7 @@
 	"wikilambda-functioncall-error-unknown": "שגיאה בקריאה לפונקציה: \"$1\" אינו עצם Z ידוע",
 	"wikilambda-functioncall-error-unknown-category": "דפים עם קריאות לוויקיפונקציות לעצמי Z בלתי־ידועים",
 	"wikilambda-functioncall-error-unknown-category-desc": "דפים שמנסים לקרוא לוויקיפונקציות שמבקשות עצם Z בלתי־ידוע",
-	"wikilambda-functioncall-error-nonfunction": "שגיאה בקריאה לפונקציה: עצם ה־Z אינו פונקציית Z, אז אי־אפשר לקרוא לו",
+	"wikilambda-functioncall-error-nonfunction": "שגיאה בקריאה לפונקציה: עצם ה־Z ששמו \"$1\" אינו פונקציית Z, אז אי־אפשר לקרוא לו",
 	"wikilambda-functioncall-error-nonfunction-category": "דפים עם ויקיפונקציות שקוראות לעצמי Z שאינם פונקציות",
 	"wikilambda-functioncall-error-nonfunction-category-desc": "דפים עם ניסיונות קריאה לוויקיפונקציות עם עצם Z שאינו פונקציה",
 	"wikilambda-functioncall-error-nonstringoutput": "שגיאה בקריאה לפונקציה: פונקציית ה־Z ששמה \"$1\" אינה פולטת מחרוזת שאפשר להציג בדף",

@@ -3,10 +3,33 @@
 		"authors": [
 			"Aranka",
 			"Daanboven",
-			"McDutchie"
+			"McDutchie",
+			"Romaine"
 		]
 	},
 	"wikilambda-invalidzobjecttitle": "De opgegeven titel '$1' is niet geldig voor een ZObject.",
+	"wikilambda-persistentzobject-metadata": "Labels en aliasen",
+	"wikilambda-persistentzobject-contents": "Inhoud",
 	"wikilambda-viewmode-nojs": "Zonder JavaScript is de weergave van deze pagina beperkt.",
-	"wikilambda-editor-label-addlanguage-label": "Taal toevoegen"
+	"wikilambda-reference": "Referentie",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Taal",
+	"wikilambda-publishnew": "Publiceren",
+	"wikilambda-savenew": "Opslaan",
+	"wikilambda-publishchanges": "Wijzigingen publiceren",
+	"wikilambda-savechanges": "Wijzigingen opslaan",
+	"wikilambda-summarylabel": "Samenvatting:",
+	"wikilambda-publish-summary-prompt": "Beschrijf wat u heeft gewijzigd",
+	"wikilambda-loading": "Laden van data",
+	"wikilambda-typeselector-label": "Selecteer Type",
+	"wikilambda-function-typeselector-label": "Selecteer een Functie",
+	"wikilambda-editor-label-addlanguage-label": "Taal toevoegen",
+	"wikilambda-implementation-selector-code": "Code",
+	"wikilambda-tester-function-duration": "Duur",
+	"wikilambda-metadata-language-column": "Taal",
+	"wikilambda-metadata-label-column": "Label",
+	"wikilambda-metadata-aka-column": "Ook bekend als",
+	"wikilambda-metadata-add-alias": "Voeg alias toe",
+	"wikilambda-metadata-all-languages": "Toon alle ingevoerde talen",
+	"wikilambda-metadata-fewer-languages": "Toon minder talen",
+	"wikilambda-persistentobject-details-label": "Details"
 }
