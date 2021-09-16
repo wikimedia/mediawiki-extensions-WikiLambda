@@ -25,6 +25,14 @@ class ZObjectEditAction extends Action {
 
 		$userLang = $this->getLanguage();
 
+		// The page title is the current ZID
+		$zId = $this->getPageTitle();
+
+		// (T290217) Show page title
+		// NOTE setPageTitle sets both the HTML <title> header and the <h1> tag
+		$editingMsg = $this->msg( 'editing', $zId );
+		$output->setPageTitle( $editingMsg );
+
 		// Fallback no-JS notice.
 		$output->addHtml( Html::element(
 			'div',
@@ -35,7 +43,6 @@ class ZObjectEditAction extends Action {
 		$userLangCode = $userLang->getCode();
 
 		$createNewPage = false;
-		$title = $this->page->getTitle();
 
 		// If the userLang isn't recognised (e.g. it's qqx, or a language we don't support yet, or it's
 		// nonsense), then fall back to English.
@@ -50,7 +57,7 @@ class ZObjectEditAction extends Action {
 			'zlang' => $userLangCode,
 			'zlangZid' => $userLangZid,
 			'createNewPage' => $createNewPage,
-			'zId' => $title->getBaseText(),
+			'zId' => $zId,
 			'viewmode' => false
 		];
 
