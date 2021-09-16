@@ -63,6 +63,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		}, ARRAY_FILTER_USE_BOTH );
 
 		$zObjectStore->insertZObjectLabels( $zid, $ztype, $newLabels );
+		// @phan-suppress-next-line SecurityCheck-SQLInjection T290563
 		$zObjectStore->insertZObjectLabelConflicts( $zid, $conflicts );
 
 		// (T285368) Write aliases in the labels table
