@@ -16,11 +16,12 @@ The WikiLambda team comprises several contributors, of whom those who have commi
 * Umherirrender <umherirrender_de.wp@web.de>
 * Željko Filipin <zeljko.filipin@gmail.com>
 * Ammar Abdulhamid <ammarpad@yahoo.com>
+* Marco Fossati <fossati@spaziodati.eu>
 * Alexander Vorwerk <alec@vc-celle.de>
 
 … as well as many translation contributors, whose work is represented on TranslateWiki.net.
 
-(This list was generated on 2021-08-20 with `git shortlog -sne --no-merges | grep -v '\[BOT\]'`.)
+(This list was generated on 2021-09-17 with `git shortlog -sne --no-merges | grep -v '\[BOT\]'`.)
 
 This work is based on the vision set out by Denny Vrandečić whilst working at Google Research in his initial paper[0], evolved into an architecture in his subsequent paper[1], and was pioneered in a prototype implementation, AbstractText[2].
 
