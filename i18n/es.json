@@ -8,7 +8,8 @@
 			"Fitoschido",
 			"Jackiezelaya",
 			"KATRINE1993",
-			"Mpayansilva"
+			"Mpayansilva",
+			"Reverse88"
 		]
 	},
 	"wikilambda-invalidzobject": "El contenido proporcionado no constituye un ZObject válido.",
@@ -30,6 +31,7 @@
 	"wikilambda-editor-label-removelanguage-tooltip": "Quitar este idioma de esta etiqueta",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Quitar este elemento de esta ZList",
 	"wikilambda-editor-zobject-addkey": "Añadir clave:",
+	"specialpages-group-wikilambda": "Páginas de Wikifunciones",
 	"wikilambda-editor-boolean-selector": "Seleccione verdadero/falso",
 	"wikilambda-implementation-selector-code": "Código",
 	"wikilambda-implementation-selector-composition": "Composición",
