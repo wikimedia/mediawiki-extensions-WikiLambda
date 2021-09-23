@@ -190,6 +190,7 @@
 				"ext.wikilambda.edit/mixins/callZFunction.js",
 				"ext.wikilambda.edit/components/ZNaturalLanguageSelector.vue",
 				"lib/ace/src/ace.js",
+				"lib/vue-router/vue-router.common.js",
 				"lib/icons.js"
 			],
 			"messages": [

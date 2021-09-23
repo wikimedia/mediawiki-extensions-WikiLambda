@@ -8,3 +8,13 @@ ace:
     ace-builds-1.4.12/ChangeLog.txt:
     ace-builds-1.4.12/LICENSE:
     ace-builds-1.4.12/README.md:
+
+vue-router:
+  type: tar
+  src: https://codeload.github.com/vuejs/vue-router/tar.gz/v3.5.2
+  integrity: sha384-3/cHWBHH48zRz9UncWpTBGxx5NpiWOaUatvgQKJq7ypSIzu82c9tasHiU1ihRZyi
+
+  dest:
+    vue-router-3.5.2/README.md:
+    vue-router-3.5.2/LICENSE:
+    vue-router-3.5.2/dist/vue-router.common.js: /

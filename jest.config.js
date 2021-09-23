@@ -37,6 +37,7 @@ module.exports = {
 		'resources/init.js',
 		'resources/vendor/',
 		'resources/lib/ace/',
+		'resources/lib/vue-router/',
 		'resources/ext.wikilambda.edit/components/base/'
 	],
 
