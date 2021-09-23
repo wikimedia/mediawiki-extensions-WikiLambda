@@ -189,7 +189,7 @@
 				"ext.wikilambda.edit/mixins/schemata.js",
 				"ext.wikilambda.edit/mixins/callZFunction.js",
 				"ext.wikilambda.edit/components/ZNaturalLanguageSelector.vue",
-				"lib/ace/ace.js",
+				"lib/ace/src/ace.js",
 				"lib/icons.js"
 			],
 			"messages": [

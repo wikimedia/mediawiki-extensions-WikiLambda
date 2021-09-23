@@ -10,7 +10,7 @@
 </template>
 
 <script>
-require( '../../../lib/ace/ace.js' );
+require( '../../../lib/ace/src/ace.js' );
 
 module.exports = {
 	name: 'CodeEditor',
