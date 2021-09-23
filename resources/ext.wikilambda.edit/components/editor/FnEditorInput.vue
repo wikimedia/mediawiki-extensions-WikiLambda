@@ -23,7 +23,7 @@
 					@input="setArgumentType( argument.id, $event )"
 				></fn-editor-type-selector>
 				<input
-					class="text-input"
+					class="ext-wikilambda-text-input"
 					:placeholder="$i18n( 'wikilambda-editor-input-label-placeholder' )"
 					:aria-label="$i18n( 'wikilambda-editor-input-label-placeholder' )"
 					:value="getArgumentLabel( argument.id )"
@@ -210,7 +210,7 @@ module.exports = {
 	display: flex;
 	align-items: center;
 
-	input.text-input {
+	input.ext-wikilambda-text-input {
 		margin-left: 10px;
 	}
 }

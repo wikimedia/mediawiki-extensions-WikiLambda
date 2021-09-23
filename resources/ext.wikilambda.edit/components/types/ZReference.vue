@@ -10,7 +10,7 @@
 			<a
 				:href="referenceLink"
 				:target="referenceLinkTarget"
-				class="referenced-type"
+				class="ext-wikilambda-referenced-type"
 			>
 				{{ referenceLabel }}
 			</a>
@@ -132,7 +132,7 @@ module.exports = {
 .ext-wikilambda-zreference {
 	display: inline;
 
-	.referenced-type {
+	.ext-wikilambda-referenced-type {
 		font-style: italic;
 		font-size: 0.9em;
 	}

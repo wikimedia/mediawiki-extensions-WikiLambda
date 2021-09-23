@@ -1,22 +1,22 @@
 <template>
 	<div>
-		<div class="ext-wikilambda-function-editor two-cols">
+		<div class="ext-wikilambda-function-editor ext-wikilambda-editor-two-cols">
 			<aside :aria-label="$i18n( 'wikilambda-editor-steps-label' )">
 				<div
 					v-for="(step, index) in steps"
 					:key="index"
-					class="vertical-progress-list"
+					class="ext-wikilambda-editor-vertical-progress-list"
 				>
 					<strong>
 						<router-link :to="step.items[ 0 ] ? getRouterTo( step.items[ 0 ].id ) : $route">
 							{{ step.title }}
 						</router-link>
 					</strong>
-					<ul class="progress-list">
+					<ul class="ext-wikilambda-editor-progress-list">
 						<li
 							v-for="item in step.items"
 							:key="item.id"
-							:class="'step ' + isCurrentTab( item.id )"
+							:class="'ext-wikilambda-editor-step ' + isCurrentTab( item.id )"
 						>
 							<span>
 								<router-link :to="getRouterTo( item.id )">
@@ -26,12 +26,12 @@
 						</li>
 					</ul>
 				</div>
-				<div class="horizontal-progress-list">
-					<ul class="progress-list tabs">
+				<div class="ext-wikilambda-editor-horizontal-progress-list">
+					<ul class="ext-wikilambda-editor-progress-list ext-wikilambda-editor-tabs">
 						<li
 							v-for="(step, index) in steps"
 							:key="index"
-							:class="{ active: currentStepCategory.title === step.title }"
+							:class="{ 'ext-wikilambda-editor-active': currentStepCategory.title === step.title }"
 						>
 							<strong>
 								<router-link :to="step.items[ 0 ] ? getRouterTo( step.items[ 0 ].id ) : $route">
@@ -40,11 +40,11 @@
 							</strong>
 						</li>
 					</ul>
-					<ul class="progress-list">
+					<ul class="ext-wikilambda-editor-progress-list">
 						<li
 							v-for="item in currentStepCategory.items"
 							:key="item.id"
-							:class="'step ' + isCurrentTab( item.id )"
+							:class="'ext-wikilambda-editor-step ' + isCurrentTab( item.id )"
 						>
 							<span>
 								<router-link :to="getRouterTo( item.id )">
@@ -59,7 +59,7 @@
 				<slot
 					:navigate-to="navigateTo"
 				></slot>
-				<div class="controls">
+				<div class="ext-wikilambda-editor-controls">
 					<sd-button @click="previousStep">
 						{{ $i18n( 'wikilambda-editor-go-back-button' ) }}
 					</sd-button>
@@ -205,9 +205,9 @@ module.exports = {
 			var tabIndex = this.flatSteps.indexOf( tab );
 
 			if ( tabIndex < this.currentStepIndex ) {
-				return 'complete';
+				return 'ext-wikilambda-editor-complete';
 			} else if ( tabIndex === this.currentStepIndex ) {
-				return 'active';
+				return 'ext-wikilambda-editor-active';
 			}
 
 			return '';
@@ -246,12 +246,12 @@ module.exports = {
 		background: #f0f0f0;
 		padding: 1em;
 
-		.progress-list {
+		.ext-wikilambda-editor-progress-list {
 			list-style: none;
 			padding: 1em 0.75em;
 			margin: 0;
 
-			li.step {
+			li.ext-wikilambda-editor-step {
 				position: relative;
 				display: block;
 				padding: 0.5em 0;
@@ -277,7 +277,7 @@ module.exports = {
 					transition-duration: 150ms;
 				}
 
-				&.complete {
+				&.ext-wikilambda-editor-complete {
 					color: #000;
 
 					& span:after {
@@ -287,7 +287,7 @@ module.exports = {
 					}
 				}
 
-				&.active {
+				&.ext-wikilambda-editor-active {
 					color: #000;
 
 					& span:after {
@@ -298,7 +298,7 @@ module.exports = {
 			}
 		}
 
-		.tabs {
+		.ext-wikilambda-editor-tabs {
 			list-style: none;
 			padding: 0;
 			margin: 0;
@@ -314,7 +314,7 @@ module.exports = {
 				}
 
 				&:hover,
-				&.active {
+				&.ext-wikilambda-editor-active {
 					color: #000;
 					border-bottom: 1px solid #000;
 
@@ -337,19 +337,19 @@ module.exports = {
 			width: 80%;
 			margin: 45px auto;
 
-			input.text-input {
+			input.ext-wikilambda-text-input {
 				width: 100%;
 				padding: 0.5em 1em;
 				box-sizing: border-box;
 			}
 		}
 
-		.description {
+		.ext-wikilambda-editor-description {
 			font-size: 0.9em;
 			margin: 0.5em 0;
 		}
 
-		.controls {
+		.ext-wikilambda-editor-controls {
 			display: flex;
 			justify-content: end;
 			padding-top: 1.5em;
@@ -360,22 +360,23 @@ module.exports = {
 		}
 	}
 
-	&.three-cols {
+	/* Currently unused, but we might bring this back. */
+	&.ext-wikilambda-editor-three-cols {
 		grid-template-columns: 200px 1fr 300px;
 
-		.horizontal-progress-list {
+		.ext-wikilambda-editor-horizontal-progress-list {
 			display: none;
 		}
 
-		.progress-list li.step span {
+		.ext-wikilambda-editor-progress-list li.ext-wikilambda-editor-step span {
 			display: block;
 		}
 	}
 
-	&.two-cols {
+	&.ext-wikilambda-editor-two-cols {
 		grid-template-columns: 1fr 300px;
 
-		.vertical-progress-list {
+		.ext-wikilambda-editor-vertical-progress-list {
 			display: none;
 		}
 
@@ -383,18 +384,18 @@ module.exports = {
 			grid-column: 1 e( '/' ) span 2;
 			background: #fff;
 
-			.progress-list {
+			.ext-wikilambda-editor-progress-list {
 				display: flex;
 				flex-direction: row;
 				justify-content: space-around;
 
-				&.tabs li {
+				&.ext-wikilambda-editor-tabs li {
 					text-align: center;
 					width: 100%;
 					transition-duration: 150ms;
 				}
 
-				li.step {
+				li.ext-wikilambda-editor-step {
 					display: flex;
 					width: 100%;
 					justify-content: center;
@@ -416,8 +417,8 @@ module.exports = {
 						transition-duration: 150ms;
 					}
 
-					&.active:not( :first-child ):before,
-					&.complete:not( :first-child ):before {
+					&.ext-wikilambda-editor-active:not( :first-child ):before,
+					&.ext-wikilambda-editor-complete:not( :first-child ):before {
 						border-bottom: 1px solid #000;
 					}
 				}

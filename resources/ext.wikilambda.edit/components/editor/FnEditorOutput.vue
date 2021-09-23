@@ -81,7 +81,7 @@ module.exports = {
 
 <style lang="less">
 .ext-wikilambda-output-editor {
-	input.text-input {
+	input.ext-wikilambda-text-input {
 		margin-left: 10px;
 	}
 }
