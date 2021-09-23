@@ -85,7 +85,7 @@ module.exports = {
 </script>
 
 <style lang="less">
-	.ext-wikilambda-inline-tester-validator {
-		display: inline;
-	}
+.ext-wikilambda-inline-tester-validator {
+	display: inline;
+}
 </style>
