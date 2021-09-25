@@ -22,6 +22,7 @@ module.exports = {
 		progress: {
 			immediate: true,
 			handler: function () {
+				// NOTE: This will change when we migrate to Vue3.
 				document.documentElement.style.setProperty( '--ext-wikilambda-complete-percentage', this.progress + '%' );
 			}
 		}

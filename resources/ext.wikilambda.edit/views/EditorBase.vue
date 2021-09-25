@@ -239,6 +239,8 @@ module.exports = {
 </script>
 
 <style lang="less">
+@import './../../lib/wikimedia-ui-base.less';
+
 .ext-wikilambda-function-editor {
 	display: grid;
 
@@ -381,7 +383,7 @@ module.exports = {
 
 		& > aside:first-child {
 			grid-column: 1 e( '/' ) span 2;
-			background: #fff;
+			background: @background-color-base;
 
 			.progress-list {
 				display: flex;
@@ -400,7 +402,7 @@ module.exports = {
 					justify-content: center;
 
 					span {
-						background: #fff;
+						background: @background-color-base;
 						padding: 0 3em 0 0.5em;
 						z-index: 2;
 					}
