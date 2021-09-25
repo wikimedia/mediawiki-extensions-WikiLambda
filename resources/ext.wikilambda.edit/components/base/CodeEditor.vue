@@ -58,7 +58,7 @@ module.exports = {
 				basePath = window.location.protocol + basePath;
 			}
 			// TODO: Figure a way to not have this path hardcoded
-			window.ace.config.set( 'basePath', basePath + '/WikiLambda/resources/lib/ace' );
+			window.ace.config.set( 'basePath', basePath + '/WikiLambda/resources/lib/ace/src' );
 
 			// Set readonly
 			this.editor.setReadOnly( this.readOnly );
