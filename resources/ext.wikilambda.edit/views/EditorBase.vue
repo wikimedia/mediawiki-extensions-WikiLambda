@@ -8,7 +8,7 @@
 					class="ext-wikilambda-editor-vertical-progress-list"
 				>
 					<strong>
-						<router-link :to="step.items[ 0 ] ? getRouterTo( step.items[ 0 ].id ) : $route">
+						<router-link :to="navigateToFirstStepItem( step )">
 							{{ step.title }}
 						</router-link>
 					</strong>
@@ -34,7 +34,7 @@
 							:class="{ 'ext-wikilambda-editor-active': currentStepCategory.title === step.title }"
 						>
 							<strong>
-								<router-link :to="step.items[ 0 ] ? getRouterTo( step.items[ 0 ].id ) : $route">
+								<router-link :to="navigateToFirstStepItem( step )">
 									{{ step.title }}
 								</router-link>
 							</strong>
@@ -227,6 +227,18 @@ module.exports = {
 			} else {
 				this.$store.dispatch( 'submitZObject', '' );
 			}
+		},
+		navigateToFirstStepItem: function ( step ) {
+			for ( var index in step.items ) {
+				var item = step.items[ index ];
+
+				// If the item has a component, render it.
+				if ( item.component ) {
+					return this.getRouterTo( item.id );
+				}
+			}
+
+			return this.$route;
 		}
 	} ),
 	mounted: function () {
