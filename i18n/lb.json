@@ -23,5 +23,18 @@
 	"wikilambda-metadata-add-alias": "Alias derbäisetzen",
 	"wikilambda-metadata-all-languages": "All disponibel Sproochen",
 	"wikilambda-metadata-fewer-languages": "Manner Sproochen",
-	"wikilambda-persistentobject-details-label": "Detailer"
+	"wikilambda-persistentobject-details-label": "Detailer",
+	"wikilambda-editor-additional-details-label": "Zousätzlech Detailer",
+	"wikilambda-editor-go-back-button": "Zréck goen",
+	"wikilambda-editor-next-button": "Nächste Schratt",
+	"wikilambda-editor-fn-step-implement": "Funktioun schreiwen",
+	"wikilambda-editor-start-function-title": "Funktioun starten",
+	"wikilambda-editor-name-title": "Numm",
+	"wikilambda-editor-name-zobject-name": "Numm vun der Funktioun",
+	"wikilambda-editor-name-aliases": "Aliasen",
+	"wikilambda-editor-behavior-title": "Verhalen",
+	"wikilambda-editor-write-title": "Schreiwen",
+	"wikilambda-editor-write-save-button": "Implementatioun späicheren",
+	"wikilambda-editor-attach-title": "Drunhänken",
+	"wikilambda-editor-progress-title": "Fortschrëtt"
 }

@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Adignyoke",
+			"Ayire Adongo",
 			"Dnshitobu"
 		]
 	},
@@ -15,5 +16,12 @@
 	"wikilambda-metadata-hide-languages": "Soge labole daka",
 	"wikilambda-metadata-language-column": "Tɔgum",
 	"wikilambda-metadata-all-languages": "Pa'ale togum Za'a ke",
-	"wikilambda-metadata-fewer-languages": "Pa'ale togum buribuure fii"
+	"wikilambda-metadata-fewer-languages": "Pa'ale togum buribuure fii",
+	"wikilambda-editor-steps-label": "Demesa Nabara",
+	"wikilambda-editor-go-back-button": "Lebe poorum",
+	"wikilambda-editor-start-function-title": "Pɔsega Di’ire",
+	"wikilambda-editor-name-title": "Yu’urɛ",
+	"wikilambda-editor-name-aliases": "Zɛbeyu’ura",
+	"wikilambda-editor-input-description": "Karewagesi dela kalɛ n lagumeni taaba. Magesɛ woo, lagumenɛ/ta’anɛ la san dɛna “Pa’asɛ”, gee ti la lagum kalesiyi, la ta’am dɛna “x” and “y”.",
+	"wikilambda-editor-write-title": "Gulesɛ"
 }

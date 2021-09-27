@@ -141,5 +141,9 @@
 	"wikilambda-persistentobject-evaluate-function": "Évaluer la fonction",
 	"wikilambda-implementation-selector-none": "Ceci est une implémentation intégrée. Le code fait partie du logiciel cœur, et n’est pas affiché ici.",
 	"wikilambda-function-is-attached": "Cet objet est associé à sa fonction.",
-	"wikilambda-function-is-not-attached": "Cet objet n'est pas associé à sa fonction."
+	"wikilambda-function-is-not-attached": "Cet objet n'est pas associé à sa fonction.",
+	"wikilambda-editor-name-title": "Nom",
+	"wikilambda-editor-name-aliases": "Alias",
+	"wikilambda-editor-input-add-button": "Ajouter une entrée",
+	"wikilambda-editor-write-title": "Écrire"
 }

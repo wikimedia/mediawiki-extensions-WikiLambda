@@ -22,6 +22,7 @@
 	"wikilambda-editor-label-removelanguage-tooltip": "이 레이블에서 이 언어를 제거합니다",
 	"wikilambda-editor-zobject-addkey": "키 추가:",
 	"wikilambda-editor-label-select-programming-language-label": "프로그래밍 언어 선택:",
+	"specialpages-group-wikilambda": "위키함수 문서",
 	"wikilambda-functioncall-error": "함수 호출 오류: $1",
 	"wikilambda-functioncall-error-category": "위키함수 호출 오류가 있는 문서",
 	"wikilambda-functioncall-error-category-desc": "일반 오류를 발생시키는 위키함수로의 호출이 있는 문서",
