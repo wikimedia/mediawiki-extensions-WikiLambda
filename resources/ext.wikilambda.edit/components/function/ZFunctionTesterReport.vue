@@ -63,7 +63,7 @@
 								</button>
 							</slot>
 						</td>
-						<td :colspan="implementations.length" class="results">
+						<td :colspan="implementations.length" class="ext-wikilambda-fn-tester-result">
 							{{ $i18n( 'wikilambda-tester-results-percentage-label' ) }}:
 							{{ resultCount.passing }}/{{ resultCount.total }} ({{ resultCount.percentage }}%)
 						</td>
@@ -283,7 +283,7 @@ module.exports = {
 	white-space: nowrap;
 }
 
-.ext-wikilambda-fn-tester-results tfoot td.results {
+.ext-wikilambda-fn-tester-results tfoot td.ext-wikilambda-fn-tester-result {
 	padding: 10px 0;
 	border-top: 3px double #000;
 	text-align: right;

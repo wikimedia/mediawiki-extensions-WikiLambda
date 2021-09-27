@@ -1,27 +1,27 @@
 <template>
 	<div class="ext-wikilambda-visual-display">
-		<div class="input">
-			<div class="input-title">
+		<div class="ext-wikilambda-visual-display-input">
+			<div class="ext-wikilambda-visual-display-input-title">
 				<slot name="input">
 					{{ $i18n( 'wikilambda-editor-input-title' ) }}
 				</slot>
 			</div>
 		</div>
-		<div class="arrow">
-			<div class="point"></div>
+		<div class="ext-wikilambda-visual-display-arrow">
+			<div class="ext-wikilambda-visual-display-point"></div>
 		</div>
-		<div class="function">
+		<div class="ext-wikilambda-visual-display-function">
 			<div class="function-title">
 				<slot name="function">
 					{{ $i18n( 'wikilambda-editor-name-zobject-name' ) }}
 				</slot>
 			</div>
 		</div>
-		<div class="arrow">
-			<div class="point"></div>
+		<div class="ext-wikilambda-visual-display-arrow">
+			<div class="ext-wikilambda-visual-display-point"></div>
 		</div>
-		<div class="output">
-			<div class="output-title">
+		<div class="ext-wikilambda-visual-display-output">
+			<div class="ext-wikilambda-visual-display-output-title">
 				<slot name="output">
 					{{ $i18n( 'wikilambda-editor-output-title' ) }}
 				</slot>
@@ -52,20 +52,20 @@ module.exports = {};
 		margin: 2px;
 	}
 
-	.input,
-	.output {
+	.ext-wikilambda-visual-display-input,
+	.ext-wikilambda-visual-display-output {
 		width: 80%;
 		border: 1px solid #333;
 		padding: 0.5em;
 	}
 
-	.arrow {
+	.ext-wikilambda-visual-display-arrow {
 		height: 50px;
 		width: 3px;
 		background: #000;
 		justify-content: end;
 
-		.point {
+		.ext-wikilambda-visual-display-point {
 			border: solid #000;
 			border-width: 0 4px 4px 0;
 			display: inline-block;
@@ -76,7 +76,7 @@ module.exports = {};
 		}
 	}
 
-	.function {
+	.ext-wikilambda-visual-display-function {
 		width: 80%;
 		height: 100px;
 		border: 1px solid #333;

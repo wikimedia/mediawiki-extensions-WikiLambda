@@ -16,7 +16,7 @@
 			</h3>
 			<input
 				v-model="zobjectLabel"
-				class="text-input"
+				class="ext-wikilambda-text-input"
 				:aria-label="$i18n( 'wikilambda-editor-name-zobject-name' )"
 				:placeholder="$i18n( 'wikilambda-editor-name-zobject-name-placeholder' )"
 			>
@@ -31,10 +31,10 @@
 			<div
 				v-for="alias in getCurrentLanguageAliases"
 				:key="alias.id"
-				class="alias-input"
+				class="ext-wikilambda-alias-input"
 			>
 				<input
-					class="text-input"
+					class="ext-wikilambda-text-input"
 					:value="alias.value"
 					aria-label="Alias"
 					@input="updateAlias( alias.id, $event.target.value )"
@@ -46,11 +46,11 @@
 					{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 				</sd-button>
 			</div>
-			<div class="alias-input">
+			<div class="ext-wikilambda-alias-input">
 				<form @submit.prevent="addAliasForLanguage( getCurrentZLanguage )">
 					<input
 						v-model="newAlias"
-						class="text-input"
+						class="ext-wikilambda-text-input"
 						aria-label="Alias"
 						:placeholder="$i18n( 'wikilambda-editor-name-aliases-placeholder' )"
 					>
@@ -284,7 +284,7 @@ module.exports = {
 
 <style lang="less">
 .ext-wikilambda-editor-name {
-	.alias-input {
+	.ext-wikilambda-alias-input {
 		display: flex;
 
 		form {

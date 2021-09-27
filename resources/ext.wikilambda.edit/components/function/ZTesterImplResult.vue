@@ -58,11 +58,11 @@ module.exports = {
 			}
 
 			if ( this.testerStatus === true ) {
-				return 'test-passed';
+				return 'ext-wikilambda-tester-passed';
 			}
 
 			if ( this.testerStatus === false ) {
-				return 'test-failed';
+				return 'ext-wikilambda-tester-failed';
 			}
 
 			return '';
@@ -90,12 +90,12 @@ module.exports = {
 	text-decoration: none;
 }
 
-.ext-wikilambda-tester-result.test-passed {
+.ext-wikilambda-tester-result.ext-wikilambda-tester-passed {
 	background: #007400;
 	color: #fff;
 }
 
-.ext-wikilambda-tester-result.test-failed {
+.ext-wikilambda-tester-result.ext-wikilambda-tester-failed {
 	background: #f00;
 	color: #fff;
 }
