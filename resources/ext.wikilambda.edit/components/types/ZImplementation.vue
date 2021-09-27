@@ -162,7 +162,7 @@ module.exports = {
 				}.bind( this ) );
 			},
 			isImplementationAttached: function () {
-				return this.selectedFunctionJson.Z2K2.Z8K4.filter( function ( zid ) {
+				return this.selectedFunctionJson && this.selectedFunctionJson.Z2K2.Z8K4.filter( function ( zid ) {
 					return zid === this.zImplementationId;
 				}.bind( this ) ).length > 0;
 			}

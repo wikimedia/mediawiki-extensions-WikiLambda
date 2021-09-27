@@ -1,0 +1,87 @@
+var Constants = require( '../../../Constants.js' ),
+	typeUtils = require( '../../../mixins/typeUtils.js' ).methods;
+
+module.exports = {
+	getters: {
+		getZObjectAsJson: function ( state, getters, rootState, rootGetters ) {
+			/**
+			 * Return the complete zObject as a JSON
+			 *
+			 * @return {Array} zObjectJson
+			 */
+
+			return rootGetters.getZObjectAsJsonById( 0, rootState.zobjectModule.zobject[ 0 ].value === 'array' );
+		},
+		/**
+		 * Return the root ZObjectId, equivalend to the Z_REFERENCE_ID of Z_PERSISTENTOBJECT_ID
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @param {Object} rootState
+		 * @param {Object} rootGetters
+		 * @return {string} currentZObjectId
+		 */
+		getCurrentZObjectId: function ( state, getters, rootState, rootGetters ) {
+			var persistentObjectId =
+				typeUtils.findKeyInArray( Constants.Z_PERSISTENTOBJECT_ID, rootState.zobjectModule.zobject ).id,
+				persistenObjectChildren = rootGetters.getZObjectChildrenById( persistentObjectId ),
+				zReferenceId = typeUtils.findKeyInArray( Constants.Z_REFERENCE_ID, persistenObjectChildren );
+
+			return zReferenceId.value || Constants.NEW_ZID_PLACEHOLDER;
+		},
+		getCurrentZObjectType: function ( state, getters ) {
+			var zobject = getters.getZObjectAsJson,
+				type;
+
+			if ( zobject && zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] ) {
+				type = zobject[
+					Constants.Z_PERSISTENTOBJECT_VALUE ][
+					Constants.Z_OBJECT_TYPE ];
+
+				if ( typeof type === 'object' ) {
+					type = type[ Constants.Z_REFERENCE_ID ];
+				}
+			}
+
+			return type || false;
+		},
+		isCurrentZObjectExecutable: function ( state, getters ) {
+			return [ Constants.Z_FUNCTION, Constants.Z_IMPLEMENTATION ].indexOf( getters.getCurrentZObjectType ) !== -1;
+		},
+		currentZObjectHasLabel: function ( state, getters ) {
+			var zobject = getters.getZObjectAsJson;
+
+			return zobject &&
+				zobject[ Constants.Z_PERSISTENTOBJECT_LABEL ][
+					Constants.Z_MULTILINGUALSTRING_VALUE ].filter(
+					function ( value ) {
+						return value[ Constants.Z_MONOLINGUALSTRING_VALUE ][
+							Constants.Z_STRING_VALUE ] !== '';
+					} ).length > 0;
+		},
+		currentZObjectLanguages: function ( state, getters ) {
+			var languageList = [],
+				zObjectLabels;
+
+			if ( !getters.getZObjectAsJson ) {
+				return;
+			}
+
+			zObjectLabels = getters.getZObjectAsJson[ Constants.Z_PERSISTENTOBJECT_LABEL ];
+
+			// Don't break if the labels are set to {}
+			if ( zObjectLabels.Z12K1 ) {
+				zObjectLabels.Z12K1.forEach( function ( label ) {
+					languageList.push( label.Z11K1.Z9K1 );
+				} );
+			}
+
+			return languageList.map( function ( languageCode ) {
+				return {
+					Z1K1: 'Z9',
+					Z9K1: languageCode
+				};
+			} );
+		}
+	}
+};

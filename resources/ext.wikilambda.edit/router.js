@@ -2,27 +2,13 @@ var VueRouter = require( '../lib/vue-router/vue-router.common.js' ),
 	FunctionEditor = require( './views/FunctionEditor.vue' ),
 	ZObjectViewer = require( './components/ZObjectViewer.vue' ),
 	ZObjectEditor = require( './components/ZObjectEditor.vue' ),
-	store = require( './store/index.js' );
+	store = require( './store/index.js' ),
+	getParameterByName = require( './mixins/urlUtils.js' ).methods.getParameterByName;
 
 // Vue Router relies on process.env.NODE_ENV being present.
 // This code is a bit of a hack to make sure that it is present.
 // If ?debug=true is passed in the URL, it will set process.env.NODE_ENV to 'development'.
 // Otherwise, it will set it to 'production'.
-function getParameterByName( name ) {
-	name = name.replace( /[[]]/g, '\\$&' );
-	var regex = new RegExp( '[?&]' + name + '(=([^&#]*)|&|#|$)' ),
-		results = regex.exec( window.location.href );
-	if ( !results ) {
-		return null;
-	}
-
-	if ( !results[ 2 ] ) {
-		return '';
-	}
-
-	return decodeURIComponent( results[ 2 ].replace( /\+/g, ' ' ) );
-}
-
 var isDebugMode = getParameterByName( 'debug' ) === 'true';
 
 window.process = {

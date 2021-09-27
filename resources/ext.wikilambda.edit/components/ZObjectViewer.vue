@@ -22,19 +22,12 @@
 </template>
 
 <script>
-var ZObject = require( './ZObject.vue' ),
-	mapGetters = require( 'vuex' ).mapGetters,
-	ZObjectJson = require( './ZObjectJson.vue' );
-
+var ZObject = require( './ZObject.vue' );
 module.exports = {
 	name: 'ZObjectViewer',
 	components: {
-		'z-object': ZObject,
-		'z-object-json': ZObjectJson
-	},
-	computed: mapGetters( {
-		ZObjectJson: 'getZObjectAsJson'
-	} )
+		'z-object': ZObject
+	}
 };
 </script>
 

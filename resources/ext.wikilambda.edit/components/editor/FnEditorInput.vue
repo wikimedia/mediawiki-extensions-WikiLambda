@@ -66,14 +66,14 @@ module.exports = {
 			default: 0
 		}
 	},
-	computed: $.extend( mapGetters( [
-		'getNextObjectId',
-		'getZObjectChildrenById',
-		'getNestedZObjectById',
-		'getZObjectAsJson',
-		'getUserZlangZID',
-		'getCurrentZLanguage'
-	] ), {
+	computed: $.extend( mapGetters( {
+		getNextObjectId: 'getNextObjectId',
+		getZObjectChildrenById: 'getZObjectChildrenById',
+		getNestedZObjectById: 'getNestedZObjectById',
+		getZObjectAsJson: 'getZObjectAsJson',
+		getUserZlangZID: 'getUserZlangZID',
+		getCurrentZLanguage: 'getCurrentZLanguage'
+	} ), {
 		Constants: function () {
 			return Constants;
 		},

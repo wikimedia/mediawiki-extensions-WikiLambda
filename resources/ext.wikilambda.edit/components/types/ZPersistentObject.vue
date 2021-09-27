@@ -99,18 +99,18 @@ module.exports = {
 			default: false
 		}
 	},
-	computed: $.extend( mapGetters( [
-		'getZObjectChildrenById',
-		'getZObjectTypeById',
-		'getZkeyLabels',
-		'getZkeys',
-		'isCurrentZObjectExecutable',
-		'getZargumentsString',
-		'getCurrentZObjectType',
-		'getZObjectAsJsonById',
-		'getZObjectAsJson',
-		'getCurrentZObjectId'
-	] ), {
+	computed: $.extend( mapGetters( {
+		getZObjectChildrenById: 'getZObjectChildrenById',
+		getZObjectTypeById: 'getZObjectTypeById',
+		getZkeyLabels: 'getZkeyLabels',
+		getZkeys: 'getZkeys',
+		isCurrentZObjectExecutable: 'isCurrentZObjectExecutable',
+		getZargumentsString: 'getZargumentsString',
+		getCurrentZObjectType: 'getCurrentZObjectType',
+		getZObjectAsJsonById: 'getZObjectAsJsonById',
+		getZObjectAsJson: 'getZObjectAsJson',
+		getCurrentZObjectId: 'getCurrentZObjectId'
+	} ), {
 		Constants: function () {
 			return Constants;
 		},

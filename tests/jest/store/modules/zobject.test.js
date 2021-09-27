@@ -568,6 +568,7 @@ describe( 'zobject Vuex module', function () {
 			};
 			context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
 			context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
+			context.getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( context.state );
 			context.commit = jest.fn( function ( mutationType, payload ) {
 				zobjectModule.mutations[ mutationType ]( context.state, payload );
 			} );
@@ -589,7 +590,7 @@ describe( 'zobject Vuex module', function () {
 
 			// Validate that recalculate correctly updated the index
 			expect( zobjectModule.getters.getZObjectById( context.state )( 20 ) ).toEqual( { key: 0, value: 'object', parent: 3, id: 20 } );
-			expect( zobjectModule.getters.getZObjectAsJson( context.state ).Z2K2 ).toEqual( [ { Z1K1: 'Z6', Z6K1: 'second' } ] );
+			expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, { zobjectModule: context.state }, context.getters ).Z2K2 ).toEqual( [ { Z1K1: 'Z6', Z6K1: 'second' } ] );
 		} );
 
 		describe( 'Add ZObjects', function () {
@@ -599,9 +600,30 @@ describe( 'zobject Vuex module', function () {
 						{ id: 0, value: 'object' }
 					]
 				};
+				context.rootState = {
+					zobjectModule: context.state
+				};
 				Object.keys( zobjectModule.getters ).forEach( function ( key ) {
-					context.getters[ key ] = zobjectModule.getters[ key ]( context.state, context.getters );
+					context.getters[ key ] =
+						zobjectModule.getters[ key ](
+							context.state, context.getters,
+							{ zobjectModule: context.state },
+							context.getters );
 				} );
+				Object.keys( zobjectModule.modules.currentZObject.getters ).forEach( function ( key ) {
+					context.getters[ key ] =
+						zobjectModule.modules.currentZObject.getters[ key ](
+							context.state,
+							context.getters,
+							{ zobjectModule: context.state },
+							context.getters );
+				} );
+				context.getters.getNextKey =
+					zobjectModule.getters.getNextKey(
+						context.state,
+						context.getters,
+						{ zobjectModule: context.state },
+						context.getters );
 				context.getters.getZkeys = {};
 				context.commit = jest.fn( function ( mutationType, payload ) {
 					zobjectModule.mutations[ mutationType ]( context.state, payload );
@@ -615,7 +637,17 @@ describe( 'zobject Vuex module', function () {
 						};
 					}
 
-					zobjectModule.actions[ actionType ]( context, payload );
+					var maybeFn = zobjectModule.actions[ actionType ];
+
+					if ( typeof maybeFn === 'function' ) {
+						maybeFn( context, payload );
+					} else {
+						maybeFn = zobjectModule.modules.addZObjects.actions[ actionType ];
+
+						if ( typeof maybeFn === 'function' ) {
+							maybeFn( context, payload );
+						}
+					}
 
 					return {
 						then: function ( fn ) {
@@ -624,15 +656,19 @@ describe( 'zobject Vuex module', function () {
 					};
 				} );
 
-				context.rootGetters = {
+				context.rootGetters = $.extend( context.getters, {
 					getZkeys: JSON.parse( fs.readFileSync( path.join( __dirname, './zobject/getZkeys.json' ) ) )
-				};
+				} );
 			} );
 
 			it( 'adds a valid ZPersistentObject', function () {
-				zobjectModule.actions.addZPersistentObject( context, 0 );
+				zobjectModule.modules.addZObjects.actions.addZPersistentObject( context, 0 );
 
-				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual(
+				expect( zobjectModule
+					.modules
+					.currentZObject
+					.getters
+					.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual(
 					{ Z1K1: { Z1K1: 'Z9', Z9K1: 'Z2' },
 						Z2K1: { Z1K1: 'Z9', Z9K1: 'Z0' },
 						Z2K2: undefined,
@@ -646,67 +682,79 @@ describe( 'zobject Vuex module', function () {
 			} );
 
 			it( 'adds a valid ZMultilingualString', function () {
-				zobjectModule.actions.addZMultilingualString( context, 0 );
+				zobjectModule.modules.addZObjects.actions.addZMultilingualString( context, 0 );
 
-				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z12', Z12K1: [] } );
+				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z12', Z12K1: [] } );
 			} );
 
 			it( 'adds a valid empty ZString', function () {
-				zobjectModule.actions.addZString( context, { id: 0 } );
+				zobjectModule.modules.addZObjects.actions.addZString( context, { id: 0 } );
 
-				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z6', Z6K1: '' } );
+				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z6', Z6K1: '' } );
 			} );
 
 			it( 'adds a valid prefilled ZString', function () {
-				zobjectModule.actions.addZString( context, { id: 0, value: 'Hello world' } );
+				zobjectModule.modules.addZObjects.actions.addZString( context, { id: 0, value: 'Hello world' } );
 
-				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z6', Z6K1: 'Hello world' } );
+				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z6', Z6K1: 'Hello world' } );
 			} );
 
 			it( 'adds a valid ZList', function () {
-				zobjectModule.actions.addZList( context, 0 );
+				zobjectModule.modules.addZObjects.actions.addZList( context, 0 );
 
 				expect( context.state.zobject ).toEqual( [
 					{ id: 0, value: 'array' }
 				] );
 
-				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( [] );
+				expect( zobjectModule
+					.modules
+					.currentZObject
+					.getters
+					.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters ) ).toEqual( [] );
 			} );
 
 			it( 'adds a valid empty ZReference', function () {
-				zobjectModule.actions.addZReference( context, { id: 0 } );
+				zobjectModule.modules.addZObjects.actions.addZReference( context, { id: 0 } );
 
-				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z9', Z9K1: '' } );
+				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z9', Z9K1: '' } );
 			} );
 
 			it( 'adds a valid prefilled ZReference', function () {
-				zobjectModule.actions.addZReference( context, { id: 0, value: 'Z1' } );
+				zobjectModule.modules.addZObjects.actions.addZReference( context, { id: 0, value: 'Z1' } );
 
-				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z1' } );
+				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z1' } );
 			} );
 
 			it( 'adds a valid ZArgument', function () {
-				zobjectModule.actions.addZArgument( context, 0 );
+				zobjectModule.modules.addZObjects.actions.addZArgument( context, 0 );
 
-				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z17', Z17K1: { Z1K1: 'Z9', Z9K1: '' }, Z17K2: { Z1K1: 'Z6', Z6K1: 'Z0K1' }, Z17K3: { Z1K1: 'Z12', Z12K1: [] } } );
+				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z17', Z17K1: { Z1K1: 'Z9', Z9K1: '' }, Z17K2: { Z1K1: 'Z6', Z6K1: 'Z0K1' }, Z17K3: { Z1K1: 'Z12', Z12K1: [] } } );
 			} );
 
 			it( 'adds a valid ZFunctionCall', function () {
-				zobjectModule.actions.addZFunctionCall( context, 0 );
+				zobjectModule.modules.addZObjects.actions.addZFunctionCall( context, 0 );
 
-				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z7', Z7K1: '' } );
+				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z7', Z7K1: '' } );
 			} );
 
 			it( 'adds a valid ZImplementation', function () {
-				zobjectModule.actions.addZImplementation( context, 0 );
+				zobjectModule.modules.addZObjects.actions.addZImplementation( context, 0 );
 
-				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( { Z1K1: 'Z14', Z14K1: { Z1K1: 'Z9', Z9K1: '' }, Z14K2: undefined, Z14K3: { Z1K1: 'Z16', Z16K1: { Z1K1: 'Z61', Z61K1: { Z1K1: 'Z6', Z6K1: '' } }, Z16K2: { Z1K1: 'Z6', Z6K1: '' } } } );
+				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.rootGetters ) ).toEqual( { Z1K1: 'Z14', Z14K1: { Z1K1: 'Z9', Z9K1: '' }, Z14K2: undefined, Z14K3: { Z1K1: 'Z16', Z16K1: { Z1K1: 'Z61', Z61K1: { Z1K1: 'Z6', Z6K1: '' } }, Z16K2: { Z1K1: 'Z6', Z6K1: '' } } } );
 			} );
 
 			it( 'adds a valid ZFunction', function () {
-				zobjectModule.actions.addZFunction( context, 0 );
+				zobjectModule.modules.addZObjects.actions.addZFunction( context, 0 );
 
-				expect( zobjectModule.getters.getZObjectAsJson( context.state ) ).toEqual( {
+				expect( zobjectModule
+					.modules
+					.currentZObject
+					.getters
+					.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( {
 					Z1K1: 'Z8',
 					Z8K1: [
 						{

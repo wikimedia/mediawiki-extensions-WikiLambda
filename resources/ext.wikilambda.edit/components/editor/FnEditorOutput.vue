@@ -48,7 +48,6 @@ module.exports = {
 		'getNextObjectId',
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
-		'getZObjectAsJson',
 		'getUserZlangZID'
 	] ), {
 		Constants: function () {

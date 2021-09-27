@@ -68,10 +68,10 @@ module.exports = {
 			viewmode: false
 		};
 	},
-	computed: mapGetters( [
-		'getCurrentZObjectType',
-		'getZObjectAsJson'
-	] ),
+	computed: mapGetters( {
+		getCurrentZObjectType: 'getCurrentZObjectType',
+		getZObjectAsJson: 'getZObjectAsJson'
+	} ),
 	methods: {
 		callFunctionHandler: function () {
 			var self = this,

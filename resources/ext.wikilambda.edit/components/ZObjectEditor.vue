@@ -54,16 +54,14 @@ var ZObject = require( './ZObject.vue' ),
 	SdButton = require( './base/Button.vue' ),
 	SdMessage = require( './base/Message.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions,
-	ZObjectJson = require( './ZObjectJson.vue' );
+	mapActions = require( 'vuex' ).mapActions;
 
 module.exports = {
 	name: 'ZObjectEditor',
 	components: {
 		'z-object': ZObject,
 		'sd-button': SdButton,
-		'sd-message': SdMessage,
-		'z-object-json': ZObjectJson
+		'sd-message': SdMessage
 	},
 	data: function () {
 		return {
@@ -73,7 +71,6 @@ module.exports = {
 	computed: $.extend( mapGetters( {
 		createNewPage: 'isCreateNewPage',
 		message: 'getZObjectMessage',
-		ZObjectJson: 'getZObjectAsJson',
 		currentZObjectHasLabel: 'currentZObjectHasLabel'
 	} ), {
 		submitButtonLabel: function () {
