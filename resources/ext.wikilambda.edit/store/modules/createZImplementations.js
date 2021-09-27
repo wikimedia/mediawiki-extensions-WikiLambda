@@ -76,11 +76,14 @@ module.exports = {
 			var api = new mw.Api(),
 				action = 'wikilambda_edit',
 				zobject = canonicalize( context.getters.getZObjectAsJsonById( payload.implementationId ) ),
-				newZid;
+				newZid,
+				programmingLanguageLabel = zobject.Z2K2.Z14K3 ?
+					zobject.Z2K2.Z14K3.Z16K1.Z61K1 :
+					'Composition';
 
 			zobject.Z2K3.Z12K1[ 0 ].Z11K2 =
 				context.getters.getZkeyLabels[ zobject.Z2K2.Z14K1 ] + ' ' +
-				zobject.Z2K2.Z14K3.Z16K1.Z61K1 + ' ' +
+				programmingLanguageLabel + ' ' +
 				( Math.floor( Math.random() * 100 ) + 1 );
 
 			// TODO: Re-use the code in zobject.submitZObject(), having that emit a Promise rather than change page?
