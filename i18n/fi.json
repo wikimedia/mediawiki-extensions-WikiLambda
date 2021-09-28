@@ -19,5 +19,9 @@
 	"wikilambda-metadata-aka-column": "Tunnetaan myös nimellä",
 	"wikilambda-metadata-all-languages": "Näytä kaikki syötetyt kielet",
 	"wikilambda-metadata-fewer-languages": "Näytä vähemmän kieliä",
-	"wikilambda-persistentobject-details-label": "Tiedot"
+	"wikilambda-persistentobject-details-label": "Tiedot",
+	"wikilambda-editor-go-back-button": "Mene takaisin",
+	"wikilambda-editor-next-button": "Seuraava vaihe",
+	"wikilambda-editor-name-title": "Nimi",
+	"wikilambda-editor-write-title": "Kirjoita"
 }

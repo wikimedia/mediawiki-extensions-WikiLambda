@@ -43,5 +43,8 @@
 	"wikilambda-metadata-fewer-languages": "Mostra meno lingue",
 	"wikilambda-persistentobject-details-label": "Dettagli",
 	"wikilambda-function-is-attached": "Questo oggetto è associato a questa funzione.",
-	"wikilambda-function-is-not-attached": "Questo oggetto non è associato a questa funzione."
+	"wikilambda-function-is-not-attached": "Questo oggetto non è associato a questa funzione.",
+	"wikilambda-editor-name-title": "Nome",
+	"wikilambda-editor-name-aliases": "Alias",
+	"wikilambda-editor-write-title": "Scrivi"
 }

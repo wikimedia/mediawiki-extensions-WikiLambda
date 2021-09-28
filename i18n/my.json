@@ -1,10 +1,19 @@
 {
 	"@metadata": {
 		"authors": [
-			"Dr Lotus Black"
+			"Dr Lotus Black",
+			"ခွန်ပညာႏ(တောင်ႏကီꩻ)"
 		]
 	},
 	"wikilambda-editor-label-addlanguage-label": "ဘာသာစကား ထည့်သွင်းရန်",
 	"wikilambda-tester-failure-actual": "လက်ခံရရှိခဲ့သည်",
-	"wikilambda-tester-function-duration": "ကာလ"
+	"wikilambda-tester-function-duration": "ကာလ",
+	"wikilambda-editor-steps-label": "မွဥ်းဖျင် အရန်း",
+	"wikilambda-editor-go-back-button": "သဲင်ꩻ ချာ",
+	"wikilambda-editor-next-button": "ထဲင်းယင်း အရန်း",
+	"wikilambda-editor-name-title": "မဥ်ꩻ",
+	"wikilambda-editor-input-title": "ထဲမ်သော့ꩻ ( ဖုံႏ )",
+	"wikilambda-editor-input-type-placeholder": "ထဲမ်သော့ꩻ အစွိုးစွိုးအမျိုꩻမျိုꩻ",
+	"wikilambda-editor-behavior-title": "အကျင်ꩻစာႏရိတ္တ",
+	"wikilambda-editor-write-title": "တဲမ်း"
 }
