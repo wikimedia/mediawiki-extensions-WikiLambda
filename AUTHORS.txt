@@ -1,7 +1,7 @@
 The WikiLambda team comprises several contributors, of whom those who have committed code are listed below:
 
 * James D. Forrester <jforrester@wikimedia.org>
-* Lindsay Wardell <lindsay@thisdot.co>
+* Lindsay Wardell <three060@gmail.com>
 * Genoveva Galarza <ggalarzaheredero@wikimedia.org>
 * Denny Vrandečić <dvrandecic@wikimedia.org>
 * Simone This Dot <simone@thisdot.co>
