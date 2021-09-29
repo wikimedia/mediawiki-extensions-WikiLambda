@@ -46,5 +46,12 @@
 	"wikilambda-enable-expert-mode": "전문가 모드 활성화",
 	"wikilambda-disable-expert-mode": "전문가 모드 비활성화",
 	"wikilambda-function-is-attached": "이 객체는 객체의 함수와 연결되어 있습니다.",
-	"wikilambda-function-is-not-attached": "이 객체는 객체의 함수와 연결되어 있지 않습니다."
+	"wikilambda-function-is-not-attached": "이 객체는 객체의 함수와 연결되어 있지 않습니다.",
+	"wikilambda-editor-go-back-button": "돌아가기",
+	"wikilambda-editor-next-button": "다음 단계",
+	"wikilambda-editor-name-title": "이름",
+	"wikilambda-editor-input-title": "입력",
+	"wikilambda-editor-output-title": "출력",
+	"wikilambda-editor-write-title": "쓰기",
+	"wikilambda-editor-attach-title": "첨부"
 }

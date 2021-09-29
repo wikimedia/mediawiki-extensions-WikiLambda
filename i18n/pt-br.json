@@ -87,5 +87,8 @@
 	"wikilambda-metadata-all-languages": "Mostrar todos os idiomas inseridos",
 	"wikilambda-metadata-fewer-languages": "Mostrar menos idiomas",
 	"wikilambda-persistentobject-details-label": "Detalhes",
-	"wikilambda-persistentobject-function-signature-label": "Assinatura de função"
+	"wikilambda-persistentobject-function-signature-label": "Assinatura de função",
+	"wikilambda-editor-name-title": "Nome",
+	"wikilambda-editor-name-aliases": "Alias",
+	"wikilambda-editor-write-title": "Escrever"
 }

@@ -5,6 +5,7 @@
 			"Avengium",
 			"BnSrSa",
 			"Danniel07",
+			"Destinid10 2",
 			"Fitoschido",
 			"Jackiezelaya",
 			"KATRINE1993",
@@ -38,5 +39,11 @@
 	"wikilambda-argref-default-label": "Seleccionar un argumento",
 	"wikilambda-implementation-selector": "Seleccionar implementación",
 	"wikilambda-tester-failure-actual": "Recibido",
-	"wikilambda-tester-function-duration": "Duración"
+	"wikilambda-tester-function-duration": "Duración",
+	"wikilambda-editor-steps-label": "Pasos del Editor",
+	"wikilambda-editor-go-back-button": "Volver",
+	"wikilambda-editor-next-button": "Siguiente paso",
+	"wikilambda-editor-start-function-title": "Comenzar Función",
+	"wikilambda-editor-name-title": "Nombre",
+	"wikilambda-editor-write-title": "Escribir"
 }
