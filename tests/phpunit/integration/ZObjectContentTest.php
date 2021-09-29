@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
@@ -33,7 +34,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	public function testCreation_invalidString() {
 		$this->hideDeprecated( '::create' );
 		$this->expectException( ZErrorException::class );
-		$this->expectExceptionMessage( "ZPersistentObject input is not a string." );
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_INVALID_FORMAT );
 		$testObject = new ZObjectContent( true );
 	}
 
@@ -43,17 +44,8 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	public function testCreation_invalidJson() {
 		$this->hideDeprecated( '::create' );
 		$this->expectException( ZErrorException::class );
-		$this->expectExceptionMessage( "ZPersistentObject input is invalid JSON: Syntax error." );
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_INVALID_JSON );
 		$testObject = new ZObjectContent( "{'invalid': JSON]" );
-	}
-
-	/**
-	 * @covers ::__construct
-	 */
-	public function testCreation_invalidThrows_nokey() {
-		$this->hideDeprecated( '::create' );
-		$this->expectException( ZErrorException::class );
-		$testObject = new ZObjectContent( '{}' );
 	}
 
 	/**
@@ -64,14 +56,12 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	public function testCreation_basicObject() {
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent(
-			'{ "Z1K1": "Z1" }'
+			'{ "Z1K1": "Z6", "Z6K1": "basic object" }'
 		);
-		$this->assertSame( 'Z1', $testObject->getZType() );
-		$this->assertSame(
-			[ 'Z1K1' => 'Z1' ],
-			$testObject->getZValue(),
-			"When passed an inner ZObject, ZObjectContent creates a ZPersistentObject wrapper"
-		);
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertInstanceOf( ZPersistentObject::class, $testObject->getZObject() );
+		$this->assertInstanceOf( ZString::class, $testObject->getInnerZObject() );
+		$this->assertSame( 'basic object', $testObject->getZValue() );
 	}
 
 	/**
@@ -82,14 +72,14 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	public function testCreation_basicPersistentObject() {
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent(
-			'{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z1" }, "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
+			'{ "Z1K1": "Z2", "Z2K1": "Z401",'
+			. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "persistent object" },'
+			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
 		);
-		$this->assertSame( 'Z1', $testObject->getZType() );
-		$this->assertSame(
-			[ 'Z1K1' => 'Z1' ],
-			$testObject->getZValue(),
-			"When passed an ZPersistentObject, ZObjectContent doesn't create another ZPersistentObject wrapper"
-		);
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertInstanceOf( ZPersistentObject::class, $testObject->getZObject() );
+		$this->assertInstanceOf( ZString::class, $testObject->getInnerZObject() );
+		$this->assertSame( 'persistent object', $testObject->getZValue() );
 	}
 
 	/**
@@ -131,7 +121,9 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	public function testCreation_invalidThrows_nestedrecordhasinvalidkey() {
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent(
-			'{ "Z1K1":"Z2", "Z2K1":"Z0", "Z2K2": { "Z1K1": "Foo" }, "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
+			'{ "Z1K1": "Z2", "Z2K1": "Z401",'
+			. ' "Z2K2": { "Z1K1": "Foo" },'
+			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
 		);
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( ZErrorException::class );
@@ -147,7 +139,9 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	public function testCreation_invalidThrows_nestedrecordhasnovalue() {
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent(
-			'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z1" }, "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
+			'{ "Z1K1": "Z2", "Z2K1": "Z401",'
+			. ' "Z2K2": { "Z1K1": "Z1" },'
+			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
 		);
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( ZErrorException::class );
@@ -163,7 +157,8 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	public function testCreation_invalidThrows_nestedrecordhasnolabel() {
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent(
-			'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z1", "Z2K2": "Foo" } }'
+			'{ "Z1K1": "Z2", "Z2K1": "Z401",'
+			. ' "Z2K2": { "Z1K1": "Z1", "Z2K2": "Foo" } }'
 		);
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( ZErrorException::class );
@@ -175,12 +170,14 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testPrepareSave_valid() {
 		$sysopUser = $this->getTestSysop()->getUser();
-		$testZid = 'Z333';
+		$testZid = 'Z401';
 		$testTitle = Title::newFromText( $testZid, NS_MAIN );
 		$testPage = WikiPage::factory( $testTitle );
 
 		$testObject = new ZObjectContent(
-			'{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z1" }, "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
+			'{ "Z1K1": "Z2", "Z2K1": "Z401",'
+			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "valid" },'
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
 		);
 		$status = $testObject->prepareSave( $testPage, 0, -1, $sysopUser );
 		$this->assertTrue( $status->isOK() );
@@ -191,12 +188,12 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testPrepareSave_invalid() {
 		$sysopUser = $this->getTestSysop()->getUser();
-		$testZid = 'Z333';
+		$testZid = 'Z401';
 		$testTitle = Title::newFromText( $testZid, NS_MAIN );
 		$testPage = WikiPage::factory( $testTitle );
 
 		$testObject = new ZObjectContent(
-			'{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
+			'{ "Z1K1": "Z2", "Z2K1": "Z401", "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
 		);
 		$status = $testObject->prepareSave( $testPage, 0, -1, $sysopUser );
 		$this->assertTrue( $status->hasMessage( 'wikilambda-invalidzobject' ) );
@@ -207,7 +204,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testGetStatus_null() {
 		$zObject = '{ "Z1K1": "Z2",'
-			. '"Z2K1": { "Z1K1": "Z9", "Z9K1": "Z333" },'
+			. '"Z2K1": { "Z1K1": "Z9", "Z9K1": "Z401" },'
 			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "string value" },'
 			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }';
 		$testObject = new ZObjectContent( $zObject );
@@ -220,7 +217,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testGetStatus() {
 		$zObject = '{ "Z1K1": "Z2",'
-			. '"Z2K1": { "Z1K1": "Z9", "Z9K1": "Z333" },'
+			. '"Z2K1": { "Z1K1": "Z9", "Z9K1": "Z401" },'
 			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "string value" },'
 			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }';
 		$testObject = new ZObjectContent( $zObject );
@@ -236,7 +233,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testContentGetters() {
 		$zobjectText = '{ "Z1K1": "Z2",'
-			. '"Z2K1": { "Z1K1": "Z9", "Z9K1": "Z333" },'
+			. '"Z2K1": { "Z1K1": "Z9", "Z9K1": "Z401" },'
 			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "string value" },'
 			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }';
 		$testObject = new ZObjectContent( $zobjectText );
@@ -262,7 +259,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	public function testPersistentGetterWrappers() {
 		$this->registerLangs( [ 'es' ] );
 		$zobjectText = '{ "Z1K1": "Z2",'
-			. '"Z2K1": { "Z1K1": "Z9", "Z9K1": "Z333" },'
+			. '"Z2K1": { "Z1K1": "Z9", "Z9K1": "Z401" },'
 			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "string value" },'
 			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": ['
 			. '{ "Z1K1": "Z11", "Z11K1":"Z1003", "Z11K2": "etiqueta en castellano" },'
@@ -275,7 +272,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertInstanceOf( ZObject::class, $testObject->getInnerZObject() );
 		$this->assertInstanceOf( ZString::class, $testObject->getInnerZObject() );
-		$this->assertSame( $testObject->getZid(), 'Z333' );
+		$this->assertSame( $testObject->getZid(), 'Z401' );
 		$this->assertSame( $testObject->getZType(), 'Z6' );
 		$this->assertSame( $testObject->getZValue(), 'string value' );
 		$this->assertInstanceOf( ZMultiLingualString::class, $testObject->getLabels() );
@@ -291,7 +288,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getLabel
 	 */
 	public function testPersistentGetterWrappers_invalid() {
-		$testObject = new ZObjectContent( '{ "Z1K1": "Z2", "Z2K1": "Z333" }' );
+		$testObject = new ZObjectContent( '{ "Z1K1": "Z2", "Z2K1": "Z401" }' );
 		$exceptions = [];
 		$english = new \Language();
 
@@ -364,6 +361,8 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 			. '{ "Z1K1": "Z11", "Z11K1":"Z1002", "Z11K2": "english label" }'
 			. '] } }';
 		$testObject = new ZObjectContent( $zobjectText );
+
+		$this->assertTrue( $testObject->isValid() );
 		$english = new \Language();
 		$this->assertSame( 'Demonstration type (Z111)',
 			$testObject->getTypeString( $english ) );

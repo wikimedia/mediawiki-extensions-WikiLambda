@@ -104,7 +104,13 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 	public function testStaticCreation() {
 		$testObject = ZObjectFactory::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MULTILINGUALSTRING,
-			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [ new ZMonoLingualString( 'en', 'Demonstration item' ) ]
+			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [
+				(object)[
+					ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRING,
+					ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => 'Z1002',
+					ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => 'Demonstration item'
+				]
+			]
 		] );
 		$this->assertSame( $testObject->getZType(), 'Z12' );
 	}

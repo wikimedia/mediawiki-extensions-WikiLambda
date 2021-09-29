@@ -9,9 +9,12 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\MediaWikiServices;
 
@@ -51,62 +54,7 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 		);
 
 		$this->hideDeprecated( '::create' );
-		$testObject = new ZObjectContent( json_encode( [
-			'Z1K1' => 'Z2',
-			'Z2K1' => 'Z111',
-			'Z2K2' => [
-				'Z1K1' => 'Z4',
-				'Z4K1' => 'Z111',
-				'Z4K2' => [
-					[
-						'Z1K1' => 'Z3',
-						'Z3K1' => 'Z6',
-						'Z3K2' => 'Z111K1',
-						'Z3K3' => [
-							'Z1K1' => 'Z12',
-							'Z12K1' => [
-								[ 'Z1K1' => 'Z11', 'Z11K1' => self::ZLANG['en'], 'Z11K2' => 'Demonstration key' ],
-								[ 'Z1K1' => 'Z11', 'Z11K1' => self::ZLANG['fr'], 'Z11K2' => 'Index pour démonstration' ]
-							]
-						]
-					],
-					[
-						'Z1K1' => 'Z3',
-						'Z3K1' => 'Z6',
-						'Z3K2' => 'Z111K2',
-						'Z3K3' => [
-							'Z1K1' => 'Z12',
-							'Z12K1' => [
-								[
-									'Z1K1' => 'Z11', 'Z11K1' => self::ZLANG['en'],
-									'Z11K2' => 'Other demonstration key'
-								],
-								[
-									'Z1K1' => 'Z11',
-									'Z11K1' => self::ZLANG['fr'],
-									'Z11K2' => 'Autre index pour démonstration'
-								]
-							]
-						]
-					]
-				],
-				'Z4K3' => 'Z1'
-			],
-			'Z2K3' => [
-				'Z1K1' => 'Z12',
-				'Z12K1' => [
-					[ 'Z1K1' => 'Z11', 'Z11K1' => self::ZLANG['en'], 'Z11K2' => 'Demonstration type' ],
-					[ 'Z1K1' => 'Z11', 'Z11K1' => self::ZLANG['fr'], 'Z11K2' => 'Type pour démonstration' ]
-				]
-			],
-			'Z2K4' => [
-				'Z1K1' => 'Z32',
-				'Z32K1' => [
-					[ 'Z1K1' => 'Z31', 'Z31K1' => self::ZLANG['en'], 'Z31K2' => [ 'Demonstration type alias' ] ],
-					[ 'Z1K1' => 'Z31', 'Z31K1' => self::ZLANG['fr'], 'Z31K2' => [ 'Alias de type pour démonstration' ] ]
-				]
-			]
-		] ) );
+		$testObject = new ZObjectContent( ZTestType::TEST_ENCODING );
 
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z4', $testObject->getZType() );
@@ -115,7 +63,7 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Type pour démonstration', $testObject->getLabel( $french ) );
 
 		$this->assertSame(
-			[ 'Demonstration type alias' ],
+			[ 'Demonstration type alias', 'Demonstration type second alias' ],
 			$testObject->getAliases()->getAliasesForLanguage( $english )
 		);
 		$this->assertSame(
@@ -125,7 +73,7 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertSame( 'Z111', $testObject->getInnerZObject()->getTypeId() );
 
-		$keys = $testObject->getInnerZObject()->getTypeKeys();
+		$keys = $testObject->getInnerZObject()->getTypeKeys()->getZListAsArray();
 
 		$this->assertCount( 2, $keys );
 		$this->assertSame( 'Z6', $keys[0]->getKeyType() );
@@ -139,7 +87,7 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Autre index pour démonstration', $keys[1]->getKeyLabel()->getStringForLanguage( $french ) );
 
 		// TODO: Nonsense result for now; once we implement Functions, will be one of those.
-		$this->assertSame( 'Z1', $testObject->getInnerZObject()->getTypeValidator() );
+		$this->assertSame( 'Z111', $testObject->getInnerZObject()->getTypeValidator() );
 	}
 
 	/**
@@ -147,15 +95,20 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::isValid
 	 */
 	public function testIsValid( $inputIdentity, $inputKeys, $inputValidator, $expected ) {
-		$testObject = new ZType( $inputIdentity, $inputKeys, $inputValidator );
+		$testObject = new ZType(
+			new ZReference( $inputIdentity ),
+			$inputKeys,
+			new ZReference( $inputValidator )
+		);
+
 		$this->assertSame( $expected, $testObject->isValid() );
 	}
 
 	public function provideIsValid() {
-		$validZ4Key = new ZKey( 'Z6', 'Z4K1', [] );
+		$validZ4Key = new ZKey( new ZReference( 'Z6' ), new ZString( 'Z4K1' ), [] );
 		$validZ4KeyList = new ZList( [ $validZ4Key ] );
-		$validZ1234Key1 = new ZKey( 'Z6', 'Z1234K1', [] );
-		$validZ1234Key2 = new ZKey( 'Z6', 'Z1234K2', [] );
+		$validZ1234Key1 = new ZKey( new ZReference( 'Z6' ), new ZString( 'Z1234K1' ), [] );
+		$validZ1234Key2 = new ZKey( new ZReference( 'Z6' ), new ZString( 'Z1234K2' ), [] );
 		$validZ1234KeyList = new ZList( [ $validZ1234Key1, $validZ1234Key2 ] );
 
 		return [

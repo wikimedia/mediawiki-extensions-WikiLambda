@@ -97,19 +97,6 @@ class ZMonoLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
 	 */
-	public function testStaticCreation_invalidLanguageCode() {
-		$this->expectException( ZErrorException::class );
-		$invalidObject = ZObjectFactory::create( (object)[
-			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRINGSET,
-			ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE => 'Z999',
-			ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE => [ 'Demonstration item', 'Demonstration second item' ]
-		] );
-	}
-
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
-	 */
 	public function testStaticCreation_invalidValue() {
 		$this->expectException( ZErrorException::class );
 		$invalidObject = ZObjectFactory::create( (object)[

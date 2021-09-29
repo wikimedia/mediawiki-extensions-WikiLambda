@@ -48,11 +48,11 @@ class ZKey extends ZObject {
 	}
 
 	public function getKeyType() {
-		return $this->data[ ZTypeRegistry::Z_KEY_TYPE ];
+		return $this->data[ ZTypeRegistry::Z_KEY_TYPE ]->getZValue();
 	}
 
 	public function getKeyId() {
-		return $this->data[ ZTypeRegistry::Z_KEY_ID ];
+		return $this->data[ ZTypeRegistry::Z_KEY_ID ]->getZValue();
 	}
 
 	public function getKeyLabel() {
@@ -69,11 +69,13 @@ class ZKey extends ZObject {
 	}
 
 	public function isValid(): bool {
-		// Type must be set to a valid ZKey reference which is itself a ZType
 		if ( !isset( $this->data[ ZTypeRegistry::Z_KEY_TYPE ] ) ) {
 			return false;
 		}
-		$type = $this->data[ ZTypeRegistry::Z_KEY_TYPE ];
+		if ( !( $this->data[ ZTypeRegistry::Z_KEY_TYPE ] instanceof ZReference ) ) {
+			return false;
+		}
+		$type = $this->data[ ZTypeRegistry::Z_KEY_TYPE ]->getZValue();
 		if ( !ZObjectUtils::isValidZObjectReference( $type ) ) {
 			return false;
 		}
@@ -91,7 +93,10 @@ class ZKey extends ZObject {
 		if ( !isset( $this->data[ ZTypeRegistry::Z_KEY_ID ] ) ) {
 			return false;
 		}
-		$identity = $this->data[ ZTypeRegistry::Z_KEY_ID ];
+		if ( !( $this->data[ ZTypeRegistry::Z_KEY_ID ] instanceof ZString ) ) {
+			return false;
+		}
+		$identity = $this->data[ ZTypeRegistry::Z_KEY_ID ]->getZValue();
 		if ( !ZObjectUtils::isValidZObjectGlobalKey( $identity ) ) {
 			return false;
 		}

@@ -12,8 +12,8 @@ namespace MediaWiki\Extension\WikiLambda\Registry;
 
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
+use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use Title;
 
 /**
@@ -22,13 +22,25 @@ use Title;
 class ZErrorTypeRegistry extends ZObjectRegistry {
 
 	public const Z_ERROR_GENERIC = 'Z500';
-
 	public const Z_ERROR_INVALID_SYNTAX = 'Z501';
+	public const Z_ERROR_NOT_WELLFORMED = 'Z502';
 	public const Z_ERROR_ZID_NOT_FOUND = 'Z504';
 	public const Z_ERROR_ARGUMENT_TYPE_MISMATCH = 'Z506';
+	public const Z_ERROR_EVALUATION = 'Z507';
+	public const Z_ERROR_LIST = 'Z509';
 	public const Z_ERROR_MISSING_KEY = 'Z511';
+	public const Z_ERROR_MISSING_PERSISTENT_VALUE = 'Z513';
+	public const Z_ERROR_NOT_NUMBER_BOOLEAN_NULL = 'Z521';
+	public const Z_ERROR_ARRAY_ELEMENT_NOT_WELLFORMED = 'Z522';
 	public const Z_ERROR_MISSING_TYPE = 'Z523';
+	public const Z_ERROR_TYPE_NOT_STRING_ARRAY = 'Z524';
 	public const Z_ERROR_INVALID_KEY = 'Z525';
+	public const Z_ERROR_KEY_VALUE_NOT_WELLFORMED = 'Z526';
+	public const Z_ERROR_STRING_VALUE_MISSING = 'Z532';
+  public const Z_ERROR_STRING_VALUE_WRONG_TYPE = 'Z533';
+	public const Z_ERROR_REFERENCE_VALUE_MISSING = 'Z535';
+	public const Z_ERROR_REFERENCE_VALUE_WRONG_TYPE = 'Z536';
+	public const Z_ERROR_REFERENCE_VALUE_INVALID = 'Z537';
 	public const Z_ERROR_WRONG_NAMESPACE = 'Z538';
 	public const Z_ERROR_WRONG_CONTENT_TYPE = 'Z539';
 	public const Z_ERROR_INVALID_LANG_CODE = 'Z540';
@@ -40,9 +52,48 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	public const Z_ERROR_BUILTIN_TYPE_NOT_FOUND = 'Z546';
 	public const Z_ERROR_INVALID_FORMAT = 'Z547';
 	public const Z_ERROR_INVALID_JSON = 'Z548';
-	public const Z_ERROR_INVALID_REFERENCE = 'Z549';
 	public const Z_ERROR_UNKNOWN_REFERENCE = 'Z550';
 	public const Z_ERROR_KEY_TYPE_MISMATCH = 'Z551';
+	public const Z_ERROR_ARRAY_TYPE_MISMATCH = 'Z552';
+	public const Z_ERROR_DISALLOWED_ROOT_ZOBJECT = 'Z553';
+
+	private const BUILT_IN_ERRORS = [
+		'Z500' => 'Z_ERROR_GENERIC',
+		'Z501' => 'Z_ERROR_INVALID_SYNTAX',
+		'Z502' => 'Z_ERROR_NOT_WELLFORMED',
+		'Z504' => 'Z_ERROR_ZID_NOT_FOUND',
+		'Z506' => 'Z_ERROR_ARGUMENT_TYPE_MISMATCH',
+		'Z507' => 'Z_ERROR_EVALUATION',
+		'Z509' => 'Z_ERROR_LIST',
+		'Z511' => 'Z_ERROR_MISSING_KEY',
+		'Z513' => 'Z_ERROR_MISSING_PERSISTENT_VALUE',
+		'Z521' => 'Z_ERROR_NOT_NUMBER_BOOLEAN_NULL',
+		'Z522' => 'Z_ERROR_ARRAY_ELEMENT_NOT_WELLFORMED',
+		'Z523' => 'Z_ERROR_MISSING_TYPE',
+		'Z524' => 'Z_ERROR_TYPE_NOT_STRING_ARRAY',
+		'Z525' => 'Z_ERROR_INVALID_KEY',
+		'Z526' => 'Z_ERROR_KEY_VALUE_NOT_WELLFORMED',
+		'Z532' => 'Z_ERROR_STRING_VALUE_MISSING',
+		'Z533' => 'Z_ERROR_STRING_VALUE_WRONG_TYPE',
+		'Z535' => 'Z_ERROR_REFERENCE_VALUE_MISSING',
+		'Z536' => 'Z_ERROR_REFERENCE_VALUE_WRONG_TYPE',
+		'Z537' => 'Z_ERROR_REFERENCE_VALUE_INVALID',
+		'Z538' => 'Z_ERROR_WRONG_NAMESPACE',
+		'Z539' => 'Z_ERROR_WRONG_CONTENT_TYPE',
+		'Z540' => 'Z_ERROR_INVALID_LANG_CODE',
+		'Z541' => 'Z_ERROR_LANG_NOT_FOUND',
+		'Z542' => 'Z_ERROR_UNEXPECTED_ZTYPE',
+		'Z543' => 'Z_ERROR_ZTYPE_NOT_FOUND',
+		'Z544' => 'Z_ERROR_CONFLICTING_TYPE_NAMES',
+		'Z545' => 'Z_ERROR_CONFLICTING_TYPE_ZIDS',
+		'Z546' => 'Z_ERROR_BUILTIN_TYPE_NOT_FOUND',
+		'Z547' => 'Z_ERROR_INVALID_FORMAT',
+		'Z548' => 'Z_ERROR_INVALID_JSON',
+		'Z550' => 'Z_ERROR_UNKNOWN_REFERENCE',
+		'Z551' => 'Z_ERROR_KEY_TYPE_MISMATCH',
+		'Z552' => 'Z_ERROR_ARRAY_TYPE_MISMATCH',
+		'Z553' => 'Z_ERROR_DISALLOWED_ROOT_ZOBJECT',
+	];
 
 	/**
 	 * Initialize ZErrorTypeRegistry
@@ -53,40 +104,80 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	}
 
 	/**
-	 * Check if the given Zid belongs to a ZErrorType (Z50)
-	 * TODO: Maybe we want to take this into a ZErrorTypeRegistry?
+	 * Check if the given ZErrorType Zid is known
 	 *
 	 * @param string $errorType
 	 * @return bool
-	 * @throws ZErrorException
 	 */
 	public function isZErrorTypeKnown( string $errorType ): bool {
 		if ( $this->isZErrorTypeCached( $errorType ) ) {
 			return true;
 		}
 
+		if ( $this->isBuiltinZErrorType( $errorType ) ) {
+			return true;
+		}
+
+		try {
+			$zObject = $this->fetchZErrorType( $errorType );
+		} catch ( ZErrorException $e ) {
+			return false;
+		}
+
+		$this->register( $errorType, $zObject->getLabels()->getStringForLanguageCode( 'en' ) );
+		return true;
+	}
+
+	/**
+	 * Fetches a given error type Zid from the database, throwing error if the ZErrorType does not
+	 * exist or if the fetched object is not of the wanted type
+	 *
+	 * @param string $errorType
+	 * @return ZObjectContent|bool Found ZObject
+	 * @throws ZErrorException
+	 */
+	private function fetchZErrorType( string $errorType ) {
 		// TODO: This is quite expensive. Store this in a metadata DB table, instead of fetching it live?
 		$title = Title::newFromText( $errorType, NS_MAIN );
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$zObject = $zObjectStore->fetchZObjectByTitle( $title );
 
 		if ( $zObject === false ) {
-			// Zid is not known
-			return false;
-		}
-
-		if ( $zObject->getZType() !== ZTypeRegistry::Z_ERRORTYPE ) {
-			// Error Z506: Argument type mismatches
 			throw new ZErrorException(
-				new ZError(
-					self::Z_ERROR_ARGUMENT_TYPE_MISMATCH,
-					new ZString( "ZObject for '$errorType' is not a ZErrorType object." )
+				ZErrorFactory::createZErrorInstance(
+					self::Z_ERROR_ZID_NOT_FOUND,
+					[ "data" => $errorType ]
 				)
 			);
 		}
 
-		$this->register( $errorType, $zObject->getLabels()->getStringForLanguageCode( 'en' ) );
-		return true;
+		if ( $zObject->getZType() !== ZTypeRegistry::Z_ERRORTYPE ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					self::Z_ERROR_UNEXPECTED_ZTYPE,
+					[
+						"expected" => ZTypeRegistry::Z_ERRORTYPE,
+						"actual" => $errorType
+					]
+				)
+			);
+		}
+
+		return $zObject;
+	}
+
+	/**
+	 * Check if the given Zid belongs to a ZErrorType
+	 *
+	 * @param string $zid
+	 * @return bool
+	 */
+	public function instanceOfZErrorType( string $zid ): bool {
+		try {
+			return $this->isZErrorTypeKnown( $zid );
+		} catch ( ZErrorException $e ) {
+			return false;
+		}
 	}
 
 	/**
@@ -95,8 +186,18 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	 * @param string $errorType
 	 * @return bool
 	 */
-	private function isZErrorTypeCached( string $errorType ): bool {
+	public function isZErrorTypeCached( string $errorType ): bool {
 		return array_key_exists( $errorType, $this->registry );
+	}
+
+	/**
+	 * Check if the given Zid belongs to a builtin ZErrorType
+	 *
+	 * @param string $errorType
+	 * @return bool
+	 */
+	private function isBuiltinZErrorType( string $errorType ): bool {
+		return array_key_exists( $errorType, self::BUILT_IN_ERRORS );
 	}
 
 	/**
@@ -105,12 +206,12 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	 *
 	 * @param string $errorType
 	 * @return string
+	 * @throws ZErrorException
 	 */
 	public function getZErrorTypeLabel( string $errorType ): string {
-		if ( $this->isZErrorTypeKnown( $errorType ) ) {
+		if ( $this->isZErrorTypeCached( $errorType ) ) {
 			return $this->registry[ $errorType ];
-		} else {
-			return "Unknown error";
 		}
+		return "Unknown error $errorType";
 	}
 }

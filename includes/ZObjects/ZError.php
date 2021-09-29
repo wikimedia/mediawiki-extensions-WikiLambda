@@ -33,7 +33,13 @@ class ZError extends ZObject {
 		];
 	}
 
+	/**
+	 * @param string $type
+	 * @param ZObject|\stdClass $value
+	 */
 	public function __construct( $type, $value ) {
+		// FIXME HACK: When an error is created, its type must be tracked by the
+		// ZErrorTypeRegistry or else it will generate another error.
 		$this->data[ ZTypeRegistry::Z_ERROR_TYPE ] = $type;
 		$this->data[ ZTypeRegistry::Z_ERROR_VALUE ] = $value;
 	}
@@ -47,10 +53,19 @@ class ZError extends ZObject {
 	}
 
 	public function getMessage(): string {
-		if ( $this->getZValue()->getZType() == ZTypeRegistry::Z_STRING ) {
-			return $this->getZValue()->getZValue();
+		// 1. Get the label of this ZType error
+		$serialized = ZErrorTypeRegistry::singleton()->getZErrorTypeLabel( $this->getZErrorType() );
+
+		// 2. If $value is a ZError, call its getMessage() and append
+		// FIXME: The value might not be a ZError but a ZErrorType instance,
+		// in which case we also want to recursively grab its message
+		$errorValue = $this->getZValue();
+		if ( $errorValue instanceof ZError ) {
+			'@phan-var ZError $errorValue';
+			$serialized .= $errorValue->getMessage();
 		}
-		return ZErrorTypeRegistry::singleton()->getZErrorTypeLabel( $this->getZErrorType() );
+
+		return $serialized;
 	}
 
 	public function isValid(): bool {
@@ -62,7 +77,7 @@ class ZError extends ZObject {
 		if ( !ZObjectUtils::isValidZObjectReference( $errorType ) ) {
 			return false;
 		}
-		if ( !ZErrorTypeRegistry::singleton()->isZErrorTypeKnown( $errorType ) ) {
+		if ( !ZErrorTypeRegistry::singleton()->instanceOfZErrorType( $errorType ) ) {
 			return false;
 		}
 		// TODO: should we validate that the ZError value has the keys specified in

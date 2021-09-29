@@ -3,6 +3,8 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
 
 use ApiTestCase;
+use ApiUsageException;
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -45,7 +47,8 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	public function testCreateFailed_invalidJson() {
 		$data = '{ invalidJson ]';
 
-		$this->setExpectedApiException( [ 'ZPersistentObject input is invalid JSON: Syntax error.', $data ] );
+		$this->expectException( ApiUsageException::class );
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_INVALID_JSON );
 
 		$this->doApiRequestWithToken( [
 			'action' => 'wikilambda_edit',
@@ -58,12 +61,13 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	 * @dataProvider provideInvalidZObjects
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
 	 */
-	public function testCreateFailed_invalidZObject( $input, $expected ) {
+	public function testCreateFailed_invalidZObject( $input ) {
 		// We don't need to test all validation errors here, we should do
 		// that in a ZObjectFactory unit test suite, but we will just
 		// test a couple of validation errors to make sure that the Api
 		// returns the messages.
-		$this->setExpectedApiException( $expected );
+		$this->expectException( ApiUsageException::class );
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED );
 
 		$this->doApiRequestWithToken( [
 			'uselang' => 'en',
@@ -75,8 +79,8 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 	public function provideInvalidZObjects() {
 		return [
-			'missing key type' => [ '{}', 'ZPersistentObject input ZObject structure is invalid.' ],
-			'invalid key type' => [ '{"Z1K1": "Z09"}', "ZObject record type 'Z09' is an invalid key." ]
+			'missing key type' => [ '{}' ],
+			'invalid key type' => [ '{"Z1K1": "Z09"}' ]
 		];
 	}
 
@@ -130,7 +134,10 @@ class ApiZObjectEditorTest extends ApiTestCase {
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "unique label" } ] } }';
 
 		// Try to create the second Zobject with the same label
-		$this->setExpectedApiException( [ "Value '$invalidZid' for 'Z2K1' of type 'NullableReference' is invalid." ] );
+		$this->expectException( ApiUsageException::class );
+		// TODO: detailed errors for Z2 related validations
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_GENERIC );
+
 		$result = $this->doApiRequestWithToken( [
 			'action' => 'wikilambda_edit',
 			'zid' => $invalidZid,
@@ -154,7 +161,9 @@ class ApiZObjectEditorTest extends ApiTestCase {
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "trouble" } ] } }';
 
 		// Try to create a nested ZPO
-		$this->setExpectedApiException( [ 'wikilambda-prohibitedcreationtype', ZTypeRegistry::Z_PERSISTENTOBJECT ] );
+		$this->expectException( ApiUsageException::class );
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_DISALLOWED_ROOT_ZOBJECT );
+
 		$result = $this->doApiRequestWithToken( [
 			'action' => 'wikilambda_edit',
 			'zid' => 'Z400',

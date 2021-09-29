@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Validation\ZObjectStructureValidator;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
@@ -29,74 +30,249 @@ use Title;
 class ZObjectFactory {
 
 	/**
-	 * Creates a ZPersistentObject from the given input data.
+	 * Validates and creates a ZPersistentObject from the given input data.
 	 * If the input already has the ZPersistentObejct keys, it uses
 	 * them to construct the wrapper object. If not, it builds a wrapper
-	 * ZPersistentObject with empty values.
+	 * ZPersistentObject with empty values. The resulting ZObject will be
+	 * structurally valid or well-formed.
 	 *
-	 * @param string|array|ZObject|\stdClass $input The item to turn into a ZObject
+	 * This method is the entrypoint from WikiLambda content object.
+	 *
+	 * @param string|array|\stdClass $input The item to turn into a ZObject
 	 * @return ZPersistentObject
 	 * @throws ZErrorException
 	 */
 	public static function createPersistentContent( $input ) {
-		if ( $input instanceof ZPersistentObject ) {
-			return $input;
+		// 1. Get ZObject type. If not present, throw a not wellformed error
+		try {
+			$inputType = self::extractObjectType( $input );
+		} catch ( ZErrorException $e ) {
+			throw new ZErrorException(
+				ZErrorFactory::createValidationZError( $e->getZError() )
+			);
 		}
 
-		if ( is_object( $input ) && !( $input instanceof ZObject ) ) {
-			$objectVars = get_object_vars( $input );
-			$type = $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ];
+		$object = $input;
+		$type = $inputType;
 
-			// If input is a JSON object representing a Z2: return new ZPersistentObject
-			if ( $type === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
-				$zid = ZTypeRegistry::Z_NULL_REFERENCE;
+		// 2. If ZObject type is Z_PERSISTENT_OBJECT (Z2), get inner object.
+		// 		If not present, throw a now wellformed error.
+		if ( $inputType === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
+			try {
+				$object = self::extractInnerObject( $input );
+			} catch ( ZErrorException $e ) {
+				throw new ZErrorException(
+					ZErrorFactory::createValidationZError( $e->getZError() )
+				);
+			}
 
-				if ( array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_ID, $objectVars ) ) {
-					$ref = $objectVars[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ];
-					if ( is_string( $ref ) ) {
-						$zid = $ref;
-					} else {
-						if ( property_exists( $ref, ZTypeRegistry::Z_REFERENCE_VALUE ) ) {
-							$zid = $ref->{ ZTypeRegistry::Z_REFERENCE_VALUE };
-						} else {
-							$zid = $ref->{ ZTypeRegistry::Z_STRING_VALUE };
-						}
-					}
-				}
-
-				self::trackSelfReference( $zid, self::SET_SELF_ZID );
-				$objectDefinition = self::validateObjectStructure( $objectVars, 'ZPersistentObject' );
-				$persistentObj = new ZPersistentObject( ...$objectDefinition );
-
-				self::trackSelfReference( $zid, self::UNSET_SELF_ZID );
-				return $persistentObj;
+			// Get type of the inner ZObject. If not present, throw a not wellformed error
+			try {
+				$type = self::extractObjectType( $object );
+			} catch ( ZErrorException $e ) {
+				throw new ZErrorException(
+					ZErrorFactory::createValidationZError( $e->getZError() )
+				);
 			}
 		}
 
-		// If input is a JSON object representing the inner ZObject, wrap in new ZPersistenObject
-		self::trackSelfReference( ZTypeRegistry::Z_NULL_REFERENCE, self::SET_SELF_ZID );
+		// 3. Make sure that the ZObject type is not one of the disallowed types
+		// 		to directly wrap in a ZPersistentObject
+		if ( in_array( $type, ZTypeRegistry::DISALLOWED_ROOT_ZOBJECTS ) ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_DISALLOWED_ROOT_ZOBJECT,
+					[
+						'data' => $object
+					]
+				)
+			);
+		}
 
-		$label = new ZMultiLingualString( [] );
-		$aliases = new ZMultiLingualStringSet( [] );
-		$value = self::create( $input );
-		$persistentObj = new ZPersistentObject( ZTypeRegistry::Z_NULL_REFERENCE, $value, $label, $aliases );
+		// 4. Create ZPersistentObject wrapper
+		// 4.1. Extract persistent keys or assign empty values
+		$persistentId = null;
+		$persistentLabel = null;
+		$persistentAliases = null;
+		if ( $inputType === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
+			// Check that required keys exist
+			try {
+				self::validatePersistentKeys( $input );
+			} catch ( ZErrorException $e ) {
+				throw new ZErrorException(
+					ZErrorFactory::createValidationZError( $e->getZError() )
+				);
+			}
+			// Build the values
+			$persistentId = self::createChild( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_ID } );
+			$persistentLabel = self::createChild( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL } );
+			$persistentAliases = property_exists( $input,  ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES )
+				? self::createChild( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES } )
+				: null;
+		}
 
-		self::trackSelfReference( ZTypeRegistry::Z_NULL_REFERENCE, self::UNSET_SELF_ZID );
-		return $persistentObj;
+		// Build empty values if we are creating a new ZPersistentObject wrapper
+		// TODO: Looks like this case is never really used: contemplate removing it
+		$persistentId = $persistentId ?? self::createChild( ZTypeRegistry::Z_NULL_REFERENCE );
+		$persistentLabel = $persistentLabel ?? self::createChild( (object)[
+			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MULTILINGUALSTRING,
+			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => []
+		] );
+
+		// 4.2 Track self-reference if Z_PERSISNTENT_ID is present
+		self::trackSelfReference( $persistentId->getZValue(), self::SET_SELF_ZID );
+
+		// 4.3. Create and validate inner ZObject: can throw Z502 not wellformed
+		$zObject = self::create( $object );
+
+		// 4.5. Construct ZPersistentObject()
+		$persistentObject = new ZPersistentObject( $persistentId, $zObject, $persistentLabel, $persistentAliases );
+
+		// 4.6. Check validity, to make sure that ID, label and aliases have the right format
+		if ( !$persistentObject->isValid() ) {
+			throw new ZErrorException(
+				// FIXME Detail persistent object-related errors
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_GENERIC,
+					[
+						'message' => "ZPersistentObject not valid"
+					]
+				)
+			);
+		}
+
+		// 4.6. Untrack self-reference
+		self::trackSelfReference( $persistentId->getZValue(), self::UNSET_SELF_ZID );
+		return $persistentObject;
 	}
 
 	/**
+	 * Check that the required ZPersistentObject keys exists and, if they don't, raise
+	 * missing key errors (Z511)
+	 *
+	 * @param string|array|\stdClass $input The item to check is a ZObject
+	 * @return bool
+	 * @throws ZErrorException
+	 */
+	public static function validatePersistentKeys( $input ): bool {
+		if ( is_string( $input ) ) {
+			return true;
+		}
+
+		$record = is_object( $input ) ? get_object_vars( $input ) : $input;
+
+		if ( !is_array( $record ) ) {
+			// TODO: Throw?
+		}
+
+		if ( !array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_ID, $record ) ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
+					[
+						'data' => $record,
+						'keywordArgs' => [ 'missing' => ZTypeRegistry::Z_PERSISTENTOBJECT_ID ]
+					]
+				)
+			);
+		}
+
+		if ( !array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL, $record ) ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
+					[
+						'data' => $record,
+						'keywordArgs' => [ 'missing' => ZTypeRegistry::Z_PERSISTENTOBJECT_ID ]
+					]
+				)
+			);
+		}
+
+		// The existence of Z2K2 has already been checked
+		return true;
+	}
+
+	/**
+	 * Validates and creates an object of type ZObject from a given input data.
+	 * The resulting ZObject will be structurally valid or well-formed.
+	 *
+	 * This method is the entrypoint from WikiLambda ZObject creation parting
+	 * from their serialized representation.
+	 *
+	 * @param string|array|\stdClass $input
+	 * @return ZObject
+	 * @throws ZErrorException
+	 */
+	public static function create( $input ): ZObject {
+		// 1. Get ZObject type. If not present, return a not wellformed error.
+		try {
+			$type = self::extractObjectType( $input );
+		} catch ( ZErrorException $e ) {
+			throw new ZErrorException(
+				ZErrorFactory::createValidationZError( $e->getZError() )
+			);
+		}
+
+		// 2. Create ZObjectStructureValidator to check that the ZObject is well formed
+		try {
+			$validator = ZObjectStructureValidator::createCanonicalValidator( $type );
+		} catch ( ZErrorException $e ) {
+			// If there's no function-schemata validator (user-defined type), we do a generic custom validation
+			return self::createCustom( $type, $input );
+		}
+
+		$status = $validator->validate( $input );
+
+		// 3. Check structural validity or wellformedness:
+		// 		If structural validation does not succeed, we cannot save the ZObject:
+		// 		throw ZErrorException with the ZError returned by the validator
+		if ( !$status->isValid() ) {
+			throw new ZErrorException( $status->getErrors() );
+		}
+
+		// 4. Everything is correct, create ZObject instances
+		return self::createChild( $input );
+	}
+
+	/**
+	 * Creates an instance of a custom or user-defined type after validating it's basic
+	 * structure: the keys are valid ZObject keys and the values have the correct types
+	 *
+	 * @param string $type
+	 * @param string|array|\stdClass $input
+	 * @return ZObject
+	 * @throws ZErrorException
+	 */
+	public static function createCustom( $type, $input ): ZObject {
+		try {
+			ZObjectUtils::isValidZObject( $input );
+		} catch ( ZErrorException $e ) {
+			throw new ZErrorException(
+				ZErrorFactory::createValidationZError( $e->getZError() )
+			);
+		}
+
+		return self::createChild( $input );
+	}
+
+	/**
+	 * Creates an object of type ZObject from the given input. This method should only
+	 * be called internally, either from the ZObjectFactory of from the ZObject
+	 * constructors. ZObjects created using this method will not necessarily be
+	 * structurally valid.
+	 *
 	 * @param string|array|ZObject|\stdClass $object The item to turn into a ZObject
 	 * @return ZObject
 	 * @throws ZErrorException
 	 */
-	public static function create( $object ) {
+	public static function createChild( $object ) {
 		if ( $object instanceof ZObject ) {
 			return $object;
 		}
 
 		if ( is_string( $object ) ) {
-			if ( ZObjectUtils::isValidOrNullZObjectReference( $object ) ) {
+			if ( ZObjectUtils::isValidZObjectReference( $object ) ) {
 				return new ZReference( $object );
 			} else {
 				return new ZString( $object );
@@ -104,117 +280,255 @@ class ZObjectFactory {
 		}
 
 		if ( is_array( $object ) ) {
-			return new ZList( $object );
+			$items = [];
+			foreach ( $object as $index => $item ) {
+				try {
+					$items[] = self::createChild( $item );
+				} catch ( ZErrorException $e ) {
+					throw new ZErrorException(
+						ZErrorFactory::createArrayElementZError( (string)$index, $e->getZError() )
+					);
+				}
+			}
+			return new ZList( $items );
 		}
 
 		if ( !is_object( $object ) ) {
-			// Error Z547: Invalid format
 			throw new ZErrorException(
-				new ZError(
+				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_INVALID_FORMAT,
-					new ZString( "Couldn't create ZObject for given input '$object'; unrecognised format." )
+					[
+						'data' => $object
+					]
+				)
+			);
+		}
+
+		$type = self::extractObjectType( $object );
+
+		if ( !ZObjectUtils::isValidZObjectReference( $type ) ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_REFERENCE_VALUE_INVALID,
+					[
+						'data' => $type
+					]
 				)
 			);
 		}
 
 		$objectVars = get_object_vars( $object );
 
-		if ( !array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $objectVars ) ) {
-			// Error Z511: Missing type
-			throw new ZErrorException(
-				new ZError(
-					ZErrorTypeRegistry::Z_ERROR_MISSING_TYPE,
-					new ZString( "ZObject record missing a type key." )
-				)
-			);
-		}
-		$type = $objectVars[ ZTypeRegistry::Z_OBJECT_TYPE ];
-
-		if ( !ZObjectUtils::isValidZObjectReference( $type ) ) {
-			// Error Z549: Invalid reference
-			throw new ZErrorException(
-				new ZError(
-					ZErrorTypeRegistry::Z_ERROR_INVALID_REFERENCE,
-					new ZString( "ZObject record type '$type' is an invalid key." )
-				)
-			);
-		}
-
 		$typeRegistry = ZTypeRegistry::singleton();
+		$errorRegistry = ZErrorTypeRegistry::singleton();
+
+		// TERRIBLE AND VERY PROVISIONAL HACK: If the ZObject that we are trying
+		// to instance is an error, and its type is a known error type, we are
+		// going to allow it without any other checks.
+		if (
+			!$typeRegistry->isZObjectKeyKnown( $type ) &&
+			$errorRegistry->instanceOfZErrorType( $type )
+		) {
+			return new ZObject( $type, $objectVars );
+		}
+
 		if ( !$typeRegistry->isZObjectKeyKnown( $type ) ) {
-			// Error Z550: Unknown reference
 			throw new ZErrorException(
-				new ZError(
+				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_UNKNOWN_REFERENCE,
-					new ZString( "ZObject record type '$type' not recognised." )
+					[
+						'data' => $type
+					]
 				)
 			);
 		}
 
-		// Wiki-provided type handling.
+		// User-defined type.
 		if ( !$typeRegistry->isZTypeBuiltIn( $type ) ) {
-			// TODO: This is quite expensive. Store this in a metadata DB table, instead of fetching it live?
 			$targetTitle = Title::newFromText( $type, NS_MAIN );
-
 			if ( !$targetTitle->exists() ) {
-				// Error Z504: Zid not found
 				throw new ZErrorException(
-					new ZError(
+					ZErrorFactory::createZErrorInstance(
 						ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
-						new ZString( "Couldn't create ZObject based on type '$type'; "
-						. "not built-in, but no such page on wiki." )
+						[
+							'data' => $type
+						]
 					)
 				);
 			}
 
 			$zObjectStore = WikiLambdaServices::getZObjectStore();
 			$targetObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
-
 			if ( !$targetObject ) {
-				// Error Z504: Zid not found
 				throw new ZErrorException(
-					new ZError(
+					ZErrorFactory::createZErrorInstance(
 						ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
-						new ZString( "Couldn't create ZObject based on type '$type'; "
-						. "page isn't returned by the wiki." )
+						[
+							'data' => $type
+						]
 					)
 				);
-			}
-
-			// We know this is a ZType, because it passed ZTypeRegistry::isZObjectKeyKnown above.
-			$targetType = $targetObject->getInnerZObject();
-			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZType $targetType';
-			foreach ( $targetType->getTypeKeys() as $key ) {
-				// Validate the object definition against its specification in the database
-				$keyId = $key->getKeyId();
-				if ( array_key_exists( $keyId, $objectVars ) ) {
-
-					// Validate the provided key values for built-ins using local PHP code
-					$keyType = $key->getKeyType();
-					if ( $typeRegistry->isZTypeBuiltIn( $keyType ) ) {
-						if ( self::validateKeyValue( $keyId, $keyType, $objectVars[ $keyId ] ) === null ) {
-							// Error Z551: Key type mismatch
-							throw new ZErrorException(
-								new ZError(
-									ZErrorTypeRegistry::Z_ERROR_KEY_TYPE_MISMATCH,
-									new ZString( "Couldn't create ZObject based on type '$type'; "
-									. "key '$keyId' isn't a valid '$keyType'." )
-								)
-							);
-						}
-					} else {
-						// TODO: Validate the provided key values for bespokes using FunctionEvaluator service
-					}
-				}
 			}
 			return new ZObject( $type, $objectVars );
 		}
 
 		$typeName = $typeRegistry->getZObjectTypeFromKey( $type );
 		$typeClass = "MediaWiki\\Extension\\WikiLambda\\ZObjects\\$typeName";
-		$objectDefinition = self::validateObjectStructure( $objectVars, $typeName );
+		$objectArgs = self::createKeyValues( $objectVars, $typeName );
+
 		// Magic:
-		return new $typeClass( ...$objectDefinition );
+		return new $typeClass( ...$objectArgs );
+	}
+
+	/**
+	 * This method takes an input and a built-in ZObject type name and returns the
+	 * required arguments to call the ZObject constructur
+	 *
+	 * @param array $objectVars
+	 * @param string $targetType
+	 * @return array arguments to pass to the target ZObject constructor
+	 */
+	private static function createKeyValues( array $objectVars, string $targetType ) {
+		// Magic
+		$targetDefinition = call_user_func(
+			'MediaWiki\Extension\WikiLambda\ZObjects\\' . $targetType . '::getDefinition'
+		);
+		$targetZid = ZTypeRegistry::singleton()->getZObjectKeyFromType( $targetType );
+
+		$creationArray = [];
+		foreach ( $targetDefinition['keys'] as $key => $settings ) {
+			if ( array_key_exists( $key, $objectVars ) ) {
+				if ( in_array( $key, ZTypeRegistry::TERMINAL_KEYS ) ) {
+					// Return the value if it belongs to a terminal key (Z6K1 or Z9K1)
+					$creationArray[] = $objectVars[ $key ];
+				} else {
+					// Build the value of a given key to create nested ZObjects
+					// If it fails, throw a key value error (Z526)
+					try {
+						$creationArray[] = self::createChild( $objectVars[ $key ] );
+					} catch ( ZErrorException $e ) {
+						throw new ZErrorException( ZErrorFactory::createKeyValueZError( $key, $e->getZError() ) );
+					}
+				}
+			} else {
+				// If it doesn't exist in $objectVars, we pass null
+				$creationArray[] = null;
+				if ( array_key_exists( 'required', $settings ) && ( $settings['required'] ) ) {
+					// Error Z511: Missing key
+					throw new ZErrorException(
+						ZErrorFactory::createZErrorInstance(
+							ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
+							[
+								'data' => $objectVars,
+								'keywordArgs' => [ 'missing' => $key ]
+							]
+						)
+					);
+				}
+			}
+		}
+
+		return $creationArray;
+	}
+
+	/**
+	 * Returns the ZPersistentObject's Zid if the key is present, else returns null
+	 *
+	 * @param \stdClass $object
+	 * @return string|null
+	 */
+	private static function extractPersistentId( $object ) {
+		if ( !property_exists( $object, ZTypeRegistry::Z_PERSISTENTOBJECT_ID ) ) {
+			return null;
+		}
+		$ref = $object->{ ZTypeRegistry::Z_PERSISTENTOBJECT_ID };
+		if ( is_string( $ref ) ) {
+			return $ref;
+		}
+		if ( is_object( $ref ) ) {
+			if ( property_exists( $ref, ZTypeRegistry::Z_STRING_VALUE ) ) {
+				return $ref->{ ZTypeRegistry::Z_STRING_VALUE };
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the inner ZObject of a given ZPersistentObject representation, which
+	 * corresponds to is value key (Z2K2)
+	 *
+	 * @param \stdClass $object
+	 * @return \stdClass|array|string
+	 * @throws ZErrorException
+	 */
+	private static function extractInnerObject( $object ) {
+		if ( !property_exists( $object, ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ) ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
+					[
+						'data' => $object,
+						'keywordArgs' => [ 'missing' => ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ]
+					]
+				)
+			);
+		}
+		return $object->{ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE};
+	}
+
+	/**
+	 * Get a given ZObject's type, irrespective of it being in canonical or in normal form
+	 *
+	 * @param \stdClass|array|string $object
+	 * @return string
+	 * @throws ZErrorException
+	 */
+	private static function extractObjectType( $object ): string {
+		// Check for canonical strings and references
+		if ( is_string( $object ) ) {
+			if ( ZObjectUtils::isValidOrNullZObjectReference( $object ) ) {
+				return ZTypeRegistry::Z_REFERENCE;
+			}
+			return ZTypeRegistry::Z_STRING;
+		}
+
+		// Check for canonical arrays
+		if ( is_array( $object ) ) {
+			return ZTypeRegistry::Z_LIST;
+		}
+
+		if ( !property_exists( $object, ZTypeRegistry::Z_OBJECT_TYPE ) ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_MISSING_TYPE,
+					[
+						'data' => $object
+					]
+				)
+			);
+		}
+
+		$type = $object->{ZTypeRegistry::Z_OBJECT_TYPE};
+
+		// FIXME: The following check is here so that we can handle normal form,
+		// but this might not be necessary in the future, as we will be receiving
+		// only ZObjects in their canonical form
+		if ( is_object( $type ) ) {
+			$type = $type->{ ZTypeRegistry::Z_REFERENCE_VALUE };
+		}
+
+		if ( !ZObjectUtils::isValidZObjectReference( $type ) ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_REFERENCE_VALUE_INVALID,
+					[
+						'data' => $type
+					]
+				)
+			);
+		}
+
+		return $type;
 	}
 
 	/**
@@ -222,6 +536,7 @@ class ZObjectFactory {
 	 * the input, returning if valid an array of a complete top-level ZObject definition for calling
 	 * its constructor, or if invalid throwing an error.
 	 *
+	 * @deprecated
 	 * @param array $objectVars The input to validate.
 	 * @param string $targetType The ZObject type against which to validate the input.
 	 * @return array ZObject definition.
@@ -272,6 +587,7 @@ class ZObjectFactory {
 	 * name that it is meant to reflect, and recursively validates the input, returning a ZObject if
 	 * valid, or throwing an error if invalid.
 	 *
+	 * @deprecated
 	 * @param string $key The key to validate (unused except for error / logging purposes).
 	 * @param string $type The ZType against which validate.
 	 * @param mixed $value The input value to validate.
@@ -652,6 +968,7 @@ class ZObjectFactory {
 	}
 
 	/**
+	 * @deprecated
 	 * @param array $value
 	 * @param string $type
 	 *

@@ -39,38 +39,32 @@ class ZListTest extends WikiLambdaIntegrationTestCase {
 
 		$testObject = new ZObjectContent( '["Test"]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ 'Test', [] ], $testObject->getZValue() );
-		$this->assertSame( [ 'Test' ], $testObject->getInnerZObject()->getZListAsArray() );
+		$this->assertSame( [ 'Test' ], $testObject->getInnerZObject()->serialize() );
 
 		$testObject = new ZObjectContent( '["Test", "Test2"]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ 'Test', [ 'Test2' ] ], $testObject->getZValue() );
-		$this->assertSame( [ 'Test', 'Test2' ], $testObject->getInnerZObject()->getZListAsArray() );
+		$this->assertSame( [ 'Test', 'Test2' ], $testObject->getInnerZObject()->serialize() );
 
 		$testObject = new ZObjectContent( '["Test","Test2","Test3"]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ 'Test', [ "Test2", "Test3" ] ], $testObject->getZValue() );
-		$this->assertSame( [ 'Test', 'Test2', 'Test3' ], $testObject->getInnerZObject()->getZListAsArray() );
+		$this->assertSame( [ 'Test', 'Test2', 'Test3' ], $testObject->getInnerZObject()->serialize() );
 
 		$testObject = new ZObjectContent( '[["Test"],["Test2"],["Test3"]]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ [ 'Test' ], [ [ "Test2" ], [ "Test3" ] ] ], $testObject->getZValue() );
 		$this->assertSame(
 			[ [ 'Test' ], [ 'Test2' ], [ 'Test3' ] ],
-			$testObject->getInnerZObject()->getZListAsArray()
+			$testObject->getInnerZObject()->serialize()
 		);
 
 		$testObject = new ZObjectContent( '[["Test"],["Test2","Test3"]]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ [ 'Test' ], [ [ "Test2", "Test3" ] ] ], $testObject->getZValue() );
-		$this->assertSame( [ [ 'Test' ], [ 'Test2', 'Test3' ] ], $testObject->getInnerZObject()->getZListAsArray() );
+		$this->assertSame( [ [ 'Test' ], [ 'Test2', 'Test3' ] ], $testObject->getInnerZObject()->serialize() );
 
 		$testObject = new ZObjectContent( '[["Test", "Test2"],["Test3","Test4"]]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ [ 'Test', 'Test2' ], [ [ "Test3", "Test4" ] ] ], $testObject->getZValue() );
 		$this->assertSame(
 			[ [ 'Test', 'Test2' ], [ 'Test3', 'Test4' ] ],
-			$testObject->getInnerZObject()->getZListAsArray()
+			$testObject->getInnerZObject()->serialize()
 		);
 
 		$this->hideDeprecated( '::create' );
@@ -79,14 +73,11 @@ class ZListTest extends WikiLambdaIntegrationTestCase {
 {
 	"Z1K1": "Z2",
 	"Z2K1": "Z0",
-	"Z2K2": {
-		"Z1K1": "Z10",
-		"Z10K1": "Test",
-		"Z10K2": [
-			"Test2",
-			"Test3"
-		]
-	},
+	"Z2K2": [
+		"Test",
+		"Test2",
+	 	"Test3"
+	],
 	"Z2K3": {
 		"Z1K1": "Z12",
 		"Z12K1": []
@@ -99,8 +90,7 @@ class ZListTest extends WikiLambdaIntegrationTestCase {
 EOT
 		);
 		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ 'Test', [ "Test2", "Test3" ] ], $testObject->getZValue() );
-		$this->assertSame( [ 'Test', 'Test2', 'Test3' ], $testObject->getInnerZObject()->getZListAsArray() );
+		$this->assertSame( [ 'Test', 'Test2', 'Test3' ], $testObject->getInnerZObject()->serialize() );
 	}
 
 	/**

@@ -14,7 +14,9 @@ use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\MediaWikiServices;
 
@@ -32,17 +34,38 @@ class ZMultiLingualStringSet extends ZObject {
 		];
 	}
 
+	/**
+	 * This can be called with an array of serialized canonical ZObjects, an array
+	 * of ZMonoLingualStringSet instances, or a ZList of ZMonoLingualStringSet instances.
+	 *
+	 * @param ZList|array $strings
+	 * @throws ZErrorException
+	 */
 	public function __construct( $strings = [] ) {
-		foreach ( $strings as $index => $monoLingualStringSet ) {
-			if ( !( $monoLingualStringSet instanceof ZMonoLingualStringSet ) ) {
-				$monoLingualStringSet = ZObjectFactory::create( $monoLingualStringSet );
+		foreach ( ZObjectUtils::getIterativeList( $strings ) as $index => $monoLingualStringSet ) {
+			try {
+				$monoLingualStringSet = ZObjectFactory::createChild( $monoLingualStringSet );
+				if ( $monoLingualStringSet instanceof ZMonoLingualStringSet ) {
+					$this->setMonoLingualStringSet( $monoLingualStringSet );
+				}
+			} catch ( ZErrorException $e ) {
+				throw new ZErrorException(
+					ZErrorFactory::createArrayElementZError( (string)$index, $e->getZError() )
+				);
 			}
-			$this->setMonoLingualStringSet( $monoLingualStringSet );
 		}
 	}
 
 	public function getZValue() {
 		return $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE ] ?? [];
+	}
+
+	public function getValueAsList() {
+		$multi = [];
+		foreach ( $this->getZValue() as $mono ) {
+			$multi[ $mono->getLanguage() ] = $mono->getStringSet();
+		}
+		return $multi;
 	}
 
 	public function isValid(): bool {
@@ -70,7 +93,9 @@ class ZMultiLingualStringSet extends ZObject {
 		} catch ( ZErrorException $e ) {
 			return [];
 		}
-		return $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE ][ $languageZid ] ?? [];
+		return array_key_exists( $languageZid, $this->getZValue() )
+			? $this->getZValue()[ $languageZid ]->getStringSet()
+			: [];
 	}
 
 	/**
@@ -105,7 +130,7 @@ class ZMultiLingualStringSet extends ZObject {
 	 * chain.
 	 *
 	 * @param string $languageCode The MediaWiki language code in which the string is wanted.
-	 * @return bool If there is a listß stored.
+	 * @return bool If there is a list stored.
 	 */
 	public function isLanguageProvidedValue( string $languageCode ): bool {
 		try {
@@ -123,6 +148,18 @@ class ZMultiLingualStringSet extends ZObject {
 	 * @param ZMonoLingualStringSet $value The new value to set.
 	 */
 	public function setMonoLingualStringSet( ZMonoLingualStringSet $value ): void {
-		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE ][ $value->getLanguage() ] = $value->getStringSet();
+		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE ][ $value->getLanguage() ] = $value;
+	}
+
+	public function serialize( $form = self::FORM_CANONICAL ) {
+		// TODO fix different serialization modes, only returning FORM_CANONICAL
+		$monolingualStringSets = [];
+		foreach ( $this->getZValue() as $lang => $value ) {
+			$monolingualStringSets[] = $value->serialize( $form );
+		}
+		return [
+			ZTypeRegistry::Z_OBJECT_TYPE => $this->getZType(),
+			ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE => $monolingualStringSets
+		];
 	}
 }

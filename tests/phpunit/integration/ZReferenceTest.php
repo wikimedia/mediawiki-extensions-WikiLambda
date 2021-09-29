@@ -9,7 +9,9 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 
 /**
@@ -20,32 +22,31 @@ class ZReferenceTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::__construct
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getInnerZObject
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getErrors
 	 */
-	public function testPersistentCreation() {
-		$testObject = new ZObjectContent( '{ "Z1K1": "Z9", "Z9K1": "Z1" }' );
-		$this->assertTrue( $testObject->isValid() );
-		$this->assertSame( 'Z9', $testObject->getZType() );
-		$this->assertSame( 'Z1', $testObject->getZValue() );
+	public function testPersistentCreation_disallowed() {
+		$testObject = new ZObjectContent( '"Z9"' );
+		$this->assertFalse( $testObject->isValid() );
+		$this->assertStringContainsString(
+			ZErrorTypeRegistry::Z_ERROR_DISALLOWED_ROOT_ZOBJECT,
+			(string)$testObject->getErrors()
+		);
 
 		$testObject = new ZObjectContent(
 			'{ '
 				. '"Z1K1": "Z2", '
 				. '"Z2K1": "Z0", '
-				. '"Z2K2": { "Z1K1": "Z9", "Z9K1": "Z1" }, '
+				. '"Z2K2": "Z401", '
 				. '"Z2K3": { "Z1K1":"Z12", "Z12K1":[] }, '
 				. '"Z2K4": { "Z1K1":"Z32", "Z32K1":[] } '
 			. '}'
 		);
+		$this->assertFalse( $testObject->isValid() );
 
-		$this->assertTrue( $testObject->isValid() );
-		$this->assertSame( 'Z9', $testObject->getZType() );
-		$this->assertSame( 'Z1', $testObject->getZValue() );
+		$this->assertStringContainsString(
+			ZErrorTypeRegistry::Z_ERROR_DISALLOWED_ROOT_ZOBJECT,
+			(string)$testObject->getErrors()
+		);
 	}
 
 	/**
@@ -55,8 +56,7 @@ class ZReferenceTest extends WikiLambdaIntegrationTestCase {
 	public function testGetZType() {
 		$testObject = new ZReference( 'Z1' );
 		$this->assertSame( 'Z9', $testObject->getZType(), 'ZType of directly-created ZReference' );
-
-		$testObject = new ZObjectContent( '{ "Z1K1": "Z9", "Z9K1": "Z1" }' );
+		$testObject = ZObjectFactory::create( "Z1" );
 		$this->assertSame( 'Z9', $testObject->getZType(), 'ZType of indirectly-created ZReference' );
 	}
 
@@ -67,8 +67,7 @@ class ZReferenceTest extends WikiLambdaIntegrationTestCase {
 	public function testGetZValue() {
 		$testObject = new ZReference( 'Z1' );
 		$this->assertSame( 'Z1', $testObject->getZValue(), 'Value of directly-created ZReference' );
-
-		$testObject = new ZObjectContent( '{ "Z1K1": "Z9", "Z9K1": "Z1" }' );
+		$testObject = ZObjectFactory::create( "Z1" );
 		$this->assertSame( 'Z1', $testObject->getZValue(), 'Value of indirectly-created ZReference' );
 	}
 

@@ -14,7 +14,9 @@ use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\MediaWikiServices;
 
@@ -32,17 +34,41 @@ class ZMultiLingualString extends ZObject {
 		];
 	}
 
+	/**
+	 * This can be called with an array of serialized canonical ZObjects, an array
+	 * of ZMonoLingualString instances, or a ZList of ZMonoLingualString instances.
+	 *
+	 * FIXME: we are giving both options here, calling the constructor with serialized
+	 * data or with ZObject instances. We should think about this a bit more.
+	 *
+	 * @param ZList|array $strings
+	 * @throws ZErrorException
+	 */
 	public function __construct( $strings = [] ) {
-		foreach ( $strings as $index => $monoLingualString ) {
-			if ( !( $monoLingualString instanceof ZMonoLingualString ) ) {
-				$monoLingualString = ZObjectFactory::create( $monoLingualString );
+		foreach ( ZObjectUtils::getIterativeList( $strings ) as $index => $monoLingualString ) {
+			try {
+				$monoLingualString = ZObjectFactory::createChild( $monoLingualString );
+				if ( $monoLingualString instanceof ZMonoLingualString ) {
+					$this->setMonoLingualString( $monoLingualString );
+				}
+			} catch ( ZErrorException $e ) {
+				throw new ZErrorException(
+					ZErrorFactory::createArrayElementZError( (string)$index, $e->getZError() )
+				);
 			}
-			$this->setMonoLingualString( $monoLingualString );
 		}
 	}
 
 	public function getZValue() {
 		return $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] ?? [];
+	}
+
+	public function getValueAsList() {
+		$multi = [];
+		foreach ( $this->getZValue() as $mono ) {
+			$multi[ $mono->getLanguage() ] = $mono->getString();
+		}
+		return $multi;
 	}
 
 	/**
@@ -59,7 +85,9 @@ class ZMultiLingualString extends ZObject {
 		} catch ( ZErrorException $e ) {
 			return '';
 		}
-		return $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageZid ] ?? '';
+		return array_key_exists( $languageZid, $this->getZValue() )
+			? $this->getZValue()[ $languageZid ]->getString()
+			: '';
 	}
 
 	/**
@@ -136,7 +164,7 @@ class ZMultiLingualString extends ZObject {
 	 * @param ZMonoLingualString $value The new value to set.
 	 */
 	public function setMonoLingualString( ZMonoLingualString $value ): void {
-		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $value->getLanguage() ] = $value->getString();
+		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $value->getLanguage() ] = $value;
 	}
 
 	/**
@@ -146,7 +174,8 @@ class ZMultiLingualString extends ZObject {
 	public function setStringForLanguage( Language $language, string $value ): void {
 		$languageCode = $language->getCode();
 		$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
-		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageZid ] = $value;
+		$monolingualString = new ZMonoLingualString( $languageZid, $value );
+		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageZid ] = $monolingualString;
 	}
 
 	/**
@@ -160,12 +189,23 @@ class ZMultiLingualString extends ZObject {
 
 	public function isValid(): bool {
 		$langs = ZLangRegistry::singleton();
-		foreach ( $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] ?? [] as $languageZid => $value ) {
-			if ( !$langs->isValidLanguageZid( $languageZid ) ) {
+		foreach ( $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] ?? [] as $lang => $monolingualString ) {
+			if ( !$monolingualString->isValid() ) {
 				return false;
 			}
-			// TODO: Do we care about the validity of the values?
 		}
 		return true;
+	}
+
+	public function serialize( $form = self::FORM_CANONICAL ) {
+		// TODO fix different serialization modes, only returning FORM_CANONICAL
+		$monolingualStrings = [];
+		foreach ( $this->getZValue() as $lang => $value ) {
+			$monolingualStrings[] = $value->serialize( $form );
+		}
+		return [
+			ZTypeRegistry::Z_OBJECT_TYPE => $this->getZType(),
+			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => $monolingualStrings
+		];
 	}
 }

@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
@@ -97,7 +98,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		} else {
 			$this->assertTrue( $status instanceof Status );
 			$this->assertFalse( $status->isOK() );
-			$this->assertTrue( $status->hasMessage( $expected ) );
+			$this->assertStringContainsString( $expected, $status->getMessage() );
 		}
 	}
 
@@ -105,19 +106,19 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		return [
 			'incorrect JSON' => [
 				'{ "Z1K1"; Z2 ]',
-				'ZPersistentObject input is invalid JSON: Syntax error.'
+				ZErrorTypeRegistry::Z_ERROR_INVALID_JSON
 			],
 			'incorrect ZObject, no id' => [
 				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" }, "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }',
-				'ZPersistentObject missing required \'Z2K1\' key.'
+				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
 			],
 			'incorrect ZObject, no value' => [
 				'{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }',
-				'ZPersistentObject missing required \'Z2K2\' key.'
+				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
 			],
 			'incorrect ZObject, no label' => [
 				'{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" } }',
-				'ZPersistentObject missing required \'Z2K3\' key.'
+				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
 			],
 			'correct ZObject' => [
 				'{ "Z1K1": "Z2", "Z2K1": "Z0",'

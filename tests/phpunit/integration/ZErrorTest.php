@@ -43,7 +43,6 @@ class ZErrorTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::isValid
 	 */
 	public function testCreate_wrongValue() {
-		$this->insertZErrorTypes( [ 'Z501' ] );
 		$testObject = new ZError( 'Z501', 'error message' );
 		$this->assertFalse( $testObject->isValid() );
 	}
@@ -53,7 +52,6 @@ class ZErrorTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::isValid
 	 */
 	public function testCreate_invalidValue() {
-		$this->insertZErrorTypes( [ 'Z501' ] );
 		$testObject = new ZError( 'Z501', new ZReference( '' ) );
 		$this->assertFalse( $testObject->isValid() );
 	}
@@ -65,7 +63,6 @@ class ZErrorTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getMessage
 	 */
 	public function testCreate_valid() {
-		$this->insertZErrorTypes( [ 'Z501' ] );
 		$testObject = new ZError( 'Z501', new ZString( 'error message' ) );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z501', $testObject->getZErrorType() );

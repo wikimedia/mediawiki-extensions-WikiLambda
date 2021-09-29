@@ -12,9 +12,8 @@ namespace MediaWiki\Extension\WikiLambda\Registry;
 
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use Title;
 
@@ -108,22 +107,23 @@ class ZLangRegistry extends ZObjectRegistry {
 
 		$content = $zObjectStore->fetchZObjectByTitle( $title );
 		if ( !$content ) {
-			// Error Z504: Zid not found
 			throw new ZErrorException(
-				new ZError(
+				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
-					new ZString( "Language object with zid '$zid' not found." )
+					[ 'data' => $zid ]
 				)
 			);
 		}
 
 		$code = $this->getLanguageCodeFromContent( $content );
 		if ( !$code ) {
-			// Error Z511: Key not found (Z60K1)
 			throw new ZErrorException(
-				new ZError(
+				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
-					new ZString( "Language object with zid '$zid' is invalid: key 'Z60K1' not found." )
+					[
+						'data' => $content->getObject(),
+						'keywordArgs' => [ 'missing' => ZTypeRegistry::Z_LANGUAGE_CODE ]
+					]
 				)
 			);
 		}
@@ -160,11 +160,10 @@ class ZLangRegistry extends ZObjectRegistry {
 		}
 
 		if ( !$foundZid ) {
-			// Error Z541: Unregistered language
 			throw new ZErrorException(
-				new ZError(
+				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_LANG_NOT_FOUND,
-					new ZString( "Language object with language code '$code' not found" )
+					[ 'lang' => $code ]
 				)
 			);
 		}
@@ -179,7 +178,7 @@ class ZLangRegistry extends ZObjectRegistry {
 	 * @return string|bool Language code or false if content object is not valid Z60.
 	 */
 	private function getLanguageCodeFromContent( $content ) {
-		// If we want to validate the ZObject, we can do:
+		// FIXME: If we want to validate the ZObject, we can do:
 		// return $zobject->getInnerZObject()->getValueByKey( ZTypeRegistry::Z_LANGUAGE_CODE );
 
 		// If we don't validate (faster), we can do:

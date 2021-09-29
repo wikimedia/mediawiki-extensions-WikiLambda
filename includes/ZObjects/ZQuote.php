@@ -37,4 +37,8 @@ class ZQuote extends ZObject {
 	public function isValid(): bool {
 		return true;
 	}
+
+	public function serialize( $form = self::FORM_CANONICAL ) {
+		return $this->getZValue();
+	}
 }

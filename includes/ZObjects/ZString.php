@@ -44,4 +44,12 @@ class ZString extends ZObject {
 		// All strings of any value are by definition valid (including null, which is read as empty).
 		return true;
 	}
+
+	public function serialize( $form = self::FORM_CANONICAL ) {
+		if ( $form === self::FORM_CANONICAL ) {
+			return $this->getZValue();
+		} else {
+			return parent::serialize();
+		}
+	}
 }

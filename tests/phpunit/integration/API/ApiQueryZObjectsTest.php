@@ -218,7 +218,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 
 		$nullReference = [
 			'Z1K1' => 'Z9',
-			'Z9K1' => 'Z0'
+			'Z9K1' => 'Z111'
 		];
 		$stringZ111K1 = [
 			'Z1K1' => 'Z6',
@@ -229,7 +229,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 			'Z9K1' => 'Z6'
 		];
 
-		$this->assertEquals( $z111_canonical['Z2K2']['Z4K3'], 'Z0' );
+		$this->assertEquals( $z111_canonical['Z2K2']['Z4K3'], 'Z111' );
 		$this->assertEquals( $z111_normal['Z2K2']['Z4K3'], $nullReference );
 
 		$this->assertEquals( $z111_canonical['Z2K2']['Z4K2'][0]['Z3K1'], 'Z6' );

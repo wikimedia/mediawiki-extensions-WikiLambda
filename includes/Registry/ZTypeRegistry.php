@@ -12,8 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Registry;
 
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use Title;
 
 /**
@@ -21,13 +20,14 @@ use Title;
  */
 class ZTypeRegistry extends ZObjectRegistry {
 
+	// Builtin Types that need special treatment while ZObject creation:
+
 	// Needed for quote type, it can be anything
 	public const BUILTIN_ANY = 'Any';
 	// Is there a better way to represent this direct string (as opposed to a ZString?)
 	public const BUILTIN_STRING = 'String';
 	// Is there a better way to represent this direct array (as opposed to a ZList?)
 	public const BUILTIN_ARRAY = 'Array';
-
 	// Needed until we have a ZReference type
 	public const BUILTIN_REFERENCE = 'Reference';
 	// Needed until we have a better way to cut the Gordian Knot of Z0 references?
@@ -36,10 +36,8 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const HACK_REFERENCE_TYPE = 'Reference(Type)';
 	// Needed until we have sub-types
 	public const HACK_REFERENCE_LANGUAGE = 'Reference(Language)';
-
 	// Needed until we have a ZLanguage type (or similar)
 	public const HACK_LANGUAGE = 'Language';
-
 	// Needed until we have sub-types
 	public const HACK_ARRAY_Z_KEY = 'Array(ZKey)';
 	// Needed until we have sub-types
@@ -122,8 +120,23 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_QUOTE => 'ZQuote',
 	];
 
+	public const TERMINAL_KEYS = [
+		self::Z_STRING_VALUE,
+		self::Z_REFERENCE_VALUE
+	];
+
+	public const DISALLOWED_ROOT_ZOBJECTS = [
+		self::Z_PERSISTENTOBJECT,
+		self::Z_KEY,
+		self::Z_REFERENCE,
+		self::Z_ARGUMENTDECLARATION,
+		self::Z_ARGUMENTREFERENCE,
+		self::Z_KEYREFERENCE
+	];
+
 	public const SELF_REFERENTIAL_KEYS = [
 		self::Z_TYPE_IDENTITY,
+		self::Z_PERSISTENTOBJECT_ID,
 		// FIXME: add Z_FUNCTION_IDENTITY when the constant is declared
 		// self::Z_FUNCTION_IDENTITY
 	];
@@ -166,9 +179,13 @@ class ZTypeRegistry extends ZObjectRegistry {
 		if ( $this->isZObjectKeyCached( $key ) ) {
 			$conflictingType = $this->getZObjectKeyFromType( $key );
 			throw new ZErrorException(
-				new ZError(
+				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_CONFLICTING_TYPE_NAMES,
-					new ZString( "ZObject key '$key' already used to register as '$conflictingType'." )
+					[
+						'zid' => $key,
+						'name' => $type,
+						'existing' => $conflictingType
+					]
 				)
 			);
 		}
@@ -176,9 +193,13 @@ class ZTypeRegistry extends ZObjectRegistry {
 		if ( $this->isZObjectTypeCached( $type ) ) {
 			$conflictingKey = $this->getZObjectTypeFromKey( $type );
 			throw new ZErrorException(
-				new ZError(
+				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_CONFLICTING_TYPE_ZIDS,
-					new ZString( "ZObject type '$type' already registered as '$conflictingKey'." )
+					[
+						'zid' => $key,
+						'name' => $type,
+						'existing' => $conflictingKey
+					]
 				)
 			);
 		}
@@ -188,9 +209,12 @@ class ZTypeRegistry extends ZObjectRegistry {
 			&& !class_exists( 'MediaWiki\Extension\WikiLambda\ZObjects\\' . self::BUILT_IN_TYPES[ $key ] )
 		) {
 			throw new ZErrorException(
-				new ZError(
-					ZErrorTypeRegistry::Z_ERROR_BUILTIN_TYPE_NOT_FOUND,
-					new ZString( "ZObject type '$key' is built-in, but class '$type' is not found." )
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_CONFLICTING_TYPE_ZIDS,
+					[
+						'zid' => $key,
+						'name' => $type
+					]
 				)
 			);
 		}
@@ -264,12 +288,14 @@ class ZTypeRegistry extends ZObjectRegistry {
 		}
 
 		if ( $zObject->getZType() !== self::Z_TYPE ) {
-			// Error Z542: unexpected zobject type
 			throw new ZErrorException(
-				new ZError(
+				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_UNEXPECTED_ZTYPE,
-					new ZString( "ZObject for '$key' is not a ZType object." )
-				)
+					[
+						'expected' => self::Z_TYPE,
+						'actual' => $zObject->getZType()
+					]
+ )
 			);
 		}
 
@@ -290,9 +316,9 @@ class ZTypeRegistry extends ZObjectRegistry {
 		if ( !$this->isZObjectKeyKnown( $key ) ) {
 			// Error Z504: Zid not found
 			throw new ZErrorException(
-				new ZError(
+				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
-					new ZString( "ZObject key '$key' is not registered." )
+					[ 'data' => $key ]
 				)
 			);
 		}
@@ -346,10 +372,10 @@ class ZTypeRegistry extends ZObjectRegistry {
 		if ( !$this->isZObjectTypeKnown( $type ) ) {
 			// Error Z543: ZType not found
 			throw new ZErrorException(
-				new ZError(
+				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_ZTYPE_NOT_FOUND,
-					new ZString( "ZObject type '$type' is not registered." )
-				)
+					[ 'type' => $type ]
+ )
 			);
 		}
 		return array_search( $type, $this->registry );

@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 
 class ZMonoLingualString extends ZObject {
 
@@ -31,9 +32,14 @@ class ZMonoLingualString extends ZObject {
 		];
 	}
 
-	public function __construct( $langage = '', $value = '' ) {
-		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] = $langage;
-		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ] = $value;
+	public function __construct( $language = null, $value = '' ) {
+		// FIXME catch and throw key-value exceptions
+		// FIXME should we check that $language is valid during creation?
+		$langRegistry = ZLangRegistry::singleton();
+		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] = ZObjectFactory::createChild(
+			$language ?? $langRegistry->getLanguageZidFromCode( 'en' )
+		);
+		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ] = ZObjectFactory::createChild( $value );
 	}
 
 	public function getZValue() {
@@ -41,16 +47,15 @@ class ZMonoLingualString extends ZObject {
 	}
 
 	public function getLanguage() {
-		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ];
+		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ]->getZValue();
 	}
 
 	public function getString() {
-		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ];
+		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ]->getZValue();
 	}
 
 	public function isValid(): bool {
 		$langs = ZLangRegistry::singleton();
-		// TODO: Do we care about the validity of the values?
-		return $langs->isValidLanguageZid( $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] );
+		return $langs->isValidLanguageZid( $this->getLanguage() );
 	}
 }

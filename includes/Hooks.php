@@ -124,7 +124,7 @@ class Hooks implements
 		}
 
 		// (T260751) Ensure uniqueness of type / label / language triples on save.
-		$newLabels = $content->getLabels()->getZValue();
+		$newLabels = $content->getLabels()->getValueAsList();
 
 		if ( $newLabels === [] ) {
 			// Unlabelled; don't error.

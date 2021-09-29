@@ -17,6 +17,9 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 class ZObject {
 
+	public const FORM_CANONICAL = 1;
+	public const FORM_NORMAL = 2;
+
 	/** @var array */
 	protected $data = [];
 
@@ -73,7 +76,8 @@ class ZObject {
 			if ( $value instanceof ZObject ) {
 				return $value;
 			}
-			return ZObjectFactory::create( $value );
+			// FIXME: why is this not being done by the constructor or by ZObjectFactory?
+			return ZObjectFactory::createChild( $value );
 		} else {
 			return null;
 		}
@@ -157,6 +161,35 @@ class ZObject {
 	 * @return string
 	 */
 	public function __toString() {
-		return FormatJson::encode( $this->data, true, FormatJson::UTF8_OK );
+		return FormatJson::encode( $this->serialize( self::FORM_CANONICAL ), true, FormatJson::UTF8_OK );
+	}
+
+	public function serialize( $form = self::FORM_CANONICAL ) {
+		$serialized = [
+			// TODO Z_OBJECT_TYPE in different forms, it's only being serialized as canonical
+			ZTypeRegistry::Z_OBJECT_TYPE => $this->getZType()
+		];
+
+		foreach ( $this->data as $key => $value ) {
+			if ( $key == ZTypeRegistry::Z_OBJECT_TYPE ) { continue;
+			}
+
+			if ( is_string( $value ) ) {
+				$serialized[ $key ] = $value;
+				continue;
+			}
+
+			if ( is_array( $value ) ) {
+				$serialized[ $key ] = array_map( static function ( $element ) use ( $form ) {
+					return ( $element instanceof ZObject ) ? $element->serialize( $form ) : $element;
+				}, $value );
+				continue;
+			}
+
+			if ( $value instanceof ZObject ) {
+				$serialized[ $key ] = $value->serialize( $form );
+			}
+		}
+		return $serialized;
 	}
 }

@@ -58,6 +58,7 @@ class ZMonoLingualStringTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testStaticCreation_invalidNoLanguageKey() {
 		$this->expectException( ZErrorException::class );
+
 		$invalidObject = ZObjectFactory::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRING,
 			ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => 'Demonstration item'
@@ -83,19 +84,6 @@ class ZMonoLingualStringTest extends WikiLambdaIntegrationTestCase {
 		$invalidObject = ZObjectFactory::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRING,
 			ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => 'en',
-			ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => 'Demonstration item'
-		] );
-	}
-
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
-	 */
-	public function testStaticCreation_invalidLanguageCode() {
-		$this->expectException( ZErrorException::class );
-		$invalidObject = ZObjectFactory::create( (object)[
-			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRING,
-			ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => 'Z999',
 			ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => 'Demonstration item'
 		] );
 	}

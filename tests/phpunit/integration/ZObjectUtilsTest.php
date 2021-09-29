@@ -7,7 +7,7 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda\Tests;
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use FormatJson;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
@@ -16,7 +16,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectUtils
  */
-class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
+class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 
 	private const EN = 'Z1002';
 	private const ES = 'Z1003';
@@ -27,12 +27,12 @@ class ZObjectUtilsTest extends \MediaWikiUnitTestCase {
 
 	public function addDBDataOnce() {
 		$langs = ZLangRegistry::singleton();
-		$langs->registerLang( 'en', self::EN );
-		$langs->registerLang( 'es', self::ES );
-		$langs->registerLang( 'fr', self::FR );
-		$langs->registerLang( 'ru', self::RU );
-		$langs->registerLang( 'uk', self::UK );
-		$langs->registerLang( 'cat', self::CAT );
+		$langs->register( 'en', self::EN );
+		$langs->register( 'es', self::ES );
+		$langs->register( 'fr', self::FR );
+		$langs->register( 'ru', self::RU );
+		$langs->register( 'uk', self::UK );
+		$langs->register( 'cat', self::CAT );
 	}
 
 	/**

@@ -18,8 +18,6 @@ use MediaWiki\Content\Transform\PreSaveTransformParams;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MWException;
@@ -126,18 +124,18 @@ class ZObjectContentHandler extends ContentHandler {
 	public static function getExternalRepresentation( Title $zObjectTitle, ?string $languageCode = null ): string {
 		if ( $zObjectTitle->getNamespace() !== NS_MAIN ) {
 			throw new ZErrorException(
-				new ZError(
+				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_WRONG_NAMESPACE,
-					new ZString( "Provided page '$zObjectTitle' is not in the main namespace." )
+					[ 'title' => (string)$zObjectTitle ]
 				)
 			);
 		}
 
 		if ( $zObjectTitle->getContentModel() !== CONTENT_MODEL_ZOBJECT ) {
 			throw new ZErrorException(
-				new ZError(
-					ZErrorTypeRegistry::Z_ERROR_WRONG_NAMESPACE,
-					new ZString( "Provided page '$zObjectTitle' is not in a ZObject content type." )
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_WRONG_CONTENT_TYPE,
+					[ 'title' => (string)$zObjectTitle ]
 				)
 			);
 		}
@@ -147,9 +145,9 @@ class ZObjectContentHandler extends ContentHandler {
 
 		if ( $zObject === false ) {
 			throw new ZErrorException(
-				new ZError(
+				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
-					new ZString( "Provided page '$zObjectTitle' could not be fetched from the DB." )
+					[ 'data' => (string)$zObjectTitle ]
 				)
 			);
 		}
@@ -161,9 +159,9 @@ class ZObjectContentHandler extends ContentHandler {
 
 			if ( !$services->getLanguageNameUtils()->isValidCode( $languageCode ) ) {
 				throw new ZErrorException(
-					new ZError(
+					ZErrorFactory::createZErrorInstance(
 						ZErrorTypeRegistry::Z_ERROR_INVALID_LANG_CODE,
-						new ZString( "Provided language code '$languageCode' is not valid." )
+						[ 'lang' => $languageCode ]
 					)
 				);
 			}

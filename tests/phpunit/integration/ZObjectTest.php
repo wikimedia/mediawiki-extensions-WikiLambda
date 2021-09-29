@@ -73,7 +73,11 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 			"Z111K1" => "first demonstration key",
 			"Z111K2" => "second demonstration key"
 		];
-		$testZObject = ZObjectFactory::create( $testObject );
+
+		// User-defined type validation can't be tested here, hence
+		// using the method createChild instead of create, as the
+		// former does not request function-schemata validator
+		$testZObject = ZObjectFactory::createChild( $testObject );
 		$this->assertInstanceOf( ZObject::class, $testZObject );
 		$this->assertSame( $testZObject->getZType(), 'Z111' );
 	}
@@ -93,7 +97,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 			"Z111K1" => "first demonstration key",
 			"Z111K2" => "second demonstration key"
 		];
-		$testZObject = ZObjectFactory::create( $testObject );
+		$testZObject = ZObjectFactory::createChild( $testObject );
 		$this->assertContains( "Z111", $testZObject->getLinkedZObjects() );
 	}
 
@@ -112,7 +116,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 			"Z111K1" => "first demonstration key",
 			"Z111K2" => "second demonstration key"
 		];
-		$testZObject = ZObjectFactory::create( $testObject );
+		$testZObject = ZObjectFactory::createChild( $testObject );
 
 		$toStringValue = $testZObject->__toString();
 

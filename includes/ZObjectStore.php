@@ -151,6 +151,7 @@ class ZObjectStore {
 	 */
 	public function updateZObject( string $zid, string $data, string $summary, User $user, int $flags = EDIT_UPDATE ) {
 		$title = $this->titleFactory->newFromText( $zid, NS_MAIN );
+
 		if ( !( $title instanceof Title ) ) {
 			return Status::newFatal( 'wikilambda-invalidzobjecttitle', $zid );
 		}

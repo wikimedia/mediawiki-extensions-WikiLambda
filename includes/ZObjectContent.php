@@ -17,12 +17,10 @@ use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualStringSet;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\MediaWikiServices;
 use ParserOptions;
 use ParserOutput;
@@ -70,9 +68,9 @@ class ZObjectContent extends AbstractContent {
 	private $status = null;
 
 	/**
-	 * @var ZError[]
+	 * @var ZError
 	 */
-	private $errors = [];
+	private $error = null;
 
 	/**
 	 * Builds the Content object that can be saved in the Wiki
@@ -87,10 +85,10 @@ class ZObjectContent extends AbstractContent {
 		// Check that the input is a valid string
 		if ( !is_string( $text ) ) {
 			throw new ZErrorException(
-				new ZError(
-					ZErrorTypeRegistry::Z_ERROR_INVALID_FORMAT,
-					new ZString( 'ZPersistentObject input is not a string.' )
-				)
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_FORMAT, [
+						'data' => $text
+					] )
 			);
 		}
 
@@ -99,20 +97,11 @@ class ZObjectContent extends AbstractContent {
 		if ( !$parseStatus->isGood() ) {
 			$errorMessage = wfMessage( $parseStatus->getErrors()[0]['message'] )->inContentLanguage()->text();
 			throw new ZErrorException(
-				new ZError(
-					ZErrorTypeRegistry::Z_ERROR_INVALID_JSON,
-					new ZString( "ZPersistentObject input is invalid JSON: $errorMessage." )
-				)
-			);
-		}
-
-		// Check that the input is a syntactically correct ZObject
-		if ( !ZObjectUtils::isValidZObject( $parseStatus->getValue() ) ) {
-			throw new ZErrorException(
-				new ZError(
-					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
-					new ZString( 'ZPersistentObject input ZObject structure is invalid.' )
-				)
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_JSON, [
+						'message' => $errorMessage,
+						'data' => $text
+					] )
 			);
 		}
 
@@ -123,7 +112,7 @@ class ZObjectContent extends AbstractContent {
 	}
 
 	/**
-	 * Tries to build the wrapped ZObject by calling ZObjectFactory::create()
+	 * Tries to build the wrapped ZObject by calling ZObjectFactory::createPersistentContent()
 	 * and sets the resulting validation status on $this->status
 	 */
 	private function validateContent() {
@@ -132,7 +121,7 @@ class ZObjectContent extends AbstractContent {
 			$this->zobject = ZObjectFactory::createPersistentContent( $this->getObject() );
 		} catch ( ZErrorException $e ) {
 			$this->status->fatal( $e->getMessage() );
-			$this->errors[] = $e->getZError();
+			$this->error = $e->getZError();
 		}
 	}
 
@@ -143,7 +132,6 @@ class ZObjectContent extends AbstractContent {
 		if ( !( $this->status instanceof Status ) ) {
 			$this->validateContent();
 		}
-
 		return $this->status->isOK();
 	}
 
@@ -169,10 +157,10 @@ class ZObjectContent extends AbstractContent {
 	}
 
 	/**
-	 * @return ZError[]
+	 * @return ZError
 	 */
 	public function getErrors() {
-		return $this->errors;
+		return $this->error;
 	}
 
 	/**
@@ -204,13 +192,7 @@ class ZObjectContent extends AbstractContent {
 	 */
 	public function getInnerZObject(): ZObject {
 		if ( !$this->isValid() ) {
-			// Error 501: Invalid syntax
-			throw new ZErrorException(
-				new ZError(
-					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
-					new ZList( $this->errors ) // errors is a list of ZErrors
-				)
-			);
+			throw new ZErrorException( $this->error );
 		}
 		return $this->zobject->getInnerZObject();
 	}
@@ -223,13 +205,7 @@ class ZObjectContent extends AbstractContent {
 	 */
 	public function getZid() {
 		if ( !$this->isValid() ) {
-			// Error 501: Invalid syntax
-			throw new ZErrorException(
-				new ZError(
-					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
-					new ZList( $this->errors ) // errors is a list of ZErrors
-				)
-			);
+			throw new ZErrorException( $this->error );
 		}
 		return $this->zobject->getZid();
 	}
@@ -264,13 +240,7 @@ class ZObjectContent extends AbstractContent {
 	 */
 	public function getZType(): string {
 		if ( !$this->isValid() ) {
-			// Error 501: Invalid syntax
-			throw new ZErrorException(
-				new ZError(
-					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
-					new ZList( $this->errors ) // errors is a list of ZErrors
-				)
-			);
+			throw new ZErrorException( $this->error );
 		}
 		return $this->zobject->getInternalZType();
 	}
@@ -283,13 +253,7 @@ class ZObjectContent extends AbstractContent {
 	 */
 	public function getZValue() {
 		if ( !$this->isValid() ) {
-			// Error 501: Invalid syntax
-			throw new ZErrorException(
-				new ZError(
-					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
-					new ZList( $this->errors ) // errors is a list of ZErrors
-				)
-			);
+			throw new ZErrorException( $this->error );
 		}
 		return $this->zobject->getZValue();
 	}
@@ -302,12 +266,7 @@ class ZObjectContent extends AbstractContent {
 	 */
 	public function getLabels(): ZMultiLingualString {
 		if ( !$this->isValid() ) {
-			throw new ZErrorException(
-				new ZError(
-					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
-					new ZList( $this->errors ) // errors is a list of ZErrors
-				)
-			);
+			throw new ZErrorException( $this->error );
 		}
 		return $this->zobject->getLabels();
 	}
@@ -321,12 +280,7 @@ class ZObjectContent extends AbstractContent {
 	 */
 	public function getLabel( $language ): string {
 		if ( !$this->isValid() ) {
-			throw new ZErrorException(
-				new ZError(
-					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
-					new ZList( $this->errors ) // errors is a list of ZErrors
-				)
-			);
+			throw new ZErrorException( $this->error );
 		}
 		return $this->zobject->getLabel( $language );
 	}
@@ -339,12 +293,7 @@ class ZObjectContent extends AbstractContent {
 	 */
 	public function getAliases(): ZMultiLingualStringSet {
 		if ( !$this->isValid() ) {
-			throw new ZErrorException(
-				new ZError(
-					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
-					new ZList( $this->errors ) // errors is a list of ZErrors
-				)
-			);
+			throw new ZErrorException( $this->error );
 		}
 		return $this->zobject->getAliases();
 	}

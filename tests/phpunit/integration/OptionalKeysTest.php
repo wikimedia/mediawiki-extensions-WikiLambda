@@ -24,6 +24,11 @@ class OptionalKeysTest extends WikiLambdaIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 */
 	public function testInstanceOfTypeWithOptionalKeys() {
+		$this->markTestSkipped(
+			'Tests instantiation of user-defined types. '
+			. 'TODO: revisit when we are able to validate these.'
+		);
+
 		// Create ZOptionalType (Z10101)
 		$baseTypeTitleText = 'Z10101';
 		$baseTypeContent = <<<EOT

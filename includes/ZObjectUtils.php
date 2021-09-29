@@ -10,7 +10,9 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use Normalizer;
 use stdClass;
 use Transliterator;
@@ -27,6 +29,7 @@ class ZObjectUtils {
 		// List    := [(ZObject(,ZObject)*)]
 		// Record  := { "Z1K1": ZObject(, "Key": ZObject)* }
 		// Key     := ZNumberKNumber | KNumber
+		$status = true;
 
 		// Encoded inputs which don't start with {, or [, are instead read as strings.
 		if ( $input !== '' && ( $input[0] === '{' || $input[0] === '[' ) ) {
@@ -35,16 +38,21 @@ class ZObjectUtils {
 			if ( $evaluatedInput === null ) {
 				return false;
 			}
-			return self::isValidZObject( $evaluatedInput );
+			try {
+				$status = self::isValidZObject( $evaluatedInput );
+			} catch ( ZErrorException $e ) {
+				$status = false;
+			}
 		}
 
 		// An actual string, not an encoded item.
-		return true;
+		return $status;
 	}
 
 	/**
 	 * @param string|array|stdClass $input
 	 * @return bool
+	 * @throws ZErrorException
 	 */
 	public static function isValidZObject( $input ): bool {
 		if ( is_string( $input ) ) {
@@ -58,19 +66,31 @@ class ZObjectUtils {
 		if ( is_object( $input ) ) {
 			return self::isValidZObjectRecord( $input );
 		}
-		// Fall-through.
-		return false;
+
+		// Fall through: invalid format error
+		throw new ZErrorException(
+			ZErrorFactory::createZErrorInstance(
+				ZErrorTypeRegistry::Z_ERROR_INVALID_FORMAT,
+				[
+					'data' => $input
+				]
+			)
+		);
 	}
 
 	/**
 	 * @param array $input
 	 * @return bool
+	 * @throws ZErrorException
 	 */
 	public static function isValidZObjectList( array $input ): bool {
-		// TODO: Simplify this to array_reduce(…)
 		foreach ( $input as $index => $value ) {
-			if ( !self::isValidZObject( $value ) ) {
-				return false;
+			try {
+				self::isValidZObject( $value );
+			} catch ( ZErrorException $e ) {
+				throw new ZErrorException(
+					ZErrorFactory::createArrayElementZError( (string)$index, $e->getZError() )
+				);
 			}
 		}
 		return true;
@@ -79,23 +99,40 @@ class ZObjectUtils {
 	/**
 	 * @param stdClass $input
 	 * @return bool
+	 * @throws ZErrorException
 	 */
 	public static function isValidZObjectRecord( stdClass $input ): bool {
 		$objectVars = get_object_vars( $input );
-		// TODO: This shouldn't hard-code knowledge of the type?
+
 		if ( !array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $objectVars ) ) {
 			// Each ZObject must define its type.
-			return false;
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_MISSING_TYPE,
+					[
+						'data' => $input
+					]
+				)
+			);
 		}
 
-		// TODO: Simplify this to array_reduce(…)
 		foreach ( $input as $key => $value ) {
+			// Check wellformedness of the key
 			if ( !self::isValidZObjectKey( $key ) ) {
-				return false;
+				throw new ZErrorException(
+					ZErrorFactory::createZErrorInstance(
+						ZErrorTypeRegistry::Z_ERROR_INVALID_KEY,
+						[
+							'dataPointer' => [ $key ]
+						]
+					)
+				);
 			}
-			// TODO: Properly type-aware arbitrary checking?
-			if ( !self::isValidZObject( $value ) ) {
-				return false;
+			// Check generic wellformedness of the value
+			try {
+				self::isValidZObject( $value );
+			} catch ( ZErrorException $e ) {
+				throw new ZErrorException( ZErrorFactory::createKeyValueZError( $key, $e->getZError() ) );
 			}
 		}
 		return true;
@@ -617,5 +654,18 @@ class ZObjectUtils {
 	public static function getZObjectReferenceFromKey( string $input ): string {
 		preg_match( "/^\s*(Z[1-9]\d*)?(K\d+)\s*$/", $input, $matches );
 		return $matches[1];
+	}
+
+	/**
+	 * Given an array or a ZList, returns an array that can be iterated over
+	 *
+	 * @param array|ZList $list
+	 * @return array
+	 */
+	public static function getIterativeList( $list ): array {
+		if ( $list instanceof ZList ) {
+			return $list->getZListAsArray();
+		}
+		return $list;
 	}
 }

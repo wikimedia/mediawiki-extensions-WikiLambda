@@ -12,6 +12,8 @@ namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 class ZMonoLingualStringSet extends ZObject {
 
@@ -31,9 +33,19 @@ class ZMonoLingualStringSet extends ZObject {
 		];
 	}
 
-	public function __construct( $langage = '', $value = [] ) {
-		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ] = $langage;
-		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE ] = $value;
+	/**
+	 * @param ZReference|string|null $language
+	 * @param ZList|array $value
+	 */
+	public function __construct( $language = null, $value = [] ) {
+		$langRegistry = ZLangRegistry::singleton();
+		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ] = ZObjectFactory::createChild(
+			// @phan-suppress-next-line PhanTypeMismatchArgumentNullable get language zid for 'en' will never be null
+			$language ?? $langRegistry->getLanguageZidFromCode( 'en' )
+		);
+		foreach ( ZObjectUtils::getIterativeList( $value ) as $index => $element ) {
+			$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE ][] = ZObjectFactory::createChild( $element );
+		}
 	}
 
 	public function getZValue() {
@@ -41,16 +53,18 @@ class ZMonoLingualStringSet extends ZObject {
 	}
 
 	public function getLanguage() {
-		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ];
+		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ]->getZValue();
 	}
 
 	public function getStringSet() {
-		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE ];
+		return array_map( static function ( $zstring ) {
+			return $zstring->getZValue();
+		}, $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE ]
+		);
 	}
 
 	public function isValid(): bool {
 		$langs = ZLangRegistry::singleton();
-		// TODO: Do we care about the validity of the values?
-		return $langs->isValidLanguageZid( $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ] );
+		return $langs->isValidLanguageZid( $this->getLanguage() );
 	}
 }

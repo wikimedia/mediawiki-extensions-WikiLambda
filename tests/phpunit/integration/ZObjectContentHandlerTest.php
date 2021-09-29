@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use FormatJson;
 use Language;
 use MediaWiki\Content\Transform\PreSaveTransformParamsValue;
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
@@ -65,8 +66,6 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 		$testObject = $handler->makeEmptyContent();
 		$this->assertInstanceOf( ZObjectContent::class, $testObject );
-		$this->assertSame( 'Z6', $testObject->getZType() );
-		$this->assertSame( '', $testObject->getZValue() );
 	}
 
 	/**
@@ -95,7 +94,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::unserializeContent
 	 */
 	public function testUnserializeContent() {
-		$serialized = '{"Z1K1":"Z2","Z2K1":"Z0","Z2K2":"","Z2K3":{"Z1K1":"Z12","Z12K1":[]}}';
+		$serialized = '{"Z1K1":"Z2","Z2K1":"Z401","Z2K2":"","Z2K3":{"Z1K1":"Z12","Z12K1":[]}}';
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 		$testObject = $handler->unserializeContent( $serialized );
 		$this->assertInstanceOf( ZObjectContent::class, $testObject );
@@ -111,8 +110,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$title = Title::newFromText( $pageTitleText );
 
 		$this->expectException( ZErrorException::class );
-		$this->expectExceptionMessage( "Provided page '$pageTitleText' is not in the main namespace." );
-
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_WRONG_NAMESPACE );
 		ZObjectContentHandler::getExternalRepresentation( $title );
 	}
 
@@ -123,15 +121,9 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$unavailableZid = 'Z333';
 		$title = Title::newFromText( $unavailableZid, NS_MAIN );
 
-		try {
-			ZObjectContentHandler::getExternalRepresentation( $title );
-		} catch ( ZErrorException $e ) {
-			$errorType = $e->getZErrorType();
-			$errorMessage = $e->getZErrorMessage()->getZValue();
-		}
-
-		$this->assertSame( 'Z504', $errorType );
-		$this->assertSame( "Provided page '$unavailableZid' could not be fetched from the DB.", $errorMessage );
+		$this->expectException( ZErrorException::class );
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND );
+		ZObjectContentHandler::getExternalRepresentation( $title );
 	}
 
 	/**

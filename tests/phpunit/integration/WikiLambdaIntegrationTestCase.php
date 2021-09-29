@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry;
 use MediaWikiIntegrationTestCase;
@@ -70,6 +71,19 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 		foreach ( $langs as $code ) {
 			$zid = self::ZLANG[$code];
 			$langRegistry->register( $zid, $code );
+		}
+	}
+
+	/**
+	 * Simulate the existence of a given set of error types by registering
+	 * their Zids
+	 *
+	 * @param string[] $errors
+	 */
+	protected function registerErrors( $errors ): void {
+		$errorRegistry = ZErrorTypeRegistry::singleton();
+		foreach ( $errors as $err ) {
+			$errorRegistry->register( $err, $err );
 		}
 	}
 

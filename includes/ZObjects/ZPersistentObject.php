@@ -12,7 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 class ZPersistentObject extends ZObject {
 
@@ -53,24 +53,24 @@ class ZPersistentObject extends ZObject {
 	 * classes for built-in representations, and is mostly intended to represent instances of
 	 * wiki-defined types.
 	 *
-	 * @param string $zid
+	 * @param string|\stdClass $zid
 	 * @param string|array|ZObject|\stdClass $value The item to turn into the internal ZObject
 	 * @param array|ZObject $label The item to turn into this ZPersistentObject's label
 	 * @param array|ZObject|null $aliases The item to turn into this ZPersistentObject's aliases
 	 */
 	public function __construct( $zid, $value, $label, $aliases = null ) {
 		$aliases = $aliases ?? new ZMultiLingualStringSet( [] );
-		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ] = $zid;
-		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = ZObjectFactory::create( $value );
-		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = ZObjectFactory::create( $label );
-		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES ] = ZObjectFactory::create( $aliases );
+		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID  ] = $zid;
+		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = $value;
+		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = $label;
+		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES ] = $aliases;
 	}
 
 	/**
 	 * @return string The persisted (or null) ZID
 	 */
 	public function getZid(): string {
-		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ];
+		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ]->getZValue();
 	}
 
 	/**
@@ -125,8 +125,27 @@ class ZPersistentObject extends ZObject {
 	 * @return bool Whether content is valid
 	 */
 	public function isValid(): bool {
-		// TODO: Right now these are uneditable and guaranteed valid on creation, but when we
-		// add model (API and UX) editing, this will need to actually evaluate.
+		// FIXME: we acept ZStrings and ZReferences for now because functions-schemata/data files
+		// are incorrect (Z2K1 contains reference instead of string)
+		if (
+			!( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ] instanceof ZString ) &&
+			!( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ] instanceof ZReference )
+		) {
+			return false;
+		}
+		$zid = $this->getZid();
+		if ( !ZObjectUtils::isValidOrNullZObjectReference( $zid ) ) {
+			return false;
+		}
+		if ( !( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] instanceof ZObject ) ) {
+			return false;
+		}
+		if ( !( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] instanceof ZMultiLingualString ) ) {
+			return false;
+		}
+		if ( !( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES ] instanceof ZMultiLingualStringSet ) ) {
+			return false;
+		}
 		return true;
 	}
 }

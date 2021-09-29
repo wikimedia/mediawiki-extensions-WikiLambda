@@ -12,9 +12,8 @@ namespace MediaWiki\Extension\WikiLambda\Tests;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 class ZTestType extends ZObject {
 
@@ -69,7 +68,7 @@ class ZTestType extends ZObject {
 				}
 			}
 		],
-		"Z4K3": "Z0"
+		"Z4K3": "Z111"
 	},
 	"Z2K3": {
 		"Z1K1": "Z12",
@@ -130,17 +129,23 @@ EOT;
 	public static function create( array $objectVars ): ZObject {
 		if ( !array_key_exists( 'Z111K1', $objectVars ) ) {
 			throw new ZErrorException(
-				new ZError(
+				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
-					new ZString( "ZTestType missing the Z111K1 key." )
+					[
+						'data' => $objectVars,
+						'keywordArgs' => [ 'missing' => 'Z111K1' ]
+					]
 				)
 			);
 		}
 		if ( !array_key_exists( 'Z111K2', $objectVars ) ) {
 			throw new ZErrorException(
-				new ZError(
+				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
-					new ZString( "ZTestType missing the Z111K2 key." )
+					[
+						'data' => $objectVars,
+						'keywordArgs' => [ 'missing' => 'Z111K2' ]
+					]
 				)
 			);
 		}

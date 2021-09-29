@@ -52,7 +52,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		$zObjectStore->deleteZObjectLabelsByZid( $zid );
 		$zObjectStore->deleteZObjectLabelConflictsByZid( $zid );
 
-		$labels = $this->zObject->getLabels()->getZValue();
+		$labels = $this->zObject->getLabels()->getValueAsList();
 
 		// TODO: This should write the shortform, encoded type (e.g. `Z4(Z6)`)
 		$ztype = $this->zObject->getZType();
@@ -67,7 +67,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		$zObjectStore->insertZObjectLabelConflicts( $zid, $conflicts );
 
 		// (T285368) Write aliases in the labels table
-		$aliases = $this->zObject->getAliases()->getZValue();
+		$aliases = $this->zObject->getAliases()->getValueAsList();
 		if ( count( $aliases ) > 0 ) {
 			$zObjectStore->insertZObjectAliases( $zid, $ztype, $aliases );
 		}
@@ -77,6 +77,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			$zFunction = null;
 
 			if ( $ztype === 'Z14' ) {
+				// FIXME: getValueByKey might throw exceptions, we should handle this
 				$zFunction = $this->zObject->getInnerZObject()->getValueByKey( 'Z14K1' );
 			} elseif ( $ztype === 'Z20' ) {
 				$zFunction = $this->zObject->getInnerZObject()->getValueByKey( 'Z20K1' );

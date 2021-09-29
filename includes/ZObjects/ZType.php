@@ -47,7 +47,7 @@ class ZType extends ZObject {
 	}
 
 	public function getTypeId() {
-		return $this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ];
+		return $this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ]->getZValue();
 	}
 
 	public function getTypeKeys() {
@@ -55,16 +55,18 @@ class ZType extends ZObject {
 	}
 
 	public function getTypeValidator() {
-		return $this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ];
+		return $this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ]->getZValue();
 	}
 
 	public function isValid(): bool {
-		// Identity must be set to a valid ZKey reference (or special case of 'Z0')
+		// Identity must be set to a valid ZReference (or special case of 'Z0')
 		if ( !isset( $this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ] ) ) {
 			return false;
 		}
-		$identity = $this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ];
-		if ( !ZObjectUtils::isValidZObjectReference( $identity ) && $identity !== ZTypeRegistry::Z_NULL_REFERENCE ) {
+		if ( !( $this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ] instanceof ZReference ) ) {
+			return false;
+		}
+		if ( !( $this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ]->isValid() ) ) {
 			return false;
 		}
 
@@ -90,7 +92,7 @@ class ZType extends ZObject {
 			if ( !$key->isValid() ) {
 				return false;
 			}
-			if ( ZObjectUtils::getZObjectReferenceFromKey( $key->getKeyId() ) !== $identity ) {
+			if ( ZObjectUtils::getZObjectReferenceFromKey( $key->getKeyId() ) !== $this->getTypeId() ) {
 				return false;
 			}
 		}
@@ -99,8 +101,10 @@ class ZType extends ZObject {
 		if ( !isset( $this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ] ) ) {
 			return false;
 		}
-		$validator = $this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ];
-		if ( !ZObjectUtils::isValidZObjectReference( $validator ) || $validator === ZTypeRegistry::Z_NULL_REFERENCE ) {
+		if ( !( $this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ] instanceof ZReference ) ) {
+			return false;
+		}
+		if ( !( $this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ]->isValid() ) ) {
 			return false;
 		}
 		// TODO: Actually check that the validator is a ZFunction that applies to us.

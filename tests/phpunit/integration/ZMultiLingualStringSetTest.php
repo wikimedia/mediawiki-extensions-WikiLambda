@@ -105,7 +105,13 @@ class ZMultiLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 		$testObject = ZObjectFactory::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MULTILINGUALSTRINGSET,
 			ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE => [
-				new ZMonoLingualStringSet( 'en', [ 'Demonstration item' ] )
+				(object)[
+					ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRINGSET,
+					ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE => 'Z1002',
+					ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE => [
+						'Demonstration item'
+					]
+				]
 			]
 		] );
 		$this->assertSame( $testObject->getZType(), 'Z32' );

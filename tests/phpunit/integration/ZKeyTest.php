@@ -9,15 +9,41 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZKey
  */
 class ZKeyTest extends WikiLambdaIntegrationTestCase {
+
+	/**
+	 * @covers ::getZType
+	 * @covers ::getKeyType
+	 * @covers ::getKeyId
+	 * @covers ::getKeyLabel
+	 * @covers ::getZValue
+	 * @covers ::isValid
+	 */
+	public function testCreation_constructors() {
+		$testRef = new ZReference( 'Z6' );
+		$testKey = new ZString( 'Z6K1' );
+		$testString = new ZMonoLingualString( self::ZLANG['en'], 'Demonstration item' );
+		$testLabelSet = new ZMultiLingualString( [ $testString ] );
+		$testObject = new ZKey( $testRef, $testKey, $testLabelSet );
+
+		$this->assertSame( 'Z3', $testObject->getZType() );
+		$this->assertSame( 'Z6', $testObject->getKeyType() );
+		$this->assertSame( 'Z6K1', $testObject->getKeyId() );
+		$this->assertSame( $testString->getString(), $testObject->getKeyLabel()->getStringForLanguageCode( 'en' ) );
+		$this->assertTrue( $testObject->isValid() );
+	}
 
 	/**
 	 * @covers ::__construct
@@ -28,17 +54,29 @@ class ZKeyTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getZValue
 	 * @covers ::isValid
 	 */
-	public function testCreation() {
-		$testString = new ZMonoLingualString( self::ZLANG['en'], 'Demonstration item' );
-		$testLabelSet = new ZMultiLingualString( [ $testString ] );
-		$testObject = new ZKey( 'Z6', 'Z6K1', $testLabelSet );
+	public function testCreation_factory() {
+		$stringZObject = <<<EOT
+{
+	"Z1K1": "Z3",
+	"Z3K1": "Z6",
+	"Z3K2": "Z6K1",
+	"Z3K3": {
+		"Z1K1": "Z12",
+		"Z12K1": [
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "Z1002",
+				"Z11K2": "Demonstration item"
+			}
+		]
+	}
+}
+EOT;
+		$testObject = ZObjectFactory::create( json_decode( $stringZObject ) );
 
 		$this->assertSame( 'Z3', $testObject->getZType() );
 		$this->assertSame( 'Z6', $testObject->getKeyType() );
 		$this->assertSame( 'Z6K1', $testObject->getKeyId() );
-
-		$this->assertSame( $testString->getString(), $testObject->getKeyLabel()->getStringForLanguageCode( 'en' ) );
-		$this->assertSame( [ 'Z3K1' => 'Z6', 'Z3K2' => 'Z6K1', 'Z3K3' => $testLabelSet ], $testObject->getZValue() );
 		$this->assertTrue( $testObject->isValid() );
 	}
 
@@ -55,7 +93,7 @@ class ZKeyTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getKeyId
 	 * @covers ::getKeyLabel
 	 */
-	public function testPersistentCreation() {
+	public function testPersistentCreation_disallowed() {
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent( <<<EOT
 {
@@ -93,14 +131,11 @@ class ZKeyTest extends WikiLambdaIntegrationTestCase {
 }
 EOT
 		);
-		$this->assertTrue( $testObject->isValid() );
-		$this->assertSame( 'Z3', $testObject->getZType() );
-
-		$innerKey = $testObject->getInnerZObject();
-
-		$this->assertSame( 'Z6', $innerKey->getKeyType() );
-		$this->assertSame( 'Z6K1', $innerKey->getKeyId() );
-		$this->assertSame( 'Key label', $innerKey->getKeyLabel()->getStringForLanguageCode( 'en' ) );
+		$this->assertFalse( $testObject->isValid() );
+		$this->assertStringContainsString(
+			ZErrorTypeRegistry::Z_ERROR_DISALLOWED_ROOT_ZOBJECT,
+			(string)$testObject->getErrors()
+		);
 	}
 
 	/**
@@ -116,11 +151,11 @@ EOT
 	}
 
 	public function provideIsValid() {
+		$testRef = new ZReference( 'Z6' );
+		$testId = new ZString( 'Z6K1' );
 		$testString1 = new ZMonoLingualString( self::ZLANG['en'], 'Demonstration item' );
 		$testString2 = new ZMonoLingualString( self::ZLANG['fr'], 'Demonstration item' );
-
 		$emptyLabelSet = new ZMultiLingualString( [] );
-
 		$testLabelSet = new ZMultiLingualString( [
 			new ZMonoLingualString( self::ZLANG['en'], 'Demonstration item' ),
 			new ZMonoLingualString( self::ZLANG['it'], 'oggetto per dimostrazione' ),
@@ -131,24 +166,24 @@ EOT
 		return [
 			'wholly null' => [ null, null, null, null, false ],
 
-			'null type' => [ null, 'Z0K1', [], null, false ],
-			'unknown type' => [ 'Z0', 'Z0K1', [], null, false ],
-			'invalid type' => [ 'Test value?', 'Z0K1', [], null, false ],
-			'known type' => [ 'Z6', 'Z4K1', [], null, true ],
+			'null type' => [ null, $testId, [], null, false ],
+			'unknown type' => [ 'Z0', $testId, [], null, false ],
+			'invalid type' => [ 'Test value?', $testId, [], null, false ],
+			'incorrect type' => [ 'Z6', $testId, [], null, false ],
 
-			'null identity' => [ 'Z6', null, [], null, false ],
-			'invalid identity' => [ 'Z6', 'Test value!', [], null, false ],
-			'local identity' => [ 'Z6', 'K1', [], null, false ],
-			'unknown identity' => [ 'Z6', 'Z0K1', [], null, false ],
+			'null identity' => [ $testRef, null, [], null, false ],
+			'invalid identity' => [ $testRef, 'Test value!', [], null, false ],
+			'local identity' => [ $testRef, 'K1', [], null, false ],
+			'unknown identity' => [ $testRef, 'Z0K1', [], null, false ],
 
-			'null label' => [ 'Z6', 'Z6K1', null, null, false ],
-			'empty label' => [ 'Z6', 'Z6K1', [], null, true ],
-			'invalid label' => [ 'Z6', 'Z6K1', [ 'Test value:' ], null, false ],
-			'singleton label' => [ 'Z6', 'Z6K1', [ $testString1 ], null, true ],
-			'multiple label' => [ 'Z6', 'Z6K1', [ $testString1, $testString2 ], [ 'fr' ], true ],
+			'null label' => [ $testRef, $testId, null, null, false ],
+			'empty label' => [ $testRef, $testId, [], null, true ],
+			'invalid label' => [ $testRef, $testId, [ 'Test value:' ], null, false ],
+			'singleton label' => [ $testRef, $testId, [ $testString1 ], null, true ],
+			'multiple label' => [ $testRef, $testId, [ $testString1, $testString2 ], [ 'fr' ], true ],
 
-			'singleton labelset' => [ 'Z6', 'Z6K1', $emptyLabelSet, null, true ],
-			'multiple labelset' => [ 'Z6', 'Z6K1', $testLabelSet, [ 'it', 'de', 'fr' ], true ],
+			'singleton labelset' => [ $testRef, $testId, $emptyLabelSet, null, true ],
+			'multiple labelset' => [ $testRef, $testId, $testLabelSet, [ 'it', 'de', 'fr' ], true ],
 		];
 	}
 }

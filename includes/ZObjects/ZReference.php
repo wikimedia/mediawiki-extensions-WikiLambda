@@ -35,6 +35,17 @@ class ZReference extends ZObject {
 	}
 
 	public function isValid(): bool {
+		if ( !isset( $this->data[ ZTypeRegistry::Z_REFERENCE_VALUE ] ) ) {
+			return false;
+		}
 		return ZObjectUtils::isValidZObjectReference( $this->data[ ZTypeRegistry::Z_REFERENCE_VALUE ] );
+	}
+
+	public function serialize( $form = self::FORM_CANONICAL ) {
+		if ( $form === self::FORM_CANONICAL ) {
+			return $this->getZValue();
+		} else {
+			return parent::serialize();
+		}
 	}
 }
