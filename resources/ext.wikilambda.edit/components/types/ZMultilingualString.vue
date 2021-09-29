@@ -11,11 +11,11 @@
 			:key="z11Object.id"
 			:zobject-id="z11Object.id"
 			class="ext-wikilambda-monolingual"
-			:readonly="getViewMode"
+			:readonly="readonly || getViewMode"
 		></z-monolingual-string>
 		<div class="ext-wikilambda-monolingual">
 			<z-natural-language-selector
-				v-if="!(getViewMode)"
+				v-if="!(readonly || getViewMode)"
 				:used-languages="usedLanguages"
 				@input="addNewLang"
 			></z-natural-language-selector>
@@ -41,6 +41,10 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			required: true
+		},
+		readonly: {
+			type: Boolean,
+			default: false
 		}
 	},
 	mixins: [ typeUtils ],

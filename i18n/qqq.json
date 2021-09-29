@@ -175,6 +175,7 @@
 	"wikilambda-editor-input-label-placeholder": "Placeholder text for the input label.",
 	"wikilambda-editor-input-description": "Description for the input label.",
 	"wikilambda-editor-input-add-button": "Button text to add an input to a function.",
+	"wikilambda-editor-input-default-label": "Default label for an input.",
 	"wikilambda-editor-output-title": "Title for the output step.",
 	"wikilambda-editor-output-subtitle": "Subtitle for the output step.",
 	"wikilambda-editor-output-placeholder": "Placeholder text for the output type.",

@@ -32,7 +32,9 @@ module.exports = {
 	created: function () {
 		// Set zobject
 		this.initializeZObject();
-		this.initialize();
+		this.initialize( this.$i18n );
+
+		$.$i18n = this.$i18n;
 	}
 };
 </script>

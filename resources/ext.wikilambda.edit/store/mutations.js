@@ -8,5 +8,8 @@ module.exports = {
 	setExpertMode: function ( state, value ) {
 		state.expertMode = value;
 		mw.storage.set( 'aw-expert-mode', value );
+	},
+	setI18n: function ( state, value ) {
+		state.i18n = value;
 	}
 };

@@ -1,5 +1,6 @@
 var canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
-	Constants = require( '../../Constants.js' );
+	Constants = require( '../../Constants.js' ),
+	typeUtils = require( '../../mixins/typeUtils.js' ).methods;
 
 module.exports = {
 	state: {
@@ -83,6 +84,63 @@ module.exports = {
 						parent: -1
 					} );
 				} );
+		},
+		updateTesterLabel: function ( context, payload ) {
+			var testerJson = canonicalize( context.getters.getZObjectAsJsonById( payload.testerId ) ).Z2K2,
+				testerLabels = context.getters.getZObjectChildrenById(
+					context.getters.getNestedZObjectById( payload.testerId, [
+						Constants.Z_PERSISTENTOBJECT_LABEL,
+						Constants.Z_MULTILINGUALSTRING_VALUE
+					] ).id ),
+				call = testerJson.Z20K2,
+				validator = testerJson.Z20K3,
+				validatorZid = validator.Z7K1,
+				callInputs = '',
+				validatorInputs = '',
+				key,
+				value;
+
+			delete call.Z1K1;
+			delete call.Z7K1;
+			delete validator.Z1K1;
+			delete validator.Z7K1;
+			delete validator[ validatorZid + 'K1' ];
+
+			for ( key in call ) {
+				value = call[ key ];
+				if ( !value ) {
+					continue;
+				}
+				if ( callInputs.length ) {
+					callInputs += ', ' + typeUtils.zObjectToString( value ).toString();
+				} else {
+					callInputs = typeUtils.zObjectToString( value ).toString();
+				}
+			}
+
+			for ( key in validator ) {
+				value = validator[ key ];
+				if ( !value ) {
+					continue;
+				}
+				if ( validatorInputs.length ) {
+					validatorInputs += ', ' + typeUtils.zObjectToString( value ).toString();
+				} else {
+					validatorInputs = typeUtils.zObjectToString( value ).toString();
+				}
+			}
+
+			testerLabels.forEach( function ( labelObject ) {
+				var labelString = context.getters.getNestedZObjectById( labelObject.id, [
+					Constants.Z_MONOLINGUALSTRING_VALUE,
+					Constants.Z_STRING_VALUE
+				] );
+
+				context.dispatch( 'setZObjectValue', {
+					id: labelString.id,
+					value: callInputs + ' -> ' + validatorInputs
+				} );
+			} );
 		},
 		saveNewTester: function ( context, payload ) {
 			var api = new mw.Api(),

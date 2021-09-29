@@ -2,6 +2,7 @@
 	<div v-if="zobject.length">
 		<z-multilingual-string
 			:zobject-id="labelsId"
+			:readonly="true"
 		></z-multilingual-string>
 		<z-inline-tester-call
 			v-if="call"
@@ -59,6 +60,9 @@ module.exports = {
 				Constants.Z_PERSISTENTOBJECT_VALUE
 			] ).id );
 		},
+		zobjectJson: function () {
+			return this.getZObjectAsJsonById( this.zobjectId );
+		},
 		labelsId: function () {
 			return this.getNestedZObjectById( this.zobjectId, [
 				Constants.Z_PERSISTENTOBJECT_LABEL
@@ -91,6 +95,13 @@ module.exports = {
 				parent: this.zTesterListId
 			} );
 		}
-	} )
+	} ),
+	watch: {
+		zobjectJson: function ( json, prevJson ) {
+			if ( JSON.stringify( json ) !== JSON.stringify( prevJson ) ) {
+				this.$store.dispatch( 'updateTesterLabel', { testerId: this.zobjectId } );
+			}
+		}
+	}
 };
 </script>
