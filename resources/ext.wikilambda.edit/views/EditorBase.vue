@@ -72,7 +72,7 @@
 				</div>
 			</main>
 			<aside :aria-label="$i18n( 'wikilambda-editor-additional-details-label' )">
-				<fn-editor-progress :progress="completePercentage"></fn-editor-progress>
+				<fn-editor-progress :progress="progress"></fn-editor-progress>
 				<div>
 					<div>
 						<strong>
@@ -84,7 +84,7 @@
 					</div>
 				</div>
 				<slot name="right-aside" :label="getZObjectLabel"></slot>
-				<div v-if="$store.getters.isExpertMode">
+				<!-- <div v-if="$store.getters.isExpertMode">
 					<h3>
 						{{ $i18n( 'wikilambda-expert-mode-json-label' ) }}
 					</h3>
@@ -92,7 +92,7 @@
 						:readonly="true"
 						:zobject-raw="$store.getters.getZObjectAsJson"
 					></z-object-json>
-				</div>
+				</div> -->
 			</aside>
 		</div>
 	</div>
@@ -120,6 +120,10 @@ module.exports = {
 			default: function () {
 				return [];
 			}
+		},
+		progress: {
+			type: Number,
+			default: 0
 		}
 	},
 	computed: $.extend( mapGetters( [
@@ -153,9 +157,6 @@ module.exports = {
 			}
 
 			return false;
-		},
-		completePercentage: function () {
-			return Math.round( this.currentStepIndex / this.flatSteps.length * 100 );
 		},
 		getZObjectLabels: function () {
 			return this.getZObjectChildrenById( this.getNestedZObjectById( 0, [

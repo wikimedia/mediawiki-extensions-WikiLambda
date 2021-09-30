@@ -1,5 +1,5 @@
 <template>
-	<editor-base :steps="steps">
+	<editor-base :steps="steps" :progress="currentZFunctionCompletionPercentage">
 		<template #default="ctx">
 			<component
 				:is="currentStepContent"
@@ -56,7 +56,8 @@ module.exports = {
 	computed: $.extend( mapGetters( [
 		'getNestedZObjectById',
 		'getCurrentZObjectId',
-		'getZkeyLabels'
+		'getZkeyLabels',
+		'currentZFunctionCompletionPercentage'
 	] ), {
 		steps: function () {
 			var steps = [

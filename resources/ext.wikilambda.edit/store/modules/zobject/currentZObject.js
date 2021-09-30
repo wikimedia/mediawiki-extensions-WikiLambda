@@ -56,8 +56,76 @@ module.exports = {
 					Constants.Z_MULTILINGUALSTRING_VALUE ].filter(
 					function ( value ) {
 						return value[ Constants.Z_MONOLINGUALSTRING_VALUE ][
-							Constants.Z_STRING_VALUE ] !== '';
+							Constants.Z_STRING_VALUE ];
 					} ).length > 0;
+		},
+		currentZFunctionHasInputs: function ( state, getters ) {
+			if ( getters.getCurrentZObjectType !== Constants.Z_FUNCTION ) {
+				return false;
+			}
+
+			var zobject = getters.getZObjectAsJson;
+
+			return zobject &&
+				zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+					Constants.Z_FUNCTION_ARGUMENTS ].filter(
+					function ( arg ) {
+						return arg[ Constants.Z_ARGUMENT_TYPE ][ Constants.Z_REFERENCE_ID ] &&
+							arg[ Constants.Z_ARGUMENT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ].filter(
+								function ( label ) {
+									return label[ Constants.Z_MONOLINGUALSTRING_VALUE ][
+										Constants.Z_STRING_VALUE ] !== '';
+								} ).length > 0;
+					}
+				).length > 0;
+		},
+		currentZFunctionHasOutput: function ( state, getters ) {
+			if ( getters.getCurrentZObjectType !== Constants.Z_FUNCTION ) {
+				return false;
+			}
+
+			var zobject = getters.getZObjectAsJson;
+
+			return zobject &&
+				!!zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+					Constants.Z_FUNCTION_RETURN_TYPE ][ Constants.Z_REFERENCE_ID ];
+		},
+		currentZFunctionHasTesters: function ( state, getters ) {
+			if ( getters.getCurrentZObjectType !== Constants.Z_FUNCTION ) {
+				return false;
+			}
+
+			var zobject = getters.getZObjectAsJson;
+
+			return zobject &&
+				zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+					Constants.Z_FUNCTION_TESTERS ].length > 0;
+		},
+		currentZFunctionHasImplementations: function ( state, getters ) {
+			if ( getters.getCurrentZObjectType !== Constants.Z_FUNCTION ) {
+				return false;
+			}
+
+			var zobject = getters.getZObjectAsJson;
+
+			return zobject &&
+				zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+					Constants.Z_FUNCTION_IMPLEMENTATIONS ].length > 0;
+		},
+		currentZFunctionCompletionPercentage: function ( state, getters ) {
+			var requiredSteps = [
+				getters.currentZObjectHasLabel,
+				getters.currentZFunctionHasInputs,
+				getters.currentZFunctionHasOutput,
+				getters.currentZFunctionHasTesters,
+				getters.currentZFunctionHasImplementations
+			];
+
+			return Math.round( requiredSteps.filter(
+				function ( step ) {
+					return step;
+				}
+			).length / requiredSteps.length * 100 );
 		},
 		currentZObjectLanguages: function ( state, getters ) {
 			var languageList = [],
