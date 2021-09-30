@@ -19,9 +19,11 @@
 	"wikilambda-metadata-fewer-languages": "Pa'ale togum buribuure fii",
 	"wikilambda-editor-steps-label": "Demesa Nabara",
 	"wikilambda-editor-go-back-button": "Lebe poorum",
+	"wikilambda-editor-next-button": "Taaliŋɔ",
 	"wikilambda-editor-start-function-title": "Pɔsega Di’ire",
 	"wikilambda-editor-name-title": "Yu’urɛ",
 	"wikilambda-editor-name-aliases": "Zɛbeyu’ura",
 	"wikilambda-editor-input-description": "Karewagesi dela kalɛ n lagumeni taaba. Magesɛ woo, lagumenɛ/ta’anɛ la san dɛna “Pa’asɛ”, gee ti la lagum kalesiyi, la ta’am dɛna “x” and “y”.",
-	"wikilambda-editor-write-title": "Gulesɛ"
+	"wikilambda-editor-write-title": "Gulesɛ",
+	"wikilambda-editor-progress-title": "Maaleŋɔ"
 }
