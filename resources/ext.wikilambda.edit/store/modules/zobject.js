@@ -11,7 +11,8 @@ var Constants = require( '../../Constants.js' ),
 	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
 	getParameterByName = require( '../../mixins/urlUtils.js' ).methods.getParameterByName,
 	addZObjects = require( './zobject/addZObjects.js' ),
-	currentZObject = require( './zobject/currentZObject.js' );
+	currentZObject = require( './zobject/currentZObject.js' ),
+	saveZObject = require( '../../mixins/api.js' ).methods.saveZObject;
 
 module.exports = {
 	modules: {
@@ -436,17 +437,14 @@ module.exports = {
 		 * @param {Object} summary
 		 */
 		submitZObject: function ( context, summary ) {
-			var api = new mw.Api(),
-				action = 'wikilambda_edit',
-				zobject = canonicalize( zobjectTreeUtils.convertZObjectTreetoJson( context.state.zobject ) );
+			var zobject = canonicalize( zobjectTreeUtils.convertZObjectTreetoJson( context.state.zobject ) );
 
-			api.postWithEditToken( {
-				action: action,
-				summary: summary,
-				zid: context.getters.isCreateNewPage ? undefined : context.getters.getCurrentZObjectId,
-				zobject: JSON.stringify( zobject )
-			} ).then( function ( result ) {
-				window.location.href = new mw.Title( result[ action ].page ).getUrl();
+			saveZObject(
+				zobject,
+				context.getters.isCreateNewPage ? undefined : context.getters.getCurrentZObjectId,
+				summary
+			).then( function ( result ) {
+				window.location.href = new mw.Title( result.page ).getUrl();
 			} ).catch( function ( errorCode, result ) {
 				context.commit( 'setMessage', {
 					type: 'error',

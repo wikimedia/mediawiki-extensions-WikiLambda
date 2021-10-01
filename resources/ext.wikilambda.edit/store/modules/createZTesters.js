@@ -1,5 +1,6 @@
 var canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
 	Constants = require( '../../Constants.js' ),
+	saveZObject = require( '../../mixins/api.js' ).methods.saveZObject,
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods;
 
 module.exports = {
@@ -143,20 +144,11 @@ module.exports = {
 			} );
 		},
 		saveNewTester: function ( context, payload ) {
-			var api = new mw.Api(),
-				action = 'wikilambda_edit',
-				zobject = canonicalize( context.getters.getZObjectAsJsonById( payload.testerId ) ),
+			var zobject = canonicalize( context.getters.getZObjectAsJsonById( payload.testerId ) ),
 				newZid;
 
-			// TODO: Re-use the code in zobject.submitZObject(), having that emit a Promise rather than change page?
-			api.postWithEditToken( {
-				action: action,
-				// TODO: i18n (and maybe specify the target function, and/or add the user's label for it?)
-				summary: 'New tester',
-				zid: undefined,
-				zobject: JSON.stringify( zobject )
-			} ).then( function ( result ) {
-				newZid = result.wikilambda_edit.title;
+			saveZObject( zobject ).then( function ( result ) {
+				newZid = result.title;
 				return context.dispatch( 'fetchZTesters', context.getters.getCurrentZObjectId );
 			} ).then( function () {
 				var nextId = context.getters.getNextObjectId;

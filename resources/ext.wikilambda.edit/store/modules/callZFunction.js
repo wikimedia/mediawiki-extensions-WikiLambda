@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-var performFunctionCall = require( '../../mixins/callZFunction.js' ).methods.performFunctionCall;
+var performFunctionCall = require( '../../mixins/api.js' ).methods.performFunctionCall;
 
 module.exports = {
 	actions: {

@@ -203,7 +203,7 @@
 				"ext.wikilambda.edit/components/editor/FnEditorProgress.vue",
 				"ext.wikilambda.edit/components/editor/FnEditorZLanguageSelector.vue",
 				"ext.wikilambda.edit/mixins/schemata.js",
-				"ext.wikilambda.edit/mixins/callZFunction.js",
+				"ext.wikilambda.edit/mixins/api.js",
 				"ext.wikilambda.edit/components/ZNaturalLanguageSelector.vue",
 				"ext.wikilambda.edit/views/EditorBase.vue",
 				"ext.wikilambda.edit/views/FunctionEditor.vue",
