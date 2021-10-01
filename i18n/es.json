@@ -6,6 +6,7 @@
 			"BnSrSa",
 			"Danniel07",
 			"Destinid10 2",
+			"Fewasser Traduce",
 			"Fitoschido",
 			"Jackiezelaya",
 			"KATRINE1993",
@@ -43,7 +44,9 @@
 	"wikilambda-editor-steps-label": "Pasos del Editor",
 	"wikilambda-editor-go-back-button": "Volver",
 	"wikilambda-editor-next-button": "Siguiente paso",
+	"wikilambda-editor-fn-step-implement": "Escribir función",
 	"wikilambda-editor-start-function-title": "Comenzar Función",
 	"wikilambda-editor-name-title": "Nombre",
-	"wikilambda-editor-write-title": "Escribir"
+	"wikilambda-editor-write-title": "Escribir",
+	"wikilambda-editor-progress-title": "Progreso"
 }
