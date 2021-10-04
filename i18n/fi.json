@@ -5,7 +5,8 @@
 			"MITO",
 			"Mediawikitranslator",
 			"Nwme",
-			"Pyscowicz"
+			"Pyscowicz",
+			"Rönttönen"
 		]
 	},
 	"wikilambda-special-evaluatefunctioncall-intro": "Varmista, että noudatat yhteisön käytäntöjä sekä tekijänoikeus- ja patenttisääntöjä.",
@@ -23,5 +24,6 @@
 	"wikilambda-editor-go-back-button": "Mene takaisin",
 	"wikilambda-editor-next-button": "Seuraava vaihe",
 	"wikilambda-editor-name-title": "Nimi",
-	"wikilambda-editor-write-title": "Kirjoita"
+	"wikilambda-editor-write-title": "Kirjoita",
+	"wikilambda-editor-attach-title": "Liitä"
 }

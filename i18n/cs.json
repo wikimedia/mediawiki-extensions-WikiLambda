@@ -1,0 +1,31 @@
+{
+	"@metadata": {
+		"authors": [
+			"Fraxinus.cs"
+		]
+	},
+	"wikilambda-editor-additional-details-label": "Další podrobnosti",
+	"wikilambda-editor-go-back-button": "Zpět",
+	"wikilambda-editor-next-button": "Další krok",
+	"wikilambda-editor-fn-step-define": "Definujte funkci",
+	"wikilambda-editor-fn-step-tests": "Provést testy",
+	"wikilambda-editor-fn-step-implement": "Napište funkci",
+	"wikilambda-editor-name-subtitle": "Jaký je název vaší funkce? Co dělá?",
+	"wikilambda-editor-name-zobject-name": "Název funkce",
+	"wikilambda-editor-name-zobject-name-placeholder": "Jaký je název vaší funkce?",
+	"wikilambda-editor-name-aliases": "Přezdívky",
+	"wikilambda-editor-name-aliases-placeholder": "Jaké další názvy chcete používat pro vaši funkci?",
+	"wikilambda-editor-input-title": "Vstup(y)",
+	"wikilambda-editor-input-subtitle": "Co přijde do funkce?",
+	"wikilambda-editor-input-type-placeholder": "Typ vstupu",
+	"wikilambda-editor-input-label-placeholder": "Jaký je název tohoto vstupu?",
+	"wikilambda-editor-input-add-button": "Přidat vstup",
+	"wikilambda-editor-output-title": "Výstup",
+	"wikilambda-editor-output-subtitle": "Jaký bude výstup funkce?",
+	"wikilambda-editor-output-placeholder": "Typ výstupu",
+	"wikilambda-editor-behavior-title": "Chování",
+	"wikilambda-editor-write-subtitle": "Napište implementaci této funkce.",
+	"wikilambda-editor-write-save-button": "Uložit implementaci",
+	"wikilambda-editor-attach-title": "Přiložit",
+	"wikilambda-editor-progress-title": "Postup"
+}
