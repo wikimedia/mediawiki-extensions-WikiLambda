@@ -13,8 +13,9 @@ module.exports = {
 	 * Initializes the Vuex store
 	 *
 	 * @param {Object} context
+	 * @param {Function} i18n - i18n function
 	 */
-	initialize: function ( context ) {
+	initialize: function ( context, i18n ) {
 		// Pre-fetch a list of the most common Zids
 		context.dispatch( 'fetchZKeys', [
 			Constants.Z_OBJECT,
@@ -32,6 +33,8 @@ module.exports = {
 			Constants.Z_IMPLEMENTATION,
 			context.getters.getUserZlangZID
 		] );
+
+		context.commit( 'setI18n', i18n );
 	},
 	toggleExpertMode: function ( context ) {
 		context.commit( 'setExpertMode', !context.getters.isExpertMode );

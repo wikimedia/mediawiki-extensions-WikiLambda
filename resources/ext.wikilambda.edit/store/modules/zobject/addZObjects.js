@@ -86,7 +86,7 @@ module.exports = {
 			// Set default string
 			nextId = context.getters.getNextObjectId;
 			context.dispatch( 'addZObject', { key: Constants.Z_MONOLINGUALSTRING_VALUE, value: 'object', parent: parentId } );
-			context.dispatch( 'addZString', { id: nextId, value: '' } );
+			context.dispatch( 'addZString', { id: nextId, value: payload.value } );
 		},
 		/**
 		 * Create the required entry in the zobject array for a zMultilingualString.
@@ -94,23 +94,24 @@ module.exports = {
 		 * { Z1K1: Z12, Z12K1: [] }
 		 *
 		 * @param {Object} context
-		 * @param {Object} objectId
+		 * @param {Object} payload
 		 */
-		addZMultilingualString: function ( context, objectId ) {
+		addZMultilingualString: function ( context, payload ) {
 			var nextId;
 			context.dispatch( 'setZObjectValue', {
-				id: objectId,
+				id: payload.id,
 				value: 'object'
 			} );
 
-			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: Constants.Z_MULTILINGUALSTRING, parent: objectId } );
+			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: Constants.Z_MULTILINGUALSTRING, parent: payload.id } );
 
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
-			context.dispatch( 'addZObject', { key: Constants.Z_MULTILINGUALSTRING_VALUE, value: 'array', parent: objectId } );
+			context.dispatch( 'addZObject', { key: Constants.Z_MULTILINGUALSTRING_VALUE, value: 'array', parent: payload.id } );
 
 			context.dispatch( 'addZMonolingualString', {
 				parentId: nextId,
-				lang: context.getters.getUserZlangZID
+				lang: context.getters.getUserZlangZID,
+				value: payload.value
 			} );
 		},
 		/**
@@ -203,7 +204,7 @@ module.exports = {
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
 			// we create the base object that will be used to scaffold the ZString
 			context.dispatch( 'addZObject', { key: Constants.Z_ARGUMENT_LABEL, value: 'object', parent: objectId } );
-			context.dispatch( 'addZMultilingualString', nextId );
+			context.dispatch( 'addZMultilingualString', { id: nextId, value: context.rootState.i18n( 'wikilambda-editor-input-default-label' ).toString() } );
 		},
 		/**
 		 * Create the required entry in the zobject array for a zArgument.
@@ -526,7 +527,7 @@ module.exports = {
 						case Constants.Z_STRING:
 							return context.dispatch( 'addZString', { id: payload.id } );
 						case Constants.Z_MULTILINGUALSTRING:
-							return context.dispatch( 'addZMultilingualString', payload.id );
+							return context.dispatch( 'addZMultilingualString', payload );
 						case Constants.Z_ARGUMENT:
 							return context.dispatch( 'addZArgument', payload.id );
 						case Constants.Z_FUNCTION_CALL:

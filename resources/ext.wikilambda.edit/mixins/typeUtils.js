@@ -73,6 +73,9 @@ var Constants = require( '../Constants.js' ),
 				return /^Z\d+$/.test( zid );
 			},
 			zObjectToString: function ( zObject ) {
+				if ( typeof zObject === 'undefined' ) {
+					return '';
+				}
 				if ( typeof zObject === 'string' ) {
 					return zObject;
 				} else if ( Array.isArray( zObject ) ) {

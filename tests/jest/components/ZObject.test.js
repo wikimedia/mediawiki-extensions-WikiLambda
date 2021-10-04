@@ -83,7 +83,7 @@ describe( 'ZObject', function () {
 				propsData: {
 					zobjectId: 0,
 					persistent: false,
-					viewmode: false
+					readonly: true
 				},
 				store: store,
 				localVue: localVue

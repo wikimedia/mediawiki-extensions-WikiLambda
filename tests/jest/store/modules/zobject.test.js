@@ -659,6 +659,10 @@ describe( 'zobject Vuex module', function () {
 				context.rootGetters = $.extend( context.getters, {
 					getZkeys: JSON.parse( fs.readFileSync( path.join( __dirname, './zobject/getZkeys.json' ) ) )
 				} );
+
+				context.rootState.i18n = jest.fn( function () {
+					return 'mocked';
+				} );
 			} );
 
 			it( 'adds a valid ZPersistentObject', function () {
@@ -682,7 +686,7 @@ describe( 'zobject Vuex module', function () {
 			} );
 
 			it( 'adds a valid ZMultilingualString', function () {
-				zobjectModule.modules.addZObjects.actions.addZMultilingualString( context, 0 );
+				zobjectModule.modules.addZObjects.actions.addZMultilingualString( context, { id: 0 } );
 
 				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z12', Z12K1: [] } );
 			} );
