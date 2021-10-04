@@ -1,4 +1,5 @@
-var canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
+var canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
+	saveZObject = require( '../../mixins/api.js' ).methods.saveZObject;
 
 module.exports = {
 	state: {
@@ -73,9 +74,7 @@ module.exports = {
 				} );
 		},
 		saveNewImplementation: function ( context, payload ) {
-			var api = new mw.Api(),
-				action = 'wikilambda_edit',
-				zobject = canonicalize( context.getters.getZObjectAsJsonById( payload.implementationId ) ),
+			var zobject = canonicalize( context.getters.getZObjectAsJsonById( payload.implementationId ) ),
 				newZid,
 				programmingLanguageLabel = zobject.Z2K2.Z14K3 ?
 					zobject.Z2K2.Z14K3.Z16K1.Z61K1 :
@@ -86,15 +85,8 @@ module.exports = {
 				programmingLanguageLabel + ' ' +
 				( Math.floor( Math.random() * 100 ) + 1 );
 
-			// TODO: Re-use the code in zobject.submitZObject(), having that emit a Promise rather than change page?
-			return api.postWithEditToken( {
-				action: action,
-				// TODO: i18n (and maybe specify the target function, and/or add the user's label for it?)
-				summary: 'New implementation',
-				zid: undefined,
-				zobject: JSON.stringify( zobject )
-			} ).then( function ( result ) {
-				newZid = result.wikilambda_edit.title;
+			return saveZObject( zobject ).then( function ( result ) {
+				newZid = result.title;
 				// eslint-disable-next-line compat/compat
 				return Promise.all( [
 					context.dispatch( 'fetchZKeys', [ newZid ] ),
