@@ -159,6 +159,7 @@
 	"wikilambda-editor-input-label-placeholder": "Як називається цей вхід?",
 	"wikilambda-editor-input-description": "Вхідні дані — це значення, які передаються у функцію. Наприклад, якщо функція називається «Додати», і вона додає два числа разом, вхідними даними можуть бути «x» та «y».",
 	"wikilambda-editor-input-add-button": "Додати введення",
+	"wikilambda-editor-input-default-label": "введення",
 	"wikilambda-editor-output-title": "Вихідні дані",
 	"wikilambda-editor-output-subtitle": "Що вийде з функції?",
 	"wikilambda-editor-output-placeholder": "Тип виходу",

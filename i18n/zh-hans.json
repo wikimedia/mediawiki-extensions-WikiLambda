@@ -4,6 +4,7 @@
 			"GuoPC",
 			"Hmgrmb",
 			"SkyEye FAST",
+			"TsuyaMarisa",
 			"Zhang8569"
 		]
 	},
@@ -33,5 +34,8 @@
 	"wikilambda-metadata-add-alias": "添加化名",
 	"wikilambda-metadata-all-languages": "显示所有输入的语言",
 	"wikilambda-metadata-fewer-languages": "显示更少语言",
-	"wikilambda-persistentobject-details-label": "详情"
+	"wikilambda-persistentobject-details-label": "详情",
+	"wikilambda-editor-name-zobject-name": "函数名称",
+	"wikilambda-editor-input-default-label": "输入",
+	"wikilambda-editor-behavior-title": "行为"
 }
