@@ -13,5 +13,7 @@
 	"wikilambda-editor-label-addlanguage-label": "Tilføj sprog",
 	"wikilambda-implementation-selector-code": "Kode",
 	"wikilambda-metadata-language-column": "Sprog",
-	"wikilambda-metadata-aka-column": "Også kendt som"
+	"wikilambda-metadata-aka-column": "Også kendt som",
+	"wikilambda-editor-go-back-button": "Gå tilbage",
+	"wikilambda-editor-name-title": "Navn"
 }

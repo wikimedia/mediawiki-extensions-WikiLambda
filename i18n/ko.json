@@ -47,11 +47,19 @@
 	"wikilambda-disable-expert-mode": "전문가 모드 비활성화",
 	"wikilambda-function-is-attached": "이 객체는 객체의 함수와 연결되어 있습니다.",
 	"wikilambda-function-is-not-attached": "이 객체는 객체의 함수와 연결되어 있지 않습니다.",
+	"wikilambda-editor-additional-details-label": "추가 상세 정보",
 	"wikilambda-editor-go-back-button": "돌아가기",
 	"wikilambda-editor-next-button": "다음 단계",
 	"wikilambda-editor-name-title": "이름",
+	"wikilambda-editor-name-aliases": "다른 이름",
 	"wikilambda-editor-input-title": "입력",
+	"wikilambda-editor-input-type-placeholder": "입력 종류",
+	"wikilambda-editor-input-label-placeholder": "이 입력의 이름은 무엇입니까?",
+	"wikilambda-editor-input-add-button": "입력 추가",
+	"wikilambda-editor-input-default-label": "입력",
 	"wikilambda-editor-output-title": "출력",
+	"wikilambda-editor-output-placeholder": "출력 종류",
 	"wikilambda-editor-write-title": "쓰기",
-	"wikilambda-editor-attach-title": "첨부"
+	"wikilambda-editor-attach-title": "첨부",
+	"wikilambda-editor-progress-title": "진행도"
 }
