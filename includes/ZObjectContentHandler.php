@@ -191,7 +191,7 @@ class ZObjectContentHandler extends ContentHandler {
 		}
 
 		// Replace Z2K1: Z0 with the actual page ID.
-		$object['Z2K1'] = $zObjectTitle->getDBkey();
+		$object['Z2K1'] = [ 'Z1K1' => 'Z6', 'Z6K1' => $zObjectTitle->getDBkey() ];
 
 		$encoded = FormatJson::encode( $object, true, FormatJson::UTF8_OK );
 

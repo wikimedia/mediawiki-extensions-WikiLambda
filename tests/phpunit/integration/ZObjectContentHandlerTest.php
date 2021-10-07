@@ -144,8 +144,8 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
 		$externalRepresentation = ZObjectContentHandler::getExternalRepresentation( $title );
 
-		$this->assertStringNotContainsString( '"Z2K1": "Z0"', $externalRepresentation, "ZPO key is not set to Z0" );
-		$this->assertStringContainsString( '"Z2K1": "Z111"', $externalRepresentation, "ZPO key is set to the title" );
+		$this->assertStringNotContainsString( '"Z6K1": "Z0"', $externalRepresentation, "ZPO key is not set to Z0" );
+		$this->assertStringContainsString( '"Z6K1": "Z111"', $externalRepresentation, "ZPO key is set to the title" );
 
 		$externalRepresentation = ZObjectContentHandler::getExternalRepresentation( $title, 'fr' );
 		$externalRepresentationLabels = ( new ZObjectContent( $externalRepresentation ) )->getLabels();
