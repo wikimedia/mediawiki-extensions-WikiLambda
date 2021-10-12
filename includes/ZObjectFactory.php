@@ -53,9 +53,15 @@ class ZObjectFactory {
 
 				if ( array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_ID, $objectVars ) ) {
 					$ref = $objectVars[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ];
-					$zid = is_string( $ref )
-						? $ref
-						: $ref->{ ZTypeRegistry::Z_REFERENCE_VALUE };
+					if ( is_string( $ref ) ) {
+						$zid = $ref;
+					} else {
+						if ( property_exists( $ref, ZTypeRegistry::Z_REFERENCE_VALUE ) ) {
+							$zid = $ref->{ ZTypeRegistry::Z_REFERENCE_VALUE };
+						} else {
+							$zid = $ref->{ ZTypeRegistry::Z_STRING_VALUE };
+						}
+					}
 				}
 
 				self::trackSelfReference( $zid, self::SET_SELF_ZID );
