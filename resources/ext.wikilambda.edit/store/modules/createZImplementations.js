@@ -1,4 +1,5 @@
-var canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
+var Constants = require( '../../Constants.js' ),
+	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
 	saveZObject = require( '../../mixins/api.js' ).methods.saveZObject;
 
 module.exports = {
@@ -32,35 +33,31 @@ module.exports = {
 
 					context.dispatch( 'injectZObject', {
 						zobject: {
-							Z1K1: 'Z2',
-							Z2K1: 'Z0',
+							Z1K1: Constants.Z_PERSISTENTOBJECT,
+							Z2K1: Constants.NEW_ZID_PLACEHOLDER,
 							Z2K2: {
-								Z1K1: 'Z14',
+								Z1K1: Constants.Z_IMPLEMENTATION,
 								Z14K1: context.getters.getCurrentZObjectId,
-								Z14K3: {
-									Z1K1: 'Z16',
-									Z16K1: {
-										Z1K1: 'Z61',
-										Z61K1: ''
-									},
-									Z16K2: ''
+								Z14K2: {
+									Z1K1: Constants.Z_FUNCTION_CALL,
+									Z7K1: ''
 								}
 							},
 							Z2K3: {
-								Z1K1: 'Z12',
+								Z1K1: Constants.Z_MULTILINGUALSTRING,
 								Z12K1: [
 									{
-										Z1K1: 'Z11',
+										Z1K1: Constants.Z_MONOLINGUALSTRING,
 										Z11K1: context.getters.getUserZlangZID,
 										Z11K2: ''
 									}
 								]
 							},
 							Z2K4: {
-								Z1K1: 'Z32',
+								Z1K1: Constants.Z_MULTILINGUALSTRINGSET,
 								Z32K1: [
 									{
-										Z1K1: 'Z31',
+										Z1K1: Constants.Z_MONOLINGUALSTRINGSET,
 										Z31K1: context.getters.getUserZlangZID,
 										Z31K2: []
 									}
