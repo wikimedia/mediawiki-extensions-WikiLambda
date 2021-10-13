@@ -219,7 +219,7 @@ class ZObjectFactory {
 			$validator = ZObjectStructureValidator::createCanonicalValidator( $type );
 		} catch ( ZErrorException $e ) {
 			// If there's no function-schemata validator (user-defined type), we do a generic custom validation
-			return self::createCustom( $type, $input );
+			return self::createCustom( $input );
 		}
 
 		$status = $validator->validate( $input );
@@ -239,12 +239,11 @@ class ZObjectFactory {
 	 * Creates an instance of a custom or user-defined type after validating it's basic
 	 * structure: the keys are valid ZObject keys and the values have the correct types
 	 *
-	 * @param string $type
 	 * @param string|array|\stdClass $input
 	 * @return ZObject
 	 * @throws ZErrorException
 	 */
-	public static function createCustom( $type, $input ): ZObject {
+	public static function createCustom( $input ): ZObject {
 		try {
 			ZObjectUtils::isValidZObject( $input );
 		} catch ( ZErrorException $e ) {
@@ -432,28 +431,6 @@ class ZObjectFactory {
 	}
 
 	/**
-	 * Returns the ZPersistentObject's Zid if the key is present, else returns null
-	 *
-	 * @param \stdClass $object
-	 * @return string|null
-	 */
-	private static function extractPersistentId( $object ) {
-		if ( !property_exists( $object, ZTypeRegistry::Z_PERSISTENTOBJECT_ID ) ) {
-			return null;
-		}
-		$ref = $object->{ ZTypeRegistry::Z_PERSISTENTOBJECT_ID };
-		if ( is_string( $ref ) ) {
-			return $ref;
-		}
-		if ( is_object( $ref ) ) {
-			if ( property_exists( $ref, ZTypeRegistry::Z_STRING_VALUE ) ) {
-				return $ref->{ ZTypeRegistry::Z_STRING_VALUE };
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * Returns the inner ZObject of a given ZPersistentObject representation, which
 	 * corresponds to is value key (Z2K2)
 	 *
@@ -495,6 +472,18 @@ class ZObjectFactory {
 		// Check for canonical arrays
 		if ( is_array( $object ) ) {
 			return ZTypeRegistry::Z_LIST;
+		}
+
+		// Check for invalid type
+		if ( !is_object( $object ) ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_FORMAT,
+					[
+						'data' => $object
+					]
+				)
+			);
 		}
 
 		if ( !property_exists( $object, ZTypeRegistry::Z_OBJECT_TYPE ) ) {
@@ -1014,8 +1003,8 @@ class ZObjectFactory {
 	}
 
 	/*
+	 * @deprecated
 	 * @param string $zid
-	 *
 	 * @return null
 	 */
 	private static function warnDuplicateCreation( $zid ) {
