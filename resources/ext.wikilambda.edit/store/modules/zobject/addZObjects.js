@@ -248,7 +248,7 @@ module.exports = {
 							context.getters.getZObjectChildrenById(
 								typeUtils.findKeyInArray(
 									Constants.Z_PERSISTENTOBJECT_VALUE,
-									context.state.zobject
+									context.rootState.zobjectModule.zobject
 								).id
 							)
 						).id
@@ -287,12 +287,9 @@ module.exports = {
 			setDefaultFunctionReference( nextId );
 
 			// Add Composition
-			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_COMPOSITION, value: 'object', parent: objectId } );
-
-			// Add ZCode
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
-			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_CODE, value: 'object', parent: objectId } );
-			context.dispatch( 'changeType', { id: nextId, type: Constants.Z_CODE } );
+			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_COMPOSITION, value: 'object', parent: objectId } );
+			context.dispatch( 'changeType', { id: nextId, type: Constants.Z_FUNCTION_CALL } );
 		},
 
 		addZFunction: function ( context, objectId ) {

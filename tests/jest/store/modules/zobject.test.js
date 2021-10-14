@@ -744,7 +744,7 @@ describe( 'zobject Vuex module', function () {
 			it( 'adds a valid ZImplementation', function () {
 				zobjectModule.modules.addZObjects.actions.addZImplementation( context, 0 );
 
-				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.rootGetters ) ).toEqual( { Z1K1: 'Z14', Z14K1: { Z1K1: 'Z9', Z9K1: '' }, Z14K2: undefined, Z14K3: { Z1K1: 'Z16', Z16K1: { Z1K1: 'Z61', Z61K1: { Z1K1: 'Z6', Z6K1: '' } }, Z16K2: { Z1K1: 'Z6', Z6K1: '' } } } );
+				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.rootGetters ) ).toEqual( { Z1K1: 'Z14', Z14K1: { Z1K1: 'Z9', Z9K1: '' }, Z14K2: { Z1K1: 'Z7', Z7K1: '' }, Z14K3: undefined } );
 			} );
 
 			it( 'adds a valid ZFunction', function () {
