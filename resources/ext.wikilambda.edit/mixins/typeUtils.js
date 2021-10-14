@@ -43,6 +43,10 @@ var Constants = require( '../Constants.js' ),
 			 * @return {Object}
 			 */
 			findKeyInArray: function ( key, array ) {
+				// Exit early if we got a false, a non-array, or an empty array
+				if ( !array || !Array.isArray( array ) || array.length === 0 ) {
+					return false;
+				}
 
 				if ( Array.isArray( key ) ) {
 					return key.map( function ( k ) {
