@@ -41,6 +41,11 @@ var routes = [
 		component: ZObjectViewer
 	},
 	{
+		path: '/wiki/Special\\:EvaluateFunctionCall',
+		name: 'functionCall',
+		component: ZObjectEditor
+	},
+	{
 		path: '/w/index.php',
 		name: 'edit',
 		component: EditorWrapper

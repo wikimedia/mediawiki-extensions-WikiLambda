@@ -11,46 +11,47 @@
 			:persistent="true"
 			@input="updateZobject"
 		></z-object>
-		<div
-			v-if="showSaveCommand"
-			class="ext-wikilambda-publishControl">
-			<!-- TODO: Replace this with a full save dialog (copywarn, IPwarn, minor edit box, …)? -->
+		<template v-if="showEditCommand">
+			<div
+				class="ext-wikilambda-publishControl">
+				<!-- TODO: Replace this with a full save dialog (copywarn, IPwarn, minor edit box, …)? -->
+				<sd-button
+					:primary="true"
+					:progressive="true"
+					:framed="true"
+					:disabled="!currentZObjectHasLabel"
+					@click="submit">
+					{{ submitButtonLabel }}
+				</sd-button>
+				<label
+					class="ext-wikilambda-editSummary-label"
+					for="summary"> {{ $i18n( 'wikilambda-summarylabel' ) }}
+				</label>
+				<input v-model="summary"
+					class="ext-wikilambda-editSummary"
+					:placeholder="submitButtonDescriptionPrompt"
+					name="summary"
+				>
+			</div>
 			<sd-button
-				:primary="true"
-				:progressive="true"
-				:framed="true"
-				:disabled="!currentZObjectHasLabel"
-				@click="submit">
-				{{ submitButtonLabel }}
+				v-if="isNewZObject"
+				@click="navigateToCreateFunction">
+				{{ $i18n( 'wikilambda-create-function' ) }}
 			</sd-button>
-			<label
-				class="ext-wikilambda-editSummary-label"
-				for="summary"> {{ $i18n( 'wikilambda-summarylabel' ) }}
-			</label>
-			<input v-model="summary"
-				class="ext-wikilambda-editSummary"
-				:placeholder="submitButtonDescriptionPrompt"
-				name="summary"
-			>
-		</div>
-		<sd-button
-			v-if="isNewZObject"
-			@click="navigateToCreateFunction">
-			{{ $i18n( 'wikilambda-create-function' ) }}
-		</sd-button>
-		<sd-button
-			class="ext-wikilambda-expertModeToggle"
-			@click="$store.dispatch( 'toggleExpertMode' )">
-			<template v-if="$store.getters.isExpertMode">
-				{{ $i18n( 'wikilambda-disable-expert-mode' ) }}
-			</template>
-			<template v-else>
-				{{ $i18n( 'wikilambda-enable-expert-mode' ) }}
-			</template>
-		</sd-button>
-		<sd-message v-if="message.text" :type="message.type">
-			{{ message }}
-		</sd-message>
+			<sd-button
+				class="ext-wikilambda-expertModeToggle"
+				@click="$store.dispatch( 'toggleExpertMode' )">
+				<template v-if="$store.getters.isExpertMode">
+					{{ $i18n( 'wikilambda-disable-expert-mode' ) }}
+				</template>
+				<template v-else>
+					{{ $i18n( 'wikilambda-enable-expert-mode' ) }}
+				</template>
+			</sd-button>
+			<sd-message v-if="message.text" :type="message.type">
+				{{ message }}
+			</sd-message>
+		</template>
 	</div>
 </template>
 
@@ -96,7 +97,7 @@ module.exports = {
 		submitButtonDescriptionPrompt: function () {
 			return this.$i18n( 'wikilambda-publish-summary-prompt' );
 		},
-		showSaveCommand: function () {
+		showEditCommand: function () {
 			// TODO: Move this into its own vuex store as things gets more complicated and more view settigns are set
 			// we currently hide the save command for evaluate function call.
 			return mw.config.get( 'wgCanonicalSpecialPageName' ) !== 'EvaluateFunctionCall';
