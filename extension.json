@@ -82,7 +82,9 @@
 				"desktop",
 				"mobile"
 			],
-			"styles": [ "ext.wikilambda.viewpage/ext.wikilambda.viewpage.less" ]
+			"styles": [
+				"ext.wikilambda.viewpage/ext.wikilambda.viewpage.less"
+			]
 		},
 		"ext.wikilambda.specialpages.styles": {
 			"targets": [
@@ -223,6 +225,7 @@
 				"wikilambda-noresult",
 				"wikilambda-persistentzobject-metadata",
 				"wikilambda-persistentzobject-contents",
+				"wikilambda-persistentzobject-description",
 				"wikilambda-reference",
 				"wikilambda-literal",
 				"wikilambda-genericliteral",
@@ -278,6 +281,7 @@
 				"wikilambda-tester-run-testers",
 				"wikilambda-tester-run-tester",
 				"wikilambda-enable-expert-mode",
+				"wikilambda-create-function",
 				"wikilambda-disable-expert-mode",
 				"wikilambda-expert-mode-json-label",
 				"wikilambda-metadata-show-languages",
