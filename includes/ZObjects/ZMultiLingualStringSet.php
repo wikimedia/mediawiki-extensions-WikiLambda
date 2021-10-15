@@ -81,12 +81,12 @@ class ZMultiLingualStringSet extends ZObject {
 	 * @return string[] The aliases, possibly empty.
 	 */
 	public function getAliasesForLanguage( Language $language ): array {
-		if ( $this->isLanguageProvidedValue( $language->mCode ) ) {
-			return $this->getAliasesForLanguageCode( $language->mCode );
+		if ( $this->isLanguageProvidedValue( $language->getCode() ) ) {
+			return $this->getAliasesForLanguageCode( $language->getCode() );
 		}
 
 		$fallbacks = MediaWikiServices::getInstance()->getLanguageFallback()->getAll(
-			$language->mCode,
+			$language->getCode(),
 			LanguageFallback::STRICT /* Don't try for en unless it's an accepted fallback. */
 		);
 

@@ -114,12 +114,12 @@ class ZMultiLingualString extends ZObject {
 	 * @return string The string, or the value of the wikilambda-multilingualstring-nofallback message.
 	 */
 	private function internalGetStringForLanguage( Language $language, bool $withEnglish ): string {
-		if ( $this->isLanguageProvidedValue( $language->mCode ) ) {
-			return $this->getStringForLanguageCode( $language->mCode );
+		if ( $this->isLanguageProvidedValue( $language->getCode() ) ) {
+			return $this->getStringForLanguageCode( $language->getCode() );
 		}
 
 		$fallbacks = MediaWikiServices::getInstance()->getLanguageFallback()->getAll(
-			$language->mCode,
+			$language->getCode(),
 			$withEnglish ? LanguageFallback::MESSAGES : LanguageFallback::STRICT
 		);
 
@@ -144,7 +144,7 @@ class ZMultiLingualString extends ZObject {
 	 * @param string $value The new string to set.
 	 */
 	public function setStringForLanguage( Language $language, string $value ): void {
-		$languageCode = $language->mCode;
+		$languageCode = $language->getCode();
 		$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
 		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageZid ] = $value;
 	}
@@ -153,7 +153,7 @@ class ZMultiLingualString extends ZObject {
 	 * @param Language $language The MediaWiki language class in which the string is to be unset.
 	 */
 	public function removeValue( Language $language ): void {
-		$languageCode = $language->mCode;
+		$languageCode = $language->getCode();
 		$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
 		unset( $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageZid ] );
 	}

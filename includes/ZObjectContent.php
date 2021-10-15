@@ -415,7 +415,7 @@ class ZObjectContent extends AbstractContent {
 		$zObject = $zObjectStore->fetchZObjectByTitle( $title );
 
 		$zLangRegistry = ZLangRegistry::singleton();
-		$userLangCode = $userLang->mCode;
+		$userLangCode = $userLang->getCode();
 		// If the userLang isn't recognised (e.g. it's qqx, or a language we don't support yet, or it's
 		// nonsense), then fall back to English.
 		$userLangZid = $zLangRegistry->getLanguageZidFromCode(
