@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\API;
 
 use ApiBase;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -31,7 +32,7 @@ class ApiZObjectEditor extends ApiBase {
 
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 
-		if ( !$zid ) {
+		if ( !$zid || $zid === ZTypeRegistry::Z_NULL_REFERENCE ) {
 			// Create a new ZObject
 			$response = $zObjectStore->createNewZObject( $zobject, $summary, $user );
 		} else {
