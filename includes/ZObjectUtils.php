@@ -337,6 +337,82 @@ class ZObjectUtils {
 	}
 
 	/**
+	 * Returns a normalized ZObject
+	 *
+	 * @param string|array|stdClass $input decoded JSON canonical form of a ZObject
+	 * @return string|array|stdClass same ZObject in normal form
+	 */
+	public static function normalize( $input ) {
+		if ( is_string( $input ) ) {
+			return self::normalizeZStringOrZReference( $input );
+		}
+
+		if ( is_array( $input ) ) {
+			return self::normalizeZList( $input );
+		}
+
+		// Create a copy of the object and normalize it
+		// We wrap $normal in an object in case it is already a terminal ZObject (Z6 or Z9)
+		$normal = json_decode( json_encode( $input ) );
+		self::normalizeInternal( (object)[ $normal ] );
+		return $normal;
+	}
+
+	/**
+	 * Normalizes a given object
+	 *
+	 * @param stdClass $input
+	 */
+	private static function normalizeInternal( $input ) {
+		// for each key of the input ZObject
+		foreach ( $input as $index => $value ) {
+			// If the value is a string, convert into ZString or ZReference
+			if ( is_string( $value ) ) {
+				$input->$index = self::normalizeZStringOrZReference( $value );
+			}
+
+			// If the value is an array:
+			// * Call normalizeZList recursively till the last element of the array
+			// * to generate the normal form of a ZList
+			if ( is_array( $value ) ) {
+				$input->$index = self::normalizeZList( $value );
+			}
+
+			// If the value is an object:
+			if ( is_object( $value ) ) {
+				// If Z1K1 is a ZString or ZReference, ignore (it's already in the normal form)
+				if ( array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $value ) && (
+					( $value->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_STRING ) ||
+					( $value->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_REFERENCE ) )
+				) {
+					continue;
+				}
+				// Else, apply the normalizer to every key in the value object
+				self::normalizeInternal( $value );
+			}
+		}
+	}
+
+	/**
+	 * Returns a normalized ZList given an array of elements (ZObjects)
+	 *
+	 * @param array $input
+	 * @return stdClass
+	 */
+	private static function normalizeZList( $input ): stdClass {
+		if ( count( $input ) == 0 ) {
+			return (object)[
+				ZTypeRegistry::Z_OBJECT_TYPE => self::normalize( ZTypeRegistry::Z_LIST )
+			];
+		}
+		return (object)[
+			ZTypeRegistry::Z_OBJECT_TYPE => self::normalize( ZTypeRegistry::Z_LIST ),
+			ZTypeRegistry::Z_LIST_HEAD => self::normalize( array_shift( $input ) ),
+			ZTypeRegistry::Z_LIST_TAIL => self::normalizeZList( $input )
+		];
+	}
+
+	/**
 	 * Returns the ZObject with normalized ZStrings and ZReferences.
 	 *
 	 * Given a canonical ZObject, returns the normal form with the following
@@ -392,7 +468,7 @@ class ZObjectUtils {
 	 * @param string $input
 	 * @return stdClass Normal form of a String or a Reference
 	 */
-	public static function normalizeZStringOrZReference( $input ) {
+	private static function normalizeZStringOrZReference( $input ) {
 		if ( self::isValidZObjectReference( $input ) || self::isNullReference( $input ) ) {
 			return (object)[
 				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_REFERENCE,
