@@ -21,6 +21,8 @@ use Title;
  */
 class ZTypeRegistry extends ZObjectRegistry {
 
+	// Needed for quote type, it can be anything
+	public const BUILTIN_ANY = 'Any';
 	// Is there a better way to represent this direct string (as opposed to a ZString?)
 	public const BUILTIN_STRING = 'String';
 	// Is there a better way to represent this direct array (as opposed to a ZList?)
@@ -94,8 +96,14 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_MULTILINGUALSTRINGSET = 'Z32';
 	public const Z_MULTILINGUALSTRINGSET_VALUE = 'Z32K1';
 
+	public const Z_KEYREFERENCE = 'Z39';
+	public const Z_KEYREFERENCE_VALUE = 'Z39K1';
+
 	public const Z_LANGUAGE = 'Z60';
 	public const Z_LANGUAGE_CODE = 'Z60K1';
+
+	public const Z_QUOTE = 'Z99';
+	public const Z_QUOTE_VALUE = 'Z99K1';
 
 	private const BUILT_IN_TYPES = [
 		self::Z_OBJECT => 'ZObject',
@@ -110,6 +118,8 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_MULTILINGUALSTRING => 'ZMultiLingualString',
 		self::Z_MONOLINGUALSTRINGSET => 'ZMonoLingualStringSet',
 		self::Z_MULTILINGUALSTRINGSET => 'ZMultiLingualStringSet',
+		self::Z_KEYREFERENCE => 'ZKeyReference',
+		self::Z_QUOTE => 'ZQuote',
 	];
 
 	public const SELF_REFERENTIAL_KEYS = [
@@ -123,7 +133,6 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_ARGUMENTDECLARATION = 'Z17';
 	public const Z_ARGUMENTREFERENCE = 'Z18';
 	public const Z_NULL = 'Z23';
-	public const Z_KEYREFERENCE = 'Z39';
 	public const Z_BOOLEAN = 'Z40';
 	public const Z_ERRORTYPE = 'Z50';
 
