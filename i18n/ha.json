@@ -1,8 +1,40 @@
 {
 	"@metadata": {
 		"authors": [
-			"Gwanki"
+			"Abbaty",
+			"Gwanki",
+			"Harunaningi",
+			"Omar Ali",
+			"Salihu aliyu"
 		]
 	},
-	"specialpages-group-wikilambda": "Shafukan Wikifuntions"
+	"specialpages-group-wikilambda": "Shafukan Wikifuntions",
+	"wikilambda-editor-steps-label": "Matakan Edita",
+	"wikilambda-editor-additional-details-label": "Karin wasu Bayanai",
+	"wikilambda-editor-go-back-button": "koma baya",
+	"wikilambda-editor-next-button": "matakin gaba",
+	"wikilambda-editor-fn-step-define": "bayanin aiki",
+	"wikilambda-editor-fn-step-tests": "Gwajin da aka samar",
+	"wikilambda-editor-fn-step-implement": "Rubuta funtion",
+	"wikilambda-editor-start-function-title": "Fara aiki",
+	"wikilambda-editor-name-title": "Suna",
+	"wikilambda-editor-name-subtitle": "Meye sunan aikinka? To me yayi?",
+	"wikilambda-editor-name-zobject-name": "sunan aiki",
+	"wikilambda-editor-name-zobject-name-placeholder": "Menene sunan abun dake da tasiri.",
+	"wikilambda-editor-name-aliases": "Lakabi",
+	"wikilambda-editor-name-aliases-placeholder": "Wane suna kuma kakeso kayi amfani dashi don aikin ka?",
+	"wikilambda-editor-input-title": "saka bayani(s)",
+	"wikilambda-editor-input-subtitle": "Me zaije akan aikin?",
+	"wikilambda-editor-input-type-placeholder": "Ierin Input",
+	"wikilambda-editor-input-label-placeholder": "Menene sunan wannan input din",
+	"wikilambda-editor-input-add-button": "kara shigarwa",
+	"wikilambda-editor-input-default-label": "shigar da Bayanai",
+	"wikilambda-editor-output-title": "Output",
+	"wikilambda-editor-output-subtitle": "Me zaije akan aikin?",
+	"wikilambda-editor-output-placeholder": "Irin Output",
+	"wikilambda-editor-behavior-title": "halalya",
+	"wikilambda-editor-write-title": "Fari",
+	"wikilambda-editor-write-save-button": "ajiye implementation",
+	"wikilambda-editor-attach-title": "Hadawa",
+	"wikilambda-editor-progress-title": "cigaba"
 }

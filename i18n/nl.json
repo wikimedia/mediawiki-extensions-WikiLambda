@@ -4,6 +4,7 @@
 			"Aranka",
 			"Daanboven",
 			"McDutchie",
+			"Robin van der Vliet",
 			"Romaine"
 		]
 	},
@@ -31,5 +32,8 @@
 	"wikilambda-metadata-add-alias": "Voeg alias toe",
 	"wikilambda-metadata-all-languages": "Toon alle ingevoerde talen",
 	"wikilambda-metadata-fewer-languages": "Toon minder talen",
-	"wikilambda-persistentobject-details-label": "Details"
+	"wikilambda-persistentobject-details-label": "Details",
+	"wikilambda-editor-next-button": "Volgende stap",
+	"wikilambda-editor-name-title": "Naam",
+	"wikilambda-editor-input-default-label": "Invoer"
 }

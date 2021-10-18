@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Antonla",
 			"Saederup92"
 		]
 	},
@@ -15,5 +16,6 @@
 	"wikilambda-metadata-language-column": "Sprog",
 	"wikilambda-metadata-aka-column": "Også kendt som",
 	"wikilambda-editor-go-back-button": "Gå tilbage",
-	"wikilambda-editor-name-title": "Navn"
+	"wikilambda-editor-name-title": "Navn",
+	"wikilambda-editor-input-default-label": "input"
 }

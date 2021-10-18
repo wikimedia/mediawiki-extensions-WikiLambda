@@ -5,7 +5,8 @@
 			"Eduardo Addad de Oliveira",
 			"Eduardoaddad",
 			"Luk3",
-			"Mariagarbin"
+			"Mariagarbin",
+			"Svjatysberega"
 		]
 	},
 	"wikilambda-desc": "Fornecendo as wikis da Wikimedia uma função de analisador de wikitexto para chamar a avaliação de funções escritas, gerenciadas e avaliadas em um wiki central.",
@@ -17,6 +18,7 @@
 	"wikilambda-typeunavailable": "Tipo não reconhecido",
 	"wikilambda-noresult": "A pesquisa não forneceu nenhum resultado.",
 	"wikilambda-labelclash": "O rótulo do conteúdo fornecido entra em conflito com ZObject '$1' para o rótulo em '$2'.",
+	"wikilambda-persistentzobject-contents": "Conteúdo",
 	"wikilambda-multilingualstring-nofallback": "Nenhum rótulo definido neste idioma ou substitutos aceitos",
 	"wikilambda-viewmode-nojs": "Esta página é exibida de forma limitada sem JavaScript.",
 	"wikilambda-reference": "Referência",
@@ -88,7 +90,22 @@
 	"wikilambda-metadata-fewer-languages": "Mostrar menos idiomas",
 	"wikilambda-persistentobject-details-label": "Detalhes",
 	"wikilambda-persistentobject-function-signature-label": "Assinatura de função",
+	"wikilambda-editor-go-back-button": "Voltar",
+	"wikilambda-editor-next-button": "Próximo passo",
+	"wikilambda-editor-fn-step-define": "Definir Função",
 	"wikilambda-editor-name-title": "Nome",
+	"wikilambda-editor-name-subtitle": "Qual o nome da sua função? O que ela faz?",
+	"wikilambda-editor-name-zobject-name": "Nome da função",
+	"wikilambda-editor-name-zobject-name-placeholder": "Qual o nome da sua função?",
 	"wikilambda-editor-name-aliases": "Alias",
-	"wikilambda-editor-write-title": "Escrever"
+	"wikilambda-editor-input-title": "Entrada(s)",
+	"wikilambda-editor-input-subtitle": "O que entrará na função?",
+	"wikilambda-editor-input-type-placeholder": "Tipo da entrada",
+	"wikilambda-editor-input-add-button": "Adicionar entrada",
+	"wikilambda-editor-output-placeholder": "Tipo da saída",
+	"wikilambda-editor-behavior-title": "Comportamento",
+	"wikilambda-editor-write-title": "Escrever",
+	"wikilambda-editor-write-subtitle": "Escreva uma implementação para esta função",
+	"wikilambda-editor-attach-title": "Anexar",
+	"wikilambda-editor-progress-title": "Progresso"
 }
