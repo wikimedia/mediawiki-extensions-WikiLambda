@@ -517,6 +517,38 @@ class ZObjectUtils {
 	}
 
 	/**
+	 * Walks the ZObject tree and when it finds a given key or keys, it applies the transformation
+	 * to its value. Note that this is also the finishing condition for the recursiveness: if another
+	 * ZObject of the same type is a child of the first one found, it will not apply the transformation
+	 * for the child one.
+	 *
+	 * @param array|stdClass|string $input decoded JSON object for a ZObject
+	 * @param string[] $keys
+	 * @param callable $transformation
+	 * @return array|stdClass|string
+	 */
+	public static function applyTransformationToKeys( $input, $keys, $transformation ) {
+		if ( is_string( $input ) ) {
+			return $input;
+		}
+		if ( is_array( $input ) ) {
+			return array_map( function ( $item ) use ( $keys, $transformation ) {
+				return self::applyTransformationToKeys( $item, $keys, $transformation );
+			}, $input );
+		}
+		if ( is_object( $input ) ) {
+			foreach ( $input as $key => $value ) {
+				if ( in_array( $key, $keys ) ) {
+					$input->$key = $transformation( $value );
+				} else {
+					$input->$key = self::applyTransformationToKeys( $value, $keys, $transformation );
+				}
+			}
+			return $input;
+		}
+	}
+
+	/**
 	 * Is the input a ZObject reference key (e.g. Z1 or Z12345)?
 	 *
 	 * @param string $input
