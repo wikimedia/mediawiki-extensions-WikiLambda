@@ -14,6 +14,12 @@
 				{{ $i18n( 'wikilambda-persistentzobject-contents' ) }}
 			</h2>
 			<div class="ext-wikilambda-persistentobject-content">
+				<p v-if="isNewZObject">
+					{{ $i18n( 'wikilambda-persistentzobject-description' ) }}
+					<router-link :to="{ name: 'create', query: { zid: Constants.Z_FUNCTION } }">
+						{{ $i18n( 'wikilambda-create-function' ) }}
+					</router-link>
+				</p>
 				<div v-if="showClearButton" class="ext-wikilambda-clear-persistentobject">
 					<button
 						:title="$i18n( 'wikilambda-editor-zobject-clearitem-tooltip' )"
@@ -109,7 +115,8 @@ module.exports = {
 		getCurrentZObjectType: 'getCurrentZObjectType',
 		getZObjectAsJsonById: 'getZObjectAsJsonById',
 		getZObjectAsJson: 'getZObjectAsJson',
-		getCurrentZObjectId: 'getCurrentZObjectId'
+		getCurrentZObjectId: 'getCurrentZObjectId',
+		isNewZObject: 'isNewZObject'
 	} ), {
 		Constants: function () {
 			return Constants;

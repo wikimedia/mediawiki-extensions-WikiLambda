@@ -34,6 +34,11 @@
 			>
 		</div>
 		<sd-button
+			v-if="isNewZObject"
+			@click="navigateToCreateFunction">
+			{{ $i18n( 'wikilambda-create-function' ) }}
+		</sd-button>
+		<sd-button
 			class="ext-wikilambda-expertModeToggle"
 			@click="$store.dispatch( 'toggleExpertMode' )">
 			<template v-if="$store.getters.isExpertMode">
@@ -54,7 +59,8 @@ var ZObject = require( './ZObject.vue' ),
 	SdButton = require( './base/Button.vue' ),
 	SdMessage = require( './base/Message.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions;
+	mapActions = require( 'vuex' ).mapActions,
+	Constants = require( '../Constants.js' );
 
 module.exports = {
 	name: 'ZObjectEditor',
@@ -71,7 +77,8 @@ module.exports = {
 	computed: $.extend( mapGetters( {
 		createNewPage: 'isCreateNewPage',
 		message: 'getZObjectMessage',
-		currentZObjectHasLabel: 'currentZObjectHasLabel'
+		currentZObjectHasLabel: 'currentZObjectHasLabel',
+		isNewZObject: 'isNewZObject'
 	} ), {
 		submitButtonLabel: function () {
 			if ( this.createNewPage ) {
@@ -104,6 +111,15 @@ module.exports = {
 
 			submit: function () {
 				this.submitZObject( this.summary );
+			},
+
+			navigateToCreateFunction: function () {
+				this.$router.push( {
+					name: 'create',
+					query: {
+						zid: Constants.Z_FUNCTION
+					}
+				} );
 			}
 		}
 	)

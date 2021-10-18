@@ -159,6 +159,18 @@ describe( 'zobject Vuex module', function () {
 
 			expect( zobjectModule.getters.getNextKey( state, { getCurrentZObjectId: 'Z0' } ) ).toEqual( 'Z0K1' );
 		} );
+
+		it( 'Returns true if the value of the current ZObject is Z0', function () {
+			state.zobject = zobjectTree;
+
+			expect( zobjectModule.modules.currentZObject.getters.isNewZObject( state, { getCurrentZObjectId: 'Z0' } ) ).toEqual( true );
+		} );
+
+		it( 'Returns false if the value of the current ZObject is not Z0', function () {
+			state.zobject = zobjectTree;
+
+			expect( zobjectModule.modules.currentZObject.getters.isNewZObject( state, { getCurrentZObjectId: 'Z4' } ) ).toEqual( false );
+		} );
 	} );
 
 	describe( 'Mutations', function () {

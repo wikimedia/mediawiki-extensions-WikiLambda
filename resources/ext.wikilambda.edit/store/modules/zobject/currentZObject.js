@@ -150,6 +150,16 @@ module.exports = {
 					Z9K1: languageCode
 				};
 			} );
+		},
+		/**
+		 * Return the boolean value, equivalend to if currentZObjectId is placeholder
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {boolean} isNewZObject
+		 */
+		isNewZObject: function ( state, getters ) {
+			return getters.getCurrentZObjectId === Constants.NEW_ZID_PLACEHOLDER;
 		}
 	}
 };
