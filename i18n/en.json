@@ -21,7 +21,7 @@
 	"wikilambda-persistentzobject": "ZObject",
 	"wikilambda-persistentzobject-metadata": "Labels and Aliases",
 	"wikilambda-persistentzobject-contents": "Contents",
-	"wikilambda-persistentzobject-description": "Start creating your zObject by selecting a type below. You can create a function by clicking this link:",
+	"wikilambda-persistentzobject-description": "Start creating your ZObject by selecting a type below. You can create a function by clicking this link:",
 	"wikilambda-multilingualstring-nofallback": "No label defined in this language or accepted fallbacks",
 	"wikilambda-viewmode-nojs": "This page displays in a limited way without JavaScript.",
 	"wikilambda-diff-incompatible": "The system cannot display differences between a ZObject and a non-ZObject.",
