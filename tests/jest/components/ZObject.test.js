@@ -22,6 +22,7 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	ZBoolean = require( '../../../resources/ext.wikilambda.edit/components/types/ZBoolean.vue' ),
 	ZImplementation = require( '../../../resources/ext.wikilambda.edit/components/types/ZImplementation.vue' ),
 	ZArgumentReference = require( '../../../resources/ext.wikilambda.edit/components/types/ZArgumentReference.vue' ),
+	ZType = require( '../../../resources/ext.wikilambda.edit/components/types/ZType.vue' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	localVue;
 
@@ -93,7 +94,8 @@ describe( 'ZObject', function () {
 		} );
 	}
 
-	testMountingComponent( 'ZObjectGeneric', Constants.Z_TYPE, ZObjectGeneric );
+	testMountingComponent( 'ZObjectGeneric', Constants.Z_NATURAL_LANGUAGE, ZObjectGeneric );
+	testMountingComponent( 'ZType', Constants.Z_TYPE, ZType );
 	testMountingComponent( 'ZList', Constants.Z_LIST, ZList );
 	testMountingComponent( 'ZMultilingualString', Constants.Z_MULTILINGUALSTRING, ZMultilingualString );
 	testMountingComponent( 'ZReference', Constants.Z_REFERENCE, ZReference );
