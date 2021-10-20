@@ -536,25 +536,25 @@ class Hooks implements
 
 		$targetFunctionArguments = $targetFunction->getValueByKey( 'Z8K1' );
 		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZList $targetFunctionArguments';
-		$nonStringArgumentDefinition = array_filter(
+		$nonStringArgumentsDefinition = array_filter(
 			$targetFunctionArguments->getZListAsArray(),
 			static function ( $arg_value ) {
 				return !(
-					property_exists( $arg_value, 'Z1K1' )
-					&& $arg_value->Z1K1 === 'Z17'
-					&& property_exists( $arg_value, 'Z17K1' )
-					&& $arg_value->Z17K1 === 'Z6'
+					is_object( $arg_value )
+					&& $arg_value->getValueByKey( 'Z1K1' )->getZValue() === 'Z17'
+					&& $arg_value->getValueByKey( 'Z17K1' )->getZValue() === 'Z6'
 				);
 			},
 			ARRAY_FILTER_USE_BOTH
 		);
 
-		if ( count( $nonStringArgumentDefinition ) ) {
-			// var_dump($nonStringArgumentDefinition[ 0 ] );
+		if ( count( $nonStringArgumentsDefinition ) ) {
 
 			// TODO: Would be nice to deal with multiple
-			$nonStringArgument = $nonStringArgumentDefinition[ 0 ]->Z17K2;
-			$nonStringArgumentType = $nonStringArgumentDefinition[ 0 ]->Z17K1;
+			$nonStringArgumentDefinition = $nonStringArgumentsDefinition[ 0 ];
+
+			$nonStringArgumentType = $nonStringArgumentDefinition->getValueByKey( 'Z17K1' );
+			$nonStringArgument = $nonStringArgumentDefinition->getValueByKey( 'Z17K2' );
 
 			// User is trying to use a ZFunction that takes something other than a Z6/String
 			$ret = Html::errorBox(
