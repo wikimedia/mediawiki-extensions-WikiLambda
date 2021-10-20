@@ -29,6 +29,7 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions;
 
 module.exports = {
+	name: 'FnEditorWrite',
 	components: {
 		'fn-editor-base': FnEditorBase,
 		'z-implementation': ZImplementation

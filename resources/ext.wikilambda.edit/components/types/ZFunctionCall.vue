@@ -24,7 +24,7 @@
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 			</sd-button>
 			<z-reference
-				:zobject-key="selectedFunction[ Constants.Z_PERSISTENTOBJECT_ID ]"
+				:zobject-key="selectedFunctionPersistentValue"
 				search-type="Z8"
 				:readonly="true"
 			></z-reference>
@@ -151,6 +151,12 @@ module.exports = {
 		},
 		selectedFunction: function () {
 			return this.getZkeys[ this.zFunctionId ];
+		},
+		selectedFunctionPersistentValue: function () {
+			if ( !this.selectedFunction ) {
+				return;
+			}
+			return this.selectedFunction[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
 		},
 		zFunctionCall: function () {
 			return this.getZkeys[ Constants.Z_FUNCTION_CALL ];

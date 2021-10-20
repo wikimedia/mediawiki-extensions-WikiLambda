@@ -113,6 +113,13 @@ function normalize( zobject ) {
 				normal.Z1K1 = zobject.Z1K1;
 				continue;
 			}
+			if ( keys[ i ] === 'Z2K1' && isString( zobject.Z2K1 ) ) {
+				normal.Z2K1 = {
+					Z1K1: 'Z6',
+					Z6K1: zobject.Z2K1
+				};
+				continue;
+			}
 			if ( keys[ i ] === 'Z6K1' && isString( zobject.Z6K1 ) ) {
 				normal.Z6K1 = zobject.Z6K1;
 				continue;

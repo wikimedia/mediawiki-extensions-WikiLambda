@@ -8,7 +8,7 @@
 	<div v-if="selectedFunction" class="ext-wikilambda-function-call-block ext-wikilambda-function-call-block__runner">
 		{{ zFunctionCallKeyLabels[ Constants.Z_FUNCTION_CALL_FUNCTION ] }}:
 		<z-reference
-			:zobject-key="selectedFunction[ Constants.Z_PERSISTENTOBJECT_ID ]"
+			:zobject-key="selectedFunctionPersistentValue"
 			search-type="Z8"
 			:readonly="true"
 		></z-reference>

@@ -109,7 +109,7 @@ module.exports = {
 		zTesterId: function () {
 			return this.getNestedZObjectById( this.getZObjectById( this.zobjectId ).parent, [
 				Constants.Z_PERSISTENTOBJECT_ID,
-				Constants.Z_REFERENCE_ID
+				Constants.Z_STRING_VALUE
 			] ).value;
 		},
 		isTesterAttached: function () {

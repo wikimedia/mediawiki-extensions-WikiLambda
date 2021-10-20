@@ -47,7 +47,7 @@
 								<z-tester-impl-result
 									:z-function-id="zFunctionId"
 									:z-implementation-id="implementation"
-									:z-tester-id="test.Z2K1.Z9K1"
+									:z-tester-id="test[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ]"
 									@set-keys="setActiveTesterKeys"
 								></z-tester-impl-result>
 							</td>
@@ -132,7 +132,8 @@ module.exports = {
 	data: function () {
 		return {
 			activeZImplementationId: null,
-			activeZTesterId: null
+			activeZTesterId: null,
+			Constants: Constants
 		};
 	},
 	computed: $.extend( mapGetters( [

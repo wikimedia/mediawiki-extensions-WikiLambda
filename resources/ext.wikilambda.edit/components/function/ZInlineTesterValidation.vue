@@ -17,7 +17,7 @@
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 			</sd-button>
 			<z-reference
-				:zobject-key="selectedFunction[ Constants.Z_PERSISTENTOBJECT_ID ]"
+				:zobject-key="selectedFunctionPersistentValue"
 				search-type="Z8"
 				:readonly="true"
 			></z-reference>

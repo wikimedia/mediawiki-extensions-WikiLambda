@@ -25,9 +25,9 @@ module.exports = {
 			var persistentObjectId =
 				typeUtils.findKeyInArray( Constants.Z_PERSISTENTOBJECT_ID, rootState.zobjectModule.zobject ).id,
 				persistenObjectChildren = rootGetters.getZObjectChildrenById( persistentObjectId ),
-				zReferenceId = typeUtils.findKeyInArray( Constants.Z_REFERENCE_ID, persistenObjectChildren );
+				persistentObjectValue = typeUtils.findKeyInArray( Constants.Z_STRING_VALUE, persistenObjectChildren );
 
-			return zReferenceId.value || Constants.NEW_ZID_PLACEHOLDER;
+			return persistentObjectValue.value || Constants.NEW_ZID_PLACEHOLDER;
 		},
 		getCurrentZObjectType: function ( state, getters ) {
 			var zobject = getters.getZObjectAsJson,
