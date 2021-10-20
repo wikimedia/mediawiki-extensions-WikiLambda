@@ -245,7 +245,7 @@ module.exports = {
 	mounted: function () {
 		// If the step is empty, set it to the first step
 		if ( !this.$route.query.step ) {
-			this.$router.push( this.getRouterTo( this.flatSteps[ 1 ] ) );
+			this.$router.replace( this.getRouterTo( this.flatSteps[ 1 ] ) );
 		}
 	}
 };
