@@ -9,8 +9,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\Validation\SchemataUtils;
 use MediaWiki\Extension\WikiLambda\Validation\ZObjectStructureValidator;
-use Mediawiki\Services\Wikilambda\FunctionSchemata\SchemataUtils;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZErrorFactory

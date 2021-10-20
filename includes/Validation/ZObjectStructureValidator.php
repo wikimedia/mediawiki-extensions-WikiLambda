@@ -12,8 +12,6 @@ namespace MediaWiki\Extension\WikiLambda\Validation;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
-use Mediawiki\Services\Wikilambda\FunctionSchemata\SchemaFactory;
-use Mediawiki\Services\Wikilambda\FunctionSchemata\SchemaWrapper;
 
 class ZObjectStructureValidator {
 

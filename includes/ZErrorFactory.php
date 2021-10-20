@@ -11,11 +11,11 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Validation\SchemataUtils;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKeyReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
-use Mediawiki\Services\Wikilambda\FunctionSchemata\SchemataUtils;
 use Opis\JsonSchema\ValidationError;
 
 class ZErrorFactory {
