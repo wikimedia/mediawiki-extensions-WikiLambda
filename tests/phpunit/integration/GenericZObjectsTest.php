@@ -75,11 +75,6 @@ EOT;
 	 * @coversNothing
 	 */
 	public function testInstanceOfZTestType() {
-		$this->markTestSkipped(
-			'Tests instantiation of user-defined types. '
-			. 'TODO: revisit when we are able to validate these.'
-		);
-
 		$this->registerLangs( ZTestType::TEST_LANGS );
 
 		// Create ZTestType (Z111)
@@ -146,28 +141,6 @@ EOT;
 		$this->assertEquals( 'Tést', $value[ 'Z111K1' ] );
 		$this->assertArrayHasKey( 'Z111K2', $value );
 		$this->assertEquals( 'content!', $value[ 'Z111K2' ] );
-
-		// Create an invalid instance of ZTestType (Z113)
-		$invalidInstanceTitleText = 'Z113';
-		$invalidInstanceContent = <<<EOT
-{
-	"Z1K1": "Z2",
-	"Z2K1": "Z0",
-	"Z2K2": {
-		"Z1K1": "Z111",
-		"Z111K1": { "Z1K1": "Z10", "Z10K1": "Invalid", "Z10K2": [ "content", "is", "invalid!" ] },
-		"Z111K2": "Valid content!"
-	},
-	"Z2K3": { "Z1K1": "Z12", "Z12K1": [] }
-}
-EOT;
-
-		$invalidInstanceStatus = $this->editPage(
-			$invalidInstanceTitleText, $invalidInstanceContent, 'Invalid instance of ZTestType', NS_MAIN
-		);
-		$this->assertFalse( $invalidInstanceStatus->isOK() );
-		$invalidInstanceTitle = Title::newFromText( $invalidInstanceTitleText, NS_MAIN );
-		$this->assertFalse( $invalidInstanceTitle->exists() );
 	}
 
 	/**
@@ -178,11 +151,6 @@ EOT;
 	 * @coversNothing
 	 */
 	public function testInstanceOfBespokeNonGeneric() {
-		$this->markTestSkipped(
-			'Tests instantiation of user-defined types. '
-			. 'TODO: revisit when we are able to validate these.'
-		);
-
 		// Create ZInteger (Z91)
 		$baseTypeTitleText = 'Z91';
 		$baseTypeContent = <<<EOT
@@ -293,11 +261,6 @@ EOT;
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 */
 	public function testInstanceOfSelfReferencingType() {
-		$this->markTestSkipped(
-			'Tests instantiation of user-defined types. '
-			. 'TODO: revisit when we are able to validate these.'
-		);
-
 		$baseTypeTitleText = 'Z991';
 		$baseTypeContent = <<<EOT
 {
@@ -491,11 +454,6 @@ EOT;
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 */
 	public function testInstanceOfListUsingType() {
-		$this->markTestSkipped(
-			'Tests instantiation of user-defined types. '
-			. 'TODO: revisit when we are able to validate these.'
-		);
-
 		// Create ZListUsingType (Z890)
 		$baseTypeTitleText = 'Z890';
 		$baseTypeContent = <<<EOT
