@@ -34,11 +34,11 @@
 		},
 		"WikiLambdaOrchestratorLocation": {
 			"description": "Docker container and port of function orchestrator.",
-			"value": "mediawiki_function-orchestrator_1:6254"
+			"value": "mediawiki-function-orchestrator-1:6254"
 		},
 		"WikiLambdaEvaluatorLocation": {
 			"description": "Docker container and port of function evaluator.",
-			"value": "http://mediawiki_function-evaluator_1:6927/1/v1/evaluate/"
+			"value": "http://mediawiki-function-evaluator-1:6927/1/v1/evaluate/"
 		},
 		"WikiLocation": {
 			"description": "Docker container and port of wiki.",
