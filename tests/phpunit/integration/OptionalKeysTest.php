@@ -24,17 +24,12 @@ class OptionalKeysTest extends WikiLambdaIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 */
 	public function testInstanceOfTypeWithOptionalKeys() {
-		$this->markTestSkipped(
-			'Tests instantiation of user-defined types. '
-			. 'TODO: revisit when we are able to validate these.'
-		);
-
 		// Create ZOptionalType (Z10101)
 		$baseTypeTitleText = 'Z10101';
 		$baseTypeContent = <<<EOT
 {
 	"Z1K1": "Z2",
-	"Z2K1": "Z10101",
+	"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z10101" },
 	"Z2K2": {
 		"Z1K1": "Z4",
 		"Z4K1": "Z10101",
@@ -58,7 +53,7 @@ class OptionalKeysTest extends WikiLambdaIntegrationTestCase {
 				"Z3K3": { "Z1K1": "Z12", "Z12K1": [] }
 			}
 		],
-		"Z4K3": "Z0"
+		"Z4K3": "Z10102"
 	},
 	"Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "ZOptions" } ] },
 	"Z2K4": { "Z1K1": "Z32", "Z32K1": [ { "Z1K1": "Z31", "Z31K1": "Z1002", "Z31K2": [ "Options!" ] } ] }
