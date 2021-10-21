@@ -2,12 +2,14 @@
 	"@metadata": {
 		"authors": [
 			"Abbaty",
+			"Bashir Gwanki",
 			"Gwanki",
 			"Harunaningi",
 			"Omar Ali",
 			"Salihu aliyu"
 		]
 	},
+	"wikilambda-persistentzobject-description": "Fara ƙirƙirar ZObject ɗin ku ta zaɓar nau'in da ke ƙasa. Kuna iya ƙirƙirar aiki ta danna wannan mahaɗin:",
 	"specialpages-group-wikilambda": "Shafukan Wikifuntions",
 	"wikilambda-editor-steps-label": "Matakan Edita",
 	"wikilambda-editor-additional-details-label": "Karin wasu Bayanai",

@@ -3,7 +3,8 @@
 		"authors": [
 			"Impartial just",
 			"Kly",
-			"Neetp7k9"
+			"Neetp7k9",
+			"Weather Top Wizard"
 		]
 	},
 	"wikilambda-desc": "為維基媒體的 Wiki 提供 Wiki 語法解析器功能，來呼叫對於在中央 Wiki 上編寫、管理、評估的功能之評估。",
@@ -36,5 +37,6 @@
 	"wikilambda-editor-zlist-additem-tooltip": "增加一個項目到 ZList",
 	"wikilambda-editor-zlist-removeitem-tooltip": "從這個 ZList 移除此項目",
 	"wikilambda-editor-zobject-addkey": "增加鍵：",
-	"wikilambda-editor-zobject-removekey-tooltip": "從這個 ZList 移除此鍵/值"
+	"wikilambda-editor-zobject-removekey-tooltip": "從這個 ZList 移除此鍵/值",
+	"wikilambda-editor-fn-step-tests": "提供測試"
 }
