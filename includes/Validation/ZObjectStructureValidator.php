@@ -12,18 +12,18 @@ namespace MediaWiki\Extension\WikiLambda\Validation;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
-use Mediawiki\Services\Wikilambda\FunctionSchemata\ISchema;
 use Mediawiki\Services\Wikilambda\FunctionSchemata\SchemaFactory;
+use Mediawiki\Services\Wikilambda\FunctionSchemata\SchemaWrapper;
 
 class ZObjectStructureValidator {
 
 	/**
-	 * @var ISchema
+	 * @var SchemaWrapper
 	 */
 	private $validator = null; // @phan-suppress-current-line PhanUndeclaredTypeProperty function-schemata
 
 	/**
-	 * @param ISchema $validator
+	 * @param SchemaWrapper $validator
 	 */
 	// @phan-suppress-next-line PhanUndeclaredTypeParameter function-schemata
 	private function __construct( $validator ) {
@@ -32,7 +32,7 @@ class ZObjectStructureValidator {
 
 	/**
 	 * Uses function-schemata SchemaFactory to create a canonical validator for
-	 * a given type, and wraps the ISchema validate function with other utilities
+	 * a given type, and wraps the SchemaWrapper validate function with other utilities
 	 * to read and parse Opis errors and convert them to system ZErrors
 	 *
 	 * @param string $type
@@ -55,7 +55,7 @@ class ZObjectStructureValidator {
 
 	/**
 	 * Uses function-schemata SchemaFactory to create a normal validator for
-	 * a given type, and wraps the ISchema validate function with other utilities
+	 * a given type, and wraps the SchemaWrapper validate function with other utilities
 	 * to read and parse Opis errors and convert them to system ZErrors
 	 *
 	 * @param string $type
@@ -81,7 +81,7 @@ class ZObjectStructureValidator {
 	 * @return ValidationStatus
 	 */
 	public function validate( $input ): ValidationStatus {
-		// @phan-suppress-next-line PhanUndeclaredClassMethod ISchema in function-schemata
+		// @phan-suppress-next-line PhanUndeclaredClassMethod SchemaWrapper in function-schemata
 		return new ValidationStatus( $this->validator->validate( $input ) );
 	}
 }
