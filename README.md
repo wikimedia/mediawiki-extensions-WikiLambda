@@ -26,6 +26,19 @@ Much further functionality is to come.
   ```
   git clone --recurse-submodules --remote-submodules https://gerrit.wikimedia.org/r/mediawiki/extensions/WikiLambda
   ```
+* Extend MediaWiki's composer dependencies to use ours by adding a `composer.local.json` file in your `mediawiki/` directory:
+  ```
+  {
+    "extra": {
+      "merge-plugin": {
+        "include": [
+          "extensions/WikiLambda/composer.json"
+        ]
+      }
+    }
+  }
+  ```
+  … and then running `docker-compose exec mediawiki composer update` or similar.
 * Add the following to your `LocalSettings.php` file:
   ```
   wfLoadExtension( 'WikiLambda' );
