@@ -54,7 +54,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$testZObject = ZObjectFactory::create( $testObject );
 		$this->assertInstanceOf( ZObject::class, $testZObject );
 		$this->assertInstanceOf( ZString::class, $testZObject );
-		$this->assertSame( $testZObject->getZType(), 'Z6' );
+		$this->assertSame( 'Z6', $testZObject->getZType() );
 	}
 
 	/**
@@ -79,7 +79,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		// former does not request function-schemata validator
 		$testZObject = ZObjectFactory::createChild( $testObject );
 		$this->assertInstanceOf( ZObject::class, $testZObject );
-		$this->assertSame( $testZObject->getZType(), 'Z111' );
+		$this->assertSame( 'Z111', $testZObject->getZType() );
 	}
 
 	/**

@@ -173,7 +173,7 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 			/* WHERE */ [ 'wlzl_zobject_zid' => ZTestType::TEST_ZID ]
 		);
 
-		$this->assertEquals( $res->numRows(), 5 );
+		$this->assertEquals( 5, $res->numRows() );
 
 		$labels = [];
 		$expectedLabels = [
@@ -224,7 +224,7 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 			/* WHERE */ [ 'wlzl_zobject_zid' => ZTestType::TEST_ZID ]
 		);
 
-		$this->assertEquals( $res->numRows(), 5 );
+		$this->assertEquals( 5, $res->numRows() );
 
 		$labels = [];
 		$expectedLabels = [

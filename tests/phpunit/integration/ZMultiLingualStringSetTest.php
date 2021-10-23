@@ -114,7 +114,7 @@ class ZMultiLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 				]
 			]
 		] );
-		$this->assertSame( $testObject->getZType(), 'Z32' );
+		$this->assertSame( 'Z32', $testObject->getZType() );
 	}
 
 	/**

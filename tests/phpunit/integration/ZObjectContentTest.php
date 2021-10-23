@@ -240,7 +240,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertSame( $testObject->getText(), $zobjectText );
 		$this->assertTrue( $testObject->getObject() instanceof \stdClass );
-		$this->assertSame( $testObject->getObject()->Z1K1, 'Z2' );
+		$this->assertSame( 'Z2', $testObject->getObject()->Z1K1 );
 		$this->assertNull( $testObject->getZObject() );
 
 		$testObject->isValid();
@@ -272,11 +272,11 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertInstanceOf( ZObject::class, $testObject->getInnerZObject() );
 		$this->assertInstanceOf( ZString::class, $testObject->getInnerZObject() );
-		$this->assertSame( $testObject->getZid(), 'Z401' );
-		$this->assertSame( $testObject->getZType(), 'Z6' );
-		$this->assertSame( $testObject->getZValue(), 'string value' );
+		$this->assertSame( 'Z401', $testObject->getZid() );
+		$this->assertSame( 'Z6', $testObject->getZType() );
+		$this->assertSame( 'string value', $testObject->getZValue() );
 		$this->assertInstanceOf( ZMultiLingualString::class, $testObject->getLabels() );
-		$this->assertSame( $testObject->getLabel( $english ), 'english label' );
+		$this->assertSame( 'english label', $testObject->getLabel( $english ) );
 	}
 
 	/**

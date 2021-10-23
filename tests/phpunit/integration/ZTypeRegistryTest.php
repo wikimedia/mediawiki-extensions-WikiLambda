@@ -90,8 +90,8 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 			"'TestingType' is not defined as a built-in, but is read from the DB as key '" . ZTestType::TEST_ZID . "'."
 		);
 		$this->assertEquals(
-			$registry->getZObjectTypeFromKey( ZTestType::TEST_ZID ),
 			'Demonstration type',
+			$registry->getZObjectTypeFromKey( ZTestType::TEST_ZID ),
 			"'" . ZTestType::TEST_ZID . "' lookup works to find 'Demonstration type'."
 		);
 	}
@@ -166,15 +166,15 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		$registry = ZTypeRegistry::singleton();
 
 		$this->assertEquals(
-			$registry->getZObjectKeyFromType( 'ZObject' ),
 			'Z1',
+			$registry->getZObjectKeyFromType( 'ZObject' ),
 			"'ZObject' lookup works."
 		);
 
 		$this->expectException( ZErrorException::class );
 		$this->assertEquals(
-			$registry->getZObjectKeyFromType( 'Zero' ),
 			'Undefined',
+			$registry->getZObjectKeyFromType( 'Zero' ),
 			"'Zero' lookup fails as undefined."
 		);
 	}
@@ -185,12 +185,12 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 	public function testGetZObjectTypeFromKey() {
 		$registry = ZTypeRegistry::singleton();
 
-		$this->assertEquals( $registry->getZObjectTypeFromKey( 'Z1' ), 'ZObject', "'Z1' lookup works." );
+		$this->assertEquals( 'ZObject', $registry->getZObjectTypeFromKey( 'Z1' ), "'Z1' lookup works." );
 
 		$this->expectException( ZErrorException::class );
 		$this->assertEquals(
-			$registry->getZObjectTypeFromKey( 'Z0' ),
 			'Undefined',
+			$registry->getZObjectTypeFromKey( 'Z0' ),
 			"'Z0' lookup fails as undefined."
 		);
 	}
@@ -208,8 +208,8 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		// e.g. register( Z1, UnregisteredType )
 		$this->expectException( ZErrorException::class );
 		$this->assertEquals(
-			$registry->register( $registeredZid, $type ),
 			'Undefined',
+			$registry->register( $registeredZid, $type ),
 			"'$type' registration fails as the ZID 'Z1' is already registered."
 		);
 	}
@@ -227,8 +227,8 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		// e.g. register( Z34, ZObject )
 		$this->expectException( ZErrorException::class );
 		$this->assertEquals(
-			$registry->register( $zid, $registeredType ),
 			'Undefined',
+			$registry->register( $zid, $registeredType ),
 			"'ZObject' registration fails as it's already registered under ZID 'Z1'."
 		);
 	}

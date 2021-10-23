@@ -203,7 +203,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 				'wlzl_type' => 'Z4'
 			]
 		);
-		$this->assertEquals( $res->numRows(), 3 );
+		$this->assertEquals( 3, $res->numRows() );
 
 		$conflicts = $this->zobjectStore->findZObjectLabelConflicts( 'Z333', 'Z4', $labels );
 		$this->assertEquals( count( $conflicts ), 3 );
@@ -249,7 +249,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 				'wlzlc_conflicting_zid' => 'Z333',
 			]
 		);
-		$this->assertEquals( $res->numRows(), 3 );
+		$this->assertEquals( 3, $res->numRows() );
 	}
 
 	/**
@@ -277,7 +277,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 				'wlzl_type' => 'Z4'
 			]
 		);
-		$this->assertEquals( $res->numRows(), 0 );
+		$this->assertSame( 0, $res->numRows() );
 	}
 
 	/**
@@ -302,7 +302,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 				$dbr::LIST_OR
 			)
 		);
-		$this->assertEquals( $res->numRows(), 0 );
+		$this->assertSame( 0, $res->numRows() );
 	}
 
 	/**

@@ -229,13 +229,13 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 			'Z9K1' => 'Z6'
 		];
 
-		$this->assertEquals( $z111_canonical['Z2K2']['Z4K3'], 'Z111' );
+		$this->assertEquals( 'Z111', $z111_canonical['Z2K2']['Z4K3'] );
 		$this->assertEquals( $z111_normal['Z2K2']['Z4K3'], $nullReference );
 
-		$this->assertEquals( $z111_canonical['Z2K2']['Z4K2'][0]['Z3K1'], 'Z6' );
+		$this->assertEquals( 'Z6', $z111_canonical['Z2K2']['Z4K2'][0]['Z3K1'] );
 		$this->assertEquals( $z111_normal['Z2K2']['Z4K2'][0]['Z3K1'], $referenceZ6 );
 
-		$this->assertEquals( $z111_canonical['Z2K2']['Z4K2'][0]['Z3K2'], 'Z111K1' );
+		$this->assertEquals( 'Z111K1', $z111_canonical['Z2K2']['Z4K2'][0]['Z3K2'] );
 		$this->assertEquals( $z111_normal['Z2K2']['Z4K2'][0]['Z3K2'], $stringZ111K1 );
 
 		// Exclude ZMultilingualStrings
