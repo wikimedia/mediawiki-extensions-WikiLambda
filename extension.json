@@ -167,6 +167,7 @@
 				"ext.wikilambda.edit/components/types/ZMultilingualString.vue",
 				"ext.wikilambda.edit/components/types/ZMonolingualString.vue",
 				"ext.wikilambda.edit/components/types/ZString.vue",
+				"ext.wikilambda.edit/components/types/ZType.vue",
 				"ext.wikilambda.edit/components/types/ZReference.vue",
 				"ext.wikilambda.edit/components/types/ZCode.vue",
 				"ext.wikilambda.edit/components/types/ZArgument.vue",

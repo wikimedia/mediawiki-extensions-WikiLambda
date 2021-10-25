@@ -45,6 +45,7 @@ var Constants = require( '../Constants.js' ),
 	ZPersistentObject = require( './types/ZPersistentObject.vue' ),
 	ZCharacter = require( './types/ZCharacter.vue' ),
 	ZPair = require( './types/ZPair.vue' ),
+	ZType = require( './types/ZType.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -67,7 +68,8 @@ module.exports = {
 		'z-tester': ZTester,
 		'z-persistentobject': ZPersistentObject,
 		'z-character': ZCharacter,
-		'z-pair': ZPair
+		'z-pair': ZPair,
+		'z-type': ZType
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -150,6 +152,8 @@ module.exports = {
 						return 'z-character';
 					case Constants.Z_PAIR:
 						return 'z-pair';
+					case Constants.Z_TYPE:
+						return 'z-type';
 					default:
 						return 'z-object-generic';
 				}

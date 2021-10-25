@@ -15,6 +15,7 @@ var Constants = {
 		Z_TYPE: 'Z4',
 		Z_TYPE_IDENTITY: 'Z4K1',
 		Z_TYPE_KEYS: 'Z4K2',
+		Z_TYPE_VALIDATOR: 'Z4K3',
 		Z_STRING: 'Z6',
 		Z_STRING_VALUE: 'Z6K1',
 		Z_FUNCTION: 'Z8',
@@ -78,7 +79,8 @@ var Constants = {
 		Z_MONOLINGUALSTRINGSET_VALUE: 'Z31K2',
 		Z_MULTILINGUALSTRINGSET: 'Z32',
 		Z_MULTILINGUALSTRINGSET_VALUE: 'Z32K1',
-		Z_NATURAL_LANGUAGE: 'Z60'
+		Z_NATURAL_LANGUAGE: 'Z60',
+		Z_VALIDATE_OBJECT: 'Z101'
 	},
 	modes = [
 		{ key: Constants.Z_KEY_MODES.REFERENCE, value: 'wikilambda-modeselector-reference', label: 'wikilambda-reference', type: Constants.Z_REFERENCE },
