@@ -9,6 +9,7 @@
 			"Fewasser Traduce",
 			"Fitoschido",
 			"Jackiezelaya",
+			"Jakeukalane",
 			"KATRINE1993",
 			"Mpayansilva",
 			"Reverse88"
@@ -41,6 +42,7 @@
 	"wikilambda-implementation-selector": "Seleccionar implementación",
 	"wikilambda-tester-failure-actual": "Recibido",
 	"wikilambda-tester-function-duration": "Duración",
+	"wikilambda-create-function": "Crear Función",
 	"wikilambda-editor-steps-label": "Pasos del Editor",
 	"wikilambda-editor-go-back-button": "Volver",
 	"wikilambda-editor-next-button": "Siguiente paso",
