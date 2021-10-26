@@ -17,6 +17,7 @@
 	},
 	"wikilambda-invalidzobject": "El contenido proporcionado no constituye un ZObject válido.",
 	"wikilambda-typeunavailable": "Tipo no reconocido",
+	"wikilambda-persistentzobject-description": "Comienza a crear tu ZObject seleccionando un tipo a continuación. Puedes crear una función haciendo clic en este enlace:",
 	"wikilambda-argref": "Referencia de argumento",
 	"wikilambda-special-createzobject-nojs": "Para utilizar esta página se necesita JavaScript.",
 	"wikilambda-special-evaluatefunctioncall": "Evalúa una llamada de función",
@@ -49,6 +50,7 @@
 	"wikilambda-editor-fn-step-implement": "Escribir Función",
 	"wikilambda-editor-start-function-title": "Comenzar Función",
 	"wikilambda-editor-name-title": "Nombre",
+	"wikilambda-editor-input-default-label": "Entrada",
 	"wikilambda-editor-write-title": "Escribir",
 	"wikilambda-editor-progress-title": "Progreso"
 }
