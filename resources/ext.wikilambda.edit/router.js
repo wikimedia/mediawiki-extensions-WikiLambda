@@ -48,6 +48,9 @@ var routes = [
 	{
 		path: '/w/index.php',
 		name: 'edit',
+		props: function ( route ) {
+			return ( { zid: route.query.zid } );
+		},
 		component: EditorWrapper
 	}
 ];

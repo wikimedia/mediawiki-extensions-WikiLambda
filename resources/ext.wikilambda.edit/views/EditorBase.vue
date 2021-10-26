@@ -226,7 +226,20 @@ module.exports = {
 			if ( currentStepIndex < this.flatSteps.length - 1 ) {
 				this.$router.push( this.getRouterTo( this.flatSteps[ currentStepIndex + 1 ] ) );
 			} else {
-				this.$store.dispatch( 'submitZObject', '' );
+				this.$store.dispatch( 'submitZObject', '' ).then( function ( result ) {
+					if ( result ) {
+
+						var route = this.$router.resolve( { name: 'edit', query: {
+							title: result,
+							action: 'edit',
+							zid: Constants.Z_FUNCTION,
+							step: 'behavior'
+						} } );
+
+						window.location.href = route.href;
+
+					}
+				}.bind( this ) );
 			}
 		},
 		navigateToFirstStepItem: function ( step ) {

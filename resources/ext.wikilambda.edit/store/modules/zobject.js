@@ -435,21 +435,24 @@ module.exports = {
 		 *
 		 * @param {Object} context
 		 * @param {Object} summary
+		 * @return {Promise}
 		 */
 		submitZObject: function ( context, summary ) {
 			var zobject = canonicalize( zobjectTreeUtils.convertZObjectTreetoJson( context.state.zobject ) );
 
-			saveZObject(
+			return saveZObject(
 				zobject,
 				context.getters.isCreateNewPage ? undefined : context.getters.getCurrentZObjectId,
 				summary
 			).then( function ( result ) {
-				window.location.href = new mw.Title( result.page ).getUrl();
-			} ).catch( function ( errorCode, result ) {
+				return result.page;
+			} ).catch( function ( errorCode ) {
 				context.commit( 'setMessage', {
 					type: 'error',
-					text: result.error.info
+					text: context.rootState.i18n( errorCode.message ) || ''
 				} );
+
+				return false;
 			} );
 		},
 		/**
