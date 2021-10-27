@@ -112,11 +112,10 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 			"'Z40' is a known ZType."
 		);
 
-		$this->expectException(
-			ZErrorException::class,
-			"'Z41' is a known ZObject but an instance rather than a ZType, so this should throw."
+		$this->assertFalse(
+			$registry->isZObjectKeyKnown( 'Z41' ),
+			"'Z41' is not a known ZType."
 		);
-		$registry->isZObjectKeyKnown( 'Z41' );
 	}
 
 	/**
