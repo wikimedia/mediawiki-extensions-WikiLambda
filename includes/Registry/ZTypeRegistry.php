@@ -270,7 +270,6 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 *
 	 * @param string $key The key of the ZType to check
 	 * @return bool
-	 * @throws ZErrorException
 	 */
 	public function isZObjectKeyKnown( string $key ): bool {
 		if ( $this->isZObjectKeyCached( $key ) ) {
@@ -288,15 +287,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 		}
 
 		if ( $zObject->getZType() !== self::Z_TYPE ) {
-			throw new ZErrorException(
-				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_UNEXPECTED_ZTYPE,
-					[
-						'expected' => self::Z_TYPE,
-						'actual' => $zObject->getZType()
-					]
- )
-			);
+			return false;
 		}
 
 		// TODO: Do we want to always store English? Or the wiki's contentLanguage? Or something else?
