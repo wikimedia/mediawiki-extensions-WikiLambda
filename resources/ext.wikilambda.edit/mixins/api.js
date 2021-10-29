@@ -49,9 +49,9 @@ module.exports = {
 				zobject: JSON.stringify( zobject )
 			} ).then( function ( result ) {
 				return result.wikilambda_edit;
-			} ).catch( function ( error ) {
+			} ).catch( function ( error, result ) {
 				// Pass the error up the chain
-				throw new Error( error );
+				throw ( result );
 			} );
 		}
 	}
