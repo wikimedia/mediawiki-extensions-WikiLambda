@@ -184,9 +184,15 @@ module.exports = {
 
 				context.commit( 'setFetchingTestResults', false );
 			} )
-				.catch( function ( error ) {
+				.catch( function ( error, message ) {
 					mw.log.error( 'Tester API call was nothing: ' + error );
-					context.commit( 'setErrorState', error );
+
+					var errorMessage = error;
+					if ( message && message.error && message.error.info ) {
+						errorMessage = message.error.info;
+					}
+
+					context.commit( 'setErrorState', errorMessage );
 					context.commit( 'setFetchingTestResults', false );
 				} );
 		}
