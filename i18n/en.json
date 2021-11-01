@@ -183,5 +183,9 @@
 	"wikilambda-editor-write-save-button": "Save Implementation",
 	"wikilambda-editor-attach-title": "Attach",
 	"wikilambda-editor-progress-title": "Progress",
-	"wikilambda-editor-progress-percentage": "%"
+	"wikilambda-editor-progress-percentage": "%",
+	"wikilambda-zlist-generic-type-placeholder": "Select a generic",
+	"wikilambda-zlist-generic-type-description": "List generic of type",
+	"wikilambda-zlist-generic-type-items": "List items"
+
 }

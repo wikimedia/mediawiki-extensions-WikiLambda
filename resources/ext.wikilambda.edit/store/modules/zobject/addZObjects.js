@@ -150,6 +150,24 @@ module.exports = {
 			} );
 		},
 		/**
+		 * Create the required entry in the object for a list of generics.
+		 * The entry will result in a json representation equal to:
+		 * { Z1K1: Z7, Z7K1: Z1010, Z1010k1: '' }
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 */
+		addZListGeneric: function ( context, payload ) {
+			var value = payload.value || '',
+				nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+
+			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: 'object', parent: payload.id } );
+			context.dispatch( 'changeType', { id: nextId, type: Constants.Z_FUNCTION_CALL, value: Constants.Z_LIST_GENERIC } )
+				.then( function () {
+					context.dispatch( 'addZObject', { key: Constants.Z_LIST_GENERIC_TYPE, value: value, parent: nextId } );
+				} );
+		},
+		/**
 		 * Create the required entry in the zobject array for a zReference.
 		 * The entry will result in a json representation equal to:
 		 * { Z1K1: Z9, Z9K1: '' }
@@ -212,17 +230,18 @@ module.exports = {
 		 * { Z1K1: Z7, Z7K1: '' }
 		 *
 		 * @param {Object} context
-		 * @param {number} objectId
+		 * @param {Object} payload
 		 */
-		addZFunctionCall: function ( context, objectId ) {
-			var zObjectItems = [];
+		addZFunctionCall: function ( context, payload ) {
+			var zObjectItems = [],
+				value = payload.value || '';
 			context.dispatch( 'setZObjectValue', {
-				id: objectId,
+				id: payload.id,
 				value: 'object'
 			} );
 			zObjectItems = [
-				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_FUNCTION_CALL, parent: objectId },
-				{ key: Constants.Z_FUNCTION_CALL_FUNCTION, value: '', parent: objectId }
+				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_FUNCTION_CALL, parent: payload.id },
+				{ key: Constants.Z_FUNCTION_CALL_FUNCTION, value: value, parent: payload.id }
 			];
 			context.dispatch( 'addZObjects', zObjectItems );
 		},
@@ -349,12 +368,12 @@ module.exports = {
 			// Set call as a function call
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
 			context.dispatch( 'addZObject', { key: Constants.Z_TESTER_CALL, value: 'object', parent: objectId } );
-			context.dispatch( 'addZFunctionCall', nextId );
+			context.dispatch( 'addZFunctionCall', { id: nextId } );
 
 			// Set validation as a reference
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
 			context.dispatch( 'addZObject', { key: Constants.Z_TESTER_VALIDATION, value: 'object', parent: objectId } );
-			context.dispatch( 'addZFunctionCall', nextId );
+			context.dispatch( 'addZFunctionCall', { id: nextId } );
 		},
 		/**
 		 * Create the required entry for a generic object,
@@ -520,7 +539,7 @@ module.exports = {
 						case Constants.Z_ARGUMENT:
 							return context.dispatch( 'addZArgument', payload.id );
 						case Constants.Z_FUNCTION_CALL:
-							return context.dispatch( 'addZFunctionCall', payload.id );
+							return context.dispatch( 'addZFunctionCall', payload );
 						case Constants.Z_FUNCTION:
 							return context.dispatch( 'addZFunction', payload.id );
 						case Constants.Z_PERSISTENTOBJECT:
@@ -531,6 +550,8 @@ module.exports = {
 							return context.dispatch( 'addZImplementation', payload.id );
 						case Constants.Z_TESTER:
 							return context.dispatch( 'addZTester', payload.id );
+						case Constants.Z_LIST_GENERIC:
+							return context.dispatch( 'addZListGeneric', payload );
 						default:
 							return context.dispatch( 'addGenericObject', payload );
 					}

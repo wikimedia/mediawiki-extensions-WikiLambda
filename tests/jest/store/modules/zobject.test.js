@@ -748,7 +748,7 @@ describe( 'zobject Vuex module', function () {
 			} );
 
 			it( 'adds a valid ZFunctionCall', function () {
-				zobjectModule.modules.addZObjects.actions.addZFunctionCall( context, 0 );
+				zobjectModule.modules.addZObjects.actions.addZFunctionCall( context, { id: 0 } );
 
 				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z7', Z7K1: '' } );
 			} );
