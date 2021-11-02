@@ -1,9 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
+			"Adam N.",
 			"Fraxinus.cs"
 		]
 	},
+	"wikilambda-create-function": "Vytvořit funkci",
 	"wikilambda-editor-additional-details-label": "Další podrobnosti",
 	"wikilambda-editor-go-back-button": "Zpět",
 	"wikilambda-editor-next-button": "Další krok",
