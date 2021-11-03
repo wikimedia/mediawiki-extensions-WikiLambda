@@ -14,6 +14,24 @@ var Constants = require( '../../Constants.js' ),
 	currentZObject = require( './zobject/currentZObject.js' ),
 	saveZObject = require( '../../mixins/api.js' ).methods.saveZObject;
 
+function isObjectTypeDeclaration( object, parentObject ) {
+	var isReference = object.value === Constants.Z_REFERENCE;
+	var isObjectType = parentObject.key === Constants.Z_OBJECT_TYPE;
+
+	return isReference && isObjectType;
+}
+
+function isListGenericDeclaration( object, functionCallId ) {
+	var isReference = object.value === Constants.Z_FUNCTION_CALL;
+	var isListGeneric = functionCallId.value === Constants.Z_LIST_GENERIC;
+
+	return isReference && isListGeneric;
+}
+
+function isNotObjectOrArrayRoot( object ) {
+	return [ 'array', 'object' ].indexOf( object.value ) === -1;
+}
+
 module.exports = {
 	modules: {
 		addZObjects: addZObjects,
@@ -58,14 +76,13 @@ module.exports = {
 			 */
 			return function ( id, keys ) {
 				var list = getters.getZObjectChildrenById( id ),
-					res,
-					last = keys[ keys.length - 1 ];
+					res;
 
 				for ( var k = 0; k < keys.length; k++ ) {
 					var key = keys[ k ];
 					res = typeUtils.findKeyInArray( key, list );
 
-					if ( res && key !== last ) {
+					if ( res && k !== keys.length ) {
 						list = getters.getZObjectChildrenById( res.id );
 					} else {
 						break;
@@ -112,6 +129,39 @@ module.exports = {
 				} );
 			};
 		},
+		getZObjectChildrenByIdRecursively: function ( state ) {
+			/**
+			 * Return the children of a specific zObject by its ID. The return is in zObjectTree array form.
+			 * This method is desinged to return just ONE level of Depth.
+			 * This will support development of small reusable components
+			 *
+			 * @param {number} parentId
+			 * @return {Array} zObjectTree
+			 */
+			return function ( parentId ) {
+				if ( parentId === undefined ) {
+					return [];
+				}
+
+				function filterObjectByParentId( items, id ) {
+					var result = items.filter( function ( item ) {
+						return item.parent === id;
+					} );
+
+					result.forEach( function ( child ) {
+						if ( isNotObjectOrArrayRoot( child ) ) {
+							return;
+						}
+
+						var nestedResut = filterObjectByParentId( items, child.id );
+						result = result.concat( nestedResut );
+					} );
+
+					return result;
+				}
+				return filterObjectByParentId( state.zobject, parentId );
+			};
+		},
 		getZObjectTypeById: function ( state, getters ) {
 			/**
 			 * Return the type of a specific zObject by its ID. If the type cannot be found it will return undefined
@@ -137,19 +187,19 @@ module.exports = {
 						break;
 					case 'object':
 						childrenObject = getters.getZObjectChildrenById( id );
-						childrenObject.forEach( function ( object ) {
-							if ( object.key === Constants.Z_OBJECT_TYPE ) {
-								if ( object.value === Constants.Z_REFERENCE &&
-									currentObject.key === Constants.Z_OBJECT_TYPE
-								) {
-									type = typeUtils.findKeyInArray( Constants.Z_REFERENCE_ID, childrenObject ).value;
-								} else if ( [ 'array', 'object' ].indexOf( object.value ) === -1 ) {
-									type = object.value;
-								} else {
-									type = findZObjectTypeById( object.id );
-								}
-							}
-						} );
+						var objectType = typeUtils.findKeyInArray( Constants.Z_OBJECT_TYPE, childrenObject ),
+							referenceId = typeUtils.findKeyInArray( Constants.Z_REFERENCE_ID, childrenObject ),
+							functionCallId = typeUtils.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, childrenObject );
+
+						if ( isObjectTypeDeclaration( objectType, currentObject ) ) {
+							type = referenceId.value;
+						} else if ( isListGenericDeclaration( objectType, functionCallId ) ) {
+							type = Constants.Z_LIST_GENERIC;
+						} else if ( isNotObjectOrArrayRoot( objectType ) ) {
+							type = objectType.value;
+						} else {
+							type = findZObjectTypeById( objectType.id );
+						}
 						break;
 					default:
 						type = undefined;
@@ -313,6 +363,12 @@ module.exports = {
 
 			state.zobject.splice( payload.index, 1, item );
 		},
+		setZObjectParent: function ( state, payload ) {
+			var item = state.zobject[ payload.index ];
+			item.parent = payload.parent;
+
+			state.zobject.splice( payload.index, 1, item );
+		},
 		removeZObject: function ( state, index ) {
 			state.zobject.splice( index, 1 );
 		},
@@ -469,6 +525,21 @@ module.exports = {
 			objectIndex = context.getters.getZObjectIndexById( payload.id );
 			payload.index = objectIndex;
 			context.commit( 'setZObjectValue', payload );
+		},
+		/**
+		 * Set the parent of a specific Zobject.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 */
+		setZObjectParent: function ( context, payload ) {
+			var objectIndex;
+			if ( payload.id === undefined || payload.parent === undefined ) {
+				return;
+			}
+			objectIndex = context.getters.getZObjectIndexById( payload.id );
+			payload.index = objectIndex;
+			context.commit( 'setZObjectParent', payload );
 		},
 		/**
 		 * Handles the conversion and initization of a zObject.

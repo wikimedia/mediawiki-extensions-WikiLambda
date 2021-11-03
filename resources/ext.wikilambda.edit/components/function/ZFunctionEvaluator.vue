@@ -43,7 +43,7 @@ module.exports = {
 			.then( function ( id ) {
 				this.functionCallId = id;
 
-				return this.addZFunctionCall( this.functionCallId );
+				return this.addZFunctionCall( { id: this.functionCallId } );
 			}.bind( this ) )
 			.then( function () {
 				return this.initializeResultId( this.resultId );

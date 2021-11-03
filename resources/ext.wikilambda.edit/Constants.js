@@ -80,7 +80,12 @@ var Constants = {
 		Z_MULTILINGUALSTRINGSET: 'Z32',
 		Z_MULTILINGUALSTRINGSET_VALUE: 'Z32K1',
 		Z_NATURAL_LANGUAGE: 'Z60',
-		Z_VALIDATE_OBJECT: 'Z101'
+		Z_VALIDATE_OBJECT: 'Z101',
+		Z_LIST_GENERIC: 'Z1010',
+		Z_LIST_GENERIC_TYPE: 'Z1010K1',
+		Z_LIST_GENERIC_ELEMENT: 'K1',
+		Z_LIST_GENERIC_NESTED_LIST: 'K2'
+
 	},
 	modes = [
 		{ key: Constants.Z_KEY_MODES.REFERENCE, value: 'wikilambda-modeselector-reference', label: 'wikilambda-reference', type: Constants.Z_REFERENCE },

@@ -12,6 +12,7 @@
 				:key="item.id"
 				:zobject-id="item.id"
 				:readonly="readonly"
+				@remove-item="removeItem"
 			></z-list-item>
 			<li v-if="!(viewmode || readonly)">
 				<button class="z-list-add"
@@ -67,7 +68,7 @@ module.exports = {
 			}
 		} ),
 	methods: $.extend( {},
-		mapActions( [ 'addZObject', 'recalculateZListIndex' ] ),
+		mapActions( [ 'addZObject', 'recalculateZListIndex', 'removeZObject', 'removeZObjectChildren' ] ),
 		{
 			addNewItem: function ( /* event */ ) {
 				var payload = {
@@ -76,6 +77,15 @@ module.exports = {
 					parent: this.zobjectId
 				};
 				this.addZObject( payload );
+			},
+			/**
+			 * Remove this item form the ZList
+			 *
+			 * @param {number} itemId
+			 */
+			removeItem: function ( itemId ) {
+				this.removeZObjectChildren( itemId );
+				this.removeZObject( itemId );
 			}
 		} ),
 	watch: {

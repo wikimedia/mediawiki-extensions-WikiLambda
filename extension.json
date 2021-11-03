@@ -142,6 +142,7 @@
 				"ext.wikilambda.edit/store/modules/zTesterResults.js",
 				"ext.wikilambda.edit/store/modules/createZTesters.js",
 				"ext.wikilambda.edit/store/modules/createZImplementations.js",
+				"ext.wikilambda.edit/store/modules/zGenericType.js",
 				"ext.wikilambda.edit/mixins/typeUtils.js",
 				"ext.wikilambda.edit/mixins/urlUtils.js",
 				"ext.wikilambda.edit/mixins/zobjectTreeUtils.js",
@@ -164,6 +165,7 @@
 				"ext.wikilambda.edit/components/base/CodeEditor.vue",
 				"ext.wikilambda.edit/components/types/ZList.vue",
 				"ext.wikilambda.edit/components/types/ZListItem.vue",
+				"ext.wikilambda.edit/components/types/ZListGeneric.vue",
 				"ext.wikilambda.edit/components/types/ZMultilingualString.vue",
 				"ext.wikilambda.edit/components/types/ZMonolingualString.vue",
 				"ext.wikilambda.edit/components/types/ZString.vue",
@@ -339,7 +341,10 @@
 				"wikilambda-editor-write-save-button",
 				"wikilambda-editor-attach-title",
 				"wikilambda-editor-progress-title",
-				"wikilambda-editor-progress-percentage"
+				"wikilambda-editor-progress-percentage",
+				"wikilambda-zlist-generic-type-placeholder",
+				"wikilambda-zlist-generic-type-description",
+				"wikilambda-zlist-generic-type-items"
 			]
 		}
 	},

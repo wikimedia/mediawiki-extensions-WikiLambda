@@ -10,7 +10,7 @@
 			class="z-list-item-remove"
 			:destructive="true"
 			:title="tooltipRemoveListItem"
-			@click="removeItem"
+			@click="$emit('remove-item', zobjectId )"
 		>
 			{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 		</sd-button>
@@ -88,16 +88,8 @@ module.exports = {
 			}
 		} ),
 	methods: $.extend( {},
-		mapActions( [ 'setZObjectValue', 'removeZObject', 'removeZObjectChildren', 'changeType' ] ),
+		mapActions( [ 'setZObjectValue', 'changeType' ] ),
 		{
-			/**
-			 * Remove this item form the ZList
-			 *
-			 */
-			removeItem: function () {
-				this.removeZObjectChildren( this.zobjectId );
-				this.removeZObject( this.zobjectId );
-			},
 			/*
 			* Sets the current list item type.
 			*
