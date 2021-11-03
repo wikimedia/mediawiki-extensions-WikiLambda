@@ -186,6 +186,6 @@
 	"wikilambda-editor-progress-percentage": "%",
 	"wikilambda-zlist-generic-type-placeholder": "Select a generic",
 	"wikilambda-zlist-generic-type-description": "List generic of type",
-	"wikilambda-zlist-generic-type-items": "List items"
-
+	"wikilambda-zlist-generic-type-items": "List items",
+	"wikilambda-zerror": "ZError of type $1"
 }

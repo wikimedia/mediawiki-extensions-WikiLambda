@@ -40,9 +40,8 @@ class ApiZObjectEditor extends ApiBase {
 			$response = $zObjectStore->updateZObject( $zid, $zobject, $summary, $user );
 		}
 
-		// TODO: Return multiple errors instead of one.
-		if ( $response instanceof \Status ) {
-			$this->dieStatus( $response );
+		if ( !$response->isOK() ) {
+			$this->dieWithError( $response->getErrors() );
 		}
 
 		$title = $response->getTitle();
@@ -55,6 +54,17 @@ class ApiZObjectEditor extends ApiBase {
 				'title' => $title->getBaseText(),
 				'page' => $title->getBaseTitle()
 			]
+		);
+	}
+
+	/**
+	 * @param ZError $zerror
+	 */
+	public function dieWithError( $zerror ) {
+		parent::dieWithError(
+			[ 'wikilambda-zerror', $zerror->getZErrorType() ],
+			null,
+			$zerror->getErrorData()
 		);
 	}
 

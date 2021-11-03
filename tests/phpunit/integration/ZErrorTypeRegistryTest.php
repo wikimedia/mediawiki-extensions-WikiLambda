@@ -38,7 +38,7 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testCacheZErrorType() {
 		$builtinErrorType = 'Z501';
-		$customErrorType = 'Z555';
+		$customErrorType = 'Z5000';
 		$registry = ZErrorTypeRegistry::singleton();
 
 		$this->runPrivateMethod( $registry, 'register', [ $customErrorType, 'error type' ] );
@@ -70,7 +70,7 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testIsZErrorTypeKnown_typeNotFound() {
 		$registry = ZErrorTypeRegistry::singleton();
-		$errorType = 'Z555';
+		$errorType = 'Z5000';
 
 		$this->assertFalse(
 			$registry->isZErrorTypeKnown( $errorType ),
@@ -101,7 +101,7 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::unregister
 	 */
 	public function testIsZErrorTypeKnown_valid() {
-		$errorType = 'Z555';
+		$errorType = 'Z5000';
 		$errorContent = <<<EOT
 {
 	"Z1K1": "Z2",

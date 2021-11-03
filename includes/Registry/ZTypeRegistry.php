@@ -125,13 +125,19 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_REFERENCE_VALUE
 	];
 
+	/**
+	 * An array of ZTypes which are prohibited from creation by any user. (T278175)
+	 */
 	public const DISALLOWED_ROOT_ZOBJECTS = [
 		self::Z_PERSISTENTOBJECT,
 		self::Z_KEY,
 		self::Z_REFERENCE,
 		self::Z_ARGUMENTDECLARATION,
 		self::Z_ARGUMENTREFERENCE,
-		self::Z_KEYREFERENCE
+		self::Z_KEYREFERENCE,
+		self::Z_ERROR,
+		self::Z_CODE,
+		self::Z_NULL,
 	];
 
 	public const SELF_REFERENTIAL_KEYS = [

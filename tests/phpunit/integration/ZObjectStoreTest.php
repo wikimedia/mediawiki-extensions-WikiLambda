@@ -12,12 +12,11 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectPage;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\MediaWikiServices;
-use Status;
 use Title;
 use Wikimedia\Rdbms\IResultWrapper;
-use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectStore
@@ -55,7 +54,8 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" },'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [] } }';
 		$page = $this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
-		$this->assertTrue( $page instanceof WikiPage );
+		$this->assertTrue( $page instanceof ZObjectPage );
+		$this->assertTrue( $page->isOK() );
 
 		$title = Title::newFromText( $zid, NS_MAIN );
 		$zobject = $this->zobjectStore->fetchZObjectByTitle( $title );
@@ -93,12 +93,12 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$sysopUser = $this->getTestSysop()->getUser();
 		$status = $this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
 
+		$this->assertTrue( $status instanceof ZObjectPage );
 		if ( $expected === true ) {
-			$this->assertTrue( $status instanceof WikiPage );
+			$this->assertTrue( $status->isOK() );
 		} else {
-			$this->assertTrue( $status instanceof Status );
 			$this->assertFalse( $status->isOK() );
-			$this->assertStringContainsString( $expected, $status->getMessage() );
+			$this->assertStringContainsString( $expected, $status->getErrors() );
 		}
 	}
 
@@ -145,7 +145,8 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }';
 
 		$page = $this->zobjectStore->createNewZObject( $normalZObject, 'Create ZObject', $sysopUser );
-		$this->assertTrue( $page instanceof WikiPage );
+		$this->assertTrue( $page instanceof ZObjectPage );
+		$this->assertTrue( $page->isOK() );
 
 		$zobject = $this->zobjectStore->fetchZObjectByTitle( $title );
 		$this->assertTrue( $zobject instanceof ZObjectContent );

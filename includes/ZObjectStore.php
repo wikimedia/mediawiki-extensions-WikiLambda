@@ -10,35 +10,20 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Revision\SlotRecord;
-use Status;
 use Title;
 use TitleFactory;
 use User;
 use Wikimedia\Rdbms\ILoadBalancer;
 use Wikimedia\Rdbms\IResultWrapper;
-use WikiPage;
 
 class ZObjectStore {
-
-	/**
-	 * An array of ZTypes which are prohibited from creation by any user. (T278175)
-	 */
-	private const PROHIBITED_Z2_TYPES = [
-		ZTypeRegistry::Z_PERSISTENTOBJECT,
-		ZTypeRegistry::Z_ERROR,
-		ZTypeRegistry::Z_CODE,
-		ZTypeRegistry::Z_ARGUMENTDECLARATION,
-		ZTypeRegistry::Z_ARGUMENTREFERENCE,
-		ZTypeRegistry::Z_NULL,
-		ZTypeRegistry::Z_KEYREFERENCE,
-		ZTypeRegistry::Z_BOOLEAN,
-	];
 
 	/** @var ILoadBalancer */
 	private $loadBalancer;
@@ -128,7 +113,7 @@ class ZObjectStore {
 	 * @param string $data
 	 * @param string $summary
 	 * @param User $user
-	 * @return WikiPage|Status Created page if success creation, status if failed
+	 * @return ZObjectPage
 	 */
 	public function createNewZObject( string $data, string $summary, User $user ) {
 		// Find all placeholder ZIDs and ZKeys and replace those with the next available ZID
@@ -147,44 +132,50 @@ class ZObjectStore {
 	 * @param string $summary
 	 * @param User $user
 	 * @param int $flags
-	 * @return WikiPage|Status Updated page if success update, status if failed
+	 * @return ZObjectPage
 	 */
 	public function updateZObject( string $zid, string $data, string $summary, User $user, int $flags = EDIT_UPDATE ) {
 		$title = $this->titleFactory->newFromText( $zid, NS_MAIN );
 
 		if ( !( $title instanceof Title ) ) {
-			return Status::newFatal( 'wikilambda-invalidzobjecttitle', $zid );
+			$error = ZErrorFactory::createZErrorInstance(
+				ZErrorTypeRegistry::Z_ERROR_INVALID_TITLE,
+				[ 'title' => $zid ]
+			);
+			return ZObjectPage::newFatal( $error );
 		}
 
 		try {
 			$content = ZObjectContentHandler::makeContent( $data, $title );
 		} catch ( ZErrorException $e ) {
-			// Error: Invalid input syntax
-			return Status::newFatal( $e->getMessage() );
+			return ZObjectPage::newFatal( $e->getZError() );
 		}
 
 		// Error: ZObject validation errors.
 		if ( !( $content->isValid() ) ) {
-			return $content->getStatus();
+			return ZObjectPage::newFatal( $content->getErrors() );
 		}
 
 		// Validate that $zid and zObject[Z2K1] are the same
 		$zObjectId = $content->getZid();
 		if ( $zObjectId !== $zid ) {
-			return Status::newFatal( 'apierror-wikilambda_edit-unmatchingzid', $zid, $zObjectId );
+			$error = ZErrorFactory::createZErrorInstance(
+				ZErrorTypeRegistry::Z_ERROR_UNMATCHING_ZID,
+				[
+					'zid' => $zObjectId,
+					'title' => $zid
+				]
+			);
+			return ZObjectPage::newFatal( $error );
 		}
 
 		// Find the label conflicts.
-		$labels = $content->getLabels()->getZValue();
+		$labels = $content->getLabels()->getValueAsList();
 		$ztype = $content->getZType();
 		$clashes = $this->findZObjectLabelConflicts( $zid, $ztype, $labels );
 		if ( count( $clashes ) > 0 ) {
-			// Error: Found label conflicts
-			$status = new Status();
-			foreach ( $clashes as $language => $clash_zid ) {
-				$status->fatal( 'wikilambda-labelclash', $clash_zid, $language );
-			}
-			return $status;
+			$error = ZErrorFactory::createLabelClashZErrors( $clashes );
+			return ZObjectPage::newFatal( $error );
 		}
 
 		// Double-check that the user has permissions to edit (should be caught by the lower parts of the stack)
@@ -193,11 +184,19 @@ class ZObjectStore {
 		if ( !$permissionManager->userCan( 'edit', $user, $title ) ) {
 			if ( !( $title->exists() ) ) {
 				// User is trying to create a page and is prohibited, e.g. logged-out.
-				return Status::newFatal( 'nocreatetext' );
+				$error = ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
+					[ 'message' => wfMessage( 'nocreatetext' )->text() ]
+				);
+				return ZObjectPage::newFatal( $error );
 			} else {
 				// User is trying to edit a page and is prohibited, e.g. blocked, but we don't know why,
 				// so give them the most generic error that MediaWiki has.
-				return Status::newFatal( 'badaccess-group0' );
+				$error = ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
+					[ 'message' => wfMessage( 'badaccess-group0' )->text() ]
+				);
+				return ZObjectPage::newFatal( $error );
 			}
 		}
 
@@ -206,11 +205,15 @@ class ZObjectStore {
 		if ( !$user->isSystemUser() ) {
 			// (T278175) Prohibit certain kinds of ZTypes from being instantiated as top-level wiki pages
 			if (
-				in_array( $ztype, self::PROHIBITED_Z2_TYPES )
+				in_array( $ztype, ZTypeRegistry::DISALLOWED_ROOT_ZOBJECTS )
 				// We only care at creation time; edits (e.g. label changes) are OK.
 				&& !$title->exists()
-				) {
-					return Status::newFatal( 'wikilambda-prohibitedcreationtype', $ztype );
+			) {
+				$error = ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_DISALLOWED_ROOT_ZOBJECT,
+					[ 'data' => $ztype ]
+				);
+				return ZObjectPage::newFatal( $error );
 			}
 
 			// (T275940) TODO: Check the user has the right for certain kinds of edit to certain kinds of type
@@ -224,16 +227,24 @@ class ZObjectStore {
 			$status = $page->doUserEditContent( $content, $user, $summary, $flags );
 		} catch ( \Exception $e ) {
 			// Error: Database or a deeper MediaWiki error, e.g. a general editing rate limit
-			return Status::newFatal( $e->getMessage() );
+			$error = ZErrorFactory::createZErrorInstance(
+				ZErrorTypeRegistry::Z_ERROR_GENERIC,
+				[ 'message' => $e->getMessage() ]
+			);
+			return ZObjectPage::newFatal( $error );
 		}
 
 		if ( !$status->isOK() ) {
 			// Error: Other doUserEditContent related errors
-			return $status;
+			$error = ZErrorFactory::createZErrorInstance(
+				ZErrorTypeRegistry::Z_ERROR_GENERIC,
+				[ 'message' => $status->getMessage() ]
+			);
+			return ZObjectPage::newFatal( $error );
 		}
 
 		// Success: return WikiPage
-		return $page;
+		return ZObjectPage::newSuccess( $page );
 	}
 
 	/**

@@ -92,7 +92,8 @@ class ApiZObjectEditorTest extends ApiTestCase {
 			. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "string" },'
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }';
 
-		$this->setExpectedApiException( [ 'apierror-wikilambda_edit-unmatchingzid', 'Z888', 'Z999' ] );
+		$this->expectException( ApiUsageException::class );
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_UNMATCHING_ZID );
 
 		$this->doApiRequestWithToken( [
 			'action' => 'wikilambda_edit',
@@ -115,8 +116,10 @@ class ApiZObjectEditorTest extends ApiTestCase {
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "unique label" } ] } }';
 		$this->store->createNewZObject( $data, 'First zobject', $sysopUser );
 
+		$this->expectException( ApiUsageException::class );
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_LABEL_CLASH );
+
 		// Try to create the second Zobject with the same label
-		$this->setExpectedApiException( [ 'wikilambda-labelclash', $firstZid, self::EN ] );
 		$result = $this->doApiRequestWithToken( [
 			'action' => 'wikilambda_edit',
 			'summary' => 'Summary message',

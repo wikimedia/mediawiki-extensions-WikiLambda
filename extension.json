@@ -342,7 +342,8 @@
 				"wikilambda-editor-progress-percentage",
 				"wikilambda-zlist-generic-type-placeholder",
 				"wikilambda-zlist-generic-type-description",
-				"wikilambda-zlist-generic-type-items"
+				"wikilambda-zlist-generic-type-items",
+				"wikilambda-zerror"
 			]
 		}
 	},

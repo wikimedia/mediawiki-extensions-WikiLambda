@@ -193,5 +193,6 @@
 	"wikilambda-editor-progress-percentage": "{{Optional}}\n\nSymbol to represent a percentage.",
 	"wikilambda-zlist-generic-type-placeholder": "Placeholder text for generic list type.\n\nThe word \"generic\" is short for \"generic type\".\n\n{{Doc-wikilambda}}",
 	"wikilambda-zlist-generic-type-description": "Description used to inform user of what type is the list generic.\n\n{{Doc-wikilambda}}",
-	"wikilambda-zlist-generic-type-items": "Heading for the list of generic items.\n\n{{Doc-wikilambda}}"
+	"wikilambda-zlist-generic-type-items": "Heading for the list of generic items.\n\n{{Doc-wikilambda}}",
+	"wikilambda-zerror": "Message that informs that a ZError of a given type has been returned.\n\n{{Doc-wikilambda}}"
 }

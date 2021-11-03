@@ -412,7 +412,7 @@ EOT;
 EOT;
 		$page = $store->createNewZObject( $newLang, 'New ZLang', $sysopUser );
 		$this->assertTrue(
-			$page instanceof WikiPage,
+			$page->isOK(),
 			'ZLanguage with null (Z0) self-reference has been created'
 		);
 
@@ -443,7 +443,7 @@ EOT;
 EOT;
 		$page = $store->createNewZObject( $newZObject, 'New ZObject', $sysopUser );
 		$this->assertTrue(
-			$page instanceof WikiPage,
+			$page->isOK(),
 			'ZObject with labels in the two previously inserted languages has been created'
 		);
 	}

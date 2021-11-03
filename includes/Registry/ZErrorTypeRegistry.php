@@ -56,6 +56,10 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	public const Z_ERROR_KEY_TYPE_MISMATCH = 'Z551';
 	public const Z_ERROR_ARRAY_TYPE_MISMATCH = 'Z552';
 	public const Z_ERROR_DISALLOWED_ROOT_ZOBJECT = 'Z553';
+	public const Z_ERROR_LABEL_CLASH = 'Z554';
+	public const Z_ERROR_UNMATCHING_ZID = 'Z555';
+	public const Z_ERROR_INVALID_TITLE = 'Z556';
+	public const Z_ERROR_USER_CANNOT_EDIT = 'Z557';
 
 	private const BUILT_IN_ERRORS = [
 		'Z500' => 'Z_ERROR_GENERIC',
@@ -93,6 +97,10 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 		'Z551' => 'Z_ERROR_KEY_TYPE_MISMATCH',
 		'Z552' => 'Z_ERROR_ARRAY_TYPE_MISMATCH',
 		'Z553' => 'Z_ERROR_DISALLOWED_ROOT_ZOBJECT',
+		'Z554' => 'Z_ERROR_LABEL_CLASH',
+		'Z555' => 'Z_ERROR_UNMATCHING_ZID',
+		'Z556' => 'Z_ERROR_INVALID_TITLE',
+		'Z557' => 'Z_ERROR_USER_CANNOT_EDIT',
 	];
 
 	/**

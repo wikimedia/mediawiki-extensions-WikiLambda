@@ -450,6 +450,30 @@ class ZErrorFactory {
 	}
 
 	/**
+	 * Create a ZError wrapping one or more label clashing errors
+	 *
+	 * @param array $clashes
+	 * @return ZError
+	 */
+	public static function createLabelClashZErrors( $clashes ): ZError {
+		$clashErrors = [];
+		foreach ( $clashes as $language => $clashZid ) {
+			$clashErrors[] = self::createZErrorInstance(
+				ZErrorTypeRegistry::Z_ERROR_LABEL_CLASH,
+				[
+					'zid' => $clashZid,
+					'language' => $language
+				]
+			);
+		}
+
+		if ( count( $clashErrors ) > 1 ) {
+			return self::createZErrorList( $clashErrors );
+		}
+		return $clashErrors[0];
+	}
+
+	/**
 	 * Create a ZError (Z5) of a given ZErrorType
 	 *
 	 * @param string $zErrorType
@@ -611,6 +635,24 @@ class ZErrorFactory {
 
 			case ZErrorTypeRegistry::Z_ERROR_DISALLOWED_ROOT_ZOBJECT:
 				$zErrorValue["Z553K1"] = new ZQuote( $payload['data'] );
+				break;
+
+			case ZErrorTypeRegistry::Z_ERROR_LABEL_CLASH:
+				$zErrorValue["Z554K1"] = new ZString( $payload['zid'] );
+				$zErrorValue["Z554K2"] = new ZString( $payload['language'] );
+				break;
+
+			case ZErrorTypeRegistry::Z_ERROR_UNMATCHING_ZID:
+				$zErrorValue["Z555K1"] = new ZString( $payload['zid'] );
+				$zErrorValue["Z555K2"] = new ZString( $payload['title'] );
+				break;
+
+			case ZErrorTypeRegistry::Z_ERROR_INVALID_TITLE:
+				$zErrorValue["Z556K1"] = new ZString( $payload['title'] );
+				break;
+
+			case ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT:
+				$zErrorValue["Z557K1"] = new ZString( $payload['message'] );
 				break;
 
 			default:

@@ -92,4 +92,12 @@ class ZError extends ZObject {
 		}
 		return $this->getZValue()->isValid();
 	}
+
+	public function getErrorData() {
+		return [
+			'zerror' => $this->serialize(),
+			// TODO: T294827 Labelize ZObject to return human-readable error
+			// 'labelized' => ''
+		];
+	}
 }
