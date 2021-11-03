@@ -43,6 +43,7 @@ class ZMonoLingualStringSet extends ZObject {
 			// @phan-suppress-next-line PhanTypeMismatchArgumentNullable get language zid for 'en' will never be null
 			$language ?? $langRegistry->getLanguageZidFromCode( 'en' )
 		);
+		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE ] = [];
 		foreach ( ZObjectUtils::getIterativeList( $value ) as $index => $element ) {
 			$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE ][] = ZObjectFactory::createChild( $element );
 		}
