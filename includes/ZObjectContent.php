@@ -12,19 +12,14 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use AbstractContent;
 use FormatJson;
-use Html;
 use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
-use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualStringSet;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\MediaWikiServices;
-use ParserOptions;
-use ParserOutput;
-use RequestContext;
 use Status;
 use Title;
 use User;
@@ -296,120 +291,6 @@ class ZObjectContent extends AbstractContent {
 			throw new ZErrorException( $this->error );
 		}
 		return $this->zobject->getAliases();
-	}
-
-	/**
-	 * Set the HTML and add the appropriate styles.
-	 *
-	 * <span class="ext-wikilambda-viewpage-header">
-	 *     <span class="ext-wikilambda-viewpage-header-label firstHeading">multiply</h1>
-	 *     <span class="ext-wikilambda-viewpage-header-zid">Z12345</span>
-	 *     <div class="ext-wikilambda-viewpage-header-type">ZFunction…</div>
-	 * </span>
-	 *
-	 * @param Title $title
-	 * @param int $revId
-	 * @param ParserOptions $options
-	 * @param bool $generateHtml
-	 * @param ParserOutput &$output
-	 */
-	protected function fillParserOutput(
-		Title $title, $revId, ParserOptions $options, $generateHtml, ParserOutput &$output
-	) {
-		$userLang = RequestContext::getMain()->getLanguage();
-
-		// Ensure the stored content is valid; this also populates $this->getZObject() for us
-		if ( !$this->isValid() ) {
-			$output->setText(
-				Html::element(
-					'div',
-					[
-						'class' => [ 'ext-wikilambda-view-invalidcontent', 'warning' ],
-					],
-					wfMessage( 'wikilambda-invalidzobject' )->inLanguage( $userLang )->text()
-				)
-			);
-			// Exit early, as the rest of the code relies on the stored content being well-formed and valid.
-			return;
-		}
-
-		$zobject = $this->getZObject();
-
-		$label = Html::element(
-			'span', [ 'class' => 'ext-wikilambda-viewpage-header-title' ],
-			$zobject->getLabels()->getStringForLanguageOrEnglish( $userLang )
-		);
-		$id = Html::element(
-			'span', [ 'class' => 'ext-wikilambda-viewpage-header-zid' ],
-			$title->getText()
-		);
-
-		$type = Html::element(
-			'div', [ 'class' => 'ext-wikilambda-viewpage-header-type' ],
-			$this->getTypeString( $userLang )
-		);
-
-		$header = Html::rawElement(
-			'span',
-			[ 'class' => 'ext-wikilambda-viewpage-header' ],
-			$label . ' ' . $id . $type
-		);
-
-		$output->addModuleStyles( 'ext.wikilambda.viewpage.styles' );
-		$output->setTitleText( $header );
-
-		$output->addModules( 'ext.wikilambda.edit' );
-
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$zObject = $zObjectStore->fetchZObjectByTitle( $title );
-
-		$zLangRegistry = ZLangRegistry::singleton();
-		$userLangCode = $userLang->getCode();
-		// If the userLang isn't recognised (e.g. it's qqx, or a language we don't support yet, or it's
-		// nonsense), then fall back to English.
-		$userLangZid = $zLangRegistry->getLanguageZidFromCode(
-			( $zLangRegistry->isLanguageKnownGivenCode( $userLangCode ) )
-				? $userLangCode
-				: 'en'
-			);
-
-		$editingData = [
-			// The following paramether may be the same now,
-			// but will surely change in the future as we remove the Zds from the UI
-			'title' => $title->getBaseText(),
-			'zId' => $title->getBaseText(),
-			'page' => $title->getPrefixedDBkey(),
-			'zlang' => $userLangCode,
-			'zlangZid' => $userLangZid,
-			'createNewPage' => false,
-			'viewmode' => true
-		];
-
-		$output->addJsConfigVars( 'wgWikiLambda', $editingData );
-
-		$output->setText(
-			// Placeholder div for the Vue template.
-			Html::element( 'div', [ 'id' => 'ext-wikilambda-app' ] )
-			// Fallback div for the warning.
-			. Html::rawElement(
-				'div',
-				[
-					'class' => [ 'ext-wikilambda-view-nojsfallback' ],
-				],
-				Html::element(
-					'div',
-					[
-						'class' => [ 'ext-wikilambda-view-nojswarning', 'warning' ],
-					],
-					wfMessage( 'wikilambda-viewmode-nojs' )->inLanguage( $userLang )->text()
-				)
-			)
-		);
-
-		// Add links to other ZObjects
-		foreach ( $this->getInnerZObject()->getLinkedZObjects() as $link ) {
-			$output->addLink( Title::newFromText( $link, NS_MAIN ) );
-		}
 	}
 
 	/**
