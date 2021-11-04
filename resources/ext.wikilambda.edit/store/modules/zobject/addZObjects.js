@@ -444,7 +444,9 @@ module.exports = {
 			context.dispatch( 'addZObject', { key: Constants.Z_TYPE_IDENTITY, value: Constants.NEW_ZID_PLACEHOLDER, parent: objectId } );
 
 			// Set keys
-			context.dispatch( 'addZObject', { key: Constants.Z_TYPE_KEYS, value: 'array', parent: objectId } );
+			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+			context.dispatch( 'addZObject', { key: Constants.Z_TYPE_KEYS, value: 'object', parent: objectId } );
+			context.dispatch( 'changeType', { id: nextId, type: Constants.Z_LIST_GENERIC, value: Constants.Z_KEY } );
 
 			// Set validator
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );

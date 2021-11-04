@@ -21,6 +21,7 @@
 			:type="type"
 			:persistent="persistent"
 			:readonly="readonly"
+			:parent-type="parentType"
 		></component>
 	</div>
 </template>
@@ -87,6 +88,11 @@ module.exports = {
 		readonly: {
 			type: Boolean,
 			default: false
+		},
+		parentType: {
+			type: String,
+			required: false,
+			default: ''
 		}
 	},
 	data: function () {

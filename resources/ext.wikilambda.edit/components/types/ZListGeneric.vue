@@ -110,7 +110,7 @@ module.exports = {
 			}
 		} ),
 	methods: $.extend( {},
-		mapActions( [ 'addZObject', 'recalculateZListIndex', 'setTypeOfGenericType', 'addGenericTypeItem', 'removeGenericTypeItem' ] ),
+		mapActions( [ 'addZObject', 'recalculateZListIndex', 'setTypeOfGenericType', 'addGenericTypeItem', 'removeGenericTypeItem', 'fetchZKeys' ] ),
 		{
 			addNewItem: function () {
 
@@ -125,7 +125,13 @@ module.exports = {
 			removeItem: function ( item ) {
 				this.removeGenericTypeItem( item );
 			}
-		} )
+		}
+	),
+	mounted: function () {
+		if ( this.zListGenericType ) {
+			this.fetchZKeys( [ this.zListGenericType ] );
+		}
+	}
 };
 </script>
 

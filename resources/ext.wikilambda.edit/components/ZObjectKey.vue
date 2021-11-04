@@ -54,6 +54,7 @@
 				v-else
 				:zobject-id="zobjectId"
 				:persistent="false"
+				:parent-type="parentType"
 				:readonly="readonly"
 			></z-object>
 		</template>

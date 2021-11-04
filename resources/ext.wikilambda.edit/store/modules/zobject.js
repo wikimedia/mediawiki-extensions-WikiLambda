@@ -173,7 +173,6 @@ module.exports = {
 				var type,
 					currentObject = getters.getZObjectById( id ),
 					childrenObject = [];
-
 				if ( !currentObject || currentObject.id === currentObject.parent ) {
 					return type;
 				}

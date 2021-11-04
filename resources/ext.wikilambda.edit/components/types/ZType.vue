@@ -5,26 +5,48 @@
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-ztype">
+	<div :class="classZObjectKey">
 		<!-- VIEW MODE -->
-
+		<z-object-generic
+			v-if="viewmode"
+			:zobject-id="zobjectId"
+			:type="type"
+			:persistent="persistent"
+			:readonly="readonly"
+			:parent-type="parentType">
+		</z-object-generic>
 		<!-- EDIT MODE -->
-		<span>
-			<label>{{ zTypeKeylabel }}</label>
-			<z-list :zobject-id="zObjectKeysId" :readonly="readonly"></z-list>
-		</span>
-		<span>
-			<label>{{ zTypeValidatorlabel }}</label>
-			<z-object :zobject-id="zTypeValidatorId"
-				:readonly="readonly"
-				:persistent="false"></z-object>
-		</span>
+		<template v-else>
+			<template
+				v-if="isChildOfPersistentObject"
+			>
+				<span>
+					<label>{{ zTypeKeylabel }}</label>
+					<z-object :zobject-id="zObjectKeysId"
+						:readonly="readonly"
+						:persistent="false"></z-object>
+				</span>
+				<span>
+					<label>{{ zTypeValidatorlabel }}</label>
+					<z-object :zobject-id="zTypeValidatorId"
+						:readonly="readonly"
+						:persistent="false"></z-object>
+				</span>
+			</template>
+			<z-object-selector
+				v-else
+				:type="Constants.Z_TYPE"
+				:placeholder="$i18n( 'wikilambda-typeselector-label' )"
+				@input="onTypeChange"
+			></z-object-selector>
+		</template>
 	</div>
 </template>
 
 <script>
 var Constants = require( '../../Constants.js' ),
-	ZList = require( './ZList.vue' ),
+	ZObjectSelector = require( '../ZObjectSelector.vue' ),
+	ZObjectGeneric = require( '../ZObjectGeneric.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapState = require( 'vuex' ).mapState,
@@ -33,7 +55,8 @@ var Constants = require( '../../Constants.js' ),
 module.exports = {
 	name: 'ZType',
 	components: {
-		'z-list': ZList
+		'z-object-selector': ZObjectSelector,
+		'z-object-generic': ZObjectGeneric
 	},
 	mixins: [ typeUtils ],
 	inject: {
@@ -55,6 +78,10 @@ module.exports = {
 		readonly: {
 			type: Boolean,
 			default: false
+		},
+		parentType: {
+			type: String,
+			required: true
 		}
 	},
 	data: function () {
@@ -72,6 +99,12 @@ module.exports = {
 			'getZkeyLabels'
 		] ),
 		{
+			classZObjectKey: function () {
+				return {
+					'ext-wikilambda-ztype': true,
+					'ext-wikilambda-ztype__no-border': this.readonly || !this.isChildOfPersistentObject
+				};
+			},
 			zobject: function () {
 				return this.getZObjectChildrenById( this.zobjectId );
 			},
@@ -86,11 +119,14 @@ module.exports = {
 			},
 			zTypeValidatorId: function () {
 				return this.findKeyInArray( Constants.Z_TYPE_VALIDATOR, this.zobject ).id;
+			},
+			isChildOfPersistentObject: function () {
+				return this.parentType === Constants.Z_PERSISTENTOBJECT;
 			}
 		}
 	),
 	methods: $.extend( {},
-		mapActions( [ 'fetchZKeys', 'changeType' ] ),
+		mapActions( [ 'fetchZKeys', 'addZReference' ] ),
 		{
 			/**
 			 * Sets the type of a ZObject key.
@@ -101,9 +137,9 @@ module.exports = {
 			onTypeChange: function ( type ) {
 				var payload = {
 					id: this.zobjectId,
-					type: type
+					value: type
 				};
-				this.changeType( payload );
+				this.addZReference( payload );
 			}
 		}
 	),
@@ -124,5 +160,9 @@ module.exports = {
 	background: #fff;
 	outline: 2px dashed #808080;
 	padding: 1em;
+}
+
+.ext-wikilambda-ztype__no-border {
+	outline: 0;
 }
 </style>

@@ -46,7 +46,8 @@ module.exports = {
 		 * @param {Array} payload.zObjectChildren
 		 */
 		addGenericTypeItem: function ( context, payload ) {
-			var currentListType = context.getters.getNestedZObjectById( payload.id, [ Constants.Z_OBJECT_TYPE, Constants.Z_LIST_GENERIC_TYPE ] ),
+			var currentListType = context.getters.getNestedZObjectById( payload.id,
+					[ Constants.Z_OBJECT_TYPE, Constants.Z_LIST_GENERIC_TYPE ] ),
 				newItemParentId = getNewItemParentId( payload.zObjectChildren, payload.id );
 
 			var nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
@@ -71,7 +72,8 @@ module.exports = {
 		 * @param {string} payload.type
 		 */
 		setTypeOfGenericType: function ( context, payload ) {
-			var listGenericValue = context.getters.getNestedZObjectById( payload.objectId, [ Constants.Z_OBJECT_TYPE, Constants.Z_LIST_GENERIC_TYPE ] );
+			var listGenericValue = context.getters.getNestedZObjectById( payload.objectId,
+				[ Constants.Z_OBJECT_TYPE, Constants.Z_LIST_GENERIC_TYPE ] );
 			listGenericValue.value = payload.type;
 
 			context.dispatch( 'setZObjectValue', listGenericValue );
@@ -87,12 +89,16 @@ module.exports = {
 		 */
 		removeGenericTypeItem: function ( context, item ) {
 			var currentListItemParentId = context.getters.getZObjectById( item.parent ).id;
-			var currentItemK2 = context.getters.getNestedZObjectById( item.parent, [ Constants.Z_LIST_GENERIC_NESTED_LIST ] );
-			var currentItemNestedElement = context.getters.getNestedZObjectById( item.parent, [ Constants.Z_LIST_GENERIC_NESTED_LIST, Constants.Z_LIST_GENERIC_ELEMENT ] );
+			var currentItemK2 = context.getters.getNestedZObjectById( item.parent,
+				[ Constants.Z_LIST_GENERIC_NESTED_LIST ] );
+			var currentItemNestedElement = context.getters.getNestedZObjectById( item.parent,
+				[ Constants.Z_LIST_GENERIC_NESTED_LIST, Constants.Z_LIST_GENERIC_ELEMENT ] );
 
 			// If nested values are available, shift them one level up by changing its parent
 			if ( currentItemNestedElement ) {
-				var nestedItemNestedList = context.getters.getNestedZObjectById( item.parent, [ Constants.Z_LIST_GENERIC_NESTED_LIST, Constants.Z_LIST_GENERIC_NESTED_LIST ] );
+				var nestedItemNestedList = context.getters.getNestedZObjectById( item.parent,
+					[ Constants.Z_LIST_GENERIC_NESTED_LIST, Constants.Z_LIST_GENERIC_NESTED_LIST ] );
+
 				context.dispatch( 'setZObjectParent', { id: currentItemNestedElement.id, parent: currentListItemParentId } );
 				context.dispatch( 'setZObjectParent', { id: nestedItemNestedList.id, parent: currentListItemParentId } );
 			}
