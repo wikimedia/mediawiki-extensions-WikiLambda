@@ -168,5 +168,8 @@
 	"wikilambda-editor-write-subtitle": "Schreibe eine Implementierung für diese Funktion",
 	"wikilambda-editor-write-save-button": "Implementierung speichern",
 	"wikilambda-editor-attach-title": "Anhängen",
-	"wikilambda-editor-progress-title": "Fortschritt"
+	"wikilambda-editor-progress-title": "Fortschritt",
+	"wikilambda-zlist-generic-type-placeholder": "Wähle eine generische",
+	"wikilambda-zlist-generic-type-description": "Liste der generischen Typen",
+	"wikilambda-zlist-generic-type-items": "Objekte auflisten"
 }

@@ -177,5 +177,8 @@
 	"wikilambda-editor-write-subtitle": "Ecrivez une implémentation pour cette fonction",
 	"wikilambda-editor-write-save-button": "Sauvegarde de l'implémentation",
 	"wikilambda-editor-attach-title": "Attachez",
-	"wikilambda-editor-progress-title": "Progrès"
+	"wikilambda-editor-progress-title": "Progrès",
+	"wikilambda-zlist-generic-type-placeholder": "Sélectionner un type générique",
+	"wikilambda-zlist-generic-type-description": "Liste générique de type",
+	"wikilambda-zlist-generic-type-items": "Éléments de liste"
 }
