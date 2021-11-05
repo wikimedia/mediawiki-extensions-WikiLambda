@@ -169,5 +169,8 @@
 	"wikilambda-editor-write-subtitle": "נא לכתוב מימוש לפונקציה הזאת",
 	"wikilambda-editor-write-save-button": "שמירת מימוש",
 	"wikilambda-editor-attach-title": "צירוף",
-	"wikilambda-editor-progress-title": "התקדמות"
+	"wikilambda-editor-progress-title": "התקדמות",
+	"wikilambda-zlist-generic-type-placeholder": "נא לבחור סוג כללי",
+	"wikilambda-zlist-generic-type-description": "סוג רשימה כללי מסוג",
+	"wikilambda-zlist-generic-type-items": "פריטי רשימה"
 }
