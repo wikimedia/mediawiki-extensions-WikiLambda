@@ -77,11 +77,11 @@ class ReloadBuiltinData extends Maintenance {
 				/* Flags */ 0
 			);
 
-			if ( $response instanceof \WikiPage ) {
+			if ( $response->isOK() ) {
 				$this->output( "Updated $zid \n" );
 			} else {
 				$this->output( "Problem updating $zid \n" );
-				$this->output( $response->getMessage() );
+				$this->output( $response->getErrors() );
 				$this->output( "\n" );
 			}
 		}

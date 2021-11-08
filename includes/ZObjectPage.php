@@ -26,7 +26,7 @@ class ZObjectPage {
 	private $errors = null;
 
 	/**
-	 * @param WikiPage $page
+	 * @param WikiPage|null $page
 	 * @param ZError|null $errors
 	 */
 	private function __construct( $page, $errors = null ) {

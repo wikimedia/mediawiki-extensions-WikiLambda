@@ -49,6 +49,8 @@ class GenerateDependenciesFile extends Maintenance {
 		// Naturally sort, so Z2 gets created before Z10 etc.
 		natsort( $initialDataToLoadListing );
 
+		$dependencies = [];
+
 		foreach ( $initialDataToLoadListing as $filename ) {
 			$zid = substr( $filename, 0, -5 );
 			$trackedZids[] = $zid;
