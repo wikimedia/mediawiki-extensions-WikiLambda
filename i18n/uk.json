@@ -175,5 +175,6 @@
 	"wikilambda-editor-progress-title": "Прогрес",
 	"wikilambda-zlist-generic-type-placeholder": "Виберіть загальний",
 	"wikilambda-zlist-generic-type-description": "Список загальних типів",
-	"wikilambda-zlist-generic-type-items": "Список елементів"
+	"wikilambda-zlist-generic-type-items": "Список елементів",
+	"wikilambda-zerror": "ZError типу $1"
 }

@@ -32,5 +32,6 @@
 	"wikilambda-editor-behavior-title": "Käyttäytyminen",
 	"wikilambda-editor-write-title": "Kirjoita",
 	"wikilambda-editor-attach-title": "Liitä",
-	"wikilambda-editor-progress-title": "Edistyminen"
+	"wikilambda-editor-progress-title": "Edistyminen",
+	"wikilambda-zlist-generic-type-placeholder": "Valitse yleinen tyyppi"
 }

@@ -171,5 +171,6 @@
 	"wikilambda-editor-progress-title": "Fortschritt",
 	"wikilambda-zlist-generic-type-placeholder": "Wähle eine generische",
 	"wikilambda-zlist-generic-type-description": "Liste der generischen Typen",
-	"wikilambda-zlist-generic-type-items": "Objekte auflisten"
+	"wikilambda-zlist-generic-type-items": "Objekte auflisten",
+	"wikilambda-zerror": "ZError vom Typ $1"
 }
