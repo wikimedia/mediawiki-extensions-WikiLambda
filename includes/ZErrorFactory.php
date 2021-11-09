@@ -34,11 +34,8 @@ class ZErrorFactory {
 		if ( !self::$errorDescriptors ) {
 			try {
 				$descriptor = json_decode(
-					// @phan-suppress-next-line PhanUndeclaredClassMethod function-schemata
 					SchemataUtils::readYamlAsSecretJson(
-						// @phan-suppress-next-line PhanUndeclaredClassMethod function-schemata
 						SchemataUtils::joinPath(
-							// @phan-suppress-next-line PhanUndeclaredClassMethod function-schemata
 							SchemataUtils::dataDirectory(),
 							"errors",
 							"error_types.yaml"
@@ -68,7 +65,6 @@ class ZErrorFactory {
 	 * @param ValidationError[] $errors
 	 * @return ZError|false
 	 */
-	// @phan-suppress-next-line PhanUndeclaredTypeParameter function-schemata
 	public static function buildStructureValidationZError( $errors ) {
 		// TODO: Bring all constants (error types ZIDs) to schemata
 		$zerrors = [];
@@ -96,7 +92,6 @@ class ZErrorFactory {
 	 * @param ValidationError $err
 	 * @return ZError|bool
 	 */
-	// @phan-suppress-next-line PhanUndeclaredTypeParameter function-schemata
 	private static function buildStructureValidationZErrorItem( $err ) {
 		$nestedErrors = [];
 		$flatErrors = array_unique( self::flattenErrors( $err ), SORT_REGULAR );
@@ -209,7 +204,6 @@ class ZErrorFactory {
 	 * @param ValidationError $err
 	 * @return array
 	 */
-	// @phan-suppress-next-line PhanUndeclaredTypeParameter function-schemata
 	public static function flattenErrors( $err ) {
 		$leaves = [];
 
@@ -218,27 +212,27 @@ class ZErrorFactory {
 		// the error is not in the child but in the parent.
 		// Before recursively flattening sub-errors, we need to account for
 		// this edge case.
-		if ( $err->keyword() === 'additionalProperties' ) { // @phan-suppress-current-line PhanUndeclaredClassMethod
-			foreach ( $err->subErrors() as $subErr ) { // @phan-suppress-current-line PhanUndeclaredClassMethod
+		if ( $err->keyword() === 'additionalProperties' ) {
+			foreach ( $err->subErrors() as $subErr ) {
 				$leaves[] = [
-					'data' => $err->data(), // @phan-suppress-current-line PhanUndeclaredClassMethod
+					'data' => $err->data(),
 					'dataPointer' => $subErr->dataPointer(),
-					'keyword' => $err->keyword(), // @phan-suppress-current-line PhanUndeclaredClassMethod
+					'keyword' => $err->keyword(),
 					'keywordArgs' => $subErr->keywordArgs()
 				];
 			}
 			return $leaves;
 		}
 
-		// If keyword is terminal, return	array with 1 element
-		$countSubErr = count( $err->subErrors() ); // @phan-suppress-current-line PhanUndeclaredClassMethod
+		// If keyword is terminal, return array with 1 element
+		$countSubErr = count( $err->subErrors() );
 		if ( $countSubErr === 0 ) {
 			$leaves[] = json_decode( json_encode(
 				[
-					'data' => $err->data(), // @phan-suppress-current-line PhanUndeclaredClassMethod
-					'dataPointer' => $err->dataPointer(), // @phan-suppress-current-line PhanUndeclaredClassMethod
-					'keyword' => $err->keyword(), // @phan-suppress-current-line PhanUndeclaredClassMethod
-					'keywordArgs' => $err->keywordArgs() // @phan-suppress-current-line PhanUndeclaredClassMethod
+					'data' => $err->data(),
+					'dataPointer' => $err->dataPointer(),
+					'keyword' => $err->keyword(),
+					'keywordArgs' => $err->keywordArgs()
 				]
 			), true );
 			return $leaves;
@@ -249,7 +243,7 @@ class ZErrorFactory {
 		// Non-terminal keywords are:
 		// anyOf, allOf, oneOf, contains, propertyNames
 		// patternProperties, and additionalProperties
-		foreach ( $err->subErrors() as $index => $serr ) { // @phan-suppress-current-line PhanUndeclaredClassMethod
+		foreach ( $err->subErrors() as $index => $serr ) {
 			$leaves = array_merge( $leaves, self::flattenErrors( $serr ) );
 		}
 		return $leaves;

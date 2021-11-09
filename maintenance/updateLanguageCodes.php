@@ -123,11 +123,12 @@ class UpdateLanguageCodes extends Maintenance {
 				/* Flags */ 0
 			);
 
-			if ( $response instanceof \WikiPage ) {
+			if ( $response->isOK() ) {
 				$this->output( "> $zid: DONE\n" );
 			} else {
 				$this->output( "> $zid: UPDATE FAILED\n" );
-				$this->output( $response->getMessage() . "\n" );
+				$this->output( $response->getErrors() );
+				$this->output( "\n" );
 			}
 		}
 	}

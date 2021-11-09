@@ -418,7 +418,7 @@ class ZObjectUtils {
 			// If the value is an object:
 			if ( is_object( $value ) ) {
 				// If Z1K1 is a ZString or ZReference, ignore (it's already in the normal form)
-				if ( array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $value ) && (
+				if ( property_exists( $value, ZTypeRegistry::Z_OBJECT_TYPE ) && (
 					( $value->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_STRING ) ||
 					( $value->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_REFERENCE ) )
 				) {

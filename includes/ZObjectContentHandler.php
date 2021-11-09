@@ -271,6 +271,7 @@ class ZObjectContentHandler extends ContentHandler {
 		$pageIdentity = $cpoParams->getPage();
 		// TODO: Re-work our code to use PageReferences rather than Titles
 		$title = Title::castFromPageReference( $pageIdentity );
+		'@phan-var Title $title';
 
 		$zobject = $content->getZObject();
 

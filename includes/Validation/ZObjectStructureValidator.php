@@ -18,12 +18,11 @@ class ZObjectStructureValidator {
 	/**
 	 * @var SchemaWrapper
 	 */
-	private $validator = null; // @phan-suppress-current-line PhanUndeclaredTypeProperty function-schemata
+	private $validator = null;
 
 	/**
 	 * @param SchemaWrapper $validator
 	 */
-	// @phan-suppress-next-line PhanUndeclaredTypeParameter function-schemata
 	private function __construct( $validator ) {
 		$this->validator = $validator;
 	}
@@ -38,7 +37,6 @@ class ZObjectStructureValidator {
 	 * @throws ZErrorException
 	 */
 	public static function createCanonicalValidator( $type ) {
-		// @phan-suppress-next-line PhanUndeclaredClassMethod SchemaFactory in function-schemata
 		$validator = ( SchemaFactory::getCanonicalFormFactory() )->create( $type );
 		if ( $validator == null ) {
 			throw new ZErrorException(
@@ -61,7 +59,6 @@ class ZObjectStructureValidator {
 	 * @throws ZErrorException
 	 */
 	public static function createNormalValidator( $type ) {
-		// @phan-suppress-next-line PhanUndeclaredClassMethod SchemaFactory in function-schemata
 		$validator = ( SchemaFactory::getNormalFormFactory() )->create( $type );
 		if ( $validator == null ) {
 			throw new ZErrorException(
@@ -79,7 +76,6 @@ class ZObjectStructureValidator {
 	 * @return ValidationStatus
 	 */
 	public function validate( $input ): ValidationStatus {
-		// @phan-suppress-next-line PhanUndeclaredClassMethod SchemaWrapper in function-schemata
 		return new ValidationStatus( $this->validator->validate( $input ) );
 	}
 }

@@ -29,19 +29,15 @@ class ValidationStatus {
 	/**
 	 * @var ValidationError[]
 	 */
-	private $parserErrors = []; // @phan-suppress-current-line PhanUndeclaredTypeProperty
+	private $parserErrors = [];
 
 	/**
 	 * @param ValidationResult $validationResult
 	 */
-	// @phan-suppress-next-line PhanUndeclaredTypeParameter
 	public function __construct( $validationResult ) {
-		// @phan-suppress-next-line PhanUndeclaredClassMethod opis currently not available
 		$this->isValid = $validationResult->isValid();
 
-		// @phan-suppress-next-line PhanUndeclaredClassMethod opis currently not available
 		if ( $validationResult->hasErrors() ) {
-			// @phan-suppress-next-line PhanUndeclaredClassMethod opis currently not available
 			$this->parserErrors = $validationResult->getErrors();
 			$errors = ZErrorFactory::buildStructureValidationZError( $this->parserErrors );
 			if ( $errors !== false ) {

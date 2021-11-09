@@ -92,11 +92,12 @@ class UpdateCanonicalStrings extends Maintenance {
 				/* Flags */ 0
 			);
 
-			if ( $response instanceof \WikiPage ) {
+			if ( $response->isOK() ) {
 				$this->output( "> $zid: DONE\n" );
 			} else {
 				$this->output( "> $zid: UPDATE FAILED\n" );
-				$this->output( $response->getMessage() . "\n" );
+				$this->output( $response->getErrors() );
+				$this->output( "\n" );
 			}
 		}
 	}
@@ -168,7 +169,7 @@ class UpdateCanonicalStrings extends Maintenance {
 	 * Transforms a reference to a canonical (explicit) string
 	 *
 	 * @param stdClass|string $ref Reference
-	 * @return stdClass Explicit string
+	 * @return array|mixed Explicit string
 	 */
 	private function updateCanonicalRefToString( $ref ) {
 		if ( is_string( $ref ) ) {
@@ -178,7 +179,7 @@ class UpdateCanonicalStrings extends Maintenance {
 				ZTypeRegistry::Z_STRING_VALUE => $ref
 			];
 		}
-		if ( array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $ref ) ) {
+		if ( property_exists( $ref, ZTypeRegistry::Z_OBJECT_TYPE ) ) {
 			$type = $ref->{ ZTypeRegistry::Z_OBJECT_TYPE };
 			if ( $type === ZTypeRegistry::Z_REFERENCE ) {
 				$this->updatedFields++;
