@@ -57,12 +57,18 @@ module.exports = {
 		'getNestedZObjectById',
 		'getCurrentZObjectId',
 		'getZkeyLabels',
-		'currentZFunctionCompletionPercentage'
+		'currentZFunctionCompletionPercentage',
+		'currentZObjectHasLabel',
+		'currentZFunctionHasInputs',
+		'currentZFunctionHasOutput',
+		'currentZFunctionHasTesters',
+		'currentZFunctionHasImplementations'
 	] ), {
 		steps: function () {
 			var steps = [
 				{
 					title: this.$i18n( 'wikilambda-editor-fn-step-define' ),
+					completed: this.currentZObjectHasLabel && this.currentZFunctionHasInputs && this.currentZFunctionHasOutput,
 					items: [
 						{
 							id: 'start',
@@ -90,17 +96,8 @@ module.exports = {
 			if ( this.$route.name !== 'create' ) {
 				steps = steps.concat( [
 					{
-						title: this.$i18n( 'wikilambda-editor-fn-step-tests' ),
-						items: [
-							{
-								id: 'behavior',
-								title: this.$i18n( 'wikilambda-editor-behavior-title' ),
-								component: FnEditorBehavior
-							}
-						]
-					},
-					{
 						title: this.$i18n( 'wikilambda-editor-fn-step-implement' ),
+						completed: this.currentZFunctionHasImplementations,
 						items: [
 							{
 								id: 'write',
@@ -113,16 +110,27 @@ module.exports = {
 								component: ZImplementationList
 							}
 						]
+					},
+					{
+						title: this.$i18n( 'wikilambda-editor-fn-step-tests' ),
+						completed: this.currentZFunctionHasTesters,
+						items: [
+							{
+								id: 'behavior',
+								title: this.$i18n( 'wikilambda-editor-behavior-title' ),
+								component: FnEditorBehavior
+							}
+						]
 					}
 				] );
 			} else {
 				steps = steps.concat( [
 					{
-						title: this.$i18n( 'wikilambda-editor-fn-step-tests' ),
+						title: this.$i18n( 'wikilambda-editor-fn-step-implement' ),
 						items: []
 					},
 					{
-						title: this.$i18n( 'wikilambda-editor-fn-step-implement' ),
+						title: this.$i18n( 'wikilambda-editor-fn-step-tests' ),
 						items: []
 					}
 				] );
