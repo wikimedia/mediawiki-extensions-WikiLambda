@@ -11,6 +11,7 @@
 	"apihelp-wikilambda_fetch-example-multiple": "אחזור שלושה עצמי Z‏: Z1‏, Z2, ו־Z3.",
 	"apierror-wikilambda_fetch-missingzid": "מזהה ה־Z שניתן \"$1\" אינו קיים בוויקי הזה.",
 	"apihelp-wikilambda_function_call-param-zobject": "עצם ה־Z לקריאה לפונקציה",
+	"apihelp-wikilambda_function_call-example-generic-list": "קריאה לפונקציה שמחזירה את האיבר הראשון של רשימה בעלת סוג",
 	"apihelp-wikilambda_function_call-example-composition": "קריאה להרכבה\" אם הארגומנט הראשון הוא אמת, למיין שני; אחרת, להחזיר ללא שינוי",
 	"apihelp-wikilambda_function_call-example-if": "קריאה לפונקציה המובנית Z802 (אם, If) עם נשוא שקרי",
 	"apihelp-wikilambda_function_call-example-native-js-code": "קריאה לקוד JavaScript שנכתב על־ידי משתמש",

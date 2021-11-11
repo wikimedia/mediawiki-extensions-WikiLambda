@@ -11,6 +11,7 @@
 	"apihelp-wikilambda_fetch-example-multiple": "Отримайте три ZObjects: Z1, Z2 і Z3.",
 	"apierror-wikilambda_fetch-missingzid": "Даний ZID '$1' не існує у цій вікі.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObject для виклику функції",
+	"apihelp-wikilambda_function_call-example-generic-list": "Викликати функцію, яка повертає перший елемент введеного списку",
 	"apihelp-wikilambda_function_call-example-composition": "Викликати композицію: якщо перший аргумент є істинним, відсортуйте другий; інакше поверніть його цілим",
 	"apihelp-wikilambda_function_call-example-if": "Викликати вбудований Z802 (Якщо) з хибним предикатом",
 	"apihelp-wikilambda_function_call-example-native-js-code": "Викликати написаний користувачем код JavaScript",
