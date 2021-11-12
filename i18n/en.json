@@ -156,7 +156,6 @@
 	"wikilambda-editor-fn-step-define": "Define",
 	"wikilambda-editor-fn-step-tests": "Test",
 	"wikilambda-editor-fn-step-implement": "Implement",
-	"wikilambda-editor-start-function-title": "Start Function",
 	"wikilambda-editor-name-title": "Name",
 	"wikilambda-editor-name-subtitle": "What is the name of your function? What does it do?",
 	"wikilambda-editor-name-zobject-name": "Function name",

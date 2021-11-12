@@ -163,7 +163,6 @@
 	"wikilambda-editor-fn-step-define": "Label for the step to define a function.",
 	"wikilambda-editor-fn-step-tests": "Label for the step to test a function.",
 	"wikilambda-editor-fn-step-implement": "Label for the step to implement a function.",
-	"wikilambda-editor-start-function-title": "Title for the start function step.",
 	"wikilambda-editor-name-title": "Title for the name step.\n{{identical|Name}}",
 	"wikilambda-editor-name-subtitle": "Subtitle for the name step.",
 	"wikilambda-editor-name-zobject-name": "Label for the name of a ZObject.",
