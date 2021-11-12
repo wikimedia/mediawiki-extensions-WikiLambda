@@ -11,6 +11,8 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use FormatJson;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**
@@ -840,6 +842,140 @@ return $item;
 
 			'Whitespace-trailing global key' => [ "Z1K1 ", 'Z1' ],
 			'Whitespace-leading global key' => [ " Z1K1", 'Z1' ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideGetRequiredZids
+	 * @covers ::getRequiredZids
+	 */
+	public function testGetRequiredZids( $input, $expected ) {
+		$this->assertSame( $expected, ZObjectUtils::getRequiredZids( $input ) );
+	}
+
+	public function provideGetRequiredZids() {
+		return [
+			'string with ref' => [ 'Z1', [ 'Z1' ] ],
+			'string without ref' => [ 'text', [] ],
+			'array with strings' => [ [ 'text', 'another text' ], [] ],
+			'array with strings' => [ [ 'text', 'Z1', 'another text', 'Z2' ], [ 'Z1', 'Z2' ] ],
+			'object zstring' => [
+				(object)[
+					'Z1K1' => 'Z6',
+					'Z6K1' => 'string'
+				],
+				[ 'Z1', 'Z6' ]
+			],
+			'object zreference' => [
+				(object)[
+					'Z1K1' => 'Z9',
+					'Z9K1' => 'Z111'
+				],
+				[ 'Z1', 'Z9', 'Z111' ]
+			],
+			'object with array and strings' => [
+				(object)[
+					'Z1K1' => 'Z2',
+					'Z2K1' => [ 'Z1K1' => 'Z9', 'Z9K1' => 'Z111' ],
+					'Z2K2' => [ 'Z222', 'Z333', 'text' ]
+				],
+				[ 'Z1', 'Z2', 'Z9', 'Z111', 'Z222', 'Z333' ]
+			],
+			'object with local keys' => [
+				(object)[
+					'Z1K1' => 'Z2',
+					'K1' => 'key one',
+					'K2' => 'Z222'
+				],
+				[ 'Z1', 'Z2', 'Z222' ]
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideGetLabelOfReference
+	 * @covers ::getLabelOfReference
+	 */
+	public function testGetLabelOfReference( $data, $lang, $requiredLangs, $expected ) {
+		$this->registerLangs( $requiredLangs );
+		$zobject = ZObjectFactory::createChild( FormatJson::parse( $data )->getValue() );
+		$this->assertSame( $expected, ZObjectUtils::getLabelOfReference( 'Z111', $zobject, $lang ) );
+	}
+
+	public function provideGetLabelOfReference() {
+		return [
+			'simple label in English' => [
+				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3": { "Z1K1":"Z12", "Z12K1":['
+					. '{"Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "label"}'
+					. ']}}',
+				$this->makeLanguage( 'en' ),
+				[ 'en' ],
+				'label'
+			],
+			'fallback to English' => [
+				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3":{"Z1K1":"Z12", "Z12K1":['
+					. '{"Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2":"label"}'
+					. ']}}',
+				$this->makeLanguage( 'es' ),
+				[ 'en', 'es' ],
+				'label'
+			],
+			'simple label in Spanish' => [
+				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3": {"Z1K1":"Z12", "Z12K1":['
+					. '{"Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2":"label"},'
+					. '{"Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2":"etiqueta"}'
+					. ']}}',
+				$this->makeLanguage( 'es' ),
+				[ 'en', 'es' ],
+				'etiqueta'
+			],
+			'no label available' => [
+				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3":{"Z1K1":"Z12", "Z12K1":[]}}',
+				$this->makeLanguage( 'es' ),
+				[ 'es' ],
+				'Z111'
+			],
+			'no label or fallback' => [
+				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3": {"Z1K1":"Z12", "Z12K1":['
+					. '{"Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2":"etiqueta"}'
+					. ']}}',
+				$this->makeLanguage( 'de' ),
+				[ 'de' ],
+				'Z111'
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideGetLabelOfKey
+	 * @covers ::getLabelOfKey
+	 */
+	public function testGetLabelOfKey( $key, $lang, $expected ) {
+		$this->registerLangs( [ 'en', 'fr', 'pcd', 'zh' ] );
+		$ztype = ZObjectFactory::createChild( FormatJson::parse( ZTestType::TEST_ENCODING )->getValue() );
+		$this->assertSame( $expected, ZObjectUtils::getLabelOfKey( $key, $ztype, $lang ) );
+	}
+
+	public function provideGetLabelOfKey() {
+		return [
+			'existing label in existing lang' => [
+				'Z111K1', $this->makeLanguage( 'en' ), 'Demonstration key'
+			],
+			'existing label in other existing lang' => [
+				'Z111K1', $this->makeLanguage( 'fr' ), 'Index pour démonstration'
+			],
+			'existing label in non existing lang, falls back to english' => [
+				'Z111K1', $this->makeLanguage( 'zh' ), 'Demonstration key'
+			],
+			'existing label in other existing lang' => [
+				'Z111K2', $this->makeLanguage( 'fr' ), 'Autre index pour démonstration'
+			],
+			'existing label in non existing lang, falls back to french' => [
+				'Z111K2', $this->makeLanguage( 'pcd' ), 'Autre index pour démonstration'
+			],
+			'non existing label' => [
+				'Z111K3', $this->makeLanguage( 'en' ), 'Z111K3'
+			],
 		];
 	}
 }

@@ -113,9 +113,13 @@ class ZPersistentObject extends ZObject {
 	 * Fetch the label for a given Language (or its fallback).
 	 *
 	 * @param Language $language Language in which to provide the label.
+	 * @param bool $defaultToEnglish
 	 * @return string
 	 */
-	public function getLabel( $language ): string {
+	public function getLabel( $language, $defaultToEnglish = false ): string {
+		if ( $defaultToEnglish ) {
+			return $this->getLabels()->getStringForLanguageOrEnglish( $language );
+		}
 		return $this->getLabels()->getStringForLanguage( $language );
 	}
 

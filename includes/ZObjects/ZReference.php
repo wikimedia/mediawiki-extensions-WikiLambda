@@ -41,11 +41,17 @@ class ZReference extends ZObject {
 		return ZObjectUtils::isValidZObjectReference( $this->data[ ZTypeRegistry::Z_REFERENCE_VALUE ] );
 	}
 
-	public function serialize( $form = self::FORM_CANONICAL ) {
+	/**
+	 * Convert this ZObject into its serialized canonical representation
+	 *
+	 * @param int $form
+	 * @return \stdClass|array|string
+	 */
+	public function getSerialized( $form = self::FORM_CANONICAL ) {
 		if ( $form === self::FORM_CANONICAL ) {
 			return $this->getZValue();
 		} else {
-			return parent::serialize();
+			return parent::getSerialized();
 		}
 	}
 }

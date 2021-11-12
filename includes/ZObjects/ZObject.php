@@ -11,9 +11,12 @@
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use FormatJson;
+use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use RequestContext;
 
 class ZObject {
 
@@ -161,10 +164,16 @@ class ZObject {
 	 * @return string
 	 */
 	public function __toString() {
-		return FormatJson::encode( $this->serialize( self::FORM_CANONICAL ), true, FormatJson::UTF8_OK );
+		return FormatJson::encode( $this->getSerialized( self::FORM_CANONICAL ), true, FormatJson::UTF8_OK );
 	}
 
-	public function serialize( $form = self::FORM_CANONICAL ) {
+	/**
+	 * Convert this ZObject into its serialized canonical representation
+	 *
+	 * @param int $form
+	 * @return \stdClass|array|string
+	 */
+	public function getSerialized( $form = self::FORM_CANONICAL ) {
 		$serialized = [
 			// TODO Z_OBJECT_TYPE in different forms, it's only being serialized as canonical
 			ZTypeRegistry::Z_OBJECT_TYPE => $this->getZType()
@@ -181,15 +190,41 @@ class ZObject {
 
 			if ( is_array( $value ) ) {
 				$serialized[ $key ] = array_map( static function ( $element ) use ( $form ) {
-					return ( $element instanceof ZObject ) ? $element->serialize( $form ) : $element;
+					return ( $element instanceof ZObject ) ? $element->getSerialized( $form ) : $element;
 				}, $value );
 				continue;
 			}
 
 			if ( $value instanceof ZObject ) {
-				$serialized[ $key ] = $value->serialize( $form );
+				$serialized[ $key ] = $value->getSerialized( $form );
 			}
 		}
-		return $serialized;
+		return (object)$serialized;
 	}
+
+	/**
+	 * Convert this ZObject into human readable object by translating all keys and
+	 * references into the preferred language or its fallbacks
+	 *
+	 * @param Language|null $language
+	 * @return \stdClass|array|string
+	 */
+	public function getHumanReadable( $language = null ) {
+		$serialized = $this->getSerialized();
+
+		// Walk the ZObject tree to get all ZIDs that need to be fetched from the database
+		// FIXME: currently fetchBatchZObjects doesn't fetch them in batch, must fix or reconsider
+		$zids = ZObjectUtils::getRequiredZids( $serialized );
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		$contents = $zObjectStore->fetchBatchZObjects( $zids );
+
+		// FIXME: Should we get the user language or should we allow for a language parameter,
+		// in case this is used by an API?
+		if ( $language === null ) {
+			$language = RequestContext::getMain()->getLanguage();
+		}
+
+		return ZObjectUtils::extractHumanReadableZObject( $serialized, $contents, $language );
+	}
+
 }

@@ -97,11 +97,17 @@ class ZList extends ZObject {
 		return false;
 	}
 
-	public function serialize( $form = self::FORM_CANONICAL ) {
+	/**
+	 * Convert this ZObject into its serialized canonical representation
+	 *
+	 * @param int $form
+	 * @return \stdClass|array|string
+	 */
+	public function getSerialized( $form = self::FORM_CANONICAL ) {
 		// TODO fix different serialization modes, only returning FORM_CANONICAL
 		$list = $this->getZListAsArray();
 		return array_map( static function ( $value ) use ( $form ) {
-			return ( $value instanceof ZObject ) ? $value->serialize( $form ) : $value;
+			return ( $value instanceof ZObject ) ? $value->getSerialized( $form ) : $value;
 		}, $list );
 	}
 }
