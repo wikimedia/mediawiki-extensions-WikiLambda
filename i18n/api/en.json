@@ -14,6 +14,7 @@
 	"apierror-wikilambda_fetch-missingzid": "The given ZID '$1' does not exist on this wiki.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObject for function call",
 	"apihelp-wikilambda_function_call-example-generic-list": "Invoke a function that returns the first element of a typed List",
+	"apihelp-wikilambda_function_call-example-generic-pair": "Invoke a function that returns the second element of a Pair<String,Pair<String,Bool>>",
 	"apihelp-wikilambda_function_call-example-composition": "Invoke a composition: if first argument is true, sort second; else, return it intact",
 	"apihelp-wikilambda_function_call-example-if": "Invoke built-in Z802 (If) with false predicate",
 	"apihelp-wikilambda_function_call-example-native-js-code": "Invoke user-written JavaScript code",
