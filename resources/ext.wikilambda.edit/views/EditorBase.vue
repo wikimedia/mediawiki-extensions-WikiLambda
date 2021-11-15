@@ -31,7 +31,10 @@
 						<li
 							v-for="(step, index) in steps"
 							:key="index"
-							:class="{ 'ext-wikilambda-editor-active': currentStepCategory.title === step.title }"
+							:class="{
+								'ext-wikilambda-editor-active': currentStepCategory.title === step.title,
+								'ext-wikilambda-editor-complete': step.completed
+							}"
 						>
 							<strong>
 								<router-link :to="navigateToFirstStepItem( step )">
@@ -339,6 +342,14 @@ module.exports = {
 
 				a {
 					color: #ccc;
+				}
+
+				&.ext-wikilambda-editor-complete {
+					color: #000;
+
+					a {
+						color: #000;
+					}
 				}
 
 				&:hover,
