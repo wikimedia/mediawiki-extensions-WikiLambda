@@ -71,10 +71,6 @@ module.exports = {
 					completed: this.currentZObjectHasLabel && this.currentZFunctionHasInputs && this.currentZFunctionHasOutput,
 					items: [
 						{
-							id: 'start',
-							title: this.$i18n( 'wikilambda-editor-start-function-title' )
-						},
-						{
 							id: 'name',
 							title: this.$i18n( 'wikilambda-editor-name-title' ),
 							component: FnEditorName
