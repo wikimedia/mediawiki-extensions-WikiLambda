@@ -13,6 +13,7 @@
 	"apierror-wikilambda_fetch-missingzid": "Die angegebene ZID „$1“ existiert nicht in diesem Wiki.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObject für Funktionsaufruf",
 	"apihelp-wikilambda_function_call-example-generic-list": "Aufrufen einer Funktion, die das erste Element einer typisierten Liste zurückgibt",
+	"apihelp-wikilambda_function_call-example-generic-pair": "Aufrufen einer Funktion, die das zweite Element eines Paares <String,Pair<String,Bool>> zurückgibt",
 	"apihelp-wikilambda_function_call-example-composition": "Aufrufen einer Zusammenstellung: Wenn das erste Argument wahr ist, sortiere das zweite; sonst, gib es unberührt zurück",
 	"apihelp-wikilambda_function_call-example-if": "Aufruf vom eingebauten Z802 (If) mit falschem Vorzeichen.",
 	"apihelp-wikilambda_function_call-example-native-js-code": "Aufrufen von selbst geschriebenem JavaScript-Code",
