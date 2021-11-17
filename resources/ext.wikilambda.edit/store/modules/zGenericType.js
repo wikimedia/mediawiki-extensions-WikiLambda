@@ -72,9 +72,20 @@ module.exports = {
 		 * @param {string} payload.type
 		 */
 		setTypeOfGenericType: function ( context, payload ) {
-			var listGenericValue = context.getters.getNestedZObjectById( payload.objectId,
-				[ Constants.Z_OBJECT_TYPE, Constants.Z_LIST_GENERIC_TYPE ] );
-			listGenericValue.value = payload.type;
+			var listGenericValue,
+				genericNestedInObjectType = context.getters.getNestedZObjectById( payload.objectId,
+					[ Constants.Z_OBJECT_TYPE, Constants.Z_LIST_GENERIC_TYPE ] );
+
+			// generic Lists can either be nested in a Z_OBJECT_TYPE or not
+			if ( genericNestedInObjectType ) {
+				genericNestedInObjectType.value = payload.type;
+				listGenericValue = genericNestedInObjectType;
+			} else {
+				var directObject = context.getters.getNestedZObjectById( payload.objectId,
+					[ Constants.Z_LIST_GENERIC_TYPE ] );
+				directObject.value = payload.type;
+				listGenericValue = directObject;
+			}
 
 			context.dispatch( 'setZObjectValue', listGenericValue );
 		},

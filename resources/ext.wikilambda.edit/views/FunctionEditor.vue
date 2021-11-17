@@ -32,7 +32,7 @@ var Constants = require( '../Constants.js' ),
 	EditorBase = require( './EditorBase.vue' ),
 	FnEditorBase = require( '../components/editor/FnEditorBase.vue' ),
 	FnEditorName = require( '../components/editor/FnEditorName.vue' ),
-	FnEditorInput = require( '../components/editor/FnEditorInput.vue' ),
+	FnEditorInputList = require( '../components/editor/FnEditorInputList.vue' ),
 	FnEditorOutput = require( '../components/editor/FnEditorOutput.vue' ),
 	FnEditorBehavior = require( '../components/editor/FnEditorBehavior.vue' ),
 	FnEditorWrite = require( '../components/editor/FnEditorWrite.vue' ),
@@ -42,11 +42,12 @@ var Constants = require( '../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions;
 
 module.exports = {
+	name: 'function-editor',
 	components: {
 		'editor-base': EditorBase,
 		'fn-editor-base': FnEditorBase,
 		'fn-editor-name': FnEditorName,
-		'fn-editor-input': FnEditorInput,
+		'fn-editor-input-list': FnEditorInputList,
 		'fn-editor-output': FnEditorOutput,
 		'fn-editor-behavior': FnEditorBehavior,
 		'fn-editor-write': FnEditorWrite,
@@ -78,7 +79,7 @@ module.exports = {
 						{
 							id: 'input',
 							title: this.$i18n( 'wikilambda-editor-input-title' ),
-							component: FnEditorInput
+							component: FnEditorInputList
 						},
 						{
 							id: 'output',

@@ -28,10 +28,12 @@ module.exports = {
 			Constants.Z_FUNCTION_CALL,
 			Constants.Z_REFERENCE,
 			Constants.Z_LIST,
+			Constants.Z_BOOLEAN,
 			Constants.Z_BOOLEAN_TRUE,
 			Constants.Z_BOOLEAN_FALSE,
 			Constants.Z_IMPLEMENTATION,
-			context.getters.getUserZlangZID
+			context.getters.getUserZlangZID,
+			Constants.Z_LIST_GENERIC
 		] );
 
 		context.commit( 'setI18n', i18n );
