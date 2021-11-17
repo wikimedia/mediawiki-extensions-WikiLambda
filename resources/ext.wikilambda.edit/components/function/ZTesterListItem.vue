@@ -10,7 +10,7 @@
 			class="z-list-item-remove"
 			:destructive="true"
 			:title="tooltipRemoveListItem"
-			@click="removeItem"
+			@click="$emit('remove-item', zobjectId )"
 		>
 			{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 		</sd-button>
@@ -43,6 +43,7 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions;
 
 module.exports = {
+	name: 'ZTesterListItem',
 	extends: ZListItem,
 	components: {
 		'z-reference': ZReference

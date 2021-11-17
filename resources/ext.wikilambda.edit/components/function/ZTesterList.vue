@@ -14,11 +14,11 @@
 				:zobject-id="item.id"
 				:viewmode="getViewMode"
 				:z-type="Constants.Z_TESTER"
+				@remove-item="removeItem"
 			></z-tester-list-item>
 			<li v-if="!getViewMode">
 				<button
 					:title="tooltipAddListItem"
-					:disabled="!getZTesters.length"
 					@click="addNewItem"
 				>
 					{{ $i18n( 'wikilambda-editor-additem' ) }}
