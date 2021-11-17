@@ -111,7 +111,11 @@ module.exports = {
 			},
 
 			submit: function () {
-				this.submitZObject( this.summary );
+				this.submitZObject( this.summary ).then( function ( pageTitle ) {
+					if ( pageTitle ) {
+						window.location.href = new mw.Title( pageTitle ).getUrl();
+					}
+				} );
 			},
 
 			navigateToCreateFunction: function () {
