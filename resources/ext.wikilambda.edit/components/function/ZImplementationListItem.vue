@@ -5,12 +5,12 @@
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->
-	<li class="ext-wikilambda-zlistItem">
+	<li class="ext-wikilambda-ZImplementationListItem">
 		<sd-button v-if="!(getViewMode || readonly)"
 			class="z-list-item-remove"
 			:destructive="true"
 			:title="tooltipRemoveListItem"
-			@click="removeItem"
+			@click="$emit('remove-item', zobjectId )"
 		>
 			{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 		</sd-button>
@@ -51,6 +51,7 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions;
 
 module.exports = {
+	name: 'ZImplementationListItem',
 	extends: ZListItem,
 	components: {
 		'z-reference': ZReference,
@@ -163,7 +164,16 @@ module.exports = {
 </script>
 
 <style lang="less">
-.ext-wikilambda-inline-list-item-title {
-	display: inline;
+.ext-wikilambda-ZImplementationListItem {
+	margin-top: 1em;
+	margin-bottom: 1em;
+
+	.ext-wikilambda-zcode {
+		margin-top: 0.5em;
+	}
+
+	.ext-wikilambda-inline-list-item-title {
+		display: inline;
+	}
 }
 </style>

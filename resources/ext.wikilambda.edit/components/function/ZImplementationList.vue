@@ -16,11 +16,11 @@
 				:zobject-id="item.id"
 				:viewmode="getViewMode"
 				:z-type="Constants.Z_IMPLEMENTATION"
+				@remove-item="removeItem"
 			></z-implementation-list-item>
 			<li v-if="!getViewMode">
 				<button
 					:title="tooltipAddListItem"
-					:disabled="!getZImplementations.length"
 					@click="addNewItem"
 				>
 					{{ $i18n( 'wikilambda-editor-additem' ) }}
@@ -44,6 +44,7 @@ var Constants = require( '../../Constants.js' ),
 	ZImplementationListItem = require( './ZImplementationListItem.vue' );
 
 module.exports = {
+	name: 'ZImplementationList',
 	extends: ZList,
 	components: {
 		'z-implementation-list-item': ZImplementationListItem
