@@ -175,6 +175,7 @@
 	"wikilambda-editor-input-subtitle": "Subtitle for the input step.",
 	"wikilambda-editor-input-type-placeholder": "Placeholder text for the input type.",
 	"wikilambda-editor-input-label-placeholder": "Placeholder text for the input label.",
+	"wikilambda-editor-input-typed-list-placeholder": "Placeholder text for the input of a typed list type selector",
 	"wikilambda-editor-input-description": "Description for the input label.",
 	"wikilambda-editor-input-add-button": "Button text to add an input to a function.",
 	"wikilambda-editor-input-default-label": "Default label for an input.",

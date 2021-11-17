@@ -267,7 +267,6 @@ module.exports = {
 				if ( !zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] ) {
 					return;
 				}
-
 				zobject[
 					Constants.Z_PERSISTENTOBJECT_VALUE ][
 					Constants.Z_FUNCTION_ARGUMENTS ]
@@ -281,11 +280,20 @@ module.exports = {
 								context.getters.getUserZlangZID;
 							} )[ 0 ] || argumentLabels[ 0 ],
 							userLangLabel = userLang[ Constants.Z_MONOLINGUALSTRING_VALUE ],
-							type = context.getters.getZkeyLabels[ argument[ Constants.Z_ARGUMENT_TYPE ] ],
 							key = userLangLabel ?
 								( userLangLabel ) + ': ' :
 								'',
-							zid = argument[ Constants.Z_ARGUMENT_KEY ];
+							zid = argument[ Constants.Z_ARGUMENT_KEY ],
+							type;
+
+						// We can either return an object or a straight string.
+						if ( typeof argument[ Constants.Z_ARGUMENT_TYPE ] === 'object' ) {
+							type = context.getters.getZkeyLabels[
+								argument[ Constants.Z_ARGUMENT_TYPE ][ Constants.Z_OBJECT_TYPE ]
+							];
+						} else {
+							type = context.getters.getZkeyLabels[ argument[ Constants.Z_ARGUMENT_TYPE ] ];
+						}
 
 						if ( typeof zid === 'object' ) {
 							zid = zid[ Constants.Z_STRING_VALUE ];

@@ -156,15 +156,25 @@ module.exports = {
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
+		 * @param {string} payload.value
+		 * @param {number} payload.id
+		 * @param {boolean} payload.unwrapped
 		 */
 		addZListGeneric: function ( context, payload ) {
 			var value = payload.value || '',
-				nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+				unwrapped = payload.unwrapped || false,
+				functionCallId;
 
-			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: 'object', parent: payload.id } );
-			context.dispatch( 'changeType', { id: nextId, type: Constants.Z_FUNCTION_CALL, value: Constants.Z_LIST_GENERIC } )
+			if ( unwrapped ) {
+				functionCallId = payload.id;
+			} else {
+				functionCallId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+				context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: 'object', parent: payload.id } );
+			}
+
+			context.dispatch( 'changeType', { id: functionCallId, type: Constants.Z_FUNCTION_CALL, value: Constants.Z_LIST_GENERIC } )
 				.then( function () {
-					context.dispatch( 'addZObject', { key: Constants.Z_LIST_GENERIC_TYPE, value: value, parent: nextId } );
+					context.dispatch( 'addZObject', { key: Constants.Z_LIST_GENERIC_TYPE, value: value, parent: functionCallId } );
 				} );
 		},
 		/**

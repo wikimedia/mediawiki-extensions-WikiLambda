@@ -38,6 +38,7 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = {
+	name: 'FnEditorTypeSelector',
 	extends: ZObjectSelector,
 	computed: mapGetters( [
 		'getZkeyLabels'
@@ -53,12 +54,19 @@ module.exports = {
 			results[ Constants.Z_REFERENCE ] = this.getZkeyLabels[ Constants.Z_REFERENCE ];
 			results[ Constants.Z_LIST ] = this.getZkeyLabels[ Constants.Z_LIST ];
 			results[ Constants.Z_BOOLEAN ] = this.getZkeyLabels[ Constants.Z_BOOLEAN ];
+			results[ Constants.Z_LIST_GENERIC ] = this.getZkeyLabels[ Constants.Z_LIST_GENERIC ];
 
 			return results;
 		}
 	},
 	mounted: function () {
-		this.fetchZKeys( [ 'Z6', 'Z9', 'Z10', 'Z40' ] );
+		this.fetchZKeys( [
+			Constants.Z_STRING,
+			Constants.Z_REFERENCE,
+			Constants.Z_LIST,
+			Constants.Z_BOOLEAN,
+			Constants.Z_LIST_GENERIC
+		] );
 	}
 };
 </script>

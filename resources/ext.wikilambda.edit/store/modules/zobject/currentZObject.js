@@ -70,12 +70,14 @@ module.exports = {
 				zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
 					Constants.Z_FUNCTION_ARGUMENTS ].filter(
 					function ( arg ) {
-						return arg[ Constants.Z_ARGUMENT_TYPE ][ Constants.Z_REFERENCE_ID ] &&
-							arg[ Constants.Z_ARGUMENT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ].filter(
+						var argumentTypeIsSet = !!arg[ Constants.Z_ARGUMENT_TYPE ],
+							argumentMonolingualStringIsSet = arg[ Constants.Z_ARGUMENT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ].filter(
 								function ( label ) {
 									return label[ Constants.Z_MONOLINGUALSTRING_VALUE ][
 										Constants.Z_STRING_VALUE ] !== '';
 								} ).length > 0;
+
+						return argumentTypeIsSet && argumentMonolingualStringIsSet;
 					}
 				).length > 0;
 		},
