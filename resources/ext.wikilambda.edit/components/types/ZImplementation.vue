@@ -118,7 +118,7 @@ module.exports = {
 			zImplementationId: function () {
 				return this.getNestedZObjectById( this.getZObjectById( this.zobjectId ).parent, [
 					Constants.Z_PERSISTENTOBJECT_ID,
-					Constants.Z_REFERENCE_ID
+					Constants.Z_STRING_VALUE
 				] ).value;
 			},
 			zFunction: function () {
