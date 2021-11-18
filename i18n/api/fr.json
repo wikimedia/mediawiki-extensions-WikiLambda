@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"DreZhsh",
 			"Gomoko",
 			"MasterSinge",
 			"Pols12",
@@ -16,6 +17,8 @@
 	"apihelp-wikilambda_fetch-example-multiple": "Récupérer trois Objets-Z : Z1, Z2 et Z3.",
 	"apierror-wikilambda_fetch-missingzid": "Le Z-ID donné « $1 » n’existe pas sur ce wiki.",
 	"apihelp-wikilambda_function_call-param-zobject": "ZObject pour l’appel de fonction",
+	"apihelp-wikilambda_function_call-example-generic-list": "Invoquer une fonction qui renvoie le premier élément d'une liste typée.",
+	"apihelp-wikilambda_function_call-example-generic-pair": "Invoquer une fonction qui renvoie le deuxième élément d'une Paire<Chaîne,Paire<Chaîne,Booléen>>.",
 	"apihelp-wikilambda_function_call-example-composition": "Invoquer une composition : si le premier argument est vrai, trier le second ; sinon, le renvoyer intact",
 	"apihelp-wikilambda_function_call-example-if": "Invoquer Z802(lf) intégré avec un prédicat faux",
 	"apihelp-wikilambda_function_call-example-native-js-code": "Invoquer le code JavaScript écrit par l’utilisateur",
