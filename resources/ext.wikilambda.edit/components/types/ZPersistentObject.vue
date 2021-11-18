@@ -16,9 +16,9 @@
 			<div class="ext-wikilambda-persistentobject-content">
 				<p v-if="isNewZObject">
 					{{ $i18n( 'wikilambda-persistentzobject-description' ) }}
-					<router-link :to="{ name: 'create', query: { zid: Constants.Z_FUNCTION } }">
+					<a @click.prevent="navigateToCreateFunction">
 						{{ $i18n( 'wikilambda-create-function' ) }}
-					</router-link>
+					</a>
 				</p>
 				<div v-if="showClearButton" class="ext-wikilambda-clear-persistentobject">
 					<button
@@ -158,10 +158,22 @@ module.exports = {
 		}
 	} ),
 	methods: $.extend( mapActions( [
-		'removeZObjectChildren'
+		'removeZObjectChildren',
+		'changeType'
 	] ), {
 		removeKey: function ( objectId ) {
 			this.removeZObjectChildren( objectId );
+		},
+
+		navigateToCreateFunction: function () {
+			var zObject = this.getZObjectChildrenById( 0 ); // We fetch the Root object
+			var Z2K2 =
+				this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, zObject );
+
+			this.changeType( {
+				id: Z2K2.id,
+				type: Constants.Z_FUNCTION
+			} );
 		}
 	} )
 };
