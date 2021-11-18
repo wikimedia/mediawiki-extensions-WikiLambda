@@ -13,12 +13,12 @@
 			and show them automatically)
 		-->
 		<z-object-selector
-			v-if="getTypeOfArgument === Constants.Z_LIST_GENERIC"
+			v-if="getTypeOfArgument === Constants.Z_TYPED_LIST"
 			class="ext-wikilambda-text-input"
 			:label="$i18n( 'wikilambda-editor-input-typed-list-placeholder' )"
 			:placeholder="$i18n( 'wikilambda-editor-input-typed-list-placeholder' )"
-			@input="setListGenericType"
-			@clear="setListGenericType"
+			@input="setListTypedList"
+			@clear="setListTypedList"
 		>
 		</z-object-selector>
 		<input
@@ -76,8 +76,8 @@ module.exports = {
 				return this.getNestedZObjectById( zArgumentTypeId, [
 					Constants.Z_REFERENCE_ID
 				] ).value;
-			} else if ( this.getZObjectTypeById( zArgumentTypeId ) === Constants.Z_LIST_GENERIC ) {
-				return Constants.Z_LIST_GENERIC;
+			} else if ( this.getZObjectTypeById( zArgumentTypeId ) === Constants.Z_TYPED_LIST ) {
+				return Constants.Z_TYPED_LIST;
 			}
 		},
 		getArgumentLabels: function () {
@@ -111,7 +111,7 @@ module.exports = {
 		'setZObjectValue',
 		'addZMonolingualString',
 		'changeType',
-		'setTypeOfGenericType'
+		'setTypeOfTypedList'
 	] ), {
 		setArgumentLabel: function ( id, input ) {
 			if ( !this.getArgumentLabel ) {
@@ -162,10 +162,10 @@ module.exports = {
 		setArgumentType: function ( type ) {
 			var payload;
 
-			if ( type === Constants.Z_LIST_GENERIC ) {
+			if ( type === Constants.Z_TYPED_LIST ) {
 				payload = {
 					id: this.getZArgumentType.id,
-					type: Constants.Z_LIST_GENERIC,
+					type: Constants.Z_TYPED_LIST,
 					unwrapped: true
 				};
 			} else {
@@ -178,12 +178,12 @@ module.exports = {
 
 			this.changeType( payload );
 		},
-		setListGenericType: function ( type ) {
+		setListTypedList: function ( type ) {
 			var payload = {
 				objectId: this.getZArgumentType.id,
 				type: type
 			};
-			this.setTypeOfGenericType( payload );
+			this.setTypeOfTypedList( payload );
 		}
 	} )
 };

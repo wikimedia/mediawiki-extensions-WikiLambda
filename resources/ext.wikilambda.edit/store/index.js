@@ -21,7 +21,7 @@ var Vue = require( 'vue' ),
 	zTesterResultsModule = require( './modules/zTesterResults.js' ),
 	createZTesters = require( './modules/createZTesters.js' ),
 	createZImplementations = require( './modules/createZImplementations.js' ),
-	zGenericType = require( './modules/zGenericType.js' );
+	zTypedList = require( './modules/zTypedList.js' );
 
 Vue.use( Vuex );
 
@@ -40,6 +40,6 @@ module.exports = new Vuex.Store( {
 		zTesterResultsModule: zTesterResultsModule,
 		createZTesters: createZTesters,
 		createZImplementations: createZImplementations,
-		zGenericType: zGenericType
+		zTypedList: zTypedList
 	}
 } );

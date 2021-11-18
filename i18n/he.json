@@ -169,8 +169,8 @@
 	"wikilambda-editor-write-save-button": "שמירת מימוש",
 	"wikilambda-editor-attach-title": "צירוף",
 	"wikilambda-editor-progress-title": "התקדמות",
-	"wikilambda-zlist-generic-type-placeholder": "נא לבחור סוג כללי",
-	"wikilambda-zlist-generic-type-description": "סוג רשימה כללי מסוג",
-	"wikilambda-zlist-generic-type-items": "פריטי רשימה",
+	"wikilambda-ztyped-list-placeholder": "נא לבחור סוג כללי",
+	"wikilambda-ztyped-list-description": "סוג רשימה כללי מסוג",
+	"wikilambda-ztyped-list-items": "פריטי רשימה",
 	"wikilambda-zerror": "שגיאת Z מסוג $1"
 }

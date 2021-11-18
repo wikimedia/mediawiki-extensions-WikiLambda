@@ -1,16 +1,16 @@
 /*!
- * WikiLambda unit test suite for the zGenericType Vuex module
+ * WikiLambda unit test suite for the zTypedList Vuex module
  *
  * @copyright 2020–2021 WikiLambda team; see AUTHORS.txt
  * @license MIT
  */
 'use strict';
 
-var zGenericTypeModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zGenericType.js' ),
+var zTypedListModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zTypedList.js' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	context;
 
-describe( 'zGenericType Vuex module', function () {
+describe( 'zTypedList Vuex module', function () {
 	beforeEach( function () {
 		context = $.extend( {}, {
 			commit: jest.fn(),
@@ -29,14 +29,14 @@ describe( 'zGenericType Vuex module', function () {
 	} );
 
 	describe( 'Actions', function () {
-		describe( 'addGenericTypeItem', function () {
+		describe( 'addTypedListItem', function () {
 
 			it( 'set new item parent id equal to root if list has no items', function () {
 				var payload = {
 					id: 1,
 					zObjectChildren: []
 				};
-				zGenericTypeModule.actions.addGenericTypeItem( context, payload );
+				zTypedListModule.actions.addTypedListItem( context, payload );
 
 				expect( context.dispatch ).toHaveBeenCalled();
 				expect( context.dispatch.mock.calls[ 0 ][ 0 ] ).toBe( 'addZObject' );
@@ -53,26 +53,26 @@ describe( 'zGenericType Vuex module', function () {
 							{ key: 'K2', id: expectedParent }
 						]
 					};
-				zGenericTypeModule.actions.addGenericTypeItem( context, payload );
+				zTypedListModule.actions.addTypedListItem( context, payload );
 
 				expect( context.dispatch ).toHaveBeenCalled();
 				expect( context.dispatch.mock.calls[ 0 ][ 0 ] ).toBe( 'addZObject' );
 				expect( context.dispatch.mock.calls[ 0 ][ 1 ].parent ).toBe( expectedParent );
 			} );
 
-			it( 'add a Z_LIST_GENERIC_ELEMENT', function () {
+			it( 'add a Z_TYPED_LIST_ELEMENT', function () {
 				var payload = {
 					id: 1,
 					zObjectChildren: []
 				};
-				zGenericTypeModule.actions.addGenericTypeItem( context, payload );
+				zTypedListModule.actions.addTypedListItem( context, payload );
 
 				expect( context.dispatch ).toHaveBeenCalled();
 				expect( context.dispatch.mock.calls[ 0 ][ 0 ] ).toBe( 'addZObject' );
-				expect( context.dispatch.mock.calls[ 0 ][ 1 ].key ).toBe( Constants.Z_LIST_GENERIC_ELEMENT );
+				expect( context.dispatch.mock.calls[ 0 ][ 1 ].key ).toBe( Constants.Z_TYPED_LIST_ELEMENT );
 			} );
 
-			it( 'set type of Z_LIST_GENERIC_ELEMENT to current list type', function () {
+			it( 'set type of Z_TYPED_LIST_ELEMENT to current list type', function () {
 				var payload = {
 						id: 1,
 						zObjectChildren: []
@@ -81,14 +81,14 @@ describe( 'zGenericType Vuex module', function () {
 				context.getters.getNestedZObjectById.mockReturnValueOnce( {
 					value: dummyType
 				} );
-				zGenericTypeModule.actions.addGenericTypeItem( context, payload );
+				zTypedListModule.actions.addTypedListItem( context, payload );
 
 				expect( context.dispatch ).toHaveBeenCalled();
 				expect( context.dispatch.mock.calls[ 1 ][ 0 ] ).toBe( 'changeType' );
 				expect( context.dispatch.mock.calls[ 1 ][ 1 ].type ).toBe( dummyType );
 			} );
 
-			it( 'add a Z_LIST_GENERIC_NESTED_LIST', function () {
+			it( 'add a Z_TYPED_LIST_NESTED_LIST', function () {
 				var payload = {
 						id: 1,
 						zObjectChildren: []
@@ -97,11 +97,11 @@ describe( 'zGenericType Vuex module', function () {
 				context.getters.getNestedZObjectById.mockReturnValueOnce( {
 					value: dummyType
 				} );
-				zGenericTypeModule.actions.addGenericTypeItem( context, payload );
+				zTypedListModule.actions.addTypedListItem( context, payload );
 
 				expect( context.dispatch ).toHaveBeenCalled();
 				expect( context.dispatch.mock.calls[ 2 ][ 0 ] ).toBe( 'addZObject' );
-				expect( context.dispatch.mock.calls[ 2 ][ 1 ].key ).toBe( Constants.Z_LIST_GENERIC_NESTED_LIST );
+				expect( context.dispatch.mock.calls[ 2 ][ 1 ].key ).toBe( Constants.Z_TYPED_LIST_NESTED_LIST );
 			} );
 
 			it( 'call zLstGeneric with the current list type', function () {
@@ -113,21 +113,21 @@ describe( 'zGenericType Vuex module', function () {
 				context.getters.getNestedZObjectById.mockReturnValueOnce( {
 					value: dummyType
 				} );
-				zGenericTypeModule.actions.addGenericTypeItem( context, payload );
+				zTypedListModule.actions.addTypedListItem( context, payload );
 
 				expect( context.dispatch ).toHaveBeenCalled();
-				expect( context.dispatch.mock.calls[ 3 ][ 0 ] ).toBe( 'addZListGeneric' );
+				expect( context.dispatch.mock.calls[ 3 ][ 0 ] ).toBe( 'addZTypedList' );
 				expect( context.dispatch.mock.calls[ 3 ][ 1 ].value ).toBe( dummyType );
 			} );
 		} );
 
-		describe( 'setTypeOfGenericType', function () {
+		describe( 'setTypeOfTypedList', function () {
 			it( 'update current list generic type', function () {
 				var payload = {
 					type: 'testValue'
 				};
 
-				zGenericTypeModule.actions.setTypeOfGenericType( context, payload );
+				zTypedListModule.actions.setTypeOfTypedList( context, payload );
 
 				expect( context.dispatch ).toHaveBeenCalled();
 				expect( context.dispatch.mock.calls[ 0 ][ 0 ] ).toBe( 'setZObjectValue' );
@@ -135,7 +135,7 @@ describe( 'zGenericType Vuex module', function () {
 			} );
 		} );
 
-		describe( 'removeGenericTypeItem', function () {
+		describe( 'removeTypedListItem', function () {
 			var currentListItemParentId = 1,
 				currentItemK2Id = 2,
 				currentItemNestedElementId = 3,
@@ -181,7 +181,7 @@ describe( 'zGenericType Vuex module', function () {
 					}
 				} );
 
-				zGenericTypeModule.actions.removeGenericTypeItem( context, item );
+				zTypedListModule.actions.removeTypedListItem( context, item );
 
 				expect( context.dispatch ).toHaveBeenCalled();
 				expect( context.dispatch.mock.calls[ 0 ][ 0 ] ).not.toBe( 'setZObjectParent' );
@@ -192,7 +192,7 @@ describe( 'zGenericType Vuex module', function () {
 					id: 0,
 					parent: 1
 				};
-				zGenericTypeModule.actions.removeGenericTypeItem( context, item );
+				zTypedListModule.actions.removeTypedListItem( context, item );
 
 				expect( context.dispatch ).toHaveBeenCalled();
 			} );
@@ -202,7 +202,7 @@ describe( 'zGenericType Vuex module', function () {
 					id: 0,
 					parent: 1
 				};
-				zGenericTypeModule.actions.removeGenericTypeItem( context, item );
+				zTypedListModule.actions.removeTypedListItem( context, item );
 
 				expect( context.dispatch.mock.calls[ 0 ][ 1 ].id ).toBe( currentItemNestedElementId );
 				expect( context.dispatch.mock.calls[ 0 ][ 1 ].parent ).toBe( currentListItemParentId );
@@ -213,7 +213,7 @@ describe( 'zGenericType Vuex module', function () {
 					id: 0,
 					parent: 1
 				};
-				zGenericTypeModule.actions.removeGenericTypeItem( context, item );
+				zTypedListModule.actions.removeTypedListItem( context, item );
 
 				expect( context.dispatch.mock.calls[ 1 ][ 1 ].id ).toBe( currentItemNestedListId );
 				expect( context.dispatch.mock.calls[ 1 ][ 1 ].parent ).toBe( currentListItemParentId );
@@ -224,7 +224,7 @@ describe( 'zGenericType Vuex module', function () {
 					id: 0,
 					parent: 1
 				};
-				zGenericTypeModule.actions.removeGenericTypeItem( context, item );
+				zTypedListModule.actions.removeTypedListItem( context, item );
 
 				expect( context.dispatch ).toHaveBeenCalled();
 				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', item.id );
@@ -236,7 +236,7 @@ describe( 'zGenericType Vuex module', function () {
 					id: 0,
 					parent: 1
 				};
-				zGenericTypeModule.actions.removeGenericTypeItem( context, item );
+				zTypedListModule.actions.removeTypedListItem( context, item );
 
 				expect( context.dispatch ).toHaveBeenCalled();
 				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', currentItemK2Id );

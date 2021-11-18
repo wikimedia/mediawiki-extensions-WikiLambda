@@ -5,30 +5,30 @@
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-zlistGeneric">
+	<div class="ext-wikilambda-zTypedList">
 		<z-object-selector
-			v-if="requiresGenericTypes"
+			v-if="requiresTypeForList"
 			:type="Constants.zType"
-			:placeholder="$i18n( 'wikilambda-zlist-generic-type-placeholder' )"
+			:placeholder="$i18n( 'wikilambda-ztyped-list-placeholder' )"
 			:readonly="readonly"
-			@input="onGenericTypeChange"
+			@input="onTypedListChange"
 		></z-object-selector>
 		<p v-else>
-			<strong>{{ $i18n( 'wikilambda-zlist-generic-type-description' ) }}:</strong> {{ genericTypeLabel }}
+			<strong>{{ $i18n( 'wikilambda-ztyped-list-description' ) }}:</strong> {{ TypedListLabel }}
 		</p>
-		<div v-if="!requiresGenericTypes" class="ext-wikilambda-zlistGeneric-items-heading">
-			{{ $i18n( 'wikilambda-zlist-generic-type-items' ) }}:
+		<div v-if="!requiresTypeForList" class="ext-wikilambda-zTypedList-items-heading">
+			{{ $i18n( 'wikilambda-ztyped-list-items' ) }}:
 		</div>
-		<ul class="ext-wikilambda-zlistGeneric-no-bullets">
+		<ul class="ext-wikilambda-zTypedList-no-bullets">
 			<z-list-item
 				v-for="(item) in zListItems"
 				:key="item.id"
 				:zobject-id="item.id"
-				:z-type="zListGenericType"
-				:readonly="readonly || requiresGenericTypes"
+				:z-type="zTypedListType"
+				:readonly="readonly || requiresTypeForList"
 				@remove-item="removeItem( item )"
 			></z-list-item>
-			<li v-if="!(viewmode || readonly || requiresGenericTypes)">
+			<li v-if="!(viewmode || readonly || requiresTypeForList)">
 				<button class="z-list-add"
 					:title="tooltipAddListItem"
 					@click="addNewItem"
@@ -49,7 +49,7 @@ var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
 module.exports = {
-	name: 'ZListGeneric',
+	name: 'ZTypedList',
 	components: {
 		'z-list-item': ZListItem,
 		'z-object-selector': ZObjectSelector
@@ -89,8 +89,8 @@ module.exports = {
 					return child.key === 'K1';
 				} );
 			},
-			zListGenericType: function () {
-				return this.findKeyInArray( Constants.Z_LIST_GENERIC_TYPE, this.zObjectChildren ).value;
+			zTypedListType: function () {
+				return this.findKeyInArray( Constants.Z_TYPED_LIST_TYPE, this.zObjectChildren ).value;
 			},
 			tooltipRemoveListItem: function () {
 				return this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' );
@@ -98,45 +98,45 @@ module.exports = {
 			tooltipAddListItem: function () {
 				this.$i18n( 'wikilambda-editor-zlist-additem-tooltip' );
 			},
-			requiresGenericTypes: function () {
-				return !this.zListGenericType;
+			requiresTypeForList: function () {
+				return !this.zTypedListType;
 			},
-			genericTypeLabel: function () {
-				if ( !this.requiresGenericTypes ) {
-					return this.getZkeyLabels[ this.zListGenericType ];
+			TypedListLabel: function () {
+				if ( !this.requiresTypeForList ) {
+					return this.getZkeyLabels[ this.zTypedListType ];
 				} else {
 					return '';
 				}
 			}
 		} ),
 	methods: $.extend( {},
-		mapActions( [ 'addZObject', 'recalculateZListIndex', 'setTypeOfGenericType', 'addGenericTypeItem', 'removeGenericTypeItem', 'fetchZKeys' ] ),
+		mapActions( [ 'addZObject', 'recalculateZListIndex', 'setTypeOfTypedList', 'addTypedListItem', 'removeTypedListItem', 'fetchZKeys' ] ),
 		{
 			addNewItem: function () {
 
-				this.addGenericTypeItem( {
+				this.addTypedListItem( {
 					id: this.zobjectId,
 					zObjectChildren: this.zObjectChildren
 				} );
 			},
-			onGenericTypeChange: function ( type ) {
-				this.setTypeOfGenericType( { type: type, objectId: this.zobjectId } );
+			onTypedListChange: function ( type ) {
+				this.setTypeOfTypedList( { type: type, objectId: this.zobjectId } );
 			},
 			removeItem: function ( item ) {
-				this.removeGenericTypeItem( item );
+				this.removeTypedListItem( item );
 			}
 		}
 	),
 	mounted: function () {
-		if ( this.zListGenericType ) {
-			this.fetchZKeys( [ this.zListGenericType ] );
+		if ( this.zTypedListType ) {
+			this.fetchZKeys( [ this.zTypedListType ] );
 		}
 	}
 };
 </script>
 
 <style lang="less">
-.ext-wikilambda-zlistGeneric {
+.ext-wikilambda-zTypedList {
 	background: #eee;
 	padding: 1em;
 }
@@ -145,12 +145,12 @@ input.ext-wikilambda-zstring {
 	background: #eef;
 }
 
-ul.ext-wikilambda-zlistGeneric-no-bullets {
+ul.ext-wikilambda-zTypedList-no-bullets {
 	list-style-type: none;
 	list-style-image: none;
 }
 
-.ext-wikilambda-zlistGeneric-items-heading {
+.ext-wikilambda-zTypedList-items-heading {
 	font-weight: bold;
 	margin-top: 1em;
 }
