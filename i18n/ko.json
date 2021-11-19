@@ -50,6 +50,8 @@
 	"wikilambda-editor-additional-details-label": "추가 상세 정보",
 	"wikilambda-editor-go-back-button": "돌아가기",
 	"wikilambda-editor-next-button": "다음 단계",
+	"wikilambda-editor-fn-step-define": "정의",
+	"wikilambda-editor-fn-step-tests": "테스트",
 	"wikilambda-editor-name-title": "이름",
 	"wikilambda-editor-name-aliases": "다른 이름",
 	"wikilambda-editor-input-title": "입력",

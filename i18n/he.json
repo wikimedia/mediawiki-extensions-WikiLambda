@@ -155,6 +155,7 @@
 	"wikilambda-editor-input-subtitle": "מה ילך לפונקציה?",
 	"wikilambda-editor-input-type-placeholder": "סוג הקלט",
 	"wikilambda-editor-input-label-placeholder": "מה השם של הקלט הזה?",
+	"wikilambda-editor-input-typed-list-placeholder": "סוג רשימה בעלת סוג",
 	"wikilambda-editor-input-description": "קלטים הם ערכים שמועברים לפונקציה. למשל, אם הפונקציה נקראת \"חיבור\", והיא מחברת שני מספרים, הקלטים יכולים להיות \"x\" ו־\"y\".",
 	"wikilambda-editor-input-add-button": "הוספת קלט",
 	"wikilambda-editor-input-default-label": "קלט",
