@@ -169,8 +169,8 @@
 	"wikilambda-editor-write-save-button": "Implementierung speichern",
 	"wikilambda-editor-attach-title": "Anhängen",
 	"wikilambda-editor-progress-title": "Fortschritt",
-	"wikilambda-zlist-generic-type-placeholder": "Wähle eine generische",
-	"wikilambda-zlist-generic-type-description": "Liste der generischen Typen",
-	"wikilambda-zlist-generic-type-items": "Objekte auflisten",
+	"wikilambda-ztyped-list-placeholder": "Wähle eine generische",
+	"wikilambda-ztyped-list-description": "Liste der generischen Typen",
+	"wikilambda-ztyped-list-items": "Objekte auflisten",
 	"wikilambda-zerror": "ZError vom Typ $1"
 }

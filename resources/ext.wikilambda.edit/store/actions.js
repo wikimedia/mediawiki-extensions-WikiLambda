@@ -33,7 +33,7 @@ module.exports = {
 			Constants.Z_BOOLEAN_FALSE,
 			Constants.Z_IMPLEMENTATION,
 			context.getters.getUserZlangZID,
-			Constants.Z_LIST_GENERIC
+			Constants.Z_TYPED_LIST
 		] );
 
 		context.commit( 'setI18n', i18n );

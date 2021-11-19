@@ -54,7 +54,7 @@ module.exports = {
 			results[ Constants.Z_REFERENCE ] = this.getZkeyLabels[ Constants.Z_REFERENCE ];
 			results[ Constants.Z_LIST ] = this.getZkeyLabels[ Constants.Z_LIST ];
 			results[ Constants.Z_BOOLEAN ] = this.getZkeyLabels[ Constants.Z_BOOLEAN ];
-			results[ Constants.Z_LIST_GENERIC ] = this.getZkeyLabels[ Constants.Z_LIST_GENERIC ];
+			results[ Constants.Z_TYPED_LIST ] = this.getZkeyLabels[ Constants.Z_TYPED_LIST ];
 
 			return results;
 		}
@@ -65,7 +65,7 @@ module.exports = {
 			Constants.Z_REFERENCE,
 			Constants.Z_LIST,
 			Constants.Z_BOOLEAN,
-			Constants.Z_LIST_GENERIC
+			Constants.Z_TYPED_LIST
 		] );
 	}
 };

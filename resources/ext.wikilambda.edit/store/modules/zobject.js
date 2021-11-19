@@ -23,7 +23,7 @@ function isObjectTypeDeclaration( object, parentObject ) {
 
 function isListGenericDeclaration( object, functionCallId ) {
 	var isReference = object.value === Constants.Z_FUNCTION_CALL;
-	var isListGeneric = functionCallId.value === Constants.Z_LIST_GENERIC;
+	var isListGeneric = functionCallId.value === Constants.Z_TYPED_LIST;
 
 	return isReference && isListGeneric;
 }
@@ -193,7 +193,7 @@ module.exports = {
 						if ( isObjectTypeDeclaration( objectType, currentObject ) ) {
 							type = referenceId.value;
 						} else if ( isListGenericDeclaration( objectType, functionCallId ) ) {
-							type = Constants.Z_LIST_GENERIC;
+							type = Constants.Z_TYPED_LIST;
 						} else if ( isNotObjectOrArrayRoot( objectType ) ) {
 							type = objectType.value;
 						} else {

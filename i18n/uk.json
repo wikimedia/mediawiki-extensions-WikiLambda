@@ -172,8 +172,8 @@
 	"wikilambda-editor-write-save-button": "Зберегти реалізацію",
 	"wikilambda-editor-attach-title": "Прикріпити",
 	"wikilambda-editor-progress-title": "Прогрес",
-	"wikilambda-zlist-generic-type-placeholder": "Виберіть загальний",
-	"wikilambda-zlist-generic-type-description": "Список загальних типів",
-	"wikilambda-zlist-generic-type-items": "Список елементів",
+	"wikilambda-ztyped-list-placeholder": "Виберіть загальний",
+	"wikilambda-ztyped-list-description": "Список загальних типів",
+	"wikilambda-ztyped-list-items": "Список елементів",
 	"wikilambda-zerror": "ZError типу $1"
 }

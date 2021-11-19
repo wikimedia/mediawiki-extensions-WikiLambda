@@ -31,7 +31,7 @@ var Constants = require( '../Constants.js' ),
 	typeUtils = require( '../mixins/typeUtils.js' ),
 	ZObjectGeneric = require( './ZObjectGeneric.vue' ),
 	ZList = require( './types/ZList.vue' ),
-	ZListGeneric = require( './types/ZListGeneric.vue' ),
+	ZTypedList = require( './types/ZTypedList.vue' ),
 	ZMultilingualString = require( './types/ZMultilingualString.vue' ),
 	ZReference = require( './types/ZReference.vue' ),
 	ZString = require( './types/ZString.vue' ),
@@ -72,7 +72,7 @@ module.exports = {
 		'z-character': ZCharacter,
 		'z-pair': ZPair,
 		'z-type': ZType,
-		'z-list-generic': ZListGeneric
+		'z-typed-list': ZTypedList
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -132,8 +132,8 @@ module.exports = {
 						return 'z-multilingual-string';
 					case Constants.Z_LIST:
 						return 'z-list';
-					case Constants.Z_LIST_GENERIC:
-						return 'z-list-generic';
+					case Constants.Z_TYPED_LIST:
+						return 'z-typed-list';
 					case Constants.Z_CODE:
 						return 'z-code';
 					case Constants.Z_ARGUMENT:

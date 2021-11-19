@@ -168,7 +168,7 @@
 	"wikilambda-editor-input-subtitle": "What will go into the function?",
 	"wikilambda-editor-input-type-placeholder": "Input type",
 	"wikilambda-editor-input-label-placeholder": "What is the name for this input?",
-	"wikilambda-editor-input-typed-list-placeholder": "Typed list type",
+	"wikilambda-editor-input-typed-list-placeholder": "List type",
 	"wikilambda-editor-input-description": "Inputs are the values that are passed into the function. For example, if the function is called “Add”, and it adds two numbers together, the inputs might be “x” and “y”.",
 	"wikilambda-editor-input-add-button": "Add input",
 	"wikilambda-editor-input-default-label": "input",
@@ -184,8 +184,8 @@
 	"wikilambda-editor-attach-title": "Attach",
 	"wikilambda-editor-progress-title": "Progress",
 	"wikilambda-editor-progress-percentage": "%",
-	"wikilambda-zlist-generic-type-placeholder": "Select a generic",
-	"wikilambda-zlist-generic-type-description": "List generic of type",
-	"wikilambda-zlist-generic-type-items": "List items",
+	"wikilambda-ztyped-list-placeholder": "Select a generic",
+	"wikilambda-ztyped-list-description": "List generic of type",
+	"wikilambda-ztyped-list-items": "List items",
 	"wikilambda-zerror": "ZError of type $1"
 }
