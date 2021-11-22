@@ -50,7 +50,10 @@
 							:class="'ext-wikilambda-editor-step ' + isCurrentTab( item.id )"
 						>
 							<span>
-								<router-link :to="getRouterTo( item.id )">
+								<router-link
+									:to="getRouterTo( item.id )"
+									:class="[ 'ext-wikilambda-editor-step-link', { 'ext-wikilambda-editor-step-link-disabled': getIsSavingObject } ]"
+								>
 									{{ item.title }}
 								</router-link>
 							</span>
@@ -62,11 +65,20 @@
 				<slot
 					:navigate-to="navigateTo"
 				></slot>
+
+				<sd-message v-if="getZObjectMessage.text" :type="getZObjectMessage.type">
+					{{ getZObjectMessage.text }}
+				</sd-message>
+
 				<div class="ext-wikilambda-editor-controls">
 					<sd-button @click="previousStep">
 						{{ $i18n( 'wikilambda-editor-go-back-button' ) }}
 					</sd-button>
-					<sd-button primary @click="nextStep">
+					<sd-button
+						primary
+						:disabled="getIsSavingObject"
+						@click="nextStep"
+					>
 						{{ currentStepIndex === flatSteps.length - 1 ?
 							$i18n( 'wikilambda-savenew' ) :
 							$i18n( 'wikilambda-editor-next-button' )
@@ -107,11 +119,13 @@ var Constants = require( '../Constants.js' ),
 	FnEditorBase = require( '../components/editor/FnEditorBase.vue' ),
 	FnEditorProgress = require( '../components/editor/FnEditorProgress.vue' ),
 	ZObjectJson = require( '../components/ZObjectJson.vue' ),
+	SdMessage = require( '../components/base/Message.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
 module.exports = {
 	components: {
+		'sd-message': SdMessage,
 		'fn-editor-base': FnEditorBase,
 		'fn-editor-progress': FnEditorProgress,
 		'z-object-json': ZObjectJson,
@@ -130,6 +144,8 @@ module.exports = {
 		}
 	},
 	computed: $.extend( mapGetters( [
+		'getIsSavingObject',
+		'getZObjectMessage',
 		'getNestedZObjectById',
 		'getCurrentZLanguage',
 		'getZObjectChildrenById'
@@ -225,6 +241,12 @@ module.exports = {
 			}
 		},
 		nextStep: function () {
+
+			// Prevent User from navigating to Other tabs while Saving Object
+			if ( this.getIsSavingObject ) {
+				return;
+			}
+
 			var currentStepIndex = this.currentStepIndex;
 
 			if ( currentStepIndex < this.flatSteps.length - 1 ) {
@@ -243,6 +265,7 @@ module.exports = {
 						window.location.href = route.href;
 
 					}
+
 				}.bind( this ) );
 			}
 		},
@@ -439,6 +462,11 @@ module.exports = {
 					display: flex;
 					width: 100%;
 					justify-content: center;
+
+					.ext-wikilambda-editor-step-link-disabled {
+						opacity: 0.5;
+						pointer-events: none;
+					}
 
 					span {
 						background: @background-color-base;

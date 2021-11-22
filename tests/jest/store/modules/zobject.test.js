@@ -459,7 +459,7 @@ describe( 'zobject Vuex module', function () {
 				zid: undefined,
 				zobject: JSON.stringify( zobject )
 			} );
-			expect( context.commit ).toHaveBeenCalledTimes( 0 );
+			expect( context.commit ).toHaveBeenCalledTimes( 1 );
 		} );
 
 		it( 'Save existing zobject', function () {
@@ -477,7 +477,7 @@ describe( 'zobject Vuex module', function () {
 				zid: 'Z0',
 				zobject: JSON.stringify( zobject )
 			} );
-			expect( context.commit ).toHaveBeenCalledTimes( 0 );
+			expect( context.commit ).toHaveBeenCalledTimes( 1 );
 		} );
 
 		it( 'Inject arbitrary JSON into zobject', function () {

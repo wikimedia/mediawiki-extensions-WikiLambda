@@ -44,9 +44,13 @@ module.exports = {
 			type: 'error',
 			text: null
 		},
+		isSavingZObject: false,
 		ZObjectInitialized: false
 	},
 	getters: {
+		getIsSavingObject: function ( state ) {
+			return state.isSavingZObject;
+		},
 		isCreateNewPage: function ( state ) {
 			return state.createNewPage;
 		},
@@ -389,6 +393,9 @@ module.exports = {
 		},
 		setZObjectInitialized: function ( state, value ) {
 			state.ZObjectInitialized = value;
+		},
+		setIsSavingZObject: function ( state, payload ) {
+			state.isSavingZObject = payload;
 		}
 	},
 	actions: {
@@ -493,6 +500,7 @@ module.exports = {
 		 * @return {Promise}
 		 */
 		submitZObject: function ( context, summary ) {
+			context.commit( 'setIsSavingZObject', true );
 			var zobject = canonicalize( zobjectTreeUtils.convertZObjectTreetoJson( context.state.zobject ) );
 
 			return saveZObject(
@@ -500,11 +508,17 @@ module.exports = {
 				context.getters.isCreateNewPage ? undefined : context.getters.getCurrentZObjectId,
 				summary
 			).then( function ( result ) {
+
+				context.commit( 'setIsSavingZObject', false );
 				return result.page;
-			} ).catch( function ( errorCode ) {
+
+			} ).catch( function ( error ) {
+
+				context.commit( 'setIsSavingZObject', false );
+
 				context.commit( 'setMessage', {
 					type: 'error',
-					text: context.rootState.i18n( errorCode.message ) || ''
+					text: error && error.error ? error.error.info : ''
 				} );
 
 				return false;
