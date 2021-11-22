@@ -36,6 +36,7 @@
 	"wikilambda-metadata-fewer-languages": "显示更少语言",
 	"wikilambda-persistentobject-details-label": "详情",
 	"wikilambda-editor-name-zobject-name": "函数名称",
+	"wikilambda-editor-input-typed-list-placeholder": "列表类型",
 	"wikilambda-editor-input-default-label": "输入",
 	"wikilambda-editor-behavior-title": "行为"
 }

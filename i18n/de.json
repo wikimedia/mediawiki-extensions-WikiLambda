@@ -154,7 +154,7 @@
 	"wikilambda-editor-input-subtitle": "Was wird in der Funktion enthalten sein?",
 	"wikilambda-editor-input-type-placeholder": "Eingabetyp",
 	"wikilambda-editor-input-label-placeholder": "Wie lautet die Bezeichnung für diese Eingabe?",
-	"wikilambda-editor-input-typed-list-placeholder": "Typisierter Listentyp",
+	"wikilambda-editor-input-typed-list-placeholder": "Typ der Liste",
 	"wikilambda-editor-input-description": "Eingaben sind die Werte, die an die Funktion übergeben werden. Wenn die Funktion zum Beispiel „Add“ heißt und zwei Zahlen addiert, könnten die Eingaben „x“ und „y“ sein.",
 	"wikilambda-editor-input-add-button": "Eingabe hinzufügen",
 	"wikilambda-editor-input-default-label": "Eingabe",

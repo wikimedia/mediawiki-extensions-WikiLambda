@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Al Riaz Uddin Ripon",
+			"Ankan",
 			"R4356th",
 			"Tahmid",
 			"WikiAbuHuraira",
@@ -23,9 +24,11 @@
 	"wikilambda-editor-label-select-programming-language-label": "প্রোগ্রামিং ভাষা নির্বাচন করুন:",
 	"specialpages-group-wikilambda": "উইকিফাংশন পাতা",
 	"wikilambda-persistentobject-details-label": "বিস্তারিত",
+	"wikilambda-editor-fn-step-define": "ব্যাখ্যা",
 	"wikilambda-editor-name-title": "নাম",
 	"wikilambda-editor-name-subtitle": "আপনার ফাংশনের নাম কি? এটি কী করে?",
 	"wikilambda-editor-name-zobject-name-placeholder": "আপনার ফাংশনের নাম কি?",
+	"wikilambda-editor-input-typed-list-placeholder": "টাইপকৃত তালিকার ধরন",
 	"wikilambda-editor-input-add-button": "ইনপুট যোগ করুন",
 	"wikilambda-editor-input-default-label": "ইনপুট",
 	"wikilambda-editor-write-title": "লিখুন"

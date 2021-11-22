@@ -163,6 +163,7 @@
 	"wikilambda-editor-input-subtitle": "Qu’est-ce qui entrera dans la fonction ?",
 	"wikilambda-editor-input-type-placeholder": "Type d’entrée",
 	"wikilambda-editor-input-label-placeholder": "Quel est le nom de cette entrée ?",
+	"wikilambda-editor-input-typed-list-placeholder": "Type de liste",
 	"wikilambda-editor-input-description": "Les entrées sont les valeurs qui sont transmises à la fonction. Par exemple, si la fonction s'appelle “Add” et qu'elle additionne deux nombres, les entrées peuvent être “x” et “y”.",
 	"wikilambda-editor-input-add-button": "Ajouter une entrée",
 	"wikilambda-editor-input-default-label": "entrée",

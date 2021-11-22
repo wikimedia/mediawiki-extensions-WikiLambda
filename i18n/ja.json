@@ -4,6 +4,7 @@
 			"Afaz",
 			"MathXplore",
 			"Portal18",
+			"RYOUMA1117",
 			"Tamaki Wakita"
 		]
 	},
@@ -25,7 +26,7 @@
 	"wikilambda-tester-none-found": "テスターが見つかりません。",
 	"wikilambda-tester-create-new": "新しいテスターを作成する",
 	"wikilambda-tester-status-running": "実行中...",
-	"wikilambda-tester-status-passed": "合格しました",
+	"wikilambda-tester-status-passed": "合格",
 	"wikilambda-tester-status-failed": "失敗",
 	"wikilambda-tester-results-title": "テスト結果",
 	"wikilambda-tester-results-caption": "実装に対する関数テスターの結果",
