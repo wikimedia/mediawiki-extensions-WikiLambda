@@ -31,15 +31,15 @@
 			"value": true
 		},
 		"WikiLambdaOrchestratorLocation": {
-			"description": "Docker container and port of function orchestrator.",
+			"description": "Docker container and port of the function orchestrator.",
 			"value": "mediawiki-function-orchestrator-1:6254"
 		},
 		"WikiLambdaEvaluatorLocation": {
-			"description": "Docker container and port of function evaluator.",
+			"description": "Docker container, port, and path to endpoint of the function evaluator.",
 			"value": "http://mediawiki-function-evaluator-1:6927/1/v1/evaluate/"
 		},
-		"WikiLocation": {
-			"description": "Docker container and port of wiki.",
+		"WikiLambdaWikiAPILocation": {
+			"description": "Docker container, port, and path to Action API endpoint of the wiki.",
 			"value": "http://mediawiki-web:8080/w/api.php"
 		}
 	},

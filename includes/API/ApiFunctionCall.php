@@ -46,7 +46,7 @@ class ApiFunctionCall extends ApiBase {
 				getConfigFactory()->makeConfig( 'WikiLambda' );
 			$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
 			$this->evaluatorHost = $config->get( 'WikiLambdaEvaluatorLocation' );
-			$this->wikiUri = $config->get( 'WikiLocation' );
+			$this->wikiUri = $config->get( 'WikiLambdaWikiAPILocation' );
 			$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
 			$this->orchestrator = new OrchestratorInterface( $client );
 		}
