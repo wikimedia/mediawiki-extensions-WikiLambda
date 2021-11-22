@@ -61,7 +61,8 @@ var ZObject = require( './ZObject.vue' ),
 	SdMessage = require( './base/Message.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	Constants = require( '../Constants.js' );
+	Constants = require( '../Constants.js' ),
+	typeUtils = require( '../mixins/typeUtils.js' );
 
 module.exports = {
 	name: 'ZObjectEditor',
@@ -70,6 +71,7 @@ module.exports = {
 		'sd-button': SdButton,
 		'sd-message': SdMessage
 	},
+	mixins: [ typeUtils ],
 	data: function () {
 		return {
 			summary: ''
@@ -79,7 +81,8 @@ module.exports = {
 		createNewPage: 'isCreateNewPage',
 		message: 'getZObjectMessage',
 		currentZObjectHasLabel: 'currentZObjectHasLabel',
-		isNewZObject: 'isNewZObject'
+		isNewZObject: 'isNewZObject',
+		getZObjectChildrenById: 'getZObjectChildrenById'
 	} ), {
 		submitButtonLabel: function () {
 			if ( this.createNewPage ) {
@@ -104,7 +107,7 @@ module.exports = {
 		}
 	} ),
 	methods: $.extend( {},
-		mapActions( [ 'submitZObject' ] ),
+		mapActions( [ 'submitZObject', 'changeType' ] ),
 		{
 			updateZobject: function ( newZobject ) {
 				this.zobject = newZobject;
@@ -119,11 +122,13 @@ module.exports = {
 			},
 
 			navigateToCreateFunction: function () {
-				this.$router.push( {
-					name: 'create',
-					query: {
-						zid: Constants.Z_FUNCTION
-					}
+				var zObject = this.getZObjectChildrenById( 0 ); // We fetch the Root object
+				var Z2K2 =
+					this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, zObject );
+
+				this.changeType( {
+					id: Z2K2.id,
+					type: Constants.Z_FUNCTION
 				} );
 			}
 		}

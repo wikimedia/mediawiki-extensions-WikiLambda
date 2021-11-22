@@ -197,6 +197,7 @@ module.exports = {
 		getRouterTo: function ( step ) {
 			var query = JSON.parse( JSON.stringify( this.$route.query ) );
 			query.step = step;
+			query.zid = Constants.Z_FUNCTION;
 
 			return {
 				query: query
@@ -260,8 +261,8 @@ module.exports = {
 	} ),
 	mounted: function () {
 		// If the step is empty, set it to the first step
-		if ( !this.$route.query.step ) {
-			this.$router.replace( this.getRouterTo( this.flatSteps[ 1 ] ) );
+		if ( !this.$route.query.step || !this.$route.query.zid ) {
+			this.$router.replace( this.getRouterTo( this.flatSteps[ 0 ] ) );
 		}
 	}
 };
