@@ -20,7 +20,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use Status;
 use Title;
-use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectContent
@@ -163,40 +162,6 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 		$this->assertFalse( $testObject->isValid() );
 		$this->expectException( ZErrorException::class );
 		$this->assertSame( 'InvalidObjectWillNotHaveAType', $testObject->getZType() );
-	}
-
-	/**
-	 * @covers ::prepareSave
-	 */
-	public function testPrepareSave_valid() {
-		$sysopUser = $this->getTestSysop()->getUser();
-		$testZid = 'Z401';
-		$testTitle = Title::newFromText( $testZid, NS_MAIN );
-		$testPage = WikiPage::factory( $testTitle );
-
-		$testObject = new ZObjectContent(
-			'{ "Z1K1": "Z2", "Z2K1": "Z401",'
-			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "valid" },'
-			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
-		);
-		$status = $testObject->prepareSave( $testPage, 0, -1, $sysopUser );
-		$this->assertTrue( $status->isOK() );
-	}
-
-	/**
-	 * @covers ::prepareSave
-	 */
-	public function testPrepareSave_invalid() {
-		$sysopUser = $this->getTestSysop()->getUser();
-		$testZid = 'Z401';
-		$testTitle = Title::newFromText( $testZid, NS_MAIN );
-		$testPage = WikiPage::factory( $testTitle );
-
-		$testObject = new ZObjectContent(
-			'{ "Z1K1": "Z2", "Z2K1": "Z401", "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
-		);
-		$status = $testObject->prepareSave( $testPage, 0, -1, $sysopUser );
-		$this->assertTrue( $status->hasMessage( 'wikilambda-invalidzobject' ) );
 	}
 
 	/**

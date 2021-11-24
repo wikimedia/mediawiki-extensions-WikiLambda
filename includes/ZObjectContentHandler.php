@@ -17,6 +17,7 @@ use Html;
 use IContextSource;
 use MediaWiki\Content\Renderer\ContentParseParams;
 use MediaWiki\Content\Transform\PreSaveTransformParams;
+use MediaWiki\Content\ValidationParams;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -25,6 +26,7 @@ use MediaWiki\Revision\SlotRenderingProvider;
 use MWException;
 use ParserOutput;
 use RequestContext;
+use StatusValue;
 use Title;
 
 class ZObjectContentHandler extends ContentHandler {
@@ -350,6 +352,18 @@ class ZObjectContentHandler extends ContentHandler {
 		foreach ( $content->getInnerZObject()->getLinkedZObjects() as $link ) {
 			$output->addLink( Title::newFromText( $link, NS_MAIN ) );
 		}
+	}
+
+	/**
+	 * @param Content $content
+	 * @param ValidationParams $validationParams
+	 * @return StatusValue
+	 */
+	public function validateSave( $content, $validationParams ) {
+		if ( $content->isValid() ) {
+			return StatusValue::newGood();
+		}
+		return StatusValue::newFatal( "wikilambda-invalidzobject" );
 	}
 
 	/**

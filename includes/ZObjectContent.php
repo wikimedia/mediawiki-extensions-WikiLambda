@@ -22,8 +22,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\MediaWikiServices;
 use Status;
 use Title;
-use User;
-use WikiPage;
 
 /**
  * This class represents the wrapper for a ZObject, as stored in MediaWiki. Though its form is
@@ -128,20 +126,6 @@ class ZObjectContent extends AbstractContent {
 			$this->validateContent();
 		}
 		return $this->status->isOK();
-	}
-
-	/**
-	 * @param WikiPage $page
-	 * @param int $flags
-	 * @param int $parentRevId
-	 * @param User $user
-	 * @return Status
-	 */
-	public function prepareSave( WikiPage $page, $flags, $parentRevId, User $user ) {
-		if ( !$this->isValid() ) {
-			return Status::newFatal( "wikilambda-invalidzobject" );
-		}
-		return Status::newGood();
 	}
 
 	/**

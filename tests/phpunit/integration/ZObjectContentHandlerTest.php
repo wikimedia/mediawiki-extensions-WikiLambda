@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use FormatJson;
 use Language;
 use MediaWiki\Content\Transform\PreSaveTransformParamsValue;
+use MediaWiki\Content\ValidationParams;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
@@ -25,6 +26,7 @@ use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Revision\SlotRenderingProvider;
 use ParserOptions;
 use Title;
+use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectContentHandler
@@ -303,4 +305,43 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
+	/**
+	 * @covers ::validateSave
+	 */
+	public function testValidateSave_valid() {
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+
+		$testZid = 'Z401';
+		$testTitle = Title::newFromText( $testZid, NS_MAIN );
+		$testPage = WikiPage::factory( $testTitle );
+		$validateParams = new ValidationParams( $testPage, 0 );
+
+		$content = new ZObjectContent(
+			'{ "Z1K1": "Z2", "Z2K1": "Z401",'
+			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "valid" },'
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
+		);
+
+		$status = $handler->validateSave( $content, $validateParams );
+		$this->assertTrue( $status->isOK() );
+	}
+
+	/**
+	 * @covers ::validateSave
+	 */
+	public function testValidateSave_invalid() {
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+
+		$testZid = 'Z401';
+		$testTitle = Title::newFromText( $testZid, NS_MAIN );
+		$testPage = WikiPage::factory( $testTitle );
+		$validateParams = new ValidationParams( $testPage, 0 );
+
+		$content = new ZObjectContent(
+			'{ "Z1K1": "Z2", "Z2K1": "Z401", "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
+		);
+
+		$status = $handler->validateSave( $content, $validateParams );
+		$this->assertTrue( $status->hasMessage( 'wikilambda-invalidzobject' ) );
+	}
 }
