@@ -30,7 +30,7 @@
 	"wikilambda-tester-create-new": "ایجاد آزمایشگر تازه",
 	"wikilambda-tester-status-pending": "در انتظار...",
 	"wikilambda-tester-status-running": "در حال اجرا...",
-	"wikilambda-tester-status-passed": "فرستاده شد",
+	"wikilambda-tester-status-passed": "موفق",
 	"wikilambda-tester-status-failed": "ناموفق",
 	"wikilambda-tester-results-title": "نتایج آزمون",
 	"wikilambda-tester-results-caption": "نتایج آزمایشگرهای توابع در مقابل پیاده‌سازی‌ها",

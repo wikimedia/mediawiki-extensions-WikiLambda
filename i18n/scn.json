@@ -4,6 +4,17 @@
 			"Ajeje Brazorf"
 		]
 	},
+	"wikilambda-persistentzobject-contents": "Cuntinuti",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Lingua",
-	"wikilambda-savenew": "Sarva"
+	"wikilambda-special-objectsbytype-typeheader": "Tutti li tipi",
+	"wikilambda-savenew": "Sarva",
+	"wikilambda-savechanges": "Sarva li canciamenti",
+	"wikilambda-editor-label-addlanguage-label": "Agghiunci lingua",
+	"wikilambda-editor-zobject-addkey": "Agghiunci chiavi:",
+	"wikilambda-implementation-selector-code": "Còdici",
+	"wikilambda-metadata-language-column": "Lingua",
+	"wikilambda-metadata-label-column": "Etichetta",
+	"wikilambda-metadata-aka-column": "Macari canusciutu comu",
+	"wikilambda-metadata-all-languages": "Ammustra tutti li lingui nziriti",
+	"wikilambda-persistentobject-details-label": "Dittagghî"
 }

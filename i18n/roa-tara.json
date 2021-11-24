@@ -4,6 +4,12 @@
 			"Joetaras"
 		]
 	},
+	"wikilambda-emptylabel": "ZObject none etichettate",
+	"wikilambda-persistentzobject-contents": "Condenute",
+	"wikilambda-literal": "Letterale",
+	"wikilambda-genericliteral": "Letterale genereche",
+	"wikilambda-call-function": "Chiame 'a funzione",
+	"wikilambda-functioncall": "Chiamate d'a funzione",
 	"wikilambda-special-createzobject": "Ccreje 'nu ZObject nuève",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "ZObject esistende",
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "ZObject in conflitte",
@@ -17,5 +23,5 @@
 	"wikilambda-argument-typeselector-label": "Scacchie 'nu tupe pe stu argomende",
 	"wikilambda-function-typeselector-label": "Scacchie 'na funzione",
 	"wikilambda-return-typeselector-label": "Scacchie 'nu tupe da turnà",
-	"wikilambda-editor-label-addlanguage-label": "Aggiunge 'na lènghe:"
+	"wikilambda-editor-label-addlanguage-label": "Aggiunge 'na lènghe"
 }
