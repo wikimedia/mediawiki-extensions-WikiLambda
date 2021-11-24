@@ -113,10 +113,11 @@ class ZMultiLingualString extends ZObject {
 	 * in the given language or any of its fallback languages.
 	 *
 	 * @param Language $language The MediaWiki language class in which the string is wanted.
-	 * @return string The string, or the value of the wikilambda-multilingualstring-nofallback message.
+	 * @param bool $returnPlaceholder By default returns 'wikilambda-multilingualstring-nofallback' message, else null.
+	 * @return string|null The string, the value of the wikilambda-multilingualstring-nofallback message, or null.
 	 */
-	public function getStringForLanguage( Language $language ): string {
-		return $this->internalGetStringForLanguage( $language, false );
+	public function getStringForLanguage( Language $language, bool $returnPlaceholder = true ) {
+		return $this->internalGetStringForLanguage( $language, false, $returnPlaceholder );
 	}
 
 	/**
@@ -126,10 +127,11 @@ class ZMultiLingualString extends ZObject {
 	 * in the given language or any of its fallback languages or English.
 	 *
 	 * @param Language $language The MediaWiki language class in which the string is wanted.
-	 * @return string The string, or the value of the wikilambda-multilingualstring-nofallback message.
+	 * @param bool $returnPlaceholder By default returns 'wikilambda-multilingualstring-nofallback' message, else null.
+	 * @return string|null The string, the value of the wikilambda-multilingualstring-nofallback message, or null.
 	 */
-	public function getStringForLanguageOrEnglish( Language $language ): string {
-		return $this->internalGetStringForLanguage( $language, true );
+	public function getStringForLanguageOrEnglish( Language $language, bool $returnPlaceholder = true ) {
+		return $this->internalGetStringForLanguage( $language, true, $returnPlaceholder );
 	}
 
 	/**
@@ -139,9 +141,10 @@ class ZMultiLingualString extends ZObject {
 	 *
 	 * @param Language $language The MediaWiki language class in which the string is wanted.
 	 * @param bool $withEnglish Whether or not to include English regardless of the fallback chain.
-	 * @return string The string, or the value of the wikilambda-multilingualstring-nofallback message.
+	 * @param bool $returnPlaceholder By default returns 'wikilambda-multilingualstring-nofallback' message, else null.
+	 * @return string|null The string, the value of the wikilambda-multilingualstring-nofallback message, or null.
 	 */
-	private function internalGetStringForLanguage( Language $language, bool $withEnglish ): string {
+	private function internalGetStringForLanguage( Language $language, bool $withEnglish, bool $returnPlaceholder ) {
 		if ( $this->isLanguageProvidedValue( $language->getCode() ) ) {
 			return $this->getStringForLanguageCode( $language->getCode() );
 		}
@@ -157,7 +160,9 @@ class ZMultiLingualString extends ZObject {
 			}
 		}
 
-		return wfMessage( 'wikilambda-multilingualstring-nofallback' )->inLanguage( $language )->text();
+		return $returnPlaceholder
+			? wfMessage( 'wikilambda-multilingualstring-nofallback' )->inLanguage( $language )->text()
+			: null;
 	}
 
 	/**
@@ -197,13 +202,19 @@ class ZMultiLingualString extends ZObject {
 		return true;
 	}
 
-	public function serialize( $form = self::FORM_CANONICAL ) {
+	/**
+	 * Convert this ZObject into its serialized canonical representation
+	 *
+	 * @param int $form
+	 * @return \stdClass|array|string
+	 */
+	public function getSerialized( $form = self::FORM_CANONICAL ) {
 		// TODO fix different serialization modes, only returning FORM_CANONICAL
 		$monolingualStrings = [];
 		foreach ( $this->getZValue() as $lang => $value ) {
-			$monolingualStrings[] = $value->serialize( $form );
+			$monolingualStrings[] = $value->getSerialized( $form );
 		}
-		return [
+		return (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => $this->getZType(),
 			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => $monolingualStrings
 		];

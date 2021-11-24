@@ -12,7 +12,6 @@ namespace MediaWiki\Extension\WikiLambda\Registry;
 
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use Title;
 
@@ -126,9 +125,8 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 			return true;
 		}
 
-		try {
-			$zObject = $this->fetchZErrorType( $errorType );
-		} catch ( ZErrorException $e ) {
+		$zObject = $this->fetchZErrorType( $errorType );
+		if ( $zObject === false ) {
 			return false;
 		}
 
@@ -151,24 +149,26 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 		$zObject = $zObjectStore->fetchZObjectByTitle( $title );
 
 		if ( $zObject === false ) {
-			throw new ZErrorException(
-				ZErrorFactory::createZErrorInstance(
-					self::Z_ERROR_ZID_NOT_FOUND,
-					[ "data" => $errorType ]
-				)
-			);
+			return false;
+			// throw new ZErrorException(
+			// 	ZErrorFactory::createZErrorInstance(
+			// 		self::Z_ERROR_ZID_NOT_FOUND,
+			// 		[ "data" => $errorType ]
+			// 	)
+			// );
 		}
 
 		if ( $zObject->getZType() !== ZTypeRegistry::Z_ERRORTYPE ) {
-			throw new ZErrorException(
-				ZErrorFactory::createZErrorInstance(
-					self::Z_ERROR_UNEXPECTED_ZTYPE,
-					[
-						"expected" => ZTypeRegistry::Z_ERRORTYPE,
-						"actual" => $errorType
-					]
-				)
-			);
+			return false;
+			// throw new ZErrorException(
+			// 	ZErrorFactory::createZErrorInstance(
+			// 		self::Z_ERROR_UNEXPECTED_ZTYPE,
+			// 		[
+			// 			"expected" => ZTypeRegistry::Z_ERRORTYPE,
+			// 			"actual" => $errorType
+			// 		]
+			// 	)
+			// );
 		}
 
 		return $zObject;
@@ -210,7 +210,6 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 
 	/**
 	 * Gets the ZErrorType label in English
-	 * TODO: should it be in the user selected language instead?
 	 *
 	 * @param string $errorType
 	 * @return string
@@ -220,6 +219,16 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 		if ( $this->isZErrorTypeCached( $errorType ) ) {
 			return $this->registry[ $errorType ];
 		}
-		return "Unknown error $errorType";
+
+		$zObject = $this->fetchZErrorType( $errorType );
+		if ( $zObject === false ) {
+			return "Unknown error $errorType";
+		}
+
+		// TODO: should it be in the user selected language instead?
+		$errorLabel = $zObject->getLabels()->getStringForLanguageCode( 'en' );
+		$this->register( $errorType, $errorLabel );
+
+		return $errorLabel;
 	}
 }

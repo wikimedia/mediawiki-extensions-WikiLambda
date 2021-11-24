@@ -38,7 +38,16 @@ class ZQuote extends ZObject {
 		return true;
 	}
 
-	public function serialize( $form = self::FORM_CANONICAL ) {
-		return $this->getZValue();
+	/**
+	 * Convert this ZObject into its serialized canonical representation
+	 *
+	 * @param int $form
+	 * @return \stdClass|array|string
+	 */
+	public function getSerialized( $form = self::FORM_CANONICAL ) {
+		return (object)[
+			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_QUOTE,
+			ZTypeRegistry::Z_QUOTE_VALUE => $this->getZValue()
+		];
 	}
 }

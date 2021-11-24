@@ -53,19 +53,30 @@ class ZError extends ZObject {
 	}
 
 	public function getMessage(): string {
-		// 1. Get the label of this ZType error
-		$serialized = ZErrorTypeRegistry::singleton()->getZErrorTypeLabel( $this->getZErrorType() );
+		$messages = [];
+		$messages[] = ZErrorTypeRegistry::singleton()->getZErrorTypeLabel( $this->getZErrorType() );
 
-		// 2. If $value is a ZError, call its getMessage() and append
-		// FIXME: The value might not be a ZError but a ZErrorType instance,
-		// in which case we also want to recursively grab its message
 		$errorValue = $this->getZValue();
-		if ( $errorValue instanceof ZError ) {
-			'@phan-var ZError $errorValue';
-			$serialized .= $errorValue->getMessage();
+		$valueType = $errorValue->getZType();
+
+		// If $valueType is Z502, concat message of Z502K2
+		if ( $valueType === ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED ) {
+			$subError = $errorValue->getValueByKey( 'Z502K2' );
+			'@phan-var ZError $subError';
+			$messages[] = $subError->getMessage();
 		}
 
-		return $serialized;
+		// If $valueType is Z509, concat messages of list Z509K1
+		if ( $valueType === ZErrorTypeRegistry::Z_ERROR_LIST ) {
+			$subErrors = $errorValue->getValueByKey( 'Z509K1' );
+			if ( is_array( $subErrors ) || ( $subErrors instanceof ZList ) ) {
+				foreach ( ZObjectUtils::getIterativeList( $subErrors ) as $subError ) {
+					$messages[] = $subError->getMessage();
+				}
+			}
+		}
+
+		return implode( ". ", $messages );
 	}
 
 	public function isValid(): bool {
@@ -95,9 +106,9 @@ class ZError extends ZObject {
 
 	public function getErrorData() {
 		return [
-			'zerror' => $this->serialize(),
-			// TODO: T294827 Labelize ZObject to return human-readable error
-			// 'labelized' => ''
+			'message' => $this->getMessage(),
+			'zerror' => $this->getSerialized(),
+			'labelled' => $this->getHumanReadable()
 		];
 	}
 }

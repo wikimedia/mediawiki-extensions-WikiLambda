@@ -39,32 +39,32 @@ class ZListTest extends WikiLambdaIntegrationTestCase {
 
 		$testObject = new ZObjectContent( '["Test"]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ 'Test' ], $testObject->getInnerZObject()->serialize() );
+		$this->assertSame( [ 'Test' ], $testObject->getInnerZObject()->getSerialized() );
 
 		$testObject = new ZObjectContent( '["Test", "Test2"]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ 'Test', 'Test2' ], $testObject->getInnerZObject()->serialize() );
+		$this->assertSame( [ 'Test', 'Test2' ], $testObject->getInnerZObject()->getSerialized() );
 
 		$testObject = new ZObjectContent( '["Test","Test2","Test3"]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ 'Test', 'Test2', 'Test3' ], $testObject->getInnerZObject()->serialize() );
+		$this->assertSame( [ 'Test', 'Test2', 'Test3' ], $testObject->getInnerZObject()->getSerialized() );
 
 		$testObject = new ZObjectContent( '[["Test"],["Test2"],["Test3"]]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
 		$this->assertSame(
 			[ [ 'Test' ], [ 'Test2' ], [ 'Test3' ] ],
-			$testObject->getInnerZObject()->serialize()
+			$testObject->getInnerZObject()->getSerialized()
 		);
 
 		$testObject = new ZObjectContent( '[["Test"],["Test2","Test3"]]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ [ 'Test' ], [ 'Test2', 'Test3' ] ], $testObject->getInnerZObject()->serialize() );
+		$this->assertSame( [ [ 'Test' ], [ 'Test2', 'Test3' ] ], $testObject->getInnerZObject()->getSerialized() );
 
 		$testObject = new ZObjectContent( '[["Test", "Test2"],["Test3","Test4"]]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
 		$this->assertSame(
 			[ [ 'Test', 'Test2' ], [ 'Test3', 'Test4' ] ],
-			$testObject->getInnerZObject()->serialize()
+			$testObject->getInnerZObject()->getSerialized()
 		);
 
 		$this->hideDeprecated( '::create' );
@@ -90,7 +90,7 @@ class ZListTest extends WikiLambdaIntegrationTestCase {
 EOT
 		);
 		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ 'Test', 'Test2', 'Test3' ], $testObject->getInnerZObject()->serialize() );
+		$this->assertSame( [ 'Test', 'Test2', 'Test3' ], $testObject->getInnerZObject()->getSerialized() );
 	}
 
 	/**

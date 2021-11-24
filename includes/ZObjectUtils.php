@@ -10,9 +10,12 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use Normalizer;
 use stdClass;
 use Transliterator;
@@ -667,5 +670,206 @@ class ZObjectUtils {
 			return $list->getZListAsArray();
 		}
 		return $list;
+	}
+
+	/**
+	 * @param string|array|\stdClass $zobject
+	 * @return array
+	 */
+	public static function getRequiredZids( $zobject ): array {
+		$zids = [];
+
+		// If $zobject is a reference, add to the array
+		if ( is_string( $zobject ) ) {
+			if ( self::isValidZObjectReference( $zobject ) ) {
+				$zids[] = $zobject;
+			}
+		}
+
+		// If $zobject is an array, get required Zids from each element
+		if ( is_array( $zobject ) ) {
+			foreach ( $zobject as $item ) {
+				$zids = array_merge( $zids, self::getRequiredZids( $item ) );
+			}
+		}
+
+		// If $zobject is an object, get required Zids from keys and values
+		if ( is_object( $zobject ) ) {
+			foreach ( $zobject as $key => $value ) {
+				// Add the reference part of the key. Do not add empty string if local key.
+				$ref = self::getZObjectReferenceFromKey( $key );
+				if ( $ref ) {
+					$zids[] = $ref;
+				}
+				// Recursively add other references in the value
+				$zids = array_merge( $zids, self::getRequiredZids( $value ) );
+			}
+		}
+
+		return array_values( array_unique( $zids ) );
+	}
+
+	/**
+	 * Returns the natural language label of a given Zid in the language
+	 * passed as parameter or available fallback languages. If not available,
+	 * returns the non-translated Zid.
+	 *
+	 * @param string $zid
+	 * @param ZPersistentObject $zobject
+	 * @param Language $lang
+	 * @return string
+	 */
+	public static function getLabelOfReference( $zid, $zobject, $lang ): string {
+		$labels = $zobject->getLabels();
+		$label = $labels->getStringForLanguageOrEnglish( $lang, false );
+
+		if ( $label === null ) {
+			return $zid;
+		}
+
+		return $label;
+	}
+
+	/**
+	 * Returns the natural language label of a given type or error key in the language
+	 * passed as parameter or available fallback languages. If not available,
+	 * returns the untranslated key Id.
+	 *
+	 * @param string $key
+	 * @param ZPersistentObject $zobject
+	 * @param Language $lang
+	 * @return string
+	 */
+	public static function getLabelOfKey( $key, $zobject, $lang ): string {
+		$ztype = $zobject->getInternalZType();
+
+		if ( $ztype === ZTypeRegistry::Z_TYPE ) {
+			return self::getLabelOfTypeKey( $key, $zobject, $lang );
+		}
+
+		$errorRegistry = ZErrorTypeRegistry::singleton();
+		if ( $ztype === ZTypeRegistry::Z_ERRORTYPE ) {
+			return self::getLabelOfErrorTypeKey( $key, $zobject, $lang );
+		}
+
+		// Not a type nor an error type, return untranslated key Id
+		return $key;
+	}
+
+	/**
+	 * Returns the natural language label of a given ZKey in the language
+	 * passed as parameter or available fallback languages. If not available,
+	 * returns the non-translated ZKey.
+	 *
+	 * @param string $key
+	 * @param ZPersistentObject $zobject
+	 * @param Language $lang
+	 * @return string
+	 */
+	public static function getLabelOfErrorTypeKey( $key, $zobject, $lang ): string {
+		$keys = $zobject->getInnerZObject()->getValueByKey( ZTypeRegistry::Z_ERRORTYPE_KEYS );
+
+		if ( !is_array( $keys ) && !( $keys instanceof ZList ) ) {
+			return $key;
+		}
+
+		foreach ( self::getIterativeList( $keys ) as $zkey ) {
+			if ( $zkey->getKeyId() === $key ) {
+				$labels = $zkey->getKeyLabel();
+
+				if ( $labels === null ) {
+					return $key;
+				}
+
+				$label = $labels->getStringForLanguageOrEnglish( $lang, false );
+				if ( $label === null ) {
+					return $key;
+				}
+
+				return $label;
+			}
+		}
+
+		// Key not found
+		return $key;
+	}
+
+	/**
+	 * Returns the natural language label of a given ZKey in the language
+	 * passed as parameter or available fallback languages. If not available,
+	 * returns the non-translated ZKey.
+	 *
+	 * @param string $key
+	 * @param ZPersistentObject $zobject
+	 * @param Language $lang
+	 * @return string
+	 */
+	public static function getLabelOfTypeKey( $key, $zobject, $lang ): string {
+		$ztype = $zobject->getInnerZObject();
+		if ( !( $ztype instanceof ZType ) ) {
+			return $key;
+		}
+
+		$zkey = $ztype->getZKey( $key );
+		if ( $zkey === null ) {
+			return $key;
+		}
+
+		$labels = $zkey->getKeyLabel();
+		if ( $labels === null ) {
+			return $key;
+		}
+
+		$label = $labels->getStringForLanguageOrEnglish( $lang, false );
+		if ( $label === null ) {
+			return $key;
+		}
+
+		return $label;
+	}
+
+	/**
+	 * Translates a serialized ZObject from Zids and ZKeys to natural language in the
+	 * language passed as parameter or available fallback languages.
+	 *
+	 * @param stdClass|array|string $zobject
+	 * @param ZPersistentObject[] $data
+	 * @param Language $lang
+	 * @return stdClass|array|string
+	 */
+	public static function extractHumanReadableZObject( $zobject, $data, $lang ) {
+		if ( is_string( $zobject ) ) {
+			if ( self::isValidZObjectReference( $zobject ) ) {
+				if ( array_key_exists( $zobject, $data ) ) {
+					return self::getLabelOfReference( $zobject, $data[ $zobject ], $lang );
+				}
+			}
+			return $zobject;
+		}
+
+		if ( is_array( $zobject ) ) {
+			return array_map( function ( $item ) use ( $data, $lang ) {
+				return self::extractHumanReadableZObject( $item, $data, $lang );
+			}, $zobject );
+		}
+
+		if ( is_object( $zobject ) ) {
+			$labelized = [];
+			foreach ( $zobject as $key => $value ) {
+				$typeZid = self::getZObjectReferenceFromKey( $key );
+				if ( array_key_exists( $typeZid, $data ) ) {
+					$labelizedKey = self::getLabelOfKey( $key, $data[ $typeZid ], $lang );
+				} else {
+					$labelizedKey = $key;
+				}
+				if ( !in_array( $key, ZTypeRegistry::IGNORE_KEY_VALUES_FOR_LABELLING ) ) {
+					$labelizedValue = self::extractHumanReadableZObject( $value, $data, $lang );
+					$labelized[ $labelizedKey ] = $labelizedValue;
+				} else {
+					$labelized[ $labelizedKey ] = $value;
+				}
+			}
+			return (object)$labelized;
+		}
 	}
 }

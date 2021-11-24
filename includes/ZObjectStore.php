@@ -12,16 +12,19 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Revision\SlotRecord;
 use Title;
+use TitleArray;
 use TitleFactory;
 use User;
 use Wikimedia\Rdbms\ILoadBalancer;
 use Wikimedia\Rdbms\IResultWrapper;
+use WikiPage;
 
 class ZObjectStore {
 
@@ -105,6 +108,42 @@ class ZObjectStore {
 		$slot = $revision->getSlot( SlotRecord::MAIN, RevisionRecord::RAW );
 		// @phan-suppress-next-line PhanTypeMismatchReturnSuperType
 		return $slot->getContent();
+	}
+
+	/**
+	 * Returns an array of ZPersistentObjects fetched from the DB given an array of their Zids
+	 *
+	 * @param string[] $zids
+	 * @return ZPersistentObject[]
+	 */
+	public function fetchBatchZObjects( $zids ) {
+		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+		$query = WikiPage::getQueryInfo();
+		$conditions = [
+			'page_namespace' => NS_MAIN,
+			'page_title' => $zids
+		];
+		$options = [];
+
+		$res = $dbr->select(
+			$query['tables'],
+			$query['fields'],
+			$conditions,
+			__METHOD__,
+			$options,
+			$query['joins']
+		);
+
+		$titleArray = TitleArray::newFromResult( $res );
+
+		$dataArray = [];
+		foreach ( $titleArray as $title ) {
+			$content = $this->fetchZObjectByTitle( $title );
+			if ( $content->isValid() ) {
+				$dataArray[ $title->getBaseText() ] = $content->getZObject();
+			}
+		}
+		return $dataArray;
 	}
 
 	/**

@@ -106,6 +106,95 @@ class ZTestType extends ZObject {
 }
 EOT;
 
+	public const TEST_LABELIZED = <<<EOT
+{
+    "type": "Persistent object",
+    "id": "Z0",
+    "value": {
+        "type": "Type",
+        "identity": "Z111",
+        "keys": [
+            {
+                "type": "Key",
+                "value type": "String",
+                "key id": "Z111K1",
+                "label": {
+                    "type": "Multilingual text",
+                    "texts": [
+                        {
+                            "type": "Monolingual text",
+                            "language": "English",
+                            "text": "Demonstration key"
+                        },
+                        {
+                            "type": "Monolingual text",
+                            "language": "French",
+                            "text": "Index pour démonstration"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "Key",
+                "value type": "String",
+                "key id": "Z111K2",
+                "label": {
+                    "type": "Multilingual text",
+                    "texts": [
+                        {
+                            "type": "Monolingual text",
+                            "language": "English",
+                            "text": "Other demonstration key"
+                        },
+                        {
+                            "type": "Monolingual text",
+                            "language": "French",
+                            "text": "Autre index pour démonstration"
+                        }
+                    ]
+                }
+            }
+        ],
+        "validator": "Z111"
+    },
+    "labels": {
+        "type": "Multilingual text",
+        "texts": [
+            {
+                "type": "Monolingual text",
+                "language": "English",
+                "text": "Demonstration type"
+            },
+            {
+                "type": "Monolingual text",
+                "language": "French",
+                "text": "Type pour démonstration"
+            }
+        ]
+    },
+    "aliases": {
+        "type": "Multilingual stringset",
+        "stringset": [
+            {
+                "type": "Monolingual stringset",
+                "language": "English",
+                "stringset": [
+                    "Demonstration type alias",
+                    "Demonstration type second alias"
+                ]
+            },
+            {
+                "type": "Monolingual stringset",
+                "language": "French",
+                "stringset": [
+                    "Alias de type pour démonstration"
+                ]
+            }
+        ]
+    }
+}
+EOT;
+
 	public const TEST_LANGS = [ 'en', 'fr' ];
 
 	public static function getDefinition(): array {

@@ -15,7 +15,6 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualStringSet;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualStringSet;
-use MediaWiki\MediaWikiServices;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualStringSet
@@ -254,19 +253,6 @@ EOT
 		$this->assertSame(
 			[ 'Article pour démonstration' ],
 			$testObject->getInnerZObject()->getAliasesForLanguage( $french )
-		);
-	}
-
-	private function makeLanguage( string $code ) {
-		$services = MediaWikiServices::getInstance();
-
-		return new \Language(
-			$code,
-			$services->getLocalisationCache(),
-			$services->getLanguageNameUtils(),
-			$services->getLanguageFallback(),
-			$services->getLanguageConverterFactory(),
-			$services->getHookContainer()
 		);
 	}
 }

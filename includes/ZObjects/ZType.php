@@ -58,6 +58,16 @@ class ZType extends ZObject {
 		return $this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ]->getZValue();
 	}
 
+	public function getZKey( $key ) {
+		$keys = $this->getTypeKeys()->getZListAsArray();
+		foreach ( $keys as $zkey ) {
+			if ( $zkey->getKeyId() === $key ) {
+				return $zkey;
+			}
+		}
+		return null;
+	}
+
 	public function isValid(): bool {
 		// Identity must be set to a valid ZReference (or special case of 'Z0')
 		if ( !isset( $this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ] ) ) {

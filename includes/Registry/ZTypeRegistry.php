@@ -103,6 +103,9 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_QUOTE = 'Z99';
 	public const Z_QUOTE_VALUE = 'Z99K1';
 
+	public const Z_ERRORTYPE = 'Z50';
+	public const Z_ERRORTYPE_KEYS = 'Z50K1';
+
 	private const BUILT_IN_TYPES = [
 		self::Z_OBJECT => 'ZObject',
 		self::Z_PERSISTENTOBJECT => 'ZPersistentObject',
@@ -140,6 +143,14 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_NULL,
 	];
 
+	public const IGNORE_KEY_VALUES_FOR_LABELLING = [
+		self::Z_QUOTE_VALUE,
+		self::Z_KEYREFERENCE_VALUE,
+		self::Z_KEY_ID,
+		self::Z_PERSISTENTOBJECT_ID,
+		self::Z_TYPE_IDENTITY,
+	];
+
 	public const SELF_REFERENTIAL_KEYS = [
 		self::Z_TYPE_IDENTITY,
 		self::Z_PERSISTENTOBJECT_ID,
@@ -153,7 +164,6 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_ARGUMENTREFERENCE = 'Z18';
 	public const Z_NULL = 'Z23';
 	public const Z_BOOLEAN = 'Z40';
-	public const Z_ERRORTYPE = 'Z50';
 
 	public const IGNORE_KEY_NORMALIZATION = [
 		self::Z_OBJECT_TYPE,

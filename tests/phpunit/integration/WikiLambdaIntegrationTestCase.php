@@ -9,9 +9,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry;
+use MediaWiki\MediaWikiServices;
 use MediaWikiIntegrationTestCase;
 
 abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCase {
@@ -23,7 +25,8 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 		'ru' => 'Z1005',
 		'zh' => 'Z1006',
 		'de' => 'Z1430',
-		'it' => 'Z1787'
+		'it' => 'Z1787',
+		'pcd' => 'Z1829',
 	];
 
 	protected function setUp(): void {
@@ -100,6 +103,25 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 		$method = $reflector->getMethod( $methodName );
 		$method->setAccessible( true );
 		return $method->invokeArgs( $object, $args );
+	}
+
+	/**
+	 * Returns instance of Language given a string language code
+	 *
+	 * @param string $code
+	 * @return Language
+	 */
+	protected function makeLanguage( string $code ) {
+		$services = MediaWikiServices::getInstance();
+
+		return new Language(
+			$code,
+			$services->getLocalisationCache(),
+			$services->getLanguageNameUtils(),
+			$services->getLanguageFallback(),
+			$services->getLanguageConverterFactory(),
+			$services->getHookContainer()
+		);
 	}
 
 	/**
