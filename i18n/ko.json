@@ -57,6 +57,7 @@
 	"wikilambda-editor-input-title": "입력",
 	"wikilambda-editor-input-type-placeholder": "입력 종류",
 	"wikilambda-editor-input-label-placeholder": "이 입력의 이름은 무엇입니까?",
+	"wikilambda-editor-input-typed-list-placeholder": "리스트 타입",
 	"wikilambda-editor-input-add-button": "입력 추가",
 	"wikilambda-editor-input-default-label": "입력",
 	"wikilambda-editor-output-title": "출력",
