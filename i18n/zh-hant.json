@@ -4,7 +4,8 @@
 			"Impartial just",
 			"Kly",
 			"Neetp7k9",
-			"Weather Top Wizard"
+			"Weather Top Wizard",
+			"Winston Sung"
 		]
 	},
 	"wikilambda-desc": "為維基媒體的 Wiki 提供 Wiki 語法解析器功能，來呼叫對於在中央 Wiki 上編寫、管理、評估的功能之評估。",
@@ -32,11 +33,11 @@
 	"wikilambda-summarylabel": "摘要：",
 	"wikilambda-typeselector-label": "選擇一個型別",
 	"wikilambda-function-typeselector-label": "選擇一個方法",
-	"wikilambda-editor-label-addlanguage-label": "增加語言：",
+	"wikilambda-editor-label-addlanguage-label": "增加語言",
 	"wikilambda-editor-label-removelanguage-tooltip": "從這個標籤移除此語言",
 	"wikilambda-editor-zlist-additem-tooltip": "增加一個項目到 ZList",
 	"wikilambda-editor-zlist-removeitem-tooltip": "從這個 ZList 移除此項目",
 	"wikilambda-editor-zobject-addkey": "增加鍵：",
 	"wikilambda-editor-zobject-removekey-tooltip": "從這個 ZList 移除此鍵/值",
-	"wikilambda-editor-fn-step-tests": "提供測試"
+	"wikilambda-editor-fn-step-tests": "測試"
 }
