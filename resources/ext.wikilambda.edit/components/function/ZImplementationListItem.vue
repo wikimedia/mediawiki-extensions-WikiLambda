@@ -62,7 +62,6 @@ module.exports = {
 		'getZImplementations',
 		'getZkeyLabels',
 		'getZkeys',
-		'getStringifiedZObject',
 		'getViewMode'
 	] ),
 	{
@@ -108,9 +107,6 @@ module.exports = {
 							Constants.Z_IMPLEMENTATION_COMPOSITION ]
 					)
 				);
-
-				this.getStringifiedZObject( composition );
-
 				this.fetchZKeys( this.findMissingZids( composition ) );
 
 				return JSON.stringify( composition, null, 4 );
