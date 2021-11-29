@@ -250,7 +250,7 @@ module.exports = {
 				this.addZObject( payload );
 				this.injectZObject( {
 					zobject: {
-						Z1K1: 'Z31',
+						Z1K1: Constants.Z_MONOLINGUALSTRINGSET,
 						Z31K1: language,
 						Z31K2: [
 							this.newAlias
