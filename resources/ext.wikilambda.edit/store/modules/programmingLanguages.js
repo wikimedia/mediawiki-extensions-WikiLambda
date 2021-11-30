@@ -5,6 +5,8 @@
  * @license MIT
  */
 
+var Constants = require( '../../Constants.js' );
+
 module.exports = {
 	state: {
 		/**
@@ -45,28 +47,28 @@ module.exports = {
 		fetchAllZProgrammingLanguages: function ( context ) {
 			var zProgrammingLanguages = [
 				{
-					Z1K1: 'Z2',
-					Z2K1: 'Z9999',
+					Z1K1: Constants.Z_PERSISTENTOBJECT,
+					Z2K1: 'Z9999', // testing zid
 					Z2K2: {
-						Z1K1: 'Z61',
+						Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
 						Z61K1: 'javascript',
 						Z61K2: 'JavaScript'
 					}
 				},
 				{
-					Z1K1: 'Z2',
-					Z2K1: 'Z99991',
+					Z1K1: Constants.Z_PERSISTENTOBJECT,
+					Z2K1: 'Z99991', // testing zid
 					Z2K2: {
-						Z1K1: 'Z61',
+						Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
 						Z61K1: 'python',
 						Z61K2: 'Python'
 					}
 				},
 				{
-					Z1K1: 'Z2',
-					Z2K1: 'Z99992',
+					Z1K1: Constants.Z_PERSISTENTOBJECT,
+					Z2K1: 'Z99992', // testing zid
 					Z2K2: {
-						Z1K1: 'Z61',
+						Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
 						Z61K1: 'lua',
 						Z61K2: 'Lua'
 					}

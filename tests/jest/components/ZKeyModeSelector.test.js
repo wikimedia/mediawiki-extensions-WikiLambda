@@ -37,7 +37,7 @@ describe( 'ZKeyModeSelector', function () {
 		var wrapper = mount( ZKeyModeSelector, {
 			propsData: {
 				mode: Constants.Z_KEY_MODES.LITERAL,
-				parentType: 'Z1'
+				parentType: Constants.Z_OBJECT
 			},
 			store: store,
 			localVue: localVue,
@@ -53,7 +53,7 @@ describe( 'ZKeyModeSelector', function () {
 		var wrapper = mount( ZKeyModeSelector, {
 				propsData: {
 					mode: Constants.Z_KEY_MODES.LITERAL,
-					parentType: 'Z1'
+					parentType: Constants.Z_OBJECT
 				},
 				store: store,
 				localVue: localVue,

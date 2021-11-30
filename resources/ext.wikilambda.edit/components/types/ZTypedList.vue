@@ -86,7 +86,7 @@ module.exports = {
 			zListItems: function () {
 				var nestedChildren = this.zObjectChildren;
 				return nestedChildren.filter( function ( child ) {
-					return child.key === 'K1';
+					return child.key === Constants.Z_TYPED_LIST_ELEMENT;
 				} );
 			},
 			zTypedListType: function () {

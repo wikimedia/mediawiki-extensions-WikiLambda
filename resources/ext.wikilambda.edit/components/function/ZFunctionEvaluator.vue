@@ -66,7 +66,7 @@ module.exports = {
 
 				return this.injectZObject( {
 					zobject: zFunctionId,
-					key: 'Z7K1',
+					key: Constants.Z_FUNCTION_CALL_FUNCTION,
 					id: zFunctionCall.id,
 					parent: this.functionCallId
 				} );

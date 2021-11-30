@@ -36,45 +36,45 @@ module.exports = {
 						defaultTestValidator = '';
 
 					if ( returnType === Constants.Z_STRING ) {
-						defaultTestValidator = 'Z866';
+						defaultTestValidator = Constants.Z_FUNCTION_STRING_EQUALITY;
 					} else if ( returnType === Constants.Z_BOOLEAN ) {
-						defaultTestValidator = 'Z844';
+						defaultTestValidator = Constants.Z_FUNCTION_BOOLEAN_EQUALITY;
 					}
 
 					context.commit( 'addNewTester', resultId );
 
 					context.dispatch( 'injectZObject', {
 						zobject: {
-							Z1K1: 'Z2',
-							Z2K1: 'Z0',
+							Z1K1: Constants.Z_PERSISTENTOBJECT,
+							Z2K1: Constants.NEW_ZID_PLACEHOLDER,
 							Z2K2: {
-								Z1K1: 'Z20',
+								Z1K1: Constants.Z_TESTER,
 								Z20K1: context.getters.getCurrentZObjectId,
 								Z20K2: {
-									Z1K1: 'Z7',
+									Z1K1: Constants.Z_FUNCTION_CALL,
 									Z7K1: context.getters.getCurrentZObjectId
 								},
 								Z20K3: {
-									Z1K1: 'Z7',
+									Z1K1: Constants.Z_FUNCTION_CALL,
 									Z7K1: defaultTestValidator
 								}
 							},
 							Z2K3: {
-								Z1K1: 'Z12',
+								Z1K1: Constants.Z_MULTILINGUALSTRING,
 								Z12K1: [
 									{
-										Z1K1: 'Z11',
+										Z1K1: Constants.Z_MONOLINGUALSTRING,
 										Z11K1: context.getters.getUserZlangZID,
 										Z11K2: ''
 									}
 								]
 							},
 							Z2K4: {
-								Z1K1: 'Z32',
+								Z1K1: Constants.Z_MULTILINGUALSTRINGSET,
 								Z32K1: [
 									{
-										Z1K1: 'Z31',
-										Z31K1: 'Z1002',
+										Z1K1: Constants.Z_MONOLINGUALSTRINGSET,
+										Z31K1: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
 										Z31K2: []
 									}
 								]
