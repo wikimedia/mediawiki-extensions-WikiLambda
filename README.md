@@ -38,12 +38,12 @@ Much further functionality is to come.
     }
   }
   ```
-  … and then running `docker-compose exec mediawiki composer update` or similar.
+* Run `docker-compose exec mediawiki composer update` or similar.
 * Add the following to your `LocalSettings.php` file:
   ```
   wfLoadExtension( 'WikiLambda' );
   ```
-* Run `php maintenance/update.php` to provision necessary schemas and initial content.
+* Run `php maintenance/update.php` (or `docker-compose exec mediawiki php maintenance/update.php` if MediaWiki is setup through Docker) to provision necessary schemas and initial content (this step could take around 20 minutes).
 
 Done! Navigate to the newly created `Z1` page on your wiki to verify that the extension is successfully installed.
 
