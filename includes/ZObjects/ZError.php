@@ -38,8 +38,6 @@ class ZError extends ZObject {
 	 * @param ZObject|\stdClass $value
 	 */
 	public function __construct( $type, $value ) {
-		// FIXME HACK: When an error is created, its type must be tracked by the
-		// ZErrorTypeRegistry or else it will generate another error.
 		$this->data[ ZTypeRegistry::Z_ERROR_TYPE ] = $type;
 		$this->data[ ZTypeRegistry::Z_ERROR_VALUE ] = $value;
 	}

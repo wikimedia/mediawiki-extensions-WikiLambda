@@ -218,8 +218,6 @@ class ZObject {
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$contents = $zObjectStore->fetchBatchZObjects( $zids );
 
-		// FIXME: Should we get the user language or should we allow for a language parameter,
-		// in case this is used by an API?
 		if ( $language === null ) {
 			$language = RequestContext::getMain()->getLanguage();
 		}
