@@ -33,8 +33,7 @@ class ZMonoLingualString extends ZObject {
 	}
 
 	public function __construct( $language = null, $value = '' ) {
-		// FIXME catch and throw key-value exceptions
-		// FIXME should we check that $language is valid during creation?
+		// TODO: (T296740) Remove ZObjectFactory creation method calls from constructor
 		$langRegistry = ZLangRegistry::singleton();
 		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] = ZObjectFactory::createChild(
 			$language ?? $langRegistry->getLanguageZidFromCode( 'en' )
@@ -55,6 +54,13 @@ class ZMonoLingualString extends ZObject {
 	}
 
 	public function isValid(): bool {
+		if ( !( $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] instanceof ZReference ) ) {
+			return false;
+		}
+		if ( !( $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ] instanceof ZString ) ) {
+			return false;
+		}
+		// We also check validity of the language Zid.
 		$langs = ZLangRegistry::singleton();
 		return $langs->isValidLanguageZid( $this->getLanguage() );
 	}

@@ -38,8 +38,7 @@ class ZMultiLingualString extends ZObject {
 	 * This can be called with an array of serialized canonical ZObjects, an array
 	 * of ZMonoLingualString instances, or a ZList of ZMonoLingualString instances.
 	 *
-	 * FIXME: we are giving both options here, calling the constructor with serialized
-	 * data or with ZObject instances. We should think about this a bit more.
+	 * TODO: (T296740) Remove ZObjectFactory creation method calls from constructor
 	 *
 	 * @param ZList|array $strings
 	 * @throws ZErrorException
@@ -193,7 +192,6 @@ class ZMultiLingualString extends ZObject {
 	}
 
 	public function isValid(): bool {
-		$langs = ZLangRegistry::singleton();
 		foreach ( $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] ?? [] as $lang => $monolingualString ) {
 			if ( !$monolingualString->isValid() ) {
 				return false;
@@ -209,7 +207,7 @@ class ZMultiLingualString extends ZObject {
 	 * @return \stdClass|array|string
 	 */
 	public function getSerialized( $form = self::FORM_CANONICAL ) {
-		// TODO fix different serialization modes, only returning FORM_CANONICAL
+		// TODO: (T296737) fix different serialization modes, only returning FORM_CANONICAL
 		$monolingualStrings = [];
 		foreach ( $this->getZValue() as $lang => $value ) {
 			$monolingualStrings[] = $value->getSerialized( $form );

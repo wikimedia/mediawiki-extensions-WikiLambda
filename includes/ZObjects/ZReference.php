@@ -35,7 +35,7 @@ class ZReference extends ZObject {
 	}
 
 	public function isValid(): bool {
-		if ( !isset( $this->data[ ZTypeRegistry::Z_REFERENCE_VALUE ] ) ) {
+		if ( !is_string( $this->data[ ZTypeRegistry::Z_REFERENCE_VALUE ] ) ) {
 			return false;
 		}
 		return ZObjectUtils::isValidZObjectReference( $this->data[ ZTypeRegistry::Z_REFERENCE_VALUE ] );

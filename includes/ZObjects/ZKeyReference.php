@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 class ZKeyReference extends ZObject {
 
@@ -43,7 +44,9 @@ class ZKeyReference extends ZObject {
 	}
 
 	public function isValid(): bool {
-		// TODO: isValid if value is a string and has Z*K* shape
-		return true;
+		if ( !is_string( $this->data[ ZTypeRegistry::Z_KEYREFERENCE_VALUE ] ) ) {
+			return false;
+		}
+		return ZObjectUtils::isValidZObjectKey( $this->data[ ZTypeRegistry::Z_KEYREFERENCE_VALUE ] );
 	}
 }

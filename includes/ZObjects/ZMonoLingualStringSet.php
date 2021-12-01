@@ -34,6 +34,8 @@ class ZMonoLingualStringSet extends ZObject {
 	}
 
 	/**
+	 * TODO: (T296740) Remove ZObjectFactory creation method calls from constructor
+	 *
 	 * @param ZReference|string|null $language
 	 * @param ZList|array $value
 	 */
@@ -65,6 +67,18 @@ class ZMonoLingualStringSet extends ZObject {
 	}
 
 	public function isValid(): bool {
+		if ( !( $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ] instanceof ZReference ) ) {
+			return false;
+		}
+		if ( !is_array( $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE ] ) ) {
+			return false;
+		}
+		foreach ( $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE ] as $value ) {
+			if ( !( $value instanceof ZString ) ) {
+				return false;
+			}
+		}
+		// We also check validity of the language Zid.
 		$langs = ZLangRegistry::singleton();
 		return $langs->isValidLanguageZid( $this->getLanguage() );
 	}

@@ -30,7 +30,7 @@ class ZList extends ZObject {
 	}
 
 	public function __construct( $head = [], $tail = null ) {
-		// Special handling for convenience. Possibly not worth the complexity? To re-evaluate.
+		// TODO: (T296824) Special handling for convenience. Possibly not worth the complexity? To re-evaluate.
 		if ( is_array( $head ) && $tail === null ) {
 			$this->data[ ZTypeRegistry::Z_LIST_HEAD ] = array_slice( $head, 0, 1 )[ 0 ] ?? null;
 			$this->data[ ZTypeRegistry::Z_LIST_TAIL ] = array_slice( $head, 1 ) ?? [];
@@ -104,7 +104,7 @@ class ZList extends ZObject {
 	 * @return \stdClass|array|string
 	 */
 	public function getSerialized( $form = self::FORM_CANONICAL ) {
-		// TODO fix different serialization modes, only returning FORM_CANONICAL
+		// TODO: (T296737) fix different serialization modes, only returning FORM_CANONICAL
 		$list = $this->getZListAsArray();
 		return array_map( static function ( $value ) use ( $form ) {
 			return ( $value instanceof ZObject ) ? $value->getSerialized( $form ) : $value;

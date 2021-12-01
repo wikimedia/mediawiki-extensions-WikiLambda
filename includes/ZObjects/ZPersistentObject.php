@@ -123,14 +123,9 @@ class ZPersistentObject extends ZObject {
 		return $this->getLabels()->getStringForLanguage( $language );
 	}
 
-	/**
-	 * Validate this ZObject against our schema, to prevent creation and saving of invalid items.
-	 *
-	 * @return bool Whether content is valid
-	 */
 	public function isValid(): bool {
-		// FIXME: we acept ZStrings and ZReferences for now because functions-schemata/data files
-		// are incorrect (Z2K1 contains reference instead of string)
+		// FIXME: (T296724) we accept ZStrings and ZReferences for now because functions-schemata/data
+		// files are incorrect (Z2K1 contains reference instead of string)
 		if (
 			!( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ] instanceof ZString ) &&
 			!( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ] instanceof ZReference )

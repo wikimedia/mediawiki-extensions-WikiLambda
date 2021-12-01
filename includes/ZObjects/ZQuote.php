@@ -35,6 +35,7 @@ class ZQuote extends ZObject {
 	}
 
 	public function isValid(): bool {
+		// For ZQuote, any value is valid by definition.
 		return true;
 	}
 
