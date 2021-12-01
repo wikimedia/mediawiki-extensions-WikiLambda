@@ -79,7 +79,7 @@ class SpecialListZObjectsByType extends SpecialPage {
 		$typesList = $this->fetchZObjects( ZTypeRegistry::Z_TYPE, $languageZids );
 
 		$wikitext = '';
-		if ( $type !== null && $type != '' ) {
+		if ( $type !== null && $type !== '' && isset( $typesList[$type] ) ) {
 			$typeLabel = $typesList[$type];
 			$zobjectList = $this->fetchZObjects( $type, $languageZids );
 			$wikitext .= "\n== ";
@@ -92,7 +92,8 @@ class SpecialListZObjectsByType extends SpecialPage {
 				// Let the usual linker de-reference the label as appropriate
 				$wikitext .= "# [[$title]] ($zid)\n";
 			}
-			if ( count( $zobjectList ) == 0 ) {
+
+			if ( count( $zobjectList ) === 0 ) {
 				$wikitext .= $this->msg( 'wikilambda-special-objectsbytype-empty' );
 			}
 		}
