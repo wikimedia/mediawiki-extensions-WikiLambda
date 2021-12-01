@@ -19,6 +19,18 @@ class ZObjectEditAction extends Action {
 		return 'edit';
 	}
 
+	/**
+	 * Get page title message
+	 * @return string
+	 */
+	protected function getPageTitleMsg() {
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		$targetZObject = $zObjectStore->fetchZObjectByTitle( $this->getTitle() );
+		$label = $targetZObject->getLabels()->getStringForLanguageOrEnglish( $this->getLanguage() );
+
+		return $this->msg( 'editing', Html::element( 'span', [], $label ) );
+	}
+
 	public function show() {
 		$output = $this->getOutput();
 		$output->addModules( 'ext.wikilambda.edit' );
@@ -30,8 +42,7 @@ class ZObjectEditAction extends Action {
 
 		// (T290217) Show page title
 		// NOTE setPageTitle sets both the HTML <title> header and the <h1> tag
-		$editingMsg = $this->msg( 'editing', $zId );
-		$output->setPageTitle( $editingMsg );
+		$output->setPageTitle( $this->getPageTitleMsg() );
 
 		// Fallback no-JS notice.
 		$output->addHtml( Html::element(

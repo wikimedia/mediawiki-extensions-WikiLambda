@@ -12,7 +12,8 @@ var Constants = require( '../../Constants.js' ),
 	getParameterByName = require( '../../mixins/urlUtils.js' ).methods.getParameterByName,
 	addZObjects = require( './zobject/addZObjects.js' ),
 	currentZObject = require( './zobject/currentZObject.js' ),
-	saveZObject = require( '../../mixins/api.js' ).methods.saveZObject;
+	saveZObject = require( '../../mixins/api.js' ).methods.saveZObject,
+	updateEditFunctionPageTitle = require( '../../mixins/domUtils.js' ).methods.updateEditFunctionPageTitle;
 
 function isObjectTypeDeclaration( object, parentObject ) {
 	var isReference = object.value === Constants.Z_REFERENCE;
@@ -534,11 +535,16 @@ module.exports = {
 		 */
 		setZObjectValue: function ( context, payload ) {
 			var objectIndex;
+
 			if ( payload.id === undefined || payload.value === undefined ) {
 				return;
 			}
+
 			objectIndex = context.getters.getZObjectIndexById( payload.id );
 			payload.index = objectIndex;
+
+			updateEditFunctionPageTitle( payload.value );
+
 			context.commit( 'setZObjectValue', payload );
 		},
 		/**

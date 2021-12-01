@@ -125,7 +125,7 @@ module.exports = {
 		}
 	}
 	),
-	methods: $.extend( mapActions( [ 'fetchZKeys' ] ), {
+	methods: $.extend( mapActions( [ 'fetchZKeys', 'removeGenericTypeItem' ] ), {
 		selectImplementation: function ( event ) {
 			this.$store.dispatch( 'injectZObject', {
 				zobject: {
@@ -158,6 +158,12 @@ module.exports = {
 			}
 
 			return zids;
+		},
+		removeItem: function () {
+
+			var item = this.getZObjectById( this.zobjectId );
+			this.removeGenericTypeItem( item );
+
 		}
 	} )
 };
