@@ -75,7 +75,6 @@ module.exports = {
 	),
 	methods: $.extend( mapActions( [
 		'addZReference',
-		'initializeResultId',
 		'createNewTester'
 	] ), {
 		addNewItem: function ( /* event */ ) {

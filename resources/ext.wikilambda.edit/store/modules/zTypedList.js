@@ -1,5 +1,5 @@
 /*!
- * WikiLambda Vue editor: zLists Vuex module
+ * WikiLambda Vue editor: zTypedLists Vuex module
  *
  * @copyright 2020–2021 WikiLambda team; see AUTHORS.txt
  * @license MIT
@@ -28,7 +28,7 @@ module.exports = {
 	},
 	actions: {
 		/**
-		 * Add a new item in a generic list. This will create the following format:
+		 * Add a new item in a typed list. This will create the following format:
 		 * {
 		 * K1: { ... structure of the current list item type},
 			K2: {
@@ -64,7 +64,7 @@ module.exports = {
 
 		},
 		/**
-		 * Select a type for a generic list.
+		 * Select a type for a typed list
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload

@@ -48,7 +48,6 @@ var Constants = require( '../Constants.js' ),
 	typeUtils = require( '../mixins/typeUtils.js' ),
 	SdMessage = require( './base/Message.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
-	mapState = require( 'vuex' ).mapState,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapMutations = require( 'vuex' ).mapMutations;
 
@@ -99,9 +98,6 @@ module.exports = {
 			zKeys: 'getZkeys',
 			zLang: 'getZLang'
 		} ),
-		mapState( [
-			'zRegex'
-		] ),
 		{
 			lookupLabels: function () {
 				return Object.keys( this.lookupResults ).map( function ( key ) {

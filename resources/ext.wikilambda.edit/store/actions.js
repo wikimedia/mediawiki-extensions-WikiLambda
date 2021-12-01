@@ -10,7 +10,7 @@ var Constants = require( '../Constants.js' );
 
 module.exports = {
 	/**
-	 * Initializes the Vuex store
+	 * Fetch information of the Keys used within the UI and initialize the i18n plugin
 	 *
 	 * @param {Object} context
 	 * @param {Function} i18n - i18n function

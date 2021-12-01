@@ -12,7 +12,6 @@ var mount = require( '@vue/test-utils' ).mount,
 	Vuex = require( 'vuex' ),
 	ZObjectSelector = require( '../../../resources/ext.wikilambda.edit/components/ZObjectSelector.vue' ),
 	WmbiAutocompleteSearchInput = require( '../../../resources/ext.wikilambda.edit/components/base/AutocompleteSearchInput.vue' ),
-	realState = require( '../../../resources/ext.wikilambda.edit/store/state.js' ),
 	localVue;
 
 localVue = createLocalVue();
@@ -29,8 +28,7 @@ describe( 'ZObjectSelector', function () {
 		state = {
 			zKeys: {},
 			zKeyLabels: {},
-			fetchingZKeys: [],
-			zRegex: realState.zRegex
+			fetchingZKeys: []
 		};
 		getters = {
 			getZkeyLabels: jest.fn( function ( s ) {

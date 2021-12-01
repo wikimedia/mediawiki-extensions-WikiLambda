@@ -25,6 +25,13 @@ module.exports = {
 		}
 	},
 	actions: {
+		/**
+		 * Create a new instance of a implementation. This is NOT attached to the main object, and used
+		 * by the UI to support the user in creating a new implementation.
+		 * The object is given a parent of -1 to indicate that it is not attached to the main zObject
+		 *
+		 * @param {Object} context
+		 */
 		createNewImplementation: function ( context ) {
 			context.dispatch( 'initializeResultId', context.getters.getNextObjectId )
 				.then( function ( resultId ) {
@@ -70,6 +77,18 @@ module.exports = {
 					} );
 				} );
 		},
+		/**
+		 * This method will take the provisional implementation (the one created using createNewImplementation )
+		 * and create a new zObject from it. It then attached the newly create zId as a implementation
+		 * to the current zObject.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {number} payload.implementationId
+		 * @param {number} payload.nextImplementationIndex
+		 *
+		 * @return {Promise}
+		 */
 		saveNewImplementation: function ( context, payload ) {
 			var zobject = canonicalize( context.getters.getZObjectAsJsonById( payload.implementationId ) ),
 				newZid,

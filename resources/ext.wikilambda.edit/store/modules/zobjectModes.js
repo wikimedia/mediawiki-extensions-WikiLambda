@@ -10,6 +10,15 @@ var Constants = require( '../../Constants.js' ),
 
 module.exports = {
 	getters: {
+		/**
+		 * Getters that retrieve possible display mode for a zObject.
+		 * This is used by the mode selector.
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 *
+		 * @return {Array} modes
+		 */
 		getAllModes: function ( state, getters ) {
 			return function ( payload ) {
 				var typeIsItsOwnIdentity = payload.parentType === payload.literalType;
@@ -47,6 +56,13 @@ module.exports = {
 			};
 		},
 		getModeIsValid: function () {
+			/**
+			 * Boolean determining if the current mode selected is valid
+			 *
+			 * @param {Object} selectedMode
+			 *
+			 * @return {boolean}
+			 */
 			return function ( selectedMode ) {
 				var modeIdValid = false;
 				modes.forEach( function ( mode ) {
@@ -58,6 +74,16 @@ module.exports = {
 			};
 		},
 		getTypeByMode: function () {
+			/**
+			 * Gets the type of the zObject by its mode. This is required when reloading
+			 * a page with a zObject that may have a selected mode different to the default one.
+			 *
+			 * @param {Object} payload
+			 * @param {string} payload.literalType
+			 * @param {string} payload.selectedMode
+			 *
+			 * @return {string} type
+			 */
 			return function ( payload ) {
 				var type = payload.literalType;
 
@@ -71,6 +97,13 @@ module.exports = {
 			};
 		},
 		getModeByType: function () {
+			/**
+			 * Gets the default mode for a type.
+			 *
+			 * @param {string} currentType
+			 *
+			 * @return {string} mode
+			 */
 			return function ( currentType ) {
 				var selectedMode = Constants.Z_KEY_MODES.LITERAL;
 				modes.forEach( function ( mode ) {
