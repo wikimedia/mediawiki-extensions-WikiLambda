@@ -69,7 +69,9 @@ module.exports = {
 			var steps = [
 				{
 					title: this.$i18n( 'wikilambda-editor-fn-step-define' ),
-					completed: this.currentZObjectHasLabel && this.currentZFunctionHasInputs && this.currentZFunctionHasOutput,
+					completed: this.currentZObjectHasLabel &&
+						this.currentZFunctionHasInputs &&
+						this.currentZFunctionHasOutput,
 					items: [
 						{
 							id: 'name',

@@ -52,7 +52,10 @@
 							<span>
 								<router-link
 									:to="getRouterTo( item.id )"
-									:class="[ 'ext-wikilambda-editor-step-link', { 'ext-wikilambda-editor-step-link-disabled': getIsSavingObject } ]"
+									:class="[
+										'ext-wikilambda-editor-step-link',
+										{ 'ext-wikilambda-editor-step-link-disabled': getIsSavingObject }
+									]"
 								>
 									{{ item.title }}
 								</router-link>

@@ -129,10 +129,10 @@ module.exports = {
 		selectImplementation: function ( event ) {
 			this.$store.dispatch( 'injectZObject', {
 				zobject: {
-					Z1K1: 'Z9',
+					Z1K1: Constants.Z_REFERENCE,
 					Z9K1: event.target.value
 				},
-				key: 'Z14K1',
+				key: Constants.Z_IMPLEMENTATION_FUNCTION,
 				id: this.zobjectId,
 				parent: this.getZObjectById( this.zobjectId ).parent
 			} );

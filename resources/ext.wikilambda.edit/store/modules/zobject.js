@@ -192,7 +192,9 @@ module.exports = {
 						childrenObject = getters.getZObjectChildrenById( id );
 						var objectType = typeUtils.findKeyInArray( Constants.Z_OBJECT_TYPE, childrenObject ),
 							referenceId = typeUtils.findKeyInArray( Constants.Z_REFERENCE_ID, childrenObject ),
-							functionCallId = typeUtils.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, childrenObject );
+							functionCallId = typeUtils.findKeyInArray(
+								Constants.Z_FUNCTION_CALL_FUNCTION, childrenObject
+							);
 
 						if ( isObjectTypeDeclaration( objectType, currentObject ) ) {
 							type = referenceId.value;
@@ -317,7 +319,7 @@ module.exports = {
 					} )[ 0 ];
 
 					// Find the correct label.
-					var langOptions = [ getters.getUserZlangZID, 'Z1002' ];
+					var langOptions = [ getters.getUserZlangZID, Constants.Z_NATURAL_LANGUAGE_ENGLISH ];
 
 					var langStr = '';
 
@@ -620,10 +622,10 @@ module.exports = {
 
 			context.dispatch( 'injectZObject', {
 				zobject: {
-					Z1K1: 'Z61',
+					Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
 					Z61K1: payload.value
 				},
-				key: 'Z16K1',
+				key: Constants.Z_CODE_LANGUAGE,
 				id: payload.id,
 				parent: zobject.parent
 			} );
@@ -636,9 +638,9 @@ module.exports = {
 			switch ( payload.mode ) {
 				case 'code':
 					json[ Constants.Z_IMPLEMENTATION_CODE ] = {
-						Z1K1: 'Z16',
+						Z1K1: Constants.Z_CODE,
 						Z16K1: {
-							Z1K1: 'Z61',
+							Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
 							Z61K1: ''
 						},
 						Z16K2: ''
@@ -648,7 +650,7 @@ module.exports = {
 				case 'composition':
 					json[ Constants.Z_IMPLEMENTATION_CODE ] = undefined;
 					json[ Constants.Z_IMPLEMENTATION_COMPOSITION ] = {
-						Z1K1: 'Z7',
+						Z1K1: Constants.Z_FUNCTION_CALL,
 						Z7K1: ''
 					};
 			}

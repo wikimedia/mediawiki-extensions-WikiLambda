@@ -288,7 +288,7 @@ module.exports = {
 					context.getters.getCurrentZObjectId;
 
 			function setDefaultFunctionReference( id ) {
-				if ( !defaultFunctionValue || defaultFunctionValue === 'Z0' ) {
+				if ( !defaultFunctionValue || defaultFunctionValue === Constants.NEW_ZID_PLACEHOLDER ) {
 					context.dispatch( 'addZReference', { id: id, value: defaultFunctionValue } );
 				}
 				// fetch zkeys for the zid, then check whether Z2K2.Z1K1 is equal to Constants.Z_FUNCTION

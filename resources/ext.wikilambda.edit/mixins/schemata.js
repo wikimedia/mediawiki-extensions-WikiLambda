@@ -93,12 +93,12 @@ function normalize( zobject ) {
 	} else if ( typeof zobject === 'string' ) {
 		if ( typeUtils.getZObjectType( zobject ) === Constants.Z_REFERENCE ) {
 			normal = {
-				Z1K1: 'Z9',
+				Z1K1: Constants.Z_REFERENCE,
 				Z9K1: zobject
 			};
 		} else {
 			normal = {
-				Z1K1: 'Z6',
+				Z1K1: Constants.Z_STRING,
 				Z6K1: zobject
 			};
 		}
@@ -109,22 +109,23 @@ function normalize( zobject ) {
 	} else {
 		keys = Object.keys( zobject );
 		for ( var i = 0; i < keys.length; i++ ) {
-			if ( keys[ i ] === 'Z1K1' && ( zobject.Z1K1 === 'Z6' || zobject.Z1K1 === 'Z9' ) ) {
+			if ( keys[ i ] === Constants.Z_OBJECT_TYPE && (
+				zobject.Z1K1 === Constants.Z_STRING || zobject.Z1K1 === Constants.Z_REFERENCE ) ) {
 				normal.Z1K1 = zobject.Z1K1;
 				continue;
 			}
-			if ( keys[ i ] === 'Z2K1' && isString( zobject.Z2K1 ) ) {
+			if ( keys[ i ] === Constants.Z_PERSISTENTOBJECT_ID && isString( zobject.Z2K1 ) ) {
 				normal.Z2K1 = {
-					Z1K1: 'Z6',
+					Z1K1: Constants.Z_STRING,
 					Z6K1: zobject.Z2K1
 				};
 				continue;
 			}
-			if ( keys[ i ] === 'Z6K1' && isString( zobject.Z6K1 ) ) {
+			if ( keys[ i ] === Constants.Z_STRING_VALUE && isString( zobject.Z6K1 ) ) {
 				normal.Z6K1 = zobject.Z6K1;
 				continue;
 			}
-			if ( keys[ i ] === 'Z9K1' && isString( zobject.Z9K1 ) ) {
+			if ( keys[ i ] === Constants.Z_REFERENCE_ID && isString( zobject.Z9K1 ) ) {
 				normal.Z9K1 = zobject.Z9K1;
 				continue;
 			}

@@ -2,6 +2,7 @@ var VueRouter = require( '../lib/vue-router/vue-router.common.js' ),
 	FunctionEditor = require( './views/FunctionEditor.vue' ),
 	ZObjectViewer = require( './components/ZObjectViewer.vue' ),
 	ZObjectEditor = require( './components/ZObjectEditor.vue' ),
+	Constants = require( './Constants.js' ),
 	store = require( './store/index.js' ),
 	getParameterByName = require( './mixins/urlUtils.js' ).methods.getParameterByName;
 
@@ -21,7 +22,9 @@ var EditorWrapper = {
 	functional: true,
 	props: [ 'zid' ],
 	render: function ( h, ctx ) {
-		var component = ctx.props.zid === 'Z8' || store.getters.getCurrentZObjectType === 'Z8' ? FunctionEditor : ZObjectEditor;
+		var component = ctx.props.zid === Constants.Z_FUNCTION ||
+		store.getters.getCurrentZObjectType === Constants.Z_FUNCTION ?
+			FunctionEditor : ZObjectEditor;
 		return h( component, ctx.data, ctx.children );
 	}
 };

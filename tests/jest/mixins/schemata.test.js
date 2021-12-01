@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 var schemata = require( '../../../resources/ext.wikilambda.edit/mixins/schemata.js' ).methods,
+	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	canonicalize = schemata.canonicalizeZObject,
 	normalize = schemata.normalizeZObject,
 	fs = require( 'fs' ),
@@ -14,19 +15,19 @@ describe( 'schemata mixin', function () {
 		canonicalZList = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalZList.json' ) ) );
 
 	it( 'canonicalizes strings', function () {
-		expect( canonicalize( { Z1K1: 'Z6', Z6K1: 'Hello, Test!' } ) ).toEqual( 'Hello, Test!' );
+		expect( canonicalize( { Z1K1: Constants.Z_STRING, Z6K1: 'Hello, Test!' } ) ).toEqual( 'Hello, Test!' );
 	} );
 
 	it( 'canonicalizes references', function () {
-		expect( canonicalize( { Z1K1: 'Z9', Z9K1: 'Z1000' } ) ).toEqual( 'Z1000' );
+		expect( canonicalize( { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z1000' } ) ).toEqual( 'Z1000' );
 	} );
 
 	it( 'canonicalizes real suspicious-lookin\' Z6s', function () {
-		expect( canonicalize( { Z1K1: 'Z6', Z6K1: 'Z1000' } ) ).toEqual( { Z1K1: 'Z6', Z6K1: 'Z1000' } );
+		expect( canonicalize( { Z1K1: Constants.Z_STRING, Z6K1: 'Z1000' } ) ).toEqual( { Z1K1: Constants.Z_STRING, Z6K1: 'Z1000' } );
 	} );
 
 	it( 'canonicalize handles Z0 because the front end uses it', function () {
-		expect( canonicalize( { Z1K1: 'Z9', Z9K1: 'Z0' } ) ).toEqual( 'Z0' );
+		expect( canonicalize( { Z1K1: Constants.Z_REFERENCE, Z9K1: Constants.NEW_ZID_PLACEHOLDER } ) ).toEqual( 'Z0' );
 	} );
 
 	it( 'normalizes canonical input - initial ZObject', function () {
@@ -50,15 +51,15 @@ describe( 'schemata mixin', function () {
 	} );
 
 	it( 'normalizes supremely sketch Z6s', function () {
-		expect( normalize( { Z1K1: 'Z6', Z6K1: 'Z1000' } ) ).toEqual( { Z1K1: 'Z6', Z6K1: 'Z1000' } );
+		expect( normalize( { Z1K1: Constants.Z_STRING, Z6K1: 'Z1000' } ) ).toEqual( { Z1K1: Constants.Z_STRING, Z6K1: 'Z1000' } );
 	} );
 
 	it( 'normalizes Z9s', function () {
-		expect( normalize( 'Z1000' ) ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z1000' } );
+		expect( normalize( 'Z1000' ) ).toEqual( { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z1000' } );
 	} );
 
 	it( 'normalizes Z6s', function () {
-		expect( normalize( 'not a reference' ) ).toEqual( { Z1K1: 'Z6', Z6K1: 'not a reference' } );
+		expect( normalize( 'not a reference' ) ).toEqual( { Z1K1: Constants.Z_STRING, Z6K1: 'not a reference' } );
 	} );
 
 	it( 'canonicalizes normal input - ZFunction example', function () {
@@ -79,11 +80,11 @@ describe( 'schemata mixin', function () {
 	} );
 
 	it( 'canonicalize an undefined string value as an empty string', function () {
-		expect( canonicalize( { Z1K1: 'Z6' } ) ).toEqual( '' );
+		expect( canonicalize( { Z1K1: Constants.Z_STRING } ) ).toEqual( '' );
 	} );
 
 	it( 'canonicalize an undefined reference ID as an empty string', function () {
-		expect( canonicalize( { Z1K1: 'Z9' } ) ).toEqual( '' );
+		expect( canonicalize( { Z1K1: Constants.Z_REFERENCE } ) ).toEqual( '' );
 	} );
 
 	it( 'canonicalize an undefined zobject as undefined', function () {

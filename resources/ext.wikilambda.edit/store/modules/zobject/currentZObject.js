@@ -71,11 +71,13 @@ module.exports = {
 					Constants.Z_FUNCTION_ARGUMENTS ].filter(
 					function ( arg ) {
 						var argumentTypeIsSet = !!arg[ Constants.Z_ARGUMENT_TYPE ],
-							argumentMonolingualStringIsSet = arg[ Constants.Z_ARGUMENT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ].filter(
-								function ( label ) {
-									return label[ Constants.Z_MONOLINGUALSTRING_VALUE ][
-										Constants.Z_STRING_VALUE ] !== '';
-								} ).length > 0;
+							argumentMonolingualStringIsSet =
+								arg[ Constants.Z_ARGUMENT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ]
+									.filter(
+										function ( label ) {
+											return label[ Constants.Z_MONOLINGUALSTRING_VALUE ][
+												Constants.Z_STRING_VALUE ] !== '';
+										} ).length > 0;
 
 						return argumentTypeIsSet && argumentMonolingualStringIsSet;
 					}
@@ -148,7 +150,7 @@ module.exports = {
 
 			return languageList.map( function ( languageCode ) {
 				return {
-					Z1K1: 'Z9',
+					Z1K1: Constants.Z_REFERENCE,
 					Z9K1: languageCode
 				};
 			} );

@@ -9,7 +9,7 @@
 		{{ zFunctionCallKeyLabels[ Constants.Z_FUNCTION_CALL_FUNCTION ] }}:
 		<z-reference
 			:zobject-key="selectedFunctionPersistentValue"
-			search-type="Z8"
+			:search-type="Constants.Z_FUNCTION"
 			:readonly="true"
 		></z-reference>
 		<ul>
@@ -31,7 +31,7 @@
 				<span>{{ $i18n( 'wikilambda-orchestrated' ) }}</span>
 				<z-key-mode-selector
 					:mode="orchestratedMode"
-					parent-type="Z7"
+					:parent-type="Constants.Z_FUNCTION_CALL"
 					:available-modes="displayModes"
 					@change="orchestratedMode = $event"
 				></z-key-mode-selector>

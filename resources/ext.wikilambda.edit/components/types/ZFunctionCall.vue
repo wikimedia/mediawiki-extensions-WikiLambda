@@ -25,7 +25,7 @@
 			</sd-button>
 			<z-reference
 				:zobject-key="selectedFunctionPersistentValue"
-				search-type="Z8"
+				:search-type="Constants.Z_FUNCTION"
 				:readonly="true"
 			></z-reference>
 		</template>
@@ -48,7 +48,7 @@
 				<span>{{ $i18n( 'wikilambda-orchestrated' ) }}</span>
 				<z-key-mode-selector
 					:mode="orchestratedMode"
-					parent-type="Z7"
+					:parent-type="Constants.Z_FUNCTION_CALL"
 					:available-modes="displayModes"
 					@change="orchestratedMode = $event"
 				></z-key-mode-selector>
@@ -246,7 +246,7 @@ module.exports = {
 
 			this.injectZObject( {
 				zobject: zid,
-				key: 'Z7K1',
+				key: Constants.Z_FUNCTION_CALL_FUNCTION,
 				id: zFunctionCallFunction.id,
 				parent: this.zobjectId
 			} ).then( function () {

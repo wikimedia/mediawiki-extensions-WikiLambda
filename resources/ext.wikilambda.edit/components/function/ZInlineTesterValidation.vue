@@ -73,7 +73,7 @@ module.exports = {
 			this.injectZObject( {
 				zobject: {
 					Z1K1: Constants.Z_REFERENCE,
-					Z9K1: 'Z20K2'
+					Z9K1: Constants.Z_TESTER_CALL
 				},
 				key: this.firstArgument.key,
 				id: firstArgumentId,
