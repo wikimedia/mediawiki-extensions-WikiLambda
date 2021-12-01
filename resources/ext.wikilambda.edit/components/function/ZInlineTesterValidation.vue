@@ -66,7 +66,7 @@ module.exports = {
 			var firstArgumentId = this.findArgumentId( this.firstArgument.key ),
 				zObject = this.getZObjectAsJsonById( firstArgumentId );
 
-			if ( !zObject || zObject[ Constants.Z_REFERENCE_ID ] === 'Z20K2' ) {
+			if ( !zObject || zObject[ Constants.Z_REFERENCE_ID ] === Constants.Z_TESTER_CALL ) {
 				return;
 			}
 
