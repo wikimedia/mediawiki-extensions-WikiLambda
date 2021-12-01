@@ -41,7 +41,11 @@ class ZString extends ZObject {
 	}
 
 	public function isValid(): bool {
-		// All strings of any value are by definition valid (including null, which is read as empty).
+		// For ZString, all strings of any value are by definition valid (including null,
+		// which is read as empty).
+		if ( !is_string( $this->data[ ZTypeRegistry::Z_STRING_VALUE ] ) ) {
+			return false;
+		}
 		return true;
 	}
 

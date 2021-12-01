@@ -89,9 +89,6 @@ class ZError extends ZObject {
 		if ( !ZErrorTypeRegistry::singleton()->instanceOfZErrorType( $errorType ) ) {
 			return false;
 		}
-		// TODO: should we validate that the ZError value has the keys specified in
-		// the ZErrorType (Z50) definition?
-
 		// Value must be a valid ZObject
 		if ( !isset( $this->data[ ZTypeRegistry::Z_ERROR_VALUE ] ) ) {
 			return false;

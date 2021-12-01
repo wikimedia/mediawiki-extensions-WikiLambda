@@ -107,9 +107,13 @@ class ZObject {
 	 * @return bool Whether content is valid
 	 */
 	public function isValid(): bool {
-		// TODO: Right now these are uneditable and guaranteed valid on creation, but when we
-		// add model (API and UX) editing, this will need to actually evaluate.
-		return true;
+		// A generic ZObject just needs a type key (Z1K1) to be present and valid.
+		if ( !isset( $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] ) ) {
+			return false;
+		}
+		// TODO: (T296822) Z1K1 can currently take a Z9 to a valid type, but we should
+		// also contemplate validity of this value to be a literal Z4 or a function call.
+		return ZObjectUtils::isValidZObjectReference( $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] );
 	}
 
 	/**
@@ -175,7 +179,7 @@ class ZObject {
 	 */
 	public function getSerialized( $form = self::FORM_CANONICAL ) {
 		$serialized = [
-			// TODO Z_OBJECT_TYPE in different forms, it's only being serialized as canonical
+			// TODO (T296737) Z_OBJECT_TYPE in different forms, it's only being serialized as canonical
 			ZTypeRegistry::Z_OBJECT_TYPE => $this->getZType()
 		];
 
