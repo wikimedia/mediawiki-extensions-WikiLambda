@@ -335,9 +335,9 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @covers ::fetchZObjectLabels
+	 * @covers ::searchZObjectLabels
 	 */
-	public function testFetchZObjectLabels_exactMatch() {
+	public function testSearchZObjectLabels_exactMatch() {
 		$response = $this->zobjectStore->insertZObjectLabels(
 			'Z450', 'Z7', [ self::ZLANG['en'] => 'example' ]
 		);
@@ -348,13 +348,13 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			'Z452', 'Z7', [ self::ZLANG['en'] => 'Some more examples' ]
 		);
 
-		$res = $this->zobjectStore->fetchZObjectLabels(
+		$res = $this->zobjectStore->searchZObjectLabels(
 			'Example', true, [ self::ZLANG['en'] ], null, null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 1, $res->numRows() );
 
-		$res = $this->zobjectStore->fetchZObjectLabels(
+		$res = $this->zobjectStore->searchZObjectLabels(
 			'Example', false, [ self::ZLANG['en'] ], null, null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
@@ -362,9 +362,9 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @covers ::fetchZObjectLabels
+	 * @covers ::searchZObjectLabels
 	 */
-	public function testFetchZObjectLabels_type() {
+	public function testSearchZObjectLabels_type() {
 		$response = $this->zobjectStore->insertZObjectLabels(
 			'Z453', 'Z7', [ self::ZLANG['en'] => 'example' ]
 		);
@@ -375,13 +375,13 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			'Z455', 'Z6', [ self::ZLANG['en'] => 'Some more examples' ]
 		);
 
-		$res = $this->zobjectStore->fetchZObjectLabels(
+		$res = $this->zobjectStore->searchZObjectLabels(
 			'example', false, [ self::ZLANG['en'] ], 'Z7', null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 2, $res->numRows() );
 
-		$res = $this->zobjectStore->fetchZObjectLabels(
+		$res = $this->zobjectStore->searchZObjectLabels(
 			'example', false, [ self::ZLANG['en'] ], 'Z6', null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
@@ -389,14 +389,14 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @covers ::fetchZObjectLabels
+	 * @covers ::searchZObjectLabels
 	 */
-	public function testFetchZObjectLabels_languages() {
+	public function testSearchZObjectLabels_languages() {
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z456', 'Z6', [ self::ZLANG['en'] => 'txt' ] );
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z457', 'Z6', [ self::ZLANG['es'] => 'txt' ] );
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z458', 'Z6', [ self::ZLANG['fr'] => 'txt' ] );
 
-		$res = $this->zobjectStore->fetchZObjectLabels(
+		$res = $this->zobjectStore->searchZObjectLabels(
 			'txt', false, [ self::ZLANG['en'], self::ZLANG['fr'] ], null, null, 5000
 		);
 
@@ -407,9 +407,9 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @covers ::fetchZObjectLabels
+	 * @covers ::searchZObjectLabels
 	 */
-	public function testFetchZObjectLabels_pagination() {
+	public function testSearchZObjectLabels_pagination() {
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z459', 'Z6', [ self::ZLANG['en'] => 'label one' ] );
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z460', 'Z6', [ self::ZLANG['en'] => 'label two' ] );
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z461', 'Z6', [ self::ZLANG['en'] => 'label three' ] );
@@ -417,7 +417,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z463', 'Z6', [ self::ZLANG['en'] => 'label five' ] );
 
 		// First page
-		$res = $this->zobjectStore->fetchZObjectLabels( 'label', false, [ self::ZLANG['en'] ], null, null, 2 );
+		$res = $this->zobjectStore->searchZObjectLabels( 'label', false, [ self::ZLANG['en'] ], null, null, 2 );
 
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 2, $res->numRows() );
@@ -429,7 +429,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$continue = strval( $second[ 'wlzl_id' ] + 1 );
 
 		// Second page
-		$res = $this->zobjectStore->fetchZObjectLabels( 'label', false, [ self::ZLANG['en'] ], null, $continue, 2 );
+		$res = $this->zobjectStore->searchZObjectLabels( 'label', false, [ self::ZLANG['en'] ], null, $continue, 2 );
 
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 2, $res->numRows() );
@@ -441,7 +441,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$continue = strval( $second[ 'wlzl_id' ] + 1 );
 
 		// Third page
-		$res = $this->zobjectStore->fetchZObjectLabels( 'label', false, [ self::ZLANG['en'] ], null, $continue, 2 );
+		$res = $this->zobjectStore->searchZObjectLabels( 'label', false, [ self::ZLANG['en'] ], null, $continue, 2 );
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 1, $res->numRows() );
 		$this->assertSame( 'label five', $res->fetchRow()[ 'wlzl_label' ] );
