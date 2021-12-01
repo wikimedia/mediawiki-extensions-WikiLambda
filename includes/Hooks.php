@@ -419,18 +419,28 @@ class Hooks implements
 		}
 
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$targetZObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
-		// Do nothing if somehow after all that it's not loadable.
-		if ( !$targetZObject || !( $targetZObject instanceof ZObjectContent ) || !$targetZObject->isValid() ) {
-			return;
-		}
 
-		// At this point, we know they're linking to a ZObject page, so show a label, falling back
-		// to English even if that's not in the language's fall-back chain.
-		$label = $targetZObject->getLabels()->getStringForLanguageOrEnglish( $context->getLanguage() );
+		// Rather than (rather expensively) fetching the whole object from the ZObjectStore, see if the labels are in
+		// the labels table already, which is very much faster:
+		$userLanguageZid = $context->getLanguage()->getCode();
+		$label = $zObjectStore->fetchZObjectLabel( $targetTitle->getBaseText(), $userLanguageZid, true );
+
+		// Just in case the database has no entry (e.g. the table is a millisecond behind or so), load the full object.
+		if ( $label === null ) {
+			$targetZObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
+			// Do nothing if somehow after all that it's not loadable.
+			if ( !$targetZObject || !( $targetZObject instanceof ZObjectContent ) || !$targetZObject->isValid() ) {
+				return;
+			}
+
+			// At this point, we know they're linking to a ZObject page, so show a label, falling back
+			// to English even if that's not in the language's fall-back chain.
+			$label = $targetZObject->getLabels()->getStringForLanguageOrEnglish( $context->getLanguage() );
+		}
 
 		// Finally, set the label of the link to the escaped user-supplied label
 		// TODO: Consider also showing the ZID?
+		// @phan-suppress-next-line PhanTypeMismatchArgumentNullableInternal; if fetchZObjectLabel() is null we replace
 		$text = htmlspecialchars( $label );
 	}
 

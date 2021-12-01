@@ -448,6 +448,54 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::fetchZObjectLabel
+	 */
+	public function testFetchZObjectLabel() {
+		$response = $this->zobjectStore->insertZObjectLabels(
+			'Z464',
+			'Z6',
+			[
+				self::ZLANG['en'] => 'txt-en',
+				self::ZLANG['es'] => 'txt-es',
+				self::ZLANG['fr'] => 'txt-fr'
+			]
+		);
+
+		// Register the languages we'll use
+		$this->registerLangs( [ 'en','es','fr','de' ] );
+
+		$this->assertSame(
+			'txt-en',
+			$this->zobjectStore->fetchZObjectLabel( 'Z464', 'en' ),
+			'Basic fetch works'
+		);
+
+		$this->assertSame(
+			'txt-fr',
+			$this->zobjectStore->fetchZObjectLabel( 'Z464', 'fr' ),
+			'Fetch from language with defined label works'
+		);
+
+		$this->assertSame(
+			'txt-es',
+			$this->zobjectStore->fetchZObjectLabel( 'Z464', 'es' ),
+			'Fetch from another language with defined label works'
+		);
+
+		$this->assertSame(
+			'txt-en',
+			$this->zobjectStore->fetchZObjectLabel( 'Z464', 'de' ),
+			'Fallback from language with no defined label works'
+		);
+
+		$this->assertSame(
+			null,
+			$this->zobjectStore->fetchZObjectLabel( 'Z464', 'de', false ),
+			'Fallback from language with no defined label works when rejecting fallbacks'
+		);
+	}
+
+	/**
 	 * @covers ::insertZFunctionReference
 	 */
 	public function testInsertZFunctionReference() {
