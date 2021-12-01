@@ -83,8 +83,10 @@ class SpecialListZObjectsByType extends SpecialPage {
 			$typeLabel = $typesList[$type];
 			$zobjectList = $this->fetchZObjects( $type, $languageZids );
 			$wikitext .= "\n== ";
-			$wikitext .= $this->msg( 'wikilambda-special-objectsbytype-listheader' );
-			$wikitext .= " $typeLabel ($type) ==\n";
+			$wikitext .= $this->msg( 'wikilambda-special-objectsbytype-listheader' )
+				->rawParams( htmlspecialchars( $typeLabel ), $type )
+				->parse();
+			$wikitext .= " ==\n";
 			foreach ( $zobjectList as $zid => $label ) {
 				$title = Title::newFromText( $zid, NS_MAIN );
 				// Let the usual linker de-reference the label as appropriate
