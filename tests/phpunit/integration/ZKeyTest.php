@@ -34,7 +34,10 @@ class ZKeyTest extends WikiLambdaIntegrationTestCase {
 	public function testCreation_constructors() {
 		$testRef = new ZReference( 'Z6' );
 		$testKey = new ZString( 'Z6K1' );
-		$testString = new ZMonoLingualString( self::ZLANG['en'], 'Demonstration item' );
+		$testString = new ZMonoLingualString(
+			new ZReference( self::ZLANG['en'] ),
+			new ZString( 'Demonstration item' )
+		);
 		$testLabelSet = new ZMultiLingualString( [ $testString ] );
 		$testObject = new ZKey( $testRef, $testKey, $testLabelSet );
 
@@ -153,14 +156,26 @@ EOT
 	public function provideIsValid() {
 		$testRef = new ZReference( 'Z6' );
 		$testId = new ZString( 'Z6K1' );
-		$testString1 = new ZMonoLingualString( self::ZLANG['en'], 'Demonstration item' );
-		$testString2 = new ZMonoLingualString( self::ZLANG['fr'], 'Demonstration item' );
+		$testString1 = new ZMonoLingualString(
+			new ZReference( self::ZLANG['en'] ), new ZString( 'Demonstration item' )
+		);
+		$testString2 = new ZMonoLingualString(
+			new ZReference( self::ZLANG['fr'] ), new ZString( 'Demonstration item' )
+		);
 		$emptyLabelSet = new ZMultiLingualString( [] );
 		$testLabelSet = new ZMultiLingualString( [
-			new ZMonoLingualString( self::ZLANG['en'], 'Demonstration item' ),
-			new ZMonoLingualString( self::ZLANG['it'], 'oggetto per dimostrazione' ),
-			new ZMonoLingualString( self::ZLANG['de'], 'Gegenstand zur Demonstration' ),
-			new ZMonoLingualString( self::ZLANG['fr'], 'article pour démonstration' )
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['en'] ), new ZString( 'Demonstration item' )
+			),
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['it'] ), new ZString( 'oggetto per dimostrazione' )
+			),
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['de'] ), new ZString( 'Gegenstand zur Demonstration' )
+			),
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['fr'] ), new ZString( 'article pour démonstration' )
+			)
 		] );
 
 		return [

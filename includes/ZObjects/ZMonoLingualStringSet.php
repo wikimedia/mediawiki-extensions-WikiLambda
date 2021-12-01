@@ -12,7 +12,6 @@ namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 class ZMonoLingualStringSet extends ZObject {
@@ -34,20 +33,18 @@ class ZMonoLingualStringSet extends ZObject {
 	}
 
 	/**
-	 * TODO: (T296740) Remove ZObjectFactory creation method calls from constructor
+	 * Create a ZMonoLingualStringSet instance given a language ZReference and an array
+	 * or ZList of ZString instances. Internally this class bypasses ZList and stores an
+	 * array.
 	 *
-	 * @param ZReference|string|null $language
+	 * @param ZReference $language
 	 * @param ZList|array $value
 	 */
-	public function __construct( $language = null, $value = [] ) {
-		$langRegistry = ZLangRegistry::singleton();
-		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ] = ZObjectFactory::createChild(
-			// @phan-suppress-next-line PhanTypeMismatchArgumentNullable get language zid for 'en' will never be null
-			$language ?? $langRegistry->getLanguageZidFromCode( 'en' )
-		);
+	public function __construct( $language, $value = [] ) {
+		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ] = $language;
 		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE ] = [];
 		foreach ( ZObjectUtils::getIterativeList( $value ) as $index => $element ) {
-			$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE ][] = ZObjectFactory::createChild( $element );
+			$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE ][] = $element;
 		}
 	}
 

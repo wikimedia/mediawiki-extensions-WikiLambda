@@ -14,8 +14,6 @@ use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZErrorFactory;
-use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\MediaWikiServices;
@@ -38,22 +36,12 @@ class ZMultiLingualStringSet extends ZObject {
 	 * This can be called with an array of serialized canonical ZObjects, an array
 	 * of ZMonoLingualStringSet instances, or a ZList of ZMonoLingualStringSet instances.
 	 *
-	 * TODO: (T296740) Remove ZObjectFactory creation method calls from constructor
-	 *
 	 * @param ZList|array $strings
-	 * @throws ZErrorException
 	 */
 	public function __construct( $strings = [] ) {
 		foreach ( ZObjectUtils::getIterativeList( $strings ) as $index => $monoLingualStringSet ) {
-			try {
-				$monoLingualStringSet = ZObjectFactory::createChild( $monoLingualStringSet );
-				if ( $monoLingualStringSet instanceof ZMonoLingualStringSet ) {
-					$this->setMonoLingualStringSet( $monoLingualStringSet );
-				}
-			} catch ( ZErrorException $e ) {
-				throw new ZErrorException(
-					ZErrorFactory::createArrayElementZError( (string)$index, $e->getZError() )
-				);
+			if ( $monoLingualStringSet instanceof ZMonoLingualStringSet ) {
+				$this->setMonoLingualStringSet( $monoLingualStringSet );
 			}
 		}
 	}

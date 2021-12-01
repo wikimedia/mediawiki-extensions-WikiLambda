@@ -12,7 +12,6 @@ namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 
 class ZMonoLingualString extends ZObject {
 
@@ -32,13 +31,15 @@ class ZMonoLingualString extends ZObject {
 		];
 	}
 
-	public function __construct( $language = null, $value = '' ) {
-		// TODO: (T296740) Remove ZObjectFactory creation method calls from constructor
-		$langRegistry = ZLangRegistry::singleton();
-		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] = ZObjectFactory::createChild(
-			$language ?? $langRegistry->getLanguageZidFromCode( 'en' )
-		);
-		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ] = ZObjectFactory::createChild( $value );
+	/**
+	 * Create a ZMonoLingualString instance given a language ZReference and a value ZString
+	 *
+	 * @param ZReference $language
+	 * @param ZString $value
+	 */
+	public function __construct( $language, $value ) {
+		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ] = $language;
+		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ] = $value;
 	}
 
 	public function getZValue() {

@@ -15,6 +15,8 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString
@@ -37,10 +39,18 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $testObject->isValid() );
 
 		$testObject = new ZMultiLingualString( [
-			new ZMonoLingualString( self::ZLANG['en'], 'Demonstration item' ),
-			new ZMonoLingualString( self::ZLANG['es'], 'Elemento para demostración' ),
-			new ZMonoLingualString( self::ZLANG['de'], 'Gegenstand zur Demonstration' ),
-			new ZMonoLingualString( self::ZLANG['fr'], 'Article pour démonstration' )
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['en'] ), new ZString( 'Demonstration item' )
+			),
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['es'] ), new ZString( 'Elemento para demostración' )
+			),
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['de'] ), new ZString( 'Gegenstand zur Demonstration' )
+			),
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['fr'] ), new ZString( 'Article pour démonstration' )
+			),
 		] );
 
 		$this->assertTrue( $testObject->isValid() );
@@ -134,12 +144,13 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 	public function testModification() {
 		$this->registerLangs( [ 'fr', 'es' ] );
 
+		$testMono = new ZMonoLingualString( new ZReference( self::ZLANG['fr'] ), new ZString( 'Bonjour' ) );
 		$testObject = new ZMultiLingualString( [] );
 		$this->assertTrue( $testObject->isValid() );
 
 		$french = $this->makeLanguage( 'fr' );
 		$this->assertFalse( $testObject->isLanguageProvidedValue( 'fr' ) );
-		$testObject->setMonoLingualString( new ZMonoLingualString( self::ZLANG['fr'], 'Bonjour' ) );
+		$testObject->setMonoLingualString( $testMono );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertTrue( $testObject->isLanguageProvidedValue( 'fr' ) );
 		$this->assertSame(
@@ -147,7 +158,7 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 			$testObject->getStringForLanguage( $french )
 		);
 
-		$testObject->setMonoLingualString( new ZMonoLingualString( self::ZLANG['fr'], 'Bonjour' ) );
+		$testObject->setMonoLingualString( $testMono );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame(
 			'Bonjour',
@@ -170,7 +181,8 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 		);
 
 		$invalidLang = $this->makeLanguage( '&&&' );
-		$testObject->setMonoLingualString( new ZMonoLingualString( '&&&', 'Invalid item' ) );
+		$invalidMono = new ZMonoLingualString( new ZReference( '&&&' ), new ZString( 'Invalid item' ) );
+		$testObject->setMonoLingualString( $invalidMono );
 		$this->assertFalse( $testObject->isValid() );
 		$this->assertSame(
 			wfMessage( 'wikilambda-multilingualstring-nofallback' )->text(),

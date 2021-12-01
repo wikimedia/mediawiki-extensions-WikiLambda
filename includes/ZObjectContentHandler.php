@@ -190,7 +190,6 @@ class ZObjectContentHandler extends ContentHandler {
 				'Z1K1' => 'Z12',
 				'Z12K1' => [ [ 'Z1K1' => 'Z11', 'Z11K1' => $languageZid, 'Z11K2' => $returnLabel ] ]
 			];
-			// new ZMultiLingualString( [ new ZMonoLingualString( $languageCode, $returnLabel ) ] );
 			$object['Z2K3'] = $returnLabelObject;
 		}
 

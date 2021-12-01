@@ -55,9 +55,9 @@ class ZObjectTypesTest extends \MediaWikiUnitTestCase {
 		$zString = new ZString( 'test' );
 		$zReference = new ZReference( 'Z1' );
 		$zList = new ZList();
-		$zMonoLingualString = new ZMonoLingualString();
+		$zMonoLingualString = new ZMonoLingualString( new ZReference( 'Z1002' ), new ZString( 'text' ) );
 		$zMultiLingualString = new ZMultiLingualString();
-		$zMonoLingualStringSet = new ZMonoLingualStringSet();
+		$zMonoLingualStringSet = new ZMonoLingualStringSet( new ZReference( 'Z1002' ), [] );
 		$zMultiLingualStringSet = new ZMultiLingualStringSet();
 
 		return [

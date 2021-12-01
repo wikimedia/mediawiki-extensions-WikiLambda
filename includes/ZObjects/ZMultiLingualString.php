@@ -14,8 +14,6 @@ use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZErrorFactory;
-use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\MediaWikiServices;
@@ -35,25 +33,16 @@ class ZMultiLingualString extends ZObject {
 	}
 
 	/**
-	 * This can be called with an array of serialized canonical ZObjects, an array
-	 * of ZMonoLingualString instances, or a ZList of ZMonoLingualString instances.
-	 *
-	 * TODO: (T296740) Remove ZObjectFactory creation method calls from constructor
+	 * Create a ZMultiLingualString instance given an array or a ZList of
+	 * ZMonoLingualString instances. Internally this class bypasses ZList
+	 * and stores an array with the language Zid as key.
 	 *
 	 * @param ZList|array $strings
-	 * @throws ZErrorException
 	 */
 	public function __construct( $strings = [] ) {
 		foreach ( ZObjectUtils::getIterativeList( $strings ) as $index => $monoLingualString ) {
-			try {
-				$monoLingualString = ZObjectFactory::createChild( $monoLingualString );
-				if ( $monoLingualString instanceof ZMonoLingualString ) {
-					$this->setMonoLingualString( $monoLingualString );
-				}
-			} catch ( ZErrorException $e ) {
-				throw new ZErrorException(
-					ZErrorFactory::createArrayElementZError( (string)$index, $e->getZError() )
-				);
+			if ( $monoLingualString instanceof ZMonoLingualString ) {
+				$this->setMonoLingualString( $monoLingualString );
 			}
 		}
 	}
@@ -178,7 +167,7 @@ class ZMultiLingualString extends ZObject {
 	public function setStringForLanguage( Language $language, string $value ): void {
 		$languageCode = $language->getCode();
 		$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
-		$monolingualString = new ZMonoLingualString( $languageZid, $value );
+		$monolingualString = new ZMonoLingualString( new ZReference( $languageZid ), new ZString( $value ) );
 		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $languageZid ] = $monolingualString;
 	}
 

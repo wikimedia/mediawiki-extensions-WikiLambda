@@ -14,6 +14,8 @@ use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString
@@ -29,7 +31,10 @@ class ZMonoLingualStringTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::isValid
 	 */
 	public function testCreation() {
-		$testObject = new ZMonoLingualString( 'Z1002', 'Demonstration item' );
+		$testObject = new ZMonoLingualString(
+			new ZReference( 'Z1002' ),
+			new ZString( 'Demonstration item' )
+		);
 		$this->assertSame( 'Z11', $testObject->getZType() );
 		$this->assertSame( 'Z1002', $testObject->getLanguage() );
 		$this->assertSame( 'Demonstration item', $testObject->getString() );

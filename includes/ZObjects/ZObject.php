@@ -14,6 +14,7 @@ use FormatJson;
 use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use RequestContext;
@@ -71,15 +72,14 @@ class ZObject {
 	 *
 	 * @param string $keyQuery The key to search for.
 	 * @return ZObject|null The value of the supplied key as a ZObject, null if key is undefined.
+	 * @throws ZErrorException
 	 */
 	public function getValueByKey( string $keyQuery ) {
 		$keys = $this->data;
 		if ( array_key_exists( $keyQuery, $keys ) ) {
 			$value = $keys[ $keyQuery ];
-			if ( $value instanceof ZObject ) {
-				return $value;
-			}
-			// FIXME: why is this not being done by the constructor or by ZObjectFactory?
+			// If value is ZObject, return it as it is.
+			// If value is string, it will be a terminal ZObject (Z6 or Z9), return the ZObject instance
 			return ZObjectFactory::createChild( $value );
 		} else {
 			return null;
