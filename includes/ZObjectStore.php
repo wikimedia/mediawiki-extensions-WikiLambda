@@ -506,7 +506,7 @@ class ZObjectStore {
 	 * @param int $limit Maximum number of results to return.
 	 * @return IResultWrapper
 	 */
-	public function fetchZObjectLabels( $label, $exact, $languages, $type, $continue, $limit ) {
+	public function searchZObjectLabels( $label, $exact, $languages, $type, $continue, $limit ) {
 		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
 
 		// Set language filter

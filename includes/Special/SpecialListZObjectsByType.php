@@ -112,7 +112,7 @@ class SpecialListZObjectsByType extends SpecialPage {
 	 * @return array
 	 */
 	private function fetchZObjects( $type, $languageZids ) {
-		$res = $this->zObjectStore->fetchZObjectLabels(
+		$res = $this->zObjectStore->searchZObjectLabels(
 			'',
 			true,
 			$languageZids,

@@ -62,7 +62,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 		$languageZids = $langRegistry->getLanguageZids( $languages );
 
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$res = $zObjectStore->fetchZObjectLabels(
+		$res = $zObjectStore->searchZObjectLabels(
 			$searchTerm,
 			$exact,
 			$languageZids,
