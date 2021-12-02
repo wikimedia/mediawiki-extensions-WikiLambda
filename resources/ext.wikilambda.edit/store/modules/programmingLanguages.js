@@ -45,10 +45,11 @@ module.exports = {
 		 * @return {Object}
 		 */
 		fetchAllZProgrammingLanguages: function ( context ) {
+			// TODO(T296815): Stop using this hard-coded list and fetch them from the API
 			var zProgrammingLanguages = [
 				{
 					Z1K1: Constants.Z_PERSISTENTOBJECT,
-					Z2K1: 'Z9999', // testing zid
+					Z2K1: 'Z600',
 					Z2K2: {
 						Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
 						Z61K1: 'javascript',
@@ -57,7 +58,7 @@ module.exports = {
 				},
 				{
 					Z1K1: Constants.Z_PERSISTENTOBJECT,
-					Z2K1: 'Z99991', // testing zid
+					Z2K1: 'Z610',
 					Z2K2: {
 						Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
 						Z61K1: 'python',
@@ -66,7 +67,7 @@ module.exports = {
 				},
 				{
 					Z1K1: Constants.Z_PERSISTENTOBJECT,
-					Z2K1: 'Z99992', // testing zid
+					Z2K1: 'Z620',
 					Z2K2: {
 						Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
 						Z61K1: 'lua',

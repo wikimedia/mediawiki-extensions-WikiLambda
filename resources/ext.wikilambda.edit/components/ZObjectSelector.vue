@@ -189,7 +189,7 @@ module.exports = {
 								var zid = result.page_title,
 									label = result.label;
 								// Update lookupResults list
-								// If we are searching for Types (this.type === 'Z4')
+								// If we are searching for Types (this.type === Constants.Z_TYPE)
 								// we should exclude Z1, Z2, Z7 and Z9 from the results
 								if ( !self.isExcludedZType( zid ) ) {
 									self.lookupResults[ zid ] = label;
