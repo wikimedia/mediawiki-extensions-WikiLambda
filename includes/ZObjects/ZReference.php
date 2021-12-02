@@ -15,6 +15,18 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 class ZReference extends ZObject {
 
+	/**
+	 * Construct a ZReference instance given the string value of the Zid which it references to
+	 *
+	 * @param string $value
+	 */
+	public function __construct( $value ) {
+		$this->data[ ZTypeRegistry::Z_REFERENCE_VALUE ] = $value;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public static function getDefinition(): array {
 		return [
 			'type' => ZTypeRegistry::Z_REFERENCE,
@@ -26,14 +38,9 @@ class ZReference extends ZObject {
 		];
 	}
 
-	public function __construct( $value ) {
-		$this->data[ ZTypeRegistry::Z_REFERENCE_VALUE ] = $value;
-	}
-
-	public function getZValue() {
-		return $this->data[ ZTypeRegistry::Z_REFERENCE_VALUE ];
-	}
-
+	/**
+	 * @inheritDoc
+	 */
 	public function isValid(): bool {
 		if ( !is_string( $this->data[ ZTypeRegistry::Z_REFERENCE_VALUE ] ) ) {
 			return false;
@@ -42,10 +49,7 @@ class ZReference extends ZObject {
 	}
 
 	/**
-	 * Convert this ZObject into its serialized canonical representation
-	 *
-	 * @param int $form
-	 * @return \stdClass|array|string
+	 * @inheritDoc
 	 */
 	public function getSerialized( $form = self::FORM_CANONICAL ) {
 		if ( $form === self::FORM_CANONICAL ) {
@@ -53,5 +57,14 @@ class ZReference extends ZObject {
 		} else {
 			return parent::getSerialized();
 		}
+	}
+
+	/**
+	 * Get the value of this ZReference
+	 *
+	 * @return string
+	 */
+	public function getZValue() {
+		return $this->data[ ZTypeRegistry::Z_REFERENCE_VALUE ];
 	}
 }

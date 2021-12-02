@@ -20,9 +20,23 @@ class ZPersistentObject extends ZObject {
 	protected $data = [];
 
 	/**
-	 * Provide this ZObject's schema.
+	 * Construct a ZPersistentObject instance
 	 *
-	 * @return array It's complicated.
+	 * @param ZObject $zid ZString representing the Zid that identifies this ZPersistentObject
+	 * @param ZObject $value ZObject to be wrapped in this ZPersistentObject
+	 * @param ZObject $label ZMultiLingualString that contains this ZPersistentObject's label
+	 * @param ZObject|null $aliases ZMultiLingualStringSet with this ZPersistentObject's aliases or null
+	 */
+	public function __construct( $zid, $value, $label, $aliases = null ) {
+		$aliases = $aliases ?? new ZMultiLingualStringSet( [] );
+		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID  ] = $zid;
+		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = $value;
+		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = $label;
+		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES ] = $aliases;
+	}
+
+	/**
+	 * @inheritDoc
 	 */
 	public static function getDefinition(): array {
 		return [
@@ -49,80 +63,8 @@ class ZPersistentObject extends ZObject {
 	}
 
 	/**
-	 * Construct a new ZObject instance. This top-level class has a number of Type-specific sub-
-	 * classes for built-in representations, and is mostly intended to represent instances of
-	 * wiki-defined types.
-	 *
-	 * @param string|\stdClass $zid
-	 * @param string|array|ZObject|\stdClass $value The item to turn into the internal ZObject
-	 * @param array|ZObject $label The item to turn into this ZPersistentObject's label
-	 * @param array|ZObject|null $aliases The item to turn into this ZPersistentObject's aliases
+	 * @inheritDoc
 	 */
-	public function __construct( $zid, $value, $label, $aliases = null ) {
-		$aliases = $aliases ?? new ZMultiLingualStringSet( [] );
-		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID  ] = $zid;
-		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = $value;
-		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = $label;
-		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES ] = $aliases;
-	}
-
-	/**
-	 * @return string The persisted (or null) ZID
-	 */
-	public function getZid(): string {
-		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ]->getZValue();
-	}
-
-	/**
-	 * @return string The type of the internal ZObject
-	 */
-	public function getInternalZType(): string {
-		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ]->getZType();
-	}
-
-	/**
-	 * @return ZMultilingualString The mulilingual string object with the label
-	 */
-	public function getLabels(): ZMultilingualString {
-		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ];
-	}
-
-	/**
-	 * @return ZMultilingualStringSet The mulilingual stringset object with the aliases
-	 */
-	public function getAliases(): ZMultiLingualStringSet {
-		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES ];
-	}
-
-	/**
-	 * @return ZObject The inner ZObject wrapped by this ZPersistentObject
-	 */
-	public function getInnerZObject(): ZObject {
-		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ];
-	}
-
-	/**
-	 * @return mixed The generic content of this ZObject; most ZObject types will implement specific
-	 *   accessors specific to that type.
-	 */
-	public function getZValue() {
-		return $this->getInnerZObject()->getZValue();
-	}
-
-	/**
-	 * Fetch the label for a given Language (or its fallback).
-	 *
-	 * @param Language $language Language in which to provide the label.
-	 * @param bool $defaultToEnglish
-	 * @return string
-	 */
-	public function getLabel( $language, $defaultToEnglish = false ): string {
-		if ( $defaultToEnglish ) {
-			return $this->getLabels()->getStringForLanguageOrEnglish( $language );
-		}
-		return $this->getLabels()->getStringForLanguage( $language );
-	}
-
 	public function isValid(): bool {
 		// FIXME: (T296724) we accept ZStrings and ZReferences for now because functions-schemata/data
 		// files are incorrect (Z2K1 contains reference instead of string)
@@ -146,5 +88,74 @@ class ZPersistentObject extends ZObject {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Get the generic content of the inner ZObject wrapped by this ZPersistentObject.
+	 *
+	 * @return mixed The generic content of the ZObject wrapped by this ZPersistentObject.
+	 */
+	public function getZValue() {
+		return $this->getInnerZObject()->getZValue();
+	}
+
+	/**
+	 * Get the Zid that identifies this ZPersistentObject.
+	 *
+	 * @return string The persisted (or null) ZID
+	 */
+	public function getZid(): string {
+		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ]->getZValue();
+	}
+
+	/**
+	 * Get the inner ZObject wrapped by this ZPersistentObject.
+	 *
+	 * @return ZObject The inner ZObject wrapped by this ZPersistentObject
+	 */
+	public function getInnerZObject(): ZObject {
+		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ];
+	}
+
+	/**
+	 * Get the type Zid of the ZObject wrapped by this ZPersistentObject.
+	 * TODO: (T296822) The type can also be a literal or a function call.
+	 *
+	 * @return string The type of the internal ZObject
+	 */
+	public function getInternalZType(): string {
+		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ]->getZType();
+	}
+
+	/**
+	 * Get the ZMultilingualString that contains the label of this ZPersistentObject.
+	 *
+	 * @return ZMultilingualString The mulilingual string object with the label
+	 */
+	public function getLabels(): ZMultilingualString {
+		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ];
+	}
+
+	/**
+	 * Get the label for a given Language (or its fallback).
+	 *
+	 * @param Language $language Language in which to provide the label.
+	 * @param bool $defaultToEnglish
+	 * @return string
+	 */
+	public function getLabel( $language, $defaultToEnglish = false ): string {
+		if ( $defaultToEnglish ) {
+			return $this->getLabels()->getStringForLanguageOrEnglish( $language );
+		}
+		return $this->getLabels()->getStringForLanguage( $language );
+	}
+
+	/**
+	 * Get the ZMultilingualStringSet that contains the aliases for this ZPersistentObject.
+	 *
+	 * @return ZMultilingualStringSet The mulilingual stringset object with the aliases
+	 */
+	public function getAliases(): ZMultiLingualStringSet {
+		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES ];
 	}
 }

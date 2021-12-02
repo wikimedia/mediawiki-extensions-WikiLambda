@@ -20,6 +20,23 @@ use MediaWiki\MediaWikiServices;
 
 class ZMultiLingualStringSet extends ZObject {
 
+	/**
+	 * Construct a ZMultiLingualStringSet instance given an array or a ZList
+	 * of ZMonoLingualStringSet instances.
+	 *
+	 * @param ZList|array $strings
+	 */
+	public function __construct( $strings = [] ) {
+		foreach ( ZObjectUtils::getIterativeList( $strings ) as $index => $monoLingualStringSet ) {
+			if ( $monoLingualStringSet instanceof ZMonoLingualStringSet ) {
+				$this->setMonoLingualStringSet( $monoLingualStringSet );
+			}
+		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public static function getDefinition(): array {
 		return [
 			'type' => ZTypeRegistry::Z_MULTILINGUALSTRINGSET,
@@ -33,31 +50,8 @@ class ZMultiLingualStringSet extends ZObject {
 	}
 
 	/**
-	 * This can be called with an array of serialized canonical ZObjects, an array
-	 * of ZMonoLingualStringSet instances, or a ZList of ZMonoLingualStringSet instances.
-	 *
-	 * @param ZList|array $strings
+	 * @inheritDoc
 	 */
-	public function __construct( $strings = [] ) {
-		foreach ( ZObjectUtils::getIterativeList( $strings ) as $index => $monoLingualStringSet ) {
-			if ( $monoLingualStringSet instanceof ZMonoLingualStringSet ) {
-				$this->setMonoLingualStringSet( $monoLingualStringSet );
-			}
-		}
-	}
-
-	public function getZValue() {
-		return $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE ] ?? [];
-	}
-
-	public function getValueAsList() {
-		$multi = [];
-		foreach ( $this->getZValue() as $mono ) {
-			$multi[ $mono->getLanguage() ] = $mono->getStringSet();
-		}
-		return $multi;
-	}
-
 	public function isValid(): bool {
 		$stringsets = $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE ] ?? [];
 		foreach ( $stringsets as $lang => $monolingualString ) {
@@ -66,6 +60,30 @@ class ZMultiLingualStringSet extends ZObject {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Get the list of ZMonoLingualStringSets that represent the value of
+	 * this ZMultiLingualStringSet
+	 *
+	 * @return array
+	 */
+	public function getZValue() {
+		return $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE ] ?? [];
+	}
+
+	/**
+	 * Get the values of this ZMultiLingualStringSet in the shape of an
+	 * array with language as key and array of strings as value.
+	 *
+	 * @return array
+	 */
+	public function getValueAsList() {
+		$multi = [];
+		foreach ( $this->getZValue() as $mono ) {
+			$multi[ $mono->getLanguage() ] = $mono->getStringSet();
+		}
+		return $multi;
 	}
 
 	/**

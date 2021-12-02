@@ -14,6 +14,18 @@ use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 
 class ZQuote extends ZObject {
 
+	/**
+	 * Construct a ZQuote instance that can contain any value
+	 *
+	 * @param mixed $value
+	 */
+	public function __construct( $value = '' ) {
+		$this->data[ ZTypeRegistry::Z_QUOTE_VALUE ] = $value;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public static function getDefinition(): array {
 		return [
 			'type' => ZTypeRegistry::Z_QUOTE,
@@ -26,29 +38,30 @@ class ZQuote extends ZObject {
 		];
 	}
 
-	public function __construct( $value = '' ) {
-		$this->data[ ZTypeRegistry::Z_QUOTE_VALUE ] = $value;
-	}
-
-	public function getZValue() {
-		return $this->data[ ZTypeRegistry::Z_QUOTE_VALUE ];
-	}
-
+	/**
+	 * @inheritDoc
+	 */
 	public function isValid(): bool {
 		// For ZQuote, any value is valid by definition.
 		return true;
 	}
 
 	/**
-	 * Convert this ZObject into its serialized canonical representation
-	 *
-	 * @param int $form
-	 * @return \stdClass|array|string
+	 * @inheritDoc
 	 */
 	public function getSerialized( $form = self::FORM_CANONICAL ) {
 		return (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_QUOTE,
 			ZTypeRegistry::Z_QUOTE_VALUE => $this->getZValue()
 		];
+	}
+
+	/**
+	 * Get the raw content of the value quoted by this ZQuote instance
+	 *
+	 * @return mixed
+	 */
+	public function getZValue() {
+		return $this->data[ ZTypeRegistry::Z_QUOTE_VALUE ];
 	}
 }

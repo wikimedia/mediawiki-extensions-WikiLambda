@@ -14,21 +14,13 @@ use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 
 class ZList extends ZObject {
 
-	public static function getDefinition(): array {
-		return [
-			'type' => ZTypeRegistry::Z_LIST,
-			'keys' => [
-				ZTypeRegistry::Z_LIST_HEAD => [
-					'type' => ZTypeRegistry::Z_OBJECT,
-				],
-				ZTypeRegistry::Z_LIST_TAIL => [
-					// TODO: This is an array of ZObjects.
-					'type' => ZTypeRegistry::BUILTIN_ARRAY,
-				],
-			],
-		];
-	}
-
+	/**
+	 * Create a new ZList instance given an array (canonical form) or two parameters representing
+	 * the head and the tail of the list
+	 *
+	 * @param array $head
+	 * @param array|null $tail
+	 */
 	public function __construct( $head = [], $tail = null ) {
 		// TODO: (T296824) Special handling for convenience. Possibly not worth the complexity? To re-evaluate.
 		if ( is_array( $head ) && $tail === null ) {
@@ -40,21 +32,26 @@ class ZList extends ZObject {
 		}
 	}
 
-	public function getZValue() {
-		return [ $this->data[ ZTypeRegistry::Z_LIST_HEAD ], $this->data[ ZTypeRegistry::Z_LIST_TAIL ] ];
+	/**
+	 * @inheritDoc
+	 */
+	public static function getDefinition(): array {
+		return [
+			'type' => ZTypeRegistry::Z_LIST,
+			'keys' => [
+				ZTypeRegistry::Z_LIST_HEAD => [
+					'type' => ZTypeRegistry::Z_OBJECT,
+				],
+				ZTypeRegistry::Z_LIST_TAIL => [
+					'type' => ZTypeRegistry::BUILTIN_ARRAY,
+				],
+			],
+		];
 	}
 
-	public function getZListAsArray(): array {
-		$result = [];
-		if ( isset( $this->data[ ZTypeRegistry::Z_LIST_HEAD ] ) ) {
-			$result[] = $this->data[ ZTypeRegistry::Z_LIST_HEAD ];
-		}
-
-		$result = array_merge( $result, (array)$this->data[ ZTypeRegistry::Z_LIST_TAIL ] );
-
-		return $result;
-	}
-
+	/**
+	 * @inheritDoc
+	 */
 	public function isValid(): bool {
 		if ( !self::isValidValue( $this->data[ ZTypeRegistry::Z_LIST_HEAD ] ) ) {
 			return false;
@@ -69,8 +66,9 @@ class ZList extends ZObject {
 	}
 
 	/**
-	 * @param mixed $value
+	 * Checks the validity for an element of this ZList.
 	 *
+	 * @param mixed $value
 	 * @return bool
 	 */
 	private function isValidValue( $value ): bool {
@@ -98,10 +96,7 @@ class ZList extends ZObject {
 	}
 
 	/**
-	 * Convert this ZObject into its serialized canonical representation
-	 *
-	 * @param int $form
-	 * @return \stdClass|array|string
+	 * @inheritDoc
 	 */
 	public function getSerialized( $form = self::FORM_CANONICAL ) {
 		// TODO: (T296737) fix different serialization modes, only returning FORM_CANONICAL
@@ -109,5 +104,27 @@ class ZList extends ZObject {
 		return array_map( static function ( $value ) use ( $form ) {
 			return ( $value instanceof ZObject ) ? $value->getSerialized( $form ) : $value;
 		}, $list );
+	}
+
+	/**
+	 * Get a pair that represent the head and tail of this ZList
+	 *
+	 * @return array
+	 */
+	public function getZValue() {
+		return [ $this->data[ ZTypeRegistry::Z_LIST_HEAD ], $this->data[ ZTypeRegistry::Z_LIST_TAIL ] ];
+	}
+
+	/**
+	 * Get the array of ZObjects represented by this ZList
+	 *
+	 * @return array
+	 */
+	public function getZListAsArray(): array {
+		$result = [];
+		if ( isset( $this->data[ ZTypeRegistry::Z_LIST_HEAD ] ) ) {
+			$result[] = $this->data[ ZTypeRegistry::Z_LIST_HEAD ];
+		}
+		return array_merge( $result, (array)$this->data[ ZTypeRegistry::Z_LIST_TAIL ] );
 	}
 }
