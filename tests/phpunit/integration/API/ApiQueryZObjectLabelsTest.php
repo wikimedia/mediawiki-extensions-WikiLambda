@@ -18,6 +18,9 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 	private const IT = 'Z1787';
 	private const EGL = 'Z1726';
 
+	/**
+	 * @var array
+	 */
 	private $testData = [
 		// TODO: Expand this test data to cover aliases
 		// (wlzl_label_primary set to 0 and more than one result per language)
@@ -119,7 +122,8 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
-	 * // TODO: Test setContinueEnumParameter when numRows() > limit.
+	 *
+	 * TODO: Test setContinueEnumParameter when numRows() > limit.
 	 */
 	public function testLimit() {
 		$precondition_result = $this->doApiRequest( [
@@ -135,7 +139,8 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'list' => 'wikilambdasearch_labels',
 			'wikilambdasearch_language' => 'it',
 			'wikilambdasearch_type' => 'birdtype',
-			'wikilambdasearch_limit' => 1,  // Limit is off by one?
+			// Limit is off by one?
+			'wikilambdasearch_limit' => 1,
 		] );
 		$expected = [
 			'batchcomplete' => true,
@@ -159,14 +164,15 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'action' => 'query',
 			'list' => 'wikilambdasearch_labels',
 			'wikilambdasearch_language' => 'it',
-			// 'wikilambdasearch_nofallback' => true,  // default
+			// Not setting the default, 'wikilambdasearch_nofallback' => true
 		] );
 		$expected = [
 			'batchcomplete' => true,
 			'query' => [
 				'wikilambdasearch_labels' => [
 					$this->resultFor( 'Z490' ),
-					$this->resultFor( 'Z493' ),  // en is always included because of History
+					// en is always included because of History
+					$this->resultFor( 'Z493' ),
 					$this->resultFor( 'Z491' ),
 				]
 			]
@@ -190,10 +196,13 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'batchcomplete' => true,
 			'query' => [
 				'wikilambdasearch_labels' => [
-					$this->resultFor( 'Z490' ),  // egl falls back to it
-					$this->resultFor( 'Z491' ),  // egl falls back to it
+					// egl falls back to it
+					$this->resultFor( 'Z490' ),
+					// egl falls back to it
+					$this->resultFor( 'Z491' ),
 					$this->resultFor( 'Z492' ),
-					$this->resultFor( 'Z493' ),  // all languages fall back to en
+					// all languages fall back to en
+					$this->resultFor( 'Z493' ),
 				]
 			]
 		];

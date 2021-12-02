@@ -21,6 +21,9 @@ class ApiQueryZFunctionReference extends ApiQueryGeneratorBase {
 	/** @var ZObjectStore */
 	protected $zObjectStore;
 
+	/**
+	 * @inheritDoc
+	 */
 	public function __construct(
 		$query,
 		$moduleName,
@@ -31,10 +34,16 @@ class ApiQueryZFunctionReference extends ApiQueryGeneratorBase {
 		$this->zObjectStore = $zObjectStore;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function execute() {
 		$this->run();
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function executeGenerator( $resultPageSet ) {
 		$this->run( $resultPageSet );
 	}

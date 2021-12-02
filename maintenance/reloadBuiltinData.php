@@ -25,6 +25,9 @@ class ReloadBuiltinData extends Maintenance {
 
 	// TODO: T260314: magical future of having changes re-apply
 
+	/**
+	 * @inheritDoc
+	 */
 	public function __construct() {
 		parent::__construct();
 		$this->requireExtension( 'WikiLambda' );

@@ -30,8 +30,19 @@ class UpdateLanguageCodes extends Maintenance {
 	private const Z_LANGUAGE = 'Z60';
 	private const Z_LANGUAGE_CODE = 'Z60K1';
 
+	/**
+	 * @var ZObjectStore
+	 */
 	private $zObjectStore = null;
+
+	/**
+	 * @var array
+	 */
 	private $languageZids = [];
+
+	/**
+	 * @var int
+	 */
 	private $updatedFields = 0;
 
 	public function __construct() {

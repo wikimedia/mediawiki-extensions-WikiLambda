@@ -296,7 +296,8 @@ class Hooks implements
 			$deps = $dependencies[ $zid ];
 			foreach ( $deps as $dep ) {
 				if (
-					!in_array( $dep, $track ) // Avoid circular dependencies
+					// Avoid circular dependencies
+					!in_array( $dep, $track )
 					&& !$langReg->isZidCached( $dep )
 					&& !$typeReg->isZidCached( $dep )
 				) {
@@ -585,7 +586,7 @@ class Hooks implements
 					'action' => 'wikilambda_function_call',
 					'wikilambda_function_call_zobject' => $call,
 				],
-				true /* wasPosted */
+				/* wasPosted */ true
 			);
 
 			$context = new DerivativeContext( RequestContext::getMain() );
@@ -643,6 +644,9 @@ class Hooks implements
 		}
 
 		// TODO: Turn this JSON blob of a ZObject into a content fragment (string) somehow.
-		return [ trim( $ret ), 'nowiki' /* Force content to be escaped */ ];
+		return [
+			trim( $ret ),
+			/* Force content to be escaped */ 'nowiki'
+		];
 	}
 }

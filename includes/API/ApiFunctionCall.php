@@ -35,6 +35,9 @@ class ApiFunctionCall extends ApiBase {
 	/** @var string */
 	private $wikiUri;
 
+	/**
+	 * @inheritDoc
+	 */
 	public function __construct( $query, $moduleName ) {
 		parent::__construct( $query, $moduleName, 'wikilambda_function_call_' );
 		if ( defined( 'MW_PHPUNIT_TEST' ) ) {
@@ -52,10 +55,16 @@ class ApiFunctionCall extends ApiBase {
 		}
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function execute() {
 		$this->run();
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function executeGenerator( $resultPageSet ) {
 		$this->run( $resultPageSet );
 	}

@@ -18,6 +18,9 @@ class ApiQueryZFunctionReferenceTest extends ApiTestCase {
 	private const IT = 'Z1787';
 	private const EGL = 'Z1726';
 
+	/**
+	 * @var array
+	 */
 	private $testData = [
 		'Z10030' => [
 			'wlzf_ref_zid' => 'Z10030',

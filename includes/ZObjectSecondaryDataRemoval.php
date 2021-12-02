@@ -19,6 +19,9 @@ class ZObjectSecondaryDataRemoval extends DataUpdate {
 	/** @var Title */
 	private $title;
 
+	/**
+	 * @inheritDoc
+	 */
 	public function __construct( Title $title ) {
 		$this->title = $title;
 	}

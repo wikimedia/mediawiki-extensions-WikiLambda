@@ -21,14 +21,23 @@ use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 
+	/**
+	 * @inheritDoc
+	 */
 	public function __construct( $query, $moduleName ) {
 		parent::__construct( $query, $moduleName, 'wikilambdasearch_' );
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function execute() {
 		$this->run();
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function executeGenerator( $resultPageSet ) {
 		$this->run( $resultPageSet );
 	}
@@ -54,7 +63,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 				$languages,
 				MediaWikiServices::getInstance()->getLanguageFallback()->getAll(
 					$language,
-					LanguageFallback::MESSAGES /* Try for en, even if it's not an explicit fallback. */
+					/* Try for en, even if it's not an explicit fallback. */ LanguageFallback::MESSAGES
 				)
 			);
 		}
@@ -84,8 +93,10 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 				'page_type' => $row->wlzl_type,
 				'label' => $row->wlzl_label,
 				'is_primary' => $row->wlzl_label_primary,
-				'page_id' => 0, // FIXME: Implement, otherwise the generator won't work.
-				'page_is_redirect' => false, // TODO: When we support redirects, implement.
+				// FIXME: Implement, otherwise the generator won't work.
+				'page_id' => 0,
+				// TODO: When we support redirects, implement.
+				'page_is_redirect' => false,
 				'page_content_model' => CONTENT_MODEL_ZOBJECT,
 				'page_lang' => $row->wlzl_language,
 			];

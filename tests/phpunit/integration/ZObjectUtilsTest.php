@@ -657,66 +657,75 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function provideApplyTransformationToType() {
+		// Of form {input, type, transformation, output}
+
 		return [
 			'transformation to string' => [
-				'"string"', /* input */
-				'Z6',     /* type */
-				static function ( $item ) { return $item;
-				}, /* transformation */
-				'"string"'  /* output */
+				'"string"',
+				'Z6',
+				static function ( $item ) {
+					return $item;
+				},
+				'"string"'
 			],
 			'transformation to empty array' => [
-				'[]', /* input */
-				'Z6',     /* type */
-				static function ( $item ) { return $item;
-				}, /* transformation */
-				'[]'  /* output */
+				'[]',
+				'Z6',
+				static function ( $item ) {
+					return $item;
+				},
+				'[]'
 			],
 			'transformation to empty zobject' => [
-				'{}', /* input */
-				'Z6', /* type */
-				static function ( $item ) { return $item;
-				}, /* transformation */
-				'{}'  /* output */
+				'{}',
+				'Z6',
+				static function ( $item ) {
+					return $item;
+				},
+				'{}'
 			],
 
 			'transformation to Z6' => [
-				'{ "Z1K1": "Z6", "Z6K1": "to uppercase" }', /* input */
-				'Z6', /* type */
-				static function ( $item ) { $item->Z6K1 = strtoupper( $item->Z6K1 );
-return $item;
-				}, /* transformation */
-				'{ "Z1K1": "Z6", "Z6K1": "TO UPPERCASE" }', /* output */
+				'{ "Z1K1": "Z6", "Z6K1": "to uppercase" }',
+				'Z6',
+				static function ( $item ) {
+					$item->Z6K1 = strtoupper( $item->Z6K1 );
+					return $item;
+				},
+				'{ "Z1K1": "Z6", "Z6K1": "TO UPPERCASE" }',
 			],
 
 			'canonicalization of Z6' => [
-				'{ "Z1K1": "Z2", "Z2K2":{ "Z1K1": "Z6", "Z6K1": "to canonical" }}', /* input */
-				'Z6', /* type */
-				static function ( $item ) { return $item->Z6K1;
-				}, /* transformation */
-				'{ "Z1K1": "Z2", "Z2K2": "to canonical" }', /* output */
+				'{ "Z1K1": "Z2", "Z2K2":{ "Z1K1": "Z6", "Z6K1": "to canonical" }}',
+				'Z6',
+				static function ( $item ) {
+					return $item->Z6K1;
+				},
+				'{ "Z1K1": "Z2", "Z2K2": "to canonical" }',
 			],
 
 			'canonicalization of many Z6' => [
 				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z6", "Z6K1": "to canonical value" }, '
 					. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", '
-					. ' "Z11K2": { "Z1K1": "Z6", "Z6K1": "to canonical label" } } ] } }', /* input */
-				'Z6', /* type */
-				static function ( $item ) { return $item->Z6K1;
-				}, /* transformation */
+					. ' "Z11K2": { "Z1K1": "Z6", "Z6K1": "to canonical label" } } ] } }',
+				'Z6',
+				static function ( $item ) {
+					return $item->Z6K1;
+				},
 				'{ "Z1K1": "Z2", "Z2K2": "to canonical value", '
 					. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [{ "Z1K1": "Z11", "Z11K1": "Z1002", '
-					. ' "Z11K2": "to canonical label" } ] } }', /* output */
+					. ' "Z11K2": "to canonical label" } ] } }',
 			],
 
 			'canonicalization of array of Z6' => [
 				'[ { "Z1K1": "Z6", "Z6K1": "first value" },'
 					. ' { "Z1K1": "Z6", "Z6K1": "second value" },'
-					. ' { "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "third value" } } ]', /* input */
-				'Z6', /* type */
-				static function ( $item ) { return $item->Z6K1;
-				}, /* transformation */
-				'[ "first value", "second value", { "Z1K1": "Z2", "Z2K1": "third value" } ]' /* output */
+					. ' { "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "third value" } } ]',
+				'Z6',
+				static function ( $item ) {
+					return $item->Z6K1;
+				},
+				'[ "first value", "second value", { "Z1K1": "Z2", "Z2K1": "third value" } ]'
 			]
 		];
 	}

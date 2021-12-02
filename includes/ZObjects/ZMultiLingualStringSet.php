@@ -119,7 +119,7 @@ class ZMultiLingualStringSet extends ZObject {
 
 		$fallbacks = MediaWikiServices::getInstance()->getLanguageFallback()->getAll(
 			$language->getCode(),
-			LanguageFallback::STRICT /* Don't try for en unless it's an accepted fallback. */
+			/* Don't try for en unless it's an accepted fallback. */ LanguageFallback::STRICT
 		);
 
 		foreach ( $fallbacks as $index => $languageCode ) {
