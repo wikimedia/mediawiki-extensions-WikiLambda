@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 class ZString extends ZObject {
 
@@ -59,10 +60,11 @@ class ZString extends ZObject {
 	 */
 	public function getSerialized( $form = self::FORM_CANONICAL ) {
 		if ( $form === self::FORM_CANONICAL ) {
-			return $this->getZValue();
-		} else {
-			return parent::getSerialized();
+			if ( !ZObjectUtils::isValidZObjectReference( $this->getZValue() ) ) {
+				return $this->getZValue();
+			}
 		}
+		return parent::getSerialized();
 	}
 
 	/**
