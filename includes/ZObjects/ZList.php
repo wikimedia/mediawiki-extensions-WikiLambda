@@ -59,11 +59,52 @@ class ZList extends ZObject {
 	 * @inheritDoc
 	 */
 	public function getSerialized( $form = self::FORM_CANONICAL ) {
-		// TODO: (T296737) fix different serialization modes, only returning FORM_CANONICAL
-		$list = $this->getZListAsArray();
-		return array_map( static function ( $value ) use ( $form ) {
-			return ( $value instanceof ZObject ) ? $value->getSerialized( $form ) : $value;
-		}, $list );
+		if ( $form === self::FORM_CANONICAL ) {
+			return self::getSerializedCanonical();
+		} else {
+			return self::getSerializedNormal( $this->data );
+		}
+	}
+
+	/**
+	 * Convert this ZList into its serialized canonical representation
+	 *
+	 * @return array
+	 */
+	private function getSerializedCanonical() {
+		return array_map( static function ( $value ) {
+			return $value->getSerialized();
+		}, $this->data );
+	}
+
+	/**
+	 * Convert this ZList into its serialized normal representation
+	 *
+	 * @param array $list
+	 * @return \stdClass
+	 */
+	private function getSerializedNormal( $list ) {
+		if ( count( $list ) > 0 ) {
+			return (object)self::returnNormalEmptyList();
+		}
+		$serialized = self::returnNormalEmptyList();
+		$serialized[ ZTypeRegistry::Z_LIST_HEAD ] = $list[0]->getSerialized();
+		$serialized[ ZTypeRegistry::Z_LIST_TAIL ] = self::getSerializedNormal( array_slice( $list, 1 ) ?? [] );
+		return (object)$serialized;
+	}
+
+	/**
+	 * Return an empty ZList in its normal representation
+	 *
+	 * @return array
+	 */
+	private function returnNormalEmptyList() {
+		return [
+			ZTypeRegistry::Z_OBJECT_TYPE => [
+				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_REFERENCE,
+				ZTypeRegistry::Z_REFERENCE_VALUE => ZTypeRegistry::Z_LIST
+			]
+		];
 	}
 
 	/**
