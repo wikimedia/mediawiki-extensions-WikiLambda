@@ -11,8 +11,10 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionRecord;
@@ -550,6 +552,84 @@ class ZObjectStore {
 				'LIMIT' => $limit,
 			]
 		);
+	}
+
+	/**
+	 * Fetch the label in the secondary database for a given object by Zid, in a given language.
+	 * Returns null if no labels are found in the given language or any other language in that
+	 * language's fallback chain, including English (Z1002).
+	 *
+	 * @param string $zid Term to search in the label database
+	 * @param string $languageCode Code of the language in which to fetch the label
+	 * @param bool $fallback Whether to only match in the given language, or use
+	 *   the language fallback change (default behaviour).
+	 * @return string|null
+	 */
+	public function fetchZObjectLabel( $zid, $languageCode, $fallback = true ) {
+		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+
+		$conditions = [	'wlzl_zobject_zid' => $zid ];
+
+		$zLangRegistry = ZLangRegistry::singleton();
+
+		$languageZid = $zLangRegistry->getLanguageZidFromCode( $languageCode );
+
+		// Set language filter
+		$languages = [ $languageZid ];
+		if ( $fallback ) {
+			$fallbackLanguages = MediaWikiServices::getInstance()->getLanguageFallback()->getAll(
+				$languageCode,
+				// Note: We intentionally fall all the way back to English as this will likely be the most
+				// common entry language, and so doing this will result in a marginally better UX behaviour
+				// for the circumstance where no label exists.
+				LanguageFallback::MESSAGES
+			);
+
+			foreach ( $fallbackLanguages as $index => $languageCode ) {
+				$languages[] = $zLangRegistry->getLanguageZidFromCode( $languageCode );
+			}
+		}
+		$conditions[ 'wlzl_language' ] = $languages;
+
+		// We only want primary labels, not aliases
+		$conditions[ 'wlzl_label_primary' ] = '1';
+
+		$res = $dbr->select(
+			/* FROM */ 'wikilambda_zobject_labels',
+			/* SELECT */ [
+				'wlzl_zobject_zid',
+				'wlzl_language',
+				'wlzl_label'
+			],
+			/* WHERE */ $dbr->makeList( $conditions, $dbr::LIST_AND ),
+			__METHOD__,
+			[
+				'ORDER BY' => 'wlzl_id ASC',
+				// Hard-coded performance limit just in case there's a very long / circular language fallback chain.
+				'LIMIT' => 5,
+			]
+		);
+
+		// No hits at all; allow callers to give a fallback message or trigger a DB fetch if they want.
+		if ( $res->numRows() === 0 ) {
+			return null;
+		}
+
+		// Collapse labels into a simple array
+		$labels = [];
+		foreach ( $res as $row ) {
+			$labels[$row->wlzl_language] = $row->wlzl_label;
+		}
+
+		// Walk the labels in order of the language chain, so that language preference is preserved
+		foreach ( $languages as $index => $languageZid ) {
+			if ( array_key_exists( $languageZid, $labels ) ) {
+				return $labels[ $languageZid ];
+			}
+		}
+
+		// Somehow we've reached this point without a hit? Oh well.
+		return null;
 	}
 
 	/**
