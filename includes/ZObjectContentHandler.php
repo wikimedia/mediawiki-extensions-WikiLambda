@@ -201,6 +201,9 @@ class ZObjectContentHandler extends ContentHandler {
 		return $encoded;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function getSecondaryDataUpdates(
 		Title $title,
 		Content $content,
@@ -213,6 +216,9 @@ class ZObjectContentHandler extends ContentHandler {
 		);
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function getDeletionUpdates( Title $title, $role ) {
 		return array_merge(
 			parent::getDeletionUpdates( $title, $role ),
@@ -220,10 +226,16 @@ class ZObjectContentHandler extends ContentHandler {
 		);
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function supportsDirectEditing() {
 		return false;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function getActionOverrides() {
 		return [
 			'edit' => ZObjectEditAction::class,

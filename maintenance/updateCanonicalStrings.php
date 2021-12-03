@@ -27,7 +27,14 @@ require_once "$IP/maintenance/Maintenance.php";
 
 class UpdateCanonicalStrings extends Maintenance {
 
+	/**
+	 * @var ZObjectStore
+	 */
 	private $zObjectStore = null;
+
+	/**
+	 * @var int
+	 */
 	private $updatedFields = 0;
 
 	public function __construct() {

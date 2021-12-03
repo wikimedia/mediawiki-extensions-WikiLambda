@@ -18,6 +18,9 @@ use MediaWiki\Extension\WikiLambda\Validation\ZObjectStructureValidator;
  */
 class ZErrorFactoryTest extends WikiLambdaIntegrationTestCase {
 
+	/**
+	 * @var array
+	 */
 	private $genericErrors = [ 'Z500', 'Z524', 'Z526', 'Z502', 'Z509' ];
 
 	/**

@@ -14,6 +14,9 @@ use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 
 class ZString extends ZObject {
 
+	/**
+	 * @inheritDoc
+	 */
 	public function __construct( $value = '' ) {
 		if ( is_string( $value ) || $value === null ) {
 			$this->data[ ZTypeRegistry::Z_STRING_VALUE ] = $value;

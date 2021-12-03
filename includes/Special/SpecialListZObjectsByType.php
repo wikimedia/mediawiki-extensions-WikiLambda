@@ -70,7 +70,7 @@ class SpecialListZObjectsByType extends SpecialPage {
 			[ $this->getLanguage()->getCode() ],
 			$this->languageFallback->getAll(
 				$this->getLanguage()->getCode(),
-				LanguageFallback::MESSAGES /* Try for en, even if it's not an explicit fallback. */
+				/* Try for en, even if it's not an explicit fallback. */ LanguageFallback::MESSAGES
 			)
 		);
 
@@ -112,13 +112,15 @@ class SpecialListZObjectsByType extends SpecialPage {
 	 * @return array
 	 */
 	private function fetchZObjects( $type, $languageZids ) {
+		// TODO: Add paging
+
 		$res = $this->zObjectStore->searchZObjectLabels(
 			'',
 			true,
 			$languageZids,
 			$type,
 			null,
-			5000 // TODO: Add paging
+			5000
 		);
 		$zobjects = [];
 		foreach ( $res as $row ) {

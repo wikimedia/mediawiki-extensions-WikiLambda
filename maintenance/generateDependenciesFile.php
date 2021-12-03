@@ -68,9 +68,12 @@ class GenerateDependenciesFile extends Maintenance {
 			preg_match_all( $refPattern, $data, $matches, PREG_PATTERN_ORDER );
 			foreach ( $matches[1] as $match ) {
 				if (
-					!$registry->isZTypeBuiltIn( $match ) // Avoid builtins
-					&& !in_array( $match, $unknownRefs ) // Avoid repetitions
-					&& ( $match !== $zid ) // Avoid self-dependency
+					// Avoid built-ins
+					!$registry->isZTypeBuiltIn( $match )
+					// Avoid repetitions
+					&& !in_array( $match, $unknownRefs )
+					// Avoid self-dependency
+					&& ( $match !== $zid )
 				) {
 					$unknownRefs[] = $match;
 				}

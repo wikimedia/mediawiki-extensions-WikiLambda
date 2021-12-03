@@ -27,11 +27,16 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 
 	/** @var LanguageFallback */
 	protected $languageFallback;
+
 	/** @var LanguageNameUtils */
 	protected $languageNameUtils;
+
 	/** @var TitleFactory */
 	protected $titleFactory;
 
+	/**
+	 * @inheritDoc
+	 */
 	public function __construct(
 		$query,
 		$moduleName,
@@ -46,10 +51,16 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 		$this->titleFactory = $titleFactory;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function execute() {
 		$this->run();
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function executeGenerator( $resultPageSet ) {
 		$this->run( $resultPageSet );
 	}

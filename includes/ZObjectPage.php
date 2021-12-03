@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
+use Title;
 use WikiPage;
 
 class ZObjectPage {
@@ -34,26 +35,58 @@ class ZObjectPage {
 		$this->errors = $errors;
 	}
 
+	/**
+	 * Create an instance of a successful ZObjectPage wrapping a WikiPage object
+	 *
+	 * @param WikiPage $page
+	 * @return ZObjectPage
+	 */
 	public static function newSuccess( $page ) {
 		return new self( $page );
 	}
 
+	/**
+	 * Create an instance of a fatal ZObjectPage wrapping a ZError object
+	 *
+	 * @param ZError $errors
+	 * @return ZObjectPage
+	 */
 	public static function newFatal( $errors ) {
 		return new self( null, $errors );
 	}
 
+	/**
+	 * Get the WikiPage of this ZObjectPage
+	 *
+	 * @return WikiPage|null
+	 */
 	public function getWikiPage() {
 		return $this->page;
 	}
 
+	/**
+	 * Get the errors of this ZObjectPage
+	 *
+	 * @return ZError|null
+	 */
 	public function getErrors() {
 		return $this->errors;
 	}
 
-	public function isOK() {
+	/**
+	 * Get whether this ZObjectPage has a page set
+	 *
+	 * @return bool
+	 */
+	public function isOK(): bool {
 		return ( $this->page !== null );
 	}
 
+	/**
+	 * Get the Title of this ZObjectPage if OK
+	 *
+	 * @return Title|null
+	 */
 	public function getTitle() {
 		if ( $this->isOK() ) {
 			return $this->page->getTitle();

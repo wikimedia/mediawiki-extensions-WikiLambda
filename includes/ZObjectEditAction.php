@@ -15,6 +15,10 @@ use Html;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 
 class ZObjectEditAction extends Action {
+
+	/**
+	 * @inheritDoc
+	 */
 	public function getName() {
 		return 'edit';
 	}

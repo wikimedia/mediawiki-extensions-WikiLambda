@@ -18,7 +18,14 @@ use WikiPage;
  */
 class ApiQueryZObjectsTest extends ApiTestCase {
 
+	/**
+	 * @var string
+	 */
 	private $unavailableZid = 'Z0123456789';
+
+	/**
+	 * @var string
+	 */
 	private $notValidZid = 'NotValidZid';
 
 	private const EN = 'Z1002';

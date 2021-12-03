@@ -197,6 +197,9 @@ EOT;
 
 	public const TEST_LANGS = [ 'en', 'fr' ];
 
+	/**
+	 * @inheritDoc
+	 */
 	public static function getDefinition(): array {
 		return [
 			'keys' => [
@@ -210,11 +213,17 @@ EOT;
 		];
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function __construct( $a = null, $b = null ) {
 		$this->data[ 'Z111K1' ] = $a;
 		$this->data[ 'Z111K2' ] = $b;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public static function create( array $objectVars ): ZObject {
 		if ( !array_key_exists( 'Z111K1', $objectVars ) ) {
 			throw new ZErrorException(
@@ -241,10 +250,16 @@ EOT;
 		return new ZTestType( $objectVars[ 'Z111K1' ], $objectVars[ 'Z111K2' ] );
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function getZValue() {
 		return [ $this->data[ 'Z111K1' ], $this->data[ 'Z111K2' ] ];
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function isValid(): bool {
 		return true;
 	}
