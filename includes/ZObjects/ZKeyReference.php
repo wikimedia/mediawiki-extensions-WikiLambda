@@ -15,6 +15,18 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 class ZKeyReference extends ZObject {
 
+	/**
+	 * Construct a ZKeyReference instance, bypassing the internal ZString formally contained.
+	 *
+	 * @param string $value
+	 */
+	public function __construct( $value ) {
+		$this->data[ ZTypeRegistry::Z_KEYREFERENCE_VALUE ] = $value;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public static function getDefinition(): array {
 		return [
 			'type' => ZTypeRegistry::Z_KEYREFERENCE,
@@ -27,26 +39,22 @@ class ZKeyReference extends ZObject {
 		];
 	}
 
-	public function __construct( $value = '' ) {
-		if ( is_string( $value ) || $value === null ) {
-			$this->data[ ZTypeRegistry::Z_KEYREFERENCE_VALUE ] = $value;
-		} elseif ( is_array( $value ) ) {
-			$this->data[ ZTypeRegistry::Z_KEYREFERENCE_VALUE ] = $value[0];
-		} else {
-			$this->data[ ZTypeRegistry::Z_KEYREFERENCE_VALUE ] = get_object_vars( $value )[
-				ZTypeRegistry::Z_KEYREFERENCE_VALUE
-			];
-		}
-	}
-
-	public function getZValue() {
-		return $this->data[ ZTypeRegistry::Z_KEYREFERENCE_VALUE ];
-	}
-
+	/**
+	 * @inheritDoc
+	 */
 	public function isValid(): bool {
 		if ( !is_string( $this->data[ ZTypeRegistry::Z_KEYREFERENCE_VALUE ] ) ) {
 			return false;
 		}
 		return ZObjectUtils::isValidZObjectKey( $this->data[ ZTypeRegistry::Z_KEYREFERENCE_VALUE ] );
+	}
+
+	/**
+	 * Get string value of the ZKeyReference object
+	 *
+	 * @return string The identifier of the ZKey referred by this ZObject
+	 */
+	public function getZValue() {
+		return $this->data[ ZTypeRegistry::Z_KEYREFERENCE_VALUE ];
 	}
 }

@@ -68,40 +68,6 @@ class ZObject {
 	}
 
 	/**
-	 * Fetch value of given key from the current ZObject.
-	 *
-	 * @param string $keyQuery The key to search for.
-	 * @return ZObject|null The value of the supplied key as a ZObject, null if key is undefined.
-	 * @throws ZErrorException
-	 */
-	public function getValueByKey( string $keyQuery ) {
-		$keys = $this->data;
-		if ( array_key_exists( $keyQuery, $keys ) ) {
-			$value = $keys[ $keyQuery ];
-			// If value is ZObject, return it as it is.
-			// If value is string, it will be a terminal ZObject (Z6 or Z9), return the ZObject instance
-			return ZObjectFactory::createChild( $value );
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * @return string The type of this ZObject
-	 */
-	public function getZType(): string {
-		return $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] ?? static::getDefinition()['type'];
-	}
-
-	/**
-	 * @return mixed The generic content of this ZObject; most ZObject types will implement specific
-	 *   accessors specific to that type.
-	 */
-	public function getZValue() {
-		return $this->data;
-	}
-
-	/**
 	 * Validate this ZObject against our schema, to prevent creation and saving of invalid items.
 	 *
 	 * @return bool Whether content is valid
@@ -117,6 +83,44 @@ class ZObject {
 	}
 
 	/**
+	 * Fetch value of given key from the current ZObject.
+	 *
+	 * @param string $keyQuery The key to search for.
+	 * @return ZObject|null The value of the supplied key as a ZObject, null if key is undefined.
+	 * @throws ZErrorException
+	 */
+	public function getValueByKey( string $keyQuery ) {
+		$keys = $this->data;
+		if ( array_key_exists( $keyQuery, $keys ) ) {
+			$value = $keys[ $keyQuery ];
+			// If value is ZObject, return it as it is.
+			// If value is string, it will be a terminal ZObject (Z6 or Z9), return the ZObject instance.
+			return ZObjectFactory::createChild( $value );
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * @return string The type of this ZObject
+	 */
+	public function getZType(): string {
+		return $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] ?? static::getDefinition()['type'];
+	}
+
+	/**
+	 * Return the generic content of this ZObject.
+	 *
+	 * @return mixed The generic content of this ZObject; most ZObject types will implement specific
+	 * accessors specific to that type.
+	 */
+	public function getZValue() {
+		return $this->data;
+	}
+
+	/**
+	 * Return all ZObject Zids that are linked to the current ZObject.
+	 *
 	 * @return string[] An array of other ZObjects to which this ZObject links
 	 * for injection into the MediaWiki system as if they were wiki links.
 	 */
@@ -128,14 +132,19 @@ class ZObject {
 	}
 
 	/**
+	 * Register in the linkedZObjects array a reference to a Zid to which
+	 * this ZObject is linked.
+	 *
 	 * @param string $zReference for the linked ZObject
 	 */
-	public function addLinkedZObject( string $zReference ) {
+	private function addLinkedZObject( string $zReference ) {
 		$this->linkedZObjects[ $zReference ] = 1;
 	}
 
 	/**
-	 * Iterate through ZObject values to find reference links
+	 * Iterate through ZObject values to find reference links and register them
+	 * locally.
+	 *
 	 * @param mixed $value value to check for reference links
 	 * @param ZObject $zobject original ZObject to add links
 	 */
@@ -155,20 +164,11 @@ class ZObject {
 			}
 		} elseif ( is_string( $value ) ) {
 			// TODO: Revisit this (probably not needed) when
-			// ZReferences are preserved/created correctly
+			// ZReferences are preserved/created correctly (T296925)
 			if ( ZObjectUtils::isValidZObjectReference( $value ) ) {
 				$zobject->addLinkedZObject( $value );
 			}
 		}
-	}
-
-	/**
-	 * Over-ride the default __toString() method to serialise ZObjects into a JSON representation.
-	 *
-	 * @return string
-	 */
-	public function __toString() {
-		return FormatJson::encode( $this->getSerialized( self::FORM_CANONICAL ), true, FormatJson::UTF8_OK );
 	}
 
 	/**
@@ -184,7 +184,8 @@ class ZObject {
 		];
 
 		foreach ( $this->data as $key => $value ) {
-			if ( $key == ZTypeRegistry::Z_OBJECT_TYPE ) { continue;
+			if ( $key == ZTypeRegistry::Z_OBJECT_TYPE ) {
+				continue;
 			}
 
 			if ( is_string( $value ) ) {
@@ -217,7 +218,7 @@ class ZObject {
 		$serialized = $this->getSerialized();
 
 		// Walk the ZObject tree to get all ZIDs that need to be fetched from the database
-		// FIXME: currently fetchBatchZObjects doesn't fetch them in batch, must fix or reconsider
+		// FIXME: (T296741) currently fetchBatchZObjects doesn't fetch them in batch, must fix or reconsider
 		$zids = ZObjectUtils::getRequiredZids( $serialized );
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$contents = $zObjectStore->fetchBatchZObjects( $zids );
@@ -229,4 +230,12 @@ class ZObject {
 		return ZObjectUtils::extractHumanReadableZObject( $serialized, $contents, $language );
 	}
 
+	/**
+	 * Over-ride the default __toString() method to serialise ZObjects into a JSON representation.
+	 *
+	 * @return string
+	 */
+	public function __toString() {
+		return FormatJson::encode( $this->getSerialized( self::FORM_CANONICAL ), true, FormatJson::UTF8_OK );
+	}
 }

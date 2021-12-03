@@ -16,6 +16,20 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 class ZError extends ZObject {
 
+	/**
+	 * Construct a new ZError instance.
+	 *
+	 * @param string $type ZErrorType Zid
+	 * @param ZObject $value Value that describes the ZError
+	 */
+	public function __construct( $type, $value ) {
+		$this->data[ ZTypeRegistry::Z_ERROR_TYPE ] = $type;
+		$this->data[ ZTypeRegistry::Z_ERROR_VALUE ] = $value;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public static function getDefinition(): array {
 		return [
 			'type' => ZTypeRegistry::Z_ERROR,
@@ -34,22 +48,53 @@ class ZError extends ZObject {
 	}
 
 	/**
-	 * @param string $type
-	 * @param ZObject|\stdClass $value
+	 * @inheritDoc
 	 */
-	public function __construct( $type, $value ) {
-		$this->data[ ZTypeRegistry::Z_ERROR_TYPE ] = $type;
-		$this->data[ ZTypeRegistry::Z_ERROR_VALUE ] = $value;
+	public function isValid(): bool {
+		// Type must be a valid Zid that references a ZObject of type Z50
+		if ( !isset( $this->data[ ZTypeRegistry::Z_ERROR_TYPE ] ) ) {
+			return false;
+		}
+		$errorType = $this->data[ ZTypeRegistry::Z_ERROR_TYPE ];
+		if ( !ZObjectUtils::isValidZObjectReference( $errorType ) ) {
+			return false;
+		}
+		if ( !ZErrorTypeRegistry::singleton()->instanceOfZErrorType( $errorType ) ) {
+			return false;
+		}
+		// Value must be a valid ZObject
+		if ( !isset( $this->data[ ZTypeRegistry::Z_ERROR_VALUE ] ) ) {
+			return false;
+		}
+		if ( !( $this->data[ ZTypeRegistry::Z_ERROR_VALUE ] instanceof ZObject ) ) {
+			return false;
+		}
+		return $this->getZValue()->isValid();
 	}
 
+	/**
+	 * Get the content of the ZError value.
+	 *
+	 * @return ZObject Value that describes this ZError
+	 */
 	public function getZValue(): ZObject {
 		return $this->data[ ZTypeRegistry::Z_ERROR_VALUE ];
 	}
 
+	/**
+	 * Get the Zid that identifies the ZErrorType that describes this ZError
+	 *
+	 * @return string ZErrorType Zid
+	 */
 	public function getZErrorType(): string {
 		return $this->data[ ZTypeRegistry::Z_ERROR_TYPE ];
 	}
 
+	/**
+	 * Get a human-readable one-line string that identifies the ZError information
+	 *
+	 * @return string ZError message
+	 */
 	public function getMessage(): string {
 		$messages = [];
 		$messages[] = ZErrorTypeRegistry::singleton()->getZErrorTypeLabel( $this->getZErrorType() );
@@ -77,28 +122,11 @@ class ZError extends ZObject {
 		return implode( ". ", $messages );
 	}
 
-	public function isValid(): bool {
-		// Type must be a valid Zid that references a ZObject of type Z50
-		if ( !isset( $this->data[ ZTypeRegistry::Z_ERROR_TYPE ] ) ) {
-			return false;
-		}
-		$errorType = $this->data[ ZTypeRegistry::Z_ERROR_TYPE ];
-		if ( !ZObjectUtils::isValidZObjectReference( $errorType ) ) {
-			return false;
-		}
-		if ( !ZErrorTypeRegistry::singleton()->instanceOfZErrorType( $errorType ) ) {
-			return false;
-		}
-		// Value must be a valid ZObject
-		if ( !isset( $this->data[ ZTypeRegistry::Z_ERROR_VALUE ] ) ) {
-			return false;
-		}
-		if ( !( $this->data[ ZTypeRegistry::Z_ERROR_VALUE ] instanceof ZObject ) ) {
-			return false;
-		}
-		return $this->getZValue()->isValid();
-	}
-
+	/**
+	 * Get all ZError related information in different forms for API failure response.
+	 *
+	 * @return array
+	 */
 	public function getErrorData() {
 		return [
 			'message' => $this->getMessage(),

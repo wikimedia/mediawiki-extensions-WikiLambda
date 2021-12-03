@@ -15,6 +15,23 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 class ZType extends ZObject {
 
+	/**
+	 * Construct a ZType instance given the identity ZReference, a ZList of ZKeys and a ZReference
+	 * to the type validator
+	 *
+	 * @param ZObject $identity
+	 * @param ZObject $keys
+	 * @param ZObject $validator
+	 */
+	public function __construct( $identity, $keys, $validator ) {
+		$this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ] = $identity;
+		$this->data[ ZTypeRegistry::Z_TYPE_KEYS ] = $keys;
+		$this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ] = $validator;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public static function getDefinition(): array {
 		return [
 			'type' => ZTypeRegistry::Z_TYPE,
@@ -36,38 +53,9 @@ class ZType extends ZObject {
 		];
 	}
 
-	public function __construct( $identity, $keys, $validator ) {
-		$this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ] = $identity;
-		$this->data[ ZTypeRegistry::Z_TYPE_KEYS ] = $keys;
-		$this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ] = $validator;
-	}
-
-	public function getZValue() {
-		return $this->data;
-	}
-
-	public function getTypeId() {
-		return $this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ]->getZValue();
-	}
-
-	public function getTypeKeys() {
-		return $this->data[ ZTypeRegistry::Z_TYPE_KEYS ];
-	}
-
-	public function getTypeValidator() {
-		return $this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ]->getZValue();
-	}
-
-	public function getZKey( $key ) {
-		$keys = $this->getTypeKeys()->getZListAsArray();
-		foreach ( $keys as $zkey ) {
-			if ( $zkey->getKeyId() === $key ) {
-				return $zkey;
-			}
-		}
-		return null;
-	}
-
+	/**
+	 * @inheritDoc
+	 */
 	public function isValid(): bool {
 		// Identity must be set to a valid ZReference (or special case of 'Z0')
 		if ( !isset( $this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ] ) ) {
@@ -120,5 +108,58 @@ class ZType extends ZObject {
 		// TODO: Actually check that the validator is a ZFunction that applies to us.
 
 		return true;
+	}
+
+	/**
+	 * Get the complete data values of this ZType, comprised of identity, keys and validator
+	 *
+	 * @return array
+	 */
+	public function getZValue() {
+		return $this->data;
+	}
+
+	/**
+	 * Get the string representation of th ZType Zid
+	 *
+	 * @return string
+	 */
+	public function getTypeId() {
+		return $this->data[ ZTypeRegistry::Z_TYPE_IDENTITY ]->getZValue();
+	}
+
+	/**
+	 * Get a ZList with the set of ZKeys for this ZType
+	 *
+	 * @return ZList
+	 */
+	public function getTypeKeys() {
+		return $this->data[ ZTypeRegistry::Z_TYPE_KEYS ];
+	}
+
+	/**
+	 * Get the string representation fo the ZReference to this ZType validator
+	 *
+	 * @return string
+	 */
+	public function getTypeValidator() {
+		return $this->data[ ZTypeRegistry::Z_TYPE_VALIDATOR ]->getZValue();
+	}
+
+	/**
+	 * Get the ZKey of a given key reference from the set of ZKeys of this ZType or
+	 * null if the ZKey is not available.
+	 *
+	 * @param string $key
+	 * @return ZKey|null
+	 */
+	public function getZKey( $key ) {
+		$keys = $this->getTypeKeys()->getZListAsArray();
+		foreach ( $keys as $zkey ) {
+			if ( $zkey->getKeyId() === $key ) {
+				return $zkey;
+			}
+		}
+		return null;
 	}
 }
