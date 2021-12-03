@@ -118,6 +118,7 @@
 
 <script>
 var Constants = require( '../Constants.js' ),
+	deepCopy = require( '../../../function-schemata/javascript/src/utils.js' ).deepCopy,
 	ZNaturalLanguageSelector = require( '../components/ZNaturalLanguageSelector.vue' ),
 	FnEditorBase = require( '../components/editor/FnEditorBase.vue' ),
 	FnEditorProgress = require( '../components/editor/FnEditorProgress.vue' ),
@@ -214,7 +215,7 @@ module.exports = {
 	} ),
 	methods: $.extend( mapActions( [] ), {
 		getRouterTo: function ( step ) {
-			var query = JSON.parse( JSON.stringify( this.$route.query ) );
+			var query = deepCopy( this.$route.query );
 			query.step = step;
 			query.zid = Constants.Z_FUNCTION;
 

@@ -9,6 +9,7 @@
 'use strict';
 
 var zTesterResultsModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zTesterResults.js' ),
+	deepCopy = require( '../../../../function-schemata/javascript/src/utils.js' ).deepCopy,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
 
 describe( 'zTesterResults Vuex module', function () {
@@ -16,7 +17,7 @@ describe( 'zTesterResults Vuex module', function () {
 		context;
 
 	beforeEach( function () {
-		state = JSON.parse( JSON.stringify( zTesterResultsModule.state ) );
+		state = deepCopy( zTesterResultsModule.state );
 		context = {
 			state: state,
 			commit: jest.fn( function ( mutationType, payload ) {

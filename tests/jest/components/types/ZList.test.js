@@ -9,6 +9,7 @@
 var mount = require( '@vue/test-utils' ).mount,
 	createLocalVue = require( '@vue/test-utils' ).createLocalVue,
 	Vuex = require( 'vuex' ),
+	deepCopy = require( '../../../../function-schemata/javascript/src/utils.js' ).deepCopy,
 	ZList = require( '../../../../resources/ext.wikilambda.edit/components/types/ZList.vue' ),
 	ZListItem = require( '../../../../resources/ext.wikilambda.edit/components/types/ZListItem.vue' ),
 	Button = require( '../../../../resources/ext.wikilambda.edit/components/base/Button.vue' ),
@@ -66,7 +67,7 @@ describe( 'ZList', function () {
 
 	beforeEach( function () {
 		state = {
-			zobject: JSON.parse( JSON.stringify( zobjectTree ) )
+			zobject: deepCopy( zobjectTree )
 		};
 
 		store = new Vuex.Store( {
@@ -118,7 +119,7 @@ describe( 'ZList', function () {
 					$i18n: jest.fn()
 				}
 			} ),
-			expectedZObject = JSON.parse( JSON.stringify( zobjectTree ) );
+			expectedZObject = deepCopy( zobjectTree );
 		expectedZObject.push( { id: 23, key: 2, parent: 3, value: 'object' } );
 
 		wrapper.find( '.z-list-add' ).trigger( 'click' );

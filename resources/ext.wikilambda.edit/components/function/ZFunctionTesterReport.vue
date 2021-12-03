@@ -20,7 +20,9 @@
 							:key="implementation"
 							scope="col"
 						>
-							{{ getZkeyLabels[ implementation ] || $i18n( 'wikilambda-tester-results-current-implementation' ) }}
+							{{ getZkeyLabels[ implementation ]
+								|| $i18n( 'wikilambda-tester-results-current-implementation' )
+							}}
 						</th>
 					</tr>
 				</thead>
