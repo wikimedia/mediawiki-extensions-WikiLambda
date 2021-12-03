@@ -11,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 /**
@@ -34,7 +35,7 @@ class ZListTest extends WikiLambdaIntegrationTestCase {
 	public function testPersistentCreation() {
 		$testObject = new ZObjectContent( '[]' );
 		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ null, [] ], $testObject->getZValue() );
+		$this->assertSame( [], $testObject->getZValue() );
 		$this->assertSame( [], $testObject->getInnerZObject()->getZListAsArray() );
 
 		$testObject = new ZObjectContent( '["Test"]' );
@@ -108,32 +109,22 @@ EOT
 	/**
 	 * @dataProvider provideIsValid
 	 * @covers ::isValid
-	 * @covers ::isValidValue
 	 */
-	public function testIsValid( $inputHead, $inputTail, $expected ) {
-		$testObject = new ZList( $inputHead, $inputTail );
+	public function testIsValid( $input, $expected ) {
+		$testObject = new ZList( $input );
 		$this->assertSame( $expected, $testObject->isValid() );
 	}
 
 	public function provideIsValid() {
 		return [
-			'empty' => [ null, [], true ],
-
-			'singleton string' => [ 'Test', [], true ],
-			'multiple strings' => [ 'Test1', [ 'Test2','Test3' ], true ],
-
-			'singleton array' => [ [ 'Test' ], [], true ],
-			'multiple arrays' => [ [ 'Test1' ], [ [ 'Test2' ],[ 'Test3' ] ], true ],
-
-			'singleton list of a singleton string' => [ new ZList( 'Test', [] ), [], true ],
-			'singleton list of multiple strings' => [ new ZList( 'Test1', [ 'Test2','Test3' ] ), [], true ],
-
-			'singleton non-ZObject object' => [ new \stdClass(), [], false ],
-
-			'singleton ZString object' => [ new ZString(), [], true ],
-			'multiple ZString objects' => [ new ZString(), [ new ZString(),new \stdClass(),new ZString() ], false ],
-
-			'multiple ZString objects with a non-ZObject' => [ new ZString(), [ new ZString(),new ZString() ], true ],
+			'empty' => [ [], true ],
+			'invalid elements' => [ [ 'invalid', 'elements' ], false ],
+			'singleton array' => [ [ new ZString() ], true ],
+			'array of strings' => [ [ new ZString(), new ZString() ], true ],
+			'array of string and ref' => [ [ new ZString(), new ZReference( 'Z1' ) ], true ],
+			'array of valid arrays' => [ [ new ZList( [ new ZString() ] ) ] , true ],
+			'array of invalid arrays' => [ [ new ZList( [ 'invalid array' ] ) ] , false ],
+			'array with invalid second element' => [ [ new ZString(), 'invalid element', new ZString() ], false ]
 		];
 	}
 }

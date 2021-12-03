@@ -15,21 +15,12 @@ use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 class ZList extends ZObject {
 
 	/**
-	 * Create a new ZList instance given an array (canonical form) or two parameters representing
-	 * the head and the tail of the list
+	 * Create a new ZList instance given an array (canonical form)
 	 *
-	 * @param array $head
-	 * @param array|null $tail
+	 * @param array $list
 	 */
-	public function __construct( $head = [], $tail = null ) {
-		// TODO: (T296824) Special handling for convenience. Possibly not worth the complexity? To re-evaluate.
-		if ( is_array( $head ) && $tail === null ) {
-			$this->data[ ZTypeRegistry::Z_LIST_HEAD ] = array_slice( $head, 0, 1 )[ 0 ] ?? null;
-			$this->data[ ZTypeRegistry::Z_LIST_TAIL ] = array_slice( $head, 1 ) ?? [];
-		} else {
-			$this->data[ ZTypeRegistry::Z_LIST_HEAD ] = $head;
-			$this->data[ ZTypeRegistry::Z_LIST_TAIL ] = $tail;
-		}
+	public function __construct( $list = [] ) {
+		$this->data = $list;
 	}
 
 	/**
@@ -53,46 +44,15 @@ class ZList extends ZObject {
 	 * @inheritDoc
 	 */
 	public function isValid(): bool {
-		if ( !self::isValidValue( $this->data[ ZTypeRegistry::Z_LIST_HEAD ] ) ) {
-			return false;
-		}
-
-		foreach ( $this->data[ ZTypeRegistry::Z_LIST_TAIL ] as $key => $value ) {
-			if ( !self::isValidValue( $value ) ) {
+		foreach ( $this->data as $key => $value ) {
+			if ( !( $value instanceof ZObject ) ) {
+				return false;
+			}
+			if ( !$value->isValid() ) {
 				return false;
 			}
 		}
 		return true;
-	}
-
-	/**
-	 * Checks the validity for an element of this ZList.
-	 *
-	 * @param mixed $value
-	 * @return bool
-	 */
-	private function isValidValue( $value ): bool {
-		if ( $value === null ) {
-			return true;
-		}
-
-		if ( is_object( $value ) && $value instanceof ZObject ) {
-			return $value->isValid();
-		}
-
-		if ( is_string( $value ) ) {
-			return true;
-		}
-
-		if ( is_array( $value ) ) {
-			foreach ( $value as $key => $innerValue ) {
-				if ( !self::isValidValue( $innerValue ) ) {
-					return false;
-				}
-			}
-			return true;
-		}
-		return false;
 	}
 
 	/**
@@ -112,7 +72,7 @@ class ZList extends ZObject {
 	 * @return array
 	 */
 	public function getZValue() {
-		return [ $this->data[ ZTypeRegistry::Z_LIST_HEAD ], $this->data[ ZTypeRegistry::Z_LIST_TAIL ] ];
+		return $this->data;
 	}
 
 	/**
@@ -121,10 +81,6 @@ class ZList extends ZObject {
 	 * @return array
 	 */
 	public function getZListAsArray(): array {
-		$result = [];
-		if ( isset( $this->data[ ZTypeRegistry::Z_LIST_HEAD ] ) ) {
-			$result[] = $this->data[ ZTypeRegistry::Z_LIST_HEAD ];
-		}
-		return array_merge( $result, (array)$this->data[ ZTypeRegistry::Z_LIST_TAIL ] );
+		return $this->getZValue();
 	}
 }
