@@ -9,6 +9,15 @@ var performFunctionCall = require( '../../mixins/api.js' ).methods.performFuncti
 
 module.exports = {
 	actions: {
+		/**
+		 * Create a new result record, that is detached from the main zObject (using parent -1)
+		 * if a record exist, it reset it by removing all childrens
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 *
+		 * @return {number} resultId
+		 */
 		initializeResultId: function ( context, payload ) {
 			var resultId = payload || context.getters.getNextObjectId;
 			if ( resultId === context.getters.getNextObjectId ) {
@@ -45,6 +54,15 @@ module.exports = {
 				} );
 			} );
 		},
+		/**
+		 * attach a function result to the zObject tree.
+		 * The result can either be a zObject or an error.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 *
+		 * @return {number} resultId
+		 */
 		addZFunctionResultToTree: function ( context, payload ) {
 			context.dispatch( 'injectZObject', {
 				zobject: payload.result,

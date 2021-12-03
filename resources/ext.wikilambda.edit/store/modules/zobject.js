@@ -219,6 +219,7 @@ module.exports = {
 		getZObjectAsJsonById: function ( state ) {
 			/**
 			 * Return the JSON representation of a specific zObject and its children
+			 * using the zObject id value within the zObject array
 			 *
 			 * @param {number} id
 			 * @param {boolean} isArray
@@ -229,6 +230,15 @@ module.exports = {
 			};
 		},
 		getZObjectAsJsonByZID: function ( state, getters ) {
+			/**
+			 * Return the JSON representation of the first occurance of a specific zObjectId
+			 * TODO (task:T296827): this should be refactored. It seems like duplication of the above and also
+			 * fragile because it just return the first occurance of the zObjectId
+			 *
+			 *
+			 * @param {string} zid
+			 * @return {Array} zObjectJson
+			 */
 			return function ( zid ) {
 				function getParentId( id ) {
 					var parent = getters.getZObjectById( id );

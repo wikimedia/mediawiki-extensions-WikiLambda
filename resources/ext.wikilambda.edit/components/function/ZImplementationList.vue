@@ -49,7 +49,7 @@ module.exports = {
 	components: {
 		'z-implementation-list-item': ZImplementationListItem
 	},
-	computed: $.extend( mapGetters( [ 'getNextObjectId', 'getZImplementations', 'getCurrentZObjectId', 'getViewMode' ] ),
+	computed: $.extend( mapGetters( [ 'getNextObjectId', 'getCurrentZObjectId', 'getViewMode' ] ),
 		{
 			Constants: function () {
 				return Constants;

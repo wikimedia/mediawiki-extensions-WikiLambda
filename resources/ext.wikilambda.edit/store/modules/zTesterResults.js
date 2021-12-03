@@ -20,6 +20,15 @@ module.exports = {
 	},
 	getters: {
 		getZTesterResults: function ( state ) {
+			/**
+			 * Retrieve the result value zTester a specific set of Function, tester and implementation.
+			 *
+			 * @param {string} zFunctionId
+			 * @param {string} zTesterId
+			 * @param {string} zImplementationId
+			 *
+			 * @return {boolean}
+			 */
 			return function ( zFunctionId, zTesterId, zImplementationId ) {
 				var key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
 
@@ -34,6 +43,16 @@ module.exports = {
 			};
 		},
 		getZTesterFailReason: function ( state ) {
+			/**
+			 * Retrieve the failed reason for a specific test.
+			 * Test are identified by a zFunctionId, zTesterId, and zImplementationId.
+			 *
+			 * @param {string} zFunctionId
+			 * @param {string} zTesterId
+			 * @param {string} zImplementationId
+			 *
+			 * @return {boolean} Error Value
+			 */
 			return function ( zFunctionId, zTesterId, zImplementationId ) {
 				var key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
 
@@ -50,6 +69,16 @@ module.exports = {
 			};
 		},
 		getZTesterMetadata: function ( state ) {
+			/**
+			 * Retrieve metadata ( eg. duration ), for a specific test.
+			 * Test are identified by a zFunctionId, zTesterId, and zImplementationId.
+			 *
+			 * @param {string} zFunctionId
+			 * @param {string} zTesterId
+			 * @param {string} zImplementationId
+			 *
+			 * @return {Object} metadata
+			 */
 			return function ( zFunctionId, zTesterId, zImplementationId ) {
 				var key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
 
@@ -63,6 +92,14 @@ module.exports = {
 			};
 		},
 		getZTesterPercentage: function ( state ) {
+			/**
+			 * Retrieve percentage of test that passed.
+			 * This getter takes into consideration all the tests of a specific zId
+			 *
+			 * @param {string} zid
+			 *
+			 * @return {Object}
+			 */
 			return function ( zid ) {
 				var results = Object.keys( state.zTesterResults ).filter( function ( key ) {
 						return key.indexOf( zid ) !== -1 && state.zTesterResults[ key ] !== undefined;
@@ -85,23 +122,58 @@ module.exports = {
 		}
 	},
 	mutations: {
+		/**
+		 * Set the result of a specific test
+		 *
+		 * @param {Object} state
+		 * @param {Object} result
+		 * @param {string} result.key
+		 * @param {boolean} result.result
+		 * @param {Object} result.metadata
+		 */
 		setZTesterResult: function ( state, result ) {
 			Vue.set( state.zTesterResults, result.key, result.result );
 			Vue.set( state.zTesterMetadata, result.key, result.metadata );
 		},
+		/**
+		 * Set the fetching state of the test results
+		 *
+		 * @param {Object} state
+		 * @param {boolean} fetching
+		 */
 		setFetchingTestResults: function ( state, fetching ) {
 			state.fetchingTestResults = fetching;
 		},
+		/**
+		 * Clear all the test results and metadata
+		 *
+		 * @param {Object} state
+		 */
 		clearZTesterResults: function ( state ) {
 			state.zTesterResults = {};
 			state.zTesterMetadata = {};
 		},
+		/**
+		 * Set the error state and message
+		 *
+		 * @param {Object} state
+		 * @param {Object} error
+		 */
 		setErrorState: function ( state, error ) {
 			state.errorState = !!error;
 			state.errorMessage = error.toString();
 		}
 	},
 	actions: {
+		/**
+		 * Reset the test results, using payload to create the required test keys
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {string} payload.zFunctionId
+		 * @param {string} payload.zTesterId
+		 * @param {string} payload.zImplementationId
+		 */
 		resetTestResult: function ( context, payload ) {
 			var key = payload.zFunctionId + ':' + payload.zTesterId + ':' + payload.zImplementationId;
 
@@ -110,6 +182,20 @@ module.exports = {
 				result: undefined
 			} );
 		},
+		/**
+		 * Triggers a test API call and updates the test results, handles the test pending state
+		 * and also define the error state and meessage if test returns errors
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {string} payload.zFunctionId
+		 * @param {string} payload.zTesterId
+		 * @param {string} payload.zImplementationId
+		 * @param {boolean} payload.clearPreviousResults
+		 * @param {boolean} payload.nocache
+		 *
+		 * @return {Promise}
+		 */
 		getTestResults: function ( context, payload ) {
 			var api = new mw.Api();
 

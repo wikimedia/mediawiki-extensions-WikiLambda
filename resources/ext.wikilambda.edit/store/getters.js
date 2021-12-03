@@ -9,6 +9,13 @@ var Constants = require( '../Constants.js' );
 
 module.exports = {
 	getZkeyLiteralType: function ( state, getters ) {
+
+		/**
+		 * Retrieve the literal type (actual type) of a specific ZKey. This is mainly used in the modeselector.
+		 *
+		 * @param {number} parentKey
+		 * @return {string} LiteralType
+		 */
 		return function ( parentKey ) {
 			var type = parentKey.match( /Z[1-9]\d*/ )[ 0 ],
 				keysArray,

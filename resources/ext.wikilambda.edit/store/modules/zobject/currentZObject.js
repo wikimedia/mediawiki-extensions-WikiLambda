@@ -29,6 +29,13 @@ module.exports = {
 
 			return persistentObjectValue.value || Constants.NEW_ZID_PLACEHOLDER;
 		},
+		/**
+		 * Return the root ZObjectId type
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {string} currentZObjectTypeId
+		 */
 		getCurrentZObjectType: function ( state, getters ) {
 			var zobject = getters.getZObjectAsJson,
 				type;
@@ -45,12 +52,25 @@ module.exports = {
 
 			return type || false;
 		},
+		/**
+		 * Return a boolean value indicating if the current zObject is executable.
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {boolean}
+		 */
 		isCurrentZObjectExecutable: function ( state, getters ) {
 			return [ Constants.Z_FUNCTION, Constants.Z_IMPLEMENTATION ].indexOf( getters.getCurrentZObjectType ) !== -1;
 		},
+		/**
+		 * Return a boolean value indicating if the
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {boolean}
+		 */
 		currentZObjectHasLabel: function ( state, getters ) {
 			var zobject = getters.getZObjectAsJson;
-
 			return zobject &&
 				zobject[ Constants.Z_PERSISTENTOBJECT_LABEL ][
 					Constants.Z_MULTILINGUALSTRING_VALUE ].filter(

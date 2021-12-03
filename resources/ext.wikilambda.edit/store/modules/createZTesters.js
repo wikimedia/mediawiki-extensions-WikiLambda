@@ -26,6 +26,13 @@ module.exports = {
 		}
 	},
 	actions: {
+		/**
+		 * Create a new instance of a tester. This is NOT attached to the main object, and used
+		 * by the UI to support the user in creating a new tester.
+		 * The object is given a parent of -1 to indicate that it is not attached to the main zObject
+		 *
+		 * @param {Object} context
+		 */
 		createNewTester: function ( context ) {
 			context.dispatch( 'initializeResultId', context.getters.getNextObjectId )
 				.then( function ( resultId ) {
@@ -86,6 +93,15 @@ module.exports = {
 					} );
 				} );
 		},
+		/**
+		 * Generates the test summary label used in the UI.
+		 * This string includes the input and expected output value.
+		 * eg: [ input1, input2 ] -> true
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {number} payload.testerId
+		 */
 		updateTesterLabel: function ( context, payload ) {
 			var testerJson = canonicalize( context.getters.getZObjectAsJsonById( payload.testerId ) ).Z2K2,
 				testerLabels = context.getters.getZObjectChildrenById(
@@ -143,6 +159,16 @@ module.exports = {
 				} );
 			} );
 		},
+		/**
+		 * This method will take the provisional testers (the one created using createNewTester )
+		 * and create a new zObject from it. It then attached the newly create zId as a tester
+		 * to the current zObject.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {number} payload.testerId
+		 * @param {number} payload.nextTesterIndex
+		 */
 		saveNewTester: function ( context, payload ) {
 			var zobject = canonicalize( context.getters.getZObjectAsJsonById( payload.testerId ) ),
 				newZid;

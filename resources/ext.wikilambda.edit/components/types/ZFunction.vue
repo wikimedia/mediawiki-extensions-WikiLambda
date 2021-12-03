@@ -82,7 +82,6 @@ module.exports = {
 			'getUserZlangZID',
 			'getCurrentZObjectId',
 			'getNestedZObjectById',
-			'getZargumentsString',
 			'isCreateNewPage'
 		] ),
 		{

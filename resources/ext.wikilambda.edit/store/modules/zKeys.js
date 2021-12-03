@@ -65,6 +65,14 @@ module.exports = {
 		getZarguments: function ( state ) {
 			return state.zArguments;
 		},
+		/**
+		 * Generates a comma separated string of the available arguments.
+		 * This is used for visualization on the editor.
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {string}
+		 */
 		getZargumentsString: function ( state, getters ) {
 			return Object.keys( getters.getZarguments )
 				.map( function ( key ) {
@@ -109,15 +117,39 @@ module.exports = {
 		addZKeyLabel: function ( state, payload ) {
 			Vue.set( state.zKeyLabels, payload.key, payload.label );
 		},
+		/**
+		 * Add a specific argument to the zArgument object.
+		 *
+		 * @param {Object} state
+		 * @param {Object} payload
+		 * @param {string} payload.zid
+		 */
 		addZArgumentInfo: function ( state, payload ) {
 			Vue.set( state.zArguments, payload.zid, payload );
 		},
+		/**
+		 * Reset the zArguments object in the state
+		 *
+		 * @param {Object} state
+		 */
 		resetZArgumentInfo: function ( state ) {
 			state.zArguments = {};
 		},
+		/**
+		 * Set the zImplementations in the store
+		 *
+		 * @param {Object} state
+		 * @param {Object} zImplementations
+		 */
 		setZImplementations: function ( state, zImplementations ) {
 			state.zImplementations = zImplementations;
 		},
+		/**
+		 * Set the zTesters in the store
+		 *
+		 * @param {Object} state
+		 * @param {Object} zTesters
+		 */
 		setZTesters: function ( state, zTesters ) {
 			state.zTesters = zTesters;
 		}
@@ -244,6 +276,13 @@ module.exports = {
 				} );
 			} );
 		},
+		/**
+		 * reset and repopulate the zArguments in the store. This method also
+		 * fetches any missing types.
+		 *
+		 * @param {Object} context
+		 * @param {Object} zFunctionId
+		 */
 		setAvailableZArguments: function ( context, zFunctionId ) {
 			context.commit( 'resetZArgumentInfo' );
 
@@ -318,6 +357,15 @@ module.exports = {
 				}
 			}
 		},
+		/**
+		 * Fetches function implementation of a the specified zFunctionId.
+		 * This methos will also fetch the zKeys in case of them are missing.
+		 *
+		 * @param {Object} context
+		 * @param {string} zFunctionId
+		 *
+		 * @return {Promise}
+		 */
 		fetchZImplementations: function ( context, zFunctionId ) {
 			var api = new mw.Api();
 
@@ -332,6 +380,15 @@ module.exports = {
 				return context.dispatch( 'fetchZKeys', response.query.wikilambdafn_search );
 			} );
 		},
+		/**
+		 * Fetches function testers of a the specified zFunctionId.
+		 * This methos will also fetch the zKeys in case of them are missing.
+		 *
+		 * @param {Object} context
+		 * @param {string} zFunctionId
+		 *
+		 * @return {Promise}
+		 */
 		fetchZTesters: function ( context, zFunctionId ) {
 			var api = new mw.Api();
 

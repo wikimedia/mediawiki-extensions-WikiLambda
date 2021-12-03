@@ -105,8 +105,7 @@ module.exports = {
 			'getZkeyLabels',
 			'getZkeys',
 			'getNestedZObjectById',
-			'getZarguments',
-			'getZargumentsString'
+			'getZarguments'
 		] ),
 		{
 			Constants: function () {
