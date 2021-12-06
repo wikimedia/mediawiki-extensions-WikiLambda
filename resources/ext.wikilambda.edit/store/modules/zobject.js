@@ -229,34 +229,6 @@ module.exports = {
 				return zobjectTreeUtils.convertZObjectTreetoJson( state.zobject, id, isArray );
 			};
 		},
-		getZObjectAsJsonByZID: function ( state, getters ) {
-			/**
-			 * Return the JSON representation of the first occurance of a specific zObjectId
-			 * TODO (task:T296827): this should be refactored. It seems like duplication of the above and also
-			 * fragile because it just return the first occurance of the zObjectId
-			 *
-			 *
-			 * @param {string} zid
-			 * @return {Array} zObjectJson
-			 */
-			return function ( zid ) {
-				function getParentId( id ) {
-					var parent = getters.getZObjectById( id );
-
-					if ( parent.parent > 0 ) {
-						return getParentId( parent.parent );
-					}
-
-					return parent.id;
-				}
-
-				var zobject = state.zobject.filter( function ( item ) {
-					return item.value === zid;
-				} )[ 0 ];
-
-				return getters.getZObjectAsJsonById( getParentId( zobject.id ) );
-			};
-		},
 		/**
 		 * Return the next key of the root ZObject. So if the current object is a Z1008
 		 * and there are currently 2 keys, it will return Z1008K3

@@ -10,6 +10,37 @@ var Vue = require( 'vue' ),
 	Constants = require( '../../Constants.js' ),
 	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
 
+/**
+ * Loop through a given array and replace the current Object or the placeholder object with a full object
+ * This is required to be able to see proper test result whil changin implementations and testers.
+ *
+ * @param {Object} context
+ * @param {Array} items - List of implementations or testers
+ * @param {Object} newItemZObject - Full zObject of the implementation or tester
+ * @return {Array}
+ */
+function replaceCurrentObjectWithFullJSONObject( context, items, newItemZObject ) {
+	return ( items || [] ).map( function ( item ) {
+		// if the item is the current object replace it
+		if ( !context.getters.getViewMode && item === context.getters.getCurrentZObjectId ) {
+			return canonicalize(
+				JSON.parse( JSON.stringify( context.getters.getZObjectAsJson ) )
+			);
+		}
+
+		// if the item has a placeholder value, it means that it is a new implementation/tester, replace it
+		if ( item === Constants.NEW_ZID_PLACEHOLDER ) {
+			return canonicalize(
+				JSON.parse( JSON.stringify( newItemZObject ) )
+			);
+		}
+
+		return item;
+	} ).filter( function ( item ) {
+		return !!item;
+	} );
+}
+
 module.exports = {
 	state: {
 		zTesterResults: {},
@@ -209,42 +240,17 @@ module.exports = {
 				context.commit( 'clearZTesterResults' );
 			}
 
+			var implementations = replaceCurrentObjectWithFullJSONObject( context, payload.zImplementations, context.getters.getNewImplementationZObjects );
+			var testers = replaceCurrentObjectWithFullJSONObject( context, payload.zTesters, context.getters.getNewTesterZObjects );
+
 			return api.post( {
 				action: 'wikilambda_perform_test',
 				wikilambda_perform_test_zfunction:
 					!context.getters.getViewMode && payload.zFunctionId === context.getters.getCurrentZObjectId ?
 						JSON.stringify( context.getters.getZkeys[ payload.zFunctionId ] ) :
 						payload.zFunctionId,
-				wikilambda_perform_test_zimplementations: JSON.stringify(
-					( payload.zImplementations || [] ).map( function ( impl ) {
-						if ( !context.getters.getViewMode && impl === context.getters.getCurrentZObjectId ) {
-							return canonicalize(
-								JSON.parse( JSON.stringify( context.getters.getZObjectAsJson ) )
-							);
-						}
-
-						if ( impl === Constants.NEW_ZID_PLACEHOLDER ) {
-							return canonicalize(
-								JSON.parse( JSON.stringify( context.getters.getZObjectAsJsonByZID( impl ) ) )
-							);
-						}
-
-						return impl;
-					} ).filter( function ( item ) {
-						return !!item;
-					} ) ),
-				wikilambda_perform_test_ztesters: JSON.stringify(
-					( payload.zTesters || [] ).map( function ( tester ) {
-						if ( !context.getters.getViewMode && tester === context.getters.getCurrentZObjectId ) {
-							return canonicalize(
-								JSON.parse( JSON.stringify( context.getters.getZObjectAsJson ) )
-							);
-						}
-
-						return tester;
-					} ).filter( function ( item ) {
-						return !!item;
-					} ) ),
+				wikilambda_perform_test_zimplementations: JSON.stringify( implementations ),
+				wikilambda_perform_test_ztesters: JSON.stringify( testers ),
 				wikilambda_perform_test_nocache: payload.nocache || false
 			} ).then( function ( data ) {
 				var results = JSON.parse( data.query.wikilambda_perform_test.Tested.data );

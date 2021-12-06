@@ -28,13 +28,12 @@
 		<div v-if="getViewMode && ZlistItems.length <= 0">
 			{{ $i18n( 'wikilambda-tester-none-found' ) }}
 		</div>
-		<div v-for="tester in getNewTesterIds" :key="tester">
-			<z-tester-ad-hoc
-				:zobject-id="tester"
-				:z-tester-list-id="zobjectId"
-			></z-tester-ad-hoc>
-		</div>
-		<button v-if="!getViewMode && getNewTesterIds.length <= 0" @click="createNewTester">
+		<z-tester-ad-hoc
+			v-if="getNewTesterId"
+			:zobject-id="getNewTesterId"
+			:z-tester-list-id="zobjectId"
+		></z-tester-ad-hoc>
+		<button v-if="!getViewMode && !getNewTesterId" @click="createNewTester">
 			{{ $i18n( 'wikilambda-tester-create-new' ) }}
 		</button>
 		<a v-if="getViewMode" :href="createNewTesterLink">
@@ -61,7 +60,7 @@ module.exports = {
 		'getNextObjectId',
 		'getCurrentZObjectId',
 		'getZTesters',
-		'getNewTesterIds',
+		'getNewTesterId',
 		'getViewMode'
 	] ),
 	{

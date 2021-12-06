@@ -128,18 +128,24 @@ describe( 'ZFunctionTesterReport', function () {
 	} );
 
 	it( 'triggers the tests on button click', function () {
-		var wrapper = shallowMount( ZFunctionTesterReport, {
-			store: store,
-			localVue: localVue,
-			propsData: {
-				zFunctionId: 'Z10000',
-				zImplementationId: 'Z10001',
-				zTesterId: 'Z10002'
-			},
-			mocks: {
-				$i18n: i18n
-			}
-		} );
+		var expectedImplementationId = 'Z10001',
+			expectedTesterId = 'Z10002',
+			wrapper = shallowMount( ZFunctionTesterReport, {
+				store: store,
+				localVue: localVue,
+				propsData: {
+					zFunctionId: 'Z10000',
+					zImplementationId: expectedImplementationId,
+					zTesterId: expectedTesterId
+				},
+				mocks: {
+					$i18n: i18n
+				},
+				computed: {
+					implementations: jest.fn().mockReturnValue( [ expectedImplementationId ] ),
+					testers: jest.fn().mockReturnValue( [ expectedTesterId ] )
+				}
+			} );
 
 		return wrapper.find( 'button' ).trigger( 'click' ).then( function () {
 			expect( actions.getTestResults ).toHaveBeenCalledWith( expect.anything(), {

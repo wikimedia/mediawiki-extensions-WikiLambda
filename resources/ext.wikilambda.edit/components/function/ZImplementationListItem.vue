@@ -19,7 +19,7 @@
 				{{ $i18n( "wikilambda-implementation-selector" ) }}
 			</option>
 			<option
-				v-for="zImplementationId in getZImplementations"
+				v-for="zImplementationId in getUnattachedZImplementations"
 				:key="zImplementationId"
 				:value="zImplementationId"
 			>
@@ -59,7 +59,7 @@ module.exports = {
 	},
 	computed: $.extend( mapGetters( [
 		'getZObjectById',
-		'getZImplementations',
+		'getUnattachedZImplementations',
 		'getZkeyLabels',
 		'getZkeys',
 		'getViewMode'
