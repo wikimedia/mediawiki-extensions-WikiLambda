@@ -1,5 +1,6 @@
 var VueRouter = require( '../lib/vue-router/vue-router.common.js' ),
 	FunctionEditor = require( './views/FunctionEditor.vue' ),
+	FunctionDefinition = require( './views/FunctionDefinition.vue' ),
 	ZObjectViewer = require( './components/ZObjectViewer.vue' ),
 	ZObjectEditor = require( './components/ZObjectEditor.vue' ),
 	Constants = require( './Constants.js' ),
@@ -18,13 +19,23 @@ window.process = {
 	}
 };
 
+// TODO: This is a temporary hack required to develop a new editor while still havve access to the old one
+// This will be removed as soon as the editor is completed (T297123)
 var EditorWrapper = {
 	functional: true,
-	props: [ 'zid' ],
+	props: [ 'zid', 'type' ],
 	render: function ( h, ctx ) {
-		var component = ctx.props.zid === Constants.Z_FUNCTION ||
-		store.getters.getCurrentZObjectType === Constants.Z_FUNCTION ?
-			FunctionEditor : ZObjectEditor;
+		var isNewDesign = ctx.props.type === 'newDesign';
+		var isFunctionEditor = ctx.props.zid === Constants.Z_FUNCTION ||
+		store.getters.getCurrentZObjectType === Constants.Z_FUNCTION;
+		var component = ZObjectEditor;
+
+		if ( isNewDesign ) {
+			component = FunctionDefinition;
+		} else if ( isFunctionEditor ) {
+			component = FunctionEditor;
+		}
+
 		return h( component, ctx.data, ctx.children );
 	}
 };
@@ -34,9 +45,20 @@ var routes = [
 		path: '/wiki/Special\\:CreateZObject',
 		name: 'create',
 		props: function ( route ) {
-			return ( { zid: route.query.zid } );
+			return ( {
+				zid: route.query.zid,
+				type: route.query.type
+			} );
 		},
 		component: EditorWrapper
+	},
+	{
+		path: '/wiki/Special\\:CreateZObject/(ciao)',
+		name: 'create',
+		props: function ( route ) {
+			return ( { zid: route.query.zid } );
+		},
+		component: FunctionDefinition
 	},
 	{
 		path: '/wiki/:id(Z[1-9]\\d*)',
