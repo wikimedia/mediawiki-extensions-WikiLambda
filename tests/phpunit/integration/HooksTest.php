@@ -20,6 +20,7 @@ use Title;
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Hooks
  * @group Database
+ * @group Standalone
  */
 class HooksTest extends WikiLambdaIntegrationTestCase {
 
