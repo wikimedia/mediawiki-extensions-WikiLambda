@@ -6,7 +6,10 @@
 			"James D. Forrester",
 			"Raymond",
 			"Robby",
-			"Umherirrender"
+			"Umherirrender",
+			"AJBot2",
+			"FF-11",
+			"Mormegil"
 		]
 	},
 	"wikilambda-desc": "{{desc|name=WikiLambda|url=https://www.mediawiki.org/wiki/Extension:WikiLambda}}\n\n{{doc-wikilambda}}",
@@ -23,7 +26,7 @@
 	"wikilambda-multilingualstring-nofallback": "Message shown when a multi-lingual string doesn't have a label defined for the user's language, nor for any of that language's fallbacks.",
 	"wikilambda-viewmode-nojs": "Warning shown on a ZObject page to readers who do not have JavaScript.",
 	"wikilambda-reference": "Label for the word [[:meta:Abstract Wikipedia/Glossary#reference|reference]].\n\n{{doc-wikilambda}}",
-	"wikilambda-literal": "Label for the word [[:meta:Abstract Wikipedia/Glossary#literal|literal]].\n\n{{doc-wikilambda}}",
+	"wikilambda-literal": "Label for the word [[:meta:Abstract Wikipedia/Glossary#literal|literal]].\n\nNot as in \"literal translation\"\n\n{{doc-wikilambda}}",
 	"wikilambda-genericliteral": "Label for the word [[:meta:Abstract Wikipedia/Glossary#generic|generic]] literal.\n\n{{doc-wikilambda}}",
 	"wikilambda-functioncall": "Label for the word [[:meta:Abstract Wikipedia/Glossary#function call|function call]].\n\n{{doc-wikilambda}}",
 	"wikilambda-special-createzobject": "Description for Special:CreateZObject.\n\n{{doc-wikilambda}}",
@@ -54,8 +57,8 @@
 	"wikilambda-editor-zobject-addkey": "Label for button to add a new ZKey to a ZObject.\n\n{{doc-wikilambda}}",
 	"wikilambda-editor-zobject-removekey-tooltip": "Tooltip shown on the button to remove an entry from a ZObject.\n\n{{doc-wikilambda}}",
 	"wikilambda-editor-label-select-programming-language-label": "Label for programming language selection dropdown.",
-	"wikilambda-modeselector-reference": "Label for button to select reference",
-	"wikilambda-modeselector-literal": "Label for button to select literal",
+	"wikilambda-modeselector-reference": "{{notranslate}}\nLabel for button to select reference",
+	"wikilambda-modeselector-literal": "{{notranslate}}\nLabel for button to select literal",
 	"wikilambda-modeselector-genericliteral": "Label for button to select the generic mode when entering values. Should be similar to the word \"[[:meta:Abstract Wikipedia/Glossary#generic|generic]]\", but as short as possible.\n\n{{doc-wikilambda}}",
-	"wikilambda-modeselector-functioncall": "Label for button to select function call"
+	"wikilambda-modeselector-functioncall": "{{notranslate}}\nLabel for button to select function call"
 }

@@ -2,9 +2,19 @@
 	"@metadata": {
 		"authors": [
 			"Aranka",
-			"Daanboven"
+			"Daanboven",
+			"McDutchie",
+			"Robin van der Vliet",
+			"Romaine"
 		]
 	},
 	"wikilambda-invalidzobjecttitle": "De opgegeven titel '$1' is niet geldig voor een ZObject.",
-	"wikilambda-viewmode-nojs": "Zonder JavaScript is de weergave van deze pagina beperkt."
+	"wikilambda-viewmode-nojs": "Zonder JavaScript is de weergave van deze pagina beperkt.",
+	"wikilambda-reference": "Referentie",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Taal",
+	"wikilambda-publishnew": "Publiceren",
+	"wikilambda-savenew": "Opslaan",
+	"wikilambda-publishchanges": "Wijzigingen publiceren",
+	"wikilambda-savechanges": "Wijzigingen opslaan",
+	"wikilambda-summarylabel": "Samenvatting:"
 }

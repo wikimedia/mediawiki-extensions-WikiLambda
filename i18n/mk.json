@@ -9,6 +9,7 @@
 	"wikilambda-invalidzobjecttitle": "Укажаниот наслов „$1“ не е важечки за ZObject.",
 	"wikilambda-invalidzobject": "Укажаната содржина не претставува важечки ZObject.",
 	"wikilambda-invalidcontenttype": "Укажанаа содржина не претставува класа на ZObject.",
+	"wikilambda-prohibitedcreationtype": "Укажаниот ZObject е од видот „$1“, кој не е дозволено да се создава.",
 	"wikilambda-noresult": "Пребарувањето не даде ништо.",
 	"wikilambda-labelclash": "Натписот на укажаната содржина се коси со ZObject „$1“ за натписот „$2“.",
 	"wikilambda-multilingualstring-nofallback": "Нема зададено натпис на овој јазик или прифатените резервни јазици",

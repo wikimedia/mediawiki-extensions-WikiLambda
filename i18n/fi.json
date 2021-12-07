@@ -3,9 +3,14 @@
 		"authors": [
 			"Joquliina",
 			"Mediawikitranslator",
-			"Pyscowicz"
+			"Pyscowicz",
+			"MITO",
+			"Nwme",
+			"Rönttönen",
+			"Yupik"
 		]
 	},
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Kieli",
+	"wikilambda-savenew": "Tallenna",
 	"wikilambda-editor-label-select-programming-language-label": "Valitse ohjelmointikieli:"
 }

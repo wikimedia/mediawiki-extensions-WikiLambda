@@ -21,7 +21,7 @@
 	"wikilambda-functioncall": "קריאה לפונקציה",
 	"wikilambda-special-createzobject": "יצירת עצם Z חדש",
 	"wikilambda-special-createzobject-summary": "הטופס הזה מאפשר לך ליצור עצם Z חדש, שיכול לייצג פונקציה, מימוש שלה, בודק שלה, או אחד מהסוגים האחרים של עצמי Z. מומלץ לקרוא את העזרה ואת הנחיות הקהילה תחילה.",
-	"wikilambda-special-createzobject-intro": "נא לוודא שאתם פועלים בהתאם למדיניות הקהילה, וכללי זכויות היוצרים והפטנטים.",
+	"wikilambda-special-createzobject-intro": "{{GENDER:|ודא שאתה ממלא|ודאי שאת ממלאת}} את מדיניות הקהילה, ואת כללי זכויות היוצרים והפטנטים.",
 	"wikilambda-special-createzobject-nojs": "הדף הזה דורש הפעלה של JavaScript.",
 	"wikilambda-special-listduplicatezobjectlabels": "דפי עצם Z עם תוויות כפולות",
 	"wikilambda-special-listduplicatezobjectlabels-summary": "הדף הזה מציג אילו עצמי Z נוצרו עם תוויות כפולות. רק הראשון יופיע בחיפושים, אז כדאי לתקן אותם.",

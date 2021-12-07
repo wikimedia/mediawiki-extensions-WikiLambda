@@ -5,7 +5,11 @@
 			"Gomoko",
 			"Pols12",
 			"Verdy p",
-			"Wladek92"
+			"Wladek92",
+			"DreZhsh",
+			"Fujimaru-kun",
+			"JenyxGym",
+			"MasterSinge"
 		]
 	},
 	"wikilambda-desc": "Fournit aux wikis de Wikimedia une fonction d’analyseur syntaxique de wikicode pour appeler l’évaluation des fonctions écrites, gérées et évaluées sur un wiki central.",
@@ -13,7 +17,7 @@
 	"wikilambda-invalidzobjecttitle": "Le titre fourni « $1 » n’est pas valide pour un Objet-Z.",
 	"wikilambda-invalidzobject": "Le contenu fourni n’est pas un Objet-Z valide.",
 	"wikilambda-invalidcontenttype": "Le contenu fourni n’est pas une classe d’Objet-Z.",
-	"wikilambda-prohibitedcreationtype": "Le ZObject fourni est de type '$1', qui n’est pas autorisé à la création.",
+	"wikilambda-prohibitedcreationtype": "L’Objet-Z fourni est de type « $1 », qui n’est pas autorisé à la création.",
 	"wikilambda-noresult": "La recherche n’a livré aucun résultat.",
 	"wikilambda-labelclash": "Le libellé du contenu fourni est en conflit avec l’Objet-Z « $1 » pour le libellé dans « $2x ».",
 	"wikilambda-persistentzobject": "Objet-Z",

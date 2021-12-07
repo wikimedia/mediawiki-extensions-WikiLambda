@@ -1,0 +1,34 @@
+{
+	"@metadata": {
+		"authors": [
+			"Adam N.",
+			"Fraxinus.cs",
+			"Mormegil"
+		]
+	},
+	"wikilambda-desc": "Poskytuje pro wiki funkci parseru wikitextu, kterou se vyvolává vyhodnocení funkce vytvořené, spravované a vyhodnocované na ústřední wiki.",
+	"wikilambda-prohibitedcreationtype": "Uvedený ZObjekt má typ „$1“, který není dovoleno vytvářet.",
+	"wikilambda-noresult": "Hledání nenašlo žádné výsledky.",
+	"wikilambda-persistentzobject": "ZObjekt",
+	"wikilambda-viewmode-nojs": "Tato stránka se bez JavaScriptu zobrazuje jen v omezené podobě.",
+	"wikilambda-reference": "Reference",
+	"wikilambda-literal": "Literál",
+	"wikilambda-functioncall": "Volání funkce",
+	"wikilambda-special-createzobject": "Vytvořit nový ZObjekt",
+	"wikilambda-special-createzobject-summary": "Pomocí tohoto formuláře můžete vytvořit nový ZObjekt, který může reprezentovat Funkci, její Implementaci, její Tester nebo jeden z mnoha různých druhů ZObjektů. Nejprve byste si měli přečíst dokumentaci a doporučení komunity.",
+	"wikilambda-special-createzobject-nojs": "Tato stránka vyžaduje pro svou funkci JavaScript.",
+	"wikilambda-special-listduplicatezobjectlabels": "Stránky ZObjektů s duplicitními štítky",
+	"wikilambda-special-listduplicatezobjectlabels-summary": "Tato stránka zobrazuje ZObjekty, které mají duplicitní štítky. Při hledání se zobrazí vždy pouze první, takže by měly být opraveny.",
+	"wikilambda-speciallistduplicatezobjectlabels-empty": "V současnosti nemají žádné ZObjekty duplicitní štítky.",
+	"wikilambda-speciallistduplicatezobjectlabels-existing": "Existující ZObjekt",
+	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "Kolidující ZObjekt",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Jazyk",
+	"wikilambda-publishnew": "Zveřejnit",
+	"wikilambda-savenew": "Uložit",
+	"wikilambda-publishchanges": "Zveřejnit změny",
+	"wikilambda-savechanges": "Uložit změny",
+	"wikilambda-summarylabel": "Shrnutí:",
+	"wikilambda-zobjectselector-label": "ZObjekt",
+	"wikilambda-editor-label-removelanguage-tooltip": "Odebrat tento jazyk z tohoto štítku",
+	"wikilambda-editor-label-select-programming-language-label": "Vyberte programovací jazyk:"
+}

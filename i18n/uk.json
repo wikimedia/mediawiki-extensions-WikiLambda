@@ -2,13 +2,35 @@
 	"@metadata": {
 		"authors": [
 			"Base",
-			"Renamerr"
+			"Renamerr",
+			"DDPAT",
+			"Ата"
 		]
 	},
+	"wikilambda-desc": "Надання вікімедіям Вікімедіа функції аналізатора вікітексту для виклику оцінки функцій, написаних, керованих та оцінених у центральній вікі.",
 	"wikilambda-emptylabel": "Неназваний ZObject",
+	"wikilambda-invalidzobjecttitle": "Наданий заголовок \"$1\" недійсний для ZObject.",
 	"wikilambda-invalidzobject": "Наданий вміст не є правильним ZObject'ом.",
 	"wikilambda-invalidcontenttype": "Наданий вміст не є ZObject-класом.",
+	"wikilambda-prohibitedcreationtype": "Наданий ZObject є типом '$1', який заборонено створювати.",
+	"wikilambda-noresult": "Пошук не дав результату.",
+	"wikilambda-labelclash": "Мітка наданого вмісту суперечить ZObject '$1' для мітки у '$2'.",
+	"wikilambda-persistentzobject": "ZObject",
+	"wikilambda-multilingualstring-nofallback": "Жодна мітка не визначена цією мовою або прийняті резервні варіанти",
+	"wikilambda-viewmode-nojs": "Ця сторінка обмежено відображається без JavaScript.",
+	"wikilambda-reference": "Виноска",
+	"wikilambda-literal": "Буквально",
+	"wikilambda-genericliteral": "Загальний літерал",
+	"wikilambda-functioncall": "Виклик функції",
 	"wikilambda-special-createzobject": "Створити новий ZObject",
+	"wikilambda-special-createzobject-summary": "Ця форма дозволяє створювати новий ZObject, який може представляти функцію, її реалізацію, тестер для неї або один з різних видів ZObjects. Спочатку слід ознайомитися з довідковою документацією та керівництвом спільноти.",
+	"wikilambda-special-createzobject-intro": "Переконайтеся, що ви дотримуєтесь політики спільноти, а також авторських та патентних правил.",
+	"wikilambda-special-createzobject-nojs": "Ця сторінка вимагає використання JavaScript.",
+	"wikilambda-special-listduplicatezobjectlabels": "Сторінки ZObject з повторюваними мітками",
+	"wikilambda-special-listduplicatezobjectlabels-summary": "На цій сторінці показано, які ZObjects були створені з повторюваними мітками. У пошукових запитах відображатиметься лише перший, тому їх слід виправити.",
+	"wikilambda-speciallistduplicatezobjectlabels-empty": "Наразі жодні ZObjects не мають повторюваних міток.",
+	"wikilambda-speciallistduplicatezobjectlabels-existing": "Існуючий ZObject",
+	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "Зіткнення ZObject",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Мова",
 	"wikilambda-publishnew": "Зберегти",
 	"wikilambda-savenew": "Зберегти",
@@ -16,8 +38,13 @@
 	"wikilambda-savechanges": "Зберегти зміни",
 	"wikilambda-summarylabel": "Опис:",
 	"wikilambda-typeselector-label": "Тип значення",
+	"wikilambda-zobjectselector-label": "ZObject",
 	"wikilambda-editor-label-addlanguage-label": "Додати мову:",
+	"wikilambda-editor-label-removelanguage-tooltip": "Видалити цю мову з цієї мітки",
 	"wikilambda-editor-zlist-additem-tooltip": "Додати елемент до цього ZList",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Вилучити цей елемент з цього ZList",
-	"wikilambda-editor-zobject-addkey": "Додати ключ:"
+	"wikilambda-editor-zobject-addkey": "Додати ключ:",
+	"wikilambda-editor-zobject-removekey-tooltip": "Вилучення цей ключ/значення із ZObject",
+	"wikilambda-editor-label-select-programming-language-label": "Вибрати мову програмування:",
+	"wikilambda-modeselector-genericliteral": "ген"
 }

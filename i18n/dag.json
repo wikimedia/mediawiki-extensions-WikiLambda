@@ -9,7 +9,9 @@
 			"Hidrash",
 			"Musahfm",
 			"Ruky Wunpini",
-			"Sir Amugi"
+			"Sir Amugi",
+			"Chirifo",
+			"Jahinfo"
 		]
 	},
 	"wikilambda-noresult": "Vihigu maa ka shahara",
@@ -21,6 +23,6 @@
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Balli",
 	"wikilambda-argument-typeselector-label": "Nangbankpeeni balibu",
 	"wikilambda-function-typeselector-label": "Tuma balibu",
-	"wikilambda-editor-label-select-programming-language-label": "Piimi Progaamin zuliya",
+	"wikilambda-editor-label-select-programming-language-label": "Piimi Progaamin balli",
 	"wikilambda-modeselector-genericliteral": "Gen"
 }

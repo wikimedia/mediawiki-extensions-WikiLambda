@@ -4,6 +4,10 @@
 			"Joetaras"
 		]
 	},
+	"wikilambda-emptylabel": "ZObject none etichettate",
+	"wikilambda-literal": "Letterale",
+	"wikilambda-genericliteral": "Letterale genereche",
+	"wikilambda-functioncall": "Chiamate d'a funzione",
 	"wikilambda-special-createzobject": "Ccreje 'nu ZObject nuève",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "ZObject esistende",
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "ZObject in conflitte",

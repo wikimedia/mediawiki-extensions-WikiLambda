@@ -1,0 +1,37 @@
+{
+	"@metadata": {
+		"authors": [
+			"DDPAT"
+		]
+	},
+	"apihelp-wikilambda_fetch-summary": "Отримайте модель JSON для ZObjects.",
+	"apihelp-wikilambda_fetch-param-language": "Мова, якою потрібно повертати результати.",
+	"apihelp-wikilambda_fetch-example-single": "Отримайте єдиний ZObject, Z1.",
+	"apihelp-wikilambda_fetch-example-multiple": "Отримайте три ZObjects: Z1, Z2 і Z3.",
+	"apierror-wikilambda_fetch-missingzid": "Даний ZID '$1' не існує у цій вікі.",
+	"apihelp-query+wikilambdasearch_labels-summary": "Цей генератор списків запитів API дозволяє шукати мітки ZObjects певною мовою. В основному він існує для підтримки перспективної системи пошуку.",
+	"apihelp-query+wikilambdasearch_labels-param-search": "Пошуковий термін",
+	"apihelp-query+wikilambdasearch_labels-param-language": "Код мови MediaWiki, у якому здійснювати пошук",
+	"apihelp-query+wikilambdasearch_labels-param-nofallback": "Чи шукати лише даною мовою, а не її запасними мовами",
+	"apihelp-query+wikilambdasearch_labels-param-exact": "Чи потрібно шукати точні збіги. Якщо цей параметр вимкнено, введення буде сприйматися як нечутливий до регістру, стандартний за Юнікодом пошук з ігноруванням наголосів на латинських символах.",
+	"apihelp-query+wikilambdasearch_labels-param-type": "Обмежити відповідність до певного типу ZObject.",
+	"apihelp-query+wikilambdasearch_labels-param-limit": "Максимальна кількість результатів для повернення",
+	"apihelp-query+wikilambda-example-simple": "Знайдіть англійською мовою ZObjects, мітка якої відповідає 'foo'",
+	"apihelp-query+wikilambda-example-nofallback": "Шукайте ZObjects, мітка яких відповідає \"foo\" французькою мовою, і не приймайте резервні мови",
+	"apihelp-query+wikilambda-example-type": "Шукайте ZObjects типу 'Z4', повертаючи англійські мітки",
+	"apihelp-query+wikilambdaload_zobjects-summary": "Шукайте ZObjects з урахуванням їхніх ZID і повертайте їхню модель JSON повністю або відфільтровано до даної мови або резервних варіантів. Якщо якийсь із наданих ZID не існує у вікі, він поверне помилку Z5 замість запитаного ZObject.",
+	"apihelp-query+wikilambdaload_zobjects-param-language": "Код мови MediaWiki, у якому потрібно повернути всі мітки ZObject.",
+	"apihelp-query+wikilambdaload_zobjects-param-canonical": "Повертати канонічну форму або, якщо її вимкнено, частково нормальну форму запитуваних ZObjects. Ця часткова нормалізація виключає ZLists, ZMonolingual String та ZMultilingual Strings.",
+	"apihelp-query+wikilambdaload_zobjects-example-full": "Знайдіть ZObjects Z12 і Z4 і поверніть їх повне представлення JSON.",
+	"apihelp-query+wikilambdaload_zobjects-example-language": "Знайдіть ZObjects Z12 та Z4 та поверніть їхні мітки, відфільтровані до іспанської чи резервних мов.",
+	"apihelp-query+wikilambdaload_zobjects-example-error": "Знайдіть ZObjects Z1 та неіснуючий Z012345789 та поверніть їх повне представлення JSON.",
+	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Знайдіть ZObject Z12 і поверніть його канонічне представлення JSON.",
+	"apihelp-wikilambda_edit-example-create": "Створити новий ZObject типу Z6 зі значенням 'value' і міткою 'label'",
+	"apihelp-wikilambda_edit-example-edit-incorrect": "Спробуйте оновити ZObject Z010 неправильними даними",
+	"apihelp-wikilambda_edit-summary": "Створення або редагування ZObject.",
+	"apihelp-wikilambda_edit-param-summary": "Редагувати короткий опис",
+	"apihelp-wikilambda_edit-param-zid": "ZID об'єкта ZObject для редагування. Якщо значення null, ZObject буде створено знову",
+	"apihelp-wikilambda_edit-param-zobject": "JSON-представлення ZObject для збереження",
+	"apierror-wikilambda_edit-invalidjson": "Не вдалося створити ZObject для даного введення \"$1\"; недійсний JSON.",
+	"apierror-wikilambda_edit-unmatchingzid": "Параметр ZID \"$1\" не збігається з ідентифікатором ZObject \"$2\""
+}
