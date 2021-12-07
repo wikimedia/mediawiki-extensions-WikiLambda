@@ -1,10 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"AC Krah"
+			"AC Krah",
+			"Naa2Darkoa"
 		]
 	},
-	"wikilambda-editor-fn-step-define": "Kyerɛaseɛ",
+	"wikilambda-editor-fn-step-define": "Kyerɛ aseɛ - Kyerɛ nea wayɛ no aseɛ",
 	"wikilambda-editor-fn-step-tests": "Sɔhwɛ",
 	"wikilambda-editor-fn-step-implement": "Fa di dwuma"
 }
