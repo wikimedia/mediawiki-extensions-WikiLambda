@@ -19,19 +19,6 @@ function isZType( zidInfo ) {
 		( zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] === Constants.Z_TYPE );
 }
 
-function filterPresentZids( rootState ) {
-	return function ( zid ) {
-		var zobject;
-		for ( zobject in rootState.zobjectModule.zobject ) {
-			if ( rootState.zobjectModule.zobject[ zobject ].value === zid ) {
-				return false;
-			}
-		}
-
-		return true;
-	};
-}
-
 module.exports = {
 	state: {
 		/**
@@ -45,15 +32,7 @@ module.exports = {
 		/**
 		 * Collection of arguments
 		 */
-		zArguments: {},
-		/**
-		 * List of implementation keys
-		 */
-		zImplementations: [],
-		/**
-		 * List of tester keys
-		 */
-		zTesters: []
+		zArguments: {}
 	},
 	getters: {
 		getZkeys: function ( state ) {
@@ -90,12 +69,6 @@ module.exports = {
 						argumentString + ', ' + key + type :
 						argumentString + key + type;
 				}, '' );
-		},
-		getZImplementations: function ( state, getters, rootState ) {
-			return state.zImplementations.filter( filterPresentZids( rootState ) );
-		},
-		getZTesters: function ( state, getters, rootState ) {
-			return state.zTesters.filter( filterPresentZids( rootState ) );
 		}
 	},
 	mutations: {
@@ -134,24 +107,6 @@ module.exports = {
 		 */
 		resetZArgumentInfo: function ( state ) {
 			state.zArguments = {};
-		},
-		/**
-		 * Set the zImplementations in the store
-		 *
-		 * @param {Object} state
-		 * @param {Object} zImplementations
-		 */
-		setZImplementations: function ( state, zImplementations ) {
-			state.zImplementations = zImplementations;
-		},
-		/**
-		 * Set the zTesters in the store
-		 *
-		 * @param {Object} state
-		 * @param {Object} zTesters
-		 */
-		setZTesters: function ( state, zTesters ) {
-			state.zTesters = zTesters;
 		}
 	},
 	actions: {
@@ -356,52 +311,6 @@ module.exports = {
 					} );
 				}
 			}
-		},
-		/**
-		 * Fetches function implementation of a the specified zFunctionId.
-		 * This methos will also fetch the zKeys in case of them are missing.
-		 *
-		 * @param {Object} context
-		 * @param {string} zFunctionId
-		 *
-		 * @return {Promise}
-		 */
-		fetchZImplementations: function ( context, zFunctionId ) {
-			var api = new mw.Api();
-
-			return api.get( {
-				action: 'query',
-				list: 'wikilambdafn_search',
-				format: 'json',
-				wikilambdafn_zfunction_id: zFunctionId,
-				wikilambdafn_type: Constants.Z_IMPLEMENTATION
-			} ).then( function ( response ) {
-				context.commit( 'setZImplementations', response.query.wikilambdafn_search );
-				return context.dispatch( 'fetchZKeys', response.query.wikilambdafn_search );
-			} );
-		},
-		/**
-		 * Fetches function testers of a the specified zFunctionId.
-		 * This methos will also fetch the zKeys in case of them are missing.
-		 *
-		 * @param {Object} context
-		 * @param {string} zFunctionId
-		 *
-		 * @return {Promise}
-		 */
-		fetchZTesters: function ( context, zFunctionId ) {
-			var api = new mw.Api();
-
-			return api.get( {
-				action: 'query',
-				list: 'wikilambdafn_search',
-				format: 'json',
-				wikilambdafn_zfunction_id: zFunctionId,
-				wikilambdafn_type: Constants.Z_TESTER
-			} ).then( function ( response ) {
-				context.commit( 'setZTesters', response.query.wikilambdafn_search );
-				return context.dispatch( 'fetchZKeys', response.query.wikilambdafn_search );
-			} );
 		}
 	}
 };

@@ -60,8 +60,6 @@ module.exports = {
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
-		 *
-		 * @return {number} resultId
 		 */
 		addZFunctionResultToTree: function ( context, payload ) {
 			context.dispatch( 'injectZObject', {

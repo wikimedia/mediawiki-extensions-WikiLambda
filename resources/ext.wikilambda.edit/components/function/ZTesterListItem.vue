@@ -19,7 +19,7 @@
 				{{ $i18n( "wikilambda-tester-selector" ) }}
 			</option>
 			<option
-				v-for="zTesterId in getZTesters"
+				v-for="zTesterId in getUnattachedZTesters"
 				:key="zTesterId"
 				:value="zTesterId"
 			>
@@ -48,7 +48,7 @@ module.exports = {
 	components: {
 		'z-reference': ZReference
 	},
-	computed: $.extend( mapGetters( [ 'getZObjectById', 'getZTesters', 'getZkeyLabels', 'getZkeys', 'getZTesterResults', 'getViewMode' ] ),
+	computed: $.extend( mapGetters( [ 'getZObjectById', 'getUnattachedZTesters', 'getZkeyLabels', 'getZkeys', 'getZTesterResults', 'getViewMode' ] ),
 		{
 			referenceValue: function () {
 				return this.findKeyInArray( Constants.Z_REFERENCE_ID, this.zobject ).value;

@@ -3,29 +3,83 @@ var canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZOb
 	saveZObject = require( '../../mixins/api.js' ).methods.saveZObject,
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods;
 
+function filterOutPresentZids( rootState ) {
+	return function ( zid ) {
+		var zobject;
+		for ( zobject in rootState.zobjectModule.zobject ) {
+			if ( rootState.zobjectModule.zobject[ zobject ].value === zid ) {
+				return false;
+			}
+		}
+
+		return true;
+	};
+}
 module.exports = {
 	state: {
-		newTesters: []
+		newTester: null,
+		/**
+		 * List of tester keys
+		 */
+		zTesters: []
 	},
 	getters: {
-		getNewTesterIds: function ( state ) {
-			return state.newTesters;
+		getNewTesterId: function ( state ) {
+			return state.newTester;
 		},
 		getNewTesterZObjects: function ( state, getters ) {
-			return state.newTesters.map( function ( id ) {
-				return getters.getZObjectAsJsonById( id );
-			} );
+			return getters.getZObjectAsJsonById( state.newTester );
+		},
+		getUnattachedZTesters: function ( state, getters, rootState ) {
+			return state.zTesters.filter( filterOutPresentZids( rootState ) );
+		},
+		getZTesters: function ( state ) {
+			return state.zTesters;
 		}
 	},
 	mutations: {
 		addNewTester: function ( state, newTester ) {
-			state.newTesters.push( newTester );
+			state.newTester = newTester;
 		},
-		removeNewTester: function ( state, id ) {
-			state.newTesters.splice( state.newTesters.indexOf( id ), 1 );
+		removeNewTester: function ( state ) {
+			state.newTester = null;
+		},
+		/**
+		 * Set the zTesters in the store
+		 *
+		 * @param {Object} state
+		 * @param {Object} zTesters
+		 */
+		setZTesters: function ( state, zTesters ) {
+			state.zTesters = zTesters;
 		}
 	},
 	actions: {
+		/**
+		 * Fetches function testers of a the specified zFunctionId.
+		 * This methos will also fetch the zKeys in case of them are missing.
+		 *
+		 * @param {Object} context
+		 * @param {string} zFunctionId
+		 *
+		 * @return {Promise}
+		 */
+		fetchZTesters: function ( context, zFunctionId ) {
+			var api = new mw.Api();
+
+			/* eslint-disable camelcase */
+			return api.get( {
+				action: 'query',
+				list: 'wikilambdafn_search',
+				format: 'json',
+				wikilambdafn_zfunction_id: zFunctionId,
+				wikilambdafn_type: Constants.Z_TESTER
+			} ).then( function ( response ) {
+				context.commit( 'setZTesters', response.query.wikilambdafn_search );
+				return context.dispatch( 'fetchZKeys', response.query.wikilambdafn_search );
+			} );
+			/* eslint-enable camelcase */
+		},
 		/**
 		 * Create a new instance of a tester. This is NOT attached to the main object, and used
 		 * by the UI to support the user in creating a new tester.
@@ -191,7 +245,7 @@ module.exports = {
 
 				context.dispatch( 'removeZObjectChildren', payload.testerId );
 				context.dispatch( 'removeZObject', payload.testerId );
-				context.commit( 'removeNewTester', payload.testerId );
+				context.commit( 'removeNewTester' );
 			} );
 		}
 	}

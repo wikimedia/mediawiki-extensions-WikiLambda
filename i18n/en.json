@@ -127,6 +127,7 @@
 	"wikilambda-tester-failure-actual": "Received",
 	"wikilambda-tester-function-duration": "Duration",
 	"wikilambda-tester-results-caption": "Results of function testers against implementations",
+	"wikilambda-tester-results-current-implementation": "Current implementation",
 	"wikilambda-tester-no-results": "No tester results found. Please add an implementation and a tester to see results.",
 	"wikilambda-tester-results-percentage-label": "Total Testers Passing",
 	"wikilambda-tester-run-testers": "Run All Testers",

@@ -6,18 +6,14 @@
 		<template #subtitle>
 			{{ $i18n( 'wikilambda-editor-write-subtitle' ) }}
 		</template>
+		<z-implementation
+			v-if="getNewImplementationId"
+			:zobject-id="findImplementationId( getNewImplementationId )"
+		></z-implementation>
 
-		<div v-for="zobjectId in getNewImplementationIds"
-			:key="zobjectId"
-		>
-			<z-implementation
-				:zobject-id="findImplementationId( zobjectId )"
-			></z-implementation>
-
-			<button @click="saveAdHocImplementation(zobjectId)">
-				{{ $i18n( 'wikilambda-editor-write-save-button' ) }}
-			</button>
-		</div>
+		<button @click="saveAdHocImplementation( getNewImplementationId )">
+			{{ $i18n( 'wikilambda-editor-write-save-button' ) }}
+		</button>
 	</fn-editor-base>
 </template>
 
@@ -41,7 +37,7 @@ module.exports = {
 		}
 	},
 	computed: $.extend( mapGetters( [
-		'getNewImplementationIds',
+		'getNewImplementationId',
 		'getZObjectChildrenById',
 		'getNestedZObjectById'
 	] ), {
@@ -78,7 +74,7 @@ module.exports = {
 		}
 	} ),
 	mounted: function () {
-		if ( this.getNewImplementationIds.length === 0 ) {
+		if ( !this.getNewImplementationId ) {
 			this.createNewImplementation();
 		}
 	}

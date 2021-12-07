@@ -20,7 +20,7 @@
 							:key="implementation"
 							scope="col"
 						>
-							{{ getZkeyLabels[ implementation ] }}
+							{{ getZkeyLabels[ implementation ] || $i18n( 'wikilambda-tester-results-current-implementation' ) }}
 						</th>
 					</tr>
 				</thead>
@@ -75,7 +75,7 @@
 					{{ $i18n( 'wikilambda-tester-results-subtitle' ) }}
 					{{ getZkeyLabels[ activeZImplementationId ] }}
 					( {{ getZkeyLabels[ activeZTesterId ] ||
-						( getNewTesterZObjects[ 0 ] && getNewTesterZObjects[ 0 ].Z2K3.Z12K1[ 0 ].Z11K2.Z6K1)
+						( getNewTesterZObjects && getNewTesterZObjects.Z2K3.Z12K1[ 0 ].Z11K2.Z6K1)
 					}} )
 				</h3>
 				<ul>
@@ -148,60 +148,51 @@ module.exports = {
 		'getZTesterResults',
 		'getZTesterMetadata',
 		'getZTesterFailReason',
-		'getViewMode'
+		'getViewMode',
+		'getZImplementations',
+		'getZTesters'
 	] ), {
 		implementations: function () {
 			if ( !this.zFunctionId || !this.getZkeys[ this.zFunctionId ] ) {
 				return [];
 			}
 
-			if ( this.zImplementationId ) {
-				return [ this.zImplementationId ];
-			}
+			var implementations = [];
 
+			// if the current root element is actually a function
 			if ( this.getCurrentZObjectId === this.zFunctionId ) {
-				return this.getZObjectAsJsonById(
-					this.getNestedZObjectById( 0, [
-						Constants.Z_PERSISTENTOBJECT_VALUE,
-						Constants.Z_FUNCTION_IMPLEMENTATIONS
-					] ).id,
-					true
-				).map( function ( impl ) {
-					return impl[ Constants.Z_REFERENCE_ID ];
-				} );
+				// we make a deep copy, otherwise we will change the original getters
+				implementations = implementations.concat( this.getZImplementations );
+			} else {
+				// if we are viewing a single implementation or tester, fetch the info from the zKey
+				implementations = implementations.concat( this.getZkeys[ this.zFunctionId ][
+					Constants.Z_PERSISTENTOBJECT_VALUE ][
+					Constants.Z_FUNCTION_IMPLEMENTATIONS ] );
 			}
 
-			return this.getZkeys[ this.zFunctionId ][
-				Constants.Z_PERSISTENTOBJECT_VALUE ][
-				Constants.Z_FUNCTION_IMPLEMENTATIONS ];
+			// The following will happen if we are creating a new zImplementation.
+			// doing so will allow us to see the result as we write it
+			if ( this.zImplementationId === Constants.NEW_ZID_PLACEHOLDER ) {
+				implementations.push( this.zImplementationId );
+			}
+			return implementations;
 		},
 		testers: function () {
 			if ( !this.zFunctionId || !this.getZkeys[ this.zFunctionId ] ) {
 				return [];
 			}
-
-			if ( this.zTesterId ) {
-				return [ this.zTesterId ];
-			}
-
+			var testers = [];
+			// if the current root element is actually a function
 			if ( this.getCurrentZObjectId === this.zFunctionId ) {
-				var savedTesters = this.getZObjectAsJsonById(
-						this.getNestedZObjectById( 0, [
-							Constants.Z_PERSISTENTOBJECT_VALUE,
-							Constants.Z_FUNCTION_TESTERS
-						] ).id,
-						true
-					).map( function ( impl ) {
-						return impl[ Constants.Z_REFERENCE_ID ];
-					} ),
-					newTesters = this.getNewTesterZObjects;
-
-				return savedTesters.concat( newTesters );
+				testers = testers.concat( this.getZTesters );
+			} else {
+				// if we are viewing a single implementation or tester, fetch the info from the zKey
+				testers = testers.concat( this.getZkeys[ this.zFunctionId ][
+					Constants.Z_PERSISTENTOBJECT_VALUE ][
+					Constants.Z_FUNCTION_TESTERS ] );
 			}
 
-			return this.getZkeys[ this.zFunctionId ][
-				Constants.Z_PERSISTENTOBJECT_VALUE ][
-				Constants.Z_FUNCTION_TESTERS ];
+			return testers;
 		},
 		resultCount: function () {
 			return this.getZTesterPercentage( this.zFunctionId );
