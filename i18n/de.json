@@ -113,6 +113,7 @@
 	"wikilambda-tester-failure-actual": "Erhalten",
 	"wikilambda-tester-function-duration": "Dauer",
 	"wikilambda-tester-results-caption": "Ergebnisse von Funktionstestern gegen Implementierungen",
+	"wikilambda-tester-results-current-implementation": "Derzeitige Umsetzung",
 	"wikilambda-tester-no-results": "Keine Testergebnisse gefunden. Füge eine Implementierung und einen Tester hinzu, um die Ergebnisse anzuzeigen.",
 	"wikilambda-tester-results-percentage-label": "Gesamtzahl der Tester, die bestanden haben",
 	"wikilambda-tester-run-testers": "Alle Tester ausführen",
