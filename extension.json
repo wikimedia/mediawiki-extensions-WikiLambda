@@ -212,6 +212,7 @@
 				"ext.wikilambda.edit/components/ZNaturalLanguageSelector.vue",
 				"ext.wikilambda.edit/views/EditorBase.vue",
 				"ext.wikilambda.edit/views/FunctionEditor.vue",
+				"ext.wikilambda.edit/views/FunctionDefinition.vue",
 				"lib/ace/src/ace.js",
 				"lib/vue-router/vue-router.common.js",
 				"lib/icons.js"
