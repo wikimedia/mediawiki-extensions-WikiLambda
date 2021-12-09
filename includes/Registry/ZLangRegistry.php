@@ -58,16 +58,24 @@ class ZLangRegistry extends ZObjectRegistry {
 	 * Given a language code, return its ZLanguage Zid
 	 *
 	 * @param string $code
+	 * @param bool $fallback If true, give the ZLanguage for English
 	 * @return string
 	 * @throws ZErrorException
 	 */
-	public function getLanguageZidFromCode( $code ): string {
+	public function getLanguageZidFromCode( $code, $fallback = false ): string {
 		$zid = array_search( $code, $this->registry );
 		if ( $zid ) {
 			return $zid;
 		}
 
-		$zid = $this->fetchLanguageZidFromCode( $code );
+		try {
+			$zid = $this->fetchLanguageZidFromCode( $code );
+		} catch ( \Throwable $th ) {
+			if ( $fallback ) {
+				return self::FALLBACK_LANGUAGE_ZID;
+			}
+			throw $th;
+		}
 		$this->register( $zid, $code );
 		return $zid;
 	}
