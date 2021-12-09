@@ -115,28 +115,47 @@ class SpecialListZObjectsByType extends SpecialPage {
 	 * @return array
 	 */
 	private function fetchZObjects( $type, $languageZids ) {
-		// TODO: Add paging
+		// Don't take down the site; limit listings to 5000(!) rows regardless.
+		$pageLimit = 5000;
 
-		$res = $this->zObjectStore->searchZObjectLabels(
-			'',
-			true,
-			$languageZids,
-			$type,
-			null,
-			5000
-		);
+		// Paginate our DB query at 100 items per request
+		$queryLimit = 100;
+
+		$continue = null;
+
 		$zobjects = [];
-		foreach ( $res as $row ) {
-			// Only set the label if we don't have one already, or it's the first-requested language.
-			// TODO: This means that if you're asking for uk > ru > en and we only have ru and en
-			// labels, we'll return whichever is first, rather than your preferred ru label over en.
-			if (
-				!isset( $zobjects[$row->wlzl_zobject_zid] )
-				|| array_search( $row->wlzl_language, $languageZids ) === 0
-			) {
-				$zobjects[$row->wlzl_zobject_zid] = $row->wlzl_label;
+
+		while ( $pageLimit > 0 ) {
+			$pageLimit -= $queryLimit;
+
+			$res = $this->zObjectStore->searchZObjectLabels(
+				'',
+				true,
+				$languageZids,
+				$type,
+				$continue,
+				$queryLimit
+			);
+
+			foreach ( $res as $row ) {
+				// Only set the label if we don't have one already, or it's the first-requested language.
+				// TODO: This means that if you're asking for uk > ru > en and we only have ru and en
+				// labels, we'll return whichever is first, rather than your preferred ru label over en.
+				if (
+					!isset( $zobjects[$row->wlzl_zobject_zid] )
+					|| array_search( $row->wlzl_language, $languageZids ) === 0
+				) {
+					$zobjects[$row->wlzl_zobject_zid] = $row->wlzl_label;
+				}
+				$continue = $row->wlzl_id;
+			}
+
+			if ( $res->numRows() < $queryLimit ) {
+				// We got fewer than our limit last time, so exit the loop.
+				break;
 			}
 		}
+
 		asort( $zobjects );
 
 		return $zobjects;
