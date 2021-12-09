@@ -425,7 +425,7 @@ class Hooks implements
 		// the labels table already, which is very much faster:
 		$zLangRegistry = ZLangRegistry::singleton();
 		$userLanguageCode = $context->getLanguage()->getCode();
-		$userLanguageCode = ( $zLangRegistry->isLanguageKnownGivenCode( $userLangCode ) ) ? $userLanguageCode : 'en';
+		$userLanguageCode = $zLangRegistry->isLanguageKnownGivenCode( $userLanguageCode ) ? $userLanguageCode : 'en';
 		$userLanguageZid = $zLangRegistry->getLanguageZidFromCode( $userLanguageCode );
 		$label = $zObjectStore->fetchZObjectLabel( $targetTitle->getBaseText(), $userLanguageZid, true );
 
