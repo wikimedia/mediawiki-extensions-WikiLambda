@@ -8,7 +8,6 @@
 'use strict';
 
 var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zKeys.js' ),
-	deepCopy = require( '../../../../function-schemata/javascript/src/utils.js' ).deepCopy,
 	mockApiReponse = {
 		batchcomplete: '',
 		query: {
@@ -215,7 +214,7 @@ describe( 'zkeys Vuex module', function () {
 				then: getResolveMock
 			};
 		} );
-		state = deepCopy( zkeysModule.state );
+		state = JSON.parse( JSON.stringify( zkeysModule.state ) );
 		context = $.extend( {}, {
 			commit: jest.fn( function ( mutationType, payload ) {
 				return zkeysModule.mutations[ mutationType ]( state, payload );

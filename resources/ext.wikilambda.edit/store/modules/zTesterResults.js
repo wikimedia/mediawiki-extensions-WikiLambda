@@ -8,7 +8,6 @@
 
 var Vue = require( 'vue' ),
 	Constants = require( '../../Constants.js' ),
-	deepCopy = require( '../../../../function-schemata/javascript/src/utils.js' ).deepCopy,
 	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
 
 /**
@@ -25,14 +24,14 @@ function replaceCurrentObjectWithFullJSONObject( context, items, newItemZObject 
 		// if the item is the current object replace it
 		if ( !context.getters.getViewMode && item === context.getters.getCurrentZObjectId ) {
 			return canonicalize(
-				deepCopy( context.getters.getZObjectAsJson )
+				JSON.parse( JSON.stringify( context.getters.getZObjectAsJson ) )
 			);
 		}
 
 		// if the item has a placeholder value, it means that it is a new implementation/tester, replace it
 		if ( item === Constants.NEW_ZID_PLACEHOLDER ) {
 			return canonicalize(
-				deepCopy( newItemZObject )
+				JSON.parse( JSON.stringify( newItemZObject ) )
 			);
 		}
 
@@ -241,16 +240,8 @@ module.exports = {
 				context.commit( 'clearZTesterResults' );
 			}
 
-			var implementations = replaceCurrentObjectWithFullJSONObject(
-				context,
-				payload.zImplementations,
-				context.getters.getNewImplementationZObjects
-			);
-			var testers = replaceCurrentObjectWithFullJSONObject(
-				context,
-				payload.zTesters,
-				context.getters.getNewTesterZObjects
-			);
+			var implementations = replaceCurrentObjectWithFullJSONObject( context, payload.zImplementations, context.getters.getNewImplementationZObjects );
+			var testers = replaceCurrentObjectWithFullJSONObject( context, payload.zTesters, context.getters.getNewTesterZObjects );
 
 			return api.post( {
 				action: 'wikilambda_perform_test',

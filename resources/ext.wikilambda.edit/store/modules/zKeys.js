@@ -9,7 +9,6 @@
 var Vue = require( 'vue' ),
 	Constants = require( '../../Constants.js' ),
 	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
-	deepCopy = require( '../../../../function-schemata/javascript/src/utils.js' ).deepCopy,
 	debounceZKeyFetch = null,
 	resolvePromiseList = [],
 	zKeystoFetch = [],
@@ -253,7 +252,7 @@ module.exports = {
 
 				if ( context.getters.getCurrentZObjectId === zFunctionId ) {
 					zobject = canonicalize(
-						deepCopy( context.getters.getZObjectAsJson )
+						JSON.parse( JSON.stringify( context.getters.getZObjectAsJson ) )
 					);
 				} else {
 					zobject = context.getters.getZkeys[ zFunctionId ];

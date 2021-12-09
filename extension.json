@@ -98,17 +98,6 @@
 				"ext.wikilambda.edit/components/base/SelectMenu.less"
 			]
 		},
-		"ext.wikilambda.utils": {
-			"localBasePath": "",
-			"remoteExtPath": "WikiLambda/",
-			"targets": [
-				"desktop",
-				"mobile"
-			],
-			"scripts": [
-				"function-schemata/javascript/src/utils.js"
-			]
-		},
 		"ext.wikilambda.edit": {
 			"targets": [
 				"desktop",
@@ -122,8 +111,7 @@
 				"mediawiki.router",
 				"mediawiki.storage",
 				"es6-polyfills",
-				"oojs",
-				"ext.wikilambda.utils"
+				"oojs"
 			],
 			"styles": [
 				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.less",
