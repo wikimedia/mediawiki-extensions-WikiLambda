@@ -320,11 +320,7 @@ class ZObjectContentHandler extends ContentHandler {
 		$userLangCode = $userLang->getCode();
 		// If the userLang isn't recognised (e.g. it's qqx, or a language we don't support yet, or it's
 		// nonsense), then fall back to English.
-		$userLangZid = $zLangRegistry->getLanguageZidFromCode(
-			( $zLangRegistry->isLanguageKnownGivenCode( $userLangCode ) )
-				? $userLangCode
-				: 'en'
-			);
+		$userLangZid = $zLangRegistry->getLanguageZidFromCode( $userLangCode, true );
 
 		$editingData = [
 			// The following paramether may be the same now,
