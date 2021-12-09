@@ -28,8 +28,7 @@ var Constants = require( '../../Constants.js' ),
 	schemata = require( '../../mixins/schemata.js' ),
 	ZInlineTesterCall = require( './ZInlineTesterCall.vue' ),
 	ZInlineTesterValidation = require( './ZInlineTesterValidation.vue' ),
-	ZMultilingualString = require( '../types/ZMultilingualString.vue' ),
-	deepEqual = require( '../../../../function-schemata/javascript/src/utils.js' ).deepEqual;
+	ZMultilingualString = require( '../types/ZMultilingualString.vue' );
 
 module.exports = {
 	components: {
@@ -99,7 +98,7 @@ module.exports = {
 	} ),
 	watch: {
 		zobjectJson: function ( json, prevJson ) {
-			if ( deepEqual( json, prevJson ) ) {
+			if ( JSON.stringify( json ) !== JSON.stringify( prevJson ) ) {
 				this.$store.dispatch( 'updateTesterLabel', { testerId: this.zobjectId } );
 			}
 		}
