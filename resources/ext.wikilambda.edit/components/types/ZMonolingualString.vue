@@ -37,11 +37,15 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
+	SdButton = require( '../base/Button.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = {
 	name: 'ZMonolingualString',
+	components: {
+		'sd-button': SdButton
+	},
 	props: {
 		zobjectId: {
 			type: Number,

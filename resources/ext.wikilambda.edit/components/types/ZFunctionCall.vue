@@ -82,7 +82,8 @@ var Constants = require( '../../Constants.js' ),
 	ZObjectKey = require( '../ZObjectKey.vue' ),
 	ZKeyModeSelector = require( '../ZKeyModeSelector.vue' ),
 	ZReference = require( './ZReference.vue' ),
-	typeUtils = require( '../../mixins/typeUtils.js' );
+	typeUtils = require( '../../mixins/typeUtils.js' ),
+	SdButton = require( '../base/Button.vue' );
 
 module.exports = {
 	components: {
@@ -90,7 +91,8 @@ module.exports = {
 		'z-object-json': ZObjectJson,
 		'z-object-key': ZObjectKey,
 		'z-key-mode-selector': ZKeyModeSelector,
-		'z-reference': ZReference
+		'z-reference': ZReference,
+		'sd-button': SdButton
 	},
 	mixins: [ typeUtils ],
 	provide: function () {

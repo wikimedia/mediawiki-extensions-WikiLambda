@@ -72,12 +72,14 @@ var FnEditorBase = require( './FnEditorBase.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	FnEditorZLanguageSelector = require( './FnEditorZLanguageSelector.vue' );
+	FnEditorZLanguageSelector = require( './FnEditorZLanguageSelector.vue' ),
+	SdButton = require( '../base/Button.vue' );
 
 module.exports = {
 	components: {
 		'fn-editor-base': FnEditorBase,
-		'fn-editor-zlanguage-selector': FnEditorZLanguageSelector
+		'fn-editor-zlanguage-selector': FnEditorZLanguageSelector,
+		'sd-button': SdButton
 	},
 	mixins: [ typeUtils ],
 	props: {
