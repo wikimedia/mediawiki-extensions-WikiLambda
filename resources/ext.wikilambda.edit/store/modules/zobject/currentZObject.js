@@ -63,7 +63,7 @@ module.exports = {
 			return [ Constants.Z_FUNCTION, Constants.Z_IMPLEMENTATION ].indexOf( getters.getCurrentZObjectType ) !== -1;
 		},
 		/**
-		 * Return a boolean value indicating if the
+		 * Return a boolean value indicating if the current Z Object has a label
 		 *
 		 * @param {Object} state
 		 * @param {Object} getters
