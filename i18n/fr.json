@@ -57,7 +57,7 @@
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Langue",
 	"wikilambda-special-objectsbytype": "Lister tous les ZObject d’un type donné",
 	"wikilambda-special-objectsbytype-summary": "Cliquer sur un des types listés ci-dessous pour voir tous les ZObject de ce type.",
-	"wikilambda-special-objectsbytype-listheader": "Tous les ZObject de type",
+	"wikilambda-special-objectsbytype-listheader": "Tous les ZObject de type $1 ($2)",
 	"wikilambda-special-objectsbytype-typeheader": "Tous les types",
 	"wikilambda-special-objectsbytype-empty": "Aucun ZObject persistent trouvé pour ce type.",
 	"wikilambda-publishnew": "Publier",
