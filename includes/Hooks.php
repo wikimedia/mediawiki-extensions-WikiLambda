@@ -214,6 +214,13 @@ class Hooks implements
 			__DIR__ . "/sql/abstractSchemaChanges/patch-add-primary-label-field-generated-$type.sql"
 		);
 
+		// (T262089) Add return type field to labels table
+		$updater->addExtensionField(
+			'wikilambda_zobject_labels',
+			'wlzl_return_type',
+			__DIR__ . "/sql/abstractSchemaChanges/patch-add-return-type-field-generated-$type.sql"
+		);
+
 		$updater->addExtensionUpdate( [ [ __CLASS__, 'createInitialContent' ] ] );
 	}
 

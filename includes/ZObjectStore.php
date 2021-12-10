@@ -376,9 +376,10 @@ class ZObjectStore {
 	 * @param string $ztype
 	 * @param array $labels Array of labels, where the key is the language code and the value
 	 * is the string representation of the label in that language
+	 * @param string|null $returnType
 	 * @return void|bool
 	 */
-	public function insertZObjectLabels( $zid, $ztype, $labels ) {
+	public function insertZObjectLabels( $zid, $ztype, $labels, $returnType = null ) {
 		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
 
 		$updates = [];
@@ -389,7 +390,8 @@ class ZObjectStore {
 				'wlzl_type' => $ztype,
 				'wlzl_label' => $value,
 				'wlzl_label_normalised' => ZObjectUtils::comparableString( $value ),
-				'wlzl_label_primary' => true
+				'wlzl_label_primary' => true,
+				'wlzl_return_type' => $returnType
 			];
 		}
 
@@ -426,9 +428,10 @@ class ZObjectStore {
 	 * @param string $ztype
 	 * @param array $aliases Set of labels, where the key is the language code
 	 * and the value is an array of strings
+	 * @param string|null $returnType
 	 * @return void|bool
 	 */
-	public function insertZObjectAliases( $zid, $ztype, $aliases ) {
+	public function insertZObjectAliases( $zid, $ztype, $aliases, $returnType = null ) {
 		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
 
 		$updates = [];
@@ -440,7 +443,8 @@ class ZObjectStore {
 					'wlzl_type' => $ztype,
 					'wlzl_label' => $value,
 					'wlzl_label_normalised' => ZObjectUtils::comparableString( $value ),
-					'wlzl_label_primary' => false
+					'wlzl_label_primary' => false,
+					'wlzl_return_type' => $returnType
 				];
 			}
 		}
@@ -504,19 +508,44 @@ class ZObjectStore {
 	 * @param bool $exact Whether to search by exact match
 	 * @param string[] $languages List of language Zids to filter by
 	 * @param string|null $type Zid of the type to filter by. If null, don't filter by type.
+	 * @param string|null $returnType Zid of the return type to filter by. If null, don't filter by return type.
+	 * @param bool $strictReturnType Whether to exclude Z1s as return type.
 	 * @param string|null $continue Id to start. If null, start from the first result.
 	 * @param int $limit Maximum number of results to return.
 	 * @return IResultWrapper
 	 */
-	public function searchZObjectLabels( $label, $exact, $languages, $type, $continue, $limit ) {
+	public function searchZObjectLabels(
+		$label,
+		$exact,
+		$languages,
+		$type,
+		$returnType,
+		$strictReturnType,
+		$continue,
+		$limit
+	) {
 		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
 
 		// Set language filter
 		$conditions = [ 'wlzl_language' => $languages ];
 
 		// Set type filter
+		$typeConditions = [];
 		if ( $type != null ) {
-			$conditions[] = 'wlzl_type = ' . $dbr->addQuotes( $type );
+			$typeConditions[] = 'wlzl_type = ' . $dbr->addQuotes( $type );
+		}
+
+		// Set returntype filter
+		if ( $returnType != null ) {
+			$typeConditions[] = 'wlzl_return_type = ' . $dbr->addQuotes( $returnType );
+			if ( !$strictReturnType ) {
+				$typeConditions[] = 'wlzl_return_type = ' . $dbr->addQuotes( ZTypeRegistry::Z_OBJECT );
+			}
+		}
+
+		// Set type conditions
+		if ( count( $typeConditions ) > 0 ) {
+			$conditions[] = $dbr->makeList( $typeConditions, $dbr::LIST_OR );
 		}
 
 		// Set minimum id bound if we are continuing a paged result
@@ -540,6 +569,7 @@ class ZObjectStore {
 			/* SELECT */ [
 				'wlzl_zobject_zid',
 				'wlzl_type',
+				'wlzl_return_type',
 				'wlzl_language',
 				'wlzl_label',
 				'wlzl_label_primary',
@@ -630,6 +660,30 @@ class ZObjectStore {
 
 		// Somehow we've reached this point without a hit? Oh well.
 		return null;
+	}
+
+	/**
+	 * Get the return type of a given Function Zid or null if not available
+	 *
+	 * @param string $zid
+	 * @return string|null
+	 */
+	public function fetchZFunctionReturnType( $zid ) {
+		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+		$res = $dbr->selectField(
+			/* FROM */ 'wikilambda_zobject_labels',
+			/* SELECT */ 'wlzl_return_type',
+			/* WHERE */ [
+				'wlzl_zobject_zid' => $zid,
+				'wlzl_type' => ZTypeRegistry::Z_FUNCTION,
+			],
+			__METHOD__,
+			[
+				'LIMIT' => 1,
+			]
+		);
+
+		return $res ? (string)$res : null;
 	}
 
 	/**

@@ -12,6 +12,8 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use Content;
 use DataUpdate;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use Title;
 
 class ZObjectSecondaryDataUpdate extends DataUpdate {
@@ -57,30 +59,53 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		// TODO: This should write the shortform, encoded type (e.g. `Z4(Z6)`)
 		$ztype = $this->zObject->getZType();
 
+		// (T262089) Save output type in labels table for function and function call
+		$returnType = null;
+		// Get Z_FUNCTION_RETURN_TYPE if the ZObject is a Z8 Function
+		if ( $ztype === ZTypeRegistry::Z_FUNCTION ) {
+			$returnRef = $this->zObject->getInnerZObject()->getValueByKey( ZTypeRegistry::Z_FUNCTION_RETURN_TYPE );
+			if ( $returnRef instanceof ZReference ) {
+				$returnType = $returnRef->getZValue();
+			}
+		}
+		// Get saved Z_FUNCTION_RETURN_TYPE of the Z_FUNCTIONCALL_FUNCTION if it's a Z7
+		if ( $ztype === ZTypeRegistry::Z_FUNCTIONCALL ) {
+			$functionRef = $this->zObject->getInnerZObject()->getValueByKey( ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION );
+			if ( $functionRef instanceof ZReference ) {
+				$returnType = $zObjectStore->fetchZFunctionReturnType( $functionRef->getZValue() );
+			}
+		}
+
 		$conflicts = $zObjectStore->findZObjectLabelConflicts( $zid, $ztype, $labels );
 		$newLabels = array_filter( $labels, static function ( $value, $lang ) use ( $conflicts ) {
 			return !isset( $conflicts[$lang] );
 		}, ARRAY_FILTER_USE_BOTH );
 
-		$zObjectStore->insertZObjectLabels( $zid, $ztype, $newLabels );
+		// @phan-suppress-next-line SecurityCheck-SQLInjection
+		$zObjectStore->insertZObjectLabels( $zid, $ztype, $newLabels, $returnType );
 		// @phan-suppress-next-line SecurityCheck-SQLInjection T290563
 		$zObjectStore->insertZObjectLabelConflicts( $zid, $conflicts );
 
 		// (T285368) Write aliases in the labels table
 		$aliases = $this->zObject->getAliases()->getValueAsList();
 		if ( count( $aliases ) > 0 ) {
-			$zObjectStore->insertZObjectAliases( $zid, $ztype, $aliases );
+			// @phan-suppress-next-line SecurityCheck-SQLInjection
+			$zObjectStore->insertZObjectAliases( $zid, $ztype, $aliases, $returnType );
 		}
 
 		// Save function information in function table
-		if ( $ztype === 'Z14' || $ztype === 'Z20' ) {
+		if ( $ztype === ZTypeRegistry::Z_IMPLEMENTATION || $ztype === ZTypeRegistry::Z_TESTER ) {
 			$zFunction = null;
 
-			if ( $ztype === 'Z14' ) {
+			if ( $ztype === ZTypeRegistry::Z_IMPLEMENTATION ) {
 				// FIXME: getValueByKey might throw exceptions, we should handle this
-				$zFunction = $this->zObject->getInnerZObject()->getValueByKey( 'Z14K1' );
-			} elseif ( $ztype === 'Z20' ) {
-				$zFunction = $this->zObject->getInnerZObject()->getValueByKey( 'Z20K1' );
+				$zFunction = $this->zObject->getInnerZObject()->getValueByKey(
+					ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION
+				);
+			} elseif ( $ztype === ZTypeRegistry::Z_TESTER ) {
+				$zFunction = $this->zObject->getInnerZObject()->getValueByKey(
+					ZTypeRegistry::Z_TESTER_FUNCTION
+				);
 			}
 
 			if ( $zFunction && $zFunction->getZValue() ) {

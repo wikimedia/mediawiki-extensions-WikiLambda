@@ -52,6 +52,8 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 			'nofallback' => $nofallback,
 			'exact' => $exact,
 			'type' => $type,
+			'return_type' => $returnType,
+			'strict_return_type' => $strictReturnType,
 			'limit' => $limit,
 			'continue' => $continue,
 		] = $this->extractRequestParams();
@@ -76,6 +78,8 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 			$exact,
 			$languageZids,
 			$type,
+			$returnType,
+			$strictReturnType,
 			$continue,
 			$limit + 1
 		);
@@ -91,6 +95,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 				'page_namespace' => NS_MAIN,
 				'page_title' => $row->wlzl_zobject_zid,
 				'page_type' => $row->wlzl_type,
+				'return_type' => $row->wlzl_return_type,
 				'label' => $row->wlzl_label,
 				'is_primary' => $row->wlzl_label_primary,
 				// FIXME: Implement, otherwise the generator won't work.
@@ -154,6 +159,13 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 			'type' => [
 				ParamValidator::PARAM_TYPE => 'string',
 			],
+			'return_type' => [
+				ParamValidator::PARAM_TYPE => 'string',
+			],
+			'strict_return_type' => [
+				ParamValidator::PARAM_TYPE => 'boolean',
+				ApiBase::PARAM_DFLT => false,
+			],
 			'limit' => [
 				ParamValidator::PARAM_TYPE => 'limit',
 				ApiBase::PARAM_DFLT => 10,
@@ -180,6 +192,11 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 				=> 'apihelp-query+wikilambda-example-nofallback',
 			'action=query&list=wikilambdasearch_labels&wikilambdasearch_type=Z4&wikilambdasearch_language=en'
 				=> 'apihelp-query+wikilambda-example-type',
+			'action=query&list=wikilambdasearch_labels&wikilambdasearch_return_type=Z40&wikilambdasearch_language=en'
+				=> 'apihelp-query+wikilambda-example-return-type',
+			'action=query&list=wikilambdasearch_labels&wikilambdasearch_return_type=Z40'
+				. '&wikilambdasearch_strict_return_type=true&wikilambdasearch_language=en'
+				=> 'apihelp-query+wikilambda-example-strict-return-type',
 		];
 	}
 }

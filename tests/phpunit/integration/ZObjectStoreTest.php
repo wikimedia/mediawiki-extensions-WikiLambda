@@ -349,13 +349,13 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		);
 
 		$res = $this->zobjectStore->searchZObjectLabels(
-			'Example', true, [ self::ZLANG['en'] ], null, null, 5000
+			'Example', true, [ self::ZLANG['en'] ], null, null, false, null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 1, $res->numRows() );
 
 		$res = $this->zobjectStore->searchZObjectLabels(
-			'Example', false, [ self::ZLANG['en'] ], null, null, 5000
+			'Example', false, [ self::ZLANG['en'] ], null, null, false, null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 3, $res->numRows() );
@@ -376,13 +376,13 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		);
 
 		$res = $this->zobjectStore->searchZObjectLabels(
-			'example', false, [ self::ZLANG['en'] ], 'Z7', null, 5000
+			'example', false, [ self::ZLANG['en'] ], 'Z7', null, false, null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 2, $res->numRows() );
 
 		$res = $this->zobjectStore->searchZObjectLabels(
-			'example', false, [ self::ZLANG['en'] ], 'Z6', null, 5000
+			'example', false, [ self::ZLANG['en'] ], 'Z6', null, false, null, 5000
 		);
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 1, $res->numRows() );
@@ -397,7 +397,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z458', 'Z6', [ self::ZLANG['fr'] => 'txt' ] );
 
 		$res = $this->zobjectStore->searchZObjectLabels(
-			'txt', false, [ self::ZLANG['en'], self::ZLANG['fr'] ], null, null, 5000
+			'txt', false, [ self::ZLANG['en'], self::ZLANG['fr'] ], null, null, false, null, 5000
 		);
 
 		$this->assertInstanceOf( IResultWrapper::class, $res );
@@ -417,7 +417,16 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z463', 'Z6', [ self::ZLANG['en'] => 'label five' ] );
 
 		// First page
-		$res = $this->zobjectStore->searchZObjectLabels( 'label', false, [ self::ZLANG['en'] ], null, null, 2 );
+		$res = $this->zobjectStore->searchZObjectLabels(
+			'label',
+			false,
+			[ self::ZLANG['en'] ],
+			null,
+			null,
+			false,
+			null,
+			2
+		);
 
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 2, $res->numRows() );
@@ -429,7 +438,16 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$continue = strval( $second[ 'wlzl_id' ] + 1 );
 
 		// Second page
-		$res = $this->zobjectStore->searchZObjectLabels( 'label', false, [ self::ZLANG['en'] ], null, $continue, 2 );
+		$res = $this->zobjectStore->searchZObjectLabels(
+			'label',
+			false,
+			[ self::ZLANG['en'] ],
+			null,
+			null,
+			false,
+			$continue,
+			2
+		);
 
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 2, $res->numRows() );
@@ -441,7 +459,17 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$continue = strval( $second[ 'wlzl_id' ] + 1 );
 
 		// Third page
-		$res = $this->zobjectStore->searchZObjectLabels( 'label', false, [ self::ZLANG['en'] ], null, $continue, 2 );
+		$res = $this->zobjectStore->searchZObjectLabels(
+			'label',
+			false,
+			[ self::ZLANG['en'] ],
+			null,
+			null,
+			false,
+			$continue,
+			2
+		);
+
 		$this->assertInstanceOf( IResultWrapper::class, $res );
 		$this->assertSame( 1, $res->numRows() );
 		$this->assertSame( 'label five', $res->fetchRow()[ 'wlzl_label' ] );
@@ -568,5 +596,29 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		);
 
 		$this->assertSame( 0, $res->numRows() );
+	}
+
+	/**
+	 * @covers ::fetchZFunctionReturnType
+	 */
+	public function testFetchZFunctionReturnType() {
+		$this->insertZids( [ 'Z8', 'Z17', 'Z801', 'Z844' ] );
+
+		$this->assertEquals(
+			'Z1',
+			$this->zobjectStore->fetchZFunctionReturnType( 'Z801' ),
+			'Return type of function Echo is Z1 (Object)'
+		);
+
+		$this->assertEquals(
+			'Z40',
+			$this->zobjectStore->fetchZFunctionReturnType( 'Z844' ),
+			'Return type of function Boolean equality is Z40 (Boolean)'
+		);
+
+		$this->assertNull(
+			$this->zobjectStore->fetchZFunctionReturnType( 'Z8' ),
+			'Return type of a non-function is null'
+		);
 	}
 }

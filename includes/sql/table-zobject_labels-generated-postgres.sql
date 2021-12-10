@@ -10,13 +10,16 @@ CREATE TABLE wikilambda_zobject_labels (
   wlzl_label TEXT NOT NULL,
   wlzl_label_normalised TEXT NOT NULL,
   wlzl_label_primary SMALLINT DEFAULT 1 NOT NULL,
+  wlzl_return_type TEXT DEFAULT NULL,
   PRIMARY KEY(wlzl_id)
 );
 
 CREATE INDEX wlzl_label_searchindex ON wikilambda_zobject_labels (
-  wlzl_type, wlzl_language, wlzl_label_normalised
+  wlzl_type, wlzl_language, wlzl_label_normalised,
+  wlzl_return_type
 );
 
 CREATE INDEX wlzl_label_searchindex_strict ON wikilambda_zobject_labels (
-  wlzl_type, wlzl_language, wlzl_label
+  wlzl_type, wlzl_language, wlzl_label,
+  wlzl_return_type
 );

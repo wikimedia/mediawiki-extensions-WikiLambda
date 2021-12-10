@@ -73,6 +73,16 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_STRING = 'Z6';
 	public const Z_STRING_VALUE = 'Z6K1';
 
+	public const Z_FUNCTIONCALL = 'Z7';
+	public const Z_FUNCTIONCALL_FUNCTION = 'Z7K1';
+
+	public const Z_FUNCTION = 'Z8';
+	public const Z_FUNCTION_ARGUMENTS = 'Z8K1';
+	public const Z_FUNCTION_RETURN_TYPE = 'Z8K2';
+	public const Z_FUNCTION_TESTERS = 'Z8K3';
+	public const Z_FUNCTION_IMPLEMENTATIONS = 'Z8K4';
+	public const Z_FUNCTION_IDENTITY = 'Z8K5';
+
 	public const Z_REFERENCE = 'Z9';
 	public const Z_REFERENCE_VALUE = 'Z9K1';
 
@@ -86,6 +96,17 @@ class ZTypeRegistry extends ZObjectRegistry {
 
 	public const Z_MULTILINGUALSTRING = 'Z12';
 	public const Z_MULTILINGUALSTRING_VALUE = 'Z12K1';
+
+	public const Z_IMPLEMENTATION = 'Z14';
+	public const Z_IMPLEMENTATION_FUNCTION = 'Z14K1';
+	public const Z_IMPLEMENTATION_COMPOSITION = 'Z14K2';
+	public const Z_IMPLEMENTATION_CODE = 'Z14K3';
+	public const Z_IMPLEMENTATION_BUILTIN = 'Z14K4';
+
+	public const Z_TESTER = 'Z20';
+	public const Z_TESTER_FUNCTION = 'Z20K1';
+	public const Z_TESTER_CALL = 'Z20K2';
+	public const Z_TESTER_VALIDATION = 'Z20K3';
 
 	public const Z_MONOLINGUALSTRINGSET = 'Z31';
 	public const Z_MONOLINGUALSTRINGSET_LANGUAGE = 'Z31K1';
@@ -154,8 +175,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const SELF_REFERENTIAL_KEYS = [
 		self::Z_TYPE_IDENTITY,
 		self::Z_PERSISTENTOBJECT_ID,
-		// FIXME: add Z_FUNCTION_IDENTITY when the constant is declared
-		// self::Z_FUNCTION_IDENTITY
+		self::Z_FUNCTION_IDENTITY
 	];
 
 	// These consts are currently only used by ZObjectStore to prohibit creation, and are not (yet) built-in.

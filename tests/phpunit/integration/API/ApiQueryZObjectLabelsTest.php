@@ -31,6 +31,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'wlzl_label' => 'CHEEP',
 			'wlzl_label_normalised' => 'cheep',
 			'wlzl_label_primary' => 1,
+			'wlzl_return_type' => null,
 		],
 		'Z492' => [
 			'wlzl_zobject_zid' => 'Z492',
@@ -39,6 +40,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'wlzl_label' => 'CHOP',
 			'wlzl_label_normalised' => 'chop',
 			'wlzl_label_primary' => 1,
+			'wlzl_return_type' => null,
 		],
 		'Z493' => [
 			'wlzl_zobject_zid' => 'Z493',
@@ -47,14 +49,34 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'wlzl_label' => 'CHAP',
 			'wlzl_label_normalised' => 'chap',
 			'wlzl_label_primary' => 1,
+			'wlzl_return_type' => null,
 		],
 		'Z491' => [
 			'wlzl_zobject_zid' => 'Z491',
 			'wlzl_type' => 'birdtype',
 			'wlzl_language' => self::IT,
 			'wlzl_label' => 'CHORP',
-			'wlzl_label_normalised' => 'cheep',
+			'wlzl_label_normalised' => 'chorp',
 			'wlzl_label_primary' => 1,
+			'wlzl_return_type' => null,
+		],
+		'Z494' => [
+			'wlzl_zobject_zid' => 'Z494',
+			'wlzl_type' => 'function',
+			'wlzl_language' => self::EN,
+			'wlzl_label' => 'CHOOP',
+			'wlzl_label_normalised' => 'choop',
+			'wlzl_label_primary' => 1,
+			'wlzl_return_type' => 'birdtype',
+		],
+		'Z495' => [
+			'wlzl_zobject_zid' => 'Z495',
+			'wlzl_type' => 'function',
+			'wlzl_language' => self::EN,
+			'wlzl_label' => 'CHOORP',
+			'wlzl_label_normalised' => 'choorp',
+			'wlzl_label_primary' => 1,
+			'wlzl_return_type' => 'Z1',
 		],
 	];
 
@@ -75,12 +97,13 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'page_namespace' => NS_MAIN,
 			'page_title' => $db_item['wlzl_zobject_zid'],
 			'page_type' => $db_item['wlzl_type'],
+			'return_type' => $db_item['wlzl_return_type'],
 			'label' => $db_item['wlzl_label'],
 			'page_id' => 0,
 			'page_is_redirect' => false,
 			'page_content_model' => CONTENT_MODEL_ZOBJECT,
 			'page_lang' => $db_item['wlzl_language'],
-			'is_primary' => $db_item['wlzl_label_primary']
+			'is_primary' => $db_item['wlzl_label_primary'],
 		];
 	}
 
@@ -114,6 +137,100 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 				'wikilambdasearch_labels' => [
 					$this->resultFor( 'Z490' ),
 					$this->resultFor( 'Z491' ),
+				]
+			]
+		];
+		$this->assertEquals( $expected, $result[0] );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
+	 */
+	public function testSearchByReturnType() {
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_language' => 'en',
+			'wikilambdasearch_return_type' => 'birdtype',
+		] );
+		$expected = [
+			'batchcomplete' => true,
+			'query' => [
+				'wikilambdasearch_labels' => [
+					$this->resultFor( 'Z494' ),
+					$this->resultFor( 'Z495' ),
+				]
+			]
+		];
+		$this->assertEquals( $expected, $result[0] );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
+	 */
+	public function testSearchByStrictReturnType() {
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_language' => 'en',
+			'wikilambdasearch_return_type' => 'birdtype',
+			'wikilambdasearch_strict_return_type' => true,
+		] );
+		$expected = [
+			'batchcomplete' => true,
+			'query' => [
+				'wikilambdasearch_labels' => [
+					$this->resultFor( 'Z494' ),
+				]
+			]
+		];
+		$this->assertEquals( $expected, $result[0] );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
+	 */
+	public function testSearchByTypeAndReturnType() {
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_language' => 'it',
+			'wikilambdasearch_type' => 'birdtype',
+			'wikilambdasearch_return_type' => 'birdtype',
+		] );
+		$expected = [
+			'batchcomplete' => true,
+			'query' => [
+				'wikilambdasearch_labels' => [
+					$this->resultFor( 'Z490' ),
+					$this->resultFor( 'Z491' ),
+					$this->resultFor( 'Z494' ),
+					$this->resultFor( 'Z495' ),
+				]
+			]
+		];
+		$this->assertEquals( $expected, $result[0] );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
+	 */
+	public function testSearchByTypeAndStrictReturnType() {
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_language' => 'it',
+			'wikilambdasearch_type' => 'birdtype',
+			'wikilambdasearch_return_type' => 'birdtype',
+			'wikilambdasearch_strict_return_type' => true,
+		] );
+		$expected = [
+			'batchcomplete' => true,
+			'query' => [
+				'wikilambdasearch_labels' => [
+					$this->resultFor( 'Z490' ),
+					$this->resultFor( 'Z491' ),
+					$this->resultFor( 'Z494' ),
 				]
 			]
 		];
@@ -174,6 +291,8 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 					// en is always included because of History
 					$this->resultFor( 'Z493' ),
 					$this->resultFor( 'Z491' ),
+					$this->resultFor( 'Z494' ),
+					$this->resultFor( 'Z495' ),
 				]
 			]
 		];

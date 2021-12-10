@@ -133,6 +133,8 @@ class SpecialListZObjectsByType extends SpecialPage {
 				true,
 				$languageZids,
 				$type,
+				null,
+				false,
 				$continue,
 				$queryLimit
 			);

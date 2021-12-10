@@ -10,11 +10,14 @@ CREATE TABLE /*_*/wikilambda_zobject_labels (
   wlzl_label VARBINARY(255) NOT NULL,
   wlzl_label_normalised VARBINARY(255) NOT NULL,
   wlzl_label_primary TINYINT DEFAULT 1 NOT NULL,
+  wlzl_return_type VARBINARY(255) DEFAULT NULL,
   INDEX wlzl_label_searchindex (
-    wlzl_type, wlzl_language, wlzl_label_normalised
+    wlzl_type, wlzl_language, wlzl_label_normalised,
+    wlzl_return_type
   ),
   INDEX wlzl_label_searchindex_strict (
-    wlzl_type, wlzl_language, wlzl_label
+    wlzl_type, wlzl_language, wlzl_label,
+    wlzl_return_type
   ),
   PRIMARY KEY(wlzl_id)
 ) /*$wgDBTableOptions*/;
