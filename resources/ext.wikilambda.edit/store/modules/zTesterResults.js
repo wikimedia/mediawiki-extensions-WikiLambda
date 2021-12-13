@@ -240,8 +240,16 @@ module.exports = {
 				context.commit( 'clearZTesterResults' );
 			}
 
-			var implementations = replaceCurrentObjectWithFullJSONObject( context, payload.zImplementations, context.getters.getNewImplementationZObjects );
-			var testers = replaceCurrentObjectWithFullJSONObject( context, payload.zTesters, context.getters.getNewTesterZObjects );
+			var implementations = replaceCurrentObjectWithFullJSONObject(
+				context,
+				payload.zImplementations,
+				context.getters.getNewImplementationZObjects
+			);
+			var testers = replaceCurrentObjectWithFullJSONObject(
+				context,
+				payload.zTesters,
+				context.getters.getNewTesterZObjects
+			);
 
 			return api.post( {
 				action: 'wikilambda_perform_test',

@@ -158,10 +158,12 @@
 				"ext.wikilambda.edit/components/ZKeyModeSelector.vue",
 				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.vue",
 				"ext.wikilambda.edit/components/base/Button.vue",
+				"ext.wikilambda.edit/components/base/Tab.vue",
 				"ext.wikilambda.edit/components/base/Icon.vue",
 				"ext.wikilambda.edit/components/base/Message.vue",
 				"ext.wikilambda.edit/components/base/SelectMenu.vue",
 				"ext.wikilambda.edit/components/base/CodeEditor.vue",
+				"ext.wikilambda.edit/components/base/TabContainer.vue",
 				"ext.wikilambda.edit/components/types/ZList.vue",
 				"ext.wikilambda.edit/components/types/ZListItem.vue",
 				"ext.wikilambda.edit/components/types/ZTypedList.vue",
@@ -347,7 +349,9 @@
 				"wikilambda-ztyped-list-placeholder",
 				"wikilambda-ztyped-list-description",
 				"wikilambda-ztyped-list-items",
-				"wikilambda-zerror"
+				"wikilambda-zerror",
+				"wikilambda-editor-fn-step-function-definition",
+				"wikilambda-editor-fn-step-implementations"
 			]
 		}
 	},
