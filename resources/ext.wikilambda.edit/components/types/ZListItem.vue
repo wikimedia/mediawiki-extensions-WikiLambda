@@ -33,13 +33,15 @@
 var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
+	SdButton = require( '../base/Button.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
 module.exports = {
 	name: 'ZListItem',
 	components: {
-		'z-object-selector': ZObjectSelector
+		'z-object-selector': ZObjectSelector,
+		'sd-button': SdButton
 	},
 	mixins: [ typeUtils ],
 	inject: {

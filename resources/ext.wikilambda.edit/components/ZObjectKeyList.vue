@@ -30,6 +30,7 @@
 var Constants = require( '../Constants.js' ),
 	typeUtils = require( '../mixins/typeUtils.js' ),
 	ZObjectKeyInput = require( './ZObjectKeyInput.vue' ),
+	SdButton = require( './base/Button.vue' ),
 	mapMutations = require( 'vuex' ).mapMutations,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
@@ -37,7 +38,8 @@ var Constants = require( '../Constants.js' ),
 module.exports = {
 	name: 'ZObjectKeyList',
 	components: {
-		'z-object-key-input': ZObjectKeyInput
+		'z-object-key-input': ZObjectKeyInput,
+		'sd-button': SdButton
 	},
 	mixins: [ typeUtils ],
 	inject: {

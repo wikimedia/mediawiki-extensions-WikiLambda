@@ -123,6 +123,7 @@ var Constants = require( '../Constants.js' ),
 	FnEditorProgress = require( '../components/editor/FnEditorProgress.vue' ),
 	ZObjectJson = require( '../components/ZObjectJson.vue' ),
 	SdMessage = require( '../components/base/Message.vue' ),
+	SdButton = require( '../components/base/Button.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
@@ -132,7 +133,8 @@ module.exports = {
 		'fn-editor-base': FnEditorBase,
 		'fn-editor-progress': FnEditorProgress,
 		'z-object-json': ZObjectJson,
-		'z-natural-language-selector': ZNaturalLanguageSelector
+		'z-natural-language-selector': ZNaturalLanguageSelector,
+		'sd-button': SdButton
 	},
 	props: {
 		steps: {

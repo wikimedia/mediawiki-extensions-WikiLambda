@@ -8,25 +8,18 @@
 
 var Vue = require( 'vue' ),
 	VueRouter = require( '../lib/vue-router/vue-router.common.js' ),
-	SdButton = require( './components/base/Button.vue' ),
 	router = require( './router.js' ),
 	store = require( './store/index.js' ),
 	App = require( './components/App.vue' );
 
-Vue.component( 'sd-button', SdButton );
-Vue.use( VueRouter );
-
-// eslint-disable-next-line no-new
-new Vue( {
-	el: '#ext-wikilambda-app',
+Vue.createMwApp( $.extend( {
 	store: store,
 	router: router,
-	render: function ( h ) {
-		return h( App );
-	},
 	provide: function () {
 		return {
 			viewmode: store.getters.getViewMode
 		};
 	}
-} );
+}, App ) )
+	.use( VueRouter )
+	.mount( '#ext-wikilambda-app' );
