@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Cottonhead",
+			"Eduardo Addad de Oliveira",
+			"Eduardoaddad",
+			"Luk3",
+			"Mariagarbin",
+			"Svjatysberega"
+		]
+	},
+	"wikilambda-desc": "Fornecendo as wikis da Wikimedia uma função de analisador de wikitexto para chamar a avaliação de funções escritas, gerenciadas e avaliadas em um wiki central."
+}

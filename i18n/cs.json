@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Adam N.",
+			"Fraxinus.cs",
+			"Mormegil"
+		]
+	},
+	"wikilambda-desc": "Poskytuje pro wiki funkci parseru wikitextu, kterou se vyvolává vyhodnocení funkce vytvořené, spravované a vyhodnocované na ústřední wiki."
+}

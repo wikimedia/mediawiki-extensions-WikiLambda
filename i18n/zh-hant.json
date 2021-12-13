@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Impartial just",
+			"Kly",
+			"Neetp7k9",
+			"Weather Top Wizard",
+			"Winston Sung"
+		]
+	},
+	"wikilambda-desc": "為維基媒體的 Wiki 提供 Wiki 語法解析器功能，來呼叫對於在中央 Wiki 上編寫、管理、評估的功能之評估。"
+}

@@ -1,8 +1,16 @@
 {
 	"@metadata": {
 		"authors": [
-			"James D. Forrester"
+			"James D. Forrester",
+			"AJBot2",
+			"Amire80",
+			"FF-11",
+			"Genoveva Galarza",
+			"Mormegil",
+			"Raymond",
+			"Robby",
+			"Umherirrender"
 		]
 	},
-	"wikilambda-desc": "{{desc|name=WikiLambda|url=https://www.mediawiki.org/wiki/Extension:WikiLambda}}"
+	"wikilambda-desc": "{{desc|name=WikiLambda|url=https://www.mediawiki.org/wiki/Extension:WikiLambda}}\n\n{{doc-wikilambda}}"
 }

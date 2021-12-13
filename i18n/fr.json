@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ayack",
+			"DreZhsh",
+			"Fujimaru-kun",
+			"Gomoko",
+			"JenyxGym",
+			"MasterSinge",
+			"Pols12",
+			"Verdy p",
+			"Wladek92"
+		]
+	},
+	"wikilambda-desc": "Fournit aux wikis de Wikimedia une fonction d’analyseur syntaxique de wikicode pour appeler l’évaluation des fonctions écrites, gérées et évaluées sur un wiki central."
+}
