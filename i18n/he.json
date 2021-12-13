@@ -50,7 +50,7 @@
 	"wikilambda-speciallistduplicatezobjectlabels-language": "שפה",
 	"wikilambda-special-objectsbytype": "רשימת כל עצמי ה־Z מהסוג הנתון",
 	"wikilambda-special-objectsbytype-summary": "יש ללחוץ על אחד הסוגים הרשומים להלן כדי לראות את כל עצמי ה־Z מהסוג הזה.",
-	"wikilambda-special-objectsbytype-listheader": "כל עצמי ה־Z מהסוג",
+	"wikilambda-special-objectsbytype-listheader": "כל עצמי ה־Z מהסוג $1 (מזהה $2)",
 	"wikilambda-special-objectsbytype-typeheader": "כל הסוגים",
 	"wikilambda-special-objectsbytype-empty": "לא נמצאו עצמי Z מתמידים עבור הסוג הזה.",
 	"wikilambda-publishnew": "פרסום",

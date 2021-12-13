@@ -61,7 +61,7 @@
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Column header on Special:ListDuplicatZObjectLabels, showing the language in  which the two ZObjects have a conflicting label.\n{{identical|Language}}",
 	"wikilambda-special-objectsbytype": "Description for Special:ObjectsByType page.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-objectsbytype-summary": "Introductory summary for Special:ObjectsByType page.\n\n{{doc-wikilambda}}",
-	"wikilambda-special-objectsbytype-listheader": "Header for list of matching ZObjects.\n\nParameters:\n* $1 - The ZObject type being listed.\n* $2 - The ZID of the type{{doc-wikilambda}}",
+	"wikilambda-special-objectsbytype-listheader": "Header for list of matching ZObjects.\n\nParameters:\n* $1 - The ZObject type being listed.\n* $2 - The ZID of the type\n{{doc-wikilambda}}",
 	"wikilambda-special-objectsbytype-typeheader": "Header for list of types.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-objectsbytype-empty": "Messages shown for Special:ObjectsByType when there are no matches.\n\n{{doc-wikilambda}}",
 	"wikilambda-publishnew": "Label for the submit button when creating a ZObject on a public wiki\n{{identical|Publish}}",
