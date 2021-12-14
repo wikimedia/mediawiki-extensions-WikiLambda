@@ -1,13 +1,13 @@
 <template>
 	<div class="ext-wikilambda-tab-container">
 		<tab
-			v-for="( tab, i ) in tabs"
-			:key="i"
-			:status="tab.status"
+			v-for="tab in tabs"
+			:key="tab.id"
+			:status="tab.id === activeTab ? 'active' : 'inactive'"
 			:title="tab.title"
 			:disabled="tab.disabled"
 			:icon="tab.icon"
-			@click="selectTab('function-definition')"
+			@click="selectTab(tab.id)"
 		></tab>
 	</div>
 </template>
@@ -20,13 +20,16 @@ module.exports = {
 		tab: Tab
 	},
 	methods: {
-		selectTab: function ( tabName ) {
-			this.$emit( 'click', tabName );
+		selectTab: function ( tab ) {
+			this.$emit( 'click', tab );
 		}
 	},
 	props: {
 		tabs: {
 			type: Array
+		},
+		activeTab: {
+			type: String
 		}
 	}
 };

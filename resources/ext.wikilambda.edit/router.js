@@ -1,6 +1,9 @@
 var VueRouter = require( '../lib/vue-router/vue-router.common.js' ),
 	FunctionEditor = require( './views/FunctionEditor.vue' ),
 	FunctionDefinition = require( './views/FunctionDefinition.vue' ),
+	FunctionImplementations = require( './views/FunctionImplementations.vue' ),
+	FunctionTests = require( './views/FunctionTests.vue' ),
+	FunctionView = require( './views/FunctionView.vue' ),
 	ZObjectViewer = require( './components/ZObjectViewer.vue' ),
 	ZObjectEditor = require( './components/ZObjectEditor.vue' ),
 	Constants = require( './Constants.js' ),
@@ -31,7 +34,7 @@ var EditorWrapper = {
 		var component = ZObjectEditor;
 
 		if ( isNewDesign ) {
-			component = FunctionDefinition;
+			component = FunctionView;
 		} else if ( isFunctionEditor ) {
 			component = FunctionEditor;
 		}
@@ -50,7 +53,24 @@ var routes = [
 				type: route.query.type
 			} );
 		},
-		component: EditorWrapper
+		component: EditorWrapper,
+		children: [
+			{
+				name: 'functionDefinition',
+				path: 'functionDefinition',
+				component: FunctionDefinition
+			},
+			{
+				name: 'functionImplementation',
+				path: 'functionImplementation',
+				component: FunctionImplementations
+			},
+			{
+				name: 'functionTests',
+				path: 'functionTests',
+				component: FunctionTests
+			}
+		]
 	},
 	{
 		path: '/wiki/Special\\:CreateZObject/(ciao)',

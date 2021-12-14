@@ -40,7 +40,6 @@ module.exports = {
 		var editingData = mw.config.get( 'wgWikiLambda' );
 		return editingData.viewmode;
 	},
-
 	isExpertMode: function ( state ) {
 		return state.expertMode;
 	}
