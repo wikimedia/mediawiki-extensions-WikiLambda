@@ -7,7 +7,6 @@
 'use strict';
 
 var Vue = require( 'vue' ),
-	VueRouter = require( '../lib/vue-router/vue-router.common.js' ),
 	router = require( './router.js' ),
 	store = require( './store/index.js' ),
 	App = require( './components/App.vue' );
@@ -21,5 +20,4 @@ Vue.createMwApp( $.extend( {
 		};
 	}
 }, App ) )
-	.use( VueRouter )
 	.mount( '#ext-wikilambda-app' );
