@@ -100,7 +100,7 @@ class ZObjectStore {
 	 * @return ZObjectContent|bool Found ZObject
 	 */
 	public function fetchZObjectByTitle( Title $title ) {
-		$revision = $this->revisionStore->getRevisionByTitle( $title );
+		$revision = $this->revisionStore->getKnownCurrentRevision( $title );
 		if ( !$revision ) {
 			// TODO: Handle errors by creating and returning Z5
 			return false;
