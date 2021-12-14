@@ -164,6 +164,8 @@
 	"wikilambda-editor-fn-step-define": "Label for the step to define a function.",
 	"wikilambda-editor-fn-step-tests": "Label for the step to test a function.",
 	"wikilambda-editor-fn-step-implement": "Label for the step to implement a function.",
+	"wikilambda-editor-fn-step-implementations": "Label for the step to implement a function.",
+	"wikilambda-editor-fn-step-function-definition": "Label for the step to implement a function definition.",
 	"wikilambda-editor-name-title": "Title for the name step.\n{{identical|Name}}",
 	"wikilambda-editor-name-subtitle": "Subtitle for the name step.",
 	"wikilambda-editor-name-zobject-name": "Label for the name of a ZObject.",
@@ -195,7 +197,5 @@
 	"wikilambda-ztyped-list-placeholder": "Placeholder text for generic list type.\n\nThe word \"generic\" is short for \"generic type\".\n\n{{Doc-wikilambda}}",
 	"wikilambda-ztyped-list-description": "Description used to inform user of what type is the list generic.\n\n{{Doc-wikilambda}}",
 	"wikilambda-ztyped-list-items": "Heading for the list of generic items.\n\n{{Doc-wikilambda}}",
-	"wikilambda-zerror": "Message that informs that a ZError of a given type has been returned.\n\n{{Doc-wikilambda}}",
-	"wikilambda-editor-fn-step-implementations": "Label for the step to implement a function.",
-	"wikilambda-editor-fn-step-function-definition": "Label for the step to implement a function definition."
+	"wikilambda-zerror": "Message that informs that a ZError of a given type has been returned.\n\n{{Doc-wikilambda}}"
 }
