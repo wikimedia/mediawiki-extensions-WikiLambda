@@ -291,11 +291,6 @@ class Hooks implements
 		$langReg = ZLangRegistry::singleton();
 		$typeReg = ZTypeRegistry::singleton();
 
-		// Zid has already been inserted, return true
-		if ( $updater->updateRowExists( $updateRowName ) ) {
-			return true;
-		}
-
 		// Check dependencies
 		$zid = substr( $filename, 0, -5 );
 
@@ -328,6 +323,12 @@ class Hooks implements
 		$zid = substr( $filename, 0, -5 );
 		$title = Title::newFromText( $zid, NS_MAIN );
 		$page = WikiPage::factory( $title );
+
+		// Zid has already been inserted, so just purge the page to update secondary data and return true
+		if ( $updater->updateRowExists( $updateRowName ) ) {
+			$page->doPurge();
+			return true;
+		}
 
 		$data = file_get_contents( $initialDataToLoadPath . $filename );
 		if ( !$data ) {
