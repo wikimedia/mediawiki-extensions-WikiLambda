@@ -424,8 +424,11 @@ class Hooks implements
 		// Rather than (rather expensively) fetching the whole object from the ZObjectStore, see if the labels are in
 		// the labels table already, which is very much faster:
 		$zLangRegistry = ZLangRegistry::singleton();
-		$userLanguageZid = $zLangRegistry->getLanguageZidFromCode( $context->getLanguage()->getCode(), true );
-		$label = $zObjectStore->fetchZObjectLabel( $targetTitle->getBaseText(), $userLanguageZid, true );
+		$label = $zObjectStore->fetchZObjectLabel(
+			$targetTitle->getBaseText(),
+			$context->getLanguage()->getCode(),
+			true
+		);
 
 		// Just in case the database has no entry (e.g. the table is a millisecond behind or so), load the full object.
 		if ( $label === null ) {
