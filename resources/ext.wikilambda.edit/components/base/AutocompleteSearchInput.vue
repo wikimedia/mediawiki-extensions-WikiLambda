@@ -12,7 +12,7 @@
 			<input
 				:id="inputElementId"
 				ref="input"
-				v-model="value"
+				:value="value"
 				dir="auto"
 				class="sd-input__input"
 				type="text"
@@ -225,10 +225,12 @@ module.exports = {
 		/**
 		 * Emit input and enable pending state.
 		 *
+		 * @param {Object} event
 		 * @fires input
 		 */
-		onInput: function () {
+		onInput: function ( event ) {
 			this.pending = true;
+			this.value = event.target.value;
 			this.$emit( 'input', this.value );
 		},
 		/**
