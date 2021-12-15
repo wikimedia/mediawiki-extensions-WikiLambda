@@ -587,7 +587,8 @@ class ZObjectStore {
 	/**
 	 * Fetch the label in the secondary database for a given object by Zid, in a given language.
 	 * Returns null if no labels are found in the given language or any other language in that
-	 * language's fallback chain, including English (Z1002).
+	 * language's fallback chain, including English (Z1002). If the language code given is not
+	 * recognised, this will fall back to returning the English label, if available.
 	 *
 	 * @param string $zid Term to search in the label database
 	 * @param string $languageCode Code of the language in which to fetch the label
@@ -602,6 +603,8 @@ class ZObjectStore {
 
 		$zLangRegistry = ZLangRegistry::singleton();
 
+		// Provided language code is not known, so fall back to English.
+		$languageCode = $zLangRegistry->isLanguageKnownGivenCode( $languageCode ) ? $languageCode : 'en';
 		$languageZid = $zLangRegistry->getLanguageZidFromCode( $languageCode );
 
 		// Set language filter
