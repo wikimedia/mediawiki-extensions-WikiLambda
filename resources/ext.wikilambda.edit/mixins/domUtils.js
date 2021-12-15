@@ -15,12 +15,12 @@ function modifyElementInnerText( className, text ) {
 	}
 }
 
-function updateEditFunctionPageTitle( text ) {
+function updateZObjectPageTitle( text ) {
 	modifyElementInnerText( '#firstHeading span', text );
 }
 
 module.exports = {
 	methods: {
-		updateEditFunctionPageTitle: updateEditFunctionPageTitle
+		updateZObjectPageTitle: updateZObjectPageTitle
 	}
 };

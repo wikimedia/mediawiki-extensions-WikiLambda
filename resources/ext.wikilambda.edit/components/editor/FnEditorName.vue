@@ -14,6 +14,7 @@
 			<h3>
 				{{ $i18n( 'wikilambda-editor-name-zobject-name' ) }}
 			</h3>
+
 			<input
 				v-model="zobjectLabel"
 				class="ext-wikilambda-text-input"
@@ -186,7 +187,7 @@ module.exports = {
 					id: this.getZObjectLabel.id,
 					value: value
 				};
-				this.setZObjectValue( payload );
+				this.setPageZObjectValue( payload );
 			}
 		}
 	} ),
@@ -197,7 +198,8 @@ module.exports = {
 		'injectZObject',
 		'addZMonolingualString',
 		'removeZObjectChildren',
-		'removeZObject'
+		'removeZObject',
+		'setPageZObjectValue'
 	] ), {
 		getLanguageAliasStringsetId: function ( language ) {
 			var aliasId;

@@ -13,7 +13,7 @@ var Constants = require( '../../Constants.js' ),
 	addZObjects = require( './zobject/addZObjects.js' ),
 	currentZObject = require( './zobject/currentZObject.js' ),
 	saveZObject = require( '../../mixins/api.js' ).methods.saveZObject,
-	updateEditFunctionPageTitle = require( '../../mixins/domUtils.js' ).methods.updateEditFunctionPageTitle;
+	updateZObjectPageTitle = require( '../../mixins/domUtils.js' ).methods.updateZObjectPageTitle;
 
 function isObjectTypeDeclaration( object, parentObject ) {
 	var isReference = object.value === Constants.Z_REFERENCE;
@@ -432,6 +432,24 @@ module.exports = {
 			} );
 		},
 		/**
+		 * Set the value of the page zObject. This updates the title and set the ZObject value
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 */
+		setPageZObjectValue: function ( context, payload ) {
+
+			if ( payload.id === undefined || payload.value === undefined ) {
+				return;
+			}
+
+			// Update page title
+			updateZObjectPageTitle( payload.value );
+
+			// Update ZObject value
+			context.dispatch( 'setZObjectValue', payload );
+		},
+		/**
 		 * Set the value of a specific Zobject. This method is called multiple times when adding a nested object.
 		 *
 		 * @param {Object} context
@@ -446,8 +464,6 @@ module.exports = {
 
 			objectIndex = context.getters.getZObjectIndexById( payload.id );
 			payload.index = objectIndex;
-
-			updateEditFunctionPageTitle( payload.value );
 
 			context.commit( 'setZObjectValue', payload );
 		},
