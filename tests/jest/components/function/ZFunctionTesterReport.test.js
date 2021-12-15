@@ -104,8 +104,7 @@ describe( 'ZFunctionTesterReport', function () {
 					zFunctionId: '',
 					zImplementations: [],
 					zTesters: [],
-					clearPreviousResults: true,
-					nocache: true
+					clearPreviousResults: true
 				} );
 
 				resolve();
@@ -152,7 +151,6 @@ describe( 'ZFunctionTesterReport', function () {
 				zFunctionId: 'Z10000',
 				zImplementations: [ 'Z10001' ],
 				zTesters: [ 'Z10002' ],
-				nocache: true,
 				clearPreviousResults: true
 			} );
 		} );

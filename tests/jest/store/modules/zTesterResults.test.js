@@ -100,12 +100,12 @@ describe( 'zTesterResults Vuex module', function () {
 	describe( 'Actions', function () {
 		var booleanReturn,
 			errorReturn,
-			postMock;
+			getMock;
 
 		beforeEach( function () {
 			booleanReturn = Constants.Z_BOOLEAN_TRUE;
 			errorReturn = false;
-			postMock = jest.fn( function ( payload ) {
+			getMock = jest.fn( function ( payload ) {
 				return new Promise( function ( resolve ) {
 					var data = [];
 
@@ -143,7 +143,7 @@ describe( 'zTesterResults Vuex module', function () {
 
 			mw.Api = jest.fn( function () {
 				return {
-					post: postMock
+					get: getMock
 				};
 			} );
 		} );
@@ -174,7 +174,7 @@ describe( 'zTesterResults Vuex module', function () {
 			} ).then( function () {
 				var result = zTesterResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
 
-				expect( postMock ).toHaveBeenCalledWith( {
+				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
 					wikilambda_perform_test_zfunction: zFunctionId,
 					wikilambda_perform_test_zimplementations: JSON.stringify( zImplementations ),
@@ -203,7 +203,7 @@ describe( 'zTesterResults Vuex module', function () {
 			} ).then( function () {
 				var result = zTesterResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
 
-				expect( postMock ).toHaveBeenCalledWith( {
+				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
 					wikilambda_perform_test_zfunction: zFunctionId,
 					wikilambda_perform_test_zimplementations: JSON.stringify( zImplementations ),
@@ -232,7 +232,7 @@ describe( 'zTesterResults Vuex module', function () {
 			} ).then( function () {
 				var result = zTesterResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
 
-				expect( postMock ).toHaveBeenCalledWith( {
+				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
 					wikilambda_perform_test_zfunction: zFunctionId,
 					wikilambda_perform_test_zimplementations: JSON.stringify( zImplementations ),
@@ -281,7 +281,7 @@ describe( 'zTesterResults Vuex module', function () {
 				zImplementations = [ 'Z10001', 'Z10002' ],
 				zTesters = [ 'Z10003', 'Z10004' ];
 
-			postMock = jest.fn( function () {
+			getMock = jest.fn( function () {
 				return new Promise( function ( resolve, reject ) {
 					reject( 'API error' );
 				} );
@@ -294,7 +294,7 @@ describe( 'zTesterResults Vuex module', function () {
 			} ).then( function () {
 				var result = zTesterResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
 
-				expect( postMock ).toHaveBeenCalledWith( {
+				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
 					wikilambda_perform_test_zfunction: zFunctionId,
 					wikilambda_perform_test_zimplementations: JSON.stringify( zImplementations ),

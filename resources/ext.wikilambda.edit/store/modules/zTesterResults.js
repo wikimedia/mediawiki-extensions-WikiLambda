@@ -219,11 +219,12 @@ module.exports = {
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
-		 * @param {string} payload.zFunctionId
-		 * @param {string} payload.zTesterId
-		 * @param {string} payload.zImplementationId
-		 * @param {boolean} payload.clearPreviousResults
-		 * @param {boolean} payload.nocache
+		 * @param {string} payload.zFunctionId The ZID of the Function we're for which running these
+		 * @param {string[]} payload.zTesters The ZIDs (or if unsaved the full ZObjects) of the Testers to run
+		 * @param {string[]} payload.zImplementations The ZIDs (or if unsaved the full ZObjects) of the
+		 *   Implementations to run
+		 * @param {boolean} payload.nocache Whether to tell the Orchestrator to cache these results
+		 * @param {boolean} payload.clearPreviousResults Whether to clear the previous results from the Vuex store
 		 *
 		 * @return {Promise}
 		 */
@@ -251,7 +252,7 @@ module.exports = {
 				context.getters.getNewTesterZObjects
 			);
 
-			return api.post( {
+			return api.get( {
 				action: 'wikilambda_perform_test',
 				wikilambda_perform_test_zfunction:
 					!context.getters.getViewMode && payload.zFunctionId === context.getters.getCurrentZObjectId ?
