@@ -1,6 +1,9 @@
 <template>
 	<div>
-		<select v-model="zLanguage">
+		<select
+			:value="zLanguage"
+			@change="zLanguage = $event.target.value"
+		>
 			<option
 				v-for="language in currentZObjectLanguages"
 				:key="language.Z9K1"

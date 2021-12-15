@@ -9,8 +9,9 @@
 		<span v-if="viewmode || readonly">{{ selectedLanguage }}</span>
 		<select
 			v-else
-			v-model="selectedLanguage"
+			:value="selectedLanguage"
 			class="ext-wikilambda-zcode__language-selector"
+			@change="selectedLanguage = $event.target.value"
 		>
 			<option value="" disabled>
 				{{ $i18n('wikilambda-editor-label-select-programming-language-label') }}

@@ -6,8 +6,7 @@
  */
 'use strict';
 
-var Vue = require( 'vue' ),
-	Vuex = require( 'vuex' ),
+var Vuex = require( 'vuex' ),
 	state = require( './state.js' ),
 	actions = require( './actions.js' ),
 	mutations = require( './mutations.js' ),
@@ -22,8 +21,6 @@ var Vue = require( 'vue' ),
 	zTesters = require( './modules/zTesters.js' ),
 	zImplementations = require( './modules/zImplementations.js' ),
 	zTypedList = require( './modules/zTypedList.js' );
-
-Vue.use( Vuex );
 
 module.exports = new Vuex.Store( {
 	state: state,

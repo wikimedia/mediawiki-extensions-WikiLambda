@@ -31,7 +31,9 @@
 			</template>
 		</div>
 		<div v-if="!viewmode && implMode">
-			<select v-model="implMode">
+			<select
+				:value="implMode"
+				@change="implMode = $event.target.value">
 				<option value="code">
 					{{ $i18n( 'wikilambda-implementation-selector-code' ) }}
 				</option>
