@@ -53,6 +53,7 @@
 	"wikilambda-editor-next-button": "다음 단계",
 	"wikilambda-editor-fn-step-define": "정의",
 	"wikilambda-editor-fn-step-tests": "테스트",
+	"wikilambda-editor-fn-step-implementations": "구현체",
 	"wikilambda-editor-name-title": "이름",
 	"wikilambda-editor-name-aliases": "다른 이름",
 	"wikilambda-editor-input-title": "입력",
