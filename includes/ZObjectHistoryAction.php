@@ -22,8 +22,14 @@ class ZObjectHistoryAction extends HistoryAction {
 			return parent::getPageTitle();
 		}
 
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$targetZObject = $zObjectStore->fetchZObjectByTitle( $this->getTitle() );
+		try {
+			$zObjectStore = WikiLambdaServices::getZObjectStore();
+			$targetZObject = $zObjectStore->fetchZObjectByTitle( $this->getTitle() );
+		} catch ( \Throwable $th ) {
+			// Something went wrong (e.g. corrupted ZObject), so fall back.
+			return parent::getPageTitle();
+		}
+
 		// Fallback to parent if somehow after all that it's not loadable.
 		if ( !$targetZObject ) {
 			return parent::getPageTitle();
