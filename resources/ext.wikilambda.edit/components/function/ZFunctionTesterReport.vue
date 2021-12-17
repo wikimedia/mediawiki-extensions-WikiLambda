@@ -240,7 +240,6 @@ module.exports = {
 				zFunctionId: this.zFunctionId,
 				zImplementations: this.implementations,
 				zTesters: this.testers,
-				nocache: true,
 				clearPreviousResults: true
 			} );
 		},
