@@ -215,6 +215,9 @@
 				"ext.wikilambda.edit/views/EditorBase.vue",
 				"ext.wikilambda.edit/views/FunctionEditor.vue",
 				"ext.wikilambda.edit/views/FunctionDefinition.vue",
+				"ext.wikilambda.edit/views/FunctionView.vue",
+				"ext.wikilambda.edit/views/FunctionImplementations.vue",
+				"ext.wikilambda.edit/views/FunctionTests.vue",
 				"lib/ace/src/ace.js",
 				"lib/vue-router/vue-router.common.js",
 				"lib/icons.js"
