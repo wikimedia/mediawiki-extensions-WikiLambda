@@ -1,6 +1,7 @@
 <template>
 	<div class="ext-wikilambda-json">
-		<!-- TODO:T297767 - The custom directive v-clickout="onClickoutHandler" has been removed as it currently breaks with vue 3 migration. -->
+		<!-- TODO:T297767 - The custom directive v-clickout="onClickoutHandler" has been removed
+		as it currently breaks with vue 3 migration. -->
 		<code-editor
 			mode="json"
 			:value="initialJson"
