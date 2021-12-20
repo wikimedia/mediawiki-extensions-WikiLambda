@@ -4,13 +4,16 @@
 			"Yupik"
 		]
 	},
+	"wikilambda-reference": "Teâttkäivv",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Ǩiõll",
 	"wikilambda-publishnew": "Õlmstââʹtt",
 	"wikilambda-savenew": "Ruõkk",
+	"wikilambda-publishchanges": "Õlmstââʹtt muttsid",
 	"wikilambda-summarylabel": "Õʹhtteǩeässmõš:",
 	"wikilambda-editor-label-addlanguage-label": "Lââʹzzet ǩiõl",
 	"wikilambda-tester-status-failed": "IJ OʹNNSTAM",
 	"wikilambda-tester-function-duration": "Pešttmõš",
 	"wikilambda-metadata-language-column": "Ǩiõll",
+	"wikilambda-metadata-aka-column": "Toobdât še nõõmin leʹbe nõõmivuiʹm",
 	"wikilambda-editor-name-title": "Nõmm"
 }
