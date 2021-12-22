@@ -8,8 +8,5 @@
 	},
 	"wikilambda-editor-label-select-programming-language-label": "ప్రోగ్రామింగ్ భాషను ఎంచుకోండి",
 	"wikilambda-metadata-language-column": "భాష",
-	"wikilambda-metadata-label-column": "సూచిక (లేబెల్)",
-	"wikilambda-editor-fn-step-tests": "{\n  \"Oscar\": [\n    [\n      \"Best Performance by an Actor in a Supporting Role\",\n      \"Robert Duvall\"\n    ]]}",
-	"wikilambda-editor-fn-step-implementations": "Hank Palmer is a successful defense attorney in Chicago, who is getting a divorce. When His brother calls with the news that their mother has died, Hank returns to his childhood home to attend the funeral. Despite the brittle bond between Hank and the Judge, Hank must come to his father's aid and defend him in court. Here, Hank discovers the truth behind the case, which binds together the dysfunctional family and reveals the struggles and secrecy of the family. Written by Warren D'Souza",
-	"wikilambda-editor-fn-step-function-definition": "[\"Well Sweep Out The Ashes (In The Morning)\",\n  \"Long White Cadillac\",\n  \"Reason To Cry\",\n  \"The Bottle Let Me Down\",\n  \"Knock Knock\",\n  \"Holocene\",\n  \"Opening #2\",\n  \"Storms\",\n  \"Rose Pregnant\",\n  \"Part 3\",\n  \"The Scientist\"\n]"
+	"wikilambda-metadata-label-column": "సూచిక (లేబెల్)"
 }
