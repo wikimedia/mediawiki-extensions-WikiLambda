@@ -3,7 +3,8 @@
 		"authors": [
 			"Kareyac",
 			"Mruczek",
-			"Rail"
+			"Rail",
+			"Woytecr"
 		]
 	},
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Język",
@@ -13,6 +14,9 @@
 	"wikilambda-editor-label-addlanguage-label": "Dodaj język",
 	"specialpages-group-wikilambda": "Strony wikifunkcji",
 	"wikilambda-implementation-selector-code": "Kod",
-	"wikilambda-metadata-all-languages": "Wszystkie wprowadzone języki",
+	"wikilambda-metadata-language-column": "Język",
+	"wikilambda-metadata-label-column": "Etykieta",
+	"wikilambda-metadata-all-languages": "Pokaż wszystkie wprowadzone języki",
+	"wikilambda-metadata-fewer-languages": "Pokaż mniej języków",
 	"wikilambda-editor-name-aliases": "Aliasy"
 }
