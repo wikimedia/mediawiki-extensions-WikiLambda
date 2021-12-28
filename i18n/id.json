@@ -1,16 +1,24 @@
 {
 	"@metadata": {
 		"authors": [
-			"Daud I.F. Argana"
+			"Daud I.F. Argana",
+			"AJBot2"
 		]
 	},
 	"wikilambda-desc": "Menyediakan wiki Wikimedia sebuah fungsi parser teks wiki untuk memanggil evaluasi fungsi yang ditulis, dikelola, dan dievaluasi dari suatu wiki pusat.",
 	"wikilambda-emptylabel": "ZObject tanpa label",
+	"wikilambda-invalidzobjecttitle": "Judul '$1' yang disediakan tidak sah untuk sebuah ZObject.",
 	"wikilambda-invalidzobject": "Konten yang diberikan bukanlah ZObject yang valid.",
 	"wikilambda-invalidcontenttype": "Konten yang diberikan bukanlah sebuah kelas ZObject.",
+	"wikilambda-prohibitedcreationtype": "ZObjek yang diberikan bertipe '$1', yang tidak boleh dibuat.",
+	"wikilambda-noresult": "Pencarian tidak menemukan apa-apa",
 	"wikilambda-labelclash": "Label konten yang diberikan bertentangan dengan ZObject '$1' untuk label dalam '$2'.",
 	"wikilambda-multilingualstring-nofallback": "Tidak ada label yang didefinisikan dalam bahasa ini atau bahasa cadangan yang diterima",
 	"wikilambda-viewmode-nojs": "Halaman ini ditampilkan secara terbatas apabila tanpa JavaScript.",
+	"wikilambda-reference": "Referensi",
+	"wikilambda-literal": "Literal",
+	"wikilambda-genericliteral": "Literal generik",
+	"wikilambda-functioncall": "Pemanggilan fungsi",
 	"wikilambda-special-createzobject": "Membuat ZObject baru",
 	"wikilambda-special-createzobject-summary": "Formulir ini membolehkan Anda membuat ZObject baru, yang bisa merepresentasikan sebuah Fungsi, Pengujinya, atau salah satu jenis ZObject lainnya. Anda sebaiknya membaca dokumentasi bantuan dan panduan komunitas terlebih dahulu.",
 	"wikilambda-special-createzobject-intro": "Pastikan Anda mengikuti kebijakan komunitas, serta aturan paten dan hak cipta.",
@@ -32,5 +40,7 @@
 	"wikilambda-editor-zlist-additem-tooltip": "Menambahkan sebuah butir ke ZList ini",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Menghapus butir ini dari ZList ini",
 	"wikilambda-editor-zobject-addkey": "Tambahkan kunci:",
-	"wikilambda-editor-zobject-removekey-tooltip": "Hapus kunci/nilai ini dari ZObject"
+	"wikilambda-editor-zobject-removekey-tooltip": "Hapus kunci/nilai ini dari ZObject",
+	"wikilambda-editor-label-select-programming-language-label": "Pilih bahasa pemrograman:",
+	"wikilambda-modeselector-genericliteral": "gen"
 }
