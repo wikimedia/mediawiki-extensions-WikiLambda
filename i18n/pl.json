@@ -2,14 +2,37 @@
 	"@metadata": {
 		"authors": [
 			"Kareyac",
-			"Rail"
+			"Rail",
+			"Mruczek",
+			"Woytecr"
 		]
 	},
+	"wikilambda-special-createzobject-nojs": "Ta strona wymaga włączonej obsługi JavaScript aby móc z niej korzystać.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Język",
 	"wikilambda-publishnew": "Opublikuj",
 	"wikilambda-savenew": "Zapisz",
 	"wikilambda-publishchanges": "Opublikuj zmiany",
+	"wikilambda-savechanges": "Zapisz zmiany",
 	"wikilambda-editor-label-addlanguage-label": "Dodaj język",
 	"wikilambda-implementation-selector-code": "Kod",
-	"wikilambda-metadata-all-languages": "Wszystkie wprowadzone języki"
+	"wikilambda-tester-status-pending": "OCZEKUJE...",
+	"wikilambda-tester-status-running": "TRWA...",
+	"wikilambda-tester-status-passed": "PRZESZEDŁ",
+	"wikilambda-tester-status-failed": "NIE POWIÓDŁ SIĘ",
+	"wikilambda-tester-failure-expected": "Oczekiwano",
+	"wikilambda-tester-failure-actual": "Otrzymano",
+	"wikilambda-tester-function-duration": "Czas trwania",
+	"wikilambda-enable-expert-mode": "Włącz tryb eksperta",
+	"wikilambda-disable-expert-mode": "Wyłącz tryb eksperta",
+	"wikilambda-metadata-show-languages": "Pokaż ramkę z etykietami",
+	"wikilambda-metadata-hide-languages": "Ukryj ramkę z etykietami",
+	"wikilambda-metadata-language-column": "Język",
+	"wikilambda-metadata-label-column": "Etykieta",
+	"wikilambda-metadata-aka-column": "Inne nazwy",
+	"wikilambda-metadata-add-alias": "Dodaj alias",
+	"wikilambda-metadata-all-languages": "Pokaż wszystkie wprowadzone języki",
+	"wikilambda-metadata-fewer-languages": "Pokaż mniej języków",
+	"wikilambda-persistentobject-details-label": "Szczegóły",
+	"wikilambda-persistentobject-function-signature-label": "Sygnatura funkcji",
+	"wikilambda-persistentobject-evaluate-function": "Wykonaj funkcję"
 }
