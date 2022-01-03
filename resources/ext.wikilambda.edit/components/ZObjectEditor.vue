@@ -27,12 +27,10 @@
 					class="ext-wikilambda-editSummary-label"
 					for="summary"> {{ $i18n( 'wikilambda-summarylabel' ) }}
 				</label>
-				<input
-					:value="summary"
+				<input v-model="summary"
 					class="ext-wikilambda-editSummary"
 					:placeholder="submitButtonDescriptionPrompt"
 					name="summary"
-					@input="summary = $event.target.value"
 				>
 			</div>
 			<sd-button

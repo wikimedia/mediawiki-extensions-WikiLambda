@@ -8,9 +8,8 @@
 	<div>
 		<select
 			v-if="!(viewmode || readonly)"
-			:value="currentBooleanValue"
+			v-model="currentBooleanValue"
 			class="ext-wikilambda-zboolean"
-			@change="currentBooleanValue = $event.target.value"
 		>
 			<option value="" disabled>
 				{{ $i18n( "wikilambda-editor-boolean-selector" ) }}

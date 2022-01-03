@@ -2,9 +2,8 @@
 	<div>
 		<select
 			v-if="!viewmode"
-			:value="selectedArgument"
+			v-model="selectedArgument"
 			class="ext-wikilambda-zargument-reference"
-			@change="selectedArgument = $event.target.value"
 		>
 			<option value="" disabled>
 				{{ $i18n( "wikilambda-argref-default-label" ) }}
