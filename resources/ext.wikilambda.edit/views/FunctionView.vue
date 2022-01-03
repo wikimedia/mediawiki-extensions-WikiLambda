@@ -14,7 +14,7 @@
 			</main>
 			<aside
 				class="ext-wikilambda-function-view__sidebar"
-				:aria-label="$i18n('wikilambda-editor-additional-details-label')">
+				:aria-label="$i18n( 'wikilambda-editor-additional-details-label' )">
 			</aside>
 		</div>
 	</div>
@@ -32,7 +32,7 @@ module.exports = {
 	methods: {
 		selectTab: function ( tab ) {
 			this.$router.push( {
-				path: tab,
+				name: tab,
 				query: {
 					type: 'newDesign',
 					zid: Constants.Z_FUNCTION
