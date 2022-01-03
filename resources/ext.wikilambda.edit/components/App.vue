@@ -5,7 +5,7 @@
 		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div id="ext-wikilambda-app">
+	<div id="ext-wikilambda-app" class="ext-wikilambda-edit">
 		<template v-if="getZObjectInitialized">
 			<router-view></router-view>
 		</template>
