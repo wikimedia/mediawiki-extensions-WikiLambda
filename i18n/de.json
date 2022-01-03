@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Druesenfieber",
+			"ElBe",
 			"FF-11"
 		]
 	},
@@ -141,7 +142,7 @@
 	"wikilambda-editor-go-back-button": "Zurück",
 	"wikilambda-editor-next-button": "Nächster Schritt",
 	"wikilambda-editor-fn-step-define": "Definieren",
-	"wikilambda-editor-fn-step-tests": "Test(s)",
+	"wikilambda-editor-fn-step-tests": "Tester",
 	"wikilambda-editor-fn-step-implement": "Implementieren",
 	"wikilambda-editor-fn-step-implementations": "Implementierung(en)",
 	"wikilambda-editor-fn-step-function-definition": "Funktionsdefinition",
