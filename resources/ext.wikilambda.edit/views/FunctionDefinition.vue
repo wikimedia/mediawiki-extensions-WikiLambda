@@ -5,11 +5,31 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<p>This is the function definition tab</p>
+	<main class="ext-wikilambda-function-definition">
+		<function-definition-name></function-definition-name>
+	</main>
 </template>
 
 <script>
+var FunctionDefinitionName = require( '../components/function/definition/function-definition-name.vue' );
+
+// @vue/component
 module.exports = {
-	name: 'function-definition'
+	name: 'FunctionDefinition',
+	components: {
+		'function-definition-name': FunctionDefinitionName
+	}
 };
+
 </script>
+
+<style lang="less">
+@import './../../lib/wikimedia-ui-base.less';
+
+.ext-wikilambda-function-definition {
+	padding-top: 20px;
+	padding-left: 27px;
+	border: 1px solid @wmui-color-base80;
+	min-height: 450px;
+}
+</style>

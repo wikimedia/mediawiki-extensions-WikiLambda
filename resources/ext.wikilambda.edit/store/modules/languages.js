@@ -7,7 +7,7 @@
 
 module.exports = {
 	state: {
-		currentZLanguage: null
+		currentZLanguage: mw.config.get( 'wgWikiLambda' ).zlangZid
 	},
 	getters: {
 		/**

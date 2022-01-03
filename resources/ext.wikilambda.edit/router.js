@@ -100,9 +100,33 @@ var routes = [
 		path: '/w/index.php',
 		name: 'edit',
 		props: function ( route ) {
-			return ( { zid: route.query.zid } );
+			return ( {
+				zid: route.query.zid,
+				type: route.query.type
+			} );
 		},
-		component: EditorWrapper
+		component: EditorWrapper,
+		children: [
+			{
+				path: '',
+				redirect: 'functionDefinition'
+			},
+			{
+				name: 'functionDefinition',
+				path: 'functionDefinition',
+				component: FunctionDefinition
+			},
+			{
+				name: 'functionImplementation',
+				path: 'functionImplementation',
+				component: FunctionImplementations
+			},
+			{
+				name: 'functionTests',
+				path: 'functionTests',
+				component: FunctionTests
+			}
+		]
 	}
 ];
 

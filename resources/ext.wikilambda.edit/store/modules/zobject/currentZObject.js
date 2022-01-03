@@ -28,6 +28,10 @@ module.exports = {
 		 * @return {string} currentZObjectId
 		 */
 		getCurrentZObjectId: function ( state, getters, rootState, rootGetters ) {
+			// we return the new placeholder if it is an empty object
+			if ( rootState.zobjectModule.zobject.length <= 1 ) {
+				return Constants.NEW_ZID_PLACEHOLDER;
+			}
 			var persistentObjectId =
 				typeUtils.findKeyInArray( Constants.Z_PERSISTENTOBJECT_ID, rootState.zobjectModule.zobject ).id,
 				persistenObjectChildren = rootGetters.getZObjectChildrenById( persistentObjectId ),

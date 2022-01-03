@@ -6,17 +6,17 @@
 		@license MIT
 	-->
 	<div>
+		<div class="ext-wikilambda-function-view-navbar">
+			<tab-container
+				:tabs="tabs"
+				:active-tab="$route.name"
+				@click="selectTab"
+			>
+			</tab-container>
+		</div>
 		<div class="ext-wikilambda-function-view ext-wikilambda-function-view__two-cols">
-			<div class="ext-wikilambda-function-view-navbar">
-				<tab-container
-					:tabs="tabs"
-					:active-tab="$route.name"
-					@click="selectTab"
-				>
-				</tab-container>
-				<router-view></router-view>
-			</div>
 			<main class="ext-wikilambda-function-view__content">
+				<router-view></router-view>
 			</main>
 			<aside
 				class="ext-wikilambda-function-view__sidebar"
@@ -30,21 +30,12 @@
 var TabContainer = require( '../components/base/TabContainer.vue' ),
 	Constants = require( '../../../ext.wikilambda.edit/Constants.js' ),
 	icons = require( './../../../lib/icons.js' );
+
+// @vue/component
 module.exports = {
-	name: 'function-view',
+	name: 'FunctionView',
 	components: {
 		'tab-container': TabContainer
-	},
-	methods: {
-		selectTab: function ( tab ) {
-			this.$router.push( {
-				name: tab,
-				query: {
-					type: 'newDesign',
-					zid: Constants.Z_FUNCTION
-				}
-			} );
-		}
 	},
 	data: function () {
 		return {
@@ -86,6 +77,17 @@ module.exports = {
 				}
 			]
 		};
+	},
+	methods: {
+		selectTab: function ( tab ) {
+			this.$router.push( {
+				name: tab,
+				query: {
+					type: 'newDesign',
+					zid: Constants.Z_FUNCTION
+				}
+			} );
+		}
 	}
 };
 </script>

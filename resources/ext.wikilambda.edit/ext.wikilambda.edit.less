@@ -6,7 +6,24 @@
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
+@import '../lib/wikimedia-ui-base.less';
+@import '../lib/sd-base-variables.less';
 
 .ext-wikilambda-edit {
-	/* Hello */
+	/* Typography */
+	&__text-regular {
+		font-family: @font-family-sans;
+		font-weight: @font-weight-base;
+		font-size: @sd-font-size-base;
+		line-height: 1.5;
+		color: @wmui-color-base0;
+	}
+
+	&__text-smaller {
+		font-family: @font-family-sans;
+		font-weight: @font-weight-base;
+		font-size: 0.815em;
+		line-height: 1.125;
+		color: @wmui-color-accent50;
+	}
 }

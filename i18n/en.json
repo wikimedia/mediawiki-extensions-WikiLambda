@@ -150,6 +150,9 @@
 	"wikilambda-implementation-selector-none": "This is a built-in implementation. The code is part of the core software, and is not displayed here.",
 	"wikilambda-function-is-attached": "This object is associated with its function.",
 	"wikilambda-function-is-not-attached": "This object is not associated with its function.",
+	"wikilambda-function-definition-name-label": "Name",
+	"wikilambda-function-definition-name-placeholder": "Enter a descriptive function name",
+	"wikilambda-function-definition-name-example": "See name examples.",
 	"wikilambda-editor-steps-label": "Editor Steps",
 	"wikilambda-editor-additional-details-label": "Additional details",
 	"wikilambda-editor-go-back-button": "Go back",
@@ -192,5 +195,6 @@
 	"wikilambda-ztyped-list-placeholder": "Select a generic",
 	"wikilambda-ztyped-list-description": "List generic of type",
 	"wikilambda-ztyped-list-items": "List items",
-	"wikilambda-zerror": "ZError of type $1"
+	"wikilambda-zerror": "ZError of type $1",
+	"wikilambda-optional": "optional"
 }
