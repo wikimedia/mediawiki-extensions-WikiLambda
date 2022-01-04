@@ -57,14 +57,26 @@ module.exports = {
 					id: 'functionImplementation',
 					icon: icons.sdIconCheck,
 					title: this.$i18n( 'wikilambda-editor-fn-step-implementations' ).text(),
-					disabled: false
+					disabled: false,
+					tooltip: {
+						icon: icons.sdIconInfoFilled,
+						header: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-header' ).text(),
+						content: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-content' ).text(),
+						visible: false
+					}
 				},
 				{
 					status: 'inactive',
 					id: 'functionTests',
 					icon: icons.sdIconCheck,
 					title: this.$i18n( 'wikilambda-editor-fn-step-tests' ).text(),
-					disabled: false
+					disabled: true,
+					tooltip: {
+						icon: icons.sdIconInfoFilled,
+						header: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-header' ).text(),
+						content: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-content' ).text(),
+						visible: true
+					}
 				}
 			]
 		};

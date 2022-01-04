@@ -7,6 +7,10 @@
 			:title="tab.title"
 			:disabled="tab.disabled"
 			:icon="tab.icon"
+			:tooltip-icon="getTooltipData(tab, 'icon')"
+			:tooltip-header="getTooltipData(tab, 'header')"
+			:tooltip-content="getTooltipData(tab, 'content')"
+			:tooltip-visible="getTooltipData(tab, 'visible')"
 			@click="selectTab(tab.id)"
 		></tab>
 	</div>
@@ -22,6 +26,29 @@ module.exports = {
 	methods: {
 		selectTab: function ( tab ) {
 			this.$emit( 'click', tab );
+		},
+		getTooltipData: function ( tab, type ) {
+			var value = null;
+			if ( tab.tooltip ) {
+				switch ( type ) {
+					case 'icon':
+						value = tab.tooltip.icon;
+						break;
+					case 'header':
+						value = tab.tooltip.header;
+						break;
+					case 'content':
+						value = tab.tooltip.content;
+						break;
+					case 'visible':
+						value = tab.tooltip.visible;
+						break;
+					default:
+						value = null;
+						break;
+				}
+			}
+			return value;
 		}
 	},
 	props: {

@@ -1,26 +1,41 @@
 <template>
-	<button
-		class="ext-wikilambda-tab"
-		:class="statusClass"
-		:disabled="disabled"
-		@click="$emit('click')"
-	>
-		<sd-icon v-if="icon" :icon="icon"></sd-icon>
-		{{ title }}
-	</button>
+	<div>
+		<button
+			class="ext-wikilambda-tab"
+			:class="statusClass"
+			:disabled="disabled"
+			@click="$emit('click')"
+		>
+			<sd-icon v-if="icon && !tooltipVisible" :icon="icon"></sd-icon>
+			<tooltip
+				v-if="tooltipVisible"
+				class="ext-wikilambda-tab_tooltip-container"
+				:icon="tooltipIcon"
+				:content="tooltipContent"
+				:header="tooltipHeader"
+			></tooltip>
+			{{ title }}
+		</button>
+	</div>
 </template>
 
 <script>
-var SdIcon = require( './Icon.vue' );
+var SdIcon = require( './Icon.vue' ),
+	Tooltip = require( './Tooltip.vue' );
 
 module.exports = {
 	name: 'Tab',
-
 	components: {
-		'sd-icon': SdIcon
+		'sd-icon': SdIcon,
+		// TOOD (T298040): replace with codex tooltip/popover component
+		tooltip: Tooltip
 	},
 	computed: {
 		statusClass: function () {
+			// disabled styles trump inactive styles
+			if ( this.disabled ) {
+				return 'ext-wikilambda-tab-status_disabled';
+			}
 			return 'ext-wikilambda-tab-status_' + this.status;
 		}
 	},
@@ -41,6 +56,21 @@ module.exports = {
 			type: [ String, Object ],
 			default: null,
 			required: false
+		},
+		// tooltip properties
+		tooltipContent: {
+			type: String
+		},
+		tooltipHeader: {
+			type: String
+		},
+		tooltipIcon: {
+			type: [ String, Object ],
+			default: null,
+			required: false
+		},
+		tooltipVisible: {
+			type: Boolean
 		}
 	}
 };
@@ -58,6 +88,11 @@ module.exports = {
 	border-left: 0;
 	border-right: 0;
 	border-top: 0;
+
+	&_tooltip-container {
+		color: @inactive-color;
+		border-color: @inactive-color;
+	}
 }
 
 @active-color:#3366CC;
@@ -81,6 +116,7 @@ module.exports = {
 	&_disabled {
 		color: @disabled-color;
 		border-color: @disabled-color;
+		display: flex;
 	}
 
 	// in case an unexpected status is passed
