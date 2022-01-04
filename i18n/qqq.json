@@ -168,6 +168,8 @@
 	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "Placeholder for the type selection of a typed list",
 	"wikilambda-function-definition-inputs-item-input-placeholder": "Placeholder for the function agument label",
 	"wikilambda-function-definition-inputs-item-add-input-button": "Button used to add another input to a function",
+	"wikilambda-function-definition-output-label": "Label for the function Output",
+	"wikilambda-function-definition-output-selector": "Label for the function Output type selector",
 	"wikilambda-editor-steps-label": "Label for the steps section of the editor.",
 	"wikilambda-editor-additional-details-label": "Label for the additional details section of the editor.",
 	"wikilambda-editor-go-back-button": "Label for the button to go back to the previous step in the editor.",

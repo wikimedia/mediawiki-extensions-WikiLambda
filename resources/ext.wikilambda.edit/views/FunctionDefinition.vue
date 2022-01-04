@@ -9,6 +9,7 @@
 		<function-definition-name></function-definition-name>
 		<function-definition-aliases></function-definition-aliases>
 		<function-definition-inputs></function-definition-inputs>
+		<function-definition-output></function-definition-output>
 	</main>
 </template>
 
@@ -16,6 +17,7 @@
 var FunctionDefinitionName = require( '../components/function/definition/function-definition-name.vue' );
 var FunctionDefinitionAliases = require( '../components/function/definition/function-definition-aliases.vue' );
 var FunctionDefinitionInputs = require( '../components/function/definition/function-definition-inputs.vue' );
+var FunctionDefinitionOutput = require( '../components/function/definition/function-definition-output.vue' );
 
 // @vue/component
 module.exports = {
@@ -23,7 +25,8 @@ module.exports = {
 	components: {
 		'function-definition-name': FunctionDefinitionName,
 		'function-definition-aliases': FunctionDefinitionAliases,
-		'function-definition-inputs': FunctionDefinitionInputs
+		'function-definition-inputs': FunctionDefinitionInputs,
+		'function-definition-output': FunctionDefinitionOutput
 	}
 };
 

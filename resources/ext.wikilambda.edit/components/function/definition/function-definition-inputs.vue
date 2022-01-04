@@ -7,7 +7,7 @@
 	-->
 	<div class="ext-wikilambda-function-definition-inputs">
 		<div>
-			<label for="ext-wikilambda-function-definition-inputs__input" class="ext-wikilambda-app__text-regular">
+			<label class="ext-wikilambda-app__text-regular">
 				{{ $i18n( 'wikilambda-function-definition-inputs-label' ) }}
 			</label>
 		</div>

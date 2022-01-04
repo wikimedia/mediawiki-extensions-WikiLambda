@@ -161,6 +161,8 @@
 	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "Select a type for your typed list",
 	"wikilambda-function-definition-inputs-item-input-placeholder": "Input label",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Add another input",
+	"wikilambda-function-definition-output-label": "Output type",
+	"wikilambda-function-definition-output-selector": "Select a type",
 	"wikilambda-editor-steps-label": "Editor Steps",
 	"wikilambda-editor-additional-details-label": "Additional details",
 	"wikilambda-editor-go-back-button": "Go back",

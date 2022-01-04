@@ -51,10 +51,7 @@ module.exports = {
 		}
 	},
 	computed: $.extend( mapGetters( [
-		'getNextObjectId',
-		'getZObjectChildrenById',
-		'getNestedZObjectById',
-		'getUserZlangZID'
+		'getNestedZObjectById'
 	] ), {
 		Constants: function () {
 			return Constants;
