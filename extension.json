@@ -90,6 +90,7 @@
 				"mobile"
 			],
 			"styles": [
+				"ext.wikilambda.edit/ext.wikilambda.edit.less",
 				"ext.wikilambda.specialpages/ext.wikilambda.specialpages.less",
 				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.less",
 				"ext.wikilambda.edit/components/base/Button.less",
