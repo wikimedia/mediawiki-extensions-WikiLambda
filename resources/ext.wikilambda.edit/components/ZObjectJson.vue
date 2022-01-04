@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for the JSON rendering for ZObjects.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div class="ext-wikilambda-json">
 		<code-editor
 			v-clickout="onClickoutHandler"

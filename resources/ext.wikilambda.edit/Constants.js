@@ -1,3 +1,9 @@
+/*!
+ * WikiLambda Vue constants file
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
 var Constants = {
 		EXCLUDED_Z_TYPES: [ 'Z2', 'Z7' ],
 		NEW_ZID_PLACEHOLDER: 'Z0',

@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for the inline validation response of ZTester objects.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div class="ext-wikilambda-inline-tester-validator">
 		<z-object-selector
 			v-if="!selectedFunction"

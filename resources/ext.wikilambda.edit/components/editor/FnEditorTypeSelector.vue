@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for selecting a type inside the Function editor.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<span class="ext-wikilambda-select-zobject">
 		<a
 			v-if="readonly || viewmode"

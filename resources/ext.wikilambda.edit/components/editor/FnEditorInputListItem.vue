@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for an input list item inside the Function editor.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<section class="ext-wikilambda-editor-input-list-item">
 		<fn-editor-type-selector
 			:type="Constants.Z_TYPE"

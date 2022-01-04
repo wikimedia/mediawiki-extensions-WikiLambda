@@ -2,7 +2,7 @@
 	<!--
 		WikiLambda Vue interface module for persistent (MediaWiki-stored) ZObjects.
 
-		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
 	<div :class="{ 'ext-wikilambda-persistentobject-metadata': hasDetailsToDisplay }">

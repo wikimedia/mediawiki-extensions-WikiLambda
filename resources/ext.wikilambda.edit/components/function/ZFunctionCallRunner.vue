@@ -2,7 +2,7 @@
 	<!--
 		WikiLambda Vue component for ZFunctionCall objects.
 
-		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
 	<div v-if="selectedFunction" class="ext-wikilambda-function-call-block ext-wikilambda-function-call-block__runner">

@@ -1,3 +1,9 @@
+/*!
+ * WikiLambda Vue URL manipulation utilities code
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
 module.exports = {
 	methods: {
 		getParameterByName: function ( name ) {

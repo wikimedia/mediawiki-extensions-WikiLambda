@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for setting of ZTesters inside the Function editor.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<fn-editor-base>
 		<template #title>
 			{{ $i18n( 'wikilambda-editor-behavior-title' ) }}

@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for the selection of a ZNaturalLanguage object inside the Function editor.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div>
 		<select v-model="zLanguage">
 			<option

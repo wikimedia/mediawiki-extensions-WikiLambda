@@ -2,7 +2,7 @@
 	<!--
 		WikiLambda Vue component for displaying the results of running testers against a function's implementations.
 
-		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
 	<div>

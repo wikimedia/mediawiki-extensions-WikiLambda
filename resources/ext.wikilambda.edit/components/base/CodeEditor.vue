@@ -3,7 +3,7 @@
 		WikiLambda Vue wrapper component for ACE CodeEditor
 		https://ace.c9.io/
 
-		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
 	<div ref="editor" class="ext-wikilambda-codeEditor"></div>

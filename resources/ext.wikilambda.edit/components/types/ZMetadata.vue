@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for the "metadata" collection of keys of ZPersistent objects.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div class="ext-wikilambda-metadata">
 		<div class="ext-wikilambda-metadata--alias-string">
 			{{ userLangAliasString }}

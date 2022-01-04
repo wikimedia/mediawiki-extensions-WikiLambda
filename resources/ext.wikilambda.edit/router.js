@@ -1,3 +1,9 @@
+/*!
+ * WikiLambda Vue plumbing code to route requests where we want them.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
 var VueRouter = require( '../lib/vue-router/vue-router.common.js' ),
 	FunctionEditor = require( './views/FunctionEditor.vue' ),
 	FunctionDefinition = require( './views/FunctionDefinition.vue' ),

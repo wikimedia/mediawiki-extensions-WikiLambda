@@ -1,3 +1,9 @@
+/*!
+ * WikiLambda Vuex code to manipulate the current ZObject.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
 var Constants = require( '../../../Constants.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ).methods;
 

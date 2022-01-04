@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for a graphical rendering of the function inside the Function editor.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div class="ext-wikilambda-visual-display">
 		<div class="ext-wikilambda-visual-display-input">
 			<div class="ext-wikilambda-visual-display-input-title">

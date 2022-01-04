@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for the Function editor.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div class="ext-wikilambda-fn-editor-base">
 		<h2>
 			<slot name="title"></slot>

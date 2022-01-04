@@ -2,7 +2,7 @@
 	<!--
 		WikiLambda Vue interface module for rendering a function's type signature.
 
-		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
 	<div class="ext-wikilambda-function-signature">

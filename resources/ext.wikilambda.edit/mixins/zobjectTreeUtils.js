@@ -1,3 +1,9 @@
+/*!
+ * WikiLambda Vue tree manipulation utilities code
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
 var Constants = require( '../Constants.js' ),
 	typeUtils = require( './typeUtils.js' ).methods,
 	normalize = require( './schemata.js' ).methods.normalizeZObject;

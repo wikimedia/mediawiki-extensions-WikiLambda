@@ -4,7 +4,7 @@
  * This is distinct from the function-schemata as the UI
  * relies of slightly different requirements for normalization.
  *
- * @copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 'use strict';

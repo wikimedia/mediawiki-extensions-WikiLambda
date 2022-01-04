@@ -3,7 +3,7 @@
 /**
  * WikiLambda integration test suite for the ZString class
  *
- * @copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 

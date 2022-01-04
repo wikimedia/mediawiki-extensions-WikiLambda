@@ -1,7 +1,7 @@
 /*!
  * WikiLambda Vue editor: Application Vuex store
  *
- * @copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 'use strict';

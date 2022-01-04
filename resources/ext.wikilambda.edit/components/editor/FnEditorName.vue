@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for setting the name of the function inside the Function editor.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<fn-editor-base class="ext-wikilambda-editor-name">
 		<template #title>
 			{{ $i18n( 'wikilambda-editor-name-title') }}

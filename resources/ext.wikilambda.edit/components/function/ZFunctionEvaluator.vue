@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for evaluation of ZFunction objects.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div v-if="resultId">
 		<z-function-call-runner
 			:zobject-id="functionCallId"

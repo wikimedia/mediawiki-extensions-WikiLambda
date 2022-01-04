@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for the general ZObject editor.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div>
 		<div class="ext-wikilambda-function-editor ext-wikilambda-editor-two-cols">
 			<aside :aria-label="$i18n( 'wikilambda-editor-steps-label' )">

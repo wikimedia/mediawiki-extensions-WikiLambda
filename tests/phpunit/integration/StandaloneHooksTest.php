@@ -5,7 +5,7 @@
  * own patches, not others', and so should only be used for tests of our own code that can't be
  * altered by patches in MediaWiki itself or other extensions or skins).
  *
- * @copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 

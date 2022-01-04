@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for the special editor of a ZFunction object.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<editor-base :steps="steps" :progress="currentZFunctionCompletionPercentage">
 		<template #default="ctx">
 			<component

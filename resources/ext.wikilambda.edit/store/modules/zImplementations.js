@@ -1,3 +1,9 @@
+/*!
+ * WikiLambda Vuex code to manipulate the ZImplementations of a ZFunction object.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
 var Constants = require( '../../Constants.js' ),
 	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
 	saveZObject = require( '../../mixins/api.js' ).methods.saveZObject;

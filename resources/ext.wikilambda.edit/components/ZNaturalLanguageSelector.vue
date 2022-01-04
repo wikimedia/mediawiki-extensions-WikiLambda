@@ -4,7 +4,7 @@
 		with autocompletion on name and filtering of 'used' languages,
 		based on our ZObjectSelector component.
 
-		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
 	<span class="ext-wikilambda-select-zobject">

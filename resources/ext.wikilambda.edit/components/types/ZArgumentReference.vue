@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for ZArgumentReference objects.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div>
 		<select
 			v-if="!viewmode"

@@ -1,3 +1,9 @@
+/*!
+ * WikiLambda Vuex code to interact with the store to create and update ZObjects.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
 var Constants = require( '../../../Constants.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ).methods,
 	zobjectTreeUtils = require( '../../../mixins/zobjectTreeUtils.js' ).methods,

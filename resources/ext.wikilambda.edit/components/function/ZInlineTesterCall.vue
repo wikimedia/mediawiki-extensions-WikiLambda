@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for inline callers for ZTester objects.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div class="ext-wikilambda-inline-tester-call">
 		<span v-for="argument in zFunctionArguments" :key="argument.key">
 			{{ argument.label }}:

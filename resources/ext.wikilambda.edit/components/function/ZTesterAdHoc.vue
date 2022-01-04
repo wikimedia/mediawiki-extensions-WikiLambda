@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for the inline addition of ZTester objects.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div v-if="zobject.length">
 		<z-multilingual-string
 			:zobject-id="labelsId"

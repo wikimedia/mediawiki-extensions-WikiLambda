@@ -2,7 +2,7 @@
 	<!--
 		WikiLambda Vue interface module for generic ZObject manipulation.
 
-		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
 	<div id="ext-wikilambda-app" class="ext-wikilambda-edit">

@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for the special view of a ZFunction object.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div>
 		<div class="ext-wikilambda-function-view ext-wikilambda-function-view__two-cols">
 			<div class="ext-wikilambda-function-view-navbar">

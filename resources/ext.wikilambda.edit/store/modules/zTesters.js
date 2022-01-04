@@ -1,3 +1,9 @@
+/*!
+ * WikiLambda Vuex code to manipulate the ZTesters of a ZFunction object.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
 var canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
 	Constants = require( '../../Constants.js' ),
 	saveZObject = require( '../../mixins/api.js' ).methods.saveZObject,

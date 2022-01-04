@@ -2,7 +2,7 @@
 	<!--
 		WikiLambda Vue component for ZObject items in ZLists.
 
-		@copyright 2020–2021 WikiLambda team; see AUTHORS.txt
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
 	<li class="ext-wikilambda-zlistItem">
