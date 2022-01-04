@@ -7,17 +7,20 @@
 	-->
 	<main class="ext-wikilambda-function-definition">
 		<function-definition-name></function-definition-name>
+		<function-definition-aliases></function-definition-aliases>
 	</main>
 </template>
 
 <script>
 var FunctionDefinitionName = require( '../components/function/definition/function-definition-name.vue' );
+var FunctionDefinitionAliases = require( '../components/function/definition/function-definition-aliases.vue' );
 
 // @vue/component
 module.exports = {
 	name: 'FunctionDefinition',
 	components: {
-		'function-definition-name': FunctionDefinitionName
+		'function-definition-name': FunctionDefinitionName,
+		'function-definition-aliases': FunctionDefinitionAliases
 	}
 };
 
