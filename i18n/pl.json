@@ -1,12 +1,17 @@
 {
 	"@metadata": {
 		"authors": [
-			"Kareyac"
+			"Kareyac",
+			"Mruczek",
+			"Rail",
+			"Woytecr"
 		]
 	},
+	"wikilambda-special-createzobject-nojs": "Ta strona wymaga włączonej obsługi JavaScript aby móc z niej korzystać.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Język",
 	"wikilambda-publishnew": "Opublikuj",
 	"wikilambda-savenew": "Zapisz",
 	"wikilambda-publishchanges": "Opublikuj zmiany",
+	"wikilambda-savechanges": "Zapisz zmiany",
 	"wikilambda-editor-label-addlanguage-label": "Dodaj język:"
 }
