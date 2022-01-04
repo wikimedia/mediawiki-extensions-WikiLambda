@@ -16,11 +16,10 @@
 			</h3>
 
 			<input
-				:value="zobjectLabel"
+				v-model="zobjectLabel"
 				class="ext-wikilambda-text-input"
 				:aria-label="$i18n( 'wikilambda-editor-name-zobject-name' )"
 				:placeholder="$i18n( 'wikilambda-editor-name-zobject-name-placeholder' )"
-				@input="zobjectLabel = $event.target.value"
 			>
 			<div class="description">
 				{{ $i18n( 'wikilambda-editor-name-zobject-name-description' ) }}
@@ -51,11 +50,10 @@
 			<div class="ext-wikilambda-alias-input">
 				<form @submit.prevent="addAliasForLanguage( getCurrentZLanguage )">
 					<input
-						:value="newAlias"
+						v-model="newAlias"
 						class="ext-wikilambda-text-input"
 						aria-label="Alias"
 						:placeholder="$i18n( 'wikilambda-editor-name-aliases-placeholder' )"
-						@input="newAlias = $event.target.value"
 					>
 				</form>
 				<sd-button @click="addAliasForLanguage( getCurrentZLanguage )">

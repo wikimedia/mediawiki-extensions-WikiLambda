@@ -33,7 +33,7 @@
 					:mode="orchestratedMode"
 					:parent-type="Constants.Z_FUNCTION_CALL"
 					:available-modes="displayModes"
-					@change="orchestratedMode = $event.target.value"
+					@change="orchestratedMode = $event"
 				></z-key-mode-selector>
 				<div>
 					<z-object-json

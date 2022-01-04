@@ -8,10 +8,9 @@
 	<span>
 		{{ $i18n( 'wikilambda-editor-zobject-addkey' ) }}
 		<input
-			:value="zkey"
+			v-model="zkey"
 			class="ext-wikilambda-zkey-input"
 			:class="{ 'ext-wikilambda-zkey-input-invalid': isInvalid }"
-			@input="zkey = $event.target.value"
 			@change="updateKey"
 		>
 		<sd-message
