@@ -68,7 +68,7 @@ class ZType extends ZObject {
 			return false;
 		}
 
-		// Key map must be set to an array or ZList of zero or more ZKeys, all valid, and of our ZID
+		// Key map must be set to an array, ZList or ZGenericList of zero or more ZKeys, all valid
 		if ( !isset( $this->data[ ZTypeRegistry::Z_TYPE_KEYS ] ) ) {
 			return false;
 		}
@@ -79,6 +79,11 @@ class ZType extends ZObject {
 					return false;
 				}
 				$keys = $keys->getZListAsArray();
+			} elseif ( $keys instanceof ZGenericList ) {
+				if ( $keys->getElementType() !== ZTypeRegistry::Z_KEY ) {
+					return false;
+				}
+				$keys = $keys->getZGenericListAsArray();
 			} else {
 				return false;
 			}
