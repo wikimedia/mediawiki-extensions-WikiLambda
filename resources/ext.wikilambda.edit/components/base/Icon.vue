@@ -2,8 +2,8 @@
 	<span class="sd-icon" :class="builtInClasses">
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
-			width="1em"
-			height="1em"
+			:width="width"
+			:height="height"
 			viewBox="0 0 20 20"
 			:aria-hidden="lacksTitle"
 		>
@@ -88,6 +88,14 @@ module.exports = {
 			default: function () {
 				return document.documentElement.lang;
 			}
+		},
+		width: {
+			type: String,
+			default: '1em'
+		},
+		height: {
+			type: String,
+			default: '1em'
 		}
 	},
 
