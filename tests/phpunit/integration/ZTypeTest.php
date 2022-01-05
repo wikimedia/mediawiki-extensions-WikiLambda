@@ -11,6 +11,8 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
@@ -136,4 +138,32 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 			'broken validator' => [ 'Z4', [ $validZ4Key ], 'Test value!', false ],
 		];
 	}
+
+	/**
+	 * @covers ::isValid
+	 */
+	public function testGenericListOfKeys() {
+		$genericListOfKeys = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z3" } }';
+		$genericList = ZObjectFactory::create( json_decode( $genericListOfKeys ) );
+
+		$this->assertInstanceOf( ZGenericList::class, $genericList );
+		$this->assertTrue( $genericList->isValid() );
+		$this->assertSame( "Z3", $genericList->getElementType() );
+
+		$testObject = new ZType(
+			new ZReference( 'Z1234' ),
+			$genericList,
+			new ZReference( 'Z101' )
+		);
+
+		$this->assertTrue( $testObject->isValid() );
+
+		// FIXME (T298642) As soon as the canonical validator in function schemata can admit generic lists,
+		// the following test should pass:
+		// $typeJson = '{"Z1K1":"Z4","Z4K1":"Z1234","Z4K2":{'
+		//  . '"Z1K1":{"Z1K1":"Z7","Z7K1":"Z881","Z881K1":"Z3"}},"Z4K3":"Z101"}';
+		// $testObject = ZObjectFactory::create( json_decode( $typeJson ) );
+		// $this->assertTrue( $testObject->isValid() );
+	}
+
 }
