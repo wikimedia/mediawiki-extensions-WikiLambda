@@ -10,6 +10,7 @@
 		<z-object-selector
 			v-if="type === Constants.Z_OBJECT"
 			:type="Constants.Z_TYPE"
+			:return-type="Constants.Z_TYPE"
 			:placeholder="$i18n( 'wikilambda-argument-typeselector-label' )"
 			@input="changeZObjectType"
 		></z-object-selector>
