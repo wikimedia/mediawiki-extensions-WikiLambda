@@ -49,6 +49,37 @@ module.exports = {
 		ZObjectInitialized: false
 	},
 	getters: {
+		getZObjectLabels: function ( state, getters ) {
+			return getters.getZObjectChildrenById( getters.getNestedZObjectById( 0, [
+				Constants.Z_PERSISTENTOBJECT_LABEL,
+				Constants.Z_MULTILINGUALSTRING_VALUE
+			] ).id );
+		},
+		getZObjectLabel: function ( state, getters ) {
+			var labelObject,
+				label = false;
+
+			for ( var index in getters.getZObjectLabels ) {
+				var maybeLabel = getters.getZObjectLabels[ index ],
+					language = getters.getNestedZObjectById( maybeLabel.id, [
+						Constants.Z_MONOLINGUALSTRING_LANGUAGE,
+						Constants.Z_REFERENCE_ID
+					] );
+
+				if ( language.value === getters.getCurrentZLanguage ) {
+					labelObject = maybeLabel;
+				}
+			}
+
+			if ( labelObject ) {
+				label = getters.getNestedZObjectById( labelObject.id, [
+					Constants.Z_MONOLINGUALSTRING_VALUE,
+					Constants.Z_STRING_VALUE
+				] );
+			}
+
+			return label;
+		},
 		getIsSavingObject: function ( state ) {
 			return state.isSavingZObject;
 		},

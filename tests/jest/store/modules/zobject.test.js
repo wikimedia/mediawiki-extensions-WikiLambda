@@ -85,7 +85,18 @@ describe( 'zobject Vuex module', function () {
 					then: getResolveMock
 				};
 			} ),
-			getters: {}
+			getters: {
+				getNestedZObjectById: jest.fn( function () {
+					return {
+						id: ''
+					};
+				} ),
+				getZObjectChildrenById: jest.fn( function () {
+					return {
+						id: ''
+					};
+				} )
+			}
 		} );
 
 		mw.Api = jest.fn( function () {

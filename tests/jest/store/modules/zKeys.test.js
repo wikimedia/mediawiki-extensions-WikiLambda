@@ -480,8 +480,14 @@ describe( 'zkeys Vuex module', function () {
 				} );
 
 				var zArguments = [
-					{ label: 'left', zid: 'Z10033K1', key: 'left: ', type: 'Boolean' },
-					{ label: 'right', zid: 'Z10033K2', key: 'right: ', type: 'Boolean' }
+					{ label: 'left', zid: 'Z10033K1', key: 'left: ', type: {
+						label: 'Boolean',
+						zid: 'Z40'
+					} },
+					{ label: 'right', zid: 'Z10033K2', key: 'right: ', type: {
+						label: 'Boolean',
+						zid: 'Z40'
+					} }
 				];
 
 				zkeysModule.actions.setAvailableZArguments( context, 'Z10033' );

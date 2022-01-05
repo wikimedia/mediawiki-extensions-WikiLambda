@@ -21,6 +21,7 @@
 			<aside
 				class="ext-wikilambda-function-view__sidebar"
 				:aria-label="$i18n( 'wikilambda-editor-additional-details-label' )">
+				<fn-editor-visual-display></fn-editor-visual-display>
 			</aside>
 		</div>
 	</div>
@@ -28,6 +29,7 @@
 
 <script>
 var TabContainer = require( '../components/base/TabContainer.vue' ),
+	FnEditorVisualDisplay = require( '../components/editor/FnEditorVisualDisplay.vue' ),
 	Constants = require( '../../../ext.wikilambda.edit/Constants.js' ),
 	icons = require( './../../../lib/icons.js' );
 
@@ -35,7 +37,8 @@ var TabContainer = require( '../components/base/TabContainer.vue' ),
 module.exports = {
 	name: 'FunctionView',
 	components: {
-		'tab-container': TabContainer
+		'tab-container': TabContainer,
+		'fn-editor-visual-display': FnEditorVisualDisplay
 	},
 	data: function () {
 		return {
@@ -97,11 +100,6 @@ module.exports = {
 
 .ext-wikilambda-function-view {
 	display: grid;
-
-	&__sidebar {
-		background: #f0f0f0;
-		padding: 1em;
-	}
 
 	&__content {
 		position: relative;

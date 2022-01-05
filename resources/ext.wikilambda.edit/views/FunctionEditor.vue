@@ -14,21 +14,8 @@
 			></component>
 		</template>
 
-		<template #right-aside="ctx">
-			<fn-editor-visual-display>
-				<template #input>
-					{{ $store.getters.getZargumentsString || $i18n( 'wikilambda-editor-input-title' ) }}
-				</template>
-				<template #function>
-					{{ ctx.label ? ctx.label.value ||
-						$i18n( 'wikilambda-editor-name-zobject-name' ) :
-						$i18n( 'wikilambda-editor-name-zobject-name' )
-					}}
-				</template>
-				<template #output>
-					{{ $store.getters.getZkeyLabels[ zReturnType.value ] || $i18n( 'wikilambda-editor-output-title' ) }}
-				</template>
-			</fn-editor-visual-display>
+		<template #right-aside>
+			<fn-editor-visual-display></fn-editor-visual-display>
 		</template>
 	</editor-base>
 </template>
@@ -187,8 +174,7 @@ module.exports = {
 		'fetchZKeys',
 		'fetchZImplementations',
 		'fetchZTesters'
-	] ), {
-	} ),
+	] ) ),
 	mounted: function () {
 		var zids = [ Constants.Z_ARGUMENT ];
 		if ( this.zReturnType && this.zReturnType.value ) {

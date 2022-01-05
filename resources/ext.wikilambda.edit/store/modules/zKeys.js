@@ -69,6 +69,19 @@ module.exports = {
 						argumentString + ', ' + key + type :
 						argumentString + key + type;
 				}, '' );
+		},
+		/**
+		 * Returns an array of objects with key and type of the available arguments.
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Array}
+		 */
+		getZargumentsArray: function ( state, getters ) {
+			return Object.keys( getters.getZarguments )
+				.map( function ( key ) {
+					return getters.getZarguments[ key ];
+				} );
 		}
 	},
 	mutations: {
@@ -278,21 +291,22 @@ module.exports = {
 								( userLangLabel ) + ': ' :
 								'',
 							zid = argument[ Constants.Z_ARGUMENT_KEY ],
-							type;
+							typeZid,
+							typeLabel;
 
 						// We can either return an object or a straight string.
 						if ( typeof argument[ Constants.Z_ARGUMENT_TYPE ] === 'object' ) {
-							type = context.getters.getZkeyLabels[
-								argument[ Constants.Z_ARGUMENT_TYPE ][ Constants.Z_OBJECT_TYPE ]
-							];
+							typeZid = argument[ Constants.Z_ARGUMENT_TYPE ][ Constants.Z_OBJECT_TYPE ];
+							typeLabel = context.getters.getZkeyLabels[ typeZid ];
 						} else {
-							type = context.getters.getZkeyLabels[ argument[ Constants.Z_ARGUMENT_TYPE ] ];
+							typeZid = argument[ Constants.Z_ARGUMENT_TYPE ];
+							typeLabel = context.getters.getZkeyLabels[ typeZid ];
 						}
 
 						if ( typeof zid === 'object' ) {
 							zid = zid[ Constants.Z_STRING_VALUE ];
 						}
-						if ( !type ) {
+						if ( !typeLabel ) {
 							missingTypes.push( argument[ Constants.Z_ARGUMENT_TYPE ] );
 						}
 
@@ -300,7 +314,10 @@ module.exports = {
 							label: userLangLabel,
 							zid: zid,
 							key: key,
-							type: type
+							type: {
+								label: typeLabel,
+								zid: typeZid
+							}
 						} );
 					} );
 

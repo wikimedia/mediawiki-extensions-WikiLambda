@@ -5,7 +5,7 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div>
+	<div class="ext-wikilambda-language-selector">
 		<select v-model="zLanguage">
 			<option
 				v-for="language in currentZObjectLanguages"
@@ -16,10 +16,12 @@
 			</option>
 		</select>
 
-		<z-natural-language-selector
-			:used-languages="currentZObjectLanguages"
-			@input="addNewLang"
-		></z-natural-language-selector>
+		<template v-if="showAddLanguage">
+			<z-natural-language-selector
+				:used-languages="currentZObjectLanguages"
+				@input="addNewLang"
+			></z-natural-language-selector>
+		</template>
 	</div>
 </template>
 
@@ -32,6 +34,12 @@ var Constants = require( '../../Constants.js' ),
 module.exports = {
 	components: {
 		'z-natural-language-selector': ZNaturalLanguageSelector
+	},
+	props: {
+		showAddLanguage: {
+			type: Boolean,
+			default: true
+		}
 	},
 	computed: $.extend( mapGetters( [
 		'currentZObjectLanguages',
@@ -79,3 +87,18 @@ module.exports = {
 	}
 };
 </script>
+
+<style lang="less">
+.ext-wikilambda-language-selector {
+	select {
+		background: #f8f9fa;
+		border: 1px solid #72777d;
+		box-sizing: border-box;
+		border-radius: 2px;
+		height: 32px;
+		padding: 6px 12px 6px 8px;
+		font-size: 1em;
+		line-height: 1.4em;
+	}
+}
+</style>

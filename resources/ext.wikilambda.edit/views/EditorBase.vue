@@ -96,27 +96,7 @@
 				</div>
 			</main>
 			<aside :aria-label="$i18n( 'wikilambda-editor-additional-details-label' )">
-				<fn-editor-progress :progress="progress"></fn-editor-progress>
-				<div>
-					<div>
-						<strong>
-							{{ getZObjectLabel ? getZObjectLabel.value ||
-								$i18n( 'wikilambda-editor-name-zobject-name' ) :
-								$i18n( 'wikilambda-editor-name-zobject-name' )
-							}}
-						</strong>
-					</div>
-				</div>
-				<slot name="right-aside" :label="getZObjectLabel"></slot>
-				<!-- <div v-if="$store.getters.isExpertMode">
-					<h3>
-						{{ $i18n( 'wikilambda-expert-mode-json-label' ) }}
-					</h3>
-					<z-object-json
-						:readonly="true"
-						:zobject-raw="$store.getters.getZObjectAsJson"
-					></z-object-json>
-				</div> -->
+				<slot name="right-aside"></slot>
 			</aside>
 		</div>
 	</div>
@@ -156,10 +136,7 @@ module.exports = {
 	},
 	computed: $.extend( mapGetters( [
 		'getIsSavingObject',
-		'getZObjectMessage',
-		'getNestedZObjectById',
-		'getCurrentZLanguage',
-		'getZObjectChildrenById'
+		'getZObjectMessage'
 	] ), {
 		currentTab: function () {
 			return this.$route.query.step;
@@ -187,37 +164,6 @@ module.exports = {
 			}
 
 			return false;
-		},
-		getZObjectLabels: function () {
-			return this.getZObjectChildrenById( this.getNestedZObjectById( 0, [
-				Constants.Z_PERSISTENTOBJECT_LABEL,
-				Constants.Z_MULTILINGUALSTRING_VALUE
-			] ).id );
-		},
-		getZObjectLabel: function () {
-			var labelObject,
-				label = false;
-
-			for ( var index in this.getZObjectLabels ) {
-				var maybeLabel = this.getZObjectLabels[ index ],
-					language = this.getNestedZObjectById( maybeLabel.id, [
-						Constants.Z_MONOLINGUALSTRING_LANGUAGE,
-						Constants.Z_REFERENCE_ID
-					] );
-
-				if ( language.value === this.getCurrentZLanguage ) {
-					labelObject = maybeLabel;
-				}
-			}
-
-			if ( labelObject ) {
-				label = this.getNestedZObjectById( labelObject.id, [
-					Constants.Z_MONOLINGUALSTRING_VALUE,
-					Constants.Z_STRING_VALUE
-				] );
-			}
-
-			return label;
 		}
 	} ),
 	methods: $.extend( mapActions( [] ), {
@@ -309,9 +255,6 @@ module.exports = {
 	display: grid;
 
 	aside {
-		background: #f0f0f0;
-		padding: 1em;
-
 		.ext-wikilambda-editor-progress-list {
 			list-style: none;
 			padding: 1em 0.75em;

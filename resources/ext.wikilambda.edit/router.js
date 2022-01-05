@@ -108,10 +108,6 @@ var routes = [
 		component: EditorWrapper,
 		children: [
 			{
-				path: '',
-				redirect: 'functionDefinition'
-			},
-			{
 				name: 'functionDefinition',
 				path: 'functionDefinition',
 				component: FunctionDefinition
