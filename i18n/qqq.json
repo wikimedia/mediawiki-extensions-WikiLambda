@@ -142,6 +142,7 @@
 	"wikilambda-enable-expert-mode": "Label for the button to enable expert mode.",
 	"wikilambda-disable-expert-mode": "Label for the button to disable expert mode.",
 	"wikilambda-create-function": "Label for the button that navigates to the create function page",
+	"wikilambda-create-type": "Label for the button that preset the current view to create a type",
 	"wikilambda-expert-mode-json-label": "Label for the JSON 'expert mode' view of the ZObject.",
 	"wikilambda-metadata-show-languages": "Label for button to show initial languages in the metadata.",
 	"wikilambda-metadata-hide-languages": "Label for button to hide initial languages in the metadata.",

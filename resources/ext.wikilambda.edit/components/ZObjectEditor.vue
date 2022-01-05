@@ -35,8 +35,13 @@
 			</div>
 			<sd-button
 				v-if="isNewZObject"
-				@click="navigateToCreateFunction">
+				@click="navigateToType( Constants.Z_FUNCTION )">
 				{{ $i18n( 'wikilambda-create-function' ) }}
+			</sd-button>
+			<sd-button
+				v-if="isNewZObject"
+				@click="navigateToType( Constants.Z_TYPE )">
+				{{ $i18n( 'wikilambda-create-type' ) }}
 			</sd-button>
 			<sd-button
 				class="ext-wikilambda-expertModeToggle"
@@ -74,7 +79,8 @@ module.exports = {
 	mixins: [ typeUtils ],
 	data: function () {
 		return {
-			summary: ''
+			summary: '',
+			Constants: Constants
 		};
 	},
 	computed: $.extend( mapGetters( {
@@ -121,14 +127,14 @@ module.exports = {
 				} );
 			},
 
-			navigateToCreateFunction: function () {
+			navigateToType: function ( type ) {
 				var zObject = this.getZObjectChildrenById( 0 ); // We fetch the Root object
 				var Z2K2 =
 					this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, zObject );
 
 				this.changeType( {
 					id: Z2K2.id,
-					type: Constants.Z_FUNCTION
+					type: type
 				} );
 			}
 		}

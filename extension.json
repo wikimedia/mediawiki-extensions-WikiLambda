@@ -299,6 +299,7 @@
 				"wikilambda-tester-run-tester",
 				"wikilambda-enable-expert-mode",
 				"wikilambda-create-function",
+				"wikilambda-create-type",
 				"wikilambda-disable-expert-mode",
 				"wikilambda-expert-mode-json-label",
 				"wikilambda-metadata-show-languages",

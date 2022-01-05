@@ -135,6 +135,7 @@
 	"wikilambda-enable-expert-mode": "Enable Expert Mode",
 	"wikilambda-disable-expert-mode": "Disable Expert Mode",
 	"wikilambda-create-function": "Create Function",
+	"wikilambda-create-type": "Create Type",
 	"wikilambda-expert-mode-json-label": "Current ZObject",
 	"wikilambda-metadata-show-languages": "Show labels box",
 	"wikilambda-metadata-hide-languages": "Hide labels box",
