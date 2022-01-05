@@ -7,7 +7,8 @@
 			"WikiAbuHuraira",
 			"YahyA",
 			"Yahya",
-			"আফতাবুজ্জামান"
+			"আফতাবুজ্জামান",
+			"Ankan"
 		]
 	},
 	"wikilambda-persistentzobject-metadata": "লেবেল ও উপনাম",
@@ -22,5 +23,10 @@
 	"wikilambda-editor-label-removelanguage-tooltip": "এই লেবেল থেকে ভাষাটি সরিয়ে দিন",
 	"wikilambda-editor-label-select-programming-language-label": "প্রোগ্রামিং ভাষা নির্বাচন করুন:",
 	"specialpages-group-wikilambda": "উইকিফাংশন পাতা",
+	"wikilambda-implementation-selector-code": "কোড",
+	"wikilambda-tester-function-duration": "স্থিতিকাল",
+	"wikilambda-metadata-language-column": "ভাষা",
+	"wikilambda-metadata-label-column": "লেবেল",
+	"wikilambda-metadata-add-alias": "উপনাম যোগ করুন",
 	"wikilambda-persistentobject-details-label": "বিস্তারিত"
 }
