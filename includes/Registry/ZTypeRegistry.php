@@ -134,6 +134,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_ERROR => 'ZError',
 		self::Z_TYPE => 'ZType',
 		self::Z_STRING => 'ZString',
+		self::Z_FUNCTIONCALL => 'ZFunctionCall',
 		self::Z_REFERENCE => 'ZReference',
 		self::Z_LIST => 'ZList',
 		self::Z_MONOLINGUALSTRING => 'ZMonoLingualString',
@@ -190,6 +191,13 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_MONOLINGUALSTRING_LANGUAGE,
 		self::Z_MONOLINGUALSTRING_VALUE,
 		self::Z_MULTILINGUALSTRING_VALUE
+	];
+
+	public const Z_FUNCTION_GENERIC_LIST = 'Z881';
+	public const Z_FUNCTION_GENERIC_LIST_TYPE = 'Z881K1';
+
+	public const BUILT_IN_FUNCTIONS = [
+		self::Z_FUNCTION_GENERIC_LIST => 'ZGenericList'
 	];
 
 	/**
@@ -287,6 +295,27 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 */
 	public function isZTypeBuiltIn( string $key ): bool {
 		return array_key_exists( $key, self::BUILT_IN_TYPES );
+	}
+
+	/**
+	 * Whether the provided ZFunction is 'built-in' to the WikiLambda extension, and thus its validator
+	 * is provided in PHP code.
+	 *
+	 * @param string $key The key of the ZFunction to check.
+	 * @return bool
+	 */
+	public function isZFunctionBuiltIn( string $key ): bool {
+		return array_key_exists( $key, self::BUILT_IN_FUNCTIONS );
+	}
+
+	/**
+	 * Returns the class name given a built-in function Zid
+	 *
+	 * @param string $zid The zid of the built-in ZFunction
+	 * @return string Class name for the built-in
+	 */
+	public function getZFunctionBuiltInName( string $zid ): string {
+		return self::BUILT_IN_FUNCTIONS[ $zid ];
 	}
 
 	/**
@@ -402,7 +431,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_ZTYPE_NOT_FOUND,
 					[ 'type' => $type ]
- )
+				)
 			);
 		}
 		return array_search( $type, $this->registry );
