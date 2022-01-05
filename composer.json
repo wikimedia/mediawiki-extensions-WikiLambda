@@ -1,7 +1,6 @@
 {
 	"require": {
-		"opis/json-schema": "1.1.0",
-		"symfony/yaml": "^5.3.6"
+		"opis/json-schema": "1.1.0"
 	},
 	"require-dev": {
 		"mediawiki/mediawiki-codesniffer": "38.0.0",
