@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Ykhwong"
+			"Ykhwong",
+			"Yunbj"
 		]
 	},
 	"wikilambda-invalidzobjecttitle": "지정된 '$1' 제목은 ZObject에 유효하지 않습니다.",
@@ -49,6 +50,9 @@
 	"wikilambda-disable-expert-mode": "전문가 모드 비활성화",
 	"wikilambda-function-is-attached": "이 객체는 객체의 함수와 연결되어 있습니다.",
 	"wikilambda-function-is-not-attached": "이 객체는 객체의 함수와 연결되어 있지 않습니다.",
+	"wikilambda-function-definition-inputs-item-selector-placeholder": "유형을 선택하세요.",
+	"wikilambda-function-definition-output-label": "출력 종류",
+	"wikilambda-function-definition-output-selector": "유형을 선택하세요.",
 	"wikilambda-editor-additional-details-label": "추가 상세 정보",
 	"wikilambda-editor-go-back-button": "돌아가기",
 	"wikilambda-editor-next-button": "다음 단계",
@@ -68,5 +72,6 @@
 	"wikilambda-editor-write-title": "쓰기",
 	"wikilambda-editor-attach-title": "첨부",
 	"wikilambda-editor-progress-title": "진행도",
-	"wikilambda-ztyped-list-items": "항목 목록"
+	"wikilambda-ztyped-list-items": "항목 목록",
+	"wikilambda-optional": "선택 사항"
 }

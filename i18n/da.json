@@ -15,6 +15,9 @@
 	"wikilambda-implementation-selector-code": "Kode",
 	"wikilambda-metadata-language-column": "Sprog",
 	"wikilambda-metadata-aka-column": "Også kendt som",
+	"wikilambda-function-definition-name-label": "Navn",
+	"wikilambda-function-definition-inputs-item-selector-placeholder": "Vælg en type",
+	"wikilambda-function-definition-output-selector": "Vælg en type",
 	"wikilambda-editor-go-back-button": "Gå tilbage",
 	"wikilambda-editor-name-title": "Navn",
 	"wikilambda-editor-input-default-label": "input"

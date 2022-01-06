@@ -2,10 +2,20 @@
 	"@metadata": {
 		"authors": [
 			"AC Krah",
+			"Amoaniwaa",
 			"Naa2Darkoa"
 		]
 	},
+	"wikilambda-function-definition-name-label": "Din",
+	"wikilambda-function-definition-name-example": "Hwɛ din ahorow nhwɛso.",
+	"wikilambda-function-definition-alias-label": "Din foforo",
+	"wikilambda-function-definition-alias-example": "Hwɛ din foforo ahorow ho nhwɛso.",
+	"wikilambda-function-definition-inputs-item-selector-placeholder": "Paw emu baako",
+	"wikilambda-function-definition-inputs-item-add-input-button": "+ Fa nsɛm foforo ka ho",
+	"wikilambda-function-definition-output-selector": "Paw emu baako",
 	"wikilambda-editor-fn-step-define": "Kyerɛ aseɛ - Kyerɛ nea wayɛ no aseɛ",
-	"wikilambda-editor-fn-step-tests": "Sɔhwɛ",
-	"wikilambda-editor-fn-step-implement": "Fa di dwuma"
+	"wikilambda-editor-fn-step-tests": "(N)sɔhwɛ",
+	"wikilambda-editor-fn-step-implement": "Fa di dwuma",
+	"wikilambda-editor-fn-tests-tooltip-header": "Wonni hokwan",
+	"wikilambda-optional": "nyɛ ɔhyɛ"
 }

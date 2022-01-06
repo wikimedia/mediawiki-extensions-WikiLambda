@@ -32,5 +32,14 @@
 	"wikilambda-tester-results-caption": "実装に対する関数テスターの結果",
 	"wikilambda-tester-no-results": "テスターの結果は見つかりませんでした。結果を確認するには、実装とテスターを追加してください。",
 	"wikilambda-tester-results-percentage-label": "合格したテスターの総数",
-	"wikilambda-tester-run-testers": "すべてのテスターを実行する"
+	"wikilambda-tester-run-testers": "すべてのテスターを実行する",
+	"wikilambda-function-definition-name-label": "名前",
+	"wikilambda-function-definition-alias-label": "別名",
+	"wikilambda-function-definition-inputs-label": "入力タイプ",
+	"wikilambda-function-definition-output-label": "出力タイプ",
+	"wikilambda-editor-fn-step-tests": "テスト",
+	"wikilambda-editor-input-title": "入力",
+	"wikilambda-editor-default-name": "無題",
+	"wikilambda-editor-implementation-title": "実装",
+	"wikilambda-optional": "省略可能"
 }
