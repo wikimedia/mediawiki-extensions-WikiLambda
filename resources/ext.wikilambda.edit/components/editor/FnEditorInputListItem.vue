@@ -8,6 +8,7 @@
 	<section class="ext-wikilambda-editor-input-list-item">
 		<fn-editor-type-selector
 			:type="Constants.Z_TYPE"
+			:return-type="Constants.Z_TYPE"
 			:placeholder="$i18n( 'wikilambda-editor-input-type-placeholder' )"
 			:selected-id="getTypeOfArgument"
 			@input="setArgumentType( $event )"

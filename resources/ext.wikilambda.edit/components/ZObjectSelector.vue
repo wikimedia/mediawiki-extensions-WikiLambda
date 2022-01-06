@@ -66,6 +66,10 @@ module.exports = {
 			type: String,
 			default: ''
 		},
+		returnType: {
+			type: String,
+			default: ''
+		},
 		selectedId: {
 			type: String,
 			default: ''
@@ -168,6 +172,8 @@ module.exports = {
 					wikilambdasearch_search: input,
 					// eslint-disable-next-line camelcase
 					wikilambdasearch_type: this.type,
+					// eslint-disable-next-line camelcase
+					wikilambdasearch_return_type: this.returnType,
 					// eslint-disable-next-line camelcase
 					wikilambdasearch_language: this.zLang
 				} ).done( function ( data ) {
