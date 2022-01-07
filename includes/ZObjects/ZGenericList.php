@@ -59,7 +59,6 @@ class ZGenericList extends ZObject {
 	 * @inheritDoc
 	 */
 	public function isValid(): bool {
-		// FIXME (T298130): check that every item from the list comforms to the set type
 		foreach ( $this->data as $key => $value ) {
 			if ( !( $value instanceof ZObject ) ) {
 				return false;
@@ -91,7 +90,7 @@ class ZGenericList extends ZObject {
 	 * @param array $list
 	 * @return \stdClass
 	 */
-	public function getSerializedGeneric( $form, $list ) {
+	private function getSerializedGeneric( $form, $list ) {
 		if ( count( $list ) === 0 ) {
 			return (object)self::returnEmptyGenericList( $form );
 		}
