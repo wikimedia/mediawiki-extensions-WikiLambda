@@ -15,6 +15,7 @@
 	"apihelp-wikilambda_function_call-example-generic-pair": "קריאה לפונקציה שמחזירה את האיבר השני של <span dir=\"ltr\">Pair<String,Pair<String,Bool>></span>",
 	"apihelp-wikilambda_function_call-example-generic-map": "קריאה לפונקציה שממפה את הרכיב של מפה כללית במפתח נתון לגרסת המחרוזת של הערך שלו",
 	"apihelp-wikilambda_function_call-example-composition": "קריאה להרכבה\" אם הארגומנט הראשון הוא אמת, למיין שני; אחרת, להחזיר ללא שינוי",
+	"apihelp-wikilambda_function_call-example-notempty": "קריאה לפונקציה \"לא ריקה\" (not empty) בתור הרכבה: החזרת אמת אם ורק אם רשימת הקלט מכילה לפחות איבר אחד",
 	"apihelp-wikilambda_function_call-example-map": "קריאה לפונקציה Map: בהינתן פונקציה ורשימת מחרוזות, להחזיר את תוצאת הרצת הפונקציה על כל מחרוזת",
 	"apihelp-wikilambda_function_call-example-apply": "קריאה לפונקציה Apply: בהינתן פונקציה ומחרוזת, להחזיר את תוצאת הרצת הפונקציה על המחרוזת",
 	"apihelp-wikilambda_function_call-example-if": "קריאה לפונקציה המובנית Z802 (אם, If) עם נשוא שקרי",

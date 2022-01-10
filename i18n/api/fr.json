@@ -21,6 +21,7 @@
 	"apihelp-wikilambda_function_call-example-generic-pair": "Invoquer une fonction qui renvoie le deuxième élément d'une Paire<Chaîne,Paire<Chaîne,Booléen>>.",
 	"apihelp-wikilambda_function_call-example-generic-map": "Invoquer une fonction qui fait la correspondance entre l’élément d’une Map générique à une clé donnée, avec une version chaîne de sa valeur",
 	"apihelp-wikilambda_function_call-example-composition": "Invoquer une composition : si le premier argument est vrai, trier le second ; sinon, le renvoyer intact",
+	"apihelp-wikilambda_function_call-example-notempty": "Invoquer la fonction « non vide » comme une composition : renvoie vrai si la liste d’entrée contient au moins un élément",
 	"apihelp-wikilambda_function_call-example-map": "Invoquer la fonction Map : étant données une fonction et une liste de chaînes, renvoyer le résultat de l’exécution de la fonction sur chaque chaîne",
 	"apihelp-wikilambda_function_call-example-apply": "Invoquer la fonction Apply : étant données une fonction et une chaîne, renvoyer le résultat de l’exécution de la fonction sur la chaîne",
 	"apihelp-wikilambda_function_call-example-if": "Invoquer Z802(lf) intégré avec un prédicat faux",

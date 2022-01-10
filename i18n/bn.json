@@ -37,6 +37,8 @@
 	"wikilambda-editor-name-title": "নাম",
 	"wikilambda-editor-name-subtitle": "আপনার ফাংশনের নাম কি? এটি কী করে?",
 	"wikilambda-editor-name-zobject-name-placeholder": "আপনার ফাংশনের নাম কি?",
+	"wikilambda-editor-input-title": "ইনপুট",
+	"wikilambda-editor-default-name": "শিরোনামহীন",
 	"wikilambda-editor-input-type-placeholder": "ইনপুটের ধরন",
 	"wikilambda-editor-input-typed-list-placeholder": "তালিকার ধরন",
 	"wikilambda-editor-input-add-button": "ইনপুট যোগ করুন",
