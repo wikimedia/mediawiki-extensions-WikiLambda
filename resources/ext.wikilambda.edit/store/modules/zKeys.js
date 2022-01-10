@@ -55,10 +55,16 @@ module.exports = {
 		getZargumentsString: function ( state, getters ) {
 			return Object.keys( getters.getZarguments )
 				.map( function ( key ) {
-					return getters.getZarguments[ key ];
+					return {
+						zid: getters.getZarguments[ key ].zid,
+						type: getters.getZarguments[ key ].type,
+						label: getters.getZarguments[ key ].labels.filter( function ( label ) {
+							return label.lang === getters.getCurrentZLanguage;
+						} )[ 0 ] || getters.getZarguments[ key ].labels[ 0 ]
+					};
 				} )
 				.reduce( function ( argumentString, argument ) {
-					var key = argument.key,
+					var key = argument.label.key,
 						type = argument.type;
 
 					if ( type === undefined ) {
@@ -70,6 +76,8 @@ module.exports = {
 						argumentString + key + type;
 				}, '' );
 		},
+
+		// TODO(T299031): cleanup this code to be more performant
 		/**
 		 * Returns an array of objects with key and type of the available arguments.
 		 *
@@ -80,9 +88,16 @@ module.exports = {
 		getZargumentsArray: function ( state, getters ) {
 			return Object.keys( getters.getZarguments )
 				.map( function ( key ) {
-					return getters.getZarguments[ key ];
+					return {
+						zid: getters.getZarguments[ key ].zid,
+						type: getters.getZarguments[ key ].type,
+						label: ( getters.getZarguments[ key ].labels.filter( function ( label ) {
+							return label.lang === getters.getCurrentZLanguage;
+						} )[ 0 ] || getters.getZarguments[ key ].labels[ 0 ] ).label
+					};
 				} );
 		}
+		// TODO(T299031): cleanup this code to be more performant
 	},
 	mutations: {
 		/**
@@ -274,22 +289,21 @@ module.exports = {
 				if ( !zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] ) {
 					return;
 				}
+
 				zobject[
 					Constants.Z_PERSISTENTOBJECT_VALUE ][
 					Constants.Z_FUNCTION_ARGUMENTS ]
 					.forEach( function ( argument ) {
 						var argumentLabels = argument[ Constants.Z_ARGUMENT_LABEL ][
 								Constants.Z_MULTILINGUALSTRING_VALUE ],
-							userLang = argumentLabels.filter( function ( label ) {
-								return label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] ===
-								context.getters.getUserZlangZID ||
-							label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_STRING_VALUE ] ===
-								context.getters.getUserZlangZID;
-							} )[ 0 ] || argumentLabels[ 0 ],
-							userLangLabel = userLang[ Constants.Z_MONOLINGUALSTRING_VALUE ],
-							key = userLangLabel ?
-								( userLangLabel ) + ': ' :
-								'',
+							labels = argumentLabels.map( function ( label ) {
+								return {
+									lang: label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_STRING_VALUE ] ||
+										label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ],
+									label: label[ Constants.Z_MONOLINGUALSTRING_VALUE ],
+									key: label[ Constants.Z_MONOLINGUALSTRING_VALUE ] + ': '
+								};
+							} ),
 							zid = argument[ Constants.Z_ARGUMENT_KEY ],
 							typeZid,
 							typeLabel;
@@ -311,13 +325,12 @@ module.exports = {
 						}
 
 						context.commit( 'addZArgumentInfo', {
-							label: userLangLabel,
 							zid: zid,
-							key: key,
 							type: {
 								label: typeLabel,
 								zid: typeZid
-							}
+							},
+							labels: labels
 						} );
 					} );
 

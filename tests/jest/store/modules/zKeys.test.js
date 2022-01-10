@@ -198,7 +198,7 @@ var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modu
 		Z6: { Z1K1: 'Z2', Z2K1: { Z1K1: 'Z9', Z9K1: 'Z6' }, Z2K2: { Z1K1: 'Z4', Z4K1: { Z1K1: 'Z9', Z9K1: 'Z6' }, Z4K2: [ { Z1K1: 'Z3', Z3K1: { Z1K1: 'Z9', Z9K1: 'Z6' }, Z3K2: { Z1K1: 'Z6', Z6K1: 'Z6K1' }, Z3K3: { Z1K1: 'Z12', Z12K1: [ { Z1K1: 'Z11', Z11K1: 'en', Z11K2: 'value' } ] } } ], Z4K3: { Z1K1: 'Z9', Z9K1: 'Z101' } }, Z2K3: { Z1K1: 'Z12', Z12K1: [ { Z1K1: 'Z11', Z11K1: 'en', Z11K2: 'String' } ] } }
 	},
 	mockZKeyLabels = { Z1: 'Object', Z1K1: 'type', Z2: 'Persistent object', Z2K1: 'id', Z2K2: 'value', Z2K3: 'label', Z12: 'Multilingual text', Z12K1: 'texts', Z3: 'Key', Z3K1: 'value type', Z3K2: 'key id', Z3K3: 'label', Z4: 'Type', Z4K1: 'identity', Z4K2: 'keys', Z4K3: 'validator', Z6: 'String', Z6K1: 'value', Z8: 'Function', Z8K1: 'arguments', Z8K2: 'return type', Z8K3: 'testers', Z8K4: 'implementations', Z8K5: 'identity', Z7: 'Function call', Z7K1: 'function', Z9: 'Reference', Z9K1: 'reference id', Z10: 'List', Z10K1: 'head', Z10K2: 'tail' },
-	mockZArguments = { Z10024K1: { label: 'word', zid: 'Z10024K1', key: 'word: ', type: 'String' } },
+	mockZArguments = { Z10024K1: { labels: [ { key: 'word: ', label: 'word', lang: 'Z1002' } ], zid: 'Z10024K1', type: 'String' } },
 	state,
 	context,
 	getMock,
@@ -480,11 +480,11 @@ describe( 'zkeys Vuex module', function () {
 				} );
 
 				var zArguments = [
-					{ label: 'left', zid: 'Z10033K1', key: 'left: ', type: {
+					{ labels: [ { key: 'left: ', label: 'left', lang: 'Z1002' } ], zid: 'Z10033K1', type: {
 						label: 'Boolean',
 						zid: 'Z40'
 					} },
-					{ label: 'right', zid: 'Z10033K2', key: 'right: ', type: {
+					{ labels: [ { key: 'right: ', label: 'right', lang: 'Z1002' } ], zid: 'Z10033K2', type: {
 						label: 'Boolean',
 						zid: 'Z40'
 					} }
