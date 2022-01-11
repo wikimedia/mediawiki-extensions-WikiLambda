@@ -166,6 +166,8 @@
 				"ext.wikilambda.edit/components/base/CodeEditor.vue",
 				"ext.wikilambda.edit/components/base/TabContainer.vue",
 				"ext.wikilambda.edit/components/base/Tooltip.vue",
+				"ext.wikilambda.edit/components/base/Chip.vue",
+				"ext.wikilambda.edit/components/base/ChipContainer.vue",
 				"ext.wikilambda.edit/components/types/ZList.vue",
 				"ext.wikilambda.edit/components/types/ZListItem.vue",
 				"ext.wikilambda.edit/components/types/ZTypedList.vue",
