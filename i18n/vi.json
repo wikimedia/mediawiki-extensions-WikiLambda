@@ -2,10 +2,18 @@
 	"@metadata": {
 		"authors": [
 			"Nguyễn Mạnh An",
-			"Yosari101"
+			"Yosari101",
+			"Thingofme"
 		]
 	},
 	"wikilambda-emptylabel": "ZObject không được đặt nhãn",
 	"wikilambda-multilingualstring-nofallback": "Không có nhãn nào được xác định bằng ngôn ngữ này hoặc các dự phòng được chấp nhận",
-	"wikilambda-speciallistduplicatezobjectlabels-language": "Ngôn ngữ"
+	"wikilambda-reference": "Chú thích",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Ngôn ngữ",
+	"wikilambda-publishnew": "Đăng",
+	"wikilambda-savenew": "Lưu",
+	"wikilambda-publishchanges": "Đăng thay đổi",
+	"wikilambda-savechanges": "Lưu thay đổi",
+	"wikilambda-summarylabel": "Tóm lược:",
+	"wikilambda-editor-label-removelanguage-tooltip": "Xóa bỏ ngôn ngữ này ra khỏi nhãn"
 }
