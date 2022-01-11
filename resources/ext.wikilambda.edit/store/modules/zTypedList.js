@@ -10,7 +10,7 @@ var Constants = require( '../../Constants.js' ),
 
 function getNewItemParentId( nestedChildren, rootId ) {
 	var items = nestedChildren.filter( function ( child ) {
-		return child.key === Constants.Z_TYPED_LIST_NESTED_LIST;
+		return child.key === Constants.Z_TYPED_OBJECT_ELEMENT_2;
 	} );
 
 	if ( items.length === 0 ) {
@@ -18,6 +18,31 @@ function getNewItemParentId( nestedChildren, rootId ) {
 	} else {
 		return items[ items.length - 1 ].id;
 	}
+}
+
+/** Set one or multiple types for the specificed typed Object
+ *
+ * @param {Object} context
+ * @param {Object} payload
+ * @param {number} payload.objectId
+ * @param {Array} payload.types
+ * @param {string} payload.types.value
+ * @param {string} payload.types.argumentZObjectId
+ */
+function setTypeOfTypedObject( context, payload ) {
+
+	payload.types.forEach( function ( type ) {
+		var genericValue,
+			genericObjectType = // the object can either be nested in a Z_OBJECT_TYPE or directly set.
+			context.getters.getNestedZObjectById( payload.objectId, [ Constants.Z_OBJECT_TYPE, type.argumentZObjectId ] ) ||
+			context.getters.getNestedZObjectById( payload.objectId, [ type.argumentZObjectId ] );
+
+		genericObjectType.value = type.value;
+		genericValue = genericObjectType;
+
+		context.dispatch( 'setZObjectValue', genericValue );
+	} );
+
 }
 module.exports = {
 	state: {
@@ -52,15 +77,38 @@ module.exports = {
 
 			var nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
 
-			context.dispatch( 'addZObject', { key: Constants.Z_TYPED_LIST_ELEMENT, value: 'object', parent: newItemParentId } );
+			context.dispatch( 'addZObject', { key: Constants.Z_TYPED_OBJECT_ELEMENT_1, value: 'object', parent: newItemParentId } );
 			context.dispatch( 'changeType', { id: nextId, type: currentListType.value } );
 
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
-			context.dispatch( 'addZObject', { key: Constants.Z_TYPED_LIST_NESTED_LIST, value: 'object', parent: newItemParentId } );
+			context.dispatch( 'addZObject', { key: Constants.Z_TYPED_OBJECT_ELEMENT_2, value: 'object', parent: newItemParentId } );
 			context.dispatch( 'addZTypedList', {
 				id: nextId,
 				value: currentListType.value
 			} );
+
+		},
+		/**
+		 * Add a new item in a typed pair. This will create the following format:
+		 * {
+		 * K1: { scaffolding for pair type 1 },
+		 * K2: { scaffolding for pair type 2 }
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {number} payload.id
+		 * @param {Array} payload.zObjectChildren
+		 */
+		addTypedPairItem: function ( context, payload ) {
+			var nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+
+			context.dispatch( 'addZObject', { key: Constants.Z_TYPED_OBJECT_ELEMENT_1, value: 'object', parent: payload.objectId } );
+			context.dispatch( 'changeType', { id: nextId, type: payload.types[ 0 ].value } );
+
+			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+
+			context.dispatch( 'addZObject', { key: Constants.Z_TYPED_OBJECT_ELEMENT_2, value: 'object', parent: payload.objectId } );
+			context.dispatch( 'changeType', { id: nextId, type: payload.types[ 1 ].value } );
 
 		},
 		/**
@@ -72,22 +120,46 @@ module.exports = {
 		 * @param {string} payload.type
 		 */
 		setTypeOfTypedList: function ( context, payload ) {
-			var listGenericValue,
-				genericNestedInObjectType = context.getters.getNestedZObjectById( payload.objectId,
-					[ Constants.Z_OBJECT_TYPE, Constants.Z_TYPED_LIST_TYPE ] );
-
-			// generic Lists can either be nested in a Z_OBJECT_TYPE or not
-			if ( genericNestedInObjectType ) {
-				genericNestedInObjectType.value = payload.type;
-				listGenericValue = genericNestedInObjectType;
-			} else {
-				var directObject = context.getters.getNestedZObjectById( payload.objectId,
-					[ Constants.Z_TYPED_LIST_TYPE ] );
-				directObject.value = payload.type;
-				listGenericValue = directObject;
+			var type = {
+				objectId: payload.objectId,
+				types: [ {
+					argumentZObjectId: Constants.Z_TYPED_LIST_TYPE,
+					value: payload.type
+				} ]
+			};
+			setTypeOfTypedObject( context, type );
+		},
+		/**
+		 * Select types for a typed pair
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {number} payload.objectId
+		 * @param {Array} payload.types
+		 */
+		setTypeOfTypedPair: function ( context, payload ) {
+			if ( payload.types.length < 2 ) {
+				return;
 			}
 
-			context.dispatch( 'setZObjectValue', listGenericValue );
+			// We set the scaffolding to defien the pair type
+			var types = {
+				objectId: payload.objectId,
+				types: [ {
+					argumentZObjectId: Constants.Z_TYPED_PAIR_TYPE1,
+					value: payload.types[ 0 ]
+				}, {
+					argumentZObjectId: Constants.Z_TYPED_PAIR_TYPE2,
+					value: payload.types[ 1 ]
+				} ]
+			};
+			setTypeOfTypedObject( context, types );
+
+			// When both types are set, we initialize the newly created pair creating instance of its "types"
+			if ( payload.types[ 0 ] && payload.types[ 1 ] ) {
+				context.dispatch( 'addTypedPairItem', types );
+			}
+
 		},
 		/**
 		 * Remove an item from the generic List. Due to the structure of the list.
@@ -101,14 +173,14 @@ module.exports = {
 		removeTypedListItem: function ( context, item ) {
 			var currentListItemParentId = context.getters.getZObjectById( item.parent ).id;
 			var currentItemK2 = context.getters.getNestedZObjectById( item.parent,
-				[ Constants.Z_TYPED_LIST_NESTED_LIST ] );
+				[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ] );
 			var currentItemNestedElement = context.getters.getNestedZObjectById( item.parent,
-				[ Constants.Z_TYPED_LIST_NESTED_LIST, Constants.Z_TYPED_LIST_ELEMENT ] );
+				[ Constants.Z_TYPED_OBJECT_ELEMENT_2, Constants.Z_TYPED_OBJECT_ELEMENT_1 ] );
 
 			// If nested values are available, shift them one level up by changing its parent
 			if ( currentItemNestedElement ) {
 				var nestedItemNestedList = context.getters.getNestedZObjectById( item.parent,
-					[ Constants.Z_TYPED_LIST_NESTED_LIST, Constants.Z_TYPED_LIST_NESTED_LIST ] );
+					[ Constants.Z_TYPED_OBJECT_ELEMENT_2, Constants.Z_TYPED_OBJECT_ELEMENT_2 ] );
 
 				context.dispatch( 'setZObjectParent', { id: currentItemNestedElement.id, parent: currentListItemParentId } );
 				context.dispatch( 'setZObjectParent', { id: nestedItemNestedList.id, parent: currentListItemParentId } );

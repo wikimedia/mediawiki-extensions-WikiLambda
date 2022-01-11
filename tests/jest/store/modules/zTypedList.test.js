@@ -60,7 +60,7 @@ describe( 'zTypedList Vuex module', function () {
 				expect( context.dispatch.mock.calls[ 0 ][ 1 ].parent ).toBe( expectedParent );
 			} );
 
-			it( 'add a Z_TYPED_LIST_ELEMENT', function () {
+			it( 'add a Z_TYPED_OBJECT_ELEMENT_1', function () {
 				var payload = {
 					id: 1,
 					zObjectChildren: []
@@ -69,10 +69,10 @@ describe( 'zTypedList Vuex module', function () {
 
 				expect( context.dispatch ).toHaveBeenCalled();
 				expect( context.dispatch.mock.calls[ 0 ][ 0 ] ).toBe( 'addZObject' );
-				expect( context.dispatch.mock.calls[ 0 ][ 1 ].key ).toBe( Constants.Z_TYPED_LIST_ELEMENT );
+				expect( context.dispatch.mock.calls[ 0 ][ 1 ].key ).toBe( Constants.Z_TYPED_OBJECT_ELEMENT_1 );
 			} );
 
-			it( 'set type of Z_TYPED_LIST_ELEMENT to current list type', function () {
+			it( 'set type of Z_TYPED_OBJECT_ELEMENT_1 to current list type', function () {
 				var payload = {
 						id: 1,
 						zObjectChildren: []
@@ -88,7 +88,7 @@ describe( 'zTypedList Vuex module', function () {
 				expect( context.dispatch.mock.calls[ 1 ][ 1 ].type ).toBe( dummyType );
 			} );
 
-			it( 'add a Z_TYPED_LIST_NESTED_LIST', function () {
+			it( 'add a Z_TYPED_OBJECT_ELEMENT_2', function () {
 				var payload = {
 						id: 1,
 						zObjectChildren: []
@@ -101,7 +101,7 @@ describe( 'zTypedList Vuex module', function () {
 
 				expect( context.dispatch ).toHaveBeenCalled();
 				expect( context.dispatch.mock.calls[ 2 ][ 0 ] ).toBe( 'addZObject' );
-				expect( context.dispatch.mock.calls[ 2 ][ 1 ].key ).toBe( Constants.Z_TYPED_LIST_NESTED_LIST );
+				expect( context.dispatch.mock.calls[ 2 ][ 1 ].key ).toBe( Constants.Z_TYPED_OBJECT_ELEMENT_2 );
 			} );
 
 			it( 'call zLstGeneric with the current list type', function () {

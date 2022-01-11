@@ -22,11 +22,11 @@ function isObjectTypeDeclaration( object, parentObject ) {
 	return isReference && isObjectType;
 }
 
-function isListGenericDeclaration( object, functionCallId ) {
+function isTypedObject( object, functionCallId ) {
 	var isReference = object.value === Constants.Z_FUNCTION_CALL;
-	var isListGeneric = functionCallId.value === Constants.Z_TYPED_LIST;
+	var istypedObject = Constants.Z_TYPED_OBEJECTS_LIST.indexOf( functionCallId.value ) !== -1;
 
-	return isReference && isListGeneric;
+	return isReference && istypedObject;
 }
 
 function isNotObjectOrArrayRoot( object ) {
@@ -230,8 +230,8 @@ module.exports = {
 
 						if ( isObjectTypeDeclaration( objectType, currentObject ) ) {
 							type = referenceId.value;
-						} else if ( isListGenericDeclaration( objectType, functionCallId ) ) {
-							type = Constants.Z_TYPED_LIST;
+						} else if ( isTypedObject( objectType, functionCallId ) ) {
+							type = functionCallId.value;
 						} else if ( isNotObjectOrArrayRoot( objectType ) ) {
 							type = objectType.value;
 						} else {
