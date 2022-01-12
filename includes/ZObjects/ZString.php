@@ -33,7 +33,10 @@ class ZString extends ZObject {
 	 */
 	public static function getDefinition(): array {
 		return [
-			'type' => ZTypeRegistry::Z_STRING,
+			'type' => [
+				'type' => ZTypeRegistry::Z_REFERENCE,
+				'value' => ZTypeRegistry::Z_STRING,
+			],
 			'keys' => [
 				ZTypeRegistry::Z_STRING_VALUE => [
 					'type' => ZTypeRegistry::BUILTIN_STRING,

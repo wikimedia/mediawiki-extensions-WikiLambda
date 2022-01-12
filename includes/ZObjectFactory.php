@@ -300,94 +300,60 @@ class ZObjectFactory {
 			);
 		}
 
+		$typeRegistry = ZTypeRegistry::singleton();
 		$typeZObject = self::extractObjectType( $object );
 		$typeZid = $typeZObject->getZValue();
-
 		$objectVars = get_object_vars( $object );
 
-		$typeRegistry = ZTypeRegistry::singleton();
-		$errorRegistry = ZErrorTypeRegistry::singleton();
-
-		// If typeZObject is a ZReference
-		// * it points to a builtin type:
-		// 	 * do var magic to call the constructor in an orderly manner
-		// * it points to a ErrorType:
-		// 	 * return new ZObject ( $errorType, $objectVars )
-		// 	 * FIXME (T298093): change from errortype hack to function call 885
-		// * it points to a user-defined type:
-		// 	 * make sure that Zid exists
-		// 	 * return new ZObject( $userDefinedType, $objectVars )
-		// 	 * FIXME (T298114): build child ZObjects from $objectVars
-		if ( $typeZObject instanceof ZReference ) {
-
-			// If the type is built-in, createKeyValues and call the built-in constructor
-			if ( $typeRegistry->isZTypeBuiltIn( $typeZid ) ) {
-				$typeName = $typeRegistry->getZObjectTypeFromKey( $typeZid );
-				$typeClass = "MediaWiki\\Extension\\WikiLambda\\ZObjects\\$typeName";
-				$objectArgs = self::createKeyValues( $objectVars, $typeName );
-				// Magic:
-				return new $typeClass( ...$objectArgs );
-			}
-
-			// FIXME (T298093)
-			// If the ZObject that we are trying to create is an error, and its type is
-			// a known error type, we are going to allow it without any other checks.
-			// When this is fixed, we will need to change all error types from the
-			// wrong error type to the builtin function errortype to type (Z885),
-			if (
-				!$typeRegistry->isZObjectKeyKnown( $typeZid ) &&
-				$errorRegistry->instanceOfZErrorType( $typeZid )
-			) {
-				// FIXME build object Vars
-				return new ZObject( $typeZid, $objectVars );
-			}
-
-			// typeZid is a User-defined type, so we first check that it exists
-			$targetTitle = Title::newFromText( $typeZid, NS_MAIN );
-			if ( !$targetTitle->exists() ) {
-				throw new ZErrorException(
-					ZErrorFactory::createZErrorInstance(
-						ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
-						[
-							'data' => $typeZid
-						]
-					)
-				);
-			}
-			$zObjectStore = WikiLambdaServices::getZObjectStore();
-			$targetObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
-			if ( !$targetObject ) {
-				throw new ZErrorException(
-					ZErrorFactory::createZErrorInstance(
-						ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
-						[
-							'data' => $typeZid
-						]
-					)
-				);
-			}
-
-			return new ZObject( $typeZid, $objectVars );
+		// If typeZObject is a ZReference and a built-in, build args and call constructor
+		// FIXME (T298114): build child ZObjects from $objectVars
+		if ( ( $typeZObject instanceof ZReference ) && ( $typeRegistry->isZTypeBuiltIn( $typeZid ) ) ) {
+			$typeName = $typeRegistry->getZObjectTypeFromKey( $typeZid );
+			$typeClass = "MediaWiki\\Extension\\WikiLambda\\ZObjects\\$typeName";
+			$objectArgs = self::createKeyValues( $objectVars, $typeName );
+			// Magic:
+			return new $typeClass( ...$objectArgs );
 		}
 
-		// If typeZObject is a ZFunctionCall
-		// * Check if the function Zid belongs to a built-in function (e.g. builtin list Z881) and call constructor
-		// * Else, return new ZObject( $functionCallType, $objectVars )
-		// * FIXME (T298114): build child ZObjects from $objectVars
-		if ( $typeZObject instanceof ZFunctionCall ) {
-
-			// If the type is built-in, createKeyValues and call the built-in constructor
-			if ( $typeRegistry->isZFunctionBuiltIn( $typeZid ) ) {
-				$builtinName = $typeRegistry->getZFunctionBuiltInName( $typeZid );
-				$builtinClass = "MediaWiki\\Extension\\WikiLambda\\ZObjects\\$builtinName";
-				$objectArgs = self::createKeyValues( $objectVars, $builtinName );
-				// Magic:
-				return new $builtinClass( $typeZObject, ...$objectArgs );
-			}
-
-			// Non built-in function, build generic ZObject
-			return new ZObject( $typeZid, $objectVars );
+		// If typeZObject is a ZFunctionCall and a built-in, build args and call constructor
+		// FIXME (T298114): build child ZObjects from $objectVars
+		if ( ( $typeZObject instanceof ZFunctionCall ) && ( $typeRegistry->isZFunctionBuiltIn( $typeZid ) ) ) {
+			$builtinName = $typeRegistry->getZFunctionBuiltInName( $typeZid );
+			$builtinClass = "MediaWiki\\Extension\\WikiLambda\\ZObjects\\$builtinName";
+			$objectArgs = self::createKeyValues( $objectVars, $builtinName );
+			// Magic:
+			return new $builtinClass( $typeZObject, ...$objectArgs );
 		}
+
+		// No built-in type or function call, so we build a generic ZObject instance:
+		// * typeZid is a user-defined type Zid or function Zid, so:
+		// * we check that it exists in the wiki
+		// * we call the ZObject constructor
+		$targetTitle = Title::newFromText( $typeZid, NS_MAIN );
+		if ( !$targetTitle->exists() ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+					[
+						'data' => $typeZid
+					]
+				)
+			);
+		}
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		$targetObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
+		if ( !$targetObject ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+					[
+						'data' => $typeZid
+					]
+				)
+			);
+		}
+
+		return new ZObject( $typeZObject, $objectVars );
 	}
 
 	/**
@@ -447,6 +413,8 @@ class ZObjectFactory {
 		if ( array_key_exists( 'additionalKeys', $targetDefinition ) && $targetDefinition[ 'additionalKeys' ] ) {
 			$args = [];
 			foreach ( $objectVars as $key => $value ) {
+				if ( $key === ZTypeRegistry::Z_OBJECT_TYPE ) { continue;
+				}
 				try {
 					$args[ $key ] = self::createChild( $value );
 				} catch ( ZErrorException $e ) {

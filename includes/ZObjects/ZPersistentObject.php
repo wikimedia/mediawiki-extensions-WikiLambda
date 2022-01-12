@@ -40,7 +40,10 @@ class ZPersistentObject extends ZObject {
 	 */
 	public static function getDefinition(): array {
 		return [
-			'type' => ZTypeRegistry::Z_PERSISTENTOBJECT,
+			'type' => [
+				'type' => ZTypeRegistry::Z_REFERENCE,
+				'value' => ZTypeRegistry::Z_PERSISTENTOBJECT,
+			],
 			'keys' => [
 				ZTypeRegistry::Z_PERSISTENTOBJECT_ID => [
 					'type' => ZTypeRegistry::BUILTIN_REFERENCE_NULLABLE,

@@ -25,7 +25,6 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::__construct
 	 * @covers ::isValid
 	 * @covers ::getElementType
-	 * @covers ::getSerialized
 	 */
 	public function testCreate_emptyList() {
 		$genericList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } }';
@@ -41,7 +40,6 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::__construct
 	 * @covers ::isValid
 	 * @covers ::getElementType
-	 * @covers ::getSerialized
 	 */
 	public function testCreate_listOfStrings() {
 		$genericList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
@@ -52,10 +50,6 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 		$this->assertInstanceOf( ZGenericList::class, $testObject );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( "Z6", $testObject->getElementType() );
-		$this->assertSame(
-			FormatJson::encode( FormatJson::decode( $genericList ) ),
-			FormatJson::encode( $testObject->getSerialized() )
-		);
 	}
 
 	/**
@@ -63,7 +57,6 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::__construct
 	 * @covers ::isValid
 	 * @covers ::getElementType
-	 * @covers ::getSerialized
 	 */
 	public function testCreate_largerListOfStrings() {
 		$genericList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
@@ -76,10 +69,6 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 		$this->assertInstanceOf( ZGenericList::class, $testObject );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( "Z6", $testObject->getElementType() );
-		$this->assertSame(
-			FormatJson::encode( FormatJson::decode( $genericList ) ),
-			FormatJson::encode( $testObject->getSerialized() )
-		);
 	}
 
 	/**
@@ -103,7 +92,6 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 * @covers ::__construct
 	 * @covers ::isValid
-	 * @covers ::getSerialized
 	 */
 	public function testCreate_listOfMixed() {
 		$genericList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
@@ -116,10 +104,6 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 		$this->assertInstanceOf( ZGenericList::class, $testObject );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( "Z1", $testObject->getElementType() );
-		$this->assertSame(
-			FormatJson::encode( FormatJson::decode( $genericList ) ),
-			FormatJson::encode( $testObject->getSerialized() )
-		);
 	}
 
 	/**
@@ -182,16 +166,27 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 		return [
 			'empty list' => [
 				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } }',
-				'{"Z1K1":{"Z1K1":"Z7","Z7K1":{"Z1K1":"Z9","Z9K1":"Z881"},"Z881K1":{"Z1K1":"Z9","Z9K1":"Z1"}}}'
+				'{ "Z1K1": {'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1":"Z1" }'
+					. '} }'
 			],
 			'list with one string' => [
 				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 					. '"K1": "first string",'
 					. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } } }',
-				'{ "Z1K1":{"Z1K1":"Z7","Z7K1":{"Z1K1":"Z9","Z9K1":"Z881"},"Z881K1":{"Z1K1":"Z9","Z9K1":"Z6"}},'
-					. '"K1":{"Z1K1":"Z6","Z6K1":"first string"},'
-					. '"K2":{"Z1K1":{"Z1K1":"Z7","Z7K1":{"Z1K1":"Z9","Z9K1":"Z881"},'
-					. '"Z881K1":{"Z1K1":"Z9","Z9K1":"Z6"}}}}'
+				'{ "Z1K1": {'
+					. '"Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. '"Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. '"Z881K1": { "Z1K1": "Z9", "Z9K1": "Z6" }'
+					. '},'
+					. ' "K1": { "Z1K1": "Z6", "Z6K1": "first string" },'
+					. ' "K2": { "Z1K1": {'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z6" }'
+					. '} } }'
 			],
 			'list with two mixed items' => [
 				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
@@ -199,13 +194,23 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 					. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
 					. '"K1": "Z111",'
 					. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } } }',
-				'{"Z1K1":{"Z1K1":"Z7","Z7K1":{"Z1K1":"Z9","Z9K1":"Z881"},"Z881K1":{"Z1K1":"Z9","Z9K1":"Z1"}},'
-					. '"K1":{"Z1K1":"Z6","Z6K1":"first string"},'
-					. '"K2":{"Z1K1":{"Z1K1":"Z7","Z7K1":{"Z1K1":"Z9","Z9K1":"Z881"},'
-					. '"Z881K1":{"Z1K1":"Z9","Z9K1":"Z1"}},'
-					. '"K1":{"Z1K1":"Z9","Z9K1":"Z111"},'
-					. '"K2":{"Z1K1":{"Z1K1":"Z7","Z7K1":{"Z1K1":"Z9","Z9K1":"Z881"},'
-					. '"Z881K1":{"Z1K1":"Z9","Z9K1":"Z1"}}}}}'
+				'{ "Z1K1": {'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9","Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9","Z9K1": "Z1" }'
+					. '},'
+					. '"K1": { "Z1K1":"Z6", "Z6K1": "first string" },'
+					. '"K2": { "Z1K1": {'
+					. ' "Z1K1": {"Z1K1": "Z9", "Z9K1": "Z7"},'
+					. ' "Z7K1": { "Z1K1":"Z9","Z9K1":"Z881"},'
+					. ' "Z881K1": {"Z1K1":"Z9","Z9K1":"Z1"}'
+					. '},'
+					. '"K1": { "Z1K1":"Z9", "Z9K1":"Z111" },'
+					. '"K2": { "Z1K1":{'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" }'
+					. '} } } }'
 			]
 		];
 	}

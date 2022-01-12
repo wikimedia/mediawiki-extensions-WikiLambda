@@ -32,8 +32,10 @@ class ZError extends ZObject {
 	 */
 	public static function getDefinition(): array {
 		return [
-			'type' => ZTypeRegistry::Z_ERROR,
-
+			'type' => [
+				'type' => ZTypeRegistry::Z_REFERENCE,
+				'value' => ZTypeRegistry::Z_ERROR,
+			],
 			'keys' => [
 				ZTypeRegistry::Z_ERROR_TYPE => [
 					'type' => ZTypeRegistry::Z_ERRORTYPE,

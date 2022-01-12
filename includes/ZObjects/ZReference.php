@@ -29,7 +29,10 @@ class ZReference extends ZObject {
 	 */
 	public static function getDefinition(): array {
 		return [
-			'type' => ZTypeRegistry::Z_REFERENCE,
+			'type' => [
+				'type' => ZTypeRegistry::Z_REFERENCE,
+				'value' => ZTypeRegistry::Z_REFERENCE,
+			],
 			'keys' => [
 				ZTypeRegistry::Z_REFERENCE_VALUE => [
 					'type' => ZTypeRegistry::BUILTIN_REFERENCE

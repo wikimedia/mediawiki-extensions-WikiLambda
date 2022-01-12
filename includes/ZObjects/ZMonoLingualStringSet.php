@@ -37,7 +37,10 @@ class ZMonoLingualStringSet extends ZObject {
 	 */
 	public static function getDefinition(): array {
 		return [
-			'type' => ZTypeRegistry::Z_MONOLINGUALSTRINGSET,
+			'type' => [
+				'type' => ZTypeRegistry::Z_REFERENCE,
+				'value' => ZTypeRegistry::Z_MONOLINGUALSTRINGSET,
+			],
 			'keys' => [
 				ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE => [
 					'type' => ZTypeRegistry::HACK_REFERENCE_LANGUAGE,

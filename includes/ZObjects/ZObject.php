@@ -24,6 +24,9 @@ class ZObject {
 	public const FORM_CANONICAL = 1;
 	public const FORM_NORMAL = 2;
 
+	/** @var ZReference|ZFunctionCall|null */
+	protected $type = null;
+
 	/** @var array */
 	protected $data = [];
 
@@ -37,7 +40,10 @@ class ZObject {
 	 */
 	public static function getDefinition(): array {
 		return [
-			'type' => ZTypeRegistry::Z_OBJECT,
+			'type' => [
+				'type' => ZTypeRegistry::Z_REFERENCE,
+				'value' => ZTypeRegistry::Z_OBJECT,
+			],
 			'keys' => [
 				ZTypeRegistry::Z_OBJECT_TYPE => [
 					'type' => ZTypeRegistry::HACK_REFERENCE_TYPE,
@@ -54,11 +60,10 @@ class ZObject {
 	 * This constructor should only be called by ZObjectFactory (and test code), and not directly.
 	 * Validation of inputs to this and all other ZObject constructors is left to ZObjectFactory.
 	 *
-	 * @param string $type ZReference for the specific ZType that is being instantiated (e.g. 'Z3').
+	 * @param ZObject $type ZReference or ZFunctionCall that resolves to the type of this ZObject
 	 */
-	public function __construct( string $type ) {
-		// If this is a wiki-defined type, fetch the extra arguments passed and affix
-		// them to the $data representation.
+	public function __construct( $type ) {
+		// Fetch the extra arguments passed and affix them to the $data representation.
 		$args = func_get_args();
 		if ( count( $args ) === 1 ) {
 			$this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] = $type;
@@ -77,9 +82,24 @@ class ZObject {
 		if ( !isset( $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] ) ) {
 			return false;
 		}
+
 		// TODO: (T296822) Z1K1 can currently take a Z9 to a valid type, but we should
-		// also contemplate validity of this value to be a literal Z4 or a function call.
-		return ZObjectUtils::isValidZObjectReference( $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] );
+		// also contemplate validity of this value to be a function call.
+		if ( self::isTypeReference() ) {
+			return ZObjectUtils::isValidZObjectReference( $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ]->getZValue() );
+		}
+
+		if ( self::isTypeFunctionCall() ) {
+			$functionCallInner = $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ];
+			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall $functionCallInner';
+			if ( $functionCallInner->getReturnType() !== ZTypeRegistry::Z_TYPE ) {
+				return false;
+			}
+			return ZObjectUtils::isValidZObjectReference( $functionCallInner->getZValue() );
+		}
+
+		// If type is neither reference or function call, not valid
+		return false;
 	}
 
 	/**
@@ -102,10 +122,62 @@ class ZObject {
 	}
 
 	/**
+	 * Returns whether this ZObject is a builtin class.
+	 *
+	 * @return bool Whether this object is a builtin type or generic or it's a direct instance of ZObject
+	 */
+	public function isBuiltin() {
+		return ( get_class( $this ) !== self::class );
+	}
+
+	/**
+	 * Returns whether the object type is a ZReference that points to a type
+	 *
+	 * @return bool Whether the object type is a reference to a type
+	 */
+	public function isTypeReference(): bool {
+		$type = $this->isBuiltin()
+			? $this->getDefinition()['type']['type']
+			: $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ]->getZType();
+		return ( $type === ZTypeRegistry::Z_REFERENCE );
+	}
+
+	/**
+	 * Returns whether the object type is a ZFunctionCall that resolves to a type
+	 *
+	 * @return bool Whether the object type is a function call to a type
+	 */
+	public function isTypeFunctionCall(): bool {
+		$type = $this->isBuiltin()
+			? $this->getDefinition()['type']['type']
+			: $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ]->getZType();
+		return ( $type === ZTypeRegistry::Z_FUNCTIONCALL );
+	}
+
+	/**
+	 * Returns either the ZReference or the ZFunctionCall that contain the type of this ZObject (Z1K1)
+	 *
+	 * @return ZReference|ZFunctionCall The ZObject representing the type of this ZObject
+	 */
+	public function getZTypeObject() {
+		if ( $this->isBuiltin() ) {
+			return $this->type ?? new ZReference( $this->getDefinition()['type']['value'] );
+		}
+		return $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ];
+	}
+
+	/**
+	 * Returns a string with the Zid representing the type of this ZObject. If it has an anonymous type
+	 * given by a ZFunctionCall, this method returns the Function Zid
+	 * TODO: Return the output type of the Function instead of its identifier
+	 *
 	 * @return string The type of this ZObject
 	 */
 	public function getZType(): string {
-		return $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ] ?? static::getDefinition()['type'];
+		if ( $this->isBuiltin() ) {
+			return $this->getDefinition()['type']['value'];
+		}
+		return $this->getZTypeObject()->getZValue();
 	}
 
 	/**
@@ -179,8 +251,7 @@ class ZObject {
 	 */
 	public function getSerialized( $form = self::FORM_CANONICAL ) {
 		$serialized = [
-			// TODO (T296737) Z_OBJECT_TYPE in different forms, it's only being serialized as canonical
-			ZTypeRegistry::Z_OBJECT_TYPE => $this->getZType()
+			ZTypeRegistry::Z_OBJECT_TYPE => $this->getZTypeObject()->getSerialized( $form )
 		];
 
 		foreach ( $this->data as $key => $value ) {

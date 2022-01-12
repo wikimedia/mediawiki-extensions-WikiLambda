@@ -14,9 +14,6 @@ use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 
 class ZGenericList extends ZObject {
 
-	/** @var ZReference */
-	protected $type;
-
 	/**
 	 * Create a new ZGenericList instance given an array (canonical form)
 	 * or an object with K1 (head) and K2 (tail)
@@ -43,7 +40,10 @@ class ZGenericList extends ZObject {
 	 */
 	public static function getDefinition(): array {
 		return [
-			'type' => ZTypeRegistry::Z_FUNCTIONCALL,
+			'type' => [
+				'type' => ZTypeRegistry::Z_FUNCTIONCALL,
+				'value' => ZTypeRegistry::Z_FUNCTION_GENERIC_LIST,
+			],
 			'keys' => [
 				'K1' => [
 					'type' => ZTypeRegistry::Z_OBJECT,

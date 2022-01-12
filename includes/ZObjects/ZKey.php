@@ -33,7 +33,10 @@ class ZKey extends ZObject {
 	 */
 	public static function getDefinition(): array {
 		return [
-			'type' => ZTypeRegistry::Z_KEY,
+			'type' => [
+				'type' => ZTypeRegistry::Z_REFERENCE,
+				'value' => ZTypeRegistry::Z_KEY,
+			],
 			'keys' => [
 				ZTypeRegistry::Z_KEY_TYPE => [
 					'type' => ZTypeRegistry::HACK_REFERENCE_TYPE,

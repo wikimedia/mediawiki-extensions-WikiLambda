@@ -39,7 +39,10 @@ class ZMultiLingualStringSet extends ZObject {
 	 */
 	public static function getDefinition(): array {
 		return [
-			'type' => ZTypeRegistry::Z_MULTILINGUALSTRINGSET,
+			'type' => [
+				'type' => ZTypeRegistry::Z_REFERENCE,
+				'value' => ZTypeRegistry::Z_MULTILINGUALSTRINGSET,
+			],
 			'keys' => [
 				ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE => [
 					'type' => ZTypeRegistry::HACK_ARRAY_Z_MONOLINGUALSTRINGSET,
@@ -54,6 +57,7 @@ class ZMultiLingualStringSet extends ZObject {
 	 */
 	public function isValid(): bool {
 		$stringsets = $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE ] ?? [];
+		// @phan-suppress-next-line PhanTypeSuspiciousNonTraversableForeach; it's a ZMonoLingualStringSet[]
 		foreach ( $stringsets as $lang => $monolingualString ) {
 			if ( !$monolingualString->isValid() ) {
 				return false;

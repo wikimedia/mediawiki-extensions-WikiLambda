@@ -133,7 +133,8 @@ EOT;
 		$innerObject = $instance->getInnerZObject();
 		$this->assertTrue( $innerObject->isValid() );
 
-		$value = $innerObject->getZValue();
+		$value = (array)$innerObject->getSerialized();
+
 		$this->assertCount( 3, $value );
 		$this->assertArrayHasKey( 'Z1K1', $value );
 		$this->assertEquals( 'Z111', $value[ 'Z1K1' ] );
@@ -247,7 +248,7 @@ EOT;
 		$innerObject = $instance->getInnerZObject();
 		$this->assertTrue( $innerObject->isValid(), 'ZInteger instance inner object comes back as a valid ZObject' );
 
-		$value = $innerObject->getZValue();
+		$value = (array)$innerObject->getSerialized();
 		$this->assertCount( 2, $value, 'ZInteger instance inner object has the right number of keys' );
 		$this->assertArrayHasKey( 'Z1K1', $value, 'ZInteger instance inner object has the type key' );
 		$this->assertEquals( 'Z91', $value[ 'Z1K1' ], 'ZInteger instance inner object has the right type key' );

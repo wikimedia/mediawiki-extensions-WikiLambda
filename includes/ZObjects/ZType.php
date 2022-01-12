@@ -34,7 +34,10 @@ class ZType extends ZObject {
 	 */
 	public static function getDefinition(): array {
 		return [
-			'type' => ZTypeRegistry::Z_TYPE,
+			'type' => [
+				'type' => ZTypeRegistry::Z_REFERENCE,
+				'value' => ZTypeRegistry::Z_TYPE,
+			],
 			'keys' => [
 				ZTypeRegistry::Z_TYPE_IDENTITY => [
 					// NOTE: Allows Z0.

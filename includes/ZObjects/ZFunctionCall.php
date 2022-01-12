@@ -40,7 +40,10 @@ class ZFunctionCall extends ZObject {
 	 */
 	public static function getDefinition(): array {
 		return [
-			'type' => ZTypeRegistry::Z_FUNCTIONCALL,
+			'type' => [
+				'type' => ZTypeRegistry::Z_REFERENCE,
+				'value' => ZTypeRegistry::Z_FUNCTIONCALL,
+			],
 			'keys' => [
 				ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION => [
 					'type' => ZTypeRegistry::Z_REFERENCE,

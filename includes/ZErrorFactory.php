@@ -13,8 +13,12 @@ use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Validation\SchemataUtils;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKeyReference;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use Opis\JsonSchema\ValidationError;
 
@@ -475,178 +479,176 @@ class ZErrorFactory {
 	 * @return ZError
 	 */
 	public static function createZErrorInstance( $zErrorType, $payload ): ZError {
-		$zErrorValue = [
-			ZTypeRegistry::Z_OBJECT_TYPE => $zErrorType
-		];
+		$zErrorValue = [];
 
 		switch ( $zErrorType ) {
 			case ZErrorTypeRegistry::Z_ERROR_GENERIC:
-				$zErrorValue["Z500K1"] = $payload['message'];
+				$zErrorValue[] = new ZString( $payload['message'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED:
-				$zErrorValue["Z502K1"] = $payload['subtype'];
-				$zErrorValue["Z502K2"] = $payload['childError'];
+				$zErrorValue[] = new ZString( $payload['subtype'] );
+				$zErrorValue[] = $payload['childError'];
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND:
-				$zErrorValue["Z504K1"] = new ZString( $payload['data'] );
+				$zErrorValue[] = new ZString( $payload['data'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_EVALUATION:
-				$zErrorValue["Z507K1"] = $payload['functionCall'];
+				$zErrorValue[] = $payload['functionCall'];
 				// FIXME: Create ZError instance of propagated error, or wrap it in a generic ZError
-				$zErrorValue["Z507K2"] = $payload['error'];
+				$zErrorValue[] = $payload['error'];
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_LIST:
-				$zErrorValue["Z509K1"] = $payload['errorList'];
+				$zErrorValue[] = $payload['errorList'];
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_MISSING_KEY:
 				$ref = array_key_exists( 'missing', $payload['keywordArgs'] ) ? $payload['keywordArgs']['missing'] : '';
-				$zErrorValue["Z511K1"] = new ZKeyReference( $ref );
-				$zErrorValue["Z511K2"] = new ZQuote( $payload['data'] );
+				$zErrorValue[] = new ZKeyReference( $ref );
+				$zErrorValue[] = new ZQuote( $payload['data'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_MISSING_PERSISTENT_VALUE:
-				$zErrorValue["Z513K1"] = new ZQuote( $payload['data'] );
+				$zErrorValue[] = new ZQuote( $payload['data'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_NOT_NUMBER_BOOLEAN_NULL:
-				$zErrorValue["Z521K1"] = new ZQuote( $payload['data'] );
+				$zErrorValue[] = new ZQuote( $payload['data'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_ARRAY_ELEMENT_NOT_WELLFORMED:
-				$zErrorValue["Z522K1"] = new ZString( $payload['index'] );
-				$zErrorValue["Z522K2"] = $payload['childError'];
+				$zErrorValue[] = new ZString( $payload['index'] );
+				$zErrorValue[] = $payload['childError'];
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_MISSING_TYPE:
-				$zErrorValue["Z523K1"] = new ZQuote( $payload['data'] );
+				$zErrorValue[] = new ZQuote( $payload['data'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_TYPE_NOT_STRING_ARRAY:
-				$zErrorValue["Z524K1"] = $payload['data'];
+				$zErrorValue[] = $payload['data'];
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_INVALID_KEY:
-				$zErrorValue["Z525K1"] = new ZString( end( $payload['dataPointer'] ) );
+				$zErrorValue[] = new ZString( end( $payload['dataPointer'] ) );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_KEY_VALUE_NOT_WELLFORMED:
-				$zErrorValue["Z526K1"] = new ZKeyReference( $payload['key'] );
-				$zErrorValue["Z526K2"] = $payload['childError'];
+				$zErrorValue[] = new ZKeyReference( $payload['key'] );
+				$zErrorValue[] = $payload['childError'];
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_STRING_VALUE_MISSING:
-				$zErrorValue["Z532K1"] = new ZQuote( $payload['data'] );
+				$zErrorValue[] = new ZQuote( $payload['data'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_STRING_VALUE_WRONG_TYPE:
-				$zErrorValue["Z533K1"] = new ZQuote( $payload['data'] );
+				$zErrorValue[] = new ZQuote( $payload['data'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_REFERENCE_VALUE_MISSING:
-				$zErrorValue["Z535K1"] = new ZQuote( $payload['data'] );
+				$zErrorValue[] = new ZQuote( $payload['data'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_REFERENCE_VALUE_WRONG_TYPE:
-				$zErrorValue["Z536K1"] = new ZQuote( $payload['data'] );
+				$zErrorValue[] = new ZQuote( $payload['data'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_REFERENCE_VALUE_INVALID:
-				$zErrorValue["Z537K1"] = new ZString( $payload['data'] );
+				$zErrorValue[] = new ZString( $payload['data'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_WRONG_NAMESPACE:
-				$zErrorValue["Z538K1"] = new ZString( $payload['title'] );
+				$zErrorValue[] = new ZString( $payload['title'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_WRONG_CONTENT_TYPE:
-				$zErrorValue["Z539K1"] = new ZString( $payload['title'] );
+				$zErrorValue[] = new ZString( $payload['title'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_INVALID_LANG_CODE:
-				$zErrorValue["Z542K1"] = new ZString( $payload['lang'] );
+				$zErrorValue[] = new ZString( $payload['lang'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_LANG_NOT_FOUND:
-				$zErrorValue["Z541K1"] = new ZString( $payload['lang'] );
+				$zErrorValue[] = new ZString( $payload['lang'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_UNEXPECTED_ZTYPE:
-				$zErrorValue["Z542K1"] = new ZString( $payload['expected'] );
-				$zErrorValue["Z542K2"] = new ZString( $payload['actual'] );
+				$zErrorValue[] = new ZString( $payload['expected'] );
+				$zErrorValue[] = new ZString( $payload['actual'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_ZTYPE_NOT_FOUND:
-				$zErrorValue["Z543K1"] = new ZString( $payload['type'] );
+				$zErrorValue[] = new ZString( $payload['type'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_CONFLICTING_TYPE_NAMES:
-				$zErrorValue["Z544K1"] = new ZString( $payload['zid'] );
-				$zErrorValue["Z544K2"] = new ZString( $payload['name'] );
-				$zErrorValue["Z544K3"] = new ZString( $payload['existing'] );
+				$zErrorValue[] = new ZString( $payload['zid'] );
+				$zErrorValue[] = new ZString( $payload['name'] );
+				$zErrorValue[] = new ZString( $payload['existing'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_CONFLICTING_TYPE_ZIDS:
-				$zErrorValue["Z545K1"] = new ZString( $payload['zid'] );
-				$zErrorValue["Z545K2"] = new ZString( $payload['name'] );
-				$zErrorValue["Z545K3"] = new ZString( $payload['existing'] );
+				$zErrorValue[] = new ZString( $payload['zid'] );
+				$zErrorValue[] = new ZString( $payload['name'] );
+				$zErrorValue[] = new ZString( $payload['existing'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_BUILTIN_TYPE_NOT_FOUND:
-				$zErrorValue["Z546K1"] = new ZString( $payload['zid'] );
-				$zErrorValue["Z546K2"] = new ZString( $payload['name'] );
+				$zErrorValue[] = new ZString( $payload['zid'] );
+				$zErrorValue[] = new ZString( $payload['name'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_INVALID_FORMAT:
-				$zErrorValue["Z547K1"] = new ZQuote( $payload['data'] );
+				$zErrorValue[] = new ZQuote( $payload['data'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_INVALID_JSON:
-				$zErrorValue["Z548K1"] = new ZString( $payload['message'] );
-				$zErrorValue["Z548K2"] = new ZQuote( $payload['data'] );
+				$zErrorValue[] = new ZString( $payload['message'] );
+				$zErrorValue[] = new ZQuote( $payload['data'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_UNKNOWN_REFERENCE:
-				$zErrorValue["Z550K1"] = new ZString( $payload['data'] );
+				$zErrorValue[] = new ZString( $payload['data'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_KEY_TYPE_MISMATCH:
 				$keyRef = end( $payload['dataPointer'] );
-				$zErrorValue["Z551K1"] = new ZKeyReference( $keyRef ?: '' );
-				$zErrorValue["Z551K2"] = new ZString( $payload['keywordArgs']['expected'] );
-				$zErrorValue["Z551K3"] = new ZString( $payload['keywordArgs']['used'] );
+				$zErrorValue[] = new ZKeyReference( $keyRef ?: '' );
+				$zErrorValue[] = new ZString( $payload['keywordArgs']['expected'] );
+				$zErrorValue[] = new ZString( $payload['keywordArgs']['used'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_ARRAY_TYPE_MISMATCH:
-				$zErrorValue["Z552K1"] = new ZKeyReference( $payload['key'] );
-				$zErrorValue["Z552K2"] = new ZString( $payload['expected'] );
-				$zErrorValue["Z552K3"] = new ZQuote( $payload['data'] );
+				$zErrorValue[] = new ZKeyReference( $payload['key'] );
+				$zErrorValue[] = new ZString( $payload['expected'] );
+				$zErrorValue[] = new ZQuote( $payload['data'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_DISALLOWED_ROOT_ZOBJECT:
-				$zErrorValue["Z553K1"] = new ZQuote( $payload['data'] );
+				$zErrorValue[] = new ZQuote( $payload['data'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_LABEL_CLASH:
-				$zErrorValue["Z554K1"] = new ZString( $payload['zid'] );
-				$zErrorValue["Z554K2"] = new ZString( $payload['language'] );
+				$zErrorValue[] = new ZString( $payload['zid'] );
+				$zErrorValue[] = new ZString( $payload['language'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_UNMATCHING_ZID:
-				$zErrorValue["Z555K1"] = new ZString( $payload['zid'] );
-				$zErrorValue["Z555K2"] = new ZString( $payload['title'] );
+				$zErrorValue[] = new ZString( $payload['zid'] );
+				$zErrorValue[] = new ZString( $payload['title'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_INVALID_TITLE:
-				$zErrorValue["Z556K1"] = new ZString( $payload['title'] );
+				$zErrorValue[] = new ZString( $payload['title'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT:
-				$zErrorValue["Z557K1"] = new ZString( $payload['message'] );
+				$zErrorValue[] = new ZString( $payload['message'] );
 				break;
 
 			default:
@@ -655,8 +657,23 @@ class ZErrorFactory {
 
 		return new ZError(
 			$zErrorType,
-			ZObjectFactory::createChild( (object)$zErrorValue )
+			self::createGenericError( $zErrorType, $zErrorValue )
 		);
+	}
+
+	/**
+	 * Create a ZGenericError instance given a errorType Zid and a set of values.
+	 *
+	 * @param string $errorType
+	 * @param ZObject[] $errorValues
+	 * @return ZGenericError
+	 */
+	public static function createGenericError( $errorType, $errorValues ) {
+		$errorTypeToType = new ZFunctionCall(
+			new ZReference( ZTypeRegistry::Z_FUNCTION_ERRORTYPE_TO_TYPE ),
+			[ ZTypeRegistry::Z_FUNCTION_ERRORTYPE_TYPE => new ZReference( $errorType ) ]
+		);
+		return new ZGenericError( $errorTypeToType, $errorValues );
 	}
 
 	/**

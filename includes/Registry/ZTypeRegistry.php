@@ -196,8 +196,12 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_FUNCTION_GENERIC_LIST = 'Z881';
 	public const Z_FUNCTION_GENERIC_LIST_TYPE = 'Z881K1';
 
+	public const Z_FUNCTION_ERRORTYPE_TO_TYPE = 'Z885';
+	public const Z_FUNCTION_ERRORTYPE_TYPE = 'Z885K1';
+
 	public const BUILT_IN_FUNCTIONS = [
-		self::Z_FUNCTION_GENERIC_LIST => 'ZGenericList'
+		self::Z_FUNCTION_GENERIC_LIST => 'ZGenericList',
+		self::Z_FUNCTION_ERRORTYPE_TO_TYPE => 'ZGenericError'
 	];
 
 	/**

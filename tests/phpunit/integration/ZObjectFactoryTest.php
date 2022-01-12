@@ -12,6 +12,8 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericError;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
@@ -76,7 +78,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 			],
 			'custom' => [
 				(object)[ 'Z1K1' => 'Z999', 'Z999K1' => 'custom' ],
-				ZErrorTypeRegistry::Z_ERROR_UNKNOWN_REFERENCE
+				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
 			],
 			'invalid' => [
 				(object)[ 'Z1K1' => 'Z11', 'Z11K2' => 'invalid monolingual string' ],
@@ -183,7 +185,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 			],
 			'custom' => [
 				(object)[ 'Z1K1' => 'Z999', 'Z999K1' => 'custom' ],
-				ZErrorTypeRegistry::Z_ERROR_UNKNOWN_REFERENCE
+				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
 			],
 			'invalid' => [
 				(object)[ 'Z1K1' => 'Z11', 'Z11K2' => 'invalid monolingual string' ],
@@ -239,8 +241,20 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 			'reference' => [ 'Z6', ZReference::class ],
 			'array' => [ [ 'array' ], ZList::class ],
 			'object' => [ json_decode( '{ "Z1K1": "Z6" }' ), ZString::class ],
-			'error type' => [ json_decode( '{ "Z1K1": "Z500" }' ), ZObject::class ],
 			'custom type' => [ json_decode( '{ "Z1K1": "Z60" }' ), ZObject::class, [ 'Z60' ] ],
+			'function call type: generic list builtin' => [
+				json_decode( '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } }' ),
+				ZGenericList::class
+			],
+			'function call type: error type builtin' => [
+				json_decode( '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z885", "Z885K1": "Z500" } }' ),
+				ZGenericError::class
+			],
+			'function call type: user defined' => [
+				json_decode( '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z801" } }' ),
+				ZObject::class,
+				[ 'Z8', 'Z17', 'Z801' ]
+			],
 		];
 	}
 

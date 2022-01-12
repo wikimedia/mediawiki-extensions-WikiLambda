@@ -21,7 +21,7 @@ class ZFunctionCallTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::__construct
 	 * @covers ::isValid
 	 */
-	public function testPersistentCreation() {
+	public function testPersistentCreation_oneArg() {
 		$strFunctionCall = '{"Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z3"}';
 		$zobject = ZObjectFactory::create( json_decode( $strFunctionCall ) );
 		$this->assertTrue( $zobject->isValid() );
@@ -143,6 +143,6 @@ EOT;
 EOT;
 
 		$zobject = ZObjectFactory::create( json_decode( $type ) );
-		 $this->assertTrue( $zobject->isValid() );
+		$this->assertTrue( $zobject->isValid() );
 	}
 }

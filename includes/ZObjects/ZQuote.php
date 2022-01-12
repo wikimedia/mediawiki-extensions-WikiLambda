@@ -28,7 +28,10 @@ class ZQuote extends ZObject {
 	 */
 	public static function getDefinition(): array {
 		return [
-			'type' => ZTypeRegistry::Z_QUOTE,
+			'type' => [
+				'type' => ZTypeRegistry::Z_REFERENCE,
+				'value' => ZTypeRegistry::Z_QUOTE,
+			],
 			'keys' => [
 				ZTypeRegistry::Z_QUOTE_VALUE => [
 					'type' => ZTypeRegistry::BUILTIN_ANY,

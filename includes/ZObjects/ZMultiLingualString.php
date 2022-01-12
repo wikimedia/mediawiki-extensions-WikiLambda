@@ -40,7 +40,10 @@ class ZMultiLingualString extends ZObject {
 	 */
 	public static function getDefinition(): array {
 		return [
-			'type' => ZTypeRegistry::Z_MULTILINGUALSTRING,
+			'type' => [
+				'type' => ZTypeRegistry::Z_REFERENCE,
+				'value' => ZTypeRegistry::Z_MULTILINGUALSTRING,
+			],
 			'keys' => [
 				ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [
 					'type' => ZTypeRegistry::HACK_ARRAY_Z_MONOLINGUALSTRING,
@@ -54,6 +57,7 @@ class ZMultiLingualString extends ZObject {
 	 * @inheritDoc
 	 */
 	public function isValid(): bool {
+		// @phan-suppress-next-line PhanTypeSuspiciousNonTraversableForeach; it's a ZMonoLingualString[]
 		foreach ( $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ] ?? [] as $lang => $monolingualString ) {
 			if ( !$monolingualString->isValid() ) {
 				return false;
