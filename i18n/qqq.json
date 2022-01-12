@@ -162,6 +162,7 @@
 	"wikilambda-function-is-attached": "Label for a persistent object that is associated with a function.",
 	"wikilambda-function-is-not-attached": "Label for a persistent object that is not associated with a function.",
 	"wikilambda-function-definition-name-label": "Label for the function name\n{{identical|Name}}",
+	"wikilambda-function-definition-add-other-label-languages-title": "Label for add other languages button",
 	"wikilambda-function-definition-name-placeholder": "Placeholder for the function name",
 	"wikilambda-function-definition-name-example": "Link to examples of function names",
 	"wikilambda-function-definition-alias-label": "Label for the function alias",

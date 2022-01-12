@@ -13,6 +13,8 @@
 			<fn-editor-zlanguage-selector
 				class="ext-wikilambda-editior-visual-display-language-selector"
 				:show-add-language="false"
+				:z-language="language.zLang"
+				@change="setLanguage"
 			></fn-editor-zlanguage-selector>
 
 			<div class="ext-wikilambda-editior-visual-display-name">
@@ -100,14 +102,19 @@ module.exports = {
 	data: function () {
 		return {
 			activeInput: 1,
-			inputWidth: 0
+			inputWidth: 0,
+			language: {
+				label: '',
+				zLang: ''
+			}
 		};
 	},
 	computed: $.extend( mapGetters( [
 		'getZObjectLabel',
 		'getNestedZObjectById',
 		'getZargumentsArray',
-		'getZkeyLabels'
+		'getZkeyLabels',
+		'getCurrentZLanguage'
 	] ), {
 		title: function () {
 			return this.getZObjectLabel.value || mw.message( 'wikilambda-editor-default-name' ).text();
@@ -116,7 +123,7 @@ module.exports = {
 			return this.outputValue.zid ? this.outputValue : { title: mw.message( 'wikilambda-editor-output-title' ).text() };
 		},
 		inputs: function () {
-			return this.getZargumentsArray || [ {
+			return this.getZargumentsArray( this.language.zLang ) || [ {
 				label: mw.message( 'wikilambda-editor-input-title' ).text()
 			} ];
 		},
@@ -149,6 +156,9 @@ module.exports = {
 		}
 	} ),
 	methods: {
+		setLanguage: function ( lang ) {
+			this.language = lang;
+		},
 		nextActiveInput: function () {
 			if ( this.activeInput < this.inputs.length ) {
 				this.setInputWidth();
@@ -164,6 +174,13 @@ module.exports = {
 		setInputWidth: function () {
 			this.inputWidth = this.$el.querySelectorAll( '.ext-wikilambda-editior-visual-display-input-box' )[ 0 ].offsetWidth;
 		}
+	},
+	mounted: function () {
+		// set language to currentlanguage
+		this.language = {
+			label: this.getZkeyLabels[ this.getCurrentZLanguage ],
+			zLang: this.getCurrentZLanguage
+		};
 	}
 };
 </script>

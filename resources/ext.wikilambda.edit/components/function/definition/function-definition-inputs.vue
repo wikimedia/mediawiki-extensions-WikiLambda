@@ -18,7 +18,10 @@
 				:key="argument.id"
 				:index="index"
 				class="ext-wikilambda-function-definition-inputs__row"
+				:z-lang="zLang"
 				:zobject-id="argument.id"
+				:show-add-new-input="showAddNewInput( isMainZObject, index )"
+				:can-edit-type="isMainZObject"
 				@add-new-input="addNewItem">
 			</function-definition-inputs-item>
 		</div>
@@ -43,6 +46,13 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			default: 0
+		},
+		isMainZObject: {
+			type: Boolean
+		},
+		zLang: {
+			type: String,
+			default: ''
 		}
 	},
 	data: function () {
@@ -84,9 +94,14 @@ module.exports = {
 					value: 'object',
 					parent: this.zArgumentId
 				};
+
 			this.addZObject( payload );
 
 			this.addZArgument( nextId );
+		},
+		// We need this function otherwise the build will fail
+		showAddNewInput: function ( isMainZObject, index ) {
+			return isMainZObject && index === 0;
 		}
 	} ),
 	watch: {

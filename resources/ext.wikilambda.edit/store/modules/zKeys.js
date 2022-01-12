@@ -86,16 +86,23 @@ module.exports = {
 		 * @return {Array}
 		 */
 		getZargumentsArray: function ( state, getters ) {
-			return Object.keys( getters.getZarguments )
-				.map( function ( key ) {
-					return {
-						zid: getters.getZarguments[ key ].zid,
-						type: getters.getZarguments[ key ].type,
-						label: ( getters.getZarguments[ key ].labels.filter( function ( label ) {
-							return label.lang === getters.getCurrentZLanguage;
-						} )[ 0 ] || getters.getZarguments[ key ].labels[ 0 ] ).label
-					};
-				} );
+			/**
+			 * @param {boolean} zlang
+			 * @return {Array}
+			 */
+			return function ( zlang ) {
+				var lang = zlang || getters.getCurrentZLanguage;
+				return Object.keys( getters.getZarguments )
+					.map( function ( key ) {
+						return {
+							zid: getters.getZarguments[ key ].zid,
+							type: getters.getZarguments[ key ].type,
+							label: ( getters.getZarguments[ key ].labels.filter( function ( label ) {
+								return label.lang === lang;
+							} )[ 0 ] || getters.getZarguments[ key ].labels[ 0 ] ).label
+						};
+					} );
+			};
 		}
 		// TODO(T299031): cleanup this code to be more performant
 	},
