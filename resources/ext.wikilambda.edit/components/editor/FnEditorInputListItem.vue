@@ -95,7 +95,6 @@ module.exports = {
 		},
 		getArgumentLabel: function () {
 			var labels = this.getZObjectChildrenById( this.getArgumentLabels.id );
-
 			for ( var index in labels ) {
 				var lang = this.getNestedZObjectById( labels[ index ].id, [
 						Constants.Z_MONOLINGUALSTRING_LANGUAGE,
@@ -121,12 +120,11 @@ module.exports = {
 		'setTypeOfTypedList'
 	] ), {
 		setArgumentLabel: function ( id, input ) {
-			if ( !this.getArgumentLabel ) {
+			if ( !this.getArgumentLabel && !input ) {
 				return;
 			}
 
 			var labels = this.getZObjectChildrenById( this.getArgumentLabels.id );
-
 			for ( var index in labels ) {
 				var lang = this.getNestedZObjectById( labels[ index ].id, [
 						Constants.Z_MONOLINGUALSTRING_LANGUAGE,
@@ -149,7 +147,7 @@ module.exports = {
 			// Add new language
 			var nextId = this.getNextObjectId,
 				newLang = this.getCurrentZLanguage,
-				zLabelParentId = this.getArgumentLabels( id ).id;
+				zLabelParentId = this.getArgumentLabels.id;
 
 			this.addZMonolingualString( {
 				lang: newLang,
