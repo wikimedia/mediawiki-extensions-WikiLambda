@@ -2,11 +2,31 @@
 	"@metadata": {
 		"authors": [
 			"Nguyễn Mạnh An",
-			"Yosari101"
+			"Yosari101",
+			"Thingofme"
 		]
 	},
 	"wikilambda-emptylabel": "ZObject không được đặt nhãn",
+	"wikilambda-persistentzobject-contents": "Nội dung",
 	"wikilambda-multilingualstring-nofallback": "Không có nhãn nào được xác định bằng ngôn ngữ này hoặc các dự phòng được chấp nhận",
+	"wikilambda-reference": "Chú thích",
+	"wikilambda-call-function": "Gọi Hàm",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Ngôn ngữ",
+	"wikilambda-publishnew": "Đăng",
+	"wikilambda-savenew": "Lưu",
+	"wikilambda-publishchanges": "Đăng thay đổi",
+	"wikilambda-savechanges": "Lưu thay đổi",
+	"wikilambda-summarylabel": "Tóm lược:",
+	"wikilambda-publish-summary-prompt": "Miêu tả các thay đổi của bạn",
+	"wikilambda-loading": "Đang tải dữ liệu",
+	"wikilambda-typeselector-label": "Chọn một Loại",
+	"wikilambda-argument-typeselector-label": "Chọn một Loại cho phép toán trên",
+	"wikilambda-function-typeselector-label": "Chọn một Hàm",
+	"wikilambda-return-typeselector-label": "Chọn một Loại để trả về",
+	"wikilambda-editor-label-addlanguage-label": "Thêm ngôn ngữ",
+	"wikilambda-editor-label-removelanguage-tooltip": "Xóa bỏ ngôn ngữ này ra khỏi nhãn",
+	"wikilambda-tester-status-pending": "ĐANG CHỜ...",
+	"wikilambda-tester-status-running": "ĐANG CHẠY...",
+	"wikilambda-tester-status-passed": "QUA",
 	"wikilambda-tester-failure-actual": "Đã nhận"
 }
