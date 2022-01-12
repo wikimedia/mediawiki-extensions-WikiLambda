@@ -49,6 +49,7 @@ var Constants = require( '../Constants.js' ),
 	ZCharacter = require( './types/ZCharacter.vue' ),
 	ZPair = require( './types/ZPair.vue' ),
 	ZType = require( './types/ZType.vue' ),
+	ZTypedPair = require( './types/ZTypedPair.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -73,7 +74,8 @@ module.exports = {
 		'z-character': ZCharacter,
 		'z-pair': ZPair,
 		'z-type': ZType,
-		'z-typed-list': ZTypedList
+		'z-typed-list': ZTypedList,
+		'z-typed-pair': ZTypedPair
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -135,6 +137,8 @@ module.exports = {
 						return 'z-list';
 					case Constants.Z_TYPED_LIST:
 						return 'z-typed-list';
+					case Constants.Z_TYPED_PAIR:
+						return 'z-typed-pair';
 					case Constants.Z_CODE:
 						return 'z-code';
 					case Constants.Z_ARGUMENT:

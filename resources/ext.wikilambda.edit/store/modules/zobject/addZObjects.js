@@ -164,7 +164,7 @@ module.exports = {
 		 * @param {Object} payload
 		 * @param {string} payload.value
 		 * @param {number} payload.id
-		 * @param {boolean} payload.unwrapped
+		 * @param {boolean} payload.unwrapped //This is used to unwrap it from a Z_OBJECT_TYPE (Z1K1)
 		 */
 		addZTypedList: function ( context, payload ) {
 			var value = payload.value || '',
@@ -181,6 +181,36 @@ module.exports = {
 			context.dispatch( 'changeType', { id: functionCallId, type: Constants.Z_FUNCTION_CALL, value: Constants.Z_TYPED_LIST } )
 				.then( function () {
 					context.dispatch( 'addZObject', { key: Constants.Z_TYPED_LIST_TYPE, value: value, parent: functionCallId } );
+				} );
+		},
+		/**
+		 * Create the required entry in the object for a list of generics.
+		 * The entry will result in a json representation equal to:
+		 * { Z1K1: Z7, Z7K1: Z882, Z882K1: '', Z882K2: '' }
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {string} payload.value
+		 * @param {number} payload.id
+		 * @param {boolean} payload.unwrapped //This is used to unwrap it from a Z_OBJECT_TYPE (Z1K1)
+		 */
+		addZTypedPair: function ( context, payload ) {
+			var value1 = payload.value1 || '',
+				value2 = payload.value2 || '',
+				unwrapped = payload.unwrapped || false,
+				functionCallId;
+
+			if ( unwrapped ) {
+				functionCallId = payload.id;
+			} else {
+				functionCallId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+				context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: 'object', parent: payload.id } );
+			}
+
+			context.dispatch( 'changeType', { id: functionCallId, type: Constants.Z_FUNCTION_CALL, value: Constants.Z_TYPED_PAIR } )
+				.then( function () {
+					context.dispatch( 'addZObject', { key: Constants.Z_TYPED_PAIR_TYPE1, value: value1, parent: functionCallId } );
+					context.dispatch( 'addZObject', { key: Constants.Z_TYPED_PAIR_TYPE2, value: value2, parent: functionCallId } );
 				} );
 		},
 		/**
@@ -570,6 +600,8 @@ module.exports = {
 							return context.dispatch( 'addZTester', payload.id );
 						case Constants.Z_TYPED_LIST:
 							return context.dispatch( 'addZTypedList', payload );
+						case Constants.Z_TYPED_PAIR:
+							return context.dispatch( 'addZTypedPair', payload );
 						default:
 							return context.dispatch( 'addGenericObject', payload );
 					}

@@ -11,7 +11,7 @@ var Vue = require( 'vue' ),
 	store = require( './store/index.js' ),
 	App = require( './components/App.vue' );
 
-Vue.createMwApp( $.extend( {
+window.vueInstance = Vue.createMwApp( $.extend( {
 	store: store,
 	router: router,
 	provide: function () {

@@ -208,6 +208,8 @@
 	"wikilambda-ztyped-list-placeholder": "Select a generic",
 	"wikilambda-ztyped-list-description": "List generic of type",
 	"wikilambda-ztyped-list-items": "List items",
+	"wikilambda-ztyped-pair-placeholder": "Select a pair type",
+	"wikilambda-ztyped-pair-description": "Pair of types",
 	"wikilambda-zerror": "ZError of type $1",
 	"wikilambda-optional": "optional"
 }

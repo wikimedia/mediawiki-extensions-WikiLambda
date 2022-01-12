@@ -92,8 +92,11 @@ var Constants = {
 		Z_VALIDATE_OBJECT: 'Z101',
 		Z_TYPED_LIST: 'Z881',
 		Z_TYPED_LIST_TYPE: 'Z881K1',
-		Z_TYPED_LIST_ELEMENT: 'K1',
-		Z_TYPED_LIST_NESTED_LIST: 'K2'
+		Z_TYPED_OBJECT_ELEMENT_1: 'K1',
+		Z_TYPED_OBJECT_ELEMENT_2: 'K2',
+		Z_TYPED_PAIR: 'Z882',
+		Z_TYPED_PAIR_TYPE1: 'Z882K1',
+		Z_TYPED_PAIR_TYPE2: 'Z882K2'
 
 	},
 	modes = [
@@ -103,8 +106,10 @@ var Constants = {
 		{ key: Constants.Z_KEY_MODES.GENERIC_LITERAL, value: 'wikilambda-modeselector-genericliteral', label: 'wikilambda-genericliteral', type: null },
 		{ key: Constants.Z_KEY_MODES.JSON, value: 'wikilambda-modeselector-json', label: 'wikilambda-json', type: null },
 		{ key: Constants.Z_KEY_MODES.ARGUMENT_REF, value: 'wikilambda-modeselector-argref', label: 'wikilambda-argref', type: Constants.Z_ARGUMENT_REFERENCE }
-	];
+	],
+	typedObjectsList = [ Constants.Z_TYPED_LIST, Constants.Z_TYPED_PAIR ];
 
 Constants.Z_MODE_SELECTOR_MODES = modes;
+Constants.Z_TYPED_OBEJECTS_LIST = typedObjectsList;
 
 module.exports = Constants;
