@@ -10,6 +10,8 @@
 		<function-definition-aliases></function-definition-aliases>
 		<function-definition-inputs></function-definition-inputs>
 		<function-definition-output></function-definition-output>
+		<!-- TODO (T298979): use toast component to notify user that a definition can be published -->
+		<function-definition-footer></function-definition-footer>
 	</main>
 </template>
 
@@ -18,6 +20,7 @@ var FunctionDefinitionName = require( '../components/function/definition/functio
 var FunctionDefinitionAliases = require( '../components/function/definition/function-definition-aliases.vue' );
 var FunctionDefinitionInputs = require( '../components/function/definition/function-definition-inputs.vue' );
 var FunctionDefinitionOutput = require( '../components/function/definition/function-definition-output.vue' );
+var FunctionDefinitionFooter = require( '../components/function/definition/function-definition-footer.vue' );
 
 // @vue/component
 module.exports = {
@@ -26,7 +29,8 @@ module.exports = {
 		'function-definition-name': FunctionDefinitionName,
 		'function-definition-aliases': FunctionDefinitionAliases,
 		'function-definition-inputs': FunctionDefinitionInputs,
-		'function-definition-output': FunctionDefinitionOutput
+		'function-definition-output': FunctionDefinitionOutput,
+		'function-definition-footer': FunctionDefinitionFooter
 	}
 };
 
