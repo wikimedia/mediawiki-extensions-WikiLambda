@@ -73,7 +73,9 @@ class ZObjectContent extends AbstractContent {
 	 * @throws ZErrorException
 	 */
 	public function __construct( $text ) {
-		parent::__construct( CONTENT_MODEL_ZOBJECT );
+		// Some unit tests somehow don't load our constant by this point, so defensively provide it as needed.
+		$ourModel = defined( 'CONTENT_MODEL_ZOBJECT' ) ? CONTENT_MODEL_ZOBJECT : 'zobject';
+		parent::__construct( $ourModel );
 
 		// Check that the input is a valid string
 		if ( !is_string( $text ) ) {
