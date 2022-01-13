@@ -9,7 +9,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 
 /**
@@ -143,9 +142,7 @@ EOT;
 }
 EOT;
 
-		// FIXME this returns an exception because function-schemata cannot validate generic lists yet
-		$this->expectException( ZErrorException::class );
 		$zobject = ZObjectFactory::create( json_decode( $type ) );
-		// $this->assertTrue( $zobject->isValid() );
+		 $this->assertTrue( $zobject->isValid() );
 	}
 }
