@@ -2,7 +2,7 @@
 	<!--
 		WikiLambda Vue component for ZTypedPair objects.
 
-		@copyright 2020 – Abstract Wikipedia team; see AUTHORS.txt
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
 	<div class="ext-wikilambda-zTypedPair">
