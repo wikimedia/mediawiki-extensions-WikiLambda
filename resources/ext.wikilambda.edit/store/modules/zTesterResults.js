@@ -82,7 +82,7 @@ module.exports = {
 			 * @param {string} zTesterId
 			 * @param {string} zImplementationId
 			 *
-			 * @return {boolean} Error Value
+			 * @return {string} Error Value
 			 */
 			return function ( zFunctionId, zTesterId, zImplementationId ) {
 				var key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
@@ -93,10 +93,20 @@ module.exports = {
 
 				var result = state.zTesterResults[ key ];
 				if ( !result || result[ Constants.Z_PAIR_SECOND ] === Constants.Z_NOTHING ) {
-					return null;
+					return '';
 				}
 
-				return result[ Constants.Z_PAIR_SECOND ].Z5K2;
+				var errorResponse = result[ Constants.Z_PAIR_SECOND ];
+				if ( errorResponse[ Constants.Z_ERROR_VALUE ] ) {
+					return errorResponse[ Constants.Z_ERROR_VALUE ];
+				}
+
+				var errorResponseType = errorResponse[ Constants.Z_ERROR_TYPE ][ Constants.Z_OBJECT_TYPE ];
+				if ( errorResponse[ Constants.Z_ERROR_TYPE ][ errorResponseType + Constants.Z_TYPED_OBJECT_ELEMENT_1 ] ) {
+					return errorResponse[ Constants.Z_ERROR_TYPE ][ errorResponseType + Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
+				}
+
+				return 'No error returned!';
 			};
 		},
 		getZTesterMetadata: function ( state ) {
