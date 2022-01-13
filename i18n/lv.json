@@ -15,6 +15,7 @@
 	"wikilambda-metadata-language-column": "Valoda",
 	"wikilambda-metadata-all-languages": "Visas ievadītās valodas",
 	"wikilambda-metadata-fewer-languages": "Rādīt mazāk valodas",
+	"wikilambda-function-definition-name-label": "Nosaukums",
 	"wikilambda-function-definition-name-placeholder": "Ievadi aprakstošu funkcijas nosaukumu",
 	"wikilambda-function-definition-name-example": "Skatīt nosaukumu piemērus.",
 	"wikilambda-editor-fn-step-tests": "Testi"

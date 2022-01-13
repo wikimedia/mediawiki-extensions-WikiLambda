@@ -192,6 +192,8 @@
 	"wikilambda-ztyped-list-placeholder": "Wähle eine generische",
 	"wikilambda-ztyped-list-description": "Liste der generischen Typen",
 	"wikilambda-ztyped-list-items": "Objekte auflisten",
+	"wikilambda-ztyped-pair-placeholder": "Wähle ein Typenpaar aus",
+	"wikilambda-ztyped-pair-description": "Typenpaar",
 	"wikilambda-zerror": "ZError vom Typ $1",
 	"wikilambda-optional": "optional"
 }
