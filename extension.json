@@ -208,7 +208,7 @@
 				"ext.wikilambda.edit/components/function/definition/function-definition-output.vue",
 				"ext.wikilambda.edit/components/function/definition/function-definition-footer.vue",
 				"ext.wikilambda.edit/components/types/ZMetadata.vue",
-				"ext.wikilambda.edit/components/types/ZPair.vue",
+				"ext.wikilambda.edit/components/types/ZResponseEnvelope.vue",
 				"ext.wikilambda.edit/components/editor/FnEditorBase.vue",
 				"ext.wikilambda.edit/components/editor/FnEditorName.vue",
 				"ext.wikilambda.edit/components/editor/FnEditorInputList.vue",

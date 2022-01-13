@@ -47,7 +47,7 @@ var Constants = require( '../Constants.js' ),
 	ZTester = require( './types/ZTester.vue' ),
 	ZPersistentObject = require( './types/ZPersistentObject.vue' ),
 	ZCharacter = require( './types/ZCharacter.vue' ),
-	ZPair = require( './types/ZPair.vue' ),
+	ZResponseEnvelope = require( './types/ZResponseEnvelope.vue' ),
 	ZType = require( './types/ZType.vue' ),
 	ZTypedPair = require( './types/ZTypedPair.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
@@ -73,7 +73,7 @@ module.exports = {
 		'z-tester': ZTester,
 		'z-persistentobject': ZPersistentObject,
 		'z-character': ZCharacter,
-		'z-pair': ZPair,
+		'z-responseenvelope': ZResponseEnvelope,
 		'z-type': ZType,
 		'z-typed-list': ZTypedList,
 		'z-typed-pair': ZTypedPair
@@ -166,8 +166,8 @@ module.exports = {
 						return 'z-tester';
 					case Constants.Z_CHARACTER:
 						return 'z-character';
-					case Constants.Z_PAIR:
-						return 'z-pair';
+					case Constants.Z_RESPONSEENVELOPE:
+						return 'z-responseenvelope';
 					case Constants.Z_TYPE:
 						return 'z-type';
 					default:
