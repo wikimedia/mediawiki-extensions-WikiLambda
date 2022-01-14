@@ -10,8 +10,17 @@
 		<function-definition-aliases></function-definition-aliases>
 		<function-definition-inputs></function-definition-inputs>
 		<function-definition-output></function-definition-output>
-		<!-- TODO (T298979): use toast component to notify user that a definition can be published -->
-		<function-definition-footer></function-definition-footer>
+		<toast
+			v-if="showToast"
+			:icon="toastIcon"
+			:intent="toastIntent"
+			:timeout="toastTimeout"
+			:message="currentToast"
+			@toast-close="closeToast"
+		></toast>
+		<function-definition-footer
+			@publish-successful="publishSuccessful"
+		></function-definition-footer>
 	</main>
 </template>
 
@@ -21,6 +30,9 @@ var FunctionDefinitionAliases = require( '../components/function/definition/func
 var FunctionDefinitionInputs = require( '../components/function/definition/function-definition-inputs.vue' );
 var FunctionDefinitionOutput = require( '../components/function/definition/function-definition-output.vue' );
 var FunctionDefinitionFooter = require( '../components/function/definition/function-definition-footer.vue' );
+var Toast = require( '../components/base/Toast.vue' );
+var mapGetters = require( 'vuex' ).mapGetters;
+var icons = require( './../../../lib/icons.js' );
 
 // @vue/component
 module.exports = {
@@ -30,10 +42,57 @@ module.exports = {
 		'function-definition-aliases': FunctionDefinitionAliases,
 		'function-definition-inputs': FunctionDefinitionInputs,
 		'function-definition-output': FunctionDefinitionOutput,
-		'function-definition-footer': FunctionDefinitionFooter
+		'function-definition-footer': FunctionDefinitionFooter,
+		toast: Toast
+	},
+	data: function () {
+		return {
+			currentToast: null
+		};
+	},
+	computed: $.extend( mapGetters( [
+		'currentZFunctionHasInputs',
+		'currentZFunctionHasOutput'
+	] ),
+	{
+		ableToPublish: function () {
+			if ( this.currentZFunctionHasInputs && this.currentZFunctionHasOutput ) {
+				return true;
+			}
+			return false;
+		},
+		toastIcon: function () {
+			return icons.sdIconCheck;
+		},
+		toastIntent: function () {
+			return 'SUCCESS';
+		},
+		toastTimeout: function () {
+			return 2000;
+		},
+		showToast: function () {
+			return this.currentToast !== null;
+		}
+	} ),
+	methods: {
+		publishSuccessful: function ( toastMessage ) {
+			this.currentToast = toastMessage;
+		},
+		closeToast: function () {
+			this.currentToast = null;
+		}
+	},
+	watch: {
+		ableToPublish: {
+			immediate: true,
+			handler: function ( status ) {
+				if ( status ) {
+					this.currentToast = this.$i18n( 'wikilambda-function-definition-can-publish-message' ).text();
+				}
+			}
+		}
 	}
 };
-
 </script>
 
 <style lang="less">
