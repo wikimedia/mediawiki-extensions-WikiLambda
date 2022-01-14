@@ -9,7 +9,7 @@
 		<span v-for="argument in zFunctionArguments" :key="argument.key">
 			{{ argument.label }}:
 			<z-object-key
-				:zobject-id="findArgumentId(argument.key)"
+				:zobject-id="findArgumentId( argument.key )"
 				:persistent="false"
 				:parent-type="Constants.Z_FUNCTION_CALL"
 				:z-key="argument.key"
@@ -22,6 +22,7 @@
 var ZFunctionCall = require( '../types/ZFunctionCall.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
+// @vue/component
 module.exports = {
 	extends: ZFunctionCall,
 	provide: function () {

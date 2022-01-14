@@ -1,10 +1,16 @@
 <template>
+	<!--
+		WikiLambda Vue component for a navigation tab
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div>
 		<button
 			class="ext-wikilambda-tab"
 			:class="statusClass"
 			:disabled="disabled"
-			@click="$emit('click')"
+			@click="$emit( 'click' )"
 		>
 			<sd-icon v-if="icon && !tooltipVisible" :icon="icon"></sd-icon>
 			<tooltip
@@ -23,21 +29,13 @@
 var SdIcon = require( './Icon.vue' ),
 	Tooltip = require( './Tooltip.vue' );
 
+// @vue/component
 module.exports = {
 	name: 'Tab',
 	components: {
 		'sd-icon': SdIcon,
 		// TOOD (T298040): replace with codex tooltip/popover component
 		tooltip: Tooltip
-	},
-	computed: {
-		statusClass: function () {
-			// disabled styles trump inactive styles
-			if ( this.disabled ) {
-				return 'ext-wikilambda-tab-status_disabled';
-			}
-			return 'ext-wikilambda-tab-status_' + this.status;
-		}
 	},
 	props: {
 		status: {
@@ -71,6 +69,15 @@ module.exports = {
 		},
 		tooltipVisible: {
 			type: Boolean
+		}
+	},
+	computed: {
+		statusClass: function () {
+			// disabled styles trump inactive styles
+			if ( this.disabled ) {
+				return 'ext-wikilambda-tab-status_disabled';
+			}
+			return 'ext-wikilambda-tab-status_' + this.status;
 		}
 	}
 };

@@ -9,7 +9,7 @@
 		<h3>{{ $i18n( 'wikilambda-editor-argument-list-label' ) }}</h3>
 		<ul class="ext-wikilambda-zlist-no-bullets">
 			<z-list-item
-				v-for="(item) in ZlistItems"
+				v-for="( item ) in ZlistItems"
 				:key="item.id"
 				:zobject-id="item.id"
 				:viewmode="viewmode"
@@ -28,6 +28,7 @@ var mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
 	ZList = require( './ZList.vue' );
 
+// @vue/component
 module.exports = {
 	extends: ZList,
 	computed: mapGetters( [ 'getNextObjectId' ] ),

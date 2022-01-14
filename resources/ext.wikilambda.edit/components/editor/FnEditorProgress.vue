@@ -9,7 +9,7 @@
 		<strong>
 			{{ $i18n( 'wikilambda-editor-progress-title' ) }}
 		</strong>
-		<div>{{ progress }}{{ $i18n( 'wikilambda-editor-progress-percentage') }}</div>
+		<div>{{ progress }}{{ $i18n( 'wikilambda-editor-progress-percentage' ) }}</div>
 		<div class="ext-wikilambda-progress-bar">
 			<div></div>
 		</div>
@@ -17,6 +17,7 @@
 </template>
 
 <script>
+// @vue/component
 module.exports = {
 	props: {
 		progress: {

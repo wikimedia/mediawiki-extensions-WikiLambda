@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for a pop-up "tooltip"
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div>
 		<button
 			class="ext-wikilambda-tooltip_button"
@@ -27,20 +33,12 @@
 
 <script>
 var SdIcon = require( './Icon.vue' );
+
+// @vue/component
 module.exports = {
 	name: 'Tooltip',
 	components: {
 		'sd-icon': SdIcon
-	},
-	data: function () {
-		return {
-			isVisible: false
-		};
-	},
-	methods: {
-		toggleVisibility: function () {
-			this.isVisible = !this.isVisible;
-		}
 	},
 	// TODO (T298491): add prop for interaction type (hover vs. click)
 	props: {
@@ -75,6 +73,16 @@ module.exports = {
 		label: {
 			type: String,
 			required: false
+		}
+	},
+	data: function () {
+		return {
+			isVisible: false
+		};
+	},
+	methods: {
+		toggleVisibility: function () {
+			this.isVisible = !this.isVisible;
 		}
 	}
 };

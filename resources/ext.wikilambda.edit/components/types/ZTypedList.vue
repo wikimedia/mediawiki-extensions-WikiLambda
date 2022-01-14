@@ -21,15 +21,16 @@
 		</div>
 		<ul class="ext-wikilambda-zTypedList-no-bullets">
 			<z-list-item
-				v-for="(item) in zListItems"
+				v-for="( item ) in zListItems"
 				:key="item.id"
 				:zobject-id="item.id"
 				:z-type="zTypedListType"
 				:readonly="readonly || requiresTypeForList"
 				@remove-item="removeItem( item )"
 			></z-list-item>
-			<li v-if="!(viewmode || readonly || requiresTypeForList)">
-				<button class="z-list-add"
+			<li v-if="!( viewmode || readonly || requiresTypeForList )">
+				<button
+					class="z-list-add"
 					:title="tooltipAddListItem"
 					@click="addNewItem"
 				>
@@ -48,6 +49,7 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
+// @vue/component
 module.exports = {
 	name: 'ZTypedList',
 	components: {

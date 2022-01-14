@@ -20,7 +20,8 @@ function getNewItemParentId( nestedChildren, rootId ) {
 	}
 }
 
-/** Set one or multiple types for the specificed typed Object
+/**
+ * Set one or multiple types for the specificed typed Object
  *
  * @param {Object} context
  * @param {Object} payload
@@ -55,14 +56,14 @@ module.exports = {
 		/**
 		 * Add a new item in a typed list. This will create the following format:
 		 * {
-		 * K1: { ... structure of the current list item type},
-			K2: {
-				Z1K1: {
-					"Z1K1": "Z7",
-					"Z7K1": "Z881",
-					"Z881K1": "current list item type"
-				}
-			}
+		 *   "K1": { … structure of the current list item type },
+		 *   "K2": {
+		 *     "Z1K1": {
+		 *       "Z1K1": "Z7",
+		 *       "Z7K1": "Z881",
+		 *       "Z881K1": "current list item type"
+		 *     }
+		 *   }
 		 * }
 		 *
 		 * @param {Object} context

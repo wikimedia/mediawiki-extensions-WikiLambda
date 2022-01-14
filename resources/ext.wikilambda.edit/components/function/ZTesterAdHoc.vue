@@ -36,6 +36,7 @@ var Constants = require( '../../Constants.js' ),
 	ZInlineTesterValidation = require( './ZInlineTesterValidation.vue' ),
 	ZMultilingualString = require( '../types/ZMultilingualString.vue' );
 
+// @vue/component
 module.exports = {
 	components: {
 		'z-inline-tester-call': ZInlineTesterCall,

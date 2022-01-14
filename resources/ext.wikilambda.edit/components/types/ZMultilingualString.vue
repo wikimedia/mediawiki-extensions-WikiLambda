@@ -7,7 +7,7 @@
 	-->
 	<div class="ext-wikilambda-multilingual">
 		<z-monolingual-string
-			v-for="(z11Object) in monolingualStrings"
+			v-for="( z11Object ) in monolingualStrings"
 			:key="z11Object.id"
 			:zobject-id="z11Object.id"
 			class="ext-wikilambda-monolingual"
@@ -15,7 +15,7 @@
 		></z-monolingual-string>
 		<div class="ext-wikilambda-monolingual">
 			<z-natural-language-selector
-				v-if="!(readonly || getViewMode)"
+				v-if="!( readonly || getViewMode )"
 				:used-languages="usedLanguages"
 				@input="addNewLang"
 			></z-natural-language-selector>
@@ -31,12 +31,14 @@ var Constants = require( '../../Constants.js' ),
 	ZMonolingualString = require( './ZMonolingualString.vue' ),
 	ZNaturalLanguageSelector = require( '../ZNaturalLanguageSelector.vue' );
 
+// @vue/component
 module.exports = {
 	name: 'ZMultilingualString',
 	components: {
 		'z-monolingual-string': ZMonolingualString,
 		'z-natural-language-selector': ZNaturalLanguageSelector
 	},
+	mixins: [ typeUtils ],
 	props: {
 		zobjectId: {
 			type: Number,
@@ -47,7 +49,6 @@ module.exports = {
 			default: false
 		}
 	},
-	mixins: [ typeUtils ],
 	data: function () {
 		return {
 			Constants: Constants

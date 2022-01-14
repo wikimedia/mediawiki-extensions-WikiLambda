@@ -8,14 +8,15 @@
 	<div class="ext-wikilambda-zlist">
 		<ul>
 			<z-list-item
-				v-for="(item) in ZlistItems"
+				v-for="( item ) in ZlistItems"
 				:key="item.id"
 				:zobject-id="item.id"
 				:readonly="readonly"
 				@remove-item="removeItem"
 			></z-list-item>
-			<li v-if="!(viewmode || readonly)">
-				<button class="z-list-add"
+			<li v-if="!( viewmode || readonly )">
+				<button
+					class="z-list-add"
 					:title="tooltipAddListItem"
 					@click="addNewItem"
 				>
@@ -31,6 +32,7 @@ var ZListItem = require( './ZListItem.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
+// @vue/component
 module.exports = {
 	name: 'ZList',
 	components: {

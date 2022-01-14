@@ -32,7 +32,7 @@
 					:key="Constants.Z_PERSISTENTOBJECT_VALUE"
 					:zobject-id="zObjectValue.id"
 					:parent-type="zObjectType"
-					:readonly="isBuiltIn || (viewmode || readonly)"
+					:readonly="isBuiltIn || ( viewmode || readonly )"
 				></z-object-key>
 			</div>
 		</div>
@@ -83,6 +83,7 @@ var Constants = require( '../../Constants.js' ),
 	ZObjectJson = require( '../ZObjectJson.vue' ),
 	FnEditorVisualDisplay = require( '../editor/FnEditorVisualDisplay.vue' );
 
+// @vue/component
 module.exports = {
 	components: {
 		'z-object-key': ZObjectKey,

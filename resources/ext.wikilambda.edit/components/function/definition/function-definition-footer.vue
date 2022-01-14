@@ -7,7 +7,7 @@
 	-->
 	<div class="ext-wikilambda-function-definition-footer">
 		<label for="ext-wikilambda-function-definition-name__input" class="ext-wikilambda-app__text-regular">
-			{{ $i18n('wikilambda-function-definition-footer-label').text() }}
+			{{ $i18n( 'wikilambda-function-definition-footer-label' ).text() }}
 		</label>
 		<input
 			v-model="summary"

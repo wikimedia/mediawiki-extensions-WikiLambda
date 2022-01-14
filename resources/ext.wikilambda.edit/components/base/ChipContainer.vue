@@ -1,11 +1,17 @@
 <template>
+	<!--
+		WikiLambda Vue component for a container for "Chips" / input tags
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div class="ext-wikilambda-chip-container">
 		<chip
 			v-for="chip in chips"
 			:key="chip.id"
 			:index="chip.id"
-			:width="'.5em'"
-			:height="'.5em'"
+			width=".5em"
+			height=".5em"
 			:text="chip.value"
 			:readonly="readonly"
 			@edit-chip="editChip"
@@ -24,27 +30,18 @@
 
 <script>
 var Chip = require( './Chip.vue' );
+
+// @vue/component
 module.exports = {
 	name: 'chip-container',
 	components: {
 		chip: Chip
 	},
-	methods: {
-		editChip: function ( index, name ) {
-			this.$emit( 'edit-chip', index, name );
-		},
-		addChip: function () {
-			this.$emit( 'add-chip', this.newText );
-			this.newText = '';
-		},
-		removeChip: function ( index ) {
-			this.$emit( 'remove-chip', index );
-		}
-	},
 	props: {
 		chips: {
 			type: Array,
 			required: true,
+			// eslint-disable-next-line vue/require-valid-default-prop
 			default: []
 		},
 		canAdd: {
@@ -68,6 +65,18 @@ module.exports = {
 			default: null
 		}
 
+	},
+	methods: {
+		editChip: function ( index, name ) {
+			this.$emit( 'edit-chip', index, name );
+		},
+		addChip: function () {
+			this.$emit( 'add-chip', this.newText );
+			this.newText = '';
+		},
+		removeChip: function ( index ) {
+			this.$emit( 'remove-chip', index );
+		}
 	}
 };
 </script>

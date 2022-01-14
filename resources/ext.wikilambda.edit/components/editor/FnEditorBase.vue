@@ -17,6 +17,7 @@
 </template>
 
 <script>
+// @vue/component
 module.exports = {};
 </script>
 

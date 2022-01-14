@@ -23,6 +23,8 @@
 
 <script>
 var ZObject = require( './ZObject.vue' );
+
+// @vue/component
 module.exports = {
 	name: 'ZObjectViewer',
 	components: {

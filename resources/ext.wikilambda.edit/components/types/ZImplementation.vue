@@ -24,7 +24,7 @@
 				<span v-else>{{ $i18n( 'wikilambda-invalidzobject' ) }}</span>
 				<span class="ext-wikilambda-is-impl-associated">
 					({{ isImplementationAttached ?
-						$i18n( 'wikilambda-function-is-attached') :
+						$i18n( 'wikilambda-function-is-attached' ) :
 						$i18n( 'wikilambda-function-is-not-attached' )
 					}})
 				</span>
@@ -71,6 +71,7 @@ var Constants = require( '../../Constants.js' ),
 	ZReference = require( './ZReference.vue' ),
 	ZFunctionTesterReport = require( '../function/ZFunctionTesterReport.vue' );
 
+// @vue/component
 module.exports = {
 	components: {
 		'z-code': ZCode,

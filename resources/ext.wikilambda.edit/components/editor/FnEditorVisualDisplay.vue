@@ -22,12 +22,13 @@
 			<div class="ext-wikilambda-editior-visual-display-input">
 				<span
 					class="ext-wikilambda-editior-visual-display-input-title"
-				>{{ $i18n('wikilambda-editor-input-title') }} {{ inputLengthText }}</span>
+				>{{ $i18n( 'wikilambda-editor-input-title' ) }} {{ inputLengthText }}</span>
 
 				<div class="ext-wikilambda-editior-visual-display-slide">
 					<div class="ext-wikilambda-editior-visual-display-slide-box">
 						<div :style="inputBoxStyle">
-							<div v-for="(input, i) in inputs"
+							<div
+								v-for="( input, i ) in inputs"
 								:key="i"
 								class="ext-wikilambda-editior-visual-display-input-box">
 								<span name="input">
@@ -44,12 +45,14 @@
 						</div>
 					</div>
 
-					<div v-if="inputs.length > 1 && activeInput < inputs.length"
+					<div
+						v-if="inputs.length > 1 && activeInput < inputs.length"
 						class="ext-wikilambda-editior-visual-display-slide-control-right"
 						@click="nextActiveInput">
 					</div>
 
-					<div v-if="activeInput > 1"
+					<div
+						v-if="activeInput > 1"
 						class="ext-wikilambda-editior-visual-display-slide-control-left"
 						@click="prevActiveInput">
 					</div>
@@ -62,7 +65,7 @@
 
 			<div class="ext-wikilambda-editior-visual-display-function">
 				<div class="ext-wikilambda-editior-visual-display-function-box">
-					<span>{{ $i18n('wikilambda-editor-implementation-title') }}</span>
+					<span>{{ $i18n( 'wikilambda-editor-implementation-title' ) }}</span>
 				</div>
 			</div>
 
@@ -89,6 +92,7 @@ var FnEditorZLanguageSelector = require( './FnEditorZLanguageSelector.vue' ),
 	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
+// @vue/component
 module.exports = {
 	components: {
 		'fn-editor-zlanguage-selector': FnEditorZLanguageSelector

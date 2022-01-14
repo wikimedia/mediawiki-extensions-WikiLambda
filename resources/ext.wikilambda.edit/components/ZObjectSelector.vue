@@ -51,6 +51,7 @@ var Constants = require( '../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapMutations = require( 'vuex' ).mapMutations;
 
+// @vue/component
 module.exports = {
 	name: 'ZObjectSelector',
 	components: {

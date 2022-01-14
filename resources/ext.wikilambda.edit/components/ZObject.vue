@@ -53,6 +53,7 @@ var Constants = require( '../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
+// @vue/component
 module.exports = {
 	name: 'ZObject',
 	components: {

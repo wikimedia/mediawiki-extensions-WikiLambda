@@ -13,7 +13,7 @@
 			class="ext-wikilambda-zcode__language-selector"
 		>
 			<option value="" disabled>
-				{{ $i18n('wikilambda-editor-label-select-programming-language-label') }}
+				{{ $i18n( 'wikilambda-editor-label-select-programming-language-label' ) }}
 			</option>
 			<option
 				v-for="zProgrammingLang in getAllProgrammingLangs"
@@ -39,10 +39,12 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
+// @vue/component
 module.exports = {
 	components: {
 		'code-editor': CodeEditor
 	},
+	mixins: [ typeUtils ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -62,7 +64,6 @@ module.exports = {
 			allowCodeValueOverride: true
 		};
 	},
-	mixins: [ typeUtils ],
 	computed: $.extend(
 		mapGetters( [
 			'getAllProgrammingLangs',

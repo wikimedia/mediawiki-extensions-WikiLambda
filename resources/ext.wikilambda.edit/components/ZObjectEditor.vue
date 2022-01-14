@@ -27,7 +27,8 @@
 					class="ext-wikilambda-editSummary-label"
 					for="summary"> {{ $i18n( 'wikilambda-summarylabel' ) }}
 				</label>
-				<input v-model="summary"
+				<input
+					v-model="summary"
 					class="ext-wikilambda-editSummary"
 					:placeholder="submitButtonDescriptionPrompt"
 					name="summary"
@@ -69,6 +70,7 @@ var ZObject = require( './ZObject.vue' ),
 	Constants = require( '../Constants.js' ),
 	typeUtils = require( '../mixins/typeUtils.js' );
 
+// @vue/component
 module.exports = {
 	name: 'ZObjectEditor',
 	components: {

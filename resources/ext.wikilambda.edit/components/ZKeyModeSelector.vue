@@ -24,6 +24,7 @@
 <script>
 var mapGetters = require( 'vuex' ).mapGetters;
 
+// @vue/component
 module.exports = {
 	name: 'ZKeyModeSelector',
 	inject: {
@@ -47,16 +48,6 @@ module.exports = {
 		availableModes: {
 			type: Array,
 			default: null
-		}
-	},
-	methods: {
-		updateMode: function ( event ) {
-			var modeValue = event.target.value;
-
-			this.$emit( 'change', modeValue );
-		},
-		translate: function ( value ) {
-			return this.$i18n( value );
 		}
 	},
 	computed: $.extend( {},
@@ -84,6 +75,16 @@ module.exports = {
 			}
 		}
 	),
+	methods: {
+		updateMode: function ( event ) {
+			var modeValue = event.target.value;
+
+			this.$emit( 'change', modeValue );
+		},
+		translate: function ( value ) {
+			return this.$i18n( value );
+		}
+	},
 	watch: {
 		isExpertMode: function () {
 			if ( !this.isExpertMode && this.mode === 'json' ) {

@@ -6,11 +6,12 @@
 		@license MIT
 	-->
 	<li class="ext-wikilambda-zlistItem">
-		<sd-button v-if="!(getViewMode || readonly)"
+		<sd-button
+			v-if="!( getViewMode || readonly )"
 			class="z-list-item-remove"
 			:destructive="true"
 			:title="tooltipRemoveListItem"
-			@click="$emit('remove-item', zobjectId )"
+			@click="$emit( 'remove-item', zobjectId )"
 		>
 			{{ $i18n( 'wikilambda-editor-removeitem' ) }}
 		</sd-button>
@@ -42,12 +43,13 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
+// @vue/component
 module.exports = {
 	name: 'ZTesterListItem',
-	extends: ZListItem,
 	components: {
 		'z-reference': ZReference
 	},
+	extends: ZListItem,
 	computed: $.extend( mapGetters( [ 'getZObjectById', 'getUnattachedZTesters', 'getZkeyLabels', 'getZkeys', 'getZTesterResults', 'getViewMode' ] ),
 		{
 			referenceValue: function () {

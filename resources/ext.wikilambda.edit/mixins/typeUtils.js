@@ -52,8 +52,8 @@ var Constants = require( '../Constants.js' ),
 					return key.map( function ( k ) {
 						return typeUtils.methods.findKeyInArray( k, array );
 					} )
-						.filter( function ( result ) {
-							return !!result;
+						.filter( function ( filterResult ) {
+							return !!filterResult;
 						} )[ 0 ] || false;
 				} else {
 					var result = array.filter( function ( item ) {

@@ -33,7 +33,7 @@
 			<li v-for="argument in zFunctionArguments" :key="argument.key">
 				{{ argument.label }}:
 				<z-object-key
-					:zobject-id="findArgumentId(argument.key)"
+					:zobject-id="findArgumentId( argument.key )"
 					:persistent="false"
 					:parent-type="Constants.Z_FUNCTION_CALL"
 					:z-key="argument.key"
@@ -85,6 +85,7 @@ var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	SdButton = require( '../base/Button.vue' );
 
+// @vue/component
 module.exports = {
 	components: {
 		'z-object-selector': ZObjectSelector,

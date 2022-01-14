@@ -46,6 +46,7 @@ var FnEditorBase = require( './FnEditorBase.vue' ),
 	FnEditorZLanguageSelector = require( './FnEditorZLanguageSelector.vue' ),
 	SdButton = require( '../base/Button.vue' );
 
+// @vue/component
 module.exports = {
 	name: 'FnEditorInputList',
 	components: {
