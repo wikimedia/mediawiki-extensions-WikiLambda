@@ -202,6 +202,8 @@
 	"wikilambda-ztyped-list-placeholder": "Sélectionner un type générique",
 	"wikilambda-ztyped-list-description": "Liste générique de type",
 	"wikilambda-ztyped-list-items": "Éléments de liste",
+	"wikilambda-ztyped-pair-placeholder": "Sélectionner un type de pair",
+	"wikilambda-ztyped-pair-description": "Types de pair",
 	"wikilambda-zerror": "ZError de type $1",
 	"wikilambda-optional": "facultatif"
 }

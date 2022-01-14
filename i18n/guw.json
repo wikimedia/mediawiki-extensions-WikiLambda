@@ -8,6 +8,8 @@
 		]
 	},
 	"wikilambda-argref": "Nudidon alodlendonu",
+	"wikilambda-published": "E ko yin sisẹdo!",
+	"wikilambda-cancel": "Hònupla",
 	"wikilambda-implementation-selector-composition": "Beplidopo",
 	"wikilambda-argref-default-label": "De nudindon",
 	"wikilambda-create-type": "Hun Alọpa",
@@ -15,6 +17,7 @@
 	"wikilambda-function-definition-name-example": "Pọn apajlẹ yinkọ lẹ tọn.",
 	"wikilambda-function-definition-alias-label": "Tẹnmẹ yinkọ lẹ",
 	"wikilambda-function-definition-alias-example": "Pọn apajlẹ yinkọ tẹnmẹ lẹ tọn.",
+	"wikilambda-function-definition-footer-placeholder": "Basi zẹẹmẹ diọdo towe lẹ tọn to kleun mẹ",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "Dè alọpa he a jlo",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Gọ́ nudevo na",
 	"wikilambda-function-definition-output-selector": "Dè alọpa dopo he a jlo",

@@ -54,6 +54,8 @@
 	"wikilambda-special-objectsbytype-typeheader": "כל הסוגים",
 	"wikilambda-special-objectsbytype-empty": "לא נמצאו עצמי Z מתמידים עבור הסוג הזה.",
 	"wikilambda-publishnew": "פרסום",
+	"wikilambda-published": "פורסמה!",
+	"wikilambda-cancel": "ביטול",
 	"wikilambda-savenew": "שמירה",
 	"wikilambda-publishchanges": "פרסום השינויים",
 	"wikilambda-savechanges": "שמירת השינויים",
@@ -144,6 +146,9 @@
 	"wikilambda-function-definition-alias-label": "כינויים",
 	"wikilambda-function-definition-alias-placeholder": "נא להזין שמות נרדפים לשם הפונקציה",
 	"wikilambda-function-definition-alias-example": "ר' דוגמאות לכינויים.",
+	"wikilambda-function-definition-footer-placeholder": "נא לתאר בקצרה את השינויים שלך",
+	"wikilambda-function-definition-footer-label": "תקציר העריכה",
+	"wikilambda-function-definition-footer-implementation-button": "כתיבת מימוש",
 	"wikilambda-function-definition-inputs-label": "סוג הקלט",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "נא לבחור סוג",
 	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "נא לבחור סוג לרשימה של איברים בעלי סוג {{GENDER:|שאתה יוצר|שאת יוצרת}}",
@@ -194,6 +199,8 @@
 	"wikilambda-ztyped-list-placeholder": "נא לבחור סוג כללי",
 	"wikilambda-ztyped-list-description": "סוג רשימה כללי מסוג",
 	"wikilambda-ztyped-list-items": "פריטי רשימה",
+	"wikilambda-ztyped-pair-placeholder": "נא לבחור את סוג הזוג",
+	"wikilambda-ztyped-pair-description": "זוג סוגים",
 	"wikilambda-zerror": "שגיאת Z מסוג $1",
 	"wikilambda-optional": "לא חובה"
 }
