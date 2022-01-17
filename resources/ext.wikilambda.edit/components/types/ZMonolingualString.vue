@@ -8,7 +8,7 @@
 	<div>
 		<div class="ext-wikilambda-cell">
 			<sd-button
-				v-if="!(readonly)"
+				v-if="!( readonly )"
 				:title="tooltipRemoveLang"
 				:destructive="true"
 				@click="removeLang"
@@ -41,11 +41,13 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
+// @vue/component
 module.exports = {
 	name: 'ZMonolingualString',
 	components: {
 		'sd-button': SdButton
 	},
+	mixins: [ typeUtils ],
 	props: {
 		zobjectId: {
 			type: Number,
@@ -56,7 +58,6 @@ module.exports = {
 			default: false
 		}
 	},
-	mixins: [ typeUtils ],
 	data: function () {
 		return {
 			Constants: Constants

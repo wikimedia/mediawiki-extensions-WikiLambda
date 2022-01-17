@@ -22,13 +22,15 @@
 			>
 				<span>
 					<label>{{ zTypeKeylabel }}</label>
-					<z-object :zobject-id="zObjectKeysId"
+					<z-object
+						:zobject-id="zObjectKeysId"
 						:readonly="readonly"
 						:persistent="false"></z-object>
 				</span>
 				<span>
 					<label>{{ zTypeValidatorlabel }}</label>
-					<z-object :zobject-id="zTypeValidatorId"
+					<z-object
+						:zobject-id="zTypeValidatorId"
 						:readonly="readonly"
 						:persistent="false"></z-object>
 				</span>
@@ -52,6 +54,7 @@ var Constants = require( '../../Constants.js' ),
 	mapState = require( 'vuex' ).mapState,
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
+// @vue/component
 module.exports = {
 	name: 'ZType',
 	components: {

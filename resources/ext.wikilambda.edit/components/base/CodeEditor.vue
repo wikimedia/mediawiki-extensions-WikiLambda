@@ -12,6 +12,7 @@
 <script>
 require( '../../../lib/ace/src/ace.js' );
 
+// @vue/component
 module.exports = {
 	name: 'CodeEditor',
 	props: {
@@ -77,9 +78,6 @@ module.exports = {
 			} );
 		}
 	},
-	mounted: function () {
-		this.initialize();
-	},
 	watch: {
 		value: function ( newValue ) {
 			this.editor.setValue( newValue, 1 );
@@ -93,6 +91,9 @@ module.exports = {
 		readOnly: function ( newValue ) {
 			this.editor.setReadOnly( newValue );
 		}
+	},
+	mounted: function () {
+		this.initialize();
 	}
 };
 </script>

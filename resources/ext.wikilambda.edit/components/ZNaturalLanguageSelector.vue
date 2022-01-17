@@ -44,6 +44,7 @@ var Constants = require( '../Constants.js' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
+// @vue/component
 module.exports = {
 	extends: ZObjectSelector,
 	props: {

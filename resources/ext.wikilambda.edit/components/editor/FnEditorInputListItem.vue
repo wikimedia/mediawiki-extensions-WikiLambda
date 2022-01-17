@@ -46,6 +46,7 @@ var Constants = require( '../../Constants.js' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
+// @vue/component
 module.exports = {
 	name: 'FnEditorInputListItem',
 	components: {

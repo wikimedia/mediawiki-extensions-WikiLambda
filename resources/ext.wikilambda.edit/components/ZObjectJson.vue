@@ -22,9 +22,28 @@ var mapGetters = require( 'vuex' ).mapGetters,
 	schemata = require( '../mixins/schemata.js' ),
 	CodeEditor = require( './base/CodeEditor.vue' );
 
+// @vue/component
 module.exports = {
 	components: {
 		'code-editor': CodeEditor
+	},
+	directives: {
+		clickout: {
+			bind: function ( el, binding ) {
+				el.clickout = {
+					stop: function ( e ) {
+						e.stopPropagation();
+					}
+				};
+
+				document.body.addEventListener( 'click', binding.value );
+				el.addEventListener( 'click', el.clickout.stop );
+			},
+			unbind: function ( el, binding ) {
+				document.body.removeEventListener( 'click', binding.value );
+				el.removeEventListener( 'click', el.clickout.stop );
+			}
+		}
 	},
 	mixins: [ typeUtils, schemata ],
 	inject: {
@@ -112,24 +131,6 @@ module.exports = {
 	mounted: function () {
 		this.codeEditorState = this.canonicalJson;
 		this.initialJson = this.canonicalJson;
-	},
-	directives: {
-		clickout: {
-			bind: function ( el, binding ) {
-				el.clickout = {
-					stop: function ( e ) {
-						e.stopPropagation();
-					}
-				};
-
-				document.body.addEventListener( 'click', binding.value );
-				el.addEventListener( 'click', el.clickout.stop );
-			},
-			unbind: function ( el, binding ) {
-				document.body.removeEventListener( 'click', binding.value );
-				el.removeEventListener( 'click', el.clickout.stop );
-			}
-		}
 	}
 };
 </script>

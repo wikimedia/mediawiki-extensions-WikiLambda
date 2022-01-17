@@ -21,6 +21,15 @@
 				"ignoreStrings": true,
 				"ignoreTemplateLiterals": true
 			}
-		]
+		],
+		"vue/component-definition-name-casing": [ "warn", "kebab-case" ],
+		"vue/multi-word-component-names": "warn",
+		"vue/no-boolean-default": "warn",
+		"vue/no-undef-properties": "warn",
+		"vue/no-unregistered-components": "warn",
+		"vue/no-unused-components": "warn",
+		"vue/no-unused-properties": "warn",
+		"vue/no-unused-refs": "warn",
+		"vue/no-useless-mustaches": "warn"
 	}
 }

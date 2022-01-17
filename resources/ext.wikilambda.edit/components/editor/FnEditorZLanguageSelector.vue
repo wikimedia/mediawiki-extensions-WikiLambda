@@ -31,6 +31,7 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
+// @vue/component
 module.exports = {
 	components: {
 		'z-natural-language-selector': ZNaturalLanguageSelector

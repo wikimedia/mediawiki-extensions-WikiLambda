@@ -37,6 +37,7 @@ var Constants = require( '../../Constants.js' ),
 	ZObjectKey = require( '../ZObjectKey.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
+// @vue/component
 module.exports = {
 	components: {
 		'z-object-key': ZObjectKey

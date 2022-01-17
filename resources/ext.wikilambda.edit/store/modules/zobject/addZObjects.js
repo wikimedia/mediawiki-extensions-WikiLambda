@@ -391,7 +391,8 @@ module.exports = {
 				{ key: Constants.Z_REFERENCE_ID, value: context.getters.getCurrentZObjectId, parent: nextId }
 			] );
 		},
-		/** Create the required entry for a ZTester
+		/**
+		 * Create the required entry for a ZTester
 		 *
 		 * @param {Object} context
 		 * @param {number} objectId

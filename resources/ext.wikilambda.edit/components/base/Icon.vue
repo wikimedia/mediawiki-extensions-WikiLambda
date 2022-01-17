@@ -57,6 +57,7 @@
  *        default: 'M11 9V4H9v5H4v2h5v5h2v-5h5V9z'
  *    }
  */
+// @vue/component
 module.exports = {
 	name: 'SdIcon',
 

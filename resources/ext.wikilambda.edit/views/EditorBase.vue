@@ -9,7 +9,7 @@
 		<div class="ext-wikilambda-function-editor ext-wikilambda-editor-two-cols">
 			<aside :aria-label="$i18n( 'wikilambda-editor-steps-label' )">
 				<div
-					v-for="(step, index) in steps"
+					v-for="( step, index ) in steps"
 					:key="index"
 					class="ext-wikilambda-editor-vertical-progress-list"
 				>
@@ -35,7 +35,7 @@
 				<div class="ext-wikilambda-editor-horizontal-progress-list">
 					<ul class="ext-wikilambda-editor-progress-list ext-wikilambda-editor-tabs">
 						<li
-							v-for="(step, index) in steps"
+							v-for="( step, index ) in steps"
 							:key="index"
 							:class="{
 								'ext-wikilambda-editor-active': currentStepCategory.title === step.title,
@@ -113,6 +113,7 @@ var Constants = require( '../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
+// @vue/component
 module.exports = {
 	components: {
 		'sd-message': SdMessage,

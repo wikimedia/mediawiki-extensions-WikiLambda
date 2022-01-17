@@ -27,7 +27,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="(test, index) in testers" :key="index">
+					<tr v-for="( test, index ) in testers" :key="index">
 						<template v-if="typeof test === 'string'">
 							<th scope="row">
 								{{ getZkeyLabels[ test ] }}
@@ -77,7 +77,7 @@
 					{{ $i18n( 'wikilambda-tester-results-subtitle' ) }}
 					{{ getZkeyLabels[ activeZImplementationId ] }}
 					( {{ getZkeyLabels[ activeZTesterId ] ||
-						( getNewTesterZObjects && getNewTesterZObjects.Z2K3.Z12K1[ 0 ].Z11K2.Z6K1)
+						( getNewTesterZObjects && getNewTesterZObjects.Z2K3.Z12K1[ 0 ].Z11K2.Z6K1 )
 					}} )
 				</h3>
 				<ul>
@@ -109,6 +109,7 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	ZTesterImplResult = require( './ZTesterImplResult.vue' );
 
+// @vue/component
 module.exports = {
 	components: {
 		'z-tester-impl-result': ZTesterImplResult

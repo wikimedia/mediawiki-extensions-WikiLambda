@@ -24,7 +24,7 @@
 				<a :href="zTypeLink" :target="!viewmode ? '_blank' : ''">{{ zTypeLabel }}</a>
 			</span>
 			<z-key-mode-selector
-				v-if="!(viewmode || readonly) && selectedMode && !isIdentityKey && zType !== Constants.Z_OBJECT"
+				v-if="!( viewmode || readonly ) && selectedMode && !isIdentityKey && zType !== Constants.Z_OBJECT"
 				:mode="selectedMode"
 				:parent-type="parentType"
 				:literal-type="literalType"
@@ -74,6 +74,7 @@ var Constants = require( '../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	typeUtils = require( '../mixins/typeUtils.js' );
 
+// @vue/component
 module.exports = {
 	name: 'ZObjectKey',
 	components: {
@@ -110,26 +111,6 @@ module.exports = {
 			selectedMode: Constants.Z_KEY_MODES.LITERAL,
 			literalType: Constants.Z_KEY_MODES.LITERAL
 		};
-	},
-	watch: {
-		getZkeys: function () {
-			if ( !this.zKey ) {
-				return;
-			}
-			var literal = this.getZkeyLiteralType( this.zKey );
-			if ( literal &&
-				this.literalType !== literal &&
-				literal !== Constants.Z_OBJECT
-			) {
-				this.literalType = literal;
-			}
-		},
-		zType: {
-			immediate: true,
-			handler: function () {
-				this.selectedMode = this.getModeByType( this.zType );
-			}
-		}
 	},
 	computed: $.extend( {},
 		mapState( [
@@ -221,6 +202,26 @@ module.exports = {
 				}
 			}
 		} ),
+	watch: {
+		getZkeys: function () {
+			if ( !this.zKey ) {
+				return;
+			}
+			var literal = this.getZkeyLiteralType( this.zKey );
+			if ( literal &&
+				this.literalType !== literal &&
+				literal !== Constants.Z_OBJECT
+			) {
+				this.literalType = literal;
+			}
+		},
+		zType: {
+			immediate: true,
+			handler: function () {
+				this.selectedMode = this.getModeByType( this.zType );
+			}
+		}
+	},
 	beforeCreate: function () {
 		this.$options.components[ 'z-object' ] = require( './ZObject.vue' );
 	},

@@ -1,11 +1,17 @@
 <template>
+	<!--
+		WikiLambda Vue component for a "Chip" / input tag
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div class="ext-wikilambda-chip">
 		<div
 			class="ext-wikilambda-chip_text"
 			:class="hover"
 			role="textbox"
 			:contenteditable="readonly"
-			@keydown.enter="handleEnter($event)"
+			@keydown.enter="handleEnter( $event )"
 		>
 			{{ text }}
 		</div>

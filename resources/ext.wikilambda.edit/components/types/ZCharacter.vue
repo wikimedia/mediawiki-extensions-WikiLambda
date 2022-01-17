@@ -25,8 +25,10 @@ var Constants = require( './../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
+// @vue/component
 module.exports = {
 	name: 'ZString',
+	mixins: [ typeUtils ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -40,7 +42,6 @@ module.exports = {
 			required: true
 		}
 	},
-	mixins: [ typeUtils ],
 	computed: $.extend( mapGetters( {
 		getZObjectById: 'getZObjectById',
 		getZObjectChildrenById: 'getZObjectChildrenById',

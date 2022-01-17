@@ -34,19 +34,20 @@ var Constants = require( '../../Constants.js' ),
 	ZString = require( './ZString.vue' ),
 	ZMultilingualString = require( './ZMultilingualString.vue' );
 
+// @vue/component
 module.exports = {
 	components: {
 		'z-object-selector': ZObjectSelector,
 		'z-multilingual-string': ZMultilingualString,
 		'z-string': ZString
 	},
+	mixins: [ typeUtils ],
 	props: {
 		zobjectId: {
 			type: Number,
 			required: true
 		}
 	},
-	mixins: [ typeUtils ],
 	computed: $.extend(
 		mapGetters( {
 			getZObjectChildrenById: 'getZObjectChildrenById',

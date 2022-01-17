@@ -15,7 +15,7 @@
 			</label>
 			<!-- TODO: replace href with correct URL: T298479 -->
 			<a href="#" class="ext-wikilambda-app__text-smaller">
-				{{ $i18n("wikilambda-function-definition-alias-example") }}
+				{{ $i18n( "wikilambda-function-definition-alias-example" ) }}
 			</a>
 		</div>
 
@@ -23,7 +23,7 @@
 			<chips
 				:chips="getFilteredCurrentLanguageAliases"
 				:input-placeholder="functionDefinitionAliasPlaceholder"
-				:input-aria-label="$i18n('wikilambda-function-definition-alias-label')"
+				:input-aria-label="$i18n( 'wikilambda-function-definition-alias-label' )"
 				@add-chip="addAliasForLanguage"
 				@edit-chip="updateAlias"
 				@remove-chip="removeAlias"

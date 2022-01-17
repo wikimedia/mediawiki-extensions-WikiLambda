@@ -7,7 +7,7 @@
 	-->
 	<div>
 		<select
-			v-if="!(viewmode || readonly)"
+			v-if="!( viewmode || readonly )"
 			v-model="currentBooleanValue"
 			class="ext-wikilambda-zboolean"
 		>
@@ -33,8 +33,10 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
+// @vue/component
 module.exports = {
 	name: 'ZBoolean',
+	mixins: [ typeUtils ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -48,7 +50,6 @@ module.exports = {
 			default: false
 		}
 	},
-	mixins: [ typeUtils ],
 	computed: $.extend( mapGetters( {
 		getZObjectChildrenById: 'getZObjectChildrenById',
 		getZkeyLabels: 'getZkeyLabels'

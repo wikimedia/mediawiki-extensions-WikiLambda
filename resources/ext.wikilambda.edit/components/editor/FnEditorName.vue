@@ -7,11 +7,11 @@
 	-->
 	<fn-editor-base class="ext-wikilambda-editor-name">
 		<template #title>
-			{{ $i18n( 'wikilambda-editor-name-title') }}
+			{{ $i18n( 'wikilambda-editor-name-title' ) }}
 		</template>
 
 		<template #subtitle>
-			{{ $i18n( 'wikilambda-editor-name-subtitle') }}
+			{{ $i18n( 'wikilambda-editor-name-subtitle' ) }}
 		</template>
 
 		<fn-editor-zlanguage-selector></fn-editor-zlanguage-selector>
@@ -82,6 +82,7 @@ var FnEditorBase = require( './FnEditorBase.vue' ),
 	FnEditorZLanguageSelector = require( './FnEditorZLanguageSelector.vue' ),
 	SdButton = require( '../base/Button.vue' );
 
+// @vue/component
 module.exports = {
 	components: {
 		'fn-editor-base': FnEditorBase,

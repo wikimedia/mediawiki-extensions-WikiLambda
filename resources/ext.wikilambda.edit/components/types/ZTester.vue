@@ -13,7 +13,7 @@
 		></z-reference>
 		<span class="ext-wikilambda-is-tester-associated">
 			({{ isTesterAttached ?
-				$i18n( 'wikilambda-function-is-attached') :
+				$i18n( 'wikilambda-function-is-attached' ) :
 				$i18n( 'wikilambda-function-is-not-attached' )
 			}})
 		</span>
@@ -52,6 +52,7 @@ var Constants = require( '../../Constants.js' ),
 	ZReference = require( './ZReference.vue' ),
 	ZFunctionTesterReport = require( '../function/ZFunctionTesterReport.vue' );
 
+// @vue/component
 module.exports = {
 	components: {
 		'z-function-call': ZFunctionCall,

@@ -30,6 +30,7 @@
 var mapGetters = require( 'vuex' ).mapGetters,
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
+// @vue/component
 module.exports = {
 	mixins: [ typeUtils ],
 	props: {

@@ -9,6 +9,7 @@
 </template>
 
 <script>
+// @vue/component
 module.exports = {
 	name: 'function-tests'
 };

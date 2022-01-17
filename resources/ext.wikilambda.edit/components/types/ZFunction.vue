@@ -44,6 +44,7 @@ var Constants = require( '../../Constants.js' ),
 	ZFunctionSignature = require( '../ZFunctionSignature.vue' ),
 	ZFunctionTesterReport = require( '../function/ZFunctionTesterReport.vue' );
 
+// @vue/component
 module.exports = {
 	components: {
 		'z-argument-list': ZArgumentList,
@@ -54,13 +55,13 @@ module.exports = {
 		'z-function-tester-report': ZFunctionTesterReport
 	},
 	mixins: [ typeUtils ],
-	inject: {
-		viewmode: { default: false }
-	},
 	provide: function () {
 		return {
 			viewmode: this.viewmode || this.readonly
 		};
+	},
+	inject: {
+		viewmode: { default: false }
 	},
 	props: {
 		zobjectId: {

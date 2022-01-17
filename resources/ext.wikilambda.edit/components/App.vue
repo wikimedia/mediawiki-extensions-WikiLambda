@@ -19,6 +19,7 @@
 var mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
+// @vue/component
 module.exports = {
 	name: 'App',
 	inject: {

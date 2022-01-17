@@ -8,7 +8,7 @@
 	<ul class="ext-wikilambda-zobject-key-list">
 		<li v-for="( value, key ) in zObjectWithoutPersistent" :key="key">
 			<sd-button
-				v-if="!(viewmode || readonly)"
+				v-if="!( viewmode || readonly )"
 				:title="tooltipRemoveZObjectKey"
 				:destructive="true"
 				@click="removeKey( value.id )"
@@ -35,6 +35,7 @@ var Constants = require( '../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
+// @vue/component
 module.exports = {
 	name: 'ZObjectKeyList',
 	components: {

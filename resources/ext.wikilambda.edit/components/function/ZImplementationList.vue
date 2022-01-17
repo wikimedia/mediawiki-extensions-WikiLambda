@@ -11,7 +11,7 @@
 		</h3>
 		<ul class="ext-wikilambda-zlist-no-bullets">
 			<z-implementation-list-item
-				v-for="(item) in ZlistItems"
+				v-for="( item ) in ZlistItems"
 				:key="item.id"
 				:zobject-id="item.id"
 				:viewmode="getViewMode"
@@ -43,12 +43,13 @@ var Constants = require( '../../Constants.js' ),
 	ZList = require( '../types/ZList.vue' ),
 	ZImplementationListItem = require( './ZImplementationListItem.vue' );
 
+// @vue/component
 module.exports = {
 	name: 'ZImplementationList',
-	extends: ZList,
 	components: {
 		'z-implementation-list-item': ZImplementationListItem
 	},
+	extends: ZList,
 	computed: $.extend( mapGetters( [ 'getNextObjectId', 'getCurrentZObjectId', 'getViewMode' ] ),
 		{
 			Constants: function () {

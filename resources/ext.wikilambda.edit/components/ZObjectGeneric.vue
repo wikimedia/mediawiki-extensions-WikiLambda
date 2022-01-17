@@ -10,7 +10,7 @@
 
 		<span v-if="persistent">
 			<a
-				v-if="type !== zobjectId && (viewmode || readonly)"
+				v-if="type !== zobjectId && ( viewmode || readonly )"
 				:href="typeLink"
 				:target="!viewmode ? '_blank' : ''"
 			>
@@ -50,6 +50,7 @@ var Constants = require( '../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapState = require( 'vuex' ).mapState;
 
+// @vue/component
 module.exports = {
 	name: 'ZObjectGeneric',
 	components: {

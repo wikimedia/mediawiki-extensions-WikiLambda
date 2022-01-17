@@ -9,7 +9,7 @@
 		<h3>{{ $i18n( 'wikilambda-editor-tester-list-label' ) }}</h3>
 		<ul class="ext-wikilambda-zlist-no-bullets">
 			<z-tester-list-item
-				v-for="(item) in ZlistItems"
+				v-for="( item ) in ZlistItems"
 				:key="item.id"
 				:zobject-id="item.id"
 				:viewmode="getViewMode"
@@ -50,12 +50,13 @@ var Constants = require( '../../Constants.js' ),
 	ZTesterListItem = require( './ZTesterListItem.vue' ),
 	ZTesterAdHoc = require( './ZTesterAdHoc.vue' );
 
+// @vue/component
 module.exports = {
-	extends: ZList,
 	components: {
 		'z-tester-list-item': ZTesterListItem,
 		'z-tester-ad-hoc': ZTesterAdHoc
 	},
+	extends: ZList,
 	computed: $.extend( mapGetters( [
 		'getNextObjectId',
 		'getCurrentZObjectId',

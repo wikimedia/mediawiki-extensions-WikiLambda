@@ -33,11 +33,13 @@ var Constants = require( './../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
+// @vue/component
 module.exports = {
 	name: 'ZReference',
 	components: {
 		'z-object-selector': ZObjectSelector
 	},
+	mixins: [ typeUtils ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -59,7 +61,6 @@ module.exports = {
 			default: false
 		}
 	},
-	mixins: [ typeUtils ],
 	computed: $.extend( {},
 		mapGetters( {
 			getZObjectChildrenById: 'getZObjectChildrenById',

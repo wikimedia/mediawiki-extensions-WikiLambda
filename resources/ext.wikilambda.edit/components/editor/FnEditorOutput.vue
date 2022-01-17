@@ -38,6 +38,7 @@ var FnEditorBase = require( './FnEditorBase.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
+// @vue/component
 module.exports = {
 	components: {
 		'fn-editor-base': FnEditorBase,
