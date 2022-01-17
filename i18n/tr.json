@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"BaRaN6161 TURK",
+			"Can",
 			"Hedda",
 			"Jelican9",
 			"Joseph",
@@ -59,6 +60,8 @@
 	"wikilambda-special-objectsbytype-typeheader": "Tüm Türler",
 	"wikilambda-special-objectsbytype-empty": "Bu tür için kalıcı ZObject bulunamadı.",
 	"wikilambda-publishnew": "Yayımla",
+	"wikilambda-published": "Yayımlandı!",
+	"wikilambda-cancel": "İptal et",
 	"wikilambda-savenew": "Kaydet",
 	"wikilambda-publishchanges": "Değişiklikleri yayımla",
 	"wikilambda-savechanges": "Değişiklikleri kaydet",
@@ -123,6 +126,12 @@
 	"wikilambda-persistentobject-function-signature-label": "İşlev İmzası",
 	"wikilambda-persistentobject-evaluate-function": "İşlevi Değerlendir",
 	"wikilambda-implementation-selector-none": "Bu dahili bir uyarlama. Kod, çekirdek yazılımın bir parçası, ve burada görüntülenmiyor.",
+	"wikilambda-function-definition-name-label": "Ad",
+	"wikilambda-function-definition-name-placeholder": "Açıklayıcı işlev adı giriniz",
+	"wikilambda-function-definition-name-example": "Ad örneklerini gör",
+	"wikilambda-function-definition-footer-placeholder": "Değişikliklerinizi kısaca açıklayın",
+	"wikilambda-function-definition-inputs-label": "Giriş türü",
+	"wikilambda-function-definition-output-label": "Çıkış türü",
 	"wikilambda-editor-steps-label": "Editör Adımları",
 	"wikilambda-editor-additional-details-label": "Ek detaylar",
 	"wikilambda-editor-fn-step-define": "Fonksiyon tanımla",
@@ -130,8 +139,11 @@
 	"wikilambda-editor-name-title": "Ad",
 	"wikilambda-editor-name-subtitle": "Fonsksiyonunuzun adı nedir? Ne işe yarar?",
 	"wikilambda-editor-name-zobject-name": "Fonksiyon adı",
+	"wikilambda-editor-input-title": "Giriş",
+	"wikilambda-editor-default-name": "Başlıksız",
 	"wikilambda-editor-input-type-placeholder": "Girdi türü",
 	"wikilambda-editor-input-add-button": "Girdi ekle",
 	"wikilambda-editor-input-default-label": "girdi",
-	"wikilambda-editor-output-title": "Çıktı"
+	"wikilambda-editor-output-title": "Çıktı",
+	"wikilambda-optional": "tercihe bağlı"
 }

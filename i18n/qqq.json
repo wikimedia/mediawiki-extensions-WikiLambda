@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"AJBot2",
+			"Ajeje Brazorf",
 			"Amire80",
 			"FF-11",
 			"Genoveva Galarza",
@@ -66,7 +67,7 @@
 	"wikilambda-special-objectsbytype-empty": "Messages shown for Special:ObjectsByType when there are no matches.\n\n{{doc-wikilambda}}",
 	"wikilambda-publishnew": "Label for the submit button when creating a ZObject on a public wiki\n{{identical|Publish}}",
 	"wikilambda-published": "Label for the publish button after clicking and publishing a function",
-	"wikilambda-cancel": "Label forthe cancel button",
+	"wikilambda-cancel": "Label for the cancel button\n\n{{Identical|Cancel}}",
 	"wikilambda-savenew": "Label for the submit button when creating a ZObject on a private wiki\n{{identical|Save}}",
 	"wikilambda-publishchanges": "Label for the submit button when updating an existing ZObject on a public wiki",
 	"wikilambda-savechanges": "Label for the submit button when updating an existing ZObject on a private wiki",

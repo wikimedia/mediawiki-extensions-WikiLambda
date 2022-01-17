@@ -14,6 +14,8 @@
 	"wikilambda-special-callfunction-nojs": "Эта страница требует использования JavaScript.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Язык",
 	"wikilambda-publishnew": "Опубликовать",
+	"wikilambda-published": "Опубликовано!",
+	"wikilambda-cancel": "Отмена",
 	"wikilambda-savenew": "Сохранить",
 	"wikilambda-savechanges": "Сохранить изменения",
 	"wikilambda-summarylabel": "Описание:",
@@ -29,5 +31,7 @@
 	"wikilambda-enable-expert-mode": "Включить режим Эксперта",
 	"wikilambda-disable-expert-mode": "Выключить режим эксперта",
 	"wikilambda-metadata-language-column": "Язык",
-	"wikilambda-metadata-fewer-languages": "Показать меньше языков"
+	"wikilambda-metadata-fewer-languages": "Показать меньше языков",
+	"wikilambda-function-definition-footer-placeholder": "Кратко опишите Ваши правки",
+	"wikilambda-function-definition-footer-label": "Описание изменений"
 }

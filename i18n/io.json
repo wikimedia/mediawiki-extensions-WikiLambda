@@ -6,7 +6,11 @@
 		]
 	},
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Idiomo",
+	"wikilambda-published": "Publikigita!",
+	"wikilambda-cancel": "Anular",
 	"wikilambda-implementation-selector": "Selektez laborado",
+	"wikilambda-function-definition-footer-placeholder": "Facez rezumo pri vua modifikuri",
+	"wikilambda-function-definition-footer-label": "Rezumo pri redakto",
 	"wikilambda-editor-input-default-label": "eniro",
 	"wikilambda-ztyped-list-items": "Listar kontenajo"
 }

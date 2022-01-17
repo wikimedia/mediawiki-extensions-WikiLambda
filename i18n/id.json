@@ -53,6 +53,8 @@
 	"wikilambda-special-objectsbytype-typeheader": "Semua Tipe",
 	"wikilambda-special-objectsbytype-empty": "Tidak ditemukan ZObjek yang bersinambung untuk tipe ini.",
 	"wikilambda-publishnew": "Terbitkan",
+	"wikilambda-published": "Telah diterbitkan!",
+	"wikilambda-cancel": "Batal",
 	"wikilambda-savenew": "Simpan",
 	"wikilambda-publishchanges": "Terbitkan perubahan",
 	"wikilambda-savechanges": "Simpan perubahan",
@@ -143,6 +145,9 @@
 	"wikilambda-function-definition-alias-label": "Alias",
 	"wikilambda-function-definition-alias-placeholder": "Masukkan nama lain untuk nama fungsi",
 	"wikilambda-function-definition-alias-example": "Lihat contoh alias.",
+	"wikilambda-function-definition-footer-placeholder": "Jelaskan secara singkat pengubahan Anda",
+	"wikilambda-function-definition-footer-label": "Ringkasan suntingan",
+	"wikilambda-function-definition-footer-implementation-button": "Tulis Implementasi",
 	"wikilambda-function-definition-inputs-label": "Tipe masukan",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "Pilih tipe",
 	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "Pilih tipe dari daftar tipe Anda",
@@ -193,6 +198,8 @@
 	"wikilambda-ztyped-list-placeholder": "Pilih sebuah tipe generik",
 	"wikilambda-ztyped-list-description": "Tipe daftar generik",
 	"wikilambda-ztyped-list-items": "Daftar butir",
+	"wikilambda-ztyped-pair-placeholder": "Pilih jenis pasangan",
+	"wikilambda-ztyped-pair-description": "Pasangan jenis",
 	"wikilambda-zerror": "ZGalat tipe $1",
 	"wikilambda-optional": "opsional"
 }
