@@ -77,7 +77,7 @@ describe( 'ZObjectSelector', function () {
 			// eslint-disable-next-line no-unused-vars
 			mockedGet = jest.fn( function ( payload ) {
 				return {
-					done: function ( fn ) {
+					then: function ( fn ) {
 						return fn( {
 							batchcomplete: '',
 							query: {
@@ -97,15 +97,16 @@ describe( 'ZObjectSelector', function () {
 					}
 				};
 			} );
-		// eslint-disable-next-line no-undef
-		global.mw.Api = function mockedApi() {
-			this.get = mockedGet;
-		};
 
 		wrapper = mount( ZObjectSelector, {
 			store: store,
-			localVue: localVue
+			localVue: localVue,
+			mocks: {
+				$i18n: jest.fn()
+			}
 		} );
+
+		wrapper.vm.lookupZObject = mockedGet;
 
 		return wrapper.find( 'input' ).setValue( 'test' )
 			.then( function () {
@@ -119,12 +120,9 @@ describe( 'ZObjectSelector', function () {
 			.then( function () {
 				expect( mockedGet ).toHaveBeenCalledTimes( 1 );
 				expect( mockedGet ).toHaveBeenCalledWith( {
-					action: 'query',
-					list: 'wikilambdasearch_labels',
-					wikilambdasearch_search: 'test',
-					wikilambdasearch_type: '',
-					wikilambdasearch_return_type: '',
-					wikilambdasearch_language: 'en'
+					input: 'test',
+					type: '',
+					returnType: ''
 				} );
 			} );
 	} );
@@ -134,17 +132,13 @@ describe( 'ZObjectSelector', function () {
 			// eslint-disable-next-line no-unused-vars
 			mockedGet = jest.fn( function ( payload ) {
 				return {
-					done: function ( fn ) {
+					then: function ( fn ) {
 						return fn( {
 							batchcomplete: ''
 						} );
 					}
 				};
 			} );
-		// eslint-disable-next-line no-undef
-		global.mw.Api = function mockedApi() {
-			this.get = mockedGet;
-		};
 
 		wrapper = mount( ZObjectSelector, {
 			propsData: {
@@ -157,6 +151,8 @@ describe( 'ZObjectSelector', function () {
 			}
 		} );
 
+		wrapper.vm.lookupZObject = mockedGet;
+
 		return wrapper.find( 'input' ).setValue( 'test' )
 			.then( function () {
 				// eslint-disable-next-line compat/compat
@@ -169,12 +165,9 @@ describe( 'ZObjectSelector', function () {
 			.then( function () {
 				expect( mockedGet ).toHaveBeenCalledTimes( 1 );
 				expect( mockedGet ).toHaveBeenCalledWith( {
-					action: 'query',
-					list: 'wikilambdasearch_labels',
-					wikilambdasearch_search: 'test',
-					wikilambdasearch_type: 'Z4',
-					wikilambdasearch_return_type: '',
-					wikilambdasearch_language: 'en'
+					input: 'test',
+					type: 'Z4',
+					returnType: ''
 				} );
 			} );
 	} );
@@ -184,17 +177,13 @@ describe( 'ZObjectSelector', function () {
 			// eslint-disable-next-line no-unused-vars
 			mockedGet = jest.fn( function ( payload ) {
 				return {
-					done: function ( fn ) {
+					then: function ( fn ) {
 						return fn( {
 							batchcomplete: ''
 						} );
 					}
 				};
 			} );
-		// eslint-disable-next-line no-undef
-		global.mw.Api = function mockedApi() {
-			this.get = mockedGet;
-		};
 
 		wrapper = mount( ZObjectSelector, {
 			propsData: {
@@ -207,6 +196,8 @@ describe( 'ZObjectSelector', function () {
 			}
 		} );
 
+		wrapper.vm.lookupZObject = mockedGet;
+
 		return wrapper.find( 'input' ).setValue( 'test' )
 			.then( function () {
 				// eslint-disable-next-line compat/compat
@@ -219,12 +210,9 @@ describe( 'ZObjectSelector', function () {
 			.then( function () {
 				expect( mockedGet ).toHaveBeenCalledTimes( 1 );
 				expect( mockedGet ).toHaveBeenCalledWith( {
-					action: 'query',
-					list: 'wikilambdasearch_labels',
-					wikilambdasearch_search: 'test',
-					wikilambdasearch_type: '',
-					wikilambdasearch_return_type: 'Z4',
-					wikilambdasearch_language: 'en'
+					input: 'test',
+					type: '',
+					returnType: 'Z4'
 				} );
 			} );
 	} );

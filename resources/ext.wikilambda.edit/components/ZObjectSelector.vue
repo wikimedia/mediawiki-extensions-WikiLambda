@@ -135,7 +135,10 @@ module.exports = {
 		}
 	),
 	methods: $.extend( {},
-		mapActions( [ 'fetchZKeys' ] ),
+		mapActions( [
+			'lookupZObject',
+			'fetchZKeys'
+		] ),
 		mapMutations( [ 'addZKeyLabel' ] ),
 		{
 			isExcludedZType: function ( zid ) {
@@ -154,39 +157,28 @@ module.exports = {
 			},
 
 			/**
-			 * Once the timeout is done, calls the `wikilambdasearch_labels` API
-			 * with the current value of the input
+			 * Handle get zObject lookup.
+			 * update lookup results with label and update zKeyLabels in store.
 			 *
 			 * @param {string} input
 			 */
 			getLookupResults: function ( input ) {
-				var api = new mw.Api(),
-					self = this,
-					queryType = 'wikilambdasearch_labels',
+				var self = this,
 					searchedString = input;
-
-				api.get( {
-					action: 'query',
-					list: queryType,
-					// eslint-disable-next-line camelcase
-					wikilambdasearch_search: input,
-					// eslint-disable-next-line camelcase
-					wikilambdasearch_type: this.type,
-					// eslint-disable-next-line camelcase
-					wikilambdasearch_return_type: this.returnType,
-					// eslint-disable-next-line camelcase
-					wikilambdasearch_language: this.zLang
-				} ).done( function ( data ) {
-					var zKeys = [];
-					self.lookupResults = {};
+				this.lookupZObject( {
+					input: input,
+					type: this.type,
+					returnType: this.returnType
+				} ).then( function ( payload ) {
 					// If the string searched has changed, do not show the search result
 					if ( self.inputValue.indexOf( searchedString ) === -1 ) {
 						return;
 					}
 
-					// If any results available
-					if ( ( 'query' in data ) && ( queryType in data.query ) ) {
-						data.query[ queryType ].forEach(
+					var zKeys = [];
+					self.lookupResults = {};
+					if ( payload && payload.length > 0 ) {
+						payload.forEach(
 							function ( result ) {
 								var zid = result.page_title,
 									label = result.label;
@@ -214,6 +206,7 @@ module.exports = {
 						self.validatorSetError( 'wikilambda-noresult' );
 					}
 				} );
+
 			},
 
 			/**
@@ -270,14 +263,15 @@ module.exports = {
 				if ( input.length < 2 ) {
 					return;
 				}
-				clearTimeout( this.lookupDelayTimer );
-				this.lookupDelayTimer = setTimeout( function () {
-					if ( self.isValidZidFormat( input.toUpperCase() ) ) {
+
+				if ( self.isValidZidFormat( input.toUpperCase() ) ) {
+					clearTimeout( this.lookupDelayTimer );
+					this.lookupDelayTimer = setTimeout( function () {
 						self.validateZidInput();
-					} else {
-						self.getLookupResults( input );
-					}
-				}, this.lookupDelayMs );
+					}, this.lookupDelayMs );
+				} else {
+					self.getLookupResults( input );
+				}
 			},
 
 			/**

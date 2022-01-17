@@ -13,7 +13,9 @@ var Constants = require( '../../Constants.js' ),
 	addZObjects = require( './zobject/addZObjects.js' ),
 	currentZObject = require( './zobject/currentZObject.js' ),
 	saveZObject = require( '../../mixins/api.js' ).methods.saveZObject,
-	updateZObjectPageTitle = require( '../../mixins/domUtils.js' ).methods.updateZObjectPageTitle;
+	updateZObjectPageTitle = require( '../../mixins/domUtils.js' ).methods.updateZObjectPageTitle,
+	debounceZObjectLookup = null,
+	DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT = 300;
 
 function isObjectTypeDeclaration( object, parentObject ) {
 	var isReference = object.value === Constants.Z_REFERENCE;
@@ -707,6 +709,41 @@ module.exports = {
 			return context.dispatch( 'changeType', {
 				id: zObjectId,
 				type: ( objectReferenceId || objectType ).value
+			} );
+		},
+		/**
+		 * Lookup a ZObject
+		 *
+		 * @param {Object} context Vuex context object
+		 * @param {number} payload Object containing input(string) and type
+		 * @return {Promise}
+		 */
+		lookupZObject: function ( context, payload ) {
+			var api = new mw.Api(),
+				queryType = 'wikilambdasearch_labels';
+			// eslint-disable-next-line compat/compat
+			return new Promise( function ( resolve ) {
+				clearTimeout( debounceZObjectLookup );
+				debounceZObjectLookup = setTimeout( function () {
+					return api.get( {
+						action: 'query',
+						list: queryType,
+						// eslint-disable-next-line camelcase
+						wikilambdasearch_search: payload.input,
+						// eslint-disable-next-line camelcase
+						wikilambdasearch_type: payload.type,
+						// eslint-disable-next-line camelcase
+						wikilambdasearch_return_type: payload.returnType,
+						// eslint-disable-next-line camelcase
+						wikilambdasearch_language: context.getters.getZLang
+					} ).then( function ( data ) {
+						var lookupResults = [];
+						if ( ( 'query' in data ) && ( queryType in data.query ) ) {
+							lookupResults = data.query[ queryType ];
+						}
+						return resolve( lookupResults );
+					} );
+				}, DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT );
 			} );
 		}
 	}

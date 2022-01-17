@@ -7,11 +7,11 @@
 	-->
 	<fn-editor-base class="ext-wikilambda-editor-name">
 		<template #title>
-			{{ $i18n( 'wikilambda-editor-name-title') }}
+			{{ $i18n( 'wikilambda-editor-name-title' ) }}
 		</template>
 
 		<template #subtitle>
-			{{ $i18n( 'wikilambda-editor-name-subtitle') }}
+			{{ $i18n( 'wikilambda-editor-name-subtitle' ) }}
 		</template>
 
 		<fn-editor-zlanguage-selector></fn-editor-zlanguage-selector>
@@ -21,12 +21,24 @@
 				{{ $i18n( 'wikilambda-editor-name-zobject-name' ) }}
 			</h3>
 
-			<input
-				v-model="zobjectLabel"
-				class="ext-wikilambda-text-input"
-				:aria-label="$i18n( 'wikilambda-editor-name-zobject-name' )"
-				:placeholder="$i18n( 'wikilambda-editor-name-zobject-name-placeholder' )"
-			>
+			<div class="ext-wikilambda-function-name-box">
+				<input
+					v-model="zobjectLabel"
+					class="ext-wikilambda-text-input"
+					:aria-label="$i18n( 'wikilambda-editor-name-zobject-name' )"
+					:placeholder="$i18n( 'wikilambda-editor-name-zobject-name-placeholder' )"
+					@input="onInput"
+				>
+				<sd-select-menu
+					v-if="hasFunctionLookupResults"
+					:items="functionLookupResults"
+					:active-item-index="-1"
+					listbox-id="function-name"
+					labelled-by="zobject-selector__label"
+					@select="onLookupFunctionSelect"
+				>
+				</sd-select-menu>
+			</div>
 			<div class="description">
 				{{ $i18n( 'wikilambda-editor-name-zobject-name-description' ) }}
 			</div>
@@ -79,12 +91,15 @@ var FnEditorBase = require( './FnEditorBase.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	typeUtils = require( '../../mixins/typeUtils.js' ),
+	SdSelectMenu = require( '../base/SelectMenu.vue' ),
 	FnEditorZLanguageSelector = require( './FnEditorZLanguageSelector.vue' ),
 	SdButton = require( '../base/Button.vue' );
 
+// @vue/component
 module.exports = {
 	components: {
 		'fn-editor-base': FnEditorBase,
+		'sd-select-menu': SdSelectMenu,
 		'fn-editor-zlanguage-selector': FnEditorZLanguageSelector,
 		'sd-button': SdButton
 	},
@@ -97,7 +112,8 @@ module.exports = {
 	},
 	data: function () {
 		return {
-			newAlias: ''
+			newAlias: '',
+			functionLookupResults: []
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -108,6 +124,12 @@ module.exports = {
 		'getNextObjectId',
 		'getCurrentZLanguage'
 	] ), {
+		/**
+		 * @return {boolean}
+		 */
+		hasFunctionLookupResults: function () {
+			return this.functionLookupResults.length > 0;
+		},
 		zobject: function () {
 			return this.getZObjectChildrenById( this.zobjectId );
 		},
@@ -198,6 +220,7 @@ module.exports = {
 		}
 	} ),
 	methods: $.extend( mapActions( [
+		'lookupZObject',
 		'setZObjectValue',
 		'addZObject',
 		'addZString',
@@ -207,6 +230,70 @@ module.exports = {
 		'removeZObject',
 		'setPageZObjectValue'
 	] ), {
+		/**
+		 * Handle input function name.
+		 * Call getfunctionlookup and handle empty input.
+		 */
+		onInput: function () {
+			var self = this,
+				input = this.zobjectLabel;
+			if ( !input ) {
+				self.functionLookupResults = [];
+				return;
+			}
+
+			self.getFunctionLookupResults( input );
+		},
+		/**
+		 * Handle lookup function select.
+		 * Open a new tab to edit function.
+		 *
+		 * @param {string} index
+		 */
+		onLookupFunctionSelect: function ( index ) {
+			var pageTitle = this.functionLookupResults[ index ].value;
+			var route = this.$router.resolve( { name: 'edit', query: {
+				title: pageTitle,
+				action: 'edit',
+				zid: Constants.Z_FUNCTION,
+				step: 'behavior'
+			} } );
+			window.open( route.href, '_blank' ).focus();
+		},
+		/**
+		 * Handle get function lookup.
+		 * update function lookup results with data.
+		 *
+		 * @param {string} input
+		 */
+		getFunctionLookupResults: function ( input ) {
+			var self = this,
+				searchedString = input;
+			this.lookupZObject( {
+				input: input,
+				type: Constants.Z_FUNCTION
+			} ).then( function ( payload ) {
+
+				// If the string searched has changed, do not show the search result
+				if ( self.zobjectLabel.indexOf( searchedString ) === -1 ) {
+					return;
+				}
+
+				var functionLookupResults = [];
+				if ( payload && payload.length > 0 ) {
+					payload.forEach(
+						function ( result ) {
+							functionLookupResults.push( {
+								label: result.label,
+								value: result.page_title
+							} );
+						}
+					);
+				}
+
+				self.functionLookupResults = functionLookupResults;
+			} );
+		},
 		getLanguageAliasStringsetId: function ( language ) {
 			var aliasId;
 
@@ -294,6 +381,10 @@ module.exports = {
 
 <style lang="less">
 .ext-wikilambda-editor-name {
+	.ext-wikilambda-function-name-box {
+		position: relative;
+	}
+
 	.ext-wikilambda-alias-input {
 		display: flex;
 
