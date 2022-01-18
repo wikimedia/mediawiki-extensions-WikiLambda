@@ -1,10 +1,15 @@
 {
 	"@metadata": {
 		"authors": [
-			"Kly"
+			"Kly",
+			"Impartial just",
+			"Neetp7k9",
+			"Tranve",
+			"Weather Top Wizard",
+			"Winston Sung"
 		]
 	},
-	"wikilambda-desc": "為維基媒體的 Wiki 提供 Wiki 語法解析器功能，來呼叫對於在中央 Wiki 上編寫、管理、評估的功能之評估。",
+	"wikilambda-desc": "為維基媒體的 Wiki 提供 wikitext 解析器功能，來呼叫對於在中央 Wiki 上編寫、管理、評估的功能之評估。",
 	"wikilambda-emptylabel": "無標籤的 ZObject",
 	"wikilambda-invalidzobject": "提供內容不是有效的 ZObject。",
 	"wikilambda-invalidcontenttype": "提供的內容不是 ZObject 類別。",
