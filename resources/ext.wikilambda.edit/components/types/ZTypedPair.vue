@@ -7,34 +7,42 @@
 	-->
 	<div class="ext-wikilambda-zTypedPair">
 		<template v-if="requiresTypeForList">
-			<z-object-selector
-
-				:type="Constants.zType"
-				:placeholder="$i18n( 'wikilambda-ztyped-pair-placeholder' )"
-				:readonly="readonly"
-				@input="onPairTypeChange( $event, 0 )"
-			></z-object-selector>
-			<z-object-selector
-				:type="Constants.zType"
-				:placeholder="$i18n( 'wikilambda-ztyped-pair-placeholder' )"
-				:readonly="readonly"
-				@input="onPairTypeChange( $event, 1 )"
-			></z-object-selector>
+			<div>
+				<label>{{ $i18n( 'wikilambda-ztyped-pair-key-label' ) }}:</label>
+				<z-object-selector
+					:type="Constants.zType"
+					:placeholder="$i18n( 'wikilambda-ztyped-pair-placeholder' )"
+					:readonly="readonly"
+					@input="onPairTypeChange( $event, 0 )"
+				></z-object-selector>
+			</div>
+			<div>
+				<label>{{ $i18n( 'wikilambda-ztyped-pair-value-label' ) }}:</label>
+				<z-object-selector
+					:type="Constants.zType"
+					:placeholder="$i18n( 'wikilambda-ztyped-pair-placeholder' )"
+					:readonly="readonly"
+					@input="onPairTypeChange( $event, 1 )"
+				></z-object-selector>
+			</div>
 		</template>
 		<template v-else>
-			<p>
-				<strong>{{ $i18n( 'wikilambda-ztyped-pair-description' ) }}:</strong> ( {{ Key1Label }}, {{ Key2Label }} )
-			</p>
-			<z-object
-				:zobject-id="zTypedPairKey1.id"
-				:persistent="false"
-				:readonly="readonly"
-			></z-object>
-			<z-object
-				:zobject-id="zTypedPairKey2.id"
-				:persistent="false"
-				:readonly="readonly"
-			></z-object>
+			<div>
+				<label>{{ $i18n( 'wikilambda-ztyped-pair-key-label' ) }}: ( {{ Key1Label }} ):</label>
+				<z-object
+					:zobject-id="zTypedPairKey1.id"
+					:persistent="false"
+					:readonly="readonly"
+				></z-object>
+			</div>
+			<div>
+				<label>{{ $i18n( 'wikilambda-ztyped-pair-value-label' ) }}: ( {{ Key2Label }} ):</label>
+				<z-object
+					:zobject-id="zTypedPairKey2.id"
+					:persistent="false"
+					:readonly="readonly"
+				></z-object>
+			</div>
 		</template>
 	</div>
 </template>
@@ -122,15 +130,8 @@ module.exports = {
 			}
 		} ),
 	methods: $.extend( {},
-		mapActions( [ 'addZObject', 'recalculateZListIndex', 'setTypeOfTypedPair', 'addTypedListItem', 'removeTypedListItem', 'fetchZKeys' ] ),
+		mapActions( [ 'addZObject', 'recalculateZListIndex', 'setTypeOfTypedPair', 'removeTypedListItem', 'fetchZKeys' ] ),
 		{
-			addNewItem: function () {
-
-				this.addTypedListItem( {
-					id: this.zobjectId,
-					zObjectChildren: this.zObjectChildren
-				} );
-			},
 			onPairTypeChange: function ( type, index ) {
 				// first we create an array with the existing value
 				var types = [ this.zTypedPairType1.value, this.zTypedPairType2.value ];
@@ -155,8 +156,11 @@ module.exports = {
 </script>
 
 <style lang="less">
+@import '../../ext.wikilambda.edit.less';
+
 .ext-wikilambda-zTypedPair {
-	background: #eee;
+	background: @wmui-color-base80;
+	border: 1px solid @wmui-color-base20;
 	padding: 1em;
 }
 

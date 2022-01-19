@@ -221,8 +221,9 @@
 	"wikilambda-ztyped-list-placeholder": "Placeholder text for generic list type.\n\nThe word \"generic\" is short for \"generic type\".\n\n{{Doc-wikilambda}}",
 	"wikilambda-ztyped-list-description": "Description used to inform user of what type is the list generic.\n\n{{Doc-wikilambda}}",
 	"wikilambda-ztyped-list-items": "Heading for the list of generic items.\n\n{{Doc-wikilambda}}",
-	"wikilambda-ztyped-pair-placeholder": "Placeholder text for generic pair.\n\nThe word \"generic\" is short for \"generic type\".\n\n{{Doc-wikilambda}}",
-	"wikilambda-ztyped-pair-description": "Description used to inform user of what types are used in a pair.\n\n{{Doc-wikilambda}}",
+	"wikilambda-ztyped-pair-placeholder": "Placeholder prompt for a typed pair.\n\n{{Doc-wikilambda}}",
+	"wikilambda-ztyped-pair-key-label": "Label for the key of a typed pair.\n\n{{Doc-wikilambda}}",
+	"wikilambda-ztyped-pair-value-label": "Label for the value of a typed pair.\n\n{{Doc-wikilambda}}",
 	"wikilambda-zerror": "Message that informs that a ZError of a given type has been returned.\n\n{{Doc-wikilambda}}",
 	"wikilambda-optional": "Word used to inform the user that a given input is optional"
 }
