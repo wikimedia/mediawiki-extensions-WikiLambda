@@ -164,14 +164,14 @@ module.exports = {
 		 * @param {Object} payload
 		 * @param {string} payload.value
 		 * @param {number} payload.id
-		 * @param {boolean} payload.unwrapped //This is used to unwrap it from a Z_OBJECT_TYPE (Z1K1)
+		 * @param {boolean} payload.isDeclaration //This is used to unwrap it from a Z_OBJECT_TYPE (Z1K1)
 		 */
 		addZTypedList: function ( context, payload ) {
 			var value = payload.value || '',
-				unwrapped = payload.unwrapped || false,
+				isDeclaration = payload.isDeclaration || false,
 				functionCallId;
 
-			if ( unwrapped ) {
+			if ( isDeclaration ) {
 				functionCallId = payload.id;
 			} else {
 				functionCallId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
@@ -180,7 +180,15 @@ module.exports = {
 
 			context.dispatch( 'changeType', { id: functionCallId, type: Constants.Z_FUNCTION_CALL, value: Constants.Z_TYPED_LIST } )
 				.then( function () {
-					context.dispatch( 'addZObject', { key: Constants.Z_TYPED_LIST_TYPE, value: value, parent: functionCallId } );
+					// If the value is an object it means that it is a complex declaration (eg. Typed pair)
+					// and we will recursively use the changeType to define the type
+					if ( value instanceof Object && value.type && value.values ) {
+						var nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+						context.dispatch( 'addZObject', { key: Constants.Z_TYPED_LIST_TYPE, value: 'object', parent: functionCallId } );
+						context.dispatch( 'changeType', { id: nextId, type: value.type, values: value.values, isDeclaration: true } );
+					} else {
+						context.dispatch( 'addZObject', { key: Constants.Z_TYPED_LIST_TYPE, value: value, parent: functionCallId } );
+					}
 				} );
 		},
 		/**
@@ -192,25 +200,79 @@ module.exports = {
 		 * @param {Object} payload
 		 * @param {string} payload.value
 		 * @param {number} payload.id
-		 * @param {boolean} payload.unwrapped //This is used to unwrap it from a Z_OBJECT_TYPE (Z1K1)
+		 * @param {boolean} payload.isDeclaration //This is used know if the the values need to be initialized or not
 		 */
 		addZTypedPair: function ( context, payload ) {
-			var value1 = payload.value1 || '',
-				value2 = payload.value2 || '',
-				unwrapped = payload.unwrapped || false,
+			var values = payload.values || [],
+				isDeclaration = payload.isDeclaration || false,
 				functionCallId;
 
-			if ( unwrapped ) {
+			if ( isDeclaration ) {
+				// the following creates:
+				// {
+				//  "Z1K1": "Z7",
+				//  "Z7K1": "Z882",
+				//  "Z882K1": values[ 0 ],
+				//  "Z882K2": values[ 1 ]
+				// }
 				functionCallId = payload.id;
+				context.dispatch( 'changeType', { id: functionCallId, type: Constants.Z_FUNCTION_CALL, value: Constants.Z_TYPED_PAIR } )
+					.then( function () {
+						context.dispatch( 'addZObject', { key: Constants.Z_TYPED_PAIR_TYPE1, value: values[ 0 ] || '', parent: functionCallId } );
+						context.dispatch( 'addZObject', { key: Constants.Z_TYPED_PAIR_TYPE2, value: values[ 1 ] || '', parent: functionCallId } );
+					} );
 			} else {
+				// the following creates:
+				// "Z1K1": {
+				//  "Z1K1": "Z7",
+				//  "Z7K1": "Z882",
+				//  "Z882K1": values[ 0 ],
+				//  "Z882K2": values[ 1 ]
+				// },
+				// "K1": initialization for value[ 0 ]
+				// "K2": initialization for values[ 1 ]
 				functionCallId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
 				context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: 'object', parent: payload.id } );
+				context.dispatch( 'changeType', { id: functionCallId, type: Constants.Z_FUNCTION_CALL, value: Constants.Z_TYPED_PAIR } )
+					.then( function () {
+						context.dispatch( 'addZObject', { key: Constants.Z_TYPED_PAIR_TYPE1, value: values[ 0 ] || '', parent: functionCallId } );
+						context.dispatch( 'addZObject', { key: Constants.Z_TYPED_PAIR_TYPE2, value: values[ 1 ] || '', parent: functionCallId } );
+					} );
+				// when the object is not a declaration we also initialize its key/value pairs
+				var nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+				context.dispatch( 'addZObject', { key: Constants.Z_TYPED_OBJECT_ELEMENT_1, value: 'object', parent: payload.id } );
+				context.dispatch( 'changeType', { id: nextId, type: values[ 0 ] } );
+				nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+				context.dispatch( 'addZObject', { key: Constants.Z_TYPED_OBJECT_ELEMENT_2, value: 'object', parent: payload.id } );
+				context.dispatch( 'changeType', { id: nextId, type: values[ 1 ] } );
 			}
 
-			context.dispatch( 'changeType', { id: functionCallId, type: Constants.Z_FUNCTION_CALL, value: Constants.Z_TYPED_PAIR } )
+		},
+		/**
+		 * Create the required entry in the object for a map list of typed pair.
+		 * The entry will result in a json representation equal to file stored in
+		 * function orchestrator test/features/v1/test_data/Z88303.json
+		 * Overall it is going to be a TypedMap, including a typedList including a typedPair.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {string} payload.value
+		 * @param {number} payload.id
+		 */
+		addZTypedMap: function ( context, payload ) {
+			var values = payload.values || [],
+				nextId;
+
+			// Set the root of the object to be a Z1K1 (Object_type)
+			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: 'object', parent: payload.id } );
+
+			// Set the Z1K1 to a ZtypedMap:
+			// { Z1K1: Z7, Z7K1: Z883, Z883K1: values[ 0 ], Z883K2: values[ 0 ] }
+			context.dispatch( 'changeType', { id: nextId, type: Constants.Z_FUNCTION_CALL, value: Constants.Z_TYPED_MAP } )
 				.then( function () {
-					context.dispatch( 'addZObject', { key: Constants.Z_TYPED_PAIR_TYPE1, value: value1, parent: functionCallId } );
-					context.dispatch( 'addZObject', { key: Constants.Z_TYPED_PAIR_TYPE2, value: value2, parent: functionCallId } );
+					context.dispatch( 'addZObject', { key: Constants.Z_TYPED_MAP_TYPE1, value: values[ 0 ] || '', parent: nextId } );
+					context.dispatch( 'addZObject', { key: Constants.Z_TYPED_MAP_TYPE2, value: values[ 1 ] || '', parent: nextId } );
 				} );
 		},
 		/**
@@ -603,6 +665,8 @@ module.exports = {
 							return context.dispatch( 'addZTypedList', payload );
 						case Constants.Z_TYPED_PAIR:
 							return context.dispatch( 'addZTypedPair', payload );
+						case Constants.Z_TYPED_MAP:
+							return context.dispatch( 'addZTypedMap', payload );
 						default:
 							return context.dispatch( 'addGenericObject', payload );
 					}

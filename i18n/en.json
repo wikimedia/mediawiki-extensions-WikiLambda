@@ -218,6 +218,8 @@
 	"wikilambda-ztyped-pair-placeholder": "Select a type",
 	"wikilambda-ztyped-pair-key-label": "Key",
 	"wikilambda-ztyped-pair-value-label": "Value",
+	"wikilambda-ztyped-map-placeholder": "Select a map type",
+	"wikilambda-ztyped-map-description": "Map of types",
 	"wikilambda-zerror": "ZError of type $1",
 	"wikilambda-optional": "optional"
 }

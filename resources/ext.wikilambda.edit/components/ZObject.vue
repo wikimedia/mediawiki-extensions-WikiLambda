@@ -50,6 +50,7 @@ var Constants = require( '../Constants.js' ),
 	ZResponseEnvelope = require( './types/ZResponseEnvelope.vue' ),
 	ZType = require( './types/ZType.vue' ),
 	ZTypedPair = require( './types/ZTypedPair.vue' ),
+	ZTypedMap = require( './types/ZTypedMap.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -76,7 +77,8 @@ module.exports = {
 		'z-responseenvelope': ZResponseEnvelope,
 		'z-type': ZType,
 		'z-typed-list': ZTypedList,
-		'z-typed-pair': ZTypedPair
+		'z-typed-pair': ZTypedPair,
+		'z-typed-map': ZTypedMap
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -140,6 +142,8 @@ module.exports = {
 						return 'z-typed-list';
 					case Constants.Z_TYPED_PAIR:
 						return 'z-typed-pair';
+					case Constants.Z_TYPED_MAP:
+						return 'z-typed-map';
 					case Constants.Z_CODE:
 						return 'z-code';
 					case Constants.Z_ARGUMENT:

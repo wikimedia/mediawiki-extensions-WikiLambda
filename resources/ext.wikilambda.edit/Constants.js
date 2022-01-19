@@ -99,7 +99,10 @@ var Constants = {
 		Z_TYPED_OBJECT_ELEMENT_2: 'K2',
 		Z_TYPED_PAIR: 'Z882',
 		Z_TYPED_PAIR_TYPE1: 'Z882K1',
-		Z_TYPED_PAIR_TYPE2: 'Z882K2'
+		Z_TYPED_PAIR_TYPE2: 'Z882K2',
+		Z_TYPED_MAP: 'Z883',
+		Z_TYPED_MAP_TYPE1: 'Z883K1',
+		Z_TYPED_MAP_TYPE2: 'Z883K2'
 
 	},
 	modes = [
@@ -110,7 +113,7 @@ var Constants = {
 		{ key: Constants.Z_KEY_MODES.JSON, value: 'wikilambda-modeselector-json', label: 'wikilambda-json', type: null },
 		{ key: Constants.Z_KEY_MODES.ARGUMENT_REF, value: 'wikilambda-modeselector-argref', label: 'wikilambda-argref', type: Constants.Z_ARGUMENT_REFERENCE }
 	],
-	typedObjectsList = [ Constants.Z_TYPED_LIST, Constants.Z_TYPED_PAIR ];
+	typedObjectsList = [ Constants.Z_TYPED_LIST, Constants.Z_TYPED_PAIR, Constants.Z_TYPED_MAP ];
 
 Constants.Z_MODE_SELECTOR_MODES = modes;
 Constants.Z_TYPED_OBEJECTS_LIST = typedObjectsList;

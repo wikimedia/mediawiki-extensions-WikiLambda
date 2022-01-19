@@ -69,23 +69,28 @@ module.exports = {
 		 * @param {Object} context
 		 * @param {Object} payload
 		 * @param {number} payload.id
-		 * @param {Array} payload.zObjectChildren
+		 * @param {string | Object} payload.value
 		 */
 		addTypedListItem: function ( context, payload ) {
-			var currentListType = context.getters.getNestedZObjectById( payload.id,
-					[ Constants.Z_OBJECT_TYPE, Constants.Z_TYPED_LIST_TYPE ] ),
-				newItemParentId = getNewItemParentId( payload.zObjectChildren, payload.id );
 
-			var nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+			var nestedChildren = context.getters.getZObjectChildrenByIdRecursively( payload.id ),
+				newItemParentId = getNewItemParentId( nestedChildren, payload.id ),
+				nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
 
+			// Create a K1 with the correct type
 			context.dispatch( 'addZObject', { key: Constants.Z_TYPED_OBJECT_ELEMENT_1, value: 'object', parent: newItemParentId } );
-			context.dispatch( 'changeType', { id: nextId, type: currentListType.value } );
+			if ( payload.value instanceof Object && payload.value.type && payload.value.values ) {
+				context.dispatch( 'changeType', { id: nextId, type: payload.value.type, values: payload.value.values, isDeclaration: false } );
+			} else {
+				context.dispatch( 'changeType', { id: nextId, type: payload.value } );
+			}
 
+			// Create a K2 and set its type to the current list type
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
 			context.dispatch( 'addZObject', { key: Constants.Z_TYPED_OBJECT_ELEMENT_2, value: 'object', parent: newItemParentId } );
 			context.dispatch( 'addZTypedList', {
 				id: nextId,
-				value: currentListType.value
+				value: payload.value
 			} );
 
 		},
@@ -97,19 +102,14 @@ module.exports = {
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
-		 * @param {number} payload.id
-		 * @param {Array} payload.zObjectChildren
+		 * @param {number} payload.objectId
 		 */
 		addTypedPairItem: function ( context, payload ) {
-			var nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+			var key1Id = context.getters.getNestedZObjectById( payload.objectId, [ Constants.Z_TYPED_OBJECT_ELEMENT_1 ] ).id;
+			context.dispatch( 'changeType', { id: key1Id, type: payload.types[ 0 ].value } );
 
-			context.dispatch( 'addZObject', { key: Constants.Z_TYPED_OBJECT_ELEMENT_1, value: 'object', parent: payload.objectId } );
-			context.dispatch( 'changeType', { id: nextId, type: payload.types[ 0 ].value } );
-
-			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
-
-			context.dispatch( 'addZObject', { key: Constants.Z_TYPED_OBJECT_ELEMENT_2, value: 'object', parent: payload.objectId } );
-			context.dispatch( 'changeType', { id: nextId, type: payload.types[ 1 ].value } );
+			var key2Id = context.getters.getNestedZObjectById( payload.objectId, [ Constants.Z_TYPED_OBJECT_ELEMENT_2 ] ).id;
+			context.dispatch( 'changeType', { id: key2Id, type: payload.types[ 1 ].value } );
 
 		},
 		/**
@@ -160,6 +160,58 @@ module.exports = {
 			if ( payload.types[ 0 ] && payload.types[ 1 ] ) {
 				context.dispatch( 'addTypedPairItem', types );
 			}
+
+		},
+		/**
+		 * Select types for a typed map. This will complete the following action:
+		 * - Set the types in the Map declaration
+		 * - Create a Pair declaration with the following types
+		 * - initialize a typed list with a type of pair
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {number} payload.objectId
+		 * @param {Array} payload.types
+		 */
+		setTypeOfTypedMap: function ( context, payload ) {
+			if ( payload.types.length < 2 ) {
+				return;
+			}
+
+			// We assign the types to the Map declaration
+			var mapObjectElementId = null,
+				types = {
+					objectId: payload.objectId,
+					types: [ {
+						argumentZObjectId: Constants.Z_TYPED_MAP_TYPE1,
+						value: payload.types[ 0 ]
+					}, {
+						argumentZObjectId: Constants.Z_TYPED_MAP_TYPE2,
+						value: payload.types[ 1 ]
+					} ]
+				};
+			setTypeOfTypedObject( context, types );
+
+			// We return unless both types are defined
+			if ( !payload.types[ 0 ] || !payload.types[ 1 ] ) {
+				return;
+			}
+			// We create a K1 (Z_TYPED_OBJECT_ELEMENT_1) in the MAP object
+			mapObjectElementId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+			context.dispatch( 'addZObject', { key: Constants.Z_TYPED_OBJECT_ELEMENT_1, value: 'object', parent: payload.objectId } );
+
+			// We create list of type pair
+			var createTypedListPayload = {
+				id: mapObjectElementId,
+				type: Constants.Z_TYPED_LIST,
+				value: {
+					type: Constants.Z_TYPED_PAIR,
+					values: payload.types
+				}
+			};
+			context.dispatch( 'changeType', createTypedListPayload );
+
+			context.dispatch( 'addTypedListItem', createTypedListPayload );
 
 		},
 		/**

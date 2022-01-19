@@ -79,20 +79,40 @@ module.exports = {
 		mapGetters( {
 			getZObjectChildrenById: 'getZObjectChildrenById',
 			getZObjectChildrenByIdRecursively: 'getZObjectChildrenByIdRecursively',
-			getZkeyLabels: 'getZkeyLabels'
+			getZkeyLabels: 'getZkeyLabels',
+			getNestedZObjectById: 'getNestedZObjectById'
 		} ),
 		{
 			zObjectChildren: function () {
 				return this.getZObjectChildrenByIdRecursively( this.zobjectId );
 			},
 			zListItems: function () {
-				var nestedChildren = this.zObjectChildren;
-				return nestedChildren.filter( function ( child ) {
-					return child.key === Constants.Z_TYPED_OBJECT_ELEMENT_1;
+				var nestedChildren = this.zObjectChildren,
+					instancesOfK1 = [], // list of the K1 object
+					k1Ids = []; // list of k1s ids, used to filter them later.
+
+				nestedChildren.forEach( function ( child ) {
+					if ( child.key === Constants.Z_TYPED_OBJECT_ELEMENT_1 ) {
+						instancesOfK1.push( child );
+						k1Ids.push( child.id );
+					}
 				} );
+				// There may be cases (like for a list of pair) where a K1 could actually be
+				// one of the pair item and not a List item. So we make sure that K1 are not related to each other
+				return instancesOfK1.filter( function ( k1 ) {
+					return k1Ids.indexOf( k1.parent ) === -1;
+				} );
+
 			},
 			zTypedListType: function () {
-				return this.findKeyInArray( Constants.Z_TYPED_LIST_TYPE, this.zObjectChildren ).value;
+				// it is either a straigh value, function call  (in case of a pair), or a reference;
+				var zTypedListType = this.findKeyInArray( Constants.Z_TYPED_LIST_TYPE, this.zObjectChildren );
+				if ( zTypedListType.value !== 'object' ) {
+					return zTypedListType.value;
+				} else {
+					return this.getNestedZObjectById( zTypedListType.id, [ Constants.Z_FUNCTION_CALL_FUNCTION ] ).value ||
+						this.getNestedZObjectById( zTypedListType.id, [ Constants.Z_REFERENCE_ID ] ).value;
+				}
 			},
 			tooltipRemoveListItem: function () {
 				return this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' );
@@ -115,10 +135,32 @@ module.exports = {
 		mapActions( [ 'addZObject', 'recalculateZListIndex', 'setTypeOfTypedList', 'addTypedListItem', 'removeTypedListItem', 'fetchZKeys' ] ),
 		{
 			addNewItem: function () {
+				var value;
+				// If the type is a pair, we need to fetch the actual key/value types and structure the request properly
+				if ( this.zTypedListType === Constants.Z_TYPED_PAIR ) {
+					var pairValue1,
+						pairValue2;
+
+					this.zObjectChildren.forEach( function ( child ) {
+						if ( child.key === Constants.Z_TYPED_PAIR_TYPE1 ) {
+							pairValue1 = child.value;
+						}
+						if ( child.key === Constants.Z_TYPED_PAIR_TYPE2 ) {
+							pairValue2 = child.value;
+						}
+					} );
+
+					value = {
+						type: this.zTypedListType,
+						values: [ pairValue1, pairValue2 ]
+					};
+				} else {
+					value = this.zTypedListType;
+				}
 
 				this.addTypedListItem( {
 					id: this.zobjectId,
-					zObjectChildren: this.zObjectChildren
+					value: value
 				} );
 			},
 			onTypedListChange: function ( type ) {

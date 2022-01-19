@@ -214,7 +214,6 @@ module.exports = {
 				if ( !currentObject || currentObject.id === currentObject.parent ) {
 					return type;
 				}
-
 				if ( currentObject.value === '' ) {
 					return Constants.Z_STRING;
 				}
