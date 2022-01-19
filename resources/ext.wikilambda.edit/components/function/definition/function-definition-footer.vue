@@ -48,6 +48,11 @@ var Constants = require( '../../../Constants.js' ),
 // @vue/component
 module.exports = {
 	name: 'FunctionDefinitionFooter',
+	data: function () {
+		return {
+			summary: ''
+		};
+	},
 	computed: $.extend( mapGetters( [
 		'currentZFunctionHasInputs',
 		'currentZFunctionHasOutput',
@@ -98,9 +103,10 @@ module.exports = {
 				} );
 			},
 			handlePublish: function () {
-				// TODO (T298979): use toast component to notify user function was published
 				// TODO: include legal text when ready (T297330)
 				this.submitZObject( this.summary );
+
+				this.$emit( 'publish-successful', this.$i18n( 'wikilambda-function-definition-publish-successful-message' ).text() );
 			}
 		}
 	)

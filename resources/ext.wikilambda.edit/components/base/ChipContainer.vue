@@ -64,7 +64,11 @@ module.exports = {
 			required: false,
 			default: null
 		}
-
+	},
+	data: function () {
+		return {
+			newText: ''
+		};
 	},
 	methods: {
 		editChip: function ( index, name ) {
