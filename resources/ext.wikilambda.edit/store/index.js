@@ -22,7 +22,7 @@ var Vuex = require( 'vuex' ),
 	zImplementations = require( './modules/zImplementations.js' ),
 	zTypedList = require( './modules/zTypedList.js' );
 
-module.exports = new Vuex.Store( {
+module.exports = Vuex.createStore( {
 	state: state,
 	actions: actions, /* Empty */
 	mutations: mutations, /* Empty */

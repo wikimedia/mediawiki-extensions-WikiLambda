@@ -12,7 +12,6 @@ var Vue = require( 'vue' ),
 	App = require( './components/App.vue' );
 
 window.vueInstance = Vue.createMwApp( $.extend( {
-	store: store,
 	router: router,
 	provide: function () {
 		return {
@@ -20,4 +19,5 @@ window.vueInstance = Vue.createMwApp( $.extend( {
 		};
 	}
 }, App ) )
+	.use( store )
 	.mount( '#ext-wikilambda-app' );
