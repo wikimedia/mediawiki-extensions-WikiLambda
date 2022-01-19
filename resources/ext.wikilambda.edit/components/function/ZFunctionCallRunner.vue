@@ -62,7 +62,7 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	extends: ZFunctionCall,
 	provide: function () {
 		return {

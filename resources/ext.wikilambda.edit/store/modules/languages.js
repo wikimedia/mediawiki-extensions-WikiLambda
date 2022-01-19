@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-module.exports = {
+module.exports = exports = {
 	state: {
 		currentZLanguage: mw.config.get( 'wgWikiLambda' ).zlangZid
 	},

@@ -7,13 +7,8 @@
 'use strict';
 
 var mount = require( '@vue/test-utils' ).mount,
-	createLocalVue = require( '@vue/test-utils' ).createLocalVue,
 	Vuex = require( 'vuex' ),
-	ZTesterImplResult = require( '../../../../resources/ext.wikilambda.edit/components/function/ZTesterImplResult.vue' ),
-	localVue;
-
-localVue = createLocalVue();
-localVue.use( Vuex );
+	ZTesterImplResult = require( '../../../../resources/ext.wikilambda.edit/components/function/ZTesterImplResult.vue' );
 
 describe( 'ZTesterImplResult', function () {
 	var getters,
@@ -40,22 +35,25 @@ describe( 'ZTesterImplResult', function () {
 			} )
 		};
 
-		store = new Vuex.Store( {
+		store = Vuex.createStore( {
 			getters: getters
 		} );
 	} );
 
 	it( 'renders without errors', function () {
 		var wrapper = mount( ZTesterImplResult, {
-			store: store,
-			localVue: localVue,
-			propsData: {
+			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
 				zTesterId: zTesterId
 			},
-			mocks: {
-				$i18n: $i18n
+			global: {
+				plugins: [
+					store
+				],
+				mocks: {
+					$i18n: $i18n
+				}
 			}
 		} );
 		expect( wrapper.find( 'div' ) ).toBeTruthy();
@@ -63,15 +61,18 @@ describe( 'ZTesterImplResult', function () {
 
 	it( 'fetches the test result for the provided IDs from Vuex', function () {
 		mount( ZTesterImplResult, {
-			store: store,
-			localVue: localVue,
-			propsData: {
+			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
 				zTesterId: zTesterId
 			},
-			mocks: {
-				$i18n: $i18n
+			global: {
+				plugins: [
+					store
+				],
+				mocks: {
+					$i18n: $i18n
+				}
 			}
 		} );
 		expect( returnStatus ).toHaveBeenCalledWith( zFunctionId, zTesterId, zImplementationId );
@@ -80,15 +81,18 @@ describe( 'ZTesterImplResult', function () {
 	it( 'displays running status when no result found', function () {
 		testStatus = undefined;
 		var wrapper = mount( ZTesterImplResult, {
-			store: store,
-			localVue: localVue,
-			propsData: {
+			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
 				zTesterId: zTesterId
 			},
-			mocks: {
-				$i18n: $i18n
+			global: {
+				plugins: [
+					store
+				],
+				mocks: {
+					$i18n: $i18n
+				}
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'wikilambda-tester-status-running' );
@@ -97,15 +101,18 @@ describe( 'ZTesterImplResult', function () {
 	it( 'displays passed status when result is passed', function () {
 		testStatus = true;
 		var wrapper = mount( ZTesterImplResult, {
-			store: store,
-			localVue: localVue,
-			propsData: {
+			global: {
+				plugins: [
+					store
+				],
+				mocks: {
+					$i18n: $i18n
+				}
+			},
+			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
 				zTesterId: zTesterId
-			},
-			mocks: {
-				$i18n: $i18n
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'wikilambda-tester-status-passed' );
@@ -114,15 +121,18 @@ describe( 'ZTesterImplResult', function () {
 	it( 'displays failed status when result is failed', function () {
 		testStatus = false;
 		var wrapper = mount( ZTesterImplResult, {
-			store: store,
-			localVue: localVue,
-			propsData: {
+			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
 				zTesterId: zTesterId
 			},
-			mocks: {
-				$i18n: $i18n
+			global: {
+				plugins: [
+					store
+				],
+				mocks: {
+					$i18n: $i18n
+				}
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'wikilambda-tester-status-failed' );
@@ -131,15 +141,18 @@ describe( 'ZTesterImplResult', function () {
 	it( 'displays pending status when implementation missing', function () {
 		testStatus = undefined;
 		var wrapper = mount( ZTesterImplResult, {
-			store: store,
-			localVue: localVue,
-			propsData: {
+			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: '',
 				zTesterId: zTesterId
 			},
-			mocks: {
-				$i18n: $i18n
+			global: {
+				plugins: [
+					store
+				],
+				mocks: {
+					$i18n: $i18n
+				}
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'wikilambda-tester-status-pending' );
@@ -148,15 +161,18 @@ describe( 'ZTesterImplResult', function () {
 	it( 'displays pending status when tester missing', function () {
 		testStatus = undefined;
 		var wrapper = mount( ZTesterImplResult, {
-			store: store,
-			localVue: localVue,
-			propsData: {
+			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
 				zTesterId: ''
 			},
-			mocks: {
-				$i18n: $i18n
+			global: {
+				plugins: [
+					store
+				],
+				mocks: {
+					$i18n: $i18n
+				}
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'wikilambda-tester-status-pending' );

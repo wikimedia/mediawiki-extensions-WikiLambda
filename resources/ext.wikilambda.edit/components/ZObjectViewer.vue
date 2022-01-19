@@ -25,7 +25,7 @@
 var ZObject = require( './ZObject.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'z-object-viewer',
 	components: {
 		'z-object': ZObject

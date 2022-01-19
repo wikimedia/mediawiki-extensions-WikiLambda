@@ -7,7 +7,6 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createLocalVue = require( '@vue/test-utils' ).createLocalVue,
 	Vuex = require( 'vuex' ),
 	ZObject = require( '../../../resources/ext.wikilambda.edit/components/ZObject.vue' ),
 	ZObjectGeneric = require( '../../../resources/ext.wikilambda.edit/components/ZObjectGeneric.vue' ),
@@ -24,11 +23,7 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	ZArgumentReference = require( '../../../resources/ext.wikilambda.edit/components/types/ZArgumentReference.vue' ),
 	ZType = require( '../../../resources/ext.wikilambda.edit/components/types/ZType.vue' ),
 	ZTypedList = require( '../../../resources/ext.wikilambda.edit/components/types/ZTypedList.vue' ),
-	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
-	localVue;
-
-localVue = createLocalVue();
-localVue.use( Vuex );
+	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' );
 
 describe( 'ZObject', function () {
 	var getters,
@@ -46,7 +41,7 @@ describe( 'ZObject', function () {
 		actions = {
 			fetchZKeys: jest.fn()
 		};
-		store = new Vuex.Store( {
+		store = Vuex.createStore( {
 			getters: getters,
 			actions: actions
 		} );
@@ -54,13 +49,16 @@ describe( 'ZObject', function () {
 
 	it( 'renders without errors', function () {
 		var wrapper = shallowMount( ZObject, {
-			propsData: {
+			global: {
+				plugins: [
+					store
+				]
+			},
+			props: {
 				zobjectId: 0,
 				persistent: false,
 				viewmode: false
-			},
-			store: store,
-			localVue: localVue
+			}
 		} );
 
 		expect( wrapper.find( 'div' ) ).toBeTruthy();
@@ -76,20 +74,23 @@ describe( 'ZObject', function () {
 				}
 			};
 
-			store = new Vuex.Store( {
+			store = Vuex.createStore( {
 				getters: getters,
 				actions: actions
 			} );
 
 			var wrapper = shallowMount( ZObject, {
-				propsData: {
+				global: {
+					plugins: [
+						store
+					]
+				},
+				props: {
 					zobjectId: 0,
 					persistent: false,
 					readonly: true,
 					parentType: Constants.Z_PERSISTENTOBJECT
-				},
-				store: store,
-				localVue: localVue
+				}
 			} );
 
 			expect( wrapper.findComponent( component ).exists() ).toBe( true );

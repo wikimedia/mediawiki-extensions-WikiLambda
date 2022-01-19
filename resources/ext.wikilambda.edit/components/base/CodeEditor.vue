@@ -13,7 +13,7 @@
 require( '../../../lib/ace/src/ace.js' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'code-editor',
 	props: {
 		value: {

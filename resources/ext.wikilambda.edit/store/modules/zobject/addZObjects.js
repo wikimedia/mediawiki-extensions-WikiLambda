@@ -18,7 +18,7 @@ function formatZObjectKeys( keys ) {
 	}
 }
 
-module.exports = {
+module.exports = exports = {
 	actions: {
 		/**
 		 * This method is used to generate a zObjectType (Z1K1) for a given object.

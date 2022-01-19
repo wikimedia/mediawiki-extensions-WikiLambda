@@ -55,7 +55,7 @@ var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'z-type',
 	components: {
 		'z-object-selector': ZObjectSelector,

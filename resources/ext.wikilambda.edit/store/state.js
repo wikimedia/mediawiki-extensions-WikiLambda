@@ -6,7 +6,7 @@
  */
 'use strict';
 
-module.exports = {
+module.exports = exports = {
 	/**
 	 * Store whether the user is in 'expert' mode
 	 */

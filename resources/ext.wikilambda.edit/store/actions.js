@@ -8,7 +8,7 @@
 
 var Constants = require( '../Constants.js' );
 
-module.exports = {
+module.exports = exports = {
 	/**
 	 * Fetch information of the Keys used within the UI and initialize the i18n plugin
 	 *

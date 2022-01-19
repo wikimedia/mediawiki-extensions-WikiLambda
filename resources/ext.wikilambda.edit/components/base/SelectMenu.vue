@@ -37,7 +37,7 @@
  * index is reset to -1 (i.e. no active item).
  */
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'select-menu',
 
 	props: {

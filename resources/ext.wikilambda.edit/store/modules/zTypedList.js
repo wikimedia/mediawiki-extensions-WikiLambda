@@ -49,7 +49,7 @@ function setTypeOfTypedObject( context, payload ) {
 	} );
 
 }
-module.exports = {
+module.exports = exports = {
 	state: {
 	},
 	getters: {

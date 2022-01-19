@@ -12,7 +12,7 @@
 
 <script>
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	props: {
 		arguments: {
 			type: String,

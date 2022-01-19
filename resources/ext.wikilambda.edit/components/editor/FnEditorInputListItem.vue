@@ -47,7 +47,7 @@ var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'fn-editor-input-list-item',
 	components: {
 		'fn-editor-type-selector': FnEditorTypeSelector,

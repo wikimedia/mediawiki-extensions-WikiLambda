@@ -28,7 +28,7 @@ var ZFunctionCall = require( '../types/ZFunctionCall.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	extends: ZFunctionCall,
 	provide: function () {
 		return {

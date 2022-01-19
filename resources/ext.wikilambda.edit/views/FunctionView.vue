@@ -35,7 +35,7 @@ var TabContainer = require( '../components/base/TabContainer.vue' ),
 	icons = require( './../../lib/icons.js' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'function-view',
 	components: {
 		'tab-container': TabContainer,

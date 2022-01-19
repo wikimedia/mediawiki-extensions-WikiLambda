@@ -18,7 +18,7 @@
 var SdIcon = require( './Icon.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'toast-message',
 	components: {
 		'sd-icon': SdIcon

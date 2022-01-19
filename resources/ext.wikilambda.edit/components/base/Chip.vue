@@ -33,7 +33,7 @@ var SdIcon = require( './Icon.vue' ),
 	icons = require( '../../../lib/icons.js' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'chip-item',
 	components: {
 		'sd-icon': SdIcon

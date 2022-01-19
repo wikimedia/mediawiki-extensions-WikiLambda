@@ -67,7 +67,7 @@ function generateZIDListFromObjectTree( objectTree ) {
 	} );
 }
 
-module.exports = {
+module.exports = exports = {
 	modules: {
 		addZObjects: addZObjects,
 		currentZObject: currentZObject

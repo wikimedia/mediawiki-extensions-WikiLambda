@@ -41,7 +41,7 @@ function replaceCurrentObjectWithFullJSONObject( context, items, newItemZObject 
 	} );
 }
 
-module.exports = {
+module.exports = exports = {
 	state: {
 		zTesterResults: {},
 		zTesterMetadata: {},

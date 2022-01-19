@@ -7,7 +7,7 @@
 
 var performFunctionCall = require( '../../mixins/api.js' ).methods.performFunctionCall;
 
-module.exports = {
+module.exports = exports = {
 	actions: {
 		/**
 		 * Create a new result record, that is detached from the main zObject (using parent -1)

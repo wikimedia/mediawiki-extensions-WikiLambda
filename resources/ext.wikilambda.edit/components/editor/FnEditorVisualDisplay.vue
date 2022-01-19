@@ -95,7 +95,7 @@ var FnEditorZLanguageSelector = require( './FnEditorZLanguageSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	components: {
 		'fn-editor-zlanguage-selector': FnEditorZLanguageSelector
 	},

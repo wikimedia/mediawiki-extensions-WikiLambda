@@ -33,7 +33,7 @@ var ZListItem = require( './ZListItem.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'z-list',
 	components: {
 		'z-list-item': ZListItem

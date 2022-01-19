@@ -49,7 +49,7 @@ var Constants = require( '../Constants.js' ),
 	mapState = require( 'vuex' ).mapState;
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'z-object-generic',
 	components: {
 		'z-object-key-list': ZObjectKeyList,

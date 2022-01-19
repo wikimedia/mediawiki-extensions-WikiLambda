@@ -41,7 +41,7 @@ var Constants = require( '../../../Constants.js' ),
 	ChipContainer = require( '../../base/ChipContainer.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'function-definition-aliases',
 	components: {
 		chips: ChipContainer

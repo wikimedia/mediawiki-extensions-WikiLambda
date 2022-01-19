@@ -27,7 +27,7 @@ var SdIcon = require( './Icon.vue' ),
  * See CardStack for usage example.
  */
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'sd-message',
 	components: {
 		'sd-icon': SdIcon

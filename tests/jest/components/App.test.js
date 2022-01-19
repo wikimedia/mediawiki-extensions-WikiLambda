@@ -7,16 +7,10 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createLocalVue = require( '@vue/test-utils' ).createLocalVue,
 	Vuex = require( 'vuex' ),
 	VueRouter = require( '../../../resources/lib/vue-router/vue-router.common.js' ),
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
-	getters = require( '../../../resources/ext.wikilambda.edit/store/getters.js' ),
-	localVue;
-
-localVue = createLocalVue();
-localVue.use( Vuex );
-localVue.use( VueRouter );
+	getters = require( '../../../resources/ext.wikilambda.edit/store/getters.js' );
 
 describe( 'App.vue', function () {
 	var actions,
@@ -28,7 +22,7 @@ describe( 'App.vue', function () {
 			initializeZObject: jest.fn(),
 			initialize: jest.fn()
 		};
-		store = new Vuex.Store( {
+		store = Vuex.createStore( {
 			actions: actions,
 			getters: $.extend( getters, {
 				getZObjectInitialized: function () {
@@ -45,10 +39,14 @@ describe( 'App.vue', function () {
 		mockIsInitialized = false;
 
 		wrapper = shallowMount( App, {
-			store: store,
-			localVue: localVue,
-			mocks: {
-				$i18n: $i18n
+			global: {
+				plugins: [
+					store,
+					VueRouter
+				],
+				mocks: {
+					$i18n: $i18n
+				}
 			},
 			provide: {
 				viewmode: true
@@ -66,10 +64,14 @@ describe( 'App.vue', function () {
 		mockIsInitialized = true;
 
 		wrapper = shallowMount( App, {
-			store: store,
-			localVue: localVue,
-			mocks: {
-				$i18n: $i18n
+			global: {
+				plugins: [
+					store,
+					VueRouter
+				],
+				mocks: {
+					$i18n: $i18n
+				}
 			},
 			provide: {
 				viewmode: true
@@ -86,10 +88,14 @@ describe( 'App.vue', function () {
 		mockIsInitialized = true;
 
 		shallowMount( App, {
-			store: store,
-			localVue: localVue,
-			mocks: {
-				$i18n: $i18n
+			global: {
+				plugins: [
+					store,
+					VueRouter
+				],
+				mocks: {
+					$i18n: $i18n
+				}
 			},
 			provide: {
 				viewmode: true

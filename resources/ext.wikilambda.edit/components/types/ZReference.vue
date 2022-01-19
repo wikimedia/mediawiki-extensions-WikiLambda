@@ -33,7 +33,7 @@ var Constants = require( './../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'z-reference',
 	components: {
 		'z-object-selector': ZObjectSelector

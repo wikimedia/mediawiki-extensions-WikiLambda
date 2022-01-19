@@ -7,13 +7,8 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createLocalVue = require( '@vue/test-utils' ).createLocalVue,
 	Vuex = require( 'vuex' ),
-	ZObjectViewer = require( '../../../resources/ext.wikilambda.edit/components/ZObjectViewer.vue' ),
-	localVue;
-
-localVue = createLocalVue();
-localVue.use( Vuex );
+	ZObjectViewer = require( '../../../resources/ext.wikilambda.edit/components/ZObjectViewer.vue' );
 
 describe( 'ZObjectViewer', function () {
 	var actions,
@@ -24,17 +19,20 @@ describe( 'ZObjectViewer', function () {
 			initialize: jest.fn()
 		};
 
-		store = new Vuex.Store( {
+		store = Vuex.createStore( {
 			actions: actions
 		} );
 	} );
 
 	it( 'renders without errors', function () {
 		var wrapper = shallowMount( ZObjectViewer, {
-			store: store,
-			localVue: localVue,
-			mocks: {
-				$i18n: jest.fn()
+			global: {
+				plugins: [
+					store
+				],
+				mocks: {
+					$i18n: jest.fn()
+				}
 			}
 		} );
 

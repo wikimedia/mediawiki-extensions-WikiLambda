@@ -44,7 +44,7 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'fn-editor-type-selector',
 	components: {
 		'sd-autocomplete-search-input': SdAutocompleteSearchInput,

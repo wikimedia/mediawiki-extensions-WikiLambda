@@ -71,7 +71,7 @@ var ZObject = require( './ZObject.vue' ),
 	typeUtils = require( '../mixins/typeUtils.js' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'z-object-editor',
 	components: {
 		'z-object': ZObject,

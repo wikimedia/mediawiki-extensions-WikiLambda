@@ -25,7 +25,7 @@
 var SdMessage = require( './base/Message.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'z-object-key-input',
 	components: {
 		'sd-message': SdMessage

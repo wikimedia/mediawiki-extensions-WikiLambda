@@ -44,7 +44,7 @@ var Constants = require( '../../Constants.js' ),
 	ZFunctionTesterReport = require( '../function/ZFunctionTesterReport.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	components: {
 		'z-argument-list': ZArgumentList,
 		'z-object-selector': ZObjectSelector,

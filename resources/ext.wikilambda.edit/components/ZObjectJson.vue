@@ -23,7 +23,7 @@ var mapGetters = require( 'vuex' ).mapGetters,
 	CodeEditor = require( './base/CodeEditor.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	components: {
 		'code-editor': CodeEditor
 	},

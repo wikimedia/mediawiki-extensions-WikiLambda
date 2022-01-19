@@ -7,14 +7,9 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createLocalVue = require( '@vue/test-utils' ).createLocalVue,
 	Vuex = require( 'vuex' ),
 	ZObjectJson = require( '../../../resources/ext.wikilambda.edit/components/ZObjectJson.vue' ),
-	canonicalize = require( '../../../resources/ext.wikilambda.edit/mixins/schemata.js' ).methods.canonicalizeZObject,
-	localVue;
-
-localVue = createLocalVue();
-localVue.use( Vuex );
+	canonicalize = require( '../../../resources/ext.wikilambda.edit/mixins/schemata.js' ).methods.canonicalizeZObject;
 
 describe( 'ZObjectJson', function () {
 	var getters,
@@ -36,15 +31,18 @@ describe( 'ZObjectJson', function () {
 				return false;
 			} )
 		};
-		store = new Vuex.Store( {
+		store = Vuex.createStore( {
 			getters: getters
 		} );
 	} );
 
 	it( 'renders without errors', function () {
 		var wrapper = shallowMount( ZObjectJson, {
-			store: store,
-			localVue: localVue
+			global: {
+				plugins: [
+					store
+				]
+			}
 		} );
 
 		expect( wrapper.find( 'div' ) ).toBeTruthy();
@@ -53,11 +51,14 @@ describe( 'ZObjectJson', function () {
 	it( 'correctly sends provided JSON to the editor in a canonical form', function () {
 		var json = { Z1K1: 'Z6', Z6K1: 'Hello, Test!' },
 			wrapper = shallowMount( ZObjectJson, {
-				propsData: {
+				props: {
 					zobjectRaw: json
 				},
-				store: store,
-				localVue: localVue
+				global: {
+					plugins: [
+						store
+					]
+				}
 			} );
 
 		expect( JSON.parse( wrapper.vm.initialJson ) ).toEqual( canonicalize( json ) );
@@ -73,16 +74,19 @@ describe( 'ZObjectJson', function () {
 			};
 		};
 
-		store = new Vuex.Store( {
+		store = Vuex.createStore( {
 			getters: getters
 		} );
 
 		wrapper = shallowMount( ZObjectJson, {
-			propsData: {
+			props: {
 				zobjectId: -1
 			},
-			store: store,
-			localVue: localVue
+			global: {
+				plugins: [
+					store
+				]
+			}
 		} );
 
 		expect( JSON.parse( wrapper.vm.initialJson ) ).toEqual( canonicalize( json ) );

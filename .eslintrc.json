@@ -6,7 +6,8 @@
 		"wikimedia/jquery"
 	],
 	"globals": {
-		"Promise": "readonly"
+		"Promise": "readonly",
+		"exports": true
 	},
 	"rules": {
 		"max-len": [

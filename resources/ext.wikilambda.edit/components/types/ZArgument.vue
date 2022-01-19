@@ -34,7 +34,7 @@ var Constants = require( '../../Constants.js' ),
 	ZMultilingualString = require( './ZMultilingualString.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	components: {
 		'z-object-selector': ZObjectSelector,
 		'z-multilingual-string': ZMultilingualString

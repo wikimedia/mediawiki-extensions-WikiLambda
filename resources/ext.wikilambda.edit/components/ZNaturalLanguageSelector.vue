@@ -45,7 +45,7 @@ var Constants = require( '../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	components: {
 		'sd-autocomplete-search-input': SdAutocompleteSearchInput,
 		'sd-message': SdMessage

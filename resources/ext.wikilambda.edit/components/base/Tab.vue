@@ -42,7 +42,7 @@ var SdIcon = require( './Icon.vue' ),
 	Tooltip = require( './Tooltip.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'tab-item',
 	components: {
 		'sd-icon': SdIcon,

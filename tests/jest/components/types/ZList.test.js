@@ -7,13 +7,11 @@
 'use strict';
 
 var mount = require( '@vue/test-utils' ).mount,
-	createLocalVue = require( '@vue/test-utils' ).createLocalVue,
+	Vue = require( 'vue' ),
 	Vuex = require( 'vuex' ),
 	ZList = require( '../../../../resources/ext.wikilambda.edit/components/types/ZList.vue' ),
 	ZListItem = require( '../../../../resources/ext.wikilambda.edit/components/types/ZListItem.vue' ),
-	Button = require( '../../../../resources/ext.wikilambda.edit/components/base/Button.vue' ),
 	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
-	localVue,
 	zobjectTree = [
 		{ id: 0, value: 'object' },
 		{ key: 'Z1K1', value: 'Z2', parent: 0, id: 1 },
@@ -40,10 +38,6 @@ var mount = require( '@vue/test-utils' ).mount,
 		{ key: 'Z6K1', value: 'second', parent: 20, id: 22 }
 	];
 
-localVue = createLocalVue();
-localVue.use( Vuex );
-localVue.component( 'sd-button', Button );
-
 describe( 'ZList', function () {
 	var state,
 		getters,
@@ -69,7 +63,7 @@ describe( 'ZList', function () {
 			zobject: JSON.parse( JSON.stringify( zobjectTree ) )
 		};
 
-		store = new Vuex.Store( {
+		store = Vuex.createStore( {
 			state: state,
 			getters: getters,
 			mutations: mutations,
@@ -79,13 +73,16 @@ describe( 'ZList', function () {
 
 	it( 'renders without errors', function () {
 		var wrapper = mount( ZList, {
-			localVue: localVue,
-			store: store,
-			propsData: {
+			props: {
 				zobjectId: 3
 			},
-			mocks: {
-				$i18n: jest.fn()
+			global: {
+				plugins: [
+					store
+				],
+				mocks: {
+					$i18n: jest.fn()
+				}
 			}
 		} );
 
@@ -94,13 +91,16 @@ describe( 'ZList', function () {
 
 	it( 'renders a tree of ZList items', function () {
 		var wrapper = mount( ZList, {
-			localVue: localVue,
-			store: store,
-			propsData: {
+			props: {
 				zobjectId: 3
 			},
-			mocks: {
-				$i18n: jest.fn()
+			global: {
+				plugins: [
+					store
+				],
+				mocks: {
+					$i18n: jest.fn()
+				}
 			}
 		} );
 
@@ -109,13 +109,16 @@ describe( 'ZList', function () {
 
 	it( 'adds an item to the list when the add button is clicked', function () {
 		var wrapper = mount( ZList, {
-				localVue: localVue,
-				store: store,
-				propsData: {
+				props: {
 					zobjectId: 3
 				},
-				mocks: {
-					$i18n: jest.fn()
+				global: {
+					plugins: [
+						store
+					],
+					mocks: {
+						$i18n: jest.fn()
+					}
 				}
 			} ),
 			expectedZObject = JSON.parse( JSON.stringify( zobjectTree ) );
@@ -129,13 +132,16 @@ describe( 'ZList', function () {
 
 	it( 'removes an item from the list when the remove button is clicked', function () {
 		var wrapper = mount( ZList, {
-				localVue: localVue,
-				store: store,
-				propsData: {
+				props: {
 					zobjectId: 3
 				},
-				mocks: {
-					$i18n: jest.fn()
+				global: {
+					plugins: [
+						store
+					],
+					mocks: {
+						$i18n: jest.fn()
+					}
 				}
 			} ),
 			expectedZObject = zobjectTree.filter( function ( zobject ) {
@@ -148,7 +154,7 @@ describe( 'ZList', function () {
 		expect( store.state.zobject.length ).toBe( 20 );
 
 		// Ensure that the index of the remaining item was updated from 1 to 0
-		localVue.nextTick().then( function () {
+		Vue.nextTick().then( function () {
 			expect( store.getters.getZObjectById( 20 ) ).toEqual( expectedFirstItem );
 		} );
 	} );

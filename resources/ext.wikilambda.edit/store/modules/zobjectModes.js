@@ -8,7 +8,7 @@
 var Constants = require( '../../Constants.js' ),
 	modes = Constants.Z_MODE_SELECTOR_MODES;
 
-module.exports = {
+module.exports = exports = {
 	getters: {
 		/**
 		 * Getters that retrieve possible display mode for a zObject.
