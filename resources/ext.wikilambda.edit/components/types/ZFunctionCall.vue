@@ -61,7 +61,7 @@
 					<z-object-key
 						v-else
 						:zobject-id="resultId"
-						:parent-type="Constants.Z_PAIR"
+						:parent-type="Constants.Z_RESPONSEENVELOPE"
 						:readonly="true"
 					></z-object-key>
 				</div>

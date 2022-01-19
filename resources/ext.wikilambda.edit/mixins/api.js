@@ -28,8 +28,8 @@ module.exports = {
 							data.query.wikilambda_function_call.Orchestrated.data
 						),
 						response = !shouldNormalize ? canonicalize( normalResponse ) : normalResponse,
-						result = response[ Constants.Z_PAIR_FIRST ],
-						error = response[ Constants.Z_PAIR_SECOND ];
+						result = response[ Constants.Z_RESPONSEENVELOPE_VALUE ],
+						error = response[ Constants.Z_RESPONSEENVELOPE_ERRORS ];
 
 					resolve( {
 						response: response,

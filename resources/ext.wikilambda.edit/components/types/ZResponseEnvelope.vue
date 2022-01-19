@@ -1,19 +1,19 @@
 <template>
 	<!--
-		WikiLambda Vue component for ZPair objects.
+		WikiLambda Vue component for ZResponseEnvelope objects.
 
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-zpair">
+	<div class="ext-wikilambda-zresponseenvelope">
 		<div>
 			<z-object-key
 				:zobject-id="zFirst.id"
-				:parent-type="Constants.Z_PAIR"
+				:parent-type="Constants.Z_RESPONSEENVELOPE"
 				:readonly="readonly"
 			></z-object-key>
 		</div>
-		<div class="ext-wikilambda-zpair__show-more">
+		<div class="ext-wikilambda-zresponseenvelope__show-more">
 			<button
 				@click.prevent="showSecond = !showSecond"
 			>
@@ -24,7 +24,7 @@
 			<hr>
 			<z-object-key
 				:zobject-id="zSecond.id"
-				:parent-type="Constants.Z_PAIR"
+				:parent-type="Constants.Z_RESPONSEENVELOPE"
 				:readonly="readonly"
 			></z-object-key>
 		</div>
@@ -68,17 +68,17 @@ module.exports = {
 			return this.getZObjectChildrenById( this.zobjectId );
 		},
 		zFirst: function () {
-			return this.findKeyInArray( Constants.Z_PAIR_FIRST, this.zobject );
+			return this.findKeyInArray( Constants.Z_RESPONSEENVELOPE_VALUE, this.zobject );
 		},
 		zSecond: function () {
-			return this.findKeyInArray( Constants.Z_PAIR_SECOND, this.zobject );
+			return this.findKeyInArray( Constants.Z_RESPONSEENVELOPE_ERRORS, this.zobject );
 		}
 	} )
 };
 </script>
 
 <style lang="less">
-.ext-wikilambda-zpair {
+.ext-wikilambda-zresponseenvelope {
 	&__show-more {
 		padding: 10px 0;
 	}
