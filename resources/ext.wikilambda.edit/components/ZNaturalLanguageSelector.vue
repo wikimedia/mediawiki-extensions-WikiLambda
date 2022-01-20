@@ -22,12 +22,11 @@
 			:class="{ 'ext-wikilambda-zkey-input-invalid': validatorIsInvalid }"
 			:label="$i18n( 'wikilambda-editor-label-addlanguage-label' )"
 			:placeholder="$i18n( 'wikilambda-editor-label-addlanguage-label' )"
+			:search-placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-search-placeholder' )"
 			:initial-value="selectedText"
 			:lookup-results="lookupLabels"
 			@input="onInput"
-			@blur="onSubmit"
 			@submit="onSubmit"
-			@clear="onClear"
 			@clear-lookup-results="onClearLookupResults"
 		>
 		</sd-autocomplete-search-input>

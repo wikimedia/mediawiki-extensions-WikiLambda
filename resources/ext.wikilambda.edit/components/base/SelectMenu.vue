@@ -1,5 +1,6 @@
 <template>
 	<div class="sd-select-menu">
+		<slot></slot>
 		<ul
 			:id="listboxId"
 			class="sd-select-menu__list"
