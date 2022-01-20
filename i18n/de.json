@@ -154,6 +154,8 @@
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Weitere Eingabe hinzufügen",
 	"wikilambda-function-definition-output-label": "Art der Ausgabe",
 	"wikilambda-function-definition-output-selector": "Typ auswählen",
+	"wikilambda-function-definition-can-publish-message": "Du hast die Definition abgeschlossen! Speichere deine Arbeit, indem du unten auf „Veröffentlichen“ klickst",
+	"wikilambda-function-definition-publish-successful-message": "Du hast die Definition erfolgreich veröffentlicht!",
 	"wikilambda-editor-steps-label": "Editor-Schritte",
 	"wikilambda-editor-additional-details-label": "Zusätzliche Details",
 	"wikilambda-editor-go-back-button": "Zurück",
@@ -197,8 +199,9 @@
 	"wikilambda-ztyped-list-placeholder": "Wähle eine generische",
 	"wikilambda-ztyped-list-description": "Liste der generischen Typen",
 	"wikilambda-ztyped-list-items": "Objekte auflisten",
-	"wikilambda-ztyped-pair-placeholder": "Wähle ein Typenpaar aus",
-	"wikilambda-ztyped-pair-description": "Typenpaar",
+	"wikilambda-ztyped-pair-placeholder": "Typ auswählen",
+	"wikilambda-ztyped-pair-key-label": "Schlüssel",
+	"wikilambda-ztyped-pair-value-label": "Wert",
 	"wikilambda-zerror": "ZError vom Typ $1",
 	"wikilambda-optional": "optional"
 }
