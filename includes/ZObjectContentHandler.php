@@ -255,20 +255,20 @@ class ZObjectContentHandler extends ContentHandler {
 	 * @inheritDoc
 	 * @param Content $content
 	 * @param ContentParseParams $cpoParams
-	 * @param ParserOutput &$output The output object to fill (reference).
+	 * @param ParserOutput &$parserOutput The output object to fill (reference).
 	 *
 	 * @throws MWException
 	 */
 	protected function fillParserOutput(
 		Content $content,
 		ContentParseParams $cpoParams,
-		ParserOutput &$output
+		ParserOutput &$parserOutput
 	) {
 		$userLang = RequestContext::getMain()->getLanguage();
 
 		// Ensure the stored content is a valid ZObject; this also populates $this->getZObject() for us
 		if ( !( $content instanceof ZObjectContent ) || !$content->isValid() ) {
-			$output->setText(
+			$parserOutput->setText(
 				Html::element(
 					'div',
 					[
@@ -308,10 +308,10 @@ class ZObjectContentHandler extends ContentHandler {
 			$label . ' ' . $id . $type
 		);
 
-		$output->addModuleStyles( 'ext.wikilambda.viewpage.styles' );
-		$output->setTitleText( $header );
+		$parserOutput->addModuleStyles( [ 'ext.wikilambda.viewpage.styles' ] );
+		$parserOutput->setTitleText( $header );
 
-		$output->addModules( 'ext.wikilambda.edit' );
+		$parserOutput->addModules( [ 'ext.wikilambda.edit' ] );
 
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$zObject = $zObjectStore->fetchZObjectByTitle( $title );
@@ -334,9 +334,9 @@ class ZObjectContentHandler extends ContentHandler {
 			'viewmode' => true
 		];
 
-		$output->addJsConfigVars( 'wgWikiLambda', $editingData );
+		$parserOutput->addJsConfigVars( 'wgWikiLambda', $editingData );
 
-		$output->setText(
+		$parserOutput->setText(
 			// Placeholder div for the Vue template.
 			Html::element( 'div', [ 'id' => 'ext-wikilambda-app' ] )
 			// Fallback div for the warning.
@@ -357,7 +357,7 @@ class ZObjectContentHandler extends ContentHandler {
 
 		// Add links to other ZObjects
 		foreach ( $content->getInnerZObject()->getLinkedZObjects() as $link ) {
-			$output->addLink( Title::newFromText( $link, NS_MAIN ) );
+			$parserOutput->addLink( Title::newFromText( $link, NS_MAIN ) );
 		}
 	}
 

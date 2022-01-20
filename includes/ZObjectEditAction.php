@@ -37,7 +37,7 @@ class ZObjectEditAction extends Action {
 
 	public function show() {
 		$output = $this->getOutput();
-		$output->addModules( 'ext.wikilambda.edit' );
+		$output->addModules( [ 'ext.wikilambda.edit' ] );
 
 		$userLang = $this->getLanguage();
 
