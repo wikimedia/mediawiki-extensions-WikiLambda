@@ -177,7 +177,7 @@
 	"wikilambda-function-definition-inputs-item-add-input-button": "Button used to add another input to a function",
 	"wikilambda-function-definition-output-label": "Label for the function Output",
 	"wikilambda-function-definition-output-selector": "Label for the function Output type selector",
-	"wikilambda-function-definition-can-publish-message": "Toast message for a function definition that is ready to publish",
+	"wikilambda-function-definition-can-publish-message": "Toast message for a function definition that is ready to publish.\n\n\"Publish\" is {{msg-mw|Wikilambda-publishnew}}.",
 	"wikilambda-function-definition-publish-successful-message": "Toast message for a function definition that has successfully been published",
 	"wikilambda-editor-steps-label": "Label for the steps section of the editor.",
 	"wikilambda-editor-additional-details-label": "Label for the additional details section of the editor.",

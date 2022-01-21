@@ -58,5 +58,8 @@
 	"wikilambda-editor-attach-title": "Liitä",
 	"wikilambda-editor-progress-title": "Edistyminen",
 	"wikilambda-ztyped-list-placeholder": "Valitse yleinen tyyppi",
+	"wikilambda-ztyped-pair-placeholder": "Valitse tyyppi",
+	"wikilambda-ztyped-pair-key-label": "Avain",
+	"wikilambda-ztyped-pair-value-label": "Arvo",
 	"wikilambda-optional": "valinnainen"
 }

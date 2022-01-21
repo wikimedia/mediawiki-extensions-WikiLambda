@@ -57,5 +57,8 @@
 	"wikilambda-editor-name-title": "Nome",
 	"wikilambda-editor-name-aliases": "Alias",
 	"wikilambda-editor-implementation-title": "Implementazione",
-	"wikilambda-editor-write-title": "Scrivi"
+	"wikilambda-editor-write-title": "Scrivi",
+	"wikilambda-ztyped-pair-placeholder": "Seleziona un tipo",
+	"wikilambda-ztyped-pair-key-label": "Chiave",
+	"wikilambda-ztyped-pair-value-label": "Valore"
 }

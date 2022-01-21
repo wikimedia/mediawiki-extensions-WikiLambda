@@ -142,6 +142,7 @@
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Başka bir giriş ekle",
 	"wikilambda-function-definition-output-label": "Çıkış türü",
 	"wikilambda-function-definition-output-selector": "Bir tür seçin",
+	"wikilambda-function-definition-publish-successful-message": "Tanımı başarıyla yayımladınız!",
 	"wikilambda-editor-steps-label": "Editör Adımları",
 	"wikilambda-editor-additional-details-label": "Ek detaylar",
 	"wikilambda-editor-fn-step-define": "Tanımla",
@@ -162,6 +163,10 @@
 	"wikilambda-editor-write-title": "Yaz",
 	"wikilambda-editor-progress-title": "Süreç",
 	"wikilambda-ztyped-list-items": "Ögeleri listele",
-	"wikilambda-ztyped-pair-placeholder": "Bir eş türü seçin",
+	"wikilambda-ztyped-pair-placeholder": "Bir tür seçin",
+	"wikilambda-ztyped-pair-key-label": "Anahtar",
+	"wikilambda-ztyped-pair-value-label": "Değer",
+	"wikilambda-ztyped-map-placeholder": "Harita türü seçin",
+	"wikilambda-ztyped-map-description": "Türler haritası",
 	"wikilambda-optional": "tercihe bağlı"
 }

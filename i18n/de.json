@@ -202,6 +202,7 @@
 	"wikilambda-ztyped-pair-placeholder": "Typ auswählen",
 	"wikilambda-ztyped-pair-key-label": "Schlüssel",
 	"wikilambda-ztyped-pair-value-label": "Wert",
+	"wikilambda-ztyped-map-placeholder": "Wähle einen Kartentyp aus",
 	"wikilambda-zerror": "ZError vom Typ $1",
 	"wikilambda-optional": "optional"
 }

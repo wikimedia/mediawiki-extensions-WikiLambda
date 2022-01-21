@@ -156,6 +156,7 @@
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ הוספה של קלט אחר",
 	"wikilambda-function-definition-output-label": "סוג הפלט",
 	"wikilambda-function-definition-output-selector": "נא לבחור סוג",
+	"wikilambda-function-definition-can-publish-message": "השלמת את ההגדרה! {{GENDER:|שמור|שמרי}} את העבודה שלך באמצעות לחיצה על \"פרסום\" למטה",
 	"wikilambda-editor-steps-label": "צעדי עורך",
 	"wikilambda-editor-additional-details-label": "פרטים נוספים",
 	"wikilambda-editor-go-back-button": "חזרה",
@@ -199,7 +200,11 @@
 	"wikilambda-ztyped-list-placeholder": "נא לבחור סוג כללי",
 	"wikilambda-ztyped-list-description": "סוג רשימה כללי מסוג",
 	"wikilambda-ztyped-list-items": "פריטי רשימה",
-	"wikilambda-ztyped-pair-placeholder": "נא לבחור את סוג הזוג",
+	"wikilambda-ztyped-pair-placeholder": "נא לבחור סוג",
+	"wikilambda-ztyped-pair-key-label": "מפתח",
+	"wikilambda-ztyped-pair-value-label": "ערך",
+	"wikilambda-ztyped-map-placeholder": "נא לבחור את סוג המפה",
+	"wikilambda-ztyped-map-description": "מפת סוגים",
 	"wikilambda-zerror": "שגיאת Z מסוג $1",
 	"wikilambda-optional": "לא חובה"
 }
