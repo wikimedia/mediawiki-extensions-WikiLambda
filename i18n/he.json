@@ -157,6 +157,7 @@
 	"wikilambda-function-definition-output-label": "סוג הפלט",
 	"wikilambda-function-definition-output-selector": "נא לבחור סוג",
 	"wikilambda-function-definition-can-publish-message": "השלמת את ההגדרה! {{GENDER:|שמור|שמרי}} את העבודה שלך באמצעות לחיצה על \"פרסום\" למטה",
+	"wikilambda-function-definition-publish-successful-message": "פרסמת בהצלחה את ההגדרה!",
 	"wikilambda-editor-steps-label": "צעדי עורך",
 	"wikilambda-editor-additional-details-label": "פרטים נוספים",
 	"wikilambda-editor-go-back-button": "חזרה",

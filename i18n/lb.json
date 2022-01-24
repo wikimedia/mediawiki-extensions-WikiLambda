@@ -31,6 +31,7 @@
 	"wikilambda-function-definition-alias-label": "Aliasen",
 	"wikilambda-function-definition-footer-placeholder": "Beschreift Är Ännerunge kuerz",
 	"wikilambda-function-definition-footer-label": "Resumé vun der Ännerung",
+	"wikilambda-function-definition-footer-implementation-button": "Implementatioun schreiwen",
 	"wikilambda-editor-additional-details-label": "Zousätzlech Detailer",
 	"wikilambda-editor-go-back-button": "Zréck goen",
 	"wikilambda-editor-next-button": "Nächste Schratt",
@@ -51,6 +52,8 @@
 	"wikilambda-editor-attach-title": "Drunhänken",
 	"wikilambda-editor-progress-title": "Fortschrëtt",
 	"wikilambda-ztyped-list-items": "Elementer opzielen",
+	"wikilambda-ztyped-pair-key-label": "Schlëssel",
+	"wikilambda-ztyped-pair-value-label": "Wäert",
 	"wikilambda-zerror": "ZError vum Typ $1",
 	"wikilambda-optional": "fakultativ"
 }

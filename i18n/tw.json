@@ -3,6 +3,7 @@
 		"authors": [
 			"AC Krah",
 			"Amoaniwaa",
+			"Daniella Damptey",
 			"Naa2Darkoa",
 			"Warmglow"
 		]
@@ -19,5 +20,7 @@
 	"wikilambda-editor-fn-step-tests": "(N)sɔhwɛ",
 	"wikilambda-editor-fn-step-implement": "Fa di dwuma",
 	"wikilambda-editor-fn-tests-tooltip-header": "Wonni hokwan",
+	"wikilambda-ztyped-pair-key-label": "Safoa",
+	"wikilambda-ztyped-pair-value-label": "Adeɛ a ɛsommo",
 	"wikilambda-optional": "nyɛ ɔhyɛ"
 }

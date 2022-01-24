@@ -48,5 +48,9 @@
 	"wikilambda-editor-input-title": "入力",
 	"wikilambda-editor-default-name": "無題",
 	"wikilambda-editor-implementation-title": "実装",
+	"wikilambda-ztyped-pair-placeholder": "種類を選択してください",
+	"wikilambda-ztyped-pair-key-label": "キー",
+	"wikilambda-ztyped-pair-value-label": "値",
+	"wikilambda-ztyped-map-placeholder": "地図の種別を選択",
 	"wikilambda-optional": "省略可能"
 }

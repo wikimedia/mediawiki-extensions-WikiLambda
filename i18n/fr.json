@@ -13,6 +13,7 @@
 		]
 	},
 	"wikilambda-desc": "Fournit aux wikis de Wikimedia une fonction d’analyseur syntaxique de wikicode pour appeler l’évaluation des fonctions écrites, gérées et évaluées sur un wiki central.",
+	"content-model-zobject": "Objet-Z",
 	"wikilambda-emptylabel": "Objet-Z sans libellé",
 	"wikilambda-history-title": "Historique de révision de « $1 » ($2)",
 	"wikilambda-invalidzobjecttitle": "Le titre fourni « $1 » n’est pas valide pour un Objet-Z.",
@@ -36,6 +37,7 @@
 	"wikilambda-functioncall": "Appel de fonction",
 	"wikilambda-orchestrated": "Résultat de l'orchestration",
 	"wikilambda-orchestrated-loading": "En cours d’orchestration, veuillez patienter",
+	"wikilambda-json": "JSON",
 	"wikilambda-argref": "Référence de l’argument",
 	"wikilambda-special-callfunction": "Créer et exécuter une fonction d'appel.",
 	"wikilambda-special-callfunction-summary": "Ce formulaire vous permet de créer et d'exécuter un appel de fonction. Vous devriez d'abord lire la documentation d'aide et les conseils de la communauté.",
@@ -206,12 +208,15 @@
 	"wikilambda-editor-write-save-button": "Sauvegarde de l'implémentation",
 	"wikilambda-editor-attach-title": "Attachez",
 	"wikilambda-editor-progress-title": "Progrès",
+	"wikilambda-editor-progress-percentage": "%",
 	"wikilambda-ztyped-list-placeholder": "Sélectionner un type générique",
 	"wikilambda-ztyped-list-description": "Liste générique de type",
 	"wikilambda-ztyped-list-items": "Éléments de liste",
 	"wikilambda-ztyped-pair-placeholder": "Sélectionner un type",
 	"wikilambda-ztyped-pair-key-label": "Clé",
 	"wikilambda-ztyped-pair-value-label": "Valeur",
+	"wikilambda-ztyped-map-placeholder": "Sélectionner un type de carte",
+	"wikilambda-ztyped-map-description": "Types de la carte",
 	"wikilambda-zerror": "ZError de type $1",
 	"wikilambda-optional": "facultatif"
 }

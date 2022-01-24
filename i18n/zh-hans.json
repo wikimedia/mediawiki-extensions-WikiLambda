@@ -6,6 +6,7 @@
 			"Hmgrmb",
 			"SkyEye FAST",
 			"TsuyaMarisa",
+			"Willy1018",
 			"Zhang8569"
 		]
 	},
@@ -44,5 +45,8 @@
 	"wikilambda-editor-name-zobject-name": "函数名称",
 	"wikilambda-editor-input-typed-list-placeholder": "列表类型",
 	"wikilambda-editor-input-default-label": "输入",
-	"wikilambda-editor-behavior-title": "行为"
+	"wikilambda-editor-behavior-title": "行为",
+	"wikilambda-ztyped-pair-placeholder": "选择类型",
+	"wikilambda-ztyped-pair-key-label": "密钥",
+	"wikilambda-ztyped-pair-value-label": "值"
 }
