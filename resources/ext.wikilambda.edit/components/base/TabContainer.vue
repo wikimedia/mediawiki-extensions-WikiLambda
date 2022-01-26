@@ -76,6 +76,6 @@ module.exports = {
 .ext-wikilambda-tab-container {
 	text-align: center;
 	display: flex;
-	justify-content: space-evenly;
+	padding-left: 3em;
 }
 </style>

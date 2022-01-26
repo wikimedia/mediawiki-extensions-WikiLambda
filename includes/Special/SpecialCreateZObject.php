@@ -31,7 +31,7 @@ class SpecialCreateZObject extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function getDescription() {
-		return $this->msg( 'wikilambda-special-createzobject' )->text();
+		return $this->msg( 'wikilambda-special-define-function' )->text();
 	}
 
 	/**
@@ -41,7 +41,7 @@ class SpecialCreateZObject extends SpecialPage {
 		// TODO: Use $subPage to extract and pre-fill type/etc.?
 
 		$this->setHeaders();
-		$this->outputHeader( 'wikilambda-special-createzobject-summary' );
+		$this->outputHeader( 'wikilambda-special-define-function-summary' );
 
 		$output = $this->getOutput();
 		$output->addModules( [ 'ext.wikilambda.edit','ext.wikilambda.specialpages.styles', 'mediawiki.special' ] );
