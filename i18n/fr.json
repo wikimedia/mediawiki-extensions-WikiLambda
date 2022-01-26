@@ -13,6 +13,7 @@
 		]
 	},
 	"wikilambda-desc": "Fournit aux wikis de Wikimedia une fonction d’analyseur syntaxique de wikicode pour appeler l’évaluation des fonctions écrites, gérées et évaluées sur un wiki central.",
+	"content-model-zobject": "Objet-Z",
 	"wikilambda-emptylabel": "Objet-Z sans libellé",
 	"wikilambda-history-title": "Historique de révision de « $1 » ($2)",
 	"wikilambda-invalidzobjecttitle": "Le titre fourni « $1 » n’est pas valide pour un Objet-Z.",
@@ -35,6 +36,7 @@
 	"wikilambda-functioncall": "Appel de fonction",
 	"wikilambda-orchestrated": "Résultat de l'orchestration",
 	"wikilambda-orchestrated-loading": "En cours d’orchestration, veuillez patienter",
+	"wikilambda-json": "JSON",
 	"wikilambda-argref": "Référence de l’argument",
 	"wikilambda-special-callfunction": "Créer et exécuter une fonction d'appel.",
 	"wikilambda-special-callfunction-summary": "Ce formulaire vous permet de créer et d'exécuter un appel de fonction. Vous devriez d'abord lire la documentation d'aide et les conseils de la communauté.",
