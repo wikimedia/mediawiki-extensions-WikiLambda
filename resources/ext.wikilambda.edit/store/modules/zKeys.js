@@ -19,6 +19,18 @@ function isZType( zidInfo ) {
 		( zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] === Constants.Z_TYPE );
 }
 
+function typedListToArray( typedList, array ) {
+	for ( var item in typedList ) {
+		if ( item === Constants.Z_TYPED_OBJECT_ELEMENT_1 ) {
+			array.push( typedList[ item ] );
+		} else if ( typeof typedList[ item ] === 'object' ) {
+			typedListToArray( typedList[ item ], array );
+		}
+	}
+
+	return array;
+}
+
 module.exports = {
 	state: {
 		/**
@@ -235,7 +247,13 @@ module.exports = {
 
 					if ( isZType( zidInfo ) ) {
 						keys = zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
-						keys.forEach( function ( key ) {
+						// TODO(T300082): once Z10 is deprecated, this should be default behavior
+						var result = keys;
+						if ( !Array.isArray( keys ) ) {
+							result = typedListToArray( keys, [] );
+						}
+
+						result.forEach( function ( key ) {
 							multilingualStr = key[
 								Constants.Z_KEY_LABEL ][
 								Constants.Z_MULTILINGUALSTRING_VALUE ];
