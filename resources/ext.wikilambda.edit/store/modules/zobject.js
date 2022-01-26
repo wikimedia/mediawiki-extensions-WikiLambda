@@ -24,15 +24,31 @@ function isObjectTypeDeclaration( object, parentObject ) {
 	return isReference && isObjectType;
 }
 
-function isTypedObject( object, functionCallId ) {
-	var isReference = object.value === Constants.Z_FUNCTION_CALL;
+function isTypedObjectWithCustomComponent( functionCallId ) {
 	var istypedObject = Constants.Z_TYPED_OBEJECTS_LIST.indexOf( functionCallId.value ) !== -1;
 
-	return isReference && istypedObject;
+	return istypedObject;
+}
+
+function isFunctionToType( objectDeclaration ) {
+	if ( objectDeclaration ) {
+		return objectDeclaration[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] === Constants.Z_FUNCTION;
+	}
 }
 
 function isNotObjectOrArrayRoot( object ) {
 	return [ 'array', 'object' ].indexOf( object.value ) === -1;
+}
+
+function retriveFunctionCallId( getZObjectChildrenById, object ) {
+	var functionCall = typeUtils.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, object );
+
+	if ( functionCall && functionCall.value === 'object' ) {
+		var functionCallObject = getZObjectChildrenById( functionCall.id );
+		functionCall = typeUtils.findKeyInArray( Constants.Z_REFERENCE_ID, functionCallObject );
+	}
+
+	return functionCall;
 }
 
 module.exports = {
@@ -225,14 +241,13 @@ module.exports = {
 						childrenObject = getters.getZObjectChildrenById( id );
 						var objectType = typeUtils.findKeyInArray( Constants.Z_OBJECT_TYPE, childrenObject ),
 							referenceId = typeUtils.findKeyInArray( Constants.Z_REFERENCE_ID, childrenObject ),
-							functionCallId = typeUtils.findKeyInArray(
-								Constants.Z_FUNCTION_CALL_FUNCTION, childrenObject
-							);
-
+							functionCallId = retriveFunctionCallId( getters.getZObjectChildrenById, childrenObject );
 						if ( isObjectTypeDeclaration( objectType, currentObject ) ) {
 							type = referenceId.value;
-						} else if ( isTypedObject( objectType, functionCallId ) ) {
+						} else if ( isTypedObjectWithCustomComponent( functionCallId ) ) {
 							type = functionCallId.value;
+						} else if ( functionCallId && isFunctionToType( getters.getZkeys[ functionCallId.value ] ) ) {
+							type = Constants.Z_FUNCTION_CALL_TO_TYPE;
 						} else if ( isNotObjectOrArrayRoot( objectType ) ) {
 							type = objectType.value;
 						} else {
