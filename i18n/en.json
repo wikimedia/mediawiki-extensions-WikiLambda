@@ -153,6 +153,7 @@
 	"wikilambda-implementation-selector-none": "This is a built-in implementation. The code is part of the core software, and is not displayed here.",
 	"wikilambda-function-is-attached": "This object is associated with its function.",
 	"wikilambda-function-is-not-attached": "This object is not associated with its function.",
+	"wikilambda-function-definition-add-other-label-languages-title": "+ Add labels in another language",
 	"wikilambda-function-definition-name-label": "Name",
 	"wikilambda-function-definition-name-placeholder": "Enter a descriptive function name",
 	"wikilambda-function-definition-name-example": "See name examples.",

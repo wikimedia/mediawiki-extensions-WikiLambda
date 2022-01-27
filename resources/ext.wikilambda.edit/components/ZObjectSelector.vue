@@ -365,7 +365,12 @@ module.exports = {
 <style lang="less">
 
 .ext-wikilambda-select-zobject {
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
+}
+
+.ext-wikilambda-select-zobject a {
+	display: inline-flex;
 }
 
 .ext-wikilambda-select-zobject-input-invalid {

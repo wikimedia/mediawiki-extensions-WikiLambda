@@ -51,6 +51,10 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			default: 0
+		},
+		zLang: {
+			type: String,
+			required: true
 		}
 	},
 	computed: $.extend(
@@ -95,13 +99,14 @@ module.exports = {
 				} );
 			},
 			getCurrentLanguageAliases: function () {
+				var lang = this.zLang || this.getCurrentZLanguage;
 				for ( var index in this.getZObjectAliasObject ) {
 					var alias = this.getZObjectAliasObject[ index ],
 						language = this.getNestedZObjectById(
 							this.findKeyInArray( Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE, alias ).id,
 							[ Constants.Z_REFERENCE_ID ]
 						);
-					if ( language.value === this.getCurrentZLanguage ) {
+					if ( language.value === lang ) {
 						return this.getZObjectChildrenById(
 							this.findKeyInArray( Constants.Z_MONOLINGUALSTRINGSET_VALUE, alias ).id
 						).map( function ( aliasString ) {
@@ -166,7 +171,7 @@ module.exports = {
 				} );
 			},
 			addAliasForLanguage: function ( newAlias ) {
-				var language = this.getCurrentZLanguage;
+				var language = this.zLang || this.getCurrentZLanguage;
 				var existingAliasId = this.getLanguageAliasStringsetId( language ),
 					nextId = this.getNextObjectId,
 					payload;

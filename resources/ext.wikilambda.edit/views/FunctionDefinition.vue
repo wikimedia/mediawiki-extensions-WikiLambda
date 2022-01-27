@@ -6,10 +6,30 @@
 		@license MIT
 	-->
 	<main class="ext-wikilambda-function-definition">
-		<function-definition-name></function-definition-name>
-		<function-definition-aliases></function-definition-aliases>
-		<function-definition-inputs></function-definition-inputs>
-		<function-definition-output></function-definition-output>
+		<div id="fnDefinitionContainer" class="ext-wikilambda-function-definition__container">
+			<div v-for="( labelLanguage, index ) in labelLanguages"
+				:key="index"
+				class="ext-wikilambda-function-definition__container__input">
+				<fn-editor-zlanguage-selector
+					class="ext-wikilambda-function-definition__container__input__language-selector"
+					:show-add-language="true"
+					:z-language="labelLanguage.zLang"
+					@change="function ( value ) {
+						return setInputLangByIndex( value, index )
+					}"
+				></fn-editor-zlanguage-selector>
+				<function-definition-name :z-lang="labelLanguage.zLang" :is-main-z-object="index === 0"></function-definition-name>
+				<function-definition-aliases :z-lang="labelLanguage.zLang"></function-definition-aliases>
+				<function-definition-inputs :z-lang="labelLanguage.zLang" :is-main-z-object="index === 0"></function-definition-inputs>
+
+				<template v-if="index === 0">
+					<function-definition-output></function-definition-output>
+				</template>
+			</div>
+		</div>
+		<div class="ext-wikilambda-function-definition__action-add-input">
+			<button @click="addLabelInOtherLanguages">+ Add labels in another language</button>
+		</div>
 		<toast
 			v-if="showToast"
 			:icon="toastIcon"
@@ -18,9 +38,7 @@
 			:message="currentToast"
 			@toast-close="closeToast"
 		></toast>
-		<function-definition-footer
-			@publish-successful="publishSuccessful"
-		></function-definition-footer>
+		<function-definition-footer></function-definition-footer>
 	</main>
 </template>
 
@@ -30,9 +48,11 @@ var FunctionDefinitionAliases = require( '../components/function/definition/func
 var FunctionDefinitionInputs = require( '../components/function/definition/function-definition-inputs.vue' );
 var FunctionDefinitionOutput = require( '../components/function/definition/function-definition-output.vue' );
 var FunctionDefinitionFooter = require( '../components/function/definition/function-definition-footer.vue' );
+var FnEditorZLanguageSelector = require( '../components/editor/FnEditorZLanguageSelector.vue' );
 var Toast = require( '../components/base/Toast.vue' );
-var mapGetters = require( 'vuex' ).mapGetters;
 var icons = require( './../../../lib/icons.js' );
+var mapGetters = require( 'vuex' ).mapGetters,
+	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
 module.exports = {
@@ -43,14 +63,23 @@ module.exports = {
 		'function-definition-inputs': FunctionDefinitionInputs,
 		'function-definition-output': FunctionDefinitionOutput,
 		'function-definition-footer': FunctionDefinitionFooter,
+		'fn-editor-zlanguage-selector': FnEditorZLanguageSelector,
 		toast: Toast
 	},
 	data: function () {
 		return {
+			labelLanguages: [
+				{
+					label: '',
+					zLang: ''
+				}
+			],
 			currentToast: null
 		};
 	},
 	computed: $.extend( mapGetters( [
+		'getZkeyLabels',
+		'getCurrentZLanguage',
 		'currentZFunctionHasInputs',
 		'currentZFunctionHasOutput'
 	] ),
@@ -74,14 +103,42 @@ module.exports = {
 			return this.currentToast !== null;
 		}
 	} ),
-	methods: {
+	methods: $.extend( mapActions( [
+		'setCurrentZLanguage'
+	] ), {
 		publishSuccessful: function ( toastMessage ) {
 			this.currentToast = toastMessage;
 		},
 		closeToast: function () {
 			this.currentToast = null;
+		},
+		addLabelInOtherLanguages: function () {
+			const hasSingleLanguage = this.labelLanguages.length === 1;
+			const hasMultipleLanguage = this.labelLanguages.length > 1;
+			const lastLanguageHasLabel = hasMultipleLanguage && !!this.labelLanguages[ this.labelLanguages.length - 1 ].label;
+			if ( hasSingleLanguage || lastLanguageHasLabel ) {
+				this.labelLanguages.push(
+					{
+						label: '',
+						zLang: ''
+					} );
+
+				// Scroll to new labelLanguage container after it has been added
+				setTimeout( function () {
+					const fnDefinitionContainer = document.getElementById( 'fnDefinitionContainer' );
+					fnDefinitionContainer.scrollTop = fnDefinitionContainer.scrollHeight;
+				}, 0 );
+			}
+		},
+		setInputLangByIndex: function ( lang, index ) {
+			// If index is zero, set currentZLanguage as lang.zLang
+			if ( index === 0 ) {
+				this.setCurrentZLanguage( lang.zLang );
+			}
+
+			this.labelLanguages[ index ] = lang;
 		}
-	},
+	} ),
 	watch: {
 		ableToPublish: {
 			immediate: true,
@@ -91,6 +148,13 @@ module.exports = {
 				}
 			}
 		}
+	},
+	mounted: function () {
+		// set first input to currentlanguage
+		this.labelLanguages[ 0 ] = {
+			label: this.getZkeyLabels[ this.getCurrentZLanguage ],
+			zLang: this.getCurrentZLanguage
+		};
 	}
 };
 </script>
@@ -99,9 +163,34 @@ module.exports = {
 @import './../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-function-definition {
-	padding-top: 20px;
-	padding-left: 27px;
-	border: 1px solid @wmui-color-base80;
-	min-height: 450px;
+	&__container {
+		padding-top: 20px;
+		padding-left: 27px;
+		border: 1px solid @wmui-color-base80;
+		max-height: 450px;
+		overflow-y: scroll;
+
+		&__input {
+			margin-bottom: 40px;
+
+			&__language-selector {
+				margin-bottom: 40px;
+			}
+		}
+	}
+
+	&__action-add-input {
+		height: 40px;
+		background: @wmui-color-base80;
+
+		button {
+			height: 100%;
+			padding: 10px 27px;
+			font-weight: bold;
+			background: transparent;
+			border: 0;
+			color: @wmui-color-base0;
+		}
+	}
 }
 </style>

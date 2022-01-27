@@ -39,6 +39,13 @@ module.exports = {
 		zobjectId: {
 			type: Number,
 			default: 0
+		},
+		isMainZObject: {
+			type: Boolean
+		},
+		zLang: {
+			type: String,
+			required: true
 		}
 	},
 	computed: $.extend( mapGetters( [
@@ -63,7 +70,8 @@ module.exports = {
 		},
 		getFunctionName: function () {
 			var labelObject,
-				label;
+				label,
+				lang = this.zLang || this.getCurrentZLanguage;
 
 			for ( var index in this.getFunctionMonolingualNames ) {
 				var maybeLabel = this.getFunctionMonolingualNames[ index ],
@@ -72,7 +80,7 @@ module.exports = {
 						Constants.Z_REFERENCE_ID
 					] );
 
-				if ( language.value === this.getCurrentZLanguage ) {
+				if ( language.value === lang ) {
 					labelObject = maybeLabel;
 				}
 			}
@@ -93,7 +101,8 @@ module.exports = {
 			set: function ( value ) {
 				var payload = {
 					id: this.getFunctionName.id,
-					value: value
+					value: value,
+					isMainZObject: this.isMainZObject
 				};
 				this.setPageZObjectValue( payload );
 			}

@@ -11,6 +11,7 @@
 			class="ext-wikilambda-editor-input-list-item__selector"
 			:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' )"
 			:selected-id="getTypeOfArgument"
+			:readonly="!canEditType"
 			@input="setArgumentType( $event )"
 		></fn-editor-type-selector>
 		<!--
@@ -28,6 +29,7 @@
 			@clear="setListTypedList"
 		>
 		</z-object-selector>
+
 		<input
 			class="ext-wikilambda-editor-input-list-item__input"
 			:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' )"
@@ -35,7 +37,8 @@
 			:value="getArgumentLabel"
 			@input="setArgumentLabel( zobjectId, $event.target.value )"
 		>
-		<template v-if=" index === 0 ">
+
+		<template v-if="showAddNewInput">
 			<div
 				class="ext-wikilambda-editor-input-list-item__button ext-wikilambda-edit__text-button"
 				role="button"
@@ -67,8 +70,15 @@ module.exports = {
 			type: Number,
 			required: true
 		},
-		index: {
-			type: Number,
+		showAddNewInput: {
+			type: Boolean
+		},
+		canEditType: {
+			type: Boolean,
+			required: true
+		},
+		zLang: {
+			type: String,
 			required: true
 		}
 	},
@@ -119,7 +129,7 @@ module.exports = {
 						Constants.Z_STRING_VALUE
 					] );
 
-				if ( lang.value === this.getCurrentZLanguage ) {
+				if ( lang.value === this.zLang ) {
 					return value.value;
 				}
 			}
@@ -134,14 +144,16 @@ module.exports = {
 		'setTypeOfTypedList'
 	] ), {
 		setArgumentLabel: function ( id, input ) {
-			if ( !this.getArgumentLabel ) {
+			if ( !this.getArgumentLabel && !this.getArgumentLabels.id ) {
 				return;
 			}
+
+			var lang = this.zLang || this.getCurrentZLanguage;
 
 			var labels = this.getZObjectChildrenById( this.getArgumentLabels.id );
 
 			for ( var index in labels ) {
-				var lang = this.getNestedZObjectById( labels[ index ].id, [
+				var labelLang = this.getNestedZObjectById( labels[ index ].id, [
 						Constants.Z_MONOLINGUALSTRING_LANGUAGE,
 						Constants.Z_REFERENCE_ID
 					] ),
@@ -150,7 +162,7 @@ module.exports = {
 						Constants.Z_STRING_VALUE
 					] );
 
-				if ( lang.value === this.getCurrentZLanguage ) {
+				if ( labelLang.value === lang ) {
 					this.setZObjectValue( {
 						id: value.id,
 						value: input
@@ -161,8 +173,8 @@ module.exports = {
 
 			// Add new language
 			var nextId = this.getNextObjectId,
-				newLang = this.getCurrentZLanguage,
-				zLabelParentId = this.getArgumentLabels( id ).id;
+				newLang = lang,
+				zLabelParentId = this.getArgumentLabels.id;
 
 			this.addZMonolingualString( {
 				lang: newLang,

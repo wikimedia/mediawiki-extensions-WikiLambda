@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-language-selector">
-		<select v-model="zLanguage">
+		<select v-model="zLanguageValue">
 			<option
 				v-for="language in currentZObjectLanguages"
 				:key="language.Z9K1"
@@ -40,28 +40,41 @@ module.exports = {
 		showAddLanguage: {
 			type: Boolean,
 			default: true
+		},
+		zLanguage: {
+			type: String
 		}
+	},
+	data: function () {
+		return {
+			localZLanguage: ''
+		};
 	},
 	computed: $.extend( mapGetters( [
 		'currentZObjectLanguages',
-		'getCurrentZLanguage',
 		'getNestedZObjectById',
-		'getUserZlangZID',
 		'getZkeyLabels'
 	] ), {
-		zLanguage: {
+		zLanguageValue: {
 			get: function () {
-				return this.getCurrentZLanguage;
+				return this.localZLanguage || this.zLanguage;
 			},
 			set: function ( value ) {
-				this.setCurrentZLanguage( value );
+				this.setLocalZLanguage( value );
 			}
 		}
 	} ),
 	methods: $.extend( mapActions( [
-		'addZMonolingualString',
-		'setCurrentZLanguage'
+		'addZMonolingualString'
 	] ), {
+		setLocalZLanguage: function ( lang ) {
+			this.localZLanguage = lang;
+
+			this.$emit( 'change', {
+				label: this.getZkeyLabels[ lang ],
+				zLang: lang
+			} );
+		},
 		addNewLang: function ( zId ) {
 			if ( !zId ) {
 				return;
@@ -78,14 +91,10 @@ module.exports = {
 				};
 
 			this.addZMonolingualString( payload );
-			this.zLanguage = zId;
+
+			this.setLocalZLanguage( zId );
 		}
-	} ),
-	mounted: function () {
-		if ( !this.zLanguage ) {
-			this.zLanguage = this.getUserZlangZID;
-		}
-	}
+	} )
 };
 </script>
 

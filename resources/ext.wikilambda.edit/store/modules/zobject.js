@@ -491,10 +491,15 @@ module.exports = {
 			}
 
 			// Update page title
-			updateZObjectPageTitle( payload.value );
+			if ( payload.isMainZObject ) {
+				updateZObjectPageTitle( payload.value );
+			}
 
 			// Update ZObject value
-			context.dispatch( 'setZObjectValue', payload );
+			context.dispatch( 'setZObjectValue', {
+				id: payload.id,
+				value: payload.value
+			} );
 		},
 		/**
 		 * Set the value of a specific Zobject. This method is called multiple times when adding a nested object.

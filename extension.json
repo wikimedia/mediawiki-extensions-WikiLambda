@@ -331,6 +331,7 @@
 				"wikilambda-implementation-selector-none",
 				"wikilambda-function-is-attached",
 				"wikilambda-function-is-not-attached",
+				"wikilambda-function-definition-add-other-label-languages-title",
 				"wikilambda-function-definition-name-label",
 				"wikilambda-function-definition-name-placeholder",
 				"wikilambda-function-definition-name-example",
