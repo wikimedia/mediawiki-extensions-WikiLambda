@@ -24,12 +24,11 @@
 			:class="{ 'ext-wikilambda-zkey-input-invalid': validatorIsInvalid }"
 			:label="placeholder"
 			:placeholder="placeholder"
+			:search-placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-search-placeholder' )"
 			:initial-value="selectedText"
 			:lookup-results="lookupLabels"
 			@input="onInput"
-			@blur="onSubmit"
 			@submit="onSubmit"
-			@clear="onClear"
 			@clear-lookup-results="onClearLookupResults"
 		>
 		</sd-autocomplete-search-input>
@@ -337,16 +336,6 @@ module.exports = {
 					this.validatorSetError( 'wikilambda-invalidzobject' );
 				}
 			},
-
-			/**
-			 * The autocomple field is cleaned
-			 */
-			onClear: function () {
-				this.valueEmitted = false;
-				this.emitInput( '' );
-				this.validatorResetError();
-			},
-
 			/**
 			 * The autocomplete field is empty or an item is selected,
 			 * so it clears the list of suggestions.

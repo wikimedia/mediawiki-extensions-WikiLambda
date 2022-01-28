@@ -1,76 +1,73 @@
 <template>
 	<div class="sd-input" :class="rootClasses">
-		<div class="sd-input__wrapper">
-			<label
-				:id="labelElementId"
-				:for="inputElementId"
-				class="sd-input__label"
-			>
-				{{ label }}
-			</label>
+		<label
+			:id="labelElementId"
+			:for="inputElementId"
+			class="sd-input__label"
+		>
+			{{ label }}
+		</label>
 
-			<input
-				:id="inputElementId"
-				ref="input"
-				v-model="value"
-				dir="auto"
-				class="sd-input__input"
-				type="text"
-				role="combobox"
-				autocomplete="off"
-				aria-autocomplete="list"
-				:aria-owns="lookupResultsElementId"
-				:aria-expanded="isExpanded"
-				:aria-activedescendant="activeLookupItemId"
-				:placeholder="placeholder"
-				@input="onInput"
-				@focus="onFocus"
-				@blur="onBlur"
-				@keyup.enter="onSubmit"
-				@keyup.up="onArrowUp"
-				@keyup.down="onArrowDown"
-			>
-
-			<span class="sd-input__icon" @click="onIconClick">
-				<sd-icon :icon="icons.sdIconSearch"></sd-icon>
-			</span>
-
+		<div
+			:id="inputElementId"
+			class="sd-input__active-box"
+			tabindex="0"
+			@click="onClick"
+			@keyup.enter.prevent="onClick"
+			@keyup="focusInput"
+		>
+			<span :class="{ 'sd-input__placeholder': !value }">{{ inputTitle }}</span>
 			<span
-				v-if="value"
 				class="sd-input__indicator"
 				role="button"
-				@click="onClear"
 			>
-				<sd-icon :icon="icons.sdIconClear" :title="clearTitle"></sd-icon>
+				<sd-icon :icon="icons.sdIconExpand"></sd-icon>
 			</span>
-
-			<sd-select-menu
-				v-if="hasLookupResults && showLookupResults"
-				:items="lookupResults"
-				:active-item-index="activeLookupItemIndex"
-				:listbox-id="lookupResultsElementId"
-				:labelled-by="labelElementId"
-				@select="onLookupItemSelect"
-				@active-item-change="onActiveItemChange"
-			>
-			</sd-select-menu>
 		</div>
 
-		<sd-button
-			v-if="hasButton"
-			class="sd-input__button"
-			:primary="true"
-			:progressive="true"
-			@click="onSubmit"
+		<sd-select-menu
+			v-if="showLookupResults"
+			:items="lookupResults"
+			:active-item-index="activeLookupItemIndex"
+			:listbox-id="lookupResultsElementId"
+			:labelled-by="labelElementId"
+			@select="onLookupItemSelect"
+			@active-item-change="onActiveItemChange"
 		>
-			{{ $i18n( 'searchbutton' ) }}
-		</sd-button>
+			<div v-if="showSearchBox" class="sd-input__menu">
+				<input
+					ref="input"
+					v-model="searchValue"
+					dir="auto"
+					class="sd-input__menu__input"
+					type="text"
+					role="combobox"
+					autocomplete="off"
+					aria-autocomplete="list"
+					:aria-owns="lookupResultsElementId"
+					:aria-expanded="isExpanded"
+					:aria-activedescendant="activeLookupItemId"
+					:placeholder="searchPlaceholder"
+					@input="onInput"
+					@keyup.enter="onSubmitActiveItem"
+					@keyup.up="onArrowUp"
+					@keyup.down="onArrowDown"
+				>
+				<span
+					v-if="searchValue"
+					class="sd-input__indicator"
+					role="button"
+					@click="onClear"
+				>
+					<sd-icon :icon="icons.sdIconClear" :title="clearTitle"></sd-icon>
+				</span>
+			</div>
+		</sd-select-menu>
 	</div>
 </template>
 
 <script>
-var SdButton = require( './Button.vue' ),
-	SdIcon = require( './Icon.vue' ),
+var SdIcon = require( './Icon.vue' ),
 	SdSelectMenu = require( './SelectMenu.vue' ),
 	icons = require( './../../../lib/icons.js' );
 /**
@@ -84,9 +81,8 @@ var SdButton = require( './Button.vue' ),
  */
 // @vue/component
 module.exports = {
-	name: 'SdAutocompleteSearchInput',
+	name: 'sd-autocomplete-search-input',
 	components: {
-		'sd-button': SdButton,
 		'sd-icon': SdIcon,
 		'sd-select-menu': SdSelectMenu
 	},
@@ -119,8 +115,12 @@ module.exports = {
 			type: [ String, Object ],
 			default: null
 		},
-		buttonLabel: {
-			type: [ String, Object ],
+		showSearchBox: {
+			type: Boolean,
+			default: true
+		},
+		searchPlaceholder: {
+			type: String,
 			default: null
 		},
 		lookupResults: {
@@ -132,6 +132,7 @@ module.exports = {
 	},
 	data: function () {
 		return {
+			searchValue: '',
 			value: this.initialValue,
 			icons: icons,
 			pending: false,
@@ -141,19 +142,18 @@ module.exports = {
 	},
 	computed: {
 		/**
+		 * @return {string}
+		 */
+		inputTitle: function () {
+			return this.value || this.placeholder;
+		},
+		/**
 		 * @return {Object}
 		 */
 		rootClasses: function () {
 			return {
-				'sd-input--button': this.hasButton,
 				'sd-input--pending': this.pending
 			};
-		},
-		/**
-		 * @return {boolean}
-		 */
-		hasButton: function () {
-			return !!this.buttonLabel;
 		},
 		/**
 		 * @return {boolean}
@@ -186,20 +186,6 @@ module.exports = {
 			return this.name + '__lookup-results';
 		},
 		/**
-		 * The actual string of the active lookup result item.
-		 *
-		 * @return {string}
-		 */
-		activeLookupItem: function () {
-			if ( this.lookupResults.length < 1 ||
-				!this.showLookupResults ||
-				this.activeLookupItemIndex < 0
-			) {
-				return false;
-			}
-			return this.lookupResults[ this.activeLookupItemIndex ];
-		},
-		/**
 		 * The ID of the element of the active lookup result item.
 		 *
 		 * @return {string|boolean}
@@ -218,54 +204,77 @@ module.exports = {
 		 * @return {string}
 		 */
 		isExpanded: function () {
-			return this.hasLookupResults && this.showLookupResults ? 'true' : 'false';
+			return this.showLookupResults ? 'true' : 'false';
+		},
+		/**
+		 * The actual string of the active lookup result item.
+		 *
+		 * @return {string}
+		 */
+		activeLookupItem: function () {
+			if ( this.lookupResults.length < 1 ||
+				!this.showLookupResults ||
+				this.activeLookupItemIndex < 0
+			) {
+				return false;
+			}
+			return this.lookupResults[ this.activeLookupItemIndex ];
 		}
 	},
 	methods: {
+		/**
+		 * Focus on input and set keyboard value as input value if valid input.
+		 *
+		 * @param {Event} event
+		 * @fires keyup
+		 */
+		focusInput: function ( event ) {
+			const keyCode = event.keyCode === 0 ? event.charCode : event.keyCode;
+			const keyCodeIsNumber = keyCode >= 48 && keyCode <= 57;
+			const keyCodeUpperCaseLetter = keyCode >= 65 && keyCode <= 90;
+			const keyCodeLowerCaseLetter = keyCode >= 97 && keyCode <= 122;
+
+			if ( keyCodeIsNumber || keyCodeUpperCaseLetter || keyCodeLowerCaseLetter ) {
+				this.$refs.input.focus();
+				this.$refs.input.value = event.key;
+			}
+		},
+		/**
+		 * Show/Hide lookup menu.
+		 *
+		 * @param {Event} event
+		 * @fires click
+		 */
+		onClick: function ( event ) {
+			this.toggleLookupResults( !this.showLookupResults );
+			this.$emit( 'reset', event );
+		},
 		/**
 		 * Emit input and enable pending state.
 		 *
 		 * @fires input
 		 */
 		onInput: function () {
-			this.pending = true;
-			this.$emit( 'input', this.value );
-		},
-		/**
-		 * If there are existing lookup results, show them on focus.
-		 *
-		 * @param {Event} event
-		 * @fires focus
-		 */
-		onFocus: function ( event ) {
-			this.toggleLookupResults( this.lookupResults.length > 0 );
-			this.$emit( 'focus', event );
-		},
-		/**
-		 * Hide, but don't delete, lookup results.
-		 *
-		 * @param {Event} event
-		 * @fires blur
-		 */
-		onBlur: function ( event ) {
-			this.$emit( 'blur', event );
-			this.toggleLookupResults( false );
-		},
-		/**
-		 * Handle enter keypress or button click.
-		 *
-		 * @fires enter
-		 */
-		onSubmit: function () {
-			// If the user is highlighting an autocomplete result, emit that
-			// result. Otherwise, emit the value of the text input.
-			if ( this.hasLookupResults && this.activeLookupItemIndex >= 0 ) {
-				// We also want to update the input text.
-				this.value = this.activeLookupItem;
+			if ( this.searchValue === '' ) {
+				return;
 			}
-			this.$emit( 'submit', this.value );
+
+			if ( this.hasLookupResults ) {
+				this.clearLookupResults();
+			}
+
+			this.pending = true;
+			this.$emit( 'input', this.searchValue );
+		},
+		/**
+		 * Clear lookup result and emit reset.
+		 *
+		 * @param {Event} event
+		 * @fires reset
+		 */
+		onReset: function ( event ) {
 			this.clearLookupResults();
-			this.$refs.input.blur();
+			this.$emit( 'reset', event );
 		},
 		/**
 		 * Handle lookup item click.
@@ -274,9 +283,8 @@ module.exports = {
 		 * @fires submit
 		 */
 		onLookupItemSelect: function ( index ) {
-			this.value = this.lookupResults[ index ];
-			this.$emit( 'submit', this.value );
-			this.clearLookupResults();
+			this.activeLookupItemIndex = index;
+			this.onSubmitActiveItem();
 		},
 		/**
 		 * Move to the next lookup result. If we're at the end, go back to the
@@ -310,23 +318,11 @@ module.exports = {
 		onActiveItemChange: function ( index ) {
 			this.activeLookupItemIndex = index;
 		},
-		/*
-		* Set focus to input if icon is clicked.
-		*/
-		onIconClick: function () {
-			var $input;
-			this.$nextTick( function () {
-				$input = this.$refs.input;
-				$input.focus();
-			} );
-		},
 		/**
-		 * Handle clear icon click.
+		 * Handle clear on icon click.
 		 */
 		onClear: function () {
-			this.$emit( 'clear' );
-			this.value = '';
-			this.clearLookupResults();
+			this.searchValue = '';
 			this.$refs.input.focus();
 		},
 		/**
@@ -342,6 +338,23 @@ module.exports = {
 		 */
 		toggleLookupResults: function ( show ) {
 			this.showLookupResults = show;
+		},
+		/**
+		 * Handle enter keypress or button click.
+		 *
+		 * @fires enter
+		 */
+		onSubmitActiveItem: function () {
+			// If the user is highlighting an autocomplete result, emit that
+			// result. Otherwise, return.
+			if ( !this.hasLookupResults || this.activeLookupItemIndex < 0 ) {
+				return;
+			}
+			this.searchValue = '';
+			this.value = this.activeLookupItem;
+			this.$emit( 'submit', this.value );
+			this.clearLookupResults();
+			this.toggleLookupResults( false );
 		}
 	},
 	watch: {
@@ -352,7 +365,7 @@ module.exports = {
 		lookupResults: function () {
 			this.pending = false;
 			this.activeLookupItemIndex = -1;
-			this.toggleLookupResults( this.lookupResults.length > 0 );
+			this.toggleLookupResults( this.showLookupResults );
 		},
 		/**
 		 * If the search term (passed down here as the "initial value" prop)
@@ -366,13 +379,13 @@ module.exports = {
 			this.value = newValue;
 		},
 		/**
-		 * Clear lookup results if the user manually delets all characters
+		 * Clear lookup results if the user manually deletes all characters
 		 *
 		 * @param {string} newValue
 		 */
-		value: function ( newValue ) {
+		searchValue: function ( newValue ) {
 			if ( newValue === '' ) {
-				this.clearLookupResults();
+				this.onReset();
 			}
 		}
 	}

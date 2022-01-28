@@ -173,6 +173,7 @@
 	"wikilambda-function-definition-footer-implementation-button": "Label for the write implementation button",
 	"wikilambda-function-definition-inputs-label": "Label for the function Inputs",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "Placeholder for the function input type selector",
+	"wikilambda-function-definition-inputs-item-selector-search-placeholder": "Placeholder for the function input type selector search",
 	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "Placeholder for the type selection of a typed list",
 	"wikilambda-function-definition-inputs-item-input-placeholder": "Placeholder for the function agument label",
 	"wikilambda-function-definition-inputs-item-add-input-button": "Button used to add another input to a function",

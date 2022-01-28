@@ -66,7 +66,10 @@ describe( 'ZObjectSelector', function () {
 	it( 'renders without errors', function () {
 		var wrapper = mount( ZObjectSelector, {
 			store: store,
-			localVue: localVue
+			localVue: localVue,
+			mocks: {
+				$i18n: jest.fn()
+			}
 		} );
 
 		expect( wrapper.find( 'div' ) ).toBeTruthy();
@@ -108,23 +111,15 @@ describe( 'ZObjectSelector', function () {
 
 		wrapper.vm.lookupZObject = mockedGet;
 
-		return wrapper.find( 'input' ).setValue( 'test' )
-			.then( function () {
-				// eslint-disable-next-line compat/compat
-				return new Promise( function ( resolve ) {
-					setTimeout( function () {
-						resolve();
-					}, 1000 );
-				} );
-			} )
-			.then( function () {
-				expect( mockedGet ).toHaveBeenCalledTimes( 1 );
-				expect( mockedGet ).toHaveBeenCalledWith( {
-					input: 'test',
-					type: '',
-					returnType: ''
-				} );
-			} );
+		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.searchValue = 'test';
+		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.onInput();
+
+		expect( mockedGet ).toHaveBeenCalledTimes( 1 );
+		expect( mockedGet ).toHaveBeenCalledWith( {
+			input: 'test',
+			type: '',
+			returnType: ''
+		} );
 	} );
 
 	it( 'searches only ZType based on input and props', function () {
@@ -151,25 +146,18 @@ describe( 'ZObjectSelector', function () {
 			}
 		} );
 
+		wrapper.vm.showLookupResults = true;
 		wrapper.vm.lookupZObject = mockedGet;
 
-		return wrapper.find( 'input' ).setValue( 'test' )
-			.then( function () {
-				// eslint-disable-next-line compat/compat
-				return new Promise( function ( resolve ) {
-					setTimeout( function () {
-						resolve();
-					}, 1000 );
-				} );
-			} )
-			.then( function () {
-				expect( mockedGet ).toHaveBeenCalledTimes( 1 );
-				expect( mockedGet ).toHaveBeenCalledWith( {
-					input: 'test',
-					type: 'Z4',
-					returnType: ''
-				} );
-			} );
+		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.searchValue = 'test';
+		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.onInput();
+
+		expect( mockedGet ).toHaveBeenCalledTimes( 1 );
+		expect( mockedGet ).toHaveBeenCalledWith( {
+			input: 'test',
+			type: 'Z4',
+			returnType: ''
+		} );
 	} );
 
 	it( 'searches only return ZType based on input and props', function () {
@@ -196,25 +184,18 @@ describe( 'ZObjectSelector', function () {
 			}
 		} );
 
+		wrapper.vm.showLookupResults = true;
 		wrapper.vm.lookupZObject = mockedGet;
 
-		return wrapper.find( 'input' ).setValue( 'test' )
-			.then( function () {
-				// eslint-disable-next-line compat/compat
-				return new Promise( function ( resolve ) {
-					setTimeout( function () {
-						resolve();
-					}, 1000 );
-				} );
-			} )
-			.then( function () {
-				expect( mockedGet ).toHaveBeenCalledTimes( 1 );
-				expect( mockedGet ).toHaveBeenCalledWith( {
-					input: 'test',
-					type: '',
-					returnType: 'Z4'
-				} );
-			} );
+		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.searchValue = 'test';
+		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.onInput();
+
+		expect( mockedGet ).toHaveBeenCalledTimes( 1 );
+		expect( mockedGet ).toHaveBeenCalledWith( {
+			input: 'test',
+			type: '',
+			returnType: 'Z4'
+		} );
 	} );
 
 	it( 'searches by ZID instead of label', function () {
@@ -246,6 +227,7 @@ describe( 'ZObjectSelector', function () {
 			actions: actions,
 			mutations: mutations
 		} );
+		jest.useFakeTimers();
 
 		wrapper = mount( ZObjectSelector, {
 			store: store,
@@ -255,46 +237,18 @@ describe( 'ZObjectSelector', function () {
 			}
 		} );
 
-		return wrapper.find( 'input' ).setValue( 'Z4' )
-			.then( function () {
-				// eslint-disable-next-line compat/compat
-				return new Promise( function ( resolve ) {
-					setTimeout( function () {
-						resolve();
-					}, 1000 );
-				} );
-			} )
-			.then( function () {
-				expect( actions.fetchZKeys ).toHaveBeenCalled();
-				expect( actions.fetchZKeys ).toHaveBeenCalledWith(
-					expect.anything(), [ 'Z4' ]
-				);
-			} );
+		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.searchValue = 'Z4';
+		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.onInput();
+		jest.runAllTimers();
+		expect( actions.fetchZKeys ).toHaveBeenCalled();
+		expect( actions.fetchZKeys ).toHaveBeenCalledWith(
+			expect.anything(), [ 'Z4' ]
+		);
 	} );
 
 	it( 'emits the selected ZID', function () {
 		var wrapper;
 
-		// eslint-disable-next-line no-unused-vars
-		actions.fetchZKeys = jest.fn( function ( context, payload ) {
-			context.state.zKeys = {
-				Z4: {
-					Z1K1: 'Z2',
-					Z2K1: 'Z4',
-					Z2K2: {
-						Z1K1: 'Z4',
-						Z4K1: 'Z4'
-					}
-				}
-			};
-
-			context.state.zKeyLabels = {
-				Z4: 'Type'
-			};
-
-			return true;
-		} );
-
 		store = new Vuex.Store( {
 			state: state,
 			getters: getters,
@@ -309,81 +263,17 @@ describe( 'ZObjectSelector', function () {
 				$i18n: jest.fn()
 			}
 		} );
+		store.state.zKeyLabels = {
+			Z4: 'String'
+		};
+		wrapper.vm.lookupResults = {
+			Z4: 'String'
+		};
 
-		return wrapper.find( 'input' ).setValue( 'Z4' )
-			.then( function () {
-				// eslint-disable-next-line compat/compat
-				return new Promise( function ( resolve ) {
-					setTimeout( function () {
-						resolve();
-					}, 1000 );
-				} );
-			} )
-			.then( function () {
-				return wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.$emit( 'submit', {} );
-			} )
-			.then( function () {
-				expect( wrapper.emitted().input ).toBeTruthy();
-				expect( wrapper.emitted().input ).toEqual( [ [ 'Z4' ] ] );
-			} );
-	} );
+		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.searchValue = 'Z4';
+		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.$emit( 'submit', 'String' );
 
-	it( 'emits an empty string when cleared', function () {
-		var wrapper;
-
-		// eslint-disable-next-line no-unused-vars
-		actions.fetchZKeys = jest.fn( function ( context, payload ) {
-			context.state.zKeys = {
-				Z4: {
-					Z1K1: 'Z2',
-					Z2K1: 'Z4',
-					Z2K2: {
-						Z1K1: 'Z4',
-						Z4K1: 'Z4'
-					}
-				}
-			};
-
-			context.state.zKeyLabels = {
-				Z4: 'Type'
-			};
-
-			return true;
-		} );
-
-		store = new Vuex.Store( {
-			state: state,
-			getters: getters,
-			actions: actions,
-			mutations: mutations
-		} );
-
-		wrapper = mount( ZObjectSelector, {
-			store: store,
-			localVue: localVue,
-			mocks: {
-				$i18n: jest.fn()
-			}
-		} );
-
-		return wrapper.find( 'input' ).setValue( 'Z4' )
-			.then( function () {
-				// eslint-disable-next-line compat/compat
-				return new Promise( function ( resolve ) {
-					setTimeout( function () {
-						resolve();
-					}, 1000 );
-				} );
-			} )
-			.then( function () {
-				return wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.$emit( 'submit', {} );
-			} )
-			.then( function () {
-				return wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.$emit( 'clear' );
-			} )
-			.then( function () {
-				expect( wrapper.emitted().input ).toBeTruthy();
-				expect( wrapper.emitted().input ).toEqual( [ [ 'Z4' ], [ '' ] ] );
-			} );
+		expect( wrapper.emitted().input ).toBeTruthy();
+		expect( wrapper.emitted().input ).toEqual( [ [ 'Z4' ] ] );
 	} );
 } );

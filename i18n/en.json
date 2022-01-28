@@ -165,6 +165,7 @@
 	"wikilambda-function-definition-footer-implementation-button": "Write Implementation",
 	"wikilambda-function-definition-inputs-label": "Input type",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "Select a type",
+	"wikilambda-function-definition-inputs-item-selector-search-placeholder": "Search for reference or function",
 	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "Select a type for your typed list",
 	"wikilambda-function-definition-inputs-item-input-placeholder": "Input label",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Add another input",

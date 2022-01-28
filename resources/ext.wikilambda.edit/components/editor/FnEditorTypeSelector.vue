@@ -13,20 +13,18 @@
 		>
 			{{ selectedText }}
 		</a>
-
 		<sd-autocomplete-search-input
 			v-else
 			name="zobject-selector"
 			:class="{ 'ext-wikilambda-zkey-input-invalid': validatorIsInvalid }"
 			:label="placeholder"
 			:placeholder="placeholder"
+			:search-placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-search-placeholder' )"
 			:initial-value="selectedText"
 			:lookup-results="lookupLabels"
 			@input="onInput"
-			@blur="onSubmit"
-			@focus="onFocus"
+			@reset="onReset"
 			@submit="onSubmit"
-			@clear="onClear"
 			@clear-lookup-results="onClearLookupResults"
 		>
 		</sd-autocomplete-search-input>
@@ -51,7 +49,7 @@ module.exports = {
 		'getZkeyLabels'
 	] ),
 	methods: {
-		onFocus: function () {
+		onReset: function () {
 			this.lookupResults = this.getDefaultResults();
 		},
 		getDefaultResults: function () {
