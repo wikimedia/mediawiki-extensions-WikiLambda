@@ -142,11 +142,11 @@ class ZLangRegistry extends ZObjectRegistry {
 	/**
 	 * Find ZLanguage in the database given a language code.
 	 *
-	 * FIXME: This is extremely slow and should be soon replaced for another method
-	 * that doesn't scan all Z60 objects. Like, for example, implement aliases and
-	 * include them in the secondary labels database (T262091) and add aliases to all
-	 * Z60s so that their aliases include all the possible language codes associated
-	 * to that given language (T283605)
+	 * FIXME (T283605): This is extremely slow and should be soon replaced for another
+	 * method that doesn't scan all Z60 objects. Like, for example, implement aliases
+	 * and include them in the secondary labels database (T262091) and add aliases to
+	 * all Z60s so that their aliases include all the possible language codes associated
+	 * to that given language
 	 *
 	 * @param string $code
 	 * @return string The ZLanguage Zid associated to this language code
@@ -186,10 +186,6 @@ class ZLangRegistry extends ZObjectRegistry {
 	 * @return string|bool Language code or false if content object is not valid Z60.
 	 */
 	private function getLanguageCodeFromContent( $content ) {
-		// FIXME: If we want to validate the ZObject, we can do:
-		// return $zobject->getInnerZObject()->getValueByKey( ZTypeRegistry::Z_LANGUAGE_CODE );
-
-		// If we don't validate (faster), we can do:
 		$zobject = $content->getObject()->{ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE };
 		if (
 			( $zobject->{ZTypeRegistry::Z_OBJECT_TYPE} === ZTypeRegistry::Z_LANGUAGE ) &&
@@ -197,7 +193,6 @@ class ZLangRegistry extends ZObjectRegistry {
 		) {
 			return $zobject->{ZTypeRegistry::Z_LANGUAGE_CODE};
 		}
-
 		return false;
 	}
 

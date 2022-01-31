@@ -23,7 +23,7 @@ class ZFunctionCall extends ZObject {
 	 */
 	public function __construct( $function, $args = [] ) {
 		$this->data[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ] = $function;
-		// TODO Allow for a dereferenced function instead of a reference
+		// TODO (T300509) Allow for a dereferenced function instead of a reference
 		// If function is a Zid, then the keys will be Global keys.
 		// If the function is a literal function, the keys will be Local ones.
 		$functionZid = $function->getZValue();
@@ -57,7 +57,7 @@ class ZFunctionCall extends ZObject {
 	 * @inheritDoc
 	 */
 	public function isValid(): bool {
-		// TODO function can be something else than a reference E.g. a literal function
+		// TODO (T300509) function can be something else than a reference E.g. a literal function
 		return ZObjectUtils::isValidZObjectReference(
 			$this->data[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ]->getZValue()
 		);
@@ -82,7 +82,7 @@ class ZFunctionCall extends ZObject {
 	 * @return string
 	 */
 	public function getReturnType(): string {
-		// FIXME this is currently hardcoded, this should look up the DB to see what return type
+		// FIXME (T300503) this is currently hardcoded, this should look up the DB to see what return type
 		// is associated to the function in Z_FUNCTIONCALL_FUNCTION
 		return ZTypeRegistry::Z_TYPE;
 	}

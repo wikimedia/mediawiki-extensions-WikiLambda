@@ -70,7 +70,6 @@ class ZErrorFactory {
 	 * @return ZError|false
 	 */
 	public static function buildStructureValidationZError( $errors ) {
-		// TODO: Bring all constants (error types ZIDs) to schemata
 		$zerrors = [];
 
 		foreach ( $errors as $error ) {
@@ -497,7 +496,7 @@ class ZErrorFactory {
 
 			case ZErrorTypeRegistry::Z_ERROR_EVALUATION:
 				$zErrorValue[] = $payload['functionCall'];
-				// FIXME: Create ZError instance of propagated error, or wrap it in a generic ZError
+				// FIXME (T300505): Create ZError instance of propagated error, or wrap it in a generic ZError
 				$zErrorValue[] = $payload['error'];
 				break;
 

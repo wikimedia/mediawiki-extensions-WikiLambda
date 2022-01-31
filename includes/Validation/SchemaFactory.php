@@ -79,7 +79,6 @@ class SchemaFactory {
 	/**
 	 * Creates a SchemaWrapper that validates the normalized form of the provided
 	 * type.
-	 * TODO: Assert that this->loader is not null.
 	 *
 	 * @param string $ZID
 	 * @return SchemaWrapper|null
@@ -90,6 +89,7 @@ class SchemaFactory {
 		} elseif ( $ZID == "Z41" || $ZID == "Z42" ) {
 			$ZID = "Z10";
 		}
+		// FIXME (T300514): Assert that this->loader is not null.
 		$schema = $this->loader->loadSchema( $ZID );
 		if ( $schema == null ) {
 			return null;

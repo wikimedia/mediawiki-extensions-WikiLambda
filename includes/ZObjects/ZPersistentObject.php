@@ -122,7 +122,7 @@ class ZPersistentObject extends ZObject {
 
 	/**
 	 * Get the type Zid of the ZObject wrapped by this ZPersistentObject.
-	 * TODO: (T296822) The type can also be a literal or a function call.
+	 * TODO: (T296822) The type can also be a function call.
 	 *
 	 * @return string The type of the internal ZObject
 	 */

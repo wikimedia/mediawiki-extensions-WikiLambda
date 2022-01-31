@@ -60,7 +60,7 @@ class SpecialListZObjectsByType extends SpecialPage {
 		$output->enableOOUI();
 
 		$output->addModuleStyles( [ 'mediawiki.special', 'ext.wikilambda.specialpages.styles' ] );
-		// TODO: Make this help page.
+		// TODO (T300519): Make this help page.
 		$this->addHelpLink( 'Extension:WikiLambda/ZObjects by type' );
 
 		$langRegistry = ZLangRegistry::singleton();
