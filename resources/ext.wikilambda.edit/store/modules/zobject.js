@@ -32,7 +32,10 @@ function isTypedObjectWithCustomComponent( functionCallId ) {
 
 function isFunctionToType( objectDeclaration ) {
 	if ( objectDeclaration ) {
-		return objectDeclaration[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] === Constants.Z_FUNCTION;
+		var isTypeFunction = objectDeclaration[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] === Constants.Z_FUNCTION;
+		var returnsAType = objectDeclaration[ Constants.Z_FUNCTION_RETURN_TYPE ] === Constants.Z_TYPE;
+
+		return isTypeFunction && returnsAType;
 	}
 }
 
