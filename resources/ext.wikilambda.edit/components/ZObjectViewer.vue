@@ -5,7 +5,7 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<!-- TODO: Add a loading indicator, once T254695 is done upstream. -->
+	<!-- TODO (T300537): Add a loading indicator, once T300538 is done upstream. -->
 	<div id="ext-wikilambda-view">
 		<z-object
 			:persistent="true"
