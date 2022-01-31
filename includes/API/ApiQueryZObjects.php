@@ -95,7 +95,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 
 			// Check for invalid ZID
 			if ( !ZObjectUtils::isValidZObjectReference( $ZID ) ) {
-				// TODO: get ZError object that represents invalid ZID
+				// FIXME (T300520): get ZError object that represents invalid ZID
 				$zobject = json_decode( '{"Z1K1": "Z5", "Z5K1": "Error: Invalid ZID"}' );
 				if ( !$resultPageSet ) {
 					$pageResult->addValue( [ 'query', $this->getModuleName() ], $ZID, [
@@ -109,8 +109,8 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 			// Check for unavailable ZObject
 			$title = $this->titleFactory->newFromText( $ZID, NS_MAIN );
 			if ( !$title || !$title->exists() ) {
-				// TODO: get ZError object that represents ZID Not Found error
-				// TODO: if language is defined, return ZError on the requested language
+				// FIXME (T300520): get ZError object that represents ZID Not Found error
+				// FIXME (T300520): if language is defined, return ZError on the requested language
 				$zobject = json_decode( '{"Z1K1": "Z5", "Z5K1": "Error: ZID Not Found"}' );
 				if ( !$resultPageSet ) {
 					$pageResult->addValue( [ 'query', $this->getModuleName() ], $ZID, [

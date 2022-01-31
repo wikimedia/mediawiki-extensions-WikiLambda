@@ -347,7 +347,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 
 		$title = Title::newFromText( $key, NS_MAIN );
 
-		// TODO: This is quite expensive. Store this in a metadata DB table, instead of fetching it live?
+		// TODO (T300530): This is quite expensive. Store this in a metadata DB table, instead of fetching it live?
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$zObject = $zObjectStore->fetchZObjectByTitle( $title );
 

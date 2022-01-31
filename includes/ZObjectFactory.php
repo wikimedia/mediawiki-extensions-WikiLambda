@@ -126,7 +126,7 @@ class ZObjectFactory {
 		// 4.6. Check validity, to make sure that ID, label and aliases have the right format
 		if ( !$persistentObject->isValid() ) {
 			throw new ZErrorException(
-				// FIXME Detail persistent object-related errors
+				// FIXME (T300506) Detail persistent object-related errors
 				ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_GENERIC,
 					[
@@ -151,13 +151,14 @@ class ZObjectFactory {
 	 */
 	public static function validatePersistentKeys( $input ): bool {
 		if ( is_string( $input ) ) {
+			// FIXME (T300506) Throw invalid type ZError
 			return true;
 		}
 
 		$record = is_object( $input ) ? get_object_vars( $input ) : $input;
 
 		if ( !is_array( $record ) ) {
-			// TODO: Throw?
+			// FIXME (T300506) Throw invalid type ZError
 		}
 
 		if ( !array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_ID, $record ) ) {
@@ -469,9 +470,7 @@ class ZObjectFactory {
 		}
 
 		// Check for canonical arrays
-		// FIXME if array, return a ZFunctionCall to 881
 		if ( is_array( $object ) ) {
-			// returns ZReference
 			// FIXME (T298126): We should probably infer the type of ZObjects contained in
 			// this array instead of just creating a generic list of Z1s
 			return new ZFunctionCall(

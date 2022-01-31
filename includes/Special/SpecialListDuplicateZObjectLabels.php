@@ -44,7 +44,7 @@ class SpecialListDuplicateZObjectLabels extends SpecialPage {
 		$output->enableOOUI();
 
 		$output->addModuleStyles( [ 'mediawiki.special', 'ext.wikilambda.specialpages.styles' ] );
-		// TODO: Make this help page.
+		// TODO (T300516): Make this help page.
 		$this->addHelpLink( 'Extension:WikiLambda/Duplicate ZObject labels' );
 
 		$pager = new DuplicateZObjectLabelsPager(

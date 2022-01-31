@@ -471,7 +471,7 @@ class Hooks implements
 	/**
 	 * Construct the JSON for a Z7/FunctionCall.
 	 *
-	 * TODO: This shouldn't really exist here.
+	 * FIXME (T300518): This shouldn't really exist here.
 	 *
 	 * @param string $target The ZID of the target function
 	 * @param string[] $arguments The arguments to pass to the call

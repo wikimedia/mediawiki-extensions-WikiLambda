@@ -43,8 +43,8 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		// 5. Saves conflicting labels in wikilambda_zobject_label_conflicts and
 		// 6. Saves non-conflicting labels in wikilambda_zobject_labels
 
-		// TODO: Only re-write the labels if they've changed.
-		// TODO: Use a single fancy upsert to remove/update/insert instead?
+		// TODO (T300522): Only re-write the labels if they've changed.
+		// TODO (T300522): Use a single fancy upsert to remove/update/insert instead?
 
 		$zid = $this->title->getDBkey();
 
@@ -98,7 +98,8 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			$zFunction = null;
 
 			if ( $ztype === ZTypeRegistry::Z_IMPLEMENTATION ) {
-				// FIXME: getValueByKey might throw exceptions, we should handle this
+				// FIXME (T298114): getValueByKey might throw exceptions, we should handle this.
+				// Will be resolved with T298114, as getValueByKey won't throw unexpected exceptions.
 				$zFunction = $this->zObject->getInnerZObject()->getValueByKey(
 					ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION
 				);

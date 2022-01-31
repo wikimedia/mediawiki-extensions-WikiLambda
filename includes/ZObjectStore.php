@@ -102,7 +102,7 @@ class ZObjectStore {
 	public function fetchZObjectByTitle( Title $title ) {
 		$revision = $this->revisionStore->getKnownCurrentRevision( $title );
 		if ( !$revision ) {
-			// TODO: Handle errors by creating and returning Z5
+			// TODO (T300521): Handle errors by creating and returning Z5
 			return false;
 		}
 
@@ -140,6 +140,7 @@ class ZObjectStore {
 
 		$dataArray = [];
 		foreach ( $titleArray as $title ) {
+			// TODO (T300521) Handle error from fetchZObjectByTitle
 			$content = $this->fetchZObjectByTitle( $title );
 			if ( $content->isValid() ) {
 				$dataArray[ $title->getBaseText() ] = $content->getZObject();
