@@ -103,7 +103,7 @@ module.exports = {
 				} );
 			},
 			handlePublish: function () {
-				// TODO: include legal text when ready (T297330)
+				// TODO (T297330): include legal text when ready
 				this.submitZObject( this.summary );
 
 				this.$emit( 'publish-successful', this.$i18n( 'wikilambda-function-definition-publish-successful-message' ).text() );

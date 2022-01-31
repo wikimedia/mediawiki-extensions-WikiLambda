@@ -109,7 +109,7 @@ module.exports = {
 			return this.$i18n( 'wikilambda-publish-summary-prompt' );
 		},
 		showEditCommand: function () {
-			// TODO: Move this into its own vuex store as things gets more complicated and more view settigns are set
+			// TODO: Move this into its own vuex store as things gets more complicated and more view settings are set
 			// we currently hide the save command for evaluate function call.
 			return mw.config.get( 'wgCanonicalSpecialPageName' ) !== 'EvaluateFunctionCall';
 		}

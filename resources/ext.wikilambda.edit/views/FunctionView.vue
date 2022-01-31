@@ -42,8 +42,8 @@ module.exports = {
 	},
 	data: function () {
 		return {
-			// TODO: remove hardcoded data with real application data (T297438)
-			// TODO: load suitable icons(T297437)
+			// TODO (T297438): remove hardcoded data with real application data
+			// TODO (T297437): load suitable icons
 			tabs: [
 				{
 					status: 'active',

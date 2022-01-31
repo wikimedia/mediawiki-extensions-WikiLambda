@@ -43,9 +43,9 @@ class ZKey extends ZObject {
 					'required' => true,
 				],
 				ZTypeRegistry::Z_KEY_ID => [
-					// TODO: Per the model, we used to dereference this ZReference into the string
-					// of its ZType, but creates recursion issues when evaluating ZKeys of ZTypes
-					// that are being created (T262097). For now, just store the string ZReference.
+					// TODO (T262097): Per the model, we used to dereference this ZReference into
+					// the string of its ZType, but creates recursion issues when evaluating ZKeys
+					// of ZTypes that are being created. For now, just store the string ZReference.
 					'type' => ZTypeRegistry::Z_TYPE_IDENTITY,
 					'required' => true,
 				],

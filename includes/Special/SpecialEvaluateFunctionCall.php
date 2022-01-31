@@ -17,7 +17,7 @@ use SpecialPage;
 class SpecialEvaluateFunctionCall extends SpecialPage {
 
 	public function __construct() {
-		// TODO: (T278651) Switch this restriction to a custom user right
+		// TODO (T278651): Switch this restriction to a custom user right
 		parent::__construct( 'EvaluateFunctionCall', 'createpage' );
 	}
 

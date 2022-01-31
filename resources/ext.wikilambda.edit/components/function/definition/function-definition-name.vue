@@ -10,7 +10,7 @@
 			<label for="ext-wikilambda-function-definition-name__input" class="ext-wikilambda-app__text-regular">
 				{{ functionNameLabel }}
 			</label>
-			<!-- TODO: replace href with correct URL: T298479 -->
+			<!-- TODO (T298479): replace href with correct URL -->
 			<a href="#" class="ext-wikilambda-app__text-smaller">
 				{{ $i18n( 'wikilambda-function-definition-name-example' ) }}
 			</a>

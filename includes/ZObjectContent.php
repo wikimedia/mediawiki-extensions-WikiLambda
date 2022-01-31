@@ -283,7 +283,7 @@ class ZObjectContent extends AbstractContent {
 	 * @inheritDoc
 	 */
 	public function getTextForSearchIndex() {
-		// TODO: (T271963) We'll probably want to inject something special for search with facets/etc.
+		// TODO (T271963): We'll probably want to inject something special for search with facets/etc.
 		return $this->getText();
 	}
 

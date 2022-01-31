@@ -13,7 +13,7 @@
 			>
 				{{ functionAliasLabel }}
 			</label>
-			<!-- TODO: replace href with correct URL: T298479 -->
+			<!-- TODO (T298479): replace href with correct URL -->
 			<a href="#" class="ext-wikilambda-app__text-smaller">
 				{{ $i18n( "wikilambda-function-definition-alias-example" ) }}
 			</a>
@@ -243,7 +243,7 @@ module.exports = {
 		display: flex;
 		padding: 4px 6px;
 		overflow: scroll;
-		// TODO: check with @@aishwarya - this is a significantly bigger height than the other
+		// TODO: check with @aishwarya - this is a significantly bigger height than the other
 		// inputs but is much easier ot read the chips
 		height: 35px;
 	}

@@ -83,7 +83,7 @@ class ZObject {
 			return false;
 		}
 
-		// TODO: (T296822) Z1K1 can currently take a Z9 to a valid type, but we should
+		// TODO (T296822): Z1K1 can currently take a Z9 to a valid type, but we should
 		// also contemplate validity of this value to be a function call.
 		if ( self::isTypeReference() ) {
 			return ZObjectUtils::isValidZObjectReference( $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ]->getZValue() );
@@ -289,7 +289,7 @@ class ZObject {
 		$serialized = $this->getSerialized();
 
 		// Walk the ZObject tree to get all ZIDs that need to be fetched from the database
-		// FIXME: (T296741) currently fetchBatchZObjects doesn't fetch them in batch, must fix or reconsider
+		// FIXME (T296741): currently fetchBatchZObjects doesn't fetch them in batch, must fix or reconsider
 		$zids = ZObjectUtils::getRequiredZids( $serialized );
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$contents = $zObjectStore->fetchBatchZObjects( $zids );

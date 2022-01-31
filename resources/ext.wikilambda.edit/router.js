@@ -28,8 +28,8 @@ window.process = {
 	}
 };
 
-// TODO: This is a temporary hack required to develop a new editor while still havve access to the old one
-// This will be removed as soon as the editor is completed (T297123)
+// TODO (T297123): This is a temporary hack required to develop a new editor while still have
+// access to the old one. This will be removed as soon as the editor is completed.
 var EditorWrapper = {
 	functional: true,
 	props: [ 'zid', 'type' ],

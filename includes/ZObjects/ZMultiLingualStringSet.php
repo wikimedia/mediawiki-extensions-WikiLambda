@@ -169,7 +169,7 @@ class ZMultiLingualStringSet extends ZObject {
 	 * @return \stdClass|array|string
 	 */
 	public function getSerialized( $form = self::FORM_CANONICAL ) {
-		// TODO: (T296737) fix different serialization modes, only returning FORM_CANONICAL
+		// TODO (T296737): fix different serialization modes, only returning FORM_CANONICAL
 		$monolingualStringSets = [];
 		foreach ( $this->getZValue() as $lang => $value ) {
 			$monolingualStringSets[] = $value->getSerialized( $form );

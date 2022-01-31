@@ -258,7 +258,7 @@ class ZObjectStore {
 				return ZObjectPage::newFatal( $error );
 			}
 
-			// (T275940) TODO: Check the user has the right for certain kinds of edit to certain kinds of type
+			// TODO (T275940): Check the user has the right for certain kinds of edit to certain kinds of type
 			// (e.g. limits on creation of Z60/Natural language, Z61/Programming language, …; limits on edits
 			// on built-in items)
 		}

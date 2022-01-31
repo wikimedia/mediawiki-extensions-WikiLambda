@@ -17,7 +17,7 @@
 		<!--
 			TODO: This is hardcoded for now as it is the first complex input,
 			In the future we should provide an UI that will allow user to define complex types
-			automatically (for examplke set a function call that require x argument to be set
+			automatically (for example set a function call that require x argument to be set
 			and show them automatically)
 		-->
 		<z-object-selector
