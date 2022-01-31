@@ -32,16 +32,10 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = {
-	name: 'FnEditorWrite',
+	name: 'fn-editor-write',
 	components: {
 		'fn-editor-base': FnEditorBase,
 		'z-implementation': ZImplementation
-	},
-	props: {
-		zobjectId: {
-			type: Number,
-			default: 0
-		}
 	},
 	computed: $.extend( mapGetters( [
 		'getNewImplementationId',

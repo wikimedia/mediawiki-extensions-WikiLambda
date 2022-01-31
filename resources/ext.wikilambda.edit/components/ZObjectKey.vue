@@ -66,9 +66,10 @@
 var Constants = require( '../Constants.js' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
 	ZKeyModeSelector = require( './ZKeyModeSelector.vue' ),
-	ZObjectGeneric = require( './ZObjectGeneric.vue' ),
 	ZReference = require( './types/ZReference.vue' ),
 	ZObjectJson = require( './ZObjectJson.vue' ),
+	ZObject = require( './ZObject.vue' ),
+	ZObjectGeneric = require( './ZObjectGeneric.vue' ),
 	mapState = require( 'vuex' ).mapState,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
@@ -76,13 +77,14 @@ var Constants = require( '../Constants.js' ),
 
 // @vue/component
 module.exports = {
-	name: 'ZObjectKey',
+	name: 'z-object-key',
 	components: {
 		'z-object-selector': ZObjectSelector,
 		'z-reference': ZReference,
 		'z-key-mode-selector': ZKeyModeSelector,
-		'z-object-generic': ZObjectGeneric,
-		'z-object-json': ZObjectJson
+		'z-object-json': ZObjectJson,
+		'z-object': ZObject,
+		'z-object-generic': ZObjectGeneric
 	},
 	mixins: [ typeUtils ],
 	inject: {
@@ -90,7 +92,8 @@ module.exports = {
 	},
 	props: {
 		zKey: {
-			type: String
+			type: String,
+			default: ''
 		},
 		zobjectId: {
 			type: Number,

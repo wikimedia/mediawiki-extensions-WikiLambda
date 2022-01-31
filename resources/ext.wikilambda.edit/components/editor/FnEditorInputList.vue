@@ -38,7 +38,6 @@
 <script>
 var FnEditorBase = require( './FnEditorBase.vue' ),
 	Constants = require( '../../Constants.js' ),
-	FnEditorTypeSelector = require( './FnEditorTypeSelector.vue' ),
 	FnEditorInputListItem = require( './FnEditorInputListItem.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
@@ -48,10 +47,9 @@ var FnEditorBase = require( './FnEditorBase.vue' ),
 
 // @vue/component
 module.exports = {
-	name: 'FnEditorInputList',
+	name: 'fn-editor-input-list',
 	components: {
 		'fn-editor-base': FnEditorBase,
-		'fn-editor-type-selector': FnEditorTypeSelector,
 		'fn-editor-zlanguage-selector': FnEditorZLanguageSelector,
 		'fn-editor-input-list-item': FnEditorInputListItem,
 		'sd-button': SdButton

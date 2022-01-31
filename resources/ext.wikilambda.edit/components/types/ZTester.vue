@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<div>
-		{{ functionLabel }}:{{ ' ' }}
+		{{ functionLabel }}:''
 		<z-reference
 			:search-type="Constants.Z_FUNCTION"
 			:zobject-id="zFunction.id"
@@ -32,7 +32,6 @@
 		</z-function-call>
 		<z-function-tester-report
 			:z-function-id="zFunctionId"
-			:z-tester-id="zTesterId"
 		>
 			<template #run-testers="{ click }">
 				<button @click="click">

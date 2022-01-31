@@ -36,7 +36,7 @@ var SdIcon = require( './Icon.vue' );
 
 // @vue/component
 module.exports = {
-	name: 'Tooltip',
+	name: 'tooltip-item',
 	components: {
 		'sd-icon': SdIcon
 	},
@@ -54,24 +54,16 @@ module.exports = {
 		},
 		header: {
 			type: String,
+			default: '',
 			required: false
 		},
 		content: {
 			type: String,
-			required: true,
-			default: ''
+			required: true
 		},
-		// not required for this usage, but other props of interest
 		footer: {
 			type: String,
-			required: false
-		},
-		align: {
-			type: String
-		},
-		// in this case you aren't relying on the tab label and/or icon
-		label: {
-			type: String,
+			default: '',
 			required: false
 		}
 	},

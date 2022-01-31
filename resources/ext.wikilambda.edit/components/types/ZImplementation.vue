@@ -7,7 +7,7 @@
 	-->
 	<div>
 		<div>
-			{{ functionLabel }}:{{ ' ' }}
+			{{ functionLabel }}: ' '
 			<z-object-selector
 				v-if="!viewmode && implMode"
 				:type="Constants.Z_FUNCTION"
@@ -47,6 +47,8 @@
 			v-if="implMode === 'code'"
 			:zobject-id="zCodeId"
 		></z-code>
+		<!-- ZImplementation -> ZObject -> ZImplementation -->
+		<!-- eslint-disable vue/no-unregistered-components -->
 		<z-object
 			v-if="implMode === 'composition'"
 			:zobject-id="zCompositionId"
@@ -66,8 +68,6 @@ var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	ZCode = require( './ZCode.vue' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
-	ZFunctionSignature = require( '../ZFunctionSignature.vue' ),
-	ZObjectKey = require( '../ZObjectKey.vue' ),
 	ZReference = require( './ZReference.vue' ),
 	ZFunctionTesterReport = require( '../function/ZFunctionTesterReport.vue' );
 
@@ -76,8 +76,6 @@ module.exports = {
 	components: {
 		'z-code': ZCode,
 		'z-object-selector': ZObjectSelector,
-		'z-function-signature': ZFunctionSignature,
-		'z-object-key': ZObjectKey,
 		'z-reference': ZReference,
 		'z-function-tester-report': ZFunctionTesterReport
 	},

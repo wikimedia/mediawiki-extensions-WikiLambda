@@ -46,17 +46,17 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	ZListItem = require( '../types/ZListItem.vue' ),
-	ZReference = require( '../types/ZReference.vue' ),
 	CodeEditor = require( '../base/CodeEditor.vue' ),
+	SdButton = require( '../base/Button.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
 module.exports = {
-	name: 'ZImplementationListItem',
+	name: 'z-implementation-list-item',
 	components: {
-		'z-reference': ZReference,
-		'code-editor': CodeEditor
+		'code-editor': CodeEditor,
+		'sd-button': SdButton
 	},
 	extends: ZListItem,
 	computed: $.extend( mapGetters( [

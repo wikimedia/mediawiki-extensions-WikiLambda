@@ -43,7 +43,8 @@ module.exports = {
 			default: true
 		},
 		zLanguage: {
-			type: String
+			type: String,
+			default: ''
 		}
 	},
 	data: function () {

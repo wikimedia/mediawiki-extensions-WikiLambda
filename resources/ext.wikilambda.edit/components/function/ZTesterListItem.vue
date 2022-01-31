@@ -40,14 +40,16 @@
 var Constants = require( '../../Constants.js' ),
 	ZListItem = require( '../types/ZListItem.vue' ),
 	ZReference = require( '../types/ZReference.vue' ),
+	SdButton = require( '../base/Button.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
 module.exports = {
-	name: 'ZTesterListItem',
+	name: 'z-tester-list-item',
 	components: {
-		'z-reference': ZReference
+		'z-reference': ZReference,
+		'sd-button': SdButton
 	},
 	extends: ZListItem,
 	computed: $.extend( mapGetters( [ 'getZObjectById', 'getUnattachedZTesters', 'getZkeyLabels', 'getZkeys', 'getZTesterResults', 'getViewMode' ] ),

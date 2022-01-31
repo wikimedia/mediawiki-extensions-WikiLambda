@@ -41,7 +41,6 @@ var Constants = require( '../../Constants.js' ),
 	ZTesterList = require( '../function/ZTesterList.vue' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	ZFunctionSignature = require( '../ZFunctionSignature.vue' ),
 	ZFunctionTesterReport = require( '../function/ZFunctionTesterReport.vue' );
 
 // @vue/component
@@ -51,7 +50,6 @@ module.exports = {
 		'z-object-selector': ZObjectSelector,
 		'z-implementation-list': ZImplementationList,
 		'z-tester-list': ZTesterList,
-		'z-function-signature': ZFunctionSignature,
 		'z-function-tester-report': ZFunctionTesterReport
 	},
 	mixins: [ typeUtils ],

@@ -29,18 +29,18 @@
 <script>
 var Constants = require( '../Constants.js' ),
 	typeUtils = require( '../mixins/typeUtils.js' ),
-	ZObjectKeyInput = require( './ZObjectKeyInput.vue' ),
 	SdButton = require( './base/Button.vue' ),
+	ZObjectKey = require( './ZObjectKey.vue' ),
 	mapMutations = require( 'vuex' ).mapMutations,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = {
-	name: 'ZObjectKeyList',
+	name: 'z-object-key-list',
 	components: {
-		'z-object-key-input': ZObjectKeyInput,
-		'sd-button': SdButton
+		'sd-button': SdButton,
+		'z-object-key': ZObjectKey
 	},
 	mixins: [ typeUtils ],
 	inject: {

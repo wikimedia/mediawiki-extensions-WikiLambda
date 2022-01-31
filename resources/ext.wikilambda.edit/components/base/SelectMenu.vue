@@ -38,7 +38,7 @@
  */
 // @vue/component
 module.exports = {
-	name: 'SelectMenu',
+	name: 'select-menu',
 
 	props: {
 		/**

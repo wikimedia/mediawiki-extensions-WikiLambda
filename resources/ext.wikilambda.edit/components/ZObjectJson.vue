@@ -51,7 +51,9 @@ module.exports = {
 	},
 	props: {
 		zobjectId: {
-			type: Number
+			type: Number,
+			required: false,
+			default: 0
 		},
 		zobjectRaw: {
 			type: [ Object, String ]

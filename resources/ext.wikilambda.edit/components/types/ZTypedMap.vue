@@ -22,7 +22,10 @@
 		</template>
 		<template v-else>
 			<p>
-				<strong>{{ $i18n( 'wikilambda-ztyped-map-description' ) }}:</strong> ( {{ Key1Label }}, {{ Key2Label }} )
+				<strong>
+					{{ $i18n( 'wikilambda-ztyped-map-description' ) }}:
+				</strong>
+				( {{ Key1Label }}, {{ Key2Label }} )
 			</p>
 
 			<z-typed-list
@@ -35,21 +38,17 @@
 
 <script>
 var Constants = require( '../../Constants.js' ),
-	ZListItem = require( './ZListItem.vue' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	ZTypedList = require( './ZTypedList.vue' ),
-	ZObjectKey = require( '../ZObjectKey.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
 // @vue/component
 module.exports = {
-	name: 'zTypedMap',
+	name: 'z-typed-map',
 	components: {
-		'z-list-item': ZListItem,
 		'z-object-selector': ZObjectSelector,
-		'z-object-key': ZObjectKey,
 		'z-typed-list': ZTypedList
 	},
 	mixins: [ typeUtils ],

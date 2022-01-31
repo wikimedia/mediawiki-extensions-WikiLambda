@@ -37,7 +37,7 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = {
-	name: 'FunctionDefinitionInputs',
+	name: 'function-definition-inputs',
 	components: {
 		'function-definition-inputs-item': functionDefinitionInputsItem
 	},
@@ -54,11 +54,6 @@ module.exports = {
 			type: String,
 			default: ''
 		}
-	},
-	data: function () {
-		return {
-			Constants: Constants
-		};
 	},
 	computed: $.extend( mapGetters( [
 		'getNextObjectId',

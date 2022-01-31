@@ -34,7 +34,7 @@ var SdIcon = require( './Icon.vue' ),
 
 // @vue/component
 module.exports = {
-	name: 'Chip',
+	name: 'chip-item',
 	components: {
 		'sd-icon': SdIcon
 	},
@@ -63,7 +63,6 @@ module.exports = {
 	data: function () {
 		return {
 			icon: icons.sdIconClose,
-			contentEditable: false,
 			hover: 'ext-wikilambda-chip_input'
 		};
 	},

@@ -29,6 +29,8 @@
 		<template v-else>
 			<div>
 				<label>{{ $i18n( 'wikilambda-ztyped-pair-key-label' ) }}: ( {{ Key1Label }} ):</label>
+				<!-- ZTypedPair -> ZObject -> ZTypedPair -->
+				<!-- eslint-disable vue/no-unregistered-components -->
 				<z-object
 					:zobject-id="zTypedPairKey1.id"
 					:persistent="false"
@@ -37,6 +39,8 @@
 			</div>
 			<div>
 				<label>{{ $i18n( 'wikilambda-ztyped-pair-value-label' ) }}: ( {{ Key2Label }} ):</label>
+				<!-- ZTypedPair -> ZObject -> ZTypedPair -->
+				<!-- eslint-disable vue/no-unregistered-components -->
 				<z-object
 					:zobject-id="zTypedPairKey2.id"
 					:persistent="false"
@@ -49,20 +53,16 @@
 
 <script>
 var Constants = require( '../../Constants.js' ),
-	ZListItem = require( './ZListItem.vue' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
-	ZObjectKey = require( '../ZObjectKey.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
 // @vue/component
 module.exports = {
-	name: 'ZTypedPair',
+	name: 'z-typed-pair',
 	components: {
-		'z-list-item': ZListItem,
-		'z-object-selector': ZObjectSelector,
-		'z-object-key': ZObjectKey
+		'z-object-selector': ZObjectSelector
 	},
 	mixins: [ typeUtils ],
 	inject: {

@@ -43,7 +43,7 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = {
-	name: 'ZMonolingualString',
+	name: 'z-monolingual-string',
 	components: {
 		'sd-button': SdButton
 	},
@@ -57,11 +57,6 @@ module.exports = {
 			type: Boolean,
 			default: false
 		}
-	},
-	data: function () {
-		return {
-			Constants: Constants
-		};
 	},
 	computed: $.extend( {},
 		mapGetters( {

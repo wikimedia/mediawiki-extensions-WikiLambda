@@ -52,7 +52,7 @@ var Constants = require( '../Constants.js' ),
 
 // @vue/component
 module.exports = {
-	name: 'ZObjectSelector',
+	name: 'z-object-selector',
 	components: {
 		'sd-autocomplete-search-input': SdAutocompleteSearchInput,
 		'sd-message': SdMessage
@@ -89,10 +89,6 @@ module.exports = {
 			lookupDelayTimer: null,
 			lookupDelayMs: 300,
 			inputValue: '',
-			validatorErrorMessages: [
-				'wikilambda-noresult',
-				'wikilambda-invalidzobject'
-			],
 			valueEmitted: false
 		};
 	},

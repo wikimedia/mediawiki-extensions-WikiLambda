@@ -72,7 +72,7 @@ var ZObject = require( './ZObject.vue' ),
 
 // @vue/component
 module.exports = {
-	name: 'ZObjectEditor',
+	name: 'z-object-editor',
 	components: {
 		'z-object': ZObject,
 		'sd-button': SdButton,

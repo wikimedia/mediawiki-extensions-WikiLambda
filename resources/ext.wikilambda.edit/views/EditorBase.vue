@@ -104,12 +104,9 @@
 
 <script>
 var Constants = require( '../Constants.js' ),
-	ZNaturalLanguageSelector = require( '../components/ZNaturalLanguageSelector.vue' ),
-	FnEditorBase = require( '../components/editor/FnEditorBase.vue' ),
-	FnEditorProgress = require( '../components/editor/FnEditorProgress.vue' ),
-	ZObjectJson = require( '../components/ZObjectJson.vue' ),
 	SdMessage = require( '../components/base/Message.vue' ),
 	SdButton = require( '../components/base/Button.vue' ),
+	VueRouter = require( '../../lib/vue-router/vue-router.common.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
@@ -117,11 +114,8 @@ var Constants = require( '../Constants.js' ),
 module.exports = {
 	components: {
 		'sd-message': SdMessage,
-		'fn-editor-base': FnEditorBase,
-		'fn-editor-progress': FnEditorProgress,
-		'z-object-json': ZObjectJson,
-		'z-natural-language-selector': ZNaturalLanguageSelector,
-		'sd-button': SdButton
+		'sd-button': SdButton,
+		'router-link': VueRouter
 	},
 	props: {
 		steps: {
@@ -129,10 +123,6 @@ module.exports = {
 			default: function () {
 				return [];
 			}
-		},
-		progress: {
-			type: Number,
-			default: 0
 		}
 	},
 	computed: $.extend( mapGetters( [

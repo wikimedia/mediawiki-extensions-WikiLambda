@@ -51,7 +51,7 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = {
-	name: 'ZTypedList',
+	name: 'z-typed-list',
 	components: {
 		'z-list-item': ZListItem,
 		'z-object-selector': ZObjectSelector
@@ -110,7 +110,10 @@ module.exports = {
 				if ( zTypedListType.value !== 'object' ) {
 					return zTypedListType.value;
 				} else {
-					return this.getNestedZObjectById( zTypedListType.id, [ Constants.Z_FUNCTION_CALL_FUNCTION ] ).value ||
+					return this.getNestedZObjectById(
+						zTypedListType.id,
+						[ Constants.Z_FUNCTION_CALL_FUNCTION ]
+					).value ||
 						this.getNestedZObjectById( zTypedListType.id, [ Constants.Z_REFERENCE_ID ] ).value;
 				}
 			},

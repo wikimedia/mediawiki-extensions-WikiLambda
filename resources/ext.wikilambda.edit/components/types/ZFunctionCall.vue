@@ -32,6 +32,8 @@
 		<ul>
 			<li v-for="argument in zFunctionArguments" :key="argument.key">
 				{{ argument.label }}:
+				<!-- ZFunctionCall -> ZObjectKey -> ZObject -> ZFunctionCall -->
+				<!-- eslint-disable vue/no-unregistered-components -->
 				<z-object-key
 					:zobject-id="findArgumentId( argument.key )"
 					:persistent="false"
@@ -58,6 +60,8 @@
 						:readonly="true"
 						:zobject-id="resultId"
 					></z-object-json>
+					<!-- ZFunctionCall -> ZObjectKey -> ZObject -> ZFunctionCall -->
+					<!-- eslint-disable vue/no-unregistered-components -->
 					<z-object-key
 						v-else
 						:zobject-id="resultId"
@@ -79,7 +83,6 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	ZObjectJson = require( '../ZObjectJson.vue' ),
-	ZObjectKey = require( '../ZObjectKey.vue' ),
 	ZKeyModeSelector = require( '../ZKeyModeSelector.vue' ),
 	ZReference = require( './ZReference.vue' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
@@ -90,7 +93,6 @@ module.exports = {
 	components: {
 		'z-object-selector': ZObjectSelector,
 		'z-object-json': ZObjectJson,
-		'z-object-key': ZObjectKey,
 		'z-key-mode-selector': ZKeyModeSelector,
 		'z-reference': ZReference,
 		'sd-button': SdButton

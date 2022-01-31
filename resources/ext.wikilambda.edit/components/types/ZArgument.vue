@@ -31,15 +31,13 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
-	ZString = require( './ZString.vue' ),
 	ZMultilingualString = require( './ZMultilingualString.vue' );
 
 // @vue/component
 module.exports = {
 	components: {
 		'z-object-selector': ZObjectSelector,
-		'z-multilingual-string': ZMultilingualString,
-		'z-string': ZString
+		'z-multilingual-string': ZMultilingualString
 	},
 	mixins: [ typeUtils ],
 	props: {

@@ -39,11 +39,17 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
+	SdAutocompleteSearchInput = require( '../base/AutocompleteSearchInput.vue' ),
+	SdMessage = require( '../base/Message.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = {
-	name: 'FnEditorTypeSelector',
+	name: 'fn-editor-type-selector',
+	components: {
+		'sd-autocomplete-search-input': SdAutocompleteSearchInput,
+		'sd-message': SdMessage
+	},
 	extends: ZObjectSelector,
 	computed: mapGetters( [
 		'getZkeyLabels'

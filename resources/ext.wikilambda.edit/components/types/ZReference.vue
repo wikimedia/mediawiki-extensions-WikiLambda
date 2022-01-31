@@ -35,7 +35,7 @@ var Constants = require( './../../Constants.js' ),
 
 // @vue/component
 module.exports = {
-	name: 'ZReference',
+	name: 'z-reference',
 	components: {
 		'z-object-selector': ZObjectSelector
 	},

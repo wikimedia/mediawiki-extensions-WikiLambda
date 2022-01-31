@@ -36,7 +36,10 @@ function setTypeOfTypedObject( context, payload ) {
 	payload.types.forEach( function ( type ) {
 		var genericValue,
 			genericObjectType = // the object can either be nested in a Z_OBJECT_TYPE or directly set.
-			context.getters.getNestedZObjectById( payload.objectId, [ Constants.Z_OBJECT_TYPE, type.argumentZObjectId ] ) ||
+			context.getters.getNestedZObjectById(
+				payload.objectId,
+				[ Constants.Z_OBJECT_TYPE, type.argumentZObjectId ]
+			) ||
 			context.getters.getNestedZObjectById( payload.objectId, [ type.argumentZObjectId ] );
 
 		genericObjectType.value = type.value;
@@ -106,10 +109,14 @@ module.exports = {
 		 * @param {number} payload.objectId
 		 */
 		addTypedPairItem: function ( context, payload ) {
-			var key1Id = context.getters.getNestedZObjectById( payload.objectId, [ Constants.Z_TYPED_OBJECT_ELEMENT_1 ] ).id;
+			var key1Id = context.getters.getNestedZObjectById(
+				payload.objectId, [ Constants.Z_TYPED_OBJECT_ELEMENT_1 ]
+			).id;
 			context.dispatch( 'changeType', { id: key1Id, type: payload.types[ 0 ].value } );
 
-			var key2Id = context.getters.getNestedZObjectById( payload.objectId, [ Constants.Z_TYPED_OBJECT_ELEMENT_2 ] ).id;
+			var key2Id = context.getters.getNestedZObjectById(
+				payload.objectId, [ Constants.Z_TYPED_OBJECT_ELEMENT_2 ]
+			).id;
 			context.dispatch( 'changeType', { id: key2Id, type: payload.types[ 1 ].value } );
 
 		},

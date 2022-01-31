@@ -17,7 +17,6 @@
 		</a>
 		<sd-autocomplete-search-input
 			v-else
-			ref="searchInput"
 			name="zobject-selector"
 			:class="{ 'ext-wikilambda-zkey-input-invalid': validatorIsInvalid }"
 			:label="$i18n( 'wikilambda-editor-label-addlanguage-label' )"
@@ -41,10 +40,16 @@
 <script>
 var Constants = require( '../Constants.js' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
+	SdAutocompleteSearchInput = require( './base/AutocompleteSearchInput.vue' ),
+	SdMessage = require( './base/Message.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = {
+	components: {
+		'sd-autocomplete-search-input': SdAutocompleteSearchInput,
+		'sd-message': SdMessage
+	},
 	extends: ZObjectSelector,
 	props: {
 		usedLanguages: {
@@ -80,27 +85,6 @@ module.exports = {
 				}
 			}.bind( this ) );
 		}
-	} ),
-	methods: {
-		emitInput: function ( zId ) {
-			var exists = false;
-
-			for ( var zLang in this.usedLanguages ) {
-				if ( this.usedLanguages[ zLang ].Z9K1 === zId ) {
-					exists = true;
-					break;
-				}
-			}
-
-			if ( !exists ) {
-				this.$emit( 'input', zId );
-				if ( zId ) {
-					this.$refs.searchInput.onClear();
-				}
-			} else {
-				this.$refs.searchInput.onClear();
-			}
-		}
-	}
+	} )
 };
 </script>

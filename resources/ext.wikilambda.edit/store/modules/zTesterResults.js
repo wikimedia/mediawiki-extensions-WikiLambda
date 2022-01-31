@@ -70,7 +70,8 @@ module.exports = {
 				var result = state.zTesterResults[ key ];
 				return result &&
 					result[ Constants.Z_RESPONSEENVELOPE_VALUE ] !== Constants.Z_NOTHING &&
-					result[ Constants.Z_RESPONSEENVELOPE_VALUE ][ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE;
+					result[ Constants.Z_RESPONSEENVELOPE_VALUE ][ Constants.Z_BOOLEAN_IDENTITY ] ===
+						Constants.Z_BOOLEAN_TRUE;
 			};
 		},
 		getZTesterFailReason: function ( state ) {
@@ -102,8 +103,12 @@ module.exports = {
 				}
 
 				var errorResponseType = errorResponse[ Constants.Z_ERROR_TYPE ][ Constants.Z_OBJECT_TYPE ];
-				if ( errorResponse[ Constants.Z_ERROR_TYPE ][ errorResponseType + Constants.Z_TYPED_OBJECT_ELEMENT_1 ] ) {
-					return errorResponse[ Constants.Z_ERROR_TYPE ][ errorResponseType + Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
+				if ( errorResponse[ Constants.Z_ERROR_TYPE ][
+					errorResponseType + Constants.Z_TYPED_OBJECT_ELEMENT_1
+				] ) {
+					return errorResponse[ Constants.Z_ERROR_TYPE ][
+						errorResponseType + Constants.Z_TYPED_OBJECT_ELEMENT_1
+					];
 				}
 
 				return 'No error returned!';
@@ -150,7 +155,8 @@ module.exports = {
 						var result = state.zTesterResults[ key ];
 						return result &&
 						result[ Constants.Z_RESPONSEENVELOPE_VALUE ] !== Constants.Z_NOTHING &&
-						result[ Constants.Z_RESPONSEENVELOPE_VALUE ][ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE;
+						result[ Constants.Z_RESPONSEENVELOPE_VALUE ][ Constants.Z_BOOLEAN_IDENTITY ] ===
+							Constants.Z_BOOLEAN_TRUE;
 					} ).length,
 					percentage = Math.round( ( passing / total ) * 100 ) || 0;
 
@@ -274,8 +280,17 @@ module.exports = {
 			} ).then( function ( data ) {
 				var results = JSON.parse( data.query.wikilambda_perform_test.Tested.data );
 
-				if ( !Array.isArray( results ) && results[ Constants.Z_RESPONSEENVELOPE_ERRORS ] !== Constants.Z_NOTHING ) {
-					throw new Error( results[ Constants.Z_RESPONSEENVELOPE_ERRORS ][ Constants.Z_ERROR_VALUE ][ Constants.Z_STRING_VALUE ] );
+				if ( !Array.isArray( results ) &&
+						results[ Constants.Z_RESPONSEENVELOPE_ERRORS ] !== Constants.Z_NOTHING ) {
+					throw new Error(
+						results[
+							Constants.Z_RESPONSEENVELOPE_ERRORS
+						][
+							Constants.Z_ERROR_VALUE
+						][
+							Constants.Z_STRING_VALUE
+						]
+					);
 				}
 
 				results.forEach( function ( testResult ) {

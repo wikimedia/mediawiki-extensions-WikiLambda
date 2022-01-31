@@ -31,7 +31,7 @@ var SdIcon = require( './Icon.vue' ),
 
 // @vue/component
 module.exports = {
-	name: 'Tab',
+	name: 'tab-item',
 	components: {
 		'sd-icon': SdIcon,
 		// TOOD (T298040): replace with codex tooltip/popover component
@@ -39,10 +39,12 @@ module.exports = {
 	},
 	props: {
 		status: {
-			type: String
+			type: String,
+			default: 'active'
 		},
 		title: {
-			type: String
+			type: String,
+			required: true
 		},
 		disabled: {
 			type: Boolean,
@@ -57,10 +59,14 @@ module.exports = {
 		},
 		// tooltip properties
 		tooltipContent: {
-			type: String
+			type: String,
+			default: null,
+			required: false
 		},
 		tooltipHeader: {
-			type: String
+			type: String,
+			default: null,
+			required: false
 		},
 		tooltipIcon: {
 			type: [ String, Object ],

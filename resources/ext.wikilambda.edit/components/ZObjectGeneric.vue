@@ -33,9 +33,9 @@
 				@input="onTypeChange"
 			></z-object-selector>
 		</span>
-
+		<!-- ZObjectKeyList -> ZObjectKey -> ZObjectGeneric -->
+		<!-- eslint-disable-next-line vue/no-unregistered-components -->
 		<z-object-key-list
-			ref="keyList"
 			:zobject-id="zobjectId"
 			:readonly="readonly"
 		></z-object-key-list>
@@ -45,16 +45,14 @@
 <script>
 var Constants = require( '../Constants.js' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
-	ZObjectKeyList = require( './ZObjectKeyList.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapState = require( 'vuex' ).mapState;
 
 // @vue/component
 module.exports = {
-	name: 'ZObjectGeneric',
+	name: 'z-object-generic',
 	components: {
-		'z-object-key-list': ZObjectKeyList,
 		'z-object-selector': ZObjectSelector
 	},
 	inject: {
@@ -80,8 +78,7 @@ module.exports = {
 	},
 	data: function () {
 		return {
-			Constants: Constants,
-			lastTypeKeys: []
+			Constants: Constants
 		};
 	},
 	computed: $.extend( {},
