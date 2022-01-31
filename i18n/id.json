@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"AJBot2",
-			"Daud I.F. Argana"
+			"Daud I.F. Argana",
+			"Syman51"
 		]
 	},
 	"wikilambda-desc": "Menyediakan wiki Wikimedia sebuah fungsi parser teks wiki untuk memanggil evaluasi fungsi yang ditulis, dikelola, dan dievaluasi dari suatu wiki pusat.",
@@ -150,6 +151,7 @@
 	"wikilambda-function-definition-footer-implementation-button": "Tulis Implementasi",
 	"wikilambda-function-definition-inputs-label": "Tipe masukan",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "Pilih tipe",
+	"wikilambda-function-definition-inputs-item-selector-search-placeholder": "Cari referensi atau fungsi",
 	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "Pilih tipe dari daftar tipe Anda",
 	"wikilambda-function-definition-inputs-item-input-placeholder": "Label masukan",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Tambahkan masukan lainnya",

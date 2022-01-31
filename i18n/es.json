@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Adam N.",
 			"Agent",
 			"Avengium",
 			"BnSrSa",
@@ -45,6 +46,8 @@
 	"wikilambda-tester-failure-actual": "Recibido",
 	"wikilambda-tester-function-duration": "Duración",
 	"wikilambda-create-function": "Crear Función",
+	"wikilambda-function-definition-add-other-label-languages-title": "+ Añade etiquetas en otra lengua",
+	"wikilambda-function-definition-inputs-item-selector-search-placeholder": "Busca referencia o función",
 	"wikilambda-editor-steps-label": "Pasos del Editor",
 	"wikilambda-editor-go-back-button": "Volver",
 	"wikilambda-editor-next-button": "Siguiente paso",

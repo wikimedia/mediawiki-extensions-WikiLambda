@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Brettchenweber",
 			"Druesenfieber",
 			"ElBe",
 			"FF-11"
@@ -152,6 +153,7 @@
 	"wikilambda-function-definition-footer-implementation-button": "Implementierung schreiben",
 	"wikilambda-function-definition-inputs-label": "Eingabetyp",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "Typ auswählen",
+	"wikilambda-function-definition-inputs-item-selector-search-placeholder": "Nach Referenz oder Funktion suchen",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Weitere Eingabe hinzufügen",
 	"wikilambda-function-definition-output-label": "Art der Ausgabe",
 	"wikilambda-function-definition-output-selector": "Typ auswählen",

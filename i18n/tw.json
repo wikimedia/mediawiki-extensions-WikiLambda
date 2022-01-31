@@ -5,11 +5,13 @@
 			"Amoaniwaa",
 			"Daniella Damptey",
 			"Naa2Darkoa",
+			"Valentine Badu",
 			"Warmglow"
 		]
 	},
 	"wikilambda-published": "Watintim!",
 	"wikilambda-cancel": "Pepa",
+	"wikilambda-function-definition-add-other-label-languages-title": "+ Add ntwereɛ wɔ kasa fofroɔ mu",
 	"wikilambda-function-definition-name-label": "Din",
 	"wikilambda-function-definition-name-example": "Hwɛ din ahorow nhwɛso.",
 	"wikilambda-function-definition-alias-label": "Din foforo",
@@ -18,6 +20,7 @@
 	"wikilambda-function-definition-footer-label": "Sa atwerɛ no nyinaa mu",
 	"wikilambda-function-definition-footer-implementation-button": "Twerɛ ɔkwan a wode bɛyɛ adwuma",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "Paw emu baako",
+	"wikilambda-function-definition-inputs-item-selector-search-placeholder": "Hwehwɛ ntotoho anaa dwumadie",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Fa nsɛm foforo ka ho",
 	"wikilambda-function-definition-output-selector": "Paw emu baako",
 	"wikilambda-editor-fn-step-define": "Kyerɛ aseɛ - Kyerɛ nea wayɛ no aseɛ",

@@ -5,7 +5,8 @@
 			"NR Deblocked",
 			"Nastua Buldakova",
 			"Okras",
-			"Rivka Silinsky"
+			"Rivka Silinsky",
+			"Tanzun"
 		]
 	},
 	"wikilambda-call-function": "Функция Звонка",
@@ -32,6 +33,8 @@
 	"wikilambda-disable-expert-mode": "Выключить режим эксперта",
 	"wikilambda-metadata-language-column": "Язык",
 	"wikilambda-metadata-fewer-languages": "Показать меньше языков",
+	"wikilambda-function-definition-add-other-label-languages-title": "+ Добавить метки на другом языке",
 	"wikilambda-function-definition-footer-placeholder": "Кратко опишите Ваши правки",
-	"wikilambda-function-definition-footer-label": "Описание изменений"
+	"wikilambda-function-definition-footer-label": "Описание изменений",
+	"wikilambda-function-definition-inputs-item-selector-search-placeholder": " Поиск ссылки или функции"
 }

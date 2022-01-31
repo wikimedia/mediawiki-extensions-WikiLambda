@@ -162,6 +162,7 @@
 	"wikilambda-function-definition-footer-implementation-button": "Écrire l’implémentation",
 	"wikilambda-function-definition-inputs-label": "Type d’entrée",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "Sélectionner un type",
+	"wikilambda-function-definition-inputs-item-selector-search-placeholder": "Recherche de référence ou fonction",
 	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "Sélectionner un type pour votre liste typée",
 	"wikilambda-function-definition-inputs-item-input-placeholder": "Libellé d’entrée",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Ajouter une autre entrée",

@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Anthonymodec",
+			"Atej2*",
 			"Gadarawamo",
 			"Hunpatinjob",
 			"Joshateji"
@@ -19,6 +20,7 @@
 	"wikilambda-function-definition-alias-example": "Pọn apajlẹ yinkọ tẹnmẹ lẹ tọn.",
 	"wikilambda-function-definition-footer-placeholder": "Basi zẹẹmẹ diọdo towe lẹ tọn to kleun mẹ",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "Dè alọpa he a jlo",
+	"wikilambda-function-definition-inputs-item-selector-search-placeholder": "Dín alọdowemenu kavi yọn-na-yizan",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Gọ́ nudevo na",
 	"wikilambda-function-definition-output-selector": "Dè alọpa dopo he a jlo",
 	"wikilambda-editor-fn-step-tests": "Zepọn(lẹ)",

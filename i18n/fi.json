@@ -28,6 +28,7 @@
 	"wikilambda-metadata-all-languages": "Näytä kaikki syötetyt kielet",
 	"wikilambda-metadata-fewer-languages": "Näytä vähemmän kieliä",
 	"wikilambda-persistentobject-details-label": "Tiedot",
+	"wikilambda-function-definition-add-other-label-languages-title": "+ Lisää kenttiä muulla kielellä",
 	"wikilambda-function-definition-name-label": "Nimi",
 	"wikilambda-function-definition-name-placeholder": "Anna kuvaavan funktion nimi",
 	"wikilambda-function-definition-name-example": "Katso nimiesimerkit.",
