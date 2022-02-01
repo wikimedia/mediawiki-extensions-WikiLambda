@@ -8,13 +8,13 @@
 			{{ label }}
 		</label>
 
-		<div
+		<div ref="sdSearchBox"
 			:id="inputElementId"
 			class="sd-input__active-box"
 			tabindex="0"
-			@click="onClick"
-			@keyup.enter.prevent="onClick"
-			@keyup="focusInput"
+			@blur="onBlur"
+			@click="onClickSearchActiveBox"
+			@keyup.enter.prevent="onClickSearchActiveBox"
 		>
 			<span :class="{ 'sd-input__placeholder': !value }">{{ inputTitle }}</span>
 			<span
@@ -31,7 +31,7 @@
 			:active-item-index="activeLookupItemIndex"
 			:listbox-id="lookupResultsElementId"
 			:labelled-by="labelElementId"
-			@select="onLookupItemSelect"
+			@select="onSubmitActiveItem"
 			@active-item-change="onActiveItemChange"
 		>
 			<div v-if="showSearchBox" class="sd-input__menu">
@@ -49,7 +49,8 @@
 					:aria-activedescendant="activeLookupItemId"
 					:placeholder="searchPlaceholder"
 					@input="onInput"
-					@keyup.enter="onSubmitActiveItem"
+					@blur="onBlur"
+					@keyup.enter="onEnterInput"
 					@keyup.up="onArrowUp"
 					@keyup.down="onArrowDown"
 				>
@@ -223,31 +224,36 @@ module.exports = {
 	},
 	methods: {
 		/**
-		 * Focus on input and set keyboard value as input value if valid input.
+		 * on click away from search input.
 		 *
-		 * @param {Event} event
-		 * @fires keyup
+		 * @fires reset
 		 */
-		focusInput: function ( event ) {
-			const keyCode = event.keyCode === 0 ? event.charCode : event.keyCode;
-			const keyCodeIsNumber = keyCode >= 48 && keyCode <= 57;
-			const keyCodeUpperCaseLetter = keyCode >= 65 && keyCode <= 90;
-			const keyCodeLowerCaseLetter = keyCode >= 97 && keyCode <= 122;
-
-			if ( keyCodeIsNumber || keyCodeUpperCaseLetter || keyCodeLowerCaseLetter ) {
-				this.$refs.input.focus();
-				this.$refs.input.value = event.key;
-			}
+		onBlur: function () {
+			this.$nextTick( function () {
+				if ( document.activeElement === this.$refs.input || document.activeElement === this.$refs.sdSearchBox ) {
+					return;
+				}
+				this.searchValue = '';
+				this.toggleLookupResults( false );
+			}.bind( this ) );
 		},
 		/**
 		 * Show/Hide lookup menu.
 		 *
-		 * @param {Event} event
-		 * @fires click
+		 * @fires reset
 		 */
-		onClick: function ( event ) {
-			this.toggleLookupResults( !this.showLookupResults );
-			this.$emit( 'reset', event );
+		onClickSearchActiveBox: function () {
+			const showLookupResultsStatus = !this.showLookupResults;
+			this.toggleLookupResults( showLookupResultsStatus );
+			if ( !showLookupResultsStatus ) {
+				// trigger reset if showLookupResults is false
+				this.searchValue = '';
+			} else if ( this.showSearchBox ) {
+				// Focus on searchbox if showSearchBox is true and showLookupResults is true
+				this.$nextTick( function () {
+					this.$refs.input.focus();
+				}.bind( this ) );
+			}
 		},
 		/**
 		 * Emit input and enable pending state.
@@ -275,16 +281,6 @@ module.exports = {
 		onReset: function ( event ) {
 			this.clearLookupResults();
 			this.$emit( 'reset', event );
-		},
-		/**
-		 * Handle lookup item click.
-		 *
-		 * @param {number} index
-		 * @fires submit
-		 */
-		onLookupItemSelect: function ( index ) {
-			this.activeLookupItemIndex = index;
-			this.onSubmitActiveItem();
 		},
 		/**
 		 * Move to the next lookup result. If we're at the end, go back to the
@@ -340,21 +336,38 @@ module.exports = {
 			this.showLookupResults = show;
 		},
 		/**
-		 * Handle enter keypress or button click.
+		 * Handle enter item on input.
 		 *
-		 * @fires enter
+		 * @param {Event} Event
+		 * @fires submit
 		 */
-		onSubmitActiveItem: function () {
-			// If the user is highlighting an autocomplete result, emit that
-			// result. Otherwise, return.
-			if ( !this.hasLookupResults || this.activeLookupItemIndex < 0 ) {
+		onEnterInput: function () {
+			if ( !this.hasLookupResults ) {
 				return;
 			}
+			// set active item to first item.
+			this.onSubmitActiveItem( 0 );
+
+			// Trigger onblur event on input.
+			this.$refs.input.blur();
+		},
+		/**
+		 * Handle enter keypress or button click.
+		 *
+		 * @param {number} index
+		 * @fires submit
+		 */
+		onSubmitActiveItem: function ( index ) {
+			// If the user is highlighting an autocomplete result,
+			// emit that result
+			if ( !this.hasLookupResults || !this.lookupResults[ index ] ) {
+				return;
+			}
+			this.activeLookupItemIndex = index;
+
 			this.searchValue = '';
 			this.value = this.activeLookupItem;
 			this.$emit( 'submit', this.value );
-			this.clearLookupResults();
-			this.toggleLookupResults( false );
 		}
 	},
 	watch: {
