@@ -33,7 +33,7 @@ function isTypedObjectWithCustomComponent( functionCallId ) {
 function isFunctionToType( objectDeclaration ) {
 	if ( objectDeclaration ) {
 		var isTypeFunction = objectDeclaration[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] === Constants.Z_FUNCTION;
-		var returnsAType = objectDeclaration[ Constants.Z_FUNCTION_RETURN_TYPE ] === Constants.Z_TYPE;
+		var returnsAType = objectDeclaration[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_RETURN_TYPE ] === Constants.Z_TYPE;
 
 		return isTypeFunction && returnsAType;
 	}
@@ -52,6 +52,16 @@ function retriveFunctionCallId( getZObjectChildrenById, object ) {
 	}
 
 	return functionCall;
+}
+
+function generateZIDListFromObjectTree( objectTree ) {
+	var arrayOfKeys = objectTree.map( function ( key ) {
+		return key.value;
+	} );
+
+	return arrayOfKeys.filter( function ( key ) {
+		return key.match( /Z[1-9]\d*$/ );
+	} );
 }
 
 module.exports = {
@@ -422,15 +432,12 @@ module.exports = {
 							};
 						}
 
-						// Get language ZIDs for this object.
-						var labels = zobject[ Constants.Z_PERSISTENTOBJECT_LABEL ][
-							Constants.Z_MULTILINGUALSTRING_VALUE ].map( function ( label ) {
-							return label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ];
-						} );
-
-						context.dispatch( 'fetchZKeys', labels );
-
 						zobjectTree = zobjectTreeUtils.convertZObjectToTree( zobject );
+
+						// Get all zIds within the object
+						var listOfZIdWithinObject = generateZIDListFromObjectTree( zobjectTree );
+
+						context.dispatch( 'fetchZKeys', listOfZIdWithinObject );
 						context.commit( 'setZObject', zobjectTree );
 						context.commit( 'setZObjectInitialized', true );
 					} );

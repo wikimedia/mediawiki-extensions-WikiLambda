@@ -183,6 +183,7 @@
 				"ext.wikilambda.edit/components/types/ZCode.vue",
 				"ext.wikilambda.edit/components/types/ZArgument.vue",
 				"ext.wikilambda.edit/components/types/ZFunctionCall.vue",
+				"ext.wikilambda.edit/components/types/ZFunctionCallToType.vue",
 				"ext.wikilambda.edit/components/types/ZFunction.vue",
 				"ext.wikilambda.edit/components/types/ZArgumentList.vue",
 				"ext.wikilambda.edit/components/ZObjectJson.vue",

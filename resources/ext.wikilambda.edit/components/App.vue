@@ -21,7 +21,7 @@ var mapGetters = require( 'vuex' ).mapGetters,
 
 // @vue/component
 module.exports = {
-	name: 'App',
+	name: 'app',
 	inject: {
 		viewmode: { default: false }
 	},
@@ -32,10 +32,13 @@ module.exports = {
 	methods: mapActions( [ 'initializeZObject', 'initialize' ] ),
 	created: function () {
 		// Set zobject
-		this.initializeZObject();
-		this.initialize( this.$i18n );
+		this.initializeZObject().then(
+			function () {
+				this.initialize( this.$i18n );
+				$.$i18n = this.$i18n;
+			}.bind( this )
+		);
 
-		$.$i18n = this.$i18n;
 	}
 };
 </script>

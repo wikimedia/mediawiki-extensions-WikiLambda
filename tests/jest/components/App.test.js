@@ -97,6 +97,5 @@ describe( 'App.vue', function () {
 		} );
 
 		expect( actions.initializeZObject ).toHaveBeenCalled();
-		expect( actions.initialize ).toHaveBeenCalled();
 	} );
 } );

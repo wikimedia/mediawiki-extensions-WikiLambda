@@ -51,12 +51,13 @@ var Constants = require( '../Constants.js' ),
 	ZType = require( './types/ZType.vue' ),
 	ZTypedPair = require( './types/ZTypedPair.vue' ),
 	ZTypedMap = require( './types/ZTypedMap.vue' ),
+	ZFunctionCallToType = require( './types/ZFunctionCallToType.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = {
-	name: 'ZObject',
+	name: 'z-object',
 	components: {
 		'z-list': ZList,
 		'z-multilingual-string': ZMultilingualString,
@@ -78,7 +79,8 @@ module.exports = {
 		'z-type': ZType,
 		'z-typed-list': ZTypedList,
 		'z-typed-pair': ZTypedPair,
-		'z-typed-map': ZTypedMap
+		'z-typed-map': ZTypedMap,
+		'z-function-call-to-type': ZFunctionCallToType
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -174,6 +176,8 @@ module.exports = {
 						return 'z-responseenvelope';
 					case Constants.Z_TYPE:
 						return 'z-type';
+					case Constants.Z_FUNCTION_CALL_TO_TYPE:
+						return 'z-function-call-to-type';
 					default:
 						return 'z-object-generic';
 				}
