@@ -9,6 +9,7 @@
 var Vue = require( 'vue' ),
 	Constants = require( '../../Constants.js' ),
 	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
+	typedListToArray = require( '../../mixins/typeUtils.js' ).methods.typedListToArray,
 	debounceZKeyFetch = null,
 	resolvePromiseList = [],
 	zKeystoFetch = [],
@@ -17,18 +18,6 @@ var Vue = require( 'vue' ),
 function isZType( zidInfo ) {
 	return ( typeof zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ] === 'object' ) &&
 		( zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] === Constants.Z_TYPE );
-}
-
-function typedListToArray( typedList, array ) {
-	for ( var item in typedList ) {
-		if ( item === Constants.Z_TYPED_OBJECT_ELEMENT_1 ) {
-			array.push( typedList[ item ] );
-		} else if ( typeof typedList[ item ] === 'object' ) {
-			typedListToArray( typedList[ item ], array );
-		}
-	}
-
-	return array;
 }
 
 module.exports = {

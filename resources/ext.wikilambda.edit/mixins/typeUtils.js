@@ -92,6 +92,17 @@ var Constants = require( '../Constants.js' ),
 							return JSON.stringify( zObject );
 					}
 				}
+			},
+			typedListToArray( typedList, array ) {
+				for ( var item in typedList ) {
+					if ( item === Constants.Z_TYPED_OBJECT_ELEMENT_1 ) {
+						array.push( typedList[ item ] );
+					} else if ( typeof typedList[ item ] === 'object' ) {
+						typeUtils.methods.typedListToArray( typedList[ item ], array );
+					}
+				}
+
+				return array;
 			}
 		}
 	};
