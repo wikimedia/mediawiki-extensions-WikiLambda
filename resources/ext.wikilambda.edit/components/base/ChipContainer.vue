@@ -47,11 +47,13 @@ module.exports = {
 		canAdd: {
 			type: Boolean, // can add a chip to the collection
 			required: false,
+			// eslint-disable-next-line vue/no-boolean-default
 			default: true
 		},
 		readonly: {
 			type: Boolean, // can edit an existing chip
 			required: false,
+			// eslint-disable-next-line vue/no-boolean-default
 			default: true
 		},
 		inputPlaceholder: {
