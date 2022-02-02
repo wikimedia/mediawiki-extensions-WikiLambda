@@ -143,6 +143,18 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::getZType
+	 * @covers ::isBuiltin
+	 * @covers ::getDefinition
+	 */
+	public function test_getZType() {
+		$genericList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } }';
+		$testObject = ZObjectFactory::create( json_decode( $genericList ) );
+
+		$this->assertSame( 'Z881', $testObject->getZType() );
+	}
+
+	/**
 	 * @dataProvider provideSerializedForms
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 * @covers ::__construct

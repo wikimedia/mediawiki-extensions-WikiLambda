@@ -31,6 +31,7 @@ class ZMultiLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getAliasesForLanguage
 	 * @covers ::getAliasesForLanguageCode
 	 * @covers ::isValid
+	 * @covers ::getDefinition
 	 */
 	public function testCreation() {
 		$this->registerLangs( [ 'es', 'de', 'fr' ] );

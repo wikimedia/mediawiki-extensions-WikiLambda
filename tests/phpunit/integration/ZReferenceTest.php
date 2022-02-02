@@ -52,6 +52,8 @@ class ZReferenceTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @covers ::__construct
 	 * @covers ::getZType
+	 * @covers ::getDefinition
+	 * @covers ::isBuiltin
 	 */
 	public function testGetZType() {
 		$testObject = new ZReference( 'Z1' );

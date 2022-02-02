@@ -32,6 +32,7 @@ class ZListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZList::getZListAsArray
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZList::isValid
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZList::getZValue
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZList::getDefinition
 	 */
 	public function testPersistentCreation() {
 		$testObject = new ZObjectContent( '[]' );
