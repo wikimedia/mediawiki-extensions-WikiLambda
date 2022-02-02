@@ -60,6 +60,8 @@ class ZStringTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @covers ::__construct
 	 * @covers ::getZType
+	 * @covers ::getDefinition
+	 * @covers ::isBuiltin
 	 */
 	public function testGetZType() {
 		$testObject = new ZString( 'Test' );

@@ -46,6 +46,8 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @covers ::__construct
 	 * @covers ::getZType
+	 * @covers ::getDefinition
+	 * @covers ::isBuiltin
 	 */
 	public function testConstruct_builtinType() {
 		$testObject = (object)[

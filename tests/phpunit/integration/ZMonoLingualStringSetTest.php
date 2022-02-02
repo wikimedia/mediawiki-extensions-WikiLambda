@@ -29,6 +29,7 @@ class ZMonoLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getStringSet
 	 * @covers ::getZValue
 	 * @covers ::isValid
+	 * @covers ::getDefinition
 	 */
 	public function testCreation() {
 		$testObject = new ZMonoLingualStringSet(

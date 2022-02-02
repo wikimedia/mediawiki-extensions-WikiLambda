@@ -57,6 +57,18 @@ class ZGenericErrorTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::getZType
+	 * @covers ::getDefinition
+	 * @covers ::isBuiltin
+	 */
+	public function testGetZType() {
+		$genericError = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z885", "Z885K1": "Z502" } }';
+		$testObject = ZObjectFactory::create( json_decode( $genericError ) );
+
+		$this->assertSame( 'Z885', $testObject->getZType() );
+	}
+
+	/**
 	 * @covers ::__construct
 	 * @covers ::isValid
 	 * @covers ::getErrorType

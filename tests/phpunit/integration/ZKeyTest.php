@@ -30,6 +30,7 @@ class ZKeyTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getKeyLabel
 	 * @covers ::getZValue
 	 * @covers ::isValid
+	 * @covers ::getDefinition
 	 */
 	public function testCreation_constructors() {
 		$testRef = new ZReference( 'Z6' );
@@ -56,6 +57,7 @@ class ZKeyTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getKeyLabel
 	 * @covers ::getZValue
 	 * @covers ::isValid
+	 * @covers ::getDefinition
 	 */
 	public function testCreation_factory() {
 		$stringZObject = <<<EOT
