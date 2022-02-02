@@ -124,11 +124,11 @@ class ApiFunctionCall extends ApiBase {
 	}
 
 	/**
-	 * Generates URL-encoded example function call from JSON file contents.
+	 * Reads file contents from test data directory.
 	 * @param string $fileName
-	 * @return string URL-encoded contents
+	 * @return string file contents
 	 */
-	private function createExample( $fileName ): string {
+	private function readTestFile( $fileName ): string {
 		$baseDir = __DIR__ .
 			DIRECTORY_SEPARATOR .
 			'..' .
@@ -141,8 +141,30 @@ class ApiFunctionCall extends ApiBase {
 			DIRECTORY_SEPARATOR .
 			'test_data';
 		$fullFile = $baseDir . DIRECTORY_SEPARATOR . $fileName;
-		$contents = urlencode( file_get_contents( $fullFile ) );
-		return $contents;
+		return file_get_contents( $fullFile );
+	}
+
+	/**
+	 * Generates URL-encoded example function call exercising user-defined validation function.
+	 * This function call produces a validation error. Replace
+	 * Z1000000K1: 'a' with Z1000000K1: 'A' in order to see successful validation.
+	 * @return string URL-encoded Function Call
+	 */
+	private function createUserDefinedValidationExample(): string {
+		$ZMillion = json_decode( $this->readTestFile( 'user-defined-validation-type.json' ), true );
+		$validationZ7 = json_decode( $this->readTestFile( 'example-user-defined-validation.json' ), true );
+		$ZMillion["Z4K3"]["Z8K1"][0]["Z17K1"] = $ZMillion;
+		$validationZ7["Z801K1"]["Z1K1"] = $ZMillion;
+		return urlencode( json_encode( $validationZ7 ) );
+	}
+
+	/**
+	 * Generates URL-encoded example function call from JSON file contents.
+	 * @param string $fileName
+	 * @return string URL-encoded contents
+	 */
+	private function createExample( $fileName ): string {
+		return urlencode( $this->readTestFile( $fileName ) );
 	}
 
 	/**
@@ -187,6 +209,9 @@ class ApiFunctionCall extends ApiBase {
 			'action=wikilambda_function_call&wikilambda_function_call_zobject='
 				. $this->createExample( 'example-user-defined-javascript.json' )
 				=> 'apihelp-wikilambda_function_call-example-user-defined-javascript',
+			'action=wikilambda_function_call&wikilambda_function_call_zobject='
+				. $this->createUserDefinedValidationExample()
+				=> 'apihelp-wikilambda_function_call-example-user-defined-validation',
 		];
 	}
 
