@@ -24,6 +24,7 @@
 				{{ $i18n( 'wikilambda-publishnew' ) }}
 			</button>
 			<button
+				v-if="!isNewZObject"
 				:class="implementationButtonStyle"
 				:disabled="!implementationButtonValidity"
 				@click="handleImplementation"

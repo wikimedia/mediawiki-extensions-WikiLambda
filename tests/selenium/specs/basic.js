@@ -5,7 +5,7 @@ const assert = require( 'assert' ),
 describe( 'CreateZObject', function () {
 	it( 'page should exist on installation', function () {
 		CreateZObjectPage.open();
-		assert.equal( CreateZObjectPage.title.getText(), 'Create a new ZObject' );
+		assert.equal( CreateZObjectPage.title.getText(), 'Define function' );
 	} );
 } );
 describe( 'EvaluateFunctionCall', function () {

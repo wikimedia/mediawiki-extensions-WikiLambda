@@ -8,7 +8,7 @@
 	<div>
 		<div class="ext-wikilambda-function-view-navbar">
 			<tab-container
-				:tabs="tabs"
+				:tabs="getVisibleTabs"
 				:active-tab="$route.name"
 				@click="selectTab"
 			>
@@ -31,6 +31,7 @@
 var TabContainer = require( '../components/base/TabContainer.vue' ),
 	FnEditorVisualDisplay = require( '../components/editor/FnEditorVisualDisplay.vue' ),
 	Constants = require( '../../../ext.wikilambda.edit/Constants.js' ),
+	mapGetters = require( 'vuex' ).mapGetters,
 	icons = require( './../../../lib/icons.js' );
 
 // @vue/component
@@ -40,47 +41,53 @@ module.exports = {
 		'tab-container': TabContainer,
 		'fn-editor-visual-display': FnEditorVisualDisplay
 	},
-	data: function () {
-		return {
-			// TODO (T297438): remove hardcoded data with real application data
-			// TODO (T297437): load suitable icons
-			tabs: [
-				{
-					status: 'active',
-					id: 'functionDefinition', // used for routing
-					icon: icons.sdIconCheck,
-					title: this.$i18n( 'wikilambda-editor-fn-step-function-definition' ).text(),
-					disabled: false // this should be computed
-				},
-				{
-					status: 'inactive',
-					id: 'functionImplementation',
-					icon: icons.sdIconCheck,
-					title: this.$i18n( 'wikilambda-editor-fn-step-implementations' ).text(),
-					disabled: false,
-					tooltip: {
-						icon: icons.sdIconInfoFilled,
-						header: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-header' ).text(),
-						content: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-content' ).text(),
-						visible: false
+	computed: $.extend( {},
+		mapGetters( [
+			'isNewZObject'
+		] ),
+		{
+			getVisibleTabs: function () {
+				var tabs = [
+					{
+						status: 'active',
+						id: 'functionDefinition', // used for routing
+						title: this.$i18n( 'wikilambda-editor-fn-step-function-definition' ).text(),
+						disabled: false // this should be computed
 					}
-				},
-				{
-					status: 'inactive',
-					id: 'functionTests',
-					icon: icons.sdIconCheck,
-					title: this.$i18n( 'wikilambda-editor-fn-step-tests' ).text(),
-					disabled: true,
-					tooltip: {
-						icon: icons.sdIconInfoFilled,
-						header: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-header' ).text(),
-						content: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-content' ).text(),
-						visible: true
-					}
+				];
+
+				if ( !this.isNewZObject ) {
+					tabs.push(
+						{
+							status: 'inactive',
+							id: 'functionImplementation',
+							title: this.$i18n( 'wikilambda-editor-fn-step-implementations' ).text(),
+							disabled: false,
+							tooltip: {
+								icon: icons.sdIconInfoFilled,
+								header: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-header' ).text(),
+								content: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-content' ).text(),
+								visible: false
+							}
+						},
+						{
+							status: 'inactive',
+							id: 'functionTests',
+							title: this.$i18n( 'wikilambda-editor-fn-step-tests' ).text(),
+							disabled: true,
+							tooltip: {
+								icon: icons.sdIconInfoFilled,
+								header: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-header' ).text(),
+								content: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-content' ).text(),
+								visible: true
+							}
+						}
+					);
 				}
-			]
-		};
-	},
+				return tabs;
+			}
+		}
+	),
 	methods: {
 		selectTab: function ( tab ) {
 			this.$router.push( {
