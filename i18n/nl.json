@@ -15,6 +15,7 @@
 	"wikilambda-reference": "Referentie",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Taal",
 	"wikilambda-publishnew": "Publiceren",
+	"wikilambda-cancel": "Annuleren",
 	"wikilambda-savenew": "Opslaan",
 	"wikilambda-publishchanges": "Wijzigingen publiceren",
 	"wikilambda-savechanges": "Wijzigingen opslaan",
@@ -33,7 +34,10 @@
 	"wikilambda-metadata-all-languages": "Toon alle ingevoerde talen",
 	"wikilambda-metadata-fewer-languages": "Toon minder talen",
 	"wikilambda-persistentobject-details-label": "Details",
+	"wikilambda-function-definition-footer-label": "Bewerkingssamenvatting",
 	"wikilambda-editor-next-button": "Volgende stap",
 	"wikilambda-editor-name-title": "Naam",
-	"wikilambda-editor-input-default-label": "Invoer"
+	"wikilambda-editor-input-default-label": "Invoer",
+	"wikilambda-ztyped-pair-key-label": "Sleutel",
+	"wikilambda-ztyped-pair-value-label": "Waarde"
 }
