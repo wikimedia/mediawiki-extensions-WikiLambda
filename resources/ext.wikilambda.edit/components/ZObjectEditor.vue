@@ -5,7 +5,7 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<!-- TODO: Add a loading indicator, once T254695 is done upstream. -->
+	<!-- TODO (T300537): Add a loading indicator, once T300538 is done upstream. -->
 	<div id="ext-wikilambda-editor">
 		<z-object
 			:persistent="true"
@@ -14,7 +14,7 @@
 		<template v-if="showEditCommand">
 			<div
 				class="ext-wikilambda-publishControl">
-				<!-- TODO: Replace this with a full save dialog (copywarn, IPwarn, minor edit box, …)? -->
+				<!-- TODO (T270304): Replace this with a full save dialog (copywarn, IPwarn, minor edit box, …)? -->
 				<sd-button
 					:primary="true"
 					:progressive="true"
