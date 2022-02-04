@@ -334,7 +334,7 @@ class ZObjectContentHandler extends ContentHandler {
 			'viewmode' => true
 		];
 
-		$parserOutput->addJsConfigVars( 'wgWikiLambda', $editingData );
+		$parserOutput->setJsConfigVar( 'wgWikiLambda', $editingData );
 
 		$parserOutput->setText(
 			// Placeholder div for the Vue template.
