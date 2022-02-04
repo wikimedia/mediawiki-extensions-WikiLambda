@@ -20,11 +20,16 @@ class ZFunctionCallTest extends WikiLambdaIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 * @covers ::__construct
 	 * @covers ::isValid
+	 * @covers ::getZValue
+	 * @covers ::getReturnType
+	 * @covers ::getDefinition
 	 */
 	public function testPersistentCreation_oneArg() {
 		$strFunctionCall = '{"Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z3"}';
 		$zobject = ZObjectFactory::create( json_decode( $strFunctionCall ) );
 		$this->assertTrue( $zobject->isValid() );
+		$this->assertSame( "Z881", $zobject->getZValue() );
+		$this->assertSame( "Z4", $zobject->getReturnType() );
 	}
 
 	/**
