@@ -251,9 +251,9 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 				ZGenericError::class
 			],
 			'function call type: user defined' => [
-				json_decode( '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z801" } }' ),
+				json_decode( '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z883" } }' ),
 				ZObject::class,
-				[ 'Z8', 'Z17', 'Z801' ]
+				[ 'Z8', 'Z17', 'Z883' ]
 			],
 		];
 	}
