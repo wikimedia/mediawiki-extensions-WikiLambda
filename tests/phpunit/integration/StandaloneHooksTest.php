@@ -14,7 +14,8 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use DatabaseUpdater;
 use DeferredUpdates;
 use FormatJson;
-use MediaWiki\Extension\WikiLambda\Hooks;
+use MediaWiki\Extension\WikiLambda\Tests\HooksDataPathMock;
+use MediaWiki\Extension\WikiLambda\Tests\HooksInsertMock;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\MediaWikiServices;
 use Title;
@@ -29,12 +30,29 @@ class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @covers ::createInitialContent
 	 */
-	public function testCreateInitialContent() {
-		// Make a fresh copy of the WikiLambda pre-defined content, as the createInitialContent() call
-		// isn't run for the test copy of the database tables.
-		// TODO(T297027): This is exceptionally slow, and ideally the test runner should do this for us
+	public function testCreateInitialContent_called() {
+		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions/';
+		$zidsToLoad = array_filter(
+			scandir( $dataPath ),
+			static function ( $key ) {
+				return (bool)preg_match( '/^Z\d+\.json$/', $key );
+			}
+		);
+
 		$updater = DatabaseUpdater::newForDB( $this->db );
-		Hooks::createInitialContent( $updater );
+		HooksInsertMock::createInitialContent( $updater );
+		$loadedZids = HooksInsertMock::getFilenames();
+
+		$this->assertSame( sort( $zidsToLoad ), sort( $loadedZids ) );
+	}
+
+	/**
+	 * @covers ::createInitialContent
+	 * @covers ::insertContentObject
+	 */
+	public function testCreateInitialContent_inserted() {
+		$updater = DatabaseUpdater::newForDB( $this->db );
+		HooksDataPathMock::createInitialContent( $updater );
 
 		// Assert that all ZIDs available in the data directory are loaded in the database
 		$res = $this->db->select(
@@ -50,7 +68,7 @@ class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
 			$loadedZids[] = $row->page_title;
 		}
 
-		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions/';
+		$dataPath = dirname( __DIR__, 1 ) . '/test_data/test_definitions/';
 		$zidsToLoad = array_filter(
 			scandir( $dataPath ),
 			static function ( $key ) {

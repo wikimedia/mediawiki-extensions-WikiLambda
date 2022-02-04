@@ -225,6 +225,15 @@ class Hooks implements
 	}
 
 	/**
+	 * Return path of data definition JSON files.
+	 *
+	 * @return string
+	 */
+	protected static function getDataPath() {
+		return dirname( __DIR__ ) . '/function-schemata/data/definitions/';
+	}
+
+	/**
 	 * Installer/Updater callback to create the initial "system" ZObjects on any installation. This
 	 * is a callback so that it runs after the tables have been created/updated.
 	 *
@@ -245,7 +254,7 @@ class Hooks implements
 			return;
 		}
 
-		$initialDataToLoadPath = dirname( __DIR__ ) . '/function-schemata/data/definitions/';
+		$initialDataToLoadPath = static::getDataPath();
 
 		$dependenciesFile = file_get_contents( $initialDataToLoadPath . 'dependencies.json' );
 		if ( $dependenciesFile === false ) {
@@ -267,7 +276,7 @@ class Hooks implements
 		natsort( $initialDataToLoadListing );
 
 		foreach ( $initialDataToLoadListing as $filename ) {
-			self::insertContentObject( $updater, $filename, $dependencies, $creatingUser, $creatingComment );
+			static::insertContentObject( $updater, $filename, $dependencies, $creatingUser, $creatingComment );
 		}
 	}
 
@@ -284,8 +293,8 @@ class Hooks implements
 	 * @param string[] $track
 	 * @return bool Has successfully inserted the content object
 	 */
-	private static function insertContentObject( $updater, $filename, $dependencies, $user, $comment, $track = [] ) {
-		$initialDataToLoadPath = dirname( __DIR__ ) . '/function-schemata/data/definitions/';
+	protected static function insertContentObject( $updater, $filename, $dependencies, $user, $comment, $track = [] ) {
+		$initialDataToLoadPath = static::getDataPath();
 		$updateRowName = "create WikiLambda initial content - $filename";
 
 		$langReg = ZLangRegistry::singleton();
