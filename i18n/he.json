@@ -35,6 +35,8 @@
 	"wikilambda-special-callfunction-intro": "{{GENDER:|ודא שאתה ממלא|ודאי שאת ממלאת}} את מדיניות הקהילה, ואת כללי זכויות היוצרים והפטנטים.",
 	"wikilambda-special-callfunction-nojs": "הדף הזה דורש הפעלה של JavaScript.",
 	"wikilambda-special-createzobject": "יצירת עצם Z חדש",
+	"wikilambda-special-define-function": "הגדרת פונקציה",
+	"wikilambda-special-define-function-summary": "פונקציה מכילה הגדרה, כמה מימושים אפשריים, ודורשת בדיקות לווידוא נכונות. הלשונית \"הגדרת פונקציה\" להלן מיועדת להגדרת הקלט, הפלט, והתוויות של הפונקציה. \"מימוש\" מיועדת לעריכה ואחסון של מימושים, ו\"בדיקה\" מיועדת לווידוא שהפונקציה מתנהגת כמו שצריך.",
 	"wikilambda-special-createzobject-summary": "הטופס הזה מאפשר לך ליצור עצם Z חדש, שיכול לייצג פונקציה, מימוש שלה, בודק שלה, או אחד מהסוגים האחרים של עצמי Z. מומלץ לקרוא את העזרה ואת הנחיות הקהילה תחילה.",
 	"wikilambda-special-createzobject-intro": "{{GENDER:|ודא שאתה ממלא|ודאי שאת ממלאת}} את מדיניות הקהילה, ואת כללי זכויות היוצרים והפטנטים.",
 	"wikilambda-special-createzobject-nojs": "הדף הזה דורש הפעלה של JavaScript.",
