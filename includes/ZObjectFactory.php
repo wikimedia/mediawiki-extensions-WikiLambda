@@ -507,10 +507,10 @@ class ZObjectFactory {
 		// resulting on a ZReference or a ZFunctionCall
 		$objectType = $object->{ ZTypeRegistry::Z_OBJECT_TYPE };
 		$type = self::createChild( $objectType );
+		$typeRegistry = ZTypeRegistry::singleton();
 
 		// If it's a ZReference, it must point at an object of type Z4
 		if ( $type instanceof ZReference ) {
-			$typeRegistry = ZTypeRegistry::singleton();
 			$errorRegistry = ZErrorTypeRegistry::singleton();
 			$typeZid = $type->getZValue();
 
@@ -543,22 +543,37 @@ class ZObjectFactory {
 		}
 
 		if ( $type instanceof ZFunctionCall ) {
-			// Make sure that the return type of the function is Z4
-			if ( $type->getReturnType() !== ZTypeRegistry::Z_TYPE ) {
+			// Only check return type for non built-in type functions, as we know
+			// that those have Z4 as their return type
+			if ( !$typeRegistry->isZFunctionBuiltIn( $type->getZValue() ) ) {
+				$returnType = $type->getReturnType();
+				// Make sure that the function Zid exists
+				if ( $returnType === null ) {
 					throw new ZErrorException(
-					ZErrorFactory::createZErrorInstance(
-						ZErrorTypeRegistry::Z_ERROR_KEY_TYPE_MISMATCH,
-						[
-							'dataPointer' => [ ZTypeRegistry::Z_OBJECT_TYPE ],
-							'keywordArgs' => [
-								'expected' => ZTypeRegistry::Z_TYPE,
-								'used' => $type->getReturnType()
+						ZErrorFactory::createZErrorInstance(
+							ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+							[
+								'data' => $type->getZValue()
 							]
-						]
-					)
-				);
+						)
+					);
+				}
+				// Make sure that the return type of the function is Z4
+				if ( $returnType !== ZTypeRegistry::Z_TYPE ) {
+					throw new ZErrorException(
+						ZErrorFactory::createZErrorInstance(
+							ZErrorTypeRegistry::Z_ERROR_KEY_TYPE_MISMATCH,
+							[
+								'dataPointer' => [ ZTypeRegistry::Z_OBJECT_TYPE ],
+								'keywordArgs' => [
+									'expected' => ZTypeRegistry::Z_TYPE,
+									'used' => $type->getReturnType()
+								]
+							]
+						)
+					);
+				}
 			}
-
 			// return ZFunctionCall
 			return $type;
 		}

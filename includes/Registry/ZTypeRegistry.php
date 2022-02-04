@@ -199,7 +199,9 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_FUNCTION_ERRORTYPE_TO_TYPE = 'Z885';
 	public const Z_FUNCTION_ERRORTYPE_TYPE = 'Z885K1';
 
-	public const BUILT_IN_FUNCTIONS = [
+	// These are built-in functions that return a type, so we will
+	// always find them as ZObject type values (Z1K1)
+	public const BUILT_IN_TYPE_FUNCTIONS = [
 		self::Z_FUNCTION_GENERIC_LIST => 'ZGenericList',
 		self::Z_FUNCTION_ERRORTYPE_TO_TYPE => 'ZGenericError'
 	];
@@ -309,7 +311,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 * @return bool
 	 */
 	public function isZFunctionBuiltIn( string $key ): bool {
-		return array_key_exists( $key, self::BUILT_IN_FUNCTIONS );
+		return array_key_exists( $key, self::BUILT_IN_TYPE_FUNCTIONS );
 	}
 
 	/**
@@ -319,7 +321,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 * @return string Class name for the built-in
 	 */
 	public function getZFunctionBuiltInName( string $zid ): string {
-		return self::BUILT_IN_FUNCTIONS[ $zid ];
+		return self::BUILT_IN_TYPE_FUNCTIONS[ $zid ];
 	}
 
 	/**

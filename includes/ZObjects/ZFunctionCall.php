@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 class ZFunctionCall extends ZObject {
@@ -73,18 +74,18 @@ class ZFunctionCall extends ZObject {
 	}
 
 	/**
-	 * Resulting type of this ZFunctionCall.
+	 * Resulting type of this ZFunctionCall. If the ZFunction is not available, returns null.
 	 * This can be extracted from the secondary labels database (we have return type in this table)
 	 * or from the persisted ZObjects.
-	 * In the future, the function in Z_FUNCTIONCALL_FUNCTION (Z7) can be a literal as well, so we
-	 * can directly return Z7K1.Z8K2
 	 *
-	 * @return string
+	 * TODO (T300509) In the future, the function in Z_FUNCTIONCALL_FUNCTION (Z7) can be a literal
+	 * as well, so we can directly return Z7K1.Z8K2
+	 *
+	 * @return string|null
 	 */
-	public function getReturnType(): string {
-		// FIXME (T300503) this is currently hardcoded, this should look up the DB to see what return type
-		// is associated to the function in Z_FUNCTIONCALL_FUNCTION
-		return ZTypeRegistry::Z_TYPE;
+	public function getReturnType() {
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		return $zObjectStore->fetchZFunctionReturnType( $this->getZValue() );
 	}
 
 }

@@ -10,9 +10,11 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall
+ * @group Database
  */
 class ZFunctionCallTest extends WikiLambdaIntegrationTestCase {
 
@@ -25,6 +27,7 @@ class ZFunctionCallTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getDefinition
 	 */
 	public function testPersistentCreation_oneArg() {
+		$this->insertZids( [ 'Z8', 'Z17', 'Z881' ] );
 		$strFunctionCall = '{"Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z3"}';
 		$zobject = ZObjectFactory::create( json_decode( $strFunctionCall ) );
 		$this->assertTrue( $zobject->isValid() );
@@ -38,6 +41,9 @@ class ZFunctionCallTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::isValid
 	 */
 	public function testGenericList() {
+		// Z881 must be persisted to successfully return its type.
+		// Z881 requires Z8 and Z17 to be present as well.
+		$this->insertZids( [ 'Z8', 'Z17', 'Z881' ] );
 		$type = <<<EOT
 {
 	"Z1K1": "Z2",
@@ -109,6 +115,9 @@ EOT;
 	 * @covers ::isValid
 	 */
 	public function testGenericListInner() {
+		// Z881 must be persisted to successfully return its type.
+		// Z881 requires Z8 and Z17 to be present as well.
+		$this->insertZids( [ 'Z8', 'Z17', 'Z881' ] );
 		$type = <<<EOT
 {
 	"Z1K1": "Z4",
@@ -149,5 +158,29 @@ EOT;
 
 		$zobject = ZObjectFactory::create( json_decode( $type ) );
 		$this->assertTrue( $zobject->isValid() );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
+	 * @covers ::__construct
+	 * @covers ::getReturnType
+	 */
+	public function testReturnType() {
+		$this->insertZids( [ 'Z8', 'Z17', 'Z881', 'Z813' ] );
+
+		$strFunctionCall = '{"Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z3"}';
+		$zobject = ZObjectFactory::create( json_decode( $strFunctionCall ) );
+		$this->assertInstanceOf( ZFunctionCall::class, $zobject );
+		$this->assertSame( 'Z4', $zobject->getReturnType() );
+
+		$strFunctionCall = '{"Z1K1": "Z7", "Z7K1": "Z813", "Z813K1": [ "list" ]}';
+		$zobject = ZObjectFactory::create( json_decode( $strFunctionCall ) );
+		$this->assertInstanceOf( ZFunctionCall::class, $zobject );
+		$this->assertSame( 'Z40', $zobject->getReturnType() );
+
+		$strFunctionCall = '{"Z1K1": "Z7", "Z7K1": "Z80008"}';
+		$zobject = ZObjectFactory::create( json_decode( $strFunctionCall ) );
+		$this->assertInstanceOf( ZFunctionCall::class, $zobject );
+		$this->assertNull( $zobject->getReturnType() );
 	}
 }
