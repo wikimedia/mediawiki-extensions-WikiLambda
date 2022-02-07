@@ -95,6 +95,10 @@ module.exports = {
 	methods: {
 		codeChangeHandler: function ( val ) {
 			this.codeEditorState = val;
+			// this will ensure non-clickout events (like clicking the submit button directl) still get processed the same way
+			// however this will trigger a lot of false positives so there is probably a smarter way to do this
+			// TODO (T301286): find  a more performant solution
+			this.onClickoutHandler();
 		},
 		onClickoutHandler: function () {
 			var json,
