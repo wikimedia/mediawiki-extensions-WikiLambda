@@ -49,11 +49,7 @@ module.exports = {
 			default: false
 		}
 	},
-	data: function () {
-		return {
-			Constants: Constants
-		};
-	},
+	data: function () {},
 	computed: $.extend( {},
 		mapGetters( {
 			getZObjectChildrenById: 'getZObjectChildrenById',
