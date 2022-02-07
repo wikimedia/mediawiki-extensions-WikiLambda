@@ -8,7 +8,6 @@
 	<div class="ext-wikilambda-zTypedMap">
 		<template v-if="requiresTypeForList">
 			<z-object-selector
-
 				:type="Constants.zType"
 				:placeholder="$i18n( 'wikilambda-ztyped-map-placeholder' )"
 				:readonly="readonly"

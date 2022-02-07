@@ -21,6 +21,53 @@ function formatZObjectKeys( keys ) {
 module.exports = {
 	actions: {
 		/**
+		 * This method is used to generate a zObjectType (Z1K1) for a given object.
+		 * This can either be a simple string with a zId or a complex function call for functionToType
+		 * { Z1K1: Z123 }
+		 * or
+		 * {
+		 *   Z1K1: {
+		 *     "Z1K1":"Z7",
+		 *     "Z7K1":"Z123",
+		 *     "Z123K1":"Z13456",
+		 *   }
+		 * }
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {string} payload.objectId
+		 * @param {string} payload.type
+		 */
+		addZObjectType: function ( context, payload ) {
+			var type,
+				isPersistentObject = context
+					.rootGetters
+					.getZkeys[ payload.type ][ Constants.Z_OBJECT_TYPE ] === Constants.Z_PERSISTENTOBJECT,
+				object = context.getters.getZObjectById( payload.objectId );
+
+			if ( isPersistentObject ) {
+				type = context
+					.rootGetters
+					.getZkeys[ payload.type ][ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
+				context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: type, parent: payload.objectId } );
+			} else {
+				type = context
+					.rootGetters
+					.getZkeys[ payload.type ][ Constants.Z_TYPE_IDENTITY ];
+
+				// we need to wrap the object in Z1K1 (Z_OBJECT_TYPE)
+				var Z_OBJECT_TYPE = {};
+				Z_OBJECT_TYPE[ Constants.Z_OBJECT_TYPE ] = type;
+
+				context.dispatch( 'injectZObject', {
+					zobject: Z_OBJECT_TYPE,
+					key: Constants.Z_OBJECT_TYPE,
+					id: payload.objectId,
+					parent: object.parentId
+				} );
+			}
+		},
+		/**
 		 * Create the required entry in the zobject array for a zPersistenObject.
 		 * The entry will result in a json representation equal to:
 		 * { Z1K1: { Z1K1: 'Z9', Z9K1: 'Z2' },
@@ -500,9 +547,11 @@ module.exports = {
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
+		 * @param {string} payload.type
+		 * @param {string} payload.id
 		 */
 		addGenericObject: function ( context, payload ) {
-			var zObjectItems = [],
+			var object = {},
 				keys = [],
 				objectKey,
 				objectKeyType,
@@ -512,33 +561,72 @@ module.exports = {
 				value: 'object'
 			} );
 
-			zObjectItems = [
-				{ key: Constants.Z_OBJECT_TYPE, value: payload.type, parent: payload.id }
-			];
-
 			// we fetch a list of keys within this generic object
 			if ( payload.type !== Constants.Z_OBJECT && context.rootGetters.getZkeys[ payload.type ] ) {
-				context.dispatch( 'addZObjects', zObjectItems );
 
-				var object = context
+				// Normal types are nested in a persisten object value, dynamically generated types from functionToType are not
+				object = context
 					.rootGetters
-					.getZkeys[ payload.type ][ Constants.Z_PERSISTENTOBJECT_VALUE ];
+					.getZkeys[ payload.type ][ Constants.Z_PERSISTENTOBJECT_VALUE ] || context
+					.rootGetters
+					.getZkeys[ payload.type ];
 
-				keys = formatZObjectKeys( object[ Constants.Z_TYPE_KEYS ] );
-				keys.forEach( function ( key ) {
-					objectKey = key[ Constants.Z_KEY_ID ];
-					objectKeyType = key[ Constants.Z_KEY_TYPE ];
-					nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
-					if ( objectKey !== Constants.Z_OBJECT_TYPE ) {
-						context.dispatch( 'addZObject', { key: objectKey, value: 'object', parent: payload.id } );
-					}
-					// We need to stop recursiveness.
-					if ( objectKeyType !== payload.type && typeof objectKeyType !== 'object' ) {
-						context.dispatch( 'changeType', { id: nextId, type: objectKeyType } );
-					} else {
-						context.dispatch( 'changeType', { id: nextId, type: Constants.Z_REFERENCE } );
-					}
-				} );
+				// the generic is either a straight type or a function that returns a type
+				if ( object[ Constants.Z_OBJECT_TYPE ] === Constants.Z_TYPE ) {
+					context.dispatch( 'addZObjectType', {
+						type: payload.type,
+						objectId: payload.id
+					} );
+
+					// we add each key in the tree and also set its type
+					keys = formatZObjectKeys( object[ Constants.Z_TYPE_KEYS ] );
+					keys.forEach( function ( key ) {
+						objectKey = key[ Constants.Z_KEY_ID ];
+						objectKeyType = key[ Constants.Z_KEY_TYPE ];
+						nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+						if ( objectKey !== Constants.Z_OBJECT_TYPE ) {
+							context.dispatch( 'addZObject', { key: objectKey, value: 'object', parent: payload.id } );
+						}
+						// We need to stop recursiveness.
+						if ( objectKeyType !== payload.type && typeof objectKeyType !== 'object' ) {
+							context.dispatch( 'changeType', { id: nextId, type: objectKeyType } );
+						// Sometimes the Type can be an object such as a function call. In those instances
+						// We will inject the complete object into the zobject tree
+						} else if ( typeof objectKeyType === 'object' ) {
+							context.dispatch( 'injectZObject', {
+								zobject: objectKeyType,
+								key: objectKey,
+								id: nextId,
+								parent: payload.id
+							} );
+						} else {
+							context.dispatch( 'changeType', { id: nextId, type: Constants.Z_REFERENCE } );
+						}
+					} );
+				} else if ( object[ Constants.Z_OBJECT_TYPE ] === Constants.Z_FUNCTION ) {
+					var functionCallObjectType = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+					context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: 'object', parent: payload.id } );
+					context.dispatch( 'addZFunctionCall', { id: functionCallObjectType, value: object[ Constants.Z_FUNCTION_IDENTITY ] } );
+					keys = object[ Constants.Z_FUNCTION_ARGUMENTS ];
+					keys.forEach( function ( key ) {
+						objectKey = key[ Constants.Z_ARGUMENT_KEY ];
+						objectKeyType = key[ Constants.Z_ARGUMENT_TYPE ];
+						nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+						if ( objectKey !== Constants.Z_OBJECT_TYPE ) {
+							context.dispatch( 'addZObject', { key: objectKey, value: 'object', parent: functionCallObjectType } );
+						}
+						// We need to stop recursiveness.
+						if ( objectKeyType !== payload.type && objectKeyType !== Constants.Z_TYPE ) {
+							context.dispatch( 'changeType', { id: nextId, type: objectKeyType } );
+						// When the type is a Z4 we prefix it to an empty string to force the object selector to be shown
+						} else if ( objectKeyType === Constants.Z_TYPE ) {
+							context.dispatch( 'setZObjectValue', { id: nextId, value: '' } );
+						} else {
+							context.dispatch( 'changeType', { id: nextId, type: Constants.Z_REFERENCE } );
+						}
+					} );
+
+				}
 			}
 
 		},

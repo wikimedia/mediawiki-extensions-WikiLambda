@@ -6,7 +6,8 @@
  */
 
 var Constants = require( '../../Constants.js' ),
-	zobjectTreeUtils = require( '../../mixins/zobjectTreeUtils.js' ).methods;
+	zobjectTreeUtils = require( '../../mixins/zobjectTreeUtils.js' ).methods,
+	performFunctionCall = require( '../../mixins/api.js' ).methods.performFunctionCall;
 
 function getNewItemParentId( nestedChildren, rootId ) {
 	var items = nestedChildren.filter( function ( child ) {
@@ -244,6 +245,33 @@ module.exports = {
 			context.dispatch( 'removeZObject', item.id );
 			context.dispatch( 'removeZObjectChildren', currentItemK2.id );
 			context.dispatch( 'removeZObject', currentItemK2.id );
+		},
+		/**
+		 * Perform a function call to retrieve the return typed of a "Function to Type"
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {string} payload.objectId
+		 * @param {string} payload.dynamicZKey
+		 *
+		 * @return {Promise}
+		 */
+		retriveTypeOfFunctionToType: function ( context, payload ) {
+			var ZfunctionCallObject = context.getters.getZObjectAsJsonById( payload.objectId );
+
+			if ( ZfunctionCallObject && ZfunctionCallObject[ Constants.Z_OBJECT_TYPE ] ) {
+				return performFunctionCall( ZfunctionCallObject[ Constants.Z_OBJECT_TYPE ] ).then( function ( data ) {
+
+					var canonicalZObject = data.response;
+					if ( canonicalZObject[ Constants.Z_RESPONSEENVELOPE_VALUE ] ) {
+						context.commit( 'addZKeyInfo', {
+							zid: payload.dynamicZKey,
+							info: canonicalZObject[ Constants.Z_RESPONSEENVELOPE_VALUE ]
+						} );
+						return true;
+					}
+				} );
+			}
 		}
 	}
 };

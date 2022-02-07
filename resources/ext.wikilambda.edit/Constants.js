@@ -102,8 +102,8 @@ var Constants = {
 		Z_TYPED_PAIR_TYPE2: 'Z882K2',
 		Z_TYPED_MAP: 'Z883',
 		Z_TYPED_MAP_TYPE1: 'Z883K1',
-		Z_TYPED_MAP_TYPE2: 'Z883K2'
-
+		Z_TYPED_MAP_TYPE2: 'Z883K2',
+		Z_FUNCTION_CALL_TO_TYPE: 'function_call_to_type'
 	},
 	modes = [
 		{ key: Constants.Z_KEY_MODES.REFERENCE, value: 'wikilambda-modeselector-reference', label: 'wikilambda-reference', type: Constants.Z_REFERENCE },
