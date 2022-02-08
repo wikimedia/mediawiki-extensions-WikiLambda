@@ -278,6 +278,26 @@ module.exports = {
 				.then( function () {
 					self.orchestrating = false;
 				} );
+		},
+		addFunctionArgument: function ( key, type, parent ) {
+			this.$nextTick( function () {
+				// Don't perform this action if the key already exists
+				if ( this.findKeyInArray( key, this.zobject ) ) {
+					return;
+				}
+				this.addZObject( {
+					key: key,
+					value: 'object',
+					parent: parent
+				} )
+					.then( function ( objectId ) {
+						var payload = {
+							id: objectId,
+							type: type
+						};
+						this.changeType( payload );
+					}.bind( this ) );
+			} );
 		}
 	} ),
 	watch: {
@@ -286,22 +306,7 @@ module.exports = {
 			handler: function ( value ) {
 				var self = this;
 				value.forEach( function ( arg ) {
-					// Don't perform this action if the key already exists
-					if ( self.findKeyInArray( arg.key, self.zobject ) ) {
-						return;
-					}
-					self.addZObject( {
-						key: arg.key,
-						value: 'object',
-						parent: self.zobjectId
-					} )
-						.then( function ( objectId ) {
-							var payload = {
-								id: objectId,
-								type: arg.type
-							};
-							self.changeType( payload );
-						} );
+					self.addFunctionArgument( arg.key, arg.type, self.zobjectId );
 				} );
 			}
 		},
