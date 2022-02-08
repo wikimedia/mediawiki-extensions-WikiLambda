@@ -25,6 +25,6 @@
 		"no-var": "off",
 		"vue/component-definition-name-casing": [ "error", "kebab-case" ],
 		"vue/no-undef-properties": "warn",
-		"vue/no-unregistered-components": [ "error", { "ignorePatterns": [ "router-link", "router-view" ] } ]
+		"vue/no-unregistered-components": [ "warn", { "ignorePatterns": [ "router-link", "router-view" ] } ]
 	}
 }
