@@ -7,28 +7,37 @@
 	-->
 	<main class="ext-wikilambda-function-definition">
 		<div id="fnDefinitionContainer" class="ext-wikilambda-function-definition__container">
-			<div v-for="( labelLanguage, index ) in labelLanguages"
+			<div
+				v-for="( labelLanguage, index ) in labelLanguages"
 				:key="index"
 				class="ext-wikilambda-function-definition__container__input">
 				<fn-editor-zlanguage-selector
 					class="ext-wikilambda-function-definition__container__input__language-selector"
-					:show-add-language="true"
 					:z-language="labelLanguage.zLang"
 					@change="function ( value ) {
 						return setInputLangByIndex( value, index )
 					}"
 				></fn-editor-zlanguage-selector>
-				<function-definition-name :z-lang="labelLanguage.zLang" :is-main-z-object="index === 0"></function-definition-name>
+				<function-definition-name
+					:z-lang="labelLanguage.zLang"
+					:is-main-z-object="index === 0"
+				></function-definition-name>
 				<function-definition-aliases :z-lang="labelLanguage.zLang"></function-definition-aliases>
-				<function-definition-inputs :z-lang="labelLanguage.zLang" :is-main-z-object="index === 0"></function-definition-inputs>
-
+				<function-definition-inputs
+					:z-lang="labelLanguage.zLang"
+					:is-main-z-object="index === 0"
+				></function-definition-inputs>
 				<template v-if="index === 0">
 					<function-definition-output></function-definition-output>
 				</template>
 			</div>
 		</div>
 		<div class="ext-wikilambda-function-definition__action-add-input">
-			<button @click="addLabelInOtherLanguages">+ Add labels in another language</button>
+			<button
+				@click="addLabelInOtherLanguages"
+			>
+				+ Add labels in another language
+			</button>
 		</div>
 		<toast
 			v-if="showToast"
@@ -56,7 +65,7 @@ var mapGetters = require( 'vuex' ).mapGetters,
 
 // @vue/component
 module.exports = {
-	name: 'FunctionDefinition',
+	name: 'function-definition',
 	components: {
 		'function-definition-name': FunctionDefinitionName,
 		'function-definition-aliases': FunctionDefinitionAliases,
@@ -115,7 +124,8 @@ module.exports = {
 		addLabelInOtherLanguages: function () {
 			const hasSingleLanguage = this.labelLanguages.length === 1;
 			const hasMultipleLanguage = this.labelLanguages.length > 1;
-			const lastLanguageHasLabel = hasMultipleLanguage && !!this.labelLanguages[ this.labelLanguages.length - 1 ].label;
+			const lastLanguageHasLabel = hasMultipleLanguage &&
+				!!this.labelLanguages[ this.labelLanguages.length - 1 ].label;
 			if ( hasSingleLanguage || lastLanguageHasLabel ) {
 				this.labelLanguages.push(
 					{

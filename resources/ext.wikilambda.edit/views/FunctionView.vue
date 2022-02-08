@@ -36,7 +36,7 @@ var TabContainer = require( '../components/base/TabContainer.vue' ),
 
 // @vue/component
 module.exports = {
-	name: 'FunctionView',
+	name: 'function-view',
 	components: {
 		'tab-container': TabContainer,
 		'fn-editor-visual-display': FnEditorVisualDisplay

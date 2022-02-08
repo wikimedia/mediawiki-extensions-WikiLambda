@@ -14,7 +14,7 @@ require( '../../../lib/ace/src/ace.js' );
 
 // @vue/component
 module.exports = {
-	name: 'CodeEditor',
+	name: 'code-editor',
 	props: {
 		value: {
 			type: String,

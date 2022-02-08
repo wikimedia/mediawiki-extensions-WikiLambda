@@ -28,6 +28,8 @@
 						{{ $i18n( 'wikilambda-editor-clearitem' ) }}
 					</button>
 				</div>
+				<!-- ZPersistentObject -> ZObjectKey -> ZObject -> ZPersistentObject -->
+				<!-- eslint-disable vue/no-unregistered-components -->
 				<z-object-key
 					:key="Constants.Z_PERSISTENTOBJECT_VALUE"
 					:zobject-id="zObjectValue.id"
@@ -77,7 +79,6 @@ var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	ZObjectKey = require( '../ZObjectKey.vue' ),
 	ZMetadata = require( './ZMetadata.vue' ),
 	ZFunctionEvaluator = require( '../function/ZFunctionEvaluator.vue' ),
 	ZObjectJson = require( '../ZObjectJson.vue' ),
@@ -86,7 +87,6 @@ var Constants = require( '../../Constants.js' ),
 // @vue/component
 module.exports = {
 	components: {
-		'z-object-key': ZObjectKey,
 		'z-metadata': ZMetadata,
 		'z-function-evaluator': ZFunctionEvaluator,
 		'z-object-json': ZObjectJson,

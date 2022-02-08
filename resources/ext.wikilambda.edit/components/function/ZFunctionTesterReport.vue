@@ -126,10 +126,6 @@ module.exports = {
 		zImplementationId: {
 			type: String,
 			default: null
-		},
-		zTesterId: {
-			type: String,
-			default: null
 		}
 	},
 	data: function () {

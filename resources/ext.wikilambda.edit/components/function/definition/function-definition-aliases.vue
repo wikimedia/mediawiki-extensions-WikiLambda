@@ -42,7 +42,7 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = {
-	name: 'FunctionDefinitionAliases',
+	name: 'function-definition-aliases',
 	components: {
 		chips: ChipContainer
 	},
@@ -94,9 +94,13 @@ module.exports = {
 			that contains the value 'false' for aliases that have been removed. Better pratice
 			would likely be to not return any value in this case and we will no longer have to filter */
 			getFilteredCurrentLanguageAliases: function () {
-				return this.getCurrentLanguageAliases.filter( function ( alias ) {
-					return alias.value !== undefined;
-				} );
+				// this will be false before any data is loaded
+				if ( Array.isArray( this.getCurrentLanguageAliases ) ) {
+					return this.getCurrentLanguageAliases.filter( function ( alias ) {
+						return alias.value !== undefined;
+					} );
+				}
+				return [];
 			},
 			getCurrentLanguageAliases: function () {
 				var lang = this.zLang || this.getCurrentZLanguage;

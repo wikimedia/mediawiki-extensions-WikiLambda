@@ -48,7 +48,7 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = {
-	name: 'FunctionDefinitionFooter',
+	name: 'function-definition-footer',
 	data: function () {
 		return {
 			summary: ''

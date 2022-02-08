@@ -11,12 +11,12 @@
 		@change="updateMode"
 	>
 		<option
-			v-for="mode in modes"
-			:key="mode.key"
-			:value="mode.key"
-			:title="translate( mode.label )"
+			v-for="modeItem in modes"
+			:key="modeItem.key"
+			:value="modeItem.key"
+			:title="translate( modeItem.label )"
 		>
-			{{ translate( mode.value ) }}
+			{{ translate( modeItem.value ) }}
 		</option>
 	</select>
 </template>
@@ -26,7 +26,7 @@ var mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = {
-	name: 'ZKeyModeSelector',
+	name: 'z-key-mode-selector',
 	inject: {
 		allowArgRefMode: { default: false }
 	},

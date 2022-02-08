@@ -26,7 +26,7 @@ var Constants = require( './../../Constants.js' ),
 
 // @vue/component
 module.exports = {
-	name: 'ZString',
+	name: 'z-string',
 	mixins: [ typeUtils ],
 	inject: {
 		viewmode: { default: false }

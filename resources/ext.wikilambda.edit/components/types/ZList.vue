@@ -34,7 +34,7 @@ var ZListItem = require( './ZListItem.vue' ),
 
 // @vue/component
 module.exports = {
-	name: 'ZList',
+	name: 'z-list',
 	components: {
 		'z-list-item': ZListItem
 	},

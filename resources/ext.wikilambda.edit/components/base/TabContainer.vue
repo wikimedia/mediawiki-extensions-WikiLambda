@@ -33,10 +33,12 @@ module.exports = {
 	},
 	props: {
 		tabs: {
-			type: Array
+			type: Array,
+			required: true
 		},
 		activeTab: {
-			type: String
+			type: String,
+			default: ''
 		}
 	},
 	methods: {

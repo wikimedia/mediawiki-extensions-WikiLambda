@@ -31,6 +31,9 @@
 		<div class="ext-wikilambda-inline-tester-validator">
 			<span v-for="argument in zFunctionArguments.slice( 1 )" :key="argument.key">
 				{{ argument.label }}:
+				<!-- ZInlineTesterValidation -> ZObjectKey -> ZObject -> ZFunction -> ZTesterList ->
+					ZTesterAdHoc -> ZInlineTesterValidation -->
+				<!-- eslint-disable-next-line vue/no-unregistered-components -->
 				<z-object-key
 					:zobject-id="findArgumentId( argument.key )"
 					:persistent="false"
@@ -45,10 +48,18 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	ZFunctionCall = require( '../types/ZFunctionCall.vue' ),
+	ZObjectSelector = require( '../ZObjectSelector.vue' ),
+	ZReference = require( '../types/ZReference.vue' ),
+	SdButton = require( '../base/Button.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = {
+	components: {
+		'sd-button': SdButton,
+		'z-object-selector': ZObjectSelector,
+		'z-reference': ZReference
+	},
 	extends: ZFunctionCall,
 	provide: function () {
 		return {

@@ -8,6 +8,11 @@
 	<div class="ext-wikilambda-inline-tester-call">
 		<span v-for="argument in zFunctionArguments" :key="argument.key">
 			{{ argument.label }}:
+			<!--
+				ZInlineTesterCall -> ZObjectKey -> ZObject -> ZFunction -> ZTesterList ->
+				ZTesterAdHoc -> ZInlinetesterCall
+			-->
+			<!-- eslint-disable-next-line vue/no-unregistered-components -->
 			<z-object-key
 				:zobject-id="findArgumentId( argument.key )"
 				:persistent="false"

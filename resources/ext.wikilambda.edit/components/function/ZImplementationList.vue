@@ -45,7 +45,7 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = {
-	name: 'ZImplementationList',
+	name: 'z-implementation-list',
 	components: {
 		'z-implementation-list-item': ZImplementationListItem
 	},

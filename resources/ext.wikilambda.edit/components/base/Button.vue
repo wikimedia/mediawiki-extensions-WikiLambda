@@ -20,7 +20,7 @@ var SdIcon = require( './Icon.vue' );
  */
 // @vue/component
 module.exports = {
-	name: 'SdButton',
+	name: 'sd-button',
 
 	components: {
 		'sd-icon': SdIcon

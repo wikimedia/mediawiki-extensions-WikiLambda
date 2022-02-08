@@ -33,7 +33,7 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = {
-	name: 'ZMultilingualString',
+	name: 'z-multilingual-string',
 	components: {
 		'z-monolingual-string': ZMonolingualString,
 		'z-natural-language-selector': ZNaturalLanguageSelector
@@ -49,7 +49,6 @@ module.exports = {
 			default: false
 		}
 	},
-	data: function () {},
 	computed: $.extend( {},
 		mapGetters( {
 			getZObjectChildrenById: 'getZObjectChildrenById',

@@ -35,7 +35,7 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = {
-	name: 'ZBoolean',
+	name: 'z-boolean',
 	mixins: [ typeUtils ],
 	inject: {
 		viewmode: { default: false }

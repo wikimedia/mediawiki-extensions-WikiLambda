@@ -59,10 +59,20 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	ZFunctionCall = require( '../types/ZFunctionCall.vue' ),
+	ZReference = require( '../types/ZReference.vue' ),
+	ZObjectKey = require( '../ZObjectKey.vue' ),
+	ZKeyModeSelector = require( '../ZKeyModeSelector.vue' ),
+	ZObjectJson = require( '../ZObjectJson.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = {
+	components: {
+		'z-reference': ZReference,
+		'z-key-mode-selector': ZKeyModeSelector,
+		'z-object-json': ZObjectJson,
+		'z-object-key': ZObjectKey
+	},
 	extends: ZFunctionCall,
 	provide: function () {
 		return {

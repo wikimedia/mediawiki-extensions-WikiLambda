@@ -6,6 +6,8 @@
 		@license MIT
 	-->
 	<div v-if="resultId">
+		<!-- ZFunctionCallRunner -> ZObjectKey -> ZObject -> ZPersistentObject -> ZFunctionEvaluator -->
+		<!-- eslint-disable vue/no-unregistered-components -->
 		<z-function-call-runner
 			:zobject-id="functionCallId"
 		></z-function-call-runner>
@@ -14,15 +16,11 @@
 
 <script>
 var Constants = require( '../../Constants.js' ),
-	ZFunctionCallRunner = require( './ZFunctionCallRunner.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = {
-	components: {
-		'z-function-call-runner': ZFunctionCallRunner
-	},
 	data: function () {
 		return {
 			functionCallId: '',

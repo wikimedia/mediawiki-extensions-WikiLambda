@@ -5,7 +5,7 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<editor-base :steps="steps" :progress="currentZFunctionCompletionPercentage">
+	<editor-base :steps="steps">
 		<template #default="ctx">
 			<component
 				:is="currentStepContent"

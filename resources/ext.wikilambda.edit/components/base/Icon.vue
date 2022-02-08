@@ -59,7 +59,7 @@
  */
 // @vue/component
 module.exports = {
-	name: 'SdIcon',
+	name: 'sd-icon',
 
 	props: {
 		/** The SVG path or an object containing that path plus other data. */

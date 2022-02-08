@@ -30,7 +30,7 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = {
-	name: 'FunctionDefinitionOutput',
+	name: 'function-definition-output',
 	components: {
 		'fn-editor-type-selector': FnEditorTypeSelector
 	},

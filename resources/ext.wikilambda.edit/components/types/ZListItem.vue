@@ -22,6 +22,8 @@
 			:readonly="readonly"
 			@input="onTypeChange"
 		></z-object-selector>
+		<!-- ZListItem -> ZObject -> ZList -> ZListItem -->
+		<!-- eslint-disable vue/no-unregistered-components -->
 		<z-object
 			v-else
 			:zobject-id="zobjectId"
@@ -32,8 +34,7 @@
 </template>
 
 <script>
-var Constants = require( '../../Constants.js' ),
-	typeUtils = require( '../../mixins/typeUtils.js' ),
+var typeUtils = require( '../../mixins/typeUtils.js' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	SdButton = require( '../base/Button.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
@@ -41,7 +42,7 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = {
-	name: 'ZListItem',
+	name: 'z-list-item',
 	components: {
 		'z-object-selector': ZObjectSelector,
 		'sd-button': SdButton
@@ -63,12 +64,6 @@ module.exports = {
 			type: String,
 			default: ''
 		}
-	},
-	data: function () {
-		return {
-			Constants: Constants,
-			listTypes: []
-		};
 	},
 	computed: $.extend( {},
 		mapGetters( {
