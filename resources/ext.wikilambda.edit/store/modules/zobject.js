@@ -306,6 +306,17 @@ module.exports = {
 
 			return zid + 'K' + nextKey;
 		},
+		getLatestObjectIndex: function ( state ) {
+			/**
+			 * Return the index of a given ZID.
+			 *
+			 * @param {string} zid
+			 * @return {number} number
+			 */
+			return function ( zid ) {
+				return zobjectTreeUtils.findLatestKey( state.zobject, zid );
+			};
+		},
 		/**
 		 * Return the nextId within the Zobjkect tree. This is required when adding
 		 * complex (nested) object withint he tree

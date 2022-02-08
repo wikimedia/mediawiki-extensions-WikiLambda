@@ -171,6 +171,12 @@ describe( 'zobject Vuex module', function () {
 			expect( zobjectModule.getters.getNextKey( state, { getCurrentZObjectId: 'Z0' } ) ).toEqual( 'Z0K1' );
 		} );
 
+		it( 'Returns latest index for a key', function () {
+			state.zobject = zobjectTree;
+
+			expect( zobjectModule.getters.getLatestObjectIndex( state )( 'Z0' ) ).toEqual( 0 );
+		} );
+
 		it( 'Returns true if the value of the current ZObject is Z0', function () {
 			state.zobject = zobjectTree;
 
