@@ -9,7 +9,9 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 /**
@@ -67,6 +69,14 @@ class ZStringTest extends WikiLambdaIntegrationTestCase {
 		$this->assertFalse( $testObject->isValid() );
 		$this->assertSame( 'Z6', $testObject->getZType() );
 		$this->assertSame( 'Tests', $testObject->getZValue()->getZValue() );
+
+		// Try the constructor with a ZString
+		$innerTestObject = new ZString( 'Test-tacular!' );
+		$outerTestObject = new ZString( $innerTestObject );
+		$this->assertTrue( $outerTestObject->isValid() );
+		$this->assertSame( 'Z6', $outerTestObject->getZType() );
+		$this->assertSame( 'Test-tacular!', $outerTestObject->getZValue() );
+		$this->assertSame( $innerTestObject->getZValue(), $outerTestObject->getZValue() );
 	}
 
 	/**
@@ -86,19 +96,59 @@ class ZStringTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @covers ::__construct
 	 * @covers ::getZValue
+	 * @covers ::getSerialized
 	 */
 	public function testGetZValue() {
 		$testObject = new ZString();
 		$this->assertSame( '', $testObject->getZValue(), 'ZValue of implicit null is the empty string' );
 
+		$testObjectAsObject = $testObject->getSerialized( ZObject::FORM_NORMAL );
+		$this->assertObjectHasAttribute( ZTypeRegistry::Z_OBJECT_TYPE, $testObjectAsObject );
+		$this->assertObjectHasAttribute( ZTypeRegistry::Z_STRING_VALUE, $testObjectAsObject );
+		$this->assertSame( ZTypeRegistry::Z_STRING, $testObjectAsObject->{ ZTypeRegistry::Z_OBJECT_TYPE } );
+		$this->assertSame(
+			'',
+			$testObjectAsObject->{ ZTypeRegistry::Z_STRING_VALUE },
+			'ZValue of implicit null is the empty string'
+		);
+
 		$testObject = new ZString( null );
 		$this->assertSame( null, $testObject->getZValue(), 'ZValue of explicit null is null' );
+		$this->assertSame( null, $testObject->getSerialized(), 'ZValue of explicit null is null' );
+
+		$testObjectAsObject = $testObject->getSerialized( ZObject::FORM_NORMAL );
+		$this->assertObjectHasAttribute( ZTypeRegistry::Z_OBJECT_TYPE, $testObjectAsObject );
+		$this->assertSame( ZTypeRegistry::Z_STRING, $testObjectAsObject->{ ZTypeRegistry::Z_OBJECT_TYPE } );
+		$this->assertFalse(
+			property_exists( $testObjectAsObject, ZTypeRegistry::Z_STRING_VALUE ),
+			'ZValue of a null string is not expressed in normal form'
+		);
 
 		$testObject = new ZString( '' );
 		$this->assertSame( '', $testObject->getZValue(), 'ZValue of an empty string is identical' );
 
+		$testObjectAsObject = $testObject->getSerialized( ZObject::FORM_NORMAL );
+		$this->assertObjectHasAttribute( ZTypeRegistry::Z_OBJECT_TYPE, $testObjectAsObject );
+		$this->assertObjectHasAttribute( ZTypeRegistry::Z_STRING_VALUE, $testObjectAsObject );
+		$this->assertSame( ZTypeRegistry::Z_STRING, $testObjectAsObject->{ ZTypeRegistry::Z_OBJECT_TYPE } );
+		$this->assertSame(
+			'',
+			$testObjectAsObject->{ ZTypeRegistry::Z_STRING_VALUE },
+			'ZValue of an empty string is identical'
+		);
+
 		$testObject = new ZString( 'Test' );
 		$this->assertSame( 'Test', $testObject->getZValue(), 'ZValue of a non-empty string is identical' );
+
+		$testObjectAsObject = $testObject->getSerialized( ZObject::FORM_NORMAL );
+		$this->assertObjectHasAttribute( ZTypeRegistry::Z_OBJECT_TYPE, $testObjectAsObject );
+		$this->assertObjectHasAttribute( ZTypeRegistry::Z_STRING_VALUE, $testObjectAsObject );
+		$this->assertSame( ZTypeRegistry::Z_STRING, $testObjectAsObject->{ ZTypeRegistry::Z_OBJECT_TYPE } );
+		$this->assertSame(
+			'Test',
+			$testObjectAsObject->{ ZTypeRegistry::Z_STRING_VALUE },
+			'ZValue of a non-empty string is identical'
+		);
 	}
 
 	/**
@@ -107,13 +157,19 @@ class ZStringTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testIsValid() {
 		$testObject = new ZString();
-		$this->assertTrue( $testObject->isValid(), 'Null ZStrings are valid' );
+		$this->assertTrue( $testObject->isValid(), 'Blank ZStrings are valid' );
 
 		$testObject = new ZString( '' );
 		$this->assertTrue( $testObject->isValid(), 'Empty ZStrings are valid' );
 
 		$testObject = new ZString( 'Test!' );
 		$this->assertTrue( $testObject->isValid(), 'Non-empty ZStrings are valid' );
+
+		$testObject = new ZString( null );
+		$this->assertFalse( $testObject->isValid(), 'Null ZStrings are not valid' );
+
+		$testObject = new ZString( true );
+		$this->assertFalse( $testObject->isValid(), 'ZStrings of non-strings are not valid' );
 	}
 
 }
