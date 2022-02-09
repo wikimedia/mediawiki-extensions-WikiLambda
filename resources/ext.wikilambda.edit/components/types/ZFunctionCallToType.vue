@@ -29,6 +29,7 @@
 
 <script>
 var Constants = require( '../../Constants.js' ),
+	ZObject = require( '../ZObject.vue' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
@@ -37,6 +38,7 @@ var Constants = require( '../../Constants.js' ),
 // @vue/component
 module.exports = {
 	components: {
+		'z-object': ZObject,
 		'z-object-selector': ZObjectSelector
 	},
 	mixins: [ typeUtils ],
