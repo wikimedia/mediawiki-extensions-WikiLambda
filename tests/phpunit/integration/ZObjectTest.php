@@ -10,8 +10,11 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use FormatJson;
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
@@ -141,27 +144,23 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers ::getHumanReadable()
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getRequiredZids
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::extractHumanReadableZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfReference
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfGlobalKey
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfTypeKey
 	 */
 	public function test_getHumanReadable() {
-		// Insert all the ZIDs that we need in the DB to get their labels and key labels and translate Z111
-		$this->insertZids(
-			[ "Z1", "Z2", "Z3", "Z4", "Z6", "Z11", "Z12", "Z31", "Z32", "Z60", "Z1002", "Z1003", "Z1004" ]
-		);
-
-		$zobject = ZObjectFactory::create( json_decode( ZTestType::TEST_ENCODING ) );
-		$labelized = $zobject->getHumanReadable( $this->makeLanguage( 'en' ) );
-		$this->assertSame(
-			FormatJson::encode( FormatJson::decode( ZTestType::TEST_LABELIZED ), true, FormatJson::UTF8_OK ),
-			FormatJson::encode( $labelized, true, FormatJson::UTF8_OK )
-		);
+		// Insert all the ZIDs that we need in the DB to get their labels
+		$this->insertZids( [ "Z1", "Z11", "Z60", "Z1003" ] );
 
 		$zref = ZObjectFactory::create( "Z11" );
 		$labelizedRef = $zref->getHumanReadable( $this->makeLanguage( 'en' ) );
 		$this->assertSame( 'Monolingual text', $labelizedRef );
 
-		$zlist = ZObjectFactory::create( [ "Z12", "Z1002", "Z1006" ] );
+		$zlist = ZObjectFactory::create( [ "Z11", "Z1003", "Z404" ] );
 		$labelizedList = $zlist->getHumanReadable( $this->makeLanguage( 'en' ) );
-		$this->assertSame( [ 'Multilingual text', 'English', 'Z1006' ], $labelizedList );
+		$this->assertSame( [ 'Monolingual text', 'Spanish', 'Z404' ], $labelizedList );
 
 		$ztext = ZObjectFactory::create( (object)[ "Z1K1" => "Z11", "Z11K1" => "Z1003", "Z11K2" => "ejemplo" ] );
 		$labelizedText = $ztext->getHumanReadable( $this->makeLanguage( 'en' ) );
@@ -169,6 +168,56 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 			FormatJson::encode( [ 'type' => 'Monolingual text', 'language' => 'Spanish', 'text' => 'ejemplo' ] ),
 			FormatJson::encode( $labelizedText )
 		);
+	}
+
+	/**
+	 * @covers ::getHumanReadable()
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getRequiredZids
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::extractHumanReadableZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfReference
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfGlobalKey
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfTypeKey
+	 */
+	public function test_getHumanReadable_testType() {
+		// Insert all the ZIDs that we need in the DB to get their labels and key labels and translate Z111
+		$this->insertZids( [
+			"Z1",
+			"Z2",
+			"Z3",
+			"Z4",
+			"Z6",
+			"Z7",
+			"Z8",
+			"Z11",
+			"Z12",
+			"Z17",
+			"Z31",
+			"Z32",
+			"Z60",
+			"Z1002",
+			"Z1003",
+			"Z1004"
+		] );
+
+		// Assert that ZTestType is labelized correctly
+		$zobject = ZObjectFactory::create( json_decode( ZTestType::TEST_ENCODING ) );
+		$labelized = $zobject->getHumanReadable( $this->makeLanguage( 'en' ) );
+		$this->assertSame(
+			FormatJson::encode( FormatJson::decode( ZTestType::TEST_LABELIZED ), true, FormatJson::UTF8_OK ),
+			FormatJson::encode( $labelized, true, FormatJson::UTF8_OK )
+		);
+	}
+
+	/**
+	 * @covers ::getHumanReadable()
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::extractHumanReadableZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfReference
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfGlobalKey
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfTypeKey
+	 */
+	public function test_getHumanReadable_languages() {
+		// Insert all the ZIDs that we need in the DB to get their labels
+		$this->insertZids( [ "Z1", "Z11", "Z60", "Z1003" ] );
 
 		// Update Z1 and Z11 with labels in English and Spanish
 		$z1Path = dirname( __DIR__, 1 ) . '/test_data/Z1_expanded_labels.json';
@@ -179,10 +228,25 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$data = file_get_contents( $z11Path );
 		$status = $this->editPage( 'Z11', $data, 'Z11 update with labels in Spanish', NS_MAIN );
 
+		$ztext = ZObjectFactory::create( (object)[ "Z1K1" => "Z11", "Z11K1" => "Z1003", "Z11K2" => "ejemplo" ] );
 		$labelizedTextEs = $ztext->getHumanReadable( $this->makeLanguage( 'es' ) );
 		$this->assertSame(
 			FormatJson::encode( [ 'tipo' => 'Texto monolingüe', 'lenguaje' => 'español', 'texto' => 'ejemplo' ] ),
 			FormatJson::encode( $labelizedTextEs )
+		);
+	}
+
+	/**
+	 * @covers ::getHumanReadable()
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::extractHumanReadableZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfReference
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfGlobalKey
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfTypeKey
+	 */
+	public function test_getHumanReadable_nonTranslatableKeys() {
+		// Insert all the ZIDs that we need in the DB to get their labels and key labels and translate Z111
+		$this->insertZids(
+			[ "Z1", "Z3", "Z4", "Z6", "Z11", "Z12", "Z1002" ]
 		);
 
 		// Labelize ZObjects with non-translatable keys (Z4K1, Z3K2, Z4K3)
@@ -241,6 +305,54 @@ EOT;
 		$this->assertSame(
 			$ztypeLabelized,
 			FormatJson::encode( $ztype->getHumanReadable(), true, FormatJson::UTF8_OK )
+		);
+	}
+
+	/**
+	 * @covers ::getHumanReadable()
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::extractHumanReadableZObject
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfReference
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfGlobalKey
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfLocalKey
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfTypeKey
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfFunctionArgument
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfErrorTypeKey
+	 */
+	public function test_getHumanReadable_errors() {
+		// Insert all the ZIDs that we need in the DB to get their labels
+		$this->insertZids(
+			[ "Z1", "Z5", "Z6", "Z7", "Z8", "Z17", "Z50", "Z504", "Z885" ]
+		);
+
+		// Human-readable Errors
+		$zerror = ZErrorFactory::createZErrorInstance(
+			ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+			[ 'data' => 'Z404' ]
+		);
+		$validationZerror = ZErrorFactory::createValidationZError( $zerror );
+		$zerrorLabelized = <<<EOT
+{
+    "type": "Error",
+    "error type": "ZID not found",
+    "error value": {
+        "type": {
+            "type": "Function call",
+            "function": "Errortype to type",
+            "errortype": "ZID not found"
+        },
+        "ZID": {
+            "type": "String",
+            "value": "Z404"
+        }
+    }
+}
+EOT;
+
+		$this->assertInstanceOf( ZError::class, $zerror );
+		$this->assertInstanceOf( ZError::class, $validationZerror );
+		$this->assertSame(
+			$zerrorLabelized,
+			FormatJson::encode( $zerror->getHumanReadable(), true, FormatJson::UTF8_OK )
 		);
 	}
 }

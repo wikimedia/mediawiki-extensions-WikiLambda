@@ -17,6 +17,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectUtils
+ * @group Database
  */
 class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 
@@ -902,6 +903,59 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::extractHumanReadableZObject
+	 * @covers ::getLabelOfGlobalKey
+	 * @covers ::getLabelOfTypeKey
+	 * @covers ::getLabelOfFunctionArgument
+	 * @covers ::getLabelOfErrorTypeKey
+	 */
+	public function testExtractHumanReadableZObject_global() {
+		$this->insertZids( [ 'Z8', 'Z17', 'Z50' ] );
+		$en = $this->makeLanguage( 'en' );
+		$data = [
+			'Z1' => $this->getZPersistentObject( 'Z1' ),
+			'Z504' => $this->getZPersistentObject( 'Z504' ),
+			'Z885' => $this->getZPersistentObject( 'Z885' ),
+		];
+
+		$zobject = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z885","Z885K1":"Z504"},"Z504K1":"Z404"}';
+		$translated = '{"type":{"type":"Z7","Z7K1":"Errortype to type","errortype":"ZID not found"},"ZID":"Z404"}';
+		$result = ZObjectUtils::extractHumanReadableZObject( json_decode( $zobject ), $data, $en );
+		$this->assertSame( $translated, json_encode( $result ) );
+	}
+
+	/**
+	 * @covers ::extractHumanReadableZObject
+	 * @covers ::getLabelOfLocalKey
+	 * @covers ::getLabelOfGlobalKey
+	 * @covers ::getLabelOfTypeKey
+	 * @covers ::getLabelOfErrorTypeKey
+	 */
+	public function testExtractHumanReadableZObject_local() {
+		$this->insertZids( [ 'Z8', 'Z17', 'Z50' ] );
+		$en = $this->makeLanguage( 'en' );
+		$data = [
+			'Z6' => $this->getZPersistentObject( 'Z6' ),
+			'Z504' => $this->getZPersistentObject( 'Z504' )
+		];
+
+		$zobject = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z885","Z885K1":"Z504"},"K1":"Z404"}';
+		$translated = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z885","Z885K1":"ZID not found"},"ZID":"Z404"}';
+		$result = ZObjectUtils::extractHumanReadableZObject( json_decode( $zobject ), $data, $en );
+		$this->assertSame( $translated, json_encode( $result ) );
+
+		$zobject = '{"Z1K1":"Z6","K1":"tasty soup"}';
+		$translated = '{"Z1K1":"String","value":"tasty soup"}';
+		$result = ZObjectUtils::extractHumanReadableZObject( json_decode( $zobject ), $data, $en );
+		$this->assertSame( $translated, json_encode( $result ) );
+
+		$zobject = '{"Z1K1":"Z9","K1":"Z111"}';
+		$translated = '{"Z1K1":"Z9","K1":"Z111"}';
+		$result = ZObjectUtils::extractHumanReadableZObject( json_decode( $zobject ), $data, $en );
+		$this->assertSame( $translated, json_encode( $result ) );
+	}
+
+	/**
 	 * @dataProvider provideGetLabelOfReference
 	 * @covers ::getLabelOfReference
 	 */
@@ -956,16 +1010,17 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @dataProvider provideGetLabelOfKey
-	 * @covers ::getLabelOfKey
+	 * @dataProvider provideGetLabelOfGlobalKey_type
+	 * @covers ::getLabelOfGlobalKey
+	 * @covers ::getLabelOfTypeKey
 	 */
-	public function testGetLabelOfKey( $key, $lang, $expected ) {
+	public function testGetLabelOfGlobalKey_type( $key, $lang, $expected ) {
 		$this->registerLangs( [ 'en', 'fr', 'pcd', 'zh' ] );
 		$ztype = ZObjectFactory::createChild( FormatJson::parse( ZTestType::TEST_ENCODING )->getValue() );
-		$this->assertSame( $expected, ZObjectUtils::getLabelOfKey( $key, $ztype, $lang ) );
+		$this->assertSame( $expected, ZObjectUtils::getLabelOfGlobalKey( $key, $ztype, $lang ) );
 	}
 
-	public function provideGetLabelOfKey() {
+	public function provideGetLabelOfGlobalKey_type() {
 		return [
 			'existing label in existing lang' => [
 				'Z111K1', $this->makeLanguage( 'en' ), 'Demonstration key'
@@ -985,6 +1040,73 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			'non existing label' => [
 				'Z111K3', $this->makeLanguage( 'en' ), 'Z111K3'
 			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideGetLabelOfGlobalKey_error
+	 * @covers ::getLabelOfGlobalKey
+	 * @covers ::getLabelOfErrorTypeKey
+	 */
+	public function testGetLabelOfGlobalKey_error( $key, $lang, $expected ) {
+		$this->insertZids( [ 'Z50' ] );
+		$zerrortype = $this->getZPersistentObject( 'Z504' );
+		$this->assertSame( $expected, ZObjectUtils::getLabelOfGlobalKey( $key, $zerrortype, $lang ) );
+	}
+
+	public function provideGetLabelOfGlobalKey_error() {
+		return [
+			'existing label in existing lang' => [
+				'Z504K1', $this->makeLanguage( 'en' ), 'ZID'
+			],
+			'existing label in non existing lang, english fallback' => [
+				'Z504K1', $this->makeLanguage( 'fr' ), 'ZID'
+			],
+			'non existing label in existing lang' => [
+				'Z504K2', $this->makeLanguage( 'en' ), 'Z504K2'
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideGetLabelOfLocalKey
+	 * @covers ::getLabelOfLocalKey
+	 * @covers ::getLabelOfErrorTypeKey
+	 */
+	public function testGetLabelOfLocalKey( $key, $json, $lang, $expected ) {
+		$this->insertZids( [ 'Z50' ] );
+		$data = [
+			'Z6' => $this->getZPersistentObject( 'Z6' ),
+			'Z11' => $this->getZPersistentObject( 'Z11' ),
+			'Z504' => $this->getZPersistentObject( 'Z504' ),
+		];
+		$zobject = json_decode( $json );
+		$this->assertSame( $expected, ZObjectUtils::getLabelOfLocalKey( $key, $zobject, $data, $lang ) );
+	}
+
+	public function provideGetLabelOfLocalKey() {
+		return [
+			'valid local label' => [
+				'K1', '{ "Z1K1": "Z6", "K1": "tasty soup" }', $this->makeLanguage( 'en' ), 'value'
+			],
+			'invalid local label' => [
+				'K2', '{ "Z1K1": "Z6", "K2": "tasty soup" }', $this->makeLanguage( 'en' ), 'K2'
+			],
+			'valid second local label' => [
+				'K2', '{ "Z1K1": "Z11", "K2": "tasty soup", "K1": "Z1002" }', $this->makeLanguage( 'en' ), 'text'
+			],
+			'local label from errortype' => [
+				'K1',
+				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z885", "Z885K1": "Z504"}, "K1": "Z404" }',
+				$this->makeLanguage( 'en' ),
+				'ZID'
+			],
+			'invalid local label from errortype' => [
+				'K2',
+				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z885", "Z885K1": "Z504"}, "K1": "Z404" }',
+				$this->makeLanguage( 'en' ),
+				'K2'
+			]
 		];
 	}
 }
