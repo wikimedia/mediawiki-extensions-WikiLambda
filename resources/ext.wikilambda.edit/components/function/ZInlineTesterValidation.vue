@@ -48,17 +48,13 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	ZFunctionCall = require( '../types/ZFunctionCall.vue' ),
-	ZObjectSelector = require( '../ZObjectSelector.vue' ),
-	ZReference = require( '../types/ZReference.vue' ),
 	SdButton = require( '../base/Button.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = {
 	components: {
-		'sd-button': SdButton,
-		'z-object-selector': ZObjectSelector,
-		'z-reference': ZReference
+		'sd-button': SdButton
 	},
 	extends: ZFunctionCall,
 	provide: function () {

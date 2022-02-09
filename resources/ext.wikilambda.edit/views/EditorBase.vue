@@ -106,7 +106,6 @@
 var Constants = require( '../Constants.js' ),
 	SdMessage = require( '../components/base/Message.vue' ),
 	SdButton = require( '../components/base/Button.vue' ),
-	VueRouter = require( '../../lib/vue-router/vue-router.common.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
@@ -114,8 +113,7 @@ var Constants = require( '../Constants.js' ),
 module.exports = {
 	components: {
 		'sd-message': SdMessage,
-		'sd-button': SdButton,
-		'router-link': VueRouter
+		'sd-button': SdButton
 	},
 	props: {
 		steps: {

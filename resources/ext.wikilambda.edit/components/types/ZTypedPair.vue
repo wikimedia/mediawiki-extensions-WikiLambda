@@ -29,8 +29,6 @@
 		<template v-else>
 			<div>
 				<label>{{ $i18n( 'wikilambda-ztyped-pair-key-label' ) }}: ( {{ Key1Label }} ):</label>
-				<!-- ZTypedPair -> ZObject -> ZTypedPair -->
-				<!-- eslint-disable vue/no-unregistered-components -->
 				<z-object
 					:zobject-id="zTypedPairKey1.id"
 					:persistent="false"
@@ -39,8 +37,6 @@
 			</div>
 			<div>
 				<label>{{ $i18n( 'wikilambda-ztyped-pair-value-label' ) }}: ( {{ Key2Label }} ):</label>
-				<!-- ZTypedPair -> ZObject -> ZTypedPair -->
-				<!-- eslint-disable vue/no-unregistered-components -->
 				<z-object
 					:zobject-id="zTypedPairKey2.id"
 					:persistent="false"
