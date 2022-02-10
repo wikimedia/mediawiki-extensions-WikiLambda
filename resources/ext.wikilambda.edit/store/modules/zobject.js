@@ -711,12 +711,17 @@ module.exports = {
 		 *
 		 * @param {Object} context
 		 * @param {Array} zObjectItems
+		 * @return {Array} newObjectIds
 		 */
 		addZObjects: function ( context, zObjectItems ) {
+			var newObjectIds = [];
 			zObjectItems.forEach( function ( item ) {
 				item.id = zobjectTreeUtils.getNextObjectId( context.state.zobject );
 				context.commit( 'addZObject', item );
+				newObjectIds.push( item.id );
 			} );
+
+			return newObjectIds;
 		},
 		/**
 		 * Reset an object to its initial state
