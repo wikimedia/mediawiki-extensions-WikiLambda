@@ -307,7 +307,6 @@ class ZObjectFactory {
 		$objectVars = get_object_vars( $object );
 
 		// If typeZObject is a ZReference and a built-in, build args and call constructor
-		// FIXME (T298114): build child ZObjects from $objectVars
 		if ( ( $typeZObject instanceof ZReference ) && ( $typeRegistry->isZTypeBuiltIn( $typeZid ) ) ) {
 			$typeName = $typeRegistry->getZObjectTypeFromKey( $typeZid );
 			$typeClass = "MediaWiki\\Extension\\WikiLambda\\ZObjects\\$typeName";
@@ -317,7 +316,6 @@ class ZObjectFactory {
 		}
 
 		// If typeZObject is a ZFunctionCall and a built-in, build args and call constructor
-		// FIXME (T298114): build child ZObjects from $objectVars
 		if ( ( $typeZObject instanceof ZFunctionCall ) && ( $typeRegistry->isZFunctionBuiltIn( $typeZid ) ) ) {
 			$builtinName = $typeRegistry->getZFunctionBuiltInName( $typeZid );
 			$builtinClass = "MediaWiki\\Extension\\WikiLambda\\ZObjects\\$builtinName";
@@ -354,7 +352,8 @@ class ZObjectFactory {
 			);
 		}
 
-		return new ZObject( $typeZObject, $objectVars );
+		$objectArgs = self::createKeyValues( $objectVars, "ZObject" );
+		return new ZObject( ...$objectArgs );
 	}
 
 	/**

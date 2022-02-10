@@ -15,7 +15,9 @@ use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -32,7 +34,6 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testGetValueByKey_stringValue() {
 		$testObject = ZObjectFactory::create( 'foo' );
-		$testObject = $testObject->getValueByKey( 'Z6K1' );
 		$this->assertSame( 'Z6', $testObject->getZType() );
 		$this->assertSame( 'foo', $testObject->getZValue() );
 	}
@@ -42,8 +43,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testGetValueByKey_undefinedKey() {
 		$testObject = ZObjectFactory::create( 'foo' );
-		$testObject = $testObject->getValueByKey( 'Z1K999' );
-		$this->assertNull( $testObject );
+		$this->assertNull( $testObject->getValueByKey( 'Z1K999' ) );
 	}
 
 	/**
@@ -86,6 +86,64 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$testZObject = ZObjectFactory::createChild( $testObject );
 		$this->assertInstanceOf( ZObject::class, $testZObject );
 		$this->assertSame( 'Z111', $testZObject->getZType() );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
+	 * @covers ::__construct
+	 * @covers ::isValid
+	 * @covers ::isTypeReference
+	 * @covers ::isTypeFunctionCall
+	 * @covers ::isBuiltin
+	 * @covers ::getZType
+	 * @covers ::getZTypeObject
+	 * @covers ::getDefinition
+	 * @covers ::getValueByKey
+	 */
+	public function testConstruct_persistedType() {
+		$this->insertZids( [ 'Z60' ] );
+
+		$testJson = '{ "Z1K1": "Z60", "Z60K1": { "Z1K1": "Z6", "Z6K1": "tasty soup" } }';
+		$testObject = ZObjectFactory::createChild( json_decode( $testJson ) );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertTrue( $testObject->isTypeReference() );
+		$this->assertFalse( $testObject->isTypeFunctionCall() );
+		$this->assertFalse( $testObject->isBuiltin() );
+		$this->assertSame( 'Z60', $testObject->getZType() );
+		$this->assertInstanceOf( ZString::class, $testObject->getValueByKey( 'Z60K1' ) );
+		$this->assertNull( $testObject->getValueByKey( 'Z60K2' ) );
+		$this->assertInstanceOf( ZReference::class, $testObject->getZTypeObject() );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
+	 * @covers ::__construct
+	 * @covers ::isValid
+	 * @covers ::isTypeReference
+	 * @covers ::isTypeFunctionCall
+	 * @covers ::isBuiltin
+	 * @covers ::getZType
+	 * @covers ::getZTypeObject
+	 * @covers ::getDefinition
+	 * @covers ::getValueByKey
+	 */
+	public function testConstruct_functionCallType() {
+		$this->insertZids( [ 'Z8', 'Z17', 'Z882' ] );
+
+		$testJson = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z882", "Z882K1": "Z6", "Z882K2": "Z6" },'
+			. '"Z882K1": { "Z1K1": "Z6", "Z6K1": "soup, soup" },'
+			. '"Z882K2": { "Z1K1": "Z6", "Z6K1": "oh, tasty soup, soup" } }';
+
+		$testObject = ZObjectFactory::createChild( json_decode( $testJson ) );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertFalse( $testObject->isTypeReference() );
+		$this->assertTrue( $testObject->isTypeFunctionCall() );
+		$this->assertFalse( $testObject->isBuiltin() );
+		$this->assertSame( 'Z882', $testObject->getZType() );
+		$this->assertInstanceOf( ZString::class, $testObject->getValueByKey( 'Z882K1' ) );
+		$this->assertInstanceOf( ZString::class, $testObject->getValueByKey( 'Z882K2' ) );
+		$this->assertNull( $testObject->getValueByKey( 'Z882K3' ) );
+		$this->assertInstanceOf( ZFunctionCall::class, $testObject->getZTypeObject() );
 	}
 
 	/**
@@ -355,4 +413,5 @@ EOT;
 			FormatJson::encode( $zerror->getHumanReadable(), true, FormatJson::UTF8_OK )
 		);
 	}
+
 }

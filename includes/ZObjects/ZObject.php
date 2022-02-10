@@ -14,8 +14,6 @@ use FormatJson;
 use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
-use MediaWiki\Extension\WikiLambda\ZErrorException;
-use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use RequestContext;
 
@@ -49,6 +47,7 @@ class ZObject {
 					'type' => ZTypeRegistry::HACK_REFERENCE_TYPE,
 				],
 			],
+			'additionalKeys' => true
 		];
 	}
 
@@ -83,12 +82,12 @@ class ZObject {
 			return false;
 		}
 
-		// TODO (T296822): Z1K1 can currently take a Z9 to a valid type, but we should
-		// also contemplate validity of this value to be a function call.
+		// Validate if type is a Reference
 		if ( self::isTypeReference() ) {
 			return ZObjectUtils::isValidZObjectReference( $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ]->getZValue() );
 		}
 
+		// Validate if type is a Function Call
 		if ( self::isTypeFunctionCall() ) {
 			$functionCallInner = $this->data[ ZTypeRegistry::Z_OBJECT_TYPE ];
 			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall $functionCallInner';
@@ -105,20 +104,11 @@ class ZObject {
 	/**
 	 * Fetch value of given key from the current ZObject.
 	 *
-	 * @param string $keyQuery The key to search for.
+	 * @param string $key The key to search for.
 	 * @return ZObject|null The value of the supplied key as a ZObject, null if key is undefined.
-	 * @throws ZErrorException
 	 */
-	public function getValueByKey( string $keyQuery ) {
-		$keys = $this->data;
-		if ( array_key_exists( $keyQuery, $keys ) ) {
-			$value = $keys[ $keyQuery ];
-			// If value is ZObject, return it as it is.
-			// If value is string, it will be a terminal ZObject (Z6 or Z9), return the ZObject instance.
-			return ZObjectFactory::createChild( $value );
-		} else {
-			return null;
-		}
+	public function getValueByKey( string $key ) {
+		return $this->data[ $key ] ?? null;
 	}
 
 	/**
