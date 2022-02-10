@@ -731,8 +731,8 @@ class ZObjectUtils {
 	}
 
 	/**
-	 * Returns the natural language label of a given type or error key in the language
-	 * passed as parameter or available fallback languages. If not available,
+	 * Returns the natural language label of a given type key, function argument or error key
+	 * in the language passed as parameter or available fallback languages. If not available,
 	 * returns the untranslated key Id.
 	 *
 	 * @param string $key
@@ -740,19 +740,64 @@ class ZObjectUtils {
 	 * @param Language $lang
 	 * @return string
 	 */
-	public static function getLabelOfKey( $key, $zobject, $lang ): string {
+	public static function getLabelOfGlobalKey( $key, $zobject, $lang ): string {
 		$ztype = $zobject->getInternalZType();
 
 		if ( $ztype === ZTypeRegistry::Z_TYPE ) {
 			return self::getLabelOfTypeKey( $key, $zobject, $lang );
 		}
 
-		$errorRegistry = ZErrorTypeRegistry::singleton();
+		if ( $ztype === ZTypeRegistry::Z_FUNCTION ) {
+			return self::getLabelOfFunctionArgument( $key, $zobject, $lang );
+		}
+
 		if ( $ztype === ZTypeRegistry::Z_ERRORTYPE ) {
 			return self::getLabelOfErrorTypeKey( $key, $zobject, $lang );
 		}
 
 		// Not a type nor an error type, return untranslated key Id
+		return $key;
+	}
+
+	/**
+	 *
+	 * @param string $key
+	 * @param \stdClass $zobject
+	 * @param ZPersistentObject[] $data
+	 * @param Language $lang
+	 * @return string
+	 */
+	public static function getLabelOfLocalKey( $key, $zobject, $data, $lang ): string {
+		$type = $zobject->{ ZTypeRegistry::Z_OBJECT_TYPE };
+
+		// If type is a reference, desambiguate and find the key in its type definition
+		if ( is_string( $type ) && ( array_key_exists( $type, $data ) ) ) {
+			$globalKey = "$type$key";
+			$translatedKey = self::getLabelOfGlobalKey( $globalKey, $data[ $type ], $lang );
+			if ( $translatedKey !== $globalKey ) { return $translatedKey;
+			}
+		}
+
+		// If type is a function call,
+		if ( is_object( $type ) && property_exists( $type, ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ) ) {
+			$function = $type->{ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION };
+			// TODO (T300509): Function is literal, not Zid
+
+			// Builtin Z885:
+			if ( is_string( $function ) && ( $function === ZTypeRegistry::Z_FUNCTION_ERRORTYPE_TO_TYPE ) ) {
+				$errorType = $type->{ ZTypeRegistry::Z_FUNCTION_ERRORTYPE_TYPE };
+				if ( array_key_exists( $errorType, $data ) ) {
+					$globalKey = "$errorType$key";
+					$translatedKey = self::getLabelOfErrorTypeKey( $globalKey, $data[ $errorType ], $lang );
+					if ( $translatedKey !== $globalKey ) { return $translatedKey;
+					}
+				}
+			}
+
+			// Builtin Z881: we don't need to translate key
+			// TODO (T301451): Non builtins, request function call execution from the orchestrator
+		}
+
 		return $key;
 	}
 
@@ -829,6 +874,61 @@ class ZObjectUtils {
 	}
 
 	/**
+	 * Returns the natural language label of a given ZArgument in the language
+	 * passed as parameter or available fallback languages. If not available,
+	 * returns the non-translated ZKey.
+	 *
+	 *
+	 * @param string $key
+	 * @param ZPersistentObject $zobject
+	 * @param Language $lang
+	 * @return string
+	 */
+	public static function getLabelOfFunctionArgument( $key, $zobject, $lang ): string {
+		$zfunction = $zobject->getInnerZObject();
+		if ( !( $zfunction->getZType() === ZTypeRegistry::Z_FUNCTION ) ) {
+			return $key;
+		}
+
+		// FIXME (T300509): It might be convenient to create built-in ZFunction and ZArgumentDeclaration
+		// objects and remove all the extra complicated getValueByKey followed by type checks.
+
+		try {
+			$zargs = $zfunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_ARGUMENTS );
+		} catch ( ZErrorException $e ) {
+			// list of arguments is not wellformed
+			return $key;
+		}
+
+		if ( $zargs === null ) {
+			// list of arguments is not present
+			return $key;
+		}
+
+		// FIXME (T298133): list of arguments will be a ZGenericList
+		if ( !( $zargs instanceof ZList ) ) {
+			// list of arguments is something else than a list?
+			return $key;
+		}
+
+		foreach ( $zargs->getZListAsArray() as $zarg ) {
+			$zargid = $zarg->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_ID );
+
+			if ( $key === $zargid->getZValue() ) {
+				$labels = $zarg->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_LABEL );
+				$label = $labels->getStringForLanguageOrEnglish( $lang, false );
+				if ( $label === null ) {
+					return $key;
+				}
+				return $label;
+			}
+		}
+
+		// key not found in argument list
+		return $key;
+	}
+
+	/**
 	 * Translates a serialized ZObject from Zids and ZKeys to natural language in the
 	 * language passed as parameter or available fallback languages.
 	 *
@@ -856,12 +956,22 @@ class ZObjectUtils {
 		if ( is_object( $zobject ) ) {
 			$labelized = [];
 			foreach ( $zobject as $key => $value ) {
-				$typeZid = self::getZObjectReferenceFromKey( $key );
-				if ( array_key_exists( $typeZid, $data ) ) {
-					$labelizedKey = self::getLabelOfKey( $key, $data[ $typeZid ], $lang );
+				// Labelize key:
+				if ( self::isValidZObjectGlobalKey( $key ) ) {
+					// If $key is a global key (ZnK1, ZnK2...), typeZid contains the
+					// Zid where we can find the key definition.
+					$typeZid = self::getZObjectReferenceFromKey( $key );
+					if ( array_key_exists( $typeZid, $data ) ) {
+						$labelizedKey = self::getLabelOfGlobalKey( $key, $data[ $typeZid ], $lang );
+					} else {
+						$labelizedKey = $key;
+					}
 				} else {
-					$labelizedKey = $key;
+					// If $key is local, get the type from $zobject[ Z1K1 ]
+					$labelizedKey = self::getLabelOfLocalKey( $key, $zobject, $data, $lang );
 				}
+
+				// Labelize value:
 				if ( !in_array( $key, ZTypeRegistry::IGNORE_KEY_VALUES_FOR_LABELLING ) ) {
 					$labelizedValue = self::extractHumanReadableZObject( $value, $data, $lang );
 					$labelized[ $labelizedKey ] = $labelizedValue;

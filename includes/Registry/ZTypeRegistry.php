@@ -103,6 +103,11 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_IMPLEMENTATION_CODE = 'Z14K3';
 	public const Z_IMPLEMENTATION_BUILTIN = 'Z14K4';
 
+	public const Z_ARGUMENTDECLARATION = 'Z17';
+	public const Z_ARGUMENTDECLARATION_TYPE = 'Z17K1';
+	public const Z_ARGUMENTDECLARATION_ID = 'Z17K2';
+	public const Z_ARGUMENTDECLARATION_LABEL = 'Z17K3';
+
 	public const Z_TESTER = 'Z20';
 	public const Z_TESTER_FUNCTION = 'Z20K1';
 	public const Z_TESTER_CALL = 'Z20K2';
@@ -181,7 +186,6 @@ class ZTypeRegistry extends ZObjectRegistry {
 
 	// These consts are currently only used by ZObjectStore to prohibit creation, and are not (yet) built-in.
 	public const Z_CODE = 'Z16';
-	public const Z_ARGUMENTDECLARATION = 'Z17';
 	public const Z_ARGUMENTREFERENCE = 'Z18';
 	public const Z_NULL = 'Z23';
 	public const Z_BOOLEAN = 'Z40';

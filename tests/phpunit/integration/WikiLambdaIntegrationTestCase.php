@@ -13,6 +13,8 @@ use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\MediaWikiServices;
 use MediaWikiIntegrationTestCase;
 
@@ -51,6 +53,18 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 			$data = file_get_contents( "$dataPath/$zid.json" );
 			$this->editPage( $zid, $data, 'Test ZObject creation', NS_MAIN );
 		}
+	}
+
+	/**
+	 * Return the ZPersistentObject representation of a data object from the data collection directory
+	 *
+	 * @param string $zid
+	 * @return ZPersistentObject
+	 */
+	protected function getZPersistentObject( $zid ): ZPersistentObject {
+		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions';
+		$data = file_get_contents( "$dataPath/$zid.json" );
+		return ZObjectFactory::createChild( json_decode( $data ) );
 	}
 
 	/**
