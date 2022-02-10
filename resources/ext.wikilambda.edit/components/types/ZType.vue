@@ -22,8 +22,6 @@
 			>
 				<span>
 					<label>{{ zTypeKeylabel }}</label>
-					<!-- ZType -> ZObject -> ZType -->
-					<!-- eslint-disable vue/no-unregistered-components -->
 					<z-object
 						:zobject-id="zObjectKeysId"
 						:readonly="readonly"
@@ -31,8 +29,6 @@
 				</span>
 				<span>
 					<label>{{ zTypeValidatorlabel }}</label>
-					<!-- ZType -> ZObject -> ZType -->
-					<!-- eslint-disable vue/no-unregistered-components -->
 					<z-object
 						:zobject-id="zTypeValidatorId"
 						:readonly="readonly"

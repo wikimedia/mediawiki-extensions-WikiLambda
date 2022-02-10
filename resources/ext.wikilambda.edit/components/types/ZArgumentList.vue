@@ -26,14 +26,10 @@
 <script>
 var mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
-	ZList = require( './ZList.vue' ),
-	ZListItem = require( './ZListItem.vue' );
+	ZList = require( './ZList.vue' );
 
 // @vue/component
 module.exports = {
-	components: {
-		'z-list-item': ZListItem
-	},
 	extends: ZList,
 	computed: mapGetters( [ 'getNextObjectId' ] ),
 	methods: $.extend( mapActions( [ 'addZArgument' ] ), {

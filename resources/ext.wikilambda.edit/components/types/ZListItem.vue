@@ -22,8 +22,6 @@
 			:readonly="readonly"
 			@input="onTypeChange"
 		></z-object-selector>
-		<!-- ZListItem -> ZObject -> ZList -> ZListItem -->
-		<!-- eslint-disable vue/no-unregistered-components -->
 		<z-object
 			v-else
 			:zobject-id="zobjectId"

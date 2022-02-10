@@ -7,8 +7,6 @@
 	-->
 	<div class="ext-wikilambda-zresponseenvelope">
 		<div>
-			<!-- ZResponseEnvelope -> ZObjectKey -> ZObject -> ZResponseEnvelope -->
-			<!-- eslint-disable vue/no-unregistered-components -->
 			<z-object-key
 				:zobject-id="zFirst.id"
 				:parent-type="Constants.Z_RESPONSEENVELOPE"
@@ -24,8 +22,6 @@
 		</div>
 		<div v-if="showSecond">
 			<hr>
-			<!-- ZResponseEnvelope -> ZObjectKey -> ZObject -> ZResponseEnvelope -->
-			<!-- eslint-disable vue/no-unregistered-components -->
 			<z-object-key
 				:zobject-id="zSecond.id"
 				:parent-type="Constants.Z_RESPONSEENVELOPE"
@@ -38,10 +34,14 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
+	ZObjectKey = require( '../ZObjectKey.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = {
+	components: {
+		'z-object-key': ZObjectKey
+	},
 	mixins: [ typeUtils ],
 	props: {
 		zobjectId: {

@@ -47,8 +47,6 @@
 			v-if="implMode === 'code'"
 			:zobject-id="zCodeId"
 		></z-code>
-		<!-- ZImplementation -> ZObject -> ZImplementation -->
-		<!-- eslint-disable vue/no-unregistered-components -->
 		<z-object
 			v-if="implMode === 'composition'"
 			:zobject-id="zCompositionId"
