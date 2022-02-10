@@ -91,6 +91,7 @@
 	"wikilambda-editor-zobject-addkey": "Label for button to add a new ZKey to a ZObject.\n\n{{doc-wikilambda}}",
 	"wikilambda-editor-zobject-removekey-tooltip": "Tooltip shown on the button to remove an entry from a ZObject.\n\n{{doc-wikilambda}}",
 	"wikilambda-editor-zobject-clearitem-tooltip": "Tooltip shown on the button to reset an entry in a ZObject to blank.\n\n{{doc-wikilambda}}",
+	"wikilambda-editor-fn-edit-definition-tooltip-content": "Tooltip shown when a non-admin is trying to modify a published function definition",
 	"wikilambda-editor-label-select-programming-language-label": "Label for programming language selection dropdown.",
 	"wikilambda-modeselector-reference": "{{notranslate}}\nLabel for button to select reference",
 	"wikilambda-modeselector-literal": "{{notranslate}}\nLabel for button to select literal",

@@ -9,6 +9,8 @@
 		<button
 			class="ext-wikilambda-tooltip_button"
 			@click="toggleVisibility"
+			@mouseover="isVisible = true"
+			@mouseleave="isVisible = false"
 		>
 			<sd-icon
 				v-if="icon"
@@ -40,7 +42,7 @@ module.exports = {
 	components: {
 		'sd-icon': SdIcon
 	},
-	// TODO (T298491): add prop for interaction type (hover vs. click)
+	// TODO (T301481): smart positioning of tooltip
 	props: {
 		// Icon path or object. See Icon.vue for valid icon formats.
 		icon: {
@@ -50,7 +52,7 @@ module.exports = {
 		},
 		iconColor: {
 			type: String,
-			default: '#A2A9B1'
+			default: '#00000'
 		},
 		header: {
 			type: String,
@@ -99,6 +101,7 @@ module.exports = {
 		box-shadow: 1px 1px @wmui-color-base50;
 		border: solid 1px @wmui-color-base50;
 		font-weight: normal;
+		z-index: 100;
 
 		&_header {
 			font-weight: bold;

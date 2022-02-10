@@ -6,12 +6,16 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-function-definition-inputs">
-		<div>
+		<div class="ext-wikilambda-function-definition-inputs_label">
 			<label class="ext-wikilambda-app__text-regular">
 				{{ $i18n( 'wikilambda-function-definition-inputs-label' ) }}
 			</label>
+			<tooltip
+				v-if="isEditing"
+				:icon="tooltipIcon"
+				:content="tooltipMessage"
+			></tooltip>
 		</div>
-
 		<div class="ext-wikilambda-function-definition-inputs__inputs">
 			<function-definition-inputs-item
 				v-for="( argument, index ) in zArgumentList"
@@ -33,13 +37,15 @@ var Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	functionDefinitionInputsItem = require( './function-definition-inputs-item.vue' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
+	Tooltip = require( '../../base/Tooltip.vue' ),
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
 module.exports = {
 	name: 'function-definition-inputs',
 	components: {
-		'function-definition-inputs-item': functionDefinitionInputsItem
+		'function-definition-inputs-item': functionDefinitionInputsItem,
+		tooltip: Tooltip
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -53,6 +59,17 @@ module.exports = {
 		zLang: {
 			type: String,
 			default: ''
+		},
+		isEditing: {
+			type: Boolean
+		},
+		tooltipIcon: {
+			type: [ String, Object ],
+			default: null,
+			required: false
+		},
+		tooltipMessage: {
+			type: String
 		}
 	},
 	computed: $.extend( mapGetters( [
@@ -119,6 +136,10 @@ module.exports = {
 
 	& > div:first-of-type {
 		width: 153px;
+	}
+
+	&_label {
+		display: flex;
 	}
 }
 </style>

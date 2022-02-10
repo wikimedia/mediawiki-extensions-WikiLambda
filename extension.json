@@ -402,7 +402,8 @@
 				"wikilambda-editor-fn-step-implementations",
 				"wikilambda-optional",
 				"wikilambda-editor-fn-tests-tooltip-header",
-				"wikilambda-editor-fn-tests-tooltip-content"
+				"wikilambda-editor-fn-tests-tooltip-content",
+				"wikilambda-editor-fn-edit-definition-tooltip-content"
 			]
 		}
 	},
