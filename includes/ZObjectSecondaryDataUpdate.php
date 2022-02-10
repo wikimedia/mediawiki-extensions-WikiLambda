@@ -98,8 +98,6 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			$zFunction = null;
 
 			if ( $ztype === ZTypeRegistry::Z_IMPLEMENTATION ) {
-				// FIXME (T298114): getValueByKey might throw exceptions, we should handle this.
-				// Will be resolved with T298114, as getValueByKey won't throw unexpected exceptions.
 				$zFunction = $this->zObject->getInnerZObject()->getValueByKey(
 					ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION
 				);
