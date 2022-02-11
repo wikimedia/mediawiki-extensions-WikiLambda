@@ -252,12 +252,12 @@ class ZObjectUtils {
 		$record = get_object_vars( $input );
 		$record = array_combine( array_map( 'trim', array_keys( $record ) ), $record );
 
-		$z1k1 = self::canonicalize( $record[ ZTypeRegistry::Z_OBJECT_TYPE ] ?? null );
-		if ( is_string( $z1k1 ) ) {
+		$type = self::canonicalize( $record[ ZTypeRegistry::Z_OBJECT_TYPE ] ?? null );
+		if ( is_string( $type ) ) {
 			foreach ( $record as $key => $value ) {
 				if ( preg_match( '/^K[1-9]\d*$/', $key ) ) {
 					// $key is guaranteed to be unique, so $globalKey is unique as well
-					$globalKey = $z1k1 . $key;
+					$globalKey = $type . $key;
 					if ( !array_key_exists( $globalKey, $record ) ) {
 						$record[$globalKey] = $value;
 						unset( $record[$key] );
