@@ -702,7 +702,7 @@ class ZObjectStore {
 			/* FROM */ 'wikilambda_zobject_function_join',
 			/* SELECT */ 'wlzf_zfunction_zid',
 			/* WHERE */ [
-				'wlzf_type' => 'Z14',
+				'wlzf_type' => ZTypeRegistry::Z_IMPLEMENTATION,
 			],
 			__METHOD__
 		);

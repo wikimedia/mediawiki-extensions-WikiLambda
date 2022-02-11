@@ -336,20 +336,20 @@ class ZErrorFactory {
 			return false;
 		}
 
-		if ( !array_key_exists( 'Z1K1', $data ) ) {
+		if ( !array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $data ) ) {
 			return false;
 		}
 
-		if ( is_string( $data['Z1K1'] ) ) {
-			return $data['Z1K1'];
+		if ( is_string( $data[ ZTypeRegistry::Z_OBJECT_TYPE ] ) ) {
+			return $data[ ZTypeRegistry::Z_OBJECT_TYPE ];
 		}
 
 		if (
-			array_key_exists( 'Z1K1', $data['Z1K1' ] ) &&
-			( $data['Z1K1']['Z1K1'] === 'Z9' ) &&
-			array_key_exists( 'Z9K1', $data['Z1K1'] )
+			array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $data[ZTypeRegistry::Z_OBJECT_TYPE ] ) &&
+			( $data[ ZTypeRegistry::Z_OBJECT_TYPE ][ ZTypeRegistry::Z_OBJECT_TYPE ] === ZTypeRegistry::Z_REFERENCE ) &&
+			array_key_exists( ZTypeRegistry::Z_REFERENCE_VALUE, $data[ ZTypeRegistry::Z_OBJECT_TYPE  ] )
 		) {
-			return $data['Z1K1']['Z9K1'];
+			return $data[ ZTypeRegistry::Z_OBJECT_TYPE ][ ZTypeRegistry::Z_REFERENCE_VALUE ];
 		}
 
 		return false;
