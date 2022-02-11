@@ -113,6 +113,10 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_TESTER_CALL = 'Z20K2';
 	public const Z_TESTER_VALIDATION = 'Z20K3';
 
+	public const Z_RESPONSEENVELOPE = 'Z22';
+	public const Z_RESPONSEENVELOPE_VALUE = 'Z22K1';
+	public const Z_RESPONSEENVELOPE_METADATA = 'Z22K2';
+
 	public const Z_MONOLINGUALSTRINGSET = 'Z31';
 	public const Z_MONOLINGUALSTRINGSET_LANGUAGE = 'Z31K1';
 	public const Z_MONOLINGUALSTRINGSET_VALUE = 'Z31K2';
