@@ -4,10 +4,6 @@
 			"Jackiezelaya"
 		]
 	},
-	"apihelp-wikilambda_function_call-example-if": "Invocar Z802 integrado (If) con predicado false",
-	"apihelp-wikilambda_function_call-example-native-js-code": "Invoca usuario-código de Javascript escrito",
-	"apihelp-wikilambda_function_call-example-native-python-code": "Invocar código Python 3 escrito por el usuario",
-	"apierror-query+wikilambdaload_zobjects-notzobject": "ZObjectStore cargó un no-ZObject para '$1'.",
 	"apihelp-query+wikilambdafn_search-summary": "Esta lista de consultas de API busca los IDENTIFICADORES de todos los ZObjects asociados con un identificador de función Z proporcionado",
 	"apihelp-query+wikilambdafn_search-example-simple": "Buscar identificadores de ZImplementation que están asociados a un identificador de ZFunction determinado",
 	"apihelp-query+wikilambdafn_search-param-zfunction_id": "El ID de función Z para buscar",
