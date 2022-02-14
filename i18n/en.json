@@ -62,6 +62,7 @@
 	"wikilambda-publishnew": "Publish",
 	"wikilambda-published": "Published!",
 	"wikilambda-cancel": "Cancel",
+	"wikilambda-confirm": "Confirm",
 	"wikilambda-savenew": "Save",
 	"wikilambda-fallback": "Fallback editor",
 	"wikilambda-publishchanges": "Publish changes",
@@ -101,6 +102,8 @@
 	"wikilambda-implementation-selector": "Select an implementation",
 	"wikilambda-implementation-none-found": "No implementations found.",
 	"wikilambda-implementation-create-new": "Create a new implementation",
+	"wikilambda-function-are-you-sure-dialog-header": "Are you sure?",
+	"wikilambda-function-are-you-sure-dialog-description": "Are you sure you want to leave editing mode without publishing first?",
 	"wikilambda-functioncall-error": "Function call error: $1",
 	"wikilambda-functioncall-error-category": "Pages with errored Wikifunctions calls",
 	"wikilambda-functioncall-error-category-desc": "Pages with calls to Wikifunctions that result in a general error",
@@ -227,5 +230,7 @@
 	"wikilambda-ztyped-map-placeholder": "Select a map type",
 	"wikilambda-ztyped-map-description": "Map of types",
 	"wikilambda-zerror": "ZError of type $1",
-	"wikilambda-optional": "optional"
+	"wikilambda-optional": "optional",
+	"wikilambda-continue-editing": "Continue editing",
+	"wikilambda-discard-edits": "Discard edits"
 }

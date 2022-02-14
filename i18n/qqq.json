@@ -70,6 +70,9 @@
 	"wikilambda-publishnew": "Label for the submit button when creating a ZObject on a public wiki\n{{identical|Publish}}",
 	"wikilambda-published": "Label for the publish button after clicking and publishing a function",
 	"wikilambda-cancel": "Label for the cancel button\n\n{{Identical|Cancel}}",
+	"wikilambda-confirm": "Label for the confirm button",
+	"wikilambda-discard-edits": "Label for the discard edits button",
+	"wikilambda-continue-editing": "Label for the continue editing button",
 	"wikilambda-savenew": "Label for the submit button when creating a ZObject on a private wiki\n{{identical|Save}}",
 	"wikilambda-fallback": "Label for the Fallback editor button",
 	"wikilambda-publishchanges": "Label for the submit button when updating an existing ZObject on a public wiki",
@@ -235,5 +238,7 @@
 	"wikilambda-ztyped-map-placeholder": "Placeholder text for map instances.\n\n{{Doc-wikilambda}}",
 	"wikilambda-ztyped-map-description": "Description used to inform user of what types are used in a map instance.\n\n{{Doc-wikilambda}}",
 	"wikilambda-zerror": "Message that informs that a ZError of a given type has been returned.\n\n{{Doc-wikilambda}}",
-	"wikilambda-optional": "Word used to inform the user that a given input is optional"
+	"wikilambda-optional": "Word used to inform the user that a given input is optional",
+	"wikilambda-function-are-you-sure-dialog-header": "Header for dialog confirming leaving edit mode without publishing",
+	"wikilambda-function-are-you-sure-dialog-description": "Description for dialog confirming leaving edit mode without publishing"
 }
