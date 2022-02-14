@@ -23,6 +23,7 @@
 	"apihelp-wikilambda_function_call-example-native-python-code": "קריאה לקוד Python 3 שנכתב על־ידי משתמש",
 	"apihelp-wikilambda_function_call-example-user-defined-python": "קריאה לפונקציה בפייתון באמצעות סוג מוגדר על־ידי משתמש.",
 	"apihelp-wikilambda_function_call-example-user-defined-javascript": "קריאה לפונקציה ב־JavaScript באמצעות סוג מוגדר על־ידי משתמש.",
+	"apihelp-wikilambda_function_call-example-user-defined-validation": "לקרוא לפונקציית אימות מוגדרת על־ידי משתמש וממומשת בפייתון.",
 	"apihelp-wikilambda_function_call-summary": "קריאה לפונקציה באמצעות קריאה למתזמר הפונקציה",
 	"apihelp-query+wikilambdasearch_labels-summary": "מחולל רשימות שאילתות ה־API הזה מאפשר לך לחפש בעצמי Z תוויות בשפה נתונה. הוא קיים בעיקר כדי לתמוך במערכת החיפוש עם מבט קדימה (look-ahead).",
 	"apihelp-query+wikilambdasearch_labels-param-search": "מילת החיפוש",

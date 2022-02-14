@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"GustasMarc"
+		]
+	},
+	"apihelp-wikilambda_function_call-example-user-defined-validation": "Iškviesti vartotojo apibrėžtą patvirtinimo funkciją, įdiegtą Python."
+}
