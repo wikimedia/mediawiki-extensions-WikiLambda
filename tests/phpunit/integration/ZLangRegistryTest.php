@@ -110,6 +110,10 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertFalse( $this->registry->isZidCached( self::ZLANG['zh'] ) );
 
+		// Test the isLanguageKnownGivenCode() path that caches the result
+		$this->assertTrue( $this->registry->isLanguageKnownGivenCode( 'zh' ) );
+		$this->registry->unregister( self::ZLANG['zh'] );
+
 		$zid = $this->registry->getLanguageZidFromCode( 'zh' );
 		$this->assertTrue( $this->registry->isLanguageKnownGivenCode( 'zh' ) );
 		$this->assertTrue( $this->registry->isZidCached( self::ZLANG['zh'] ) );
@@ -124,6 +128,11 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 	public function testGetLanguageZidFromCode_notFound() {
 		$notFoundCode = 'foo';
 		$this->assertFalse( $this->registry->isLanguageKnownGivenCode( $notFoundCode ) );
+
+		// We should get the ZID for English if we said a fallback was OK.
+		$this->assertSame( 'Z1002', $this->registry->getLanguageZidFromCode( $notFoundCode, true ) );
+
+		// Otherwise, we should get an error.
 		$this->expectException( ZErrorException::class );
 		$this->registry->getLanguageZidFromCode( $notFoundCode );
 	}
