@@ -212,6 +212,9 @@ class ApiFunctionCall extends ApiBase {
 			'action=wikilambda_function_call&wikilambda_function_call_zobject='
 				. $this->createUserDefinedValidationExample()
 				=> 'apihelp-wikilambda_function_call-example-user-defined-validation',
+			'action=wikilambda_function_call&wikilambda_function_call_zobject='
+				. $this->createExample( 'example-user-defined-generic-type.json' )
+				=> 'apihelp-wikilambda_function_call-example-user-defined-generic-type',
 		];
 	}
 
