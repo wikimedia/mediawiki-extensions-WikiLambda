@@ -9,7 +9,10 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use FauxRequest;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use RequestContext;
+use SpecialRecentChanges;
 use Title;
 
 /**
@@ -17,7 +20,6 @@ use Title;
  * @group Database
  */
 class HooksTest extends WikiLambdaIntegrationTestCase {
-
 	/**
 	 * @covers ::onMultiContentSave
 	 */
@@ -47,5 +49,37 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertFalse( $invalidZIDStatus->isOK() );
 		$this->assertTrue( $invalidZIDStatus->hasMessage( 'wikilambda-invalidzobject' ) );
+	}
+
+	protected function getRecentChangesPage(): SpecialRecentChanges {
+		return new SpecialRecentChanges(
+			$this->getServiceContainer()->getWatchedItemStore(),
+			$this->getServiceContainer()->getMessageCache(),
+			$this->getServiceContainer()->getDBLoadBalancer(),
+			$this->getServiceContainer()->getUserOptionsLookup()
+		);
+	}
+
+	/**
+	 * @covers ::onHtmlPageLinkRendererEnd
+	 */
+	public function testOnHtmlPageLinkRendererEnd_noDoubleEscape() {
+		$createdStatus = $this->editPage(
+			ZTestType::TEST_ZID, ZTestType::TEST_HTML_ESCAPE, 'Test html escape', NS_MAIN
+		);
+
+		$this->assertTrue( $createdStatus->isOK() );
+
+		$context = RequestContext::getMain();
+
+		$context->setTitle( Title::newFromText( __METHOD__ ) );
+		$context->setRequest( new FauxRequest );
+
+		// Confirm that the test page is in RC and the label was escaped exactly
+		// once.
+		$rc1 = $this->getRecentChangesPage();
+		$rc1->setContext( $context );
+		$rc1->execute( null );
+		$this->assertStringContainsString( "&lt;&lt;&lt;&gt;&gt;&gt;", $rc1->getOutput()->getHTML() );
 	}
 }

@@ -460,10 +460,13 @@ class Hooks implements
 			$label = $targetZObject->getLabels()->getStringForLanguageOrEnglish( $context->getLanguage() );
 		}
 
-		// Finally, set the label of the link to the escaped user-supplied label
+		// Finally, set the label of the link to the *un*escaped user-supplied label, see
+		// https://www.mediawiki.org/wiki/Manual:Hooks/HtmlPageLinkRendererEnd
+		//
+		// &$text: the contents that the <a> tag should have; either a *plain, unescaped string* or a HtmlArmor object.
+		//
 		// TODO: Consider also showing the ZID?
-		// @phan-suppress-next-line PhanTypeMismatchArgumentNullableInternal; if fetchZObjectLabel() is null we replace
-		$text = htmlspecialchars( $label );
+		$text = $label;
 	}
 
 	/**
