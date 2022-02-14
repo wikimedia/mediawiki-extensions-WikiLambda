@@ -8,8 +8,9 @@
 			{{ label }}
 		</label>
 
-		<div ref="sdSearchBox"
+		<div
 			:id="inputElementId"
+			ref="sdSearchBox"
 			class="sd-input__active-box"
 			tabindex="0"
 			@blur="onBlur"

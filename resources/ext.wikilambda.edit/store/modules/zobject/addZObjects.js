@@ -564,7 +564,8 @@ module.exports = {
 			// we fetch a list of keys within this generic object
 			if ( payload.type !== Constants.Z_OBJECT && context.rootGetters.getZkeys[ payload.type ] ) {
 
-				// Normal types are nested in a persisten object value, dynamically generated types from functionToType are not
+				// Normal types are nested in a persisten object value,
+				// dynamically generated types from functionToType are not
 				object = context
 					.rootGetters
 					.getZkeys[ payload.type ][ Constants.Z_PERSISTENTOBJECT_VALUE ] || context
@@ -604,7 +605,9 @@ module.exports = {
 						}
 					} );
 				} else if ( object[ Constants.Z_OBJECT_TYPE ] === Constants.Z_FUNCTION ) {
-					var functionCallObjectType = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+					var functionCallObjectType = zobjectTreeUtils.getNextObjectId(
+						context.rootState.zobjectModule.zobject
+					);
 					context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: 'object', parent: payload.id } );
 					context.dispatch( 'addZFunctionCall', { id: functionCallObjectType, value: object[ Constants.Z_FUNCTION_IDENTITY ] } );
 					keys = object[ Constants.Z_FUNCTION_ARGUMENTS ];
@@ -617,8 +620,12 @@ module.exports = {
 						}
 						// We need to stop recursiveness.
 						if ( objectKeyType !== payload.type && objectKeyType !== Constants.Z_TYPE ) {
-							context.dispatch( 'changeType', { id: nextId, type: objectKeyType } );
-						// When the type is a Z4 we prefix it to an empty string to force the object selector to be shown
+							context.dispatch(
+								'changeType',
+								{ id: nextId, type: objectKeyType }
+							);
+						// When the type is a Z4
+						// we prefix it to an empty string to force the object selector to be shown
 						} else if ( objectKeyType === Constants.Z_TYPE ) {
 							context.dispatch( 'setZObjectValue', { id: nextId, value: '' } );
 						} else {

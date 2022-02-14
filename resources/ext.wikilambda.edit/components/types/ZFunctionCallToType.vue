@@ -67,9 +67,18 @@ module.exports = {
 		},
 		zObjectType: function () {
 			// We can receive a straigh reference, a function call, or a functioncall with a reference
-			var typeFromFunctionCallWithReference = this.getNestedZObjectById( this.zobjectId, [ Constants.Z_OBJECT_TYPE, Constants.Z_FUNCTION_CALL_FUNCTION, Constants.Z_REFERENCE_ID ] ) || {},
-				typeFromFunctionCall = this.getNestedZObjectById( this.zobjectId, [ Constants.Z_OBJECT_TYPE, Constants.Z_FUNCTION_CALL_FUNCTION ] ) || {},
-				typeFromReference = this.getNestedZObjectById( this.zobjectId, [ Constants.Z_OBJECT_TYPE, Constants.Z_REFERENCE_ID ] ) || {};
+			var typeFromFunctionCallWithReference = this.getNestedZObjectById(
+					this.zobjectId,
+					[ Constants.Z_OBJECT_TYPE, Constants.Z_FUNCTION_CALL_FUNCTION, Constants.Z_REFERENCE_ID ]
+				) || {},
+				typeFromFunctionCall = this.getNestedZObjectById(
+					this.zobjectId,
+					[ Constants.Z_OBJECT_TYPE, Constants.Z_FUNCTION_CALL_FUNCTION ]
+				) || {},
+				typeFromReference = this.getNestedZObjectById(
+					this.zobjectId,
+					[ Constants.Z_OBJECT_TYPE, Constants.Z_REFERENCE_ID ]
+				) || {};
 
 			return typeFromFunctionCallWithReference.value || typeFromFunctionCall.value || typeFromReference.value;
 		},
