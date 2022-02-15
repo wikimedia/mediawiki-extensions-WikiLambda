@@ -30,7 +30,7 @@ class ZGenericList extends ZObject {
 		} elseif ( is_array( $head ) && ( $tail === null ) ) {
 			$this->data = $head;
 		} else {
-			$tailAsArray = ( $tail === null ) ? [] : $tail->getZGenericListAsArray();
+			$tailAsArray = ( $tail === null ) ? [] : $tail->getAsArray();
 			$this->data = array_merge( [ $head ], $tailAsArray );
 		}
 	}
@@ -53,6 +53,19 @@ class ZGenericList extends ZObject {
 				],
 			],
 		];
+	}
+
+	/**
+	 * Build the function call that defines the type of this Generic List
+	 *
+	 * @param string $listType
+	 * @return ZFunctionCall
+	 */
+	public static function buildType( $listType ): ZFunctionCall {
+		return new ZFunctionCall(
+			new ZReference( ZTypeRegistry::Z_FUNCTION_GENERIC_LIST ),
+			[ ZTypeRegistry::Z_FUNCTION_GENERIC_LIST_TYPE => new ZReference( $listType ) ]
+		);
 	}
 
 	/**
@@ -80,11 +93,26 @@ class ZGenericList extends ZObject {
 	 * @inheritDoc
 	 */
 	public function getSerialized( $form = self::FORM_CANONICAL ) {
-		return self::getSerializedGeneric( $form, $this->data );
+		if ( $form === self::FORM_CANONICAL ) {
+			return self::getSerializedCanonical();
+		} else {
+			return self::getSerializedGeneric( $form, $this->data );
+		}
 	}
 
 	/**
-	 * Convert this ZGenericList into its serialized generic representation
+	 * Convert this ZGenericList into its serialized canonical representation
+	 *
+	 * @return array
+	 */
+	private function getSerializedCanonical() {
+		return array_map( static function ( $value ) {
+			return $value->getSerialized();
+		}, $this->data );
+	}
+
+	/**
+	 * Convert this ZGenericList into its serialized normal representation
 	 *
 	 * @param int $form
 	 * @param array $list
@@ -127,7 +155,7 @@ class ZGenericList extends ZObject {
 	 *
 	 * @return array
 	 */
-	public function getZGenericListAsArray(): array {
+	public function getAsArray(): array {
 		return $this->getZValue();
 	}
 
@@ -139,4 +167,5 @@ class ZGenericList extends ZObject {
 	public function getElementType(): string {
 		return $this->type->getValueByKey( ZTypeRegistry::Z_FUNCTION_GENERIC_LIST_TYPE )->getZValue();
 	}
+
 }

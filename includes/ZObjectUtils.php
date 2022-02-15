@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
@@ -662,12 +663,13 @@ class ZObjectUtils {
 	/**
 	 * Given an array or a ZList, returns an array that can be iterated over
 	 *
-	 * @param array|ZList $list
+	 * @param array|ZList|ZGenericList $list
 	 * @return array
 	 */
 	public static function getIterativeList( $list ): array {
-		if ( $list instanceof ZList ) {
-			return $list->getZListAsArray();
+		// TODO (T298133): Remove support for ZList
+		if ( ( $list instanceof ZList ) || ( $list instanceof ZGenericList ) ) {
+			return $list->getAsArray();
 		}
 		return $list;
 	}
@@ -814,7 +816,8 @@ class ZObjectUtils {
 	public static function getLabelOfErrorTypeKey( $key, $zobject, $lang ): string {
 		$keys = $zobject->getInnerZObject()->getValueByKey( ZTypeRegistry::Z_ERRORTYPE_KEYS );
 
-		if ( !is_array( $keys ) && !( $keys instanceof ZList ) ) {
+		// TODO (T298133): Remove support for ZList
+		if ( !is_array( $keys ) && !( $keys instanceof ZList ) && !( $keys instanceof ZGenericList ) ) {
 			return $key;
 		}
 
@@ -905,13 +908,13 @@ class ZObjectUtils {
 			return $key;
 		}
 
-		// FIXME (T298133): list of arguments will be a ZGenericList
-		if ( !( $zargs instanceof ZList ) ) {
+		// TODO (T298133): Remove support for ZList
+		if ( !( $zargs instanceof ZList ) && !( $zargs instanceof ZGenericList ) ) {
 			// list of arguments is something else than a list?
 			return $key;
 		}
 
-		foreach ( $zargs->getZListAsArray() as $zarg ) {
+		foreach ( $zargs->getAsArray() as $zarg ) {
 			$zargid = $zarg->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_ID );
 
 			if ( $key === $zargid->getZValue() ) {

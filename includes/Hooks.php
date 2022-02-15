@@ -582,7 +582,7 @@ class Hooks implements
 		$targetFunctionArguments = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_ARGUMENTS );
 		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZList $targetFunctionArguments';
 		$nonStringArgumentsDefinition = array_filter(
-			$targetFunctionArguments->getZListAsArray(),
+			$targetFunctionArguments->getAsArray(),
 			static function ( $arg_value ) {
 				return !(
 					is_object( $arg_value )
@@ -645,6 +645,7 @@ class Hooks implements
 			$api->execute();
 			$outerResponse = $api->getResult()->getResultData( [], [ 'Strip' => 'all' ] );
 
+			// TODO (T301556): Take ZError creation to ZErrorFactory
 			if ( isset( $outerResponse[ 'error' ] ) ) {
 				$zerror = ZObjectFactory::create( $outerResponse[ 'error' ] );
 				if ( !( $zerror instanceof ZError ) ) {

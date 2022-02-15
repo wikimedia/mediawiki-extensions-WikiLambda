@@ -13,12 +13,10 @@ use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Validation\SchemataUtils;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKeyReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use Opis\JsonSchema\ValidationError;
 
@@ -668,11 +666,7 @@ class ZErrorFactory {
 	 * @return ZGenericError
 	 */
 	public static function createGenericError( $errorType, $errorValues ) {
-		$errorTypeToType = new ZFunctionCall(
-			new ZReference( ZTypeRegistry::Z_FUNCTION_ERRORTYPE_TO_TYPE ),
-			[ ZTypeRegistry::Z_FUNCTION_ERRORTYPE_TYPE => new ZReference( $errorType ) ]
-		);
-		return new ZGenericError( $errorTypeToType, $errorValues );
+		return new ZGenericError( ZGenericError::buildType( $errorType ), $errorValues );
 	}
 
 	/**

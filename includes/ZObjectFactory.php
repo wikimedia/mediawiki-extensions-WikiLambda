@@ -14,7 +14,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Validation\ZObjectStructureValidator;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
@@ -278,16 +278,32 @@ class ZObjectFactory {
 
 		if ( is_array( $object ) ) {
 			$items = [];
-			foreach ( $object as $index => $item ) {
+			$listType = null;
+			foreach ( $object as $index => $value ) {
 				try {
-					$items[] = self::createChild( $item );
+					$item = self::createChild( $value );
 				} catch ( ZErrorException $e ) {
 					throw new ZErrorException(
 						ZErrorFactory::createArrayElementZError( (string)$index, $e->getZError() )
 					);
 				}
+
+				// TODO (T301553): Simplify this logic, we should be able to use getZType irrespectively
+				// of whether it's a reference or a function call
+				if ( $item->isTypeReference() ) {
+					$itemType = $item->getZType();
+				} else {
+					$itemType = $item->getZTypeObject()->getReturnType();
+				}
+
+				$listType = ( ( $listType === null ) || ( $listType === $itemType ) )
+					? $itemType
+					: ZTypeRegistry::Z_OBJECT;
+
+				$items[] = $item;
 			}
-			return new ZList( $items );
+
+			return new ZGenericList( ZGenericList::buildType( $listType ?? ZTypeRegistry::Z_OBJECT ), $items );
 		}
 
 		if ( !is_object( $object ) ) {

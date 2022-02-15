@@ -75,7 +75,7 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertSame( 'Z111', $testObject->getInnerZObject()->getTypeId() );
 
-		$keys = $testObject->getInnerZObject()->getTypeKeys()->getZListAsArray();
+		$keys = $testObject->getInnerZObject()->getTypeKeys()->getAsArray();
 
 		$this->assertCount( 2, $keys );
 		$this->assertSame( 'Z6', $keys[0]->getKeyType() );

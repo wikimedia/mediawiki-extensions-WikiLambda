@@ -124,7 +124,7 @@ class ZList extends ZObject {
 	 *
 	 * @return array
 	 */
-	public function getZListAsArray(): array {
+	public function getAsArray(): array {
 		return $this->getZValue();
 	}
 }

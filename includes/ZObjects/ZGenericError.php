@@ -51,6 +51,19 @@ class ZGenericError extends ZObject {
 	}
 
 	/**
+	 * Build the function call that defines the type of this Generic Error
+	 *
+	 * @param string $errorType
+	 * @return ZFunctionCall
+	 */
+	public static function buildType( $errorType ): ZFunctionCall {
+		return new ZFunctionCall(
+			new ZReference( ZTypeRegistry::Z_FUNCTION_ERRORTYPE_TO_TYPE ),
+			[ ZTypeRegistry::Z_FUNCTION_ERRORTYPE_TYPE => new ZReference( $errorType ) ]
+		);
+	}
+
+	/**
 	 * @inheritDoc
 	 */
 	public function isValid(): bool {

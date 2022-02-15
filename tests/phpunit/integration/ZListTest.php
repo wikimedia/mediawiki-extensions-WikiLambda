@@ -21,82 +21,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 class ZListTest extends WikiLambdaIntegrationTestCase {
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getInnerZObject
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZList::getZListAsArray
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZList::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZList::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZList::getDefinition
-	 */
-	public function testPersistentCreation() {
-		$testObject = new ZObjectContent( '[]' );
-		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [], $testObject->getZValue() );
-		$this->assertSame( [], $testObject->getInnerZObject()->getZListAsArray() );
-
-		$testObject = new ZObjectContent( '["Test"]' );
-		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ 'Test' ], $testObject->getInnerZObject()->getSerialized() );
-
-		$testObject = new ZObjectContent( '["Test", "Test2"]' );
-		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ 'Test', 'Test2' ], $testObject->getInnerZObject()->getSerialized() );
-
-		$testObject = new ZObjectContent( '["Test","Test2","Test3"]' );
-		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ 'Test', 'Test2', 'Test3' ], $testObject->getInnerZObject()->getSerialized() );
-
-		$testObject = new ZObjectContent( '[["Test"],["Test2"],["Test3"]]' );
-		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame(
-			[ [ 'Test' ], [ 'Test2' ], [ 'Test3' ] ],
-			$testObject->getInnerZObject()->getSerialized()
-		);
-
-		$testObject = new ZObjectContent( '[["Test"],["Test2","Test3"]]' );
-		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ [ 'Test' ], [ 'Test2', 'Test3' ] ], $testObject->getInnerZObject()->getSerialized() );
-
-		$testObject = new ZObjectContent( '[["Test", "Test2"],["Test3","Test4"]]' );
-		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame(
-			[ [ 'Test', 'Test2' ], [ 'Test3', 'Test4' ] ],
-			$testObject->getInnerZObject()->getSerialized()
-		);
-
-		$this->hideDeprecated( '::create' );
-		$testObject = new ZObjectContent(
-			<<<EOT
-{
-	"Z1K1": "Z2",
-	"Z2K1": "Z0",
-	"Z2K2": [
-		"Test",
-		"Test2",
-	 	"Test3"
-	],
-	"Z2K3": {
-		"Z1K1": "Z12",
-		"Z12K1": []
-	},
-	"Z2K4": {
-		"Z1K1": "Z32",
-		"Z32K1": []
-	}
-}
-EOT
-		);
-		$this->assertSame( 'Z10', $testObject->getZType() );
-		$this->assertSame( [ 'Test', 'Test2', 'Test3' ], $testObject->getInnerZObject()->getSerialized() );
-	}
-
-	/**
 	 * @covers ::__construct
 	 * @covers ::getZType
 	 */
@@ -105,28 +29,31 @@ EOT
 		$this->assertSame( 'Z10', $testObject->getZType(), 'ZType of directly-created ZList' );
 
 		$testObject = new ZObjectContent( '["Test"]' );
-		$this->assertSame( 'Z10', $testObject->getZType(), 'ZType of indirectly-created ZList' );
+		$this->assertSame( 'Z881', $testObject->getZType(), 'ZType of indirectly-created ZList' );
 	}
 
 	/**
 	 * @dataProvider provideIsValid
 	 * @covers ::isValid
+	 * @covers ::getAsArray
+	 * @covers ::getZValue
 	 */
-	public function testIsValid( $input, $expected ) {
+	public function testIsValid( $input, $expected, $expectedCount ) {
 		$testObject = new ZList( $input );
+		$this->assertCount( $expectedCount, $testObject->getAsArray() );
 		$this->assertSame( $expected, $testObject->isValid() );
 	}
 
 	public function provideIsValid() {
 		return [
-			'empty' => [ [], true ],
-			'invalid elements' => [ [ 'invalid', 'elements' ], false ],
-			'singleton array' => [ [ new ZString() ], true ],
-			'array of strings' => [ [ new ZString(), new ZString() ], true ],
-			'array of string and ref' => [ [ new ZString(), new ZReference( 'Z1' ) ], true ],
-			'array of valid arrays' => [ [ new ZList( [ new ZString() ] ) ] , true ],
-			'array of invalid arrays' => [ [ new ZList( [ 'invalid array' ] ) ] , false ],
-			'array with invalid second element' => [ [ new ZString(), 'invalid element', new ZString() ], false ]
+			'empty' => [ [], true, 0 ],
+			'invalid elements' => [ [ 'invalid', 'elements' ], false, 2 ],
+			'singleton array' => [ [ new ZString() ], true, 1 ],
+			'array of strings' => [ [ new ZString(), new ZString() ], true, 2 ],
+			'array of string and ref' => [ [ new ZString(), new ZReference( 'Z1' ) ], true, 2 ],
+			'array of valid arrays' => [ [ new ZList( [ new ZString() ] ) ] , true, 1 ],
+			'array of invalid arrays' => [ [ new ZList( [ 'invalid array' ] ) ] , false, 1 ],
+			'array with invalid second element' => [ [ new ZString(), 'invalid element', new ZString() ], false, 3 ]
 		];
 	}
 

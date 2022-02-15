@@ -159,7 +159,8 @@ class ZObject {
 	/**
 	 * Returns a string with the Zid representing the type of this ZObject. If it has an anonymous type
 	 * given by a ZFunctionCall, this method returns the Function Zid
-	 * TODO: Return the output type of the Function instead of its identifier
+	 *
+	 * TODO (T301553): Return the output type of the Function instead of its identifier
 	 *
 	 * @return string The type of this ZObject
 	 */
@@ -207,7 +208,7 @@ class ZObject {
 	 * Iterate through ZObject values to find reference links and register them
 	 * locally.
 	 *
-	 * @param mixed $value value to check for reference links
+	 * @param ZObject $value value to check for reference links
 	 * @param ZObject $zobject original ZObject to add links
 	 */
 	private static function extractLinkedZObjects( $value, $zobject ) {

@@ -14,7 +14,6 @@ use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericList;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
@@ -44,7 +43,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 		return [
 			'string' => [ 'string object', ZString::class ],
 			'reference' => [ 'Z6', ZReference::class ],
-			'array' => [ [ 'one string', 'another string' ], ZList::class ],
+			'array' => [ [ 'one string', 'another string' ], ZGenericList::class ],
 			'monolingual' => [
 				(object)[ 'Z1K1' => 'Z11', 'Z11K1' => 'Z1003', 'Z11K2' => 'string' ],
 				ZMonoLingualString::class
@@ -110,7 +109,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 	public function provideCreatePersistentValidInput() {
 		return [
 			'string' => [ 'string object', ZString::class ],
-			'array' => [ [ 'one string', 'another string' ], ZList::class ],
+			'array' => [ [ 'one string', 'another string' ], ZGenericList::class ],
 			'monolingual' => [
 				json_decode( '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "monolingual string" }' ),
 				ZMonoLingualString::class
@@ -131,7 +130,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 					. ' "Z2K3": { "Z1K1": "Z12",  "Z12K1": ['
 					. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "wrapped array label" } ] } }'
 				),
-				ZList::class
+				ZGenericList::class
 			],
 			'wrapped monolingual' => [
 				json_decode(
@@ -239,7 +238,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 			'zstring' => [ new ZString( 'holi' ), ZString::class ],
 			'string' => [ 'string', ZString::class ],
 			'reference' => [ 'Z6', ZReference::class ],
-			'array' => [ [ 'array' ], ZList::class ],
+			'array' => [ [ 'array' ], ZGenericList::class ],
 			'object' => [ json_decode( '{ "Z1K1": "Z6" }' ), ZString::class ],
 			'custom type' => [ json_decode( '{ "Z1K1": "Z60" }' ), ZObject::class, [ 'Z60' ] ],
 			'function call type: generic list builtin' => [

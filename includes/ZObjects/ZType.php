@@ -81,12 +81,12 @@ class ZType extends ZObject {
 				if ( !$keys->isValid() ) {
 					return false;
 				}
-				$keys = $keys->getZListAsArray();
+				$keys = $keys->getAsArray();
 			} elseif ( $keys instanceof ZGenericList ) {
 				if ( $keys->getElementType() !== ZTypeRegistry::Z_KEY ) {
 					return false;
 				}
-				$keys = $keys->getZGenericListAsArray();
+				$keys = $keys->getAsArray();
 			} else {
 				return false;
 			}
@@ -162,7 +162,7 @@ class ZType extends ZObject {
 	 * @return ZKey|null
 	 */
 	public function getZKey( $key ) {
-		$keys = $this->getTypeKeys()->getZListAsArray();
+		$keys = $this->getTypeKeys()->getAsArray();
 		foreach ( $keys as $zkey ) {
 			if ( $zkey->getKeyId() === $key ) {
 				return $zkey;
