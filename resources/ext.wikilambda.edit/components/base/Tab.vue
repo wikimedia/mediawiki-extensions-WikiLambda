@@ -19,6 +19,7 @@
 				:icon="tooltipIcon"
 				:content="tooltipContent"
 				:header="tooltipHeader"
+				:icon-color="getTooltipColor"
 			></tooltip>
 			{{ title }}
 		</button>
@@ -84,6 +85,11 @@ module.exports = {
 				return 'ext-wikilambda-tab-status_disabled';
 			}
 			return 'ext-wikilambda-tab-status_' + this.status;
+		}
+	},
+	methods: {
+		getTooltipColor: function () {
+			return 'A2A9B1';
 		}
 	}
 };

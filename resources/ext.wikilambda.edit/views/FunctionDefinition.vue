@@ -26,9 +26,16 @@
 				<function-definition-inputs
 					:z-lang="labelLanguage.zLang"
 					:is-main-z-object="index === 0"
+					:is-editing="isEditing"
+					:tooltip-icon="adminTooltipIcon"
+					:tooltip-message="adminTooltipMessage"
 				></function-definition-inputs>
 				<template v-if="index === 0">
-					<function-definition-output></function-definition-output>
+					<function-definition-output
+						:is-editing="isEditing"
+						:tooltip-icon="adminTooltipIcon"
+						:tooltip-message="adminTooltipMessage"
+					></function-definition-output>
 				</template>
 			</div>
 		</div>
@@ -90,7 +97,8 @@ module.exports = {
 		'getZkeyLabels',
 		'getCurrentZLanguage',
 		'currentZFunctionHasInputs',
-		'currentZFunctionHasOutput'
+		'currentZFunctionHasOutput',
+		'isNewZObject'
 	] ),
 	{
 		ableToPublish: function () {
@@ -110,6 +118,18 @@ module.exports = {
 		},
 		showToast: function () {
 			return this.currentToast !== null;
+		},
+		isEditing: function () {
+			if ( this.$route.name === 'edit' ) {
+				return true;
+			}
+			return false;
+		},
+		adminTooltipIcon: function () {
+			return icons.sdIconInfoFilled;
+		},
+		adminTooltipMessage: function () {
+			return this.$i18n( 'wikilambda-editor-fn-edit-definition-tooltip-content' ).text();
 		}
 	} ),
 	methods: $.extend( mapActions( [

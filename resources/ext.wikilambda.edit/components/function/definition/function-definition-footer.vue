@@ -24,7 +24,7 @@
 				{{ $i18n( 'wikilambda-publishnew' ) }}
 			</button>
 			<button
-				v-if="!isNewZObject"
+				v-if="isEditing"
 				:class="implementationButtonStyle"
 				:disabled="!implementationButtonValidity"
 				@click="handleImplementation"
@@ -49,6 +49,11 @@ var Constants = require( '../../../Constants.js' ),
 // @vue/component
 module.exports = {
 	name: 'function-definition-footer',
+	props: {
+		isEditing: {
+			type: Boolean
+		}
+	},
 	data: function () {
 		return {
 			summary: ''
@@ -56,8 +61,7 @@ module.exports = {
 	},
 	computed: $.extend( mapGetters( [
 		'currentZFunctionHasInputs',
-		'currentZFunctionHasOutput',
-		'isNewZObject'
+		'currentZFunctionHasOutput'
 	] ),
 	{
 		publishButtonValidity: function () {
@@ -76,7 +80,7 @@ module.exports = {
 		},
 		implementationButtonValidity: function () {
 			// can only create an implementation if this is a published function
-			if ( !this.isNewZObject ) {
+			if ( this.isEditing ) {
 				return true;
 			}
 			return false;
