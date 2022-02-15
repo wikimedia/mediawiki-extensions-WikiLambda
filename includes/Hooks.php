@@ -25,6 +25,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Linker\LinkTarget;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
 use MessageSpecifier;
 use Parser;
@@ -478,7 +479,10 @@ class Hooks implements
 	 * @param Parser $parser
 	 */
 	public function onParserFirstCallInit( $parser ) {
-		$parser->setFunctionHook( 'function', [ __CLASS__ , 'parserFunctionCallback' ], Parser::SFH_OBJECT_ARGS );
+		$config = MediaWikiServices::getInstance()->getMainConfig();
+		if ( $config->get( 'WikiLambdaEnableParserFunction' ) ) {
+			$parser->setFunctionHook( 'function', [ __CLASS__ , 'parserFunctionCallback' ], Parser::SFH_OBJECT_ARGS );
+		}
 	}
 
 	/**
