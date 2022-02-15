@@ -658,17 +658,20 @@ class Hooks implements
 				true
 			);
 
-			if ( !$response || $response[ ZTypeRegistry::Z_OBJECT_TYPE ] !== 'Z22' ) {
+			if ( !$response || $response[ ZTypeRegistry::Z_OBJECT_TYPE ] !== ZTypeRegistry::Z_RESPONSEENVELOPE ) {
 				// The server's not given us a result!
 				$zerror = new ZError( 'Z507', new ZList( [ 'Server returned a non-result!' ] ) );
 				throw new ZErrorException( $zerror );
 			}
-			if ( $response['Z22K1'] === 'Z23' ) {
+			if ( $response[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ] === 'Z23' ) {
 				// If the server has responsed with a Z5, show that properly.
-				$zerror = new ZError( 'Z507', new ZList( [ $response['Z22K2'] ] ) );
+				$zerror = new ZError(
+					'Z507',
+					new ZList( [ $response[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ] ] )
+				);
 				throw new ZErrorException( $zerror );
 			}
-			$ret = $response['Z22K1'];
+			$ret = $response[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ];
 		} catch ( ZErrorException $e ) {
 			$ret = Html::errorBox(
 				wfMessage(

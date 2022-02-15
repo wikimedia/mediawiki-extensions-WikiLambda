@@ -98,9 +98,9 @@ class ApiPerformTest extends ApiBase {
 			$this->dieWithError( [ "apierror-wikilambda_perform_test-not-connected", $this->orchestratorHost ] );
 		} catch ( ClientException | ServerException $exception ) {
 			$zError = json_encode( [
-				ZTypeRegistry::Z_OBJECT_TYPE => 'Z22',
-				'Z22K1' => 'Z23',
-				'Z22K2' => [
+				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_RESPONSEENVELOPE,
+				ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE => 'Z23',
+				ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA => [
 					ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_ERROR,
 					ZTypeRegistry::Z_ERROR_VALUE => [
 						ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_STRING,
