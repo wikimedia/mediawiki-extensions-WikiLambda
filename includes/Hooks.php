@@ -18,6 +18,7 @@ use DerivativeContext;
 use FauxRequest;
 use Html;
 use HtmlArmor;
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
@@ -647,7 +648,10 @@ class Hooks implements
 			if ( isset( $outerResponse[ 'error' ] ) ) {
 				$zerror = ZObjectFactory::create( $outerResponse[ 'error' ] );
 				if ( !( $zerror instanceof ZError ) ) {
-					$zerror = new ZError( 'Z507', new ZList( [ 'Server returned a non-ZError error!', $zerror ] ) );
+					$zerror = new ZError(
+						ZErrorTypeRegistry::Z_ERROR_EVALUATION,
+						new ZList( [ 'Server returned a non-ZError error!', $zerror ] )
+					);
 				}
 				throw new ZErrorException( $zerror );
 			}
@@ -660,13 +664,16 @@ class Hooks implements
 
 			if ( !$response || $response[ ZTypeRegistry::Z_OBJECT_TYPE ] !== ZTypeRegistry::Z_RESPONSEENVELOPE ) {
 				// The server's not given us a result!
-				$zerror = new ZError( 'Z507', new ZList( [ 'Server returned a non-result!' ] ) );
+				$zerror = new ZError(
+					ZErrorTypeRegistry::Z_ERROR_EVALUATION,
+					new ZList( [ 'Server returned a non-result!' ] )
+				);
 				throw new ZErrorException( $zerror );
 			}
 			if ( $response[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ] === 'Z23' ) {
 				// If the server has responsed with a Z5, show that properly.
 				$zerror = new ZError(
-					'Z507',
+					ZErrorTypeRegistry::Z_ERROR_EVALUATION,
 					new ZList( [ $response[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ] ] )
 				);
 				throw new ZErrorException( $zerror );
