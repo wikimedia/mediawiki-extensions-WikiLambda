@@ -18,6 +18,7 @@ use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use MediaWiki\Extension\WikiLambda\MockOrchestrator;
 use MediaWiki\Extension\WikiLambda\OrchestratorInterface;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -93,13 +94,13 @@ class ApiFunctionCall extends ApiBase {
 			$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
 		} catch ( ClientException | ServerException $exception ) {
 			$zError = json_encode( [
-				'Z1K1' => 'Z22',
+				ZTypeRegistry::Z_OBJECT_TYPE => 'Z22',
 				'Z22K1' => 'Z23',
 				'Z22K2' => [
-					'Z1K1' => 'Z5',
-					'Z5K2' => [
-						'Z1K1' => 'Z6',
-						'Z6K1' => $exception->getResponse()->getReasonPhrase()
+					ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_ERROR,
+					ZTypeRegistry::Z_ERROR_VALUE => [
+						ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_STRING,
+						ZTypeRegistry::Z_STRING_VALUE => $exception->getResponse()->getReasonPhrase()
 					]
 				]
 			] );

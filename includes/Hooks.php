@@ -492,16 +492,22 @@ class Hooks implements
 	private static function createFunctionCallJSON( $target, $arguments ): string {
 		$callObject = [];
 
-		$callObject['Z1K1'] = [ 'Z1K1' => 'Z9', 'Z9K1' => 'Z7' ];
-		$callObject['Z7K1'] = [ 'Z1K1' => 'Z9', 'Z9K1' => $target ];
+		$callObject[ ZTypeRegistry::Z_OBJECT_TYPE ] = [
+			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_REFERENCE,
+			ZTypeRegistry::Z_REFERENCE_VALUE => ZTypeRegistry::Z_FUNCTIONCALL
+		];
+		$callObject[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ] = [
+			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_REFERENCE,
+			ZTypeRegistry::Z_REFERENCE_VALUE => $target
+		];
 
 		for ( $i = 0; $i < count( $arguments ); $i++ ) {
 
 			$key = $target . 'K' . ( $i + 1 );
 
 			$callObject[$key] = [
-				'Z1K1' => 'Z6',
-				'Z6K1' => $arguments[ $i ],
+				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_STRING,
+				ZTypeRegistry::Z_STRING_VALUE => $arguments[ $i ],
 			];
 		}
 
@@ -543,7 +549,7 @@ class Hooks implements
 
 		$targetObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
 
-		if ( $targetObject->getZType() !== 'Z8' ) {
+		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
 			// User is trying to use a ZObject that's not a ZFunction
 			$ret = Html::errorBox(
 				wfMessage(
@@ -557,7 +563,10 @@ class Hooks implements
 
 		$targetFunction = $targetObject->getInnerZObject();
 
-		if ( $targetFunction->getValueByKey( 'Z8K2' )->getZValue() !== 'Z6' ) {
+		if (
+			$targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_RETURN_TYPE )->getZValue()
+				!== ZTypeRegistry::Z_STRING
+			) {
 			// User is trying to use a ZFunction that returns something other than a Z6/String
 			$ret = Html::errorBox(
 				wfMessage(
@@ -569,15 +578,17 @@ class Hooks implements
 			return [ $ret ];
 		}
 
-		$targetFunctionArguments = $targetFunction->getValueByKey( 'Z8K1' );
+		$targetFunctionArguments = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_ARGUMENTS );
 		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZList $targetFunctionArguments';
 		$nonStringArgumentsDefinition = array_filter(
 			$targetFunctionArguments->getZListAsArray(),
 			static function ( $arg_value ) {
 				return !(
 					is_object( $arg_value )
-					&& $arg_value->getValueByKey( 'Z1K1' )->getZValue() === 'Z17'
-					&& $arg_value->getValueByKey( 'Z17K1' )->getZValue() === 'Z6'
+					&& $arg_value->getValueByKey( ZTypeRegistry::Z_OBJECT_TYPE )->getZValue()
+						=== ZTypeRegistry::Z_ARGUMENTDECLARATION
+					&& $arg_value->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE )->getZValue()
+						=== ZTypeRegistry::Z_STRING
 				);
 			},
 			ARRAY_FILTER_USE_BOTH
@@ -588,8 +599,12 @@ class Hooks implements
 			// TODO: Would be nice to deal with multiple
 			$nonStringArgumentDefinition = $nonStringArgumentsDefinition[ 0 ];
 
-			$nonStringArgumentType = $nonStringArgumentDefinition->getValueByKey( 'Z17K1' );
-			$nonStringArgument = $nonStringArgumentDefinition->getValueByKey( 'Z17K2' );
+			$nonStringArgumentType = $nonStringArgumentDefinition->getValueByKey(
+				ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE
+			);
+			$nonStringArgument = $nonStringArgumentDefinition->getValueByKey(
+				ZTypeRegistry::Z_ARGUMENTDECLARATION_ID
+			);
 
 			// User is trying to use a ZFunction that takes something other than a Z6/String
 			$ret = Html::errorBox(
@@ -643,7 +658,7 @@ class Hooks implements
 				true
 			);
 
-			if ( !$response || $response['Z1K1'] !== 'Z22' ) {
+			if ( !$response || $response[ ZTypeRegistry::Z_OBJECT_TYPE ] !== 'Z22' ) {
 				// The server's not given us a result!
 				$zerror = new ZError( 'Z507', new ZList( [ 'Server returned a non-result!' ] ) );
 				throw new ZErrorException( $zerror );

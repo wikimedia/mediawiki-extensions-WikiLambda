@@ -187,14 +187,21 @@ class ZObjectContentHandler extends ContentHandler {
 			$returnLabel = $fullLabels->getStringForLanguage( $returnLanguage );
 
 			$returnLabelObject = (object)[
-				'Z1K1' => 'Z12',
-				'Z12K1' => [ [ 'Z1K1' => 'Z11', 'Z11K1' => $languageZid, 'Z11K2' => $returnLabel ] ]
+				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MULTILINGUALSTRING,
+				ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [ [
+					ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRING,
+					ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => $languageZid,
+					ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => $returnLabel
+				] ]
 			];
-			$object['Z2K3'] = $returnLabelObject;
+			$object[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = $returnLabelObject;
 		}
 
 		// Replace Z2K1: Z0 with the actual page ID.
-		$object['Z2K1'] = [ 'Z1K1' => 'Z6', 'Z6K1' => $zObjectTitle->getDBkey() ];
+		$object[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ] = [
+			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_STRING,
+			ZTypeRegistry::Z_STRING_VALUE => $zObjectTitle->getDBkey()
+		];
 
 		$encoded = FormatJson::encode( $object, true, FormatJson::UTF8_OK );
 

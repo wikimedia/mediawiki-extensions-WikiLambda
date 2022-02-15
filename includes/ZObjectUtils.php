@@ -155,29 +155,29 @@ class ZObjectUtils {
 		if ( is_object( $input ) ) {
 			$output = self::canonicalizeZRecord( $input );
 
-			if ( property_exists( $output, 'Z1K1' )
-				&& $output->Z1K1 == 'Z6'
-				&& property_exists( $output, 'Z6K1' )
+			if ( property_exists( $output, ZTypeRegistry::Z_OBJECT_TYPE )
+				&& $output->Z1K1 == ZTypeRegistry::Z_STRING
+				&& property_exists( $output, ZTypeRegistry::Z_STRING_VALUE )
 				&& !self::isValidId( $output->Z6K1 ) ) {
 				return self::canonicalize( $output->Z6K1 );
 			}
 
-			if ( property_exists( $output, 'Z1K1' )
-				&& $output->Z1K1 == 'Z9'
-				&& property_exists( $output, 'Z9K1' )
+			if ( property_exists( $output, ZTypeRegistry::Z_OBJECT_TYPE )
+				&& $output->Z1K1 == ZTypeRegistry::Z_REFERENCE
+				&& property_exists( $output, ZTypeRegistry::Z_REFERENCE_VALUE )
 				&& self::isValidId( $output->Z9K1 ) ) {
 				return self::canonicalize( $output->Z9K1 );
 			}
 
-			if ( property_exists( $output, 'Z1K1' )
-				&& $output->Z1K1 == 'Z10' ) {
+			if ( property_exists( $output, ZTypeRegistry::Z_OBJECT_TYPE )
+				&& $output->Z1K1 == ZTypeRegistry::Z_LIST ) {
 
-				if ( !property_exists( $output, 'Z10K1' )
-					&& !property_exists( $output, 'Z10K2' ) ) {
+				if ( !property_exists( $output, ZTypeRegistry::Z_LIST_HEAD )
+					&& !property_exists( $output, ZTypeRegistry::Z_LIST_TAIL ) ) {
 					return [];
 				}
 
-				if ( !property_exists( $output, 'Z10K2' ) ) {
+				if ( !property_exists( $output, ZTypeRegistry::Z_LIST_TAIL ) ) {
 					return [ self::canonicalize( $output->Z10K1 ) ];
 				}
 
@@ -252,7 +252,7 @@ class ZObjectUtils {
 		$record = get_object_vars( $input );
 		$record = array_combine( array_map( 'trim', array_keys( $record ) ), $record );
 
-		$z1k1 = self::canonicalize( $record['Z1K1'] ?? null );
+		$z1k1 = self::canonicalize( $record[ ZTypeRegistry::Z_OBJECT_TYPE ] ?? null );
 		if ( is_string( $z1k1 ) ) {
 			foreach ( $record as $key => $value ) {
 				if ( preg_match( '/^K[1-9]\d*$/', $key ) ) {
