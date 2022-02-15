@@ -14,14 +14,14 @@
 			@input="typeHandler"
 		></z-object-selector>
 		<template v-else>
-			<sd-button
+			<cdx-button
 				v-if="!viewmode"
 				:title="$i18n( 'wikilambda-editor-zobject-removekey-tooltip' )"
 				:destructive="true"
 				@click="typeHandler"
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
-			</sd-button>
+			</cdx-button>
 			<z-reference
 				:zobject-key="selectedFunctionPersistentValue"
 				search-type="Z8"
@@ -48,13 +48,13 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	ZFunctionCall = require( '../types/ZFunctionCall.vue' ),
-	SdButton = require( '../base/Button.vue' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
 	components: {
-		'sd-button': SdButton
+		'cdx-button': CdxButton
 	},
 	extends: ZFunctionCall,
 	provide: function () {

@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<li class="ext-wikilambda-zlistItem">
-		<sd-button
+		<cdx-button
 			v-if="!( viewmode || readonly )"
 			class="z-list-item-remove"
 			:destructive="true"
@@ -14,7 +14,7 @@
 			@click="$emit( 'remove-item', zobjectId )"
 		>
 			{{ $i18n( 'wikilambda-editor-removeitem' ) }}
-		</sd-button>
+		</cdx-button>
 		<z-object-selector
 			v-if="isEmptyObject"
 			:type="zType"
@@ -34,7 +34,7 @@
 <script>
 var typeUtils = require( '../../mixins/typeUtils.js' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
-	SdButton = require( '../base/Button.vue' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -43,7 +43,7 @@ module.exports = exports = {
 	name: 'z-list-item',
 	components: {
 		'z-object-selector': ZObjectSelector,
-		'sd-button': SdButton
+		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],
 	inject: {

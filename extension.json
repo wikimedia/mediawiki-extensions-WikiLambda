@@ -97,7 +97,6 @@
 				"ext.wikilambda.edit/ext.wikilambda.edit.less",
 				"ext.wikilambda.specialpages/ext.wikilambda.specialpages.less",
 				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.less",
-				"ext.wikilambda.edit/components/base/Button.less",
 				"ext.wikilambda.edit/components/base/Icon.less",
 				"ext.wikilambda.edit/components/base/Message.less",
 				"ext.wikilambda.edit/components/base/SelectMenu.less"
@@ -122,7 +121,6 @@
 			],
 			"styles": [
 				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.less",
-				"ext.wikilambda.edit/components/base/Button.less",
 				"ext.wikilambda.edit/components/base/Icon.less",
 				"ext.wikilambda.edit/components/base/Message.less",
 				"ext.wikilambda.edit/components/base/SelectMenu.less"
@@ -164,7 +162,6 @@
 				"ext.wikilambda.edit/components/ZObjectKeyInput.vue",
 				"ext.wikilambda.edit/components/ZKeyModeSelector.vue",
 				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.vue",
-				"ext.wikilambda.edit/components/base/Button.vue",
 				"ext.wikilambda.edit/components/base/Tab.vue",
 				"ext.wikilambda.edit/components/base/Icon.vue",
 				"ext.wikilambda.edit/components/base/Message.vue",

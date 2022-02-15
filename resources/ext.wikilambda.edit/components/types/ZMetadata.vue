@@ -9,7 +9,7 @@
 		<div class="ext-wikilambda-metadata--alias-string">
 			{{ userLangAliasString }}
 		</div>
-		<sd-button
+		<cdx-button
 			:frameless="true"
 			@click="showMoreLanguages = !showMoreLanguages">
 			<template v-if="showMoreLanguages">
@@ -18,7 +18,7 @@
 			<template v-else>
 				{{ $i18n( 'wikilambda-metadata-show-languages' ) }}
 			</template>
-		</sd-button>
+		</cdx-button>
 		<template v-if="showMoreLanguages">
 			<table>
 				<thead>
@@ -42,13 +42,13 @@
 				<tbody>
 					<tr v-for="language in displayedSelectedLanguages" :key="language.Z9K1">
 						<td>
-							<sd-button
+							<cdx-button
 								v-if="!viewmode"
 								:destructive="true"
 								@click="removeLang( language.Z9K1 )"
 							>
 								{{ $i18n( 'wikilambda-editor-removeitem' ) }}
-							</sd-button>
+							</cdx-button>
 							{{ getZkeyLabels[ language.Z9K1 ] }}
 						</td>
 						<td>
@@ -59,13 +59,13 @@
 						<!-- <td></td> -->
 						<td>
 							<div v-for="( alias, index ) in getLanguageAliases( language.Z9K1 )" :key="index">
-								<sd-button
+								<cdx-button
 									v-if="!viewmode"
 									:destructive="true"
 									@click="removeAlias( alias )"
 								>
 									{{ $i18n( 'wikilambda-editor-removeitem' ) }}
-								</sd-button>
+								</cdx-button>
 								<z-string
 									:zobject-id="alias"
 								></z-string>
@@ -82,7 +82,7 @@
 				</tbody>
 			</table>
 			<div v-if="selectedLanguages.length > defaultMaxLanguages">
-				<sd-button
+				<cdx-button
 					:frameless="true"
 					@click="showAllSelectedLanguages = !showAllSelectedLanguages">
 					<template v-if="showAllSelectedLanguages">
@@ -91,7 +91,7 @@
 					<template v-else>
 						{{ $i18n( 'wikilambda-metadata-all-languages' ) }}
 					</template>
-				</sd-button>
+				</cdx-button>
 			</div>
 			<z-natural-language-selector
 				:used-languages="selectedLanguages"
@@ -106,14 +106,14 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	SdButton = require( '../base/Button.vue' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	ZString = require( './ZString.vue' ),
 	ZNaturalLanguageSelector = require( '../ZNaturalLanguageSelector.vue' );
 
 // @vue/component
 module.exports = exports = {
 	components: {
-		'sd-button': SdButton,
+		'cdx-button': CdxButton,
 		'z-string': ZString,
 		'z-natural-language-selector': ZNaturalLanguageSelector
 	},

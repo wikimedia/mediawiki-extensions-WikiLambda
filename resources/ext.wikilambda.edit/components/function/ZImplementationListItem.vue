@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<li class="ext-wikilambda-ZImplementationListItem">
-		<sd-button
+		<cdx-button
 			v-if="!( getViewMode || readonly )"
 			class="z-list-item-remove"
 			:destructive="true"
@@ -14,7 +14,7 @@
 			@click="$emit( 'remove-item', zobjectId )"
 		>
 			{{ $i18n( 'wikilambda-editor-removeitem' ) }}
-		</sd-button>
+		</cdx-button>
 		<select v-if="!hasReference" @change="selectImplementation">
 			<option disabled selected>
 				{{ $i18n( "wikilambda-implementation-selector" ) }}
@@ -47,7 +47,7 @@
 var Constants = require( '../../Constants.js' ),
 	ZListItem = require( '../types/ZListItem.vue' ),
 	CodeEditor = require( '../base/CodeEditor.vue' ),
-	SdButton = require( '../base/Button.vue' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
@@ -56,7 +56,7 @@ module.exports = exports = {
 	name: 'z-implementation-list-item',
 	components: {
 		'code-editor': CodeEditor,
-		'sd-button': SdButton
+		'cdx-button': CdxButton
 	},
 	extends: ZListItem,
 	computed: $.extend( mapGetters( [
