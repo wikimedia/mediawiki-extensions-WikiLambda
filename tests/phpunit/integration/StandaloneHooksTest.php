@@ -47,6 +47,25 @@ class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @coversNothing
+	 */
+	public function testAllMediaWikiLanguagesRepresented() {
+		$languagesFromMediaWiki = \MediaWiki\Languages\Data\Names::$names;
+
+		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions/naturalLanguages.json';
+		$languagesFromWikiLambda = json_decode( file_get_contents( $dataPath ) );
+
+		// This is slightly hacky, but it means that we get a nice print-out of what languages are missing.
+		$missingLanguages = [];
+		foreach ( $languagesFromMediaWiki as $code => $autonym ) {
+			if ( !property_exists( $languagesFromWikiLambda, $code ) ) {
+				$missingLanguages[ $code ] = $autonym;
+			}
+		}
+		$this->assertSame( [], $missingLanguages, 'WikiLambda has a ZObject for each language MediaWiki supports' );
+	}
+
+	/**
 	 * @covers ::createInitialContent
 	 * @covers ::insertContentObject
 	 */
