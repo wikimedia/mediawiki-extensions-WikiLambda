@@ -11,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use FormatJson;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
@@ -193,7 +194,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$reserialisedObject = $parseStatus->getValue();
 		$this->assertTrue( ZObjectUtils::isValidZObject( $reserialisedObject ) );
 		$this->assertTrue( property_exists( $reserialisedObject, 'Z1K1' ) );
-		$this->assertSame( 'Z111', $reserialisedObject->Z1K1 );
+		$this->assertSame( 'Z111', $reserialisedObject->{ ZTypeRegistry::Z_OBJECT_TYPE } );
 		$this->assertTrue( property_exists( $reserialisedObject, 'Z111K1' ) );
 		$this->assertSame( 'first demonstration key', $reserialisedObject->Z111K1 );
 		$this->assertTrue( property_exists( $reserialisedObject, 'Z111K2' ) );

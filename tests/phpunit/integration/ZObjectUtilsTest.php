@@ -11,6 +11,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use FormatJson;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -932,7 +933,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "Z1K1": "Z6", "Z6K1": "to uppercase" }',
 				'Z6',
 				static function ( $item ) {
-					$item->Z6K1 = strtoupper( $item->Z6K1 );
+					$item->{ ZTypeRegistry::Z_STRING_VALUE } = strtoupper( $item->{ ZTypeRegistry::Z_STRING_VALUE } );
 					return $item;
 				},
 				'{ "Z1K1": "Z6", "Z6K1": "TO UPPERCASE" }',
@@ -942,7 +943,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "Z1K1": "Z2", "Z2K2":{ "Z1K1": "Z6", "Z6K1": "to canonical" }}',
 				'Z6',
 				static function ( $item ) {
-					return $item->Z6K1;
+					return $item->{ ZTypeRegistry::Z_STRING_VALUE };
 				},
 				'{ "Z1K1": "Z2", "Z2K2": "to canonical" }',
 			],
@@ -953,7 +954,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 					. ' "Z11K2": { "Z1K1": "Z6", "Z6K1": "to canonical label" } } ] } }',
 				'Z6',
 				static function ( $item ) {
-					return $item->Z6K1;
+					return $item->{ ZTypeRegistry::Z_STRING_VALUE };
 				},
 				'{ "Z1K1": "Z2", "Z2K2": "to canonical value", '
 					. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [{ "Z1K1": "Z11", "Z11K1": "Z1002", '
@@ -966,7 +967,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 					. ' { "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "third value" } } ]',
 				'Z6',
 				static function ( $item ) {
-					return $item->Z6K1;
+					return $item->{ ZTypeRegistry::Z_STRING_VALUE };
 				},
 				'[ "first value", "second value", { "Z1K1": "Z2", "Z2K1": "third value" } ]'
 			]

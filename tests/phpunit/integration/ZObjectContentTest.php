@@ -205,7 +205,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertSame( $testObject->getText(), $zobjectText );
 		$this->assertTrue( $testObject->getObject() instanceof \stdClass );
-		$this->assertSame( 'Z2', $testObject->getObject()->Z1K1 );
+		$this->assertSame( 'Z2', $testObject->getObject()->{ ZTypeRegistry::Z_OBJECT_TYPE } );
 		$this->assertNull( $testObject->getZObject() );
 
 		$testObject->isValid();
