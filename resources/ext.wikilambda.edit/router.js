@@ -5,7 +5,6 @@
  * @license MIT
  */
 var VueRouter = require( '../lib/vue-router/vue-router.common.js' ),
-	FunctionEditor = require( './views/FunctionEditor.vue' ),
 	FunctionDefinition = require( './views/FunctionDefinition.vue' ),
 	FunctionImplementations = require( './views/FunctionImplementations.vue' ),
 	FunctionTests = require( './views/FunctionTests.vue' ),
@@ -34,15 +33,15 @@ var EditorWrapper = {
 	functional: true,
 	props: [ 'zid', 'type' ],
 	render: function ( h, ctx ) {
-		var isNewDesign = ctx.props.type === 'newDesign';
+		var isFallback = ctx.props.type === 'fallback';
 		var isFunctionEditor = ctx.props.zid === Constants.Z_FUNCTION ||
 		store.getters.getCurrentZObjectType === Constants.Z_FUNCTION;
-		var component = ZObjectEditor;
+		var component;
 
-		if ( isNewDesign ) {
+		if ( isFunctionEditor && !isFallback ) {
 			component = FunctionView;
-		} else if ( isFunctionEditor ) {
-			component = FunctionEditor;
+		} else {
+			component = ZObjectEditor;
 		}
 
 		return h( component, ctx.data, ctx.children );
@@ -61,6 +60,10 @@ var routes = [
 		},
 		component: EditorWrapper,
 		children: [
+			{
+				path: '',
+				component: FunctionDefinition
+			},
 			{
 				name: 'functionDefinition',
 				path: 'functionDefinition',
@@ -107,6 +110,10 @@ var routes = [
 		},
 		component: EditorWrapper,
 		children: [
+			{
+				path: '',
+				component: FunctionDefinition
+			},
 			{
 				name: 'functionDefinition',
 				path: 'functionDefinition',

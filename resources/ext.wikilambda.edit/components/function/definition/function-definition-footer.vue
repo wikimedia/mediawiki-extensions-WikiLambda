@@ -31,6 +31,14 @@
 			>
 				{{ $i18n( 'wikilambda-function-definition-footer-implementation-button' ) }}
 			</button>
+			<!-- TODO: The following is just a placeholder until it is possible to attach implementation / Testers -->
+			<button
+				v-if="!isNewZObject"
+				:class="implementationButtonStyle"
+				@click="handleFallbackClick"
+			>
+				{{ $i18n( 'wikilambda-fallback' ) }}
+			</button>
 			<button
 				class="ext-wikilambda-function-definition-footer__actions__cancel"
 				@click="handleCancel"
@@ -112,6 +120,13 @@ module.exports = {
 				this.submitZObject( this.summary );
 
 				this.$emit( 'publish-successful', this.$i18n( 'wikilambda-function-definition-publish-successful-message' ).text() );
+			},
+			handleFallbackClick: function () {
+				var query = {
+					type: 'fallback',
+					zid: Constants.Z_FUNCTION
+				};
+				this.$router.push( { name: this.$route.name, query: query } );
 			}
 		}
 	)

@@ -70,6 +70,7 @@
 	"wikilambda-publishnew": "Label for the submit button when creating a ZObject on a public wiki\n{{identical|Publish}}",
 	"wikilambda-published": "Label for the publish button after clicking and publishing a function",
 	"wikilambda-cancel": "Label for the cancel button\n\n{{Identical|Cancel}}",
+	"wikilambda-fallback": "Label for the Fallback editor button",
 	"wikilambda-savenew": "Label for the submit button when creating a ZObject on a private wiki\n{{identical|Save}}",
 	"wikilambda-publishchanges": "Label for the submit button when updating an existing ZObject on a public wiki",
 	"wikilambda-savechanges": "Label for the submit button when updating an existing ZObject on a private wiki",
