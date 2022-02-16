@@ -37,5 +37,6 @@
 	"wikilambda-function-definition-add-other-label-languages-title": "+ Добавить метки на другом языке",
 	"wikilambda-function-definition-footer-placeholder": "Кратко опишите Ваши правки",
 	"wikilambda-function-definition-footer-label": "Описание изменений",
-	"wikilambda-function-definition-inputs-item-selector-search-placeholder": " Поиск ссылки или функции"
+	"wikilambda-function-definition-inputs-item-selector-search-placeholder": " Поиск ссылки или функции",
+	"wikilambda-editor-fn-edit-definition-tooltip-content": "Приносим свои извинения! Только администраторы могут изменить описание функции после его публикации."
 }

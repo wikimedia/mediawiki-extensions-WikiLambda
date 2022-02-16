@@ -172,6 +172,7 @@
 	"wikilambda-editor-fn-step-function-definition": "Funktionsdefinition",
 	"wikilambda-editor-fn-tests-tooltip-content": "Sobald die Funktion definiert ist, kannst du Implementierungen und Tests hinzufügen.",
 	"wikilambda-editor-fn-tests-tooltip-header": "Kein Zugriff",
+	"wikilambda-editor-fn-edit-definition-tooltip-content": "Entschuldigung! Nur Administratoren können die Funktionsdefinition ändern, sobald eine Definition veröffentlicht wurde.",
 	"wikilambda-editor-name-title": "Name",
 	"wikilambda-editor-name-subtitle": "Wie lautet der Name deiner Funktion? Was tut sie?",
 	"wikilambda-editor-name-zobject-name": "Funktionsname",

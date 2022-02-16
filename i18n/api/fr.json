@@ -20,6 +20,7 @@
 	"apihelp-wikilambda_function_call-example-generic-list": "Invoquer une fonction qui renvoie le premier élément d'une liste typée.",
 	"apihelp-wikilambda_function_call-example-generic-pair": "Invoquer une fonction qui renvoie le deuxième élément d’une Paire<Chaîne,Paire<Chaîne,Booléen>>",
 	"apihelp-wikilambda_function_call-example-generic-map": "Invoquer une fonction qui fait la correspondance entre l’élément d’une Correspondance (Map) générique à une clé donnée, avec une version chaîne de sa valeur",
+	"apihelp-wikilambda_function_call-example-user-defined-generic-type": "Génère un Z4/Type avec une fonction définie par l’utilisateur et utilise ce Z4/Type comme un Z1K1/Type de Z-Objet",
 	"apihelp-wikilambda_function_call-example-composition": "Invoquer une composition : si le premier argument est vrai, trier le second ; sinon, le renvoyer intact",
 	"apihelp-wikilambda_function_call-example-notempty": "Invoquer la fonction « non vide » comme une composition : renvoie vrai si la liste d’entrée contient au moins un élément",
 	"apihelp-wikilambda_function_call-example-map": "Invoquer la fonction Correspondance (Map) : étant données une fonction et une liste de chaînes, renvoyer le résultat de l’exécution de la fonction sur chaque chaîne",

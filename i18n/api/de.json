@@ -16,6 +16,7 @@
 	"apihelp-wikilambda_function_call-example-generic-list": "Aufrufen einer Funktion, die das erste Element einer typisierten Liste zurückgibt",
 	"apihelp-wikilambda_function_call-example-generic-pair": "Aufrufen einer Funktion, die das zweite Element eines Paares <String,Pair<String,Bool>> zurückgibt",
 	"apihelp-wikilambda_function_call-example-generic-map": "Aufrufen einer Funktion, die das Element einer generischen Map an einem bestimmten Schlüssel auf eine String-Version seines Wertes abbildet",
+	"apihelp-wikilambda_function_call-example-user-defined-generic-type": "Erzeugen eines Z4/Typs mit einer benutzerdefinierten Funktion und Verwendung dieses Z4/Typs als Z1K1/Typ eines ZObjekts",
 	"apihelp-wikilambda_function_call-example-composition": "Aufrufen einer Zusammenstellung: Wenn das erste Argument wahr ist, sortiere das zweite; sonst, gib es unberührt zurück",
 	"apihelp-wikilambda_function_call-example-map": "Aufrufen der Map-Funktion: eine Funktion und eine Liste von Zeichenketten, Rückgabe des Ergebnisses der Ausführung der Funktion über jede Zeichenkette",
 	"apihelp-wikilambda_function_call-example-apply": "Aufrufen der Funktion Apply: eine Funktion und eine Zeichenkette geben das Ergebnis der Ausführung der Funktion über die Zeichenkette zurück",
