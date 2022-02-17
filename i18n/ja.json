@@ -45,6 +45,7 @@
 	"wikilambda-function-definition-output-selector": "種類を選択してください",
 	"wikilambda-editor-fn-step-tests": "テスト",
 	"wikilambda-editor-fn-tests-tooltip-header": "アクセスなし",
+	"wikilambda-editor-fn-edit-definition-tooltip-content": "申し訳ありません、関数の定義は公開後になると管理者しか変更できません。",
 	"wikilambda-editor-input-title": "入力",
 	"wikilambda-editor-default-name": "無題",
 	"wikilambda-editor-implementation-title": "実装",
