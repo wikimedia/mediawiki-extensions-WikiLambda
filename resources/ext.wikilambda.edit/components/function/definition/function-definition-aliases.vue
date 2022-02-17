@@ -246,7 +246,7 @@ module.exports = {
 		border-radius: 2px;
 		display: flex;
 		padding: 4px 6px;
-		overflow: scroll;
+		overflow: auto;
 		// TODO: check with @aishwarya - this is a significantly bigger height than the other
 		// inputs but is much easier ot read the chips
 		height: 35px;
