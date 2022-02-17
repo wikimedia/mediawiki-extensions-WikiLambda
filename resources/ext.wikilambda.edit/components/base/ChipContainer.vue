@@ -95,7 +95,7 @@ module.exports = {
 
 	&__input {
 		border: 1px solid transparent;
-		width: 300px;
+		width: 240px;
 	}
 
 	input:focus {
