@@ -138,12 +138,12 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 				$zobject = ZObjectUtils::filterZMultilingualStringsToLanguage( $zobject, $languageZids );
 			}
 
-			// Normalize Z6 and Z9
+			// Normalize ZObject
 			// TODO: If language parameter is present and canonical is set to false, we are
 			// walking the tree two times. It would be interesting to only walk it once, and
 			// perform all the transformations that are necessary on that same recursive walk.
 			if ( !$canonical ) {
-				$zobject = ZObjectUtils::normalizeZStringsAndZReferences( $zobject );
+				$zobject = ZObjectUtils::normalize( $zobject );
 			}
 
 			$result = [

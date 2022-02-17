@@ -229,6 +229,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			'empty list as array' => [
 				'[]', '[]'
 			],
+			// TODO (T298133): Remove Z10 test cases when we are ready to deprecate it
 			'empty list as ZObject' => [
 				'{ "Z1K1": "Z10" }', '[]'
 			],
@@ -302,6 +303,39 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "Z1K1": "Z60", "K1": "test" }',
 				'{ "Z1K1": "Z60", "Z60K1": "test" }',
 			],
+
+			// Generic list examples
+			// TODO (T298133): Remove Z10 test cases when we are ready to deprecate it
+			'empty generic list' => [
+				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } }',
+				'[]'
+			],
+			'single string in a generic list' => [
+				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" }, "K1": "a" }',
+				'["a"]'
+			],
+			'single string in generic list, tail empty generic list' => [
+				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" }, "K1": "a",'
+				. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } }',
+				'["a"]'
+			],
+			'two strings in a generic list' => [
+				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" }, "K1": "a",'
+				. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" }, "K1": "b" } }',
+				'["a", "b"]'
+			],
+			'empty generic list in generic list' => [
+				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
+				. ' "K1": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } }',
+				'[[]]'
+			],
+			'two empty generic lists in generic list' => [
+				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
+				. ' "K1": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } },'
+				. ' "K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
+				. ' "K1": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } } }',
+				'[[], []]'
+			]
 		];
 	}
 
@@ -552,6 +586,214 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				[ self::UK, self::RU ],
 				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }]',
 			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideTypeEqualTo
+	 * @covers ::isTypeEqualTo
+	 */
+	public function testTypeEqualTo( $type1, $type2, $expectedResult ) {
+		$this->assertSame(
+			$expectedResult,
+			ZObjectUtils::isTypeEqualTo( FormatJson::decode( $type1 ), FormatJson::decode( $type2 ) )
+		);
+	}
+
+	public function provideTypeEqualTo() {
+		return [
+			'equal canonical types' => [ '"Z11"', '"Z11"', true ],
+			'non equal canonical types' => [ '"Z11"', '"Z12"', false ],
+			'equal normal types' => [
+				'{ "Z1K1": "Z9", "Z9K1": "Z11" }',
+				'{ "Z1K1": "Z9", "Z9K1": "Z11" }',
+				true
+			],
+			'non equal normal types' => [
+				'{ "Z1K1": "Z9", "Z9K1": "Z11" }',
+				'{ "Z1K1": "Z9", "Z9K1": "Z12" }',
+				false
+			],
+			'same types but in different forms fails' => [
+				'"Z12"',
+				'{ "Z1K1": "Z9", "Z9K1": "Z12" }',
+				false
+			],
+			'equal list types' => [
+				'{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z6" } }',
+				'{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z6" } }',
+				true
+			],
+			'non equal list types' => [
+				'{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z6" } }',
+				'{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } }',
+				false
+			],
+			'non equal list types with extra key' => [
+				'{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z6" } }',
+				'{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } }'
+					. ' "Z882K1": { "Z1K1": "Z9", "Z9K1": "Z1" } }',
+				false
+			],
+			'non equal list types with less keys' => [
+				'{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z6" } }'
+					. ' "Z882K1": { "Z1K1": "Z9", "Z9K1": "Z1" } }',
+				'{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } }',
+				false
+			],
+			'non equal list and error types' => [
+				'{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z6" } }',
+				'{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z885" },'
+					. ' "Z885K1": { "Z1K1": "Z9", "Z9K1": "Z500" } }',
+				false
+			],
+			'equal list types in different formats fails' => [
+				'{ "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" }',
+				'{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z6" } }',
+				false
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideNormalize()
+	 * @covers ::normalize
+	 * @covers ::normalizeInternal
+	 * @covers ::normalizeZStringOrZReference
+	 * @covers ::normalizeZList
+	 * @covers ::normalizeZListInternal
+	 */
+	public function testNormalize( $input, $expected ) {
+		$this->assertSame(
+			FormatJson::encode( FormatJson::decode( $expected ) ),
+			FormatJson::encode( ZObjectUtils::normalize( FormatJson::decode( $input ) ) )
+		);
+	}
+
+	public function provideNormalize() {
+		return [
+				'normalize empty zobject' => [
+				'{}',
+				'{}'
+			],
+			'normalize empty list' => [
+				'[]',
+				'{ "Z1K1": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } } }'
+			],
+			'normalize empty list as value' => [
+				'{ "Z2K2": [] }',
+				'{ "Z2K2": { "Z1K1": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } } } }'
+			],
+			'normalize canonical string' => [
+				'{ "Z2K2": "string value" }',
+				'{ "Z2K2": { "Z1K1": "Z6", "Z6K1": "string value" } }'
+			],
+			'normalize canonical reference' => [
+				'{ "Z2K2": "Z111" }',
+				'{ "Z2K2": { "Z1K1": "Z9", "Z9K1": "Z111" } }'
+			],
+			'normalize list with two elements of a same type' => [
+				'{ "Z2K2": ['
+				. '{ "Z1K1": "Z2", "Z2K1": "Z111" },'
+				. '{ "Z1K1": "Z2", "Z2K1": "string" }'
+				. '] }',
+				'{ "Z2K2": { "Z1K1": {'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z2" } },'
+					. ' "K1": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z2" },'
+					. ' "Z2K1": { "Z1K1": "Z9", "Z9K1": "Z111" } },'
+					. ' "K2": { "Z1K1": {'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z2" } },'
+					. ' "K1": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z2" },'
+					. ' "Z2K1": { "Z1K1": "Z6", "Z6K1": "string" } } } } }'
+			],
+			'normalize list with two elements of a different type' => [
+				'[ "string", "Z111" ]',
+				'{ "Z1K1": {'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } },'
+					. ' "K1": { "Z1K1": "Z6", "Z6K1": "string" },'
+					. ' "K2": { "Z1K1": {'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } },'
+					. ' "K1": { "Z1K1": "Z9", "Z9K1": "Z111" } } }'
+			],
+			'normalize monolingual string keys' => [
+				'{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "label" }',
+				'{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z11" },'
+					. ' "Z11K1": { "Z1K1": "Z9", "Z9K1": "Z1002" },'
+					. ' "Z11K2": { "Z1K1": "Z6", "Z6K1": "label" } }'
+			],
+			'normalize multilingual string keys' => [
+				'{ "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" } ] }',
+				'{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z12" }, "Z12K1": { "Z1K1": {'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z11" } },'
+					. ' "K1": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z11" },'
+					. ' "Z11K1": { "Z1K1": "Z9", "Z9K1": "Z1003" },'
+					. ' "Z11K2": { "Z1K1": "Z6", "Z6K1": "etiqueta" } } } }',
+			],
+			'leave untouched an already normalized string' => [
+				'{ "Z2K2": { "Z1K1": "Z6", "Z6K1": "string value" } }',
+				'{ "Z2K2": { "Z1K1": "Z6", "Z6K1": "string value" } }'
+			],
+			'leave untouched an already normalized reference' => [
+				'{ "Z2K2": { "Z1K1": "Z9", "Z9K1": "Z111" } }',
+				'{ "Z2K2": { "Z1K1": "Z9", "Z9K1": "Z111" } }'
+			],
+			'leave untouched an already normalized list' => [
+				'{ "Z1K1": {'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } },'
+					. ' "K1": { "Z1K1": "Z6", "Z6K1": "string" },'
+					. ' "K2": { "Z1K1": {'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } },'
+					. ' "K1": { "Z1K1": "Z9", "Z9K1": "Z111" } } }',
+				'{ "Z1K1": {'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } },'
+					. ' "K1": { "Z1K1": "Z6", "Z6K1": "string" },'
+					. ' "K2": { "Z1K1": {'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } },'
+					. ' "K1": { "Z1K1": "Z9", "Z9K1": "Z111" } } }'
+			]
 		];
 	}
 

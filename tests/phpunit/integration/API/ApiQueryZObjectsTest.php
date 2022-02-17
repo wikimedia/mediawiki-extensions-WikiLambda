@@ -141,7 +141,8 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
 			'list' => 'wikilambdaload_zobjects',
-			'wikilambdaload_zids' => 'Z111'
+			'wikilambdaload_zids' => 'Z111',
+			'wikilambdaload_canonical' => true,
 		] );
 
 		$z111 = $result[0]['query']['wikilambdaload_zobjects']['Z111']['data'];
@@ -164,6 +165,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 			'list' => 'wikilambdaload_zobjects',
 			'wikilambdaload_zids' => 'Z111',
 			'wikilambdaload_language' => 'fr',
+			'wikilambdaload_canonical' => true,
 		] );
 
 		$z111 = $result[0]['query']['wikilambdaload_zobjects']['Z111']['data'];
@@ -188,6 +190,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 			'list' => 'wikilambdaload_zobjects',
 			'wikilambdaload_zids' => 'Z111',
 			'wikilambdaload_language' => 'es',
+			'wikilambdaload_canonical' => true,
 		] );
 
 		$z111 = $result[0]['query']['wikilambdaload_zobjects']['Z111']['data'];
@@ -240,12 +243,9 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		$this->assertEquals( $nullReference, $z111_normal['Z2K2']['Z4K3'] );
 
 		$this->assertEquals( 'Z6', $z111_canonical['Z2K2']['Z4K2'][0]['Z3K1'] );
-		$this->assertEquals( $referenceZ6, $z111_normal['Z2K2']['Z4K2'][0]['Z3K1'] );
+		$this->assertEquals( $referenceZ6, $z111_normal['Z2K2']['Z4K2']['K1']['Z3K1'] );
 
 		$this->assertEquals( 'Z111K1', $z111_canonical['Z2K2']['Z4K2'][0]['Z3K2'] );
-		$this->assertEquals( $stringZ111K1, $z111_normal['Z2K2']['Z4K2'][0]['Z3K2'] );
-
-		// Exclude ZMultilingualStrings
-		$this->assertEquals( $z111_canonical['Z2K3']['Z12K1'], $z111_normal['Z2K3']['Z12K1'] );
+		$this->assertEquals( $stringZ111K1, $z111_normal['Z2K2']['Z4K2']['K1']['Z3K2'] );
 	}
 }
