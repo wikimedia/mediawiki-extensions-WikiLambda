@@ -153,9 +153,8 @@ module.exports = {
 					case Constants.Z_FUNCTION_CALL:
 						return 'z-function-call';
 					case Constants.Z_FUNCTION:
-					// Prevent rendering the ZFunction component in edit mode
-					// This causes recursion issues when the ZFunction is rendered within another type
-						if ( this.readonly ) {
+						// Prevent rendering the ZFunction component is not the root element
+						if ( this.parentType === Constants.Z_PERSISTENTOBJECT ) {
 							return 'z-function';
 						} else {
 							return 'z-object-generic';

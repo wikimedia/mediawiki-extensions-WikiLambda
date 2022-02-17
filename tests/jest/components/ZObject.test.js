@@ -85,7 +85,8 @@ describe( 'ZObject', function () {
 				propsData: {
 					zobjectId: 0,
 					persistent: false,
-					readonly: true
+					readonly: true,
+					parentType: Constants.Z_PERSISTENTOBJECT
 				},
 				store: store,
 				localVue: localVue
