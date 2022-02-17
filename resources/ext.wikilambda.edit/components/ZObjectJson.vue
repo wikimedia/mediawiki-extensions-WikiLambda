@@ -104,6 +104,9 @@ module.exports = {
 			this.onClickoutHandler();
 		},
 		onClickoutHandler: function () {
+			if ( this.readonly ) {
+				return;
+			}
 			var json,
 				self = this;
 			if ( this.zobjectId !== undefined ) {
