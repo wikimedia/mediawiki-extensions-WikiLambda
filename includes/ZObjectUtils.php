@@ -154,42 +154,73 @@ class ZObjectUtils {
 		}
 
 		if ( is_object( $input ) ) {
-			$output = self::canonicalizeZRecord( $input );
+			$outputObj = self::canonicalizeZRecord( $input );
+			$output = get_object_vars( $outputObj );
 
-			if ( property_exists( $output, ZTypeRegistry::Z_OBJECT_TYPE )
-				&& $output->Z1K1 == ZTypeRegistry::Z_STRING
-				&& property_exists( $output, ZTypeRegistry::Z_STRING_VALUE )
-				&& !self::isValidId( $output->Z6K1 ) ) {
-				return self::canonicalize( $output->Z6K1 );
-			}
+			if ( array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $output ) ) {
+				$type = self::canonicalize( $output[ ZTypeRegistry::Z_OBJECT_TYPE ] );
 
-			if ( property_exists( $output, ZTypeRegistry::Z_OBJECT_TYPE )
-				&& $output->Z1K1 == ZTypeRegistry::Z_REFERENCE
-				&& property_exists( $output, ZTypeRegistry::Z_REFERENCE_VALUE )
-				&& self::isValidId( $output->Z9K1 ) ) {
-				return self::canonicalize( $output->Z9K1 );
-			}
+				if ( is_string( $type ) ) {
+					// Type is ZString
+					if ( $type === ZTypeRegistry::Z_STRING
+						&& array_key_exists( ZTypeRegistry::Z_STRING_VALUE, $output )
+						&& !self::isValidId( $output[ ZTypeRegistry::Z_STRING_VALUE ] ) ) {
+						// FIXME: what if it is a valid ID? what are we returning here?
+						return self::canonicalize( $output[ ZTypeRegistry::Z_STRING_VALUE ] );
+					}
 
-			if ( property_exists( $output, ZTypeRegistry::Z_OBJECT_TYPE )
-				&& $output->Z1K1 == ZTypeRegistry::Z_LIST ) {
+					// Type is a ZReference
+					if ( $type === ZTypeRegistry::Z_REFERENCE
+						&& array_key_exists( ZTypeRegistry::Z_REFERENCE_VALUE, $output )
+						&& self::isValidId( $output[ ZTypeRegistry::Z_REFERENCE_VALUE ] ) ) {
+						return self::canonicalize( $output[ ZTypeRegistry::Z_REFERENCE_VALUE ] );
+					}
 
-				if ( !property_exists( $output, ZTypeRegistry::Z_LIST_HEAD )
-					&& !property_exists( $output, ZTypeRegistry::Z_LIST_TAIL ) ) {
-					return [];
+					// Type is a ZList
+					// TODO (T298133): Remove whenever we stop supporting Z10s
+					if ( $type === ZTypeRegistry::Z_LIST ) {
+						if ( !array_key_exists( ZTypeRegistry::Z_LIST_HEAD, $output )
+							&& !array_key_exists( ZTypeRegistry::Z_LIST_TAIL, $output ) ) {
+							return [];
+						}
+
+						if ( !array_key_exists( ZTypeRegistry::Z_LIST_TAIL, $output ) ) {
+							return [ self::canonicalize( $output[ ZTypeRegistry::Z_LIST_HEAD ] ) ];
+						}
+
+						return array_merge(
+							[ self::canonicalize( $output[ ZTypeRegistry::Z_LIST_HEAD ] ) ],
+							self::canonicalize( $output[ ZTypeRegistry::Z_LIST_TAIL ] )
+						);
+					}
 				}
 
-				if ( !property_exists( $output, ZTypeRegistry::Z_LIST_TAIL ) ) {
-					return [ self::canonicalize( $output->Z10K1 ) ];
+				// Type is a Typed list
+				if ( is_object( $type ) ) {
+					$typeVars = get_object_vars( $type );
+					if (
+						array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $typeVars )
+						&& $typeVars[ ZTypeRegistry::Z_OBJECT_TYPE ] == ZTypeRegistry::Z_FUNCTIONCALL
+						&& array_key_exists( ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION, $typeVars )
+						&& $typeVars[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ] == ZTypeRegistry::Z_FUNCTION_GENERIC_LIST
+					) {
+						if ( !array_key_exists( 'K1', $output )
+							&& !array_key_exists( 'K2', $output ) ) {
+							return [];
+						}
+
+						if ( !array_key_exists( 'K2', $output ) ) {
+							return [ self::canonicalize( $output[ 'K1' ] ) ];
+						}
+
+						return array_merge(
+							[ self::canonicalize( $output[ 'K1' ] ) ],
+							self::canonicalize( $output[ 'K2' ] )
+						);
+					}
 				}
-
-				return array_merge(
-					[ self::canonicalize( $output->Z10K1 ) ],
-					self::canonicalize( $output->Z10K2 )
-				);
-
 			}
-
-			return $output;
+			return $outputObj;
 		}
 
 		return $input;
@@ -435,22 +466,88 @@ class ZObjectUtils {
 	}
 
 	/**
-	 * Returns a normalized ZList given an array of elements (ZObjects)
+	 * Asserts whether two types are equivalent
+	 *
+	 * @param stdClass|string $type1
+	 * @param stdClass|string $type2
+	 * @return bool
+	 */
+	public static function isTypeEqualTo( $type1, $type2 ) {
+		// Not the same type
+		if ( gettype( $type1 ) !== gettype( $type2 ) ) { return false;
+		}
+
+		// If they are both strings, return identity
+		if ( is_string( $type1 ) ) { return $type1 === $type2;
+		}
+
+		// If they are both objects, compare their keys
+		$typeArr1 = (array)$type1;
+		$typeArr2 = (array)$type2;
+		if ( count( $typeArr1 ) !== count( $typeArr2 ) ) {
+			return false;
+		}
+		foreach ( $typeArr1 as $key => $value ) {
+			if ( !array_key_exists( $key, $typeArr2 ) ) { return false;
+			}
+			if ( !self::isTypeEqualTo( $value, $typeArr2[ $key ] ) ) { return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Returns a normalized typed list given an array of elements (ZObjects)
 	 *
 	 * @param array $input
 	 * @return stdClass
 	 */
 	private static function normalizeZList( $input ): stdClass {
-		if ( count( $input ) == 0 ) {
-			return (object)[
-				ZTypeRegistry::Z_OBJECT_TYPE => self::normalize( ZTypeRegistry::Z_LIST )
-			];
+		$elements = [];
+		$listType = null;
+
+		foreach ( $input as $item ) {
+			$zobject = self::normalize( $item );
+			$type = $zobject->{ ZTypeRegistry::Z_OBJECT_TYPE } ?? self::normalize( ZTypeRegistry::Z_OBJECT );
+			if ( $listType === null ) {
+				$listType = $type;
+			} else {
+				if ( !self::isTypeEqualTo( $listType, $type ) ) {
+					$listType = self::normalize( ZTypeRegistry::Z_OBJECT );
+				}
+			}
+			$elements[] = $zobject;
 		}
-		return (object)[
-			ZTypeRegistry::Z_OBJECT_TYPE => self::normalize( ZTypeRegistry::Z_LIST ),
-			ZTypeRegistry::Z_LIST_HEAD => self::normalize( array_shift( $input ) ),
-			ZTypeRegistry::Z_LIST_TAIL => self::normalizeZList( $input )
+
+		return self::normalizeZListInternal( $listType ?? self::normalize( ZTypeRegistry::Z_OBJECT ), $elements );
+	}
+
+	/**
+	 * Given a type and an array of normalized elements, returns the generic list
+	 * representation.
+	 *
+	 * @param stdClass $listType
+	 * @param array $elements
+	 * @return stdClass
+	 */
+	private static function normalizeZListInternal( $listType, $elements ) {
+		$type = (object)[
+			ZTypeRegistry::Z_OBJECT_TYPE => self::normalize( ZTypeRegistry::Z_FUNCTIONCALL ),
+			ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION => self::normalize( ZTypeRegistry::Z_FUNCTION_GENERIC_LIST ),
+			ZTypeRegistry::Z_FUNCTION_GENERIC_LIST_TYPE => $listType
 		];
+
+		$zobject = [ ZTypeRegistry::Z_OBJECT_TYPE => $type ];
+
+		if ( count( $elements ) === 0 ) {
+			return (object)$zobject;
+		}
+
+		$zobject[ 'K1' ] = array_shift( $elements );
+		if ( count( $elements ) > 0 ) {
+			$zobject[ 'K2' ] = self::normalizeZListInternal( $listType, $elements );
+		}
+		return (object)$zobject;
 	}
 
 	/**
@@ -459,6 +556,7 @@ class ZObjectUtils {
 	 * Given a canonical ZObject, returns the normal form with the following
 	 * exceptions: ZList, ZMultilingualString, ZMonolingualString
 	 *
+	 * @deprecated
 	 * @param string|array|stdClass $input decoded JSON canonical form of a ZObject
 	 * @return string|array|stdClass same ZObject in normal form except ZLists,
 	 * ZMultilingualStrings and ZMonolingualStrings
