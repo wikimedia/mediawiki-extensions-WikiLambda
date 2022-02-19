@@ -30,6 +30,10 @@
 			"description": "Enable the extension.",
 			"value": true
 		},
+		"WikiLambdaEnableParserFunction": {
+			"description": "Enable the {{#function:…}} extension.",
+			"value": true
+		},
 		"WikiLambdaOrchestratorLocation": {
 			"description": "Docker container and port of the function orchestrator.",
 			"value": "mediawiki_function-orchestrator_1:6254"
