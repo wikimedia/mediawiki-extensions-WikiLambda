@@ -112,6 +112,7 @@
 			"dependencies": [
 				"vue",
 				"vuex",
+				"@wikimedia/codex",
 				"mediawiki.Title",
 				"mediawiki.api",
 				"mediawiki.router",
