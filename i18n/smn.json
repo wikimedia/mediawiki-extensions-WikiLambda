@@ -1,10 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
+			"Seipinne",
 			"Yupik"
 		]
 	},
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Kielâ",
 	"wikilambda-savenew": "Vuorkkii",
+	"wikilambda-metadata-language-column": "Kielâ",
 	"wikilambda-editor-name-title": "Nommâ"
 }
