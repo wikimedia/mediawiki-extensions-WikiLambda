@@ -75,29 +75,21 @@ module.exports = {
 		publishButtonValidity: function () {
 			// publish button is only valid if function has inputs and outputs defined
 			// TODO: this should also reset if there are local changes on an already published function
-			if ( this.currentZFunctionHasInputs && this.currentZFunctionHasOutput ) {
-				return true;
-			}
-			return false;
+			return this.currentZFunctionHasInputs && this.currentZFunctionHasOutput;
 		},
 		publishButtonStyle: function () {
-			if ( this.publishButtonValidity ) {
-				return 'ext-wikilambda-function-definition-footer__actions__valid-publish';
-			}
-			return 'ext-wikilambda-function-definition-footer__actions__invalid';
+			return this.publishButtonValidity ?
+				'ext-wikilambda-function-definition-footer__actions__valid-publish' :
+				'ext-wikilambda-function-definition-footer__actions__invalid';
 		},
 		implementationButtonValidity: function () {
 			// can only create an implementation if this is a published function
-			if ( this.isEditing ) {
-				return true;
-			}
-			return false;
+			return this.isEditing;
 		},
 		implementationButtonStyle: function () {
-			if ( this.implementationButtonValidity ) {
-				return 'ext-wikilambda-function-definition-footer__actions__valid-implementation';
-			}
-			return 'ext-wikilambda-function-definition-footer__actions__invalid';
+			return this.implementationButtonValidity ?
+				'ext-wikilambda-function-definition-footer__actions__valid-implementation' :
+				'ext-wikilambda-function-definition-footer__actions__invalid';
 		}
 	} ),
 	methods: $.extend( {},
@@ -117,9 +109,13 @@ module.exports = {
 			},
 			handlePublish: function () {
 				// TODO (T297330): include legal text when ready
-				this.submitZObject( this.summary );
-
-				this.$emit( 'publish-successful', this.$i18n( 'wikilambda-function-definition-publish-successful-message' ).text() );
+				this.submitZObject( this.summary ).then( function ( pageTitle ) {
+					if ( pageTitle ) {
+						window.location.href = new mw.Title( pageTitle ).getUrl();
+					} else {
+						this.$emit( 'publish-successful', this.$i18n( 'wikilambda-function-definition-publish-successful-message' ).text() );
+					}
+				} );
 			},
 			handleFallbackClick: function () {
 				var query = {
@@ -156,6 +152,7 @@ module.exports = {
 			padding: 5px;
 			margin: 5px;
 			border-radius: 2px;
+			cursor: pointer;
 		}
 
 		&__valid-publish {
