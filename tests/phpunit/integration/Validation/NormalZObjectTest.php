@@ -23,7 +23,7 @@ final class NormalZObjectTest extends ValidationTest {
 		// Keep in lock-step with CanonicalZObjectTest::provideZIDs()
 		// TODO: Enable test for Z7.
 		return [
-			// [ "LIST" ],
+			[ "LIST" ],
 			[ "Z1" ], [ "Z2" ],
 			// [ "Z6" ],
 			[ "Z14" ], [ "Z17" ], [ "Z18" ], [ "Z22" ], [ "Z39" ], [ "Z40" ],
