@@ -4,11 +4,14 @@
 			"Robby"
 		]
 	},
+	"wikilambda-reference": "Referenz",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Sprooch",
 	"wikilambda-publishnew": "Verëffentlechen",
 	"wikilambda-savenew": "Späicheren",
 	"wikilambda-publishchanges": "Ännerunge verëffentlechen",
 	"wikilambda-savechanges": "Ännerunge späicheren",
 	"wikilambda-summarylabel": "Resumé:",
-	"wikilambda-editor-label-addlanguage-label": "Sprooch derbäisetzen:"
+	"wikilambda-editor-label-addlanguage-label": "Sprooch derbäisetzen:",
+	"wikilambda-editor-label-removelanguage-tooltip": "Dës Sprooch vun dëser Etikett ewechhuelen",
+	"wikilambda-editor-zobject-addkey": "Schlëssel derbäisetzen:"
 }
