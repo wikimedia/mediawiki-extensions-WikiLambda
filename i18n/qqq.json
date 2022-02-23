@@ -9,7 +9,8 @@
 			"Raymond",
 			"Robby",
 			"Umherirrender",
-			"Mormegil"
+			"Mormegil",
+			"Ajeje Brazorf"
 		]
 	},
 	"wikilambda-desc": "{{desc|name=WikiLambda|url=https://www.mediawiki.org/wiki/Extension:WikiLambda}}\n\n{{doc-wikilambda}}",
@@ -31,7 +32,7 @@
 	"wikilambda-multilingualstring-nofallback": "Message shown when a multi-lingual string doesn't have a label defined for the user's language, nor for any of that language's fallbacks.",
 	"wikilambda-viewmode-nojs": "Warning shown on a ZObject page to readers who do not have JavaScript.",
 	"wikilambda-diff-incompatible": "Warning shown on a diff page when a user tries to get the differences between a ZObject and something else.",
-	"wikilambda-reference": "Label for the word [[:meta:Abstract Wikipedia/Glossary#reference|reference]].\n\n{{doc-wikilambda}}",
+	"wikilambda-reference": "Label for the word [[:meta:Abstract Wikipedia/Glossary#reference|reference]].\n\n{{doc-wikilambda}}\n\n{{identical|Reference}}",
 	"wikilambda-literal": "Label for the word [[:meta:Abstract Wikipedia/Glossary#literal|literal]].\n\nNot as in \"literal translation\"\n\n{{doc-wikilambda}}",
 	"wikilambda-genericliteral": "Label for the word [[:meta:Abstract Wikipedia/Glossary#generic|generic]] literal.\n\n{{doc-wikilambda}}",
 	"wikilambda-call-function": "Label for button that calls a function{{doc-wikilambda}}",
