@@ -12,6 +12,9 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use GuzzleHttp\ClientInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 class OrchestratorInterface extends OrchestratorBase {
 
 	/**

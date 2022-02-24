@@ -13,6 +13,9 @@ namespace MediaWiki\Extension\WikiLambda;
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 class OrchestratorBase {
 
 	/** @var Client */

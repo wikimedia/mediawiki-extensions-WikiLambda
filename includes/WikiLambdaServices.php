@@ -12,6 +12,9 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\MediaWikiServices;
 
+/**
+ * @codeCoverageIgnore
+ */
 class WikiLambdaServices {
 
 	/**
