@@ -8,4 +8,7 @@
  * @license MIT
  */
 
+/**
+ * @codeCoverageIgnore
+ */
 define( 'CONTENT_MODEL_ZOBJECT', 'zobject' );

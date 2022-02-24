@@ -14,6 +14,9 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 
+/**
+ * @codeCoverageIgnore
+ */
 class MockOrchestrator extends OrchestratorBase {
 
 	/** @var MockHandler */

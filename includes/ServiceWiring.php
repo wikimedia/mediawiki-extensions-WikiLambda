@@ -12,8 +12,10 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\MediaWikiServices;
 
+/**
+ * @codeCoverageIgnore
+ */
 return [
-
 	'WikiLambdaZObjectStore' => static function ( MediaWikiServices $services ) {
 		return new ZObjectStore(
 			$services->getDBLoadBalancer(),
