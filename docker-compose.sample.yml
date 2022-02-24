@@ -4,6 +4,9 @@ services:
     image: docker-registry.wikimedia.org/wikimedia/mediawiki-services-function-orchestrator:<TAG>
     ports:
       - 6254:6254
+    environment:
+      WIKI_API_URL: "http://mediawiki-web:8080/w/api.php"
+      FUNCTION_EVALUATOR_URL: "http://mediawiki_function-evaluator_1:6927/1/v1/evaluate/"
   function-evaluator:
     image: docker-registry.wikimedia.org/wikimedia/mediawiki-services-function-evaluator:<TAG>
     ports:

@@ -30,12 +30,6 @@ class ApiFunctionCall extends ApiBase {
 	/** @var string */
 	private $orchestratorHost;
 
-	/** @var string */
-	private $evaluatorHost;
-
-	/** @var string */
-	private $wikiUri;
-
 	/**
 	 * @inheritDoc
 	 */
@@ -44,13 +38,10 @@ class ApiFunctionCall extends ApiBase {
 		if ( defined( 'MW_PHPUNIT_TEST' ) ) {
 			$this->orchestrator = MockOrchestrator::getInstance();
 			$this->orchestratorHost = 'mock';
-			$this->evaluatorHost = 'mock';
 		} else {
 			$config = MediaWikiServices::getInstance()->
 				getConfigFactory()->makeConfig( 'WikiLambda' );
 			$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
-			$this->evaluatorHost = $config->get( 'WikiLambdaEvaluatorLocation' );
-			$this->wikiUri = $config->get( 'WikiLambdaWikiAPILocation' );
 			$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
 			$this->orchestrator = new OrchestratorInterface( $client );
 		}
@@ -80,8 +71,6 @@ class ApiFunctionCall extends ApiBase {
 		$zObject = json_decode( $stringOfAZ );
 		$jsonQuery = [
 			'zobject' => $zObject,
-			'evaluatorUri' => $this->evaluatorHost,
-			'wikiUri' => $this->wikiUri,
 			'doValidate' => true
 		];
 		try {
