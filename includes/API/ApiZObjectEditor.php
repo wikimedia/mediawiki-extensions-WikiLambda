@@ -75,18 +75,26 @@ class ApiZObjectEditor extends ApiBase {
 		parent::dieWithError( $zerror );
 	}
 
+	/**
+	 * @inheritDoc
+	 * @codeCoverageIgnore
+	 */
 	public function mustBePosted() {
 		return true;
 	}
 
+	/**
+	 * @inheritDoc
+	 * @codeCoverageIgnore
+	 */
 	public function isWriteMode() {
 		return true;
 	}
 
 	/**
 	 * @see ApiBase::needsToken
-	 *
 	 * @return string
+	 * @codeCoverageIgnore
 	 */
 	public function needsToken(): string {
 		return 'csrf';
@@ -94,6 +102,7 @@ class ApiZObjectEditor extends ApiBase {
 
 	/**
 	 * @inheritDoc
+	 * @codeCoverageIgnore
 	 */
 	protected function getAllowedParams(): array {
 		return [
@@ -117,6 +126,7 @@ class ApiZObjectEditor extends ApiBase {
 	/**
 	 * @see ApiBase::getExamplesMessages()
 	 * @return array
+	 * @codeCoverageIgnore
 	 */
 	protected function getExamplesMessages() {
 		return [

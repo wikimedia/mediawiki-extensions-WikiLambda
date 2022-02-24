@@ -109,6 +109,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
 	 */
 	public function testNoResults() {
 		$result = $this->doApiRequest( [
@@ -123,6 +124,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
 	 */
 	public function testSearchByType() {
 		$result = $this->doApiRequest( [
@@ -145,6 +147,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
 	 */
 	public function testSearchByReturnType() {
 		$result = $this->doApiRequest( [
@@ -167,6 +170,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
 	 */
 	public function testSearchByStrictReturnType() {
 		$result = $this->doApiRequest( [
@@ -189,6 +193,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
 	 */
 	public function testSearchByTypeAndReturnType() {
 		$result = $this->doApiRequest( [
@@ -214,6 +219,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
 	 */
 	public function testSearchByTypeAndStrictReturnType() {
 		$result = $this->doApiRequest( [
@@ -239,6 +245,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
 	 *
 	 * TODO: Test setContinueEnumParameter when numRows() > limit.
 	 */
@@ -275,6 +282,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
 	 */
 	public function testSearchByLanguageNoFallback() {
 		$result = $this->doApiRequest( [
@@ -301,6 +309,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
 	 * @group Broken
 	 */
 	public function testSearchByLanguageNotNoFallback() {
@@ -330,6 +339,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
 	 * @group Broken
 	 */
 	public function testSearchByLabelInexact() {
@@ -357,6 +367,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
 	 */
 	public function testSearchByLabelExact() {
 		$result = $this->doApiRequest( [
@@ -379,6 +390,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
 	 */
 	public function testContinue() {
 		$result = $this->doApiRequest( [

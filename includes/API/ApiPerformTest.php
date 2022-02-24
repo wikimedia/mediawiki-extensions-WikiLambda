@@ -118,6 +118,7 @@ class ApiPerformTest extends ApiBase {
 
 	/**
 	 * @inheritDoc
+	 * @codeCoverageIgnore
 	 */
 	protected function getAllowedParams(): array {
 		return [
@@ -143,6 +144,7 @@ class ApiPerformTest extends ApiBase {
 	/**
 	 * @see ApiBase::getExamplesMessages()
 	 * @return array
+	 * @codeCoverageIgnore
 	 */
 	protected function getExamplesMessages() {
 		$exampleZid = $this->zObjectStore->findFirstZImplementationFunction();

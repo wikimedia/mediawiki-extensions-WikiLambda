@@ -23,6 +23,7 @@ class ApiQueryZFunctionReference extends ApiQueryGeneratorBase {
 
 	/**
 	 * @inheritDoc
+	 * @codeCoverageIgnore
 	 */
 	public function __construct(
 		$query,
@@ -72,6 +73,7 @@ class ApiQueryZFunctionReference extends ApiQueryGeneratorBase {
 
 	/**
 	 * @inheritDoc
+	 * @codeCoverageIgnore
 	 */
 	protected function getAllowedParams(): array {
 		return [
@@ -89,6 +91,7 @@ class ApiQueryZFunctionReference extends ApiQueryGeneratorBase {
 	/**
 	 * @see ApiBase::getExamplesMessages()
 	 * @return array
+	 * @codeCoverageIgnore
 	 */
 	protected function getExamplesMessages() {
 		$exampleZid = $this->zObjectStore->findFirstZImplementationFunction();

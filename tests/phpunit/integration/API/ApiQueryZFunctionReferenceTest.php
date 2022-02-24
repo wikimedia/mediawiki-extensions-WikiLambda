@@ -52,6 +52,7 @@ class ApiQueryZFunctionReferenceTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZFunctionReference::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZFunctionReference::run
 	 */
 	public function testNoResults() {
 		$result = $this->doApiRequest( [
@@ -73,6 +74,7 @@ class ApiQueryZFunctionReferenceTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZFunctionReference::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZFunctionReference::run
 	 */
 	public function testSearch() {
 		$result = $this->doApiRequest( [

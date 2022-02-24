@@ -51,6 +51,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 	}
 
 	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
 	 */
 	public function testNotFound() {
@@ -67,6 +68,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 	}
 
 	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
 	 */
 	public function testNotValidZid() {
@@ -83,6 +85,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 	}
 
 	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
 	 */
 	public function testMultipleZidsOneNotFound() {
@@ -100,6 +103,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 	}
 
 	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
 	 */
 	public function testMultipleZidsOneNotValid() {
@@ -117,6 +121,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 	}
 
 	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
 	 */
 	public function testMultipleZidsErrors() {
@@ -135,6 +140,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 	}
 
 	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
 	 */
 	public function testNoLanguageFilter() {
@@ -157,6 +163,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 	}
 
 	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
 	 */
 	public function testAvailableLanguage() {
@@ -182,6 +189,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 	}
 
 	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
 	 */
 	public function testUnavailableLanguage() {
@@ -207,6 +215,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 	}
 
 	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
 	 */
 	public function testNormalForm() {
