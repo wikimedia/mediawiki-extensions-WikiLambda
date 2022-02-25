@@ -36,6 +36,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 
 	/**
 	 * @inheritDoc
+	 * @codeCoverageIgnore
 	 */
 	public function __construct(
 		$query,
@@ -164,6 +165,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 
 	/**
 	 * @inheritDoc
+	 * @codeCoverageIgnore
 	 */
 	protected function getAllowedParams(): array {
 		return [
@@ -187,6 +189,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 	/**
 	 * @see ApiBase::getExamplesMessages()
 	 * @return array
+	 * @codeCoverageIgnore
 	 */
 	protected function getExamplesMessages() {
 		return [

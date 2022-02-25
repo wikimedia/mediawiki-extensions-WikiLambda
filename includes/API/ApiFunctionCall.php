@@ -114,6 +114,7 @@ class ApiFunctionCall extends ApiBase {
 
 	/**
 	 * @inheritDoc
+	 * @codeCoverageIgnore
 	 */
 	protected function getAllowedParams(): array {
 		return [
@@ -128,6 +129,7 @@ class ApiFunctionCall extends ApiBase {
 	 * Reads file contents from test data directory.
 	 * @param string $fileName
 	 * @return string file contents
+	 * @codeCoverageIgnore
 	 */
 	private function readTestFile( $fileName ): string {
 		$baseDir = __DIR__ .
@@ -150,6 +152,7 @@ class ApiFunctionCall extends ApiBase {
 	 * This function call produces a validation error. Replace
 	 * Z1000000K1: 'a' with Z1000000K1: 'A' in order to see successful validation.
 	 * @return string URL-encoded Function Call
+	 * @codeCoverageIgnore
 	 */
 	private function createUserDefinedValidationExample(): string {
 		$ZMillion = json_decode( $this->readTestFile( 'user-defined-validation-type.json' ), true );
@@ -163,6 +166,7 @@ class ApiFunctionCall extends ApiBase {
 	 * Generates URL-encoded example function call from JSON file contents.
 	 * @param string $fileName
 	 * @return string URL-encoded contents
+	 * @codeCoverageIgnore
 	 */
 	private function createExample( $fileName ): string {
 		return urlencode( $this->readTestFile( $fileName ) );
@@ -171,6 +175,7 @@ class ApiFunctionCall extends ApiBase {
 	/**
 	 * @see ApiBase::getExamplesMessages()
 	 * @return array
+	 * @codeCoverageIgnore
 	 */
 	protected function getExamplesMessages() {
 		return [

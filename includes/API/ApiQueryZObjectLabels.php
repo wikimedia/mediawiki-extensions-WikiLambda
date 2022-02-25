@@ -23,6 +23,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 
 	/**
 	 * @inheritDoc
+	 * @codeCoverageIgnore
 	 */
 	public function __construct( $query, $moduleName ) {
 		parent::__construct( $query, $moduleName, 'wikilambdasearch_' );
@@ -133,6 +134,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 
 	/**
 	 * @inheritDoc
+	 * @codeCoverageIgnore
 	 */
 	protected function getAllowedParams(): array {
 		return [
@@ -182,6 +184,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 	/**
 	 * @see ApiBase::getExamplesMessages()
 	 * @return array
+	 * @codeCoverageIgnore
 	 */
 	protected function getExamplesMessages() {
 		return [

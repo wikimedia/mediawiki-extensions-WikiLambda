@@ -44,6 +44,7 @@ class ApiZObjectFetcher extends ApiBase {
 
 	/**
 	 * @inheritDoc
+	 * @codeCoverageIgnore
 	 */
 	protected function getAllowedParams(): array {
 		$languageUtils = MediaWikiServices::getInstance()->getLanguageNameUtils();
@@ -64,6 +65,7 @@ class ApiZObjectFetcher extends ApiBase {
 	/**
 	 * @see ApiBase::getExamplesMessages()
 	 * @return array
+	 * @codeCoverageIgnore
 	 */
 	protected function getExamplesMessages() {
 		return [
