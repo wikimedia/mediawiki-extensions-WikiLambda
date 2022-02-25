@@ -35,6 +35,27 @@ module.exports = {
 		'resources/ext.wikilambda.edit/components/base/' // These are components we expect to move up into Codex
 	],
 
+	coverageThreshold: {
+		global: { // No thresholds per-file yet, as we don't pass on all files
+			branches: 0,
+			lines: 0,
+			functions: 0,
+			statements: 0
+		},
+		'./resources/ext.wikilambda.edit/': {
+			branches: 33,
+			lines: 43,
+			functions: 28,
+			statements: 0
+		},
+		'./resources/ext.wikilambda.edit/store': {
+			branches: 41,
+			lines: 55,
+			functions: 59,
+			statements: -450
+		}
+	},
+
 	// The paths to modules that run some code to configure or set up the testing environment before each test
 	setupFiles: [
 		'./jest.setup.js'
