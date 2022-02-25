@@ -12,9 +12,8 @@
 			</label>
 			<tooltip
 				v-if="isEditing"
-				:icon="tooltipIcon"
 				:content="tooltipMessage"
-			></tooltip>
+			>{{ tooltipIcon }}</tooltip>
 		</div>
 		<div class="ext-wikilambda-function-definition-inputs__inputs">
 			<function-definition-inputs-item

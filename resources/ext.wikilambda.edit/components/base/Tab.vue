@@ -6,23 +6,34 @@
 		@license MIT
 	-->
 	<div>
-		<button
-			class="ext-wikilambda-tab"
-			:class="statusClass"
-			:disabled="disabled"
-			@click="$emit( 'click' )"
+		<template v-if="!tooltipVisible">
+			<button
+				class="ext-wikilambda-tab"
+				:class="statusClass"
+				:disabled="disabled"
+				@click="$emit( 'click' )"
+			>
+				<sd-icon v-if="icon" :icon="icon"></sd-icon>
+				{{ title }}
+			</button>
+		</template>
+		<tooltip
+			v-else
+			class="ext-wikilambda-tab_tooltip-container"
+			:content="tooltipContent"
+			:header="tooltipHeader"
+			:icon-color="getTooltipColor"
 		>
-			<sd-icon v-if="icon && !tooltipVisible" :icon="icon"></sd-icon>
-			<tooltip
-				v-if="tooltipVisible"
-				class="ext-wikilambda-tab_tooltip-container"
-				:icon="tooltipIcon"
-				:content="tooltipContent"
-				:header="tooltipHeader"
-				:icon-color="getTooltipColor"
-			></tooltip>
-			{{ title }}
-		</button>
+			<button
+				class="ext-wikilambda-tab"
+				:class="statusClass"
+				:disabled="disabled"
+				@click="$emit( 'click' )"
+			>
+				<sd-icon v-if="icon" :icon="icon"></sd-icon>
+				{{ title }}
+			</button>
+		</tooltip>
 	</div>
 </template>
 
@@ -69,11 +80,6 @@ module.exports = {
 			default: null,
 			required: false
 		},
-		tooltipIcon: {
-			type: [ String, Object ],
-			default: null,
-			required: false
-		},
 		tooltipVisible: {
 			type: Boolean
 		}
@@ -107,10 +113,26 @@ module.exports = {
 	border-left: 0;
 	border-right: 0;
 	border-top: 0;
+	border-color: #fff;
+	border-style: solid;
+	margin-right: 20px;
+	padding-bottom: 10px;
+	display: flex;
+	align-items: center;
 
 	&_tooltip-container {
 		color: @inactive-color;
 		border-color: @inactive-color;
+	}
+
+	.sd-icon {
+		border-radius: 100%;
+		border-width: 1px;
+		border-style: solid;
+		padding: 3px;
+		height: 14px;
+		width: 14px;
+		margin-right: 6px;
 	}
 }
 
@@ -123,25 +145,37 @@ module.exports = {
 	&_active {
 		color: @active-color;
 		border-color: @active-color;
+
+		.sd-icon {
+			border-color: @active-color;
+		}
 	}
 
 	// not current, but clickable
 	&_inactive {
 		color: @inactive-color;
-		border-color: @inactive-color;
+
+		.sd-icon {
+			border-color: @inactive-color;
+		}
 	}
 
 	// not clickable
 	&_disabled {
 		color: @disabled-color;
-		border-color: @disabled-color;
-		display: flex;
+
+		.sd-icon {
+			border-color: @disabled-color;
+		}
 	}
 
 	// in case an unexpected status is passed
 	&_undefined {
 		color: @inactive-color;
-		border-color: @inactive-color;
+
+		.sd-icon {
+			border-color: @inactive-color;
+		}
 	}
 }
 
