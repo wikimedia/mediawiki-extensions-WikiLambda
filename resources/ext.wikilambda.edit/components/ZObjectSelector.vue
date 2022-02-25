@@ -133,9 +133,9 @@ module.exports = exports = {
 	methods: $.extend( {},
 		mapActions( [
 			'lookupZObject',
-			'fetchZKeys'
+			'fetchZKeyWithDebounce'
 		] ),
-		mapMutations( [ 'addZKeyLabel' ] ),
+		mapMutations( [ 'addAllZKeyLabels' ] ),
 		{
 			isExcludedZType: function ( zid ) {
 				return (
@@ -177,6 +177,7 @@ module.exports = exports = {
 						payload.forEach(
 							function ( result ) {
 								var zid = result.page_title,
+									lang = result.page_lang,
 									label = result.label;
 								// Update lookupResults list
 								// If we are searching for Types (this.type === Constants.Z_TYPE)
@@ -186,10 +187,11 @@ module.exports = exports = {
 								}
 								// Update zKeyLabels in the Vuex store
 								if ( !( zid in self.zkeyLabels ) ) {
-									self.addZKeyLabel( {
-										key: zid,
-										label: label
-									} );
+									self.addAllZKeyLabels( [ {
+										zid,
+										label,
+										lang
+									} ] );
 
 									zKeys.push( zid );
 								}
@@ -197,7 +199,7 @@ module.exports = exports = {
 						);
 						self.showList = true;
 
-						self.fetchZKeys( zKeys );
+						self.fetchZKeyWithDebounce( zKeys );
 					} else {
 						self.validatorSetError( 'wikilambda-noresult' );
 					}
@@ -216,7 +218,7 @@ module.exports = exports = {
 					normalizedSearchValue = self.inputValue.toUpperCase();
 
 				if ( self.isValidZidFormat( normalizedSearchValue ) ) {
-					self.fetchZKeys( [
+					self.fetchZKeyWithDebounce( [
 						normalizedSearchValue
 					] ).then( function () {
 						var label = '';

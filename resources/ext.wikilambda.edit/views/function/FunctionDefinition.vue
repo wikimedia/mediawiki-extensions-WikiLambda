@@ -10,14 +10,20 @@
 			<div
 				v-for="( labelLanguage, index ) in labelLanguages"
 				:key="index"
-				class="ext-wikilambda-function-definition__container__input">
+				class="ext-wikilambda-function-definition__container__input"
+			>
 				<fn-editor-zlanguage-selector
+					v-if="isNewZObject === true || labelLanguage.readonly === false"
 					class="ext-wikilambda-function-definition__container__input__language-selector"
 					:z-language="labelLanguage.zLang"
 					@change="function ( value ) {
 						return setInputLangByIndex( value, index )
 					}"
-				></fn-editor-zlanguage-selector>
+				>
+				</fn-editor-zlanguage-selector>
+				<span v-else class="ext-wikilambda-function-definition__container__input__language-title">
+					{{ labelLanguage.label ? labelLanguage.label : labelLanguage.zLang }}:
+				</span>
 				<function-definition-name
 					:z-lang="labelLanguage.zLang"
 					:is-main-z-object="index === 0"
@@ -54,7 +60,10 @@
 			:message="currentToast"
 			@toast-close="closeToast"
 		></toast>
-		<function-definition-footer :is-editing="isEditingExistingFunction"></function-definition-footer>
+		<function-definition-footer
+			:is-editing="isEditingExistingFunction"
+			@publish="handlePublish"
+		></function-definition-footer>
 	</main>
 </template>
 
@@ -69,6 +78,8 @@ var Toast = require( '../../components/base/Toast.vue' );
 var icons = require( '../../../lib/icons.json' );
 var mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
+var Constants = require( '../../Constants.js' );
+var typeUtils = require( '../../mixins/typeUtils.js' );
 
 // @vue/component
 module.exports = exports = {
@@ -82,15 +93,11 @@ module.exports = exports = {
 		'fn-editor-zlanguage-selector': FnEditorZLanguageSelector,
 		toast: Toast
 	},
+	mixins: [ typeUtils ],
 	data: function () {
 		return {
-			labelLanguages: [
-				{
-					label: '',
-					zLang: ''
-				}
-			],
-			currentToast: null
+			currentToast: null,
+			labelLanguages: []
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -99,7 +106,11 @@ module.exports = exports = {
 		'currentZFunctionHasInputs',
 		'currentZFunctionHasOutput',
 		'isNewZObject',
-		'getViewMode'
+		'getViewMode',
+		'getZObjectChildrenById',
+		'getZObjectAsJsonById',
+		'getCurrentLanguageZkeyLabels',
+		'getAllZKeyLanguageLabels'
 	] ),
 	{
 		ableToPublish: function () {
@@ -128,10 +139,60 @@ module.exports = exports = {
 		},
 		adminTooltipMessage: function () {
 			return this.$i18n( 'wikilambda-editor-fn-edit-definition-tooltip-content' ).text();
+		},
+		zobjectId: function () {
+			return this.getZkeyLabels[ 0 ];
+		},
+		zobject: function () {
+			return this.getZObjectChildrenById( this.zobjectId );
+		},
+		zObjectLabelId: function () {
+			return this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_LABEL, this.zobject ).id;
+		},
+		zObjectAliasId: function () {
+			return this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_ALIASES, this.zobject ).id;
+		},
+		zObjectLabels: function () {
+			return this.getZObjectAsJsonById( this.zObjectLabelId );
+		},
+		zObjectAliases: function () {
+			return this.getZObjectAsJsonById( this.zObjectAliasId );
+		},
+		selectedLanguages: function () {
+			var languageList = [];
+
+			// Don't break if the labels are set to {}
+			if ( this.zObjectLabels.Z2K3.Z12K1 ) {
+				this.zObjectLabels.Z2K3.Z12K1.forEach( function ( label ) {
+					languageList.push( label.Z11K1.Z9K1 );
+				} );
+			}
+
+			// Don't break if the aliases are set to {}
+			if ( this.zObjectAliases.Z2K4.Z32K1 ) {
+				this.zObjectAliases.Z2K4.Z32K1.forEach( function ( alias ) {
+					var lang = alias.Z31K1.Z9K1;
+
+					if ( languageList.indexOf( lang ) === -1 ) {
+						languageList.push( lang );
+					}
+				} );
+			}
+
+			var formattedLanguages = [];
+			for ( var item in languageList ) {
+				formattedLanguages.push( {
+					zLang: languageList[ item ],
+					label: this.getZkeyLabels[ languageList[ item ] ],
+					readOnly: true
+				} );
+			}
+			return formattedLanguages;
 		}
 	} ),
 	methods: $.extend( mapActions( [
-		'setCurrentZLanguage'
+		'setCurrentZLanguage',
+		'submitZObject'
 	] ), {
 		publishSuccessful: function ( toastMessage ) {
 			this.currentToast = toastMessage;
@@ -144,11 +205,13 @@ module.exports = exports = {
 			const hasMultipleLanguage = this.labelLanguages.length > 1;
 			const lastLanguageHasLabel = hasMultipleLanguage &&
 				!!this.labelLanguages[ this.labelLanguages.length - 1 ].label;
+
 			if ( hasSingleLanguage || lastLanguageHasLabel ) {
 				this.labelLanguages.push(
 					{
 						label: '',
-						zLang: ''
+						zLang: '',
+						readonly: false
 					} );
 
 				// Scroll to new labelLanguage container after it has been added
@@ -165,6 +228,13 @@ module.exports = exports = {
 			}
 
 			this.labelLanguages[ index ] = lang;
+		},
+		handlePublish: function ( summary ) {
+			this.submitZObject( summary ).then( function ( pageTitle ) {
+				if ( pageTitle ) {
+					window.location.href = new mw.Title( pageTitle ).getUrl();
+				}
+			} );
 		}
 	} ),
 	watch: {
@@ -175,14 +245,24 @@ module.exports = exports = {
 					this.currentToast = this.$i18n( 'wikilambda-function-definition-can-publish-message' ).text();
 				}
 			}
+		},
+		selectedLanguages: {
+			handler: function () {
+				if ( this.labelLanguages.length === 0 &&
+					this.selectedLanguages[ this.selectedLanguages.length - 1 ].label !== undefined ) {
+					this.labelLanguages = this.selectedLanguages;
+				}
+			}
 		}
 	},
 	mounted: function () {
-		// set first input to currentlanguage
-		this.labelLanguages[ 0 ] = {
-			label: this.getZkeyLabels[ this.getCurrentZLanguage ],
-			zLang: this.getCurrentZLanguage
-		};
+		if ( !this.zObjectLabels ) {
+			this.labelLanguages.push( {
+				label: this.getZkeyLabels[ this.getCurrentZLanguage ],
+				zLang: this.getCurrentZLanguage,
+				readonly: false
+			} );
+		}
 	}
 };
 </script>
@@ -203,6 +283,10 @@ module.exports = exports = {
 
 			&__language-selector {
 				margin-bottom: 40px;
+			}
+
+			&__language-title {
+				font-size: 2em;
 			}
 		}
 	}

@@ -6,19 +6,16 @@
  * @license MIT
  */
 'use strict';
-
 var mount = require( '@vue/test-utils' ).mount,
 	Vuex = require( 'vuex' ),
 	ZObjectSelector = require( '../../../resources/ext.wikilambda.edit/components/ZObjectSelector.vue' ),
 	WmbiAutocompleteSearchInput = require( '../../../resources/ext.wikilambda.edit/components/base/AutocompleteSearchInput.vue' );
-
 describe( 'ZObjectSelector', function () {
 	var state,
 		getters,
 		actions,
 		mutations,
 		store;
-
 	beforeEach( function () {
 		state = {
 			zKeys: {},
@@ -41,7 +38,7 @@ describe( 'ZObjectSelector', function () {
 		};
 		actions = {
 			// eslint-disable-next-line no-unused-vars
-			fetchZKeys: jest.fn( function ( context, payload ) {
+			fetchZKeyWithDebounce: jest.fn( function ( context, payload ) {
 				return true;
 			} )
 		};
@@ -57,7 +54,6 @@ describe( 'ZObjectSelector', function () {
 			mutations: mutations
 		} );
 	} );
-
 	it( 'renders without errors', function () {
 		var wrapper = mount( ZObjectSelector, {
 			global: {
@@ -66,10 +62,8 @@ describe( 'ZObjectSelector', function () {
 				]
 			}
 		} );
-
 		expect( wrapper.find( 'div' ) ).toBeTruthy();
 	} );
-
 	it( 'searches all ZObjects based on input', function () {
 		var wrapper,
 			// eslint-disable-next-line no-unused-vars
@@ -95,7 +89,6 @@ describe( 'ZObjectSelector', function () {
 					}
 				};
 			} );
-
 		wrapper = mount( ZObjectSelector, {
 			global: {
 				plugins: [
@@ -103,12 +96,9 @@ describe( 'ZObjectSelector', function () {
 				]
 			}
 		} );
-
 		wrapper.vm.lookupZObject = mockedGet;
-
 		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.searchValue = 'test';
 		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.onInput();
-
 		expect( mockedGet ).toHaveBeenCalledTimes( 1 );
 		expect( mockedGet ).toHaveBeenCalledWith( {
 			input: 'test',
@@ -116,7 +106,6 @@ describe( 'ZObjectSelector', function () {
 			returnType: ''
 		} );
 	} );
-
 	it( 'searches only ZType based on input and props', function () {
 		var wrapper,
 			// eslint-disable-next-line no-unused-vars
@@ -129,7 +118,6 @@ describe( 'ZObjectSelector', function () {
 					}
 				};
 			} );
-
 		wrapper = mount( ZObjectSelector, {
 			props: {
 				type: 'Z4'
@@ -140,13 +128,10 @@ describe( 'ZObjectSelector', function () {
 				]
 			}
 		} );
-
 		wrapper.vm.showLookupResults = true;
 		wrapper.vm.lookupZObject = mockedGet;
-
 		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.searchValue = 'test';
 		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.onInput();
-
 		expect( mockedGet ).toHaveBeenCalledTimes( 1 );
 		expect( mockedGet ).toHaveBeenCalledWith( {
 			input: 'test',
@@ -154,7 +139,6 @@ describe( 'ZObjectSelector', function () {
 			returnType: ''
 		} );
 	} );
-
 	it( 'searches only return ZType based on input and props', function () {
 		var wrapper,
 			// eslint-disable-next-line no-unused-vars
@@ -167,7 +151,6 @@ describe( 'ZObjectSelector', function () {
 					}
 				};
 			} );
-
 		wrapper = mount( ZObjectSelector, {
 			props: {
 				returnType: 'Z4'
@@ -178,13 +161,10 @@ describe( 'ZObjectSelector', function () {
 				]
 			}
 		} );
-
 		wrapper.vm.showLookupResults = true;
 		wrapper.vm.lookupZObject = mockedGet;
-
 		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.searchValue = 'test';
 		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.onInput();
-
 		expect( mockedGet ).toHaveBeenCalledTimes( 1 );
 		expect( mockedGet ).toHaveBeenCalledWith( {
 			input: 'test',
@@ -192,12 +172,10 @@ describe( 'ZObjectSelector', function () {
 			returnType: 'Z4'
 		} );
 	} );
-
 	it( 'searches by ZID instead of label', function () {
 		var wrapper;
-
 		// eslint-disable-next-line no-unused-vars
-		actions.fetchZKeys = jest.fn( function ( context, payload ) {
+		actions.fetchZKeyWithDebounce = jest.fn( function ( context, payload ) {
 			context.state.zKeys = {
 				Z4: {
 					Z1K1: 'Z2',
@@ -208,14 +186,11 @@ describe( 'ZObjectSelector', function () {
 					}
 				}
 			};
-
 			context.state.zKeyLabels = {
 				Z4: 'Type'
 			};
-
 			return true;
 		} );
-
 		store = Vuex.createStore( {
 			state: state,
 			getters: getters,
@@ -223,7 +198,6 @@ describe( 'ZObjectSelector', function () {
 			mutations: mutations
 		} );
 		jest.useFakeTimers();
-
 		wrapper = mount( ZObjectSelector, {
 			global: {
 				plugins: [
@@ -231,26 +205,22 @@ describe( 'ZObjectSelector', function () {
 				]
 			}
 		} );
-
 		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.searchValue = 'Z4';
 		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.onInput();
 		jest.runAllTimers();
-		expect( actions.fetchZKeys ).toHaveBeenCalled();
-		expect( actions.fetchZKeys ).toHaveBeenCalledWith(
+		expect( actions.fetchZKeyWithDebounce ).toHaveBeenCalled();
+		expect( actions.fetchZKeyWithDebounce ).toHaveBeenCalledWith(
 			expect.anything(), [ 'Z4' ]
 		);
 	} );
-
 	it( 'emits the selected ZID', function () {
 		var wrapper;
-
 		store = Vuex.createStore( {
 			state: state,
 			getters: getters,
 			actions: actions,
 			mutations: mutations
 		} );
-
 		wrapper = mount( ZObjectSelector, {
 			global: {
 				plugins: [
@@ -264,10 +234,8 @@ describe( 'ZObjectSelector', function () {
 		wrapper.vm.lookupResults = {
 			Z4: 'String'
 		};
-
 		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.searchValue = 'Z4';
 		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.$emit( 'submit', 'String' );
-
 		expect( wrapper.emitted().input ).toBeTruthy();
 		expect( wrapper.emitted().input ).toEqual( [ [ 'Z4' ] ] );
 	} );

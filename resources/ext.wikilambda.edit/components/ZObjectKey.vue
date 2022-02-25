@@ -172,7 +172,7 @@ module.exports = exports = {
 		}
 	),
 	methods: $.extend( {},
-		mapActions( [ 'fetchZKeys', 'changeType' ] ),
+		mapActions( [ 'changeType' ] ),
 		{
 			/**
 			 * Sets the type of a ZObject key.

@@ -84,7 +84,7 @@ module.exports = exports = {
 			'addZObject',
 			'removeZObjectChildren'
 		] ),
-		mapMutations( [ 'addZKeyLabel' ] ),
+		mapMutations( [ 'addAllZKeyLabels' ] ),
 		{
 			/**
 			 * Adds a new key field to the list.

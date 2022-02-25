@@ -71,7 +71,7 @@ module.exports = exports = {
 		}
 	},
 	mounted: function () {
-		this.fetchZKeys( [
+		this.fetchZKeyWithDebounce( [
 			Constants.Z_STRING,
 			Constants.Z_REFERENCE,
 			Constants.Z_LIST,

@@ -193,7 +193,6 @@ module.exports = exports = {
 				if ( parentId === undefined ) {
 					return [];
 				}
-
 				return state.zobject.filter( function ( object ) {
 					return object.parent === parentId;
 				} );

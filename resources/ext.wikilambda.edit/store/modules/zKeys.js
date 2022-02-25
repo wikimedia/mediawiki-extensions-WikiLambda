@@ -27,9 +27,9 @@ module.exports = exports = {
 		 */
 		zKeys: {},
 		/**
-		 * Collection of zKey labels in the user selected language
+		 * Collection of zKey labels in all languages
 		 */
-		zKeyLabels: {},
+		zKeyAllLanguageLabels: [],
 		/**
 		 * Collection of arguments
 		 */
@@ -39,8 +39,19 @@ module.exports = exports = {
 		getZkeys: function ( state ) {
 			return state.zKeys;
 		},
-		getZkeyLabels: function ( state ) {
-			return state.zKeyLabels;
+		getZkeyLabels: function ( state, getters ) {
+			var langLabels = state.zKeyAllLanguageLabels.filter( function ( item ) {
+				return item.lang === getters.getCurrentZLanguage;
+			} );
+
+			var languageItem = {};
+			for ( var label in langLabels ) {
+				languageItem[ langLabels[ label ].zid ] = langLabels[ label ].label;
+			}
+			return languageItem;
+		},
+		getAllZKeyLanguageLabels: function ( state ) {
+			return state.zKeyAllLanguageLabels;
 		},
 		getZarguments: function ( state ) {
 			return state.zArguments;
@@ -117,14 +128,8 @@ module.exports = exports = {
 		addZKeyInfo: function ( state, payload ) {
 			Vue.set( state.zKeys, payload.zid, payload.info );
 		},
-		/**
-		 * Add zkey label in the user selected language
-		 *
-		 * @param {Object} state
-		 * @param {Object} payload
-		 */
-		addZKeyLabel: function ( state, payload ) {
-			Vue.set( state.zKeyLabels, payload.key, payload.label );
+		addAllZKeyLabels: function ( state, allKeyLanguageLabels ) {
+			state.zKeyAllLanguageLabels = state.zKeyAllLanguageLabels.concat( allKeyLanguageLabels );
 		},
 		/**
 		 * Add a specific argument to the zArgument object.
@@ -147,7 +152,7 @@ module.exports = exports = {
 	},
 	actions: {
 		/**
-		 * Call the wikilambda_fetch api to get the information of a given
+		 * Call the wikilambda_fetch api with debounce to get the information of a given
 		 * of ZIds, and stores the ZId information and the ZKey labels
 		 * in the state.
 		 *
@@ -155,7 +160,20 @@ module.exports = exports = {
 		 * @param {Array} zids
 		 * @return {Promise}
 		 */
-		fetchZKeys: function ( context, zids ) {
+		fetchZKeyWithDebounce: function ( context, zids ) {
+			return context.dispatch( 'fetchZKeys', zids, true );
+		},
+		/**
+		 * Call the wikilambda_fetch api to get the information of a given
+		 * of ZIds, and stores the ZId information and the ZKey labels
+		 * in the state.
+		 *
+		 * @param {Object} context
+		 * @param {Array} zids
+		 * @param {boolean} debounce
+		 * @return {Promise}
+		 */
+		fetchZKeys: function ( context, zids, debounce = false ) {
 			zids.forEach( function ( zId ) {
 				// Zid has already been fetched
 				// or
@@ -173,25 +191,30 @@ module.exports = exports = {
 				return Promise.resolve();
 			}
 
+			function dispatchPerformZKeyFetch( payload ) {
+				zKeystoFetch = [];
+				return context.dispatch( 'performZKeyFetch', payload ).then( function () {
+					resolvePromiseList.forEach( function ( performResolve ) {
+						performResolve();
+					} );
+					resolvePromiseList = [];
+				} );
+			}
+
 			// eslint-disable-next-line compat/compat
 			return new Promise( function ( resolve ) {
-				clearTimeout( debounceZKeyFetch );
+				var payload = zKeystoFetch;
 				resolvePromiseList.push( resolve );
-				debounceZKeyFetch = setTimeout( function () {
-					var payload = zKeystoFetch;
-					zKeystoFetch = [];
-					return context.dispatch( 'performZKeyFetch', payload ).then( function () {
-						resolvePromiseList.forEach( function ( performResolve ) {
-							performResolve();
-						} );
-						resolvePromiseList = [];
-					} );
-				}, DEBOUNCE_FETCH_ZKEYS_TIMEOUT );
+				if ( debounce ) {
+					clearTimeout( debounceZKeyFetch );
+					debounceZKeyFetch = setTimeout( dispatchPerformZKeyFetch( payload ), DEBOUNCE_FETCH_ZKEYS_TIMEOUT );
+				} else {
+					dispatchPerformZKeyFetch( payload );
+				}
 			} );
 		},
 		performZKeyFetch: function ( context, payload ) {
 			var api = new mw.Api();
-
 			return api.get( {
 				action: 'query',
 				list: 'wikilambdaload_zobjects',
@@ -222,25 +245,25 @@ module.exports = exports = {
 
 					// State mutation:
 					// Add zObject label in user's selected language
-					// eslint-disable-next-line max-len
-					multilingualStr = zidInfo[ Constants.Z_PERSISTENTOBJECT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ];
+					multilingualStr = zidInfo[
+						Constants.Z_PERSISTENTOBJECT_LABEL
+					][ Constants.Z_MULTILINGUALSTRING_VALUE ];
 
-					if ( multilingualStr && multilingualStr[ 0 ] ) {
-						var userLanguageFilteredLabels = multilingualStr.filter( function ( data ) {
-							return context.getters.getUserZlangZID === data[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ];
-						} );
-						// If the user's language isn't set, fall back to the first set label
-						var label = (
-							( userLanguageFilteredLabels && userLanguageFilteredLabels[ 0 ] ) ?
-								userLanguageFilteredLabels : multilingualStr
-						)[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ];
-
-						context.commit( 'addZKeyLabel', {
-							key: zid,
-							label: label
-						} );
+					// State mutation:
+					// Add zObject label in all languages
+					var allLabels = [];
+					for ( var language in multilingualStr ) {
+						var monoStr = multilingualStr[ language ];
+						allLabels.push(
+							{
+								zid,
+								label: monoStr.Z11K2,
+								lang: monoStr.Z11K1
+							}
+						);
 					}
-
+					context.commit( 'addAllZKeyLabels', allLabels );
+					var zTypeallLabels = [];
 					if ( isZType( zidInfo ) ) {
 						keys = zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
 						// TODO(T300082): once Z10 is deprecated, this should be default behavior
@@ -254,21 +277,23 @@ module.exports = exports = {
 								Constants.Z_KEY_LABEL ][
 								Constants.Z_MULTILINGUALSTRING_VALUE ];
 
-							var userLanguageFilteredKeyLabels = multilingualStr.filter( function ( data ) {
-								return context.getters.getUserZlangZID ===
-									data[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ];
-							} );
+							var langsList = key[
+								Constants.Z_KEY_LABEL
+							][
+								Constants.Z_MULTILINGUALSTRING_VALUE
+							];
 
-							var keyLabel = (
-								( userLanguageFilteredKeyLabels && userLanguageFilteredKeyLabels[ 0 ] ) ?
-									userLanguageFilteredKeyLabels : multilingualStr
-							)[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ];
-
-							context.commit( 'addZKeyLabel', {
-								key: key[ Constants.Z_KEY_ID ],
-								label: keyLabel
+							langsList.forEach( function ( languageItem ) {
+								zTypeallLabels.push(
+									{
+										zid: key[ Constants.Z_KEY_ID ],
+										label: languageItem[ Constants.Z_MONOLINGUALSTRING_VALUE ],
+										lang: languageItem[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
+									}
+								);
 							} );
 						} );
+						context.commit( 'addAllZKeyLabels', zTypeallLabels );
 					}
 				} );
 			} );

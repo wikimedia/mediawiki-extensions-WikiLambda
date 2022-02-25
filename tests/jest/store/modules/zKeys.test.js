@@ -197,7 +197,10 @@ var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modu
 		Z1: { Z1K1: 'Z2', Z2K1: { Z1K1: 'Z9', Z9K1: 'Z1' }, Z2K2: { Z1K1: 'Z4', Z4K1: { Z1K1: 'Z9', Z9K1: 'Z1' }, Z4K2: [ { Z1K1: 'Z3', Z3K1: { Z1K1: 'Z9', Z9K1: 'Z4' }, Z3K2: { Z1K1: 'Z6', Z6K1: 'Z1K1' }, Z3K3: { Z1K1: 'Z12', Z12K1: [ { Z1K1: 'Z11', Z11K1: 'en', Z11K2: 'type' } ] } } ], Z4K3: { Z1K1: 'Z9', Z9K1: 'Z101' } }, Z2K3: { Z1K1: 'Z12', Z12K1: [ { Z1K1: 'Z11', Z11K1: 'en', Z11K2: 'Object' } ] } },
 		Z6: { Z1K1: 'Z2', Z2K1: { Z1K1: 'Z9', Z9K1: 'Z6' }, Z2K2: { Z1K1: 'Z4', Z4K1: { Z1K1: 'Z9', Z9K1: 'Z6' }, Z4K2: [ { Z1K1: 'Z3', Z3K1: { Z1K1: 'Z9', Z9K1: 'Z6' }, Z3K2: { Z1K1: 'Z6', Z6K1: 'Z6K1' }, Z3K3: { Z1K1: 'Z12', Z12K1: [ { Z1K1: 'Z11', Z11K1: 'en', Z11K2: 'value' } ] } } ], Z4K3: { Z1K1: 'Z9', Z9K1: 'Z101' } }, Z2K3: { Z1K1: 'Z12', Z12K1: [ { Z1K1: 'Z11', Z11K1: 'en', Z11K2: 'String' } ] } }
 	},
-	mockZKeyLabels = { Z1: 'Object', Z1K1: 'type', Z2: 'Persistent object', Z2K1: 'id', Z2K2: 'value', Z2K3: 'label', Z12: 'Multilingual text', Z12K1: 'texts', Z3: 'Key', Z3K1: 'value type', Z3K2: 'key id', Z3K3: 'label', Z4: 'Type', Z4K1: 'identity', Z4K2: 'keys', Z4K3: 'validator', Z6: 'String', Z6K1: 'value', Z8: 'Function', Z8K1: 'arguments', Z8K2: 'return type', Z8K3: 'testers', Z8K4: 'implementations', Z8K5: 'identity', Z7: 'Function call', Z7K1: 'function', Z9: 'Reference', Z9K1: 'reference id', Z10: 'List', Z10K1: 'head', Z10K2: 'tail' },
+	mockAllZKeyLanguageLabels = [
+		{ zid: 'Z1', label: 'Object', lang: 'Z1002' },
+		{ zid: 'Z6', label: 'String', lang: 'Z1002' }
+	],
 	mockZArguments = { Z10024K1: { labels: [ { key: 'word: ', label: 'word', lang: 'Z1002' } ], zid: 'Z10024K1', type: 'String' } },
 	state,
 	context,
@@ -244,14 +247,14 @@ describe( 'zkeys Vuex module', function () {
 			} );
 		} );
 
-		describe( 'getZkeyLabels', function () {
-			it( 'Returns empty object if no zKeyLabels are defined in the state', function () {
-				expect( zkeysModule.getters.getZkeyLabels( state ) ).toEqual( {} );
+		describe( 'getAllZKeyLanguageLabels', function () {
+			it( 'Returns empty array if no zKeyAllLanguageLabels are defined in the state', function () {
+				expect( zkeysModule.getters.getAllZKeyLanguageLabels( state ) ).toEqual( [] );
 			} );
 
-			it( 'Returns the zKeys defined in the state', function () {
-				state.zKeyLabels = mockZKeyLabels;
-				expect( zkeysModule.getters.getZkeyLabels( state ) ).toEqual( mockZKeyLabels );
+			it( 'Returns the zKeysAllLanguages defined in the state', function () {
+				state.zKeyAllLanguageLabels = mockAllZKeyLanguageLabels;
+				expect( zkeysModule.getters.getAllZKeyLanguageLabels( state ) ).toEqual( mockAllZKeyLanguageLabels );
 			} );
 		} );
 
@@ -352,10 +355,18 @@ describe( 'zkeys Vuex module', function () {
 						zid: expect.any( String ),
 						info: expect.any( Object )
 					} ),
-					expecteaddZKeyLabelInfoCall = expect.objectContaining( {
-						key: expect.any( String ),
-						label: expect.any( String )
-					} );
+					expecteaddAllZKeyLabelInfoCall = expect.arrayContaining( [
+						{
+							zid: expect.any( String ),
+							lang: expect.any( String ),
+							label: expect.any( String )
+						},
+						{
+							zid: expect.any( String ),
+							lang: expect.any( String ),
+							label: expect.any( String )
+						}
+					] );
 
 				zkeysModule.actions.performZKeyFetch( context, zIdsToSearch );
 
@@ -366,8 +377,7 @@ describe( 'zkeys Vuex module', function () {
 					expect( getResolveMock ).toHaveBeenCalledTimes( 1 );
 					expect( context.commit ).toHaveBeenCalledTimes( 6 );
 					expect( context.commit ).toHaveBeenCalledWith( 'addZKeyInfo', expectedAddZKeyInfoCall );
-					expect( context.commit ).toHaveBeenCalledWith( 'addZKeyLabel', expecteaddZKeyLabelInfoCall );
-
+					expect( context.commit ).toHaveBeenCalledWith( 'addAllZKeyLabels', expecteaddAllZKeyLabelInfoCall );
 					resolve();
 				}, 1000 );
 			} );

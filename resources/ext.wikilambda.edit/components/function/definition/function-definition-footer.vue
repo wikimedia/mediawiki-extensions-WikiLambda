@@ -123,13 +123,7 @@ module.exports = exports = {
 			},
 			handlePublish: function () {
 				// TODO (T297330): include legal text when ready
-				this.submitZObject( this.summary ).then( function ( pageTitle ) {
-					if ( pageTitle ) {
-						window.location.href = new mw.Title( pageTitle ).getUrl();
-					} else {
-						this.$emit( 'publish-successful', this.$i18n( 'wikilambda-function-definition-publish-successful-message' ).text() );
-					}
-				} );
+				this.$emit( 'publish', this.summary );
 			},
 			handleFallbackClick: function () {
 				var payload = {
