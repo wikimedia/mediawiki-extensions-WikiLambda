@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"DDPAT"
+			"DDPAT",
+			"Ice bulldog"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Отримайте модель JSON для ZObjects.",
