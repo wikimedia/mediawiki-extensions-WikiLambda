@@ -31,14 +31,8 @@ module.exports = {
 
 	// An array of regexp pattern strings used to skip coverage collection
 	coveragePathIgnorePatterns: [
-		'/node_modules/',
-		'resources/components/index.js', // these are examples; you may have init or index scaffolding
-		'resources/plugins/index.js', // files which you don't want included in coverage
-		'resources/init.js',
-		'resources/vendor/',
-		'resources/lib/ace/',
-		'resources/lib/vue-router/',
-		'resources/ext.wikilambda.edit/components/base/'
+		'resources/lib/', // These are upstream libraries
+		'resources/ext.wikilambda.edit/components/base/' // These are components we expect to move up into Codex
 	],
 
 	// The paths to modules that run some code to configure or set up the testing environment before each test
