@@ -6,19 +6,14 @@
 		@license MIT
 	-->
 	<div>
-		<button
+		<div
 			class="ext-wikilambda-tooltip_button"
 			@click="toggleVisibility"
 			@mouseover="isVisible = true"
 			@mouseleave="isVisible = false"
 		>
-			<sd-icon
-				v-if="icon"
-				:icon="icon"
-				:style="'color: ' + iconColor"
-			>
-			</sd-icon>
-		</button>
+			<slot></slot>
+		</div>
 		<div v-if="isVisible" class="ext-wikilambda-tooltip_content">
 			<div v-if="header" class="ext-wikilambda-tooltip_content_header">
 				{{ header }}
@@ -34,26 +29,11 @@
 </template>
 
 <script>
-var SdIcon = require( './Icon.vue' );
-
 // @vue/component
 module.exports = {
 	name: 'tooltip-item',
-	components: {
-		'sd-icon': SdIcon
-	},
 	// TODO (T301481): smart positioning of tooltip
 	props: {
-		// Icon path or object. See Icon.vue for valid icon formats.
-		icon: {
-			type: [ String, Object ],
-			default: null,
-			required: false
-		},
-		iconColor: {
-			type: String,
-			default: '#00000'
-		},
 		header: {
 			type: String,
 			default: '',
@@ -95,7 +75,7 @@ module.exports = {
 		position: absolute;
 		width: 200px;
 		padding: 10px;
-		margin-top: 15px;
+		margin-top: 5px;
 		text-align: left;
 		background: @wmui-color-base100;
 		box-shadow: 1px 1px @wmui-color-base50;

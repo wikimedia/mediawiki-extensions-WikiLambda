@@ -12,9 +12,8 @@
 			</label>
 			<tooltip
 				v-if="isEditing"
-				:icon="tooltipIcon"
 				:content="tooltipMessage"
-			></tooltip>
+			>{{ tooltipIcon }}</tooltip>
 		</div>
 		<fn-editor-type-selector
 			:type="Constants.Z_TYPE"
