@@ -6,9 +6,14 @@
 			"WikiAbuHuraira",
 			"YahyA",
 			"Yahya",
-			"আফতাবুজ্জামান"
+			"আফতাবুজ্জামান",
+			"Ankan",
+			"Tahmid",
+			"খাত্তাব হাসান"
 		]
 	},
+	"wikilambda-desc": "কেন্দ্রীয় উইকিতে লিখিত, পরিচালিত এবং মূল্যায়িত ফাংশনগুলোর মূল্যায়ন আহ্বান করার জন্য উইকিটেক্সট পার্সার ফাংশন সহ উইকিমিডিয়া উইকি প্রদান করা।",
+	"wikilambda-emptylabel": "লেবেলবিহীন জোবজেক্ট",
 	"wikilambda-reference": "তথ্যসূত্র",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "ভাষা",
 	"wikilambda-publishnew": "প্রকাশ করুন",
