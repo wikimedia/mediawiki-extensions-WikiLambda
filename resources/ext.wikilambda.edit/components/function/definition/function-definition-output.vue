@@ -11,9 +11,11 @@
 				{{ $i18n( 'wikilambda-function-definition-output-label' ) }}
 			</label>
 			<tooltip
-				v-if="isEditing"
+				v-if="isEditing && tooltipMessage"
 				:content="tooltipMessage"
-			>{{ tooltipIcon }}</tooltip>
+			>
+				<sd-icon v-if="tooltipIcon" :icon="tooltipIcon"></sd-icon>
+			</tooltip>
 		</div>
 		<fn-editor-type-selector
 			:type="Constants.Z_TYPE"
@@ -29,6 +31,7 @@
 var Constants = require( '../../../Constants.js' ),
 	FnEditorTypeSelector = require( '../../editor/FnEditorTypeSelector.vue' ),
 	Tooltip = require( '../../base/Tooltip.vue' ),
+	SdIcon = require( '../../base/Icon.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
@@ -37,7 +40,8 @@ module.exports = {
 	name: 'function-definition-output',
 	components: {
 		'fn-editor-type-selector': FnEditorTypeSelector,
-		tooltip: Tooltip
+		tooltip: Tooltip,
+		'sd-icon': SdIcon
 	},
 	props: {
 		zobjectId: {
@@ -53,7 +57,8 @@ module.exports = {
 			required: false
 		},
 		tooltipMessage: {
-			type: String
+			type: String,
+			default: null
 		}
 	},
 	computed: $.extend( mapGetters( [

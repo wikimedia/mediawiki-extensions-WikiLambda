@@ -11,9 +11,11 @@
 				{{ $i18n( 'wikilambda-function-definition-inputs-label' ) }}
 			</label>
 			<tooltip
-				v-if="isEditing"
+				v-if="isEditing && tooltipMessage"
 				:content="tooltipMessage"
-			>{{ tooltipIcon }}</tooltip>
+			>
+				<sd-icon v-if="tooltipIcon" :icon="tooltipIcon"></sd-icon>
+			</tooltip>
 		</div>
 		<div class="ext-wikilambda-function-definition-inputs__inputs">
 			<function-definition-inputs-item
@@ -37,6 +39,7 @@ var Constants = require( '../../../Constants.js' ),
 	functionDefinitionInputsItem = require( './function-definition-inputs-item.vue' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	Tooltip = require( '../../base/Tooltip.vue' ),
+	SdIcon = require( '../../base/Icon.vue' ),
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
@@ -44,7 +47,8 @@ module.exports = {
 	name: 'function-definition-inputs',
 	components: {
 		'function-definition-inputs-item': functionDefinitionInputsItem,
-		tooltip: Tooltip
+		tooltip: Tooltip,
+		'sd-icon': SdIcon
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -68,7 +72,8 @@ module.exports = {
 			required: false
 		},
 		tooltipMessage: {
-			type: String
+			type: String,
+			default: null
 		}
 	},
 	computed: $.extend( mapGetters( [
