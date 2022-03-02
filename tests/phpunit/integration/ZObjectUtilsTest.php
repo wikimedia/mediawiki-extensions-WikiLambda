@@ -1194,7 +1194,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getLabelOfErrorTypeKey
 	 */
 	public function testExtractHumanReadableZObject_global() {
-		$this->insertZids( [ 'Z8', 'Z17', 'Z50' ] );
+		$this->insertZids( [ 'Z17', 'Z50' ] );
 		$en = $this->makeLanguage( 'en' );
 		$data = [
 			'Z1' => $this->getZPersistentObject( 'Z1' ),
@@ -1244,7 +1244,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getLabelOfErrorTypeKey
 	 */
 	public function testExtractHumanReadableZObject_local() {
-		$this->insertZids( [ 'Z8', 'Z17', 'Z50' ] );
+		$this->insertZids( [ 'Z17', 'Z50' ] );
 		$en = $this->makeLanguage( 'en' );
 		$data = [
 			'Z6' => $this->getZPersistentObject( 'Z6' ),
@@ -1568,6 +1568,57 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			'generic list with one element' => [ $genericOne, 1 ],
 			'generic list with two elements' => [ $genericTwo, 2 ],
 		];
+	}
+
+	/**
+	 * @covers ::extractHumanReadableZObject
+	 * @covers ::getLabelOfGlobalKey
+	 * @covers ::getLabelOfTypeKey
+	 * @covers ::getLabelOfFunctionArgument
+	 * @covers ::getLabelOfErrorTypeKey
+	 */
+	public function testExtractHumanReadableZObject_repeatedLabel() {
+		$this->insertZids( [ 'Z17' ] );
+		$en = $this->makeLanguage( 'en' );
+		$data = [
+			'Z1' => $this->getZPersistentObject( 'Z1' ),
+			'Z7' => $this->getZPersistentObject( 'Z7' ),
+			'Z881' => $this->getZPersistentObject( 'Z881' ),
+		];
+
+		// Z1K1 and Z881K1 have the same english label (type)
+		$zobject = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z881","Z881K1":"Z6" },"K1":"string"}';
+		$translated = '{"type":{"type":"Function call","function":"Typed list","type (Z881K1)":"Z6"},'
+			. '"K1":"string"}';
+
+		$result = ZObjectUtils::extractHumanReadableZObject( json_decode( $zobject ), $data, $en );
+		$this->assertSame( $translated, json_encode( $result ) );
+	}
+
+	/**
+	 * @covers ::extractHumanReadableZObject
+	 * @covers ::getLabelOfGlobalKey
+	 * @covers ::getLabelOfTypeKey
+	 * @covers ::getLabelOfFunctionArgument
+	 * @covers ::getLabelOfErrorTypeKey
+	 */
+	public function testExtractHumanReadableZObject_literalFunction() {
+		$this->insertZids( [ 'Z17' ] );
+		$en = $this->makeLanguage( 'en' );
+		$data = [
+			'Z1' => $this->getZPersistentObject( 'Z1' ),
+			'Z7' => $this->getZPersistentObject( 'Z7' ),
+			'Z881' => $this->getZPersistentObject( 'Z881' ),
+		];
+
+		$zobject = '{ "Z1K1": { "Z1K1": "Z7",'
+			. ' "Z7K1": { "Z1K1": "Z8", "Z8K1": [], "Z8K2": "Z4", "Z8K3": [], "Z8K4": [], "Z8K5": "Z881" },'
+			. ' "Z881K1": "Z6" }, "K1": "string"}';
+		$translated = '{"type":{"type":"Function call",'
+			. '"function":{"type":"Z8","Z8K1":[],"Z8K2":"Z4","Z8K3":[],"Z8K4":[],"Z8K5":"Typed list"},'
+			. '"type (Z881K1)":"Z6"},"K1":"string"}';
+		$result = ZObjectUtils::extractHumanReadableZObject( json_decode( $zobject ), $data, $en );
+		$this->assertSame( $translated, json_encode( $result ) );
 	}
 
 }

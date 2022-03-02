@@ -168,4 +168,13 @@ class ZGenericList extends ZObject {
 		return $this->type->getValueByKey( ZTypeRegistry::Z_FUNCTION_GENERIC_LIST_TYPE )->getZValue();
 	}
 
+	/**
+	 * Returns true if it contains an empty list
+	 *
+	 * @return bool Whether it's an empty list
+	 */
+	public function isEmpty(): bool {
+		return empty( $this->data );
+	}
+
 }

@@ -17,17 +17,20 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 class ZFunctionCall extends ZObject {
 
 	/**
-	 * Construct a ZFunctionCall instance, bypassing the internal ZString formally contained.
+	 * Construct a ZFunctionCall instance, can take a referenced or derreferenced function.
 	 *
 	 * @param ZObject $function
 	 * @param array $args
 	 */
 	public function __construct( $function, $args = [] ) {
 		$this->data[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ] = $function;
-		// TODO (T300509) Allow for a dereferenced function instead of a reference
-		// If function is a Zid, then the keys will be Global keys.
-		// If the function is a literal function, the keys will be Local ones.
-		$functionZid = $function->getZValue();
+		$functionZid = '';
+		if ( $function instanceof ZFunction ) {
+			$functionZid = $function->getIdentity() ?? '';
+		}
+		if ( $function instanceof ZReference ) {
+			$functionZid = $function->getZValue() ?? '';
+		}
 		foreach ( $args as $key => $value ) {
 			// Save as additional keys only if the key reference belongs to the function Zid
 			if ( ZObjectUtils::getZObjectReferenceFromKey( $key ) === $functionZid ) {
@@ -58,10 +61,14 @@ class ZFunctionCall extends ZObject {
 	 * @inheritDoc
 	 */
 	public function isValid(): bool {
-		// TODO (T300509) function can be something else than a reference E.g. a literal function
-		return ZObjectUtils::isValidZObjectReference(
-			$this->data[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ]->getZValue()
-		);
+		// Check Z7K1 is either a valid reference or a valid function
+		$function = $this->data[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ];
+		if (
+			!( $this->data[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ] instanceof ZReference ) &&
+			!( $this->data[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ] instanceof ZFunction ) ) {
+			return false;
+		}
+		return $this->data[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ]->isValid();
 	}
 
 	/**
@@ -75,17 +82,21 @@ class ZFunctionCall extends ZObject {
 
 	/**
 	 * Resulting type of this ZFunctionCall. If the ZFunction is not available, returns null.
-	 * This can be extracted from the secondary labels database (we have return type in this table)
-	 * or from the persisted ZObjects.
-	 *
-	 * TODO (T300509) In the future, the function in Z_FUNCTIONCALL_FUNCTION (Z7) can be a literal
-	 * as well, so we can directly return Z7K1.Z8K2
+	 * When Z7K1 is a reference to a persisted function, its type should be extracted from the
+	 * secondary labels database for better performance.
 	 *
 	 * @return string|null
 	 */
 	public function getReturnType() {
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		return $zObjectStore->fetchZFunctionReturnType( $this->getZValue() );
-	}
+		if ( $this->data[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ] instanceof ZReference ) {
+			$zObjectStore = WikiLambdaServices::getZObjectStore();
+			return $zObjectStore->fetchZFunctionReturnType( $this->getZValue() );
+		}
 
+		if ( $this->data[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ] instanceof ZFunction ) {
+			return $this->data[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ]->getReturnType();
+		}
+
+		return null;
+	}
 }

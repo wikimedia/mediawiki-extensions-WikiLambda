@@ -602,7 +602,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::fetchZFunctionReturnType
 	 */
 	public function testFetchZFunctionReturnType() {
-		$this->insertZids( [ 'Z8', 'Z17', 'Z801', 'Z844' ] );
+		$this->insertZids( [ 'Z17', 'Z801', 'Z844' ] );
 
 		$this->assertEquals(
 			'Z1',

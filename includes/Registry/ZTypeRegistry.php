@@ -144,6 +144,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_TYPE => 'ZType',
 		self::Z_STRING => 'ZString',
 		self::Z_FUNCTIONCALL => 'ZFunctionCall',
+		self::Z_FUNCTION => 'ZFunction',
 		self::Z_REFERENCE => 'ZReference',
 		self::Z_LIST => 'ZList',
 		self::Z_MONOLINGUALSTRING => 'ZMonoLingualString',

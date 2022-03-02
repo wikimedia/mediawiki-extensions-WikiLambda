@@ -101,7 +101,7 @@ class ZGenericErrorTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getErrorType
 	 */
 	public function testCreate_nobuiltin() {
-		$this->insertZids( [ 'Z8', 'Z17', 'Z882' ] );
+		$this->insertZids( [ 'Z17', 'Z882' ] );
 		$genericError = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z882", "Z882K1": "Z6", "Z882K2": "Z9" },'
 			. ' "K1": "string value",'
 			. ' "K2": "Z111" }';

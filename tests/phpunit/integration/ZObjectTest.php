@@ -129,7 +129,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getValueByKey
 	 */
 	public function testConstruct_functionCallType() {
-		$this->insertZids( [ 'Z8', 'Z17', 'Z882' ] );
+		$this->insertZids( [ 'Z17', 'Z882' ] );
 
 		$testJson = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z882", "Z882K1": "Z6", "Z882K2": "Z6" },'
 			. '"Z882K1": { "Z1K1": "Z6", "Z6K1": "soup, soup" },'

@@ -24,6 +24,7 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 * @covers ::__construct
 	 * @covers ::isValid
+	 * @covers ::isEmpty
 	 * @covers ::getElementType
 	 */
 	public function testCreate_emptyList() {
@@ -32,6 +33,7 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertInstanceOf( ZGenericList::class, $testObject );
 		$this->assertTrue( $testObject->isValid() );
+		$this->assertTrue( $testObject->isEmpty() );
 		$this->assertSame( "Z6", $testObject->getElementType() );
 	}
 
@@ -130,6 +132,7 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 * @covers ::__construct
+	 * @covers ::isEmpty
 	 * @covers ::getAsArray
 	 * @covers ::getZValue
 	 */
@@ -138,6 +141,7 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 		$testObject = ZObjectFactory::create( json_decode( $genericList ) );
 		$array = $testObject->getAsArray();
 
+		$this->assertTrue( $testObject->isEmpty() );
 		$this->assertIsArray( $array );
 		$this->assertCount( 0,  $array );
 	}

@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZFunction;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
@@ -874,27 +875,28 @@ class ZObjectUtils {
 		if ( is_string( $type ) && ( array_key_exists( $type, $data ) ) ) {
 			$globalKey = "$type$key";
 			$translatedKey = self::getLabelOfGlobalKey( $globalKey, $data[ $type ], $lang );
-			if ( $translatedKey !== $globalKey ) { return $translatedKey;
+			if ( $translatedKey !== $globalKey ) {
+				return $translatedKey;
 			}
 		}
 
 		// If type is a function call,
 		if ( is_object( $type ) && property_exists( $type, ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ) ) {
 			$function = $type->{ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION };
-			// TODO (T300509): Function is literal, not Zid
 
-			// Builtin Z885:
+			// Builtin Z885: we can build the global keys with error type Zid
 			if ( is_string( $function ) && ( $function === ZTypeRegistry::Z_FUNCTION_ERRORTYPE_TO_TYPE ) ) {
 				$errorType = $type->{ ZTypeRegistry::Z_FUNCTION_ERRORTYPE_TYPE };
 				if ( array_key_exists( $errorType, $data ) ) {
 					$globalKey = "$errorType$key";
 					$translatedKey = self::getLabelOfErrorTypeKey( $globalKey, $data[ $errorType ], $lang );
-					if ( $translatedKey !== $globalKey ) { return $translatedKey;
+					if ( $translatedKey !== $globalKey ) {
+						return $translatedKey;
 					}
 				}
 			}
 
-			// Builtin Z881: we don't need to translate key
+			// Builtin Z881: we don't need to translate keys
 			// TODO (T301451): Non builtins, request function call execution from the orchestrator
 		}
 
@@ -987,32 +989,12 @@ class ZObjectUtils {
 	 */
 	public static function getLabelOfFunctionArgument( $key, $zobject, $lang ): string {
 		$zfunction = $zobject->getInnerZObject();
-		if ( !( $zfunction->getZType() === ZTypeRegistry::Z_FUNCTION ) ) {
+		if ( !( $zfunction instanceof ZFunction ) ) {
 			return $key;
 		}
 
-		// FIXME (T300509): It might be convenient to create built-in ZFunction and ZArgumentDeclaration
-		// objects and remove all the extra complicated getValueByKey followed by type checks.
-
-		try {
-			$zargs = $zfunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_ARGUMENTS );
-		} catch ( ZErrorException $e ) {
-			// list of arguments is not wellformed
-			return $key;
-		}
-
-		if ( $zargs === null ) {
-			// list of arguments is not present
-			return $key;
-		}
-
-		// TODO (T298133): Remove support for ZList
-		if ( !( $zargs instanceof ZList ) && !( $zargs instanceof ZGenericList ) ) {
-			// list of arguments is something else than a list?
-			return $key;
-		}
-
-		foreach ( $zargs->getAsArray() as $zarg ) {
+		$zargs = $zfunction->getArgumentDeclarations();
+		foreach ( $zargs as $zarg ) {
 			$zargid = $zarg->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_ID );
 
 			if ( $key === $zargid->getZValue() ) {
@@ -1073,12 +1055,17 @@ class ZObjectUtils {
 				}
 
 				// Labelize value:
-				if ( !in_array( $key, ZTypeRegistry::IGNORE_KEY_VALUES_FOR_LABELLING ) ) {
-					$labelizedValue = self::extractHumanReadableZObject( $value, $data, $lang );
-					$labelized[ $labelizedKey ] = $labelizedValue;
+				$labelizedValue = in_array( $key, ZTypeRegistry::IGNORE_KEY_VALUES_FOR_LABELLING )
+					? $value
+					: self::extractHumanReadableZObject( $value, $data, $lang );
+
+				// Exception: labelized key already exists
+				if ( array_key_exists( $labelizedKey, $labelized ) ) {
+					$labelized[ "$labelizedKey ($key)" ] = $labelizedValue;
 				} else {
-					$labelized[ $labelizedKey ] = $value;
+					$labelized[ $labelizedKey ] = $labelizedValue;
 				}
+
 			}
 			return (object)$labelized;
 		}
