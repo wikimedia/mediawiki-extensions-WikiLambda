@@ -122,7 +122,6 @@ module.exports = {
 			'getZkeyLiteralType',
 			'getTypeByMode',
 			'getZkeyLabels',
-			'getZkeys',
 			'getModeByType',
 			'getCurrentZObjectId',
 			'getZObjectChildrenById'
@@ -204,18 +203,6 @@ module.exports = {
 			}
 		} ),
 	watch: {
-		getZkeys: function () {
-			if ( !this.zKey ) {
-				return;
-			}
-			var literal = this.getZkeyLiteralType( this.zKey );
-			if ( literal &&
-				this.literalType !== literal &&
-				literal !== Constants.Z_OBJECT
-			) {
-				this.literalType = literal;
-			}
-		},
 		zType: {
 			immediate: true,
 			handler: function () {
@@ -227,10 +214,7 @@ module.exports = {
 		this.$options.components[ 'z-object' ] = require( './ZObject.vue' );
 	},
 	mounted: function () {
-		// We set the current Literal to the current Ztype (if set),
-		// this may be chjanged later when the zKeys are fetched.
-		// This is needed for cases like Z2K2 to keep the String value
-		this.literalType = this.zType;
+		this.literalType = this.getZkeyLiteralType( this.zKey ) || this.zType;
 	}
 };
 </script>

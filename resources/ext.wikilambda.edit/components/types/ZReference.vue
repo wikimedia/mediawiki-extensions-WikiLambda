@@ -15,7 +15,6 @@
 				{{ referenceLabel }}
 			</a>
 		</span>
-
 		<z-object-selector
 			v-else
 			:placeholder="$i18n( 'wikilambda-zobjectselector-label' )"
