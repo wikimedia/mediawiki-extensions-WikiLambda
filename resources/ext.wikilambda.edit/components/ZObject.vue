@@ -52,6 +52,7 @@ var Constants = require( '../Constants.js' ),
 	ZTypedPair = require( './types/ZTypedPair.vue' ),
 	ZTypedMap = require( './types/ZTypedMap.vue' ),
 	ZFunctionCallToType = require( './types/ZFunctionCallToType.vue' ),
+	ZKey = require( './types/ZKey.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -80,7 +81,8 @@ module.exports = {
 		'z-typed-list': ZTypedList,
 		'z-typed-pair': ZTypedPair,
 		'z-typed-map': ZTypedMap,
-		'z-function-call-to-type': ZFunctionCallToType
+		'z-function-call-to-type': ZFunctionCallToType,
+		'z-key': ZKey
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -177,6 +179,8 @@ module.exports = {
 						return 'z-type';
 					case Constants.Z_FUNCTION_CALL_TO_TYPE:
 						return 'z-function-call-to-type';
+					case Constants.Z_KEY:
+						return 'z-key';
 					default:
 						return 'z-object-generic';
 				}

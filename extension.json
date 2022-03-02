@@ -199,6 +199,7 @@
 				"ext.wikilambda.edit/components/types/ZArgumentReference.vue",
 				"ext.wikilambda.edit/components/function/ZImplementationListItem.vue",
 				"ext.wikilambda.edit/components/types/ZTester.vue",
+				"ext.wikilambda.edit/components/types/ZKey.vue",
 				"ext.wikilambda.edit/components/function/ZTesterList.vue",
 				"ext.wikilambda.edit/components/function/ZTesterListItem.vue",
 				"ext.wikilambda.edit/components/function/ZFunctionTesterReport.vue",

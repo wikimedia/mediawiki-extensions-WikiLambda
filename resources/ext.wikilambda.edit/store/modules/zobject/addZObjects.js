@@ -748,7 +748,7 @@ module.exports = {
 						case Constants.Z_REFERENCE:
 							return context.dispatch( 'addZReference', payload );
 						case Constants.Z_STRING:
-							return context.dispatch( 'addZString', { id: payload.id } );
+							return context.dispatch( 'addZString', payload );
 						case Constants.Z_MULTILINGUALSTRING:
 							return context.dispatch( 'addZMultilingualString', payload );
 						case Constants.Z_ARGUMENT:
