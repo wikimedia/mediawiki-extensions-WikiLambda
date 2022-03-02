@@ -69,7 +69,8 @@ module.exports = {
 	},
 	computed: $.extend( mapGetters( [
 		'currentZFunctionHasInputs',
-		'currentZFunctionHasOutput'
+		'currentZFunctionHasOutput',
+		'isNewZObject'
 	] ),
 	{
 		publishButtonValidity: function () {
