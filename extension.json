@@ -175,6 +175,8 @@
 				"ext.wikilambda.edit/components/base/Chip.vue",
 				"ext.wikilambda.edit/components/base/ChipContainer.vue",
 				"ext.wikilambda.edit/components/base/Toast.vue",
+				"ext.wikilambda.edit/components/base/Dialog.vue",
+				"ext.wikilambda.edit/components/base/DialogContainer.vue",
 				"ext.wikilambda.edit/components/types/ZList.vue",
 				"ext.wikilambda.edit/components/types/ZListItem.vue",
 				"ext.wikilambda.edit/components/types/ZTypedList.vue",
@@ -239,7 +241,10 @@
 				"wikilambda-published",
 				"wikilambda-savenew",
 				"wikilambda-cancel",
+				"wikilambda-confirm",
 				"wikilambda-fallback",
+				"wikilambda-continue-editing",
+				"wikilambda-discard-edits",
 				"wikilambda-publishchanges",
 				"wikilambda-savechanges",
 				"wikilambda-summarylabel",
@@ -401,7 +406,9 @@
 				"wikilambda-optional",
 				"wikilambda-editor-fn-tests-tooltip-header",
 				"wikilambda-editor-fn-tests-tooltip-content",
-				"wikilambda-editor-fn-edit-definition-tooltip-content"
+				"wikilambda-editor-fn-edit-definition-tooltip-content",
+				"wikilambda-function-are-you-sure-dialog-header",
+				"wikilambda-function-are-you-sure-dialog-description"
 			]
 		}
 	},

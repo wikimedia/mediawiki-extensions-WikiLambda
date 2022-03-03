@@ -66,7 +66,7 @@ var FunctionDefinitionOutput = require( '../components/function/definition/funct
 var FunctionDefinitionFooter = require( '../components/function/definition/function-definition-footer.vue' );
 var FnEditorZLanguageSelector = require( '../components/editor/FnEditorZLanguageSelector.vue' );
 var Toast = require( '../components/base/Toast.vue' );
-var icons = require( './../../../lib/icons.js' );
+var icons = require( '../../lib/icons.js' );
 var mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 

@@ -6,6 +6,16 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-function-definition-footer">
+		<dialog-container
+			v-if="openDialog"
+			:title="$i18n( 'wikilambda-function-are-you-sure-dialog-header' ).text()"
+			:description="$i18n( 'wikilambda-function-are-you-sure-dialog-description' ).text()"
+			:cancel-button="cancelButton"
+			:confirm-button="confirmButton"
+			@exit-dialog="openDialog = false"
+			@close-dialog="openDialog = false"
+			@confirm-dialog="confirmCancel">
+		</dialog-container>
 		<label for="ext-wikilambda-function-definition-name__input" class="ext-wikilambda-app__text-regular">
 			{{ $i18n( 'wikilambda-function-definition-footer-label' ).text() }}
 		</label>
@@ -41,7 +51,7 @@
 			</button>
 			<button
 				class="ext-wikilambda-function-definition-footer__actions__cancel"
-				@click="handleCancel"
+				@click.stop="handleCancel"
 			>
 				{{ $i18n( 'wikilambda-cancel' ) }}
 			</button>
@@ -51,12 +61,16 @@
 
 <script>
 var Constants = require( '../../../Constants.js' ),
+	DialogContainer = require( '../../base/DialogContainer.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
 module.exports = {
 	name: 'function-definition-footer',
+	components: {
+		'dialog-container': DialogContainer
+	},
 	props: {
 		isEditing: {
 			type: Boolean
@@ -64,7 +78,8 @@ module.exports = {
 	},
 	data: function () {
 		return {
-			summary: ''
+			summary: '',
+			openDialog: false
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -91,13 +106,37 @@ module.exports = {
 			return this.implementationButtonValidity ?
 				'ext-wikilambda-function-definition-footer__actions__valid-implementation' :
 				'ext-wikilambda-function-definition-footer__actions__invalid';
+		},
+		cancelButton: function () {
+			return {
+				style: '',
+				text: this.$i18n( 'wikilambda-continue-editing' ).text()
+			};
+		},
+		confirmButton: function () {
+			return {
+				style: 'ext-wikilambda-dialog_danger',
+				text: this.$i18n( 'wikilambda-discard-edits' ).text()
+			};
 		}
 	} ),
 	methods: $.extend( {},
 		mapActions( [ 'submitZObject' ] ),
 		{
 			handleCancel: function () {
-				this.$router.go( -1 );
+				// if leaving without saving edits
+				if ( this.isEditing ) {
+					this.openDialog = true;
+				} else {
+					// if not editing, go to previous page
+					this.$router.go( -1 );
+				}
+			},
+			confirmCancel: function () {
+				if ( this.openDialog ) {
+					this.openDialog = false;
+				}
+				window.location.href = new mw.Title( this.$route.query.title ).getUrl();
 			},
 			handleImplementation: function () {
 				this.$router.push( {
