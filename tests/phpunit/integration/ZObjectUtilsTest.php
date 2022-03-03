@@ -14,6 +14,10 @@ use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**
@@ -615,6 +619,11 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "Z1K1": "Z9", "Z9K1": "Z12" }',
 				false
 			],
+			'non equal normal types with extra key' => [
+				'{ "Z1K1": "Z9", "Z9K1": "Z11" }',
+				'{ "Z1K1": "Z9", "Z9K1": "Z11", "Z9K3": "extra" }',
+				false
+			],
 			'same types but in different forms fails' => [
 				'"Z12"',
 				'{ "Z1K1": "Z9", "Z9K1": "Z12" }',
@@ -683,6 +692,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::normalizeInternal
 	 * @covers ::normalizeZStringOrZReference
 	 * @covers ::normalizeZList
+	 * @covers ::isTypeEqualTo
 	 * @covers ::normalizeZListInternal
 	 */
 	public function testNormalize( $input, $expected ) {
@@ -1017,6 +1027,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 
 			'Simple ZID' => [ 'Z1', true ],
 			'Big ZID' => [ 'Z1234567890', true ],
+			'Null ZID' => [ 'Z0', false ],
 
 			'Invalid ZID' => [ 'ZK1', false ],
 			'Key' => [ 'Z1K1', false ],
@@ -1030,6 +1041,36 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			'Whitespace-prefixed ZID' => [ " Z1", true ],
 			'Whitespace-beset ZID' => [ "\n\t\rZ1\t \t", true ],
 		];
+	}
+
+	/**
+	 * @dataProvider provideIsValidOrNullZObjectReference
+	 * @covers ::isValidZObjectReference
+	 * @covers ::isValidOrNullZObjectReference
+	 * @covers ::isNullReference
+	 */
+	public function testIsValidOrNullZObjectReference( $input, $expected ) {
+		$this->assertSame( $expected, ZObjectUtils::isValidOrNullZObjectReference( $input ) );
+	}
+
+	public function provideIsValidOrNullZObjectReference() {
+		return [
+			'empty string' => [ '', false ],
+			'Simple ZID' => [ 'Z1', true ],
+			'Big ZID' => [ 'Z1234567890', true ],
+			'Null ZID' => [ 'Z0', true ],
+			'Invalid ZID' => [ 'ZK1', false ],
+			'Key' => [ 'Z1K1', false ],
+		];
+	}
+
+	/**
+	 * @covers ::isNullReference
+	 */
+	public function testIsNullReference() {
+		$this->assertTrue( ZObjectUtils::isNullReference( 'Z0' ) );
+		$this->assertFalse( ZObjectUtils::isNullReference( 'Z1' ) );
+		$this->assertFalse( ZObjectUtils::isNullReference( 'foo' ) );
 	}
 
 	/**
@@ -1169,6 +1210,34 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers ::extractHumanReadableZObject
+	 * @covers ::getLabelOfGlobalKey
+	 * @covers ::getLabelOfTypeKey
+	 * @covers ::getLabelOfFunctionArgument
+	 * @covers ::getLabelOfErrorTypeKey
+	 */
+	public function testExtractHumanReadableZObject_unknownKeys() {
+		$this->insertZids( [ 'Z8', 'Z17', 'Z50' ] );
+		$en = $this->makeLanguage( 'en' );
+		$data = [
+			'Z1' => $this->getZPersistentObject( 'Z1' ),
+			'Z504' => $this->getZPersistentObject( 'Z504' ),
+			'Z885' => $this->getZPersistentObject( 'Z885' ),
+		];
+
+		$zobject = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z885","Z885K1":"Z504", '
+			. '"Z885K2":"unknown function argument key"},'
+			. '"Z504K2":"unknown error key",'
+			. '"Z1K2": "unknown global key"}';
+		$translated = '{"type":{"type":"Z7","Z7K1":"Errortype to type","errortype":"ZID not found",'
+			. '"Z885K2":"unknown function argument key"},'
+			. '"Z504K2":"unknown error key",'
+			. '"Z1K2":"unknown global key"}';
+		$result = ZObjectUtils::extractHumanReadableZObject( json_decode( $zobject ), $data, $en );
+		$this->assertSame( $translated, json_encode( $result ) );
+	}
+
+	/**
+	 * @covers ::extractHumanReadableZObject
 	 * @covers ::getLabelOfLocalKey
 	 * @covers ::getLabelOfGlobalKey
 	 * @covers ::getLabelOfTypeKey
@@ -1287,6 +1356,59 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::getLabelOfTypeKey
+	 */
+	public function testGetLabelOfTypeKey_wrong() {
+		$this->insertZids( [ 'Z60' ] );
+		$zobject = $this->getZPersistentObject( 'Z1002' );
+
+		$this->assertSame(
+			'Z1002K1',
+			ZObjectUtils::getLabelOfTypeKey( 'Z1002K1', $zobject, $this->makeLanguage( 'en' ) )
+		);
+	}
+
+	/**
+	 * @dataProvider provideGetLabelOfTypeKey_unknown
+	 * @covers ::getLabelOfTypeKey
+	 */
+	public function testGetLabelOfTypeKey_unknown( $key, $zobject ) {
+		$this->assertSame(
+			$key,
+			ZObjectUtils::getLabelOfTypeKey( $key, $zobject, $this->makeLanguage( 'en' ) )
+		);
+	}
+
+	public function provideGetLabelOfTypeKey_unknown() {
+		$type1 = ZObjectFactory::createChild( json_decode(
+			'{ "Z1K1": "Z4", "Z4K1": "Z11111", "Z4K2": ['
+			. '{ "Z1K1": "Z3", "Z3K1": "Z6", "Z3K2": "Z11111K1" }'
+			. '] }'
+		) );
+		$persistentType1 = new ZPersistentObject(
+			new ZReference( 'Z11111' ),
+			$type1,
+			new ZMultiLingualString( [] )
+		);
+
+		$type2 = ZObjectFactory::createChild( json_decode(
+			'{ "Z1K1": "Z4", "Z4K1": "Z11111", "Z4K2": ['
+			. '{ "Z1K1": "Z3", "Z3K1":"Z6", "Z3K2":"Z11111K1", "Z3K3":{"Z1K1":"Z12","Z12K1":[] } }'
+			. '] }'
+		) );
+		$persistentType2 = new ZPersistentObject(
+			new ZReference( 'Z11111' ),
+			$type2,
+			new ZMultiLingualString( [] )
+		);
+
+		return [
+			'type key with no label key' => [ 'Z11111K1', $persistentType1 ],
+			'type key with empty labels' => [ 'Z11111K1', $persistentType2 ]
+		];
+	}
+
+	/**
 	 * @dataProvider provideGetLabelOfGlobalKey_error
 	 * @covers ::getLabelOfGlobalKey
 	 * @covers ::getLabelOfErrorTypeKey
@@ -1309,6 +1431,18 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'Z504K2', $this->makeLanguage( 'en' ), 'Z504K2'
 			],
 		];
+	}
+
+	/**
+	 * @covers ::getLabelOfGlobalKey
+	 */
+	public function testGetLabelOfGlobalKey_unknown() {
+		$this->insertZids( [ 'Z60' ] );
+		$language = $this->getZPersistentObject( 'Z1002' );
+		$this->assertSame(
+			'Z1002K1',
+			ZObjectUtils::getLabelOfGlobalKey( 'Z1002K1', $language, $this->makeLanguage( 'en' ) )
+		);
 	}
 
 	/**
@@ -1352,4 +1486,88 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			]
 		];
 	}
+
+	/**
+	 * @dataProvider provideGetErrorTypeKeys
+	 * @covers ::getLabelOfErrorTypeKey
+	 */
+	public function testErrorTypeKeys( $persistentObject, $lang ) {
+		$key = 'Z5555K1';
+		$this->assertSame(
+			$key,
+			ZObjectUtils::getLabelOfErrorTypeKey( $key, $persistentObject, $lang )
+		);
+	}
+
+	public function provideGetErrorTypeKeys() {
+		$id = new ZReference( 'Z5555' );
+		$labels = new ZMultiLingualString( [] );
+		$errorType = new ZReference( 'Z50' );
+
+		$value1 = new ZObject( $errorType );
+		$value2 = new ZObject( $errorType, [
+			'Z50K1' => ZObjectFactory::createChild( [] )
+		] );
+		$value3 = new ZObject( $errorType, [
+			'Z50K1' => ZObjectFactory::createChild( json_decode(
+				'[{"Z1K1": "Z3", "Z3K1":"Z6", "Z3K2": "Z5555K1"}]'
+			) )
+		] );
+		$value4 = new ZObject( $errorType, [
+			'Z50K1' => ZObjectFactory::createChild( [ json_decode(
+				'{"Z1K1": "Z3", "Z3K1":"Z6", "Z3K2": "Z5555K1", "Z3K3":{"Z1K1": "Z12", "Z12K1":[]}}'
+			) ] )
+		] );
+
+		return [
+			'no error keys key' => [
+				new ZPersistentObject( $id, $value1, $labels ),
+				$this->makeLanguage( 'en' )
+			],
+			'empty key array' => [
+				new ZPersistentObject( $id, $value2, $labels ),
+				$this->makeLanguage( 'en' )
+			],
+			'found key with no labels' => [
+				new ZPersistentObject( $id, $value3, $labels ),
+				$this->makeLanguage( 'en' )
+			],
+			'found key with empty labels' => [
+				new ZPersistentObject( $id, $value4, $labels ),
+				$this->makeLanguage( 'en' )
+			]
+		];
+	}
+
+	/**
+	 * @dataProvider provideIterativeList
+	 * @covers ::getIterativeList
+	 */
+	public function testIterativeList( $object, $count ) {
+		$list = ZObjectUtils::getIterativeList( $object );
+		$this->assertIsArray( $list );
+		$this->assertCount( $count, $list );
+	}
+
+	public function provideIterativeList() {
+		$generic1 = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } }';
+		$generic2 = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
+			. '"K1": "first string",'
+			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } } }';
+		$generic3 = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
+			. '"K1": "first string",'
+			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
+			. '"K1": "second string",'
+			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } } } }';
+		$emptyGeneric = ZObjectFactory::createChild( json_decode( $generic1 ) );
+		$genericOne = ZObjectFactory::createChild( json_decode( $generic2 ) );
+		$genericTwo = ZObjectFactory::createChild( json_decode( $generic3 ) );
+		return [
+			'normal array' => [ [ "eins", "zwei" ], 2 ],
+			'empty generic list' => [ $emptyGeneric, 0 ],
+			'generic list with one element' => [ $genericOne, 1 ],
+			'generic list with two elements' => [ $genericTwo, 2 ],
+		];
+	}
+
 }
