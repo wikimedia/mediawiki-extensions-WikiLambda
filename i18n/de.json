@@ -59,6 +59,7 @@
 	"wikilambda-publishnew": "Veröffentlichen",
 	"wikilambda-published": "Veröffentlicht!",
 	"wikilambda-cancel": "Abbrechen",
+	"wikilambda-confirm": "Bestätigen",
 	"wikilambda-savenew": "Speichern",
 	"wikilambda-fallback": "Fallback-Benutzer",
 	"wikilambda-publishchanges": "Änderungen veröffentlichen",
@@ -89,6 +90,8 @@
 	"wikilambda-implementation-selector": "Eine Implementierung auswählen",
 	"wikilambda-implementation-none-found": "Keine Implementierungen gefunden.",
 	"wikilambda-implementation-create-new": "Eine neue Implementierung erstellen",
+	"wikilambda-function-are-you-sure-dialog-header": "Bist du sicher?",
+	"wikilambda-function-are-you-sure-dialog-description": "Bist du sicher, dass du den Bearbeitungsmodus verlassen möchtest, ohne vorher zu veröffentlichen?",
 	"wikilambda-functioncall-error": "Fehler beim Funktionsaufruf: $1",
 	"wikilambda-functioncall-error-category": "Seiten mit fehlerhaften Wikifunctions-Aufrufen",
 	"wikilambda-functioncall-error-category-desc": "Seiten mit Aufrufen von Wikifunktionen, die zu einem allgemeinen Fehler führen",
@@ -211,5 +214,7 @@
 	"wikilambda-ztyped-pair-value-label": "Wert",
 	"wikilambda-ztyped-map-placeholder": "Wähle einen Kartentyp aus",
 	"wikilambda-zerror": "ZError vom Typ $1",
-	"wikilambda-optional": "optional"
+	"wikilambda-optional": "optional",
+	"wikilambda-continue-editing": "Weiter bearbeiten",
+	"wikilambda-discard-edits": "Bearbeitungen verwerfen"
 }

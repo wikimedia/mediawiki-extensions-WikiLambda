@@ -68,6 +68,7 @@
 	"wikilambda-publishnew": "Publier",
 	"wikilambda-published": "Publié !",
 	"wikilambda-cancel": "Annuler",
+	"wikilambda-confirm": "Confirmer",
 	"wikilambda-savenew": "Enregistrer",
 	"wikilambda-fallback": "Éditeur de repli",
 	"wikilambda-publishchanges": "Publier les modifications",
@@ -99,6 +100,8 @@
 	"wikilambda-implementation-selector": "Sélectionnez une mise en œuvre",
 	"wikilambda-implementation-none-found": "Aucune mise en œuvre trouvée.",
 	"wikilambda-implementation-create-new": "Créer une nouvelle mise en œuvre",
+	"wikilambda-function-are-you-sure-dialog-header": "Êtes-vous sûr ?",
+	"wikilambda-function-are-you-sure-dialog-description": "Êtes-vous sûr de vouloir quitter le mode d’édition sans publier auparavant ?",
 	"wikilambda-functioncall-error": "Erreur d’appel de fonction : $1",
 	"wikilambda-functioncall-error-category": "Pages contenant des appels erronés à Wikifonctions",
 	"wikilambda-functioncall-error-category-desc": "Pages avec des appels à Wikifonctions qui aboutissent à une erreur générale",
@@ -225,5 +228,7 @@
 	"wikilambda-ztyped-map-placeholder": "Sélectionner un type de carte",
 	"wikilambda-ztyped-map-description": "Types de la carte",
 	"wikilambda-zerror": "Z-Erreur de type $1",
-	"wikilambda-optional": "facultatif"
+	"wikilambda-optional": "facultatif",
+	"wikilambda-continue-editing": "Continuer à éditer",
+	"wikilambda-discard-edits": "Abandonner les modifications"
 }

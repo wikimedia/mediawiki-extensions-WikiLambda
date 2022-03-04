@@ -5,6 +5,7 @@
 			"MathXplore",
 			"Portal18",
 			"RYOUMA1117",
+			"Sou0012",
 			"Tamaki Wakita"
 		]
 	},
@@ -15,6 +16,7 @@
 	"wikilambda-publishnew": "公開",
 	"wikilambda-published": "公開が完了しました!",
 	"wikilambda-cancel": "キャンセル",
+	"wikilambda-confirm": "確認",
 	"wikilambda-savenew": "保存",
 	"wikilambda-publishchanges": "変更を公開",
 	"wikilambda-savechanges": "変更を保存",
@@ -53,5 +55,7 @@
 	"wikilambda-ztyped-pair-key-label": "キー",
 	"wikilambda-ztyped-pair-value-label": "値",
 	"wikilambda-ztyped-map-placeholder": "地図の種別を選択",
-	"wikilambda-optional": "省略可能"
+	"wikilambda-optional": "省略可能",
+	"wikilambda-continue-editing": "編集を続行",
+	"wikilambda-discard-edits": "編集内容を破棄"
 }

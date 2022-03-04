@@ -71,8 +71,6 @@
 	"wikilambda-published": "Label for the publish button after clicking and publishing a function",
 	"wikilambda-cancel": "Label for the cancel button\n\n{{Identical|Cancel}}",
 	"wikilambda-confirm": "Label for the confirm button",
-	"wikilambda-discard-edits": "Label for the discard edits button",
-	"wikilambda-continue-editing": "Label for the continue editing button",
 	"wikilambda-savenew": "Label for the submit button when creating a ZObject on a private wiki\n{{identical|Save}}",
 	"wikilambda-fallback": "Label for the Fallback editor button",
 	"wikilambda-publishchanges": "Label for the submit button when updating an existing ZObject on a public wiki",
@@ -112,6 +110,8 @@
 	"wikilambda-implementation-selector": "Label for selecting an implementation to add to a function.",
 	"wikilambda-implementation-none-found": "Label for when no implementation for a function has yet been created.",
 	"wikilambda-implementation-create-new": "Label for creating a new implementation for a function.",
+	"wikilambda-function-are-you-sure-dialog-header": "Header for dialog confirming leaving edit mode without publishing",
+	"wikilambda-function-are-you-sure-dialog-description": "Description for dialog confirming leaving edit mode without publishing",
 	"wikilambda-functioncall-error": "Error shown when a wikitext function call goes wrong.\n\nParams:\n* $1 - The specific error message",
 	"wikilambda-functioncall-error-category": "A [[:mw:Special:MyLanguage/Help:Tracking categories|tracking category]] added to a page with a function call that results in an error. Please don't add namespace prefix.",
 	"wikilambda-functioncall-error-category-desc": "Description of the generic Wikifunctions error tracking category",
@@ -239,6 +239,6 @@
 	"wikilambda-ztyped-map-description": "Description used to inform user of what types are used in a map instance.\n\n{{Doc-wikilambda}}",
 	"wikilambda-zerror": "Message that informs that a ZError of a given type has been returned.\n\n{{Doc-wikilambda}}",
 	"wikilambda-optional": "Word used to inform the user that a given input is optional",
-	"wikilambda-function-are-you-sure-dialog-header": "Header for dialog confirming leaving edit mode without publishing",
-	"wikilambda-function-are-you-sure-dialog-description": "Description for dialog confirming leaving edit mode without publishing"
+	"wikilambda-continue-editing": "Label for the continue editing button",
+	"wikilambda-discard-edits": "Label for the discard edits button"
 }

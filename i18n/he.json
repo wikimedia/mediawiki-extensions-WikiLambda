@@ -58,6 +58,7 @@
 	"wikilambda-publishnew": "פרסום",
 	"wikilambda-published": "פורסמה!",
 	"wikilambda-cancel": "ביטול",
+	"wikilambda-confirm": "אישור",
 	"wikilambda-savenew": "שמירה",
 	"wikilambda-fallback": "עורך גיבוי",
 	"wikilambda-publishchanges": "פרסום השינויים",
@@ -89,6 +90,8 @@
 	"wikilambda-implementation-selector": "בחירת מימוש",
 	"wikilambda-implementation-none-found": "לא נמצאו מימושים.",
 	"wikilambda-implementation-create-new": "יציאת מימוש חדש",
+	"wikilambda-function-are-you-sure-dialog-header": "באמת?",
+	"wikilambda-function-are-you-sure-dialog-description": "האם ברצונך באמת לעזוב את מצב העריכה בלי לפרסם קודם?",
 	"wikilambda-functioncall-error": "שגיאה בקריאה לפונקציה: $1",
 	"wikilambda-functioncall-error-category": "דפים עם קריאות לוויקיפונקציות שגרמו לשגיאות",
 	"wikilambda-functioncall-error-category-desc": "דפים עם קריאות לוויקיפונקציות שגרמו לשגיאה כללית",
@@ -214,5 +217,7 @@
 	"wikilambda-ztyped-map-placeholder": "נא לבחור את סוג המפה",
 	"wikilambda-ztyped-map-description": "מפת סוגים",
 	"wikilambda-zerror": "שגיאת Z מסוג $1",
-	"wikilambda-optional": "לא חובה"
+	"wikilambda-optional": "לא חובה",
+	"wikilambda-continue-editing": "המשך עריכה",
+	"wikilambda-discard-edits": "ביטול העריכות"
 }
