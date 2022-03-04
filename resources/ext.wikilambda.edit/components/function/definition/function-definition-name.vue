@@ -33,7 +33,7 @@ var Constants = require( '../../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'function-definition-name',
 	props: {
 		zobjectId: {

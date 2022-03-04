@@ -32,7 +32,7 @@
 var Chip = require( './Chip.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'chip-container',
 	components: {
 		chip: Chip

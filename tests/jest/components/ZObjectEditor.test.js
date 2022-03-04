@@ -7,13 +7,8 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	createLocalVue = require( '@vue/test-utils' ).createLocalVue,
 	Vuex = require( 'vuex' ),
-	ZObjectEditor = require( '../../../resources/ext.wikilambda.edit/components/ZObjectEditor.vue' ),
-	localVue;
-
-localVue = createLocalVue();
-localVue.use( Vuex );
+	ZObjectEditor = require( '../../../resources/ext.wikilambda.edit/components/ZObjectEditor.vue' );
 
 describe( 'ZObjectEditor', function () {
 	var getters,
@@ -49,7 +44,7 @@ describe( 'ZObjectEditor', function () {
 			addZKeyLabel: jest.fn()
 		};
 
-		store = new Vuex.Store( {
+		store = Vuex.createStore( {
 			getters: getters,
 			actions: actions,
 			mutations: mutations
@@ -64,10 +59,13 @@ describe( 'ZObjectEditor', function () {
 
 	it( 'renders without errors', function () {
 		var wrapper = shallowMount( ZObjectEditor, {
-			store: store,
-			localVue: localVue,
-			mocks: {
-				$i18n: jest.fn()
+			global: {
+				plugins: [
+					store
+				],
+				mocks: {
+					$i18n: jest.fn()
+				}
 			}
 		} );
 

@@ -4,7 +4,7 @@
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-module.exports = {
+module.exports = exports = {
 	setExpertMode: function ( state, value ) {
 		state.expertMode = value;
 		mw.storage.set( 'aw-expert-mode', value );

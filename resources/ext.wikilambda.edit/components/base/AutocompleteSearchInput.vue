@@ -82,7 +82,7 @@ var SdIcon = require( './Icon.vue' ),
  * general for wider usage.
  */
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'sd-autocomplete-search-input',
 	components: {
 		'sd-icon': SdIcon,

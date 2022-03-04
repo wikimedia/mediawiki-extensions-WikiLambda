@@ -32,7 +32,7 @@ var Constants = require( '../../Constants.js' ),
 	ZNaturalLanguageSelector = require( '../ZNaturalLanguageSelector.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'z-multilingual-string',
 	components: {
 		'z-monolingual-string': ZMonolingualString,

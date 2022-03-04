@@ -26,7 +26,7 @@
 var Tab = require( './Tab.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'tab-container',
 	components: {
 		tab: Tab

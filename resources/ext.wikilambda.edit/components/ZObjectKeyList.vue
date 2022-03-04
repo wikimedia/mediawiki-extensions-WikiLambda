@@ -35,7 +35,7 @@ var Constants = require( '../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'z-object-key-list',
 	components: {
 		'sd-button': SdButton

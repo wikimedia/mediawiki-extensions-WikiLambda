@@ -58,7 +58,7 @@
  *    }
  */
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'sd-icon',
 
 	props: {

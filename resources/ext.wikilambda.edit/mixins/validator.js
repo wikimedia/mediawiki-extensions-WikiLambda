@@ -7,7 +7,7 @@
  */
 'use strict';
 
-module.exports = {
+module.exports = exports = {
 
 	data: function () {
 		return {

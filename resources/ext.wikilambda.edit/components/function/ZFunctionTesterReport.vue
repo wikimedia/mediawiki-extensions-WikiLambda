@@ -110,7 +110,7 @@ var Constants = require( '../../Constants.js' ),
 	ZTesterImplResult = require( './ZTesterImplResult.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	components: {
 		'z-tester-impl-result': ZTesterImplResult
 	},

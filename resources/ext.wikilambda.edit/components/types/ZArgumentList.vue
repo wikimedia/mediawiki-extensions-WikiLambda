@@ -29,7 +29,7 @@ var mapActions = require( 'vuex' ).mapActions,
 	ZList = require( './ZList.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	extends: ZList,
 	computed: mapGetters( [ 'getNextObjectId' ] ),
 	methods: $.extend( mapActions( [ 'addZArgument' ] ), {

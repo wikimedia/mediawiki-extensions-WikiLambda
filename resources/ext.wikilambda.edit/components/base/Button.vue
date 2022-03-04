@@ -19,7 +19,7 @@ var SdIcon = require( './Icon.vue' );
  * Button with optional icon.
  */
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'sd-button',
 
 	components: {

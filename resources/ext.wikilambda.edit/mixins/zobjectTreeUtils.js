@@ -8,7 +8,7 @@ var Constants = require( '../Constants.js' ),
 	typeUtils = require( './typeUtils.js' ).methods,
 	normalize = require( './schemata.js' ).methods.normalizeZObject;
 
-module.exports = {
+module.exports = exports = {
 	methods: {
 		convertZObjectToTree: function ( zObject, startingKey, startingId, startingParentId ) {
 

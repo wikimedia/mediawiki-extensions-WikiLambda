@@ -14,9 +14,16 @@ module.exports = {
 		'vue'
 	],
 
-	transform: {
-		'.*\\.(vue)$': '<rootDir>/node_modules/vue-jest'
+	// Use the compatibility build of Vue 3
+	moduleNameMapper: {
+		'^vue$': '@vue/compat'
 	},
+
+	transform: {
+		'.*\\.(vue)$': '<rootDir>/node_modules/@vue/vue3-jest'
+	},
+
+	testEnvironment: 'jsdom',
 
 	// Indicates whether the coverage information should be collected while executing the test
 	collectCoverage: true,

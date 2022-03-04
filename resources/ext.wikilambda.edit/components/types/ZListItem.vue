@@ -39,7 +39,7 @@ var typeUtils = require( '../../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'z-list-item',
 	components: {
 		'z-object-selector': ZObjectSelector,

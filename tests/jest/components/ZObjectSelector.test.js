@@ -8,14 +8,9 @@
 'use strict';
 
 var mount = require( '@vue/test-utils' ).mount,
-	createLocalVue = require( '@vue/test-utils' ).createLocalVue,
 	Vuex = require( 'vuex' ),
 	ZObjectSelector = require( '../../../resources/ext.wikilambda.edit/components/ZObjectSelector.vue' ),
-	WmbiAutocompleteSearchInput = require( '../../../resources/ext.wikilambda.edit/components/base/AutocompleteSearchInput.vue' ),
-	localVue;
-
-localVue = createLocalVue();
-localVue.use( Vuex );
+	WmbiAutocompleteSearchInput = require( '../../../resources/ext.wikilambda.edit/components/base/AutocompleteSearchInput.vue' );
 
 describe( 'ZObjectSelector', function () {
 	var state,
@@ -55,7 +50,7 @@ describe( 'ZObjectSelector', function () {
 				s.zKeyLabels[ payload.key ] = payload.label;
 			} )
 		};
-		store = new Vuex.Store( {
+		store = Vuex.createStore( {
 			state: state,
 			getters: getters,
 			actions: actions,
@@ -65,10 +60,13 @@ describe( 'ZObjectSelector', function () {
 
 	it( 'renders without errors', function () {
 		var wrapper = mount( ZObjectSelector, {
-			store: store,
-			localVue: localVue,
-			mocks: {
-				$i18n: jest.fn()
+			global: {
+				plugins: [
+					store
+				],
+				mocks: {
+					$i18n: jest.fn()
+				}
 			}
 		} );
 
@@ -102,10 +100,13 @@ describe( 'ZObjectSelector', function () {
 			} );
 
 		wrapper = mount( ZObjectSelector, {
-			store: store,
-			localVue: localVue,
-			mocks: {
-				$i18n: jest.fn()
+			global: {
+				plugins: [
+					store
+				],
+				mocks: {
+					$i18n: jest.fn()
+				}
 			}
 		} );
 
@@ -136,13 +137,16 @@ describe( 'ZObjectSelector', function () {
 			} );
 
 		wrapper = mount( ZObjectSelector, {
-			propsData: {
+			props: {
 				type: 'Z4'
 			},
-			store: store,
-			localVue: localVue,
-			mocks: {
-				$i18n: jest.fn()
+			global: {
+				plugins: [
+					store
+				],
+				mocks: {
+					$i18n: jest.fn()
+				}
 			}
 		} );
 
@@ -174,13 +178,16 @@ describe( 'ZObjectSelector', function () {
 			} );
 
 		wrapper = mount( ZObjectSelector, {
-			propsData: {
+			props: {
 				returnType: 'Z4'
 			},
-			store: store,
-			localVue: localVue,
-			mocks: {
-				$i18n: jest.fn()
+			global: {
+				plugins: [
+					store
+				],
+				mocks: {
+					$i18n: jest.fn()
+				}
 			}
 		} );
 
@@ -221,7 +228,7 @@ describe( 'ZObjectSelector', function () {
 			return true;
 		} );
 
-		store = new Vuex.Store( {
+		store = Vuex.createStore( {
 			state: state,
 			getters: getters,
 			actions: actions,
@@ -230,10 +237,13 @@ describe( 'ZObjectSelector', function () {
 		jest.useFakeTimers();
 
 		wrapper = mount( ZObjectSelector, {
-			store: store,
-			localVue: localVue,
-			mocks: {
-				$i18n: jest.fn()
+			global: {
+				plugins: [
+					store
+				],
+				mocks: {
+					$i18n: jest.fn()
+				}
 			}
 		} );
 
@@ -249,7 +259,7 @@ describe( 'ZObjectSelector', function () {
 	it( 'emits the selected ZID', function () {
 		var wrapper;
 
-		store = new Vuex.Store( {
+		store = Vuex.createStore( {
 			state: state,
 			getters: getters,
 			actions: actions,
@@ -257,10 +267,13 @@ describe( 'ZObjectSelector', function () {
 		} );
 
 		wrapper = mount( ZObjectSelector, {
-			store: store,
-			localVue: localVue,
-			mocks: {
-				$i18n: jest.fn()
+			global: {
+				plugins: [
+					store
+				],
+				mocks: {
+					$i18n: jest.fn()
+				}
 			}
 		} );
 		store.state.zKeyLabels = {

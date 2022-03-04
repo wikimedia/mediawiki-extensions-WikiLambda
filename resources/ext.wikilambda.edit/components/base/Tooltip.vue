@@ -30,7 +30,7 @@
 
 <script>
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'tooltip-item',
 	// TODO (T301481): smart positioning of tooltip
 	props: {

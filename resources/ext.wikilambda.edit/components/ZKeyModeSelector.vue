@@ -25,7 +25,7 @@
 var mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'z-key-mode-selector',
 	inject: {
 		allowArgRefMode: { default: false }
@@ -50,6 +50,7 @@ module.exports = {
 			default: null
 		}
 	},
+	emits: [ 'change' ],
 	computed: $.extend( {},
 		mapGetters( {
 			getAllModes: 'getAllModes',

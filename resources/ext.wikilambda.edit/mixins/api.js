@@ -12,7 +12,7 @@
 var Constants = require( '../Constants.js' ),
 	canonicalize = require( './schemata.js' ).methods.canonicalizeZObject;
 
-module.exports = {
+module.exports = exports = {
 	methods: {
 		performFunctionCall: function ( zobject, shouldNormalize ) {
 			var api = new mw.Api();

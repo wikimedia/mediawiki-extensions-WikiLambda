@@ -52,7 +52,7 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'z-implementation-list-item',
 	components: {
 		'code-editor': CodeEditor,

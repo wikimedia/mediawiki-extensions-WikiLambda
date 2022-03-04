@@ -51,7 +51,7 @@ var Constants = require( '../../Constants.js' ),
 	ZTesterAdHoc = require( './ZTesterAdHoc.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	components: {
 		'z-tester-list-item': ZTesterListItem,
 		'z-tester-ad-hoc': ZTesterAdHoc

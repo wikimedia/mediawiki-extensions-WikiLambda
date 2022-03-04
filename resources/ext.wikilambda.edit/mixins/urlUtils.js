@@ -4,7 +4,7 @@
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-module.exports = {
+module.exports = exports = {
 	methods: {
 		getParameterByName: function ( name ) {
 			name = name.replace( /[[]]/g, '\\$&' );

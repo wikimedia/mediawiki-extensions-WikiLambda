@@ -7,7 +7,7 @@
 'use strict';
 var Constants = require( '../Constants.js' );
 
-module.exports = {
+module.exports = exports = {
 	getZkeyLiteralType: function ( state, getters ) {
 
 		/**

@@ -20,7 +20,7 @@ var mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'app',
 	inject: {
 		viewmode: { default: false }

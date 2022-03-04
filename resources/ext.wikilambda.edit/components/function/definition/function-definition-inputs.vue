@@ -43,7 +43,7 @@ var Constants = require( '../../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'function-definition-inputs',
 	components: {
 		'function-definition-inputs-item': functionDefinitionInputsItem,

@@ -20,7 +20,7 @@ function filterOutPresentZids( rootState ) {
 		return true;
 	};
 }
-module.exports = {
+module.exports = exports = {
 	state: {
 		newImplementation: null,
 		/**

@@ -51,7 +51,7 @@ var Constants = require( '../Constants.js' ),
 	mapMutations = require( 'vuex' ).mapMutations;
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'z-object-selector',
 	components: {
 		'sd-autocomplete-search-input': SdAutocompleteSearchInput,

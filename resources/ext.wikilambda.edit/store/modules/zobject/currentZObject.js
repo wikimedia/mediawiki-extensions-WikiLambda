@@ -7,7 +7,7 @@
 var Constants = require( '../../../Constants.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ).methods;
 
-module.exports = {
+module.exports = exports = {
 	getters: {
 		getZObjectAsJson: function ( state, getters, rootState, rootGetters ) {
 			/**

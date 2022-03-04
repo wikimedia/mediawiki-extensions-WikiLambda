@@ -20,7 +20,7 @@ function isZType( zidInfo ) {
 		( zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] === Constants.Z_TYPE );
 }
 
-module.exports = {
+module.exports = exports = {
 	state: {
 		/**
 		 * Collection of zKey information

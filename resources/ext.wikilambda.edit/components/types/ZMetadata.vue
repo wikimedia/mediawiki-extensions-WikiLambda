@@ -111,7 +111,7 @@ var Constants = require( '../../Constants.js' ),
 	ZNaturalLanguageSelector = require( '../ZNaturalLanguageSelector.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	components: {
 		'sd-button': SdButton,
 		'z-string': ZString,

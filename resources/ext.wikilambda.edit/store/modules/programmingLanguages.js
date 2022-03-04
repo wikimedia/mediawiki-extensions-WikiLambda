@@ -7,7 +7,7 @@
 
 var Constants = require( '../../Constants.js' );
 
-module.exports = {
+module.exports = exports = {
 	state: {
 		/**
 		 * Collection of ZProgrammingLanguages

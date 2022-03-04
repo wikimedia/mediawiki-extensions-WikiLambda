@@ -19,7 +19,7 @@ function updateZObjectPageTitle( text ) {
 	modifyElementInnerText( '#firstHeading span', text );
 }
 
-module.exports = {
+module.exports = exports = {
 	methods: {
 		updateZObjectPageTitle: updateZObjectPageTitle
 	}

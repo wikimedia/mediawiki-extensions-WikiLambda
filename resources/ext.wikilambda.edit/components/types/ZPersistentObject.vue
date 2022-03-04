@@ -84,7 +84,7 @@ var Constants = require( '../../Constants.js' ),
 	FnEditorVisualDisplay = require( '../editor/FnEditorVisualDisplay.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	components: {
 		'z-object-key': ZObjectKey,
 		'z-metadata': ZMetadata,

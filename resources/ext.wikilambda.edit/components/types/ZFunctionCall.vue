@@ -86,7 +86,7 @@ var Constants = require( '../../Constants.js' ),
 	SdButton = require( '../base/Button.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	components: {
 		'z-object-selector': ZObjectSelector,
 		'z-object-json': ZObjectJson,

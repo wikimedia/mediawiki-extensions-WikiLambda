@@ -134,7 +134,7 @@ function normalize( zobject ) {
 	return normal;
 }
 
-module.exports = {
+module.exports = exports = {
 	methods: {
 		canonicalizeZObject: canonicalize,
 		normalizeZObject: normalize
