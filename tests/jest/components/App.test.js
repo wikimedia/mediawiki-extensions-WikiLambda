@@ -83,8 +83,6 @@ describe( 'App.vue', function () {
 	} );
 
 	it( 'Initializes the app on load', function () {
-		var $i18n = jest.fn();
-
 		mockIsInitialized = true;
 
 		shallowMount( App, {
@@ -92,10 +90,7 @@ describe( 'App.vue', function () {
 				plugins: [
 					store,
 					VueRouter
-				],
-				mocks: {
-					$i18n: $i18n
-				}
+				]
 			},
 			provide: {
 				viewmode: true

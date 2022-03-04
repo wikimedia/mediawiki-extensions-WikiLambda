@@ -13,10 +13,7 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 describe( 'ZFunctionTesterReport', function () {
 	var getters,
 		actions,
-		store,
-		i18n = jest.fn( function ( str ) {
-			return str;
-		} );
+		store;
 
 	beforeEach( function () {
 		getters = {
@@ -73,10 +70,7 @@ describe( 'ZFunctionTesterReport', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: jest.fn()
-				}
+				]
 			}
 		} );
 		expect( wrapper.find( 'div' ) ).toBeTruthy();
@@ -90,10 +84,7 @@ describe( 'ZFunctionTesterReport', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: i18n
-				}
+				]
 			}
 		} );
 
@@ -121,10 +112,7 @@ describe( 'ZFunctionTesterReport', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: i18n
-				}
+				]
 			}
 		} );
 		expect( wrapper.find( 'p' ).text() ).toBe( 'wikilambda-tester-no-results' );
@@ -144,10 +132,7 @@ describe( 'ZFunctionTesterReport', function () {
 				global: {
 					plugins: [
 						store
-					],
-					mocks: {
-						$i18n: i18n
-					}
+					]
 				},
 				// TODO (T303072): This is not supported any more
 				computed: {

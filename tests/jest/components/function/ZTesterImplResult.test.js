@@ -17,9 +17,6 @@ describe( 'ZTesterImplResult', function () {
 		zFunctionId,
 		zImplementationId,
 		zTesterId,
-		$i18n = jest.fn( function ( str ) {
-			return str;
-		} ),
 		returnStatus = jest.fn( function () {
 			return testStatus;
 		} );
@@ -50,10 +47,7 @@ describe( 'ZTesterImplResult', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: $i18n
-				}
+				]
 			}
 		} );
 		expect( wrapper.find( 'div' ) ).toBeTruthy();
@@ -69,10 +63,7 @@ describe( 'ZTesterImplResult', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: $i18n
-				}
+				]
 			}
 		} );
 		expect( returnStatus ).toHaveBeenCalledWith( zFunctionId, zTesterId, zImplementationId );
@@ -89,10 +80,7 @@ describe( 'ZTesterImplResult', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: $i18n
-				}
+				]
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'wikilambda-tester-status-running' );
@@ -104,10 +92,7 @@ describe( 'ZTesterImplResult', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: $i18n
-				}
+				]
 			},
 			props: {
 				zFunctionId: zFunctionId,
@@ -129,10 +114,7 @@ describe( 'ZTesterImplResult', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: $i18n
-				}
+				]
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'wikilambda-tester-status-failed' );
@@ -149,10 +131,7 @@ describe( 'ZTesterImplResult', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: $i18n
-				}
+				]
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'wikilambda-tester-status-pending' );
@@ -169,10 +148,7 @@ describe( 'ZTesterImplResult', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: $i18n
-				}
+				]
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'wikilambda-tester-status-pending' );

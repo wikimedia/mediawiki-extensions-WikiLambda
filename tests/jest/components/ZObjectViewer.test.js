@@ -29,10 +29,7 @@ describe( 'ZObjectViewer', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: jest.fn()
-				}
+				]
 			}
 		} );
 

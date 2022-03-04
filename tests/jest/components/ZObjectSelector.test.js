@@ -63,10 +63,7 @@ describe( 'ZObjectSelector', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: jest.fn()
-				}
+				]
 			}
 		} );
 
@@ -103,10 +100,7 @@ describe( 'ZObjectSelector', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: jest.fn()
-				}
+				]
 			}
 		} );
 
@@ -143,10 +137,7 @@ describe( 'ZObjectSelector', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: jest.fn()
-				}
+				]
 			}
 		} );
 
@@ -184,10 +175,7 @@ describe( 'ZObjectSelector', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: jest.fn()
-				}
+				]
 			}
 		} );
 
@@ -240,10 +228,7 @@ describe( 'ZObjectSelector', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: jest.fn()
-				}
+				]
 			}
 		} );
 
@@ -270,10 +255,7 @@ describe( 'ZObjectSelector', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: jest.fn()
-				}
+				]
 			}
 		} );
 		store.state.zKeyLabels = {

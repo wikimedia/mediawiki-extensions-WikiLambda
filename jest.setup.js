@@ -1,4 +1,5 @@
-/* eslint-disable no-undef */
+/* eslint-disable no-implicit-globals */
+/* global global, jest, mockLocalStorage */
 // Assign things to "global" here if you want them to be globally available during tests
 global.$ = require( 'jquery' );
 
@@ -42,4 +43,13 @@ global.mw = {
 		} )
 	}
 // other mw properties as needed...
+};
+
+// Mock i18n for all tests
+var vueTestUtils = require( '@vue/test-utils' );
+
+vueTestUtils.config.global.mocks = {
+	$i18n: jest.fn( function ( str ) {
+		return str;
+	} )
 };

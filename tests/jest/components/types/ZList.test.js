@@ -79,10 +79,7 @@ describe( 'ZList', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: jest.fn()
-				}
+				]
 			}
 		} );
 
@@ -97,10 +94,7 @@ describe( 'ZList', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: jest.fn()
-				}
+				]
 			}
 		} );
 
@@ -115,10 +109,7 @@ describe( 'ZList', function () {
 				global: {
 					plugins: [
 						store
-					],
-					mocks: {
-						$i18n: jest.fn()
-					}
+					]
 				}
 			} ),
 			expectedZObject = JSON.parse( JSON.stringify( zobjectTree ) );
@@ -138,10 +129,7 @@ describe( 'ZList', function () {
 				global: {
 					plugins: [
 						store
-					],
-					mocks: {
-						$i18n: jest.fn()
-					}
+					]
 				}
 			} ),
 			expectedZObject = zobjectTree.filter( function ( zobject ) {

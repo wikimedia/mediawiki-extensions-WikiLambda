@@ -62,10 +62,7 @@ describe( 'ZObjectEditor', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: jest.fn()
-				}
+				]
 			}
 		} );
 

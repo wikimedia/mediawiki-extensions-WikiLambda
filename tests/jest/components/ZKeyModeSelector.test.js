@@ -37,10 +37,7 @@ describe( 'ZKeyModeSelector', function () {
 			global: {
 				plugins: [
 					store
-				],
-				mocks: {
-					$i18n: jest.fn()
-				}
+				]
 			}
 		} );
 
@@ -56,10 +53,7 @@ describe( 'ZKeyModeSelector', function () {
 				global: {
 					plugins: [
 						store
-					],
-					mocks: {
-						$i18n: jest.fn()
-					}
+					]
 				}
 			} ),
 			select,
