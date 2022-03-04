@@ -51,7 +51,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::isValidZObjectRecord
 	 */
 	public function testIsValidSerialisedZObject( $input, $expected ) {
-		$this->assertSame( ZObjectUtils::isValidSerialisedZObject( $input ), $expected );
+		$this->assertSame( $expected, ZObjectUtils::isValidSerialisedZObject( $input ) );
 	}
 
 	public function provideIsValidSerialisedZObject() {
