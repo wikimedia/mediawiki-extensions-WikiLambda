@@ -133,9 +133,9 @@ var routes = [
 	}
 ];
 
-module.exports = VueRouter.createRouter(
+module.exports = new VueRouter(
 	{
 		routes: routes,
-		history: VueRouter.createWebHistory()
+		mode: 'history'
 	}
 );
