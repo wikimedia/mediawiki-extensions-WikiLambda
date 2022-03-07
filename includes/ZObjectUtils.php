@@ -1036,38 +1036,48 @@ class ZObjectUtils {
 			}, $zobject );
 		}
 
-		if ( is_object( $zobject ) ) {
-			$labelized = [];
-			foreach ( $zobject as $key => $value ) {
-				// Labelize key:
-				if ( self::isValidZObjectGlobalKey( $key ) ) {
-					// If $key is a global key (ZnK1, ZnK2...), typeZid contains the
-					// Zid where we can find the key definition.
-					$typeZid = self::getZObjectReferenceFromKey( $key );
-					if ( array_key_exists( $typeZid, $data ) ) {
-						$labelizedKey = self::getLabelOfGlobalKey( $key, $data[ $typeZid ], $lang );
-					} else {
-						$labelizedKey = $key;
-					}
-				} else {
-					// If $key is local, get the type from $zobject[ Z1K1 ]
-					$labelizedKey = self::getLabelOfLocalKey( $key, $zobject, $data, $lang );
-				}
-
-				// Labelize value:
-				$labelizedValue = in_array( $key, ZTypeRegistry::IGNORE_KEY_VALUES_FOR_LABELLING )
-					? $value
-					: self::extractHumanReadableZObject( $value, $data, $lang );
-
-				// Exception: labelized key already exists
-				if ( array_key_exists( $labelizedKey, $labelized ) ) {
-					$labelized[ "$labelizedKey ($key)" ] = $labelizedValue;
-				} else {
-					$labelized[ $labelizedKey ] = $labelizedValue;
-				}
-
-			}
-			return (object)$labelized;
+		if ( !is_object( $zobject ) ) {
+			// Fall through: invalid syntax error
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_SYNTAX,
+					[
+						'data' => $zobject
+					]
+				)
+			);
 		}
+
+		$labelized = [];
+		foreach ( $zobject as $key => $value ) {
+			// Labelize key:
+			if ( self::isValidZObjectGlobalKey( $key ) ) {
+				// If $key is a global key (ZnK1, ZnK2...), typeZid contains the
+				// Zid where we can find the key definition.
+				$typeZid = self::getZObjectReferenceFromKey( $key );
+				if ( array_key_exists( $typeZid, $data ) ) {
+					$labelizedKey = self::getLabelOfGlobalKey( $key, $data[ $typeZid ], $lang );
+				} else {
+					$labelizedKey = $key;
+				}
+			} else {
+				// If $key is local, get the type from $zobject[ Z1K1 ]
+				$labelizedKey = self::getLabelOfLocalKey( $key, $zobject, $data, $lang );
+			}
+
+			// Labelize value:
+			$labelizedValue = in_array( $key, ZTypeRegistry::IGNORE_KEY_VALUES_FOR_LABELLING )
+				? $value
+				: self::extractHumanReadableZObject( $value, $data, $lang );
+
+			// Exception: labelized key already exists
+			if ( array_key_exists( $labelizedKey, $labelized ) ) {
+				$labelized[ "$labelizedKey ($key)" ] = $labelizedValue;
+			} else {
+				$labelized[ $labelizedKey ] = $labelizedValue;
+			}
+
+		}
+		return (object)$labelized;
 	}
 }
