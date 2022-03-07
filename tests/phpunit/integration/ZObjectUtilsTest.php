@@ -517,6 +517,17 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				. '] }'
 				. '] }',
 			],
+
+			'empty language list but we give a string as the input' => [
+				'"string value"',
+				[],
+				'"string value"'
+			],
+			'non-empty language list but we give a string as the input' => [
+				'"string value"',
+				[ self::ES, self::EN ],
+				'"string value"'
+			],
 		];
 	}
 
