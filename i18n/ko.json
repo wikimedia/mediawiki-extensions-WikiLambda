@@ -14,6 +14,7 @@
 	"wikilambda-speciallistduplicatezobjectlabels-language": "언어",
 	"wikilambda-special-objectsbytype-typeheader": "모든 유형",
 	"wikilambda-publishnew": "게시",
+	"wikilambda-confirm": "확인",
 	"wikilambda-savenew": "저장",
 	"wikilambda-fallback": "폴백 편집기",
 	"wikilambda-publishchanges": "변경사항 게시",
@@ -25,6 +26,8 @@
 	"wikilambda-editor-zobject-addkey": "키 추가:",
 	"wikilambda-editor-label-select-programming-language-label": "프로그래밍 언어 선택:",
 	"specialpages-group-wikilambda": "위키함수 문서",
+	"wikilambda-function-are-you-sure-dialog-header": "확실합니까?",
+	"wikilambda-function-are-you-sure-dialog-description": "정말 게시하지 않고 편집을 그만 두겠습니까?",
 	"wikilambda-functioncall-error": "함수 호출 오류: $1",
 	"wikilambda-functioncall-error-category": "위키함수 호출 오류가 있는 문서",
 	"wikilambda-functioncall-error-category-desc": "일반 오류를 발생시키는 위키함수로의 호출이 있는 문서",
@@ -74,5 +77,6 @@
 	"wikilambda-editor-attach-title": "첨부",
 	"wikilambda-editor-progress-title": "진행도",
 	"wikilambda-ztyped-list-items": "항목 목록",
-	"wikilambda-optional": "선택 사항"
+	"wikilambda-optional": "선택 사항",
+	"wikilambda-continue-editing": "편집 계속"
 }

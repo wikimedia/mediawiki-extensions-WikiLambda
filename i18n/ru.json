@@ -18,6 +18,7 @@
 	"wikilambda-publishnew": "Опубликовать",
 	"wikilambda-published": "Опубликовано!",
 	"wikilambda-cancel": "Отмена",
+	"wikilambda-confirm": "Подтвердить",
 	"wikilambda-savenew": "Сохранить",
 	"wikilambda-savechanges": "Сохранить изменения",
 	"wikilambda-summarylabel": "Описание:",
@@ -28,6 +29,7 @@
 	"wikilambda-implementation-selector-code": "Код",
 	"wikilambda-argref-default-label": "Выберите аргумент",
 	"wikilambda-implementation-selector": "Выберите реализацию",
+	"wikilambda-function-are-you-sure-dialog-header": "Вы уверены?",
 	"wikilambda-tester-status-pending": "В ОЖИДАНИИ...",
 	"wikilambda-tester-status-failed": "НЕУДАЧА",
 	"wikilambda-enable-expert-mode": "Включить режим Эксперта",
@@ -38,5 +40,6 @@
 	"wikilambda-function-definition-footer-placeholder": "Кратко опишите Ваши правки",
 	"wikilambda-function-definition-footer-label": "Описание изменений",
 	"wikilambda-function-definition-inputs-item-selector-search-placeholder": " Поиск ссылки или функции",
-	"wikilambda-editor-fn-edit-definition-tooltip-content": "Приносим свои извинения! Только администраторы могут изменить описание функции после его публикации."
+	"wikilambda-editor-fn-edit-definition-tooltip-content": "Приносим свои извинения! Только администраторы могут изменить описание функции после его публикации.",
+	"wikilambda-continue-editing": "Продолжить редактирование"
 }

@@ -25,6 +25,8 @@
 	"wikilambda-implementation-selector": "実装を選択する",
 	"wikilambda-implementation-none-found": "実装が見つかりません。",
 	"wikilambda-implementation-create-new": "新しい実装を作成する",
+	"wikilambda-function-are-you-sure-dialog-header": "本当によろしいですか?",
+	"wikilambda-function-are-you-sure-dialog-description": "保存せずに編集から離れてもよろしいですか？",
 	"wikilambda-editor-tester-list-label": "テスターの一覧",
 	"wikilambda-tester-selector": "テスターを選択",
 	"wikilambda-tester-none-found": "テスターが見つかりません。",

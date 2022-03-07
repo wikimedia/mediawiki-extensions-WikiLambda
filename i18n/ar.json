@@ -2,15 +2,20 @@
 	"@metadata": {
 		"authors": [
 			"Dr. Mohammed",
+			"FiberAhmed",
 			"محمد أحمد عبد الفتاح"
 		]
 	},
 	"wikilambda-publishnew": "نشر",
+	"wikilambda-confirm": "أكّد",
 	"wikilambda-publishchanges": "نشر التغييرات",
 	"wikilambda-savechanges": "حفظ التغييرات",
 	"wikilambda-loading": "يجري تحميل البيانات",
 	"wikilambda-editor-label-addlanguage-label": "أضف لغة",
 	"wikilambda-implementation-selector": "حدد التنفيذ",
+	"wikilambda-function-are-you-sure-dialog-header": "هل أنت متأكد؟",
 	"wikilambda-editor-additional-details-label": "تفاصيل إضافية",
-	"wikilambda-editor-default-name": "غير معنونة"
+	"wikilambda-editor-default-name": "غير معنونة",
+	"wikilambda-continue-editing": "مواصلة التعديل",
+	"wikilambda-discard-edits": "تجاهل التعديلات"
 }

@@ -12,7 +12,10 @@
 	},
 	"wikilambda-published": "Watintim!",
 	"wikilambda-cancel": "Pepa",
+	"wikilambda-confirm": "Gye tom",
 	"wikilambda-fallback": "Akyidɔm ɔsesafoɔ",
+	"wikilambda-function-are-you-sure-dialog-header": "Wogye di?",
+	"wikilambda-function-are-you-sure-dialog-description": "Wogye di sɛ wopɛ sɛ wofiri nsesaeɛ bea a wo mma amansan nhunu wo dwumadie kane?",
 	"wikilambda-function-definition-add-other-label-languages-title": "+ Add ntwereɛ wɔ kasa fofroɔ mu",
 	"wikilambda-function-definition-name-label": "Din",
 	"wikilambda-function-definition-name-example": "Hwɛ din ahorow nhwɛso.",
@@ -31,5 +34,7 @@
 	"wikilambda-editor-fn-tests-tooltip-header": "Wonni hokwan",
 	"wikilambda-ztyped-pair-key-label": "Safoa",
 	"wikilambda-ztyped-pair-value-label": "Adeɛ a ɛsommo",
-	"wikilambda-optional": "nyɛ ɔhyɛ"
+	"wikilambda-optional": "nyɛ ɔhyɛ",
+	"wikilambda-continue-editing": "Toa so sesa",
+	"wikilambda-discard-edits": "To nsesa no gu"
 }

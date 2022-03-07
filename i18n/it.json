@@ -19,6 +19,7 @@
 	"wikilambda-publishnew": "Pubblica",
 	"wikilambda-published": "Pubblicato!",
 	"wikilambda-cancel": "Annulla",
+	"wikilambda-confirm": "Conferma",
 	"wikilambda-savenew": "Salva",
 	"wikilambda-publishchanges": "Pubblica modifiche",
 	"wikilambda-savechanges": "Salva modifiche",
@@ -32,6 +33,7 @@
 	"wikilambda-editor-label-select-programming-language-label": "Seleziona linguaggio di programmazione:",
 	"wikilambda-implementation-selector-code": "Codice",
 	"wikilambda-argref-default-label": "Seleziona un argomento",
+	"wikilambda-function-are-you-sure-dialog-header": "Sei sicuro?",
 	"wikilambda-tester-failure-actual": "Ricevuto",
 	"wikilambda-tester-function-duration": "Durata",
 	"wikilambda-enable-expert-mode": "Abilità modalità esperto",
@@ -60,5 +62,7 @@
 	"wikilambda-editor-write-title": "Scrivi",
 	"wikilambda-ztyped-pair-placeholder": "Seleziona un tipo",
 	"wikilambda-ztyped-pair-key-label": "Chiave",
-	"wikilambda-ztyped-pair-value-label": "Valore"
+	"wikilambda-ztyped-pair-value-label": "Valore",
+	"wikilambda-continue-editing": "Continua a modificare",
+	"wikilambda-discard-edits": "Ignora modifiche"
 }
