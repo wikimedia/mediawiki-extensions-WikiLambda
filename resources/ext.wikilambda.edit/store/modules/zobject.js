@@ -436,7 +436,7 @@ module.exports = exports = {
 				context.commit( 'setZObjectInitialized', true );
 			// if Zid is set
 			} else if ( zId ) {
-				context.dispatch( 'fetchZKeys', [ zId ] )
+				return context.dispatch( 'fetchZKeys', [ zId ] )
 					.then( function () {
 						zobject = context.getters.getZkeys[ zId ];
 						if ( !zobject[ Constants.Z_PERSISTENTOBJECT_ALIASES ] ) {

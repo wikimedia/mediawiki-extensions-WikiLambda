@@ -28,7 +28,18 @@ describe( 'App.vue', function () {
 				getZObjectInitialized: function () {
 					return mockIsInitialized;
 				}
-			} )
+			} ),
+			modules: {
+				router: {
+					namespaced: true,
+					getters: {
+						getCurrentView: jest.fn().mockReturnValue( 'function-editor' )
+					},
+					actions: {
+						evaluateView: jest.fn()
+					}
+				}
+			}
 		} );
 	} );
 
@@ -53,7 +64,7 @@ describe( 'App.vue', function () {
 			}
 		} );
 
-		expect( wrapper.findComponent( { name: 'RouterView' } ).exists() ).toBe( false );
+		expect( wrapper.findComponent( { name: 'function-editor' } ).exists() ).toBe( false );
 		expect( $i18n ).toHaveBeenCalledWith( 'wikilambda-loading' );
 	} );
 
@@ -78,7 +89,7 @@ describe( 'App.vue', function () {
 			}
 		} );
 
-		expect( wrapper.findComponent( { name: 'RouterView' } ).exists() ).toBe( true );
+		expect( wrapper.findComponent( { name: 'function-editor' } ).exists() ).toBe( true );
 		expect( $i18n ).not.toHaveBeenCalled();
 	} );
 

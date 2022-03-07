@@ -9,14 +9,14 @@
 		<div class="ext-wikilambda-function-view-navbar">
 			<tab-container
 				:tabs="getVisibleTabs"
-				:active-tab="$route.name"
+				:active-tab="getCurrentView"
 				@click="selectTab"
 			>
 			</tab-container>
 		</div>
 		<div class="ext-wikilambda-function-view ext-wikilambda-function-view__two-cols">
 			<main class="ext-wikilambda-function-view__content">
-				<router-view></router-view>
+				<component :is="currentTab"></component>
 			</main>
 			<aside
 				class="ext-wikilambda-function-view__sidebar"
@@ -30,7 +30,7 @@
 <script>
 var TabContainer = require( '../components/base/TabContainer.vue' ),
 	FnEditorVisualDisplay = require( '../components/editor/FnEditorVisualDisplay.vue' ),
-	Constants = require( '../../../ext.wikilambda.edit/Constants.js' ),
+	functionDefinition = require( './function/FunctionDefinition.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	icons = require( './../../lib/icons.js' );
 
@@ -39,18 +39,23 @@ module.exports = exports = {
 	name: 'function-view',
 	components: {
 		'tab-container': TabContainer,
+		'function-definition': functionDefinition,
 		'fn-editor-visual-display': FnEditorVisualDisplay
 	},
+	data: function () {
+		return {
+			currentTab: 'function-definition'
+		};
+	},
 	computed: $.extend( {},
-		mapGetters( [
-			'isNewZObject'
-		] ),
+		mapGetters( [ 'isNewZObject' ] ),
+		mapGetters( 'router', [ 'getCurrentView' ] ),
 		{
 			getVisibleTabs: function () {
 				var tabs = [
 					{
 						status: 'active',
-						id: 'functionDefinition', // used for routing
+						id: 'function-editor', // used for routing
 						title: this.$i18n( 'wikilambda-editor-fn-step-function-definition' ).text(),
 						disabled: false, // this should be computed
 						icon: icons.sdIconCheck
@@ -61,7 +66,7 @@ module.exports = exports = {
 					tabs.push(
 						{
 							status: 'inactive',
-							id: 'functionImplementation',
+							id: 'function-implementations',
 							title: this.$i18n( 'wikilambda-editor-fn-step-implementations' ).text(),
 							disabled: false,
 							icon: icons.sdIconCheck,
@@ -73,7 +78,7 @@ module.exports = exports = {
 						},
 						{
 							status: 'inactive',
-							id: 'functionTests',
+							id: 'function-tests',
 							title: this.$i18n( 'wikilambda-editor-fn-step-tests' ).text(),
 							disabled: true,
 							icon: icons.sdIconCheck,
@@ -91,13 +96,7 @@ module.exports = exports = {
 	),
 	methods: {
 		selectTab: function ( tab ) {
-			this.$router.push( {
-				name: tab,
-				query: {
-					type: 'newDesign',
-					zid: Constants.Z_FUNCTION
-				}
-			} );
+			this.currentTab = tab.id;
 		}
 	}
 };

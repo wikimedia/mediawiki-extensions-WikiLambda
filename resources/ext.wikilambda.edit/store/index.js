@@ -20,7 +20,8 @@ var Vuex = require( 'vuex' ),
 	zTesterResultsModule = require( './modules/zTesterResults.js' ),
 	zTesters = require( './modules/zTesters.js' ),
 	zImplementations = require( './modules/zImplementations.js' ),
-	zTypedList = require( './modules/zTypedList.js' );
+	zTypedList = require( './modules/zTypedList.js' ),
+	router = require( './modules/router.js' );
 
 module.exports = Vuex.createStore( {
 	state: state,
@@ -37,6 +38,7 @@ module.exports = Vuex.createStore( {
 		zTesterResultsModule: zTesterResultsModule,
 		zTesters: zTesters,
 		zImplementations: zImplementations,
-		zTypedList: zTypedList
+		zTypedList: zTypedList,
+		router: router
 	}
 } );

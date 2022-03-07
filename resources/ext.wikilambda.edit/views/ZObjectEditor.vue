@@ -36,12 +36,12 @@
 			</div>
 			<cdx-button
 				v-if="isNewZObject"
-				@click="navigateToType( Constants.Z_FUNCTION )">
+				@click="navigateToFunctionEditor( Constants.Z_FUNCTION )">
 				{{ $i18n( 'wikilambda-create-function' ) }}
 			</cdx-button>
 			<cdx-button
 				v-if="isNewZObject"
-				@click="navigateToType( Constants.Z_TYPE )">
+				@click="changePersistentObjectValue( Constants.Z_TYPE )">
 				{{ $i18n( 'wikilambda-create-type' ) }}
 			</cdx-button>
 			<cdx-button
@@ -62,9 +62,9 @@
 </template>
 
 <script>
-var ZObject = require( './ZObject.vue' ),
+var ZObject = require( '../components/ZObject.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	SdMessage = require( './base/Message.vue' ),
+	SdMessage = require( '../components/base/Message.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	Constants = require( '../Constants.js' ),
@@ -116,6 +116,7 @@ module.exports = exports = {
 	} ),
 	methods: $.extend( {},
 		mapActions( [ 'submitZObject', 'changeType' ] ),
+		mapActions( 'router', [ 'navigate' ] ),
 		{
 			updateZobject: function ( newZobject ) {
 				this.zobject = newZobject;
@@ -129,15 +130,21 @@ module.exports = exports = {
 				} );
 			},
 
-			navigateToType: function ( type ) {
+			changePersistentObjectValue: function ( type ) {
 				var zObject = this.getZObjectChildrenById( 0 ); // We fetch the Root object
 				var Z2K2 =
 					this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, zObject );
 
-				this.changeType( {
+				return this.changeType( {
 					id: Z2K2.id,
 					type: type
 				} );
+			},
+			navigateToFunctionEditor: function () {
+				this.changePersistentObjectValue( Constants.Z_FUNCTION ).then( function () {
+					this.navigate( { to: Constants.VIEWS.FUNCTION_EDITOR } );
+				}.bind( this ) );
+
 			}
 		}
 	)
