@@ -15,14 +15,14 @@
 			<div
 				class="ext-wikilambda-publishControl">
 				<!-- TODO (T270304): Replace this with a full save dialog (copywarn, IPwarn, minor edit box, …)? -->
-				<sd-button
+				<cdx-button
 					:primary="true"
 					:progressive="true"
 					:framed="true"
 					:disabled="!currentZObjectHasLabel"
 					@click="submit">
 					{{ submitButtonLabel }}
-				</sd-button>
+				</cdx-button>
 				<label
 					class="ext-wikilambda-editSummary-label"
 					for="summary"> {{ $i18n( 'wikilambda-summarylabel' ) }}
@@ -34,17 +34,17 @@
 					name="summary"
 				>
 			</div>
-			<sd-button
+			<cdx-button
 				v-if="isNewZObject"
 				@click="navigateToType( Constants.Z_FUNCTION )">
 				{{ $i18n( 'wikilambda-create-function' ) }}
-			</sd-button>
-			<sd-button
+			</cdx-button>
+			<cdx-button
 				v-if="isNewZObject"
 				@click="navigateToType( Constants.Z_TYPE )">
 				{{ $i18n( 'wikilambda-create-type' ) }}
-			</sd-button>
-			<sd-button
+			</cdx-button>
+			<cdx-button
 				class="ext-wikilambda-expertModeToggle"
 				@click="$store.dispatch( 'toggleExpertMode' )">
 				<template v-if="$store.getters.isExpertMode">
@@ -53,7 +53,7 @@
 				<template v-else>
 					{{ $i18n( 'wikilambda-enable-expert-mode' ) }}
 				</template>
-			</sd-button>
+			</cdx-button>
 			<sd-message v-if="message.text" :type="message.type">
 				{{ message }}
 			</sd-message>
@@ -63,7 +63,7 @@
 
 <script>
 var ZObject = require( './ZObject.vue' ),
-	SdButton = require( './base/Button.vue' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	SdMessage = require( './base/Message.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
@@ -75,7 +75,7 @@ module.exports = exports = {
 	name: 'z-object-editor',
 	components: {
 		'z-object': ZObject,
-		'sd-button': SdButton,
+		'cdx-button': CdxButton,
 		'sd-message': SdMessage
 	},
 	mixins: [ typeUtils ],

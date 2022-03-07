@@ -7,14 +7,14 @@
 	-->
 	<ul class="ext-wikilambda-zobject-key-list">
 		<li v-for="( value, key ) in zObjectWithoutPersistent" :key="key">
-			<sd-button
+			<cdx-button
 				v-if="!( viewmode || readonly )"
 				:title="tooltipRemoveZObjectKey"
 				:destructive="true"
 				@click="removeKey( value.id )"
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
-			</sd-button>
+			</cdx-button>
 			<z-object-key
 				:z-key="value.key"
 				:zobject-id="value.id"
@@ -29,7 +29,7 @@
 <script>
 var Constants = require( '../Constants.js' ),
 	typeUtils = require( '../mixins/typeUtils.js' ),
-	SdButton = require( './base/Button.vue' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapMutations = require( 'vuex' ).mapMutations,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
@@ -38,7 +38,7 @@ var Constants = require( '../Constants.js' ),
 module.exports = exports = {
 	name: 'z-object-key-list',
 	components: {
-		'sd-button': SdButton
+		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],
 	inject: {

@@ -7,14 +7,14 @@
 	-->
 	<div>
 		<div class="ext-wikilambda-cell">
-			<sd-button
+			<cdx-button
 				v-if="!( readonly )"
 				:title="tooltipRemoveLang"
 				:destructive="true"
 				@click="removeLang"
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
-			</sd-button>
+			</cdx-button>
 			{{ languageLabel }}:
 		</div>
 		<div class="ext-wikilambda-cell">
@@ -37,7 +37,7 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	SdButton = require( '../base/Button.vue' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -45,7 +45,7 @@ var Constants = require( '../../Constants.js' ),
 module.exports = exports = {
 	name: 'z-monolingual-string',
 	components: {
-		'sd-button': SdButton
+		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],
 	props: {
