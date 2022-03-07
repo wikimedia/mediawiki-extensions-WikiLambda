@@ -18,6 +18,7 @@
 		<z-object-selector
 			v-if="isEmptyObject"
 			:type="zType"
+			:return-type="zType"
 			:placeholder="$i18n( 'wikilambda-typeselector-label' )"
 			:readonly="readonly"
 			@input="onTypeChange"
