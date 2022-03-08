@@ -1,9 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Yupik"
+			"Yupik",
+			"Seipinne"
 		]
 	},
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Kielâ",
+	"wikilambda-publishnew": "Almostit",
 	"wikilambda-savenew": "Vuorkkii"
 }
