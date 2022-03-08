@@ -10,6 +10,7 @@
 			<z-list-item
 				v-for="( item ) in ZlistItems"
 				:key="item.id"
+				:z-type="Constants.Z_TYPE"
 				:zobject-id="item.id"
 				:readonly="readonly"
 				@remove-item="removeItem"
@@ -28,7 +29,8 @@
 </template>
 
 <script>
-var ZListItem = require( './ZListItem.vue' ),
+var Constants = require( '../../Constants.js' ),
+	ZListItem = require( './ZListItem.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -50,6 +52,11 @@ module.exports = exports = {
 			type: Boolean,
 			default: false
 		}
+	},
+	data: function () {
+		return {
+			Constants: Constants
+		};
 	},
 	computed: $.extend( {},
 		mapGetters( {
