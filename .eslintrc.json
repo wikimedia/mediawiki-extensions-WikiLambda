@@ -24,6 +24,7 @@
 			}
 		],
 		"no-var": "off",
+		"jsdoc/require-returns": "error",
 		"vue/component-definition-name-casing": [ "error", "kebab-case" ],
 		"vue/no-undef-properties": "off",
 		"vue/no-unregistered-components": [ "warn", { "ignorePatterns": [ "router-link", "router-view", "z-object" ] } ]

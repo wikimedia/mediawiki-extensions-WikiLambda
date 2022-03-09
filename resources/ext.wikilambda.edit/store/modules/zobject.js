@@ -386,6 +386,7 @@ module.exports = exports = {
 		 * to our Tree structure.
 		 *
 		 * @param {Object} context
+		 * @return {Promise}
 		 */
 		initializeZObject: function ( context ) {
 			var editingData = mw.config.get( 'wgWikiLambda' ),
