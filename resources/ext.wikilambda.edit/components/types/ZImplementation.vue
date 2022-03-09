@@ -7,7 +7,7 @@
 	-->
 	<div>
 		<div>
-			{{ functionLabel }}: ' '
+			{{ functionLabel }}:
 			<z-object-selector
 				v-if="!viewmode && implMode"
 				:type="Constants.Z_FUNCTION"
