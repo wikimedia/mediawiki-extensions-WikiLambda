@@ -5,7 +5,7 @@
 		:aria-live="type !== 'error' ? 'polite' : false"
 		:role="type === 'error' ? 'alert' : false"
 	>
-		<sd-icon :icon="icon"></sd-icon>
+		<cdx-icon :icon="icon"></cdx-icon>
 		<div class="sd-message__content">
 			<slot></slot>
 		</div>
@@ -13,13 +13,13 @@
 </template>
 
 <script>
-var SdIcon = require( './Icon.vue' ),
-	icons = require( './../../../lib/icons.js' ),
+var CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	icons = require( '../../../lib/icons.json' ),
 	ICON_MAP = {
-		notice: icons.sdIconInfoFilled,
-		error: icons.sdIconError,
-		warning: icons.sdIconAlert,
-		success: icons.sdIconCheck
+		notice: icons.cdxIconInfoFilled,
+		error: icons.cdxIconError,
+		warning: icons.cdxIconAlert,
+		success: icons.cdxIconCheck
 	};
 /**
  * User-facing message with icon.
@@ -30,7 +30,7 @@ var SdIcon = require( './Icon.vue' ),
 module.exports = exports = {
 	name: 'sd-message',
 	components: {
-		'sd-icon': SdIcon
+		'cdx-icon': CdxIcon
 	},
 	props: {
 		// Should be one of notice, warning, error, or success.

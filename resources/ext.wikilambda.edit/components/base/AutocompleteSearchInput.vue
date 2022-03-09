@@ -22,7 +22,7 @@
 				class="sd-input__indicator"
 				role="button"
 			>
-				<sd-icon :icon="icons.sdIconExpand"></sd-icon>
+				<cdx-icon :icon="icons.cdxIconExpand"></cdx-icon>
 			</span>
 		</div>
 
@@ -61,7 +61,7 @@
 					role="button"
 					@click="onClear"
 				>
-					<sd-icon :icon="icons.sdIconClear" :title="clearTitle"></sd-icon>
+					<cdx-icon :icon="icons.cdxIconClear" :title="clearTitle"></cdx-icon>
 				</span>
 			</div>
 		</sd-select-menu>
@@ -69,9 +69,9 @@
 </template>
 
 <script>
-var SdIcon = require( './Icon.vue' ),
+var CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	SdSelectMenu = require( './SelectMenu.vue' ),
-	icons = require( './../../../lib/icons.js' );
+	icons = require( '../../../lib/icons.json' );
 /**
  * @file AutocompleteSearchInput
  *
@@ -85,7 +85,7 @@ var SdIcon = require( './Icon.vue' ),
 module.exports = exports = {
 	name: 'sd-autocomplete-search-input',
 	components: {
-		'sd-icon': SdIcon,
+		'cdx-icon': CdxIcon,
 		'sd-select-menu': SdSelectMenu
 	},
 	props: {

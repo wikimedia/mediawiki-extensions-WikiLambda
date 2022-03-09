@@ -97,7 +97,6 @@
 				"ext.wikilambda.edit/ext.wikilambda.edit.less",
 				"ext.wikilambda.specialpages/ext.wikilambda.specialpages.less",
 				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.less",
-				"ext.wikilambda.edit/components/base/Icon.less",
 				"ext.wikilambda.edit/components/base/Message.less",
 				"ext.wikilambda.edit/components/base/SelectMenu.less"
 			]
@@ -122,7 +121,6 @@
 			],
 			"styles": [
 				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.less",
-				"ext.wikilambda.edit/components/base/Icon.less",
 				"ext.wikilambda.edit/components/base/Message.less",
 				"ext.wikilambda.edit/components/base/SelectMenu.less"
 			],
@@ -162,7 +160,6 @@
 				"ext.wikilambda.edit/components/ZKeyModeSelector.vue",
 				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.vue",
 				"ext.wikilambda.edit/components/base/Tab.vue",
-				"ext.wikilambda.edit/components/base/Icon.vue",
 				"ext.wikilambda.edit/components/base/Message.vue",
 				"ext.wikilambda.edit/components/base/SelectMenu.vue",
 				"ext.wikilambda.edit/components/base/CodeEditor.vue",
@@ -229,7 +226,20 @@
 				"ext.wikilambda.edit/views/ZObjectEditor.vue",
 				"ext.wikilambda.edit/views/ZObjectViewer.vue",
 				"lib/ace/src/ace.js",
-				"lib/icons.js"
+				{
+					"name": "lib/icons.json",
+					"callback": "ResourceLoaderCodexModule::getIcons",
+					"callbackParam": [
+						"cdxIconExpand",
+						"cdxIconClear",
+						"cdxIconClose",
+						"cdxIconInfoFilled",
+						"cdxIconError",
+						"cdxIconAlert",
+						"cdxIconCheck",
+						"cdxIconInfoFilled"
+					]
+				}
 			],
 			"messages": [
 				"wikilambda-publishnew",

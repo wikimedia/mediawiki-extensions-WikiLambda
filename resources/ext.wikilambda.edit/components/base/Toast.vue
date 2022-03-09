@@ -3,25 +3,25 @@
 		class="ext-wikilambda-toast"
 		:class="getStyleFromIntent( false )"
 	>
-		<sd-icon
+		<cdx-icon
 			v-if="icon"
 			:icon="icon"
 			:class="getStyleFromIntent( true )"
 			@click="$emit( 'toast-close' )"
 		>
-		</sd-icon>
+		</cdx-icon>
 		<div class="ext-wikilambda-toast-text" v-html="message"></div>
 	</div>
 </template>
 
 <script>
-var SdIcon = require( './Icon.vue' );
+var CdxIcon = require( '@wikimedia/codex' ).CdxIcon;
 
 // @vue/component
 module.exports = exports = {
 	name: 'toast-message',
 	components: {
-		'sd-icon': SdIcon
+		'cdx-icon': CdxIcon
 	},
 	props: {
 		icon: {
