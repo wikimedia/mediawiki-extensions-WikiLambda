@@ -113,9 +113,22 @@ var Constants = {
 		{ key: Constants.Z_KEY_MODES.JSON, value: 'wikilambda-modeselector-json', label: 'wikilambda-json', type: null },
 		{ key: Constants.Z_KEY_MODES.ARGUMENT_REF, value: 'wikilambda-modeselector-argref', label: 'wikilambda-argref', type: Constants.Z_ARGUMENT_REFERENCE }
 	],
-	typedObjectsList = [ Constants.Z_TYPED_LIST, Constants.Z_TYPED_PAIR, Constants.Z_TYPED_MAP ];
+	typedObjectsList = [ Constants.Z_TYPED_LIST, Constants.Z_TYPED_PAIR, Constants.Z_TYPED_MAP ],
+	views = {
+		FUNCTION_EDITOR: 'function-editor',
+		Z_OBJECT_EDITOR: 'zobject-editor',
+		Z_OBJECT_VIEWER: 'zobject-viewer'
+	},
+	paths = {
+		CREATE_Z_OBJECT: '/wiki/Special:CreateZObject',
+		EVALUTATE_FUNCTION_CALL: '/wiki/Special:EvaluateFunctionCall',
+		EDIT_Z_OBJECT: '/w/index.php',
+		VIEW_Z_OBJECT: ''
+	};
 
 Constants.Z_MODE_SELECTOR_MODES = modes;
 Constants.Z_TYPED_OBEJECTS_LIST = typedObjectsList;
+Constants.VIEWS = views;
+Constants.PATHS = paths;
 
 module.exports = Constants;

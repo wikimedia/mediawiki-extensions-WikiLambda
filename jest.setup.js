@@ -41,7 +41,12 @@ global.mw = {
 				mockLocalStorage[ key ] = value;
 			};
 		} )
-	}
+	},
+	Uri: jest.fn().mockReturnValue( {
+		path: jest.fn(),
+		query: jest.fn()
+	} )
+
 // other mw properties as needed...
 };
 

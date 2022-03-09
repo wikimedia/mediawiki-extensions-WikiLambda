@@ -7,7 +7,7 @@
 	-->
 	<div id="ext-wikilambda-app" class="ext-wikilambda-edit">
 		<template v-if="getZObjectInitialized">
-			<router-view></router-view>
+			<component :is="getCurrentView" :bind="getQueryParams"></component>
 		</template>
 		<span v-else>
 			{{ $i18n( 'wikilambda-loading' ) }}
@@ -17,28 +17,47 @@
 
 <script>
 var mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions;
+	mapActions = require( 'vuex' ).mapActions,
+	FunctionEditor = require( '../views/FunctionEditor.vue' ),
+	ZObjectViewer = require( '../views/ZObjectViewer.vue' ),
+	ZObjectEditor = require( '../views/ZObjectEditor.vue' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'app',
+	components: {
+		'function-editor': FunctionEditor,
+		'zobject-viewer': ZObjectViewer,
+		'zobject-editor': ZObjectEditor
+	},
 	inject: {
 		viewmode: { default: false }
 	},
-	computed: $.extend( mapGetters( [
-		'getZObjectInitialized'
-	] ), {
-	} ),
-	methods: mapActions( [ 'initializeZObject', 'initialize' ] ),
+	computed: $.extend(
+		mapGetters( [
+			'getZObjectInitialized'
+		] ), mapGetters(
+			'router',
+			[ 'getCurrentView', 'getQueryParams' ]
+		)
+	),
+	methods: $.extend(
+		mapActions( [ 'initializeZObject', 'initialize' ] ),
+		mapActions( 'router', [ 'evaluateView', 'navigate' ] )
+	),
 	created: function () {
 		// Set zobject
 		this.initializeZObject().then(
 			function () {
 				this.initialize( this.$i18n );
 				$.$i18n = this.$i18n;
+				this.evaluateView();
 			}.bind( this )
 		);
 
+		window.onpopstate = function () {
+			this.evaluateView();
+		}.bind( this );
 	}
 };
 </script>

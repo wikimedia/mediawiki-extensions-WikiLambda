@@ -26,13 +26,13 @@
 				<function-definition-inputs
 					:z-lang="labelLanguage.zLang"
 					:is-main-z-object="index === 0"
-					:is-editing="isEditing"
+					:is-editing="isEditingExistingFunction"
 					:tooltip-icon="adminTooltipIcon"
 					:tooltip-message="adminTooltipMessage"
 				></function-definition-inputs>
 				<template v-if="index === 0">
 					<function-definition-output
-						:is-editing="isEditing"
+						:is-editing="isEditingExistingFunction"
 						:tooltip-icon="adminTooltipIcon"
 						:tooltip-message="adminTooltipMessage"
 					></function-definition-output>
@@ -54,24 +54,24 @@
 			:message="currentToast"
 			@toast-close="closeToast"
 		></toast>
-		<function-definition-footer></function-definition-footer>
+		<function-definition-footer :is-editing="isEditingExistingFunction"></function-definition-footer>
 	</main>
 </template>
 
 <script>
-var FunctionDefinitionName = require( '../components/function/definition/function-definition-name.vue' );
-var FunctionDefinitionAliases = require( '../components/function/definition/function-definition-aliases.vue' );
-var FunctionDefinitionInputs = require( '../components/function/definition/function-definition-inputs.vue' );
-var FunctionDefinitionOutput = require( '../components/function/definition/function-definition-output.vue' );
-var FunctionDefinitionFooter = require( '../components/function/definition/function-definition-footer.vue' );
-var FnEditorZLanguageSelector = require( '../components/editor/FnEditorZLanguageSelector.vue' );
-var Toast = require( '../components/base/Toast.vue' );
-var icons = require( '../../lib/icons.js' );
+var FunctionDefinitionName = require( '../../components/function/definition/function-definition-name.vue' );
+var FunctionDefinitionAliases = require( '../../components/function/definition/function-definition-aliases.vue' );
+var FunctionDefinitionInputs = require( '../../components/function/definition/function-definition-inputs.vue' );
+var FunctionDefinitionOutput = require( '../../components/function/definition/function-definition-output.vue' );
+var FunctionDefinitionFooter = require( '../../components/function/definition/function-definition-footer.vue' );
+var FnEditorZLanguageSelector = require( '../../components/editor/FnEditorZLanguageSelector.vue' );
+var Toast = require( '../../components/base/Toast.vue' );
+var icons = require( './../../../lib/icons.js' );
 var mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
-module.exports = exports = {
+module.exports = {
 	name: 'function-definition',
 	components: {
 		'function-definition-name': FunctionDefinitionName,
@@ -98,7 +98,8 @@ module.exports = exports = {
 		'getCurrentZLanguage',
 		'currentZFunctionHasInputs',
 		'currentZFunctionHasOutput',
-		'isNewZObject'
+		'isNewZObject',
+		'getViewMode'
 	] ),
 	{
 		ableToPublish: function () {
@@ -119,11 +120,8 @@ module.exports = exports = {
 		showToast: function () {
 			return this.currentToast !== null;
 		},
-		isEditing: function () {
-			if ( this.$route.name === 'edit' ) {
-				return true;
-			}
-			return false;
+		isEditingExistingFunction: function () {
+			return !this.isNewZObject && !this.getViewMode;
 		},
 		adminTooltipIcon: function () {
 			return icons.sdIconInfoFilled;
@@ -190,7 +188,7 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import './../../lib/wikimedia-ui-base.less';
+@import './../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-function-definition {
 	&__container {

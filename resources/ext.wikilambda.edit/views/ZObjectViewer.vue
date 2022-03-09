@@ -22,7 +22,7 @@
 </template>
 
 <script>
-var ZObject = require( './ZObject.vue' );
+var ZObject = require( '../components/ZObject.vue' );
 
 // @vue/component
 module.exports = exports = {

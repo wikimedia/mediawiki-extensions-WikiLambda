@@ -8,7 +8,7 @@
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	Vuex = require( 'vuex' ),
-	ZObjectEditor = require( '../../../resources/ext.wikilambda.edit/components/ZObjectEditor.vue' );
+	ZObjectEditor = require( '../../../resources/ext.wikilambda.edit/views/ZObjectEditor.vue' );
 
 describe( 'ZObjectEditor', function () {
 	var getters,

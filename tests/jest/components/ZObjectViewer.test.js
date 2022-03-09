@@ -8,7 +8,7 @@
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	Vuex = require( 'vuex' ),
-	ZObjectViewer = require( '../../../resources/ext.wikilambda.edit/components/ZObjectViewer.vue' );
+	ZObjectViewer = require( '../../../resources/ext.wikilambda.edit/views/ZObjectViewer.vue' );
 
 describe( 'ZObjectViewer', function () {
 	var actions,

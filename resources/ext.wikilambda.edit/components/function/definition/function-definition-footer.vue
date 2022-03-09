@@ -33,18 +33,9 @@
 			>
 				{{ $i18n( 'wikilambda-publishnew' ) }}
 			</button>
-			<button
-				v-if="isEditing"
-				:class="implementationButtonStyle"
-				:disabled="!implementationButtonValidity"
-				@click="handleImplementation"
-			>
-				{{ $i18n( 'wikilambda-function-definition-footer-implementation-button' ) }}
-			</button>
 			<!-- TODO: The following is just a placeholder until it is possible to attach implementation / Testers -->
 			<button
-				v-if="!isNewZObject"
-				:class="implementationButtonStyle"
+				v-if="isEditing "
 				@click="handleFallbackClick"
 			>
 				{{ $i18n( 'wikilambda-fallback' ) }}
@@ -98,15 +89,6 @@ module.exports = exports = {
 				'ext-wikilambda-function-definition-footer__actions__valid-publish' :
 				'ext-wikilambda-function-definition-footer__actions__invalid';
 		},
-		implementationButtonValidity: function () {
-			// can only create an implementation if this is a published function
-			return this.isEditing;
-		},
-		implementationButtonStyle: function () {
-			return this.implementationButtonValidity ?
-				'ext-wikilambda-function-definition-footer__actions__valid-implementation' :
-				'ext-wikilambda-function-definition-footer__actions__invalid';
-		},
 		cancelButton: function () {
 			return {
 				style: '',
@@ -122,6 +104,7 @@ module.exports = exports = {
 	} ),
 	methods: $.extend( {},
 		mapActions( [ 'submitZObject' ] ),
+		mapActions( 'router', [ 'navigate' ] ),
 		{
 			handleCancel: function () {
 				// if leaving without saving edits
@@ -129,7 +112,7 @@ module.exports = exports = {
 					this.openDialog = true;
 				} else {
 					// if not editing, go to previous page
-					this.$router.go( -1 );
+					history.back();
 				}
 			},
 			confirmCancel: function () {
@@ -137,15 +120,6 @@ module.exports = exports = {
 					this.openDialog = false;
 				}
 				window.location.href = new mw.Title( this.$route.query.title ).getUrl();
-			},
-			handleImplementation: function () {
-				this.$router.push( {
-					name: 'functionImplementation',
-					query: {
-						type: 'newDesign',
-						zid: Constants.Z_FUNCTION
-					}
-				} );
 			},
 			handlePublish: function () {
 				// TODO (T297330): include legal text when ready
@@ -158,11 +132,10 @@ module.exports = exports = {
 				} );
 			},
 			handleFallbackClick: function () {
-				var query = {
-					type: 'fallback',
-					zid: Constants.Z_FUNCTION
+				var payload = {
+					to: Constants.VIEWS.Z_OBJECT_EDITOR
 				};
-				this.$router.push( { name: this.$route.name, query: query } );
+				this.navigate( payload );
 			}
 		}
 	)
@@ -204,12 +177,6 @@ module.exports = exports = {
 		&__published {
 			background-color: @wmui-color-accent90;
 			border: 0;
-		}
-
-		&__valid-implementation {
-			color: @wmui-color-base10;
-			background-color: @wmui-color-base90;
-			border: 1px solid @wmui-color-base50;
 		}
 
 		&__cancel {
