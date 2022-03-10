@@ -2,11 +2,17 @@
 	"@metadata": {
 		"authors": [
 			"AVVK Chaitanya",
+			"Chaduvari",
 			"Pranayraj1985",
 			"Tmamatha"
 		]
 	},
+	"wikilambda-confirm": "నిర్ధారించు",
 	"wikilambda-editor-label-select-programming-language-label": "ప్రోగ్రామింగ్ భాషను ఎంచుకోండి",
+	"wikilambda-function-are-you-sure-dialog-header": "నిశ్చయించుకున్నారా?",
+	"wikilambda-function-are-you-sure-dialog-description": "ప్రచురించకుండానే దిద్దుబాటు స్థితి నుండి వెళ్ళిపోడానికి నిశ్చయించుకున్నారా?",
 	"wikilambda-metadata-language-column": "భాష",
-	"wikilambda-metadata-label-column": "సూచిక (లేబెల్)"
+	"wikilambda-metadata-label-column": "సూచిక (లేబెల్)",
+	"wikilambda-continue-editing": "దిద్దుబాటు కొనసాగించండి",
+	"wikilambda-discard-edits": "సవరణలను తోసిపుచ్చండి"
 }
