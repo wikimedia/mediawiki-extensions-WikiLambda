@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Muotâ",
 			"Seipinne",
 			"Yupik"
 		]
@@ -9,7 +10,7 @@
 	"wikilambda-publishnew": "Almostit",
 	"wikilambda-savenew": "Vuorkkii",
 	"wikilambda-editor-label-addlanguage-label": "Lasseet kielâ",
-	"wikilambda-function-are-you-sure-dialog-header": "Lah-uv vises?",
+	"wikilambda-function-are-you-sure-dialog-header": "Lah-uv tun vises?",
 	"wikilambda-metadata-language-column": "Kielâ",
 	"wikilambda-editor-name-title": "Nommâ"
 }
