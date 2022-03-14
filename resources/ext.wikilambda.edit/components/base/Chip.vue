@@ -19,24 +19,24 @@
 			class="ext-wikilambda-chip_icon"
 			@click="handleRemove"
 		>
-			<sd-icon
+			<cdx-icon
 				:icon="icon"
 				:width="iconWidth"
 				:height="iconHeight"
-			></sd-icon>
+			></cdx-icon>
 		</div>
 	</div>
 </template>
 
 <script>
-var SdIcon = require( './Icon.vue' ),
-	icons = require( '../../../lib/icons.js' );
+var CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	icons = require( '../../../lib/icons.json' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'chip-item',
 	components: {
-		'sd-icon': SdIcon
+		'cdx-icon': CdxIcon
 	},
 	props: {
 		text: {
@@ -62,7 +62,7 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			icon: icons.sdIconClose,
+			icon: icons.cdxIconClose,
 			hover: 'ext-wikilambda-chip_input'
 		};
 	},

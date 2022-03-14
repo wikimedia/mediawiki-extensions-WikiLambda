@@ -14,7 +14,7 @@
 				v-if="isEditing && tooltipMessage"
 				:content="tooltipMessage"
 			>
-				<sd-icon v-if="tooltipIcon" :icon="tooltipIcon"></sd-icon>
+				<cdx-icon v-if="tooltipIcon" :icon="tooltipIcon"></cdx-icon>
 			</tooltip>
 		</div>
 		<div class="ext-wikilambda-function-definition-inputs__inputs">
@@ -39,7 +39,7 @@ var Constants = require( '../../../Constants.js' ),
 	functionDefinitionInputsItem = require( './function-definition-inputs-item.vue' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	Tooltip = require( '../../base/Tooltip.vue' ),
-	SdIcon = require( '../../base/Icon.vue' ),
+	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
@@ -48,7 +48,7 @@ module.exports = exports = {
 	components: {
 		'function-definition-inputs-item': functionDefinitionInputsItem,
 		tooltip: Tooltip,
-		'sd-icon': SdIcon
+		'cdx-icon': CdxIcon
 	},
 	mixins: [ typeUtils ],
 	props: {

@@ -14,7 +14,7 @@
 				<div> {{ description }}</div>
 			</div>
 			<button class="ext-wikilambda-dialog_close-button" @click="$emit( 'exit-dialog' )">
-				<sd-icon :icon="dialogIcon()"></sd-icon>
+				<cdx-icon :icon="dialogIcon()"></cdx-icon>
 			</button>
 		</div>
 		<div class="ext-wikilambda-dialog_action-buttons">
@@ -35,15 +35,15 @@
 </template>
 
 <script>
-var SdIcon = require( './Icon.vue' );
-var icons = require( './../../../lib/icons.js' );
+var CdxIcon = require( '@wikimedia/codex' ).CdxIcon;
+var icons = require( '../../../lib/icons.json' );
 
 // @vue/component
 module.exports = {
 	name: 'base-dialog',
 	compatConfig: { MODE: 3 },
 	components: {
-		'sd-icon': SdIcon
+		'cdx-icon': CdxIcon
 	},
 	directives: {
 		clickout: {
@@ -98,7 +98,7 @@ module.exports = {
 			}
 		},
 		dialogIcon: function () {
-			return icons.sdIconClose;
+			return icons.cdxIconClose;
 		}
 	}
 };

@@ -32,7 +32,7 @@ var TabContainer = require( '../components/base/TabContainer.vue' ),
 	FnEditorVisualDisplay = require( '../components/editor/FnEditorVisualDisplay.vue' ),
 	functionDefinition = require( './function/FunctionDefinition.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
-	icons = require( './../../lib/icons.js' );
+	cdxIcons = require( '../../lib/icons.json' );
 
 // @vue/component
 module.exports = exports = {
@@ -58,7 +58,7 @@ module.exports = exports = {
 						id: 'function-editor', // used for routing
 						title: this.$i18n( 'wikilambda-editor-fn-step-function-definition' ).text(),
 						disabled: false, // this should be computed
-						icon: icons.sdIconCheck
+						icon: cdxIcons.cdxIconCheck
 					}
 				];
 
@@ -69,7 +69,7 @@ module.exports = exports = {
 							id: 'function-implementations',
 							title: this.$i18n( 'wikilambda-editor-fn-step-implementations' ).text(),
 							disabled: false,
-							icon: icons.sdIconCheck,
+							icon: cdxIcons.cdxIconCheck,
 							tooltip: {
 								header: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-header' ).text(),
 								content: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-content' ).text(),
@@ -81,7 +81,7 @@ module.exports = exports = {
 							id: 'function-tests',
 							title: this.$i18n( 'wikilambda-editor-fn-step-tests' ).text(),
 							disabled: true,
-							icon: icons.sdIconCheck,
+							icon: cdxIcons.cdxIconCheck,
 							tooltip: {
 								header: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-header' ).text(),
 								content: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-content' ).text(),

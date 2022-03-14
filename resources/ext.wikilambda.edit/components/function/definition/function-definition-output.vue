@@ -14,7 +14,7 @@
 				v-if="isEditing && tooltipMessage"
 				:content="tooltipMessage"
 			>
-				<sd-icon v-if="tooltipIcon" :icon="tooltipIcon"></sd-icon>
+				<cdx-icon v-if="tooltipIcon" :icon="tooltipIcon"></cdx-icon>
 			</tooltip>
 		</div>
 		<fn-editor-type-selector
@@ -31,7 +31,7 @@
 var Constants = require( '../../../Constants.js' ),
 	FnEditorTypeSelector = require( '../../editor/FnEditorTypeSelector.vue' ),
 	Tooltip = require( '../../base/Tooltip.vue' ),
-	SdIcon = require( '../../base/Icon.vue' ),
+	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
@@ -41,7 +41,7 @@ module.exports = exports = {
 	components: {
 		'fn-editor-type-selector': FnEditorTypeSelector,
 		tooltip: Tooltip,
-		'sd-icon': SdIcon
+		'cdx-icon': CdxIcon
 	},
 	props: {
 		zobjectId: {

@@ -13,7 +13,7 @@
 				:disabled="disabled"
 				@click="$emit( 'click' )"
 			>
-				<sd-icon v-if="icon" :icon="icon"></sd-icon>
+				<cdx-icon v-if="icon" :icon="icon"></cdx-icon>
 				{{ title }}
 			</button>
 		</template>
@@ -30,7 +30,7 @@
 				:disabled="disabled"
 				@click="$emit( 'click' )"
 			>
-				<sd-icon v-if="icon" :icon="icon"></sd-icon>
+				<cdx-icon v-if="icon" :icon="icon"></cdx-icon>
 				{{ title }}
 			</button>
 		</tooltip>
@@ -38,14 +38,14 @@
 </template>
 
 <script>
-var SdIcon = require( './Icon.vue' ),
+var CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	Tooltip = require( './Tooltip.vue' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'tab-item',
 	components: {
-		'sd-icon': SdIcon,
+		'cdx-icon': CdxIcon,
 		// TOOD (T298040): replace with codex tooltip/popover component
 		tooltip: Tooltip
 	},
@@ -63,7 +63,6 @@ module.exports = exports = {
 			default: false,
 			required: false
 		},
-		// Icon path or object. See Icon.vue for valid icon formats.
 		icon: {
 			type: [ String, Object ],
 			default: null,
@@ -125,7 +124,7 @@ module.exports = exports = {
 		border-color: @inactive-color;
 	}
 
-	.sd-icon {
+	.cdx-icon {
 		border-radius: 100%;
 		border-width: 1px;
 		border-style: solid;
@@ -146,7 +145,7 @@ module.exports = exports = {
 		color: @active-color;
 		border-color: @active-color;
 
-		.sd-icon {
+		.cdx-icon {
 			border-color: @active-color;
 		}
 	}
@@ -155,7 +154,7 @@ module.exports = exports = {
 	&_inactive {
 		color: @inactive-color;
 
-		.sd-icon {
+		.cdx-icon {
 			border-color: @inactive-color;
 		}
 	}
@@ -164,7 +163,7 @@ module.exports = exports = {
 	&_disabled {
 		color: @disabled-color;
 
-		.sd-icon {
+		.cdx-icon {
 			border-color: @disabled-color;
 		}
 	}
@@ -173,7 +172,7 @@ module.exports = exports = {
 	&_undefined {
 		color: @inactive-color;
 
-		.sd-icon {
+		.cdx-icon {
 			border-color: @inactive-color;
 		}
 	}

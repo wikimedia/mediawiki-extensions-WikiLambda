@@ -66,7 +66,7 @@ var FunctionDefinitionOutput = require( '../../components/function/definition/fu
 var FunctionDefinitionFooter = require( '../../components/function/definition/function-definition-footer.vue' );
 var FnEditorZLanguageSelector = require( '../../components/editor/FnEditorZLanguageSelector.vue' );
 var Toast = require( '../../components/base/Toast.vue' );
-var icons = require( './../../../lib/icons.js' );
+var icons = require( '../../../lib/icons.json' );
 var mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
@@ -109,7 +109,7 @@ module.exports = {
 			return false;
 		},
 		toastIcon: function () {
-			return icons.sdIconCheck;
+			return icons.cdxIconCheck;
 		},
 		toastIntent: function () {
 			return 'SUCCESS';
@@ -124,7 +124,7 @@ module.exports = {
 			return !this.isNewZObject && !this.getViewMode;
 		},
 		adminTooltipIcon: function () {
-			return icons.sdIconInfoFilled;
+			return icons.cdxIconInfoFilled;
 		},
 		adminTooltipMessage: function () {
 			return this.$i18n( 'wikilambda-editor-fn-edit-definition-tooltip-content' ).text();
