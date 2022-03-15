@@ -16,7 +16,8 @@ module.exports = {
 
 	// Use the compatibility build of Vue 3
 	moduleNameMapper: {
-		'^vue$': '@vue/compat'
+		'^vue$': '@vue/compat',
+		'icons.json': '<rootDir>/tests/jest/fixtures/icons.json'
 	},
 
 	transform: {
