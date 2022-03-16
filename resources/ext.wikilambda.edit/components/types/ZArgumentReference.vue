@@ -19,11 +19,11 @@
 				:key="argument.zid"
 				:value="argument.zid"
 			>
-				{{ argument.label }}
+				{{ getCurrentLanguageLabel( argument.labels ).label }}
 			</option>
 		</select>
 		<template v-else>
-			{{ getZarguments[ selectedArgument ].label }}
+			{{ getCurrentLanguageLabel( getZarguments[ selectedArgument ].labels ).label }}
 		</template>
 	</div>
 </template>
@@ -50,7 +50,8 @@ module.exports = exports = {
 		mapGetters( {
 			getZObjectById: 'getZObjectById',
 			getZObjectChildrenById: 'getZObjectChildrenById',
-			getZarguments: 'getZarguments'
+			getZarguments: 'getZarguments',
+			getCurrentZLanguage: 'getCurrentZLanguage'
 		} ),
 		{
 			zobject: function () {
@@ -78,7 +79,17 @@ module.exports = exports = {
 		}
 	),
 	methods: $.extend( {},
-		mapActions( [ 'setZObjectValue' ] )
+		mapActions( [ 'setZObjectValue' ] ),
+		{
+			getCurrentLanguageLabel: function ( labels ) {
+				var labelInCurrentLanguage = labels.filter( function ( label ) {
+					return label.lang === this.getCurrentZLanguage;
+				} )[ 0 ];
+				var fallbackLanguage = labels[ 0 ];
+
+				return labelInCurrentLanguage || fallbackLanguage;
+			}
+		}
 	)
 };
 </script>
