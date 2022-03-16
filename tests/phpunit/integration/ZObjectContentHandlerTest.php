@@ -10,7 +10,6 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use FormatJson;
-use Language;
 use MediaWiki\Content\Transform\PreSaveTransformParamsValue;
 use MediaWiki\Content\ValidationParams;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
@@ -174,14 +173,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		);
 
 		$services = MediaWikiServices::getInstance();
-		$language = new Language(
-			'de',
-			$services->getLocalisationCache(),
-			$services->getLanguageNameUtils(),
-			$services->getLanguageFallback(),
-			$services->getLanguageConverterFactory(),
-			$services->getHookContainer()
-		);
+		$language = $this->makeLanguage( 'de' );
 
 		$this->assertSame(
 			wfMessage( 'wikilambda-multilingualstring-nofallback' )->inLanguage( $language )->text(),

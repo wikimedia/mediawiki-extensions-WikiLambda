@@ -38,22 +38,8 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 		$services = MediaWikiServices::getInstance();
 		$this->registerLangs( [ 'fr' ] );
 
-		$english = new \Language(
-			'en',
-			$services->getLocalisationCache(),
-			$services->getLanguageNameUtils(),
-			$services->getLanguageFallback(),
-			$services->getLanguageConverterFactory(),
-			$services->getHookContainer()
-		);
-		$french = new \Language(
-			'fr',
-			$services->getLocalisationCache(),
-			$services->getLanguageNameUtils(),
-			$services->getLanguageFallback(),
-			$services->getLanguageConverterFactory(),
-			$services->getHookContainer()
-		);
+		$english = $this->makeLanguage( 'en' );
+		$french = $this->makeLanguage( 'fr' );
 
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent( ZTestType::TEST_ENCODING );
