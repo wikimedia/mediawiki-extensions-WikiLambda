@@ -100,10 +100,14 @@ module.exports = {
 		}
 	},
 	actions: {
-
 		/**
+		 * Changes the current View and Query params and updates the history states.
+		 * This method is used to navigate between pages within the UI.
+		 *
 		 * @param {Object} context
 		 * @param {Object} payload
+		 * @param {string} payload.to
+		 * @param {Object} payload.params
 		 */
 		navigate: function ( context, payload ) {
 			if ( viewIsInvalid( payload.to ) ) {
@@ -119,12 +123,13 @@ module.exports = {
 			pushToHistoryState( context.state.currentPath, query );
 
 		},
-
 		/**
+		 * Evaluate the Uri path to evaluate what View should be displayed.
+		 *
 		 * @param {Object} context
 		 */
-		evaluateView: function ( context ) {
-			const uri = mw.Uri();
+		evaluateUri: function ( context ) {
+			var uri = mw.Uri();
 			if ( uri.query.view ) {
 				context.commit( 'CHANGE_CURRENT_VIEW', uri.query.view );
 				// we remove the view from the query params
@@ -139,8 +144,10 @@ module.exports = {
 				context.dispatch( 'changeCurrentView', Constants.VIEWS.Z_OBJECT_VIEWER );
 			}
 		},
-
 		/**
+		 * Handle the changes of a view and replace the history state.
+		 * This method is usually used when the change of view is made dynamically.
+		 *
 		 * @param {Object} context
 		 * @param {string} view
 		 */

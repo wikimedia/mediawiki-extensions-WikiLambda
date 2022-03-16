@@ -71,7 +71,7 @@ var mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'function-definition',
 	components: {
 		'function-definition-name': FunctionDefinitionName,

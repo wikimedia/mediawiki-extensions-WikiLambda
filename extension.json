@@ -222,6 +222,8 @@
 				"ext.wikilambda.edit/mixins/api.js",
 				"ext.wikilambda.edit/components/ZNaturalLanguageSelector.vue",
 				"ext.wikilambda.edit/views/function/FunctionDefinition.vue",
+				"ext.wikilambda.edit/views/function/FunctionImplementations.vue",
+				"ext.wikilambda.edit/views/function/FunctionTests.vue",
 				"ext.wikilambda.edit/views/FunctionEditor.vue",
 				"ext.wikilambda.edit/views/ZObjectEditor.vue",
 				"ext.wikilambda.edit/views/ZObjectViewer.vue",

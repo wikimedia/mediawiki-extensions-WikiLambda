@@ -23,7 +23,7 @@
 var Dialog = require( './Dialog.vue' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'base-dialog-container',
 	compatConfig: { MODE: 3 },
 	components: {
