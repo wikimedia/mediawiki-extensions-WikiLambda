@@ -39,7 +39,7 @@ var CdxIcon = require( '@wikimedia/codex' ).CdxIcon;
 var icons = require( '../../../lib/icons.json' );
 
 // @vue/component
-module.exports = {
+module.exports = exports = {
 	name: 'base-dialog',
 	compatConfig: { MODE: 3 },
 	components: {

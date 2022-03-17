@@ -164,7 +164,7 @@ describe( 'router Vuex module', function () {
 			} );
 		} );
 
-		describe( 'evaluateView', function () {
+		describe( 'evaluateUri', function () {
 			beforeEach(
 				function () {
 					window.mw.Uri.mockImplementation( function () {
@@ -177,7 +177,7 @@ describe( 'router Vuex module', function () {
 
 			it( 'default current view to Function viewer', function () {
 
-				routerInstance.actions.evaluateView( context );
+				routerInstance.actions.evaluateUri( context );
 
 				expect( context.dispatch ).toHaveBeenCalled();
 				expect( context.dispatch ).toHaveBeenCalledWith(
@@ -202,7 +202,7 @@ describe( 'router Vuex module', function () {
 
 				it( 'changes the current view', function () {
 
-					routerInstance.actions.evaluateView( context );
+					routerInstance.actions.evaluateUri( context );
 
 					expect( context.commit ).toHaveBeenCalled();
 					expect( context.commit ).toHaveBeenNthCalledWith( 1,
@@ -211,7 +211,7 @@ describe( 'router Vuex module', function () {
 
 				it( 'changes the query params', function () {
 
-					routerInstance.actions.evaluateView( context );
+					routerInstance.actions.evaluateUri( context );
 
 					expect( context.commit ).toHaveBeenCalled();
 					expect( context.commit ).toHaveBeenNthCalledWith( 2,
@@ -230,7 +230,7 @@ describe( 'router Vuex module', function () {
 						};
 					} );
 
-					routerInstance.actions.evaluateView( context );
+					routerInstance.actions.evaluateUri( context );
 
 					expect( context.dispatch ).toHaveBeenCalled();
 					expect( context.dispatch ).toHaveBeenCalledWith(
@@ -239,7 +239,7 @@ describe( 'router Vuex module', function () {
 				it( 'when getCurrentZObjectType is equal tp Z_FUNCTION', function () {
 					context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
 
-					routerInstance.actions.evaluateView( context );
+					routerInstance.actions.evaluateUri( context );
 
 					expect( context.dispatch ).toHaveBeenCalled();
 					expect( context.dispatch ).toHaveBeenCalledWith(
@@ -256,7 +256,7 @@ describe( 'router Vuex module', function () {
 						};
 					} );
 
-					routerInstance.actions.evaluateView( context );
+					routerInstance.actions.evaluateUri( context );
 
 					expect( context.dispatch ).toHaveBeenCalled();
 					expect( context.dispatch ).toHaveBeenCalledWith(
@@ -270,7 +270,7 @@ describe( 'router Vuex module', function () {
 						};
 					} );
 
-					routerInstance.actions.evaluateView( context );
+					routerInstance.actions.evaluateUri( context );
 
 					expect( context.dispatch ).toHaveBeenCalled();
 					expect( context.dispatch ).toHaveBeenCalledWith(
@@ -284,7 +284,7 @@ describe( 'router Vuex module', function () {
 						};
 					} );
 
-					routerInstance.actions.evaluateView( context );
+					routerInstance.actions.evaluateUri( context );
 
 					expect( context.dispatch ).toHaveBeenCalled();
 					expect( context.dispatch ).toHaveBeenCalledWith(

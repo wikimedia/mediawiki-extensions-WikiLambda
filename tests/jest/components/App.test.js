@@ -36,7 +36,7 @@ describe( 'App.vue', function () {
 						getCurrentView: jest.fn().mockReturnValue( 'function-editor' )
 					},
 					actions: {
-						evaluateView: jest.fn()
+						evaluateUri: jest.fn()
 					}
 				}
 			}

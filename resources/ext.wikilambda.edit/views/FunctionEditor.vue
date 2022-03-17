@@ -31,6 +31,8 @@
 var TabContainer = require( '../components/base/TabContainer.vue' ),
 	FnEditorVisualDisplay = require( '../components/editor/FnEditorVisualDisplay.vue' ),
 	functionDefinition = require( './function/FunctionDefinition.vue' ),
+	functionImplementations = require( './function/FunctionImplementations.vue' ),
+	functionTests = require( './function/FunctionTests.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	cdxIcons = require( '../../lib/icons.json' );
 
@@ -40,6 +42,8 @@ module.exports = exports = {
 	components: {
 		'tab-container': TabContainer,
 		'function-definition': functionDefinition,
+		'function-tests': functionTests,
+		'function-implementations': functionImplementations,
 		'fn-editor-visual-display': FnEditorVisualDisplay
 	},
 	data: function () {
@@ -55,7 +59,7 @@ module.exports = exports = {
 				var tabs = [
 					{
 						status: 'active',
-						id: 'function-editor', // used for routing
+						id: 'function-definition', // used for routing
 						title: this.$i18n( 'wikilambda-editor-fn-step-function-definition' ).text(),
 						disabled: false, // this should be computed
 						icon: cdxIcons.cdxIconCheck
@@ -96,7 +100,7 @@ module.exports = exports = {
 	),
 	methods: {
 		selectTab: function ( tab ) {
-			this.currentTab = tab.id;
+			this.currentTab = tab;
 		}
 	}
 };

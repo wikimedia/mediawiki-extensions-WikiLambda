@@ -43,7 +43,7 @@ module.exports = exports = {
 	),
 	methods: $.extend(
 		mapActions( [ 'initializeZObject', 'initialize' ] ),
-		mapActions( 'router', [ 'evaluateView', 'navigate' ] )
+		mapActions( 'router', [ 'evaluateUri', 'navigate' ] )
 	),
 	created: function () {
 		// Set zobject
@@ -51,12 +51,12 @@ module.exports = exports = {
 			function () {
 				this.initialize( this.$i18n );
 				$.$i18n = this.$i18n;
-				this.evaluateView();
+				this.evaluateUri();
 			}.bind( this )
 		);
 
 		window.onpopstate = function () {
-			this.evaluateView();
+			this.evaluateUri();
 		}.bind( this );
 	}
 };
