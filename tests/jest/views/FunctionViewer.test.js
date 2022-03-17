@@ -12,7 +12,8 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 
 describe( 'FunctionViewer', function () {
 	var getters,
-		store;
+		store,
+		$i18n;
 
 	beforeEach( function () {
 		getters = {
@@ -21,6 +22,12 @@ describe( 'FunctionViewer', function () {
 		store = Vuex.createStore( {
 			getters: getters
 		} );
+
+		$i18n = jest.fn().mockImplementation( function () {
+			return {
+				text: jest.fn()
+			};
+		} );
 	} );
 
 	it( 'renders without errors', function () {
@@ -28,7 +35,10 @@ describe( 'FunctionViewer', function () {
 			global: {
 				plugins: [
 					store
-				]
+				],
+				mocks: {
+					$i18n: $i18n
+				}
 			}
 		} );
 

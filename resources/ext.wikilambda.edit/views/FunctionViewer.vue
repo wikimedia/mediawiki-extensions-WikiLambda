@@ -17,7 +17,6 @@
 		<div class="ext-wikilambda-function-viewer ext-wikilambda-function-viewer__two-cols">
 			<main class="ext-wikilambda-function-viewer__content">
 				<component :is="currentTab"></component>
-				Function-viewer
 			</main>
 			<aside
 				class="ext-wikilambda-function-viewer__sidebar"
@@ -28,13 +27,19 @@
 </template>
 
 <script>
-var TabContainer = require( '../components/base/TabContainer.vue' );
+var TabContainer = require( '../components/base/TabContainer.vue' ),
+	functionAbout = require( './function/FunctionAbout.vue' ),
+	functionDetails = require( './function/FunctionDetails.vue' ),
+	mapGetters = require( 'vuex' ).mapGetters,
+	cdxIcons = require( '../../lib/icons.json' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'function-viewer',
 	components: {
-		'tab-container': TabContainer
+		'tab-container': TabContainer,
+		'function-about': functionAbout,
+		'function-details': functionDetails
 	},
 	data: function () {
 		return {
@@ -42,9 +47,25 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( {},
+		mapGetters( 'router', [ 'getCurrentView' ] ),
 		{
 			getVisibleTabs: function () {
-				var tabs = [];
+				var tabs = [
+					{
+						status: 'active',
+						id: 'function-about', // used for routing
+						title: this.$i18n( 'wikilambda-editor-fn-step-function-about' ).text(),
+						disabled: false, // this should be computed
+						icon: cdxIcons.cdxIconCheck
+					},
+					{
+						status: 'active',
+						id: 'function-details', // used for routing
+						title: this.$i18n( 'wikilambda-editor-fn-step-function-details' ).text(),
+						disabled: false, // this should be computed
+						icon: cdxIcons.cdxIconCheck
+					}
+				];
 
 				return tabs;
 			}

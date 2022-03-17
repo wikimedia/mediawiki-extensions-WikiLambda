@@ -224,6 +224,8 @@
 				"ext.wikilambda.edit/views/function/FunctionDefinition.vue",
 				"ext.wikilambda.edit/views/function/FunctionImplementations.vue",
 				"ext.wikilambda.edit/views/function/FunctionTests.vue",
+				"ext.wikilambda.edit/views/function/FunctionAbout.vue",
+				"ext.wikilambda.edit/views/function/FunctionDetails.vue",
 				"ext.wikilambda.edit/views/FunctionEditor.vue",
 				"ext.wikilambda.edit/views/FunctionViewer.vue",
 				"ext.wikilambda.edit/views/ZObjectEditor.vue",
@@ -410,13 +412,17 @@
 				"wikilambda-ztyped-pair-value-label",
 				"wikilambda-zerror",
 				"wikilambda-editor-fn-step-function-definition",
+				"wikilambda-editor-fn-step-function-about",
+				"wikilambda-editor-fn-step-function-details",
 				"wikilambda-editor-fn-step-implementations",
 				"wikilambda-optional",
 				"wikilambda-editor-fn-tests-tooltip-header",
 				"wikilambda-editor-fn-tests-tooltip-content",
 				"wikilambda-editor-fn-edit-definition-tooltip-content",
 				"wikilambda-function-are-you-sure-dialog-header",
-				"wikilambda-function-are-you-sure-dialog-description"
+				"wikilambda-function-are-you-sure-dialog-description",
+				"wikilambda-function-about-summary",
+				"wikilambda-function-details-summary"
 			]
 		}
 	},
