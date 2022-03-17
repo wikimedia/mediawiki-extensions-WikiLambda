@@ -25,12 +25,29 @@ const isNewOrExistingObjectPath = function ( uriPath ) {
 };
 
 /**
+ * Analyses the zObject to determine if it is a function
+ *
  * @param {Object} context The ZObject context in which we're operating
  * @param {Object} uriQuery The contextual mw.Uri's query sub-object
  * @return {boolean}
  */
-const isFunctionEditor = function ( context, uriQuery ) {
+const isFunction = function ( context, uriQuery ) {
 	return uriQuery.zid === Constants.Z_FUNCTION || context.rootGetters.getCurrentZObjectType === Constants.Z_FUNCTION;
+};
+
+/**
+ * Analyses the path and zObject to determine if the current view is hte functionEditor
+ *
+ * @param {Object} context The ZObject context in which we're operating
+ * @param {Object} uriQuery The contextual mw.Uri's query sub-object
+ * @param {Object} uriPath The contextual mw.Uri's path sub-object
+ * @return {boolean}
+ */
+const isFunctionEditor = function ( context, uriQuery, uriPath ) {
+	var isEditpath = Constants.PATHS.EDIT_Z_OBJECT.indexOf( uriPath ) !== -1;
+	var isFunctionObject = isFunction( context, uriQuery );
+
+	return isEditpath && isFunctionObject;
 };
 
 /**
@@ -136,8 +153,10 @@ module.exports = {
 				const params = $.extend( {}, uri.query );
 				delete params.view;
 				context.commit( 'CHANGE_QUERY_PARAMS', params );
-			} else if ( isFunctionEditor( context, uri.query ) ) {
+			} else if ( isFunctionEditor( context, uri.query, uri.path ) ) {
 				context.dispatch( 'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
+			} else if ( isFunction( context, uri.query ) ) {
+				context.dispatch( 'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
 			} else if ( isEvaluateFunctionCallPath( uri.path ) || isNewOrExistingObjectPath( uri.path ) ) {
 				context.dispatch( 'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
 			} else {

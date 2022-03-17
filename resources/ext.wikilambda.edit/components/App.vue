@@ -19,6 +19,7 @@
 var mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	FunctionEditor = require( '../views/FunctionEditor.vue' ),
+	FunctionViewer = require( '../views/FunctionViewer.vue' ),
 	ZObjectViewer = require( '../views/ZObjectViewer.vue' ),
 	ZObjectEditor = require( '../views/ZObjectEditor.vue' );
 
@@ -27,6 +28,7 @@ module.exports = exports = {
 	name: 'app',
 	components: {
 		'function-editor': FunctionEditor,
+		'function-viewer': FunctionViewer,
 		'zobject-viewer': ZObjectViewer,
 		'zobject-editor': ZObjectEditor
 	},

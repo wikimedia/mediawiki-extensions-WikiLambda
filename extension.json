@@ -225,6 +225,7 @@
 				"ext.wikilambda.edit/views/function/FunctionImplementations.vue",
 				"ext.wikilambda.edit/views/function/FunctionTests.vue",
 				"ext.wikilambda.edit/views/FunctionEditor.vue",
+				"ext.wikilambda.edit/views/FunctionViewer.vue",
 				"ext.wikilambda.edit/views/ZObjectEditor.vue",
 				"ext.wikilambda.edit/views/ZObjectViewer.vue",
 				"lib/ace/src/ace.js",

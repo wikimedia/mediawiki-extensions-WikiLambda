@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<div>
-		<div class="ext-wikilambda-function-view-navbar">
+		<div class="ext-wikilambda-function-editor-navbar">
 			<tab-container
 				:tabs="getVisibleTabs"
 				:active-tab="getCurrentView"
@@ -14,12 +14,12 @@
 			>
 			</tab-container>
 		</div>
-		<div class="ext-wikilambda-function-view ext-wikilambda-function-view__two-cols">
-			<main class="ext-wikilambda-function-view__content">
+		<div class="ext-wikilambda-function-editor ext-wikilambda-function-editor__two-cols">
+			<main class="ext-wikilambda-function-editor__content">
 				<component :is="currentTab"></component>
 			</main>
 			<aside
-				class="ext-wikilambda-function-view__sidebar"
+				class="ext-wikilambda-function-editor__sidebar"
 				:aria-label="$i18n( 'wikilambda-editor-additional-details-label' )">
 				<fn-editor-visual-display></fn-editor-visual-display>
 			</aside>
@@ -38,7 +38,7 @@ var TabContainer = require( '../components/base/TabContainer.vue' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'function-view',
+	name: 'function-editor',
 	components: {
 		'tab-container': TabContainer,
 		'function-definition': functionDefinition,
@@ -109,7 +109,7 @@ module.exports = exports = {
 <style lang="less">
 @import './../../lib/wikimedia-ui-base.less';
 
-.ext-wikilambda-function-view {
+.ext-wikilambda-function-editor {
 	display: grid;
 
 	&__content {

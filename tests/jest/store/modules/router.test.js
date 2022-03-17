@@ -226,7 +226,8 @@ describe( 'router Vuex module', function () {
 						return {
 							query: {
 								zid: Constants.Z_FUNCTION
-							}
+							},
+							path: Constants.PATHS.EDIT_Z_OBJECT
 						};
 					} );
 
@@ -236,6 +237,39 @@ describe( 'router Vuex module', function () {
 					expect( context.dispatch ).toHaveBeenCalledWith(
 						'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
 				} );
+				it( 'when getCurrentZObjectType is equal to Z_FUNCTION', function () {
+					context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
+					window.mw.Uri.mockImplementationOnce( function () {
+						return {
+							path: Constants.PATHS.EDIT_Z_OBJECT,
+							query: {}
+						};
+					} );
+
+					routerInstance.actions.evaluateUri( context );
+
+					expect( context.dispatch ).toHaveBeenCalled();
+					expect( context.dispatch ).toHaveBeenCalledWith(
+						'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
+				} );
+			} );
+
+			describe( 'changes current view to Function Viewer', function () {
+				it( 'when query zid is equal to Z_FUNCTION', function () {
+					window.mw.Uri.mockImplementationOnce( function () {
+						return {
+							query: {
+								zid: Constants.Z_FUNCTION
+							}
+						};
+					} );
+
+					routerInstance.actions.evaluateUri( context );
+
+					expect( context.dispatch ).toHaveBeenCalled();
+					expect( context.dispatch ).toHaveBeenCalledWith(
+						'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
+				} );
 				it( 'when getCurrentZObjectType is equal tp Z_FUNCTION', function () {
 					context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
 
@@ -243,7 +277,7 @@ describe( 'router Vuex module', function () {
 
 					expect( context.dispatch ).toHaveBeenCalled();
 					expect( context.dispatch ).toHaveBeenCalledWith(
-						'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
+						'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
 				} );
 			} );
 

@@ -116,6 +116,7 @@ var Constants = {
 	typedObjectsList = [ Constants.Z_TYPED_LIST, Constants.Z_TYPED_PAIR, Constants.Z_TYPED_MAP ],
 	views = {
 		FUNCTION_EDITOR: 'function-editor',
+		FUNCTION_VIEWER: 'function-viewer',
 		Z_OBJECT_EDITOR: 'zobject-editor',
 		Z_OBJECT_VIEWER: 'zobject-viewer'
 	},
