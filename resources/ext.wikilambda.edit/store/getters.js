@@ -17,6 +17,10 @@ module.exports = exports = {
 		 * @return {string} LiteralType
 		 */
 		return function ( parentKey ) {
+			if ( !parentKey ) {
+				return;
+			}
+
 			var type = parentKey.match( /Z[1-9]\d*/ )[ 0 ],
 				keysArray,
 				currentKeyLiteralType = null;
