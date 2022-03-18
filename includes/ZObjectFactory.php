@@ -577,13 +577,10 @@ class ZObjectFactory {
 				if ( $returnType !== ZTypeRegistry::Z_TYPE ) {
 					throw new ZErrorException(
 						ZErrorFactory::createZErrorInstance(
-							ZErrorTypeRegistry::Z_ERROR_KEY_TYPE_MISMATCH,
+							ZErrorTypeRegistry::Z_ERROR_UNEXPECTED_ZTYPE,
 							[
-								'dataPointer' => [ ZTypeRegistry::Z_OBJECT_TYPE ],
-								'keywordArgs' => [
-									'expected' => ZTypeRegistry::Z_TYPE,
-									'used' => $type->getReturnType()
-								]
+								'expected' => ZTypeRegistry::Z_TYPE,
+								'used' => $type->getReturnType()
 							]
 						)
 					);

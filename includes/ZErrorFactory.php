@@ -17,6 +17,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKeyReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use Opis\JsonSchema\ValidationError;
 
@@ -575,8 +576,8 @@ class ZErrorFactory {
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_UNEXPECTED_ZTYPE:
-				$zErrorValue[] = new ZString( $payload['expected'] );
-				$zErrorValue[] = new ZString( $payload['actual'] );
+				$zErrorValue[] = new ZReference( $payload['expected'] );
+				$zErrorValue[] = new ZReference( $payload['actual'] );
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_ZTYPE_NOT_FOUND:
@@ -613,7 +614,7 @@ class ZErrorFactory {
 				$zErrorValue[] = new ZString( $payload['data'] );
 				break;
 
-			case ZErrorTypeRegistry::Z_ERROR_KEY_TYPE_MISMATCH:
+			case ZErrorTypeRegistry::Z_ERROR_SCHEMA_TYPE_MISMATCH:
 				$keyRef = end( $payload['dataPointer'] );
 				$zErrorValue[] = new ZKeyReference( $keyRef ?: '' );
 				$zErrorValue[] = new ZString( $payload['keywordArgs']['expected'] );
