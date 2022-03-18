@@ -1,11 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"Omotecho"
+			"Omotecho",
+			"Yamagata Yusuke"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "ZObjects を JSON モードで取得。",
-	"apihelp-wikilambda_fetch-param-zids": "ZObject ZID をパイプ記号で区切って取得。",
+	"apihelp-wikilambda_fetch-param-zids": "ZObject ZIDを取得。",
 	"apihelp-wikilambda_fetch-example-single": "単一の ZObject Z1 を取得。",
 	"apihelp-wikilambda_fetch-example-multiple": "3件の ZObjects を取得：Z1、Z2、Z3。",
 	"apierror-wikilambda_fetch-missingzid": "このウィキに指定の ZID '$1' は存在しません。",

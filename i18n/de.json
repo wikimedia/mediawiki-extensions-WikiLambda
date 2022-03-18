@@ -174,6 +174,8 @@
 	"wikilambda-editor-fn-step-implement": "Implementieren",
 	"wikilambda-editor-fn-step-implementations": "Implementierung(en)",
 	"wikilambda-editor-fn-step-function-definition": "Funktionsdefinition",
+	"wikilambda-editor-fn-step-function-about": "Über",
+	"wikilambda-editor-fn-step-function-details": "Details",
 	"wikilambda-editor-fn-tests-tooltip-content": "Sobald die Funktion definiert ist, kannst du Implementierungen und Tests hinzufügen.",
 	"wikilambda-editor-fn-tests-tooltip-header": "Kein Zugriff",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "Entschuldigung! Nur Administratoren können die Funktionsdefinition ändern, sobald eine Definition veröffentlicht wurde.",
@@ -216,5 +218,7 @@
 	"wikilambda-zerror": "ZError vom Typ $1",
 	"wikilambda-optional": "optional",
 	"wikilambda-continue-editing": "Weiter bearbeiten",
-	"wikilambda-discard-edits": "Bearbeitungen verwerfen"
+	"wikilambda-discard-edits": "Bearbeitungen verwerfen",
+	"wikilambda-function-about-summary": "Diese Funktion wandelt ein englisches Wort im Singular in seine Pluralform um, aber Englisch ist eine seltsame Sprache und es könnte sein, dass einige selten verwendete Wörter falsch geschrieben werden. Probiere es aus!",
+	"wikilambda-function-details-summary": "Jeder kann eine „vorgeschlagene“ Implementierung oder einen Test erstellen. Diese werden dann von der Gemeinschaft geprüft und genehmigt. Sobald sie genehmigt sind, werden sie zu „verfügbaren“ Implementierungen und „verifizierten“ Tests. Um Duplikate zu vermeiden, kannst du die Liste der Implementierungen und Tests unten überprüfen, bevor du deine eigenen erstellst."
 }

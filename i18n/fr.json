@@ -186,6 +186,8 @@
 	"wikilambda-editor-fn-step-implement": "Mettre en œuvre",
 	"wikilambda-editor-fn-step-implementations": "Mise(s) en œuvre",
 	"wikilambda-editor-fn-step-function-definition": "Définition de fonction",
+	"wikilambda-editor-fn-step-function-about": "À propos",
+	"wikilambda-editor-fn-step-function-details": "Détails",
 	"wikilambda-editor-fn-tests-tooltip-content": "Une fois la fonction définie, vous pouvez ajouter des mises en œuvre et des tests.",
 	"wikilambda-editor-fn-tests-tooltip-header": "Aucun accès",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "Désolé ! Seuls les administrateurs peuvent changer la définition de la fonction une fois qu’une définition a été publiée.",
