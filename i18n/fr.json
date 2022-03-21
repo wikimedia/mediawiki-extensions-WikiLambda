@@ -232,5 +232,7 @@
 	"wikilambda-zerror": "Z-Erreur de type $1",
 	"wikilambda-optional": "facultatif",
 	"wikilambda-continue-editing": "Continuer les modifications",
-	"wikilambda-discard-edits": "Abandonner les modifications"
+	"wikilambda-discard-edits": "Abandonner les modifications",
+	"wikilambda-function-about-summary": "Cette fonction transforme un unique mot en anglais en sa forme plurielle, mais l’anglais est une langue bizarre et cela peut donner un résultat incorrect pour quelques mots rarement utilisés. Essayez-la !",
+	"wikilambda-function-details-summary": "N’importe qui peut créer une mise en œuvre « proposée » ou un test. Elle sera alors relue et approuvée par la communauté. Une fois approuvée, elle fera partie des mise en œuvre « approuvées » et des tests « vérifiés ». Pour éviter les doublons, vous pouvez vérifier la liste des mises en œuvre et des tests ci-dessous avant de créer le vôtre."
 }

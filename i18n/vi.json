@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"NguyenHung",
 			"Nguyễn Mạnh An",
 			"Thingofme",
 			"Yosari101"
@@ -36,6 +37,8 @@
 	"wikilambda-editor-fn-step-implement": "Thực hiện",
 	"wikilambda-editor-fn-step-implementations": "Các bước thực hiện",
 	"wikilambda-editor-fn-step-function-definition": "Định nghĩa Hàm",
+	"wikilambda-editor-fn-step-function-about": "Giới thiệu",
+	"wikilambda-editor-fn-step-function-details": "Chi tiết",
 	"wikilambda-editor-fn-tests-tooltip-header": "Không truy cập",
 	"wikilambda-editor-name-title": "Tên",
 	"wikilambda-editor-name-zobject-name": "Tên hàm",

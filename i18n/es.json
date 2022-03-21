@@ -8,6 +8,7 @@
 			"DDPAT",
 			"Danniel07",
 			"Destinid10 2",
+			"DiegoAmbrocio",
 			"Fewasser Traduce",
 			"Fitoschido",
 			"Ice bulldog",
@@ -45,14 +46,16 @@
 	"wikilambda-tester-failure-actual": "Recibido",
 	"wikilambda-tester-function-duration": "Duración",
 	"wikilambda-create-function": "Crear Función",
-	"wikilambda-function-definition-add-other-label-languages-title": "+ Añade etiquetas en otra lengua",
-	"wikilambda-function-definition-inputs-item-selector-search-placeholder": "Busca referencia o función",
 	"wikilambda-editor-steps-label": "Pasos del Editor",
 	"wikilambda-editor-go-back-button": "Volver",
 	"wikilambda-editor-next-button": "Siguiente paso",
 	"wikilambda-editor-fn-step-implement": "Escribir Función",
+	"wikilambda-editor-fn-step-function-about": "Acerca de",
+	"wikilambda-editor-fn-step-function-details": "Detalles",
 	"wikilambda-editor-name-title": "Nombre",
 	"wikilambda-editor-input-default-label": "Entrada",
 	"wikilambda-editor-write-title": "Escribir",
-	"wikilambda-editor-progress-title": "Progreso"
+	"wikilambda-editor-progress-title": "Progreso",
+	"wikilambda-function-about-summary": "Esta función convierte una palabra inglesa en singular en su forma plural, pero el inglés es un idioma extraño y puede hacer que algunas palabras poco utilizadas sean incorrectas. ¡Pruébalo!",
+	"wikilambda-function-details-summary": "Cualquiera puede crear una \"propuesta\" de aplicación o prueba. Estas son revisadas y aprobadas por la comunidad. Una vez aprobadas, se convertirán en implementaciones \"disponibles\" y pruebas \"verificadas\". Para evitar duplicidades, puedes consultar la lista de implementaciones y pruebas que aparece a continuación antes de crear la tuya."
 }

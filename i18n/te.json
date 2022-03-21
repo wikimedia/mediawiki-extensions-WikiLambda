@@ -13,6 +13,8 @@
 	"wikilambda-function-are-you-sure-dialog-description": "ప్రచురించకుండానే దిద్దుబాటు స్థితి నుండి వెళ్ళిపోడానికి నిశ్చయించుకున్నారా?",
 	"wikilambda-metadata-language-column": "భాష",
 	"wikilambda-metadata-label-column": "సూచిక (లేబెల్)",
+	"wikilambda-editor-fn-step-function-about": "గురించి",
+	"wikilambda-editor-fn-step-function-details": "వివరాలు",
 	"wikilambda-continue-editing": "దిద్దుబాటు కొనసాగించండి",
 	"wikilambda-discard-edits": "సవరణలను తోసిపుచ్చండి"
 }

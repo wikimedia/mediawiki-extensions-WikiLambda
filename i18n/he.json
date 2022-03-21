@@ -176,6 +176,8 @@
 	"wikilambda-editor-fn-step-implement": "מימוש",
 	"wikilambda-editor-fn-step-implementations": "מימושים",
 	"wikilambda-editor-fn-step-function-definition": "הגדרת פונקציה",
+	"wikilambda-editor-fn-step-function-about": "אודות",
+	"wikilambda-editor-fn-step-function-details": "פרטים",
 	"wikilambda-editor-fn-tests-tooltip-content": "משהפונקציה מוגדרת, {{GENDER:|תוכל|תוכלי}} להוסיף מימושים ובדיקות.",
 	"wikilambda-editor-fn-tests-tooltip-header": "אין גישה",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "מצטערים! רק מפעילים יכולים לשנות הגדרה של פונקציה אחרי שההגדרה פורסמה.",
@@ -219,5 +221,7 @@
 	"wikilambda-zerror": "שגיאת Z מסוג $1",
 	"wikilambda-optional": "לא חובה",
 	"wikilambda-continue-editing": "המשך עריכה",
-	"wikilambda-discard-edits": "ביטול העריכות"
+	"wikilambda-discard-edits": "ביטול העריכות",
+	"wikilambda-function-about-summary": "הפונקציה הזאת הופכת מילה ביחיד באנגלית למילה ברבים, אבל אנגלית היא שפה מוזרה ויכול להיות שהיא תפלוט משהו לא נכון על מילים נדירות. נסו אותה!",
+	"wikilambda-function-details-summary": "כל אחד יכול ליצור מימוש \"מוצע\" או בדיקה \"מוצעת\". אלה נסקרים ומאושרים על־ידי הקהילה. אחרי האישור הם יהפכו למימושים \"זמינים\" ובדיקות \"מאומתות\". כדי להימנע מכפילויות, אפשר לבדוק את רשימת המימושים והבדיקות להלן לפני יצירת משהו משלך."
 }

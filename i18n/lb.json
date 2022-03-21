@@ -15,6 +15,7 @@
 	"wikilambda-publishnew": "Verëffentlechen",
 	"wikilambda-published": "Verëffentlecht!",
 	"wikilambda-cancel": "Ofbriechen",
+	"wikilambda-confirm": "Confirméieren",
 	"wikilambda-savenew": "Späicheren",
 	"wikilambda-publishchanges": "Ännerunge verëffentlechen",
 	"wikilambda-savechanges": "Ännerunge späicheren",
@@ -29,6 +30,7 @@
 	"wikilambda-editor-zobject-clearitem-tooltip": "Dëse Wäert eidelmaachen",
 	"wikilambda-implementation-selector-code": "Code",
 	"wikilambda-implementation-selector-composition": "Zesummesetzung",
+	"wikilambda-function-are-you-sure-dialog-header": "Sidd Dir sécher?",
 	"wikilambda-tester-results-current-implementation": "Aktuell Ëmsetzung",
 	"wikilambda-metadata-language-column": "Sprooch",
 	"wikilambda-metadata-label-column": "Etikett",
@@ -50,6 +52,8 @@
 	"wikilambda-editor-fn-step-tests": "Test(er)",
 	"wikilambda-editor-fn-step-implement": "Implementéieren",
 	"wikilambda-editor-fn-step-implementations": "Ëmsetzung(en)",
+	"wikilambda-editor-fn-step-function-about": "Iwwer",
+	"wikilambda-editor-fn-step-function-details": "Detailer",
 	"wikilambda-editor-fn-tests-tooltip-header": "Keen Accès",
 	"wikilambda-editor-name-title": "Numm",
 	"wikilambda-editor-name-zobject-name": "Numm vun der Funktioun",
@@ -68,5 +72,6 @@
 	"wikilambda-ztyped-pair-key-label": "Schlëssel",
 	"wikilambda-ztyped-pair-value-label": "Wäert",
 	"wikilambda-zerror": "ZError vum Typ $1",
-	"wikilambda-optional": "fakultativ"
+	"wikilambda-optional": "fakultativ",
+	"wikilambda-continue-editing": "Virufuere mat Änneren"
 }

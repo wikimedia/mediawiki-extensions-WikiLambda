@@ -42,6 +42,8 @@
 	"wikilambda-function-definition-output-label": "আউটপুটের ধরন",
 	"wikilambda-editor-next-button": "পরবর্তী ধাপ",
 	"wikilambda-editor-fn-step-define": "ব্যাখ্যা",
+	"wikilambda-editor-fn-step-function-about": "সম্পর্কে",
+	"wikilambda-editor-fn-step-function-details": "বিস্তারিত",
 	"wikilambda-editor-name-title": "নাম",
 	"wikilambda-editor-name-subtitle": "আপনার ফাংশনের নাম কি? এটি কী করে?",
 	"wikilambda-editor-name-zobject-name-placeholder": "আপনার ফাংশনের নাম কি?",

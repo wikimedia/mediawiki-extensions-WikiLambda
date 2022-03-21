@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Vipz"
+		]
+	},
+	"wikilambda-editor-fn-step-function-about": "O funkciji",
+	"wikilambda-editor-fn-step-function-details": "Detalji",
+	"wikilambda-function-about-summary": "Ova funkcija mijenja englesku riječ iz jednine u množinu, ali možda bude grešaka kod rjeđih riječi jer je engleski čudan jezik. Probajte ovu funkciju!"
+}
