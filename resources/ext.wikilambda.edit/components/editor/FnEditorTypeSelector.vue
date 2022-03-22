@@ -28,11 +28,13 @@
 			@clear-lookup-results="onClearLookupResults"
 		>
 		</sd-autocomplete-search-input>
-		<sd-message
+		<cdx-message
 			v-if="validatorIsInvalid"
 			:inline="true"
 			type="error"
-		> {{ validatorErrorMessage }} </sd-message>
+		>
+			{{ validatorErrorMessage }}
+		</cdx-message>
 	</span>
 </template>
 
@@ -40,7 +42,7 @@
 var Constants = require( '../../Constants.js' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	SdAutocompleteSearchInput = require( '../base/AutocompleteSearchInput.vue' ),
-	SdMessage = require( '../base/Message.vue' ),
+	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
@@ -48,7 +50,7 @@ module.exports = exports = {
 	name: 'fn-editor-type-selector',
 	components: {
 		'sd-autocomplete-search-input': SdAutocompleteSearchInput,
-		'sd-message': SdMessage
+		'cdx-message': CdxMessage
 	},
 	extends: ZObjectSelector,
 	computed: mapGetters( [

@@ -54,9 +54,9 @@
 					{{ $i18n( 'wikilambda-enable-expert-mode' ) }}
 				</template>
 			</cdx-button>
-			<sd-message v-if="message.text" :type="message.type">
+			<cdx-message v-if="message.text" :type="message.type">
 				{{ message }}
-			</sd-message>
+			</cdx-message>
 		</template>
 	</div>
 </template>
@@ -64,7 +64,7 @@
 <script>
 var ZObject = require( '../components/ZObject.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	SdMessage = require( '../components/base/Message.vue' ),
+	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	Constants = require( '../Constants.js' ),
@@ -76,7 +76,7 @@ module.exports = exports = {
 	components: {
 		'z-object': ZObject,
 		'cdx-button': CdxButton,
-		'sd-message': SdMessage
+		'cdx-message': CdxMessage
 	},
 	mixins: [ typeUtils ],
 	data: function () {

@@ -13,22 +13,24 @@
 			:class="{ 'ext-wikilambda-zkey-input-invalid': isInvalid }"
 			@change="updateKey"
 		>
-		<sd-message
+		<cdx-message
 			v-if="isInvalid"
 			:inline="true"
 			type="error"
-		> {{ $i18n( 'wikilambda-invalidzobject' ) }} </sd-message>
+		>
+			{{ $i18n( 'wikilambda-invalidzobject' ) }}
+		</cdx-message>
 	</span>
 </template>
 
 <script>
-var SdMessage = require( './base/Message.vue' );
+var CdxMessage = require( '@wikimedia/codex' ).CdxMessage;
 
 // @vue/component
 module.exports = exports = {
 	name: 'z-object-key-input',
 	components: {
-		'sd-message': SdMessage
+		'cdx-message': CdxMessage
 	},
 	data: function () {
 		return {
