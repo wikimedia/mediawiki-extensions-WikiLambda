@@ -1,8 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"Kareyac"
+			"Kareyac",
+			"QuickQuokka"
 		]
 	},
-	"wikilambda-editor-fn-step-function-details": "Подробности"
+	"wikilambda-editor-fn-step-function-details": "Детайли"
 }
