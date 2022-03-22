@@ -10,17 +10,31 @@
 			<div class="ext-wikilambda-function-about__summary">
 				{{ $i18n( 'wikilambda-function-about-summary' ).text() }}
 			</div>
+			<div class="ext-wikilambda-function-about__names">
+				<function-viewer-names></function-viewer-names>
+			</div>
+			<div class="ext-wikilambda-function-about__aliases">
+				<function-viewer-aliases></function-viewer-aliases>
+			</div>
 		</div>
 	</main>
 </template>
 
 <script>
+var FunctionViewerAliases = require( './about/function-viewer-aliases.vue' ),
+	FunctionViewerNames = require( './about/function-viewer-names.vue' ),
+	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
 	name: 'function-about',
 	components: {
-	}
+		'function-viewer-aliases': FunctionViewerAliases,
+		'function-viewer-names': FunctionViewerNames
+	},
+	computed: $.extend( {},
+		mapGetters( [ 'getCurrentZObjectId' ] )
+	)
 };
 </script>
 
@@ -38,6 +52,11 @@ module.exports = exports = {
 
 	&__summary:extend(.ext-wikilambda-edit__text-regular) {
 		color: @wmui-color-base30;
+	}
+
+	&__names,
+	&__aliases {
+		margin-top: 10%;
 	}
 }
 </style>

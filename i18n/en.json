@@ -236,6 +236,9 @@
 	"wikilambda-continue-editing": "Continue editing",
 	"wikilambda-discard-edits": "Discard edits",
 	"wikilambda-function-about-summary": "This function turns an English singular word into its plural form, but English is a weird language and it might get some rarely used words incorrect. Give it a try!",
-	"wikilambda-function-details-summary": "Anyone can create a \"proposed\" implementation or test. These are then reviewed and approved by the community. Once approved, they will become \"available\" implementations and \"verified\" tests. To avoid duplicates, you can check the list of implementations and tests below before creating your own."
-
+	"wikilambda-function-details-summary": "Anyone can create a \"proposed\" implementation or test. These are then reviewed and approved by the community. Once approved, they will become \"available\" implementations and \"verified\" tests. To avoid duplicates, you can check the list of implementations and tests below before creating your own.",
+	"wikilambda-function-viewer-aliases-header": "Also known as",
+	"wikilambda-function-viewer-aliases-show-language-button": "Show more languages",
+	"wikilambda-function-viewer-aliases-hide-language-button": "Hide list",
+	"wikilambda-function-viewer-names-show-languages-button": "Show name in other languages"
 }

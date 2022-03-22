@@ -180,19 +180,44 @@ module.exports = exports = {
 				return objectIndex;
 			};
 		},
-		getZObjectChildrenById: function ( state ) {
+		getZObjectChildrenById: function ( state, getters ) {
 			/**
 			 * Return the children of a specific zObject by its ID. The return is in zObjectTree array form.
 			 * This method is desinged to return just ONE level of Depth.
 			 * This will support development of small reusable components
+			 * If language is passed, the language zid and object will be returned as a property
 			 *
 			 * @param {number} parentId
+			 * @param {string} language
 			 * @return {Array} zObjectTree
 			 */
-			return function ( parentId ) {
+			return function ( parentId, language ) {
 				if ( parentId === undefined ) {
 					return [];
 				}
+
+				if ( language ) {
+					var childrenObjects = [];
+					for ( var zobject in state.zobject ) {
+
+						var objectProps = state.zobject[ zobject ];
+						if ( objectProps.parent === parentId ) {
+							childrenObjects.push( {
+								id: objectProps.id,
+								key: objectProps.key,
+								value: objectProps.value,
+								parent: objectProps.parent,
+								language,
+								languageString: getters.getNestedZObjectById(
+									objectProps.id,
+									[ Constants.Z_STRING_VALUE ]
+								)
+							} );
+						}
+					}
+					return childrenObjects;
+				}
+
 				return state.zobject.filter( function ( object ) {
 					return object.parent === parentId;
 				} );

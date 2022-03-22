@@ -59,6 +59,12 @@ module.exports = exports = {
 		isMainZObject: {
 			type: Boolean
 		},
+		/**
+		 * zID of item label language
+		 *
+		 * @example Z1014
+		 *
+		 */
 		zLang: {
 			type: String,
 			default: ''
