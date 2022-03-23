@@ -10,7 +10,8 @@
 			"Robby",
 			"Umherirrender",
 			"Mormegil",
-			"Ajeje Brazorf"
+			"Ajeje Brazorf",
+			"Verdy p"
 		]
 	},
 	"wikilambda-desc": "{{desc|name=WikiLambda|url=https://www.mediawiki.org/wiki/Extension:WikiLambda}}\n\n{{doc-wikilambda}}",
@@ -28,7 +29,7 @@
 	"wikilambda-labelclash": "Error shown when a ZObject is attempted to be saved with a clashing label.\n\nParameters:\n* $1 - The ZID of the clashing page.\n* $2 - The language in which the other page's label clashes.\n\n{{doc-wikilambda}}",
 	"wikilambda-persistentzobject": "{{Optional}}Label for a top-level ZObject.",
 	"wikilambda-persistentzobject-metadata": "Label for the heading of the meta-data of a ZObject page",
-	"wikilambda-persistentzobject-contents": "Label for the heading of the contents of a ZObject page",
+	"wikilambda-persistentzobject-contents": "Label for the heading of the contents of a ZObject page\n\n{{Identical|Content}}",
 	"wikilambda-multilingualstring-nofallback": "Message shown when a multi-lingual string doesn't have a label defined for the user's language, nor for any of that language's fallbacks.",
 	"wikilambda-viewmode-nojs": "Warning shown on a ZObject page to readers who do not have JavaScript.",
 	"wikilambda-diff-incompatible": "Warning shown on a diff page when a user tries to get the differences between a ZObject and something else.",
