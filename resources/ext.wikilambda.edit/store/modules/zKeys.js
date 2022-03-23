@@ -269,7 +269,7 @@ module.exports = exports = {
 						// TODO(T300082): once Z10 is deprecated, this should be default behavior
 						var result = keys;
 						if ( !Array.isArray( keys ) ) {
-							result = typedListToArray( keys, [] );
+							result = typedListToArray( keys );
 						}
 
 						result.forEach( function ( key ) {

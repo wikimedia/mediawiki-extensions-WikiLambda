@@ -14,7 +14,7 @@ function formatZObjectKeys( keys ) {
 	if ( Array.isArray( keys ) ) {
 		return keys;
 	} else {
-		return typeUtils.typedListToArray( keys, [] );
+		return typeUtils.typedListToArray( keys );
 	}
 }
 

@@ -44,7 +44,7 @@ var Constants = require( '../Constants.js' ),
 			 */
 			findKeyInArray: function ( key, array ) {
 				// Exit early if we got a false, a non-array, or an empty array
-				if ( !array || !Array.isArray( array ) || array.length === 0 ) {
+				if ( !key || !array || !Array.isArray( array ) || array.length === 0 ) {
 					return false;
 				}
 
@@ -94,10 +94,12 @@ var Constants = require( '../Constants.js' ),
 				}
 			},
 			typedListToArray( typedList, array ) {
+				array = array || [];
+
 				for ( var item in typedList ) {
 					if ( item === Constants.Z_TYPED_OBJECT_ELEMENT_1 ) {
 						array.push( typedList[ item ] );
-					} else if ( typeof typedList[ item ] === 'object' ) {
+					} else if ( item === Constants.Z_TYPED_OBJECT_ELEMENT_2 ) {
 						typeUtils.methods.typedListToArray( typedList[ item ], array );
 					}
 				}
