@@ -479,26 +479,25 @@ module.exports = exports = {
 		submitZObject: function ( context, summary ) {
 			context.commit( 'setIsSavingZObject', true );
 			var zobject = canonicalize( zobjectTreeUtils.convertZObjectTreetoJson( context.state.zobject ) );
+			// eslint-disable-next-line compat/compat
+			return new Promise( function ( resolve, reject ) {
+				saveZObject(
+					zobject,
+					context.getters.isCreateNewPage ? undefined : context.getters.getCurrentZObjectId,
+					summary
+				).then( function ( result ) {
+					context.commit( 'setIsSavingZObject', false );
+					return resolve( result.page );
+				} ).catch( function ( error ) {
+					context.commit( 'setIsSavingZObject', false );
 
-			return saveZObject(
-				zobject,
-				context.getters.isCreateNewPage ? undefined : context.getters.getCurrentZObjectId,
-				summary
-			).then( function ( result ) {
+					context.commit( 'setMessage', {
+						type: 'error',
+						text: error && error.error ? error.error.info : ''
+					} );
 
-				context.commit( 'setIsSavingZObject', false );
-				return result.page;
-
-			} ).catch( function ( error ) {
-
-				context.commit( 'setIsSavingZObject', false );
-
-				context.commit( 'setMessage', {
-					type: 'error',
-					text: error && error.error ? error.error.info : ''
+					return reject( error );
 				} );
-
-				return false;
 			} );
 		},
 		/**

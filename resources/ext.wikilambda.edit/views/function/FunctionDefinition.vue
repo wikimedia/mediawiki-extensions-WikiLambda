@@ -97,6 +97,7 @@ module.exports = exports = {
 	data: function () {
 		return {
 			currentToast: null,
+			toastIntent: 'SUCCESS',
 			labelLanguages: []
 		};
 	},
@@ -121,9 +122,6 @@ module.exports = exports = {
 		},
 		toastIcon: function () {
 			return icons.cdxIconCheck;
-		},
-		toastIntent: function () {
-			return 'SUCCESS';
 		},
 		toastTimeout: function () {
 			return 2000;
@@ -195,6 +193,7 @@ module.exports = exports = {
 		'submitZObject'
 	] ), {
 		publishSuccessful: function ( toastMessage ) {
+			this.toastIntent = 'SUCCESS';
 			this.currentToast = toastMessage;
 		},
 		closeToast: function () {
@@ -230,10 +229,14 @@ module.exports = exports = {
 			this.labelLanguages[ index ] = lang;
 		},
 		handlePublish: function ( summary ) {
+			const context = this;
 			this.submitZObject( summary ).then( function ( pageTitle ) {
 				if ( pageTitle ) {
 					window.location.href = new mw.Title( pageTitle ).getUrl();
 				}
+			} ).catch( function ( error ) {
+				context.toastIntent = 'FAILURE';
+				context.currentToast = error.error.message;
 			} );
 		}
 	} ),
@@ -242,6 +245,7 @@ module.exports = exports = {
 			immediate: true,
 			handler: function ( status ) {
 				if ( status ) {
+					this.toastIntent = 'SUCCESS';
 					this.currentToast = this.$i18n( 'wikilambda-function-definition-can-publish-message' ).text();
 				}
 			}
