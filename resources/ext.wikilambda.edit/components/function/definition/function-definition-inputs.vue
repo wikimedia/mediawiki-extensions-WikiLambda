@@ -92,7 +92,7 @@ module.exports = exports = {
 			return this.getNestedZObjectById( this.zobjectId, [
 				Constants.Z_PERSISTENTOBJECT_VALUE,
 				Constants.Z_FUNCTION_ARGUMENTS
-			] ).id;
+			] ).id || Constants.NEW_ZID_PLACEHOLDER;
 		},
 		zArgumentList: function () {
 			return this.getZObjectChildrenById( this.zArgumentId );
