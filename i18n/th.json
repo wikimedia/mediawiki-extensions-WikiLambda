@@ -1,8 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
-			"Bebiezaza"
+			"Bebiezaza",
+			"Trisorn Triboon"
 		]
 	},
-	"wikilambda-editor-label-select-programming-language-label": "เลือกภาษาเขียนโปรแกรม:"
+	"wikilambda-confirm": "ยืนยัน",
+	"wikilambda-editor-label-select-programming-language-label": "เลือกภาษาเขียนโปรแกรม:",
+	"wikilambda-function-are-you-sure-dialog-header": "ท่านแน่ใจหรือไม่?",
+	"wikilambda-editor-fn-step-function-about": "เกี่ยวกับ",
+	"wikilambda-editor-fn-step-function-details": "รายละเอียด",
+	"wikilambda-continue-editing": "แก้ไขต่อ"
 }
