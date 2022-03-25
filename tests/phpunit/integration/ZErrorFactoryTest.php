@@ -66,7 +66,7 @@ class ZErrorFactoryTest extends WikiLambdaIntegrationTestCase {
 		$testDescriptor = json_decode( SchemataUtils::readYamlAsSecretJson( $file ) );
 
 		$provide = [];
-		foreach ( $testDescriptor->test_objects->failure as $test ) {
+		foreach ( $testDescriptor->test_objects as $test ) {
 			$provide[ $test->name ] = [
 				$test->object, $test->errors ?? [], $test->php_errors ?? []
 			];
