@@ -9,16 +9,13 @@
 		<div class="ext-wikilambda-metadata--alias-string">
 			{{ userLangAliasString }}
 		</div>
-		<cdx-button
-			:frameless="true"
-			@click="showMoreLanguages = !showMoreLanguages">
-			<template v-if="showMoreLanguages">
-				{{ $i18n( 'wikilambda-metadata-hide-languages' ).text() }}
-			</template>
-			<template v-else>
-				{{ $i18n( 'wikilambda-metadata-show-languages' ).text() }}
-			</template>
-		</cdx-button>
+		<cdx-toggle-button
+			:quiet="true"
+			v-model="showMoreLanguages"
+			@update:model-value="onUpdate"
+		>
+			{{ showMoreLanguagesLabel }}
+		</cdx-toggle-button>
 		<template v-if="showMoreLanguages">
 			<table>
 				<thead>
@@ -82,16 +79,13 @@
 				</tbody>
 			</table>
 			<div v-if="selectedLanguages.length > defaultMaxLanguages">
-				<cdx-button
-					:frameless="true"
-					@click="showAllSelectedLanguages = !showAllSelectedLanguages">
-					<template v-if="showAllSelectedLanguages">
-						{{ $i18n( 'wikilambda-metadata-fewer-languages' ).text() }}
-					</template>
-					<template v-else>
-						{{ $i18n( 'wikilambda-metadata-all-languages' ).text() }}
-					</template>
-				</cdx-button>
+				<cdx-toggle-button
+					:quiet="true"
+					v-model="showAllSelectedLanguages"
+					@update:model-value="onUpdate"
+				>
+					{{ showAllSelectedLanguagesLabel }}
+				</cdx-toggle-button>
 			</div>
 			<z-object-selector
 				:used-languages="selectedLanguages"
@@ -108,6 +102,7 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
+	CdxToggleButton = require( '@wikimedia/codex' ).CdxToggleButton,
 	ZString = require( './ZString.vue' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' );
 
@@ -115,6 +110,7 @@ var Constants = require( '../../Constants.js' ),
 module.exports = exports = {
 	components: {
 		'cdx-button': CdxButton,
+		'cdx-toggle-button': CdxToggleButton,
 		'z-string': ZString,
 		'z-object-selector': ZObjectSelector
 	},
@@ -145,6 +141,18 @@ module.exports = exports = {
 	] ), {
 		Constants: function () {
 			return Constants;
+		},
+		showAllSelectedLanguagesLabel: function () {
+			if ( this.showAllSelectedLanguages ) {
+				return this.$i18n( 'wikilambda-metadata-fewer-languages' ).text();
+			}
+			return this.$i18n( 'wikilambda-metadata-all-languages' ).text();
+		},
+		showMoreLanguagesLabel: function () {
+			if ( this.showMoreLanguages ) {
+				return this.$i18n( 'wikilambda-metadata-hide-languages' ).text();
+			}
+			return this.$i18n( 'wikilambda-metadata-show-languages' ).text();
 		},
 		zobject: function () {
 			return this.getZObjectChildrenById( this.zobjectId );
