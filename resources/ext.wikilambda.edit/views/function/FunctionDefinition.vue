@@ -160,16 +160,32 @@ module.exports = exports = {
 			var languageList = [];
 
 			// Don't break if the labels are set to {}
-			if ( this.zObjectLabels.Z2K3.Z12K1 ) {
-				this.zObjectLabels.Z2K3.Z12K1.forEach( function ( label ) {
-					languageList.push( label.Z11K1.Z9K1 );
+			if ( this.zObjectLabels && this.zObjectLabels[
+				Constants.Z_PERSISTENTOBJECT_LABEL
+			][
+				Constants.Z_MULTILINGUALSTRING_VALUE
+			] ) {
+				this.zObjectLabels[
+					Constants.Z_PERSISTENTOBJECT_LABEL
+				][
+					Constants.Z_MULTILINGUALSTRING_VALUE
+				].forEach( function ( label ) {
+					languageList.push( label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ] );
 				} );
 			}
 
 			// Don't break if the aliases are set to {}
-			if ( this.zObjectAliases.Z2K4.Z32K1 ) {
-				this.zObjectAliases.Z2K4.Z32K1.forEach( function ( alias ) {
-					var lang = alias.Z31K1.Z9K1;
+			if ( this.zObjectAliases && this.zObjectAliases[
+				Constants.Z_PERSISTENTOBJECT_ALIASES
+			][
+				Constants.Z_MULTILINGUALSTRINGSET_VALUE
+			] ) {
+				this.zObjectAliases[
+					Constants.Z_PERSISTENTOBJECT_ALIASES
+				][
+					Constants.Z_MULTILINGUALSTRINGSET_VALUE
+				].forEach( function ( alias ) {
+					var lang = alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ][ Constants.Z_REFERENCE_ID ];
 
 					if ( languageList.indexOf( lang ) === -1 ) {
 						languageList.push( lang );
