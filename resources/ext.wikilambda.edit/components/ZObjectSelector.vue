@@ -32,20 +32,22 @@
 			@clear-lookup-results="onClearLookupResults"
 		>
 		</sd-autocomplete-search-input>
-		<sd-message
+		<cdx-message
 			v-if="validatorIsInvalid"
 			:inline="true"
 			type="error"
-		> {{ validatorErrorMessage }} </sd-message>
+		>
+			{{ validatorErrorMessage }}
+		</cdx-message>
 	</span>
 </template>
 
 <script>
 var Constants = require( '../Constants.js' ),
 	SdAutocompleteSearchInput = require( './base/AutocompleteSearchInput.vue' ),
+	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	validator = require( '../mixins/validator.js' ),
 	typeUtils = require( '../mixins/typeUtils.js' ),
-	SdMessage = require( './base/Message.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapMutations = require( 'vuex' ).mapMutations;
@@ -55,7 +57,7 @@ module.exports = exports = {
 	name: 'z-object-selector',
 	components: {
 		'sd-autocomplete-search-input': SdAutocompleteSearchInput,
-		'sd-message': SdMessage
+		'cdx-message': CdxMessage
 	},
 	mixins: [ validator, typeUtils ],
 	inject: {
