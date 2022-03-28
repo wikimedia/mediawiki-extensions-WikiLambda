@@ -17,19 +17,19 @@
 				<cdx-icon v-if="tooltipIcon" :icon="tooltipIcon"></cdx-icon>
 			</tooltip>
 		</div>
-		<fn-editor-type-selector
+		<z-object-selector
 			:type="Constants.Z_TYPE"
 			class="ext-wikilambda-function-definition-output__selector"
 			:placeholder="$i18n( 'wikilambda-function-definition-output-selector' )"
 			:selected-id="zReturnType.value"
 			@input="setReturnType"
-		></fn-editor-type-selector>
+		></z-object-selector>
 	</div>
 </template>
 
 <script>
 var Constants = require( '../../../Constants.js' ),
-	FnEditorTypeSelector = require( '../../editor/FnEditorTypeSelector.vue' ),
+	ZObjectSelector = require( '../../ZObjectSelector.vue' ),
 	Tooltip = require( '../../base/Tooltip.vue' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	mapGetters = require( 'vuex' ).mapGetters,
@@ -39,7 +39,7 @@ var Constants = require( '../../../Constants.js' ),
 module.exports = exports = {
 	name: 'function-definition-output',
 	components: {
-		'fn-editor-type-selector': FnEditorTypeSelector,
+		'z-object-selector': ZObjectSelector,
 		tooltip: Tooltip,
 		'cdx-icon': CdxIcon
 	},

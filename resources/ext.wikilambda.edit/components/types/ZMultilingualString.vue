@@ -14,11 +14,12 @@
 			:readonly="readonly || getViewMode"
 		></z-monolingual-string>
 		<div class="ext-wikilambda-monolingual">
-			<z-natural-language-selector
+			<z-object-selector
 				v-if="!( readonly || getViewMode )"
 				:used-languages="usedLanguages"
+				:type="Constants.Z_NATURAL_LANGUAGE"
 				@input="addNewLang"
-			></z-natural-language-selector>
+			></z-object-selector>
 		</div>
 	</div>
 </template>
@@ -29,14 +30,14 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
 	ZMonolingualString = require( './ZMonolingualString.vue' ),
-	ZNaturalLanguageSelector = require( '../ZNaturalLanguageSelector.vue' );
+	ZObjectSelector = require( '../ZObjectSelector.vue' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'z-multilingual-string',
 	components: {
 		'z-monolingual-string': ZMonolingualString,
-		'z-natural-language-selector': ZNaturalLanguageSelector
+		'z-object-selector': ZObjectSelector
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -56,6 +57,9 @@ module.exports = exports = {
 			getViewMode: 'getViewMode'
 		} ),
 		{
+			Constants: function () {
+				return Constants;
+			},
 			zobject: function () {
 				return this.getZObjectChildrenById( this.zobjectId );
 			},

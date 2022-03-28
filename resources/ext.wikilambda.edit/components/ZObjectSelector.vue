@@ -22,8 +22,8 @@
 			v-else
 			name="zobject-selector"
 			:class="{ 'ext-wikilambda-zkey-input-invalid': validatorIsInvalid }"
-			:label="placeholder"
-			:placeholder="placeholder"
+			:label="getPlaceholder"
+			:placeholder="getPlaceholder"
 			:search-placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-search-placeholder' )"
 			:initial-value="selectedText"
 			:lookup-results="lookupLabels"
@@ -83,6 +83,13 @@ module.exports = exports = {
 		readonly: {
 			type: Boolean,
 			default: false
+		},
+		usedLanguages: {
+			type: Array,
+			default: function () {
+				return [];
+			},
+			required: false
 		}
 	},
 	data: function () {
@@ -101,8 +108,30 @@ module.exports = exports = {
 			zLang: 'getZLang'
 		} ),
 		{
+			usedLanguageZids: function () {
+				return this.usedLanguages.map( function ( language ) {
+					return language.Z9K1;
+				} );
+			},
+			getPlaceholder: function () {
+				if ( this.type === Constants.Z_NATURAL_LANGUAGE ) {
+					return this.$i18n( 'wikilambda-editor-label-addlanguage-label' ).text();
+				}
+				return this.placeholder;
+			},
 			lookupLabels: function () {
-				return Object.keys( this.lookupResults ).map( function ( key ) {
+				var filteredResults = {};
+				if ( this.type === Constants.Z_NATURAL_LANGUAGE ) {
+					for ( var zid in this.lookupResults ) {
+						if ( this.usedLanguageZids.indexOf( zid ) === -1 ) {
+							filteredResults[ zid ] = this.zkeyLabels[ zid ];
+						}
+					}
+				} else {
+					filteredResults = this.lookupResults;
+				}
+
+				return Object.keys( filteredResults ).map( function ( key ) {
 					var label = this.zkeyLabels[ key ],
 						result = this.lookupResults[ key ];
 
@@ -345,9 +374,34 @@ module.exports = exports = {
 			},
 			emitInput: function ( zId ) {
 				this.$emit( 'input', zId );
+			},
+			onReset: function () {
+				if ( this.type !== Constants.Z_NATURAL_LANGUAGE ) {
+					this.lookupResults = this.getDefaultResults();
+				}
+			},
+			getDefaultResults: function () {
+				var results = {};
+
+				results[ Constants.Z_STRING ] = this.getZkeyLabels[ Constants.Z_STRING ];
+				results[ Constants.Z_REFERENCE ] = this.getZkeyLabels[ Constants.Z_REFERENCE ];
+				results[ Constants.Z_LIST ] = this.getZkeyLabels[ Constants.Z_LIST ];
+				results[ Constants.Z_BOOLEAN ] = this.getZkeyLabels[ Constants.Z_BOOLEAN ];
+				results[ Constants.Z_TYPED_LIST ] = this.getZkeyLabels[ Constants.Z_TYPED_LIST ];
+
+				return results;
 			}
 		}
-	)
+	),
+	mounted: function () {
+		this.fetchZKeyWithDebounce( [
+			Constants.Z_STRING,
+			Constants.Z_REFERENCE,
+			Constants.Z_LIST,
+			Constants.Z_BOOLEAN,
+			Constants.Z_TYPED_LIST
+		] );
+	}
 };
 </script>
 

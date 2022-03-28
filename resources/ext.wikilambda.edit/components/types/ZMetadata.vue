@@ -93,10 +93,11 @@
 					</template>
 				</cdx-button>
 			</div>
-			<z-natural-language-selector
+			<z-object-selector
 				:used-languages="selectedLanguages"
+				:type="Constants.Z_NATURAL_LANGUAGE"
 				@input="addNewLang"
-			></z-natural-language-selector>
+			></z-object-selector>
 		</template>
 	</div>
 </template>
@@ -108,14 +109,14 @@ var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	ZString = require( './ZString.vue' ),
-	ZNaturalLanguageSelector = require( '../ZNaturalLanguageSelector.vue' );
+	ZObjectSelector = require( '../ZObjectSelector.vue' );
 
 // @vue/component
 module.exports = exports = {
 	components: {
 		'cdx-button': CdxButton,
 		'z-string': ZString,
-		'z-natural-language-selector': ZNaturalLanguageSelector
+		'z-object-selector': ZObjectSelector
 	},
 	mixins: [ typeUtils ],
 	inject: {
@@ -143,6 +144,9 @@ module.exports = exports = {
 		'getNextObjectId',
 		'getUserZlangZID'
 	] ), {
+		Constants: function () {
+			return Constants;
+		},
 		zobject: function () {
 			return this.getZObjectChildrenById( this.zobjectId );
 		},

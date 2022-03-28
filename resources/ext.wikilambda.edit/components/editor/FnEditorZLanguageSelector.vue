@@ -17,24 +17,25 @@
 		</select>
 
 		<template v-if="showAddLanguage">
-			<z-natural-language-selector
+			<z-object-selector
 				:used-languages="currentZObjectLanguages"
+				:type="Constants.Z_NATURAL_LANGUAGE"
 				@input="addNewLang"
-			></z-natural-language-selector>
+			></z-object-selector>
 		</template>
 	</div>
 </template>
 
 <script>
 var Constants = require( '../../Constants.js' ),
-	ZNaturalLanguageSelector = require( '../ZNaturalLanguageSelector.vue' ),
+	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
 module.exports = exports = {
 	components: {
-		'z-natural-language-selector': ZNaturalLanguageSelector
+		'z-object-selector': ZObjectSelector
 	},
 	props: {
 		showAddLanguage: {
@@ -57,6 +58,9 @@ module.exports = exports = {
 		'getNestedZObjectById',
 		'getZkeyLabels'
 	] ), {
+		Constants: function () {
+			return Constants;
+		},
 		zLanguageValue: {
 			get: function () {
 				return this.localZLanguage || this.zLanguage;

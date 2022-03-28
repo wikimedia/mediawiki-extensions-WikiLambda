@@ -6,13 +6,13 @@
 		@license MIT
 	-->
 	<section class="ext-wikilambda-editor-input-list-item">
-		<fn-editor-type-selector
+		<z-object-selector
 			:type="Constants.Z_TYPE"
 			:return-type="Constants.Z_TYPE"
 			:placeholder="$i18n( 'wikilambda-editor-input-type-placeholder' )"
 			:selected-id="getTypeOfArgument"
 			@input="setArgumentType( $event )"
-		></fn-editor-type-selector>
+		></z-object-selector>
 		<!--
 			TODO: This is hardcoded for now as it is the first complex input,
 			In the future we should provide an UI that will allow user to define complex types
@@ -40,17 +40,15 @@
 
 <script>
 var Constants = require( '../../Constants.js' ),
-	FnEditorTypeSelector = require( './FnEditorTypeSelector.vue' ),
+	ZObjectSelector = require( './ZObjectSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'fn-editor-input-list-item',
 	components: {
-		'fn-editor-type-selector': FnEditorTypeSelector,
 		'z-object-selector': ZObjectSelector
 	},
 	mixins: [ typeUtils ],
