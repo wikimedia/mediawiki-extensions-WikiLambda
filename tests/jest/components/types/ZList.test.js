@@ -6,9 +6,8 @@
  */
 'use strict';
 
-var mount = require( '@vue/test-utils' ).mount,
+var VueTestUtils = require( '@vue/test-utils' ),
 	Vue = require( 'vue' ),
-	Vuex = require( 'vuex' ),
 	ZList = require( '../../../../resources/ext.wikilambda.edit/components/types/ZList.vue' ),
 	ZListItem = require( '../../../../resources/ext.wikilambda.edit/components/types/ZListItem.vue' ),
 	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
@@ -39,47 +38,39 @@ var mount = require( '@vue/test-utils' ).mount,
 	];
 
 describe( 'ZList', function () {
-	var state,
-		getters,
+	var getters,
 		mutations,
 		actions,
-		store,
 		isViewMode = false;
 
-	beforeAll( function () {
-		getters = $.extend( zobjectModule.getters, {
-			getViewMode: function () {
-				return isViewMode;
-			}
-		} );
-		mutations = zobjectModule.mutations;
-		actions = $.extend( zobjectModule.actions, {
-			fetchZKeys: jest.fn()
-		} );
+	getters = $.extend( zobjectModule.getters, {
+		getViewMode: function () {
+			return isViewMode;
+		}
+	} );
+
+	mutations = zobjectModule.mutations;
+
+	actions = $.extend( zobjectModule.actions, {
+		fetchZKeys: jest.fn()
+	} );
+
+	global.store.hotUpdate( {
+		getters: getters,
+		mutations: mutations,
+		actions: actions
 	} );
 
 	beforeEach( function () {
-		state = {
+		global.store.replaceState( {
 			zobject: JSON.parse( JSON.stringify( zobjectTree ) )
-		};
-
-		store = Vuex.createStore( {
-			state: state,
-			getters: getters,
-			mutations: mutations,
-			actions: actions
 		} );
 	} );
 
 	it( 'renders without errors', function () {
-		var wrapper = mount( ZList, {
+		var wrapper = VueTestUtils.mount( ZList, {
 			props: {
 				zobjectId: 3
-			},
-			global: {
-				plugins: [
-					store
-				]
 			}
 		} );
 
@@ -87,14 +78,9 @@ describe( 'ZList', function () {
 	} );
 
 	it( 'renders a tree of ZList items', function () {
-		var wrapper = mount( ZList, {
+		var wrapper = VueTestUtils.mount( ZList, {
 			props: {
 				zobjectId: 3
-			},
-			global: {
-				plugins: [
-					store
-				]
 			}
 		} );
 
@@ -102,14 +88,9 @@ describe( 'ZList', function () {
 	} );
 
 	it( 'adds an item to the list when the add button is clicked', function () {
-		var wrapper = mount( ZList, {
+		var wrapper = VueTestUtils.mount( ZList, {
 				props: {
 					zobjectId: 3
-				},
-				global: {
-					plugins: [
-						store
-					]
 				}
 			} ),
 			expectedZObject = JSON.parse( JSON.stringify( zobjectTree ) );
@@ -117,19 +98,14 @@ describe( 'ZList', function () {
 
 		wrapper.find( '.z-list-add' ).trigger( 'click' );
 
-		expect( store.state.zobject ).toEqual( expectedZObject );
-		expect( store.state.zobject.length ).toBe( 24 );
+		expect( global.store.state.zobject ).toEqual( expectedZObject );
+		expect( global.store.state.zobject.length ).toBe( 24 );
 	} );
 
 	it( 'removes an item from the list when the remove button is clicked', function () {
-		var wrapper = mount( ZList, {
+		var wrapper = VueTestUtils.mount( ZList, {
 				props: {
 					zobjectId: 3
-				},
-				global: {
-					plugins: [
-						store
-					]
 				}
 			} ),
 			expectedZObject = zobjectTree.filter( function ( zobject ) {
@@ -138,12 +114,12 @@ describe( 'ZList', function () {
 			expectedFirstItem = { id: 20, key: 0, parent: 3, value: 'object' };
 		wrapper.find( '.z-list-item-remove' ).trigger( 'click' );
 
-		expect( store.state.zobject ).toEqual( expectedZObject );
-		expect( store.state.zobject.length ).toBe( 20 );
+		expect( global.store.state.zobject ).toEqual( expectedZObject );
+		expect( global.store.state.zobject.length ).toBe( 20 );
 
 		// Ensure that the index of the remaining item was updated from 1 to 0
 		Vue.nextTick().then( function () {
-			expect( store.getters.getZObjectById( 20 ) ).toEqual( expectedFirstItem );
+			expect( global.store.getters.getZObjectById( 20 ) ).toEqual( expectedFirstItem );
 		} );
 	} );
 } );

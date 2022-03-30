@@ -7,13 +7,10 @@
 'use strict';
 
 var mount = require( '@vue/test-utils' ).mount,
-	Vuex = require( 'vuex' ),
 	ZTesterImplResult = require( '../../../../resources/ext.wikilambda.edit/components/function/ZTesterImplResult.vue' );
 
 describe( 'ZTesterImplResult', function () {
-	var getters,
-		store,
-		testStatus,
+	var testStatus,
 		zFunctionId,
 		zImplementationId,
 		zTesterId,
@@ -26,14 +23,12 @@ describe( 'ZTesterImplResult', function () {
 		zImplementationId = 'Z10001';
 		zTesterId = 'Z10002';
 
-		getters = {
-			getZTesterResults: jest.fn( function () {
-				return returnStatus;
-			} )
-		};
-
-		store = Vuex.createStore( {
-			getters: getters
+		global.store.hotUpdate( {
+			getters: {
+				getZTesterResults: jest.fn( function () {
+					return returnStatus;
+				} )
+			}
 		} );
 	} );
 
@@ -43,11 +38,6 @@ describe( 'ZTesterImplResult', function () {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
 				zTesterId: zTesterId
-			},
-			global: {
-				plugins: [
-					store
-				]
 			}
 		} );
 		expect( wrapper.find( 'div' ) ).toBeTruthy();
@@ -59,11 +49,6 @@ describe( 'ZTesterImplResult', function () {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
 				zTesterId: zTesterId
-			},
-			global: {
-				plugins: [
-					store
-				]
 			}
 		} );
 		expect( returnStatus ).toHaveBeenCalledWith( zFunctionId, zTesterId, zImplementationId );
@@ -76,11 +61,6 @@ describe( 'ZTesterImplResult', function () {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
 				zTesterId: zTesterId
-			},
-			global: {
-				plugins: [
-					store
-				]
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'wikilambda-tester-status-running' );
@@ -89,11 +69,6 @@ describe( 'ZTesterImplResult', function () {
 	it( 'displays passed status when result is passed', function () {
 		testStatus = true;
 		var wrapper = mount( ZTesterImplResult, {
-			global: {
-				plugins: [
-					store
-				]
-			},
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
@@ -110,11 +85,6 @@ describe( 'ZTesterImplResult', function () {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
 				zTesterId: zTesterId
-			},
-			global: {
-				plugins: [
-					store
-				]
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'wikilambda-tester-status-failed' );
@@ -127,11 +97,6 @@ describe( 'ZTesterImplResult', function () {
 				zFunctionId: zFunctionId,
 				zImplementationId: '',
 				zTesterId: zTesterId
-			},
-			global: {
-				plugins: [
-					store
-				]
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'wikilambda-tester-status-pending' );
@@ -144,11 +109,6 @@ describe( 'ZTesterImplResult', function () {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
 				zTesterId: ''
-			},
-			global: {
-				plugins: [
-					store
-				]
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'wikilambda-tester-status-pending' );

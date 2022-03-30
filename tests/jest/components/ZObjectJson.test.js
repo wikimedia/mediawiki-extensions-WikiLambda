@@ -7,13 +7,11 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	Vuex = require( 'vuex' ),
 	ZObjectJson = require( '../../../resources/ext.wikilambda.edit/components/ZObjectJson.vue' ),
 	canonicalize = require( '../../../resources/ext.wikilambda.edit/mixins/schemata.js' ).methods.canonicalizeZObject;
 
 describe( 'ZObjectJson', function () {
-	var getters,
-		store;
+	var getters;
 
 	beforeEach( function () {
 		getters = {
@@ -31,19 +29,14 @@ describe( 'ZObjectJson', function () {
 				return false;
 			} )
 		};
-		store = Vuex.createStore( {
+
+		global.store.hotUpdate( {
 			getters: getters
 		} );
 	} );
 
 	it( 'renders without errors', function () {
-		var wrapper = shallowMount( ZObjectJson, {
-			global: {
-				plugins: [
-					store
-				]
-			}
-		} );
+		var wrapper = shallowMount( ZObjectJson );
 
 		expect( wrapper.find( 'div' ) ).toBeTruthy();
 	} );
@@ -53,11 +46,6 @@ describe( 'ZObjectJson', function () {
 			wrapper = shallowMount( ZObjectJson, {
 				props: {
 					zobjectRaw: json
-				},
-				global: {
-					plugins: [
-						store
-					]
 				}
 			} );
 
@@ -74,18 +62,13 @@ describe( 'ZObjectJson', function () {
 			};
 		};
 
-		store = Vuex.createStore( {
+		global.store.hotUpdate( {
 			getters: getters
 		} );
 
 		wrapper = shallowMount( ZObjectJson, {
 			props: {
 				zobjectId: -1
-			},
-			global: {
-				plugins: [
-					store
-				]
 			}
 		} );
 

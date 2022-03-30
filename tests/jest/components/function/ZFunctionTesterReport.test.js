@@ -6,93 +6,79 @@
  */
 'use strict';
 
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	Vuex = require( 'vuex' ),
+var VueTestUtils = require( '@vue/test-utils' ),
 	ZFunctionTesterReport = require( '../../../../resources/ext.wikilambda.edit/components/function/ZFunctionTesterReport.vue' );
 
 describe( 'ZFunctionTesterReport', function () {
-	var getters,
-		actions,
-		store;
-
+	var fetchZKeysMock = jest.fn(),
+		getTestResultsMock = jest.fn();
 	beforeEach( function () {
-		getters = {
-			getZObjectChildrenById: jest.fn(),
-			getZkeyLabels: jest.fn( function () {
-				return {
-					Z10000: 'FN',
-					Z10001: 'IMPL',
-					Z10002: 'TESTER'
-				};
-			} ),
-			getZkeys: jest.fn( function () {
-				return {
-					Z10000: 'Z10000',
-					Z10001: 'Z10001',
-					Z10002: 'Z10002'
-				};
-			} ),
-			getViewMode: jest.fn( function () {
-				return false;
-			} ),
-			getNestedZObjectById: jest.fn(),
-			getZObjectAsJsonById: jest.fn(),
-			getZTesterPercentage: jest.fn( function () {
-				return function () {
+		global.store.hotUpdate( {
+			getters: {
+				getZObjectChildrenById: jest.fn(),
+				getZkeyLabels: jest.fn( function () {
 					return {
-						passing: 1,
-						total: 1,
-						percentage: 100
+						Z10000: 'FN',
+						Z10001: 'IMPL',
+						Z10002: 'TESTER'
 					};
-				};
-			} ),
-			getCurrentZObjectId: jest.fn(),
-			getZTesterResults: jest.fn( function () {
-				return jest.fn();
-			} )
-		};
-		actions = {
-			fetchZKeys: jest.fn(),
-			getTestResults: jest.fn()
-		};
-
-		store = Vuex.createStore( {
-			getters: getters,
-			actions: actions
+				} ),
+				getZkeys: jest.fn( function () {
+					return {
+						Z10000: 'Z10000',
+						Z10001: 'Z10001',
+						Z10002: 'Z10002'
+					};
+				} ),
+				getViewMode: jest.fn( function () {
+					return false;
+				} ),
+				getNestedZObjectById: jest.fn(),
+				getZObjectAsJsonById: jest.fn(),
+				getZTesterPercentage: jest.fn( function () {
+					return function () {
+						return {
+							passing: 1,
+							total: 1,
+							percentage: 100
+						};
+					};
+				} ),
+				getCurrentZObjectId: jest.fn(),
+				getZTesterResults: jest.fn( function () {
+					return jest.fn();
+				} )
+			},
+			actions: {
+				fetchZKeys: fetchZKeysMock,
+				getTestResults: getTestResultsMock
+			}
 		} );
+
+		jest.clearAllMocks();
 	} );
 
 	it( 'renders without errors', function () {
-		var wrapper = shallowMount( ZFunctionTesterReport, {
+		var wrapper = VueTestUtils.shallowMount( ZFunctionTesterReport, {
 			props: {
 				zFunctionId: ''
-			},
-			global: {
-				plugins: [
-					store
-				]
 			}
 		} );
 		expect( wrapper.find( 'div' ) ).toBeTruthy();
 	} );
 
 	it( 'triggers the tests on load', function () {
-		shallowMount( ZFunctionTesterReport, {
+		VueTestUtils.shallowMount( ZFunctionTesterReport, {
 			props: {
 				zFunctionId: ''
-			},
-			global: {
-				plugins: [
-					store
-				]
 			}
 		} );
 
 		// eslint-disable-next-line compat/compat
 		return new Promise( function ( resolve ) {
 			setTimeout( function () {
-				expect( actions.getTestResults ).toHaveBeenCalled();
-				expect( actions.getTestResults ).toHaveBeenCalledWith( expect.anything(), {
+				expect( getTestResultsMock ).toHaveBeenCalled();
+				expect( getTestResultsMock ).toHaveBeenCalledWith( expect.anything(), {
 					zFunctionId: '',
 					zImplementations: [],
 					zTesters: [],
@@ -105,14 +91,9 @@ describe( 'ZFunctionTesterReport', function () {
 	} );
 
 	it( 'displays no results when no implementations or testers found', function () {
-		var wrapper = shallowMount( ZFunctionTesterReport, {
+		var wrapper = VueTestUtils.shallowMount( ZFunctionTesterReport, {
 			props: {
 				zFunctionId: ''
-			},
-			global: {
-				plugins: [
-					store
-				]
 			}
 		} );
 		expect( wrapper.find( 'p' ).text() ).toBe( 'wikilambda-tester-no-results' );
@@ -123,16 +104,11 @@ describe( 'ZFunctionTesterReport', function () {
 	it.skip( 'triggers the tests on button click', function () {
 		var expectedImplementationId = 'Z10001',
 			expectedTesterId = 'Z10002',
-			wrapper = shallowMount( ZFunctionTesterReport, {
+			wrapper = VueTestUtils.shallowMount( ZFunctionTesterReport, {
 				props: {
 					zFunctionId: 'Z10000',
 					zImplementationId: expectedImplementationId,
 					zTesterId: expectedTesterId
-				},
-				global: {
-					plugins: [
-						store
-					]
 				},
 				// TODO (T303072): This is not supported any more
 				computed: {
@@ -142,7 +118,7 @@ describe( 'ZFunctionTesterReport', function () {
 			} );
 
 		return wrapper.find( 'button' ).trigger( 'click' ).then( function () {
-			expect( actions.getTestResults ).toHaveBeenCalledWith( expect.anything(), {
+			expect( getTestResultsMock ).toHaveBeenCalledWith( expect.anything(), {
 				zFunctionId: 'Z10000',
 				zImplementations: [ 'Z10001' ],
 				zTesters: [ 'Z10002' ],

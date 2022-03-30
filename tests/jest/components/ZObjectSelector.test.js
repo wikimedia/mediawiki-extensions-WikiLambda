@@ -7,15 +7,13 @@
  */
 'use strict';
 var mount = require( '@vue/test-utils' ).mount,
-	Vuex = require( 'vuex' ),
 	ZObjectSelector = require( '../../../resources/ext.wikilambda.edit/components/ZObjectSelector.vue' ),
 	WmbiAutocompleteSearchInput = require( '../../../resources/ext.wikilambda.edit/components/base/AutocompleteSearchInput.vue' );
 describe( 'ZObjectSelector', function () {
 	var state,
 		getters,
 		actions,
-		mutations,
-		store;
+		mutations;
 	beforeEach( function () {
 		state = {
 			zKeys: {},
@@ -47,7 +45,8 @@ describe( 'ZObjectSelector', function () {
 				s.zKeyLabels[ payload.key ] = payload.label;
 			} )
 		};
-		store = Vuex.createStore( {
+
+		global.store.hotUpdate( {
 			state: state,
 			getters: getters,
 			actions: actions,
@@ -55,13 +54,7 @@ describe( 'ZObjectSelector', function () {
 		} );
 	} );
 	it( 'renders without errors', function () {
-		var wrapper = mount( ZObjectSelector, {
-			global: {
-				plugins: [
-					store
-				]
-			}
-		} );
+		var wrapper = mount( ZObjectSelector );
 		expect( wrapper.find( 'div' ) ).toBeTruthy();
 	} );
 	it( 'searches all ZObjects based on input', function () {
@@ -89,13 +82,7 @@ describe( 'ZObjectSelector', function () {
 					}
 				};
 			} );
-		wrapper = mount( ZObjectSelector, {
-			global: {
-				plugins: [
-					store
-				]
-			}
-		} );
+		wrapper = mount( ZObjectSelector );
 		wrapper.vm.lookupZObject = mockedGet;
 		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.searchValue = 'test';
 		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.onInput();
@@ -121,11 +108,6 @@ describe( 'ZObjectSelector', function () {
 		wrapper = mount( ZObjectSelector, {
 			props: {
 				type: 'Z4'
-			},
-			global: {
-				plugins: [
-					store
-				]
 			}
 		} );
 		wrapper.vm.showLookupResults = true;
@@ -154,11 +136,6 @@ describe( 'ZObjectSelector', function () {
 		wrapper = mount( ZObjectSelector, {
 			props: {
 				returnType: 'Z4'
-			},
-			global: {
-				plugins: [
-					store
-				]
 			}
 		} );
 		wrapper.vm.showLookupResults = true;
@@ -175,7 +152,7 @@ describe( 'ZObjectSelector', function () {
 	it( 'searches by ZID instead of label', function () {
 		var wrapper;
 		// eslint-disable-next-line no-unused-vars
-		actions.fetchZKeyWithDebounce = jest.fn( function ( context, payload ) {
+		var fetchZKeyWithDebounce = jest.fn( function ( context, payload ) {
 			context.state.zKeys = {
 				Z4: {
 					Z1K1: 'Z2',
@@ -191,44 +168,27 @@ describe( 'ZObjectSelector', function () {
 			};
 			return true;
 		} );
-		store = Vuex.createStore( {
-			state: state,
-			getters: getters,
-			actions: actions,
-			mutations: mutations
-		} );
-		jest.useFakeTimers();
-		wrapper = mount( ZObjectSelector, {
-			global: {
-				plugins: [
-					store
-				]
+
+		global.store.hotUpdate( {
+			actions: {
+				fetchZKeyWithDebounce: fetchZKeyWithDebounce
 			}
 		} );
+		jest.useFakeTimers();
+		wrapper = mount( ZObjectSelector );
 		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.searchValue = 'Z4';
 		wrapper.findComponent( WmbiAutocompleteSearchInput ).vm.onInput();
 		jest.runAllTimers();
-		expect( actions.fetchZKeyWithDebounce ).toHaveBeenCalled();
-		expect( actions.fetchZKeyWithDebounce ).toHaveBeenCalledWith(
+
+		expect( fetchZKeyWithDebounce ).toHaveBeenCalled();
+		expect( fetchZKeyWithDebounce ).toHaveBeenCalledWith(
 			expect.anything(), [ 'Z4' ]
 		);
 	} );
 	it( 'emits the selected ZID', function () {
 		var wrapper;
-		store = Vuex.createStore( {
-			state: state,
-			getters: getters,
-			actions: actions,
-			mutations: mutations
-		} );
-		wrapper = mount( ZObjectSelector, {
-			global: {
-				plugins: [
-					store
-				]
-			}
-		} );
-		store.state.zKeyLabels = {
+		wrapper = mount( ZObjectSelector );
+		global.store.state.zKeyLabels = {
 			Z4: 'String'
 		};
 		wrapper.vm.lookupResults = {

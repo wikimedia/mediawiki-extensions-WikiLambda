@@ -66,7 +66,12 @@ describe( 'zobject Vuex module', function () {
 		postWithEditTokenMock = jest.fn( function ( payload ) {
 			// eslint-disable-next-line compat/compat
 			return new Promise( function ( resolve ) {
-				resolve( responsePayload );
+				resolve( {
+					// eslint-disable-next-line camelcase
+					wikilambda_edit: {
+						page: 'sample'
+					}
+				} );
 			} );
 		} );
 
@@ -435,6 +440,7 @@ describe( 'zobject Vuex module', function () {
 			expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expectedSetZObjectPayload );
 			expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
 		} );
+
 		it( 'Initialize ZObject with Z7 call function when no zids or createNewPage is set', function () {
 			var expectedChangeTypePayload = { id: 0, type: Constants.Z_FUNCTION_CALL },
 				expectedRootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
