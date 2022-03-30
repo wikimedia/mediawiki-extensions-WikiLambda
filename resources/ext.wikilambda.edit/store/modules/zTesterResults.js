@@ -29,7 +29,7 @@ function replaceCurrentObjectWithFullJSONObject( context, items, newItemZObject 
 		}
 
 		// if the item has a placeholder value, it means that it is a new implementation/tester, replace it
-		if ( item === Constants.NEW_ZID_PLACEHOLDER ) {
+		if ( item === Constants.NEW_ZID_PLACEHOLDER && newItemZObject ) {
 			return canonicalize(
 				JSON.parse( JSON.stringify( newItemZObject ) )
 			);
@@ -259,8 +259,7 @@ module.exports = exports = {
 
 			var implementations = replaceCurrentObjectWithFullJSONObject(
 				context,
-				payload.zImplementations,
-				context.getters.getNewImplementationZObjects
+				payload.zImplementations
 			);
 			var testers = replaceCurrentObjectWithFullJSONObject(
 				context,
