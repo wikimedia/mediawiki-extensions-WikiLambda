@@ -136,11 +136,8 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getZObjectChildrenById',
 		'getZkeyLabels',
 		'getZkeys',
-		'getNestedZObjectById',
-		'getZObjectAsJsonById',
 		'getZTesterPercentage',
 		'getCurrentZObjectId',
 		'getNewTesterZObjects',

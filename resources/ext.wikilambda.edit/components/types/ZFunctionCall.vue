@@ -128,7 +128,6 @@ module.exports = exports = {
 	},
 	computed: $.extend( mapGetters( {
 		getZObjectChildrenById: 'getZObjectChildrenById',
-		getZObjectTypeById: 'getZObjectTypeById',
 		getZkeys: 'getZkeys',
 		getZObjectAsJsonById: 'getZObjectAsJsonById'
 	} ), {
@@ -238,7 +237,6 @@ module.exports = exports = {
 		'changeType',
 		'initializeResultId',
 		'injectZObject',
-		'resetZObject',
 		'removeZObject'
 	] ), {
 		typeHandler: function ( zid ) {

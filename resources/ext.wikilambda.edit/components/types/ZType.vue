@@ -97,9 +97,7 @@ module.exports = exports = {
 			'fetchingZKeys'
 		] ),
 		mapGetters( [
-			'getZObjectAsJsonById',
 			'getZObjectChildrenById',
-			'getCurrentZObjectId',
 			'getZkeyLabels'
 		] ),
 		{

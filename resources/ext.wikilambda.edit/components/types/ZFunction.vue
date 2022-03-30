@@ -74,11 +74,7 @@ module.exports = exports = {
 	computed: $.extend( {},
 		mapGetters( [
 			'getZObjectChildrenById',
-			'getNextObjectId',
-			'getZObjectTypeById',
 			'getZkeyLabels',
-			'getZObjectAsJsonById',
-			'getUserZlangZID',
 			'getCurrentZObjectId',
 			'getNestedZObjectById',
 			'isCreateNewPage'

@@ -107,7 +107,6 @@ module.exports = exports = {
 		mapActions( [
 			'fetchAllZProgrammingLanguages',
 			'setZCodeLanguage',
-			'addZString',
 			'injectZObject'
 		] ),
 		{

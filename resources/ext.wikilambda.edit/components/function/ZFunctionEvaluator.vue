@@ -32,10 +32,6 @@ module.exports = exports = {
 	computed: mapGetters( {
 		getNestedZObjectById: 'getNestedZObjectById',
 		getCurrentZObjectId: 'getCurrentZObjectId',
-		getZObjectChildrenById: 'getZObjectChildrenById',
-		getZObjectTypeById: 'getZObjectTypeById',
-		getZkeys: 'getZkeys',
-		getZObjectAsJsonById: 'getZObjectAsJsonById',
 		getCurrentZObjectType: 'getCurrentZObjectType',
 		getZObjectAsJson: 'getZObjectAsJson'
 	} ),

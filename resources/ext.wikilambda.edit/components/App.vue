@@ -45,7 +45,7 @@ module.exports = exports = {
 	),
 	methods: $.extend(
 		mapActions( [ 'initializeZObject', 'initialize' ] ),
-		mapActions( 'router', [ 'evaluateUri', 'navigate' ] )
+		mapActions( 'router', [ 'evaluateUri' ] )
 	),
 	created: function () {
 		// Set zobject

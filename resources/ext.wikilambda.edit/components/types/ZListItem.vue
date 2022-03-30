@@ -87,7 +87,7 @@ module.exports = exports = {
 			}
 		} ),
 	methods: $.extend( {},
-		mapActions( [ 'setZObjectValue', 'changeType' ] ),
+		mapActions( [ 'changeType' ] ),
 		{
 			/*
 			* Sets the current list item type.
