@@ -111,7 +111,11 @@ module.exports = exports = {
 			}
 		} ),
 	methods: $.extend( {},
-		mapActions( [ 'addZObject', 'recalculateZListIndex', 'setTypeOfTypedMap', 'addTypedListItem', 'removeTypedListItem', 'fetchZKeys' ] ),
+		mapActions( [
+			'setTypeOfTypedMap',
+			'removeTypedListItem',
+			'fetchZKeys'
+		] ),
 		{
 			onMapTypeChange: function ( type, index ) {
 				// first we create an array with the existing value

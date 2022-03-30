@@ -81,7 +81,6 @@ module.exports = exports = {
 	},
 	computed: $.extend( {},
 		mapGetters( {
-			getZObjectChildrenById: 'getZObjectChildrenById',
 			getZObjectChildrenByIdRecursively: 'getZObjectChildrenByIdRecursively',
 			getZkeyLabels: 'getZkeyLabels'
 		} ),
@@ -126,7 +125,11 @@ module.exports = exports = {
 			}
 		} ),
 	methods: $.extend( {},
-		mapActions( [ 'addZObject', 'recalculateZListIndex', 'setTypeOfTypedPair', 'removeTypedListItem', 'fetchZKeys' ] ),
+		mapActions( [
+			'setTypeOfTypedPair',
+			'removeTypedListItem',
+			'fetchZKeys'
+		] ),
 		{
 			onPairTypeChange: function ( type, index ) {
 				// first we create an array with the existing value

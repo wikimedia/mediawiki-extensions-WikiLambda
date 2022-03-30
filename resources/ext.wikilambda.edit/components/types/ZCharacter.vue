@@ -43,7 +43,6 @@ module.exports = exports = {
 		}
 	},
 	computed: $.extend( mapGetters( {
-		getZObjectById: 'getZObjectById',
 		getZObjectChildrenById: 'getZObjectChildrenById',
 		getNestedZObjectById: 'getNestedZObjectById'
 	} ), {

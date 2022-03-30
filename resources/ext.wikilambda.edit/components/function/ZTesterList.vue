@@ -59,8 +59,6 @@ module.exports = exports = {
 	extends: ZList,
 	computed: $.extend( mapGetters( [
 		'getNextObjectId',
-		'getCurrentZObjectId',
-		'getZTesters',
 		'getNewTesterId',
 		'getViewMode'
 	] ),

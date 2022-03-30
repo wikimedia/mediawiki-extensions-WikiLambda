@@ -77,7 +77,6 @@ module.exports = exports = {
 	},
 	computed: $.extend( {},
 		mapGetters( {
-			getZObjectChildrenById: 'getZObjectChildrenById',
 			getZObjectChildrenByIdRecursively: 'getZObjectChildrenByIdRecursively',
 			getZkeyLabels: 'getZkeyLabels',
 			getNestedZObjectById: 'getNestedZObjectById'
@@ -135,7 +134,12 @@ module.exports = exports = {
 			}
 		} ),
 	methods: $.extend( {},
-		mapActions( [ 'addZObject', 'recalculateZListIndex', 'setTypeOfTypedList', 'addTypedListItem', 'removeTypedListItem', 'fetchZKeys' ] ),
+		mapActions( [
+			'setTypeOfTypedList',
+			'addTypedListItem',
+			'removeTypedListItem',
+			'fetchZKeys'
+		] ),
 		{
 			addNewItem: function () {
 				var value;

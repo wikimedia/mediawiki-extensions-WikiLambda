@@ -45,7 +45,6 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions,
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	ZFunctionCall = require( './ZFunctionCall.vue' ),
 	ZReference = require( './ZReference.vue' ),
@@ -117,11 +116,7 @@ module.exports = exports = {
 				return zid === this.zTesterId;
 			}.bind( this ) ).length > 0;
 		}
-	} ),
-	methods: $.extend( mapActions( [
-		'fetchZKeys',
-		'setZObjectValue'
-	] ), {} )
+	} )
 };
 </script>
 

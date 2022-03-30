@@ -52,18 +52,24 @@ module.exports = exports = {
 		'cdx-button': CdxButton
 	},
 	extends: ZListItem,
-	computed: $.extend( mapGetters( [ 'getZObjectById', 'getUnattachedZTesters', 'getZkeyLabels', 'getZkeys', 'getZTesterResults', 'getViewMode' ] ),
-		{
-			referenceValue: function () {
-				return this.findKeyInArray( Constants.Z_REFERENCE_ID, this.zobject ).value;
-			},
-			hasReference: function () {
-				return !!this.referenceValue;
-			},
-			testerStatus: function () {
-				return this.getZTesterResults[ this.referenceValue ];
-			}
+	computed: $.extend( mapGetters( [
+		'getZObjectById',
+		'getUnattachedZTesters',
+		'getZkeyLabels',
+		'getZTesterResults',
+		'getViewMode'
+	] ),
+	{
+		referenceValue: function () {
+			return this.findKeyInArray( Constants.Z_REFERENCE_ID, this.zobject ).value;
+		},
+		hasReference: function () {
+			return !!this.referenceValue;
+		},
+		testerStatus: function () {
+			return this.getZTesterResults[ this.referenceValue ];
 		}
+	}
 	),
 	methods: $.extend( mapActions( [ 'performTest', 'fetchZKeys' ] ), {
 		selectTester: function ( event ) {

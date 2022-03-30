@@ -42,7 +42,6 @@ module.exports = exports = {
 		}
 	},
 	computed: $.extend( mapGetters( {
-		getZObjectById: 'getZObjectById',
 		getZObjectChildrenById: 'getZObjectChildrenById'
 	} ), {
 		zobjectStringValueItem: function () {

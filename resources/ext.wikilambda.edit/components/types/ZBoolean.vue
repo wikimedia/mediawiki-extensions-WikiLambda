@@ -91,8 +91,7 @@ module.exports = exports = {
 		}
 	} ),
 	methods: $.extend( mapActions( [
-		'setZObjectValue',
-		'fetchZKeys'
+		'setZObjectValue'
 	] ),
 	{
 

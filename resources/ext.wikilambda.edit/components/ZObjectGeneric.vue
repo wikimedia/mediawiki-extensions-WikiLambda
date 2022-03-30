@@ -45,8 +45,7 @@ var Constants = require( '../Constants.js' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
 	ZObjectKeyList = require( './ZObjectKeyList.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters,
-	mapState = require( 'vuex' ).mapState;
+	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
@@ -82,11 +81,7 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( {},
-		mapState( [
-			'fetchingZKeys'
-		] ),
 		mapGetters( [
-			'getZObjectChildrenById',
 			'getCurrentZObjectId',
 			'getZkeyLabels'
 		] ),

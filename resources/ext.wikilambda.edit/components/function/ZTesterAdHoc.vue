@@ -57,10 +57,7 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getZObjectChildrenById',
 		'getZObjectAsJsonById',
-		'getUserZlangZID',
-		'getCurrentZObjectId',
-		'getNestedZObjectById',
-		'getNextObjectId'
+		'getNestedZObjectById'
 	] ), {
 		zobject: function () {
 			return this.getZObjectChildrenById( this.getNestedZObjectById( this.zobjectId, [
