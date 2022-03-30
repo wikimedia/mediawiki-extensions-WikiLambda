@@ -14,10 +14,10 @@
 			@input="onTypedListChange"
 		></z-object-selector>
 		<p v-else>
-			<strong>{{ $i18n( 'wikilambda-ztyped-list-description' ) }}:</strong> {{ TypedListLabel }}
+			<strong>{{ $i18n( 'wikilambda-ztyped-list-description' ).text() }}:</strong> {{ TypedListLabel }}
 		</p>
 		<div v-if="!requiresTypeForList" class="ext-wikilambda-zTypedList-items-heading">
-			{{ $i18n( 'wikilambda-ztyped-list-items' ) }}:
+			{{ $i18n( 'wikilambda-ztyped-list-items' ).text() }}:
 		</div>
 		<ul class="ext-wikilambda-zTypedList-no-bullets">
 			<z-list-item
@@ -34,7 +34,7 @@
 					:title="tooltipAddListItem"
 					@click="addNewItem"
 				>
-					{{ $i18n( 'wikilambda-editor-additem' ) }}
+					{{ $i18n( 'wikilambda-editor-additem' ).text() }}
 				</button>
 			</li>
 		</ul>
@@ -117,10 +117,10 @@ module.exports = exports = {
 				}
 			},
 			tooltipRemoveListItem: function () {
-				return this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' );
+				return this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' ).text();
 			},
 			tooltipAddListItem: function () {
-				this.$i18n( 'wikilambda-editor-zlist-additem-tooltip' );
+				this.$i18n( 'wikilambda-editor-zlist-additem-tooltip' ).text();
 			},
 			requiresTypeForList: function () {
 				return !this.zTypedListType;

@@ -11,7 +11,7 @@
 			v-if="type === Constants.Z_OBJECT"
 			:type="Constants.Z_TYPE"
 			:return-type="Constants.Z_TYPE"
-			:placeholder="$i18n( 'wikilambda-argument-typeselector-label' )"
+			:placeholder="$i18n( 'wikilambda-argument-typeselector-label' ).text()"
 			@input="changeZObjectType"
 		></z-object-selector>
 

@@ -24,7 +24,8 @@
 			:class="{ 'ext-wikilambda-zkey-input-invalid': validatorIsInvalid }"
 			:label="getPlaceholder"
 			:placeholder="getPlaceholder"
-			:search-placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-search-placeholder' )"
+			:search-placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-search-placeholder' )
+				.text()"
 			:initial-value="selectedText"
 			:lookup-results="lookupLabels"
 			@input="onInput"

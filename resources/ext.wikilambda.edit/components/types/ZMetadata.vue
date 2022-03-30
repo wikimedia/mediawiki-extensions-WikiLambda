@@ -13,10 +13,10 @@
 			:frameless="true"
 			@click="showMoreLanguages = !showMoreLanguages">
 			<template v-if="showMoreLanguages">
-				{{ $i18n( 'wikilambda-metadata-hide-languages' ) }}
+				{{ $i18n( 'wikilambda-metadata-hide-languages' ).text() }}
 			</template>
 			<template v-else>
-				{{ $i18n( 'wikilambda-metadata-show-languages' ) }}
+				{{ $i18n( 'wikilambda-metadata-show-languages' ).text() }}
 			</template>
 		</cdx-button>
 		<template v-if="showMoreLanguages">
@@ -24,10 +24,10 @@
 				<thead>
 					<tr>
 						<th scope="col">
-							{{ $i18n( 'wikilambda-metadata-language-column' ) }}
+							{{ $i18n( 'wikilambda-metadata-language-column' ).text() }}
 						</th>
 						<th scope="col">
-							{{ $i18n( 'wikilambda-metadata-label-column' ) }}
+							{{ $i18n( 'wikilambda-metadata-label-column' ).text() }}
 						</th>
 						<!--
 						<th scope="col">
@@ -35,7 +35,7 @@
 						</th>
 						-->
 						<th scope="col">
-							{{ $i18n( 'wikilambda-metadata-aka-column' ) }}
+							{{ $i18n( 'wikilambda-metadata-aka-column' ).text() }}
 						</th>
 					</tr>
 				</thead>
@@ -47,7 +47,7 @@
 								:destructive="true"
 								@click="removeLang( language.Z9K1 )"
 							>
-								{{ $i18n( 'wikilambda-editor-removeitem' ) }}
+								{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
 							</cdx-button>
 							{{ getZkeyLabels[ language.Z9K1 ] }}
 						</td>
@@ -64,7 +64,7 @@
 									:destructive="true"
 									@click="removeAlias( alias )"
 								>
-									{{ $i18n( 'wikilambda-editor-removeitem' ) }}
+									{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
 								</cdx-button>
 								<z-string
 									:zobject-id="alias"
@@ -74,8 +74,8 @@
 								<button
 									@click="addAliasForLanguage( language.Z9K1 )"
 								>
-									{{ $i18n( 'wikilambda-editor-additem' ) }}
-								</button> {{ $i18n( 'wikilambda-metadata-add-alias' ) }}
+									{{ $i18n( 'wikilambda-editor-additem' ).text() }}
+								</button> {{ $i18n( 'wikilambda-metadata-add-alias' ).text() }}
 							</div>
 						</td>
 					</tr>
@@ -86,10 +86,10 @@
 					:frameless="true"
 					@click="showAllSelectedLanguages = !showAllSelectedLanguages">
 					<template v-if="showAllSelectedLanguages">
-						{{ $i18n( 'wikilambda-metadata-fewer-languages' ) }}
+						{{ $i18n( 'wikilambda-metadata-fewer-languages' ).text() }}
 					</template>
 					<template v-else>
-						{{ $i18n( 'wikilambda-metadata-all-languages' ) }}
+						{{ $i18n( 'wikilambda-metadata-all-languages' ).text() }}
 					</template>
 				</cdx-button>
 			</div>

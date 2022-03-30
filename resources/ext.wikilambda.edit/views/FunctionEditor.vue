@@ -20,7 +20,7 @@
 			</main>
 			<aside
 				class="ext-wikilambda-function-editor__sidebar"
-				:aria-label="$i18n( 'wikilambda-editor-additional-details-label' )">
+				:aria-label="$i18n( 'wikilambda-editor-additional-details-label' ).text()">
 				<fn-editor-visual-display></fn-editor-visual-display>
 			</aside>
 		</div>

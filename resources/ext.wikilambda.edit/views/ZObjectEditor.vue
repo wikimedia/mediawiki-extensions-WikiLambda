@@ -25,7 +25,7 @@
 				</cdx-button>
 				<label
 					class="ext-wikilambda-editSummary-label"
-					for="summary"> {{ $i18n( 'wikilambda-summarylabel' ) }}
+					for="summary"> {{ $i18n( 'wikilambda-summarylabel' ).text() }}
 				</label>
 				<input
 					v-model="summary"
@@ -37,21 +37,21 @@
 			<cdx-button
 				v-if="isNewZObject"
 				@click="navigateToFunctionEditor( Constants.Z_FUNCTION )">
-				{{ $i18n( 'wikilambda-create-function' ) }}
+				{{ $i18n( 'wikilambda-create-function' ).text() }}
 			</cdx-button>
 			<cdx-button
 				v-if="isNewZObject"
 				@click="changePersistentObjectValue( Constants.Z_TYPE )">
-				{{ $i18n( 'wikilambda-create-type' ) }}
+				{{ $i18n( 'wikilambda-create-type' ).text() }}
 			</cdx-button>
 			<cdx-button
 				class="ext-wikilambda-expertModeToggle"
 				@click="$store.dispatch( 'toggleExpertMode' )">
 				<template v-if="$store.getters.isExpertMode">
-					{{ $i18n( 'wikilambda-disable-expert-mode' ) }}
+					{{ $i18n( 'wikilambda-disable-expert-mode' ).text() }}
 				</template>
 				<template v-else>
-					{{ $i18n( 'wikilambda-enable-expert-mode' ) }}
+					{{ $i18n( 'wikilambda-enable-expert-mode' ).text() }}
 				</template>
 			</cdx-button>
 			<cdx-message v-if="message.text" :type="message.type">
@@ -106,7 +106,7 @@ module.exports = exports = {
 			}
 		},
 		submitButtonDescriptionPrompt: function () {
-			return this.$i18n( 'wikilambda-publish-summary-prompt' );
+			return this.$i18n( 'wikilambda-publish-summary-prompt' ).text();
 		},
 		showEditCommand: function () {
 			// TODO: Move this into its own vuex store as things gets more complicated and more view settings are set

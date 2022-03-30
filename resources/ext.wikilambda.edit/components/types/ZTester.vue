@@ -13,8 +13,8 @@
 		></z-reference>
 		<span class="ext-wikilambda-is-tester-associated">
 			({{ isTesterAttached ?
-				$i18n( 'wikilambda-function-is-attached' ) :
-				$i18n( 'wikilambda-function-is-not-attached' )
+				$i18n( 'wikilambda-function-is-attached' ).text() :
+				$i18n( 'wikilambda-function-is-not-attached' ).text()
 			}})
 		</span>
 		<div>{{ callLabel }}:</div>
@@ -35,7 +35,7 @@
 		>
 			<template #run-testers="{ click }">
 				<button @click="click">
-					{{ $i18n( 'wikilambda-tester-run-tester' ) }}
+					{{ $i18n( 'wikilambda-tester-run-tester' ).text() }}
 				</button>
 			</template>
 		</z-function-tester-report>

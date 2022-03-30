@@ -8,7 +8,7 @@
 	<main class="ext-wikilambda-function-about">
 		<div id="fnDefinitionContainer" class="ext-wikilambda-function-about__container">
 			<div class="ext-wikilambda-function-about__summary">
-				{{ $i18n( 'wikilambda-function-about-summary' ) }}
+				{{ $i18n( 'wikilambda-function-about-summary' ).text() }}
 			</div>
 		</div>
 	</main>

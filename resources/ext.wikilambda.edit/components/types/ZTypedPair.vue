@@ -8,19 +8,19 @@
 	<div class="ext-wikilambda-zTypedPair">
 		<template v-if="requiresTypeForList">
 			<div>
-				<label>{{ $i18n( 'wikilambda-ztyped-pair-key-label' ) }}:</label>
+				<label>{{ $i18n( 'wikilambda-ztyped-pair-key-label' ).text() }}:</label>
 				<z-object-selector
 					:type="Constants.zType"
-					:placeholder="$i18n( 'wikilambda-ztyped-pair-placeholder' )"
+					:placeholder="$i18n( 'wikilambda-ztyped-pair-placeholder' ).text()"
 					:readonly="readonly"
 					@input="onPairTypeChange( $event, 0 )"
 				></z-object-selector>
 			</div>
 			<div>
-				<label>{{ $i18n( 'wikilambda-ztyped-pair-value-label' ) }}:</label>
+				<label>{{ $i18n( 'wikilambda-ztyped-pair-value-label' ).text() }}:</label>
 				<z-object-selector
 					:type="Constants.zType"
-					:placeholder="$i18n( 'wikilambda-ztyped-pair-placeholder' )"
+					:placeholder="$i18n( 'wikilambda-ztyped-pair-placeholder' ).text()"
 					:readonly="readonly"
 					@input="onPairTypeChange( $event, 1 )"
 				></z-object-selector>
@@ -28,7 +28,7 @@
 		</template>
 		<template v-else>
 			<div>
-				<label>{{ $i18n( 'wikilambda-ztyped-pair-key-label' ) }}: ( {{ Key1Label }} ):</label>
+				<label>{{ $i18n( 'wikilambda-ztyped-pair-key-label' ).text() }}: ( {{ Key1Label }} ):</label>
 				<z-object
 					:zobject-id="zTypedPairKey1.id"
 					:persistent="false"
@@ -36,7 +36,7 @@
 				></z-object>
 			</div>
 			<div>
-				<label>{{ $i18n( 'wikilambda-ztyped-pair-value-label' ) }}: ( {{ Key2Label }} ):</label>
+				<label>{{ $i18n( 'wikilambda-ztyped-pair-value-label' ).text() }}: ( {{ Key2Label }} ):</label>
 				<z-object
 					:zobject-id="zTypedPairKey2.id"
 					:persistent="false"
@@ -101,10 +101,10 @@ module.exports = exports = {
 				return this.findKeyInArray( Constants.Z_TYPED_OBJECT_ELEMENT_2, this.zObjectChildren );
 			},
 			tooltipRemoveListItem: function () {
-				return this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' );
+				return this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' ).text();
 			},
 			tooltipAddListItem: function () {
-				this.$i18n( 'wikilambda-editor-zlist-additem-tooltip' );
+				this.$i18n( 'wikilambda-editor-zlist-additem-tooltip' ).text();
 			},
 			requiresTypeForList: function () {
 				return !this.zTypedPairType1.value || !this.zTypedPairType2.value;

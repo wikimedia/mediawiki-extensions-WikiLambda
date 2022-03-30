@@ -28,7 +28,7 @@
 				v-else
 				:type="Constants.Z_TYPE"
 				:return-type="Constants.Z_TYPE"
-				:placeholder="$i18n( 'wikilambda-typeselector-label' )"
+				:placeholder="$i18n( 'wikilambda-typeselector-label' ).text()"
 				:selected-id="type"
 				@input="onTypeChange"
 			></z-object-selector>

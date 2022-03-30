@@ -12,10 +12,10 @@
 		></z-object>
 		<button @click="$store.dispatch( 'toggleExpertMode' )">
 			<template v-if="$store.getters.isExpertMode">
-				{{ $i18n( 'wikilambda-disable-expert-mode' ) }}
+				{{ $i18n( 'wikilambda-disable-expert-mode' ).text() }}
 			</template>
 			<template v-else>
-				{{ $i18n( 'wikilambda-enable-expert-mode' ) }}
+				{{ $i18n( 'wikilambda-enable-expert-mode' ).text() }}
 			</template>
 		</button>
 	</div>

@@ -80,7 +80,7 @@ module.exports = exports = {
 				} );
 			},
 			tooltipRemoveLang: function () {
-				return this.$i18n( 'wikilambda-editor-label-removelanguage-tooltip' );
+				return this.$i18n( 'wikilambda-editor-label-removelanguage-tooltip' ).text();
 			},
 			selectedLang: function () {
 				return 'None';

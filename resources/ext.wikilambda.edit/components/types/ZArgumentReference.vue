@@ -12,7 +12,7 @@
 			class="ext-wikilambda-zargument-reference"
 		>
 			<option value="" disabled>
-				{{ $i18n( "wikilambda-argref-default-label" ) }}
+				{{ $i18n( "wikilambda-argref-default-label" ).text() }}
 			</option>
 			<option
 				v-for="argument in getZarguments"

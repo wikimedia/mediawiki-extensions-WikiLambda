@@ -9,13 +9,13 @@
 		<template v-if="requiresTypeForList">
 			<z-object-selector
 				:type="Constants.zType"
-				:placeholder="$i18n( 'wikilambda-ztyped-map-placeholder' )"
+				:placeholder="$i18n( 'wikilambda-ztyped-map-placeholder' ).text()"
 				:readonly="readonly"
 				@input="onMapTypeChange( $event, 0 )"
 			></z-object-selector>
 			<z-object-selector
 				:type="Constants.zType"
-				:placeholder="$i18n( 'wikilambda-ztyped-map-placeholder' )"
+				:placeholder="$i18n( 'wikilambda-ztyped-map-placeholder' ).text()"
 				:readonly="readonly"
 				@input="onMapTypeChange( $event, 1 )"
 			></z-object-selector>
@@ -23,7 +23,7 @@
 		<template v-else>
 			<p>
 				<strong>
-					{{ $i18n( 'wikilambda-ztyped-map-description' ) }}:
+					{{ $i18n( 'wikilambda-ztyped-map-description' ).text() }}:
 				</strong>
 				( {{ Key1Label }}, {{ Key2Label }} )
 			</p>

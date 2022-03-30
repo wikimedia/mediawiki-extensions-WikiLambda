@@ -50,7 +50,7 @@ module.exports = exports = {
 			if ( this.validatorErrorMessages.indexOf( this.validatorCurrentError ) === -1 ) {
 				return '';
 			}
-			return this.$i18n( this.validatorCurrentError );
+			return this.$i18n( this.validatorCurrentError ).text();
 		}
 	}
 };

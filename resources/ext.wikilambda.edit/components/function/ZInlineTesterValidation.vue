@@ -16,11 +16,11 @@
 		<template v-else>
 			<cdx-button
 				v-if="!viewmode"
-				:title="$i18n( 'wikilambda-editor-zobject-removekey-tooltip' )"
+				:title="$i18n( 'wikilambda-editor-zobject-removekey-tooltip' ).text()"
 				:destructive="true"
 				@click="typeHandler"
 			>
-				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
+				{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
 			</cdx-button>
 			<z-reference
 				:zobject-key="selectedFunctionPersistentValue"

@@ -13,13 +13,13 @@
 			:title="tooltipRemoveListItem"
 			@click="$emit( 'remove-item', zobjectId )"
 		>
-			{{ $i18n( 'wikilambda-editor-removeitem' ) }}
+			{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
 		</cdx-button>
 		<z-object-selector
 			v-if="isEmptyObject"
 			:type="zType"
 			:return-type="zType"
-			:placeholder="$i18n( 'wikilambda-typeselector-label' )"
+			:placeholder="$i18n( 'wikilambda-typeselector-label' ).text()"
 			:readonly="readonly"
 			@input="onTypeChange"
 		></z-object-selector>
@@ -80,10 +80,10 @@ module.exports = exports = {
 				return !this.zobjectType;
 			},
 			tooltipRemoveListItem: function () {
-				return this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' );
+				return this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' ).text();
 			},
 			tooltipAddListItem: function () {
-				this.$i18n( 'wikilambda-editor-zlist-additem-tooltip' );
+				this.$i18n( 'wikilambda-editor-zlist-additem-tooltip' ).text();
 			}
 		} ),
 	methods: $.extend( {},

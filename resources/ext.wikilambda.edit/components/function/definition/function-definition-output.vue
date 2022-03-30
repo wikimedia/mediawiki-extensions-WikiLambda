@@ -8,7 +8,7 @@
 	<div class="ext-wikilambda-function-definition-output">
 		<div class="ext-wikilambda-function-definition-output_label">
 			<label class="ext-wikilambda-app__text-regular">
-				{{ $i18n( 'wikilambda-function-definition-output-label' ) }}
+				{{ $i18n( 'wikilambda-function-definition-output-label' ).text() }}
 			</label>
 			<tooltip
 				v-if="isEditing && tooltipMessage"
@@ -20,7 +20,7 @@
 		<z-object-selector
 			:type="Constants.Z_TYPE"
 			class="ext-wikilambda-function-definition-output__selector"
-			:placeholder="$i18n( 'wikilambda-function-definition-output-selector' )"
+			:placeholder="$i18n( 'wikilambda-function-definition-output-selector' ).text()"
 			:selected-id="zReturnType.value"
 			@input="setReturnType"
 		></z-object-selector>

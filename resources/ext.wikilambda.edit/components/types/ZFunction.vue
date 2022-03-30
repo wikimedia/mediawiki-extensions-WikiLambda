@@ -10,7 +10,7 @@
 			<h3>{{ zReturnTypeLabel }}</h3>
 			<z-object-selector
 				:type="Constants.Z_TYPE"
-				:placeholder="$i18n( 'wikilambda-return-typeselector-label' )"
+				:placeholder="$i18n( 'wikilambda-return-typeselector-label' ).text()"
 				:selected-id="zReturnType.value"
 				@input="updateZReturnType"
 			></z-object-selector>

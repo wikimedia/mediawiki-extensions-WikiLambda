@@ -10,18 +10,18 @@
 		<z-object-selector
 			v-if="!selectedFunction"
 			:type="Constants.Z_FUNCTION"
-			:placeholder="$i18n( 'wikilambda-function-typeselector-label' )"
+			:placeholder="$i18n( 'wikilambda-function-typeselector-label' ).text()"
 			:selected-id="zFunctionId"
 			@input="typeHandler"
 		></z-object-selector>
 		<template v-else>
 			<cdx-button
 				v-if="!viewmode"
-				:title="$i18n( 'wikilambda-editor-zobject-removekey-tooltip' )"
+				:title="$i18n( 'wikilambda-editor-zobject-removekey-tooltip' ).text()"
 				:destructive="true"
 				@click="typeHandler"
 			>
-				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
+				{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
 			</cdx-button>
 			<z-reference
 				:zobject-key="selectedFunctionPersistentValue"
@@ -41,11 +41,11 @@
 			</li>
 		</ul>
 		<button v-if="!hideCallButton && isRootFunctionCall" @click="callFunctionHandler">
-			<label> {{ $i18n( 'wikilambda-call-function' ) }} </label>
+			<label> {{ $i18n( 'wikilambda-call-function' ).text() }} </label>
 		</button>
 		<div v-if="resultZObject || orchestrating" class="ext-wikilambda-orchestrated-result">
 			<template v-if="resultZObject">
-				<span>{{ $i18n( 'wikilambda-orchestrated' ) }}</span>
+				<span>{{ $i18n( 'wikilambda-orchestrated' ).text() }}</span>
 				<z-key-mode-selector
 					:mode="orchestratedMode"
 					:parent-type="Constants.Z_FUNCTION_CALL"
@@ -67,7 +67,7 @@
 				</div>
 			</template>
 			<template v-else-if="orchestrating">
-				<em>{{ $i18n( 'wikilambda-orchestrated-loading' ) }}</em>
+				<em>{{ $i18n( 'wikilambda-orchestrated-loading' ).text() }}</em>
 			</template>
 		</div>
 	</div>
