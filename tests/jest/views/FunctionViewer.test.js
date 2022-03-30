@@ -6,24 +6,21 @@
  */
 'use strict';
 
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	Vuex = require( 'vuex' ),
+var VueTestUtils = require( '@vue/test-utils' ),
 	FunctionViewer = require( '../../../resources/ext.wikilambda.edit/views/FunctionViewer.vue' );
 
 describe( 'FunctionViewer', function () {
-	var getters,
-		store,
-		$i18n;
+	var getters;
 
 	beforeEach( function () {
 		getters = {
 		};
 
-		store = Vuex.createStore( {
+		global.store.hotUpdate( {
 			getters: getters
 		} );
 
-		$i18n = jest.fn().mockImplementation( function () {
+		VueTestUtils.config.global.mocks.$i18n = jest.fn().mockImplementation( function () {
 			return {
 				text: jest.fn()
 			};
@@ -31,16 +28,7 @@ describe( 'FunctionViewer', function () {
 	} );
 
 	it( 'renders without errors', function () {
-		var wrapper = shallowMount( FunctionViewer, {
-			global: {
-				plugins: [
-					store
-				],
-				mocks: {
-					$i18n: $i18n
-				}
-			}
-		} );
+		var wrapper = VueTestUtils.shallowMount( FunctionViewer );
 
 		expect( wrapper.find( '.ext-wikilambda-function-viewer' ) ).toBeTruthy();
 	} );

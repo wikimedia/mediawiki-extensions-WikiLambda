@@ -7,14 +7,12 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	Vuex = require( 'vuex' ),
 	ZObjectEditor = require( '../../../resources/ext.wikilambda.edit/views/ZObjectEditor.vue' );
 
 describe( 'ZObjectEditor', function () {
 	var getters,
 		actions,
-		mutations,
-		store;
+		mutations;
 
 	beforeEach( function () {
 		getters = {
@@ -44,7 +42,7 @@ describe( 'ZObjectEditor', function () {
 			addZKeyLabel: jest.fn()
 		};
 
-		store = Vuex.createStore( {
+		global.store.hotUpdate( {
 			getters: getters,
 			actions: actions,
 			mutations: mutations
@@ -58,13 +56,7 @@ describe( 'ZObjectEditor', function () {
 	} );
 
 	it( 'renders without errors', function () {
-		var wrapper = shallowMount( ZObjectEditor, {
-			global: {
-				plugins: [
-					store
-				]
-			}
-		} );
+		var wrapper = shallowMount( ZObjectEditor );
 
 		expect( wrapper.find( 'div' ) ).toBeTruthy();
 	} );

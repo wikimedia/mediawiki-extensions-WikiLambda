@@ -7,31 +7,23 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	Vuex = require( 'vuex' ),
 	ZObjectViewer = require( '../../../resources/ext.wikilambda.edit/views/ZObjectViewer.vue' );
 
 describe( 'ZObjectViewer', function () {
-	var actions,
-		store;
+	var actions;
 
 	beforeEach( function () {
 		actions = {
 			initialize: jest.fn()
 		};
 
-		store = Vuex.createStore( {
+		global.store.hotUpdate( {
 			actions: actions
 		} );
 	} );
 
 	it( 'renders without errors', function () {
-		var wrapper = shallowMount( ZObjectViewer, {
-			global: {
-				plugins: [
-					store
-				]
-			}
-		} );
+		var wrapper = shallowMount( ZObjectViewer );
 
 		expect( wrapper.find( 'div' ) ).toBeTruthy();
 	} );

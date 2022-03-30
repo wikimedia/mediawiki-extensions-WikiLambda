@@ -7,25 +7,22 @@
 'use strict';
 
 var mount = require( '@vue/test-utils' ).mount,
-	Vuex = require( 'vuex' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ZKeyModeSelector = require( '../../../resources/ext.wikilambda.edit/components/ZKeyModeSelector.vue' ),
 	zobjectModes = require( '../../../resources/ext.wikilambda.edit/store/modules/zobjectModes.js' );
 
 describe( 'ZKeyModeSelector', function () {
-	var store;
 
 	beforeAll( function () {
-		store = Vuex.createStore( {
+		global.store.hotUpdate( {
 			getters: {
 				isExpertMode: function () {
 					return true;
 				}
-			},
-			modules: {
-				zobjectModes: zobjectModes
 			}
 		} );
+
+		global.store.registerModule( 'zobjectModes', zobjectModes );
 	} );
 
 	it( 'renders without errors', function () {
@@ -33,11 +30,6 @@ describe( 'ZKeyModeSelector', function () {
 			props: {
 				mode: Constants.Z_KEY_MODES.LITERAL,
 				parentType: Constants.Z_OBJECT
-			},
-			global: {
-				plugins: [
-					store
-				]
 			}
 		} );
 
@@ -49,11 +41,6 @@ describe( 'ZKeyModeSelector', function () {
 				props: {
 					mode: Constants.Z_KEY_MODES.LITERAL,
 					parentType: Constants.Z_OBJECT
-				},
-				global: {
-					plugins: [
-						store
-					]
 				}
 			} ),
 			select,

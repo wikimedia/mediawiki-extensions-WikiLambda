@@ -7,102 +7,79 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	Vuex = require( 'vuex' ),
-	VueRouter = require( '../../../resources/lib/vue-router/vue-router.common.js' ),
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
 	getters = require( '../../../resources/ext.wikilambda.edit/store/getters.js' );
 
 describe( 'App.vue', function () {
 	var actions,
-		store,
 		mockIsInitialized;
 
-	beforeEach( function () {
+	beforeAll( function () {
 		actions = {
 			initializeZObject: jest.fn(),
 			initialize: jest.fn()
 		};
-		store = Vuex.createStore( {
+
+		global.store.hotUpdate( {
 			actions: actions,
 			getters: $.extend( getters, {
 				getZObjectInitialized: function () {
 					return mockIsInitialized;
 				}
-			} ),
-			modules: {
-				router: {
-					namespaced: true,
-					getters: {
-						getCurrentView: jest.fn().mockReturnValue( 'function-editor' )
-					},
-					actions: {
-						evaluateUri: jest.fn()
-					}
-				}
+			} )
+		} );
+
+		global.store.registerModule( 'router', {
+			namespaced: true,
+			getters: {
+				getCurrentView: jest.fn().mockReturnValue( 'function-editor' ),
+				getQueryParams: jest.fn( function () {
+					return jest.fn();
+				} )
+			},
+			actions: {
+				evaluateUri: jest.fn()
 			}
 		} );
+
 	} );
 
 	it( 'Renders loading when getZObjectInitialized is false', function () {
-		var wrapper,
-			$i18n = jest.fn();
+		var wrapper;
 
 		mockIsInitialized = false;
 
 		wrapper = shallowMount( App, {
-			global: {
-				plugins: [
-					store,
-					VueRouter
-				],
-				mocks: {
-					$i18n: $i18n
-				}
-			},
 			provide: {
 				viewmode: true
 			}
 		} );
 
 		expect( wrapper.findComponent( { name: 'function-editor' } ).exists() ).toBe( false );
-		expect( $i18n ).toHaveBeenCalledWith( 'wikilambda-loading' );
+		expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-loading' );
 	} );
 
 	it( 'Renders the router view when getZObjectInitialized is true', function () {
-		var wrapper,
-			$i18n = jest.fn();
+		jest.clearAllMocks();
+
+		var wrapper;
 
 		mockIsInitialized = true;
 
 		wrapper = shallowMount( App, {
-			global: {
-				plugins: [
-					store,
-					VueRouter
-				],
-				mocks: {
-					$i18n: $i18n
-				}
-			},
 			provide: {
 				viewmode: true
 			}
 		} );
 
 		expect( wrapper.findComponent( { name: 'function-editor' } ).exists() ).toBe( true );
-		expect( $i18n ).not.toHaveBeenCalled();
+		expect( global.$i18n ).not.toHaveBeenCalled();
 	} );
 
 	it( 'Initializes the app on load', function () {
 		mockIsInitialized = true;
 
 		shallowMount( App, {
-			global: {
-				plugins: [
-					store,
-					VueRouter
-				]
-			},
 			provide: {
 				viewmode: true
 			}
