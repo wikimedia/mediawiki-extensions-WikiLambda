@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 /*!
  * WikiLambda Vue editor: zKeys Vuex module
  *
@@ -132,12 +131,15 @@ module.exports = exports = {
 				action: 'query',
 				list: 'wikilambdaload_zobjects',
 				format: 'json',
+				// eslint-disable-next-line camelcase
 				wikilambdaload_zids: payload.join( '|' ),
 				// Fetch all labels when initially loading the ZObject, otherwise get only the user's languages
+				// eslint-disable-next-line camelcase
 				wikilambdaload_language:
 					context.getters.getCurrentZObjectId !== Constants.NEW_ZID_PLACEHOLDER ?
 						context.getters.getZLang :
 						undefined,
+				// eslint-disable-next-line camelcase
 				wikilambdaload_canonical: 'true'
 			} ).then( function ( response ) {
 				var keys,
