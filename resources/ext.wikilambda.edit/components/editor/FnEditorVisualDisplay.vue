@@ -24,7 +24,7 @@
 			<div class="ext-wikilambda-editior-visual-display-input">
 				<span
 					class="ext-wikilambda-editior-visual-display-input-title"
-				>{{ $i18n( 'wikilambda-editor-input-title' ) }} {{ inputLengthText }}</span>
+				>{{ $i18n( 'wikilambda-editor-input-title' ).text() }} {{ inputLengthText }}</span>
 
 				<div class="ext-wikilambda-editior-visual-display-slide">
 					<div class="ext-wikilambda-editior-visual-display-slide-box">
@@ -67,7 +67,7 @@
 
 			<div class="ext-wikilambda-editior-visual-display-function">
 				<div class="ext-wikilambda-editior-visual-display-function-box">
-					<span>{{ $i18n( 'wikilambda-editor-implementation-title' ) }}</span>
+					<span>{{ $i18n( 'wikilambda-editor-implementation-title' ).text() }}</span>
 				</div>
 			</div>
 

@@ -11,6 +11,7 @@ var Vuex = require( 'vuex' ),
 	actions = require( './actions.js' ),
 	mutations = require( './mutations.js' ),
 	getters = require( './getters.js' ),
+	argumentsModule = require( './modules/arguments.js' ),
 	zobjectModule = require( './modules/zobject.js' ),
 	zobjectModes = require( './modules/zobjectModes.js' ),
 	zKeysModule = require( './modules/zKeys.js' ),
@@ -25,10 +26,11 @@ var Vuex = require( 'vuex' ),
 
 module.exports = Vuex.createStore( {
 	state: state,
-	actions: actions, /* Empty */
-	mutations: mutations, /* Empty */
+	actions: actions,
+	mutations: mutations,
 	getters: getters,
 	modules: {
+		argumentsModule: argumentsModule,
 		zobjectModule: zobjectModule,
 		zobjectModes: zobjectModes,
 		zKeysModule: zKeysModule,

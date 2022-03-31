@@ -10,7 +10,7 @@
 			<component :is="getCurrentView" :bind="getQueryParams"></component>
 		</template>
 		<span v-else>
-			{{ $i18n( 'wikilambda-loading' ) }}
+			{{ $i18n( 'wikilambda-loading' ).text() }}
 		</span>
 	</div>
 </template>

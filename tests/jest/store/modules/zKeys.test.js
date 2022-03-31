@@ -201,7 +201,6 @@ var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modu
 		{ zid: 'Z1', label: 'Object', lang: 'Z1002' },
 		{ zid: 'Z6', label: 'String', lang: 'Z1002' }
 	],
-	mockZArguments = { Z10024K1: { labels: [ { key: 'word: ', label: 'word', lang: 'Z1002' } ], zid: 'Z10024K1', type: 'String' } },
 	state,
 	context,
 	getMock,
@@ -255,16 +254,6 @@ describe( 'zkeys Vuex module', function () {
 			it( 'Returns the zKeysAllLanguages defined in the state', function () {
 				state.zKeyAllLanguageLabels = mockAllZKeyLanguageLabels;
 				expect( zkeysModule.getters.getAllZKeyLanguageLabels( state ) ).toEqual( mockAllZKeyLanguageLabels );
-			} );
-		} );
-
-		describe( 'getZarguments', function () {
-			it( 'Returns empty object if no zArguments are defined in the state', function () {
-				expect( zkeysModule.getters.getZarguments( state ) ).toEqual( {} );
-			} );
-			it( 'Returns the zArguments defined in the state', function () {
-				state.zArguments = mockZArguments;
-				expect( zkeysModule.getters.getZarguments( state ) ).toEqual( mockZArguments );
 			} );
 		} );
 	} );
@@ -380,132 +369,6 @@ describe( 'zkeys Vuex module', function () {
 					expect( context.commit ).toHaveBeenCalledWith( 'addAllZKeyLabels', expecteaddAllZKeyLabelInfoCall );
 					resolve();
 				}, 1000 );
-			} );
-			it( 'Will set the stored ZArguments', function () {
-				context.getters.getZkeys = {
-					Z10033: {
-						Z1K1: 'Z2',
-						Z2K1: 'Z10033',
-						Z2K2: {
-							Z1K1: 'Z8',
-							Z8K1: [
-								{
-									Z1K1: 'Z17',
-									Z17K1: 'Z40',
-									Z17K2: {
-										Z1K1: 'Z6',
-										Z6K1: 'Z10033K1'
-									},
-									Z17K3: {
-										Z1K1: 'Z12',
-										Z12K1: [
-											{
-												Z1K1: 'Z11',
-												Z11K1: 'Z1002',
-												Z11K2: 'left'
-											}
-										]
-									}
-								},
-								{
-									Z1K1: 'Z17',
-									Z17K1: 'Z40',
-									Z17K2: {
-										Z1K1: 'Z6',
-										Z6K1: 'Z10033K2'
-									},
-									Z17K3: {
-										Z1K1: 'Z12',
-										Z12K1: [
-											{
-												Z1K1: 'Z11',
-												Z11K1: 'Z1002',
-												Z11K2: 'right'
-											}
-										]
-									}
-								}
-							],
-							Z8K2: 'Z40',
-							Z8K3: [],
-							Z8K4: [
-								'Z10034'
-							],
-							Z8K5: 'Z10033'
-						},
-						Z2K3: {
-							Z1K1: 'Z12',
-							Z12K1: [
-								{
-									Z1K1: 'Z11',
-									Z11K1: 'Z1002',
-									Z11K2: 'Nand'
-								}
-							]
-						}
-					},
-					Z40: {
-						Z1K1: 'Z2',
-						Z2K1: 'Z40',
-						Z2K2: {
-							Z1K1: 'Z4',
-							Z4K1: 'Z40',
-							Z4K2: [
-								{
-									Z1K1: 'Z3',
-									Z3K1: 'Z40',
-									Z3K2: 'Z40K1',
-									Z3K3: {
-										Z1K1: 'Z12',
-										Z12K1: [
-											{
-												Z1K1: 'Z11',
-												Z11K1: 'Z1002',
-												Z11K2: 'identity'
-											}
-										]
-									}
-								}
-							],
-							Z4K3: 'Z140'
-						},
-						Z2K3: {
-							Z1K1: 'Z12',
-							Z12K1: [
-								{
-									Z1K1: 'Z11',
-									Z11K1: 'Z1002',
-									Z11K2: 'Boolean'
-								}
-							]
-						}
-					}
-				};
-				context.getters.getZkeyLabels = {
-					Z40: 'Boolean'
-				};
-
-				context.getters.getZObjectAsJson = jest.fn( function () {
-					return true;
-				} );
-
-				var zArguments = [
-					{ labels: [ { key: 'left: ', label: 'left', lang: 'Z1002' } ], zid: 'Z10033K1', type: {
-						label: 'Boolean',
-						zid: 'Z40'
-					} },
-					{ labels: [ { key: 'right: ', label: 'right', lang: 'Z1002' } ], zid: 'Z10033K2', type: {
-						label: 'Boolean',
-						zid: 'Z40'
-					} }
-				];
-
-				zkeysModule.actions.setAvailableZArguments( context, 'Z10033' );
-
-				expect( context.commit ).toHaveBeenCalledTimes( 3 );
-				expect( context.commit ).toHaveBeenNthCalledWith( 1, 'resetZArgumentInfo' );
-				expect( context.commit ).toHaveBeenNthCalledWith( 2, 'addZArgumentInfo', zArguments[ 0 ] );
-				expect( context.commit ).toHaveBeenNthCalledWith( 3, 'addZArgumentInfo', zArguments[ 1 ] );
 			} );
 		} );
 	} );

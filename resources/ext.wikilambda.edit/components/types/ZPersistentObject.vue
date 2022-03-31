@@ -41,21 +41,13 @@
 				<h2>
 					{{ $i18n( 'wikilambda-persistentobject-details-label' ).text() }}
 				</h2>
-				<template v-if="isCurrentZObjectExecutable && getCurrentZObjectReturnType">
+				<template v-if="isCurrentZObjectExecutable">
 					<h3>
 						{{ $i18n( 'wikilambda-persistentobject-evaluate-function' ).text() }}
 					</h3>
 					<z-function-evaluator></z-function-evaluator>
+
 					<fn-editor-visual-display>
-						<template #input>
-							{{ getZargumentsString }}
-						</template>
-						<template #function>
-							{{ getZkeyLabels[ getCurrentZObjectId ] }}
-						</template>
-						<template #output>
-							{{ getCurrentZObjectReturnType }}
-						</template>
 					</fn-editor-visual-display>
 				</template>
 				<div v-if="$store.getters.isExpertMode">
@@ -109,12 +101,8 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( {
 		getZObjectChildrenById: 'getZObjectChildrenById',
 		getZObjectTypeById: 'getZObjectTypeById',
-		getZkeyLabels: 'getZkeyLabels',
 		getZkeys: 'getZkeys',
 		isCurrentZObjectExecutable: 'isCurrentZObjectExecutable',
-		getZargumentsString: 'getZargumentsString',
-		getCurrentZObjectType: 'getCurrentZObjectType',
-		getZObjectAsJsonById: 'getZObjectAsJsonById',
 		getZObjectAsJson: 'getZObjectAsJson',
 		getCurrentZObjectId: 'getCurrentZObjectId',
 		isNewZObject: 'isNewZObject'
@@ -130,21 +118,6 @@ module.exports = exports = {
 		},
 		zObjectValue: function () {
 			return this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, this.zobject );
-		},
-		getCurrentZObjectReturnType: function () {
-			if ( this.getCurrentZObjectType === Constants.Z_FUNCTION ) {
-				return this.getZkeyLabels[ this.getZObjectAsJsonById( this.zobjectId ).Z2K2.Z8K2.Z9K1 ];
-			} else if ( this.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) {
-				var zFunction = this.getZObjectAsJsonById( this.zobjectId ),
-					zFunctionReference = zFunction.Z2K2.Z14K1,
-					zFunctionId = zFunctionReference ? zFunctionReference.Z9K1 : null;
-
-				if ( !this.getZkeys[ zFunctionId ] ) {
-					return;
-				}
-
-				return this.getZkeyLabels[ this.getZkeys[ zFunctionId ].Z2K2.Z8K2 ];
-			}
 		},
 		hasDetailsToDisplay: function () {
 			return this.isCurrentZObjectExecutable || this.$store.getters.isExpertMode;

@@ -83,7 +83,7 @@ module.exports = exports = {
 			this.$emit( 'change', modeValue );
 		},
 		translate: function ( value ) {
-			return this.$i18n( value );
+			return this.$i18n( value ).text();
 		}
 	},
 	watch: {

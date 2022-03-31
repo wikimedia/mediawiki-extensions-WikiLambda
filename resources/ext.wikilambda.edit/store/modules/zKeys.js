@@ -8,7 +8,6 @@
 
 var Vue = require( 'vue' ),
 	Constants = require( '../../Constants.js' ),
-	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
 	typedListToArray = require( '../../mixins/typeUtils.js' ).methods.typedListToArray,
 	debounceZKeyFetch = null,
 	resolvePromiseList = [],
@@ -29,11 +28,7 @@ module.exports = exports = {
 		/**
 		 * Collection of zKey labels in all languages
 		 */
-		zKeyAllLanguageLabels: [],
-		/**
-		 * Collection of arguments
-		 */
-		zArguments: {}
+		zKeyAllLanguageLabels: []
 	},
 	getters: {
 		getZkeys: function ( state ) {
@@ -52,71 +47,7 @@ module.exports = exports = {
 		},
 		getAllZKeyLanguageLabels: function ( state ) {
 			return state.zKeyAllLanguageLabels;
-		},
-		getZarguments: function ( state ) {
-			return state.zArguments;
-		},
-		/**
-		 * Generates a comma separated string of the available arguments.
-		 * This is used for visualization on the editor.
-		 *
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @return {string}
-		 */
-		getZargumentsString: function ( state, getters ) {
-			return Object.keys( getters.getZarguments )
-				.map( function ( key ) {
-					return {
-						zid: getters.getZarguments[ key ].zid,
-						type: getters.getZarguments[ key ].type,
-						label: getters.getZarguments[ key ].labels.filter( function ( label ) {
-							return label.lang === getters.getCurrentZLanguage;
-						} )[ 0 ] || getters.getZarguments[ key ].labels[ 0 ]
-					};
-				} )
-				.reduce( function ( argumentString, argument ) {
-					var key = argument.label.key,
-						type = argument.type;
-
-					if ( type === undefined ) {
-						return argumentString;
-					}
-
-					return argumentString.length ?
-						argumentString + ', ' + key + type :
-						argumentString + key + type;
-				}, '' );
-		},
-
-		// TODO(T299031): cleanup this code to be more performant
-		/**
-		 * Returns an array of objects with key and type of the available arguments.
-		 *
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @return {Array}
-		 */
-		getZargumentsArray: function ( state, getters ) {
-			/**
-			 * @param {boolean} zlang
-			 * @return {Array}
-			 */
-			return function ( zlang ) {
-				var lang = zlang || getters.getCurrentZLanguage;
-				return Object.keys( getters.getZarguments )
-					.map( function ( key ) {
-						return {
-							zid: getters.getZarguments[ key ].zid,
-							type: getters.getZarguments[ key ].type,
-							label: ( getters.getZarguments[ key ].labels.filter( function ( label ) {
-								return label.lang === lang;
-							} )[ 0 ] || getters.getZarguments[ key ].labels[ 0 ] ).label
-						};
-					} );
-			};
 		}
-		// TODO(T299031): cleanup this code to be more performant
 	},
 	mutations: {
 		/**
@@ -130,24 +61,6 @@ module.exports = exports = {
 		},
 		addAllZKeyLabels: function ( state, allKeyLanguageLabels ) {
 			state.zKeyAllLanguageLabels = state.zKeyAllLanguageLabels.concat( allKeyLanguageLabels );
-		},
-		/**
-		 * Add a specific argument to the zArgument object.
-		 *
-		 * @param {Object} state
-		 * @param {Object} payload
-		 * @param {string} payload.zid
-		 */
-		addZArgumentInfo: function ( state, payload ) {
-			Vue.set( state.zArguments, payload.zid, payload );
-		},
-		/**
-		 * Reset the zArguments object in the state
-		 *
-		 * @param {Object} state
-		 */
-		resetZArgumentInfo: function ( state ) {
-			state.zArguments = {};
 		}
 	},
 	actions: {
@@ -297,89 +210,6 @@ module.exports = exports = {
 					}
 				} );
 			} );
-		},
-		/**
-		 * reset and repopulate the zArguments in the store. This method also
-		 * fetches any missing types.
-		 *
-		 * @param {Object} context
-		 * @param {Object} zFunctionId
-		 */
-		setAvailableZArguments: function ( context, zFunctionId ) {
-			context.commit( 'resetZArgumentInfo' );
-
-			if ( context.getters.getCurrentZObjectId === zFunctionId ||
-					context.getters.getZkeys[ zFunctionId ] ) {
-				var zobject,
-					missingTypes = [];
-
-				if ( !context.getters.getZObjectAsJson ) {
-					return;
-				}
-
-				if ( context.getters.getCurrentZObjectId === zFunctionId ) {
-					zobject = canonicalize(
-						JSON.parse( JSON.stringify( context.getters.getZObjectAsJson ) )
-					);
-				} else {
-					zobject = context.getters.getZkeys[ zFunctionId ];
-				}
-
-				if ( !zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] ) {
-					return;
-				}
-
-				zobject[
-					Constants.Z_PERSISTENTOBJECT_VALUE ][
-					Constants.Z_FUNCTION_ARGUMENTS ]
-					.forEach( function ( argument ) {
-						var argumentLabels = argument[ Constants.Z_ARGUMENT_LABEL ][
-								Constants.Z_MULTILINGUALSTRING_VALUE ],
-							labels = argumentLabels.map( function ( label ) {
-								return {
-									lang: label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_STRING_VALUE ] ||
-										label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ],
-									label: label[ Constants.Z_MONOLINGUALSTRING_VALUE ],
-									key: label[ Constants.Z_MONOLINGUALSTRING_VALUE ] + ': '
-								};
-							} ),
-							zid = argument[ Constants.Z_ARGUMENT_KEY ],
-							typeZid,
-							typeLabel;
-
-						// We can either return an object or a straight string.
-						if ( typeof argument[ Constants.Z_ARGUMENT_TYPE ] === 'object' ) {
-							typeZid = argument[ Constants.Z_ARGUMENT_TYPE ][ Constants.Z_OBJECT_TYPE ];
-							typeLabel = context.getters.getZkeyLabels[ typeZid ];
-						} else {
-							typeZid = argument[ Constants.Z_ARGUMENT_TYPE ];
-							typeLabel = context.getters.getZkeyLabels[ typeZid ];
-						}
-
-						if ( typeof zid === 'object' ) {
-							zid = zid[ Constants.Z_STRING_VALUE ];
-						}
-						if ( !typeLabel ) {
-							missingTypes.push( argument[ Constants.Z_ARGUMENT_TYPE ] );
-						}
-
-						context.commit( 'addZArgumentInfo', {
-							zid: zid,
-							type: {
-								label: typeLabel,
-								zid: typeZid
-							},
-							labels: labels
-						} );
-					} );
-
-				// If any argument types are not available, fetch them and rerun the function
-				if ( missingTypes.filter( Boolean ).length ) {
-					context.dispatch( 'fetchZKeys', missingTypes ).then( function () {
-						context.dispatch( 'setAvailableZArguments', zFunctionId );
-					} );
-				}
-			}
 		}
 	}
 };
