@@ -6,7 +6,8 @@
 			"Neetp7k9",
 			"Tranve",
 			"Weather Top Wizard",
-			"Winston Sung"
+			"Winston Sung",
+			"DinoWP"
 		]
 	},
 	"wikilambda-desc": "為維基媒體的 Wiki 提供 wikitext 解析器功能，來呼叫對於在中央 Wiki 上編寫、管理、評估的功能之評估。",
@@ -28,6 +29,7 @@
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "衝突的 ZObject",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "語言",
 	"wikilambda-publishnew": "發布",
+	"wikilambda-confirm": "確認",
 	"wikilambda-savenew": "儲存",
 	"wikilambda-publishchanges": "發布變更",
 	"wikilambda-savechanges": "儲存變更",
@@ -40,5 +42,7 @@
 	"wikilambda-editor-zlist-removeitem-tooltip": "從這個 ZList 移除此項目",
 	"wikilambda-editor-zobject-addkey": "增加鍵：",
 	"wikilambda-editor-zobject-removekey-tooltip": "從這個 ZList 移除此鍵/值",
-	"wikilambda-editor-fn-step-tests": "測試"
+	"wikilambda-function-are-you-sure-dialog-header": "您確定嗎？",
+	"wikilambda-editor-fn-step-tests": "測試",
+	"wikilambda-continue-editing": "繼續編輯"
 }
