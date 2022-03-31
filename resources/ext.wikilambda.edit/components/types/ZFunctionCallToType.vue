@@ -10,7 +10,7 @@
 			<div v-for="( argument, index ) in functionCallArguments" :key="argument.id">
 				<z-object-selector
 					:type="Constants.zType"
-					:placeholder="$i18n( 'wikilambda-ztyped-map-placeholder' )"
+					:placeholder="$i18n( 'wikilambda-ztyped-map-placeholder' ).text()"
 					:readonly="readonly"
 					@input="onTypeChange( $event, argument.id, index )"
 				></z-object-selector>

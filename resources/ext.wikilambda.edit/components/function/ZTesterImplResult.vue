@@ -12,16 +12,16 @@
 		@click="emitTesterKeys"
 	>
 		<template v-if="!zImplementationId || !zTesterId">
-			{{ $i18n( 'wikilambda-tester-status-pending' ) }}
+			{{ $i18n( 'wikilambda-tester-status-pending' ).text() }}
 		</template>
 		<template v-else-if="testerStatus === true">
-			{{ $i18n( 'wikilambda-tester-status-passed' ) }}
+			{{ $i18n( 'wikilambda-tester-status-passed' ).text() }}
 		</template>
 		<template v-else-if="testerStatus === false">
-			{{ $i18n( 'wikilambda-tester-status-failed' ) }}
+			{{ $i18n( 'wikilambda-tester-status-failed' ).text() }}
 		</template>
 		<template v-else>
-			{{ $i18n( 'wikilambda-tester-status-running' ) }}
+			{{ $i18n( 'wikilambda-tester-status-running' ).text() }}
 		</template>
 	</button>
 </template>

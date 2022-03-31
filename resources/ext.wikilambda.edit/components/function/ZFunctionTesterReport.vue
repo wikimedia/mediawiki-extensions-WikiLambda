@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<div>
-		<h2>{{ $i18n( 'wikilambda-tester-results-title' ) }}</h2>
+		<h2>{{ $i18n( 'wikilambda-tester-results-title' ).text() }}</h2>
 		<template v-if="zFunctionId && implementations.length > 0 && testers.length > 0">
 			<table
 				class="ext-wikilambda-fn-tester-results"
@@ -21,7 +21,7 @@
 							scope="col"
 						>
 							{{ getZkeyLabels[ implementation ] ||
-								$i18n( 'wikilambda-tester-results-current-implementation' )
+								$i18n( 'wikilambda-tester-results-current-implementation' ).text()
 							}}
 						</th>
 					</tr>
@@ -61,12 +61,12 @@
 						<td>
 							<slot name="run-testers" :click="runTesters">
 								<button v-if="!getViewMode" @click="runTesters">
-									{{ $i18n( 'wikilambda-tester-run-testers' ) }}
+									{{ $i18n( 'wikilambda-tester-run-testers' ).text() }}
 								</button>
 							</slot>
 						</td>
 						<td :colspan="implementations.length" class="ext-wikilambda-fn-tester-result">
-							{{ $i18n( 'wikilambda-tester-results-percentage-label' ) }}:
+							{{ $i18n( 'wikilambda-tester-results-percentage-label' ).text() }}:
 							{{ resultCount.passing }}/{{ resultCount.total }} ({{ resultCount.percentage }}%)
 						</td>
 					</tr>
@@ -74,7 +74,7 @@
 			</table>
 			<div v-if="getZTesterResults( zFunctionId, activeZTesterId, activeZImplementationId ) !== undefined">
 				<h3>
-					{{ $i18n( 'wikilambda-tester-results-subtitle' ) }}
+					{{ $i18n( 'wikilambda-tester-results-subtitle' ).text() }}
 					{{ getZkeyLabels[ activeZImplementationId ] }}
 					( {{ getZkeyLabels[ activeZTesterId ] ||
 						( getNewTesterZObjects && getNewTesterZObjects.Z2K3.Z12K1[ 0 ].Z11K2.Z6K1 )
@@ -82,22 +82,22 @@
 				</h3>
 				<ul>
 					<li>
-						{{ $i18n( 'wikilambda-tester-status-label' ) }}:
+						{{ $i18n( 'wikilambda-tester-status-label' ).text() }}:
 						{{ activeTesterStatus }}
 					</li>
 					<li v-if="!getZTesterResults( zFunctionId, activeZTesterId, activeZImplementationId )">
-						{{ $i18n( 'wikilambda-tester-failure-reason' ) }}:
+						{{ $i18n( 'wikilambda-tester-failure-reason' ).text() }}:
 						{{ activeTesterFailReason }}
 					</li>
 					<li>
-						{{ $i18n( 'wikilambda-tester-function-duration' ) }}:
+						{{ $i18n( 'wikilambda-tester-function-duration' ).text() }}:
 						{{ getZTesterMetadata( zFunctionId, activeZTesterId, activeZImplementationId ).duration }} ms
 					</li>
 				</ul>
 			</div>
 		</template>
 		<div v-else>
-			<p>{{ $i18n( 'wikilambda-tester-no-results' ) }}</p>
+			<p>{{ $i18n( 'wikilambda-tester-no-results' ).text() }}</p>
 		</div>
 	</div>
 </template>
@@ -199,8 +199,8 @@ module.exports = exports = {
 				this.activeZTesterId,
 				this.activeZImplementationId
 			) === true ?
-				this.$i18n( 'wikilambda-tester-status-passed' ) :
-				this.$i18n( 'wikilambda-tester-status-failed' );
+				this.$i18n( 'wikilambda-tester-status-passed' ).text() :
+				this.$i18n( 'wikilambda-tester-status-failed' ).text();
 		},
 		activeTesterFailReason: function () {
 			var reason = this.getZTesterFailReason(
@@ -222,9 +222,9 @@ module.exports = exports = {
 			expected = this.zObjectToString( reason[ 0 ] );
 			actual = this.zObjectToString( reason[ 1 ] );
 
-			return this.$i18n( 'wikilambda-tester-failure-expected' ) + ' ' +
+			return this.$i18n( 'wikilambda-tester-failure-expected' ).text() + ' ' +
 				expected + '. ' +
-				this.$i18n( 'wikilambda-tester-failure-actual' ) + ' ' +
+				this.$i18n( 'wikilambda-tester-failure-actual' ).text() + ' ' +
 				actual + '.';
 		}
 	} ),

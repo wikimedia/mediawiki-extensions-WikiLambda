@@ -12,7 +12,7 @@
 			</label>
 			<!-- TODO (T298479): replace href with correct URL -->
 			<a href="#" class="ext-wikilambda-app__text-smaller">
-				{{ $i18n( 'wikilambda-function-definition-name-example' ) }}
+				{{ $i18n( 'wikilambda-function-definition-name-example' ).text() }}
 			</a>
 		</div>
 
@@ -20,8 +20,8 @@
 			id="ext-wikilambda-function-definition-name__input"
 			:value="zobjectLabel"
 			class="ext-wikilambda-text-input"
-			:aria-label="$i18n( 'wikilambda-function-definition-name-label' )"
-			:placeholder="$i18n( 'wikilambda-function-definition-name-placeholder' )"
+			:aria-label="$i18n( 'wikilambda-function-definition-name-label' ).text()"
+			:placeholder="$i18n( 'wikilambda-function-definition-name-placeholder' ).text()"
 			@input="zobjectLabel = $event.target.value"
 		>
 	</div>
@@ -105,7 +105,7 @@ module.exports = exports = {
 			}
 		},
 		functionNameLabel: function () {
-			return this.$i18n( 'wikilambda-function-definition-name-label' ) + ' ( ' + this.$i18n( 'wikilambda-optional' ) + ' )';
+			return this.$i18n( 'wikilambda-function-definition-name-label' ).text() + ' ( ' + this.$i18n( 'wikilambda-optional' ).text() + ' )';
 		}
 	} ),
 	methods: $.extend( mapActions( [

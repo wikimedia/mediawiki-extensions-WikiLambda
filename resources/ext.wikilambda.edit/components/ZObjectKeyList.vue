@@ -13,7 +13,7 @@
 				:destructive="true"
 				@click="removeKey( value.id )"
 			>
-				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
+				{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
 			</cdx-button>
 			<z-object-key
 				:z-key="value.key"
@@ -61,7 +61,7 @@ module.exports = exports = {
 		] ),
 		{
 			tooltipRemoveZObjectKey: function () {
-				return this.$i18n( 'wikilambda-editor-zobject-removekey-tooltip' );
+				return this.$i18n( 'wikilambda-editor-zobject-removekey-tooltip' ).text();
 			},
 			zObject: function () {
 				return this.getZObjectChildrenById( this.zobjectId );

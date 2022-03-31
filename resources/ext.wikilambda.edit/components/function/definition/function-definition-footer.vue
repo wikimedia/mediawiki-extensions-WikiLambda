@@ -22,8 +22,8 @@
 		<input
 			v-model="summary"
 			class="ext-wikilambda-function-definition-footer__text-input"
-			:aria-label="$i18n( 'wikilambda-function-definition-footer-label' )"
-			:placeholder="$i18n( 'wikilambda-function-definition-footer-placeholder' )"
+			:aria-label="$i18n( 'wikilambda-function-definition-footer-label' ).text()"
+			:placeholder="$i18n( 'wikilambda-function-definition-footer-placeholder' ).text()"
 		>
 		<div class="ext-wikilambda-function-definition-footer__actions">
 			<button
@@ -31,20 +31,20 @@
 				:disabled="!publishButtonValidity"
 				@click="handlePublish"
 			>
-				{{ $i18n( 'wikilambda-publishnew' ) }}
+				{{ $i18n( 'wikilambda-publishnew' ).text() }}
 			</button>
 			<!-- TODO: The following is just a placeholder until it is possible to attach implementation / Testers -->
 			<button
 				v-if="isEditing "
 				@click="handleFallbackClick"
 			>
-				{{ $i18n( 'wikilambda-fallback' ) }}
+				{{ $i18n( 'wikilambda-fallback' ).text() }}
 			</button>
 			<button
 				class="ext-wikilambda-function-definition-footer__actions__cancel"
 				@click.stop="handleCancel"
 			>
-				{{ $i18n( 'wikilambda-cancel' ) }}
+				{{ $i18n( 'wikilambda-cancel' ).text() }}
 			</button>
 		</div>
 	</div>

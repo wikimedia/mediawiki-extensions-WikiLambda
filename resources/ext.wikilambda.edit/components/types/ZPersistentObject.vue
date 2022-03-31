@@ -11,21 +11,21 @@
 				:zobject-id="zobjectId"
 			></z-metadata>
 			<h2 class="ext-wikilambda-persistentobject-header">
-				{{ $i18n( 'wikilambda-persistentzobject-contents' ) }}
+				{{ $i18n( 'wikilambda-persistentzobject-contents' ).text() }}
 			</h2>
 			<div class="ext-wikilambda-persistentobject-content">
 				<p v-if="isNewZObject">
-					{{ $i18n( 'wikilambda-persistentzobject-description' ) }}
+					{{ $i18n( 'wikilambda-persistentzobject-description' ).text() }}
 					<a @click.prevent="navigateToCreateFunction">
-						{{ $i18n( 'wikilambda-create-function' ) }}
+						{{ $i18n( 'wikilambda-create-function' ).text() }}
 					</a>
 				</p>
 				<div v-if="showClearButton" class="ext-wikilambda-clear-persistentobject">
 					<button
-						:title="$i18n( 'wikilambda-editor-zobject-clearitem-tooltip' )"
+						:title="$i18n( 'wikilambda-editor-zobject-clearitem-tooltip' ).text()"
 						@click="removeKey( zObjectValue.id )"
 					>
-						{{ $i18n( 'wikilambda-editor-clearitem' ) }}
+						{{ $i18n( 'wikilambda-editor-clearitem' ).text() }}
 					</button>
 				</div>
 				<z-object-key
@@ -39,11 +39,11 @@
 		<div v-if="hasDetailsToDisplay" class="ext-wikilambda-sidebar">
 			<div>
 				<h2>
-					{{ $i18n( 'wikilambda-persistentobject-details-label' ) }}
+					{{ $i18n( 'wikilambda-persistentobject-details-label' ).text() }}
 				</h2>
 				<template v-if="isCurrentZObjectExecutable && getCurrentZObjectReturnType">
 					<h3>
-						{{ $i18n( 'wikilambda-persistentobject-evaluate-function' ) }}
+						{{ $i18n( 'wikilambda-persistentobject-evaluate-function' ).text() }}
 					</h3>
 					<z-function-evaluator></z-function-evaluator>
 					<fn-editor-visual-display>
@@ -60,7 +60,7 @@
 				</template>
 				<div v-if="$store.getters.isExpertMode">
 					<h3>
-						{{ $i18n( 'wikilambda-expert-mode-json-label' ) }}
+						{{ $i18n( 'wikilambda-expert-mode-json-label' ).text() }}
 					</h3>
 					<z-object-json
 						:readonly="true"

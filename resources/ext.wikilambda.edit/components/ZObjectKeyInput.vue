@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<span>
-		{{ $i18n( 'wikilambda-editor-zobject-addkey' ) }}
+		{{ $i18n( 'wikilambda-editor-zobject-addkey' ).text() }}
 		<input
 			v-model="zkey"
 			class="ext-wikilambda-zkey-input"
@@ -18,7 +18,7 @@
 			:inline="true"
 			type="error"
 		>
-			{{ $i18n( 'wikilambda-invalidzobject' ) }}
+			{{ $i18n( 'wikilambda-invalidzobject' ).text() }}
 		</cdx-message>
 	</span>
 </template>

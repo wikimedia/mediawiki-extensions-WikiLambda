@@ -54,8 +54,18 @@ global.mw = {
 var vueTestUtils = require( '@vue/test-utils' );
 var vuex = require( 'vuex' );
 
+class Mocki18n {
+	constructor( string ) {
+		this.string = string;
+	}
+
+	text() {
+		return this.string;
+	}
+}
+
 global.$i18n = jest.fn( function ( str ) {
-	return str;
+	return new Mocki18n( str );
 } );
 global.getters = {};
 global.state = {};

@@ -12,7 +12,7 @@
 			class="ext-wikilambda-zboolean"
 		>
 			<option value="" disabled>
-				{{ $i18n( "wikilambda-editor-boolean-selector" ) }}
+				{{ $i18n( "wikilambda-editor-boolean-selector" ).text() }}
 			</option>
 			<option :value="Constants.Z_BOOLEAN_TRUE">
 				{{ getZkeyLabels[ Constants.Z_BOOLEAN_TRUE ] }}

@@ -13,11 +13,11 @@
 			:title="tooltipRemoveListItem"
 			@click="$emit( 'remove-item', zobjectId )"
 		>
-			{{ $i18n( 'wikilambda-editor-removeitem' ) }}
+			{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
 		</cdx-button>
 		<select v-if="!hasReference" @change="selectTester">
 			<option disabled selected>
-				{{ $i18n( "wikilambda-tester-selector" ) }}
+				{{ $i18n( "wikilambda-tester-selector" ).text() }}
 			</option>
 			<option
 				v-for="zTesterId in getUnattachedZTesters"

@@ -9,7 +9,7 @@
 		<z-object-selector
 			:type="Constants.Z_TYPE"
 			:return-type="Constants.Z_TYPE"
-			:placeholder="$i18n( 'wikilambda-editor-input-type-placeholder' )"
+			:placeholder="$i18n( 'wikilambda-editor-input-type-placeholder' ).text()"
 			:selected-id="getTypeOfArgument"
 			@input="setArgumentType( $event )"
 		></z-object-selector>
@@ -22,16 +22,16 @@
 		<z-object-selector
 			v-if="getTypeOfArgument === Constants.Z_TYPED_LIST"
 			class="ext-wikilambda-text-input"
-			:label="$i18n( 'wikilambda-editor-input-typed-list-placeholder' )"
-			:placeholder="$i18n( 'wikilambda-editor-input-typed-list-placeholder' )"
+			:label="$i18n( 'wikilambda-editor-input-typed-list-placeholder' ).text()"
+			:placeholder="$i18n( 'wikilambda-editor-input-typed-list-placeholder' ).text()"
 			@input="setListTypedList"
 			@clear="setListTypedList"
 		>
 		</z-object-selector>
 		<input
 			class="ext-wikilambda-text-input"
-			:placeholder="$i18n( 'wikilambda-editor-input-label-placeholder' )"
-			:aria-label="$i18n( 'wikilambda-editor-input-label-placeholder' )"
+			:placeholder="$i18n( 'wikilambda-editor-input-label-placeholder' ).text()"
+			:aria-label="$i18n( 'wikilambda-editor-input-label-placeholder' ).text()"
 			:value="getArgumentLabel"
 			@input="setArgumentLabel( zobjectId, $event.target.value )"
 		>

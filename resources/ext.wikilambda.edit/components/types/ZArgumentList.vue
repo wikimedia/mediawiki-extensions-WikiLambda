@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<div>
-		<h3>{{ $i18n( 'wikilambda-editor-argument-list-label' ) }}</h3>
+		<h3>{{ $i18n( 'wikilambda-editor-argument-list-label' ).text() }}</h3>
 		<ul class="ext-wikilambda-zlist-no-bullets">
 			<z-list-item
 				v-for="( item ) in ZlistItems"
@@ -16,7 +16,7 @@
 			></z-list-item>
 			<li v-if="!viewmode">
 				<button :title="tooltipAddListItem" @click="addNewItem">
-					{{ $i18n( 'wikilambda-editor-additem' ) }}
+					{{ $i18n( 'wikilambda-editor-additem' ).text() }}
 				</button>
 			</li>
 		</ul>

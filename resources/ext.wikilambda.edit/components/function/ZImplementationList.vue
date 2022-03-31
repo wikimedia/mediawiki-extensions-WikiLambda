@@ -7,7 +7,7 @@
 	-->
 	<div>
 		<h3>
-			{{ $i18n( 'wikilambda-editor-implementation-list-label' ) }}
+			{{ $i18n( 'wikilambda-editor-implementation-list-label' ).text() }}
 		</h3>
 		<ul class="ext-wikilambda-zlist-no-bullets">
 			<z-implementation-list-item
@@ -23,15 +23,15 @@
 					:title="tooltipAddListItem"
 					@click="addNewItem"
 				>
-					{{ $i18n( 'wikilambda-editor-additem' ) }}
+					{{ $i18n( 'wikilambda-editor-additem' ).text() }}
 				</button>
 			</li>
 		</ul>
 		<div v-if="getViewMode && ZlistItems.length <= 0">
-			{{ $i18n( 'wikilambda-implementation-none-found' ) }}
+			{{ $i18n( 'wikilambda-implementation-none-found' ).text() }}
 		</div>
 		<a :href="createNewImplementationLink">
-			{{ $i18n( 'wikilambda-implementation-create-new' ) }}
+			{{ $i18n( 'wikilambda-implementation-create-new' ).text() }}
 		</a>
 	</div>
 </template>

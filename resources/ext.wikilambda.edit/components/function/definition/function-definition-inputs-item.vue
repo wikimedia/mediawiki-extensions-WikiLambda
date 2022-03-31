@@ -9,7 +9,7 @@
 		<z-object-selector
 			:type="Constants.Z_TYPE"
 			class="ext-wikilambda-editor-input-list-item__selector"
-			:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' )"
+			:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text()"
 			:selected-id="getTypeOfArgument"
 			:readonly="!canEditType"
 			@input="setArgumentType( $event )"
@@ -23,8 +23,8 @@
 		<z-object-selector
 			v-if="getTypeOfArgument === Constants.Z_TYPED_LIST"
 			class="ext-wikilambda-editor-input-list-item__selector"
-			:label="$i18n( 'wikilambda-function-definition-inputs-item-typed-list-placeholder' )"
-			:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-typed-list-placeholder' )"
+			:label="$i18n( 'wikilambda-function-definition-inputs-item-typed-list-placeholder' ).text()"
+			:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-typed-list-placeholder' ).text()"
 			@input="setListTypedList"
 			@clear="setListTypedList"
 		>
@@ -32,8 +32,8 @@
 
 		<input
 			class="ext-wikilambda-editor-input-list-item__input"
-			:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' )"
-			:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' )"
+			:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
+			:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
 			:value="getArgumentLabel"
 			@input="setArgumentLabel( zobjectId, $event.target.value )"
 		>
@@ -43,7 +43,7 @@
 				class="ext-wikilambda-editor-input-list-item__button ext-wikilambda-edit__text-button"
 				role="button"
 				@click="$emit( 'add-new-input' )">
-				{{ $i18n( 'wikilambda-function-definition-inputs-item-add-input-button' ) }}
+				{{ $i18n( 'wikilambda-function-definition-inputs-item-add-input-button' ).text() }}
 			</div>
 		</template>
 	</div>

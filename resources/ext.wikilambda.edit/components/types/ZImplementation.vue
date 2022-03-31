@@ -11,7 +11,7 @@
 			<z-object-selector
 				v-if="!viewmode && implMode"
 				:type="Constants.Z_FUNCTION"
-				:placeholder="$i18n( 'wikilambda-function-typeselector-label' )"
+				:placeholder="$i18n( 'wikilambda-function-typeselector-label' ).text()"
 				:selected-id="zFunction.value"
 				@input="updateZFunctionType"
 			></z-object-selector>
@@ -21,11 +21,11 @@
 					:zobject-key="zFunction.value"
 					:readonly="true"
 				></z-reference>
-				<span v-else>{{ $i18n( 'wikilambda-invalidzobject' ) }}</span>
+				<span v-else>{{ $i18n( 'wikilambda-invalidzobject' ).text() }}</span>
 				<span class="ext-wikilambda-is-impl-associated">
 					({{ isImplementationAttached ?
-						$i18n( 'wikilambda-function-is-attached' ) :
-						$i18n( 'wikilambda-function-is-not-attached' )
+						$i18n( 'wikilambda-function-is-attached' ).text() :
+						$i18n( 'wikilambda-function-is-not-attached' ).text()
 					}})
 				</span>
 			</template>
@@ -33,15 +33,15 @@
 		<div v-if="!viewmode && implMode">
 			<select v-model="implMode">
 				<option value="code">
-					{{ $i18n( 'wikilambda-implementation-selector-code' ) }}
+					{{ $i18n( 'wikilambda-implementation-selector-code' ).text() }}
 				</option>
 				<option value="composition">
-					{{ $i18n( 'wikilambda-implementation-selector-composition' ) }}
+					{{ $i18n( 'wikilambda-implementation-selector-composition' ).text() }}
 				</option>
 			</select>
 		</div>
 		<div v-if="implMode === null">
-			<span>{{ $i18n( 'wikilambda-implementation-selector-none' ) }}</span>
+			<span>{{ $i18n( 'wikilambda-implementation-selector-none' ).text() }}</span>
 		</div>
 		<z-code
 			v-if="implMode === 'code'"

@@ -13,7 +13,7 @@
 				:destructive="true"
 				@click="removeLang"
 			>
-				{{ $i18n( 'wikilambda-editor-removeitem' ) }}
+				{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
 			</cdx-button>
 			{{ languageLabel }}:
 		</div>
@@ -68,7 +68,7 @@ module.exports = exports = {
 				return this.getZObjectChildrenById( this.zobjectId );
 			},
 			tooltipRemoveLang: function () {
-				return this.$i18n( 'wikilambda-editor-label-removelanguage-tooltip' );
+				return this.$i18n( 'wikilambda-editor-label-removelanguage-tooltip' ).text();
 			},
 			languageLabel: function () {
 				return this.getZkeyLabels[ this.monolingualStringLanguage ];

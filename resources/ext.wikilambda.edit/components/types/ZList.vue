@@ -21,7 +21,7 @@
 					:title="tooltipAddListItem"
 					@click="addNewItem"
 				>
-					{{ $i18n( 'wikilambda-editor-additem' ) }}
+					{{ $i18n( 'wikilambda-editor-additem' ).text() }}
 				</button>
 			</li>
 		</ul>
@@ -70,10 +70,10 @@ module.exports = exports = {
 				return this.ZlistItems.length;
 			},
 			tooltipRemoveListItem: function () {
-				return this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' );
+				return this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' ).text();
 			},
 			tooltipAddListItem: function () {
-				this.$i18n( 'wikilambda-editor-zlist-additem-tooltip' );
+				this.$i18n( 'wikilambda-editor-zlist-additem-tooltip' ).text();
 			}
 		} ),
 	methods: $.extend( {},

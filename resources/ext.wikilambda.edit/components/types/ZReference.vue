@@ -17,7 +17,7 @@
 		</span>
 		<z-object-selector
 			v-else
-			:placeholder="$i18n( 'wikilambda-zobjectselector-label' )"
+			:placeholder="$i18n( 'wikilambda-zobjectselector-label' ).text()"
 			:selected-id="referenceValue"
 			:type="searchType"
 			@input="setZReference"

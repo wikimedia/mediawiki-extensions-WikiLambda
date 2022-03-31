@@ -13,7 +13,7 @@
 			class="ext-wikilambda-zcode__language-selector"
 		>
 			<option value="" disabled>
-				{{ $i18n( 'wikilambda-editor-label-select-programming-language-label' ) }}
+				{{ $i18n( 'wikilambda-editor-label-select-programming-language-label' ).text() }}
 			</option>
 			<option
 				v-for="zProgrammingLang in getAllProgrammingLangs"

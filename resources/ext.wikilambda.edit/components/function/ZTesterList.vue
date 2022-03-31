@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<div>
-		<h3>{{ $i18n( 'wikilambda-editor-tester-list-label' ) }}</h3>
+		<h3>{{ $i18n( 'wikilambda-editor-tester-list-label' ).text() }}</h3>
 		<ul class="ext-wikilambda-zlist-no-bullets">
 			<z-tester-list-item
 				v-for="( item ) in ZlistItems"
@@ -21,12 +21,12 @@
 					:title="tooltipAddListItem"
 					@click="addNewItem"
 				>
-					{{ $i18n( 'wikilambda-editor-additem' ) }}
+					{{ $i18n( 'wikilambda-editor-additem' ).text() }}
 				</button>
 			</li>
 		</ul>
 		<div v-if="getViewMode && ZlistItems.length <= 0">
-			{{ $i18n( 'wikilambda-tester-none-found' ) }}
+			{{ $i18n( 'wikilambda-tester-none-found' ).text() }}
 		</div>
 		<z-tester-ad-hoc
 			v-if="getNewTesterId"
@@ -34,10 +34,10 @@
 			:z-tester-list-id="zobjectId"
 		></z-tester-ad-hoc>
 		<button v-if="!getViewMode && !getNewTesterId" @click="createNewTester">
-			{{ $i18n( 'wikilambda-tester-create-new' ) }}
+			{{ $i18n( 'wikilambda-tester-create-new' ).text() }}
 		</button>
 		<a v-if="getViewMode" :href="createNewTesterLink">
-			{{ $i18n( 'wikilambda-tester-create-new' ) }}
+			{{ $i18n( 'wikilambda-tester-create-new' ).text() }}
 		</a>
 	</div>
 </template>
