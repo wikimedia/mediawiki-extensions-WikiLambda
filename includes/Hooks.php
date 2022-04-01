@@ -675,7 +675,7 @@ class Hooks implements
 				);
 				throw new ZErrorException( $zerror );
 			}
-			if ( $response[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ] === 'Z23' ) {
+			if ( $response[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ] === ZTypeRegistry::Z_NULL ) {
 				// If the server has responsed with a Z5, show that properly.
 				$zerror = new ZError(
 					ZErrorTypeRegistry::Z_ERROR_EVALUATION,
