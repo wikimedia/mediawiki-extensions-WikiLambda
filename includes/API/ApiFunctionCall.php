@@ -95,7 +95,7 @@ class ApiFunctionCall extends ApiBase {
 		} catch ( ClientException | ServerException $exception ) {
 			$zError = json_encode( [
 				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_RESPONSEENVELOPE,
-				ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE => 'Z23',
+				ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE => ZTypeRegistry::Z_NULL,
 				ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA => [
 					ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_ERROR,
 					ZTypeRegistry::Z_ERROR_VALUE => [
