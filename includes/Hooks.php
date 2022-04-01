@@ -274,7 +274,7 @@ class Hooks implements
 			}
 		);
 
-		// Naturally sort, so Z2 gets created before Z10 etc.
+		// Naturally sort, so Z2/Persistent Object gets created before Z10/List etc.
 		natsort( $initialDataToLoadListing );
 
 		foreach ( $initialDataToLoadListing as $filename ) {
@@ -676,7 +676,7 @@ class Hooks implements
 				throw new ZErrorException( $zerror );
 			}
 			if ( $response[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ] === ZTypeRegistry::Z_NULL ) {
-				// If the server has responsed with a Z5, show that properly.
+				// If the server has responsed with a Z5/Error, show that properly.
 				$zerror = new ZError(
 					ZErrorTypeRegistry::Z_ERROR_EVALUATION,
 					new ZList( [ $response[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ] ] )

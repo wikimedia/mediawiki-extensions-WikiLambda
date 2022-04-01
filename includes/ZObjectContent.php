@@ -25,9 +25,9 @@ use Title;
 
 /**
  * This class represents the wrapper for a ZObject, as stored in MediaWiki. Though its form is
- * intentionally similar to that of a ZObject, representing a 'Persistent ZObject' or Z2, it
- * has several differences to account for the Content hierarchy and how it serves as the bridge
- * between MediaWiki 'real' content and the functional model.
+ * intentionally similar to that of a ZObject, representing a Z2/Persistent ZObject, it has several
+ * differences to account for the Content hierarchy and how it serves as the bridge between
+ * MediaWiki 'real' content and the functional model.
  */
 class ZObjectContent extends AbstractContent {
 

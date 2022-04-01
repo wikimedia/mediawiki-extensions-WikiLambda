@@ -49,8 +49,8 @@ class ZObjectFactory {
 
 		$object = $input;
 
-		// 2. If ZObject type is Z_PERSISTENT_OBJECT (Z2), get inner object.
-		// 		If not present, throw a now wellformed error.
+		// 2. If ZObject type is Z2/Z_PERSISTENT_OBJECT, get the inner object.
+		// 		If not present, throw a not wellformed error.
 		if ( $typeZid === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
 			try {
 				$object = self::extractInnerObject( $input );
@@ -117,7 +117,7 @@ class ZObjectFactory {
 		// 4.2 Track self-reference if Z_PERSISNTENT_ID is present
 		self::trackSelfReference( $persistentId->getZValue(), self::SET_SELF_ZID );
 
-		// 4.3. Create and validate inner ZObject: can throw Z502 not wellformed
+		// 4.3. Create and validate inner ZObject: can throw Z502/Not wellformed
 		$zObject = self::create( $object );
 
 		// 4.5. Construct ZPersistentObject()
@@ -143,7 +143,7 @@ class ZObjectFactory {
 
 	/**
 	 * Check that the required ZPersistentObject keys exists and, if they don't, raise
-	 * missing key errors (Z511)
+	 * Z511/Missing key errors
 	 *
 	 * @param string|array|\stdClass $input The item to check is a ZObject
 	 * @return bool
@@ -394,7 +394,7 @@ class ZObjectFactory {
 					$creationArray[] = $objectVars[ $key ];
 				} else {
 					// Build the value of a given key to create nested ZObjects
-					// If it fails, throw a key value error (Z526)
+					// If it fails, throw a Z526/Key value error
 					try {
 						$creationArray[] = self::createChild( $objectVars[ $key ] );
 					} catch ( ZErrorException $e ) {
@@ -410,7 +410,7 @@ class ZObjectFactory {
 				// If it doesn't exist in $objectVars, we pass null
 				$creationArray[] = null;
 				if ( array_key_exists( 'required', $settings ) && ( $settings['required'] ) ) {
-					// Error Z511: Missing key
+					// Error Z511/Missing key
 					throw new ZErrorException(
 						ZErrorFactory::createZErrorInstance(
 							ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,

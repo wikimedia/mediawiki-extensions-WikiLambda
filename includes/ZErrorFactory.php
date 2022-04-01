@@ -62,8 +62,8 @@ class ZErrorFactory {
 
 	/**
 	 * Root function to transform an array of Opis\JsonSchema\ValidationError objects
-	 * to a root ZError (Z5) object with all the nested errors identified by the
-	 * builtin ZErrorTypes (Z50)
+	 * to a root Z5/ZError object with all the nested errors identified by the
+	 * built-in Z50/ZErrorTypes
 	 *
 	 * @param ValidationError[] $errors
 	 * @return ZError|false
@@ -89,7 +89,7 @@ class ZErrorFactory {
 
 	/**
 	 * From the error structure built from opis/json-schema, identify the error types
-	 * using the error descriptors and build a nested ZError (Z5) with all that information
+	 * using the error descriptors and build a nested Z5/ZError with all that information
 	 *
 	 * @param ValidationError $err
 	 * @return ZError|bool
@@ -111,7 +111,7 @@ class ZErrorFactory {
 			);
 		}
 
-		// Return the Z5 structure with identified ZErrorTypes
+		// Return the Z5/ZError structure with identified Z50/ZErrorTypes
 		return self::identifyNestedErrors( $nestedErrors );
 	}
 
@@ -121,11 +121,11 @@ class ZErrorFactory {
 	 * matching the error descriptors, and
 	 * 2. when finding a non-terminal error, identifies it as a "key not wellformed"
 	 * builtin error and continues walking the branch.
-	 * It returns false if no errors could be identified or a root ZError (Z5) if
+	 * It returns false if no errors could be identified or a root Z5/ZError if
 	 * with the identified errors.
 	 *
 	 * @param array $nestedErrors
-	 * @return ZError|bool ZError (Z5) or false for no errors found
+	 * @return ZError|bool Z5/ZError or false for no errors found
 	 */
 	public static function identifyNestedErrors( $nestedErrors ) {
 		$zerrors = [];
@@ -153,7 +153,7 @@ class ZErrorFactory {
 			}
 		}
 
-		// If we found a list of errors, return a error Z509 (multiple errors)
+		// If we found a list of errors, return a single error Z509/Multiple errors
 		if ( count( $zerrors ) === 0 ) {
 			return false;
 		} elseif ( count( $zerrors ) === 1 ) {
@@ -379,7 +379,7 @@ class ZErrorFactory {
 	}
 
 	/**
-	 * Create a ZError (Z5) of the type "Multiple errors" (Z509)
+	 * Create a Z5/ZError of the type Z509/Multiple errors
 	 *
 	 * @param ZError[] $errorList
 	 * @return ZError
@@ -396,7 +396,7 @@ class ZErrorFactory {
 	}
 
 	/**
-	 * Create a ZError (Z5) of the type "Not wellformed" (Z502)
+	 * Create a Z5/ZError of the type Z502/Not wellformed
 	 *
 	 * @param ZError $childError
 	 * @return ZError
@@ -412,7 +412,7 @@ class ZErrorFactory {
 	}
 
 	/**
-	 * Create a ZError (Z5) of the type "Key not wellformed" (Z526)
+	 * Create a Z5/ZError of the type Z526/Key not wellformed
 	 *
 	 * @param string $key
 	 * @param ZError $childError
@@ -429,7 +429,7 @@ class ZErrorFactory {
 	}
 
 	/**
-	 * Create a ZError (Z5) of the type "Array element not wellformed" (Z522)
+	 * Create a Z5/ZError of the type Z522/Array element not wellformed
 	 *
 	 * @param string $index
 	 * @param ZError $childError
@@ -470,7 +470,7 @@ class ZErrorFactory {
 	}
 
 	/**
-	 * Create a ZError (Z5) of a given ZErrorType
+	 * Create a Z5/ZError of a given Z50/ZErrorType
 	 *
 	 * @param string $zErrorType
 	 * @param array $payload
