@@ -173,7 +173,7 @@ class ZObjectContentHandler extends ContentHandler {
 				);
 			}
 
-			// If language doesn't have a Zid, throws ZErrorException (Z541)
+			// If language doesn't have a Zid, throws ZErrorException of Z541/Language code not found
 			$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
 
 			$fullLabels = $zObject->getLabels();
