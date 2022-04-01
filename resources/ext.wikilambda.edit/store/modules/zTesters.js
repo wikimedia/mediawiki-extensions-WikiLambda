@@ -73,18 +73,18 @@ module.exports = exports = {
 		fetchZTesters: function ( context, zFunctionId ) {
 			var api = new mw.Api();
 
-			/* eslint-disable camelcase */
 			return api.get( {
 				action: 'query',
 				list: 'wikilambdafn_search',
 				format: 'json',
+				// eslint-disable-next-line camelcase
 				wikilambdafn_zfunction_id: zFunctionId,
+				// eslint-disable-next-line camelcase
 				wikilambdafn_type: Constants.Z_TESTER
 			} ).then( function ( response ) {
 				context.commit( 'setZTesters', response.query.wikilambdafn_search );
 				return context.dispatch( 'fetchZKeys', response.query.wikilambdafn_search );
 			} );
-			/* eslint-enable camelcase */
 		},
 		/**
 		 * Create a new instance of a tester. This is NOT attached to the main object, and used

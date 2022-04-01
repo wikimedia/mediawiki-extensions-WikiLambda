@@ -8,7 +8,6 @@
  */
 'use strict';
 
-/* eslint-disable camelcase */
 var Constants = require( '../Constants.js' ),
 	canonicalize = require( './schemata.js' ).methods.canonicalizeZObject;
 
@@ -18,6 +17,7 @@ module.exports = exports = {
 			var api = new mw.Api();
 			return api.post( {
 				action: 'wikilambda_function_call',
+				// eslint-disable-next-line camelcase
 				wikilambda_function_call_zobject: JSON.stringify(
 					canonicalize( zobject )
 				)

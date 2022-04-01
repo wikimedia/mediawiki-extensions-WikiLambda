@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 /*!
  * WikiLambda Vue editor: Module for storing, retrieving, and running test runners
  *
@@ -269,12 +268,16 @@ module.exports = exports = {
 
 			return api.get( {
 				action: 'wikilambda_perform_test',
+				// eslint-disable-next-line camelcase
 				wikilambda_perform_test_zfunction:
 					!context.getters.getViewMode && payload.zFunctionId === context.getters.getCurrentZObjectId ?
 						JSON.stringify( context.getters.getZkeys[ payload.zFunctionId ] ) :
 						payload.zFunctionId,
+				// eslint-disable-next-line camelcase
 				wikilambda_perform_test_zimplementations: JSON.stringify( implementations ),
+				// eslint-disable-next-line camelcase
 				wikilambda_perform_test_ztesters: JSON.stringify( testers ),
+				// eslint-disable-next-line camelcase
 				wikilambda_perform_test_nocache: payload.nocache || false
 			} ).then( function ( data ) {
 				var results = JSON.parse( data.query.wikilambda_perform_test.Tested.data );
