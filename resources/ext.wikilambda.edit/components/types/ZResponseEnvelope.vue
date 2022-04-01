@@ -14,11 +14,11 @@
 			></z-object-key>
 		</div>
 		<div class="ext-wikilambda-zresponseenvelope__show-more">
-			<button
+			<cdx-button
 				@click.prevent="showSecond = !showSecond"
 			>
 				Show More
-			</button>
+			</cdx-button>
 		</div>
 		<div v-if="showSecond">
 			<hr>
@@ -35,12 +35,14 @@
 var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	ZObjectKey = require( '../ZObjectKey.vue' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
 	components: {
-		'z-object-key': ZObjectKey
+		'z-object-key': ZObjectKey,
+		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],
 	props: {

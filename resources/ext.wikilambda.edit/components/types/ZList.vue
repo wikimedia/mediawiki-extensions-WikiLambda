@@ -16,13 +16,13 @@
 				@remove-item="removeItem"
 			></z-list-item>
 			<li v-if="!( viewmode || readonly )">
-				<button
+				<cdx-button
 					class="z-list-add"
 					:title="tooltipAddListItem"
 					@click="addNewItem"
 				>
 					{{ $i18n( 'wikilambda-editor-additem' ).text() }}
-				</button>
+				</cdx-button>
 			</li>
 		</ul>
 	</div>
@@ -31,6 +31,7 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	ZListItem = require( './ZListItem.vue' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -38,7 +39,8 @@ var Constants = require( '../../Constants.js' ),
 module.exports = exports = {
 	name: 'z-list',
 	components: {
-		'z-list-item': ZListItem
+		'z-list-item': ZListItem,
+		'cdx-button': CdxButton
 	},
 	inject: {
 		viewmode: { default: false }

@@ -23,9 +23,9 @@
 				></z-object-key>
 			</li>
 		</ul>
-		<button @click="callFunctionHandler">
+		<cdx-button @click="callFunctionHandler">
 			<label> {{ $i18n( 'wikilambda-call-function' ).text() }} </label>
-		</button>
+		</cdx-button>
 		<div v-if="resultZObject || orchestrating" class="ext-wikilambda-orchestrated-result">
 			<template v-if="resultZObject">
 				<span>{{ $i18n( 'wikilambda-orchestrated' ).text() }}</span>
@@ -58,11 +58,15 @@
 
 <script>
 var Constants = require( '../../Constants.js' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	ZFunctionCall = require( '../types/ZFunctionCall.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
+	components: {
+		'cdx-button': CdxButton
+	},
 	extends: ZFunctionCall,
 	provide: function () {
 		return {

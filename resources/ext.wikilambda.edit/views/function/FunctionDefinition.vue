@@ -48,11 +48,12 @@
 			</div>
 		</div>
 		<div class="ext-wikilambda-function-definition__action-add-input">
-			<button
+			<cdx-button
+				type="quiet"
 				@click="addLabelInOtherLanguages"
 			>
-				+ Add labels in another language
-			</button>
+				{{ $i18n( 'wikilambda-function-definition-add-other-label-languages-title' ).text() }}
+			</cdx-button>
 		</div>
 		<toast
 			v-if="showToast"
@@ -82,6 +83,7 @@ var mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 var Constants = require( '../../Constants.js' );
 var typeUtils = require( '../../mixins/typeUtils.js' );
+var CdxButton = require( '@wikimedia/codex' ).CdxButton;
 
 // @vue/component
 module.exports = exports = {
@@ -93,7 +95,8 @@ module.exports = exports = {
 		'function-definition-output': FunctionDefinitionOutput,
 		'function-definition-footer': FunctionDefinitionFooter,
 		'fn-editor-zlanguage-selector': FnEditorZLanguageSelector,
-		toast: Toast
+		toast: Toast,
+		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],
 	data: function () {

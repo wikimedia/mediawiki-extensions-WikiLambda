@@ -40,9 +40,9 @@
 				></z-object-key>
 			</li>
 		</ul>
-		<button v-if="!hideCallButton && isRootFunctionCall" @click="callFunctionHandler">
+		<cdx-button v-if="!hideCallButton && isRootFunctionCall" @click="callFunctionHandler">
 			<label> {{ $i18n( 'wikilambda-call-function' ).text() }} </label>
-		</button>
+		</cdx-button>
 		<div v-if="resultZObject || orchestrating" class="ext-wikilambda-orchestrated-result">
 			<template v-if="resultZObject">
 				<span>{{ $i18n( 'wikilambda-orchestrated' ).text() }}</span>

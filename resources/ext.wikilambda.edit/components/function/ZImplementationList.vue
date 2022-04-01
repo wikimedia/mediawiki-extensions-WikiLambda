@@ -19,12 +19,12 @@
 				@remove-item="removeItem"
 			></z-implementation-list-item>
 			<li v-if="!getViewMode">
-				<button
+				<cdx-button
 					:title="tooltipAddListItem"
 					@click="addNewItem"
 				>
 					{{ $i18n( 'wikilambda-editor-additem' ).text() }}
-				</button>
+				</cdx-button>
 			</li>
 		</ul>
 		<div v-if="getViewMode && ZlistItems.length <= 0">
@@ -40,6 +40,7 @@
 var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	ZList = require( '../types/ZList.vue' ),
 	ZImplementationListItem = require( './ZImplementationListItem.vue' );
 
@@ -47,7 +48,8 @@ var Constants = require( '../../Constants.js' ),
 module.exports = exports = {
 	name: 'z-implementation-list',
 	components: {
-		'z-implementation-list-item': ZImplementationListItem
+		'z-implementation-list-item': ZImplementationListItem,
+		'cdx-button': CdxButton
 	},
 	extends: ZList,
 	computed: $.extend( mapGetters( [ 'getNextObjectId', 'getCurrentZObjectId', 'getViewMode' ] ),

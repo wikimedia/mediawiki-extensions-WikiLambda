@@ -7,15 +7,16 @@
 	-->
 	<div>
 		<template v-if="!tooltipVisible">
-			<button
+			<cdx-button
 				class="ext-wikilambda-tab"
+				type="quiet"
 				:class="statusClass"
 				:disabled="disabled"
 				@click="$emit( 'click' )"
 			>
 				<cdx-icon v-if="icon" :icon="icon"></cdx-icon>
 				{{ title }}
-			</button>
+			</cdx-button>
 		</template>
 		<tooltip
 			v-else
@@ -24,21 +25,23 @@
 			:header="tooltipHeader"
 			:icon-color="getTooltipColor"
 		>
-			<button
+			<cdx-button
 				class="ext-wikilambda-tab"
+				type="quiet"
 				:class="statusClass"
 				:disabled="disabled"
 				@click="$emit( 'click' )"
 			>
 				<cdx-icon v-if="icon" :icon="icon"></cdx-icon>
 				{{ title }}
-			</button>
+			</cdx-button>
 		</tooltip>
 	</div>
 </template>
 
 <script>
 var CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	Tooltip = require( './Tooltip.vue' );
 
 // @vue/component
@@ -46,6 +49,7 @@ module.exports = exports = {
 	name: 'tab-item',
 	components: {
 		'cdx-icon': CdxIcon,
+		'cdx-button': CdxButton,
 		// TOOD (T298040): replace with codex tooltip/popover component
 		tooltip: Tooltip
 	},
@@ -85,11 +89,10 @@ module.exports = exports = {
 	},
 	computed: {
 		statusClass: function () {
-			// disabled styles trump inactive styles
-			if ( this.disabled ) {
-				return 'ext-wikilambda-tab-status_disabled';
+			if ( this.status === 'active' ) {
+				return 'progressive';
 			}
-			return 'ext-wikilambda-tab-status_' + this.status;
+			return '';
 		}
 	},
 	methods: {
@@ -138,44 +141,5 @@ module.exports = exports = {
 @active-color:#3366CC;
 @inactive-color: #000000;
 @disabled-color: #A2A9B1;
-
-.ext-wikilambda-tab-status {
-	// the current tab
-	&_active {
-		color: @active-color;
-		border-color: @active-color;
-
-		.cdx-icon {
-			border-color: @active-color;
-		}
-	}
-
-	// not current, but clickable
-	&_inactive {
-		color: @inactive-color;
-
-		.cdx-icon {
-			border-color: @inactive-color;
-		}
-	}
-
-	// not clickable
-	&_disabled {
-		color: @disabled-color;
-
-		.cdx-icon {
-			border-color: @disabled-color;
-		}
-	}
-
-	// in case an unexpected status is passed
-	&_undefined {
-		color: @inactive-color;
-
-		.cdx-icon {
-			border-color: @inactive-color;
-		}
-	}
-}
 
 </style>

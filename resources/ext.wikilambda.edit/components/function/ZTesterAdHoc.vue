@@ -19,9 +19,9 @@
 			:zobject-id="validator.id"
 		></z-inline-tester-validation>
 		<div>
-			<button @click="saveAdHocTester">
+			<cdx-button @click="saveAdHocTester">
 				{{ submitButtonLabel }}
-			</button>
+			</cdx-button>
 		</div>
 	</div>
 </template>
@@ -32,6 +32,7 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	schemata = require( '../../mixins/schemata.js' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	ZInlineTesterCall = require( './ZInlineTesterCall.vue' ),
 	ZInlineTesterValidation = require( './ZInlineTesterValidation.vue' ),
 	ZMultilingualString = require( '../types/ZMultilingualString.vue' );
@@ -41,7 +42,8 @@ module.exports = exports = {
 	components: {
 		'z-inline-tester-call': ZInlineTesterCall,
 		'z-inline-tester-validation': ZInlineTesterValidation,
-		'z-multilingual-string': ZMultilingualString
+		'z-multilingual-string': ZMultilingualString,
+		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils, schemata ],
 	props: {

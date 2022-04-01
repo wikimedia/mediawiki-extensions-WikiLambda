@@ -29,13 +29,13 @@
 				@remove-item="removeItem( item )"
 			></z-list-item>
 			<li v-if="!( viewmode || readonly || requiresTypeForList )">
-				<button
+				<cdx-button
 					class="z-list-add"
 					:title="tooltipAddListItem"
 					@click="addNewItem"
 				>
 					{{ $i18n( 'wikilambda-editor-additem' ).text() }}
-				</button>
+				</cdx-button>
 			</li>
 		</ul>
 	</div>
@@ -47,6 +47,7 @@ var Constants = require( '../../Constants.js' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
 // @vue/component
@@ -54,7 +55,8 @@ module.exports = exports = {
 	name: 'z-typed-list',
 	components: {
 		'z-list-item': ZListItem,
-		'z-object-selector': ZObjectSelector
+		'z-object-selector': ZObjectSelector,
+		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],
 	inject: {

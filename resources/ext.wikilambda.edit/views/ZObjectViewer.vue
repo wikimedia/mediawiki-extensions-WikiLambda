@@ -10,25 +10,27 @@
 		<z-object
 			:persistent="true"
 		></z-object>
-		<button @click="$store.dispatch( 'toggleExpertMode' )">
+		<cdx-button @click="$store.dispatch( 'toggleExpertMode' )">
 			<template v-if="$store.getters.isExpertMode">
 				{{ $i18n( 'wikilambda-disable-expert-mode' ).text() }}
 			</template>
 			<template v-else>
 				{{ $i18n( 'wikilambda-enable-expert-mode' ).text() }}
 			</template>
-		</button>
+		</cdx-button>
 	</div>
 </template>
 
 <script>
 var ZObject = require( '../components/ZObject.vue' );
+var CdxButton = require( '@wikimedia/codex' ).CdxButton;
 
 // @vue/component
 module.exports = exports = {
 	name: 'z-object-viewer',
 	components: {
-		'z-object': ZObject
+		'z-object': ZObject,
+		'cdx-button': CdxButton
 	}
 };
 </script>

@@ -5,9 +5,10 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<button
+	<cdx-button
 		class="ext-wikilambda-tester-result"
-		:class="resultClass"
+		:action="testerStatus"
+		type="primary"
 		x:disabled="!zImplementationId || !zTesterId || typeof testerStatus === 'undefined'"
 		@click="emitTesterKeys"
 	>
@@ -23,15 +24,19 @@
 		<template v-else>
 			{{ $i18n( 'wikilambda-tester-status-running' ).text() }}
 		</template>
-	</button>
+	</cdx-button>
 </template>
 
 <script>
 var mapGetters = require( 'vuex' ).mapGetters,
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
 // @vue/component
 module.exports = exports = {
+	components: {
+		'cdx-button': CdxButton
+	},
 	mixins: [ typeUtils ],
 	props: {
 		zFunctionId: {
@@ -59,11 +64,11 @@ module.exports = exports = {
 			}
 
 			if ( this.testerStatus === true ) {
-				return 'ext-wikilambda-tester-passed';
+				return 'progressive';
 			}
 
 			if ( this.testerStatus === false ) {
-				return 'ext-wikilambda-tester-failed';
+				return 'destructive';
 			}
 
 			return '';
@@ -91,13 +96,4 @@ module.exports = exports = {
 	text-decoration: none;
 }
 
-.ext-wikilambda-tester-result.ext-wikilambda-tester-passed {
-	background: #007400;
-	color: #fff;
-}
-
-.ext-wikilambda-tester-result.ext-wikilambda-tester-failed {
-	background: #f00;
-	color: #fff;
-}
 </style>

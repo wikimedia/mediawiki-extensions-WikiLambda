@@ -17,12 +17,12 @@
 				@remove-item="removeItem"
 			></z-tester-list-item>
 			<li v-if="!getViewMode">
-				<button
+				<cdx-button
 					:title="tooltipAddListItem"
 					@click="addNewItem"
 				>
 					{{ $i18n( 'wikilambda-editor-additem' ).text() }}
-				</button>
+				</cdx-button>
 			</li>
 		</ul>
 		<div v-if="getViewMode && ZlistItems.length <= 0">
@@ -33,9 +33,9 @@
 			:zobject-id="getNewTesterId"
 			:z-tester-list-id="zobjectId"
 		></z-tester-ad-hoc>
-		<button v-if="!getViewMode && !getNewTesterId" @click="createNewTester">
+		<cdx-button v-if="!getViewMode && !getNewTesterId" @click="createNewTester">
 			{{ $i18n( 'wikilambda-tester-create-new' ).text() }}
-		</button>
+		</cdx-button>
 		<a v-if="getViewMode" :href="createNewTesterLink">
 			{{ $i18n( 'wikilambda-tester-create-new' ).text() }}
 		</a>
@@ -46,6 +46,7 @@
 var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	ZList = require( '../types/ZList.vue' ),
 	ZTesterListItem = require( './ZTesterListItem.vue' ),
 	ZTesterAdHoc = require( './ZTesterAdHoc.vue' );
@@ -54,7 +55,8 @@ var Constants = require( '../../Constants.js' ),
 module.exports = exports = {
 	components: {
 		'z-tester-list-item': ZTesterListItem,
-		'z-tester-ad-hoc': ZTesterAdHoc
+		'z-tester-ad-hoc': ZTesterAdHoc,
+		'cdx-button': CdxButton
 	},
 	extends: ZList,
 	computed: $.extend( mapGetters( [

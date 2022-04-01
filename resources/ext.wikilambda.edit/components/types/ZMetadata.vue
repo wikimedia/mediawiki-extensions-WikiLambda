@@ -71,11 +71,11 @@
 								></z-string>
 							</div>
 							<div v-if="!viewmode">
-								<button
+								<cdx-button
 									@click="addAliasForLanguage( language.Z9K1 )"
 								>
 									{{ $i18n( 'wikilambda-editor-additem' ).text() }}
-								</button> {{ $i18n( 'wikilambda-metadata-add-alias' ).text() }}
+								</cdx-button> {{ $i18n( 'wikilambda-metadata-add-alias' ).text() }}
 							</div>
 						</td>
 					</tr>

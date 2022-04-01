@@ -60,9 +60,9 @@
 					<tr>
 						<td>
 							<slot name="run-testers" :click="runTesters">
-								<button v-if="!getViewMode" @click="runTesters">
+								<cdx-button v-if="!getViewMode" @click="runTesters">
 									{{ $i18n( 'wikilambda-tester-run-testers' ).text() }}
-								</button>
+								</cdx-button>
 							</slot>
 						</td>
 						<td :colspan="implementations.length" class="ext-wikilambda-fn-tester-result">
@@ -107,12 +107,14 @@ var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	ZTesterImplResult = require( './ZTesterImplResult.vue' );
 
 // @vue/component
 module.exports = exports = {
 	components: {
-		'z-tester-impl-result': ZTesterImplResult
+		'z-tester-impl-result': ZTesterImplResult,
+		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],
 	inject: {

@@ -15,9 +15,9 @@
 				:viewmode="viewmode"
 			></z-list-item>
 			<li v-if="!viewmode">
-				<button :title="tooltipAddListItem" @click="addNewItem">
+				<cdx-button :title="tooltipAddListItem" @click="addNewItem">
 					{{ $i18n( 'wikilambda-editor-additem' ).text() }}
-				</button>
+				</cdx-button>
 			</li>
 		</ul>
 	</div>
@@ -26,10 +26,14 @@
 <script>
 var mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	ZList = require( './ZList.vue' );
 
 // @vue/component
 module.exports = exports = {
+	components: {
+		'cdx-button': CdxButton
+	},
 	extends: ZList,
 	computed: mapGetters( [ 'getNextObjectId' ] ),
 	methods: $.extend( mapActions( [ 'addZArgument' ] ), {

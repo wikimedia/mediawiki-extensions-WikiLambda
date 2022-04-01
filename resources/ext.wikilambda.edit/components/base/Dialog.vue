@@ -13,29 +13,34 @@
 				</div>
 				<div> {{ description }}</div>
 			</div>
-			<button class="ext-wikilambda-dialog_close-button" @click="$emit( 'exit-dialog' )">
+			<cdx-button
+				type="quiet"
+				class="ext-wikilambda-dialog_close-button"
+				@click="$emit( 'exit-dialog' )"
+			>
 				<cdx-icon :icon="dialogIcon()"></cdx-icon>
-			</button>
+			</cdx-button>
 		</div>
 		<div class="ext-wikilambda-dialog_action-buttons">
-			<button
-				:class="cancelButton.class"
+			<cdx-button
 				@click="$emit( 'close-dialog' )"
 			>
-				{{ cancelButton.text }}
-			</button>
-			<button
-				:class="confirmButton.style"
+				{{ cancelButtonText }}
+			</cdx-button>
+			<cdx-button
+				action="destructive"
+				type="primary"
 				@click="$emit( 'confirm-dialog' )"
 			>
-				{{ confirmButton.text }}
-			</button>
+				{{ confirmButtonText }}
+			</cdx-button>
 		</div>
 	</div>
 </template>
 
 <script>
 var CdxIcon = require( '@wikimedia/codex' ).CdxIcon;
+var CdxButton = require( '@wikimedia/codex' ).CdxButton;
 var icons = require( '../../../lib/icons.json' );
 
 // @vue/component
@@ -43,7 +48,8 @@ module.exports = exports = {
 	name: 'base-dialog',
 	compatConfig: { MODE: 3 },
 	components: {
-		'cdx-icon': CdxIcon
+		'cdx-icon': CdxIcon,
+		'cdx-button': CdxButton
 	},
 	directives: {
 		clickout: {
@@ -72,18 +78,12 @@ module.exports = exports = {
 			type: String,
 			required: true
 		},
-		/* expected format:
-		{
-			// the color to use for the button
-			class: ext-wikilambda-dialog_ + (danger | '' )
-			text: the text for the button
-		} */
-		cancelButton: {
-			type: Object,
+		cancelButtonText: {
+			type: String,
 			required: true
 		},
-		confirmButton: {
-			type: Object,
+		confirmButtonText: {
+			type: String,
 			required: true
 		},
 		shouldClickToClose: {

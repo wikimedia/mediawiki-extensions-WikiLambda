@@ -34,9 +34,9 @@
 			:z-function-id="zFunctionId"
 		>
 			<template #run-testers="{ click }">
-				<button @click="click">
+				<cdx-button @click="click">
 					{{ $i18n( 'wikilambda-tester-run-tester' ).text() }}
-				</button>
+				</cdx-button>
 			</template>
 		</z-function-tester-report>
 	</div>
@@ -46,6 +46,7 @@
 var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	typeUtils = require( '../../mixins/typeUtils.js' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	ZFunctionCall = require( './ZFunctionCall.vue' ),
 	ZReference = require( './ZReference.vue' ),
 	ZFunctionTesterReport = require( '../function/ZFunctionTesterReport.vue' );
@@ -55,7 +56,8 @@ module.exports = exports = {
 	components: {
 		'z-function-call': ZFunctionCall,
 		'z-reference': ZReference,
-		'z-function-tester-report': ZFunctionTesterReport
+		'z-function-tester-report': ZFunctionTesterReport,
+		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],
 	props: {

@@ -10,8 +10,8 @@
 			v-if="openDialog"
 			:title="$i18n( 'wikilambda-function-are-you-sure-dialog-header' ).text()"
 			:description="$i18n( 'wikilambda-function-are-you-sure-dialog-description' ).text()"
-			:cancel-button="cancelButton"
-			:confirm-button="confirmButton"
+			:cancel-button-text="cancelButtonText"
+			:confirm-button-text="confirmButtonText"
 			@exit-dialog="openDialog = false"
 			@close-dialog="openDialog = false"
 			@confirm-dialog="confirmCancel">
@@ -26,27 +26,29 @@
 			:placeholder="$i18n( 'wikilambda-function-definition-footer-placeholder' ).text()"
 		>
 		<div class="ext-wikilambda-function-definition-footer__actions">
-			<button
+			<cdx-button
 				class="ext-wikilambda-function-definition-footer__publish-button"
-				:class="publishButtonStyle"
+				:action="publishButtonStyle"
 				:disabled="!publishButtonValidity"
 				@click="handlePublish"
 			>
 				{{ $i18n( 'wikilambda-publishnew' ).text() }}
-			</button>
+			</cdx-button>
 			<!-- TODO: The following is just a placeholder until it is possible to attach implementation / Testers -->
-			<button
+			<cdx-button
 				v-if="isEditing "
 				@click="handleFallbackClick"
 			>
 				{{ $i18n( 'wikilambda-fallback' ).text() }}
-			</button>
-			<button
+			</cdx-button>
+			<cdx-button
 				class="ext-wikilambda-function-definition-footer__actions__cancel"
+				action="destructive"
+				type="primary"
 				@click.stop="handleCancel"
 			>
 				{{ $i18n( 'wikilambda-cancel' ).text() }}
-			</button>
+			</cdx-button>
 		</div>
 	</div>
 </template>
@@ -54,6 +56,7 @@
 <script>
 var Constants = require( '../../../Constants.js' ),
 	DialogContainer = require( '../../base/DialogContainer.vue' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
@@ -61,7 +64,8 @@ var Constants = require( '../../../Constants.js' ),
 module.exports = exports = {
 	name: 'function-definition-footer',
 	components: {
-		'dialog-container': DialogContainer
+		'dialog-container': DialogContainer,
+		'cdx-button': CdxButton
 	},
 	props: {
 		isEditing: {
@@ -86,20 +90,14 @@ module.exports = exports = {
 		},
 		publishButtonStyle: function () {
 			return this.publishButtonValidity ?
-				'ext-wikilambda-function-definition-footer__actions__valid-publish' :
-				'ext-wikilambda-function-definition-footer__actions__invalid';
+				'progressive' :
+				'destructive';
 		},
-		cancelButton: function () {
-			return {
-				style: '',
-				text: this.$i18n( 'wikilambda-continue-editing' ).text()
-			};
+		cancelButtonText: function () {
+			return this.$i18n( 'wikilambda-continue-editing' ).text();
 		},
-		confirmButton: function () {
-			return {
-				style: 'ext-wikilambda-dialog_danger',
-				text: this.$i18n( 'wikilambda-discard-edits' ).text()
-			};
+		confirmButtonText: function () {
+			return this.$i18n( 'wikilambda-discard-edits' ).text();
 		}
 	} ),
 	methods: $.extend( {},
@@ -163,28 +161,6 @@ module.exports = exports = {
 			margin: 5px;
 			border-radius: 2px;
 			cursor: pointer;
-		}
-
-		&__valid-publish {
-			background-color: @wmui-color-accent50;
-			color: @wmui-color-base100;
-			border: 0;
-		}
-
-		&__published {
-			background-color: @wmui-color-accent90;
-			border: 0;
-		}
-
-		&__cancel {
-			color: @wmui-color-red50;
-			border: 0;
-		}
-
-		&__invalid {
-			background-color: @wmui-color-base70;
-			color: @wmui-color-base100;
-			border: 0;
 		}
 
 		input {

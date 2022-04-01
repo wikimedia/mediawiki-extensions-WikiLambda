@@ -9,8 +9,8 @@
 		<base-dialog
 			:title="title"
 			:description="description"
-			:cancel-button="cancelButton"
-			:confirm-button="confirmButton"
+			:cancel-button-text="cancelButtonText"
+			:confirm-button-text="confirmButtonText"
 			:should-click-to-close="shouldClickToClose"
 			@exit-dialog="$emit( 'exit-dialog' ) "
 			@close-dialog="$emit( 'close-dialog' )"
@@ -38,24 +38,18 @@ module.exports = exports = {
 			type: String,
 			required: true
 		},
-		cancelButton: {
-			type: Object,
-			required: false,
+		cancelButtonText: {
+			type: String,
+			required: true,
 			default() {
-				return {
-					text: this.$i18n( 'wikilambda-cancel' ).text(),
-					class: 'ext-wikilambda-dialog_danger'
-				};
+				return this.$i18n( 'wikilambda-cancel' ).text();
 			}
 		},
-		confirmButton: {
-			type: Object,
-			required: false,
+		confirmButtonText: {
+			type: String,
+			required: true,
 			default() {
-				return {
-					text: this.$i18n( 'wikilambda-confirm' ).text(),
-					class: ''
-				};
+				return this.$i18n( 'wikilambda-confirm' ).text();
 			}
 		},
 		shouldClickToClose: {

@@ -21,12 +21,12 @@
 					</a>
 				</p>
 				<div v-if="showClearButton" class="ext-wikilambda-clear-persistentobject">
-					<button
+					<cdx-button
 						:title="$i18n( 'wikilambda-editor-zobject-clearitem-tooltip' ).text()"
 						@click="removeKey( zObjectValue.id )"
 					>
 						{{ $i18n( 'wikilambda-editor-clearitem' ).text() }}
-					</button>
+					</cdx-button>
 				</div>
 				<z-object-key
 					:key="Constants.Z_PERSISTENTOBJECT_VALUE"
@@ -67,6 +67,7 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	ZObjectKey = require( '../ZObjectKey.vue' ),
@@ -82,7 +83,8 @@ module.exports = exports = {
 		'z-metadata': ZMetadata,
 		'z-function-evaluator': ZFunctionEvaluator,
 		'z-object-json': ZObjectJson,
-		'fn-editor-visual-display': FnEditorVisualDisplay
+		'fn-editor-visual-display': FnEditorVisualDisplay,
+		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],
 	inject: {
