@@ -79,11 +79,11 @@ class ApiQueryZFunctionReference extends ApiQueryGeneratorBase {
 		return [
 			'zfunction_id' => [
 				ParamValidator::PARAM_TYPE => 'string',
-				ApiBase::PARAM_DFLT => ''
+				ParamValidator::PARAM_DEFAULT => ''
 			],
 			'type' => [
 				ParamValidator::PARAM_TYPE => 'string',
-				ApiBase::PARAM_DFLT => ''
+				ParamValidator::PARAM_DEFAULT => ''
 			]
 		];
 	}

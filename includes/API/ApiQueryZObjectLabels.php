@@ -141,7 +141,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 		return [
 			'search' => [
 				ParamValidator::PARAM_TYPE => 'string',
-				ApiBase::PARAM_DFLT => '',
+				ParamValidator::PARAM_DEFAULT => '',
 			],
 			'language' => [
 				ParamValidator::PARAM_TYPE => array_keys(
@@ -153,11 +153,11 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 			// default-true boolean flags to ever be set false.
 			'nofallback' => [
 				ParamValidator::PARAM_TYPE => 'boolean',
-				ApiBase::PARAM_DFLT => false,
+				ParamValidator::PARAM_DEFAULT => false,
 			],
 			'exact' => [
 				ParamValidator::PARAM_TYPE => 'boolean',
-				ApiBase::PARAM_DFLT => false,
+				ParamValidator::PARAM_DEFAULT => false,
 			],
 			'type' => [
 				ParamValidator::PARAM_TYPE => 'string',
@@ -167,11 +167,11 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 			],
 			'strict_return_type' => [
 				ParamValidator::PARAM_TYPE => 'boolean',
-				ApiBase::PARAM_DFLT => false,
+				ParamValidator::PARAM_DEFAULT => false,
 			],
 			'limit' => [
 				ParamValidator::PARAM_TYPE => 'limit',
-				ApiBase::PARAM_DFLT => 10,
+				ParamValidator::PARAM_DEFAULT => 10,
 				IntegerDef::PARAM_MIN => 1,
 				IntegerDef::PARAM_MAX => ApiBase::LIMIT_BIG1,
 				IntegerDef::PARAM_MAX2 => ApiBase::LIMIT_BIG2,
