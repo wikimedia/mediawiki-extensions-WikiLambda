@@ -18,6 +18,7 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\ParamValidator\ParamValidator;
+use Wikimedia\ParamValidator\TypeDef\IntegerDef;
 
 class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 
@@ -171,9 +172,9 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 			'limit' => [
 				ParamValidator::PARAM_TYPE => 'limit',
 				ApiBase::PARAM_DFLT => 10,
-				ApiBase::PARAM_MIN => 1,
-				ApiBase::PARAM_MAX => ApiBase::LIMIT_BIG1,
-				ApiBase::PARAM_MAX2 => ApiBase::LIMIT_BIG2,
+				IntegerDef::PARAM_MIN => 1,
+				IntegerDef::PARAM_MAX => ApiBase::LIMIT_BIG1,
+				IntegerDef::PARAM_MAX2 => ApiBase::LIMIT_BIG2,
 			],
 			'continue' => [
 				ApiBase::PARAM_HELP_MSG => 'api-help-param-continue',
