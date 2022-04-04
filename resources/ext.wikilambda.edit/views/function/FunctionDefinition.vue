@@ -24,10 +24,12 @@
 				<span v-else class="ext-wikilambda-function-definition__container__input__language-title">
 					{{ labelLanguage.label ? labelLanguage.label : labelLanguage.zLang }}:
 				</span>
+				<!-- component that displays names for a language -->
 				<function-definition-name
 					:z-lang="labelLanguage.zLang"
 					:is-main-z-object="index === 0"
 				></function-definition-name>
+				<!-- component that displays aliases for a language -->
 				<function-definition-aliases :z-lang="labelLanguage.zLang"></function-definition-aliases>
 				<function-definition-inputs
 					:z-lang="labelLanguage.zLang"
@@ -114,52 +116,124 @@ module.exports = exports = {
 		'getAllZKeyLanguageLabels'
 	] ),
 	{
+		/**
+		 * A function can be published if it has at least one input and an output
+		 *
+		 * @return {boolean} if a function is able to be published
+		 */
 		ableToPublish: function () {
 			if ( this.currentZFunctionHasInputs && this.currentZFunctionHasOutput ) {
 				return true;
 			}
 			return false;
 		},
+		/**
+		 * icon for toast
+		 *
+		 * @return {Object}
+		 */
 		toastIcon: function () {
 			return icons.cdxIconCheck;
 		},
+		/**
+		 * timeout for toast
+		 *
+		 * @return {number}
+		 */
 		toastTimeout: function () {
 			return 2000;
 		},
+		/**
+		 * if toast should be shown
+		 *
+		 * @return {boolean}
+		 */
 		showToast: function () {
 			return this.currentToast !== null;
 		},
+		/**
+		 * if currently editing the loaded function
+		 *
+		 * @return {boolean}
+		 */
 		isEditingExistingFunction: function () {
 			return !this.isNewZObject && !this.getViewMode;
 		},
+		/**
+		 * icon for admin tooltip
+		 *
+		 * @return {Object}
+		 */
 		adminTooltipIcon: function () {
 			return icons.cdxIconInfoFilled;
 		},
+		/**
+		 * message for admin tooltip
+		 *
+		 * @return {string}
+		 */
 		adminTooltipMessage: function () {
 			return this.$i18n( 'wikilambda-editor-fn-edit-definition-tooltip-content' ).text();
 		},
+		/**
+		 * zobject ID
+		 *
+		 * @return {number}
+		 */
 		zobjectId: function () {
 			return this.getZkeyLabels[ 0 ];
 		},
+		/**
+		 * zobjectId
+		 *
+		 * @return {number}
+		 */
 		zobject: function () {
 			return this.getZObjectChildrenById( this.zobjectId );
 		},
+		/**
+		 * id for zObjectLabel
+		 *
+		 * @return {number}
+		 */
 		zObjectLabelId: function () {
 			return this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_LABEL, this.zobject ).id;
 		},
+		/**
+		 * id for zObjectAlias
+		 *
+		 * @return {number}
+		 */
 		zObjectAliasId: function () {
 			return this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_ALIASES, this.zobject ).id;
 		},
+		/**
+		 * list of labels for a given zObject
+		 *
+		 * @return {Array}
+		 */
 		zObjectLabels: function () {
 			return this.getZObjectAsJsonById( this.zObjectLabelId );
 		},
+		/**
+		 * list of aliases for a given zObject
+		 *
+		 * @return {Array}
+		 */
 		zObjectAliases: function () {
 			return this.getZObjectAsJsonById( this.zObjectAliasId );
 		},
+		/**
+		 * get all the existing languages for the current function
+		 * these languages could be used for labels and/or aliases
+		 *
+		 * @return {Array} list of formatted languages
+		 */
 		selectedLanguages: function () {
 			var languageList = [];
 
 			// Don't break if the labels are set to {}
+			// find all languages used for labels
 			if ( this.zObjectLabels && this.zObjectLabels[
 				Constants.Z_PERSISTENTOBJECT_LABEL
 			][
@@ -175,6 +249,7 @@ module.exports = exports = {
 			}
 
 			// Don't break if the aliases are set to {}
+			// find all languages used for aliases
 			if ( this.zObjectAliases && this.zObjectAliases[
 				Constants.Z_PERSISTENTOBJECT_ALIASES
 			][
@@ -194,10 +269,11 @@ module.exports = exports = {
 			}
 
 			var formattedLanguages = [];
+
 			for ( var item in languageList ) {
 				formattedLanguages.push( {
 					zLang: languageList[ item ],
-					label: this.getZkeyLabels[ languageList[ item ] ],
+					label: this.getZkeyLabels[ languageList[ item ] ], // get the label for the language zId
 					readOnly: true
 				} );
 			}
@@ -215,6 +291,10 @@ module.exports = exports = {
 		closeToast: function () {
 			this.currentToast = null;
 		},
+		/**
+		 * Gets called when user clicks on the button
+		 * adds another language label section
+		 */
 		addLabelInOtherLanguages: function () {
 			const hasSingleLanguage = this.labelLanguages.length === 1;
 			const hasMultipleLanguage = this.labelLanguages.length > 1;
@@ -244,6 +324,11 @@ module.exports = exports = {
 
 			this.labelLanguages[ index ] = lang;
 		},
+		/**
+		 * publish function changes and redirect to the view page
+		 *
+		 * @param {Object} summary
+		 */
 		handlePublish: function ( summary ) {
 			const context = this;
 			this.submitZObject( summary ).then( function ( pageTitle ) {
@@ -257,6 +342,9 @@ module.exports = exports = {
 		}
 	} ),
 	watch: {
+		/**
+		 * show a toast once the user has filled out the requirements and a function can be published
+		 */
 		ableToPublish: {
 			immediate: true,
 			handler: function ( status ) {

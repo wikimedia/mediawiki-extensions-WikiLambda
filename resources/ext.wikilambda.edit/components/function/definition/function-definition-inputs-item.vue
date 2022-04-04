@@ -68,13 +68,24 @@ module.exports = exports = {
 			type: Number,
 			required: true
 		},
+		/**
+		 * if user has permissions to add new input
+		 */
 		showAddNewInput: {
 			type: Boolean
 		},
+		/**
+		 * if user has permissions to edit the input type
+		 */
 		canEditType: {
 			type: Boolean,
 			required: true
 		},
+		/**
+		 * zID of item label language
+		 *
+		 * @example Z1014
+		 */
 		zLang: {
 			type: String,
 			required: true

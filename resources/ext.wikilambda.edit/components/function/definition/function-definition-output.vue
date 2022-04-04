@@ -48,14 +48,23 @@ module.exports = exports = {
 			type: Number,
 			default: 0
 		},
+		/**
+		 * if user is editing the function
+		 */
 		isEditing: {
 			type: Boolean
 		},
+		/**
+		 * icon that will display a tooltip
+		 */
 		tooltipIcon: {
 			type: [ String, Object ],
 			default: null,
 			required: false
 		},
+		/**
+		 * message the tooltip displays
+		 */
 		tooltipMessage: {
 			type: String,
 			default: null

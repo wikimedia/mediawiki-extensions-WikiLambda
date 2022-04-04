@@ -15,7 +15,6 @@
 				{{ $i18n( 'wikilambda-function-definition-name-example' ).text() }}
 			</a>
 		</div>
-
 		<input
 			id="ext-wikilambda-function-definition-name__input"
 			:value="zobjectLabel"
@@ -43,6 +42,10 @@ module.exports = exports = {
 		isMainZObject: {
 			type: Boolean
 		},
+		/**
+		 * zID of item label language
+		 * @example Z1014
+		 */
 		zLang: {
 			type: String,
 			required: true

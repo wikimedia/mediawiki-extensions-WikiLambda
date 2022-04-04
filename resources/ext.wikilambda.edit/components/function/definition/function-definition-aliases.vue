@@ -18,7 +18,6 @@
 				{{ $i18n( "wikilambda-function-definition-alias-example" ) }}
 			</a>
 		</div>
-
 		<div class="ext-wikilambda-function-definition-aliases__inputs">
 			<chips
 				:chips="getFilteredCurrentLanguageAliases"
@@ -52,6 +51,11 @@ module.exports = exports = {
 			type: Number,
 			default: 0
 		},
+		/**
+		 * zID of item label language
+		 *
+		 * @example Z1014
+		 */
 		zLang: {
 			type: String,
 			required: true

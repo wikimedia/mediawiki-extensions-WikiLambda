@@ -122,6 +122,9 @@ module.exports = exports = {
 			},
 			handlePublish: function () {
 				// TODO (T297330): include legal text when ready
+				/**
+				 * event to publish changes to a function (or a new function)
+				 */
 				this.$emit( 'publish', this.summary );
 			},
 			handleFallbackClick: function () {

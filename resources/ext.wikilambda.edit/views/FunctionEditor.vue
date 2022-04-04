@@ -55,6 +55,11 @@ module.exports = exports = {
 		mapGetters( [ 'isNewZObject' ] ),
 		mapGetters( 'router', [ 'getCurrentView' ] ),
 		{
+			/**
+			 * get the list of tabs to display at the top of the page for navigation
+			 *
+			 * @return {Array} list of tab objects
+			 */
 			getVisibleTabs: function () {
 				var tabs = [
 					{
@@ -65,7 +70,7 @@ module.exports = exports = {
 						icon: cdxIcons.cdxIconCheck
 					}
 				];
-
+				// only show implementation and tester tabs if the function already exists
 				if ( !this.isNewZObject ) {
 					tabs.push(
 						{
