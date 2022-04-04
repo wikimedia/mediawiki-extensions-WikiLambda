@@ -18,6 +18,9 @@ describe( 'ZKeyModeSelector', function () {
 			getters: {
 				isExpertMode: function () {
 					return true;
+				},
+				getZarguments: function () {
+					return { Z10024K1: { labels: [ { key: 'word: ', label: 'word', lang: 'Z1002' } ], zid: 'Z10024K1', type: 'String' } };
 				}
 			}
 		} );
@@ -41,6 +44,11 @@ describe( 'ZKeyModeSelector', function () {
 				props: {
 					mode: Constants.Z_KEY_MODES.LITERAL,
 					parentType: Constants.Z_OBJECT
+				},
+				global: {
+					provide: {
+						allowArgRefMode: true
+					}
 				}
 			} ),
 			select,
@@ -48,8 +56,8 @@ describe( 'ZKeyModeSelector', function () {
 
 		select = wrapper.find( 'select' );
 		options = select.findAll( 'option' );
-		// TODO (T303073): This fails, expects 6 but gets 5 since we upgraded to Vue3
-		// expect( options.length ).toBe( Object.keys( Constants.Z_KEY_MODES ).length );
+
+		expect( options.length ).toBe( Object.keys( Constants.Z_KEY_MODES ).length );
 		options[ 1 ].element.selected = true;
 		wrapper.find( 'select' ).trigger( 'change' );
 		expect( wrapper.emitted().change.length ).toBe( 1 );
