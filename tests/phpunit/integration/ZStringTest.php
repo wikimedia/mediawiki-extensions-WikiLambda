@@ -38,17 +38,17 @@ class ZStringTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Z6', $testObject->getZType() );
 		$this->assertSame( 'Test', $testObject->getZValue() );
 
-		$testObject = new ZObjectContent( '{ "Z1K1": "Z6", "Z6K1": "Test" }' );
+		$testObject = new ZObjectContent( '{ "Z1K1": "Z6", "Z6K1": "Z400" }' );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z6', $testObject->getZType() );
-		$this->assertSame( 'Test', $testObject->getZValue() );
+		$this->assertSame( 'Z400', $testObject->getZValue() );
 
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent(
 			'{ '
 				. '"Z1K1": "Z2", '
 				. '"Z2K1": "Z0", '
-				. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "Test" }, '
+				. '"Z2K2": "Test", '
 				. '"Z2K3": { "Z1K1":"Z12", "Z12K1":[] } '
 			. '}'
 		);
