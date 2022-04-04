@@ -35,7 +35,7 @@ class ZObjectStructureValidatorTest extends WikiLambdaIntegrationTestCase {
 	 * @covers MediaWiki\Extension\WikiLambda\Validation\ValidationStatus::getErrors
 	 */
 	public function testCanonical_valid() {
-		$canonicalZ2 = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0"},'
+		$canonicalZ2 = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z400" },'
 			. ' "Z2K2": "valid content", "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }';
 		$validator = ZObjectStructureValidator::createCanonicalValidator( "Z2" );
 		$this->assertInstanceOf( ZObjectStructureValidator::class, $validator );

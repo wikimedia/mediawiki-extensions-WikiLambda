@@ -56,7 +56,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 	public function testConstruct_builtinType() {
 		$testObject = (object)[
 			"Z1K1" => "Z6",
-			"Z6K1" => "builtin zobject"
+			"Z6K1" => "Z400"
 		];
 		$testZObject = ZObjectFactory::create( $testObject );
 		$this->assertInstanceOf( ZObject::class, $testZObject );

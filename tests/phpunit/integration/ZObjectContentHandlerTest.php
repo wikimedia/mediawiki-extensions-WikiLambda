@@ -270,14 +270,17 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 
 		// Valid content with string and reference in normal form
 		$testObject = new ZObjectContent( '{ "Z1K1": "Z2",'
-			. '"Z2K1": { "Z1K1": "Z9", "Z9K1": "Z333" },'
-			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "string value" },'
+			. '"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z333" },'
+			. '"Z2K2": "string value",'
 			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }' );
 
 		// Expected result: canonical, UTF8, trimmed and standard EOL characters
 		$zObjectTransform = FormatJson::encode( [
 			"Z1K1" => "Z2",
-			"Z2K1" => "Z333",
+			"Z2K1" => [
+				"Z1K1" => "Z6",
+				"Z6K1" => "Z333"
+			],
 			"Z2K2" => "string value",
 			"Z2K3" => [
 				"Z1K1" => "Z12",
@@ -309,8 +312,9 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$validateParams = new ValidationParams( $testPage, 0 );
 
 		$content = new ZObjectContent(
-			'{ "Z1K1": "Z2", "Z2K1": "Z401",'
-			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "valid" },'
+			'{ "Z1K1": "Z2",'
+			. '"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z401"},'
+			. '"Z2K2": "valid",'
 			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
 		);
 

@@ -51,7 +51,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$sysopUser = $this->getTestSysop()->getUser();
 
 		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
-			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" },'
+			. '"Z2K2": "hello",'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [] } }';
 		$page = $this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
 		$this->assertTrue( $page instanceof ZObjectPage );
@@ -109,7 +109,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 				ZErrorTypeRegistry::Z_ERROR_INVALID_JSON
 			],
 			'incorrect ZObject, no id' => [
-				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" }, "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }',
+				'{ "Z1K1": "Z2", "Z2K2": "hello", "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }',
 				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
 			],
 			'incorrect ZObject, no value' => [
@@ -117,12 +117,12 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
 			],
 			'incorrect ZObject, no label' => [
-				'{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" } }',
+				'{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": "hello" }',
 				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
 			],
 			'correct ZObject' => [
 				'{ "Z1K1": "Z2", "Z2K1": "Z0",'
-					. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" },'
+					. ' "Z2K2": "hello",'
 					. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }',
 				true
 			],
@@ -137,8 +137,8 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$title = Title::newFromText( $zid, NS_MAIN );
-		$normalZObject = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z9", "Z9K1": "Z0" },'
-			. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" },'
+		$normalZObject = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+			. ' "Z2K2": "hello",'
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }';
 		$canonicalZObject = '{ "Z1K1": "Z2", "Z2K1": "' . $zid . '",'
 			. ' "Z2K2": "hello",'
@@ -163,7 +163,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$title = Title::newFromText( $zid, NS_MAIN );
 		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
-			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "hello" },'
+			. '"Z2K2": "hello",'
 			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [] } }';
 
 		// We create a new ZObject

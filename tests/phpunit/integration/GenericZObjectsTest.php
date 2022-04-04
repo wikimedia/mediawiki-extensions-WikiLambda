@@ -35,10 +35,7 @@ class GenericZObjectsTest extends WikiLambdaIntegrationTestCase {
 {
 	"Z1K1": "Z2",
 	"Z2K1": "Z0",
-	"Z2K2": {
-		"Z1K1": "Z6",
-		"Z6K1": "Tést content!"
-	},
+	"Z2K2": "Tést content!",
 	"Z2K3": { "Z1K1": "Z12", "Z12K1": [] }
 }
 EOT;
@@ -422,10 +419,7 @@ EOT;
 {
 	"Z1K1": "Z2",
 	"Z2K1": "Z0",
-	"Z2K2": {
-		"Z1K1": "Z6",
-		"Z6K1": "test object"
-	},
+	"Z2K2": "test object",
 	"Z2K3": {
 		"Z1K1": "Z12",
 		"Z12K1": [

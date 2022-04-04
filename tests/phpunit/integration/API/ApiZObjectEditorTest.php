@@ -89,7 +89,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	 */
 	public function testUpdateFailed_unmatchingZid() {
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z999",'
-			. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "string" },'
+			. ' "Z2K2": "string",'
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }';
 
 		$this->expectException( ApiUsageException::class );
@@ -112,7 +112,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 		// Create the first Zobject
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
-			. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "string" },'
+			. ' "Z2K2": "string",'
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "unique label" } ] } }';
 		$this->store->createNewZObject( $data, 'First zobject', $sysopUser );
 
@@ -133,7 +133,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	public function testUpdateFailed_invalidTitle() {
 		$invalidZid = 'ZID';
 		$data = '{ "Z1K1": "Z2", "Z2K1": "' . $invalidZid . '",'
-			. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "string" },'
+			. ' "Z2K2": "string",'
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "unique label" } ] } }';
 
 		// Try to create the second Zobject with the same label
@@ -183,7 +183,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		$newZid = $this->store->getNextAvailableZid();
 
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
-			. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "string" },'
+			. ' "Z2K2": "string",'
 			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "new label" } ] } }';
 
 		$result = $this->doApiRequestWithToken( [
