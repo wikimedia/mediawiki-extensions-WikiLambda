@@ -27,6 +27,7 @@
 		>
 		<div class="ext-wikilambda-function-definition-footer__actions">
 			<button
+				class="ext-wikilambda-function-definition-footer__publish-button"
 				:class="publishButtonStyle"
 				:disabled="!publishButtonValidity"
 				@click="handlePublish"
