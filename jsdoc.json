@@ -1,0 +1,31 @@
+{
+	"opts": {
+		"encoding": "utf8",
+		"destination": "docs/js",
+		"packageX": "package.json",
+		"readme": "README.md",
+		"recurse": true,
+		"template": "node_modules/jsdoc-wmf-theme"
+	},
+	"plugins": [
+		"plugins/markdown"
+	],
+	"recurseDepth": 10,
+	"source": {
+		"include": [ "resources" ],
+		"includePattern": ".+\\.js$"
+	},
+	"tags": {},
+	"templates": {
+		"cleverLinks": true,
+		"default": {
+			"useLongnameInNav": true
+		},
+		"wmf": {
+			"linkMap": {
+				"Array": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+				"Promise": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+			}
+		}
+	}
+}

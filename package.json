@@ -3,7 +3,8 @@
 	"scripts": {
 		"test": "grunt test && npm run test:unit",
 		"test:unit": "jest",
-		"selenium-test": "wdio tests/selenium/wdio.conf.js"
+		"selenium-test": "wdio tests/selenium/wdio.conf.js",
+		"doc": "jsdoc -c jsdoc.json"
 	},
 	"devDependencies": {
 		"@babel/core": "7.16.10",
@@ -26,6 +27,8 @@
 		"grunt-stylelint": "0.16.0",
 		"jest": "27.4.7",
 		"jquery": "3.6.0",
+		"jsdoc": "3.6.10",
+		"jsdoc-wmf-theme": "0.0.5",
 		"stylelint-config-wikimedia": "0.11.1",
 		"vue": "3.2.31",
 		"vue-template-compiler": "2.6.11",
