@@ -68,6 +68,90 @@ If you would like to use the orchestrator/evaluator (e.g., to run user-defined a
 * You can evaluate an arbitrary function call by navigating to `localhost:8080/wiki/Special:CreateZObject`, adding a new key/value pair whose value is of type `Z7`, and selecting a function.
 * Note that if you are running the evaluator at a different relative URL than the default, you will have to change the value of WikiLambdaEvaluatorLocation in your local settings appropriately.
 
+### Data Model (vuex)
+
+Abstract Wikimedia uses a [Vuex](https://vuex.vuejs.org/) data model to store state and manipulate the data being provided by the PHP API.
+
+WikiLambda is build on top of complex data structure called zObjects. This data is fetched and managed by Vuex, and this section is going to describe how VUEX make use of this data.
+
+#### zObject from JSON to Array
+
+The most important topic of the store manipulation is the conversion of zObjects from JSON to Array. zObject can be very large and splitting it up in "smaller" parts was required to simplify the development and design of the FrontEnd. 
+
+The solution to this problem, was to convert a zObject JSON into an array that would allow us to separate the data into smaller parts and use individual array Indexes to support data manipulation.
+
+An example of a zObject JSON (mutlilingual string):
+
+```
+{
+        "Z1K1": "Z12",
+        "Z12K1": [
+            {
+                "Z1K1": "Z11",
+                "Z11K1": "Z1002",
+                "Z11K2": "Good Morning"
+            },
+            {
+                "Z1K1": "Z11",
+                "Z11K1": "Z1787",
+                "Z11K2": "Buongiorno"
+            }
+        ]
+    }
+```
+The provided example have 2 different instances of a monolingual string (Z11). If we would have been using JSON in our data model, we would have found difficult to manage the data. The Vue components would have had to have a complex flow of data all the way up, and modification of data (for example change Buongiorno to Buon giorno) would have been difficult due to the multiple instances of the same structure withint he JSON.
+
+To simplify the overall structure the above zObject is translated in the following array structure at first load in the method "convertZObjectToTree" in the `zobjectThreeUtils.js` mixins folder.
+
+| id | key       | parent    | value        |
+|----|-----------|-----------|--------------|
+| 0  | undefined | undefined | object       |
+| 1  | Z1K1      | 0         | Z12          |
+| 2  | Z12K1     | 1         | array        |
+| 3  | 0         | 2         | object       |
+| 4  | Z1K1      | 3         | Z11          |
+| 5  | Z11K1     | 3         | Z1002        |
+| 6  | Z11K2     | 3         | Good Morning |
+| 7  | 1         | 2         | object       |
+| 8  | Z1K1      | 7         | Z11          |
+| 9  | Z11K1     | 7         | Z1787        |
+| 10 | Z11K2     | 7         | Buongiorno   |
+
+The array data model allows us to manage the data in a more intuitive way. Each vue component is able to define its own scope by the use of Id's. For example the component that handles monolingual string will be rendered twice. One will be provided a Property of zObjectId of 3 and one with the value of 7. Doing so will allow the component to self manage the render (get all children of ID 3 or ID 7) and the manipulation of the data (modify Z11K2 of the monolingual with ID 7), and simplify the overall structure of the data.
+### Selenium Tests
+
+A set of Selenium test used to test E2E of the application is available within the project. The tests require a specific version of node (10) to run, and it is suggested therefore to use "fresh-node" to run them locally without the need to modify the personal environment.
+
+The tests need a specific set of environment variable to be avaialable. Please see the following list on how to set this `https://www.mediawiki.org/wiki/Selenium/How-to/Set_environment_variables`
+
+For information on how to run fresh-node and how to get started, see the following documentation: `https://www.mediawiki.org/wiki/Selenium/Getting_Started/Run_tests_using_Fresh`
+
+After the environment variable and fresh node are both set locally, run the following commands:
+
+```
+
+// go to your WikiLambda extension
+cd path/to/WikiLambda # you can start in the extension, no need for core
+
+// Initialize Fresh node
+fresh-node -env -net # you can start fresh in the extension folder, no need for core
+
+// Set the variable inline (unless you are loading them from a .env file)
+export MW_SERVER=http://localhost:8080
+export MW_SCRIPT_PATH=/w
+export MEDIAWIKI_USER=Admin
+export MEDIAWIKI_PASSWORD=dockerpass
+
+# for additional debugging, you can enable video recording
+# see https://www.mediawiki.org/wiki/Selenium/How-to/Record_videos_of_test_runs
+export DISPLAY=:1
+Xvfb "$DISPLAY" -screen 0 1280x1024x24 &
+
+# run the tests
+npm run selenium-test
+
+NOTE: the tests will produce some snapshot after completition (both on failure and success). This can be found on "extensions/WikiLambda/tests/selenium/log"
+```
 ## See also
 
 <https://www.mediawiki.org/wiki/Extension:WikiLambda>
