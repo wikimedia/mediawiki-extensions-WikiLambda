@@ -6,11 +6,15 @@
 	},
 	"wikilambda-desc": "Gir Wikimedia-wikier en wikitekst-parserfunksjon for å kjøre evaluering av funksjoner skrevet, behandlet og evaluert på en sentral wiki.",
 	"wikilambda-emptylabel": "ZObject uten etikett",
+	"wikilambda-invalidzobjecttitle": "Den angitte tittelen «$1» er ikke gyldig for et ZObject.",
 	"wikilambda-invalidzobject": "Det gitte innholdet er ikke et gyldig ZObject.",
 	"wikilambda-invalidcontenttype": "Det gitte innholdet er ikke en ZObject-klasse.",
+	"wikilambda-prohibitedcreationtype": "Det angitte ZObject-et har typen «$1», som ikke kan opprettes.",
+	"wikilambda-noresult": "Søket ga ingen resultater.",
 	"wikilambda-labelclash": "Det gitte innholdets etikett konflikterer med ZObject-et «$1» for etiketten på «$2».",
 	"wikilambda-multilingualstring-nofallback": "Ingen etikett definert på dette språket eller godkjente tilbakefallsspråk",
 	"wikilambda-viewmode-nojs": "Denne siden har begrenset visning uten Javascript.",
+	"wikilambda-reference": "Referanse",
 	"wikilambda-special-createzobject": "Opprett et nytt ZObject",
 	"wikilambda-special-createzobject-summary": "Dette skjemaet lar deg opprette et nytt ZObject, som kan representere en funksjon, dens implementasjon, en test for den eller én av flere andre typer ZObject-er. Du bør lese hjelpedokumentasjonen og nettsamfunnets retningslinjer først.",
 	"wikilambda-special-createzobject-intro": "Sjekk at du følger nettsamfunnets regler, samt opphavsretts- og patentregler.",
@@ -32,5 +36,6 @@
 	"wikilambda-editor-zlist-additem-tooltip": "Legg til et element i denne ZList-en",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Fjern dette elementet fra denne ZList-en",
 	"wikilambda-editor-zobject-addkey": "Legg til nøkkel:",
-	"wikilambda-editor-zobject-removekey-tooltip": "Fjern denne nøkkelen/verdien fra ZObject-et"
+	"wikilambda-editor-zobject-removekey-tooltip": "Fjern denne nøkkelen/verdien fra ZObject-et",
+	"wikilambda-editor-label-select-programming-language-label": "Velg programmeringsspråk:"
 }
