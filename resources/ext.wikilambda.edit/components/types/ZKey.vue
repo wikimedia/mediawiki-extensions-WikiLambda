@@ -55,17 +55,18 @@ module.exports = exports = {
 		mapGetters( [
 			'getZObjectChildrenById',
 			'getLatestObjectIndex',
-			'getNestedZObjectById'
+			'getNestedZObjectById',
+			'getCurrentZObjectId'
 		] ),
 		{
 			zObject: function () {
 				return this.getZObjectChildrenById( this.zobjectId );
 			},
 			zKeyValue: function () {
-				return Constants.NEW_ZID_PLACEHOLDER + 'K' + Number( this.zObjectParentIndex + 1 );
+				return this.getCurrentZObjectId + 'K' + Number( this.zObjectParentIndex + 1 );
 			},
 			zObjectParentIndex: function () {
-				return this.getLatestObjectIndex( Constants.NEW_ZID_PLACEHOLDER );
+				return this.getLatestObjectIndex( this.getCurrentZObjectId );
 			},
 			zObjectKey: function () {
 				return this.getNestedZObjectById( this.zobjectId, [ Constants.Z_KEY_ID ] );
