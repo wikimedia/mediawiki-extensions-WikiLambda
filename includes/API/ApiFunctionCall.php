@@ -148,6 +148,16 @@ class ApiFunctionCall extends ApiBase {
 	}
 
 	/**
+	 * Reads file contents from test data directory as JSON array.
+	 * @param string $fileName
+	 * @return array file contents (JSON-decoded)
+	 * @codeCoverageIgnore
+	 */
+	private function readTestFileAsArray( $fileName ): array {
+		return json_decode( $this->readTestFile( $fileName ), true );
+	}
+
+	/**
 	 * Generates URL-encoded example function call exercising user-defined validation function.
 	 * This function call produces a validation error. Replace
 	 * Z1000000K1: 'a' with Z1000000K1: 'A' in order to see successful validation.
@@ -155,11 +165,39 @@ class ApiFunctionCall extends ApiBase {
 	 * @codeCoverageIgnore
 	 */
 	private function createUserDefinedValidationExample(): string {
-		$ZMillion = json_decode( $this->readTestFile( 'user-defined-validation-type.json' ), true );
-		$validationZ7 = json_decode( $this->readTestFile( 'example-user-defined-validation.json' ), true );
+		$ZMillion = $this->readTestFileAsArray( 'user-defined-validation-type.json' );
+		$validationZ7 = $this->readTestFileAsArray( 'example-user-defined-validation.json' );
 		$ZMillion["Z4K3"]["Z8K1"][0]["Z17K1"] = $ZMillion;
 		$validationZ7["Z801K1"]["Z1K1"] = $ZMillion;
 		return urlencode( json_encode( $validationZ7 ) );
+	}
+
+	/**
+	 * Generates URL-encoded example function call exercising curry function.
+	 * @return string URL-encoded Function Call
+	 * @codeCoverageIgnore
+	 */
+	private function createCurryExample(): string {
+		$curryImplementation = $this->readTestFileAsArray( 'curry-implementation-Z10088.json' );
+		$curryFunction = $this->readTestFileAsArray( 'curry-Z10087.json' );
+		$curryFunction["Z8K4"][0] = $curryImplementation;
+		$curryFunctionCall = $this->readTestFileAsArray( 'curry-call-Z30086.json' );
+		$curryFunctionCall["Z8K4"][0]["Z14K2"]["Z7K1"]["Z7K1"] = $curryFunction;
+		$andFunction = $this->readTestFileAsArray( 'and-Z10007.json' );
+		$curry = [
+			"Z1K1" => "Z7",
+			"Z7K1" => $curryFunctionCall,
+			"Z30086K1" => $andFunction,
+			"Z30086K2" => [
+				"Z1K1" => "Z40",
+				"Z40K1" => "Z41"
+			],
+			"Z30086K3" => [
+				"Z1K1" => "Z40",
+				"Z40K1" => "Z41"
+			]
+		];
+		return urlencode( json_encode( $curry ) );
 	}
 
 	/**
@@ -221,6 +259,9 @@ class ApiFunctionCall extends ApiBase {
 			'action=wikilambda_function_call&wikilambda_function_call_zobject='
 				. $this->createExample( 'example-user-defined-generic-type.json' )
 				=> 'apihelp-wikilambda_function_call-example-user-defined-generic-type',
+			'action=wikilambda_function_call&wikilambda_function_call_zobject='
+				. $this->createCurryExample()
+				=> 'apihelp-wikilambda_function_call-example-curry',
 		];
 	}
 
