@@ -54,12 +54,13 @@
 	"wikilambda-argument-typeselector-label": "Изберете вид на аргумент",
 	"wikilambda-function-typeselector-label": "Изберете функција",
 	"wikilambda-return-typeselector-label": "Избрете вид за поврат",
-	"wikilambda-editor-label-addlanguage-label": "Додај јазик:",
+	"wikilambda-editor-label-addlanguage-label": "Додај јазик",
 	"wikilambda-editor-label-removelanguage-tooltip": "Отстрани го јазиков од овој натпис",
 	"wikilambda-editor-zlist-additem-tooltip": "Додај ставка кон овој ZList.",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Отстрани ставка од овој ZList",
 	"wikilambda-editor-zobject-addkey": "Додај клуч:",
 	"wikilambda-editor-zobject-removekey-tooltip": "Отстрани ја оваа вредност/клуч од ZObject-от",
+	"wikilambda-editor-zobject-clearitem-tooltip": "Испразни ја оваа вредност",
 	"wikilambda-editor-label-select-programming-language-label": "Изберете програмски јазик:",
 	"wikilambda-modeselector-genericliteral": "општ.",
 	"specialpages-group-wikilambda": "Страница на Викифункции",
@@ -69,5 +70,6 @@
 	"wikilambda-implementation-selector-code": "Код",
 	"wikilambda-implementation-selector-composition": "Состав",
 	"wikilambda-argref-default-label": "Изберете аргумент",
-	"wikilambda-implementation-selector": "Изберете спроведување"
+	"wikilambda-implementation-selector": "Изберете спроведување",
+	"wikilambda-implementation-none-found": "Не најдов спроведувања."
 }
