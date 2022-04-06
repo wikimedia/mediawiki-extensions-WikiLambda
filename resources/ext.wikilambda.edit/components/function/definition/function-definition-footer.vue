@@ -78,28 +78,33 @@ module.exports = exports = {
 			openDialog: false
 		};
 	},
-	computed: $.extend( mapGetters( [
-		'currentZFunctionHasInputs',
-		'currentZFunctionHasOutput'
-	] ),
-	{
-		publishButtonValidity: function () {
+	computed: $.extend(
+		mapGetters( [
+			'currentZFunctionHasInputs',
+			'currentZFunctionHasOutput'
+		] ),
+		mapGetters(
+			'router',
+			[ 'getQueryParams' ]
+		),
+		{
+			publishButtonValidity: function () {
 			// publish button is only valid if function has inputs and outputs defined
 			// TODO: this should also reset if there are local changes on an already published function
-			return this.currentZFunctionHasInputs && this.currentZFunctionHasOutput;
-		},
-		publishButtonStyle: function () {
-			return this.publishButtonValidity ?
-				'progressive' :
-				'destructive';
-		},
-		cancelButtonText: function () {
-			return this.$i18n( 'wikilambda-continue-editing' ).text();
-		},
-		confirmButtonText: function () {
-			return this.$i18n( 'wikilambda-discard-edits' ).text();
-		}
-	} ),
+				return this.currentZFunctionHasInputs && this.currentZFunctionHasOutput;
+			},
+			publishButtonStyle: function () {
+				return this.publishButtonValidity ?
+					'progressive' :
+					'destructive';
+			},
+			cancelButtonText: function () {
+				return this.$i18n( 'wikilambda-continue-editing' ).text();
+			},
+			confirmButtonText: function () {
+				return this.$i18n( 'wikilambda-discard-edits' ).text();
+			}
+		} ),
 	methods: $.extend( {},
 		mapActions( [ 'submitZObject' ] ),
 		mapActions( 'router', [ 'navigate' ] ),
@@ -117,7 +122,7 @@ module.exports = exports = {
 				if ( this.openDialog ) {
 					this.openDialog = false;
 				}
-				window.location.href = new mw.Title( this.$route.query.title ).getUrl();
+				window.location.href = new mw.Title( this.getQueryParams.title ).getUrl();
 			},
 			handlePublish: function () {
 				// TODO (T297330): include legal text when ready
