@@ -63,7 +63,7 @@ var Constants = require( '../Constants.js' ),
 					if ( result.length === 0 ) {
 						return false;
 					} else {
-						return result[ result.length - 1 ];
+						return result[ 0 ];
 					}
 				}
 			},

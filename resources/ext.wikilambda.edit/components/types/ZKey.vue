@@ -71,21 +71,29 @@ module.exports = exports = {
 				return this.getNestedZObjectById( this.zobjectId, [ Constants.Z_KEY_ID ] );
 			},
 			zObjectKeyValue: function () {
-				return this.getNestedZObjectById( this.zobjectId, [ Constants.Z_KEY_ID, Constants.Z_STRING_VALUE ] );
+				var object = this.getNestedZObjectById( this.zobjectId,
+					[ Constants.Z_KEY_ID, Constants.Z_STRING_VALUE ] );
+
+				return object ? object.value : '';
 			}
 		}
 	),
 	methods: $.extend( {},
 		mapActions( [ 'changeType' ] )
 	),
-	mounted: function () {
-		if ( this.zObjectKey && !this.zObjectKeyValue.value ) {
-			const payload = {
-				id: this.zObjectKey.id,
-				type: Constants.Z_STRING,
-				value: this.zKeyValue
-			};
-			this.changeType( payload );
+	watch: {
+		zObjectKeyValue: {
+			handler( value ) {
+				if ( !value && this.zObjectKey ) {
+					const payload = {
+						id: this.zObjectKey.id,
+						type: Constants.Z_STRING,
+						value: this.zKeyValue
+					};
+					this.changeType( payload ).then();
+				}
+			},
+			deep: true
 		}
 	}
 };

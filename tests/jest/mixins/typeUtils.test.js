@@ -96,8 +96,7 @@ describe( 'typeUtils mixin', function () {
 				var arrayItem = typeUtils.findKeyInArray( 'one', dummyArray );
 				expect( arrayItem.value ).toBe( dummyArray[ 0 ].value );
 			} );
-			// TODO: This ticket rely on (T304048) the Async Await update to be made
-			it.skip( 'returns the first instance with matching key', function () {
+			it( 'returns the first instance with matching key', function () {
 
 				var dummyArray = [
 					{ key: 'one', value: 'firstOccurance' },
