@@ -10,19 +10,26 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	Vuex = require( 'vuex' ),
 	ZObject = require( '../../../resources/ext.wikilambda.edit/components/ZObject.vue' ),
 	ZObjectGeneric = require( '../../../resources/ext.wikilambda.edit/components/ZObjectGeneric.vue' ),
+	ZArgument = require( '../../../resources/ext.wikilambda.edit/components/types/ZArgument.vue' ),
+	ZArgumentReference = require( '../../../resources/ext.wikilambda.edit/components/types/ZArgumentReference.vue' ),
+	ZBoolean = require( '../../../resources/ext.wikilambda.edit/components/types/ZBoolean.vue' ),
+	ZCharacter = require( '../../../resources/ext.wikilambda.edit/components/types/ZCharacter.vue' ),
+	ZCode = require( '../../../resources/ext.wikilambda.edit/components/types/ZCode.vue' ),
+	ZFunction = require( '../../../resources/ext.wikilambda.edit/components/types/ZFunction.vue' ),
+	ZFunctionCall = require( '../../../resources/ext.wikilambda.edit/components/types/ZFunctionCall.vue' ),
+	ZFunctionCallToType = require( '../../../resources/ext.wikilambda.edit/components/types/ZFunctionCallToType.vue' ),
+	ZImplementation = require( '../../../resources/ext.wikilambda.edit/components/types/ZImplementation.vue' ),
+	ZKey = require( '../../../resources/ext.wikilambda.edit/components/types/ZKey.vue' ),
 	ZList = require( '../../../resources/ext.wikilambda.edit/components/types/ZList.vue' ),
 	ZMultilingualString = require( '../../../resources/ext.wikilambda.edit/components/types/ZMultilingualString.vue' ),
 	ZReference = require( '../../../resources/ext.wikilambda.edit/components/types/ZReference.vue' ),
+	ZResponseEnvelope = require( '../../../resources/ext.wikilambda.edit/components/types/ZResponseEnvelope.vue' ),
 	ZString = require( '../../../resources/ext.wikilambda.edit/components/types/ZString.vue' ),
-	ZCode = require( '../../../resources/ext.wikilambda.edit/components/types/ZCode.vue' ),
-	ZArgument = require( '../../../resources/ext.wikilambda.edit/components/types/ZArgument.vue' ),
-	ZFunctionCall = require( '../../../resources/ext.wikilambda.edit/components/types/ZFunctionCall.vue' ),
-	ZFunction = require( '../../../resources/ext.wikilambda.edit/components/types/ZFunction.vue' ),
-	ZBoolean = require( '../../../resources/ext.wikilambda.edit/components/types/ZBoolean.vue' ),
-	ZImplementation = require( '../../../resources/ext.wikilambda.edit/components/types/ZImplementation.vue' ),
-	ZArgumentReference = require( '../../../resources/ext.wikilambda.edit/components/types/ZArgumentReference.vue' ),
+	ZTester = require( '../../../resources/ext.wikilambda.edit/components/types/ZTester.vue' ),
 	ZType = require( '../../../resources/ext.wikilambda.edit/components/types/ZType.vue' ),
 	ZTypedList = require( '../../../resources/ext.wikilambda.edit/components/types/ZTypedList.vue' ),
+	ZTypedMap = require( '../../../resources/ext.wikilambda.edit/components/types/ZTypedMap.vue' ),
+	ZTypedPair = require( '../../../resources/ext.wikilambda.edit/components/types/ZTypedPair.vue' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' );
 
 describe( 'ZObject', function () {
@@ -97,19 +104,28 @@ describe( 'ZObject', function () {
 		} );
 	}
 
+	// All types with components should be tested here.
+	// Types not tested: ZPersistentObject (not allowed), ZMonolingualString (doesn't work?)
+	// Non-type components not tested: ZArgumentList, ZListItem, ZMetadata
 	testMountingComponent( 'ZObjectGeneric', Constants.Z_NATURAL_LANGUAGE, ZObjectGeneric );
-	testMountingComponent( 'ZType', Constants.Z_TYPE, ZType );
+	testMountingComponent( 'ZArgument', Constants.Z_ARGUMENT, ZArgument );
+	testMountingComponent( 'ZArgumentReference', Constants.Z_ARGUMENT_REFERENCE, ZArgumentReference );
+	testMountingComponent( 'ZBoolean', Constants.Z_BOOLEAN, ZBoolean );
+	testMountingComponent( 'ZCharacter', Constants.Z_CHARACTER, ZCharacter );
+	testMountingComponent( 'ZCode', Constants.Z_CODE, ZCode );
+	testMountingComponent( 'ZFunction', Constants.Z_FUNCTION, ZFunction );
+	testMountingComponent( 'ZFunctionCall', Constants.Z_FUNCTION_CALL, ZFunctionCall );
+	testMountingComponent( 'ZFunctionCallToType', Constants.Z_FUNCTION_CALL_TO_TYPE, ZFunctionCallToType );
+	testMountingComponent( 'ZImplementation', Constants.Z_IMPLEMENTATION, ZImplementation );
+	testMountingComponent( 'ZKey', Constants.Z_KEY, ZKey );
 	testMountingComponent( 'ZList', Constants.Z_LIST, ZList );
 	testMountingComponent( 'ZMultilingualString', Constants.Z_MULTILINGUALSTRING, ZMultilingualString );
 	testMountingComponent( 'ZReference', Constants.Z_REFERENCE, ZReference );
+	testMountingComponent( 'ZResponseEnvelope', Constants.Z_RESPONSEENVELOPE, ZResponseEnvelope );
 	testMountingComponent( 'ZString', Constants.Z_STRING, ZString );
-	testMountingComponent( 'ZCode', Constants.Z_CODE, ZCode );
-	testMountingComponent( 'ZArgument', Constants.Z_ARGUMENT, ZArgument );
-	testMountingComponent( 'ZFunctionCall', Constants.Z_FUNCTION_CALL, ZFunctionCall );
-	testMountingComponent( 'ZFunction', Constants.Z_FUNCTION, ZFunction );
-	testMountingComponent( 'ZBoolean', Constants.Z_BOOLEAN, ZBoolean );
-	testMountingComponent( 'ZImplementation', Constants.Z_IMPLEMENTATION, ZImplementation );
-	testMountingComponent( 'ZArgumentReference', Constants.Z_ARGUMENT_REFERENCE, ZArgumentReference );
+	testMountingComponent( 'ZTester', Constants.Z_TESTER, ZTester );
+	testMountingComponent( 'ZType', Constants.Z_TYPE, ZType );
 	testMountingComponent( 'ZTypedList', Constants.Z_TYPED_LIST, ZTypedList );
-
+	testMountingComponent( 'ZTypedMap', Constants.Z_TYPED_MAP, ZTypedMap );
+	testMountingComponent( 'ZTypedPair', Constants.Z_TYPED_PAIR, ZTypedPair );
 } );
