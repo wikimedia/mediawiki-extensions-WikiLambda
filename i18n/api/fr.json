@@ -31,6 +31,7 @@
 	"apihelp-wikilambda_function_call-example-user-defined-python": "Invoquer la fonction Python en utilisant un type défini par l’utilisateur.",
 	"apihelp-wikilambda_function_call-example-user-defined-javascript": "Invoquer la fonction JavaScript en utilisant un type défini par l’utilisateur.",
 	"apihelp-wikilambda_function_call-example-user-defined-validation": "Invoque une fonction de validation définie par l’utilisateur et mise en œuvre en Python.",
+	"apihelp-wikilambda_function_call-example-curry": "Créer et invoquer une fonction curryfiée",
 	"apihelp-wikilambda_function_call-summary": "Invoquer une fonction en appelant l’orchestrateur de fonction",
 	"apihelp-query+wikilambdasearch_labels-summary": "Ce générateur de listes de requêtes API permet de rechercher des libellés de Z-Objets dans une langue donnée. Il existe principalement pour assister le système de recherche anticipée.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Le terme recherché",
