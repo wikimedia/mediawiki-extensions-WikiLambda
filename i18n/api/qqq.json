@@ -29,7 +29,7 @@
 	"apihelp-wikilambda_function_call-example-user-defined-python": "{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_function_call-example-user-defined-javascript": "{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_function_call-example-user-defined-validation": "{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",
-	"apihelp-wikilambda_function_call-example-curry": "{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",
+	"apihelp-wikilambda_function_call-example-curry": "For the meaning of \"curried\", see [[:w:en:Currying|Currying]] in the English Wikipedia.\n\n{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_function_call-summary": "{{doc-apihelp-summary|wikilambda_function_call}}\n\n{{doc-wikilambda}}",
 	"apihelp-query+wikilambdasearch_labels-summary": "{{doc-apihelp-summary|query+wikilambdasearch_labels}}\n\n{{doc-wikilambda}}",
 	"apihelp-query+wikilambdasearch_labels-param-search": "{{doc-apihelp-param|query+wikilambdasearch_labels|search}}",
