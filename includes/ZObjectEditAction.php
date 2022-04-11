@@ -30,9 +30,26 @@ class ZObjectEditAction extends Action {
 	protected function getPageTitleMsg() {
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$targetZObject = $zObjectStore->fetchZObjectByTitle( $this->getTitle() );
-		$label = $targetZObject->getLabels()->getStringForLanguageOrEnglish( $this->getLanguage() );
 
-		return $this->msg( 'editing', Html::element( 'span', [], $label ) );
+		$prefix = Html::element(
+			'span', [ 'class' => 'ext-wikilambda-editpage-header-title' ],
+			$this->msg( 'wikilambda-special-edit-function-definition-title' )->text()
+		);
+
+		$label = Html::element(
+			'span',
+			[
+				'class' => 'ext-wikilambda-editpage-header-title
+					ext-wikilambda-editpage-header-title--function-name'
+			],
+			$targetZObject->getLabels()->getStringForLanguageOrEnglish( $this->getLanguage() )
+		);
+
+		return Html::rawElement(
+			'span',
+			[ 'class' => 'ext-wikilambda-editpage-header' ],
+			$prefix . ": '" . $label . "'"
+		);
 	}
 
 	public function show() {
@@ -44,9 +61,23 @@ class ZObjectEditAction extends Action {
 		// The page title is the current ZID
 		$zId = $this->getPageTitle();
 
+		$output->addModuleStyles( [ 'ext.wikilambda.editpage.styles' ] );
+
 		// (T290217) Show page title
 		// NOTE setPageTitle sets both the HTML <title> header and the <h1> tag
 		$output->setPageTitle( $this->getPageTitleMsg() );
+
+		$linkLabel = Html::element(
+			'a',
+			[ 'class' => 'ext-wikilambda-editpage-header-description--link' ],
+			$this->msg( 'wikilambda-special-edit-function-definition-special-permission-link-label' )->text()
+		);
+
+		$output->addHtml( Html::rawElement(
+			'div', [ 'class' => 'ext-wikilambda-editpage-header-description' ],
+			$this->msg( 'wikilambda-special-edit-function-definition-description' )->rawParams( $linkLabel )
+			->escaped()
+		) );
 
 		// Fallback no-JS notice.
 		$output->addHtml( Html::element(

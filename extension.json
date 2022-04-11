@@ -88,6 +88,15 @@
 				"ext.wikilambda.viewpage/ext.wikilambda.viewpage.less"
 			]
 		},
+		"ext.wikilambda.editpage.styles": {
+			"targets": [
+				"desktop",
+				"mobile"
+			],
+			"styles": [
+				"ext.wikilambda.editpage/ext.wikilambda.editpage.less"
+			]
+		},
 		"ext.wikilambda.specialpages.styles": {
 			"targets": [
 				"desktop",

@@ -16,7 +16,7 @@ function modifyElementInnerText( className, text ) {
 }
 
 function updateZObjectPageTitle( text ) {
-	modifyElementInnerText( '#firstHeading span', text );
+	modifyElementInnerText( '#firstHeading .ext-wikilambda-editpage-header-title--function-name', text );
 }
 
 module.exports = exports = {
