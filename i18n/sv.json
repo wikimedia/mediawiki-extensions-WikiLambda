@@ -90,6 +90,8 @@
 	"wikilambda-editor-fn-step-implement": "Implementera",
 	"wikilambda-editor-fn-step-implementations": "Implementeringar",
 	"wikilambda-editor-fn-step-function-definition": "Definition av funktion",
+	"wikilambda-editor-fn-step-function-about": "Om",
+	"wikilambda-editor-fn-step-function-details": "Detaljer",
 	"wikilambda-editor-fn-tests-tooltip-header": "Ingen åtkomst",
 	"wikilambda-editor-name-title": "Namn",
 	"wikilambda-editor-name-subtitle": "Vad heter din funktion? Vad gör den?",
