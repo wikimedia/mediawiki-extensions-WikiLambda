@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Darafsh",
-			"Jeeputer"
+			"Jeeputer",
+			"Mojtabakd"
 		]
 	},
 	"wikilambda-persistentzobject-metadata": "برچسب‌ها و نام‌های مستعار",
@@ -52,6 +53,8 @@
 	"wikilambda-editor-next-button": "گام بعدی",
 	"wikilambda-editor-fn-step-tests": "آزمون(ها)",
 	"wikilambda-editor-fn-step-implement": "نوشتن تابع",
+	"wikilambda-editor-fn-step-function-about": "درباره",
+	"wikilambda-editor-fn-step-function-details": "جزئیات",
 	"wikilambda-editor-fn-tests-tooltip-content": "هرگاه تابع تعریف شد، می‌توانید پیاده‌سازی‌ها و آزمایش‌ها را بیافزایید.",
 	"wikilambda-editor-fn-tests-tooltip-header": "فاقد دسترسی",
 	"wikilambda-editor-name-title": "نام",
