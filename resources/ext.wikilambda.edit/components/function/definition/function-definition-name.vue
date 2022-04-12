@@ -44,7 +44,9 @@ module.exports = exports = {
 		},
 		/**
 		 * zID of item label language
+		 *
 		 * @example Z1014
+		 *
 		 */
 		zLang: {
 			type: String,

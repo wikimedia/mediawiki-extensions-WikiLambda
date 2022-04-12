@@ -221,6 +221,9 @@
 				"ext.wikilambda.edit/views/function/FunctionImplementations.vue",
 				"ext.wikilambda.edit/views/function/FunctionTests.vue",
 				"ext.wikilambda.edit/views/function/FunctionAbout.vue",
+				"ext.wikilambda.edit/views/function/about/function-viewer-aliases.vue",
+				"ext.wikilambda.edit/views/function/about/function-viewer-names.vue",
+				"ext.wikilambda.edit/views/function/partials/function-viewer-sidebar.vue",
 				"ext.wikilambda.edit/views/function/FunctionDetails.vue",
 				"ext.wikilambda.edit/views/FunctionEditor.vue",
 				"ext.wikilambda.edit/views/FunctionViewer.vue",
@@ -238,7 +241,8 @@
 						"cdxIconError",
 						"cdxIconAlert",
 						"cdxIconCheck",
-						"cdxIconInfoFilled"
+						"cdxIconLanguage",
+						"cdxIconCollapse"
 					]
 				}
 			],
@@ -418,7 +422,11 @@
 				"wikilambda-function-are-you-sure-dialog-header",
 				"wikilambda-function-are-you-sure-dialog-description",
 				"wikilambda-function-about-summary",
-				"wikilambda-function-details-summary"
+				"wikilambda-function-details-summary",
+				"wikilambda-function-viewer-aliases-header",
+				"wikilambda-function-viewer-aliases-show-language-button",
+				"wikilambda-function-viewer-aliases-hide-language-button",
+				"wikilambda-function-viewer-names-show-languages-button"
 			]
 		}
 	},

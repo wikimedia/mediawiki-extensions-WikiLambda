@@ -58,4 +58,17 @@ var mockLabels = {
 	}
 };
 
-module.exports = { mockLabels };
+var mockSidebarItems = [
+	{
+		label: "dummy",
+		language: "Z1002",
+		languageLabel: "English"
+	},
+	{
+		label: "dummy2",
+		language: "Z1003",
+		languageLabel: "español"
+	}
+];
+
+module.exports = { mockLabels, mockSidebarItems };

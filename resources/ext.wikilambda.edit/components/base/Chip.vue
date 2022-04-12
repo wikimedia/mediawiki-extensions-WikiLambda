@@ -5,17 +5,21 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-chip">
+	<div
+		class="ext-wikilambda-chip"
+		:class="'ext-wikilambda-chip_' + intent"
+	>
 		<div
 			class="ext-wikilambda-chip_text"
 			:class="hover"
 			role="textbox"
-			:contenteditable="readonly"
+			:contenteditable="!readonly"
 			@keydown.enter="handleEnter( $event )"
 		>
 			{{ text }}
 		</div>
 		<div
+			v-if="editableContainer"
 			class="ext-wikilambda-chip_icon"
 			@click="handleRemove"
 		>
@@ -53,11 +57,27 @@ module.exports = exports = {
 		},
 		iconWidth: {
 			type: String,
-			default: '1em'
+			default: '1em',
+			required: false
 		},
 		iconHeight: {
 			type: String,
-			default: '1em'
+			default: '1em',
+			required: false
+		},
+		editableContainer: {
+			type: Boolean,
+			required: false,
+			// eslint-disable-next-line vue/no-boolean-default
+			default: true
+		},
+		intent: {
+			validator: function ( value ) {
+				return [ 'notice', 'warning', 'error', 'success' ].indexOf( value ) !== -1;
+			},
+			type: String,
+			default: 'notice',
+			required: false
 		}
 	},
 	data: function () {
@@ -87,13 +107,14 @@ module.exports = exports = {
 
 .ext-wikilambda-chip {
 	display: inline-flex;
-	background-color: @wmui-color-base90;
+	background-color: @wmui-color-base80;
 	border-width: 1.5px;
 	border-style: solid;
-	border-radius: 5px;
-	height: fit-content;
-	padding: 4px 6px;
-	margin: 2.5px;
+	border-radius: 12px;
+	height: 22px;
+	padding: 0 6px;
+	margin-top: 2.5px;
+	margin-bottom: 2.5px;
 	vertical-align: middle;
 
 	&_text {
@@ -102,6 +123,25 @@ module.exports = exports = {
 
 	&_icon {
 		margin-left: 10px;
+	}
+
+	&_notice {
+		background-color: @wmui-color-base80;
+		border-color: @wmui-color-base50;
+	}
+
+	&_warning {
+		background-color: @wmui-color-yellow30;
+		border-color: @wmui-color-yellow50;
+	}
+
+	&_error {
+		background-color: @wmui-color-red30;
+		border-color: @wmui-color-red50;
+	}
+
+	&_success {
+		background-color: @wmui-color-green30;
 	}
 }
 

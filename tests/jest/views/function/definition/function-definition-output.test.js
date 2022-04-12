@@ -1,7 +1,7 @@
 /*!
  * WikiLambda unit test suite for the function-definition-output component and related files.
  *
- * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @copyright 2022– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 'use strict';
