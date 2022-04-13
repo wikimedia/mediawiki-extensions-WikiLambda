@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the function-viewer-names component and related files.
+ * WikiLambda unit test suite for the function-viewer-aliases component and related files.
  *
  * @copyright 2022– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -10,7 +10,7 @@
 var VueTestUtils = require( '@vue/test-utils' ),
 	mocks = require( '../../../fixtures/mocks.js' ),
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	FunctionViewerNames = require( '../../../../../resources/ext.wikilambda.edit/views/function/about/function-viewer-names.vue' ),
+	FunctionViewerAliases = require( '../../../../../resources/ext.wikilambda.edit/views/function/about/function-viewer-about-aliases.vue' ),
 	FunctionViewerSidebar = require( '../../../../../resources/ext.wikilambda.edit/views/function/partials/function-viewer-sidebar.vue' );
 
 describe( 'FunctionViewerAliases', function () {
@@ -18,8 +18,8 @@ describe( 'FunctionViewerAliases', function () {
 		var getters = {
 			getZObjectAsJsonById: createGettersWithFunctionsMock( mocks.mockLabels ),
 			getZObjectChildrenById: createGettersWithFunctionsMock( [ 'Z123123' ] ),
-			getNestedZObjectById: createGettersWithFunctionsMock( { } ),
-			getUserZlangZID: jest.fn(),
+			getNestedZObjectById: jest.fn(),
+			getUserZlangZID: jest.fn( function () { return 'Z1002'; } ),
 			getZkeyLabels: jest.fn()
 		};
 
@@ -29,14 +29,27 @@ describe( 'FunctionViewerAliases', function () {
 	} );
 
 	it( 'renders without errors', function () {
-		var wrapper = VueTestUtils.shallowMount( FunctionViewerNames );
+		var wrapper = VueTestUtils.shallowMount( FunctionViewerAliases );
 
-		expect( wrapper.find( '.ext-wikilambda-function-viewer-names' ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-viewer-aliases' ) ).toBeTruthy();
 	} );
 
 	it( 'renders the sidebar component', function () {
-		var wrapper = VueTestUtils.mount( FunctionViewerNames );
+		var wrapper = VueTestUtils.mount( FunctionViewerAliases );
 
 		expect( wrapper.findComponent( FunctionViewerSidebar ) ).toBeTruthy();
+	} );
+
+	it( 'filters function aliases to current language when showAllLangs is false', function () {
+		var wrapper = VueTestUtils.shallowMount( FunctionViewerAliases, {
+			computed: {
+				langAliasString: function () {
+					return mocks.mockSidebarItems;
+				}
+			}
+		} );
+
+		var selectedFunctionAliases = wrapper.vm.getSelectedAliases( 'Z1002' );
+		expect( selectedFunctionAliases ).toEqual( [ mocks.mockSidebarItems[ 0 ] ] );
 	} );
 } );
