@@ -1,8 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"CptViraj"
+			"CptViraj",
+			"Mira Parmar"
 		]
 	},
-	"wikilambda-function-definition-name-label": "નામ"
+	"wikilambda-function-definition-name-label": "નામ",
+	"wikilambda-function-viewer-aliases-header": "તરીકે પણ જાણીતા છે.",
+	"wikilambda-function-viewer-aliases-show-language-button": "વધુ ભાષાઓ બતાવો.",
+	"wikilambda-function-viewer-aliases-hide-language-button": "સૂચિ છૂપાવો.",
+	"wikilambda-function-viewer-names-show-languages-button": "અન્ય ભાષાઓમા નામ બતાવો."
 }
