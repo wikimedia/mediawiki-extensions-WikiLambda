@@ -63,7 +63,11 @@ module.exports = exports = {
 						zFunctionId = this.getCurrentZObjectId;
 						break;
 					case Constants.Z_IMPLEMENTATION:
-						zFunctionId = this.getZObjectAsJson.Z2K2.Z14K1.Z9K1;
+						// eslint-disable-next-line max-len
+						var zImplementationFunction = this.getZObjectAsJson[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_FUNCTION ];
+						if ( zImplementationFunction ) {
+							zFunctionId = zImplementationFunction[ Constants.Z_REFERENCE_ID ];
+						}
 				}
 
 				return this.injectZObject( {
