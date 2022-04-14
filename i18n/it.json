@@ -3,6 +3,7 @@
 		"authors": [
 			"Ajeje Brazorf",
 			"Beta16",
+			"GpieroMW",
 			"Lorem Ipsum",
 			"Luca.favorido",
 			"Noretta93",
@@ -65,5 +66,8 @@
 	"wikilambda-ztyped-pair-key-label": "Chiave",
 	"wikilambda-ztyped-pair-value-label": "Valore",
 	"wikilambda-continue-editing": "Continua a modificare",
-	"wikilambda-discard-edits": "Ignora modifiche"
+	"wikilambda-discard-edits": "Ignora modifiche",
+	"wikilambda-function-viewer-aliases-show-language-button": "Mostra altre lingue",
+	"wikilambda-function-viewer-aliases-hide-language-button": "Nascondi elenco",
+	"wikilambda-function-viewer-names-show-languages-button": "Mostra il nome in altre lingue"
 }

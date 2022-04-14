@@ -41,6 +41,9 @@
 	"wikilambda-special-createzobject-summary": "הטופס הזה מאפשר לך ליצור עצם Z חדש, שיכול לייצג פונקציה, מימוש שלה, בודק שלה, או אחד מהסוגים האחרים של עצמי Z. מומלץ לקרוא את העזרה ואת הנחיות הקהילה תחילה.",
 	"wikilambda-special-createzobject-intro": "{{GENDER:|ודא שאתה ממלא|ודאי שאת ממלאת}} את מדיניות הקהילה, ואת כללי זכויות היוצרים והפטנטים.",
 	"wikilambda-special-createzobject-nojs": "הדף הזה דורש הפעלה של JavaScript.",
+	"wikilambda-special-edit-function-definition-title": "עריכת הגדרת הפונקציה",
+	"wikilambda-special-edit-function-definition-description": "{{GENDER:|אתה עורך|את עורכת}} את דף הגדרת הפונקציה. $1 יכולים לערוך את הגדרת הפונקציה. כל אחד אחר יכול לערוך את התוויות. נא לוודא שהעבודה שלך נשמרת באמצעות לחיצה על כפתור הפרסום הכחול למטה.",
+	"wikilambda-special-edit-function-definition-special-permission-link-label": "רק משתמשים עם הרשאות מיוחדות",
 	"wikilambda-special-evaluatefunctioncall": "הערכה של קריאה לפונקציה",
 	"wikilambda-special-evaluatefunctioncall-summary": "הטופס הזה מאפשר לך לעשות הערכה של קריאה לפונקציה.",
 	"wikilambda-special-evaluatefunctioncall-intro": "{{GENDER:|ודא שאתה ממלא|ודאי שאת ממלאת}} את מדיניות הקהילה, ואת כללי זכויות היוצרים והפטנטים.",
@@ -226,7 +229,7 @@
 	"wikilambda-function-about-summary": "הפונקציה הזאת הופכת מילה ביחיד באנגלית למילה ברבים, אבל אנגלית היא שפה מוזרה ויכול להיות שהיא תפלוט משהו לא נכון על מילים נדירות. נסו אותה!",
 	"wikilambda-function-details-summary": "כל אחד יכול ליצור מימוש \"מוצע\" או בדיקה \"מוצעת\". אלה נסקרים ומאושרים על־ידי הקהילה. אחרי האישור הם יהפכו למימושים \"זמינים\" ובדיקות \"מאומתות\". כדי להימנע מכפילויות, אפשר לבדוק את רשימת המימושים והבדיקות להלן לפני יצירת משהו משלך.",
 	"wikilambda-function-viewer-aliases-header": "ידוע גם בשם",
-	"wikilambda-function-viewer-aliases-show-language-button": "בשפות נוספות",
-	"wikilambda-function-viewer-aliases-hide-language-button": "הסתר רשימה",
-	"wikilambda-function-viewer-names-show-languages-button": "הראה שם בשפות אחרות"
+	"wikilambda-function-viewer-aliases-show-language-button": "הצגת שפות נוספות",
+	"wikilambda-function-viewer-aliases-hide-language-button": "הסתרת רשימה",
+	"wikilambda-function-viewer-names-show-languages-button": "הצגת השם בשפות אחרות"
 }

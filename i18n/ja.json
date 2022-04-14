@@ -12,6 +12,7 @@
 	"wikilambda-invalidzobjecttitle": "提供されたタイトル'$1' は  ZObject　には無効です。",
 	"wikilambda-noresult": "検索結果が得られませんでした",
 	"wikilambda-orchestrated-loading": "オーケストレーションを実行します、お待ちください",
+	"wikilambda-special-edit-function-definition-special-permission-link-label": "特別な許可がある利用者に限る",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "言語",
 	"wikilambda-publishnew": "公開",
 	"wikilambda-published": "公開が完了しました!",
@@ -60,5 +61,9 @@
 	"wikilambda-ztyped-map-placeholder": "地図の種別を選択",
 	"wikilambda-optional": "省略可能",
 	"wikilambda-continue-editing": "編集を続行",
-	"wikilambda-discard-edits": "編集内容を破棄"
+	"wikilambda-discard-edits": "編集内容を破棄",
+	"wikilambda-function-viewer-aliases-header": "別名",
+	"wikilambda-function-viewer-aliases-show-language-button": "他の言語も表示する",
+	"wikilambda-function-viewer-aliases-hide-language-button": "リストを隠す",
+	"wikilambda-function-viewer-names-show-languages-button": "他の言語で名前を表示する"
 }
