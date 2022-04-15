@@ -14,14 +14,8 @@
 			>
 			</tab-container>
 		</div>
-		<div class="ext-wikilambda-function-viewer ext-wikilambda-function-viewer__two-cols">
-			<main class="ext-wikilambda-function-viewer__content">
-				<component :is="currentTab"></component>
-			</main>
-			<aside
-				class="ext-wikilambda-function-viewer__sidebar"
-				:aria-label="$i18n( 'wikilambda-editor-additional-details-label' ).text()">
-			</aside>
+		<div class="ext-wikilambda-function-viewer">
+			<component :is="currentTab"></component>
 		</div>
 	</div>
 </template>
@@ -82,28 +76,4 @@ module.exports = exports = {
 <style lang="less">
 @import './../../lib/wikimedia-ui-base.less';
 
-.ext-wikilambda-function-viewer {
-	display: grid;
-
-	&__content {
-		position: relative;
-		flex: 0 1 100%;
-		margin: 0 3em;
-		display: flex;
-		flex-direction: column;
-
-		section {
-			width: 80%;
-			margin: 45px auto;
-		}
-	}
-
-	&__two-cols {
-		grid-template-columns: 1fr 300px;
-
-		& > aside {
-			grid-column-start: 2;
-		}
-	}
-}
 </style>

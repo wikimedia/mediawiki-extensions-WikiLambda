@@ -26,7 +26,7 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'function-viewer-names',
+	name: 'function-viewer-about-names',
 	components: {
 		'function-viewer-sidebar': FunctionViewerSidebar
 	},

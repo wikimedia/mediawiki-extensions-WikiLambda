@@ -6,11 +6,13 @@
 		@license MIT
 	-->
 	<main class="ext-wikilambda-function-details">
-		<div id="fnDefinitionContainer" class="ext-wikilambda-function-details__container">
-			<div class="ext-wikilambda-function-details__summary">
-				{{ $i18n( 'wikilambda-function-details-summary' ).text() }}
-			</div>
+		<div class="ext-wikilambda-function-details__summary">
+			{{ $i18n( 'wikilambda-function-details-summary' ).text() }}
 		</div>
+		<section>
+		</section>
+		<section>
+		</section>
 	</main>
 </template>
 
@@ -28,16 +30,21 @@ module.exports = exports = {
 @import './../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-function-details {
-	&__container {
-		padding-top: 20px;
-		padding-left: 27px;
-		border: 1px solid @wmui-color-base80;
-		min-height: 450px;
-		overflow-y: auto;
-	}
+	padding-top: 16px;
+	min-height: 450px;
+	overflow-y: auto;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
 
 	&__summary:extend(.ext-wikilambda-edit__text-regular) {
 		color: @wmui-color-base30;
+		grid-column: 1 ~'/' span 2;
+		margin-bottom: 32px;
+	}
+
+	&__names,
+	&__aliases {
+		margin-top: 10%;
 	}
 }
 </style>
