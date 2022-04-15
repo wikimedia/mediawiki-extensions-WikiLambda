@@ -12,6 +12,8 @@
 	"wikilambda-special-callfunction-intro": "공동체 정책과 저작권, 특허 규정을 준수해 주십시오.",
 	"wikilambda-special-callfunction-nojs": "이 페이지는 자바스크립트 사용이 필요합니다.",
 	"wikilambda-special-createzobject": "새 ZObject 만들기",
+	"wikilambda-special-edit-function-definition-title": "함수 정의 편집",
+	"wikilambda-special-edit-function-definition-special-permission-link-label": "특수 권한이 있는 사용자만",
 	"wikilambda-special-evaluatefunctioncall-nojs": "이 페이지는 자바스크립트 사용이 필요합니다.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "언어",
 	"wikilambda-special-objectsbytype-typeheader": "모든 유형",
@@ -83,5 +85,9 @@
 	"wikilambda-ztyped-list-items": "항목 목록",
 	"wikilambda-optional": "선택 사항",
 	"wikilambda-continue-editing": "편집 계속",
-	"wikilambda-discard-edits": "편집 버리기"
+	"wikilambda-discard-edits": "편집 버리기",
+	"wikilambda-function-viewer-aliases-header": "다른 이름",
+	"wikilambda-function-viewer-aliases-show-language-button": "더 많은 언어 보기",
+	"wikilambda-function-viewer-aliases-hide-language-button": "목록 숨기기",
+	"wikilambda-function-viewer-names-show-languages-button": "다른 언어로 이름 표시"
 }
