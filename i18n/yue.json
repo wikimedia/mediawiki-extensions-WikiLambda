@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"OmniBus"
+			"OmniBus",
+			"ZiqiLiang"
 		]
 	},
-	"wikilambda-speciallistduplicatezobjectlabels-language": "語文"
+	"wikilambda-speciallistduplicatezobjectlabels-language": "語文",
+	"wikilambda-function-viewer-aliases-hide-language-button": "隱藏清單"
 }

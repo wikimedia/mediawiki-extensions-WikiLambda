@@ -5,5 +5,11 @@
 		]
 	},
 	"wikilambda-reference": "Rujukan",
-	"wikilambda-literal": "Harfiah"
+	"wikilambda-literal": "Harfiah",
+	"wikilambda-special-edit-function-definition-title": "Sunting takrifan fungsi",
+	"wikilambda-special-edit-function-definition-special-permission-link-label": "Hanya pengguna dengan kebenaran khas",
+	"wikilambda-function-viewer-aliases-header": "Juga dikenali sebagai",
+	"wikilambda-function-viewer-aliases-show-language-button": "Tunjuk lebih bahasa",
+	"wikilambda-function-viewer-aliases-hide-language-button": "Sorok senarai",
+	"wikilambda-function-viewer-names-show-languages-button": "Tunjuk nama dalam bahasa lain"
 }

@@ -109,5 +109,8 @@
 	"wikilambda-editor-write-title": "Escrever",
 	"wikilambda-editor-write-subtitle": "Escreva uma implementação para esta função",
 	"wikilambda-editor-attach-title": "Anexar",
-	"wikilambda-editor-progress-title": "Progresso"
+	"wikilambda-editor-progress-title": "Progresso",
+	"wikilambda-function-viewer-aliases-show-language-button": "Mostrar mais idiomas",
+	"wikilambda-function-viewer-aliases-hide-language-button": "Ocultar lista",
+	"wikilambda-function-viewer-names-show-languages-button": "Mostrar nome em outros idiomas"
 }
