@@ -264,7 +264,7 @@ describe( 'zkeys Vuex module', function () {
 				context.dispatch = jest.fn( function ( key, payload ) {
 					return new Promise( function ( resolve ) {
 						zkeysModule.actions.performZKeyFetch( context, payload );
-						resolve();
+						resolve( payload );
 					} );
 				} );
 			} );
@@ -364,7 +364,7 @@ describe( 'zkeys Vuex module', function () {
 					expect( getMock ).toHaveBeenCalledTimes( 1 );
 
 					expect( getResolveMock ).toHaveBeenCalledTimes( 1 );
-					expect( context.commit ).toHaveBeenCalledTimes( 6 );
+					expect( context.commit ).toHaveBeenCalledTimes( 9 );
 					expect( context.commit ).toHaveBeenCalledWith( 'addZKeyInfo', expectedAddZKeyInfoCall );
 					expect( context.commit ).toHaveBeenCalledWith( 'addAllZKeyLabels', expecteaddAllZKeyLabelInfoCall );
 					resolve();

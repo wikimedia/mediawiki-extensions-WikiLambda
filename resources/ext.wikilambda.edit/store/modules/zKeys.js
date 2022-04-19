@@ -98,25 +98,38 @@ module.exports = exports = {
 					zKeystoFetch.push( zId );
 				}
 			} );
-
 			if ( zKeystoFetch.length === 0 ) {
 				return Promise.resolve();
 			}
 
 			function dispatchPerformZKeyFetch( payload ) {
 				zKeystoFetch = [];
-				return context.dispatch( 'performZKeyFetch', payload ).then( function () {
-					resolvePromiseList.forEach( function ( performResolve ) {
-						performResolve();
-					} );
-					resolvePromiseList = [];
+				return context.dispatch( 'performZKeyFetch', payload ).then( function ( fetchedZids ) {
+
+					if ( !fetchedZids || fetchedZids.length === 0 ) {
+						return;
+					}
+
+					// we replicate the name defined when the promise was set
+					var promiseName = fetchedZids.join( '-' );
+					resolvePromiseList[ promiseName ]();
 				} );
 			}
 
 			// eslint-disable-next-line compat/compat
 			return new Promise( function ( resolve ) {
 				var payload = zKeystoFetch;
-				resolvePromiseList.push( resolve );
+				// we provide an unique name to the promise, to be able to resolve the correct one later.
+				var promiseName = payload.join( '-' );
+
+				// if a promise with the same name already exist, do not fetch again
+				if ( resolvePromiseList[ promiseName ] ) {
+					resolve();
+					return;
+				} else {
+					resolvePromiseList[ promiseName ] = resolve;
+				}
+
 				if ( debounce ) {
 					clearTimeout( debounceZKeyFetch );
 					debounceZKeyFetch = setTimeout( dispatchPerformZKeyFetch( payload ), DEBOUNCE_FETCH_ZKEYS_TIMEOUT );
@@ -127,6 +140,7 @@ module.exports = exports = {
 		},
 		performZKeyFetch: function ( context, payload ) {
 			var api = new mw.Api();
+
 			return api.get( {
 				action: 'query',
 				list: 'wikilambdaload_zobjects',
@@ -142,10 +156,14 @@ module.exports = exports = {
 				// eslint-disable-next-line camelcase
 				wikilambdaload_canonical: 'true'
 			} ).then( function ( response ) {
+
 				var keys,
 					multilingualStr,
-					zidInfo;
-				payload.forEach( function ( zid ) {
+					zidInfo,
+					zIds;
+
+				zIds = Object.keys( response.query.wikilambdaload_zobjects );
+				zIds.forEach( function ( zid ) {
 					if ( !( 'success' in response.query.wikilambdaload_zobjects[ zid ] ) ) {
 						// TODO add error into error notification pool
 						return;
@@ -211,6 +229,7 @@ module.exports = exports = {
 						context.commit( 'addAllZKeyLabels', zTypeallLabels );
 					}
 				} );
+				return zIds;
 			} );
 		}
 	}

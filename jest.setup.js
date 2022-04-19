@@ -5,8 +5,12 @@ global.$ = require( 'jquery' );
 
 global.mockLocalStorage = {};
 
+function Api() {}
+Api.prototype.get = jest.fn().mockReturnValue( $.Deferred().resolve().promise() );
+
 // Mock MW object
 global.mw = {
+	Api: Api,
 	config: {
 		get: jest.fn( function ( endpoint ) {
 			switch ( endpoint ) {
