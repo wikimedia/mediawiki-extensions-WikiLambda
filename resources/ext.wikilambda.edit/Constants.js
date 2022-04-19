@@ -125,11 +125,27 @@ var Constants = {
 		EVALUTATE_FUNCTION_CALL: '/wiki/Special:EvaluateFunctionCall',
 		EDIT_Z_OBJECT: '/w/index.php',
 		VIEW_Z_OBJECT: ''
+	},
+	breakpoints = {
+		MOBILE: 320,
+		TABLET: 720,
+		DESKTOP: 1000,
+		DESKTOP_WIDE: 1200,
+		DESKTOP_EXTRAWIDE: 2000
+	},
+	breakpointsTypes = {
+		MOBILE: 'MOBILE',
+		TABLET: 'TABLET',
+		DESKTOP: 'DESKTOP',
+		DESKTOP_WIDE: 'DESKTOP_WIDE',
+		DESKTOP_EXTRAWIDE: 'DESKTOP_EXTRAWIDE'
 	};
 
 Constants.Z_MODE_SELECTOR_MODES = modes;
 Constants.Z_TYPED_OBEJECTS_LIST = typedObjectsList;
 Constants.VIEWS = views;
 Constants.PATHS = paths;
+Constants.breakpoints = breakpoints;
+Constants.breakpointsTypes = breakpointsTypes;
 
 module.exports = Constants;
