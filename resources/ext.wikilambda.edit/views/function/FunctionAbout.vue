@@ -10,6 +10,9 @@
 			{{ $i18n( 'wikilambda-function-about-summary' ).text() }}
 		</div>
 		<section>
+			<div class="ext-wikilambda-function-about__examples">
+				<function-viewer-about-examples></function-viewer-about-examples>
+			</div>
 			<div class="ext-wikilambda-function-about__names">
 				<function-viewer-about-names></function-viewer-about-names>
 			</div>
@@ -28,6 +31,7 @@
 var FunctionViewerAboutAliases = require( './about/function-viewer-about-aliases.vue' ),
 	FunctionViewerAboutNames = require( './about/function-viewer-about-names.vue' ),
 	FunctionViewerAboutDetails = require( './about/function-viewer-about-details.vue' ),
+	FunctionViewerAboutExamples = require( './about/function-viewer-about-examples.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
@@ -36,7 +40,8 @@ module.exports = exports = {
 	components: {
 		'function-viewer-about-aliases': FunctionViewerAboutAliases,
 		'function-viewer-about-names': FunctionViewerAboutNames,
-		'function-viewer-about-details': FunctionViewerAboutDetails
+		'function-viewer-about-details': FunctionViewerAboutDetails,
+		'function-viewer-about-examples': FunctionViewerAboutExamples
 	},
 	computed: $.extend( {},
 		mapGetters( [ 'getCurrentZObjectId' ] )
