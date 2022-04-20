@@ -9,13 +9,18 @@ var Vue = require( 'vue' ),
 	Constants = require( '../../Constants.js' ),
 	typedListToArray = require( '../../mixins/typeUtils.js' ).methods.typedListToArray,
 	debounceZKeyFetch = null,
-	resolvePromiseList = [],
+	resolvePromiseList = {},
 	zKeystoFetch = [],
 	DEBOUNCE_FETCH_ZKEYS_TIMEOUT = 1;
 
 function isZType( zidInfo ) {
 	return ( typeof zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ] === 'object' ) &&
 		( zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] === Constants.Z_TYPE );
+}
+
+function generateRequestName( keysList ) {
+	const sortedKeys = keysList.sort();
+	return sortedKeys.join( '-' );
 }
 
 module.exports = exports = {
@@ -109,26 +114,27 @@ module.exports = exports = {
 					if ( !fetchedZids || fetchedZids.length === 0 ) {
 						return;
 					}
-
 					// we replicate the name defined when the promise was set
-					var promiseName = fetchedZids.join( '-' );
-					resolvePromiseList[ promiseName ]();
+					var currentPromiseName = generateRequestName( fetchedZids );
+					resolvePromiseList[ currentPromiseName ].resolve();
+					delete resolvePromiseList[ currentPromiseName ];
 				} );
 			}
 
-			// eslint-disable-next-line compat/compat
-			return new Promise( function ( resolve ) {
-				var payload = zKeystoFetch;
-				// we provide an unique name to the promise, to be able to resolve the correct one later.
-				var promiseName = payload.join( '-' );
+			// we provide an unique name to the promise, to be able to resolve the correct one later.
+			var promiseName = generateRequestName( zKeystoFetch );
 
-				// if a promise with the same name already exist, do not fetch again
-				if ( resolvePromiseList[ promiseName ] ) {
-					resolve();
-					return;
-				} else {
-					resolvePromiseList[ promiseName ] = resolve;
-				}
+			// if a promise with the same name already exist, do not fetch again
+			if ( resolvePromiseList[ promiseName ] ) {
+				return resolvePromiseList[ promiseName ].promise;
+			} else {
+				resolvePromiseList[ promiseName ] = {};
+			}
+
+			// eslint-disable-next-line compat/compat
+			resolvePromiseList[ promiseName ].promise = new Promise( function ( resolve ) {
+				var payload = zKeystoFetch;
+				resolvePromiseList[ promiseName ].resolve = resolve;
 
 				if ( debounce ) {
 					clearTimeout( debounceZKeyFetch );
@@ -137,6 +143,8 @@ module.exports = exports = {
 					dispatchPerformZKeyFetch( payload );
 				}
 			} );
+
+			return resolvePromiseList[ promiseName ].promise;
 		},
 		performZKeyFetch: function ( context, payload ) {
 			var api = new mw.Api();
