@@ -41,6 +41,27 @@ module.exports = exports = {
 		},
 		getZTesters: function ( state ) {
 			return state.zTesters;
+		},
+		getTestInputOutputByZIDs: function ( state, getters ) {
+			/**
+			 * @param {array} zIDs
+			 * @return {Array}
+			 */
+			return function ( zIDs ) {
+				var inputOutput = [];
+				for ( let index = 0; index < zIDs.length; index++ ) {
+					const zid = zIDs[ index ];
+					if ( getters.getZkeyLabels[ zid ] ) {
+						const zObjectValue = getters.getZkeyLabels[ zid ].split( ' -> ' );
+						inputOutput.push( {
+							input: zObjectValue[ 0 ],
+							output: zObjectValue[ 1 ]
+						} );
+					}
+				}
+
+				return inputOutput;
+			};
 		}
 	},
 	mutations: {
