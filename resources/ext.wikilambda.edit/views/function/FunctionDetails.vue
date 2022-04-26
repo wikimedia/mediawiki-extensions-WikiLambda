@@ -9,20 +9,45 @@
 		<div class="ext-wikilambda-function-details__summary">
 			{{ $i18n( 'wikilambda-function-details-summary' ).text() }}
 		</div>
-		<section>
-		</section>
-		<section>
-		</section>
+		<div class="ext-wikilambda-function-details__sidebar">
+			<function-viewer-details-sidebar :zobject-id="zObjectValue.id"></function-viewer-details-sidebar>
+		</div>
 	</main>
 </template>
 
 <script>
+var FunctionViewerDetailsSidebar = require( './details/function-viewer-details-sidebar.vue' ),
+	Constants = require( '../../Constants.js' ),
+	typeUtils = require( '../../mixins/typeUtils.js' ),
+	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
 	name: 'function-details',
 	components: {
-	}
+		'function-viewer-details-sidebar': FunctionViewerDetailsSidebar
+	},
+	mixins: [ typeUtils ],
+	props: {
+		zobjectId: {
+			type: Number,
+			required: false,
+			default: 0
+		}
+	},
+	computed: $.extend( {},
+		mapGetters( [
+			'getZObjectChildrenById'
+		] ),
+		{
+			zobject: function () {
+				return this.getZObjectChildrenById( this.zobjectId );
+			},
+			zObjectValue: function () {
+				return this.findKeyInArray( Constants.Z_PERSISTENTOBJECT, this.zobject );
+			}
+		}
+	)
 };
 </script>
 
@@ -34,7 +59,7 @@ module.exports = exports = {
 	min-height: 450px;
 	overflow-y: auto;
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: 250px 1fr;
 
 	&__summary:extend(.ext-wikilambda-edit__text-regular) {
 		color: @wmui-color-base30;
@@ -42,9 +67,8 @@ module.exports = exports = {
 		margin-bottom: 32px;
 	}
 
-	&__names,
-	&__aliases {
-		margin-top: 10%;
+	&__sidebar {
+		width: 30%;
 	}
 }
 </style>

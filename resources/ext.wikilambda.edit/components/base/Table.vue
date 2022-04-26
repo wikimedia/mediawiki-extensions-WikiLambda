@@ -1,12 +1,19 @@
 <template>
-	<div class="ext-wikilambda-table" :data-has-border="isBordered" :data-is-expandable="isExpandable">
-		<div v-if="title" class="ext-wikilambda-table__title">
-			{{ title }}
+	<div
+		class="ext-wikilambda-table"
+		:data-has-border="isBordered"
+		:data-is-expandable="isExpandable"
+	>
+		<div class="ext-wikilambda-table__title">
+			<slot name="table-title"></slot>
 		</div>
 		<div class="ext-wikilambda-table__content" :style="gridStyleVariables">
-			<div class="ext-wikilambda-table__content__header ext-wikilambda-table__content__row">
-				<div v-for="( n, i ) in header" :key="i"
+			<div v-if="!hideHeader" class="ext-wikilambda-table__content__header ext-wikilambda-table__content__row">
+				<div
+					v-for="( n, i ) in header"
+					:key="i"
 					class="ext-wikilambda-table__content__row__item ext-wikilambda-table__content__row__item--header"
+					:class="n.class"
 				>
 					{{ n.title || n }}
 				</div>
@@ -20,20 +27,23 @@
 				:key="i"
 				class="ext-wikilambda-table__content__row"
 			>
-				<div
-					v-for="( _, item ) in header"
-					:key="item"
-					class="ext-wikilambda-table__content__row__item"
-				>
-					<template v-if="n[ item ].component">
-						<component :is="n[ item ].component" v-bind="n[ item ].props">
-							{{ n[ item ].title || "" }}
-						</component>
-					</template>
-					<template v-else>
-						{{ n[ item ].title || n[ item ] }}
-					</template>
-				</div>
+				<template v-for="( _, item ) in header">
+					<div
+						v-if="n && item in n"
+						:key="item"
+						class="ext-wikilambda-table__content__row__item"
+						:class="n[ item ] ? n[ item ].class : ''"
+					>
+						<template v-if="n[ item ].component">
+							<component :is="n[ item ].component" v-bind="n[ item ].props">
+								{{ n[ item ].title || "" }}
+							</component>
+						</template>
+						<template v-else>
+							{{ n[ item ].title || n[ item ].title === '' ? n[ item ].title : n[ item ] }}
+						</template>
+					</div>
+				</template>
 
 				<template v-if="isExpandable">
 					<div class="ext-wikilambda-table__content__row__item">
@@ -58,6 +68,7 @@
 
 <script>
 var CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	icons = require( '../../../lib/icons.json' ),
 	Chip = require( './Chip.vue' );
 
@@ -66,13 +77,10 @@ module.exports = exports = {
 	name: 'table-container',
 	components: {
 		'cdx-icon': CdxIcon,
+		'cdx-button': CdxButton,
 		chip: Chip
 	},
 	props: {
-		title: {
-			type: String,
-			default: ''
-		},
 		header: { // example: { language: "Language" } or { language: { title: "Language" mobile: false } }
 			type: Object,
 			required: true
@@ -82,6 +90,10 @@ module.exports = exports = {
 			default: function () {
 				return [];
 			}
+		},
+		hideHeader: {
+			type: Boolean,
+			default: false
 		},
 		isExpandable: {
 			type: Boolean,
@@ -137,29 +149,23 @@ module.exports = exports = {
 
 	&__title {
 		display: table-caption;
-		padding: 15px 16px;
-		color: @wmui-color-base0;
-		font-weight: @font-weight-bold;
 		white-space: nowrap;
-		background-color: @wmui-color-base80;
 	}
 
 	&__content {
 		display: grid;
-		grid-auto-rows: 54px;
 		position: relative;
-		grid-template-columns: repeat( var( --header-length ), minmax( -webkit-max-content, 1fr ) );
-		grid-template-columns: repeat( var( --header-length ), minmax( max-content, 1fr ) );
+		grid-template-columns: repeat( var( --header-length ), minmax( -webkit-max-content, ~'calc( 100% / var( --header-length ) )' ) );
+		grid-template-columns: repeat( var( --header-length ), minmax( max-content, ~'calc( 100% / var( --header-length ) )' ) );
 
 		&__row {
 			display: contents;
 
 			&__item {
 				display: flex;
+				height: 54px;
 				align-items: center;
 				border-top: 1px solid @wmui-color-base80;
-				padding: 0 15px;
-				text-transform: capitalize;
 
 				&__icon {
 					cursor: pointer;
@@ -184,13 +190,8 @@ module.exports = exports = {
 		}
 
 		&__header {
-			grid-auto-rows: 41px;
-
 			.ext-wikilambda-table__content__row__item {
-				font-weight: @font-weight-bold;
-				background-color: @wmui-color-base90;
-				border-top: 1px solid @wmui-color-base80;
-				border-right: 1px solid @wmui-color-base80;
+				height: 41px;
 			}
 
 			div.ext-wikilambda-table__content__row__item--header:last-of-type {

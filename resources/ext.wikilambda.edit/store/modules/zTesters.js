@@ -44,7 +44,7 @@ module.exports = exports = {
 		},
 		getTestInputOutputByZIDs: function ( state, getters ) {
 			/**
-			 * @param {array} zIDs
+			 * @param {Array} zIDs
 			 * @return {Array}
 			 */
 			return function ( zIDs ) {

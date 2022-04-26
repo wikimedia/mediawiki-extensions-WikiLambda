@@ -54,7 +54,7 @@ module.exports = exports = {
 		 * @return {string}
 		 */
 		truncateTitle: function () {
-			return this.shortendText ? 'Show more' : 'Hide more';
+			return this.shortendText ? this.$i18n( 'wikilambda-show-more' ).text() : this.$i18n( 'wikilambda-hide-more' ).text();
 		}
 	},
 	methods: {
