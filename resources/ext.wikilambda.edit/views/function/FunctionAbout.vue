@@ -7,7 +7,9 @@
 	-->
 	<main class="ext-wikilambda-function-about">
 		<div class="ext-wikilambda-function-about__summary">
-			{{ $i18n( 'wikilambda-function-about-summary' ).text() }}
+			<text-component :truncate="300">
+				{{ $i18n( 'wikilambda-function-about-summary' ).text() }}
+			</text-component>
 		</div>
 		<section>
 			<div class="ext-wikilambda-function-about__examples">
@@ -32,6 +34,7 @@ var FunctionViewerAboutAliases = require( './about/function-viewer-about-aliases
 	FunctionViewerAboutNames = require( './about/function-viewer-about-names.vue' ),
 	FunctionViewerAboutDetails = require( './about/function-viewer-about-details.vue' ),
 	FunctionViewerAboutExamples = require( './about/function-viewer-about-examples.vue' ),
+	TextComponent = require( '../../components/base/Text.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
@@ -41,7 +44,8 @@ module.exports = exports = {
 		'function-viewer-about-aliases': FunctionViewerAboutAliases,
 		'function-viewer-about-names': FunctionViewerAboutNames,
 		'function-viewer-about-details': FunctionViewerAboutDetails,
-		'function-viewer-about-examples': FunctionViewerAboutExamples
+		'function-viewer-about-examples': FunctionViewerAboutExamples,
+		'text-component': TextComponent
 	},
 	computed: $.extend( {},
 		mapGetters( [ 'getCurrentZObjectId' ] )
@@ -51,13 +55,10 @@ module.exports = exports = {
 
 <style lang="less">
 @import '../../ext.wikilambda.edit.less';
+@import './../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-function-about {
 	padding-top: 16px;
-	min-height: 450px;
-	overflow-y: auto;
-	display: grid;
-	grid-template-columns: 1fr 1fr;
 
 	&__summary:extend(.ext-wikilambda-edit__text-regular) {
 		color: @wmui-color-base30;
@@ -68,6 +69,13 @@ module.exports = exports = {
 	&__names,
 	&__aliases {
 		margin-top: 10%;
+	}
+
+	@media screen and ( min-width: @width-breakpoint-tablet ) {
+		min-height: 450px;
+		overflow-y: auto;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
 	}
 }
 </style>

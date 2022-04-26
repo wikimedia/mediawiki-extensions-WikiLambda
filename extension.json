@@ -181,6 +181,7 @@
 				"ext.wikilambda.edit/components/base/Chip.vue",
 				"ext.wikilambda.edit/components/base/ChipContainer.vue",
 				"ext.wikilambda.edit/components/base/Toast.vue",
+				"ext.wikilambda.edit/components/base/Text.vue",
 				"ext.wikilambda.edit/components/base/Dialog.vue",
 				"ext.wikilambda.edit/components/base/DialogContainer.vue",
 				"ext.wikilambda.edit/components/types/ZList.vue",

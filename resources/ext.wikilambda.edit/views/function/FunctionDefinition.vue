@@ -384,10 +384,7 @@ module.exports = exports = {
 .ext-wikilambda-function-definition {
 	&__container {
 		padding-top: 20px;
-		padding-left: 27px;
 		border: 1px solid @wmui-color-base80;
-		max-height: 450px;
-		overflow-y: scroll;
 
 		&__input {
 			margin-bottom: 40px;
@@ -404,15 +401,32 @@ module.exports = exports = {
 
 	&__action-add-input {
 		height: 40px;
-		background: @wmui-color-base80;
+		margin: 40px 0;
 
 		button {
 			height: 100%;
-			padding: 10px 27px;
 			font-weight: bold;
 			background: transparent;
 			border: 0;
 			color: @wmui-color-base0;
+		}
+	}
+
+	@media screen and ( min-width: @width-breakpoint-tablet ) {
+		&__container {
+			max-height: 450px;
+			padding-left: 27px;
+			overflow-y: scroll;
+		}
+
+		&__action-add-input {
+			background: @wmui-color-base80;
+			margin: 0;
+
+			button {
+				padding-left: 27px;
+				padding-right: 27px;
+			}
 		}
 	}
 }
