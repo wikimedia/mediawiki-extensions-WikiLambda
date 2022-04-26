@@ -5,6 +5,7 @@
 			"NR Deblocked",
 			"Nastua Buldakova",
 			"Okras",
+			"Pacha Tchernof",
 			"Rivka Silinsky",
 			"Tanzun"
 		]
@@ -40,6 +41,7 @@
 	"wikilambda-function-definition-footer-placeholder": "Кратко опишите Ваши правки",
 	"wikilambda-function-definition-footer-label": "Описание изменений",
 	"wikilambda-function-definition-inputs-item-selector-search-placeholder": " Поиск ссылки или функции",
+	"wikilambda-function-definition-example-title": "Примеры использования функции",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "Приносим свои извинения! Только администраторы могут изменить описание функции после его публикации.",
 	"wikilambda-continue-editing": "Продолжить редактирование"
 }
