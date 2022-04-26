@@ -5,7 +5,7 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div>
+	<div class="ext-wikilambda-function-editor">
 		<div class="ext-wikilambda-function-editor-navbar">
 			<tab-container
 				:tabs="getVisibleTabs"
@@ -14,12 +14,12 @@
 			>
 			</tab-container>
 		</div>
-		<div class="ext-wikilambda-function-editor ext-wikilambda-function-editor__two-cols">
-			<main class="ext-wikilambda-function-editor__content">
+		<div class="ext-wikilambda-function-editor__main">
+			<main class="ext-wikilambda-function-editor__main__content">
 				<component :is="currentTab"></component>
 			</main>
 			<aside
-				class="ext-wikilambda-function-editor__sidebar"
+				class="ext-wikilambda-function-editor__main__sidebar"
 				:aria-label="$i18n( 'wikilambda-editor-additional-details-label' ).text()">
 				<fn-editor-visual-display></fn-editor-visual-display>
 			</aside>
@@ -113,28 +113,34 @@ module.exports = exports = {
 
 <style lang="less">
 @import './../../lib/wikimedia-ui-base.less';
+@import './../../lib/sd-base-variables.less';
 
 .ext-wikilambda-function-editor {
-	display: grid;
-
-	&__content {
-		position: relative;
-		flex: 0 1 100%;
-		margin: 0 3em;
-		display: flex;
-		flex-direction: column;
-
-		section {
-			width: 80%;
-			margin: 45px auto;
+	&__main {
+		&__content {
+			width: 100%;
 		}
-	}
-
-	&__two-cols {
-		grid-template-columns: 1fr 300px;
 
 		& > aside {
 			grid-column-start: 2;
+		}
+
+		@media screen and ( min-width: @width-breakpoint-tablet ) {
+			display: grid;
+			grid-template-columns: 1fr 300px;
+
+			&__content {
+				position: relative;
+				flex: 0 1 100%;
+				margin: 0 3em;
+				display: flex;
+				flex-direction: column;
+
+				section {
+					width: 80%;
+					margin: 45px auto;
+				}
+			}
 		}
 	}
 }
