@@ -169,6 +169,7 @@
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ הוספה של קלט אחר",
 	"wikilambda-function-definition-output-label": "סוג הפלט",
 	"wikilambda-function-definition-output-selector": "נא לבחור סוג",
+	"wikilambda-function-definition-example-title": "דוגמאות לשימוש בפונקציה",
 	"wikilambda-function-definition-can-publish-message": "השלמת את ההגדרה! {{GENDER:|שמור|שמרי}} את העבודה שלך באמצעות לחיצה על \"פרסום\" למטה",
 	"wikilambda-function-definition-publish-successful-message": "פרסמת בהצלחה את ההגדרה!",
 	"wikilambda-editor-steps-label": "צעדי עורך",

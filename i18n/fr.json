@@ -178,6 +178,7 @@
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Ajouter une autre entrée",
 	"wikilambda-function-definition-output-label": "Type de sortie",
 	"wikilambda-function-definition-output-selector": "Sélectionner un type",
+	"wikilambda-function-definition-example-title": "Exemples d’utilisation de la fonction",
 	"wikilambda-function-definition-can-publish-message": "Vous avez terminé la définition ! Enregistrez votre travail en cliquant sur « Publier » ci-dessous.",
 	"wikilambda-function-definition-publish-successful-message": "Vous avez réussi à publier la définition !",
 	"wikilambda-editor-steps-label": "Étapes de l’éditeur",
