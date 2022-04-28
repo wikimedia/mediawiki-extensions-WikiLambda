@@ -48,6 +48,7 @@
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "種類を選択してください",
 	"wikilambda-function-definition-output-label": "出力タイプ",
 	"wikilambda-function-definition-output-selector": "種類を選択してください",
+	"wikilambda-function-definition-example-title": "関数の使用例",
 	"wikilambda-editor-fn-step-tests": "テスト",
 	"wikilambda-editor-fn-step-function-details": "詳細",
 	"wikilambda-editor-fn-tests-tooltip-header": "アクセスなし",
