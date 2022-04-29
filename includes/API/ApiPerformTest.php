@@ -34,12 +34,6 @@ class ApiPerformTest extends ApiBase {
 	/** @var string */
 	private $orchestratorHost;
 
-	/** @var string */
-	private $evaluatorHost;
-
-	/** @var string */
-	private $wikiUri;
-
 	public function __construct( $query, $moduleName, ZObjectStore $zObjectStore ) {
 		parent::__construct( $query, $moduleName, 'wikilambda_perform_test_' );
 
@@ -48,13 +42,10 @@ class ApiPerformTest extends ApiBase {
 		if ( defined( 'MW_PHPUNIT_TEST' ) ) {
 			$this->orchestrator = MockOrchestrator::getInstance();
 			$this->orchestratorHost = 'mock';
-			$this->evaluatorHost = 'mock';
 		} else {
 			$config = MediaWikiServices::getInstance()->
 				getConfigFactory()->makeConfig( 'WikiLambda' );
 			$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
-			$this->evaluatorHost = $config->get( 'WikiLambdaEvaluatorLocation' );
-			$this->wikiUri = $config->get( 'WikiLambdaWikiAPILocation' );
 			$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
 			$this->orchestrator = new OrchestratorInterface( $client );
 		}
@@ -82,8 +73,6 @@ class ApiPerformTest extends ApiBase {
 			'zfunction' => $zfunction,
 			'zimplementations' => $zimplementations,
 			'ztesters' => $ztesters,
-			'evaluatorUri' => urlencode( $this->evaluatorHost ),
-			'wikiUri' => urlencode( $this->wikiUri ),
 			'doValidate' => true,
 			'nocache' => $nocache,
 		];
