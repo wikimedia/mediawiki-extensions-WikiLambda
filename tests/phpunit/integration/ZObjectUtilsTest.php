@@ -175,7 +175,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "Z1K1": "Z6", "Z6K1": "Z6" }',
 				'{ "Z1K1": "Z6", "Z6K1": "Z6" }'
 			],
-			'unneccessary escaped string' => [
+			'unnecessary escaped string' => [
 				'{ "Z1K1": "Z6", "Z6K1": "Z" }',
 				'"Z"'
 			],
@@ -183,15 +183,15 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "Z1K1": "Z6", "Z6K1": "Q42" }',
 				'{ "Z1K1": "Z6", "Z6K1": "Q42" }'
 			],
-			'unneccessary escaped string key' => [
+			'unnecessary escaped string key' => [
 				'{ "Z1K1": "Z6", "Z6K1": "Z1K1" }',
 				'"Z1K1"'
 			],
-			'unneccessary escaped string with whitespace' => [
+			'unnecessary escaped string with whitespace' => [
 				'{ "Z1K1": "Z6", "Z6K1": " Z1" }',
 				'" Z1"'
 			],
-			'unneccessary double escaped string' => [
+			'unnecessary double escaped string' => [
 				'{ "Z1K1": "Z6", "Z6K1": { "Z1K1": "Z6", "Z6K1": "Z" } }',
 				'"Z"'
 			],
