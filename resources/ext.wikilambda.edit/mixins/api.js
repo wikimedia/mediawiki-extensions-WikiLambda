@@ -29,7 +29,7 @@ module.exports = exports = {
 						),
 						response = !shouldNormalize ? canonicalize( normalResponse ) : normalResponse,
 						result = response[ Constants.Z_RESPONSEENVELOPE_VALUE ],
-						error = response[ Constants.Z_RESPONSEENVELOPE_ERRORS ];
+						error = response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
 
 					resolve( {
 						response: response,
