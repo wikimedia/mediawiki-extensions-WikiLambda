@@ -155,7 +155,7 @@ class ZMultiLingualString extends ZObject {
 
 	/**
 	 * Fetch the ZMultiLingualString's stored value for a given MediaWiki language class. This will
-	 * walk the language fallback chain, including English even if that is not one of the langauge's
+	 * walk the language fallback chain, including English even if that is not one of the language's
 	 * defined fallback languages, and only provide a fallback message if there is no label defined
 	 * in the given language or any of its fallback languages or English.
 	 *
