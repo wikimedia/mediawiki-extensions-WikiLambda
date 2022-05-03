@@ -42,6 +42,9 @@
 	"wikilambda-orchestrated": "Label for the result of orchestration.\n\n{{doc-wikilambda}}",
 	"wikilambda-orchestrated-loading": "Label for the result of orchestration while it is loading.\n\n{{doc-wikilambda}}",
 	"wikilambda-json": "{{Optional}}\n\nLabel for the word [[:meta:Abstract Wikipedia/Glossary#json|json]].\n\n{{doc-wikilambda}}",
+	"wikilambda-edit": "Label for the button to edit a function definition",
+	"wikilambda-show-more": "Label for the button to show more items on truncated list",
+	"wikilambda-hide-more": "Label for the button to hide items from an expanded list",
 	"wikilambda-argref": "Label for button that access argument reference",
 	"wikilambda-special-callfunction": "Description for Special:EvaluateFunctionCall.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-callfunction-summary": "Introductory summary shown on Special:CallFunction.\n\n{{doc-wikilambda}}",
@@ -253,5 +256,7 @@
 	"wikilambda-function-viewer-aliases-header": "Header for function aliases",
 	"wikilambda-function-viewer-aliases-show-language-button": "Show language button for rendering aliases in other languages",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Hide language button for rendering aliases in other languages",
-	"wikilambda-function-viewer-names-show-languages-button": "Show language button for rendering function name in other languages"
+	"wikilambda-function-viewer-names-show-languages-button": "Show language button for rendering function name in other languages",
+	"wikilambda-function-viewer-details-input-number": "Text for a function input. Paramters: \n* $1 - input number in list",
+	"wikilambda-function-viewer-details-sidebar-summary": "Summary of the function details side panel"
 }

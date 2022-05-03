@@ -33,6 +33,9 @@
 	"wikilambda-orchestrated": "Orchestration result",
 	"wikilambda-orchestrated-loading": "Performing orchestration, please wait",
 	"wikilambda-json": "JSON",
+	"wikilambda-edit": "Edit",
+	"wikilambda-show-more": "Show more",
+	"wikilambda-hide-more": "Hide more",
 	"wikilambda-argref": "Argument Reference",
 	"wikilambda-special-callfunction": "Create and execute a Function Call.",
 	"wikilambda-special-callfunction-summary": "This form lets you create and execute a Function Call. You should read the help documentation and community guidance first.",
@@ -244,5 +247,7 @@
 	"wikilambda-function-viewer-aliases-header": "Also known as",
 	"wikilambda-function-viewer-aliases-show-language-button": "Show more languages",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Hide list",
-	"wikilambda-function-viewer-names-show-languages-button": "Show name in other languages"
+	"wikilambda-function-viewer-names-show-languages-button": "Show name in other languages",
+	"wikilambda-function-viewer-details-input-number": "Input $1",
+	"wikilambda-function-viewer-details-sidebar-summary": "Anyone can edit labels, but the input/output type and count can only be edited by users with special permissions."
 }

@@ -62,7 +62,7 @@ module.exports = exports = {
 			required: true
 		},
 		buttonIcon: {
-			type: Object,
+			type: String,
 			required: true
 		},
 		shouldShowButton: {

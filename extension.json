@@ -233,6 +233,7 @@
 				"ext.wikilambda.edit/views/function/about/function-viewer-about-names.vue",
 				"ext.wikilambda.edit/views/function/about/function-viewer-about-details.vue",
 				"ext.wikilambda.edit/views/function/about/function-viewer-about-examples.vue",
+				"ext.wikilambda.edit/views/function/details/function-viewer-details-sidebar.vue",
 				"ext.wikilambda.edit/views/function/partials/function-viewer-sidebar.vue",
 				"ext.wikilambda.edit/views/function/FunctionDetails.vue",
 				"ext.wikilambda.edit/views/FunctionEditor.vue",
@@ -282,6 +283,9 @@
 				"wikilambda-orchestrated",
 				"wikilambda-functioncall",
 				"wikilambda-json",
+				"wikilambda-edit",
+				"wikilambda-show-more",
+				"wikilambda-hide-more",
 				"wikilambda-modeselector-argref",
 				"wikilambda-argref",
 				"wikilambda-typeselector-label",
@@ -437,7 +441,9 @@
 				"wikilambda-function-viewer-aliases-header",
 				"wikilambda-function-viewer-aliases-show-language-button",
 				"wikilambda-function-viewer-aliases-hide-language-button",
-				"wikilambda-function-viewer-names-show-languages-button"
+				"wikilambda-function-viewer-names-show-languages-button",
+				"wikilambda-function-viewer-details-input-number",
+				"wikilambda-function-viewer-details-sidebar-summary"
 			]
 		}
 	},

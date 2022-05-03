@@ -7,10 +7,16 @@
 	-->
 	<div class="ext-wikilambda-function-viewer-about-aliases">
 		<function-viewer-about-examples-table
-			:title="title"
 			:header="header"
 			:body="exampleList"
 		>
+			<template #table-title>
+				<div
+					class="ext-wikilambda-function-viewer-about-aliases__table-title"
+				>
+					{{ title }}
+				</div>
+			</template>
 		</function-viewer-about-examples-table>
 	</div>
 </template>
@@ -32,8 +38,14 @@ module.exports = exports = {
 		return {
 			title: this.$i18n( 'wikilambda-function-definition-example-title' ).text(),
 			header: {
-				input: this.$i18n( 'wikilambda-editor-input-default-label' ).text(),
-				output: this.$i18n( 'wikilambda-editor-output-title' ).text()
+				input: {
+					title: this.$i18n( 'wikilambda-editor-input-default-label' ).text(),
+					class: 'ext-wikilambda-function-viewer-about-aliases__table-header-item'
+				},
+				output: {
+					title: this.$i18n( 'wikilambda-editor-output-title' ).text(),
+					class: 'ext-wikilambda-function-viewer-about-aliases__table-header-item'
+				}
 			}
 		};
 	},
@@ -49,8 +61,47 @@ module.exports = exports = {
 			}
 			return this.getTestInputOutputByZIDs(
 				zObjectValue[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_TESTERS ]
-			);
+			).map( function ( example ) {
+				return {
+					input: {
+						title: example.input,
+						class: 'ext-wikilambda-function-viewer-about-aliases__table-item'
+					},
+					output: {
+						title: example.output,
+						class: 'ext-wikilambda-function-viewer-about-aliases__table-item'
+					}
+				};
+			} );
 		}
 	} )
 };
 </script>
+
+<style lang="less">
+@import '../../../ext.wikilambda.edit.less';
+
+.ext-wikilambda-function-viewer-about-aliases {
+	&__table {
+		&-title {
+			background-color: @wmui-color-base80;
+			padding: 15px 16px;
+			color: @wmui-color-base0;
+			font-weight: @font-weight-bold;
+		}
+
+		&-header-item {
+			padding: 0 16px;
+			font-weight: @font-weight-bold;
+			background-color: @wmui-color-base90;
+			border-top: 1px solid @wmui-color-base80;
+			border-right: 1px solid @wmui-color-base80;
+		}
+
+		&-item {
+			padding: 0 16px;
+			text-transform: capitalize;
+		}
+	}
+}
+</style>
