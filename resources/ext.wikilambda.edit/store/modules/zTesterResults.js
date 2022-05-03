@@ -92,11 +92,11 @@ module.exports = exports = {
 				}
 
 				var result = state.zTesterResults[ key ];
-				if ( !result || result[ Constants.Z_RESPONSEENVELOPE_ERRORS ] === Constants.Z_NOTHING ) {
+				if ( !result || result[ Constants.Z_RESPONSEENVELOPE_METADATA ] === Constants.Z_NOTHING ) {
 					return '';
 				}
 
-				var errorResponse = result[ Constants.Z_RESPONSEENVELOPE_ERRORS ];
+				var errorResponse = result[ Constants.Z_RESPONSEENVELOPE_METADATA ];
 				if ( errorResponse[ Constants.Z_ERROR_VALUE ] ) {
 					return errorResponse[ Constants.Z_ERROR_VALUE ];
 				}
@@ -283,10 +283,10 @@ module.exports = exports = {
 				var results = JSON.parse( data.query.wikilambda_perform_test.Tested.data );
 
 				if ( !Array.isArray( results ) &&
-						results[ Constants.Z_RESPONSEENVELOPE_ERRORS ] !== Constants.Z_NOTHING ) {
+						results[ Constants.Z_RESPONSEENVELOPE_METADATA ] !== Constants.Z_NOTHING ) {
 					throw new Error(
 						results[
-							Constants.Z_RESPONSEENVELOPE_ERRORS
+							Constants.Z_RESPONSEENVELOPE_METADATA
 						][
 							Constants.Z_ERROR_VALUE
 						][

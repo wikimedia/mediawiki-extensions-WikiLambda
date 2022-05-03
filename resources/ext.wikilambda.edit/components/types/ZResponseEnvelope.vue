@@ -73,7 +73,7 @@ module.exports = exports = {
 			return this.findKeyInArray( Constants.Z_RESPONSEENVELOPE_VALUE, this.zobject );
 		},
 		zSecond: function () {
-			return this.findKeyInArray( Constants.Z_RESPONSEENVELOPE_ERRORS, this.zobject );
+			return this.findKeyInArray( Constants.Z_RESPONSEENVELOPE_METADATA, this.zobject );
 		}
 	} )
 };
