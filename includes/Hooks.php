@@ -10,19 +10,14 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use ApiMain;
 use ApiMessage;
 use CommentStoreComment;
 use DatabaseUpdater;
-use DerivativeContext;
-use FauxRequest;
 use Html;
 use HtmlArmor;
-use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
+use MediaWiki\Extension\WikiLambda\API\ApiFunctionCall;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\MediaWikiServices;
@@ -631,83 +626,30 @@ class Hooks implements
 		// TODO: We want a much finer control on execution time than this.
 		// TODO: Actually do this, or something similar?
 		// set_time_limit( 1 );
+		// TODO: We should retain this object for re-use if there's more than one call per page.
 		try {
-			// TODO: We should retain this object for re-use if there's more than one call per page.
-			$api = new ApiMain( new FauxRequest() );
-			$request = new FauxRequest(
-				[
-					'format' => 'json',
-					'action' => 'wikilambda_function_call',
-					'wikilambda_function_call_zobject' => $call,
-				],
-				/* wasPosted */ true
-			);
-
-			$context = new DerivativeContext( RequestContext::getMain() );
-			$context->setRequest( $request );
-			$api->setContext( $context );
-			$api->execute();
-			$outerResponse = $api->getResult()->getResultData( [], [ 'Strip' => 'all' ] );
-
-			// TODO (T301556): Take ZError creation to ZErrorFactory
-			if ( isset( $outerResponse[ 'error' ] ) ) {
-				$zerror = ZObjectFactory::create( $outerResponse[ 'error' ] );
-				if ( !( $zerror instanceof ZError ) ) {
-					$zerror = new ZError(
-						ZErrorTypeRegistry::Z_ERROR_EVALUATION,
-						new ZList( [ 'Server returned a non-ZError error!', $zerror ] )
-					);
-				}
-				throw new ZErrorException( $zerror );
-			}
-
-			// Shuck the result JSON string into an object
-			$response = json_decode(
-				$outerResponse['query']['wikilambda_function_call']['Orchestrated']['data'],
-				true
-			);
-
-			if ( !$response || $response[ ZTypeRegistry::Z_OBJECT_TYPE ] !== ZTypeRegistry::Z_RESPONSEENVELOPE ) {
-				// The server's not given us a result!
-				$zerror = new ZError(
-					ZErrorTypeRegistry::Z_ERROR_EVALUATION,
-					new ZList( [ 'Server returned a non-result!' ] )
-				);
-				throw new ZErrorException( $zerror );
-			}
-			if ( $response[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ] === ZTypeRegistry::Z_NULL ) {
-				// If the server has responsed with a Z5/Error, show that properly.
-				$zerror = new ZError(
-					ZErrorTypeRegistry::Z_ERROR_EVALUATION,
-					new ZList( [ $response[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ] ] )
-				);
-				throw new ZErrorException( $zerror );
-			}
-			$ret = $response[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ];
-		} catch ( ZErrorException $e ) {
-			$ret = Html::errorBox(
-				wfMessage(
-					'wikilambda-functioncall-error',
-					$e->getZErrorMessage()
-				)->parseAsBlock()
-			);
-			$parser->addTrackingCategory( 'wikilambda-functioncall-error-category' );
+			$ret = [
+				ApiFunctionCall::makeRequest( $call ),
+				/* Force content to be escaped */ 'nowiki'
+			];
 		} catch ( \Throwable $th ) {
-			// Something went wrong elsewhere; no nice translatable ZError to show, sadly.
-			$ret = Html::errorBox(
-				wfMessage(
-					'wikilambda-functioncall-error',
-					$th->getMessage()
-				)->parseAsBlock()
-			);
 			$parser->addTrackingCategory( 'wikilambda-functioncall-error-category' );
+			if ( $th instanceof ZErrorException ) {
+				$errorMessage = $th->getZErrorMessage();
+			} else {
+				// Something went wrong elsewhere; no nice translatable ZError to show, sadly.
+				$errorMessage = $th->getMessage();
+			}
+
+			$ret = Html::errorBox(
+				wfMessage( 'wikilambda-functioncall-error', $errorMessage )->parseAsBlock()
+			);
 		} finally {
 			// Restore time limits to status quo.
 			// TODO: Actually do this, or something similar?
 			// set_time_limit( 0 );
 		}
 
-		// TODO: Turn this JSON blob of a ZObject into a content fragment (string) somehow.
 		return [
 			trim( $ret ),
 			/* Force content to be escaped */ 'nowiki'

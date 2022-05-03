@@ -81,6 +81,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			return !isset( $conflicts[$lang] );
 		}, ARRAY_FILTER_USE_BOTH );
 
+		// @phan-suppress-next-line SecurityCheck-SQLInjection T290563
 		$zObjectStore->insertZObjectLabels( $zid, $ztype, $newLabels, $returnType );
 		// @phan-suppress-next-line SecurityCheck-SQLInjection T290563
 		$zObjectStore->insertZObjectLabelConflicts( $zid, $conflicts );
@@ -88,6 +89,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		// (T285368) Write aliases in the labels table
 		$aliases = $this->zObject->getAliases()->getValueAsList();
 		if ( count( $aliases ) > 0 ) {
+			// @phan-suppress-next-line SecurityCheck-SQLInjection T290563
 			$zObjectStore->insertZObjectAliases( $zid, $ztype, $aliases, $returnType );
 		}
 
