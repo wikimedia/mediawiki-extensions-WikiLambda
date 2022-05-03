@@ -11,7 +11,7 @@
 				{{ $i18n( 'wikilambda-function-about-summary' ).text() }}
 			</text-component>
 		</div>
-		<section>
+		<section class="ext-wikilambda-function-about__sidebar">
 			<div class="ext-wikilambda-function-about__examples">
 				<function-viewer-about-examples></function-viewer-about-examples>
 			</div>
@@ -22,7 +22,7 @@
 				<function-viewer-about-aliases></function-viewer-about-aliases>
 			</div>
 		</section>
-		<section>
+		<section class="ext-wikilambda-function-about__details">
 			<function-viewer-about-details>
 			</function-viewer-about-details>
 		</section>
@@ -56,6 +56,7 @@ module.exports = exports = {
 <style lang="less">
 @import '../../ext.wikilambda.edit.less';
 @import './../../../lib/wikimedia-ui-base.less';
+@import './../../../lib/sd-base-variables.less';
 
 .ext-wikilambda-function-about {
 	padding-top: 16px;
@@ -76,6 +77,21 @@ module.exports = exports = {
 		overflow-y: auto;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
+	}
+
+	@media ( max-width: @width-breakpoint-tablet ) {
+		grid-template-columns: 1fr;
+
+		&__details {
+			order: 1;
+			grid-column: 1;
+		}
+
+		&__sidebar {
+			order: 2;
+			grid-column: 1;
+			margin-top: 40px;
+		}
 	}
 }
 </style>
