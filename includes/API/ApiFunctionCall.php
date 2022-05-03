@@ -24,9 +24,11 @@ use MediaWiki\Extension\WikiLambda\OrchestratorInterface;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\MediaWikiServices;
 use RequestContext;
@@ -288,14 +290,10 @@ class ApiFunctionCall extends ApiBase {
 		$api->execute();
 		$outerResponse = $api->getResult()->getResultData( [], [ 'Strip' => 'all' ] );
 
-		// TODO (T301556): Take ZError creation to ZErrorFactory
 		if ( isset( $outerResponse[ 'error' ] ) ) {
 			$zerror = ZObjectFactory::create( $outerResponse[ 'error' ] );
 			if ( !( $zerror instanceof ZError ) ) {
-				$zerror = new ZError(
-					ZErrorTypeRegistry::Z_ERROR_EVALUATION,
-					new ZList( [ 'Server returned a non-ZError error!', $zerror ] )
-				);
+				$zerror = self::wrapError( new ZQuote( $zerror ), $call );
 			}
 			throw new ZErrorException( $zerror );
 		}
@@ -308,10 +306,8 @@ class ApiFunctionCall extends ApiBase {
 
 		if ( !( $response instanceof ZResponseEnvelope ) ) {
 			// The server's not given us a result!
-			$zerror = new ZError(
-				ZErrorTypeRegistry::Z_ERROR_EVALUATION,
-				new ZList( [ 'Server returned a non-result!' ] )
-			);
+			$responseType = $response->getZType();
+			$zerror = self::wrapError( "Server returned a non-result of type '$responseType'!", $call );
 			throw new ZErrorException( $zerror );
 		}
 
@@ -319,14 +315,32 @@ class ApiFunctionCall extends ApiBase {
 			// If the server has responsed with a Z5/Error, show that properly.
 			$zerror = $response->getErrors();
 			if ( !( $zerror instanceof ZError ) ) {
-				$zerror = new ZError(
-					ZErrorTypeRegistry::Z_ERROR_EVALUATION,
-					new ZList( [ 'Server returned a non-ZError error!', $zerror ] )
-				);
+				$zerror = self::wrapError( new ZQuote( $zerror ), $call );
 			}
 			throw new ZErrorException( $zerror );
 		}
 
 		return trim( $response->getZValue() );
+	}
+
+	/**
+	 * Private convenience method to wrap a non-error in a Z507/Evaluation ZError
+	 *
+	 * @param string|ZObject $message The non-error to wrap.
+	 * @param string $call The functional call context.
+	 * @return ZError
+	 */
+	private static function wrapError( $message, $call ): ZError {
+		$wrappedError = ZErrorFactory::createZErrorInstance(
+			ZErrorTypeRegistry::Z_ERROR_GENERIC, [ 'message' => $message ]
+		);
+		$zerror = ZErrorFactory::createZErrorInstance(
+			ZErrorTypeRegistry::Z_ERROR_EVALUATION,
+			[
+				'functionCall' => $call,
+				'error' => $wrappedError
+			]
+		);
+		return $zerror;
 	}
 }
