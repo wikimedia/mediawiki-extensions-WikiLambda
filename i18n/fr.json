@@ -39,6 +39,9 @@
 	"wikilambda-orchestrated": "Résultat de l’orchestration",
 	"wikilambda-orchestrated-loading": "En cours d’orchestration, veuillez patienter",
 	"wikilambda-json": "JSON",
+	"wikilambda-edit": "Modifier",
+	"wikilambda-show-more": "Afficher plus",
+	"wikilambda-hide-more": "Masquer plus",
 	"wikilambda-argref": "Référence de l’argument",
 	"wikilambda-special-callfunction": "Créer et exécuter un appel de fonction.",
 	"wikilambda-special-callfunction-summary": "Ce formulaire vous permet de créer et d’exécuter un appel de fonction. Vous devriez d’abord lire la documentation d’aide et les conseils de la communauté.",
@@ -242,5 +245,7 @@
 	"wikilambda-function-viewer-aliases-header": "Également connu comme",
 	"wikilambda-function-viewer-aliases-show-language-button": "Afficher plus de langues",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Masquer la liste",
-	"wikilambda-function-viewer-names-show-languages-button": "Afficher le nom dans d’autres langues"
+	"wikilambda-function-viewer-names-show-languages-button": "Afficher le nom dans d’autres langues",
+	"wikilambda-function-viewer-details-input-number": "Entrée nº $1",
+	"wikilambda-function-viewer-details-sidebar-summary": "Chacun peut modifier des libellés, mais le type et le nombre d’entrées/sorties ne peuvent être modifiés que par des utilisateurs ayant des droits spéciaux."
 }

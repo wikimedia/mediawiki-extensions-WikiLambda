@@ -12,6 +12,8 @@
 	"wikilambda-invalidzobjecttitle": "提供されたタイトル'$1' は  ZObject　には無効です。",
 	"wikilambda-noresult": "検索結果が得られませんでした",
 	"wikilambda-orchestrated-loading": "オーケストレーションを実行します、お待ちください",
+	"wikilambda-edit": "編集",
+	"wikilambda-show-more": "さらに表示する",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "特別な許可がある利用者に限る",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "言語",
 	"wikilambda-publishnew": "公開",

@@ -30,6 +30,9 @@
 	"wikilambda-functioncall": "Funktionsaufruf",
 	"wikilambda-orchestrated": "Ergebnis der Orchestrierung",
 	"wikilambda-orchestrated-loading": "Instrumentierung wird durchgeführt, bitte warten",
+	"wikilambda-edit": "Bearbeiten",
+	"wikilambda-show-more": "Mehr anzeigen",
+	"wikilambda-hide-more": "Mehr ausblenden",
 	"wikilambda-argref": "Argument Referenz",
 	"wikilambda-special-callfunction": "Erstellen und Ausführen eines Funktionsaufrufs.",
 	"wikilambda-special-callfunction-summary": "Mit diesem Formular kannst du einen Funktionsaufruf erstellen und ausführen. Du solltest zuerst die Hilfedokumentation und die Anleitung der Community lesen.",
@@ -166,6 +169,7 @@
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Weitere Eingabe hinzufügen",
 	"wikilambda-function-definition-output-label": "Art der Ausgabe",
 	"wikilambda-function-definition-output-selector": "Typ auswählen",
+	"wikilambda-function-definition-example-title": "Beispiele für die Verwendung der Funktion",
 	"wikilambda-function-definition-can-publish-message": "Du hast die Definition abgeschlossen! Speichere deine Arbeit, indem du unten auf „Veröffentlichen“ klickst",
 	"wikilambda-function-definition-publish-successful-message": "Du hast die Definition erfolgreich veröffentlicht!",
 	"wikilambda-editor-steps-label": "Editor-Schritte",
@@ -227,5 +231,7 @@
 	"wikilambda-function-viewer-aliases-header": "Auch bekannt als",
 	"wikilambda-function-viewer-aliases-show-language-button": "Zeige mehr Sprachen",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Liste ausblenden",
-	"wikilambda-function-viewer-names-show-languages-button": "Name in anderen Sprachen anzeigen"
+	"wikilambda-function-viewer-names-show-languages-button": "Name in anderen Sprachen anzeigen",
+	"wikilambda-function-viewer-details-input-number": "Eingabe $1",
+	"wikilambda-function-viewer-details-sidebar-summary": "Jeder kann Beschriftungen bearbeiten, aber die Eingabe-/Ausgabeart und die Anzahl können nur von Benutzern mit speziellen Rechten bearbeitet werden."
 }
