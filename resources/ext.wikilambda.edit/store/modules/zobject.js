@@ -434,6 +434,8 @@ module.exports = exports = {
 					var defaultZid = getParameterByName( 'zid' ),
 						defaultKeys;
 
+					context.commit( 'setZObjectInitialized', true );
+
 					if ( !defaultZid || !defaultZid.match( /Z[1-9]\d*$/ ) ) {
 						return Promise.resolve();
 					}
@@ -457,8 +459,6 @@ module.exports = exports = {
 							} );
 						} );
 				} );
-
-				context.commit( 'setZObjectInitialized', true );
 			// if Zid is set
 			} else if ( zId ) {
 				return context.dispatch( 'fetchZKeys', [ zId ] )

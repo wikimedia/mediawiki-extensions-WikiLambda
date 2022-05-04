@@ -32,6 +32,7 @@
 				<!-- component that displays aliases for a language -->
 				<function-definition-aliases :z-lang="labelLanguage.zLang"></function-definition-aliases>
 				<function-definition-inputs
+					:is-mobile="isMobile"
 					:z-lang="labelLanguage.zLang"
 					:is-main-z-object="index === 0"
 					:is-editing="isEditingExistingFunction"
@@ -77,6 +78,7 @@ var FunctionDefinitionInputs = require( '../../components/function/definition/fu
 var FunctionDefinitionOutput = require( '../../components/function/definition/function-definition-output.vue' );
 var FunctionDefinitionFooter = require( '../../components/function/definition/function-definition-footer.vue' );
 var FnEditorZLanguageSelector = require( '../../components/editor/FnEditorZLanguageSelector.vue' );
+var useBreakpoints = require( '../../composables/useBreakpoints.js' );
 var Toast = require( '../../components/base/Toast.vue' );
 var icons = require( '../../../lib/icons.json' );
 var mapGetters = require( 'vuex' ).mapGetters,
@@ -99,6 +101,12 @@ module.exports = exports = {
 		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],
+	setup: function () {
+		var breakpoint = useBreakpoints( Constants.breakpoints );
+		return {
+			breakpoint
+		};
+	},
 	data: function () {
 		return {
 			currentToast: null,
@@ -115,10 +123,13 @@ module.exports = exports = {
 		'getViewMode',
 		'getZObjectChildrenById',
 		'getZObjectAsJsonById',
-		'getCurrentLanguageZkeyLabels',
-		'getAllZKeyLanguageLabels'
+		'getAllZKeyLanguageLabels',
+		'getZObjectInitialized'
 	] ),
 	{
+		isMobile: function () {
+			return this.breakpoint.current.value === Constants.breakpointsTypes.MOBILE;
+		},
 		/**
 		 * A function can be published if it has at least one input and an output
 		 *
@@ -285,7 +296,8 @@ module.exports = exports = {
 	} ),
 	methods: $.extend( mapActions( [
 		'setCurrentZLanguage',
-		'submitZObject'
+		'submitZObject',
+		'changeType'
 	] ), {
 		publishSuccessful: function ( toastMessage ) {
 			this.toastIntent = 'SUCCESS';
@@ -342,6 +354,15 @@ module.exports = exports = {
 				context.toastIntent = 'FAILURE';
 				context.currentToast = error.error.message;
 			} );
+		},
+		changeTypeToFunction: function () {
+			var zObject = this.getZObjectChildrenById( 0 ); // We fetch the Root object
+			var Z2K2 =
+				this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, zObject );
+			this.changeType( {
+				id: Z2K2.id,
+				type: Constants.Z_FUNCTION
+			} );
 		}
 	} ),
 	watch: {
@@ -374,6 +395,9 @@ module.exports = exports = {
 				readonly: false
 			} );
 		}
+		if ( this.isNewZObject ) {
+			this.changeTypeToFunction();
+		}
 	}
 };
 </script>
@@ -384,7 +408,6 @@ module.exports = exports = {
 .ext-wikilambda-function-definition {
 	&__container {
 		padding-top: 20px;
-		border: 1px solid @wmui-color-base80;
 
 		&__input {
 			margin-bottom: 40px;
@@ -414,6 +437,7 @@ module.exports = exports = {
 
 	@media screen and ( min-width: @width-breakpoint-tablet ) {
 		&__container {
+			border: 1px solid @wmui-color-base80;
 			max-height: 450px;
 			padding-left: 27px;
 			overflow-y: scroll;

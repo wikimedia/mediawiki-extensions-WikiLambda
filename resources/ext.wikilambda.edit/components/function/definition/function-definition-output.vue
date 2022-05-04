@@ -103,10 +103,13 @@ module.exports = exports = {
 
 <style lang="less">
 @import '../../../ext.wikilambda.edit.less';
+@import './../../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-function-definition-output {
 	display: flex;
+	flex-direction: column;
 	margin-bottom: 26px;
+	gap: 15px;
 
 	& > div {
 		width: 153px;
@@ -115,10 +118,20 @@ module.exports = exports = {
 	&__selector {
 		height: 32px;
 		margin-right: 6px;
+		width: auto;
 	}
 
 	&_label {
 		display: flex;
+	}
+
+	@media screen and ( min-width: @width-breakpoint-tablet ) {
+		display: flex;
+		flex-direction: row;
+
+		&__selector {
+			width: auto;
+		}
 	}
 }
 </style>

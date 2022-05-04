@@ -29,7 +29,6 @@ describe( 'FunctionDefinition', function () {
 			getViewMode: jest.fn(),
 			getZObjectChildrenById: createGettersWithFunctionsMock(),
 			getZObjectAsJsonById: createGettersWithFunctionsMock( mockLabels ),
-			getCurrentLanguageZkeyLabels: jest.fn(),
 			getAllZKeyLanguageLabels: jest.fn()
 		};
 

@@ -250,7 +250,8 @@
 						"cdxIconAlert",
 						"cdxIconCheck",
 						"cdxIconLanguage",
-						"cdxIconCollapse"
+						"cdxIconCollapse",
+						"cdxIconTrash"
 					]
 				}
 			],

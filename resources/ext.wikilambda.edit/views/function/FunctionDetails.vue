@@ -9,9 +9,19 @@
 		<div class="ext-wikilambda-function-details__summary">
 			{{ $i18n( 'wikilambda-function-details-summary' ).text() }}
 		</div>
-		<div class="ext-wikilambda-function-details__sidebar">
-			<function-viewer-details-sidebar :zobject-id="zObjectValue.id"></function-viewer-details-sidebar>
+		<div class="ext-wikilambda-function-details__action">
+			<cdx-button>
+				New Implementation
+			</cdx-button>
+			<cdx-button>
+				New Test
+			</cdx-button>
 		</div>
+		<section>
+			<div class="ext-wikilambda-function-details__sidebar">
+				<function-viewer-details-sidebar :zobject-id="zObjectValue.id"></function-viewer-details-sidebar>
+			</div>
+		</section>
 	</main>
 </template>
 
@@ -19,13 +29,15 @@
 var FunctionViewerDetailsSidebar = require( './details/function-viewer-details-sidebar.vue' ),
 	Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	mapGetters = require( 'vuex' ).mapGetters,
+	CdxButton = require( '@wikimedia/codex' ).CdxButton;
 
 // @vue/component
 module.exports = exports = {
 	name: 'function-details',
 	components: {
-		'function-viewer-details-sidebar': FunctionViewerDetailsSidebar
+		'function-viewer-details-sidebar': FunctionViewerDetailsSidebar,
+		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -55,20 +67,46 @@ module.exports = exports = {
 @import './../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-function-details {
-	padding-top: 16px;
-	min-height: 450px;
-	overflow-y: auto;
-	display: grid;
-	grid-template-columns: 250px 1fr;
+	display: flex;
+	-webkit-flex-flow: row wrap;
+	flex-flow: row wrap;
 
 	&__summary:extend(.ext-wikilambda-edit__text-regular) {
 		color: @wmui-color-base30;
-		grid-column: 1 ~'/' span 2;
 		margin-bottom: 32px;
+		width: 100%;
 	}
 
 	&__sidebar {
 		width: 30%;
+	}
+
+	&__action {
+		display: flex;
+		order: 3;
+		margin-bottom: 32px;
+		width: 100%;
+
+		button {
+			height: 32px;
+
+			&:last-child {
+				margin-left: -1px;
+			}
+		}
+	}
+
+	@media screen and ( min-width: @width-breakpoint-tablet ) {
+		&__summary:extend(.ext-wikilambda-edit__text-regular) {
+			width: ~'calc( 100% - 300px )';
+		}
+
+		&__action {
+			order: unset;
+			margin-bottom: 32px;
+			width: 300px;
+			justify-content: flex-end;
+		}
 	}
 }
 </style>

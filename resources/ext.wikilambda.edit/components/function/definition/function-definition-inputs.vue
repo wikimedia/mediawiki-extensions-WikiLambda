@@ -17,7 +17,10 @@
 				<cdx-icon v-if="tooltipIcon" :icon="tooltipIcon"></cdx-icon>
 			</tooltip>
 		</div>
-		<div class="ext-wikilambda-function-definition-inputs__inputs">
+		<div
+			class="ext-wikilambda-function-definition-inputs__inputs"
+			:class="{ 'ext-wikilambda-function-definition-inputs__padded': isMainZObject }"
+		>
 			<function-definition-inputs-item
 				v-for="( argument, index ) in zArgumentList"
 				:key="argument.id"
@@ -27,7 +30,11 @@
 				:zobject-id="argument.id"
 				:show-add-new-input="showAddNewInput( isMainZObject, index )"
 				:can-edit-type="isMainZObject"
-				@add-new-input="addNewItem">
+				:is-mobile="isMobile"
+				:is-active="activeInputIndex === index"
+				:show-index="zArgumentList.length > 1"
+				@add-new-input="addNewItem"
+				@active-input="setActiveInput">
 			</function-definition-inputs-item>
 		</div>
 	</div>
@@ -89,9 +96,22 @@ module.exports = exports = {
 		tooltipMessage: {
 			type: String,
 			default: null
+		},
+		/**
+		 * device screensize is mobile
+		 */
+		isMobile: {
+			type: Boolean,
+			required: true
 		}
 	},
+	data: function () {
+		return {
+			activeInputIndex: this.isMainZObject ? 0 : -1
+		};
+	},
 	computed: $.extend( mapGetters( [
+		'getZObject',
 		'getNextObjectId',
 		'getZObjectChildrenById',
 		'getNestedZObjectById'
@@ -133,6 +153,9 @@ module.exports = exports = {
 		// We need this function otherwise the build will fail
 		showAddNewInput: function ( isMainZObject, index ) {
 			return isMainZObject && index === 0;
+		},
+		setActiveInput: function ( index ) {
+			this.activeInputIndex = index;
 		}
 	} ),
 	watch: {
@@ -148,17 +171,31 @@ module.exports = exports = {
 
 <style lang="less">
 @import '../../../ext.wikilambda.edit.less';
+@import './../../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-function-definition-inputs {
-	display: flex;
+	display: block;
+	position: relative;
 	margin-bottom: 26px;
+
+	&__padded {
+		padding-bottom: 40px;
+	}
 
 	& > div:first-of-type {
 		width: 153px;
 	}
 
 	&_label {
+		display: none;
+	}
+
+	@media screen and ( min-width: @width-breakpoint-tablet ) {
 		display: flex;
+
+		&_label {
+			display: flex;
+		}
 	}
 }
 </style>

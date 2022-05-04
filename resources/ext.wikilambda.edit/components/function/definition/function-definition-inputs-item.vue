@@ -6,38 +6,69 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-editor-input-list-item">
-		<z-object-selector
-			:type="Constants.Z_TYPE"
-			class="ext-wikilambda-editor-input-list-item__selector"
-			:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text()"
-			:selected-id="getTypeOfArgument"
-			:readonly="!canEditType"
-			@input="setArgumentType( $event )"
-		></z-object-selector>
-		<!--
-			TODO: This is hardcoded for now as it is the first complex input,
-			In the future we should provide an UI that will allow user to define complex types
-			automatically (for example set a function call that require x argument to be set
-			and show them automatically)
-		-->
-		<z-object-selector
-			v-if="getTypeOfArgument === Constants.Z_TYPED_LIST"
-			class="ext-wikilambda-editor-input-list-item__selector"
-			:label="$i18n( 'wikilambda-function-definition-inputs-item-typed-list-placeholder' ).text()"
-			:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-typed-list-placeholder' ).text()"
-			@input="setListTypedList"
-			@clear="setListTypedList"
+		<div
+			v-if="isMobile"
+			class="ext-wikilambda-editor-input-list-item__header"
+			:class="{ 'ext-wikilambda-editor-input-list-item__header--active': isActive }"
 		>
-		</z-object-selector>
+			<cdx-button
+				type="quiet"
+				class="ext-wikilambda-editor-input-list-item__header__title"
+				@click="toggleActive"
+			>
+				<cdx-icon :icon="icons.cdxIconExpand"></cdx-icon>
+				<span
+					class="ext-wikilambda-editor-input-list-item__header__title__text"
+				>
+					{{
+						$i18n( 'wikilambda-function-viewer-details-input-number', inputNumber ) +
+							( selectedLabel && !isActive ? ': ' + selectedLabel : '' )
+					}}
+				</span>
+			</cdx-button>
 
-		<input
-			class="ext-wikilambda-editor-input-list-item__input"
-			:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
-			:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
-			:value="getArgumentLabel"
-			@input="setArgumentLabel( zobjectId, $event.target.value )"
-		>
+			<cdx-button
+				v-if="index !== 0 && canEditType"
+				type="quiet"
+				class="ext-wikilambda-editor-input-list-item__header__action-delete"
+			>
+				<cdx-icon :icon="icons.cdxIconTrash"></cdx-icon>
+			</cdx-button>
+		</div>
 
+		<div class="ext-wikilambda-editor-input-list-item__body">
+			<z-object-selector
+				:type="Constants.Z_TYPE"
+				class="ext-wikilambda-editor-input-list-item__selector"
+				:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text()"
+				:selected-id="getTypeOfArgument"
+				:readonly="!canEditType"
+				@input="setArgumentType( $event )"
+			></z-object-selector>
+			<!--
+				TODO: This is hardcoded for now as it is the first complex input,
+				In the future we should provide an UI that will allow user to define complex types
+				automatically (for example set a function call that require x argument to be set
+				and show them automatically)
+			-->
+			<z-object-selector
+				v-if="getTypeOfArgument === Constants.Z_TYPED_LIST"
+				class="ext-wikilambda-editor-input-list-item__selector"
+				:label="$i18n( 'wikilambda-function-definition-inputs-item-typed-list-placeholder' ).text()"
+				:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-typed-list-placeholder' ).text()"
+				@input="setListTypedList"
+				@clear="setListTypedList"
+			>
+			</z-object-selector>
+
+			<input
+				class="ext-wikilambda-editor-input-list-item__input"
+				:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
+				:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
+				:value="getArgumentLabel"
+				@input="setArgumentLabel( zobjectId, $event.target.value )"
+			>
+		</div>
 		<template v-if="showAddNewInput">
 			<div
 				class="ext-wikilambda-editor-input-list-item__button ext-wikilambda-edit__text-button"
@@ -54,16 +85,25 @@ var Constants = require( '../../../Constants.js' ),
 	ZObjectSelector = require( '../../ZObjectSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
+	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
+	icons = require( './../../../../lib/icons.json' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'fn-editor-input-list-item',
 	components: {
-		'z-object-selector': ZObjectSelector
+		'z-object-selector': ZObjectSelector,
+		'cdx-icon': CdxIcon,
+		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],
 	props: {
+		index: {
+			type: Number,
+			required: true
+		},
 		zobjectId: {
 			type: Number,
 			required: true
@@ -89,15 +129,39 @@ module.exports = exports = {
 		zLang: {
 			type: String,
 			required: true
+		},
+		/**
+		 * device screensize is mobile
+		 */
+		isMobile: {
+			type: Boolean,
+			required: true
+		},
+		isActive: {
+			type: Boolean,
+			default: false
+		},
+		showIndex: {
+			type: Boolean,
+			default: false
 		}
+	},
+	data: function () {
+		return {
+			icons: icons
+		};
 	},
 	computed: $.extend( mapGetters( [
 		'getNextObjectId',
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
 		'getCurrentZLanguage',
-		'getZObjectTypeById'
+		'getZObjectTypeById',
+		'getZkeyLabels'
 	] ), {
+		inputNumber: function () {
+			return this.showIndex ? this.index + 1 : '';
+		},
 		Constants: function () {
 			return Constants;
 		},
@@ -144,6 +208,9 @@ module.exports = exports = {
 			}
 
 			return null;
+		},
+		selectedLabel: function () {
+			return this.getTypeOfArgument ? this.getZkeyLabels[ this.getTypeOfArgument ] : '';
 		}
 	} ),
 	methods: $.extend( mapActions( [
@@ -224,6 +291,10 @@ module.exports = exports = {
 				type: type
 			};
 			this.setTypeOfTypedList( payload );
+		},
+		toggleActive: function () {
+			var index = this.isActive ? -1 : this.index;
+			this.$emit( 'active-input', index );
 		}
 	} )
 };
@@ -231,23 +302,112 @@ module.exports = exports = {
 
 <style lang="less">
 @import '../../../ext.wikilambda.edit.less';
+@import './../../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-editor-input-list-item {
-	margin-bottom: 6px;
+	flex-direction: column;
+	gap: 20px;
+	padding: 24px 0;
+	border-bottom: 1px solid @wmui-color-base80;
+
+	&__body {
+		width: 100%;
+		display: none;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	&__header {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+
+		&__title {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			width: 100%;
+			padding: 0;
+
+			.cdx-icon {
+				width: 30px;
+				height: 30px;
+				transform: rotate( 180deg );
+
+				svg {
+					width: 16px;
+				}
+			}
+
+			&__text {
+				font-weight: @font-weight-normal;
+			}
+		}
+
+		&__action-delete {
+			.cdx-icon {
+				color: @wmui-color-red50;
+				width: 16px;
+				height: 16px;
+			}
+		}
+
+		&--active {
+			.ext-wikilambda-editor-input-list-item__header__title {
+				.cdx-icon {
+					transform: rotate( 0deg );
+				}
+			}
+
+			+ .ext-wikilambda-editor-input-list-item__body {
+				display: flex;
+			}
+		}
+	}
 
 	&__selector {
-		height: 32px;
-		margin-right: 6px;
+		height: 34px;
+		width: 100%;
 	}
 
 	&__input {
-		height: 20px;
-		padding: 4px 6px;
-		margin-right: 8px;
+		height: 36px;
+		width: 100%;
+		padding: 0 6px;
+		box-sizing: border-box;
 	}
 
 	&__button {
+		white-space: nowrap;
 		cursor: pointer;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+	}
+
+	@media screen and ( min-width: @width-breakpoint-tablet ) {
+		padding: 0;
+		flex-direction: row;
+		margin-bottom: 6px;
+		border-bottom: 0;
+
+		&__body {
+			display: flex;
+			flex-direction: row;
+			gap: 6px;
+		}
+
+		&__selector {
+			width: auto;
+		}
+
+		&__input {
+			width: auto;
+		}
+
+		&__button {
+			position: relative;
+		}
 	}
 }
 </style>
