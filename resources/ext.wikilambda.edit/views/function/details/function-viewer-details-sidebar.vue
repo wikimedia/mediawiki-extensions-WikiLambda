@@ -96,7 +96,7 @@ module.exports = exports = {
 				tableData.push( {
 					label: {
 						// only show the numbered input if there is more than one
-						title: this.zArgumentList.length > 1 ? this.$i18n( 'wikilambda-function-viewer-details-input-number', Number( argumentIndex ) + 1 ).text() : this.$i18n( 'wikilambda-editor-input-title' ).text(),
+						title: this.$i18n( 'wikilambda-function-viewer-details-input-number', this.zArgumentList.length > 1 ? Number( argumentIndex ) + 1 : '' ).text(),
 						component: 'div',
 						props: {
 							class: 'ext-wikilambda-function-viewer-details-sidebar__table-bold'
