@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Zafar Shamsiddinov"
+			"Zafar Shamsiddinov",
+			"Malikxan"
 		]
 	},
+	"wikilambda-persistentzobject-contents": "Mundarija",
 	"wikilambda-special-createzobject-nojs": "Ushbu sahifadan foydalanish uchun JavaScript talab etiladi."
 }
