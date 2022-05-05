@@ -1,11 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Hanna Tardos"
+			"Hanna Tardos",
+			"Máté"
 		]
 	},
 	"wikilambda-invalidcontenttype": "A megadott tartalom nem sorolható be egyetlen ZObject osztályba sem.",
 	"wikilambda-labelclash": "A megadott tartalom címe ütközik a '$1' ZObjecttel '$2' cím miatt.",
+	"wikilambda-persistentzobject-contents": "Tartalomjegyzék",
 	"wikilambda-viewmode-nojs": "JavaScript hiányában az oldal csökkentett verzióban jelenik meg.",
 	"wikilambda-reference": "Hivatkozás",
 	"wikilambda-special-createzobject": "Új ZObject létrehozása",
