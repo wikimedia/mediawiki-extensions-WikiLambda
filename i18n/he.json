@@ -30,6 +30,9 @@
 	"wikilambda-functioncall": "קריאה לפונקציה",
 	"wikilambda-orchestrated": "תוצאת התזמור",
 	"wikilambda-orchestrated-loading": "מתבצע תזמור, נא להמתין",
+	"wikilambda-edit": "עריכה",
+	"wikilambda-show-more": "להציג עוד",
+	"wikilambda-hide-more": "להסתיר עוד",
 	"wikilambda-argref": "הפניה לארגומנט",
 	"wikilambda-special-callfunction": "ליצור ולבצע קריאה לפונקציה.",
 	"wikilambda-special-callfunction-summary": "הטופס הזה מאפשר לך ליצור ולבצע קריאה לפונקציה. מומלץ לקרוא את תיעוד העזרה ואת הנחיות הקהילה לפני־כן.",
@@ -232,5 +235,7 @@
 	"wikilambda-function-viewer-aliases-header": "ידוע גם בשם",
 	"wikilambda-function-viewer-aliases-show-language-button": "הצגת שפות נוספות",
 	"wikilambda-function-viewer-aliases-hide-language-button": "הסתרת רשימה",
-	"wikilambda-function-viewer-names-show-languages-button": "הצגת השם בשפות אחרות"
+	"wikilambda-function-viewer-names-show-languages-button": "הצגת השם בשפות אחרות",
+	"wikilambda-function-viewer-details-input-number": "קלט $1",
+	"wikilambda-function-viewer-details-sidebar-summary": "כל אחד יכול לערוך תוויות, אבל רק משתמשים בעלי הרשאות מיוחדות יכולים לערוך את הסוג והמספר של הקלט והפלט."
 }

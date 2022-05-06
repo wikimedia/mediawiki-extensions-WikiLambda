@@ -6,8 +6,10 @@
 			"Hmgrmb",
 			"NACHOgao3",
 			"SkyEye FAST",
+			"StarrySky",
 			"TsuyaMarisa",
 			"Willy1018",
+			"Yining Chen",
 			"Zhang8569"
 		]
 	},
@@ -16,6 +18,9 @@
 	"wikilambda-persistentzobject-metadata": "标签与化名",
 	"wikilambda-persistentzobject-contents": "内容",
 	"wikilambda-orchestrated-loading": "正在执行编排，请稍候",
+	"wikilambda-edit": "编辑",
+	"wikilambda-show-more": "显示更多",
+	"wikilambda-hide-more": "隐藏更多",
 	"wikilambda-argref": "参数参考",
 	"wikilambda-published": "已发布！",
 	"wikilambda-cancel": "取消",
@@ -51,5 +56,7 @@
 	"wikilambda-editor-behavior-title": "行为",
 	"wikilambda-ztyped-pair-placeholder": "选择类型",
 	"wikilambda-ztyped-pair-key-label": "密钥",
-	"wikilambda-ztyped-pair-value-label": "值"
+	"wikilambda-ztyped-pair-value-label": "值",
+	"wikilambda-function-viewer-details-input-number": "输入$1",
+	"wikilambda-function-viewer-details-sidebar-summary": "任何人都可以编辑标签，但是输入/输出类型或count只能被拥有特定权限的用户编辑。"
 }
