@@ -497,7 +497,10 @@ class ZObjectStore {
 
 		$zids = [];
 		foreach ( $res as $row ) {
-			$zids[] = $row->page_title;
+			$zid = $row->page_title;
+			if ( ZObjectUtils::isValidZObjectReference( $zid ) ) {
+				$zids[] = $zid;
+			}
 		}
 		return $zids;
 	}

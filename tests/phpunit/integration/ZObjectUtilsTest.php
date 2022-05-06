@@ -11,7 +11,6 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use FormatJson;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
-use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
@@ -904,93 +903,6 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				. ' { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" }'
 				. ' ] },'
 				. ' "Z3K4": { "Z1K1": "Z6", "Z6K1": "default value" } }'
-			]
-		];
-	}
-
-	/**
-	 * @dataProvider provideApplyTransformationToType
-	 * @covers ::applyTransformationToType
-	 */
-	public function testApplyTransformationToType( $input, $type, $transformation, $expected ) {
-		$this->assertSame(
-			FormatJson::encode( FormatJson::decode( $expected ) ),
-			FormatJson::encode(
-				ZObjectUtils::applyTransformationToType( FormatJson::decode( $input ), $type, $transformation )
-			)
-		);
-	}
-
-	public function provideApplyTransformationToType() {
-		// Of form {input, type, transformation, output}
-
-		return [
-			'transformation to string' => [
-				'"string"',
-				'Z6',
-				static function ( $item ) {
-					return $item;
-				},
-				'"string"'
-			],
-			'transformation to empty array' => [
-				'[]',
-				'Z6',
-				static function ( $item ) {
-					return $item;
-				},
-				'[]'
-			],
-			'transformation to empty zobject' => [
-				'{}',
-				'Z6',
-				static function ( $item ) {
-					return $item;
-				},
-				'{}'
-			],
-
-			'transformation to Z6' => [
-				'{ "Z1K1": "Z6", "Z6K1": "to uppercase" }',
-				'Z6',
-				static function ( $item ) {
-					$item->{ ZTypeRegistry::Z_STRING_VALUE } = strtoupper( $item->{ ZTypeRegistry::Z_STRING_VALUE } );
-					return $item;
-				},
-				'{ "Z1K1": "Z6", "Z6K1": "TO UPPERCASE" }',
-			],
-
-			'canonicalization of Z6' => [
-				'{ "Z1K1": "Z2", "Z2K2":{ "Z1K1": "Z6", "Z6K1": "to canonical" }}',
-				'Z6',
-				static function ( $item ) {
-					return $item->{ ZTypeRegistry::Z_STRING_VALUE };
-				},
-				'{ "Z1K1": "Z2", "Z2K2": "to canonical" }',
-			],
-
-			'canonicalization of many Z6' => [
-				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z6", "Z6K1": "to canonical value" }, '
-					. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", '
-					. ' "Z11K2": { "Z1K1": "Z6", "Z6K1": "to canonical label" } } ] } }',
-				'Z6',
-				static function ( $item ) {
-					return $item->{ ZTypeRegistry::Z_STRING_VALUE };
-				},
-				'{ "Z1K1": "Z2", "Z2K2": "to canonical value", '
-					. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [{ "Z1K1": "Z11", "Z11K1": "Z1002", '
-					. ' "Z11K2": "to canonical label" } ] } }',
-			],
-
-			'canonicalization of array of Z6' => [
-				'[ { "Z1K1": "Z6", "Z6K1": "first value" },'
-					. ' { "Z1K1": "Z6", "Z6K1": "second value" },'
-					. ' { "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "third value" } } ]',
-				'Z6',
-				static function ( $item ) {
-					return $item->{ ZTypeRegistry::Z_STRING_VALUE };
-				},
-				'[ "first value", "second value", { "Z1K1": "Z2", "Z2K1": "third value" } ]'
 			]
 		];
 	}
