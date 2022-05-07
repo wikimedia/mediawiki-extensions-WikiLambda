@@ -149,6 +149,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_LIST => 'ZList',
 		self::Z_MONOLINGUALSTRING => 'ZMonoLingualString',
 		self::Z_MULTILINGUALSTRING => 'ZMultiLingualString',
+		self::Z_RESPONSEENVELOPE => 'ZResponseEnvelope',
 		self::Z_MONOLINGUALSTRINGSET => 'ZMonoLingualStringSet',
 		self::Z_MULTILINGUALSTRINGSET => 'ZMultiLingualStringSet',
 		self::Z_KEYREFERENCE => 'ZKeyReference',
