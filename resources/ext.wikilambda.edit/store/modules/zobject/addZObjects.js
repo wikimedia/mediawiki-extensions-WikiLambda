@@ -220,7 +220,7 @@ module.exports = exports = {
 		 * @param {Object} payload
 		 * @param {string} payload.value
 		 * @param {number} payload.id
-		 * @param {boolean} payload.isDeclaration //This is used to unwrap it from a Z_OBJECT_TYPE (Z1K1)
+		 * @param {boolean} payload.isDeclaration This is used to unwrap it from a Z_OBJECT_TYPE (Z1K1)
 		 */
 		addZTypedList: function ( context, payload ) {
 			var value = payload.value || '',
@@ -256,7 +256,7 @@ module.exports = exports = {
 		 * @param {Object} payload
 		 * @param {string} payload.value
 		 * @param {number} payload.id
-		 * @param {boolean} payload.isDeclaration //This is used know if the the values need to be initialized or not
+		 * @param {boolean} payload.isDeclaration This is used know if the values need to be initialized or not
 		 */
 		addZTypedPair: function ( context, payload ) {
 			var values = payload.values || [],
