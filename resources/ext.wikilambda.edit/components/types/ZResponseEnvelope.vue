@@ -8,7 +8,7 @@
 	<div class="ext-wikilambda-zresponseenvelope">
 		<div>
 			<z-object-key
-				:zobject-id="zFirst.id"
+				:zobject-id="zValue.id"
 				:parent-type="Constants.Z_RESPONSEENVELOPE"
 				:readonly="readonly"
 			></z-object-key>
@@ -23,7 +23,7 @@
 		<div v-if="showSecond">
 			<hr>
 			<z-object-key
-				:zobject-id="zSecond.id"
+				:zobject-id="zMetaData.id"
 				:parent-type="Constants.Z_RESPONSEENVELOPE"
 				:readonly="readonly"
 			></z-object-key>
@@ -69,10 +69,10 @@ module.exports = exports = {
 		zobject: function () {
 			return this.getZObjectChildrenById( this.zobjectId );
 		},
-		zFirst: function () {
+		zValue: function () {
 			return this.findKeyInArray( Constants.Z_RESPONSEENVELOPE_VALUE, this.zobject );
 		},
-		zSecond: function () {
+		zMetaData: function () {
 			return this.findKeyInArray( Constants.Z_RESPONSEENVELOPE_METADATA, this.zobject );
 		}
 	} )
