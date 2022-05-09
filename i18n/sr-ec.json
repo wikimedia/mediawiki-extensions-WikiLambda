@@ -1,9 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Kizule"
+			"Kizule",
+			"Milicevic01"
 		]
 	},
+	"wikilambda-edit": "Уреди",
+	"wikilambda-show-more": "Прикажи више",
+	"wikilambda-hide-more": "Сакриј више",
 	"wikilambda-publish-summary-prompt": "Укратко опишите шта сте променили",
 	"wikilambda-metadata-all-languages": "Прикажи све унесене језике",
 	"wikilambda-persistentobject-details-label": "Детаљи"
