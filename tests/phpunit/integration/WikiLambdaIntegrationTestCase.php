@@ -138,6 +138,7 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 			// TODO (T304009): We should not create Language objects directly, that's not supported upstream.
 			return new Language(
 				$code,
+				$services->getNamespaceInfo(),
 				$services->getLocalisationCache(),
 				$services->getLanguageNameUtils(),
 				$services->getLanguageFallback(),

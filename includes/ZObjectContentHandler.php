@@ -180,6 +180,7 @@ class ZObjectContentHandler extends ContentHandler {
 			// TODO (T304009): We should not create Language objects directly, that's not supported upstream.
 			$returnLanguage = new Language(
 				$languageCode,
+				$services->getNamespaceInfo(),
 				$services->getLocalisationCache(),
 				$services->getLanguageNameUtils(),
 				$services->getLanguageFallback(),
