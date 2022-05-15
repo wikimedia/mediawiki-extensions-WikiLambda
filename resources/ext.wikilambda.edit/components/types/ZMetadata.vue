@@ -96,6 +96,7 @@
 			<z-object-selector
 				:used-languages="selectedLanguages"
 				:type="Constants.Z_NATURAL_LANGUAGE"
+				:selected-id="selectedLang"
 				@input="addNewLang"
 			></z-object-selector>
 		</template>
@@ -132,7 +133,8 @@ module.exports = exports = {
 		return {
 			defaultMaxLanguages: 4,
 			showMoreLanguages: !mw.storage.get( 'aw-showMoreLanguages' ) || mw.storage.get( 'aw-showMoreLanguages' ) === 'true',
-			showAllSelectedLanguages: false
+			showAllSelectedLanguages: false,
+			selectedLang: ''
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -343,6 +345,8 @@ module.exports = exports = {
 			this.addZMonolingualString( payload );
 
 			this.showAllSelectedLanguages = true;
+
+			this.selectedLang = zId;
 		},
 		removeLang: function ( language ) {
 			var labelId = this.getLanguageLabelId( language ),
