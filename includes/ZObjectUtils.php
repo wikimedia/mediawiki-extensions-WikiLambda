@@ -622,67 +622,24 @@ class ZObjectUtils {
 	}
 
 	/**
-	 * Walks the ZObject tree and when it finds a ZObject with an explicit type that matches the
-	 * type passed as a parameter, it applies the transformation to that sub ZObject. Note that this
-	 * is also the finishing condition for the recursiveness: if another ZObject of the same type is
-	 * a child of the first one found, it will not apply the transformation for the child one.
+	 * Walks the ZObject tree and applies a given transformation to its branches.
 	 *
 	 * @param array|stdClass|string $input decoded JSON object for a ZObject
-	 * @param string $type
 	 * @param callable $transformation
 	 * @return array|stdClass|string
 	 */
-	public static function applyTransformationToType( $input, $type, $transformation ) {
+	public static function applyTransformation( $input, $transformation ) {
 		if ( is_string( $input ) ) {
 			return $input;
 		}
 		if ( is_array( $input ) ) {
-			return array_map( function ( $item ) use ( $type, $transformation ) {
-				return self::applyTransformationToType( $item, $type, $transformation );
-			}, $input );
-		}
-		if ( is_object( $input ) ) {
-			if (
-				property_exists( $input, ZTypeRegistry::Z_OBJECT_TYPE ) &&
-				$input->{ZTypeRegistry::Z_OBJECT_TYPE} == $type
-			) {
-				return $transformation( $input );
-			} else {
-				foreach ( $input as $index => $value ) {
-					$input->$index = self::applyTransformationToType( $value, $type, $transformation );
-				}
-				return $input;
-			}
-		}
-	}
-
-	/**
-	 * Walks the ZObject tree and when it finds a given key or keys, it applies the transformation
-	 * to its value. Note that this is also the finishing condition for the recursiveness: if another
-	 * ZObject of the same type is a child of the first one found, it will not apply the transformation
-	 * for the child one.
-	 *
-	 * @param array|stdClass|string $input decoded JSON object for a ZObject
-	 * @param string[] $keys
-	 * @param callable $transformation
-	 * @return array|stdClass|string
-	 */
-	public static function applyTransformationToKeys( $input, $keys, $transformation ) {
-		if ( is_string( $input ) ) {
-			return $input;
-		}
-		if ( is_array( $input ) ) {
-			return array_map( function ( $item ) use ( $keys, $transformation ) {
-				return self::applyTransformationToKeys( $item, $keys, $transformation );
+			return array_map( function ( $item ) use ( $transformation ) {
+				return self::applyTransformation( $item, $transformation );
 			}, $input );
 		}
 		if ( is_object( $input ) ) {
 			foreach ( $input as $key => $value ) {
-				if ( in_array( $key, $keys ) ) {
-					$input->$key = $transformation( $value );
-				} else {
-					$input->$key = self::applyTransformationToKeys( $value, $keys, $transformation );
-				}
+				$input->$key = self::applyTransformation( $transformation( $key, $value ), $transformation );
 			}
 			return $input;
 		}

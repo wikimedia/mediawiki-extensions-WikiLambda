@@ -1,10 +1,26 @@
 <?php
 /**
- * WikiLambda updateLanguageCodes development script
+ * WikiLambda updateTypedLists development script
  *
- * Replaces language codes for the corresponding Z60 (ZLanguage) Zids in all ZObjects
- * persisted in wiki. If the flag '--files' is present, it replaces the language codes
- * from the files available in the 'data' directory instead.
+ * Replaces canonical untyped arrays with canonical typed arrays (Benjamin arrays), by
+ * prepending the expected type of the items from the list. The built-in keys that contain
+ * arrays are are:
+ * * Z12K1: TypedList( Z11 )
+ * * Z8K1: TypedList( Z17 )
+ * * Z8K3: TypedList( Z20 )
+ * * Z8K4: TypedList( Z14 )
+ * * Z60K2: TypedList( Z6 )
+ * * Z50K1: TypedList( Z3 )
+ * * Z31K2: TypedList( Z6 )
+ * * Z32K1: TypedList( Z31 )
+ * * Z4K2: TypedList( Z3 )
+ * The rest of lists will be appended with the default type "Z1":
+ * * Z810K2: TypedList( Z1 )
+ * * Z2k2: TypedList( Z1 )
+ *
+ * The command applies this transformation to the files available in the 'data'
+ * directory. If the flag '--db' is used, then this transformation will be applied
+ * to all the ZObjects persisted in the database.
  *
  * @file
  * @ingroup Extensions
@@ -12,7 +28,6 @@
  * @license MIT
  */
 
-use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -25,10 +40,7 @@ if ( $IP === false ) {
 
 require_once "$IP/maintenance/Maintenance.php";
 
-class UpdateLanguageCodes extends Maintenance {
-
-	private const Z_LANGUAGE = 'Z60';
-	private const Z_LANGUAGE_CODE = 'Z60K1';
+class UpdateTypedLists extends Maintenance {
 
 	/**
 	 * @var ZObjectStore
@@ -36,21 +48,36 @@ class UpdateLanguageCodes extends Maintenance {
 	private $zObjectStore = null;
 
 	/**
-	 * @var array
-	 */
-	private $languageZids = [];
-
-	/**
 	 * @var int
 	 */
 	private $updatedFields = 0;
 
+	/**
+	 * @var array
+	 */
+	private $itemTypes = [
+		"Z4K2" => "Z3",
+		"Z8K1" => "Z17",
+		"Z8K3" => "Z20",
+		"Z8K4" => "Z14",
+		"Z12K1" => "Z11",
+		"Z31K2" => "Z6",
+		"Z32K1" => "Z31",
+		"Z50K1" => "Z3",
+		"Z60K2" => "Z6"
+	];
+
+	/**
+	 * @var string
+	 */
+	private $defaultType = "Z1";
+
 	public function __construct() {
 		parent::__construct();
 		$this->requireExtension( 'WikiLambda' );
-		$this->addDescription( 'Updates all saved ZObjects to use Z60 languages instead of string language codes' );
+		$this->addDescription( 'Updates all saved ZObjects to have canonical typed lists for the builtin types' );
 
-		$this->addOption( 'files', 'Modify the files of builtin ZObjects', false, false );
+		$this->addOption( 'db', 'Modify the persisted ZObject in the database', false, false );
 	}
 
 	public function execute() {
@@ -63,49 +90,22 @@ class UpdateLanguageCodes extends Maintenance {
 			$services->getRevisionStore()
 		);
 
-		$this->registerLanguageCodes();
-
 		// Either we alter the db or we alter the builtin files.
 		// The db is going to be the most common thing to do, the
 		// builtin files are just going to be one time thing, so let's
 		// use the parameter to specify the files
-		$files = $this->getOption( 'files' );
+		$db = $this->getOption( 'db' );
 
-		if ( $files ) {
-			$this->updateInFiles();
-		} else {
+		if ( $db ) {
 			$this->updateInDatabase();
+		} else {
+			$this->updateInFiles();
 		}
 	}
 
 	/**
-	 * Fetches all ZObjects of type Z60 and registers them locally to make the
-	 * language code to language Zid transformation. It is reasonable to register
-	 * all languages in memory before doing the transformation, as fetching a
-	 * language object by language code is extremely database-intensive.
-	 */
-	private function registerLanguageCodes() {
-		$zids = $this->zObjectStore->fetchZidsOfType( self::Z_LANGUAGE );
-		foreach ( $zids as $zid ) {
-			$title = Title::newFromText( $zid, NS_MAIN );
-			$content = $this->zObjectStore->fetchZObjectByTitle( $title );
-			$zobject = $content->getObject()->{ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE};
-			if ( $zobject->{ZTypeRegistry::Z_OBJECT_TYPE} === self::Z_LANGUAGE ) {
-				if ( property_exists( $zobject, self::Z_LANGUAGE_CODE ) ) {
-					$code = $zobject->{self::Z_LANGUAGE_CODE};
-					$this->languageZids[ $code ] = $zid;
-				} else {
-					$this->output( "$zid doesn't have property " . self::Z_LANGUAGE_CODE );
-				}
-			} else {
-				$this->output( "$zid is not of type " . self::Z_LANGUAGE );
-			}
-		}
-	}
-
-	/**
-	 * Fetches every ZObject in the database and updates it after applying the language
-	 * code to language Zid transformation to all its ZMonolingualString (Z11).
+	 * Fetches every ZObject in the database and updates it after replacing its lists
+	 * with canonical typed lists.
 	 */
 	private function updateInDatabase() {
 		$zids = $this->zObjectStore->fetchAllZids();
@@ -122,7 +122,8 @@ class UpdateLanguageCodes extends Maintenance {
 				$this->output( "> $zid: FETCH FAILED\n" );
 				$this->output( $e->getMessage() . "\n" );
 			}
-			$newObject = $this->transformLanguageCodeIntoZid( $content->getObject() );
+
+			$newObject = $this->transformTypedLists( $content->getObject() );
 
 			// And we update the data
 			$response = $this->zObjectStore->updateZObject(
@@ -142,22 +143,6 @@ class UpdateLanguageCodes extends Maintenance {
 				$this->output( "\n" );
 			}
 		}
-	}
-
-	/**
-	 * Walks a ZObject and applies the language code to language Zid ID to every
-	 * ZMonolingualString (Z11) that it finds.
-	 *
-	 * @param stdClass $zObject
-	 * @return stdClass
-	 */
-	private function transformLanguageCodeIntoZid( $zObject ) {
-		return ZObjectUtils::applyTransformation(
-			$zObject,
-			function ( $key, $value ) {
-				return $this->updateMonolingualLanguageCode( $value );
-			}
-		);
 	}
 
 	/**
@@ -194,7 +179,7 @@ class UpdateLanguageCodes extends Maintenance {
 				return;
 			}
 			$content = ZObjectContentHandler::makeContent( $data, $title );
-			$newObject = $this->transformLanguageCodeIntoZid( $content->getObject() );
+			$newObject = $this->transformTypedLists( $content->getObject() );
 
 			file_put_contents(
 				$initialDataToLoadPath . $filename,
@@ -207,28 +192,36 @@ class UpdateLanguageCodes extends Maintenance {
 	}
 
 	/**
-	 * Transforms a ZMonolingualString replacing the laguage code from its language key (Z11K1)
-	 * with the equivalent ZLanguage object Zid.
+	 * Walks a ZObject and transforms its lists into canonical typed list.
 	 *
-	 * @param stdClass $zobject Monolingual string with language codes
-	 * @return stdClass Monolingual string with Zids instead of language codes
+	 * @param stdClass $zObject
+	 * @return stdClass
 	 */
-	private function updateMonolingualLanguageCode( $zobject ) {
-		if (
-			property_exists( $zobject, ZTypeRegistry::Z_OBJECT_TYPE ) &&
-			$zobject->{ZTypeRegistry::Z_OBJECT_TYPE} == ZTypeRegistry::Z_MONOLINGUALSTRING
-		) {
-			$languageCode = $zobject->{ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE};
-			if ( array_key_exists( $languageCode, $this->languageZids ) ) {
-				$languageZid = $this->languageZids[ $languageCode ];
-				$zobject->{ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE} = $languageZid;
-				$this->updatedFields++;
+	private function transformTypedLists( $zObject ) {
+		return ZObjectUtils::applyTransformation(
+			$zObject,
+			function ( $key, $value ) {
+				return $this->updateCanonicalTypedLists( $key, $value );
 			}
+		);
+	}
+
+	/**
+	 * Transforms the given under the given key into a typed list
+	 *
+	 * @param string $key
+	 * @param array $value
+	 * @return array Explicit string
+	 */
+	private function updateCanonicalTypedLists( $key, $value ) {
+		if ( is_array( $value ) ) {
+			$this->updatedFields++;
+			return array_merge( [ $this->itemTypes[$key] ?? $this->defaultType ], $value );
 		}
-		return $zobject;
+		return $value;
 	}
 }
 
-$maintClass = UpdateLanguageCodes::class;
+$maintClass = UpdateTypedLists::class;
 
 require_once RUN_MAINTENANCE_IF_MAIN;

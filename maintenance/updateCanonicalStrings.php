@@ -37,6 +37,11 @@ class UpdateCanonicalStrings extends Maintenance {
 	 */
 	private $updatedFields = 0;
 
+	/**
+	 * @var array
+	 */
+	private $transformKeys = [ "Z2K1", "Z14K4" ];
+
 	public function __construct() {
 		parent::__construct();
 		$this->requireExtension( 'WikiLambda' );
@@ -117,11 +122,10 @@ class UpdateCanonicalStrings extends Maintenance {
 	 * @return stdClass
 	 */
 	private function transformCanonicalStrings( $zObject ) {
-		return ZObjectUtils::applyTransformationToKeys(
+		return ZObjectUtils::applyTransformation(
 			$zObject,
-			[ "Z2K1", "Z14K4" ],
-			function ( $item ) {
-				return $this->updateCanonicalRefToString( $item );
+			function ( $key, $value ) {
+				return $this->updateCanonicalRefToString( $key, $value );
 			}
 		);
 	}
@@ -175,25 +179,28 @@ class UpdateCanonicalStrings extends Maintenance {
 	/**
 	 * Transforms a reference to a canonical (explicit) string
 	 *
+	 * @param string $key Key
 	 * @param stdClass|string $ref Reference
 	 * @return array|mixed Explicit string
 	 */
-	private function updateCanonicalRefToString( $ref ) {
-		if ( is_string( $ref ) ) {
-			$this->updatedFields++;
-			return [
-				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_STRING,
-				ZTypeRegistry::Z_STRING_VALUE => $ref
-			];
-		}
-		if ( property_exists( $ref, ZTypeRegistry::Z_OBJECT_TYPE ) ) {
-			$type = $ref->{ ZTypeRegistry::Z_OBJECT_TYPE };
-			if ( $type === ZTypeRegistry::Z_REFERENCE ) {
+	private function updateCanonicalRefToString( $key, $ref ) {
+		if ( in_array( $key, $this->transformKeys ) ) {
+			if ( is_string( $ref ) ) {
 				$this->updatedFields++;
 				return [
 					ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_STRING,
-					ZTypeRegistry::Z_STRING_VALUE => $ref->{ ZTypeRegistry::Z_REFERENCE_VALUE }
+					ZTypeRegistry::Z_STRING_VALUE => $ref
 				];
+			}
+			if ( property_exists( $ref, ZTypeRegistry::Z_OBJECT_TYPE ) ) {
+				$type = $ref->{ ZTypeRegistry::Z_OBJECT_TYPE };
+				if ( $type === ZTypeRegistry::Z_REFERENCE ) {
+					$this->updatedFields++;
+					return [
+						ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_STRING,
+						ZTypeRegistry::Z_STRING_VALUE => $ref->{ ZTypeRegistry::Z_REFERENCE_VALUE }
+					];
+				}
 			}
 		}
 		return $ref;
