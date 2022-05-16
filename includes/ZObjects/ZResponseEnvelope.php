@@ -11,7 +11,6 @@
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use stdClass;
 
 class ZResponseEnvelope extends ZObject {
 
@@ -22,8 +21,8 @@ class ZResponseEnvelope extends ZObject {
 	 * @param ?ZObject $metadata Meta-data response
 	 */
 	public function __construct( $response, $metadata ) {
-		$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ] = $response ?? ZTypeRegistry::Z_VOID_INSTANCE;
-		$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ] = $metadata ?? ZTypeRegistry::Z_VOID_INSTANCE;
+		$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ] = $response ?? (object)ZTypeRegistry::Z_VOID_INSTANCE;
+		$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ] = $metadata ?? (object)ZTypeRegistry::Z_VOID_INSTANCE;
 	}
 
 	/**
@@ -85,28 +84,7 @@ class ZResponseEnvelope extends ZObject {
 	 * @return bool
 	 */
 	public function hasErrors(): bool {
-		// TODO (T291136): This should be reading a ZMap 'errors' value
-		$errors = $this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ];
-
-		return (
-			is_object( $errors ) &&
-			(
-				// A real, live ZError
-				$errors instanceof ZError ||
-				// An uninstantiated ZObject
-				(
-					$errors instanceof stdClass &&
-					property_exists( $errors, ZTypeRegistry::Z_OBJECT_TYPE ) &&
-					(
-						$errors->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_ERROR ||
-						(
-							$errors->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_REFERENCE
-							&& $errors->{ ZTypeRegistry::Z_REFERENCE_VALUE } === ZTypeRegistry::Z_ERROR
-						)
-					)
-				)
-			)
-		);
+		return $this->getErrors() !== null;
 	}
 
 	/**
@@ -115,7 +93,77 @@ class ZResponseEnvelope extends ZObject {
 	 * @return ZError|null
 	 */
 	public function getErrors(): ?ZError {
-		// TODO (T291136): This should be reading a ZMap 'errors' value
-		return $this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ];
+		$metaData = $this->getZMetadata();
+
+		if ( !$metaData ) {
+			return null;
+		}
+
+		if ( !is_object( $metaData ) ) {
+			return null;
+		}
+
+		if ( $metaData instanceof ZTypedMap ) {
+			// @phan-suppress-next-line PhanTypeMismatchReturnSuperType phan can't tell this must be a ZError
+			return $metaData->getValueGivenKey( new ZString( 'errors' ) );
+		}
+
+		if ( $metaData instanceof ZObject ) {
+			// TODO (T291136): Legacy error-only response envelope; to remove.
+
+			if ( $metaData instanceof ZError ) {
+				return $metaData;
+			}
+
+			if ( $metaData instanceof ZReference && $metaData->getZValue() === ZTypeRegistry::Z_VOID ) {
+				return null;
+			}
+
+			$metaDataType = $metaData->getZType();
+		} else {
+			if ( !property_exists( $metaData, ZTypeRegistry::Z_OBJECT_TYPE ) ) {
+				return null;
+			}
+
+			$metaDataType = $metaData->{ ZTypeRegistry::Z_OBJECT_TYPE };
+
+			if ( $metaDataType === ZTypeRegistry::Z_UNIT ) {
+				return null;
+			}
+		}
+
+		if (
+			!is_object( $metaDataType ) ||
+			!property_exists( $metaDataType, ZTypeRegistry::Z_OBJECT_TYPE ) ||
+			$metaDataType->{ ZTypeRegistry::Z_OBJECT_TYPE } !== ZTypeRegistry::Z_FUNCTIONCALL ||
+			!property_exists( $metaDataType, ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ) ||
+			$metaDataType->{ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION } !== 'Z883' ||
+			!property_exists( $metaDataType, 'Z883K1' ) ||
+			$metaDataType->{ 'Z883K1' } !== 'Z6' ||
+			!property_exists( $metaDataType, 'Z883K2' ) ||
+			$metaDataType->{ 'Z883K2' } !== 'Z1'
+		) {
+			// Meta-data map is a non-object or otherwise wrong; something's gone wrong, return nothing.
+			return null;
+		}
+
+		'@phan-var \stdClass $metaData';
+		$metaDataMapContents = $metaData->{ 'K1' };
+
+		// FIXME: This code will be significantly different with Benjamin Arrays.
+		// [ 'Z7/Z882', {}, {}, {} ]
+		while ( property_exists( $metaDataMapContents, 'K1' ) ) {
+			$currentValue = $metaDataMapContents->{ 'K1' };
+
+			if ( $currentValue->{ 'K1' } === 'errors' ) {
+				return $currentValue->{ 'K2' };
+			}
+
+			// Not found in this value, so recurse to the next value in the map
+			$metaDataMapContents = $metaDataMapContents->{ 'K2' };
+		}
+
+		// Nothing found in the map, so there are no errors
+		return null;
 	}
 }

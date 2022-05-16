@@ -39,7 +39,7 @@ class ZResponseEnvelopeTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertFalse( $testObject->hasErrors() );
 		$this->assertSame( $testResponse->getZValue(), $testObject->getZValue()->getZValue() );
-		$this->assertSame( ZTypeRegistry::Z_UNIT, $testObject->getZMetadata()[ ZTypeRegistry::Z_OBJECT_TYPE ] );
+		$this->assertSame( ZTypeRegistry::Z_UNIT, $testObject->getZMetadata()->{ ZTypeRegistry::Z_OBJECT_TYPE } );
 	}
 
 	/**
@@ -59,13 +59,14 @@ class ZResponseEnvelopeTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $testObject instanceof ZResponseEnvelope );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertTrue( $testObject->hasErrors() );
-		$this->assertSame( ZTypeRegistry::Z_UNIT, $testObject->getZValue()[ ZTypeRegistry::Z_OBJECT_TYPE ] );
+		$this->assertSame( ZTypeRegistry::Z_UNIT, $testObject->getZValue()->{ ZTypeRegistry::Z_OBJECT_TYPE } );
 
 		// Note that this will be a ZMap in future.
 		$metadata = $testObject->getZMetadata();
 		$this->assertSame( $metadata->getZErrorType(), $testError->getZErrorType() );
 
 		$error = $testObject->getErrors();
+		$this->assertTrue( $error instanceof ZError );
 		$this->assertSame( $error->getZErrorType(), $testError->getZErrorType() );
 	}
 
@@ -128,6 +129,148 @@ EOT;
 		$this->assertSame( ZTypeRegistry::Z_VOID, $testObject->getZValue()->getZValue() );
 
 		$error = $testObject->getErrors();
+		$this->assertTrue( $error instanceof ZError );
+		$this->assertSame( '"Z507"', $error->getZErrorType() );
+	}
+
+	/**
+	 * @covers ::__construct
+	 * @covers ::getDefinition
+	 * @covers ::getErrors
+	 * @covers ::getZMetadata
+	 * @covers ::getZType
+	 * @covers ::hasErrors
+	 * @covers ::isValid
+	 */
+	public function testCreation_factory_mapped_errors() {
+		$stringZObject = <<<EOT
+{
+	"Z1K1": "Z22",
+	"Z22K1": "Z24",
+	"Z22K2": {
+		"K1": {
+			"K1": {
+				"Z882K1": "errors",
+				"Z882K2": {
+					"Z1K1": "Z5",
+					"Z5K1": "Z507",
+					"Z5K2": "Executor returned an empty response."
+				},
+				"Z1K1": {
+					"Z1K1": "Z7",
+					"Z7K1": "Z882",
+					"Z882K1": "Z6",
+					"Z882K2": "Z1"
+				}
+			},
+			"K2": {
+				"K1": {
+					"Z882K1": "startTime",
+					"Z882K2": "2022-05-24T20:16:39.688Z",
+					"Z1K1": {
+						"Z1K1": "Z7",
+						"Z7K1": "Z882",
+						"Z882K1": "Z6",
+						"Z882K2": "Z1"
+					}
+				},
+				"K2": {
+					"K1": {
+						"Z882K1": "endTime",
+						"Z882K2": "2022-05-24T20:16:39.757Z",
+						"Z1K1": {
+							"Z1K1": "Z7",
+							"Z7K1": "Z882",
+							"Z882K1": "Z6",
+							"Z882K2": "Z1"
+						}
+					},
+					"K2": {
+						"K1": {
+							"Z882K1": "duration",
+							"Z882K2": "69ms",
+							"Z1K1": {
+								"Z1K1": "Z7",
+								"Z7K1": "Z882",
+								"Z882K1": "Z6",
+								"Z882K2": "Z1"
+							}
+						},
+						"K2": {
+							"Z1K1": {
+								"Z1K1": "Z7",
+								"Z7K1": "Z881",
+								"Z881K1": {
+									"Z1K1": "Z7",
+									"Z7K1": "Z882",
+									"Z882K1": "Z6",
+									"Z882K2": "Z1"
+								}
+							}
+						},
+						"Z1K1": {
+							"Z1K1": "Z7",
+							"Z7K1": "Z881",
+							"Z881K1": {
+								"Z1K1": "Z7",
+								"Z7K1": "Z882",
+								"Z882K1": "Z6",
+								"Z882K2": "Z1"
+							}
+						}
+					},
+					"Z1K1": {
+						"Z1K1": "Z7",
+						"Z7K1": "Z881",
+						"Z881K1": {
+							"Z1K1": "Z7",
+							"Z7K1": "Z882",
+							"Z882K1": "Z6",
+							"Z882K2": "Z1"
+						}
+					}
+				},
+				"Z1K1": {
+					"Z1K1": "Z7",
+					"Z7K1": "Z881",
+					"Z881K1": {
+						"Z1K1": "Z7",
+						"Z7K1": "Z882",
+						"Z882K1": "Z6",
+						"Z882K2": "Z1"
+					}
+				}
+			},
+			"Z1K1": {
+				"Z1K1": "Z7",
+				"Z7K1": "Z881",
+				"Z881K1": {
+					"Z1K1": "Z7",
+					"Z7K1": "Z882",
+					"Z882K1": "Z6",
+					"Z882K2": "Z1"
+				}
+			}
+		},
+		"Z1K1": {
+			"Z1K1": "Z7",
+			"Z7K1": "Z883",
+			"Z883K1": "Z6",
+			"Z883K2": "Z1"
+		}
+	}
+}
+EOT;
+
+		$testObject = ZObjectFactory::create( json_decode( $stringZObject ) );
+
+		$this->assertSame( 'Z22', $testObject->getZType() );
+		$this->assertTrue( $testObject instanceof ZResponseEnvelope );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertTrue( $testObject->hasErrors() );
+
+		$error = $testObject->getErrors();
+		$this->assertTrue( $error instanceof ZError );
 		$this->assertSame( '"Z507"', $error->getZErrorType() );
 	}
 }
