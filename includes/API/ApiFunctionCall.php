@@ -11,15 +11,25 @@
 namespace MediaWiki\Extension\WikiLambda\API;
 
 use ApiBase;
+use ApiMain;
 use ApiPageSet;
+use DerivativeContext;
+use FauxRequest;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use MediaWiki\Extension\WikiLambda\MockOrchestrator;
 use MediaWiki\Extension\WikiLambda\OrchestratorInterface;
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\MediaWikiServices;
+use RequestContext;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiFunctionCall extends ApiBase {
@@ -254,4 +264,69 @@ class ApiFunctionCall extends ApiBase {
 		];
 	}
 
+	/**
+	 * A convenience function for making a ZFunctionCall and returning its result to embed within a page.
+	 *
+	 * @param string $call The ZFunctionCall to make, as a JSON object turned into a string
+	 * @return string Currently the only permissable response objects are strings
+	 * @throws ZErrorException When the request is responded to oddly by the orchestrator
+	 */
+	public static function makeRequest( $call ): string {
+		$api = new ApiMain( new FauxRequest() );
+		$request = new FauxRequest(
+			[
+				'format' => 'json',
+				'action' => 'wikilambda_function_call',
+				'wikilambda_function_call_zobject' => $call,
+			],
+			/* wasPosted */ true
+		);
+
+		$context = new DerivativeContext( RequestContext::getMain() );
+		$context->setRequest( $request );
+		$api->setContext( $context );
+		$api->execute();
+		$outerResponse = $api->getResult()->getResultData( [], [ 'Strip' => 'all' ] );
+
+		// TODO (T301556): Take ZError creation to ZErrorFactory
+		if ( isset( $outerResponse[ 'error' ] ) ) {
+			$zerror = ZObjectFactory::create( $outerResponse[ 'error' ] );
+			if ( !( $zerror instanceof ZError ) ) {
+				$zerror = new ZError(
+					ZErrorTypeRegistry::Z_ERROR_EVALUATION,
+					new ZList( [ 'Server returned a non-ZError error!', $zerror ] )
+				);
+			}
+			throw new ZErrorException( $zerror );
+		}
+
+		// Now we know that the request has not failed before it even got to the orchestrator, get the response
+		// JSON string as a ZResponseEnvelope (falling back to an empty string in case it's unset).
+		$response = ZObjectFactory::create(
+			$outerResponse['query']['wikilambda_function_call']['Orchestrated']['data'] ?? ''
+		);
+
+		if ( !( $response instanceof ZResponseEnvelope ) ) {
+			// The server's not given us a result!
+			$zerror = new ZError(
+				ZErrorTypeRegistry::Z_ERROR_EVALUATION,
+				new ZList( [ 'Server returned a non-result!' ] )
+			);
+			throw new ZErrorException( $zerror );
+		}
+
+		if ( $response->hasErrors() ) {
+			// If the server has responsed with a Z5/Error, show that properly.
+			$zerror = $response->getErrors();
+			if ( !( $zerror instanceof ZError ) ) {
+				$zerror = new ZError(
+					ZErrorTypeRegistry::Z_ERROR_EVALUATION,
+					new ZList( [ 'Server returned a non-ZError error!', $zerror ] )
+				);
+			}
+			throw new ZErrorException( $zerror );
+		}
+
+		return trim( $response->getZValue() );
+	}
 }
