@@ -1,9 +1,7 @@
 <template>
 	<!--
 		WikiLambda Vue interface module for selecting any ZObject,
-		with autocompletion on name.
-		Uses the base component AutocompleteSearchInput from MediaSearch
-		Vue.js base components.
+		with lookup on name.
 		Receives an input parameter to filter the type of ZObjects that
 		it will search and display (e.g. Z4 for selecting only types)
 
@@ -18,21 +16,17 @@
 		>
 			{{ selectedText }}
 		</a>
-		<sd-autocomplete-search-input
+		<cdx-lookup
 			v-else
-			name="zobject-selector"
+			:model-value="selectedId"
 			:class="{ 'ext-wikilambda-zkey-input-invalid': validatorIsInvalid }"
-			:label="getPlaceholder"
-			:placeholder="getPlaceholder"
-			:search-placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-search-placeholder' )
-				.text()"
-			:initial-value="selectedText"
-			:lookup-results="lookupLabels"
-			@input="onInput"
-			@submit="onSubmit"
-			@clear-lookup-results="onClearLookupResults"
+			:placeholder="placeholder"
+			:menu-items="lookupResults"
+			:end-icon="lookupIcon"
+			@new-input="onInput"
+			@update:model-value="emitInput"
 		>
-		</sd-autocomplete-search-input>
+		</cdx-lookup>
 		<cdx-message
 			v-if="validatorIsInvalid"
 			:inline="true"
@@ -45,20 +39,21 @@
 
 <script>
 var Constants = require( '../Constants.js' ),
-	SdAutocompleteSearchInput = require( './base/AutocompleteSearchInput.vue' ),
+	CdxLookup = require( '@wikimedia/codex' ).CdxLookup,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	validator = require( '../mixins/validator.js' ),
 	typeUtils = require( '../mixins/typeUtils.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
-	mapMutations = require( 'vuex' ).mapMutations;
+	mapMutations = require( 'vuex' ).mapMutations,
+	icons = require( '../../../lib/icons.json' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'z-object-selector',
 	components: {
-		'sd-autocomplete-search-input': SdAutocompleteSearchInput,
-		'cdx-message': CdxMessage
+		'cdx-message': CdxMessage,
+		'cdx-lookup': CdxLookup
 	},
 	mixins: [ validator, typeUtils ],
 	inject: {
@@ -95,7 +90,7 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			lookupResults: {},
+			lookupResults: [],
 			lookupDelayTimer: null,
 			lookupDelayMs: 300,
 			inputValue: '',
@@ -121,27 +116,34 @@ module.exports = exports = {
 				return this.placeholder;
 			},
 			lookupLabels: function () {
-				var filteredResults = {};
+				var filteredResults = [];
+				var formattedData = [];
 				if ( this.type === Constants.Z_NATURAL_LANGUAGE ) {
 					for ( var zid in this.lookupResults ) {
 						if ( this.usedLanguageZids.indexOf( zid ) === -1 ) {
-							filteredResults[ zid ] = this.zkeyLabels[ zid ];
+							filteredResults.push(
+								{
+									label: this.zkeyLabels[ zid ],
+									value: zid
+								}
+							);
 						}
 					}
 				} else {
 					filteredResults = this.lookupResults;
 				}
 
-				return Object.keys( filteredResults ).map( function ( key ) {
+				formattedData = Object.keys( filteredResults ).map( function ( key ) {
 					var label = this.zkeyLabels[ key ],
 						result = this.lookupResults[ key ];
+					var formattedResult = label === result ? result : result + ' (' + label + ')';
 
-					if ( label === result ) {
-						return result;
-					} else {
-						return result + ' (' + label + ')';
-					}
+					return {
+						value: key,
+						label: formattedResult
+					};
 				}.bind( this ) );
+				return formattedData;
 			},
 			selectedLabel: function () {
 				return this.zkeyLabels[ this.selectedId ];
@@ -159,6 +161,9 @@ module.exports = exports = {
 				}
 
 				return;
+			},
+			lookupIcon: function () {
+				return icons.cdxIconExpand;
 			}
 		}
 	),
@@ -204,28 +209,36 @@ module.exports = exports = {
 					}
 
 					var zKeys = [];
-					self.lookupResults = {};
+					self.lookupResults = [];
 					if ( payload && payload.length > 0 ) {
 						payload.forEach(
 							function ( result ) {
-								var zid = result.page_title,
-									lang = result.page_lang,
-									label = result.label;
-								// Update lookupResults list
-								// If we are searching for Types (this.type === Constants.Z_TYPE)
-								// we should exclude Z1, Z2, Z7 and Z9 from the results
-								if ( !self.isExcludedZType( zid ) ) {
-									self.lookupResults[ zid ] = label;
-								}
-								// Update zKeyLabels in the Vuex store
-								if ( !( zid in self.zkeyLabels ) ) {
-									self.addAllZKeyLabels( [ {
-										zid,
-										label,
-										lang
-									} ] );
+								// filter out aliases - do we want searching by alias to work?
+								if ( result.is_primary > 0 ) {
+									var zid = result.page_title,
+										lang = result.page_lang,
+										label = result.label;
+									// Update lookupResults list
+									// If we are searching for Types (this.type === Constants.Z_TYPE)
+									// we should exclude Z1, Z2, Z7 and Z9 from the results
+									if ( !self.isExcludedZType( zid ) ) {
+										self.lookupResults.push(
+											{
+												value: zid,
+												label
+											}
+										);
+									}
+									// Update zKeyLabels in the Vuex store
+									if ( !( zid in self.zkeyLabels ) ) {
+										self.addAllZKeyLabels( [ {
+											zid,
+											label,
+											lang
+										} ] );
 
-									zKeys.push( zid );
+										zKeys.push( zid );
+									}
 								}
 							}
 						);
@@ -238,7 +251,6 @@ module.exports = exports = {
 				} );
 
 			},
-
 			/**
 			 * Allow the field to receive a Zid instead of a label and,
 			 * if valid and it exists, select and submit it.
@@ -254,7 +266,7 @@ module.exports = exports = {
 						normalizedSearchValue
 					] ).then( function () {
 						var label = '';
-						self.lookupResults = {};
+						self.lookupResults = [];
 						// If data is returned, The value will show in the zKeys
 						if (
 							( normalizedSearchValue in self.zKeys ) &&
@@ -272,7 +284,7 @@ module.exports = exports = {
 				}
 			},
 			/**
-			 * On Autocomplete field input, set a timer so that the lookup is not done immediately.
+			 * On lookup field input, set a timer so that the lookup is not done immediately.
 			 *
 			 * @param {string} input
 			 */
@@ -303,83 +315,8 @@ module.exports = exports = {
 					self.getLookupResults( input );
 				}
 			},
-
-			/**
-			 * ZObject is selected, the component emits `input` event.
-			 * This method is emitted on blur and on element click
-			 *
-			 * @param {string} item
-			 */
-			onSubmit: function ( item ) {
-				var zId = '',
-					inputValue;
-				// we need to make sure that the input event is not triggered twice
-				if ( this.valueEmitted === true ) {
-					this.valueEmitted = false;
-					return;
-				}
-				this.validatorResetError();
-				if ( typeof item === 'object' ) {
-					inputValue = this.inputValue;
-				} else {
-					inputValue = item;
-				}
-
-				// if the input value is empty, we don't want to do anything
-				if ( inputValue.length <= 0 ) {
-					return;
-				}
-
-				var match = '';
-				var matchPercentage = 0;
-
-				for ( var result in this.lookupResults ) {
-					if (
-						inputValue.indexOf( this.lookupResults[ result ] ) !== -1 &&
-						( matchPercentage < this.lookupResults[ result ].length / inputValue.length )
-					) {
-						match = this.lookupResults[ result ];
-						matchPercentage = this.lookupResults[ result ].length / inputValue.length;
-					}
-				}
-
-				inputValue = match;
-
-				// If the input is a valid Zid, set zId
-				// Otherwise check if the text matches a label
-				if ( this.isValidZidFormat( inputValue.toUpperCase() ) ) {
-					zId = inputValue;
-				} else {
-					for ( var key in this.lookupResults ) {
-						var label = this.lookupResults[ key ];
-
-						if ( label === inputValue ) {
-							zId = key;
-							break;
-						}
-					}
-				}
-				if ( this.zkeyLabels[ zId ] ) {
-					this.emitInput( zId );
-					this.valueEmitted = true;
-				} else {
-					this.validatorSetError( 'wikilambda-invalidzobject' );
-				}
-			},
-			/**
-			 * The autocomplete field is empty or an item is selected,
-			 * so it clears the list of suggestions.
-			 */
-			onClearLookupResults: function () {
-				this.lookupResults = {};
-			},
 			emitInput: function ( zId ) {
 				this.$emit( 'input', zId );
-			},
-			onReset: function () {
-				if ( this.type !== Constants.Z_NATURAL_LANGUAGE ) {
-					this.lookupResults = this.getDefaultResults();
-				}
 			},
 			getDefaultResults: function () {
 				var results = {};

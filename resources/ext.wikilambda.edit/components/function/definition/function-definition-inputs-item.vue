@@ -216,7 +216,6 @@ module.exports = exports = {
 					value: type
 				};
 			}
-
 			this.changeType( payload );
 		},
 		setListTypedList: function ( type ) {

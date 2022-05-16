@@ -101,7 +101,6 @@
 			"styles": [
 				"ext.wikilambda.edit/ext.wikilambda.edit.less",
 				"ext.wikilambda.specialpages/ext.wikilambda.specialpages.less",
-				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.less",
 				"ext.wikilambda.edit/components/base/SelectMenu.less"
 			]
 		},
@@ -124,7 +123,6 @@
 				"oojs"
 			],
 			"styles": [
-				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.less",
 				"ext.wikilambda.edit/components/base/SelectMenu.less"
 			],
 			"packageFiles": [
@@ -163,7 +161,6 @@
 				"ext.wikilambda.edit/components/ZObjectKey.vue",
 				"ext.wikilambda.edit/components/ZObjectKeyInput.vue",
 				"ext.wikilambda.edit/components/ZKeyModeSelector.vue",
-				"ext.wikilambda.edit/components/base/AutocompleteSearchInput.vue",
 				"ext.wikilambda.edit/components/base/Tab.vue",
 				"ext.wikilambda.edit/components/base/Table.vue",
 				"ext.wikilambda.edit/components/base/SelectMenu.vue",
