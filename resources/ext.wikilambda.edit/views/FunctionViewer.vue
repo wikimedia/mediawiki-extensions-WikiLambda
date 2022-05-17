@@ -5,70 +5,51 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div>
-		<div class="ext-wikilambda-function-viewer-navbar">
-			<tab-container
-				:tabs="getVisibleTabs"
-				:active-tab="getCurrentView"
-				@click="selectTab"
+	<div class="ext-wikilambda-function-viewer">
+		<!-- eslint-disable vue/no-v-model-argument -->
+		<!-- eslint-disable vue/no-unsupported-features -->
+		<cdx-tabs v-model:active="currentTab">
+			<cdx-tab
+				v-for="( tab, index ) in tabsData"
+				:key="index"
+				:name="tab.name"
+				:label="tab.label"
 			>
-			</tab-container>
-		</div>
-		<div class="ext-wikilambda-function-viewer">
-			<component :is="currentTab"></component>
-		</div>
+				<component :is="currentTab"></component>
+			</cdx-tab>
+		</cdx-tabs>
 	</div>
 </template>
 
 <script>
-var TabContainer = require( '../components/base/TabContainer.vue' ),
+var CdxTab = require( '@wikimedia/codex' ).CdxTab,
+	CdxTabs = require( '@wikimedia/codex' ).CdxTabs,
 	functionAbout = require( './function/FunctionAbout.vue' ),
-	functionDetails = require( './function/FunctionDetails.vue' ),
-	mapGetters = require( 'vuex' ).mapGetters,
-	cdxIcons = require( '../../lib/icons.json' );
+	functionDetails = require( './function/FunctionDetails.vue' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'function-viewer',
 	components: {
-		'tab-container': TabContainer,
 		'function-about': functionAbout,
-		'function-details': functionDetails
+		'function-details': functionDetails,
+		'cdx-tab': CdxTab,
+		'cdx-tabs': CdxTabs
 	},
 	data: function () {
 		return {
-			currentTab: 'function-about'
+			currentTab: 'function-about',
+			tabsData: [
+				{
+					name: 'function-about',
+					label: this.$i18n( 'wikilambda-editor-fn-step-function-about' ).text()
+				},
+				{
+					name: 'function-details',
+					label: this.$i18n( 'wikilambda-editor-fn-step-function-details' ).text()
+				}
+			]
 		};
-	},
-	computed: $.extend( {},
-		mapGetters( 'router', [ 'getCurrentView' ] ),
-		{
-			getVisibleTabs: function () {
-				var tabs = [
-					{
-						status: 'active',
-						id: 'function-about', // used for routing
-						title: this.$i18n( 'wikilambda-editor-fn-step-function-about' ).text(),
-						disabled: false, // this should be computed
-						icon: cdxIcons.cdxIconCheck
-					},
-					{
-						status: 'active',
-						id: 'function-details', // used for routing
-						title: this.$i18n( 'wikilambda-editor-fn-step-function-details' ).text(),
-						disabled: false, // this should be computed
-						icon: cdxIcons.cdxIconCheck
-					}
-				];
-
-				return tabs;
-			}
-		}
-	),
-	methods: {
-		selectTab: function ( tab ) {
-			this.currentTab = tab;
-		}
 	}
 };
 </script>

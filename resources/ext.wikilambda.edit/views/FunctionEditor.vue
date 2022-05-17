@@ -6,18 +6,21 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-function-editor">
-		<div class="ext-wikilambda-function-editor-navbar">
-			<tab-container
-				:tabs="getVisibleTabs"
-				:active-tab="getCurrentView"
-				@click="selectTab"
-			>
-			</tab-container>
-		</div>
 		<div class="ext-wikilambda-function-editor__main">
-			<main class="ext-wikilambda-function-editor__main__content">
-				<component :is="currentTab"></component>
-			</main>
+			<!-- eslint-disable vue/no-v-model-argument -->
+			<!-- eslint-disable vue/no-unsupported-features -->
+			<cdx-tabs v-model:active="currentTab">
+				<cdx-tab
+					v-for="( tab, index ) in tabsData"
+					:key="index"
+					:name="tab.name"
+					:label="tab.label"
+				>
+					<main class="ext-wikilambda-function-editor__main__content">
+						<component :is="currentTab"></component>
+					</main>
+				</cdx-tab>
+			</cdx-tabs>
 			<aside
 				class="ext-wikilambda-function-editor__main__sidebar"
 				:aria-label="$i18n( 'wikilambda-editor-additional-details-label' ).text()">
@@ -28,85 +31,34 @@
 </template>
 
 <script>
-var TabContainer = require( '../components/base/TabContainer.vue' ),
+var CdxTab = require( '@wikimedia/codex' ).CdxTab,
+	CdxTabs = require( '@wikimedia/codex' ).CdxTabs,
 	FnEditorVisualDisplay = require( '../components/editor/FnEditorVisualDisplay.vue' ),
 	functionDefinition = require( './function/FunctionDefinition.vue' ),
 	functionImplementations = require( './function/FunctionImplementations.vue' ),
-	functionTests = require( './function/FunctionTests.vue' ),
-	mapGetters = require( 'vuex' ).mapGetters,
-	cdxIcons = require( '../../lib/icons.json' );
+	functionTests = require( './function/FunctionTests.vue' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'function-editor',
 	components: {
-		'tab-container': TabContainer,
 		'function-definition': functionDefinition,
 		'function-tests': functionTests,
 		'function-implementations': functionImplementations,
-		'fn-editor-visual-display': FnEditorVisualDisplay
+		'fn-editor-visual-display': FnEditorVisualDisplay,
+		'cdx-tab': CdxTab,
+		'cdx-tabs': CdxTabs
 	},
 	data: function () {
 		return {
-			currentTab: 'function-definition'
-		};
-	},
-	computed: $.extend( {},
-		mapGetters( [ 'isNewZObject' ] ),
-		mapGetters( 'router', [ 'getCurrentView' ] ),
-		{
-			/**
-			 * get the list of tabs to display at the top of the page for navigation
-			 *
-			 * @return {Array} list of tab objects
-			 */
-			getVisibleTabs: function () {
-				var tabs = [
-					{
-						status: 'active',
-						id: 'function-definition', // used for routing
-						title: this.$i18n( 'wikilambda-editor-fn-step-function-definition' ).text(),
-						disabled: false, // this should be computed
-						icon: cdxIcons.cdxIconCheck
-					}
-				];
-				// only show implementation and tester tabs if the function already exists
-				if ( !this.isNewZObject ) {
-					tabs.push(
-						{
-							status: 'inactive',
-							id: 'function-implementations',
-							title: this.$i18n( 'wikilambda-editor-fn-step-implementations' ).text(),
-							disabled: false,
-							icon: cdxIcons.cdxIconCheck,
-							tooltip: {
-								header: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-header' ).text(),
-								content: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-content' ).text(),
-								visible: false
-							}
-						},
-						{
-							status: 'inactive',
-							id: 'function-tests',
-							title: this.$i18n( 'wikilambda-editor-fn-step-tests' ).text(),
-							disabled: true,
-							icon: cdxIcons.cdxIconCheck,
-							tooltip: {
-								header: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-header' ).text(),
-								content: this.$i18n( 'wikilambda-editor-fn-tests-tooltip-content' ).text(),
-								visible: true
-							}
-						}
-					);
+			currentTab: 'function-definition',
+			tabsData: [
+				{
+					name: 'function-definition',
+					label: this.$i18n( 'wikilambda-editor-fn-step-function-definition' ).text()
 				}
-				return tabs;
-			}
-		}
-	),
-	methods: {
-		selectTab: function ( tab ) {
-			this.currentTab = tab;
-		}
+			]
+		};
 	}
 };
 </script>
