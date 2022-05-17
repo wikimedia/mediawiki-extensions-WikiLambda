@@ -242,8 +242,6 @@ module.exports = exports = {
 								}
 							}
 						);
-						self.showList = true;
-
 						self.fetchZKeyWithDebounce( zKeys );
 					} else {
 						self.validatorSetError( 'wikilambda-noresult' );
@@ -273,8 +271,10 @@ module.exports = exports = {
 							( self.hasValidType( normalizedSearchValue ) )
 						) {
 							label = self.zkeyLabels[ normalizedSearchValue ];
-							self.lookupResults[ label + ' (' + normalizedSearchValue + ')' ] = normalizedSearchValue;
-							self.showList = true;
+							self.lookupResults.push( {
+								value: normalizedSearchValue,
+								label: label + ' (' + normalizedSearchValue + ')'
+							} );
 						} else {
 							self.validatorSetError( 'wikilambda-invalidzobject' );
 						}
