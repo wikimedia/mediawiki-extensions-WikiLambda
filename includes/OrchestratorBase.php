@@ -29,6 +29,10 @@ class OrchestratorBase {
 		// TODO: Use postAsync here.
 		return $this->guzzleClient->post( '/1/v1/evaluate/', [
 			'json' => $query,
+			'headers' => [
+				// TODO: Get a reasonable version string for /our/ code, not MW's
+				'User-Agent' => 'wikifunctions-request/' . MW_VERSION,
+			],
 		] );
 	}
 
