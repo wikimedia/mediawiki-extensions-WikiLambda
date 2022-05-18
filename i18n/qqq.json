@@ -42,7 +42,7 @@
 	"wikilambda-orchestrated": "Label for the result of orchestration.\n\n{{doc-wikilambda}}",
 	"wikilambda-orchestrated-loading": "Label for the result of orchestration while it is loading.\n\n{{doc-wikilambda}}",
 	"wikilambda-json": "{{Optional}}\n\nLabel for the word [[:meta:Abstract Wikipedia/Glossary#json|json]].\n\n{{doc-wikilambda}}",
-	"wikilambda-edit": "Label for the button to edit a function definition",
+	"wikilambda-edit": "Label for the button to edit a function definition\n{{identical|Edit}}",
 	"wikilambda-show-more": "Label for the button to show more items on truncated list",
 	"wikilambda-hide-more": "Label for the button to hide items from an expanded list",
 	"wikilambda-argref": "Label for button that access argument reference",
