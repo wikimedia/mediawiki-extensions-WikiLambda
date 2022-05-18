@@ -8,16 +8,32 @@
 			class="ext-wikilambda-function-viewer-sidebar__chip"
 		>
 			<li>
-				<template v-if="item.language !== zLang">
+				<div
+					v-if="item.language !== zLang"
+					class="ext-wikilambda-function-viewer-sidebar__chip-container"
+					@mouseover="hovering = true"
+					@mouseleave="hovering = false"
+				>
 					<chip
 						class="ext-wikilambda-function-viewer-sidebar__chip-item"
 						:index="index"
 						:editable-container="false"
 						:readonly="true"
-						:text="item.languageLabel"
+						:text="item.isoCode.toUpperCase()"
+						:hover-text="item.languageLabel"
 					></chip>
-				</template>
+				</div>
 				{{ item.label }}
+				<div
+					v-if="hovering && item.language !== zLang"
+					class="ext-wikilambda-function-viewer-sidebar__chip-hover"
+				>
+					<span
+						class="ext-wikilambda-function-viewer-sidebar__chip-hover-text"
+					>
+						{{ item.languageLabel }}
+					</span>
+				</div>
 			</li>
 		</ul>
 		<cdx-button
@@ -76,6 +92,11 @@ module.exports = exports = {
 			required: true
 		}
 	},
+	data: function () {
+		return {
+			hovering: false
+		};
+	},
 	methods: {
 		changeShowLangs: function () {
 			this.$emit( 'changeShowLangs' );
@@ -86,6 +107,8 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
+@import '../../../../lib/wikimedia-ui-base.less';
+
 .ext-wikilambda-function-viewer-sidebar {
 	ul {
 		list-style: none;
@@ -95,8 +118,24 @@ module.exports = exports = {
 	&__chip {
 		margin-bottom: 15px;
 
+		&-container {
+			display: inline-block;
+		}
+
 		&-item {
 			margin-right: 8px;
+			display: inline-block;
+		}
+
+		&-hover {
+			margin-top: 15px;
+			margin-bottom: 15px;
+		}
+
+		&-hover-text {
+			background-color: @wmui-color-base70;
+			padding: 5px;
+			box-shadow: 0 4px 4px rgba( 0, 0, 0, 0.25 );
 		}
 	}
 

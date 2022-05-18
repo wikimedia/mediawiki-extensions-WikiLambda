@@ -54,6 +54,7 @@ module.exports = exports = {
 	},
 	computed: $.extend( mapGetters( [
 		'getZObjectAsJsonById',
+		'getZkeys',
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
 		'getUserZlangZID',
@@ -74,7 +75,6 @@ module.exports = exports = {
 			if ( this.zObjectAliases[ Constants.Z_MULTILINGUALSTRINGSET_VALUE ] ) {
 				this.zObjectAliases[ Constants.Z_MULTILINGUALSTRINGSET_VALUE ].forEach( function ( alias ) {
 					var lang = alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ][ Constants.Z_REFERENCE_ID ];
-
 					if ( languageList.indexOf( lang ) === -1 ) {
 						languageList.push( lang );
 					}
@@ -93,10 +93,17 @@ module.exports = exports = {
 		langAliasString: function () {
 			var languageAliases = this.getLanguageAliases( this.selectedLanguages );
 			return languageAliases.map( function ( alias ) {
+				var isoCode = this.getZkeys[ alias.language ][
+					Constants.Z_PERSISTENTOBJECT_VALUE
+				][
+					Constants.Z_NATURAL_LANGUAGE_ISO_CODE
+				];
+
 				return {
 					label: alias.languageString.value,
 					language: alias.language,
-					languageLabel: this.getZkeyLabels[ alias.language ]
+					languageLabel: this.getZkeyLabels[ alias.language ],
+					isoCode
 				};
 			}.bind( this ) );
 		},

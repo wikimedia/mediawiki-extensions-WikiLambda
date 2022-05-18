@@ -43,11 +43,11 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getZObjectAsJsonById',
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
 		'getUserZlangZID',
-		'getZkeyLabels'
+		'getZkeyLabels',
+		'getZkeys'
 	] ), {
 		zobject: function () {
 			return this.getZObjectChildrenById( this.zobjectId );
@@ -79,10 +79,17 @@ module.exports = exports = {
 						] ).value;
 
 						if ( label ) {
+							var isoCode = this.getZkeys[ language ][
+								Constants.Z_PERSISTENTOBJECT_VALUE
+							][
+								Constants.Z_NATURAL_LANGUAGE_ISO_CODE
+							];
+
 							allLabels.push( {
 								label,
 								language,
-								languageLabel: this.getZkeyLabels[ language ]
+								languageLabel: this.getZkeyLabels[ language ],
+								isoCode
 							} );
 						}
 					}
