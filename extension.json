@@ -213,7 +213,7 @@
 				"ext.wikilambda.edit/components/function/definition/function-definition-inputs-item.vue",
 				"ext.wikilambda.edit/components/function/definition/function-definition-output.vue",
 				"ext.wikilambda.edit/components/function/definition/function-definition-footer.vue",
-				"ext.wikilambda.edit/components/types/ZMetadata.vue",
+				"ext.wikilambda.edit/components/types/ZLabelsBlock.vue",
 				"ext.wikilambda.edit/components/types/ZResponseEnvelope.vue",
 				"ext.wikilambda.edit/components/editor/FnEditorInputListItem.vue",
 				"ext.wikilambda.edit/components/editor/FnEditorVisualDisplay.vue",
