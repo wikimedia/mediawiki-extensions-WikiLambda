@@ -5,11 +5,11 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div :class="{ 'ext-wikilambda-persistentobject-metadata': hasDetailsToDisplay }">
+	<div :class="{ 'ext-wikilambda-persistentobject-labelsblock': hasDetailsToDisplay }">
 		<div v-if="zObjectValue.id">
-			<z-metadata
+			<z-labels-block
 				:zobject-id="zobjectId"
-			></z-metadata>
+			></z-labels-block>
 			<h2 class="ext-wikilambda-persistentobject-header">
 				{{ $i18n( 'wikilambda-persistentzobject-contents' ).text() }}
 			</h2>
@@ -71,7 +71,7 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	ZObjectKey = require( '../ZObjectKey.vue' ),
-	ZMetadata = require( './ZMetadata.vue' ),
+	ZLabelsBlock = require( './ZLabelsBlock.vue' ),
 	ZFunctionEvaluator = require( '../function/ZFunctionEvaluator.vue' ),
 	ZObjectJson = require( '../ZObjectJson.vue' ),
 	FnEditorVisualDisplay = require( '../editor/FnEditorVisualDisplay.vue' );
@@ -80,7 +80,7 @@ var Constants = require( '../../Constants.js' ),
 module.exports = exports = {
 	components: {
 		'z-object-key': ZObjectKey,
-		'z-metadata': ZMetadata,
+		'z-labels-block': ZLabelsBlock,
 		'z-function-evaluator': ZFunctionEvaluator,
 		'z-object-json': ZObjectJson,
 		'fn-editor-visual-display': FnEditorVisualDisplay,
@@ -156,7 +156,7 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-.ext-wikilambda-persistentobject-metadata {
+.ext-wikilambda-persistentobject-labelsblock {
 	display: grid;
 	grid-template-columns: 2fr 1fr;
 

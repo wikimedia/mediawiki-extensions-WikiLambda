@@ -1,12 +1,12 @@
 <template>
 	<!--
-		WikiLambda Vue component for the "metadata" collection of keys of ZPersistent objects.
+		WikiLambda Vue component for the collection of labels of ZPersistent objects.
 
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-metadata">
-		<div class="ext-wikilambda-metadata--alias-string">
+	<div class="ext-wikilambda-labelsblock">
+		<div class="ext-wikilambda-labelsblock--alias-string">
 			{{ userLangAliasString }}
 		</div>
 		<cdx-toggle-button
@@ -26,11 +26,6 @@
 						<th scope="col">
 							{{ $i18n( 'wikilambda-metadata-label-column' ).text() }}
 						</th>
-						<!--
-						<th scope="col">
-							Description
-						</th>
-						-->
 						<th scope="col">
 							{{ $i18n( 'wikilambda-metadata-aka-column' ).text() }}
 						</th>
@@ -53,7 +48,6 @@
 								:zobject-id="getLanguageLabelStringId( language.Z9K1 )"
 							></z-string>
 						</td>
-						<!-- <td></td> -->
 						<td>
 							<div v-for="( alias, index ) in getLanguageAliases( language.Z9K1 )" :key="index">
 								<cdx-button
@@ -428,8 +422,8 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-.ext-wikilambda-metadata {
-	.ext-wikilambda-metadata--alias-string {
+.ext-wikilambda-labelsblock {
+	.ext-wikilambda-labelsblock--alias-string {
 		color: #888;
 		margin: 10px 0;
 	}
