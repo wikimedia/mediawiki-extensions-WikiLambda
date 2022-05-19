@@ -36,7 +36,7 @@ const isFunction = function ( context, uriQuery ) {
 };
 
 /**
- * Analyses the path and zObject to determine if the current view is hte functionEditor
+ * Analyses the path and zObject to determine if the current view is the functionEditor
  *
  * @param {Object} context The ZObject context in which we're operating
  * @param {Object} uriQuery The contextual mw.Uri's query sub-object

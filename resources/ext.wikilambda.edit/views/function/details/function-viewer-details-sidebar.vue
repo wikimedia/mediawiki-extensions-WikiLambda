@@ -24,7 +24,6 @@
 var TableContainer = require( '../../../components/base/Table.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions,
 	Constants = require( '../../../Constants.js' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
@@ -60,7 +59,8 @@ module.exports = exports = {
 		'getNestedZObjectById',
 		'getZkeyLabels',
 		'getCurrentZLanguage',
-		'getZObjectTypeById'
+		'getZObjectTypeById',
+		'getCurrentZObjectId'
 	] ), {
 		// format inputs/output to pass to the table in expected format
 		formattedDataList: function () {
@@ -251,10 +251,9 @@ module.exports = exports = {
 		}
 	} ),
 	methods: $.extend( {},
-		mapActions( 'router', [ 'navigate' ] ),
 		{
 			handleEditClick: function () {
-				this.navigate( { to: Constants.VIEWS.FUNCTION_EDITOR } );
+				window.location.href = new mw.Title( this.getCurrentZObjectId ).getUrl() + '?view=function-editor';
 			},
 			/* get the ZID of the argument type */
 			zArgumentType: function ( argumentId ) {
