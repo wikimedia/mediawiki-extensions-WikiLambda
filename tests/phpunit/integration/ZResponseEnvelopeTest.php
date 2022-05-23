@@ -9,8 +9,10 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
@@ -32,11 +34,12 @@ class ZResponseEnvelopeTest extends WikiLambdaIntegrationTestCase {
 
 		$testObject = new ZResponseEnvelope( $testResponse, null );
 
-		$this->assertSame( 'Z22', $testObject->getZType() );
+		$this->assertSame( ZTypeRegistry::Z_RESPONSEENVELOPE, $testObject->getZType() );
 		$this->assertTrue( $testObject instanceof ZResponseEnvelope );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertFalse( $testObject->hasErrors() );
 		$this->assertSame( $testResponse->getZValue(), $testObject->getZValue()->getZValue() );
+		$this->assertSame( ZTypeRegistry::Z_UNIT, $testObject->getZMetadata()[ ZTypeRegistry::Z_OBJECT_TYPE ] );
 	}
 
 	/**
@@ -52,10 +55,11 @@ class ZResponseEnvelopeTest extends WikiLambdaIntegrationTestCase {
 		$testError = new ZError( 'Z507', new ZString( 'error message' ) );
 		$testObject = new ZResponseEnvelope( null, $testError );
 
-		$this->assertSame( 'Z22', $testObject->getZType() );
+		$this->assertSame( ZTypeRegistry::Z_RESPONSEENVELOPE, $testObject->getZType() );
 		$this->assertTrue( $testObject instanceof ZResponseEnvelope );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertTrue( $testObject->hasErrors() );
+		$this->assertSame( ZTypeRegistry::Z_UNIT, $testObject->getZValue()[ ZTypeRegistry::Z_OBJECT_TYPE ] );
 
 		// Note that this will be a ZMap in future.
 		$metadata = $testObject->getZMetadata();
@@ -83,11 +87,13 @@ class ZResponseEnvelopeTest extends WikiLambdaIntegrationTestCase {
 EOT;
 		$testObject = ZObjectFactory::create( json_decode( $stringZObject ) );
 
-		$this->assertSame( 'Z22', $testObject->getZType() );
+		$this->assertSame( ZTypeRegistry::Z_RESPONSEENVELOPE, $testObject->getZType() );
 		$this->assertTrue( $testObject instanceof ZResponseEnvelope );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertFalse( $testObject->hasErrors() );
 		$this->assertSame( 'Hello!', $testObject->getZValue()->getZValue() );
+		$this->assertTrue( $testObject->getZMetadata() instanceof ZReference );
+		$this->assertSame( ZTypeRegistry::Z_VOID, $testObject->getZMetadata()->getZValue() );
 	}
 
 	/**
@@ -114,10 +120,12 @@ EOT;
 
 		$testObject = ZObjectFactory::create( json_decode( $stringZObject ) );
 
-		$this->assertSame( 'Z22', $testObject->getZType() );
+		$this->assertSame( ZTypeRegistry::Z_RESPONSEENVELOPE, $testObject->getZType() );
 		$this->assertTrue( $testObject instanceof ZResponseEnvelope );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertTrue( $testObject->hasErrors() );
+		$this->assertTrue( $testObject->getZValue() instanceof ZReference );
+		$this->assertSame( ZTypeRegistry::Z_VOID, $testObject->getZValue()->getZValue() );
 
 		$error = $testObject->getErrors();
 		$this->assertSame( '"Z507"', $error->getZErrorType() );

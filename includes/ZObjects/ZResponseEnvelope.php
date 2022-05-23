@@ -11,18 +11,19 @@
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use stdClass;
 
 class ZResponseEnvelope extends ZObject {
 
 	/**
 	 * Construct a new ZResponseEnvelope instance
 	 *
-	 * @param ZObject $response Value of the response
-	 * @param ZObject $metadata Meta-data response
+	 * @param ?ZObject $response Value of the response
+	 * @param ?ZObject $metadata Meta-data response
 	 */
 	public function __construct( $response, $metadata ) {
-		$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ] = $response;
-		$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ] = $metadata;
+		$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE ] = $response ?? ZTypeRegistry::Z_VOID_INSTANCE;
+		$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ] = $metadata ?? ZTypeRegistry::Z_VOID_INSTANCE;
 	}
 
 	/**
@@ -88,17 +89,20 @@ class ZResponseEnvelope extends ZObject {
 		$errors = $this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ];
 
 		return (
-			$errors &&
+			is_object( $errors ) &&
 			(
 				// A real, live ZError
 				$errors instanceof ZError ||
 				// An uninstantiated ZObject
-				property_exists( $errors, ZTypeRegistry::Z_OBJECT_TYPE ) &&
 				(
-					$errors[ ZTypeRegistry::Z_OBJECT_TYPE ] === ZTypeRegistry::Z_ERROR ||
+					$errors instanceof stdClass &&
+					property_exists( $errors, ZTypeRegistry::Z_OBJECT_TYPE ) &&
 					(
-						$errors[ ZTypeRegistry::Z_OBJECT_TYPE ] === ZTypeRegistry::Z_REFERENCE
-						&& $errors[ ZTypeRegistry::Z_REFERENCE_VALUE ] === ZTypeRegistry::Z_ERROR
+						$errors->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_ERROR ||
+						(
+							$errors->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_REFERENCE
+							&& $errors->{ ZTypeRegistry::Z_REFERENCE_VALUE } === ZTypeRegistry::Z_ERROR
+						)
 					)
 				)
 			)
