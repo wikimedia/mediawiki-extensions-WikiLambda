@@ -174,6 +174,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_ERROR,
 		self::Z_CODE,
 		self::Z_NULL,
+		self::Z_UNIT,
 	];
 
 	public const IGNORE_KEY_VALUES_FOR_LABELLING = [
@@ -193,7 +194,13 @@ class ZTypeRegistry extends ZObjectRegistry {
 	// These consts are currently only used by ZObjectStore to prohibit creation, and are not (yet) built-in.
 	public const Z_CODE = 'Z16';
 	public const Z_ARGUMENTREFERENCE = 'Z18';
+	public const Z_UNIT = 'Z21';
 	public const Z_NULL = 'Z23';
+
+	// These are provided for ease of use
+	public const Z_VOID = 'Z24';
+	public const Z_VOID_INSTANCE = [ self::Z_OBJECT_TYPE => self::Z_UNIT ];
+
 	public const Z_BOOLEAN = 'Z40';
 
 	public const IGNORE_KEY_NORMALIZATION = [
