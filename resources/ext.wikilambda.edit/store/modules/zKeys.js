@@ -92,6 +92,7 @@ module.exports = exports = {
 		 */
 		fetchZKeys: function ( context, zids, debounce = false ) {
 			zids.forEach( function ( zId ) {
+
 				// Zid has already been fetched
 				// or
 				// Zid is in the process of being fetched
@@ -172,6 +173,7 @@ module.exports = exports = {
 
 				zIds = Object.keys( response.query.wikilambdaload_zobjects );
 				zIds.forEach( function ( zid ) {
+
 					if ( !( 'success' in response.query.wikilambdaload_zobjects[ zid ] ) ) {
 						// TODO add error into error notification pool
 						return;
