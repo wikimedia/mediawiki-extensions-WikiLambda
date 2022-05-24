@@ -36,7 +36,7 @@ class ZObjectStructureValidatorTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testCanonical_valid() {
 		$canonicalZ2 = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z400" },'
-			. ' "Z2K2": "valid content", "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }';
+			. ' "Z2K2": "valid content", "Z2K3": { "Z1K1": "Z12", "Z12K1": ["Z11"] } }';
 		$validator = ZObjectStructureValidator::createCanonicalValidator( "Z2" );
 		$this->assertInstanceOf( ZObjectStructureValidator::class, $validator );
 		$status = $validator->validate( json_decode( $canonicalZ2 ) );
@@ -79,7 +79,10 @@ class ZObjectStructureValidatorTest extends WikiLambdaIntegrationTestCase {
 			. '"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0"},'
 			. '"Z2K2": { "Z1K1": "Z6", "Z6K1": "valid content" },'
 			. '"Z2K3": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z12" }, '
-			. '"Z12K1": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z10" } } } }';
+			. '"Z12K1": { "Z1K1": {'
+			. '"Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+			. '"Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+			. '"Z881K1": { "Z1K1": "Z9", "Z9K1": "Z11" } } } } }';
 		$validator = ZObjectStructureValidator::createNormalValidator( "Z2" );
 		$this->assertInstanceOf( ZObjectStructureValidator::class, $validator );
 		$status = $validator->validate( json_decode( $normalZ2 ) );

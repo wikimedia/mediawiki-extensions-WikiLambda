@@ -90,7 +90,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	public function testUpdateFailed_unmatchingZid() {
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z999",'
 			. ' "Z2K2": "string",'
-			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }';
+			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
 		$this->expectException( ApiUsageException::class );
 		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_UNMATCHING_ZID );
@@ -113,7 +113,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		// Create the first Zobject
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. ' "Z2K2": "string",'
-			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "unique label" } ] } }';
+			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"unique label" }]}}';
 		$this->store->createNewZObject( $data, 'First zobject', $sysopUser );
 
 		$this->expectException( ApiUsageException::class );
@@ -134,7 +134,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		$invalidZid = 'ZID';
 		$data = '{ "Z1K1": "Z2", "Z2K1": "' . $invalidZid . '",'
 			. ' "Z2K2": "string",'
-			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "en", "Z11K2": "unique label" } ] } }';
+			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"en", "Z11K2":"unique label" }]}}';
 
 		// Try to create the second Zobject with the same label
 		$this->expectException( ApiUsageException::class );
@@ -159,9 +159,9 @@ class ApiZObjectEditorTest extends ApiTestCase {
 				. ' "Z1K1": "' . ZTypeRegistry::Z_PERSISTENTOBJECT . '",'
 				. ' "Z2K1": "Z0",'
 				. ' "Z2K2": { "Z1K1": "Z6", "Z6K1": "string" },'
-				. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] }'
+				. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] }'
 			. '},'
-			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "trouble" } ] } }';
+			. ' "Z2K3": { "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"trouble" }]}}';
 
 		// Try to create a nested ZPO
 		$this->expectException( ApiUsageException::class );
@@ -184,7 +184,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. ' "Z2K2": "string",'
-			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "new label" } ] } }';
+			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"new label" }]}}';
 
 		$result = $this->doApiRequestWithToken( [
 			'action' => 'wikilambda_edit',
@@ -207,11 +207,11 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 		// Create the Zobject
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K2": "New ZObject", "Z2K3":'
-			. ' { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "unique label" } ] } }';
+			. ' { "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "unique label" } ] } }';
 		$this->store->createNewZObject( $data, 'New ZObject', $sysopUser );
 
 		$data = '{ "Z1K1": "Z2", "Z2K1": "' . $newZid . '", "Z2K2": "New ZObject", "Z2K3":'
-			. ' { "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "new label" },'
+			. ' { "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "new label" },'
 			. ' { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "nueva etiqueta" } ] } }';
 
 		$result = $this->doApiRequestWithToken( [

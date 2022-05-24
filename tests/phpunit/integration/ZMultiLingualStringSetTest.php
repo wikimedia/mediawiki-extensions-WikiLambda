@@ -119,10 +119,12 @@ class ZMultiLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 		$testObject = ZObjectFactory::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MULTILINGUALSTRINGSET,
 			ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE => [
+				ZTypeRegistry::Z_MONOLINGUALSTRINGSET,
 				(object)[
 					ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRINGSET,
 					ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE => 'Z1002',
 					ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE => [
+						ZTypeRegistry::Z_STRING,
 						'Demonstration item'
 					]
 				]
@@ -210,15 +212,15 @@ class ZMultiLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 	"Z2K1": "Z0",
 	"Z2K2": {
 		"Z1K1": "Z32",
-		"Z32K1": []
+		"Z32K1": [ "Z31" ]
 	},
 	"Z2K3": {
 		"Z1K1": "Z12",
-		"Z12K1": []
+		"Z12K1": [ "Z11" ]
 	},
 	"Z2K4": {
 		"Z1K1": "Z32",
-		"Z32K1": []
+		"Z32K1": [ "Z31" ]
 	}
 }
 EOT
@@ -236,25 +238,26 @@ EOT
 	"Z2K2": {
 		"Z1K1": "Z32",
 		"Z32K1": [
+			"Z31",
 			{
 				"Z1K1": "Z31",
 				"Z31K1": "Z1002",
-				"Z31K2": ["Demonstration item"]
+				"Z31K2": [ "Z6", "Demonstration item"]
 			},
 			{
 				"Z1K1": "Z31",
 				"Z31K1": "Z1004",
-				"Z31K2": ["Article pour démonstration"]
+				"Z31K2": [ "Z6", "Article pour démonstration"]
 			}
 		]
 	},
 	"Z2K3": {
 		"Z1K1": "Z12",
-		"Z12K1": []
+		"Z12K1": [ "Z11" ]
 	},
 	"Z2K4": {
 		"Z1K1": "Z32",
-		"Z32K1": []
+		"Z32K1": [ "Z31" ]
 	}
 }
 EOT

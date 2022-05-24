@@ -174,7 +174,8 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_ERROR,
 		self::Z_CODE,
 		self::Z_NULL,
-		self::Z_UNIT,
+		// TODO (T309302) uncomment when fixed Z24 insertion issue
+		// self::Z_UNIT,
 	];
 
 	public const IGNORE_KEY_VALUES_FOR_LABELLING = [

@@ -24,7 +24,6 @@ class ZGenericList extends ZObject {
 	 */
 	public function __construct( $functionCall, $head = null, $tail = null ) {
 		$this->type = $functionCall;
-
 		if ( $head === null ) {
 			$this->data = [];
 		} elseif ( is_array( $head ) && ( $tail === null ) ) {
@@ -58,13 +57,13 @@ class ZGenericList extends ZObject {
 	/**
 	 * Build the function call that defines the type of this Generic List
 	 *
-	 * @param string $listType
+	 * @param ZObject $listType
 	 * @return ZFunctionCall
 	 */
 	public static function buildType( $listType ): ZFunctionCall {
 		return new ZFunctionCall(
 			new ZReference( ZTypeRegistry::Z_FUNCTION_GENERIC_LIST ),
-			[ ZTypeRegistry::Z_FUNCTION_GENERIC_LIST_TYPE => new ZReference( $listType ) ]
+			[ ZTypeRegistry::Z_FUNCTION_GENERIC_LIST_TYPE => $listType ]
 		);
 	}
 
@@ -80,8 +79,8 @@ class ZGenericList extends ZObject {
 				return false;
 			}
 			if (
-				( self::getElementType() !== ZTypeRegistry::Z_OBJECT )
-				&& ( self::getElementType() !== $value->getZType() )
+				( self::getElementType()->getZValue() !== ZTypeRegistry::Z_OBJECT )
+				&& ( self::getElementType()->getZValue() !== $value->getZType() )
 			) {
 				return false;
 			}
@@ -96,7 +95,7 @@ class ZGenericList extends ZObject {
 		if ( $form === self::FORM_CANONICAL ) {
 			return self::getSerializedCanonical();
 		} else {
-			return self::getSerializedGeneric( $form, $this->data );
+			return self::getSerializedNormal( $this->data );
 		}
 	}
 
@@ -106,26 +105,31 @@ class ZGenericList extends ZObject {
 	 * @return array
 	 */
 	private function getSerializedCanonical() {
-		return array_map( static function ( $value ) {
+		$type = $this->type->getValueByKey(
+			ZTypeRegistry::Z_FUNCTION_GENERIC_LIST_TYPE
+		)->getSerialized();
+
+		$items = array_map( static function ( $value ) {
 			return $value->getSerialized();
 		}, $this->data );
+
+		return array_merge( [ $type ], $items );
 	}
 
 	/**
 	 * Convert this ZGenericList into its serialized normal representation
 	 *
-	 * @param int $form
 	 * @param array $list
 	 * @return \stdClass
 	 */
-	private function getSerializedGeneric( $form, $list ) {
+	private function getSerializedNormal( $list ) {
 		if ( count( $list ) === 0 ) {
-			return (object)self::returnEmptyGenericList( $form );
+			return (object)self::returnEmptyGenericList( self::FORM_NORMAL );
 		}
 
-		$serialized = self::returnEmptyGenericList( $form );
-		$serialized[ 'K1' ] = $list[0]->getSerialized( $form );
-		$serialized[ 'K2' ] = self::getSerializedGeneric( $form, array_slice( $list, 1 ) ?? [] );
+		$serialized = self::returnEmptyGenericList( self::FORM_NORMAL );
+		$serialized[ 'K1' ] = $list[0]->getSerialized( self::FORM_NORMAL );
+		$serialized[ 'K2' ] = self::getSerializedNormal( array_slice( $list, 1 ) ?? [] );
 		return (object)$serialized;
 	}
 
@@ -162,10 +166,10 @@ class ZGenericList extends ZObject {
 	/**
 	 * Returns the type of the elements of this ZGenericList
 	 *
-	 * @return string The type of this ZObject
+	 * @return ZObject The type of this ZObject
 	 */
-	public function getElementType(): string {
-		return $this->type->getValueByKey( ZTypeRegistry::Z_FUNCTION_GENERIC_LIST_TYPE )->getZValue();
+	public function getElementType(): ZObject {
+		return $this->type->getValueByKey( ZTypeRegistry::Z_FUNCTION_GENERIC_LIST_TYPE );
 	}
 
 	/**

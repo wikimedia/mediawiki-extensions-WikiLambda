@@ -215,8 +215,8 @@ class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
 		$updated = json_decode( ZTestType::TEST_ENCODING, true );
 
 		// Change the label
-		$updated['Z2K3']['Z12K1'][0]['Z11K2'] = "Edited demonstration type";
-		$updated['Z2K4']['Z32K1'][0]['Z31K2'][1] = "Edited demonstration type alias";
+		$updated['Z2K3']['Z12K1'][1]['Z11K2'] = "Edited demonstration type";
+		$updated['Z2K4']['Z32K1'][1]['Z31K2'][2] = "Edited demonstration type alias";
 
 		$this->editPage(
 			ZTestType::TEST_ZID,

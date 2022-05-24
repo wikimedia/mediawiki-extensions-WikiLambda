@@ -101,6 +101,7 @@ class ZObjectFactory {
 			// Build the values
 			$persistentId = self::createChild( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_ID } );
 			$persistentLabel = self::createChild( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL } );
+
 			$persistentAliases = property_exists( $input,  ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES )
 				? self::createChild( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES } )
 				: null;
@@ -111,7 +112,7 @@ class ZObjectFactory {
 		$persistentId = $persistentId ?? self::createChild( ZTypeRegistry::Z_NULL_REFERENCE );
 		$persistentLabel = $persistentLabel ?? self::createChild( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MULTILINGUALSTRING,
-			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => []
+			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [ ZTypeRegistry::Z_MONOLINGUALSTRING ]
 		] );
 
 		// 4.2 Track self-reference if Z_PERSISNTENT_ID is present
@@ -150,42 +151,13 @@ class ZObjectFactory {
 	 * @throws ZErrorException
 	 */
 	public static function validatePersistentKeys( $input ): bool {
-		if ( is_string( $input ) ) {
-			// FIXME (T300506) Throw invalid type ZError
-			return true;
+		$validator = ZObjectStructureValidator::createCanonicalValidator( ZTypeRegistry::Z_PERSISTENTOBJECT );
+		$status = $validator->validate( $input );
+
+		if ( !$status->isValid() ) {
+			throw new ZErrorException( $status->getErrors() );
 		}
 
-		$record = is_object( $input ) ? get_object_vars( $input ) : $input;
-
-		if ( !is_array( $record ) ) {
-			// FIXME (T300506) Throw invalid type ZError
-		}
-
-		if ( !array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_ID, $record ) ) {
-			throw new ZErrorException(
-				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
-					[
-						'data' => $record,
-						'keywordArgs' => [ 'missing' => ZTypeRegistry::Z_PERSISTENTOBJECT_ID ]
-					]
-				)
-			);
-		}
-
-		if ( !array_key_exists( ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL, $record ) ) {
-			throw new ZErrorException(
-				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_MISSING_KEY,
-					[
-						'data' => $record,
-						'keywordArgs' => [ 'missing' => ZTypeRegistry::Z_PERSISTENTOBJECT_ID ]
-					]
-				)
-			);
-		}
-
-		// The existence of Z2K2 has already been checked
 		return true;
 	}
 
@@ -213,7 +185,8 @@ class ZObjectFactory {
 
 		// 2. Create ZObjectStructureValidator to check that the ZObject is well formed
 		try {
-			$validator = ZObjectStructureValidator::createCanonicalValidator( $typeZid );
+			// FIXME (T309409): Generic validator should work with lists but it fails during ZObject migration
+			$validator = ZObjectStructureValidator::createCanonicalValidator( is_array( $input ) ? "LIST" : $typeZid );
 		} catch ( ZErrorException $e ) {
 			// If there's no function-schemata validator (user-defined type), we do a generic custom validation
 			$validator = ZObjectStructureValidator::createCanonicalValidator( ZTypeRegistry::Z_OBJECT );
@@ -277,8 +250,33 @@ class ZObjectFactory {
 		}
 
 		if ( is_array( $object ) ) {
+			if ( count( $object ) === 0 ) {
+				throw new ZErrorException(
+					ZErrorFactory::createZErrorInstance(
+						ZErrorTypeRegistry::Z_ERROR_UNDEFINED_LIST_TYPE,
+						[
+							'data' => $object
+						]
+					)
+				);
+			}
+
+			$rawListType = array_shift( $object );
+			$listType = self::createChild( $rawListType );
+
+			if ( !( $listType instanceof ZReference ) && !( $listType instanceof ZFunctionCall ) ) {
+				throw new ZErrorException(
+					ZErrorFactory::createZErrorInstance(
+						ZErrorTypeRegistry::Z_ERROR_WRONG_LIST_TYPE,
+						[
+							'data' => $rawListType
+						]
+					)
+				);
+			}
+
 			$items = [];
-			$listType = null;
+
 			foreach ( $object as $index => $value ) {
 				try {
 					$item = self::createChild( $value );
@@ -287,23 +285,10 @@ class ZObjectFactory {
 						ZErrorFactory::createArrayElementZError( (string)$index, $e->getZError() )
 					);
 				}
-
-				// TODO (T301553): Simplify this logic, we should be able to use getZType irrespectively
-				// of whether it's a reference or a function call
-				if ( $item->isTypeReference() ) {
-					$itemType = $item->getZType();
-				} else {
-					$itemType = $item->getZTypeObject()->getReturnType();
-				}
-
-				$listType = ( ( $listType === null ) || ( $listType === $itemType ) )
-					? $itemType
-					: ZTypeRegistry::Z_OBJECT;
-
 				$items[] = $item;
 			}
 
-			return new ZGenericList( ZGenericList::buildType( $listType ?? ZTypeRegistry::Z_OBJECT ), $items );
+			return new ZGenericList( ZGenericList::buildType( $listType ), $items );
 		}
 
 		if ( !is_object( $object ) ) {

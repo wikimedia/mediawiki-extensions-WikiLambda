@@ -131,6 +131,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 			if ( !( $page instanceof ZObjectContent ) ) {
 				$this->dieWithError( [ 'apierror-query+wikilambdaload_zobjects-nonzobject', $ZID ] );
 			}
+
 			$zobject = $page->getObject();
 
 			if ( is_array( $languages ) ) {

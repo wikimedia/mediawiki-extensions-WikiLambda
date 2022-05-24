@@ -56,7 +56,7 @@ class ZMonoLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 		$testObject = ZObjectFactory::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRINGSET,
 			ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE => 'Z1002',
-			ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE => [ 'Demonstration item', 'Demonstration second item' ]
+			ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE => [ 'Z6', 'Demonstration item', 'Demonstration second item' ]
 		] );
 		$this->assertSame( 'Z31', $testObject->getZType() );
 		$this->assertSame( 'Z1002', $testObject->getLanguage() );
@@ -128,7 +128,8 @@ class ZMonoLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 	public function testPersistentCreation() {
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent(
-			'{ "Z1K1": "Z31", "Z31K1": "Z1002", "Z31K2": ["Demonstration item", "Demonstration second item"] }'
+			'{ "Z1K1": "Z31", "Z31K1": "Z1002", "Z31K2":'
+				. '[ "Z6", "Demonstration item", "Demonstration second item" ] }'
 		);
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'Z31', $testObject->getZType() );
@@ -145,15 +146,15 @@ class ZMonoLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 	"Z2K2": {
 		"Z1K1": "Z31",
 		"Z31K1": "Z1002",
-		"Z31K2": [ "Demonstration item", "Demonstration second item" ]
+		"Z31K2": [ "Z6", "Demonstration item", "Demonstration second item" ]
 	},
 	"Z2K3": {
 		"Z1K1": "Z12",
-		"Z12K1": []
+		"Z12K1": [ "Z11" ]
 	},
 	"Z2K4": {
 		"Z1K1": "Z32",
-		"Z32K1": []
+		"Z32K1": [ "Z31" ]
 	}
 }
 EOT

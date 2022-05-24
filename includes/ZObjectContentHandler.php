@@ -58,19 +58,19 @@ class ZObjectContentHandler extends ContentHandler {
 		$class = $this->getContentClass();
 		return new $class(
 			'{' . "\n"
-				. '  "' . ZTypeRegistry::Z_OBJECT_TYPE . '": "' . ZTypeRegistry::Z_PERSISTENTOBJECT . '",' . "\n"
-				 . '  "' . ZTypeRegistry::Z_PERSISTENTOBJECT_ID . '": "' . ZTypeRegistry::Z_NULL_REFERENCE . '",' . "\n"
-				 . '  "' . ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE . '": "",' . "\n"
-				 . '  "' . ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL . '": {' . "\n"
-				 . '    "' . ZTypeRegistry::Z_OBJECT_TYPE . '": "'
-					. ZTypeRegistry::Z_MULTILINGUALSTRING . '",' . "\n"
-				 . '    "' . ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE . '": []' . "\n"
-				 . '  },' . "\n"
-				 . '  "' . ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES . '": {' . "\n"
-				 . '    "' . ZTypeRegistry::Z_OBJECT_TYPE . '": "'
-					. ZTypeRegistry::Z_MULTILINGUALSTRINGSET . '",' . "\n"
-				 . '    "' . ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE . '": []' . "\n"
-				 . '  }' . "\n"
+			. '"' . ZTypeRegistry::Z_OBJECT_TYPE . '": "' . ZTypeRegistry::Z_PERSISTENTOBJECT . '",' . "\n"
+			. '"' . ZTypeRegistry::Z_PERSISTENTOBJECT_ID . '": "' . ZTypeRegistry::Z_NULL_REFERENCE . '",' . "\n"
+			. '"' . ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE . '": "",' . "\n"
+			. '"' . ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL . '": {' . "\n"
+			. '"' . ZTypeRegistry::Z_OBJECT_TYPE . '": "' . ZTypeRegistry::Z_MULTILINGUALSTRING . '",' . "\n"
+			. '"' . ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE . '":'
+			. '["' . ZTypeRegistry::Z_MONOLINGUALSTRING . '"]' . "\n"
+			. '},' . "\n"
+			. '"' . ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES . '": {' . "\n"
+			. '"' . ZTypeRegistry::Z_OBJECT_TYPE . '": "' . ZTypeRegistry::Z_MULTILINGUALSTRINGSET . '",' . "\n"
+			. '"' . ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE . '":'
+			. '["' . ZTypeRegistry::Z_MONOLINGUALSTRINGSET . '"]' . "\n"
+			. '}' . "\n"
 			. '}'
 		);
 	}
@@ -192,11 +192,14 @@ class ZObjectContentHandler extends ContentHandler {
 
 			$returnLabelObject = (object)[
 				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MULTILINGUALSTRING,
-				ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [ [
-					ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRING,
-					ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => $languageZid,
-					ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => $returnLabel
-				] ]
+				ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [
+					ZTypeRegistry::Z_MONOLINGUALSTRING,
+					[
+						ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRING,
+						ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE => $languageZid,
+						ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE => $returnLabel
+					]
+				]
 			];
 			$object[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = $returnLabelObject;
 		}
@@ -255,6 +258,15 @@ class ZObjectContentHandler extends ContentHandler {
 	}
 
 	/**
+	 * Do not render HTML on edit (T285987)
+	 *
+	 * @return bool
+	 */
+	public function generateHTMLOnEdit(): bool {
+		return false;
+	}
+
+	/**
 	 * Set the HTML and add the appropriate styles.
 	 *
 	 * <span class="ext-wikilambda-viewpage-header">
@@ -275,6 +287,11 @@ class ZObjectContentHandler extends ContentHandler {
 		ContentParseParams $cpoParams,
 		ParserOutput &$parserOutput
 	) {
+		if ( !$cpoParams->getGenerateHtml() ) {
+			$parserOutput->setText( '' );
+			return;
+		}
+
 		$userLang = RequestContext::getMain()->getLanguage();
 
 		// Ensure the stored content is a valid ZObject; this also populates $this->getZObject() for us

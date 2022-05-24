@@ -28,6 +28,8 @@
  * @license MIT
  */
 
+use MediaWiki\Extension\WikiLambda\Hooks;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -77,7 +79,7 @@ class UpdateTypedLists extends Maintenance {
 		$this->requireExtension( 'WikiLambda' );
 		$this->addDescription( 'Updates all saved ZObjects to have canonical typed lists for the builtin types' );
 
-		$this->addOption( 'db', 'Modify the persisted ZObject in the database', false, false );
+		$this->addOption( 'db', 'Modify the persisted ZObjects in the database', false, false );
 	}
 
 	public function execute() {
@@ -109,12 +111,24 @@ class UpdateTypedLists extends Maintenance {
 	 */
 	private function updateInDatabase() {
 		$zids = $this->zObjectStore->fetchAllZids();
+		$builtinZids = self::getAllBuiltinZids();
 
 		$creatingUserName = wfMessage( 'wikilambda-systemuser' )->inLanguage( 'en' )->text();
 		$creatingUser = User::newSystemUser( $creatingUserName, [ 'steal' => true ] );
 		$creatingComment = wfMessage( 'wikilambda-bootstrapcreationeditsummary' )->inLanguage( 'en' )->text();
 
+		// First, we should create all the initial content from the files and avoiding failure on
+		// unupdated dependencies. That's why we need to push them in using Hooks::CreateInitialContent
+		$updater = DatabaseUpdater::newForDB( $this->getDB( DB_PRIMARY ), true, $this );
+		Hooks::createInitialContent( $updater, true );
+
 		foreach ( $zids as $zid ) {
+			// If ZID is a builtin, ignore, we already have it
+			if ( in_array( $zid, $builtinZids ) ) {
+				$this->output( "> $zid: BUILT-IN. ALREADY UPDATED\n" );
+				continue;
+			}
+
 			$title = Title::newFromText( $zid, NS_MAIN );
 			try {
 				$content = $this->zObjectStore->fetchZObjectByTitle( $title );
@@ -123,6 +137,14 @@ class UpdateTypedLists extends Maintenance {
 				$this->output( $e->getMessage() . "\n" );
 			}
 
+			// Add additional validation check to see if they are already valid
+			if ( self::validatePersistentLabel( $content->getObject() ) ) {
+				$this->output( "> $zid: ALREADY MIGRATED. IGNORING\n" );
+				continue;
+			}
+
+			// If ZObject is builtin data, get from data files instead of applying transformation
+			// If there's a error creation loop, EXIT
 			$newObject = $this->transformTypedLists( $content->getObject() );
 
 			// And we update the data
@@ -136,12 +158,15 @@ class UpdateTypedLists extends Maintenance {
 			);
 
 			if ( $response->isOK() ) {
-				$this->output( "> $zid: DONE\n" );
+				$this->output( "> $zid: CUSTOM ZOBJECT. DONE\n" );
 			} else {
 				$this->output( "> $zid: UPDATE FAILED\n" );
 				$this->output( $response->getErrors() );
 				$this->output( "\n" );
 			}
+
+			// Only one iteration for starters
+			return;
 		}
 	}
 
@@ -154,6 +179,28 @@ class UpdateTypedLists extends Maintenance {
 	 */
 	private function spacesToTabs( $json ) {
 		return str_replace( '    ', "\t", $json ) . "\n";
+	}
+
+	/**
+	 * Returns the array of built-in ZIDS
+	 *
+	 * @return array
+	 */
+	private static function getAllBuiltinZids() {
+		$dataPath = dirname( __DIR__ ) . '/function-schemata/data/definitions/';
+		$filenames = array_filter(
+			scandir( $dataPath ),
+			static function ( $key ) {
+				return (bool)preg_match( '/^Z\d+\.json$/', $key );
+			}
+		);
+		$zids = array_map(
+			static function ( $filename ) {
+				return substr( $filename, 0, -5 );
+			},
+			$filenames
+		);
+		return $zids;
 	}
 
 	/**
@@ -179,6 +226,13 @@ class UpdateTypedLists extends Maintenance {
 				return;
 			}
 			$content = ZObjectContentHandler::makeContent( $data, $title );
+
+			// Add additional validation check to see if they are already valid
+			if ( self::validatePersistentLabel( $content->getObject() ) ) {
+				$this->output( "> $zid: Looks already migrated: IGNORING\n" );
+				continue;
+			}
+
 			$newObject = $this->transformTypedLists( $content->getObject() );
 
 			file_put_contents(
@@ -189,6 +243,25 @@ class UpdateTypedLists extends Maintenance {
 			$this->output( "> $zid: DONE\n" );
 		}
 		$this->output( $this->updatedFields . " keys were successfully updated\n" );
+	}
+
+	/**
+	 * Everything persisted must have a Z2K3.Z12K1 with an array, use this to check
+	 * whether the object has been migrated to benjamin arrays or not yet
+	 *
+	 * @param stdClass $zObject
+	 * @return bool
+	 */
+	private static function validatePersistentLabel( $zObject ) {
+		$labels = $zObject
+			->{ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL }
+			->{ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE };
+		return (
+			is_array( $labels )
+			&& ( count( $labels ) >= 1 )
+			&& is_string( $labels[0] )
+			&& ZObjectUtils::isValidZObjectReference( $labels[0] )
+		);
 	}
 
 	/**

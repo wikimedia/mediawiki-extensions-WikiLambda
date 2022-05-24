@@ -80,8 +80,8 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$expected = '{"Z1K1":"Z2",'
 			. '"Z2K1":"Z0",'
 			. '"Z2K2":"",'
-			. '"Z2K3":{"Z1K1":"Z12","Z12K1":[]},'
-			. '"Z2K4":{"Z1K1":"Z32","Z32K1":[]}}';
+			. '"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]},'
+			. '"Z2K4":{"Z1K1":"Z32","Z32K1":["Z31"]}}';
 
 		$this->assertTrue( is_string( $serialized ) );
 		$this->assertSame(
@@ -95,7 +95,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::unserializeContent
 	 */
 	public function testUnserializeContent() {
-		$serialized = '{"Z1K1":"Z2","Z2K1":"Z401","Z2K2":"","Z2K3":{"Z1K1":"Z12","Z12K1":[]}}';
+		$serialized = '{"Z1K1":"Z2","Z2K1":"Z401","Z2K2":"","Z2K3":{"Z1K1":"Z12","Z12K1":["Z11"]}}';
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 		$testObject = $handler->unserializeContent( $serialized );
 		$this->assertInstanceOf( ZObjectContent::class, $testObject );
@@ -272,7 +272,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$testObject = new ZObjectContent( '{ "Z1K1": "Z2",'
 			. '"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z333" },'
 			. '"Z2K2": "string value",'
-			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }' );
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }' );
 
 		// Expected result: canonical, UTF8, trimmed and standard EOL characters
 		$zObjectTransform = FormatJson::encode( [
@@ -284,7 +284,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 			"Z2K2" => "string value",
 			"Z2K3" => [
 				"Z1K1" => "Z12",
-				"Z12K1" => []
+				"Z12K1" => [ "Z11" ]
 			]
 		], true, FormatJson::UTF8_OK );
 		$zObjectTransform = str_replace( [ "\r\n", "\r" ], "\n", rtrim( $zObjectTransform ) );
@@ -315,7 +315,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 			'{ "Z1K1": "Z2",'
 			. '"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z401"},'
 			. '"Z2K2": "valid",'
-			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
+			. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }'
 		);
 
 		$status = $handler->validateSave( $content, $validateParams );
@@ -334,7 +334,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$validateParams = new ValidationParams( $testPage, 0 );
 
 		$content = new ZObjectContent(
-			'{ "Z1K1": "Z2", "Z2K1": "Z401", "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }'
+			'{ "Z1K1": "Z2", "Z2K1": "Z401", "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }'
 		);
 
 		$status = $handler->validateSave( $content, $validateParams );

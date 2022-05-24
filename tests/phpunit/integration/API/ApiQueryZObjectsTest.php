@@ -42,7 +42,8 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		$baseObject = ZTestType::TEST_ENCODING;
 		$page = WikiPage::factory( $title );
 		$content = ZObjectContentHandler::makeContent( $baseObject, $title );
-		$page->doUserEditContent(
+
+		$status = $page->doUserEditContent(
 			$content,
 			$this->getTestSysop()->getUser(),
 			"Test creation object"
@@ -155,10 +156,14 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		$keys = $z111['Z2K2']['Z4K2'];
 		$labels = $z111['Z2K3']['Z12K1'];
 
+		// Remove type element
+		array_shift( $keys );
+		array_shift( $labels );
+
 		$this->assertCount( 2, $labels );
 
 		foreach ( $keys as $key ) {
-			$this->assertCount( 2, $key['Z3K3']['Z12K1'] );
+			$this->assertCount( 3, $key['Z3K3']['Z12K1'] );
 		}
 	}
 
@@ -179,12 +184,16 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		$keys = $z111['Z2K2']['Z4K2'];
 		$labels = $z111['Z2K3']['Z12K1'];
 
+		// Remove type element
+		array_shift( $keys );
+		array_shift( $labels );
+
 		$this->assertCount( 1, $labels );
 		$this->assertEquals( self::FR, $labels[0]['Z11K1'] );
 
 		foreach ( $keys as $key ) {
-			$this->assertCount( 1, $key['Z3K3']['Z12K1'] );
-			$this->assertEquals( self::FR, $key['Z3K3']['Z12K1'][0]['Z11K1'] );
+			$this->assertCount( 2, $key['Z3K3']['Z12K1'] );
+			$this->assertEquals( self::FR, $key['Z3K3']['Z12K1'][1]['Z11K1'] );
 		}
 	}
 
@@ -205,12 +214,16 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		$keys = $z111['Z2K2']['Z4K2'];
 		$labels = $z111['Z2K3']['Z12K1'];
 
+		// Remove type element
+		array_shift( $keys );
+		array_shift( $labels );
+
 		$this->assertCount( 1, $labels );
 		$this->assertEquals( self::EN, $labels[0]['Z11K1'] );
 
 		foreach ( $keys as $key ) {
-			$this->assertCount( 1, $key['Z3K3']['Z12K1'] );
-			$this->assertEquals( self::EN, $key['Z3K3']['Z12K1'][0]['Z11K1'] );
+			$this->assertCount( 2, $key['Z3K3']['Z12K1'] );
+			$this->assertEquals( self::EN, $key['Z3K3']['Z12K1'][1]['Z11K1'] );
 		}
 	}
 
@@ -224,7 +237,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 			'list' => 'wikilambdaload_zobjects',
 			'wikilambdaload_zids' => 'Z111'
 		] );
-
 		$result_canonical = $this->doApiRequest( [
 			'action' => 'query',
 			'list' => 'wikilambdaload_zobjects',
@@ -251,10 +263,10 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		$this->assertEquals( 'Z111', $z111_canonical['Z2K2']['Z4K3'] );
 		$this->assertEquals( $nullReference, $z111_normal['Z2K2']['Z4K3'] );
 
-		$this->assertEquals( 'Z6', $z111_canonical['Z2K2']['Z4K2'][0]['Z3K1'] );
+		$this->assertEquals( 'Z6', $z111_canonical['Z2K2']['Z4K2'][1]['Z3K1'] );
 		$this->assertEquals( $referenceZ6, $z111_normal['Z2K2']['Z4K2']['K1']['Z3K1'] );
 
-		$this->assertEquals( 'Z111K1', $z111_canonical['Z2K2']['Z4K2'][0]['Z3K2'] );
+		$this->assertEquals( 'Z111K1', $z111_canonical['Z2K2']['Z4K2'][1]['Z3K2'] );
 		$this->assertEquals( $stringZ111K1, $z111_normal['Z2K2']['Z4K2']['K1']['Z3K2'] );
 	}
 }

@@ -235,15 +235,15 @@ class Hooks implements
 	 * is a callback so that it runs after the tables have been created/updated.
 	 *
 	 * @param DatabaseUpdater $updater
+	 * @param bool $overwrite If true, overwrites the content, else skips if present
 	 */
-	public static function createInitialContent( DatabaseUpdater $updater ) {
+	public static function createInitialContent( DatabaseUpdater $updater, $overwrite = false ) {
 		// Ensure that the extension is set up (namespace is defined) even when running in update.php outside of MW.
 		self::registerExtension();
 
 		// Note: Hard-coding the English version for messages as this can run without a Context and so no language set.
 		$creatingUserName = wfMessage( 'wikilambda-systemuser' )->inLanguage( 'en' )->text();
 		$creatingUser = User::newSystemUser( $creatingUserName, [ 'steal' => true ] );
-
 		$creatingComment = wfMessage( 'wikilambda-bootstrapcreationeditsummary' )->inLanguage( 'en' )->text();
 
 		if ( !$creatingUser ) {
@@ -272,8 +272,17 @@ class Hooks implements
 		// Naturally sort, so Z2/Persistent Object gets created before Z10/List etc.
 		natsort( $initialDataToLoadListing );
 
+		$inserted = [];
 		foreach ( $initialDataToLoadListing as $filename ) {
-			static::insertContentObject( $updater, $filename, $dependencies, $creatingUser, $creatingComment );
+			static::insertContentObject(
+				$updater,
+				$filename,
+				$dependencies,
+				$creatingUser,
+				$creatingComment,
+				$overwrite,
+				$inserted
+			);
 		}
 	}
 
@@ -287,10 +296,14 @@ class Hooks implements
 	 * @param array $dependencies
 	 * @param User $user
 	 * @param string $comment
+	 * @param bool $overwrite
+	 * @param string[] &$inserted
 	 * @param string[] $track
 	 * @return bool Has successfully inserted the content object
 	 */
-	protected static function insertContentObject( $updater, $filename, $dependencies, $user, $comment, $track = [] ) {
+	protected static function insertContentObject(
+		$updater, $filename, $dependencies, $user, $comment, $overwrite = false, &$inserted = [], $track = []
+	) {
 		$initialDataToLoadPath = static::getDataPath();
 		$updateRowName = "create WikiLambda initial content - $filename";
 
@@ -316,6 +329,8 @@ class Hooks implements
 						$dependencies,
 						$user,
 						$comment,
+						$overwrite,
+						$inserted,
 						array_merge( $track, (array)$dep )
 					);
 					// If any of the dependencies fail, we desist on the current insertion
@@ -330,8 +345,12 @@ class Hooks implements
 		$title = Title::newFromText( $zid, NS_MAIN );
 		$page = WikiPage::factory( $title );
 
-		// Zid has already been inserted, so just purge the page to update secondary data and return true
-		if ( $updater->updateRowExists( $updateRowName ) ) {
+		// If we don't want to overwrite the ZObjects, and if Zid has already been inserted,
+		// just purge the page to update secondary data and return true
+		if (
+			( $overwrite && in_array( $zid, $inserted ) ) ||
+			( !$overwrite && $updater->updateRowExists( $updateRowName ) )
+		) {
 			$page->doPurge();
 			return true;
 		}
@@ -357,6 +376,7 @@ class Hooks implements
 		);
 
 		if ( $status->isOK() ) {
+			array_push( $inserted, $zid );
 			$updater->insertUpdateRow( $updateRowName );
 			if ( !defined( 'MW_PHPUNIT_TEST' ) ) {
 				// Don't log this during unit testing, quibble thinks it means we're broken.

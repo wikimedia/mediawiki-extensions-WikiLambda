@@ -27,6 +27,7 @@ class ZTestType extends ZObject {
 		"Z1K1": "Z4",
 		"Z4K1": "Z111",
 		"Z4K2": [
+			"Z3",
 			{
 				"Z1K1": "Z3",
 				"Z3K1": "Z6",
@@ -34,6 +35,7 @@ class ZTestType extends ZObject {
 				"Z3K3": {
 					"Z1K1": "Z12",
 					"Z12K1": [
+						"Z11",
 						{
 							"Z1K1": "Z11",
 							"Z11K1": "Z1002",
@@ -54,6 +56,7 @@ class ZTestType extends ZObject {
 				"Z3K3": {
 					"Z1K1": "Z12",
 					"Z12K1": [
+						"Z11",
 						{
 							"Z1K1": "Z11",
 							"Z11K1": "Z1002",
@@ -73,6 +76,7 @@ class ZTestType extends ZObject {
 	"Z2K3": {
 		"Z1K1": "Z12",
 		"Z12K1": [
+			"Z11",
 			{
 				"Z1K1": "Z11",
 				"Z11K1": "Z1002",
@@ -88,10 +92,12 @@ class ZTestType extends ZObject {
 	"Z2K4": {
 		"Z1K1": "Z32",
 		"Z32K1": [
+			"Z31",
 			{
 				"Z1K1": "Z31",
 				"Z31K1": "Z1002",
 				"Z31K2": [
+					"Z6",
 					"Demonstration type alias",
 					"Demonstration type second alias"
  				]
@@ -99,7 +105,7 @@ class ZTestType extends ZObject {
 			{
 				"Z1K1": "Z31",
 				"Z31K1": "Z1004",
-				"Z31K2": [ "Alias de type pour démonstration" ]
+				"Z31K2": [ "Z6", "Alias de type pour démonstration" ]
 			}
 		]
 	}
@@ -114,6 +120,7 @@ EOT;
         "type": "Type",
         "identity": "Z111",
         "keys": [
+						"Key",
             {
                 "type": "Key",
                 "value type": "String",
@@ -121,6 +128,7 @@ EOT;
                 "label": {
                     "type": "Multilingual text",
                     "texts": [
+												"Monolingual text",
                         {
                             "type": "Monolingual text",
                             "language": "English",
@@ -141,6 +149,7 @@ EOT;
                 "label": {
                     "type": "Multilingual text",
                     "texts": [
+												"Monolingual text",
                         {
                             "type": "Monolingual text",
                             "language": "English",
@@ -160,6 +169,7 @@ EOT;
     "labels": {
         "type": "Multilingual text",
         "texts": [
+						"Monolingual text",
             {
                 "type": "Monolingual text",
                 "language": "English",
@@ -175,10 +185,12 @@ EOT;
     "aliases": {
         "type": "Multilingual stringset",
         "stringset": [
+						"Monolingual stringset",
             {
                 "type": "Monolingual stringset",
                 "language": "English",
-                "stringset": [
+								"stringset": [
+										"String",
                     "Demonstration type alias",
                     "Demonstration type second alias"
                 ]
@@ -187,6 +199,7 @@ EOT;
                 "type": "Monolingual stringset",
                 "language": "French",
                 "stringset": [
+										"String",
                     "Alias de type pour démonstration"
                 ]
             }
@@ -203,6 +216,7 @@ EOT;
 		"Z1K1": "Z4",
 		"Z4K1": "Z111",
 		"Z4K2": [
+			"Z3",
 			{
 				"Z1K1": "Z3",
 				"Z3K1": "Z6",
@@ -210,6 +224,7 @@ EOT;
 				"Z3K3": {
 					"Z1K1": "Z12",
 					"Z12K1": [
+						"Z11",
 						{
 							"Z1K1": "Z11",
 							"Z11K1": "Z1002",
@@ -230,6 +245,7 @@ EOT;
 				"Z3K3": {
 					"Z1K1": "Z12",
 					"Z12K1": [
+						"Z11",
 						{
 							"Z1K1": "Z11",
 							"Z11K1": "Z1002",
@@ -249,6 +265,7 @@ EOT;
 	"Z2K3": {
 		"Z1K1": "Z12",
 		"Z12K1": [
+			"Z11",
 			{
 				"Z1K1": "Z11",
 				"Z11K1": "Z1002",
@@ -264,10 +281,12 @@ EOT;
 	"Z2K4": {
 		"Z1K1": "Z32",
 		"Z32K1": [
+			"Z31",
 			{
 				"Z1K1": "Z31",
 				"Z31K1": "Z1002",
 				"Z31K2": [
+					"Z6",
 					"Demonstration type alias",
 					"Demonstration type second alias"
 					]
@@ -275,7 +294,7 @@ EOT;
 			{
 				"Z1K1": "Z31",
 				"Z31K1": "Z1004",
-				"Z31K2": [ "Alias de type pour démonstration" ]
+				"Z31K2": [ "Z6", "Alias de type pour démonstration" ]
 			}
 		]
 	}

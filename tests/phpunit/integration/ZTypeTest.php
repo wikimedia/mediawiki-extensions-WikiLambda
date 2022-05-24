@@ -134,7 +134,7 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertInstanceOf( ZGenericList::class, $genericList );
 		$this->assertTrue( $genericList->isValid() );
-		$this->assertSame( "Z3", $genericList->getElementType() );
+		$this->assertSame( "Z3", $genericList->getElementType()->getZValue() );
 
 		$testObject = new ZType(
 			new ZReference( 'Z1234' ),

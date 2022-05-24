@@ -21,11 +21,11 @@ use MediaWiki\MediaWikiServices;
 class ZMultiLingualString extends ZObject {
 
 	/**
-	 * Create a ZMultiLingualString instance given an array or a ZList of
-	 * ZMonoLingualString instances. Internally this class bypasses ZList
+	 * Create a ZMultiLingualString instance given an array or a ZGenericList of
+	 * ZMonoLingualString instances. Internally this class bypasses ZGenericList
 	 * and stores an array with the language Zid as key.
 	 *
-	 * @param ZList|array $strings
+	 * @param ZGenericList|array $strings
 	 */
 	public function __construct( $strings = [] ) {
 		foreach ( ZObjectUtils::getIterativeList( $strings ) as $index => $monoLingualString ) {
@@ -70,14 +70,11 @@ class ZMultiLingualString extends ZObject {
 	 * @inheritDoc
 	 */
 	public function getSerialized( $form = self::FORM_CANONICAL ) {
-		// TODO (T296737): fix different serialization modes, only returning FORM_CANONICAL
-		$monolingualStrings = [];
-		foreach ( $this->getZValue() as $lang => $value ) {
-			$monolingualStrings[] = $value->getSerialized( $form );
-		}
+		$listType = new ZReference( ZTypeRegistry::Z_MONOLINGUALSTRING );
+		$generic = new ZGenericList( ZGenericList::buildType( $listType ), array_values( $this->getZValue() ) );
 		return (object)[
-			ZTypeRegistry::Z_OBJECT_TYPE => $this->getZType(),
-			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => $monolingualStrings
+			ZTypeRegistry::Z_OBJECT_TYPE => $this->getZTypeObject()->getSerialized( $form ),
+			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => $generic->getSerialized( $form )
 		];
 	}
 
