@@ -68,7 +68,7 @@ module.exports = exports = {
 						class: 'ext-wikilambda-function-viewer-about-aliases__table-item'
 					},
 					output: {
-						title: example.output,
+						title: example.output || '',
 						class: 'ext-wikilambda-function-viewer-about-aliases__table-item'
 					}
 				};
