@@ -22,7 +22,6 @@ use GuzzleHttp\Exception\ServerException;
 use MediaWiki\Extension\WikiLambda\MockOrchestrator;
 use MediaWiki\Extension\WikiLambda\OrchestratorInterface;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
-use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
@@ -94,19 +93,9 @@ class ApiFunctionCall extends ApiBase {
 		} catch ( ConnectException $exception ) {
 			$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
 		} catch ( ClientException | ServerException $exception ) {
-			$zError = json_encode( [
-				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_RESPONSEENVELOPE,
-				ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE => ZTypeRegistry::Z_NULL,
-				ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA => [
-					ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_ERROR,
-					ZTypeRegistry::Z_ERROR_VALUE => [
-						ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_STRING,
-						ZTypeRegistry::Z_STRING_VALUE => $exception->getResponse()->getReasonPhrase()
-					]
-				]
-			] );
-
-			$result = [ 'data' => $zError ];
+			$zErrorObject = self::wrapError( $exception->getResponse()->getReasonPhrase(), $zObject );
+			$zResponseObject = new ZResponseEnvelope( null, $zErrorObject );
+			$result = [ 'data' => $zResponseObject->getSerialized() ];
 			$pageResult->addValue(
 				// TODO: Remove "Orchestrated".
 				[ 'query', $this->getModuleName() ], "Orchestrated", $result );
