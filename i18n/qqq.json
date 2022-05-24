@@ -253,6 +253,7 @@
 	"wikilambda-discard-edits": "Label for the discard edits button",
 	"wikilambda-function-about-summary": "Summary of the function about page",
 	"wikilambda-function-details-summary": "Summary of the function details page",
+	"wikilambda-function-details-summary-learn-more": "Link to learn more about functions",
 	"wikilambda-function-viewer-aliases-header": "Header for function aliases",
 	"wikilambda-function-viewer-aliases-show-language-button": "Show language button for rendering aliases in other languages",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Hide language button for rendering aliases in other languages",
