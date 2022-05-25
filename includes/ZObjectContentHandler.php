@@ -299,8 +299,45 @@ class ZObjectContentHandler extends ContentHandler {
 
 		$zobject = $content->getZObject();
 
-		$label = Html::element(
+		$isoCode = '';
+		// the MW code of the language currently being rendered (usually ISO code)
+		$currLangCode = wfMessage( 'wikilambda-special-edit-function-definition-title' )->getLanguage()->getCode();
+		// the MW code of the user's preferred language (usually ISO code)
+		$userLanguageCode = $userLang->getCode();
+		// the string text of the language currently being rendered
+		$currLangName = wfMessage(
+			'wikilambda-special-edit-function-definition-title'
+		)->getLanguage()->fetchLanguageName( $currLangCode );
+
+		if ( $currLangCode !== $userLanguageCode ) {
+			$isoCode = Html::element(
+				"span
+				title=$currLangName
+				style='
+					background-color: #EAECF0;
+					border: 1px solid #A2A9B1;
+					border-radius: 12px;
+					padding: 0 4px;'
+				",
+				[
+					'class' => 'ext-wikilambda-page-header-title
+						ext-wikilambda-page-header-title--iso-code',
+				],
+				$currLangCode
+			);
+		}
+
+		$prefix = Html::element(
 			'span', [ 'class' => 'ext-wikilambda-viewpage-header-title' ],
+			wfMessage( 'wikilambda-special-function-definition-title' )->text()
+		);
+
+		$label = Html::element(
+			'span',
+			[
+				'class' => 'ext-wikilambda-viewpage-header-title
+					ext-wikilambda-viewpage-header-title--function-name'
+			],
 			$zobject->getLabels()->getStringForLanguageOrEnglish( $userLang )
 		);
 		$id = Html::element(
@@ -316,7 +353,9 @@ class ZObjectContentHandler extends ContentHandler {
 		$header = Html::rawElement(
 			'span',
 			[ 'class' => 'ext-wikilambda-viewpage-header' ],
-			$label . ' ' . $id . $type
+				$isoCode . " " . $prefix
+				. wfMessage( 'colon-separator' )->text() . $label
+				. ' ' . $id . $type
 		);
 
 		$parserOutput->addModuleStyles( [ 'ext.wikilambda.viewpage.styles' ] );
