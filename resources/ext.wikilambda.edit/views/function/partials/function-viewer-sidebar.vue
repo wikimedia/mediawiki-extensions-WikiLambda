@@ -13,6 +13,7 @@
 					class="ext-wikilambda-function-viewer-sidebar__chip-container"
 					@mouseover="hovering = true"
 					@mouseleave="hovering = false"
+					@click="isMobile ? hovering = !hovering : null"
 				>
 					<chip
 						class="ext-wikilambda-function-viewer-sidebar__chip-item"
@@ -53,6 +54,8 @@
 
 <script>
 var Chip = require( '../../../components/base/Chip.vue' ),
+	useBreakpoints = require( '../../../composables/useBreakpoints.js' ),
+	Constants = require( '../../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon;
 
@@ -92,11 +95,24 @@ module.exports = exports = {
 			required: true
 		}
 	},
+	setup: function () {
+		var breakpoint = useBreakpoints( Constants.breakpoints );
+		return {
+			breakpoint
+		};
+	},
 	data: function () {
 		return {
 			hovering: false
 		};
 	},
+	computed: $.extend(
+		{
+			isMobile: function () {
+				return this.breakpoint.current.value === Constants.breakpointsTypes.MOBILE;
+			}
+		}
+	),
 	methods: {
 		changeShowLangs: function () {
 			this.$emit( 'changeShowLangs' );
