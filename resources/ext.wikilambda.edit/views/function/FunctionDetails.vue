@@ -8,14 +8,8 @@
 	<main class="ext-wikilambda-function-details">
 		<div class="ext-wikilambda-function-details__summary">
 			{{ $i18n( 'wikilambda-function-details-summary' ).text() }}
-		</div>
-		<div class="ext-wikilambda-function-details__action">
-			<cdx-button>
-				New Implementation
-			</cdx-button>
-			<cdx-button>
-				New Test
-			</cdx-button>
+			<!-- TODO(T309199): link to process page once it exists -->
+			<a href="#"> {{ $i18n( 'wikilambda-function-details-summary-learn-more' ).text() }} </a>
 		</div>
 		<section>
 			<div class="ext-wikilambda-function-details__sidebar">
@@ -29,15 +23,13 @@
 var FunctionViewerDetailsSidebar = require( './details/function-viewer-details-sidebar.vue' ),
 	Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	mapGetters = require( 'vuex' ).mapGetters,
-	CdxButton = require( '@wikimedia/codex' ).CdxButton;
+	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
 	name: 'function-details',
 	components: {
-		'function-viewer-details-sidebar': FunctionViewerDetailsSidebar,
-		'cdx-button': CdxButton
+		'function-viewer-details-sidebar': FunctionViewerDetailsSidebar
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -75,6 +67,7 @@ module.exports = exports = {
 		color: @wmui-color-base30;
 		margin-bottom: 32px;
 		width: 100%;
+		padding-top: 16px;
 	}
 
 	&__sidebar {
@@ -97,10 +90,6 @@ module.exports = exports = {
 	}
 
 	@media screen and ( min-width: @width-breakpoint-tablet ) {
-		&__summary:extend(.ext-wikilambda-edit__text-regular) {
-			width: ~'calc( 100% - 300px )';
-		}
-
 		&__action {
 			order: unset;
 			margin-bottom: 32px;

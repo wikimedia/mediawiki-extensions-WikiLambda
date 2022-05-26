@@ -17,6 +17,15 @@
 		<div class="ext-wikilambda-function-viewer-details-sidebar__summary">
 			{{ $i18n( 'wikilambda-function-viewer-details-sidebar-summary' ).text() }}
 		</div>
+		<div class="ext-wikilambda-function-viewer-details-sidebar__links">
+			<!-- TODO (T309200): update to use correct links-->
+			<div class="ext-wikilambda-function-viewer-details-sidebar__link">
+				<a href="#"> {{ $i18n( 'wikilambda-implementation-create-new' ).text() }} </a>
+			</div>
+			<div>
+				<a href="#"> {{ $i18n( 'wikilambda-tester-create-new' ).text() }} </a>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -350,6 +359,14 @@ module.exports = exports = {
 
 	&__button {
 		margin-top: 30px;
+	}
+
+	&__link {
+		padding-bottom: 16px;
+	}
+
+	&__links {
+		padding-top: 20px;
 	}
 
 	&__table {
