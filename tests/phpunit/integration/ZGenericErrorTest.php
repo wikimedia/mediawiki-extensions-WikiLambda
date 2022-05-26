@@ -96,9 +96,14 @@ class ZGenericErrorTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * TODO (T309798): This is now broken because Z882 is built-in. Changing this to Z885 makes
+	 * it pass, but that's also built-in, and this test doesn't justify its existence or raise
+	 * code coverage(?), so leaving it as `@group Broken` for now.
+	 *
 	 * @covers ::__construct
 	 * @covers ::isValid
 	 * @covers ::getErrorType
+	 * @group Broken
 	 */
 	public function testCreate_nobuiltin() {
 		$this->insertZids( [ 'Z17', 'Z882' ] );

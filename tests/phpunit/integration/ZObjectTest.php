@@ -136,10 +136,11 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 			. '"Z882K2": { "Z1K1": "Z6", "Z6K1": "oh, tasty soup, soup" } }';
 
 		$testObject = ZObjectFactory::createChild( json_decode( $testJson ) );
+
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertFalse( $testObject->isTypeReference() );
 		$this->assertTrue( $testObject->isTypeFunctionCall() );
-		$this->assertFalse( $testObject->isBuiltin() );
+		$this->assertTrue( $testObject->isBuiltin() );
 		$this->assertSame( 'Z882', $testObject->getZType() );
 		$this->assertInstanceOf( ZString::class, $testObject->getValueByKey( 'Z882K1' ) );
 		$this->assertInstanceOf( ZString::class, $testObject->getValueByKey( 'Z882K2' ) );

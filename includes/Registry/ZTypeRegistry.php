@@ -217,6 +217,10 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_FUNCTION_TYPED_LIST = 'Z881';
 	public const Z_FUNCTION_TYPED_LIST_TYPE = 'Z881K1';
 
+	public const Z_FUNCTION_TYPED_PAIR = 'Z882';
+	public const Z_FUNCTION_TYPED_FIRST_TYPE = 'Z882K1';
+	public const Z_FUNCTION_TYPED_SECOND_TYPE = 'Z882K2';
+
 	public const Z_FUNCTION_ERRORTYPE_TO_TYPE = 'Z885';
 	public const Z_FUNCTION_ERRORTYPE_TYPE = 'Z885K1';
 
@@ -224,6 +228,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	// always find them as ZObject type values (Z1K1)
 	public const BUILT_IN_TYPE_FUNCTIONS = [
 		self::Z_FUNCTION_TYPED_LIST => 'ZTypedList',
+		self::Z_FUNCTION_TYPED_PAIR => 'ZTypedPair',
 		self::Z_FUNCTION_ERRORTYPE_TO_TYPE => 'ZGenericError'
 	];
 
