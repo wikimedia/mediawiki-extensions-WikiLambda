@@ -4,7 +4,8 @@
 			"Alhassan Peter",
 			"Chirifo",
 			"Hasslaebetch",
-			"Sir Amugi"
+			"Sir Amugi",
+			"Amire80"
 		]
 	},
 	"apihelp-wikilambda_edit-example-create": "Yori palli",
@@ -13,6 +14,6 @@
 	"apihelp-wikilambda_edit-param-summary": "Malimi kolivaai lahabali maa niŋ.",
 	"apihelp-wikilambda_edit-param-zid": "Zaɣpali pilibu",
 	"apihelp-wikilambda_edit-param-zobject": "JSON zaŋ ti ZObject di yan malsoŋ",
-	"apierror-wikilambda_edit-invalidjson": "Bi tooi yooi obijati palli zan ti inputi",
+	"apierror-wikilambda_edit-invalidjson": "Bi tooi nam ZObject n-ti given input '$1'; invalid JSON.",
 	"apierror-wikilambda_edit-unmatchingzid": "ZID tarisi ZID '$1' din bi doli ZObject ID '$2'"
 }
