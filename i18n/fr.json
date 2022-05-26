@@ -54,6 +54,7 @@
 	"wikilambda-special-createzobject-intro": "Assurez-vous que vous suivez les politiques de la communauté, ainsi que les règles relatives aux droits d’auteur et aux brevets.",
 	"wikilambda-special-createzobject-nojs": "Cette page nécessite JavaScript pour être utilisée.",
 	"wikilambda-special-edit-function-definition-title": "Modifier la définition de la fonction",
+	"wikilambda-special-function-definition-title": "Fonction",
 	"wikilambda-special-edit-function-definition-description": "Vous modifiez la page de définition de la fonction. $1 peut modifier la définition de la fonction. Toute autre personne peut modifier les libellés. Assurez-vous d’enregistrer votre travail en cliquant sur le bouton bleu Publier ci-dessous.",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Seulement les utilisateurs avec des droits spéciaux",
 	"wikilambda-special-evaluatefunctioncall": "Évaluer un appel de fonction",
