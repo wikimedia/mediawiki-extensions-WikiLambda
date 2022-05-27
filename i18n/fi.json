@@ -12,6 +12,7 @@
 			"Yupik"
 		]
 	},
+	"wikilambda-special-function-definition-title": "Funktio",
 	"wikilambda-special-evaluatefunctioncall-intro": "Varmista, että noudatat yhteisön käytäntöjä sekä tekijänoikeus- ja patenttisääntöjä.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Kieli",
 	"wikilambda-published": "Julkaistu!",
@@ -19,6 +20,7 @@
 	"wikilambda-savenew": "Tallenna",
 	"wikilambda-editor-label-addlanguage-label": "Lisää kieli",
 	"wikilambda-editor-label-select-programming-language-label": "Valitse ohjelmointikieli:",
+	"wikilambda-tester-create-new": "Luo uusi testi",
 	"wikilambda-tester-status-pending": "ODOTTAA...",
 	"wikilambda-tester-results-title": "Testaimen tulokset",
 	"wikilambda-tester-status-label": "Testaimen tila",

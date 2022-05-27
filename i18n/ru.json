@@ -7,7 +7,8 @@
 			"Okras",
 			"Pacha Tchernof",
 			"Rivka Silinsky",
-			"Tanzun"
+			"Tanzun",
+			"Загребин Илья"
 		]
 	},
 	"wikilambda-persistentzobject-contents": "Содержание",
@@ -16,6 +17,7 @@
 	"wikilambda-special-callfunction-intro": "Убедитесь, что вы следуете правила сообщества, авторским правам и патентным правилам.",
 	"wikilambda-special-callfunction-nojs": "Эта страница требует использования JavaScript.",
 	"wikilambda-special-define-function": "Определить функцию",
+	"wikilambda-special-function-definition-title": "Функция",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Язык",
 	"wikilambda-publishnew": "Опубликовать",
 	"wikilambda-published": "Опубликовано!",
@@ -44,5 +46,6 @@
 	"wikilambda-function-definition-inputs-item-selector-search-placeholder": " Поиск ссылки или функции",
 	"wikilambda-function-definition-example-title": "Примеры использования функции",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "Приносим свои извинения! Только администраторы могут изменить описание функции после его публикации.",
-	"wikilambda-continue-editing": "Продолжить редактирование"
+	"wikilambda-continue-editing": "Продолжить редактирование",
+	"wikilambda-function-details-summary-learn-more": "Узнать больше о процессе проверки."
 }
