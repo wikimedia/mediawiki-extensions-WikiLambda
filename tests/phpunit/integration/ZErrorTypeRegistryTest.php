@@ -109,6 +109,7 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 	"Z2K2": {
 		"Z1K1": "Z50",
 		"Z50K1": [
+			"Z3",
 			{
 				"Z1K1": "Z3",
 				"Z3K1": "Z50",
@@ -116,6 +117,7 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 				"Z3K3": {
 					"Z1K1": "Z12",
 					"Z12K1": [
+						"Z11",
 						{
 							"Z1K1": "Z11",
 							"Z11K1": "Z1002",
@@ -129,6 +131,7 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 	"Z2K3": {
 		"Z1K1": "Z12",
 		"Z12K1": [
+			"Z11",
 			{
 				"Z1K1": "Z11",
 				"Z11K1": "Z1002",

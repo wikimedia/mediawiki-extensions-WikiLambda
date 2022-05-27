@@ -74,7 +74,7 @@ class ZFunction extends ZObject {
 			return false;
 		}
 		$list = $this->data[ ZTypeRegistry::Z_FUNCTION_ARGUMENTS ];
-		if ( !$list->isEmpty() && ( $list->getElementType() !== ZTypeRegistry::Z_ARGUMENTDECLARATION ) ) {
+		if ( !$list->isEmpty() && ( $list->getElementType()->getZValue() !== ZTypeRegistry::Z_ARGUMENTDECLARATION ) ) {
 			return false;
 		}
 
@@ -93,7 +93,7 @@ class ZFunction extends ZObject {
 			return false;
 		}
 		$list = $this->data[ ZTypeRegistry::Z_FUNCTION_TESTERS ];
-		if ( !$list->isEmpty() && ( $list->getElementType() !== ZTypeRegistry::Z_TESTER ) ) {
+		if ( !$list->isEmpty() && ( $list->getElementType()->getZValue() !== ZTypeRegistry::Z_TESTER ) ) {
 			return false;
 		}
 
@@ -102,7 +102,7 @@ class ZFunction extends ZObject {
 			return false;
 		}
 		$list = $this->data[ ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS ];
-		if ( !$list->isEmpty() && ( $list->getElementType() !== ZTypeRegistry::Z_IMPLEMENTATION ) ) {
+		if ( !$list->isEmpty() && ( $list->getElementType()->getZValue() !== ZTypeRegistry::Z_IMPLEMENTATION ) ) {
 			return false;
 		}
 

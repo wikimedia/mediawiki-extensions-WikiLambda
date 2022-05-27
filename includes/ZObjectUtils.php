@@ -89,6 +89,30 @@ class ZObjectUtils {
 	 * @throws ZErrorException
 	 */
 	public static function isValidZObjectList( array $input ): bool {
+		if ( count( $input ) === 0 ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_UNDEFINED_LIST_TYPE,
+					[
+						'data' => $input
+					]
+				)
+			);
+		}
+
+		$listType = array_shift( $input );
+
+		if ( !self::isValidZObjectResolver( $listType ) ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_WRONG_LIST_TYPE,
+					[
+						'data' => $listType
+					]
+				)
+			);
+		}
+
 		foreach ( $input as $index => $value ) {
 			try {
 				self::isValidZObject( $value );
@@ -99,6 +123,33 @@ class ZObjectUtils {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * @param mixed $input
+	 * @return bool
+	 * @throws ZErrorException
+	 */
+	public static function isValidZObjectResolver( $input ): bool {
+		if ( is_string( $input ) ) {
+			return self::isValidZObjectReference( $input );
+		}
+
+		if ( is_object( $input ) ) {
+			try {
+				self::isValidZObjectRecord( $input );
+			} catch ( ZErrorException $e ) {
+				return false;
+			}
+			$resolverType = $input->{ ZTypeRegistry::Z_OBJECT_TYPE };
+			if ( ( $resolverType === ZTypeRegistry::Z_REFERENCE ) ||
+				( $resolverType === ZTypeRegistry::Z_FUNCTIONCALL ) ||
+				( $resolverType === ZTypeRegistry::Z_ARGUMENTREFERENCE ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -205,19 +256,12 @@ class ZObjectUtils {
 						&& array_key_exists( ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION, $typeVars )
 						&& $typeVars[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ] == ZTypeRegistry::Z_FUNCTION_GENERIC_LIST
 					) {
-						if ( !array_key_exists( 'K1', $output )
-							&& !array_key_exists( 'K2', $output ) ) {
-							return [];
+						$itemType = $typeVars[ ZTypeRegistry::Z_FUNCTION_GENERIC_LIST_TYPE ];
+						$benjamin = [ $itemType ];
+						if ( array_key_exists( 'K1', $output ) ) {
+							array_push( $benjamin, $output['K1'], ...array_slice( $output['K2'], 1 ) );
 						}
-
-						if ( !array_key_exists( 'K2', $output ) ) {
-							return [ self::canonicalize( $output[ 'K1' ] ) ];
-						}
-
-						return array_merge(
-							[ self::canonicalize( $output[ 'K1' ] ) ],
-							self::canonicalize( $output[ 'K2' ] )
-						);
+						return $benjamin;
 					}
 				}
 			}
@@ -387,11 +431,14 @@ class ZObjectUtils {
 	 * @return array same ZMultilingualString value with only one item of the preferred language
 	 */
 	public static function getPreferredMonolingualString( array $multilingualStr, array $languages ): array {
+		// Ignore benjamin type
+		$itemType = array_shift( $multilingualStr );
+
 		$availableLangs = [];
 		$selectedIndex = 0;
 
 		if ( count( $multilingualStr ) == 0 ) {
-			return [];
+			return [ $itemType ];
 		}
 
 		foreach ( $multilingualStr as $value ) {
@@ -406,7 +453,7 @@ class ZObjectUtils {
 			}
 		}
 
-		return [ $multilingualStr[ $selectedIndex ] ];
+		return [ $itemType, $multilingualStr[ $selectedIndex ] ];
 	}
 
 	/**
@@ -504,23 +551,9 @@ class ZObjectUtils {
 	 * @return stdClass
 	 */
 	private static function normalizeZList( $input ): stdClass {
-		$elements = [];
-		$listType = null;
-
-		foreach ( $input as $item ) {
-			$zobject = self::normalize( $item );
-			$type = $zobject->{ ZTypeRegistry::Z_OBJECT_TYPE } ?? self::normalize( ZTypeRegistry::Z_OBJECT );
-			if ( $listType === null ) {
-				$listType = $type;
-			} else {
-				if ( !self::isTypeEqualTo( $listType, $type ) ) {
-					$listType = self::normalize( ZTypeRegistry::Z_OBJECT );
-				}
-			}
-			$elements[] = $zobject;
-		}
-
-		return self::normalizeZListInternal( $listType ?? self::normalize( ZTypeRegistry::Z_OBJECT ), $elements );
+		$listType = self::normalize( array_shift( $input ) );
+		$elements = array_map( [ __CLASS__, 'normalize' ], $input );
+		return self::normalizeZListInternal( $listType, $elements );
 	}
 
 	/**
@@ -545,9 +578,8 @@ class ZObjectUtils {
 		}
 
 		$zobject[ 'K1' ] = array_shift( $elements );
-		if ( count( $elements ) > 0 ) {
-			$zobject[ 'K2' ] = self::normalizeZListInternal( $listType, $elements );
-		}
+		$zobject[ 'K2' ] = self::normalizeZListInternal( $listType, $elements );
+
 		return (object)$zobject;
 	}
 

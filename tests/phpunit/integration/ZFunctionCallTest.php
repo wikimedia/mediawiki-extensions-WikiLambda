@@ -81,11 +81,14 @@ class ZFunctionCallTest extends WikiLambdaIntegrationTestCase {
 				"Z3K2": "Z0K1",
 				"Z3K3": {
 					"Z1K1": "Z12",
-					"Z12K1": [{
-						"Z1K1": "Z11",
-						"Z11K1": "Z1002",
-						"Z11K2": "Test key"
-					}]
+					"Z12K1": [
+						"Z11",
+						{
+							"Z1K1": "Z11",
+							"Z11K1": "Z1002",
+							"Z11K2": "Test key"
+						}
+					]
 				}
 			},
 			"K2": {
@@ -100,19 +103,25 @@ class ZFunctionCallTest extends WikiLambdaIntegrationTestCase {
 	},
 	"Z2K3": {
 		"Z1K1": "Z12",
-		"Z12K1": [{
-			"Z1K1": "Z11",
-			"Z11K1": "Z1002",
-			"Z11K2": "Test type"
-		}]
+		"Z12K1": [
+			"Z11",
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "Z1002",
+				"Z11K2": "Test type"
+			}
+		]
 	},
 	"Z2K4": {
 		"Z1K1": "Z32",
-		"Z32K1": [{
-			"Z1K1": "Z31",
-			"Z31K1": "Z1002",
-			"Z31K2": []
-		}]
+		"Z32K1": [
+			"Z31",
+			{
+				"Z1K1": "Z31",
+				"Z31K1": "Z1002",
+				"Z31K2": [ "Z6" ]
+			}
+		]
 	}
 }
 EOT;
@@ -134,33 +143,25 @@ EOT;
 {
 	"Z1K1": "Z4",
 	"Z4K1": "Z111",
-	"Z4K2": {
-		"Z1K1": {
-			"Z1K1": "Z7",
-			"Z7K1": "Z881",
-			"Z881K1": "Z3"
-		},
-		"K1": {
+	"Z4K2": [
+		"Z3",
+		{
 			"Z1K1": "Z3",
 			"Z3K1": "Z6",
 			"Z3K2": "Z111K1",
 			"Z3K3": {
 				"Z1K1": "Z12",
-				"Z12K1": [{
-					"Z1K1": "Z11",
-					"Z11K1": "Z1002",
-					"Z11K2": "Test key"
-				}]
-			}
-		},
-		"K2": {
-			"Z1K1": {
-				"Z1K1": "Z7",
-				"Z7K1": "Z881",
-				"Z881K1": "Z3"
+				"Z12K1": [
+					"Z11",
+					{
+						"Z1K1": "Z11",
+						"Z11K1": "Z1002",
+						"Z11K2": "Test key"
+					}
+				]
 			}
 		}
-	},
+	],
 	"Z4K3": "Z101"
 }
 EOT;
@@ -182,7 +183,7 @@ EOT;
 		$this->assertInstanceOf( ZFunctionCall::class, $zobject );
 		$this->assertSame( 'Z4', $zobject->getReturnType() );
 
-		$strFunctionCall = '{"Z1K1": "Z7", "Z7K1": "Z813", "Z813K1": [ "list" ]}';
+		$strFunctionCall = '{"Z1K1": "Z7", "Z7K1": "Z813", "Z813K1": [ "Z6", "list" ]}';
 		$zobject = ZObjectFactory::create( json_decode( $strFunctionCall ) );
 		$this->assertInstanceOf( ZFunctionCall::class, $zobject );
 		$this->assertSame( 'Z40', $zobject->getReturnType() );

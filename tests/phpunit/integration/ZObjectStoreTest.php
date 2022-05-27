@@ -52,7 +52,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. '"Z2K2": "hello",'
-			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [] } }';
+			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 		$page = $this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
 		$this->assertTrue( $page instanceof ZObjectPage );
 		$this->assertTrue( $page->isOK() );
@@ -109,11 +109,11 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 				ZErrorTypeRegistry::Z_ERROR_INVALID_JSON
 			],
 			'incorrect ZObject, no id' => [
-				'{ "Z1K1": "Z2", "Z2K2": "hello", "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }',
+				'{ "Z1K1": "Z2", "Z2K2": "hello", "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
 				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
 			],
 			'incorrect ZObject, no value' => [
-				'{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }',
+				'{ "Z1K1": "Z2", "Z2K1": "Z0", "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
 				ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED
 			],
 			'incorrect ZObject, no label' => [
@@ -123,7 +123,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			'correct ZObject' => [
 				'{ "Z1K1": "Z2", "Z2K1": "Z0",'
 					. ' "Z2K2": "hello",'
-					. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }',
+					. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
 				true
 			],
 		];
@@ -137,21 +137,21 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$title = Title::newFromText( $zid, NS_MAIN );
-		$normalZObject = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+		$zObject = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. ' "Z2K2": "hello",'
-			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }';
-		$canonicalZObject = '{ "Z1K1": "Z2", "Z2K1": "' . $zid . '",'
+			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+		$savedZObject = '{ "Z1K1": "Z2", "Z2K1": "' . $zid . '",'
 			. ' "Z2K2": "hello",'
-			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [] } }';
+			. ' "Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
-		$page = $this->zobjectStore->createNewZObject( $normalZObject, 'Create ZObject', $sysopUser );
+		$page = $this->zobjectStore->createNewZObject( $zObject, 'Create ZObject', $sysopUser );
 		$this->assertTrue( $page instanceof ZObjectPage );
 		$this->assertTrue( $page->isOK() );
 
 		$zobject = $this->zobjectStore->fetchZObjectByTitle( $title );
 		$this->assertTrue( $zobject instanceof ZObjectContent );
 		// We compare the JSONs after decoding because it's saved prettified
-		$this->assertEquals( json_decode( $zobject->getText() ), json_decode( $canonicalZObject ) );
+		$this->assertEquals( json_decode( $zobject->getText() ), json_decode( $savedZObject ) );
 	}
 
 	/**
@@ -164,7 +164,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$title = Title::newFromText( $zid, NS_MAIN );
 		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. '"Z2K2": "hello",'
-			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [] } }';
+			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
 
 		// We create a new ZObject
 		$this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );

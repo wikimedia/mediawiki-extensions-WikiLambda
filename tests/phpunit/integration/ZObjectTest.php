@@ -261,6 +261,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		// Assert that ZTestType is labelized correctly
 		$zobject = ZObjectFactory::create( json_decode( ZTestType::TEST_ENCODING ) );
 		$labelized = $zobject->getHumanReadable( $this->makeLanguage( 'en' ) );
+
 		$this->assertSame(
 			FormatJson::encode( FormatJson::decode( ZTestType::TEST_LABELIZED ), true, FormatJson::UTF8_OK ),
 			FormatJson::encode( $labelized, true, FormatJson::UTF8_OK )
@@ -314,6 +315,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
     "Z1K1": "Z4",
     "Z4K1": "Z6",
     "Z4K2": [
+        "Z3",
         {
             "Z1K1": "Z3",
             "Z3K1": "Z6",
@@ -321,6 +323,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
             "Z3K3": {
                 "Z1K1": "Z12",
                 "Z12K1": [
+                    "Z11",
                     {
                         "Z1K1": "Z11",
                         "Z11K1": "Z1002",
@@ -339,6 +342,7 @@ EOT;
     "type": "Type",
     "identity": "Z6",
     "keys": [
+        "Key",
         {
             "type": "Key",
             "value type": "String",
@@ -346,6 +350,7 @@ EOT;
             "label": {
                 "type": "Multilingual text",
                 "texts": [
+                    "Monolingual text",
                     {
                         "type": "Monolingual text",
                         "language": "English",
@@ -414,5 +419,4 @@ EOT;
 			FormatJson::encode( $zerror->getHumanReadable(), true, FormatJson::UTF8_OK )
 		);
 	}
-
 }

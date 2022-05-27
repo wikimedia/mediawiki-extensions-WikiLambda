@@ -61,12 +61,12 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			'short string' => [ 'Test', true ],
 			'messy string' => [ "This is a [basic] \tcomplicated\ntest {string}!", true ],
 
-			'empty list' => [ '[]', true ],
-			'string singleton list' => [ '["Test"]', true ],
-			'string multiple list' => [ '["Test1", "Test2" , "Test3"]', true ],
-			'record singleton list' => [ '[{ "Z1K1": "Test!", "Z2K1": "Test" }]', true ],
+			'empty list' => [ '[ "Z1" ]', true ],
+			'string singleton list' => [ '[ "Z6", "Test"]', true ],
+			'string multiple list' => [ '[ "Z6", "Test1", "Test2" , "Test3"]', true ],
+			'record singleton list' => [ '[ "Z1", { "Z1K1": "Test!", "Z2K1": "Test" }]', true ],
 			'record multiple list' => [
-				'[{ "Z1K1": "Test!", "Z2K1": "Test" },{ "Z1K1": "Test2!", "Z2K1": "Test2?" }]',
+				'["Z1", { "Z1K1": "Test!", "Z2K1": "Test" },{ "Z1K1": "Test2!", "Z2K1": "Test2?" }]',
 				true
 			],
 			'invalid record singleton list' => [ '[{ "Z2K1": "Test" }]', false ],
@@ -80,11 +80,11 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			'string record with invalid key' => [ '{ "Z1K1": "Test", "ZK1": "Test" }', false ],
 
 			'record with list and sub-record' => [
-				'{ "Z1K1": ["Test", "Second test"], "Z2K1": { "Z1K1": "Test", "K2": "Test"} }',
+				'{ "Z1K1": [ "Z6", "Test", "Second test"], "Z2K1": { "Z1K1": "Test", "K2": "Test"} }',
 				true
 			],
 			'record with list and invalid sub-record' => [
-				'{ "Z1K1": ["Test", "Second test"], "Z2K1": { "K2": "Test"} }',
+				'{ "Z1K1": [ "Z6", "Test", "Second test"], "Z2K1": { "K2": "Test"} }',
 				false
 			],
 
@@ -109,12 +109,13 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 
 	public function provideCanonicalize() {
 		return [
-			'empty list' => [ '[]', '[]' ],
-			'list with empty string' => [ '[""]', '[""]' ],
-			'list with two empty strings' => [ '["", ""]', '["", ""]' ],
-			'list with ordered strings' => [ '["a", "b"]', '["a", "b"]' ],
-			'list with unordered strings' => [ '["b", "a"]', '["b", "a"]' ],
-			'list with lists' => [ '[[],[[]], []]', '[[],[[]],[]]' ],
+			'empty mixed list' => [ '["Z1"]', '["Z1"]' ],
+			'empty list of strings' => [ '["Z6"]', '["Z6"]' ],
+			'list with empty string' => [ '["Z6", ""]', '["Z6", ""]' ],
+			'list with two empty strings' => [ '["Z6", "", ""]', '["Z6", "", ""]' ],
+			'list with ordered strings' => [ '["Z6", "a", "b"]', '["Z6", "a", "b"]' ],
+			'list with unordered strings' => [ '["Z1", "b", "a"]', '["Z1", "b", "a"]' ],
+			'list with lists' => [ '["Z1",["Z1"],["Z1",["Z1"]],["Z1"]]', '["Z1",["Z1"],["Z1",["Z1"]],["Z1"]]' ],
 
 			'empty string' => [ '""', '""' ],
 			'string' => [ '"ab"', '"ab"' ],
@@ -159,8 +160,8 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "Z1K1": "Z60", "Z60K1": { "Z1K1": "Z60", "Z60K1": "a" } }',
 			],
 			'list with record with key untrimmed' => [
-				'[{ " Z1K1 ": "Z60", "Z60K1 ": "a" }]',
-				'[{ "Z1K1": "Z60", "Z60K1": "a" }]'
+				'["Z1", { " Z1K1 ": "Z60", "Z60K1 ": "a" }]',
+				'["Z1", { "Z1K1": "Z60", "Z60K1": "a" }]'
 			],
 			'simple record with unsorted keys' => [
 				'{ "Z60K1": "a", "Z1K1 ": "Z60" }',
@@ -203,8 +204,8 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "Z6K1": "Z" }'
 			],
 			'array with escaped string' => [
-				'[{ "Z1K1": "Z6", "Z6K1": "Z6" }, { "Z1K1": "Z6", "Z6K1": "Z" }]',
-				'[{ "Z1K1": "Z6", "Z6K1": "Z6" }, "Z" ]'
+				'["Z6",{ "Z1K1": "Z6", "Z6K1": "Z6" }, { "Z1K1": "Z6", "Z6K1": "Z" }]',
+				'["Z6",{ "Z1K1": "Z6", "Z6K1": "Z6" }, "Z" ]'
 			],
 			'object with escaped string' => [
 				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z6", "Z6K1": "Z6" } }',
@@ -230,74 +231,13 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z9", "Z9K1": "ZObject" } }',
 				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z9", "Z9K1": "ZObject" } }'
 			],
-			'empty list as array' => [
-				'[]', '[]'
-			],
-			// TODO (T298133): Remove Z10 test cases when we are ready to deprecate it
-			'empty list as ZObject' => [
-				'{ "Z1K1": "Z10" }', '[]'
-			],
-			'single string in list as array' => [
-				'["a"]', '["a"]'
-			],
-			'single string in list as ZObject' => [
-				'{ "Z1K1": "Z10", "Z10K1": "a" }', '["a"]'
-			],
-			'single string in list as ZObject, tail empty array' => [
-				'{ "Z1K1": "Z10", "Z10K1": "a", "Z10K2": [] }', '["a"]'
-			],
-			'single string in list as ZObject, tail ZObject' => [
-				'{ "Z1K1": "Z10", "Z10K1": "a", "Z10K2": { "Z1K1": "Z10" } }',
-				'["a"]'
-			],
-			'two strings in list as array' => [
-				'["a", "b"]', '["a", "b"]'
-			],
-			'two strings in list as ZObject, tail as array' => [
-				'{ "Z1K1": "Z10", "Z10K1": "a", "Z10K2": ["b"] }',
-				'["a", "b"]'
-			],
-			'two strings in list as ZObject, all tails ZObject' => [
-				'{ "Z1K1": "Z10", "Z10K1": "a", "Z10K2":' .
-				'{ "Z1K1": "Z10", "Z10K1": "b", "Z10K2": { "Z1K1": "Z10" } } }',
-				'["a", "b"]'
-			],
-			'two strings in list as ZObject, tails mixed' => [
-				'{ "Z1K1": "Z10", "Z10K1": "a", "Z10K2":' .
-				'{ "Z1K1": "Z10", "Z10K1": "b", "Z10K2": [] } }',
-				'["a", "b"]'
-			],
-			'two strings in list as ZObject, no tail in tail' => [
-				'{ "Z1K1": "Z10", "Z10K1": "a", "Z10K2":' .
-				'{ "Z1K1": "Z10", "Z10K1": "b" } }',
-				'["a", "b"]'
-			],
 			'list in list' => [
-				'[[]]',
-				'[[]]'
+				'["Z1",["Z1"]]',
+				'["Z1",["Z1"]]'
 			],
 			'lists in list' => [
-				'[[], []]',
-				'[[], []]'
-			],
-			'empty ZObject in list' => [
-				'[{ "Z1K1": "Z10" }]',
-				'[[]]'
-			],
-			'empty ZObjects in list' => [
-				'[{ "Z1K1": "Z10" }, { "Z1K1": "Z10" }]',
-				'[[], []]'
-			],
-			'empty ZObjects in list, all ZObjects' => [
-				'{ "Z1K1": "Z10", "Z10K1": { "Z1K1": "Z10" }, "Z10K2":' .
-				'{ "Z1K1": "Z10", "Z10K1": { "Z1K1": "Z10" }, "Z10K2":' .
-				'{ "Z1K1": "Z10" } } }',
-				'[[], []]'
-			],
-			'ZObject in list' => [
-				'{ "Z1K1": "Z10", "Z10K1": { "Z1K1": "Z6", "Z6K1": "Z1" },' .
-				'  "Z10K2": { "Z1K1": "Z10" } }',
-				'[{ "Z1K1": "Z6", "Z6K1": "Z1" }]'
+				'["Z1",["Z6"], ["Z6"]]',
+				'["Z1",["Z6"], ["Z6"]]'
 			],
 			'ZObject with global keys' => [
 				'{ "Z1K1": "Z60", "Z60K1": "test" }',
@@ -307,38 +247,44 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "Z1K1": "Z60", "K1": "test" }',
 				'{ "Z1K1": "Z60", "Z60K1": "test" }',
 			],
-
 			// Generic list examples
-			// TODO (T298133): Remove Z10 test cases when we are ready to deprecate it
 			'empty generic list' => [
 				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } }',
-				'[]'
+				'["Z1"]'
 			],
-			'single string in a generic list' => [
-				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" }, "K1": "a" }',
-				'["a"]'
+			'single object in a generic list' => [
+				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
+					. '"K1": "a",'
+					. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } }',
+				'["Z1", "a"]'
 			],
-			'single string in generic list, tail empty generic list' => [
-				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" }, "K1": "a",'
-				. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } }',
-				'["a"]'
+			'single string in generic list' => [
+				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
+					. ' "K1": "a",'
+					. ' "K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } } }',
+				'["Z6", "a"]'
 			],
 			'two strings in a generic list' => [
-				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" }, "K1": "a",'
-				. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" }, "K1": "b" } }',
-				'["a", "b"]'
+				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
+					. '"K1": "a",'
+					. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
+					. '"K1": "b",'
+					. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } } } }',
+				'["Z6", "a", "b"]'
 			],
 			'empty generic list in generic list' => [
 				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
-				. ' "K1": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } }',
-				'[[]]'
+					. ' "K1": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } },'
+					. ' "K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } }',
+				'["Z1", ["Z1"]]'
 			],
 			'two empty generic lists in generic list' => [
 				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
-				. ' "K1": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } },'
-				. ' "K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
-				. ' "K1": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } } }',
-				'[[], []]'
+					. ' "K1": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } },'
+					. ' "K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
+					. ' "K1": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } },'
+					. ' "K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } } }',
+				'["Z1", ["Z1"], ["Z1"]]'
 			]
 		];
 	}
@@ -429,9 +375,9 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "Z1K1": "Z2", "Z2K2": "string value" }'
 			],
 			'zobject with array value' => [
-				'{ "Z1K1": "Z2", "Z2K2": [{ "Z1K1": "Z111"}, {"Z1K1": "Z222"}] }',
+				'{ "Z1K1": "Z2", "Z2K2": ["Z1", { "Z1K1": "Z111"}, {"Z1K1": "Z222"}] }',
 				[],
-				'{ "Z1K1": "Z2", "Z2K2": [{ "Z1K1": "Z111"}, {"Z1K1": "Z222"}] }'
+				'{ "Z1K1": "Z2", "Z2K2": ["Z1", { "Z1K1": "Z111"}, {"Z1K1": "Z222"}] }'
 			],
 			'zobject with nested zobject' => [
 				'{ "Z1K1": "Z2", "Z2K2": { "Z1K1": "Z3", "Z3K3": { "Z1K1": "Z6" } } }',
@@ -440,78 +386,78 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			],
 
 			'zobject with multilingual string and no languages' => [
-				'{ "Z1K1": "Z12", "Z12K1": ['
+				'{ "Z1K1": "Z12", "Z12K1": ["Z11",'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" },'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }'
 				. '] }',
 				[],
-				'{ "Z1K1": "Z12", "Z12K1": [{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }] }'
+				'{ "Z1K1": "Z12", "Z12K1": ["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }] }'
 			],
 
 			'zobject with multilingual string and language chain' => [
-				'{ "Z1K1": "Z12", "Z12K1": ['
+				'{ "Z1K1": "Z12", "Z12K1": ["Z11",'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" },'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }'
 				. '] }',
 				[ self::ES, self::EN ],
-				'{ "Z1K1": "Z12", "Z12K1": [{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }] }'
+				'{ "Z1K1": "Z12", "Z12K1": ["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }] }'
 			],
 
 			'zobject with nested multilingual strings' => [
-				'{ "Z1K1": "Z2", "Z2K3": { "Z1K1": "Z12", "Z12K1": ['
+				'{ "Z1K1": "Z2", "Z2K3": { "Z1K1": "Z12", "Z12K1": ["Z11",'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "label" },'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" }'
-				. '] }, "Z2K2": { "Z1K1": "Z2", "Z2K3": { "Z1K1": "Z12", "Z12K1": ['
+				. '] }, "Z2K2": { "Z1K1": "Z2", "Z2K3": { "Z1K1": "Z12", "Z12K1": ["Z11",'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "nested label" },'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta anidada" }'
 				. '] } } }',
 				[ self::ES, self::EN ],
-				'{ "Z1K1": "Z2", "Z2K3": {"Z1K1": "Z12", "Z12K1": ['
+				'{ "Z1K1": "Z2", "Z2K3": {"Z1K1": "Z12", "Z12K1": ["Z11",'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" }'
-				. '] }, "Z2K2": { "Z1K1": "Z2", "Z2K3": {"Z1K1": "Z12", "Z12K1": ['
+				. '] }, "Z2K2": { "Z1K1": "Z2", "Z2K3": {"Z1K1": "Z12", "Z12K1": ["Z11",'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta anidada" }'
 				. '] } } }'
 			],
 
 			'zobject with array of multilingual strings and same languages' => [
-				'{ "Z1K1": "Z2", "Z2K2": ['
-				. '{ "Z1K1": "Z12", "Z12K1": ['
+				'{ "Z1K1": "Z2", "Z2K2": ["Z12",'
+				. '{ "Z1K1": "Z12", "Z12K1": ["Z11",'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "first text" },'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "primer texto" }'
 				. '] },'
-				. '{ "Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z12", "Z12K1": ["Z11",'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "second text" },'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "segundo texto" }'
 				. '] }'
 				. '] }',
 				[ self::ES, self::EN ],
-				'{ "Z1K1": "Z2", "Z2K2": ['
-				. '{ "Z1K1": "Z12", "Z12K1": ['
+				'{ "Z1K1": "Z2", "Z2K2": ["Z12",'
+				. '{ "Z1K1": "Z12", "Z12K1": ["Z11",'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "primer texto" }'
 				. '] },'
-				. '{ "Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z12", "Z12K1": ["Z11",'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "segundo texto" }'
 				. '] }'
 				. '] }',
 			],
 
 			'zobject with array of multilingual strings and different languages' => [
-				'{ "Z1K1": "Z2", "Z2K2": ['
-				. '{ "Z1K1": "Z12", "Z12K1": ['
+				'{ "Z1K1": "Z2", "Z2K2": ["Z12",'
+				. '{ "Z1K1": "Z12", "Z12K1": ["Z11",'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "primer texto" },'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "first text" }'
 				. '] },'
-				. '{ "Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z12", "Z12K1": ["Z11",'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "second text" },'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1332", "Z11K2": "другий текст" }'
 				. '] }'
 				. '] }',
 				[ self::CAT, self::ES, self::EN ],
-				'{ "Z1K1": "Z2", "Z2K2": ['
-				. '{ "Z1K1": "Z12", "Z12K1": ['
+				'{ "Z1K1": "Z2", "Z2K2": ["Z12",'
+				. '{ "Z1K1": "Z12", "Z12K1": ["Z11",'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "primer texto" }'
 				. '] },'
-				. '{ "Z1K1": "Z12", "Z12K1": ['
+				. '{ "Z1K1": "Z12", "Z12K1": ["Z11",'
 				. '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "second text" }'
 				. '] }'
 				. '] }',
@@ -546,60 +492,60 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 
 	public function provideGetPreferredMonolingualString() {
 		return [
-			'no monolingual string and no languages' => [ '[]', [], '[]', ],
-			'no monolingual string and one languages' => [ '[]', [ self::EN ], '[]', ],
-			'no monolingual string and many languages' => [ '[]', [ self::ES, self::EN ], '[]', ],
+			'no monolingual string and no languages' => [ '["Z11"]', [], '["Z11"]', ],
+			'no monolingual string and one languages' => [ '["Z11"]', [ self::EN ], '["Z11"]', ],
+			'no monolingual string and many languages' => [ '["Z11"]', [ self::ES, self::EN ], '["Z11"]', ],
 
 			'one monolingual string and no languages' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[],
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 			],
 			'one monolingual string and an available language' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[ self::EN ],
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 			],
 			'one monolingual string and one unavailable language' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[ self::FR ],
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 			],
 			'one monolingual string and one unavailable language' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[ self::FR ],
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 			],
 
 			'many monolingual strings and no languages' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
 				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[],
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }]',
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }]',
 			],
 			'many monolingual strings and one available languages' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
 				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[ self::EN ],
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 			],
 		  'many monolingual strings and one unavailable languages' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
 				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[ self::FR ],
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }]',
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }]',
 			],
 			'many monolingual strings and some available languages' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
 				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[ self::CAT, self::ES, self::EN ],
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }]',
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }]',
 			],
 			'many monolingual strings and some unavailable languages' => [
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" },'
 				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "type" }]',
 				[ self::UK, self::RU ],
-				'[{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }]',
+				'["Z11",{ "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "tipo" }]',
 			],
 		];
 	}
@@ -719,13 +665,13 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{}'
 			],
 			'normalize empty list' => [
-				'[]',
+				'[ "Z1" ]',
 				'{ "Z1K1": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
 					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
 					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } } }'
 			],
 			'normalize empty list as value' => [
-				'{ "Z2K2": [] }',
+				'{ "Z2K2": [ "Z1" ] }',
 				'{ "Z2K2": { "Z1K1": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
 					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
 					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } } } }'
@@ -739,7 +685,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "Z2K2": { "Z1K1": "Z9", "Z9K1": "Z111" } }'
 			],
 			'normalize list with two elements of a same type' => [
-				'{ "Z2K2": ['
+				'{ "Z2K2": [ "Z2", '
 				. '{ "Z1K1": "Z2", "Z2K1": "Z111" },'
 				. '{ "Z1K1": "Z2", "Z2K1": "string" }'
 				. '] }',
@@ -754,10 +700,15 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
 					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z2" } },'
 					. ' "K1": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z2" },'
-					. ' "Z2K1": { "Z1K1": "Z6", "Z6K1": "string" } } } } }'
+					. ' "Z2K1": { "Z1K1": "Z6", "Z6K1": "string" } },'
+					. ' "K2": { "Z1K1": {'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z2" } } } } } }'
+
 			],
 			'normalize list with two elements of a different type' => [
-				'[ "string", "Z111" ]',
+				'[ "Z1", "string", "Z111" ]',
 				'{ "Z1K1": {'
 					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
 					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
@@ -767,7 +718,11 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
 					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
 					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } },'
-					. ' "K1": { "Z1K1": "Z9", "Z9K1": "Z111" } } }'
+					. ' "K1": { "Z1K1": "Z9", "Z9K1": "Z111" },'
+					. ' "K2": { "Z1K1": {'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } } } } }'
 			],
 			'normalize monolingual string keys' => [
 				'{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "label" }',
@@ -776,14 +731,20 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 					. ' "Z11K2": { "Z1K1": "Z6", "Z6K1": "label" } }'
 			],
 			'normalize multilingual string keys' => [
-				'{ "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" } ] }',
+				'{ "Z1K1": "Z12", "Z12K1": ['
+					. ' "Z11",'
+					. ' { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" } ] }',
 				'{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z12" }, "Z12K1": { "Z1K1": {'
 					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
 					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
 					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z11" } },'
 					. ' "K1": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z11" },'
 					. ' "Z11K1": { "Z1K1": "Z9", "Z9K1": "Z1003" },'
-					. ' "Z11K2": { "Z1K1": "Z6", "Z6K1": "etiqueta" } } } }',
+					. ' "Z11K2": { "Z1K1": "Z6", "Z6K1": "etiqueta" } },'
+					. ' "K2": { "Z1K1": {'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z11" } } } } }'
 			],
 			'leave untouched an already normalized string' => [
 				'{ "Z2K2": { "Z1K1": "Z6", "Z6K1": "string value" } }',
@@ -803,7 +764,11 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
 					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
 					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } },'
-					. ' "K1": { "Z1K1": "Z9", "Z9K1": "Z111" } } }',
+					. ' "K1": { "Z1K1": "Z9", "Z9K1": "Z111" },'
+					. ' "K2": { "Z1K1": {'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } } } } }',
 				'{ "Z1K1": {'
 					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
 					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
@@ -813,7 +778,11 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
 					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
 					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } },'
-					. ' "K1": { "Z1K1": "Z9", "Z9K1": "Z111" } } }'
+					. ' "K1": { "Z1K1": "Z9", "Z9K1": "Z111" },'
+					. ' "K2": { "Z1K1": {'
+					. ' "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" },'
+					. ' "Z7K1": { "Z1K1": "Z9", "Z9K1": "Z881" },'
+					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" } } } } }'
 			]
 		];
 	}
@@ -837,8 +806,8 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{}'
 			],
 			'normalize empty zlist' => [
-				'{ "Z2K2": [] }',
-				'{ "Z2K2": [] }'
+				'{ "Z2K2": [ "Z1" ] }',
+				'{ "Z2K2": [ { "Z1K1": "Z9", "Z9K1": "Z1" } ] }'
 			],
 			'normalize canonical string' => [
 				'{ "Z2K2": "string value" }',
@@ -849,18 +818,18 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "Z2K2": { "Z1K1": "Z9", "Z9K1": "Z111" } }'
 			],
 			'normalize zlist' => [
-				'{ "Z2K2": ['
+				'{ "Z2K2": [ "Z2",'
 				. '{ "Z1K1": "Z2", "Z2K1": "Z111" },'
 				. '{ "Z1K1": "Z2", "Z2K1": "string" }'
 				. '] }',
-				'{ "Z2K2": ['
+				'{ "Z2K2": [ { "Z1K1": "Z9", "Z9K1": "Z2" },'
 				. '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z9", "Z9K1": "Z111" } },'
 				. '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "string" } }'
 				. '] }'
 			],
 			'normalize zlist of canonical strings and references' => [
-				'{ "Z2K2": [ "canonical", "strings", "Z111" ] }',
-				'{ "Z2K2": ['
+				'{ "Z2K2": [ "Z6", "canonical", "strings", "Z111" ] }',
+				'{ "Z2K2": [ { "Z1K1": "Z9", "Z9K1": "Z6" },'
 				. '{ "Z1K1": "Z6", "Z6K1": "canonical" },'
 				. '{ "Z1K1": "Z6", "Z6K1": "strings" },'
 				. '{ "Z1K1": "Z9", "Z9K1": "Z111" }'
@@ -883,14 +852,14 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "label" }'
 			],
 			'leave untouched multilingual string keys' => [
-				'{ "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" } ] }',
-				'{ "Z1K1": "Z12", "Z12K1": [ { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" } ] }',
+				'{ "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" } ] }',
+				'{ "Z1K1": "Z12", "Z12K1": [ "Z11", { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" } ] }',
 			],
 			'normalize full zobject with type, strings, references and multilingual strings' => [
 				'{ "Z1K1": "Z3",'
 				. ' "Z3K1": "Z6",'
 				. ' "Z3K2": "Z111K1",'
-				. ' "Z3K3": { "Z1K1": "Z12", "Z12K1": ['
+				. ' "Z3K3": { "Z1K1": "Z12", "Z12K1": [ "Z11",'
 				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "label" },'
 				. ' { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" }'
 				. ' ] },'
@@ -898,7 +867,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "Z1K1": "Z3",'
 				. ' "Z3K1": { "Z1K1": "Z9", "Z9K1": "Z6" },'
 			  . ' "Z3K2": { "Z1K1": "Z6", "Z6K1": "Z111K1" },'
-			  . ' "Z3K3": { "Z1K1": "Z12", "Z12K1": ['
+			  . ' "Z3K3": { "Z1K1": "Z12", "Z12K1": [ "Z11",'
 				. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "label" },'
 				. ' { "Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2": "etiqueta" }'
 				. ' ] },'
@@ -1074,8 +1043,8 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		return [
 			'string with ref' => [ 'Z1', [ 'Z1' ] ],
 			'string without ref' => [ 'text', [] ],
-			'array with strings' => [ [ 'text', 'another text' ], [] ],
-			'array with strings' => [ [ 'text', 'Z1', 'another text', 'Z2' ], [ 'Z1', 'Z2' ] ],
+			'array with strings' => [ [ 'Z6', 'text', 'another text' ], [ 'Z6' ] ],
+			'array with strings' => [ [ 'Z1', 'text', 'Z1', 'another text', 'Z2' ], [ 'Z1', 'Z2' ] ],
 			'object zstring' => [
 				(object)[
 					'Z1K1' => 'Z6',
@@ -1203,7 +1172,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	public function provideGetLabelOfReference() {
 		return [
 			'simple label in English' => [
-				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3": { "Z1K1":"Z12", "Z12K1":['
+				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3": { "Z1K1":"Z12", "Z12K1":["Z11",'
 					. '{"Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "label"}'
 					. ']}}',
 				$this->makeLanguage( 'en' ),
@@ -1211,7 +1180,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'label'
 			],
 			'fallback to English' => [
-				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3":{"Z1K1":"Z12", "Z12K1":['
+				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3":{"Z1K1":"Z12", "Z12K1":["Z11",'
 					. '{"Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2":"label"}'
 					. ']}}',
 				$this->makeLanguage( 'es' ),
@@ -1219,7 +1188,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'label'
 			],
 			'simple label in Spanish' => [
-				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3": {"Z1K1":"Z12", "Z12K1":['
+				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3": {"Z1K1":"Z12", "Z12K1":["Z11",'
 					. '{"Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2":"label"},'
 					. '{"Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2":"etiqueta"}'
 					. ']}}',
@@ -1228,13 +1197,13 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'etiqueta'
 			],
 			'no label available' => [
-				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3":{"Z1K1":"Z12", "Z12K1":[]}}',
+				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3":{"Z1K1":"Z12", "Z12K1":["Z11"]}}',
 				$this->makeLanguage( 'es' ),
 				[ 'es' ],
 				'Z111'
 			],
 			'no label or fallback' => [
-				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3": {"Z1K1":"Z12", "Z12K1":['
+				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3": {"Z1K1":"Z12", "Z12K1":["Z11",'
 					. '{"Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2":"etiqueta"}'
 					. ']}}',
 				$this->makeLanguage( 'de' ),
@@ -1304,7 +1273,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 
 	public function provideGetLabelOfTypeKey_unknown() {
 		$type1 = ZObjectFactory::createChild( json_decode(
-			'{ "Z1K1": "Z4", "Z4K1": "Z11111", "Z4K2": ['
+			'{ "Z1K1": "Z4", "Z4K1": "Z11111", "Z4K2": ["Z3",'
 			. '{ "Z1K1": "Z3", "Z3K1": "Z6", "Z3K2": "Z11111K1" }'
 			. '] }'
 		) );
@@ -1315,8 +1284,8 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		);
 
 		$type2 = ZObjectFactory::createChild( json_decode(
-			'{ "Z1K1": "Z4", "Z4K1": "Z11111", "Z4K2": ['
-			. '{ "Z1K1": "Z3", "Z3K1":"Z6", "Z3K2":"Z11111K1", "Z3K3":{"Z1K1":"Z12","Z12K1":[] } }'
+			'{ "Z1K1": "Z4", "Z4K1": "Z11111", "Z4K2": ["Z3",'
+			. '{ "Z1K1": "Z3", "Z3K1":"Z6", "Z3K2":"Z11111K1", "Z3K3":{"Z1K1":"Z12","Z12K1":["Z11"] } }'
 			. '] }'
 		) );
 		$persistentType2 = new ZPersistentObject(
@@ -1429,17 +1398,17 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 
 		$value1 = new ZObject( $errorType );
 		$value2 = new ZObject( $errorType, [
-			'Z50K1' => ZObjectFactory::createChild( [] )
+			'Z50K1' => ZObjectFactory::createChild( [ "Z1" ] )
 		] );
 		$value3 = new ZObject( $errorType, [
 			'Z50K1' => ZObjectFactory::createChild( json_decode(
-				'[{"Z1K1": "Z3", "Z3K1":"Z6", "Z3K2": "Z5555K1"}]'
+				'["Z3", {"Z1K1": "Z3", "Z3K1":"Z6", "Z3K2": "Z5555K1"}]'
 			) )
 		] );
 		$value4 = new ZObject( $errorType, [
-			'Z50K1' => ZObjectFactory::createChild( [ json_decode(
-				'{"Z1K1": "Z3", "Z3K1":"Z6", "Z3K2": "Z5555K1", "Z3K3":{"Z1K1": "Z12", "Z12K1":[]}}'
-			) ] )
+			'Z50K1' => ZObjectFactory::createChild( json_decode(
+				'["Z3", {"Z1K1": "Z3", "Z3K1":"Z6", "Z3K2": "Z5555K1", "Z3K3":{"Z1K1": "Z12", "Z12K1":["Z11"]}}]'
+			) )
 		] );
 
 		return [
@@ -1534,11 +1503,11 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			'Z881' => $this->getZPersistentObject( 'Z881' ),
 		];
 
-		$zobject = '{ "Z1K1": { "Z1K1": "Z7",'
-			. ' "Z7K1": { "Z1K1": "Z8", "Z8K1": [], "Z8K2": "Z4", "Z8K3": [], "Z8K4": [], "Z8K5": "Z881" },'
-			. ' "Z881K1": "Z6" }, "K1": "string"}';
+		$zobject = '{"Z1K1":{ "Z1K1":"Z7",'
+			. ' "Z7K1": { "Z1K1":"Z8", "Z8K1":["Z17"], "Z8K2":"Z4", "Z8K3":["Z20"], "Z8K4":["Z14"], "Z8K5":"Z881" },'
+			. ' "Z881K1":"Z6" }, "K1":"string"}';
 		$translated = '{"type":{"type":"Function call",'
-			. '"function":{"type":"Z8","Z8K1":[],"Z8K2":"Z4","Z8K3":[],"Z8K4":[],"Z8K5":"Typed list"},'
+			. '"function":{"type":"Z8","Z8K1":["Z17"],"Z8K2":"Z4","Z8K3":["Z20"],"Z8K4":["Z14"],"Z8K5":"Typed list"},'
 			. '"type (Z881K1)":"Z6"},"K1":"string"}';
 		$result = ZObjectUtils::extractHumanReadableZObject( json_decode( $zobject ), $data, $en );
 		$this->assertSame( $translated, json_encode( $result ) );

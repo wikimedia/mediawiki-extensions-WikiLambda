@@ -27,7 +27,7 @@ class ZFunctionTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getDefinition
 	 */
 	public function testCreation() {
-		$strFunction = '{"Z1K1": "Z8", "Z8K1": [], "Z8K2": "Z6", "Z8K3": [], "Z8K4": [], "Z8K5": "Z88888" }';
+		$strFunction = '{"Z1K1":"Z8", "Z8K1":["Z17"], "Z8K2":"Z6", "Z8K3":["Z20"], "Z8K4":["Z14"], "Z8K5":"Z88888"}';
 		$zobject = ZObjectFactory::create( json_decode( $strFunction ) );
 		$this->assertInstanceOf( ZFunction::class, $zobject );
 		$this->assertTrue( $zobject->isValid() );
@@ -41,7 +41,7 @@ class ZFunctionTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getDefinition
 	 */
 	public function testPersistentCreation() {
-		$strFunction = '{"Z1K1": "Z8", "Z8K1": [], "Z8K2": "Z6", "Z8K3": [], "Z8K4": [], "Z8K5": "Z88888" }';
+		$strFunction = '{"Z1K1":"Z8", "Z8K1":["Z17"], "Z8K2":"Z6", "Z8K3":["Z20"], "Z8K4":["Z14"], "Z8K5":"Z88888"}';
 		$zobject = ZObjectFactory::createPersistentContent( json_decode( $strFunction ) );
 		$this->assertInstanceOf( ZPersistentObject::class, $zobject );
 		$this->assertInstanceOf( ZFunction::class, $zobject->getInnerZObject() );
@@ -63,35 +63,43 @@ class ZFunctionTest extends WikiLambdaIntegrationTestCase {
 	public function provideTestNotValid() {
 		return [
 			'list of args wrong type' => [
-				'{"Z1K1": "Z8", "Z8K1": "wrong type", "Z8K2": "Z6", "Z8K3": [], "Z8K4": [], "Z8K5": "Z88888" }'
+				'{"Z1K1": "Z8", "Z8K1": "wrong type", "Z8K2": "Z6", "Z8K3": [ "Z20" ], "Z8K4": [ "Z14" ],'
+					. '"Z8K5": "Z88888" }'
 			],
 			'list of args wrong item type' => [
-				'{"Z1K1": "Z8", "Z8K1": ["wrong item type"], "Z8K2": "Z6", "Z8K3": [], "Z8K4": [], "Z8K5": "Z88888" }'
+				'{"Z1K1": "Z8", "Z8K1": [ "Z6", "wrong item type" ], "Z8K2": "Z6", "Z8K3": [ "Z20" ],'
+					. '"Z8K4": [ "Z14" ], "Z8K5": "Z88888" }'
 			],
 			'return type wrong type' => [
-				'{"Z1K1": "Z8", "Z8K1": [], "Z8K2": [], "Z8K3": [], "Z8K4": [], "Z8K5": "Z88888" }'
+				'{"Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": [ "Z6" ], "Z8K3": [ "Z20" ], "Z8K4": [ "Z14" ],'
+					. '"Z8K5": "Z88888" }'
 			],
 			'return type not valid' => [
-				'{"Z1K1": "Z8", "Z8K1": [], "Z8K2": {"Z1K1":"Z9", "Z9K1": "foo"},'
-					. ' "Z8K3": [], "Z8K4": [], "Z8K5": "Z88888" }'
+				'{"Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": {"Z1K1":"Z9", "Z9K1": "foo"},'
+					. ' "Z8K3": [ "Z20" ], "Z8K4": [ "Z14" ], "Z8K5": "Z88888" }'
 			],
 			'list of testers wrong type' => [
-				'{"Z1K1": "Z8", "Z8K1": [], "Z8K2": "Z6", "Z8K3": "wrong type", "Z8K4": [], "Z8K5": "Z88888" }'
+				'{"Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": "Z6", "Z8K3": "wrong type", "Z8K4": [ "Z14" ],'
+					. ' "Z8K5": "Z88888" }'
 			],
 			'list of testers wrong item type' => [
-				'{"Z1K1": "Z8", "Z8K1": [], "Z8K2": "Z6", "Z8K3": ["wrong item type"], "Z8K4": [], "Z8K5": "Z88888" }'
+				'{"Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": "Z6", "Z8K3": [ "Z6", "wrong item type" ],'
+					. ' "Z8K4": [ "Z14" ], "Z8K5": "Z88888" }'
 			],
 			'list of implementations wrong type' => [
-				'{"Z1K1": "Z8", "Z8K1": [], "Z8K2": "Z6", "Z8K3": [], "Z8K4": "wrong type", "Z8K5": "Z88888" }'
+				'{"Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": "Z6", "Z8K3": [ "Z20" ], "Z8K4": "wrong type",'
+					. '"Z8K5": "Z88888" }'
 			],
 			'list of implementations wrong item type' => [
-				'{"Z1K1": "Z8", "Z8K1": [], "Z8K2": "Z6", "Z8K3": [], "Z8K4": ["wrong item type"], "Z8K5": "Z88888" }'
+				'{"Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": "Z6", "Z8K3": [ "Z20" ],'
+					. ' "Z8K4": [ "Z6", "wrong item type" ], "Z8K5": "Z88888" }'
 			],
 			'function id wrong type' => [
-				'{"Z1K1": "Z8", "Z8K1": [], "Z8K2": "Z6", "Z8K3": [], "Z8K4": [], "Z8K5": "stronk strink" }'
+				'{"Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": "Z6", "Z8K3": [ "Z20" ],'
+					. ' "Z8K4": [ "Z14" ], "Z8K5": "stronk strink" }'
 			],
 			'function id not valid' => [
-				'{"Z1K1": "Z8", "Z8K1": [], "Z8K2": "Z6", "Z8K3": [], "Z8K4": [],'
+				'{"Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": "Z6", "Z8K3": [ "Z20" ], "Z8K4": [ "Z14" ],'
 					. ' "Z8K5": {"Z1K1": "Z9", "Z9K1": "bar"} }'
 			],
 		];
@@ -113,30 +121,33 @@ class ZFunctionTest extends WikiLambdaIntegrationTestCase {
 	public function provideTestReturnType() {
 		return [
 			'return type is reference' => [
-				'{"Z1K1": "Z8", "Z8K1": [], "Z8K2": "Z6", "Z8K3": [], "Z8K4": [], "Z8K5": "Z88888" }',
+				'{"Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": "Z6", "Z8K3": [ "Z20" ], "Z8K4": [ "Z14" ],'
+					. '"Z8K5": "Z88888" }',
 				'Z6'
 			],
 			'return type is normal reference' => [
-				'{"Z1K1": "Z8", "Z8K1": [], "Z8K2": { "Z1K1": "Z9", "Z9K1": "Z6"},'
-					. ' "Z8K3": [], "Z8K4": [], "Z8K5": "Z88888" }',
+				'{"Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": { "Z1K1": "Z9", "Z9K1": "Z6"},'
+					. ' "Z8K3": [ "Z20" ], "Z8K4": [ "Z14" ], "Z8K5": "Z88888" }',
 				'Z6'
 			],
 			'return type is empty reference' => [
-				'{"Z1K1": "Z8", "Z8K1": [], "Z8K2": { "Z1K1": "Z9"}, "Z8K3": [], "Z8K4": [], "Z8K5": "Z88888" }',
+				'{"Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": { "Z1K1": "Z9"}, "Z8K3": [ "Z20" ],'
+					. '"Z8K4": [ "Z14" ], "Z8K5": "Z88888" }',
 				null
 			],
 			'return type is function call of persisted function' => [
-				'{"Z1K1": "Z8", "Z8K1": [], '
+				'{"Z1K1": "Z8", "Z8K1": [ "Z17" ], '
 					. ' "Z8K2": { "Z1K1": "Z7", "Z7K1": "Z881" },'
-					. ' "Z8K3": [], "Z8K4": [], "Z8K5": "Z88888" }',
+					. ' "Z8K3": [ "Z20" ], "Z8K4": [ "Z14" ], "Z8K5": "Z88888" }',
 				'Z4', [ 'Z17', 'Z881' ]
 			],
 			'return type is function call of literal function' => [
-				'{"Z1K1": "Z8", "Z8K1": [], '
+				'{"Z1K1": "Z8", "Z8K1": [ "Z17" ], '
 					. ' "Z8K2": { "Z1K1": "Z7", "Z7K1": {'
-					. ' "Z1K1": "Z8", "Z8K1": [], "Z8K2": "Z9", "Z8K3": [], "Z8K4": [], "Z8K5": "Z88889"'
+					. ' "Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": "Z9",'
+					. ' "Z8K3": [ "Z20" ], "Z8K4": [ "Z14" ], "Z8K5": "Z88889"'
 					. ' } },'
-					. ' "Z8K3": [], "Z8K4": [], "Z8K5": "Z88888" }',
+					. ' "Z8K3": [ "Z20" ], "Z8K4": [ "Z14" ], "Z8K5": "Z88888" }',
 				'Z9'
 			]
 		];
@@ -155,11 +166,13 @@ class ZFunctionTest extends WikiLambdaIntegrationTestCase {
 	public function provideTestGetIdentity() {
 		return [
 			'identity is reference' => [
-				'{"Z1K1": "Z8", "Z8K1": [], "Z8K2": "Z6", "Z8K3": [], "Z8K4": [], "Z8K5": "Z88888" }',
+				'{"Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": "Z6", "Z8K3": [ "Z20" ],'
+					. '"Z8K4": [ "Z14" ], "Z8K5": "Z88888" }',
 				'Z88888'
 			],
 			'identity is not reference' => [
-				'{"Z1K1": "Z8", "Z8K1": [], "Z8K2": "Z6", "Z8K3": [], "Z8K4": [], "Z8K5": "tasty soup" }',
+				'{"Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": "Z6", "Z8K3": [ "Z20" ],'
+					. '"Z8K4": [ "Z14" ], "Z8K5": "tasty soup" }',
 				null
 			]
 		];

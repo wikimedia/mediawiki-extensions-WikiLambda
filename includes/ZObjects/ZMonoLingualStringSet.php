@@ -22,7 +22,7 @@ class ZMonoLingualStringSet extends ZObject {
 	 * array.
 	 *
 	 * @param ZReference $language
-	 * @param ZList|array $value
+	 * @param ZGenericList|array $value
 	 */
 	public function __construct( $language, $value = [] ) {
 		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ] = $language;
@@ -72,6 +72,23 @@ class ZMonoLingualStringSet extends ZObject {
 		// We also check validity of the language Zid.
 		$langs = ZLangRegistry::singleton();
 		return $langs->isValidLanguageZid( $this->getLanguage() );
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getSerialized( $form = self::FORM_CANONICAL ) {
+		$listType = new ZReference( ZTypeRegistry::Z_STRING );
+		$language = $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ];
+		$generic = new ZGenericList(
+			ZGenericList::buildType( $listType ),
+			$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE ]
+		);
+		return (object)[
+			ZTypeRegistry::Z_OBJECT_TYPE => $this->getZTypeObject()->getSerialized( $form ),
+			ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE => $language->getSerialized( $form ),
+			ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE => $generic->getSerialized( $form )
+		];
 	}
 
 	/**

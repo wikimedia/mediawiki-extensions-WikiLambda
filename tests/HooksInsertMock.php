@@ -19,7 +19,9 @@ class HooksInsertMock extends Hooks {
 	/**
 	 * @inheritDoc
 	 */
-	protected static function insertContentObject( $updater, $filename, $dependencies, $user, $comment, $track = [] ) {
+	protected static function insertContentObject(
+		$updater, $filename, $dependencies, $user, $comment, $overwrite = false, &$inserted = [], $track = []
+	) {
 		static::$filenames[] = $filename;
 		return true;
 	}

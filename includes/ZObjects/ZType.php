@@ -83,7 +83,7 @@ class ZType extends ZObject {
 				}
 				$keys = $keys->getAsArray();
 			} elseif ( $keys instanceof ZGenericList ) {
-				if ( $keys->getElementType() !== ZTypeRegistry::Z_KEY ) {
+				if ( $keys->getElementType()->getZValue() !== ZTypeRegistry::Z_KEY ) {
 					return false;
 				}
 				$keys = $keys->getAsArray();

@@ -385,12 +385,13 @@ class ZErrorFactory {
 	 * @return ZError
 	 */
 	public static function createZErrorList( $errorList ): ZError {
+		$benjaminErrors = array_merge( [ new ZReference( ZTypeRegistry::Z_ERROR ) ], $errorList );
 		return self::createZErrorInstance(
 			ZErrorTypeRegistry::Z_ERROR_LIST,
 			[
 				// We don't need to catch the error thrown by ZObjectFactory::createChild because
 				// we know that every item of the list is already an instance of ZObject
-				'errorList' => ZObjectFactory::createChild( $errorList )
+				'errorList' => ZObjectFactory::createChild( $benjaminErrors )
 			]
 		);
 	}
@@ -510,6 +511,14 @@ class ZErrorFactory {
 				break;
 
 			case ZErrorTypeRegistry::Z_ERROR_MISSING_PERSISTENT_VALUE:
+				$zErrorValue[] = new ZQuote( $payload['data'] );
+				break;
+
+			case ZErrorTypeRegistry::Z_ERROR_UNDEFINED_LIST_TYPE:
+				$zErrorValue[] = new ZQuote( $payload['data'] );
+				break;
+
+			case ZErrorTypeRegistry::Z_ERROR_WRONG_LIST_TYPE:
 				$zErrorValue[] = new ZQuote( $payload['data'] );
 				break;
 

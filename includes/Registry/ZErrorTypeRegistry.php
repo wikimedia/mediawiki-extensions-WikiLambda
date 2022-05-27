@@ -30,6 +30,8 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	public const Z_ERROR_LIST = 'Z509';
 	public const Z_ERROR_MISSING_KEY = 'Z511';
 	public const Z_ERROR_MISSING_PERSISTENT_VALUE = 'Z513';
+	public const Z_ERROR_UNDEFINED_LIST_TYPE = 'Z519';
+	public const Z_ERROR_WRONG_LIST_TYPE = 'Z520';
 	public const Z_ERROR_NOT_NUMBER_BOOLEAN_NULL = 'Z521';
 	public const Z_ERROR_ARRAY_ELEMENT_NOT_WELLFORMED = 'Z522';
 	public const Z_ERROR_MISSING_TYPE = 'Z523';
@@ -71,6 +73,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 		'Z509' => 'Z_ERROR_LIST',
 		'Z511' => 'Z_ERROR_MISSING_KEY',
 		'Z513' => 'Z_ERROR_MISSING_PERSISTENT_VALUE',
+		'Z519' => 'Z_ERROR_UNDEFINED_LIST_TYPE',
 		'Z521' => 'Z_ERROR_NOT_NUMBER_BOOLEAN_NULL',
 		'Z522' => 'Z_ERROR_ARRAY_ELEMENT_NOT_WELLFORMED',
 		'Z523' => 'Z_ERROR_MISSING_TYPE',

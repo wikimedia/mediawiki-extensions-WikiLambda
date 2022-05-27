@@ -123,11 +123,11 @@ class ZMonoLingualStringTest extends WikiLambdaIntegrationTestCase {
 	},
 	"Z2K3": {
 		"Z1K1": "Z12",
-		"Z12K1": []
+		"Z12K1": [ "Z11" ]
 	},
 	"Z2K4": {
 		"Z1K1": "Z32",
-		"Z32K1": []
+		"Z32K1": [ "Z31" ]
 	}
 }
 EOT
