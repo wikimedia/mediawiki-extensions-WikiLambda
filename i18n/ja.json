@@ -34,7 +34,7 @@
 	"wikilambda-editor-tester-list-label": "テスターの一覧",
 	"wikilambda-tester-selector": "テスターを選択",
 	"wikilambda-tester-none-found": "テスターが見つかりません。",
-	"wikilambda-tester-create-new": "新しいテスターを作成する",
+	"wikilambda-tester-create-new": "新しいテストを作成する",
 	"wikilambda-tester-status-running": "実行中...",
 	"wikilambda-tester-status-passed": "合格",
 	"wikilambda-tester-status-failed": "失敗",

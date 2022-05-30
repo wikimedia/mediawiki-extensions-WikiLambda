@@ -3,6 +3,7 @@
 		"authors": [
 			"Bluehill",
 			"MemphisA5",
+			"Theshinster123",
 			"Ykhwong",
 			"Yunbj"
 		]
@@ -16,6 +17,7 @@
 	"wikilambda-special-callfunction-nojs": "이 페이지는 자바스크립트 사용이 필요합니다.",
 	"wikilambda-special-createzobject": "새 ZObject 만들기",
 	"wikilambda-special-edit-function-definition-title": "함수 정의 편집",
+	"wikilambda-special-function-definition-title": "기능",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "특수 권한이 있는 사용자만",
 	"wikilambda-special-evaluatefunctioncall-nojs": "이 페이지는 자바스크립트 사용이 필요합니다.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "언어",
@@ -50,6 +52,7 @@
 	"wikilambda-functioncall-error-nonstringinput": "함수 호출 오류: '$1' ZFunction은 문자열로서 입력 '$2' 대신 '$3' 값을 취하므로 호출할 수 없습니다",
 	"wikilambda-functioncall-error-nonstringinput-category": "문자열이 아닌 ZObjects를 사용하는 위키함수 호출이 있는 문서",
 	"wikilambda-functioncall-error-nonstringinput-category-desc": "문자열을 취하지 않는 ZFunction이 있는 위키함수로의 호출을 시도한 문서",
+	"wikilambda-tester-create-new": "새 테스트 만들기",
 	"wikilambda-tester-status-passed": "통과",
 	"wikilambda-tester-status-failed": "실패",
 	"wikilambda-tester-results-title": "테스터 결과",
@@ -89,6 +92,7 @@
 	"wikilambda-optional": "선택 사항",
 	"wikilambda-continue-editing": "편집 계속",
 	"wikilambda-discard-edits": "편집 버리기",
+	"wikilambda-function-details-summary-learn-more": "리뷰 과정 대해 더 알아보기",
 	"wikilambda-function-viewer-aliases-header": "다른 이름",
 	"wikilambda-function-viewer-aliases-show-language-button": "더 많은 언어 보기",
 	"wikilambda-function-viewer-aliases-hide-language-button": "목록 숨기기",
