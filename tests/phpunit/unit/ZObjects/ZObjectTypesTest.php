@@ -16,7 +16,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKeyReference;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualStringSet;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
@@ -67,7 +66,6 @@ class ZObjectTypesTest extends \MediaWikiUnitTestCase {
 		$zKey = new ZKey( $zReference, $zString, $zMultiLingualString );
 		$zType = new ZType( $zReference, [ $zKey ], $zReference );
 		$zError = new ZError( $zReference, $zString );
-		$zList = new ZList();
 
 		$zQuote = new ZQuote();
 		$zKeyReference = new ZKeyReference( 'K1' );
@@ -105,7 +103,6 @@ class ZObjectTypesTest extends \MediaWikiUnitTestCase {
 			'error' => [ $zError, 'Z5', true, true ],
 			'string' => [ $zString, 'Z6', true, true ],
 			'reference' => [ $zReference, 'Z9', true, true ],
-			'list' => [ $zList, 'Z10', true, true ],
 			'monolingual' => [ $zMonoLingualString, 'Z11', true, true ],
 			'multilingual' => [ $zMultiLingualString, 'Z12', true, true ],
 			'monolingual set' => [ $zMonoLingualStringSet, 'Z31', true, true ],

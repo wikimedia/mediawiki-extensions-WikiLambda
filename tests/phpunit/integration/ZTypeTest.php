@@ -14,7 +14,6 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
@@ -94,10 +93,11 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 
 	public function provideIsValid() {
 		$validZ4Key = new ZKey( new ZReference( 'Z6' ), new ZString( 'Z4K1' ), [] );
-		$validZ4KeyList = new ZList( [ $validZ4Key ] );
+		$listOfKeys = ZGenericList::buildType( new ZReference( 'Z3' ) );
+		$validZ4KeyList = new ZGenericList( $listOfKeys, [ $validZ4Key ] );
 		$validZ1234Key1 = new ZKey( new ZReference( 'Z6' ), new ZString( 'Z1234K1' ), [] );
 		$validZ1234Key2 = new ZKey( new ZReference( 'Z6' ), new ZString( 'Z1234K2' ), [] );
-		$validZ1234KeyList = new ZList( [ $validZ1234Key1, $validZ1234Key2 ] );
+		$validZ1234KeyList = new ZGenericList( $listOfKeys, [ $validZ1234Key1, $validZ1234Key2 ] );
 
 		return [
 			'wholly null' => [ null, null, null, false ],
@@ -113,10 +113,10 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 			'one ZKey keys' => [ 'Z4', [ $validZ4Key ], 'Z4', true ],
 			'multiple ZKeys keys' => [ 'Z1234', [ $validZ1234Key1,$validZ1234Key2 ], 'Z4', true ],
 
-			'empty ZList keys' => [ 'Z4', new ZList( [] ), 'Z4', true ],
-			'non-ZKey ZList keys' => [ 'Z4', new ZList( [ 'This is not a ZKey!' ] ), 'Z4', false ],
-			'one ZKey ZList keys' => [ 'Z4', $validZ4KeyList, 'Z4', true ],
-			'multiple ZList ZKeys keys' => [ 'Z1234', $validZ1234KeyList, 'Z4', true ],
+			'empty typed list of keys' => [ 'Z4', new ZGenericList( $listOfKeys, [] ), 'Z4', true ],
+			'non-ZKey typed list of keys' => [ 'Z4', new ZGenericList( $listOfKeys, [ 'String!' ] ), 'Z4', false ],
+			'one ZKey typed list of keys keys' => [ 'Z4', $validZ4KeyList, 'Z4', true ],
+			'multiple typed list of keys ZKeys keys' => [ 'Z1234', $validZ1234KeyList, 'Z4', true ],
 
 			'null validator' => [ 'Z4', [ $validZ4Key ], null, false ],
 			'Z4 validator' => [ 'Z4', [ $validZ4Key ], 'Z4', true ],

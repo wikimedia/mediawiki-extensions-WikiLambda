@@ -114,7 +114,7 @@ class ZError extends ZObject {
 		// If $valueType is Z509, concat messages of list Z509K1
 		if ( $valueType === ZErrorTypeRegistry::Z_ERROR_LIST ) {
 			$subErrors = $errorValue->getValueByKey( 'Z509K1' );
-			if ( is_array( $subErrors ) || ( $subErrors instanceof ZList ) ) {
+			if ( is_array( $subErrors ) || ( $subErrors instanceof ZGenericList ) ) {
 				foreach ( ZObjectUtils::getIterativeList( $subErrors ) as $subError ) {
 					$messages[] = $subError->getMessage();
 				}
