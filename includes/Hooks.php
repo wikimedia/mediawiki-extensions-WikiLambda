@@ -599,7 +599,7 @@ class Hooks implements
 		}
 
 		$targetFunctionArguments = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_ARGUMENTS );
-		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZList $targetFunctionArguments';
+		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZGenericList $targetFunctionArguments';
 		$nonStringArgumentsDefinition = array_filter(
 			$targetFunctionArguments->getAsArray(),
 			static function ( $arg_value ) {

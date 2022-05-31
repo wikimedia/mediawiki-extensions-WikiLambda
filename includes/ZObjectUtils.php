@@ -468,7 +468,7 @@ class ZObjectUtils {
 		}
 
 		if ( is_array( $input ) ) {
-			return self::normalizeZList( $input );
+			return self::normalizeList( $input );
 		}
 
 		// Create a copy of the object and normalize it
@@ -492,10 +492,10 @@ class ZObjectUtils {
 			}
 
 			// If the value is an array:
-			// * Call normalizeZList recursively till the last element of the array
-			// * to generate the normal form of a ZList
+			// * Call normalizeList recursively till the last element of the array
+			// * to generate the normal form of a typed list
 			if ( is_array( $value ) ) {
-				$input->$index = self::normalizeZList( $value );
+				$input->$index = self::normalizeList( $value );
 			}
 
 			// If the value is an object:
@@ -550,10 +550,10 @@ class ZObjectUtils {
 	 * @param array $input
 	 * @return stdClass
 	 */
-	private static function normalizeZList( $input ): stdClass {
+	private static function normalizeList( $input ): stdClass {
 		$listType = self::normalize( array_shift( $input ) );
 		$elements = array_map( [ __CLASS__, 'normalize' ], $input );
-		return self::normalizeZListInternal( $listType, $elements );
+		return self::normalizeListInternal( $listType, $elements );
 	}
 
 	/**
@@ -564,7 +564,7 @@ class ZObjectUtils {
 	 * @param array $elements
 	 * @return stdClass
 	 */
-	private static function normalizeZListInternal( $listType, $elements ) {
+	private static function normalizeListInternal( $listType, $elements ) {
 		$type = (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => self::normalize( ZTypeRegistry::Z_FUNCTIONCALL ),
 			ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION => self::normalize( ZTypeRegistry::Z_FUNCTION_GENERIC_LIST ),
@@ -578,7 +578,7 @@ class ZObjectUtils {
 		}
 
 		$zobject[ 'K1' ] = array_shift( $elements );
-		$zobject[ 'K2' ] = self::normalizeZListInternal( $listType, $elements );
+		$zobject[ 'K2' ] = self::normalizeListInternal( $listType, $elements );
 
 		return (object)$zobject;
 	}
@@ -587,11 +587,11 @@ class ZObjectUtils {
 	 * Returns the ZObject with normalized ZStrings and ZReferences.
 	 *
 	 * Given a canonical ZObject, returns the normal form with the following
-	 * exceptions: ZList, ZMultilingualString, ZMonolingualString
+	 * exceptions: lists, ZMultilingualString, ZMonolingualString
 	 *
 	 * @deprecated
 	 * @param string|array|stdClass $input decoded JSON canonical form of a ZObject
-	 * @return string|array|stdClass same ZObject in normal form except ZLists,
+	 * @return string|array|stdClass same ZObject in normal form except lists,
 	 * ZMultilingualStrings and ZMonolingualStrings
 	 */
 	public static function normalizeZStringsAndZReferences( $input ) {
@@ -609,7 +609,7 @@ class ZObjectUtils {
 				continue;
 			}
 
-			// If is ZList, apply the normalizer function to every
+			// If is a list, apply the normalizer function to every
 			// element of the array
 			if ( is_array( $value ) ) {
 				$input->$index = array_map( [ __CLASS__, 'normalizeZStringsAndZReferences' ], $value );

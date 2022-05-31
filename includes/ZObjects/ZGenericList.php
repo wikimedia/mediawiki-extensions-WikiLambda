@@ -1,6 +1,6 @@
 <?php
 /**
- * WikiLambda ZList
+ * WikiLambda ZGenericList
  *
  * @file
  * @ingroup Extensions
@@ -146,7 +146,7 @@ class ZGenericList extends ZObject {
 	}
 
 	/**
-	 * Get a pair that represent the head and tail of this ZList
+	 * Get a pair that represent the head and tail of this list
 	 *
 	 * @return array
 	 */
@@ -155,7 +155,7 @@ class ZGenericList extends ZObject {
 	}
 
 	/**
-	 * Get the array of ZObjects represented by this ZList
+	 * Get the array of ZObjects represented by this list
 	 *
 	 * @return array
 	 */

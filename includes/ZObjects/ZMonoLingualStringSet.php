@@ -18,8 +18,8 @@ class ZMonoLingualStringSet extends ZObject {
 
 	/**
 	 * Create a ZMonoLingualStringSet instance given a language ZReference and an array
-	 * or ZList of ZString instances. Internally this class bypasses ZList and stores an
-	 * array.
+	 * or ZGenericList of ZString instances. Internally this class bypasses ZGenericList
+	 * and stores an array.
 	 *
 	 * @param ZReference $language
 	 * @param ZGenericList|array $value

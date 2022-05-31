@@ -647,9 +647,9 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::normalize
 	 * @covers ::normalizeInternal
 	 * @covers ::normalizeZStringOrZReference
-	 * @covers ::normalizeZList
+	 * @covers ::normalizeList
 	 * @covers ::isTypeEqualTo
-	 * @covers ::normalizeZListInternal
+	 * @covers ::normalizeListInternal
 	 */
 	public function testNormalize( $input, $expected ) {
 		$this->assertSame(
