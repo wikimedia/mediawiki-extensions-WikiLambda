@@ -129,12 +129,42 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
+	 * @group Broken
+	 *
+	 * FIXME (T309386): Opis doesn't detect failures that Ajv does with
+	 * current schemata implementation of typed lists. When fixed, uncomment
+	 * this test.
+	 */
+	 public function testCreateFailed_invalidLabel() {
+		$sysopUser = $this->getTestSysop()->getUser();
+		$firstZid = $this->store->getNextAvailableZid();
+
+		// Create the first Zobject
+		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+			. ' "Z2K2": "string",'
+			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"en", "Z11K2":"wrong language" }]}}';
+
+		// Try to create the second Zobject with the same label
+		$this->expectException( ApiUsageException::class );
+		// TODO: detailed errors for Z2 related validations
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED );
+
+		// Try to create the second Zobject with the same label
+		$result = $this->doApiRequestWithToken( [
+			'action' => 'wikilambda_edit',
+			'summary' => 'Summary message',
+			'zobject' => $data
+		] );
+	 }
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
 	 */
 	public function testUpdateFailed_invalidTitle() {
 		$invalidZid = 'ZID';
 		$data = '{ "Z1K1": "Z2", "Z2K1": "' . $invalidZid . '",'
 			. ' "Z2K2": "string",'
-			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"en", "Z11K2":"unique label" }]}}';
+			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"unique label" }]}}';
 
 		// Try to create the second Zobject with the same label
 		$this->expectException( ApiUsageException::class );
