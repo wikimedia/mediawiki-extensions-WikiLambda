@@ -21,11 +21,11 @@ use MediaWiki\MediaWikiServices;
 class ZMultiLingualString extends ZObject {
 
 	/**
-	 * Create a ZMultiLingualString instance given an array or a ZGenericList of
-	 * ZMonoLingualString instances. Internally this class bypasses ZGenericList
+	 * Create a ZMultiLingualString instance given an array or a ZTypedList of
+	 * ZMonoLingualString instances. Internally this class bypasses ZTypedList
 	 * and stores an array with the language Zid as key.
 	 *
-	 * @param ZGenericList|array $strings
+	 * @param ZTypedList|array $strings
 	 */
 	public function __construct( $strings = [] ) {
 		foreach ( ZObjectUtils::getIterativeList( $strings ) as $index => $monoLingualString ) {
@@ -71,10 +71,10 @@ class ZMultiLingualString extends ZObject {
 	 */
 	public function getSerialized( $form = self::FORM_CANONICAL ) {
 		$listType = new ZReference( ZTypeRegistry::Z_MONOLINGUALSTRING );
-		$generic = new ZGenericList( ZGenericList::buildType( $listType ), array_values( $this->getZValue() ) );
+		$typedList = new ZTypedList( ZTypedList::buildType( $listType ), array_values( $this->getZValue() ) );
 		return (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => $this->getZTypeObject()->getSerialized( $form ),
-			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => $generic->getSerialized( $form )
+			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => $typedList->getSerialized( $form )
 		];
 	}
 

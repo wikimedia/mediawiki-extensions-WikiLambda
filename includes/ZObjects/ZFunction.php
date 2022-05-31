@@ -17,10 +17,10 @@ class ZFunction extends ZObject {
 	/**
 	 * Construct a ZFunction instance
 	 *
-	 * @param ZGenericList $arguments
+	 * @param ZTypedList $arguments
 	 * @param ZObject $returnType
-	 * @param ZGenericList $testers
-	 * @param ZGenericList $implementations
+	 * @param ZTypedList $testers
+	 * @param ZTypedList $implementations
 	 * @param ZReference $identity
 	 */
 	public function __construct( $arguments, $returnType, $testers, $implementations, $identity ) {
@@ -42,7 +42,7 @@ class ZFunction extends ZObject {
 			],
 			'keys' => [
 				ZTypeRegistry::Z_FUNCTION_ARGUMENTS => [
-					'type' => ZTypeRegistry::Z_FUNCTION_GENERIC_LIST,
+					'type' => ZTypeRegistry::Z_FUNCTION_TYPED_LIST,
 					'required' => true
 				],
 				ZTypeRegistry::Z_FUNCTION_RETURN_TYPE => [
@@ -50,11 +50,11 @@ class ZFunction extends ZObject {
 					'required' => true
 				],
 				ZTypeRegistry::Z_FUNCTION_TESTERS => [
-					'type' => ZTypeRegistry::Z_FUNCTION_GENERIC_LIST,
+					'type' => ZTypeRegistry::Z_FUNCTION_TYPED_LIST,
 					'required' => true
 				],
 				ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS => [
-					'type' => ZTypeRegistry::Z_FUNCTION_GENERIC_LIST,
+					'type' => ZTypeRegistry::Z_FUNCTION_TYPED_LIST,
 					'required' => true
 				],
 				ZTypeRegistry::Z_FUNCTION_IDENTITY => [
@@ -70,7 +70,7 @@ class ZFunction extends ZObject {
 	 */
 	public function isValid(): bool {
 		// Check Z8K1 is a list of argument declarations
-		if ( !( $this->data[ ZTypeRegistry::Z_FUNCTION_ARGUMENTS ] instanceof ZGenericList ) ) {
+		if ( !( $this->data[ ZTypeRegistry::Z_FUNCTION_ARGUMENTS ] instanceof ZTypedList ) ) {
 			return false;
 		}
 		$list = $this->data[ ZTypeRegistry::Z_FUNCTION_ARGUMENTS ];
@@ -89,7 +89,7 @@ class ZFunction extends ZObject {
 		}
 
 		// Check Z8K3 is a list of testers
-		if ( !( $this->data[ ZTypeRegistry::Z_FUNCTION_TESTERS ] instanceof ZGenericList ) ) {
+		if ( !( $this->data[ ZTypeRegistry::Z_FUNCTION_TESTERS ] instanceof ZTypedList ) ) {
 			return false;
 		}
 		$list = $this->data[ ZTypeRegistry::Z_FUNCTION_TESTERS ];
@@ -98,7 +98,7 @@ class ZFunction extends ZObject {
 		}
 
 		// Check Z8K4 is a list of implementations
-		if ( !( $this->data[ ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS ] instanceof ZGenericList ) ) {
+		if ( !( $this->data[ ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS ] instanceof ZTypedList ) ) {
 			return false;
 		}
 		$list = $this->data[ ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS ];
@@ -152,7 +152,7 @@ class ZFunction extends ZObject {
 	 * @return array
 	 */
 	public function getArgumentDeclarations(): array {
-		if ( !( $this->data[ ZTypeRegistry::Z_FUNCTION_ARGUMENTS ] instanceof ZGenericList ) ) {
+		if ( !( $this->data[ ZTypeRegistry::Z_FUNCTION_ARGUMENTS ] instanceof ZTypedList ) ) {
 			return [];
 		}
 		return $this->data[ ZTypeRegistry::Z_FUNCTION_ARGUMENTS ]->getAsArray();

@@ -18,11 +18,11 @@ class ZMonoLingualStringSet extends ZObject {
 
 	/**
 	 * Create a ZMonoLingualStringSet instance given a language ZReference and an array
-	 * or ZGenericList of ZString instances. Internally this class bypasses ZGenericList
+	 * or ZTypedList of ZString instances. Internally this class bypasses ZTypedList
 	 * and stores an array.
 	 *
 	 * @param ZReference $language
-	 * @param ZGenericList|array $value
+	 * @param ZTypedList|array $value
 	 */
 	public function __construct( $language, $value = [] ) {
 		$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ] = $language;
@@ -80,14 +80,14 @@ class ZMonoLingualStringSet extends ZObject {
 	public function getSerialized( $form = self::FORM_CANONICAL ) {
 		$listType = new ZReference( ZTypeRegistry::Z_STRING );
 		$language = $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ];
-		$generic = new ZGenericList(
-			ZGenericList::buildType( $listType ),
+		$typedList = new ZTypedList(
+			ZTypedList::buildType( $listType ),
 			$this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE ]
 		);
 		return (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => $this->getZTypeObject()->getSerialized( $form ),
 			ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE => $language->getSerialized( $form ),
-			ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE => $generic->getSerialized( $form )
+			ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE => $typedList->getSerialized( $form )
 		];
 	}
 

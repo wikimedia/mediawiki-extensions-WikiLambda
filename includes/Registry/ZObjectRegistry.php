@@ -71,7 +71,7 @@ abstract class ZObjectRegistry {
 	}
 
 	/**
-	 * Generic method to cache a key value in a registry instance,
+	 * Utility method to cache a key value in a registry instance,
 	 * where the key is the Zid of the cached ZObject. (E.g. a ZLangRegistry
 	 * will register the ZLanguage Zid and the language code string as its value)
 	 *
@@ -83,7 +83,7 @@ abstract class ZObjectRegistry {
 	}
 
 	/**
-	 * Generic method to remove a given Zid from a registry instance
+	 * Utility method to remove a given Zid from a registry instance
 	 *
 	 * @param string $zid
 	 */
@@ -92,7 +92,7 @@ abstract class ZObjectRegistry {
 	}
 
 	/**
-	 * Generic method to clear the whole cache of a registry instance and
+	 * Utility method to clear the whole cache of a registry instance and
 	 * set it to initial values.
 	 */
 	public function clear(): void {
@@ -101,7 +101,7 @@ abstract class ZObjectRegistry {
 	}
 
 	/**
-	 * Generic method to check if the given Zid is cached in the registry.
+	 * Utility method to check if the given Zid is cached in the registry.
 	 *
 	 * @param string $zid
 	 * @return bool

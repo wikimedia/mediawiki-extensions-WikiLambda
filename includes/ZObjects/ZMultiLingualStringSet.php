@@ -21,10 +21,10 @@ use MediaWiki\MediaWikiServices;
 class ZMultiLingualStringSet extends ZObject {
 
 	/**
-	 * Construct a ZMultiLingualStringSet instance given an array or a ZGenericList
+	 * Construct a ZMultiLingualStringSet instance given an array or a ZTypedList
 	 * of ZMonoLingualStringSet instances.
 	 *
-	 * @param ZGenericList|array $strings
+	 * @param ZTypedList|array $strings
 	 */
 	public function __construct( $strings = [] ) {
 		foreach ( ZObjectUtils::getIterativeList( $strings ) as $index => $monoLingualStringSet ) {
@@ -170,10 +170,10 @@ class ZMultiLingualStringSet extends ZObject {
 	 */
 	public function getSerialized( $form = self::FORM_CANONICAL ) {
 		$listType = new ZReference( ZTypeRegistry::Z_MONOLINGUALSTRINGSET );
-		$generic = new ZGenericList( ZGenericList::buildType( $listType ), array_values( $this->getZValue() ) );
+		$typedList = new ZTypedList( ZTypedList::buildType( $listType ), array_values( $this->getZValue() ) );
 		return (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => $this->getZTypeObject()->getSerialized( $form ),
-			ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE => $generic->getSerialized( $form )
+			ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE => $typedList->getSerialized( $form )
 		];
 	}
 }

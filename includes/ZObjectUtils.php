@@ -14,10 +14,10 @@ use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunction;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use Normalizer;
 use stdClass;
 use Transliterator;
@@ -254,9 +254,9 @@ class ZObjectUtils {
 						array_key_exists( ZTypeRegistry::Z_OBJECT_TYPE, $typeVars )
 						&& $typeVars[ ZTypeRegistry::Z_OBJECT_TYPE ] == ZTypeRegistry::Z_FUNCTIONCALL
 						&& array_key_exists( ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION, $typeVars )
-						&& $typeVars[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ] == ZTypeRegistry::Z_FUNCTION_GENERIC_LIST
+						&& $typeVars[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ] == ZTypeRegistry::Z_FUNCTION_TYPED_LIST
 					) {
-						$itemType = $typeVars[ ZTypeRegistry::Z_FUNCTION_GENERIC_LIST_TYPE ];
+						$itemType = $typeVars[ ZTypeRegistry::Z_FUNCTION_TYPED_LIST_TYPE ];
 						$benjamin = [ $itemType ];
 						if ( array_key_exists( 'K1', $output ) ) {
 							array_push( $benjamin, $output['K1'], ...array_slice( $output['K2'], 1 ) );
@@ -567,8 +567,8 @@ class ZObjectUtils {
 	private static function normalizeListInternal( $listType, $elements ) {
 		$type = (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => self::normalize( ZTypeRegistry::Z_FUNCTIONCALL ),
-			ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION => self::normalize( ZTypeRegistry::Z_FUNCTION_GENERIC_LIST ),
-			ZTypeRegistry::Z_FUNCTION_GENERIC_LIST_TYPE => $listType
+			ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION => self::normalize( ZTypeRegistry::Z_FUNCTION_TYPED_LIST ),
+			ZTypeRegistry::Z_FUNCTION_TYPED_LIST_TYPE => $listType
 		];
 
 		$zobject = [ ZTypeRegistry::Z_OBJECT_TYPE => $type ];
@@ -751,12 +751,12 @@ class ZObjectUtils {
 	/**
 	 * Given an array or a ZList, returns an array that can be iterated over
 	 *
-	 * @param array|ZList|ZGenericList $list
+	 * @param array|ZList|ZTypedList $list
 	 * @return array
 	 */
 	public static function getIterativeList( $list ): array {
 		// TODO (T298133): Remove support for ZList
-		if ( ( $list instanceof ZList ) || ( $list instanceof ZGenericList ) ) {
+		if ( ( $list instanceof ZList ) || ( $list instanceof ZTypedList ) ) {
 			return $list->getAsArray();
 		}
 		return $list;
@@ -906,7 +906,7 @@ class ZObjectUtils {
 		$keys = $zobject->getInnerZObject()->getValueByKey( ZTypeRegistry::Z_ERRORTYPE_KEYS );
 
 		// TODO (T298133): Remove support for ZList
-		if ( !is_array( $keys ) && !( $keys instanceof ZList ) && !( $keys instanceof ZGenericList ) ) {
+		if ( !is_array( $keys ) && !( $keys instanceof ZList ) && !( $keys instanceof ZTypedList ) ) {
 			return $key;
 		}
 
@@ -1138,8 +1138,8 @@ class ZObjectUtils {
 				$innerItemType = self::inferItemType( $item );
 				$itemType = (object)[
 					ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_FUNCTIONCALL,
-					ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION => ZTypeRegistry::Z_FUNCTION_GENERIC_LIST,
-					ZTypeRegistry::Z_FUNCTION_GENERIC_LIST_TYPE => $innerItemType
+					ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION => ZTypeRegistry::Z_FUNCTION_TYPED_LIST,
+					ZTypeRegistry::Z_FUNCTION_TYPED_LIST_TYPE => $innerItemType
 				];
 			}
 			if ( is_object( $item ) ) {

@@ -211,8 +211,8 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_MULTILINGUALSTRING_VALUE
 	];
 
-	public const Z_FUNCTION_GENERIC_LIST = 'Z881';
-	public const Z_FUNCTION_GENERIC_LIST_TYPE = 'Z881K1';
+	public const Z_FUNCTION_TYPED_LIST = 'Z881';
+	public const Z_FUNCTION_TYPED_LIST_TYPE = 'Z881K1';
 
 	public const Z_FUNCTION_ERRORTYPE_TO_TYPE = 'Z885';
 	public const Z_FUNCTION_ERRORTYPE_TYPE = 'Z885K1';
@@ -220,7 +220,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	// These are built-in functions that return a type, so we will
 	// always find them as ZObject type values (Z1K1)
 	public const BUILT_IN_TYPE_FUNCTIONS = [
-		self::Z_FUNCTION_GENERIC_LIST => 'ZGenericList',
+		self::Z_FUNCTION_TYPED_LIST => 'ZTypedList',
 		self::Z_FUNCTION_ERRORTYPE_TO_TYPE => 'ZGenericError'
 	];
 
