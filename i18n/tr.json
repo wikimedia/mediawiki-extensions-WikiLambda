@@ -94,7 +94,7 @@
 	"wikilambda-editor-tester-list-label": "Tester Listesi",
 	"wikilambda-tester-selector": "Bir tester seçin",
 	"wikilambda-tester-none-found": "Tester bulunamadı.",
-	"wikilambda-tester-create-new": "Yeni bir tester oluştur",
+	"wikilambda-tester-create-new": "Yeni bir test oluştur",
 	"wikilambda-tester-status-pending": "BEKLİYOR...",
 	"wikilambda-tester-status-running": "ÇALIŞIYOR...",
 	"wikilambda-tester-status-passed": "GEÇ",
