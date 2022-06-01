@@ -12,6 +12,8 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use Title;
 
 /**
@@ -357,6 +359,86 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->assertFalse(
 			$registry->isZObjectKeyCached( $zid ),
 			"The key '$zid' is not cached after unregistering."
+		);
+	}
+
+	/**
+	 * @covers ::isZObjectInstanceOfType
+	 */
+	public function testIsZObjectInstanceOfType() {
+		// Ensure that Z4/Type, Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
+		$this->insertZids( [ 'Z4', 'Z6', 'Z40', 'Z41' ] );
+
+		$registry = ZTypeRegistry::singleton();
+
+		$typeZObjectReference = ZObjectFactory::create( "Z4" );
+		$stringZObjectReference = ZObjectFactory::create( "Z6" );
+
+		$this->assertTrue(
+			$registry->isZObjectInstanceOfType( $typeZObjectReference, $typeZObjectReference->getZValue() ),
+			"A reference to the type type is itself a type."
+		);
+
+		$this->assertTrue(
+			$registry->isZObjectInstanceOfType( $typeZObjectReference, ZTypeRegistry::Z_OBJECT ),
+			"A reference to the type type is itself a ZObject."
+		);
+
+		$this->assertTrue(
+			$registry->isZObjectInstanceOfType( $stringZObjectReference, ZTypeRegistry::Z_OBJECT ),
+			"A reference to the string type is itself a ZObject."
+		);
+
+		$this->assertTrue(
+			$registry->isZObjectInstanceOfType( $stringZObjectReference, $typeZObjectReference->getZValue() ),
+			"A reference to the string type is itself a type."
+		);
+
+		$this->assertFalse(
+			$registry->isZObjectInstanceOfType( $typeZObjectReference, $stringZObjectReference->getZValue() ),
+			"A reference to the type type is not a string type."
+		);
+
+		$workingZObject = ZObjectFactory::create( "direct string" );
+		$this->assertTrue(
+			$registry->isZObjectInstanceOfType( $workingZObject, $stringZObjectReference->getZValue() ),
+			"A direct string is a string."
+		);
+
+		$booleanZObjectReference = ZObjectFactory::create( "Z40" );
+		$booleanTrueZObjectReference = ZObjectFactory::create( "Z41" );
+
+		$this->assertTrue(
+			$registry->isZObjectInstanceOfType( $booleanTrueZObjectReference, $booleanZObjectReference->getZValue() ),
+			"A reference to Z41/True is a boolean."
+		);
+
+		$this->assertFalse(
+			$registry->isZObjectInstanceOfType( $booleanTrueZObjectReference, $stringZObjectReference->getZValue() ),
+			"A reference to Z41/True is not a string."
+		);
+
+		$this->assertFalse(
+			$registry->isZObjectInstanceOfType( new ZString( 'Hello' ), $booleanZObjectReference->getZValue() ),
+			"A non-reference ZObject which is not of the right type is seen as such."
+		);
+	}
+
+	/**
+	 * @covers ::isZObjectInstanceOfType
+	 */
+	public function testIsZObjectInstanceOfTyp_throws() {
+		// Ensure that Z4/Type, Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
+		$this->insertZids( [ 'Z4' ] );
+
+		$registry = ZTypeRegistry::singleton();
+
+		$typeZObjectReference = ZObjectFactory::create( "Z4" );
+
+		$this->expectException( ZErrorException::class );
+		$this->assertFalse(
+			$registry->isZObjectInstanceOfType( $typeZObjectReference, 'Z0' ),
+			"Asking if an item is a reference to an unknown ZID throws."
 		);
 	}
 }
