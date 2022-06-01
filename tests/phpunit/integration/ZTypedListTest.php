@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WikiLambda integration test suite for the ZGenericList class
+ * WikiLambda integration test suite for the ZTypedList class
  *
  * @copyright 2020– WikiLambda team; see AUTHORS.txt
  * @license MIT
@@ -11,14 +11,14 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use FormatJson;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZGenericList
+ * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList
  */
-class ZGenericListTest extends WikiLambdaIntegrationTestCase {
+class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
@@ -28,10 +28,10 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getElementType
 	 */
 	public function testCreate_emptyList() {
-		$genericList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } }';
-		$testObject = ZObjectFactory::create( json_decode( $genericList ) );
+		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } }';
+		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
 
-		$this->assertInstanceOf( ZGenericList::class, $testObject );
+		$this->assertInstanceOf( ZTypedList::class, $testObject );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertTrue( $testObject->isEmpty() );
 		$this->assertInstanceOf( ZReference::class, $testObject->getElementType() );
@@ -45,12 +45,12 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getElementType
 	 */
 	public function testCreate_listOfStrings() {
-		$genericList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
+		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 			. '"K1": "first string",'
 			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } } }';
-		$testObject = ZObjectFactory::create( json_decode( $genericList ) );
+		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
 
-		$this->assertInstanceOf( ZGenericList::class, $testObject );
+		$this->assertInstanceOf( ZTypedList::class, $testObject );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertInstanceOf( ZReference::class, $testObject->getElementType() );
 		$this->assertSame( "Z6", $testObject->getElementType()->getZValue() );
@@ -63,14 +63,14 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getElementType
 	 */
 	public function testCreate_largerListOfStrings() {
-		$genericList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
+		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 			. '"K1": "first string",'
 			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 			. '"K1": "second string",'
 			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } } } }';
-		$testObject = ZObjectFactory::create( json_decode( $genericList ) );
+		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
 
-		$this->assertInstanceOf( ZGenericList::class, $testObject );
+		$this->assertInstanceOf( ZTypedList::class, $testObject );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertInstanceOf( ZReference::class, $testObject->getElementType() );
 		$this->assertSame( "Z6", $testObject->getElementType()->getZValue() );
@@ -82,14 +82,14 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::isValid
 	 */
 	public function testCreate_invalidListOfStrings() {
-		$genericList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
+		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 			. '"K1": "first string",'
 			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 			. '"K1": "Z111",'
 			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } } } }';
-		$testObject = ZObjectFactory::create( json_decode( $genericList ) );
+		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
 
-		$this->assertInstanceOf( ZGenericList::class, $testObject );
+		$this->assertInstanceOf( ZTypedList::class, $testObject );
 		$this->assertFalse( $testObject->isValid() );
 	}
 
@@ -99,14 +99,14 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::isValid
 	 */
 	public function testCreate_listOfMixed() {
-		$genericList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
+		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
 			. '"K1": "first string",'
 			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
 			. '"K1": "Z111",'
 			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } } }';
-		$testObject = ZObjectFactory::create( json_decode( $genericList ) );
+		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
 
-		$this->assertInstanceOf( ZGenericList::class, $testObject );
+		$this->assertInstanceOf( ZTypedList::class, $testObject );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertInstanceOf( ZReference::class, $testObject->getElementType() );
 		$this->assertSame( "Z1", $testObject->getElementType()->getZValue() );
@@ -118,13 +118,13 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getAsArray
 	 * @covers ::getZValue
 	 */
-	public function test_genericListToArray() {
-		$genericList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
+	public function test_typedListToArray() {
+		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
 			. '"K1": "first string",'
 			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
 			. '"K1": "Z111",'
 			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } } }';
-		$testObject = ZObjectFactory::create( json_decode( $genericList ) );
+		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
 		$array = $testObject->getAsArray();
 
 		$this->assertIsArray( $array );
@@ -142,7 +142,7 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function test_createBenjamin( $benjamin, $type, $isEmpty, $canonical, $normal ) {
 		$testObject = ZObjectFactory::create( json_decode( $benjamin ) );
-		$this->assertInstanceOf( ZGenericList::class, $testObject );
+		$this->assertInstanceOf( ZTypedList::class, $testObject );
 
 		$this->assertSame(
 			FormatJson::encode( FormatJson::decode( $type ) ),
@@ -250,9 +250,9 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getAsArray
 	 * @covers ::getZValue
 	 */
-	public function test_emptyGenericListToArray() {
-		$genericList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } }';
-		$testObject = ZObjectFactory::create( json_decode( $genericList ) );
+	public function test_emptyTypedListToArray() {
+		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } }';
+		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
 		$array = $testObject->getAsArray();
 
 		$this->assertTrue( $testObject->isEmpty() );
@@ -266,8 +266,8 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getDefinition
 	 */
 	public function test_getZType() {
-		$genericList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } }';
-		$testObject = ZObjectFactory::create( json_decode( $genericList ) );
+		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } }';
+		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
 
 		$this->assertSame( 'Z881', $testObject->getZType() );
 	}
@@ -280,7 +280,7 @@ class ZGenericListTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function test_serialize( $typed, $canonical, $normal ) {
 		$testObject = ZObjectFactory::create( json_decode( $typed ) );
-		$this->assertInstanceOf( ZGenericList::class, $testObject );
+		$this->assertInstanceOf( ZTypedList::class, $testObject );
 
 		$this->assertSame(
 			FormatJson::encode( FormatJson::decode( $canonical ) ),

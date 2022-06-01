@@ -114,7 +114,7 @@ class ZObject {
 	/**
 	 * Returns whether this ZObject is a builtin class.
 	 *
-	 * @return bool Whether this object is a builtin type or generic or it's a direct instance of ZObject
+	 * @return bool Whether this object is a built-in type or generic, or it's a direct instance of ZObject
 	 */
 	public function isBuiltin() {
 		return ( get_class( $this ) !== self::class );

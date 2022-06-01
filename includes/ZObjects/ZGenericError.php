@@ -16,8 +16,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 class ZGenericError extends ZObject {
 
 	/**
-	 * Create a new ZGenericList instance given an array (canonical form)
-	 * or an object with K1 (head) and K2 (tail)
+	 * Create a new typed error instance
 	 *
 	 * @param ZFunctionCall $functionCall
 	 * @param ZObject[] $keys

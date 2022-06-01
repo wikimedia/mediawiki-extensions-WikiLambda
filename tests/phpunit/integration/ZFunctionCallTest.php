@@ -58,7 +58,7 @@ class ZFunctionCallTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::__construct
 	 * @covers ::isValid
 	 */
-	public function testGenericList() {
+	public function testTypedList() {
 		// Z881 must be persisted to successfully return its type.
 		// Z881 requires Z8 and Z17 to be present as well.
 		$this->insertZids( [ 'Z17', 'Z881' ] );
@@ -135,7 +135,7 @@ EOT;
 	 * @covers ::__construct
 	 * @covers ::isValid
 	 */
-	public function testGenericListInner() {
+	public function testTypedListInner() {
 		// Z881 must be persisted to successfully return its type.
 		// Z881 requires Z8 and Z17 to be present as well.
 		$this->insertZids( [ 'Z17', 'Z881' ] );

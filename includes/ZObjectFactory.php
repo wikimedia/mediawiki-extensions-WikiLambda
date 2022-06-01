@@ -14,11 +14,11 @@ use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Validation\ZObjectStructureValidator;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use Title;
 
 class ZObjectFactory {
@@ -288,7 +288,7 @@ class ZObjectFactory {
 				$items[] = $item;
 			}
 
-			return new ZGenericList( ZGenericList::buildType( $listType ), $items );
+			return new ZTypedList( ZTypedList::buildType( $listType ), $items );
 		}
 
 		if ( !is_object( $object ) ) {
@@ -474,8 +474,8 @@ class ZObjectFactory {
 			// FIXME (T298126): We should probably infer the type of ZObjects contained in
 			// this array instead of just creating a generic list of Z1s
 			return new ZFunctionCall(
-				new ZReference( ZTypeRegistry::Z_FUNCTION_GENERIC_LIST ),
-				[ ZTypeRegistry::Z_FUNCTION_GENERIC_LIST_TYPE => ZTypeRegistry::Z_OBJECT_TYPE ]
+				new ZReference( ZTypeRegistry::Z_FUNCTION_TYPED_LIST ),
+				[ ZTypeRegistry::Z_FUNCTION_TYPED_LIST_TYPE => ZTypeRegistry::Z_OBJECT_TYPE ]
 			);
 		}
 

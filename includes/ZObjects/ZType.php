@@ -16,7 +16,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 class ZType extends ZObject {
 
 	/**
-	 * Construct a ZType instance given the identity ZReference, a ZGenericList of ZKeys
+	 * Construct a ZType instance given the identity ZReference, a ZTypedList of ZKeys,
 	 * and a ZReference to the type validator
 	 *
 	 * @param ZObject $identity
@@ -71,13 +71,13 @@ class ZType extends ZObject {
 			return false;
 		}
 
-		// Key map must be set to an array or ZGenericList of zero or more ZKeys, all valid
+		// Key map must be set to an array or ZTypedList of zero or more ZKeys, all valid
 		if ( !isset( $this->data[ ZTypeRegistry::Z_TYPE_KEYS ] ) ) {
 			return false;
 		}
 		$keys = $this->data[ ZTypeRegistry::Z_TYPE_KEYS ];
 		if ( !is_array( $keys ) ) {
-			if ( $keys instanceof ZGenericList ) {
+			if ( $keys instanceof ZTypedList ) {
 				if ( $keys->getElementType()->getZValue() !== ZTypeRegistry::Z_KEY ) {
 					return false;
 				}
@@ -134,7 +134,7 @@ class ZType extends ZObject {
 	/**
 	 * Get a list with the set of ZKeys for this ZType
 	 *
-	 * @return ZGenericList
+	 * @return ZTypedList
 	 */
 	public function getTypeKeys() {
 		return $this->data[ ZTypeRegistry::Z_TYPE_KEYS ];

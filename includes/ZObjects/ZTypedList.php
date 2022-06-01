@@ -1,6 +1,6 @@
 <?php
 /**
- * WikiLambda ZGenericList
+ * WikiLambda ZTypedList
  *
  * @file
  * @ingroup Extensions
@@ -12,15 +12,15 @@ namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 
-class ZGenericList extends ZObject {
+class ZTypedList extends ZObject {
 
 	/**
-	 * Create a new ZGenericList instance given an array (canonical form)
+	 * Create a new ZTypedList instance given an array (canonical form)
 	 * or an object with K1 (head) and K2 (tail)
 	 *
 	 * @param ZFunctionCall $functionCall
 	 * @param array|ZObject|null $head
-	 * @param ZGenericList|null $tail
+	 * @param ZTypedList|null $tail
 	 */
 	public function __construct( $functionCall, $head = null, $tail = null ) {
 		$this->type = $functionCall;
@@ -41,29 +41,29 @@ class ZGenericList extends ZObject {
 		return [
 			'type' => [
 				'type' => ZTypeRegistry::Z_FUNCTIONCALL,
-				'value' => ZTypeRegistry::Z_FUNCTION_GENERIC_LIST,
+				'value' => ZTypeRegistry::Z_FUNCTION_TYPED_LIST,
 			],
 			'keys' => [
 				'K1' => [
 					'type' => ZTypeRegistry::Z_OBJECT,
 				],
 				'K2' => [
-					'type' => ZTypeRegistry::Z_FUNCTION_GENERIC_LIST,
+					'type' => ZTypeRegistry::Z_FUNCTION_TYPED_LIST,
 				],
 			],
 		];
 	}
 
 	/**
-	 * Build the function call that defines the type of this Generic List
+	 * Build the function call that defines the type of this ZTypedList
 	 *
 	 * @param ZObject $listType
 	 * @return ZFunctionCall
 	 */
 	public static function buildType( $listType ): ZFunctionCall {
 		return new ZFunctionCall(
-			new ZReference( ZTypeRegistry::Z_FUNCTION_GENERIC_LIST ),
-			[ ZTypeRegistry::Z_FUNCTION_GENERIC_LIST_TYPE => $listType ]
+			new ZReference( ZTypeRegistry::Z_FUNCTION_TYPED_LIST ),
+			[ ZTypeRegistry::Z_FUNCTION_TYPED_LIST_TYPE => $listType ]
 		);
 	}
 
@@ -100,13 +100,13 @@ class ZGenericList extends ZObject {
 	}
 
 	/**
-	 * Convert this ZGenericList into its serialized canonical representation
+	 * Convert this ZTypedList into its serialized canonical representation
 	 *
 	 * @return array
 	 */
 	private function getSerializedCanonical() {
 		$type = $this->type->getValueByKey(
-			ZTypeRegistry::Z_FUNCTION_GENERIC_LIST_TYPE
+			ZTypeRegistry::Z_FUNCTION_TYPED_LIST_TYPE
 		)->getSerialized();
 
 		$items = array_map( static function ( $value ) {
@@ -117,29 +117,29 @@ class ZGenericList extends ZObject {
 	}
 
 	/**
-	 * Convert this ZGenericList into its serialized normal representation
+	 * Convert this ZTypedList into its serialized normal representation
 	 *
 	 * @param array $list
 	 * @return \stdClass
 	 */
 	private function getSerializedNormal( $list ) {
 		if ( count( $list ) === 0 ) {
-			return (object)self::returnEmptyGenericList( self::FORM_NORMAL );
+			return (object)self::returnEmptyTypedList( self::FORM_NORMAL );
 		}
 
-		$serialized = self::returnEmptyGenericList( self::FORM_NORMAL );
+		$serialized = self::returnEmptyTypedList( self::FORM_NORMAL );
 		$serialized[ 'K1' ] = $list[0]->getSerialized( self::FORM_NORMAL );
 		$serialized[ 'K2' ] = self::getSerializedNormal( array_slice( $list, 1 ) ?? [] );
 		return (object)$serialized;
 	}
 
 	/**
-	 * Return an empty ZGenericList
+	 * Return an empty ZTypedList
 	 *
 	 * @param int $form
 	 * @return array
 	 */
-	private function returnEmptyGenericList( $form ): array {
+	private function returnEmptyTypedList( $form ): array {
 		return [
 			ZTypeRegistry::Z_OBJECT_TYPE => $this->type->getSerialized( $form )
 		];
@@ -164,12 +164,12 @@ class ZGenericList extends ZObject {
 	}
 
 	/**
-	 * Returns the type of the elements of this ZGenericList
+	 * Returns the type of the elements of this ZTypedList
 	 *
 	 * @return ZObject The type of this ZObject
 	 */
 	public function getElementType(): ZObject {
-		return $this->type->getValueByKey( ZTypeRegistry::Z_FUNCTION_GENERIC_LIST_TYPE );
+		return $this->type->getValueByKey( ZTypeRegistry::Z_FUNCTION_TYPED_LIST_TYPE );
 	}
 
 	/**

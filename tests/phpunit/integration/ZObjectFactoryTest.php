@@ -13,12 +13,12 @@ use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericError;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectFactory
@@ -43,7 +43,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 		return [
 			'string' => [ 'string object', ZString::class ],
 			'reference' => [ 'Z6', ZReference::class ],
-			'array' => [ [ 'Z6', 'one string', 'another string' ], ZGenericList::class ],
+			'array' => [ [ 'Z6', 'one string', 'another string' ], ZTypedList::class ],
 			'monolingual' => [
 				(object)[ 'Z1K1' => 'Z11', 'Z11K1' => 'Z1003', 'Z11K2' => 'string' ],
 				ZMonoLingualString::class
@@ -109,7 +109,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 	public function provideCreatePersistentValidInput() {
 		return [
 			'string' => [ 'string object', ZString::class ],
-			'array' => [ [ 'Z6', 'one string', 'another string' ], ZGenericList::class ],
+			'array' => [ [ 'Z6', 'one string', 'another string' ], ZTypedList::class ],
 			'monolingual' => [
 				json_decode( '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "monolingual string" }' ),
 				ZMonoLingualString::class
@@ -130,7 +130,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 					. ' "Z2K3": { "Z1K1": "Z12",  "Z12K1": [ "Z11",'
 					. ' { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "wrapped array label" } ] } }'
 				),
-				ZGenericList::class
+				ZTypedList::class
 			],
 			'wrapped monolingual' => [
 				json_decode(
@@ -246,12 +246,12 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 			'zstring' => [ new ZString( 'holi' ), ZString::class ],
 			'string' => [ 'string', ZString::class ],
 			'reference' => [ 'Z6', ZReference::class ],
-			'array' => [ [ 'Z6', 'array' ], ZGenericList::class ],
+			'array' => [ [ 'Z6', 'array' ], ZTypedList::class ],
 			'object' => [ json_decode( '{ "Z1K1": "Z6" }' ), ZString::class ],
 			'custom type' => [ json_decode( '{ "Z1K1": "Z60" }' ), ZObject::class, [ 'Z60' ] ],
 			'function call type: generic list builtin' => [
 				json_decode( '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } }' ),
-				ZGenericList::class
+				ZTypedList::class
 			],
 			'function call type: error type builtin' => [
 				json_decode( '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z885", "Z885K1": "Z500" } }' ),

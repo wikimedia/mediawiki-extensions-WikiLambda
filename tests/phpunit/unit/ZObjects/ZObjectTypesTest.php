@@ -13,7 +13,6 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericError;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKeyReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
@@ -25,6 +24,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZObject
@@ -71,7 +71,7 @@ class ZObjectTypesTest extends \MediaWikiUnitTestCase {
 		$zKeyReference = new ZKeyReference( 'K1' );
 		$zFunctionCall = new ZFunctionCall( new ZReference( 'Z999' ) );
 
-		$genericList = new ZGenericList(
+		$typedList = new ZTypedList(
 			new ZFunctionCall( new ZReference( 'Z881' ),
 			[ 'Z881K1' => new ZReference( 'Z6' ) ] )
 		);
@@ -110,7 +110,7 @@ class ZObjectTypesTest extends \MediaWikiUnitTestCase {
 			'quote' => [ $zQuote, 'Z99', true, true ],
 			'key reference' => [ $zKeyReference, 'Z39', true, true ],
 			'function call' => [ $zFunctionCall, 'Z7', true, true ],
-			'generic list' => [ $genericList, 'Z881', true, false ],
+			'generic list' => [ $typedList, 'Z881', true, false ],
 			'generic error' => [ $genericError, 'Z885', true, false ],
 		];
 	}
