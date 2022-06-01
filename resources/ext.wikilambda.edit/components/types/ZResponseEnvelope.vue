@@ -23,7 +23,7 @@
 		<div v-if="showSecond">
 			<hr>
 			<z-object-key
-				:zobject-id="zMetaData.id"
+				:zobject-id="zErrors.id"
 				:parent-type="Constants.Z_RESPONSEENVELOPE"
 				:readonly="readonly"
 			></z-object-key>
@@ -61,7 +61,8 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getZObjectChildrenById'
+		'getZObjectChildrenById',
+		'getNestedZObjectById'
 	] ), {
 		Constants: function () {
 			return Constants;
@@ -74,8 +75,31 @@ module.exports = exports = {
 		},
 		zMetaData: function () {
 			return this.findKeyInArray( Constants.Z_RESPONSEENVELOPE_METADATA, this.zobject );
+		},
+		zErrors: function () {
+			const metadata = this.zMetaData;
+			const errors = this.isZError( metadata.id ) ? metadata : this.getZMapValue( metadata.id, 'errors' );
+			return errors;
 		}
-	} )
+	} ),
+	methods: {
+		isZError: function ( zobjectId ) {
+			const zType = this.getNestedZObjectById( zobjectId,
+				[ Constants.Z_OBJECT_TYPE, Constants.Z_REFERENCE_ID ] );
+			return zType.value === Constants.Z_ERROR;
+		},
+		getZMapValue: function ( zMapId, key ) {
+			const listOfPairs = this.getNestedZObjectById( zMapId, [ Constants.Z_TYPED_OBJECT_ELEMENT_1 ] );
+			const elements = this.getZObjectChildrenById( listOfPairs.id );
+			for ( const pair of elements ) {
+				if ( this.getNestedZObjectById( pair.id,
+					[ Constants.Z_TYPED_OBJECT_ELEMENT_1, Constants.Z_STRING_VALUE ] ).value === key ) {
+					return this.getNestedZObjectById( pair.id, [ Constants.Z_TYPED_OBJECT_ELEMENT_2 ] );
+				}
+			}
+			return false;
+		}
+	}
 };
 </script>
 
