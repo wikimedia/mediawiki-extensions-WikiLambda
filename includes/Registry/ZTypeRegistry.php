@@ -15,6 +15,7 @@ use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use Title;
 
 /**
@@ -490,10 +491,14 @@ class ZTypeRegistry extends ZObjectRegistry {
 			return false;
 		}
 
+		if ( !ZObjectUtils::isValidZObjectReference( $object->getZValue() ) ) {
+			return false;
+		}
+
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$objectTitle = Title::newFromText( $object->getZValue(), NS_MAIN );
 		$fetchedObject = $zObjectStore->fetchZObjectByTitle( $objectTitle );
 
-		return $type === $fetchedObject->getZType();
+		return $fetchedObject && $type === $fetchedObject->getZType();
 	}
 }
