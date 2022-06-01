@@ -13,6 +13,8 @@ namespace MediaWiki\Extension\WikiLambda\Registry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use Title;
 
 /**
@@ -461,4 +463,37 @@ class ZTypeRegistry extends ZObjectRegistry {
 		return array_search( $type, $this->registry );
 	}
 
+	/**
+	 * Checks if a given ZObject is an instance of a given type.
+	 *
+	 * @param ZObject $object
+	 * @param string $type ZID of the type to test
+	 * @return bool
+	 * @throws ZErrorException
+	 */
+	public function isZObjectInstanceOfType( ZObject $object, string $type ): bool {
+		if ( !$this->isZObjectKeyKnown( $type ) ) {
+			// Error Z504: ZID not found
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+					[ 'data' => $type ]
+				)
+			);
+		}
+
+		if ( $type === self::Z_OBJECT || $type === $object->getZType() ) {
+			return true;
+		}
+
+		if ( !( $object instanceof ZReference ) ) {
+			return false;
+		}
+
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		$objectTitle = Title::newFromText( $object->getZValue(), NS_MAIN );
+		$fetchedObject = $zObjectStore->fetchZObjectByTitle( $objectTitle );
+
+		return $type === $fetchedObject->getZType();
+	}
 }
