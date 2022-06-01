@@ -32,21 +32,12 @@
 				{{ zImplementationLabel }}
 			</a>
 		</h4>
-		<code-editor
-			v-if="zImplementation &&
-				!zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_BUILT_IN ]"
-			:mode="zImplementationCodeLanguage"
-			:read-only="true"
-			:value="zImplementationCode"
-			class="ext-wikilambda-zcode"
-		></code-editor>
 	</li>
 </template>
 
 <script>
 var Constants = require( '../../Constants.js' ),
 	ZListItem = require( '../types/ZListItem.vue' ),
-	CodeEditor = require( '../base/CodeEditor.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
@@ -55,7 +46,6 @@ var Constants = require( '../../Constants.js' ),
 module.exports = exports = {
 	name: 'z-implementation-list-item',
 	components: {
-		'code-editor': CodeEditor,
 		'cdx-button': CdxButton
 	},
 	extends: ZListItem,
@@ -78,45 +68,6 @@ module.exports = exports = {
 		},
 		zImplementation: function () {
 			return this.getZkeys[ this.zImplementationId ];
-		},
-		zImplementationCodeLanguage: function () {
-			if ( !this.zImplementation ) {
-				return '';
-			}
-
-			if ( !this.zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-				Constants.Z_IMPLEMENTATION_CODE ]
-			) {
-				return 'json';
-			}
-
-			return this.zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-				Constants.Z_IMPLEMENTATION_CODE ][
-				Constants.Z_CODE_LANGUAGE ][
-				Constants.Z_PROGRAMMING_LANGUAGE_CODE ];
-		},
-		zImplementationCode: function () {
-			if ( !this.zImplementation ) {
-				return '';
-			}
-
-			if ( this.zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-				Constants.Z_IMPLEMENTATION_COMPOSITION ]
-			) {
-				var composition = JSON.parse(
-					JSON.stringify(
-						this.zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-							Constants.Z_IMPLEMENTATION_COMPOSITION ]
-					)
-				);
-				this.fetchZKeys( this.findMissingZids( composition ) );
-
-				return JSON.stringify( composition, null, 4 );
-			}
-
-			return this.zImplementation[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-				Constants.Z_IMPLEMENTATION_CODE ][
-				Constants.Z_CODE_CODE ];
 		},
 		zImplementationLink: function () {
 			return '/wiki/' + this.zImplementationId;
@@ -171,10 +122,6 @@ module.exports = exports = {
 .ext-wikilambda-ZImplementationListItem {
 	margin-top: 1em;
 	margin-bottom: 1em;
-
-	.ext-wikilambda-zcode {
-		margin-top: 0.5em;
-	}
 
 	.ext-wikilambda-inline-list-item-title {
 		display: inline;

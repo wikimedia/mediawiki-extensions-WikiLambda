@@ -20,10 +20,11 @@
 					:persistent="false"
 					:parent-type="Constants.Z_FUNCTION_CALL"
 					:z-key="argument.key"
+					:readonly="hasNoImplementations()"
 				></z-object-key>
 			</li>
 		</ul>
-		<cdx-button @click="callFunctionHandler">
+		<cdx-button @click="callFunctionHandler" :disabled="hasNoImplementations()">
 			<label> {{ $i18n( 'wikilambda-call-function' ).text() }} </label>
 		</cdx-button>
 		<div v-if="resultZObject || orchestrating" class="ext-wikilambda-orchestrated-result">
@@ -102,6 +103,9 @@ module.exports = exports = {
 				.then( function () {
 					self.orchestrating = false;
 				} );
+		},
+		hasNoImplementations: function () {
+			return this.zImplementationLanguages === null;
 		}
 	}
 };
