@@ -543,6 +543,9 @@ module.exports = exports = {
 				updateZObjectPageTitle( payload.value );
 			}
 
+			// TODO(T309723): if renaming a function that had previously had no name,
+			// we need to re-add the structure in the form of a typed list
+
 			// Update ZObject value
 			context.dispatch( 'setZObjectValue', {
 				id: payload.id,

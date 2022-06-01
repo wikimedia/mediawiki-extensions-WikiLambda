@@ -215,6 +215,7 @@ class ZObjectStore {
 		$labels = $content->getLabels()->getValueAsList();
 		$ztype = $content->getZType();
 		$clashes = $this->findZObjectLabelConflicts( $zid, $ztype, $labels );
+
 		if ( count( $clashes ) > 0 ) {
 			$error = ZErrorFactory::createLabelClashZErrors( $clashes );
 			return ZObjectPage::newFatal( $error );
@@ -336,6 +337,12 @@ class ZObjectStore {
 	 */
 	public function findZObjectLabelConflicts( $zid, $ztype, $labels ): array {
 		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+
+		// remove labels with an undefined value
+		$labels = array_filter(
+			$labels, static function ( $value ) {
+				return $value !== "";
+			} );
 
 		if ( $labels === [] ) {
 			return [];
