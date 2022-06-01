@@ -62,7 +62,7 @@ module.exports = exports = {
 			default: null
 		},
 		inputAriaLabel: {
-			type: String,
+			type: Object,
 			required: false,
 			default: null
 		}

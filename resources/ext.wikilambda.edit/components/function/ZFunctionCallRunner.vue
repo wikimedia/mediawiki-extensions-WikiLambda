@@ -24,7 +24,7 @@
 				></z-object-key>
 			</li>
 		</ul>
-		<cdx-button @click="callFunctionHandler" :disabled="hasNoImplementations()">
+		<cdx-button :disabled="hasNoImplementations()" @click="callFunctionHandler">
 			<label> {{ $i18n( 'wikilambda-call-function' ).text() }} </label>
 		</cdx-button>
 		<div v-if="resultZObject || orchestrating" class="ext-wikilambda-orchestrated-result">

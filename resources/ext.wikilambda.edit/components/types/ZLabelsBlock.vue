@@ -10,8 +10,8 @@
 			{{ userLangAliasString }}
 		</div>
 		<cdx-toggle-button
-			:quiet="true"
 			v-model="showMoreLanguages"
+			:quiet="true"
 			@update:model-value="onUpdate"
 		>
 			{{ showMoreLanguagesLabel }}
@@ -74,8 +74,8 @@
 			</table>
 			<div v-if="selectedLanguages.length > defaultMaxLanguages">
 				<cdx-toggle-button
-					:quiet="true"
 					v-model="showAllSelectedLanguages"
+					:quiet="true"
 					@update:model-value="onUpdate"
 				>
 					{{ showAllSelectedLanguagesLabel }}

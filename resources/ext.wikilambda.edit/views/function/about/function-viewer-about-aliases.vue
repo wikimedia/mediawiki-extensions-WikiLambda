@@ -93,18 +93,22 @@ module.exports = exports = {
 		langAliasString: function () {
 			var languageAliases = this.getLanguageAliases( this.selectedLanguages );
 			return languageAliases.map( function ( alias ) {
-				var isoCode = this.getZkeys[ alias.language ][
+				if ( this.getZkeys[ alias.language ] && this.getZkeys[ alias.language ][
 					Constants.Z_PERSISTENTOBJECT_VALUE
-				][
-					Constants.Z_NATURAL_LANGUAGE_ISO_CODE
-				];
+				] ) {
+					var isoCode = this.getZkeys[ alias.language ][
+						Constants.Z_PERSISTENTOBJECT_VALUE
+					][
+						Constants.Z_NATURAL_LANGUAGE_ISO_CODE
+					];
 
-				return {
-					label: alias.languageString.value,
-					language: alias.language,
-					languageLabel: this.getZkeyLabels[ alias.language ],
-					isoCode
-				};
+					return {
+						label: alias.languageString.value,
+						language: alias.language,
+						languageLabel: this.getZkeyLabels[ alias.language ],
+						isoCode
+					};
+				}
 			}.bind( this ) );
 		},
 		buttonText: function () {
@@ -132,7 +136,7 @@ module.exports = exports = {
 				return this.langAliasString;
 			}
 			return this.langAliasString.filter( function ( alias ) {
-				return alias.language === userLanguage;
+				return alias && alias.language === userLanguage;
 			} );
 		},
 		getLanguageAliases: function ( allLanguages ) {
