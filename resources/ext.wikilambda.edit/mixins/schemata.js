@@ -72,11 +72,26 @@ function canonicalize( zobject ) {
 	) {
 		canon = canonicalize( listifyArray( zobject ) );
 	} else {
+		// remove any 'undefined' labels
+		if ( zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ] ) {
+			zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ] = filterUndefinedLabels(
+				zobject[ Constants.Z_MULTILINGUALSTRING_VALUE ]
+			);
+		}
+
 		Object.keys( zobject ).forEach( function ( key ) {
 			canon[ key ] = canonicalize( zobject[ key ] );
 		} );
 	}
 	return canon;
+}
+
+function filterUndefinedLabels( allLabels ) {
+	return allLabels.filter( function ( label ) {
+		return ( label[ Constants.Z_MONOLINGUALSTRING_VALUE ] &&
+			label[ Constants.Z_MONOLINGUALSTRING_VALUE ][ Constants.Z_STRING_VALUE ]
+		);
+	} );
 }
 
 function isString( s ) {

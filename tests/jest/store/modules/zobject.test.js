@@ -17,13 +17,7 @@ var fs = require( 'fs' ),
 		Z2K2: '',
 		Z2K3: {
 			Z1K1: 'Z12',
-			Z12K1: [
-				{
-					Z1K1: 'Z11',
-					Z11K1: 'Z1002',
-					Z11K2: ''
-				}
-			]
+			Z12K1: []
 		}
 	},
 	zobjectTree = [
