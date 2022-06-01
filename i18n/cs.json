@@ -8,6 +8,7 @@
 	},
 	"wikilambda-desc": "Poskytuje pro wiki funkci parseru wikitextu, kterou se vyvolává vyhodnocení funkce vytvořené, spravované a vyhodnocované na ústřední wiki.",
 	"content-model-zobject": "ZObjekt",
+	"wikilambda-emptylabel": "ZObjekt bez štítku",
 	"wikilambda-prohibitedcreationtype": "Uvedený ZObjekt má typ „$1“, který není dovoleno vytvářet.",
 	"wikilambda-noresult": "Hledání nenašlo žádné výsledky.",
 	"wikilambda-persistentzobject": "ZObjekt",
