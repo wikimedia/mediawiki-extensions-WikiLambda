@@ -18,12 +18,20 @@
 			{{ $i18n( 'wikilambda-function-viewer-details-sidebar-summary' ).text() }}
 		</div>
 		<div class="ext-wikilambda-function-viewer-details-sidebar__links">
-			<!-- TODO (T309200): update to use correct links-->
 			<div class="ext-wikilambda-function-viewer-details-sidebar__link">
-				<a href="#"> {{ $i18n( 'wikilambda-implementation-create-new' ).text() }} </a>
+				<a
+					id="ext-wikilambda-function-viewer-details-sidebar__link--implementation"
+					:href="createNew( Constants.Z_IMPLEMENTATION )"
+				>
+					{{ $i18n( 'wikilambda-implementation-create-new' ).text() }}
+				</a>
 			</div>
 			<div>
-				<a href="#"> {{ $i18n( 'wikilambda-tester-create-new' ).text() }} </a>
+				<a
+					:href="createNew( Constants.Z_TESTER )"
+				>
+					{{ $i18n( 'wikilambda-tester-create-new' ).text() }}
+				</a>
 			</div>
 		</div>
 	</div>
@@ -60,7 +68,8 @@ module.exports = exports = {
 				language: '',
 				text: ''
 			},
-			showAllLangs: false
+			showAllLangs: false,
+			Constants: Constants
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -340,6 +349,13 @@ module.exports = exports = {
 				}
 
 				return item.value;
+			},
+			createNew: function ( type ) {
+				const zid = type,
+					zidK1 = type === Constants.Z_IMPLEMENTATION ?
+						Constants.Z_IMPLEMENTATION_FUNCTION : Constants.Z_TESTER_FUNCTION;
+
+				return `/wiki/Special:CreateZObject?zid=${zid}&${zidK1}=${this.getCurrentZObjectId}`;
 			}
 		}
 	)
