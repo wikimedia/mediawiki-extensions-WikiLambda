@@ -12,9 +12,9 @@
 	"wikilambda-editor-steps-label": "တည်းဖြတ်သူအဆင့်များ",
 	"wikilambda-editor-go-back-button": "နောက်သို့ ပြန်သွားရန်",
 	"wikilambda-editor-next-button": "နောက်အဆင့်",
-	"wikilambda-editor-fn-step-tests": "စမ်းသပ်ရန်",
+	"wikilambda-editor-fn-step-tests": "စမ်းသပ်ချက်(များ)",
 	"wikilambda-editor-name-title": "အမည်",
-	"wikilambda-editor-input-title": "ထည့်သွင်းမှု(များ)",
+	"wikilambda-editor-input-title": "ထည့်သွင်းမှု",
 	"wikilambda-editor-input-type-placeholder": "ထည့်သွင်းမှု အမျိုးအစား",
 	"wikilambda-editor-behavior-title": "အမူအကျင့်",
 	"wikilambda-editor-write-title": "ရေးရန်"
