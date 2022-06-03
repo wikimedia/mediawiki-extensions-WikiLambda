@@ -1,11 +1,11 @@
 <?php
 
-namespace MediaWiki\Extension\WikiLambda\Validation\Tests;
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Validation;
 
 use MediaWiki\Extension\WikiLambda\Validation\SchemaFactory;
 use MediaWiki\Extension\WikiLambda\Validation\SchemataUtils;
 
-final class CanonicalZObjectTest extends ValidationTest {
+final class CanonicalZObjectTest extends ValidationTestCase {
 	/**
 	 * @coversNothing
 	 * @dataProvider provideZIDs

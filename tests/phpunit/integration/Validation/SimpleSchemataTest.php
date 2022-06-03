@@ -1,12 +1,12 @@
 <?php
 
-namespace MediaWiki\Extension\WikiLambda\Validation\Tests;
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Validation;
 
 use MediaWiki\Extension\WikiLambda\Validation\SchemaFactory;
 use MediaWiki\Extension\WikiLambda\Validation\SchemataUtils;
 use MediaWiki\Extension\WikiLambda\Validation\SchemaWrapper;
 
-final class SimpleSchemataTest extends ValidationTest {
+final class SimpleSchemataTest extends ValidationTestCase {
 
 	/**
 	 * @coversNothing

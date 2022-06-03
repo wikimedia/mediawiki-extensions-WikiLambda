@@ -1,6 +1,6 @@
 <?php
 
-namespace MediaWiki\Extension\WikiLambda\Validation\Tests;
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Validation;
 
 use MediaWiki\Extension\WikiLambda\Validation\SchemaWrapper;
 use PHPUnit\Framework\TestCase;
@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
  * Defines the testValidation helper function to facilitate working with test
  * cases define in JSON objects.
  */
-abstract class ValidationTest extends TestCase {
+abstract class ValidationTestCase extends TestCase {
 	/**
 	 * Helper function to test success and failure on the validation
 	 * of ZObjects.
