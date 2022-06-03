@@ -21,12 +21,22 @@ final class NormalZObjectTest extends ValidationTest {
 
 	public function provideZIDs() {
 		// Keep in lock-step with CanonicalZObjectTest::provideZIDs()
-		// TODO: Enable test for Z7.
 		return [
-			[ "LIST" ],
-			[ "Z1" ], [ "Z2" ],
+			// FIXME (T309386): Opis doesn't detect failures that Ajv does with
+			// current schemata implementation of typed lists
+			[ "Z1" ],
+			[ "Z2" ],
+			[ "Z3" ],
+			// [ "Z4" ],
 			// [ "Z6" ],
-			[ "Z14" ], [ "Z17" ], [ "Z18" ], [ "Z22" ], [ "Z39" ], [ "Z40" ],
+			[ "Z7" ],
+			// [ "Z8" ],
+			// [ "Z9" ],
+			// [ "Z12" ],
+			[ "Z14" ], [ "Z17" ], [ "Z18" ], [ "Z22" ],
+			// [ "Z32" ],
+			[ "Z39" ], [ "Z40" ],
+			// [ "Z60" ],
 			[ "Z61" ], [ "Z80" ], [ "Z86" ], [ "Z99" ]
 		];
 	}
