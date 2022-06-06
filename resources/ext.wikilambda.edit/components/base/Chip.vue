@@ -131,17 +131,18 @@ module.exports = exports = {
 	}
 
 	&_warning {
-		background-color: @wmui-color-yellow30;
-		border-color: @wmui-color-yellow50;
+		background-color: @wmui-color-yellow90;
+		border-color: @wmui-color-yellow30;
 	}
 
 	&_error {
-		background-color: @wmui-color-red30;
-		border-color: @wmui-color-red50;
+		background-color: @wmui-color-red90;
+		border-color: @wmui-color-red30;
 	}
 
 	&_success {
-		background-color: @wmui-color-green30;
+		background-color: @wmui-color-green90;
+		border-color: @wmui-color-green30;
 	}
 }
 

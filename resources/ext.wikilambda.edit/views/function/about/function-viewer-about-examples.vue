@@ -59,8 +59,10 @@ module.exports = exports = {
 			if ( !zObjectValue ) {
 				return [];
 			}
+
+			// remove first item cause it is the type
 			return this.getTestInputOutputByZIDs(
-				zObjectValue[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_TESTERS ]
+				zObjectValue[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_TESTERS ].slice( 1 )
 			).map( function ( example ) {
 				return {
 					input: {
@@ -91,7 +93,8 @@ module.exports = exports = {
 		}
 
 		&-header-item {
-			padding: 0 16px;
+			padding-left: 16px;
+			padding-right: 16px;
 			font-weight: @font-weight-bold;
 			background-color: @wmui-color-base90;
 			border-top: 1px solid @wmui-color-base80;
@@ -99,7 +102,8 @@ module.exports = exports = {
 		}
 
 		&-item {
-			padding: 0 16px;
+			padding-left: 16px;
+			padding-right: 16px;
 			text-transform: capitalize;
 		}
 	}

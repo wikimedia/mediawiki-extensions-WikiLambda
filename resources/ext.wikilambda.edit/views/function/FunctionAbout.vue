@@ -72,6 +72,10 @@ module.exports = exports = {
 		margin-top: 10%;
 	}
 
+	&__sidebar {
+		width: 300px;
+	}
+
 	@media screen and ( min-width: @width-breakpoint-tablet ) {
 		min-height: 450px;
 		overflow-y: auto;

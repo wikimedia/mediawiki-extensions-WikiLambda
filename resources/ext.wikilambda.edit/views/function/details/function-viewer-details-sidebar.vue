@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for viewing a function examples.
+
+		@copyright 2022– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div class="ext-wikilambda-function-viewer-details-sidebar">
 		<table-container
 			class="ext-wikilambda-function-viewer-details-sidebar__table"
@@ -92,6 +98,7 @@ module.exports = exports = {
 					},
 					class: 'ext-wikilambda-function-viewer-details-sidebar__table__header ext-wikilambda-function-viewer-details-sidebar__table__expanded'
 				},
+				language: '',
 				text: {
 					title: this.$i18n( 'wikilambda-edit' ).text(),
 					component: 'cdx-button',
@@ -232,7 +239,7 @@ module.exports = exports = {
 		// START OF ARGUMENTS HELPER FUNCTIONS //
 		/* get the list of arguments for the current argument ID */
 		zArgumentList: function () {
-			return this.getZObjectChildrenById( this.zArgumentId );
+			return this.getAllItemsFromListById( this.zArgumentId );
 		},
 		/* get the zArgumentId */
 		zArgumentId: function () {

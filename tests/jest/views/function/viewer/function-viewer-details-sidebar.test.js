@@ -17,6 +17,7 @@ describe( 'FunctionViewerDetailsSidebar', function () {
 			getCurrentZObjectId: jest.fn( function () {
 				return 'Z1002';
 			} ),
+			getAllItemsFromListById: createGettersWithFunctionsMock(),
 			getZObjectChildrenById: createGettersWithFunctionsMock(),
 			getNestedZObjectById: createGettersWithFunctionsMock( { id: 10 } ),
 			getZkeyLabels: jest.fn( function () {

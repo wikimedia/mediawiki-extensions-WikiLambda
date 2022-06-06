@@ -13,23 +13,39 @@
 		</div>
 		<section>
 			<div class="ext-wikilambda-function-details__sidebar">
-				<function-viewer-details-sidebar :zobject-id="zObjectValue.id"></function-viewer-details-sidebar>
+				<function-viewer-details-sidebar :zobject-id="zobjectId"></function-viewer-details-sidebar>
 			</div>
+		</section>
+		<section class="ext-wikilambda-function-details__tables">
+			<function-viewer-details-table
+				:header="implementationsHeader"
+				:body="implementationBody"
+				:title="$i18n( 'wikilambda-function-implementation-table-header' ).text()"
+			></function-viewer-details-table>
+			<!-- TODO(T310182): have the implementation table filter the tester table -->
+			<function-viewer-details-table
+				:header="testersHeader"
+				:body="testersBody"
+				:title="$i18n( 'wikilambda-function-test-cases-table-header' ).text()"
+			></function-viewer-details-table>
 		</section>
 	</main>
 </template>
 
 <script>
 var FunctionViewerDetailsSidebar = require( './details/function-viewer-details-sidebar.vue' ),
+	FunctionViewerDetailsImplementationTable = require( './details/function-viewer-details-table.vue' ),
 	Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
+	icons = require( '../../../lib/icons.json' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
 	name: 'function-details',
 	components: {
-		'function-viewer-details-sidebar': FunctionViewerDetailsSidebar
+		'function-viewer-details-sidebar': FunctionViewerDetailsSidebar,
+		'function-viewer-details-table': FunctionViewerDetailsImplementationTable
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -39,16 +55,237 @@ module.exports = exports = {
 			default: 0
 		}
 	},
+	data: function () {
+		return {
+			implementationLabels: []
+		};
+	},
 	computed: $.extend( {},
 		mapGetters( [
-			'getZObjectChildrenById'
+			'getZTesters',
+			'getUnattachedZTesters',
+			'getZkeyLabels',
+			'getZImplementations',
+			'getUnattachedZImplementations',
+			'getZkeys'
 		] ),
 		{
-			zobject: function () {
-				return this.getZObjectChildrenById( this.zobjectId );
+			implementationsHeader: function () {
+				if ( this.implementationBody.length === 0 ) {
+					return {
+						name: {
+							title: this.$i18n( 'wikilambda-implementations-none' ),
+							class: 'ext-wikilambda-function-details-table-no-text'
+						}
+					};
+				}
+
+				const headers = {
+					checkbox: {
+						title: '',
+						component: 'cdx-checkbox',
+						props: {
+							vModel: this.checkValue
+						},
+						class: 'ext-wikilambda-function-details-table-text'
+					},
+					name: {
+						title: this.$i18n( 'wikilambda-function-implementation-name-label' ),
+						class: 'ext-wikilambda-function-details-table-text'
+					},
+					language: {
+						title: this.$i18n( 'wikilambda-function-implementation-language-label' ),
+						class: 'ext-wikilambda-function-details-table-text'
+					},
+					state: {
+						title: this.$i18n( 'wikilambda-function-implementation-state-label' ),
+						class: 'ext-wikilambda-function-details-table-text'
+					},
+					testsPassed: {
+						title: this.$i18n( 'wikilambda-function-implementation-tests-passed-label' ),
+						class: 'ext-wikilambda-function-details-table-text'
+					}
+				};
+
+				return headers;
 			},
-			zObjectValue: function () {
-				return this.findKeyInArray( Constants.Z_PERSISTENTOBJECT, this.zobject );
+			implementationBody: function () {
+				const tableData = [];
+
+				for ( var item in this.getZImplementations ) {
+					var zImplementationState = this.$i18n( 'wikilambda-function-implementation-state-available' ).text();
+
+					if ( this.getUnattachedZImplementations.indexOf( this.getZImplementations[ item ] ) > -1 ) {
+						zImplementationState = this.$i18n( 'wikilambda-function-implementation-state-proposed' ).text();
+					}
+
+					var language = this.$i18n( 'wikilambda-implementation-selector-composition' );
+
+					var zImplementationObj = this.getZkeys[ this.getZImplementations[ item ] ];
+					if ( zImplementationObj[ Constants.Z_PERSISTENTOBJECT_VALUE ] &&
+						zImplementationObj[
+							Constants.Z_PERSISTENTOBJECT_VALUE
+						][
+							Constants.Z_IMPLEMENTATION_BUILT_IN
+						]
+					) {
+						language = this.$i18n( 'wikilambda-implementation-selector-built-in' );
+					}
+					if ( zImplementationObj[ Constants.Z_PERSISTENTOBJECT_VALUE ] &&
+						zImplementationObj[
+							Constants.Z_PERSISTENTOBJECT_VALUE
+						][
+							Constants.Z_IMPLEMENTATION_CODE
+						]
+					) {
+						language = zImplementationObj[
+							Constants.Z_PERSISTENTOBJECT_VALUE
+						][
+							Constants.Z_IMPLEMENTATION_CODE
+						][
+							Constants.Z_CODE_LANGUAGE
+						][
+							Constants.Z_PROGRAMMING_LANGUAGE_CODE
+						];
+					}
+
+					// save the implementation name in a list for use by the tester table
+					this.implementationLabels.push( this.getZkeyLabels[ this.getZImplementations[ item ] ] );
+
+					tableData.push( {
+						checkbox: {
+							title: '',
+							component: 'cdx-checkbox',
+							props: {
+								vModel: this.checkValue
+							},
+							class: 'ext-wikilambda-function-details-table-item'
+						},
+						name: {
+							title: this.getZkeyLabels[ this.getZImplementations[ item ] ],
+							component: 'a',
+							props: {
+								href: '/wiki/' + this.getZImplementations[ item ]
+							},
+							class: 'ext-wikilambda-function-details-implementation-table-link ext-wikilambda-function-details-table-item'
+						},
+						language: {
+							title: language,
+							class: 'ext-wikilambda-function-details-table-item'
+						},
+						state: {
+							component: 'chip',
+							props: {
+								editableContainer: false,
+								readonly: true,
+								text: zImplementationState,
+								intent: zImplementationState === this.$i18n( 'wikilambda-function-implementation-state-available' ).text() ? 'success' : 'warning'
+							},
+							class: 'ext-wikilambda-function-details-table-item'
+						},
+						// TODO (T310003): fetch these from a cached table in mediawiki
+						testsPassed: {
+							title: '-'
+						},
+						class: 'ext-wikilambda-function-details-table-item'
+					} );
+				}
+
+				return tableData;
+			},
+			// header columns for test table
+			testersHeader: function () {
+				if ( this.testersBody.length === 0 ) {
+					return {
+						name: {
+							title: this.$i18n( 'wikilambda-test-case-none' ),
+							class: 'ext-wikilambda-function-details-table-no-text'
+						}
+					};
+				}
+
+				const headers = {
+					checkbox: {
+						title: '',
+						component: 'cdx-checkbox',
+						props: {
+							vModel: this.checkValue
+						},
+						class: 'ext-wikilambda-function-details-table-text'
+					},
+					name: {
+						title: this.$i18n( 'wikilambda-function-implementation-name-label' ),
+						class: 'ext-wikilambda-function-details-table-text'
+					}
+				};
+
+				// create one column per implementation
+				for ( var item in this.implementationLabels ) {
+					headers[ this.implementationLabels[ item ] ] = {
+						title: this.implementationLabels[ item ],
+						class: 'ext-wikilambda-function-details-table-text'
+					};
+				}
+
+				headers.state = {
+					title: this.$i18n( 'wikilambda-function-implementation-state-label' ),
+					class: 'ext-wikilambda-function-details-table-text'
+				};
+
+				return headers;
+			},
+			testersBody: function () {
+				var tableData = [];
+				for ( var index in this.getZTesters ) {
+					var testerLabel = this.getZkeyLabels[ this.getZTesters[ index ] ];
+					var zTesterState = this.$i18n( 'wikilambda-function-implementation-state-available' ).text();
+
+					if ( this.getUnattachedZTesters.indexOf( this.getZTesters[ index ] ) > -1 ) {
+						zTesterState = this.$i18n( 'wikilambda-function-implementation-state-proposed' ).text();
+					}
+
+					tableData[ index ] = {};
+
+					tableData[ index ].checkbox = {
+						title: '',
+						component: 'cdx-checkbox',
+						props: {
+							vModel: this.checkValue
+						},
+						class: 'ext-wikilambda-function-details-table-item'
+					};
+
+					tableData[ index ].name = {
+						title: testerLabel,
+						component: 'a',
+						props: {
+							href: '/wiki/' + this.getZTesters[ index ]
+						},
+						class: 'ext-wikilambda-function-details-table-item'
+					};
+
+					for ( var item in this.implementationLabels ) {
+						tableData[ index ][ this.implementationLabels[ item ] ] = {
+							title: this.$i18n( 'wikilambda-tester-status-passed' ).text(),
+							component: 'cdx-icon',
+							props: {
+								icon: icons.cdxIconCheck
+							}
+						};
+					}
+
+					tableData[ index ].state = {
+						component: 'chip',
+						props: {
+							editableContainer: false,
+							readonly: true,
+							text: zTesterState,
+							intent: zTesterState === this.$i18n( 'wikilambda-function-implementation-state-available' ).text() ? 'success' : 'warning'
+						}
+					};
+				}
+
+				return tableData;
 			}
 		}
 	)
@@ -62,6 +299,8 @@ module.exports = exports = {
 	display: flex;
 	-webkit-flex-flow: row wrap;
 	flex-flow: row wrap;
+	row-gap: 10px;
+	column-gap: 80px;
 
 	&__summary:extend(.ext-wikilambda-edit__text-regular) {
 		color: @wmui-color-base30;
@@ -70,8 +309,9 @@ module.exports = exports = {
 		padding-top: 16px;
 	}
 
-	&__sidebar {
-		width: 30%;
+	&__tables {
+		flex: 1;
+		flex-grow: 1;
 	}
 
 	&__action {
