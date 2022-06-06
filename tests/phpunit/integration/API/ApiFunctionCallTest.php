@@ -1,5 +1,9 @@
 <?php
 
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
+
+use ApiTestCase;
+use ApiUsageException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;

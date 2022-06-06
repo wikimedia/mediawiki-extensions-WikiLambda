@@ -1,6 +1,11 @@
 <?php
 
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
+
+use ApiTestCase;
+use DeferredUpdates;
 use MediaWiki\MediaWikiServices;
+use Title;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiZObjectFetcher
