@@ -18,22 +18,31 @@ use MediaWiki\Extension\WikiLambda\MockOrchestrator;
 class ApiFunctionCallTest extends ApiTestCase {
 
 	/**
+	 * Reads file contents from test data directory.
+	 * @param string $fileName
+	 * @return string file contents
+	 * @codeCoverageIgnore
+	 */
+	private function readTestFile( $fileName ): string {
+		$baseDir = __DIR__ .
+			DIRECTORY_SEPARATOR .
+			'..' .
+			DIRECTORY_SEPARATOR .
+			'..' .
+			DIRECTORY_SEPARATOR .
+			'test_data';
+		$fullFile = $baseDir . DIRECTORY_SEPARATOR . $fileName;
+		return file_get_contents( $fullFile );
+	}
+
+	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::execute
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::executeGenerator
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::run
 	 * @group Broken
 	 */
 	public function testExecute() {
-		$inputFile = __DIR__ .
-			DIRECTORY_SEPARATOR .
-			'..' .
-			DIRECTORY_SEPARATOR .
-			'..' .
-			DIRECTORY_SEPARATOR .
-			'test_data' .
-			DIRECTORY_SEPARATOR .
-			'Z902_false.json';
-		$Z902 = file_get_contents( $inputFile );
+		$Z902 = $this->readTestFile( 'Z902_false.json' );
 		$Z902 = preg_replace( '/[\s\n]/', '', $Z902 );
 		$result = $this->doApiRequest( [
 			'action' => 'wikilambda_function_call',
@@ -57,16 +66,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 			'"Z40K1":{"Z1K1":"Z6","Z6K1":"Z42"}}';
 		MockOrchestrator::mock()->append( new Response( 200, [], $expectedString ) );
 
-		$inputFile = __DIR__ .
-			DIRECTORY_SEPARATOR .
-			'..' .
-			DIRECTORY_SEPARATOR .
-			'..' .
-			DIRECTORY_SEPARATOR .
-			'test_data' .
-			DIRECTORY_SEPARATOR .
-			'Z902_false.json';
-		$Z902 = file_get_contents( $inputFile );
+		$Z902 = $this->readTestFile( 'Z902_false.json' );
 		$Z902 = preg_replace( '/[\s\n]/', '', $Z902 );
 
 		$result = $this->doApiRequest( [
@@ -80,38 +80,30 @@ class ApiFunctionCallTest extends ApiTestCase {
 		$this->assertEquals( $expected, json_decode( $orchestrationResult['data'] ) );
 	}
 
-	// Temporarily removed to test on CI
+	/**
+	 * Temporarily removed to test on CI
+	 *
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::executeGenerator
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::run
+	 * @group Broken
+	 */
+	public function testExecuteRequestFailedWithMock() {
+		$expectedError = 'Not found.';
+		$response = new Response();
+		$response = $response->withStatus( 404, $expectedError );
+		MockOrchestrator::mock()->append( $response );
 
-	// /**
-	//  * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::execute
-	//  * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::executeGenerator
-	//  * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::run
-	//  */
-	// public function testExecuteRequestFailedWithMock() {
-	// 	$expectedError = 'Not found.';
-	// 	$response = new Response();
-	// 	$response = $response->withStatus( 404, $expectedError );
-	// 	MockOrchestrator::mock()->append( $response );
+		$Z902 = $this->readTestFile( 'Z902_false.json' );
+		$Z902 = preg_replace( '/[\s\n]/', '', $Z902 );
 
-	// 	$inputFile = __DIR__ .
-	// 		DIRECTORY_SEPARATOR .
-	// 		'..' .
-	// 		DIRECTORY_SEPARATOR .
-	// 		'..' .
-	// 		DIRECTORY_SEPARATOR .
-	// 		'test_data' .
-	// 		DIRECTORY_SEPARATOR .
-	// 		'Z902_false.json';
-	// 	$Z902 = file_get_contents( $inputFile );
-	// 	$Z902 = preg_replace( '/[\s\n]/', '', $Z902 );
+		$this->expectException( ApiUsageException::class );
 
-	// 	$this->expectException( ApiUsageException::class );
-
-	// 	$result = $this->doApiRequest( [
-	// 		'action' => 'wikilambda_function_call',
-	// 		'wikilambda_function_call_zobject' => $Z902
-	// 	] );
-	// }
+		$result = $this->doApiRequest( [
+			'action' => 'wikilambda_function_call',
+			'wikilambda_function_call_zobject' => $Z902
+		] );
+	}
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::execute
@@ -119,16 +111,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::run
 	 */
 	public function testExecuteConnectionFailedWithMock() {
-		$inputFile = __DIR__ .
-			DIRECTORY_SEPARATOR .
-			'..' .
-			DIRECTORY_SEPARATOR .
-			'..' .
-			DIRECTORY_SEPARATOR .
-			'test_data' .
-			DIRECTORY_SEPARATOR .
-			'Z902_false.json';
-		$Z902 = file_get_contents( $inputFile );
+		$Z902 = $this->readTestFile( 'Z902_false.json' );
 		$Z902 = preg_replace( '/[\s\n]/', '', $Z902 );
 
 		$expectedError = 'Could not resolve host <mock>, ' .
