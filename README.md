@@ -49,28 +49,40 @@ Done! Navigate to the newly created `Z1` page on your wiki to verify that the ex
 
 ### Orchestration and evaluation
 
-If you would like to use the orchestrator/evaluator (e.g., to run user-defined and built-in functions), please perform the following additional steps:
+#### Default experience using Beta Wikifunctions
 
-* Copy the contents of the `services` block in `mediawiki/extensions/WikiLambda/docker-compose.sample.yml` to the analogous `services` block in your `mediawiki/docker-compose.override.yml`
-* If you would instead like to use a local version of the function orchestrator or evaluator, carry out the following steps.
+On install, the extension will try to use the orchestrator and evaluator services of the [Beta Cluster version of Wikifunctions](https://wikifunctions.beta.wmflabs.org/). The services provide for running user-defined and built-in functions in a secure, scalable environment. The default configuration will let you do rudimentary tests with the built-in objects, but not with custom on-wiki content (as they are pointed at the content of Beta Wikifunctions).
 
-  ```
-  # First, get Blubber: https://wikitech.wikimedia.org/wiki/Blubber/Download#Blubber_as_a_(micro)Service
-  # Then, from the root of your function-orchestrator installation, run
-  blubber .pipeline/blubber.yaml development | docker build -t local-orchestrator -f - .
-  ```
+You can test your installation by running the PHPUnit test suite as described in the MediaWiki install instructions: `docker-compose exec mediawiki php tests/phpunit/phpunit.php extensions/WikiLambda/tests/phpunit/integration/API/ApiFunctionCallTest.php`. If the tests all pass, your installation has successfully called the configured function orchestrator with the calls, executed them, and got the expected results back. Congratulations!
 
-  After that, in `mediawiki/docker-compose.override.yaml`, replace `image: docker-registry...` in the `function-orchestrator` service stanza to read `image: local-orchestrator:latest`. If changing the evaluator, follow the same steps but for the evaluator image.
+You can evaluate an arbitrary function call by navigating to `localhost:8080/wiki/Special:CreateZObject`, adding a new key/value pair whose value is of type `Z7`, and selecting a function.
 
-* If you want to use a different port or your checkout of MediaWiki is not in a directory called 'mediawiki', you may need to change the WikiLambdaOrchestratorLocation configuration from the default of `mediawiki_function-orchestrator_1:6254` in your LocalSettings file, e.g. to `core_function-orchestrator_1:6254` you would add:
+#### Local services
+
+If you would like to use your own installation of the function orchestrator and evaluator services, please perform the following additional step:
+
+* Copy the contents of the `services` block in `mediawiki/extensions/WikiLambda/docker-compose.sample.yml` to the analogous `services` block in your `mediawiki/docker-compose.override.yml`.
+* If you want to use a different port or name for your orchestrator service, you will need to set the `$wgWikiLambdaOrchestratorLocation` configuration from the default of `mediawiki_function-orchestrator_1:6254` in your `LocalSettings.php` file, e.g. to `core_function-orchestrator_1:6254` you would add:
 
  ```
  $wgWikiLambdaOrchestratorLocation = "core_function-orchestrator_1:6254";
  ```
 
-* You can test your installation by removing `@group: Broken` from `mediawiki/extensions/WikiLambda/tests/phpunit/integration/API/ApiFunctionCallTest.php` and running the PHPUnit test suite as described in the MediaWiki install instructions: `docker-compose exec mediawiki php tests/phpunit/phpunit.php extensions/WikiLambda/tests/phpunit/integration/API/ApiFunctionCallTest.php`.
-* You can evaluate an arbitrary function call by navigating to `localhost:8080/wiki/Special:CreateZObject`, adding a new key/value pair whose value is of type `Z7`, and selecting a function.
-* Note that if you are running the evaluator at a different relative URL than the default, you will have to change the value of WikiLambdaEvaluatorLocation in your local settings appropriately.
+* If your wiki is not called 'mediawiki-web', e.g. because your checkout of MediaWiki is not in a directory called 'mediawiki', you will need to set `$wgWikiLambdaOrchestratorLocation` in your `LocalSettings.php` and make similar edits to the `environment` variables you have set in your `mediawiki/docker-compose.override.yml` file.
+
+This will provide you with your own orchestrator and evaluator service, pointed at your wiki. You can now use this for local content as well as built-in content.
+
+#### Locally-built services for development
+
+If you would instead like to develop changes to the function orchestrator or evaluator, you will need to use a locally-built version of the services. To do this for the orchestrator:
+
+* [Get Blubber](https://wikitech.wikimedia.org/wiki/Blubber/Download#Blubber_as_a_(micro)Service) so you can build the service images
+* In a directory outside of your MediaWiki checkout, clone the services via `git clone --recurse-submodules --remote-submodules https://gerrit.wikimedia.org/r/mediawiki/services/function-orchestrator`.
+* From the root of your function-orchestrator installation, run
+  `blubber .pipeline/blubber.yaml development | docker build -t local-orchestrator -f - .`
+* Alter `mediawiki/docker-compose.override.yaml` to replace `image: docker-registry...` in the `function-orchestrator` service stanza to read `image: local-orchestrator:latest`.
+
+If changing the evaluator, follow the same steps but for the evaluator image.
 
 ### Data Model (vuex)
 

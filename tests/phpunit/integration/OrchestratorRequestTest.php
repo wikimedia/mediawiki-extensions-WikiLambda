@@ -1,19 +1,19 @@
 <?php
 
-namespace MediaWiki\Extension\WikiLambda\Tests;
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
-use MediaWiki\Extension\WikiLambda\OrchestratorInterface;
+use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 
 /**
- * @coversDefaultClass MediaWiki\Extension\WikiLambda\OrchestratorInterface;
+ * @coversDefaultClass MediaWiki\Extension\WikiLambda\OrchestratorRequest;
  * @group WikiLambda
  * @group medium
  */
-class OrchestratorInterfaceTest extends \MediaWikiUnitTestCase {
+class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::execute
@@ -38,7 +38,7 @@ class OrchestratorInterfaceTest extends \MediaWikiUnitTestCase {
 		$Z902 = file_get_contents( $inputFile );
 		$Z902 = preg_replace( '/[\s\n]/', '', $Z902 );
 
-		$orchestrator = new OrchestratorInterface( $client );
+		$orchestrator = new OrchestratorRequest( $client );
 		$result = $orchestrator->orchestrate( json_decode( $Z902 ) )->getBody();
 		$this->assertEquals( json_decode( $expectedString ), json_decode( $result ) );
 	}

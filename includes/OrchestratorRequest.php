@@ -11,15 +11,23 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * @codeCoverageIgnore
  */
-class OrchestratorBase {
+class OrchestratorRequest {
 
 	/** @var Client */
 	protected $guzzleClient;
+
+	/**
+	 * @param ClientInterface $client GuzzleHttp Client used for requests
+	 */
+	public function __construct( ClientInterface $client ) {
+		$this->guzzleClient = $client;
+	}
 
 	/**
 	 * @param \stdClass|array $query
@@ -27,6 +35,7 @@ class OrchestratorBase {
 	 */
 	public function orchestrate( $query ): ResponseInterface {
 		// TODO: Use postAsync here.
+
 		return $this->guzzleClient->post( '/1/v1/evaluate/', [
 			'json' => $query,
 			'headers' => [

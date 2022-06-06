@@ -16,8 +16,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
-use MediaWiki\Extension\WikiLambda\MockOrchestrator;
-use MediaWiki\Extension\WikiLambda\OrchestratorInterface;
+use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
@@ -35,7 +34,7 @@ class ApiPerformTest extends ApiBase {
 	/** @var ZObjectStore */
 	protected $zObjectStore;
 
-	/** @var OrchestratorInterface */
+	/** @var OrchestratorRequest */
 	protected $orchestrator;
 
 	/** @var string */
@@ -46,16 +45,11 @@ class ApiPerformTest extends ApiBase {
 
 		$this->zObjectStore = $zObjectStore;
 
-		if ( defined( 'MW_PHPUNIT_TEST' ) ) {
-			$this->orchestrator = MockOrchestrator::getInstance();
-			$this->orchestratorHost = 'mock';
-		} else {
-			$config = MediaWikiServices::getInstance()->
-				getConfigFactory()->makeConfig( 'WikiLambda' );
-			$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
-			$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
-			$this->orchestrator = new OrchestratorInterface( $client );
-		}
+		$config = MediaWikiServices::getInstance()->
+			getConfigFactory()->makeConfig( 'WikiLambda' );
+		$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
+		$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
+		$this->orchestrator = new OrchestratorRequest( $client );
 	}
 
 	public function execute() {
