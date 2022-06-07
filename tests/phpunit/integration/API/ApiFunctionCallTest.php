@@ -81,12 +81,9 @@ class ApiFunctionCallTest extends ApiTestCase {
 	}
 
 	/**
-	 * Temporarily removed to test on CI
-	 *
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::execute
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::executeGenerator
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::run
-	 * @group Broken
 	 */
 	public function testExecuteRequestFailedWithMock() {
 		$expectedError = 'Not found.';
@@ -97,12 +94,13 @@ class ApiFunctionCallTest extends ApiTestCase {
 		$Z902 = $this->readTestFile( 'Z902_false.json' );
 		$Z902 = preg_replace( '/[\s\n]/', '', $Z902 );
 
-		$this->expectException( ApiUsageException::class );
-
 		$result = $this->doApiRequest( [
 			'action' => 'wikilambda_function_call',
 			'wikilambda_function_call_zobject' => $Z902
 		] );
+
+		$orchestrationResult = $result[0]['query']['wikilambda_function_call'];
+		$this->assertArrayNotHasKey( 'success', $orchestrationResult );
 	}
 
 	/**
