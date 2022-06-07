@@ -39,18 +39,18 @@ class ApiFunctionCallTest extends ApiTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::execute
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::executeGenerator
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::run
-	 * @group Broken
 	 */
 	public function testExecute() {
 		$Z902 = $this->readTestFile( 'Z902_false.json' );
 		$Z902 = preg_replace( '/[\s\n]/', '', $Z902 );
+		$expectedString = '{"Z1K1":{"Z1K1":"Z9","Z9K1":"Z40"},"Z40K1":{"Z1K1":"Z6","Z6K1":"Z42"}}';
+		MockOrchestrator::mock()->append( new Response( 200, [], $expectedString ) );
+
 		$result = $this->doApiRequest( [
 			'action' => 'wikilambda_function_call',
 			'wikilambda_function_call_zobject' => $Z902
 		] );
-		$expected = json_decode(
-			'{"Z1K1":{"Z1K1":"Z9","Z9K1":"Z40"},"Z40K1":{"Z1K1":"Z6","Z6K1":"Z42"}}'
-		);
+		$expected = json_decode( $expectedString );
 		$orchestrationResult = $result[0]['query']['wikilambda_function_call'];
 		$this->assertTrue( $orchestrationResult['success'] );
 		$this->assertEquals( $expected, json_decode( $orchestrationResult['data'] ) );
