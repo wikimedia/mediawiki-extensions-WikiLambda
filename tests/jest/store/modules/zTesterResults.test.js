@@ -130,9 +130,7 @@ describe( 'zTesterResults Vuex module', function () {
 					resolve( {
 						query: {
 							wikilambda_perform_test: {
-								Tested: {
-									data: JSON.stringify( data )
-								}
+								data: JSON.stringify( data )
 							}
 						}
 					} );

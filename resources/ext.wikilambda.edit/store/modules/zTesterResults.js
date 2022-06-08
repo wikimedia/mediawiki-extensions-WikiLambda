@@ -280,7 +280,7 @@ module.exports = exports = {
 				// eslint-disable-next-line camelcase
 				wikilambda_perform_test_nocache: payload.nocache || false
 			} ).then( function ( data ) {
-				var results = JSON.parse( data.query.wikilambda_perform_test.Tested.data );
+				var results = JSON.parse( data.query.wikilambda_perform_test.data );
 
 				if ( !Array.isArray( results ) &&
 						results[ Constants.Z_RESPONSEENVELOPE_METADATA ] !== Constants.Z_NOTHING ) {

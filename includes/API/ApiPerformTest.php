@@ -80,9 +80,6 @@ class ApiPerformTest extends ApiBase {
 		try {
 			$response = $this->orchestrator->performTest( $query );
 			$result = [ 'success' => true, 'data' => $response->getBody() ];
-			$pageResult->addValue(
-				// TODO: Remove "Tested".
-				[ 'query', $this->getModuleName() ], "Tested", $result );
 		} catch ( ConnectException $exception ) {
 			$this->dieWithError( [ "apierror-wikilambda_perform_test-not-connected", $this->orchestratorHost ] );
 		} catch ( ClientException | ServerException $exception ) {
@@ -99,10 +96,8 @@ class ApiPerformTest extends ApiBase {
 			] );
 
 			$result = [ 'data' => $zError ];
-			$pageResult->addValue(
-				// TODO: Remove "Tested".
-				[ 'query', $this->getModuleName() ], "Tested", $result );
 		}
+		$pageResult->addValue( [ 'query' ], $this->getModuleName(), $result );
 	}
 
 	/**

@@ -87,19 +87,14 @@ class ApiFunctionCall extends ApiBase {
 		try {
 			$response = $this->orchestrator->orchestrate( $jsonQuery );
 			$result = [ 'success' => true, 'data' => $response->getBody() ];
-			$pageResult->addValue(
-				// TODO: Remove "Orchestrated".
-				[ 'query', $this->getModuleName() ], "Orchestrated", $result );
 		} catch ( ConnectException $exception ) {
 			$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
 		} catch ( ClientException | ServerException $exception ) {
 			$zErrorObject = self::wrapError( $exception->getResponse()->getReasonPhrase(), $zObject );
 			$zResponseObject = new ZResponseEnvelope( null, $zErrorObject );
 			$result = [ 'data' => $zResponseObject->getSerialized() ];
-			$pageResult->addValue(
-				// TODO: Remove "Orchestrated".
-				[ 'query', $this->getModuleName() ], "Orchestrated", $result );
 		}
+		$pageResult->addValue( [ 'query' ], $this->getModuleName(), $result );
 	}
 
 	/**
@@ -290,7 +285,7 @@ class ApiFunctionCall extends ApiBase {
 		// Now we know that the request has not failed before it even got to the orchestrator, get the response
 		// JSON string as a ZResponseEnvelope (falling back to an empty string in case it's unset).
 		$response = ZObjectFactory::create(
-			$outerResponse['query']['wikilambda_function_call']['Orchestrated']['data'] ?? ''
+			$outerResponse['query']['wikilambda_function_call']['data'] ?? ''
 		);
 
 		if ( !( $response instanceof ZResponseEnvelope ) ) {

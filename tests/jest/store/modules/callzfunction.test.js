@@ -56,7 +56,7 @@ describe( 'callZFunction Vuex module', function () {
 						query: {
 							// eslint-disable-next-line camelcase
 							wikilambda_function_call: {
-								Orchestrated: { data: expectedData }
+								data: expectedData
 							}
 						}
 					} );

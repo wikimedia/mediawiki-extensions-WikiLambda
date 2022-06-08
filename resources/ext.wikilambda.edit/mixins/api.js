@@ -25,7 +25,7 @@ module.exports = exports = {
 				// eslint-disable-next-line compat/compat
 				return new Promise( function ( resolve ) {
 					var normalResponse = JSON.parse(
-							data.query.wikilambda_function_call.Orchestrated.data
+							data.query.wikilambda_function_call.data
 						),
 						response = !shouldNormalize ? canonicalize( normalResponse ) : normalResponse,
 						result = response[ Constants.Z_RESPONSEENVELOPE_VALUE ],

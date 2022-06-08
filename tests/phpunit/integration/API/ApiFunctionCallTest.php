@@ -51,7 +51,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 		$expected = json_decode(
 			'{"Z1K1":{"Z1K1":"Z9","Z9K1":"Z40"},"Z40K1":{"Z1K1":"Z6","Z6K1":"Z42"}}'
 		);
-		$orchestrationResult = $result[0]['query']['wikilambda_function_call']['Orchestrated'];
+		$orchestrationResult = $result[0]['query']['wikilambda_function_call'];
 		$this->assertTrue( $orchestrationResult['success'] );
 		$this->assertEquals( $expected, json_decode( $orchestrationResult['data'] ) );
 	}
@@ -75,7 +75,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 		] );
 
 		$expected = json_decode( $expectedString );
-		$orchestrationResult = $result[0]['query']['wikilambda_function_call']['Orchestrated'];
+		$orchestrationResult = $result[0]['query']['wikilambda_function_call'];
 		$this->assertTrue( $orchestrationResult['success'] );
 		$this->assertEquals( $expected, json_decode( $orchestrationResult['data'] ) );
 	}
