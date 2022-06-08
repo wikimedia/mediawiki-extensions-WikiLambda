@@ -29,12 +29,12 @@ module.exports = exports = {
 						),
 						response = !shouldNormalize ? canonicalize( normalResponse ) : normalResponse,
 						result = response[ Constants.Z_RESPONSEENVELOPE_VALUE ],
-						error = response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
+						metadata = response[ Constants.Z_RESPONSEENVELOPE_METADATA ];
 
 					resolve( {
 						response: response,
 						result: result,
-						error: error
+						metadata: metadata
 					} );
 				} );
 			} );
