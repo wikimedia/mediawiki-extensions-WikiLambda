@@ -330,15 +330,10 @@ class ZObjectContentHandler extends ContentHandler {
 			$isoCode = Html::element(
 				"span
 				title=$currLangName
-				style='
-					background-color: #EAECF0;
-					border: 1px solid #A2A9B1;
-					border-radius: 12px;
-					padding: 0 4px;'
 				",
 				[
 					'class' => 'ext-wikilambda-page-header-title
-						ext-wikilambda-page-header-title--iso-code',
+						ext-wikilambda-viewpage-header--iso-code',
 				],
 				$currLangCode
 			);
@@ -349,16 +344,30 @@ class ZObjectContentHandler extends ContentHandler {
 			wfMessage( 'wikilambda-special-function-definition-title' )->text()
 		);
 
+		$labelText = $zobject->getLabels()->getStringForLanguageOrEnglish(
+			$userLang,
+			$returnPlaceholder = true,
+			$isTitle = true
+		);
+
+		$untitledStyle = $labelText === wfMessage( 'wikilambda-editor-default-name' )->text() ?
+			'ext-wikilambda-viewpage-header--title-untitled' : null;
+
 		$label = Html::element(
 			'span',
 			[
 				'class' => 'ext-wikilambda-viewpage-header-title
 					ext-wikilambda-viewpage-header-title--function-name'
+					. ' ' . $untitledStyle
 			],
-			$zobject->getLabels()->getStringForLanguageOrEnglish( $userLang )
+			$labelText
 		);
+
 		$id = Html::element(
-			'span', [ 'class' => 'ext-wikilambda-viewpage-header-zid' ],
+			'span',
+			[
+				'class' => 'ext-wikilambda-viewpage-header-zid'
+			],
 			$title->getText()
 		);
 

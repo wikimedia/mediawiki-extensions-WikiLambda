@@ -30,6 +30,7 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::isLanguageProvidedValue
 	 * @covers ::getStringForLanguage
 	 * @covers ::getStringForLanguageCode
+	 * @covers ::getStringForLanguageOrEnglish
 	 * @covers ::isValid
 	 * @covers ::getDefinition
 	 */
@@ -100,11 +101,53 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 			$testObject->getStringForLanguage( $this->makeLanguage( 'dsb' ) )
 		);
 
-		// Test non-fall-back.
+		// Test non-fall-back when not title.
 		$chineseLang = $this->makeLanguage( 'zh' );
 		$this->assertSame(
 			wfMessage( 'wikilambda-multilingualstring-nofallback' )->inLanguage( $chineseLang )->text(),
 			$testObject->getStringForLanguage( $chineseLang )
+		);
+
+		// Test english fallback
+		$this->assertSame(
+			'Demonstration item',
+			$testObject->getStringForLanguageOrEnglish( $chineseLang, false, true, true )
+		);
+	}
+
+	/**
+	 * @covers ::getStringForLanguage
+	 */
+	public function testTitleCreation() {
+		$englishLang = $this->makeLanguage( 'en' );
+		// test title comes back correctly when it exists
+		$testObject = new ZMultiLingualString( [] );
+		$this->assertTrue( $testObject->isValid() );
+
+		$testObject = new ZMultiLingualString( [
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['en'] ), new ZString( 'English Title' )
+			),
+		] );
+
+		$this->assertSame(
+			'English Title',
+			$testObject->getStringForLanguage( $englishLang, false, true, true )
+		);
+
+		// test 'wikilambda-editor-default-name' comes back when title does not exist
+		$testObject = new ZMultiLingualString( [] );
+		$this->assertTrue( $testObject->isValid() );
+
+		$this->assertSame(
+			wfMessage( 'wikilambda-editor-default-name' )->inLanguage( $englishLang )->text(),
+			$testObject->getStringForLanguage( $englishLang, true, true, true )
+		);
+
+		// test returns 'null' if no placeholder is requested
+		$this->assertSame(
+			null,
+			$testObject->getStringForLanguage( $englishLang, false, false, false )
 		);
 	}
 

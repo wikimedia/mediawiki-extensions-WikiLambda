@@ -5,9 +5,22 @@
  * @license MIT
  */
 
+@import '../lib/wikimedia-ui-base.less';
+
 .ext-wikilambda-viewpage-header {
 	&-label {
 		font-size: 18em;
+	}
+
+	&--title-untitled {
+		color: @wmui-color-base50;
+	}
+
+	&--iso-code {
+		background-color: @wmui-color-base80;
+		border: 1px solid @wmui-color-base50;
+		border-radius: 12px;
+		padding: 0 4px;
 	}
 
 	&-zid {
