@@ -230,7 +230,7 @@
 	"wikilambda-zerror": "שגיאת Z מסוג $1",
 	"wikilambda-optional": "לא חובה",
 	"wikilambda-continue-editing": "המשך עריכה",
-	"wikilambda-discard-edits": "ביטול העריכות",
+	"wikilambda-discard-edits": "זריקת העריכות",
 	"wikilambda-function-about-summary": "הפונקציה הזאת הופכת מילה ביחיד באנגלית למילה ברבים, אבל אנגלית היא שפה מוזרה ויכול להיות שהיא תפלוט משהו לא נכון על מילים נדירות. נסו אותה!",
 	"wikilambda-function-details-summary": "כל אחד יכול להציע מימוש חדש או בדיקה חדשה. קוד מוצע נסקר על־ידי קהילת ויקיפונקציות לפני שהוא הופך למימוש זמין או בדיקה מאושרת.",
 	"wikilambda-function-details-summary-learn-more": "מידע נוסף על תהליך הסקירה.",
