@@ -187,6 +187,7 @@ class Hooks implements
 	public function onLoadExtensionSchemaUpdates( $updater ) {
 		$db = $updater->getDB();
 		$type = $db->getType();
+		$dir = __DIR__ . '/../sql';
 
 		if ( !in_array( $type, [ 'mysql', 'sqlite', 'postgres' ] ) ) {
 			wfWarn( "Database type '$type' is not supported by the WikiLambda extension." );
@@ -200,7 +201,7 @@ class Hooks implements
 		];
 
 		foreach ( $tables as $key => $table ) {
-			$updater->addExtensionTable( 'wikilambda_' . $table, __DIR__ . "/sql/table-$table-generated-$type.sql" );
+			$updater->addExtensionTable( 'wikilambda_' . $table, "$dir/$type/table-$table.sql" );
 		}
 
 		// Database updates:
@@ -208,14 +209,14 @@ class Hooks implements
 		$updater->addExtensionField(
 			'wikilambda_zobject_labels',
 			'wlzl_label_primary',
-			__DIR__ . "/sql/abstractSchemaChanges/patch-add-primary-label-field-generated-$type.sql"
+			"$dir/$type/patch-add-primary-label-field.sql"
 		);
 
 		// (T262089) Add return type field to labels table
 		$updater->addExtensionField(
 			'wikilambda_zobject_labels',
 			'wlzl_return_type',
-			__DIR__ . "/sql/abstractSchemaChanges/patch-add-return-type-field-generated-$type.sql"
+			"$dir/$type/patch-add-return-type-field.sql"
 		);
 
 		$updater->addExtensionUpdate( [ [ __CLASS__, 'createInitialContent' ] ] );
