@@ -39,8 +39,10 @@ class ZObjectEditAction extends Action {
 		$label = Html::element(
 			'span',
 			[
-				'class' => 'ext-wikilambda-editpage-header-title
-					ext-wikilambda-editpage-header-title--function-name'
+				'class' => [
+					'ext-wikilambda-editpage-header-title',
+					'ext-wikilambda-editpage-header-title--function-name'
+				]
 			],
 			$targetZObject->getLabels()->getStringForLanguageOrEnglish( $this->getLanguage() )
 		);

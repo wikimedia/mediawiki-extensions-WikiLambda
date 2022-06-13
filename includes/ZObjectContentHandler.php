@@ -332,8 +332,10 @@ class ZObjectContentHandler extends ContentHandler {
 				title=$currLangName
 				",
 				[
-					'class' => 'ext-wikilambda-page-header-title
-						ext-wikilambda-viewpage-header--iso-code',
+					'class' => [
+						'ext-wikilambda-page-header-title',
+						'ext-wikilambda-viewpage-header--iso-code'
+					],
 				],
 				$currLangCode
 			);
@@ -356,9 +358,11 @@ class ZObjectContentHandler extends ContentHandler {
 		$label = Html::element(
 			'span',
 			[
-				'class' => 'ext-wikilambda-viewpage-header-title
-					ext-wikilambda-viewpage-header-title--function-name'
-					. ' ' . $untitledStyle
+				'class' => [
+					'ext-wikilambda-viewpage-header-title',
+					'ext-wikilambda-viewpage-header-title--function-name',
+					$untitledStyle
+				]
 			],
 			$labelText
 		);
