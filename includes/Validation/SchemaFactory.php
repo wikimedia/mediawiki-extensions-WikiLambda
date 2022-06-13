@@ -85,9 +85,9 @@ class SchemaFactory {
 	 */
 	public function create( $ZID ) {
 		if ( $ZID == "Z13" ) {
-			$ZID = "Z10";
+			$ZID = "LIST";
 		} elseif ( $ZID == "Z41" || $ZID == "Z42" ) {
-			$ZID = "Z10";
+			$ZID = "Z40";
 		}
 		// FIXME (T300514): Assert that this->loader is not null.
 		$schema = $this->loader->loadSchema( $ZID );

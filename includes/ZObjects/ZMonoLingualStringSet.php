@@ -47,7 +47,7 @@ class ZMonoLingualStringSet extends ZObject {
 					'required' => true,
 				],
 				ZTypeRegistry::Z_MONOLINGUALSTRINGSET_VALUE => [
-					'type' => ZTypeRegistry::Z_LIST,
+					'type' => ZTypeRegistry::HACK_ARRAY_Z_STRING,
 					'required' => true,
 				],
 			],

@@ -29,7 +29,7 @@ final class SchemaFactoryTest extends TestCase {
 	 */
 	public function testSchema(): void {
 		$factory = SchemaFactory::getNormalFormFactory();
-		$schema = $factory->create( "Z10" );
+		$schema = $factory->create( "Z3" );
 		$this->assertInstanceOf( SchemaWrapper::class, $schema );
 	}
 

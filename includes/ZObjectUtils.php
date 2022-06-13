@@ -14,7 +14,6 @@ use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunction;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
@@ -226,24 +225,6 @@ class ZObjectUtils {
 						&& array_key_exists( ZTypeRegistry::Z_REFERENCE_VALUE, $output )
 						&& self::isValidId( $output[ ZTypeRegistry::Z_REFERENCE_VALUE ] ) ) {
 						return self::canonicalize( $output[ ZTypeRegistry::Z_REFERENCE_VALUE ] );
-					}
-
-					// Type is a ZList
-					// TODO (T298133): Remove whenever we stop supporting Z10s
-					if ( $type === ZTypeRegistry::Z_LIST ) {
-						if ( !array_key_exists( ZTypeRegistry::Z_LIST_HEAD, $output )
-							&& !array_key_exists( ZTypeRegistry::Z_LIST_TAIL, $output ) ) {
-							return [];
-						}
-
-						if ( !array_key_exists( ZTypeRegistry::Z_LIST_TAIL, $output ) ) {
-							return [ self::canonicalize( $output[ ZTypeRegistry::Z_LIST_HEAD ] ) ];
-						}
-
-						return array_merge(
-							[ self::canonicalize( $output[ ZTypeRegistry::Z_LIST_HEAD ] ) ],
-							self::canonicalize( $output[ ZTypeRegistry::Z_LIST_TAIL ] )
-						);
 					}
 				}
 
@@ -749,14 +730,13 @@ class ZObjectUtils {
 	}
 
 	/**
-	 * Given an array or a ZList, returns an array that can be iterated over
+	 * Given an array or a ZTypedList, returns an array that can be iterated over
 	 *
-	 * @param array|ZList|ZTypedList $list
+	 * @param array|ZTypedList $list
 	 * @return array
 	 */
 	public static function getIterativeList( $list ): array {
-		// TODO (T298133): Remove support for ZList
-		if ( ( $list instanceof ZList ) || ( $list instanceof ZTypedList ) ) {
+		if ( $list instanceof ZTypedList ) {
 			return $list->getAsArray();
 		}
 		return $list;
@@ -905,8 +885,7 @@ class ZObjectUtils {
 	public static function getLabelOfErrorTypeKey( $key, $zobject, $lang ): string {
 		$keys = $zobject->getInnerZObject()->getValueByKey( ZTypeRegistry::Z_ERRORTYPE_KEYS );
 
-		// TODO (T298133): Remove support for ZList
-		if ( !is_array( $keys ) && !( $keys instanceof ZList ) && !( $keys instanceof ZTypedList ) ) {
+		if ( !is_array( $keys ) && !( $keys instanceof ZTypedList ) ) {
 			return $key;
 		}
 

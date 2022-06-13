@@ -29,7 +29,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const BUILTIN_ANY = 'Any';
 	// Is there a better way to represent this direct string (as opposed to a ZString?)
 	public const BUILTIN_STRING = 'String';
-	// Is there a better way to represent this direct array (as opposed to a ZList?)
+	// Is there a better way to represent this direct array
 	public const BUILTIN_ARRAY = 'Array';
 	// Needed until we have a ZReference type
 	public const BUILTIN_REFERENCE = 'Reference';
@@ -43,6 +43,8 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const HACK_LANGUAGE = 'Language';
 	// Needed until we have sub-types
 	public const HACK_ARRAY_Z_KEY = 'Array(ZKey)';
+	// Needed until we have sub-types
+	public const HACK_ARRAY_Z_STRING = 'Array(ZString)';
 	// Needed until we have sub-types
 	public const HACK_ARRAY_Z_MONOLINGUALSTRING = 'Array(ZMonoLingualString)';
 	// Needed until we have sub-types

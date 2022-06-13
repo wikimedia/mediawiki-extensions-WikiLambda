@@ -270,7 +270,7 @@ class Hooks implements
 			}
 		);
 
-		// Naturally sort, so Z2/Persistent Object gets created before Z10/List etc.
+		// Naturally sort, so Z2/Persistent Object gets created before others
 		natsort( $initialDataToLoadListing );
 
 		$inserted = [];
