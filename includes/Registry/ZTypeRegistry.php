@@ -91,10 +91,6 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_REFERENCE = 'Z9';
 	public const Z_REFERENCE_VALUE = 'Z9K1';
 
-	public const Z_LIST = 'Z10';
-	public const Z_LIST_HEAD = 'Z10K1';
-	public const Z_LIST_TAIL = 'Z10K2';
-
 	public const Z_MONOLINGUALSTRING = 'Z11';
 	public const Z_MONOLINGUALSTRING_LANGUAGE = 'Z11K1';
 	public const Z_MONOLINGUALSTRING_VALUE = 'Z11K2';
@@ -151,7 +147,6 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_FUNCTIONCALL => 'ZFunctionCall',
 		self::Z_FUNCTION => 'ZFunction',
 		self::Z_REFERENCE => 'ZReference',
-		self::Z_LIST => 'ZList',
 		self::Z_MONOLINGUALSTRING => 'ZMonoLingualString',
 		self::Z_MULTILINGUALSTRING => 'ZMultiLingualString',
 		self::Z_RESPONSEENVELOPE => 'ZResponseEnvelope',
