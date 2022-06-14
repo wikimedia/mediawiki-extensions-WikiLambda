@@ -150,6 +150,7 @@ module.exports = exports = {
 							Z2K3: {
 								Z1K1: Constants.Z_MULTILINGUALSTRING,
 								Z12K1: [
+									Constants.Z_MONOLINGUALSTRING,
 									{
 										Z1K1: Constants.Z_MONOLINGUALSTRING,
 										Z11K1: context.getters.getUserZlangZID,
@@ -160,6 +161,7 @@ module.exports = exports = {
 							Z2K4: {
 								Z1K1: Constants.Z_MULTILINGUALSTRINGSET,
 								Z32K1: [
+									Constants.Z_MONOLINGUALSTRINGSET,
 									{
 										Z1K1: Constants.Z_MONOLINGUALSTRINGSET,
 										Z31K1: Constants.Z_NATURAL_LANGUAGE_ENGLISH,

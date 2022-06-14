@@ -33,6 +33,13 @@ function canonicalizeZ6OrZ9( zobject ) {
 	return '';
 }
 
+function filterUndefinedLabels( allLabels ) {
+	return allLabels.filter( function ( label ) {
+		return label[ Constants.Z_OBJECT_TYPE ] !== Constants.Z_MONOLINGUALSTRING ||
+		!!label[ Constants.Z_MONOLINGUALSTRING_VALUE ];
+	} );
+}
+
 function canonicalize( zobject ) {
 	function listifyArray( zlist, arr ) {
 		var head = zlist[ Constants.Z_LIST_HEAD ],
@@ -68,7 +75,7 @@ function canonicalize( zobject ) {
 	) {
 		canon = canonicalizeZ6OrZ9( zobject );
 	} else if ( zobject[ Constants.Z_OBJECT_TYPE ] &&
-		zobject[ Constants.Z_OBJECT_TYPE ][ Constants.Z_REFERENCE_ID ] === Constants.Z_LIST
+		zobject[ Constants.Z_OBJECT_TYPE ][ Constants.Z_REFERENCE_ID ] === Constants.Z_TYPED_LIST
 	) {
 		canon = canonicalize( listifyArray( zobject ) );
 	} else {
@@ -84,14 +91,6 @@ function canonicalize( zobject ) {
 		} );
 	}
 	return canon;
-}
-
-function filterUndefinedLabels( allLabels ) {
-	return allLabels.filter( function ( label ) {
-		return ( label[ Constants.Z_MONOLINGUALSTRING_VALUE ] &&
-			label[ Constants.Z_MONOLINGUALSTRING_VALUE ][ Constants.Z_STRING_VALUE ]
-		);
-	} );
 }
 
 function isString( s ) {

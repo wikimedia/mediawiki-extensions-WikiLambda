@@ -148,11 +148,6 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 				$zobject = ZObjectUtils::normalize( $zobject );
 			}
 
-			// FIXME: (T306824) Remove this pipe when front-end handles benjamin stuff
-			if ( !defined( 'MW_PHPUNIT_TEST' ) && $canonical ) {
-				$zobject = ZObjectUtils::benjaminToSimple( $zobject );
-			}
-
 			$result = [
 				'success' => true,
 				'data' => $zobject

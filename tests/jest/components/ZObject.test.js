@@ -20,7 +20,6 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	ZFunctionCallToType = require( '../../../resources/ext.wikilambda.edit/components/types/ZFunctionCallToType.vue' ),
 	ZImplementation = require( '../../../resources/ext.wikilambda.edit/components/types/ZImplementation.vue' ),
 	ZKey = require( '../../../resources/ext.wikilambda.edit/components/types/ZKey.vue' ),
-	ZList = require( '../../../resources/ext.wikilambda.edit/components/types/ZList.vue' ),
 	ZMultilingualString = require( '../../../resources/ext.wikilambda.edit/components/types/ZMultilingualString.vue' ),
 	ZReference = require( '../../../resources/ext.wikilambda.edit/components/types/ZReference.vue' ),
 	ZResponseEnvelope = require( '../../../resources/ext.wikilambda.edit/components/types/ZResponseEnvelope.vue' ),
@@ -118,7 +117,6 @@ describe( 'ZObject', function () {
 	testMountingComponent( 'ZFunctionCallToType', Constants.Z_FUNCTION_CALL_TO_TYPE, ZFunctionCallToType );
 	testMountingComponent( 'ZImplementation', Constants.Z_IMPLEMENTATION, ZImplementation );
 	testMountingComponent( 'ZKey', Constants.Z_KEY, ZKey );
-	testMountingComponent( 'ZList', Constants.Z_LIST, ZList );
 	testMountingComponent( 'ZMultilingualString', Constants.Z_MULTILINGUALSTRING, ZMultilingualString );
 	testMountingComponent( 'ZReference', Constants.Z_REFERENCE, ZReference );
 	testMountingComponent( 'ZResponseEnvelope', Constants.Z_RESPONSEENVELOPE, ZResponseEnvelope );

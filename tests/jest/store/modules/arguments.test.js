@@ -56,6 +56,7 @@ describe( 'arguments Vuex module', function () {
 						Z2K2: {
 							Z1K1: 'Z8',
 							Z8K1: [
+								'Z17',
 								{
 									Z1K1: 'Z17',
 									Z17K1: 'Z40',
@@ -66,6 +67,7 @@ describe( 'arguments Vuex module', function () {
 									Z17K3: {
 										Z1K1: 'Z12',
 										Z12K1: [
+											'Z11',
 											{
 												Z1K1: 'Z11',
 												Z11K1: 'Z1002',
@@ -84,6 +86,7 @@ describe( 'arguments Vuex module', function () {
 									Z17K3: {
 										Z1K1: 'Z12',
 										Z12K1: [
+											'Z11',
 											{
 												Z1K1: 'Z11',
 												Z11K1: 'Z1002',
@@ -94,8 +97,11 @@ describe( 'arguments Vuex module', function () {
 								}
 							],
 							Z8K2: 'Z40',
-							Z8K3: [],
+							Z8K3: [
+								'Z20'
+							],
 							Z8K4: [
+								'Z14',
 								'Z10034'
 							],
 							Z8K5: 'Z10033'
@@ -103,6 +109,7 @@ describe( 'arguments Vuex module', function () {
 						Z2K3: {
 							Z1K1: 'Z12',
 							Z12K1: [
+								'Z11',
 								{
 									Z1K1: 'Z11',
 									Z11K1: 'Z1002',
@@ -118,6 +125,7 @@ describe( 'arguments Vuex module', function () {
 							Z1K1: 'Z4',
 							Z4K1: 'Z40',
 							Z4K2: [
+								'Z3',
 								{
 									Z1K1: 'Z3',
 									Z3K1: 'Z40',
@@ -125,6 +133,7 @@ describe( 'arguments Vuex module', function () {
 									Z3K3: {
 										Z1K1: 'Z12',
 										Z12K1: [
+											'Z11',
 											{
 												Z1K1: 'Z11',
 												Z11K1: 'Z1002',
@@ -139,6 +148,7 @@ describe( 'arguments Vuex module', function () {
 						Z2K3: {
 							Z1K1: 'Z12',
 							Z12K1: [
+								'Z11',
 								{
 									Z1K1: 'Z11',
 									Z11K1: 'Z1002',

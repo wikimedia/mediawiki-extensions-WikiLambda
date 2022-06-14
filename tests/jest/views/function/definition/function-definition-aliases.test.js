@@ -26,7 +26,8 @@ describe( 'FunctionDefinitionAliases', function () {
 
 	beforeEach( function () {
 		getters = {
-			getZObjectChildrenById: createGettersWithFunctionsMock( [ 'Z123123' ] ),
+			getAllItemsFromListById: createGettersWithFunctionsMock( [ 'Z123123' ] ),
+			getZObjectChildrenById: createGettersWithFunctionsMock( [ 'Z6', 'Z123123' ] ),
 			getNestedZObjectById: createGettersWithFunctionsMock( { id: 10 } ),
 			getNextObjectId: jest.fn( function () { return 5; } ),
 			getCurrentZLanguage: jest.fn().mockReturnValue( 'Z10002' )

@@ -81,6 +81,7 @@ module.exports = exports = {
 	},
 	computed: $.extend( {},
 		mapGetters( {
+			getZObjectChildrenById: 'getZObjectChildrenById',
 			getZObjectChildrenByIdRecursively: 'getZObjectChildrenByIdRecursively',
 			getZkeyLabels: 'getZkeyLabels'
 		} ),
@@ -89,10 +90,30 @@ module.exports = exports = {
 				return this.getZObjectChildrenByIdRecursively( this.zobjectId );
 			},
 			zTypedPairType1: function () {
-				return this.findKeyInArray( Constants.Z_TYPED_PAIR_TYPE1, this.zObjectChildren );
+				var mapType = this.findKeyInArray(
+					Constants.Z_TYPED_PAIR_TYPE1,
+					this.zObjectChildren
+				);
+				if ( mapType.value === 'object' ) {
+					mapType = this.findKeyInArray(
+						Constants.Z_REFERENCE_ID,
+						this.getZObjectChildrenById( mapType.id )
+					);
+				}
+				return mapType;
 			},
 			zTypedPairType2: function () {
-				return this.findKeyInArray( Constants.Z_TYPED_PAIR_TYPE2, this.zObjectChildren );
+				var mapType = this.findKeyInArray(
+					Constants.Z_TYPED_PAIR_TYPE2,
+					this.zObjectChildren
+				);
+				if ( mapType.value === 'object' ) {
+					mapType = this.findKeyInArray(
+						Constants.Z_REFERENCE_ID,
+						this.getZObjectChildrenById( mapType.id )
+					);
+				}
+				return mapType;
 			},
 			zTypedPairKey1: function () {
 				return this.findKeyInArray( Constants.Z_TYPED_OBJECT_ELEMENT_1, this.zObjectChildren );

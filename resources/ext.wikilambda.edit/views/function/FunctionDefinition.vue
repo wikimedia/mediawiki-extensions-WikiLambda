@@ -258,7 +258,11 @@ module.exports = exports = {
 				][
 					Constants.Z_MULTILINGUALSTRING_VALUE
 				].forEach( function ( label ) {
-					languageList.push( label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ] );
+					if ( label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] ) {
+						languageList.push(
+							label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ]
+						);
+					}
 				} );
 			}
 
@@ -274,10 +278,12 @@ module.exports = exports = {
 				][
 					Constants.Z_MULTILINGUALSTRINGSET_VALUE
 				].forEach( function ( alias ) {
-					var lang = alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ][ Constants.Z_REFERENCE_ID ];
+					if ( alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ] ) {
+						var lang = alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ][ Constants.Z_REFERENCE_ID ];
 
-					if ( languageList.indexOf( lang ) === -1 ) {
-						languageList.push( lang );
+						if ( languageList.indexOf( lang ) === -1 ) {
+							languageList.push( lang );
+						}
 					}
 				} );
 			}

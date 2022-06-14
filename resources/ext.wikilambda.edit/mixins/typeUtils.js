@@ -21,7 +21,7 @@ var Constants = require( '../Constants.js' ),
 					return Constants.Z_STRING;
 				} else if ( typeof ( value ) === 'object' ) {
 					if ( Array.isArray( value ) ) {
-						return Constants.Z_LIST;
+						return Constants.Z_TYPED_LIST;
 					} else if ( Constants.Z_OBJECT_TYPE in value ) {
 						return value[ Constants.Z_OBJECT_TYPE ];
 					} else {

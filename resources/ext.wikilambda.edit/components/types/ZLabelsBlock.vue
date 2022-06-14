@@ -169,19 +169,24 @@ module.exports = exports = {
 			var languageList = [];
 
 			// Don't break if the labels are set to {}
-			if ( this.zObjectLabels.Z12K1 ) {
-				this.zObjectLabels.Z12K1.forEach( function ( label ) {
-					languageList.push( label.Z11K1.Z9K1 );
+			if ( this.zObjectLabels[ Constants.Z_MULTILINGUALSTRING_VALUE ] ) {
+				this.zObjectLabels[ Constants.Z_MULTILINGUALSTRING_VALUE ].forEach( function ( label ) {
+					if ( label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] ) {
+						languageList.push(
+							label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ]
+						);
+					}
 				} );
 			}
 
 			// Don't break if the aliases are set to {}
-			if ( this.zObjectAliases.Z32K1 ) {
-				this.zObjectAliases.Z32K1.forEach( function ( alias ) {
-					var lang = alias.Z31K1.Z9K1;
-
-					if ( languageList.indexOf( lang ) === -1 ) {
-						languageList.push( lang );
+			if ( this.zObjectAliases[ Constants.Z_MULTILINGUALSTRINGSET_VALUE ] ) {
+				this.zObjectAliases[ Constants.Z_MULTILINGUALSTRINGSET_VALUE ].forEach( function ( alias ) {
+					if ( alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ] ) {
+						var lang = alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ][ Constants.Z_REFERENCE_ID ];
+						if ( languageList.indexOf( lang ) === -1 ) {
+							languageList.push( lang );
+						}
 					}
 				} );
 			}

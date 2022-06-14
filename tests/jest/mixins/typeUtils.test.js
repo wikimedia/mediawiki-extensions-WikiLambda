@@ -31,13 +31,13 @@ describe( 'typeUtils mixin', function () {
 				var dummyValue = [];
 
 				var type = typeUtils.getZObjectType( dummyValue );
-				expect( type ).toBe( Constants.Z_LIST );
+				expect( type ).toBe( Constants.Z_TYPED_LIST );
 			} );
 			it( 'when value is a filled array', function () {
 				var dummyValue = [ 'dummyValue' ];
 
 				var type = typeUtils.getZObjectType( dummyValue );
-				expect( type ).toBe( Constants.Z_LIST );
+				expect( type ).toBe( Constants.Z_TYPED_LIST );
 			} );
 		} );
 

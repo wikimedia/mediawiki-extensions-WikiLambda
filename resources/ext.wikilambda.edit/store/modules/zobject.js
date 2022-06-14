@@ -196,8 +196,8 @@ module.exports = exports = {
 					return [];
 				}
 
+				var childrenObjects = [];
 				if ( language ) {
-					var childrenObjects = [];
 					for ( var zobject in state.zobject ) {
 
 						var objectProps = state.zobject[ zobject ];
@@ -216,11 +216,56 @@ module.exports = exports = {
 						}
 					}
 					return childrenObjects;
+				} else {
+					childrenObjects = state.zobject.filter( function ( object ) {
+						return object.parent === parentId;
+					} );
 				}
 
-				return state.zobject.filter( function ( object ) {
-					return object.parent === parentId;
-				} );
+				return childrenObjects;
+			};
+		},
+		getAllItemsFromListById: function ( state, getters ) {
+			/**
+			 * Return the children of a specific zObject by its ID. The return is in zObjectTree array form.
+			 * This method is desinged to return just ONE level of Depth.
+			 * This will support development of small reusable components
+			 * If language is passed, the language zid and object will be returned as a property
+			 *
+			 * @param {number} parentId
+			 * @param {string} language
+			 * @return {Array} zObjectTree
+			 */
+			return function ( parentId, language ) {
+				var childrenObjects = getters.getZObjectChildrenById( parentId, language );
+
+				// Remove first item in array which denotes the type of the list
+				if ( childrenObjects.length > 0 ) {
+					childrenObjects.shift();
+				}
+
+				return childrenObjects;
+			};
+		},
+		getListTypeById: function ( state ) {
+			/**
+			 * Return the type of children of a specific zObject by its ID
+			 *
+			 * @param {number} parentId
+			 * @return {object}
+			 */
+			return function ( parentId ) {
+				let childrenType = {};
+				if ( parentId ) {
+					for ( const zobject in state.zobject ) {
+						const objectProps = state.zobject[ zobject ];
+						if ( objectProps.parent === parentId ) {
+							childrenType = objectProps;
+							break;
+						}
+					}
+				}
+				return childrenType;
 			};
 		},
 		getZObjectChildrenByIdRecursively: function ( state ) {
@@ -275,7 +320,7 @@ module.exports = exports = {
 				}
 				switch ( currentObject.value ) {
 					case 'array':
-						type = Constants.Z_LIST;
+						type = Constants.Z_TYPED_LIST;
 						break;
 					case 'object':
 						childrenObject = getters.getZObjectChildrenById( id );
@@ -467,7 +512,9 @@ module.exports = exports = {
 						if ( !zobject[ Constants.Z_PERSISTENTOBJECT_ALIASES ] ) {
 							zobject[ Constants.Z_PERSISTENTOBJECT_ALIASES ] = {
 								Z1K1: Constants.Z_MULTILINGUALSTRINGSET,
-								Z32K1: []
+								Z32K1: [
+									Constants.Z_MONOLINGUALSTRINGSET
+								]
 							};
 						}
 
@@ -505,6 +552,7 @@ module.exports = exports = {
 		submitZObject: function ( context, summary ) {
 			context.commit( 'setIsSavingZObject', true );
 			var zobject = canonicalize( zobjectTreeUtils.convertZObjectTreetoJson( context.state.zobject ) );
+
 			// eslint-disable-next-line compat/compat
 			return new Promise( function ( resolve, reject ) {
 				saveZObject(

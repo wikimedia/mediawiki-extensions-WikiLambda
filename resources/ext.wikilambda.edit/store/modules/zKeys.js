@@ -197,44 +197,48 @@ module.exports = exports = {
 					var allLabels = [];
 					for ( var language in multilingualStr ) {
 						var monoStr = multilingualStr[ language ];
-						allLabels.push(
-							{
-								zid,
-								label: monoStr.Z11K2,
-								lang: monoStr.Z11K1
-							}
-						);
+						if ( typeof monoStr === 'object' ) {
+							allLabels.push(
+								{
+									zid,
+									label: monoStr[ Constants.Z_MONOLINGUALSTRING_VALUE ],
+									lang: monoStr[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
+								}
+							);
+						}
 					}
 					context.commit( 'addAllZKeyLabels', allLabels );
 					var zTypeallLabels = [];
 					if ( isZType( zidInfo ) ) {
 						keys = zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
 						// TODO(T300082): once Z10 is deprecated, this should be default behavior
-						var result = keys;
+						var results = keys;
 						if ( !Array.isArray( keys ) ) {
-							result = typedListToArray( keys );
+							results = typedListToArray( keys );
 						}
 
-						result.forEach( function ( key ) {
-							multilingualStr = key[
-								Constants.Z_KEY_LABEL ][
-								Constants.Z_MULTILINGUALSTRING_VALUE ];
+						results.forEach( function ( key ) {
+							if ( typeof key === 'object' ) {
+								multilingualStr = key[
+									Constants.Z_KEY_LABEL ][
+									Constants.Z_MULTILINGUALSTRING_VALUE ];
 
-							var langsList = key[
-								Constants.Z_KEY_LABEL
-							][
-								Constants.Z_MULTILINGUALSTRING_VALUE
-							];
+								var langsList = key[
+									Constants.Z_KEY_LABEL
+								][
+									Constants.Z_MULTILINGUALSTRING_VALUE
+								];
 
-							langsList.forEach( function ( languageItem ) {
-								zTypeallLabels.push(
-									{
-										zid: key[ Constants.Z_KEY_ID ],
-										label: languageItem[ Constants.Z_MONOLINGUALSTRING_VALUE ],
-										lang: languageItem[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
-									}
-								);
-							} );
+								langsList.forEach( function ( languageItem ) {
+									zTypeallLabels.push(
+										{
+											zid: key[ Constants.Z_KEY_ID ],
+											label: languageItem[ Constants.Z_MONOLINGUALSTRING_VALUE ],
+											lang: languageItem[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
+										}
+									);
+								} );
+							}
 						} );
 						context.commit( 'addAllZKeyLabels', zTypeallLabels );
 					}

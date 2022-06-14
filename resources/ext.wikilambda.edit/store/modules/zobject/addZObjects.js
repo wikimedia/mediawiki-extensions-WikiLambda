@@ -75,10 +75,10 @@ module.exports = exports = {
 		 *      Z2K2: undefined,
 		 *      Z2K3: { Z1K1: {
 		 *        Z1K1: 'Z9', Z9K1: 'Z12'
-		 *      }, Z12K1: [] },
+		 *      }, Z12K1: [ Z11 ] },
 		 *      Z2K4: { Z1K1: {
 		 *        Z1K1: 'Z9', Z9K1: 'Z32'
-		 *      }, Z32K1: [] }
+		 *      }, Z32K1: [ Z31 ] }
 		 *  }
 		 *
 		 * @param {Object} context
@@ -92,21 +92,27 @@ module.exports = exports = {
 					Z2K2: {},
 					Z2K3: {
 						Z1K1: Constants.Z_MULTILINGUALSTRING,
-						Z12K1: ( context.getters.getUserZlangZID ? [ {
-							Z1K1: Constants.Z_MONOLINGUALSTRING,
-							Z11K1: context.getters.getUserZlangZID,
-							Z11K2: ''
-						} ] : []
-						)
+						Z12K1: context.getters.getUserZlangZID ? [
+							Constants.Z_MONOLINGUALSTRING,
+							{
+								Z1K1: Constants.Z_MONOLINGUALSTRING,
+								Z11K1: context.getters.getUserZlangZID,
+								Z11K2: ''
+							}
+						] : [ Constants.Z_MONOLINGUALSTRING ]
 					},
 					Z2K4: {
 						Z1K1: Constants.Z_MULTILINGUALSTRINGSET,
-						Z32K1: ( context.getters.getUserZlangZID ? [ {
-							Z1K1: Constants.Z_MONOLINGUALSTRINGSET,
-							Z31K1: context.getters.getUserZlangZID,
-							Z31K2: []
-						} ] : []
-						)
+						Z32K1: context.getters.getUserZlangZID ? [
+							Constants.Z_MONOLINGUALSTRINGSET,
+							{
+								Z1K1: Constants.Z_MONOLINGUALSTRINGSET,
+								Z31K1: context.getters.getUserZlangZID,
+								Z31K2: [
+									Constants.Z_STRING
+								]
+							}
+						] : [ Constants.Z_MONOLINGUALSTRINGSET ]
 					}
 				},
 				key: undefined,
@@ -153,7 +159,7 @@ module.exports = exports = {
 		/**
 		 * Create the required entry in the zobject array for a zMultilingualString.
 		 * The entry will result in a json representation equal to:
-		 * { Z1K1: Z12, Z12K1: [] }
+		 * { Z1K1: Z12, Z12K1: [ Z11 ] }
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
@@ -165,11 +171,38 @@ module.exports = exports = {
 				value: 'object'
 			} );
 
-			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: Constants.Z_MULTILINGUALSTRING, parent: payload.id } );
+			context.dispatch( 'addZObject', {
+				key: Constants.Z_OBJECT_TYPE,
+				value: Constants.Z_MULTILINGUALSTRING,
+				parent: payload.id
+			} );
 
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
-			context.dispatch( 'addZObject', { key: Constants.Z_MULTILINGUALSTRING_VALUE, value: 'array', parent: payload.id } );
+			context.dispatch( 'addZObject', {
+				key: Constants.Z_MULTILINGUALSTRING_VALUE,
+				value: 'array',
+				parent: payload.id
+			} );
 
+			// Add ZMonolingualString
+			// Add ZMonolingualString type
+			var monolingualStringParentId = nextId + 1;
+			var zObjectItems = [
+				{ key: 0, value: 'object', parent: nextId },
+				{
+					key: Constants.Z_OBJECT_TYPE,
+					value: Constants.Z_REFERENCE,
+					parent: monolingualStringParentId
+				},
+				{
+					key: Constants.Z_REFERENCE_ID,
+					value: Constants.Z_MONOLINGUALSTRING,
+					parent: monolingualStringParentId
+				}
+			];
+			context.dispatch( 'addZObjects', zObjectItems );
+
+			// Add ZMonolingualString items
 			context.dispatch( 'addZMonolingualString', {
 				parentId: nextId,
 				lang: context.getters.getUserZlangZID,
@@ -205,47 +238,48 @@ module.exports = exports = {
 		 * @param {Object} context
 		 * @param {number} objectId
 		 */
-		addZList: function ( context, objectId ) {
-			context.dispatch( 'setZObjectValue', {
-				id: objectId,
-				value: 'array'
-			} );
+		addTypetoList: function ( context, payload ) {
+			var listType = context.getters.getListTypeById( payload.objectId );
+			var zListTypeChildren;
+
+			if ( !listType.id ) {
+				var nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+				var zObjectItems = [
+					{ key: 0, value: 'object', parent: payload.objectId },
+					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: nextId },
+					{ key: Constants.Z_REFERENCE_ID, value: payload.type, parent: nextId }
+				];
+				context.dispatch( 'addZObjects', zObjectItems );
+			} else {
+				zListTypeChildren = typeUtils.findKeyInArray(
+					Constants.Z_REFERENCE_ID,
+					context.getters.getZObjectChildrenById( listType.id ) );
+
+				context.dispatch( 'setZObjectValue', {
+					id: zListTypeChildren.id,
+					value: payload.type
+				} );
+			}
 		},
 		/**
 		 * Create the required entry in the object for a list of generics.
 		 * The entry will result in a json representation equal to:
-		 * { Z1K1: Z7, Z7K1: Z881, Z881k1: '' }
+		 * [ 'Z1' ]
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
 		 * @param {string} payload.value
 		 * @param {number} payload.id
-		 * @param {boolean} payload.isDeclaration This is used to unwrap it from a Z_OBJECT_TYPE (Z1K1)
 		 */
 		addZTypedList: function ( context, payload ) {
-			var value = payload.value || '',
-				isDeclaration = payload.isDeclaration || false,
-				functionCallId;
-
-			if ( isDeclaration ) {
-				functionCallId = payload.id;
-			} else {
-				functionCallId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
-				context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: 'object', parent: payload.id } );
-			}
-
-			context.dispatch( 'changeType', { id: functionCallId, type: Constants.Z_FUNCTION_CALL, value: Constants.Z_TYPED_LIST } )
-				.then( function () {
-					// If the value is an object it means that it is a complex declaration (eg. Typed pair)
-					// and we will recursively use the changeType to define the type
-					if ( value instanceof Object && value.type && value.values ) {
-						var nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
-						context.dispatch( 'addZObject', { key: Constants.Z_TYPED_LIST_TYPE, value: 'object', parent: functionCallId } );
-						context.dispatch( 'changeType', { id: nextId, type: value.type, values: value.values, isDeclaration: true } );
-					} else {
-						context.dispatch( 'addZObject', { key: Constants.Z_TYPED_LIST_TYPE, value: value, parent: functionCallId } );
-					}
-				} );
+			context.dispatch( 'setZObjectValue', {
+				id: payload.id,
+				value: 'array'
+			} );
+			context.dispatch( 'addTypetoList', {
+				objectId: payload.id,
+				type: Constants.Z_OBJECT
+			} );
 		},
 		/**
 		 * Create the required entry in the object for a list of generics.
@@ -358,7 +392,7 @@ module.exports = exports = {
 		 * { Z1K1: 'Z17',
 		 * Z17K1: { Z1K1: 'Z9', Z9K1: '' },
 		 * Z17K2: { Z1K1: 'Z6', Z6K1: 'Z0K1' },
-		 * Z17K3: { Z1K1: 'Z12', Z12K1: [] }
+		 * Z17K3: { Z1K1: 'Z12', Z12K1: [ Z11 ] }
 		 * }
 		 *
 		 * @param {Object} context
@@ -488,17 +522,44 @@ module.exports = exports = {
 			// Add initial ZArgument
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
 			context.dispatch( 'addZObject', { key: Constants.Z_FUNCTION_ARGUMENTS, value: 'array', parent: objectId } );
-			context.dispatch( 'addZObject', { key: 0, value: 'object', parent: nextId } );
-			context.dispatch( 'addZArgument', nextId + 1 );
+			// Add ZArgument Type to array
+			var argumentTypeParentId = nextId + 1;
+			var zObjectItems = [
+				{ key: 0, value: 'object', parent: nextId },
+				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: argumentTypeParentId },
+				{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_ARGUMENT, parent: argumentTypeParentId }
+			];
+			context.dispatch( 'addZObjects', zObjectItems );
+			// Add ZArgument to array
+			var argumentsNextId = nextId + 4;
+			context.dispatch( 'addZObject', { key: 1, value: 'object', parent: nextId } );
+			context.dispatch( 'addZArgument', argumentsNextId );
 
 			// Add return type
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
 			context.dispatch( 'addZObject', { key: Constants.Z_FUNCTION_RETURN_TYPE, value: 'object', parent: objectId } );
 			context.dispatch( 'addZReference', { id: nextId, value: '' } );
 
+			// Add tester
+			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+			context.dispatch( 'addZObject', { key: Constants.Z_FUNCTION_TESTERS, value: 'array', parent: objectId } );
+			var testersNextId = nextId + 1;
+			// Add tester type
 			context.dispatch( 'addZObjects', [
-				{ key: Constants.Z_FUNCTION_TESTERS, value: 'array', parent: objectId },
-				{ key: Constants.Z_FUNCTION_IMPLEMENTATIONS, value: 'array', parent: objectId }
+				{ key: 0, value: 'object', parent: nextId },
+				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: testersNextId },
+				{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_TESTER, parent: testersNextId }
+			] );
+
+			// Add implementation
+			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+			context.dispatch( 'addZObject', { key: Constants.Z_FUNCTION_IMPLEMENTATIONS, value: 'array', parent: objectId } );
+			var implementationsNextId = nextId + 1;
+			// Add implementation type
+			context.dispatch( 'addZObjects', [
+				{ key: 0, value: 'object', parent: nextId },
+				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: implementationsNextId },
+				{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_IMPLEMENTATION, parent: implementationsNextId }
 			] );
 
 			// Set identity
@@ -743,8 +804,6 @@ module.exports = exports = {
 			return context.dispatch( 'fetchZKeys', [ payload.type ] )
 				.then( function () {
 					switch ( payload.type ) {
-						case Constants.Z_LIST:
-							return context.dispatch( 'addZList', payload.id );
 						case Constants.Z_REFERENCE:
 							return context.dispatch( 'addZReference', payload );
 						case Constants.Z_STRING:

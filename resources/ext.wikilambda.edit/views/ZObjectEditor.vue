@@ -132,11 +132,11 @@ module.exports = exports = {
 
 			changePersistentObjectValue: function ( type ) {
 				var zObject = this.getZObjectChildrenById( 0 ); // We fetch the Root object
-				var Z2K2 =
+				var zPersistentObjectValue =
 					this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, zObject );
 
 				return this.changeType( {
-					id: Z2K2.id,
+					id: zPersistentObjectValue.id,
 					type: type
 				} );
 			},

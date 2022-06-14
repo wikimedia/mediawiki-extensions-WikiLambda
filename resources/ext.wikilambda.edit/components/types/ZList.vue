@@ -1,4 +1,5 @@
 <template>
+	<!-- TODO (T298133): Remove support for Z10, this file should be safely deleted. -->
 	<!--
 		WikiLambda Vue component for ZList objects.
 
@@ -6,25 +7,28 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-zlist">
-		<ul>
-			<z-list-item
-				v-for="( item ) in ZlistItems"
-				:key="item.id"
-				:z-type="Constants.Z_TYPE"
-				:zobject-id="item.id"
-				:readonly="readonly"
-				@remove-item="removeItem"
-			></z-list-item>
-			<li v-if="!( viewmode || readonly )">
-				<cdx-button
-					class="z-list-add"
-					:title="tooltipAddListItem"
-					@click="addNewItem"
-				>
-					{{ $i18n( 'wikilambda-editor-additem' ).text() }}
-				</cdx-button>
-			</li>
-		</ul>
+		<div class="ext-wikilambda-zlist__container">
+			<ul>
+				<z-list-item
+					v-for="( item ) in ZlistItems"
+					:key="item.id"
+					:z-type="Constants.Z_TYPE"
+					:zobject-id="item.id"
+					:ztype-id="item.id"
+					:readonly="readonly"
+					@remove-item="removeItem"
+				></z-list-item>
+				<li v-if="!( viewmode || readonly )">
+					<cdx-button
+						class="z-list-add"
+						:title="tooltipAddListItem"
+						@click="addNewItem"
+					>
+						{{ $i18n( 'wikilambda-editor-additem' ).text() }}
+					</cdx-button>
+				</li>
+			</ul>
+		</div>
 	</div>
 </template>
 
@@ -33,7 +37,8 @@ var Constants = require( '../../Constants.js' ),
 	ZListItem = require( './ZListItem.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters;
+	mapGetters = require( 'vuex' ).mapGetters,
+	typeUtils = require( '../../mixins/typeUtils.js' );
 
 // @vue/component
 module.exports = exports = {
@@ -42,6 +47,7 @@ module.exports = exports = {
 		'z-list-item': ZListItem,
 		'cdx-button': CdxButton
 	},
+	mixins: [ typeUtils ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -62,11 +68,21 @@ module.exports = exports = {
 	},
 	computed: $.extend( {},
 		mapGetters( {
-			getZObjectChildrenById: 'getZObjectChildrenById'
+			getListTypeById: 'getListTypeById',
+			getZObjectChildrenById: 'getZObjectChildrenById',
+			getAllItemsFromListById: 'getAllItemsFromListById'
 		} ),
 		{
+			ZlistTypeId: function () {
+				return this.getListTypeById( this.zobjectId );
+			},
+			ZListType: function () {
+				return this.findKeyInArray(
+					Constants.Z_REFERENCE_ID,
+					this.getZObjectChildrenById( this.ZlistTypeId.id ) );
+			},
 			ZlistItems: function () {
-				return this.getZObjectChildrenById( this.zobjectId );
+				return this.getAllItemsFromListById( this.zobjectId );
 			},
 			ZlistItemsLength: function () {
 				return this.ZlistItems.length;
@@ -79,15 +95,28 @@ module.exports = exports = {
 			}
 		} ),
 	methods: $.extend( {},
-		mapActions( [ 'addZObject', 'recalculateZListIndex', 'removeZObject', 'removeZObjectChildren' ] ),
+		mapActions( [
+			'addZObject', 'recalculateZListIndex', 'removeZObject', 'removeZObjectChildren', 'addTypetoList', 'changeType'
+		] ),
 		{
+			onTypedListChange: function ( type ) {
+				this.addTypetoList( { type: type, objectId: this.zobjectId } );
+			},
 			addNewItem: function ( /* event */ ) {
 				var payload = {
-					key: this.ZlistItemsLength,
+					// since first item is type, new key is items length + 1
+					key: this.ZlistItemsLength + 1,
 					value: 'object',
 					parent: this.zobjectId
 				};
-				this.addZObject( payload );
+
+				var zListType = this.ZListType.value;
+				this.addZObject( payload ).then( function ( zobjectId ) {
+					this.changeType( {
+						type: zListType,
+						id: zobjectId
+					} );
+				}.bind( this ) );
 			},
 			/**
 			 * Remove this item form the ZList
@@ -119,11 +148,11 @@ input.ext-wikilambda-zstring {
 	background: #eef;
 }
 
-.ext-wikilambda-zlist:before {
+.ext-wikilambda-zlist__container:before {
 	content: '[';
 }
 
-.ext-wikilambda-zlist:after {
+.ext-wikilambda-zlist__container:after {
 	content: ']';
 }
 

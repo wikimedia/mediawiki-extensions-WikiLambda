@@ -26,6 +26,9 @@
 			@new-input="onInput"
 			@update:model-value="emitInput"
 		>
+			<template #no-results>
+				No results found.
+			</template>
 		</cdx-lookup>
 		<cdx-message
 			v-if="validatorIsInvalid"
@@ -184,7 +187,7 @@ module.exports = exports = {
 				var zidType = this.zKeys[ zid ][ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ];
 				return ( !this.type || // Either the selection isn't type restricted
 					(
-						( this.type === zidType ) && // Or the specified type matches de ZObject type
+						this.type === zidType && // Or the specified type matches de ZObject type
 						!this.isExcludedZType( zid ) // and ZID is not part of the EXCLUDED_Z_TYPES
 					) );
 			},
@@ -323,7 +326,6 @@ module.exports = exports = {
 
 				results[ Constants.Z_STRING ] = this.getZkeyLabels[ Constants.Z_STRING ];
 				results[ Constants.Z_REFERENCE ] = this.getZkeyLabels[ Constants.Z_REFERENCE ];
-				results[ Constants.Z_LIST ] = this.getZkeyLabels[ Constants.Z_LIST ];
 				results[ Constants.Z_BOOLEAN ] = this.getZkeyLabels[ Constants.Z_BOOLEAN ];
 				results[ Constants.Z_TYPED_LIST ] = this.getZkeyLabels[ Constants.Z_TYPED_LIST ];
 
@@ -335,7 +337,6 @@ module.exports = exports = {
 		this.fetchZKeyWithDebounce( [
 			Constants.Z_STRING,
 			Constants.Z_REFERENCE,
-			Constants.Z_LIST,
 			Constants.Z_BOOLEAN,
 			Constants.Z_TYPED_LIST
 		] );

@@ -53,6 +53,7 @@ module.exports = exports = {
 	computed: $.extend( {},
 		mapGetters( {
 			getZObjectChildrenById: 'getZObjectChildrenById',
+			getAllItemsFromListById: 'getAllItemsFromListById',
 			getZObjectAsJsonById: 'getZObjectAsJsonById',
 			getViewMode: 'getViewMode'
 		} ),
@@ -70,7 +71,7 @@ module.exports = exports = {
 			},
 			monolingualStrings: function () {
 				if ( this.monolingualStringsParentId ) {
-					return this.getZObjectChildrenById( this.monolingualStringsParentId );
+					return this.getAllItemsFromListById( this.monolingualStringsParentId );
 				}
 			},
 			usedLanguages: function () {

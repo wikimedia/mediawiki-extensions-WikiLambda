@@ -5,49 +5,38 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-zTypedList">
-		<z-object-selector
-			v-if="requiresTypeForList"
-			:type="Constants.zType"
-			:placeholder="$i18n( 'wikilambda-ztyped-list-placeholder' )"
-			:readonly="readonly"
-			@input="onTypedListChange"
-		></z-object-selector>
-		<p v-else>
-			<strong>{{ $i18n( 'wikilambda-ztyped-list-description' ).text() }}:</strong> {{ TypedListLabel }}
-		</p>
-		<div v-if="!requiresTypeForList" class="ext-wikilambda-zTypedList-items-heading">
-			{{ $i18n( 'wikilambda-ztyped-list-items' ).text() }}:
+	<div class="ext-wikilambda-ztypedlist">
+		<div class="ext-wikilambda-ztypedlist__container">
+			<ul>
+				<z-list-item
+					v-for="( item ) in ZlistItems"
+					:key="item.id"
+					:z-type="Constants.Z_TYPE"
+					:zobject-id="item.id"
+					:ztype-id="item.id"
+					:readonly="readonly"
+					@remove-item="removeItem"
+				></z-list-item>
+				<li v-if="!( viewmode || readonly )">
+					<cdx-button
+						class="z-list-add"
+						:title="tooltipAddListItem"
+						@click="addNewItem"
+					>
+						{{ $i18n( 'wikilambda-editor-additem' ).text() }}
+					</cdx-button>
+				</li>
+			</ul>
 		</div>
-		<ul class="ext-wikilambda-zTypedList-no-bullets">
-			<z-list-item
-				v-for="( item ) in zListItems"
-				:key="item.id"
-				:zobject-id="item.id"
-				:z-type="zTypedListType"
-				:readonly="readonly || requiresTypeForList"
-				@remove-item="removeItem( item )"
-			></z-list-item>
-			<li v-if="!( viewmode || readonly || requiresTypeForList )">
-				<cdx-button
-					class="z-list-add"
-					:title="tooltipAddListItem"
-					@click="addNewItem"
-				>
-					{{ $i18n( 'wikilambda-editor-additem' ).text() }}
-				</cdx-button>
-			</li>
-		</ul>
 	</div>
 </template>
 
 <script>
 var Constants = require( '../../Constants.js' ),
 	ZListItem = require( './ZListItem.vue' ),
-	ZObjectSelector = require( '../ZObjectSelector.vue' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	typeUtils = require( '../../mixins/typeUtils.js' );
 
 // @vue/component
@@ -55,7 +44,6 @@ module.exports = exports = {
 	name: 'z-typed-list',
 	components: {
 		'z-list-item': ZListItem,
-		'z-object-selector': ZObjectSelector,
 		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],
@@ -79,132 +67,96 @@ module.exports = exports = {
 	},
 	computed: $.extend( {},
 		mapGetters( {
-			getZObjectChildrenByIdRecursively: 'getZObjectChildrenByIdRecursively',
-			getZkeyLabels: 'getZkeyLabels',
-			getNestedZObjectById: 'getNestedZObjectById'
+			getListTypeById: 'getListTypeById',
+			getZObjectChildrenById: 'getZObjectChildrenById',
+			getAllItemsFromListById: 'getAllItemsFromListById'
 		} ),
 		{
-			zObjectChildren: function () {
-				return this.getZObjectChildrenByIdRecursively( this.zobjectId );
+			ZlistTypeId: function () {
+				return this.getListTypeById( this.zobjectId );
 			},
-			zListItems: function () {
-				var nestedChildren = this.zObjectChildren,
-					instancesOfK1 = [], // list of the K1 object
-					k1Ids = []; // list of k1s ids, used to filter them later.
-
-				nestedChildren.forEach( function ( child ) {
-					if ( child.key === Constants.Z_TYPED_OBJECT_ELEMENT_1 ) {
-						instancesOfK1.push( child );
-						k1Ids.push( child.id );
-					}
-				} );
-				// There may be cases (like for a list of pair) where a K1 could actually be
-				// one of the pair item and not a List item. So we make sure that K1 are not related to each other
-				return instancesOfK1.filter( function ( k1 ) {
-					return k1Ids.indexOf( k1.parent ) === -1;
-				} );
-
+			ZListType: function () {
+				return this.findKeyInArray(
+					Constants.Z_REFERENCE_ID,
+					this.getZObjectChildrenById( this.ZlistTypeId.id ) );
 			},
-			zTypedListType: function () {
-				// it is either a straigh value, function call  (in case of a pair), or a reference;
-				var zTypedListType = this.findKeyInArray( Constants.Z_TYPED_LIST_TYPE, this.zObjectChildren );
-				if ( zTypedListType.value !== 'object' ) {
-					return zTypedListType.value;
-				} else {
-					return this.getNestedZObjectById(
-						zTypedListType.id,
-						[ Constants.Z_FUNCTION_CALL_FUNCTION ]
-					).value ||
-						this.getNestedZObjectById( zTypedListType.id, [ Constants.Z_REFERENCE_ID ] ).value;
-				}
+			ZlistItems: function () {
+				return this.getAllItemsFromListById( this.zobjectId );
+			},
+			ZlistItemsLength: function () {
+				return this.ZlistItems.length;
 			},
 			tooltipRemoveListItem: function () {
 				return this.$i18n( 'wikilambda-editor-zlist-removeitem-tooltip' ).text();
 			},
 			tooltipAddListItem: function () {
 				this.$i18n( 'wikilambda-editor-zlist-additem-tooltip' ).text();
-			},
-			requiresTypeForList: function () {
-				return !this.zTypedListType;
-			},
-			TypedListLabel: function () {
-				if ( !this.requiresTypeForList ) {
-					return this.getZkeyLabels[ this.zTypedListType ];
-				} else {
-					return '';
-				}
 			}
 		} ),
 	methods: $.extend( {},
 		mapActions( [
-			'setTypeOfTypedList',
-			'addTypedListItem',
-			'removeTypedListItem',
-			'fetchZKeys'
+			'addZObject', 'recalculateZListIndex', 'removeZObject', 'removeZObjectChildren', 'addTypetoList', 'changeType'
 		] ),
 		{
-			addNewItem: function () {
-				var value;
-				// If the type is a pair, we need to fetch the actual key/value types and structure the request properly
-				if ( this.zTypedListType === Constants.Z_TYPED_PAIR ) {
-					var pairValue1,
-						pairValue2;
-
-					this.zObjectChildren.forEach( function ( child ) {
-						if ( child.key === Constants.Z_TYPED_PAIR_TYPE1 ) {
-							pairValue1 = child.value;
-						}
-						if ( child.key === Constants.Z_TYPED_PAIR_TYPE2 ) {
-							pairValue2 = child.value;
-						}
-					} );
-
-					value = {
-						type: this.zTypedListType,
-						values: [ pairValue1, pairValue2 ]
-					};
-				} else {
-					value = this.zTypedListType;
-				}
-
-				this.addTypedListItem( {
-					id: this.zobjectId,
-					value: value
-				} );
-			},
 			onTypedListChange: function ( type ) {
-				this.setTypeOfTypedList( { type: type, objectId: this.zobjectId } );
+				this.addTypetoList( { type: type, objectId: this.zobjectId } );
 			},
-			removeItem: function ( item ) {
-				this.removeTypedListItem( item );
+			addNewItem: function ( /* event */ ) {
+				var payload = {
+					// since first item is type, new key is items length + 1
+					key: this.ZlistItemsLength + 1,
+					value: 'object',
+					parent: this.zobjectId
+				};
+
+				var zListType = this.ZListType.value;
+				this.addZObject( payload ).then( function ( zobjectId ) {
+					this.changeType( {
+						type: zListType,
+						id: zobjectId
+					} );
+				}.bind( this ) );
+			},
+			/**
+			 * Remove this item form the ZList
+			 *
+			 * @param {number} itemId
+			 */
+			removeItem: function ( itemId ) {
+				this.removeZObjectChildren( itemId );
+				this.removeZObject( itemId );
 			}
-		}
-	),
-	mounted: function () {
-		if ( this.zTypedListType ) {
-			this.fetchZKeys( [ this.zTypedListType ] );
+		} ),
+	watch: {
+		ZlistItems: function ( list, prevList ) {
+			if ( list.length < prevList.length ) {
+				this.recalculateZListIndex( this.zobjectId );
+			}
 		}
 	}
 };
 </script>
 
 <style lang="less">
-.ext-wikilambda-zTypedList {
+.ext-wikilambda-ztypedlist {
 	background: #eee;
-	padding: 1em;
+	padding: 0 0.5em;
 }
 
 input.ext-wikilambda-zstring {
 	background: #eef;
 }
 
-ul.ext-wikilambda-zTypedList-no-bullets {
-	list-style-type: none;
-	list-style-image: none;
+.ext-wikilambda-ztypedlist__container:before {
+	content: '[';
 }
 
-.ext-wikilambda-zTypedList-items-heading {
-	font-weight: bold;
-	margin-top: 1em;
+.ext-wikilambda-ztypedlist__container:after {
+	content: ']';
+}
+
+ul.ext-wikilambda-ztypedlist-no-bullets {
+	list-style-type: none;
+	list-style-image: none;
 }
 </style>

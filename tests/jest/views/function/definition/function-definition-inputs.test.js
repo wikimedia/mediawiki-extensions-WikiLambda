@@ -17,7 +17,7 @@ describe( 'FunctionDefinitionInputs', function () {
 		getters = {
 			getNestedZObjectById: createGettersWithFunctionsMock( { id: 10 } ),
 			getZObjectTypeById: createGettersWithFunctionsMock(),
-			getZObjectChildrenById: createGettersWithFunctionsMock(),
+			getAllItemsFromListById: createGettersWithFunctionsMock(),
 			getNextObjectId: jest.fn()
 		};
 

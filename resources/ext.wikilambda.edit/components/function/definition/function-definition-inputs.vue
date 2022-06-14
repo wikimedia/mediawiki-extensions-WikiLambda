@@ -113,7 +113,7 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getZObject',
 		'getNextObjectId',
-		'getZObjectChildrenById',
+		'getAllItemsFromListById',
 		'getNestedZObjectById'
 	] ), {
 		zFunctionId: function () {
@@ -130,7 +130,7 @@ module.exports = exports = {
 			] ).id || Constants.NEW_ZID_PLACEHOLDER;
 		},
 		zArgumentList: function () {
-			return this.getZObjectChildrenById( this.zArgumentId );
+			return this.getAllItemsFromListById( this.zArgumentId );
 		}
 	} ),
 	methods: $.extend( mapActions( [
@@ -141,7 +141,8 @@ module.exports = exports = {
 		addNewItem: function ( /* event */ ) {
 			var nextId = this.getNextObjectId,
 				payload = {
-					key: this.zArgumentList.length,
+					// since first item is type, new key is argmentList + 1
+					key: this.zArgumentList.length + 1,
 					value: 'object',
 					parent: this.zArgumentId
 				};

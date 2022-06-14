@@ -80,7 +80,8 @@ module.exports = exports = {
 		addNewItem: function ( /* event */ ) {
 			var nextId = this.getNextObjectId,
 				payload = {
-					key: this.ZlistItemsLength,
+					// since first item is type, new key is items length + 1
+					key: this.ZlistItemsLength + 1,
 					value: 'object',
 					parent: this.zobjectId
 				};

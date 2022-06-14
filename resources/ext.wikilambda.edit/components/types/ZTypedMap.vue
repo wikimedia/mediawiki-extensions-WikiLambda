@@ -84,13 +84,36 @@ module.exports = exports = {
 				return this.getZObjectChildrenByIdRecursively( this.zobjectId );
 			},
 			zTypedMapType1: function () {
-				return this.findKeyInArray( Constants.Z_TYPED_MAP_TYPE1, this.zObjectChildrenRecursive );
+				var mapType = this.findKeyInArray(
+					Constants.Z_TYPED_MAP_TYPE1,
+					this.zObjectChildrenRecursive
+				);
+				if ( mapType.value === 'object' ) {
+					mapType = this.findKeyInArray(
+						Constants.Z_REFERENCE_ID,
+						this.getZObjectChildrenById( mapType.id )
+					);
+				}
+				return mapType;
 			},
 			zTypedMapType2: function () {
-				return this.findKeyInArray( Constants.Z_TYPED_MAP_TYPE2, this.zObjectChildrenRecursive );
+				var mapType = this.findKeyInArray(
+					Constants.Z_TYPED_MAP_TYPE2,
+					this.zObjectChildrenRecursive
+				);
+				if ( mapType.value === 'object' ) {
+					mapType = this.findKeyInArray(
+						Constants.Z_REFERENCE_ID,
+						this.getZObjectChildrenById( mapType.id )
+					);
+				}
+				return mapType;
 			},
 			zNestedTypedList: function () {
-				return this.findKeyInArray( Constants.Z_TYPED_OBJECT_ELEMENT_1, this.zObjectChildren );
+				return this.findKeyInArray(
+					Constants.Z_TYPED_OBJECT_ELEMENT_1,
+					this.zObjectChildren
+				);
 			},
 			requiresTypeForList: function () {
 				return !this.zTypedMapType1.value || !this.zTypedMapType2.value;

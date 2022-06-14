@@ -17,7 +17,9 @@ var fs = require( 'fs' ),
 		Z2K2: '',
 		Z2K3: {
 			Z1K1: 'Z12',
-			Z12K1: []
+			Z12K1: [
+				'Z11'
+			]
 		}
 	},
 	zobjectTree = [
@@ -31,11 +33,14 @@ var fs = require( 'fs' ),
 		{ key: 'Z1K1', value: 'Z12', parent: 6, id: 7 },
 		{ key: 'Z12K1', value: 'array', parent: 6, id: 8 },
 		{ key: '0', value: 'object', parent: 8, id: 9 },
-		{ key: 'Z1K1', value: 'Z11', parent: 9, id: 10 },
-		{ key: 'Z11K1', value: 'Z1002', parent: 9, id: 11 },
-		{ key: 'Z11K2', value: '', parent: 9, id: 12 },
-		{ key: 'Z1K1', value: 'Z6', parent: 3, id: 13 },
-		{ key: 'Z6K1', value: '', parent: 3, id: 14 }
+		{ key: 'Z1K1', value: 'Z9', parent: 9, id: 10 },
+		{ key: 'Z9K1', value: 'Z11', parent: 9, id: 11 },
+		{ key: '1', value: 'object', parent: 8, id: 12 },
+		{ key: 'Z1K1', value: 'Z11', parent: 12, id: 13 },
+		{ key: 'Z11K1', value: 'Z1002', parent: 12, id: 14 },
+		{ key: 'Z11K2', value: '', parent: 12, id: 15 },
+		{ key: 'Z1K1', value: 'Z6', parent: 3, id: 16 },
+		{ key: 'Z6K1', value: '', parent: 3, id: 17 }
 	],
 	state,
 	context,
@@ -91,6 +96,11 @@ describe( 'zobject Vuex module', function () {
 					};
 				} ),
 				getZObjectChildrenById: jest.fn( function () {
+					return {
+						id: ''
+					};
+				} ),
+				getAllItemsFromListById: jest.fn( function () {
 					return {
 						id: ''
 					};
@@ -703,17 +713,23 @@ describe( 'zobject Vuex module', function () {
 						Z2K2: undefined,
 						Z2K3: { Z1K1: {
 							Z1K1: 'Z9', Z9K1: 'Z12'
-						}, Z12K1: [] },
+						}, Z12K1: [ {
+							Z1K1: 'Z9',
+							Z9K1: 'Z11'
+						} ] },
 						Z2K4: { Z1K1: {
 							Z1K1: 'Z9', Z9K1: 'Z32'
-						}, Z32K1: [] }
+						}, Z32K1: [ { Z1K1: 'Z9', Z9K1: 'Z31' } ] }
 					} );
 			} );
 
 			it( 'adds a valid ZMultilingualString', function () {
 				zobjectModule.modules.addZObjects.actions.addZMultilingualString( context, { id: 0 } );
 
-				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z12', Z12K1: [] } );
+				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z12', Z12K1: [ {
+					Z1K1: 'Z9',
+					Z9K1: 'Z11'
+				} ] } );
 			} );
 
 			it( 'adds a valid empty ZString', function () {
@@ -729,10 +745,28 @@ describe( 'zobject Vuex module', function () {
 			} );
 
 			it( 'adds a valid ZList', function () {
-				zobjectModule.modules.addZObjects.actions.addZList( context, 0 );
+				zobjectModule.modules.addZObjects.actions.addZTypedList( context, { id: 0 } );
 
 				expect( context.state.zobject ).toEqual( [
-					{ id: 0, value: 'array' }
+					{ id: 0, value: 'array' },
+					{
+						id: 1,
+						key: 0,
+						parent: 0,
+						value: 'object'
+					},
+					{
+						id: 2,
+						key: 'Z1K1',
+						parent: 1,
+						value: 'Z9'
+					},
+					{
+						id: 3,
+						key: 'Z9K1',
+						parent: 1,
+						value: 'Z1'
+					}
 				] );
 
 				expect( zobjectModule
@@ -743,7 +777,12 @@ describe( 'zobject Vuex module', function () {
 						context.state,
 						context.getters,
 						context.rootState,
-						context.getters ) ).toEqual( [] );
+						context.getters
+					)
+				).toEqual( [ {
+					Z1K1: 'Z9',
+					Z9K1: 'Z1'
+				} ] );
 			} );
 
 			it( 'adds a valid empty ZReference', function () {
@@ -761,7 +800,10 @@ describe( 'zobject Vuex module', function () {
 			it( 'adds a valid ZArgument', function () {
 				zobjectModule.modules.addZObjects.actions.addZArgument( context, 0 );
 
-				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z17', Z17K1: { Z1K1: 'Z9', Z9K1: '' }, Z17K2: { Z1K1: 'Z6', Z6K1: 'Z0K1' }, Z17K3: { Z1K1: 'Z12', Z12K1: [] } } );
+				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z17', Z17K1: { Z1K1: 'Z9', Z9K1: '' }, Z17K2: { Z1K1: 'Z6', Z6K1: 'Z0K1' }, Z17K3: { Z1K1: 'Z12', Z12K1: [ {
+					Z1K1: 'Z9',
+					Z9K1: 'Z11'
+				} ] } } );
 			} );
 
 			it( 'adds a valid ZFunctionCall', function () {
@@ -787,6 +829,10 @@ describe( 'zobject Vuex module', function () {
 					Z1K1: 'Z8',
 					Z8K1: [
 						{
+							Z1K1: 'Z9',
+							Z9K1: 'Z17'
+						},
+						{
 							Z1K1: 'Z17',
 							Z17K1: {
 								Z1K1: 'Z9',
@@ -798,7 +844,12 @@ describe( 'zobject Vuex module', function () {
 							},
 							Z17K3: {
 								Z1K1: 'Z12',
-								Z12K1: []
+								Z12K1: [
+									{
+										Z1K1: 'Z9',
+										Z9K1: 'Z11'
+									}
+								]
 							}
 						}
 					],
@@ -806,8 +857,18 @@ describe( 'zobject Vuex module', function () {
 						Z1K1: 'Z9',
 						Z9K1: ''
 					},
-					Z8K3: [],
-					Z8K4: [],
+					Z8K3: [
+						{
+							Z1K1: 'Z9',
+							Z9K1: 'Z20'
+						}
+					],
+					Z8K4: [
+						{
+							Z1K1: 'Z9',
+							Z9K1: 'Z14'
+						}
+					],
 					Z8K5: {
 						Z1K1: 'Z9',
 						Z9K1: 'Z0'

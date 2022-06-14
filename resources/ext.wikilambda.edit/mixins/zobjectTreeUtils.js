@@ -39,7 +39,7 @@ module.exports = exports = {
 						}
 						break;
 					default:
-						type = valueType === Constants.Z_LIST ? 'array' : 'object';
+						type = valueType === Constants.Z_TYPED_LIST ? 'array' : 'object';
 						zObjectTree.push( { id: currentId, key: key, value: type, parent: parentId } );
 						for ( objectKey in value ) {
 							// We make sure that the current Key does not expect a raw string

@@ -27,7 +27,6 @@ module.exports = exports = {
 			Constants.Z_FUNCTION,
 			Constants.Z_FUNCTION_CALL,
 			Constants.Z_REFERENCE,
-			Constants.Z_LIST,
 			Constants.Z_BOOLEAN,
 			Constants.Z_BOOLEAN_TRUE,
 			Constants.Z_BOOLEAN_FALSE,

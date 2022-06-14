@@ -20,11 +20,23 @@
 
 		<!-- If there's a type, we render the appropriate component -->
 		<template v-else>
-			<span>
+			<span v-if="zType === Constants.Z_TYPED_LIST">
+				{{ zTypeLabel }} ->
+				<z-object
+					:zobject-id="zListType.id"
+					:persistent="false"
+					:readonly="readonly"
+				></z-object>
+			</span>
+			<span v-else>
 				<a :href="zTypeLink" :target="!viewmode ? '_blank' : ''">{{ zTypeLabel }}</a>
 			</span>
+
 			<z-key-mode-selector
-				v-if="!( viewmode || readonly ) && selectedMode && !isIdentityKey && zType !== Constants.Z_OBJECT"
+				v-if="!( viewmode || readonly ) &&
+					selectedMode && !isIdentityKey &&
+					zType !== Constants.Z_OBJECT &&
+					zType !== Constants.Z_TYPED_LIST"
 				:mode="selectedMode"
 				:parent-type="parentType"
 				:literal-type="literalType"
@@ -119,6 +131,7 @@ module.exports = exports = {
 		] ),
 		mapGetters( [
 			'getZObjectTypeById',
+			'getListTypeById',
 			'getZkeyLiteralType',
 			'getTypeByMode',
 			'getZkeyLabels',
@@ -144,6 +157,12 @@ module.exports = exports = {
 			},
 			zType: function () {
 				return this.getZObjectTypeById( this.zobjectId );
+			},
+			zListType: function () {
+				if ( this.zType === Constants.Z_TYPED_LIST ) {
+					return this.getListTypeById( this.zobjectId );
+				}
+				return { id: Constants.NEW_ZID_PLACEHOLDER };
 			},
 			zKeyLabel: function () {
 				var label = this.getZkeyLabels[ this.zKey ];

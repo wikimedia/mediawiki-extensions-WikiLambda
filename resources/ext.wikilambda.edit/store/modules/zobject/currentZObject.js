@@ -81,12 +81,14 @@ module.exports = exports = {
 		 */
 		currentZObjectHasLabel: function ( state, getters ) {
 			var zobject = getters.getZObjectAsJson;
+
 			return zobject &&
 				zobject[ Constants.Z_PERSISTENTOBJECT_LABEL ][
 					Constants.Z_MULTILINGUALSTRING_VALUE ].filter(
 					function ( value ) {
-						return value[ Constants.Z_MONOLINGUALSTRING_VALUE ][
-							Constants.Z_STRING_VALUE ];
+						return value[ Constants.Z_MONOLINGUALSTRING_VALUE ] &&
+							value[ Constants.Z_MONOLINGUALSTRING_VALUE ][
+								Constants.Z_STRING_VALUE ];
 					} ).length > 0;
 		},
 		currentZFunctionHasInputs: function ( state, getters ) {
@@ -95,23 +97,29 @@ module.exports = exports = {
 			}
 
 			var zobject = getters.getZObjectAsJson;
+			if ( !zobject || !zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ] ||
+				zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ] <= 1 ) {
+				return false;
+			}
+			var argumentList = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ];
+			// Remove argument type
+			argumentList.shift();
 
-			return zobject &&
-				zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-					Constants.Z_FUNCTION_ARGUMENTS ].filter(
-					function ( arg ) {
-						var argumentTypeIsSet = !!arg[ Constants.Z_ARGUMENT_TYPE ],
-							argumentMonolingualStringIsSet =
-								arg[ Constants.Z_ARGUMENT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ]
-									.filter(
-										function ( label ) {
-											return label[ Constants.Z_MONOLINGUALSTRING_VALUE ][
+			return argumentList.filter(
+				function ( arg ) {
+					var argumentTypeIsSet = !!arg[ Constants.Z_ARGUMENT_TYPE ],
+						argumentMonolingualStringIsSet =
+							arg[ Constants.Z_ARGUMENT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ]
+								.filter(
+									function ( label ) {
+										return label[ Constants.Z_MONOLINGUALSTRING_VALUE ] &&
+											label[ Constants.Z_MONOLINGUALSTRING_VALUE ][
 												Constants.Z_STRING_VALUE ] !== '';
-										} ).length > 0;
+									} ).length > 0;
 
-						return argumentTypeIsSet && argumentMonolingualStringIsSet;
-					}
-				).length > 0;
+					return argumentTypeIsSet && argumentMonolingualStringIsSet;
+				}
+			).length > 0;
 		},
 		currentZFunctionHasOutput: function ( state, getters ) {
 			if ( getters.getCurrentZObjectType !== Constants.Z_FUNCTION ) {
@@ -172,16 +180,20 @@ module.exports = exports = {
 			zObjectLabels = getters.getZObjectAsJson[ Constants.Z_PERSISTENTOBJECT_LABEL ];
 
 			// Don't break if the labels are set to {}
-			if ( zObjectLabels.Z12K1 ) {
-				zObjectLabels.Z12K1.forEach( function ( label ) {
-					languageList.push( label.Z11K1.Z9K1 );
+			if ( zObjectLabels[ Constants.Z_MULTILINGUALSTRING_VALUE ] ) {
+				zObjectLabels[ Constants.Z_MULTILINGUALSTRING_VALUE ].forEach( function ( label ) {
+					if ( label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] ) {
+						languageList.push(
+							label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ]
+						);
+					}
 				} );
 			}
 
 			return languageList.map( function ( languageCode ) {
 				return {
 					Z1K1: Constants.Z_REFERENCE,
-					Z9K1: languageCode
+					[ Constants.Z_REFERENCE_ID ]: languageCode
 				};
 			} );
 		},

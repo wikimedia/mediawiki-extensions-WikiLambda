@@ -63,6 +63,7 @@ module.exports = exports = {
 	},
 	computed: $.extend(
 		mapGetters( [
+			'getAllItemsFromListById',
 			'getZObjectChildrenById',
 			'getNestedZObjectById',
 			'getNextObjectId',
@@ -76,7 +77,7 @@ module.exports = exports = {
 				return this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_ALIASES, this.zobject ).id;
 			},
 			getZObjectAliases: function () {
-				return this.getZObjectChildrenById(
+				return this.getAllItemsFromListById(
 					this.getNestedZObjectById( this.zobjectId, [
 						Constants.Z_PERSISTENTOBJECT_ALIASES,
 						Constants.Z_MULTILINGUALSTRINGSET_VALUE
@@ -84,7 +85,7 @@ module.exports = exports = {
 				);
 			},
 			getZObjectAliasObject: function () {
-				return this.getZObjectChildrenById(
+				return this.getAllItemsFromListById(
 					this.getNestedZObjectById( this.zobjectId, [
 						Constants.Z_PERSISTENTOBJECT_ALIASES,
 						Constants.Z_MULTILINGUALSTRINGSET_VALUE
@@ -114,8 +115,9 @@ module.exports = exports = {
 							this.findKeyInArray( Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE, alias ).id,
 							[ Constants.Z_REFERENCE_ID ]
 						);
+
 					if ( language.value === lang ) {
-						return this.getZObjectChildrenById(
+						return this.getAllItemsFromListById(
 							this.findKeyInArray( Constants.Z_MONOLINGUALSTRINGSET_VALUE, alias ).id
 						).map( function ( aliasString ) {
 							return this.getNestedZObjectById( aliasString.id, [

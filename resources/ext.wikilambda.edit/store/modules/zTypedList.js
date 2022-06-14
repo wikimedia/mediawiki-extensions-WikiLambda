@@ -5,6 +5,8 @@
  * @license MIT
  */
 
+// TODO (T298133): In Removing support for Z10, removed unused code.
+
 var Constants = require( '../../Constants.js' ),
 	zobjectTreeUtils = require( '../../mixins/zobjectTreeUtils.js' ).methods,
 	performFunctionCall = require( '../../mixins/api.js' ).methods.performFunctionCall;
@@ -57,6 +59,7 @@ module.exports = exports = {
 	mutations: {
 	},
 	actions: {
+		// TODO (T298133): In Removing support for Z10, refactor addtypedlist map item.
 		/**
 		 * Add a new item in a typed list. This will create the following format:
 		 * {
@@ -75,7 +78,7 @@ module.exports = exports = {
 		 * @param {number} payload.id
 		 * @param {string | Object} payload.value
 		 */
-		addTypedListItem: function ( context, payload ) {
+		addTypedListMapItem: function ( context, payload ) {
 
 			var nestedChildren = context.getters.getZObjectChildrenByIdRecursively( payload.id ),
 				newItemParentId = getNewItemParentId( nestedChildren, payload.id ),
@@ -219,7 +222,7 @@ module.exports = exports = {
 			};
 			context.dispatch( 'changeType', createTypedListPayload );
 
-			context.dispatch( 'addTypedListItem', createTypedListPayload );
+			// context.dispatch( 'addTypedListMapItem', createTypedListPayload );
 
 		},
 		/**

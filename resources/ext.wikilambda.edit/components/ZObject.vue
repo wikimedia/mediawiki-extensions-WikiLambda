@@ -140,8 +140,6 @@ module.exports = exports = {
 						return 'z-reference';
 					case Constants.Z_MULTILINGUALSTRING:
 						return 'z-multilingual-string';
-					case Constants.Z_LIST:
-						return 'z-list';
 					case Constants.Z_TYPED_LIST:
 						return 'z-typed-list';
 					case Constants.Z_TYPED_PAIR:

@@ -11,12 +11,10 @@
 namespace MediaWiki\Extension\WikiLambda\API;
 
 use ApiBase;
-use FormatJson;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
-use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiZObjectEditor extends ApiBase {
@@ -30,13 +28,6 @@ class ApiZObjectEditor extends ApiBase {
 
 		$summary = $params[ 'summary' ];
 		$zobject = $params[ 'zobject' ];
-
-		// FIXME: (T306824) Remove this pipe when front-end handles benjamin stuff
-		if ( !defined( 'MW_PHPUNIT_TEST' ) ) {
-			$zobject = FormatJson::encode(
-				ZObjectUtils::simpleToBenjamin( FormatJson::parse( $zobject )->value )
-			);
-		}
 
 		// If zid is set, we should be editing it, if empty or Z0, we are creating a new zobject
 		// Shall we add an aditional flag to confirm creation/edition?

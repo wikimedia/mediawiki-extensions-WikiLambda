@@ -103,49 +103,56 @@ module.exports = exports = {
 					return;
 				}
 
-				zobject[
+				var zArguments = zobject[
 					Constants.Z_PERSISTENTOBJECT_VALUE ][
-					Constants.Z_FUNCTION_ARGUMENTS ]
-					.forEach( function ( argument ) {
-						var argumentLabels = argument[ Constants.Z_ARGUMENT_LABEL ][
-								Constants.Z_MULTILINGUALSTRING_VALUE ],
-							labels = argumentLabels.map( function ( label ) {
-								return {
-									lang: label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_STRING_VALUE ] ||
-										label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ],
-									label: label[ Constants.Z_MONOLINGUALSTRING_VALUE ],
-									key: label[ Constants.Z_MONOLINGUALSTRING_VALUE ] + ': '
-								};
-							} ),
-							zid = argument[ Constants.Z_ARGUMENT_KEY ],
-							typeZid,
-							typeLabel;
+					Constants.Z_FUNCTION_ARGUMENTS ];
 
-						// We can either return an object or a straight string.
-						if ( typeof argument[ Constants.Z_ARGUMENT_TYPE ] === 'object' ) {
-							typeZid = argument[ Constants.Z_ARGUMENT_TYPE ][ Constants.Z_OBJECT_TYPE ];
-							typeLabel = context.getters.getZkeyLabels[ typeZid ];
-						} else {
-							typeZid = argument[ Constants.Z_ARGUMENT_TYPE ];
-							typeLabel = context.getters.getZkeyLabels[ typeZid ];
-						}
+				// Remove argument type
+				zArguments.shift();
 
-						if ( typeof zid === 'object' ) {
-							zid = zid[ Constants.Z_STRING_VALUE ];
-						}
-						if ( !typeLabel ) {
-							missingTypes.push( argument[ Constants.Z_ARGUMENT_TYPE ] );
-						}
+				zArguments.forEach( function ( argument ) {
+					var argumentLabels = argument[ Constants.Z_ARGUMENT_LABEL ][
+						Constants.Z_MULTILINGUALSTRING_VALUE ];
+					// Remove argument label type
+					argumentLabels.shift();
 
-						context.commit( 'addZArgumentInfo', {
-							zid: zid,
-							type: {
-								label: typeLabel,
-								zid: typeZid
-							},
-							labels: labels
-						} );
+					var labels = argumentLabels.map( function ( label ) {
+							return {
+								lang: label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_STRING_VALUE ] ||
+									label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ],
+								label: label[ Constants.Z_MONOLINGUALSTRING_VALUE ],
+								key: label[ Constants.Z_MONOLINGUALSTRING_VALUE ] + ': '
+							};
+						} ),
+						zid = argument[ Constants.Z_ARGUMENT_KEY ],
+						typeZid,
+						typeLabel;
+
+					// We can either return an object or a straight string.
+					if ( typeof argument[ Constants.Z_ARGUMENT_TYPE ] === 'object' ) {
+						typeZid = argument[ Constants.Z_ARGUMENT_TYPE ][ Constants.Z_OBJECT_TYPE ];
+						typeLabel = context.getters.getZkeyLabels[ typeZid ];
+					} else {
+						typeZid = argument[ Constants.Z_ARGUMENT_TYPE ];
+						typeLabel = context.getters.getZkeyLabels[ typeZid ];
+					}
+
+					if ( typeof zid === 'object' ) {
+						zid = zid[ Constants.Z_STRING_VALUE ];
+					}
+					if ( !typeLabel ) {
+						missingTypes.push( argument[ Constants.Z_ARGUMENT_TYPE ] );
+					}
+
+					context.commit( 'addZArgumentInfo', {
+						zid: zid,
+						type: {
+							label: typeLabel,
+							zid: typeZid
+						},
+						labels: labels
 					} );
+				} );
 
 				// If any argument types are not available, fetch them and rerun the function
 				if ( missingTypes.filter( Boolean ).length ) {
