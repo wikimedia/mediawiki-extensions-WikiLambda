@@ -91,7 +91,7 @@ class ApiFunctionCall extends ApiBase {
 		} catch ( ConnectException $exception ) {
 			$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
 		} catch ( ClientException | ServerException $exception ) {
-			$zErrorObject = self::wrapError( $exception->getResponse()->getReasonPhrase(), $zObject );
+			$zErrorObject = self::wrapErrorFromFunctionCall( $exception->getResponse()->getReasonPhrase(), $zObject );
 			$zResponseObject = new ZResponseEnvelope( null, $zErrorObject );
 			$result = [ 'data' => $zResponseObject->getSerialized() ];
 		}
@@ -278,7 +278,7 @@ class ApiFunctionCall extends ApiBase {
 		if ( isset( $outerResponse[ 'error' ] ) ) {
 			$zerror = ZObjectFactory::create( $outerResponse[ 'error' ] );
 			if ( !( $zerror instanceof ZError ) ) {
-				$zerror = self::wrapError( new ZQuote( $zerror ), $call );
+				$zerror = self::wrapErrorFromFunctionCall( new ZQuote( $zerror ), $call );
 			}
 			throw new ZErrorException( $zerror );
 		}
@@ -292,7 +292,7 @@ class ApiFunctionCall extends ApiBase {
 		if ( !( $response instanceof ZResponseEnvelope ) ) {
 			// The server's not given us a result!
 			$responseType = $response->getZType();
-			$zerror = self::wrapError( "Server returned a non-result of type '$responseType'!", $call );
+			$zerror = self::wrapErrorFromFunctionCall( "Server returned a non-result of type '$responseType'!", $call );
 			throw new ZErrorException( $zerror );
 		}
 
@@ -300,7 +300,7 @@ class ApiFunctionCall extends ApiBase {
 			// If the server has responsed with a Z5/Error, show that properly.
 			$zerror = $response->getErrors();
 			if ( !( $zerror instanceof ZError ) ) {
-				$zerror = self::wrapError( new ZQuote( $zerror ), $call );
+				$zerror = self::wrapErrorFromFunctionCall( new ZQuote( $zerror ), $call );
 			}
 			throw new ZErrorException( $zerror );
 		}
@@ -309,13 +309,13 @@ class ApiFunctionCall extends ApiBase {
 	}
 
 	/**
-	 * Private convenience method to wrap a non-error in a Z507/Evaluation ZError
+	 * Convenience method to wrap a non-error in a Z507/Evaluation ZError
 	 *
 	 * @param string|ZObject $message The non-error to wrap.
 	 * @param string $call The functional call context.
 	 * @return ZError
 	 */
-	private static function wrapError( $message, $call ): ZError {
+	public static function wrapErrorFromFunctionCall( $message, $call ): ZError {
 		$wrappedError = ZErrorFactory::createZErrorInstance(
 			ZErrorTypeRegistry::Z_ERROR_GENERIC, [ 'message' => $message ]
 		);
