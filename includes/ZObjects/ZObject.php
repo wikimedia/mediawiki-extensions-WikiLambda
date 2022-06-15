@@ -112,6 +112,16 @@ class ZObject {
 	}
 
 	/**
+	 * Set a value of given key in the current ZObject.
+	 *
+	 * @param string $key The key to set.
+	 * @param ZObject $value The value to set.
+	 */
+	public function setValueByKey( string $key, ZObject $value ) {
+		$this->data[ $key ] = $value;
+	}
+
+	/**
 	 * Returns whether this ZObject is a builtin class.
 	 *
 	 * @return bool Whether this object is a built-in type or generic, or it's a direct instance of ZObject
