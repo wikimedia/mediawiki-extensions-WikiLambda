@@ -12,7 +12,9 @@
 	"wikilambda-prohibitedcreationtype": "Uvedený ZObjekt má typ „$1“, který není dovoleno vytvářet.",
 	"wikilambda-noresult": "Hledání nenašlo žádné výsledky.",
 	"wikilambda-persistentzobject": "ZObjekt",
+	"wikilambda-persistentzobject-contents": "Obsah",
 	"wikilambda-viewmode-nojs": "Tato stránka se bez JavaScriptu zobrazuje jen v omezené podobě.",
+	"wikilambda-diff-incompatible": "Systém nemůže zobrazit rozdíly mezi ZObjektem a ne-ZObjektem.",
 	"wikilambda-reference": "Reference",
 	"wikilambda-literal": "Literál",
 	"wikilambda-call-function": "Zavolat funkci",
@@ -54,5 +56,8 @@
 	"wikilambda-editor-label-addlanguage-label": "Přidat jazyk",
 	"wikilambda-editor-label-removelanguage-tooltip": "Odebrat tento jazyk z tohoto štítku",
 	"wikilambda-editor-zobject-clearitem-tooltip": "Vyprázdnit tuto hodnotu",
-	"wikilambda-editor-label-select-programming-language-label": "Vyberte programovací jazyk:"
+	"wikilambda-editor-label-select-programming-language-label": "Vyberte programovací jazyk:",
+	"wikilambda-tester-status-running": "BĚŽÍ…",
+	"wikilambda-tester-status-passed": "ÚSPĚCH",
+	"wikilambda-tester-status-failed": "NEÚSPĚCH"
 }
