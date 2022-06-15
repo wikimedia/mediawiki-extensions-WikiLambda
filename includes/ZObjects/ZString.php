@@ -63,7 +63,7 @@ class ZString extends ZObject {
 	 */
 	public function getSerialized( $form = self::FORM_CANONICAL ) {
 		if ( $form === self::FORM_CANONICAL ) {
-			if ( !ZObjectUtils::isValidZObjectReference( $this->getZValue() ) ) {
+			if ( !ZObjectUtils::isValidZObjectReference( $this->getZValue() ?? '' ) ) {
 				return $this->getZValue();
 			}
 		}
@@ -73,7 +73,7 @@ class ZString extends ZObject {
 	/**
 	 * Get the string value wrapped in this ZString instance
 	 *
-	 * @return string
+	 * @return string|null
 	 */
 	public function getZValue() {
 		return $this->data[ ZTypeRegistry::Z_STRING_VALUE ];
