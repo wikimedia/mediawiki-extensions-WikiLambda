@@ -165,7 +165,9 @@ module.exports = exports = {
 		},
 		zFunctionCallKeys: function () {
 			if ( this.zFunctionCall ) {
-				return this.zFunctionCall[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
+				// Return only elements [1..]
+				return this.zFunctionCall[
+					Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ].slice( 1 );
 			}
 			return [];
 		},
@@ -176,7 +178,7 @@ module.exports = exports = {
 				labels[ key ] = keyObject[
 					Constants.Z_KEY_LABEL ][
 					Constants.Z_MULTILINGUALSTRING_VALUE ][
-					0 ][
+					1 ][
 					Constants.Z_MONOLINGUALSTRING_VALUE ];
 			} );
 			return labels;
@@ -185,7 +187,9 @@ module.exports = exports = {
 			if ( !this.selectedFunction ) {
 				return [];
 			} else {
-				return this.selectedFunction[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ];
+				// Return only elements [1..]
+				return this.selectedFunction[
+					Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ].slice( 1 );
 			}
 		},
 		zFunctionArguments: function () {
@@ -195,7 +199,7 @@ module.exports = exports = {
 					label = keyObject[
 						Constants.Z_ARGUMENT_LABEL ][
 						Constants.Z_MULTILINGUALSTRING_VALUE ][
-						0 ][
+						1 ][
 						Constants.Z_MONOLINGUALSTRING_VALUE ],
 					type = keyObject[ Constants.Z_ARGUMENT_TYPE ];
 
@@ -212,17 +216,17 @@ module.exports = exports = {
 
 			return labels;
 		},
-		zImplementationLanguages: function () {
+		zImplementations: function () {
 			if ( this.selectedFunction ) {
 				// we check if the function has implementations
 				if ( this.selectedFunction[ Constants.Z_PERSISTENTOBJECT_VALUE ] &&
 					this.selectedFunction[
-						Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_IMPLEMENTATIONS ].length > 0 ) {
+						Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_IMPLEMENTATIONS ].length > 1 ) {
 					return this.selectedFunction[
-						Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_IMPLEMENTATIONS ];
+						Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_IMPLEMENTATIONS ].slice( 1 );
 				}
 			}
-			return null;
+			return [];
 		},
 		displayModes: function () {
 			return Constants.Z_MODE_SELECTOR_MODES.filter( function ( mode ) {

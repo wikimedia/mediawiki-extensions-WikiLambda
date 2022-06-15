@@ -73,6 +73,7 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
+		'getAllItemsFromListById',
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
 		'getZkeyLabels',
@@ -301,21 +302,21 @@ module.exports = exports = {
 				/* get the ID of the label from the current argument ZObject */
 				var argumentLabels = this.findKeyInArray( Constants.Z_ARGUMENT_LABEL, argumentZobject );
 				if ( !argumentLabels.id ) {
-					return;
+					return [];
 				}
 
 				/* get the zObject for the current argument input */
-				var monolingualZObject = this.getZObjectChildrenById( argumentLabels.id );
+				var multilingualZObject = this.getZObjectChildrenById( argumentLabels.id );
 
 				/* get the ID for the list of string labels for the current argument input */
-				var monolingualStringItem = this.findKeyInArray(
+				var multilingualValue = this.findKeyInArray(
 					Constants.Z_MULTILINGUALSTRING_VALUE,
-					monolingualZObject
+					multilingualZObject
 				);
-				if ( monolingualStringItem.id ) {
-					return this.getZObjectChildrenById( monolingualStringItem.id );
+				if ( multilingualValue.id ) {
+					return this.getAllItemsFromListById( multilingualValue.id );
 				}
-				return null;
+				return [];
 			},
 			/* get the ZID of the text of the monolingual string */
 			monolingualStringValue: function ( multilingualObject ) {

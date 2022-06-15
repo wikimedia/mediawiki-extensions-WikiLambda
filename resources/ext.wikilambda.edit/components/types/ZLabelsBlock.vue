@@ -128,6 +128,7 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
+		'getAllItemsFromListById',
 		'getZObjectAsJsonById',
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
@@ -331,7 +332,8 @@ module.exports = exports = {
 			return aliasId;
 		},
 		getLanguageAliases: function ( language ) {
-			return this.getZObjectChildrenById( this.getLanguageAliasStringsetId( language ) ).map( function ( alias ) {
+			const aliases = this.getAllItemsFromListById( this.getLanguageAliasStringsetId( language ) );
+			return aliases.map( function ( alias ) {
 				return alias.id;
 			} );
 		},

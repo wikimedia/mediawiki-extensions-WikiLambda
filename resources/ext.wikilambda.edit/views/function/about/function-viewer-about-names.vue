@@ -43,6 +43,7 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
+		'getAllItemsFromListById',
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
 		'getUserZlangZID',
@@ -59,7 +60,7 @@ module.exports = exports = {
 			] ).id;
 		},
 		getFunctionMonolingualNames: function () {
-			return this.getZObjectChildrenById( this.getFunctionNameMultilingualId );
+			return this.getAllItemsFromListById( this.getFunctionNameMultilingualId );
 		},
 		getFunctionNames: function () {
 			var allLabels = [];

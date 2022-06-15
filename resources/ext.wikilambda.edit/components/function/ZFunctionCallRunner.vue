@@ -105,7 +105,7 @@ module.exports = exports = {
 				} );
 		},
 		hasNoImplementations: function () {
-			return this.zImplementationLanguages === null;
+			return this.zImplementations.length === 0;
 		}
 	}
 };
