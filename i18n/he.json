@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Amire80"
+			"Amire80",
+			"Xnet1234"
 		]
 	},
 	"wikilambda-desc": "מספקת לאתרי ויקי של ויקימדיה פונקציית מפענח לקוד ויקי לקריאה לפונקציות שנכתבות, מנוהלות, ומבוצעות בוויקי מרכזי.",
@@ -219,5 +220,5 @@
 	"wikilambda-zerror": "שגיאת Z מסוג $1",
 	"wikilambda-optional": "לא חובה",
 	"wikilambda-continue-editing": "המשך עריכה",
-	"wikilambda-discard-edits": "ביטול העריכות"
+	"wikilambda-discard-edits": "זריקת העריכות"
 }
