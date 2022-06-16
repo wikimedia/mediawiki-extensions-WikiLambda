@@ -22,6 +22,7 @@ use GuzzleHttp\Exception\ServerException;
 use MediaWiki\Extension\WikiLambda\MockOrchestrator;
 use MediaWiki\Extension\WikiLambda\OrchestratorInterface;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
@@ -174,12 +175,12 @@ class ApiFunctionCall extends ApiBase {
 			"Z7K1" => $curryFunctionCall,
 			"Z30086K1" => $andFunction,
 			"Z30086K2" => [
-				"Z1K1" => "Z40",
-				"Z40K1" => "Z41"
+				"Z1K1" => ZTypeRegistry::Z_BOOLEAN,
+				ZTypeRegistry::Z_BOOLEAN_VALUE => ZTypeRegistry::Z_BOOLEAN_TRUE
 			],
 			"Z30086K3" => [
-				"Z1K1" => "Z40",
-				"Z40K1" => "Z41"
+				"Z1K1" => ZTypeRegistry::Z_BOOLEAN,
+				ZTypeRegistry::Z_BOOLEAN_VALUE => ZTypeRegistry::Z_BOOLEAN_TRUE
 			]
 		];
 		return urlencode( json_encode( $curry ) );

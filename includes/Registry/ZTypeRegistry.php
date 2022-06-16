@@ -203,6 +203,9 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_VOID_INSTANCE = [ self::Z_OBJECT_TYPE => self::Z_UNIT ];
 
 	public const Z_BOOLEAN = 'Z40';
+	public const Z_BOOLEAN_VALUE = 'Z40K1';
+	public const Z_BOOLEAN_TRUE = 'Z41';
+	public const Z_BOOLEAN_FALSE = 'Z42';
 
 	public const IGNORE_KEY_NORMALIZATION = [
 		self::Z_OBJECT_TYPE,
