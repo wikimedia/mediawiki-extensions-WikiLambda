@@ -13,6 +13,8 @@
 			"Zhang8569"
 		]
 	},
+	"content-model-zobject": "ZObject",
+	"wikilambda-emptylabel": "无标签的 ZObject",
 	"wikilambda-typeunavailable": "不可识别种类",
 	"wikilambda-noresult": "搜索没有提供结果。",
 	"wikilambda-persistentzobject-metadata": "标签与化名",
@@ -34,6 +36,7 @@
 	"wikilambda-implementation-selector": "选择一个实现",
 	"wikilambda-implementation-none-found": "没有找到实现。",
 	"wikilambda-implementation-create-new": "创建一个新的实现",
+	"wikilambda-test-case-none": "没有测试案例",
 	"wikilambda-tester-run-tester": "运行测试",
 	"wikilambda-enable-expert-mode": "开启专家模式",
 	"wikilambda-disable-expert-mode": "关闭专家模式",
