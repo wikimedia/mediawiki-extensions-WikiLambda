@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Siddhan"
+		]
+	},
+	"wikilambda-implementation-selector-built-in": "உருவாக்கப்பட்ட",
+	"wikilambda-implementations-none": "அமலாக்கங்கள் இல்லை",
+	"wikilambda-function-implementation-name-label": "பெயர்",
+	"wikilambda-function-implementation-language-label": "மொழி",
+	"wikilambda-function-implementation-state-label": "நிலைமை",
+	"wikilambda-function-implementation-tests-passed-label": "தேர்ச்சி பெற்ற தேர்வுகள்",
+	"wikilambda-function-implementation-state-available": "கிடைக்கக்கூடிய",
+	"wikilambda-function-implementation-state-proposed": "முன்மொழியப்பட்ட",
+	"wikilambda-function-implementation-table-header": "அமலாக்கங்கள்"
+}

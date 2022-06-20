@@ -3,6 +3,7 @@
 		"authors": [
 			"AJBot2",
 			"Daud I.F. Argana",
+			"Farras",
 			"Syman51"
 		]
 	},
@@ -145,6 +146,7 @@
 	"wikilambda-function-is-not-attached": "Objek ini tidak terkait dengan fungsinya.",
 	"wikilambda-function-definition-add-other-label-languages-title": "+ Tambahkan label dalam bahasa lain",
 	"wikilambda-function-definition-name-label": "Nama",
+	"wikilambda-function-implementation-language-label": "Bahasa",
 	"wikilambda-function-definition-name-placeholder": "Masukkan nama fungsi yang deskriptif",
 	"wikilambda-function-definition-name-example": "Lihat contoh nama.",
 	"wikilambda-function-definition-alias-label": "Alias",

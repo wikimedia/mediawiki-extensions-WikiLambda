@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Afaz",
+			"Funa-enpitu",
 			"MathXplore",
 			"Portal18",
 			"RYOUMA1117",
@@ -34,6 +35,7 @@
 	"wikilambda-editor-tester-list-label": "テスターの一覧",
 	"wikilambda-tester-selector": "テスターを選択",
 	"wikilambda-tester-none-found": "テスターが見つかりません。",
+	"wikilambda-test-case-none": "サンドボックスなし",
 	"wikilambda-tester-create-new": "新しいテストを作成する",
 	"wikilambda-tester-status-running": "実行中...",
 	"wikilambda-tester-status-passed": "合格",
@@ -46,6 +48,7 @@
 	"wikilambda-function-definition-name-label": "名前",
 	"wikilambda-function-implementation-name-label": "名前",
 	"wikilambda-function-implementation-language-label": "言語",
+	"wikilambda-function-implementation-state-label": "状態",
 	"wikilambda-function-implementation-state-available": "利用可能",
 	"wikilambda-function-definition-alias-label": "別名",
 	"wikilambda-function-definition-footer-placeholder": "変更点を簡単に説明してください。",
@@ -56,6 +59,7 @@
 	"wikilambda-function-definition-output-selector": "種類を選択してください",
 	"wikilambda-function-definition-example-title": "関数の使用例",
 	"wikilambda-editor-fn-step-tests": "テスト",
+	"wikilambda-function-implementation-table-header": "実装",
 	"wikilambda-editor-fn-step-function-details": "詳細",
 	"wikilambda-editor-fn-tests-tooltip-header": "アクセスなし",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "申し訳ありません、関数の定義は公開後になると管理者しか変更できません。",
