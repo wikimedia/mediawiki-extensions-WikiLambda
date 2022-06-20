@@ -37,7 +37,6 @@ var FunctionViewerDetailsSidebar = require( './details/function-viewer-details-s
 	FunctionViewerDetailsImplementationTable = require( './details/function-viewer-details-table.vue' ),
 	Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	icons = require( '../../../lib/icons.json' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
@@ -57,7 +56,8 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			implementationLabels: []
+			implementationIds: [],
+			filterState: ''
 		};
 	},
 	computed: $.extend( {},
@@ -112,15 +112,16 @@ module.exports = exports = {
 			implementationBody: function () {
 				const tableData = [];
 
-				for ( var item in this.getZImplementations ) {
-					var zImplementationState = this.$i18n( 'wikilambda-function-implementation-state-available' ).text();
-
+				// iterate over each implementation for this function
+				for ( const item in this.getZImplementations ) {
+					// get the state of the implementation ( available | proposed )
+					let zImplementationState = this.$i18n( 'wikilambda-function-implementation-state-available' ).text();
 					if ( this.getUnattachedZImplementations.indexOf( this.getZImplementations[ item ] ) > -1 ) {
 						zImplementationState = this.$i18n( 'wikilambda-function-implementation-state-proposed' ).text();
 					}
 
+					// get the language of the implementation
 					var language = this.$i18n( 'wikilambda-implementation-selector-composition' );
-
 					var zImplementationObj = this.getZkeys[ this.getZImplementations[ item ] ];
 					if ( zImplementationObj[ Constants.Z_PERSISTENTOBJECT_VALUE ] &&
 						zImplementationObj[
@@ -149,17 +150,31 @@ module.exports = exports = {
 						];
 					}
 
-					// save the implementation name in a list for use by the tester table
-					this.implementationLabels.push( this.getZkeyLabels[ this.getZImplementations[ item ] ] );
+					// for each implementation, store the checked state
+					// (used to determine the columns of the test table)
+					if ( !this.implementationIds[ this.getZImplementations[ item ] ] ) {
+						this.implementationIds[ this.getZImplementations[ item ] ] = {
+							zid: this.getZImplementations[ item ],
+							state: zImplementationState,
+							checked: false
+						};
+					}
 
+					// create the table data for the implementations table
 					tableData.push( {
 						checkbox: {
 							title: '',
 							component: 'cdx-checkbox',
 							props: {
-								vModel: this.checkValue
+								vModel: this.checkValue,
+								// disabled if it is of a different state than a selected implementation
+								disabled: this.filterState !== zImplementationState && this.filterState !== '',
+								onClick: function () {
+									this.handleCheckboxClick( this.getZImplementations[ item ] );
+								}.bind( this )
 							},
-							class: 'ext-wikilambda-function-details-table-item'
+							class: 'ext-wikilambda-function-details-table-item',
+							id: this.getZkeyLabels[ this.getZImplementations[ item ] ] + ' ' + zImplementationState
 						},
 						name: {
 							title: this.getZkeyLabels[ this.getZImplementations[ item ] ],
@@ -219,12 +234,14 @@ module.exports = exports = {
 					}
 				};
 
-				// create one column per implementation
-				for ( var item in this.implementationLabels ) {
-					headers[ this.implementationLabels[ item ] ] = {
-						title: this.implementationLabels[ item ],
-						class: 'ext-wikilambda-function-details-table-text'
-					};
+				// create one column per implementation selected (or for all implementations if none are selected)
+				for ( const item in this.implementationIds ) {
+					if ( this.implementationIds[ item ].checked || this.filterState === '' ) {
+						headers[ this.implementationIds[ item ].zid ] = {
+							title: this.getZkeyLabels[ this.implementationIds[ item ].zid ],
+							class: 'ext-wikilambda-function-details-table-text'
+						};
+					}
 				}
 
 				headers.state = {
@@ -264,14 +281,18 @@ module.exports = exports = {
 						class: 'ext-wikilambda-function-details-table-item'
 					};
 
-					for ( var item in this.implementationLabels ) {
-						tableData[ index ][ this.implementationLabels[ item ] ] = {
-							title: this.$i18n( 'wikilambda-tester-status-passed' ).text(),
-							component: 'cdx-icon',
-							props: {
-								icon: icons.cdxIconCheck
-							}
-						};
+					for ( const item in this.implementationIds ) {
+						if ( this.implementationIds[ item ].checked || this.filterState === '' ) {
+							tableData[ index ][ this.implementationIds[ item ].zid ] = {
+								// TODO: update to fetch actual pass/fail status and update styles/icons accordingly
+								// here and in tester-table-status.vue
+								component: 'tester-table-status',
+								props: {
+									status: this.$i18n( 'wikilambda-tester-status-passed' ).text()
+								},
+								class: 'ext-wikilambda-function-details-table-item--checkbox'
+							};
+						}
 					}
 
 					tableData[ index ].state = {
@@ -288,7 +309,24 @@ module.exports = exports = {
 				return tableData;
 			}
 		}
-	)
+	),
+	methods: {
+		handleCheckboxClick: function ( item ) {
+			// update the implementation selection
+			this.implementationIds[ item ].checked = !this.implementationIds[ item ].checked;
+
+			// if any implementation is currently checked, the filter state should be the state
+			// of that implementation
+			// TODO: find a more efficient way to do this
+			for ( var implementation in this.implementationIds ) {
+				if ( this.implementationIds[ implementation ].checked ) {
+					this.filterState = this.implementationIds[ implementation ].state;
+					break;
+				}
+				this.filterState = '';
+			}
+		}
+	}
 };
 </script>
 

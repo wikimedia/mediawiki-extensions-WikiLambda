@@ -7,7 +7,10 @@
 'use strict';
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	FunctionDetails = require( '../../../../resources/ext.wikilambda.edit/views/function/FunctionDetails.vue' );
+	FunctionDetails = require( '../../../../resources/ext.wikilambda.edit/views/function/FunctionDetails.vue' ),
+	FunctionViewerDetailsSidebar = require( '../../../../resources/ext.wikilambda.edit/views/function/details/function-viewer-details-sidebar.vue' ),
+	FunctionViewerDetailsTable = require( '../../../../resources/ext.wikilambda.edit/views/function/details/function-viewer-details-table.vue' );
+
 describe( 'FunctionDetails', function () {
 	var getters;
 
@@ -24,5 +27,11 @@ describe( 'FunctionDetails', function () {
 	it( 'renders without errors', function () {
 		var wrapper = shallowMount( FunctionDetails );
 		expect( wrapper.find( '.ext-wikilambda-function-details' ) ).toBeTruthy();
+	} );
+
+	it( 'loads child components', function () {
+		var wrapper = shallowMount( FunctionDetails );
+		expect( wrapper.findComponent( FunctionViewerDetailsSidebar ) ).toBeTruthy();
+		expect( wrapper.findComponent( FunctionViewerDetailsTable ) ).toBeTruthy();
 	} );
 } );
