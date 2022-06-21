@@ -65,8 +65,11 @@ module.exports = exports = {
 				// eslint-disable-next-line camelcase
 				wikilambdafn_type: Constants.Z_IMPLEMENTATION
 			} ).then( function ( response ) {
-				context.commit( 'setZImplementations', response.query.wikilambdafn_search );
-				return context.dispatch( 'fetchZKeys', { zids: response.query.wikilambdafn_search } );
+				var zidList = response.query.wikilambdafn_search.map( function ( zidItem ) {
+					return zidItem.zid;
+				} );
+				context.commit( 'setZImplementations', zidList );
+				return context.dispatch( 'fetchZKeys', { zids: zidList } );
 			} );
 		}
 	}
