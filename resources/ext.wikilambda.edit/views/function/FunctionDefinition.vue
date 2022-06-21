@@ -56,14 +56,17 @@
 				{{ $i18n( 'wikilambda-function-definition-add-other-label-languages-title' ).text() }}
 			</cdx-button>
 		</div>
-		<toast
+		<cdx-message
 			v-if="showToast"
-			:icon="toastIcon"
-			:intent="toastIntent"
-			:timeout="toastTimeout"
-			:message="currentToast"
-			@toast-close="closeToast"
-		></toast>
+			dismiss-button-label="Close"
+			:type="toastIntent"
+			:auto-dismiss="true"
+			@user-dismissed="closeToast"
+			@auto-dismissed="closeToast"
+		>
+			{{ currentToast }}
+		</cdx-message>
+
 		<function-definition-footer
 			:is-editing="isEditingExistingFunction"
 			@publish="handlePublish"
@@ -79,13 +82,13 @@ var FunctionDefinitionOutput = require( '../../components/function/definition/fu
 var FunctionDefinitionFooter = require( '../../components/function/definition/function-definition-footer.vue' );
 var FnEditorZLanguageSelector = require( '../../components/editor/FnEditorZLanguageSelector.vue' );
 var useBreakpoints = require( '../../composables/useBreakpoints.js' );
-var Toast = require( '../../components/base/Toast.vue' );
 var icons = require( '../../../lib/icons.json' );
 var mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 var Constants = require( '../../Constants.js' );
 var typeUtils = require( '../../mixins/typeUtils.js' );
-var CdxButton = require( '@wikimedia/codex' ).CdxButton;
+var CdxButton = require( '@wikimedia/codex' ).CdxButton,
+	CdxMessage = require( '@wikimedia/codex' ).CdxMessage;
 
 // @vue/component
 module.exports = exports = {
@@ -97,8 +100,8 @@ module.exports = exports = {
 		'function-definition-output': FunctionDefinitionOutput,
 		'function-definition-footer': FunctionDefinitionFooter,
 		'fn-editor-zlanguage-selector': FnEditorZLanguageSelector,
-		toast: Toast,
-		'cdx-button': CdxButton
+		'cdx-button': CdxButton,
+		'cdx-message': CdxMessage
 	},
 	mixins: [ typeUtils ],
 	setup: function () {
@@ -110,7 +113,7 @@ module.exports = exports = {
 	data: function () {
 		return {
 			currentToast: null,
-			toastIntent: 'SUCCESS',
+			toastIntent: 'success',
 			labelLanguages: []
 		};
 	},
@@ -140,22 +143,6 @@ module.exports = exports = {
 				return true;
 			}
 			return false;
-		},
-		/**
-		 * icon for toast
-		 *
-		 * @return {Object}
-		 */
-		toastIcon: function () {
-			return icons.cdxIconCheck;
-		},
-		/**
-		 * timeout for toast
-		 *
-		 * @return {number}
-		 */
-		toastTimeout: function () {
-			return 2000;
 		},
 		/**
 		 * if toast should be shown
@@ -306,7 +293,7 @@ module.exports = exports = {
 		'changeType'
 	] ), {
 		publishSuccessful: function ( toastMessage ) {
-			this.toastIntent = 'SUCCESS';
+			this.toastIntent = 'success';
 			this.currentToast = toastMessage;
 		},
 		closeToast: function () {
@@ -357,7 +344,7 @@ module.exports = exports = {
 					window.location.href = new mw.Title( pageTitle ).getUrl();
 				}
 			} ).catch( function ( error ) {
-				context.toastIntent = 'FAILURE';
+				context.toastIntent = 'error';
 				context.currentToast = error.error.message;
 			} );
 		},
@@ -379,7 +366,7 @@ module.exports = exports = {
 			immediate: true,
 			handler: function ( status ) {
 				if ( status ) {
-					this.toastIntent = 'SUCCESS';
+					this.toastIntent = 'success';
 					this.currentToast = this.$i18n( 'wikilambda-function-definition-can-publish-message' ).text();
 				}
 			}
