@@ -151,6 +151,24 @@ npm run selenium-test
 
 NOTE: the tests will produce some snapshot after completition (both on failure and success). This can be found on "extensions/WikiLambda/tests/selenium/log"
 ```
+
+## Rate-limiting
+
+WikiLambda uses [PoolCounter](https://www.mediawiki.org/wiki/Extension:PoolCounter) to limit the number of concurrent function calls a user may have in flight at any given time. In order to set the concurrency limit, you need to add configuration for a `WikiLambdaFunctionCall` pool to [$wgPoolCounterConf](https://www.mediawiki.org/wiki/Manual:$wgPoolCounterConf) in `LocalSettings.php`.
+
+The example below allows user to have at most two functions executing at a given time, placing any function calls that exceed the concurrency limit in a queue:
+
+```
+$wgPoolCounterConf = [
+    'WikiLambdaFunctionCall' => [
+        'class' => MediaWiki\Extension\PoolCounter\Client::class,
+        'timeout' => 1, // wait timeout in seconds
+        'workers' => 2, // maximum number of active threads in each pool
+        'maxqueue' => 5, // maximum number of total threads in each pool
+    ]
+];
+```
+
 ## See also
 
 <https://www.mediawiki.org/wiki/Extension:WikiLambda>
