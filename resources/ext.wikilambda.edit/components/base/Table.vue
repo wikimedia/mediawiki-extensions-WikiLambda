@@ -12,72 +12,65 @@
 		<div class="ext-wikilambda-table__title">
 			<slot name="table-title"></slot>
 		</div>
-		<table class="ext-wikilambda-table__content">
-			<thead v-if="!hideHeader" class="ext-wikilambda-table__content__header ext-wikilambda-table__content__row">
-				<tr>
-					<th
-						v-for="( n, i ) in header"
-						:key="i"
-						class="ext-wikilambda-table__content__row__item ext-wikilambda-table__content__row__item--header"
-						:class="n.class"
-					>
-						<template v-if="n.component">
-							<component :is="n.component" v-bind="n.props">
-								{{ n.title || "" }}
-							</component>
+		<div class="ext-wikilambda-table__body">
+			<table class="ext-wikilambda-table__content">
+				<thead v-if="!hideHeader" class="ext-wikilambda-table__content__header ext-wikilambda-table__content__row">
+					<tr>
+						<template v-for="( n, i ) in header">
+							<th
+								v-if="n"
+								:key="i"
+								class="ext-wikilambda-table__content__row__item ext-wikilambda-table__content__row__item--header"
+								:class="n.class"
+								:colspan="n.colspan"
+							>
+								<template v-if="n.component">
+									<component :is="n.component" v-bind="n.props">
+										{{ n.title || "" }}
+									</component>
+								</template>
+								<template v-else>
+									{{ n.title || n.title === '' ? n.title : n }}
+								</template>
+							</th>
 						</template>
-						<template v-else>
-							{{ n.title || n.title === '' ? n.title : n }}
-						</template>
-					</th>
-				</tr>
-			</thead>
+					</tr>
+				</thead>
 
-			<tbody>
-				<tr
-					v-for="( n, i ) in body"
-					:key="i"
-					class="ext-wikilambda-table__content__row">
-					<template v-for="( _, item ) in header">
-						<td
-							v-if="n && item in n"
-							:key="item"
-							class="ext-wikilambda-table__content__row__item"
-							:class="n[ item ] ? n[ item ].class : ''"
-						>
-							<template v-if="n[ item ].component">
-								<component :is="n[ item ].component" v-bind="n[ item ].props">
-									{{ n[ item ].title || "" }}
-								</component>
-							</template>
-							<template v-else>
-								{{ n[ item ].title || n[ item ].title === '' ? n[ item ].title : n[ item ] }}
-							</template>
-						</td>
-					</template>
-				</tr>
-			</tbody>
-		</table>
+				<tbody>
+					<tr
+						v-for="( n, i ) in body"
+						:key="i"
+						class="ext-wikilambda-table__content__row">
+						<template v-for="( _, item ) in header">
+							<td
+								v-if="n && item in n"
+								:key="item"
+								class="ext-wikilambda-table__content__row__item"
+								:class="n[ item ] ? n[ item ].class : ''"
+								:colspan="n.colspan"
+							>
+								<template v-if="n[ item ].component">
+									<component :is="n[ item ].component" v-bind="n[ item ].props">
+										{{ n[ item ].title || "" }}
+									</component>
+								</template>
+								<template v-else>
+									{{ n[ item ].title || n[ item ].title === '' ? n[ item ].title : n[ item ] }}
+								</template>
+							</td>
+						</template>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</div>
 </template>
 
 <script>
-var CdxCheckbox = require( '@wikimedia/codex' ).CdxCheckbox,
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	TableTesterStatus = require( '../../views/function/partials/tester-table-status.vue' ),
-	Chip = require( './Chip.vue' );
-
 // @vue/component
 module.exports = exports = {
 	name: 'table-container',
-	components: {
-		'cdx-button': CdxButton,
-		'cdx-checkbox': CdxCheckbox,
-		'cdx-icon': CdxIcon,
-		'tester-table-status': TableTesterStatus,
-		chip: Chip
-	},
 	props: {
 		header: { // example: { language: "Language" } or { language: { title: "Language" mobile: false } }
 			type: Object,
@@ -109,6 +102,11 @@ module.exports = exports = {
 
 	&__title {
 		white-space: nowrap;
+	}
+
+	&__body {
+		width: 100%;
+		overflow-x: auto;
 	}
 
 	&__content {

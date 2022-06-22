@@ -11,10 +11,8 @@
 			<!-- TODO(T309199): link to process page once it exists -->
 			<a href="#"> {{ $i18n( 'wikilambda-function-details-summary-learn-more' ).text() }} </a>
 		</div>
-		<section>
-			<div class="ext-wikilambda-function-details__sidebar">
-				<function-viewer-details-sidebar :zobject-id="zobjectId"></function-viewer-details-sidebar>
-			</div>
+		<section class="ext-wikilambda-function-details__sidebar">
+			<function-viewer-details-sidebar :zobject-id="zobjectId"></function-viewer-details-sidebar>
 		</section>
 		<section class="ext-wikilambda-function-details__tables">
 			<function-viewer-details-table
@@ -33,11 +31,19 @@
 </template>
 
 <script>
+var Vue = require( 'vue' );
 var FunctionViewerDetailsSidebar = require( './details/function-viewer-details-sidebar.vue' ),
 	FunctionViewerDetailsImplementationTable = require( './details/function-viewer-details-table.vue' ),
 	Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
+	CdxCheckbox = require( '@wikimedia/codex' ).CdxCheckbox,
+	WikilambdaChip = require( '../../components/base/Chip.vue' ),
+	TableTesterStatus = require( './partials/tester-table-status.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
+
+Vue.component( 'cdx-checkbox', CdxCheckbox.default || CdxCheckbox );
+Vue.component( 'wikilambda-chip', WikilambdaChip.default || WikilambdaChip );
+Vue.component( 'tester-table-status', TableTesterStatus.default || TableTesterStatus );
 
 // @vue/component
 module.exports = exports = {
@@ -123,7 +129,7 @@ module.exports = exports = {
 					// get the language of the implementation
 					var language = this.$i18n( 'wikilambda-implementation-selector-composition' );
 					var zImplementationObj = this.getZkeys[ this.getZImplementations[ item ] ];
-					if ( zImplementationObj[ Constants.Z_PERSISTENTOBJECT_VALUE ] &&
+					if ( zImplementationObj && zImplementationObj[ Constants.Z_PERSISTENTOBJECT_VALUE ] &&
 						zImplementationObj[
 							Constants.Z_PERSISTENTOBJECT_VALUE
 						][
@@ -132,7 +138,7 @@ module.exports = exports = {
 					) {
 						language = this.$i18n( 'wikilambda-implementation-selector-built-in' );
 					}
-					if ( zImplementationObj[ Constants.Z_PERSISTENTOBJECT_VALUE ] &&
+					if ( zImplementationObj && zImplementationObj[ Constants.Z_PERSISTENTOBJECT_VALUE ] &&
 						zImplementationObj[
 							Constants.Z_PERSISTENTOBJECT_VALUE
 						][
@@ -189,7 +195,7 @@ module.exports = exports = {
 							class: 'ext-wikilambda-function-details-table-item'
 						},
 						state: {
-							component: 'chip',
+							component: 'wikilambda-chip',
 							props: {
 								editableContainer: false,
 								readonly: true,
@@ -296,7 +302,7 @@ module.exports = exports = {
 					}
 
 					tableData[ index ].state = {
-						component: 'chip',
+						component: 'wikilambda-chip',
 						props: {
 							editableContainer: false,
 							readonly: true,
@@ -350,29 +356,12 @@ module.exports = exports = {
 	&__tables {
 		flex: 1;
 		flex-grow: 1;
-	}
-
-	&__action {
-		display: flex;
-		order: 3;
-		margin-bottom: 32px;
 		width: 100%;
-
-		button {
-			height: 32px;
-
-			&:last-child {
-				margin-left: -1px;
-			}
-		}
 	}
 
-	@media screen and ( min-width: @width-breakpoint-tablet ) {
-		&__action {
-			order: unset;
-			margin-bottom: 32px;
-			width: 300px;
-			justify-content: flex-end;
+	@media screen and ( max-width: @width-breakpoint-tablet ) {
+		&__sidebar {
+			flex: auto;
 		}
 	}
 }

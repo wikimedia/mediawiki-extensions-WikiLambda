@@ -180,6 +180,7 @@
 	"wikilambda-function-is-not-attached": "Label for a persistent object that is not associated with a function.",
 	"wikilambda-function-definition-add-other-label-languages-title": "Label for add other languages button",
 	"wikilambda-function-definition-name-label": "Label for the function name\n{{identical|Name}}",
+	"wikilambda-function-definition-edit": "Label for the edit function definition",
 	"wikilambda-function-implementation-name-label": "Label for the Name column of the implementations table\n{{identical|Name}}",
 	"wikilambda-function-implementation-language-label": "Label for the Language column of the implementations table\n{{identical|Language}}",
 	"wikilambda-function-implementation-state-label": "Label for State column of the implementations table",

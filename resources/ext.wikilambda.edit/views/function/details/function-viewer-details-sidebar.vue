@@ -8,18 +8,25 @@
 	<div class="ext-wikilambda-function-viewer-details-sidebar">
 		<table-container
 			class="ext-wikilambda-function-viewer-details-sidebar__table"
-			:header="header"
-			:body="formattedDataList"
-			:hide-header="true"
+			:header="formattedHeaderData"
+			:body="formattedBodyData"
 		>
 		</table-container>
-		<cdx-button
-			class="ext-wikilambda-function-viewer-details-sidebar__button"
-			@click="showAllLangs = !showAllLangs"
-		>
-			<cdx-icon :icon="buttonIcon"></cdx-icon>
-			{{ buttonText }}
-		</cdx-button>
+		<template v-if="this.showFunctionDefinitionItems">
+			<cdx-button
+				class="ext-wikilambda-function-viewer-details-sidebar__button"
+				@click="showAllLangs = !showAllLangs"
+			>
+				<cdx-icon :icon="buttonIcon"></cdx-icon>
+				{{ buttonText }}
+			</cdx-button>
+		</template>
+		<template v-if="isMobile">
+			<a class="ext-wikilambda-function-viewer-details-sidebar__edit-function" :href="editUrl">
+				{{ this.$i18n( 'wikilambda-function-definition-edit' ).text() }}
+			</a>
+		</template>
+
 		<div class="ext-wikilambda-function-viewer-details-sidebar__summary">
 			{{ $i18n( 'wikilambda-function-viewer-details-sidebar-summary' ).text() }}
 		</div>
@@ -44,13 +51,20 @@
 </template>
 
 <script>
+var Vue = require( 'vue' );
 var TableContainer = require( '../../../components/base/Table.vue' ),
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapGetters = require( 'vuex' ).mapGetters,
 	Constants = require( '../../../Constants.js' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
-	icons = require( '../../../../lib/icons.json' );
+	icons = require( '../../../../lib/icons.json' ),
+	useBreakpoints = require( '../../../composables/useBreakpoints.js' ),
+	WikilambdaChip = require( '../../../components/base/Chip.vue' );
+
+Vue.component( 'cdx-icon', CdxIcon.default || CdxIcon );
+Vue.component( 'cdx-button', CdxButton.default || CdxButton );
+Vue.component( 'wikilambda-chip', WikilambdaChip.default || WikilambdaChip );
 
 // @vue/component
 module.exports = exports = {
@@ -67,13 +81,15 @@ module.exports = exports = {
 			default: 0
 		}
 	},
+	setup: function () {
+		var breakpoint = useBreakpoints( Constants.breakpoints );
+		return {
+			breakpoint
+		};
+	},
 	data: function () {
 		return {
-			header: {
-				label: '',
-				language: '',
-				text: ''
-			},
+			showFunctionDefinitionItems: true,
 			showAllLangs: false,
 			Constants: Constants
 		};
@@ -87,19 +103,28 @@ module.exports = exports = {
 		'getZObjectTypeById',
 		'getCurrentZObjectId'
 	] ), {
-		// format inputs/output to pass to the table in expected format
-		formattedDataList: function () {
-			var tableData = [ {
+		// format inputs/output header to pass to the table in expected format
+		formattedHeaderData: function () {
+			return {
 				label: {
 					title: this.$i18n( 'wikilambda-editor-fn-step-function-definition' ).text(),
 					component: 'span',
 					props: {
 						class: 'ext-wikilambda-function-viewer-details-sidebar__table-bold'
 					},
-					class: 'ext-wikilambda-function-viewer-details-sidebar__table__header ext-wikilambda-function-viewer-details-sidebar__table__expanded'
+					class: 'ext-wikilambda-function-viewer-details-sidebar__table__header ext-wikilambda-function-viewer-details-sidebar__table__expanded',
+					colspan: 2
 				},
 				language: '',
-				text: {
+				text: this.isMobile ? {
+					component: 'cdx-icon',
+					props: {
+						class: 'ext-wikilambda-function-viewer-details-sidebar__table-toggle',
+						icon: icons.cdxIconExpand,
+						onClick: this.toggleShowFunctionDefinitionItems
+					},
+					class: 'ext-wikilambda-function-viewer-details-sidebar__table__header'
+				} : {
 					title: this.$i18n( 'wikilambda-edit' ).text(),
 					component: 'cdx-button',
 					props: {
@@ -110,7 +135,15 @@ module.exports = exports = {
 					},
 					class: 'ext-wikilambda-function-viewer-details-sidebar__table__header'
 				}
-			} ];
+			};
+		},
+		// format inputs/output body to pass to the table in expected format
+		formattedBodyData: function () {
+			var tableData = [];
+
+			if ( !this.showFunctionDefinitionItems ) {
+				return tableData;
+			}
 
 			// for each input to the function
 			for ( var argumentIndex in this.zArgumentList ) {
@@ -187,7 +220,7 @@ module.exports = exports = {
 								class: 'ext-wikilambda-function-viewer-details-sidebar__table-borderless-row'
 							},
 							language: {
-								component: 'chip',
+								component: 'wikilambda-chip',
 								props: {
 									editableContainer: false,
 									readonly: true,
@@ -235,7 +268,6 @@ module.exports = exports = {
 			} );
 			return tableData;
 		},
-
 		// START OF ARGUMENTS HELPER FUNCTIONS //
 		/* get the list of arguments for the current argument ID */
 		zArgumentList: function () {
@@ -274,12 +306,18 @@ module.exports = exports = {
 				return icons.cdxIconCollapse;
 			}
 			return icons.cdxIconLanguage;
+		},
+		isMobile: function () {
+			return this.breakpoint.current.value === Constants.breakpointsTypes.MOBILE;
+		},
+		editUrl: function () {
+			return new mw.Title( this.getCurrentZObjectId ).getUrl() + '?view=function-editor';
 		}
 	} ),
 	methods: $.extend( {},
 		{
 			handleEditClick: function () {
-				window.location.href = new mw.Title( this.getCurrentZObjectId ).getUrl() + '?view=function-editor';
+				window.location.href = this.editUrl;
 			},
 			/* get the ZID of the argument type */
 			zArgumentType: function ( argumentId ) {
@@ -364,9 +402,17 @@ module.exports = exports = {
 						Constants.Z_IMPLEMENTATION_FUNCTION : Constants.Z_TESTER_FUNCTION;
 
 				return `/wiki/Special:CreateZObject?zid=${zid}&${zidK1}=${this.getCurrentZObjectId}`;
+			},
+			toggleShowFunctionDefinitionItems: function () {
+				this.showFunctionDefinitionItems = !this.showFunctionDefinitionItems;
 			}
 		}
-	)
+	),
+	mounted: function () {
+		if ( this.isMobile ) {
+			this.showFunctionDefinitionItems = false;
+		}
+	}
 };
 </script>
 
@@ -376,13 +422,20 @@ module.exports = exports = {
 .ext-wikilambda-function-viewer-details-sidebar {
 	width: 250px;
 
+	&__edit-function {
+		display: block;
+		margin-top: 12px;
+		font-weight: @font-weight-bold;
+	}
+
 	&__summary:extend(.ext-wikilambda-edit__text-regular) {
 		color: @wmui-color-base30;
 		margin-top: 30px;
 	}
 
 	&__button {
-		margin-top: 30px;
+		margin-top: 20px;
+		margin-bottom: 10px;
 	}
 
 	&__link {
@@ -441,6 +494,15 @@ module.exports = exports = {
 		&-small {
 			word-break: break-word;
 		}
+
+		&-toggle {
+			cursor: pointer;
+			float: right;
+		}
+	}
+
+	@media screen and ( max-width: @width-breakpoint-tablet ) {
+		width: 100%;
 	}
 }
 </style>
