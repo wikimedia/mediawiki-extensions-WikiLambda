@@ -7,9 +7,14 @@
 			"SkyEye FAST",
 			"TsuyaMarisa",
 			"Willy1018",
-			"Zhang8569"
+			"Zhang8569",
+			"NACHOgao3",
+			"StarrySky",
+			"Yining Chen"
 		]
 	},
+	"content-model-zobject": "ZObject",
+	"wikilambda-emptylabel": "无标签的 ZObject",
 	"wikilambda-typeunavailable": "不可识别种类",
 	"wikilambda-noresult": "搜索没有提供结果。",
 	"wikilambda-persistentzobject-metadata": "标签与化名",
