@@ -22,7 +22,6 @@ use GuzzleHttp\Exception\ServerException;
 use MediaWiki\Extension\WikiLambda\MockOrchestrator;
 use MediaWiki\Extension\WikiLambda\OrchestratorInterface;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
-use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
@@ -91,7 +90,7 @@ class ApiFunctionCall extends ApiBase {
 		} catch ( ConnectException $exception ) {
 			$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
 		} catch ( ClientException | ServerException $exception ) {
-			$zErrorObject = self::wrapErrorFromFunctionCall( $exception->getResponse()->getReasonPhrase(), $zObject );
+			$zErrorObject = self::wrapError( $exception->getResponse()->getReasonPhrase(), $zObject );
 			$zResponseObject = new ZResponseEnvelope( null, $zErrorObject );
 			$result = [ 'data' => $zResponseObject->getSerialized() ];
 		}
@@ -151,10 +150,11 @@ class ApiFunctionCall extends ApiBase {
 	 * @codeCoverageIgnore
 	 */
 	private function createUserDefinedValidationExample(): string {
-		$ZMillion = $this->readTestFileAsArray( 'user-defined-validation-type.json' );
+		$ZMillionOuter = $this->readTestFileAsArray( 'user-defined-validation-type.json' );
+		$ZMillionInner = $this->readTestFileAsArray( 'user-defined-validation-type.json' );
 		$validationZ7 = $this->readTestFileAsArray( 'example-user-defined-validation.json' );
-		$ZMillion["Z4K3"]["Z8K1"][0]["Z17K1"] = $ZMillion;
-		$validationZ7["Z801K1"]["Z1K1"] = $ZMillion;
+		$ZMillionOuter["Z4K3"]["Z8K1"][1]["Z17K1"] = $ZMillionInner;
+		$validationZ7["Z801K1"]["Z1K1"] = $ZMillionOuter;
 		return urlencode( json_encode( $validationZ7 ) );
 	}
 
@@ -166,21 +166,21 @@ class ApiFunctionCall extends ApiBase {
 	private function createCurryExample(): string {
 		$curryImplementation = $this->readTestFileAsArray( 'curry-implementation-Z10088.json' );
 		$curryFunction = $this->readTestFileAsArray( 'curry-Z10087.json' );
-		$curryFunction["Z8K4"][0] = $curryImplementation;
+		$curryFunction["Z8K4"][1] = $curryImplementation;
 		$curryFunctionCall = $this->readTestFileAsArray( 'curry-call-Z30086.json' );
-		$curryFunctionCall["Z8K4"][0]["Z14K2"]["Z7K1"]["Z7K1"] = $curryFunction;
+		$curryFunctionCall["Z8K4"][1]["Z14K2"]["Z7K1"]["Z7K1"] = $curryFunction;
 		$andFunction = $this->readTestFileAsArray( 'and-Z10007.json' );
 		$curry = [
 			"Z1K1" => "Z7",
 			"Z7K1" => $curryFunctionCall,
 			"Z30086K1" => $andFunction,
 			"Z30086K2" => [
-				"Z1K1" => ZTypeRegistry::Z_BOOLEAN,
-				ZTypeRegistry::Z_BOOLEAN_VALUE => ZTypeRegistry::Z_BOOLEAN_TRUE
+				"Z1K1" => "Z40",
+				"Z40K1" => "Z41"
 			],
 			"Z30086K3" => [
-				"Z1K1" => ZTypeRegistry::Z_BOOLEAN,
-				ZTypeRegistry::Z_BOOLEAN_VALUE => ZTypeRegistry::Z_BOOLEAN_TRUE
+				"Z1K1" => "Z40",
+				"Z40K1" => "Z41"
 			]
 		];
 		return urlencode( json_encode( $curry ) );
@@ -278,7 +278,7 @@ class ApiFunctionCall extends ApiBase {
 		if ( isset( $outerResponse[ 'error' ] ) ) {
 			$zerror = ZObjectFactory::create( $outerResponse[ 'error' ] );
 			if ( !( $zerror instanceof ZError ) ) {
-				$zerror = self::wrapErrorFromFunctionCall( new ZQuote( $zerror ), $call );
+				$zerror = self::wrapError( new ZQuote( $zerror ), $call );
 			}
 			throw new ZErrorException( $zerror );
 		}
@@ -292,7 +292,7 @@ class ApiFunctionCall extends ApiBase {
 		if ( !( $response instanceof ZResponseEnvelope ) ) {
 			// The server's not given us a result!
 			$responseType = $response->getZType();
-			$zerror = self::wrapErrorFromFunctionCall( "Server returned a non-result of type '$responseType'!", $call );
+			$zerror = self::wrapError( "Server returned a non-result of type '$responseType'!", $call );
 			throw new ZErrorException( $zerror );
 		}
 
@@ -300,7 +300,7 @@ class ApiFunctionCall extends ApiBase {
 			// If the server has responsed with a Z5/Error, show that properly.
 			$zerror = $response->getErrors();
 			if ( !( $zerror instanceof ZError ) ) {
-				$zerror = self::wrapErrorFromFunctionCall( new ZQuote( $zerror ), $call );
+				$zerror = self::wrapError( new ZQuote( $zerror ), $call );
 			}
 			throw new ZErrorException( $zerror );
 		}
@@ -309,13 +309,16 @@ class ApiFunctionCall extends ApiBase {
 	}
 
 	/**
-	 * Convenience method to wrap a non-error in a Z507/Evaluation ZError
+	 * Private convenience method to wrap a non-error in a Z507/Evaluation ZError
+	 *
+	 * FIXME (T311480): Move this to the ZErrorFactory, which is where all the error
+	 * creating convenience methods are right now. This is used by two different APIs.
 	 *
 	 * @param string|ZObject $message The non-error to wrap.
 	 * @param string $call The functional call context.
 	 * @return ZError
 	 */
-	public static function wrapErrorFromFunctionCall( $message, $call ): ZError {
+	public static function wrapError( $message, $call ): ZError {
 		$wrappedError = ZErrorFactory::createZErrorInstance(
 			ZErrorTypeRegistry::Z_ERROR_GENERIC, [ 'message' => $message ]
 		);

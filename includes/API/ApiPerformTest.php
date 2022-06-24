@@ -234,13 +234,13 @@ class ApiPerformTest extends ApiBase {
 		} catch ( ConnectException $exception ) {
 			$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
 		} catch ( ClientException | ServerException $exception ) {
-			$zErrorObject = ApiFunctionCall::wrapErrorFromFunctionCall(
+			$zErrorObject = ApiFunctionCall::wrapError(
 				$exception->getResponse()->getReasonPhrase(),
 				$zObject
 			);
 			return new ZResponseEnvelope( null, $zErrorObject );
 		} catch ( \Exception $exception ) {
-			$zErrorObject = ApiFunctionCall::wrapErrorFromFunctionCall(
+			$zErrorObject = ApiFunctionCall::wrapError(
 				$exception->getMessage(),
 				$zObject
 			);
