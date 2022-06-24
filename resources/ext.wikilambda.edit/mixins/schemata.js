@@ -42,8 +42,8 @@ function filterUndefinedLabels( allLabels ) {
 
 function canonicalize( zobject ) {
 	function listifyArray( zlist, arr ) {
-		var head = zlist[ Constants.Z_LIST_HEAD ],
-			tail = zlist[ Constants.Z_LIST_TAIL ];
+		var head = zlist[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ],
+			tail = zlist[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ];
 
 		if ( typeof arr === 'undefined' ) {
 			arr = [];

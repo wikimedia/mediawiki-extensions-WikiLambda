@@ -41,7 +41,7 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	ZList = require( '../types/ZList.vue' ),
+	ZTypedList = require( '../types/ZTypedList.vue' ),
 	ZImplementationListItem = require( './ZImplementationListItem.vue' );
 
 // @vue/component
@@ -51,7 +51,7 @@ module.exports = exports = {
 		'z-implementation-list-item': ZImplementationListItem,
 		'cdx-button': CdxButton
 	},
-	extends: ZList,
+	extends: ZTypedList,
 	computed: $.extend( mapGetters( [ 'getNextObjectId', 'getCurrentZObjectId', 'getViewMode' ] ),
 		{
 			Constants: function () {

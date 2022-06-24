@@ -27,14 +27,14 @@
 var mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	ZList = require( './ZList.vue' );
+	ZTypedList = require( './ZTypedList.vue' );
 
 // @vue/component
 module.exports = exports = {
 	components: {
 		'cdx-button': CdxButton
 	},
-	extends: ZList,
+	extends: ZTypedList,
 	computed: mapGetters( [ 'getNextObjectId' ] ),
 	methods: $.extend( mapActions( [ 'addZArgument' ] ), {
 		addNewItem: function ( /* event */ ) {

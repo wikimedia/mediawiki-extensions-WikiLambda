@@ -47,9 +47,9 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	ZList = require( '../types/ZList.vue' ),
 	ZTesterListItem = require( './ZTesterListItem.vue' ),
-	ZTesterAdHoc = require( './ZTesterAdHoc.vue' );
+	ZTesterAdHoc = require( './ZTesterAdHoc.vue' ),
+	ZTypedList = require( '../types/ZTypedList.vue' );
 
 // @vue/component
 module.exports = exports = {
@@ -58,7 +58,7 @@ module.exports = exports = {
 		'z-tester-ad-hoc': ZTesterAdHoc,
 		'cdx-button': CdxButton
 	},
-	extends: ZList,
+	extends: ZTypedList,
 	computed: $.extend( mapGetters( [
 		'getNextObjectId',
 		'getNewTesterId',

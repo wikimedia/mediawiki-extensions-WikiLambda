@@ -9,15 +9,6 @@ var Constants = require( '../../../Constants.js' ),
 	zobjectTreeUtils = require( '../../../mixins/zobjectTreeUtils.js' ).methods,
 	getParameterByName = require( '../../../mixins/urlUtils.js' ).methods.getParameterByName;
 
-// TODO(T300628): Remove the following method when Z10 is remove and all Keys are typedList(keys)
-function formatZObjectKeys( keys ) {
-	if ( Array.isArray( keys ) ) {
-		return keys;
-	} else {
-		return typeUtils.typedListToArray( keys );
-	}
-}
-
 module.exports = exports = {
 	actions: {
 		/**
@@ -641,7 +632,7 @@ module.exports = exports = {
 					} );
 
 					// we add each key in the tree and also set its type
-					keys = formatZObjectKeys( object[ Constants.Z_TYPE_KEYS ] );
+					keys = object[ Constants.Z_TYPE_KEYS ];
 					keys.forEach( function ( key ) {
 						objectKey = key[ Constants.Z_KEY_ID ];
 						objectKeyType = key[ Constants.Z_KEY_TYPE ];

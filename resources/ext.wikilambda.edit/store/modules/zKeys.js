@@ -7,7 +7,6 @@
 
 var Vue = require( 'vue' ),
 	Constants = require( '../../Constants.js' ),
-	typedListToArray = require( '../../mixins/typeUtils.js' ).methods.typedListToArray,
 	debounceZKeyFetch = null,
 	resolvePromiseList = {},
 	zKeystoFetch = [],
@@ -210,14 +209,8 @@ module.exports = exports = {
 					context.commit( 'addAllZKeyLabels', allLabels );
 					var zTypeallLabels = [];
 					if ( isZType( zidInfo ) ) {
-						keys = zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ];
-						// TODO(T300082): once Z10 is deprecated, this should be default behavior
-						var results = keys;
-						if ( !Array.isArray( keys ) ) {
-							results = typedListToArray( keys );
-						}
-
-						results.forEach( function ( key ) {
+						keys = zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ].slice( 1 );
+						keys.forEach( function ( key ) {
 							if ( typeof key === 'object' ) {
 								multilingualStr = key[
 									Constants.Z_KEY_LABEL ][
