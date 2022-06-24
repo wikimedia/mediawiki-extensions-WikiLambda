@@ -9,6 +9,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Validation;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use Opis\JsonSchema\ISchemaLoader;
 use Opis\JsonSchema\Schema;
 use Opis\JsonSchema\Validator;
@@ -86,8 +87,8 @@ class SchemaFactory {
 	public function create( $ZID ) {
 		if ( $ZID == "Z13" ) {
 			$ZID = "LIST";
-		} elseif ( $ZID == "Z41" || $ZID == "Z42" ) {
-			$ZID = "Z40";
+		} elseif ( $ZID == ZTypeRegistry::Z_BOOLEAN_TRUE || $ZID == ZTypeRegistry::Z_BOOLEAN_FALSE ) {
+			$ZID = ZTypeRegistry::Z_BOOLEAN;
 		}
 		// FIXME (T300514): Assert that this->loader is not null.
 		$schema = $this->loader->loadSchema( $ZID );
