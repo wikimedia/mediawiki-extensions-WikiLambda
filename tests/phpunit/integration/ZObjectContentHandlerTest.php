@@ -25,7 +25,6 @@ use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Revision\SlotRenderingProvider;
 use ParserOptions;
 use Title;
-use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectContentHandler
@@ -308,7 +307,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 
 		$testZid = 'Z401';
 		$testTitle = Title::newFromText( $testZid, NS_MAIN );
-		$testPage = WikiPage::factory( $testTitle );
+		$testPage = $this->getServiceContainer()->getWikiPageFactory()->newFromTitle( $testTitle );
 		$validateParams = new ValidationParams( $testPage, 0 );
 
 		$content = new ZObjectContent(
@@ -330,7 +329,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 
 		$testZid = 'Z401';
 		$testTitle = Title::newFromText( $testZid, NS_MAIN );
-		$testPage = WikiPage::factory( $testTitle );
+		$testPage = $this->getServiceContainer()->getWikiPageFactory()->newFromTitle( $testTitle );
 		$validateParams = new ValidationParams( $testPage, 0 );
 
 		$content = new ZObjectContent(

@@ -7,7 +7,6 @@ use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use Title;
-use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiQueryZobjects
@@ -40,7 +39,7 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		// Add ZTypeTest multilingual object (Z111)
 		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
 		$baseObject = ZTestType::TEST_ENCODING;
-		$page = WikiPage::factory( $title );
+		$page = $this->getServiceContainer()->getWikiPageFactory()->newFromTitle( $title );
 		$content = ZObjectContentHandler::makeContent( $baseObject, $title );
 
 		$status = $page->doUserEditContent(

@@ -31,7 +31,6 @@ use Sanitizer;
 use Status;
 use Title;
 use User;
-use WikiPage;
 
 class Hooks implements
 	\MediaWiki\Hook\BeforePageDisplayHook,
@@ -344,7 +343,7 @@ class Hooks implements
 
 		$zid = substr( $filename, 0, -5 );
 		$title = Title::newFromText( $zid, NS_MAIN );
-		$page = WikiPage::factory( $title );
+		$page = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $title );
 
 		// If we don't want to overwrite the ZObjects, and if Zid has already been inserted,
 		// just purge the page to update secondary data and return true
