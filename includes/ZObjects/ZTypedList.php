@@ -57,7 +57,7 @@ class ZTypedList extends ZObject {
 	/**
 	 * Build the function call that defines the type of this ZTypedList
 	 *
-	 * @param ZObject $listType
+	 * @param string $listType The ZID of the type of ZObjects this list contains
 	 * @return ZFunctionCall
 	 */
 	public static function buildType( $listType ): ZFunctionCall {
