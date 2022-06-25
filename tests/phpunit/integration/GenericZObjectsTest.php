@@ -16,7 +16,6 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Revision\RevisionRecord;
 use Title;
-use WikiPage;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectContent
@@ -50,7 +49,7 @@ EOT;
 		$this->assertTrue( $instanceTitle->getContentModel() === CONTENT_MODEL_ZOBJECT );
 
 		// Test content is correct.
-		$instanceWikiPage = WikiPage::factory( $instanceTitle );
+		$instanceWikiPage = $this->getServiceContainer()->getWikiPageFactory()->newFromTitle( $instanceTitle );
 		$instance = $instanceWikiPage->getContent( RevisionRecord::RAW );
 		$this->assertTrue( $instance instanceof ZObjectContent );
 		$this->assertTrue( $instance->isValid() );
@@ -120,7 +119,7 @@ EOT;
 		$this->assertTrue( $instanceTitle->getContentModel() === CONTENT_MODEL_ZOBJECT );
 
 		// Test content is correct.
-		$instanceWikiPage = WikiPage::factory( $instanceTitle );
+		$instanceWikiPage = $this->getServiceContainer()->getWikiPageFactory()->newFromTitle( $instanceTitle );
 		$instance = $instanceWikiPage->getContent( RevisionRecord::RAW );
 		$this->assertTrue( $instance instanceof ZObjectContent );
 		$this->assertTrue( $instance->isValid() );
@@ -233,7 +232,7 @@ EOT;
 		);
 
 		// Test content is correct.
-		$instanceWikiPage = WikiPage::factory( $instanceTitle );
+		$instanceWikiPage = $this->getServiceContainer()->getWikiPageFactory()->newFromTitle( $instanceTitle );
 		$instance = $instanceWikiPage->getContent( RevisionRecord::RAW );
 		$this->assertTrue(
 			$instance instanceof ZObjectContent,
@@ -335,7 +334,7 @@ EOT;
 		);
 
 		// Test content is correct.
-		$instanceWikiPage = WikiPage::factory( $instanceTitle );
+		$instanceWikiPage = $this->getServiceContainer()->getWikiPageFactory()->newFromTitle( $instanceTitle );
 		$instance = $instanceWikiPage->getContent( RevisionRecord::RAW );
 		$this->assertTrue(
 			$instance instanceof ZObjectContent,
@@ -537,7 +536,7 @@ EOT;
 		);
 
 		// Test content is correct.
-		$instanceWikiPage = WikiPage::factory( $instanceTitle );
+		$instanceWikiPage = $this->getServiceContainer()->getWikiPageFactory()->newFromTitle( $instanceTitle );
 		$instance = $instanceWikiPage->getContent( RevisionRecord::RAW );
 		$this->assertTrue(
 			$instance instanceof ZObjectContent,
