@@ -66,7 +66,7 @@ module.exports = exports = {
 				wikilambdafn_type: Constants.Z_IMPLEMENTATION
 			} ).then( function ( response ) {
 				context.commit( 'setZImplementations', response.query.wikilambdafn_search );
-				return context.dispatch( 'fetchZKeys', response.query.wikilambdafn_search );
+				return context.dispatch( 'fetchZKeys', { zids: response.query.wikilambdafn_search } );
 			} );
 		}
 	}

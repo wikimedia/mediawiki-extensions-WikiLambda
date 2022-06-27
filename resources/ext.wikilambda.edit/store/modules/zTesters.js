@@ -104,7 +104,7 @@ module.exports = exports = {
 				wikilambdafn_type: Constants.Z_TESTER
 			} ).then( function ( response ) {
 				context.commit( 'setZTesters', response.query.wikilambdafn_search );
-				return context.dispatch( 'fetchZKeys', response.query.wikilambdafn_search );
+				return context.dispatch( 'fetchZKeys', { zids: response.query.wikilambdafn_search } );
 			} );
 		},
 		/**

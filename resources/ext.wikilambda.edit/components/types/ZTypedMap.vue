@@ -154,7 +154,7 @@ module.exports = exports = {
 	),
 	mounted: function () {
 		if ( this.zTypedMapType1 && this.zTypedMapType1.value ) {
-			this.fetchZKeys( [ this.zTypedMapType1.value, this.zTypedMapType2.value ] );
+			this.fetchZKeys( { zids: [ this.zTypedMapType1.value, this.zTypedMapType2.value ] } );
 		}
 	},
 	beforeCreate: function () {

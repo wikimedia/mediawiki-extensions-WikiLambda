@@ -129,7 +129,7 @@ module.exports = exports = {
 			}
 		} ),
 	mounted: function () {
-		this.fetchZKeys( [ this.monolingualStringLanguage ] );
+		this.fetchZKeys( { zids: [ this.monolingualStringLanguage ] } );
 	}
 };
 </script>

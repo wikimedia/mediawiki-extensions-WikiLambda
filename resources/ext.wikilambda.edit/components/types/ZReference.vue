@@ -122,7 +122,7 @@ module.exports = exports = {
 	),
 	created: function () {
 		if ( this.referenceValue ) {
-			this.fetchZKeys( [ this.referenceValue ] );
+			this.fetchZKeys( { zids: [ this.referenceValue ] } );
 		}
 	}
 };

@@ -247,17 +247,17 @@ module.exports = exports = {
 	watch: {
 		implementations: function ( newValue, oldValue ) {
 			if ( newValue.length !== oldValue.length ) {
-				this.fetchZKeys( this.implementations );
+				this.fetchZKeys( { zids: this.implementations } );
 			}
 		},
 		testers: function ( newValue, oldValue ) {
 			if ( newValue.length !== oldValue.length ) {
-				this.fetchZKeys( this.testers );
+				this.fetchZKeys( { zids: this.testers } );
 			}
 		}
 	},
 	mounted: function () {
-		this.fetchZKeys( this.implementations.concat( this.testers ) )
+		this.fetchZKeys( { zids: this.implementations.concat( this.testers ) } )
 			.then( function () {
 				setTimeout( this.runTesters, 1000 );
 			}.bind( this ) );

@@ -166,7 +166,7 @@ module.exports = exports = {
 	),
 	mounted: function () {
 		if ( this.zTypedPairType1 && this.zTypedPairType1.value ) {
-			this.fetchZKeys( [ this.zTypedPairType1.value, this.zTypedPairType2.value ] );
+			this.fetchZKeys( { zids: [ this.zTypedPairType1.value, this.zTypedPairType2.value ] } );
 		}
 	},
 	beforeCreate: function () {

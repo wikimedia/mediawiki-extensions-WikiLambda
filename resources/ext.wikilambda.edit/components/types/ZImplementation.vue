@@ -206,7 +206,7 @@ module.exports = exports = {
 			immediate: true,
 			handler: function ( val, prevVal ) {
 				if ( val.value && ( !prevVal || val.value !== prevVal.value ) ) {
-					this.fetchZKeys( [ this.zFunction.value ] );
+					this.fetchZKeys( { zids: [ this.zFunction.value ] } );
 				}
 			}
 		},
