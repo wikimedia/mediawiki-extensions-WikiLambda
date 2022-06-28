@@ -265,9 +265,10 @@ describe( 'zobject Vuex module', function () {
 			};
 			zobjectModule.actions.initializeZObject( context );
 
-			expect( context.commit ).toHaveBeenCalledTimes( 3 );
+			expect( context.commit ).toHaveBeenCalledTimes( 4 );
 			expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
 			expect( context.commit ).toHaveBeenCalledWith( 'setCreateNewPage', true );
+			expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z0' );
 			expect( context.commit ).toHaveBeenCalledWith( 'addZObject', expectedRootObject );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedChangeTypePayload );
 			expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
@@ -303,9 +304,10 @@ describe( 'zobject Vuex module', function () {
 			};
 			zobjectModule.actions.initializeZObject( context );
 
-			expect( context.commit ).toHaveBeenCalledTimes( 3 );
+			expect( context.commit ).toHaveBeenCalledTimes( 4 );
 			expect( context.dispatch ).toHaveBeenCalledTimes( 3 );
 			expect( context.commit ).toHaveBeenCalledWith( 'setCreateNewPage', true );
+			expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z0' );
 			expect( context.commit ).toHaveBeenCalledWith( 'addZObject', expectedRootObject );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedChangeTypePayload );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedZ2K2ChangeTypePayload );
@@ -438,9 +440,10 @@ describe( 'zobject Vuex module', function () {
 			};
 			zobjectModule.actions.initializeZObject( context );
 
-			expect( context.commit ).toHaveBeenCalledTimes( 3 );
+			expect( context.commit ).toHaveBeenCalledTimes( 4 );
 			expect( context.dispatch ).toHaveBeenCalledTimes( 2 );
 			expect( context.commit ).toHaveBeenCalledWith( 'setCreateNewPage', false );
+			expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
 			expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expectedSetZObjectPayload );
 			expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
 		} );
@@ -463,9 +466,10 @@ describe( 'zobject Vuex module', function () {
 			};
 			zobjectModule.actions.initializeZObject( context );
 
-			expect( context.commit ).toHaveBeenCalledTimes( 3 );
+			expect( context.commit ).toHaveBeenCalledTimes( 4 );
 			expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
 			expect( context.commit ).toHaveBeenCalledWith( 'setCreateNewPage', false );
+			expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z0' );
 			expect( context.commit ).toHaveBeenCalledWith( 'addZObject', expectedRootObject );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedChangeTypePayload );
 			expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );

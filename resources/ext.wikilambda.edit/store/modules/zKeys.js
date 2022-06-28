@@ -37,16 +37,23 @@ module.exports = exports = {
 		getZkeys: function ( state ) {
 			return state.zKeys;
 		},
+		/**
+		 * Returns all fetched zids and their label, which will be in the
+		 * user selected language if available, or in the closes fallback.
+		 *
+		 * @param {Object} state
+		 * @param {Object} payload
+		 * @param getters
+		 * @return {Object} map of { zid, label } values
+		 */
 		getZkeyLabels: function ( state, getters ) {
-			var langLabels = state.zKeyAllLanguageLabels.filter( function ( item ) {
-				return item.lang === getters.getCurrentZLanguage;
+			const allLabels = {};
+			state.zKeyAllLanguageLabels.forEach( function ( label ) {
+				if ( !allLabels[ label.zid ] || ( label.lang === getters.getCurrentZLanguage ) ) {
+					allLabels[ label.zid ] = label.label;
+				}
 			} );
-
-			var languageItem = {};
-			for ( var label in langLabels ) {
-				languageItem[ langLabels[ label ].zid ] = langLabels[ label ].label;
-			}
-			return languageItem;
+			return allLabels;
 		},
 		getAllZKeyLanguageLabels: function ( state ) {
 			return state.zKeyAllLanguageLabels;
@@ -68,8 +75,8 @@ module.exports = exports = {
 	},
 	actions: {
 		/**
-		 * Call the wikilambda_fetch api with debounce to get the information of a given
-		 * of ZIds, and stores the ZId information and the ZKey labels
+		 * Call the wikilambdaload_zobjects api with debounce to get the information
+		 * of a given set of ZIds, and stores the ZId information and the ZKey labels
 		 * in the state.
 		 *
 		 * @param {Object} context
@@ -77,23 +84,29 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		fetchZKeyWithDebounce: function ( context, zids ) {
-			return context.dispatch( 'fetchZKeys', zids, true );
+			return context.dispatch( 'fetchZKeys', {
+				zids: zids,
+				debounce: true
+			} );
 		},
 		/**
-		 * Call the wikilambda_fetch api to get the information of a given
-		 * of ZIds, and stores the ZId information and the ZKey labels
+		 * Call the wikilambdaload_zobjects api to get the information of a
+		 * given set of ZIds, and stores the ZId information and the ZKey labels
 		 * in the state.
 		 *
-		 * @param {Object} context
-		 * @param {Array} zids
-		 * @param {boolean} debounce
+		 * @param context
+		 * @param {Object} payload with the keys 'zids', 'debounce' and 'main'
 		 * @return {Promise}
 		 */
-		fetchZKeys: function ( context, zids, debounce = false ) {
-			zids.forEach( function ( zId ) {
+		fetchZKeys: function ( context, payload ) {
+			const {
+				zids = [],
+				debounce = false,
+				main = false
+			} = payload;
 
-				// Zid has already been fetched
-				// or
+			zids.forEach( function ( zId ) {
+				// Zid has already been fetched or
 				// Zid is in the process of being fetched
 				if ( zId &&
 					zId !== Constants.NEW_ZID_PLACEHOLDER &&
@@ -103,14 +116,20 @@ module.exports = exports = {
 					zKeystoFetch.push( zId );
 				}
 			} );
+
 			if ( zKeystoFetch.length === 0 ) {
 				return Promise.resolve();
 			}
 
-			function dispatchPerformZKeyFetch( payload ) {
+			function dispatchPerformZKeyFetch( fetchZids, isMainZid = false ) {
 				zKeystoFetch = [];
-				return context.dispatch( 'performZKeyFetch', payload ).then( function ( fetchedZids ) {
-
+				return context.dispatch(
+					'performZKeyFetch',
+					{
+						zids: fetchZids,
+						main: isMainZid
+					}
+				).then( function ( fetchedZids ) {
 					if ( !fetchedZids || fetchedZids.length === 0 ) {
 						return;
 					}
@@ -133,20 +152,34 @@ module.exports = exports = {
 
 			// eslint-disable-next-line compat/compat
 			resolvePromiseList[ promiseName ].promise = new Promise( function ( resolve ) {
-				var payload = zKeystoFetch;
 				resolvePromiseList[ promiseName ].resolve = resolve;
 
 				if ( debounce ) {
 					clearTimeout( debounceZKeyFetch );
-					debounceZKeyFetch = setTimeout( dispatchPerformZKeyFetch( payload ), DEBOUNCE_FETCH_ZKEYS_TIMEOUT );
+					debounceZKeyFetch = setTimeout(
+						dispatchPerformZKeyFetch( zKeystoFetch, main ),
+						DEBOUNCE_FETCH_ZKEYS_TIMEOUT
+					);
 				} else {
-					dispatchPerformZKeyFetch( payload );
+					dispatchPerformZKeyFetch( zKeystoFetch, main );
 				}
 			} );
 
 			return resolvePromiseList[ promiseName ].promise;
 		},
+		/**
+		 * Calls the api wikilambdaload_zobjects with a set of Zids and
+		 * with or without language property. The language will always be
+		 * requested so that the backend takes care of the language ballback
+		 * logic. The only moment in wich we will not specify a language
+		 * property is when requesting the root ZObject on initialization
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @return {Promise}
+		 */
 		performZKeyFetch: function ( context, payload ) {
+
 			var api = new mw.Api();
 
 			return api.get( {
@@ -154,13 +187,9 @@ module.exports = exports = {
 				list: 'wikilambdaload_zobjects',
 				format: 'json',
 				// eslint-disable-next-line camelcase
-				wikilambdaload_zids: payload.join( '|' ),
-				// Fetch all labels when initially loading the ZObject, otherwise get only the user's languages
+				wikilambdaload_zids: payload.zids.join( '|' ),
 				// eslint-disable-next-line camelcase
-				wikilambdaload_language:
-					context.getters.getCurrentZObjectId !== Constants.NEW_ZID_PLACEHOLDER ?
-						context.getters.getZLang :
-						undefined,
+				wikilambdaload_language: payload.main ? undefined : context.getters.getZLang,
 				// eslint-disable-next-line camelcase
 				wikilambdaload_canonical: 'true'
 			} ).then( function ( response ) {
@@ -210,17 +239,16 @@ module.exports = exports = {
 					var zTypeallLabels = [];
 					if ( isZType( zidInfo ) ) {
 						keys = zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TYPE_KEYS ].slice( 1 );
+
 						keys.forEach( function ( key ) {
 							if ( typeof key === 'object' ) {
 								multilingualStr = key[
-									Constants.Z_KEY_LABEL ][
-									Constants.Z_MULTILINGUALSTRING_VALUE ];
+									Constants.Z_KEY_LABEL
+								][ Constants.Z_MULTILINGUALSTRING_VALUE ];
 
 								var langsList = key[
 									Constants.Z_KEY_LABEL
-								][
-									Constants.Z_MULTILINGUALSTRING_VALUE
-								];
+								][ Constants.Z_MULTILINGUALSTRING_VALUE ];
 
 								langsList.forEach( function ( languageItem ) {
 									zTypeallLabels.push(

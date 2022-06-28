@@ -314,12 +314,12 @@ module.exports = exports = {
 		},
 		zFunctionId: function () {
 			if ( this.zFunctionId ) {
-				this.fetchZKeys( [ this.zFunctionId ] );
+				this.fetchZKeys( { zids: [ this.zFunctionId ] } );
 			}
 		}
 	},
 	mounted: function () {
-		this.fetchZKeys( [ Constants.Z_FUNCTION_CALL, this.zFunctionId ] );
+		this.fetchZKeys( { zids: [ Constants.Z_FUNCTION_CALL, this.zFunctionId ] } );
 	}
 };
 </script>

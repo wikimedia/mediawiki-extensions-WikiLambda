@@ -17,7 +17,7 @@ module.exports = exports = {
 	 */
 	initialize: function ( context, i18n ) {
 		// Pre-fetch a list of the most common Zids
-		context.dispatch( 'fetchZKeys', [
+		const zids = [
 			Constants.Z_OBJECT,
 			Constants.Z_PERSISTENTOBJECT,
 			Constants.Z_MULTILINGUALSTRING,
@@ -33,8 +33,8 @@ module.exports = exports = {
 			Constants.Z_IMPLEMENTATION,
 			context.getters.getUserZlangZID,
 			Constants.Z_TYPED_LIST
-		] );
-
+		];
+		context.dispatch( 'fetchZKeys', { zids: zids } );
 		context.commit( 'setI18n', i18n );
 	},
 	toggleExpertMode: function ( context ) {

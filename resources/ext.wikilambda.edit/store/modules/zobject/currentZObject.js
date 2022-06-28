@@ -4,40 +4,44 @@
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-var Constants = require( '../../../Constants.js' ),
-	typeUtils = require( '../../../mixins/typeUtils.js' ).methods;
+var Constants = require( '../../../Constants.js' );
 
 module.exports = exports = {
+	state: {
+		currentZid: Constants.NEW_ZID_PLACEHOLDER
+	},
+	mutations: {
+		/**
+		 * Set the value of the current Zid
+		 *
+		 * @param state
+		 * @param currentZid
+		 */
+		setCurrentZid: function ( state, currentZid ) {
+			state.currentZid = currentZid;
+		}
+	},
 	getters: {
+		/**
+		 * Return the complete zObject as a JSON
+		 *
+		 * @param state
+		 * @param getters
+		 * @param rootState
+		 * @param rootGetters
+		 * @return {Array} zObjectJson
+		 */
 		getZObjectAsJson: function ( state, getters, rootState, rootGetters ) {
-			/**
-			 * Return the complete zObject as a JSON
-			 *
-			 * @return {Array} zObjectJson
-			 */
-
 			return rootGetters.getZObjectAsJsonById( 0, rootState.zobjectModule.zobject[ 0 ].value === 'array' );
 		},
 		/**
 		 * Return the root ZObjectId, equivalend to the Z_REFERENCE_ID of Z_PERSISTENTOBJECT_ID
 		 *
 		 * @param {Object} state
-		 * @param {Object} getters
-		 * @param {Object} rootState
-		 * @param {Object} rootGetters
 		 * @return {string} currentZObjectId
 		 */
-		getCurrentZObjectId: function ( state, getters, rootState, rootGetters ) {
-			// we return the new placeholder if it is an empty object
-			if ( rootState.zobjectModule.zobject.length <= 1 ) {
-				return Constants.NEW_ZID_PLACEHOLDER;
-			}
-			var persistentObjectId =
-				typeUtils.findKeyInArray( Constants.Z_PERSISTENTOBJECT_ID, rootState.zobjectModule.zobject ).id,
-				persistenObjectChildren = rootGetters.getZObjectChildrenById( persistentObjectId ),
-				persistentObjectValue = typeUtils.findKeyInArray( Constants.Z_STRING_VALUE, persistenObjectChildren );
-
-			return persistentObjectValue.value || Constants.NEW_ZID_PLACEHOLDER;
+		getCurrentZObjectId: function ( state ) {
+			return state.currentZid || Constants.NEW_ZID_PLACEHOLDER;
 		},
 		/**
 		 * Return the root ZObjectId type

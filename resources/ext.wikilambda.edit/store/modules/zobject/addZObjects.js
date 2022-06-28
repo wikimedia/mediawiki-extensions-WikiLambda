@@ -128,7 +128,7 @@ module.exports = exports = {
 				return;
 			}
 
-			context.dispatch( 'fetchZKeys', [ payload.lang ] );
+			context.dispatch( 'fetchZKeys', { zids: [ payload.lang ] } );
 
 			// Create root object
 			zObjectItems = [
@@ -227,7 +227,7 @@ module.exports = exports = {
 		 * []
 		 *
 		 * @param {Object} context
-		 * @param {number} objectId
+		 * @param {Object} payload
 		 */
 		addTypetoList: function ( context, payload ) {
 			var listType = context.getters.getListTypeById( payload.objectId );
@@ -471,7 +471,7 @@ module.exports = exports = {
 					context.dispatch( 'addZReference', { id: id, value: defaultFunctionValue } );
 				}
 				// fetch zkeys for the zid, then check whether Z2K2.Z1K1 is equal to Constants.Z_FUNCTION
-				return context.dispatch( 'fetchZKeys', [ defaultFunctionValue ] ).then( function () {
+				return context.dispatch( 'fetchZKeys', { zids: [ defaultFunctionValue ] } ).then( function () {
 					var keys = context.getters.getZkeys[ defaultFunctionValue ];
 
 					if ( keys &&

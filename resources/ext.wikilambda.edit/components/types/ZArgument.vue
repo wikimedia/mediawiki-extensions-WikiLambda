@@ -108,7 +108,7 @@ module.exports = exports = {
 		if ( this.argumentType ) {
 			zids.push( this.argumentType );
 		}
-		this.fetchZKeys( zids );
+		this.fetchZKeys( { zids: zids } );
 	}
 };
 </script>

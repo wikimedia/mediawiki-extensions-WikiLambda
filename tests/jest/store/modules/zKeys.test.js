@@ -264,14 +264,14 @@ describe( 'zkeys Vuex module', function () {
 				context.dispatch = jest.fn( function ( key, payload ) {
 					return new Promise( function ( resolve ) {
 						zkeysModule.actions.performZKeyFetch( context, payload );
-						resolve( payload );
+						resolve( payload.zids );
 					} );
 				} );
 			} );
 
 			it( 'Call api.get if the zId is not already in the state', function () {
 				var zIdsToSearch = [ 'Z1' ];
-				return zkeysModule.actions.fetchZKeys( context, zIdsToSearch ).then( function () {
+				return zkeysModule.actions.fetchZKeys( context, { zids: zIdsToSearch } ).then( function () {
 					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 					expect( getMock ).toHaveBeenCalledWith( {
 						action: 'query',
@@ -289,7 +289,7 @@ describe( 'zkeys Vuex module', function () {
 			it( 'Call api.get with multiple Zids as a string separated by | ', function () {
 				var zIdsToSearch = [ 'Z1', 'Z6' ],
 					expectedWikilambdaloadZids = 'Z1|Z6';
-				return zkeysModule.actions.fetchZKeys( context, zIdsToSearch ).then( function () {
+				return zkeysModule.actions.fetchZKeys( context, { zids: zIdsToSearch } ).then( function () {
 					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 					expect( getMock ).toHaveBeenCalledWith( {
 						action: 'query',
@@ -308,7 +308,7 @@ describe( 'zkeys Vuex module', function () {
 				var zIdsToSearch = [ 'Z1' ];
 				context.state.zKeys = mockApiZkeys;
 
-				zkeysModule.actions.fetchZKeys( context, zIdsToSearch );
+				zkeysModule.actions.fetchZKeys( context, { zids: zIdsToSearch } );
 
 				expect( mw.Api ).toHaveBeenCalledTimes( 0 );
 				expect( getMock ).toHaveBeenCalledTimes( 0 );
@@ -320,7 +320,7 @@ describe( 'zkeys Vuex module', function () {
 					Z1: mockApiZkeys.Z1
 				};
 
-				return zkeysModule.actions.fetchZKeys( context, zIdsToSearch ).then( function () {
+				return zkeysModule.actions.fetchZKeys( context, { zids: zIdsToSearch } ).then( function () {
 					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 					expect( getMock ).toHaveBeenCalledTimes( 1 );
 					expect( getMock ).toHaveBeenCalledWith( {
@@ -357,7 +357,7 @@ describe( 'zkeys Vuex module', function () {
 						}
 					] );
 
-				zkeysModule.actions.performZKeyFetch( context, zIdsToSearch );
+				zkeysModule.actions.performZKeyFetch( context, { zids: zIdsToSearch } );
 
 				return new Promise( function ( resolve ) {
 					expect( mw.Api ).toHaveBeenCalledTimes( 1 );

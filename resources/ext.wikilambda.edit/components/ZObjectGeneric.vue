@@ -123,7 +123,7 @@ module.exports = exports = {
 	),
 	mounted: function () {
 		if ( this.type !== 'root' ) {
-			this.fetchZKeys( [ this.type ] );
+			this.fetchZKeys( { zids: [ this.type ] } );
 		}
 	}
 };

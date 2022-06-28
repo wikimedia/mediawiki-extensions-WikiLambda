@@ -194,7 +194,7 @@ module.exports = exports = {
 		}
 	),
 	mounted: function () {
-		this.fetchZKeys( [ this.type ] );
+		this.fetchZKeys( { zids: [ this.type ] } );
 	}
 };
 </script>

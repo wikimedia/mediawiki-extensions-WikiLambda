@@ -156,7 +156,7 @@ module.exports = exports = {
 
 				// If any argument types are not available, fetch them and rerun the function
 				if ( missingTypes.filter( Boolean ).length ) {
-					context.dispatch( 'fetchZKeys', missingTypes ).then( function () {
+					context.dispatch( 'fetchZKeys', { zids: missingTypes } ).then( function () {
 						context.dispatch( 'setAvailableZArguments', zFunctionId );
 					} );
 				}

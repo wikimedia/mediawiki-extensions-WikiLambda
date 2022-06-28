@@ -252,7 +252,7 @@ module.exports = exports = {
 			 * Return the type of children of a specific zObject by its ID
 			 *
 			 * @param {number} parentId
-			 * @return {object}
+			 * @return {Object}
 			 */
 			return function ( parentId ) {
 				let childrenType = {};
@@ -466,8 +466,9 @@ module.exports = exports = {
 				rootObject;
 
 			context.commit( 'setCreateNewPage', createNewPage );
+			context.commit( 'setCurrentZid', zId || Constants.NEW_ZID_PLACEHOLDER );
 
-			// if create new page Z2 of Z0
+			// Create new page, ZObject zid is Z0
 			if ( createNewPage ) {
 				rootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
 				context.commit( 'addZObject', rootObject );
@@ -476,21 +477,26 @@ module.exports = exports = {
 					id: 0,
 					type: Constants.Z_PERSISTENTOBJECT
 				} ).then( function () {
-					var defaultZid = getParameterByName( 'zid' ),
+					// If `zid` url parameter is found, the new ZObject
+					// will be of the given type.
+					var defaultType = getParameterByName( 'zid' ),
 						defaultKeys;
 
 					context.commit( 'setZObjectInitialized', true );
 
-					if ( !defaultZid || !defaultZid.match( /Z[1-9]\d*$/ ) ) {
+					// No `zid` parameter, return.
+					if ( !defaultType || !defaultType.match( /Z[1-9]\d*$/ ) ) {
 						return Promise.resolve();
 					}
 
-					return context.dispatch( 'fetchZKeys', [ defaultZid ] )
+					// Else, fetch `zid` and make sure it's a type
+					return context.dispatch( 'fetchZKeys', { zids: [ defaultType ] } )
 						.then( function () {
 							var Z2K2 =
 								typeUtils.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, context.state.zobject );
-							defaultKeys = context.rootGetters.getZkeys[ defaultZid ];
+							defaultKeys = context.rootGetters.getZkeys[ defaultType ];
 
+							// If `zid` is not a type, return.
 							if ( !defaultKeys ||
 								defaultKeys[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] !==
 								Constants.Z_TYPE
@@ -498,15 +504,26 @@ module.exports = exports = {
 								return Promise.resolve();
 							}
 
+							// If `zid` is a type, dispatch `changeType` action
 							return context.dispatch( 'changeType', {
 								id: Z2K2.id,
-								type: defaultZid
+								type: defaultType
 							} );
 						} );
 				} );
-			// if Zid is set
+
+			// Not create new page, Zid must be set
 			} else if ( zId ) {
-				return context.dispatch( 'fetchZKeys', [ zId ] )
+				// Fetch the whole ZObject.
+				// This is the only moment in the front-end in which we are going to call
+				// the wikilambdaload_zobjects API with language set to null, because
+				// we want to get all the available strings in each multilingual string.
+				// For that purpose we set main to true.
+				const fetchPayload = {
+					zids: [ zId ],
+					main: true
+				};
+				return context.dispatch( 'fetchZKeys', fetchPayload )
 					.then( function () {
 						zobject = context.getters.getZkeys[ zId ];
 						if ( !zobject[ Constants.Z_PERSISTENTOBJECT_ALIASES ] ) {
@@ -520,15 +537,21 @@ module.exports = exports = {
 
 						zobjectTree = zobjectTreeUtils.convertZObjectToTree( zobject );
 
-						// Get all zIds within the object
+						// Get all zIds within the object.
+						// We get main zId again because we previously did not add its labels
+						// to the keyLabels object in the store. We will this way take
+						// advantage of the backend making language fallback decisions
 						var listOfZIdWithinObject = generateZIDListFromObjectTree( zobjectTree );
+						listOfZIdWithinObject.push( zId );
+						listOfZIdWithinObject = [ ...new Set( listOfZIdWithinObject ) ];
 
-						context.dispatch( 'fetchZKeys', listOfZIdWithinObject );
+						context.dispatch( 'fetchZKeys', { zids: listOfZIdWithinObject } );
 						context.commit( 'setZObject', zobjectTree );
 						context.commit( 'setZObjectInitialized', true );
 					} );
 
-			// TODO: improve, this is too weak
+			// TODO (T311416): improve, this is too weak
+			// Is this edge case even possible? createNewPage=false and zid=null parameters
 			} else {
 				rootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
 				context.commit( 'addZObject', rootObject );

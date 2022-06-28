@@ -166,7 +166,7 @@ module.exports = exports = {
 		if ( this.zReturnType && this.zReturnType.value ) {
 			zids.push( this.zReturnType.value );
 		}
-		this.fetchZKeys( zids );
+		this.fetchZKeys( { zids: zids } );
 
 		this.fetchZImplementations( this.getCurrentZObjectId );
 		this.fetchZTesters( this.getCurrentZObjectId );
