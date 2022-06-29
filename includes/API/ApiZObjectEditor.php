@@ -110,7 +110,7 @@ class ApiZObjectEditor extends ApiBase {
 			'summary' => [
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => false,
-				ParamValidator::PARAM_DEFAULT => null,
+				ParamValidator::PARAM_DEFAULT => '',
 			],
 			'zid' => [
 				ParamValidator::PARAM_TYPE => 'string',
