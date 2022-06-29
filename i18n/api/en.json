@@ -60,6 +60,7 @@
 	"apihelp-wikilambda_edit-param-zid": "ZID of the ZObject to edit. If null, the ZObject will be newly created",
 	"apihelp-wikilambda_edit-param-zobject": "JSON representation of the ZObject to save",
 	"apierror-wikilambda_function_call-not-connected": "Could not resolve host '$1', probably because the orchestrator is not running. Please consult the README to add the orchestrator to your docker-compose configuration.",
+	"apierror-wikilambda_function_call-concurrency-limit": "You have too many function calls executing right now.",
 	"apierror-wikilambda_edit-invalidjson": "Couldn't create ZObject for given input '$1'; invalid JSON.",
 	"apierror-wikilambda_edit-unmatchingzid": "The parameter ZID '$1' does not match with the ZObject ID '$2'",
 	"apihelp-query+wikilambdafn_search-summary": "This API query list searches for the IDs of all ZObjects associated with a provided ZFunction ID",

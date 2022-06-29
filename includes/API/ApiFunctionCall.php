@@ -30,7 +30,9 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\MediaWikiServices;
+use PoolCounterWorkViaCallback;
 use RequestContext;
+use Status;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiFunctionCall extends ApiBase {
@@ -84,8 +86,18 @@ class ApiFunctionCall extends ApiBase {
 			'zobject' => $zObject,
 			'doValidate' => true
 		];
+
+		$work = new PoolCounterWorkViaCallback( 'WikiLambdaFunctionCall', $this->getUser()->getName(), [
+			'doWork' => function () use ( $jsonQuery ) {
+				return $this->orchestrator->orchestrate( $jsonQuery );
+			},
+			'error' => function ( Status $status ) {
+				$this->dieWithError( [ "apierror-wikilambda_function_call-concurrency-limit" ] );
+			}
+		] );
+
 		try {
-			$response = $this->orchestrator->orchestrate( $jsonQuery );
+			$response = $work->execute();
 			$result = [ 'success' => true, 'data' => $response->getBody() ];
 		} catch ( ConnectException $exception ) {
 			$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
