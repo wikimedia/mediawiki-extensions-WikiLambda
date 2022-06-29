@@ -18,13 +18,13 @@
 		</a>
 		<cdx-lookup
 			v-else
-			:model-value="selectedId"
+			:selected="selectedId"
 			:class="{ 'ext-wikilambda-zkey-input-invalid': validatorIsInvalid }"
 			:placeholder="placeholder"
 			:menu-items="lookupResults"
 			:end-icon="lookupIcon"
-			@new-input="onInput"
-			@update:model-value="emitInput"
+			@input="onInput"
+			@update:selected="emitInput"
 		>
 			<template #no-results>
 				No results found.
