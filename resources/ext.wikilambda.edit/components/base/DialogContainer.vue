@@ -9,9 +9,10 @@
 		<base-dialog
 			:title="title"
 			:description="description"
-			:cancel-button-text="cancelButtonText"
-			:confirm-button-text="confirmButtonText"
+			:cancel-button-text="cancelButtonTextOrDefault()"
+			:confirm-button-text="confirmButtonTextOrDefault()"
 			:should-click-to-close="shouldClickToClose"
+			:show-action-buttons="showActionButtons"
 			@exit-dialog="$emit( 'exit-dialog' ) "
 			@close-dialog="$emit( 'close-dialog' )"
 			@confirm-dialog="$emit( 'confirm-dialog' )"
@@ -40,23 +41,32 @@ module.exports = exports = {
 		},
 		cancelButtonText: {
 			type: String,
-			required: true,
-			default() {
-				return this.$i18n( 'wikilambda-cancel' ).text();
-			}
+			required: false
 		},
 		confirmButtonText: {
 			type: String,
-			required: true,
-			default() {
-				return this.$i18n( 'wikilambda-confirm' ).text();
-			}
+			required: false
 		},
 		shouldClickToClose: {
 			type: Boolean,
 			// eslint-disable-next-line vue/no-boolean-default
 			default: true,
 			required: false
+		},
+		showActionButtons: {
+			type: Boolean,
+			// eslint-disable-next-line vue/no-boolean-default
+			default: true,
+			required: false
+		}
+	},
+	methods: {
+		// We can't call this.$i18n in the default value of a prop, so do it here
+		cancelButtonTextOrDefault: function () {
+			return this.cancelButtonText || this.$i18n( 'wikilambda-cancel' ).text();
+		},
+		confirmButtonTextOrDefault: function () {
+			return this.confirmButtonText || this.$i18n( 'wikilambda-confirm' ).text();
 		}
 	}
 };
