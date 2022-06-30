@@ -64,6 +64,8 @@
 <script>
 var CdxCheckbox = require( '@wikimedia/codex' ).CdxCheckbox,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
+	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	TableTesterStatus = require( '../../views/function/partials/tester-table-status.vue' ),
 	Chip = require( './Chip.vue' );
 
 // @vue/component
@@ -72,6 +74,8 @@ module.exports = exports = {
 	components: {
 		'cdx-button': CdxButton,
 		'cdx-checkbox': CdxCheckbox,
+		'cdx-icon': CdxIcon,
+		'tester-table-status': TableTesterStatus,
 		chip: Chip
 	},
 	props: {
