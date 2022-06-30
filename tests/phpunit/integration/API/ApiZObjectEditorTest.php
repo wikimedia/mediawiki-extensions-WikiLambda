@@ -229,6 +229,23 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
+	 */
+	public function testCreateSuccess_missingSummary() {
+		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+			. ' "Z2K2": "string",'
+			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"Z1002", "Z11K2":"new label" }]}}';
+
+		$result = $this->doApiRequestWithToken( [
+			'uselang' => 'en',
+			'action' => 'wikilambda_edit',
+			'summary' => null,
+			'zobject' => $data
+		] );
+		$this->assertTrue( $result[0]['wikilambda_edit']['success'], 'should create a ZObject with no summary passed' );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore::updateZObject
 	 */
 	public function testUpdateSuccess() {
