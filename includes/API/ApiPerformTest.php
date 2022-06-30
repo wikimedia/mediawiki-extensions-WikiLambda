@@ -116,7 +116,7 @@ class ApiPerformTest extends ApiBase {
 			$targetFunction->setValueByKey(
 				ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS,
 				new ZTypedList(
-					ZTypedList::buildType( ZTypeRegistry::Z_IMPLEMENTATION ),
+					ZTypedList::buildType( new ZReference( ZTypeRegistry::Z_IMPLEMENTATION ) ),
 					new ZReference( $implementationName )
 				)
 			);
