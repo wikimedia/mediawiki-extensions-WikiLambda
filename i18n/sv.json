@@ -75,6 +75,7 @@
 	"wikilambda-metadata-fewer-languages": "Visa färre språk",
 	"wikilambda-persistentobject-details-label": "Detaljer",
 	"wikilambda-function-definition-name-label": "Namn",
+	"wikilambda-function-definition-edit": "Redigera definition",
 	"wikilambda-function-definition-alias-label": "Alias",
 	"wikilambda-function-definition-footer-label": "Redigeringssammanfattning",
 	"wikilambda-function-definition-footer-implementation-button": "Skriv implementering",

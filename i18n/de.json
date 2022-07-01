@@ -159,6 +159,7 @@
 	"wikilambda-function-is-not-attached": "Dieses Objekt ist nicht mit seiner Funktion verbunden.",
 	"wikilambda-function-definition-add-other-label-languages-title": "+ Bezeichnungen in einer anderen Sprache hinzufügen",
 	"wikilambda-function-definition-name-label": "Name",
+	"wikilambda-function-definition-edit": "Definition bearbeiten",
 	"wikilambda-function-implementation-name-label": "Name",
 	"wikilambda-function-implementation-language-label": "Sprache",
 	"wikilambda-function-implementation-state-label": "Status",
