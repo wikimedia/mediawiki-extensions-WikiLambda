@@ -54,6 +54,7 @@
 	"wikilambda-function-is-attached": "Questo oggetto è associato a questa funzione.",
 	"wikilambda-function-is-not-attached": "Questo oggetto non è associato a questa funzione.",
 	"wikilambda-function-definition-name-label": "Nome",
+	"wikilambda-function-definition-edit": "Modifica definizione",
 	"wikilambda-function-implementation-name-label": "Nome",
 	"wikilambda-function-implementation-language-label": "Lingua",
 	"wikilambda-function-implementation-state-label": "Stato",

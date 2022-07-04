@@ -160,6 +160,7 @@
 	"wikilambda-function-is-not-attached": "העצם הזה אינו משויך לפונקציה שלו.",
 	"wikilambda-function-definition-add-other-label-languages-title": "+ הוספת תוויות בשפה אחרת",
 	"wikilambda-function-definition-name-label": "שם",
+	"wikilambda-function-definition-edit": "עריכת הגדרה",
 	"wikilambda-function-implementation-name-label": "שם",
 	"wikilambda-function-implementation-language-label": "שפה",
 	"wikilambda-function-implementation-state-label": "מצב",
