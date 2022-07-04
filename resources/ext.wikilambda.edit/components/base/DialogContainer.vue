@@ -42,11 +42,17 @@ module.exports = exports = {
 		},
 		cancelButtonText: {
 			type: String,
-			required: false
+			required: false,
+			// The default value is generated in cancelButtonTextOrDefault
+			// Explicitly setting default=undefined here eliminates a grunt warning
+			default: undefined
 		},
 		confirmButtonText: {
 			type: String,
-			required: false
+			required: false,
+			// The default value is generated in confirmButtonTextOrDefault
+			// Explicitly setting default=undefined here eliminates a grunt warning
+			default: undefined
 		},
 		shouldClickToClose: {
 			type: Boolean,
