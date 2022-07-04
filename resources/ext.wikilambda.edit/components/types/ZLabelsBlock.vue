@@ -206,13 +206,24 @@ module.exports = exports = {
 				return this.selectedLanguages.slice( 0, this.defaultMaxLanguages );
 			}
 		},
+		/**
+		 * Returns a list of MonolingualStringSet objects.
+		 *
+		 * @return {Array}
+		 */
 		getZObjectAliases: function () {
-			return this.getZObjectChildrenById(
+			return this.getAllItemsFromListById(
 				this.getNestedZObjectById( this.zobjectId, [
 					Constants.Z_PERSISTENTOBJECT_ALIASES,
 					Constants.Z_MULTILINGUALSTRINGSET_VALUE
 				] ).id );
 		},
+		/**
+		 * Returns a string with all the user language aliases (if any)
+		 * separated by a pipe (|)
+		 *
+		 * @return {string}
+		 */
 		userLangAliasString: function () {
 			var str = '';
 
@@ -240,6 +251,13 @@ module.exports = exports = {
 		'removeZObjectChildren',
 		'removeZObject'
 	] ), {
+		/**
+		 * Returns the internal Id that identifies the
+		 * Monolingual String object for a given language Zid
+		 *
+		 * @param {string} language
+		 * @return {string}
+		 */
 		getLanguageLabelId: function ( language ) {
 			var labels = this.getZObjectChildrenById(
 					this.getNestedZObjectById( this.zobjectId, [
@@ -262,6 +280,13 @@ module.exports = exports = {
 
 			return labelId;
 		},
+		/**
+		 * Returns the internal Id that identifies the string
+		 * object with the label value for a given language Zid.
+		 *
+		 * @param {string} language
+		 * @return {string}
+		 */
 		getLanguageLabelStringId: function ( language ) {
 			var labels = this.getZObjectChildrenById(
 					this.getNestedZObjectById( this.zobjectId, [
@@ -286,77 +311,84 @@ module.exports = exports = {
 
 			return labelStringId;
 		},
-		getLanguageLabel: function ( language ) {
-			var monolingualString;
-
-			this.zObjectLabels.Z12K1.forEach( function ( label ) {
-				if ( label.Z11K1.Z9K1 === language ) {
-					monolingualString = label.Z11K2.Z6K1;
-				}
-			} );
-
-			return monolingualString;
-		},
+		/**
+		 * Returns the table ID of the MonolingualStringSet
+		 * containing the list of aliases for a given language
+		 *
+		 * @param language
+		 * @return {string}
+		 */
 		getLanguageAliasId: function ( language ) {
-			var aliasId;
-
-			this.getZObjectAliases.forEach( function ( alias ) {
-				var aliasLang = this.getNestedZObjectById( alias.id, [
+			const aliasForLang = this.getZObjectAliases.find( function ( alias ) {
+				const aliasLang = this.getNestedZObjectById( alias.id, [
 					Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE,
 					Constants.Z_REFERENCE_ID
 				] );
-
-				if ( aliasLang.value === language ) {
-					aliasId = alias.id;
-				}
+				return ( aliasLang.value === language );
 			}.bind( this ) );
 
-			return aliasId;
+			return aliasForLang ? aliasForLang.id : null;
 		},
+		/**
+		 * Returns the table ID of the MonolingualStringSet Value
+		 * containing the list of aliases for a given language
+		 *
+		 * @param language
+		 * @return {string}
+		 */
 		getLanguageAliasStringsetId: function ( language ) {
-			var aliasId;
-
-			this.getZObjectAliases.forEach( function ( alias ) {
-				var aliasLang = this.getNestedZObjectById( alias.id, [
-					Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE,
-					Constants.Z_REFERENCE_ID
-				] );
-
-				if ( aliasLang.value === language ) {
-					aliasId = this.getNestedZObjectById( alias.id, [
-						Constants.Z_MONOLINGUALSTRINGSET_VALUE
-					] ).id;
-				}
-			}.bind( this ) );
-
-			return aliasId;
+			const aliasForLangId = this.getLanguageAliasId( language );
+			return aliasForLangId ?
+				this.getNestedZObjectById( aliasForLangId, [ Constants.Z_MONOLINGUALSTRINGSET_VALUE ] ).id :
+				null;
 		},
+		/**
+		 * Returns the list of elements contained in the
+		 * MonolingualStringSet value typed list of strings
+		 * for a given language.
+		 *
+		 * @param language
+		 * @return {Array}
+		 */
 		getLanguageAliases: function ( language ) {
 			const aliases = this.getAllItemsFromListById( this.getLanguageAliasStringsetId( language ) );
 			return aliases.map( function ( alias ) {
 				return alias.id;
 			} );
 		},
-		addNewLang: function ( zId ) {
-			if ( !zId ) {
+		/**
+		 * Add a new row to the Label Block, consisting
+		 * on a new label for a given language Zid and a new
+		 * list of aliases for that language.
+		 *
+		 * @param langZid
+		 */
+		addNewLang: function ( langZid ) {
+			if ( !langZid ) {
 				return;
 			}
 
-			var lang = zId,
-				zLabelParentId = this.findKeyInArray(
+			var zLabelParentId = this.findKeyInArray(
 					Constants.Z_MULTILINGUALSTRING_VALUE,
 					this.getZObjectChildrenById( this.zObjectLabelId )
 				).id,
 				payload = {
-					lang: lang,
+					lang: langZid,
 					parentId: zLabelParentId
 				};
+
 			this.addZMonolingualString( payload );
-
 			this.showAllSelectedLanguages = true;
-
-			this.selectedLang = zId;
+			this.selectedLang = langZid;
 		},
+		/**
+		 * Remove the row from the Label Block corresponding
+		 * to a given language Zid. This includes removing
+		 * the label as well as all the aliases for this
+		 * language
+		 *
+		 * @param language
+		 */
 		removeLang: function ( language ) {
 			var labelId = this.getLanguageLabelId( language ),
 				aliasId = this.getLanguageAliasId( language );
@@ -369,34 +401,54 @@ module.exports = exports = {
 				this.removeZObject( aliasId );
 			}
 		},
+		/**
+		 * Remove one alias from the alias list of a given language
+		 * by providing its ZObject internal table id
+		 *
+		 * @param alias
+		 */
 		removeAlias: function ( alias ) {
 			this.removeZObjectChildren( alias );
 			this.removeZObject( alias );
 		},
+		/**
+		 * Add an alias in a language. The language already exists for
+		 * labels, but there might or might not already exists aliases or
+		 * even an alias block for this language.
+		 *
+		 * @param language
+		 */
 		addAliasForLanguage: function ( language ) {
-			var existingAliasId = this.getLanguageAliasStringsetId( language ),
-				nextId = this.getNextObjectId,
-				payload;
+			const existingAliasId = this.getLanguageAliasStringsetId( language ),
+				nextId = this.getNextObjectId;
 
 			if ( existingAliasId ) {
-				payload = {
-					key: this.getLanguageAliases( language ).length,
+				// If the monolingualStringSet for the given language exists,
+				// add one more string to the list.
+				const nextIndexLanguageAliases = this.getLanguageAliases( language ).length + 1;
+
+				const payload = {
+					key: nextIndexLanguageAliases.toString(),
 					value: 'object',
 					parent: existingAliasId
 				};
 
 				this.addZObject( payload );
-				this.addZString( {
-					id: nextId
-				} );
+				this.addZString( { id: nextId } );
+
 			} else {
-				var key = this.getZObjectAliases.length.toString();
-				payload = {
-					key: key,
+				// If the monolingualStringSet for the given language does not exist,
+				// create a monolingualStringSet object with an empty array of strings
+				// and add it to the list.
+				const nextIndexAliases = this.getZObjectAliases.length + 1;
+				const multilingualAliasesId = this.getNestedZObjectById( this.zObjectAliasId, [
+					Constants.Z_MULTILINGUALSTRINGSET_VALUE
+				] ).id;
+
+				const payload = {
+					key: nextIndexAliases.toString(),
 					value: 'object',
-					parent: this.getNestedZObjectById( this.zObjectAliasId, [
-						Constants.Z_MULTILINGUALSTRINGSET_VALUE
-					] ).id
+					parent: multilingualAliasesId
 				};
 
 				this.addZObject( payload );
@@ -404,15 +456,11 @@ module.exports = exports = {
 					zobject: {
 						Z1K1: Constants.Z_MONOLINGUALSTRINGSET,
 						Z31K1: language,
-						Z31K2: [
-							''
-						]
+						Z31K2: [ 'Z6', '' ]
 					},
-					key: key,
+					key: nextIndexAliases.toString(),
 					id: nextId,
-					parent: this.getNestedZObjectById( this.zObjectAliasId, [
-						Constants.Z_MULTILINGUALSTRINGSET_VALUE
-					] ).id
+					parent: multilingualAliasesId
 				} );
 			}
 		}

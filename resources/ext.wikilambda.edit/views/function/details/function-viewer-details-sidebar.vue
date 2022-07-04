@@ -12,7 +12,7 @@
 			:body="formattedBodyData"
 		>
 		</table-container>
-		<template v-if="this.showFunctionDefinitionItems">
+		<template v-if="showFunctionDefinitionItems">
 			<cdx-button
 				class="ext-wikilambda-function-viewer-details-sidebar__button"
 				@click="showAllLangs = !showAllLangs"
@@ -23,7 +23,7 @@
 		</template>
 		<template v-if="isMobile">
 			<a class="ext-wikilambda-function-viewer-details-sidebar__edit-function" :href="editUrl">
-				{{ this.$i18n( 'wikilambda-function-definition-edit' ).text() }}
+				{{ $i18n( 'wikilambda-function-definition-edit' ).text() }}
 			</a>
 		</template>
 
