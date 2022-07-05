@@ -26,6 +26,7 @@
 					:zobject-id="zListType.id"
 					:persistent="false"
 					:readonly="readonly"
+					:reference-type="Constants.Z_TYPE"
 				></z-object>
 			</span>
 			<span v-else>

@@ -17,7 +17,7 @@
 		</span>
 		<z-object-selector
 			v-else
-			:placeholder="$i18n( 'wikilambda-zobjectselector-label' ).text()"
+			:placeholder="selectorPlaceholder"
 			:selected-id="referenceValue"
 			:type="searchType"
 			@input="setZReference"
@@ -67,6 +67,11 @@ module.exports = exports = {
 			getCurrentZObjectId: 'getCurrentZObjectId'
 		} ),
 		{
+			selectorPlaceholder: function () {
+				return this.searchType === Constants.Z_TYPE ?
+					this.$i18n( 'wikilambda-typeselector-label' ).text() :
+					this.$i18n( 'wikilambda-zobjectselector-label' ).text();
+			},
 			Constants: function () {
 				return Constants;
 			},
