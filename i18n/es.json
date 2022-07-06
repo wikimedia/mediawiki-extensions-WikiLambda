@@ -15,6 +15,7 @@
 			"Jackiezelaya",
 			"Jakeukalane",
 			"KATRINE1993",
+			"MarcoAurelio",
 			"Mpayansilva",
 			"Reverse88"
 		]
@@ -46,6 +47,7 @@
 	"wikilambda-tester-failure-actual": "Recibido",
 	"wikilambda-tester-function-duration": "Duración",
 	"wikilambda-create-function": "Crear Función",
+	"wikilambda-function-implementation-language-label": "Idioma",
 	"wikilambda-editor-steps-label": "Pasos del Editor",
 	"wikilambda-editor-go-back-button": "Volver",
 	"wikilambda-editor-next-button": "Siguiente paso",
