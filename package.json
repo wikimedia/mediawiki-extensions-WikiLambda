@@ -5,7 +5,8 @@
 		"test": "grunt test && npm run test:unit",
 		"test:unit": "jest",
 		"selenium-test": "wdio tests/selenium/wdio.conf.js",
-		"doc": "jsdoc -c jsdoc.json"
+		"doc": "jsdoc -c jsdoc.json",
+		"coverage": "npm run test:unit"
 	},
 	"devDependencies": {
 		"@babel/core": "7.16.10",
