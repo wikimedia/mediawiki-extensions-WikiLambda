@@ -8,10 +8,9 @@
 	<div v-clickout="clickToClose" class="ext-wikilambda-dialog">
 		<div class="ext-wikilambda-dialog_text">
 			<div>
-				<div class="ext-wikilambda-dialog_title">
-					{{ title }}
+				<div class="ext-wikilambda-dialog_title" v-html="title">
 				</div>
-				<div> {{ description }}</div>
+				<div v-html="description"></div>
 			</div>
 			<cdx-button
 				type="quiet"
@@ -21,7 +20,7 @@
 				<cdx-icon :icon="dialogIcon()"></cdx-icon>
 			</cdx-button>
 		</div>
-		<div class="ext-wikilambda-dialog_action-buttons">
+		<div v-if="showActionButtons" class="ext-wikilambda-dialog_action-buttons">
 			<cdx-button
 				@click="$emit( 'close-dialog' )"
 			>
@@ -87,6 +86,10 @@ module.exports = exports = {
 			required: true
 		},
 		shouldClickToClose: {
+			type: Boolean,
+			required: true
+		},
+		showActionButtons: {
 			type: Boolean,
 			required: true
 		}
