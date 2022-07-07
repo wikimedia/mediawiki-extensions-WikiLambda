@@ -122,146 +122,170 @@ describe( 'zobject Vuex module', function () {
 	} );
 
 	describe( 'Getters', function () {
-		it( 'Returns current zObject by its ID', function () {
-			var result = { id: 1, key: 'Z1K1', value: 'Z2', parent: 0 };
-			state.zobject = zobjectTree;
+		describe( 'getZObjectById', function () {
+			it( 'Returns current zObject by its ID', function () {
+				var result = { id: 1, key: 'Z1K1', value: 'Z2', parent: 0 };
+				state.zobject = zobjectTree;
 
-			expect( zobjectModule.getters.getZObjectById( state )( 1 ) ).toEqual( result );
-		} );
-
-		it( 'Returns current zObject by its index', function () {
-			var result = 10;
-			state.zobject = zobjectTree;
-
-			expect( zobjectModule.getters.getZObjectIndexById( state )( 10 ) ).toEqual( result );
-		} );
-
-		it( 'Returns empty array if zobject has no children when calling getZObjectChildrenById', function () {
-			var result = [];
-			state.zobject = zobjectTree;
-
-			expect( zobjectModule.getters.getZObjectChildrenById( state )( 10 ) ).toEqual( result );
-		} );
-
-		it( 'Returns zobject children when calling getZObjectChildrenById', function () {
-			var result = [
-				{ key: 'Z1K1', value: 'Z9', parent: 2, id: 4 },
-				{ key: 'Z9K1', value: 'Z0', parent: 2, id: 5 }
-			];
-			state.zobject = zobjectTree;
-
-			expect( zobjectModule.getters.getZObjectChildrenById( state )( 2 ) ).toEqual( result );
-		} );
-
-		it( 'Returns whether the current state has `createNewPage`', function () {
-			expect( zobjectModule.getters.isCreateNewPage( state ) ).toBe( true );
-		} );
-
-		it( 'Returns the current zobjectMessage', function () {
-			expect( zobjectModule.getters.getZObjectMessage( state ) ).toEqual( {
-				type: 'error',
-				text: null
-			} );
-
-			state.zobjectMessage = {
-				type: 'notice',
-				text: 'Something noticeable'
-			};
-
-			expect( zobjectModule.getters.getZObjectMessage( state ) ).toEqual( {
-				type: 'notice',
-				text: 'Something noticeable'
+				expect( zobjectModule.getters.getZObjectById( state )( 1 ) ).toEqual( result );
 			} );
 		} );
 
-		it( 'Returns next ID for a key or argument', function () {
-			state.zobject = zobjectTree;
+		describe( 'getZObjectIndexById', function () {
+			it( 'Returns current zObject by its index', function () {
+				var result = 10;
+				state.zobject = zobjectTree;
 
-			expect( zobjectModule.getters.getNextKey( state, { getCurrentZObjectId: 'Z0' } ) ).toEqual( 'Z0K1' );
+				expect( zobjectModule.getters.getZObjectIndexById( state )( 10 ) ).toEqual( result );
+			} );
 		} );
 
-		it( 'Returns latest index for a key', function () {
-			state.zobject = zobjectTree.concat( [ { key: 'Z6K1', value: 'Z0K4', parent: 0, id: 18 } ] );
+		describe( 'getZObjectChildrenById', function () {
+			it( 'Returns empty array if zobject has no children when calling getZObjectChildrenById', function () {
+				var result = [];
+				state.zobject = zobjectTree;
 
-			expect( zobjectModule.getters.getLatestObjectIndex( state )( 'Z0' ) ).toEqual( 4 );
+				expect( zobjectModule.getters.getZObjectChildrenById( state )( 10 ) ).toEqual( result );
+			} );
+
+			it( 'Returns zobject children when calling getZObjectChildrenById', function () {
+				var result = [
+					{ key: 'Z1K1', value: 'Z9', parent: 2, id: 4 },
+					{ key: 'Z9K1', value: 'Z0', parent: 2, id: 5 }
+				];
+				state.zobject = zobjectTree;
+
+				expect( zobjectModule.getters.getZObjectChildrenById( state )( 2 ) ).toEqual( result );
+			} );
 		} );
 
-		it( 'Returns 0 when no key is found for passed ZID', function () {
-			state.zobject = zobjectTree.concat( [ { key: 'Z6K1', value: 'Z42K4', parent: 0, id: 18 } ] );
-
-			expect( zobjectModule.getters.getLatestObjectIndex( state )( 'Z0' ) ).toEqual( 0 );
+		describe( 'isCreateNewPage', function () {
+			it( 'Returns whether the current state has `createNewPage`', function () {
+				expect( zobjectModule.getters.isCreateNewPage( state ) ).toBe( true );
+			} );
 		} );
 
-		it( 'Skip items with no value', function () {
-			state.zobject = [ { key: 'Z6K1', parent: 0, id: 18 } ];
+		describe( 'getZObjectMessage', function () {
+			it( 'Returns the current zobjectMessage', function () {
+				expect( zobjectModule.getters.getZObjectMessage( state ) ).toEqual( {
+					type: 'error',
+					text: null
+				} );
 
-			expect( zobjectModule.getters.getLatestObjectIndex( state )( 'Z0' ) ).toEqual( 0 );
+				state.zobjectMessage = {
+					type: 'notice',
+					text: 'Something noticeable'
+				};
+
+				expect( zobjectModule.getters.getZObjectMessage( state ) ).toEqual( {
+					type: 'notice',
+					text: 'Something noticeable'
+				} );
+			} );
 		} );
 
-		it( 'Returns true if the value of the current ZObject is Z0', function () {
-			state.zobject = zobjectTree;
+		describe( 'getNextKey', function () {
+			it( 'Returns next ID for a key or argument', function () {
+				state.zobject = zobjectTree;
 
-			expect( zobjectModule.modules.currentZObject.getters.isNewZObject( state, { getCurrentZObjectId: 'Z0' } ) ).toEqual( true );
+				expect( zobjectModule.getters.getNextKey( state, { getCurrentZObjectId: 'Z0' } ) ).toEqual( 'Z0K1' );
+			} );
 		} );
 
-		it( 'Returns false if the value of the current ZObject is not Z0', function () {
-			state.zobject = zobjectTree;
+		describe( 'getLatestObjectIndex', function () {
+			it( 'Returns latest index for a key', function () {
+				state.zobject = zobjectTree.concat( [ { key: 'Z6K1', value: 'Z0K4', parent: 0, id: 18 } ] );
 
-			expect( zobjectModule.modules.currentZObject.getters.isNewZObject( state, { getCurrentZObjectId: 'Z4' } ) ).toEqual( false );
+				expect( zobjectModule.getters.getLatestObjectIndex( state )( 'Z0' ) ).toEqual( 4 );
+			} );
+
+			it( 'Returns 0 when no key is found for passed ZID', function () {
+				state.zobject = zobjectTree.concat( [ { key: 'Z6K1', value: 'Z42K4', parent: 0, id: 18 } ] );
+
+				expect( zobjectModule.getters.getLatestObjectIndex( state )( 'Z0' ) ).toEqual( 0 );
+			} );
+
+			it( 'Skip items with no value', function () {
+				state.zobject = [ { key: 'Z6K1', parent: 0, id: 18 } ];
+
+				expect( zobjectModule.getters.getLatestObjectIndex( state )( 'Z0' ) ).toEqual( 0 );
+			} );
 		} );
 
-		it( 'Returns 0 if ZObject does not exist', function () {
-			state.zobject = null;
+		describe( 'getNextObjectId', function () {
+			it( 'Returns 0 if ZObject does not exist', function () {
+				state.zobject = null;
 
-			expect( zobjectModule.getters.getNextObjectId( state ) ).toEqual( 0 );
+				expect( zobjectModule.getters.getNextObjectId( state ) ).toEqual( 0 );
+			} );
+
+			it( 'Returns 0 if ZObject is an empty array', function () {
+				state.zobject = [];
+
+				expect( zobjectModule.getters.getNextObjectId( state ) ).toEqual( 0 );
+			} );
+
+			it( 'Returns the increment of the hightest object id', function () {
+				state.zobject = zobjectTree;
+				const zobjectHighestId = 17;
+
+				expect( zobjectModule.getters.getNextObjectId( state ) ).toEqual( zobjectHighestId + 1 );
+			} );
 		} );
 
-		it( 'Returns 0 if ZObject is an empty array', function () {
-			state.zobject = [];
+		describe( 'isNewZObject', function () {
+			it( 'Returns true if the value of the current ZObject is Z0', function () {
+				state.zobject = zobjectTree;
 
-			expect( zobjectModule.getters.getNextObjectId( state ) ).toEqual( 0 );
-		} );
+				expect( zobjectModule.modules.currentZObject.getters.isNewZObject( state, { getCurrentZObjectId: 'Z0' } ) ).toEqual( true );
+			} );
 
-		it( 'Returns the increment of the hightest object id', function () {
-			state.zobject = zobjectTree;
-			const zobjectHighestId = 17;
+			it( 'Returns false if the value of the current ZObject is not Z0', function () {
+				state.zobject = zobjectTree;
 
-			expect( zobjectModule.getters.getNextObjectId( state ) ).toEqual( zobjectHighestId + 1 );
+				expect( zobjectModule.modules.currentZObject.getters.isNewZObject( state, { getCurrentZObjectId: 'Z4' } ) ).toEqual( false );
+			} );
 		} );
 	} );
 
 	describe( 'Mutations', function () {
-		it( 'Updates the zobject', function () {
-			zobjectModule.mutations.setZObject( state, zobject );
+		describe( 'setZObject', function () {
+			it( 'Updates the zobject', function () {
+				zobjectModule.mutations.setZObject( state, zobject );
 
-			expect( state.zobject ).toEqual( zobject );
+				expect( state.zobject ).toEqual( zobject );
+			} );
 		} );
 
-		it( 'Set `createNewPage` to provided value', function () {
-			expect( state.createNewPage ).toBe( true );
+		describe( 'setCreateNewPage', function () {
+			it( 'Sets `createNewPage` to provided value', function () {
+				expect( state.createNewPage ).toBe( true );
 
-			zobjectModule.mutations.setCreateNewPage( state, false );
+				zobjectModule.mutations.setCreateNewPage( state, false );
 
-			expect( state.createNewPage ).toBe( false );
+				expect( state.createNewPage ).toBe( false );
+			} );
 		} );
 
-		it( 'Set message to provided value', function () {
-			var message = {
-				type: 'error',
-				text: 'An error occurred'
-			};
+		describe( 'setMessage', function () {
+			it( 'Sets message to provided value', function () {
+				var message = {
+					type: 'error',
+					text: 'An error occurred'
+				};
 
-			zobjectModule.mutations.setMessage( state, message );
+				zobjectModule.mutations.setMessage( state, message );
 
-			expect( state.zobjectMessage ).toEqual( message );
-		} );
+				expect( state.zobjectMessage ).toEqual( message );
+			} );
 
-		it( 'Set message to default when no payload is found', function () {
-			zobjectModule.mutations.setMessage( state );
+			it( 'Sets message to default when no payload is found', function () {
+				zobjectModule.mutations.setMessage( state );
 
-			expect( state.zobjectMessage ).toEqual( {
-				type: 'notice',
-				text: null
+				expect( state.zobjectMessage ).toEqual( {
+					type: 'notice',
+					text: null
+				} );
 			} );
 		} );
 	} );
