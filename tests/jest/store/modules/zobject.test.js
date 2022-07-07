@@ -181,7 +181,19 @@ describe( 'zobject Vuex module', function () {
 		} );
 
 		it( 'Returns latest index for a key', function () {
-			state.zobject = zobjectTree;
+			state.zobject = zobjectTree.concat( [ { key: 'Z6K1', value: 'Z0K4', parent: 0, id: 18 } ] );
+
+			expect( zobjectModule.getters.getLatestObjectIndex( state )( 'Z0' ) ).toEqual( 4 );
+		} );
+
+		it( 'Returns 0 when no key is found for passed ZID', function () {
+			state.zobject = zobjectTree.concat( [ { key: 'Z6K1', value: 'Z42K4', parent: 0, id: 18 } ] );
+
+			expect( zobjectModule.getters.getLatestObjectIndex( state )( 'Z0' ) ).toEqual( 0 );
+		} );
+
+		it( 'Skip items with no value', function () {
+			state.zobject = [ { key: 'Z6K1', parent: 0, id: 18 } ];
 
 			expect( zobjectModule.getters.getLatestObjectIndex( state )( 'Z0' ) ).toEqual( 0 );
 		} );
@@ -196,6 +208,25 @@ describe( 'zobject Vuex module', function () {
 			state.zobject = zobjectTree;
 
 			expect( zobjectModule.modules.currentZObject.getters.isNewZObject( state, { getCurrentZObjectId: 'Z4' } ) ).toEqual( false );
+		} );
+
+		it( 'Returns 0 if ZObject does not exist', function () {
+			state.zobject = null;
+
+			expect( zobjectModule.getters.getNextObjectId( state ) ).toEqual( 0 );
+		} );
+
+		it( 'Returns 0 if ZObject is an empty array', function () {
+			state.zobject = [];
+
+			expect( zobjectModule.getters.getNextObjectId( state ) ).toEqual( 0 );
+		} );
+
+		it( 'Returns the increment of the hightest object id', function () {
+			state.zobject = zobjectTree;
+			const zobjectHighestId = 17;
+
+			expect( zobjectModule.getters.getNextObjectId( state ) ).toEqual( zobjectHighestId + 1 );
 		} );
 	} );
 

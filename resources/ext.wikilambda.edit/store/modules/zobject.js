@@ -387,8 +387,8 @@ module.exports = exports = {
 			};
 		},
 		/**
-		 * Return the nextId within the Zobjkect tree. This is required when adding
-		 * complex (nested) object withint he tree
+		 * Return the nextId within the Zobject tree. This is required when adding
+		 * complex (nested) object within the tree
 		 *
 		 * @param {Object} state
 		 * @return {string} nextId
