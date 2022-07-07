@@ -26,6 +26,7 @@ use TitleFactory;
 use User;
 use Wikimedia\Rdbms\ILoadBalancer;
 use Wikimedia\Rdbms\IResultWrapper;
+use Wikimedia\Rdbms\SelectQueryBuilder;
 use WikiPage;
 
 class ZObjectStore {
@@ -68,20 +69,18 @@ class ZObjectStore {
 	public function getNextAvailableZid(): string {
 		// Intentionally use DB_PRIMARY as we need the latest data here.
 		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
-		$res = $dbr->select(
-			/* FROM */ 'page',
-			/* SELECT */ [ 'page_title' ],
-			/* WHERE */ [
-				'page_namespace' => NS_MAIN,
-				'LENGTH( page_title ) > 5'
-			],
-			__METHOD__,
-			[
-				'GROUP BY' => 'page_id,page_title',
-				'ORDER BY' => 'page_id DESC',
-				'LIMIT' => 1,
-			]
-		);
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( [ 'page_title' ] )
+			 ->from( 'page' )
+			 ->where( [
+				 'page_namespace' => NS_MAIN,
+				 'LENGTH( page_title ) > 5'
+			 ] )
+			 ->orderBy( 'page_id', SelectQueryBuilder::SORT_DESC )
+			 ->groupBy( [ 'page_id', 'page_title' ] )
+			 ->limit( 1 )
+			 ->caller( __METHOD__ )
+			 ->fetchResultSet();
 
 		// TODO: Take 'Z9999' to extension constants when we define the ZID ranges
 		// available for new ZObjects.
@@ -121,20 +120,17 @@ class ZObjectStore {
 	public function fetchBatchZObjects( $zids ) {
 		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
 		$query = WikiPage::getQueryInfo();
-		$conditions = [
-			'page_namespace' => NS_MAIN,
-			'page_title' => $zids
-		];
 		$options = [];
 
-		$res = $dbr->select(
-			$query['tables'],
-			$query['fields'],
-			$conditions,
-			__METHOD__,
-			$options,
-			$query['joins']
-		);
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( $query['fields'] )
+			 ->from( 'page' )
+			 ->where( [
+				 'page_namespace' => NS_MAIN,
+				 'page_title' => $zids
+			 ] )
+			 ->caller( __METHOD__ )
+			 ->fetchResultSet();
 
 		$titleArray = TitleArray::newFromResult( $res );
 
@@ -357,16 +353,17 @@ class ZObjectStore {
 			], $dbr::LIST_AND );
 		}
 
-		$res = $dbr->select(
-			/* FROM */ 'wikilambda_zobject_labels',
-			/* SELECT */ [ 'wlzl_zobject_zid', 'wlzl_language' ],
-			/* WHERE */ [
-				'wlzl_zobject_zid != ' . $dbr->addQuotes( $zid ),
-				// TODO: Check against type, once we properly implement that.
-				// 'wlzl_type' => $dbr->addQuotes( $ztype ),
-				$dbr->makeList( $labelConflictConditions, $dbr::LIST_OR )
-			]
-		);
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( [ 'wlzl_zobject_zid', 'wlzl_language' ] )
+			 ->from( 'wikilambda_zobject_labels' )
+			 ->where( [
+				 'wlzl_zobject_zid != ' . $dbr->addQuotes( $zid ),
+				 // TODO: Check against type, once we properly implement that.
+				 // 'wlzl_type' => $dbr->addQuotes( $ztype ),
+				 $dbr->makeList( $labelConflictConditions, $dbr::LIST_OR )
+			 ] )
+			 ->caller( __METHOD__ )
+			 ->fetchResultSet();
 
 		$conflicts = [];
 		foreach ( $res as $row ) {
@@ -468,17 +465,15 @@ class ZObjectStore {
 	 */
 	public function fetchZidsOfType( $ztype ) {
 		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
-		$res = $dbr->select(
-			/* FROM */ 'wikilambda_zobject_labels',
-			/* SELECT */ [ 'wlzl_zobject_zid' ],
-			/* WHERE */ [
-				'wlzl_type' => $ztype
-			],
-			__METHOD__,
-			[
-				'ORDER BY' => 'wlzl_zobject_zid ASC',
-			]
-		);
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( [ 'wlzl_zobject_zid' ] )
+			 ->from( 'wikilambda_zobject_labels' )
+			 ->where( [
+				 'wlzl_type' => $ztype
+			 ] )
+			 ->orderBy( 'wlzl_zobject_zid', SelectQueryBuilder::SORT_ASC )
+			 ->caller( __METHOD__ )
+			 ->fetchResultSet();
 
 		$zids = [];
 		foreach ( $res as $row ) {
@@ -494,13 +489,14 @@ class ZObjectStore {
 	 */
 	public function fetchAllZids() {
 		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
-		$res = $dbr->select(
-			/* FROM */ 'page',
-			/* SELECT */ [ 'page_title' ],
-			/* WHERE */ [
-				'page_namespace' => NS_MAIN
-			]
-		);
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( [ 'page_title' ] )
+			 ->from( 'page' )
+			 ->where( [
+				 'page_namespace' => NS_MAIN
+			 ] )
+			 ->caller( __METHOD__ )
+			 ->fetchResultSet();
 
 		$zids = [];
 		foreach ( $res as $row ) {
@@ -575,24 +571,22 @@ class ZObjectStore {
 		$conditions[] = $searchedColumn . $dbr->buildLike( $dbr->anyString(), $searchTerm, $dbr->anyString() );
 
 		// $dbr->addOption( 'LIMIT', $limit + 1 );
-		return $dbr->select(
-			/* FROM */ 'wikilambda_zobject_labels',
-			/* SELECT */ [
-				'wlzl_zobject_zid',
-				'wlzl_type',
-				'wlzl_return_type',
-				'wlzl_language',
-				'wlzl_label',
-				'wlzl_label_primary',
-				'wlzl_id'
-			],
-			/* WHERE */ $dbr->makeList( $conditions, $dbr::LIST_AND ),
-			__METHOD__,
-			[
-				'ORDER BY' => 'wlzl_id ASC',
-				'LIMIT' => $limit,
-			]
-		);
+		return $dbr->newSelectQueryBuilder()
+			 ->select( [
+				 'wlzl_zobject_zid',
+				 'wlzl_type',
+				 'wlzl_return_type',
+				 'wlzl_language',
+				 'wlzl_label',
+				 'wlzl_label_primary',
+				 'wlzl_id'
+			 ] )
+			 ->from( 'wikilambda_zobject_labels' )
+			 ->where( $conditions )
+			 ->orderBy( 'wlzl_id', SelectQueryBuilder::SORT_ASC )
+			 ->limit( $limit )
+			 ->caller( __METHOD__ )
+			 ->fetchResultSet();
 	}
 
 	/**
@@ -638,21 +632,19 @@ class ZObjectStore {
 		// We only want primary labels, not aliases
 		$conditions[ 'wlzl_label_primary' ] = '1';
 
-		$res = $dbr->select(
-			/* FROM */ 'wikilambda_zobject_labels',
-			/* SELECT */ [
-				'wlzl_zobject_zid',
-				'wlzl_language',
-				'wlzl_label'
-			],
-			/* WHERE */ $dbr->makeList( $conditions, $dbr::LIST_AND ),
-			__METHOD__,
-			[
-				'ORDER BY' => 'wlzl_id ASC',
-				// Hard-coded performance limit just in case there's a very long / circular language fallback chain.
-				'LIMIT' => 5,
-			]
-		);
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( [
+				 'wlzl_zobject_zid',
+				 'wlzl_language',
+				 'wlzl_label'
+			 ] )
+			 ->from( 'wikilambda_zobject_labels' )
+			 ->where( $conditions )
+			 ->orderBy( 'wlzl_id', SelectQueryBuilder::SORT_ASC )
+			 // Hard-coded performance limit just in case there's a very long / circular language fallback chain.
+			 ->limit( 5 )
+			 ->caller( __METHOD__ )
+			 ->fetchResultSet();
 
 		// No hits at all; allow callers to give a fallback message or trigger a DB fetch if they want.
 		if ( $res->numRows() === 0 ) {
@@ -684,18 +676,16 @@ class ZObjectStore {
 	 */
 	public function fetchZFunctionReturnType( $zid ) {
 		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
-		$res = $dbr->selectField(
-			/* FROM */ 'wikilambda_zobject_labels',
-			/* SELECT */ 'wlzl_return_type',
-			/* WHERE */ [
-				'wlzl_zobject_zid' => $zid,
-				'wlzl_type' => ZTypeRegistry::Z_FUNCTION,
-			],
-			__METHOD__,
-			[
-				'LIMIT' => 1,
-			]
-		);
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( [ 'wlzl_return_type' ] )
+			 ->from( 'wikilambda_zobject_labels' )
+			 ->where( [
+				 'wlzl_zobject_zid' => $zid,
+				 'wlzl_type' => ZTypeRegistry::Z_FUNCTION,
+			 ] )
+			 ->limit( 1 )
+			 ->caller( __METHOD__ )
+			 ->fetchField();
 
 		return $res ? (string)$res : null;
 	}
@@ -708,14 +698,15 @@ class ZObjectStore {
 	 */
 	public function findFirstZImplementationFunction(): string {
 		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
-		$res = $dbr->selectField(
-			/* FROM */ 'wikilambda_zobject_function_join',
-			/* SELECT */ 'wlzf_zfunction_zid',
-			/* WHERE */ [
-				'wlzf_type' => ZTypeRegistry::Z_IMPLEMENTATION,
-			],
-			__METHOD__
-		);
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( [ 'wlzf_zfunction_zid' ] )
+			 ->from( 'wikilambda_zobject_function_join' )
+			 ->where( [
+				 'wlzf_type' => ZTypeRegistry::Z_IMPLEMENTATION,
+			 ] )
+			 ->limit( 1 )
+			 ->caller( __METHOD__ )
+			 ->fetchField();
 
 		return $res ? (string)$res : '';
 	}
@@ -729,15 +720,15 @@ class ZObjectStore {
 	 */
 	public function findReferencedZObjectsByZFunctionId( $zid, $type ): array {
 		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
-		$res = $dbr->select(
-			/* FROM */ 'wikilambda_zobject_function_join',
-			/* SELECT */ [ 'wlzf_ref_zid' ],
-			/* WHERE */ [
-				'wlzf_zfunction_zid' => $zid,
-				'wlzf_type' => $type,
-			],
-			__METHOD__
-		);
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( [ 'wlzf_ref_zid' ] )
+			 ->from( 'wikilambda_zobject_function_join' )
+			 ->where( [
+				 'wlzf_zfunction_zid' => $zid,
+				 'wlzf_type' => $type,
+			 ] )
+			 ->caller( __METHOD__ )
+			 ->fetchResultSet();
 
 		$zids = [];
 		foreach ( $res as $row ) {

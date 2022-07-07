@@ -196,14 +196,14 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $response );
 
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
-		$res = $dbr->select(
-			/* FROM */ 'wikilambda_zobject_labels',
-			/* SELECT */ [ 'wlzl_language', 'wlzl_label' ],
-			/* WHERE */ [
-				'wlzl_zobject_zid' => 'Z222',
-				'wlzl_type' => 'Z4'
-			]
-		);
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( [ 'wlzl_language', 'wlzl_label' ] )
+			 ->from( 'wikilambda_zobject_labels' )
+			 ->where( [
+				 'wlzl_zobject_zid' => 'Z222',
+				 'wlzl_type' => 'Z4'
+			 ] )
+			 ->fetchResultSet();
 		$this->assertEquals( 3, $res->numRows() );
 
 		$conflicts = $this->zobjectStore->findZObjectLabelConflicts( 'Z333', 'Z4', $labels );
@@ -242,14 +242,14 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $response );
 
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
-		$res = $dbr->select(
-			/* FROM */ 'wikilambda_zobject_label_conflicts',
-			/* SELECT */ [ 'wlzlc_language' ],
-			/* WHERE */ [
-				'wlzlc_existing_zid' => 'Z222',
-				'wlzlc_conflicting_zid' => 'Z333',
-			]
-		);
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( [ 'wlzlc_language' ] )
+			 ->from( 'wikilambda_zobject_label_conflicts' )
+			 ->where( [
+				 'wlzlc_existing_zid' => 'Z222',
+				 'wlzlc_conflicting_zid' => 'Z333',
+			 ] )
+			 ->fetchResultSet();
 		$this->assertEquals( 3, $res->numRows() );
 	}
 
@@ -270,14 +270,14 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore->deleteZObjectLabelsByZid( 'Z222' );
 
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
-		$res = $dbr->select(
-			/* FROM */ 'wikilambda_zobject_labels',
-			/* SELECT */ [ 'wlzl_language', 'wlzl_label' ],
-			/* WHERE */ [
-				'wlzl_zobject_zid' => 'Z222',
-				'wlzl_type' => 'Z4'
-			]
-		);
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( [ 'wlzl_language', 'wlzl_label' ] )
+			 ->from( 'wikilambda_zobject_labels' )
+			 ->where( [
+				 'wlzl_zobject_zid' => 'Z222',
+				 'wlzl_type' => 'Z4'
+			 ] )
+			 ->fetchResultSet();
 		$this->assertSame( 0, $res->numRows() );
 	}
 
@@ -292,17 +292,14 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore->deleteZObjectLabelConflictsByZid( 'Z333' );
 
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
-		$res = $dbr->select(
-			/* FROM */ 'wikilambda_zobject_label_conflicts',
-			/* SELECT */ [ 'wlzlc_language' ],
-			/* WHERE */ $dbr->makeList(
-				[
-					'wlzlc_existing_zid' => 'Z333',
-					'wlzlc_conflicting_zid' => 'Z333',
-				],
-				$dbr::LIST_OR
-			)
-		);
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( [ 'wlzlc_language' ] )
+			 ->from( 'wikilambda_zobject_label_conflicts' )
+			 ->where( $dbr->makeList( [
+				 'wlzlc_existing_zid' => 'Z333',
+				 'wlzlc_conflicting_zid' => 'Z333',
+			 ], $dbr::LIST_OR ) )
+			 ->fetchResultSet();
 		$this->assertSame( 0, $res->numRows() );
 	}
 
@@ -531,15 +528,15 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $response );
 
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
-		$res = $dbr->select(
-			/* FROM */ 'wikilambda_zobject_function_join',
-			/* SELECT */ [ 'wlzf_ref_zid' ],
-			/* WHERE */ [
-				'wlzf_zfunction_zid' => 'Z10029',
-				'wlzf_type' => 'Z14'
-			],
-			__METHOD__
-		);
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( [ 'wlzf_ref_zid' ] )
+			 ->from( 'wikilambda_zobject_function_join' )
+			 ->where( [
+				 'wlzf_zfunction_zid' => 'Z10029',
+				 'wlzf_type' => 'Z14'
+			 ] )
+			 ->caller( __METHOD__ )
+			 ->fetchResultSet();
 
 		$this->assertSame( 1, $res->numRows() );
 	}
@@ -585,15 +582,15 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore->deleteZFunctionReference( 'Z10030' );
 
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
-		$res = $dbr->select(
-			/* FROM */ 'wikilambda_zobject_function_join',
-			/* SELECT */ [ 'wlzf_ref_zid' ],
-			/* WHERE */ [
-				'wlzf_zfunction_zid' => 'Z10029',
-				'wlzf_type' => 'Z14'
-			],
-			__METHOD__
-		);
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( [ 'wlzf_ref_zid' ] )
+			 ->from( 'wikilambda_zobject_function_join' )
+			 ->where( [
+				 'wlzf_zfunction_zid' => 'Z10029',
+				 'wlzf_type' => 'Z14'
+			 ] )
+			 ->caller( __METHOD__ )
+			 ->fetchResultSet();
 
 		$this->assertSame( 0, $res->numRows() );
 	}

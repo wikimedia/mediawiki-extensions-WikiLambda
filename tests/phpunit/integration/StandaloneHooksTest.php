@@ -19,6 +19,7 @@ use MediaWiki\Extension\WikiLambda\Tests\HooksInsertMock;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\MediaWikiServices;
 use Title;
+use Wikimedia\Rdbms\SelectQueryBuilder;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Hooks
@@ -74,13 +75,13 @@ class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
 		HooksDataPathMock::createInitialContent( $updater );
 
 		// Assert that all ZIDs available in the data directory are loaded in the database
-		$res = $this->db->select(
-			/* FROM */ 'page',
-			/* SELECT */ [ 'page_title' ],
-			/* WHERE */ [ 'page_namespace' => NS_MAIN ],
-			__METHOD__,
-			[ 'ORDER BY' => 'page_id DESC' ]
-		);
+		$res = $this->db->newSelectQueryBuilder()
+			 ->select( [ 'page_title' ] )
+			 ->from( 'page' )
+			 ->where( [ 'page_namespace' => NS_MAIN ] )
+			 ->orderBy( 'page_id', SelectQueryBuilder::SORT_DESC )
+			 ->caller( __METHOD__ )
+			 ->fetchResultSet();
 
 		$loadedZids = [];
 		foreach ( $res as $row ) {
@@ -179,11 +180,11 @@ class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
 
 		// Check the alias have been inserted in the secondary table
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
-		$res = $dbr->select(
-			/* FROM */ 'wikilambda_zobject_labels',
-			/* SELECT */ [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_label_primary' ],
-			/* WHERE */ [ 'wlzl_zobject_zid' => ZTestType::TEST_ZID ]
-		);
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_label_primary' ] )
+			 ->from( 'wikilambda_zobject_labels' )
+			 ->where( [ 'wlzl_zobject_zid' => ZTestType::TEST_ZID ] )
+			 ->fetchResultSet();
 
 		$this->assertEquals( 5, $res->numRows() );
 
@@ -230,11 +231,11 @@ class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
 		MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->waitForReplication();
 		$this->assertSame( [], DeferredUpdates::getPendingUpdates() );
 
-		$res = $dbr->select(
-			/* FROM */ 'wikilambda_zobject_labels',
-			/* SELECT */ [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_label_primary' ],
-			/* WHERE */ [ 'wlzl_zobject_zid' => ZTestType::TEST_ZID ]
-		);
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_label_primary' ] )
+			 ->from( 'wikilambda_zobject_labels' )
+			 ->where( [ 'wlzl_zobject_zid' => ZTestType::TEST_ZID ] )
+			 ->fetchResultSet();
 
 		$this->assertEquals( 5, $res->numRows() );
 
