@@ -104,31 +104,37 @@ module.exports = exports = {
 			return reconstructJson( zObjectTree, parentId, rootIsArray );
 		},
 		getNextObjectId: function ( zObject ) {
-			var higherstObejectId = 0;
+			var highestObjectId = 0;
 
 			if ( !zObject || zObject.length === 0 ) {
-				return higherstObejectId;
+				return highestObjectId;
 			}
 
 			zObject.forEach( function ( item ) {
-				if ( item.id > higherstObejectId ) {
-					higherstObejectId = item.id;
+				if ( item.id > highestObjectId ) {
+					highestObjectId = item.id;
 				}
 			} );
-			return higherstObejectId + 1;
+			return highestObjectId + 1;
 		},
 		findLatestKey: function ( zObject, zid ) {
-			var nextKey = 0,
-				potentialKey = null;
+			var
+				keyRegex = new RegExp( '^' + zid + 'K([0-9]+)$' ),
+				latestKey = 0;
+
 			zObject.forEach( function ( item ) {
-				if ( item.value && item.value.match( /^Z([0-9])+K([0-9])+$/g ) ) {
-					potentialKey = item.value.replace( zid + 'K', '' );
-					if ( potentialKey > nextKey ) {
-						nextKey = potentialKey;
+				var
+					potentialKey,
+					match = item.value && item.value.match( keyRegex );
+				if ( match ) {
+					potentialKey = parseInt( match[ 1 ], 10 );
+					if ( potentialKey > latestKey ) {
+						latestKey = potentialKey;
 					}
 				}
 			} );
-			return parseInt( nextKey, 10 );
+
+			return latestKey;
 		}
 	}
 };
