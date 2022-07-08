@@ -23,6 +23,7 @@
 			:persistent="persistent"
 			:readonly="readonly"
 			:parent-type="parentType"
+			:search-type="referenceType"
 		></component>
 	</div>
 </template>
@@ -101,6 +102,11 @@ module.exports = exports = {
 			type: String,
 			required: false,
 			default: ''
+		},
+		referenceType: {
+			type: String,
+			required: false,
+			default: null
 		}
 	},
 	data: function () {
