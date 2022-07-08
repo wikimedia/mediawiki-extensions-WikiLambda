@@ -618,4 +618,179 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			'Return type of a non-function is null'
 		);
 	}
+
+	/**
+	 * @covers ::clearFunctionsSecondaryTables
+	 */
+	public function testClearFunctionsSecondaryTables() {
+		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+		$response = $this->zobjectStore->insertZFunctionReference( 'Z10031', 'Z10029', 'Z14' );
+
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzf_ref_zid' ] )
+			->from( 'wikilambda_zobject_function_join' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$this->assertSame( 2, $res->numRows() );
+
+		// Now clear the table:
+		$this->zobjectStore->clearFunctionsSecondaryTables();
+
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzf_ref_zid' ] )
+			->from( 'wikilambda_zobject_function_join' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$this->assertSame( 0, $res->numRows(), 'The secondary function join table has been wiped clean' );
+	}
+
+	/**
+	 * @covers ::clearLabelsSecondaryTables
+	 */
+	public function testClearLabelsSecondaryTables() {
+		$labels = [
+			self::ZLANG['en'] => 'label',
+			self::ZLANG['es'] => 'etiqueta',
+			self::ZLANG['fr'] => 'marque'
+		];
+
+		$this->zobjectStore->insertZObjectLabels( 'Z222', 'Z4', $labels );
+
+		$conflicts = [
+			self::ZLANG['en'] => 'Z222',
+			self::ZLANG['es'] => 'Z222',
+			self::ZLANG['fr'] => 'Z222'
+		];
+
+		$this->zobjectStore->insertZObjectLabelConflicts( 'Z333', $conflicts );
+
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+
+		$resLabels = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzl_id' ] )
+			->from( 'wikilambda_zobject_labels' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$resConflicts = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzlc_id' ] )
+			->from( 'wikilambda_zobject_label_conflicts' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$this->assertEquals( 3, $resLabels->numRows() );
+		$this->assertEquals( 3, $resConflicts->numRows() );
+
+		// Now clear the tables:
+		$this->zobjectStore->clearLabelsSecondaryTables();
+
+		$resLabels = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzl_id' ] )
+			->from( 'wikilambda_zobject_labels' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$resConflicts = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzlc_id' ] )
+			->from( 'wikilambda_zobject_label_conflicts' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$this->assertSame( 0, $resLabels->numRows(), 'The secondary labels table has been wiped clean' );
+		$this->assertSame( 0, $resConflicts->numRows(), 'The secondary label conflicts table has been wiped clean' );
+	}
+
+	/**
+	 * @covers ::deleteFromFunctionsSecondaryTables
+	 */
+	public function testDeleteFromFunctionsSecondaryTables() {
+		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
+		$response = $this->zobjectStore->insertZFunctionReference( 'Z10031', 'Z10028', 'Z14' );
+		$response = $this->zobjectStore->insertZFunctionReference( 'Z10032', 'Z10027', 'Z20' );
+
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzf_ref_zid' ] )
+			->from( 'wikilambda_zobject_function_join' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$this->assertSame( 3, $res->numRows() );
+
+		// Now clear the table:
+		$this->zobjectStore->deleteFromFunctionsSecondaryTables( [ 'Z10029', 'Z10032' ] );
+
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzf_ref_zid' ] )
+			->from( 'wikilambda_zobject_function_join' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$this->assertSame( 1, $res->numRows(), 'The secondary function join table has been cleared of the given zids' );
+	}
+
+	/**
+	 * @covers ::deleteFromLabelsSecondaryTables
+	 */
+	public function testDeleteFromLabelsSecondaryTables() {
+		$labels1 = [ self::ZLANG['en'] => 'label1', ];
+		$labels2 = [ self::ZLANG['en'] => 'label2', ];
+		$labels3 = [ self::ZLANG['en'] => 'label3', ];
+
+		$this->zobjectStore->insertZObjectLabels( 'Z222', 'Z4', $labels1 );
+		$this->zobjectStore->insertZObjectLabels( 'Z223', 'Z4', $labels2 );
+		$this->zobjectStore->insertZObjectLabels( 'Z224', 'Z4', $labels3 );
+
+		$conflicts1 = [ self::ZLANG['en'] => 'Z222' ];
+		$conflicts2 = [ self::ZLANG['en'] => 'Z223' ];
+		$conflicts3 = [ self::ZLANG['en'] => 'Z224' ];
+
+		$this->zobjectStore->insertZObjectLabelConflicts( 'Z333', $conflicts1 );
+		$this->zobjectStore->insertZObjectLabelConflicts( 'Z334', $conflicts2 );
+		$this->zobjectStore->insertZObjectLabelConflicts( 'Z335', $conflicts3 );
+
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+
+		$resLabels = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzl_id' ] )
+			->from( 'wikilambda_zobject_labels' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$resConflicts = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzlc_id' ] )
+			->from( 'wikilambda_zobject_label_conflicts' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$this->assertEquals( 3, $resLabels->numRows() );
+		$this->assertEquals( 3, $resConflicts->numRows() );
+
+		// Now clear the tables:
+		$this->zobjectStore->deleteFromLabelsSecondaryTables( [ 'Z222', 'Z223' ] );
+
+		$resLabels = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzl_id' ] )
+			->from( 'wikilambda_zobject_labels' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$resConflicts = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzlc_id' ] )
+			->from( 'wikilambda_zobject_label_conflicts' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$this->assertSame( 1, $resLabels->numRows(),
+			'The secondary labels table has been cleared of the given zids' );
+		$this->assertSame( 1, $resConflicts->numRows(),
+			'The secondary label conflicts table has been cleared of the given zids' );
+	}
 }

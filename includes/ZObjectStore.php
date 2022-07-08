@@ -24,6 +24,7 @@ use Title;
 use TitleArray;
 use TitleFactory;
 use User;
+use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\ILoadBalancer;
 use Wikimedia\Rdbms\IResultWrapper;
 use Wikimedia\Rdbms\SelectQueryBuilder;
@@ -218,7 +219,7 @@ class ZObjectStore {
 		}
 
 		// Double-check that the user has permissions to edit (should be caught by the lower parts of the stack)
-		// TODO: This should use the Authority concept, not the soon-to-be-legacy PermissionManager.
+		// TODO (T312090): This should use the Authority concept, not the soon-to-be-legacy PermissionManager.
 		$permissionManager = MediaWikiServices::getInstance()->getPermissionManager();
 		if ( !$permissionManager->userCan( 'edit', $user, $title ) ) {
 			if ( !( $title->exists() ) ) {
@@ -776,5 +777,71 @@ class ZObjectStore {
 			[ 'wlzf_ref_zid' => $refId ],
 			__METHOD__
 		);
+	}
+
+	/**
+	 * Delete data related to the given zids from the secondary labels table.
+	 * This method is only for its use by reloadBuiltinData with the --force flag.
+	 *
+	 * @param string[] $zids list of zids to clear, if null, clear all rows
+	 * @return void
+	 */
+	public function deleteFromLabelsSecondaryTables( $zids ): void {
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw->delete(
+			/* FROM */ 'wikilambda_zobject_labels',
+			/* WHERE */ [ 'wlzl_zobject_zid' => $zids ],
+			__METHOD__
+		);
+		$dbw->delete(
+			/* FROM */'wikilambda_zobject_label_conflicts',
+			/* WHERE */ [ 'wlzlc_existing_zid' => $zids ],
+			__METHOD__
+		);
+	}
+
+	/**
+	 * Delete data related to the given zids from the secondary function joins table.
+	 * This method is only for its use by reloadBuiltinData with the --force flag.
+	 *
+	 * @param string[] $zids list of zids to clear, if null, clear all rows
+	 * @return void
+	 */
+	public function deleteFromFunctionsSecondaryTables( $zids ): void {
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw->delete(
+			/* FROM */ 'wikilambda_zobject_function_join',
+			/* WHERE */ $dbw->makeList(
+				[
+					'wlzf_zfunction_zid' => $zids,
+					'wlzf_ref_zid' => $zids
+				],
+				$dbw::LIST_OR
+			),
+			__METHOD__
+		);
+	}
+
+	/**
+	 * Clear all data from the secondary labels table. This method
+	 * is only for its use by reloadBuiltinData with the --force flag.
+	 *
+	 * @return void
+	 */
+	public function clearLabelsSecondaryTables(): void {
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw->delete( 'wikilambda_zobject_labels', IDatabase::ALL_ROWS, __METHOD__ );
+		$dbw->delete( 'wikilambda_zobject_label_conflicts', IDatabase::ALL_ROWS, __METHOD__ );
+	}
+
+	/**
+	 * Clear all data from the secondary function joins table. This method
+	 * is only for its use by reloadBuiltinData with the --force flag.
+	 *
+	 * @return void
+	 */
+	public function clearFunctionsSecondaryTables(): void {
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw->delete( 'wikilambda_zobject_function_join', IDatabase::ALL_ROWS, __METHOD__ );
 	}
 }
