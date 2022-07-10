@@ -7,6 +7,7 @@
 	-->
 	<Teleport to="#ext-wikilambda-app">
 		<base-dialog
+			:class="customClass"
 			:title="title"
 			:description="description"
 			:cancel-button-text="cancelButtonTextOrDefault()"
@@ -58,6 +59,11 @@ module.exports = exports = {
 			// eslint-disable-next-line vue/no-boolean-default
 			default: true,
 			required: false
+		},
+		customClass: {
+			type: String,
+			required: false,
+			default: ''
 		}
 	},
 	methods: {
