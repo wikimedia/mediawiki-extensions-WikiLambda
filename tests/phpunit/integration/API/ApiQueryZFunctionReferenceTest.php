@@ -92,6 +92,10 @@ class ApiQueryZFunctionReferenceTest extends ApiTestCase {
 				]
 			]
 		];
+
+		// On postgres the api result may not in order
+		sort( $result[0]['query']['wikilambdafn_search'] );
+
 		$this->assertEquals( $expected, $result[0] );
 	}
 }
