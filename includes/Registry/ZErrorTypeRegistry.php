@@ -54,6 +54,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	public const Z_ERROR_BUILTIN_TYPE_NOT_FOUND = 'Z546';
 	public const Z_ERROR_INVALID_FORMAT = 'Z547';
 	public const Z_ERROR_INVALID_JSON = 'Z548';
+	public const Z_ERROR_INVALID_REFERENCE = 'Z549';
 	public const Z_ERROR_UNKNOWN_REFERENCE = 'Z550';
 	public const Z_ERROR_SCHEMA_TYPE_MISMATCH = 'Z551';
 	public const Z_ERROR_ARRAY_TYPE_MISMATCH = 'Z552';
@@ -96,6 +97,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 		'Z546' => 'Z_ERROR_BUILTIN_TYPE_NOT_FOUND',
 		'Z547' => 'Z_ERROR_INVALID_FORMAT',
 		'Z548' => 'Z_ERROR_INVALID_JSON',
+		'Z549' => 'Z_ERROR_INVALID_REFERENCE',
 		'Z550' => 'Z_ERROR_UNKNOWN_REFERENCE',
 		'Z551' => 'Z_ERROR_SCHEMA_TYPE_MISMATCH',
 		'Z552' => 'Z_ERROR_ARRAY_TYPE_MISMATCH',

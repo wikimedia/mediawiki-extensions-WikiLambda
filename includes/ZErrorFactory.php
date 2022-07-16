@@ -619,6 +619,10 @@ class ZErrorFactory {
 				$zErrorValue[] = new ZQuote( $payload['data'] );
 				break;
 
+			case ZErrorTypeRegistry::Z_ERROR_INVALID_REFERENCE:
+				$zErrorValue[] = new ZString( $payload['data'] );
+				break;
+
 			case ZErrorTypeRegistry::Z_ERROR_UNKNOWN_REFERENCE:
 				$zErrorValue[] = new ZString( $payload['data'] );
 				break;

@@ -11,7 +11,11 @@
 namespace MediaWiki\Extension\WikiLambda\API;
 
 use ApiBase;
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\MediaWikiServices;
 use Title;
 use Wikimedia\ParamValidator\ParamValidator;
@@ -28,18 +32,43 @@ class ApiZObjectFetcher extends ApiBase {
 		$language = $params[ 'language' ];
 
 		foreach ( $ZIDs as $index => $ZID ) {
-			$title = Title::newFromText( $ZID, NS_MAIN );
-
-			if ( !$title || !is_a( $title, "Title" ) || !$title->exists() ) {
-				$this->dieWithError( [ 'apierror-wikilambda_fetch-missingzid', $ZID ] );
-			} else {
-				$this->getResult()->addValue(
-					$ZID,
-					$this->getModuleName(),
-					ZObjectContentHandler::getExternalRepresentation( $title, $language )
+			if ( !ZObjectUtils::isValidZObjectReference( mb_strtoupper( $ZID ) ) ) {
+				$zErrorObject = ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_REFERENCE,
+					[ 'data' => $ZID ]
 				);
+				$this->dieWithZError( $zErrorObject );
+			} else {
+				$title = Title::newFromText( $ZID, NS_MAIN );
+
+				if ( !$title || !is_a( $title, "Title" ) || !$title->exists() ) {
+					$zErrorObject = ZErrorFactory::createZErrorInstance(
+						ZErrorTypeRegistry::Z_ERROR_UNKNOWN_REFERENCE,
+						[ 'data' => $ZID ]
+					);
+					$this->dieWithZError( $zErrorObject );
+				} else {
+					$this->getResult()->addValue(
+						$ZID,
+						$this->getModuleName(),
+						ZObjectContentHandler::getExternalRepresentation( $title, $language )
+					);
+				}
 			}
 		}
+	}
+
+	/**
+	 * @param ZError $zerror
+	 *
+	 * FIXME duplicated from ApiZObjectEditor.php
+	 */
+	private function dieWithZError( $zerror ) {
+		$this->dieWithError(
+			[ 'wikilambda-zerror', $zerror->getZErrorType() ],
+			null,
+			$zerror->getErrorData()
+		);
 	}
 
 	/**
