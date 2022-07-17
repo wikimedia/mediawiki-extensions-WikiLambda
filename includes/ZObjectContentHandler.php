@@ -292,6 +292,8 @@ class ZObjectContentHandler extends ContentHandler {
 			return;
 		}
 
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+
 		$userLang = RequestContext::getMain()->getLanguage();
 
 		// Ensure the stored content is a valid ZObject; this also populates $this->getZObject() for us
@@ -310,46 +312,50 @@ class ZObjectContentHandler extends ContentHandler {
 		}
 
 		$pageIdentity = $cpoParams->getPage();
+		$services = MediaWikiServices::getInstance();
+
 		// TODO: Re-work our code to use PageReferences rather than Titles
 		$title = Title::castFromPageReference( $pageIdentity );
 		'@phan-var Title $title';
 
 		$zobject = $content->getZObject();
+		$zobjectType = $content->getTypeStringAndLanguage( $userLang );
 
-		$isoCode = '';
-		// the MW code of the language currently being rendered (usually ISO code)
-		$currLangCode = wfMessage( 'wikilambda-special-edit-function-definition-title' )->getLanguage()->getCode();
 		// the MW code of the user's preferred language (usually ISO code)
 		$userLanguageCode = $userLang->getCode();
-		// the string text of the language currently being rendered
-		$currLangName = wfMessage(
-			'wikilambda-special-edit-function-definition-title'
-		)->getLanguage()->fetchLanguageName( $currLangCode );
+		// OBJECT TYPE language code ( MW code, which is usually ISO code ) (ex: 'en' )
+		$langCodeType = gettype( $zobjectType[ 'languageCode' ] ) === 'string' ? $zobjectType[ 'languageCode' ] : '';
+		// OBJECT TYPE language label (ex: English ) of the language currently being rendered
+		$langNameType = $services->getLanguageNameUtils()->getLanguageName( $langCodeType );
 
-		if ( $currLangCode !== $userLanguageCode ) {
-			$isoCode = Html::element(
-				"span
-				title=$currLangName
-				",
-				[
-					'class' => [
-						'ext-wikilambda-page-header-title',
-						'ext-wikilambda-viewpage-header--iso-code'
-					],
-				],
-				$currLangCode
-			);
+		// OBJECT NAME label (ex: My function | Unknown) and language code (ex: 'en')
+		$label = $zobject->getLabels()->getStringAndLanguageCode(
+			$userLang,
+			true,
+			true,
+			true
+		);
+		$labelText = $label[ 'title' ];
+		$labelCodeName = $label[ 'languageCode' ];
+
+		$isoCodeClassName = 'ext-wikilambda-viewpage-header--iso-code';
+		$isoCodeObjectName = '';
+		// OBJECT NAME language label (ex: English ) of the language currently being rendered
+		$labelStringName = $services->getLanguageNameUtils()->getLanguageName( $labelCodeName );
+		if ( $labelCodeName && $labelCodeName !== $userLanguageCode ) {
+			// if the object label (ex: My function | Unknown ) is not in the user's language,
+			// render an iso code for the language used
+			$isoCodeObjectName = ZObjectUtils::getIsoCode( $labelCodeName, $labelStringName, $isoCodeClassName );
 		}
+
+		// if the object type (ex: Function ) is not in the user's language,
+		// render an iso code for the language used
+		$isoCodeObjectType = $langCodeType === $userLanguageCode ? ''
+			: ZObjectUtils::getIsoCode( $langCodeType, $langNameType, $isoCodeClassName );
 
 		$prefix = Html::element(
 			'span', [ 'class' => 'ext-wikilambda-viewpage-header-title' ],
-			wfMessage( 'wikilambda-special-function-definition-title' )->text()
-		);
-
-		$labelText = $zobject->getLabels()->getStringForLanguageOrEnglish(
-			$userLang,
-			$returnPlaceholder = true,
-			$isTitle = true
+			$zobjectType[ 'title' ]
 		);
 
 		$untitledStyle = $labelText === wfMessage( 'wikilambda-editor-default-name' )->text() ?
@@ -377,15 +383,19 @@ class ZObjectContentHandler extends ContentHandler {
 
 		$type = Html::element(
 			'div', [ 'class' => 'ext-wikilambda-viewpage-header-type' ],
-			$content->getTypeString( $userLang )
+			$zobjectType[ 'type' ]
 		);
+
+		// if we have two iso codes showing the same fallback language, only render the first one
+		if ( $langNameType === $labelStringName ) {
+			$isoCodeObjectName = '';
+		}
 
 		$header = Html::rawElement(
 			'span',
 			[ 'class' => 'ext-wikilambda-viewpage-header' ],
-				$isoCode . " " . $prefix
-				. wfMessage( 'colon-separator' )->text() . $label
-				. ' ' . $id . $type
+			$isoCodeObjectType . " " . $prefix
+			. wfMessage( 'colon-separator' )->text() . $isoCodeObjectName . " " . $label . ' ' . $id . $type
 		);
 
 		$parserOutput->addModuleStyles( [ 'ext.wikilambda.viewpage.styles' ] );
@@ -393,7 +403,6 @@ class ZObjectContentHandler extends ContentHandler {
 
 		$parserOutput->addModules( [ 'ext.wikilambda.edit' ] );
 
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$zObject = $zObjectStore->fetchZObjectByTitle( $title );
 
 		$zLangRegistry = ZLangRegistry::singleton();

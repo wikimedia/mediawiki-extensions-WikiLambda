@@ -116,7 +116,60 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::getStringAndLanguageCode
+	 * @covers ::internalGetStringForLanguage
+	 */
+	public function testGetStringAndLanguageCode() {
+		$this->registerLangs( [ 'en' ] );
+		$germanLang = $this->makeLanguage( 'de' );
+		$englishLang = $this->makeLanguage( 'en' );
+
+		$testObject = new ZMultiLingualString( [] );
+		$this->assertTrue( $testObject->isValid() );
+
+		$testObject = new ZMultiLingualString( [
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['en'] ), new ZString( 'Demonstration item' )
+			)
+		] );
+
+		$this->assertTrue( $testObject->isValid() );
+
+		// returns given language when there is no fallback needed
+		$this->assertSame(
+			[
+				'title' => 'Demonstration item',
+				'languageCode' => 'en'
+			],
+			$testObject->getStringAndLanguageCode( $englishLang )
+		);
+
+		// do not only return the title
+		$this->assertNotSame(
+			'Demonstration item',
+			$testObject->getStringAndLanguageCode( $germanLang )
+		);
+
+		$testObject = new ZMultiLingualString( [
+			new ZMonoLingualString(
+				new ZReference( self::ZLANG['en'] ), new ZString( 'Demonstration item' )
+			)
+		] );
+
+		// returns given language if no fallback is used
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertSame(
+			[
+				'title' => 'Demonstration item',
+				'languageCode' => 'en'
+			],
+			$testObject->getStringAndLanguageCode( $englishLang )
+		);
+	}
+
+	/**
 	 * @covers ::getStringForLanguage
+	 * @covers ::internalGetStringForLanguage
 	 */
 	public function testTitleCreation() {
 		$englishLang = $this->makeLanguage( 'en' );

@@ -126,7 +126,6 @@ module.exports = exports = {
 		'getViewMode',
 		'getZObjectChildrenById',
 		'getZObjectAsJsonById',
-		'getAllZKeyLanguageLabels',
 		'getZObjectInitialized'
 	] ),
 	{

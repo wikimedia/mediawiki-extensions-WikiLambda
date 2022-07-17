@@ -306,6 +306,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @covers ::getTypeString
 	 * @covers ::getZType
+	 * @covers ::getTypeStringAndLanguage
 	 */
 	public function testGetTypeString() {
 		$this->registerLangs( ZTestType::TEST_LANGS );
@@ -334,5 +335,12 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 		$english = $this->makeLanguage( 'en' );
 		$this->assertSame( 'Demonstration type (Z111)',
 			$testObject->getTypeString( $english ) );
+		$this->assertSame(
+			[
+				'title' => 'Demonstration type',
+				'type' => 'Demonstration type (Z111)',
+				'languageCode' => 'en'
+			],
+			$testObject->getTypeStringAndLanguage( $english ) );
 	}
 }
