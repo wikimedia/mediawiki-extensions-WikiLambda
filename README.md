@@ -62,7 +62,12 @@ If you would like to use the orchestrator/evaluator (e.g., to run user-defined a
 
   After that, in `mediawiki/docker-compose.override.yaml`, replace `image: docker-registry...` in the `function-orchestrator` service stanza to read `image: local-orchestrator:latest`. If changing the evaluator, follow the same steps but for the evaluator image.
 
-* If you want to use a different port or your checkout of MediaWiki is not in a directory called 'mediawiki', you may need to change the WikiLambdaOrchestratorLocation configuration from the default of `mediawiki_function-orchestrator_1:6254` in your LocalSettings file, e.g. to `core_function-orchestrator_1:6254`..
+* If you want to use a different port or your checkout of MediaWiki is not in a directory called 'mediawiki', you may need to change the WikiLambdaOrchestratorLocation configuration from the default of `mediawiki_function-orchestrator_1:6254` in your LocalSettings file, e.g. to `core_function-orchestrator_1:6254` you would add:
+
+ ```
+ $wgWikiLambdaOrchestratorLocation = "core_function-orchestrator_1:6254";
+ ```
+
 * You can test your installation by removing `@group: Broken` from `mediawiki/extensions/WikiLambda/tests/phpunit/integration/API/ApiFunctionCallTest.php` and running the PHPUnit test suite as described in the MediaWiki install instructions: `docker-compose exec mediawiki php tests/phpunit/phpunit.php extensions/WikiLambda/tests/phpunit/integration/API/ApiFunctionCallTest.php`.
 * You can evaluate an arbitrary function call by navigating to `localhost:8080/wiki/Special:CreateZObject`, adding a new key/value pair whose value is of type `Z7`, and selecting a function.
 * Note that if you are running the evaluator at a different relative URL than the default, you will have to change the value of WikiLambdaEvaluatorLocation in your local settings appropriately.
@@ -75,7 +80,7 @@ WikiLambda is build on top of complex data structure called zObjects. This data 
 
 #### zObject from JSON to Array
 
-The most important topic of the store manipulation is the conversion of zObjects from JSON to Array. zObject can be very large and splitting it up in "smaller" parts was required to simplify the development and design of the FrontEnd. 
+The most important topic of the store manipulation is the conversion of zObjects from JSON to Array. zObject can be very large and splitting it up in "smaller" parts was required to simplify the development and design of the FrontEnd.
 
 The solution to this problem, was to convert a zObject JSON into an array that would allow us to separate the data into smaller parts and use individual array Indexes to support data manipulation.
 
