@@ -568,6 +568,10 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$res = $this->zobjectStore->findReferencedZObjectsByZFunctionId( 'Z10029', 'Z14' );
 
 		$this->assertCount( 2, $res );
+
+		// On postgres the result may not in order
+		sort( $res );
+
 		$this->assertEquals( [ 'Z10030', 'Z10031' ], $res );
 	}
 
