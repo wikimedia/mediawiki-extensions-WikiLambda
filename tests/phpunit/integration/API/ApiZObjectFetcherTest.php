@@ -28,17 +28,46 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectFetcher::execute
 	 */
-	public function testFailsWithoutTitle() {
+	public function testFailsWithMalformedTitle() {
 		$unnamable = 'nope; can\'t name it';
-		$this->assertFalse(
-			Title::newFromText( $unnamable, NS_MAIN )->exists(),
-			'no title should exist for the string "' . $unnamable . '"' );
 
-		$this->setExpectedApiException( [ 'apierror-wikilambda_fetch-missingzid', $unnamable ] );
+		$expectedData = '{"message":"Unknown error Z549","zerror":{"Z1K1":"Z5","Z5K1":"Z549","Z5K2":' .
+			'{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z885","Z885K1":"Z549"},"K1":"' .
+			$unnamable .
+			'"}},"labelled":{"Z1K1":"Z5","Z5K1":"Z549","Z5K2":{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z885",' .
+			'"Z885K1":"Z549"},"K1":"' . $unnamable . '"}}}';
+
+		$this->setExpectedApiException( [ 'wikilambda-zerror', '' ], 'Z549', [ json_decode( $expectedData ) ] );
 
 		$this->doApiRequest( [
 			'action' => 'wikilambda_fetch',
 			'zids' => $unnamable,
+			'language' => 'en',
+		] );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectFetcher::execute
+	 */
+	public function testFailsWithUnknownReference() {
+		$unknownZid = 'Z199999';
+		$this->assertFalse(
+			Title::newFromText( $unknownZid, NS_MAIN )->exists(),
+			'no title should exist for the string "' . $unknownZid . '"' );
+
+		$expectedData = '{"message":"Unknown error Z550","zerror":{"Z1K1":"Z5",' .
+			'"Z5K1":"Z550","Z5K2":{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z885","Z885K1":"Z550"},"K1":"' .
+			$unknownZid .
+			'"}},"labelled":{"Z1K1":"Z5","Z5K1":"Z550","Z5K2":{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z885",' .
+			'"Z885K1":"Z550"},"K1":"' .
+			$unknownZid .
+			'"}}}';
+
+		$this->setExpectedApiException( [ 'wikilambda-zerror', '' ], 'Z550', [ json_decode( $expectedData ) ] );
+
+		$this->doApiRequest( [
+			'action' => 'wikilambda_fetch',
+			'zids' => $unknownZid,
 			'language' => 'en',
 		] );
 	}
