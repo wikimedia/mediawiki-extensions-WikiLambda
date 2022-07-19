@@ -23,6 +23,29 @@
 		padding: 0 4px;
 	}
 
+	[ data-title ] {
+		position: relative;
+	}
+
+	[ data-title ]:after {
+		content: attr( data-title );
+		position: absolute;
+		bottom: -1.6em;
+		left: 100%;
+		padding: 8px;
+		box-shadow: 0 4px 4px rgba( 0, 0, 0, 0.25 );
+		background-image: -webkit-linear-gradient( top, @wmui-color-base70, @wmui-color-base70 );
+		z-index: 99999;
+		visibility: hidden;
+		font-family: 'Helvetica Neue', sans-serif;
+	}
+
+	[ data-title ]:hover:after {
+		opacity: 1;
+		transition: all 0.1s ease 0.5s;
+		visibility: visible;
+	}
+
 	&-zid {
 		color: #ccc;
 		padding-left: 1em;

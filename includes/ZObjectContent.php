@@ -199,18 +199,41 @@ class ZObjectContent extends AbstractContent {
 	 * @throws ZErrorException
 	 */
 	public function getTypeString( $language ): string {
+		return $this->getTypeStringAndLanguage( $language )[ 'type' ];
+	}
+
+	/**
+	 * Two string representations (and the language code of that representation) of this ZObject
+	 *
+	 * @param Language $language Language in which to provide the string.
+	 * @return array An array containing the following keys (all in string form):
+	 * 		title => the label of the type
+	 * 		type => which is the label of the type and the zCode of the type
+	 * 		languageCode
+	 * @throws ZErrorException
+	 */
+	public function getTypeStringAndLanguage( $language ) {
 		$type = $this->getZType();
 		$typeTitle = Title::newFromText( $type, NS_MAIN );
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$typeObject = $zObjectStore->fetchZObjectByTitle( $typeTitle );
+
+		$chosenLang = $language;
+
 		if ( $typeObject ) {
-			$label = $typeObject->getLabels()->getStringForLanguageOrEnglish( $language );
+			$labelAndLang = $typeObject->getLabels()->getStringAndLanguageCode( $language );
+			$label = $labelAndLang[ 'title' ];
+			$chosenLang = $labelAndLang[ 'languageCode' ];
 		} else {
 			$label = wfMessage( 'wikilambda-typeunavailable' )->inContentLanguage()->text();
 		}
-		return $label
-			. wfMessage( 'word-separator' )->inContentLanguage()->text()
-			. wfMessage( 'parentheses' )->rawParams( $this->getZType() )->text();
+		return [
+			'title' => $label,
+			'type' => $label
+				. wfMessage( 'word-separator' )->inContentLanguage()->text()
+				. wfMessage( 'parentheses' )->rawParams( $this->getZType() )->text(),
+			'languageCode' => $chosenLang
+		];
 	}
 
 	/**

@@ -148,7 +148,7 @@ class ZMultiLingualString extends ZObject {
 	 * @return string|null The string, the value of the wikilambda-multilingualstring-nofallback message, or null.
 	 */
 	public function getStringForLanguage( Language $language, bool $returnPlaceholder = true, $isTitle = false ) {
-		return $this->internalGetStringForLanguage( $language, false, $returnPlaceholder, $isTitle );
+		return $this->internalGetStringForLanguage( $language, false, $returnPlaceholder, $isTitle )[ 'title' ];
 	}
 
 	/**
@@ -167,7 +167,28 @@ class ZMultiLingualString extends ZObject {
 		bool $returnPlaceholder = true,
 		bool $isTitle = false
 	) {
-		return $this->internalGetStringForLanguage( $language, true, $returnPlaceholder, $isTitle );
+		return $this->internalGetStringForLanguage( $language, true, $returnPlaceholder, $isTitle )[ 'title' ];
+	}
+
+	/**
+	 * Fetch the ZMultiLingualString's stored value for a given MediaWiki language class. This will
+	 * walk the language fallback chain, and provide a fallback message if there is no label defined
+	 * in the given language or any of its fallback languages. This function will return both the
+	 * string and the language code that was used (the passed language or fallback language)
+	 *
+	 * @param Language $language The MediaWiki language class in which the string is wanted.
+	 * @param bool $withEnglish Whether or not to include English regardless of the fallback chain.
+	 * @param bool $returnPlaceholder By default returns 'wikilambda-multilingualstring-nofallback' message, else null.
+	 * @param bool $isTitle Return 'wikilambda-editor-default-name', else $returnPlaceholder
+	 * @return array The string, the fallback message, or null AND the language code.
+	 */
+	public function getStringAndLanguageCode(
+		Language $language,
+		bool $withEnglish = true,
+		bool $returnPlaceholder = true,
+		bool $isTitle = false
+	) {
+		return $this->internalGetStringForLanguage( $language, $withEnglish, $returnPlaceholder, $isTitle );
 	}
 
 	/**
@@ -179,7 +200,7 @@ class ZMultiLingualString extends ZObject {
 	 * @param bool $withEnglish Whether or not to include English regardless of the fallback chain.
 	 * @param bool $returnPlaceholder By default returns 'wikilambda-multilingualstring-nofallback' message, else null.
 	 * @param bool $isTitle Return 'wikilambda-editor-default-name', else $returnPlaceholder
-	 * @return string|null The string, the value of the wikilambda-multilingualstring-nofallback message, or null.
+	 * @return array The string, the fallback message, or null AND the language code.
 	 */
 	private function internalGetStringForLanguage(
 		Language $language,
@@ -188,7 +209,11 @@ class ZMultiLingualString extends ZObject {
 		bool $isTitle
 	) {
 		if ( $this->isLanguageProvidedValue( $language->getCode() ) ) {
-			return $this->getStringForLanguageCode( $language->getCode() );
+			$title = $this->getStringForLanguageCode( $language->getCode() );
+			return [
+				'title' => $title,
+				'languageCode' => $language->getCode()
+			];
 		}
 
 		$fallbacks = MediaWikiServices::getInstance()->getLanguageFallback()->getAll(
@@ -198,15 +223,21 @@ class ZMultiLingualString extends ZObject {
 
 		foreach ( $fallbacks as $index => $languageCode ) {
 			if ( $this->isLanguageProvidedValue( $languageCode ) ) {
-				return $this->getStringForLanguageCode( $languageCode );
+				$title = $this->getStringForLanguageCode( $languageCode );
+				return [
+					'title' => $title,
+					'languageCode' => $languageCode
+				];
 			}
 		}
 
 		$placeholderText = $isTitle ? 'wikilambda-editor-default-name' : 'wikilambda-multilingualstring-nofallback';
+		$title = $returnPlaceholder ? wfMessage( $placeholderText )->inLanguage( $language )->text() : null;
 
-		return $returnPlaceholder
-			? wfMessage( $placeholderText )->inLanguage( $language )->text()
-			: null;
+		return [
+			'title' => $title,
+			'languageCode' => $language->getCode()
+		];
 	}
 
 	/**

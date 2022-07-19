@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use Html;
 use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -22,6 +23,23 @@ use stdClass;
 use Transliterator;
 
 class ZObjectUtils {
+	/**
+	 * @param string $code The MW language code
+	 * @param string $name The plain text name of the language
+	 * @param string $class The name of the class for the HTML element
+	 * @return string the element to be rendered
+	 */
+	public static function getIsoCode( $code, $name, $class ) {
+		// TODO (T309039): use the chip component and ZID language object here instead
+		return Html::element(
+			'span',
+			[
+				'data-title' => $name,
+				'class' => $class
+			 ],
+			$code
+		);
+	}
 
 	/**
 	 * @param string $input

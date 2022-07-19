@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use Action;
 use Html;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\MediaWikiServices;
 
 class ZObjectEditAction extends Action {
 
@@ -31,10 +32,9 @@ class ZObjectEditAction extends Action {
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$targetZObject = $zObjectStore->fetchZObjectByTitle( $this->getTitle() );
 
-		$prefix = Html::element(
-			'span', [ 'class' => 'ext-wikilambda-editpage-header-title' ],
-			$this->msg( 'wikilambda-special-edit-function-definition-title' )->text()
-		);
+		// the language object of the user's preferred language
+		$userLang = $this->getLanguage();
+		$zObjectLabelsWithLang = $targetZObject->getTypeStringAndLanguage( $userLang );
 
 		$label = Html::element(
 			'span',
@@ -47,33 +47,58 @@ class ZObjectEditAction extends Action {
 			$targetZObject->getLabels()->getStringForLanguageOrEnglish( $this->getLanguage() )
 		);
 
-		$isoCode = '';
-		// the MW code of the language currently being rendered (usually ISO code)
-		$currLangCode = $this->msg( 'wikilambda-special-edit-function-definition-title' )->getLanguage()->getCode();
-		// the MW code of the user's preferred language (usually ISO code)
-		$userLanguageCode = $this->getLanguage()->getCode();
-		// the string text of the language currently being rendered
-		$currLangName = $this->msg(
-			'wikilambda-special-edit-function-definition-title'
-		)->getLanguage()->fetchLanguageName( $currLangCode );
+		/* isoCodes can occur in two places:
+			(1) in front of the entire header - this happens if
+				(a) ONLY the TYPE is in a non-user language OR
+				(b) if both the TYPE and the NAME are in the SAME non-user language
+			(2) in front of the name - this happens if the NAME is in a non-user language
+		*/
+
+		// used to go from LANG_CODE -> LANG_NAME
+		$services = MediaWikiServices::getInstance();
+
+		// the iso code of the language currently being rendered for the zObject Type
+		$typeLangCode = $zObjectLabelsWithLang[ 'languageCode' ] ?: '';
+		wfDebugLog( "error", var_export( $typeLangCode, true ) );
+		$typeLangName = $services->getLanguageNameUtils()->getLanguageName( $typeLangCode );
+
+		$isoCodeObjectName = '';
+		// the iso code of the language currently being rendered for the zObject Type
+		$nameLang = $targetZObject->getLabels()->getStringAndLanguageCode(
+			$userLang,
+			true,
+			true,
+			true
+		);
+		$nameLangCode = $nameLang[ 'languageCode' ];
+		$nameLangTitle = $services->getLanguageNameUtils()->getLanguageName( $nameLangCode );
 
 		// show a language label if the text is not the user's preferred language
 		// TODO (T309039): use the chip component and ZID language object here instead
-		if ( $currLangCode !== $userLanguageCode ) {
-			$isoCode = Html::element(
-				"span data-title=$currLangName",
-				[
-					'class' => 'ext-wikilambda-editpage-header-title
-						ext-wikilambda-editpage-header-title--iso-code'
-				],
-				$currLangCode
-			);
+		$isoCodeClassName = 'ext-wikilambda-editpage-header--iso-code';
+		if ( $nameLangCode !== $userLang->getCode() ) {
+			$isoCodeObjectName = ZObjectUtils::getIsoCode( $nameLangCode, $nameLangTitle, $isoCodeClassName );
+		}
+
+		// show a language label if the text is not the user's preferred language
+		$isoCodeObjectType = $typeLangCode === $userLang->getCode() ? ''
+			: ZObjectUtils::getIsoCode( $typeLangCode, $typeLangName, $isoCodeClassName );
+
+		$prefix = Html::element(
+			'span', [ 'class' => 'ext-wikilambda-editpage-header-title' ],
+			$this->msg( 'wikilambda-edit' )->text()
+		);
+
+		// if we have two iso codes showing the same fallback language, only render the first one
+		if ( $typeLangCode === $nameLangCode ) {
+			$isoCodeObjectName = '';
 		}
 
 		return Html::rawElement(
 			'span',
 			[ 'class' => 'ext-wikilambda-editpage-header' ],
-			$isoCode . " " . $prefix . $this->msg( 'colon-separator' )->text() . $label . "'"
+			" " . $prefix . " " . $isoCodeObjectType . " " . $zObjectLabelsWithLang[ 'title' ]
+			. $this->msg( 'colon-separator' )->text() . $isoCodeObjectName . $label
 		);
 	}
 

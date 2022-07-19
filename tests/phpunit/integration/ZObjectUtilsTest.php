@@ -10,6 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use FormatJson;
+use Html;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
@@ -1596,5 +1597,24 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				. '[ "Z6", "oh", "tasty", "soup" ] ]'
 			]
 		];
+	}
+
+	/**
+	 * @covers ::getIsoCode
+	 */
+	public function testGetIsoCode() {
+		$actual = ZObjectUtils::getIsoCode( 'en', 'English', 'ext-wikilambda-viewpage-header--iso-code' );
+		$expected = Html::element(
+			'span',
+			[
+				'data-title' => 'English',
+				'class' => 'ext-wikilambda-viewpage-header--iso-code'
+			],
+			'en'
+		);
+		$this->assertIsString( $actual );
+
+		// correctly generates iso code
+		$this->assertSame( $expected, $actual );
 	}
 }
