@@ -148,9 +148,37 @@ function normalize( zobject ) {
 	return normal;
 }
 
+/**
+ * Return the ZMap value corresponding to the given key, if present.
+ * TODO (T302015) When ZMap keys are extended beyond Z6/Z39, update accordingly
+ *
+ * @param {Object} zMap a Z883/Typed map, in canonical form
+ * @param {Object} key a Z6 or Z39 instance, in canonical form
+ * @return {Object|undefined} a Z1/Object, the value of the map entry with the given key,
+ * or undefined if there is no such entry
+ */
+function getValueFromCanonicalZMap( zMap, key ) {
+	const K1Array = zMap[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
+	// With Benjamin arrays, skip over the first array element
+	for ( let i = 1; i < K1Array.length; i++ ) {
+		const entry = K1Array[ i ];
+		const currentKey = entry[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
+		if ( ( currentKey === key ) ||
+			( currentKey[ Constants.Z_OBJECT_TYPE ] === Constants.Z_STRING &&
+				key[ Constants.Z_OBJECT_TYPE ] === Constants.Z_STRING &&
+				currentKey[ Constants.Z_STRING_VALUE ] === key[ Constants.Z_STRING_VALUE ] ) ||
+			( currentKey[ Constants.Z_OBJECT_TYPE ] === 'Z39' &&
+				key[ Constants.Z_OBJECT_TYPE ] === 'Z39' &&
+				currentKey.Z39K1 === key.Z39K1 ) ) {
+			return entry[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ];
+		}
+	}
+}
+
 module.exports = exports = {
 	methods: {
 		canonicalizeZObject: canonicalize,
-		normalizeZObject: normalize
+		normalizeZObject: normalize,
+		getValueFromCanonicalZMap: getValueFromCanonicalZMap
 	}
 };
