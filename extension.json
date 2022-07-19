@@ -40,7 +40,7 @@
 		},
 		"WikiLambdaOrchestratorLocation": {
 			"description": "Host and port of the function orchestrator.",
-			"value": "mediawiki_function-orchestrator_1:6254"
+			"value": "https://wikifunctions-orchestrator-beta.wmflabs.org:443"
 		}
 	},
 	"ConfigRegistry": {

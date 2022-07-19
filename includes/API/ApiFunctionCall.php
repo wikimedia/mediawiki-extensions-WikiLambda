@@ -19,8 +19,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
-use MediaWiki\Extension\WikiLambda\MockOrchestrator;
-use MediaWiki\Extension\WikiLambda\OrchestratorInterface;
+use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
@@ -37,7 +36,7 @@ use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiFunctionCall extends ApiBase {
 
-	/** @var OrchestratorInterface */
+	/** @var OrchestratorRequest */
 	protected $orchestrator;
 
 	/** @var string */
@@ -48,16 +47,11 @@ class ApiFunctionCall extends ApiBase {
 	 */
 	public function __construct( $query, $moduleName ) {
 		parent::__construct( $query, $moduleName, 'wikilambda_function_call_' );
-		if ( defined( 'MW_PHPUNIT_TEST' ) ) {
-			$this->orchestrator = MockOrchestrator::getInstance();
-			$this->orchestratorHost = 'mock';
-		} else {
-			$config = MediaWikiServices::getInstance()->
-				getConfigFactory()->makeConfig( 'WikiLambda' );
-			$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
-			$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
-			$this->orchestrator = new OrchestratorInterface( $client );
-		}
+
+		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
+		$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
+		$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
+		$this->orchestrator = new OrchestratorRequest( $client );
 	}
 
 	/**
