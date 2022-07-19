@@ -4,6 +4,7 @@
 			"Yupik"
 		]
 	},
+	"wikilambda-history-title": "Seeid \"$1\" ($2) muʹttemhistoria",
 	"wikilambda-reference": "Teâttkäivv",
 	"wikilambda-special-createzobject": "Raaj ođđ ZObjeeʹkt",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Ǩiõll",
@@ -20,5 +21,6 @@
 	"wikilambda-metadata-language-column": "Ǩiõll",
 	"wikilambda-metadata-aka-column": "Toobdât še nõõmin leʹbe nõõmivuiʹm",
 	"wikilambda-editor-fn-step-function-about": "Lââʹssteâđ",
-	"wikilambda-editor-name-title": "Nõmm"
+	"wikilambda-editor-name-title": "Nõmm",
+	"wikilambda-function-viewer-aliases-hide-language-button": "Čiõǥǥ liist"
 }
