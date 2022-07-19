@@ -166,4 +166,40 @@ class ZResponseEnvelope extends ZObject {
 		// Nothing found in the map, so there are no errors
 		return null;
 	}
+
+	/**
+	 * Convenience method to make a ZTypedMap for a ZResponseEnvelope with a
+	 * given key/value pair
+	 *
+	 * @param string $key The key to use
+	 * @param ZObject $value The value to set
+	 * @return ZTypedMap
+	 */
+	public static function wrapInResponseMap( $key, $value ): ZTypedMap {
+		$pairType = ZTypedPair::buildType( 'Z6', 'Z1' );
+
+		return new ZTypedMap(
+			ZTypedMap::buildType( 'Z6', 'Z1' ),
+			new ZTypedList(
+				ZTypedList::buildType( $pairType ),
+				[
+					new ZTypedPair(
+						$pairType,
+						new ZString( $key ),
+						$value
+					),
+				]
+			)
+		);
+	}
+
+	/**
+	 * Convenience method to make a ZTypedMap for a ZResponseEnvelope for a ZError
+	 *
+	 * @param ZError $error The error to set
+	 * @return ZTypedMap
+	 */
+	public static function wrapErrorInResponseMap( $error ): ZTypedMap {
+		return self::wrapInResponseMap( 'errors', $error );
+	}
 }
