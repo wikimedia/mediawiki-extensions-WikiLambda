@@ -34,14 +34,15 @@
 			<div class="ext-wikilambda-function-viewer-details-sidebar__link">
 				<a
 					id="ext-wikilambda-function-viewer-details-sidebar__link--implementation"
-					:href="createNew( Constants.Z_IMPLEMENTATION )"
+					:href="newImplementationLink"
 				>
 					{{ $i18n( 'wikilambda-implementation-create-new' ).text() }}
 				</a>
 			</div>
 			<div>
 				<a
-					:href="createNew( Constants.Z_TESTER )"
+					id="ext-wikilambda-function-viewer-details-sidebar__link--tester"
+					:href="newTesterLink"
 				>
 					{{ $i18n( 'wikilambda-tester-create-new' ).text() }}
 				</a>
@@ -90,8 +91,7 @@ module.exports = exports = {
 	data: function () {
 		return {
 			showFunctionDefinitionItems: true,
-			showAllLangs: false,
-			Constants: Constants
+			showAllLangs: false
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -312,6 +312,12 @@ module.exports = exports = {
 		},
 		editUrl: function () {
 			return new mw.Title( this.getCurrentZObjectId ).getUrl() + '?view=function-editor';
+		},
+		newTesterLink: function () {
+			return new mw.Title( 'Special:CreateZObject' ).getUrl() + `?zid=${Constants.Z_TESTER}&${Constants.Z_TESTER_FUNCTION}=${this.getCurrentZObjectId}`;
+		},
+		newImplementationLink: function () {
+			return new mw.Title( 'Special:CreateZObject' ).getUrl() + `?zid=${Constants.Z_IMPLEMENTATION}&${Constants.Z_IMPLEMENTATION_FUNCTION}=${this.getCurrentZObjectId}`;
 		}
 	} ),
 	methods: $.extend( {},
@@ -395,13 +401,6 @@ module.exports = exports = {
 				}
 
 				return item.value;
-			},
-			createNew: function ( type ) {
-				const zid = type,
-					zidK1 = type === Constants.Z_IMPLEMENTATION ?
-						Constants.Z_IMPLEMENTATION_FUNCTION : Constants.Z_TESTER_FUNCTION;
-
-				return `/wiki/Special:CreateZObject?zid=${zid}&${zidK1}=${this.getCurrentZObjectId}`;
 			},
 			toggleShowFunctionDefinitionItems: function () {
 				this.showFunctionDefinitionItems = !this.showFunctionDefinitionItems;

@@ -30,6 +30,13 @@ describe( 'FunctionViewerDetailsSidebar', function () {
 		global.store.hotUpdate( {
 			getters: getters
 		} );
+		mw.Title = jest.fn( function ( title ) {
+			return {
+				getUrl: jest.fn( function () {
+					return '/wiki/' + title;
+				} )
+			};
+		} );
 	} );
 
 	it( 'renders without errors', function () {
@@ -44,6 +51,15 @@ describe( 'FunctionViewerDetailsSidebar', function () {
 
 		expect( link.attributes( 'href' ) ).toBeTruthy();
 		expect( link.attributes().href ).toBe( '/wiki/Special:CreateZObject?zid=Z14&Z14K1=Z1002' );
+
+	} );
+
+	it( 'returns the correct url for creating a tester', function () {
+		var wrapper = VueTestUtils.shallowMount( FunctionViewerSidebar );
+		var link = wrapper.find( '#ext-wikilambda-function-viewer-details-sidebar__link--tester' );
+
+		expect( link.attributes( 'href' ) ).toBeTruthy();
+		expect( link.attributes().href ).toBe( '/wiki/Special:CreateZObject?zid=Z20&Z20K1=Z1002' );
 
 	} );
 } );
