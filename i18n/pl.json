@@ -16,6 +16,7 @@
 	"wikilambda-editor-label-addlanguage-label": "Dodaj język",
 	"specialpages-group-wikilambda": "Strony wikifunkcji",
 	"wikilambda-implementation-selector-code": "Kod",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Błąd|Błędy|Błędów}}",
 	"wikilambda-tester-status-pending": "OCZEKUJE...",
 	"wikilambda-tester-status-running": "TRWA...",
 	"wikilambda-tester-status-passed": "PRZESZEDŁ",

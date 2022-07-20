@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Asenoner"
+		]
+	},
+	"wikilambda-show-error": "Mostra l fal",
+	"wikilambda-hide-error": "Nascuend fal",
+	"wikilambda-show-metrics": "Mostra la metriches",
+	"wikilambda-hide-metrics": "Nascuend metriches",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Fal|Fai}}",
+	"wikilambda-functioncall-metadata-errors-none": "Nët nia",
+	"wikilambda-functioncall-metadata-evaluation-duration": "Evaluazion dureda"
+}
