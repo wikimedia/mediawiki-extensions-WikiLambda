@@ -109,8 +109,8 @@ describe( 'zTesterResults Vuex module', function () {
 				return new Promise( function ( resolve ) {
 					var data = [];
 
-					JSON.parse( payload.wikilambda_perform_test_zimplementations ).forEach( function ( impl ) {
-						JSON.parse( payload.wikilambda_perform_test_ztesters ).forEach( function ( tester ) {
+					payload.wikilambda_perform_test_zimplementations.split( '|' ).forEach( function ( impl ) {
+						payload.wikilambda_perform_test_ztesters.split( '|' ).forEach( function ( tester ) {
 							data.push( {
 								zFunctionId: payload.wikilambda_perform_test_zfunction,
 								zImplementationId: impl,
@@ -175,8 +175,8 @@ describe( 'zTesterResults Vuex module', function () {
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
 					wikilambda_perform_test_zfunction: zFunctionId,
-					wikilambda_perform_test_zimplementations: JSON.stringify( zImplementations ),
-					wikilambda_perform_test_ztesters: JSON.stringify( zTesters ),
+					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
+					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 					wikilambda_perform_test_nocache: false
 				} );
 				expect( context.commit ).toHaveBeenCalledTimes( 7 );
@@ -204,8 +204,8 @@ describe( 'zTesterResults Vuex module', function () {
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
 					wikilambda_perform_test_zfunction: zFunctionId,
-					wikilambda_perform_test_zimplementations: JSON.stringify( zImplementations ),
-					wikilambda_perform_test_ztesters: JSON.stringify( zTesters ),
+					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
+					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 					wikilambda_perform_test_nocache: false
 				} );
 				expect( context.commit ).toHaveBeenCalledTimes( 7 );
@@ -233,8 +233,8 @@ describe( 'zTesterResults Vuex module', function () {
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
 					wikilambda_perform_test_zfunction: zFunctionId,
-					wikilambda_perform_test_zimplementations: JSON.stringify( zImplementations ),
-					wikilambda_perform_test_ztesters: JSON.stringify( zTesters ),
+					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
+					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 					wikilambda_perform_test_nocache: false
 				} );
 				expect( context.commit ).toHaveBeenCalledTimes( 7 );
@@ -295,8 +295,8 @@ describe( 'zTesterResults Vuex module', function () {
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
 					wikilambda_perform_test_zfunction: zFunctionId,
-					wikilambda_perform_test_zimplementations: JSON.stringify( zImplementations ),
-					wikilambda_perform_test_ztesters: JSON.stringify( zTesters ),
+					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
+					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 					wikilambda_perform_test_nocache: false
 				} );
 				expect( context.commit ).toHaveBeenCalledTimes( 4 );
