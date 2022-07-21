@@ -557,6 +557,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @covers ::insertZFunctionReference
 	 * @covers ::findReferencedZObjectsByZFunctionId
+	 * @covers ::findReferencedZObjectsByZFunctionIdAsList
 	 */
 	public function testFindReferencedZObjectsByZFunctionId() {
 		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
@@ -565,8 +566,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$response = $this->zobjectStore->insertZFunctionReference( 'Z10031', 'Z10029', 'Z14' );
 		$this->assertTrue( $response );
 
-		$res = $this->zobjectStore->findReferencedZObjectsByZFunctionId( 'Z10029', 'Z14' );
-
+		$res = $this->zobjectStore->findReferencedZObjectsByZFunctionIdAsList( 'Z10029', 'Z14' );
 		$this->assertCount( 2, $res );
 
 		// On postgres the result may not in order

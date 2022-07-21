@@ -76,6 +76,37 @@ class ApiQueryZFunctionReferenceTest extends ApiTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZFunctionReference::execute
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZFunctionReference::run
 	 */
+	public function testLimit() {
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdafn_search',
+			'wikilambdafn_zfunction_id' => 'Z10029',
+			'wikilambdafn_type' => 'Z14',
+			'wikilambdafn_limit' => 1,
+		] );
+
+		$expected = [
+			'batchcomplete' => true,
+			'query' => [
+				'wikilambdafn_search' => [
+					[
+						'page_namespace' => NS_MAIN,
+						'zid' => 'Z10030'
+					]
+				]
+			],
+			'continue' => [
+				'wikilambdafn_continue' => '2',
+				'continue' => '-||',
+			],
+		];
+		$this->assertEquals( $expected, $result[0] );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZFunctionReference::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZFunctionReference::run
+	 */
 	public function testSearch() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -87,8 +118,14 @@ class ApiQueryZFunctionReferenceTest extends ApiTestCase {
 			'batchcomplete' => true,
 			'query' => [
 				'wikilambdafn_search' => [
-					'Z10030',
-					'Z10031'
+					[
+						'page_namespace' => NS_MAIN,
+						'zid' => 'Z10030'
+					],
+					[
+						'page_namespace' => NS_MAIN,
+						'zid' => 'Z10031'
+					]
 				]
 			]
 		];

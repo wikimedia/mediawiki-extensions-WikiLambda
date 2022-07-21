@@ -713,30 +713,63 @@ class ZObjectStore {
 	}
 
 	/**
-	 * Search implementations in the secondary database and return all matching a given ZID
+	 * Converts findReferencedZObjectsByZFunctionId into a list of zids
 	 *
 	 * @param string $zid the ZID of the ZFunction
 	 * @param string $type the type of the ZFunction reference
 	 * @return string[] All ZIDs of referenced ZObjects associated to the ZFunction
 	 */
-	public function findReferencedZObjectsByZFunctionId( $zid, $type ): array {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
-		$res = $dbr->newSelectQueryBuilder()
-			 ->select( [ 'wlzf_ref_zid' ] )
-			 ->from( 'wikilambda_zobject_function_join' )
-			 ->where( [
-				 'wlzf_zfunction_zid' => $zid,
-				 'wlzf_type' => $type,
-			 ] )
-			 ->caller( __METHOD__ )
-			 ->fetchResultSet();
-
+	public function findReferencedZObjectsByZFunctionIdAsList(
+		$zid,
+		$type
+	) {
+		$res = $this->findReferencedZObjectsByZFunctionId( $zid, $type );
 		$zids = [];
 		foreach ( $res as $row ) {
 			$zids[] = $row->wlzf_ref_zid;
 		}
 
 		return $zids;
+	}
+
+	/**
+	 * Search implementations in the secondary database and return all matching a given ZID
+	 *
+	 * @param string $zid the ZID of the ZFunction
+	 * @param string $type the type of the ZFunction reference
+	 * @param string|null $continue Id to start. If null (the default), start from the first result.
+	 * @param int $limit Maximum number of results to return. Defaults to 10
+	 * @return IResultWrapper
+	 */
+	public function findReferencedZObjectsByZFunctionId(
+			$zid,
+			$type,
+			$continue = null,
+			$limit = 10
+		) {
+		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+
+		$conditions = [
+			'wlzf_zfunction_zid' => $zid,
+			'wlzf_type' => $type
+		];
+
+		// Set minimum id bound if we are continuing a paged result
+		if ( $continue != null ) {
+			$conditions[] = "wlzf_id >= $continue";
+		}
+		$res = $dbr->select(
+			/* FROM */ 'wikilambda_zobject_function_join',
+			/* SELECT */ [ 'wlzf_ref_zid', 'wlzf_id' ],
+			/* WHERE */ $dbr->makeList( $conditions, $dbr::LIST_AND ),
+			__METHOD__,
+			[
+				'ORDER BY' => 'wlzf_id ASC',
+				'LIMIT' => $limit,
+			]
+		);
+
+		return $res;
 	}
 
 	/**

@@ -103,8 +103,11 @@ module.exports = exports = {
 				// eslint-disable-next-line camelcase
 				wikilambdafn_type: Constants.Z_TESTER
 			} ).then( function ( response ) {
-				context.commit( 'setZTesters', response.query.wikilambdafn_search );
-				return context.dispatch( 'fetchZKeys', { zids: response.query.wikilambdafn_search } );
+				var zidList = response.query.wikilambdafn_search.map( function ( zidItem ) {
+					return zidItem.zid;
+				} );
+				context.commit( 'setZTesters', zidList );
+				return context.dispatch( 'fetchZKeys', { zids: zidList } );
 			} );
 		},
 		/**
