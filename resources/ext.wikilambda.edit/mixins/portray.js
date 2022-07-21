@@ -25,7 +25,13 @@ const knownKeys = new Map( [
 	[ 'orchestrationDuration', { i18nId: 'wikilambda-functioncall-metadata-orchestration-duration' } ],
 	[ 'evaluationStartTime', { i18nId: 'wikilambda-functioncall-metadata-evaluation-start-time' } ],
 	[ 'evaluationEndTime', { i18nId: 'wikilambda-functioncall-metadata-evaluation-end-time' } ],
-	[ 'evaluationDuration', { i18nId: 'wikilambda-functioncall-metadata-evaluation-duration' } ]
+	[ 'evaluationDuration', { i18nId: 'wikilambda-functioncall-metadata-evaluation-duration' } ],
+	[ 'orchestrationMemoryUsage', { i18nId: 'wikilambda-functioncall-metadata-orchestration-memory-usage' } ],
+	[ 'evaluationMemoryUsage', { i18nId: 'wikilambda-functioncall-metadata-evaluation-memory-usage' } ],
+	[ 'executionMemoryUsage', { i18nId: 'wikilambda-functioncall-metadata-execution-memory-usage' } ],
+	[ 'orchestrationCpuUsage', { i18nId: 'wikilambda-functioncall-metadata-orchestration-cpu-usage' } ],
+	[ 'evaluationCpuUsage', { i18nId: 'wikilambda-functioncall-metadata-evaluation-cpu-usage' } ],
+	[ 'executionCpuUsage', { i18nId: 'wikilambda-functioncall-metadata-execution-cpu-usage' } ]
 ] );
 
 module.exports = exports = {
