@@ -269,7 +269,7 @@ module.exports = exports = {
 			} );
 			context.dispatch( 'addTypetoList', {
 				objectId: payload.id,
-				type: Constants.Z_OBJECT
+				type: payload.value || Constants.Z_OBJECT
 			} );
 		},
 		/**
@@ -633,18 +633,32 @@ module.exports = exports = {
 
 					// we add each key in the tree and also set its type
 					keys = object[ Constants.Z_TYPE_KEYS ];
+
 					keys.forEach( function ( key ) {
 						objectKey = key[ Constants.Z_KEY_ID ];
 						objectKeyType = key[ Constants.Z_KEY_TYPE ];
 						nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
+						if ( !objectKeyType ) {
+							return;
+						}
+
 						if ( objectKey !== Constants.Z_OBJECT_TYPE ) {
 							context.dispatch( 'addZObject', { key: objectKey, value: 'object', parent: payload.id } );
 						}
 						// We need to stop recursiveness.
 						if ( objectKeyType !== payload.type && typeof objectKeyType !== 'object' ) {
 							context.dispatch( 'changeType', { id: nextId, type: objectKeyType } );
-						// Sometimes the Type can be an object such as a function call. In those instances
-						// We will inject the complete object into the zobject tree
+						// If Z_OBJECT_TYPE is a function call, we infer the type and use it to create the object
+						} else if ( typeof objectKeyType === 'object' &&
+							objectKeyType[ Constants.Z_OBJECT_TYPE ] === Constants.Z_FUNCTION_CALL &&
+							objectKeyType[ Constants.Z_FUNCTION_CALL_FUNCTION ] === Constants.Z_TYPED_LIST
+						) {
+							context.dispatch( 'addZTypedList', {
+								id: nextId,
+								value: objectKeyType[ Constants.Z_TYPED_LIST_TYPE ]
+							} );
+							// Sometimes the Type can be an object. In those instances
+							// We will inject the complete object into the zobject tree
 						} else if ( typeof objectKeyType === 'object' ) {
 							context.dispatch( 'injectZObject', {
 								zobject: objectKeyType,

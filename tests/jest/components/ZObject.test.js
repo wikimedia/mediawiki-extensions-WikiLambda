@@ -25,7 +25,6 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	ZString = require( '../../../resources/ext.wikilambda.edit/components/types/ZString.vue' ),
 	ZTester = require( '../../../resources/ext.wikilambda.edit/components/types/ZTester.vue' ),
 	ZType = require( '../../../resources/ext.wikilambda.edit/components/types/ZType.vue' ),
-	ZTypedList = require( '../../../resources/ext.wikilambda.edit/components/types/ZTypedList.vue' ),
 	ZTypedMap = require( '../../../resources/ext.wikilambda.edit/components/types/ZTypedMap.vue' ),
 	ZTypedPair = require( '../../../resources/ext.wikilambda.edit/components/types/ZTypedPair.vue' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' );
@@ -39,6 +38,11 @@ describe( 'ZObject', function () {
 			getZObjectTypeById: function () {
 				return jest.fn( function () {
 					return 'none';
+				} );
+			},
+			getZObjectById: function () {
+				return jest.fn( function () {
+					return {};
 				} );
 			}
 		};
@@ -70,6 +74,11 @@ describe( 'ZObject', function () {
 				getZObjectTypeById: function () {
 					return jest.fn( function () {
 						return componentCode;
+					} );
+				},
+				getZObjectById: function () {
+					return jest.fn( function () {
+						return {};
 					} );
 				}
 			};
@@ -112,7 +121,7 @@ describe( 'ZObject', function () {
 	testMountingComponent( 'ZString', Constants.Z_STRING, ZString );
 	testMountingComponent( 'ZTester', Constants.Z_TESTER, ZTester );
 	testMountingComponent( 'ZType', Constants.Z_TYPE, ZType );
-	testMountingComponent( 'ZTypedList', Constants.Z_TYPED_LIST, ZTypedList );
+	testMountingComponent( 'ZTypedList', Constants.Z_TYPED_LIST, ZObjectGeneric );
 	testMountingComponent( 'ZTypedMap', Constants.Z_TYPED_MAP, ZTypedMap );
 	testMountingComponent( 'ZTypedPair', Constants.Z_TYPED_PAIR, ZTypedPair );
 } );

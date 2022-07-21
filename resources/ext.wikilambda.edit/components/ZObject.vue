@@ -114,10 +114,13 @@ module.exports = exports = {
 			Constants: Constants
 		};
 	},
-	computed: $.extend( mapGetters( [ 'getZObjectTypeById' ] ),
+	computed: $.extend( mapGetters( [ 'getZObjectById', 'getZObjectTypeById' ] ),
 		{
 			type: function () {
 				return this.getZObjectTypeById( this.zobjectId );
+			},
+			zObject: function () {
+				return this.getZObjectById( this.zobjectId );
 			},
 			isInlineComponent: function () {
 				return [
@@ -145,7 +148,11 @@ module.exports = exports = {
 					case Constants.Z_MULTILINGUALSTRING:
 						return 'z-multilingual-string';
 					case Constants.Z_TYPED_LIST:
-						return 'z-typed-list';
+						if ( this.zObject && this.zObject.value === 'array' ) {
+							return 'z-typed-list';
+						} else {
+							return 'z-object-generic';
+						}
 					case Constants.Z_TYPED_PAIR:
 						return 'z-typed-pair';
 					case Constants.Z_TYPED_MAP:
