@@ -10,17 +10,15 @@
 
 namespace MediaWiki\Extension\WikiLambda\API;
 
-use ApiBase;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\MediaWikiServices;
 use Title;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class ApiZObjectFetcher extends ApiBase {
+class ApiZObjectFetcher extends WikiLambdaApiBase {
 
 	/**
 	 * @inheritDoc
@@ -56,19 +54,6 @@ class ApiZObjectFetcher extends ApiBase {
 				}
 			}
 		}
-	}
-
-	/**
-	 * @param ZError $zerror
-	 *
-	 * FIXME duplicated from ApiZObjectEditor.php
-	 */
-	private function dieWithZError( $zerror ) {
-		$this->dieWithError(
-			[ 'wikilambda-zerror', $zerror->getZErrorType() ],
-			null,
-			$zerror->getErrorData()
-		);
 	}
 
 	/**

@@ -27,6 +27,7 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectFetcher::execute
+	 * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase::dieWithZError
 	 */
 	public function testFailsWithMalformedTitle() {
 		$unnamable = 'nope; can\'t name it';

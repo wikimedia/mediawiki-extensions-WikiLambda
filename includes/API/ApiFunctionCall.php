@@ -10,7 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\API;
 
-use ApiBase;
 use ApiMain;
 use ApiPageSet;
 use DerivativeContext;
@@ -34,7 +33,7 @@ use RequestContext;
 use Status;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class ApiFunctionCall extends ApiBase {
+class ApiFunctionCall extends WikiLambdaApiBase {
 
 	/** @var OrchestratorRequest */
 	protected $orchestrator;

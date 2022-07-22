@@ -10,14 +10,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\API;
 
-use ApiBase;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class ApiZObjectEditor extends ApiBase {
+class ApiZObjectEditor extends WikiLambdaApiBase {
 
 	/**
 	 * @inheritDoc
@@ -58,22 +55,6 @@ class ApiZObjectEditor extends ApiBase {
 				'page' => $title->getBaseTitle()
 			]
 		);
-	}
-
-	/**
-	 * @param ZError|ZObject|string $zerror
-	 */
-	public function dieWithZError( $zerror ) {
-		if ( $zerror instanceof ZError ) {
-			parent::dieWithError(
-				[ 'wikilambda-zerror', $zerror->getZErrorType() ],
-				null,
-				$zerror->getErrorData()
-			);
-		}
-		// This can be an array of strings or ZObjects as well as ZErrors during
-		// the transition of this code.
-		parent::dieWithError( $zerror );
 	}
 
 	/**

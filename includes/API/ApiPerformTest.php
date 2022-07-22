@@ -10,7 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\API;
 
-use ApiBase;
 use ApiPageSet;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -29,7 +28,7 @@ use MediaWiki\MediaWikiServices;
 use Title;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class ApiPerformTest extends ApiBase {
+class ApiPerformTest extends WikiLambdaApiBase {
 
 	/** @var ZObjectStore */
 	protected $zObjectStore;
