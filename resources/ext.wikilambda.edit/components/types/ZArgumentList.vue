@@ -40,7 +40,7 @@ module.exports = exports = {
 		addNewItem: function ( /* event */ ) {
 			var nextId = this.getNextObjectId,
 				payload = {
-					key: this.ZlistItemsLength,
+					key: this.ZlistItemsLength + 1,
 					value: 'object',
 					parent: this.zobjectId
 				};
