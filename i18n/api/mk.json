@@ -1,11 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"Bjankuloski06"
+			"Bjankuloski06",
+			"Vlad5250"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Дај го JSON-моделот на ZObjects.",
-	"apihelp-wikilambda_fetch-param-zids": "Кои ZID-ја за ZObject да се добијат, одделени со прави црти.",
+	"apihelp-wikilambda_fetch-param-zids": "ZID-ја за ZObject-от што се добиваат.",
 	"apihelp-wikilambda_fetch-param-language": "На кој јазик да се даде исходот.",
 	"apihelp-wikilambda_fetch-example-single": "Дај еден ZObject, Z1.",
 	"apihelp-wikilambda_fetch-example-multiple": "Дај три ZObjects: Z1, Z2 и Z3.",
@@ -24,5 +25,7 @@
 	"apihelp-query+wikilambdasearch_labels-param-limit": "Највеќе ставки во исходот за прикажување",
 	"apihelp-query+wikilambda-example-simple": "Пребарување на ZObjects чиј натпис одговара на „foo“ на англиски",
 	"apihelp-query+wikilambda-example-nofallback": "Пребарување на ZObjects чиј натпис одговара на „foo“ на француски, и не прифаќај резервни јазици",
-	"apihelp-query+wikilambda-example-type": "Пребарај ZObjects од видот „Z4“, давајќи натписи на англиски"
+	"apihelp-query+wikilambda-example-type": "Пребарај ZObjects од видот „Z4“, давајќи натписи на англиски",
+	"apihelp-query+wikilambdaload_zobjects-param-zids": "ZID-ја за ZObject-от што се добиваат.",
+	"apihelp-wikilambda_perform_test-param-nocache": "Дали да се користи меѓускладот или не"
 }
