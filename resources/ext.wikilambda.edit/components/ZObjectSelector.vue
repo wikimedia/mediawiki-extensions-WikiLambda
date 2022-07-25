@@ -320,6 +320,7 @@ module.exports = exports = {
 			},
 			emitInput: function ( zId ) {
 				this.$emit( 'input', zId );
+				this.lookupResults = [];
 			},
 			getDefaultResults: function () {
 				var results = {};
