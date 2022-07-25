@@ -58,7 +58,7 @@ module.exports = exports = {
 				return Constants;
 			},
 			createNewImplementationLink: function () {
-				return '/wiki/Special:CreateZObject?zid=Z14&Z14K1=' + this.getCurrentZObjectId;
+				return new mw.Title( 'Special:CreateZObject' ).getUrl() + `?zid=${Constants.Z_IMPLEMENTATION}&${Constants.Z_IMPLEMENTATION_FUNCTION}=${this.getCurrentZObjectId}`;
 			}
 		}
 	),

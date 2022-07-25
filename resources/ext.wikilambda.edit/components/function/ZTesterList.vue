@@ -69,7 +69,7 @@ module.exports = exports = {
 			return Constants;
 		},
 		createNewTesterLink: function () {
-			return '/wiki/Special:CreateZObject?zid=Z20';
+			return new mw.Title( 'Special:CreateZObject' ).getUrl() + `?zid=${Constants.Z_TESTER}`;
 		}
 	}
 	),
