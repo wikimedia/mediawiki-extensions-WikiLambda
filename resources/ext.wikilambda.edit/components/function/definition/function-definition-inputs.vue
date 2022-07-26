@@ -14,7 +14,9 @@
 				v-if="isEditing && tooltipMessage"
 				:content="tooltipMessage"
 			>
-				<cdx-icon v-if="tooltipIcon" :icon="tooltipIcon"></cdx-icon>
+				<cdx-icon class="ext-wikilambda-function-definition-inputs_tooltip-icon"
+					v-if="tooltipIcon" :icon="tooltipIcon">
+				</cdx-icon>
 			</tooltip>
 		</div>
 		<div
@@ -189,6 +191,10 @@ module.exports = exports = {
 
 	&_label {
 		display: none;
+	}
+
+	&_tooltip-icon {
+		padding-left: 8px;
 	}
 
 	@media screen and ( min-width: @width-breakpoint-tablet ) {
