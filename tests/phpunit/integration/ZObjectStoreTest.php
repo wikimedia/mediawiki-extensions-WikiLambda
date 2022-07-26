@@ -170,6 +170,9 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
 		$zobject = $this->zobjectStore->fetchZObjectByTitle( $title );
 
+		$revisionStore = $this->getServiceContainer()->getRevisionStore();
+		$initialRevision = $revisionStore->getKnownCurrentRevision( $title )->getId();
+
 		// We change the text representation of the ZObject to update it in the DB
 		$zobjectNewText = str_replace( "hello", "bye", $zobject->getText() );
 
@@ -178,8 +181,13 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		// Fetch it again and check whether the changes were saved
 		$updatedZObject = $this->zobjectStore->fetchZObjectByTitle( $title );
+		$updatedRevision = $revisionStore->getKnownCurrentRevision( $title )->getId();
 		$this->assertTrue( $updatedZObject instanceof ZObjectContent );
 		$this->assertEquals( $updatedZObject->getText(), $zobjectNewText );
+		$this->assertNotEquals( $updatedRevision, $initialRevision );
+
+		$refetchedZObject = $this->zobjectStore->fetchZObjectByTitle( $title, $initialRevision );
+		$this->assertEquals( $zobject->getText(), $refetchedZObject->getText() );
 	}
 
 	/**

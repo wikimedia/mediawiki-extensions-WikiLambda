@@ -96,11 +96,17 @@ class ZObjectStore {
 	/**
 	 * Fetch the ZObject given its title and return it wrapped in a ZObjectContent object
 	 *
-	 * @param Title $title
+	 * @param Title $title The ZObject to fetch
+	 * @param int|null $requestedRevision The revision ID of the page to fetch. If unset, the latest is returned.
 	 * @return ZObjectContent|bool Found ZObject
 	 */
-	public function fetchZObjectByTitle( Title $title ) {
-		$revision = $this->revisionStore->getKnownCurrentRevision( $title );
+	public function fetchZObjectByTitle( Title $title, ?int $requestedRevision = null ) {
+		if ( $requestedRevision ) {
+			$revision = $this->revisionStore->getRevisionById( $requestedRevision, 0, $title );
+		} else {
+			$revision = $this->revisionStore->getKnownCurrentRevision( $title );
+		}
+
 		if ( !$revision ) {
 			// TODO (T300521): Handle errors by creating and returning Z5
 			return false;
@@ -114,6 +120,9 @@ class ZObjectStore {
 
 	/**
 	 * Returns an array of ZPersistentObjects fetched from the DB given an array of their Zids
+	 *
+	 * Note that this will only fetch the latest revision of a ZObject; if you want a specific
+	 * revision, you need to use ZObjectStore::fetchZObjectByTitle() instead.
 	 *
 	 * @param string[] $zids
 	 * @return ZPersistentObject[]
