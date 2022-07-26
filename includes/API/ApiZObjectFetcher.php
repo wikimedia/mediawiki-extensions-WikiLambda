@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\API;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
@@ -27,6 +28,21 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 		$params = $this->extractRequestParams();
 
 		$ZIDs = $params[ 'zids' ];
+
+		$revisions = $params[ 'revisions' ];
+		if (
+			$revisions &&
+			count( $revisions ) !== count( $ZIDs )
+		) {
+			$zErrorObject = ZErrorFactory::createZErrorInstance(
+				ZErrorTypeRegistry::Z_ERROR_GENERIC,
+				[
+					'message' => "You must specify a revision for each ZID"
+				]
+			);
+			$this->dieWithZError( $zErrorObject );
+		}
+
 		$language = $params[ 'language' ];
 
 		foreach ( $ZIDs as $index => $ZID ) {
@@ -46,10 +62,24 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 					);
 					$this->dieWithZError( $zErrorObject );
 				} else {
+					$revision = $revisions ? $revisions[ $index ] : null;
+
+					try {
+						$fetchedContent = ZObjectContentHandler::getExternalRepresentation(
+							$title,
+							$language,
+							$revision
+						);
+					} catch ( ZErrorException $e ) {
+						// This probably means that the requested revision is not known; return
+						// null for this entry rather than throwing or returning a ZError instance.
+						$fetchedContent = null;
+					}
+
 					$this->getResult()->addValue(
 						$ZID,
 						$this->getModuleName(),
-						ZObjectContentHandler::getExternalRepresentation( $title, $language )
+						$fetchedContent
 					);
 				}
 			}
@@ -69,6 +99,10 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 				ParamValidator::PARAM_REQUIRED => true,
 				ParamValidator::PARAM_ISMULTI => true,
 			],
+			'revisions' => [
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_ISMULTI => true,
+			],
 			'language' => [
 				ParamValidator::PARAM_TYPE => array_keys( $languageUtils->getLanguageNames() ),
 				ParamValidator::PARAM_REQUIRED => false,
@@ -85,8 +119,12 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 		return [
 			'action=wikilambda_fetch&zids=Z1'
 				=> 'apihelp-wikilambda_fetch-example-single',
+			'action=wikilambda_fetch&zids=Z1&revisions=12'
+				=> 'apihelp-wikilambda_fetch-example-single-old',
 			'action=wikilambda_fetch&zids=Z1|Z2|Z3'
 				=> 'apihelp-wikilambda_fetch-example-multiple',
+			'action=wikilambda_fetch&zids=Z1|Z2|Z3&revisions=12|14|25'
+				=> 'apihelp-wikilambda_fetch-example-multiple-old',
 		];
 	}
 }
