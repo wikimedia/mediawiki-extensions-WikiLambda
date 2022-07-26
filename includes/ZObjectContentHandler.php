@@ -125,10 +125,13 @@ class ZObjectContentHandler extends ContentHandler {
 	/**
 	 * @param Title $zObjectTitle The page to fetch.
 	 * @param string|null $languageCode The language in which to return results. If unset, all results are returned.
+	 * @param int|null $revision The revision ID of the page to fetch. If unset, the latest is returned.
 	 * @return string The external JSON form of the given title.
 	 * @throws ZErrorException
 	 */
-	public static function getExternalRepresentation( Title $zObjectTitle, ?string $languageCode = null ): string {
+	public static function getExternalRepresentation(
+		Title $zObjectTitle, ?string $languageCode = null, ?int $revision = null
+	): string {
 		if ( $zObjectTitle->getNamespace() !== NS_MAIN ) {
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
@@ -148,7 +151,7 @@ class ZObjectContentHandler extends ContentHandler {
 		}
 
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$zObject = $zObjectStore->fetchZObjectByTitle( $zObjectTitle );
+		$zObject = $zObjectStore->fetchZObjectByTitle( $zObjectTitle, $revision );
 
 		if ( $zObject === false ) {
 			throw new ZErrorException(
