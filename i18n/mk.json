@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Bjankuloski06"
+			"Bjankuloski06",
+			"Vlad5250"
 		]
 	},
 	"wikilambda-desc": "Дава Викимедиини врски со расчленувачка функција за викитекст за повикување на вреднувањето на функции напишани, управувани и вреднувани на централно вики.",
@@ -44,11 +45,15 @@
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "Постоечки ZObject",
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "Спротиставен ZObject",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Јазик",
+	"wikilambda-special-objectsbytype": "Наведи ги сите ZObjects од даден тип",
+	"wikilambda-special-objectsbytype-typeheader": "Сите типови",
+	"wikilambda-special-objectsbytype-empty": "Не се пронајдени постојани ZObjects за овој тип.",
 	"wikilambda-publishnew": "Објави",
 	"wikilambda-savenew": "Зачувај",
 	"wikilambda-publishchanges": "Објави промени",
 	"wikilambda-savechanges": "Зачувај промени",
 	"wikilambda-summarylabel": "Опис:",
+	"wikilambda-publish-summary-prompt": "Опишете ги направените измени",
 	"wikilambda-loading": "Податоците се вчитуваат",
 	"wikilambda-typeselector-label": "Изберете вид",
 	"wikilambda-argument-typeselector-label": "Изберете вид на аргумент",
@@ -71,5 +76,19 @@
 	"wikilambda-implementation-selector-composition": "Состав",
 	"wikilambda-argref-default-label": "Изберете аргумент",
 	"wikilambda-implementation-selector": "Изберете спроведување",
-	"wikilambda-implementation-none-found": "Не најдов спроведувања."
+	"wikilambda-implementation-none-found": "Не најдов спроведувања.",
+	"wikilambda-functioncall-error": "Грешка во повикот на функцијата: $1",
+	"wikilambda-functioncall-error-category": "Страници со погрешни повици на Викифункции",
+	"wikilambda-functioncall-error-unknown": "Грешка во повикувањето на функцијата: „$1“ не е познат ZObject",
+	"wikilambda-tester-failure-expected": "Очекувано",
+	"wikilambda-tester-failure-actual": "Примено",
+	"wikilambda-tester-function-duration": "Траење",
+	"wikilambda-expert-mode-json-label": "Тековен ZObject",
+	"wikilambda-metadata-language-column": "Јазик",
+	"wikilambda-metadata-label-column": "Натпис",
+	"wikilambda-metadata-aka-column": "Познато и како",
+	"wikilambda-metadata-all-languages": "Прикажи ги сите внесени јазици",
+	"wikilambda-metadata-fewer-languages": "Прикажи помалку јазици",
+	"wikilambda-persistentobject-details-label": "Подробно",
+	"wikilambda-persistentobject-function-signature-label": "Потпис на функцијата"
 }
