@@ -31,7 +31,8 @@
 		"indexes": [
 			{
 				"name": "wlzlc_searchindex",
-				"columns": [ "wlzlc_language", "wlzlc_existing_zid" ]
+				"columns": [ "wlzlc_language", "wlzlc_existing_zid" ],
+				"unique": false
 			}
 		],
 		"pk": [ "wlzlc_id" ]

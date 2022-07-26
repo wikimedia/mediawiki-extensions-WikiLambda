@@ -31,7 +31,8 @@
 		"indexes": [
 			{
 				"name": "wlzf_searchindex",
-				"columns": [ "wlzf_type", "wlzf_zfunction_zid" ]
+				"columns": [ "wlzf_type", "wlzf_zfunction_zid" ],
+				"unique": false
 			}
 		],
 		"pk": [ "wlzf_id" ]
