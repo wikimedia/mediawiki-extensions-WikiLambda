@@ -43,6 +43,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @dataProvider provideCanBeUsedOn
 	 * @covers ::canBeUsedOn
+	 * @covers ::__construct
 	 */
 	public function testCanBeUsedOn( $input, $expected ) {
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
@@ -129,6 +130,32 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @covers ::getExternalRepresentation
 	 */
+	public function testGetExternalRepresentation_languageNotFound() {
+		$this->editPage( ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'Test creation', NS_MAIN );
+
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
+
+		$this->expectException( ZErrorException::class );
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_LANG_NOT_FOUND );
+		ZObjectContentHandler::getExternalRepresentation( $title, 'thisisnotalanguage' );
+	}
+
+	/**
+	 * @covers ::getExternalRepresentation
+	 */
+	public function testGetExternalRepresentation_badLanguage() {
+		$this->editPage( ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'Test creation', NS_MAIN );
+
+		$title = Title::newFromText( ZTestType::TEST_ZID, NS_MAIN );
+
+		$this->expectException( ZErrorException::class );
+		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_INVALID_LANG_CODE );
+		ZObjectContentHandler::getExternalRepresentation( $title, '//notvalidlanguagecode//' );
+	}
+
+	/**
+	 * @covers ::getExternalRepresentation
+	 */
 	public function testGetExternalRepresentation() {
 		$this->registerLangs( [ 'fr', 'de' ] );
 		$this->editPage( ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'Test creation', NS_MAIN );
@@ -182,6 +209,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::makeContent
 	 * @covers ::getSecondaryDataUpdates
 	 */
 	public function testGetSecondaryDataUpdates() {
@@ -338,5 +366,13 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 
 		$status = $handler->validateSave( $content, $validateParams );
 		$this->assertTrue( $status->hasMessage( 'wikilambda-invalidzobject' ) );
+	}
+
+	/**
+	 * @covers ::generateHTMLOnEdit
+	 */
+	public function testGenerateHTMLOnEdit() {
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$this->assertFalse( $handler->generateHTMLOnEdit() );
 	}
 }
