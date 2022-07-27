@@ -92,7 +92,7 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'fn-editor-input-list-item',
+	name: 'function-definition-inputs-item',
 	components: {
 		'z-object-selector': ZObjectSelector,
 		'cdx-icon': CdxIcon,
