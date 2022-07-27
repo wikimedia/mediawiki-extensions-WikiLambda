@@ -74,7 +74,7 @@ module.exports = exports = {
 					continue;
 				}
 				const keyInfo = knownKeys.get( key );
-				const displayKey = keyInfo ? this.$i18n( keyInfo.i18nId ) : key;
+				const displayKey = keyInfo ? this.$i18n( keyInfo.i18nId ).text() : key;
 				const value = this.maybeStringify( entry[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ] );
 				html = html + '<li><b>' + displayKey + ':</b> ' + value + '</li>';
 			}
@@ -103,7 +103,7 @@ module.exports = exports = {
 			} else {
 				messages = [ this.messageForError( error ) ];
 			}
-			const i18nKey = this.$i18n( knownKeys.get( key ).i18nId );
+			const i18nKey = this.$i18n( knownKeys.get( key ).i18nId, messages.length ).text();
 			if ( messages.length === 0 ) {
 				return '<li><b>' + i18nKey + ':</b> ' +
 					this.$i18n( 'wikilambda-functioncall-metadata-errors-none' ).text() + '</li>';
@@ -118,8 +118,7 @@ module.exports = exports = {
 		 * Extract or construct a message characterizing the given error.  The message returned
 		 * is plain text, no HTML markup. (Based on existing code in zTesterResults.js.)
 		 *
-		 * FIXME: Needs to do a better job on some error types.  Also, should return
-		 * a label for errorType instead of Z5xx.
+		 * TODO: (T312611): Do a good job on all error types.  Also, return a label for errorType (as well as Z5xx).
 		 *
 		 * @param {Object} zError a Z5/Error, in canonical form
 		 * @return {string}
