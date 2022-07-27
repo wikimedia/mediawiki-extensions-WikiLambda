@@ -7,22 +7,16 @@
 	-->
 	<div class="ext-wikilambda-zcode">
 		<span v-if="viewmode || readonly">{{ selectedLanguage }}</span>
-		<select
-			v-else
-			v-model="selectedLanguage"
+		<!-- eslint-disable vue/no-v-model-argument -->
+		<!-- eslint-disable vue/no-unsupported-features -->
+		<cdx-select
+			v-model:selected="selectedLanguage"
 			class="ext-wikilambda-zcode__language-selector"
+			:menu-items="programmingLangsList"
+			:default-label="$i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
+			@update:selected="selectLanguage"
 		>
-			<option value="" disabled>
-				{{ $i18n( 'wikilambda-editor-label-select-programming-language-label' ).text() }}
-			</option>
-			<option
-				v-for="zProgrammingLang in getAllProgrammingLangs"
-				:key="zProgrammingLang.Z2K1"
-				:value="zProgrammingLang.Z2K2.Z61K1"
-			>
-				{{ zProgrammingLang.Z2K2.Z61K2 }}
-			</option>
-		</select>
+		</cdx-select>
 		<code-editor
 			:mode="selectedLanguage"
 			:read-only="!selectedLanguage || viewmode || readonly"
@@ -36,13 +30,15 @@
 var Constants = require( '../../Constants.js' ),
 	typeUtils = require( './../../mixins/typeUtils.js' ),
 	CodeEditor = require( '../base/CodeEditor.vue' ),
+	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
 	components: {
-		'code-editor': CodeEditor
+		'code-editor': CodeEditor,
+		'cdx-select': CdxSelect
 	},
 	mixins: [ typeUtils ],
 	inject: {
@@ -87,27 +83,54 @@ module.exports = exports = {
 					)
 				);
 			},
+			zCodeProgrammingLanguageDefaultCodeValue: function () {
+				return this.findKeyInArray(
+					Constants.Z_STRING_VALUE,
+					this.getZObjectChildrenById( this.codeItem.id )
+				).value;
+			},
 			codeItem: function () {
 				return this.findKeyInArray( Constants.Z_CODE_CODE, this.zobject );
 			},
 			selectedLanguage: {
 				get: function () {
-					if ( this.zCodeProgrammingLanguage ) {
-						return this.zCodeProgrammingLanguage.value || '';
-					} else {
-						return '';
-					}
+					return this.zCodeProgrammingLanguage.value || '';
 				},
 				set: function ( val ) {
 					this.selectLanguage( val );
 				}
+			},
+			programmingLangsList: function () {
+				var programmingLangs = [];
+				if ( this.getAllProgrammingLangs.length > 0 ) {
+					for ( var lang in this.getAllProgrammingLangs ) {
+						programmingLangs.push(
+							{
+								label: this.getAllProgrammingLangs[
+									lang
+								][
+									Constants.Z_PERSISTENTOBJECT_VALUE
+								][
+									Constants.Z_PROGRAMMING_LANGUAGE_CODE
+								],
+								value: this.getAllProgrammingLangs[
+									lang
+								][
+									Constants.Z_PERSISTENTOBJECT_VALUE
+								][
+									Constants.Z_PROGRAMMING_LANGUAGE_CODE
+								]
+							}
+						);
+					}
+				}
+
+				return programmingLangs;
 			}
 		} ),
 	methods: $.extend(
 		mapActions( [
-			'fetchAllZProgrammingLanguages',
-			'setZCodeLanguage',
-			'injectZObject'
+			'fetchAllZProgrammingLanguages'
 		] ),
 		{
 			/**
@@ -122,7 +145,7 @@ module.exports = exports = {
 					id: this.zCodeLanguage.id,
 					value: value
 				};
-				this.setZCodeLanguage( payload );
+				this.$emit( 'select-language', payload );
 			},
 			updateCode: function ( code ) {
 				var payload = {
@@ -135,7 +158,7 @@ module.exports = exports = {
 					parent: this.zobjectId
 				};
 
-				this.injectZObject( payload );
+				this.$emit( 'update-code', payload );
 			}
 		} ),
 	watch: {
@@ -154,6 +177,14 @@ module.exports = exports = {
 					this.codeValue = codeValue.value;
 					this.allowCodeValueOverride = false;
 				}
+			}
+		},
+		// the default code changes only when the programming language has changed
+		// in which case we reset the code
+		zCodeProgrammingLanguageDefaultCodeValue: {
+			immediate: true,
+			handler: function () {
+				this.codeValue = this.zCodeProgrammingLanguageDefaultCodeValue || '';
 			}
 		}
 	},
@@ -174,6 +205,7 @@ module.exports = exports = {
 
 	&__language-selector {
 		width: 200px;
+		z-index: 100;
 	}
 }
 

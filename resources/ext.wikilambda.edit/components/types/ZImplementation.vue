@@ -5,7 +5,7 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div>
+	<div class="ext-wikilambda-zimplementation">
 		<div>
 			{{ functionLabel }}:
 			<z-object-selector
@@ -22,7 +22,7 @@
 					:readonly="true"
 				></z-reference>
 				<span v-else>{{ $i18n( 'wikilambda-invalidzobject' ).text() }}</span>
-				<span class="ext-wikilambda-is-impl-associated">
+				<span class="ext-wikilambda-zimplementation__-is-impl-associated">
 					({{ isImplementationAttached ?
 						$i18n( 'wikilambda-function-is-attached' ).text() :
 						$i18n( 'wikilambda-function-is-not-attached' ).text()
@@ -31,24 +31,28 @@
 			</template>
 		</div>
 		<div v-if="!viewmode && implMode">
-			<select v-model="implMode">
-				<option value="code">
-					{{ $i18n( 'wikilambda-implementation-selector-code' ).text() }}
-				</option>
-				<option value="composition">
-					{{ $i18n( 'wikilambda-implementation-selector-composition' ).text() }}
-				</option>
-			</select>
+			<!-- eslint-disable vue/no-v-model-argument -->
+			<!-- eslint-disable vue/no-unsupported-features -->
+			<cdx-select
+				v-model:selected="implMode"
+				class="ext-wikilambda-zimplementation__mode-selector"
+				:menu-items="implementationModeItems"
+				@update:selected="changeImplMode"
+			>
+			</cdx-select>
 		</div>
 		<div v-if="implMode === null">
 			<span>{{ $i18n( 'wikilambda-implementation-selector-none' ).text() }}</span>
 		</div>
 		<z-code
-			v-if="implMode === 'code'"
+			v-if="implMode === Constants.implementationModes.CODE"
 			:zobject-id="zCodeId"
+			:default-code="zCodeProgrammingLanguageDefaultCode"
+			@select-language="selectLanguage"
+			@update-code="updateCode"
 		></z-code>
 		<z-object
-			v-if="implMode === 'composition'"
+			v-if="implMode === Constants.implementationModes.COMPOSITION"
 			:zobject-id="zCompositionId"
 			:persistent="false"
 		></z-object>
@@ -63,6 +67,7 @@
 var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
+	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	ZCode = require( './ZCode.vue' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
@@ -75,7 +80,8 @@ module.exports = exports = {
 		'z-code': ZCode,
 		'z-object-selector': ZObjectSelector,
 		'z-reference': ZReference,
-		'z-function-tester-report': ZFunctionTesterReport
+		'z-function-tester-report': ZFunctionTesterReport,
+		'cdx-select': CdxSelect
 	},
 	mixins: [ typeUtils ],
 	provide: {
@@ -138,6 +144,14 @@ module.exports = exports = {
 					Constants.Z_STRING_VALUE
 				] ).value;
 			},
+			zCodeString: function () {
+				this.findKeyInArray(
+					Constants.Z_STRING_VALUE,
+					this.getZObjectChildrenById(
+						this.findKeyInArray( Constants.Z_CODE_CODE, this.zCodeId ).id
+					)
+				);
+			},
 			functionLabel: function () {
 				return this.getZkeyLabels[ Constants.Z_IMPLEMENTATION_FUNCTION ];
 			},
@@ -161,6 +175,18 @@ module.exports = exports = {
 				return this.selectedFunctionJson && this.selectedFunctionJson.Z2K2.Z8K4.filter( function ( zid ) {
 					return zid === this.zImplementationId;
 				}.bind( this ) ).length > 0;
+			},
+			implementationModeItems: function () {
+				return [
+					{
+						value: Constants.implementationModes.COMPOSITION,
+						label: this.$i18n( 'wikilambda-implementation-selector-composition' ).text()
+					},
+					{
+						value: Constants.implementationModes.CODE,
+						label: this.$i18n( 'wikilambda-implementation-selector-code' ).text()
+					}
+				];
 			}
 		}
 	),
@@ -170,7 +196,9 @@ module.exports = exports = {
 			'setZObjectValue',
 			'initializeZCodeFunction',
 			'setZImplementationType',
-			'setAvailableZArguments'
+			'setAvailableZArguments',
+			'setZCodeLanguage',
+			'injectZObject'
 		] ),
 		{
 			updateZFunctionType: function ( val ) {
@@ -178,30 +206,28 @@ module.exports = exports = {
 					id: this.zFunction.id,
 					value: val
 				} );
-			}
-		}
-	),
-	watch: {
-		zCodeLanguage: function () {
-			if ( typeof this.zCodeLanguage !== 'undefined' ) {
+			},
+			selectLanguage: function ( payload ) {
+				this.setZCodeLanguage( payload );
 				this.initializeZCodeFunction( {
 					zCodeId: this.zCodeId,
 					language: this.zCodeLanguage,
 					functionId: this.zFunction.value,
 					argumentList: this.selectedFunctionArguments
 				} );
+			},
+			updateCode: function ( payload ) {
+				this.injectZObject( payload );
+			},
+			changeImplMode: function ( mode ) {
+				this.setZImplementationType( {
+					zobjectId: this.zobjectId,
+					mode: mode
+				} );
 			}
-		},
-		implMode: function ( mode, prevMode ) {
-			if ( !prevMode ) {
-				return;
-			}
-
-			this.setZImplementationType( {
-				zobjectId: this.zobjectId,
-				mode: mode
-			} );
-		},
+		}
+	),
+	watch: {
 		zFunction: {
 			immediate: true,
 			handler: function ( val, prevVal ) {
@@ -242,17 +268,24 @@ module.exports = exports = {
 	},
 	mounted: function () {
 		if ( this.zCodeId ) {
-			this.implMode = 'code';
+			this.implMode = Constants.implementationModes.CODE;
 		} else if ( this.zCompositionId ) {
-			this.implMode = 'composition';
+			this.implMode = Constants.implementationModes.COMPOSITION;
 		}
 	}
 };
 </script>
 
 <style lang="less">
-.ext-wikilambda-is-impl-associated {
-	font-size: 0.8em;
-	font-style: italic;
+.ext-wikilambda-zimplementation {
+	&__mode-selector {
+		z-index: 500;
+	}
+
+	&__is-impl-associated {
+		font-size: 0.8em;
+		font-style: italic;
+	}
 }
+
 </style>
