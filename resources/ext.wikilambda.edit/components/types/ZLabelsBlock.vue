@@ -82,6 +82,7 @@
 				</cdx-toggle-button>
 			</div>
 			<z-object-selector
+				ref="languageSelector"
 				:used-languages="selectedLanguages"
 				:type="Constants.Z_NATURAL_LANGUAGE"
 				:selected-id="selectedLang"
@@ -380,6 +381,7 @@ module.exports = exports = {
 			this.addZMonolingualString( payload );
 			this.showAllSelectedLanguages = true;
 			this.selectedLang = langZid;
+			this.$refs.languageSelector.clearResults();
 		},
 		/**
 		 * Remove the row from the Label Block corresponding

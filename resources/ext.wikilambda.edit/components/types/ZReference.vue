@@ -16,9 +16,9 @@
 			</a>
 		</span>
 		<z-object-selector
-			v-else
-			:placeholder="selectorPlaceholder"
+			v-else-if="isReferenceReady"
 			:selected-id="referenceValue"
+			:initial-selection-label="referenceLabel"
 			:type="searchType"
 			@input="setZReference"
 		></z-object-selector>
@@ -67,11 +67,6 @@ module.exports = exports = {
 			getCurrentZObjectId: 'getCurrentZObjectId'
 		} ),
 		{
-			selectorPlaceholder: function () {
-				return this.searchType === Constants.Z_TYPE ?
-					this.$i18n( 'wikilambda-typeselector-label' ).text() :
-					this.$i18n( 'wikilambda-zobjectselector-label' ).text();
-			},
 			Constants: function () {
 				return Constants;
 			},
@@ -86,6 +81,9 @@ module.exports = exports = {
 			},
 			referenceLabel: function () {
 				return this.getZkeyLabels[ this.referenceValue ];
+			},
+			isReferenceReady: function () {
+				return this.referenceItem.value ? !!this.referenceLabel : true;
 			},
 			isReadOnly: function () {
 				return this.viewmode || this.readonly || this.getCurrentZObjectId === this.referenceValue;

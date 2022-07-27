@@ -20,9 +20,10 @@
 			v-else
 			:selected="selectedId"
 			:class="{ 'ext-wikilambda-zkey-input-invalid': validatorIsInvalid }"
-			:placeholder="placeholder"
+			:placeholder="lookupPlaceholder"
 			:menu-items="lookupResults"
 			:end-icon="lookupIcon"
+			:initial-input-value="initialInputValue"
 			@input="onInput"
 			@update:selected="emitInput"
 		>
@@ -75,6 +76,10 @@ module.exports = exports = {
 			type: String,
 			default: ''
 		},
+		initialSelectionLabel: {
+			type: String,
+			default: ''
+		},
 		placeholder: {
 			type: [ String, Object ],
 			default: ''
@@ -112,11 +117,18 @@ module.exports = exports = {
 					return language.Z9K1;
 				} );
 			},
-			getPlaceholder: function () {
-				if ( this.type === Constants.Z_NATURAL_LANGUAGE ) {
-					return this.$i18n( 'wikilambda-editor-label-addlanguage-label' ).text();
+			lookupPlaceholder: function () {
+				if ( this.placeholder ) {
+					return this.placeholder;
 				}
-				return this.placeholder;
+				switch ( this.type ) {
+					case Constants.Z_NATURAL_LANGUAGE:
+						return this.$i18n( 'wikilambda-editor-label-addlanguage-label' ).text();
+					case Constants.Z_TYPE:
+						return this.$i18n( 'wikilambda-typeselector-label' ).text();
+					default:
+						return this.$i18n( 'wikilambda-zobjectselector-label' ).text();
+				}
 			},
 			lookupLabels: function () {
 				var filteredResults = [];
@@ -157,6 +169,10 @@ module.exports = exports = {
 				} else {
 					return '';
 				}
+			},
+			initialInputValue: function () {
+				this.inputValue = this.initialSelectionLabel;
+				return this.initialSelectionLabel;
 			},
 			referenceLinkTarget: function () {
 				if ( !( this.viewmode || this.readonly ) ) {
@@ -286,6 +302,10 @@ module.exports = exports = {
 					self.validatorSetError( 'wikilambda-invalidzobject' );
 				}
 			},
+			clearResults: function () {
+				this.lookupResults = [];
+				this.inputValue = '';
+			},
 			/**
 			 * On lookup field input, set a timer so that the lookup is not done immediately.
 			 *
@@ -320,7 +340,6 @@ module.exports = exports = {
 			},
 			emitInput: function ( zId ) {
 				this.$emit( 'input', zId );
-				this.lookupResults = [];
 			},
 			getDefaultResults: function () {
 				var results = {};
@@ -334,6 +353,14 @@ module.exports = exports = {
 			}
 		}
 	),
+	watch: {
+		// Run lookup results, so the options are ready on first lookup box focus.
+		inputValue( newSelectionLabel, oldSelectionLabel ) {
+			if ( newSelectionLabel !== '' && newSelectionLabel !== oldSelectionLabel ) {
+				this.getLookupResults( newSelectionLabel );
+			}
+		}
+	},
 	mounted: function () {
 		this.fetchZKeyWithDebounce( [
 			Constants.Z_STRING,
