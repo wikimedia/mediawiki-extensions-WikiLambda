@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\API;
 
 use ApiPageSet;
+use FormatJson;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
@@ -94,7 +95,6 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		if ( empty( $requestedTesters ) ) {
 			$targetFunctionTesters = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_TESTERS );
 			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionTesters';
-
 			$requestedTesters = $targetFunctionTesters->getAsArray();
 		}
 
@@ -199,10 +199,13 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				// TODO (T297707): Store this response in a DB table for faster future responses.
 
 				// Stash the response
-				$responseArray[ $zfunction ][ $implementationName ][ $testerName ] = $validateResult;
+				$testResult = [ 'zFunctionId' => $zfunction,
+					'zImplementationId' => $implementationName,
+					'zTesterId' => $testerName,
+					'validationResponse' => $validateResult ];
+				$responseArray[] = $testResult;
 			}
 		}
-
 		// 3. Return the response.
 		$pageResult->addValue( [ 'query' ], $this->getModuleName(), $responseArray );
 	}
@@ -221,7 +224,8 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		];
 		try {
 			$response = $this->orchestrator->orchestrate( $queryArguments );
-			$responseObject = ZObjectFactory::create( $response->getBody() );
+			$responseContents = FormatJson::decode( $response->getBody()->getContents() );
+			$responseObject = ZObjectFactory::create( $responseContents );
 			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope $responseObject';
 			return $responseObject;
 		} catch ( ConnectException $exception ) {
