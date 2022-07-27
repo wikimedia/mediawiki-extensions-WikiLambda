@@ -7,7 +7,6 @@
 'use strict';
 
 var zTypedListModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zTypedList.js' ),
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	context;
 
 describe( 'zTypedList Vuex module', function () {
@@ -30,87 +29,6 @@ describe( 'zTypedList Vuex module', function () {
 	} );
 
 	describe( 'Actions', function () {
-		// TODO(T298133): Rewrite test for addTypedListItem method
-		describe.skip( 'addTypedListItem', function () {
-
-			it( 'set new item parent id equal to root if list has no items', function () {
-				var payload = {
-					id: 1,
-					zObjectChildren: []
-				};
-
-				zTypedListModule.actions.addTypedListItem( context, payload );
-
-				expect( context.dispatch ).toHaveBeenCalled();
-				expect( context.dispatch.mock.calls[ 0 ][ 0 ] ).toBe( 'addZObject' );
-				expect( context.dispatch.mock.calls[ 0 ][ 1 ].parent ).toBe( payload.id );
-			} );
-
-			it( 'set new item parent id equal to last k2 parent entry', function () {
-				var expectedParent = 15,
-					payload = {
-						id: 1
-					};
-				context.getters.getZObjectChildrenByIdRecursively.mockReturnValueOnce( [
-					{ key: 'K2', id: 5 },
-					{ key: 'dummy', id: 10 },
-					{ key: 'K2', id: expectedParent }
-				] );
-				zTypedListModule.actions.addTypedListItem( context, payload );
-
-				expect( context.dispatch ).toHaveBeenCalled();
-				expect( context.dispatch.mock.calls[ 0 ][ 0 ] ).toBe( 'addZObject' );
-				expect( context.dispatch.mock.calls[ 0 ][ 1 ].parent ).toBe( expectedParent );
-			} );
-
-			it( 'add a Z_TYPED_OBJECT_ELEMENT_1', function () {
-				var payload = {
-					id: 1
-				};
-				zTypedListModule.actions.addTypedListItem( context, payload );
-
-				expect( context.dispatch ).toHaveBeenCalled();
-				expect( context.dispatch.mock.calls[ 0 ][ 0 ] ).toBe( 'addZObject' );
-				expect( context.dispatch.mock.calls[ 0 ][ 1 ].key ).toBe( Constants.Z_TYPED_OBJECT_ELEMENT_1 );
-			} );
-
-			it( 'set type of Z_TYPED_OBJECT_ELEMENT_1 to current list type', function () {
-				var payload = {
-					id: 1,
-					value: 'dummyType'
-				};
-				zTypedListModule.actions.addTypedListItem( context, payload );
-
-				expect( context.dispatch ).toHaveBeenCalled();
-				expect( context.dispatch.mock.calls[ 1 ][ 0 ] ).toBe( 'changeType' );
-				expect( context.dispatch.mock.calls[ 1 ][ 1 ].type ).toBe( payload.value );
-			} );
-
-			it( 'add a Z_TYPED_OBJECT_ELEMENT_2', function () {
-				var payload = {
-					id: 1,
-					value: 'dummyType'
-				};
-				zTypedListModule.actions.addTypedListItem( context, payload );
-
-				expect( context.dispatch ).toHaveBeenCalled();
-				expect( context.dispatch.mock.calls[ 2 ][ 0 ] ).toBe( 'addZObject' );
-				expect( context.dispatch.mock.calls[ 2 ][ 1 ].key ).toBe( Constants.Z_TYPED_OBJECT_ELEMENT_2 );
-			} );
-
-			it( 'call zListGeneric with the current list type', function () {
-				var payload = {
-					id: 1,
-					value: 'dummyType'
-				};
-				zTypedListModule.actions.addTypedListItem( context, payload );
-
-				expect( context.dispatch ).toHaveBeenCalled();
-				expect( context.dispatch.mock.calls[ 3 ][ 0 ] ).toBe( 'addZTypedList' );
-				expect( context.dispatch.mock.calls[ 3 ][ 1 ].value ).toBe( payload.value );
-			} );
-		} );
-
 		describe( 'setTypeOfTypedList', function () {
 			it( 'update current list generic type', function () {
 				var payload = {

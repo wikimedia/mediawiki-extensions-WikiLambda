@@ -7,7 +7,6 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	Vuex = require( 'vuex' ),
 	ZObject = require( '../../../resources/ext.wikilambda.edit/components/ZObject.vue' ),
 	ZObjectGeneric = require( '../../../resources/ext.wikilambda.edit/components/ZObjectGeneric.vue' ),
 	ZArgument = require( '../../../resources/ext.wikilambda.edit/components/types/ZArgument.vue' ),
@@ -33,8 +32,7 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 
 describe( 'ZObject', function () {
 	var getters,
-		actions,
-		store;
+		actions;
 
 	beforeEach( function () {
 		getters = {
@@ -47,7 +45,8 @@ describe( 'ZObject', function () {
 		actions = {
 			fetchZKeys: jest.fn()
 		};
-		store = Vuex.createStore( {
+
+		global.store.hotUpdate( {
 			getters: getters,
 			actions: actions
 		} );
@@ -55,11 +54,6 @@ describe( 'ZObject', function () {
 
 	it( 'renders without errors', function () {
 		var wrapper = shallowMount( ZObject, {
-			global: {
-				plugins: [
-					store
-				]
-			},
 			props: {
 				zobjectId: 0,
 				persistent: false,
@@ -80,17 +74,12 @@ describe( 'ZObject', function () {
 				}
 			};
 
-			store = Vuex.createStore( {
+			global.store.hotUpdate( {
 				getters: getters,
 				actions: actions
 			} );
 
 			var wrapper = shallowMount( ZObject, {
-				global: {
-					plugins: [
-						store
-					]
-				},
 				props: {
 					zobjectId: 0,
 					persistent: false,

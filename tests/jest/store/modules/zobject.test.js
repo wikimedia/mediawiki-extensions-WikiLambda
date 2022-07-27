@@ -159,6 +159,55 @@ describe( 'zobject Vuex module', function () {
 			} );
 		} );
 
+		describe( 'getAllItemsFromListById', function () {
+
+			it( 'Returns all items in list when calling getAllItemsFromListById', function () {
+				var result = [
+					{ id: 12, key: '1', value: 'object', parent: 8 }
+				];
+				state.zobject = zobjectTree;
+				var getters = {
+					getZObjectChildrenById: zobjectModule.getters.getZObjectChildrenById( state )
+				};
+
+				expect( zobjectModule.getters.getAllItemsFromListById( state, getters )( 8 ) ).toEqual( result );
+			} );
+
+			it( 'Returns empty array if list contains single item(type) when calling getAllItemsFromListById', function () {
+				var result = [];
+				state.zobject = [
+					{ id: 0, value: 'object' },
+					{ key: 'Z1K1', value: 'Z2', parent: 0, id: 1 },
+					{ key: 'Z2K1', value: 'object', parent: 0, id: 2 },
+					{ key: 'Z2K2', value: 'object', parent: 0, id: 3 },
+					{ key: 'Z1K1', value: 'Z9', parent: 2, id: 4 },
+					{ key: 'Z9K1', value: 'Z0', parent: 2, id: 5 },
+					{ key: 'Z2K3', value: 'object', parent: 0, id: 6 },
+					{ key: 'Z1K1', value: 'Z12', parent: 6, id: 7 },
+					{ key: 'Z12K1', value: 'array', parent: 6, id: 8 },
+					{ key: '0', value: 'object', parent: 8, id: 9 },
+					{ key: 'Z1K1', value: 'Z9', parent: 9, id: 10 },
+					{ key: 'Z9K1', value: 'Z11', parent: 9, id: 11 }
+				];
+				var getters = {
+					getZObjectChildrenById: zobjectModule.getters.getZObjectChildrenById( state )
+				};
+
+				expect( zobjectModule.getters.getAllItemsFromListById( state, getters )( 8 ) ).toEqual( result );
+			} );
+		} );
+
+		describe( 'getListTypeById', function () {
+
+			it( 'Returns list type when calling getListTypeById', function () {
+				var result = { key: '0', value: 'object', parent: 8, id: 9 };
+				state.zobject = zobjectTree;
+
+				expect( zobjectModule.getters.getListTypeById( state )( 8 ) ).toEqual( result );
+			} );
+
+		} );
+
 		describe( 'isCreateNewPage', function () {
 			it( 'Returns whether the current state has `createNewPage`', function () {
 				expect( zobjectModule.getters.isCreateNewPage( state ) ).toBe( true );
