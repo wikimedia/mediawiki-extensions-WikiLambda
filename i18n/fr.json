@@ -22,7 +22,7 @@
 	"wikilambda-invalidcontenttype": "Le contenu fourni n’est pas une classe de Z-Objet.",
 	"wikilambda-typeunavailable": "Type non reconnu",
 	"wikilambda-prohibitedcreationtype": "Le Z-Objet fourni est de type « $1 », qui n’est pas autorisé à la création.",
-	"wikilambda-noresult": "La recherche n’a livré aucun résultat.",
+	"wikilambda-noresult": "La recherche n’a donné aucun résultat.",
 	"wikilambda-labelclash": "Le libellé du contenu fourni est en conflit avec le Z-Objet « $1 » pour le libellé dans « $2 ».",
 	"wikilambda-persistentzobject": "Z-Objet",
 	"wikilambda-persistentzobject-metadata": "Libellés et alias",
