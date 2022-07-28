@@ -9,10 +9,11 @@
 		<div>
 			{{ functionLabel }}:
 			<z-object-selector
-				v-if="!viewmode && implMode"
+				v-if="!viewmode && implMode && isFunctionLabelReady"
 				:type="Constants.Z_FUNCTION"
 				:placeholder="$i18n( 'wikilambda-function-typeselector-label' ).text()"
 				:selected-id="zFunction.value"
+				:initial-selection-label="selectedFunctionLabel"
 				@input="updateZFunctionType"
 			></z-object-selector>
 			<template v-else>
@@ -140,6 +141,12 @@ module.exports = exports = {
 			},
 			functionLabel: function () {
 				return this.getZkeyLabels[ Constants.Z_IMPLEMENTATION_FUNCTION ];
+			},
+			selectedFunctionLabel: function () {
+				return this.getZkeyLabels[ this.zFunction.value ];
+			},
+			isFunctionLabelReady: function () {
+				return !!this.selectedFunctionLabel;
 			},
 			selectedFunctionJson: function () {
 				return this.getZkeys[ this.zFunction.value ];
