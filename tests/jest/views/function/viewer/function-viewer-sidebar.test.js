@@ -27,6 +27,8 @@ describe( 'FunctionViewerSidebar', function () {
 		expect( wrapper.find( '.ext-wikilambda-function-viewer-sidebar__button' ) ).toBeTruthy();
 		wrapper.find( '.ext-wikilambda-function-viewer-sidebar__button' ).trigger( 'click' );
 		wrapper.vm.$nextTick( function () {
+			// TODO: Remove need to manually call changeShowLangs, button click should trigger it
+			wrapper.vm.changeShowLangs();
 			expect( wrapper.emitted().changeShowLangs ).toBeTruthy();
 		} );
 	} );

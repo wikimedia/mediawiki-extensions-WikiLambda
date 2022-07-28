@@ -11,7 +11,8 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	FunctionDefinitionInputs = require( '../../../../../resources/ext.wikilambda.edit/components/function/definition/function-definition-inputs.vue' );
 
 describe( 'FunctionDefinitionInputs', function () {
-	var getters;
+	var getters,
+		actions;
 
 	beforeEach( function () {
 		getters = {
@@ -20,9 +21,15 @@ describe( 'FunctionDefinitionInputs', function () {
 			getAllItemsFromListById: createGettersWithFunctionsMock(),
 			getNextObjectId: jest.fn()
 		};
+		actions = {
+			addZObject: jest.fn(),
+			addZArgument: jest.fn(),
+			setAvailableZArguments: jest.fn()
+		};
 
 		global.store.hotUpdate( {
-			getters: getters
+			getters: getters,
+			actions
 		} );
 	} );
 

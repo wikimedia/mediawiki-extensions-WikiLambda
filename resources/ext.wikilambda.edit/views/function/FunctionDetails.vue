@@ -63,7 +63,8 @@ module.exports = exports = {
 	data: function () {
 		return {
 			implementationIds: [],
-			filterState: ''
+			filterState: '',
+			checkValue: ''
 		};
 	},
 	computed: $.extend( {},

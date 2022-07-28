@@ -16,7 +16,16 @@ describe( 'FunctionDetails', function () {
 
 	beforeEach( function () {
 		getters = {
-			getZObjectChildrenById: createGettersWithFunctionsMock()
+			getZTesters: createGettersWithFunctionsMock(),
+			getUnattachedZTesters: function () {
+				return [];
+			},
+			getZkeyLabels: createGettersWithFunctionsMock(),
+			getZImplementations: createGettersWithFunctionsMock(),
+			getUnattachedZImplementations: function () {
+				return [];
+			},
+			getZkeys: createGettersWithFunctionsMock()
 		};
 
 		global.store.hotUpdate( {
