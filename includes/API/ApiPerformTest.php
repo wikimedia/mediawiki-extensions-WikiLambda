@@ -104,6 +104,10 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 			$implementationName = (string)$implementation;
 
+			// Because these are strings which look like references, we're getting '"Z901"' rather than
+			// 'Z901', so just splice back out the quotes.
+			$implementationName = str_replace( '"', '', $implementationName );
+
 			// Re-use our copy of the target function, setting the implementations to just the one
 			// we're testing now
 			$targetFunction->setValueByKey(
