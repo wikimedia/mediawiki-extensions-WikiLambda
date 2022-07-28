@@ -136,7 +136,9 @@ class ZTypedMap extends ZObject {
 				continue;
 			}
 
-			if ( $pair->getFirstElement()->getZValue() === $key->getZValue() ) {
+			$mapKey = $pair->getFirstElement();
+
+			if ( $mapKey && $mapKey->getZValue() === $key->getZValue() ) {
 				return $pair->getSecondElement();
 			}
 		}
