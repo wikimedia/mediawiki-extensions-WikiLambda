@@ -31,7 +31,8 @@ class SpecialCreateZObject extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function getDescription() {
-		return $this->msg( 'wikilambda-special-define-function' )->text();
+		// we do not know which object type will be created, so we need to be generic here
+		return $this->msg( 'wikilambda-special-createzobject' )->text();
 	}
 
 	/**
@@ -41,7 +42,8 @@ class SpecialCreateZObject extends SpecialPage {
 		// TODO: Use $subPage to extract and pre-fill type/etc.?
 
 		$this->setHeaders();
-		$this->outputHeader( 'wikilambda-special-define-function-summary' );
+		// TODO(T312532): determine if there should be object type agnostic text here
+		// $this->outputHeader( 'wikilambda-special-define-function-summary' );
 
 		$output = $this->getOutput();
 		$output->addModules( [ 'ext.wikilambda.edit','ext.wikilambda.specialpages.styles', 'mediawiki.special' ] );

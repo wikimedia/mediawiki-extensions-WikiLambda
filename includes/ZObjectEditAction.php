@@ -25,16 +25,29 @@ class ZObjectEditAction extends Action {
 	}
 
 	/**
+	 * Get the type and language labels of the target zObject
+	 * @return array
+	 */
+	public function getTargetZObjectWithLabels() {
+		return $this->getTargetZObject()->getTypeStringAndLanguage( $this->getLanguage() );
+	}
+
+	/**
+	 * Get the target zObject
+	 * @return ZObjectContent|bool Found ZObject
+	 */
+	public function getTargetZObject() {
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		return $zObjectStore->fetchZObjectByTitle( $this->getTitle() );
+	}
+
+	/**
 	 * Get page title message
 	 * @return string
 	 */
 	protected function getPageTitleMsg() {
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$targetZObject = $zObjectStore->fetchZObjectByTitle( $this->getTitle() );
-
 		// the language object of the user's preferred language
-		$userLang = $this->getLanguage();
-		$zObjectLabelsWithLang = $targetZObject->getTypeStringAndLanguage( $userLang );
+		$zObjectLabelsWithLang = $this->getTargetZObjectWithLabels();
 
 		$label = Html::element(
 			'span',
@@ -44,7 +57,7 @@ class ZObjectEditAction extends Action {
 					'ext-wikilambda-editpage-header-title--function-name'
 				]
 			],
-			$targetZObject->getLabels()->getStringForLanguageOrEnglish( $this->getLanguage() )
+			$this->getTargetZObject()->getLabels()->getStringForLanguageOrEnglish( $this->getLanguage() )
 		);
 
 		/* isoCodes can occur in two places:
@@ -64,8 +77,8 @@ class ZObjectEditAction extends Action {
 
 		$isoCodeObjectName = '';
 		// the iso code of the language currently being rendered for the zObject Type
-		$nameLang = $targetZObject->getLabels()->getStringAndLanguageCode(
-			$userLang,
+		$nameLang = $this->getTargetZObject()->getLabels()->getStringAndLanguageCode(
+			$this->getLanguage(),
 			true,
 			true,
 			true
@@ -76,12 +89,12 @@ class ZObjectEditAction extends Action {
 		// show a language label if the text is not the user's preferred language
 		// TODO (T309039): use the chip component and ZID language object here instead
 		$isoCodeClassName = 'ext-wikilambda-editpage-header--iso-code';
-		if ( $nameLangCode !== $userLang->getCode() ) {
+		if ( $nameLangCode !== $this->getLanguage()->getCode() ) {
 			$isoCodeObjectName = ZObjectUtils::getIsoCode( $nameLangCode, $nameLangTitle, $isoCodeClassName );
 		}
 
 		// show a language label if the text is not the user's preferred language
-		$isoCodeObjectType = $typeLangCode === $userLang->getCode() ? ''
+		$isoCodeObjectType = $typeLangCode === $this->getLanguage()->getCode() ? ''
 			: ZObjectUtils::getIsoCode( $typeLangCode, $typeLangName, $isoCodeClassName );
 
 		$prefix = Html::element(
@@ -106,8 +119,6 @@ class ZObjectEditAction extends Action {
 		$output = $this->getOutput();
 		$output->addModules( [ 'ext.wikilambda.edit' ] );
 
-		$userLang = $this->getLanguage();
-
 		// The page title is the current ZID
 		$zId = $this->getPageTitle();
 
@@ -117,26 +128,29 @@ class ZObjectEditAction extends Action {
 		// NOTE setPageTitle sets both the HTML <title> header and the <h1> tag
 		$output->setPageTitle( $this->getPageTitleMsg() );
 
-		$linkLabel = Html::element(
-			'a',
-			[ 'class' => 'ext-wikilambda-editpage-header-description--link' ],
-			$this->msg( 'wikilambda-special-edit-function-definition-special-permission-link-label' )->text()
-		);
+		$zObjectLabelsWithLang = $this->getTargetZObjectWithLabels();
+		if ( $zObjectLabelsWithLang[ 'title' ] === 'Function' ) {
+			$linkLabel = Html::element(
+				'a',
+				[ 'class' => 'ext-wikilambda-editpage-header-description--link' ],
+				$this->msg( 'wikilambda-special-edit-function-definition-special-permission-link-label' )->text()
+			);
 
-		$output->addHtml( Html::rawElement(
-			'div', [ 'class' => 'ext-wikilambda-editpage-header-description' ],
-			$this->msg( 'wikilambda-special-edit-function-definition-description' )->rawParams( $linkLabel )
-			->escaped()
-		) );
+			$output->addHtml( Html::rawElement(
+				'div', [ 'class' => 'ext-wikilambda-editpage-header-description' ],
+				$this->msg( 'wikilambda-special-edit-function-definition-description' )->rawParams( $linkLabel )
+				->escaped()
+			) );
+		}
 
 		// Fallback no-JS notice.
 		$output->addHtml( Html::element(
 			'div',
 			[ 'class' => [ 'client-nojs', 'ext-wikilambda-editor-nojswarning' ] ],
-			$this->msg( 'wikilambda-special-createzobject-nojs' )->inLanguage( $userLang )->text()
+			$this->msg( 'wikilambda-special-createzobject-nojs' )->inLanguage( $this->getLanguage() )->text()
 		) );
 
-		$userLangCode = $userLang->getCode();
+		$userLangCode = $this->getLanguage()->getCode();
 
 		$createNewPage = false;
 
