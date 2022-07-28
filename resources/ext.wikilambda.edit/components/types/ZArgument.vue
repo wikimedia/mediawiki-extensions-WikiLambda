@@ -9,9 +9,11 @@
 		<div>
 			{{ typeLabel }}:
 			<z-object-selector
+				v-if="isArgumentTypeLabelReady"
 				:type="Constants.Z_TYPE"
 				:placeholder="$i18n( 'wikilambda-argument-typeselector-label' )"
 				:selected-id="argumentType"
+				:initial-selection-label="selectedArgumentTypeLabel"
 				@input="typeHandler"
 			></z-object-selector>
 		</div>
@@ -69,6 +71,12 @@ module.exports = exports = {
 				}
 
 				return argumentType;
+			},
+			selectedArgumentTypeLabel: function () {
+				return this.zKeyLabels[ this.argumentTypeItem.value ];
+			},
+			isArgumentTypeLabelReady: function () {
+				return this.argumentTypeItem.value ? !!this.selectedArgumentTypeLabel : true;
 			},
 			argumentType: function () {
 				if ( this.argumentTypeItem ) {

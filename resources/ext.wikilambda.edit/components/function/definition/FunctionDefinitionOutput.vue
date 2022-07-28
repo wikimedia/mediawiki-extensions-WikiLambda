@@ -26,6 +26,7 @@
 			class="ext-wikilambda-function-definition-output__selector"
 			:placeholder="$i18n( 'wikilambda-function-definition-output-selector' ).text()"
 			:selected-id="zReturnType.value"
+			:initial-selection-label="zReturnTypeLabel"
 			@input="setReturnType"
 		></z-object-selector>
 	</div>
@@ -75,7 +76,8 @@ module.exports = exports = {
 		}
 	},
 	computed: $.extend( mapGetters( [
-		'getNestedZObjectById'
+		'getNestedZObjectById',
+		'getZkeyLabels'
 	] ), {
 		Constants: function () {
 			return Constants;
@@ -89,6 +91,9 @@ module.exports = exports = {
 				Constants.Z_FUNCTION_RETURN_TYPE,
 				Constants.Z_REFERENCE_ID
 			] );
+		},
+		zReturnTypeLabel: function () {
+			return this.zReturnType.value ? this.getZkeyLabels[ this.zReturnType.value ] : '';
 		}
 	} ),
 	methods: $.extend( mapActions( [

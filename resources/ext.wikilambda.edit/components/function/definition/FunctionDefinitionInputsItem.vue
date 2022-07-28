@@ -42,6 +42,7 @@
 				class="ext-wikilambda-editor-input-list-item__selector"
 				:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text()"
 				:selected-id="getTypeOfArgument"
+				:initial-selection-label="selectedLabel"
 				:readonly="!canEditType"
 				@input="setArgumentType( $event )"
 			></z-object-selector>

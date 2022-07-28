@@ -98,7 +98,7 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			lookupResults: [],
+			lookupResults: [ { value: this.selectedId, label: this.initialSelectionLabel } ],
 			lookupDelayTimer: null,
 			lookupDelayMs: 300,
 			inputValue: '',
@@ -353,14 +353,6 @@ module.exports = exports = {
 			}
 		}
 	),
-	watch: {
-		// Run lookup results, so the options are ready on first lookup box focus.
-		inputValue( newSelectionLabel, oldSelectionLabel ) {
-			if ( newSelectionLabel !== '' && newSelectionLabel !== oldSelectionLabel ) {
-				this.getLookupResults( newSelectionLabel );
-			}
-		}
-	},
 	mounted: function () {
 		this.fetchZKeyWithDebounce( [
 			Constants.Z_STRING,
