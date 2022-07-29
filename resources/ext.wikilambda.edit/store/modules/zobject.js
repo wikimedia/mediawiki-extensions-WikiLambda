@@ -730,6 +730,53 @@ module.exports = exports = {
 				parent: zobject.parent
 			} );
 		},
+		/**
+		 * Sets the ZCode's code string to a default based on provided values.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @return {Object}
+		 */
+		initializeZCodeFunction: function ( context, payload ) {
+			var zCode = context.getters.getZObjectChildrenById( payload.zCodeId ),
+				zCodeString = typeUtils.findKeyInArray(
+					Constants.Z_STRING_VALUE,
+					context.getters.getZObjectChildrenById(
+						typeUtils.findKeyInArray( Constants.Z_CODE_CODE, zCode ).id
+					)
+				),
+				args = Array.isArray( payload.argumentList ) ?
+					payload.argumentList.reduce(
+						function ( str, argument, index ) {
+							if ( index === 0 ) {
+								return argument.zid;
+							}
+							return str + ', ' + argument.zid;
+						}, '' ) : '';
+
+			switch ( payload.language ) {
+				case 'javascript':
+					return context.commit( 'setZObjectValue', {
+						index: context.getters.getZObjectIndexById( zCodeString.id ),
+						value: 'function ' + payload.functionId + '( ' + args + ' ) {\n\n}'
+					} );
+				case 'python':
+					return context.commit( 'setZObjectValue', {
+						index: context.getters.getZObjectIndexById( zCodeString.id ),
+						value: 'def ' + payload.functionId + '(' + args + '):\n\t'
+					} );
+				case 'lua':
+					return context.commit( 'setZObjectValue', {
+						index: context.getters.getZObjectIndexById( zCodeString.id ),
+						value: 'function ' + payload.functionId + '(' + args + ')\n\t\nend'
+					} );
+				default:
+					return context.commit( 'setZObjectValue', {
+						index: context.getters.getZObjectIndexById( zCodeString.id ),
+						value: ''
+					} );
+			}
+		},
 		setZImplementationType: function ( context, payload ) {
 			var zobject = context.getters.getZObjectById( payload.zobjectId ),
 				zobjectParent = context.getters.getZObjectById( zobject.parent ),

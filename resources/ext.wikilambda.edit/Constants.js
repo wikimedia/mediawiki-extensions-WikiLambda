@@ -103,6 +103,10 @@ var Constants = {
 		Z_TYPED_MAP_TYPE2: 'Z883K2',
 		Z_FUNCTION_CALL_TO_TYPE: 'function_call_to_type'
 	},
+	implementationModes = {
+		CODE: 'code',
+		COMPOSITION: 'composition'
+	},
 	modes = [
 		{ key: Constants.Z_KEY_MODES.REFERENCE, value: 'wikilambda-modeselector-reference', label: 'wikilambda-reference', type: Constants.Z_REFERENCE },
 		{ key: Constants.Z_KEY_MODES.FUNCTION_CALL, value: 'wikilambda-modeselector-functioncall', label: 'wikilambda-functioncall', type: Constants.Z_FUNCTION_CALL },
@@ -145,5 +149,6 @@ Constants.VIEWS = views;
 Constants.PATHS = paths;
 Constants.breakpoints = breakpoints;
 Constants.breakpointsTypes = breakpointsTypes;
+Constants.implementationModes = implementationModes;
 
 module.exports = Constants;
