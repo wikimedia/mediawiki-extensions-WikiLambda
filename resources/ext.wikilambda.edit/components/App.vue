@@ -7,7 +7,7 @@
 	-->
 	<div id="ext-wikilambda-app" class="ext-wikilambda-edit">
 		<template v-if="getZObjectInitialized">
-			<component :is="getCurrentView" :bind="getQueryParams"></component>
+			<component :is="getCurrentView"></component>
 		</template>
 		<span v-else>
 			{{ $i18n( 'wikilambda-loading' ).text() }}
@@ -40,7 +40,7 @@ module.exports = exports = {
 			'getZObjectInitialized'
 		] ), mapGetters(
 			'router',
-			[ 'getCurrentView', 'getQueryParams' ]
+			[ 'getCurrentView' ]
 		)
 	),
 	methods: $.extend(
