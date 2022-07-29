@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<div>
-		{{ functionLabel }}:''
+		{{ functionLabel }}:
 		<z-reference
 			:search-type="Constants.Z_FUNCTION"
 			:zobject-id="zFunction.id"
