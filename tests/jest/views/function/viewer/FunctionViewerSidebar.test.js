@@ -8,7 +8,7 @@
 'use strict';
 
 var VueTestUtils = require( '@vue/test-utils' ),
-	FunctionViewerSidebar = require( '../../../../../resources/ext.wikilambda.edit/views/function/partials/function-viewer-sidebar.vue' );
+	FunctionViewerSidebar = require( '../../../../../resources/ext.wikilambda.edit/views/function/partials/FunctionViewerSidebar.vue' );
 
 describe( 'FunctionViewerSidebar', function () {
 	beforeEach( function () {

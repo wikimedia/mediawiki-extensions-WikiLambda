@@ -30,10 +30,10 @@
 </template>
 
 <script>
-var FunctionViewerAboutAliases = require( './about/function-viewer-about-aliases.vue' ),
-	FunctionViewerAboutNames = require( './about/function-viewer-about-names.vue' ),
-	FunctionViewerAboutDetails = require( './about/function-viewer-about-details.vue' ),
-	FunctionViewerAboutExamples = require( './about/function-viewer-about-examples.vue' ),
+var FunctionViewerAboutAliases = require( './about/FunctionViewerAboutAliases.vue' ),
+	FunctionViewerAboutNames = require( './about/FunctionViewerAboutNames.vue' ),
+	FunctionViewerAboutDetails = require( './about/FunctionViewerAboutDetails.vue' ),
+	FunctionViewerAboutExamples = require( './about/FunctionViewerAboutExamples.vue' ),
 	TextComponent = require( '../../components/base/Text.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 

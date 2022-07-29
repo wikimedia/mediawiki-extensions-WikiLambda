@@ -75,11 +75,11 @@
 </template>
 
 <script>
-var FunctionDefinitionName = require( '../../components/function/definition/function-definition-name.vue' );
-var FunctionDefinitionAliases = require( '../../components/function/definition/function-definition-aliases.vue' );
-var FunctionDefinitionInputs = require( '../../components/function/definition/function-definition-inputs.vue' );
-var FunctionDefinitionOutput = require( '../../components/function/definition/function-definition-output.vue' );
-var FunctionDefinitionFooter = require( '../../components/function/definition/function-definition-footer.vue' );
+var FunctionDefinitionName = require( '../../components/function/definition/FunctionDefinitionName.vue' );
+var FunctionDefinitionAliases = require( '../../components/function/definition/FunctionDefinitionAliases.vue' );
+var FunctionDefinitionInputs = require( '../../components/function/definition/FunctionDefinitionInputs.vue' );
+var FunctionDefinitionOutput = require( '../../components/function/definition/FunctionDefinitionOutput.vue' );
+var FunctionDefinitionFooter = require( '../../components/function/definition/FunctionDefinitionFooter.vue' );
 var FnEditorZLanguageSelector = require( '../../components/editor/FnEditorZLanguageSelector.vue' );
 var useBreakpoints = require( '../../composables/useBreakpoints.js' );
 var icons = require( '../../../lib/icons.json' );

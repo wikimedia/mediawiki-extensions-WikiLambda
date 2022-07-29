@@ -8,7 +8,7 @@
 
 var VueTestUtils = require( '@vue/test-utils' ),
 	DialogContainer = require( '../../../../../resources/ext.wikilambda.edit/components/base/DialogContainer.vue' ),
-	FunctionDefinitionFooter = require( '../../../../../resources/ext.wikilambda.edit/components/function/definition/function-definition-footer.vue' );
+	FunctionDefinitionFooter = require( '../../../../../resources/ext.wikilambda.edit/components/function/definition/FunctionDefinitionFooter.vue' );
 
 describe( 'FunctionDefinitionFooter', function () {
 	var getters;

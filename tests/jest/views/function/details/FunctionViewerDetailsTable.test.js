@@ -7,7 +7,7 @@
 'use strict';
 
 var VueTestUtils = require( '@vue/test-utils' ),
-	FunctionViewerDetailsTable = require( '../../../../../resources/ext.wikilambda.edit/views/function/details/function-viewer-details-table.vue' );
+	FunctionViewerDetailsTable = require( '../../../../../resources/ext.wikilambda.edit/views/function/details/FunctionViewerDetailsTable.vue' );
 
 describe( 'FunctionViewerDetailsTable', function () {
 	it( 'renders without errors', function () {

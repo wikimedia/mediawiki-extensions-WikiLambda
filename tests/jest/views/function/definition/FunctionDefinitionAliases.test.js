@@ -9,7 +9,7 @@
 var VueTestUtils = require( '@vue/test-utils' ),
 	Constants = require( '../../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	FunctionDefinitionAliases = require( '../../../../../resources/ext.wikilambda.edit/components/function/definition/function-definition-aliases.vue' );
+	FunctionDefinitionAliases = require( '../../../../../resources/ext.wikilambda.edit/components/function/definition/FunctionDefinitionAliases.vue' );
 
 describe( 'FunctionDefinitionAliases', function () {
 	var getters,

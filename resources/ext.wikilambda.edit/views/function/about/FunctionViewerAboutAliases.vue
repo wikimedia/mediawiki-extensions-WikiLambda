@@ -29,7 +29,7 @@ var Constants = require( '../../../Constants.js' ),
 	icons = require( '../../../../lib/icons.json' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
-	FunctionViewerSidebar = require( '../partials/function-viewer-sidebar.vue' );
+	FunctionViewerSidebar = require( '../partials/FunctionViewerSidebar.vue' );
 
 // @vue/component
 module.exports = exports = {

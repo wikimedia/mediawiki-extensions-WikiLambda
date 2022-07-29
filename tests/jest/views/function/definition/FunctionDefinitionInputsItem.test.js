@@ -8,7 +8,7 @@
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	FunctionDefinitionInputsItem = require( '../../../../../resources/ext.wikilambda.edit/components/function/definition/function-definition-inputs-item.vue' );
+	FunctionDefinitionInputsItem = require( '../../../../../resources/ext.wikilambda.edit/components/function/definition/FunctionDefinitionInputsItem.vue' );
 
 describe( 'FunctionDefinitionInputsItem', function () {
 	var getters,

@@ -32,13 +32,13 @@
 
 <script>
 var Vue = require( 'vue' );
-var FunctionViewerDetailsSidebar = require( './details/function-viewer-details-sidebar.vue' ),
-	FunctionViewerDetailsImplementationTable = require( './details/function-viewer-details-table.vue' ),
+var FunctionViewerDetailsSidebar = require( './details/FunctionViewerDetailsSidebar.vue' ),
+	FunctionViewerDetailsImplementationTable = require( './details/FunctionViewerDetailsTable.vue' ),
 	Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	CdxCheckbox = require( '@wikimedia/codex' ).CdxCheckbox,
 	WikilambdaChip = require( '../../components/base/Chip.vue' ),
-	TableTesterStatus = require( './partials/tester-table-status.vue' ),
+	TableTesterStatus = require( './partials/TesterTableStatus.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 Vue.component( 'cdx-checkbox', CdxCheckbox.default || CdxCheckbox );

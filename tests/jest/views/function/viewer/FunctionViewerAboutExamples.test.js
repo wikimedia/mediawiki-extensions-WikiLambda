@@ -9,7 +9,7 @@
 
 var VueTestUtils = require( '@vue/test-utils' ),
 	TableComponent = require( '../../../../../resources/ext.wikilambda.edit/components/base/Table.vue' ),
-	FunctionViewerExamples = require( '../../../../../resources/ext.wikilambda.edit/views/function/about/function-viewer-about-examples.vue' );
+	FunctionViewerExamples = require( '../../../../../resources/ext.wikilambda.edit/views/function/about/FunctionViewerAboutExamples.vue' );
 
 describe( 'FunctionViewerAboutExamples', function () {
 	beforeEach( function () {
