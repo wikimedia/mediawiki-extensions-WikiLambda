@@ -41,6 +41,8 @@
 								></z-tester-impl-result>
 							</td>
 						</template>
+						<!-- FIXME T314469: The template for the else clause should treat tester literal objects
+						differently, as they will not be persistent objects but objects of type Z20/Tester -->
 						<template v-else>
 							<th scope="row">
 								{{ test.Z2K3.Z12K1[ 0 ].Z11K2.Z6K1 }}
@@ -163,9 +165,11 @@ module.exports = exports = {
 				implementations = implementations.concat( this.getZImplementations );
 			} else {
 				// if we are viewing a single implementation or tester, fetch the info from the zKey
-				implementations = implementations.concat( this.getZkeys[ this.zFunctionId ][
+				const fetched = this.getZkeys[ this.zFunctionId ][
 					Constants.Z_PERSISTENTOBJECT_VALUE ][
-					Constants.Z_FUNCTION_IMPLEMENTATIONS ] );
+					Constants.Z_FUNCTION_IMPLEMENTATIONS ];
+				// Slice off the first element of Benjamin array
+				implementations = implementations.concat( Array.isArray( fetched ) ? fetched.slice( 1 ) : [] );
 			}
 
 			// The following will happen if we are creating a new zImplementation.
@@ -185,9 +189,11 @@ module.exports = exports = {
 				testers = testers.concat( this.getZTesters );
 			} else {
 				// if we are viewing a single implementation or tester, fetch the info from the zKey
-				testers = testers.concat( this.getZkeys[ this.zFunctionId ][
+				const fetched = this.getZkeys[ this.zFunctionId ][
 					Constants.Z_PERSISTENTOBJECT_VALUE ][
-					Constants.Z_FUNCTION_TESTERS ] );
+					Constants.Z_FUNCTION_TESTERS ];
+				// Slice off the first element of Benjamin array
+				testers = testers.concat( Array.isArray( fetched ) ? fetched.slice( 1 ) : [] );
 			}
 
 			return testers;
