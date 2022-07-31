@@ -162,7 +162,8 @@ function getValueFromCanonicalZMap( zMap, key ) {
 	// With Benjamin arrays, skip over the first array element
 	for ( let i = 1; i < K1Array.length; i++ ) {
 		const entry = K1Array[ i ];
-		const currentKey = entry[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
+		// To accommodate our current programming practices, we need to allow for either key here:
+		const currentKey = entry[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ] || entry[ Constants.Z_TYPED_PAIR_TYPE1 ];
 		if ( ( currentKey === key ) ||
 			( currentKey[ Constants.Z_OBJECT_TYPE ] === Constants.Z_STRING &&
 				key[ Constants.Z_OBJECT_TYPE ] === Constants.Z_STRING &&
@@ -170,7 +171,8 @@ function getValueFromCanonicalZMap( zMap, key ) {
 			( currentKey[ Constants.Z_OBJECT_TYPE ] === Constants.Z_KEY_REFERENCE &&
 				key[ Constants.Z_OBJECT_TYPE ] === Constants.Z_KEY_REFERENCE &&
 				currentKey[ Constants.Z_KEY_REFERENCE_ID ] === key[ Constants.Z_KEY_REFERENCE_ID ] ) ) {
-			return entry[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ];
+			// To accommodate our current programming practices, we need to allow for either key here:
+			return entry[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ] || entry[ Constants.Z_TYPED_PAIR_TYPE2 ];
 		}
 	}
 }
