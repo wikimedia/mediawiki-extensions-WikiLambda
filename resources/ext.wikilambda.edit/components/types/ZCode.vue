@@ -205,7 +205,6 @@ module.exports = exports = {
 
 	&__language-selector {
 		width: 200px;
-		z-index: 100;
 	}
 }
 
