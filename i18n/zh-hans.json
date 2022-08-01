@@ -10,6 +10,7 @@
 			"StarrySky",
 			"TsuyaMarisa",
 			"Willy1018",
+			"Wzl19371",
 			"Yining Chen",
 			"Zhang8569"
 		]
@@ -39,6 +40,7 @@
 	"wikilambda-implementation-none-found": "没有找到实现。",
 	"wikilambda-implementation-create-new": "创建一个新的实现",
 	"wikilambda-functioncall-metadata-dialog-header": "元数据",
+	"wikilambda-functioncall-metadata-errors-none": "无",
 	"wikilambda-test-case-none": "没有测试案例",
 	"wikilambda-tester-run-tester": "运行测试",
 	"wikilambda-enable-expert-mode": "开启专家模式",

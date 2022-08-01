@@ -10,6 +10,7 @@
 			"WikiAbuHuraira",
 			"YahyA",
 			"Yahya",
+			"আজিজ",
 			"আফতাবুজ্জামান",
 			"খাত্তাব হাসান"
 		]
@@ -19,6 +20,8 @@
 	"wikilambda-persistentzobject-metadata": "লেবেল ও উপনাম",
 	"wikilambda-persistentzobject-contents": "পরিচ্ছেদসমূহ",
 	"wikilambda-reference": "তথ্যসূত্র",
+	"wikilambda-show-error": "ত্রুটি দেখান",
+	"wikilambda-hide-error": "ত্রুটি লুকান",
 	"wikilambda-special-edit-function-definition-title": "ফাংশনের সংজ্ঞা সম্পাদনা করুন",
 	"wikilambda-special-edit-function-definition-description": "আপনি ফাংশন সংজ্ঞার পাতা সম্পাদনা করছেন। $1 ফাংশনের সংজ্ঞা পরিবর্তন করতে পারবে। অন্য সবাই লেবেলসমূহ সম্পাদনা করতে পারবেন। নিচের নীল রঙের প্রকাশ করুন বোতাম চেপে সম্পাদনা প্রকাশ করুন।",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "শুধু বিশেষ অধিকারপ্রাপ্ত ব্যবহারকারীদের জন্য অনুমোদিত",
@@ -34,6 +37,8 @@
 	"wikilambda-editor-label-select-programming-language-label": "প্রোগ্রামিং ভাষা নির্বাচন করুন:",
 	"specialpages-group-wikilambda": "উইকিফাংশন পাতা",
 	"wikilambda-implementation-selector-code": "কোড",
+	"wikilambda-functioncall-metadata-dialog-header": "অধিউপাত্ত",
+	"wikilambda-functioncall-metadata-errors-none": "কোনটিই নয়",
 	"wikilambda-tester-function-duration": "স্থিতিকাল",
 	"wikilambda-metadata-language-column": "ভাষা",
 	"wikilambda-metadata-label-column": "লেবেল",
