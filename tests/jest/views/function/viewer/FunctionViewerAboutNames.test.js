@@ -10,8 +10,8 @@
 var VueTestUtils = require( '@vue/test-utils' ),
 	mocks = require( '../../../fixtures/mocks.js' ),
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	FunctionViewerNames = require( '../../../../../resources/ext.wikilambda.edit/views/function/about/function-viewer-about-names.vue' ),
-	FunctionViewerSidebar = require( '../../../../../resources/ext.wikilambda.edit/views/function/partials/function-viewer-sidebar.vue' );
+	FunctionViewerNames = require( '../../../../../resources/ext.wikilambda.edit/views/function/about/FunctionViewerAboutNames.vue' ),
+	FunctionViewerSidebar = require( '../../../../../resources/ext.wikilambda.edit/views/function/partials/FunctionViewerSidebar.vue' );
 
 describe( 'FunctionViewerAliases', function () {
 	beforeEach( function () {

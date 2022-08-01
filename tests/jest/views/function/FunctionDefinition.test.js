@@ -9,11 +9,11 @@
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	mockLabels = require( '../../fixtures/mocks.js' ).mockLabels,
-	FunctionDefinitionName = require( '../../../../resources/ext.wikilambda.edit/components/function/definition/function-definition-name.vue' ),
-	FunctionDefinitionAliases = require( '../../../../resources/ext.wikilambda.edit/components/function/definition/function-definition-aliases.vue' ),
-	FunctionDefinitionInputs = require( '../../../../resources/ext.wikilambda.edit/components/function/definition/function-definition-inputs.vue' ),
-	FunctionDefinitionOutput = require( '../../../../resources/ext.wikilambda.edit/components/function/definition/function-definition-output.vue' ),
-	FunctionDefinitionFooter = require( '../../../../resources/ext.wikilambda.edit/components/function/definition/function-definition-footer.vue' ),
+	FunctionDefinitionName = require( '../../../../resources/ext.wikilambda.edit/components/function/definition/FunctionDefinitionName.vue' ),
+	FunctionDefinitionAliases = require( '../../../../resources/ext.wikilambda.edit/components/function/definition/FunctionDefinitionAliases.vue' ),
+	FunctionDefinitionInputs = require( '../../../../resources/ext.wikilambda.edit/components/function/definition/FunctionDefinitionInputs.vue' ),
+	FunctionDefinitionOutput = require( '../../../../resources/ext.wikilambda.edit/components/function/definition/FunctionDefinitionOutput.vue' ),
+	FunctionDefinitionFooter = require( '../../../../resources/ext.wikilambda.edit/components/function/definition/FunctionDefinitionFooter.vue' ),
 	FunctionDefinition = require( '../../../../resources/ext.wikilambda.edit/views/function/FunctionDefinition.vue' );
 
 describe( 'FunctionDefinition', function () {

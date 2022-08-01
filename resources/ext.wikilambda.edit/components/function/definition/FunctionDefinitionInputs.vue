@@ -45,7 +45,7 @@
 <script>
 var Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
-	functionDefinitionInputsItem = require( './function-definition-inputs-item.vue' ),
+	functionDefinitionInputsItem = require( './FunctionDefinitionInputsItem.vue' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	Tooltip = require( '../../base/Tooltip.vue' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,

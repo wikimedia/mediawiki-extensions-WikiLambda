@@ -9,7 +9,7 @@
 
 var VueTestUtils = require( '@vue/test-utils' ),
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	FunctionViewerSidebar = require( '../../../../../resources/ext.wikilambda.edit/views/function/details/function-viewer-details-sidebar.vue' );
+	FunctionViewerSidebar = require( '../../../../../resources/ext.wikilambda.edit/views/function/details/FunctionViewerDetailsSidebar.vue' );
 
 describe( 'FunctionViewerDetailsSidebar', function () {
 	beforeEach( function () {

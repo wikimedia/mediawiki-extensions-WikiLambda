@@ -8,8 +8,8 @@
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	FunctionDetails = require( '../../../../resources/ext.wikilambda.edit/views/function/FunctionDetails.vue' ),
-	FunctionViewerDetailsSidebar = require( '../../../../resources/ext.wikilambda.edit/views/function/details/function-viewer-details-sidebar.vue' ),
-	FunctionViewerDetailsTable = require( '../../../../resources/ext.wikilambda.edit/views/function/details/function-viewer-details-table.vue' );
+	FunctionViewerDetailsSidebar = require( '../../../../resources/ext.wikilambda.edit/views/function/details/FunctionViewerDetailsSidebar.vue' ),
+	FunctionViewerDetailsTable = require( '../../../../resources/ext.wikilambda.edit/views/function/details/FunctionViewerDetailsTable.vue' );
 
 describe( 'FunctionDetails', function () {
 	var getters;
