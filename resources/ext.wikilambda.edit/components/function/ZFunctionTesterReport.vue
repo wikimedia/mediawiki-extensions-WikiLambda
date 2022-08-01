@@ -93,7 +93,7 @@
 					</li>
 					<li>
 						{{ $i18n( 'wikilambda-tester-function-duration' ).text() }}:
-						{{ getZTesterMetadata( zFunctionId, activeZTesterId, activeZImplementationId ).duration }} ms
+						{{ activeTesterDuration }}
 					</li>
 				</ul>
 			</div>
@@ -107,6 +107,7 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
+	schemata = require( '../../mixins/schemata.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
@@ -118,7 +119,7 @@ module.exports = exports = {
 		'z-tester-impl-result': ZTesterImplResult,
 		'cdx-button': CdxButton
 	},
-	mixins: [ typeUtils ],
+	mixins: [ typeUtils, schemata ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -212,12 +213,10 @@ module.exports = exports = {
 		},
 		activeTesterFailReason: function () {
 			var reason = this.getZTesterFailReason(
-					this.zFunctionId,
-					this.activeZTesterId,
-					this.activeZImplementationId
-				),
-				expected,
-				actual;
+				this.zFunctionId,
+				this.activeZTesterId,
+				this.activeZImplementationId
+			);
 
 			if ( !reason ) {
 				return '';
@@ -227,13 +226,19 @@ module.exports = exports = {
 				return reason;
 			}
 
-			expected = this.zObjectToString( reason[ 0 ] );
-			actual = this.zObjectToString( reason[ 1 ] );
-
-			return this.$i18n( 'wikilambda-tester-failure-expected' ).text() + ' ' +
-				expected + '. ' +
-				this.$i18n( 'wikilambda-tester-failure-actual' ).text() + ' ' +
-				actual + '.';
+			// TODO(T314079): Use the metadata dialog in this component (and remove this function),
+			//   or arrange to return a string containing expected & actual values here.
+			return '';
+		},
+		activeTesterDuration: function () {
+			// TODO(T314079): Possibly use the metadata dialog in this component; then remove this function
+			const metadata = this.getZTesterMetadata(
+				this.zFunctionId, this.activeZTesterId, this.activeZImplementationId );
+			// Check for error object, for backwards compatibility
+			if ( metadata[ Constants.Z_OBJECT_TYPE ] === Constants.Z_ERROR ) {
+				return '';
+			}
+			return this.getValueFromCanonicalZMap( metadata, 'orchestrationDuration' );
 		}
 	} ),
 	methods: $.extend( mapActions( [ 'fetchZKeys', 'getTestResults' ] ), {

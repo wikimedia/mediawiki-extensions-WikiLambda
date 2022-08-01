@@ -37,12 +37,13 @@ describe( 'zTesterResults Vuex module', function () {
 			expect( result ).toBe( undefined );
 		} );
 		it( 'should return the test result when it is found (true)', function () {
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = { Z22K1: { Z40K1: 'Z41' } };
+			// The code allows for either normal form, as here, or canonical, as below
+			context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = { Z1K1: 'Z40', Z40K1: 'Z41' };
 			var result = zTesterResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
 			expect( result ).toBe( true );
 		} );
 		it( 'should return the test result when it is found (false)', function () {
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = { Z22K1: { Z40K1: 'Z42' } };
+			context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = 'Z42';
 			var result = zTesterResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
 			expect( result ).toBe( false );
 		} );
@@ -53,11 +54,11 @@ describe( 'zTesterResults Vuex module', function () {
 		} );
 
 		it( 'should return an object with values for the percentage of passing tests by one given ZID', function () {
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = { Z22K1: { Z40K1: 'Z41' } };
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10003' ] = { Z22K1: { Z40K1: 'Z41' } };
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10004' ] = { Z22K1: { Z40K1: 'Z41' } };
-			context.state.zTesterResults[ 'Z10000:Z10001:Z10005' ] = { Z22K1: { Z40K1: 'Z42' } };
-			context.state.zTesterResults[ 'Z10009:Z10010:Z10006' ] = { Z22K1: { Z40K1: 'Z42' } };
+			context.state.zTesterResults[ 'Z10000:Z10001:Z10002' ] = 'Z41';
+			context.state.zTesterResults[ 'Z10000:Z10001:Z10003' ] = 'Z41';
+			context.state.zTesterResults[ 'Z10000:Z10001:Z10004' ] = 'Z41';
+			context.state.zTesterResults[ 'Z10000:Z10001:Z10005' ] = 'Z42';
+			context.state.zTesterResults[ 'Z10009:Z10010:Z10006' ] = 'Z42';
 
 			var result = zTesterResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
 
@@ -71,7 +72,7 @@ describe( 'zTesterResults Vuex module', function () {
 
 	describe( 'Mutations', function () {
 		it( 'should set the tester result', function () {
-			zTesterResultsModule.mutations.setZTesterResult( context.state, { key: 'Z10000:Z10001:Z10002', result: { Z22K1: { Z40K1: 'Z41' } } } );
+			zTesterResultsModule.mutations.setZTesterResult( context.state, { key: 'Z10000:Z10001:Z10002', result: 'Z41' } );
 
 			var result = zTesterResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' );
 			expect( result ).toBe( true );
@@ -99,12 +100,10 @@ describe( 'zTesterResults Vuex module', function () {
 
 	describe( 'Actions', function () {
 		var booleanReturn,
-			errorReturn,
 			getMock;
 
 		beforeEach( function () {
 			booleanReturn = Constants.Z_BOOLEAN_TRUE;
-			errorReturn = false;
 			getMock = jest.fn( function ( payload ) {
 				return new Promise( function ( resolve ) {
 					var data = [];
@@ -115,23 +114,19 @@ describe( 'zTesterResults Vuex module', function () {
 								zFunctionId: payload.wikilambda_perform_test_zfunction,
 								zImplementationId: impl,
 								zTesterId: tester,
-								validationResponse: {
-									Z1K1: Constants.Z_PAIR,
-									Z22K1: errorReturn ? Constants.Z_NOTHING : {
-										Z1K1: Constants.Z_BOOLEAN,
-										Z40K1: booleanReturn
-									},
-									Z22K2: Constants.Z_NOTHING
-								}
+								validateStatus: JSON.stringify( {
+									Z1K1: Constants.Z_BOOLEAN,
+									Z40K1: booleanReturn
+								} ),
+								// This will normally be a ZMap of metadata, but we aren't testing that here
+								testMetadata: JSON.stringify( Constants.Z_VOID )
 							} );
 						} );
 					} );
 
 					resolve( {
 						query: {
-							wikilambda_perform_test: {
-								data: JSON.stringify( data )
-							}
+							wikilambda_perform_test: data
 						}
 					} );
 				} );
@@ -147,7 +142,7 @@ describe( 'zTesterResults Vuex module', function () {
 		} );
 
 		it( 'should allow for resetting a given test result', function () {
-			zTesterResultsModule.mutations.setZTesterResult( context.state, { key: 'Z10000:Z10001:Z10002', result: { Z22K1: { Z40K1: 'Z41' } } } );
+			zTesterResultsModule.mutations.setZTesterResult( context.state, { key: 'Z10000:Z10001:Z10002', result: 'Z41' } );
 
 			expect( zTesterResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' ) ).toBe( true );
 
@@ -193,35 +188,6 @@ describe( 'zTesterResults Vuex module', function () {
 				zTesters = [ 'Z10003', 'Z10004' ];
 
 			booleanReturn = Constants.Z_BOOLEAN_FALSE;
-
-			return zTesterResultsModule.actions.getTestResults( context, {
-				zFunctionId: zFunctionId,
-				zImplementations: zImplementations,
-				zTesters: zTesters
-			} ).then( function () {
-				var result = zTesterResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
-
-				expect( getMock ).toHaveBeenCalledWith( {
-					action: 'wikilambda_perform_test',
-					wikilambda_perform_test_zfunction: zFunctionId,
-					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
-					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
-					wikilambda_perform_test_nocache: false
-				} );
-				expect( context.commit ).toHaveBeenCalledTimes( 7 );
-				expect( Object.keys( context.state.zTesterResults ).length )
-					.toEqual( zTesters.length * zImplementations.length );
-
-				expect( result.passing ).toBe( 0 );
-			} );
-		} );
-
-		it( 'should perform the provided tests (evaluator/orchestrator error)', function () {
-			var zFunctionId = 'Z10000',
-				zImplementations = [ 'Z10001', 'Z10002' ],
-				zTesters = [ 'Z10003', 'Z10004' ];
-
-			errorReturn = true;
 
 			return zTesterResultsModule.actions.getTestResults( context, {
 				zFunctionId: zFunctionId,

@@ -7,7 +7,8 @@
 
 var Vue = require( 'vue' ),
 	Constants = require( '../../Constants.js' ),
-	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
+	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
+	getValueFromCanonicalZMap = require( '../../mixins/schemata.js' ).methods.getValueFromCanonicalZMap;
 
 /**
  * Loop through a given array and replace the current Object or the placeholder object with a full object
@@ -68,9 +69,8 @@ module.exports = exports = {
 
 				var result = state.zTesterResults[ key ];
 				return result &&
-					result[ Constants.Z_RESPONSEENVELOPE_VALUE ] !== Constants.Z_NOTHING &&
-					result[ Constants.Z_RESPONSEENVELOPE_VALUE ][ Constants.Z_BOOLEAN_IDENTITY ] ===
-						Constants.Z_BOOLEAN_TRUE;
+					( result === Constants.Z_BOOLEAN_TRUE ||
+						( typeof result === 'object' && result[ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE ) );
 			};
 		},
 		getZTesterFailReason: function ( state ) {
@@ -90,13 +90,24 @@ module.exports = exports = {
 				if ( state.errorState ) {
 					return state.errorMessage;
 				}
-
-				var result = state.zTesterResults[ key ];
-				if ( !result || result[ Constants.Z_RESPONSEENVELOPE_METADATA ] === Constants.Z_NOTHING ) {
+				var metadata = state.zTesterMetadata[ key ];
+				if ( !metadata || metadata === Constants.Z_VOID ) {
 					return '';
 				}
 
-				var errorResponse = result[ Constants.Z_RESPONSEENVELOPE_METADATA ];
+				var errorResponse;
+				// Allow for an error object here, for backwards compatibility
+				if ( metadata[ Constants.Z_OBJECT_TYPE ] === Constants.Z_ERROR ) {
+					errorResponse = metadata;
+				} else {
+					errorResponse = getValueFromCanonicalZMap( metadata, 'errors' );
+				}
+				if ( !errorResponse ) {
+					return '';
+				}
+
+				// FIXME: Could use messageForError, from portray.js, for what's below.  But first check if
+				//  getZTesterFailReason might go away; see T314079.
 				if ( errorResponse[ Constants.Z_ERROR_VALUE ] ) {
 					return errorResponse[ Constants.Z_ERROR_VALUE ];
 				}
@@ -127,11 +138,7 @@ module.exports = exports = {
 			return function ( zFunctionId, zTesterId, zImplementationId ) {
 				var key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
 
-				if ( state.errorState ) {
-					return {
-						duration: 0
-					};
-				}
+				// TODO(T314267): Check for and handle state.errorState = true
 
 				return state.zTesterMetadata[ key ];
 			};
@@ -153,9 +160,8 @@ module.exports = exports = {
 					passing = results.filter( function ( key ) {
 						var result = state.zTesterResults[ key ];
 						return result &&
-						result[ Constants.Z_RESPONSEENVELOPE_VALUE ] !== Constants.Z_NOTHING &&
-						result[ Constants.Z_RESPONSEENVELOPE_VALUE ][ Constants.Z_BOOLEAN_IDENTITY ] ===
-							Constants.Z_BOOLEAN_TRUE;
+							( result === Constants.Z_BOOLEAN_TRUE ||
+								( typeof result === 'object' && result[ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE ) );
 					} ).length,
 					percentage = Math.round( ( passing / total ) * 100 ) || 0;
 
@@ -280,8 +286,7 @@ module.exports = exports = {
 				// eslint-disable-next-line camelcase
 				wikilambda_perform_test_nocache: payload.nocache || false
 			} ).then( function ( data ) {
-				var results = JSON.parse( data.query.wikilambda_perform_test.data );
-
+				var results = data.query.wikilambda_perform_test;
 				if ( !Array.isArray( results ) &&
 						results[ Constants.Z_RESPONSEENVELOPE_METADATA ] !== Constants.Z_NOTHING ) {
 					throw new Error(
@@ -296,17 +301,15 @@ module.exports = exports = {
 				}
 
 				results.forEach( function ( testResult ) {
-					var metadata = testResult,
-						response = canonicalize( testResult.validationResponse ),
+					var status = canonicalize( JSON.parse( testResult.validateStatus ) ),
+						metadata = canonicalize( JSON.parse( testResult.testMetadata ) ),
 						key = ( testResult.zFunctionId || Constants.NEW_ZID_PLACEHOLDER ) + ':' + ( testResult.zTesterId || Constants.NEW_ZID_PLACEHOLDER ) + ':' + ( testResult.zImplementationId || Constants.NEW_ZID_PLACEHOLDER );
-
-					delete metadata.validationResponse;
 
 					// Store result
 					context.commit( 'setZTesterResult', {
 						key: key,
-						result: response,
-						metadata: testResult
+						result: status,
+						metadata: metadata
 					} );
 				} );
 

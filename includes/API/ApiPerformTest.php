@@ -143,6 +143,8 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 				// Execute the test case function call
 				$testResultObject = $this->executeFunctionCall( $testFunctionCall, true );
+				$testMetadata = $testResultObject->getValueByKey(
+					ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA );
 
 				// Use tester to create a function call validating the output
 				$validateTestValue = $testResultObject->hasErrors() ?
@@ -164,6 +166,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 						ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE,
 						new ZReference( ZTypeRegistry::Z_BOOLEAN_FALSE )
 					);
+					// FIXME: Add to $testMetadata: validateErrors: $validateResult->getErrors();
 				}
 
 				$validateResultItem = $validateResult->getZValue();
@@ -197,7 +200,9 @@ class ApiPerformTest extends WikiLambdaApiBase {
 						)
 					)
 				) {
-					// FIXME: If it failed, write the expected and actual values to the $validateResult object
+					// FIXME: If it failed, write the expected and actual values to the $testMetadata object
+					//  actual: $validateTestValue
+					//  expected: $validateFunctionCall->getValueByKey($targetValidationFunctionZID . 'K2' )
 				}
 
 				// TODO (T297707): Store this response in a DB table for faster future responses.
@@ -206,7 +211,9 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				$testResult = [ 'zFunctionId' => $zfunction,
 					'zImplementationId' => $implementationName,
 					'zTesterId' => $testerName,
-					'validationResponse' => $validateResult ];
+					'testMetadata' => $testMetadata,
+					'validateStatus' => $validateResultItem
+				];
 				$responseArray[] = $testResult;
 			}
 		}
