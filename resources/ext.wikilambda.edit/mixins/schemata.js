@@ -167,9 +167,9 @@ function getValueFromCanonicalZMap( zMap, key ) {
 			( currentKey[ Constants.Z_OBJECT_TYPE ] === Constants.Z_STRING &&
 				key[ Constants.Z_OBJECT_TYPE ] === Constants.Z_STRING &&
 				currentKey[ Constants.Z_STRING_VALUE ] === key[ Constants.Z_STRING_VALUE ] ) ||
-			( currentKey[ Constants.Z_OBJECT_TYPE ] === 'Z39' &&
-				key[ Constants.Z_OBJECT_TYPE ] === 'Z39' &&
-				currentKey.Z39K1 === key.Z39K1 ) ) {
+			( currentKey[ Constants.Z_OBJECT_TYPE ] === Constants.Z_KEY_REFERENCE &&
+				key[ Constants.Z_OBJECT_TYPE ] === Constants.Z_KEY_REFERENCE &&
+				currentKey[ Constants.Z_KEY_REFERENCE_ID ] === key[ Constants.Z_KEY_REFERENCE_ID ] ) ) {
 			return entry[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ];
 		}
 	}
