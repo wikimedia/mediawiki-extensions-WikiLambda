@@ -42,6 +42,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		// 4. Finds conflicting labels, e.g. existing labels from other ZIDs that have same language-value
 		// 5. Saves conflicting labels in wikilambda_zobject_label_conflicts and
 		// 6. Saves non-conflicting labels in wikilambda_zobject_labels
+		// 7. If appropriate, clear wikilambda_ztester_results for this ZID
 
 		// TODO (T300522): Only re-write the labels if they've changed.
 		// TODO (T300522): Use a single fancy upsert to remove/update/insert instead?
@@ -109,6 +110,19 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 				$zObjectStore->deleteZFunctionReference( $zid );
 				$zObjectStore->insertZFunctionReference( $zid, $zFunction->getZValue(), $ztype );
 			}
+		}
+
+		// If appropriate, clear wikilambda_ztester_results for this ZID
+		if ( $ztype === ZTypeRegistry::Z_FUNCTION ) {
+			$zObjectStore->deleteZFunctionFromZTesterResultsCache( $zid );
+		}
+
+		if ( $ztype === ZTypeRegistry::Z_IMPLEMENTATION ) {
+			$zObjectStore->deleteZImplementationFromZTesterResultsCache( $zid );
+		}
+
+		if ( $ztype === ZTypeRegistry::Z_TESTER ) {
+			$zObjectStore->deleteZTesterFromZTesterResultsCache( $zid );
 		}
 	}
 }

@@ -14,8 +14,10 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectPage;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\MediaWikiServices;
+use stdClass;
 use Title;
 use Wikimedia\Rdbms\IResultWrapper;
 
@@ -24,6 +26,9 @@ use Wikimedia\Rdbms\IResultWrapper;
  * @group Database
  */
 class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
+
+	/** @var string */
+	private static $testResponse = '{ "Z1K1": "Z22", "Z22K1": "Z24", "Z22K2": "Z24" }';
 
 	/** @var ZObjectStore */
 	protected $zobjectStore;
@@ -925,5 +930,191 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			'The secondary labels table has been cleared of the given zids' );
 		$this->assertSame( 1, $resConflicts->numRows(),
 			'The secondary label conflicts table has been cleared of the given zids' );
+	}
+
+	private function injectZTesterResults(): void {
+		$this->zobjectStore->insertZTesterResult(
+			'Z410', 1, 'Z401', 2, 'Z402', 3, true, self::$testResponse
+		);
+		$this->zobjectStore->insertZTesterResult(
+			'Z410', 1, 'Z401', 2, 'Z403', 4, false, self::$testResponse
+		);
+		$this->zobjectStore->insertZTesterResult(
+			'Z410', 1, 'Z401', 2, 'Z404', 5, true, self::$testResponse
+		);
+	}
+
+	private function getZTesterResultsFromDB( string $functionZid ): IResultWrapper {
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_REPLICA );
+		return $dbr->newSelectQueryBuilder()
+			->select( [ 'wlztr_pass', 'wlztr_returnobject' ] )
+			->from( 'wikilambda_ztester_results' )
+			->where( [
+				'wlztr_zfunction_zid' => $functionZid,
+			] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+	}
+
+	/**
+	 * @covers ::insertZTesterResult
+	 * @covers ::findZTesterResult
+	 */
+	public function testInsertZTesterResult() {
+		$this->injectZTesterResults();
+
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_REPLICA );
+		$res = $this->getZTesterResultsFromDB( 'Z410' );
+
+		$this->assertSame( 3, $res->numRows() );
+
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlztr_pass', 'wlztr_returnobject' ] )
+			->from( 'wikilambda_ztester_results' )
+			->where( [
+				'wlztr_zfunction_zid' => 'Z410',
+				'wlztr_zimplementation_zid' => 'Z401',
+				'wlztr_ztester_zid' => 'Z402',
+			] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$this->assertSame( 1, $res->numRows() );
+
+		$result = $res->fetchRow();
+
+		$this->assertTrue( (bool)$result['wlztr_pass'] );
+
+		$resultEnvelopeString = $result['wlztr_returnobject'];
+		$this->assertStringContainsString( 'Z22', $resultEnvelopeString );
+
+		$resultEnvelopeObject = json_decode( $resultEnvelopeString );
+		$this->assertTrue( $resultEnvelopeObject instanceof stdClass );
+
+		$findRes = $this->zobjectStore->findZTesterResult( 'Z410', null, 'Z401', null, 'Z402', null );
+		$this->assertTrue( $findRes instanceof ZResponseEnvelope );
+	}
+
+	/**
+	 * @covers ::insertZTesterResult
+	 * @covers ::findZTesterResult
+	 */
+	public function testInsertZTesterResult_invalidContent() {
+		$this->zobjectStore->insertZTesterResult(
+			'Z410', 1, 'Z401', 2, 'Z402', 3, true, 'Hello I am an erroneous input'
+		);
+
+		$findRes = $this->zobjectStore->findZTesterResult( 'Z410', null, 'Z401', null, 'Z402', null );
+		$this->assertNull( $findRes );
+	}
+
+	/**
+	 * @covers ::deleteFromTesterResultsSecondaryTables
+	 */
+	public function testDeleteFromTesterResultsSecondaryTables() {
+		$this->injectZTesterResults();
+
+		$res = $this->getZTesterResultsFromDB( 'Z410' );
+
+		$this->assertSame( 3, $res->numRows() );
+
+		$this->zobjectStore->deleteFromTesterResultsSecondaryTables( [ 'Z410' ] );
+
+		$res = $this->getZTesterResultsFromDB( 'Z410' );
+
+		$this->assertSame( 0, $res->numRows() );
+	}
+
+	/**
+	 * @covers ::deleteZFunctionFromZTesterResultsCache
+	 */
+	public function testDeleteZFunctionFromZTesterResultsCache() {
+		$this->injectZTesterResults();
+
+		$res = $this->getZTesterResultsFromDB( 'Z410' );
+
+		$this->assertSame( 3, $res->numRows() );
+
+		$this->zobjectStore->deleteZFunctionFromZTesterResultsCache( 'Z410' );
+
+		$res = $this->getZTesterResultsFromDB( 'Z410' );
+
+		$this->assertSame( 0, $res->numRows() );
+	}
+
+	/**
+	 * @covers ::deleteZImplementationFromZTesterResultsCache
+	 */
+	public function testDeleteZImplementationFromZTesterResultsCache() {
+		$this->injectZTesterResults();
+
+		$res = $this->getZTesterResultsFromDB( 'Z410' );
+
+		$this->assertSame( 3, $res->numRows() );
+
+		$this->zobjectStore->deleteZImplementationFromZTesterResultsCache( 'Z401' );
+
+		$res = $this->getZTesterResultsFromDB( 'Z410' );
+
+		$this->assertSame( 0, $res->numRows() );
+	}
+
+	/**
+	 * @covers ::deleteZTesterFromZTesterResultsCache
+	 */
+	public function testDeleteZTesterFromZTesterResultsCache() {
+		$this->injectZTesterResults();
+
+		$this->zobjectStore->deleteZTesterFromZTesterResultsCache( 'Z402' );
+
+		$res = $this->getZTesterResultsFromDB( 'Z410' );
+
+		$this->assertSame( 2, $res->numRows() );
+
+		$this->zobjectStore->deleteZTesterFromZTesterResultsCache( 'Z403' );
+
+		$res = $this->getZTesterResultsFromDB( 'Z410' );
+
+		$this->assertSame( 1, $res->numRows() );
+
+		$this->zobjectStore->deleteZTesterFromZTesterResultsCache( 'Z404' );
+
+		$res = $this->getZTesterResultsFromDB( 'Z410' );
+
+		$this->assertSame( 0, $res->numRows() );
+	}
+
+	/**
+	 * @covers ::clearTesterResultsSecondaryTables
+	 */
+	public function testClearTesterResultsSecondaryTables() {
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_REPLICA );
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlztr_pass', 'wlztr_returnobject' ] )
+			->from( 'wikilambda_ztester_results' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$this->assertSame( 0, $res->numRows() );
+
+		$this->injectZTesterResults();
+
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlztr_pass', 'wlztr_returnobject' ] )
+			->from( 'wikilambda_ztester_results' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$this->assertSame( 3, $res->numRows() );
+
+		$this->zobjectStore->clearTesterResultsSecondaryTables();
+
+		$res = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlztr_pass', 'wlztr_returnobject' ] )
+			->from( 'wikilambda_ztester_results' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
+
+		$this->assertSame( 0, $res->numRows() );
 	}
 }

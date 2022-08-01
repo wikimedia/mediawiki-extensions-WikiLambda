@@ -14,6 +14,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPageFactory;
@@ -826,13 +827,202 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Search test run results in the secondary tester results table; the latest result (highest
+	 * database ID) will be used.
+	 *
+	 * @param ?string $functionZID The ZID of the ZFunction
+	 * @param ?int $functionRevision The revision ID of the ZFunction
+	 * @param ?string $implementationZID The ZID of the ZImplementation
+	 * @param ?int $implementationRevision The revision ID of the ZImplementation
+	 * @param ?string $testerZID The ZID of the ZTester
+	 * @param ?int $testerRevision The revision ID of the ZTester
+	 * @return ?ZResponseEnvelope
+	 */
+	public function findZTesterResult(
+		?string $functionZID,
+		?int $functionRevision,
+		?string $implementationZID,
+		?int $implementationRevision,
+		?string $testerZID,
+		?int $testerRevision
+	) {
+		$dbr = $this->loadBalancer->getConnection( DB_REPLICA );
+
+		$purgeableResults = [];
+		$conditions = [];
+		if ( $functionZID !== null ) {
+			$conditions[] = "wlztr_zfunction_zid = " . $dbr->addQuotes( $functionZID );
+			$purgeableResults[] = $functionZID;
+		}
+		if ( $functionRevision !== null ) {
+			$conditions[] = "wlztr_zfunction_revision = " . $dbr->addQuotes( $functionRevision );
+		}
+		if ( $implementationZID !== null ) {
+			$conditions[] = "wlztr_zimplementation_zid = " . $dbr->addQuotes( $implementationZID );
+			$purgeableResults[] = $implementationZID;
+		}
+		if ( $implementationRevision !== null ) {
+			$conditions[] = "wlztr_zimplementation_revision = " . $dbr->addQuotes( $implementationRevision );
+		}
+		if ( $testerZID !== null ) {
+			$conditions[] = "wlztr_ztester_zid = " . $dbr->addQuotes( $testerZID );
+			$purgeableResults[] = $testerZID;
+		}
+		if ( $testerRevision !== null ) {
+			$conditions[] = "wlztr_ztester_revision = " . $dbr->addQuotes( $testerRevision );
+		}
+
+		$res = $dbr->select(
+			/* FROM */ 'wikilambda_ztester_results',
+			/* SELECT */ [
+				'wlztr_id',
+				'wlztr_zfunction_zid', 'wlztr_zfunction_revision',
+				'wlztr_zimplementation_zid', 'wlztr_zimplementation_revision',
+				'wlztr_ztester_zid', 'wlztr_ztester_revision',
+				'wlztr_pass',
+				'wlztr_returnobject'
+			],
+			/* WHERE */ $dbr->makeList( $conditions, $dbr::LIST_AND ),
+			__METHOD__,
+			[
+				'ORDER BY' => 'wlztr_id DESC',
+				'LIMIT' => 1,
+			]
+		);
+
+		if ( $res->numRows() == 0 ) {
+			return null;
+		}
+
+		$result = $res->fetchRow();
+		try {
+			$responseObjectString = $result['wlztr_returnobject'];
+			$responseObject = ZObjectFactory::create( json_decode( $responseObjectString ) );
+			if ( $responseObject instanceof ZResponseEnvelope ) {
+				return $responseObject;
+			}
+
+			// Something's gone wrong, somehow
+			wfDebug( __METHOD__ . ' retrieved a non-ZResponseEnvelope: ' . $responseObjectString );
+		} catch ( \Throwable $th ) {
+			// Something's gone differently wrong, somehow
+			wfDebug( __METHOD__ . ' threw from ZObjectFactory.' );
+		}
+
+		return null;
+	}
+
+	/**
+	 * Cache a test run result in the secondary tester results table
+	 *
+	 * @param string $functionZID The ZID of the ZFunction
+	 * @param int $functionRevision The revision ID of the ZFunction
+	 * @param string $implementationZID The ZID of the ZImplementation
+	 * @param int $implementationRevision The revision ID of the ZImplementation
+	 * @param string $testerZID The ZID of the ZTester
+	 * @param int $testerRevision The revision ID of the ZTester
+	 * @param bool $testerResult Whether the test run passed (true) or failed (false)
+	 * @param string $testerResponse The test run response JSON object
+	 * @return bool
+	 */
+	public function insertZTesterResult(
+		string $functionZID,
+		int $functionRevision,
+		string $implementationZID,
+		int $implementationRevision,
+		string $testerZID,
+		int $testerRevision,
+		bool $testerResult,
+		string $testerResponse
+	): bool {
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+
+		$dbw->upsert(
+			'wikilambda_ztester_results',
+			[
+				'wlztr_zfunction_zid' => $functionZID,
+				'wlztr_zfunction_revision' => $functionRevision,
+				'wlztr_zimplementation_zid' => $implementationZID,
+				'wlztr_zimplementation_revision' => $implementationRevision,
+				'wlztr_ztester_zid' => $testerZID,
+				'wlztr_ztester_revision' => $testerRevision,
+				'wlztr_pass' => $testerResult,
+				'wlztr_returnobject' => $testerResponse,
+			],
+			[
+				[
+					'wlztr_zfunction_revision',
+					'wlztr_zimplementation_revision',
+					'wlztr_ztester_revision'
+
+				]
+			],
+			[
+				'wlztr_pass' => $testerResult,
+				'wlztr_returnobject' => $testerResponse,
+			],
+			__METHOD__
+		);
+
+		return (bool)$dbw->affectedRows();
+	}
+
+	/**
+	 * Remove a given ZFunction's results from the secondary tester results table.
+	 *
+	 * @param string $refId the ZID of the ZFunction whose results you wish to delete
+	 * @return void
+	 */
+	public function deleteZFunctionFromZTesterResultsCache( string $refId ): void {
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+
+		$dbw->delete(
+			'wikilambda_ztester_results',
+			[ 'wlztr_zfunction_zid' => $refId ],
+			__METHOD__
+		);
+	}
+
+	/**
+	 * Remove a given ZImplementation's results from the secondary tester results table.
+	 *
+	 * @param string $refId the ZID of the ZImplementation whose results you wish to delete
+	 * @return void
+	 */
+	public function deleteZImplementationFromZTesterResultsCache( string $refId ): void {
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+
+		$dbw->delete(
+			'wikilambda_ztester_results',
+			[ 'wlztr_zimplementation_zid' => $refId ],
+			__METHOD__
+		);
+	}
+
+	/**
+	 * Remove a given ZTester's results from the secondary tester results table.
+	 *
+	 * @param string $refId the ZID of the ZTester whose results you wish to delete
+	 * @return void
+	 */
+	public function deleteZTesterFromZTesterResultsCache( string $refId ): void {
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+
+		$dbw->delete(
+			'wikilambda_ztester_results',
+			[ 'wlztr_ztester_zid' => $refId ],
+			__METHOD__
+		);
+	}
+
+	/**
 	 * Delete data related to the given zids from the secondary labels table.
 	 * This method is only for its use by reloadBuiltinData with the --force flag.
 	 *
-	 * @param string[] $zids list of zids to clear, if null, clear all rows
+	 * @param string[] $zids list of zids to clear
 	 * @return void
 	 */
-	public function deleteFromLabelsSecondaryTables( $zids ): void {
+	public function deleteFromLabelsSecondaryTables( array $zids ): void {
 		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
 		$dbw->delete(
 			/* FROM */ 'wikilambda_zobject_labels',
@@ -850,10 +1040,10 @@ class ZObjectStore {
 	 * Delete data related to the given zids from the secondary function joins table.
 	 * This method is only for its use by reloadBuiltinData with the --force flag.
 	 *
-	 * @param string[] $zids list of zids to clear, if null, clear all rows
+	 * @param string[] $zids list of zids to clear
 	 * @return void
 	 */
-	public function deleteFromFunctionsSecondaryTables( $zids ): void {
+	public function deleteFromFunctionsSecondaryTables( array $zids ): void {
 		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
 		$dbw->delete(
 			/* FROM */ 'wikilambda_zobject_function_join',
@@ -861,6 +1051,29 @@ class ZObjectStore {
 				[
 					'wlzf_zfunction_zid' => $zids,
 					'wlzf_ref_zid' => $zids
+				],
+				$dbw::LIST_OR
+			),
+			__METHOD__
+		);
+	}
+
+	/**
+	 * Delete data related to the given zids from the secondary tester results table.
+	 * This method is only for its use by reloadBuiltinData with the --force flag.
+	 *
+	 * @param string[] $zids list of zids to clear
+	 * @return void
+	 */
+	public function deleteFromTesterResultsSecondaryTables( array $zids ): void {
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw->delete(
+			/* FROM */ 'wikilambda_ztester_results',
+			/* WHERE */ $dbw->makeList(
+				[
+					'wlztr_zfunction_zid' => $zids,
+					'wlztr_zimplementation_zid' => $zids,
+					'wlztr_ztester_zid' => $zids
 				],
 				$dbw::LIST_OR
 			),
@@ -890,4 +1103,16 @@ class ZObjectStore {
 		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
 		$dbw->delete( 'wikilambda_zobject_function_join', IDatabase::ALL_ROWS, __METHOD__ );
 	}
+
+	/**
+	 * Clear all data from the secondary tester results table. This method
+	 * is only for its use by reloadBuiltinData with the --force flag.
+	 *
+	 * @return void
+	 */
+	public function clearTesterResultsSecondaryTables(): void {
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw->delete( 'wikilambda_ztester_results', IDatabase::ALL_ROWS, __METHOD__ );
+	}
+
 }

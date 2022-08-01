@@ -67,19 +67,23 @@ class ApiPerformTest extends WikiLambdaApiBase {
 	private function run( $resultPageSet = null ) {
 		$params = $this->extractRequestParams();
 		$pageResult = $this->getResult();
-		$zfunction = $params[ 'zfunction' ];
+		$functionZid = $params[ 'zfunction' ];
 		$requestedImplementations = $params[ 'zimplementations' ] ?: [];
 		$requestedTesters = $params[ 'ztesters' ] ?: [];
 
 		// 1. Work out matrix of what we want for what
 		// FIXME: Handle an inline ZFunction (for when it's not been created yet)?
-		$targetTitle = Title::newFromText( $zfunction, NS_MAIN );
+		$targetTitle = Title::newFromText( $functionZid, NS_MAIN );
 		if ( !( $targetTitle->exists() ) ) {
-			$this->dieWithError( [ "wikilambda-performtest-error-unknown-zid", $zfunction ] );
+			$this->dieWithError( [ "wikilambda-performtest-error-unknown-zid", $functionZid ] );
 		}
+
+		// Needed for caching.
+		$functionRevision = $targetTitle->getLatestRevID();
+
 		$targetObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
 		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
-			$this->dieWithError( [ "wikilambda-performtest-error-nonfunction", $zfunction ] );
+			$this->dieWithError( [ "wikilambda-performtest-error-nonfunction", $functionZid ] );
 		}
 
 		$targetFunction = $targetObject->getInnerZObject();
@@ -100,15 +104,24 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		// 2. For each implementation, run each tester
 		$responseArray = [];
 		foreach ( $requestedImplementations as $implementation ) {
+			$inlineImplementation = false;
 			if ( is_string( $implementation ) ) {
 				$decodedJson = FormatJson::decode( $implementation );
 				// If not JSON, assume we have received a ZID.
-				$implementation = $decodedJson
-					? ZObjectFactory::create( $decodedJson )
-					: new ZReference( $implementation );
+				if ( $decodedJson ) {
+					$inlineImplementation = true;
+					$implementation = ZObjectFactory::create( $decodedJson );
+				} else {
+					$implementation = new ZReference( $implementation );
+				}
 			}
 			$implementationZid = $this->getZid( $implementation );
 			$implementationListEntry = $this->getImplementationListEntry( $implementation );
+
+			// Note that the Implementation ZID can be non-Z0 if it's being run on an unsaved edit.
+			$implementationRevision = $inlineImplementation
+				? null
+				: Title::newFromText( $implementationZid, NS_MAIN )->getLatestRevID();
 
 			// Re-use our copy of the target function, setting the implementations to just the one
 			// we're testing now
@@ -120,31 +133,71 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				)
 			);
 			foreach ( $requestedTesters as $requestedTester ) {
+				$passed = true;
+				$testResult = [
+					'zFunctionId' => $functionZid,
+					'zImplementationId' => $implementationZid,
+				];
+
+				$inlineTester = false;
 				if ( is_string( $requestedTester ) ) {
 					$decodedJson = FormatJson::decode( $requestedTester );
 					// If not JSON, assume we have received a ZID.
-					$requestedTester = $decodedJson
-						? ZObjectFactory::create( $decodedJson )
-						: new ZReference( $requestedTester );
+					if ( $decodedJson ) {
+						$inlineTester = true;
+						$requestedTester = ZObjectFactory::create( $decodedJson );
+					} else {
+						$requestedTester = new ZReference( $requestedTester );
+					}
 				}
+
 				$testerZid = $this->getZid( $requestedTester );
+				$testResult[ 'zTesterId' ] = $testerZid;
 				$testerObject = $this->getTesterObject( $requestedTester );
 
-				// TODO (T297707): Work out if this has been cached before (check revisions of objects?), and
-				// if so reply with that instead of executing.
+				// Note that the Tester ZID can be non-Z0 if it's being run on an unsaved edit.
+				$testerRevision = $inlineTester
+					? null
+					: Title::newFromText( $testerZid, NS_MAIN )->getLatestRevID();
+
+				// (T297707): Work out if this has been cached before (checking revisions of objects),
+				// and if so reply with that instead of executing.
+				if ( !$inlineImplementation && !$inlineTester ) {
+					$possiblyCachedResult = $this->zObjectStore->findZTesterResult(
+						$functionZid,
+						$functionRevision,
+						$implementationZid,
+						$implementationRevision,
+						$testerZid,
+						$testerRevision,
+					);
+
+					if ( $possiblyCachedResult ) {
+						$possiblyCachedResult->setMetaDataValue(
+							"loadedFromMediaWikiCache",
+							new ZString( date( 'Y-m-d\TH:i:s\Z' ) )
+						);
+
+						wfDebug( 'Cache result hit: ' . $possiblyCachedResult->getZValue() );
+						$testResult[ 'validateStatus' ] = $possiblyCachedResult->getZValue();
+						$testResult[ 'testMetadata'] = $possiblyCachedResult->getZMetadata();
+
+						$responseArray[] = $testResult;
+						continue;
+					}
+				}
 
 				// Use tester to create a function call of the test case inputs
 				$testFunctionCall = $testerObject->getValueByKey( ZTypeRegistry::Z_TESTER_CALL );
 				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall $testFunctionCall';
 
-				// Set the target function of the cal too our modified copy of the target function with only the
+				// Set the target function of the call to our modified copy of the target function with only the
 				// current implementation
 				$testFunctionCall->setValueByKey( ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION, $targetFunction );
 
 				// Execute the test case function call
 				$testResultObject = $this->executeFunctionCall( $testFunctionCall, true );
-				$testMetadata = $testResultObject->getValueByKey(
-					ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA );
+				$testMetadata = $testResultObject->getValueByKey( ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA );
 				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap $testMetadata';
 
 				// Use tester to create a function call validating the output
@@ -168,30 +221,52 @@ class ApiPerformTest extends WikiLambdaApiBase {
 						new ZReference( ZTypeRegistry::Z_BOOLEAN_FALSE )
 					);
 					// Add the validator errors to the metadata map
-					$testMetadata->setValueForKey( new ZString( "validateErrors" ),
+					$testMetadata->setValueForKey(
+						new ZString( "validateErrors" ),
 						$validateResult->getErrors() );
 				}
 
 				$validateResultItem = $validateResult->getZValue();
 
 				if ( $this->isFalse( $validateResultItem ) ) {
+					$passed = false;
 					// Add the expected and actual values to the metadata map
-					$testMetadata->setValueForKey( new ZString( "actualTestResult" ),
-						$validateTestValue );
-					$testMetadata->setValueForKey( new ZString( "expectedTestResult" ),
-						$validateFunctionCall->getValueByKey( $targetValidationFunctionZID . 'K2'
-						) );
+					$testMetadata->setValueForKey(
+						new ZString( "actualTestResult" ),
+						$validateTestValue
+					);
+					$testMetadata->setValueForKey(
+						new ZString( "expectedTestResult" ),
+						$validateFunctionCall->getValueByKey( $targetValidationFunctionZID . 'K2' )
+					);
 				}
 
-				// TODO (T297707): Store this response in a DB table for faster future responses.
+				// (T297707): Store this response in a DB table for faster future responses.
+				// We can only do this for persisted revisions, not inline items, as we can't
+				// version them otherwise, so use truthiness (neither null nor 0, non-extant).
+				// We also only do this if the validation step didn't have an error itself.
+				if (
+					!$inlineImplementation && !$inlineTester &&
+					!$validateResult->hasErrors()
+				) {
+					// Store a fake ZResponseEnvelope of the validation result and the real meta-data run
+					$stashedResult = new ZResponseEnvelope( $validateResultItem, $testMetadata );
+
+					$this->zObjectStore->insertZTesterResult(
+						$functionZid,
+						$functionRevision,
+						$implementationZid,
+						$implementationRevision,
+						$testerZid,
+						$testerRevision,
+						$passed,
+						$stashedResult->__toString()
+					);
+				}
 
 				// Stash the response
-				$testResult = [ 'zFunctionId' => $zfunction,
-					'zImplementationId' => $implementationZid,
-					'zTesterId' => $testerZid,
-					'testMetadata' => $testMetadata,
-					'validateStatus' => $validateResultItem
-				];
+				$testResult[ 'validateStatus'] = $validateResultItem;
+				$testResult[ 'testMetadata' ] = $testMetadata;
 				$responseArray[] = $testResult;
 			}
 		}
@@ -236,7 +311,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		}
 	}
 
-	private function getZid( $zobject ) {
+	private function getZid( $zobject ): string {
 		if ( $zobject->getZType() === ZTypeRegistry::Z_REFERENCE ) {
 			return $zobject->getValueByKey( ZTypeRegistry::Z_REFERENCE_VALUE );
 		} elseif ( $zobject->getZType() === ZTypeRegistry::Z_PERSISTENTOBJECT ) {

@@ -157,6 +157,25 @@ class ZResponseEnvelope extends ZObject {
 	}
 
 	/**
+	 * Set the meta-data in the response envelope to the given key.
+	 *
+	 * @param ZString|string $key The key to use
+	 * @param ZObject $value The value to set
+	 */
+	public function setMetaDataValue( $key, ZObject $value ) {
+		$metaData = $this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ];
+
+		if ( !( $metaData instanceof ZTypedMap ) ) {
+			$metaData = self::wrapInResponseMap( $key, $value );
+		} else {
+			$key = $key instanceof ZString ?: new ZString( $key );
+			$metaData->setValueForKey( $key, $value );
+		}
+
+		$this->data[ ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA ] = $metaData;
+	}
+
+	/**
 	 * Convenience method to make a ZTypedMap for a ZResponseEnvelope with a
 	 * given key/value pair
 	 *
