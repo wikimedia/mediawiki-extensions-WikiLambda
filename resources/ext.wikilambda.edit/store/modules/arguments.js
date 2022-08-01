@@ -96,7 +96,8 @@ module.exports = exports = {
 						JSON.parse( JSON.stringify( context.getters.getZObjectAsJson ) )
 					);
 				} else {
-					zobject = context.getters.getZkeys[ zFunctionId ];
+					// "JSON.parse( JSON.stringify() )" is to prevent zobject from updating Zkeys state when reassigned.
+					zobject = JSON.parse( JSON.stringify( context.getters.getZkeys[ zFunctionId ] ) );
 				}
 
 				if ( !zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] ) {
