@@ -278,10 +278,6 @@ module.exports = exports = {
 
 <style lang="less">
 .ext-wikilambda-zimplementation {
-	&__mode-selector {
-		z-index: 500;
-	}
-
 	&__is-impl-associated {
 		font-size: 0.8em;
 		font-style: italic;
