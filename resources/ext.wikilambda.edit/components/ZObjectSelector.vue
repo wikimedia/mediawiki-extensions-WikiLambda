@@ -18,6 +18,7 @@
 		</a>
 		<cdx-lookup
 			v-else
+			:key="lookupKey"
 			:selected="selectedId"
 			:class="{ 'ext-wikilambda-zkey-input-invalid': validatorIsInvalid }"
 			:placeholder="lookupPlaceholder"
@@ -102,7 +103,8 @@ module.exports = exports = {
 			lookupDelayTimer: null,
 			lookupDelayMs: 300,
 			inputValue: '',
-			valueEmitted: false
+			valueEmitted: false,
+			lookupKey: 1
 		};
 	},
 	computed: $.extend( {},
@@ -305,6 +307,7 @@ module.exports = exports = {
 			clearResults: function () {
 				this.lookupResults = [];
 				this.inputValue = '';
+				this.lookupKey += 1;
 			},
 			/**
 			 * On lookup field input, set a timer so that the lookup is not done immediately.

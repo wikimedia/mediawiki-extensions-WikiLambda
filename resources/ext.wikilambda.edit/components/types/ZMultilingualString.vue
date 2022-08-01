@@ -16,6 +16,7 @@
 		<div class="ext-wikilambda-monolingual">
 			<z-object-selector
 				v-if="!( readonly || getViewMode )"
+				ref="langSelector"
 				:used-languages="usedLanguages"
 				:type="Constants.Z_NATURAL_LANGUAGE"
 				@input="addNewLang"
@@ -122,6 +123,7 @@ module.exports = exports = {
 						parentId: this.monolingualStringsParentId
 					};
 				this.addZMonolingualString( payload );
+				this.$refs.langSelector.clearResults();
 			},
 
 			/**
