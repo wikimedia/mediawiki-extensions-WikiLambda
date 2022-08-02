@@ -36,7 +36,7 @@
 			</div>
 			<cdx-button
 				v-if="isNewZObject"
-				@click="navigateToFunctionEditor( Constants.Z_FUNCTION )">
+				@click="navigateToFunctionEditor">
 				{{ $i18n( 'wikilambda-create-function' ).text() }}
 			</cdx-button>
 			<cdx-button
@@ -140,11 +140,9 @@ module.exports = exports = {
 					type: type
 				} );
 			},
-			navigateToFunctionEditor: function () {
-				this.changePersistentObjectValue( Constants.Z_FUNCTION ).then( function () {
-					this.navigate( { to: Constants.VIEWS.FUNCTION_EDITOR } );
-				}.bind( this ) );
 
+			navigateToFunctionEditor: function () {
+				this.navigate( { to: Constants.VIEWS.FUNCTION_EDITOR } );
 			}
 		}
 	)
