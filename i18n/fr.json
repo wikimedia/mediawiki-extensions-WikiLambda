@@ -27,7 +27,7 @@
 	"wikilambda-persistentzobject": "Z-Objet",
 	"wikilambda-persistentzobject-metadata": "Libellés et alias",
 	"wikilambda-persistentzobject-contents": "Contenu",
-	"wikilambda-multilingualstring-nofallback": "Aucun libellé défini dans cette langue ni de valeur par défaut acceptée.",
+	"wikilambda-multilingualstring-nofallback": "Aucun libellé défini dans cette langue ni dans les langues de repli acceptées.",
 	"wikilambda-viewmode-nojs": "Affichage réduit de cette page sans Javascript.",
 	"wikilambda-diff-incompatible": "Le système ne peut pas afficher les différences entre un Z-Objet et un non-Z-Objet.",
 	"wikilambda-reference": "Référence",

@@ -2,13 +2,14 @@
 	"@metadata": {
 		"authors": [
 			"GuoPC",
-			"Zhang8569"
+			"Zhang8569",
+			"Stang"
 		]
 	},
 	"apihelp-wikilambda_function_call-example-composition": "调用组合：如果第一个参数为真，则排序第二个；否则，原封不动地退回",
 	"apihelp-wikilambda_function_call-example-native-js-code": "调用用户编写的JavaScript代码",
 	"apihelp-wikilambda_function_call-example-native-python-code": "调用用户编写的Python 3代码",
-	"apierror-query+wikilambdaload_zobjects-unloadable": "ZObjectStore无法为“$1”载入页面。",
+	"apierror-query+wikilambdaload_zobjects-unloadable": "ZObjectStore无法为“$1”加载页面。",
 	"apierror-query+wikilambdaload_zobjects-notzobject": "ZObjectStore为“$1”加载了一个非ZObject。",
 	"apihelp-wikilambda_perform_test-param-nocache": "是否使用缓存"
 }

@@ -4,7 +4,10 @@
 			"Yupik"
 		]
 	},
+	"content-model-zobject": "ZObjeʹktt",
+	"wikilambda-emptylabel": "Nõõmteʹmes ZObjeʹktt",
 	"wikilambda-history-title": "Seeid \"$1\" ($2) muʹttemhistoria",
+	"wikilambda-persistentzobject": "ZObjeʹktt",
 	"wikilambda-reference": "Teâttkäivv",
 	"wikilambda-special-createzobject": "Raaj ođđ ZObjeeʹkt",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Ǩiõll",
@@ -13,11 +16,14 @@
 	"wikilambda-publishchanges": "Õlmstââʹtt muttsid",
 	"wikilambda-savechanges": "Ruõkk muttsid",
 	"wikilambda-summarylabel": "Õʹhtteǩeässmõš:",
+	"wikilambda-zobjectselector-label": "ZObjeʹktt",
 	"wikilambda-editor-label-addlanguage-label": "Lââʹzzet ǩiõl",
 	"wikilambda-editor-zobject-addkey": "Lââʹzzet čouddi:",
 	"wikilambda-implementation-selector-code": "Koodd",
 	"wikilambda-tester-status-failed": "IJ OʹNNSTAM",
 	"wikilambda-tester-function-duration": "Pešttmõš",
 	"wikilambda-metadata-language-column": "Ǩiõll",
-	"wikilambda-metadata-aka-column": "Toobdât še nõõmin leʹbe nõõmivuiʹm"
+	"wikilambda-metadata-label-column": "Nõmm",
+	"wikilambda-metadata-aka-column": "Toobdât še nõõmin leʹbe nõõmivuiʹm",
+	"wikilambda-persistentobject-details-label": "Teâđ"
 }
