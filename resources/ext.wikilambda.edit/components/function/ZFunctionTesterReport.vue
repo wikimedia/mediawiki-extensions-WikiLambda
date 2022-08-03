@@ -149,8 +149,8 @@ module.exports = exports = {
 		'getZTesterMetadata',
 		'getZTesterFailReason',
 		'getViewMode',
-		'getZImplementations',
-		'getZTesters'
+		'getAllZImplementations',
+		'getAllZTesters'
 	] ), {
 		implementations: function () {
 			if ( !this.zFunctionId || !this.getZkeys[ this.zFunctionId ] ) {
@@ -162,7 +162,7 @@ module.exports = exports = {
 			// if the current root element is actually a function
 			if ( this.getCurrentZObjectId === this.zFunctionId ) {
 				// we make a deep copy, otherwise we will change the original getters
-				implementations = implementations.concat( this.getZImplementations );
+				implementations = implementations.concat( this.getAllZImplementations );
 			} else {
 				// if we are viewing a single implementation or tester, fetch the info from the zKey
 				const fetched = this.getZkeys[ this.zFunctionId ][
@@ -186,7 +186,7 @@ module.exports = exports = {
 			var testers = [];
 			// if the current root element is actually a function
 			if ( this.getCurrentZObjectId === this.zFunctionId ) {
-				testers = testers.concat( this.getZTesters );
+				testers = testers.concat( this.getAllZTesters );
 			} else {
 				// if we are viewing a single implementation or tester, fetch the info from the zKey
 				const fetched = this.getZkeys[ this.zFunctionId ][

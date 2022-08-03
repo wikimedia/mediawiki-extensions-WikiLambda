@@ -69,10 +69,10 @@ module.exports = exports = {
 	},
 	computed: $.extend( {},
 		mapGetters( [
-			'getZTesters',
+			'getAllZTesters',
 			'getUnattachedZTesters',
 			'getZkeyLabels',
-			'getZImplementations',
+			'getAllZImplementations',
 			'getUnattachedZImplementations',
 			'getZkeys'
 		] ),
@@ -118,18 +118,20 @@ module.exports = exports = {
 			},
 			implementationBody: function () {
 				const tableData = [];
-
 				// iterate over each implementation for this function
-				for ( const item in this.getZImplementations ) {
+				for ( const item in this.getAllZImplementations ) {
 					// get the state of the implementation ( available | proposed )
 					let zImplementationState = this.$i18n( 'wikilambda-function-implementation-state-available' ).text();
-					if ( this.getUnattachedZImplementations.indexOf( this.getZImplementations[ item ] ) > -1 ) {
+					if ( this.isFunctionItemAttached(
+						this.getAllZImplementations[ item ],
+						this.getUnattachedZImplementations
+					) ) {
 						zImplementationState = this.$i18n( 'wikilambda-function-implementation-state-proposed' ).text();
 					}
 
 					// get the language of the implementation
 					var language = this.$i18n( 'wikilambda-implementation-selector-composition' );
-					var zImplementationObj = this.getZkeys[ this.getZImplementations[ item ] ];
+					var zImplementationObj = this.getZkeys[ this.getAllZImplementations[ item ] ];
 					if ( zImplementationObj && zImplementationObj[ Constants.Z_PERSISTENTOBJECT_VALUE ] &&
 						zImplementationObj[
 							Constants.Z_PERSISTENTOBJECT_VALUE
@@ -159,9 +161,9 @@ module.exports = exports = {
 
 					// for each implementation, store the checked state
 					// (used to determine the columns of the test table)
-					if ( !this.implementationIds[ this.getZImplementations[ item ] ] ) {
-						this.implementationIds[ this.getZImplementations[ item ] ] = {
-							zid: this.getZImplementations[ item ],
+					if ( !this.implementationIds[ this.getAllZImplementations[ item ] ] ) {
+						this.implementationIds[ this.getAllZImplementations[ item ] ] = {
+							zid: this.getAllZImplementations[ item ],
 							state: zImplementationState,
 							checked: false
 						};
@@ -177,17 +179,17 @@ module.exports = exports = {
 								// disabled if it is of a different state than a selected implementation
 								disabled: this.filterState !== zImplementationState && this.filterState !== '',
 								onClick: function () {
-									this.handleCheckboxClick( this.getZImplementations[ item ] );
+									this.handleCheckboxClick( this.getAllZImplementations[ item ] );
 								}.bind( this )
 							},
 							class: 'ext-wikilambda-function-details-table-item',
-							id: this.getZkeyLabels[ this.getZImplementations[ item ] ] + ' ' + zImplementationState
+							id: this.getZkeyLabels[ this.getAllZImplementations[ item ] ] + ' ' + zImplementationState
 						},
 						name: {
-							title: this.getZkeyLabels[ this.getZImplementations[ item ] ],
+							title: this.getZkeyLabels[ this.getAllZImplementations[ item ] ],
 							component: 'a',
 							props: {
-								href: '/wiki/' + this.getZImplementations[ item ]
+								href: '/wiki/' + this.getAllZImplementations[ item ]
 							},
 							class: 'ext-wikilambda-function-details-implementation-table-link ext-wikilambda-function-details-table-item'
 						},
@@ -260,11 +262,11 @@ module.exports = exports = {
 			},
 			testersBody: function () {
 				var tableData = [];
-				for ( var index in this.getZTesters ) {
-					var testerLabel = this.getZkeyLabels[ this.getZTesters[ index ] ];
+				for ( var index in this.getAllZTesters ) {
+					var testerLabel = this.getZkeyLabels[ this.getAllZTesters[ index ] ];
 					var zTesterState = this.$i18n( 'wikilambda-function-implementation-state-available' ).text();
 
-					if ( this.getUnattachedZTesters.indexOf( this.getZTesters[ index ] ) > -1 ) {
+					if ( this.getUnattachedZTesters.indexOf( this.getAllZTesters[ index ] ) > -1 ) {
 						zTesterState = this.$i18n( 'wikilambda-function-implementation-state-proposed' ).text();
 					}
 
@@ -283,7 +285,7 @@ module.exports = exports = {
 						title: testerLabel,
 						component: 'a',
 						props: {
-							href: '/wiki/' + this.getZTesters[ index ]
+							href: '/wiki/' + this.getAllZTesters[ index ]
 						},
 						class: 'ext-wikilambda-function-details-table-item'
 					};

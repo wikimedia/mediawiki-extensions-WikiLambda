@@ -39,7 +39,22 @@ module.exports = exports = {
 
 		};
 	},
+	paginateList: function () {
+		return function ( items ) {
+			var paginatedItems = {};
+			var pageNum = 1;
 
+			if ( items.length > 0 ) {
+				for ( var i = 0; i < items.length - 1; i += Constants.PAGINATION_SIZE ) {
+					const pageItems = items.slice( i, i + Constants.PAGINATION_SIZE );
+					paginatedItems[ pageNum ] = pageItems;
+					pageNum++;
+				}
+				return paginatedItems;
+			}
+			return { 0: items };
+		};
+	},
 	getViewMode: function () {
 		var editingData = mw.config.get( 'wgWikiLambda' );
 		return editingData.viewmode;
