@@ -74,29 +74,14 @@
 					</tr>
 				</tfoot>
 			</table>
-			<div v-if="getZTesterResults( zFunctionId, activeZTesterId, activeZImplementationId ) !== undefined">
-				<h3>
-					{{ $i18n( 'wikilambda-tester-results-subtitle' ).text() }}
-					{{ getZkeyLabels[ activeZImplementationId ] }}
-					( {{ getZkeyLabels[ activeZTesterId ] ||
-						( getNewTesterZObjects && getNewTesterZObjects.Z2K3.Z12K1[ 0 ].Z11K2.Z6K1 )
-					}} )
-				</h3>
-				<ul>
-					<li>
-						{{ $i18n( 'wikilambda-tester-status-label' ).text() }}:
-						{{ activeTesterStatus }}
-					</li>
-					<li v-if="!getZTesterResults( zFunctionId, activeZTesterId, activeZImplementationId )">
-						{{ $i18n( 'wikilambda-tester-failure-reason' ).text() }}:
-						{{ activeTesterFailReason }}
-					</li>
-					<li>
-						{{ $i18n( 'wikilambda-tester-function-duration' ).text() }}:
-						{{ activeTesterDuration }}
-					</li>
-				</ul>
-			</div>
+			<dialog-container v-if="showMetrics"
+				:custom-class="customDialogClass"
+				:title="dialogTitle"
+				:description="dialogText"
+				:show-action-buttons="false"
+				@exit-dialog="showMetrics = false"
+			>
+			</dialog-container>
 		</template>
 		<div v-else>
 			<p>{{ $i18n( 'wikilambda-tester-no-results' ).text() }}</p>
@@ -111,15 +96,18 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	ZTesterImplResult = require( './ZTesterImplResult.vue' );
+	ZTesterImplResult = require( './ZTesterImplResult.vue' ),
+	DialogContainer = require( '../base/DialogContainer.vue' ),
+	portray = require( '../../mixins/portray.js' );
 
 // @vue/component
 module.exports = exports = {
 	components: {
 		'z-tester-impl-result': ZTesterImplResult,
-		'cdx-button': CdxButton
+		'cdx-button': CdxButton,
+		'dialog-container': DialogContainer
 	},
-	mixins: [ typeUtils, schemata ],
+	mixins: [ typeUtils, schemata, portray ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -137,7 +125,9 @@ module.exports = exports = {
 		return {
 			activeZImplementationId: null,
 			activeZTesterId: null,
-			Constants: Constants
+			Constants: Constants,
+			showMetrics: false,
+			customDialogClass: 'ext-wikilambda-fn-tester-dialog'
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -239,6 +229,22 @@ module.exports = exports = {
 				return '';
 			}
 			return this.getValueFromCanonicalZMap( metadata, 'orchestrationDuration' );
+		},
+		dialogText: function () {
+			const metadata = this.getZTesterMetadata(
+				this.zFunctionId, this.activeZTesterId, this.activeZImplementationId );
+			// Check for error object, for backwards compatibility
+			if ( metadata[ Constants.Z_OBJECT_TYPE ] === Constants.Z_ERROR ) {
+				return '';
+			}
+			return this.portrayMetadataMap( metadata );
+		},
+		dialogTitle: function () {
+			const testerLabel = this.getZkeyLabels[ this.activeZTesterId ] ||
+				( this.getNewTesterZObjects && this.getNewTesterZObjects.Z2K3.Z12K1[ 0 ].Z11K2.Z6K1 );
+			const implementationLabel = this.getZkeyLabels[ this.activeZImplementationId ];
+			return '<strong>' + this.$i18n( 'wikilambda-functioncall-metadata-dialog-header' ).text() + '<br>' +
+				implementationLabel + '<br>' + testerLabel + '</strong>';
 		}
 	} ),
 	methods: $.extend( mapActions( [ 'fetchZKeys', 'getTestResults' ] ), {
@@ -250,9 +256,24 @@ module.exports = exports = {
 				clearPreviousResults: true
 			} );
 		},
+		/*
+			Currently we only allow one dialog to be up at a time, according to the values of activeZTesterId and
+			activeZImplementationId.  If a dialog is already up, and they click on the message-icon of a different
+			tester, we just change the displayed dialog, rather than bringing it down.
+			Note: if it's ever desired, it's easy to allow for multiple different dialogs
+			to stay up, by shifting the control of the dialogs entirely into ZTesterImplResult.
+		 */
 		setActiveTesterKeys: function ( keys ) {
+			let toggleMetrics = true;
+			if ( this.showMetrics && ( this.activeZImplementationId !== keys.zImplementationId ||
+				this.activeZTesterId !== keys.zTesterId ) ) {
+				toggleMetrics = false;
+			}
 			this.activeZImplementationId = keys.zImplementationId;
 			this.activeZTesterId = keys.zTesterId;
+			if ( toggleMetrics ) {
+				this.showMetrics = !this.showMetrics;
+			}
 		}
 	} ),
 	watch: {
@@ -291,5 +312,21 @@ module.exports = exports = {
 	padding: 10px 0;
 	border-top: 3px double #000;
 	text-align: right;
+}
+
+.ext-wikilambda-fn-tester-dialog {
+	position: fixed;
+	z-index: 999;
+	top: calc( 50% - 10px );
+	left: calc( 50% - 10px );
+	width: auto;
+	max-width: 75%;
+	height: auto;
+	max-height: 75%;
+	margin-left: -100px;
+	margin-right: 100px;
+	margin-bottom: 100px;
+	overflow-x: auto;
+	overflow-y: auto;
 }
 </style>

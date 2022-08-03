@@ -64,7 +64,7 @@ module.exports = exports = {
 			// Ignore first item in the canonical form array; this is a string representing the type
 			for ( let i = 1; i < k1Array.length; i++ ) {
 				const entry = k1Array[ i ];
-				let key = entry[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
+				let key = entry[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ] || entry[ Constants.Z_TYPED_PAIR_TYPE1 ];
 				// Allow for keys that correspond to references
 				if ( typeof key === 'object' && key[ Constants.Z_OBJECT_TYPE ] === Constants.Z_STRING_VALUE ) {
 					key = key[ Constants.Z_STRING_VALUE ];
@@ -75,7 +75,8 @@ module.exports = exports = {
 				}
 				const keyInfo = knownKeys.get( key );
 				const displayKey = keyInfo ? this.$i18n( keyInfo.i18nId ).text() : key;
-				const value = this.maybeStringify( entry[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ] );
+				const value = this.maybeStringify( entry[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ] ||
+					entry[ Constants.Z_TYPED_PAIR_TYPE2 ] );
 				html = html + '<li><b>' + displayKey + ':</b> ' + value + '</li>';
 			}
 			return html + '</ul></span>';
