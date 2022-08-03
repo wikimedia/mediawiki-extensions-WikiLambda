@@ -9,6 +9,23 @@ var Constants = require( '../../../Constants.js' ),
 	zobjectTreeUtils = require( '../../../mixins/zobjectTreeUtils.js' ).methods,
 	getParameterByName = require( '../../../mixins/urlUtils.js' ).methods.getParameterByName;
 
+function setDefaultFunctionReference( context, id, functionValue ) {
+	if ( !functionValue || functionValue === Constants.NEW_ZID_PLACEHOLDER ) {
+		context.dispatch( 'addZReference', { id: id, value: functionValue } );
+	}
+	// fetch zkeys for the zid, then check whether Z2K2.Z1K1 is equal to Constants.Z_FUNCTION
+	return context.dispatch( 'fetchZKeys', { zids: [ functionValue ] } ).then( function () {
+		var keys = context.getters.getZkeys[ functionValue ];
+
+		if ( keys &&
+			keys[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] ===
+			Constants.Z_FUNCTION
+		) {
+			context.dispatch( 'addZReference', { id: id, value: functionValue } );
+		}
+	} );
+}
+
 module.exports = exports = {
 	actions: {
 		/**
@@ -466,23 +483,6 @@ module.exports = exports = {
 					getParameterByName( Constants.Z_IMPLEMENTATION_FUNCTION ) || '' :
 					context.getters.getCurrentZObjectId;
 
-			function setDefaultFunctionReference( id ) {
-				if ( !defaultFunctionValue || defaultFunctionValue === Constants.NEW_ZID_PLACEHOLDER ) {
-					context.dispatch( 'addZReference', { id: id, value: defaultFunctionValue } );
-				}
-				// fetch zkeys for the zid, then check whether Z2K2.Z1K1 is equal to Constants.Z_FUNCTION
-				return context.dispatch( 'fetchZKeys', { zids: [ defaultFunctionValue ] } ).then( function () {
-					var keys = context.getters.getZkeys[ defaultFunctionValue ];
-
-					if ( keys &&
-						keys[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] ===
-						Constants.Z_FUNCTION
-					) {
-						context.dispatch( 'addZReference', { id: id, value: defaultFunctionValue } );
-					}
-				} );
-			}
-
 			context.dispatch( 'setZObjectValue', {
 				id: objectId,
 				value: 'object'
@@ -492,7 +492,7 @@ module.exports = exports = {
 			// Add function
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
 			context.dispatch( 'addZObject', { key: Constants.Z_IMPLEMENTATION_FUNCTION, value: 'object', parent: objectId } );
-			setDefaultFunctionReference( nextId );
+			setDefaultFunctionReference( context, nextId, defaultFunctionValue );
 
 			// Add Composition
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
@@ -568,7 +568,9 @@ module.exports = exports = {
 		 * @param {number} objectId
 		 */
 		addZTester: function ( context, objectId ) {
-			var nextId;
+			var nextId,
+				defaultFunctionValue = getParameterByName( Constants.Z_TESTER_FUNCTION ) || '';
+
 			context.dispatch( 'setZObjectValue', {
 				id: objectId,
 				value: 'object'
@@ -577,10 +579,10 @@ module.exports = exports = {
 			// Set type
 			context.dispatch( 'addZObject', { key: Constants.Z_OBJECT_TYPE, value: Constants.Z_TESTER, parent: objectId } );
 
-			// Set call as a function call
+			// Set function and add default reference.
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
 			context.dispatch( 'addZObject', { key: Constants.Z_TESTER_FUNCTION, value: 'object', parent: objectId } );
-			context.dispatch( 'addZReference', { id: nextId, value: '' } );
+			setDefaultFunctionReference( context, nextId, defaultFunctionValue );
 
 			// Set call as a function call
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
