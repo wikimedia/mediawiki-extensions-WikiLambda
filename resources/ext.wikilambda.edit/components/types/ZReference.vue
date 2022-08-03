@@ -83,7 +83,7 @@ module.exports = exports = {
 				return this.getZkeyLabels[ this.referenceValue ];
 			},
 			isReferenceReady: function () {
-				return this.referenceItem.value ? !!this.referenceLabel : true;
+				return this.zobjectId ? !!this.referenceLabel : true;
 			},
 			isReadOnly: function () {
 				return this.viewmode || this.readonly || this.getCurrentZObjectId === this.referenceValue;
