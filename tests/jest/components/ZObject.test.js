@@ -61,7 +61,7 @@ describe( 'ZObject', function () {
 			}
 		} );
 
-		expect( wrapper.find( 'div' ) ).toBeTruthy();
+		expect( wrapper.find( 'div' ).exists() ).toBe( true );
 	} );
 
 	function testMountingComponent( componentName, componentCode, component ) {

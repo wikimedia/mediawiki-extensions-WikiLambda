@@ -47,7 +47,6 @@
 		<z-code
 			v-if="implMode === Constants.implementationModes.CODE"
 			:zobject-id="zCodeId"
-			:default-code="zCodeProgrammingLanguageDefaultCode"
 			@select-language="selectLanguage"
 			@update-code="updateCode"
 		></z-code>

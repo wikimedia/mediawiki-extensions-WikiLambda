@@ -20,7 +20,7 @@
 		<code-editor
 			:mode="selectedLanguage"
 			:read-only="!selectedLanguage || viewmode || readonly"
-			:value="codeValue"
+			:value="editorValue"
 			@change="updateCode"
 		></code-editor>
 	</div>
@@ -56,8 +56,8 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			codeValue: '',
-			allowCodeValueOverride: true
+			editorValue: '',
+			allowSetEditorValue: true
 		};
 	},
 	computed: $.extend(
@@ -83,7 +83,7 @@ module.exports = exports = {
 					)
 				);
 			},
-			zCodeProgrammingLanguageDefaultCodeValue: function () {
+			codeValue: function () {
 				return this.findKeyInArray(
 					Constants.Z_STRING_VALUE,
 					this.getZObjectChildrenById( this.codeItem.id )
@@ -139,7 +139,7 @@ module.exports = exports = {
 			 * @param {string} value
 			 */
 			selectLanguage: function ( value ) {
-				this.allowCodeValueOverride = true;
+				this.allowSetEditorValue = true;
 
 				var payload = {
 					id: this.zCodeLanguage.id,
@@ -162,29 +162,16 @@ module.exports = exports = {
 			}
 		} ),
 	watch: {
-		codeItem: {
+		codeValue: {
 			immediate: true,
 			handler: function () {
-				var codeValue;
-
-				// Assigning the value this way prevents a bug,
-				// that would move the cursor to the end of the string on every keypress
-				codeValue = this.findKeyInArray(
-					Constants.Z_STRING_VALUE,
-					this.getZObjectChildrenById( this.codeItem.id )
-				);
-				if ( codeValue && this.allowCodeValueOverride ) {
-					this.codeValue = codeValue.value;
-					this.allowCodeValueOverride = false;
+				// Check allowSetEditorValue to ensure we only set value in the editor when its current value should be
+				// overriden (e.g. when the editor is first loaded, or when the language changes). Ensuring this
+				// prevents a bug that moves the cursor to the end of the editor on every keypress.
+				if ( this.allowSetEditorValue ) {
+					this.editorValue = this.codeValue || '';
+					this.allowSetEditorValue = false;
 				}
-			}
-		},
-		// the default code changes only when the programming language has changed
-		// in which case we reset the code
-		zCodeProgrammingLanguageDefaultCodeValue: {
-			immediate: true,
-			handler: function () {
-				this.codeValue = this.zCodeProgrammingLanguageDefaultCodeValue || '';
 			}
 		}
 	},
