@@ -59,13 +59,17 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $page->isOK() );
 
 		$title = Title::newFromText( $zid, NS_MAIN );
-		$zobject = $this->zobjectStore->fetchZObjectByTitle( $title );
-		$this->assertTrue( $zobject instanceof ZObjectContent );
+		$zObjectContent = $this->zobjectStore->fetchZObjectByTitle( $title );
+		$this->assertTrue( $zObjectContent instanceof ZObjectContent );
 
-		// TODO: When we change ZObjectContent to keep information of the ZPersistentObject,
-		// we shall assert that the $zid is equal to $zobject->getId() this way:
-		// $this->assertEquals( $zobject->getId(), $zid );
-		// TODO: Also test that Z2K1 has the title's ZID instead of Z0
+		$this->assertEquals( $zid, $zObjectContent->getZid() );
+
+		$zObject = $zObjectContent->getZObject();
+		$this->assertTrue( $zObject instanceof ZPersistentObject );
+
+		$zObjectInnerValue = $zObject->getZValue();
+		$this->assertTrue( is_string( $zObjectInnerValue ) );
+		$this->assertEquals( 'hello', $zObjectInnerValue );
 
 		$zids = $this->zobjectStore->fetchAllZids();
 		$this->assertSame( [ $zid ], $zids );
