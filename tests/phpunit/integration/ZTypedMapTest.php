@@ -99,13 +99,14 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 		// Ensure that Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
 		$this->insertZids( [ 'Z6', 'Z40', 'Z41' ] );
 
+		$pairType = ZTypedPair::buildType( 'Z6', 'Z40' );
 		$testObject = new ZTypedMap(
 			ZTypedMap::buildType( 'Z6', 'Z40' ),
 			new ZTypedList(
-				ZTypedPair::buildType( 'Z6', 'Z40' ),
+				ZTypedList::buildType( $pairType ),
 				[
 					new ZTypedPair(
-						ZTypedPair::buildType( 'Z6', 'Z40' ),
+						$pairType,
 						new ZString( 'Testing' ),
 						new ZReference( 'Z41' )
 					),
@@ -230,18 +231,19 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 		// Ensure that Z6/String, Z40/Boolean, and Z41/True and Z/42 False instances of Boolean are all available
 		$this->insertZids( [ 'Z6', 'Z40', 'Z41', 'Z42' ] );
 
+		$pairType = ZTypedPair::buildType( 'Z6', 'Z40' );
 		$testObject = new ZTypedMap(
 			ZTypedMap::buildType( 'Z6', 'Z40' ),
 			new ZTypedList(
-				ZTypedPair::buildType( 'Z6', 'Z40' ),
+				ZTypedList::buildType( $pairType ),
 				[
 					new ZTypedPair(
-						ZTypedPair::buildType( 'Z6', 'Z40' ),
+						$pairType,
 						new ZString( 'Testing' ),
 						new ZReference( 'Z41' )
 					),
 					new ZTypedPair(
-						ZTypedPair::buildType( 'Z6', 'Z40' ),
+						$pairType,
 						new ZString( 'Testification' ),
 						new ZReference( 'Z42' )
 					),
@@ -306,13 +308,14 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 		// Ensure that Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
 		$this->insertZids( [ 'Z6', 'Z40', 'Z41' ] );
 
+		$pairType = ZTypedPair::buildType( 'Z6', 'Z40' );
 		$testObject = new ZTypedMap(
 			ZTypedMap::buildType( 'Z6', 'Z40' ),
 			new ZTypedList(
-				ZTypedPair::buildType( 'Z6', 'Z40' ),
+				ZTypedList::buildType( $pairType ),
 				[
 					new ZTypedPair(
-						ZTypedPair::buildType( 'Z6', 'Z40' ),
+						$pairType,
 						new ZReference( '400' ),
 						new ZString( 'Failing' )
 					),
