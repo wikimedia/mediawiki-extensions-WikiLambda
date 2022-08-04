@@ -97,13 +97,13 @@ class ApiFunctionCallTest extends ApiTestCase {
 			'Z24',
 		];
 
-		// TODO (T310084): Enable this test after fixing the orchestrator.
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
-		// yield 'Invoke the Map function: given a function and a list of strings, return the result of running the function over each string' => [
-		// 	$this->readTestFile( 'example-map.json' ),
-		// 	'Z24',
-		// 	'Z24',
-		// ];
+		yield 'Invoke the Map function: given a function and a list of strings, return the result of running the function over each string' => [
+			$this->readTestFile( 'example-map.json' ),
+			// @phpcs:ignore Generic.Files.LineLength.TooLong
+			'"{\"Z1K1\":\"Z22\",\"Z22K1\":[\"Z6\",\"acab\",\"acab\",\"bacab\"],\"Z22K2\":{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z883\",\"Z883K1\":\"Z6\",\"Z883K2\":\"Z1\"},\"K1\":[{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationMemoryUsage\",\"K2\":\"199.31 MiB\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationCpuUsage\",\"K2\":\"3622.255 ms\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationStartTime\",\"K2\":\"2022-08-04T15:47:25.562Z\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationEndTime\",\"K2\":\"2022-08-04T15:47:28.487Z\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationDuration\",\"K2\":\"2925 ms\"}]}}"',
+			'Z24',
+		];
 
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		yield 'Invoke the Apply function: given a function and a string, return the result of running the function over the string' => [
