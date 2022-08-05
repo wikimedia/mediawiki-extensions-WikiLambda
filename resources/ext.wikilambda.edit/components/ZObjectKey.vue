@@ -216,9 +216,12 @@ module.exports = exports = {
 			onModeChange: function ( mode ) {
 				var selectedModeType = this.getTypeByMode( { selectedMode: mode, literalType: this.literalType } );
 
-				this.selectedMode = mode;
 				if ( selectedModeType !== this.zType ) {
+					// If the mode selector generates a zobject content change, call changeType
 					this.changeType( { id: this.zobjectId, type: selectedModeType } );
+				} else {
+					// Else, simply change the view without changing the content
+					this.selectedMode = mode;
 				}
 			}
 		} ),
