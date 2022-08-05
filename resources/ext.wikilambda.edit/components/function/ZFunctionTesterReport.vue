@@ -169,7 +169,7 @@ module.exports = exports = {
 				const fetched = this.getZkeys[ this.zFunctionId ][
 					Constants.Z_PERSISTENTOBJECT_VALUE ][
 					Constants.Z_FUNCTION_IMPLEMENTATIONS ];
-				// Slice off the first element of Benjamin array
+				// Slice off the first item in the canonical form array; this is a string representing the type
 				implementations = implementations.concat( Array.isArray( fetched ) ? fetched.slice( 1 ) : [] );
 			}
 
@@ -193,7 +193,7 @@ module.exports = exports = {
 				const fetched = this.getZkeys[ this.zFunctionId ][
 					Constants.Z_PERSISTENTOBJECT_VALUE ][
 					Constants.Z_FUNCTION_TESTERS ];
-				// Slice off the first element of Benjamin array
+				// Slice off the first item in the canonical form array; this is a string representing the type
 				testers = testers.concat( Array.isArray( fetched ) ? fetched.slice( 1 ) : [] );
 			}
 

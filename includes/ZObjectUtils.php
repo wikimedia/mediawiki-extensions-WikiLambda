@@ -256,11 +256,11 @@ class ZObjectUtils {
 						&& $typeVars[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ] == ZTypeRegistry::Z_FUNCTION_TYPED_LIST
 					) {
 						$itemType = $typeVars[ ZTypeRegistry::Z_FUNCTION_TYPED_LIST_TYPE ];
-						$benjamin = [ $itemType ];
+						$typedListArray = [ $itemType ];
 						if ( array_key_exists( 'K1', $output ) ) {
-							array_push( $benjamin, $output['K1'], ...array_slice( $output['K2'], 1 ) );
+							array_push( $typedListArray, $output['K1'], ...array_slice( $output['K2'], 1 ) );
 						}
-						return $benjamin;
+						return $typedListArray;
 					}
 				}
 			}
@@ -430,7 +430,7 @@ class ZObjectUtils {
 	 * @return array same ZMultilingualString value with only one item of the preferred language
 	 */
 	public static function getPreferredMonolingualString( array $multilingualStr, array $languages ): array {
-		// Ignore benjamin type
+		// Ignore first item in the canonical form array; this is a string representing the type
 		$itemType = array_shift( $multilingualStr );
 
 		$availableLangs = [];
@@ -1065,97 +1065,5 @@ class ZObjectUtils {
 
 		}
 		return (object)$labelized;
-	}
-
-	/**
-	 * FIXME: (T306824) Remove this pipe when front-end handles benjamin arrays.
-	 *
-	 * Transforms all benjamin arrays from a given ZObject into simple arrays
-	 *
-	 * @param mixed $zobject
-	 * @return mixed
-	 */
-	public static function benjaminToSimple( $zobject ) {
-		if ( is_array( $zobject ) ) {
-			array_shift( $zobject );
-			return array_map( [ __CLASS__, 'benjaminToSimple' ], $zobject );
-		}
-
-		if ( is_object( $zobject ) ) {
-			foreach ( $zobject as $index => $value ) {
-				$zobject->$index = self::benjaminToSimple( $value );
-			}
-		}
-
-		return $zobject;
-	}
-
-	/**
-	 * FIXME: (T306824) Remove this pipe when front-end handles benjamin arrays
-	 *
-	 * Transforms all simple arrays from a given ZObject into benjamin arrays
-	 *
-	 * @param mixed $zobject
-	 * @return mixed
-	 */
-	public static function simpleToBenjamin( $zobject ) {
-		if ( is_array( $zobject ) ) {
-			$itemType = self::inferItemType( $zobject );
-			$items = array_map( [ __CLASS__, 'simpleToBenjamin' ], $zobject );
-			return array_merge( [ $itemType ],  $items );
-		}
-
-		if ( is_object( $zobject ) ) {
-			foreach ( $zobject as $index => $value ) {
-				$zobject->$index = self::simpleToBenjamin( $value );
-			}
-		}
-
-		return $zobject;
-	}
-
-	/**
-	 * FIXME: (T306824) Remove this pipe when front-end handles benjamin arrays
-	 *
-	 * Infers item type from a list of ZObjects
-	 *
-	 * @param array $zobject
-	 * @return string|stdClass
-	 */
-	public static function inferItemType( $zobject ) {
-		$listType = null;
-		$itemType = null;
-		foreach ( $zobject as $item ) {
-			if ( is_string( $item ) ) {
-				$itemType = self::isValidZObjectReference( $item )
-					? ZTypeRegistry::Z_REFERENCE
-					: ZTypeRegistry::Z_STRING;
-			}
-			if ( is_array( $item ) ) {
-				$innerItemType = self::inferItemType( $item );
-				$itemType = (object)[
-					ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_FUNCTIONCALL,
-					ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION => ZTypeRegistry::Z_FUNCTION_TYPED_LIST,
-					ZTypeRegistry::Z_FUNCTION_TYPED_LIST_TYPE => $innerItemType
-				];
-			}
-			if ( is_object( $item ) ) {
-				$itemType = $item->{ ZTypeRegistry::Z_OBJECT_TYPE };
-			}
-
-			if ( $listType === null ) {
-				$listType = $itemType;
-			} else {
-				if (
-					( json_encode( $listType ) !== json_encode( $itemType ) ) ||
-					( $itemType === ZTypeRegistry::Z_REFERENCE ) ||
-					( $itemType === ZTypeRegistry::Z_FUNCTIONCALL ) ||
-					( $itemType === ZTypeRegistry::Z_ARGUMENTREFERENCE )
-				) {
-					$listType = ZTypeRegistry::Z_OBJECT;
-				}
-			}
-		}
-		return $listType ?? ZTypeRegistry::Z_OBJECT;
 	}
 }

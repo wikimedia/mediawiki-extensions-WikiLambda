@@ -159,7 +159,7 @@ function normalize( zobject ) {
  */
 function getValueFromCanonicalZMap( zMap, key ) {
 	const K1Array = zMap[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
-	// With Benjamin arrays, skip over the first array element
+	// Ignore first item in the canonical form array; this is a string representing the type
 	for ( let i = 1; i < K1Array.length; i++ ) {
 		const entry = K1Array[ i ];
 		// To accommodate our current programming practices, we need to allow for either key here:

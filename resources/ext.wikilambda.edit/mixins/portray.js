@@ -61,7 +61,7 @@ module.exports = exports = {
 
 			// Now portray any top-level zMap entries that weren't already used above
 			const k1Array = zMap[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
-			// With Benjamin arrays, skip over the first array element
+			// Ignore first item in the canonical form array; this is a string representing the type
 			for ( let i = 1; i < k1Array.length; i++ ) {
 				const entry = k1Array[ i ];
 				let key = entry[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];

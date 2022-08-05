@@ -150,8 +150,6 @@ class ZResponseEnvelope extends ZObject {
 		'@phan-var \stdClass $metaData';
 		$metaDataMapContents = $metaData->{ 'K1' };
 
-		// FIXME: This code will be significantly different with Benjamin Arrays.
-		// [ 'Z7/Z882', {}, {}, {} ]
 		while ( property_exists( $metaDataMapContents, 'K1' ) ) {
 			$currentValue = $metaDataMapContents->{ 'K1' };
 

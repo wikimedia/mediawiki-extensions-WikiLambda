@@ -134,14 +134,14 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @dataProvider provideBenjaminForms
+	 * @dataProvider provideListsInCanonicalForm
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 * @covers ::__construct
 	 * @covers ::getAsArray
 	 * @covers ::getZValue
 	 */
-	public function test_createBenjamin( $benjamin, $type, $isEmpty, $canonical, $normal ) {
-		$testObject = ZObjectFactory::create( json_decode( $benjamin ) );
+	public function test_createCanonicalForm( $canonicalFormArray, $type, $isEmpty, $canonical, $normal ) {
+		$testObject = ZObjectFactory::create( json_decode( $canonicalFormArray ) );
 		$this->assertInstanceOf( ZTypedList::class, $testObject );
 
 		$this->assertSame(
@@ -161,9 +161,9 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	public function provideBenjaminForms() {
+	public function provideListsInCanonicalForm() {
 		return [
-			'benjamin empty array of Z1s' => [
+			'Canonical form empty array of Z1s' => [
 				'[ "Z1" ]',
 				'"Z1"', true,
 				'[ "Z1" ]',
@@ -173,7 +173,7 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1":"Z1" }'
 					. '} }'
 			],
-			'benjamin array of Z6s with one string' => [
+			'Canonical form array of Z6s with one string' => [
 				'[ "Z6", "first string"]',
 				'"Z6"', false,
 				'[ "Z6", "first string"]',
@@ -189,7 +189,7 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z6" }'
 					. '} } }'
 			],
-			'benjamin array of Z1s with one string' => [
+			'Canonical form array of Z1s with one string' => [
 				'[ "Z1", "first string"]',
 				'"Z1"', false,
 				'[ "Z1", "first string"]',
@@ -205,7 +205,7 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" }'
 					. '} } }'
 			],
-			'benjamin array of Z1s with two items' => [
+			'Canonical form array of Z1s with two items' => [
 				'[ "Z1", "first string", "Z111"]',
 				'"Z1"', false,
 				'[ "Z1", "first string", "Z111"]',
@@ -227,7 +227,7 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 					. ' "Z881K1": { "Z1K1": "Z9", "Z9K1": "Z1" }'
 					. '} } } }'
 			],
-			'benjamin empty array of lists' => [
+			'Canonical form empty array of lists' => [
 				'[ { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } ]',
 				'{ "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" }', true,
 				'[ { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } ]',
