@@ -246,6 +246,69 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::updateZObject
+	 */
+	public function testUpdateZObject_nonTitle() {
+		$status = $this->zobjectStore->updateZObject(
+			'',
+			'',
+			'Update summary',
+			$this->getTestSysop()->getUser()
+		);
+		$this->assertFalse( $status->isOK() );
+		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_INVALID_TITLE, $status->getErrors() );
+	}
+
+	/**
+	 * @covers ::updateZObject
+	 */
+	public function testUpdateZObject_nonContent() {
+		$zid = $this->zobjectStore->getNextAvailableZid();
+		$status = $this->zobjectStore->updateZObject(
+			$zid,
+			'',
+			'Update summary',
+			$this->getTestSysop()->getUser()
+		);
+		$this->assertFalse( $status->isOK() );
+		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_INVALID_JSON, $status->getErrors() );
+	}
+
+	/**
+	 * @covers ::updateZObject
+	 */
+	public function testUpdateZObject_badContent() {
+		$zid = $this->zobjectStore->getNextAvailableZid();
+		$status = $this->zobjectStore->updateZObject(
+			$zid,
+			'{"Z1K1":"Z6"}',
+			'Update summary',
+			$this->getTestSysop()->getUser()
+		);
+		$this->assertFalse( $status->isOK() );
+		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_SCHEMA_TYPE_MISMATCH, $status->getErrors() );
+	}
+
+	/**
+	 * @covers ::updateZObject
+	 */
+	public function testUpdateZObject_badZ2K2() {
+		$zid = $this->zobjectStore->getNextAvailableZid();
+		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+			. '"Z2K2": "hello",'
+			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+
+		$status = $this->zobjectStore->updateZObject(
+			$zid,
+			$input,
+			'Update summary',
+			$this->getTestSysop()->getUser()
+		);
+		$this->assertFalse( $status->isOK() );
+		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_UNMATCHING_ZID, $status->getErrors() );
+	}
+
+	/**
 	 * @covers ::insertZObjectLabels
 	 */
 	public function testInsertZObjectLabels() {
