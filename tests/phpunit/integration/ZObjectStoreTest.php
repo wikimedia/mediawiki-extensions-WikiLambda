@@ -352,6 +352,9 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$conflicts = $this->zobjectStore->findZObjectLabelConflicts( 'Z333', 'Z4', $labels );
 		$this->assertEquals( count( $conflicts ), 3 );
+
+		$conflicts = $this->zobjectStore->findZObjectLabelConflicts( 'Z333', 'Z4', [ self::ZLANG['de'] => 'label' ] );
+		$this->assertEquals( count( $conflicts ), 0 );
 	}
 
 	/**
