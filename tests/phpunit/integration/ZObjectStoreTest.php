@@ -13,6 +13,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectPage;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\MediaWikiServices;
 use Title;
@@ -83,6 +84,55 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$zids = $this->zobjectStore->fetchAllZids();
 		$this->assertNotContains( $invalidZid, $zids );
+	}
+
+	/**
+	 * @covers ::fetchBatchZObjects
+	 * @covers ::getNextAvailableZid
+	 * @covers ::fetchAllZids
+	 */
+	public function testFetchBatchZObjects() {
+		$sysopUser = $this->getTestSysop()->getUser();
+
+		$firstZid = $this->zobjectStore->getNextAvailableZid();
+		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+			. '"Z2K2": "hello",'
+			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+		$page = $this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
+		$this->assertTrue( $page instanceof ZObjectPage );
+		$this->assertTrue( $page->isOK() );
+
+		$secondZid = $this->zobjectStore->getNextAvailableZid();
+		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+			. '"Z2K2": "world",'
+			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+		$page = $this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
+		$this->assertTrue( $page instanceof ZObjectPage );
+		$this->assertTrue( $page->isOK() );
+
+		$response = $this->zobjectStore->fetchBatchZObjects( [ $firstZid, $secondZid ] );
+
+		$this->assertTrue( is_array( $response ) );
+		$this->assertCount( 2, $response );
+		$this->assertArrayHasKey( $firstZid, $response );
+		$this->assertArrayHasKey( $secondZid, $response );
+
+		$firstZObject = $response[ $firstZid ];
+		$this->assertTrue( $firstZObject instanceof ZPersistentObject );
+		$this->assertEquals( $firstZid, $firstZObject->getZid() );
+		$firstZObjectInnerValue = $firstZObject->getZValue();
+		$this->assertTrue( is_string( $firstZObjectInnerValue ) );
+		$this->assertEquals( 'hello', $firstZObjectInnerValue );
+
+		$secondZObject = $response[ $secondZid ];
+		$this->assertTrue( $secondZObject instanceof ZPersistentObject );
+		$this->assertEquals( $secondZid, $secondZObject->getZid() );
+		$secondZObjectInnerValue = $secondZObject->getZValue();
+		$this->assertTrue( is_string( $secondZObjectInnerValue ) );
+		$this->assertEquals( 'world', $secondZObjectInnerValue );
+
+		$zids = $this->zobjectStore->fetchAllZids();
+		$this->assertSame( [ $firstZid, $secondZid ], $zids );
 	}
 
 	/**
