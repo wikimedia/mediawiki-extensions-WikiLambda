@@ -256,7 +256,7 @@ module.exports = exports = {
 						Constants.Z_PERSISTENTOBJECT_VALUE ][
 						Constants.Z_FUNCTION_RETURN_TYPE ] );
 
-					this.fetchZKeys( zKeys ).then( function () {
+					this.fetchZKeys( { zids: zKeys } ).then( function () {
 						this.setAvailableZArguments( this.zFunction.value );
 					}.bind( this ) );
 				}
