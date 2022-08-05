@@ -29,7 +29,7 @@
 	"apihelp-wikilambda_function_call-example-user-defined-validation": "Invoke user-defined validation function implemented in Python.",
 	"apihelp-wikilambda_function_call-example-curry": "Create and invoke a curried function",
 	"apihelp-wikilambda_function_call-summary": "Invoke a function by calling the function-orchestrator",
-	"apihelp-wikilambda_health_check-summary": "Perform a health check against the wikilambda endpoint",
+	"apihelp-wikilambda_health_check-summary": "Perform a health check against the WikiLambda endpoint",
 	"apihelp-query+wikilambdasearch_labels-summary": "This API query list generator lets you search ZObjects for labels in a given language. It principally exists to support the look-ahead search system.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "The search term",
 	"apihelp-query+wikilambdasearch_labels-param-language": "The MediaWiki language code in which to search",
