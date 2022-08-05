@@ -210,6 +210,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers ::updateZObject
+	 * @covers ::fetchZObjectByTitle
 	 */
 	public function testUpdateZObject() {
 		$sysopUser = $this->getTestSysop()->getUser();
