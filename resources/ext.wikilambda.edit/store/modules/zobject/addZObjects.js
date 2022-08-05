@@ -730,7 +730,7 @@ module.exports = exports = {
 		 */
 		changeType: function ( context, payload ) {
 			context.dispatch( 'removeZObjectChildren', payload.id );
-			return context.dispatch( 'fetchZKeys', [ payload.type ] )
+			return context.dispatch( 'fetchZKeys', { zids: [ payload.type ] } )
 				.then( function () {
 					switch ( payload.type ) {
 						case Constants.Z_REFERENCE:
