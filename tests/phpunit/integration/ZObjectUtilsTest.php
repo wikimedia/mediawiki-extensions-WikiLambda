@@ -96,6 +96,22 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::isValidZObjectList
+	 */
+	public function testIsValidZObjectList_zeroLengthList() {
+		$this->expectException( ZErrorException::class );
+		ZObjectUtils::isValidZObjectList( [] );
+	}
+
+	/**
+	 * @covers ::isValidZObjectList
+	 */
+	public function testIsValidZObjectList_listWithNonZObject() {
+		$this->expectException( ZErrorException::class );
+		ZObjectUtils::isValidZObjectList( [ 'Z6', 12 ] );
+	}
+
+	/**
 	 * @dataProvider provideCanonicalize
 	 * @covers ::canonicalize
 	 * @covers ::canonicalizeZRecord
