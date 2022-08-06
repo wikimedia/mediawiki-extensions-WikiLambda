@@ -13,6 +13,7 @@ use FormatJson;
 use Html;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
@@ -1461,6 +1462,20 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			'generic list with one element' => [ $genericOne, 1 ],
 			'generic list with two elements' => [ $genericTwo, 2 ],
 		];
+	}
+
+	/**
+	 * @covers ::extractHumanReadableZObject
+	 * @covers ::getLabelOfGlobalKey
+	 * @covers ::getLabelOfTypeKey
+	 * @covers ::getLabelOfFunctionArgument
+	 * @covers ::getLabelOfErrorTypeKey
+	 */
+	public function testExtractHumanReadableZObject_failOnInvalid() {
+		$en = $this->makeLanguage( 'en' );
+
+		$this->expectException( ZErrorException::class );
+		ZObjectUtils::extractHumanReadableZObject( 1000, [], $en );
 	}
 
 	/**
