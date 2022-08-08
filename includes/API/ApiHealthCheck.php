@@ -136,8 +136,8 @@ class ApiHealthCheck extends WikiLambdaApiBase {
 			if ( $result[ 'passed'] == $result[ 'total_tests'] ) {
 				$result[ 'success' ] = 'true';
 			}
-		} catch ( ConnectException | ClientException | ServerException $exception ) {
-			$result[ 'error' ] = $exception->getResponse()->getReasonPhrase();
+		} catch ( ConnectException | ServerException | ClientException $exception ) {
+			$result[ 'error' ] = $exception->getMessage();
 		}
 
 		$pageResult->addValue( [ 'query' ], $this->getModuleName(), $result );
