@@ -53,6 +53,6 @@ describe( 'ZObjectSelector', function () {
 	} );
 	it( 'renders without errors', function () {
 		var wrapper = mount( ZObjectSelector );
-		expect( wrapper.find( 'div' ) ).toBeTruthy();
+		expect( wrapper.find( 'div' ).exists() ).toBe( true );
 	} );
 } );

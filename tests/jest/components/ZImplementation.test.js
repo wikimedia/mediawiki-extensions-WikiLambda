@@ -48,6 +48,6 @@ describe( 'ZImplementation', function () {
 
 	it( 'renders without errors', function () {
 		var wrapper = VueTestUtils.shallowMount( ZImplementation );
-		expect( wrapper.find( 'ext-wikilambda-zimplementation' ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-zimplementation' ).exists() ).toBe( true );
 	} );
 } );

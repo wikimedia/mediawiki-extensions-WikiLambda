@@ -38,7 +38,7 @@ describe( 'ZObjectJson', function () {
 	it( 'renders without errors', function () {
 		var wrapper = shallowMount( ZObjectJson );
 
-		expect( wrapper.find( 'div' ) ).toBeTruthy();
+		expect( wrapper.find( 'div' ).exists() ).toBe( true );
 	} );
 
 	it( 'correctly sends provided JSON to the editor in a canonical form', function () {
