@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kareyac",
+			"Mruczek",
+			"Msz2001",
+			"Rail",
+			"Woytecr"
+		]
+	},
+	"wikilambda-desc": "Dostarcza projektom Wikimedia funkcję parsera do wywoływania funkcji napisanych, zarządzanych i uruchamianych na centralnej wiki."
+}
