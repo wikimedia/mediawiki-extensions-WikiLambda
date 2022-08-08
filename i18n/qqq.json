@@ -284,7 +284,7 @@
 	"wikilambda-optional": "Word used to inform the user that a given input is optional",
 	"wikilambda-continue-editing": "Label for the continue editing button",
 	"wikilambda-discard-edits": "Label for the discard edits button",
-	"wikilambda-function-about-summary": "Summary of the function about page",
+	"wikilambda-function-about-summary": "Placeholder label for the forthcoming description feature which will appear on function decription pages.",
 	"wikilambda-function-details-summary": "Summary of the function details page",
 	"wikilambda-function-details-summary-learn-more": "Link to learn more about functions",
 	"wikilambda-function-viewer-aliases-header": "Header for function aliases",
