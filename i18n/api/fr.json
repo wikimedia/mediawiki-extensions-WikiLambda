@@ -33,6 +33,7 @@
 	"apihelp-wikilambda_function_call-example-user-defined-validation": "Invoque une fonction de validation définie par l’utilisateur et mise en œuvre en Python.",
 	"apihelp-wikilambda_function_call-example-curry": "Créer et invoquer une fonction curryfiée",
 	"apihelp-wikilambda_function_call-summary": "Invoquer une fonction en appelant l’orchestrateur de fonction",
+	"apihelp-wikilambda_health_check-summary": "Effectuer une vérification de l’état de santé du point de terminaison WikiLambda",
 	"apihelp-query+wikilambdasearch_labels-summary": "Ce générateur de listes de requêtes API permet de rechercher des libellés de Z-Objets dans une langue donnée. Il existe principalement pour assister le système de recherche anticipée.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Le terme recherché",
 	"apihelp-query+wikilambdasearch_labels-param-language": "Le code de langue MediaWiki dans laquelle rechercher.",
