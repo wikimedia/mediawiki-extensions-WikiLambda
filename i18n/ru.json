@@ -8,6 +8,7 @@
 			"Pacha Tchernof",
 			"Rivka Silinsky",
 			"Tanzun",
+			"WindEwriX",
 			"Артём 13327",
 			"Загребин Илья"
 		]
@@ -38,7 +39,7 @@
 	"wikilambda-implementation-selector": "Выберите реализацию",
 	"wikilambda-function-are-you-sure-dialog-header": "Вы уверены?",
 	"wikilambda-functioncall-metadata-dialog-header": "Метаданные",
-	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1| Ошибка|Ошибки}}",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Ошибка|Ошибки|Ошибок}}",
 	"wikilambda-tester-status-pending": "В ОЖИДАНИИ...",
 	"wikilambda-tester-status-failed": "НЕУДАЧА",
 	"wikilambda-enable-expert-mode": "Включить режим Эксперта",
