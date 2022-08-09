@@ -282,5 +282,7 @@
 	"wikilambda-function-viewer-aliases-hide-language-button": "Hide list",
 	"wikilambda-function-viewer-names-show-languages-button": "Show name in other languages",
 	"wikilambda-function-viewer-details-input-number": "Input $1",
-	"wikilambda-function-viewer-details-sidebar-summary": "Anyone can edit labels, but the input/output type and count can only be edited by users with special permissions."
+	"wikilambda-function-viewer-details-sidebar-summary": "Anyone can edit labels, but the input/output type and count can only be edited by users with special permissions.",
+	"wikilambda-function-viewer-details-table-view-all": "View all",
+	"wikilambda-function-viewer-details-table-view-less": "View less"
 }

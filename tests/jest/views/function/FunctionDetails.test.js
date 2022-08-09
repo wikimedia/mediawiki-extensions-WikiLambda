@@ -16,12 +16,12 @@ describe( 'FunctionDetails', function () {
 
 	beforeEach( function () {
 		getters = {
-			getAllZTesters: createGettersWithFunctionsMock(),
+			getPaginatedTesters: createGettersWithFunctionsMock(),
 			getUnattachedZTesters: function () {
 				return [];
 			},
 			getZkeyLabels: createGettersWithFunctionsMock(),
-			getAllZImplementations: createGettersWithFunctionsMock(),
+			getPaginatedImplementations: createGettersWithFunctionsMock(),
 			getUnattachedZImplementations: function () {
 				return [];
 			},

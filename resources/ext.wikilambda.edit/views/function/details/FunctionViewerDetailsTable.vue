@@ -20,19 +20,29 @@
 				</div>
 			</template>
 		</table-container>
+		<pagination
+			v-if="totalPages > 1"
+			:total-pages="totalPages"
+			:current-page="currentPage"
+			:showing-all="showingAll"
+			@update-page="updateCurrentPage"
+			@reset-view="resetView"
+		></pagination>
 	</div>
 </template>
 
 <script>
 
 const TableContainer = require( '../../../components/base/Table.vue' ),
+	Pagination = require( '../../../components/base/Pagination.vue' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'function-viewer-details-table',
 	components: {
-		'table-container': TableContainer
+		'table-container': TableContainer,
+		pagination: Pagination
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -50,6 +60,26 @@ module.exports = exports = {
 			type: String,
 			required: false,
 			default: ''
+		},
+		currentPage: {
+			type: Number,
+			default: 1
+		},
+		totalPages: {
+			type: Number,
+			default: 0
+		},
+		showingAll: {
+			type: Boolean,
+			defualt: false
+		}
+	},
+	methods: {
+		updateCurrentPage: function ( newPage ) {
+			this.$emit( 'update-page', newPage );
+		},
+		resetView: function () {
+			this.$emit( 'reset-view' );
 		}
 	}
 };

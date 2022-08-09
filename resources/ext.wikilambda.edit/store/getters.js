@@ -45,8 +45,10 @@ module.exports = exports = {
 			var pageNum = 1;
 
 			if ( items.length > 0 ) {
-				for ( var i = 0; i < items.length - 1; i += Constants.PAGINATION_SIZE ) {
-					const pageItems = items.slice( i, i + Constants.PAGINATION_SIZE );
+				for ( var i = 0; i < items.length; i += Constants.PAGINATION_SIZE ) {
+					const endIndex = Math.min( items.length, i + Constants.PAGINATION_SIZE );
+					const pageItems = items.slice( i, endIndex );
+
 					paginatedItems[ pageNum ] = pageItems;
 					pageNum++;
 				}
