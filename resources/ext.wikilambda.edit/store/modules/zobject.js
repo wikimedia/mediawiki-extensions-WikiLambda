@@ -189,37 +189,40 @@ module.exports = exports = {
 			 *
 			 * @param {number} parentId
 			 * @param {string} language
+			 * @param {string} parentType
 			 * @return {Array} zObjectTree
 			 */
-			return function ( parentId, language ) {
+			return function ( parentId, language, parentType ) {
 				if ( parentId === undefined ) {
 					return [];
 				}
 
 				var childrenObjects = [];
-				if ( language ) {
-					for ( var zobject in state.zobject ) {
 
-						var objectProps = state.zobject[ zobject ];
-						if ( objectProps.parent === parentId ) {
-							childrenObjects.push( {
-								id: objectProps.id,
-								key: objectProps.key,
-								value: objectProps.value,
-								parent: objectProps.parent,
-								language,
-								languageString: getters.getNestedZObjectById(
-									objectProps.id,
-									[ Constants.Z_STRING_VALUE ]
-								)
-							} );
-						}
+				for ( var zobject in state.zobject ) {
+
+					var objectProps = state.zobject[ zobject ];
+					// if parentType is passed, ensure parentType matches the value of the zobject
+					if ( parentType && objectProps.id === parentId && objectProps.value !== parentType ) {
+						break;
 					}
-					return childrenObjects;
-				} else {
-					childrenObjects = state.zobject.filter( function ( object ) {
-						return object.parent === parentId;
-					} );
+
+					if ( objectProps.parent === parentId ) {
+						var childObject = {
+							id: objectProps.id,
+							key: objectProps.key,
+							value: objectProps.value,
+							parent: objectProps.parent
+						};
+						if ( language ) {
+							childObject.language = language;
+							childObject.languageString = getters.getNestedZObjectById(
+								objectProps.id,
+								[ Constants.Z_STRING_VALUE ]
+							);
+						}
+						childrenObjects.push( childObject );
+					}
 				}
 
 				return childrenObjects;
@@ -237,8 +240,7 @@ module.exports = exports = {
 			 * @return {Array} zObjectTree
 			 */
 			return function ( parentId, language ) {
-				var childrenObjects = getters.getZObjectChildrenById( parentId, language );
-
+				var childrenObjects = getters.getZObjectChildrenById( parentId, language, 'array' );
 				// Remove first item in array which denotes the type of the list
 				if ( childrenObjects.length > 0 ) {
 					childrenObjects.shift();
@@ -249,22 +251,25 @@ module.exports = exports = {
 		},
 		getListTypeById: function ( state ) {
 			/**
-			 * Return the type of children of a specific zObject by its ID
+			 * Return the type of children of a specific zObject(typedlist) by its ID
 			 *
 			 * @param {number} parentId
 			 * @return {Object}
 			 */
 			return function ( parentId ) {
 				let childrenType = {};
+
 				if ( parentId ) {
 					for ( const zobject in state.zobject ) {
 						const objectProps = state.zobject[ zobject ];
+
 						if ( objectProps.parent === parentId ) {
 							childrenType = objectProps;
 							break;
 						}
 					}
 				}
+
 				return childrenType;
 			};
 		},
@@ -638,7 +643,6 @@ module.exports = exports = {
 
 			objectIndex = context.getters.getZObjectIndexById( payload.id );
 			payload.index = objectIndex;
-
 			context.commit( 'setZObjectValue', payload );
 		},
 		/**

@@ -20,7 +20,8 @@
 
 		<!-- If there's a type, we render the appropriate component -->
 		<template v-else>
-			<span v-if="zType === Constants.Z_TYPED_LIST">
+			<!-- Check if zobject is actually a list  -->
+			<span v-if="zType === Constants.Z_TYPED_LIST && zListType.key === '0'">
 				{{ zTypeLabel }} ->
 				<z-object
 					:zobject-id="zListType.id"
