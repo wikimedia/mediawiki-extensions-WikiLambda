@@ -112,6 +112,30 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @dataProvider provideIsValidZObjectResolver
+	 * @covers ::isValidZObjectResolver
+	 */
+	public function testIsValidZObjectResolver( $input, $expected ) {
+		$this->assertSame( $expected, ZObjectUtils::isValidZObjectResolver( $input ) );
+	}
+
+	public function provideIsValidZObjectResolver() {
+		yield 'Empty string' => [ '', false ];
+		yield 'Contentful string' => [ 'Hello', false ];
+		yield 'Reference string' => [ 'Z123', true ];
+		yield 'Reference-like string' => [ 'A123', false ];
+		yield 'Key reference string' => [ 'Z123K1', false ];
+
+		yield 'Empty record' => [ json_decode( '{}' ), false ];
+		yield 'Un-typed record' => [ json_decode( '{ "Z1K1": "Test" }' ), false ];
+		yield 'String record' => [ json_decode( '{ "Z1K1": "Z6", "Z6K1": "Test" }' ), false ];
+
+		yield 'Reference record' => [ json_decode( '{ "Z1K1": "Z9", "Z9K1": "Z1234" }' ), true ];
+		yield 'Function call record' => [ json_decode( '{ "Z1K1": "Z7", "Z7K1": "Z1234" }' ), true ];
+		yield 'Argument reference record' => [ json_decode( '{ "Z1K1": "Z18", "Z18K1": "Z1234" }' ), true ];
+	}
+
+	/**
 	 * @dataProvider provideCanonicalize
 	 * @covers ::canonicalize
 	 * @covers ::canonicalizeZRecord
