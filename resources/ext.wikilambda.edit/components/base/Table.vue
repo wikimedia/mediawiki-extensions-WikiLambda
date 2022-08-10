@@ -111,6 +111,8 @@ module.exports = exports = {
 
 	&__content {
 		position: relative;
+		width: 100%; // This is the fallback for non WebKit / Mozilla-based browsers.
+		width: -moz-available;
 		width: -webkit-fill-available;
 		border-collapse: collapse;
 
