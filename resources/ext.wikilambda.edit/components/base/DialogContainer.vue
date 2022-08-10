@@ -7,7 +7,7 @@
 	-->
 	<Teleport to="#ext-wikilambda-app">
 		<base-dialog
-			:class="customClass"
+			:custom-class="customClass"
 			:title="title"
 			:description="description"
 			:cancel-button-text="cancelButtonTextOrDefault()"
