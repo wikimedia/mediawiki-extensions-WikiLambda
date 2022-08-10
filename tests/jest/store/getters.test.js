@@ -95,4 +95,21 @@ describe( 'Vuex root getters', function () {
 		// Return null if key is invalid
 		expect( getters.getZkeyLiteralType( undefined, mockedGetters )( 'Z2K4' ) ).toEqual( null );
 	} );
+	it( 'correctly paginates pages', function () {
+		const mockTesterList = [
+			'Tester 1',
+			'Tester 2',
+			'Tester 3',
+			'Tester 4',
+			'Tester 5',
+			'Tester 6',
+			'Tester 7'
+		];
+		expect( getters.paginateList( undefined )( mockTesterList ) ).toEqual(
+			{
+				1: [ 'Tester 1', 'Tester 2', 'Tester 3', 'Tester 4', 'Tester 5' ],
+				2: [ 'Tester 6', 'Tester 7' ]
+			}
+		);
+	} );
 } );

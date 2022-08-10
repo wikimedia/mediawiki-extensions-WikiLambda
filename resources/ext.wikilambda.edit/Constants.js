@@ -104,7 +104,8 @@ var Constants = {
 		Z_TYPED_MAP: 'Z883',
 		Z_TYPED_MAP_TYPE1: 'Z883K1',
 		Z_TYPED_MAP_TYPE2: 'Z883K2',
-		Z_FUNCTION_CALL_TO_TYPE: 'function_call_to_type'
+		Z_FUNCTION_CALL_TO_TYPE: 'function_call_to_type',
+		PAGINATION_SIZE: 5
 	},
 	implementationModes = {
 		CODE: 'code',

@@ -110,9 +110,6 @@ module.exports = exports = {
 					return item.key === Constants.Z_FUNCTION_TESTERS;
 				} )[ 0 ].id;
 			},
-			zImplementationList: function () {
-				return this.getZObjectChildrenById( this.zImplementationId );
-			},
 			zReturnType: function () {
 				var returnType = this.findKeyInArray( Constants.Z_FUNCTION_RETURN_TYPE, this.zobject );
 
@@ -168,8 +165,15 @@ module.exports = exports = {
 		}
 		this.fetchZKeys( { zids: zids } );
 
-		this.fetchZImplementations( this.getCurrentZObjectId );
-		this.fetchZTesters( this.getCurrentZObjectId );
+		// TODO(T314580): once the API supports it, this should be one call
+		this.fetchZImplementations( {
+			zFunctionId: this.getCurrentZObjectId,
+			id: this.zobjectId
+		} );
+		this.fetchZTesters( {
+			zFunctionId: this.getCurrentZObjectId,
+			id: this.zobjectId
+		} );
 	}
 };
 </script>
