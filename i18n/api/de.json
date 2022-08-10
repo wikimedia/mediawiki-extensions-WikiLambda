@@ -25,6 +25,7 @@
 	"apihelp-wikilambda_function_call-example-native-python-code": "Aufrufen von selbst geschriebenem JavaScript-Code",
 	"apihelp-wikilambda_function_call-example-user-defined-python": "Aufrufen einer Python-Funktion mit einem benutzerdefinierten Typ.",
 	"apihelp-wikilambda_function_call-example-user-defined-javascript": "Aufrufen einer JavaScript-Funktion mit einem benutzerdefinierten Typ.",
+	"apihelp-wikilambda_function_call-example-user-defined-validation": "Aufrufen einer benutzerdefinierten, in Python implementierten Validierungsfunktion",
 	"apihelp-wikilambda_function_call-summary": "Aufrufen einer Funktion durch Aufruf des Funktions-Orchestrators",
 	"apihelp-query+wikilambdasearch_labels-summary": "Mit diesem API-Abfragelistengenerator kannst du ZObjects nach Bezeichnungen in einer bestimmten Sprache durchsuchen. Er dient in erster Linie zur Unterstützung des Look-Ahead-Suchsystems.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Der Suchbegriff",
