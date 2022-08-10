@@ -24,6 +24,7 @@
 				></z-reference>
 				<span v-else>{{ $i18n( 'wikilambda-invalidzobject' ).text() }}</span>
 				<span class="ext-wikilambda-zimplementation__-is-impl-associated">
+					<cdx-icon :icon="associatedIcon()"></cdx-icon>
 					({{ isImplementationAttached ?
 						$i18n( 'wikilambda-function-is-attached' ).text() :
 						$i18n( 'wikilambda-function-is-not-attached' ).text()
@@ -68,6 +69,8 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
+	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	icons = require( '../../../lib/icons.json' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	ZCode = require( './ZCode.vue' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
@@ -81,7 +84,8 @@ module.exports = exports = {
 		'z-object-selector': ZObjectSelector,
 		'z-reference': ZReference,
 		'z-function-tester-report': ZFunctionTesterReport,
-		'cdx-select': CdxSelect
+		'cdx-select': CdxSelect,
+		'cdx-icon': CdxIcon
 	},
 	mixins: [ typeUtils ],
 	provide: {
@@ -230,6 +234,9 @@ module.exports = exports = {
 					zobjectId: this.zobjectId,
 					mode: mode
 				} );
+			},
+			associatedIcon: function () {
+				return ( this.isImplementationAttached ) ? icons.cdxIconLink : icons.cdxIconUnLink;
 			}
 		}
 	),
@@ -287,6 +294,7 @@ module.exports = exports = {
 	&__is-impl-associated {
 		font-size: 0.8em;
 		font-style: italic;
+		margin-left: 0.2em;
 	}
 }
 

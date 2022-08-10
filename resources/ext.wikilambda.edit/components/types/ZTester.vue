@@ -12,6 +12,7 @@
 			:zobject-id="zFunction.id"
 		></z-reference>
 		<span class="ext-wikilambda-is-tester-associated">
+			<cdx-icon :icon="associatedIcon()"></cdx-icon>
 			({{ isTesterAttached ?
 				$i18n( 'wikilambda-function-is-attached' ).text() :
 				$i18n( 'wikilambda-function-is-not-attached' ).text()
@@ -47,6 +48,8 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
+	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	icons = require( '../../../lib/icons.json' ),
 	ZFunctionCall = require( './ZFunctionCall.vue' ),
 	ZReference = require( './ZReference.vue' ),
 	ZFunctionTesterReport = require( '../function/ZFunctionTesterReport.vue' );
@@ -57,7 +60,8 @@ module.exports = exports = {
 		'z-function-call': ZFunctionCall,
 		'z-reference': ZReference,
 		'z-function-tester-report': ZFunctionTesterReport,
-		'cdx-button': CdxButton
+		'cdx-button': CdxButton,
+		'cdx-icon': CdxIcon
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -118,7 +122,12 @@ module.exports = exports = {
 				return zid === this.zTesterId;
 			}.bind( this ) ).length > 0;
 		}
-	} )
+	} ),
+	methods: {
+		associatedIcon: function () {
+			return ( this.isTesterAttached ) ? icons.cdxIconLink : icons.cdxIconUnLink;
+		}
+	}
 };
 </script>
 
@@ -126,5 +135,6 @@ module.exports = exports = {
 .ext-wikilambda-is-tester-associated {
 	font-size: 0.8em;
 	font-style: italic;
+	margin-left: 0.2em;
 }
 </style>

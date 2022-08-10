@@ -251,7 +251,9 @@
 						"cdxIconCheck",
 						"cdxIconLanguage",
 						"cdxIconCollapse",
-						"cdxIconTrash"
+						"cdxIconTrash",
+						"cdxIconLink",
+						"cdxIconUnLink"
 					]
 				}
 			],
