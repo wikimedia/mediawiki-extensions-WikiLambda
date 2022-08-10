@@ -316,9 +316,8 @@ module.exports = exports = {
 				this.valueEmitted = false;
 				this.inputValue = input;
 
-				// The `input` event is also emitted when the field is emptied.
-				// We handle this case with the `onClearLookupResults` event instead.
 				if ( !input ) {
+					this.lookupResults = [];
 					return;
 				}
 
