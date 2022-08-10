@@ -9,8 +9,6 @@ use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiQueryZFunctionReference
  * @group Database
  * @group API
- * @group WikiLambda
- * @group medium
  */
 class ApiQueryZFunctionReferenceTest extends ApiTestCase {
 

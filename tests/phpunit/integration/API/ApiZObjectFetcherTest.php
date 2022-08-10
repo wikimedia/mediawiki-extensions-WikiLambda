@@ -11,8 +11,6 @@ use Title;
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiZObjectFetcher
  * @group Database
  * @group API
- * @group WikiLambda
- * @group medium
  */
 class ApiZObjectFetcherTest extends ApiTestCase {
 

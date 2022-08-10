@@ -10,8 +10,6 @@ use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 
 /**
  * @coversDefaultClass MediaWiki\Extension\WikiLambda\OrchestratorRequest;
- * @group WikiLambda
- * @group medium
  */
 class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 

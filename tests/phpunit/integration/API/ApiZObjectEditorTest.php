@@ -15,8 +15,6 @@ use Title;
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor
  * @group Database
  * @group API
- * @group WikiLambda
- * @group medium
  */
 class ApiZObjectEditorTest extends ApiTestCase {
 
