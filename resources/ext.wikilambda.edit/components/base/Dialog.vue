@@ -5,7 +5,7 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div v-clickout="clickToClose" class="ext-wikilambda-dialog">
+	<div v-clickout="clickToClose" class="ext-wikilambda-dialog" :class="customClass">
 		<div class="ext-wikilambda-dialog_text">
 			<div>
 				<div class="ext-wikilambda-dialog_title" v-html="title">
@@ -92,6 +92,11 @@ module.exports = exports = {
 		showActionButtons: {
 			type: Boolean,
 			required: true
+		},
+		customClass: {
+			type: String,
+			required: false,
+			default: ''
 		}
 	},
 	methods: {
