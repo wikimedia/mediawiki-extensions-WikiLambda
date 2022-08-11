@@ -428,7 +428,8 @@ module.exports = exports = {
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
 			// we create the base object that will be used to scaffold the ZString
 			context.dispatch( 'addZObject', { key: Constants.Z_ARGUMENT_LABEL, value: 'object', parent: objectId } );
-			context.dispatch( 'addZMultilingualString', { id: nextId, value: context.rootState.i18n( 'wikilambda-editor-input-default-label' ).toString() } );
+			// don't provide a default string: force the user to specify one
+			context.dispatch( 'addZMultilingualString', { id: nextId, value: '' } );
 		},
 		/**
 		 * Create the required entry in the zobject array for a zArgument.
