@@ -18,29 +18,22 @@ var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modu
 					data: {
 						Z1K1: 'Z2',
 						Z2K1: {
-							Z1K1: 'Z9',
-							Z9K1: 'Z1'
+							Z1K1: 'Z6',
+							Z6K1: 'Z1'
 						},
 						Z2K2: {
 							Z1K1: 'Z4',
-							Z4K1: {
-								Z1K1: 'Z9',
-								Z9K1: 'Z1'
-							},
+							Z4K1: 'Z1',
 							Z4K2: [
+								'Z3',
 								{
 									Z1K1: 'Z3',
-									Z3K1: {
-										Z1K1: 'Z9',
-										Z9K1: 'Z4'
-									},
-									Z3K2: {
-										Z1K1: 'Z6',
-										Z6K1: 'Z1K1'
-									},
+									Z3K1: 'Z4',
+									Z3K2: 'Z1K1',
 									Z3K3: {
 										Z1K1: 'Z12',
 										Z12K1: [
+											'Z11',
 											{
 												Z1K1: 'Z11',
 												Z11K1: 'en',
@@ -50,14 +43,12 @@ var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modu
 									}
 								}
 							],
-							Z4K3: {
-								Z1K1: 'Z9',
-								Z9K1: 'Z101'
-							}
+							Z4K3: 'Z101'
 						},
 						Z2K3: {
 							Z1K1: 'Z12',
 							Z12K1: [
+								'Z11',
 								{
 									Z1K1: 'Z11',
 									Z11K1: 'en',
@@ -71,11 +62,15 @@ var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modu
 					success: '',
 					data: {
 						Z1K1: 'Z2',
-						Z2K1: 'Z2',
+						Z2K1: {
+							Z1K1: 'Z6',
+							Z6K1: 'Z2'
+						},
 						Z2K2: {
 							Z1K1: 'Z4',
 							Z4K1: 'Z2',
 							Z4K2: [
+								'Z3',
 								{
 									Z1K1: 'Z3',
 									Z3K1: 'Z6',
@@ -83,6 +78,7 @@ var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modu
 									Z3K3: {
 										Z1K1: 'Z12',
 										Z12K1: [
+											'Z11',
 											{
 												Z1K1: 'Z11',
 												Z11K1: 'Z1002',
@@ -98,6 +94,7 @@ var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modu
 									Z3K3: {
 										Z1K1: 'Z12',
 										Z12K1: [
+											'Z11',
 											{
 												Z1K1: 'Z11',
 												Z11K1: 'Z1002',
@@ -113,6 +110,7 @@ var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modu
 									Z3K3: {
 										Z1K1: 'Z12',
 										Z12K1: [
+											'Z11',
 											{
 												Z1K1: 'Z11',
 												Z11K1: 'Z1002',
@@ -127,6 +125,7 @@ var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modu
 						Z2K3: {
 							Z1K1: 'Z12',
 							Z12K1: [
+								'Z11',
 								{
 									Z1K1: 'Z11',
 									Z11K1: 'Z1002',
@@ -141,29 +140,22 @@ var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modu
 					data: {
 						Z1K1: 'Z2',
 						Z2K1: {
-							Z1K1: 'Z9',
-							Z9K1: 'Z6'
+							Z1K1: 'Z6',
+							Z6K1: 'Z6'
 						},
 						Z2K2: {
 							Z1K1: 'Z4',
-							Z4K1: {
-								Z1K1: 'Z9',
-								Z9K1: 'Z6'
-							},
+							Z4K1: 'Z6',
 							Z4K2: [
+								'Z3',
 								{
 									Z1K1: 'Z3',
-									Z3K1: {
-										Z1K1: 'Z9',
-										Z9K1: 'Z6'
-									},
-									Z3K2: {
-										Z1K1: 'Z6',
-										Z6K1: 'Z6K1'
-									},
+									Z3K1: 'Z6',
+									Z3K2: 'Z6K1',
 									Z3K3: {
 										Z1K1: 'Z12',
 										Z12K1: [
+											'Z11',
 											{
 												Z1K1: 'Z11',
 												Z11K1: 'en',
@@ -173,14 +165,12 @@ var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modu
 									}
 								}
 							],
-							Z4K3: {
-								Z1K1: 'Z9',
-								Z9K1: 'Z101'
-							}
+							Z4K3: 'Z101'
 						},
 						Z2K3: {
 							Z1K1: 'Z12',
 							Z12K1: [
+								'Z11',
 								{
 									Z1K1: 'Z11',
 									Z11K1: 'en',
@@ -194,8 +184,8 @@ var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modu
 		}
 	},
 	mockApiZkeys = {
-		Z1: { Z1K1: 'Z2', Z2K1: { Z1K1: 'Z9', Z9K1: 'Z1' }, Z2K2: { Z1K1: 'Z4', Z4K1: { Z1K1: 'Z9', Z9K1: 'Z1' }, Z4K2: [ { Z1K1: 'Z3', Z3K1: { Z1K1: 'Z9', Z9K1: 'Z4' }, Z3K2: { Z1K1: 'Z6', Z6K1: 'Z1K1' }, Z3K3: { Z1K1: 'Z12', Z12K1: [ { Z1K1: 'Z11', Z11K1: 'en', Z11K2: 'type' } ] } } ], Z4K3: { Z1K1: 'Z9', Z9K1: 'Z101' } }, Z2K3: { Z1K1: 'Z12', Z12K1: [ { Z1K1: 'Z11', Z11K1: 'en', Z11K2: 'Object' } ] } },
-		Z6: { Z1K1: 'Z2', Z2K1: { Z1K1: 'Z9', Z9K1: 'Z6' }, Z2K2: { Z1K1: 'Z4', Z4K1: { Z1K1: 'Z9', Z9K1: 'Z6' }, Z4K2: [ { Z1K1: 'Z3', Z3K1: { Z1K1: 'Z9', Z9K1: 'Z6' }, Z3K2: { Z1K1: 'Z6', Z6K1: 'Z6K1' }, Z3K3: { Z1K1: 'Z12', Z12K1: [ { Z1K1: 'Z11', Z11K1: 'en', Z11K2: 'value' } ] } } ], Z4K3: { Z1K1: 'Z9', Z9K1: 'Z101' } }, Z2K3: { Z1K1: 'Z12', Z12K1: [ { Z1K1: 'Z11', Z11K1: 'en', Z11K2: 'String' } ] } }
+		Z1: { Z1K1: 'Z2', Z2K1: { Z1K1: 'Z9', Z9K1: 'Z1' }, Z2K2: { Z1K1: 'Z4', Z4K1: { Z1K1: 'Z9', Z9K1: 'Z1' }, Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: { Z1K1: 'Z9', Z9K1: 'Z4' }, Z3K2: { Z1K1: 'Z6', Z6K1: 'Z1K1' }, Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'en', Z11K2: 'type' } ] } } ], Z4K3: { Z1K1: 'Z9', Z9K1: 'Z101' } }, Z2K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'en', Z11K2: 'Object' } ] } },
+		Z6: { Z1K1: 'Z2', Z2K1: { Z1K1: 'Z9', Z9K1: 'Z6' }, Z2K2: { Z1K1: 'Z4', Z4K1: { Z1K1: 'Z9', Z9K1: 'Z6' }, Z4K2: [ 'Z3', { Z1K1: 'Z3', Z3K1: { Z1K1: 'Z9', Z9K1: 'Z6' }, Z3K2: { Z1K1: 'Z6', Z6K1: 'Z6K1' }, Z3K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'en', Z11K2: 'value' } ] } } ], Z4K3: { Z1K1: 'Z9', Z9K1: 'Z101' } }, Z2K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'en', Z11K2: 'String' } ] } }
 	},
 	mockAllZKeyLanguageLabels = [
 		{ zid: 'Z1', label: 'Object', lang: 'Z1002' },
@@ -339,12 +329,12 @@ describe( 'zkeys Vuex module', function () {
 				} );
 			} );
 			it( 'Will Update the ZKeys with the API response', function () {
-				var zIdsToSearch = [ 'Z1', 'Z6' ],
+				var zIdsToSearch = [ 'Z1', 'Z2', 'Z6' ],
 					expectedAddZKeyInfoCall = expect.objectContaining( {
 						zid: expect.any( String ),
 						info: expect.any( Object )
 					} ),
-					expecteaddAllZKeyLabelInfoCall = expect.arrayContaining( [
+					expectedAddAllZKeyLabelsCall = expect.arrayContaining( [
 						{
 							zid: expect.any( String ),
 							lang: expect.any( String ),
@@ -362,11 +352,10 @@ describe( 'zkeys Vuex module', function () {
 				return new Promise( function ( resolve ) {
 					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 					expect( getMock ).toHaveBeenCalledTimes( 1 );
-
 					expect( getResolveMock ).toHaveBeenCalledTimes( 1 );
 					expect( context.commit ).toHaveBeenCalledTimes( 9 );
 					expect( context.commit ).toHaveBeenCalledWith( 'addZKeyInfo', expectedAddZKeyInfoCall );
-					expect( context.commit ).toHaveBeenCalledWith( 'addAllZKeyLabels', expecteaddAllZKeyLabelInfoCall );
+					expect( context.commit ).toHaveBeenCalledWith( 'addAllZKeyLabels', expectedAddAllZKeyLabelsCall );
 					resolve();
 				}, 1000 );
 			} );

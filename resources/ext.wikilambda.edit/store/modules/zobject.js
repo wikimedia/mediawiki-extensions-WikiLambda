@@ -58,13 +58,27 @@ function retriveFunctionCallId( getZObjectChildrenById, object ) {
 }
 
 function generateZIDListFromObjectTree( objectTree ) {
-	var arrayOfKeys = objectTree.map( function ( key ) {
-		return key.value;
+	let keysOrZids = new Set();
+	objectTree.forEach( function ( row ) {
+		keysOrZids.add( row.value );
+		if ( row.key !== undefined ) {
+			keysOrZids.add( row.key );
+		}
 	} );
 
-	return arrayOfKeys.filter( function ( key ) {
-		return key.match( /Z[1-9]\d*$/ );
-	} );
+	keysOrZids = [ ...keysOrZids ]
+		.map( function ( str ) {
+			// If it matches Zid or Zkey, return Zid part, else false
+			const matches = str.match( /^(Z[1-9]\d*)(K[1-9]\d*)?$/ );
+			return matches ? matches.slice( 1 )[ 0 ] : false;
+		} )
+		.filter( function ( value ) {
+			// Filter false values
+			return value;
+		} );
+
+	// Return unique values
+	return [ ...new Set( keysOrZids ) ];
 }
 
 module.exports = exports = {
@@ -465,8 +479,6 @@ module.exports = exports = {
 		initializeZObject: function ( context ) {
 			var editingData = mw.config.get( 'wgWikiLambda' ),
 				createNewPage = editingData.createNewPage,
-				zobject = {},
-				zobjectTree = [],
 				zId = editingData.zId,
 				rootObject;
 
@@ -519,41 +531,7 @@ module.exports = exports = {
 
 			// Not create new page, Zid must be set
 			} else if ( zId ) {
-				// Fetch the whole ZObject.
-				// This is the only moment in the front-end in which we are going to call
-				// the wikilambdaload_zobjects API with language set to null, because
-				// we want to get all the available strings in each multilingual string.
-				// For that purpose we set main to true.
-				const fetchPayload = {
-					zids: [ zId ],
-					main: true
-				};
-				return context.dispatch( 'fetchZKeys', fetchPayload )
-					.then( function () {
-						zobject = context.getters.getZkeys[ zId ];
-						if ( !zobject[ Constants.Z_PERSISTENTOBJECT_ALIASES ] ) {
-							zobject[ Constants.Z_PERSISTENTOBJECT_ALIASES ] = {
-								Z1K1: Constants.Z_MULTILINGUALSTRINGSET,
-								Z32K1: [
-									Constants.Z_MONOLINGUALSTRINGSET
-								]
-							};
-						}
-
-						zobjectTree = zobjectTreeUtils.convertZObjectToTree( zobject );
-
-						// Get all zIds within the object.
-						// We get main zId again because we previously did not add its labels
-						// to the keyLabels object in the store. We will this way take
-						// advantage of the backend making language fallback decisions
-						var listOfZIdWithinObject = generateZIDListFromObjectTree( zobjectTree );
-						listOfZIdWithinObject.push( zId );
-						listOfZIdWithinObject = [ ...new Set( listOfZIdWithinObject ) ];
-
-						context.dispatch( 'fetchZKeys', { zids: listOfZIdWithinObject } );
-						context.commit( 'setZObject', zobjectTree );
-						context.commit( 'setZObjectInitialized', true );
-					} );
+				return context.dispatch( 'initializeRootZObject', zId );
 
 			// TODO (T311416): improve, this is too weak
 			// Is this edge case even possible? createNewPage=false and zid=null parameters
@@ -567,7 +545,56 @@ module.exports = exports = {
 				} );
 				context.commit( 'setZObjectInitialized', true );
 			}
+		},
+		/**
+		 * Call to the wikilambdaload_zobjects API to fetch the root Zobject of the page
+		 * with all its unfiltered content (all language labels, etc). This call is done
+		 * only once and the method is separate from fetchZKeys because the logic to
+		 * treat the result is extremely different.
+		 *
+		 * @param context
+		 * @param {string} zId
+		 * @return {Promise}
+		 */
+		initializeRootZObject: function ( context, zId ) {
+			// Calling the API without language parameter so that we get
+			// the unfiltered multilingual object
+			const api = new mw.Api();
+			return api.get( {
+				action: 'query',
+				list: 'wikilambdaload_zobjects',
+				format: 'json',
+				// eslint-disable-next-line camelcase
+				wikilambdaload_zids: zId,
+				// eslint-disable-next-line camelcase
+				wikilambdaload_canonical: 'true'
+			} ).then( function ( response ) {
+				const zobject = response.query.wikilambdaload_zobjects[ zId ].data;
 
+				// Initialize optional aliases key if absent
+				if ( !zobject[ Constants.Z_PERSISTENTOBJECT_ALIASES ] ) {
+					zobject[ Constants.Z_PERSISTENTOBJECT_ALIASES ] = {
+						Z1K1: Constants.Z_MULTILINGUALSTRINGSET,
+						Z32K1: [
+							Constants.Z_MONOLINGUALSTRINGSET
+						]
+					};
+				}
+
+				const zobjectTree = zobjectTreeUtils.convertZObjectToTree( zobject );
+
+				// Get all zIds within the object.
+				// We get main zId again because we previously did not add its labels
+				// to the keyLabels object in the store. We will this way take
+				// advantage of the backend making language fallback decisions
+				let listOfZIdWithinObject = generateZIDListFromObjectTree( zobjectTree );
+				listOfZIdWithinObject.push( zId );
+				listOfZIdWithinObject = [ ...new Set( listOfZIdWithinObject ) ];
+
+				context.dispatch( 'fetchZKeys', { zids: listOfZIdWithinObject } );
+				context.commit( 'setZObject', zobjectTree );
+				context.commit( 'setZObjectInitialized', true );
+			} );
 		},
 		/**
 		 * Submit a zObject to the api.
