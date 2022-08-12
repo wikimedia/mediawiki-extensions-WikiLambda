@@ -474,7 +474,11 @@ class Hooks implements
 
 			// At this point, we know they're linking to a ZObject page, so show a label, falling back
 			// to English even if that's not in the language's fall-back chain.
-			$label = $targetZObject->getLabels()->getStringForLanguageOrEnglish( $context->getLanguage() );
+			$label = $targetZObject->getLabels()
+				->buildStringForLanguage( $context->getLanguage() )
+				->fallbackWithEnglish()
+				->placeholderNoFallback()
+				->getString();
 		}
 
 		// Finally, set the label of the link to the *un*escaped user-supplied label, see

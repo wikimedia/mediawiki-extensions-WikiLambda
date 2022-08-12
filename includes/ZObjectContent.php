@@ -221,7 +221,10 @@ class ZObjectContent extends AbstractContent {
 		$chosenLang = $language;
 
 		if ( $typeObject ) {
-			$labelAndLang = $typeObject->getLabels()->getStringAndLanguageCode( $language );
+			$labelAndLang = $typeObject->getLabels()->buildStringForLanguage( $language )
+				->fallbackWithEnglish()
+				->placeholderNoFallback()
+				->getStringAndLanguageCode();
 			$label = $labelAndLang[ 'title' ];
 			$chosenLang = $labelAndLang[ 'languageCode' ];
 		} else {
@@ -279,10 +282,10 @@ class ZObjectContent extends AbstractContent {
 	 * Wrapper for ZPersistentObject getLabel method. Returns the label for a given Language (or its fallback).
 	 *
 	 * @param Language $language Language in which to provide the label.
-	 * @return string
+	 * @return ?string
 	 * @throws ZErrorException
 	 */
-	public function getLabel( $language ): string {
+	public function getLabel( $language ): ?string {
 		if ( !$this->isValid() ) {
 			throw new ZErrorException( $this->error );
 		}

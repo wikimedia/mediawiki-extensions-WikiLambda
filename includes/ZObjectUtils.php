@@ -785,7 +785,7 @@ class ZObjectUtils {
 	 */
 	public static function getLabelOfReference( $zid, $zobject, $lang ): string {
 		$labels = $zobject->getLabels();
-		$label = $labels->getStringForLanguageOrEnglish( $lang, false );
+		$label = $labels->buildStringForLanguage( $lang )->fallbackWithEnglish()->getString();
 
 		if ( $label === null ) {
 			return $zid;
@@ -891,7 +891,7 @@ class ZObjectUtils {
 					return $key;
 				}
 
-				$label = $labels->getStringForLanguageOrEnglish( $lang, false );
+				$label = $labels->buildStringForLanguage( $lang )->fallbackWithEnglish()->getString();
 				if ( $label === null ) {
 					return $key;
 				}
@@ -930,7 +930,7 @@ class ZObjectUtils {
 			return $key;
 		}
 
-		$label = $labels->getStringForLanguageOrEnglish( $lang, false );
+		$label = $labels->buildStringForLanguage( $lang )->fallbackWithEnglish()->getString();
 		if ( $label === null ) {
 			return $key;
 		}
@@ -961,7 +961,7 @@ class ZObjectUtils {
 
 			if ( $key === $zargid->getZValue() ) {
 				$labels = $zarg->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_LABEL );
-				$label = $labels->getStringForLanguageOrEnglish( $lang, false );
+				$label = $labels->buildStringForLanguage( $lang )->fallbackWithEnglish()->getString();
 				if ( $label === null ) {
 					return $key;
 				}
