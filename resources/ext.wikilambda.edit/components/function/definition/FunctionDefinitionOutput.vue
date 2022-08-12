@@ -14,8 +14,10 @@
 				v-if="isEditing && tooltipMessage"
 				:content="tooltipMessage"
 			>
-				<cdx-icon class="ext-wikilambda-function-definition-inputs_tooltip-icon"
-					v-if="tooltipIcon" :icon="tooltipIcon">
+				<cdx-icon
+					v-if="tooltipIcon"
+					class="ext-wikilambda-function-definition-inputs_tooltip-icon"
+					:icon="tooltipIcon">
 				</cdx-icon>
 			</tooltip>
 		</div>
