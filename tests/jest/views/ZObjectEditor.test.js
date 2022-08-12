@@ -30,7 +30,7 @@ describe( 'ZObjectEditor', function () {
 					Z1K1: 'Z1'
 				};
 			} ),
-			currentZObjectHasLabel: jest.fn(),
+			currentZObjectIsValid: jest.fn(),
 			isNewZObject: jest.fn()
 		};
 		actions = {

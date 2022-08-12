@@ -19,7 +19,7 @@
 					:primary="true"
 					:progressive="true"
 					:framed="true"
-					:disabled="!currentZObjectHasLabel"
+					:disabled="!currentZObjectIsValid"
 					@click="submit">
 					{{ submitButtonLabel }}
 				</cdx-button>
@@ -88,7 +88,7 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( {
 		createNewPage: 'isCreateNewPage',
 		message: 'getZObjectMessage',
-		currentZObjectHasLabel: 'currentZObjectHasLabel',
+		currentZObjectIsValid: 'currentZObjectIsValid',
 		isNewZObject: 'isNewZObject',
 		getZObjectChildrenById: 'getZObjectChildrenById'
 	} ), {
