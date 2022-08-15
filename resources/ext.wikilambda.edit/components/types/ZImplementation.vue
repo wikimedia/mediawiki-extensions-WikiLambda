@@ -163,7 +163,7 @@ module.exports = exports = {
 				return this.getZkeyLabels[ this.zFunction.value ];
 			},
 			isFunctionLabelReady: function () {
-				return !!this.selectedFunctionLabel;
+				return this.zFunction.value ? !!this.selectedFunctionLabel : true;
 			},
 			selectedFunctionJson: function () {
 				return this.getZkeys[ this.zFunction.value ];
