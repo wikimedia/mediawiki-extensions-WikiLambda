@@ -75,6 +75,10 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 			'Demonstration item',
 			$testObject->getStringForLanguageCode( 'en' )
 		);
+		$this->assertSame(
+			'',
+			$testObject->getStringForLanguageCode( '123' )
+		);
 
 		$this->assertSame(
 			'Elemento para demostración',
