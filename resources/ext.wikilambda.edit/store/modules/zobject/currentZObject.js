@@ -14,8 +14,8 @@ module.exports = exports = {
 		/**
 		 * Set the value of the current Zid
 		 *
-		 * @param state
-		 * @param currentZid
+		 * @param {Object} state
+		 * @param {string} currentZid
 		 */
 		setCurrentZid: function ( state, currentZid ) {
 			state.currentZid = currentZid;
@@ -25,10 +25,10 @@ module.exports = exports = {
 		/**
 		 * Return the complete zObject as a JSON
 		 *
-		 * @param state
-		 * @param getters
-		 * @param rootState
-		 * @param rootGetters
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @param {Object} rootState
+		 * @param {Object} rootGetters
 		 * @return {Array} zObjectJson
 		 */
 		getZObjectAsJson: function ( state, getters, rootState, rootGetters ) {
@@ -83,10 +83,13 @@ module.exports = exports = {
 		 * @param {Object} getters
 		 * @return {boolean}
 		 */
-		currentZObjectHasLabel: function ( state, getters ) {
-			var zobject = getters.getZObjectAsJson;
+		currentZObjectIsValid: function ( state, getters ) {
+			// TODO (T315099): we need a better way to surface errors to the user
+			// (ex: you can't save because this is an implementation and there is no function defined)
+			const zobject = getters.getZObjectAsJson;
+			const zobjectType = getters.getCurrentZObjectType;
 
-			return zobject &&
+			const hasLabels = zobject &&
 				zobject[ Constants.Z_PERSISTENTOBJECT_LABEL ][
 					Constants.Z_MULTILINGUALSTRING_VALUE ].filter(
 					function ( value ) {
@@ -94,6 +97,13 @@ module.exports = exports = {
 							value[ Constants.Z_MONOLINGUALSTRING_VALUE ][
 								Constants.Z_STRING_VALUE ];
 					} ).length > 0;
+
+			// if the new zObject is an implementation or a tester, a function is required to save
+			if ( zobjectType === Constants.Z_IMPLEMENTATION || zobjectType === Constants.Z_TESTER ) {
+				const hasFunction = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_FUNCTION ][ Constants.Z_REFERENCE_ID ] !== '';
+				return hasLabels && hasFunction;
+			}
+			return hasLabels;
 		},
 		currentZFunctionHasInputs: function ( state, getters ) {
 			if ( getters.getCurrentZObjectType !== Constants.Z_FUNCTION ) {
@@ -160,7 +170,7 @@ module.exports = exports = {
 		},
 		currentZFunctionCompletionPercentage: function ( state, getters ) {
 			var requiredSteps = [
-				getters.currentZObjectHasLabel,
+				getters.currentZObjectIsValid,
 				getters.currentZFunctionHasInputs,
 				getters.currentZFunctionHasOutput,
 				getters.currentZFunctionHasTesters,
