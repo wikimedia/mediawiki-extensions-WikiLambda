@@ -103,10 +103,11 @@ module.exports = exports = {
 		/**
 		 * Fetch all attached zTesters for a given local id (corresponding to a zFunction)
 		 *
+		 * Note that this returns a raw array, not a canonical ZList.
+		 *
 		 * @param {Object} context
 		 * @param {string} id
 		 * @return {Promise}
-		 *
 		 */
 		// TODO(T314928): This should be a simple lookup after data layer refactoring
 		// ex: zObject.get( Constants.Z_FUNCTION_TESTERS );
@@ -119,6 +120,8 @@ module.exports = exports = {
 			} )[ 0 ].id;
 
 			const zTesterList = context.getters.getZObjectChildrenById( zTesterId );
+			// remove the list type (we want to return a raw array, not a canonical ZList)
+			zTesterList.shift();
 
 			for ( var zid in zTesterList ) {
 				const zTester = context.getters.getZObjectChildrenById( zTesterList[ zid ].id );
@@ -132,10 +135,11 @@ module.exports = exports = {
 		 * Fetch all zTesters from the wikilambdafn_search API and filter that list to
 		 * only unattached zTesters by determining which zIds are not already in the root state
 		 *
+		 * Note that this returns a raw array, not a canonical ZList.
+		 *
 		 * @param {Object} context
 		 * @param {string} zFunctionId
 		 * @return {Promise}
-		 *
 		 */
 		fetchUnattachedZTesters: function ( context, zFunctionId ) {
 			var api = new mw.Api();
