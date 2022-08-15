@@ -54,6 +54,8 @@ module.exports = exports = {
 		 * Parses out attached implementations from zFunction
 		 * Also fetches relevant zKeys
 		 *
+		 * Note that this returns a raw array, not a canonical ZList.
+		 *
 		 * @param {Object} context
 		 * @param {string} id
 		 * @return {Promise}
@@ -69,9 +71,13 @@ module.exports = exports = {
 			} )[ 0 ].id;
 
 			const zImplementationList = context.getters.getZObjectChildrenById( zImplementationId );
+			// remove the list type (we want to return a raw array, not a canonical ZList)
+			zImplementationList.shift();
+
 			for ( var zid in zImplementationList ) {
 				const zImplementation = context.getters.getZObjectChildrenById(
 					zImplementationList[ zid ].id );
+
 				attachedImplementations.push( zImplementation[ 1 ].value );
 			}
 
@@ -82,6 +88,8 @@ module.exports = exports = {
 		 * Fetches all implementations for specified function ID
 		 * Filter out to only unattached implementations - attached ones are populated from the zObject directly
 		 * Also fetches relevant zKeys
+		 *
+		 * Note that this returns a raw array, not a canonical ZList.
 		 *
 		 * @param {Object} context
 		 * @param {string} zFunctionId
