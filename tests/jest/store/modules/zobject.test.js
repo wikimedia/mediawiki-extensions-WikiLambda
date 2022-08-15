@@ -46,6 +46,7 @@ var fs = require( 'fs' ),
 	context,
 	postMock,
 	postWithEditTokenMock,
+	getMock,
 	getResolveMock;
 
 describe( 'zobject Vuex module', function () {
@@ -503,37 +504,6 @@ describe( 'zobject Vuex module', function () {
 		} );
 
 		it( 'Initialize ZObject, existing zobject page', function () {
-			var expectedSetZObjectPayload = [ { id: 0, key: undefined, parent: undefined, value: 'object' }, { id: 1, key: 'Z1K1', value: 'object', parent: 0 }, { id: 2, key: 'Z1K1', value: 'Z9', parent: 1 }, { id: 3, key: 'Z9K1', value: 'Z2', parent: 1 }, { id: 4, key: 'Z2K1', value: 'object', parent: 0 }, { id: 5, key: 'Z1K1', value: 'Z6', parent: 4 }, { id: 6, key: 'Z6K1', value: 'Z1234', parent: 4 }, { id: 7, key: 'Z2K2', value: 'object', parent: 0 }, { id: 8, key: 'Z1K1', value: 'Z6', parent: 7 }, { id: 9, key: 'Z6K1', value: 'test', parent: 7 }, { id: 10, key: 'Z2K3', value: 'object', parent: 0 }, { id: 11, key: 'Z1K1', value: 'object', parent: 10 }, { id: 12, key: 'Z1K1', value: 'Z9', parent: 11 }, { id: 13, key: 'Z9K1', value: 'Z12', parent: 11 }, { id: 14, key: 'Z12K1', value: 'array', parent: 10 }, { id: 15, key: '0', value: 'object', parent: 14 }, { id: 16, key: 'Z1K1', value: 'object', parent: 15 }, { id: 17, key: 'Z1K1', value: 'Z9', parent: 16 }, { id: 18, key: 'Z9K1', value: 'Z11', parent: 16 }, { id: 19, key: 'Z11K1', value: 'object', parent: 15 }, { id: 20, key: 'Z1K1', value: 'Z9', parent: 19 }, { id: 21, key: 'Z9K1', value: 'Z1002', parent: 19 }, { id: 22, key: 'Z11K2', value: 'object', parent: 15 }, { id: 23, key: 'Z1K1', value: 'Z6', parent: 22 }, { id: 24, key: 'Z6K1', value: 'test', parent: 22 }, { id: 25, key: 'Z2K4', value: 'object', parent: 0 }, { id: 26, key: 'Z1K1', value: 'object', parent: 25 }, { id: 27, key: 'Z1K1', value: 'Z9', parent: 26 }, { id: 28, key: 'Z9K1', value: 'Z32', parent: 26 }, { id: 29, key: 'Z32K1', value: 'array', parent: 25 }, { id: 30, key: '0', value: 'object', parent: 29 }, { id: 31, key: 'Z1K1', value: 'object', parent: 30 }, { id: 32, key: 'Z1K1', value: 'Z9', parent: 31 }, { id: 33, key: 'Z9K1', value: 'Z31', parent: 31 }, { id: 34, key: 'Z31K1', value: 'object', parent: 30 }, { id: 35, key: 'Z1K1', value: 'Z9', parent: 34 }, { id: 36, key: 'Z9K1', value: 'Z1002', parent: 34 }, { id: 37, key: 'Z31K2', value: 'array', parent: 30 } ];
-			context.state = {
-				zobject: zobjectTree
-			};
-			context.getters.getZkeys = {
-				Z1234: {
-					Z1K1: 'Z2',
-					Z2K1: 'Z1234',
-					Z2K2: 'test',
-					Z2K3: {
-						Z1K1: 'Z12',
-						Z12K1: [
-							{
-								Z1K1: 'Z11',
-								Z11K1: 'Z1002',
-								Z11K2: 'test'
-							}
-						]
-					},
-					Z2K4: {
-						Z1K1: 'Z32',
-						Z32K1: [
-							{
-								Z1K1: 'Z31',
-								Z31K1: 'Z1002',
-								Z31K2: []
-							}
-						]
-					}
-				}
-			};
 			mw.config = {
 				get: jest.fn( function () {
 					return {
@@ -544,12 +514,127 @@ describe( 'zobject Vuex module', function () {
 			};
 			zobjectModule.actions.initializeZObject( context );
 
-			expect( context.commit ).toHaveBeenCalledTimes( 4 );
-			expect( context.dispatch ).toHaveBeenCalledTimes( 2 );
+			expect( context.commit ).toHaveBeenCalledTimes( 2 );
+			expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
 			expect( context.commit ).toHaveBeenCalledWith( 'setCreateNewPage', false );
 			expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'initializeRootZObject', 'Z1234' );
+		} );
+
+		it( 'Initialize Root ZObject', function () {
+			// Root ZObject
+			const Z1234 = {
+				Z1K1: 'Z2',
+				Z2K1: 'Z1234',
+				Z2K2: 'test',
+				Z2K3: {
+					Z1K1: 'Z12',
+					Z12K1: [
+						'Z11',
+						{
+							Z1K1: 'Z11',
+							Z11K1: 'Z1002',
+							Z11K2: 'test'
+						}
+					]
+				},
+				Z2K4: {
+					Z1K1: 'Z32',
+					Z32K1: [
+						'Z31',
+						{
+							Z1K1: 'Z31',
+							Z31K1: 'Z1002',
+							Z31K2: [ 'Z6' ]
+						}
+					]
+				}
+			};
+
+			// Mock responses
+			const mockApiResponse = {
+				batchcomplete: '',
+				query: {
+					// eslint-disable-next-line camelcase
+					wikilambdaload_zobjects: {
+						Z1234: {
+							success: '',
+							data: Z1234
+						}
+					}
+				}
+			};
+			getResolveMock = jest.fn( function ( thenFunction ) {
+				return thenFunction( mockApiResponse );
+			} );
+			getMock = jest.fn( function () {
+				return { then: getResolveMock };
+			} );
+			mw.Api = jest.fn( function () {
+				return { get: getMock };
+			} );
+
+			// Expected data
+			const expectedFetchZKeysPayload = {
+				zids: [ 'Z1', 'Z9', 'Z2', 'Z6', 'Z1234', 'Z12', 'Z11', 'Z1002', 'Z32', 'Z31' ]
+			};
+			const expectedSetZObjectPayload = [
+				{ id: 0, key: undefined, value: 'object', parent: undefined },
+				{ id: 1, key: 'Z1K1', value: 'object', parent: 0 },
+				{ id: 2, key: 'Z1K1', value: 'Z9', parent: 1 },
+				{ id: 3, key: 'Z9K1', value: 'Z2', parent: 1 },
+				{ id: 4, key: 'Z2K1', value: 'object', parent: 0 },
+				{ id: 5, key: 'Z1K1', value: 'Z6', parent: 4 },
+				{ id: 6, key: 'Z6K1', value: 'Z1234', parent: 4 },
+				{ id: 7, key: 'Z2K2', value: 'object', parent: 0 },
+				{ id: 8, key: 'Z1K1', value: 'Z6', parent: 7 },
+				{ id: 9, key: 'Z6K1', value: 'test', parent: 7 },
+				{ id: 10, key: 'Z2K3', value: 'object', parent: 0 },
+				{ id: 11, key: 'Z1K1', value: 'object', parent: 10 },
+				{ id: 12, key: 'Z1K1', value: 'Z9', parent: 11 },
+				{ id: 13, key: 'Z9K1', value: 'Z12', parent: 11 },
+				{ id: 14, key: 'Z12K1', value: 'array', parent: 10 },
+				{ id: 15, key: '0', value: 'object', parent: 14 },
+				{ id: 16, key: 'Z1K1', value: 'Z9', parent: 15 },
+				{ id: 17, key: 'Z9K1', value: 'Z11', parent: 15 },
+				{ id: 18, key: '1', value: 'object', parent: 14 },
+				{ id: 19, key: 'Z1K1', value: 'object', parent: 18 },
+				{ id: 20, key: 'Z1K1', value: 'Z9', parent: 19 },
+				{ id: 21, key: 'Z9K1', value: 'Z11', parent: 19 },
+				{ id: 22, key: 'Z11K1', value: 'object', parent: 18 },
+				{ id: 23, key: 'Z1K1', value: 'Z9', parent: 22 },
+				{ id: 24, key: 'Z9K1', value: 'Z1002', parent: 22 },
+				{ id: 25, key: 'Z11K2', value: 'object', parent: 18 },
+				{ id: 26, key: 'Z1K1', value: 'Z6', parent: 25 },
+				{ id: 27, key: 'Z6K1', value: 'test', parent: 25 },
+				{ id: 28, key: 'Z2K4', value: 'object', parent: 0 },
+				{ id: 29, key: 'Z1K1', value: 'object', parent: 28 },
+				{ id: 30, key: 'Z1K1', value: 'Z9', parent: 29 },
+				{ id: 31, key: 'Z9K1', value: 'Z32', parent: 29 },
+				{ id: 32, key: 'Z32K1', value: 'array', parent: 28 },
+				{ id: 33, key: '0', value: 'object', parent: 32 },
+				{ id: 34, key: 'Z1K1', value: 'Z9', parent: 33 },
+				{ id: 35, key: 'Z9K1', value: 'Z31', parent: 33 },
+				{ id: 36, key: '1', value: 'object', parent: 32 },
+				{ id: 37, key: 'Z1K1', value: 'object', parent: 36 },
+				{ id: 38, key: 'Z1K1', value: 'Z9', parent: 37 },
+				{ id: 39, key: 'Z9K1', value: 'Z31', parent: 37 },
+				{ id: 40, key: 'Z31K1', value: 'object', parent: 36 },
+				{ id: 41, key: 'Z1K1', value: 'Z9', parent: 40 },
+				{ id: 42, key: 'Z9K1', value: 'Z1002', parent: 40 },
+				{ id: 43, key: 'Z31K2', value: 'array', parent: 36 },
+				{ id: 44, key: '0', value: 'object', parent: 43 },
+				{ id: 45, key: 'Z1K1', value: 'Z9', parent: 44 },
+				{ id: 46, key: 'Z9K1', value: 'Z6', parent: 44 }
+			];
+
+			zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
+
+			expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+			expect( context.commit ).toHaveBeenCalledTimes( 2 );
 			expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expectedSetZObjectPayload );
 			expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZKeys', expectedFetchZKeysPayload );
 		} );
 
 		it( 'Initialize ZObject with Z7 call function when no zids or createNewPage is set', function () {
