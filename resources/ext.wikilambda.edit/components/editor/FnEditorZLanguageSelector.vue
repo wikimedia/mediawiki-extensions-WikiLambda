@@ -18,6 +18,7 @@
 
 		<template v-if="showAddLanguage">
 			<z-object-selector
+				ref="langSelector"
 				:used-languages="currentZObjectLanguages"
 				:type="Constants.Z_NATURAL_LANGUAGE"
 				@input="addNewLang"
@@ -99,6 +100,7 @@ module.exports = exports = {
 			this.addZMonolingualString( payload );
 
 			this.setLocalZLanguage( zId );
+			this.$refs.langSelector.clearResults();
 		}
 	} )
 };
