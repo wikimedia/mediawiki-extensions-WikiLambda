@@ -653,30 +653,6 @@ class ZObjectUtils {
 	}
 
 	/**
-	 * Walks the ZObject tree and applies a given transformation to its branches.
-	 *
-	 * @param array|stdClass|string $input decoded JSON object for a ZObject
-	 * @param callable $transformation
-	 * @return array|stdClass|string
-	 */
-	public static function applyTransformation( $input, $transformation ) {
-		if ( is_string( $input ) ) {
-			return $input;
-		}
-		if ( is_array( $input ) ) {
-			return array_map( function ( $item ) use ( $transformation ) {
-				return self::applyTransformation( $item, $transformation );
-			}, $input );
-		}
-		if ( is_object( $input ) ) {
-			foreach ( $input as $key => $value ) {
-				$input->$key = self::applyTransformation( $transformation( $key, $value ), $transformation );
-			}
-			return $input;
-		}
-	}
-
-	/**
 	 * Is the input a ZObject reference key (e.g. Z1 or Z12345)?
 	 *
 	 * @param string $input
