@@ -1121,6 +1121,34 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::getLabelOfFunctionArgument
+	 */
+	public function testGetLabelOfFunctionArgument() {
+		$this->insertZids( [ 'Z17' ] );
+
+		$en = $this->makeLanguage( 'en' );
+		$ru = $this->makeLanguage( 'ru' );
+
+		// Result for a non-Function is just the requested key
+		$persistentObjectOfZ2 = $this->getZPersistentObject( 'Z2' );
+		$response = ZObjectUtils::getLabelOfFunctionArgument( 'Z2K1', $persistentObjectOfZ2, $en );
+		$this->assertSame( 'Z2K1', $response );
+
+		$persistentObjectOfEcho = $this->getZPersistentObject( 'Z801' );
+		// Result for a pre-defined Function is the expected value
+		$response = ZObjectUtils::getLabelOfFunctionArgument( 'Z801K1', $persistentObjectOfEcho, $en );
+		$this->assertSame( 'input', $response );
+
+		// Result for a pre-defined Function is the expected value falling back from unset language
+		$response = ZObjectUtils::getLabelOfFunctionArgument( 'Z801K1', $persistentObjectOfEcho, $ru );
+		$this->assertSame( 'input', $response );
+
+		// Result for a pre-defined Function with an unknown key is the expected value
+		$response = ZObjectUtils::getLabelOfFunctionArgument( 'Z801K27', $persistentObjectOfEcho, $en );
+		$this->assertSame( 'Z801K27', $response );
+	}
+
+	/**
 	 * @covers ::extractHumanReadableZObject
 	 * @covers ::getLabelOfGlobalKey
 	 * @covers ::getLabelOfTypeKey
