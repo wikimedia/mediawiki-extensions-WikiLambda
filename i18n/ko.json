@@ -72,8 +72,6 @@
 	"wikilambda-tester-status-passed": "통과",
 	"wikilambda-tester-status-failed": "실패",
 	"wikilambda-tester-results-title": "테스터 결과",
-	"wikilambda-tester-status-label": "테스터 상태",
-	"wikilambda-tester-failure-reason": "실패 이유",
 	"wikilambda-tester-results-current-implementation": "현재 구현체",
 	"wikilambda-tester-run-tester": "테스터 실행",
 	"wikilambda-enable-expert-mode": "전문가 모드 활성화",

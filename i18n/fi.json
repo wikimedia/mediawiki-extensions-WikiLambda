@@ -23,8 +23,6 @@
 	"wikilambda-tester-create-new": "Luo uusi testi",
 	"wikilambda-tester-status-pending": "ODOTTAA...",
 	"wikilambda-tester-results-title": "Testaimen tulokset",
-	"wikilambda-tester-status-label": "Testaimen tila",
-	"wikilambda-tester-function-duration": "Kesto",
 	"wikilambda-metadata-language-column": "Kieli",
 	"wikilambda-metadata-label-column": "Nimi",
 	"wikilambda-metadata-aka-column": "Tunnetaan myös nimellä",

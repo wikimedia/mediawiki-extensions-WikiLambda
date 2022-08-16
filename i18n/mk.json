@@ -106,7 +106,6 @@
 	"wikilambda-test-case-none": "Нема пробни случаи",
 	"wikilambda-tester-failure-expected": "Очекувано",
 	"wikilambda-tester-failure-actual": "Примено",
-	"wikilambda-tester-function-duration": "Траење",
 	"wikilambda-create-function": "Создај функција",
 	"wikilambda-create-type": "Создај тип",
 	"wikilambda-expert-mode-json-label": "Тековен ZObject",

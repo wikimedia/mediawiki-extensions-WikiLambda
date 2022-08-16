@@ -47,7 +47,6 @@
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Errore|Errori}}",
 	"wikilambda-functioncall-metadata-errors-none": "Nessuno",
 	"wikilambda-tester-failure-actual": "Ricevuto",
-	"wikilambda-tester-function-duration": "Durata",
 	"wikilambda-enable-expert-mode": "Abilità modalità esperto",
 	"wikilambda-disable-expert-mode": "Disabilità modalità esperto",
 	"wikilambda-expert-mode-json-label": "ZObject corrente",
