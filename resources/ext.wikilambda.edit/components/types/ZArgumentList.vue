@@ -13,6 +13,7 @@
 				:key="item.id"
 				:zobject-id="item.id"
 				:viewmode="viewmode"
+				@remove-item="removeItem"
 			></z-list-item>
 			<li v-if="!viewmode">
 				<cdx-button :title="tooltipAddListItem" @click="addNewItem">
@@ -36,7 +37,7 @@ module.exports = exports = {
 	},
 	extends: ZTypedList,
 	computed: mapGetters( [ 'getNextObjectId' ] ),
-	methods: $.extend( mapActions( [ 'addZArgument' ] ), {
+	methods: $.extend( mapActions( [ 'addZArgument', 'removeZObjectChildren', 'removeZObject', 'recalculateZArgumentList' ] ), {
 		addNewItem: function ( /* event */ ) {
 			var nextId = this.getNextObjectId,
 				payload = {
@@ -47,6 +48,11 @@ module.exports = exports = {
 			this.addZObject( payload );
 
 			this.addZArgument( nextId );
+		},
+		removeItem: function ( itemId ) {
+			this.removeZObjectChildren( itemId );
+			this.removeZObject( itemId );
+			this.recalculateZArgumentList( this.zobjectId );
 		}
 	} )
 };
