@@ -995,6 +995,134 @@ module.exports = exports = {
 					} );
 				}, DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT );
 			} );
+		},
+		/**
+		 * Adds the given testers to the given function's list of approved testers, and submits
+		 * the change to the API.
+		 *
+		 * @param {Object} context
+		 * @param {string} payload.functionId - the local ID of the function
+		 * @param {Array} payload.testerZIds - the ZIDs of the testers to attach
+		 * @return {Promise}
+		 */
+		attachZTesters: function ( context, payload ) {
+			const listId = context.getters.getNestedZObjectById( payload.functionId, [
+				Constants.Z_PERSISTENTOBJECT_VALUE,
+				Constants.Z_FUNCTION_TESTERS
+			] ).id;
+			const currentListLength = context.getters.getZObjectChildrenById( listId ).length;
+
+			const newListItems = [];
+			for ( let i = 0; i < payload.testerZIds.length; i++ ) {
+				newListItems.push( {
+					key: String( currentListLength + i ),
+					value: 'object',
+					parent: listId
+				} );
+			}
+			return context.dispatch( 'addZObjects', newListItems ).then( ( newListItemIds ) => {
+				for ( let i = 0; i < newListItemIds.length; i++ ) {
+					context.dispatch( 'addZReference', {
+						id: newListItemIds[ i ],
+						value: payload.testerZIds[ i ]
+					} );
+				}
+				return context.dispatch( 'submitZObject', '' );
+			} );
+		},
+		/**
+		 * Removes the given testers from the given function's list of approved testers, and submits the
+		 * change to the API.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload.functionId - the local ID of the function
+		 * @param {Array} payload.testerZIds - the ZIDs of the testers to detach
+		 * @return {Promise}
+		 */
+		detachZTesters: function ( context, payload ) {
+			const listId = context.getters.getNestedZObjectById(
+				payload.functionId, [
+					Constants.Z_PERSISTENTOBJECT_VALUE,
+					Constants.Z_FUNCTION_TESTERS
+				] ).id;
+			const listItems = context.getters.getZObjectChildrenById( listId );
+
+			for ( const zid of payload.testerZIds ) {
+				const listItemId = listItems.find( ( listItem ) =>
+					context.getters.getNestedZObjectById(
+						listItem.id,
+						[ Constants.Z_REFERENCE_ID ]
+					).value === zid
+				).id;
+				context.dispatch( 'removeZObjectChildren', listItemId );
+				context.dispatch( 'removeZObject', listItemId );
+			}
+			context.dispatch( 'recalculateZListIndex', listId );
+			return context.dispatch( 'submitZObject', '' );
+		},
+		/**
+		 * Adds the given implementations to the given function's list of approved implementations, and submits
+		 * the change to the API.
+		 *
+		 * @param {Object} context
+		 * @param {string} payload.functionId - the local ID of the function
+		 * @param {Array} payload.implementationZIds - the ZIDs of the implementations to attach
+		 * @return {Promise}
+		 */
+		attachZImplementations: function ( context, payload ) {
+			const listId = context.getters.getNestedZObjectById( payload.functionId, [
+				Constants.Z_PERSISTENTOBJECT_VALUE,
+				Constants.Z_FUNCTION_IMPLEMENTATIONS
+			] ).id;
+			const currentListLength = context.getters.getZObjectChildrenById( listId ).length;
+
+			const newListItems = [];
+			for ( let i = 0; i < payload.implementationZIds.length; i++ ) {
+				newListItems.push( {
+					key: String( currentListLength + i ),
+					value: 'object',
+					parent: listId
+				} );
+			}
+			return context.dispatch( 'addZObjects', newListItems ).then( ( newListItemIds ) => {
+				for ( let i = 0; i < newListItemIds.length; i++ ) {
+					context.dispatch( 'addZReference', {
+						id: newListItemIds[ i ],
+						value: payload.implementationZIds[ i ]
+					} );
+				}
+				return context.dispatch( 'submitZObject', '' );
+			} );
+		},
+		/**
+		 * Removes the given implementations from the given function's list of approved implementations, and submits the
+		 * change to the API.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload.functionId - the local ID of the function
+		 * @param {Array} payload.implementationZIds - the ZIDs of the implementations to detach
+		 * @return {Promise}
+		 */
+		detachZImplementations: function ( context, payload ) {
+			const listId = context.getters.getNestedZObjectById(
+				payload.functionId, [
+					Constants.Z_PERSISTENTOBJECT_VALUE,
+					Constants.Z_FUNCTION_IMPLEMENTATIONS
+				] ).id;
+			const listItems = context.getters.getZObjectChildrenById( listId );
+
+			for ( const zid of payload.implementationZIds ) {
+				const listItemId = listItems.find( ( listItem ) =>
+					context.getters.getNestedZObjectById(
+						listItem.id,
+						[ Constants.Z_REFERENCE_ID ]
+					).value === zid
+				).id;
+				context.dispatch( 'removeZObjectChildren', listItemId );
+				context.dispatch( 'removeZObject', listItemId );
+			}
+			context.dispatch( 'recalculateZListIndex', listId );
+			return context.dispatch( 'submitZObject', '' );
 		}
 	}
 };

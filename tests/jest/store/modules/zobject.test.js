@@ -1135,5 +1135,127 @@ describe( 'zobject Vuex module', function () {
 				} );
 			} );
 		} );
+		describe( 'Attach and detach testers and implementations', function () {
+			beforeEach( function () {
+				context.state = {
+					zobject: zobjectTree.concat( [
+						{ key: Constants.Z_FUNCTION_TESTERS, value: 'array', parent: 3, id: 18 },
+						{ key: Constants.Z_FUNCTION_IMPLEMENTATIONS, value: 'array', parent: 3, id: 19 },
+						{ key: '0', value: 'object', parent: 18, id: 20 },
+						{ key: '1', value: 'object', parent: 18, id: 21 },
+						{ key: '2', value: 'object', parent: 18, id: 22 },
+						{ key: '3', value: 'object', parent: 18, id: 23 },
+						{ key: '0', value: 'object', parent: 19, id: 24 },
+						{ key: '1', value: 'object', parent: 19, id: 25 },
+						{ key: '2', value: 'object', parent: 19, id: 26 },
+						{ key: '3', value: 'object', parent: 19, id: 27 },
+						{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_TESTER, parent: 20, id: 28 },
+						{ key: Constants.Z_REFERENCE_ID, value: 'Z111', parent: 21, id: 29 }, // existing tester 1
+						{ key: Constants.Z_REFERENCE_ID, value: 'Z222', parent: 22, id: 30 }, // existing tester 2
+						{ key: Constants.Z_REFERENCE_ID, value: 'Z333', parent: 23, id: 31 }, // existing tester 3
+						{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_IMPLEMENTATION, parent: 24, id: 32 },
+						{ key: Constants.Z_REFERENCE_ID, value: 'Z444', parent: 25, id: 33 }, // existing impl 1
+						{ key: Constants.Z_REFERENCE_ID, value: 'Z555', parent: 26, id: 34 }, // existing impl 2
+						{ key: Constants.Z_REFERENCE_ID, value: 'Z666', parent: 27, id: 35 } // existing impl 3
+					] )
+				};
+				context.rootState = {
+					zobjectModule: context.state
+				};
+				Object.keys( zobjectModule.getters ).forEach( function ( key ) {
+					context.getters[ key ] =
+						zobjectModule.getters[ key ](
+							context.state, context.getters,
+							{ zobjectModule: context.state },
+							context.getters );
+				} );
+				context.commit = jest.fn( function ( mutationType, payload ) {
+					zobjectModule.mutations[ mutationType ]( context.state, payload );
+				} );
+				context.dispatch = jest.fn( function ( actionType, payload ) {
+					var maybeFn = zobjectModule.actions[ actionType ];
+					var result;
+					if ( typeof maybeFn === 'function' ) {
+						result = maybeFn( context, payload );
+					} else {
+						maybeFn = zobjectModule.modules.addZObjects.actions[ actionType ];
+
+						if ( typeof maybeFn === 'function' ) {
+							result = maybeFn( context, payload );
+						}
+					}
+
+					return {
+						then: function ( fn ) {
+							return fn( result );
+						}
+					};
+				} );
+			} );
+
+			it( 'attaches given testers', function () {
+				zobjectModule.actions.attachZTesters( context,
+					{ functionId: 0, testerZIds: [ 'Z777', 'Z888' ] } );
+
+				expect( context.state.zobject ).toContainEqual(
+					{ key: '4', value: 'object', parent: 18, id: 36 } );
+				expect( context.state.zobject ).toContainEqual(
+					{ key: '5', value: 'object', parent: 18, id: 37 } );
+				expect( context.state.zobject ).toContainEqual(
+					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 36, id: 38 } );
+				expect( context.state.zobject ).toContainEqual(
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z777', parent: 36, id: 39 } );
+				expect( context.state.zobject ).toContainEqual(
+					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 37, id: 40 } );
+				expect( context.state.zobject ).toContainEqual(
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z888', parent: 37, id: 41 } );
+
+				expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
+			} );
+
+			it( 'detaches given testers', function () {
+				zobjectModule.actions.detachZTesters( context,
+					{ functionId: 0, testerZIds: [ 'Z111', 'Z333' ] } );
+
+				const listChildren = context.state.zobject.filter( ( item ) => item.parent === 18 );
+				expect( listChildren ).toHaveLength( 2 );
+				expect( listChildren ).toContainEqual( { key: '0', value: 'object', parent: 18, id: 20 } );
+				expect( listChildren ).toContainEqual( { key: '1', value: 'object', parent: 18, id: 22 } );
+
+				expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
+			} );
+
+			it( 'attaches given implementations', function () {
+				zobjectModule.actions.attachZImplementations( context,
+					{ functionId: 0, implementationZIds: [ 'Z777', 'Z888' ] } );
+
+				expect( context.state.zobject ).toContainEqual(
+					{ key: '4', value: 'object', parent: 19, id: 36 } );
+				expect( context.state.zobject ).toContainEqual(
+					{ key: '5', value: 'object', parent: 19, id: 37 } );
+				expect( context.state.zobject ).toContainEqual(
+					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 36, id: 38 } );
+				expect( context.state.zobject ).toContainEqual(
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z777', parent: 36, id: 39 } );
+				expect( context.state.zobject ).toContainEqual(
+					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 37, id: 40 } );
+				expect( context.state.zobject ).toContainEqual(
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z888', parent: 37, id: 41 } );
+
+				expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
+			} );
+
+			it( 'detaches given implementations', function () {
+				zobjectModule.actions.detachZImplementations( context,
+					{ functionId: 0, implementationZIds: [ 'Z444', 'Z666' ] } );
+
+				const listChildren = context.state.zobject.filter( ( item ) => item.parent === 19 );
+				expect( listChildren ).toHaveLength( 2 );
+				expect( listChildren ).toContainEqual( { key: '0', value: 'object', parent: 19, id: 24 } );
+				expect( listChildren ).toContainEqual( { key: '1', value: 'object', parent: 19, id: 26 } );
+
+				expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
+			} );
+		} );
 	} );
 } );
