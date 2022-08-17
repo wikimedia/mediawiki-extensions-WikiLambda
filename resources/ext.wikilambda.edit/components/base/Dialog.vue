@@ -55,7 +55,7 @@ module.exports = exports = {
 	},
 	directives: {
 		clickout: {
-			bind: function ( el, binding ) {
+			beforeMount: function ( el, binding ) {
 				el.clickout = {
 					stop: function ( e ) {
 						e.stopPropagation();
@@ -65,7 +65,7 @@ module.exports = exports = {
 				document.body.addEventListener( 'click', binding.value );
 				el.addEventListener( 'click', el.clickout.stop );
 			},
-			unbind: function ( el, binding ) {
+			unmounted: function ( el, binding ) {
 				document.body.removeEventListener( 'click', binding.value );
 				el.removeEventListener( 'click', el.clickout.stop );
 			}
