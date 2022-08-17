@@ -288,5 +288,7 @@
 	"wikilambda-function-viewer-aliases-hide-language-button": "Hide language button for rendering aliases in other languages",
 	"wikilambda-function-viewer-names-show-languages-button": "Show language button for rendering function name in other languages",
 	"wikilambda-function-viewer-details-input-number": "Text for a function input. Paramters: \n* $1 - input number in list",
-	"wikilambda-function-viewer-details-sidebar-summary": "Summary of the function details side panel"
+	"wikilambda-function-viewer-details-sidebar-summary": "Summary of the function details side panel",
+	"wikilambda-function-viewer-details-table-view-all": "Label for button to view all rows in a table",
+	"wikilambda-function-viewer-details-table-view-less": "Label for button to view less rows in a table"
 }

@@ -162,6 +162,7 @@
 				"ext.wikilambda.edit/components/ZObjectKeyInput.vue",
 				"ext.wikilambda.edit/components/ZKeyModeSelector.vue",
 				"ext.wikilambda.edit/components/base/Table.vue",
+				"ext.wikilambda.edit/components/base/Pagination.vue",
 				"ext.wikilambda.edit/components/base/SelectMenu.vue",
 				"ext.wikilambda.edit/components/base/CodeEditor.vue",
 				"ext.wikilambda.edit/components/base/Tooltip.vue",
@@ -253,7 +254,9 @@
 						"cdxIconCollapse",
 						"cdxIconTrash",
 						"cdxIconLink",
-						"cdxIconUnLink"
+						"cdxIconUnLink",
+						"cdxIconNext",
+						"cdxIconPrevious"
 					]
 				}
 			],
@@ -471,7 +474,9 @@
 				"wikilambda-function-viewer-aliases-hide-language-button",
 				"wikilambda-function-viewer-names-show-languages-button",
 				"wikilambda-function-viewer-details-input-number",
-				"wikilambda-function-viewer-details-sidebar-summary"
+				"wikilambda-function-viewer-details-sidebar-summary",
+				"wikilambda-function-viewer-details-table-view-all",
+				"wikilambda-function-viewer-details-table-view-less"
 			]
 		}
 	},

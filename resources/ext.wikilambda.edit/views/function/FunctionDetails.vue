@@ -19,12 +19,22 @@
 				:header="implementationsHeader"
 				:body="implementationBody"
 				:title="$i18n( 'wikilambda-function-implementation-table-header' ).text()"
+				:current-page="currentImplementationPage"
+				:total-pages="numberOfImplementationPages"
+				:showing-all="implementationShowAll"
+				@update-page="updateImplementationPage"
+				@reset-view="resetImplementationView"
 			></function-viewer-details-table>
 			<!-- TODO(T310182): have the implementation table filter the tester table -->
 			<function-viewer-details-table
 				:header="testersHeader"
 				:body="testersBody"
 				:title="$i18n( 'wikilambda-function-test-cases-table-header' ).text()"
+				:current-page="currentTesterPage"
+				:total-pages="numberofTesterPages"
+				:showing-all="testerShowAll"
+				@update-page="updateTestersPage"
+				@reset-view="resetTestersView"
 			></function-viewer-details-table>
 		</section>
 	</main>
@@ -64,16 +74,22 @@ module.exports = exports = {
 		return {
 			implementationIds: [],
 			filterState: '',
-			checkValue: ''
+			checkValue: '',
+			currentImplementationPage: 1,
+			implementationShowAll: false,
+			currentTesterPage: 1,
+			testerShowAll: false
 		};
 	},
 	computed: $.extend( {},
 		mapGetters( [
-			'getAllZTesters',
 			'getUnattachedZTesters',
 			'getZkeyLabels',
+			'getPaginatedImplementations',
 			'getAllZImplementations',
 			'getUnattachedZImplementations',
+			'getPaginatedTesters',
+			'getAllZTesters',
 			'getZkeys'
 		] ),
 		{
@@ -116,14 +132,22 @@ module.exports = exports = {
 
 				return headers;
 			},
+			numberOfImplementationPages: function () {
+				return Object.keys( this.getPaginatedImplementations ).length;
+			},
+			numberofTesterPages: function () {
+				return Object.keys( this.getPaginatedTesters ).length;
+			},
 			implementationBody: function () {
+				const visibleImplementations = this.implementationShowAll ? this.getAllZImplementations :
+					this.getPaginatedImplementations[ this.currentImplementationPage ];
 				const tableData = [];
 				// iterate over each implementation for this function
-				for ( const item in this.getAllZImplementations ) {
+				for ( const item in visibleImplementations ) {
 					// get the state of the implementation ( available | proposed )
 					let zImplementationState = this.$i18n( 'wikilambda-function-implementation-state-available' ).text();
 					if ( this.isFunctionItemAttached(
-						this.getAllZImplementations[ item ],
+						visibleImplementations[ item ],
 						this.getUnattachedZImplementations
 					) ) {
 						zImplementationState = this.$i18n( 'wikilambda-function-implementation-state-proposed' ).text();
@@ -131,7 +155,7 @@ module.exports = exports = {
 
 					// get the language of the implementation
 					var language = this.$i18n( 'wikilambda-implementation-selector-composition' );
-					var zImplementationObj = this.getZkeys[ this.getAllZImplementations[ item ] ];
+					var zImplementationObj = this.getZkeys[ visibleImplementations[ item ] ];
 					if ( zImplementationObj && zImplementationObj[ Constants.Z_PERSISTENTOBJECT_VALUE ] &&
 						zImplementationObj[
 							Constants.Z_PERSISTENTOBJECT_VALUE
@@ -161,9 +185,9 @@ module.exports = exports = {
 
 					// for each implementation, store the checked state
 					// (used to determine the columns of the test table)
-					if ( !this.implementationIds[ this.getAllZImplementations[ item ] ] ) {
-						this.implementationIds[ this.getAllZImplementations[ item ] ] = {
-							zid: this.getAllZImplementations[ item ],
+					if ( !this.implementationIds[ visibleImplementations[ item ] ] ) {
+						this.implementationIds[ visibleImplementations[ item ] ] = {
+							zid: visibleImplementations[ item ],
 							state: zImplementationState,
 							checked: false
 						};
@@ -179,17 +203,17 @@ module.exports = exports = {
 								// disabled if it is of a different state than a selected implementation
 								disabled: this.filterState !== zImplementationState && this.filterState !== '',
 								onClick: function () {
-									this.handleCheckboxClick( this.getAllZImplementations[ item ] );
+									this.handleCheckboxClick( visibleImplementations[ item ] );
 								}.bind( this )
 							},
 							class: 'ext-wikilambda-function-details-table-item',
-							id: this.getZkeyLabels[ this.getAllZImplementations[ item ] ] + ' ' + zImplementationState
+							id: this.getZkeyLabels[ visibleImplementations[ item ] ] + ' ' + zImplementationState
 						},
 						name: {
-							title: this.getZkeyLabels[ this.getAllZImplementations[ item ] ],
+							title: this.getZkeyLabels[ visibleImplementations[ item ] ],
 							component: 'a',
 							props: {
-								href: '/wiki/' + this.getAllZImplementations[ item ]
+								href: '/wiki/' + visibleImplementations[ item ]
 							},
 							class: 'ext-wikilambda-function-details-implementation-table-link ext-wikilambda-function-details-table-item'
 						},
@@ -262,11 +286,13 @@ module.exports = exports = {
 			},
 			testersBody: function () {
 				var tableData = [];
-				for ( var index in this.getAllZTesters ) {
-					var testerLabel = this.getZkeyLabels[ this.getAllZTesters[ index ] ];
+				const visibleTesters = this.testerShowAll ? this.getAllZTesters :
+					this.getPaginatedTesters[ this.currentTesterPage ];
+				for ( var index in visibleTesters ) {
+					var testerLabel = this.getZkeyLabels[ visibleTesters[ index ] ];
 					var zTesterState = this.$i18n( 'wikilambda-function-implementation-state-available' ).text();
 
-					if ( this.getUnattachedZTesters.indexOf( this.getAllZTesters[ index ] ) > -1 ) {
+					if ( this.getUnattachedZTesters.indexOf( visibleTesters[ index ] ) > -1 ) {
 						zTesterState = this.$i18n( 'wikilambda-function-implementation-state-proposed' ).text();
 					}
 
@@ -285,7 +311,7 @@ module.exports = exports = {
 						title: testerLabel,
 						component: 'a',
 						props: {
-							href: '/wiki/' + this.getAllZTesters[ index ]
+							href: '/wiki/' + visibleTesters[ index ]
 						},
 						class: 'ext-wikilambda-function-details-table-item'
 					};
@@ -334,6 +360,19 @@ module.exports = exports = {
 				}
 				this.filterState = '';
 			}
+		},
+		updateImplementationPage: function ( page ) {
+			this.currentImplementationPage = page;
+			this.implementationIds = [];
+		},
+		updateTestersPage: function ( page ) {
+			this.currentTesterPage = page;
+		},
+		resetImplementationView: function () {
+			this.implementationShowAll = !this.implementationShowAll;
+		},
+		resetTestersView: function () {
+			this.testerShowAll = !this.testerShowAll;
 		}
 	}
 };
