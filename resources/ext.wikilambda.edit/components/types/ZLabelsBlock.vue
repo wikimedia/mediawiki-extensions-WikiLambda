@@ -53,7 +53,7 @@
 								<cdx-button
 									v-if="!viewmode"
 									:destructive="true"
-									@click="removeAlias( alias )"
+									@click="removeAlias( alias, language.Z9K1 )"
 								>
 									{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
 								</cdx-button>
@@ -250,7 +250,8 @@ module.exports = exports = {
 		'addZString',
 		'injectZObject',
 		'removeZObjectChildren',
-		'removeZObject'
+		'removeZObject',
+		'recalculateZListIndex'
 	] ), {
 		/**
 		 * Returns the internal Id that identifies the
@@ -408,10 +409,14 @@ module.exports = exports = {
 		 * by providing its ZObject internal table id
 		 *
 		 * @param alias
+		 * @param language
 		 */
-		removeAlias: function ( alias ) {
+		removeAlias: function ( alias, language ) {
 			this.removeZObjectChildren( alias );
 			this.removeZObject( alias );
+
+			const aliasListId = this.getLanguageAliasStringsetId( language );
+			this.recalculateZListIndex( aliasListId );
 		},
 		/**
 		 * Add an alias in a language. The language already exists for
