@@ -6,7 +6,6 @@ use ApiTestCase;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall
- * @group Broken
  * @group API
  * @group WikiLambda
  * @group Standalone
