@@ -14,7 +14,11 @@
 				{{ functionAliasLabel }}
 			</label>
 			<!-- TODO (T298479): replace href with correct URL -->
-			<a href="#" class="ext-wikilambda-app__text-smaller">
+			<a
+				v-if="isMainZObject"
+				href="#"
+				class="ext-wikilambda-app__text-smaller"
+			>
 				{{ $i18n( "wikilambda-function-definition-alias-example" ) }}
 			</a>
 		</div>
@@ -50,6 +54,9 @@ module.exports = exports = {
 		zobjectId: {
 			type: Number,
 			default: 0
+		},
+		isMainZObject: {
+			type: Boolean
 		},
 		/**
 		 * zID of item label language
@@ -131,9 +138,9 @@ module.exports = exports = {
 			functionAliasLabel: function () {
 				return (
 					this.$i18n( 'wikilambda-function-definition-alias-label' ) +
-					' ( ' +
+					' (' +
 					this.$i18n( 'wikilambda-optional' ) +
-					' ) '
+					') '
 				);
 			},
 			functionDefinitionAliasPlaceholder: function () {
@@ -248,14 +255,6 @@ module.exports = exports = {
 
 	&__inputs {
 		width: 300px;
-		border: 1px solid @wmui-color-base30;
-		border-radius: 2px;
-		display: flex;
-		padding: 4px 6px;
-		overflow: auto;
-		// TODO: check with @aishwarya - this is a significantly bigger height than the other
-		// inputs but is much easier ot read the chips
-		height: 35px;
 	}
 
 	&__label {

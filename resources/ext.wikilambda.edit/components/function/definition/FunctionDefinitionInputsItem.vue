@@ -38,6 +38,7 @@
 
 		<div class="ext-wikilambda-editor-input-list-item__body">
 			<z-object-selector
+				v-if="( !canEditType && getTypeOfArgument ) || canEditType"
 				:type="Constants.Z_TYPE"
 				class="ext-wikilambda-editor-input-list-item__selector"
 				:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text()"
@@ -62,13 +63,12 @@
 			>
 			</z-object-selector>
 
-			<input
-				class="ext-wikilambda-editor-input-list-item__input"
+			<cdx-text-input
+				v-model="getArgumentLabel"
 				:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
 				:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
-				:value="getArgumentLabel"
 				@input="setArgumentLabel( zobjectId, $event.target.value )"
-			>
+			></cdx-text-input>
 		</div>
 		<template v-if="showAddNewInput">
 			<div
@@ -88,6 +88,7 @@ var Constants = require( '../../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
+	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	icons = require( './../../../../lib/icons.json' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' );
 
@@ -97,7 +98,8 @@ module.exports = exports = {
 	components: {
 		'z-object-selector': ZObjectSelector,
 		'cdx-icon': CdxIcon,
-		'cdx-button': CdxButton
+		'cdx-button': CdxButton,
+		'cdx-text-input': CdxTextInput
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -316,7 +318,10 @@ module.exports = exports = {
 		width: 100%;
 		display: none;
 		flex-direction: column;
-		gap: 20px;
+
+		& > * {
+			margin-right: 10px;
+		}
 	}
 
 	&__header {
@@ -368,15 +373,7 @@ module.exports = exports = {
 	}
 
 	&__selector {
-		height: 34px;
 		width: 100%;
-	}
-
-	&__input {
-		height: 36px;
-		width: 100%;
-		padding: 0 6px;
-		box-sizing: border-box;
 	}
 
 	&__button {
@@ -390,13 +387,20 @@ module.exports = exports = {
 	@media screen and ( min-width: @width-breakpoint-tablet ) {
 		padding: 0;
 		flex-direction: row;
-		margin-bottom: 6px;
 		border-bottom: 0;
+		margin-top: 6px;
+
+		&:first-child {
+			margin-top: 0;
+		}
 
 		&__body {
 			display: flex;
 			flex-direction: row;
-			gap: 6px;
+
+			& > * {
+				margin-right: 6px;
+			}
 		}
 
 		&__selector {

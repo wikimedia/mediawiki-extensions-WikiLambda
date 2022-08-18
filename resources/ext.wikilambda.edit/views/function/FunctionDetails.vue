@@ -97,7 +97,7 @@ module.exports = exports = {
 				if ( this.implementationBody.length === 0 ) {
 					return {
 						name: {
-							title: this.$i18n( 'wikilambda-implementations-none' ),
+							title: this.$i18n( 'wikilambda-implementation-none-found' ),
 							class: 'ext-wikilambda-function-details-table-no-text'
 						}
 					};
@@ -246,7 +246,7 @@ module.exports = exports = {
 				if ( this.testersBody.length === 0 ) {
 					return {
 						name: {
-							title: this.$i18n( 'wikilambda-test-case-none' ),
+							title: this.$i18n( 'wikilambda-tester-none-found' ),
 							class: 'ext-wikilambda-function-details-table-no-text'
 						}
 					};

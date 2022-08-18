@@ -6,34 +6,42 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-function-definition-name">
-		<div>
+		<div class="ext-wikilambda-function-definition-name__label">
 			<label for="ext-wikilambda-function-definition-name__input" class="ext-wikilambda-app__text-regular">
 				{{ functionNameLabel }}
 			</label>
 			<!-- TODO (T298479): replace href with correct URL -->
-			<a href="#" class="ext-wikilambda-app__text-smaller">
+			<a
+				v-if="isMainZObject"
+				href="#"
+				class="ext-wikilambda-app__text-smaller"
+			>
 				{{ $i18n( 'wikilambda-function-definition-name-example' ).text() }}
 			</a>
 		</div>
-		<input
+
+		<cdx-text-input
 			id="ext-wikilambda-function-definition-name__input"
-			:value="zobjectLabel"
-			class="ext-wikilambda-text-input"
+			v-model="zobjectLabel"
+			class="ext-wikilambda-function-definition-name__input"
 			:aria-label="$i18n( 'wikilambda-function-definition-name-label' ).text()"
 			:placeholder="$i18n( 'wikilambda-function-definition-name-placeholder' ).text()"
-			@input="zobjectLabel = $event.target.value"
-		>
+		></cdx-text-input>
 	</div>
 </template>
 
 <script>
 var Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions;
+	mapActions = require( 'vuex' ).mapActions,
+	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput;
 
 // @vue/component
 module.exports = exports = {
 	name: 'function-definition-name',
+	components: {
+		'cdx-text-input': CdxTextInput
+	},
 	props: {
 		zobjectId: {
 			type: Number,
@@ -110,7 +118,7 @@ module.exports = exports = {
 			}
 		},
 		functionNameLabel: function () {
-			return this.$i18n( 'wikilambda-function-definition-name-label' ).text() + ' ( ' + this.$i18n( 'wikilambda-optional' ).text() + ' )';
+			return this.$i18n( 'wikilambda-function-definition-name-label' ).text() + ' (' + this.$i18n( 'wikilambda-optional' ).text() + ')';
 		}
 	} ),
 	methods: $.extend( mapActions( [
@@ -126,16 +134,14 @@ module.exports = exports = {
 	display: flex;
 	margin-bottom: 26px;
 
-	& > div {
+	&__label {
 		display: flex;
 		flex-direction: column;
 		width: 153px;
 	}
 
-	input {
+	&__input {
 		width: 300px;
-		height: 20px;
-		padding: 4px 6px;
 	}
 }
 </style>

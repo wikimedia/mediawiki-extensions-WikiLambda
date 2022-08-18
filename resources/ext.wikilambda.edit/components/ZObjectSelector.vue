@@ -9,18 +9,19 @@
 		@license MIT
 	-->
 	<span class="ext-wikilambda-select-zobject">
-		<a
-			v-if="readonly || viewmode"
-			:href="'/wiki/' + selectedId"
-			:target="referenceLinkTarget"
-		>
-			{{ selectedText }}
-		</a>
+		<div v-if="readonly || viewmode" class="ext-wikilambda-select-zobject__link">
+			<a
+				:href="'/wiki/' + selectedId"
+				:target="referenceLinkTarget"
+			>
+				{{ selectedText }}
+			</a>
+		</div>
 		<cdx-lookup
 			v-else
 			:key="lookupKey"
 			:selected="selectedId"
-			:class="{ 'ext-wikilambda-zkey-input-invalid': validatorIsInvalid }"
+			:class="{ 'ext-wikilambda-select-zobject__input-invalid': validatorIsInvalid }"
 			:placeholder="lookupPlaceholder"
 			:menu-items="lookupResults"
 			:end-icon="lookupIcon"
@@ -372,19 +373,20 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-
 .ext-wikilambda-select-zobject {
-	display: inline-flex;
-	align-items: center;
-}
+	&__link {
+		min-height: 32px;
+		display: inline-flex;
+		align-items: center;
+	}
 
-.ext-wikilambda-select-zobject a {
-	display: inline-flex;
-}
+	a {
+		display: inline-flex;
+	}
 
-.ext-wikilambda-select-zobject-input-invalid {
-	background: #fee;
-	border: 2px #f00 solid;
+	&__input-invalid {
+		background: #fee;
+		border: 2px #f00 solid;
+	}
 }
-
 </style>

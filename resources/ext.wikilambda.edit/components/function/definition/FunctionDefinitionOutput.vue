@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-function-definition-output">
-		<div class="ext-wikilambda-function-definition-output_label">
+		<div class="ext-wikilambda-function-definition-output__label">
 			<label class="ext-wikilambda-app__text-regular">
 				{{ $i18n( 'wikilambda-function-definition-output-label' ).text() }}
 			</label>
@@ -16,7 +16,7 @@
 			>
 				<cdx-icon
 					v-if="tooltipIcon"
-					class="ext-wikilambda-function-definition-inputs_tooltip-icon"
+					class="ext-wikilambda-function-definition-output_tooltip-icon"
 					:icon="tooltipIcon">
 				</cdx-icon>
 			</tooltip>
@@ -117,25 +117,21 @@ module.exports = exports = {
 .ext-wikilambda-function-definition-output {
 	display: flex;
 	flex-direction: column;
-	margin-bottom: 26px;
-	gap: 15px;
-
-	& > div {
-		width: 153px;
-	}
 
 	&__selector {
-		height: 32px;
 		margin-right: 6px;
 		width: auto;
 	}
 
-	&_label {
+	&__label {
 		display: flex;
+		width: 153px;
 	}
 
 	&_tooltip-icon {
-		padding-left: 8px;
+		margin-left: 8px;
+		width: 16px;
+		height: 16px;
 	}
 
 	@media screen and ( min-width: @width-breakpoint-tablet ) {

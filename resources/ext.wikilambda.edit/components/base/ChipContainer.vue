@@ -5,20 +5,20 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-chip-container">
+	<div class="ext-wikilambda-chip-container" @click="focusInput">
 		<chip
 			v-for="chip in chips"
 			:key="chip.id"
 			:index="chip.id"
-			width=".5em"
-			height=".5em"
 			:text="chip.value"
 			:readonly="readonly"
+			class="ext-wikilambda-chip-container__item"
 			@edit-chip="editChip"
 			@remove-chip="removeChip"
 		></chip>
 		<input
 			v-if="canAdd"
+			ref="chipInput"
 			v-model="newText"
 			class="ext-wikilambda-chip-container__input"
 			:aria-label="inputAriaLabel"
@@ -82,6 +82,11 @@ module.exports = exports = {
 		},
 		removeChip: function ( index ) {
 			this.$emit( 'remove-chip', index );
+		},
+		focusInput: function () {
+			if ( this.canAdd ) {
+				this.$refs.chipInput.focus();
+			}
 		}
 	}
 };
@@ -92,17 +97,30 @@ module.exports = exports = {
 
 .ext-wikilambda-chip-container {
 	display: flex;
+	flex: 1 auto;
+	flex-flow: wrap;
+	border-radius: 2px;
+	padding: 0 8px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: @wmui-color-base50;
+	box-shadow: inset 0 0 0 1px transparent;
 
-	&__input {
-		border: 1px solid transparent;
-		width: 240px;
+	&__item {
+		margin-right: 5px;
+		margin-top: 3px;
+		margin-bottom: 3px;
 	}
 
-	input:focus {
-		border-left: 0;
-		border-top: 0;
-		border-bottom: 0;
+	&__input {
+		flex-grow: inherit;
+		height: 26px;
+		padding: 2px 0;
+		border: 0;
 		outline: 0;
+		font-family: inherit;
+		font-size: inherit;
+		line-height: 1.43em;
 	}
 }
 </style>

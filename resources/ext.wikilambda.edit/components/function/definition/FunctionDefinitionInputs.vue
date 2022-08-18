@@ -200,11 +200,17 @@ module.exports = exports = {
 	}
 
 	&_tooltip-icon {
-		padding-left: 8px;
+		margin-left: 8px;
+		width: 16px;
+		height: 16px;
 	}
 
 	@media screen and ( min-width: @width-breakpoint-tablet ) {
 		display: flex;
+
+		&__padded {
+			padding-bottom: 0;
+		}
 
 		&_label {
 			display: flex;

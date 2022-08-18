@@ -8,6 +8,7 @@
 	<div
 		class="ext-wikilambda-chip"
 		:class="'ext-wikilambda-chip_' + intent"
+		@click.stop=""
 	>
 		<div
 			class="ext-wikilambda-chip_text"
@@ -25,8 +26,6 @@
 		>
 			<cdx-icon
 				:icon="icon"
-				:width="iconWidth"
-				:height="iconHeight"
 			></cdx-icon>
 		</div>
 	</div>
@@ -53,16 +52,6 @@ module.exports = exports = {
 		},
 		readonly: { // if chip can be edited
 			type: Boolean,
-			required: false
-		},
-		iconWidth: {
-			type: String,
-			default: '1em',
-			required: false
-		},
-		iconHeight: {
-			type: String,
-			default: '1em',
 			required: false
 		},
 		editableContainer: {
@@ -111,18 +100,30 @@ module.exports = exports = {
 	border-width: 1.5px;
 	border-style: solid;
 	border-radius: 12px;
-	height: 22px;
+	height: 20px;
 	padding: 0 6px;
 	margin-top: 2.5px;
 	margin-bottom: 2.5px;
 	vertical-align: middle;
 
 	&_text {
+		height: 100%;
 		width: max-content;
+		display: flex;
+		align-items: center;
 	}
 
 	&_icon {
 		margin-left: 10px;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+
+		.cdx-icon {
+			width: 12.4px;
+			height: 12.4px;
+		}
 	}
 
 	&_notice {

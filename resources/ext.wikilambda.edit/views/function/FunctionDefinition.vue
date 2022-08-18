@@ -12,25 +12,30 @@
 				:key="index"
 				class="ext-wikilambda-function-definition__container__input"
 			>
-				<fn-editor-zlanguage-selector
-					v-if="isNewZObject === true || labelLanguage.readonly === false"
-					class="ext-wikilambda-function-definition__container__input__language-selector"
-					:z-language="labelLanguage.zLang"
-					@change="function ( value ) {
-						return setInputLangByIndex( value, index )
-					}"
-				>
-				</fn-editor-zlanguage-selector>
-				<span v-else class="ext-wikilambda-function-definition__container__input__language-title">
-					{{ labelLanguage.label ? labelLanguage.label : labelLanguage.zLang }}:
-				</span>
+				<div class="ext-wikilambda-function-definition__container__input__language">
+					<fn-editor-zlanguage-selector
+						v-if="isNewZObject === true || labelLanguage.readonly === false"
+						class="ext-wikilambda-function-definition__container__input__language__selector"
+						:z-language="labelLanguage.zLang"
+						@change="function ( value ) {
+							return setInputLangByIndex( value, index )
+						}"
+					>
+					</fn-editor-zlanguage-selector>
+					<span v-else class="ext-wikilambda-function-definition__container__input__language__title">
+						{{ labelLanguage.label ? labelLanguage.label : labelLanguage.zLang }}:
+					</span>
+				</div>
 				<!-- component that displays names for a language -->
 				<function-definition-name
 					:z-lang="labelLanguage.zLang"
 					:is-main-z-object="index === 0"
 				></function-definition-name>
 				<!-- component that displays aliases for a language -->
-				<function-definition-aliases :z-lang="labelLanguage.zLang"></function-definition-aliases>
+				<function-definition-aliases
+					:z-lang="labelLanguage.zLang"
+					:is-main-z-object="index === 0"
+				></function-definition-aliases>
 				<function-definition-inputs
 					:is-mobile="isMobile"
 					:z-lang="labelLanguage.zLang"
@@ -529,12 +534,17 @@ module.exports = exports = {
 		&__input {
 			margin-bottom: 40px;
 
-			&__language-selector {
-				margin-bottom: 40px;
-			}
+			&__language {
+				margin-bottom: 15px;
 
-			&__language-title {
-				font-size: 2em;
+				&__selector {
+					margin-bottom: 40px;
+					display: flex;
+				}
+
+				&__title {
+					font-size: 2em;
+				}
 			}
 		}
 	}

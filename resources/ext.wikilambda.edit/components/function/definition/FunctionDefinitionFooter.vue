@@ -9,12 +9,14 @@
 		<label for="ext-wikilambda-function-definition-name__input" class="ext-wikilambda-app__text-regular">
 			{{ $i18n( 'wikilambda-function-definition-footer-label' ).text() }}
 		</label>
-		<input
+		<cdx-text-input
+			id="ext-wikilambda-function-definition-name__input"
 			v-model="summary"
-			class="ext-wikilambda-function-definition-footer__text-input"
+			class="ext-wikilambda-function-definition-footer__summary-input"
 			:aria-label="$i18n( 'wikilambda-function-definition-footer-label' ).text()"
 			:placeholder="$i18n( 'wikilambda-function-definition-footer-placeholder' ).text()"
-		>
+		></cdx-text-input>
+
 		<div class="ext-wikilambda-function-definition-footer__actions">
 			<cdx-button
 				class="ext-wikilambda-function-definition-footer__publish-button"
@@ -46,6 +48,7 @@
 <script>
 var Constants = require( '../../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
+	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
@@ -53,6 +56,7 @@ var Constants = require( '../../../Constants.js' ),
 module.exports = exports = {
 	name: 'function-definition-footer',
 	components: {
+		'cdx-text-input': CdxTextInput,
 		'cdx-button': CdxButton
 	},
 	props: {
@@ -116,26 +120,17 @@ module.exports = exports = {
 	background-color: @wmui-color-base90;
 	padding: 30px;
 
-	&__text-input {
-		padding: 6px 8px;
+	&__summary-input {
 		margin-top: 10px;
-		margin-bottom: 10px;
 	}
 
 	&__actions {
 		display: flex;
+		margin-top: 28px;
 
 		button {
-			padding: 5px;
-			margin: 5px;
-			border-radius: 2px;
+			margin-right: 10px;
 			cursor: pointer;
-		}
-
-		input {
-			width: 300px;
-			height: 20px;
-			padding: 4px 6px;
 		}
 	}
 }

@@ -160,8 +160,6 @@
 	"wikilambda-editor-tester-list-label": "Label for a list of testers associated with a function.\n\n{{doc-wikilambda}}",
 	"wikilambda-tester-selector": "Label for selecting a tester",
 	"wikilambda-tester-none-found": "Label for when no testers are found for a function",
-	"wikilambda-test-case-none": "Label for when no test cases are found for a function",
-	"wikilambda-implementations-none": "Label for when no implementations are found for a function",
 	"wikilambda-tester-create-new": "Label for creating a new tester",
 	"wikilambda-tester-status-pending": "Label for a pending test runner",
 	"wikilambda-tester-status-running": "Label for a running test runner",

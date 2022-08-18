@@ -98,7 +98,7 @@ module.exports = exports = {
 	}
 
 	&-no-text {
-		margin-right: 32px;
+		padding: 12px;
 		font-weight: @font-weight-base;
 		color: @wmui-color-base30;
 	}

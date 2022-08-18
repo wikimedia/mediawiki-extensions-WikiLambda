@@ -6,19 +6,20 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-language-selector">
-		<select v-model="zLanguageValue">
-			<option
-				v-for="language in currentZObjectLanguages"
-				:key="language.Z9K1"
-				:value="language.Z9K1"
-			>
-				{{ getZkeyLabels[ language.Z9K1 ] }}
-			</option>
-		</select>
+		<!-- eslint-disable vue/no-v-model-argument -->
+		<!-- eslint-disable vue/no-unsupported-features -->
+		<cdx-select
+			v-model:selected="zLanguageValue"
+			class="ext-wikilambda-language-selector__select"
+			:default-label="getZkeyLabels[ zLanguageValue ]"
+			:menu-items="languageList"
+		>
+		</cdx-select>
 
 		<template v-if="showAddLanguage">
 			<z-object-selector
 				ref="langSelector"
+				class="ext-wikilambda-language-selector__add-language"
 				:used-languages="currentZObjectLanguages"
 				:type="Constants.Z_NATURAL_LANGUAGE"
 				@input="addNewLang"
@@ -30,12 +31,14 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
+	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
 module.exports = exports = {
 	components: {
+		'cdx-select': CdxSelect,
 		'z-object-selector': ZObjectSelector
 	},
 	props: {
@@ -69,6 +72,14 @@ module.exports = exports = {
 			set: function ( value ) {
 				this.setLocalZLanguage( value );
 			}
+		},
+		languageList: function () {
+			return this.currentZObjectLanguages.map( function ( language ) {
+				return {
+					label: this.getZkeyLabels[ language.Z9K1 ],
+					value: language.Z9K1
+				};
+			}.bind( this ) );
 		}
 	} ),
 	methods: $.extend( mapActions( [
@@ -76,11 +87,7 @@ module.exports = exports = {
 	] ), {
 		setLocalZLanguage: function ( lang ) {
 			this.localZLanguage = lang;
-
-			this.$emit( 'change', {
-				label: this.getZkeyLabels[ lang ],
-				zLang: lang
-			} );
+			this.$emit( 'change', lang );
 		},
 		addNewLang: function ( zId ) {
 			if ( !zId ) {
@@ -108,15 +115,12 @@ module.exports = exports = {
 
 <style lang="less">
 .ext-wikilambda-language-selector {
-	select {
-		background: #f8f9fa;
-		border: 1px solid #72777d;
-		box-sizing: border-box;
-		border-radius: 2px;
-		height: 32px;
-		padding: 6px 12px 6px 8px;
-		font-size: 1em;
-		line-height: 1.4em;
+	&__select {
+		min-width: 100px;
+	}
+
+	&__add-language {
+		margin-left: 10px;
 	}
 }
 </style>
