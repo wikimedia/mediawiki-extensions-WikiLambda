@@ -209,6 +209,9 @@ module.exports = exports = {
 						!this.isExcludedZType( zid ) // and ZID is not part of the EXCLUDED_Z_TYPES
 					) );
 			},
+			isUsedLanguage: function ( zid ) {
+				return this.usedLanguageZids.indexOf( zid ) !== -1;
+			},
 
 			/**
 			 * Handle get zObject lookup.
@@ -243,12 +246,14 @@ module.exports = exports = {
 									// If we are searching for Types (this.type === Constants.Z_TYPE)
 									// we should exclude Z1, Z2, Z7 and Z9 from the results
 									if ( !self.isExcludedZType( zid ) ) {
-										self.lookupResults.push(
-											{
-												value: zid,
-												label
-											}
-										);
+										if ( !self.isUsedLanguage( zid ) ) {
+											self.lookupResults.push(
+												{
+													value: zid,
+													label
+												}
+											);
+										}
 									}
 									// Update zKeyLabels in the Vuex store
 									if ( !( zid in self.zkeyLabels ) ) {
