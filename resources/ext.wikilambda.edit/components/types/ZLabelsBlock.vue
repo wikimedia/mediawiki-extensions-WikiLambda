@@ -399,6 +399,12 @@ module.exports = exports = {
 			this.removeZObjectChildren( labelId );
 			this.removeZObject( labelId );
 
+			var zLabelParentId = this.findKeyInArray(
+				Constants.Z_MULTILINGUALSTRING_VALUE,
+				this.getZObjectChildrenById( this.zObjectLabelId )
+			).id;
+			this.recalculateZListIndex( zLabelParentId );
+
 			if ( aliasId ) {
 				this.removeZObjectChildren( aliasId );
 				this.removeZObject( aliasId );
