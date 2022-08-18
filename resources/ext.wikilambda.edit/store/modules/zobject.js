@@ -741,6 +741,30 @@ module.exports = exports = {
 			} );
 		},
 		/**
+		 * Recalculate the keys and key values of a ZArgument List.
+		 * This should be used when an item is removed from a ZArgument list.
+		 *
+		 * @param {Object} context
+		 * @param {number} zListId
+		 */
+		recalculateZArgumentList: function ( context, zListId ) {
+			var zList = context.getters.getAllItemsFromListById( zListId );
+
+			zList.forEach( function ( zObject, index ) {
+				var children = context.getters.getZObjectChildrenById( zObject.id );
+				var argumentKeyZObject = typeUtils.findKeyInArray( Constants.Z_ARGUMENT_KEY, children );
+				var argumentKeyChildren = context.getters.getZObjectChildrenById( argumentKeyZObject.id );
+				context.commit( 'setZObjectValue', {
+					index: context.getters.getZObjectIndexById( argumentKeyChildren[ 1 ].id ),
+					value: `${context.getters.getCurrentZObjectId}K${index + 1}`
+				} );
+				context.commit( 'setZObjectKey', {
+					index: context.getters.getZObjectIndexById( zObject.id ),
+					key: index
+				} );
+			} );
+		},
+		/**
 		 * Set the programing language for a specific zCode object.
 		 * The entry will result in a json representation equal to:
 		 * { Z1K1: Z61, Z61K1: payload.value }

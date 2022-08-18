@@ -821,6 +821,72 @@ describe( 'zobject Vuex module', function () {
 			expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, { zobjectModule: context.state }, context.getters ).Z2K2 ).toEqual( [ { Z1K1: 'Z6', Z6K1: 'second' } ] );
 		} );
 
+		it( 'Recalculate an existing ZArgumentList with the correct key values', function () {
+			context.state = {
+				zobject: [
+					{ id: 0, value: 'object' },
+					{ key: 'Z1K1', value: 'Z2', parent: 0, id: 1 },
+					{ key: 'Z2K1', value: 'object', parent: 0, id: 2 },
+					{ key: 'Z2K2', value: 'object', parent: 0, id: 3 },
+					{ key: 'Z1K1', value: 'Z6', parent: 2, id: 4 },
+					{ key: 'Z6K1', value: 'Z10006', parent: 2, id: 5 },
+					{ key: 'Z2K2', value: 'object', parent: 0, id: 6 },
+					{ key: 'Z1K1', value: 'Z8', parent: 6, id: 7 },
+					{ key: 'Z8K1', value: 'array', parent: 6, id: 8 },
+					{ key: 0, value: 'Z17', parent: 8, id: 9 },
+					{ key: 1, value: 'object', parent: 8, id: 10 },
+					{ key: 'Z1K1', value: 'Z17', parent: 10, id: 11 },
+					{ key: 'Z17K1', value: 'Z6', parent: 10, id: 12 },
+					{ key: 'Z17K2', value: 'object', parent: 10, id: 13 },
+					{ key: 'Z1K1', value: 'Z6', parent: 13, id: 14 },
+					{ key: 'Z6K1', value: 'Z10006K1', parent: 13, id: 15 },
+					{ key: 'Z17K3', value: 'object', parent: 10, id: 16 },
+					{ key: 'Z1K1', value: 'Z12', parent: 16, id: 17 },
+					{ key: 'Z12K1', value: 'array', parent: 16, id: 18 },
+					{ key: 2, value: 'object', parent: 8, id: 19 },
+					{ key: 'Z1K1', value: 'Z17', parent: 19, id: 20 },
+					{ key: 'Z17K1', value: 'Z6', parent: 19, id: 21 },
+					{ key: 'Z17K2', value: 'object', parent: 19, id: 22 },
+					{ key: 'Z1K1', value: 'Z6', parent: 22, id: 23 },
+					{ key: 'Z6K1', value: 'Z10006K2', parent: 22, id: 24 },
+					{ key: 'Z17K3', value: 'object', parent: 19, id: 25 },
+					{ key: 3, value: 'object', parent: 8, id: 26 },
+					{ key: 'Z1K1', value: 'Z17', parent: 26, id: 27 },
+					{ key: 'Z17K1', value: 'Z6', parent: 26, id: 28 },
+					{ key: 'Z17K2', value: 'object', parent: 26, id: 29 },
+					{ key: 'Z1K1', value: 'Z6', parent: 29, id: 30 },
+					{ key: 'Z6K1', value: 'Z10006K3', parent: 29, id: 31 },
+					{ key: 'Z17K3', value: 'object', parent: 26, id: 32 }
+				]
+			};
+			context.getters = {
+				getCurrentZObjectId: 'Z10006',
+				// List that is passed once second item has been removed.
+				getAllItemsFromListById: jest.fn().mockReturnValue( [ { key: 1, value: 'object', parent: 8, id: 10 }, { key: 3, value: 'object', parent: 8, id: 26 } ] ),
+				getZObjectChildrenById: zobjectModule.getters.getZObjectChildrenById( context.state ),
+				getZObjectIndexById: zobjectModule.getters.getZObjectIndexById( context.state )
+			};
+			context.commit = jest.fn( function ( mutationType, payload ) {
+				zobjectModule.mutations[ mutationType ]( context.state, payload );
+			} );
+			context.dispatch = jest.fn( function ( actionType, payload ) {
+				zobjectModule.actions[ actionType ]( context, payload );
+
+				return {
+					then: function ( fn ) {
+						return fn();
+					}
+				};
+			} );
+			// Remove second item from ZArgumentList.
+			zobjectModule.actions.removeZObject( context, 22 );
+			// Perform recalculate
+			zobjectModule.actions.recalculateZArgumentList( context, 8 );
+			// Third list item, has now become second list item.
+			expect( zobjectModule.getters.getZObjectById( context.state )( 26 ) ).toEqual( { key: 1, value: 'object', parent: 8, id: 26 } );
+			expect( zobjectModule.getters.getZObjectById( context.state )( 31 ) ).toEqual( { key: 'Z6K1', value: 'Z10006K2', parent: 29, id: 31 } );
+		} );
+
 		describe( 'Add ZObjects', function () {
 			beforeEach( function () {
 				context.state = {
