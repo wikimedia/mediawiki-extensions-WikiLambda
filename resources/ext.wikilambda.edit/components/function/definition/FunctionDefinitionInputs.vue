@@ -37,6 +37,7 @@
 				:is-mobile="isMobile"
 				:is-active="activeInputIndex === index"
 				:show-index="zArgumentList.length > 1"
+				@update-argument-label="updateArgumentLabel"
 				@add-new-input="addNewItem"
 				@active-input="setActiveInput">
 			</function-definition-inputs-item>
@@ -158,6 +159,9 @@ module.exports = exports = {
 		// We need this function otherwise the build will fail
 		showAddNewInput: function ( isMainZObject, index ) {
 			return isMainZObject && index === 0;
+		},
+		updateArgumentLabel: function () {
+			this.setAvailableZArguments( this.zFunctionId );
 		},
 		setActiveInput: function ( index ) {
 			this.activeInputIndex = index;
