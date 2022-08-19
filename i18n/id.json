@@ -4,7 +4,8 @@
 			"AJBot2",
 			"Daud I.F. Argana",
 			"Farras",
-			"Syman51"
+			"Syman51",
+			"Veracious"
 		]
 	},
 	"wikilambda-desc": "Menyediakan wiki Wikimedia sebuah fungsi parser teks wiki untuk memanggil evaluasi fungsi yang ditulis, dikelola, dan dievaluasi dari suatu wiki pusat.",
@@ -170,6 +171,7 @@
 	"wikilambda-editor-fn-step-implement": "Implementasikan",
 	"wikilambda-editor-fn-step-implementations": "Implementasi",
 	"wikilambda-editor-fn-step-function-definition": "Definisi Fungsi",
+	"wikilambda-editor-fn-step-function-details": "Rincian",
 	"wikilambda-editor-fn-tests-tooltip-content": "Begitu fungsi didefinisikan, Anda bisa menambahkan implementasi dan uji coba.",
 	"wikilambda-editor-fn-tests-tooltip-header": "Tidak ada akses",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "Maaf! Hanya Pengurus yang bisa mengubah definisi fungsi setelah definisinya diterbitkan.",

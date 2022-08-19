@@ -112,5 +112,7 @@
 	"wikilambda-editor-progress-title": "Progresso",
 	"wikilambda-function-viewer-aliases-show-language-button": "Mostrar mais idiomas",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Ocultar lista",
-	"wikilambda-function-viewer-names-show-languages-button": "Mostrar nome em outros idiomas"
+	"wikilambda-function-viewer-names-show-languages-button": "Mostrar nome em outros idiomas",
+	"wikilambda-function-viewer-details-table-view-all": "Ver tudo",
+	"wikilambda-function-viewer-details-table-view-less": "Ver menos"
 }

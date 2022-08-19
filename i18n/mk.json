@@ -163,5 +163,7 @@
 	"wikilambda-function-viewer-aliases-header": "Познато и како",
 	"wikilambda-function-viewer-aliases-show-language-button": "Прикажи повеќе јазици",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Скриј список",
-	"wikilambda-function-viewer-names-show-languages-button": "Прикажи име на други јазици"
+	"wikilambda-function-viewer-names-show-languages-button": "Прикажи име на други јазици",
+	"wikilambda-function-viewer-details-table-view-all": "Сите",
+	"wikilambda-function-viewer-details-table-view-less": "Помалку"
 }

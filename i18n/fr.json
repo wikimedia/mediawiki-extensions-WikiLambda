@@ -276,5 +276,7 @@
 	"wikilambda-function-viewer-aliases-hide-language-button": "Masquer la liste",
 	"wikilambda-function-viewer-names-show-languages-button": "Afficher le nom dans d’autres langues",
 	"wikilambda-function-viewer-details-input-number": "Entrée nº $1",
-	"wikilambda-function-viewer-details-sidebar-summary": "Chacun peut modifier des libellés, mais le type et le nombre d’entrées/sorties ne peuvent être modifiés que par des utilisateurs ayant des droits spéciaux."
+	"wikilambda-function-viewer-details-sidebar-summary": "Chacun peut modifier des libellés, mais le type et le nombre d’entrées/sorties ne peuvent être modifiés que par des utilisateurs ayant des droits spéciaux.",
+	"wikilambda-function-viewer-details-table-view-all": "Afficher tout",
+	"wikilambda-function-viewer-details-table-view-less": "Afficher moins"
 }
