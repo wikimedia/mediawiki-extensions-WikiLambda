@@ -97,7 +97,7 @@ module.exports = exports = {
 		saveAdHocTester: function () {
 			this.saveNewTester( {
 				testerId: this.zobjectId,
-				nextTesterIndex: this.zTesterList.length,
+				nextTesterIndex: this.zTesterList.length.toString(),
 				parent: this.zTesterListId
 			} );
 		}

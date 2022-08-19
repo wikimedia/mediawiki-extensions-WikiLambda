@@ -67,7 +67,7 @@ module.exports = exports = {
 			var nextId = this.getNextObjectId,
 				payload = {
 					// since first item is type, new key is items length + 1
-					key: this.ZlistItemsLength + 1,
+					key: `${this.ZlistItemsLength + 1}`,
 					value: 'object',
 					parent: this.zobjectId
 				};

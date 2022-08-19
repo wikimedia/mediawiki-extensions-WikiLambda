@@ -20,33 +20,19 @@ module.exports = exports = {
 					type,
 					objectKey;
 
+				// When the node is terminal, push a new row with its final value as 'value'
 				if ( typeof value === 'string' ) {
 					zObjectTree.push( { id: currentId, key: key, value: value, parent: parentId } );
 					return;
 				}
 
-				switch ( valueType ) {
-					case Constants.Z_REFERENCE:
-					case Constants.Z_STRING:
-						zObjectTree.push( {
-							id: currentId,
-							key: key,
-							value: 'object',
-							parent: parentId
-						} );
-						for ( objectKey in value ) {
-							tranverseJson( value[ objectKey ], objectKey, currentId );
-						}
-						break;
-					default:
-						type = valueType === Constants.Z_TYPED_LIST ? 'array' : 'object';
-						zObjectTree.push( { id: currentId, key: key, value: type, parent: parentId } );
-						for ( objectKey in value ) {
-							// We make sure that the current Key does not expect a raw string
+				// Else, push a new row with its type (array or object) as 'value'
+				type = valueType === Constants.Z_TYPED_LIST ? 'array' : 'object';
+				zObjectTree.push( { id: currentId, key: key, value: type, parent: parentId } );
 
-							tranverseJson( value[ objectKey ], objectKey, currentId );
-						}
-						break;
+				// And for every child, perform the same operation
+				for ( objectKey in value ) {
+					tranverseJson( value[ objectKey ], objectKey, currentId );
 				}
 			}
 

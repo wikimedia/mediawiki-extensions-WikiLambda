@@ -778,7 +778,7 @@ describe( 'zobject Vuex module', function () {
 					{ key: 'Z2K3', value: 'object', parent: 0, id: 6 },
 					{ key: 'Z1K1', value: 'Z12', parent: 6, id: 7 },
 					{ key: 'Z12K1', value: 'array', parent: 6, id: 8 },
-					{ key: 0, value: 'object', parent: 8, id: 9 },
+					{ key: '0', value: 'object', parent: 8, id: 9 },
 					{ key: 'Z1K1', value: 'Z11', parent: 9, id: 10 },
 					{ key: 'Z11K1', value: 'object', parent: 9, id: 11 },
 					{ key: 'Z1K1', value: 'Z9', parent: 11, id: 12 },
@@ -786,10 +786,10 @@ describe( 'zobject Vuex module', function () {
 					{ key: 'Z11K2', value: 'object', parent: 9, id: 14 },
 					{ key: 'Z1K1', value: 'Z6', parent: 14, id: 15 },
 					{ key: 'Z6K1', value: '', parent: 14, id: 16 },
-					{ key: 0, value: 'object', parent: 3, id: 17 },
+					{ key: '0', value: 'object', parent: 3, id: 17 },
 					{ key: 'Z1K1', value: 'Z6', parent: 17, id: 18 },
 					{ key: 'Z6K1', value: 'first', parent: 17, id: 19 },
-					{ key: 1, value: 'object', parent: 3, id: 20 },
+					{ key: '1', value: 'object', parent: 3, id: 20 },
 					{ key: 'Z1K1', value: 'Z6', parent: 20, id: 21 },
 					{ key: 'Z6K1', value: 'second', parent: 20, id: 22 }
 				]
@@ -817,7 +817,7 @@ describe( 'zobject Vuex module', function () {
 			zobjectModule.actions.recalculateZListIndex( context, 3 );
 
 			// Validate that recalculate correctly updated the index
-			expect( zobjectModule.getters.getZObjectById( context.state )( 20 ) ).toEqual( { key: 0, value: 'object', parent: 3, id: 20 } );
+			expect( zobjectModule.getters.getZObjectById( context.state )( 20 ) ).toEqual( { key: '0', value: 'object', parent: 3, id: 20 } );
 			expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, { zobjectModule: context.state }, context.getters ).Z2K2 ).toEqual( [ { Z1K1: 'Z6', Z6K1: 'second' } ] );
 		} );
 
@@ -833,8 +833,8 @@ describe( 'zobject Vuex module', function () {
 					{ key: 'Z2K2', value: 'object', parent: 0, id: 6 },
 					{ key: 'Z1K1', value: 'Z8', parent: 6, id: 7 },
 					{ key: 'Z8K1', value: 'array', parent: 6, id: 8 },
-					{ key: 0, value: 'Z17', parent: 8, id: 9 },
-					{ key: 1, value: 'object', parent: 8, id: 10 },
+					{ key: '0', value: 'Z17', parent: 8, id: 9 },
+					{ key: '1', value: 'object', parent: 8, id: 10 },
 					{ key: 'Z1K1', value: 'Z17', parent: 10, id: 11 },
 					{ key: 'Z17K1', value: 'Z6', parent: 10, id: 12 },
 					{ key: 'Z17K2', value: 'object', parent: 10, id: 13 },
@@ -843,14 +843,14 @@ describe( 'zobject Vuex module', function () {
 					{ key: 'Z17K3', value: 'object', parent: 10, id: 16 },
 					{ key: 'Z1K1', value: 'Z12', parent: 16, id: 17 },
 					{ key: 'Z12K1', value: 'array', parent: 16, id: 18 },
-					{ key: 2, value: 'object', parent: 8, id: 19 },
+					{ key: '2', value: 'object', parent: 8, id: 19 },
 					{ key: 'Z1K1', value: 'Z17', parent: 19, id: 20 },
 					{ key: 'Z17K1', value: 'Z6', parent: 19, id: 21 },
 					{ key: 'Z17K2', value: 'object', parent: 19, id: 22 },
 					{ key: 'Z1K1', value: 'Z6', parent: 22, id: 23 },
 					{ key: 'Z6K1', value: 'Z10006K2', parent: 22, id: 24 },
 					{ key: 'Z17K3', value: 'object', parent: 19, id: 25 },
-					{ key: 3, value: 'object', parent: 8, id: 26 },
+					{ key: '3', value: 'object', parent: 8, id: 26 },
 					{ key: 'Z1K1', value: 'Z17', parent: 26, id: 27 },
 					{ key: 'Z17K1', value: 'Z6', parent: 26, id: 28 },
 					{ key: 'Z17K2', value: 'object', parent: 26, id: 29 },
@@ -862,7 +862,7 @@ describe( 'zobject Vuex module', function () {
 			context.getters = {
 				getCurrentZObjectId: 'Z10006',
 				// List that is passed once second item has been removed.
-				getAllItemsFromListById: jest.fn().mockReturnValue( [ { key: 1, value: 'object', parent: 8, id: 10 }, { key: 3, value: 'object', parent: 8, id: 26 } ] ),
+				getAllItemsFromListById: jest.fn().mockReturnValue( [ { key: '1', value: 'object', parent: 8, id: 10 }, { key: '3', value: 'object', parent: 8, id: 26 } ] ),
 				getZObjectChildrenById: zobjectModule.getters.getZObjectChildrenById( context.state ),
 				getZObjectIndexById: zobjectModule.getters.getZObjectIndexById( context.state )
 			};
@@ -883,7 +883,7 @@ describe( 'zobject Vuex module', function () {
 			// Perform recalculate
 			zobjectModule.actions.recalculateZArgumentList( context, 8 );
 			// Third list item, has now become second list item.
-			expect( zobjectModule.getters.getZObjectById( context.state )( 26 ) ).toEqual( { key: 1, value: 'object', parent: 8, id: 26 } );
+			expect( zobjectModule.getters.getZObjectById( context.state )( 26 ) ).toEqual( { key: '1', value: 'object', parent: 8, id: 26 } );
 			expect( zobjectModule.getters.getZObjectById( context.state )( 31 ) ).toEqual( { key: 'Z6K1', value: 'Z10006K2', parent: 29, id: 31 } );
 		} );
 
@@ -1010,7 +1010,7 @@ describe( 'zobject Vuex module', function () {
 					{ id: 0, value: 'array' },
 					{
 						id: 1,
-						key: 0,
+						key: '0',
 						parent: 0,
 						value: 'object'
 					},

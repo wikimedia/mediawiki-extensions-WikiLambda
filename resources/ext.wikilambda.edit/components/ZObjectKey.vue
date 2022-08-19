@@ -22,7 +22,7 @@
 		<template v-else>
 			<!-- Check if zobject is actually a list  -->
 			<span v-if="zType === Constants.Z_TYPED_LIST && zListType.key === '0'">
-				{{ zTypeLabel }} ->
+				{{ zTypeLabel }} &rarr;
 				<z-object
 					:zobject-id="zListType.id"
 					:persistent="false"

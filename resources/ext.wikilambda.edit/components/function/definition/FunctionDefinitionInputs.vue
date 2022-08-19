@@ -146,7 +146,7 @@ module.exports = exports = {
 			var nextId = this.getNextObjectId,
 				payload = {
 					// since first item is type, new key is argmentList + 1
-					key: this.zArgumentList.length + 1,
+					key: `${this.zArgumentList.length + 1}`,
 					value: 'object',
 					parent: this.zArgumentId
 				};

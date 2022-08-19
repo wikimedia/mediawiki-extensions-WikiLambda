@@ -62,7 +62,9 @@ function generateZIDListFromObjectTree( objectTree ) {
 	objectTree.forEach( function ( row ) {
 		keysOrZids.add( row.value );
 		if ( row.key !== undefined ) {
-			keysOrZids.add( row.key );
+			// We make sure that even integer keys are added as strings
+			// otherwise the following pattern match will raise an error
+			keysOrZids.add( `${row.key}` );
 		}
 	} );
 
@@ -724,8 +726,8 @@ module.exports = exports = {
 
 		},
 		/**
-		 * Recalculate the keys of a ZList
-		 * This should be used when an item is removed from a ZList
+		 * Recalculate the internal keys of a ZList in its zobject table representation.
+		 * This should be used when an item is removed from a ZList.
 		 *
 		 * @param {Object} context
 		 * @param {number} zListId
@@ -736,7 +738,7 @@ module.exports = exports = {
 			zList.forEach( function ( zObject, index ) {
 				context.commit( 'setZObjectKey', {
 					index: context.getters.getZObjectIndexById( zObject.id ),
-					key: index
+					key: `${index}`
 				} );
 			} );
 		},
@@ -760,7 +762,7 @@ module.exports = exports = {
 				} );
 				context.commit( 'setZObjectKey', {
 					index: context.getters.getZObjectIndexById( zObject.id ),
-					key: index
+					key: `${index}`
 				} );
 			} );
 		},

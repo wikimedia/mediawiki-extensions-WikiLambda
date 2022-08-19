@@ -188,7 +188,7 @@ module.exports = exports = {
 
 				if ( existingAliasId ) {
 					payload = {
-						key: this.getLanguageAliases( language ).length,
+						key: this.getLanguageAliases( language ).length.toString(),
 						value: newAlias,
 						parent: existingAliasId
 					};

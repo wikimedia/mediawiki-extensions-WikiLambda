@@ -104,7 +104,7 @@ module.exports = exports = {
 			addNewItem: function ( /* event */ ) {
 				var payload = {
 					// since first item is type, new key is items length + 1
-					key: this.ZlistItemsLength + 1,
+					key: `${this.ZlistItemsLength + 1}`,
 					value: 'object',
 					parent: this.zobjectId
 				};

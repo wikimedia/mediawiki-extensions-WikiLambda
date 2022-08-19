@@ -149,7 +149,7 @@ module.exports = exports = {
 
 			// Create root object
 			zObjectItems = [
-				{ key: numberOfLanguageInArray, value: 'object', parent: payload.parentId },
+				{ key: `${numberOfLanguageInArray}`, value: 'object', parent: payload.parentId },
 				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_MONOLINGUALSTRING, parent: parentId }
 			];
 			context.dispatch( 'addZObjects', zObjectItems );
@@ -196,7 +196,7 @@ module.exports = exports = {
 			// Add ZMonolingualString type
 			var monolingualStringParentId = nextId + 1;
 			var zObjectItems = [
-				{ key: 0, value: 'object', parent: nextId },
+				{ key: '0', value: 'object', parent: nextId },
 				{
 					key: Constants.Z_OBJECT_TYPE,
 					value: Constants.Z_REFERENCE,
@@ -253,7 +253,7 @@ module.exports = exports = {
 			if ( !listType.id ) {
 				var nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
 				var zObjectItems = [
-					{ key: 0, value: 'object', parent: payload.objectId },
+					{ key: '0', value: 'object', parent: payload.objectId },
 					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: nextId },
 					{ key: Constants.Z_REFERENCE_ID, value: payload.type, parent: nextId }
 				];
@@ -517,14 +517,14 @@ module.exports = exports = {
 			// Add ZArgument Type to array
 			var argumentTypeParentId = nextId + 1;
 			var zObjectItems = [
-				{ key: 0, value: 'object', parent: nextId },
+				{ key: '0', value: 'object', parent: nextId },
 				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: argumentTypeParentId },
 				{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_ARGUMENT, parent: argumentTypeParentId }
 			];
 			context.dispatch( 'addZObjects', zObjectItems );
 			// Add ZArgument to array
 			var argumentsNextId = nextId + 4;
-			context.dispatch( 'addZObject', { key: 1, value: 'object', parent: nextId } );
+			context.dispatch( 'addZObject', { key: '1', value: 'object', parent: nextId } );
 			context.dispatch( 'addZArgument', argumentsNextId );
 
 			// Add return type
@@ -538,7 +538,7 @@ module.exports = exports = {
 			var testersNextId = nextId + 1;
 			// Add tester type
 			context.dispatch( 'addZObjects', [
-				{ key: 0, value: 'object', parent: nextId },
+				{ key: '0', value: 'object', parent: nextId },
 				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: testersNextId },
 				{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_TESTER, parent: testersNextId }
 			] );
@@ -549,7 +549,7 @@ module.exports = exports = {
 			var implementationsNextId = nextId + 1;
 			// Add implementation type
 			context.dispatch( 'addZObjects', [
-				{ key: 0, value: 'object', parent: nextId },
+				{ key: '0', value: 'object', parent: nextId },
 				{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: implementationsNextId },
 				{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_IMPLEMENTATION, parent: implementationsNextId }
 			] );
