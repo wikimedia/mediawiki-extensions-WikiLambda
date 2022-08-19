@@ -246,7 +246,7 @@ module.exports = exports = {
 									// If we are searching for Types (this.type === Constants.Z_TYPE)
 									// we should exclude Z1, Z2, Z7 and Z9 from the results
 									if ( !self.isExcludedZType( zid ) ) {
-										if ( !self.isUsedLanguage( zid ) ) {
+										if ( self.usedLanguageZids ? !self.isUsedLanguage( zid ) : true ) {
 											self.lookupResults.push(
 												{
 													value: zid,
