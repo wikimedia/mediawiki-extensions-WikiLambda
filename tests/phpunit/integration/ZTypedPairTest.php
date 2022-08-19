@@ -119,6 +119,49 @@ class ZTypedPairTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::__construct
+	 * @covers ::buildType
+	 * @covers ::getFirstType
+	 * @covers ::getFirstElement
+	 * @covers ::getSecondType
+	 * @covers ::getSecondElement
+	 * @covers ::setFirstElement
+	 * @covers ::setSecondElement
+	 * @covers ::isValid
+	 */
+	public function testElementSetters() {
+		// Ensure that Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
+		$this->insertZids( [ 'Z6', 'Z40', 'Z41', 'Z42' ] );
+
+		$testObject = new ZTypedPair(
+			ZTypedPair::buildType( 'Z6', 'Z40' ),
+			new ZString( 'Testing' ),
+			new ZReference( 'Z41' )
+		);
+
+		$testObject->setFirstElement( new ZString( 'Still testing' ) );
+		$testObject->setSecondElement( new ZReference( 'Z42' ) );
+
+		$this->assertInstanceOf( ZTypedPair::class, $testObject );
+
+		$this->assertTrue( $testObject->isValid() );
+
+		$firstType = $testObject->getFirstType();
+		$this->assertInstanceOf( ZReference::class, $firstType );
+		$this->assertSame( "Z6", $firstType->getZValue() );
+		$firstElement = $testObject->getFirstElement();
+		$this->assertInstanceOf( ZString::class, $firstElement );
+		$this->assertSame( "Still testing", $firstElement->getZValue() );
+
+		$secondType = $testObject->getSecondType();
+		$this->assertInstanceOf( ZReference::class, $secondType );
+		$this->assertSame( "Z40", $secondType->getZValue() );
+		$secondElement = $testObject->getSecondElement();
+		$this->assertInstanceOf( ZReference::class, $secondElement );
+		$this->assertSame( "Z42", $secondElement->getZValue() );
+	}
+
+	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 * @covers ::__construct
 	 * @covers ::getDefinition

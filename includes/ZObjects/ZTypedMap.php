@@ -144,4 +144,46 @@ class ZTypedMap extends ZObject {
 		}
 		return null;
 	}
+
+	/**
+	 * Ensures there is an entry for the given key / value in the ZMap.  If there is
+	 * already an entry for the given key, overwrites the corresponding value.  Otherwise,
+	 * creates a new entry. N.B.: Modifies the content of the ZMap's list in place.
+	 *
+	 * TODO (T302015) When ZMap keys are extended beyond Z6/Z39, update accordingly
+	 *
+	 * @param ZObject $key a Z6 or Z39 instance
+	 * @param ZObject $value a ZObject
+	 */
+	public function setValueForKey( ZObject $key, ZObject $value ) {
+		// TODO (T315953): Check the type of the key
+		$typedList = $this->getList();
+		if ( $typedList === null ) {
+			// TODO (T315953): This isn't supposed to happen, so throw an exception
+			return;
+		}
+
+		foreach ( $typedList->getAsArray() as $index => $pair ) {
+			if ( !( $pair instanceof ZTypedPair ) ) {
+				continue;
+			}
+
+			$mapKey = $pair->getFirstElement();
+
+			if ( $mapKey && $mapKey->getZValue() === $key->getZValue() ) {
+				$pair->setSecondElement( $value );
+				return;
+			}
+		}
+
+		// The key isn't present in the map, so add an entry for it
+		$pairType = ZTypedPair::buildType( $this->getKeyType()->getZValue(), $this->getValueType()->getZValue() );
+		$newPair = new ZTypedPair(
+			$pairType,
+			$key,
+			$value
+		);
+		$typedList->appendArray( [ $newPair ] );
+		$this->data[ 'K1' ] = $typedList;
+	}
 }

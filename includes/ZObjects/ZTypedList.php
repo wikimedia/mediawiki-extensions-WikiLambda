@@ -89,6 +89,26 @@ class ZTypedList extends ZObject {
 	}
 
 	/**
+	 * Add the new elements, given as an array of ZObjects,
+	 * to the end of the list.
+	 *
+	 * @param array $newElements
+	 */
+	public function appendArray( array $newElements ) {
+		$this->data = array_merge( $this->data, $newElements );
+	}
+
+	/**
+	 * Add the new elements, given as a ZTypedList,
+	 * to the end of the list.
+	 *
+	 * @param ZTypedList $newElements
+	 */
+	public function appendZTypedList( ZTypedList $newElements ) {
+		$this->data = array_merge( $this->data, $newElements->getAsArray() );
+	}
+
+	/**
 	 * @inheritDoc
 	 */
 	public function getSerialized( $form = self::FORM_CANONICAL ) {

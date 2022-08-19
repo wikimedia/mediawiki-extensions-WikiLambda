@@ -113,6 +113,15 @@ class ZTypedPair extends ZObject {
 	}
 
 	/**
+	 * Sets the first element of this ZTypedPair
+	 *
+	 * @param ZObject $newValue The new first element
+	 */
+	public function setFirstElement( ZObject $newValue ) {
+		$this->data[ ZTypeRegistry::Z_FUNCTION_TYPED_FIRST_TYPE ] = $newValue;
+	}
+
+	/**
 	 * Returns the type of the second element of this ZTypedPair
 	 *
 	 * @return ZReference The type of the second element
@@ -129,5 +138,14 @@ class ZTypedPair extends ZObject {
 	 */
 	public function getSecondElement(): ?ZObject {
 		return $this->data[ ZTypeRegistry::Z_FUNCTION_TYPED_SECOND_TYPE ] ?? null;
+	}
+
+	/**
+	 * Sets the second element of this ZTypedPair
+	 *
+	 * @param ZObject $newValue The new second element
+	 */
+	public function setSecondElement( ZObject $newValue ) {
+		$this->data[ ZTypeRegistry::Z_FUNCTION_TYPED_SECOND_TYPE ] = $newValue;
 	}
 }

@@ -115,6 +115,175 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 * @covers ::__construct
+	 * @covers ::isValid
+	 * @covers ::isEmpty
+	 * @covers ::getElementType
+	 * @covers ::appendArray
+	 * @covers ::getAsArray
+	 */
+	public function testAppendArray_emptyList() {
+		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } }';
+		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
+		$newElements = [ new ZString( "New string" ) ];
+		$testObject->appendArray( $newElements );
+
+		$this->assertInstanceOf( ZTypedList::class, $testObject );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertFalse( $testObject->isEmpty() );
+		$this->assertInstanceOf( ZReference::class, $testObject->getElementType() );
+		$this->assertSame( "Z6", $testObject->getElementType()->getZValue() );
+
+		$array = $testObject->getAsArray();
+		$this->assertCount( 1, $array );
+		$firstListItem = $array[0];
+		$this->assertInstanceOf( ZString::class, $firstListItem );
+		$this->assertSame( 'New string', $firstListItem->getZValue() );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
+	 * @covers ::__construct
+	 * @covers ::isValid
+	 * @covers ::getElementType
+	 * @covers ::appendArray
+	 * @covers ::getAsArray
+	 */
+	public function testAppendArray_listOfStrings() {
+		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
+			. '"K1": "first string",'
+			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } } }';
+		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
+		$newElements = [ new ZString( "New string" ) ];
+		$testObject->appendArray( $newElements );
+
+		$this->assertInstanceOf( ZTypedList::class, $testObject );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertInstanceOf( ZReference::class, $testObject->getElementType() );
+		$this->assertSame( "Z6", $testObject->getElementType()->getZValue() );
+
+		$array = $testObject->getAsArray();
+		$this->assertCount( 2, $array );
+		$firstListItem = $array[0];
+		$this->assertInstanceOf( ZString::class, $firstListItem );
+		$this->assertSame( 'first string', $firstListItem->getZValue() );
+		$secondListItem = $array[1];
+		$this->assertInstanceOf( ZString::class, $secondListItem );
+		$this->assertSame( 'New string', $secondListItem->getZValue() );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
+	 * @covers ::__construct
+	 * @covers ::isValid
+	 * @covers ::appendArray
+	 * @covers ::getAsArray
+	 */
+	public function testAppendArray_listOfMixed() {
+		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
+			. '"K1": "first string",'
+			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
+			. '"K1": "Z111",'
+			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } } }';
+		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
+
+		$newElements = [ new ZString( "New string" ), new ZReference( 'Z41' ) ];
+		$testObject->appendArray( $newElements );
+
+		$this->assertInstanceOf( ZTypedList::class, $testObject );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertInstanceOf( ZReference::class, $testObject->getElementType() );
+		$this->assertSame( "Z1", $testObject->getElementType()->getZValue() );
+
+		$array = $testObject->getAsArray();
+		$this->assertCount( 4, $array );
+		$firstListItem = $array[0];
+		$this->assertInstanceOf( ZString::class, $firstListItem );
+		$this->assertSame( 'first string', $firstListItem->getZValue() );
+		$secondListItem = $array[1];
+		$this->assertInstanceOf( ZReference::class, $secondListItem );
+		$this->assertSame( 'Z111', $secondListItem->getZValue() );
+		$thirdListItem = $array[2];
+		$this->assertInstanceOf( ZString::class, $thirdListItem );
+		$this->assertSame( 'New string', $thirdListItem->getZValue() );
+		$fourthListItem = $array[3];
+		$this->assertInstanceOf( ZReference::class, $fourthListItem );
+		$this->assertSame( 'Z41', $fourthListItem->getZValue() );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
+	 * @covers ::__construct
+	 * @covers ::isValid
+	 * @covers ::appendArray
+	 * @covers ::getAsArray
+	 */
+	public function testAppendEmptyArray_listOfMixed() {
+		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
+			. '"K1": "first string",'
+			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
+			. '"K1": "Z111",'
+			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } } }';
+		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
+		$testObject->appendArray( [] );
+
+		$this->assertInstanceOf( ZTypedList::class, $testObject );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertInstanceOf( ZReference::class, $testObject->getElementType() );
+		$this->assertSame( "Z1", $testObject->getElementType()->getZValue() );
+
+		$array = $testObject->getAsArray();
+		$this->assertCount( 2, $array );
+		$firstListItem = $array[0];
+		$this->assertInstanceOf( ZString::class, $firstListItem );
+		$this->assertSame( 'first string', $firstListItem->getZValue() );
+		$secondListItem = $array[1];
+		$this->assertInstanceOf( ZReference::class, $secondListItem );
+		$this->assertSame( 'Z111', $secondListItem->getZValue() );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
+	 * @covers ::__construct
+	 * @covers ::isValid
+	 * @covers ::appendZTypedList
+	 * @covers ::getAsArray
+	 */
+	public function testAppendZTypedList_listOfMixed() {
+		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
+			. '"K1": "first string",'
+			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
+			. '"K1": "Z111",'
+			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } } }';
+		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
+
+		$newElements = new ZTypedList( ZTypedList::buildType( 'Z1' ),
+			[ new ZString( "New string" ), new ZReference( 'Z41' ) ] );
+		$testObject->appendZTypedList( $newElements );
+
+		$this->assertInstanceOf( ZTypedList::class, $testObject );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertInstanceOf( ZReference::class, $testObject->getElementType() );
+		$this->assertSame( "Z1", $testObject->getElementType()->getZValue() );
+
+		$array = $testObject->getAsArray();
+		$this->assertCount( 4, $array );
+		$firstListItem = $array[0];
+		$this->assertInstanceOf( ZString::class, $firstListItem );
+		$this->assertSame( 'first string', $firstListItem->getZValue() );
+		$secondListItem = $array[1];
+		$this->assertInstanceOf( ZReference::class, $secondListItem );
+		$this->assertSame( 'Z111', $secondListItem->getZValue() );
+		$thirdListItem = $array[2];
+		$this->assertInstanceOf( ZString::class, $thirdListItem );
+		$this->assertSame( 'New string', $thirdListItem->getZValue() );
+		$fourthListItem = $array[3];
+		$this->assertInstanceOf( ZReference::class, $fourthListItem );
+		$this->assertSame( 'Z41', $fourthListItem->getZValue() );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
+	 * @covers ::__construct
 	 * @covers ::getAsArray
 	 * @covers ::getZValue
 	 */
