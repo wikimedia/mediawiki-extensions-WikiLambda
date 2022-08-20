@@ -244,6 +244,7 @@ module.exports = exports = {
 						id: value.id,
 						value: input
 					} );
+					this.$emit( 'update-argument-label' );
 					return;
 				}
 			}
