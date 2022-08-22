@@ -173,7 +173,6 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_KEYREFERENCE,
 		self::Z_ERROR,
 		self::Z_CODE,
-		self::Z_NULL,
 		// TODO (T309302) uncomment when fixed Z24 insertion issue
 		// self::Z_UNIT,
 	];
