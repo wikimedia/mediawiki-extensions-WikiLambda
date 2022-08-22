@@ -30,6 +30,24 @@ function isTypedObjectWithCustomComponent( functionCallId ) {
 	return istypedObject;
 }
 
+/**
+ * Remove implementation and tester from a ZObject
+ * The zObject has to be of type function
+ *
+ * @param {Object} zobject
+ * @return {Object} zobject
+ */
+function unattachImplementationsAndTesters( zobject ) {
+	if ( zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] === Constants.Z_FUNCTION
+	) {
+		zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_TESTERS ] = [ Constants.Z_TESTER ];
+		zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_IMPLEMENTATIONS ] =
+			[ Constants.Z_IMPLEMENTATION ];
+	}
+
+	return zobject;
+}
+
 function isFunctionToType( objectDeclaration ) {
 	if ( objectDeclaration ) {
 		var isTypeFunction =
@@ -570,11 +588,16 @@ module.exports = exports = {
 		 *
 		 * @param {Object} context
 		 * @param {Object} summary
+		 * @param {boolean} shouldUnattachImplentationAndTester
 		 * @return {Promise}
 		 */
-		submitZObject: function ( context, summary ) {
+		submitZObject: function ( context, { summary, shouldUnattachImplentationAndTester } ) {
 			context.commit( 'setIsSavingZObject', true );
 			var zobject = canonicalize( zobjectTreeUtils.convertZObjectTreetoJson( context.state.zobject ) );
+
+			if ( shouldUnattachImplentationAndTester ) {
+				zobject = unattachImplementationsAndTesters( zobject );
+			}
 
 			// eslint-disable-next-line compat/compat
 			return new Promise( function ( resolve, reject ) {

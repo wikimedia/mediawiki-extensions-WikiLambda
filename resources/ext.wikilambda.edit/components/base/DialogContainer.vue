@@ -5,17 +5,17 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<Teleport to="#ext-wikilambda-app">
+	<Teleport v-if="isVisible" to="#ext-wikilambda-app">
 		<base-dialog
 			:class="customClass"
 			:title="title"
 			:description="description"
-			:cancel-button-text="cancelButtonTextOrDefault()"
-			:confirm-button-text="confirmButtonTextOrDefault()"
+			:cancel-button-text="cancelButtonTextOrDefault"
+			:confirm-button-text="confirmButtonTextOrDefault"
 			:should-click-to-close="shouldClickToClose"
 			:show-action-buttons="showActionButtons"
-			@exit-dialog="$emit( 'exit-dialog' ) "
-			@close-dialog="$emit( 'close-dialog' )"
+			@exit-dialog="exitDialog"
+			@close-dialog="closeDialog"
 			@confirm-dialog="$emit( 'confirm-dialog' )"
 		></base-dialog>
 	</Teleport>
@@ -72,13 +72,32 @@ module.exports = exports = {
 			default: ''
 		}
 	},
-	methods: {
+	data: function () {
+		return {
+			isVisible: false
+		};
+	},
+	computed: {
 		// We can't call this.$i18n in the default value of a prop, so do it here
 		cancelButtonTextOrDefault: function () {
 			return this.cancelButtonText || this.$i18n( 'wikilambda-cancel' ).text();
 		},
 		confirmButtonTextOrDefault: function () {
 			return this.confirmButtonText || this.$i18n( 'wikilambda-confirm' ).text();
+		}
+	},
+	methods: {
+		// eslint-disable-next-line vue/no-unused-properties
+		openDialog: function () {
+			this.isVisible = true;
+		},
+		closeDialog: function () {
+			this.isVisible = false;
+			this.$emit( 'close-dialog' );
+		},
+		exitDialog: function () {
+			this.isVisible = false;
+			this.$emit( 'exit-dialog' );
 		}
 	}
 };

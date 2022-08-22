@@ -29,7 +29,9 @@ describe( 'FunctionDefinition', function () {
 			getViewMode: jest.fn(),
 			getZObjectChildrenById: createGettersWithFunctionsMock(),
 			getZObjectAsJsonById: createGettersWithFunctionsMock( mockLabels ),
-			getAllZKeyLanguageLabels: jest.fn()
+			getAllZKeyLanguageLabels: jest.fn(),
+			getZargumentsArray: createGettersWithFunctionsMock(),
+			getNestedZObjectById: createGettersWithFunctionsMock()
 		};
 
 		global.store.hotUpdate( {

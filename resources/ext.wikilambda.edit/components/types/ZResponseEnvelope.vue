@@ -30,21 +30,19 @@
 		</div>
 		<div class="ext-wikilambda-zresponseenvelope__show-metrics">
 			<cdx-button
-				@click.prevent="showMetrics = !showMetrics"
+				@click.prevent="$refs.dialogBox.openDialog()"
 			>
 				{{ metricsButtonText }}
 			</cdx-button>
 		</div>
-		<div v-if="showMetrics">
-			<dialog-container
-				:custom-class="customDialogClass"
-				:title="dialogTitle"
-				:description="dialogText"
-				:show-action-buttons="false"
-				@exit-dialog="showMetrics = false"
-			>
-			</dialog-container>
-		</div>
+		<dialog-container
+			ref="dialogBox"
+			:custom-class="customDialogClass"
+			:title="dialogTitle"
+			:description="dialogText"
+			:show-action-buttons="false"
+		>
+		</dialog-container>
 	</div>
 </template>
 
@@ -79,7 +77,6 @@ module.exports = exports = {
 	data: function () {
 		return {
 			showError: false,
-			showMetrics: false,
 			customDialogClass: 'ext-wikilambda-zresponseenvelope__dialog'
 		};
 	},
@@ -118,11 +115,7 @@ module.exports = exports = {
 		},
 		metricsButtonText: function () {
 			// TODO(T312610): Depending on design choices, these button labels could change
-			if ( this.showMetrics ) {
-				return this.$i18n( 'wikilambda-hide-metrics' ).text();
-			} else {
-				return this.$i18n( 'wikilambda-show-metrics' ).text();
-			}
+			return this.$i18n( 'wikilambda-hide-metrics' ).text();
 		},
 		dialogText: function () {
 			return this.dialogContent( this.zMetaData.id );

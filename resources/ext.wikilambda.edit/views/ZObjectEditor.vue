@@ -123,7 +123,7 @@ module.exports = exports = {
 			},
 
 			submit: function () {
-				this.submitZObject( this.summary ).then( function ( pageTitle ) {
+				this.submitZObject( { summary: this.summary } ).then( function ( pageTitle ) {
 					if ( pageTitle ) {
 						window.location.href = new mw.Title( pageTitle ).getUrl();
 					}
