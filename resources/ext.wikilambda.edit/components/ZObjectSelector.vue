@@ -17,17 +17,18 @@
 				{{ selectedText }}
 			</a>
 		</div>
+		<!-- eslint-disable vue/no-v-model-argument -->
+		<!-- eslint-disable vue/no-unsupported-features -->
 		<cdx-lookup
 			v-else
 			:key="lookupKey"
-			:selected="selectedId"
+			v-model:selected="selectedValue"
 			:class="{ 'ext-wikilambda-select-zobject__input-invalid': validatorIsInvalid }"
 			:placeholder="lookupPlaceholder"
 			:menu-items="lookupResults"
 			:end-icon="lookupIcon"
 			:initial-input-value="initialInputValue"
 			@input="onInput"
-			@update:selected="emitInput"
 		>
 			<template #no-results>
 				No results found.
@@ -105,14 +106,14 @@ module.exports = exports = {
 			lookupDelayMs: 300,
 			inputValue: '',
 			valueEmitted: false,
-			lookupKey: 1
+			lookupKey: 1,
+			selectedValue: this.selectedId
 		};
 	},
 	computed: $.extend( {},
 		mapGetters( {
 			zkeyLabels: 'getZkeyLabels',
-			zKeys: 'getZkeys',
-			zLang: 'getZLang'
+			zKeys: 'getZkeys'
 		} ),
 		{
 			usedLanguageZids: function () {
@@ -132,36 +133,6 @@ module.exports = exports = {
 					default:
 						return this.$i18n( 'wikilambda-zobjectselector-label' ).text();
 				}
-			},
-			lookupLabels: function () {
-				var filteredResults = [];
-				var formattedData = [];
-				if ( this.type === Constants.Z_NATURAL_LANGUAGE ) {
-					for ( var zid in this.lookupResults ) {
-						if ( this.usedLanguageZids.indexOf( zid ) === -1 ) {
-							filteredResults.push(
-								{
-									label: this.zkeyLabels[ zid ],
-									value: zid
-								}
-							);
-						}
-					}
-				} else {
-					filteredResults = this.lookupResults;
-				}
-
-				formattedData = Object.keys( filteredResults ).map( function ( key ) {
-					var label = this.zkeyLabels[ key ],
-						result = this.lookupResults[ key ];
-					var formattedResult = label === result ? result : result + ' (' + label + ')';
-
-					return {
-						value: key,
-						label: formattedResult
-					};
-				}.bind( this ) );
-				return formattedData;
 			},
 			selectedLabel: function () {
 				return this.zkeyLabels[ this.selectedId ];
@@ -345,22 +316,19 @@ module.exports = exports = {
 				} else {
 					self.getLookupResults( input );
 				}
-			},
-			emitInput: function ( zId ) {
-				this.$emit( 'input', zId );
-			},
-			getDefaultResults: function () {
-				var results = {};
-
-				results[ Constants.Z_STRING ] = this.getZkeyLabels[ Constants.Z_STRING ];
-				results[ Constants.Z_REFERENCE ] = this.getZkeyLabels[ Constants.Z_REFERENCE ];
-				results[ Constants.Z_BOOLEAN ] = this.getZkeyLabels[ Constants.Z_BOOLEAN ];
-				results[ Constants.Z_TYPED_LIST ] = this.getZkeyLabels[ Constants.Z_TYPED_LIST ];
-
-				return results;
 			}
 		}
 	),
+	watch: {
+		selectedValue: {
+			handler: function ( zId ) {
+				if ( this.selectedValue === null ) {
+					this.$emit( 'input-removed' );
+				}
+				this.$emit( 'input', zId );
+			}
+		}
+	},
 	mounted: function () {
 		this.fetchZKeyWithDebounce( [
 			Constants.Z_STRING,

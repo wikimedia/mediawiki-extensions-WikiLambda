@@ -127,7 +127,8 @@ module.exports = exports = {
 
 			return argumentList.filter(
 				function ( arg ) {
-					var argumentTypeIsSet = !!arg[ Constants.Z_ARGUMENT_TYPE ],
+					var argumentTypeIsSet = !!arg[ Constants.Z_ARGUMENT_TYPE ] &&
+						!!arg[ Constants.Z_ARGUMENT_TYPE ][ Constants.Z_REFERENCE_ID ],
 						argumentMonolingualStringIsSet =
 							arg[ Constants.Z_ARGUMENT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ]
 								.filter(
@@ -147,7 +148,6 @@ module.exports = exports = {
 			}
 
 			var zobject = getters.getZObjectAsJson;
-
 			return zobject &&
 				!!zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
 					Constants.Z_FUNCTION_RETURN_TYPE ][ Constants.Z_REFERENCE_ID ];

@@ -76,8 +76,7 @@ module.exports = exports = {
 		] ),
 		{
 			publishButtonValidity: function () {
-			// publish button is only valid if function has inputs and outputs defined
-			// TODO: this should also reset if there are local changes on an already published function
+				// publish button is only valid if function has inputs and outputs defined
 				return this.currentZFunctionHasInputs && this.currentZFunctionHasOutput;
 			},
 			publishButtonStyle: function () {
@@ -94,6 +93,7 @@ module.exports = exports = {
 				/**
 				 * event to publish changes to a function (or a new function)
 				 */
+
 				this.$emit( 'publish', this.summary );
 			},
 			handleCancel: function () {
