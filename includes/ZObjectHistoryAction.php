@@ -35,10 +35,13 @@ class ZObjectHistoryAction extends HistoryAction {
 			return parent::getPageTitle();
 		}
 
-		$label = $targetZObject->getLabels()->getStringForLanguageOrEnglish( $this->getLanguage() );
+		$label = $targetZObject->getLabels()->buildStringForLanguage( $this->getLanguage() )
+			->fallbackWithEnglish()
+			->placeholderNoFallback()
+			->getString();
 
 		return $this->msg( 'wikilambda-history-title' )
-			->rawParams( htmlspecialchars( $label ), $this->getTitle()->getText() )
+			->rawParams( htmlspecialchars( $label ?? '' ), $this->getTitle()->getText() )
 			->text();
 	}
 

@@ -29,7 +29,7 @@ class ZPersistentObject extends ZObject {
 	 */
 	public function __construct( $zid, $value, $label, $aliases = null ) {
 		$aliases = $aliases ?? new ZMultiLingualStringSet( [] );
-		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID  ] = $zid;
+		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ] = $zid;
 		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = $value;
 		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = $label;
 		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES ] = $aliases;
@@ -144,11 +144,14 @@ class ZPersistentObject extends ZObject {
 	 *
 	 * @param Language $language Language in which to provide the label.
 	 * @param bool $defaultToEnglish
-	 * @return string
+	 * @return ?string
 	 */
-	public function getLabel( $language, $defaultToEnglish = false ): string {
+	public function getLabel( $language, $defaultToEnglish = false ): ?string {
 		if ( $defaultToEnglish ) {
-			return $this->getLabels()->getStringForLanguageOrEnglish( $language );
+			return $this->getLabels()
+				->buildStringForLanguage( $language )
+				->fallbackWithEnglish()
+				->getString();
 		}
 		return $this->getLabels()->getStringForLanguage( $language );
 	}

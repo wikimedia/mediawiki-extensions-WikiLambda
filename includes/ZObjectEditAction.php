@@ -49,6 +49,10 @@ class ZObjectEditAction extends Action {
 		// the language object of the user's preferred language
 		$zObjectLabelsWithLang = $this->getTargetZObjectWithLabels();
 
+		$stringForLanguageBuilder = $this->getTargetZObject()->getLabels()->buildStringForLanguage(
+			$this->getLanguage()
+		);
+
 		$label = Html::element(
 			'span',
 			[
@@ -57,7 +61,10 @@ class ZObjectEditAction extends Action {
 					'ext-wikilambda-editpage-header-title--function-name'
 				]
 			],
-			$this->getTargetZObject()->getLabels()->getStringForLanguageOrEnglish( $this->getLanguage() )
+			$stringForLanguageBuilder
+				->fallbackWithEnglish()
+				->placeholderNoFallback()
+				->getString() ?? ''
 		);
 
 		/* isoCodes can occur in two places:
@@ -77,12 +84,10 @@ class ZObjectEditAction extends Action {
 
 		$isoCodeObjectName = '';
 		// the iso code of the language currently being rendered for the zObject Type
-		$nameLang = $this->getTargetZObject()->getLabels()->getStringAndLanguageCode(
-			$this->getLanguage(),
-			true,
-			true,
-			true
-		);
+		$nameLang = $this->getTargetZObject()->getLabels()->buildStringForLanguage( $this->getLanguage() )
+			->fallbackWithEnglish()
+			->placeholderForTitle()
+			->getStringAndLanguageCode();
 		$nameLangCode = $nameLang[ 'languageCode' ];
 		$nameLangTitle = $services->getLanguageNameUtils()->getLanguageName( $nameLangCode );
 

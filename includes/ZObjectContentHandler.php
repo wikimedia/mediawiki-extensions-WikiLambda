@@ -332,12 +332,10 @@ class ZObjectContentHandler extends ContentHandler {
 		$langNameType = $services->getLanguageNameUtils()->getLanguageName( $langCodeType );
 
 		// OBJECT NAME label (ex: My function | Unknown) and language code (ex: 'en')
-		$label = $zobject->getLabels()->getStringAndLanguageCode(
-			$userLang,
-			true,
-			true,
-			true
-		);
+		$label = $zobject->getLabels()->buildStringForLanguage( $userLang )
+			->fallbackWithEnglish()
+			->placeholderForTitle()
+			->getStringAndLanguageCode();
 		$labelText = $label[ 'title' ];
 		$labelCodeName = $label[ 'languageCode' ];
 

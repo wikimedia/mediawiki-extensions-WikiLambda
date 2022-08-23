@@ -30,7 +30,6 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::isLanguageProvidedValue
 	 * @covers ::getStringForLanguage
 	 * @covers ::getStringForLanguageCode
-	 * @covers ::getStringForLanguageOrEnglish
 	 * @covers ::isValid
 	 * @covers ::getDefinition
 	 */
@@ -115,13 +114,16 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 		// Test english fallback
 		$this->assertSame(
 			'Demonstration item',
-			$testObject->getStringForLanguageOrEnglish( $chineseLang, false, true, true )
+			$testObject->buildStringForLanguage( $chineseLang )->fallbackWithEnglish()->getString()
 		);
 	}
 
 	/**
-	 * @covers ::getStringAndLanguageCode
-	 * @covers ::internalGetStringForLanguage
+	 * @covers ::buildStringForLanguage
+	 * @covers \MediaWiki\Extension\WikiLambda\StringForLanguageBuilder::__construct
+	 * @covers \MediaWiki\Extension\WikiLambda\StringForLanguageBuilder::fallbackWithEnglish
+	 * @covers \MediaWiki\Extension\WikiLambda\StringForLanguageBuilder::placeholderNoFallback
+	 * @covers \MediaWiki\Extension\WikiLambda\StringForLanguageBuilder::getStringAndLanguageCode
 	 */
 	public function testGetStringAndLanguageCode() {
 		$this->registerLangs( [ 'en' ] );
@@ -145,13 +147,19 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 				'title' => 'Demonstration item',
 				'languageCode' => 'en'
 			],
-			$testObject->getStringAndLanguageCode( $englishLang )
+			$testObject->buildStringForLanguage( $englishLang )
+				->fallbackWithEnglish()
+				->placeholderNoFallback()
+				->getStringAndLanguageCode()
 		);
 
 		// do not only return the title
 		$this->assertNotSame(
 			'Demonstration item',
-			$testObject->getStringAndLanguageCode( $germanLang )
+			$testObject->buildStringForLanguage( $germanLang )
+			  ->fallbackWithEnglish()
+			  ->placeholderNoFallback()
+			  ->getStringAndLanguageCode()
 		);
 
 		$testObject = new ZMultiLingualString( [
@@ -167,13 +175,18 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 				'title' => 'Demonstration item',
 				'languageCode' => 'en'
 			],
-			$testObject->getStringAndLanguageCode( $englishLang )
+			$testObject->buildStringForLanguage( $englishLang )
+				->fallbackWithEnglish()
+				->placeholderNoFallback()
+				->getStringAndLanguageCode()
 		);
 	}
 
 	/**
-	 * @covers ::getStringForLanguage
-	 * @covers ::internalGetStringForLanguage
+	 * @covers ::buildStringForLanguage
+	 * @covers \MediaWiki\Extension\WikiLambda\StringForLanguageBuilder::__construct
+	 * @covers \MediaWiki\Extension\WikiLambda\StringForLanguageBuilder::placeholderForTitle
+	 * @covers \MediaWiki\Extension\WikiLambda\StringForLanguageBuilder::getString
 	 */
 	public function testTitleCreation() {
 		$englishLang = $this->makeLanguage( 'en' );
@@ -189,7 +202,7 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertSame(
 			'English Title',
-			$testObject->getStringForLanguage( $englishLang, false, true, true )
+			$testObject->buildStringForLanguage( $englishLang )->getString()
 		);
 
 		// test 'wikilambda-editor-default-name' comes back when title does not exist
@@ -198,13 +211,13 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertSame(
 			wfMessage( 'wikilambda-editor-default-name' )->inLanguage( $englishLang )->text(),
-			$testObject->getStringForLanguage( $englishLang, true, true, true )
+			$testObject->buildStringForLanguage( $englishLang )->placeholderForTitle()->getString()
 		);
 
 		// test returns 'null' if no placeholder is requested
 		$this->assertSame(
 			null,
-			$testObject->getStringForLanguage( $englishLang, false, false, false )
+			$testObject->buildStringForLanguage( $englishLang )->getString()
 		);
 	}
 
