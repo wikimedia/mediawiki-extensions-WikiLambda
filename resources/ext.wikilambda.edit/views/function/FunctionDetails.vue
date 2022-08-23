@@ -22,10 +22,13 @@
 				:current-page="currentImplementationPage"
 				:total-pages="numberOfImplementationPages"
 				:showing-all="implementationShowAll"
+				:can-approve="areProposedImplementationsSelected"
+				:can-deactivate="areAvailableImplementationsSelected"
 				@update-page="updateImplementationPage"
 				@reset-view="resetImplementationView"
+				@approve="approveImplementations"
+				@deactivate="deactivateImplementations"
 			></function-viewer-details-table>
-			<!-- TODO(T310182): have the implementation table filter the tester table -->
 			<function-viewer-details-table
 				:header="testersHeader"
 				:body="testersBody"
@@ -33,10 +36,22 @@
 				:current-page="currentTesterPage"
 				:total-pages="numberofTesterPages"
 				:showing-all="testerShowAll"
+				:can-approve="areProposedTestersSelected"
+				:can-deactivate="areAvailableTestersSelected"
 				@update-page="updateTestersPage"
 				@reset-view="resetTestersView"
+				@approve="approveTesters"
+				@deactivate="deactivateTesters"
 			></function-viewer-details-table>
 		</section>
+		<cdx-message
+			v-if="shouldShowToast"
+			:dismiss-button-label="$i18n( 'wikilambda-toast-close' ).text()"
+			type="error"
+			@user-dismissed="closeToast"
+		>
+			{{ currentToast }}
+		</cdx-message>
 	</main>
 </template>
 
@@ -47,9 +62,11 @@ var FunctionViewerDetailsSidebar = require( './details/FunctionViewerDetailsSide
 	Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	CdxCheckbox = require( '@wikimedia/codex' ).CdxCheckbox,
+	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	WikilambdaChip = require( '../../components/base/Chip.vue' ),
 	TableTesterStatus = require( './partials/TesterTableStatus.vue' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+	mapGetters = require( 'vuex' ).mapGetters,
+	mapActions = require( 'vuex' ).mapActions;
 
 Vue.component( 'cdx-checkbox', CdxCheckbox.default || CdxCheckbox );
 Vue.component( 'wikilambda-chip', WikilambdaChip.default || WikilambdaChip );
@@ -60,7 +77,8 @@ module.exports = exports = {
 	name: 'function-details',
 	components: {
 		'function-viewer-details-sidebar': FunctionViewerDetailsSidebar,
-		'function-viewer-details-table': FunctionViewerDetailsImplementationTable
+		'function-viewer-details-table': FunctionViewerDetailsImplementationTable,
+		'cdx-message': CdxMessage
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -72,13 +90,13 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			implementationIds: [],
-			filterState: '',
-			checkValue: '',
 			currentImplementationPage: 1,
 			implementationShowAll: false,
 			currentTesterPage: 1,
-			testerShowAll: false
+			testerShowAll: false,
+			implZidToState: {},
+			testerZidToState: {},
+			currentToast: null
 		};
 	},
 	computed: $.extend( {},
@@ -108,7 +126,13 @@ module.exports = exports = {
 						title: '',
 						component: 'cdx-checkbox',
 						props: {
-							vModel: this.checkValue
+							modelValue: Object.keys( this.implZidToState ).every( ( zid ) =>
+								this.implZidToState[ zid ].checked ),
+							'onUpdate:modelValue': function ( newValue ) {
+								for ( const zid in this.implZidToState ) {
+									this.implZidToState[ zid ].checked = newValue;
+								}
+							}.bind( this )
 						},
 						class: 'ext-wikilambda-function-details-table-text'
 					},
@@ -143,19 +167,15 @@ module.exports = exports = {
 					this.getPaginatedImplementations[ this.currentImplementationPage ];
 				const tableData = [];
 				// iterate over each implementation for this function
-				for ( const item in visibleImplementations ) {
-					// get the state of the implementation ( available | proposed )
-					let zImplementationState = this.$i18n( 'wikilambda-function-implementation-state-available' ).text();
-					if ( this.isFunctionItemAttached(
-						visibleImplementations[ item ],
+				for ( const index in visibleImplementations ) {
+					var isAvailable = !this.isFunctionItemUnattached(
+						visibleImplementations[ index ],
 						this.getUnattachedZImplementations
-					) ) {
-						zImplementationState = this.$i18n( 'wikilambda-function-implementation-state-proposed' ).text();
-					}
+					);
 
 					// get the language of the implementation
 					var language = this.$i18n( 'wikilambda-implementation-selector-composition' );
-					var zImplementationObj = this.getZkeys[ visibleImplementations[ item ] ];
+					var zImplementationObj = this.getZkeys[ visibleImplementations[ index ] ];
 					if ( zImplementationObj && zImplementationObj[ Constants.Z_PERSISTENTOBJECT_VALUE ] &&
 						zImplementationObj[
 							Constants.Z_PERSISTENTOBJECT_VALUE
@@ -183,12 +203,12 @@ module.exports = exports = {
 						];
 					}
 
-					// for each implementation, store the checked state
-					// (used to determine the columns of the test table)
-					if ( !this.implementationIds[ visibleImplementations[ item ] ] ) {
-						this.implementationIds[ visibleImplementations[ item ] ] = {
-							zid: visibleImplementations[ item ],
-							state: zImplementationState,
+					// for each implementation, store whether its checkbox is checked and whether it's available. We use
+					// this to determine the state of the select-all checkbox, the columns of the test table, and
+					// whether the approve and deactivate buttons should be enabled.
+					if ( !this.implZidToState[ visibleImplementations[ index ] ] ) {
+						this.implZidToState[ visibleImplementations[ index ] ] = {
+							available: isAvailable,
 							checked: false
 						};
 					}
@@ -199,21 +219,19 @@ module.exports = exports = {
 							title: '',
 							component: 'cdx-checkbox',
 							props: {
-								vModel: this.checkValue,
-								// disabled if it is of a different state than a selected implementation
-								disabled: this.filterState !== zImplementationState && this.filterState !== '',
-								onClick: function () {
-									this.handleCheckboxClick( visibleImplementations[ item ] );
+								modelValue: this.implZidToState[ visibleImplementations[ index ] ].checked,
+								'onUpdate:modelValue': function ( newValue ) {
+									this.implZidToState[ visibleImplementations[ index ] ].checked = newValue;
 								}.bind( this )
 							},
 							class: 'ext-wikilambda-function-details-table-item',
-							id: this.getZkeyLabels[ visibleImplementations[ item ] ] + ' ' + zImplementationState
+							id: this.getZkeyLabels[ visibleImplementations[ index ] ]
 						},
 						name: {
-							title: this.getZkeyLabels[ visibleImplementations[ item ] ],
+							title: this.getZkeyLabels[ visibleImplementations[ index ] ],
 							component: 'a',
 							props: {
-								href: '/wiki/' + visibleImplementations[ item ]
+								href: '/wiki/' + visibleImplementations[ index ]
 							},
 							class: 'ext-wikilambda-function-details-implementation-table-link ext-wikilambda-function-details-table-item'
 						},
@@ -226,8 +244,12 @@ module.exports = exports = {
 							props: {
 								editableContainer: false,
 								readonly: true,
-								text: zImplementationState,
-								intent: zImplementationState === this.$i18n( 'wikilambda-function-implementation-state-available' ).text() ? 'success' : 'warning'
+								text: this.$i18n(
+									isAvailable ?
+										'wikilambda-function-implementation-state-available' :
+										'wikilambda-function-implementation-state-proposed'
+								).text(),
+								intent: isAvailable ? 'success' : 'warning'
 							},
 							class: 'ext-wikilambda-function-details-table-item'
 						},
@@ -257,7 +279,13 @@ module.exports = exports = {
 						title: '',
 						component: 'cdx-checkbox',
 						props: {
-							vModel: this.checkValue
+							modelValue: Object.keys( this.testerZidToState ).every( ( zid ) =>
+								this.testerZidToState[ zid ].checked ),
+							'onUpdate:modelValue': function ( newValue ) {
+								for ( const zid in this.testerZidToState ) {
+									this.testerZidToState[ zid ].checked = newValue;
+								}
+							}.bind( this )
 						},
 						class: 'ext-wikilambda-function-details-table-text'
 					},
@@ -268,10 +296,10 @@ module.exports = exports = {
 				};
 
 				// create one column per implementation selected (or for all implementations if none are selected)
-				for ( const item in this.implementationIds ) {
-					if ( this.implementationIds[ item ].checked || this.filterState === '' ) {
-						headers[ this.implementationIds[ item ].zid ] = {
-							title: this.getZkeyLabels[ this.implementationIds[ item ].zid ],
+				for ( const zid in this.implZidToState ) {
+					if ( this.implZidToState[ zid ].checked || !this.areAnyImplementationsChecked ) {
+						headers[ zid ] = {
+							title: this.getZkeyLabels[ zid ],
 							class: 'ext-wikilambda-function-details-table-text'
 						};
 					}
@@ -288,12 +316,21 @@ module.exports = exports = {
 				var tableData = [];
 				const visibleTesters = this.testerShowAll ? this.getAllZTesters :
 					this.getPaginatedTesters[ this.currentTesterPage ];
-				for ( var index in visibleTesters ) {
+				for ( const index in visibleTesters ) {
 					var testerLabel = this.getZkeyLabels[ visibleTesters[ index ] ];
-					var zTesterState = this.$i18n( 'wikilambda-function-implementation-state-available' ).text();
+					var isAvailable = !this.isFunctionItemUnattached(
+						visibleTesters[ index ],
+						this.getUnattachedZTesters
+					);
 
-					if ( this.getUnattachedZTesters.indexOf( visibleTesters[ index ] ) > -1 ) {
-						zTesterState = this.$i18n( 'wikilambda-function-implementation-state-proposed' ).text();
+					// for each tester, store whether its checkbox is checked and whether it's available. We use this
+					// to determine  the state of the select-all checkbox, and whether the approve and deactivate
+					// buttons should be enabled.
+					if ( !this.testerZidToState[ visibleTesters[ index ] ] ) {
+						this.testerZidToState[ visibleTesters[ index ] ] = {
+							available: isAvailable,
+							checked: false
+						};
 					}
 
 					tableData[ index ] = {};
@@ -302,7 +339,10 @@ module.exports = exports = {
 						title: '',
 						component: 'cdx-checkbox',
 						props: {
-							vModel: this.checkValue
+							modelValue: this.testerZidToState[ visibleTesters[ index ] ].checked,
+							'onUpdate:modelValue': function ( newValue ) {
+								this.testerZidToState[ visibleTesters[ index ] ].checked = newValue;
+							}.bind( this )
 						},
 						class: 'ext-wikilambda-function-details-table-item'
 					};
@@ -316,9 +356,9 @@ module.exports = exports = {
 						class: 'ext-wikilambda-function-details-table-item'
 					};
 
-					for ( const item in this.implementationIds ) {
-						if ( this.implementationIds[ item ].checked || this.filterState === '' ) {
-							tableData[ index ][ this.implementationIds[ item ].zid ] = {
+					for ( const zid in this.implZidToState ) {
+						if ( this.implZidToState[ zid ].checked || !this.areAnyImplementationsChecked ) {
+							tableData[ index ][ zid ] = {
 								// TODO: update to fetch actual pass/fail status and update styles/icons accordingly
 								// here and in tester-table-status.vue
 								component: 'tester-table-status',
@@ -335,46 +375,127 @@ module.exports = exports = {
 						props: {
 							editableContainer: false,
 							readonly: true,
-							text: zTesterState,
-							intent: zTesterState === this.$i18n( 'wikilambda-function-implementation-state-available' ).text() ? 'success' : 'warning'
+							text: this.$i18n(
+								isAvailable ?
+									'wikilambda-function-implementation-state-available' :
+									'wikilambda-function-implementation-state-proposed'
+							).text(),
+							intent: isAvailable ? 'success' : 'warning'
 						}
 					};
 				}
 
 				return tableData;
+			},
+			areAnyImplementationsChecked: function () {
+				return Object.keys( this.implZidToState ).some( ( zid ) => this.implZidToState[ zid ].checked );
+			},
+			areProposedImplementationsSelected: function () {
+				return Object.keys( this.implZidToState ).some( ( zid ) =>
+					this.implZidToState[ zid ].checked && !this.implZidToState[ zid ].available );
+			},
+			areAvailableImplementationsSelected: function () {
+				return Object.keys( this.implZidToState ).some( ( zid ) =>
+					this.implZidToState[ zid ].checked && this.implZidToState[ zid ].available );
+			},
+			areProposedTestersSelected: function () {
+				return Object.keys( this.testerZidToState ).some( ( zid ) =>
+					this.testerZidToState[ zid ].checked && !this.testerZidToState[ zid ].available );
+			},
+			areAvailableTestersSelected: function () {
+				return Object.keys( this.testerZidToState ).some( ( zid ) =>
+					this.testerZidToState[ zid ].checked && this.testerZidToState[ zid ].available );
+			},
+			shouldShowToast: function () {
+				return this.currentToast !== null;
 			}
 		}
 	),
-	methods: {
-		handleCheckboxClick: function ( item ) {
-			// update the implementation selection
-			this.implementationIds[ item ].checked = !this.implementationIds[ item ].checked;
-
-			// if any implementation is currently checked, the filter state should be the state
-			// of that implementation
-			// TODO: find a more efficient way to do this
-			for ( var implementation in this.implementationIds ) {
-				if ( this.implementationIds[ implementation ].checked ) {
-					this.filterState = this.implementationIds[ implementation ].state;
-					break;
-				}
-				this.filterState = '';
-			}
-		},
+	methods: $.extend( mapActions( [
+		'attachZImplementations',
+		'detachZImplementations',
+		'attachZTesters',
+		'detachZTesters'
+	] ), {
 		updateImplementationPage: function ( page ) {
 			this.currentImplementationPage = page;
-			this.implementationIds = [];
+			this.implZidToState = {};
 		},
 		updateTestersPage: function ( page ) {
 			this.currentTesterPage = page;
+			this.testerZidToState = {};
 		},
 		resetImplementationView: function () {
 			this.implementationShowAll = !this.implementationShowAll;
 		},
 		resetTestersView: function () {
 			this.testerShowAll = !this.testerShowAll;
+		},
+		approveImplementations: function () {
+			// TODO(T316566): ensure only those with the correct permissions can approve/deactivate
+			const zidsToAttach = Object.keys( this.implZidToState ).filter( ( zid ) =>
+				this.implZidToState[ zid ].checked && !this.implZidToState[ zid ].available );
+			const context = this;
+			this.attachZImplementations( {
+				functionId: this.zobjectId,
+				implementationZIds: zidsToAttach
+			} ).then( function ( pageTitle ) {
+				if ( pageTitle ) {
+					window.location.href = new mw.Title( pageTitle ).getUrl();
+				}
+			} ).catch( function ( error ) {
+				context.currentToast = error.error.message;
+			} );
+		},
+		deactivateImplementations: function () {
+			const zidsToDetach = Object.keys( this.implZidToState ).filter( ( zid ) =>
+				this.implZidToState[ zid ].checked && this.implZidToState[ zid ].available );
+			const context = this;
+			this.detachZImplementations( {
+				functionId: this.zobjectId,
+				implementationZIds: zidsToDetach
+			} ).then( function ( pageTitle ) {
+				if ( pageTitle ) {
+					window.location.href = new mw.Title( pageTitle ).getUrl();
+				}
+			} ).catch( function ( error ) {
+				context.currentToast = error.error.message;
+			} );
+		},
+		approveTesters: function () {
+			const zidsToAttach = Object.keys( this.testerZidToState ).filter( ( zid ) =>
+				this.testerZidToState[ zid ].checked && !this.testerZidToState[ zid ].available );
+			const context = this;
+			this.attachZTesters( {
+				functionId: this.zobjectId,
+				testerZIds: zidsToAttach
+			} ).then( function ( pageTitle ) {
+				if ( pageTitle ) {
+					window.location.href = new mw.Title( pageTitle ).getUrl();
+				}
+			} ).catch( function ( error ) {
+				context.currentToast = error.error.message;
+			} );
+		},
+		deactivateTesters: function () {
+			const zidsToDetach = Object.keys( this.testerZidToState ).filter( ( zid ) =>
+				this.testerZidToState[ zid ].checked && this.testerZidToState[ zid ].available );
+			const context = this;
+			this.detachZTesters( {
+				functionId: this.zobjectId,
+				testerZIds: zidsToDetach
+			} ).then( function ( pageTitle ) {
+				if ( pageTitle ) {
+					window.location.href = new mw.Title( pageTitle ).getUrl();
+				}
+			} ).catch( function ( error ) {
+				context.currentToast = error.error.message;
+			} );
+		},
+		closeToast: function () {
+			this.currentToast = null;
 		}
-	}
+	} )
 };
 </script>
 

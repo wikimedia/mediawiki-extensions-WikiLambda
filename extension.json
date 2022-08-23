@@ -469,6 +469,8 @@
 				"wikilambda-function-about-summary",
 				"wikilambda-function-details-summary",
 				"wikilambda-function-details-summary-learn-more",
+				"wikilambda-function-details-table-approve",
+				"wikilambda-function-details-table-deactivate",
 				"wikilambda-function-viewer-aliases-header",
 				"wikilambda-function-viewer-aliases-show-language-button",
 				"wikilambda-function-viewer-aliases-hide-language-button",
@@ -476,7 +478,8 @@
 				"wikilambda-function-viewer-details-input-number",
 				"wikilambda-function-viewer-details-sidebar-summary",
 				"wikilambda-function-viewer-details-table-view-all",
-				"wikilambda-function-viewer-details-table-view-less"
+				"wikilambda-function-viewer-details-table-view-less",
+				"wikilambda-toast-close"
 			]
 		}
 	},

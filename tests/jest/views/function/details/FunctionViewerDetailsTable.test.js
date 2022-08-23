@@ -12,6 +12,6 @@ var VueTestUtils = require( '@vue/test-utils' ),
 describe( 'FunctionViewerDetailsTable', function () {
 	it( 'renders without errors', function () {
 		var wrapper = VueTestUtils.shallowMount( FunctionViewerDetailsTable );
-		expect( wrapper.find( 'ext-wikilambda-function-details-table' ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-details-table' ).exists() ).toBe( true );
 	} );
 } );

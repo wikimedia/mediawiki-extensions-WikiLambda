@@ -222,6 +222,8 @@
 	"wikilambda-function-definition-example-title": "Title for function definition input and output example",
 	"wikilambda-function-definition-can-publish-message": "Toast message for a function definition that is ready to publish.\n\n\"Publish\" is {{msg-mw|Wikilambda-publishnew}}.",
 	"wikilambda-function-definition-publish-successful-message": "Toast message for a function definition that has successfully been published",
+	"wikilambda-function-details-table-approve": "Text on button that approves the currently selected function implementations or testers. Approving them allows them to be executed.",
+	"wikilambda-function-details-table-deactivate": "Text on button that deactivates the currently selected function implementations or testers. Deactivating them prevents them from being executed.",
 	"wikilambda-editor-steps-label": "Label for the steps section of the editor.",
 	"wikilambda-editor-additional-details-label": "Label for the additional details section of the editor.",
 	"wikilambda-editor-go-back-button": "Label for the button to go back to the previous step in the editor.",
@@ -290,5 +292,6 @@
 	"wikilambda-function-viewer-details-input-number": "Text for a function input. Paramters: \n* $1 - input number in list",
 	"wikilambda-function-viewer-details-sidebar-summary": "Summary of the function details side panel",
 	"wikilambda-function-viewer-details-table-view-all": "Label for button to view all rows in a table",
-	"wikilambda-function-viewer-details-table-view-less": "Label for button to view less rows in a table"
+	"wikilambda-function-viewer-details-table-view-less": "Label for button to view less rows in a table",
+	"wikilambda-toast-close": "Label for button that closes a toast (that shows an error or success message)."
 }

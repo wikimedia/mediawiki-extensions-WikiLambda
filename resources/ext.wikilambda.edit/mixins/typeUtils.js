@@ -106,7 +106,7 @@ var Constants = require( '../Constants.js' ),
 
 				return array;
 			},
-			isFunctionItemAttached( item, unattachedItems ) {
+			isFunctionItemUnattached( item, unattachedItems ) {
 				return unattachedItems.indexOf( item ) > -1;
 			}
 		}
