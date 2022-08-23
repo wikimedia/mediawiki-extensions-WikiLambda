@@ -6,16 +6,6 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-function-definition-footer">
-		<dialog-container
-			v-if="openDialog"
-			:title="$i18n( 'wikilambda-function-are-you-sure-dialog-header' ).text()"
-			:description="$i18n( 'wikilambda-function-are-you-sure-dialog-description' ).text()"
-			:cancel-button-text="cancelButtonText"
-			:confirm-button-text="confirmButtonText"
-			@exit-dialog="openDialog = false"
-			@close-dialog="openDialog = false"
-			@confirm-dialog="confirmCancel">
-		</dialog-container>
 		<label for="ext-wikilambda-function-definition-name__input" class="ext-wikilambda-app__text-regular">
 			{{ $i18n( 'wikilambda-function-definition-footer-label' ).text() }}
 		</label>
@@ -30,7 +20,7 @@
 				class="ext-wikilambda-function-definition-footer__publish-button"
 				:action="publishButtonStyle"
 				:disabled="!publishButtonValidity"
-				@click="handlePublish"
+				@click.stop="handlePublish"
 			>
 				{{ $i18n( 'wikilambda-publishnew' ).text() }}
 			</cdx-button>
@@ -55,7 +45,6 @@
 
 <script>
 var Constants = require( '../../../Constants.js' ),
-	DialogContainer = require( '../../base/DialogContainer.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
@@ -64,7 +53,6 @@ var Constants = require( '../../../Constants.js' ),
 module.exports = exports = {
 	name: 'function-definition-footer',
 	components: {
-		'dialog-container': DialogContainer,
 		'cdx-button': CdxButton
 	},
 	props: {
@@ -74,8 +62,7 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			summary: '',
-			openDialog: false
+			summary: ''
 		};
 	},
 	computed: $.extend(
@@ -83,10 +70,6 @@ module.exports = exports = {
 			'currentZFunctionHasInputs',
 			'currentZFunctionHasOutput'
 		] ),
-		mapGetters(
-			'router',
-			[ 'getQueryParams' ]
-		),
 		{
 			publishButtonValidity: function () {
 			// publish button is only valid if function has inputs and outputs defined
@@ -97,39 +80,20 @@ module.exports = exports = {
 				return this.publishButtonValidity ?
 					'progressive' :
 					'destructive';
-			},
-			cancelButtonText: function () {
-				return this.$i18n( 'wikilambda-continue-editing' ).text();
-			},
-			confirmButtonText: function () {
-				return this.$i18n( 'wikilambda-discard-edits' ).text();
 			}
 		} ),
 	methods: $.extend( {},
-		mapActions( [ 'submitZObject' ] ),
 		mapActions( 'router', [ 'navigate' ] ),
 		{
-			handleCancel: function () {
-				// if leaving without saving edits
-				if ( this.isEditing ) {
-					this.openDialog = true;
-				} else {
-					// if not editing, go to previous page
-					history.back();
-				}
-			},
-			confirmCancel: function () {
-				if ( this.openDialog ) {
-					this.openDialog = false;
-				}
-				window.location.href = new mw.Title( this.getQueryParams.title ).getUrl();
-			},
 			handlePublish: function () {
 				// TODO (T297330): include legal text when ready
 				/**
 				 * event to publish changes to a function (or a new function)
 				 */
 				this.$emit( 'publish', this.summary );
+			},
+			handleCancel: function () {
+				this.$emit( 'cancel' );
 			},
 			handleFallbackClick: function () {
 				var payload = {

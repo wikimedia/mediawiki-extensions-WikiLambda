@@ -273,6 +273,7 @@
 				"wikilambda-savechanges",
 				"wikilambda-summarylabel",
 				"wikilambda-publish-summary-prompt",
+				"wikilambda-publish-impact-prompt",
 				"wikilambda-loading",
 				"wikilambda-invalidzobject",
 				"wikilambda-noresult",

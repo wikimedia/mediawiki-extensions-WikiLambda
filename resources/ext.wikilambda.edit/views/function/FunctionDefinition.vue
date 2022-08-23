@@ -69,8 +69,18 @@
 
 		<function-definition-footer
 			:is-editing="isEditingExistingFunction"
-			@publish="handlePublish"
+			@publish="validateInputOutputTypeChanged"
+			@cancel="handleCancel"
 		></function-definition-footer>
+
+		<dialog-container
+			ref="dialogBox"
+			:title="dialogInfo.title"
+			:description="dialogInfo.description"
+			:cancel-button-text="dialogInfo.cancelButtonText"
+			:confirm-button-text="dialogInfo.confirmButtonText"
+			@confirm-dialog="dialogInfo.onConfirm">
+		</dialog-container>
 	</main>
 </template>
 
@@ -88,7 +98,8 @@ var mapGetters = require( 'vuex' ).mapGetters,
 var Constants = require( '../../Constants.js' );
 var typeUtils = require( '../../mixins/typeUtils.js' );
 var CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxMessage = require( '@wikimedia/codex' ).CdxMessage;
+	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
+	DialogContainer = require( '../../components/base/DialogContainer.vue' );
 
 // @vue/component
 module.exports = exports = {
@@ -101,7 +112,8 @@ module.exports = exports = {
 		'function-definition-footer': FunctionDefinitionFooter,
 		'fn-editor-zlanguage-selector': FnEditorZLanguageSelector,
 		'cdx-button': CdxButton,
-		'cdx-message': CdxMessage
+		'cdx-message': CdxMessage,
+		'dialog-container': DialogContainer
 	},
 	mixins: [ typeUtils ],
 	setup: function () {
@@ -114,7 +126,16 @@ module.exports = exports = {
 		return {
 			currentToast: null,
 			toastIntent: 'success',
-			labelLanguages: []
+			labelLanguages: [],
+			initialInputTypes: [],
+			initialOutputType: '',
+			dialogInfo: {
+				title: '',
+				description: '',
+				cancelButtonText: '',
+				confirmButtonText: '',
+				onConfirm: ''
+			}
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -126,8 +147,14 @@ module.exports = exports = {
 		'getViewMode',
 		'getZObjectChildrenById',
 		'getZObjectAsJsonById',
-		'getZObjectInitialized'
+		'getZObjectInitialized',
+		'getZargumentsArray',
+		'getNestedZObjectById'
 	] ),
+	mapGetters(
+		'router',
+		[ 'getQueryParams' ]
+	),
 	{
 		isMobile: function () {
 			return this.breakpoint.current.value === Constants.breakpointsTypes.MOBILE;
@@ -284,6 +311,16 @@ module.exports = exports = {
 				} );
 			}
 			return formattedLanguages;
+		},
+		currentInputs: function () {
+			return this.getZargumentsArray() || [];
+		},
+		currentOutput: function () {
+			return this.getNestedZObjectById( 0, [
+				Constants.Z_PERSISTENTOBJECT_VALUE,
+				Constants.Z_FUNCTION_RETURN_TYPE,
+				Constants.Z_REFERENCE_ID
+			] ) || '';
 		}
 	} ),
 	methods: $.extend( mapActions( [
@@ -335,10 +372,16 @@ module.exports = exports = {
 		 * publish function changes and redirect to the view page
 		 *
 		 * @param {Object} summary
+		 * @param {Boolean} shouldUnattachImplentationAndTester
 		 */
-		handlePublish: function ( summary ) {
+		handlePublish: function ( summary, shouldUnattachImplentationAndTester ) {
+			if ( this.dialogInfo.title ) {
+				this.resetDialogInfo();
+				this.$refs.dialogBox.closeDialog();
+			}
+
 			const context = this;
-			this.submitZObject( summary ).then( function ( pageTitle ) {
+			this.submitZObject( { summary, shouldUnattachImplentationAndTester } ).then( function ( pageTitle ) {
 				if ( pageTitle ) {
 					window.location.href = new mw.Title( pageTitle ).getUrl();
 				}
@@ -355,9 +398,91 @@ module.exports = exports = {
 				id: Z2K2.id,
 				type: Constants.Z_FUNCTION
 			} );
+		},
+		validateInputTypeChanged: function () {
+			let inputTypeChanged = false;
+			if ( this.currentInputs.length === this.initialInputTypes.length ) {
+				for ( let index = 0; index < this.currentInputs.length; index++ ) {
+					const input = this.currentInputs[ index ];
+					if ( input.type.zid !== this.initialInputTypes[ index ] ) {
+						inputTypeChanged = true;
+					}
+				}
+			} else {
+				inputTypeChanged = true;
+			}
+
+			return inputTypeChanged;
+		},
+		validateOutputTypeChanged: function () {
+			return this.currentOutput.value !== this.initialOutputType;
+		},
+		validateInputOutputTypeChanged: function ( summary ) {
+			if ( this.isEditingExistingFunction &&
+				( this.validateInputTypeChanged() || this.validateOutputTypeChanged() )
+			) {
+				this.dialogInfo = {
+					title: this.$i18n( 'wikilambda-function-are-you-sure-dialog-header' ).text(),
+					description: this.$i18n( 'wikilambda-publish-impact-prompt' ).text(),
+					cancelButtonText: this.$i18n( 'wikilambda-continue-editing' ).text(),
+					confirmButtonText: this.$i18n( 'wikilambda-publishnew' ).text(),
+					onConfirm: function () { return this.handlePublish( summary, true ); }.bind( this )
+				};
+				this.$refs.dialogBox.openDialog();
+			} else {
+				this.handlePublish( summary );
+			}
+		},
+		handleCancel: function () {
+			// if leaving without saving edits
+			if ( this.isEditingExistingFunction ) {
+				this.dialogInfo = {
+					title: this.$i18n( 'wikilambda-function-are-you-sure-dialog-header' ).text(),
+					description: this.$i18n( 'wikilambda-function-are-you-sure-dialog-description' ).text(),
+					cancelButtonText: this.$i18n( 'wikilambda-continue-editing' ).text(),
+					confirmButtonText: this.$i18n( 'wikilambda-discard-edits' ).text(),
+					onConfirm: this.confirmCancel
+				};
+				this.$refs.dialogBox.openDialog();
+			} else {
+				// if not editing, go to previous page
+				history.back();
+			}
+		},
+		confirmCancel: function () {
+			this.resetDialogInfo();
+			this.$refs.dialogBox.closeDialog();
+			window.location.href = new mw.Title( this.getQueryParams.title ).getUrl();
+		},
+		resetDialogInfo: function () {
+			this.dialogInfo = {
+				title: '',
+				description: '',
+				cancelButtonText: '',
+				confirmButtonText: '',
+				onConfirm: ''
+			};
 		}
 	} ),
 	watch: {
+		currentInputs: {
+			immediate: true,
+			handler: function () {
+				if ( this.initialInputTypes.length === 0 ) {
+					this.initialInputTypes = this.currentInputs.map( ( inputs ) => {
+						return inputs.type.zid || '';
+					} );
+				}
+			}
+		},
+		currentOutput: {
+			immediate: true,
+			handler: function () {
+				if ( this.initialOutputType === '' ) {
+					this.initialOutputType = this.currentOutput.value;
+				}
+			}
+		},
 		/**
 		 * show a toast once the user has filled out the requirements and a function can be published
 		 */

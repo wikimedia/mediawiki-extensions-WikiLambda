@@ -670,7 +670,7 @@ describe( 'zobject Vuex module', function () {
 			context.state = {
 				zobject: zobjectTree
 			};
-			zobjectModule.actions.submitZObject( context, 'A summary' );
+			zobjectModule.actions.submitZObject( context, { summary: 'A summary' } );
 
 			expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 			expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
@@ -688,7 +688,7 @@ describe( 'zobject Vuex module', function () {
 			context.state = {
 				zobject: zobjectTree
 			};
-			zobjectModule.actions.submitZObject( context, 'A summary' );
+			zobjectModule.actions.submitZObject( context, { summary: 'A summary' } );
 
 			expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 			expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
@@ -696,6 +696,31 @@ describe( 'zobject Vuex module', function () {
 				summary: 'A summary',
 				zid: 'Z0',
 				zobject: JSON.stringify( zobject )
+			} );
+			expect( context.commit ).toHaveBeenCalledTimes( 1 );
+		} );
+
+		it( 'Remove zImplementation and zTester from zObject and Save existing zobject', function () {
+			context.getters.isCreateNewPage = false;
+			context.getters.getCurrentZObjectId = 'Z0';
+			const zobjectFunction = JSON.parse( fs.readFileSync( path.join( __dirname, './zobject/getZFunction.json' ) ) );
+			context.state = {
+				zobject: zobjectFunction.ZObjectTree
+			};
+			zobjectModule.actions.submitZObject( context, { summary: 'A summary', shouldUnattachImplentationAndTester: true } );
+
+			expect( mw.Api ).toHaveBeenCalledTimes( 1 );
+
+			zobjectFunction.ZObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_TESTERS ] =
+			[ Constants.Z_TESTER ];
+			zobjectFunction.ZObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_IMPLEMENTATIONS ] =
+			[ Constants.Z_IMPLEMENTATION ];
+
+			expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
+				action: 'wikilambda_edit',
+				summary: 'A summary',
+				zid: 'Z0',
+				zobject: JSON.stringify( zobjectFunction.ZObject )
 			} );
 			expect( context.commit ).toHaveBeenCalledTimes( 1 );
 		} );
