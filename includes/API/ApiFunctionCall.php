@@ -77,7 +77,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		$zObject = json_decode( $stringOfAZ );
 		$jsonQuery = [
 			'zobject' => $zObject,
-			'doValidate' => true
+			'doValidate' => false
 		];
 
 		$work = new PoolCounterWorkViaCallback( 'WikiLambdaFunctionCall', $this->getUser()->getName(), [
