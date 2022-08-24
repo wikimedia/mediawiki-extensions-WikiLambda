@@ -138,8 +138,6 @@
 	"wikilambda-editor-tester-list-label": "רשימת בודקים",
 	"wikilambda-tester-selector": "בחירת בודק",
 	"wikilambda-tester-none-found": "לא נמצאו בודקים.",
-	"wikilambda-test-case-none": "אין מקרי בדיקה",
-	"wikilambda-implementations-none": "אין מימושים",
 	"wikilambda-tester-create-new": "יצירת בדיקה חדשה",
 	"wikilambda-tester-status-pending": "בהמתנה...",
 	"wikilambda-tester-status-running": "בהרצה...",
