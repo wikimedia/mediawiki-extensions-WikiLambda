@@ -53,5 +53,7 @@
 	"wikilambda-editor-fn-step-function-about": "關於",
 	"wikilambda-continue-editing": "繼續編輯",
 	"wikilambda-function-viewer-aliases-show-language-button": "顯示更多語言",
-	"wikilambda-function-viewer-aliases-hide-language-button": "隱藏清單"
+	"wikilambda-function-viewer-aliases-hide-language-button": "隱藏清單",
+	"wikilambda-function-viewer-details-table-view-all": "檢視全部",
+	"wikilambda-function-viewer-details-table-view-less": "檢視較少"
 }

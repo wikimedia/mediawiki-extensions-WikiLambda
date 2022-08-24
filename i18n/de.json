@@ -77,6 +77,7 @@
 	"wikilambda-savechanges": "Änderungen speichern",
 	"wikilambda-summarylabel": "Zusammenfassung:",
 	"wikilambda-publish-summary-prompt": "Bitte erläutere kurz deine Änderungen",
+	"wikilambda-publish-impact-prompt": "Du hast den Eingabe- oder Ausgabetyp dieser Funktion aktualisiert, wodurch die Implementierungen und Tester entfernt werden. Möchtest du wirklich fortfahren?",
 	"wikilambda-loading": "Daten werden geladen",
 	"wikilambda-typeselector-label": "Typ auswählen",
 	"wikilambda-argument-typeselector-label": "Wähle einen Typ für dieses Argument",
@@ -100,7 +101,7 @@
 	"wikilambda-implementation-selector-built-in": "Eingebaut",
 	"wikilambda-argref-default-label": "Wähle ein Argument",
 	"wikilambda-implementation-selector": "Eine Implementierung auswählen",
-	"wikilambda-implementation-none-found": "Keine Implementierungen gefunden.",
+	"wikilambda-implementation-none-found": "Derzeit gibt es keine Implementierungen für diese Funktion",
 	"wikilambda-implementation-create-new": "Eine neue Implementierung erstellen",
 	"wikilambda-function-are-you-sure-dialog-header": "Bist du sicher?",
 	"wikilambda-function-are-you-sure-dialog-description": "Bist du sicher, dass du den Bearbeitungsmodus verlassen möchtest, ohne vorher zu veröffentlichen?",
@@ -131,9 +132,7 @@
 	"wikilambda-functioncall-error-nonstringinput-category-desc": "Seiten mit versuchten Aufrufen von Wikifunctions mit einer ZFunction, die keine Zeichenkette annimmt",
 	"wikilambda-editor-tester-list-label": "Testerliste",
 	"wikilambda-tester-selector": "Einen Tester wählen",
-	"wikilambda-tester-none-found": "Keine Tester gefunden.",
-	"wikilambda-test-case-none": "Keine Testverfahren",
-	"wikilambda-implementations-none": "Keine Implementierungen",
+	"wikilambda-tester-none-found": "Derzeit gibt es keine Tests für diese Funktion.",
 	"wikilambda-tester-create-new": "Neuen Test erstellen",
 	"wikilambda-tester-status-pending": "UNERLEDIGT …",
 	"wikilambda-tester-status-running": "LÄUFT …",
@@ -257,5 +256,7 @@
 	"wikilambda-function-viewer-aliases-hide-language-button": "Liste ausblenden",
 	"wikilambda-function-viewer-names-show-languages-button": "Name in anderen Sprachen anzeigen",
 	"wikilambda-function-viewer-details-input-number": "Eingabe $1",
-	"wikilambda-function-viewer-details-sidebar-summary": "Jeder kann Beschriftungen bearbeiten, aber die Eingabe-/Ausgabeart und die Anzahl können nur von Benutzern mit speziellen Rechten bearbeitet werden."
+	"wikilambda-function-viewer-details-sidebar-summary": "Jeder kann Beschriftungen bearbeiten, aber die Eingabe-/Ausgabeart und die Anzahl können nur von Benutzern mit speziellen Rechten bearbeitet werden.",
+	"wikilambda-function-viewer-details-table-view-all": "Alle ansehen",
+	"wikilambda-function-viewer-details-table-view-less": "Weniger ansehen"
 }

@@ -142,8 +142,6 @@
 	"wikilambda-editor-tester-list-label": "Lista testerów",
 	"wikilambda-tester-selector": "Wybierz tester",
 	"wikilambda-tester-none-found": "Nie znaleziono testerów.",
-	"wikilambda-test-case-none": "Brak przypadków testowych",
-	"wikilambda-implementations-none": "Brak implementacji",
 	"wikilambda-tester-create-new": "Utwórz nowy test",
 	"wikilambda-tester-status-pending": "OCZEKUJE...",
 	"wikilambda-tester-status-running": "TRWA...",
