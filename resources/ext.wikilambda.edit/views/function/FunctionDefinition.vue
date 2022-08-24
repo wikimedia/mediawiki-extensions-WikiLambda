@@ -147,7 +147,7 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getZkeyLabels',
 		'getCurrentZLanguage',
-		'currentZFunctionHasInputs',
+		'currentZFunctionHasValidInputs',
 		'currentZFunctionHasOutput',
 		'isNewZObject',
 		'getViewMode',
@@ -171,7 +171,7 @@ module.exports = exports = {
 		 * @return {boolean} if a function is able to be published
 		 */
 		ableToPublish: function () {
-			if ( this.currentZFunctionHasInputs && this.currentZFunctionHasOutput ) {
+			if ( this.currentZFunctionHasValidInputs && this.currentZFunctionHasOutput ) {
 				return true;
 			}
 			return false;

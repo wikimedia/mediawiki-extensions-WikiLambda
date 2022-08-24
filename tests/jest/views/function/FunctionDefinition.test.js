@@ -23,7 +23,7 @@ describe( 'FunctionDefinition', function () {
 		getters = {
 			getZkeyLabels: createGettersWithFunctionsMock( [] ),
 			getCurrentZLanguage: jest.fn(),
-			currentZFunctionHasInputs: jest.fn(),
+			currentZFunctionHasValidInputs: jest.fn(),
 			currentZFunctionHasOutput: jest.fn(),
 			isNewZObject: jest.fn(),
 			getViewMode: jest.fn(),

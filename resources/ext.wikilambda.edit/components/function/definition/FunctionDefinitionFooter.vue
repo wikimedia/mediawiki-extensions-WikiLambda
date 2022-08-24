@@ -71,13 +71,14 @@ module.exports = exports = {
 	},
 	computed: $.extend(
 		mapGetters( [
-			'currentZFunctionHasInputs',
+			'currentZFunctionHasValidInputs',
 			'currentZFunctionHasOutput'
 		] ),
 		{
 			publishButtonValidity: function () {
 				// publish button is only valid if function has inputs and outputs defined
-				return this.currentZFunctionHasInputs && this.currentZFunctionHasOutput;
+				// TODO: this should also reset if there are local changes on an already published function
+				return this.currentZFunctionHasValidInputs && this.currentZFunctionHasOutput;
 			},
 			publishButtonStyle: function () {
 				return this.publishButtonValidity ?
