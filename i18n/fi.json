@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Joquliina",
+			"Kyykaarme",
 			"MITO",
 			"Markus Mikkonen",
 			"Mediawikitranslator",
@@ -20,6 +21,8 @@
 	"wikilambda-savenew": "Tallenna",
 	"wikilambda-editor-label-addlanguage-label": "Lisää kieli",
 	"wikilambda-editor-label-select-programming-language-label": "Valitse ohjelmointikieli:",
+	"wikilambda-implementation-none-found": "Tällä hetkellä tälle toiminnolle ei ole toteutuksia.",
+	"wikilambda-tester-none-found": "Tällä hetkellä tälle toiminnolle ei ole testitapauksia.",
 	"wikilambda-tester-create-new": "Luo uusi testi",
 	"wikilambda-tester-status-pending": "ODOTTAA...",
 	"wikilambda-tester-results-title": "Testaimen tulokset",

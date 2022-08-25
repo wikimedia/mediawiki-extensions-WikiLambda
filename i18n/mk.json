@@ -103,6 +103,7 @@
 	"wikilambda-functioncall-error": "Грешка во повикот на функцијата: $1",
 	"wikilambda-functioncall-error-category": "Страници со погрешни повици на Викифункции",
 	"wikilambda-functioncall-error-unknown": "Грешка во повикувањето на функцијата: „$1“ не е познат ZObject",
+	"wikilambda-tester-none-found": "Во моментов нема пробни случаи за функцијава.",
 	"wikilambda-tester-failure-expected": "Очекувано",
 	"wikilambda-tester-failure-actual": "Примено",
 	"wikilambda-create-function": "Создај функција",

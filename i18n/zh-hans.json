@@ -37,7 +37,7 @@
 	"wikilambda-implementation-selector-composition": "构成",
 	"wikilambda-argref-default-label": "选择一个参数",
 	"wikilambda-implementation-selector": "选择一个实现",
-	"wikilambda-implementation-none-found": "没有找到实现。",
+	"wikilambda-implementation-none-found": "目前没有此函数的实现。",
 	"wikilambda-implementation-create-new": "创建一个新的实现",
 	"wikilambda-functioncall-metadata-dialog-header": "元数据",
 	"wikilambda-functioncall-metadata-errors-none": "无",
