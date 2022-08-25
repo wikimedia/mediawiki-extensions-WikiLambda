@@ -89,6 +89,7 @@
 	"wikilambda-publishchanges": "Label for the submit button when updating an existing ZObject on a public wiki",
 	"wikilambda-savechanges": "Label for the submit button when updating an existing ZObject on a private wiki",
 	"wikilambda-summarylabel": "Label for summary of changes in the edited ZObject\n{{identical|Summary}}",
+	"wikilambda-languagelabel": "Label for language selector",
 	"wikilambda-publish-summary-prompt": "Placeholder label for summary of changes in the edited ZObject.",
 	"wikilambda-publish-impact-prompt": "Description for impact of editing function input and output type",
 	"wikilambda-loading": "Label to inform the user that the content of the page is being loaded",

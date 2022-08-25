@@ -272,6 +272,7 @@
 				"wikilambda-publishchanges",
 				"wikilambda-savechanges",
 				"wikilambda-summarylabel",
+				"wikilambda-languagelabel",
 				"wikilambda-publish-summary-prompt",
 				"wikilambda-publish-impact-prompt",
 				"wikilambda-loading",

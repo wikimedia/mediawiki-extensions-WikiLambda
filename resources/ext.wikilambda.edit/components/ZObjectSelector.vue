@@ -310,6 +310,7 @@ module.exports = exports = {
 					self.validatorSetError( 'wikilambda-invalidzobject' );
 				}
 			},
+			// used by ZLabelsBlock component to automatically add and clear labels
 			clearResults: function () {
 				this.lookupResults = [];
 				this.inputValue = '';
