@@ -136,25 +136,20 @@ var zTestersModule = require( '../../../../resources/ext.wikilambda.edit/store/m
 	mockApiResponse = {
 		batchcomplete: '',
 		query: {
-			// eslint-disable-next-line camelcase
 			wikilambdafn_search: [
 				{
-					// eslint-disable-next-line camelcase
 					page_namespace: 0,
 					zid: 'Z8010'
 				},
 				{
-					// eslint-disable-next-line camelcase
 					page_namespace: 0,
 					zid: 'Z8011'
 				},
 				{
-					// eslint-disable-next-line camelcase
 					page_namespace: 0,
 					zid: 'Z8012'
 				},
 				{
-					// eslint-disable-next-line camelcase
 					page_namespace: 0,
 					zid: 'Z8013'
 				}
@@ -246,9 +241,7 @@ describe( 'zTesters Vuex module ', function () {
 						action: 'query',
 						list: 'wikilambdafn_search',
 						format: 'json',
-						// eslint-disable-next-line camelcase
 						wikilambdafn_zfunction_id: 'Z801',
-						// eslint-disable-next-line camelcase
 						wikilambdafn_type: 'Z20'
 					} );
 				} );

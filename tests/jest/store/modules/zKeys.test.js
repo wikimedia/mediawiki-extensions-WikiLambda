@@ -11,7 +11,6 @@ var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modu
 	mockApiReponse = {
 		batchcomplete: '',
 		query: {
-			// eslint-disable-next-line camelcase
 			wikilambdaload_zobjects: {
 				Z1: {
 					success: '',
@@ -267,11 +266,8 @@ describe( 'zkeys Vuex module', function () {
 						action: 'query',
 						list: 'wikilambdaload_zobjects',
 						format: 'json',
-						// eslint-disable-next-line camelcase
 						wikilambdaload_zids: 'Z1',
-						// eslint-disable-next-line camelcase
 						wikilambdaload_language: context.rootGetters.zLang,
-						// eslint-disable-next-line camelcase
 						wikilambdaload_canonical: 'true'
 					} );
 				} );
@@ -285,11 +281,8 @@ describe( 'zkeys Vuex module', function () {
 						action: 'query',
 						list: 'wikilambdaload_zobjects',
 						format: 'json',
-						// eslint-disable-next-line camelcase
 						wikilambdaload_zids: expectedWikilambdaloadZids,
-						// eslint-disable-next-line camelcase
 						wikilambdaload_language: context.rootGetters.zLang,
-						// eslint-disable-next-line camelcase
 						wikilambdaload_canonical: 'true'
 					} );
 				} );
@@ -317,11 +310,8 @@ describe( 'zkeys Vuex module', function () {
 						action: 'query',
 						list: 'wikilambdaload_zobjects',
 						format: 'json',
-						// eslint-disable-next-line camelcase
 						wikilambdaload_zids: expectedWikilambdaloadZids,
-						// eslint-disable-next-line camelcase
 						wikilambdaload_language: context.rootGetters.zLang,
-						// eslint-disable-next-line camelcase
 						wikilambdaload_canonical: 'true'
 					} );
 
