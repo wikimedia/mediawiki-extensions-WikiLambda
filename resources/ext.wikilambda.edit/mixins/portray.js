@@ -20,6 +20,9 @@ const getValueFromCanonicalZMap = require( './schemata.js' ).methods.getValueFro
  */
 const knownKeys = new Map( [
 	[ 'errors', { i18nId: 'wikilambda-functioncall-metadata-errors' } ],
+	[ 'validateErrors', { i18nId: 'wikilambda-functioncall-metadata-validator-errors' } ],
+	[ 'actualTestResult', { i18nId: 'wikilambda-functioncall-metadata-actual-result' } ],
+	[ 'expectedTestResult', { i18nId: 'wikilambda-functioncall-metadata-expected-result' } ],
 	[ 'orchestrationStartTime', { i18nId: 'wikilambda-functioncall-metadata-orchestration-start-time' } ],
 	[ 'orchestrationEndTime', { i18nId: 'wikilambda-functioncall-metadata-orchestration-end-time' } ],
 	[ 'orchestrationDuration', { i18nId: 'wikilambda-functioncall-metadata-orchestration-duration' } ],
@@ -36,8 +39,8 @@ const knownKeys = new Map( [
 
 module.exports = exports = {
 	methods: {
-		maybeStringify: function ( message ) {
-			return typeof message === 'string' ? message : JSON.stringify( message );
+		maybeStringify: function ( value ) {
+			return typeof value === 'string' ? value : JSON.stringify( value );
 		},
 		/**
 		 * Given a function-call metadata map (produced by WikiFunctions backend services),
@@ -51,13 +54,20 @@ module.exports = exports = {
 			var keysUsed = [];
 			let html = '<span><ul>';
 			// First, portray the known/expected metadata keys and their values
-			html = html + this.keyAndErrorValue( zMap, 'errors', keysUsed );
+			// If there's no 'errors' value, keyAndZErrorValue will display 'None'
+			html = html + this.keyAndZErrorValue( zMap, 'errors', keysUsed );
+			// With 'validateErrors', we don't want to display 'None', so check here if there's a value
+			if ( getValueFromCanonicalZMap( zMap, 'validateErrors' ) ) {
+				html = html + this.keyAndZErrorValue( zMap, 'validateErrors', keysUsed );
+			}
+			html = html + this.keyAndArbitraryValue( zMap, 'expectedTestResult', keysUsed );
+			html = html + this.keyAndArbitraryValue( zMap, 'actualTestResult', keysUsed );
 			html = html + this.keyAndDatetimeValue( zMap, 'orchestrationStartTime', keysUsed );
 			html = html + this.keyAndDatetimeValue( zMap, 'orchestrationEndTime', keysUsed );
-			html = html + this.keyAndStringValue( zMap, 'orchestrationDuration', keysUsed );
+			html = html + this.keyAndArbitraryValue( zMap, 'orchestrationDuration', keysUsed );
 			html = html + this.keyAndDatetimeValue( zMap, 'evaluationStartTime', keysUsed );
 			html = html + this.keyAndDatetimeValue( zMap, 'evaluationEndTime', keysUsed );
-			html = html + this.keyAndStringValue( zMap, 'evaluationDuration', keysUsed );
+			html = html + this.keyAndArbitraryValue( zMap, 'evaluationDuration', keysUsed );
 
 			// Now portray any top-level zMap entries that weren't already used above
 			const k1Array = zMap[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
@@ -89,7 +99,7 @@ module.exports = exports = {
 		 * @param {Array} keysUsed any keys used (or checked) here are added to this array
 		 * @return {string}
 		 */
-		keyAndErrorValue: function ( zMap, key, keysUsed ) {
+		keyAndZErrorValue: function ( zMap, key, keysUsed ) {
 			keysUsed.push( key );
 			let messages;
 			const error = getValueFromCanonicalZMap( zMap, key );
@@ -167,12 +177,13 @@ module.exports = exports = {
 		 * @param {Array} keysUsed any keys used (or checked) here are added to this array
 		 * @return {string}
 		 */
-		keyAndStringValue: function ( zMap, key, keysUsed ) {
+		keyAndArbitraryValue: function ( zMap, key, keysUsed ) {
 			keysUsed.push( key );
-			const value = getValueFromCanonicalZMap( zMap, key );
+			let value = getValueFromCanonicalZMap( zMap, key );
 			if ( value === undefined ) {
 				return '';
 			}
+			value = this.maybeStringify( value );
 			const i18nKey = this.$i18n( knownKeys.get( key ).i18nId ).text();
 			return '<li><b>' + i18nKey + ':</b> ' + value + '</li>';
 		}
