@@ -273,7 +273,7 @@ class ZObjectContentHandler extends ContentHandler {
 	 * Set the HTML and add the appropriate styles.
 	 *
 	 * <span class="ext-wikilambda-viewpage-header">
-	 *     <span class="ext-wikilambda-viewpage-header-label firstHeading">multiply</h1>
+	 *     <span class="ext-wikilambda-viewpage-header-label firstHeading">multiply</span>
 	 *     <span class="ext-wikilambda-viewpage-header-zid">Z12345</span>
 	 *     <div class="ext-wikilambda-viewpage-header-type">ZFunction…</div>
 	 * </span>
