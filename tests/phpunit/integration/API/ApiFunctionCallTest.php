@@ -7,9 +7,7 @@ use ApiTestCase;
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall
  * @group API
- * @group WikiLambda
  * @group Standalone
- * @group medium
  */
 class ApiFunctionCallTest extends ApiTestCase {
 

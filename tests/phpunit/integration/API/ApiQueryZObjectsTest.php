@@ -12,8 +12,6 @@ use Title;
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiQueryZobjects
  * @group Database
  * @group API
- * @group WikiLambda
- * @group medium
  */
 class ApiQueryZObjectsTest extends ApiTestCase {
 
