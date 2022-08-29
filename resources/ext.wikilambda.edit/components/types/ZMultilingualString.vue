@@ -77,9 +77,13 @@ module.exports = exports = {
 			},
 			usedLanguages: function () {
 				var languageJson = this.getZObjectAsJsonById( this.monolingualStringsParentId, true );
-				return languageJson.map( function ( language ) {
-					return language[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ];
-				} );
+				return languageJson.reduce( function ( result, language ) {
+					const languageString = language[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ];
+					if ( languageString ) {
+						result.push( languageString );
+					}
+					return result;
+				}, [] );
 			},
 			tooltipRemoveLang: function () {
 				return this.$i18n( 'wikilambda-editor-label-removelanguage-tooltip' ).text();
