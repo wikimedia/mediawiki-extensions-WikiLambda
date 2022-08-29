@@ -49,9 +49,11 @@ class ZObjectEditAction extends Action {
 		// the language object of the user's preferred language
 		$zObjectLabelsWithLang = $this->getTargetZObjectWithLabels();
 
-		$stringForLanguageBuilder = $this->getTargetZObject()->getLabels()->buildStringForLanguage(
-			$this->getLanguage()
-		);
+		[ 'title' => $labelText ] = $this->getTargetZObject()->getLabels()
+			->buildStringForLanguage( $this->getLanguage() )
+			->fallbackWithEnglish()
+			->placeholderNoFallback()
+			->getStringAndLanguageCode();
 
 		$label = Html::element(
 			'span',
@@ -61,10 +63,7 @@ class ZObjectEditAction extends Action {
 					'ext-wikilambda-editpage-header-title--function-name'
 				]
 			],
-			$stringForLanguageBuilder
-				->fallbackWithEnglish()
-				->placeholderNoFallback()
-				->getString() ?? ''
+			$labelText
 		);
 
 		/* isoCodes can occur in two places:
@@ -82,35 +81,36 @@ class ZObjectEditAction extends Action {
 		wfDebugLog( "error", var_export( $typeLangCode, true ) );
 		$typeLangName = $services->getLanguageNameUtils()->getLanguageName( $typeLangCode );
 
-		$isoCodeObjectName = '';
 		// the iso code of the language currently being rendered for the zObject Type
-		$nameLang = $this->getTargetZObject()->getLabels()->buildStringForLanguage( $this->getLanguage() )
+		$userLangCode = $this->getLanguage()->getCode();
+
+		$nameLangCode = $this->getTargetZObject()
+			->getLabels()
+			->buildStringForLanguage( $this->getLanguage() )
 			->fallbackWithEnglish()
-			->placeholderForTitle()
-			->getStringAndLanguageCode();
-		$nameLangCode = $nameLang[ 'languageCode' ];
+			->getLanguageProvided() ?? $userLangCode;
 		$nameLangTitle = $services->getLanguageNameUtils()->getLanguageName( $nameLangCode );
 
-		// show a language label if the text is not the user's preferred language
-		// TODO (T309039): use the chip component and ZID language object here instead
 		$isoCodeClassName = 'ext-wikilambda-editpage-header--iso-code';
-		if ( $nameLangCode !== $this->getLanguage()->getCode() ) {
-			$isoCodeObjectName = ZObjectUtils::getIsoCode( $nameLangCode, $nameLangTitle, $isoCodeClassName );
+
+		if ( $typeLangCode !== $nameLangCode ) {
+			$isoCodeObjectName = $this->getIsoCodeIfUserLangIsDifferent(
+				$nameLangCode, $nameLangTitle, $userLangCode, $isoCodeClassName
+			);
+		} else {
+			// if we have two iso codes showing the same fallback language, only render the first one
+			$isoCodeObjectName = '';
 		}
 
 		// show a language label if the text is not the user's preferred language
-		$isoCodeObjectType = $typeLangCode === $this->getLanguage()->getCode() ? ''
-			: ZObjectUtils::getIsoCode( $typeLangCode, $typeLangName, $isoCodeClassName );
+		$isoCodeObjectType = $this->getIsoCodeIfUserLangIsDifferent(
+			$typeLangCode, $typeLangName, $userLangCode, $isoCodeClassName
+		);
 
 		$prefix = Html::element(
 			'span', [ 'class' => 'ext-wikilambda-editpage-header-title' ],
 			$this->msg( 'wikilambda-edit' )->text()
 		);
-
-		// if we have two iso codes showing the same fallback language, only render the first one
-		if ( $typeLangCode === $nameLangCode ) {
-			$isoCodeObjectName = '';
-		}
 
 		return Html::rawElement(
 			'span',
