@@ -30,5 +30,7 @@
 	"wikilambda-editor-zlist-additem-tooltip": "Elem hozzáadása a ZListhez",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Elem eltávolítása a ZListről",
 	"wikilambda-editor-zobject-addkey": "Kulcs hozzáadása:",
-	"wikilambda-editor-zobject-removekey-tooltip": "Kulcs/érték eltávolítása a Zobjectről"
+	"wikilambda-editor-zobject-removekey-tooltip": "Kulcs/érték eltávolítása a Zobjectről",
+	"wikilambda-function-viewer-details-table-view-all": "Összes megtekintése",
+	"wikilambda-function-viewer-details-table-view-less": "Mutass kevesebbet"
 }

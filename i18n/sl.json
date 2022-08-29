@@ -7,5 +7,7 @@
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Jezik",
 	"wikilambda-cancel": "Prekliči",
 	"wikilambda-savenew": "Shrani",
-	"wikilambda-summarylabel": "Povzetek:"
+	"wikilambda-summarylabel": "Povzetek:",
+	"wikilambda-persistentobject-details-label": "Podrobnosti",
+	"wikilambda-editor-fn-step-function-details": "Podrobnosti"
 }
