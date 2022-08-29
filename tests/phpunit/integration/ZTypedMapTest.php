@@ -444,8 +444,7 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 			new ZTypedList( ZTypedList::buildType( $pairType ) )
 		);
 
-		$testObject->setValueForKey( new ZString( 'Testing1' ), new ZReference( 'Z41' ) );
-
+		// Check that the Map got created as expected
 		$this->assertInstanceOf( ZTypedMap::class, $testObject );
 
 		$this->assertTrue( $testObject->isValid() );
@@ -462,6 +461,24 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 		$this->assertInstanceOf( ZTypedList::class, $list );
 
 		$array = $list->getAsArray();
+		$this->assertCount( 0, $array );
+
+		// Check that setting null doesn't create a key
+		$testObject->setValueForKey( new ZString( 'Testing1' ), null );
+
+		$this->assertTrue( $testObject->isValid() );
+
+		$list = $testObject->getList();
+		$array = $list->getAsArray();
+		$this->assertCount( 0, $array );
+
+		// Check that setting a value creates a key with that value
+		$testObject->setValueForKey( new ZString( 'Testing1' ), new ZReference( 'Z41' ) );
+
+		$this->assertTrue( $testObject->isValid() );
+
+		$list = $testObject->getList();
+		$array = $list->getAsArray();
 		$this->assertCount( 1, $array );
 
 		$firstListItem = $array[0];
@@ -471,6 +488,20 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 		$this->assertInstanceOf( ZString::class, $key );
 		$this->assertSame( 'Testing1', $key->getZValue() );
 
+		$value = $firstListItem->getSecondElement();
+		$this->assertInstanceOf( ZReference::class, $value );
+		$this->assertSame( 'Z41', $value->getZValue() );
+
+		// Check that re-setting a key to null doesn't over-write that key
+		$testObject->setValueForKey( new ZString( 'Testing1' ), null );
+
+		$this->assertTrue( $testObject->isValid() );
+
+		$list = $testObject->getList();
+		$array = $list->getAsArray();
+		$this->assertCount( 1, $array );
+
+		$firstListItem = $array[0];
 		$value = $firstListItem->getSecondElement();
 		$this->assertInstanceOf( ZReference::class, $value );
 		$this->assertSame( 'Z41', $value->getZValue() );
