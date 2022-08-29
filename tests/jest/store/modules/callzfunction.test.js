@@ -54,7 +54,6 @@ describe( 'callZFunction Vuex module', function () {
 				return new Promise( function ( resolve ) {
 					resolve( {
 						query: {
-							// eslint-disable-next-line camelcase
 							wikilambda_function_call: {
 								data: expectedData
 							}
@@ -69,7 +68,6 @@ describe( 'callZFunction Vuex module', function () {
 
 			expect( postMock ).toHaveBeenCalledWith( {
 				action: 'wikilambda_function_call',
-				// eslint-disable-next-line camelcase
 				wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall )
 			} );
 		} );
@@ -91,7 +89,6 @@ describe( 'callZFunction Vuex module', function () {
 
 			expect( postMock ).toHaveBeenCalledWith( {
 				action: 'wikilambda_function_call',
-				// eslint-disable-next-line camelcase
 				wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall )
 			} );
 		} );

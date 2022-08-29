@@ -274,16 +274,12 @@ module.exports = exports = {
 
 			return api.get( {
 				action: 'wikilambda_perform_test',
-				// eslint-disable-next-line camelcase
 				wikilambda_perform_test_zfunction:
 					!context.getters.getViewMode && payload.zFunctionId === context.getters.getCurrentZObjectId ?
 						JSON.stringify( context.getters.getZkeys[ payload.zFunctionId ] ) :
 						payload.zFunctionId,
-				// eslint-disable-next-line camelcase
 				wikilambda_perform_test_zimplementations: implementations.join( '|' ),
-				// eslint-disable-next-line camelcase
 				wikilambda_perform_test_ztesters: testers.join( '|' ),
-				// eslint-disable-next-line camelcase
 				wikilambda_perform_test_nocache: payload.nocache || false
 			} ).then( function ( data ) {
 				var results = data.query.wikilambda_perform_test;

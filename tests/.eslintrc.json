@@ -4,6 +4,10 @@
 		"jest/globals": true
 	},
 	"rules": {
+		"camelcase": [
+			"error",
+			{ "properties": "never" }
+		],
 		"no-implicit-globals": "off"
 	}
 }

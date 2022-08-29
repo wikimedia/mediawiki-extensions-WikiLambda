@@ -147,9 +147,7 @@ module.exports = exports = {
 				action: 'query',
 				list: 'wikilambdafn_search',
 				format: 'json',
-				// eslint-disable-next-line camelcase
 				wikilambdafn_zfunction_id: zFunctionId,
-				// eslint-disable-next-line camelcase
 				wikilambdafn_type: Constants.Z_TESTER
 			} ).then( function ( response ) {
 				var zidList = response.query.wikilambdafn_search.map( function ( zidItem ) {

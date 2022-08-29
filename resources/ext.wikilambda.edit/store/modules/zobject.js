@@ -584,9 +584,7 @@ module.exports = exports = {
 				action: 'query',
 				list: 'wikilambdaload_zobjects',
 				format: 'json',
-				// eslint-disable-next-line camelcase
 				wikilambdaload_zids: zId,
-				// eslint-disable-next-line camelcase
 				wikilambdaload_canonical: 'true'
 			} ).then( function ( response ) {
 				const zobject = response.query.wikilambdaload_zobjects[ zId ].data;
@@ -1001,13 +999,9 @@ module.exports = exports = {
 					return api.get( {
 						action: 'query',
 						list: queryType,
-						// eslint-disable-next-line camelcase
 						wikilambdasearch_search: payload.input,
-						// eslint-disable-next-line camelcase
 						wikilambdasearch_type: payload.type,
-						// eslint-disable-next-line camelcase
 						wikilambdasearch_return_type: payload.returnType,
-						// eslint-disable-next-line camelcase
 						wikilambdasearch_language: context.getters.getZLang
 					} ).then( function ( data ) {
 						var lookupResults = [];

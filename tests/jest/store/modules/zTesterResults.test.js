@@ -1,5 +1,4 @@
 /* eslint-disable compat/compat */
-/* eslint-disable camelcase */
 /*!
  * WikiLambda unit test suite for the zobjectModes Vuex module
  *

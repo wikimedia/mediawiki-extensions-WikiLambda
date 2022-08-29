@@ -182,11 +182,8 @@ module.exports = exports = {
 				action: 'query',
 				list: 'wikilambdaload_zobjects',
 				format: 'json',
-				// eslint-disable-next-line camelcase
 				wikilambdaload_zids: payload.zids.join( '|' ),
-				// eslint-disable-next-line camelcase
 				wikilambdaload_language: context.getters.getZLang,
-				// eslint-disable-next-line camelcase
 				wikilambdaload_canonical: 'true'
 			} ).then( function ( response ) {
 

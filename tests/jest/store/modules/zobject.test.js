@@ -67,7 +67,6 @@ describe( 'zobject Vuex module', function () {
 			// eslint-disable-next-line compat/compat
 			return new Promise( function ( resolve ) {
 				resolve( {
-					// eslint-disable-next-line camelcase
 					wikilambda_edit: {
 						page: 'sample'
 					}
@@ -555,7 +554,6 @@ describe( 'zobject Vuex module', function () {
 			const mockApiResponse = {
 				batchcomplete: '',
 				query: {
-					// eslint-disable-next-line camelcase
 					wikilambdaload_zobjects: {
 						Z1234: {
 							success: '',
