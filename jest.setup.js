@@ -8,6 +8,16 @@ global.mockLocalStorage = {};
 function Api() {}
 Api.prototype.get = jest.fn().mockReturnValue( $.Deferred().resolve().promise() );
 
+class Title {
+	constructor( page ) {
+		this.page = page;
+	}
+
+	getUrl() {
+		return this.page;
+	}
+}
+
 // Mock MW object
 global.mw = {
 	Api: Api,
@@ -49,7 +59,8 @@ global.mw = {
 	Uri: jest.fn().mockReturnValue( {
 		path: jest.fn(),
 		query: jest.fn()
-	} )
+	} ),
+	Title: Title
 
 // other mw properties as needed...
 };

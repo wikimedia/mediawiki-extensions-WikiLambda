@@ -63,7 +63,7 @@
 		</div>
 		<cdx-message
 			v-if="showToast"
-			dismiss-button-label="Close"
+			:dismiss-button-label="$i18n( 'wikilambda-toast-close' ).text()"
 			:type="toastIntent"
 			:auto-dismiss="true"
 			@user-dismissed="closeToast"

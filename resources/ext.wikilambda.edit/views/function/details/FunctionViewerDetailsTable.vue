@@ -16,7 +16,15 @@
 					<span>
 						{{ title }}
 					</span>
-					<!-- TODO (T310164):add button group for admin functions -->
+					<!-- TODO (T310164): replace with button group -->
+					<div class="ext-wikilambda-function-details-table__title__buttons">
+						<cdx-button :disabled="!canApprove" @click="approve">
+							<label> {{ $i18n( 'wikilambda-function-details-table-approve' ).text() }} </label>
+						</cdx-button>
+						<cdx-button :disabled="!canDeactivate" @click="deactivate">
+							<label> {{ $i18n( 'wikilambda-function-details-table-deactivate' ).text() }} </label>
+						</cdx-button>
+					</div>
 				</div>
 			</template>
 		</table-container>
@@ -72,6 +80,14 @@ module.exports = exports = {
 		showingAll: {
 			type: Boolean,
 			defualt: false
+		},
+		canApprove: {
+			type: Boolean,
+			required: true
+		},
+		canDeactivate: {
+			type: Boolean,
+			required: true
 		}
 	},
 	methods: {
@@ -80,6 +96,12 @@ module.exports = exports = {
 		},
 		resetView: function () {
 			this.$emit( 'reset-view' );
+		},
+		approve: function () {
+			this.$emit( 'approve' );
+		},
+		deactivate: function () {
+			this.$emit( 'deactivate' );
 		}
 	}
 };
@@ -109,6 +131,12 @@ module.exports = exports = {
 		word-break: break-all;
 		background: @wmui-color-base80;
 		padding: 14px 16px;
+		display: flex;
+		align-items: center;
+
+		&__buttons {
+			margin-left: auto;
+		}
 	}
 
 	&-text {
