@@ -63,6 +63,7 @@
 	"wikilambda-special-createzobject-nojs": "Warning shown to editors on Special:CreateZObject who do not have JavaScript.",
 	"wikilambda-special-edit-function-definition-title": "Edit function title prefix",
 	"wikilambda-special-function-definition-title": "Function title prefix",
+	"wikilambda-special-function-definition-publish-description": "Description of publish action",
 	"wikilambda-special-edit-function-definition-description": "Description of edit function and edit function permission",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Label for edit function user permission link",
 	"wikilambda-special-evaluatefunctioncall": "Description for Special:EvaluateFunctionCall.\n\n{{doc-wikilambda}}",

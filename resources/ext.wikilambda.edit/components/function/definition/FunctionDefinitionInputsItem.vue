@@ -310,7 +310,6 @@ module.exports = exports = {
 
 .ext-wikilambda-editor-input-list-item {
 	flex-direction: column;
-	gap: 20px;
 	padding: 24px 0;
 	border-bottom: 1px solid @wmui-color-base80;
 
@@ -320,7 +319,7 @@ module.exports = exports = {
 		flex-direction: column;
 
 		& > * {
-			margin-right: 10px;
+			margin-top: 10px;
 		}
 	}
 
@@ -335,6 +334,7 @@ module.exports = exports = {
 			gap: 8px;
 			width: 100%;
 			padding: 0;
+			flex: 1;
 
 			.cdx-icon {
 				width: 30px;
@@ -386,6 +386,7 @@ module.exports = exports = {
 
 	@media screen and ( min-width: @width-breakpoint-tablet ) {
 		padding: 0;
+		gap: 20px;
 		flex-direction: row;
 		border-bottom: 0;
 		margin-top: 6px;
@@ -399,6 +400,7 @@ module.exports = exports = {
 			flex-direction: row;
 
 			& > * {
+				margin-top: 0;
 				margin-right: 6px;
 			}
 		}

@@ -53,6 +53,7 @@
 	"wikilambda-special-createzobject-nojs": "This page requires JavaScript to be used.",
 	"wikilambda-special-edit-function-definition-title": "Edit function definition",
 	"wikilambda-special-function-definition-title": "Function",
+	"wikilambda-special-function-definition-publish-description": "This will publish your work to the internet",
 	"wikilambda-special-edit-function-definition-description": "You are editing the function definition page. $1 can change the definiton of the function. Everyone else can edit the labels. Make sure to save your work by clicking the blue Publish button below.",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Only users with special permissions",
 	"wikilambda-special-evaluatefunctioncall": "Evaluate a function call",

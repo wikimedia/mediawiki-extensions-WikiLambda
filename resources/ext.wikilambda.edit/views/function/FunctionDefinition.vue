@@ -434,6 +434,19 @@ module.exports = exports = {
 					onConfirm: function () { return this.handlePublish( summary, true ); }.bind( this )
 				};
 				this.$refs.dialogBox.openDialog();
+			} else if ( !this.isEditingExistingFunction && this.isMobile ) {
+				this.dialogInfo = {
+					title: this.$i18n( 'wikilambda-publishnew' ).text(),
+					description: this.$i18n( 'wikilambda-special-function-definition-publish-description' ).text(),
+					cancelButtonText: this.$i18n( 'wikilambda-cancel' ).text(),
+					confirmButtonText: this.$i18n( 'wikilambda-confirm' ).text(),
+					onConfirm: function () {
+						this.resetDialogInfo();
+						this.$refs.dialogBox.closeDialog();
+						this.handlePublish( summary, true );
+					}.bind( this )
+				};
+				this.$refs.dialogBox.openDialog();
 			} else {
 				this.handlePublish( summary );
 			}
