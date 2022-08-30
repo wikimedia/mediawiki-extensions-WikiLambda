@@ -151,7 +151,6 @@
 				"ext.wikilambda.edit/mixins/urlUtils.js",
 				"ext.wikilambda.edit/mixins/zobjectTreeUtils.js",
 				"ext.wikilambda.edit/mixins/validator.js",
-				"ext.wikilambda.edit/mixins/domUtils.js",
 				"ext.wikilambda.edit/composables/useBreakpoints.js",
 				"ext.wikilambda.edit/components/App.vue",
 				"ext.wikilambda.edit/components/ZObject.vue",
