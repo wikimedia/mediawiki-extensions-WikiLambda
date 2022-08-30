@@ -382,6 +382,9 @@ module.exports = exports = {
 			this.addZMonolingualString( payload );
 			this.showAllSelectedLanguages = true;
 			this.selectedLang = langZid;
+			// this is necessary because it is an anti-pattern
+			// the cdx-lookup block should hold the selected value, but we
+			// are autoclearing it to make way for the next one
 			this.$refs.languageSelector.clearResults();
 		},
 		/**

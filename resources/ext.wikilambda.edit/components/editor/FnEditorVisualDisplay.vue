@@ -12,13 +12,15 @@
 			</span>
 		</div>
 		<div class="ext-wikilambda-editior-visual-display-body">
-			<fn-editor-zlanguage-selector
-				class="ext-wikilambda-editior-visual-display-language-selector"
-				:show-add-language="false"
-				:z-language="zLanguage"
-				@change="setLanguage"
-			></fn-editor-zlanguage-selector>
-
+			<!-- eslint-disable vue/no-v-model-argument -->
+			<!-- eslint-disable vue/no-unsupported-features -->
+			<cdx-select
+				v-model:selected="selectedLanguage"
+				class="ext-wikilambda-editior-visual-display-body__language-selector"
+				:default-label="getZkeyLabels[ selectedLanguage ]"
+				:menu-items="languageList"
+			>
+			</cdx-select>
 			<div class="ext-wikilambda-editior-visual-display-name">
 				<span>{{ title }}</span>
 			</div>
@@ -92,14 +94,14 @@
 </template>
 
 <script>
-var FnEditorZLanguageSelector = require( './FnEditorZLanguageSelector.vue' ),
-	Constants = require( '../../Constants.js' ),
-	mapGetters = require( 'vuex' ).mapGetters;
+var Constants = require( '../../Constants.js' ),
+	mapGetters = require( 'vuex' ).mapGetters,
+	CdxSelect = require( '@wikimedia/codex' ).CdxSelect;
 
 // @vue/component
 module.exports = exports = {
 	components: {
-		'fn-editor-zlanguage-selector': FnEditorZLanguageSelector
+		'cdx-select': CdxSelect
 	},
 	data: function () {
 		return {
@@ -164,6 +166,22 @@ module.exports = exports = {
 				return {
 					transform: 'translateX(' + width + 'px)'
 				};
+			},
+			selectedLanguage: {
+				get: function () {
+					return this.zLanguage || '';
+				},
+				set: function ( zLang ) {
+					this.setLanguage( zLang );
+				}
+			},
+			languageList: function () {
+				return this.currentZObjectLanguages.map( function ( language ) {
+					return {
+						label: this.getZkeyLabels[ language.Z9K1 ],
+						value: language.Z9K1
+					};
+				}.bind( this ) );
 			}
 		}
 	),

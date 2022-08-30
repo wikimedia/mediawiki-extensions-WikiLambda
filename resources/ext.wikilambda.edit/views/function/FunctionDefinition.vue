@@ -55,6 +55,7 @@
 		</div>
 		<div class="ext-wikilambda-function-definition__action-add-input">
 			<cdx-button
+				class="ext-wikilambda-function-definition__action-add-input-button"
 				type="quiet"
 				@click="addLabelInOtherLanguages"
 			>
@@ -370,14 +371,17 @@ module.exports = exports = {
 			if ( index === 0 ) {
 				this.setCurrentZLanguage( lang.zLang );
 			}
-
-			this.labelLanguages[ index ] = lang;
+			this.labelLanguages[ index ] = {
+				zLang: lang,
+				label: this.getZkeyLabels[ lang ],
+				readOnly: true
+			};
 		},
 		/**
 		 * publish function changes and redirect to the view page
 		 *
 		 * @param {Object} summary
-		 * @param {Boolean} shouldUnattachImplentationAndTester
+		 * @param {boolean} shouldUnattachImplentationAndTester
 		 */
 		handlePublish: function ( summary, shouldUnattachImplentationAndTester ) {
 			if ( this.dialogInfo.title ) {
