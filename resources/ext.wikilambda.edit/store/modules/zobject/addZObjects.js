@@ -648,8 +648,12 @@ module.exports = exports = {
 						if ( objectKey !== Constants.Z_OBJECT_TYPE ) {
 							context.dispatch( 'addZObject', { key: objectKey, value: 'object', parent: payload.id } );
 						}
+
+						// If we are adding a key of type Z4, we want to add a reference rather than Z4/Type literal.
+						if ( objectKeyType === Constants.Z_TYPE ) {
+							context.dispatch( 'changeType', { id: nextId, type: Constants.Z_REFERENCE } );
 						// We need to stop recursiveness.
-						if ( objectKeyType !== payload.type && typeof objectKeyType !== 'object' ) {
+						} else if ( objectKeyType !== payload.type && typeof objectKeyType !== 'object' ) {
 							context.dispatch( 'changeType', { id: nextId, type: objectKeyType } );
 						// If Z_OBJECT_TYPE is a function call, we infer the type and use it to create the object
 						} else if ( typeof objectKeyType === 'object' &&
