@@ -36,8 +36,7 @@ module.exports = exports = {
 		 * user selected language if available, or in the closes fallback.
 		 *
 		 * @param {Object} state
-		 * @param {Object} payload
-		 * @param getters
+		 * @param {Object} getters
 		 * @return {Object} map of { zid, label } values
 		 */
 		getZkeyLabels: function ( state, getters ) {
@@ -94,7 +93,7 @@ module.exports = exports = {
 		 * given set of ZIds, and stores the ZId information and the ZKey labels
 		 * in the state.
 		 *
-		 * @param context
+		 * @param {Object} context
 		 * @param {Object} payload with the keys 'zids' and 'debounce'
 		 * @return {Promise}
 		 */

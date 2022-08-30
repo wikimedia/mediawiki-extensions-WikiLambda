@@ -572,7 +572,7 @@ module.exports = exports = {
 		 * only once and the method is separate from fetchZKeys because the logic to
 		 * treat the result is extremely different.
 		 *
-		 * @param context
+		 * @param {Object} context
 		 * @param {string} zId
 		 * @return {Promise}
 		 */
@@ -619,8 +619,9 @@ module.exports = exports = {
 		 * The request is handled differently if new or existing object
 		 *
 		 * @param {Object} context
-		 * @param {Object} summary
-		 * @param {boolean} shouldUnattachImplentationAndTester
+		 * @param {Object} param
+		 * @param {Object} param.summary
+		 * @param {boolean} param.shouldUnattachImplentationAndTester
 		 * @return {Promise}
 		 */
 		submitZObject: function ( context, { summary, shouldUnattachImplentationAndTester } ) {
@@ -1018,6 +1019,7 @@ module.exports = exports = {
 		 * the change to the API.
 		 *
 		 * @param {Object} context
+		 * @param {Object} payload
 		 * @param {string} payload.functionId - the local ID of the function
 		 * @param {Array} payload.testerZIds - the ZIDs of the testers to attach
 		 * @return {Promise}
@@ -1052,6 +1054,7 @@ module.exports = exports = {
 		 * change to the API.
 		 *
 		 * @param {Object} context
+		 * @param {Object} payload
 		 * @param {Object} payload.functionId - the local ID of the function
 		 * @param {Array} payload.testerZIds - the ZIDs of the testers to detach
 		 * @return {Promise}
@@ -1082,6 +1085,7 @@ module.exports = exports = {
 		 * the change to the API.
 		 *
 		 * @param {Object} context
+		 * @param {Object} payload
 		 * @param {string} payload.functionId - the local ID of the function
 		 * @param {Array} payload.implementationZIds - the ZIDs of the implementations to attach
 		 * @return {Promise}
@@ -1116,6 +1120,7 @@ module.exports = exports = {
 		 * change to the API.
 		 *
 		 * @param {Object} context
+		 * @param {Object} payload
 		 * @param {Object} payload.functionId - the local ID of the function
 		 * @param {Array} payload.implementationZIds - the ZIDs of the implementations to detach
 		 * @return {Promise}

@@ -317,7 +317,7 @@ module.exports = exports = {
 		 * Returns the table ID of the MonolingualStringSet
 		 * containing the list of aliases for a given language
 		 *
-		 * @param language
+		 * @param {string} language
 		 * @return {string}
 		 */
 		getLanguageAliasId: function ( language ) {
@@ -335,7 +335,7 @@ module.exports = exports = {
 		 * Returns the table ID of the MonolingualStringSet Value
 		 * containing the list of aliases for a given language
 		 *
-		 * @param language
+		 * @param {string} language
 		 * @return {string}
 		 */
 		getLanguageAliasStringsetId: function ( language ) {
@@ -349,7 +349,7 @@ module.exports = exports = {
 		 * MonolingualStringSet value typed list of strings
 		 * for a given language.
 		 *
-		 * @param language
+		 * @param {string} language
 		 * @return {Array}
 		 */
 		getLanguageAliases: function ( language ) {
@@ -363,7 +363,7 @@ module.exports = exports = {
 		 * on a new label for a given language Zid and a new
 		 * list of aliases for that language.
 		 *
-		 * @param langZid
+		 * @param {string} langZid
 		 */
 		addNewLang: function ( langZid ) {
 			if ( !langZid ) {
@@ -393,7 +393,7 @@ module.exports = exports = {
 		 * the label as well as all the aliases for this
 		 * language
 		 *
-		 * @param language
+		 * @param {string} language
 		 */
 		removeLang: function ( language ) {
 			var labelId = this.getLanguageLabelId( language ),
@@ -417,8 +417,8 @@ module.exports = exports = {
 		 * Remove one alias from the alias list of a given language
 		 * by providing its ZObject internal table id
 		 *
-		 * @param alias
-		 * @param language
+		 * @param {number} alias
+		 * @param {string} language
 		 */
 		removeAlias: function ( alias, language ) {
 			this.removeZObjectChildren( alias );
@@ -432,7 +432,7 @@ module.exports = exports = {
 		 * labels, but there might or might not already exists aliases or
 		 * even an alias block for this language.
 		 *
-		 * @param language
+		 * @param {string} language
 		 */
 		addAliasForLanguage: function ( language ) {
 			const existingAliasId = this.getLanguageAliasStringsetId( language ),
