@@ -108,7 +108,8 @@ module.exports = exports = {
 			'getUnattachedZImplementations',
 			'getPaginatedTesters',
 			'getAllZTesters',
-			'getZkeys'
+			'getZkeys',
+			'getCurrentZObjectId'
 		] ),
 		{
 			implementationsHeader: function () {
@@ -359,11 +360,11 @@ module.exports = exports = {
 					for ( const zid in this.implZidToState ) {
 						if ( this.implZidToState[ zid ].checked || !this.areAnyImplementationsChecked ) {
 							tableData[ index ][ zid ] = {
-								// TODO: update to fetch actual pass/fail status and update styles/icons accordingly
-								// here and in tester-table-status.vue
 								component: 'tester-table-status',
 								props: {
-									status: this.$i18n( 'wikilambda-tester-status-passed' ).text()
+									zFunctionId: this.getCurrentZObjectId,
+									zImplementationId: zid,
+									zTesterId: visibleTesters[ index ]
 								},
 								class: 'ext-wikilambda-function-details-table-item--checkbox'
 							};
