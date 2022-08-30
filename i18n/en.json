@@ -195,7 +195,7 @@
 	"wikilambda-function-definition-name-placeholder": "Enter a descriptive function name",
 	"wikilambda-function-definition-name-example": "See name examples.",
 	"wikilambda-function-definition-alias-label": "Aliases",
-	"wikilambda-function-definition-alias-placeholder": "Enter synonyms for function name",
+	"wikilambda-function-definition-alias-placeholder": "Enter an alternative function name",
 	"wikilambda-function-definition-alias-example": "See alias examples.",
 	"wikilambda-function-definition-footer-placeholder": "Briefly describe your changes",
 	"wikilambda-function-definition-footer-label": "Edit summary",
