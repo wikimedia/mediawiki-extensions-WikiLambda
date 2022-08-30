@@ -206,7 +206,7 @@
 	"wikilambda-function-definition-name-placeholder": "Placeholder for the function name",
 	"wikilambda-function-definition-name-example": "Link to examples of function names",
 	"wikilambda-function-definition-alias-label": "Label for the function alias",
-	"wikilambda-function-definition-alias-placeholder": "Placeholder for the function aliases",
+	"wikilambda-function-definition-alias-placeholder": "Placeholder for input box where user can enter an alternative name (or alias) for the given function",
 	"wikilambda-function-definition-alias-example": "Link to examples of function aliases",
 	"wikilambda-function-definition-footer-placeholder": "Placeholder for the function footer",
 	"wikilambda-function-definition-footer-label": "Label for the function footer",
