@@ -101,7 +101,7 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			lookupResults: [ { value: this.selectedId, label: this.initialSelectionLabel } ],
+			lookupResults: [],
 			lookupDelayTimer: null,
 			lookupDelayMs: 300,
 			inputValue: '',
