@@ -77,7 +77,7 @@
 	"wikilambda-savechanges": "Änderungen speichern",
 	"wikilambda-summarylabel": "Zusammenfassung:",
 	"wikilambda-publish-summary-prompt": "Bitte erläutere kurz deine Änderungen",
-	"wikilambda-publish-impact-prompt": "Du hast den Eingabe- oder Ausgabetyp dieser Funktion aktualisiert, wodurch die Implementierungen und Tester entfernt werden. Möchtest du wirklich fortfahren?",
+	"wikilambda-publish-impact-prompt": "Du hast den Eingabe- oder Ausgabetyp dieser Funktion aktualisiert. Dadurch werden die Implementierungen und Tester entfernt werden. Möchtest du wirklich fortfahren?",
 	"wikilambda-loading": "Daten werden geladen",
 	"wikilambda-typeselector-label": "Typ auswählen",
 	"wikilambda-argument-typeselector-label": "Wähle einen Typ für dieses Argument",
@@ -251,6 +251,8 @@
 	"wikilambda-function-about-summary": "Dies ist der Ort, an dem die Zusammenfassung der Funktionsbeschreibung erscheinen wird, sobald die Funktion verfügbar ist. Hier kannst du erklären, warum die Funktion existiert, wie sie häufig verwendet wird und welche Alternativen für verschiedene Situationen besser geeignet sind. Im Bearbeitungsmodus wird dies ein mehrsprachiges, editierbares Wikitextfeld sein.",
 	"wikilambda-function-details-summary": "Jeder kann eine neue Implementierung oder einen neuen Test vorschlagen. Vorgeschlagener Code wird von der Wikifunctions-Gemeinschaft geprüft, bevor er zu einer verfügbaren Implementierung oder einem verifizierten Test wird.",
 	"wikilambda-function-details-summary-learn-more": "Weitere Informationen über den Überprüfungsprozess.",
+	"wikilambda-function-details-table-approve": "Genehmigen",
+	"wikilambda-function-details-table-deactivate": "Deaktivieren",
 	"wikilambda-function-viewer-aliases-header": "Auch bekannt als",
 	"wikilambda-function-viewer-aliases-show-language-button": "Zeige mehr Sprachen",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Liste ausblenden",
@@ -258,5 +260,6 @@
 	"wikilambda-function-viewer-details-input-number": "Eingabe $1",
 	"wikilambda-function-viewer-details-sidebar-summary": "Jeder kann Beschriftungen bearbeiten, aber die Eingabe-/Ausgabeart und die Anzahl können nur von Benutzern mit speziellen Rechten bearbeitet werden.",
 	"wikilambda-function-viewer-details-table-view-all": "Alle ansehen",
-	"wikilambda-function-viewer-details-table-view-less": "Weniger ansehen"
+	"wikilambda-function-viewer-details-table-view-less": "Weniger ansehen",
+	"wikilambda-toast-close": "Schließen"
 }

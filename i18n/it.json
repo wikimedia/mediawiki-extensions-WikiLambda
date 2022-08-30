@@ -85,7 +85,10 @@
 	"wikilambda-ztyped-pair-value-label": "Valore",
 	"wikilambda-continue-editing": "Continua a modificare",
 	"wikilambda-discard-edits": "Ignora modifiche",
+	"wikilambda-function-details-table-approve": "Approva",
+	"wikilambda-function-details-table-deactivate": "Disattiva",
 	"wikilambda-function-viewer-aliases-show-language-button": "Mostra altre lingue",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Nascondi elenco",
-	"wikilambda-function-viewer-names-show-languages-button": "Mostra il nome in altre lingue"
+	"wikilambda-function-viewer-names-show-languages-button": "Mostra il nome in altre lingue",
+	"wikilambda-toast-close": "Chiudi"
 }

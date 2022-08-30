@@ -31,6 +31,7 @@
 	"wikilambda-editor-zlist-removeitem-tooltip": "Elem eltávolítása a ZListről",
 	"wikilambda-editor-zobject-addkey": "Kulcs hozzáadása:",
 	"wikilambda-editor-zobject-removekey-tooltip": "Kulcs/érték eltávolítása a Zobjectről",
+	"wikilambda-function-about-summary": "Mikor elérhetővé válik, ide kerül majd a funkció leírásának összefoglalója, ahol kifejtheted, miért jött létre, hogy használják, és milyen alternatív megoldások működhetnek különböző helyzetekben. Szerkesztés módban ez egy többnyelvű, szerkeszthető wikiszövegdoboz lesz.",
 	"wikilambda-function-viewer-details-table-view-all": "Összes megtekintése",
 	"wikilambda-function-viewer-details-table-view-less": "Mutass kevesebbet"
 }
