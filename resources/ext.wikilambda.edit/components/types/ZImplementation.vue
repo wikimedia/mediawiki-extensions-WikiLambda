@@ -10,6 +10,7 @@
 			{{ functionLabel }}:
 			<z-object-selector
 				v-if="!viewmode && implMode && isFunctionLabelReady"
+				class="ext-wikilambda-zimplementation__function-selector"
 				:type="Constants.Z_FUNCTION"
 				:placeholder="$i18n( 'wikilambda-function-typeselector-label' ).text()"
 				:selected-id="zFunction.value"
@@ -112,7 +113,8 @@ module.exports = exports = {
 			'getZkeyLabels',
 			'getZkeys',
 			'getNestedZObjectById',
-			'getZarguments'
+			'getZarguments',
+			'isNewZObject'
 		] ),
 		{
 			Constants: function () {
@@ -163,7 +165,11 @@ module.exports = exports = {
 				return this.getZkeyLabels[ this.zFunction.value ];
 			},
 			isFunctionLabelReady: function () {
-				return this.zFunction.value ? !!this.selectedFunctionLabel : true;
+				// this will be false if re-routed from an existing function
+				if ( this.isNewZObject ) {
+					return true;
+				}
+				return !!this.selectedFunctionLabel;
 			},
 			selectedFunctionJson: function () {
 				return this.getZkeys[ this.zFunction.value ];

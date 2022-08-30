@@ -8,7 +8,8 @@
 
 var VueTestUtils = require( '@vue/test-utils' ),
 	createGettersWithFunctionsMock = require( '../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	ZImplementation = require( '../../../resources/ext.wikilambda.edit/components/types/ZImplementation.vue' );
+	ZImplementation = require( '../../../resources/ext.wikilambda.edit/components/types/ZImplementation.vue' ),
+	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' );
 
 describe( 'ZImplementation', function () {
 	beforeEach( function () {
@@ -32,7 +33,13 @@ describe( 'ZImplementation', function () {
 			getNestedZObjectById: createGettersWithFunctionsMock( { id: 10 } ),
 			getZarguments: function () {
 				return { Z10024K1: { labels: [ { key: 'word: ', label: 'word', lang: 'Z1002' } ], zid: 'Z10024K1', type: 'String' } };
-			}
+			},
+			viewmode: jest.fn( function () {
+				return false;
+			} ),
+			isNewZObject: jest.fn( function () {
+				return true;
+			} )
 		};
 
 		var actions = {
@@ -49,5 +56,23 @@ describe( 'ZImplementation', function () {
 	it( 'renders without errors', function () {
 		var wrapper = VueTestUtils.shallowMount( ZImplementation );
 		expect( wrapper.find( '.ext-wikilambda-zimplementation' ).exists() ).toBe( true );
+	} );
+	it( 'shows the function selector when creating a new implementation from scratch', function () {
+		var wrapper = VueTestUtils.shallowMount( ZImplementation, {
+			data() {
+				return {
+					implMode: Constants.implementationModes.CODE
+				};
+			}
+		} );
+		expect( wrapper.find( '.ext-wikilambda-zimplementation__function-selector' ).exists() ).toBe( true );
+	} );
+	it( 'does not show the function selector in view only mode', function () {
+		var wrapper = VueTestUtils.shallowMount( ZImplementation, {
+			props: {
+				viewMode: true
+			}
+		} );
+		expect( wrapper.find( '.ext-wikilambda-zimplementation__function-selector' ).exists() ).toBe( false );
 	} );
 } );
