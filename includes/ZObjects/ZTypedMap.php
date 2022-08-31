@@ -152,10 +152,14 @@ class ZTypedMap extends ZObject {
 	 *
 	 * TODO (T302015) When ZMap keys are extended beyond Z6/Z39, update accordingly
 	 *
-	 * @param ZObject $key a Z6 or Z39 instance
-	 * @param ZObject $value a ZObject
+	 * @param ZObject $key A Z6 or Z39 instance to serve as the key
+	 * @param ?ZObject $value A ZObject to set; if null, no object is set
 	 */
-	public function setValueForKey( ZObject $key, ZObject $value ) {
+	public function setValueForKey( ZObject $key, ?ZObject $value ) {
+		if ( $value === null ) {
+			return;
+		}
+
 		// TODO (T315953): Check the type of the key
 		$typedList = $this->getList();
 		if ( $typedList === null ) {
