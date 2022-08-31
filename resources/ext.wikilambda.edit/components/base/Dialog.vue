@@ -5,37 +5,40 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div
-		v-clickout="clickToClose"
-		class="ext-wikilambda-dialog"
-		:class="customClass">
-		<div class="ext-wikilambda-dialog_text">
-			<div>
-				<div class="ext-wikilambda-dialog_title" v-html="title">
+	<div class="ext-wikilambda-dialog">
+		<div
+			v-clickout="clickToClose"
+			class="ext-wikilambda-dialog__box"
+			:class="[ 'ext-wikilambda-dialog__box--size-' + size, customClass ]">
+			<div class="ext-wikilambda-dialog__header">
+				<div class="ext-wikilambda-dialog__header__title">
+					<slot name="dialog-title"></slot>
 				</div>
-				<div v-html="description"></div>
+				<cdx-button
+					type="quiet"
+					class="ext-wikilambda-dialog__header__close-button"
+					@click="$emit( 'exit-dialog' )"
+				>
+					<cdx-icon :icon="dialogIcon()"></cdx-icon>
+				</cdx-button>
 			</div>
-			<cdx-button
-				type="quiet"
-				class="ext-wikilambda-dialog_close-button"
-				@click="$emit( 'exit-dialog' )"
-			>
-				<cdx-icon :icon="dialogIcon()"></cdx-icon>
-			</cdx-button>
-		</div>
-		<div v-if="showActionButtons" class="ext-wikilambda-dialog_action-buttons">
-			<cdx-button
-				@click="$emit( 'close-dialog' )"
-			>
-				{{ cancelButtonText }}
-			</cdx-button>
-			<cdx-button
-				action="destructive"
-				type="primary"
-				@click="$emit( 'confirm-dialog' )"
-			>
-				{{ confirmButtonText }}
-			</cdx-button>
+			<div class="ext-wikilambda-dialog__body">
+				<slot></slot>
+			</div>
+			<div v-if="showActionButtons" class="ext-wikilambda-dialog__action-buttons">
+				<cdx-button
+					@click="$emit( 'close-dialog' )"
+				>
+					{{ cancelButtonText }}
+				</cdx-button>
+				<cdx-button
+					action="destructive"
+					type="primary"
+					@click="$emit( 'confirm-dialog' )"
+				>
+					{{ confirmButtonText }}
+				</cdx-button>
+			</div>
 		</div>
 	</div>
 </template>
@@ -72,14 +75,6 @@ module.exports = exports = {
 		}
 	},
 	props: {
-		title: {
-			type: String,
-			required: true
-		},
-		description: {
-			type: String,
-			required: true
-		},
 		cancelButtonText: {
 			type: String,
 			required: true
@@ -88,7 +83,7 @@ module.exports = exports = {
 			type: String,
 			required: true
 		},
-		shouldClickToClose: {
+		canClickOutsideToClose: {
 			type: Boolean,
 			required: true
 		},
@@ -100,11 +95,15 @@ module.exports = exports = {
 			type: String,
 			required: false,
 			default: ''
+		},
+		size: {
+			type: String,
+			default: 'small'
 		}
 	},
 	methods: {
 		clickToClose: function () {
-			if ( this.shouldClickToClose ) {
+			if ( this.canClickOutsideToClose ) {
 				this.$emit( 'close-dialog' );
 			}
 		},
@@ -119,42 +118,72 @@ module.exports = exports = {
 @import './../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-dialog {
-	position: fixed;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: #ffffffbd;
+	top: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	z-index: 999;
-	top: calc( 50% - 10px );
-	left: calc( 50% - 10px );
-	width: 300px;
-	margin-left: -150px;
-	background: @wmui-color-base100;
-	border: solid 1px @wmui-color-base50;
-	border-radius: 2px;
+
+	&__box {
+		background: @wmui-color-base100;
+		border: solid 1px @wmui-color-base50;
+		border-radius: 2px;
+		box-shadow: 0 2px 2px rgba( 0, 0, 0, 0.25 );
+		min-width: 300px;
+		max-width: 75%;
+		max-height: 75%;
+		overflow-y: auto;
+
+		&--size {
+			&-auto {
+				width: auto;
+				overflow-x: auto;
+			}
+
+			&-small {
+				width: 300px;
+			}
+		}
+	}
 
 	&_text {
 		padding: 15px;
 		display: flex;
 	}
 
-	&_close-button {
+	&__header {
 		display: flex;
-		justify-content: flex-end;
-		background: none;
-		border: 0;
-		width: fit-content;
-		height: fit-content;
-		margin-left: auto;
+		justify-content: space-between;
+		padding: 8px 2px 6px 16px;
+		position: sticky;
+		top: 0;
+		background: @wmui-color-base100;
+
+		&__title {
+			width: 100%;
+		}
+
+		&__close-button {
+			display: flex;
+			color: #202122;
+			justify-content: center;
+			align-items: center;
+			height: 32px;
+			width: 32px;
+			background: none;
+			border: 0;
+		}
 	}
 
-	&_title {
-		text-align: center;
-		font-size: 21;
+	&__body {
+		padding: 0 16px 16px;
 	}
 
-	&_danger {
-		background-color: #d33;
-		color: @wmui-color-base100;
-	}
-
-	&_action-buttons {
+	&__action-buttons {
 		button {
 			display: block;
 			width: 100%;
@@ -162,5 +191,4 @@ module.exports = exports = {
 		}
 	}
 }
-
 </style>

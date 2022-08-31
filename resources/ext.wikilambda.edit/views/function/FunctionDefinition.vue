@@ -81,11 +81,17 @@
 
 		<dialog-container
 			ref="dialogBox"
-			:title="dialogInfo.title"
-			:description="dialogInfo.description"
 			:cancel-button-text="dialogInfo.cancelButtonText"
 			:confirm-button-text="dialogInfo.confirmButtonText"
-			@confirm-dialog="dialogInfo.onConfirm">
+			@confirm-dialog="dialogInfo.onConfirm"
+		>
+			<template #dialog-container-title>
+				<strong>{{ dialogInfo.title }}</strong>
+			</template>
+
+			<template>
+				{{ dialogInfo.description }}
+			</template>
 		</dialog-container>
 	</main>
 </template>

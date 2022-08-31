@@ -37,13 +37,17 @@
 		</div>
 		<dialog-container
 			ref="dialogBox"
-			:custom-class="customDialogClass"
-			:title="dialogTitle"
-			:description="dialogText"
+			size="auto"
 			:show-action-buttons="false"
-			:should-click-to-close="false"
 			@exit-dialog="showMetrics = false"
 		>
+			<template #dialog-container-title>
+				<strong>{{ dialogTitle }}</strong>
+			</template>
+
+			<template>
+				<span v-html="dialogText"></span>
+			</template>
 		</dialog-container>
 	</div>
 </template>
@@ -79,8 +83,7 @@ module.exports = exports = {
 	data: function () {
 		return {
 			showError: false,
-			showMetrics: false,
-			customDialogClass: 'ext-wikilambda-zresponseenvelope__dialog'
+			showMetrics: false
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -129,7 +132,7 @@ module.exports = exports = {
 			return this.dialogContent( this.zMetaData.id );
 		},
 		dialogTitle: function () {
-			return '<strong>' + this.$i18n( 'wikilambda-functioncall-metadata-dialog-header' ).text() + '</strong>';
+			return this.$i18n( 'wikilambda-functioncall-metadata-dialog-header' ).text();
 		}
 	} ),
 	methods: {
@@ -172,22 +175,6 @@ module.exports = exports = {
 .ext-wikilambda-zresponseenvelope {
 	&__show-error {
 		padding: 10px 0;
-	}
-
-	&__dialog {
-		position: fixed;
-		z-index: 999;
-		top: calc( 50% - 10px );
-		left: calc( 50% - 10px );
-		width: auto;
-		max-width: 75%;
-		height: auto;
-		max-height: 75%;
-		margin-left: -100px;
-		margin-right: 100px;
-		margin-bottom: 100px;
-		overflow-x: auto;
-		overflow-y: auto;
 	}
 }
 </style>

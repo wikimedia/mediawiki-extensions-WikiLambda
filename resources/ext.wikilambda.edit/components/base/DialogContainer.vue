@@ -8,16 +8,20 @@
 	<Teleport v-if="isVisible" to="#ext-wikilambda-app">
 		<base-dialog
 			:custom-class="customClass"
-			:title="title"
-			:description="description"
 			:cancel-button-text="cancelButtonTextOrDefault"
 			:confirm-button-text="confirmButtonTextOrDefault"
-			:should-click-to-close="shouldClickToClose"
+			:can-click-outside-to-close="canClickOutsideToClose"
 			:show-action-buttons="showActionButtons"
+			:size="size"
 			@exit-dialog="exitDialog"
 			@close-dialog="closeDialog"
 			@confirm-dialog="$emit( 'confirm-dialog' )"
-		></base-dialog>
+		>
+			<template #dialog-title>
+				<slot name="dialog-container-title"></slot>
+			</template>
+			<slot></slot>
+		</base-dialog>
 	</Teleport>
 </template>
 
@@ -32,14 +36,6 @@ module.exports = exports = {
 		'base-dialog': Dialog
 	},
 	props: {
-		title: {
-			type: String,
-			required: true
-		},
-		description: {
-			type: String,
-			required: true
-		},
 		cancelButtonText: {
 			type: String,
 			required: false,
@@ -54,7 +50,7 @@ module.exports = exports = {
 			// Explicitly setting default=undefined here eliminates a grunt warning
 			default: undefined
 		},
-		shouldClickToClose: {
+		canClickOutsideToClose: {
 			type: Boolean,
 			// eslint-disable-next-line vue/no-boolean-default
 			default: true,
@@ -70,6 +66,9 @@ module.exports = exports = {
 			type: String,
 			required: false,
 			default: ''
+		},
+		size: {
+			type: String
 		}
 	},
 	data: function () {

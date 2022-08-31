@@ -18,13 +18,17 @@
 		></cdx-icon>
 		<dialog-container
 			ref="dialogBox"
-			:title="dialogTitle"
-			:description="dialogText"
+			size="auto"
 			:show-action-buttons="false"
-			:custom-class="customDialogClass"
 			@exit-dialog="showMetadata = false"
 			@close-dialog="showMetadata = false"
 		>
+			<template #dialog-container-title>
+				<span v-html="dialogTitle"></span>
+			</template>
+			<template>
+				<span v-html="dialogText"></span>
+			</template>
 		</dialog-container>
 	</div>
 </template>
@@ -61,8 +65,7 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			showMetadata: false,
-			customDialogClass: 'ext-wikilambda-tester-table-dialog'
+			showMetadata: false
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -168,22 +171,6 @@ module.exports = exports = {
 		&--RUNNING {
 			color: @wmui-color-yellow50;
 		}
-	}
-
-	&-dialog {
-		position: fixed;
-		z-index: 999;
-		top: calc( 50% - 10px );
-		left: calc( 50% - 10px );
-		width: auto;
-		max-width: 75%;
-		height: auto;
-		max-height: 75%;
-		margin-left: -100px;
-		margin-right: 100px;
-		margin-bottom: 100px;
-		overflow-x: auto;
-		overflow-y: auto;
 	}
 }
 </style>
