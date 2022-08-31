@@ -270,6 +270,8 @@
 	"wikilambda-function-about-summary": "C'est là qu’ira le résumé de la description de la fonction, une fois que cette fonctionnalité sera disponible. Il vous permettra d’expliquer pourquoi la fonction existe, comment elle est souvent utilisée et quelles alternatives pourraient mieux fonctionner dans différentes situations. En mode modification, ce sera une boîte de wikicode modifiable et multilingue.",
 	"wikilambda-function-details-summary": "N’importe qui peut créer une nouvelle mise en œuvre ou un test. Le code proposé sera alors relu et approuvé par la communauté de Wikifonctions avant qu’il devienne une mise en œuvre disponible ou un test vérifié.",
 	"wikilambda-function-details-summary-learn-more": "En savoir plus sur le processus de passage en revue.",
+	"wikilambda-function-details-table-approve": "Approuver",
+	"wikilambda-function-details-table-deactivate": "Désactiver",
 	"wikilambda-function-viewer-aliases-header": "Également connu comme",
 	"wikilambda-function-viewer-aliases-show-language-button": "Afficher plus de langues",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Masquer la liste",
@@ -277,5 +279,6 @@
 	"wikilambda-function-viewer-details-input-number": "Entrée nº $1",
 	"wikilambda-function-viewer-details-sidebar-summary": "Chacun peut modifier des libellés, mais le type et le nombre d’entrées/sorties ne peuvent être modifiés que par des utilisateurs ayant des droits spéciaux.",
 	"wikilambda-function-viewer-details-table-view-all": "Afficher tout",
-	"wikilambda-function-viewer-details-table-view-less": "Afficher moins"
+	"wikilambda-function-viewer-details-table-view-less": "Afficher moins",
+	"wikilambda-toast-close": "Fermer"
 }
