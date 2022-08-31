@@ -10,6 +10,7 @@
 		<!-- eslint-disable vue/no-v-model-argument -->
 		<!-- eslint-disable vue/no-unsupported-features -->
 		<cdx-select
+			v-else
 			v-model:selected="selectedLanguage"
 			class="ext-wikilambda-zcode__language-selector"
 			:menu-items="programmingLangsList"

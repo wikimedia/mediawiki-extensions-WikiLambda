@@ -11,8 +11,10 @@ const Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js'
 var VueTestUtils = require( '@vue/test-utils' ),
 	ZCode = require( '../../../resources/ext.wikilambda.edit/components/types/ZCode.vue' );
 
-const zobjectId = 123;
-const codeItemId = 456;
+const zobjectId = 1;
+const codeItemId = 2;
+const codeLanguageId = 3;
+const languageCodeId = 4;
 const initialCodeValue = 'initial';
 
 describe( 'ZCode', () => {
@@ -27,9 +29,16 @@ describe( 'ZCode', () => {
 				getZObjectChildrenById: ( state ) =>
 					( id ) => {
 						if ( id === zobjectId ) {
-							return [ { key: Constants.Z_CODE_CODE, id: codeItemId } ];
+							return [
+								{ key: Constants.Z_CODE_CODE, id: codeItemId },
+								{ key: Constants.Z_CODE_LANGUAGE, id: codeLanguageId }
+							];
 						} else if ( id === codeItemId ) {
 							return [ { key: Constants.Z_STRING_VALUE, value: state.codeValue } ];
+						} else if ( id === codeLanguageId ) {
+							return [ { key: Constants.Z_PROGRAMMING_LANGUAGE_CODE, id: languageCodeId } ];
+						} else if ( id === languageCodeId ) {
+							return [ { key: Constants.Z_STRING_VALUE, value: 'Python' } ];
 						}
 						return [];
 					},
@@ -74,5 +83,29 @@ describe( 'ZCode', () => {
 			expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'value' ) ).toEqual( initialCodeValue );
 			done();
 		} );
+	} );
+
+	it( 'enables programming language selector and code editor when not in read-only or view mode', () => {
+		var wrapper = VueTestUtils.shallowMount( ZCode, { props: { zobjectId: zobjectId } } );
+
+		expect( wrapper.findComponent( { name: 'cdx-select' } ).exists() ).toEqual( true );
+		expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'readOnly' ) ).toEqual( false );
+	} );
+
+	it( 'disables programming language selector and code editor when in read-only mode', () => {
+		var wrapper = VueTestUtils.shallowMount( ZCode, { props: { zobjectId: zobjectId, readonly: true } } );
+
+		expect( wrapper.findComponent( { name: 'cdx-select' } ).exists() ).toEqual( false );
+		expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'readOnly' ) ).toEqual( true );
+	} );
+
+	it( 'disables programming language selector and code editor when in view mode', () => {
+		var wrapper = VueTestUtils.shallowMount( ZCode, {
+			props: { zobjectId: zobjectId },
+			global: { provide: { viewmode: true } }
+		} );
+
+		expect( wrapper.findComponent( { name: 'cdx-select' } ).exists() ).toEqual( false );
+		expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'readOnly' ) ).toEqual( true );
 	} );
 } );
