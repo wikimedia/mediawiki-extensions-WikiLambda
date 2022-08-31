@@ -95,7 +95,7 @@ class ApiHealthCheck extends WikiLambdaApiBase {
 	 *     expected outcomes.
 	 */
 	private static function getChecksAndAnswers() {
-		// TODO(T311457): We can expand this to use all the examples in the API function call.
+		// TODO (T311457): We can expand this to use all the examples in the API function call.
 		return [
 			'evaluated-js.json' => "13",
 			'evaluated-python.json' => "13",
@@ -124,7 +124,7 @@ class ApiHealthCheck extends WikiLambdaApiBase {
 			// The total number of tests that passed the check.
 			'passed' => 0,
 			// The first error encountered.
-			// TODO(T311457): An alternative is to make errors not abort and collect all of them.
+			// TODO (T311457): An alternative is to make errors not abort and collect all of them.
 			'error' => ''
 		];
 
