@@ -12,10 +12,10 @@ namespace MediaWiki\Extension\WikiLambda;
 
 use Action;
 use Html;
-use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\MediaWikiServices;
 
 class ZObjectEditAction extends Action {
+	use ZObjectEditingPageTrait;
 
 	/**
 	 * @inheritDoc
@@ -134,6 +134,7 @@ class ZObjectEditAction extends Action {
 		$output->setPageTitle( $this->getPageTitleMsg() );
 
 		$zObjectLabelsWithLang = $this->getTargetZObjectWithLabels();
+
 		if ( $zObjectLabelsWithLang[ 'title' ] === 'Function' ) {
 			$linkLabel = Html::element(
 				'a',
@@ -148,34 +149,10 @@ class ZObjectEditAction extends Action {
 			) );
 		}
 
-		// Fallback no-JS notice.
-		$output->addHtml( Html::element(
-			'div',
-			[ 'class' => [ 'client-nojs', 'ext-wikilambda-editor-nojswarning' ] ],
-			$this->msg( 'wikilambda-special-createzobject-nojs' )->inLanguage( $this->getLanguage() )->text()
-		) );
-
-		$userLangCode = $this->getLanguage()->getCode();
-
-		$createNewPage = false;
-
-		// If the userLang isn't recognised (e.g. it's qqx, or a language we don't support yet, or it's
-		// nonsense), then fall back to English.
-		$zLangRegistry = ZLangRegistry::singleton();
-		$userLangZid = $zLangRegistry->getLanguageZidFromCode( $userLangCode, true );
-
-		$editingData = [
-			'zlang' => $userLangCode,
-			'zlangZid' => $userLangZid,
-			'createNewPage' => $createNewPage,
+		$this->generateZObjectPayload( $output, $this->getContext(), [
+			'createNewPage' => false,
 			'zId' => $zId,
-			'viewmode' => false
-		];
-
-		$output->addJsConfigVars( 'wgWikiLambda', $editingData );
-
-		// Vue app element
-		$output->addHtml( Html::element( 'div', [ 'id' => 'ext-wikilambda-app' ] ) );
+		] );
 	}
 
 	public function doesWrites() {
