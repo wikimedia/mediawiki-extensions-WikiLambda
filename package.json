@@ -22,7 +22,6 @@
 		"@wdio/mocha-framework": "7.16.13",
 		"@wdio/spec-reporter": "7.16.13",
 		"@wikimedia/codex": "0.1.0-alpha.8",
-		"babel-core": "6.26.3",
 		"eslint-config-wikimedia": "0.22.1",
 		"eslint-plugin-jest": "25.7.0",
 		"grunt": "1.5.3",
