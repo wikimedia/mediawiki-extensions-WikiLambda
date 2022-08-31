@@ -74,11 +74,13 @@
 					</tr>
 				</tfoot>
 			</table>
-			<dialog-container v-if="showMetrics"
+			<dialog-container
+				ref="dialogBox"
 				:custom-class="customDialogClass"
 				:title="dialogTitle"
 				:description="dialogText"
 				:show-action-buttons="false"
+				:should-click-to-close="false"
 				@exit-dialog="showMetrics = false"
 			>
 			</dialog-container>
@@ -231,6 +233,9 @@ module.exports = exports = {
 			return this.getValueFromCanonicalZMap( metadata, 'orchestrationDuration' );
 		},
 		dialogText: function () {
+			if ( !this.activeZTesterId || !this.activeZImplementationId ) {
+				return '';
+			}
 			const metadata = this.getZTesterMetadata(
 				this.zFunctionId, this.activeZTesterId, this.activeZImplementationId );
 			// Check for error object, for backwards compatibility
@@ -240,6 +245,9 @@ module.exports = exports = {
 			return this.portrayMetadataMap( metadata );
 		},
 		dialogTitle: function () {
+			if ( !this.activeZTesterId || !this.activeZImplementationId ) {
+				return '';
+			}
 			const testerLabel = this.getZkeyLabels[ this.activeZTesterId ] ||
 				( this.getNewTesterZObjects && this.getNewTesterZObjects.Z2K3.Z12K1[ 0 ].Z11K2.Z6K1 );
 			const implementationLabel = this.getZkeyLabels[ this.activeZImplementationId ];
@@ -272,7 +280,13 @@ module.exports = exports = {
 			this.activeZImplementationId = keys.zImplementationId;
 			this.activeZTesterId = keys.zTesterId;
 			if ( toggleMetrics ) {
-				this.showMetrics = !this.showMetrics;
+				if ( this.showMetrics ) {
+					this.showMetrics = false;
+					this.$refs.dialogBox.closeDialog();
+				} else {
+					this.showMetrics = true;
+					this.$refs.dialogBox.openDialog();
+				}
 			}
 		}
 	} ),
