@@ -437,6 +437,72 @@ module.exports = exports = {
 		},
 		getZObjectInitialized: function ( state ) {
 			return state.ZObjectInitialized;
+		},
+		getAttachedZTesters: function ( state, getters ) {
+			/**
+			 * Returns ZIDs for testers attached to the function with the given local ID.
+			 * Note that this returns a raw array, not a canonical ZList.
+			 *
+			 * @param {string} functionId
+			 * @return {Array}
+			 */
+			// TODO(T314928): This should be a simple lookup after data layer refactoring
+			// ex: zObject.get( Constants.Z_FUNCTION_TESTERS );
+			return function ( functionId ) {
+				var attachedTesters = [];
+
+				const zTesterListId = getters.getNestedZObjectById(
+					functionId, [
+						Constants.Z_PERSISTENTOBJECT_VALUE,
+						Constants.Z_FUNCTION_TESTERS
+					] ).id;
+				const zTesterList = getters.getZObjectChildrenById( zTesterListId );
+				// remove the list type (we want to return a raw array, not a canonical ZList)
+				zTesterList.shift();
+
+				for ( var zid in zTesterList ) {
+					const testerZId = getters.getNestedZObjectById(
+						zTesterList[ zid ].id, [
+							Constants.Z_REFERENCE_ID
+						] ).value;
+					attachedTesters.push( testerZId );
+				}
+
+				return attachedTesters;
+			};
+		},
+		getAttachedZImplementations: function ( state, getters ) {
+			/**
+			 * Returns ZIDs for implementations attached to the function with the given local ID.
+			 * Note that this returns a raw array, not a canonical ZList.
+			 *
+			 * @param {string} functionId
+			 * @return {Array}
+			 */
+			// TODO(T314928): This should be a simple lookup after data layer refactoring
+			// ex: zObject.get( Constants.Z_FUNCTION_IMPLEMENTATIONS );
+			return function ( functionId ) {
+				var attachedImplementations = [];
+
+				const zImplementationListId = getters.getNestedZObjectById(
+					functionId, [
+						Constants.Z_PERSISTENTOBJECT_VALUE,
+						Constants.Z_FUNCTION_IMPLEMENTATIONS
+					] ).id;
+				const zImplementationList = getters.getZObjectChildrenById( zImplementationListId );
+				// remove the list type (we want to return a raw array, not a canonical ZList)
+				zImplementationList.shift();
+
+				for ( var zid in zImplementationList ) {
+					const implementationZId = getters.getNestedZObjectById(
+						zImplementationList[ zid ].id, [
+							Constants.Z_REFERENCE_ID
+						] ).value;
+					attachedImplementations.push( implementationZId );
+				}
+
+				return attachedImplementations;
+			};
 		}
 	},
 	mutations: {

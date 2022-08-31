@@ -351,6 +351,39 @@ describe( 'zobject Vuex module', function () {
 					getZObjectAsJson: zObjectAsjson } ) ).toEqual( false );
 			} );
 		} );
+
+		describe( 'getAttachedZTesters and getAttachedZImplementations', function () {
+			var getters;
+			beforeEach( function () {
+				state.zobject = zobjectTree.concat( [
+					{ key: Constants.Z_FUNCTION_TESTERS, value: 'array', parent: 3, id: 18 },
+					{ key: Constants.Z_FUNCTION_IMPLEMENTATIONS, value: 'array', parent: 3, id: 19 },
+					{ key: '0', value: 'object', parent: 18, id: 20 },
+					{ key: '1', value: 'object', parent: 18, id: 21 },
+					{ key: '2', value: 'object', parent: 18, id: 22 },
+					{ key: '0', value: 'object', parent: 19, id: 23 },
+					{ key: '1', value: 'object', parent: 19, id: 24 },
+					{ key: '2', value: 'object', parent: 19, id: 25 },
+					{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_TESTER, parent: 20, id: 26 },
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z111', parent: 21, id: 27 }, // tester 1
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z222', parent: 22, id: 28 }, // tester 2
+					{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_IMPLEMENTATION, parent: 23, id: 29 },
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z333', parent: 24, id: 30 }, // impl 1
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z444', parent: 25, id: 31 } // impl 2
+				] );
+				getters = {};
+				getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( state, getters );
+				getters.getNestedZObjectById = zobjectModule.getters.getNestedZObjectById( state, getters );
+			} );
+			it( 'return attached ZTesters', function () {
+				expect( zobjectModule.getters.getAttachedZTesters( state, getters )( 0 ) )
+					.toEqual( [ 'Z111', 'Z222' ] );
+			} );
+			it( 'return attached ZImplementations', function () {
+				expect( zobjectModule.getters.getAttachedZImplementations( state, getters )( 0 ) )
+					.toEqual( [ 'Z333', 'Z444' ] );
+			} );
+		} );
 	} );
 
 	describe( 'Mutations', function () {

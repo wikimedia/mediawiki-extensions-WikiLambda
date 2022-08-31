@@ -144,24 +144,23 @@ var zTestersModule = require( '../../../../resources/ext.wikilambda.edit/store/m
 				{
 					page_namespace: 0,
 					zid: 'Z8011'
-				},
-				{
-					page_namespace: 0,
-					zid: 'Z8012'
-				},
-				{
-					page_namespace: 0,
-					zid: 'Z8013'
 				}
 			]
 		}
 	},
+	mockPaginatedItems = { 1: 'page 1', 2: 'page 2' },
+	commitMock,
 	getMock,
 	getResolveMock,
-	context;
+	context,
+	getters;
 
 describe( 'zTesters Vuex module ', function () {
 	beforeEach( function () {
+		commitMock = jest.fn( function () {
+			return;
+		} );
+
 		getResolveMock = jest.fn( function ( thenFunction ) {
 			return thenFunction( mockApiResponse );
 		} );
@@ -172,14 +171,21 @@ describe( 'zTesters Vuex module ', function () {
 			};
 		} );
 
+		getters = {
+			paginateList: jest.fn( () => mockPaginatedItems )
+		};
+
 		state = JSON.parse( JSON.stringify( zTestersModule.state ) );
 
 		context = $.extend( {}, {
-			// eslint-disable-next-line no-unused-vars
-			commit: jest.fn( function ( mutationType, payload ) {
-				return;
+			commit: commitMock,
+			dispatch: jest.fn( function () {
+				return {
+					then: function ( thenFunction ) {
+						return thenFunction();
+					}
+				};
 			} ),
-			dispatch: jest.fn(),
 			getters: {
 				getZObjectChildrenById: createGettersWithFunctionsMock( [ 'Z123123' ] )
 			}
@@ -192,24 +198,31 @@ describe( 'zTesters Vuex module ', function () {
 		} );
 
 	} );
-	describe( 'Getters', function () {
-		it( 'Returns empty list if there are no testers', function () {
-			expect( zTestersModule.getters.getAllZTesters( state ) ).toEqual( [] );
+	describe( 'Getters', () => {
+		describe( 'getZTesters', () => {
+			it( 'returns empty list if there are no testers', function () {
+				expect( zTestersModule.getters.getZTesters( state ) ).toEqual( [] );
+			} );
+			it( 'returns zTesters if they exist', function () {
+				state.zTesters = mockZTesters;
+				expect( zTestersModule.getters.getZTesters( state ) ).toEqual( mockZTesters );
+			} );
 		} );
-		it( 'Returns only an attached zTester', function () {
-			state.zAttachedTesters = mockZTesters[ 0 ];
-			state.zUnattachedTesters = mockZTesters[ 1 ];
-			expect( zTestersModule.getters.getAttachedZTesters( state ) ).toEqual( mockZTesters[ 0 ] );
+		describe( 'getPaginatedTesters', () => {
+			it( 'returns paginated testers', function () {
+				state.zTesters = mockZTesters;
+				expect( zTestersModule.getters.getPaginatedTesters( state, getters ) )
+					.toEqual( mockPaginatedItems );
+				expect( getters.paginateList ).toHaveBeenCalledWith( mockZTesters );
+			} );
 		} );
-		it( 'Returns only an unattached zTester', function () {
-			state.zAttachedTesters = mockZTesters[ 0 ];
-			state.zUnattachedTesters = mockZTesters[ 1 ];
-			expect( zTestersModule.getters.getUnattachedZTesters( state ) ).toEqual( mockZTesters[ 1 ] );
-		} );
-		it( 'Returns all zTesters', function () {
-			state.zAttachedTesters = [ mockZTesters[ 0 ] ];
-			state.zUnattachedTesters = [ mockZTesters[ 1 ] ];
-			expect( zTestersModule.getters.getAllZTesters( state ) ).toEqual( mockZTesters );
+	} );
+	describe( 'Mutations', () => {
+		describe( 'setZTesters', () => {
+			it( 'sets testers in the state', function () {
+				zTestersModule.mutations.setZTesters( state, mockZTesters );
+				expect( state.zTesters ).toEqual( mockZTesters );
+			} );
 		} );
 	} );
 	describe( 'Actions', function () {
@@ -223,17 +236,10 @@ describe( 'zTesters Vuex module ', function () {
 				context.rootState = {
 					zobjectModule: context.state
 				};
-				context.dispatch = jest.fn( function ( zFunctionId ) {
-					// eslint-disable-next-line compat/compat
-					return new Promise( function ( resolve ) {
-						zTestersModule.actions.fetchUnattachedZTesters( context, zFunctionId );
-						resolve();
-					} );
-				} );
 			} );
-			it( 'Calls api.get for unattached zTesters', function () {
+			it( 'Calls api.get for zTesters and sets response in state', function () {
 				var zFunctionId = 'Z801';
-				return zTestersModule.actions.fetchUnattachedZTesters(
+				return zTestersModule.actions.fetchZTesters(
 					context,
 					zFunctionId
 				).then( function () {
@@ -244,18 +250,9 @@ describe( 'zTesters Vuex module ', function () {
 						wikilambdafn_zfunction_id: 'Z801',
 						wikilambdafn_type: 'Z20'
 					} );
+					expect( commitMock ).toHaveBeenCalledWith( 'setZTesters', [ 'Z8010', 'Z8011' ] );
 				} );
 			} );
-		} );
-		it( 'calls attached and unattached actions', function () {
-			var payload = {
-				zFunctionId: 'Z801',
-				id: 7
-			};
-
-			zTestersModule.actions.fetchZTesters( context, payload );
-			expect( context.dispatch ).toHaveBeenCalledWith( 'fetchUnattachedZTesters', 'Z801' );
-			expect( context.dispatch ).toHaveBeenCalledWith( 'fetchAttachedZTesters', 7 );
 		} );
 	} );
 } );

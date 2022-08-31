@@ -48,25 +48,17 @@ describe( 'FunctionDetails', function () {
 			detachZTesters: createAction()
 		};
 		getters = {
-			getAllZTesters: function () {
-				return [ 'Z111', 'Z222' ];
-			},
-			getUnattachedZTesters: function () {
-				return [ 'Z111' ];
-			},
-			getAllZImplementations: function () {
-				return [ 'Z333', 'Z444' ];
-			},
-			getUnattachedZImplementations: function () {
-				return [ 'Z333' ];
-			},
-			getPaginatedTesters: function () {
+			getZTesters: () => [ 'Z111', 'Z222' ],
+			getAttachedZTesters: () => () => [ 'Z222' ],
+			getZImplementations: () => [ 'Z333', 'Z444' ],
+			getAttachedZImplementations: () => () => [ 'Z444' ],
+			getPaginatedTesters: () => {
 				return { 1: [ 'Z111', 'Z222' ] };
 			},
-			getPaginatedImplementations: function () {
+			getPaginatedImplementations: () => {
 				return { 1: [ 'Z333', 'Z444' ] };
 			},
-			getZkeys: function () {
+			getZkeys: () => {
 				return {
 					Z333: {
 						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
@@ -79,7 +71,7 @@ describe( 'FunctionDetails', function () {
 					}
 				};
 			},
-			getZkeyLabels: function () {
+			getZkeyLabels: () => {
 				return {
 					Z111: 'Z111 name',
 					Z222: 'Z222 name',

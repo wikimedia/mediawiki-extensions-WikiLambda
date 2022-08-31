@@ -9,27 +9,13 @@ var canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZOb
 	saveZObject = require( '../../mixins/api.js' ).methods.saveZObject,
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods;
 
-function filterOutPresentZids( rootState ) {
-	return function ( zid ) {
-		var zobject;
-		for ( zobject in rootState.zobjectModule.zobject ) {
-			if ( rootState.zobjectModule.zobject[ zobject ].value === zid ) {
-				return false;
-			}
-		}
-
-		return true;
-	};
-}
 module.exports = exports = {
 	state: {
 		newTester: null,
 		/**
-		 * List of tester keys
+		 * List of ZIDs for all testers (attached and unattached)
 		 */
-		zTesters: [],
-		zAttachedTesters: [],
-		zUnattachedTesters: []
+		zTesters: []
 	},
 	getters: {
 		getNewTesterId: function ( state ) {
@@ -38,14 +24,8 @@ module.exports = exports = {
 		getNewTesterZObjects: function ( state, getters ) {
 			return getters.getZObjectAsJsonById( state.newTester );
 		},
-		getAttachedZTesters: function ( state ) {
-			return state.zAttachedTesters;
-		},
-		getUnattachedZTesters: function ( state ) {
-			return state.zUnattachedTesters;
-		},
-		getAllZTesters: function ( state ) {
-			return state.zAttachedTesters.concat( state.zUnattachedTesters );
+		getZTesters: function ( state ) {
+			return state.zTesters;
 		},
 		getTestInputOutputByZIDs: function ( state, getters ) {
 			/**
@@ -69,8 +49,7 @@ module.exports = exports = {
 			};
 		},
 		getPaginatedTesters: function ( state, getters ) {
-			var allTesters = state.zAttachedTesters.concat( state.zUnattachedTesters );
-			return getters.paginateList( allTesters );
+			return getters.paginateList( state.zTesters );
 		}
 	},
 	mutations: {
@@ -81,67 +60,27 @@ module.exports = exports = {
 			state.newTester = null;
 		},
 		/**
-		 * Set the attached zTesters in the store
+		 * Set the zTesters in the store
 		 *
 		 * @param {Object} state
 		 * @param {Object} zTesters
 		 */
-		setAttachedZTesters: function ( state, zTesters ) {
-			state.zAttachedTesters = zTesters;
-		},
-		/**
-		 * Set the unattached zTesters in the store
-		 *
-		 * @param {Object} state
-		 * @param {Object} zTesters
-		 */
-		setUnattachedZTesters: function ( state, zTesters ) {
-			state.zUnattachedTesters = zTesters;
+		setZTesters: function ( state, zTesters ) {
+			state.zTesters = zTesters;
 		}
 	},
 	actions: {
 		/**
-		 * Fetch all attached zTesters for a given local id (corresponding to a zFunction)
+		 * Triggers the fetch of all (attached and unattached) testers for the specified zFunctionId.
+		 * Also fetches relevant zKeys
 		 *
-		 * Note that this returns a raw array, not a canonical ZList.
-		 *
-		 * @param {Object} context
-		 * @param {string} id
-		 * @return {Promise}
-		 */
-		// TODO(T314928): This should be a simple lookup after data layer refactoring
-		// ex: zObject.get( Constants.Z_FUNCTION_TESTERS );
-		fetchAttachedZTesters: function ( context, id ) {
-			var attachedTesters = [];
-			const zObject = context.getters.getZObjectChildrenById( id );
-
-			const zTesterId = zObject.filter( function ( item ) {
-				return item.key === Constants.Z_FUNCTION_TESTERS;
-			} )[ 0 ].id;
-
-			const zTesterList = context.getters.getZObjectChildrenById( zTesterId );
-			// remove the list type (we want to return a raw array, not a canonical ZList)
-			zTesterList.shift();
-
-			for ( var zid in zTesterList ) {
-				const zTester = context.getters.getZObjectChildrenById( zTesterList[ zid ].id );
-				attachedTesters.push( zTester[ 1 ].value );
-			}
-
-			context.commit( 'setAttachedZTesters', attachedTesters );
-			return context.dispatch( 'fetchZKeys', { zids: attachedTesters } );
-		},
-		/**
-		 * Fetch all zTesters from the wikilambdafn_search API and filter that list to
-		 * only unattached zTesters by determining which zIds are not already in the root state
-		 *
-		 * Note that this returns a raw array, not a canonical ZList.
+		 * Note that this stores a raw array, not a canonical ZList.
 		 *
 		 * @param {Object} context
 		 * @param {string} zFunctionId
 		 * @return {Promise}
 		 */
-		fetchUnattachedZTesters: function ( context, zFunctionId ) {
+		fetchZTesters: function ( context, zFunctionId ) {
 			var api = new mw.Api();
 			return api.get( {
 				action: 'query',
@@ -153,23 +92,9 @@ module.exports = exports = {
 				var zidList = response.query.wikilambdafn_search.map( function ( zidItem ) {
 					return zidItem.zid;
 				} );
-				// the list returned contains both attached and unattached zTesters
-				// we filter here so we only have a single source for attached zTesters
-				zidList = zidList.filter( filterOutPresentZids( context.rootState ) );
-				context.commit( 'setUnattachedZTesters', zidList );
+				context.commit( 'setZTesters', zidList );
 				return context.dispatch( 'fetchZKeys', { zids: zidList } );
 			} );
-		},
-		/**
-		 * Triggers the fetches of both unattached and attached function testers of a the specified zFunctionId.
-		 *
-		 * @param {Object} context
-		 * @param {Object} payload
-		 *
-		 */
-		fetchZTesters: function ( context, payload ) {
-			context.dispatch( 'fetchUnattachedZTesters', payload.zFunctionId );
-			context.dispatch( 'fetchAttachedZTesters', payload.id );
 		},
 		/**
 		 * Create a new instance of a tester. This is NOT attached to the main object, and used
