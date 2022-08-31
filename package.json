@@ -30,7 +30,7 @@
 		"grunt-eslint": "23.0.0",
 		"grunt-stylelint": "0.18.0",
 		"jest": "27.4.7",
-		"jquery": "3.6.0",
+		"jquery": "3.6.1",
 		"jsdoc": "3.6.10",
 		"jsdoc-wmf-theme": "0.0.5",
 		"stylelint-config-wikimedia": "0.13.1",
