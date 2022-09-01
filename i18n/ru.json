@@ -32,7 +32,7 @@
 	"wikilambda-summarylabel": "Описание:",
 	"wikilambda-typeselector-label": "Выберите тип",
 	"wikilambda-function-typeselector-label": "Выберите функцию",
-	"wikilambda-editor-label-addlanguage-label": "Добавить язык",
+	"wikilambda-editor-label-addlanguage-label": "Выберите язык",
 	"wikilambda-editor-zobject-clearitem-tooltip": "Очистить это значение",
 	"wikilambda-implementation-selector-code": "Код",
 	"wikilambda-argref-default-label": "Выберите аргумент",
