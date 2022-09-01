@@ -28,16 +28,18 @@ describe( 'FunctionViewerAliases', function () {
 		} );
 	} );
 
-	it( 'renders without errors', function () {
-		var wrapper = VueTestUtils.shallowMount( FunctionViewerAliases );
+	it( 'renders without errors the sidebar component', function () {
+		var wrapper = VueTestUtils.shallowMount( FunctionViewerAliases, {
+			computed: {
+				langAliasString: function () {
+					return mocks.mockSidebarItems;
+				}
+			}
+		} );
 
-		expect( wrapper.find( '.ext-wikilambda-function-viewer-aliases' ) ).toBeTruthy();
-	} );
-
-	it( 'renders the sidebar component', function () {
-		var wrapper = VueTestUtils.mount( FunctionViewerAliases );
-
-		expect( wrapper.findComponent( FunctionViewerSidebar ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-viewer-aliases' ).exists() ).toBeTruthy();
+		expect( wrapper.findComponent( FunctionViewerSidebar ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-viewer-aliases__header' ).text() ).toEqual( 'wikilambda-function-viewer-aliases-header' );
 	} );
 
 	it( 'filters function aliases to current language when showAllLangs is false', function () {

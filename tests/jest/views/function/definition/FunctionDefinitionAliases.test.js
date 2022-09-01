@@ -47,21 +47,21 @@ describe( 'FunctionDefinitionAliases', () => {
 			},
 			getNestedZObjectById: () => ( id, keys ) => {
 				if ( id === 0 && keys.length === 2 &&
-						keys[ 0 ] === Constants.Z_PERSISTENTOBJECT_ALIASES &&
-						keys[ 1 ] === Constants.Z_MULTILINGUALSTRINGSET_VALUE ) {
+					keys[ 0 ] === Constants.Z_PERSISTENTOBJECT_ALIASES &&
+					keys[ 1 ] === Constants.Z_MULTILINGUALSTRINGSET_VALUE ) {
 					return { id: multilingualStringsetValueId };
 				} else if ( id === monolingualStringsetId && keys.length === 1 &&
-							keys[ 0 ] === Constants.Z_MONOLINGUALSTRINGSET_VALUE ) {
+					keys[ 0 ] === Constants.Z_MONOLINGUALSTRINGSET_VALUE ) {
 					return { id: monolingualStringsetValueId };
 				} else if ( id === monolingualStringsetId && keys.length === 2 &&
-							keys[ 0 ] === Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE &&
-							keys[ 1 ] === Constants.Z_REFERENCE_ID ) {
+					keys[ 0 ] === Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE &&
+					keys[ 1 ] === Constants.Z_REFERENCE_ID ) {
 					return { value: Constants.Z_NATURAL_LANGUAGE_ENGLISH };
 				} else if ( id === monolingualStringsetLanguageId && keys.length === 1 &&
-							keys[ 0 ] === Constants.Z_REFERENCE_ID ) {
+					keys[ 0 ] === Constants.Z_REFERENCE_ID ) {
 					return { value: Constants.Z_NATURAL_LANGUAGE_ENGLISH };
 				} else if ( id === stringId && keys.length === 1 &&
-							keys[ 0 ] === Constants.Z_STRING_VALUE ) {
+					keys[ 0 ] === Constants.Z_STRING_VALUE ) {
 					return { id: stringValueId, value: 'existing alias' };
 				}
 			},

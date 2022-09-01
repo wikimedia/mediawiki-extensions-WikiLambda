@@ -42,7 +42,7 @@ describe( 'FunctionViewerDetailsSidebar', function () {
 	it( 'renders without errors', function () {
 		var wrapper = VueTestUtils.shallowMount( FunctionViewerSidebar );
 
-		expect( wrapper.find( '.ext-wikilambda-function-viewer-details-sidebar' ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-viewer-details-sidebar' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'returns the correct url for creating an implementation', function () {

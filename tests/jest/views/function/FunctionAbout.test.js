@@ -18,6 +18,6 @@ describe( 'FunctionAbout', function () {
 	it( 'renders without errors', function () {
 		var wrapper = shallowMount( FunctionAbout );
 
-		expect( wrapper.find( 'ext-wikilambda-function-about' ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-about' ).exists() ).toBeTruthy();
 	} );
 } );

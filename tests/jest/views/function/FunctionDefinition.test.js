@@ -8,7 +8,7 @@
 
 const { CdxMessage } = require( '@wikimedia/codex' );
 
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
+var VueTestUtils = require( '@vue/test-utils' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	mockLabels = require( '../../fixtures/mocks.js' ).mockLabels,
 	FunctionDefinitionName = require( '../../../../resources/ext.wikilambda.edit/components/function/definition/FunctionDefinitionName.vue' ),
@@ -19,12 +19,13 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	FunctionDefinition = require( '../../../../resources/ext.wikilambda.edit/views/function/FunctionDefinition.vue' );
 
 describe( 'FunctionDefinition', function () {
-	var getters;
+	let getters;
+	const addBtnClass = '.ext-wikilambda-function-definition__action-add-input-button';
 
 	beforeEach( function () {
 		getters = {
 			getZkeyLabels: () => { return { Z1002: 'Martian', Z1004: 'Whale-talk' }; },
-			getCurrentZLanguage: jest.fn(),
+			getCurrentZLanguage: jest.fn().mockReturnValue( 'Z10002' ),
 			currentZFunctionHasValidInputs: () => false,
 			currentZFunctionHasOutput: () => false,
 			currentZObjectLanguages: () => [
@@ -43,7 +44,8 @@ describe( 'FunctionDefinition', function () {
 			getZObjectAsJsonById: createGettersWithFunctionsMock( mockLabels ),
 			getAllZKeyLanguageLabels: jest.fn(),
 			getZargumentsArray: createGettersWithFunctionsMock(),
-			getNestedZObjectById: createGettersWithFunctionsMock()
+			getNestedZObjectById: createGettersWithFunctionsMock( jest.fn() ),
+			getAllItemsFromListById: createGettersWithFunctionsMock( [] )
 		};
 		global.store.hotUpdate( {
 			getters: getters
@@ -51,11 +53,12 @@ describe( 'FunctionDefinition', function () {
 	} );
 
 	it( 'renders without errors', () => {
-		var wrapper = shallowMount( FunctionDefinition );
+		var wrapper = VueTestUtils.shallowMount( FunctionDefinition );
 		expect( wrapper.find( '.ext-wikilambda-function-definition' ).exists() ).toBe( true );
 	} );
+
 	it( 'loads child components', ( done ) => {
-		var wrapper = shallowMount( FunctionDefinition );
+		var wrapper = VueTestUtils.shallowMount( FunctionDefinition );
 		global.store.hotUpdate( { getters: getters } );
 		wrapper.vm.$nextTick( () => {
 			// Two sets of label inputs for the two languages.
@@ -70,7 +73,7 @@ describe( 'FunctionDefinition', function () {
 		} );
 	} );
 	it( 'does not initially display toast', ( done ) => {
-		var wrapper = shallowMount( FunctionDefinition );
+		var wrapper = VueTestUtils.shallowMount( FunctionDefinition );
 		global.store.hotUpdate( { getters: getters } );
 		wrapper.vm.$nextTick( () => {
 			expect( wrapper.findComponent( CdxMessage ).exists() ).toBe( false );
@@ -78,7 +81,7 @@ describe( 'FunctionDefinition', function () {
 		} );
 	} );
 	it( 'displays success toast when function becomes publishable', ( done ) => {
-		var wrapper = shallowMount( FunctionDefinition );
+		var wrapper = VueTestUtils.shallowMount( FunctionDefinition );
 		getters.currentZFunctionHasValidInputs = () => true;
 		getters.currentZFunctionHasOutput = () => true;
 		global.store.hotUpdate( { getters: getters } );
@@ -86,6 +89,33 @@ describe( 'FunctionDefinition', function () {
 			expect( wrapper.findComponent( CdxMessage ).exists() ).toBe( true );
 			expect( wrapper.findComponent( CdxMessage ).props( 'type' ) ).toEqual( 'success' );
 			done();
+		} );
+	} );
+
+	it( 'creates new form inputs for another language on add button click', function () {
+		var wrapper = VueTestUtils.shallowMount( FunctionDefinition, {
+			data() {
+				return {
+					labelLanguages: [
+						{ zLang: 'Z1004', label: 'français', readOnly: true }
+					]
+				};
+			},
+			global: {
+				stubs: { CdxButton: false, FunctionDefinition: false }
+			}
+		} );
+		return wrapper.findComponent( addBtnClass ).trigger( 'click' ).then( () => {
+			expect( wrapper.findAllComponents( FunctionDefinitionName ).length ).toEqual( 2 );
+			expect( wrapper.findAllComponents( FunctionDefinitionAliases ).length ).toEqual( 2 );
+			expect( wrapper.findAllComponents( FunctionDefinitionInputs ).length ).toEqual( 2 );
+
+			expect( wrapper.findAllComponents( FunctionDefinitionOutput ).length ).toEqual( 1 );
+			expect( wrapper.findAllComponents( FunctionDefinitionFooter ).length ).toEqual( 1 );
+			return VueTestUtils.flushPromises();
+		} ).then( function () {
+			const fnDefinitionContainerEl = wrapper.find( { ref: 'fnDefinitionContainer' } ).element;
+			expect( fnDefinitionContainerEl.scrollTop ).toEqual( fnDefinitionContainerEl.scrollHeight );
 		} );
 	} );
 } );

@@ -7,7 +7,6 @@
 'use strict';
 
 var VueTestUtils = require( '@vue/test-utils' ),
-	DialogContainer = require( '../../../../../resources/ext.wikilambda.edit/components/base/DialogContainer.vue' ),
 	FunctionDefinitionFooter = require( '../../../../../resources/ext.wikilambda.edit/components/function/definition/FunctionDefinitionFooter.vue' );
 
 describe( 'FunctionDefinitionFooter', function () {
@@ -29,30 +28,40 @@ describe( 'FunctionDefinitionFooter', function () {
 	it( 'renders without errors', function () {
 		var wrapper = VueTestUtils.shallowMount( FunctionDefinitionFooter );
 
-		expect( wrapper.find( '.ext-wikilambda-function-definition-footer' ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-definition-footer' ).exists() ).toBeTruthy();
 	} );
-	it( 'triggers publish on button click', function () {
+	it( 'triggers the "publish" event on button click', function () {
+		getters.currentZFunctionHasOutput.mockReturnValue( true );
+		getters.currentZFunctionHasValidInputs.mockReturnValue( true );
+
 		var wrapper = VueTestUtils.shallowMount( FunctionDefinitionFooter, {
 			props: {
 				isEditing: true
+			},
+			global: {
+				stubs: { CdxButton: false }
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-function-definition-footer__publish-button' ) ).toBeTruthy();
-		wrapper.find( '.ext-wikilambda-function-definition-footer__publish-button' ).trigger( 'click' );
-		wrapper.vm.$nextTick( function () {
-			wrapper.vm.handlePublish();
+		const button = wrapper.findComponent( '.ext-wikilambda-function-definition-footer__publish-button' );
+		expect( button.exists() ).toBeTruthy();
+		return button.trigger( 'click' ).then( function () {
 			expect( wrapper.emitted().publish ).toBeTruthy();
 		} );
 	} );
-	it( 'opens the dialog on cancel when editing', function () {
+	it( 'triggers the "cancel" event on cancel button click', function () {
 		var wrapper = VueTestUtils.shallowMount( FunctionDefinitionFooter, {
 			props: {
 				isEditing: true
+			},
+			global: {
+				stubs: { CdxButton: false }
 			}
 		} );
 
-		expect( wrapper.find( '.ext-wikilambda-function-definition-footer__actions__cancel' ) ).toBeTruthy();
-		wrapper.find( '.ext-wikilambda-function-definition-footer__actions__cancel' ).trigger( 'click' );
-		expect( wrapper.findComponent( DialogContainer ) ).toBeTruthy();
+		const cancelButton = wrapper.find( '.ext-wikilambda-function-definition-footer__actions__cancel' );
+		expect( cancelButton.exists() ).toBeTruthy();
+		return cancelButton.trigger( 'click' ).then( function () {
+			expect( wrapper.emitted().cancel ).toBeTruthy();
+		} );
 	} );
 } );

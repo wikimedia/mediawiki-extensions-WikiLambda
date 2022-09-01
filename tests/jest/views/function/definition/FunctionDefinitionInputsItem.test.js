@@ -20,7 +20,7 @@ describe( 'FunctionDefinitionInputsItem', function () {
 	beforeEach( function () {
 		getters = {
 			getZObjectChildrenById: createGettersWithFunctionsMock(),
-			getNestedZObjectById: createGettersWithFunctionsMock( { } ),
+			getNestedZObjectById: createGettersWithFunctionsMock( {} ),
 			getZObjectTypeById: createGettersWithFunctionsMock(),
 			getNextObjectId: jest.fn().mockReturnValue( 123 ),
 			getCurrentZLanguage: jest.fn().mockReturnValue( 'Z10002' )
@@ -42,7 +42,7 @@ describe( 'FunctionDefinitionInputsItem', function () {
 	it( 'renders without errors', function () {
 		var wrapper = shallowMount( FunctionDefinitionInputsItem );
 
-		expect( wrapper.find( '.ext-wikilambda-editor-input-list-item' ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-editor-input-list-item' ).exists() ).toBeTruthy();
 	} );
 	it( 'has an input element ', function () {
 		var wrapper = shallowMount( FunctionDefinitionInputsItem );

@@ -40,7 +40,7 @@ describe( 'ZTesterImplResult', function () {
 				zTesterId: zTesterId
 			}
 		} );
-		expect( wrapper.find( 'div' ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-tester-result' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'fetches the test result for the provided IDs from Vuex', function () {

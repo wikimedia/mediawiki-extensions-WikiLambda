@@ -25,6 +25,6 @@ describe( 'ZObjectViewer', function () {
 	it( 'renders without errors', function () {
 		var wrapper = shallowMount( ZObjectViewer );
 
-		expect( wrapper.find( 'div' ) ).toBeTruthy();
+		expect( wrapper.find( '#ext-wikilambda-view' ).exists() ).toBeTruthy();
 	} );
 } );

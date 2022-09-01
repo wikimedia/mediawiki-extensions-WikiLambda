@@ -26,6 +26,10 @@ class Mocki18n {
 	text() {
 		return this.string;
 	}
+
+	toString() {
+		return this.text();
+	}
 }
 
 // Mock MW object
@@ -78,7 +82,7 @@ global.mw = {
 	} ),
 	Title: Title
 
-// other mw properties as needed...
+	// other mw properties as needed...
 };
 
 // Mock i18n & store for all tests
