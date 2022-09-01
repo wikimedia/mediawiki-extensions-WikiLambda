@@ -15,7 +15,7 @@ describe( 'FunctionDefinitionFooter', function () {
 
 	beforeEach( function () {
 		getters = {
-			currentZFunctionHasInputs: jest.fn(),
+			currentZFunctionHasValidInputs: jest.fn(),
 			currentZFunctionHasOutput: jest.fn(),
 			isNewZObject: jest.fn()
 		};

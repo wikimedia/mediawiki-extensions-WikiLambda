@@ -111,21 +111,19 @@ module.exports = exports = {
 			}
 			return hasLabels;
 		},
-		currentZFunctionHasInputs: function ( state, getters ) {
+		currentZFunctionHasValidInputs: function ( state, getters ) {
 			if ( getters.getCurrentZObjectType !== Constants.Z_FUNCTION ) {
 				return false;
 			}
 
 			var zobject = getters.getZObjectAsJson;
-			if ( !zobject || !zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ] ||
-				zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ] <= 1 ) {
+			if ( !zobject || !zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ] ) {
 				return false;
 			}
 			var argumentList = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ];
 			// Remove argument type
 			argumentList.shift();
-
-			return argumentList.filter(
+			return argumentList.length > 0 && argumentList.every(
 				function ( arg ) {
 					var argumentTypeIsSet = !!arg[ Constants.Z_ARGUMENT_TYPE ] &&
 						!!arg[ Constants.Z_ARGUMENT_TYPE ][ Constants.Z_REFERENCE_ID ],
@@ -140,7 +138,7 @@ module.exports = exports = {
 
 					return argumentTypeIsSet && argumentMonolingualStringIsSet;
 				}
-			).length > 0;
+			);
 		},
 		currentZFunctionHasOutput: function ( state, getters ) {
 			if ( getters.getCurrentZObjectType !== Constants.Z_FUNCTION ) {
@@ -177,7 +175,7 @@ module.exports = exports = {
 		currentZFunctionCompletionPercentage: function ( state, getters ) {
 			var requiredSteps = [
 				getters.currentZObjectIsValid,
-				getters.currentZFunctionHasInputs,
+				getters.currentZFunctionHasValidInputs,
 				getters.currentZFunctionHasOutput,
 				getters.currentZFunctionHasTesters,
 				getters.currentZFunctionHasImplementations

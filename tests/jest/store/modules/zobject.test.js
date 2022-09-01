@@ -295,6 +295,62 @@ describe( 'zobject Vuex module', function () {
 				expect( zobjectModule.modules.currentZObject.getters.isNewZObject( state, { getCurrentZObjectId: 'Z4' } ) ).toEqual( false );
 			} );
 		} );
+
+		describe( 'currentZFunctionHasValidInputs', () => {
+			var zObjectAsjson;
+			beforeEach( () => {
+				zObjectAsjson = JSON.parse( fs.readFileSync( path.join( __dirname, './zobject/zFunction.json' ) ) );
+			} );
+
+			it( 'returns true if all requirements met', () => {
+				expect( zobjectModule.modules.currentZObject.getters.currentZFunctionHasValidInputs( state, {
+					getCurrentZObjectType: Constants.Z_FUNCTION,
+					getZObjectAsJson: zObjectAsjson } ) ).toEqual( true );
+			} );
+
+			it( 'returns false if current object not a function', () => {
+				expect( zobjectModule.modules.currentZObject.getters.currentZFunctionHasValidInputs( state, {
+					getCurrentZObjectType: Constants.Z_STRING,
+					getZObjectAsJson: zObjectAsjson } ) ).toEqual( false );
+			} );
+
+			it( ' returns false if an input has an empty type', () => {
+				zObjectAsjson[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ][ 1 ][
+					Constants.Z_ARGUMENT_TYPE ][ Constants.Z_REFERENCE_ID ] = '';
+
+				expect( zobjectModule.modules.currentZObject.getters.currentZFunctionHasValidInputs( state, {
+					getCurrentZObjectType: Constants.Z_FUNCTION,
+					getZObjectAsJson: zObjectAsjson } ) ).toEqual( false );
+			} );
+
+			it( ' returns false if an input has only an empty label', () => {
+				zObjectAsjson[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ][ 1 ][
+					Constants.Z_ARGUMENT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ][ 0 ][
+					Constants.Z_MONOLINGUALSTRING_VALUE ][ Constants.Z_STRING_VALUE ] = '';
+
+				expect( zobjectModule.modules.currentZObject.getters.currentZFunctionHasValidInputs( state, {
+					getCurrentZObjectType: Constants.Z_FUNCTION,
+					getZObjectAsJson: zObjectAsjson } ) ).toEqual( false );
+			} );
+
+			it( ' returns false if an input has no label', () => {
+				zObjectAsjson[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ][ 1 ][
+					Constants.Z_ARGUMENT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ] = [];
+
+				expect( zobjectModule.modules.currentZObject.getters.currentZFunctionHasValidInputs( state, {
+					getCurrentZObjectType: Constants.Z_FUNCTION,
+					getZObjectAsJson: zObjectAsjson } ) ).toEqual( false );
+			} );
+
+			it( ' returns false if there are no inputs', () => {
+				zObjectAsjson[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ] =
+					[ Constants.Z_ARGUMENT ];
+
+				expect( zobjectModule.modules.currentZObject.getters.currentZFunctionHasValidInputs( state, {
+					getCurrentZObjectType: Constants.Z_FUNCTION,
+					getZObjectAsJson: zObjectAsjson } ) ).toEqual( false );
+			} );
+		} );
 	} );
 
 	describe( 'Mutations', function () {
