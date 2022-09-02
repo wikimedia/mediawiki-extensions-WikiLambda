@@ -6,6 +6,8 @@
  */
 'use strict';
 
+const { CdxMessage } = require( '@wikimedia/codex' );
+
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	mockLabels = require( '../../fixtures/mocks.js' ).mockLabels,
@@ -21,10 +23,10 @@ describe( 'FunctionDefinition', function () {
 
 	beforeEach( function () {
 		getters = {
-			getZkeyLabels: createGettersWithFunctionsMock( [] ),
+			getZkeyLabels: () => { return { Z1002: 'Martian' }; },
 			getCurrentZLanguage: jest.fn(),
-			currentZFunctionHasValidInputs: jest.fn(),
-			currentZFunctionHasOutput: jest.fn(),
+			currentZFunctionHasValidInputs: () => false,
+			currentZFunctionHasOutput: () => false,
 			isNewZObject: jest.fn(),
 			getViewMode: jest.fn(),
 			getZObjectChildrenById: createGettersWithFunctionsMock(),
@@ -33,24 +35,44 @@ describe( 'FunctionDefinition', function () {
 			getZargumentsArray: createGettersWithFunctionsMock(),
 			getNestedZObjectById: createGettersWithFunctionsMock()
 		};
-
 		global.store.hotUpdate( {
 			getters: getters
 		} );
-
 	} );
 
-	it( 'renders without errors', function () {
+	it( 'renders without errors', () => {
 		var wrapper = shallowMount( FunctionDefinition );
-
-		expect( wrapper.find( '.ext-wikilambda-function-definition' ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-definition' ).exists() ).toBe( true );
 	} );
-	it( 'loads child components', function () {
+	it( 'loads child components', ( done ) => {
 		var wrapper = shallowMount( FunctionDefinition );
-		expect( wrapper.findComponent( FunctionDefinitionName ) ).toBeTruthy();
-		expect( wrapper.findComponent( FunctionDefinitionAliases ) ).toBeTruthy();
-		expect( wrapper.findComponent( FunctionDefinitionInputs ) ).toBeTruthy();
-		expect( wrapper.findComponent( FunctionDefinitionOutput ) ).toBeTruthy();
-		expect( wrapper.findComponent( FunctionDefinitionFooter ) ).toBeTruthy();
+		global.store.hotUpdate( { getters: getters } );
+		wrapper.vm.$nextTick( () => {
+			expect( wrapper.findComponent( FunctionDefinitionName ).exists() ).toBe( true );
+			expect( wrapper.findComponent( FunctionDefinitionAliases ).exists() ).toBe( true );
+			expect( wrapper.findComponent( FunctionDefinitionInputs ).exists() ).toBe( true );
+			expect( wrapper.findComponent( FunctionDefinitionOutput ).exists() ).toBe( true );
+			expect( wrapper.findComponent( FunctionDefinitionFooter ).exists() ).toBe( true );
+			done();
+		} );
+	} );
+	it( 'does not initially display toast', ( done ) => {
+		var wrapper = shallowMount( FunctionDefinition );
+		global.store.hotUpdate( { getters: getters } );
+		wrapper.vm.$nextTick( () => {
+			expect( wrapper.findComponent( CdxMessage ).exists() ).toBe( false );
+			done();
+		} );
+	} );
+	it( 'displays success toast when function becomes publishable', ( done ) => {
+		var wrapper = shallowMount( FunctionDefinition );
+		getters.currentZFunctionHasValidInputs = () => true;
+		getters.currentZFunctionHasOutput = () => true;
+		global.store.hotUpdate( { getters: getters } );
+		wrapper.vm.$nextTick( () => {
+			expect( wrapper.findComponent( CdxMessage ).exists() ).toBe( true );
+			expect( wrapper.findComponent( CdxMessage ).props( 'type' ) ).toEqual( 'success' );
+			done();
+		} );
 	} );
 } );
