@@ -76,13 +76,16 @@
 			</table>
 			<dialog-container
 				ref="dialogBox"
-				:custom-class="customDialogClass"
-				:title="dialogTitle"
-				:description="dialogText"
+				size="auto"
 				:show-action-buttons="false"
-				:should-click-to-close="false"
 				@exit-dialog="showMetrics = false"
 			>
+				<template #dialog-container-title>
+					<span v-html="dialogTitle"></span>
+				</template>
+				<template>
+					<span v-html="dialogText"></span>
+				</template>
 			</dialog-container>
 		</template>
 		<div v-else>
@@ -128,8 +131,7 @@ module.exports = exports = {
 			activeZImplementationId: null,
 			activeZTesterId: null,
 			Constants: Constants,
-			showMetrics: false,
-			customDialogClass: 'ext-wikilambda-fn-tester-dialog'
+			showMetrics: false
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -239,7 +241,7 @@ module.exports = exports = {
 			const metadata = this.getZTesterMetadata(
 				this.zFunctionId, this.activeZTesterId, this.activeZImplementationId );
 			// Check for error object, for backwards compatibility
-			if ( metadata[ Constants.Z_OBJECT_TYPE ] === Constants.Z_ERROR ) {
+			if ( !metadata || metadata[ Constants.Z_OBJECT_TYPE ] === Constants.Z_ERROR ) {
 				return '';
 			}
 			return this.portrayMetadataMap( metadata );
@@ -264,30 +266,11 @@ module.exports = exports = {
 				clearPreviousResults: true
 			} );
 		},
-		/*
-			Currently we only allow one dialog to be up at a time, according to the values of activeZTesterId and
-			activeZImplementationId.  If a dialog is already up, and they click on the message-icon of a different
-			tester, we just change the displayed dialog, rather than bringing it down.
-			Note: if it's ever desired, it's easy to allow for multiple different dialogs
-			to stay up, by shifting the control of the dialogs entirely into ZTesterImplResult.
-		 */
 		setActiveTesterKeys: function ( keys ) {
-			let toggleMetrics = true;
-			if ( this.showMetrics && ( this.activeZImplementationId !== keys.zImplementationId ||
-				this.activeZTesterId !== keys.zTesterId ) ) {
-				toggleMetrics = false;
-			}
 			this.activeZImplementationId = keys.zImplementationId;
 			this.activeZTesterId = keys.zTesterId;
-			if ( toggleMetrics ) {
-				if ( this.showMetrics ) {
-					this.showMetrics = false;
-					this.$refs.dialogBox.closeDialog();
-				} else {
-					this.showMetrics = true;
-					this.$refs.dialogBox.openDialog();
-				}
-			}
+			this.showMetrics = true;
+			this.$refs.dialogBox.openDialog();
 		}
 	} ),
 	watch: {
@@ -326,21 +309,5 @@ module.exports = exports = {
 	padding: 10px 0;
 	border-top: 3px double #000;
 	text-align: right;
-}
-
-.ext-wikilambda-fn-tester-dialog {
-	position: fixed;
-	z-index: 999;
-	top: calc( 50% - 10px );
-	left: calc( 50% - 10px );
-	width: auto;
-	max-width: 75%;
-	height: auto;
-	max-height: 75%;
-	margin-left: -100px;
-	margin-right: 100px;
-	margin-bottom: 100px;
-	overflow-x: auto;
-	overflow-y: auto;
 }
 </style>

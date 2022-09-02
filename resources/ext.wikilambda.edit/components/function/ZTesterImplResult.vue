@@ -14,7 +14,7 @@
 		<cdx-icon
 			:icon="messageIcon"
 			class="ext-wikilambda-tester-result-message-icon"
-			@click.native="emitTesterKeys"
+			@click.stop="emitTesterKeys"
 		></cdx-icon>
 	</div>
 </template>
