@@ -8,10 +8,11 @@
  * @license MIT
  */
 
-namespace MediaWiki\Extension\WikiLambda;
+namespace MediaWiki\Extension\WikiLambda\Diff;
 
 use Content;
 use DifferenceEngine;
+use MediaWiki\Extension\WikiLambda\ZObjectContent;
 
 class ZObjectContentDifferenceEngine extends DifferenceEngine {
 
@@ -26,6 +27,8 @@ class ZObjectContentDifferenceEngine extends DifferenceEngine {
 
 		// $slotRenderer = new ZObjectSlotDiffRenderer();
 		// $diffObject = $slotRenderer->getDiff( $oldContent, $newContent );
+
+		// TODO: generate and return html body of the diff page
 		return '';
 	}
 }
