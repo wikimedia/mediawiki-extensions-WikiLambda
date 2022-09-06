@@ -100,13 +100,15 @@ module.exports = exports = {
 
 			// if the new zObject is an implementation, a function is required to save
 			if ( zobjectType === Constants.Z_IMPLEMENTATION ) {
-				const hasFunction = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_FUNCTION ][ Constants.Z_REFERENCE_ID ] !== '';
+				const hasFunction = !!zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+					Constants.Z_IMPLEMENTATION_FUNCTION ][ Constants.Z_REFERENCE_ID ];
 				return hasLabels && hasFunction;
 			}
 
 			// if the new zObject is a tester, a function is required to save
 			if ( zobjectType === Constants.Z_TESTER ) {
-				const hasFunction = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_TESTER_FUNCTION ][ Constants.Z_REFERENCE_ID ] !== '';
+				const hasFunction = !!zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+					Constants.Z_TESTER_FUNCTION ][ Constants.Z_REFERENCE_ID ];
 				return hasLabels && hasFunction;
 			}
 			return hasLabels;
