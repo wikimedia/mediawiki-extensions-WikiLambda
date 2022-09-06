@@ -1,0 +1,100 @@
+'use strict';
+
+const Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
+
+module.exports = {
+	[ Constants.Z_OBJECT_TYPE ]: Constants.Z_PERSISTENTOBJECT,
+	[ Constants.Z_PERSISTENTOBJECT_ID ]: {
+		[ Constants.Z_OBJECT_TYPE ]: Constants.Z_STRING,
+		[ Constants.Z_STRING_VALUE ]: Constants.NEW_ZID_PLACEHOLDER
+	},
+	[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
+		[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION,
+		[ Constants.Z_FUNCTION_ARGUMENTS ]: [
+			Constants.Z_ARGUMENT,
+			{
+				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_ARGUMENT,
+				[ Constants.Z_ARGUMENT_TYPE ]: Constants.Z_STRING,
+				[ Constants.Z_ARGUMENT_KEY ]: {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_STRING,
+					[ Constants.Z_STRING_VALUE ]: 'Z0K1'
+				},
+				[ Constants.Z_ARGUMENT_LABEL ]: {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
+					[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [
+						Constants.Z_MONOLINGUALSTRING,
+						{
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
+							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_CHINESE,
+							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'first argument label, in Chinese'
+						}
+					]
+				}
+			},
+			{
+				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_ARGUMENT,
+				[ Constants.Z_ARGUMENT_TYPE ]: Constants.Z_STRING,
+				[ Constants.Z_ARGUMENT_KEY ]: {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_STRING,
+					[ Constants.Z_STRING_VALUE ]: 'Z0K2'
+				},
+				[ Constants.Z_ARGUMENT_LABEL ]: {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
+					[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [
+						Constants.Z_MONOLINGUALSTRING,
+						// TODO(T317888): Remove this expected item once bug fixed that sends empty English label
+						// despite English not being selected.
+						{
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
+							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: ''
+						},
+						{
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
+							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_CHINESE,
+							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'second argument label, in Chinese'
+						}
+					]
+				}
+			}
+		],
+		[ Constants.Z_FUNCTION_RETURN_TYPE ]: Constants.Z_STRING,
+		[ Constants.Z_FUNCTION_TESTERS ]: [ Constants.Z_TESTER ],
+		[ Constants.Z_FUNCTION_IMPLEMENTATIONS ]: [ Constants.Z_IMPLEMENTATION ],
+		[ Constants.Z_FUNCTION_IDENTITY ]: Constants.NEW_ZID_PLACEHOLDER
+	},
+	[ Constants.Z_PERSISTENTOBJECT_LABEL ]: {
+		[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
+		[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [
+			Constants.Z_MONOLINGUALSTRING,
+			{
+				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
+				[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_CHINESE,
+				[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'function name, in Chinese'
+			}
+		]
+	},
+	[ Constants.Z_PERSISTENTOBJECT_ALIASES ]: {
+		[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRINGSET,
+		[ Constants.Z_MULTILINGUALSTRINGSET_VALUE ]: [
+			Constants.Z_MONOLINGUALSTRINGSET,
+			// TODO(T318323): Remove this expected item once bug fixed that sends empty English stringset
+			// despite English not being selected.
+			{
+				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRINGSET,
+				[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+				[ Constants.Z_MONOLINGUALSTRINGSET_VALUE ]: [
+					Constants.Z_STRING
+				]
+			},
+			{
+				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRINGSET,
+				[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_CHINESE,
+				[ Constants.Z_MONOLINGUALSTRINGSET_VALUE ]: [
+					Constants.Z_STRING,
+					'function alias, in Chinese'
+				]
+			}
+		]
+	}
+};

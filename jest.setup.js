@@ -18,6 +18,16 @@ class Title {
 	}
 }
 
+class Mocki18n {
+	constructor( string ) {
+		this.string = string;
+	}
+
+	text() {
+		return this.string;
+	}
+}
+
 // Mock MW object
 global.mw = {
 	Api: Api,
@@ -34,7 +44,10 @@ global.mw = {
 				default:
 					return {};
 			}
-		} )
+		} ),
+		values: {
+			wgUserName: 'username'
+		}
 	},
 	user: {
 		isAnon: jest.fn().mockReturnValue( true )
@@ -56,6 +69,9 @@ global.mw = {
 			};
 		} )
 	},
+	message: jest.fn( function ( str ) {
+		return new Mocki18n( str );
+	} ),
 	Uri: jest.fn().mockReturnValue( {
 		path: jest.fn(),
 		query: jest.fn()
@@ -68,16 +84,6 @@ global.mw = {
 // Mock i18n & store for all tests
 var vueTestUtils = require( '@vue/test-utils' );
 var vuex = require( 'vuex' );
-
-class Mocki18n {
-	constructor( string ) {
-		this.string = string;
-	}
-
-	text() {
-		return this.string;
-	}
-}
 
 global.$i18n = jest.fn( function ( str ) {
 	return new Mocki18n( str );

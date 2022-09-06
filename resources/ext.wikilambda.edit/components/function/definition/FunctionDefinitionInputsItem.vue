@@ -66,6 +66,7 @@
 			</z-object-selector>
 
 			<cdx-text-input
+				class="ext-wikilambda-editor-input-list-item__label"
 				v-model="getArgumentLabel"
 				:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
 				:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
