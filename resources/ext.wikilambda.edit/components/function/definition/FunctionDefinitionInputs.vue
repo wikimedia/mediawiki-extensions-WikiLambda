@@ -214,6 +214,7 @@ module.exports = exports = {
 
 		&_label {
 			display: flex;
+			flex: none;
 		}
 	}
 }
