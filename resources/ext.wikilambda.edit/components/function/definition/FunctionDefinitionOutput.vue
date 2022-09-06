@@ -125,6 +125,7 @@ module.exports = exports = {
 
 	&__label {
 		display: flex;
+		flex: none;
 		width: 153px;
 	}
 
