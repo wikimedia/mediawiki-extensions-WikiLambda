@@ -99,10 +99,13 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
+@import './../../../lib/sd-base-variables.less';
+
 .ext-wikilambda-codeEditor {
 	width: 100%;
 	border: 1px solid #e0e0e0;
 	min-height: 85px;
 	z-index: 0;
+	.sd-box-sizing( border-box );
 }
 </style>
