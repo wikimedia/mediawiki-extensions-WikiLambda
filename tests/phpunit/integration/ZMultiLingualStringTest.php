@@ -291,7 +291,7 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 		$testObject->removeValue( $spanish );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame(
-			wfMessage( 'wikilambda-multilingualstring-nofallback' )->text(),
+			wfMessage( 'wikilambda-multilingualstring-nofallback' )->inLanguage( 'es' )->text(),
 			$testObject->getStringForLanguage( $spanish )
 		);
 
