@@ -174,14 +174,8 @@ module.exports = exports = {
 		this.fetchZKeys( { zids: zids } );
 
 		// TODO(T314580): once the API supports it, this should be one call
-		this.fetchZImplementations( {
-			zFunctionId: this.getCurrentZObjectId,
-			id: this.zobjectId
-		} );
-		this.fetchZTesters( {
-			zFunctionId: this.getCurrentZObjectId,
-			id: this.zobjectId
-		} );
+		this.fetchZImplementations( this.getCurrentZObjectId );
+		this.fetchZTesters( this.getCurrentZObjectId );
 	}
 };
 </script>

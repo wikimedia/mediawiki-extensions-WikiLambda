@@ -101,13 +101,13 @@ module.exports = exports = {
 	},
 	computed: $.extend( {},
 		mapGetters( [
-			'getUnattachedZTesters',
+			'getAttachedZTesters',
 			'getZkeyLabels',
 			'getPaginatedImplementations',
-			'getAllZImplementations',
-			'getUnattachedZImplementations',
+			'getZImplementations',
+			'getAttachedZImplementations',
 			'getPaginatedTesters',
-			'getAllZTesters',
+			'getZTesters',
 			'getZkeys',
 			'getCurrentZObjectId'
 		] ),
@@ -164,14 +164,14 @@ module.exports = exports = {
 				return Object.keys( this.getPaginatedTesters ).length;
 			},
 			implementationBody: function () {
-				const visibleImplementations = this.implementationShowAll ? this.getAllZImplementations :
+				const visibleImplementations = this.implementationShowAll ? this.getZImplementations :
 					this.getPaginatedImplementations[ this.currentImplementationPage ];
 				const tableData = [];
 				// iterate over each implementation for this function
 				for ( const index in visibleImplementations ) {
-					var isAvailable = !this.isFunctionItemUnattached(
+					var isAvailable = this.isFunctionItemAttached(
 						visibleImplementations[ index ],
-						this.getUnattachedZImplementations
+						this.getAttachedZImplementations( this.zobjectId )
 					);
 
 					// get the language of the implementation
@@ -315,13 +315,13 @@ module.exports = exports = {
 			},
 			testersBody: function () {
 				var tableData = [];
-				const visibleTesters = this.testerShowAll ? this.getAllZTesters :
+				const visibleTesters = this.testerShowAll ? this.getZTesters :
 					this.getPaginatedTesters[ this.currentTesterPage ];
 				for ( const index in visibleTesters ) {
 					var testerLabel = this.getZkeyLabels[ visibleTesters[ index ] ];
-					var isAvailable = !this.isFunctionItemUnattached(
+					var isAvailable = this.isFunctionItemAttached(
 						visibleTesters[ index ],
-						this.getUnattachedZTesters
+						this.getAttachedZTesters( this.zobjectId )
 					);
 
 					// for each tester, store whether its checkbox is checked and whether it's available. We use this
