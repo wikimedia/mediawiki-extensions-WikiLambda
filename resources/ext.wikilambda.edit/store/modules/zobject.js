@@ -124,10 +124,10 @@ module.exports = exports = {
 			] ).id );
 		},
 		getZObjectLabel: function ( state, getters ) {
-			return function ( zLanganguage ) {
+			return function ( zLanguage ) {
 				var labelObject,
 					label = false,
-					lang = zLanganguage || getters.getCurrentZLanguage;
+					lang = zLanguage || getters.getCurrentZLanguage;
 
 				for ( var index in getters.getZObjectLabels ) {
 					var maybeLabel = getters.getZObjectLabels[ index ],
