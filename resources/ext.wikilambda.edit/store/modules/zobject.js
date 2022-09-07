@@ -124,29 +124,32 @@ module.exports = exports = {
 			] ).id );
 		},
 		getZObjectLabel: function ( state, getters ) {
-			var labelObject,
-				label = false;
+			return function ( zLanganguage ) {
+				var labelObject,
+					label = false,
+					lang = zLanganguage || getters.getCurrentZLanguage;
 
-			for ( var index in getters.getZObjectLabels ) {
-				var maybeLabel = getters.getZObjectLabels[ index ],
-					language = getters.getNestedZObjectById( maybeLabel.id, [
-						Constants.Z_MONOLINGUALSTRING_LANGUAGE,
-						Constants.Z_REFERENCE_ID
-					] );
+				for ( var index in getters.getZObjectLabels ) {
+					var maybeLabel = getters.getZObjectLabels[ index ],
+						language = getters.getNestedZObjectById( maybeLabel.id, [
+							Constants.Z_MONOLINGUALSTRING_LANGUAGE,
+							Constants.Z_REFERENCE_ID
+						] );
 
-				if ( language.value === getters.getCurrentZLanguage ) {
-					labelObject = maybeLabel;
+					if ( language.value === lang ) {
+						labelObject = maybeLabel;
+					}
 				}
-			}
 
-			if ( labelObject ) {
-				label = getters.getNestedZObjectById( labelObject.id, [
-					Constants.Z_MONOLINGUALSTRING_VALUE,
-					Constants.Z_STRING_VALUE
-				] );
-			}
+				if ( labelObject ) {
+					label = getters.getNestedZObjectById( labelObject.id, [
+						Constants.Z_MONOLINGUALSTRING_VALUE,
+						Constants.Z_STRING_VALUE
+					] );
+				}
 
-			return label;
+				return label;
+			};
 		},
 		getIsSavingObject: function ( state ) {
 			return state.isSavingZObject;
