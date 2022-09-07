@@ -122,7 +122,7 @@ module.exports = exports = {
 		{
 			title: function () {
 				return (
-					this.getZObjectLabel.value ||
+					this.getZObjectLabel( this.zLanguage ).value ||
 					mw.message( 'wikilambda-editor-default-name' ).text()
 				);
 			},

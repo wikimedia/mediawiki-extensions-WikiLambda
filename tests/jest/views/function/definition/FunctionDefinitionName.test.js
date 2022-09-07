@@ -20,7 +20,7 @@ describe( 'FunctionDefinitionName', function () {
 			getZkeyLabels: jest.fn(),
 			getUserZlangZID: jest.fn(),
 			getNextObjectId: jest.fn(),
-			getCurrentZLanguage: jest.fn()
+			getZObjectLabel: createGettersWithFunctionsMock()
 		};
 
 		global.store.hotUpdate( {

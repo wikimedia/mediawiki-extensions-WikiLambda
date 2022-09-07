@@ -64,7 +64,7 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
-		'getCurrentZLanguage'
+		'getZObjectLabel'
 	] ), {
 		zobject: function () {
 			return this.getZObjectChildrenById( this.zobjectId );
@@ -79,30 +79,7 @@ module.exports = exports = {
 			return this.getZObjectChildrenById( this.getFunctionNameMultilingualId );
 		},
 		getFunctionName: function () {
-			var labelObject,
-				label,
-				lang = this.zLang || this.getCurrentZLanguage;
-
-			for ( var index in this.getFunctionMonolingualNames ) {
-				var maybeLabel = this.getFunctionMonolingualNames[ index ],
-					language = this.getNestedZObjectById( maybeLabel.id, [
-						Constants.Z_MONOLINGUALSTRING_LANGUAGE,
-						Constants.Z_REFERENCE_ID
-					] );
-
-				if ( language.value === lang ) {
-					labelObject = maybeLabel;
-				}
-			}
-
-			if ( labelObject ) {
-				label = this.getNestedZObjectById( labelObject.id, [
-					Constants.Z_MONOLINGUALSTRING_VALUE,
-					Constants.Z_STRING_VALUE
-				] );
-			}
-
-			return label;
+			return this.getZObjectLabel( this.zLang );
 		},
 		zobjectLabel: {
 			get: function () {
