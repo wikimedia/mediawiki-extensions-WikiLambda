@@ -256,6 +256,9 @@ module.exports = exports = {
 			validateZidInput: function () {
 				var self = this,
 					normalizedSearchValue = self.inputValue.toUpperCase();
+				if ( this.isUsedLanguage( normalizedSearchValue ) ) {
+					return;
+				}
 
 				if ( self.isValidZidFormat( normalizedSearchValue ) ) {
 					self.fetchZKeyWithDebounce( [

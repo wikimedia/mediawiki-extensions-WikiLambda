@@ -57,7 +57,7 @@ module.exports = exports = {
 			this.$emit( 'change', lang );
 		},
 		addNewLang: function ( zId ) {
-			if ( !zId ) {
+			if ( !zId || this.isSelectedLang( zId ) ) {
 				return;
 			}
 
@@ -73,6 +73,10 @@ module.exports = exports = {
 
 			this.addZMonolingualString( payload );
 			this.setLocalZLanguage( zId );
+		}
+	}, {
+		isSelectedLang: function ( zId ) {
+			return this.currentZObjectLanguages.some( ( zObjLang ) => zObjLang[ Constants.Z_REFERENCE_ID ] === zId );
 		}
 	} )
 };
