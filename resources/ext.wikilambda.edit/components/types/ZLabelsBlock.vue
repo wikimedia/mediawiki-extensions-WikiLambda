@@ -472,7 +472,7 @@ module.exports = exports = {
 					zobject: {
 						Z1K1: Constants.Z_MONOLINGUALSTRINGSET,
 						Z31K1: language,
-						Z31K2: [ 'Z6', '' ]
+						Z31K2: [ Constants.Z_STRING, '' ]
 					},
 					key: nextIndexAliases.toString(),
 					id: nextId,
