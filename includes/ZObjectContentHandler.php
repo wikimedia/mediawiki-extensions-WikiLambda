@@ -31,6 +31,7 @@ use StatusValue;
 use Title;
 
 class ZObjectContentHandler extends ContentHandler {
+	use ZObjectEditingPageTrait;
 
 	/**
 	 * @param string $modelId
@@ -332,27 +333,33 @@ class ZObjectContentHandler extends ContentHandler {
 		$langNameType = $services->getLanguageNameUtils()->getLanguageName( $langCodeType );
 
 		// OBJECT NAME label (ex: My function | Unknown) and language code (ex: 'en')
-		$label = $zobject->getLabels()->buildStringForLanguage( $userLang )
+		[
+			'title' => $labelText,
+			'languageCode' => $labelCodeName
+		] = $zobject->getLabels()->buildStringForLanguage( $userLang )
 			->fallbackWithEnglish()
 			->placeholderForTitle()
 			->getStringAndLanguageCode();
-		$labelText = $label[ 'title' ];
-		$labelCodeName = $label[ 'languageCode' ];
 
-		$isoCodeClassName = 'ext-wikilambda-viewpage-header--iso-code';
-		$isoCodeObjectName = '';
 		// OBJECT NAME language label (ex: English ) of the language currently being rendered
 		$labelStringName = $services->getLanguageNameUtils()->getLanguageName( $labelCodeName );
-		if ( $labelCodeName && $labelCodeName !== $userLanguageCode ) {
-			// if the object label (ex: My function | Unknown ) is not in the user's language,
-			// render an iso code for the language used
-			$isoCodeObjectName = ZObjectUtils::getIsoCode( $labelCodeName, $labelStringName, $isoCodeClassName );
+
+		$isoCodeClassName = 'ext-wikilambda-viewpage-header--iso-code';
+
+		if ( $langNameType !== $labelStringName ) {
+			$isoCodeObjectName = $this->getIsoCodeIfUserLangIsDifferent(
+				$labelCodeName, $labelStringName, $userLanguageCode, $isoCodeClassName
+			);
+		} else {
+			// if we have two iso codes showing the same fallback language, only render the first one
+			$isoCodeObjectName = '';
 		}
 
 		// if the object type (ex: Function ) is not in the user's language,
 		// render an iso code for the language used
-		$isoCodeObjectType = $langCodeType === $userLanguageCode ? ''
-			: ZObjectUtils::getIsoCode( $langCodeType, $langNameType, $isoCodeClassName );
+		$isoCodeObjectType = $this->getIsoCodeIfUserLangIsDifferent(
+			$langCodeType, $langNameType, $userLanguageCode, $isoCodeClassName
+		);
 
 		$prefix = Html::element(
 			'span', [ 'class' => 'ext-wikilambda-viewpage-header-title' ],
@@ -386,11 +393,6 @@ class ZObjectContentHandler extends ContentHandler {
 			'div', [ 'class' => 'ext-wikilambda-viewpage-header-type' ],
 			$zobjectType[ 'type' ]
 		);
-
-		// if we have two iso codes showing the same fallback language, only render the first one
-		if ( $langNameType === $labelStringName ) {
-			$isoCodeObjectName = '';
-		}
 
 		$header = Html::rawElement(
 			'span',

@@ -77,19 +77,14 @@ class StringForLanguageBuilder {
 	}
 
 	/**
-	 * Return the string and the language code.
-	 *
-	 * @return array
+	 * @return ?string The language code for which a string value is provided.
 	 */
-	public function getStringAndLanguageCode(): array {
+	public function getLanguageProvided() {
 		$languageCode = $this->language->getCode();
 		if ( $this->provider->isLanguageProvidedValue( $languageCode ) ) {
-			$title = $this->provider->getStringForLanguageCode( $languageCode );
-			return [
-				'title' => $title,
-				'languageCode' => $languageCode
-			];
+			return $languageCode;
 		}
+
 		$fallbacks = MediaWikiServices::getInstance()->getLanguageFallback()->getAll(
 			$languageCode,
 			$this->languageFallback
@@ -97,13 +92,27 @@ class StringForLanguageBuilder {
 
 		foreach ( $fallbacks as $index => $fallbackLanguageCode ) {
 			if ( $this->provider->isLanguageProvidedValue( $fallbackLanguageCode ) ) {
-				$title = $this->provider->getStringForLanguageCode( $fallbackLanguageCode );
-				return [
-					'title' => $title,
-					'languageCode' => $fallbackLanguageCode
-				];
+				return $fallbackLanguageCode;
 			}
 		}
+		return null;
+	}
+
+	/**
+	 * Return the string and the language code.
+	 *
+	 * @return array
+	 */
+	public function getStringAndLanguageCode(): array {
+		$languageCodeProvided = $this->getLanguageProvided();
+		if ( $languageCodeProvided !== null ) {
+			return [
+				'title' => $this->provider->getStringForLanguageCode( $languageCodeProvided ),
+				'languageCode' => $languageCodeProvided
+			];
+		}
+
+		$languageCode = $this->language->getCode();
 
 		if ( isset( $this->placeholderText ) ) {
 			return [
