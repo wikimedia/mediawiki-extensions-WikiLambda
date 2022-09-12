@@ -29,6 +29,7 @@
 			:end-icon="lookupIcon"
 			:initial-input-value="initialInputValue"
 			@input="onInput"
+			@focusout="onFocusOut"
 		>
 			<template #no-results>
 				No results found.
@@ -256,10 +257,10 @@ module.exports = exports = {
 			validateZidInput: function () {
 				var self = this,
 					normalizedSearchValue = self.inputValue.toUpperCase();
+
 				if ( this.isUsedLanguage( normalizedSearchValue ) ) {
 					return;
 				}
-
 				if ( self.isValidZidFormat( normalizedSearchValue ) ) {
 					self.fetchZKeyWithDebounce( [
 						normalizedSearchValue
@@ -284,7 +285,8 @@ module.exports = exports = {
 					self.validatorSetError( 'wikilambda-invalidzobject' );
 				}
 			},
-			// used by ZLabelsBlock component to automatically add and clear labels
+			// used by ZLabelsBlock, ZMultilingualString and FnEditorZLanguageSelector components to
+			// automatically add and clear labels.
 			clearResults: function () {
 				this.lookupResults = [];
 				this.inputValue = '';
@@ -320,6 +322,9 @@ module.exports = exports = {
 				} else {
 					self.getLookupResults( input );
 				}
+			},
+			onFocusOut: function () {
+				this.$emit( 'focus-out' );
 			}
 		}
 	),
