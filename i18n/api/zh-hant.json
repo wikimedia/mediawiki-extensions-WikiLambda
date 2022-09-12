@@ -1,11 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
+			"Iceman1415",
 			"Kly"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "取得 ZObjects 的 JSON 模組。",
-	"apihelp-wikilambda_fetch-param-zids": "要取得的 ZObject ZID，依豎線符號區分。",
+	"apihelp-wikilambda_fetch-param-zids": "要取得的 ZObject ZID。",
 	"apihelp-wikilambda_fetch-param-language": "返回結果的語言。",
 	"apihelp-wikilambda_fetch-example-single": "取得單一的 ZObject，Z1。",
 	"apihelp-wikilambda_fetch-example-multiple": "取得三個 ZObjects：Z1、Z2、Z3。",
