@@ -429,16 +429,26 @@ module.exports = exports = {
 			return this.currentOutput.value !== this.initialOutputType;
 		},
 		validateInputOutputTypeChanged: function ( summary ) {
+			const inputTypeChanged = this.validateInputTypeChanged();
+			const outputTypeChanged = this.validateOutputTypeChanged();
+
 			if ( this.isEditingExistingFunction &&
-				( this.validateInputTypeChanged() || this.validateOutputTypeChanged() )
+				( inputTypeChanged || outputTypeChanged )
 			) {
 				this.dialogInfo = {
 					title: this.$i18n( 'wikilambda-function-are-you-sure-dialog-header' ).text(),
-					description: this.$i18n( 'wikilambda-publish-impact-prompt' ).text(),
+					description: '',
 					cancelButtonText: this.$i18n( 'wikilambda-continue-editing' ).text(),
 					confirmButtonText: this.$i18n( 'wikilambda-publishnew' ).text(),
 					onConfirm: function () { return this.handlePublish( summary, true ); }.bind( this )
 				};
+				if ( inputTypeChanged && outputTypeChanged ) {
+					this.dialogInfo.description = this.$i18n( 'wikilambda-publish-input-and-output-type-changed-impact-prompt' ).text();
+				} else if ( inputTypeChanged ) {
+					this.dialogInfo.description = this.$i18n( 'wikilambda-publish-input-type-changed-impact-prompt' ).text();
+				} else if ( outputTypeChanged ) {
+					this.dialogInfo.description = this.$i18n( 'wikilambda-publish-output-type-changed-impact-prompt' ).text();
+				}
 				this.$refs.dialogBox.openDialog();
 			} else if ( !this.isEditingExistingFunction && this.isMobile ) {
 				this.dialogInfo = {
