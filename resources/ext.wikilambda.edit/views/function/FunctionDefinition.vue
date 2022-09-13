@@ -14,7 +14,6 @@
 			>
 				<div class="ext-wikilambda-function-definition__container__input__language">
 					<fn-editor-zlanguage-selector
-						v-if="isNewZObject === true || labelLanguage.readonly === false"
 						class="ext-wikilambda-function-definition__container__input__language__selector"
 						:z-language="labelLanguage.zLang"
 						@change="function ( value ) {
@@ -22,9 +21,6 @@
 						}"
 					>
 					</fn-editor-zlanguage-selector>
-					<span v-else class="ext-wikilambda-function-definition__container__input__language__title">
-						{{ labelLanguage.label ? labelLanguage.label : labelLanguage.zLang }}:
-					</span>
 				</div>
 				<!-- component that displays names for a language -->
 				<function-definition-name
