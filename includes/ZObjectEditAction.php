@@ -52,15 +52,19 @@ class ZObjectEditAction extends Action {
 		[ 'title' => $labelText ] = $this->getTargetZObject()->getLabels()
 			->buildStringForLanguage( $this->getLanguage() )
 			->fallbackWithEnglish()
-			->placeholderNoFallback()
+			->placeholderForTitle()
 			->getStringAndLanguageCode();
+
+		$untitledStyle = $labelText === wfMessage( 'wikilambda-editor-default-name' )->text() ?
+			'ext-wikilambda-editpage-header--title-untitled' : null;
 
 		$label = Html::element(
 			'span',
 			[
 				'class' => [
 					'ext-wikilambda-editpage-header-title',
-					'ext-wikilambda-editpage-header-title--function-name'
+					'ext-wikilambda-editpage-header-title--function-name',
+					$untitledStyle
 				]
 			],
 			$labelText
@@ -78,7 +82,6 @@ class ZObjectEditAction extends Action {
 
 		// the iso code of the language currently being rendered for the zObject Type
 		$typeLangCode = $zObjectLabelsWithLang[ 'languageCode' ] ?: '';
-		wfDebugLog( "error", var_export( $typeLangCode, true ) );
 		$typeLangName = $services->getLanguageNameUtils()->getLanguageName( $typeLangCode );
 
 		// the iso code of the language currently being rendered for the zObject Type

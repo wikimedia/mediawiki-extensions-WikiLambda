@@ -105,9 +105,17 @@ class StringForLanguageBuilder {
 	 */
 	public function getStringAndLanguageCode(): array {
 		$languageCodeProvided = $this->getLanguageProvided();
+
 		if ( $languageCodeProvided !== null ) {
+			$title = $this->provider->getStringForLanguageCode( $languageCodeProvided );
+
+			// use 'untitled' placeholder instead of an empty string
+			if ( $title == '' && $this->placeholderText !== null ) {
+				$title = wfMessage( $this->placeholderText )->inLanguage( $this->language )->text();
+			}
+
 			return [
-				'title' => $this->provider->getStringForLanguageCode( $languageCodeProvided ),
+				'title' => $title,
 				'languageCode' => $languageCodeProvided
 			];
 		}
