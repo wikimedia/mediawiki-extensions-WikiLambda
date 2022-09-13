@@ -38,8 +38,8 @@
 
 		<div class="ext-wikilambda-editor-input-list-item__body">
 			<z-object-selector
-				ref="typeSelector"
 				v-if="( !canEditType && getTypeOfArgument ) || canEditType"
+				ref="typeSelector"
 				:type="Constants.Z_TYPE"
 				class="ext-wikilambda-editor-input-list-item__selector"
 				:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text()"

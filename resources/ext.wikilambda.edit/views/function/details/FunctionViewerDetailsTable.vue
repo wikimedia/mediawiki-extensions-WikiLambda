@@ -18,13 +18,25 @@
 					</span>
 					<!-- TODO (T310164): replace with button group -->
 					<div class="ext-wikilambda-function-details-table__title__buttons">
-						<cdx-button :disabled="!canApprove" @click="approve">
+						<cdx-button
+							v-if="!( isMobile && !canApprove )"
+							:disabled="!canApprove"
+							@click="approve">
 							<label> {{ $i18n( 'wikilambda-function-details-table-approve' ).text() }} </label>
 						</cdx-button>
-						<cdx-button :disabled="!canDeactivate" @click="deactivate">
+						<cdx-button
+							v-if="!( isMobile && !canDeactivate )"
+							:disabled="!canDeactivate"
+							@click="deactivate"
+						>
 							<label> {{ $i18n( 'wikilambda-function-details-table-deactivate' ).text() }} </label>
 						</cdx-button>
 					</div>
+				</div>
+			</template>
+			<template #table-empty-text>
+				<div class="ext-wikilambda-function-details-table__empty">
+					<span>{{ emptyText }}</span>
 				</div>
 			</template>
 		</table-container>
@@ -40,10 +52,11 @@
 </template>
 
 <script>
-
 const TableContainer = require( '../../../components/base/Table.vue' ),
 	Pagination = require( '../../../components/base/Pagination.vue' ),
-	typeUtils = require( '../../../mixins/typeUtils.js' );
+	typeUtils = require( '../../../mixins/typeUtils.js' ),
+	Constants = require( '../../../Constants.js' ),
+	useBreakpoints = require( '../../../composables/useBreakpoints.js' );
 
 // @vue/component
 module.exports = exports = {
@@ -69,6 +82,9 @@ module.exports = exports = {
 			required: false,
 			default: ''
 		},
+		emptyText: {
+			type: String
+		},
 		currentPage: {
 			type: Number,
 			default: 1
@@ -88,6 +104,17 @@ module.exports = exports = {
 		canDeactivate: {
 			type: Boolean,
 			required: true
+		}
+	},
+	setup: function () {
+		var breakpoint = useBreakpoints( Constants.breakpoints );
+		return {
+			breakpoint
+		};
+	},
+	computed: {
+		isMobile: function () {
+			return this.breakpoint.current.value === Constants.breakpointsTypes.MOBILE;
 		}
 	},
 	methods: {
@@ -119,10 +146,15 @@ module.exports = exports = {
 		}
 	}
 
-	&-no-text {
+	&__row--active {
+		background: @wmui-color-accent90;
+	}
+
+	&__empty {
 		padding: 12px;
 		font-weight: @font-weight-base;
 		color: @wmui-color-base30;
+		white-space: pre-wrap;
 	}
 
 	&__title {
@@ -146,16 +178,38 @@ module.exports = exports = {
 		word-break: break-all;
 
 		&:first-child {
+			width: 20px;
 			padding-left: 16px;
+			padding-right: 16px;
 		}
 	}
 
 	&-item {
-		padding-right: 32px;
-		word-break: break-all;
+		padding-right: 16px;
+
+		a {
+			display: block; /* Fallback for non-webkit */
+			display: -webkit-box;
+			width: max-content;
+			max-width: 244px;
+			max-height: 44.78px; /* Fallback for non-webkit */
+			-webkit-line-clamp: 2;
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
 
 		&:first-child {
 			padding-left: 16px;
+		}
+	}
+
+	@media screen and ( max-width: @width-breakpoint-tablet ) {
+		&-item {
+			a {
+				-webkit-line-clamp: 1;
+				height: 22.39px;
+			}
 		}
 	}
 }

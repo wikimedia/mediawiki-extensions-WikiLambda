@@ -24,6 +24,7 @@
 				:showing-all="implementationShowAll"
 				:can-approve="areProposedImplementationsSelected"
 				:can-deactivate="areAvailableImplementationsSelected"
+				:empty-text="$i18n( 'wikilambda-implementation-none-found' )"
 				@update-page="updateImplementationPage"
 				@reset-view="resetImplementationView"
 				@approve="approveImplementations"
@@ -38,6 +39,7 @@
 				:showing-all="testerShowAll"
 				:can-approve="areProposedTestersSelected"
 				:can-deactivate="areAvailableTestersSelected"
+				:empty-text="$i18n( 'wikilambda-tester-none-found' )"
 				@update-page="updateTestersPage"
 				@reset-view="resetTestersView"
 				@approve="approveTesters"
@@ -114,12 +116,7 @@ module.exports = exports = {
 		{
 			implementationsHeader: function () {
 				if ( this.implementationBody.length === 0 ) {
-					return {
-						name: {
-							title: this.$i18n( 'wikilambda-implementation-none-found' ),
-							class: 'ext-wikilambda-function-details-table-no-text'
-						}
-					};
+					return null;
 				}
 
 				const headers = {
@@ -258,7 +255,7 @@ module.exports = exports = {
 						testsPassed: {
 							title: '-'
 						},
-						class: 'ext-wikilambda-function-details-table-item'
+						class: this.implZidToState[ visibleImplementations[ index ] ].checked ? 'ext-wikilambda-function-details-table__row--active' : null
 					} );
 				}
 
@@ -267,12 +264,7 @@ module.exports = exports = {
 			// header columns for test table
 			testersHeader: function () {
 				if ( this.testersBody.length === 0 ) {
-					return {
-						name: {
-							title: this.$i18n( 'wikilambda-tester-none-found' ),
-							class: 'ext-wikilambda-function-details-table-no-text'
-						}
-					};
+					return null;
 				}
 
 				const headers = {
@@ -365,8 +357,7 @@ module.exports = exports = {
 									zFunctionId: this.getCurrentZObjectId,
 									zImplementationId: zid,
 									zTesterId: visibleTesters[ index ]
-								},
-								class: 'ext-wikilambda-function-details-table-item--checkbox'
+								}
 							};
 						}
 					}
@@ -382,8 +373,11 @@ module.exports = exports = {
 									'wikilambda-function-implementation-state-proposed'
 							).text(),
 							intent: isAvailable ? 'success' : 'warning'
-						}
+						},
+						class: 'ext-wikilambda-function-details-table-item'
 					};
+
+					tableData[ index ].class = this.testerZidToState[ visibleTesters[ index ] ].checked ? 'ext-wikilambda-function-details-table__row--active' : null;
 				}
 
 				return tableData;
@@ -520,7 +514,7 @@ module.exports = exports = {
 	&__tables {
 		flex: 1;
 		flex-grow: 1;
-		width: 100%;
+		width: calc( 100% - 400px );
 	}
 
 	@media screen and ( max-width: @width-breakpoint-tablet ) {

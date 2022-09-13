@@ -56,7 +56,8 @@ module.exports = exports = {
 	] ), {
 		exampleList: function () {
 			var zObjectValue = this.getZkeys[ this.getCurrentZObjectId ];
-			if ( !zObjectValue ) {
+			if ( !zObjectValue || !zObjectValue[ Constants.Z_PERSISTENTOBJECT_VALUE ][
+				Constants.Z_FUNCTION_TESTERS ] ) {
 				return [];
 			}
 

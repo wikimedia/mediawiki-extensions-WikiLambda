@@ -16,7 +16,7 @@ module.exports = function useBreakpoints( breakpoints ) {
 
 	// return the largest breakpoint as the current selected type
 	const current = Vue.computed( () => {
-		var currentType = null;
+		var currentType = Object.keys( breakpoints )[ 0 ] || null;
 		for ( var breakpoint in breakpoints ) {
 			if ( windowWidth.value >= breakpoints[ breakpoint ] ) {
 				currentType = breakpoint;

@@ -13,7 +13,10 @@
 			<slot name="table-title"></slot>
 		</div>
 		<div class="ext-wikilambda-table__body">
-			<table class="ext-wikilambda-table__content">
+			<div v-if="!header && body.length === 0" class="ext-wikilambda-table__body__empty">
+				<slot name="table-empty-text"></slot>
+			</div>
+			<table v-else class="ext-wikilambda-table__content">
 				<thead v-if="!hideHeader" class="ext-wikilambda-table__content__header ext-wikilambda-table__content__row">
 					<tr>
 						<template v-for="( n, i ) in header">
@@ -41,14 +44,15 @@
 					<tr
 						v-for="( n, i ) in body"
 						:key="i"
-						class="ext-wikilambda-table__content__row">
+						class="ext-wikilambda-table__content__row"
+						:class="n ? ( n.class ? n.class : '' ) : ''"
+					>
 						<template v-for="( _, item ) in header">
 							<td
 								v-if="n && item in n"
 								:key="item"
 								class="ext-wikilambda-table__content__row__item"
 								:class="n[ item ] ? n[ item ].class : ''"
-								:colspan="n.colspan"
 							>
 								<template v-if="n[ item ].component">
 									<component :is="n[ item ].component" v-bind="n[ item ].props">

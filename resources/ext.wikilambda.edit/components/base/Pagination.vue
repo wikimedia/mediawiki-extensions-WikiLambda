@@ -6,26 +6,29 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-pagination">
-		<cdx-button @click="resetView">
+		<cdx-button class="ext-wikilambda-pagination__view-all" @click="resetView">
 			{{ getButtonText }}
 		</cdx-button>
-		<div class="ext-wikilambda-pagination-page-selector">
-			<input
-				ref="pageInput"
-				class="ext-wikilambda-pagination-page-selector-input"
-				:max="totalPages"
-				:value="currentPage"
-				@input="resetPage"
-			>
-			/
-			{{ totalPages }}
+		<div class="ext-wikilambda-pagination__page-selector">
+			<div class="ext-wikilambda-pagination__page-selector__main">
+				<input
+					ref="pageInput"
+					class="ext-wikilambda-pagination__page-selector__input"
+					:max="totalPages"
+					:value="currentPage"
+					@input="resetPage"
+				>
+				<span class="ext-wikilambda-pagination__page-selector__total-pages">/ {{ totalPages }} </span>
+			</div>
 			<cdx-button
+				class="ext-wikilambda-pagination__page-selector__action"
 				:disabled="currentPage === 1"
 				@click="updatePage( -1 )"
 			>
 				<cdx-icon :icon="icons.cdxIconPrevious" icon-label="Back"></cdx-icon>
 			</cdx-button>
 			<cdx-button
+				class="ext-wikilambda-pagination__page-selector__action"
 				:disabled="currentPage === totalPages "
 				@click="updatePage( 1 )"
 			>
@@ -101,16 +104,42 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
+@import './../../../lib/sd-base-variables.less';
+
 .ext-wikilambda-pagination {
-	padding: 18px 12px;
+	padding-top: 18px;
+	padding-bottom: 18px;
 	display: flex;
 
-	&-page-selector {
-		margin-left: auto;
+	&__view-all {
+		flex: none;
+		height: 32px;
 	}
 
-	&-input {
-		max-width: 30px;
+	&__page-selector {
+		display: flex;
+		align-content: center;
+		margin-left: auto;
+
+		&__input {
+			width: 32px;
+			height: 32px;
+			margin: 0;
+			text-align: center;
+			.sd-box-sizing( border-box );
+		}
+
+		&__total-pages {
+			height: 32px;
+			text-align: center;
+			padding: 0 8px;
+		}
+
+		&__action {
+			padding-left: 0;
+			padding-right: 0;
+			margin-left: 8px;
+		}
 	}
 }
 </style>
