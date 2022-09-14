@@ -31,7 +31,6 @@
 		</template>
 		<ul>
 			<li v-for="argument in zFunctionArguments" :key="argument.key">
-				{{ argument.label }}:
 				<z-object-key
 					:zobject-id="findArgumentId( argument.key )"
 					:persistent="false"
