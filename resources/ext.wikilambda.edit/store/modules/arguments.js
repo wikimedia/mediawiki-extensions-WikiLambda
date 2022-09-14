@@ -32,7 +32,7 @@ module.exports = exports = {
 		 */
 		getZargumentsArray: function ( state, getters, rootState, rootGetters ) {
 			/**
-			 * @param {boolean} zlang
+			 * @param {string} zlang
 			 * @return {Array}
 			 */
 			return function ( zlang ) {
@@ -44,7 +44,7 @@ module.exports = exports = {
 							type: getters.getZarguments[ key ].type,
 							label: ( getters.getZarguments[ key ].labels.filter( function ( label ) {
 								return label.lang === lang;
-							} )[ 0 ] || getters.getZarguments[ key ].labels[ 0 ] ).label
+							} )[ 0 ] || { label: '' } ).label
 						};
 					} );
 			};
