@@ -114,9 +114,13 @@ module.exports = exports = {
 			text: null
 		},
 		isSavingZObject: false,
-		ZObjectInitialized: false
+		ZObjectInitialized: false,
+		activeLangSelection: ''
 	},
 	getters: {
+		getActiveLangSelection: function ( state ) {
+			return state.activeLangSelection;
+		},
 		getZObjectLabels: function ( state, getters ) {
 			return getters.getZObjectChildrenById( getters.getNestedZObjectById( 0, [
 				Constants.Z_PERSISTENTOBJECT_LABEL,
@@ -554,6 +558,9 @@ module.exports = exports = {
 		},
 		setIsSavingZObject: function ( state, payload ) {
 			state.isSavingZObject = payload;
+		},
+		setActiveLangSelection: function ( state, payload ) {
+			state.activeLangSelection = payload;
 		}
 	},
 	actions: {

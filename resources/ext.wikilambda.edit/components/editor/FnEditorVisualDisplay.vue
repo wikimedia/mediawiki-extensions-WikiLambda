@@ -117,7 +117,8 @@ module.exports = exports = {
 			'getZargumentsArray',
 			'getZkeyLabels',
 			'getCurrentZLanguage',
-			'currentZObjectLanguages'
+			'currentZObjectLanguages',
+			'getActiveLangSelection'
 		] ),
 		{
 			title: function () {
@@ -176,6 +177,19 @@ module.exports = exports = {
 				}
 			},
 			languageList: function () {
+				var selected = this.selectedLanguage;
+				// Check if the selected language on the Work Summary is within
+				// the current zObjectLanguages. If not, replace the Work Summary
+				// selection with the current active language selector from the function editor.
+				if ( !this.selectionWithinOptions( selected ) ) {
+					var indexToUpdate;
+					this.currentZObjectLanguages.forEach( ( zObjLang, index ) => {
+						if ( zObjLang.Z9K1 === this.getActiveLangSelection ) {
+							indexToUpdate = index;
+						}
+					} );
+					this.setLanguage( this.currentZObjectLanguages[ indexToUpdate ].Z9K1 );
+				}
 				return this.currentZObjectLanguages.map( function ( language ) {
 					return {
 						label: this.getZkeyLabels[ language.Z9K1 ],
@@ -205,6 +219,9 @@ module.exports = exports = {
 			this.inputWidth = this.$el.querySelectorAll(
 				'.ext-wikilambda-editior-visual-display-input-box'
 			)[ 0 ].offsetWidth;
+		},
+		selectionWithinOptions: function ( zId ) {
+			return this.currentZObjectLanguages.some( ( zObjLang ) => zObjLang[ Constants.Z_REFERENCE_ID ] === zId );
 		}
 	},
 	watch: {

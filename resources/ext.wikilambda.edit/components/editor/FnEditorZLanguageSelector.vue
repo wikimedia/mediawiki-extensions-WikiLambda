@@ -13,12 +13,14 @@
 				</label>
 			</div>
 			<z-object-selector
+				ref="languageSelector"
 				class="ext-wikilambda-language-selector__add-language"
 				:used-languages="currentZObjectLanguages"
 				:type="Constants.Z_NATURAL_LANGUAGE"
 				:selected-id="zLanguage"
 				:initial-selection-label="getZkeyLabels[ zLanguage ]"
 				@input="addNewLang"
+				@focus-out="clearLookupToFallback"
 			></z-object-selector>
 		</template>
 	</div>
@@ -28,7 +30,8 @@
 var Constants = require( '../../Constants.js' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions;
+	mapActions = require( 'vuex' ).mapActions,
+	mapMutations = require( 'vuex' ).mapMutations;
 
 // @vue/component
 module.exports = exports = {
@@ -44,16 +47,26 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'currentZObjectLanguages',
 		'getNestedZObjectById',
-		'getZkeyLabels'
+		'getZkeyLabels',
+		'getZObjectChildrenById'
 	] ), {
 		Constants: function () {
 			return Constants;
 		}
 	} ),
-	methods: $.extend( mapActions( [
-		'addZMonolingualString'
-	] ), {
+	methods: $.extend( {}, mapActions( [
+		'addZMonolingualString',
+		'removeZObject',
+		'removeZObjectChildren',
+		'recalculateZListIndex'
+	] ),
+	mapMutations( [
+		'setActiveLangSelection'
+	] ),
+	{
 		setLocalZLanguage: function ( lang ) {
+			this.resetPreviousLangForSelection( this.zLanguage );
+			this.setActiveLangSelection( lang );
 			this.$emit( 'change', lang );
 		},
 		addNewLang: function ( zId ) {
@@ -73,6 +86,46 @@ module.exports = exports = {
 
 			this.addZMonolingualString( payload );
 			this.setLocalZLanguage( zId );
+		},
+		isSelectedLang: function ( zId ) {
+			return this.currentZObjectLanguages.some( ( zObjLang ) =>
+				zObjLang[ Constants.Z_REFERENCE_ID ] === zId );
+		},
+		getLanguageLabelId: function ( language ) {
+			var labels = this.getZObjectChildrenById(
+					this.getNestedZObjectById( 0, [
+						Constants.Z_PERSISTENTOBJECT_LABEL,
+						Constants.Z_MULTILINGUALSTRING_VALUE
+					] ).id ),
+				labelId;
+
+			labels.forEach( function ( label ) {
+				var labelLang = this.getNestedZObjectById( label.id, [
+					Constants.Z_MONOLINGUALSTRING_LANGUAGE,
+					Constants.Z_REFERENCE_ID
+				] );
+
+				if ( labelLang.value === language ) {
+					labelId = label.id;
+				}
+			}.bind( this ) );
+
+			return labelId;
+		},
+		resetPreviousLangForSelection: function ( zId ) {
+			var labelId = this.getLanguageLabelId( zId );
+
+			this.removeZObjectChildren( labelId );
+			this.removeZObject( labelId );
+
+			var zLabelParentId = this.getNestedZObjectById( 0, [
+				Constants.Z_PERSISTENTOBJECT_LABEL,
+				Constants.Z_MULTILINGUALSTRING_VALUE
+			] ).id;
+			this.recalculateZListIndex( zLabelParentId );
+		},
+		clearLookupToFallback: function () {
+			this.$refs.languageSelector.clearResults();
 		}
 	}, {
 		isSelectedLang: function ( zId ) {
