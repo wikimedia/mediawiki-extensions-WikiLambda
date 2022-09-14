@@ -79,6 +79,9 @@ module.exports = exports = {
 			return this.getZObjectChildrenById( this.getFunctionNameMultilingualId );
 		},
 		getFunctionName: function () {
+			if ( this.zLang === '' ) {
+				return '';
+			}
 			return this.getZObjectLabel( this.zLang );
 		},
 		zobjectLabel: {
