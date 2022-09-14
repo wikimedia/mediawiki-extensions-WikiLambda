@@ -11,7 +11,7 @@
 				{{ $i18n( 'wikilambda-function-definition-inputs-label' ) }}
 			</label>
 			<tooltip
-				v-if="isEditing && tooltipMessage"
+				v-if="tooltipMessage && !canEdit"
 				:content="tooltipMessage"
 			>
 				<cdx-icon
@@ -33,7 +33,7 @@
 				:z-lang="zLang"
 				:zobject-id="argument.id"
 				:show-add-new-input="showAddNewInput( isMainZObject, index )"
-				:can-edit-type="isMainZObject"
+				:can-edit-type="canEditType"
 				:is-mobile="isMobile"
 				:is-active="activeInputIndex === index"
 				:show-index="zArgumentList.length > 1"
@@ -82,18 +82,19 @@ module.exports = exports = {
 			default: ''
 		},
 		/**
-		 * if user is in edit mode
-		 */
-		isEditing: {
-			type: Boolean
-		},
-		/**
 		 * icon that will display a tooltip
 		 */
 		tooltipIcon: {
 			type: [ String, Object ],
 			default: null,
 			required: false
+		},
+		/**
+		 * if a user has permission to edit a function
+		 */
+		canEdit: {
+			type: Boolean,
+			default: false
 		},
 		/**
 		 * message the tooltip displays
@@ -136,6 +137,9 @@ module.exports = exports = {
 		},
 		zArgumentList: function () {
 			return this.getAllItemsFromListById( this.zArgumentId );
+		},
+		canEditType: function () {
+			return this.canEdit && this.isMainZObject;
 		}
 	} ),
 	methods: $.extend( mapActions( [

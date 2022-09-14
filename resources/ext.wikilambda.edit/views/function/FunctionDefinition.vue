@@ -36,13 +36,13 @@
 					:is-mobile="isMobile"
 					:z-lang="labelLanguage.zLang"
 					:is-main-z-object="index === 0"
-					:is-editing="isEditingExistingFunction"
+					:can-edit="canEditFunction"
 					:tooltip-icon="adminTooltipIcon"
 					:tooltip-message="adminTooltipMessage"
 				></function-definition-inputs>
 				<template v-if="index === 0">
 					<function-definition-output
-						:is-editing="isEditingExistingFunction"
+						:can-edit="canEditFunction"
 						:tooltip-icon="adminTooltipIcon"
 						:tooltip-message="adminTooltipMessage"
 					></function-definition-output>
@@ -157,13 +157,18 @@ module.exports = exports = {
 		'getZObjectAsJsonById',
 		'getZObjectInitialized',
 		'getZargumentsArray',
-		'getNestedZObjectById'
+		'getNestedZObjectById',
+		'isUserLoggedIn'
 	] ),
 	mapGetters(
 		'router',
 		[ 'getQueryParams' ]
 	),
 	{
+		canEditFunction: function () {
+			// TODO(T301667): restrict to only certain user roles
+			return this.isUserLoggedIn;
+		},
 		isMobile: function () {
 			return this.breakpoint.current.value === Constants.breakpointsTypes.MOBILE;
 		},

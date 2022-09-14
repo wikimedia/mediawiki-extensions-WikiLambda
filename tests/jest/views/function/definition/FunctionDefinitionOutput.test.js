@@ -6,7 +6,6 @@
  */
 'use strict';
 
-const { CdxLookup } = require( '@wikimedia/codex' );
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
@@ -40,9 +39,6 @@ describe( 'FunctionDefinitionOutput', function () {
 		var wrapper = mount( FunctionDefinitionOutput );
 
 		var outputTypeSelector = wrapper.get( '.ext-wikilambda-function-definition-output' ).getComponent( ZObjectSelector );
-
-		var outputTypeSelectorLookup = wrapper.get( '.ext-wikilambda-select-zobject' ).getComponent( CdxLookup );
-		outputTypeSelectorLookup.vm.$emit( 'input', 'S' );
 
 		outputTypeSelector.vm.clearResults = jest.fn();
 

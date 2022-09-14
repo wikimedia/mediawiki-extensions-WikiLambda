@@ -11,7 +11,7 @@
 				{{ $i18n( 'wikilambda-function-definition-output-label' ).text() }}
 			</label>
 			<tooltip
-				v-if="isEditing && tooltipMessage"
+				v-if="tooltipMessage && !canEdit"
 				:content="tooltipMessage"
 			>
 				<cdx-icon
@@ -28,6 +28,7 @@
 			:placeholder="$i18n( 'wikilambda-function-definition-output-selector' ).text()"
 			:selected-id="zReturnType.value"
 			:initial-selection-label="zReturnTypeLabel"
+			:readonly="!canEdit"
 			@input="setReturnType"
 			@focus-out="clearIfUnset"
 		></z-object-selector>
@@ -56,10 +57,11 @@ module.exports = exports = {
 			default: 0
 		},
 		/**
-		 * if user is editing the function
+		 * if a user has permission to edit a function
 		 */
-		isEditing: {
-			type: Boolean
+		canEdit: {
+			type: Boolean,
+			default: false
 		},
 		/**
 		 * icon that will display a tooltip
