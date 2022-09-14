@@ -8,6 +8,5 @@
 	"wikilambda-special-evaluatefunctioncall": "Calcular uma chamada de função",
 	"wikilambda-special-evaluatefunctioncall-summary": "Este formulário permite calcular uma chamada de função.",
 	"wikilambda-special-evaluatefunctioncall-intro": "Certifique-se de que respeita as práticas da comunidade e as regras respeitantes a direitos de autor e patentes.",
-	"wikilambda-special-evaluatefunctioncall-nojs": "Esta página requer o uso de JavaScript.",
-	"wikilambda-publish-impact-prompt": "Atualizou o tipo de entrada ou saída desta função. Isto fará com que as implementações e testadores sejam removidos. Tem a certeza de que deseja continuar?"
+	"wikilambda-special-evaluatefunctioncall-nojs": "Esta página requer o uso de JavaScript."
 }

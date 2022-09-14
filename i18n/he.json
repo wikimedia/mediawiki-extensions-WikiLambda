@@ -79,7 +79,6 @@
 	"wikilambda-summarylabel": "תקציר:",
 	"wikilambda-languagelabel": "שפה",
 	"wikilambda-publish-summary-prompt": "נא לתאר מה שינית",
-	"wikilambda-publish-impact-prompt": "עדכנת את סוג הקלט או הפלט של הפונקציה הזאת. זה יגרום להסרת המימושים והבודקים. האם ברצונך באמת להמשיך?",
 	"wikilambda-loading": "טעינת נתונים",
 	"wikilambda-typeselector-label": "נא לבחור סוג",
 	"wikilambda-argument-typeselector-label": "נא לבחור סוג עבור הארגומנט הזה",

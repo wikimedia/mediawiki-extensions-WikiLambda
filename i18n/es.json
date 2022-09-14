@@ -95,7 +95,6 @@
 	"wikilambda-summarylabel": "Resumen:",
 	"wikilambda-languagelabel": "Idioma",
 	"wikilambda-publish-summary-prompt": "Describe lo que has cambiado",
-	"wikilambda-publish-impact-prompt": "Has actualizado el tipo de entrada o salida de esta función. Esto hará que se eliminen las implementaciones y los probadores. ¿Estás seguro que deseas continuar?",
 	"wikilambda-loading": "Cargando datos",
 	"wikilambda-typeselector-label": "Seleccionar tipo",
 	"wikilambda-argument-typeselector-label": "Seleccione un Tipo para este argumento",

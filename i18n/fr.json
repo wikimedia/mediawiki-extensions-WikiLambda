@@ -88,7 +88,6 @@
 	"wikilambda-summarylabel": "Résumé :",
 	"wikilambda-languagelabel": "Langue",
 	"wikilambda-publish-summary-prompt": "Décrivez ce que vous avez modifié",
-	"wikilambda-publish-impact-prompt": "Vous avez mis à jour le type d’entrée ou de sortie de cette fonction. Cela entraînera la suppression des mises en œuvre et des testeurs. Voulez-vous vraiment continuer ?",
 	"wikilambda-loading": "Chargement des données en cours",
 	"wikilambda-typeselector-label": "Sélectionner un type",
 	"wikilambda-argument-typeselector-label": "Sélectionner un type pour cet argument",
