@@ -112,22 +112,57 @@ module.exports = exports = {
 
 			return labelId;
 		},
-		resetPreviousLangForSelection: function ( zId ) {
+		resetArgumentListLabelsForLang: function ( language ) {
+			var argumentsList = this.getAllItemsFromListById(
+				this.getNestedZObjectById( 0, [
+					Constants.Z_PERSISTENTOBJECT_VALUE,
+					Constants.Z_FUNCTION_ARGUMENTS
+				] ).id );
+
+			argumentsList.forEach( function ( argument ) {
+				var argumentLabelArrayId = this.getNestedZObjectById( argument.id, [
+					Constants.Z_ARGUMENT_LABEL,
+					Constants.Z_MULTILINGUALSTRING_VALUE ] ).id;
+				var argumentLabelArray = this.getZObjectChildrenById( argumentLabelArrayId );
+
+				argumentLabelArray.forEach( function ( label ) {
+					var labelLang = this.getNestedZObjectById( label.id, [
+						Constants.Z_MONOLINGUALSTRING_LANGUAGE,
+						Constants.Z_REFERENCE_ID
+					] );
+
+					if ( labelLang.value === language ) {
+						this.removeZObjectChildren( label.id );
+						this.removeZObject( label.id );
+					}
+				}.bind( this ) );
+
+				this.recalculateZListIndex( argumentLabelArrayId );
+
+			}.bind( this ) );
+		},
+		resetNameLabelForLang: function ( zId ) {
 			var labelId = this.getLanguageLabelId( zId );
 
-			if ( labelId ) {
-				this.removeZObjectChildren( labelId );
-				this.removeZObject( labelId );
+			this.removeZObjectChildren( labelId );
+			this.removeZObject( labelId );
 
-				var zLabelParentId = this.getNestedZObjectById( 0, [
-					Constants.Z_PERSISTENTOBJECT_LABEL,
-					Constants.Z_MULTILINGUALSTRING_VALUE
-				] ).id;
-				this.recalculateZListIndex( zLabelParentId );
-			}
+			var zLabelParentId = this.getNestedZObjectById( 0, [
+				Constants.Z_PERSISTENTOBJECT_LABEL,
+				Constants.Z_MULTILINGUALSTRING_VALUE
+			] ).id;
+			this.recalculateZListIndex( zLabelParentId );
+		},
+		resetPreviousLangForSelection: function ( zId ) {
+			this.resetArgumentListLabelsForLang( zId );
+			this.resetNameLabelForLang( zId );
 		},
 		clearLookupToFallback: function () {
 			this.$refs.languageSelector.clearResults();
+		}
+	}, {
+		isSelectedLang: function ( zId ) {
+			return this.currentZObjectLanguages.some( ( zObjLang ) => zObjLang[ Constants.Z_REFERENCE_ID ] === zId );
 		}
 	} )
 };
