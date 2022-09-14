@@ -30,7 +30,7 @@
 		</div>
 		<div class="ext-wikilambda-zresponseenvelope__show-metrics">
 			<cdx-button
-				@click.prevent="toggleMetrics"
+				@click.stop="openMetrics"
 			>
 				{{ metricsButtonText }}
 			</cdx-button>
@@ -40,11 +40,11 @@
 			size="auto"
 			:show-action-buttons="false"
 			@exit-dialog="showMetrics = false"
+			@close-dialog="showMetrics = false"
 		>
 			<template #dialog-container-title>
 				<strong>{{ dialogTitle }}</strong>
 			</template>
-
 			<template>
 				<span v-html="dialogText"></span>
 			</template>
@@ -136,14 +136,9 @@ module.exports = exports = {
 		}
 	} ),
 	methods: {
-		toggleMetrics: function () {
-			if ( this.showMetrics ) {
-				this.showMetrics = false;
-				this.$refs.dialogBox.closeDialog();
-			} else {
-				this.showMetrics = true;
-				this.$refs.dialogBox.openDialog();
-			}
+		openMetrics: function () {
+			this.showMetrics = true;
+			this.$refs.dialogBox.openDialog();
 		},
 		isZError: function ( zobjectId ) {
 			const zType = this.getNestedZObjectById( zobjectId,
