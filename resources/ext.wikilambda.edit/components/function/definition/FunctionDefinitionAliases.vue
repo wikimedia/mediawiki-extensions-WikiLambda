@@ -115,7 +115,7 @@ module.exports = exports = {
 				return [];
 			},
 			getCurrentLanguageAliases: function () {
-				var lang = this.zLang || this.getCurrentZLanguage;
+				var lang = this.zLang;
 				for ( var index in this.getZObjectAliasObject ) {
 					var alias = this.getZObjectAliasObject[ index ],
 						language = this.getNestedZObjectById(
@@ -188,7 +188,7 @@ module.exports = exports = {
 				} );
 			},
 			addAliasForLanguage: function ( newAlias ) {
-				var language = this.zLang || this.getCurrentZLanguage;
+				var language = this.zLang;
 				var existingAliasId = this.getLanguageAliasStringsetId( language ),
 					nextId = this.getNextObjectId,
 					payload;

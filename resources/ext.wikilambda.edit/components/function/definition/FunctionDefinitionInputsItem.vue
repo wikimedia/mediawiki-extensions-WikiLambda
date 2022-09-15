@@ -223,11 +223,11 @@ module.exports = exports = {
 		'setTypeOfTypedList'
 	] ), {
 		setArgumentLabel: function ( id, input ) {
-			if ( !this.getArgumentLabel && !this.getArgumentLabels.id ) {
+			if ( ( !this.getArgumentLabel && !this.getArgumentLabels.id ) || !this.zLang ) {
 				return;
 			}
 
-			var lang = this.zLang || this.getCurrentZLanguage;
+			var lang = this.zLang;
 
 			var labels = this.getZObjectChildrenById( this.getArgumentLabels.id );
 
@@ -300,7 +300,12 @@ module.exports = exports = {
 			var index = this.isActive ? -1 : this.index;
 			this.$emit( 'active-input', index );
 		}
-	} )
+	} ),
+	watch: {
+		zLang: function () {
+			this.setArgumentLabel( this.zobjectId, null );
+		}
+	}
 };
 </script>
 

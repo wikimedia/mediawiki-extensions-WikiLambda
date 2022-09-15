@@ -103,7 +103,12 @@ module.exports = exports = {
 	} ),
 	methods: $.extend( mapActions( [
 		'setPageZObjectValue'
-	] ) )
+	] ) ),
+	watch: {
+		zLang: function () {
+			this.zobjectLabel = null;
+		}
+	}
 };
 </script>
 

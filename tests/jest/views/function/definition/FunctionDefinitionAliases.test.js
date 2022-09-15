@@ -29,8 +29,7 @@ describe( 'FunctionDefinitionAliases', function () {
 			getAllItemsFromListById: createGettersWithFunctionsMock( [ 'Z123123' ] ),
 			getZObjectChildrenById: createGettersWithFunctionsMock( [ 'Z6', 'Z123123' ] ),
 			getNestedZObjectById: createGettersWithFunctionsMock( { id: 10 } ),
-			getNextObjectId: jest.fn( function () { return 5; } ),
-			getCurrentZLanguage: jest.fn().mockReturnValue( 'Z10002' )
+			getNextObjectId: jest.fn( function () { return 5; } )
 		};
 
 		actions = {
@@ -73,7 +72,11 @@ describe( 'FunctionDefinitionAliases', function () {
 	describe( 'addAliasForLanguage', function () {
 		var wrapper;
 		beforeEach( function () {
-			wrapper = VueTestUtils.shallowMount( FunctionDefinitionAliases );
+			wrapper = VueTestUtils.shallowMount( FunctionDefinitionAliases, {
+				props: {
+					zLang: 'Z10002'
+				}
+			} );
 		} );
 		it( 'adds a new alias for an existing language', function () {
 			wrapper.vm.getLanguageAliasStringsetId = jest.fn( function () {
