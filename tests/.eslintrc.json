@@ -1,5 +1,8 @@
 {
 	"plugins": [ "jest" ],
+	"parserOptions": {
+		"ecmaVersion": 2017
+	},
 	"env": {
 		"jest/globals": true
 	},
