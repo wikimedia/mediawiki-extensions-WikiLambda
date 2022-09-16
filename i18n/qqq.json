@@ -192,6 +192,7 @@
 	"wikilambda-metadata-label-column": "Label for the label column in the metadata table.\n{{identical|Label}}",
 	"wikilambda-metadata-aka-column": "Label for the 'Also known as' column in the metadata table.",
 	"wikilambda-metadata-add-alias": "Label for button to add an alias to a ZObject",
+	"wikilambda-metadata-duplicate-alias-error": "Error message when a duplicate alias is entered",
 	"wikilambda-metadata-all-languages": "Label for button to show all languages in the metadata.",
 	"wikilambda-metadata-fewer-languages": "Label for button to show fewer languages in the metadata.",
 	"wikilambda-persistentobject-details-label": "Label for the details section of a persistent object.",

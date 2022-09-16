@@ -32,6 +32,12 @@
 				@remove-chip="removeAlias"
 			>
 			</chips>
+			<p
+				v-if="repeatAlias"
+				class="ext-wikilambda-function-definition-aliases__error"
+			>
+				{{ $i18n( "wikilambda-metadata-duplicate-alias-error", repeatAlias ) }}
+			</p>
 		</div>
 	</div>
 </template>
@@ -67,6 +73,11 @@ module.exports = exports = {
 			type: String,
 			required: true
 		}
+	},
+	data: function () {
+		return {
+			repeatAlias: null
+		};
 	},
 	computed: $.extend(
 		mapGetters( [
@@ -188,7 +199,17 @@ module.exports = exports = {
 				} );
 			},
 			addAliasForLanguage: function ( newAlias ) {
+				// show an error message if a user enters a duplicate alias
+				// TODO (T317990): should duplication be case sensitive?
+				if ( this.getFilteredCurrentLanguageAliases.some( ( alias ) => alias.value === newAlias ) ) {
+					this.repeatAlias = newAlias;
+					return;
+				}
+				// clear the error message
+				this.clearAliasError();
+
 				var language = this.zLang;
+
 				var existingAliasId = this.getLanguageAliasStringsetId( language ),
 					nextId = this.getNextObjectId,
 					payload;
@@ -231,6 +252,7 @@ module.exports = exports = {
 				}
 			},
 			updateAlias: function ( aliasId, value ) {
+				this.clearAliasError();
 				var payload = {
 					id: aliasId,
 					value: value
@@ -238,8 +260,12 @@ module.exports = exports = {
 				this.setZObjectValue( payload );
 			},
 			removeAlias: function ( index ) {
+				this.clearAliasError();
 				this.removeZObjectChildren( index );
 				this.removeZObject( index );
+			},
+			clearAliasError: function () {
+				this.repeatAlias = null;
 			}
 		}
 	)
@@ -255,6 +281,10 @@ module.exports = exports = {
 
 	&__inputs {
 		width: 300px;
+	}
+
+	&__error {
+		color: @wmui-color-red50;
 	}
 
 	&__label {

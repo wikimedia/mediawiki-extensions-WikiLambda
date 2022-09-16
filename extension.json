@@ -385,6 +385,7 @@
 				"wikilambda-function-definition-alias-label",
 				"wikilambda-function-definition-alias-placeholder",
 				"wikilambda-function-definition-alias-example",
+				"wikilambda-metadata-duplicate-alias-error",
 				"wikilambda-function-definition-footer-label",
 				"wikilambda-function-definition-footer-placeholder",
 				"wikilambda-function-definition-inputs-label",

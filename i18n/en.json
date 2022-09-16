@@ -182,6 +182,7 @@
 	"wikilambda-metadata-label-column": "Label",
 	"wikilambda-metadata-aka-column": "Also known as",
 	"wikilambda-metadata-add-alias": "Add Alias",
+	"wikilambda-metadata-duplicate-alias-error": "'$1' already exists",
 	"wikilambda-metadata-all-languages": "Show all entered languages",
 	"wikilambda-metadata-fewer-languages": "Show fewer languages",
 	"wikilambda-persistentobject-details-label": "Details",
