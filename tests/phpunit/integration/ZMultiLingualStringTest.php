@@ -214,7 +214,7 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 			$testObject->buildStringForLanguage( $englishLang )->placeholderForTitle()->getString()
 		);
 
-		// test returns 'null' if no placeholder is requested
+		// test returns null if no placeholder is requested
 		$this->assertSame(
 			null,
 			$testObject->buildStringForLanguage( $englishLang )->getString()
