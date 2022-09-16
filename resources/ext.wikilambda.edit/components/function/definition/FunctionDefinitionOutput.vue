@@ -22,12 +22,14 @@
 			</tooltip>
 		</div>
 		<z-object-selector
+			ref="typeSelector"
 			:type="Constants.Z_TYPE"
 			class="ext-wikilambda-function-definition-output__selector"
 			:placeholder="$i18n( 'wikilambda-function-definition-output-selector' ).text()"
 			:selected-id="zReturnType.value"
 			:initial-selection-label="zReturnTypeLabel"
 			@input="setReturnType"
+			@focus-out="clearIfUnset"
 		></z-object-selector>
 	</div>
 </template>
@@ -105,6 +107,11 @@ module.exports = exports = {
 				value: type
 			};
 			this.setZObjectValue( payload );
+		},
+		clearIfUnset: function () {
+			if ( !this.zReturnType.value ) {
+				this.$refs.typeSelector.clearResults();
+			}
 		}
 	} )
 };
