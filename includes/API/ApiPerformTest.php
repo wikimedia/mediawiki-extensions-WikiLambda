@@ -23,6 +23,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\MediaWikiServices;
@@ -145,6 +146,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				$testResultObject = $this->executeFunctionCall( $testFunctionCall, true );
 				$testMetadata = $testResultObject->getValueByKey(
 					ZTypeRegistry::Z_RESPONSEENVELOPE_METADATA );
+				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap $testMetadata';
 
 				// Use tester to create a function call validating the output
 				$validateTestValue = $testResultObject->hasErrors() ?
@@ -166,7 +168,9 @@ class ApiPerformTest extends WikiLambdaApiBase {
 						ZTypeRegistry::Z_RESPONSEENVELOPE_VALUE,
 						new ZReference( ZTypeRegistry::Z_BOOLEAN_FALSE )
 					);
-					// FIXME: Add to $testMetadata: validateErrors: $validateResult->getErrors();
+					// Add the validator errors to the metadata map
+					$testMetadata->setValueForKey( new ZString( "validateErrors" ),
+						$validateResult->getErrors() );
 				}
 
 				$validateResultItem = $validateResult->getZValue();
@@ -200,9 +204,12 @@ class ApiPerformTest extends WikiLambdaApiBase {
 						)
 					)
 				) {
-					// FIXME: If it failed, write the expected and actual values to the $testMetadata object
-					//  actual: $validateTestValue
-					//  expected: $validateFunctionCall->getValueByKey($targetValidationFunctionZID . 'K2' )
+					// Add the expected and actual values to the metadata map
+					$testMetadata->setValueForKey( new ZString( "actualTestResult" ),
+						$validateTestValue );
+					$testMetadata->setValueForKey( new ZString( "expectedTestResult" ),
+						$validateFunctionCall->getValueByKey( $targetValidationFunctionZID . 'K2'
+						) );
 				}
 
 				// TODO (T297707): Store this response in a DB table for faster future responses.
