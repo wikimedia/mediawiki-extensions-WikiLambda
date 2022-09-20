@@ -227,13 +227,18 @@ module.exports = exports = {
 						value: newAlias
 					} );
 				} else {
-					var key = this.getZObjectAliases.length.toString();
+					// If the monolingualStringSet for the given language does not exist,
+					// create a monolingualStringSet object with an empty array of strings
+					// and add it to the list.
+					const nextIndexAliases = this.getZObjectAliases.length + 1;
+					const multilingualAliasesId = this.getNestedZObjectById( this.zObjectAliasId, [
+						Constants.Z_MULTILINGUALSTRINGSET_VALUE
+					] ).id;
+
 					payload = {
-						key: key,
-						value: newAlias,
-						parent: this.getNestedZObjectById( this.zObjectAliasId, [
-							Constants.Z_MULTILINGUALSTRINGSET_VALUE
-						] ).id
+						key: nextIndexAliases.toString(),
+						value: 'object',
+						parent: multilingualAliasesId
 					};
 
 					this.addZObject( payload );
@@ -241,13 +246,11 @@ module.exports = exports = {
 						zobject: {
 							Z1K1: Constants.Z_MONOLINGUALSTRINGSET,
 							Z31K1: language,
-							Z31K2: [ newAlias ]
+							Z31K2: [ Constants.Z_STRING, newAlias ]
 						},
-						key: key,
+						key: nextIndexAliases.toString(),
 						id: nextId,
-						parent: this.getNestedZObjectById( this.zObjectAliasId, [
-							Constants.Z_MULTILINGUALSTRINGSET_VALUE
-						] ).id
+						parent: multilingualAliasesId
 					} );
 				}
 			},

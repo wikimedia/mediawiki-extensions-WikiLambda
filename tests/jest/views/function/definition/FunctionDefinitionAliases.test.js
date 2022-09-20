@@ -97,9 +97,9 @@ describe( 'FunctionDefinitionAliases', function () {
 				zobject: {
 					Z1K1: Constants.Z_MONOLINGUALSTRINGSET,
 					Z31K1: 'Z10002',
-					Z31K2: [ 'new alias' ]
+					Z31K2: [ Constants.Z_STRING, 'new alias' ]
 				},
-				key: '1',
+				key: '2',
 				id: 5,
 				parent: 10
 			};
