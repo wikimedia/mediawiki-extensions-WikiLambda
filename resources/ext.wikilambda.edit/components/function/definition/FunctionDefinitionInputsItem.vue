@@ -225,11 +225,11 @@ module.exports = exports = {
 		'setTypeOfTypedList'
 	] ), {
 		setArgumentLabel: function ( id, input ) {
-			if ( !this.getArgumentLabel && !this.getArgumentLabels.id ) {
+			if ( ( !this.getArgumentLabel && !this.getArgumentLabels.id ) || !this.zLang ) {
 				return;
 			}
 
-			var lang = this.zLang || this.getCurrentZLanguage;
+			var lang = this.zLang;
 
 			var labels = this.getZObjectChildrenById( this.getArgumentLabels.id );
 
@@ -307,7 +307,12 @@ module.exports = exports = {
 				this.$refs.typeSelector.clearResults();
 			}
 		}
-	} )
+	} ),
+	watch: {
+		zLang: function () {
+			this.setArgumentLabel( this.zobjectId, null );
+		}
+	}
 };
 </script>
 

@@ -48,7 +48,7 @@ module.exports = exports = {
 		'currentZObjectLanguages',
 		'getNestedZObjectById',
 		'getZkeyLabels',
-		'getZObjectChildrenById'
+		'getAllItemsFromListById'
 	] ), {
 		Constants: function () {
 			return Constants;
@@ -92,7 +92,7 @@ module.exports = exports = {
 				zObjLang[ Constants.Z_REFERENCE_ID ] === zId );
 		},
 		getLanguageLabelId: function ( language ) {
-			var labels = this.getZObjectChildrenById(
+			var labels = this.getAllItemsFromListById(
 					this.getNestedZObjectById( 0, [
 						Constants.Z_PERSISTENTOBJECT_LABEL,
 						Constants.Z_MULTILINGUALSTRING_VALUE
@@ -115,21 +115,19 @@ module.exports = exports = {
 		resetPreviousLangForSelection: function ( zId ) {
 			var labelId = this.getLanguageLabelId( zId );
 
-			this.removeZObjectChildren( labelId );
-			this.removeZObject( labelId );
+			if ( labelId ) {
+				this.removeZObjectChildren( labelId );
+				this.removeZObject( labelId );
 
-			var zLabelParentId = this.getNestedZObjectById( 0, [
-				Constants.Z_PERSISTENTOBJECT_LABEL,
-				Constants.Z_MULTILINGUALSTRING_VALUE
-			] ).id;
-			this.recalculateZListIndex( zLabelParentId );
+				var zLabelParentId = this.getNestedZObjectById( 0, [
+					Constants.Z_PERSISTENTOBJECT_LABEL,
+					Constants.Z_MULTILINGUALSTRING_VALUE
+				] ).id;
+				this.recalculateZListIndex( zLabelParentId );
+			}
 		},
 		clearLookupToFallback: function () {
 			this.$refs.languageSelector.clearResults();
-		}
-	}, {
-		isSelectedLang: function ( zId ) {
-			return this.currentZObjectLanguages.some( ( zObjLang ) => zObjLang[ Constants.Z_REFERENCE_ID ] === zId );
 		}
 	} )
 };
