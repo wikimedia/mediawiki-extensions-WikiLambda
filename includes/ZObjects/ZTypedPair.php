@@ -27,8 +27,8 @@ class ZTypedPair extends ZObject {
 	public function __construct( $functionCall, $firstItem = null, $secondItem = null ) {
 		$this->type = $functionCall;
 
-		$this->data[ ZTypeRegistry::Z_FUNCTION_TYPED_FIRST_TYPE ] = $firstItem;
-		$this->data[ ZTypeRegistry::Z_FUNCTION_TYPED_SECOND_TYPE ] = $secondItem;
+		$this->data[ 'K1' ] = $firstItem;
+		$this->data[ 'K2' ] = $secondItem;
 
 		$this->typeRegistry = ZTypeRegistry::singleton();
 	}
@@ -43,10 +43,10 @@ class ZTypedPair extends ZObject {
 				'value' => ZTypeRegistry::Z_FUNCTION_TYPED_PAIR,
 			],
 			'keys' => [
-				ZTypeRegistry::Z_FUNCTION_TYPED_FIRST_TYPE => [
+				'K1' => [
 					'type' => ZTypeRegistry::Z_OBJECT,
 				],
-				ZTypeRegistry::Z_FUNCTION_TYPED_SECOND_TYPE => [
+				'K2' => [
 					'type' => ZTypeRegistry::Z_OBJECT,
 				],
 			],
@@ -76,8 +76,8 @@ class ZTypedPair extends ZObject {
 	 * @inheritDoc
 	 */
 	public function isValid(): bool {
-		$firstItem = $this->data[ ZTypeRegistry::Z_FUNCTION_TYPED_FIRST_TYPE ] ?? null;
-		$secondItem = $this->data[ ZTypeRegistry::Z_FUNCTION_TYPED_SECOND_TYPE ] ?? null;
+		$firstItem = $this->data[ 'K1' ] ?? null;
+		$secondItem = $this->data[ 'K2' ] ?? null;
 
 		if ( !( $firstItem instanceof ZObject && $secondItem instanceof ZObject ) ) {
 			return false;
@@ -109,7 +109,7 @@ class ZTypedPair extends ZObject {
 	 * @return ?ZObject The first element
 	 */
 	public function getFirstElement(): ?ZObject {
-		return $this->data[ ZTypeRegistry::Z_FUNCTION_TYPED_FIRST_TYPE ] ?? null;
+		return $this->data[ 'K1' ] ?? null;
 	}
 
 	/**
@@ -118,7 +118,7 @@ class ZTypedPair extends ZObject {
 	 * @param ZObject $newValue The new first element
 	 */
 	public function setFirstElement( ZObject $newValue ) {
-		$this->data[ ZTypeRegistry::Z_FUNCTION_TYPED_FIRST_TYPE ] = $newValue;
+		$this->data[ 'K1' ] = $newValue;
 	}
 
 	/**
@@ -137,7 +137,7 @@ class ZTypedPair extends ZObject {
 	 * @return ?ZObject The second element
 	 */
 	public function getSecondElement(): ?ZObject {
-		return $this->data[ ZTypeRegistry::Z_FUNCTION_TYPED_SECOND_TYPE ] ?? null;
+		return $this->data[ 'K2' ] ?? null;
 	}
 
 	/**
@@ -146,6 +146,6 @@ class ZTypedPair extends ZObject {
 	 * @param ZObject $newValue The new second element
 	 */
 	public function setSecondElement( ZObject $newValue ) {
-		$this->data[ ZTypeRegistry::Z_FUNCTION_TYPED_SECOND_TYPE ] = $newValue;
+		$this->data[ 'K2' ] = $newValue;
 	}
 }

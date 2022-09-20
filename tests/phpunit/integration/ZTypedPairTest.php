@@ -177,8 +177,8 @@ class ZTypedPairTest extends WikiLambdaIntegrationTestCase {
 
 		$typedPairStdObject = (object)[
 			'Z1K1' => (object)[ 'Z1K1' => 'Z7', 'Z7K1' => 'Z882', 'Z882K1' => 'Z6', 'Z882K2' => 'Z40' ],
-			'Z882K1' => (object)[ 'Z1K1' => 'Z6', 'Z6K1' => 'Testing' ],
-			'Z882K2' => (object)[ 'Z1K1' => 'Z9', 'Z9K1' => 'Z41' ],
+			'K1' => (object)[ 'Z1K1' => 'Z6', 'Z6K1' => 'Testing' ],
+			'K2' => (object)[ 'Z1K1' => 'Z9', 'Z9K1' => 'Z41' ],
 		];
 		$testObject = ZObjectFactory::create( $typedPairStdObject );
 
@@ -296,8 +296,8 @@ class ZTypedPairTest extends WikiLambdaIntegrationTestCase {
 
 		$typedPairStdObject = (object)[
 			'Z1K1' => (object)[ 'Z1K1' => 'Z7', 'Z7K1' => 'Z882', 'Z882K1' => 'Z6', 'Z882K2' => 'Z40' ],
-			'Z882K1' => (object)[ 'Z1K1' => 'Z9', 'Z9K1' => '400' ],
-			'Z882K2' => (object)[ 'Z1K1' => 'Z6', 'Z6K1' => 'Failing' ],
+			'K1' => (object)[ 'Z1K1' => 'Z9', 'Z9K1' => '400' ],
+			'K2' => (object)[ 'Z1K1' => 'Z6', 'Z6K1' => 'Failing' ],
 		];
 		$testObject = ZObjectFactory::create( $typedPairStdObject );
 

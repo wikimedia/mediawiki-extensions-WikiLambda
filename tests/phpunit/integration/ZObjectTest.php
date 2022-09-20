@@ -132,8 +132,8 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$this->insertZids( [ 'Z17', 'Z882' ] );
 
 		$testJson = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z882", "Z882K1": "Z6", "Z882K2": "Z6" },'
-			. '"Z882K1": { "Z1K1": "Z6", "Z6K1": "soup, soup" },'
-			. '"Z882K2": { "Z1K1": "Z6", "Z6K1": "oh, tasty soup, soup" } }';
+			. '"K1": { "Z1K1": "Z6", "Z6K1": "soup, soup" },'
+			. '"K2": { "Z1K1": "Z6", "Z6K1": "oh, tasty soup, soup" } }';
 
 		$testObject = ZObjectFactory::createChild( json_decode( $testJson ) );
 
@@ -142,9 +142,9 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $testObject->isTypeFunctionCall() );
 		$this->assertTrue( $testObject->isBuiltin() );
 		$this->assertSame( 'Z882', $testObject->getZType() );
-		$this->assertInstanceOf( ZString::class, $testObject->getValueByKey( 'Z882K1' ) );
-		$this->assertInstanceOf( ZString::class, $testObject->getValueByKey( 'Z882K2' ) );
-		$this->assertNull( $testObject->getValueByKey( 'Z882K3' ) );
+		$this->assertInstanceOf( ZString::class, $testObject->getValueByKey( 'K1' ) );
+		$this->assertInstanceOf( ZString::class, $testObject->getValueByKey( 'K2' ) );
+		$this->assertNull( $testObject->getValueByKey( 'K3' ) );
 		$this->assertInstanceOf( ZFunctionCall::class, $testObject->getZTypeObject() );
 	}
 
