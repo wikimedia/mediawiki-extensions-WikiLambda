@@ -123,7 +123,7 @@ module.exports = exports = {
 				var argumentLabelArrayId = this.getNestedZObjectById( argument.id, [
 					Constants.Z_ARGUMENT_LABEL,
 					Constants.Z_MULTILINGUALSTRING_VALUE ] ).id;
-				var argumentLabelArray = this.getZObjectChildrenById( argumentLabelArrayId );
+				var argumentLabelArray = this.getAllItemsFromListById( argumentLabelArrayId );
 
 				argumentLabelArray.forEach( function ( label ) {
 					var labelLang = this.getNestedZObjectById( label.id, [
