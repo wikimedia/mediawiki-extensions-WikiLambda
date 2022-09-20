@@ -93,6 +93,7 @@ module.exports = exports = {
 
 <style lang="less">
 @import './../../../lib/wikimedia-ui-base.less';
+@import './../../../lib/sd-base-variables.less';
 
 .ext-wikilambda-chip {
 	display: inline-flex;
@@ -100,25 +101,29 @@ module.exports = exports = {
 	border-width: 1.5px;
 	border-style: solid;
 	border-radius: 12px;
-	height: 20px;
-	padding: 0 6px;
+	padding: 0 4px 0 6px;
 	margin-top: 2.5px;
 	margin-bottom: 2.5px;
 	vertical-align: middle;
+	max-width: 100%;
+	.sd-box-sizing( border-box );
 
 	&_text {
 		height: 100%;
 		width: max-content;
+		max-width: 100%;
 		display: flex;
 		align-items: center;
 	}
 
 	&_icon {
-		margin-left: 10px;
-		width: 100%;
+		margin-left: 6px;
+		width: 20px;
 		height: 100%;
 		display: flex;
 		align-items: center;
+		justify-content: center;
+		flex: none;
 
 		.cdx-icon {
 			width: 12.4px;

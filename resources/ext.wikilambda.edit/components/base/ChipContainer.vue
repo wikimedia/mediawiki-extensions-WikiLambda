@@ -22,7 +22,7 @@
 			v-model="newText"
 			class="ext-wikilambda-chip-container__input"
 			:aria-label="inputAriaLabel"
-			:placeholder="inputPlaceholder"
+			:placeholder="!hasChips ? inputPlaceholder : ''"
 			@keydown.enter="addChip"
 		>
 	</div>
@@ -42,7 +42,9 @@ module.exports = exports = {
 			type: Array,
 			required: true,
 			// eslint-disable-next-line vue/require-valid-default-prop
-			default: []
+			default: function () {
+				return [];
+			}
 		},
 		canAdd: {
 			type: Boolean, // can add a chip to the collection
@@ -71,6 +73,11 @@ module.exports = exports = {
 		return {
 			newText: ''
 		};
+	},
+	computed: {
+		hasChips: function () {
+			return this.chips.length > 0;
+		}
 	},
 	methods: {
 		editChip: function ( index, name ) {
