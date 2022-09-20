@@ -24,7 +24,7 @@
 		</div>
 		<div class="ext-wikilambda-function-definition-aliases__inputs">
 			<chips
-				:chips="getFilteredCurrentLanguageAliases"
+				:chips="getCurrentLanguageAliases"
 				:input-placeholder="functionDefinitionAliasPlaceholder"
 				:input-aria-label="$i18n( 'wikilambda-function-definition-alias-label' )"
 				@add-chip="addAliasForLanguage"
@@ -85,45 +85,25 @@ module.exports = exports = {
 			'getZObjectChildrenById',
 			'getNestedZObjectById',
 			'getNextObjectId',
-			'getCurrentZLanguage'
+			'getCurrentZLanguage',
+			'getZObjectById'
 		] ),
 		{
-			zobject: function () {
-				return this.getZObjectChildrenById( this.zobjectId );
-			},
-			zObjectAliasId: function () {
-				return this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_ALIASES, this.zobject ).id;
+			zMultilingualStringsetValueId: function () {
+				return this.getNestedZObjectById( this.zobjectId, [
+					Constants.Z_PERSISTENTOBJECT_ALIASES,
+					Constants.Z_MULTILINGUALSTRINGSET_VALUE
+				] ).id;
 			},
 			getZObjectAliases: function () {
-				return this.getAllItemsFromListById(
-					this.getNestedZObjectById( this.zobjectId, [
-						Constants.Z_PERSISTENTOBJECT_ALIASES,
-						Constants.Z_MULTILINGUALSTRINGSET_VALUE
-					] ).id
-				);
+				return this.getAllItemsFromListById( this.zMultilingualStringsetValueId );
 			},
 			getZObjectAliasObject: function () {
-				return this.getAllItemsFromListById(
-					this.getNestedZObjectById( this.zobjectId, [
-						Constants.Z_PERSISTENTOBJECT_ALIASES,
-						Constants.Z_MULTILINGUALSTRINGSET_VALUE
-					] ).id ).map(
+				return this.getZObjectAliases.map(
 					function ( alias ) {
 						return this.getZObjectChildrenById( alias.id );
 					}.bind( this )
 				);
-			},
-			/* this function is necessary because 'getCurrentLanguageAliases' returns a list
-			that contains the value 'false' for aliases that have been removed. Better pratice
-			would likely be to not return any value in this case and we will no longer have to filter */
-			getFilteredCurrentLanguageAliases: function () {
-				// this will be false before any data is loaded
-				if ( Array.isArray( this.getCurrentLanguageAliases ) ) {
-					return this.getCurrentLanguageAliases.filter( function ( alias ) {
-						return alias.value !== undefined;
-					} );
-				}
-				return [];
 			},
 			getCurrentLanguageAliases: function () {
 				var lang = this.zLang;
@@ -144,7 +124,7 @@ module.exports = exports = {
 						}.bind( this ) );
 					}
 				}
-				return false;
+				return [];
 			},
 			functionAliasLabel: function () {
 				return (
@@ -172,7 +152,8 @@ module.exports = exports = {
 			'addZString',
 			'injectZObject',
 			'removeZObjectChildren',
-			'removeZObject'
+			'removeZObject',
+			'recalculateZListIndex'
 		] ),
 		{
 			getLanguageAliasStringsetId: function ( language ) {
@@ -192,16 +173,10 @@ module.exports = exports = {
 				);
 				return aliasId;
 			},
-			getLanguageAliases: function ( language ) {
-				return this.getZObjectChildrenById(
-					this.getLanguageAliasStringsetId( language ) ).map( function ( alias ) {
-					return alias.id;
-				} );
-			},
 			addAliasForLanguage: function ( newAlias ) {
 				// show an error message if a user enters a duplicate alias
 				// TODO (T317990): should duplication be case sensitive?
-				if ( this.getFilteredCurrentLanguageAliases.some( ( alias ) => alias.value === newAlias ) ) {
+				if ( this.getCurrentLanguageAliases.some( ( alias ) => alias.value === newAlias ) ) {
 					this.repeatAlias = newAlias;
 					return;
 				}
@@ -216,7 +191,7 @@ module.exports = exports = {
 
 				if ( existingAliasId ) {
 					payload = {
-						key: this.getLanguageAliases( language ).length.toString(),
+						key: ( this.getAllItemsFromListById( existingAliasId ).length + 1 ).toString(),
 						value: newAlias,
 						parent: existingAliasId
 					};
@@ -231,14 +206,11 @@ module.exports = exports = {
 					// create a monolingualStringSet object with an empty array of strings
 					// and add it to the list.
 					const nextIndexAliases = this.getZObjectAliases.length + 1;
-					const multilingualAliasesId = this.getNestedZObjectById( this.zObjectAliasId, [
-						Constants.Z_MULTILINGUALSTRINGSET_VALUE
-					] ).id;
 
 					payload = {
 						key: nextIndexAliases.toString(),
 						value: 'object',
-						parent: multilingualAliasesId
+						parent: this.zMultilingualStringsetValueId
 					};
 
 					this.addZObject( payload );
@@ -250,22 +222,25 @@ module.exports = exports = {
 						},
 						key: nextIndexAliases.toString(),
 						id: nextId,
-						parent: multilingualAliasesId
+						parent: this.zMultilingualStringsetValueId
 					} );
 				}
 			},
-			updateAlias: function ( aliasId, value ) {
+			updateAlias: function ( aliasStringValueId, value ) {
 				this.clearAliasError();
 				var payload = {
-					id: aliasId,
+					id: aliasStringValueId,
 					value: value
 				};
 				this.setZObjectValue( payload );
 			},
-			removeAlias: function ( index ) {
+			removeAlias: function ( aliasStringValueId ) {
 				this.clearAliasError();
-				this.removeZObjectChildren( index );
-				this.removeZObject( index );
+				const aliasStringObject = this.getZObjectById( this.getZObjectById( aliasStringValueId ).parent );
+				const aliasStringSetId = aliasStringObject.parent;
+				this.removeZObjectChildren( aliasStringObject.id );
+				this.removeZObject( aliasStringObject.id );
+				this.recalculateZListIndex( aliasStringSetId );
 			},
 			clearAliasError: function () {
 				this.repeatAlias = null;
