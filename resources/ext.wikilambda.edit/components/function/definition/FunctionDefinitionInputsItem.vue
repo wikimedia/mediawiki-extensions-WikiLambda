@@ -38,6 +38,7 @@
 
 		<div class="ext-wikilambda-editor-input-list-item__body">
 			<z-object-selector
+				ref="typeSelector"
 				v-if="( !canEditType && getTypeOfArgument ) || canEditType"
 				:type="Constants.Z_TYPE"
 				class="ext-wikilambda-editor-input-list-item__selector"
@@ -46,6 +47,7 @@
 				:initial-selection-label="selectedLabel"
 				:readonly="!canEditType"
 				@input="setArgumentType( $event )"
+				@focus-out="clearIfUnset"
 			></z-object-selector>
 			<!--
 				TODO: This is hardcoded for now as it is the first complex input,
@@ -299,6 +301,11 @@ module.exports = exports = {
 		toggleActive: function () {
 			var index = this.isActive ? -1 : this.index;
 			this.$emit( 'active-input', index );
+		},
+		clearIfUnset: function () {
+			if ( !this.getTypeOfArgument ) {
+				this.$refs.typeSelector.clearResults();
+			}
 		}
 	} )
 };

@@ -6,9 +6,12 @@
  */
 'use strict';
 
+const { CdxLookup } = require( '@wikimedia/codex' );
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
+	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	FunctionDefinitionInputsItem = require( '../../../../../resources/ext.wikilambda.edit/components/function/definition/FunctionDefinitionInputsItem.vue' );
+	FunctionDefinitionInputsItem = require( '../../../../../resources/ext.wikilambda.edit/components/function/definition/FunctionDefinitionInputsItem.vue' ),
+	ZObjectSelector = require( '../../../../../resources/ext.wikilambda.edit/components/ZObjectSelector.vue' );
 
 describe( 'FunctionDefinitionInputsItem', function () {
 	var getters,
@@ -81,6 +84,25 @@ describe( 'FunctionDefinitionInputsItem', function () {
 				expect.anything(),
 				{ lang: 'Z10002', parentId: mockZLabel.id }
 			);
+		} );
+		it( 'clears on focus-out if a value is typed but then not selected', function () {
+			var wrapper = mount( FunctionDefinitionInputsItem, {
+				props: {
+					canEditType: true,
+					showAddNewInput: true
+				}
+			} );
+
+			var inputTypeSelector = wrapper.get( '.ext-wikilambda-editor-input-list-item__body' ).getComponent( ZObjectSelector );
+
+			var inputTypeSelectorLookup = wrapper.get( '.ext-wikilambda-select-zobject' ).getComponent( CdxLookup );
+			inputTypeSelectorLookup.vm.$emit( 'input', 'S' );
+
+			inputTypeSelector.vm.clearResults = jest.fn();
+
+			inputTypeSelector.vm.$emit( 'focus-out' );
+
+			expect( inputTypeSelector.vm.clearResults ).toHaveBeenCalled();
 		} );
 	} );
 } );
