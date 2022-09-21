@@ -26,15 +26,17 @@ const knownKeys = new Map( [
 	[ 'orchestrationStartTime', { i18nId: 'wikilambda-functioncall-metadata-orchestration-start-time' } ],
 	[ 'orchestrationEndTime', { i18nId: 'wikilambda-functioncall-metadata-orchestration-end-time' } ],
 	[ 'orchestrationDuration', { i18nId: 'wikilambda-functioncall-metadata-orchestration-duration' } ],
+	[ 'orchestrationCpuUsage', { i18nId: 'wikilambda-functioncall-metadata-orchestration-cpu-usage' } ],
+	[ 'orchestrationMemoryUsage', { i18nId: 'wikilambda-functioncall-metadata-orchestration-memory-usage' } ],
+	[ 'orchestrationHostname', { i18nId: 'wikilambda-functioncall-metadata-orchestration-hostname' } ],
 	[ 'evaluationStartTime', { i18nId: 'wikilambda-functioncall-metadata-evaluation-start-time' } ],
 	[ 'evaluationEndTime', { i18nId: 'wikilambda-functioncall-metadata-evaluation-end-time' } ],
 	[ 'evaluationDuration', { i18nId: 'wikilambda-functioncall-metadata-evaluation-duration' } ],
-	[ 'orchestrationMemoryUsage', { i18nId: 'wikilambda-functioncall-metadata-orchestration-memory-usage' } ],
-	[ 'evaluationMemoryUsage', { i18nId: 'wikilambda-functioncall-metadata-evaluation-memory-usage' } ],
-	[ 'executionMemoryUsage', { i18nId: 'wikilambda-functioncall-metadata-execution-memory-usage' } ],
-	[ 'orchestrationCpuUsage', { i18nId: 'wikilambda-functioncall-metadata-orchestration-cpu-usage' } ],
 	[ 'evaluationCpuUsage', { i18nId: 'wikilambda-functioncall-metadata-evaluation-cpu-usage' } ],
-	[ 'executionCpuUsage', { i18nId: 'wikilambda-functioncall-metadata-execution-cpu-usage' } ]
+	[ 'evaluationMemoryUsage', { i18nId: 'wikilambda-functioncall-metadata-evaluation-memory-usage' } ],
+	[ 'evaluationHostname', { i18nId: 'wikilambda-functioncall-metadata-evaluation-hostname' } ],
+	[ 'executionCpuUsage', { i18nId: 'wikilambda-functioncall-metadata-execution-cpu-usage' } ],
+	[ 'executionMemoryUsage', { i18nId: 'wikilambda-functioncall-metadata-execution-memory-usage' } ]
 ] );
 
 module.exports = exports = {
@@ -65,9 +67,11 @@ module.exports = exports = {
 			html = html + this.keyAndDatetimeValue( zMap, 'orchestrationStartTime', keysUsed );
 			html = html + this.keyAndDatetimeValue( zMap, 'orchestrationEndTime', keysUsed );
 			html = html + this.keyAndArbitraryValue( zMap, 'orchestrationDuration', keysUsed );
+			html = html + this.keyAndArbitraryValue( zMap, 'orchestrationHostname', keysUsed );
 			html = html + this.keyAndDatetimeValue( zMap, 'evaluationStartTime', keysUsed );
 			html = html + this.keyAndDatetimeValue( zMap, 'evaluationEndTime', keysUsed );
 			html = html + this.keyAndArbitraryValue( zMap, 'evaluationDuration', keysUsed );
+			html = html + this.keyAndArbitraryValue( zMap, 'evaluationHostname', keysUsed );
 
 			// Now portray any top-level zMap entries that weren't already used above
 			const k1Array = zMap[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];

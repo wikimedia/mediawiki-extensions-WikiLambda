@@ -471,6 +471,8 @@
 				"wikilambda-functioncall-metadata-orchestration-cpu-usage",
 				"wikilambda-functioncall-metadata-evaluation-cpu-usage",
 				"wikilambda-functioncall-metadata-execution-cpu-usage",
+				"wikilambda-functioncall-metadata-orchestration-hostname",
+				"wikilambda-functioncall-metadata-evaluation-hostname",
 				"wikilambda-functioncall-metadata-expected-result",
 				"wikilambda-functioncall-metadata-actual-result",
 				"wikilambda-functioncall-metadata-validator-errors",

@@ -135,6 +135,8 @@
 	"wikilambda-functioncall-metadata-execution-memory-usage": "Execution memory usage",
 	"wikilambda-functioncall-metadata-orchestration-cpu-usage": "Orchestration CPU usage",
 	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "Evaluation CPU usage",
+	"wikilambda-functioncall-metadata-orchestration-hostname": "Orchestration server",
+	"wikilambda-functioncall-metadata-evaluation-hostname": "Evaluation server",
 	"wikilambda-functioncall-metadata-execution-cpu-usage": "Execution CPU usage",
 	"wikilambda-functioncall-metadata-expected-result": "Expected result",
 	"wikilambda-functioncall-metadata-actual-result": "Actual result",
