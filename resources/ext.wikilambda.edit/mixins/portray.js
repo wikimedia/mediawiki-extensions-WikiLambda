@@ -67,11 +67,17 @@ module.exports = exports = {
 			html = html + this.keyAndDatetimeValue( zMap, 'orchestrationStartTime', keysUsed );
 			html = html + this.keyAndDatetimeValue( zMap, 'orchestrationEndTime', keysUsed );
 			html = html + this.keyAndArbitraryValue( zMap, 'orchestrationDuration', keysUsed );
+			html = html + this.keyAndArbitraryValue( zMap, 'orchestrationCpuUsage', keysUsed );
+			html = html + this.keyAndArbitraryValue( zMap, 'orchestrationMemoryUsage', keysUsed );
 			html = html + this.keyAndArbitraryValue( zMap, 'orchestrationHostname', keysUsed );
 			html = html + this.keyAndDatetimeValue( zMap, 'evaluationStartTime', keysUsed );
 			html = html + this.keyAndDatetimeValue( zMap, 'evaluationEndTime', keysUsed );
 			html = html + this.keyAndArbitraryValue( zMap, 'evaluationDuration', keysUsed );
+			html = html + this.keyAndArbitraryValue( zMap, 'evaluationCpuUsage', keysUsed );
+			html = html + this.keyAndArbitraryValue( zMap, 'evaluationMemoryUsage', keysUsed );
 			html = html + this.keyAndArbitraryValue( zMap, 'evaluationHostname', keysUsed );
+			html = html + this.keyAndArbitraryValue( zMap, 'executionCpuUsage', keysUsed );
+			html = html + this.keyAndArbitraryValue( zMap, 'executionMemoryUsage', keysUsed );
 
 			// Now portray any top-level zMap entries that weren't already used above
 			const k1Array = zMap[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
