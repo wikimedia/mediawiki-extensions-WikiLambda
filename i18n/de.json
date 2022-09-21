@@ -165,6 +165,7 @@
 	"wikilambda-metadata-label-column": "Beschriftung",
 	"wikilambda-metadata-aka-column": "Auch bekannt als",
 	"wikilambda-metadata-add-alias": "Alias hinzufügen",
+	"wikilambda-metadata-duplicate-alias-error": "„$1“ ist bereits vorhanden",
 	"wikilambda-metadata-all-languages": "Zeige alle eingegebenen Sprachen",
 	"wikilambda-metadata-fewer-languages": "Zeige weniger Sprachen",
 	"wikilambda-persistentobject-details-label": "Einzelheiten",
