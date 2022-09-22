@@ -13,7 +13,6 @@ var Constants = require( '../../Constants.js' ),
 	addZObjects = require( './zobject/addZObjects.js' ),
 	currentZObject = require( './zobject/currentZObject.js' ),
 	saveZObject = require( '../../mixins/api.js' ).methods.saveZObject,
-	updateZObjectPageTitle = require( '../../mixins/domUtils.js' ).methods.updateZObjectPageTitle,
 	debounceZObjectLookup = null,
 	DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT = 300;
 
@@ -743,7 +742,8 @@ module.exports = exports = {
 
 			// Update page title
 			if ( payload.isMainZObject ) {
-				updateZObjectPageTitle( payload.value );
+				const pageTitleSelector = '#firstHeading .ext-wikilambda-editpage-header-title--function-name';
+				$( pageTitleSelector ).first().text( payload.value );
 			}
 
 			// TODO(T309723): if renaming a function that had previously had no name,
