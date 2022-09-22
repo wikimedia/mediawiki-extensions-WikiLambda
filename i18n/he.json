@@ -171,6 +171,7 @@
 	"wikilambda-metadata-label-column": "תווית",
 	"wikilambda-metadata-aka-column": "ידוע גם בשם",
 	"wikilambda-metadata-add-alias": "הוספת כינוי",
+	"wikilambda-metadata-duplicate-alias-error": "\"$1\" כבר קיים",
 	"wikilambda-metadata-all-languages": "הצגת כל השפות שהוכנסו",
 	"wikilambda-metadata-fewer-languages": "הצגת פחות שפות",
 	"wikilambda-persistentobject-details-label": "פרטים",

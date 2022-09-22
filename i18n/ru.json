@@ -48,6 +48,7 @@
 	"wikilambda-enable-expert-mode": "Включить режим Эксперта",
 	"wikilambda-disable-expert-mode": "Выключить режим эксперта",
 	"wikilambda-metadata-language-column": "Язык",
+	"wikilambda-metadata-duplicate-alias-error": "'$1' уже существует",
 	"wikilambda-metadata-fewer-languages": "Показать меньше языков",
 	"wikilambda-function-definition-add-other-label-languages-title": "+ Добавить метки на другом языке",
 	"wikilambda-function-implementation-name-label": "Имя",

@@ -8,6 +8,13 @@
 	"wikilambda-cancel": "Prekliči",
 	"wikilambda-savenew": "Shrani",
 	"wikilambda-summarylabel": "Povzetek:",
+	"wikilambda-publish-input-type-changed-impact-prompt": "Spremenili ste vrsto vhoda te funkcije. Vse obstoječe izvedbe in testi bodo ločeni od trenutne funkcije. Želite nadaljevati?",
+	"wikilambda-publish-output-type-changed-impact-prompt": "Spremenili ste vrsto izhoda te funkcije. Vse obstoječe izvedbe in testi bodo ločeni od trenutne funkcije. Želite nadaljevati?",
+	"wikilambda-publish-input-and-output-type-changed-impact-prompt": "Spremenili ste vrsto vnosa in izhoda te funkcije. Vse obstoječe izvedbe in testi bodo ločeni od trenutne funkcije. Želite nadaljevati?",
+	"wikilambda-functioncall-metadata-orchestration-hostname": "Orkestracijski strežnik",
+	"wikilambda-functioncall-metadata-evaluation-hostname": "Ocenjevalni strežnik",
+	"wikilambda-functioncall-metadata-expected-result": "Pričakovani rezultat",
+	"wikilambda-functioncall-metadata-actual-result": "Dejanski rezultat",
 	"wikilambda-persistentobject-details-label": "Podrobnosti",
 	"wikilambda-editor-fn-step-function-details": "Podrobnosti"
 }

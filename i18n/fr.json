@@ -133,6 +133,8 @@
 	"wikilambda-functioncall-metadata-execution-memory-usage": "Utilisation de la mémoire pour l’exécution",
 	"wikilambda-functioncall-metadata-orchestration-cpu-usage": "Utilisation du processeur pour l’orchestration",
 	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "Utilisation du processeur pour l’évaluation",
+	"wikilambda-functioncall-metadata-orchestration-hostname": "Serveur d’orchestration",
+	"wikilambda-functioncall-metadata-evaluation-hostname": "Serveur d’évaluation",
 	"wikilambda-functioncall-metadata-execution-cpu-usage": "Utilisation du processeur pour l’exécution",
 	"wikilambda-functioncall-metadata-expected-result": "Résultat attendu",
 	"wikilambda-functioncall-metadata-actual-result": "Résultat obtenu",

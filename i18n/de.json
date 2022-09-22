@@ -118,6 +118,7 @@
 	"wikilambda-functioncall-metadata-evaluation-memory-usage": "Auswertung der Speichernutzung",
 	"wikilambda-functioncall-metadata-execution-memory-usage": "Auslastung des Speichers",
 	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "Auswertung CPU-Nutzung",
+	"wikilambda-functioncall-metadata-evaluation-hostname": "Auswertungsserver",
 	"wikilambda-functioncall-metadata-execution-cpu-usage": "Ausführung CPU-Auslastung",
 	"wikilambda-functioncall-metadata-expected-result": "Erwartetes Ergebnis",
 	"wikilambda-functioncall-metadata-actual-result": "Tatsächliches Ergebnis",
