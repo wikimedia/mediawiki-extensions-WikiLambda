@@ -8,6 +8,7 @@ use ApiTestCase;
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall
  * @group API
  * @group Standalone
+ * @group medium
  */
 class ApiFunctionCallTest extends ApiTestCase {
 
@@ -112,7 +113,8 @@ class ApiFunctionCallTest extends ApiTestCase {
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		yield 'Invoke the Map function: given a function and a list of strings, return the result of running the function over each string' => [
 			$this->readTestFile( 'example-map.json' ),
-			"[\"Z6\",\"acab\",\"acab\",\"bacab\"]"
+			// @phpcs:ignore Generic.Files.LineLength.TooLong
+			"[{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z6\",\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z6K1\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"value\"}]}}],\"Z4K3\":\"Z106\"},\"acab\",\"acab\",\"bacab\"]"
 		];
 
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
@@ -129,15 +131,19 @@ class ApiFunctionCallTest extends ApiTestCase {
 		yield 'Invoke a function that returns the second element of a Pair<String,Pair<String,Bool>>' => [
 			$this->readTestFile( 'example-generic-pair.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			"{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z40\"},\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"K1\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"first\"}]}},{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z40\",\"Z3K2\":\"K2\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"second\"}]}}],\"Z4K3\":\"Z831\"},\"K1\":\"and all her silken flanks in garlands drest\",\"K2\":{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}}"
+			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 		];
 
+		/*
+		 *
+		 * TODO (T318363): Re-enable this once request entities are not too large.
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		yield 'Invoke a function that maps the element of a generic Map at a given key to a string version of its value' => [
 			$this->readTestFile( 'example-generic-map.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			"{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z883\",\"Z883K1\":\"Z6\",\"Z883K2\":\"Z6\"},\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z881\",\"Z881K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z6\"},\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"K1\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"first\"}]}},{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"K2\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"second\"}]}}],\"Z4K3\":\"Z831\"}},\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z6\"},\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"K1\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"first\"}]}},{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"K2\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"second\"}]}}],\"Z4K3\":\"Z831\"},\"Z3K2\":\"K1\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"head\"}]}},{\"Z1K1\":\"Z3\",\"Z3K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z881\",\"Z881K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z6\"},\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"K1\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"first\"}]}},{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"K2\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"second\"}]}}],\"Z4K3\":\"Z831\"}},\"Z3K2\":\"K2\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"tail\"}]}}],\"Z4K3\":\"Z831\"},\"Z3K2\":\"K1\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"elements\"}]}}],\"Z4K3\":\"Z831\"},\"K1\":[{\"Z1K1\":\"Z4\",\"Z4K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z6\"},\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"K1\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"first\"}]}},{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"K2\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"second\"}]}}],\"Z4K3\":\"Z831\"},{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z6\"},\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"K1\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"first\"}]}},{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"K2\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"second\"}]}}],\"Z4K3\":\"Z831\"},\"K1\":\"true?\",\"K2\":\"True\"}]}"
 		];
+		*/
 
 		yield 'Invoke Python function using a user-defined type' => [
 			$this->readTestFile( 'example-user-defined-python.json' ),
