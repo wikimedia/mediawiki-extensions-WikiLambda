@@ -272,10 +272,11 @@ module.exports = exports = {
 
 	&-body {
 		padding: 16px 25px;
-	}
 
-	&-language-selector {
-		margin-bottom: 18px;
+		&__language-selector {
+			margin-bottom: 18px;
+			min-width: 100px;
+		}
 	}
 
 	&-name {
