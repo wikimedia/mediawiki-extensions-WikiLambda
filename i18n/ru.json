@@ -40,6 +40,8 @@
 	"wikilambda-function-are-you-sure-dialog-header": "Вы уверены?",
 	"wikilambda-functioncall-metadata-dialog-header": "Метаданные",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Ошибка|Ошибки|Ошибок}}",
+	"wikilambda-functioncall-metadata-orchestration-hostname": "Оркестрационный сервер",
+	"wikilambda-functioncall-metadata-evaluation-hostname": "Пробный сервер",
 	"wikilambda-functioncall-metadata-expected-result": "Ожидаемый результат",
 	"wikilambda-functioncall-metadata-actual-result": "Фактический результат",
 	"wikilambda-functioncall-metadata-validator-errors": "{{PLURAL:$1|1=Ошибка|Ошибки}} валидации",

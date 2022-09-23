@@ -22,6 +22,7 @@
 	"wikilambda-function-are-you-sure-dialog-header": "هل أنت متأكد؟",
 	"wikilambda-function-are-you-sure-dialog-description": "هل انت متاكد انك تريد ترك وضع التحرير من دون النشر اولا",
 	"wikilambda-tester-create-new": "قم بإنشاء اختبار جديد",
+	"wikilambda-metadata-duplicate-alias-error": "$1 موجود بالفعل.",
 	"wikilambda-function-definition-edit": "عدل التعريف",
 	"wikilambda-editor-additional-details-label": "تفاصيل إضافية",
 	"wikilambda-editor-fn-step-function-details": "تفاصيل",

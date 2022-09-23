@@ -124,6 +124,8 @@
 	"wikilambda-functioncall-metadata-execution-memory-usage": "שימוש בזיכרון של ביצוע",
 	"wikilambda-functioncall-metadata-orchestration-cpu-usage": "שימוש בכוח עיבוד של תזמור",
 	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "שימוש בכוח עיבוד של הערכה",
+	"wikilambda-functioncall-metadata-orchestration-hostname": "שרת תזמור",
+	"wikilambda-functioncall-metadata-evaluation-hostname": "שרת הערכה",
 	"wikilambda-functioncall-metadata-execution-cpu-usage": "שימוש בכוח עיבוד של ביצוע",
 	"wikilambda-functioncall-metadata-expected-result": "תוצאה מצופה",
 	"wikilambda-functioncall-metadata-actual-result": "תוצאה בפועל",
