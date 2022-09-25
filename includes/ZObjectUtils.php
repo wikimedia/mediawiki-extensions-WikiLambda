@@ -219,7 +219,7 @@ class ZObjectUtils {
 	 */
 	public static function canonicalize( $input ) {
 		if ( is_array( $input ) ) {
-			return array_map( [ __CLASS__, 'canonicalize' ], $input );
+			return array_map( [ self::class, 'canonicalize' ], $input );
 		}
 
 		if ( is_object( $input ) ) {
@@ -342,8 +342,8 @@ class ZObjectUtils {
 			}
 		}
 
-		uksort( $record, [ __CLASS__, 'orderZKeyIDs' ] );
-		$record = array_map( [ __CLASS__, 'canonicalize' ], $record );
+		uksort( $record, [ self::class, 'orderZKeyIDs' ] );
+		$record = array_map( [ self::class, 'canonicalize' ], $record );
 		return (object)$record;
 	}
 
@@ -551,7 +551,7 @@ class ZObjectUtils {
 	 */
 	private static function normalizeList( $input ): stdClass {
 		$listType = self::normalize( array_shift( $input ) );
-		$elements = array_map( [ __CLASS__, 'normalize' ], $input );
+		$elements = array_map( [ self::class, 'normalize' ], $input );
 		return self::normalizeListInternal( $listType, $elements );
 	}
 
@@ -611,7 +611,7 @@ class ZObjectUtils {
 			// If is a list, apply the normalizer function to every
 			// element of the array
 			if ( is_array( $value ) ) {
-				$input->$index = array_map( [ __CLASS__, 'normalizeZStringsAndZReferences' ], $value );
+				$input->$index = array_map( [ self::class, 'normalizeZStringsAndZReferences' ], $value );
 			}
 
 			// If the value is an object:
