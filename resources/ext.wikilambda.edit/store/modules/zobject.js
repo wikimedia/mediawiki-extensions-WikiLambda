@@ -971,7 +971,7 @@ module.exports = exports = {
 		 * @param {number} objectId
 		 */
 		removeZObject: function ( context, objectId ) {
-			if ( objectId === null ) {
+			if ( objectId === null || objectId === undefined ) {
 				return;
 			}
 			var objectIndex = context.getters.getZObjectIndexById( objectId );
