@@ -80,15 +80,15 @@ module.exports = exports = {
 		}
 	},
 	methods: {
-		editChip: function ( index, name ) {
-			this.$emit( 'edit-chip', index, name );
+		editChip: function ( id, name ) {
+			this.$emit( 'edit-chip', id, name );
 		},
 		addChip: function () {
 			this.$emit( 'add-chip', this.newText );
 			this.newText = '';
 		},
-		removeChip: function ( index ) {
-			this.$emit( 'remove-chip', index );
+		removeChip: function ( id ) {
+			this.$emit( 'remove-chip', id );
 		},
 		focusInput: function () {
 			if ( this.canAdd ) {
