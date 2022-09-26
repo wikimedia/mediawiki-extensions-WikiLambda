@@ -218,7 +218,7 @@ class Hooks implements
 			"$dir/$type/patch-add-return-type-field.sql"
 		);
 
-		$updater->addExtensionUpdate( [ [ __CLASS__, 'createInitialContent' ] ] );
+		$updater->addExtensionUpdate( [ [ self::class, 'createInitialContent' ] ] );
 	}
 
 	/**
@@ -500,7 +500,7 @@ class Hooks implements
 	public function onParserFirstCallInit( $parser ) {
 		$config = MediaWikiServices::getInstance()->getMainConfig();
 		if ( $config->get( 'WikiLambdaEnableParserFunction' ) ) {
-			$parser->setFunctionHook( 'function', [ __CLASS__ , 'parserFunctionCallback' ], Parser::SFH_OBJECT_ARGS );
+			$parser->setFunctionHook( 'function', [ self::class , 'parserFunctionCallback' ], Parser::SFH_OBJECT_ARGS );
 		}
 	}
 
