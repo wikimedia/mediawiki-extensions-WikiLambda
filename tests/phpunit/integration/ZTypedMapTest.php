@@ -9,7 +9,9 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
@@ -591,5 +593,88 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 			->getZValue() );
 
 		$this->assertSame( null, $testObject->getValueGivenKey( new ZString( 'Unknown key' ) ) );
+	}
+
+	/**
+	 * @covers ::setValueForKey
+	 */
+	public function testSetValueForKey_invalidMap() {
+		$this->insertZids( [ 'Z1', 'Z6', 'Z40', 'Z41', 'Z42' ] );
+
+		// $pairType = ZTypedPair::buildType( 'Z6', 'Z1' );
+		$invalidObject = new ZTypedMap(
+			'Z6',
+			null
+		);
+
+		$this->expectException( ZErrorException::class );
+		$invalidObject->setValueForKey( new ZString( 'Testing1' ), new ZReference( 'Z42' ) );
+	}
+
+	/**
+	 * @covers ::setValueForKey
+	 */
+	public function testSetValueForKey_invalidKey() {
+		$this->insertZids( [ 'Z1', 'Z6', 'Z40', 'Z41', 'Z42' ] );
+
+		$pairType = ZTypedPair::buildType( 'Z6', 'Z1' );
+		$testObject = new ZTypedMap(
+			ZTypedMap::buildType( 'Z6', 'Z1' ),
+			new ZTypedList(
+				ZTypedList::buildType( $pairType ),
+				[]
+			)
+		);
+
+		$falseRef = new ZReference( 'Z42' );
+
+		$this->expectException( ZErrorException::class );
+		$testObject->setValueForKey( new ZQuote( 'Invalid key type!' ), $falseRef );
+	}
+
+	/**
+	 * @covers ::setValueForKey
+	 */
+	public function testSetValueForKey_invalidKeyReferenceOrFunctionCallPassesAnyway() {
+		$this->insertZids( [ 'Z1', 'Z6', 'Z40', 'Z41', 'Z42' ] );
+
+		$pairType = ZTypedPair::buildType( 'Z6', 'Z1' );
+		$testObject = new ZTypedMap(
+			ZTypedMap::buildType( 'Z6', 'Z1' ),
+			new ZTypedList(
+				ZTypedList::buildType( $pairType ),
+				[]
+			)
+		);
+
+		$boolRef = new ZReference( 'Z40' );
+		$falseRef = new ZReference( 'Z42' );
+
+		$testObject->setValueForKey( $boolRef, $falseRef );
+		$this->assertSame(
+			$falseRef->getZValue(),
+			$testObject->getValueGivenKey( $boolRef )->getZValue()
+		);
+
+		$testObject->setValueForKey( $pairType, $falseRef );
+	}
+
+	/**
+	 * @covers ::setValueForKey
+	 */
+	public function testSetValueForKey_invalidValue() {
+		$this->insertZids( [ 'Z1', 'Z6', 'Z40', 'Z41', 'Z42' ] );
+
+		$pairType = ZTypedPair::buildType( 'Z6', 'Z40' );
+		$testObject = new ZTypedMap(
+			ZTypedMap::buildType( 'Z6', 'Z40' ),
+			new ZTypedList(
+				ZTypedList::buildType( $pairType ),
+				[]
+			)
+		);
+
+		$this->expectException( ZErrorException::class );
+		$testObject->setValueForKey( new ZString( 'TestingInvalidType' ), new ZString( 'Hello' ) );
 	}
 }
