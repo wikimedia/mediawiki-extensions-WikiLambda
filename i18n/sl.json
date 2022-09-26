@@ -16,6 +16,8 @@
 	"wikilambda-functioncall-metadata-evaluation-hostname": "Ocenjevalni strežnik",
 	"wikilambda-functioncall-metadata-expected-result": "Pričakovani rezultat",
 	"wikilambda-functioncall-metadata-actual-result": "Dejanski rezultat",
+	"wikilambda-functioncall-metadata-validator-errors": "{{PLURAL:$1|Napaka|Napake}} validatorja",
+	"wikilambda-metadata-duplicate-alias-error": "»$1« že obstaja",
 	"wikilambda-persistentobject-details-label": "Podrobnosti",
 	"wikilambda-editor-fn-step-function-details": "Podrobnosti"
 }

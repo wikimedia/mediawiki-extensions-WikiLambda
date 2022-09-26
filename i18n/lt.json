@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Pavel1513"
+		]
+	},
+	"wikilambda-functioncall-metadata-orchestration-hostname": "\"Orkestravimo\" serveris",
+	"wikilambda-functioncall-metadata-evaluation-hostname": "Įvertinimo serveris"
+}
