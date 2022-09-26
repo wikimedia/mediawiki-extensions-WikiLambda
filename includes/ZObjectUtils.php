@@ -15,7 +15,10 @@ use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunction;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use Normalizer;
@@ -1041,5 +1044,37 @@ class ZObjectUtils {
 
 		}
 		return (object)$labelized;
+	}
+
+	/**
+	 * @param ZObject $accepted The ZObject we accept (typically a ZReference)
+	 * @param ZObject $input A ZObject we're looking to evaluate whether it's compatible
+	 * @return bool True if the types are compatible
+	 */
+	public static function isCompatibleType( ZObject $accepted, ZObject $input ): bool {
+		// Do we accept anything? If so, go ahead.
+		if ( $accepted->getZValue() === 'Z1' ) {
+			return true;
+		}
+
+		// Are we being given a reference? If so, go ahead.
+		// TODO (T318588): Dereference this to see if it is actually to an allowed object?
+		if ( $input instanceof ZReference ) {
+			return true;
+		}
+
+		// Are we being given a function call? If so, go ahead.
+		// TODO (T318588): Execute this to see if it is actually to an allowed object?
+		if ( $input instanceof ZFunctionCall ) {
+			return true;
+		}
+
+		// Do we exactly match by type what's accepted? If so, go ahead.
+		if ( $accepted->getZValue() === $input->getZTypeObject()->getZValue() ) {
+			return true;
+		}
+
+		// Otherwise, no.
+		return false;
 	}
 }

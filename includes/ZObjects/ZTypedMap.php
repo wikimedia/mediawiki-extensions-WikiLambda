@@ -14,6 +14,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 class ZTypedMap extends ZObject {
 
@@ -177,7 +178,7 @@ class ZTypedMap extends ZObject {
 		}
 
 		// Check the types of the key and value for compatibility
-		if ( !self::compatibleTypes( $this->getKeyType(), $key ) ) {
+		if ( !ZObjectUtils::isCompatibleType( $this->getKeyType(), $key ) ) {
 			// The key we've been given is of an unacceptable type
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
@@ -191,7 +192,7 @@ class ZTypedMap extends ZObject {
 			);
 		}
 
-		if ( !self::compatibleTypes( $this->getValueType(), $value ) ) {
+		if ( !ZObjectUtils::isCompatibleType( $this->getValueType(), $value ) ) {
 			// The value we've been given is of an unacceptable type
 			throw new ZErrorException(
 				ZErrorFactory::createZErrorInstance(
@@ -225,35 +226,4 @@ class ZTypedMap extends ZObject {
 		$this->data[ 'K1' ] = $typedList;
 	}
 
-	/**
-	 * @param ZObject $accepted The ZObject we accept (typically a ZReference)
-	 * @param ZObject $input A ZObject we're looking to evaluate whether it's compatible
-	 * @return bool True if the types are compatible
-	 */
-	private static function compatibleTypes( ZObject $accepted, ZObject $input ): bool {
-		// Do we accept anything? If so, go ahead.
-		if ( $accepted->getZValue() === 'Z1' ) {
-			return true;
-		}
-
-		// Are we being given a reference? If so, go ahead.
-		// TODO (T318588): Dereference this to see if it is actually to an allowed object?
-		if ( $input instanceof ZReference ) {
-			return true;
-		}
-
-		// Are we being given a function call? If so, go ahead.
-		// TODO (T318588): Execute this to see if it is actually to an allowed object?
-		if ( $input instanceof ZFunctionCall ) {
-			return true;
-		}
-
-		// Do we exactly match by type what's accepted? If so, go ahead.
-		if ( $accepted->getZValue() === $input->getZTypeObject()->getZValue() ) {
-			return true;
-		}
-
-		// Otherwise, no.
-		return false;
-	}
 }
