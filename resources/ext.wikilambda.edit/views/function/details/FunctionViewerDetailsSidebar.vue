@@ -170,7 +170,7 @@ module.exports = exports = {
 						title: this.zArgumentTypeLabel( zArgumentType ),
 						component: 'a',
 						props: {
-							href: '/wiki/' + zArgumentType
+							href: new mw.Title( zArgumentType ).getUrl()
 						},
 						class: argumentIndex > 0 ? 'ext-wikilambda-function-viewer-details-sidebar__table-bordered-row' : 'ext-wikilambda-function-viewer-details-sidebar__table-borderless-row'
 					}
@@ -261,7 +261,7 @@ module.exports = exports = {
 					title: this.zReturnTypeLabel,
 					component: 'a',
 					props: {
-						href: '/wiki/' + this.zReturnType
+						href: new mw.Title( this.zReturnType ).getUrl()
 					},
 					class: 'ext-wikilambda-function-viewer-details-sidebar__table-bordered-row'
 				}

@@ -70,7 +70,7 @@ module.exports = exports = {
 			return this.getZkeys[ this.zImplementationId ];
 		},
 		zImplementationLink: function () {
-			return '/wiki/' + this.zImplementationId;
+			return new mw.Title( this.zImplementationId ).getUrl();
 		}
 	}
 	),

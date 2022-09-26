@@ -13,7 +13,7 @@ const Constants = require( '../../Constants.js' );
  * @return {boolean}
  */
 const isEvaluateFunctionCallPath = function ( uriPath ) {
-	return uriPath === Constants.PATHS.EVALUTATE_FUNCTION_CALL;
+	return uriPath === new mw.Title( 'Special:EvaluateFunctionCall' ).getUrl();
 };
 
 /**
@@ -21,7 +21,8 @@ const isEvaluateFunctionCallPath = function ( uriPath ) {
  * @return {boolean}
  */
 const isNewOrExistingObjectPath = function ( uriPath ) {
-	return [ Constants.PATHS.CREATE_Z_OBJECT, Constants.PATHS.EDIT_Z_OBJECT ].indexOf( uriPath ) !== -1;
+	const newUrl = new mw.Title( 'Special:CreateZObject' ).getUrl();
+	return [ newUrl, Constants.PATHS.EDIT_Z_OBJECT ].indexOf( uriPath ) !== -1;
 };
 
 /**

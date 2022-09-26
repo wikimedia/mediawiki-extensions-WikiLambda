@@ -99,7 +99,7 @@ module.exports = exports = {
 				return this.getCurrentZObjectId;
 			},
 			typeLink: function () {
-				return '/wiki/' + this.type;
+				return new mw.Title( this.type ).getUrl();
 			}
 		}
 	),

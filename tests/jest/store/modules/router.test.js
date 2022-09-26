@@ -285,7 +285,7 @@ describe( 'router Vuex module', function () {
 				it( 'when uri path is Evaluate function call', function () {
 					window.mw.Uri.mockImplementationOnce( function () {
 						return {
-							path: Constants.PATHS.EVALUTATE_FUNCTION_CALL,
+							path: new mw.Title( 'Special:EvaluateFunctionCall' ).getUrl(),
 							query: {}
 						};
 					} );
@@ -299,7 +299,7 @@ describe( 'router Vuex module', function () {
 				it( 'when uri path is Create zObject', function () {
 					window.mw.Uri.mockImplementationOnce( function () {
 						return {
-							path: Constants.PATHS.CREATE_Z_OBJECT,
+							path: new mw.Title( 'Special:CreateZObject' ).getUrl(),
 							query: {}
 						};
 					} );
