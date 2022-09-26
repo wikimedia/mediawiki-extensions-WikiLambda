@@ -136,6 +136,9 @@ var Constants = {
 		EDIT_Z_OBJECT: '/w/index.php',
 		VIEW_Z_OBJECT: ''
 	},
+	actions = {
+		EDIT: 'edit'
+	},
 	breakpoints = {
 		MOBILE: 320,
 		TABLET: 720,
@@ -155,6 +158,7 @@ Constants.Z_MODE_SELECTOR_MODES = modes;
 Constants.Z_TYPED_OBEJECTS_LIST = typedObjectsList;
 Constants.VIEWS = views;
 Constants.PATHS = paths;
+Constants.ACTIONS = actions;
 Constants.breakpoints = breakpoints;
 Constants.breakpointsTypes = breakpointsTypes;
 Constants.implementationModes = implementationModes;
