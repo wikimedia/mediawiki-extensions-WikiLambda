@@ -10,7 +10,10 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 
 class ZTypedMap extends ZObject {
 
@@ -160,11 +163,46 @@ class ZTypedMap extends ZObject {
 			return;
 		}
 
-		// TODO (T315953): Check the type of the key
 		$typedList = $this->getList();
 		if ( $typedList === null ) {
-			// TODO (T315953): This isn't supposed to happen, so throw an exception
-			return;
+			// The list we're wrapping was not created correctly; nothing we can do but throw
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_WRONG_LIST_TYPE,
+					[
+						'data' => $typedList
+					]
+				)
+			);
+		}
+
+		// Check the types of the key and value for compatibility
+		if ( !self::compatibleTypes( $this->getKeyType(), $key ) ) {
+			// The key we've been given is of an unacceptable type
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_ARRAY_TYPE_MISMATCH,
+					[
+						'key' => 'key',
+						'expected' => $this->getKeyType()->getZValue(),
+						'data' => $key->getValueByKey( ZTypeRegistry::Z_OBJECT_TYPE ),
+					]
+				)
+			);
+		}
+
+		if ( !self::compatibleTypes( $this->getValueType(), $value ) ) {
+			// The value we've been given is of an unacceptable type
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_ARRAY_TYPE_MISMATCH,
+					[
+						'key' => 'value',
+						'expected' => $this->getValueType()->getZValue(),
+						'data' => $value->getValueByKey( ZTypeRegistry::Z_OBJECT_TYPE ),
+					]
+				)
+			);
 		}
 
 		foreach ( $typedList->getAsArray() as $index => $pair ) {
@@ -182,12 +220,40 @@ class ZTypedMap extends ZObject {
 
 		// The key isn't present in the map, so add an entry for it
 		$pairType = ZTypedPair::buildType( $this->getKeyType()->getZValue(), $this->getValueType()->getZValue() );
-		$newPair = new ZTypedPair(
-			$pairType,
-			$key,
-			$value
-		);
+		$newPair = new ZTypedPair( $pairType, $key, $value );
 		$typedList->appendArray( [ $newPair ] );
 		$this->data[ 'K1' ] = $typedList;
+	}
+
+	/**
+	 * @param ZObject $accepted The ZObject we accept (typically a ZReference)
+	 * @param ZObject $input A ZObject we're looking to evaluate whether it's compatible
+	 * @return bool True if the types are compatible
+	 */
+	private static function compatibleTypes( ZObject $accepted, ZObject $input ): bool {
+		// Do we accept anything? If so, go ahead.
+		if ( $accepted->getZValue() === 'Z1' ) {
+			return true;
+		}
+
+		// Are we being given a reference? If so, go ahead.
+		// TODO (T318588): Dereference this to see if it is actually to an allowed object?
+		if ( $input instanceof ZReference ) {
+			return true;
+		}
+
+		// Are we being given a function call? If so, go ahead.
+		// TODO (T318588): Execute this to see if it is actually to an allowed object?
+		if ( $input instanceof ZFunctionCall ) {
+			return true;
+		}
+
+		// Do we exactly match by type what's accepted? If so, go ahead.
+		if ( $accepted->getZValue() === $input->getZTypeObject()->getZValue() ) {
+			return true;
+		}
+
+		// Otherwise, no.
+		return false;
 	}
 }
