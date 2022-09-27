@@ -9,7 +9,9 @@
 			"Mim.saitkilic",
 			"MuratTheTurkish",
 			"SaldırganSincap",
-			"Sayginer"
+			"Sayginer",
+			"Can",
+			"Khalvar"
 		]
 	},
 	"wikilambda-desc": "Wikimedia vikilerine, merkezi bir vikide yazılan, yönetilen ve değerlendirilen işlevlerin değerlendirilmesi için vikimetin ayrıştırıcı işlevi sağlar.",
@@ -96,7 +98,7 @@
 	"wikilambda-tester-status-running": "ÇALIŞIYOR...",
 	"wikilambda-tester-status-passed": "GEÇ",
 	"wikilambda-tester-status-failed": "BAŞARISIZ",
-	"wikilambda-tester-results-title": "Test Sonuçları",
+	"wikilambda-tester-results-title": "Testçi Sonuçları",
 	"wikilambda-tester-results-subtitle": "Şunun için test sonuçları:",
 	"wikilambda-tester-status-label": "Test durumu",
 	"wikilambda-tester-failure-reason": "Başarısızlık nedeni",

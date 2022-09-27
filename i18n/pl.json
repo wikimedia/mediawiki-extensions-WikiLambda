@@ -108,6 +108,7 @@
 	"wikilambda-tester-status-running": "TRWA...",
 	"wikilambda-tester-status-passed": "PRZESZEDŁ",
 	"wikilambda-tester-status-failed": "NIE POWIÓDŁ SIĘ",
+	"wikilambda-tester-results-title": "Wyniki testowania",
 	"wikilambda-tester-failure-reason": "Przyczyna niepowodzenia",
 	"wikilambda-tester-failure-expected": "Oczekiwano",
 	"wikilambda-tester-failure-actual": "Otrzymano",

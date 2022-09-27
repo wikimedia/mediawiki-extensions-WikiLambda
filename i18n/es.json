@@ -118,6 +118,7 @@
 	"wikilambda-tester-status-running": "EJECUTANDO...",
 	"wikilambda-tester-status-passed": "APROBADO",
 	"wikilambda-tester-status-failed": "FALLO",
+	"wikilambda-tester-results-title": "Resultados del probador",
 	"wikilambda-tester-failure-expected": "Esperado",
 	"wikilambda-tester-failure-actual": "Recibido",
 	"wikilambda-tester-function-duration": "Duración",
