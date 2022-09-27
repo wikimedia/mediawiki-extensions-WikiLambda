@@ -70,6 +70,15 @@ class ZObjectEditAction extends Action {
 			$labelText
 		);
 
+		$zObjectId = $this->getTargetZObject()->getZid();
+		$id = Html::element(
+			'span',
+			[
+				'class' => 'ext-wikilambda-editpage-header-zid'
+			],
+			$zObjectId
+		);
+
 		/* isoCodes can occur in two places:
 			(1) in front of the entire header - this happens if
 				(a) ONLY the TYPE is in a non-user language OR
@@ -119,8 +128,7 @@ class ZObjectEditAction extends Action {
 			'span',
 			[ 'class' => 'ext-wikilambda-editpage-header' ],
 			" " . $prefix . " " . $isoCodeObjectType . " " . $zObjectLabelsWithLang[ 'title' ]
-			. $this->msg( 'colon-separator' )->text() . $isoCodeObjectName . $label
-		);
+			. $this->msg( 'colon-separator' )->text() . $isoCodeObjectName . $label . ' ' . $id );
 	}
 
 	public function show() {
