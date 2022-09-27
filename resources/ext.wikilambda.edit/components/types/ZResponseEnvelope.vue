@@ -20,7 +20,7 @@
 				{{ errorButtonText }}
 			</cdx-button>
 		</div>
-		<div v-if="showError">
+		<div v-if="containsError && showError" class="ext-wikilambda-zresponseenvelope__error">
 			<hr>
 			<z-object-key
 				:zobject-id="zError.id"
@@ -82,7 +82,7 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			showError: false,
+			showError: true,
 			showMetrics: false
 		};
 	},
