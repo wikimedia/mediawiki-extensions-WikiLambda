@@ -448,11 +448,11 @@ module.exports = exports = {
 					onConfirm: function () { return this.handlePublish( summary, true ); }.bind( this )
 				};
 				if ( inputTypeChanged && outputTypeChanged ) {
-					this.dialogInfo.description = this.$i18n( 'wikilambda-publish-input-and-output-type-changed-impact-prompt' ).text();
+					this.dialogInfo.description = this.$i18n( 'wikilambda-publish-input-and-output-changed-impact-prompt' ).text();
 				} else if ( inputTypeChanged ) {
-					this.dialogInfo.description = this.$i18n( 'wikilambda-publish-input-type-changed-impact-prompt' ).text();
+					this.dialogInfo.description = this.$i18n( 'wikilambda-publish-input-changed-impact-prompt' ).text();
 				} else if ( outputTypeChanged ) {
-					this.dialogInfo.description = this.$i18n( 'wikilambda-publish-output-type-changed-impact-prompt' ).text();
+					this.dialogInfo.description = this.$i18n( 'wikilambda-publish-output-changed-impact-prompt' ).text();
 				}
 				this.$refs.dialogBox.openDialog();
 			} else if ( !this.isEditingExistingFunction && this.isMobile ) {

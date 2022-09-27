@@ -31,6 +31,7 @@
 				v-if="index !== 0 && canEditType"
 				type="quiet"
 				class="ext-wikilambda-editor-input-list-item__header__action-delete"
+				@click="removeInput"
 			>
 				<cdx-icon :icon="icons.cdxIconTrash"></cdx-icon>
 			</cdx-button>
@@ -222,7 +223,9 @@ module.exports = exports = {
 		'setZObjectValue',
 		'addZMonolingualString',
 		'changeType',
-		'setTypeOfTypedList'
+		'setTypeOfTypedList',
+		'removeZObject',
+		'removeZObjectChildren'
 	] ), {
 		setArgumentLabel: function ( id, input ) {
 			if ( ( !this.getArgumentLabel && !this.getArgumentLabels.id ) || !this.zLang ) {
@@ -306,6 +309,11 @@ module.exports = exports = {
 			if ( !this.getTypeOfArgument ) {
 				this.$refs.typeSelector.clearResults();
 			}
+		},
+		removeInput: function () {
+			const zId = this.zobjectId;
+			this.removeZObjectChildren( zId );
+			this.removeZObject( zId );
 		}
 	} ),
 	watch: {
