@@ -1095,11 +1095,15 @@ describe( 'zobject Vuex module', function () {
 			} );
 
 			it( 'adds a valid ZMultilingualString', function () {
-				zobjectModule.modules.addZObjects.actions.addZMultilingualString( context, { id: 0 } );
+				zobjectModule.modules.addZObjects.actions.addZMultilingualString( context, { id: 0, lang: 'Z1004', value: 'test label' } );
 
-				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z12', Z12K1: [ {
+				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: { Z1K1: 'Z6', Z6K1: 'test label', Z9K1: 'Z1004' }, Z12K1: [ {
 					Z1K1: 'Z9',
 					Z9K1: 'Z11'
+				}, {
+					Z11K1: undefined, // 'object'
+					Z11K2: undefined, // 'object'
+					Z1K1: 'Z11'
 				} ] } );
 			} );
 
@@ -1169,7 +1173,7 @@ describe( 'zobject Vuex module', function () {
 			} );
 
 			it( 'adds a valid ZArgument', function () {
-				zobjectModule.modules.addZObjects.actions.addZArgument( context, 0 );
+				zobjectModule.modules.addZObjects.actions.addZArgument( context, { id: 0 } );
 
 				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z17', Z17K1: { Z1K1: 'Z9', Z9K1: '' }, Z17K2: { Z1K1: 'Z6', Z6K1: 'Z0K1' }, Z17K3: { Z1K1: 'Z12', Z12K1: [ {
 					Z1K1: 'Z9',

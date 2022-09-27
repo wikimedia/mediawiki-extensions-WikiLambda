@@ -42,13 +42,6 @@ module.exports = {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
 					[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [
 						Constants.Z_MONOLINGUALSTRING,
-						// TODO(T317888): Remove this expected item once bug fixed that sends empty English label
-						// despite English not being selected.
-						{
-							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
-							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
-							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: ''
-						},
 						{
 							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
 							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_CHINESE,
