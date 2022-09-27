@@ -373,34 +373,15 @@ class ZObjectFactory {
 
 		$creationArray = [];
 		foreach ( $targetDefinition['keys'] as $key => $settings ) {
-
-			// Split our given (global) key (e.g. 'Z1K1') to also give a local key (e.g. 'K1')
-			$matches = [];
-			if ( !preg_match( "/^(Z[1-9]\d*)?(K\d+)$/", $key, $matches ) ) {
-				// If we didn't match, that means the key we've been given is invalid; throw.
-				throw new ZErrorException(
-					ZErrorFactory::createZErrorInstance(
-						ZErrorTypeRegistry::Z_ERROR_INVALID_KEY,
-						[
-							'dataPointer' => [ $key ]
-						]
-					)
-				);
-			}
-			// If we were given a global key this will be the local key; if it was a local key, it'll be the input
-			$localKey = $matches[ 2 ];
-
-			if ( array_key_exists( $key, $objectVars ) || array_key_exists( $localKey, $objectVars ) ) {
-				$value = $objectVars[ $key ] ?? $objectVars[ $localKey ];
-
+			if ( array_key_exists( $key, $objectVars ) ) {
 				if ( in_array( $key, ZTypeRegistry::TERMINAL_KEYS ) ) {
 					// Return the value if it belongs to a terminal key (Z6K1 or Z9K1)
-					$creationArray[] = $value;
+					$creationArray[] = $objectVars[ $key ];
 				} else {
 					// Build the value of a given key to create nested ZObjects
 					// If it fails, throw a Z526/Key value error
 					try {
-						$creationArray[] = self::createChild( $value );
+						$creationArray[] = self::createChild( $objectVars[ $key ] );
 					} catch ( ZErrorException $e ) {
 						throw new ZErrorException( ZErrorFactory::createKeyValueZError( $key, $e->getZError() ) );
 					}
