@@ -6,7 +6,8 @@
 			"Eduardoaddad",
 			"Luk3",
 			"Mariagarbin",
-			"Svjatysberega"
+			"Svjatysberega",
+			"YuriNikolai"
 		]
 	},
 	"wikilambda-desc": "Fornecendo as wikis da Wikimedia uma função de analisador de wikitexto para chamar a avaliação de funções escritas, gerenciadas e avaliadas em um wiki central.",
@@ -92,13 +93,13 @@
 	"wikilambda-persistentobject-function-signature-label": "Assinatura de função",
 	"wikilambda-editor-go-back-button": "Voltar",
 	"wikilambda-editor-next-button": "Próximo passo",
-	"wikilambda-editor-fn-step-define": "Definir Função",
+	"wikilambda-editor-fn-step-define": "Definir",
 	"wikilambda-editor-name-title": "Nome",
 	"wikilambda-editor-name-subtitle": "Qual o nome da sua função? O que ela faz?",
 	"wikilambda-editor-name-zobject-name": "Nome da função",
 	"wikilambda-editor-name-zobject-name-placeholder": "Qual o nome da sua função?",
 	"wikilambda-editor-name-aliases": "Alias",
-	"wikilambda-editor-input-title": "Entrada(s)",
+	"wikilambda-editor-input-title": "Entrada de texto",
 	"wikilambda-editor-input-subtitle": "O que entrará na função?",
 	"wikilambda-editor-input-type-placeholder": "Tipo da entrada",
 	"wikilambda-editor-input-add-button": "Adicionar entrada",
