@@ -10,7 +10,11 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 class ZTypedList extends ZObject {
 
@@ -93,8 +97,12 @@ class ZTypedList extends ZObject {
 	 * to the end of the list.
 	 *
 	 * @param array $newElements
+	 * @param bool $checkTypes
 	 */
-	public function appendArray( array $newElements ) {
+	public function appendArray( array $newElements, bool $checkTypes = true ) {
+		if ( $checkTypes ) {
+			$this->checkNewElementTypes( $newElements );
+		}
 		$this->data = array_merge( $this->data, $newElements );
 	}
 
@@ -103,9 +111,14 @@ class ZTypedList extends ZObject {
 	 * to the end of the list.
 	 *
 	 * @param ZTypedList $newElements
+	 * @param bool $checkTypes
 	 */
-	public function appendZTypedList( ZTypedList $newElements ) {
-		$this->data = array_merge( $this->data, $newElements->getAsArray() );
+	public function appendZTypedList( ZTypedList $newElements, bool $checkTypes = true ) {
+		$array = $newElements->getAsArray();
+		if ( $checkTypes ) {
+			$this->checkNewElementTypes( $array );
+		}
+		$this->data = array_merge( $this->data, $array );
 	}
 
 	/**
@@ -201,4 +214,28 @@ class ZTypedList extends ZObject {
 		return empty( $this->data );
 	}
 
+	/**
+	 * Check the type of each array element for compatibility with the ZTypedList's element type.
+	 *
+	 * @param array $newElements
+	 * @throws ZErrorException When an array element has an incompatible type
+	 */
+	private function checkNewElementTypes( array $newElements ) {
+		$elementType = $this->getElementType();
+		foreach ( $newElements as $index => $element ) {
+			if ( !ZObjectUtils::isCompatibleType( $elementType, $element ) ) {
+				// This element is of an unacceptable type
+				throw new ZErrorException(
+					ZErrorFactory::createZErrorInstance(
+						ZErrorTypeRegistry::Z_ERROR_ARRAY_TYPE_MISMATCH,
+						[
+							'key' => $index,
+							'expected' => $this->getElementType()->getZValue(),
+							'data' => $element->getValueByKey( ZTypeRegistry::Z_OBJECT_TYPE ),
+						]
+					)
+				);
+			}
+		}
+	}
 }

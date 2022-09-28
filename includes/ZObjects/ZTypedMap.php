@@ -222,7 +222,7 @@ class ZTypedMap extends ZObject {
 		// The key isn't present in the map, so add an entry for it
 		$pairType = ZTypedPair::buildType( $this->getKeyType()->getZValue(), $this->getValueType()->getZValue() );
 		$newPair = new ZTypedPair( $pairType, $key, $value );
-		$typedList->appendArray( [ $newPair ] );
+		$typedList->appendArray( [ $newPair ], false );
 		$this->data[ 'K1' ] = $typedList;
 	}
 

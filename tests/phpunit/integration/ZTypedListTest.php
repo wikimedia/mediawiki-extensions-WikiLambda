@@ -10,7 +10,11 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use FormatJson;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
@@ -120,6 +124,8 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getElementType
 	 * @covers ::appendArray
 	 * @covers ::getAsArray
+	 * @covers ::checkNewElementTypes
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isCompatibleType
 	 */
 	public function testAppendArray_emptyList() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } }';
@@ -147,6 +153,8 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getElementType
 	 * @covers ::appendArray
 	 * @covers ::getAsArray
+	 * @covers ::checkNewElementTypes
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isCompatibleType
 	 */
 	public function testAppendArray_listOfStrings() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
@@ -177,6 +185,8 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::isValid
 	 * @covers ::appendArray
 	 * @covers ::getAsArray
+	 * @covers ::checkNewElementTypes
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isCompatibleType
 	 */
 	public function testAppendArray_listOfMixed() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
@@ -216,6 +226,8 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::isValid
 	 * @covers ::appendArray
 	 * @covers ::getAsArray
+	 * @covers ::checkNewElementTypes
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isCompatibleType
 	 */
 	public function testAppendEmptyArray_listOfMixed() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
@@ -245,8 +257,76 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 * @covers ::__construct
 	 * @covers ::isValid
+	 * @covers ::appendArray
+	 * @covers ::checkNewElementTypes
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isCompatibleType
+	 */
+	public function testAppendArray_badElementType() {
+		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
+			. '"K1": "first string",'
+			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } } }';
+		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
+
+		$this->assertInstanceOf( ZTypedList::class, $testObject );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertInstanceOf( ZReference::class, $testObject->getElementType() );
+		$this->assertSame( "Z6", $testObject->getElementType()->getZValue() );
+
+		// List type is Z6; new element type is Z5; exception should be raised
+		$newElements = [ new ZError( 'Z501', new ZString( 'error message' ) ) ];
+		$this->expectException( ZErrorException::class );
+		$testObject->appendArray( $newElements );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
+	 * @covers ::__construct
+	 * @covers ::isValid
+	 * @covers ::appendArray
+	 * @covers ::getAsArray
+	 * @covers ::checkNewElementTypes
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isCompatibleType
+	 */
+	public function testAppendArray_uncheckedElementTypes() {
+		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
+			. '"K1": "first string",'
+			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } } }';
+		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
+
+		// The type mismatch here should be ignored because checkTypes = false
+		$newElements = [ new ZError( 'Z501', new ZString( 'error message' ) ) ];
+		$testObject->appendArray( $newElements, false );
+
+		// This case ideally should cause an exception but does not because
+		// ZObjectUtils::isCompatibleType currently passes on any ZReference.
+		$newElements = [ new ZReference( 'Z41' ) ];
+		$testObject->appendArray( $newElements );
+
+		// This case ideally should cause an exception but does not because
+		// ZObjectUtils::isCompatibleType currently passes on any ZFunctionCall.
+		$newElements = [
+			new ZFunctionCall( new ZReference( ZTypeRegistry::Z_FUNCTION_TYPED_LIST ),
+				[ ZTypeRegistry::Z_FUNCTION_TYPED_LIST_TYPE => ZTypeRegistry::Z_OBJECT_TYPE ] ),
+		];
+		$testObject->appendArray( $newElements );
+
+		$this->assertInstanceOf( ZTypedList::class, $testObject );
+		$this->assertInstanceOf( ZReference::class, $testObject->getElementType() );
+		$this->assertSame( "Z6", $testObject->getElementType()->getZValue() );
+
+		$array = $testObject->getAsArray();
+		$this->assertCount( 4, $array );
+		$this->assertFalse( $testObject->isValid() );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
+	 * @covers ::__construct
+	 * @covers ::isValid
 	 * @covers ::appendZTypedList
 	 * @covers ::getAsArray
+	 * @covers ::checkNewElementTypes
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isCompatibleType
 	 */
 	public function testAppendZTypedList_listOfMixed() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
@@ -279,6 +359,33 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$fourthListItem = $array[3];
 		$this->assertInstanceOf( ZReference::class, $fourthListItem );
 		$this->assertSame( 'Z41', $fourthListItem->getZValue() );
+	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
+	 * @covers ::__construct
+	 * @covers ::isValid
+	 * @covers ::appendArray
+	 * @covers ::getAsArray
+	 * @covers ::checkNewElementTypes
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isCompatibleType
+	 */
+	public function testAppendZTypedList_badElementType() {
+		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
+			. '"K1": "first string",'
+			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } } }';
+		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
+
+		$this->assertInstanceOf( ZTypedList::class, $testObject );
+		$this->assertTrue( $testObject->isValid() );
+		$this->assertInstanceOf( ZReference::class, $testObject->getElementType() );
+		$this->assertSame( "Z6", $testObject->getElementType()->getZValue() );
+
+		// List type is Z6; new element type is Z5; exception should be raised
+		$newElements = new ZTypedList( ZTypedList::buildType( ZTypeRegistry::Z_OBJECT ),
+			[ new ZError( 'Z501', new ZString( 'error message' ) ) ] );
+		$this->expectException( ZErrorException::class );
+		$testObject->appendZTypedList( $newElements );
 	}
 
 	/**
