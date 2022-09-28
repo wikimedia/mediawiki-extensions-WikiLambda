@@ -93,8 +93,6 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 
 		// ACT: Enter a label for the first argument.
 		const argumentLabelInput = wrapper.get( '.ext-wikilambda-editor-input-list-item__label input' );
-		// TODO(T317889): Remove this first setValue once bug fixed that ignores first change in input.
-		await argumentLabelInput.setValue( 'f' );
 		await argumentLabelInput.setValue( 'first argument label, in Chinese' );
 
 		// ASSERT: First argument's type and label are visible in work summary.
@@ -115,8 +113,6 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 
 		// ACT: Enter a label for the second argument.
 		const secondArgumentLabelInput = wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 1 ];
-		// TODO(T317889): Remove this first setValue once bug fixed that ignores first change in input.
-		await secondArgumentLabelInput.setValue( 's' );
 		await secondArgumentLabelInput.setValue( 'second argument label, in Chinese' );
 
 		// TODO(T317781): Test scrolling to second argument in work summary, once bug fixed.
