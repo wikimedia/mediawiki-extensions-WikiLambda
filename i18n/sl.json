@@ -5,6 +5,8 @@
 		]
 	},
 	"wikilambda-persistentzobject-contents": "Vsebina",
+	"wikilambda-special-createzobject-summary": "Ta obrazec vam omogoča, da ustvarite nov ZObject, ki lahko predstavlja funkcijo, njeno uvedbo, njen preizkus ali katerega od različnih drugih vrst ZObjects. Najprej preberite dokumentacijo s pomočjo in navodila skupnosti.",
+	"wikilambda-special-edit-function-definition-description": "Urejate stran z opredelitvijo funkcije. Opredelitev funkcije lahko spremeni $1. Oznake lahko ureja vsakdo. Svoje delo shranite s klikom spodnjega modrega gumba Objavi.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Jezik",
 	"wikilambda-cancel": "Prekliči",
 	"wikilambda-savenew": "Shrani",
@@ -17,6 +19,14 @@
 	"wikilambda-functioncall-metadata-expected-result": "Pričakovani rezultat",
 	"wikilambda-functioncall-metadata-actual-result": "Dejanski rezultat",
 	"wikilambda-functioncall-metadata-validator-errors": "{{PLURAL:$1|Napaka|Napake}} validatorja",
+	"wikilambda-editor-tester-list-label": "Seznam preizkusov",
+	"wikilambda-tester-selector": "Izberite preizkus",
+	"wikilambda-tester-results-title": "Rezultati preizkusov",
+	"wikilambda-tester-results-caption": "Rezultati preizkusov funkcij glede na uvedbo",
+	"wikilambda-tester-no-results": "Ni rezultatov preizkusov. Za ogled rezultatov dodajte izvedbo in preizkus.",
+	"wikilambda-tester-results-percentage-label": "Skupno opravljenih preizkusov",
+	"wikilambda-tester-run-testers": "Izvedi vse preizkuse",
+	"wikilambda-tester-run-tester": "Zaženi preizkus",
 	"wikilambda-metadata-duplicate-alias-error": "»$1« že obstaja",
 	"wikilambda-persistentobject-details-label": "Podrobnosti",
 	"wikilambda-editor-fn-step-function-details": "Podrobnosti"

@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"AJBot2",
+			"DARMAS BUDI SANTOSO",
 			"Daud I.F. Argana",
 			"Farras",
 			"Syman51",
@@ -42,6 +43,7 @@
 	"wikilambda-special-createzobject-summary": "Formulir ini membolehkan Anda membuat ZObject baru, yang bisa merepresentasikan sebuah Fungsi, Pengujinya, atau salah satu jenis ZObject lainnya. Anda sebaiknya membaca dokumentasi bantuan dan panduan komunitas terlebih dahulu.",
 	"wikilambda-special-createzobject-intro": "Pastikan Anda mengikuti kebijakan komunitas, serta aturan paten dan hak cipta.",
 	"wikilambda-special-createzobject-nojs": "Halaman ini memerlukan JavaScript agar bisa digunakan.",
+	"wikilambda-special-edit-function-definition-description": "You are editing the function definition page. $1 can change the definiton of the function. Everyone can edit the labels. Make sure to save your work by clicking the blue Publish button below.",
 	"wikilambda-special-evaluatefunctioncall": "Mengevaluasi pemanggilan fungsi",
 	"wikilambda-special-evaluatefunctioncall-summary": "Formulir ini membolehkan Anda mengevaluasi pemanggilan fungsi.",
 	"wikilambda-special-evaluatefunctioncall-intro": "Pastikan Anda mengikuti kebijakan komunitas, serta aturan paten dan hak cipta.",
