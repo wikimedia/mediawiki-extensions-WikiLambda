@@ -7,6 +7,7 @@
 'use strict';
 
 const { CdxLookup } = require( '@wikimedia/codex' );
+const Constants = require( '../../../../../resources/ext.wikilambda.edit/Constants.js' );
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
@@ -23,7 +24,17 @@ describe( 'FunctionDefinitionInputsItem', function () {
 			getNestedZObjectById: createGettersWithFunctionsMock( { } ),
 			getZObjectTypeById: createGettersWithFunctionsMock(),
 			getNextObjectId: jest.fn().mockReturnValue( 123 ),
-			getCurrentZLanguage: jest.fn().mockReturnValue( 'Z10002' )
+			getCurrentZLanguage: jest.fn().mockReturnValue( 'Z10002' ),
+			currentZObjectLanguages: () => [
+				{
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+					[ Constants.Z_REFERENCE_ID ]: 'Z10002'
+				},
+				{
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+					[ Constants.Z_REFERENCE_ID ]: 'Z10004'
+				}
+			]
 		};
 
 		actions = {

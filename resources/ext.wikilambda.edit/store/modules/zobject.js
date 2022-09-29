@@ -59,6 +59,121 @@ function isFunctionToType( objectDeclaration ) {
 	}
 }
 
+/**
+ * Runs actions on the global zobject to make it valid for submission.
+ *
+ * -Clears empty monolingual string labels.
+ * -Canonicalizes the zobject.
+ * -Unattaches implementations and testers, if relevant.
+ *
+ * @param {Object} context
+ * @param {boolean} shouldUnattachImplentationAndTester
+ * @return {Object} zobject
+ */
+function transformZObjectForSubmission( context, shouldUnattachImplementationAndTester ) {
+	removeEmptyNameLabelValues( context );
+	removeEmptyAliasLabelValues( context );
+
+	if ( context.getters.getNestedZObjectById( 0, [
+		Constants.Z_PERSISTENTOBJECT_VALUE,
+		Constants.Z_FUNCTION_ARGUMENTS ] ) ) {
+		removeEmptyArgumentLabelValues( context );
+	}
+
+	var zobject = canonicalize( zobjectTreeUtils.convertZObjectTreetoJson( context.state.zobject ) );
+
+	if ( shouldUnattachImplementationAndTester ) {
+		zobject = unattachImplementationsAndTesters( zobject );
+	}
+
+	return zobject;
+}
+
+/**
+ * Removes the name label language objects with empty monolingual string values from the global zobject.
+ *
+ * @param {Object} context
+ */
+function removeEmptyNameLabelValues( context ) {
+	var namesListId = context.getters.getNestedZObjectById( 0, [
+		Constants.Z_PERSISTENTOBJECT_LABEL,
+		Constants.Z_MULTILINGUALSTRING_VALUE
+	] ).id;
+	var namesList = context.getters.getAllItemsFromListById( namesListId );
+
+	namesList.forEach( function ( nameListLabel ) {
+		var labelString = context.getters.getNestedZObjectById( nameListLabel.id, [
+			Constants.Z_MONOLINGUALSTRING_VALUE,
+			Constants.Z_STRING_VALUE
+		] );
+		if ( !labelString.value ) {
+			context.dispatch( 'removeZObjectChildren', nameListLabel.id );
+			context.dispatch( 'removeZObject', nameListLabel.id );
+		}
+	} );
+	context.dispatch( 'recalculateZListIndex', namesListId );
+}
+
+/**
+ * Removes the function argument label language objects with empty monolingual string values from the global zobject.
+ *
+ * @param {Object} context
+ */
+function removeEmptyArgumentLabelValues( context ) {
+	var argumentsList = context.getters.getAllItemsFromListById(
+		context.getters.getNestedZObjectById( 0, [
+			Constants.Z_PERSISTENTOBJECT_VALUE,
+			Constants.Z_FUNCTION_ARGUMENTS
+		] ).id );
+
+	argumentsList.forEach( function ( argument ) {
+		var argumentLabelArrayId = context.getters.getNestedZObjectById( argument.id, [
+			Constants.Z_ARGUMENT_LABEL,
+			Constants.Z_MULTILINGUALSTRING_VALUE ] ).id;
+		var argumentLabelArray = context.getters.getAllItemsFromListById( argumentLabelArrayId );
+
+		argumentLabelArray.forEach( function ( argumentLabel ) {
+			var labelString = context.getters.getNestedZObjectById( argumentLabel.id, [
+				Constants.Z_MONOLINGUALSTRING_VALUE,
+				Constants.Z_STRING_VALUE
+			] );
+
+			if ( !labelString.value ) {
+				context.dispatch( 'removeZObjectChildren', argumentLabel.id );
+				context.dispatch( 'removeZObject', argumentLabel.id );
+			}
+		} );
+
+		context.dispatch( 'recalculateZListIndex', argumentLabelArrayId );
+	} );
+}
+
+/**
+ * Removes the alias label language objects with empty monolingual string values from the global zobject.
+ *
+ * @param {Object} context
+ */
+function removeEmptyAliasLabelValues( context ) {
+	var aliasListId = context.getters.getNestedZObjectById( 0, [
+		Constants.Z_PERSISTENTOBJECT_ALIASES,
+		Constants.Z_MULTILINGUALSTRINGSET_VALUE
+	] ).id;
+	var aliasList = context.getters.getAllItemsFromListById( aliasListId );
+
+	aliasList.forEach( function ( alias ) {
+		var aliasLabelArrayId = context.getters.getNestedZObjectById( alias.id, [
+			Constants.Z_MONOLINGUALSTRINGSET_VALUE ] ).id;
+		var aliasLabelArray = context.getters.getAllItemsFromListById( aliasLabelArrayId );
+
+		if ( aliasLabelArray.length === 0 ) {
+			context.dispatch( 'removeZObjectChildren', alias.id );
+			context.dispatch( 'removeZObject', alias.id );
+		}
+
+		context.dispatch( 'recalculateZListIndex', aliasListId );
+	} );
+}
+
 function isNotObjectOrArrayRoot( object ) {
 	return [ 'array', 'object' ].indexOf( object.value ) === -1;
 }
@@ -696,22 +811,19 @@ module.exports = exports = {
 		},
 		/**
 		 * Submit a zObject to the api.
-		 * The request is handled differently if new or existing object
+		 * The request is handled differently if new or existing object.
+		 * Empty labels are removed before submitting.
 		 *
 		 * @param {Object} context
 		 * @param {Object} param
 		 * @param {Object} param.summary
-		 * @param {boolean} param.shouldUnattachImplentationAndTester
+		 * @param {boolean} param.shouldUnattachImplementationAndTester
 		 * @return {Promise}
 		 */
-		submitZObject: function ( context, { summary, shouldUnattachImplentationAndTester } ) {
+		submitZObject: function ( context, { summary, shouldUnattachImplementationAndTester } ) {
 			context.commit( 'setIsSavingZObject', true );
-			var zobject = canonicalize( zobjectTreeUtils.convertZObjectTreetoJson( context.state.zobject ) );
 
-			if ( shouldUnattachImplentationAndTester ) {
-				zobject = unattachImplementationsAndTesters( zobject );
-			}
-
+			var zobject = transformZObjectForSubmission( context, shouldUnattachImplementationAndTester );
 			// eslint-disable-next-line compat/compat
 			return new Promise( function ( resolve, reject ) {
 				saveZObject(

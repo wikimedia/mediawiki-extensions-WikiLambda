@@ -27,8 +27,8 @@ module.exports = {
 						Constants.Z_MONOLINGUALSTRING,
 						{
 							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
-							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_CHINESE,
-							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'first argument label, in Chinese'
+							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_AFRIKAANS,
+							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'first argument label, in Afrikaans'
 						}
 					]
 				}
@@ -46,8 +46,8 @@ module.exports = {
 						Constants.Z_MONOLINGUALSTRING,
 						{
 							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
-							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_CHINESE,
-							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'second argument label, in Chinese'
+							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_AFRIKAANS,
+							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'second argument label, in Afrikaans'
 						}
 					]
 				}

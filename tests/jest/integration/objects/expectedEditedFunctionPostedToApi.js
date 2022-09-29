@@ -28,13 +28,13 @@ module.exports = {
 						Constants.Z_MONOLINGUALSTRING,
 						{
 							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
-							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_CHINESE,
-							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'edited first argument label, in Chinese'
+							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_AFRIKAANS,
+							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'edited first argument label, in Afrikaans'
 						},
 						{
 							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
-							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_FRENCH,
-							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'first argument label, in French'
+							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_CHINESE,
+							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'newly added first argument label, in Chinese'
 						}
 					]
 				}
@@ -52,14 +52,8 @@ module.exports = {
 						Constants.Z_MONOLINGUALSTRING,
 						{
 							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
-							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_CHINESE,
-							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'edited second argument label, in Chinese'
-						},
-						// TODO(T318143): Remove this expected item containing empty string once bug fixed.
-						{
-							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
-							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_FRENCH,
-							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: ''
+							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_AFRIKAANS,
+							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'second argument label, in Afrikaans'
 						}
 					]
 				}
