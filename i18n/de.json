@@ -45,7 +45,7 @@
 	"wikilambda-special-createzobject": "Neues ZObject erstellen",
 	"wikilambda-special-define-function": "Definition der Funktion",
 	"wikilambda-special-define-function-summary": "Eine Funktion enthält eine Definition, möglicherweise mehrere Implementierungen und erfordert Tests zur Validierung. Auf der folgenden Registerkarte „Funktionsdefinition“ werden die Eingabe, die Ausgabe und die Bezeichnungen der Funktion definiert, unter „Implementierung“ werden die Implementierungen bearbeitet und gespeichert und unter „Test“ wird sichergestellt, dass sich die Funktion wie erwartet verhält.",
-	"wikilambda-special-createzobject-summary": "Mit diesem Formular kannst du ein neues ZObjekt erstellen, das eine Funktion, ihre Implementierung, ein Test dafür oder eine von verschiedenen anderen Arten von ZObjekten darstellen kann. Du solltest zuerst die Hilfedokumentation und die Community-Anleitung lesen.",
+	"wikilambda-special-createzobject-summary": "Mit diesem Formular kannst du ein neues ZObjekt erstellen, das eine Funktion, ihre Implementierung, einen Test dafür oder eine von verschiedenen anderen Arten von ZObjekten darstellen kann. Du solltest zuerst die Hilfedokumentation und die Community-Anleitung lesen.",
 	"wikilambda-special-createzobject-intro": "Vergewissere dich, dass du die Gemeinschaftsrichtlinien sowie die Urheberrechts- und Patentvorschriften befolgst.",
 	"wikilambda-special-createzobject-nojs": "Diese Seite erfordert die Verwendung von JavaScript.",
 	"wikilambda-special-edit-function-definition-title": "Funktionsdefinition bearbeiten",
