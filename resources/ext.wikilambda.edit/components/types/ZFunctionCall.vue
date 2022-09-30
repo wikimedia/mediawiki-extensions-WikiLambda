@@ -17,6 +17,7 @@
 		<template v-else>
 			<cdx-button
 				v-if="!viewmode"
+				class="ext-wikilambda-function-call-clear-function-button"
 				:title="$i18n( 'wikilambda-editor-zobject-removekey-tooltip' ).text()"
 				:destructive="true"
 				@click="typeHandler"
@@ -39,7 +40,10 @@
 				></z-object-key>
 			</li>
 		</ul>
-		<cdx-button v-if="!hideCallButton && isRootFunctionCall" @click="callFunctionHandler">
+		<cdx-button
+			v-if="!hideCallButton && isRootFunctionCall"
+			class="ext-wikilambda-function-call-button"
+			@click="callFunctionHandler">
 			<label> {{ $i18n( 'wikilambda-call-function' ).text() }} </label>
 		</cdx-button>
 		<div v-if="resultZObject || orchestrating" class="ext-wikilambda-orchestrated-result">
@@ -240,9 +244,15 @@ module.exports = exports = {
 		'changeType',
 		'initializeResultId',
 		'injectZObject',
-		'removeZObject'
+		'removeZObject',
+		'removeZObjectChildren'
 	] ), {
 		typeHandler: function ( zid ) {
+			// Clear out results when function is changed or removed.
+			this.removeZObjectChildren( this.resultId );
+			this.removeZObject( this.resultId );
+			this.resultId = null;
+
 			var zFunctionCallFunction = this.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, this.zobject ),
 				argumentKeys = this.zFunctionArguments.map( function ( arg ) {
 					return arg.key;
