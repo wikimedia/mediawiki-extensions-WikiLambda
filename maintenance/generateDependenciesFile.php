@@ -17,7 +17,6 @@ $IP = getenv( 'MW_INSTALL_PATH' );
 if ( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
-
 require_once "$IP/maintenance/Maintenance.php";
 
 class GenerateDependenciesFile extends Maintenance {
@@ -124,5 +123,4 @@ class GenerateDependenciesFile extends Maintenance {
 }
 
 $maintClass = GenerateDependenciesFile::class;
-
 require_once RUN_MAINTENANCE_IF_MAIN;
