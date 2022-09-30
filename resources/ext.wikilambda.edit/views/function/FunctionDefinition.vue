@@ -151,6 +151,7 @@ module.exports = exports = {
 		'getCurrentZLanguage',
 		'currentZFunctionHasValidInputs',
 		'currentZFunctionHasOutput',
+		'currentZObjectLanguages',
 		'isNewZObject',
 		'getViewMode',
 		'getZObjectChildrenById',
@@ -270,56 +271,15 @@ module.exports = exports = {
 		 * @return {Array} list of formatted languages
 		 */
 		selectedLanguages: function () {
-			var languageList = [];
-
-			// Don't break if the labels are set to {}
-			// find all languages used for labels
-			if ( this.zObjectLabels && this.zObjectLabels[
-				Constants.Z_PERSISTENTOBJECT_LABEL
-			][
-				Constants.Z_MULTILINGUALSTRING_VALUE
-			] ) {
-				this.zObjectLabels[
-					Constants.Z_PERSISTENTOBJECT_LABEL
-				][
-					Constants.Z_MULTILINGUALSTRING_VALUE
-				].forEach( function ( label ) {
-					if ( label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] ) {
-						languageList.push(
-							label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ]
-						);
-					}
-				} );
-			}
-
-			// Don't break if the aliases are set to {}
-			// find all languages used for aliases
-			if ( this.zObjectAliases && this.zObjectAliases[
-				Constants.Z_PERSISTENTOBJECT_ALIASES
-			][
-				Constants.Z_MULTILINGUALSTRINGSET_VALUE
-			] ) {
-				this.zObjectAliases[
-					Constants.Z_PERSISTENTOBJECT_ALIASES
-				][
-					Constants.Z_MULTILINGUALSTRINGSET_VALUE
-				].forEach( function ( alias ) {
-					if ( alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ] ) {
-						var lang = alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ][ Constants.Z_REFERENCE_ID ];
-
-						if ( languageList.indexOf( lang ) === -1 ) {
-							languageList.push( lang );
-						}
-					}
-				} );
-			}
-
+			var languageList = this.currentZObjectLanguages;
 			var formattedLanguages = [];
 
+			// Add languages from function names, labels and aliases.
 			for ( var item in languageList ) {
 				formattedLanguages.push( {
-					zLang: languageList[ item ],
-					label: this.getZkeyLabels[ languageList[ item ] ], // get the label for the language zId
+					zLang: languageList[ item ][ Constants.Z_REFERENCE_ID ],
+					// get the label for the language zId
+					label: this.getZkeyLabels[ languageList[ item ][ Constants.Z_REFERENCE_ID ] ],
 					readOnly: true
 				} );
 			}
@@ -376,7 +336,7 @@ module.exports = exports = {
 		setInputLangByIndex: function ( lang, index ) {
 			// If index is zero, set currentZLanguage as lang.zLang
 			if ( index === 0 ) {
-				this.setCurrentZLanguage( lang.zLang );
+				this.setCurrentZLanguage( lang );
 			}
 			this.labelLanguages[ index ] = {
 				zLang: lang,

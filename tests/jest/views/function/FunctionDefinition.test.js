@@ -23,10 +23,20 @@ describe( 'FunctionDefinition', function () {
 
 	beforeEach( function () {
 		getters = {
-			getZkeyLabels: () => { return { Z1002: 'Martian' }; },
+			getZkeyLabels: () => { return { Z1002: 'Martian', Z1004: 'Whale-talk' }; },
 			getCurrentZLanguage: jest.fn(),
 			currentZFunctionHasValidInputs: () => false,
 			currentZFunctionHasOutput: () => false,
+			currentZObjectLanguages: () => [
+				{
+					Z1K1: 'Z9',
+					Z9K1: 'Z1002'
+				},
+				{
+					Z1K1: 'Z9',
+					Z9K1: 'Z1004'
+				}
+			],
 			isNewZObject: jest.fn(),
 			getViewMode: jest.fn(),
 			getZObjectChildrenById: createGettersWithFunctionsMock(),
@@ -48,9 +58,12 @@ describe( 'FunctionDefinition', function () {
 		var wrapper = shallowMount( FunctionDefinition );
 		global.store.hotUpdate( { getters: getters } );
 		wrapper.vm.$nextTick( () => {
-			expect( wrapper.findComponent( FunctionDefinitionName ).exists() ).toBe( true );
-			expect( wrapper.findComponent( FunctionDefinitionAliases ).exists() ).toBe( true );
-			expect( wrapper.findComponent( FunctionDefinitionInputs ).exists() ).toBe( true );
+			// Two sets of label inputs for the two languages.
+			expect( wrapper.findAll( '.ext-wikilambda-function-definition__container__input' ).length ).toEqual( 2 );
+			expect( wrapper.findAllComponents( FunctionDefinitionName ).length ).toEqual( 2 );
+			expect( wrapper.findAllComponents( FunctionDefinitionAliases ).length ).toEqual( 2 );
+			expect( wrapper.findAllComponents( FunctionDefinitionInputs ).length ).toEqual( 2 );
+
 			expect( wrapper.findComponent( FunctionDefinitionOutput ).exists() ).toBe( true );
 			expect( wrapper.findComponent( FunctionDefinitionFooter ).exists() ).toBe( true );
 			done();

@@ -101,9 +101,7 @@ describe( 'zobject Vuex module', function () {
 					};
 				} ),
 				getAllItemsFromListById: jest.fn( function () {
-					return {
-						id: ''
-					};
+					return [];
 				} )
 			}
 		} );
@@ -156,6 +154,21 @@ describe( 'zobject Vuex module', function () {
 				state.zobject = zobjectTree;
 
 				expect( zobjectModule.getters.getZObjectChildrenById( state )( 2 ) ).toEqual( result );
+			} );
+		} );
+
+		describe( 'currentZObjectLanguages', function () {
+			it( 'Returns all languages found across name labels, argument labels and alias labels without any duplicates', function () {
+				var result = [ { [ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE, [ Constants.Z_REFERENCE_ID ]: 'Z1002' },
+					{ [ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE, [ Constants.Z_REFERENCE_ID ]: 'Z1004' },
+					{ [ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE, [ Constants.Z_REFERENCE_ID ]: 'Z1005' } ];
+
+				var getters = {
+					getZObjectAsJson: JSON.parse( fs.readFileSync( path.join( __dirname, './zobject/zFunctionWithMultipleLanguages.json' ) ) ),
+					getZObjectAsJsonById: zobjectModule.getters.getZObjectAsJsonById( state )
+				};
+				expect( zobjectModule.modules.currentZObject.getters.currentZObjectLanguages( state, getters ) )
+					.toEqual( result );
 			} );
 		} );
 
