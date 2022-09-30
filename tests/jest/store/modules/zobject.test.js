@@ -737,7 +737,8 @@ describe( 'zobject Vuex module', function () {
 			expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZKeys', expectedFetchZKeysPayload );
 		} );
 
-		it( 'Initialize ZObject with Z7 call function when no zids or createNewPage is set', function () {
+		it( 'Initialize ZObject with Z7 call function when createNewPage is false and evaluateFunctionCall ' +
+			'is true', function () {
 			var expectedChangeTypePayload = { id: 0, type: Constants.Z_FUNCTION_CALL },
 				expectedRootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
 			context.state = {
@@ -749,7 +750,8 @@ describe( 'zobject Vuex module', function () {
 			mw.config = {
 				get: jest.fn( function () {
 					return {
-						createNewPage: false
+						createNewPage: false,
+						evaluateFunctionCall: true
 					};
 				} )
 			};

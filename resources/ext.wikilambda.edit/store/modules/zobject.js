@@ -574,14 +574,16 @@ module.exports = exports = {
 		initializeZObject: function ( context ) {
 			var editingData = mw.config.get( 'wgWikiLambda' ),
 				createNewPage = editingData.createNewPage,
+				evaluateFunctionCall = editingData.evaluateFunctionCall,
 				zId = editingData.zId,
 				rootObject;
 
 			context.commit( 'setCreateNewPage', createNewPage );
-			context.commit( 'setCurrentZid', zId || Constants.NEW_ZID_PLACEHOLDER );
 
-			// Create new page, ZObject zid is Z0
+			// If createNewPage is true, ignore evaluateFunctionCall and any specified ZID.
 			if ( createNewPage ) {
+				context.commit( 'setCurrentZid', Constants.NEW_ZID_PLACEHOLDER );
+
 				rootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
 				context.commit( 'addZObject', rootObject );
 
@@ -624,13 +626,11 @@ module.exports = exports = {
 						} );
 				} );
 
-			// Not create new page, Zid must be set
-			} else if ( zId ) {
-				return context.dispatch( 'initializeRootZObject', zId );
+			// If evaluateFunctionCall is true, ignore any specified ZID. If no ZID specified, assume
+			// evaluateFunctionCall is true.
+			} else if ( evaluateFunctionCall || !zId ) {
+				context.commit( 'setCurrentZid', Constants.NEW_ZID_PLACEHOLDER );
 
-			// TODO (T311416): improve, this is too weak
-			// Is this edge case even possible? createNewPage=false and zid=null parameters
-			} else {
 				rootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
 				context.commit( 'addZObject', rootObject );
 
@@ -639,6 +639,11 @@ module.exports = exports = {
 					type: Constants.Z_FUNCTION_CALL
 				} );
 				context.commit( 'setZObjectInitialized', true );
+
+			} else {
+				context.commit( 'setCurrentZid', zId );
+
+				return context.dispatch( 'initializeRootZObject', zId );
 			}
 		},
 		/**

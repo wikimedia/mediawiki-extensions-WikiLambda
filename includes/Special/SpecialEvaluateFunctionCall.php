@@ -73,6 +73,7 @@ class SpecialEvaluateFunctionCall extends SpecialPage {
 			'zlang' => $userLangCode,
 			'zlangZid' => $userLangZid,
 			'createNewPage' => false,
+			'evaluateFunctionCall' => true,
 			'viewmode' => false
 		];
 
