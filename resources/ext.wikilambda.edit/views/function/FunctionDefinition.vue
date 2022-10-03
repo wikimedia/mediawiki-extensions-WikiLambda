@@ -167,7 +167,7 @@ module.exports = exports = {
 	{
 		canEditFunction: function () {
 			// TODO(T301667): restrict to only certain user roles
-			return this.isUserLoggedIn;
+			return this.isNewZObject ? true : this.isUserLoggedIn;
 		},
 		isMobile: function () {
 			return this.breakpoint.current.value === Constants.breakpointsTypes.MOBILE;
