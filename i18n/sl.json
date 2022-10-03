@@ -28,6 +28,7 @@
 	"wikilambda-tester-run-testers": "Izvedi vse preizkuse",
 	"wikilambda-tester-run-tester": "Zaženi preizkus",
 	"wikilambda-metadata-duplicate-alias-error": "»$1« že obstaja",
+	"wikilambda-metadata-all-languages": "Prikaži vse vnesene jezike",
 	"wikilambda-persistentobject-details-label": "Podrobnosti",
 	"wikilambda-editor-fn-step-function-details": "Podrobnosti"
 }
