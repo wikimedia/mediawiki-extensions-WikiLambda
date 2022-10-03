@@ -24,6 +24,11 @@ const awaitLookup = async ( wrapper ) => {
 	await wrapper.vm.$nextTick();
 };
 
+const clickItemInMenu = ( parentWrapper, itemText ) =>
+	parentWrapper.findAll( '.cdx-menu-item' )
+		.find( ( item ) => item.text() === itemText )
+		.trigger( 'click' );
+
 describe( 'WikiLambda frontend, on function-editor view', () => {
 	let apiPostWithEditTokenMock;
 	let wrapper;
@@ -36,6 +41,13 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 				href: 'currentPage'
 			}
 		} );
+
+		// This is necessary to allow FunctionDefinition to attempt to scroll to second language without crashing.
+		document.getElementById = ( selector ) => {
+			if ( selector === 'fnDefinitionContainer' ) {
+				return {};
+			}
+		};
 
 		apiPostWithEditTokenMock = jest.fn( () => Promise.resolve( {
 			wikilambda_edit: {
@@ -64,9 +76,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 			wrapper.get( '.ext-wikilambda-language-selector__add-language' ).getComponent( CdxLookup );
 		languageSelectorLookup.vm.$emit( 'input', 'Chin' );
 		await awaitLookup( wrapper );
-		await languageSelectorLookup.findAll( '.cdx-menu-item' )
-			.find( ( item ) => item.text() === 'Chinese' )
-			.trigger( 'click' );
+		await clickItemInMenu( languageSelectorLookup, 'Chinese' );
 
 		// ACT: Enter a name for the function.
 		wrapper.get( '.ext-wikilambda-function-definition-name' ).getComponent( CdxTextInput )
@@ -87,9 +97,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 			wrapper.get( '.ext-wikilambda-editor-input-list-item__selector' ).getComponent( CdxLookup );
 		argumentTypeSelectorLookup.vm.$emit( 'input', 'Str' );
 		await awaitLookup( wrapper );
-		await argumentTypeSelectorLookup.findAll( '.cdx-menu-item' )
-			.find( ( item ) => item.text() === 'String' )
-			.trigger( 'click' );
+		await clickItemInMenu( argumentTypeSelectorLookup, 'String' );
 
 		// ACT: Enter a label for the first argument.
 		const argumentLabelInput = wrapper.get( '.ext-wikilambda-editor-input-list-item__label input' );
@@ -107,9 +115,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 			wrapper.findAll( '.ext-wikilambda-editor-input-list-item__selector' )[ 1 ].getComponent( CdxLookup );
 		secondArgumentTypeSelectorLookup.vm.$emit( 'input', 'Str' );
 		await awaitLookup( wrapper );
-		await secondArgumentTypeSelectorLookup.findAll( '.cdx-menu-item' )
-			.find( ( item ) => item.text() === 'String' )
-			.trigger( 'click' );
+		await clickItemInMenu( secondArgumentTypeSelectorLookup, 'String' );
 
 		// ACT: Enter a label for the second argument.
 		const secondArgumentLabelInput = wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 1 ];
@@ -122,16 +128,60 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 			wrapper.get( '.ext-wikilambda-function-definition-output__selector' ).getComponent( CdxLookup );
 		outputTypeSelectorLookup.vm.$emit( 'input', 'Str' );
 		await awaitLookup( wrapper );
-		await outputTypeSelectorLookup.findAll( '.cdx-menu-item' )
-			.find( ( item ) => item.text() === 'String' )
-			.trigger( 'click' );
+		await clickItemInMenu( outputTypeSelectorLookup, 'String' );
 
 		// ASSERT: Output's type is visible in work summary.
 		expect( wrapper.get( '.ext-wikilambda-editior-visual-display-output-box' ).text() ).toEqual( 'String' );
 
+		// ACT: Click "Add labels in another language".
+		await wrapper.get( '.ext-wikilambda-function-definition__action-add-input-button' ).trigger( 'click' );
+
+		// ACT: Select a second natural language.
+		const secondLanguageSelectorLookup =
+			wrapper.findAll( '.ext-wikilambda-language-selector__add-language' )[ 1 ].getComponent( CdxLookup );
+		secondLanguageSelectorLookup.vm.$emit( 'input', 'Fren' );
+		await awaitLookup( wrapper );
+		await clickItemInMenu( secondLanguageSelectorLookup, 'French' );
+
+		// ACT: Enter a name in the second language.
+		wrapper.findAll( '.ext-wikilambda-function-definition-name' )[ 1 ].getComponent( CdxTextInput )
+			.vm.$emit( 'input', 'function name, in French' );
+		await wrapper.vm.$nextTick();
+
+		// ACT: Select second language in work summary.
+		const workSummaryLanguageSelector =
+			wrapper.get( '.ext-wikilambda-editior-visual-display-body__language-selector' );
+		await workSummaryLanguageSelector.trigger( 'click' );
+		await clickItemInMenu( workSummaryLanguageSelector, 'French' );
+
+		// ASSERT: New name is visible in work summary.
+		expect( wrapper.get( '.ext-wikilambda-editior-visual-display-name' ).text() )
+			.toEqual( 'function name, in French' );
+
+		// ACT: Enter an alias in the second language.
+		const secondLanguageAliasInput =
+			wrapper.findAll( '.ext-wikilambda-function-definition-aliases__inputs input' )[ 1 ];
+		await secondLanguageAliasInput.setValue( 'function alias, in French' );
+		await secondLanguageAliasInput.trigger( 'keydown', { key: 'enter' } );
+
+		// ACT: Enter a label for the first argument, in the second language.
+		await wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 2 ]
+			.setValue( 'first argument label, in French' );
+
+		// ASSERT: First argument's label is visible in work summary.
+		expect( wrapper.get( '.ext-wikilambda-editior-visual-display-input-box' ).text() )
+			.toEqual( 'String, “first argument label, in French”' );
+
+		// ACT: Enter a label for the second argument, in the second language.
+		await wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 3 ]
+			.setValue( 'second argument label, in French' );
+
+		// TODO(T317781): Test scrolling to second argument in work summary, once bug fixed.
+
 		// ACT: Click publish button.
 		await wrapper.get( '.ext-wikilambda-function-definition-footer__publish-button' ).trigger( 'click' );
 		jest.runAllTimers();
+		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 
 		// ASSERT: Location is changed to page returned by API.

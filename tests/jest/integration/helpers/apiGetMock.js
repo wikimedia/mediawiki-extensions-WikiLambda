@@ -32,6 +32,33 @@ const chineseLabelLookupApiResponse = {
 	]
 };
 
+const frenchLabelLookupApiResponse = {
+	wikilambdasearch_labels: [
+		{
+			page_namespace: 0,
+			page_title: Constants.Z_NATURAL_LANGUAGE_FRENCH,
+			page_type: Constants.Z_NATURAL_LANGUAGE,
+			return_type: null,
+			label: 'French',
+			is_primary: '1',
+			page_id: 0,
+			page_content_model: 'zobject',
+			page_lang: Constants.Z_NATURAL_LANGUAGE_ENGLISH
+		},
+		{
+			page_namespace: 0,
+			page_title: Constants.Z_NATURAL_LANGUAGE_CANADIAN_FRENCH,
+			page_type: Constants.Z_NATURAL_LANGUAGE,
+			return_type: null,
+			label: 'Canadian French',
+			is_primary: '1',
+			page_id: 0,
+			page_content_model: 'zobject',
+			page_lang: Constants.Z_NATURAL_LANGUAGE_ENGLISH
+		}
+	]
+};
+
 const stringLabelLookupApiResponse = {
 	wikilambdasearch_labels: [
 		{
@@ -83,6 +110,10 @@ module.exports = ( args ) => {
 				args.wikilambdasearch_type === Constants.Z_NATURAL_LANGUAGE &&
 				'Chinese'.includes( args.wikilambdasearch_search ) ) {
 		response.query = chineseLabelLookupApiResponse;
+	} else if ( args.list === 'wikilambdasearch_labels' &&
+				args.wikilambdasearch_type === Constants.Z_NATURAL_LANGUAGE &&
+				'French'.includes( args.wikilambdasearch_search ) ) {
+		response.query = frenchLabelLookupApiResponse;
 	} else if ( args.list === 'wikilambdasearch_labels' &&
 				args.wikilambdasearch_type === Constants.Z_TYPE &&
 				'String'.includes( args.wikilambdasearch_search ) ) {

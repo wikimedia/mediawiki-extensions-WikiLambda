@@ -27,6 +27,11 @@ module.exports = {
 							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
 							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_CHINESE,
 							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'first argument label, in Chinese'
+						},
+						{
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
+							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_FRENCH,
+							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'first argument label, in French'
 						}
 					]
 				}
@@ -53,6 +58,11 @@ module.exports = {
 							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
 							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_CHINESE,
 							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'second argument label, in Chinese'
+						},
+						{
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
+							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_FRENCH,
+							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'second argument label, in French'
 						}
 					]
 				}
@@ -71,6 +81,11 @@ module.exports = {
 				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
 				[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_CHINESE,
 				[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'function name, in Chinese'
+			},
+			{
+				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
+				[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_FRENCH,
+				[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'function name, in French'
 			}
 		]
 	},
@@ -93,6 +108,14 @@ module.exports = {
 				[ Constants.Z_MONOLINGUALSTRINGSET_VALUE ]: [
 					Constants.Z_STRING,
 					'function alias, in Chinese'
+				]
+			},
+			{
+				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRINGSET,
+				[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_FRENCH,
+				[ Constants.Z_MONOLINGUALSTRINGSET_VALUE ]: [
+					Constants.Z_STRING,
+					'function alias, in French'
 				]
 			}
 		]
