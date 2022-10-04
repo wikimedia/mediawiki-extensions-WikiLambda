@@ -361,7 +361,8 @@ module.exports = exports = {
 									zFunctionId: this.getCurrentZObjectId,
 									zImplementationId: zid,
 									zTesterId: visibleTesters[ index ]
-								}
+								},
+								class: 'ext-wikilambda-function-details-table-item'
 							};
 						}
 					}

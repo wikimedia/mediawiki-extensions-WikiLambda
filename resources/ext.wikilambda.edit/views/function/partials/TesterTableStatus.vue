@@ -7,13 +7,16 @@
 	-->
 	<div class="ext-wikilambda-tester-table">
 		<cdx-icon
+			class="ext-wikilambda-tester-table__message-icon"
 			:icon="statusIcon"
 			:class="statusIconClass"
 		></cdx-icon>
-		{{ status }}
+		<span class="ext-wikilambda-tester-table__message-status">
+			{{ status }}
+		</span>
 		<cdx-icon
 			:icon="messageIcon"
-			class="ext-wikilambda-tester-table-message-icon"
+			class="ext-wikilambda-tester-table__message-icon ext-wikilambda-tester-table__message-icon--info"
 			@click.stop="handleMessageIconClick"
 		></cdx-icon>
 		<dialog-container
@@ -168,8 +171,28 @@ module.exports = exports = {
 @import '../../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-tester-table {
-	&-message-icon {
-		cursor: pointer;
+	display: flex;
+	text-transform: capitalize;
+
+	&__message-icon {
+		svg {
+			width: 16px;
+			height: 16px;
+		}
+
+		&--info {
+			cursor: pointer;
+
+			svg {
+				width: 20px;
+				height: 20px;
+			}
+		}
+	}
+
+	&__message-status {
+		display: inline-block;
+		margin: 0 8px;
 	}
 
 	&-status {

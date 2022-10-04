@@ -105,9 +105,10 @@ module.exports = exports = {
 
 <style lang="less">
 @import './../../../lib/sd-base-variables.less';
+@import './../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-pagination {
-	padding-top: 18px;
+	padding-top: 8px;
 	padding-bottom: 18px;
 	display: flex;
 
@@ -126,13 +127,15 @@ module.exports = exports = {
 			height: 32px;
 			margin: 0;
 			text-align: center;
+			border: 1px solid @wmui-color-base50;
+			border-radius: 2px;
 			.sd-box-sizing( border-box );
 		}
 
 		&__total-pages {
 			height: 32px;
 			text-align: center;
-			padding: 0 8px;
+			padding: 0 6px;
 		}
 
 		&__action {

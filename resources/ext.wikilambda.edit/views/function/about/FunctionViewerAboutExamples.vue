@@ -87,8 +87,11 @@ module.exports = exports = {
 .ext-wikilambda-function-viewer-about-aliases {
 	&__table {
 		&-title {
+			display: flex;
+			align-items: center;
+			height: 50px;
 			background-color: @wmui-color-base80;
-			padding: 15px 16px;
+			padding: 0 16px;
 			color: @wmui-color-base0;
 			font-weight: @font-weight-bold;
 		}

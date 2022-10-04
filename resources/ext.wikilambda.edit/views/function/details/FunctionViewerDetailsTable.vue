@@ -13,7 +13,7 @@
 		>
 			<template #table-title>
 				<div class="ext-wikilambda-function-details-table__title">
-					<span>
+					<span class="ext-wikilambda-function-details-table__title__text">
 						{{ title }}
 					</span>
 					<!-- TODO (T310164): replace with button group -->
@@ -154,7 +154,7 @@ module.exports = exports = {
 	}
 
 	&__empty {
-		padding: 12px;
+		padding: 0 16px;
 		font-weight: @font-weight-base;
 		color: @wmui-color-base30;
 		white-space: pre-wrap;
@@ -165,12 +165,24 @@ module.exports = exports = {
 		color: @wmui-color-base10;
 		word-break: break-all;
 		background: @wmui-color-base80;
-		padding: 14px 16px;
+		padding: 0 16px;
+		height: 50px;
 		display: flex;
 		align-items: center;
 
+		&__text {
+			display: block;
+			width: 100%;
+			margin-right: 10px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
 		&__buttons {
 			margin-left: auto;
+			display: flex;
+			column-gap: 12px;
 		}
 	}
 
@@ -198,8 +210,13 @@ module.exports = exports = {
 			max-height: 44.78px; /* Fallback for non-webkit */
 			-webkit-line-clamp: 2;
 			-webkit-box-orient: vertical;
+			word-break: break-all;
 			overflow: hidden;
 			text-overflow: ellipsis;
+		}
+
+		.cdx-checkbox {
+			width: 22.85px;
 		}
 
 		&:first-child {

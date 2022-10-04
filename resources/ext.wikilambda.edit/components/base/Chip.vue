@@ -100,8 +100,8 @@ module.exports = exports = {
 	background-color: @wmui-color-base80;
 	border-width: 1.5px;
 	border-style: solid;
-	border-radius: 12px;
-	padding: 0 4px 0 6px;
+	border-radius: 100px;
+	padding: 0 8px;
 	margin-top: 2.5px;
 	margin-bottom: 2.5px;
 	vertical-align: middle;
