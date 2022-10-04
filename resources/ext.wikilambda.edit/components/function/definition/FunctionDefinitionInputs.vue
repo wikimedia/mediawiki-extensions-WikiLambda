@@ -158,7 +158,11 @@ module.exports = exports = {
 
 			this.addZObject( payload );
 
-			this.addZArgument( nextId );
+			var argumentPayload = {
+				id: nextId,
+				lang: this.zLang
+			};
+			this.addZArgument( argumentPayload );
 		},
 		// We need this function otherwise the build will fail
 		showAddNewInput: function ( isMainZObject, index ) {

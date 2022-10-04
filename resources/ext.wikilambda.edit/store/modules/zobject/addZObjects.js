@@ -204,7 +204,7 @@ module.exports = exports = {
 			// Add ZMonolingualString items
 			context.dispatch( 'addZMonolingualString', {
 				parentId: nextId,
-				lang: context.getters.getUserZlangZID,
+				lang: payload.lang || context.getters.getUserZlangZID,
 				value: payload.value
 			} );
 		},
@@ -397,8 +397,9 @@ module.exports = exports = {
 		 * @param {Object} context
 		 * @param {number} objectId
 		 */
-		addZArgument: function ( context, objectId ) {
-			var nextId;
+		addZArgument: function ( context, payload ) {
+			var objectId = payload.id,
+				nextId;
 			context.dispatch( 'setZObjectValue', {
 				id: objectId,
 				value: 'object'
@@ -420,7 +421,7 @@ module.exports = exports = {
 			// we create the base object that will be used to scaffold the ZString
 			context.dispatch( 'addZObject', { key: Constants.Z_ARGUMENT_LABEL, value: 'object', parent: objectId } );
 			// don't provide a default string: force the user to specify one
-			context.dispatch( 'addZMultilingualString', { id: nextId, value: '' } );
+			context.dispatch( 'addZMultilingualString', { id: nextId, value: '', lang: payload.lang } );
 		},
 		/**
 		 * Create the required entry in the zobject array for a zArgument.
@@ -516,7 +517,7 @@ module.exports = exports = {
 			// Add ZArgument to array
 			var argumentsNextId = nextId + 4;
 			context.dispatch( 'addZObject', { key: '1', value: 'object', parent: nextId } );
-			context.dispatch( 'addZArgument', argumentsNextId );
+			context.dispatch( 'addZArgument', { id: argumentsNextId } );
 
 			// Add return type
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
@@ -750,7 +751,7 @@ module.exports = exports = {
 						case Constants.Z_MULTILINGUALSTRING:
 							return context.dispatch( 'addZMultilingualString', payload );
 						case Constants.Z_ARGUMENT:
-							return context.dispatch( 'addZArgument', payload.id );
+							return context.dispatch( 'addZArgument', { id: payload.id } );
 						case Constants.Z_FUNCTION_CALL:
 							return context.dispatch( 'addZFunctionCall', payload );
 						case Constants.Z_FUNCTION:

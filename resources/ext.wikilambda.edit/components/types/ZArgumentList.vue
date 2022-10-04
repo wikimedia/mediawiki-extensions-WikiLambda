@@ -47,7 +47,7 @@ module.exports = exports = {
 				};
 			this.addZObject( payload );
 
-			this.addZArgument( nextId );
+			this.addZArgument( { id: nextId } );
 		},
 		removeItem: function ( itemId ) {
 			this.removeZObjectChildren( itemId );
