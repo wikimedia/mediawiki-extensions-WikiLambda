@@ -62,7 +62,7 @@
 <script>
 var Vue = require( 'vue' );
 var FunctionViewerDetailsSidebar = require( './details/FunctionViewerDetailsSidebar.vue' ),
-	FunctionViewerDetailsImplementationTable = require( './details/FunctionViewerDetailsTable.vue' ),
+	FunctionViewerDetailsTable = require( './details/FunctionViewerDetailsTable.vue' ),
 	Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	CdxCheckbox = require( '@wikimedia/codex' ).CdxCheckbox,
@@ -81,7 +81,7 @@ module.exports = exports = {
 	name: 'function-details',
 	components: {
 		'function-viewer-details-sidebar': FunctionViewerDetailsSidebar,
-		'function-viewer-details-table': FunctionViewerDetailsImplementationTable,
+		'function-viewer-details-table': FunctionViewerDetailsTable,
 		'cdx-message': CdxMessage
 	},
 	mixins: [ typeUtils ],

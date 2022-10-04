@@ -8,7 +8,7 @@
 'use strict';
 
 const { CdxLookup, CdxTextInput } = require( '@wikimedia/codex' ),
-	{ awaitLookup, clickItemInMenu } = require( './helpers/interactionHelpers.js' ),
+	{ awaitLookup, clickItemInMenu, pageChange } = require( './helpers/interactionHelpers.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	mount = require( '@vue/test-utils' ).mount,
 	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
@@ -184,8 +184,8 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		// ACT: Click publish button.
 		await wrapper.get( '.ext-wikilambda-function-definition-footer__publish-button' ).trigger( 'click' );
 		jest.runAllTimers();
-		await wrapper.vm.$nextTick();
-		await wrapper.vm.$nextTick();
+
+		await pageChange( wrapper );
 
 		// ASSERT: Location is changed to page returned by API.
 		expect( window.location.href ).toEqual( 'newPage' );

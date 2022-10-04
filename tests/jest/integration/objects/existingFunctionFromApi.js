@@ -1,8 +1,11 @@
 'use strict';
 
-const Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
+const Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+	existingImplementationByCompositionFromApi = require( './existingImplementationByCompositionFromApi.js' );
 
 const zid = 'Z12345';
+const implementationByCompositionZid =
+existingImplementationByCompositionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
 
 module.exports = {
 	[ Constants.Z_OBJECT_TYPE ]: Constants.Z_PERSISTENTOBJECT,
@@ -17,10 +20,7 @@ module.exports = {
 			{
 				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_ARGUMENT,
 				[ Constants.Z_ARGUMENT_TYPE ]: Constants.Z_STRING,
-				[ Constants.Z_ARGUMENT_KEY ]: {
-					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_STRING,
-					[ Constants.Z_STRING_VALUE ]: zid + 'K1'
-				},
+				[ Constants.Z_ARGUMENT_KEY ]: zid + 'K1',
 				[ Constants.Z_ARGUMENT_LABEL ]: {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
 					[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [
@@ -36,10 +36,7 @@ module.exports = {
 			{
 				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_ARGUMENT,
 				[ Constants.Z_ARGUMENT_TYPE ]: Constants.Z_STRING,
-				[ Constants.Z_ARGUMENT_KEY ]: {
-					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_STRING,
-					[ Constants.Z_STRING_VALUE ]: zid + 'K2'
-				},
+				[ Constants.Z_ARGUMENT_KEY ]: zid + 'K2',
 				[ Constants.Z_ARGUMENT_LABEL ]: {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
 					[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [
@@ -55,7 +52,7 @@ module.exports = {
 		],
 		[ Constants.Z_FUNCTION_RETURN_TYPE ]: Constants.Z_STRING,
 		[ Constants.Z_FUNCTION_TESTERS ]: [ Constants.Z_TESTER ],
-		[ Constants.Z_FUNCTION_IMPLEMENTATIONS ]: [ Constants.Z_IMPLEMENTATION ],
+		[ Constants.Z_FUNCTION_IMPLEMENTATIONS ]: [ Constants.Z_IMPLEMENTATION, implementationByCompositionZid ],
 		[ Constants.Z_FUNCTION_IDENTITY ]: zid
 	},
 	[ Constants.Z_PERSISTENTOBJECT_LABEL ]: {

@@ -4,9 +4,15 @@
 const Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	fs = require( 'fs' ),
 	path = require( 'path' ),
-	existingFunctionFromApi = require( '../objects/existingFunctionFromApi.js' );
+	existingFunctionFromApi = require( '../objects/existingFunctionFromApi.js' ),
+	existingImplementationInCodeFromApi = require( '../objects/existingImplementationInCodeFromApi.js' ),
+	existingImplementationByCompositionFromApi = require( '../objects/existingImplementationByCompositionFromApi.js' );
 
 const existingFunctionZid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
+const existingImplementationInCodeZid =
+	existingImplementationInCodeFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
+const existingImplementationByCompositionZid =
+	existingImplementationByCompositionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
 
 function createMockApi( apiMocks ) {
 	return ( request ) => {
@@ -27,13 +33,19 @@ function createMockApi( apiMocks ) {
 	};
 }
 
+const zObjectResponses = {
+	[ existingFunctionZid ]: existingFunctionFromApi,
+	[ existingImplementationInCodeZid ]: existingImplementationInCodeFromApi,
+	[ existingImplementationByCompositionZid ]: existingImplementationByCompositionFromApi
+};
+
 // Builders
 const zObjectApiResponseBuilder = ( zids, language ) => {
 	const response = { wikilambdaload_zobjects: {} };
 	zids.split( '|' ).forEach( ( zid ) => {
 		let data;
-		if ( zid === existingFunctionZid ) {
-			data = existingFunctionFromApi;
+		if ( zObjectResponses[ zid ] ) {
+			data = zObjectResponses[ zid ];
 		} else {
 			const json = fs.readFileSync( path.join(
 				__dirname, '../../../../function-schemata/data/definitions/' + zid + '.json' ) );
@@ -142,6 +154,17 @@ const stringLabelLookupApiResponse = {
 	]
 };
 
+const associatedImplementationsSearchResponse = {
+	wikilambdafn_search: [
+		{ page_namespace: 0,
+			zid: existingImplementationByCompositionZid
+		},
+		{ page_namespace: 0,
+			zid: existingImplementationInCodeZid
+		}
+	]
+};
+
 const labelsApiResponseBuilder = ( type, search ) => {
 	if ( type === Constants.Z_NATURAL_LANGUAGE && 'Chinese'.includes( search ) ) {
 		return chineseLabelLookupApiResponse;
@@ -155,16 +178,14 @@ const labelsApiResponseBuilder = ( type, search ) => {
 const searchApiResponseBuilder = ( zfunctionId, type ) => {
 	if ( zfunctionId === existingFunctionZid ) {
 		if ( type === Constants.Z_IMPLEMENTATION ) {
-			return { wikilambdafn_search: [] };
+			return associatedImplementationsSearchResponse;
 		} else if ( type === Constants.Z_TESTER ) {
 			return { wikilambdafn_search: [] };
 		}
 	}
 };
 const performTestResponseBuilder = ( zfunction, zimplementations, ztesters ) => {
-	if ( zfunction === JSON.stringify( existingFunctionFromApi ) &&
-		zimplementations === '' &&
-		ztesters === '' ) {
+	if ( zfunction === JSON.stringify( existingFunctionFromApi ) && ( zimplementations === '' || ztesters === '' ) ) {
 		return { wikilambda_perform_test: [] };
 	}
 };
@@ -205,9 +226,12 @@ const basicFieldMatcher =
 	( expectedRequest, actualRequest, fields ) => {
 		return fields.every( ( field ) => expectedRequest[ field ] === actualRequest[ field ] );
 	};
-const labelsMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list', 'wikilambdasearch_type' ] );
-const loadZObjectsMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list' ] );
-const zObjectSearchMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list', 'wikilambdafn_zfunction_id', 'wikilambdafn_type' ] );
+const labelsMatcher = ( expectedRequest, actualRequest ) =>
+	basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list', 'wikilambdasearch_type' ] );
+const loadZObjectsMatcher = ( expectedRequest, actualRequest ) =>
+	basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list' ] );
+const zObjectSearchMatcher = ( expectedRequest, actualRequest ) =>
+	basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list', 'wikilambdafn_zfunction_id', 'wikilambdafn_type' ] );
 const performTestMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action' ] );
 
 // Responses

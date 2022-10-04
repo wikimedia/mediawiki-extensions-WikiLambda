@@ -19,12 +19,14 @@
 					<!-- TODO (T310164): replace with button group -->
 					<div class="ext-wikilambda-function-details-table__title__buttons">
 						<cdx-button
+							class="ext-wikilambda-function-details-table__title__buttons__approve-button"
 							v-if="!( isMobile && !canApprove )"
 							:disabled="!canApprove"
 							@click="approve">
 							<label> {{ $i18n( 'wikilambda-function-details-table-approve' ).text() }} </label>
 						</cdx-button>
 						<cdx-button
+							class="ext-wikilambda-function-details-table__title__buttons__deactivate-button"
 							v-if="!( isMobile && !canDeactivate )"
 							:disabled="!canDeactivate"
 							@click="deactivate"
