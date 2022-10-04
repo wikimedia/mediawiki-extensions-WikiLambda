@@ -111,16 +111,7 @@ module.exports = exports = {
 					},
 					Z2K4: {
 						Z1K1: Constants.Z_MULTILINGUALSTRINGSET,
-						Z32K1: context.getters.getUserZlangZID ? [
-							Constants.Z_MONOLINGUALSTRINGSET,
-							{
-								Z1K1: Constants.Z_MONOLINGUALSTRINGSET,
-								Z31K1: context.getters.getUserZlangZID,
-								Z31K2: [
-									Constants.Z_STRING
-								]
-							}
-						] : [ Constants.Z_MONOLINGUALSTRINGSET ]
+						Z32K1: [ Constants.Z_MONOLINGUALSTRINGSET ]
 					}
 				},
 				key: undefined,

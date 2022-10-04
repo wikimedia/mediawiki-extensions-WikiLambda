@@ -93,15 +93,6 @@ module.exports = {
 		[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRINGSET,
 		[ Constants.Z_MULTILINGUALSTRINGSET_VALUE ]: [
 			Constants.Z_MONOLINGUALSTRINGSET,
-			// TODO(T318323): Remove this expected item once bug fixed that sends empty English stringset
-			// despite English not being selected.
-			{
-				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRINGSET,
-				[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
-				[ Constants.Z_MONOLINGUALSTRINGSET_VALUE ]: [
-					Constants.Z_STRING
-				]
-			},
 			{
 				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRINGSET,
 				[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_CHINESE,
