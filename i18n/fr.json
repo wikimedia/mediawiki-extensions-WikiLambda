@@ -116,7 +116,7 @@
 	"wikilambda-tester-status-running": "EXÉCUTION EN COURS...",
 	"wikilambda-tester-status-passed": "PASSE",
 	"wikilambda-tester-status-failed": "ÉCHEC",
-	"wikilambda-tester-results-title": "Résultats du testeur",
+	"wikilambda-tester-results-title": "Résultats du test",
 	"wikilambda-tester-results-subtitle": "Résultats de test pour",
 	"wikilambda-tester-status-label": "État du test",
 	"wikilambda-tester-failure-reason": "Motif d’échec",

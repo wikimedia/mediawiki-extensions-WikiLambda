@@ -2,10 +2,14 @@
 	"@metadata": {
 		"authors": [
 			"AVVK Chaitanya",
-			"Pranayraj1985"
+			"Pranayraj1985",
+			"Chaduvari",
+			"Tmamatha",
+			"Veeven"
 		]
 	},
 	"wikilambda-editor-label-select-programming-language-label": "ప్రోగ్రామింగ్ భాషను ఎంచుకోండి",
+	"wikilambda-tester-results-title": "పరీక్ష ఫలితాలు",
 	"wikilambda-metadata-language-column": "భాష",
 	"wikilambda-metadata-label-column": "సూచిక (లేబెల్)"
 }

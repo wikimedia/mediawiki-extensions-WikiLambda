@@ -107,7 +107,7 @@
 	"wikilambda-tester-status-running": "בהרצה...",
 	"wikilambda-tester-status-passed": "עבר",
 	"wikilambda-tester-status-failed": "נכשל",
-	"wikilambda-tester-results-title": "תוצאות בודק",
+	"wikilambda-tester-results-title": "תוצאות בדיקה",
 	"wikilambda-tester-results-subtitle": "תוצאות בדיקות עבור",
 	"wikilambda-tester-status-label": "מצב הבדיקה",
 	"wikilambda-tester-failure-reason": "סיבת הכישלון",
