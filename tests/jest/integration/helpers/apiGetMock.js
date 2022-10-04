@@ -6,7 +6,8 @@ const Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.
 	path = require( 'path' ),
 	existingFunctionFromApi = require( '../objects/existingFunctionFromApi.js' ),
 	existingImplementationInCodeFromApi = require( '../objects/existingImplementationInCodeFromApi.js' ),
-	existingImplementationByCompositionFromApi = require( '../objects/existingImplementationByCompositionFromApi.js' );
+	existingImplementationByCompositionFromApi = require( '../objects/existingImplementationByCompositionFromApi.js' ),
+	existingTesterFromApi = require( '../objects/existingTesterFromApi.js' );
 
 const existingFunctionZid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
 const existingImplementationInCodeZid =
@@ -36,7 +37,11 @@ function createMockApi( apiMocks ) {
 const zObjectResponses = {
 	[ existingFunctionZid ]: existingFunctionFromApi,
 	[ existingImplementationInCodeZid ]: existingImplementationInCodeFromApi,
-	[ existingImplementationByCompositionZid ]: existingImplementationByCompositionFromApi
+	[ existingImplementationByCompositionZid ]: existingImplementationByCompositionFromApi,
+	[ existingTesterFromApi.successTesterZid ]:
+		existingTesterFromApi.testerZObject( existingTesterFromApi.successTesterZid ),
+	[ existingTesterFromApi.failedTesterZid ]:
+		existingTesterFromApi.testerZObject( existingTesterFromApi.failedTesterZid )
 };
 
 // Builders
@@ -165,6 +170,32 @@ const associatedImplementationsSearchResponse = {
 	]
 };
 
+const associatedTestersSearchResponse = {
+	wikilambdafn_search: [
+		{ page_namespace: 0,
+			zid: existingTesterFromApi.successTesterZid
+		},
+		{ page_namespace: 0,
+			zid: existingTesterFromApi.failedTesterZid
+		}
+	]
+};
+
+const performTestResponseResults = ( zFunctionId, zimplementationIds, ztesterId, isSuccess ) => {
+	const testResults = [];
+	zimplementationIds.split( '|' ).forEach( function ( zimplementation ) {
+		var validateStatus = isSuccess ? Constants.Z_BOOLEAN_TRUE : Constants.Z_BOOLEAN_FALSE;
+		testResults.push( {
+			zFunctionId: zFunctionId,
+			zImplementationId: zimplementation,
+			zTesterId: ztesterId,
+			testMetadata: JSON.stringify( '{}' ),
+			validateStatus: `"${validateStatus}"`
+		} );
+	} );
+	return testResults;
+};
+
 const labelsApiResponseBuilder = ( type, search ) => {
 	if ( type === Constants.Z_NATURAL_LANGUAGE && 'Chinese'.includes( search ) ) {
 		return chineseLabelLookupApiResponse;
@@ -180,13 +211,38 @@ const searchApiResponseBuilder = ( zfunctionId, type ) => {
 		if ( type === Constants.Z_IMPLEMENTATION ) {
 			return associatedImplementationsSearchResponse;
 		} else if ( type === Constants.Z_TESTER ) {
-			return { wikilambdafn_search: [] };
+			return associatedTestersSearchResponse;
 		}
 	}
 };
+
+function isRequestMatchingZFunction( requestZfunction, zfunction ) {
+	return requestZfunction === JSON.stringify( zfunction ) ||
+	JSON.parse( requestZfunction )[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ] ===
+		zfunction[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
+}
+
 const performTestResponseBuilder = ( zfunction, zimplementations, ztesters ) => {
-	if ( zfunction === JSON.stringify( existingFunctionFromApi ) && ( zimplementations === '' || ztesters === '' ) ) {
-		return { wikilambda_perform_test: [] };
+	if ( isRequestMatchingZFunction( zfunction, existingFunctionFromApi ) ) {
+		var zFunctionId = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
+		var successTestResults = [];
+		var failedTestResults = [];
+		ztesters.split( '|' ).forEach( function ( ztester ) {
+			if ( ztester === existingTesterFromApi.successTesterZid ) {
+				successTestResults = [ ...successTestResults,
+					...performTestResponseResults( zFunctionId, zimplementations, ztester, true ) ];
+			} else if ( ztester === existingTesterFromApi.failedTesterZid ) {
+				failedTestResults = [ ...failedTestResults,
+					...performTestResponseResults( zFunctionId, zimplementations, ztester, false ) ];
+			} else {
+				throw new Error( 'Success or failure response not found for ztester: ' + ztester );
+			}
+		} );
+		return {
+			wikilambda_perform_test: [ ...successTestResults, ...failedTestResults ]
+		};
+	} else {
+		throw new Error( 'Test does not support PerformTest response for zfunction: ' + zfunction );
 	}
 };
 

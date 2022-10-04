@@ -74,7 +74,7 @@ var FunctionViewerDetailsSidebar = require( './details/FunctionViewerDetailsSide
 
 Vue.component( 'cdx-checkbox', CdxCheckbox.default || CdxCheckbox );
 Vue.component( 'wikilambda-chip', WikilambdaChip.default || WikilambdaChip );
-Vue.component( 'tester-table-status', TableTesterStatus.default || TableTesterStatus );
+Vue.component( 'tester-table-status', TableTesterStatus );
 
 // @vue/component
 module.exports = exports = {

@@ -22,7 +22,7 @@ const ticksUntilTrue = async ( wrapper, callback ) => {
 		ticksComplete = callback();
 		tickCount += 1;
 	}
-	if ( tickCount > 11 ) {
+	if ( tickCount > 10 ) {
 		throw new Error( 'Test waited for too many ticks: ' + tickCount );
 	}
 };

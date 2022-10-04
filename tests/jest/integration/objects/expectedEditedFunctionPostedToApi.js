@@ -2,11 +2,12 @@
 
 const Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	existingImplementationByCompositionFromApi = require( './existingImplementationByCompositionFromApi.js' ),
+	existingTesterFromApi = require( './existingTesterFromApi.js' ),
 	existingFunctionFromApi = require( './existingFunctionFromApi.js' );
 
 const zid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
 const implementationByCompositionZid =
-existingImplementationByCompositionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
+	existingImplementationByCompositionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
 
 module.exports = {
 	[ Constants.Z_OBJECT_TYPE ]: Constants.Z_PERSISTENTOBJECT,
@@ -63,7 +64,7 @@ module.exports = {
 			}
 		],
 		[ Constants.Z_FUNCTION_RETURN_TYPE ]: Constants.Z_STRING,
-		[ Constants.Z_FUNCTION_TESTERS ]: [ Constants.Z_TESTER ],
+		[ Constants.Z_FUNCTION_TESTERS ]: [ Constants.Z_TESTER, existingTesterFromApi.failedTesterZid ],
 		[ Constants.Z_FUNCTION_IMPLEMENTATIONS ]: [ Constants.Z_IMPLEMENTATION, implementationByCompositionZid ],
 		[ Constants.Z_FUNCTION_IDENTITY ]: zid
 	},

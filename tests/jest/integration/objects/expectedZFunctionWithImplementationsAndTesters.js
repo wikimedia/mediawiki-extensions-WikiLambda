@@ -5,7 +5,7 @@ const Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.
 
 const zid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
 
-const zFunctionWithImplementations = function ( implementations ) {
+const zFunctionWithImplementationsAndTesters = function ( implementations, testers ) {
 	return {
 		[ Constants.Z_OBJECT_TYPE ]: Constants.Z_PERSISTENTOBJECT,
 		[ Constants.Z_PERSISTENTOBJECT_ID ]: {
@@ -56,7 +56,7 @@ const zFunctionWithImplementations = function ( implementations ) {
 				}
 			],
 			[ Constants.Z_FUNCTION_RETURN_TYPE ]: Constants.Z_STRING,
-			[ Constants.Z_FUNCTION_TESTERS ]: [ Constants.Z_TESTER ],
+			[ Constants.Z_FUNCTION_TESTERS ]: [ Constants.Z_TESTER, ...testers ],
 			[ Constants.Z_FUNCTION_IMPLEMENTATIONS ]: [ Constants.Z_IMPLEMENTATION, ...implementations ],
 			[ Constants.Z_FUNCTION_IDENTITY ]: zid
 		},
@@ -89,5 +89,5 @@ const zFunctionWithImplementations = function ( implementations ) {
 };
 
 module.exports = exports = {
-	zFunctionWithImplementations
+	zFunctionWithImplementationsAndTesters
 };
