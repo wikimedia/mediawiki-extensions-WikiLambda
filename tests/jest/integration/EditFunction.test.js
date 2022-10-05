@@ -1,6 +1,6 @@
 /* eslint-disable compat/compat */
 /*!
- * WikiLambda integration test for creating new function.
+ * WikiLambda integration test for editing a function.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -14,9 +14,12 @@ const { CdxLookup, CdxTextInput } = require( '@wikimedia/codex' ),
 	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
 	apiGetMock = require( './helpers/apiGetMock.js' ),
-	expectedNewFunctionPostedToApi = require( './objects/expectedNewFunctionPostedToApi.js' );
+	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' ),
+	expectedEditedFunctionPostedToApi = require( './objects/expectedEditedFunctionPostedToApi.js' );
 
-describe( 'WikiLambda frontend, on function-editor view', () => {
+const functionZid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
+
+describe( 'WikiLambda frontend, editing an existing function, on function-editor view', () => {
 	let apiPostWithEditTokenMock;
 	let wrapper;
 	beforeEach( () => {
@@ -47,78 +50,59 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 				get: apiGetMock
 			};
 		} );
+
 		window.mw.Uri.mockImplementation( () => {
 			return {
-				path: Constants.PATHS.CREATE_Z_OBJECT,
+				path: Constants.PATHS.EDIT_Z_OBJECT,
 				query: {
-					view: Constants.VIEWS.FUNCTION_EDITOR
+					action: Constants.ACTIONS.EDIT,
+					view: Constants.VIEWS.FUNCTION_EDITOR,
+					title: functionZid
 				}
 			};
 		} );
+		global.mw.config.get = ( endpoint ) => {
+			switch ( endpoint ) {
+				case 'wgWikiLambda':
+					return {
+						zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+						zId: functionZid
+					};
+				default:
+					return {};
+			}
+		};
+
 		wrapper = mount( App, { global: { plugins: [ store ] } } );
 	} );
-	it( 'allows creating a new function, making use of most important features', async () => {
-		// ACT: Select a natural language.
-		const languageSelectorLookup =
-			wrapper.get( '.ext-wikilambda-language-selector__add-language' ).getComponent( CdxLookup );
-		languageSelectorLookup.vm.$emit( 'input', 'Chin' );
-		await awaitLookup( wrapper );
-		await clickItemInMenu( languageSelectorLookup, 'Chinese' );
-
-		// ACT: Enter a name for the function.
+	it( 'allows editing the function, making use of most important features', async () => {
+		// ACT: Edit the name of the function.
 		wrapper.get( '.ext-wikilambda-function-definition-name' ).getComponent( CdxTextInput )
-			.vm.$emit( 'input', 'function name, in Chinese' );
+			.vm.$emit( 'input', 'edited function name, in Chinese' );
 		await wrapper.vm.$nextTick();
 
 		// ASSERT: New name is visible in work summary.
 		expect( wrapper.get( '.ext-wikilambda-editior-visual-display-name' ).text() )
-			.toEqual( 'function name, in Chinese' );
+			.toEqual( 'edited function name, in Chinese' );
 
-		// ACT: Enter an alias for the function.
+		// ACT: Add a second alias for the function.
 		const aliasInput = wrapper.get( '.ext-wikilambda-function-definition-aliases__inputs input' );
-		await aliasInput.setValue( 'function alias, in Chinese' );
+		await aliasInput.setValue( 'second function alias, in Chinese' );
 		await aliasInput.trigger( 'keydown', { key: 'enter' } );
 
-		// ACT: Select a type for the first argument.
-		const argumentTypeSelectorLookup =
-			wrapper.get( '.ext-wikilambda-editor-input-list-item__selector' ).getComponent( CdxLookup );
-		argumentTypeSelectorLookup.vm.$emit( 'input', 'Str' );
-		await awaitLookup( wrapper );
-		await clickItemInMenu( argumentTypeSelectorLookup, 'String' );
+		// ACT: Edit the label for the first argument.
+		await wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 0 ]
+			.setValue( 'edited first argument label, in Chinese' );
 
-		// ACT: Enter a label for the first argument.
-		const argumentLabelInput = wrapper.get( '.ext-wikilambda-editor-input-list-item__label input' );
-		await argumentLabelInput.setValue( 'first argument label, in Chinese' );
-
-		// ASSERT: First argument's type and label are visible in work summary.
+		// ASSERT: New label for argument is visible in work summary.
 		expect( wrapper.get( '.ext-wikilambda-editior-visual-display-input-box' ).text() )
-			.toEqual( 'String, “first argument label, in Chinese”' );
+			.toEqual( 'String, “edited first argument label, in Chinese”' );
 
-		// ACT: Add another argument
-		await wrapper.get( '.ext-wikilambda-editor-input-list-item__button' ).trigger( 'click' );
-
-		// ACT: Select a type for the second argument.
-		const secondArgumentTypeSelectorLookup =
-			wrapper.findAll( '.ext-wikilambda-editor-input-list-item__selector' )[ 1 ].getComponent( CdxLookup );
-		secondArgumentTypeSelectorLookup.vm.$emit( 'input', 'Str' );
-		await awaitLookup( wrapper );
-		await clickItemInMenu( secondArgumentTypeSelectorLookup, 'String' );
-
-		// ACT: Enter a label for the second argument.
-		const secondArgumentLabelInput = wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 1 ];
-		await secondArgumentLabelInput.setValue( 'second argument label, in Chinese' );
+		// ACT: Edit the label for the second argument.
+		await wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 1 ]
+			.setValue( 'edited second argument label, in Chinese' );
 
 		// TODO(T317781): Test scrolling to second argument in work summary, once bug fixed.
-
-		// ACT: Select a type for the output
-		const outputTypeSelectorLookup =
-			wrapper.get( '.ext-wikilambda-function-definition-output__selector' ).getComponent( CdxLookup );
-		outputTypeSelectorLookup.vm.$emit( 'input', 'Str' );
-		await awaitLookup( wrapper );
-		await clickItemInMenu( outputTypeSelectorLookup, 'String' );
-
-		// ASSERT: Output's type is visible in work summary.
-		expect( wrapper.get( '.ext-wikilambda-editior-visual-display-output-box' ).text() ).toEqual( 'String' );
 
 		// ACT: Click "Add labels in another language".
 		await wrapper.get( '.ext-wikilambda-function-definition__action-add-input-button' ).trigger( 'click' );
@@ -155,15 +139,11 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 2 ]
 			.setValue( 'first argument label, in French' );
 
-		// ASSERT: First argument's label is visible in work summary.
+		// ASSERT: Argument's label is visible in work summary.
 		expect( wrapper.get( '.ext-wikilambda-editior-visual-display-input-box' ).text() )
 			.toEqual( 'String, “first argument label, in French”' );
 
-		// ACT: Enter a label for the second argument, in the second language.
-		await wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 3 ]
-			.setValue( 'second argument label, in French' );
-
-		// TODO(T317781): Test scrolling to second argument in work summary, once bug fixed.
+		// [ACT: Don't enter a label for the second argument, in the second language.]
 
 		// ACT: Click publish button.
 		await wrapper.get( '.ext-wikilambda-function-definition-footer__publish-button' ).trigger( 'click' );
@@ -174,12 +154,12 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		// ASSERT: Location is changed to page returned by API.
 		expect( window.location.href ).toEqual( 'newPage' );
 
-		// ASSERT: Correct ZObject was posted to the API.
+		// ASSERT: Correct ZID and ZObject were posted to the API.
 		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_edit',
 			summary: '',
-			zid: undefined,
-			zobject: JSON.stringify( expectedNewFunctionPostedToApi )
+			zid: functionZid,
+			zobject: JSON.stringify( expectedEditedFunctionPostedToApi )
 		} );
 	} );
 } );
