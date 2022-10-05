@@ -47,6 +47,7 @@
 	"wikilambda-metadata-label-column": "Etikett",
 	"wikilambda-metadata-aka-column": "Och bekannt als",
 	"wikilambda-metadata-add-alias": "Alias derbäisetzen",
+	"wikilambda-metadata-duplicate-alias-error": "'$1' gëtt et schonn.",
 	"wikilambda-metadata-all-languages": "All Sproochen, déi agi goufen, weisen",
 	"wikilambda-metadata-fewer-languages": "Manner Sprooche weisen",
 	"wikilambda-persistentobject-details-label": "Detailer",
