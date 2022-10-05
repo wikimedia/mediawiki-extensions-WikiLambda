@@ -17,7 +17,7 @@
 					:label="tab.label"
 				>
 					<main class="ext-wikilambda-function-editor__main__content">
-						<component :is="currentTab"></component>
+						<component v-if="tab.name === currentTab" :is="tab.name"></component>
 					</main>
 				</cdx-tab>
 			</cdx-tabs>

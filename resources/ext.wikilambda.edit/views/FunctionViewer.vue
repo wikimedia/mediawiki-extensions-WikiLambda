@@ -15,7 +15,10 @@
 				:name="tab.name"
 				:label="tab.label"
 			>
-				<component :is="currentTab"></component>
+				<!-- Keep alive helps keeps the local state of the component so that it is not remounted -->
+				<keep-alive>
+					<component v-if="tab.name === currentTab" :is="tab.name" :name="tab.name"></component>
+				</keep-alive>
 			</cdx-tab>
 		</cdx-tabs>
 	</div>

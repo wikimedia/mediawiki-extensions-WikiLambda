@@ -12,7 +12,7 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 
 describe( 'App.vue', function () {
 	var actions,
-		mockIsInitialized;
+		mockGetZObjectInitializedValue;
 
 	beforeAll( function () {
 		actions = {
@@ -24,7 +24,7 @@ describe( 'App.vue', function () {
 			actions: actions,
 			getters: $.extend( getters, {
 				getZObjectInitialized: function () {
-					return mockIsInitialized;
+					return mockGetZObjectInitializedValue;
 				}
 			} )
 		} );
@@ -44,10 +44,10 @@ describe( 'App.vue', function () {
 
 	} );
 
-	it( 'Renders loading when getZObjectInitialized is false', function () {
+	it( 'Renders loading when getZObjectInitialized and `isAppSetup`(data property) is false', function () {
 		var wrapper;
 
-		mockIsInitialized = false;
+		mockGetZObjectInitializedValue = false;
 
 		wrapper = shallowMount( App, {
 			provide: {
@@ -55,16 +55,17 @@ describe( 'App.vue', function () {
 			}
 		} );
 
+		expect( wrapper.componentVM.isAppSetup ).toBe( false );
 		expect( wrapper.findComponent( { name: 'function-editor' } ).exists() ).toBe( false );
 		expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-loading' );
 	} );
 
-	it( 'Renders the router view when getZObjectInitialized is true', function () {
+	it( 'Does not render the router view when getZObjectInitialized is true but initializeZObject has not yet completed', async () => {
 		jest.clearAllMocks();
 
 		var wrapper;
 
-		mockIsInitialized = true;
+		mockGetZObjectInitializedValue = true;
 
 		wrapper = shallowMount( App, {
 			provide: {
@@ -72,12 +73,32 @@ describe( 'App.vue', function () {
 			}
 		} );
 
+		expect( wrapper.componentVM.isAppSetup ).toBe( false );
+		expect( wrapper.findComponent( { name: 'function-editor' } ).exists() ).toBe( false );
+	} );
+
+	it( 'Renders the router view when getZObjectInitialized is true and initializeZObject has completed', async () => {
+		jest.clearAllMocks();
+
+		var wrapper;
+
+		mockGetZObjectInitializedValue = true;
+
+		wrapper = shallowMount( App, {
+			provide: {
+				viewmode: true
+			}
+		} );
+
+		await wrapper.vm.$nextTick();
+		await wrapper.vm.$nextTick();
+
+		expect( wrapper.componentVM.isAppSetup ).toBe( true );
 		expect( wrapper.findComponent( { name: 'function-editor' } ).exists() ).toBe( true );
-		expect( global.$i18n ).not.toHaveBeenCalled();
 	} );
 
 	it( 'Initializes the app on load', function () {
-		mockIsInitialized = true;
+		mockGetZObjectInitializedValue = true;
 
 		shallowMount( App, {
 			provide: {

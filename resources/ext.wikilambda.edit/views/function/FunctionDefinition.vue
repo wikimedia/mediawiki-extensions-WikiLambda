@@ -495,6 +495,7 @@ module.exports = exports = {
 			}
 		},
 		selectedLanguages: {
+			immediate: true,
 			handler: function () {
 				if ( this.labelLanguages.length === 0 &&
 					this.selectedLanguages[ this.selectedLanguages.length - 1 ].label !== undefined ) {

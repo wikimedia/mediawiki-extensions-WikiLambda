@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<div id="ext-wikilambda-app" class="ext-wikilambda-edit">
-		<template v-if="getZObjectInitialized">
+		<template v-if="getZObjectInitialized && isAppSetup">
 			<component :is="getCurrentView"></component>
 		</template>
 		<span v-else>
@@ -35,6 +35,11 @@ module.exports = exports = {
 	inject: {
 		viewmode: { default: false }
 	},
+	data: function () {
+		return {
+			isAppSetup: false
+		};
+	},
 	computed: $.extend(
 		mapGetters( [
 			'getZObjectInitialized'
@@ -54,6 +59,7 @@ module.exports = exports = {
 				this.initialize( this.$i18n );
 				$.$i18n = this.$i18n;
 				this.evaluateUri();
+				this.isAppSetup = true;
 			}.bind( this )
 		);
 

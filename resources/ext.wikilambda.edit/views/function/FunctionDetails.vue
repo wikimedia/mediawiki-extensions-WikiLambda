@@ -24,7 +24,8 @@
 				:showing-all="implementationShowAll"
 				:can-approve="areProposedImplementationsSelected"
 				:can-deactivate="areAvailableImplementationsSelected"
-				:empty-text="$i18n( 'wikilambda-implementation-none-found' )"
+				:empty-text="zImplementationsFetched ?
+					$i18n( 'wikilambda-implementation-none-found' ) : $i18n( 'wikilambda-loading' )"
 				@update-page="updateImplementationPage"
 				@reset-view="resetImplementationView"
 				@approve="approveImplementations"
@@ -39,7 +40,8 @@
 				:showing-all="testerShowAll"
 				:can-approve="areProposedTestersSelected"
 				:can-deactivate="areAvailableTestersSelected"
-				:empty-text="$i18n( 'wikilambda-tester-none-found' )"
+				:empty-text="zTestersFetched ?
+					$i18n( 'wikilambda-tester-none-found' ) : $i18n( 'wikilambda-loading' )"
 				@update-page="updateTestersPage"
 				@reset-view="resetTestersView"
 				@approve="approveTesters"
@@ -98,7 +100,9 @@ module.exports = exports = {
 			testerShowAll: false,
 			implZidToState: {},
 			testerZidToState: {},
-			currentToast: null
+			currentToast: null,
+			zImplementationsFetched: false,
+			zTestersFetched: false
 		};
 	},
 	computed: $.extend( {},
@@ -403,6 +407,9 @@ module.exports = exports = {
 			},
 			shouldShowToast: function () {
 				return this.currentToast !== null;
+			},
+			fetchedZImplementationsAndZTesters: function () {
+				return this.zImplementationsFetched && this.zTestersFetched;
 			}
 		}
 	),
@@ -410,7 +417,10 @@ module.exports = exports = {
 		'attachZImplementations',
 		'detachZImplementations',
 		'attachZTesters',
-		'detachZTesters'
+		'detachZTesters',
+		'fetchZImplementations',
+		'fetchZTesters',
+		'getTestResults'
 	] ), {
 		updateImplementationPage: function ( page ) {
 			this.currentImplementationPage = page;
@@ -489,8 +499,32 @@ module.exports = exports = {
 		},
 		closeToast: function () {
 			this.currentToast = null;
+		},
+		runTesters: function () {
+			this.getTestResults( {
+				zFunctionId: this.getCurrentZObjectId,
+				zImplementations: this.getZImplementations,
+				zTesters: this.getZTesters,
+				clearPreviousResults: true
+			} );
 		}
-	} )
+	} ),
+	watch: {
+		fetchedZImplementationsAndZTesters: function ( val ) {
+			if ( val ) {
+				this.runTesters();
+			}
+		}
+	},
+	mounted: function () {
+		// TODO(T314580): once the API supports it, this should be one call
+		this.fetchZImplementations( this.getCurrentZObjectId ).then( function () {
+			this.zImplementationsFetched = true;
+		}.bind( this ) );
+		this.fetchZTesters( this.getCurrentZObjectId ).then( function () {
+			this.zTestersFetched = true;
+		}.bind( this ) );
+	}
 };
 </script>
 

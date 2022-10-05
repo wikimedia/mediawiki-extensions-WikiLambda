@@ -45,7 +45,9 @@ describe( 'FunctionDetails', function () {
 			attachZImplementations: createAction(),
 			detachZImplementations: createAction(),
 			attachZTesters: createAction(),
-			detachZTesters: createAction()
+			detachZTesters: createAction(),
+			fetchZImplementations: createAction(),
+			fetchZTesters: createAction()
 		};
 		getters = {
 			getZTesters: () => [ 'Z111', 'Z222' ],
@@ -79,7 +81,10 @@ describe( 'FunctionDetails', function () {
 					Z444: 'Z444 name'
 				};
 
-			}
+			},
+			getCurrentZObjectId: jest.fn( () => {
+				return 'Z555';
+			} )
 		};
 		global.store.hotUpdate( {
 			getters: getters,
