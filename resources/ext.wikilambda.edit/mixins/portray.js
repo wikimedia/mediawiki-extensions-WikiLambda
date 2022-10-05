@@ -23,6 +23,8 @@ const knownKeys = new Map( [
 	[ 'validateErrors', { i18nId: 'wikilambda-functioncall-metadata-validator-errors' } ],
 	[ 'actualTestResult', { i18nId: 'wikilambda-functioncall-metadata-actual-result' } ],
 	[ 'expectedTestResult', { i18nId: 'wikilambda-functioncall-metadata-expected-result' } ],
+	[ 'implementationId', { i18nId: 'wikilambda-functioncall-metadata-implementation-id' } ],
+	[ 'implementationType', { i18nId: 'wikilambda-functioncall-metadata-implementation-type' } ],
 	[ 'orchestrationStartTime', { i18nId: 'wikilambda-functioncall-metadata-orchestration-start-time' } ],
 	[ 'orchestrationEndTime', { i18nId: 'wikilambda-functioncall-metadata-orchestration-end-time' } ],
 	[ 'orchestrationDuration', { i18nId: 'wikilambda-functioncall-metadata-orchestration-duration' } ],
@@ -64,20 +66,22 @@ module.exports = exports = {
 			}
 			html = html + this.keyAndArbitraryValue( zMap, 'expectedTestResult', keysUsed );
 			html = html + this.keyAndArbitraryValue( zMap, 'actualTestResult', keysUsed );
+			html = html + this.keyAndStringValue( zMap, 'implementationType', keysUsed );
+			html = html + this.keyAndStringValue( zMap, 'implementationId', keysUsed );
 			html = html + this.keyAndDatetimeValue( zMap, 'orchestrationStartTime', keysUsed );
 			html = html + this.keyAndDatetimeValue( zMap, 'orchestrationEndTime', keysUsed );
-			html = html + this.keyAndArbitraryValue( zMap, 'orchestrationDuration', keysUsed );
-			html = html + this.keyAndArbitraryValue( zMap, 'orchestrationCpuUsage', keysUsed );
-			html = html + this.keyAndArbitraryValue( zMap, 'orchestrationMemoryUsage', keysUsed );
-			html = html + this.keyAndArbitraryValue( zMap, 'orchestrationHostname', keysUsed );
+			html = html + this.keyAndStringValue( zMap, 'orchestrationDuration', keysUsed );
+			html = html + this.keyAndStringValue( zMap, 'orchestrationCpuUsage', keysUsed );
+			html = html + this.keyAndStringValue( zMap, 'orchestrationMemoryUsage', keysUsed );
+			html = html + this.keyAndStringValue( zMap, 'orchestrationHostname', keysUsed );
 			html = html + this.keyAndDatetimeValue( zMap, 'evaluationStartTime', keysUsed );
 			html = html + this.keyAndDatetimeValue( zMap, 'evaluationEndTime', keysUsed );
-			html = html + this.keyAndArbitraryValue( zMap, 'evaluationDuration', keysUsed );
-			html = html + this.keyAndArbitraryValue( zMap, 'evaluationCpuUsage', keysUsed );
-			html = html + this.keyAndArbitraryValue( zMap, 'evaluationMemoryUsage', keysUsed );
-			html = html + this.keyAndArbitraryValue( zMap, 'evaluationHostname', keysUsed );
-			html = html + this.keyAndArbitraryValue( zMap, 'executionCpuUsage', keysUsed );
-			html = html + this.keyAndArbitraryValue( zMap, 'executionMemoryUsage', keysUsed );
+			html = html + this.keyAndStringValue( zMap, 'evaluationDuration', keysUsed );
+			html = html + this.keyAndStringValue( zMap, 'evaluationCpuUsage', keysUsed );
+			html = html + this.keyAndStringValue( zMap, 'evaluationMemoryUsage', keysUsed );
+			html = html + this.keyAndStringValue( zMap, 'evaluationHostname', keysUsed );
+			html = html + this.keyAndStringValue( zMap, 'executionCpuUsage', keysUsed );
+			html = html + this.keyAndStringValue( zMap, 'executionMemoryUsage', keysUsed );
 
 			// Now portray any top-level zMap entries that weren't already used above
 			const k1Array = zMap[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
@@ -102,7 +106,7 @@ module.exports = exports = {
 			return html + '</ul></span>';
 		},
 		/**
-		 * Portray the given key and its content, which should be a Z5 / Error object
+		 * Portray the given key and its zMap value, which should be a Z5 / Error object
 		 *
 		 * @param {Object} zMap a Z883/Typed map, in canonical form
 		 * @param {string} key
@@ -160,7 +164,7 @@ module.exports = exports = {
 			return this.maybeStringify( message );
 		},
 		/**
-		 * Portray the given key and its content, which should be a string containing
+		 * Portray the given key and its zMap value, which should be a string containing
 		 * a date+time in ISO 8601 format
 		 *
 		 * @param {Object} zMap a Z883/Typed map, in canonical form
@@ -179,8 +183,33 @@ module.exports = exports = {
 			return '<li><b>' + i18nKey + ':</b> ' + value + '</li>';
 		},
 		/**
-		 * Portray the given key and its content, which should be an arbitrary string
+		 * Portray the given key and its zMap value, which should be a string
 		 * that's already suitable for presentation
+		 *
+		 * @param {Object} zMap a Z883/Typed map, in canonical form
+		 * @param {string} key
+		 * @param {Array} keysUsed any keys used (or checked) here are added to this array
+		 * @return {string}
+		 */
+		keyAndStringValue: function ( zMap, key, keysUsed ) {
+			keysUsed.push( key );
+			let value = getValueFromCanonicalZMap( zMap, key );
+			if ( value === undefined ) {
+				return '';
+			}
+			if ( typeof value === 'object' && value[ Constants.Z_OBJECT_TYPE ] === Constants.Z_STRING &&
+				value[ Constants.Z_STRING_VALUE ] ) {
+				// In canonical form there are cases where the string remains inside a Z6 object;
+				// extract it here
+				value = value[ Constants.Z_STRING_VALUE ];
+			}
+			value = this.maybeStringify( value );
+			const i18nKey = this.$i18n( knownKeys.get( key ).i18nId ).text();
+			return '<li><b>' + i18nKey + ':</b> ' + value + '</li>';
+		},
+		/**
+		 * Portray the given key and its zMap value, which should be an arbitrary ZObject
+		 * not handled by any of the more specialized methods.
 		 *
 		 * @param {Object} zMap a Z883/Typed map, in canonical form
 		 * @param {string} key

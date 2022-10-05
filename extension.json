@@ -458,6 +458,8 @@
 				"wikilambda-functioncall-metadata-dialog-header",
 				"wikilambda-functioncall-metadata-errors",
 				"wikilambda-functioncall-metadata-errors-none",
+				"wikilambda-functioncall-metadata-implementation-id",
+				"wikilambda-functioncall-metadata-implementation-type",
 				"wikilambda-functioncall-metadata-orchestration-start-time",
 				"wikilambda-functioncall-metadata-orchestration-end-time",
 				"wikilambda-functioncall-metadata-orchestration-duration",
