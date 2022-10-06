@@ -12,7 +12,7 @@ function createMockApi( apiMocks ) {
 	return ( request ) => {
 		var matchedMock = apiMocks.find( function ( mock ) {
 			if ( mock.matcher ) {
-				return mock.matcher.every( ( field ) => request[ field ] === mock.request[ field ] );
+				return mock.matcher( mock.request, request );
 			} else if ( mock.request === request ) {
 				return true;
 			} else {
@@ -201,10 +201,14 @@ const performTestRequest = {
 };
 
 // Matchers
-const labelsMatcher = [ 'action', 'list', 'wikilambdasearch_type' ];
-const loadZObjectsMatcher = [ 'action', 'list' ];
-const zObjectSearchMatcher = [ 'action', 'list', 'wikilambdafn_zfunction_id', 'wikilambdafn_type' ];
-const performTestMatcher = [ 'action' ];
+const basicFieldMatcher =
+	( expectedRequest, actualRequest, fields ) => {
+		return fields.every( ( field ) => expectedRequest[ field ] === actualRequest[ field ] );
+	};
+const labelsMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list', 'wikilambdasearch_type' ] );
+const loadZObjectsMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list' ] );
+const zObjectSearchMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list', 'wikilambdafn_zfunction_id', 'wikilambdafn_type' ] );
+const performTestMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action' ] );
 
 // Responses
 const labelsResponse = ( request ) =>
