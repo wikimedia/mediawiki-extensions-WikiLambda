@@ -14,10 +14,25 @@ const { CdxLookup, CdxTextInput } = require( '@wikimedia/codex' ),
 	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
 	apiGetMock = require( './helpers/apiGetMock.js' ),
+	ApiMock = require( './helpers/apiMock.js' ),
 	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' ),
 	expectedEditedFunctionPostedToApi = require( './objects/expectedEditedFunctionPostedToApi.js' );
 
 const functionZid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
+
+const lookupZObjectTypeLabels =
+	new ApiMock( apiGetMock.typeLabelsRequest, apiGetMock.labelsResponse, apiGetMock.labelsMatcher );
+const lookupZObjectLanguageLabels =
+	new ApiMock( apiGetMock.languageLabelsRequest, apiGetMock.labelsResponse, apiGetMock.labelsMatcher );
+const initializeRootZObject =
+	new ApiMock( apiGetMock.loadZObjectsRequest, apiGetMock.loadZObjectsResponse, apiGetMock.loadZObjectsMatcher );
+const fetchZImplementations =
+	new ApiMock( apiGetMock.fetchZImplementationsRequest,
+		apiGetMock.zObjectSearchResponse, apiGetMock.zObjectSearchMatcher );
+const fetchZTesters =
+	new ApiMock( apiGetMock.fetchZTestersRequest, apiGetMock.zObjectSearchResponse, apiGetMock.zObjectSearchMatcher );
+const performTest =
+	new ApiMock( apiGetMock.performTestRequest, apiGetMock.performTestResponse, apiGetMock.performTestMatcher );
 
 describe( 'WikiLambda frontend, editing an existing function, on function-editor view', () => {
 	let apiPostWithEditTokenMock;
@@ -47,7 +62,13 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		mw.Api = jest.fn( () => {
 			return {
 				postWithEditToken: apiPostWithEditTokenMock,
-				get: apiGetMock
+				get: apiGetMock.createMockApi( [
+					lookupZObjectLanguageLabels,
+					lookupZObjectTypeLabels,
+					initializeRootZObject,
+					fetchZImplementations,
+					fetchZTesters,
+					performTest ] )
 			};
 		} );
 
