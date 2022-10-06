@@ -13,8 +13,16 @@ const { CdxLookup, CdxTextInput } = require( '@wikimedia/codex' ),
 	mount = require( '@vue/test-utils' ).mount,
 	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
+	ApiMock = require( './helpers/apiMock.js' ),
 	apiGetMock = require( './helpers/apiGetMock.js' ),
 	expectedNewFunctionPostedToApi = require( './objects/expectedNewFunctionPostedToApi.js' );
+
+const lookupZObjectTypeLabels =
+	new ApiMock( apiGetMock.typeLabelsRequest, apiGetMock.labelsResponse, apiGetMock.labelsMatcher );
+const lookupZObjectLanguageLabels =
+	new ApiMock( apiGetMock.languageLabelsRequest, apiGetMock.labelsResponse, apiGetMock.labelsMatcher );
+const initializeRootZObject =
+	new ApiMock( apiGetMock.loadZObjectsRequest, apiGetMock.loadZObjectsResponse, apiGetMock.loadZObjectsMatcher );
 
 describe( 'WikiLambda frontend, on function-editor view', () => {
 	let apiPostWithEditTokenMock;
@@ -44,7 +52,11 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		mw.Api = jest.fn( () => {
 			return {
 				postWithEditToken: apiPostWithEditTokenMock,
-				get: apiGetMock
+				get: apiGetMock.createMockApi( [
+					lookupZObjectLanguageLabels,
+					lookupZObjectTypeLabels,
+					initializeRootZObject
+				] )
 			};
 		} );
 		window.mw.Uri.mockImplementation( () => {
