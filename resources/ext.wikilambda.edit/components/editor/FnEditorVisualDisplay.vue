@@ -32,7 +32,7 @@
 
 				<div class="ext-wikilambda-editior-visual-display-slide">
 					<div class="ext-wikilambda-editior-visual-display-slide-box">
-						<div :style="inputBoxStyle">
+						<div :style="inputContainerStyle">
 							<div
 								v-for="( input, i ) in inputs"
 								:key="i"
@@ -162,10 +162,11 @@ module.exports = exports = {
 
 				return '(' + this.activeInput + '/' + this.inputs.length + ')';
 			},
-			inputBoxStyle: function () {
-				var width = 0 - ( this.activeInput - 1 ) * this.inputWidth;
+			inputContainerStyle: function () {
+				var offset = 0 - ( this.activeInput - 1 ) * this.inputWidth;
+				// Move the container containing all inputs horizontally so that current input shows
 				return {
-					transform: 'translateX(' + width + 'px)'
+					transform: 'translateX(' + offset + 'px)'
 				};
 			},
 			selectedLanguage: {
@@ -216,7 +217,7 @@ module.exports = exports = {
 			}
 		},
 		setInputWidth: function () {
-			this.inputWidth = this.$el.querySelectorAll(
+			this.inputWidth = document.querySelectorAll(
 				'.ext-wikilambda-editior-visual-display-input-box'
 			)[ 0 ].offsetWidth;
 		},
