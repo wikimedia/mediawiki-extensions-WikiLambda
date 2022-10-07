@@ -283,6 +283,8 @@
 				"wikilambda-functioncall",
 				"wikilambda-json",
 				"wikilambda-edit",
+				"wikilambda-helplink-button",
+				"wikilambda-helplink-tooltip",
 				"wikilambda-show-more",
 				"wikilambda-hide-more",
 				"wikilambda-show-error",

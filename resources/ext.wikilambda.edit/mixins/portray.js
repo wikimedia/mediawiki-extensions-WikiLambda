@@ -103,7 +103,18 @@ module.exports = exports = {
 					entry[ Constants.Z_TYPED_PAIR_TYPE2 ] );
 				html = html + '<li><b>' + displayKey + ':</b> ' + value + '</li>';
 			}
-			return html + '</ul></span>';
+
+			// TODO (T320669): Construct this more nicely, perhaps with a Codex link component?
+			const helpLink = '<a' +
+				' class="ext-wikilambda-metadatadialog-helplink"' +
+				' href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/Function_call_metadata"' +
+				' title="' + this.$i18n( 'wikilambda-helplink-tooltip' ).text() + '"' +
+				' target="_blank"' +
+				'>' +
+				this.$i18n( 'wikilambda-helplink-button' ).text() +
+				'</a>';
+
+			return html + '</ul>' + helpLink + '</span>';
 		},
 		/**
 		 * Portray the given key and its zMap value, which should be a Z5 / Error object

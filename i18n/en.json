@@ -34,6 +34,8 @@
 	"wikilambda-orchestrated-loading": "Performing orchestration, please wait",
 	"wikilambda-json": "JSON",
 	"wikilambda-edit": "Edit",
+	"wikilambda-helplink-button": "Help",
+	"wikilambda-helplink-tooltip": "You can read a Help page which explains this metadata",
 	"wikilambda-show-more": "Show more",
 	"wikilambda-hide-more": "Hide more",
 	"wikilambda-show-error": "Show error",
