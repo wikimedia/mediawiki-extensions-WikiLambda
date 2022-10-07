@@ -116,7 +116,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$response = $this->zobjectStore->fetchBatchZObjects( [ $firstZid, $secondZid ] );
 
-		$this->assertTrue( is_array( $response ) );
+		$this->assertIsArray( $response );
 		$this->assertCount( 2, $response );
 		$this->assertArrayHasKey( $firstZid, $response );
 		$this->assertArrayHasKey( $secondZid, $response );
