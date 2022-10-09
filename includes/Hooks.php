@@ -385,7 +385,6 @@ class Hooks implements
 		} else {
 			$firstError = $status->getErrors()[0];
 			$error = wfMessage( $firstError[ 'message' ], $firstError[ 'params' ] );
-			// @phan-suppress-next-line SecurityCheck-DoubleEscaped Error message is just logged, not rendered.
 			$updater->output( "\t❌ Unable to make a page for {$title->getPrefixedText()}: $error\n" );
 		}
 

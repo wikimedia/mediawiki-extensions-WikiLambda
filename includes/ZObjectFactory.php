@@ -364,6 +364,7 @@ class ZObjectFactory {
 	 * @param array $objectVars
 	 * @param string $targetType
 	 * @return array arguments to pass to the target ZObject constructor
+	 * @phan-return non-empty-array
 	 */
 	private static function createKeyValues( array $objectVars, string $targetType ) {
 		// Magic
