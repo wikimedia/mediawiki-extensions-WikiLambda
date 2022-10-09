@@ -131,8 +131,6 @@ var Constants = {
 		Z_OBJECT_VIEWER: 'zobject-viewer'
 	},
 	paths = {
-		CREATE_Z_OBJECT: '/wiki/Special:CreateZObject',
-		EVALUTATE_FUNCTION_CALL: '/wiki/Special:EvaluateFunctionCall',
 		EDIT_Z_OBJECT: '/w/index.php',
 		VIEW_Z_OBJECT: ''
 	},

@@ -188,7 +188,7 @@ module.exports = exports = {
 					this.referenceValue === this.getCurrentZObjectId;
 			},
 			zTypeLink: function () {
-				return '/wiki/' + this.zType;
+				return new mw.Title( this.zType ).getUrl();
 			}
 		}
 	),

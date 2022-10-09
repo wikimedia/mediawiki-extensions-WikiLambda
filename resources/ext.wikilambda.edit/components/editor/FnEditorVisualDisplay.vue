@@ -39,7 +39,7 @@
 								class="ext-wikilambda-editior-visual-display-input-box">
 								<span name="input">
 									<template v-if="input.type && input.type.zid">
-										<a :href="`/wiki/${input.type.zid}`" target="_blank">
+										<a :href="typeLink( input )" target="_blank">
 											{{ input.type.label }}
 										</a>, “{{ input.label }}”
 									</template>
@@ -82,7 +82,7 @@
 			<div class="ext-wikilambda-editior-visual-display-output">
 				<div class="ext-wikilambda-editior-visual-display-output-box">
 					<template v-if="output.zid">
-						<a :href="`/wiki/${output.zid}`" target="_blank">{{ output.title }}</a>
+						<a :href="outputLink" target="_blank">{{ output.title }}</a>
 					</template>
 					<template v-else>
 						{{ output.title }}
@@ -196,6 +196,9 @@ module.exports = exports = {
 						value: language.Z9K1
 					};
 				}.bind( this ) );
+			},
+			outputLink: function () {
+				return new mw.Title( this.output.zid ).getUrl();
 			}
 		}
 	),
@@ -222,6 +225,9 @@ module.exports = exports = {
 		},
 		selectionWithinOptions: function ( zId ) {
 			return this.currentZObjectLanguages.some( ( zObjLang ) => zObjLang[ Constants.Z_REFERENCE_ID ] === zId );
+		},
+		typeLink: function ( input ) {
+			return new mw.Title( input.type.zid ).getUrl();
 		}
 	},
 	watch: {

@@ -11,7 +11,7 @@
 	<span class="ext-wikilambda-select-zobject">
 		<div v-if="readonly || viewmode" class="ext-wikilambda-select-zobject__link">
 			<a
-				:href="'/wiki/' + selectedId"
+				:href="typeUrl()"
 				:target="referenceLinkTarget"
 			>
 				{{ selectedText }}
@@ -325,6 +325,9 @@ module.exports = exports = {
 			},
 			onFocusOut: function () {
 				this.$emit( 'focus-out' );
+			},
+			typeUrl: function () {
+				return new mw.Title( this.selectedId ).getUrl();
 			}
 		}
 	),

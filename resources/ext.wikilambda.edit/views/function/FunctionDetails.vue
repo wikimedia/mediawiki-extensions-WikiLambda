@@ -229,7 +229,7 @@ module.exports = exports = {
 							title: this.getZkeyLabels[ visibleImplementations[ index ] ],
 							component: 'a',
 							props: {
-								href: '/wiki/' + visibleImplementations[ index ]
+								href: new mw.Title( visibleImplementations[ index ] ).getUrl()
 							},
 							class: 'ext-wikilambda-function-details-implementation-table-link ext-wikilambda-function-details-table-item'
 						},
@@ -344,7 +344,7 @@ module.exports = exports = {
 						title: testerLabel,
 						component: 'a',
 						props: {
-							href: '/wiki/' + visibleTesters[ index ]
+							href: new mw.Title( visibleTesters[ index ] ).getUrl()
 						},
 						class: 'ext-wikilambda-function-details-table-item'
 					};
