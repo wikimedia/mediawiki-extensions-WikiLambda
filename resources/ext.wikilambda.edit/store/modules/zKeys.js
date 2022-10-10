@@ -6,10 +6,8 @@
  */
 
 var Constants = require( '../../Constants.js' ),
-	debounceZKeyFetch = null,
 	resolvePromiseList = {},
-	zKeystoFetch = [],
-	DEBOUNCE_FETCH_ZKEYS_TIMEOUT = 1;
+	zKeystoFetch = [];
 
 function generateRequestName( keysList ) {
 	const sortedKeys = keysList.sort();
@@ -74,33 +72,17 @@ module.exports = exports = {
 	},
 	actions: {
 		/**
-		 * Call the wikilambdaload_zobjects api with debounce to get the information
-		 * of a given set of ZIds, and stores the ZId information and the ZKey labels
-		 * in the state.
-		 *
-		 * @param {Object} context
-		 * @param {Array} zids
-		 * @return {Promise}
-		 */
-		fetchZKeyWithDebounce: function ( context, zids ) {
-			return context.dispatch( 'fetchZKeys', {
-				zids: zids,
-				debounce: true
-			} );
-		},
-		/**
 		 * Call the wikilambdaload_zobjects api to get the information of a
 		 * given set of ZIds, and stores the ZId information and the ZKey labels
 		 * in the state.
 		 *
 		 * @param {Object} context
-		 * @param {Object} payload with the keys 'zids' and 'debounce'
+		 * @param {Object} payload with the keys 'zids'
 		 * @return {Promise}
 		 */
 		fetchZKeys: function ( context, payload ) {
 			const {
-				zids = [],
-				debounce = false
+				zids = []
 			} = payload;
 
 			zids.forEach( function ( zId ) {
@@ -150,16 +132,7 @@ module.exports = exports = {
 			// eslint-disable-next-line compat/compat
 			resolvePromiseList[ promiseName ].promise = new Promise( function ( resolve ) {
 				resolvePromiseList[ promiseName ].resolve = resolve;
-
-				if ( debounce ) {
-					clearTimeout( debounceZKeyFetch );
-					debounceZKeyFetch = setTimeout(
-						dispatchPerformZKeyFetch( zKeystoFetch ),
-						DEBOUNCE_FETCH_ZKEYS_TIMEOUT
-					);
-				} else {
-					dispatchPerformZKeyFetch( zKeystoFetch );
-				}
+				dispatchPerformZKeyFetch( zKeystoFetch );
 			} );
 
 			return resolvePromiseList[ promiseName ].promise;

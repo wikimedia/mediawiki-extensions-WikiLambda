@@ -34,7 +34,7 @@ describe( 'ZObjectSelector', function () {
 		};
 		actions = {
 			// eslint-disable-next-line no-unused-vars
-			fetchZKeyWithDebounce: jest.fn( function ( context, payload ) {
+			fetchZKeys: jest.fn( function ( context, payload ) {
 				return true;
 			} )
 		};

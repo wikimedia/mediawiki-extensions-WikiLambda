@@ -395,7 +395,7 @@ module.exports = exports = {
 		 * }
 		 *
 		 * @param {Object} context
-		 * @param {number} objectId
+		 * @param {number} payload
 		 */
 		addZArgument: function ( context, payload ) {
 			var objectId = payload.id,

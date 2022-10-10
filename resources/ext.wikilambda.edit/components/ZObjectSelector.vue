@@ -164,7 +164,7 @@ module.exports = exports = {
 	methods: $.extend( {},
 		mapActions( [
 			'lookupZObject',
-			'fetchZKeyWithDebounce'
+			'fetchZKeys'
 		] ),
 		mapMutations( [ 'addAllZKeyLabels' ] ),
 		{
@@ -241,7 +241,7 @@ module.exports = exports = {
 								}
 							}
 						);
-						self.fetchZKeyWithDebounce( zKeys );
+						self.fetchZKeys( { zids: zKeys } );
 					} else {
 						self.validatorSetError( 'wikilambda-noresult' );
 					}
@@ -262,9 +262,7 @@ module.exports = exports = {
 					return;
 				}
 				if ( self.isValidZidFormat( normalizedSearchValue ) ) {
-					self.fetchZKeyWithDebounce( [
-						normalizedSearchValue
-					] ).then( function () {
+					self.fetchZKeys( { zids: [ normalizedSearchValue ] } ).then( function () {
 						var label = '';
 						self.lookupResults = [];
 						// If data is returned, The value will show in the zKeys
@@ -342,12 +340,12 @@ module.exports = exports = {
 		}
 	},
 	mounted: function () {
-		this.fetchZKeyWithDebounce( [
+		this.fetchZKeys( { zids: [
 			Constants.Z_STRING,
 			Constants.Z_REFERENCE,
 			Constants.Z_BOOLEAN,
 			Constants.Z_TYPED_LIST
-		] );
+		] } );
 	}
 };
 </script>
