@@ -36,7 +36,7 @@
 	"wikilambda-special-createzobject-summary": "Pomocí tohoto formuláře můžete vytvořit nový ZObjekt, který může reprezentovat Funkci, její Implementaci, její Tester nebo jeden z mnoha různých druhů ZObjektů. Nejprve byste si měli přečíst dokumentaci a doporučení komunity.",
 	"wikilambda-special-createzobject-nojs": "Tato stránka vyžaduje pro svou funkci JavaScript.",
 	"wikilambda-special-function-definition-title": "Funkce",
-	"wikilambda-special-edit-function-definition-description": "Editujete stránku s definicí funkce. $1 mohou měnit definici funkce. Všichni ostatní mohou editovat štítky. Nezapomeňte uložit svou práci kliknutím na modré tlačítko Zveřejnit níže.",
+	"wikilambda-special-edit-function-definition-description": "Editujete stránku s definicí funkce. $1 mohou měnit definici funkce. Každý může editovat štítky. Nezapomeňte uložit svou práci kliknutím na modré tlačítko Zveřejnit níže.",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Pouze uživatelé se zvláštními oprávněními",
 	"wikilambda-special-evaluatefunctioncall": "Vyhodnotit volání funkce",
 	"wikilambda-special-evaluatefunctioncall-summary": "Pomocí tohoto formuláře můžete vyhodnotit volání funkce.",

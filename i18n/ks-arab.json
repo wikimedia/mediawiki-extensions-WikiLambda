@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Tajamul9"
+		]
+	},
+	"wikilambda-editor-tester-list-label": "ٹؠسٹ فہرست",
+	"wikilambda-tester-selector": "ٹؠسٹ اکھ چُنِیوٚ",
+	"wikilambda-tester-results-title": "ٹؠسٹ نٕتیٖجہٕ",
+	"wikilambda-tester-results-percentage-label": "کُل تعداد مُکمل ٹؠسٹن ہِیوٚنٛد",
+	"wikilambda-tester-run-testers": "تمام تر ٹؠسٹ چلٲوِو",
+	"wikilambda-tester-run-tester": "ٹؠسٹ چلٲوِو"
+}

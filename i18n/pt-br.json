@@ -52,6 +52,8 @@
 	"wikilambda-savechanges": "Salvar alterações",
 	"wikilambda-summarylabel": "Resumo:",
 	"wikilambda-publish-summary-prompt": "Descreva o que você mudou",
+	"wikilambda-publish-input-changed-impact-prompt": "Alterou o campo de entrada desta função. Todas as implementações e testes existentes serão desanexados da função atual. Quer prosseguir?",
+	"wikilambda-publish-input-and-output-changed-impact-prompt": "Alterou o campo de entrada e o tipo da saída desta função. Todas as implementações e testes existentes serão desanexados da função atual. Quer prosseguir?",
 	"wikilambda-loading": "Carregando dados",
 	"wikilambda-typeselector-label": "Selecione um tipo",
 	"wikilambda-argument-typeselector-label": "Selecione um tipo para este argumento",
