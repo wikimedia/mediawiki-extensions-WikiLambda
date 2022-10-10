@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Emma Franzen",
+			"Hamilton Abreu"
+		]
+	},
+	"wikilambda-desc": "Fornece às wikis da Wikimedia uma função de análise sintática de texto wiki para chamar a execução de funções escritas, geridas e executadas numa wiki central."
+}
