@@ -11,9 +11,9 @@
 				<div
 					v-if="item.language !== zLang"
 					class="ext-wikilambda-function-viewer-sidebar__chip-container"
-					@mouseover="hovering = true"
-					@mouseleave="hovering = false"
-					@click="isMobile ? hovering = !hovering : null"
+					@mouseover="hoveringIndex = index"
+					@mouseleave="hoveringIndex = -1"
+					@touchstart="hoveringIndex = ( hoveringIndex === index ? -1 : index )"
 				>
 					<chip
 						class="ext-wikilambda-function-viewer-sidebar__chip-item"
@@ -26,7 +26,7 @@
 				</div>
 				{{ item.label }}
 				<div
-					v-if="hovering && item.language !== zLang"
+					v-if="hoveringIndex === index && item.language !== zLang"
 					class="ext-wikilambda-function-viewer-sidebar__chip-hover"
 				>
 					<span
@@ -54,8 +54,6 @@
 
 <script>
 var Chip = require( '../../../components/base/Chip.vue' ),
-	useBreakpoints = require( '../../../composables/useBreakpoints.js' ),
-	Constants = require( '../../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon;
 
@@ -95,24 +93,11 @@ module.exports = exports = {
 			required: true
 		}
 	},
-	setup: function () {
-		var breakpoint = useBreakpoints( Constants.breakpoints );
-		return {
-			breakpoint
-		};
-	},
 	data: function () {
 		return {
-			hovering: false
+			hoveringIndex: -1
 		};
 	},
-	computed: $.extend(
-		{
-			isMobile: function () {
-				return this.breakpoint.current.value === Constants.breakpointsTypes.MOBILE;
-			}
-		}
-	),
 	methods: {
 		changeShowLangs: function () {
 			this.$emit( 'changeShowLangs' );
