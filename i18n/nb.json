@@ -3,7 +3,8 @@
 		"authors": [
 			"Avilena",
 			"EdoAug",
-			"Jon Harald Søby"
+			"Jon Harald Søby",
+			"Telaneo"
 		]
 	},
 	"wikilambda-desc": "Gir Wikimedia-wikier en wikitekst-parserfunksjon for å kjøre evaluering av funksjoner skrevet, behandlet og evaluert på en sentral wiki.",
@@ -41,7 +42,9 @@
 	"wikilambda-publishchanges": "Publiser endringer",
 	"wikilambda-savechanges": "Lagre endringer",
 	"wikilambda-summarylabel": "Sammendrag:",
+	"wikilambda-publish-input-changed-impact-prompt": "Du endret inndata-feltet til denne funksjonen. Alle eksisterende implementeringer og tester blir koblet fra den nåværende funksjonen. Ønsker du å fortsette?",
 	"wikilambda-publish-output-changed-impact-prompt": "Du endret utdata-typen for denne funksjonen. Alle eksisterende implementeringer og tester blir koblet fra den nåværende funksjonen. Ønsker du å fortsette?",
+	"wikilambda-publish-input-and-output-changed-impact-prompt": "Du endret inndata- og utdata-feltene til denne funksjonen. Alle eksisterende implementeringer og tester blir koblet fra den nåværende funksjonen. Ønsker du å fortsette?",
 	"wikilambda-typeselector-label": "Velg en type",
 	"wikilambda-editor-label-addlanguage-label": "Velg språk",
 	"wikilambda-editor-label-removelanguage-tooltip": "Fjern dette språket fra denne etiketten",

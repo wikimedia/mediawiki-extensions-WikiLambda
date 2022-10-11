@@ -1,8 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
+			"Ajiniyaz Nurniyazov",
 			"Nurlan"
 		]
 	},
+	"wikilambda-publish-input-changed-impact-prompt": "Siz bul funkciyanıń kirgiziw maydanın hám shıǵıw túrin ózgerttińiz. Hámme bar qosımshalar hám testler ámeldegi funksiyadan ajıratıladı. Dawam etiwdi qáleysizbe?",
+	"wikilambda-publish-input-and-output-changed-impact-prompt": "Siz bul funkciyanıń kirgiziw maydanın hám shıǵıw túrin ózgerttińiz. Hámme bar qosımshalar hám testler ámeldegi funksiyadan ajıratıladı. Dawam etiwdi qáleysizbe?",
 	"wikilambda-function-viewer-details-table-view-all": "Hámmesin kóriw"
 }
