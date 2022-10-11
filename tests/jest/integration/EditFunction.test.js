@@ -115,15 +115,17 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		await wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 0 ]
 			.setValue( 'edited first argument label, in Chinese' );
 
-		// ASSERT: New label for argument is visible in work summary.
-		expect( wrapper.get( '.ext-wikilambda-editior-visual-display-input-box' ).text() )
+		// ASSERT: New label for first argument is visible in work summary.
+		expect( wrapper.findAll( '.ext-wikilambda-editior-visual-display-input-box' )[ 0 ].text() )
 			.toEqual( 'String, “edited first argument label, in Chinese”' );
 
 		// ACT: Edit the label for the second argument.
 		await wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 1 ]
 			.setValue( 'edited second argument label, in Chinese' );
 
-		// TODO(T317781): Test scrolling to second argument in work summary, once bug fixed.
+		// ASSERT: New label for second argument is visible in work summary.
+		expect( wrapper.findAll( '.ext-wikilambda-editior-visual-display-input-box' )[ 1 ].text() )
+			.toEqual( 'String, “edited second argument label, in Chinese”' );
 
 		// ACT: Click "Add labels in another language".
 		await wrapper.get( '.ext-wikilambda-function-definition__action-add-input-button' ).trigger( 'click' );
