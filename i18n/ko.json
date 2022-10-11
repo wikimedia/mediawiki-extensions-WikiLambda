@@ -43,7 +43,7 @@
 	"wikilambda-functioncall-error-nonstringinput-category-desc": "문자열을 취하지 않는 ZFunction이 있는 위키함수로의 호출을 시도한 문서",
 	"wikilambda-tester-status-passed": "통과",
 	"wikilambda-tester-status-failed": "실패",
-	"wikilambda-tester-results-title": "테스터 결과",
+	"wikilambda-tester-results-title": "테스트 결과",
 	"wikilambda-tester-status-label": "테스트 상태",
 	"wikilambda-tester-failure-reason": "실패 이유",
 	"wikilambda-tester-run-tester": "테스터 실행",
