@@ -53,6 +53,7 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
+		'getAllItemsFromListById',
 		'getZObjectAsJsonById',
 		'getZkeys',
 		'getZObjectChildrenById',
@@ -172,8 +173,7 @@ module.exports = exports = {
 						Constants.Z_MONOLINGUALSTRINGSET_VALUE
 					] );
 
-					var aliasString = this.getZObjectChildrenById( alias.id, language );
-
+					var aliasString = this.getAllItemsFromListById( alias.id, language );
 					allAliases = allAliases.concat( aliasString );
 				}
 			}.bind( this ) );
