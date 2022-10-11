@@ -1,0 +1,33 @@
+{
+	"ignore": false,
+	"description": "Added Z2K4 key and value.",
+	"diffs": {
+		"root.Z2K4": {
+			"type": "add",
+			"newvalue": {
+				"Z1K1": "Z32",
+				"Z32K1": [ "Z31" ]
+			}
+		}
+	},
+	"oldValue": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z10001"
+		}
+	},
+	"newValue": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z10001"
+		},
+		"Z2K4": {
+			"Z1K1": "Z32",
+			"Z32K1": [
+				"Z31"
+			]
+		}
+	}
+}
