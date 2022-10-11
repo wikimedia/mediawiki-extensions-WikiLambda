@@ -270,5 +270,11 @@ module.exports = exports = {
 		flex-direction: column;
 		width: 153px;
 	}
+
+	@media screen and ( max-width: @width-breakpoint-tablet ) {
+		& {
+			flex-direction: column;
+		}
+	}
 }
 </style>

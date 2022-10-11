@@ -169,6 +169,8 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
+@import '../../../lib/wikimedia-ui-base.less';
+
 .ext-wikilambda-language-selector {
 	&__select {
 		min-width: 100px;
@@ -178,6 +180,12 @@ module.exports = exports = {
 		display: flex;
 		flex-direction: column;
 		width: 153px;
+	}
+
+	@media screen and ( max-width: @width-breakpoint-tablet ) {
+		& {
+			flex-direction: column;
+		}
 	}
 }
 </style>
