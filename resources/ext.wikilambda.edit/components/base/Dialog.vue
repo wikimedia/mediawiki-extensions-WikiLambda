@@ -118,7 +118,7 @@ module.exports = exports = {
 @import './../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-dialog {
-	position: absolute;
+	position: fixed;
 	width: 100%;
 	height: 100%;
 	background: #ffffffbd;
