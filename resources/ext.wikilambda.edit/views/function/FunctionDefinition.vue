@@ -560,9 +560,7 @@ module.exports = exports = {
 	@media screen and ( min-width: @width-breakpoint-tablet ) {
 		&__container {
 			border: 1px solid @wmui-color-base80;
-			max-height: 450px;
 			padding-left: 27px;
-			overflow-y: scroll;
 		}
 
 		&__action-add-input {

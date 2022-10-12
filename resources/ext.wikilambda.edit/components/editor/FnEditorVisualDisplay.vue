@@ -262,6 +262,8 @@ module.exports = exports = {
 .ext-wikilambda-editior-visual-display {
 	background: #fef6e7;
 	min-height: 555px;
+	position: sticky;
+	top: 20px;
 
 	&-head {
 		padding: 16px;
