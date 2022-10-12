@@ -112,6 +112,8 @@
 	"wikilambda-functioncall-metadata-dialog-header": "Metadaten",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Fehler}}",
 	"wikilambda-functioncall-metadata-errors-none": "Keine",
+	"wikilambda-functioncall-metadata-implementation-id": "Implementierungs-ID",
+	"wikilambda-functioncall-metadata-implementation-type": "Implementierungstyp",
 	"wikilambda-functioncall-metadata-evaluation-start-time": "Startzeit der Auswertung",
 	"wikilambda-functioncall-metadata-evaluation-end-time": "Endzeit der Auswertung",
 	"wikilambda-functioncall-metadata-evaluation-duration": "Auswertungsdauer",

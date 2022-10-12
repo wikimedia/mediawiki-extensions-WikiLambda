@@ -14,6 +14,8 @@
 	"wikilambda-publish-input-changed-impact-prompt": "Spremenili ste vrsto vhoda te funkcije. Vse obstoječe izvedbe in preizkusi bodo ločeni od trenutne funkcije. Želite nadaljevati?",
 	"wikilambda-publish-output-changed-impact-prompt": "Spremenili ste vrsto izhoda te funkcije. Vse obstoječe izvedbe in testi bodo ločeni od trenutne funkcije. Želite nadaljevati?",
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "Spremenili ste vrsto vhoda in izhoda te funkcije. Vse obstoječe izvedbe in preizkusi bodo ločeni od trenutne funkcije. Želite nadaljevati?",
+	"wikilambda-functioncall-metadata-implementation-id": "ID izvedbe",
+	"wikilambda-functioncall-metadata-implementation-type": "Vrsta izvedbe",
 	"wikilambda-functioncall-metadata-orchestration-hostname": "Orkestracijski strežnik",
 	"wikilambda-functioncall-metadata-evaluation-hostname": "Ocenjevalni strežnik",
 	"wikilambda-functioncall-metadata-expected-result": "Pričakovani rezultat",
