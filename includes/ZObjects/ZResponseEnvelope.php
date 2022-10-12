@@ -95,41 +95,32 @@ class ZResponseEnvelope extends ZObject {
 	public function getErrors(): ?ZError {
 		$metaData = $this->getZMetadata();
 
-		if ( !$metaData ) {
+		if ( !$metaData || !is_object( $metaData ) ) {
 			return null;
-		}
-
-		if ( !is_object( $metaData ) ) {
-			return null;
-		}
-
-		if ( $metaData instanceof ZTypedMap ) {
-			// @phan-suppress-next-line PhanTypeMismatchReturnSuperType phan can't tell this must be a ZError
-			return $metaData->getValueGivenKey( new ZString( 'errors' ) );
 		}
 
 		if ( $metaData instanceof ZObject ) {
-			// TODO (T291136): Legacy error-only response envelope; to remove.
-
-			if ( $metaData instanceof ZError ) {
-				return $metaData;
+			if ( $metaData instanceof ZTypedMap ) {
+				// @phan-suppress-next-line PhanTypeMismatchReturnSuperType phan can't tell this must be a ZError
+				return $metaData->getValueGivenKey( new ZString( 'errors' ) );
 			}
 
 			if ( $metaData instanceof ZReference && $metaData->getZValue() === ZTypeRegistry::Z_VOID ) {
 				return null;
 			}
+		}
 
-			$metaDataType = $metaData->getZType();
-		} else {
-			if ( !property_exists( $metaData, ZTypeRegistry::Z_OBJECT_TYPE ) ) {
-				return null;
-			}
+		// A this point, we know we've been initialised with a raw object, presumably in the form of a ZTypedMap.
 
-			$metaDataType = $metaData->{ ZTypeRegistry::Z_OBJECT_TYPE };
+		if ( !property_exists( $metaData, ZTypeRegistry::Z_OBJECT_TYPE ) ) {
+			return null;
+		}
 
-			if ( $metaDataType === ZTypeRegistry::Z_UNIT ) {
-				return null;
-			}
+		// @phan-suppress-next-line PhanUndeclaredProperty phan can't tell this must exist per line #115
+		$metaDataType = $metaData->{ ZTypeRegistry::Z_OBJECT_TYPE };
+
+		if ( $metaDataType === ZTypeRegistry::Z_UNIT ) {
+			return null;
 		}
 
 		if (
