@@ -80,10 +80,21 @@
 				:show-action-buttons="false"
 				@exit-dialog="showMetrics = false"
 			>
+				<!-- TODO (T320670): This should be a call to a dialog component, not a filled-in template. -->
 				<template #dialog-container-title>
 					<span v-html="dialogTitle"></span>
 				</template>
 				<template>
+					<!-- TODO (T320669): Construct this more nicely, perhaps with a Codex link component? -->
+					<div class="ext-wikilambda-metadatadialog-helplink">
+						<cdx-icon :icon="helpLinkIcon()"></cdx-icon>
+						<a
+							:title="tooltipMetaDataHelpLink"
+							href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/Function_call_metadata"
+							target="_blank">
+							{{ $i18n( 'wikilambda-helplink-button' ).text() }}
+						</a>
+					</div>
 					<span v-html="dialogText"></span>
 				</template>
 			</dialog-container>
@@ -101,6 +112,8 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
+	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	icons = require( '../../../lib/icons.json' ),
 	ZTesterImplResult = require( './ZTesterImplResult.vue' ),
 	DialogContainer = require( '../base/DialogContainer.vue' ),
 	portray = require( '../../mixins/portray.js' );
@@ -110,6 +123,7 @@ module.exports = exports = {
 	components: {
 		'z-tester-impl-result': ZTesterImplResult,
 		'cdx-button': CdxButton,
+		'cdx-icon': CdxIcon,
 		'dialog-container': DialogContainer
 	},
 	mixins: [ typeUtils, schemata, portray ],
@@ -220,12 +234,12 @@ module.exports = exports = {
 				return reason;
 			}
 
-			// TODO(T314079): Use the metadata dialog in this component (and remove this function),
+			// TODO (T314079): Use the metadata dialog in this component (and remove this function),
 			//   or arrange to return a string containing expected & actual values here.
 			return '';
 		},
 		activeTesterDuration: function () {
-			// TODO(T314079): Possibly use the metadata dialog in this component; then remove this function
+			// TODO (T314079): Possibly use the metadata dialog in this component; then remove this function
 			const metadata = this.getZTesterMetadata(
 				this.zFunctionId, this.activeZTesterId, this.activeZImplementationId );
 			// Check for error object, for backwards compatibility
@@ -255,6 +269,9 @@ module.exports = exports = {
 			const implementationLabel = this.getZkeyLabels[ this.activeZImplementationId ];
 			return '<strong>' + this.$i18n( 'wikilambda-functioncall-metadata-dialog-header' ).text() + '<br>' +
 				implementationLabel + '<br>' + testerLabel + '</strong>';
+		},
+		tooltipMetaDataHelpLink: function () {
+			return this.$i18n( 'wikilambda-helplink-tooltip' ).text();
 		}
 	} ),
 	methods: $.extend( mapActions( [ 'fetchZKeys', 'getTestResults' ] ), {
@@ -271,6 +288,9 @@ module.exports = exports = {
 			this.activeZTesterId = keys.zTesterId;
 			this.showMetrics = true;
 			this.$refs.dialogBox.openDialog();
+		},
+		helpLinkIcon: function () {
+			return icons.cdxIconHelpNotice;
 		}
 	} ),
 	watch: {
@@ -309,5 +329,9 @@ module.exports = exports = {
 	padding: 10px 0;
 	border-top: 3px double #000;
 	text-align: right;
+}
+
+.ext-wikilambda-metadatadialog-helplink {
+	float: right;
 }
 </style>

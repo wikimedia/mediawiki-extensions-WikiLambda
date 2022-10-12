@@ -104,17 +104,7 @@ module.exports = exports = {
 				html = html + '<li><b>' + displayKey + ':</b> ' + value + '</li>';
 			}
 
-			// TODO (T320669): Construct this more nicely, perhaps with a Codex link component?
-			const helpLink = '<a' +
-				' class="ext-wikilambda-metadatadialog-helplink"' +
-				' href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/Function_call_metadata"' +
-				' title="' + this.$i18n( 'wikilambda-helplink-tooltip' ).text() + '"' +
-				' target="_blank"' +
-				'>' +
-				this.$i18n( 'wikilambda-helplink-button' ).text() +
-				'</a>';
-
-			return html + '</ul>' + helpLink + '</span>';
+			return html + '</ul></span>';
 		},
 		/**
 		 * Portray the given key and its zMap value, which should be a Z5 / Error object
@@ -148,7 +138,7 @@ module.exports = exports = {
 			for ( const message of messages ) {
 				html = html + '<li>' + message + '</li>';
 			}
-			return html + '</ul ></li>';
+			return html + '</ul></li>';
 		},
 		/**
 		 * Extract or construct a message characterizing the given error.  The message returned

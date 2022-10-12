@@ -42,10 +42,21 @@
 			@exit-dialog="showMetrics = false"
 			@close-dialog="showMetrics = false"
 		>
+			<!-- TODO (T320670): This should be a call to a dialog component, not a filled-in template. -->
 			<template #dialog-container-title>
 				<strong>{{ dialogTitle }}</strong>
 			</template>
 			<template>
+				<!-- TODO (T320669): Construct this more nicely, perhaps with a Codex link component? -->
+				<div class="ext-wikilambda-metadatadialog-helplink">
+					<cdx-icon :icon="helpLinkIcon()"></cdx-icon>
+					<a
+						:title="tooltipMetaDataHelpLink"
+						href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/Function_call_metadata"
+						target="_blank">
+						{{ $i18n( 'wikilambda-helplink-button' ).text() }}
+					</a>
+				</div>
 				<span v-html="dialogText"></span>
 			</template>
 		</dialog-container>
@@ -57,6 +68,8 @@ var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	ZObjectKey = require( '../ZObjectKey.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
+	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	icons = require( '../../../lib/icons.json' ),
 	DialogContainer = require( '../base/DialogContainer.vue' ),
 	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
 	portray = require( '../../mixins/portray.js' ),
@@ -67,6 +80,7 @@ module.exports = exports = {
 	components: {
 		'z-object-key': ZObjectKey,
 		'cdx-button': CdxButton,
+		'cdx-icon': CdxIcon,
 		'dialog-container': DialogContainer
 	},
 	mixins: [ typeUtils, portray ],
@@ -133,6 +147,9 @@ module.exports = exports = {
 		},
 		dialogTitle: function () {
 			return this.$i18n( 'wikilambda-functioncall-metadata-dialog-header' ).text();
+		},
+		tooltipMetaDataHelpLink: function () {
+			return this.$i18n( 'wikilambda-helplink-tooltip' ).text();
 		}
 	} ),
 	methods: {
@@ -159,6 +176,9 @@ module.exports = exports = {
 		dialogContent: function ( zMapId ) {
 			const zMapJSON = canonicalize( this.getZObjectAsJsonById( zMapId ) );
 			return this.portrayMetadataMap( zMapJSON );
+		},
+		helpLinkIcon: function () {
+			return icons.cdxIconHelpNotice;
 		}
 	}
 };
@@ -171,5 +191,9 @@ module.exports = exports = {
 	&__show-error {
 		padding: 10px 0;
 	}
+}
+
+.ext-wikilambda-metadatadialog-helplink {
+	float: right;
 }
 </style>
