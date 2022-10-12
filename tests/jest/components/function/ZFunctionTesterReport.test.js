@@ -64,7 +64,7 @@ describe( 'ZFunctionTesterReport', function () {
 				zFunctionId: ''
 			}
 		} );
-		expect( wrapper.find( 'div' ) ).toBeTruthy();
+		expect( wrapper.find( 'div' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'triggers the tests on load', function () {

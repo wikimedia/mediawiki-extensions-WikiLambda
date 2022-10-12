@@ -28,12 +28,12 @@ describe( 'FunctionDefinitionOutput', function () {
 	it( 'renders without errors', function () {
 		var wrapper = shallowMount( FunctionDefinitionOutput );
 
-		expect( wrapper.find( '.ext-wikilambda-function-definition-output' ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-definition-output' ).exists() ).toBeTruthy();
 	} );
 	it( 'loads the z-object-selector component', function () {
 		var wrapper = shallowMount( FunctionDefinitionOutput );
 
-		expect( wrapper.find( '.ext-wikilambda-function-definition-output__selector' ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-definition-output__selector' ).exists() ).toBeTruthy();
 	} );
 	it( 'clears on focus-out if a value is typed but then not selected', function () {
 		var wrapper = mount( FunctionDefinitionOutput );

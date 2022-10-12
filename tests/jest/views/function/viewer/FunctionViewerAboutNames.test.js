@@ -18,7 +18,7 @@ describe( 'FunctionViewerAliases', function () {
 		var getters = {
 			getZObjectAsJsonById: createGettersWithFunctionsMock( mocks.mockLabels ),
 			getZObjectChildrenById: createGettersWithFunctionsMock( [ 'Z123123' ] ),
-			getNestedZObjectById: createGettersWithFunctionsMock( { } ),
+			getNestedZObjectById: createGettersWithFunctionsMock( {} ),
 			getUserZlangZID: jest.fn(),
 			getZkeyLabels: jest.fn()
 		};
@@ -31,12 +31,12 @@ describe( 'FunctionViewerAliases', function () {
 	it( 'renders without errors', function () {
 		var wrapper = VueTestUtils.shallowMount( FunctionViewerNames );
 
-		expect( wrapper.find( '.ext-wikilambda-function-viewer-names' ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-viewer-names' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'renders the sidebar component', function () {
 		var wrapper = VueTestUtils.mount( FunctionViewerNames );
 
-		expect( wrapper.findComponent( FunctionViewerSidebar ) ).toBeTruthy();
+		expect( wrapper.findComponent( FunctionViewerSidebar ).exists() ).toBeTruthy();
 	} );
 } );

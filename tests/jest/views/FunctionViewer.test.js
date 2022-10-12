@@ -30,6 +30,6 @@ describe( 'FunctionViewer', function () {
 	it( 'renders without errors', function () {
 		var wrapper = VueTestUtils.shallowMount( FunctionViewer );
 
-		expect( wrapper.find( '.ext-wikilambda-function-viewer' ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-viewer' ).exists() ).toBeTruthy();
 	} );
 } );

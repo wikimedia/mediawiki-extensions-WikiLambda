@@ -6,7 +6,9 @@
 		@license MIT
 	-->
 	<main class="ext-wikilambda-function-definition">
-		<div id="fnDefinitionContainer" class="ext-wikilambda-function-definition__container">
+		<div
+			ref="fnDefinitionContainer"
+			class="ext-wikilambda-function-definition__container">
 			<div
 				v-for="( labelLanguage, index ) in labelLanguages"
 				:key="index"
@@ -328,9 +330,9 @@ module.exports = exports = {
 
 				// Scroll to new labelLanguage container after it has been added
 				setTimeout( function () {
-					const fnDefinitionContainer = document.getElementById( 'fnDefinitionContainer' );
+					const fnDefinitionContainer = this.$refs.fnDefinitionContainer;
 					fnDefinitionContainer.scrollTop = fnDefinitionContainer.scrollHeight;
-				}, 0 );
+				}.bind( this ), 0 );
 			}
 		},
 		setInputLangByIndex: function ( lang, index ) {

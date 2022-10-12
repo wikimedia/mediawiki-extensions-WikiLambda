@@ -31,11 +31,11 @@ describe( 'FunctionDefinitionName', function () {
 	it( 'renders without errors', function () {
 		var wrapper = shallowMount( FunctionDefinitionName );
 
-		expect( wrapper.find( '.ext-wikilambda-function-definition-name' ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-definition-name' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'has an input box', function () {
 		var wrapper = shallowMount( FunctionDefinitionName );
-		expect( wrapper.find( '.ext-wikilambda-function-definition-name__input' ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-definition-name__input' ).exists() ).toBeTruthy();
 	} );
 } );

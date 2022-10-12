@@ -58,6 +58,7 @@ describe( 'ZObjectEditor', function () {
 	it( 'renders without errors', function () {
 		var wrapper = shallowMount( ZObjectEditor );
 
-		expect( wrapper.find( 'div' ) ).toBeTruthy();
+		expect( wrapper.find( '#ext-wikilambda-editor' ).exists() ).toBeTruthy();
+
 	} );
 } );

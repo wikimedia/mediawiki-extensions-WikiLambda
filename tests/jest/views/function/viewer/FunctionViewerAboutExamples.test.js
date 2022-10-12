@@ -44,12 +44,22 @@ describe( 'FunctionViewerAboutExamples', function () {
 	it( 'renders without errors', function () {
 		var wrapper = VueTestUtils.shallowMount( FunctionViewerExamples );
 
-		expect( wrapper.find( '.ext-wikilambda-function-viewer-about-aliases' ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-viewer-about-aliases' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'table component is rendered without errors', function () {
 		var wrapper = VueTestUtils.mount( FunctionViewerExamples );
-		expect( wrapper.findComponent( TableComponent ) ).toBeTruthy();
+		expect( wrapper.findComponent( TableComponent ).exists() ).toBeTruthy();
+	} );
+
+	it( 'table component has title', function () {
+		const fakeTitle = 'fake title';
+		const wrapper = VueTestUtils.mount( FunctionViewerExamples, {
+			data() {
+				return { title: fakeTitle };
+			}
+		} );
+		expect( wrapper.find( '.ext-wikilambda-function-viewer-about-aliases__table-title' ).text() ).toEqual( fakeTitle );
 	} );
 
 } );

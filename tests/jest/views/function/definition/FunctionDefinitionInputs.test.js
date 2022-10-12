@@ -36,6 +36,6 @@ describe( 'FunctionDefinitionInputs', function () {
 	it( 'renders without errors', function () {
 		var wrapper = shallowMount( FunctionDefinitionInputs );
 
-		expect( wrapper.find( '.ext-wikilambda-editor-input-list-item' ) ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs' ).exists() ).toBeTruthy();
 	} );
 } );
