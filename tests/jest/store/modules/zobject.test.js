@@ -809,7 +809,7 @@ describe( 'zobject Vuex module', function () {
 			context.state = {
 				zobject: zobjectFunction.ZObjectTree
 			};
-			zobjectModule.actions.submitZObject( context, { summary: 'A summary', shouldUnattachImplentationAndTester: true } );
+			zobjectModule.actions.submitZObject( context, { summary: 'A summary', shouldUnattachImplementationAndTester: true } );
 
 			expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 

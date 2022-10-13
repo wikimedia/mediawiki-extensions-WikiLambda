@@ -27,7 +27,7 @@
 				<!-- component that displays names for a language -->
 				<function-definition-name
 					:z-lang="labelLanguage.zLang"
-					:is-main-z-object="index === 0"
+					:is-main-z-object="isMainZObject( labelLanguage.zLang, index )"
 				></function-definition-name>
 				<!-- component that displays aliases for a language -->
 				<function-definition-aliases
@@ -161,6 +161,7 @@ module.exports = exports = {
 		'getZObjectInitialized',
 		'getZargumentsArray',
 		'getNestedZObjectById',
+		'getUserZlangZID',
 		'isUserLoggedIn'
 	] ),
 	mapGetters(
@@ -463,6 +464,22 @@ module.exports = exports = {
 				confirmButtonText: '',
 				onConfirm: ''
 			};
+		},
+		/**
+		 *  The main zObject labels are displayed on the Page title.
+		 *
+		 *  It is the zobject which matches the users language, otherwise
+		 *  is the first zobject on the page.
+		 *
+		 *  @param {Object} zLang
+		 *  @param {Number} index
+		 *  @return {boolean} isMainZObject
+		 */
+		isMainZObject: function ( zLang, index ) {
+			return this.currentZObjectLanguages.some(
+				( id ) => id[ Constants.Z_REFERENCE_ID ] === this.getUserZlangZID ) ?
+				zLang === this.getUserZlangZID :
+				index === 0;
 		}
 	} ),
 	watch: {

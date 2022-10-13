@@ -164,7 +164,8 @@ module.exports = exports = {
 		'getNestedZObjectById',
 		'getCurrentZLanguage',
 		'getZObjectTypeById',
-		'getZkeyLabels'
+		'getZkeyLabels',
+		'currentZObjectLanguages'
 	] ), {
 		inputNumber: function () {
 			return this.showIndex ? this.index + 1 : '';
@@ -235,6 +236,13 @@ module.exports = exports = {
 
 			var lang = this.zLang;
 
+			if ( this.currentZObjectLanguages.indexOf( lang ) === -1 ) {
+				this.addZMonolingualString( {
+					lang: lang,
+					parentId: this.getArgumentLabels.id
+				} );
+			}
+
 			var labels = this.getZObjectChildrenById( this.getArgumentLabels.id );
 
 			for ( var index in labels ) {
@@ -256,26 +264,6 @@ module.exports = exports = {
 					return;
 				}
 			}
-
-			// Add new language
-			var nextId = this.getNextObjectId,
-				newLang = lang,
-				zLabelParentId = this.getArgumentLabels.id;
-
-			this.addZMonolingualString( {
-				lang: newLang,
-				parentId: zLabelParentId
-			} ).then( function () {
-				var newMonolingualString = this.getNestedZObjectById( nextId, [
-					Constants.Z_MONOLINGUALSTRING_VALUE,
-					Constants.Z_STRING_VALUE
-				] );
-
-				this.setZObjectValue( {
-					id: newMonolingualString.id,
-					value: input
-				} );
-			}.bind( this ) );
 		},
 		setArgumentType: function ( type ) {
 			var payload;

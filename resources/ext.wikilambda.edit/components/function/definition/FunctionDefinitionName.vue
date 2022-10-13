@@ -75,9 +75,6 @@ module.exports = exports = {
 				Constants.Z_MULTILINGUALSTRING_VALUE
 			] ).id;
 		},
-		getFunctionMonolingualNames: function () {
-			return this.getZObjectChildrenById( this.getFunctionNameMultilingualId );
-		},
 		getFunctionName: function () {
 			if ( this.zLang === '' ) {
 				return '';
@@ -89,6 +86,13 @@ module.exports = exports = {
 				return this.getFunctionName ? this.getFunctionName.value : '';
 			},
 			set: function ( value ) {
+				var id = this.getFunctionName.id;
+				if ( !id ) {
+					this.addZMonolingualString( {
+						parentId: this.getFunctionNameMultilingualId,
+						lang: this.zLang
+					} );
+				}
 				var payload = {
 					id: this.getFunctionName.id,
 					value: value,
@@ -102,7 +106,8 @@ module.exports = exports = {
 		}
 	} ),
 	methods: $.extend( mapActions( [
-		'setPageZObjectValue'
+		'setPageZObjectValue',
+		'addZMonolingualString'
 	] ) ),
 	watch: {
 		zLang: function () {
