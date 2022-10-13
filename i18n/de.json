@@ -31,6 +31,8 @@
 	"wikilambda-orchestrated": "Ergebnis der Orchestrierung",
 	"wikilambda-orchestrated-loading": "Instrumentierung wird durchgeführt, bitte warten",
 	"wikilambda-edit": "Bearbeiten",
+	"wikilambda-helplink-button": "Hilfe",
+	"wikilambda-helplink-tooltip": "Du kannst eine Hilfeseite lesen, die diese Metadaten erklärt",
 	"wikilambda-show-more": "Mehr anzeigen",
 	"wikilambda-hide-more": "Mehr ausblenden",
 	"wikilambda-show-error": "Fehler anzeigen",

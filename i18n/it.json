@@ -48,6 +48,8 @@
 	"wikilambda-functioncall-metadata-dialog-header": "Metadati",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Errore|Errori}}",
 	"wikilambda-functioncall-metadata-errors-none": "Nessuno",
+	"wikilambda-functioncall-metadata-implementation-id": "ID implementazione",
+	"wikilambda-functioncall-metadata-implementation-type": "Tipo implementazione",
 	"wikilambda-functioncall-metadata-expected-result": "Risultato atteso",
 	"wikilambda-editor-tester-list-label": "Elenco test",
 	"wikilambda-tester-selector": "Seleziona un test",

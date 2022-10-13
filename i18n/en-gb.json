@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Boke",
+			"Cakkaparla"
+		]
+	},
+	"wikilambda-helplink-button": "ကူညီပါ",
+	"wikilambda-helplink-tooltip": "ဒေMetadataရှင်းပြရေ အကူညီစာမျက်နှာကို မင်းဖက်နိုင်ပါရေ",
+	"wikilambda-functioncall-metadata-implementation-id": "အကောင်အထည်ဖော်မှု ID",
+	"wikilambda-functioncall-metadata-implementation-type": "အကောင်အထည်ဖော်အရေမျိုးအစား"
+}

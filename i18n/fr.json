@@ -8,6 +8,7 @@
 			"JenyxGym",
 			"MasterSinge",
 			"Pols12",
+			"SleaY",
 			"Thibaut120094",
 			"Verdy p",
 			"Wladek92"
@@ -40,6 +41,8 @@
 	"wikilambda-orchestrated-loading": "En cours d’orchestration, veuillez patienter",
 	"wikilambda-json": "JSON",
 	"wikilambda-edit": "Modifier",
+	"wikilambda-helplink-button": "Aide",
+	"wikilambda-helplink-tooltip": "Vous pouvez lire une page d'aide qui explique cette métadonnée",
 	"wikilambda-show-more": "Afficher plus",
 	"wikilambda-hide-more": "Masquer plus",
 	"wikilambda-show-error": "Afficher l’erreur",

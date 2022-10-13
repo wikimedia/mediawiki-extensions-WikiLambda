@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Cakkaparla",
+			"ReyLon Mrat"
+		]
+	},
+	"wikilambda-helplink-button": "အကူအညီ",
+	"wikilambda-helplink-tooltip": "ဒေမီတာဒေတာကိုရှင်းပြထားရေ အကူအညီစာမျက်နှာမှာ သင်ဖတ်လို့ရရေ",
+	"wikilambda-publish-input-changed-impact-prompt": "ဒေလုပ်ဆောင်မှု​၏ အထွက်ပုံစံနဲ့အသွင်းနေရာကိုသင်ပြောင်းခရေ။ လက်ယှိလုပ်ဆောင်မှုကနီ ယှိနီရေစစ်ဆေးမှုနဲ့ အကောင်အထည်ဖော်ထားစွာတိကိုခွဲထုတ်လိုက်ပါဖို့။ သင်လုပ်ဆောင်ပါလာ။",
+	"wikilambda-publish-input-and-output-changed-impact-prompt": "ဒေလုပ်ဆောင်မှု​၏ အထွက်ပုံစံနဲ့ အသွင်းနေရာကိုသင်ပြောင်းခရေ။ လက်ယှိလုပ်ဆောင်မှုကနီ ယှိနီရေစစ်ဆေးမှုနဲ့ အကောင်အထည်ဖော်ထားစွာတိကို ခွဲထုတ်လိုက်ပါဖို့။",
+	"wikilambda-functioncall-metadata-implementation-id": "လက်တွိကျကျလုပ်ဆောင်မှု ID",
+	"wikilambda-functioncall-metadata-implementation-type": "အကောင်အထည်ဖော်ခြင်းအမျိုးအစား"
+}

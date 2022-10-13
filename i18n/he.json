@@ -113,6 +113,8 @@
 	"wikilambda-functioncall-metadata-dialog-header": "מטא־נתונים",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|שגיאה|שגיאות}}",
 	"wikilambda-functioncall-metadata-errors-none": "אין",
+	"wikilambda-functioncall-metadata-implementation-id": "מזהה המימוש",
+	"wikilambda-functioncall-metadata-implementation-type": "סוג המימוש",
 	"wikilambda-functioncall-metadata-orchestration-start-time": "זמן תחילת התזמור",
 	"wikilambda-functioncall-metadata-orchestration-end-time": "זמן סיום התזמור",
 	"wikilambda-functioncall-metadata-orchestration-duration": "משך התזמור",
