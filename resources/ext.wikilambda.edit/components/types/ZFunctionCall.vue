@@ -199,12 +199,16 @@ module.exports = exports = {
 			var labels = [];
 			this.zFunctionKeys.forEach( function ( keyObject ) {
 				var key = keyObject[ Constants.Z_ARGUMENT_KEY ],
-					label = keyObject[
-						Constants.Z_ARGUMENT_LABEL ][
-						Constants.Z_MULTILINGUALSTRING_VALUE ][
-						1 ][
-						Constants.Z_MONOLINGUALSTRING_VALUE ],
-					type = keyObject[ Constants.Z_ARGUMENT_TYPE ];
+					type = keyObject[ Constants.Z_ARGUMENT_TYPE ],
+					label;
+
+				if ( keyObject[ Constants.Z_ARGUMENT_LABEL ][
+					Constants.Z_MULTILINGUALSTRING_VALUE ].length > 1 ) {
+					label = keyObject[ Constants.Z_ARGUMENT_LABEL ][
+						Constants.Z_MULTILINGUALSTRING_VALUE ][ 1 ][ Constants.Z_MONOLINGUALSTRING_VALUE ];
+				} else {
+					label = '';
+				}
 
 				labels.push( {
 					key: key,

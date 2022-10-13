@@ -19,11 +19,11 @@
 				:key="argument.zid"
 				:value="argument.zid"
 			>
-				{{ getCurrentLanguageLabel( argument.labels ).label }}
+				{{ getCurrentLanguageLabel( argument ) }}
 			</option>
 		</select>
 		<template v-else>
-			{{ getCurrentLanguageLabel( getZarguments[ selectedArgument ].labels ).label }}
+			{{ getCurrentLanguageLabel( getZarguments[ selectedArgument ] ) }}
 		</template>
 	</div>
 </template>
@@ -80,13 +80,21 @@ module.exports = exports = {
 	methods: $.extend( {},
 		mapActions( [ 'setZObjectValue' ] ),
 		{
-			getCurrentLanguageLabel: function ( labels ) {
-				var labelInCurrentLanguage = labels.filter( function ( label ) {
+			getCurrentLanguageLabel: function ( argument ) {
+				var labelInCurrentLanguage = argument.labels.filter( function ( label ) {
 					return label.lang === this.getCurrentZLanguage;
 				} )[ 0 ];
-				var fallbackLanguage = labels[ 0 ];
+				var fallbackLanguage = argument.labels[ 0 ];
 
-				return labelInCurrentLanguage || fallbackLanguage;
+				if ( labelInCurrentLanguage ) {
+					return labelInCurrentLanguage.label;
+				} else if ( fallbackLanguage ) {
+					return fallbackLanguage.label;
+				}
+
+				var index = Object.keys( this.getZarguments ).indexOf( argument.zid );
+				var emptyLabelFallback = this.$i18n( 'wikilambda-function-viewer-details-input-number', Number( index ) + 1 ).text();
+				return emptyLabelFallback;
 			}
 		}
 	)
