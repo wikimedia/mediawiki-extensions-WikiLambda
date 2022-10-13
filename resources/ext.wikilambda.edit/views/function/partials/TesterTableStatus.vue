@@ -23,10 +23,21 @@
 			@exit-dialog="showMetadata = false"
 			@close-dialog="showMetadata = false"
 		>
+			<!-- TODO (T320670): This should be a call to a dialog component, not a filled-in template. -->
 			<template #dialog-container-title>
 				<span v-html="dialogTitle"></span>
 			</template>
 			<template>
+				<!-- TODO (T320669): Construct this more nicely, perhaps with a Codex link component? -->
+				<div class="ext-wikilambda-metadatadialog-helplink">
+					<cdx-icon :icon="helpLinkIcon()"></cdx-icon>
+					<a
+						:title="tooltipMetaDataHelpLink"
+						href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/Function_call_metadata"
+						target="_blank">
+						{{ $i18n( 'wikilambda-helplink-button' ).text() }}
+					</a>
+				</div>
 				<span v-html="dialogText"></span>
 			</template>
 		</dialog-container>
@@ -133,6 +144,9 @@ module.exports = exports = {
 			const implementationLabel = this.getZkeyLabels[ this.zImplementationId ];
 			return '<strong>' + this.$i18n( 'wikilambda-functioncall-metadata-dialog-header' ).text() + '<br>' +
 				implementationLabel + '<br>' + testerLabel + '</strong>';
+		},
+		tooltipMetaDataHelpLink: function () {
+			return this.$i18n( 'wikilambda-helplink-tooltip' ).text();
 		}
 	} ),
 	methods: {
@@ -146,6 +160,9 @@ module.exports = exports = {
 				this.showMetadata = false;
 				this.$refs.dialogBox.closeDialog();
 			}
+		},
+		helpLinkIcon: function () {
+			return icons.cdxIconHelpNotice;
 		}
 	}
 };
@@ -172,5 +189,9 @@ module.exports = exports = {
 			color: @wmui-color-yellow50;
 		}
 	}
+}
+
+.ext-wikilambda-metadatadialog-helplink {
+	float: right;
 }
 </style>
