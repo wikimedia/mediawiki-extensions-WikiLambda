@@ -5,8 +5,8 @@
 			"Cakkaparla"
 		]
 	},
-	"wikilambda-helplink-button": "ကူညီပါ",
-	"wikilambda-helplink-tooltip": "ဒေMetadataရှင်းပြရေ အကူညီစာမျက်နှာကို မင်းဖက်နိုင်ပါရေ",
-	"wikilambda-functioncall-metadata-implementation-id": "အကောင်အထည်ဖော်မှု ID",
+	"wikilambda-helplink-button": "ကူညီစွာ",
+	"wikilambda-helplink-tooltip": "ဒေMetadataရှင်းပြရေ အကူအညီစာမျက်နှာတိကို မင်းဖက်နိုင်ပါရေ",
+	"wikilambda-functioncall-metadata-implementation-id": "အကောင်အထည်ဖော်ကတ်ရဖို့ အိုင်ဒီ",
 	"wikilambda-functioncall-metadata-implementation-type": "အကောင်အထည်ဖော်အရေမျိုးအစား"
 }

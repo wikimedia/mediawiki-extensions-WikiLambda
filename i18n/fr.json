@@ -125,6 +125,8 @@
 	"wikilambda-functioncall-metadata-dialog-header": "Métadonnées",
 	"wikilambda-functioncall-metadata-errors": "Erreur{{PLURAL:$1||s}}",
 	"wikilambda-functioncall-metadata-errors-none": "Aucune",
+	"wikilambda-functioncall-metadata-implementation-id": "ID d’implémentation",
+	"wikilambda-functioncall-metadata-implementation-type": "Type d’implémentation",
 	"wikilambda-functioncall-metadata-orchestration-start-time": "Heure de début de l’orchestration",
 	"wikilambda-functioncall-metadata-orchestration-end-time": "Heure de fin de l’orchestration",
 	"wikilambda-functioncall-metadata-orchestration-duration": "Durée de l’orchestration",

@@ -1,9 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Abbas dhothar"
+			"Abbas dhothar",
+			"Bgo eiu"
 		]
 	},
+	"wikilambda-helplink-button": "مدد",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "بولی",
 	"wikilambda-function-implementation-language-label": "بولی"
 }
