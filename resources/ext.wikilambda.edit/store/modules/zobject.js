@@ -67,7 +67,7 @@ function isFunctionToType( objectDeclaration ) {
  * -Unattaches implementations and testers, if relevant.
  *
  * @param {Object} context
- * @param {boolean} shouldUnattachImplentationAndTester
+ * @param {boolean} shouldUnattachImplementationAndTester
  * @return {Object} zobject
  */
 function transformZObjectForSubmission( context, shouldUnattachImplementationAndTester ) {
