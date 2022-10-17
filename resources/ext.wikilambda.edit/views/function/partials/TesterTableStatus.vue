@@ -129,10 +129,6 @@ module.exports = exports = {
 			if ( metadata === undefined ) {
 				return '';
 			}
-			// Check for error object, for backwards compatibility
-			if ( metadata[ Constants.Z_OBJECT_TYPE ] === Constants.Z_ERROR ) {
-				return '';
-			}
 			return this.portrayMetadataMap( metadata );
 		},
 		dialogTitle: function () {

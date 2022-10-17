@@ -96,12 +96,7 @@ module.exports = exports = {
 				}
 
 				var errorResponse;
-				// Allow for an error object here, for backwards compatibility
-				if ( metadata[ Constants.Z_OBJECT_TYPE ] === Constants.Z_ERROR ) {
-					errorResponse = metadata;
-				} else {
-					errorResponse = getValueFromCanonicalZMap( metadata, 'errors' );
-				}
+				errorResponse = getValueFromCanonicalZMap( metadata, 'errors' );
 				if ( !errorResponse ) {
 					return '';
 				}
