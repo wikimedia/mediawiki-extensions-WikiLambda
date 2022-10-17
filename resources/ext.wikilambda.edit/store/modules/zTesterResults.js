@@ -7,8 +7,7 @@
 
 var Vue = require( 'vue' ),
 	Constants = require( '../../Constants.js' ),
-	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
-	getValueFromCanonicalZMap = require( '../../mixins/schemata.js' ).methods.getValueFromCanonicalZMap;
+	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
 
 /**
  * Loop through a given array and replace the current Object or the placeholder object with a full object
@@ -71,52 +70,6 @@ module.exports = exports = {
 				return result &&
 					( result === Constants.Z_BOOLEAN_TRUE ||
 						( typeof result === 'object' && result[ Constants.Z_BOOLEAN_IDENTITY ] === Constants.Z_BOOLEAN_TRUE ) );
-			};
-		},
-		getZTesterFailReason: function ( state ) {
-			/**
-			 * Retrieve the failed reason for a specific test.
-			 * Test are identified by a zFunctionId, zTesterId, and zImplementationId.
-			 *
-			 * @param {string} zFunctionId
-			 * @param {string} zTesterId
-			 * @param {string} zImplementationId
-			 *
-			 * @return {string} Error Value
-			 */
-			return function ( zFunctionId, zTesterId, zImplementationId ) {
-				var key = zFunctionId + ':' + zTesterId + ':' + zImplementationId;
-
-				if ( state.errorState ) {
-					return state.errorMessage;
-				}
-				var metadata = state.zTesterMetadata[ key ];
-				if ( !metadata || metadata === Constants.Z_VOID ) {
-					return '';
-				}
-
-				var errorResponse;
-				errorResponse = getValueFromCanonicalZMap( metadata, 'errors' );
-				if ( !errorResponse ) {
-					return '';
-				}
-
-				// FIXME: Could use messageForError, from portray.js, for what's below.  But first check if
-				//  getZTesterFailReason might go away; see T314079.
-				if ( errorResponse[ Constants.Z_ERROR_VALUE ] ) {
-					return errorResponse[ Constants.Z_ERROR_VALUE ];
-				}
-
-				var errorResponseType = errorResponse[ Constants.Z_ERROR_TYPE ][ Constants.Z_OBJECT_TYPE ];
-				if ( errorResponse[ Constants.Z_ERROR_TYPE ][
-					errorResponseType + Constants.Z_TYPED_OBJECT_ELEMENT_1
-				] ) {
-					return errorResponse[ Constants.Z_ERROR_TYPE ][
-						errorResponseType + Constants.Z_TYPED_OBJECT_ELEMENT_1
-					];
-				}
-
-				return 'No error returned!';
 			};
 		},
 		getZTesterMetadata: function ( state ) {

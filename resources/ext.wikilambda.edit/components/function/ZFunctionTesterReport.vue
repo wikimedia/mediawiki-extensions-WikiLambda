@@ -156,7 +156,6 @@ module.exports = exports = {
 		'getNewTesterZObjects',
 		'getZTesterResults',
 		'getZTesterMetadata',
-		'getZTesterFailReason',
 		'getViewMode',
 		'getZImplementations',
 		'getZTesters'
@@ -218,31 +217,6 @@ module.exports = exports = {
 			) === true ?
 				this.$i18n( 'wikilambda-tester-status-passed' ).text() :
 				this.$i18n( 'wikilambda-tester-status-failed' ).text();
-		},
-		activeTesterFailReason: function () {
-			var reason = this.getZTesterFailReason(
-				this.zFunctionId,
-				this.activeZTesterId,
-				this.activeZImplementationId
-			);
-
-			if ( !reason ) {
-				return '';
-			}
-
-			if ( typeof reason === 'string' ) {
-				return reason;
-			}
-
-			// TODO (T314079): Use the metadata dialog in this component (and remove this function),
-			//   or arrange to return a string containing expected & actual values here.
-			return '';
-		},
-		activeTesterDuration: function () {
-			// TODO (T314079): Possibly use the metadata dialog in this component; then remove this function
-			const metadata = this.getZTesterMetadata(
-				this.zFunctionId, this.activeZTesterId, this.activeZImplementationId );
-			return this.getValueFromCanonicalZMap( metadata, 'orchestrationDuration' );
 		},
 		dialogText: function () {
 			if ( !this.activeZTesterId || !this.activeZImplementationId ) {
