@@ -119,8 +119,7 @@ module.exports = exports = {
 		},
 		zError: function () {
 			const metadata = this.zMetaData;
-			const errors = this.isZError( metadata.id ) ? metadata : this.getZMapValue( metadata.id, 'errors' );
-			return errors;
+			return this.getZMapValue( metadata.id, 'errors' );
 		},
 		containsError: function () {
 			return this.zError !== false;
@@ -156,11 +155,6 @@ module.exports = exports = {
 		openMetrics: function () {
 			this.showMetrics = true;
 			this.$refs.dialogBox.openDialog();
-		},
-		isZError: function ( zobjectId ) {
-			const zType = this.getNestedZObjectById( zobjectId,
-				[ Constants.Z_OBJECT_TYPE, Constants.Z_REFERENCE_ID ] );
-			return zType.value === Constants.Z_ERROR;
 		},
 		getZMapValue: function ( zMapId, key ) {
 			const listOfPairs = this.getNestedZObjectById( zMapId, [ Constants.Z_TYPED_OBJECT_ELEMENT_1 ] );

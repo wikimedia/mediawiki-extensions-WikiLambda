@@ -242,10 +242,6 @@ module.exports = exports = {
 			// TODO (T314079): Possibly use the metadata dialog in this component; then remove this function
 			const metadata = this.getZTesterMetadata(
 				this.zFunctionId, this.activeZTesterId, this.activeZImplementationId );
-			// Check for error object, for backwards compatibility
-			if ( metadata[ Constants.Z_OBJECT_TYPE ] === Constants.Z_ERROR ) {
-				return '';
-			}
 			return this.getValueFromCanonicalZMap( metadata, 'orchestrationDuration' );
 		},
 		dialogText: function () {
@@ -254,10 +250,6 @@ module.exports = exports = {
 			}
 			const metadata = this.getZTesterMetadata(
 				this.zFunctionId, this.activeZTesterId, this.activeZImplementationId );
-			// Check for error object, for backwards compatibility
-			if ( !metadata || metadata[ Constants.Z_OBJECT_TYPE ] === Constants.Z_ERROR ) {
-				return '';
-			}
 			return this.portrayMetadataMap( metadata );
 		},
 		dialogTitle: function () {
