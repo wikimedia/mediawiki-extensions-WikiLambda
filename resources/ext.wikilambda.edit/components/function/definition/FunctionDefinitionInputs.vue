@@ -166,7 +166,7 @@ module.exports = exports = {
 		},
 		// We need this function otherwise the build will fail
 		showAddNewInput: function ( isMainZObject, index ) {
-			return isMainZObject && index === 0;
+			return isMainZObject && index === this.zArgumentList.length - 1;
 		},
 		updateArgumentLabel: function () {
 			this.setAvailableZArguments( this.zFunctionId );
