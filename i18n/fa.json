@@ -33,7 +33,7 @@
 	"wikilambda-tester-status-running": "در حال اجرا...",
 	"wikilambda-tester-status-passed": "موفق",
 	"wikilambda-tester-status-failed": "ناموفق",
-	"wikilambda-tester-results-title": "نتایج آزمایش‌گر",
+	"wikilambda-tester-results-title": "نتایج آزمایش",
 	"wikilambda-tester-results-caption": "نتایج آزمایشگرهای توابع در مقابل پیاده‌سازی‌ها",
 	"wikilambda-tester-no-results": "نتایج آزمایشگر یافت نشد. برای مشاهدهٔ نتایج، لطفاً یک پیاده‌سازی و یک آزمایشگر اضافه کنید.",
 	"wikilambda-tester-results-percentage-label": "مجموع آزمایشگرهای در حال ارسال",
