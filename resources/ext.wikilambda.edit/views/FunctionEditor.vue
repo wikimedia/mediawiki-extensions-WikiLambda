@@ -17,14 +17,14 @@
 					:label="tab.label"
 				>
 					<main class="ext-wikilambda-function-editor__main__content">
-						<component v-if="tab.name === currentTab" :is="tab.name"></component>
+						<component :is="tab.name" v-if="tab.name === currentTab"></component>
 					</main>
 				</cdx-tab>
 			</cdx-tabs>
 			<aside
 				class="ext-wikilambda-function-editor__main__sidebar"
 				:aria-label="$i18n( 'wikilambda-editor-additional-details-label' ).text()">
-				<fn-editor-visual-display></fn-editor-visual-display>
+				<fn-editor-visual-display :is-sticky="true"></fn-editor-visual-display>
 			</aside>
 		</div>
 	</div>

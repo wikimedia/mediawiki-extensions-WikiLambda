@@ -5,7 +5,7 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-editior-visual-display">
+	<div :class="getVisualDisplayClass">
 		<div class="ext-wikilambda-editior-visual-display-head">
 			<span class="ext-wikilambda-editior-visual-display-head-title">
 				Work summary
@@ -103,6 +103,12 @@ module.exports = exports = {
 	components: {
 		'cdx-select': CdxSelect
 	},
+	props: {
+		isSticky: {
+			type: Boolean,
+			default: false
+		}
+	},
 	data: function () {
 		return {
 			activeInput: 1,
@@ -126,6 +132,11 @@ module.exports = exports = {
 					this.getZObjectLabel( this.zLanguage ).value ||
 					mw.message( 'wikilambda-editor-default-name' ).text()
 				);
+			},
+			getVisualDisplayClass: function () {
+				const cssClass = 'ext-wikilambda-editior-visual-display';
+				const cssClassStickyMode = cssClass + '-sticky';
+				return [ cssClass, this.isSticky ? cssClassStickyMode : '' ];
 			},
 			output: function () {
 				return this.outputValue.zid ?
@@ -262,8 +273,11 @@ module.exports = exports = {
 .ext-wikilambda-editior-visual-display {
 	background: #fef6e7;
 	min-height: 555px;
-	position: sticky;
-	top: 20px;
+
+	&.ext-wikilambda-editior-visual-display-sticky {
+		position: sticky;
+		top: 20px;
+	}
 
 	&-head {
 		padding: 16px;
