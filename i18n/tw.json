@@ -10,7 +10,6 @@
 			"Warmglow"
 		]
 	},
-	"wikilambda-published": "Watintim!",
 	"wikilambda-cancel": "Pepa",
 	"wikilambda-confirm": "Gye tom",
 	"wikilambda-fallback": "Akyidɔm ɔsesafoɔ",
@@ -23,15 +22,9 @@
 	"wikilambda-function-definition-alias-example": "Hwɛ din foforo ahorow ho nhwɛso.",
 	"wikilambda-function-definition-footer-placeholder": "Tiaa mu no, ka nsesa no ho asɛm",
 	"wikilambda-function-definition-footer-label": "Sa atwerɛ no nyinaa mu",
-	"wikilambda-function-definition-footer-implementation-button": "Twerɛ ɔkwan a wode bɛyɛ adwuma",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "Paw emu baako",
-	"wikilambda-function-definition-inputs-item-selector-search-placeholder": "Hwehwɛ ntotoho anaa dwumadie",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Fa nsɛm foforo ka ho",
 	"wikilambda-function-definition-output-selector": "Paw emu baako",
-	"wikilambda-editor-fn-step-define": "Kyerɛ aseɛ - Kyerɛ nea wayɛ no aseɛ",
-	"wikilambda-editor-fn-step-tests": "(N)sɔhwɛ",
-	"wikilambda-editor-fn-step-implement": "Fa di dwuma",
-	"wikilambda-editor-fn-tests-tooltip-header": "Wonni hokwan",
 	"wikilambda-ztyped-pair-key-label": "Safoa",
 	"wikilambda-ztyped-pair-value-label": "Adeɛ a ɛsommo",
 	"wikilambda-optional": "nyɛ ɔhyɛ",

@@ -7,14 +7,6 @@
 		]
 	},
 	"wikilambda-editor-label-addlanguage-label": "ဘာသာစကား ထည့်သွင်းရန်",
-	"wikilambda-tester-failure-actual": "လက်ခံရရှိခဲ့သည်",
-	"wikilambda-editor-steps-label": "တည်းဖြတ်သူအဆင့်များ",
-	"wikilambda-editor-go-back-button": "နောက်သို့ ပြန်သွားရန်",
-	"wikilambda-editor-next-button": "နောက်အဆင့်",
-	"wikilambda-editor-fn-step-tests": "စမ်းသပ်ချက်(များ)",
-	"wikilambda-editor-name-title": "အမည်",
 	"wikilambda-editor-input-title": "ထည့်သွင်းမှု",
-	"wikilambda-editor-input-type-placeholder": "ထည့်သွင်းမှု အမျိုးအစား",
-	"wikilambda-editor-behavior-title": "အမူအကျင့်",
-	"wikilambda-editor-write-title": "ရေးရန်"
+	"wikilambda-editor-input-type-placeholder": "ထည့်သွင်းမှု အမျိုးအစား"
 }

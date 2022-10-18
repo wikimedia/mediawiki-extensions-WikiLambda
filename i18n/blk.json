@@ -5,19 +5,7 @@
 			"Ninjastrikers"
 		]
 	},
-	"wikilambda-editor-go-back-button": "သဲင်ꩻချာ",
-	"wikilambda-editor-next-button": "ထင်ႏငါယင်းတရန်း",
-	"wikilambda-editor-fn-step-implement": "တဲမ်းသွော့ ထာꩻမာꩻခွုမ်စံႏချက်",
-	"wikilambda-editor-name-title": "မဉ်ꩻ",
-	"wikilambda-editor-name-zobject-name": "ထာꩻမာꩻခွုမ်စံႏချက်မိဉ်ꩻ",
 	"wikilambda-editor-input-title": "သွင်ꩻသော့ꩻ",
 	"wikilambda-editor-input-type-placeholder": "အနွို့ အစွိုးအမျိုꩻ",
-	"wikilambda-editor-input-add-button": "ထဲမ်သော့ꩻ အနွို့",
-	"wikilambda-editor-output-title": "အထန်ႏ၊ ထန်ႏ",
-	"wikilambda-editor-output-placeholder": "အထန်ႏ အစွိုးအမျိုꩻ",
-	"wikilambda-editor-behavior-title": "အကျင်ꩻ၊ နမ်းကျင်ꩻ",
-	"wikilambda-editor-write-title": "တဲမ်း",
-	"wikilambda-editor-write-save-button": "သိမ်ꩻသွော့ ဖောႏခါꩻဒါႏအနမ်းအခြုံ",
-	"wikilambda-editor-attach-title": "ပူꩻတွယ်ꩻ",
-	"wikilambda-editor-progress-title": "ထင်ႏထိုꩻမုꩻ၊ ထာꩻမာꩻစဲဉ်ႏ"
+	"wikilambda-editor-output-title": "အထန်ႏ၊ ထန်ႏ"
 }

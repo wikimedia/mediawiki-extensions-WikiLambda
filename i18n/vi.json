@@ -8,7 +8,6 @@
 			"Yosari101"
 		]
 	},
-	"wikilambda-emptylabel": "ZObject không được đặt nhãn",
 	"wikilambda-persistentzobject-contents": "Nội dung",
 	"wikilambda-multilingualstring-nofallback": "Không có nhãn nào được xác định bằng ngôn ngữ này hoặc các dự phòng được chấp nhận",
 	"wikilambda-reference": "Chú thích",
@@ -30,18 +29,7 @@
 	"wikilambda-tester-status-pending": "ĐANG CHỜ…",
 	"wikilambda-tester-status-running": "ĐANG CHẠY…",
 	"wikilambda-tester-status-passed": "QUA",
-	"wikilambda-tester-failure-actual": "Đã nhận",
-	"wikilambda-editor-go-back-button": "Quay lại",
-	"wikilambda-editor-next-button": "Bước tiếp theo",
-	"wikilambda-editor-fn-step-define": "Định nghĩa",
-	"wikilambda-editor-fn-step-tests": "Thử nghiệm",
-	"wikilambda-editor-fn-step-implement": "Thực hiện",
-	"wikilambda-editor-fn-step-implementations": "Các bước thực hiện",
 	"wikilambda-editor-fn-step-function-definition": "Định nghĩa Hàm",
 	"wikilambda-editor-fn-step-function-about": "Giới thiệu",
-	"wikilambda-editor-fn-step-function-details": "Chi tiết",
-	"wikilambda-editor-fn-tests-tooltip-header": "Không truy cập",
-	"wikilambda-editor-name-title": "Tên",
-	"wikilambda-editor-name-zobject-name": "Tên hàm",
-	"wikilambda-editor-name-zobject-name-placeholder": "Tên hàm của bạn là gì?"
+	"wikilambda-editor-fn-step-function-details": "Chi tiết"
 }

@@ -11,7 +11,6 @@
 	"wikilambda-viewmode-nojs": "JavaScript hiányában az oldal csökkentett verzióban jelenik meg.",
 	"wikilambda-reference": "Hivatkozás",
 	"wikilambda-special-createzobject": "Új ZObject létrehozása",
-	"wikilambda-special-createzobject-summary": "Az űrlap segítségével létrehozhatsz egy új ZObjectet, mely képviselhet Funkciót, Végrehajtást, Tesztert, vagy bármely egyéb ZObject típust. Ajánljuk figyelmedbe a súgót és a közösségi útmutatót.",
 	"wikilambda-special-createzobject-intro": "Kövesd a közösségi irányelveket és tartsd tiszteletben a szabadalmi és szerzői jogokat.",
 	"wikilambda-special-createzobject-nojs": "Az oldal használatához JavaScript szükséges.",
 	"wikilambda-special-listduplicatezobjectlabels-summary": "Ezen az oldalon találod a több címmel rendelkező ZObjecteket. Mivel a keresőben csak az első cím jelenik meg, így ezek javításra szorulnak.",

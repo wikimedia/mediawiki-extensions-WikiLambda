@@ -13,7 +13,6 @@
 		]
 	},
 	"wikilambda-desc": "為維基媒體的 Wiki 提供 wikitext 解析器功能，來呼叫對於在中央 Wiki 上編寫、管理、評估的功能之評估。",
-	"wikilambda-emptylabel": "無標籤的 ZObject",
 	"wikilambda-history-title": "“ $1 ”（ $2 ）的修訂歷史",
 	"wikilambda-invalidzobjecttitle": "提供的“ $1 ”不是個有效的 ZObject 標題。",
 	"wikilambda-invalidzobject": "提供內容不是有效的 ZObject。",
@@ -32,7 +31,6 @@
 	"wikilambda-show-error": "顯示錯誤",
 	"wikilambda-hide-error": "隱藏錯誤",
 	"wikilambda-special-createzobject": "建立一個新的 ZObject",
-	"wikilambda-special-createzobject-summary": "此表單能讓您建立一個新的 ZObject，它可以表現成一個實行的功能、用於此的測試器、或是別種 ZObject 當中之一。您應先閱讀說明文件與社群指南。",
 	"wikilambda-special-createzobject-intro": "請確定您遵循社群規範、版權和專利規則。",
 	"wikilambda-special-createzobject-nojs": "此頁面需要用到 JavaScript。",
 	"wikilambda-special-listduplicatezobjectlabels": "帶有重複標籤的 ZObject 頁面",
@@ -60,7 +58,6 @@
 	"wikilambda-function-implementation-name-label": "名稱",
 	"wikilambda-function-implementation-language-label": "語言",
 	"wikilambda-function-implementation-state-label": "狀態",
-	"wikilambda-editor-fn-step-tests": "測試",
 	"wikilambda-function-implementation-table-header": "實現",
 	"wikilambda-editor-fn-step-function-about": "關於",
 	"wikilambda-continue-editing": "繼續編輯",
