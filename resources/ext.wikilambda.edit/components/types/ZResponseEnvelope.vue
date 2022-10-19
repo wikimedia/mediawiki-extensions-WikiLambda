@@ -71,8 +71,10 @@ var Constants = require( '../../Constants.js' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( '../../../lib/icons.json' ),
 	DialogContainer = require( '../base/DialogContainer.vue' ),
-	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
 	portray = require( '../../mixins/portray.js' ),
+	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
+	schemata = require( '../../mixins/schemata.js' ),
+	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
@@ -83,7 +85,7 @@ module.exports = exports = {
 		'cdx-icon': CdxIcon,
 		'dialog-container': DialogContainer
 	},
-	mixins: [ typeUtils, portray ],
+	mixins: [ typeUtils, portray, schemata ],
 	props: {
 		zobjectId: {
 			type: Number,
@@ -103,7 +105,8 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
-		'getZObjectAsJsonById'
+		'getZObjectAsJsonById',
+		'getZkeyLabels'
 	] ), {
 		Constants: function () {
 			return Constants;
@@ -151,7 +154,7 @@ module.exports = exports = {
 			return this.$i18n( 'wikilambda-helplink-tooltip' ).text();
 		}
 	} ),
-	methods: {
+	methods: $.extend( mapActions( [ 'fetchZKeys' ] ), {
 		openMetrics: function () {
 			this.showMetrics = true;
 			this.$refs.dialogBox.openDialog();
@@ -169,12 +172,15 @@ module.exports = exports = {
 		},
 		dialogContent: function ( zMapId ) {
 			const zMapJSON = canonicalize( this.getZObjectAsJsonById( zMapId ) );
-			return this.portrayMetadataMap( zMapJSON );
+			// Ensure ZIDs appearing in metadata map have been fetched
+			const metadataZIDs = this.extractZIDs( zMapJSON );
+			this.fetchZKeys( { zids: metadataZIDs } );
+			return this.portrayMetadataMap( zMapJSON, this.getZkeyLabels );
 		},
 		helpLinkIcon: function () {
 			return icons.cdxIconHelpNotice;
 		}
-	}
+	} )
 };
 </script>
 

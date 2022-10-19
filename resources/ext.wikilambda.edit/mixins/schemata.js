@@ -12,7 +12,9 @@
 var Constants = require( '../Constants.js' ),
 	typeUtils = require( './typeUtils.js' ).methods;
 
-var referenceRe = /^Z[0-9]+(K[0-9]+)?$/;
+// Note: This is intentionally "wrong" in that it allows for Z0
+const referenceRe = /^Z\d+(K[1-9]\d*)?$/;
+const errorTypeReferenceRe = /^Z5\d{2}$/;
 
 function canonicalizeZ6OrZ9( zobject ) {
 	var objectType = zobject[ Constants.Z_OBJECT_TYPE ];
@@ -97,6 +99,10 @@ function isString( s ) {
 	return typeof s === 'string' || s instanceof String;
 }
 
+function isZid( k ) {
+	return k.match( /^Z[1-9]\d*$/ ) !== null;
+}
+
 function normalize( zobject ) {
 	var normal = {},
 		keys;
@@ -177,10 +183,179 @@ function getValueFromCanonicalZMap( zMap, key ) {
 	}
 }
 
+/**
+ * Traverses a ZObject calling the provided callback function for every
+ * <key, value> pair. This a depth-first procedure.
+ *
+ * @param {Object} zobject
+ * @param {Function} callback
+ */
+function traverse( zobject, callback ) {
+	if ( zobject !== null && typeof zobject === 'object' ) {
+		// eslint-disable-next-line es/no-object-entries
+		Object.entries( zobject ).forEach( ( [ key, value ] ) => {
+			callback( key, value );
+			traverse( value, callback );
+		} );
+	}
+}
+
+/**
+ * Finds all of the ZIDs appearing in an arbitrary ZObject.
+ *
+ * @param {Object|string} zobject a Z1/Object
+ * @return {Set} Set of (string) ZIDs
+ */
+function extractZIDs( zobject ) {
+	const found = new Set( [] );
+	// Handle the case of a lone canonical reference
+	if ( typeof zobject === 'string' && isZid( zobject ) ) {
+		found.add( zobject );
+	}
+
+	traverse( zobject, ( _key, value ) => {
+		if ( typeof value === 'string' && isZid( value ) ) {
+			found.add( value );
+		}
+	} );
+
+	return found;
+}
+
+/**
+ * Checks if a given zobject is a suberror (a zobject whose type is an instance of Z50/'Error type').
+ * If so, returns a JS object with keys errorType and (optionally) explanation.  If not, returns null.
+ *
+ * The 'explanation' is an explanatory string for this suberror.
+ * Such strings are expected for Z500, but are also generated in the orchestrator for
+ * some other error types. In addition to explanatory strings, a few other useful keys
+ * with string values will show up here, e.g. Z503K1/'feature name' and Z504K1/ZID.
+ *
+ * Allows for the more relaxed Z5/Error format from the orchestrator, in which the suberror's
+ * type appears directly as the value of Z1K1/type, and also the stricter format, in which
+ * it appears in a function call to Z885/'Errortype to type'.  Z885K1 is the 'errortype' key of Z885.
+ *
+ * @param {Object} zobject
+ * @return {Array} of objects
+ */
+function checkIfSuberror( zobject ) {
+	if ( typeof zobject === 'object' && zobject.Z1K1 && typeof zobject.Z1K1 === 'string' &&
+		zobject.Z1K1.match( errorTypeReferenceRe ) ) {
+		// Handle the relaxed Z5/Error format from the orchestrator
+		const suberror = {};
+		suberror.errorType = zobject.Z1K1;
+		const stringKey = suberror.errorType + 'K1';
+		const k1String = zobject[ stringKey ];
+		if ( k1String && isString( k1String ) && !isZid( k1String ) ) {
+			suberror.explanation = k1String;
+		}
+		return suberror;
+	} else if ( typeof zobject === 'object' && zobject.Z1K1 && typeof zobject.Z1K1 === 'object' &&
+		zobject.Z1K1.Z885K1 && typeof zobject.Z1K1.Z885K1 === 'string' &&
+		zobject.Z1K1.Z885K1.match( errorTypeReferenceRe ) ) {
+		const suberror = {};
+		suberror.errorType = zobject.Z1K1.Z885K1;
+		const stringKey = 'K1';
+		const k1String = zobject[ stringKey ];
+		if ( k1String && isString( k1String ) && !isZid( k1String ) ) {
+			suberror.explanation = k1String;
+		}
+		return suberror;
+	}
+}
+
+// These error types have no keys whose values contain nested error content.  If a error type ZID
+// appears here, extractErrorStructure will not search through any children of a zobject of that type.
+const errorTypesNotToTraverse = new Set( [ 'Z501', 'Z505', 'Z508', 'Z511', 'Z512', 'Z513', 'Z516',
+	'Z531', 'Z532', 'Z533', 'Z534', 'Z535', 'Z536', 'Z537', 'Z542', 'Z547', 'Z548', 'Z551', 'Z553' ] );
+
+/**
+ * Traverses a ZObject to find all the suberrors.  (A suberror is a zobject
+ * whose type is an instance of Z50/'Error type'). Example:
+ *   { Z1K1: 'Z500', Z500K1: 'Could not find argument Z811K1' }
+ * For each suberror found, the result includes a JS object with properties
+ * 'errorType', 'children', and (optionally) 'explanation'.  Example:
+ *   { errorType: 'Z500', explanation: 'Could not find argument Z811K1', children: [] }
+ *
+ * The 'children', if any, are additional suberrors found within the nested ZObjects of
+ * this suberror.
+ *
+ * zobject is normally a Z5 in the top level call, but doesn't have to be.
+ *
+ * @param {Object} zobject
+ * @return {Array} of objects
+ */
+function extractErrorStructure( zobject ) {
+	const subError = checkIfSuberror( zobject );
+	if ( subError ) {
+		if ( subError.explanation ) {
+			// In this special case, there won't be any nested suberrors; look no further
+			subError.children = [];
+		} else if ( errorTypesNotToTraverse.has( subError.errorType ) ) {
+			// Also in this case, there won't be any nested suberrors; look no further
+			subError.children = [];
+		} else {
+			subError.children = extractNestedSuberrors( zobject, subError.errorType );
+		}
+		return [ subError ];
+	}
+	return extractNestedSuberrors( zobject, null );
+}
+
+/**
+ * For each suberror type, these are its keys whose values should be included
+ * in the traversal conducted by extractNestedSuberrors(), because
+ * they may contain nested error content.  We include both local and global
+ * forms of the keys, to make sure all currently generated errors are covered.
+ *
+ * If a suberror type isn't listed here, *all* of its keys' values will be traversed.
+ * It is not necessary for each suberror type to appear here, but if one does,
+ * it should *not* appear in errorTypesNotToTraverse.
+ *
+ * New error types will be handled without updating this map or errorTypesNotToTraverse
+ * (albeit not necessarily optimally).
+ */
+const errorKeysToTraverse = new Map( [
+	[ 'Z502', new Set( [ 'Z502K2', 'K2' ] ) ], // Not wellformed, [value]
+	[ 'Z506', new Set( [ 'Z506K4', 'K4' ] ) ], // Argument type mismatch, [propagated error]
+	[ 'Z507', new Set( [ 'Z507K2', 'K2' ] ) ], // Error in evaluation, [propagated error]
+	[ 'Z517', new Set( [ 'Z517K4', 'K4' ] ) ], // Return type mismatch, [propagated error]
+	[ 'Z518', new Set( [ 'Z518K3', 'K3' ] ) ] // Object type mismatch, [propagated error]
+] );
+
+/**
+ * Finds all suberrors in the children objects of the given zobject, as described for
+ * extractErrorStructure().  In that function we check whether the top-level
+ * object is a suberror; here we look at the children objects.
+ *
+ * Special-purpose function; only meant to be called from extractErrorStructure().
+ *
+ * @param {Object} zobject
+ * @param {string|null} errorType
+ * @return {Array} of objects
+ */
+function extractNestedSuberrors( zobject, errorType ) {
+	var nested = [];
+	if ( zobject !== null && typeof zobject === 'object' ) {
+		const keysToTraverse = errorKeysToTraverse.get( errorType );
+		// eslint-disable-next-line es/no-object-entries
+		Object.entries( zobject ).forEach( ( [ key, value ] ) => {
+			// We've already looked inside Z1K1/type; no need to look again
+			if ( key !== Constants.Z_OBJECT_TYPE &&
+				( keysToTraverse === undefined || keysToTraverse.has( key ) ) ) {
+				nested.push( ...extractErrorStructure( value ) );
+			}
+		} );
+	}
+	return nested;
+}
+
 module.exports = exports = {
 	methods: {
 		canonicalizeZObject: canonicalize,
 		normalizeZObject: normalize,
-		getValueFromCanonicalZMap: getValueFromCanonicalZMap
+		getValueFromCanonicalZMap: getValueFromCanonicalZMap,
+		extractErrorStructure: extractErrorStructure,
+		extractZIDs: extractZIDs
 	}
 };

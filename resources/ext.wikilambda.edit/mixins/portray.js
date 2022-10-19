@@ -12,6 +12,7 @@
 
 const Constants = require( '../Constants.js' );
 const getValueFromCanonicalZMap = require( './schemata.js' ).methods.getValueFromCanonicalZMap;
+const extractErrorStructure = require( './schemata.js' ).methods.extractErrorStructure;
 
 /**
  * Map from internal key (which appears in the result envelopes returned from backend services)
@@ -19,8 +20,8 @@ const getValueFromCanonicalZMap = require( './schemata.js' ).methods.getValueFro
  * inclusion of other attributes.
  */
 const knownKeys = new Map( [
-	[ 'errors', { i18nId: 'wikilambda-functioncall-metadata-errors' } ],
-	[ 'validateErrors', { i18nId: 'wikilambda-functioncall-metadata-validator-errors' } ],
+	[ 'errors', { i18nId: 'wikilambda-functioncall-metadata-error-summary' } ],
+	[ 'validateErrors', { i18nId: 'wikilambda-functioncall-metadata-validator-error-summary' } ],
 	[ 'actualTestResult', { i18nId: 'wikilambda-functioncall-metadata-actual-result' } ],
 	[ 'expectedTestResult', { i18nId: 'wikilambda-functioncall-metadata-expected-result' } ],
 	[ 'implementationId', { i18nId: 'wikilambda-functioncall-metadata-implementation-id' } ],
@@ -52,17 +53,18 @@ module.exports = exports = {
 		 * readable style, using raw HTML markup
 		 *
 		 * @param {Object} zMap a Z883/Typed map, in canonical form
+		 * @param {Array} labels
 		 * @return {string}
 		 */
-		portrayMetadataMap: function ( zMap ) {
+		portrayMetadataMap: function ( zMap, labels ) {
 			var keysUsed = [];
 			let html = '<span><ul>';
 			// First, portray the known/expected metadata keys and their values
-			// If there's no 'errors' value, keyAndZErrorValue will display 'None'
-			html = html + this.keyAndZErrorValue( zMap, 'errors', keysUsed );
+			// If there's no 'errors' value, keyAndZErrorSummary will display 'None'
+			html = html + this.keyAndZErrorSummary( zMap, 'errors', labels, keysUsed );
 			// With 'validateErrors', we don't want to display 'None', so check here if there's a value
 			if ( getValueFromCanonicalZMap( zMap, 'validateErrors' ) ) {
-				html = html + this.keyAndZErrorValue( zMap, 'validateErrors', keysUsed );
+				html = html + this.keyAndZErrorSummary( zMap, 'validateErrors', labels, keysUsed );
 			}
 			html = html + this.keyAndArbitraryValue( zMap, 'expectedTestResult', keysUsed );
 			html = html + this.keyAndArbitraryValue( zMap, 'actualTestResult', keysUsed );
@@ -107,62 +109,66 @@ module.exports = exports = {
 			return html + '</ul></span>';
 		},
 		/**
-		 * Portray the given key and its zMap value, which should be a Z5 / Error object
+		 * Portray the given key and its zMap value, which should be a Z5 / Error object.  The
+		 * resulting string is a cursory, bulleted summary of the given Z5.  Each bullet represents
+		 * a suberror (instance of Z50) found in the Z5.  Bullets are indented to reflect the
+		 * nesting of the sub-errors.
 		 *
 		 * @param {Object} zMap a Z883/Typed map, in canonical form
 		 * @param {string} key
+		 * @param {Array} labels
 		 * @param {Array} keysUsed any keys used (or checked) here are added to this array
 		 * @return {string}
 		 */
-		keyAndZErrorValue: function ( zMap, key, keysUsed ) {
+		keyAndZErrorSummary: function ( zMap, key, labels, keysUsed ) {
 			keysUsed.push( key );
-			let messages;
+			let suberrors;
 			const error = getValueFromCanonicalZMap( zMap, key );
 			if ( error === undefined ) {
-				messages = [];
-			} else if ( error[ Constants.Z_ERROR_TYPE ] === 'Z509' ) {
-				const errors = error[ Constants.Z_ERROR_VALUE ].Z509K1;
-				messages = [];
-				for ( let i = 1; i < errors.length; i++ ) {
-					messages.push( this.messageForError( errors[ i ] ) );
-				}
+				suberrors = [];
 			} else {
-				messages = [ this.messageForError( error ) ];
+				suberrors = extractErrorStructure( error );
 			}
-			const i18nKey = this.$i18n( knownKeys.get( key ).i18nId, messages.length ).text();
-			if ( messages.length === 0 ) {
-				return '<li><b>' + i18nKey + ':</b> ' +
+			if ( suberrors.length === 0 ) {
+				// Display (for English reader): "Errors: none" or "Validator errors: none"
+				const i18nKeyForNoErrors = this.$i18n( 'wikilambda-functioncall-metadata-errors', 0 ).text();
+				return '<li><b>' + i18nKeyForNoErrors + ':</b> ' +
 					this.$i18n( 'wikilambda-functioncall-metadata-errors-none' ).text() + '</li>';
 			}
-			let html = '<li><b>' + i18nKey + ':</b><br><ul>';
-			for ( const message of messages ) {
-				html = html + '<li>' + message + '</li>';
-			}
-			return html + '</ul></li>';
+			// The knownKeys keys display "Error summary: ..." or "Validator error summary: ..."
+			const i18nKey = this.$i18n( knownKeys.get( key ).i18nId ).text();
+			let html = '<li><b>' + i18nKey + ':</b><br>';
+			html = html + this.formatZErrorSummary( suberrors, labels );
+			return html + '</li>';
 		},
-		/**
-		 * Extract or construct a message characterizing the given error.  The message returned
-		 * is plain text, no HTML markup. (Based on existing code in zTesterResults.js.)
-		 *
-		 * TODO: (T312611): Do a good job on all error types.  Also, return a label for errorType (as well as Z5xx).
-		 *
-		 * @param {Object} zError a Z5/Error, in canonical form
-		 * @return {string}
-		 */
-		messageForError: function ( zError ) {
-			let message;
-			if ( zError[ Constants.Z_ERROR_VALUE ] ) {
-				message = zError[ Constants.Z_ERROR_VALUE ];
-			} else {
-				const errorType = zError[ Constants.Z_ERROR_TYPE ][ Constants.Z_OBJECT_TYPE ];
-				const errorValue = zError[ Constants.Z_ERROR_TYPE ][ errorType + 'K1' ];
-				if ( errorValue ) {
-					message = '[' + errorType + '] ' + errorValue;
-				} else {
-					message = zError;
+		formatZErrorSummary: function ( suberrors, labels ) {
+			let html = '<ul>';
+			for ( const suberror of suberrors ) {
+				html = html + '<li>' + this.messageForSuberror( suberror, labels ) + '</li>';
+				if ( suberror.children !== [] ) {
+					html = html + this.formatZErrorSummary( suberror.children, labels );
 				}
 			}
-			return this.maybeStringify( message );
+			return html + '</ul>';
+		},
+		/**
+		 * Construct a message characterizing the given suberror.  The message returned
+		 * is plain text, no HTML markup.  See schemata.js::extractErrorStructure for
+		 * more about the suberror objects.
+		 *
+		 * @param {Object} subError
+		 * @param {Array} labels
+		 * @return {string}
+		 */
+		messageForSuberror: function ( subError, labels ) {
+			let message;
+			const errorType = subError.errorType;
+			const errorLabel = labels[ errorType ];
+			message = '[' + errorType + '/' + errorLabel + ']';
+			if ( subError.explanation ) {
+				message = message + ' ' + subError.explanation;
+			}
+			return message;
 		},
 
 		/**

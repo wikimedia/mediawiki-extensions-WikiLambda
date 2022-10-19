@@ -53,7 +53,9 @@ var Constants = require( '../../../Constants.js' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( '../../../../lib/icons.json' ),
 	DialogContainer = require( '../../../components/base/DialogContainer.vue' ),
-	portray = require( '../../../mixins/portray.js' );
+	schemata = require( '../../../mixins/schemata.js' ),
+	portray = require( '../../../mixins/portray.js' ),
+	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
 module.exports = exports = {
@@ -62,7 +64,7 @@ module.exports = exports = {
 		'cdx-icon': CdxIcon,
 		'dialog-container': DialogContainer
 	},
-	mixins: [ portray ],
+	mixins: [ portray, schemata ],
 	props: {
 		zFunctionId: {
 			type: String,
@@ -132,7 +134,10 @@ module.exports = exports = {
 			if ( metadata === undefined ) {
 				return '';
 			}
-			return this.portrayMetadataMap( metadata );
+			// Ensure ZIDs appearing in metadata have been fetched
+			const metadataZIDs = this.extractZIDs( metadata );
+			this.fetchZKeys( { zids: metadataZIDs } );
+			return this.portrayMetadataMap( metadata, this.getZkeyLabels );
 		},
 		dialogTitle: function () {
 			const testerLabel = this.getZkeyLabels[ this.zTesterId ] ||
@@ -148,7 +153,7 @@ module.exports = exports = {
 			return this.$i18n( 'wikilambda-helplink-tooltip' ).text();
 		}
 	} ),
-	methods: {
+	methods: $.extend( mapActions( [ 'fetchZKeys' ] ), {
 		handleMessageIconClick: function () {
 			// TODO(T315607): See if the metadata dialog behavior can be improved further.
 			// TODO(T316567): Check if results are ready before showing metadata dialog
@@ -163,7 +168,7 @@ module.exports = exports = {
 		helpLinkIcon: function () {
 			return icons.cdxIconHelpNotice;
 		}
-	}
+	} )
 };
 </script>
 

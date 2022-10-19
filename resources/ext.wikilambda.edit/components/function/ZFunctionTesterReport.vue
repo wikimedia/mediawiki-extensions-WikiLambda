@@ -224,7 +224,10 @@ module.exports = exports = {
 			}
 			const metadata = this.getZTesterMetadata(
 				this.zFunctionId, this.activeZTesterId, this.activeZImplementationId );
-			return this.portrayMetadataMap( metadata );
+			// Ensure ZIDs appearing in metadata have been fetched
+			const metadataZIDs = this.extractZIDs( metadata );
+			this.fetchZKeys( { zids: metadataZIDs } );
+			return this.portrayMetadataMap( metadata, this.getZkeyLabels );
 		},
 		dialogTitle: function () {
 			if ( !this.activeZTesterId || !this.activeZImplementationId ) {

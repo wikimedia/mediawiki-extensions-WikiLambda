@@ -3,6 +3,8 @@ var schemata = require( '../../../resources/ext.wikilambda.edit/mixins/schemata.
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	canonicalize = schemata.canonicalizeZObject,
 	normalize = schemata.normalizeZObject,
+	extractErrorStructure = schemata.extractErrorStructure,
+	extractZIDs = schemata.extractZIDs,
 	fs = require( 'fs' ),
 	path = require( 'path' );
 
@@ -12,7 +14,57 @@ describe( 'schemata mixin', function () {
 		normalZFunction = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/normalZFunction.json' ) ) ),
 		canonicalZFunction = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalZFunction.json' ) ) ),
 		normalZList = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/normalZList.json' ) ) ),
-		canonicalZList = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalZList.json' ) ) );
+		canonicalZList = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/canonicalZList.json' ) ) ),
+		simpleErrorObjectRelaxedFormat = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/simpleErrorObject_RelaxedFormat.json' ) ) ),
+		fairlyComplexErrorObject = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/fairlyComplexErrorObject.json' ) ) ),
+		fairlyComplexErrorObjectLocalKeys = JSON.parse( fs.readFileSync( path.join( __dirname, './schemata/fairlyComplexErrorObject_LocalKeys.json' ) ) );
+
+	it( 'extracts ZID from normal string', function () {
+		expect( extractZIDs( { Z1K1: Constants.Z_STRING, Z6K1: 'Hello, Test!' } ) ).toEqual(
+			new Set( [ 'Z6' ] ) );
+	} );
+
+	it( 'extracts no ZID from canonical string', function () {
+		expect( extractZIDs( 'Hello' ) ).toEqual(
+			new Set( [] ) );
+	} );
+
+	it( 'extracts ZID from canonical reference', function () {
+		expect( extractZIDs( 'Z10023' ) ).toEqual(
+			new Set( [ 'Z10023' ] ) );
+	} );
+
+	it( 'extracts ZIDs from normal function', function () {
+		expect( extractZIDs( normalZFunction ) ).toEqual(
+			new Set( [ 'Z10023', 'Z11', 'Z12', 'Z14', 'Z16', 'Z17', 'Z2', 'Z6', 'Z61', 'Z8', 'Z9' ] ) );
+	} );
+
+	it( 'extracts ZIDs from canonical function', function () {
+		expect( extractZIDs( canonicalZFunction ) ).toEqual(
+			new Set( [ 'Z10023', 'Z11', 'Z12', 'Z14', 'Z16', 'Z17', 'Z2', 'Z6', 'Z61', 'Z8' ] ) );
+	} );
+
+	it( 'extracts error structure from a simple error object in relaxed format', function () {
+		// TODO( ): Remove this test after the relaxed format is no longer produced
+		expect( extractErrorStructure( simpleErrorObjectRelaxedFormat ) ).toEqual(
+			[ { children: [], errorType: 'Z500', explanation: 'Arbitrary handcrafted message' } ] );
+	} );
+
+	it( 'extracts error structure from fairly complex error object', function () {
+		expect( extractErrorStructure( fairlyComplexErrorObject ) ).toEqual(
+			[ { children: [ { children: [ { children: [], errorType: 'Z532' },
+				{ children: [], errorType: 'Z535' },
+				{ children: [], errorType: 'Z511' } ], errorType: 'Z509' } ], errorType: 'Z502' } ]
+		);
+	} );
+
+	it( 'extracts error structure from fairly complex error object with local keys', function () {
+		expect( extractErrorStructure( fairlyComplexErrorObjectLocalKeys ) ).toEqual(
+			[ { children: [ { children: [ { children: [], errorType: 'Z532' },
+				{ children: [], errorType: 'Z535' },
+				{ children: [], errorType: 'Z511' } ], errorType: 'Z509' } ], errorType: 'Z502' } ]
+		);
+	} );
 
 	it( 'canonicalizes strings', function () {
 		expect( canonicalize( { Z1K1: Constants.Z_STRING, Z6K1: 'Hello, Test!' } ) ).toEqual( 'Hello, Test!' );
