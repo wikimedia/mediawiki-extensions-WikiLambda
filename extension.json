@@ -207,7 +207,6 @@
 				"ext.wikilambda.edit/components/function/definition/FunctionDefinitionFooter.vue",
 				"ext.wikilambda.edit/components/types/ZLabelsBlock.vue",
 				"ext.wikilambda.edit/components/types/ZResponseEnvelope.vue",
-				"ext.wikilambda.edit/components/editor/FnEditorVisualDisplay.vue",
 				"ext.wikilambda.edit/components/editor/FnEditorZLanguageSelector.vue",
 				"ext.wikilambda.edit/mixins/schemata.js",
 				"ext.wikilambda.edit/mixins/portray.js",

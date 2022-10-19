@@ -46,9 +46,6 @@
 						{{ $i18n( 'wikilambda-persistentobject-evaluate-function' ).text() }}
 					</h3>
 					<z-function-evaluator></z-function-evaluator>
-
-					<fn-editor-visual-display>
-					</fn-editor-visual-display>
 				</template>
 				<div v-if="$store.getters.isExpertMode">
 					<h3>
@@ -73,8 +70,7 @@ var Constants = require( '../../Constants.js' ),
 	ZObjectKey = require( '../ZObjectKey.vue' ),
 	ZLabelsBlock = require( './ZLabelsBlock.vue' ),
 	ZFunctionEvaluator = require( '../function/ZFunctionEvaluator.vue' ),
-	ZObjectJson = require( '../ZObjectJson.vue' ),
-	FnEditorVisualDisplay = require( '../editor/FnEditorVisualDisplay.vue' );
+	ZObjectJson = require( '../ZObjectJson.vue' );
 
 // @vue/component
 module.exports = exports = {
@@ -83,7 +79,6 @@ module.exports = exports = {
 		'z-labels-block': ZLabelsBlock,
 		'z-function-evaluator': ZFunctionEvaluator,
 		'z-object-json': ZObjectJson,
-		'fn-editor-visual-display': FnEditorVisualDisplay,
 		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],

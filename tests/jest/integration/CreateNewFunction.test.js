@@ -82,10 +82,6 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 			.vm.$emit( 'input', 'function name, in Chinese' );
 		await wrapper.vm.$nextTick();
 
-		// ASSERT: New name is visible in work summary.
-		expect( wrapper.get( '.ext-wikilambda-editior-visual-display-name' ).text() )
-			.toEqual( 'function name, in Chinese' );
-
 		// ACT: Enter an alias for the function.
 		const aliasInput = wrapper.get( '.ext-wikilambda-function-definition-aliases__inputs input' );
 		await aliasInput.setValue( 'function alias, in Chinese' );
@@ -102,11 +98,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		const argumentLabelInput = wrapper.get( '.ext-wikilambda-editor-input-list-item__label input' );
 		await argumentLabelInput.setValue( 'first argument label, in Chinese' );
 
-		// ASSERT: First argument's type and label are visible in work summary.
-		expect( wrapper.findAll( '.ext-wikilambda-editior-visual-display-input-box' )[ 0 ].text() )
-			.toEqual( 'String, “first argument label, in Chinese”' );
-
-		// ACT: Add another argument
+		// ACT: Add another argument.
 		await wrapper.get( '.ext-wikilambda-editor-input-list-item__button' ).trigger( 'click' );
 
 		// ACT: Select a type for the second argument.
@@ -120,19 +112,12 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		const secondArgumentLabelInput = wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 1 ];
 		await secondArgumentLabelInput.setValue( 'second argument label, in Chinese' );
 
-		// ASSERT: Second argument's type and label are visible in work summary.
-		expect( wrapper.findAll( '.ext-wikilambda-editior-visual-display-input-box' )[ 1 ].text() )
-			.toEqual( 'String, “second argument label, in Chinese”' );
-
-		// ACT: Select a type for the output
+		// ACT: Select a type for the output.
 		const outputTypeSelectorLookup =
 			wrapper.get( '.ext-wikilambda-function-definition-output__selector' ).getComponent( CdxLookup );
 		outputTypeSelectorLookup.vm.$emit( 'input', 'Str' );
 		await awaitLookup( wrapper );
 		await clickItemInMenu( outputTypeSelectorLookup, 'String' );
-
-		// ASSERT: Output's type is visible in work summary.
-		expect( wrapper.get( '.ext-wikilambda-editior-visual-display-output-box' ).text() ).toEqual( 'String' );
 
 		// ACT: Click "Add labels in another language".
 		await wrapper.get( '.ext-wikilambda-function-definition__action-add-input-button' ).trigger( 'click' );
@@ -149,16 +134,6 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 			.vm.$emit( 'input', 'function name, in French' );
 		await wrapper.vm.$nextTick();
 
-		// ACT: Select second language in work summary.
-		const workSummaryLanguageSelector =
-			wrapper.get( '.ext-wikilambda-editior-visual-display-body__language-selector' );
-		await workSummaryLanguageSelector.trigger( 'click' );
-		await clickItemInMenu( workSummaryLanguageSelector, 'French' );
-
-		// ASSERT: New name is visible in work summary.
-		expect( wrapper.get( '.ext-wikilambda-editior-visual-display-name' ).text() )
-			.toEqual( 'function name, in French' );
-
 		// ACT: Enter an alias in the second language.
 		const secondLanguageAliasInput =
 			wrapper.findAll( '.ext-wikilambda-function-definition-aliases__inputs input' )[ 1 ];
@@ -169,17 +144,9 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 2 ]
 			.setValue( 'first argument label, in French' );
 
-		// ASSERT: First argument's label is visible in work summary.
-		expect( wrapper.findAll( '.ext-wikilambda-editior-visual-display-input-box' )[ 0 ].text() )
-			.toEqual( 'String, “first argument label, in French”' );
-
 		// ACT: Enter a label for the second argument, in the second language.
 		await wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 3 ]
 			.setValue( 'second argument label, in French' );
-
-		// ASSERT: Second argument's type and label are visible in work summary.
-		expect( wrapper.findAll( '.ext-wikilambda-editior-visual-display-input-box' )[ 1 ].text() )
-			.toEqual( 'String, “second argument label, in French”' );
 
 		// ACT: Click publish button.
 		await wrapper.get( '.ext-wikilambda-function-definition-footer__publish-button' ).trigger( 'click' );

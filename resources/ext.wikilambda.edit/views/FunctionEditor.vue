@@ -21,11 +21,6 @@
 					</main>
 				</cdx-tab>
 			</cdx-tabs>
-			<aside
-				class="ext-wikilambda-function-editor__main__sidebar"
-				:aria-label="$i18n( 'wikilambda-editor-additional-details-label' ).text()">
-				<fn-editor-visual-display :is-sticky="true"></fn-editor-visual-display>
-			</aside>
 		</div>
 	</div>
 </template>
@@ -33,7 +28,6 @@
 <script>
 var CdxTab = require( '@wikimedia/codex' ).CdxTab,
 	CdxTabs = require( '@wikimedia/codex' ).CdxTabs,
-	FnEditorVisualDisplay = require( '../components/editor/FnEditorVisualDisplay.vue' ),
 	functionDefinition = require( './function/FunctionDefinition.vue' ),
 	functionImplementations = require( './function/FunctionImplementations.vue' ),
 	functionTests = require( './function/FunctionTests.vue' );
@@ -45,7 +39,6 @@ module.exports = exports = {
 		'function-definition': functionDefinition,
 		'function-tests': functionTests,
 		'function-implementations': functionImplementations,
-		'fn-editor-visual-display': FnEditorVisualDisplay,
 		'cdx-tab': CdxTab,
 		'cdx-tabs': CdxTabs
 	},

@@ -102,10 +102,6 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 			.vm.$emit( 'input', 'edited function name, in Chinese' );
 		await wrapper.vm.$nextTick();
 
-		// ASSERT: New name is visible in work summary.
-		expect( wrapper.get( '.ext-wikilambda-editior-visual-display-name' ).text() )
-			.toEqual( 'edited function name, in Chinese' );
-
 		// ACT: Add a second alias for the function.
 		const aliasInput = wrapper.get( '.ext-wikilambda-function-definition-aliases__inputs input' );
 		await aliasInput.setValue( 'second function alias, in Chinese' );
@@ -114,10 +110,6 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		// ACT: Add a label for the first argument.
 		await wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 0 ]
 			.setValue( 'newly added first argument label, in Chinese' );
-
-		// ASSERT: New label for argument is visible in work summary.
-		expect( wrapper.get( '.ext-wikilambda-editior-visual-display-input-box' ).text() )
-			.toEqual( 'String, “newly added first argument label, in Chinese”' );
 
 		// [ACT: Don't enter a label for the second argument, in the first language.]
 
@@ -131,35 +123,17 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		await wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 2 ]
 			.setValue( 'edited first argument label, in Afrikaans' );
 
-		// ACT: Select second language in work summary.
-		const workSummaryLanguageSelector =
-			wrapper.get( '.ext-wikilambda-editior-visual-display-body__language-selector' );
-		await workSummaryLanguageSelector.trigger( 'click' );
-		await clickItemInMenu( workSummaryLanguageSelector, 'Afrikaans' );
-
-		// ASSERT: New label for argument is visible in work summary.
-		expect( wrapper.get( '.ext-wikilambda-editior-visual-display-input-box' ).text() )
-			.toEqual( 'String, “edited first argument label, in Afrikaans”' );
-
 		// ACT: Enter a name in the second language.
 		wrapper.findAll( '.ext-wikilambda-function-definition-name' )[ 1 ].getComponent( CdxTextInput )
 			.vm.$emit( 'input', 'function name, in Afrikaans' );
 		await wrapper.vm.$nextTick();
-
-		// ASSERT: New name is visible in work summary.
-		expect( wrapper.get( '.ext-wikilambda-editior-visual-display-name' ).text() )
-			.toEqual( 'function name, in Afrikaans' );
 
 		// ACT: Delete the name.
 		wrapper.findAll( '.ext-wikilambda-function-definition-name' )[ 1 ].getComponent( CdxTextInput )
 			.vm.$emit( 'input', '' );
 		await wrapper.vm.$nextTick();
 
-		// ASSERT: No name is visible in the work summary.
-		expect( wrapper.get( '.ext-wikilambda-editior-visual-display-name' ).text() )
-			.toEqual( 'wikilambda-editor-default-name' );
-
-		// ACT: Enter an aliase in the second language.
+		// ACT: Enter an alias in the second language.
 		const secondLanguageAliasInput =
 			wrapper.findAll( '.ext-wikilambda-function-definition-aliases__inputs input' )[ 1 ];
 		await secondLanguageAliasInput.setValue( 'first function alias, in Afrikaans' );
