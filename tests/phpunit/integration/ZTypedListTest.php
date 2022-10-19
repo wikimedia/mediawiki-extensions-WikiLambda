@@ -336,7 +336,8 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } } }';
 		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
 
-		$newElements = new ZTypedList( ZTypedList::buildType( 'Z1' ),
+		$newElements = new ZTypedList(
+			ZTypedList::buildType( new ZReference( ZTypeRegistry::Z_OBJECT ) ),
 			[ new ZString( "New string" ), new ZReference( 'Z41' ) ] );
 		$testObject->appendZTypedList( $newElements );
 
@@ -382,7 +383,8 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( "Z6", $testObject->getElementType()->getZValue() );
 
 		// List type is Z6; new element type is Z5; exception should be raised
-		$newElements = new ZTypedList( ZTypedList::buildType( ZTypeRegistry::Z_OBJECT ),
+		$newElements = new ZTypedList(
+			ZTypedList::buildType( new ZReference( ZTypeRegistry::Z_OBJECT ) ),
 			[ new ZError( 'Z501', new ZString( 'error message' ) ) ] );
 		$this->expectException( ZErrorException::class );
 		$testObject->appendZTypedList( $newElements );
