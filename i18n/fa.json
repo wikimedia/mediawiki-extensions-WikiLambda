@@ -38,7 +38,7 @@
 	"wikilambda-functioncall-metadata-evaluation-duration": "مدت‌زمان ارزیابی",
 	"wikilambda-editor-tester-list-label": "فهرست آزمایشگرها",
 	"wikilambda-tester-selector": "انتخاب یک آزمایشگر",
-	"wikilambda-tester-none-found": "آزمایشگری یافت نشد.",
+	"wikilambda-tester-none-found": "در حال حاضر هیچ نمونهٔ آزمایشی برای این تابغ موجود نیست.",
 	"wikilambda-tester-create-new": "ایجاد آزمون تازه",
 	"wikilambda-tester-status-pending": "در انتظار...",
 	"wikilambda-tester-status-running": "در حال اجرا...",
