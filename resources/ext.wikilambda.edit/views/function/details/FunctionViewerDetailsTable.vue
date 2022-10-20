@@ -19,15 +19,15 @@
 					<!-- TODO (T310164): replace with button group -->
 					<div class="ext-wikilambda-function-details-table__title__buttons">
 						<cdx-button
-							class="ext-wikilambda-function-details-table__title__buttons__approve-button"
 							v-if="!( isMobile && !canApprove )"
+							class="ext-wikilambda-function-details-table__title__buttons__approve-button"
 							:disabled="!canApprove"
 							@click="approve">
 							<label> {{ $i18n( 'wikilambda-function-details-table-approve' ).text() }} </label>
 						</cdx-button>
 						<cdx-button
-							class="ext-wikilambda-function-details-table__title__buttons__deactivate-button"
 							v-if="!( isMobile && !canDeactivate )"
+							class="ext-wikilambda-function-details-table__title__buttons__deactivate-button"
 							:disabled="!canDeactivate"
 							@click="deactivate"
 						>
@@ -85,7 +85,8 @@ module.exports = exports = {
 			default: ''
 		},
 		emptyText: {
-			type: String
+			type: String,
+			default: ''
 		},
 		currentPage: {
 			type: Number,

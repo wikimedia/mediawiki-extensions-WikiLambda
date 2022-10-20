@@ -1,4 +1,3 @@
-/* eslint-disable compat/compat */
 /*!
  * WikiLambda integration test for attaching a function implementation.
  *

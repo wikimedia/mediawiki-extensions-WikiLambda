@@ -1,4 +1,3 @@
-/* eslint-disable compat/compat */
 'use strict';
 
 var VueTestUtils = require( '@vue/test-utils' ),

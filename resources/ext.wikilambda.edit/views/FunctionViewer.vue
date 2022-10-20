@@ -17,7 +17,11 @@
 			>
 				<!-- Keep alive helps keeps the local state of the component so that it is not remounted -->
 				<keep-alive>
-					<component v-if="tab.name === currentTab" :is="tab.name" :name="tab.name"></component>
+					<component
+						:is="tab.name"
+						v-if="tab.name === currentTab"
+						:name="tab.name">
+					</component>
 				</keep-alive>
 			</cdx-tab>
 		</cdx-tabs>

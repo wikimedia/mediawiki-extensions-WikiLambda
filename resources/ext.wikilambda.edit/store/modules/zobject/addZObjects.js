@@ -445,7 +445,7 @@ module.exports = exports = {
 			context.dispatch( 'addZObjects', zObjectItems );
 		},
 		/**
-		 * Create the required entry in the zobject array for a zImplemnetation.
+		 * Create the required entry in the zobject array for a zImplementation.
 		 * The entry will result in a json representation equal to:
 		 * { Z1K1: 'Z14', Z14K1:
 		 * { Z1K1: 'Z9', Z9K1: '' },

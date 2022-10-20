@@ -1,4 +1,4 @@
-/* eslint-disable no-undef, compat/compat, no-restricted-syntax */
+/* eslint-disable compat/compat */
 'use strict';
 
 const mount = require( '@vue/test-utils' ).mount,

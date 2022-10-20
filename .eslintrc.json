@@ -26,6 +26,8 @@
 		"no-var": "off",
 		"jsdoc/require-param-type": "error",
 		"jsdoc/require-returns": "error",
+		"jsdoc/check-types": "error",
+		"vue/attributes-order": "error",
 		"vue/component-definition-name-casing": [
 			"error",
 			"kebab-case"

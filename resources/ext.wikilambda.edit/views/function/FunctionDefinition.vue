@@ -472,7 +472,7 @@ module.exports = exports = {
 		 *  is the first zobject on the page.
 		 *
 		 *  @param {Object} zLang
-		 *  @param {Number} index
+		 *  @param {number} index
 		 *  @return {boolean} isMainZObject
 		 */
 		isMainZObject: function ( zLang, index ) {
