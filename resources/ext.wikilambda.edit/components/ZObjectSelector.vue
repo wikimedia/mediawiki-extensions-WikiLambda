@@ -98,6 +98,12 @@ module.exports = exports = {
 				return [];
 			},
 			required: false
+		},
+		// TODO: wire up to componentError store
+		// eslint-disable-next-line vue/no-unused-properties
+		zobjectId: {
+			type: Number,
+			default: -1
 		}
 	},
 	data: function () {

@@ -60,16 +60,6 @@
 				{{ $i18n( 'wikilambda-function-definition-add-other-label-languages-title' ).text() }}
 			</cdx-button>
 		</div>
-		<cdx-message
-			v-if="showToast"
-			:dismiss-button-label="$i18n( 'wikilambda-toast-close' ).text()"
-			:type="toastIntent"
-			:auto-dismiss="true"
-			@user-dismissed="closeToast"
-			@auto-dismissed="closeToast"
-		>
-			{{ currentToast }}
-		</cdx-message>
 
 		<function-definition-footer
 			:is-editing="isEditingExistingFunction"
@@ -108,7 +98,6 @@ var mapGetters = require( 'vuex' ).mapGetters,
 var Constants = require( '../../Constants.js' );
 var typeUtils = require( '../../mixins/typeUtils.js' );
 var CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	DialogContainer = require( '../../components/base/DialogContainer.vue' );
 
 // @vue/component
@@ -122,7 +111,6 @@ module.exports = exports = {
 		'function-definition-footer': FunctionDefinitionFooter,
 		'fn-editor-zlanguage-selector': FnEditorZLanguageSelector,
 		'cdx-button': CdxButton,
-		'cdx-message': CdxMessage,
 		'dialog-container': DialogContainer
 	},
 	mixins: [ typeUtils ],
@@ -175,25 +163,6 @@ module.exports = exports = {
 		},
 		isMobile: function () {
 			return this.breakpoint.current.value === Constants.breakpointsTypes.MOBILE;
-		},
-		/**
-		 * A function can be published if it has at least one input and an output
-		 *
-		 * @return {boolean} if a function is able to be published
-		 */
-		ableToPublish: function () {
-			if ( this.currentZFunctionHasValidInputs && this.currentZFunctionHasOutput ) {
-				return true;
-			}
-			return false;
-		},
-		/**
-		 * if toast should be shown
-		 *
-		 * @return {boolean}
-		 */
-		showToast: function () {
-			return this.currentToast !== null;
 		},
 		/**
 		 * if currently editing the loaded function
@@ -498,18 +467,6 @@ module.exports = exports = {
 			handler: function () {
 				if ( this.initialOutputType === '' ) {
 					this.initialOutputType = this.currentOutput.value;
-				}
-			}
-		},
-		/**
-		 * show a toast once the user has filled out the requirements and a function can be published
-		 */
-		ableToPublish: {
-			immediate: true,
-			handler: function ( status ) {
-				if ( status ) {
-					this.toastIntent = 'success';
-					this.currentToast = this.$i18n( 'wikilambda-function-definition-can-publish-message' ).text();
 				}
 			}
 		},
