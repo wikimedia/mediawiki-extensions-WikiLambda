@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"GeoO",
-			"Kareyac"
+			"Kareyac",
+			"Սերգեյ Սաֆարյան"
 		]
 	},
 	"wikilambda-edit": "Խմբագրել",
@@ -20,5 +21,6 @@
 	"wikilambda-function-definition-footer-label": "Խմբագրել մեկնաբանությունը",
 	"wikilambda-function-viewer-aliases-show-language-button": "Ցույց տալ ավելի շատ լեզուներ",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Թաքցնել ցանկը",
-	"wikilambda-function-viewer-details-table-view-all": "Տեսնել բոլորը"
+	"wikilambda-function-viewer-details-table-view-all": "Տեսնել բոլորը",
+	"wikilambda-function-viewer-details-table-view-less": "Ցուցադրել ավելի սեղմ"
 }
