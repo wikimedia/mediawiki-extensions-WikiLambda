@@ -271,7 +271,8 @@ module.exports = exports = {
 	methods: $.extend( mapActions( [
 		'setCurrentZLanguage',
 		'submitZObject',
-		'changeType'
+		'changeType',
+		'removeZObjectChildren'
 	] ), {
 		publishSuccessful: function ( toastMessage ) {
 			this.toastIntent = 'success';
@@ -490,6 +491,15 @@ module.exports = exports = {
 		}
 		if ( this.isNewZObject ) {
 			this.changeTypeToFunction();
+		}
+	},
+	beforeUnmount: function () {
+		// Clear zobject function scaffolding when unmounted
+		// This cleans up scaffolding for when user click the back button and returns to the base createZObject page
+		if ( this.isNewZObject ) {
+			const zObject = this.getZObjectChildrenById( 0 );
+			const zObjectValue = this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, zObject );
+			this.removeZObjectChildren( zObjectValue.id );
 		}
 	}
 };

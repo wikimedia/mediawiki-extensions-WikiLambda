@@ -139,7 +139,6 @@ module.exports = {
 			}
 			const query = $.extend( {}, context.state.queryParams, { view: context.state.currentView } );
 			pushToHistoryState( context.state.currentPath, query );
-
 		},
 		/**
 		 * Evaluate the Uri path to evaluate what View should be displayed.
@@ -148,18 +147,30 @@ module.exports = {
 		 */
 		evaluateUri: function ( context ) {
 			var uri = mw.Uri();
-			if ( uri.query.view ) {
-				context.commit( 'CHANGE_CURRENT_VIEW', uri.query.view );
-				// we remove the view from the query params
-				const params = $.extend( {}, uri.query );
-				delete params.view;
-				context.commit( 'CHANGE_QUERY_PARAMS', params );
-			} else if ( isFunctionEditor( context, uri.query, uri.path ) ) {
-				context.dispatch( 'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
-			} else if ( isFunction( context, uri.query ) ) {
-				context.dispatch( 'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
-			} else if ( isEvaluateFunctionCallPath( uri.path ) || isNewOrExistingObjectPath( uri.path ) ) {
+
+			if ( isFunctionEditor( context, uri.query, uri.path ) ) {
+				let currentFunctionEditorView = Constants.VIEWS.FUNCTION_EDITOR;
+				// should allow user explicitly set view to zobject-editor view
+				if ( uri.query.view === Constants.VIEWS.Z_OBJECT_EDITOR ) {
+					currentFunctionEditorView = uri.query.view;
+				}
+				context.dispatch( 'changeCurrentView', currentFunctionEditorView );
+			} else if ( isEvaluateFunctionCallPath( uri.path ) ) {
 				context.dispatch( 'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
+			} else if ( isNewOrExistingObjectPath( uri.path ) ) {
+				let currentEditorView = Constants.VIEWS.Z_OBJECT_EDITOR;
+				// should show new function creation view if passed in url
+				if ( uri.query.view === Constants.VIEWS.FUNCTION_EDITOR ) {
+					currentEditorView = uri.query.view;
+				}
+				context.dispatch( 'changeCurrentView', currentEditorView );
+			} else if ( isFunction( context, uri.query ) ) {
+				let currentFunctionViewerView = Constants.VIEWS.FUNCTION_VIEWER;
+				// should allow user explicitly set view to zobject-viewer view
+				if ( uri.query.view === Constants.VIEWS.Z_OBJECT_VIEWER ) {
+					currentFunctionViewerView = uri.query.view;
+				}
+				context.dispatch( 'changeCurrentView', currentFunctionViewerView );
 			} else {
 				context.dispatch( 'changeCurrentView', Constants.VIEWS.Z_OBJECT_VIEWER );
 			}
@@ -174,8 +185,11 @@ module.exports = {
 		changeCurrentView: function ( context, view ) {
 			context.commit( 'CHANGE_CURRENT_VIEW', view );
 			const uri = mw.Uri();
-			const query = $.extend( uri.query, { view: view } );
-			replaceToHistoryState( uri.path, query );
+			// should only replace history state if path query view is set and is different from new view
+			if ( uri.query.view && uri.query.view !== view ) {
+				const query = $.extend( uri.query, { view: view } );
+				replaceToHistoryState( uri.path, query );
+			}
 		}
 	}
 };

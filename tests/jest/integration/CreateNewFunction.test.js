@@ -67,6 +67,14 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 				}
 			};
 		} );
+
+		mw.Title = jest.fn( function ( title ) {
+			return {
+				getUrl: jest.fn( function () {
+					return '/wiki/' + title;
+				} )
+			};
+		} );
 		wrapper = mount( App, { global: { plugins: [ store ] } } );
 	} );
 	it( 'allows creating a new function, making use of most important features', async () => {
@@ -155,7 +163,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await pageChange( wrapper );
 
 		// ASSERT: Location is changed to page returned by API.
-		expect( window.location.href ).toEqual( 'newPage' );
+		expect( window.location.href ).toEqual( '/wiki/newPage' );
 
 		// ASSERT: Correct ZObject was posted to the API.
 		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
