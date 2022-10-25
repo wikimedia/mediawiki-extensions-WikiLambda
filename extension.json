@@ -441,7 +441,8 @@
 				"wikilambda-function-viewer-details-sidebar-summary",
 				"wikilambda-function-viewer-details-table-view-all",
 				"wikilambda-function-viewer-details-table-view-less",
-				"wikilambda-toast-close"
+				"wikilambda-toast-close",
+				"wikilambda-missing-function-output-error-message"
 			]
 		}
 	},

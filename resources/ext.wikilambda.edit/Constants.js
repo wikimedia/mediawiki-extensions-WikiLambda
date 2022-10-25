@@ -140,6 +140,10 @@ var Constants = {
 	actions = {
 		EDIT: 'edit'
 	},
+	errorTypes = {
+		WARNING: 'warning',
+		ERROR: 'error'
+	},
 	breakpoints = {
 		MOBILE: 320,
 		TABLET: 720,
@@ -160,6 +164,7 @@ Constants.Z_TYPED_OBEJECTS_LIST = typedObjectsList;
 Constants.VIEWS = views;
 Constants.PATHS = paths;
 Constants.ACTIONS = actions;
+Constants.errorTypes = errorTypes;
 Constants.breakpoints = breakpoints;
 Constants.breakpointsTypes = breakpointsTypes;
 Constants.implementationModes = implementationModes;

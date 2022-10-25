@@ -17,8 +17,9 @@ module.exports = exports = {
 	mutations: {
 		setError: function ( state, payload ) {
 			state.errors[ payload.internalId ] = {
-				value: payload.errorState,
-				message: payload.errorMessage
+				state: payload.errorState,
+				message: payload.errorMessage,
+				type: payload.errorType
 			};
 		}
 	},

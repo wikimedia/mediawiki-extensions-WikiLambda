@@ -97,6 +97,12 @@ describe( 'FunctionDefinitionInputsItem', function () {
 			);
 		} );
 		it( 'clears on focus-out if a value is typed but then not selected', function () {
+			getters.getErrors = jest.fn( function () {
+				return {};
+			} );
+			global.store.hotUpdate( {
+				getters: getters
+			} );
 			var wrapper = mount( FunctionDefinitionInputsItem, {
 				props: {
 					canEditType: true,

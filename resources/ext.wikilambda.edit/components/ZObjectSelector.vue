@@ -19,6 +19,7 @@
 		</div>
 		<!-- eslint-disable vue/no-v-model-argument -->
 		<!-- eslint-disable vue/no-unsupported-features -->
+		<!-- TODO: add error state when implemented in codex -->
 		<cdx-lookup
 			v-else
 			:key="lookupKey"
@@ -41,6 +42,14 @@
 			type="error"
 		>
 			{{ validatorErrorMessage }}
+		</cdx-message>
+		<cdx-message
+			v-if="errorState"
+			class="ext-wikilambda-select-zobject__error"
+			:type="errorType"
+			inline
+		>
+			{{ errorMessage }}
 		</cdx-message>
 	</span>
 </template>
@@ -99,8 +108,6 @@ module.exports = exports = {
 			},
 			required: false
 		},
-		// TODO: wire up to componentError store
-		// eslint-disable-next-line vue/no-unused-properties
 		zobjectId: {
 			type: Number,
 			default: -1
@@ -120,7 +127,8 @@ module.exports = exports = {
 	computed: $.extend( {},
 		mapGetters( {
 			zkeyLabels: 'getZkeyLabels',
-			zKeys: 'getZkeys'
+			zKeys: 'getZkeys',
+			getErrors: 'getErrors'
 		} ),
 		{
 			usedLanguageZids: function () {
@@ -164,13 +172,35 @@ module.exports = exports = {
 			},
 			lookupIcon: function () {
 				return icons.cdxIconExpand;
+			},
+			errorType: function () {
+				if ( this.getErrors[ this.zobjectId ] ) {
+					return this.getErrors[ this.zobjectId ].type;
+				}
+				return null;
+			},
+			errorState: function () {
+				// the error is not guaranteed to exist
+				if ( this.getErrors[ this.zobjectId ] ) {
+					return this.getErrors[ this.zobjectId ].state;
+				}
+
+				return false;
+			},
+			errorMessage: function () {
+				if ( this.getErrors[ this.zobjectId ] ) {
+					const messageStr = this.getErrors[ this.zobjectId ].message;
+					return this.$i18n( messageStr ).text();
+				}
+				return null;
 			}
 		}
 	),
 	methods: $.extend( {},
 		mapActions( [
 			'lookupZObject',
-			'fetchZKeys'
+			'fetchZKeys',
+			'setError'
 		] ),
 		mapMutations( [ 'addAllZKeyLabels' ] ),
 		{
@@ -342,6 +372,11 @@ module.exports = exports = {
 					this.$emit( 'input-removed' );
 				}
 				this.$emit( 'input', zId );
+
+				this.setError( {
+					internalId: this.zobjectId,
+					errorState: false
+				} );
 			}
 		}
 	},
@@ -371,6 +406,10 @@ module.exports = exports = {
 	&__input-invalid {
 		background: #fee;
 		border: 2px #f00 solid;
+	}
+
+	&__error {
+		padding-top: 6px;
 	}
 }
 </style>

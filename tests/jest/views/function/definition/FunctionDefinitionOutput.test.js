@@ -36,6 +36,13 @@ describe( 'FunctionDefinitionOutput', function () {
 		expect( wrapper.find( '.ext-wikilambda-function-definition-output__selector' ).exists() ).toBeTruthy();
 	} );
 	it( 'clears on focus-out if a value is typed but then not selected', function () {
+		getters.getErrors = jest.fn( function () {
+			return {};
+		} );
+		global.store.hotUpdate( {
+			getters: getters
+		} );
+
 		var wrapper = mount( FunctionDefinitionOutput );
 
 		var outputTypeSelector = wrapper.get( '.ext-wikilambda-function-definition-output' ).getComponent( ZObjectSelector );
