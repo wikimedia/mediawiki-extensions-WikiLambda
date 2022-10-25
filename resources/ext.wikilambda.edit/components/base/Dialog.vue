@@ -27,17 +27,23 @@
 			</div>
 			<div v-if="showActionButtons" class="ext-wikilambda-dialog__action-buttons">
 				<cdx-button
+					id="cancel-button"
 					@click="$emit( 'close-dialog' )"
 				>
 					{{ cancelButtonText }}
 				</cdx-button>
 				<cdx-button
+					id="primary-button"
 					action="destructive"
 					type="primary"
 					@click="$emit( 'confirm-dialog' )"
 				>
 					{{ confirmButtonText }}
 				</cdx-button>
+			</div>
+			<div v-if="legalText" class="ext-wikilambda-dialog__legal-text">
+				<hr class="ext-wikilambda-dialog__divider">
+				<div v-html="legalText"></div>
 			</div>
 		</div>
 	</div>
@@ -90,6 +96,11 @@ module.exports = exports = {
 		showActionButtons: {
 			type: Boolean,
 			required: true
+		},
+		legalText: {
+			type: String,
+			required: false,
+			default: ''
 		},
 		customClass: {
 			type: String,
@@ -187,7 +198,17 @@ module.exports = exports = {
 		button {
 			display: block;
 			width: 100%;
-			height: 40px;
+			height: 32px;
+		}
+	}
+
+	&__legal-text {
+		margin: 16px 32px;
+		color: @wmui-color-base30;
+
+		hr {
+			color: #c8ccd1;
+			margin-bottom: 8px;
 		}
 	}
 }
