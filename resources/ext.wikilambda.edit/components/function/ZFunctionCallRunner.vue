@@ -80,15 +80,17 @@ module.exports = exports = {
 	methods: {
 		callFunctionHandler: function () {
 			var self = this,
-				ZfunctionObject;
-
-			ZfunctionObject = this.getZObjectAsJsonById( this.zobjectId );
+				zFunctionCallObject = this.getZObjectAsJsonById( this.zobjectId );
 
 			if ( this.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) {
-				var zFunctionId = this.getZObjectAsJson.Z2K2.Z14K1.Z9K1;
-				ZfunctionObject.Z7K1 = this.getZkeys[ zFunctionId ].Z2K2;
-
-				ZfunctionObject.Z7K1.Z8K4 = [ this.getZObjectAsJson.Z2K2 ];
+				var zFunctionId = this.getZObjectAsJson[
+					Constants.Z_PERSISTENTOBJECT_VALUE ][
+					Constants.Z_IMPLEMENTATION_FUNCTION ][
+					Constants.Z_REFERENCE_ID ];
+				zFunctionCallObject[ Constants.Z_FUNCTION_CALL_FUNCTION ] =
+					this.getZkeys[ zFunctionId ][ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				zFunctionCallObject[ Constants.Z_FUNCTION_CALL_FUNCTION ][ Constants.Z_FUNCTION_IMPLEMENTATIONS ] =
+					[ Constants.Z_IMPLEMENTATION, this.getZObjectAsJson[ Constants.Z_PERSISTENTOBJECT_VALUE ] ];
 			}
 
 			this.orchestrating = true;
@@ -97,7 +99,7 @@ module.exports = exports = {
 				.then( function ( resultId ) {
 					self.resultId = resultId;
 
-					return self.callZFunction( { zobject: ZfunctionObject, resultId: self.resultId } );
+					return self.callZFunction( { zobject: zFunctionCallObject, resultId: self.resultId } );
 				} )
 				.then( function () {
 					self.orchestrating = false;
