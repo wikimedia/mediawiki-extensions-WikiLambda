@@ -1,4 +1,4 @@
-/*!
+/*
  * WikiLambda integration test for detaching a function implementation.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
@@ -11,9 +11,11 @@ const Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js'
 	{ runSetup } = require( './helpers/functionViewerDetailsTestSetup.js' ),
 	FunctionViewerDetailsTable = require( '../../../resources/ext.wikilambda.edit/views/function/details/FunctionViewerDetailsTable.vue' ),
 	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' ),
-	expected = require( './objects/expectedZFunctionWithImplementations.js' );
+	existingTesterFromApi = require( './objects/existingTesterFromApi.js' ),
+	expected = require( './objects/expectedZFunctionWithImplementationsAndTesters.js' );
 
 const functionZid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
+const existingFailedTesterZid = existingTesterFromApi.failedTesterZid;
 
 describe( 'WikiLambda frontend, function viewer details tab', () => {
 	let apiPostWithEditTokenMock;
@@ -57,7 +59,8 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 			action: 'wikilambda_edit',
 			summary: '',
 			zid: functionZid,
-			zobject: JSON.stringify( expected.zFunctionWithImplementations( [] ) )
+			zobject:
+				JSON.stringify( expected.zFunctionWithImplementationsAndTesters( [], [ existingFailedTesterZid ] ) )
 		} );
 	} );
 } );
