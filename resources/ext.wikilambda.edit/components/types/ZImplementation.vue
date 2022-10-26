@@ -15,6 +15,7 @@
 				:placeholder="$i18n( 'wikilambda-function-typeselector-label' ).text()"
 				:selected-id="zFunction.value"
 				:initial-selection-label="selectedFunctionLabel"
+				:zobject-id="zFunction.id"
 				@input="updateZFunctionType"
 			></z-object-selector>
 			<template v-else>

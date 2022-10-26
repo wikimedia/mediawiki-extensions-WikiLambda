@@ -47,6 +47,7 @@
 				:selected-id="getTypeOfArgument"
 				:initial-selection-label="selectedLabel"
 				:readonly="!canEditType"
+				:zobject-id="getZArgumentType.id"
 				@input="setArgumentType( $event )"
 				@focus-out="clearIfUnset"
 			></z-object-selector>

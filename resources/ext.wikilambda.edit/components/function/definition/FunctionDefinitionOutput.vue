@@ -29,6 +29,7 @@
 			:selected-id="zReturnType.value"
 			:initial-selection-label="zReturnTypeLabel"
 			:readonly="!canEdit"
+			:zobject-id="zReturnTypeId"
 			@input="setReturnType"
 			@focus-out="clearIfUnset"
 		></z-object-selector>

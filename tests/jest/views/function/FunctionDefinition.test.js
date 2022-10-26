@@ -6,8 +6,6 @@
  */
 'use strict';
 
-const { CdxMessage } = require( '@wikimedia/codex' );
-
 var VueTestUtils = require( '@vue/test-utils' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	mockLabels = require( '../../fixtures/mocks.js' ).mockLabels,
@@ -69,25 +67,6 @@ describe( 'FunctionDefinition', function () {
 
 			expect( wrapper.findComponent( FunctionDefinitionOutput ).exists() ).toBe( true );
 			expect( wrapper.findComponent( FunctionDefinitionFooter ).exists() ).toBe( true );
-			done();
-		} );
-	} );
-	it( 'does not initially display toast', ( done ) => {
-		var wrapper = VueTestUtils.shallowMount( FunctionDefinition );
-		global.store.hotUpdate( { getters: getters } );
-		wrapper.vm.$nextTick( () => {
-			expect( wrapper.findComponent( CdxMessage ).exists() ).toBe( false );
-			done();
-		} );
-	} );
-	it( 'displays success toast when function becomes publishable', ( done ) => {
-		var wrapper = VueTestUtils.shallowMount( FunctionDefinition );
-		getters.currentZFunctionHasValidInputs = () => true;
-		getters.currentZFunctionHasOutput = () => true;
-		global.store.hotUpdate( { getters: getters } );
-		wrapper.vm.$nextTick( () => {
-			expect( wrapper.findComponent( CdxMessage ).exists() ).toBe( true );
-			expect( wrapper.findComponent( CdxMessage ).props( 'type' ) ).toEqual( 'success' );
 			done();
 		} );
 	} );

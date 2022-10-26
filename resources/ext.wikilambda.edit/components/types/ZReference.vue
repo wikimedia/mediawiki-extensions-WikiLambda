@@ -20,6 +20,7 @@
 			:selected-id="referenceValue"
 			:initial-selection-label="referenceLabel"
 			:type="searchType"
+			:zobject-id="referenceItem.id"
 			@input="setZReference"
 		></z-object-selector>
 	</div>
