@@ -175,7 +175,7 @@ describe( 'router Vuex module', function () {
 				}
 			);
 
-			it( 'default current view to Function viewer', function () {
+			it( 'default current view to zObject viewer', function () {
 
 				routerInstance.actions.evaluateUri( context );
 
@@ -185,43 +185,46 @@ describe( 'router Vuex module', function () {
 			} );
 
 			describe( 'when mw.Uri includes a value for "view"', function () {
-				var fakeView = 'dummyView',
-					fakeParams = 'fakeParameter';
-				beforeEach(
-					function () {
-						window.mw.Uri.mockImplementationOnce( function () {
-							return {
-								query: {
-									view: fakeView,
-									fakeParams: fakeParams
-								}
-							};
-						} );
-					}
-				);
-
 				it( 'changes the current view', function () {
+					var fakeView = 'zobject-viewer',
+						fakeParams = 'fakeParameter';
+					window.mw.Uri.mockImplementationOnce( function () {
+						return {
+							query: {
+								view: fakeView,
+								fakeParams: fakeParams
+							}
+						};
+					} );
 
 					routerInstance.actions.evaluateUri( context );
 
-					expect( context.commit ).toHaveBeenCalled();
-					expect( context.commit ).toHaveBeenNthCalledWith( 1,
-						'CHANGE_CURRENT_VIEW', fakeView );
+					expect( context.dispatch ).toHaveBeenCalled();
+					expect( context.dispatch ).toHaveBeenNthCalledWith( 1, 'changeCurrentView', fakeView );
 				} );
 
-				it( 'changes the query params', function () {
+				it( 'renders VIEW_Z_OBJECT when the view passed is equal to Z_OBJECT_VIEWER and ZID is Z_FUNCTION', function () {
+					window.mw.Uri.mockImplementationOnce( function () {
+						return {
+							query: {
+								zid: Constants.Z_FUNCTION,
+								view: Constants.VIEWS.Z_OBJECT_VIEWER
+							},
+							path: Constants.PATHS.VIEW_Z_OBJECT
+						};
+					} );
 
 					routerInstance.actions.evaluateUri( context );
 
-					expect( context.commit ).toHaveBeenCalled();
-					expect( context.commit ).toHaveBeenNthCalledWith( 2,
-						'CHANGE_QUERY_PARAMS', { fakeParams: fakeParams } );
+					expect( context.dispatch ).toHaveBeenCalled();
+					expect( context.dispatch ).toHaveBeenCalledWith(
+						'changeCurrentView', Constants.VIEWS.Z_OBJECT_VIEWER );
 				} );
 
 			} );
 
 			describe( 'changes current view to Function Editor', function () {
-				it( 'when query zid is equal tp Z_FUNCTION', function () {
+				it( 'when query zid is equal to Z_FUNCTION', function () {
 					window.mw.Uri.mockImplementationOnce( function () {
 						return {
 							query: {
@@ -243,6 +246,32 @@ describe( 'router Vuex module', function () {
 						return {
 							path: Constants.PATHS.EDIT_Z_OBJECT,
 							query: {}
+						};
+					} );
+
+					routerInstance.actions.evaluateUri( context );
+
+					expect( context.dispatch ).toHaveBeenCalled();
+					expect( context.dispatch ).toHaveBeenCalledWith(
+						'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
+				} );
+				it( 'when view is FUNCTION_EDITOR and it is a new zObject page', function () {
+					context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
+					window.mw.Uri.mockImplementationOnce( function () {
+						return {
+							query: {
+								zid: Constants.Z_FUNCTION,
+								view: Constants.VIEWS.FUNCTION_EDITOR
+							},
+							path: Constants.PATHS.CREATE_Z_OBJECT
+						};
+					} );
+
+					mw.Title = jest.fn( function ( title ) {
+						return {
+							getUrl: jest.fn( function () {
+								return '/wiki/' + title;
+							} )
 						};
 					} );
 
@@ -285,7 +314,7 @@ describe( 'router Vuex module', function () {
 				it( 'when uri path is Evaluate function call', function () {
 					window.mw.Uri.mockImplementationOnce( function () {
 						return {
-							path: new mw.Title( 'Special:EvaluateFunctionCall' ).getUrl(),
+							path: Constants.PATHS.EVALUATE_FUNCTION_CALL,
 							query: {}
 						};
 					} );
@@ -299,7 +328,7 @@ describe( 'router Vuex module', function () {
 				it( 'when uri path is Create zObject', function () {
 					window.mw.Uri.mockImplementationOnce( function () {
 						return {
-							path: new mw.Title( 'Special:CreateZObject' ).getUrl(),
+							path: Constants.PATHS.CREATE_Z_OBJECT,
 							query: {}
 						};
 					} );
@@ -315,6 +344,24 @@ describe( 'router Vuex module', function () {
 						return {
 							path: Constants.PATHS.EDIT_Z_OBJECT,
 							query: {}
+						};
+					} );
+
+					routerInstance.actions.evaluateUri( context );
+
+					expect( context.dispatch ).toHaveBeenCalled();
+					expect( context.dispatch ).toHaveBeenCalledWith(
+						'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
+				} );
+
+				it( 'when uri path is edit zObject(function) and the view passed is equal to zObject editor', function () {
+					window.mw.Uri.mockImplementationOnce( function () {
+						return {
+							query: {
+								zid: Constants.Z_FUNCTION,
+								view: Constants.VIEWS.Z_OBJECT_EDITOR
+							},
+							path: Constants.PATHS.EDIT_Z_OBJECT
 						};
 					} );
 
@@ -342,26 +389,32 @@ describe( 'router Vuex module', function () {
 				expect( context.commit ).toHaveBeenCalled();
 				expect( context.commit ).toHaveBeenCalledWith( 'CHANGE_CURRENT_VIEW', dummyView );
 			} );
-			it( 'replace history state', function () {
+			it( 'does not replace history state if view is not set in query param', function () {
 				var dummyView = 'dummyView';
 				routerInstance.actions.changeCurrentView( context, dummyView );
 
-				expect( window.history.replaceState ).toHaveBeenCalled();
+				expect( window.history.replaceState ).not.toHaveBeenCalled();
 			} );
-			it( 'replace history state with current path', function () {
+			it( 'does not replace history state if view set in query param is the view passed', function () {
+				var dummyView = 'dummyView';
+				routerInstance.actions.changeCurrentView( context, dummyView );
+
+				expect( window.history.replaceState ).not.toHaveBeenCalled();
+			} );
+			it( 'replace history state with current view', function () {
 				var dummyView = 'dummyView',
 					fakePath = 'fakePath',
 					fakeExistingValue = 'fakeValue';
 				window.mw.Uri.mockImplementation( function () {
 					return {
 						query: {
+							view: 'initialDummyView',
 							existingDummyParams: fakeExistingValue
 						},
 						path: fakePath
 					};
 				} );
 				routerInstance.actions.changeCurrentView( context, dummyView );
-
 				expect( window.history.replaceState.mock.calls[ 0 ][ 0 ] ).toMatchObject(
 					{
 						path: fakePath,
@@ -371,21 +424,6 @@ describe( 'router Vuex module', function () {
 						}
 					}
 				);
-			} );
-			it( 'replace history state with query including new view', function () {
-				var dummyView = 'dummyView';
-				var expectedQuery = 'fakePath?existingDummyParams=fakeValue&view=dummyView';
-				window.mw.Uri.mockImplementation( function () {
-					return {
-						query: {
-							existingDummyParams: 'fakeValue'
-						},
-						path: 'fakePath'
-					};
-				} );
-				routerInstance.actions.changeCurrentView( context, dummyView );
-
-				expect( window.history.replaceState.mock.calls[ 0 ][ 2 ] ).toBe( expectedQuery );
 			} );
 		} );
 	} );

@@ -132,8 +132,10 @@ var Constants = {
 		Z_OBJECT_VIEWER: 'zobject-viewer'
 	},
 	paths = {
+		CREATE_Z_OBJECT: '/wiki/Special:CreateZObject',
 		EDIT_Z_OBJECT: '/w/index.php',
-		VIEW_Z_OBJECT: ''
+		VIEW_Z_OBJECT: '/wiki/{{ZID}}',
+		EVALUATE_FUNCTION_CALL: '/wiki/Special:EvaluateFunctionCall'
 	},
 	actions = {
 		EDIT: 'edit'
