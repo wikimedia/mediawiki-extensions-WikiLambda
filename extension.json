@@ -213,8 +213,6 @@
 				"ext.wikilambda.edit/mixins/portray.js",
 				"ext.wikilambda.edit/mixins/api.js",
 				"ext.wikilambda.edit/views/function/FunctionDefinition.vue",
-				"ext.wikilambda.edit/views/function/FunctionImplementations.vue",
-				"ext.wikilambda.edit/views/function/FunctionTests.vue",
 				"ext.wikilambda.edit/views/function/FunctionAbout.vue",
 				"ext.wikilambda.edit/views/function/about/FunctionViewerAboutAliases.vue",
 				"ext.wikilambda.edit/views/function/about/FunctionViewerAboutNames.vue",
