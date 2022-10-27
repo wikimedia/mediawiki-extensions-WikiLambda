@@ -5,13 +5,20 @@
  * @license MIT
  */
 'use strict';
-var mount = require( '@vue/test-utils' ).mount,
+
+const Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
+	{ CdxLookup } = require( '@wikimedia/codex' ),
+	mount = require( '@vue/test-utils' ).mount,
 	ZObjectSelector = require( '../../../resources/ext.wikilambda.edit/components/ZObjectSelector.vue' );
+
 describe( 'ZObjectSelector', function () {
 	var state,
 		getters,
 		actions,
-		mutations;
+		mutations,
+		lookupMock = jest.fn( function () {
+			return [];
+		} );
 	beforeEach( function () {
 		state = {
 			zKeys: {},
@@ -36,7 +43,8 @@ describe( 'ZObjectSelector', function () {
 			// eslint-disable-next-line no-unused-vars
 			fetchZKeys: jest.fn( function ( context, payload ) {
 				return true;
-			} )
+			} ),
+			lookupZObject: lookupMock
 		};
 		mutations = {
 			addZKeyLabel: jest.fn( function ( s, payload ) {
@@ -54,5 +62,18 @@ describe( 'ZObjectSelector', function () {
 	it( 'renders without errors', function () {
 		var wrapper = mount( ZObjectSelector );
 		expect( wrapper.find( 'div' ).exists() ).toBe( true );
+	} );
+
+	it( 'on lookup, sends the the selector type in the payload', function () {
+		var wrapper = mount( ZObjectSelector, {
+			props: {
+				type: Constants.Z_TYPE
+			}
+		} );
+
+		var lookup = wrapper.getComponent( CdxLookup );
+		lookup.vm.$emit( 'input', 'Stri' );
+
+		expect( lookupMock ).toHaveBeenLastCalledWith( expect.anything(), { input: 'Stri', returnType: '', type: Constants.Z_TYPE } );
 	} );
 } );

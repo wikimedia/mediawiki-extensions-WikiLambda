@@ -193,7 +193,7 @@ module.exports = exports = {
 		}
 	),
 	methods: $.extend( {},
-		mapActions( [ 'changeType' ] ),
+		mapActions( [ 'changeType', 'fetchZKeys' ] ),
 		{
 			/**
 			 * Sets the type of a ZObject key.
@@ -238,7 +238,13 @@ module.exports = exports = {
 		this.$options.components[ 'z-object' ] = require( './ZObject.vue' );
 	},
 	mounted: function () {
-		this.literalType = this.getZkeyLiteralType( this.zKey ) || this.zType;
+		if ( this.getZkeyLiteralType( this.zKey ) ) {
+			this.literalType = this.getZkeyLiteralType( this.zKey );
+		} else {
+			this.fetchZKeys( { zids: [ Constants.Z_KEY ] } ).then( () => {
+				this.literalType = this.getZkeyLiteralType( this.zKey );
+			} );
+		}
 	}
 };
 </script>
