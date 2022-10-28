@@ -148,13 +148,13 @@ class ApiFunctionCallTest extends ApiTestCase {
 		yield 'Invoke Python function using a user-defined type' => [
 			$this->readTestFile( 'example-user-defined-python.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			"{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z1000\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[\"Z17\",{\"Z1K1\":\"Z17\",\"Z17K1\":\"Z99\",\"Z17K2\":\"Z831K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"input to validate\"}]}},{\"Z1K1\":\"Z17\",\"Z17K1\":\"Z99\",\"Z17K2\":\"Z831K2\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"schema for validation\"}]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[\"Z20\"],\"Z8K4\":[\"Z14\",{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z831\",\"Z14K4\":{\"Z1K1\":\"Z6\",\"Z6K1\":\"Z931\"}}],\"Z8K5\":\"Z831\"}},\"Z1000000K1\":\"5\"}"
+			"{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z1000\"}],\"Z4K3\":\"Z831\"},\"Z1000000K1\":\"5\"}"
 		];
 
 		yield 'Invoke JavaScript function using a user-defined type' => [
 			$this->readTestFile( 'example-user-defined-javascript.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			"{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z1000\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[\"Z17\",{\"Z1K1\":\"Z17\",\"Z17K1\":\"Z99\",\"Z17K2\":\"Z831K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"input to validate\"}]}},{\"Z1K1\":\"Z17\",\"Z17K1\":\"Z99\",\"Z17K2\":\"Z831K2\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"schema for validation\"}]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[\"Z20\"],\"Z8K4\":[\"Z14\",{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z831\",\"Z14K4\":{\"Z1K1\":\"Z6\",\"Z6K1\":\"Z931\"}}],\"Z8K5\":\"Z831\"}},\"Z1000000K1\":\"5\"}"
+			"{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z1000\"}],\"Z4K3\":\"Z831\"},\"Z1000000K1\":\"5\"}"
 		];
 
 		$ZMillion = $this->readTestFileAsArray( 'user-defined-validation-type.json' );
@@ -173,7 +173,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 		yield 'Generate a Z4/Type with a user-defined function and use that Z4/Type as a ZObject\'s Z1K1/Type' => [
 			$this->readTestFile( 'example-user-defined-generic-type.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
-			"{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z10101\",\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"K1\",\"Z3K3\":\"Z1000\"},{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z40\",\"Z3K2\":\"K2\",\"Z3K3\":\"Z1000\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[\"Z17\",{\"Z1K1\":\"Z17\",\"Z17K1\":\"Z99\",\"Z17K2\":\"Z831K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"input to validate\"}]}},{\"Z1K1\":\"Z17\",\"Z17K1\":\"Z99\",\"Z17K2\":\"Z831K2\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"schema for validation\"}]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[\"Z20\"],\"Z8K4\":[\"Z14\",{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z831\",\"Z14K4\":{\"Z1K1\":\"Z6\",\"Z6K1\":\"Z931\"}}],\"Z8K5\":\"Z831\"}},\"K1\":\"TRUE\",\"K2\":{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}}"
+			"{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z10101\",\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"K1\",\"Z3K3\":\"Z1000\"},{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z40\",\"Z3K2\":\"K2\",\"Z3K3\":\"Z1000\"}],\"Z4K3\":\"Z831\"},\"K1\":\"TRUE\",\"K2\":{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}}"
 		];
 
 		$curryImplementation = $this->readTestFileAsArray( 'curry-implementation-Z10088.json' );
