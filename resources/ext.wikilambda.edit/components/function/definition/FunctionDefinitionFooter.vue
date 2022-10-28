@@ -20,8 +20,7 @@
 		<div class="ext-wikilambda-function-definition-footer__actions">
 			<cdx-button
 				class="ext-wikilambda-function-definition-footer__publish-button"
-				:action="publishButtonStyle"
-				:disabled="!publishButtonValidity"
+				action="progressive"
 				@click.stop="handlePublish"
 			>
 				{{ $i18n( 'wikilambda-publishnew' ).text() }}
@@ -49,7 +48,6 @@
 var Constants = require( '../../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
-	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
@@ -69,23 +67,6 @@ module.exports = exports = {
 			summary: ''
 		};
 	},
-	computed: $.extend(
-		mapGetters( [
-			'currentZFunctionHasValidInputs',
-			'currentZFunctionHasOutput'
-		] ),
-		{
-			publishButtonValidity: function () {
-				// publish button is only valid if function has inputs and outputs defined
-				// TODO: this should also reset if there are local changes on an already published function
-				return this.currentZFunctionHasValidInputs && this.currentZFunctionHasOutput;
-			},
-			publishButtonStyle: function () {
-				return this.publishButtonValidity ?
-					'progressive' :
-					'destructive';
-			}
-		} ),
 	methods: $.extend( {},
 		mapActions( 'router', [ 'navigate' ] ),
 		{

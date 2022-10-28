@@ -59,6 +59,14 @@ function isFunctionToType( objectDeclaration ) {
 	}
 }
 
+function getFunctionOutputId( getNestedZObjectById ) {
+	return getNestedZObjectById( 0, [
+		Constants.Z_PERSISTENTOBJECT_VALUE,
+		Constants.Z_FUNCTION_RETURN_TYPE,
+		Constants.Z_REFERENCE_ID
+	] ).id;
+}
+
 /**
  * Runs actions on the global zobject to make it valid for submission.
  *
@@ -808,6 +816,38 @@ module.exports = exports = {
 				context.commit( 'setZObject', zobjectTree );
 				context.commit( 'setZObjectInitialized', true );
 			} );
+		},
+		/**
+		 *
+		 * @param {Object} context
+		 * @return {Object}
+		 *
+		 * Return an Object, including a value indicating if the current Z Object is valid based on type requirements
+		 *
+		 * Update error store with any errors found while validating
+		 */
+		validateZObject: function ( context ) {
+			const zobjectType = context.getters.getCurrentZObjectType;
+
+			var internalId,
+				validityResults = { isValid: true };
+
+			switch ( zobjectType ) {
+				case Constants.Z_FUNCTION:
+					if ( !context.getters.currentZFunctionHasOutput ) {
+						internalId = getFunctionOutputId( context.getters.getNestedZObjectById );
+						context.dispatch( 'setError', {
+							internalId,
+							errorState: true,
+							errorMessage: 'wikilambda-missing-function-output-error-message',
+							errorType: Constants.errorTypes.ERROR
+						} );
+						validityResults.isValid = false;
+					}
+					return validityResults;
+				default:
+					return validityResults;
+			}
 		},
 		/**
 		 * Submit a zObject to the api.

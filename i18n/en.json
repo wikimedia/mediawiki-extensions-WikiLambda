@@ -245,5 +245,6 @@
 	"wikilambda-function-viewer-details-sidebar-summary": "Anyone can edit labels, but the input/output type and count can only be edited by users with special permissions.",
 	"wikilambda-function-viewer-details-table-view-all": "View all",
 	"wikilambda-function-viewer-details-table-view-less": "View less",
-	"wikilambda-toast-close": "Close"
+	"wikilambda-toast-close": "Close",
+	"wikilambda-missing-function-output-error-message": "A function requires an output"
 }

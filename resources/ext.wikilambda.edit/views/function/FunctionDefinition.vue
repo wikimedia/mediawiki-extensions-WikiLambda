@@ -271,8 +271,9 @@ module.exports = exports = {
 	methods: $.extend( mapActions( [
 		'setCurrentZLanguage',
 		'submitZObject',
-		'changeType',
-		'removeZObjectChildren'
+		'removeZObjectChildren',
+		'validateZObject',
+		'changeType'
 	] ), {
 		publishSuccessful: function ( toastMessage ) {
 			this.toastIntent = 'success';
@@ -330,13 +331,22 @@ module.exports = exports = {
 			}
 
 			const context = this;
-			this.submitZObject( { summary, shouldUnattachImplentationAndTester } ).then( function ( pageTitle ) {
-				if ( pageTitle ) {
-					window.location.href = new mw.Title( pageTitle ).getUrl();
+
+			this.validateZObject().then( function ( validity ) {
+				if ( validity.isValid ) {
+					context.submitZObject(
+						{
+							summary,
+							shouldUnattachImplentationAndTester
+						} ).then( function ( pageTitle ) {
+						if ( pageTitle ) {
+							window.location.href = new mw.Title( pageTitle ).getUrl();
+						}
+					} ).catch( function ( error ) {
+						context.toastIntent = 'error';
+						context.currentToast = error.error.message;
+					} );
 				}
-			} ).catch( function ( error ) {
-				context.toastIntent = 'error';
-				context.currentToast = error.error.message;
 			} );
 		},
 		changeTypeToFunction: function () {

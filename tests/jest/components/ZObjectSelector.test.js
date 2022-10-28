@@ -23,20 +23,24 @@ describe( 'ZObjectSelector', function () {
 		state = {
 			zKeys: {},
 			zKeyLabels: {},
-			fetchingZKeys: []
+			fetchingZKeys: [],
+			errors: {}
 		};
 		getters = {
-			getZkeyLabels: jest.fn( function ( s ) {
-				return s.zKeyLabels;
+			getZkeyLabels: jest.fn( function () {
+				return {};
 			} ),
-			getZkeys: jest.fn( function ( s ) {
-				return s.zKeys;
+			getZkeys: jest.fn( function () {
+				return {};
 			} ),
 			getZLang: jest.fn( function () {
 				return 'en';
 			} ),
 			getViewMode: jest.fn( function () {
 				return false;
+			} ),
+			getErrors: jest.fn( function () {
+				return {};
 			} )
 		};
 		actions = {
@@ -44,7 +48,11 @@ describe( 'ZObjectSelector', function () {
 			fetchZKeys: jest.fn( function ( context, payload ) {
 				return true;
 			} ),
-			lookupZObject: lookupMock
+			lookupZObject: lookupMock,
+			// eslint-disable-next-line no-unused-vars
+			setError: jest.fn( function ( context, payload ) {
+				return true;
+			} )
 		};
 		mutations = {
 			addZKeyLabel: jest.fn( function ( s, payload ) {
