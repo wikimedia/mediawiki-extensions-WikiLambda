@@ -244,5 +244,6 @@
 	"wikilambda-function-viewer-details-sidebar-summary": "Chacun peut modifier des libellés, mais le type et le nombre d’entrées/sorties ne peuvent être modifiés que par des utilisateurs ayant des droits spéciaux.",
 	"wikilambda-function-viewer-details-table-view-all": "Afficher tout",
 	"wikilambda-function-viewer-details-table-view-less": "Afficher moins",
-	"wikilambda-toast-close": "Fermer"
+	"wikilambda-toast-close": "Fermer",
+	"wikilambda-missing-function-output-error-message": "Une fonction nécessite une sortie"
 }

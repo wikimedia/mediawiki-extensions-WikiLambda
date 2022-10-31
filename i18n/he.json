@@ -234,5 +234,6 @@
 	"wikilambda-function-viewer-details-sidebar-summary": "כל אחד יכול לערוך תוויות, אבל רק משתמשים בעלי הרשאות מיוחדות יכולים לערוך את הסוג והמספר של הקלט והפלט.",
 	"wikilambda-function-viewer-details-table-view-all": "להציג הכול",
 	"wikilambda-function-viewer-details-table-view-less": "להציג פחות",
-	"wikilambda-toast-close": "סגירה"
+	"wikilambda-toast-close": "סגירה",
+	"wikilambda-missing-function-output-error-message": "פונקציה דורשת פלט"
 }

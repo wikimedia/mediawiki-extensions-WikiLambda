@@ -224,5 +224,6 @@
 	"wikilambda-function-viewer-details-sidebar-summary": "Jeder kann Beschriftungen bearbeiten, aber die Eingabe-/Ausgabeart und die Anzahl können nur von Benutzern mit speziellen Rechten bearbeitet werden.",
 	"wikilambda-function-viewer-details-table-view-all": "Alle ansehen",
 	"wikilambda-function-viewer-details-table-view-less": "Weniger ansehen",
-	"wikilambda-toast-close": "Schließen"
+	"wikilambda-toast-close": "Schließen",
+	"wikilambda-missing-function-output-error-message": "Eine Funktion erfordert eine Ausgabe"
 }

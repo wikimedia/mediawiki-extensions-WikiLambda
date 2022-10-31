@@ -231,5 +231,6 @@
 	"wikilambda-function-viewer-details-sidebar-summary": "Todos podem editar as etiquetas, mas o tipo e a contagem das entradas e das saídas só podem ser editados por utilizadores com permissões especiais.",
 	"wikilambda-function-viewer-details-table-view-all": "Ver todas",
 	"wikilambda-function-viewer-details-table-view-less": "Ver menos",
-	"wikilambda-toast-close": "Fechar"
+	"wikilambda-toast-close": "Fechar",
+	"wikilambda-missing-function-output-error-message": "Uma função requer um resultado de saída"
 }

@@ -34,5 +34,6 @@
 	"wikilambda-metadata-duplicate-alias-error": "»$1« že obstaja",
 	"wikilambda-metadata-all-languages": "Prikaži vse vnesene jezike",
 	"wikilambda-persistentobject-details-label": "Podrobnosti",
-	"wikilambda-editor-fn-step-function-details": "Podrobnosti"
+	"wikilambda-editor-fn-step-function-details": "Podrobnosti",
+	"wikilambda-missing-function-output-error-message": "Funkcija zahteva izhod"
 }
