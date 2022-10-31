@@ -120,6 +120,13 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		const secondArgumentLabelInput = wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 1 ];
 		await secondArgumentLabelInput.setValue( 'second argument label, in Chinese' );
 
+		// ACT: Click publish button, before output is set (invalid)
+		await wrapper.get( '.ext-wikilambda-function-definition-footer__publish-button' ).trigger( 'click' );
+		jest.runAllTimers();
+
+		// ASSERT: Invalid ZObject was NOT posted to the API.
+		expect( apiPostWithEditTokenMock ).not.toHaveBeenCalled();
+
 		// ACT: Select a type for the output.
 		const outputTypeSelectorLookup =
 			wrapper.get( '.ext-wikilambda-function-definition-output__selector' ).getComponent( CdxLookup );

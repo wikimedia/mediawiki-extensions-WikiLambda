@@ -19,7 +19,6 @@
 					:primary="true"
 					:progressive="true"
 					:framed="true"
-					:disabled="!currentZObjectIsValid"
 					@click="submit">
 					{{ submitButtonLabel }}
 				</cdx-button>
@@ -88,7 +87,6 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( {
 		createNewPage: 'isCreateNewPage',
 		message: 'getZObjectMessage',
-		currentZObjectIsValid: 'currentZObjectIsValid',
 		isNewZObject: 'isNewZObject',
 		getZObjectChildrenById: 'getZObjectChildrenById'
 	} ), {
@@ -115,7 +113,7 @@ module.exports = exports = {
 		}
 	} ),
 	methods: $.extend( {},
-		mapActions( [ 'submitZObject', 'changeType' ] ),
+		mapActions( [ 'submitZObject', 'changeType', 'validateZObject' ] ),
 		mapActions( 'router', [ 'navigate' ] ),
 		{
 			updateZobject: function ( newZobject ) {
@@ -123,9 +121,14 @@ module.exports = exports = {
 			},
 
 			submit: function () {
-				this.submitZObject( { summary: this.summary } ).then( function ( pageTitle ) {
-					if ( pageTitle ) {
-						window.location.href = new mw.Title( pageTitle ).getUrl();
+				const context = this;
+				this.validateZObject().then( function ( validity ) {
+					if ( validity.isValid ) {
+						context.submitZObject( { summary: context.summary } ).then( function ( pageTitle ) {
+							if ( pageTitle ) {
+								window.location.href = new mw.Title( pageTitle ).getUrl();
+							}
+						} );
 					}
 				} );
 			},

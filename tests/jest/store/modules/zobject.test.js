@@ -92,13 +92,11 @@ describe( 'zobject Vuex module', function () {
 			getters: {
 				getNestedZObjectById: jest.fn( function () {
 					return {
-						id: ''
+						id: 17
 					};
 				} ),
 				getZObjectChildrenById: jest.fn( function () {
-					return {
-						id: ''
-					};
+					return [];
 				} ),
 				getAllItemsFromListById: jest.fn( function () {
 					return [];
@@ -479,6 +477,101 @@ describe( 'zobject Vuex module', function () {
 			expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedChangeTypePayload );
 			expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
 			expect( context.state.zobject ).toEqual( zobjectTree );
+		} );
+
+		it( 'Dispatches errors for an invalid zFunction', function () {
+			context.getters.currentZFunctionHasOutput = false;
+			context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
+
+			const mockError = {
+				errorMessage: 'wikilambda-missing-function-output-error-message',
+				errorState: true,
+				errorType: 'error',
+				internalId: 17
+			};
+
+			const isValid = zobjectModule.actions.validateZObject( context );
+			expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+			expect( isValid ).toEqual( { isValid: false } );
+		} );
+
+		it( 'Dispatches errors for an invalid zImplementation', function () {
+			context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
+			context.state = {
+				zobject: [
+					{ id: 0, value: 'object' },
+					{ key: 'Z2K2', value: 'object', parent: 0, id: 7 },
+					{ key: 'Z14K1', value: 'object', parent: 7, id: 35 },
+					{ key: 'Z9K1', value: '', parent: 35, id: 37 }
+				]
+			};
+			context.getters.getZObjectAsJson = {
+				Z2K2: {
+					Z1K1: Constants.Z_IMPLEMENTATION,
+					Z14K1: {
+						Z1K1: Constants.Z_REFERENCE,
+						Z9K1: ''
+					}
+				}
+			};
+			context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
+
+			const mockError = {
+				errorMessage: 'wikilambda-zobject-missing-attached-function',
+				errorState: true,
+				errorType: 'error',
+				internalId: 37
+			};
+
+			const isValid = zobjectModule.actions.validateZObject( context );
+			expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+			expect( isValid ).toEqual( { isValid: false } );
+
+		} );
+
+		it( 'Dispatches errors for an invalid zTester', function () {
+			context.getters.getCurrentZObjectType = Constants.Z_TESTER;
+			context.state = {
+				zobject: [
+					{ id: 0, value: 'object' },
+					{ key: 'Z2K2', value: 'object', parent: 0, id: 7 },
+					{ key: 'Z20K1', value: 'object', parent: 7, id: 35 },
+					{ key: 'Z9K1', value: '', parent: 35, id: 37 }
+				]
+			};
+			context.getters.getZObjectAsJson = {
+				Z2K2: {
+					Z1K1: Constants.Z_TESTER,
+					Z20K1: {
+						Z1K1: Constants.Z_REFERENCE,
+						Z9K1: ''
+					}
+				}
+			};
+			context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
+
+			const mockError = {
+				errorMessage: 'wikilambda-zobject-missing-attached-function',
+				errorState: true,
+				errorType: 'error',
+				internalId: 37
+			};
+
+			const isValid = zobjectModule.actions.validateZObject( context );
+			expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+			expect( isValid ).toEqual( { isValid: false } );
+		} );
+
+		it( 'Does not dispatch errors for a valid zFunction', function () {
+			context.getters.currentZFunctionHasOutput = true;
+			context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
+
+			const isValid = zobjectModule.actions.validateZObject( context );
+			expect( context.dispatch ).not.toHaveBeenCalled();
+			expect( isValid ).toEqual( { isValid: true } );
 		} );
 
 		it( 'Initialize ZObject, create new page, initial value for Z2K2', function () {

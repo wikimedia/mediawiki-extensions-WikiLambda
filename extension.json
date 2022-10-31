@@ -442,7 +442,8 @@
 				"wikilambda-function-viewer-details-table-view-all",
 				"wikilambda-function-viewer-details-table-view-less",
 				"wikilambda-toast-close",
-				"wikilambda-missing-function-output-error-message"
+				"wikilambda-missing-function-output-error-message",
+				"wikilambda-zobject-missing-attached-function"
 			]
 		}
 	},
