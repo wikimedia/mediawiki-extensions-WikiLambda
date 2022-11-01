@@ -111,6 +111,10 @@ module.exports = exports = {
 	&__body {
 		width: 100%;
 		overflow-x: auto;
+
+		table {
+			margin: 0;
+		}
 	}
 
 	&__content {
@@ -122,10 +126,20 @@ module.exports = exports = {
 
 		&__row {
 			&__item {
-				padding-top: 12px;
-				padding-bottom: 12px;
+				height: 50px;
 				align-items: center;
+				vertical-align: middle;
 				border-top: 1px solid @wmui-color-base80;
+				font-size: 1em;
+				line-height: 1.4em;
+				letter-spacing: -0.003em;
+
+				span,
+				div,
+				a {
+					font-size: 1em;
+					line-height: 1.4em;
+				}
 
 				&:last-child {
 					border-right: 0;
