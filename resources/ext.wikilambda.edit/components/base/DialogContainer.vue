@@ -13,6 +13,7 @@
 			:can-click-outside-to-close="canClickOutsideToClose"
 			:show-action-buttons="showActionButtons"
 			:size="size"
+			:legal-text="legalText"
 			@exit-dialog="exitDialog"
 			@close-dialog="closeDialog"
 			@confirm-dialog="$emit( 'confirm-dialog' )"
@@ -69,6 +70,11 @@ module.exports = exports = {
 		},
 		size: {
 			type: String
+		},
+		legalText: {
+			type: String,
+			required: false,
+			default: ''
 		}
 	},
 	data: function () {
