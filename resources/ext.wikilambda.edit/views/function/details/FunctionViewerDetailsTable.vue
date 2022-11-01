@@ -9,6 +9,7 @@
 		<table-container
 			:header="header"
 			:body="body"
+			:is-loading="isLoading"
 			class="ext-wikilambda-function-details-table__body"
 		>
 			<template #table-title>
@@ -107,6 +108,10 @@ module.exports = exports = {
 		canDeactivate: {
 			type: Boolean,
 			required: true
+		},
+		isLoading: {
+			type: Boolean,
+			default: false
 		}
 	},
 	setup: function () {

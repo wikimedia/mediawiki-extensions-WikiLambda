@@ -1261,6 +1261,7 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		attachZTesters: function ( context, payload ) {
+			const zObjectCopy = JSON.parse( JSON.stringify( context.state.zobject ) );
 			const listId = context.getters.getNestedZObjectById( payload.functionId, [
 				Constants.Z_PERSISTENTOBJECT_VALUE,
 				Constants.Z_FUNCTION_TESTERS
@@ -1275,6 +1276,7 @@ module.exports = exports = {
 					parent: listId
 				} );
 			}
+
 			return context.dispatch( 'addZObjects', newListItems ).then( ( newListItemIds ) => {
 				for ( let i = 0; i < newListItemIds.length; i++ ) {
 					context.dispatch( 'addZReference', {
@@ -1282,7 +1284,11 @@ module.exports = exports = {
 						value: payload.testerZIds[ i ]
 					} );
 				}
-				return context.dispatch( 'submitZObject', '' );
+
+				return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
+					context.commit( 'setZObject', zObjectCopy );
+					throw e;
+				} );
 			} );
 		},
 		/**
@@ -1296,6 +1302,7 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		detachZTesters: function ( context, payload ) {
+			const zObjectCopy = JSON.parse( JSON.stringify( context.state.zobject ) );
 			const listId = context.getters.getNestedZObjectById(
 				payload.functionId, [
 					Constants.Z_PERSISTENTOBJECT_VALUE,
@@ -1314,7 +1321,10 @@ module.exports = exports = {
 				context.dispatch( 'removeZObject', listItemId );
 			}
 			context.dispatch( 'recalculateZListIndex', listId );
-			return context.dispatch( 'submitZObject', '' );
+			return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
+				context.commit( 'setZObject', zObjectCopy );
+				throw e;
+			} );
 		},
 		/**
 		 * Adds the given implementations to the given function's list of approved implementations, and submits
@@ -1327,6 +1337,7 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		attachZImplementations: function ( context, payload ) {
+			const zObjectCopy = JSON.parse( JSON.stringify( context.state.zobject ) );
 			const listId = context.getters.getNestedZObjectById( payload.functionId, [
 				Constants.Z_PERSISTENTOBJECT_VALUE,
 				Constants.Z_FUNCTION_IMPLEMENTATIONS
@@ -1348,7 +1359,11 @@ module.exports = exports = {
 						value: payload.implementationZIds[ i ]
 					} );
 				}
-				return context.dispatch( 'submitZObject', '' );
+
+				return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
+					context.commit( 'setZObject', zObjectCopy );
+					throw e;
+				} );
 			} );
 		},
 		/**
@@ -1362,6 +1377,7 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		detachZImplementations: function ( context, payload ) {
+			const zObjectCopy = JSON.parse( JSON.stringify( context.state.zobject ) );
 			const listId = context.getters.getNestedZObjectById(
 				payload.functionId, [
 					Constants.Z_PERSISTENTOBJECT_VALUE,
@@ -1380,7 +1396,10 @@ module.exports = exports = {
 				context.dispatch( 'removeZObject', listItemId );
 			}
 			context.dispatch( 'recalculateZListIndex', listId );
-			return context.dispatch( 'submitZObject', '' );
+			return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
+				context.commit( 'setZObject', zObjectCopy );
+				throw e;
+			} );
 		}
 	}
 };

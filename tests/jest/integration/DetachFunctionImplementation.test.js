@@ -7,7 +7,7 @@
 'use strict';
 
 const Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
-	{ ticksUntilTrue, pageChange } = require( './helpers/interactionHelpers.js' ),
+	{ ticksUntilTrue } = require( './helpers/interactionHelpers.js' ),
 	{ runSetup } = require( './helpers/functionViewerDetailsTestSetup.js' ),
 	FunctionViewerDetailsTable = require( '../../../resources/ext.wikilambda.edit/views/function/details/FunctionViewerDetailsTable.vue' ),
 	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' ),
@@ -48,11 +48,6 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 
 		// ACT: Click the deactivate button.
 		await wrapper.get( '.ext-wikilambda-function-details-table__title__buttons__deactivate-button' ).trigger( 'click' );
-
-		await pageChange( wrapper );
-
-		// ASSERT: Location is changed to page returned by API.
-		expect( window.location.href ).toEqual( 'newPage' );
 
 		// ASSERT: Correct ZObject was posted to the API.
 		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {

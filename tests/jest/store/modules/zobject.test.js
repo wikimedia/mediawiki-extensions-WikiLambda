@@ -1319,6 +1319,9 @@ describe( 'zobject Vuex module', function () {
 					return {
 						then: function ( fn ) {
 							return fn( result );
+						},
+						catch: function () {
+							return 'error';
 						}
 					};
 				} );
@@ -1386,6 +1389,105 @@ describe( 'zobject Vuex module', function () {
 				expect( listChildren ).toContainEqual( { key: '1', value: 'object', parent: 19, id: 26 } );
 
 				expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
+			} );
+
+			describe( 'Revert zObject to previous state if api fails', function () {
+				const initialZObject = zobjectTree.concat( [
+					{ key: Constants.Z_FUNCTION_TESTERS, value: 'array', parent: 3, id: 18 },
+					{ key: Constants.Z_FUNCTION_IMPLEMENTATIONS, value: 'array', parent: 3, id: 19 },
+					{ key: '0', value: 'object', parent: 18, id: 20 },
+					{ key: '1', value: 'object', parent: 18, id: 21 },
+					{ key: '2', value: 'object', parent: 18, id: 22 },
+					{ key: '3', value: 'object', parent: 18, id: 23 },
+					{ key: '0', value: 'object', parent: 19, id: 24 },
+					{ key: '1', value: 'object', parent: 19, id: 25 },
+					{ key: '2', value: 'object', parent: 19, id: 26 },
+					{ key: '3', value: 'object', parent: 19, id: 27 },
+					{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_TESTER, parent: 20, id: 28 },
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z111', parent: 21, id: 29 }, // existing tester 1
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z222', parent: 22, id: 30 }, // existing tester 2
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z333', parent: 23, id: 31 }, // existing tester 3
+					{ key: Constants.Z_REFERENCE_ID, value: Constants.Z_IMPLEMENTATION, parent: 24, id: 32 },
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z444', parent: 25, id: 33 }, // existing impl 1
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z555', parent: 26, id: 34 }, // existing impl 2
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z666', parent: 27, id: 35 } // existing impl 3
+				] );
+				beforeEach( function () {
+					context.state = {
+						zobject: initialZObject
+					};
+					context.rootState = {
+						zobjectModule: context.state
+					};
+					Object.keys( zobjectModule.getters ).forEach( function ( key ) {
+						context.getters[ key ] =
+							zobjectModule.getters[ key ](
+								context.state, context.getters,
+								{ zobjectModule: context.state },
+								context.getters );
+					} );
+					context.commit = jest.fn( function ( mutationType, payload ) {
+						zobjectModule.mutations[ mutationType ]( context.state, payload );
+					} );
+					context.dispatch = jest.fn( function ( actionType, payload ) {
+						return {
+							then: function ( fn ) {
+								if ( actionType === 'submitZObject' ) {
+									throw fn();
+								}
+
+								return fn( payload );
+							},
+							catch: function ( fn ) {
+								return fn( 'error' );
+							}
+						};
+					} );
+				} );
+
+				it( 'attachZTesters', async function () {
+					try {
+						zobjectModule.actions.attachZTesters( context,
+							{ functionId: 0, testerZIds: [ 'Z777', 'Z888' ] } );
+					} catch ( error ) {
+						expect( error ).toEqual( 'error' );
+						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
+						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
+					}
+				} );
+
+				it( 'detachZTesters', function () {
+					try {
+						zobjectModule.actions.detachZTesters( context,
+							{ functionId: 0, testerZIds: [ 'Z111', 'Z333' ] } );
+					} catch ( error ) {
+						expect( error ).toEqual( 'error' );
+						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
+						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
+					}
+				} );
+
+				it( 'attachZImplementations', async function () {
+					try {
+						zobjectModule.actions.attachZImplementations( context,
+							{ functionId: 0, implementationZIds: [ 'Z777', 'Z888' ] } );
+					} catch ( error ) {
+						expect( error ).toEqual( 'error' );
+						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
+						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
+					}
+				} );
+
+				it( 'detachZImplementations', function () {
+					try {
+						zobjectModule.actions.detachZImplementations( context,
+							{ functionId: 0, implementationZIds: [ 'Z444', 'Z666' ] } );
+					} catch ( error ) {
+						expect( error ).toEqual( 'error' );
+						expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
+						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
+					}
+				} );
 			} );
 		} );
 	} );
