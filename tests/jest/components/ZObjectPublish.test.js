@@ -150,7 +150,7 @@ describe( 'ZObjectPublish', function () {
 		const errors = dialog.find( '.ext-wikilambda-publishdialog__errors' );
 		expect( errors.exists() ).toBeTruthy();
 
-		const errorMessage = dialog.find( '.ext-wikilambda-publishdialog__errors__messages' );
+		const errorMessage = dialog.find( '.ext-wikilambda-publishdialog__errors__message' );
 		expect( errorMessage.text() ).toBe( 'error to be displayed' );
 
 		const warnings = dialog.findComponent( '.ext-wikilambda-publishdialog__warnings' );
@@ -181,7 +181,7 @@ describe( 'ZObjectPublish', function () {
 		const warnings = dialog.find( '.ext-wikilambda-publishdialog__warnings' );
 		expect( warnings.exists() ).toBeTruthy();
 
-		const warningMessage = dialog.find( '.ext-wikilambda-publishdialog__warnings__messages' );
+		const warningMessage = dialog.find( '.ext-wikilambda-publishdialog__warnings__message' );
 		expect( warningMessage.text() ).toBe( 'warning to be displayed' );
 
 		const errors = dialog.find( '.ext-wikilambda-publishdialog__errors' );

@@ -34,11 +34,17 @@ module.exports = exports = {
 		'cdx-button': CdxButton,
 		'publish-dialog': PublishDialog
 	},
+	props: {
+		shouldUnattachImplementationAndTester: {
+			type: Boolean,
+			required: false,
+			default: false
+		}
+	},
 	data: function () {
 		return {
 			action: 'progressive',
-			showPublishDialog: false,
-			shouldUnattachImplementationAndTester: false
+			showPublishDialog: false
 		};
 	},
 	methods: $.extend( {},
@@ -47,8 +53,6 @@ module.exports = exports = {
 			handlePublish: function () {
 				this.validateZObject().then( function ( validation ) {
 					if ( validation.isValid ) {
-						// TODO(T321739): Read this from validation once available;
-						this.shouldUnattachImplementationAndTester = false;
 						this.showPublishDialog = true;
 					}
 				}.bind( this ) );

@@ -24,15 +24,14 @@
 				<strong>{{ $i18n( 'wikilambda-editor-publish-dialog-header' ).text() }}</strong>
 			</template>
 			<template>
-				<div v-if="hasErrors"
-					class="ext-wikilambda-publishdialog__errors">
+				<div v-if="hasErrors" class="ext-wikilambda-publishdialog__errors">
 					<cdx-icon class="ext-wikilambda-publishdialog__errors__icon"
 						:icon="errorIcon">
 					</cdx-icon>
 					<div class="ext-wikilambda-publishdialog__errors__messages">
 						<div v-for="error in errors"
 							:key="error.id"
-							class="ext-wikilambda-publishdialog_errors__message"
+							class="ext-wikilambda-publishdialog__errors__message"
 							v-html="error.message">
 						</div>
 					</div>
@@ -45,7 +44,7 @@
 					<div class="ext-wikilambda-publishdialog__warnings__messages">
 						<div v-for="warning in warnings"
 							:key="warning.id"
-							class="ext-wikilambda-publishdialog_warnings__message"
+							class="ext-wikilambda-publishdialog__warnings__message"
 							v-html="warning.message">
 						</div>
 					</div>
@@ -149,10 +148,12 @@ module.exports = exports = {
 	] ),
 	{
 		closeDialog: function () {
-			this.setError( {
-				internalId: this.getCurrentZObjectId,
-				errorState: false
-			} );
+			if ( this.hasErrors ) {
+				this.setError( {
+					internalId: this.getCurrentZObjectId,
+					errorState: false
+				} );
+			}
 			this.$emit( 'close-dialog' );
 		},
 		publishZObject: function () {

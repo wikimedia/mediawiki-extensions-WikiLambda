@@ -14,6 +14,7 @@ const { CdxLookup, CdxTextInput } = require( '@wikimedia/codex' ),
 	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
 	PublishDialog = require( '../../../resources/ext.wikilambda.edit/components/editor/PublishDialog.vue' ),
+	Dialog = require( '../../../resources/ext.wikilambda.edit/components/base/Dialog.vue' ),
 	apiGetMock = require( './helpers/apiGetMock.js' ),
 	ApiMock = require( './helpers/apiMock.js' ),
 	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' ),
@@ -102,7 +103,37 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 
 		wrapper = mount( App, { global: { plugins: [ store ] } } );
 	} );
+
+	afterEach( () => {
+		document.body.outerHTML = '';
+	} );
+
 	it( 'allows editing the function, making use of most important features', async () => {
+		// ACT: Change the first argument type.
+		const argumentTypeSelectorLookup =
+		wrapper.get( '.ext-wikilambda-editor-input-list-item__selector' ).getComponent( CdxLookup );
+		argumentTypeSelectorLookup.vm.$emit( 'input', 'Str' );
+		await awaitLookup( wrapper );
+		await clickItemInMenu( argumentTypeSelectorLookup, 'Monolingual stringset' );
+
+		// ACT: Click publish button.
+		await wrapper.find( '.ext-wikilamba-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.vm.$nextTick();
+
+		const baseDialog = wrapper.getComponent( Dialog );
+		const warningMessage = baseDialog.find( '.ext-wikilambda-publishdialog__warnings__message' );
+		expect( warningMessage.text() ).toBe( 'wikilambda-publish-input-changed-impact-prompt' );
+
+		const publishDialog = wrapper.findComponent( PublishDialog );
+		// ACT: Close publish dialog.
+		await publishDialog.findComponent( '#cancel-button' ).trigger( 'click' );
+		await wrapper.vm.$nextTick();
+
+		// ACT: Change the first argument type back to the original type.
+		argumentTypeSelectorLookup.vm.$emit( 'input', 'Str' );
+		await awaitLookup( wrapper );
+		await clickItemInMenu( argumentTypeSelectorLookup, 'String' );
+
 		// ACT: Edit the name of the function.
 		wrapper.get( '.ext-wikilambda-function-definition-name' ).getComponent( CdxTextInput )
 			.vm.$emit( 'input', 'edited function name, in Chinese' );
@@ -172,8 +203,6 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 
 		// ACT: Click publish button.
 		await wrapper.find( '.ext-wikilamba-publish-zobject__publish-button' ).trigger( 'click' );
-
-		const publishDialog = wrapper.findComponent( PublishDialog );
 
 		// ACT: Add a summary of your changes.
 		publishDialog.getComponent( CdxTextInput ).vm.$emit( 'input', 'my changes summary' );
