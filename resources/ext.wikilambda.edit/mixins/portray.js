@@ -164,6 +164,7 @@ module.exports = exports = {
 			}
 			return this.maybeStringify( message );
 		},
+
 		/**
 		 * Portray the given key and its zMap value, which should be a string containing
 		 * a date+time in ISO 8601 format
@@ -174,15 +175,88 @@ module.exports = exports = {
 		 * @return {string}
 		 */
 		keyAndDatetimeValue: function ( zMap, key, keysUsed ) {
+
+			/**
+			 * Attempt to render a relative timestamp given a datetime string in ISO 8601 format
+			 *
+			 * @param {string} dateTimeString
+			 * @return {string}
+			 */
+			const getDatetimeRelativeValue = function ( dateTimeString ) {
+				if ( Intl.RelativeTimeFormat ) {
+					const target = Date.parse( dateTimeString );
+					const now = Date.now();
+					const offset = now - target;
+
+					let relativeTimeFormatter;
+					try {
+						relativeTimeFormatter = new Intl.RelativeTimeFormat( mw.config.get( 'wgUserLanguage' ) );
+					} catch ( error ) {
+						// Fall back to English if the MW locale isn't supported
+						relativeTimeFormatter = new Intl.RelativeTimeFormat( 'en' );
+					}
+
+					let offsetThreshold = 1000;
+
+					// If this was within the last minute, render in seconds.
+					if ( offset < offsetThreshold * 60 ) {
+						return relativeTimeFormatter.format(
+							-Math.floor( offset / offsetThreshold ),
+							'second'
+						);
+					}
+					offsetThreshold *= 60;
+
+					// If this was within the last hour, render in minutes.
+					if ( offset < offsetThreshold * 60 ) {
+						return relativeTimeFormatter.format(
+							-Math.floor( offset / offsetThreshold ),
+							'minute'
+						);
+					}
+					offsetThreshold *= 60;
+
+					// If this was within the last day, render in hours.
+					if ( offset < offsetThreshold * 24 ) {
+						return relativeTimeFormatter.format(
+							-Math.floor( offset / offsetThreshold ),
+							'hour'
+						);
+					}
+					offsetThreshold *= 24;
+
+					// If this was within the last week, render in days.
+					if ( offset < offsetThreshold * 7 ) {
+						return relativeTimeFormatter.format(
+							-Math.floor( offset / offsetThreshold ),
+							'hour'
+						);
+					}
+					offsetThreshold *= 7;
+
+					// If this was within the last four weeks, render in weeks.
+					if ( offset < offsetThreshold * 4 ) {
+						return relativeTimeFormatter.format(
+							-Math.floor( offset / offsetThreshold ),
+							'hour'
+						);
+					}
+					offsetThreshold *= 4;
+				}
+
+				// Fallback for browsers without Intl
+				return dateTimeString.replace( 'T', ' ' ).replace( 'Z', ' (UTC)' );
+			};
+
 			keysUsed.push( key );
-			let value = getValueFromCanonicalZMap( zMap, key );
+			const value = getValueFromCanonicalZMap( zMap, key );
 			if ( value === undefined ) {
 				return '';
 			}
-			value = value.replace( 'T', ' ' ).replace( 'Z', ' (UTC)' );
 			const i18nKey = this.$i18n( knownKeys.get( key ).i18nId ).text();
-			return '<li><b>' + i18nKey + ':</b> ' + value + '</li>';
+			return '<li><b>' + i18nKey + ':</b> ' + getDatetimeRelativeValue( value ) + '</li>';
 		},
+
 		/**
 		 * Portray the given key and its zMap value, which should be a string
 		 * that's already suitable for presentation
