@@ -14,6 +14,8 @@
 			:show-action-buttons="showActionButtons"
 			:size="size"
 			:legal-text="legalText"
+			:primary-button-disabled="primaryButtonDisabled"
+			:button-action="buttonAction"
 			@exit-dialog="exitDialog"
 			@close-dialog="closeDialog"
 			@confirm-dialog="$emit( 'confirm-dialog' )"
@@ -75,6 +77,16 @@ module.exports = exports = {
 			type: String,
 			required: false,
 			default: ''
+		},
+		primaryButtonDisabled: {
+			type: Boolean,
+			// eslint-disable-next-line vue/no-boolean-default
+			default: false,
+			required: false
+		},
+		buttonAction: {
+			type: String,
+			required: false
 		}
 	},
 	data: function () {

@@ -14,6 +14,8 @@
 			:confirm-button-text="$i18n( 'wikilambda-publishnew' ).text()"
 			:cancel-button-text="$i18n( 'wikilambda-cancel' ).text()"
 			:legal-text="legalText"
+			:primary-button-disabled="hasErrors"
+			:button-action="buttonAction"
 			@exit-dialog="closeDialog"
 			@close-dialog="closeDialog"
 			@confirm-dialog="publishZObject">
@@ -60,6 +62,7 @@
 					<cdx-text-input
 						id="ext-wikilambda-publishdialog__summary-input"
 						v-model="summary"
+						class="ext-wikilambda-publishdialog__summary-input"
 						:aria-label="$i18n( 'wikilambda-editor-publish-dialog-summary-label' ).text()"
 						:placeholder="$i18n( 'wikilambda-editor-publish-dialog-summary-placeholder' ).text()"
 					></cdx-text-input>
@@ -107,42 +110,22 @@ module.exports = exports = {
 			errorIcon: icons.cdxIconError,
 			warningIcon: icons.cdxIconAlert,
 			publishDialogCustomClass: 'ext-wikilambda-publishdialog-custom-class',
-			mockErrorsAndWarnings: {
-				0: {
-					state: true,
-					message:
-					'this is <a> first <strong>error</strong></a> message',
-					type: Constants.errorTypes.ERROR
-				},
-				1: {
-					state: true,
-					message:
-					'this is <a> first <strong>warning</strong></a> message',
-					type: Constants.errorTypes.WARNING
-				},
-				2: {
-					state: true,
-					message:
-						'this is <a> second <strong>error</strong></a> message',
-					type: Constants.errorTypes.ERROR
-				}
-			}
+			buttonAction: 'progressive'
 		};
 	},
 	computed: $.extend( mapGetters( [
 		'getCurrentZObjectId',
-		'getCurrentZObjectType'
+		'getCurrentZObjectType',
+		'getErrors'
 	] ), {
 		errors: function () {
-			// TODO(T321742): replace mocks for getErrors from the store.
-			return Object.keys( this.mockErrorsAndWarnings )
-				.map( ( key ) => this.mockErrorsAndWarnings[ key ] )
+			return Object.keys( this.getErrors )
+				.map( ( key ) => this.getErrors[ key ] )
 				.filter( ( error ) => error.type === Constants.errorTypes.ERROR );
 		},
 		warnings: function () {
-			// TODO(T321742): replace mocks for getErrors from the store.
-			return Object.keys( this.mockErrorsAndWarnings )
-				.map( ( key ) => this.mockErrorsAndWarnings[ key ] )
+			return Object.keys( this.getErrors )
+				.map( ( key ) => this.getErrors[ key ] )
 				.filter( ( error ) => error.type === Constants.errorTypes.WARNING );
 		},
 		hasErrors: function () {
@@ -161,10 +144,15 @@ module.exports = exports = {
 		}
 	} ),
 	methods: $.extend( mapActions( [
-		'submitZObject'
+		'submitZObject',
+		'setError'
 	] ),
 	{
 		closeDialog: function () {
+			this.setError( {
+				internalId: this.getCurrentZObjectId,
+				errorState: false
+			} );
 			this.$emit( 'close-dialog' );
 		},
 		publishZObject: function () {
@@ -175,9 +163,15 @@ module.exports = exports = {
 					window.location.href = new mw.Title( pageTitle ).getUrl();
 					// TODO(T321741): Add success snackbar to redirected page.
 				}
-			} ).catch( function () {
-				// TODO(T321742): Run setError passing the error to the errors module.
-			} );
+			} ).catch( function ( error ) {
+				const payload = {
+					internalId: this.getCurrentZObjectId,
+					errorState: true,
+					errorMessage: error.error.message,
+					errorType: Constants.errorTypes.ERROR
+				};
+				this.setError( payload );
+			}.bind( this ) );
 		}
 	} ),
 	watch: {
@@ -223,7 +217,7 @@ module.exports = exports = {
 		display: flex;
 		flex-direction: row;
 		padding: 16px 24px;
-		margin: 0 16px;
+		margin: 8px 16px;
 
 		&__icon {
 			color: #d33;
@@ -239,7 +233,7 @@ module.exports = exports = {
 	&__summary {
 		display: flex;
 		flex-direction: column;
-		margin: 16px 16px;
+		padding: 8px 16px;
 	}
 
 	&__summary-label {
@@ -252,17 +246,19 @@ module.exports = exports = {
 }
 
 .ext-wikilambda-publishdialog-custom-class .ext-wikilambda-dialog {
+	&__header {
+		margin-top: 16px;
+		padding: 0 32px;
+
+		&__title {
+			font-size: 1.1em;
+		}
+	}
+
 	&__action-buttons {
 		display: flex;
 		justify-content: flex-end;
 		margin-right: 32px;
-		padding-bottom: 16px;
-
-		/* stylelint-disable-next-line */
-		#primary-button {
-			border: 0;
-			background-color: #36c;
-		}
 
 		button {
 			margin-left: 10px;
