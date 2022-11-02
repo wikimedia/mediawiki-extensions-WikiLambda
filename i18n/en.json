@@ -253,5 +253,6 @@
 	"wikilambda-function-viewer-details-table-view-all": "View all",
 	"wikilambda-function-viewer-details-table-view-less": "View less",
 	"wikilambda-toast-close": "Close",
-	"wikilambda-missing-function-output-error-message": "A function requires an output"
+	"wikilambda-missing-function-output-error-message": "A function requires an output",
+	"wikilambda-zobject-missing-attached-function": "An associated function is required"
 }

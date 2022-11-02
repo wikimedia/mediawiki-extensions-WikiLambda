@@ -263,5 +263,6 @@
 	"wikilambda-function-viewer-details-table-view-all": "Label for button to view all rows in a table",
 	"wikilambda-function-viewer-details-table-view-less": "Label for button to view less rows in a table",
 	"wikilambda-toast-close": "Label for button that closes a toast (that shows an error or success message).",
-	"wikilambda-missing-function-output-error-message": "Error message for a submitted ZFunction that is missing a function output"
+	"wikilambda-missing-function-output-error-message": "Error message for a submitted ZFunction that is missing a function output",
+	"wikilambda-zobject-missing-attached-function": "Error message for a ZObject that requires an associated function and is missing one"
 }

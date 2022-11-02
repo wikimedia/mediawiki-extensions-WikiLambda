@@ -139,8 +139,6 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getZkeyLabels',
 		'getCurrentZLanguage',
-		'currentZFunctionHasValidInputs',
-		'currentZFunctionHasOutput',
 		'currentZObjectLanguages',
 		'isNewZObject',
 		'getViewMode',

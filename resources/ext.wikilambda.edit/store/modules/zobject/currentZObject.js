@@ -156,43 +156,7 @@ module.exports = exports = {
 		isCurrentZObjectExecutable: function ( state, getters ) {
 			return [ Constants.Z_FUNCTION, Constants.Z_IMPLEMENTATION ].indexOf( getters.getCurrentZObjectType ) !== -1;
 		},
-		/**
-		 * Return a boolean value indicating if the current Z Object has a label
-		 *
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @return {boolean}
-		 */
-		currentZObjectIsValid: function ( state, getters ) {
-			// TODO (T315099): we need a better way to surface errors to the user
-			// (ex: you can't save because this is an implementation and there is no function defined)
-			const zobject = getters.getZObjectAsJson;
-			const zobjectType = getters.getCurrentZObjectType;
-
-			const hasLabels = zobject &&
-				zobject[ Constants.Z_PERSISTENTOBJECT_LABEL ][
-					Constants.Z_MULTILINGUALSTRING_VALUE ].filter(
-					function ( value ) {
-						return value[ Constants.Z_MONOLINGUALSTRING_VALUE ] &&
-							value[ Constants.Z_MONOLINGUALSTRING_VALUE ][
-								Constants.Z_STRING_VALUE ];
-					} ).length > 0;
-
-			// if the new zObject is an implementation, a function is required to save
-			if ( zobjectType === Constants.Z_IMPLEMENTATION ) {
-				const hasFunction = !!zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-					Constants.Z_IMPLEMENTATION_FUNCTION ][ Constants.Z_REFERENCE_ID ];
-				return hasLabels && hasFunction;
-			}
-
-			// if the new zObject is a tester, a function is required to save
-			if ( zobjectType === Constants.Z_TESTER ) {
-				const hasFunction = !!zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-					Constants.Z_TESTER_FUNCTION ][ Constants.Z_REFERENCE_ID ];
-				return hasLabels && hasFunction;
-			}
-			return hasLabels;
-		},
+		// TODO: use this check for ZFunction warnings
 		currentZFunctionHasValidInputs: function ( state, getters ) {
 			if ( getters.getCurrentZObjectType !== Constants.Z_FUNCTION ) {
 				return false;
@@ -253,21 +217,6 @@ module.exports = exports = {
 			return zobject &&
 				zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
 					Constants.Z_FUNCTION_IMPLEMENTATIONS ].length > 0;
-		},
-		currentZFunctionCompletionPercentage: function ( state, getters ) {
-			var requiredSteps = [
-				getters.currentZObjectIsValid,
-				getters.currentZFunctionHasValidInputs,
-				getters.currentZFunctionHasOutput,
-				getters.currentZFunctionHasTesters,
-				getters.currentZFunctionHasImplementations
-			];
-
-			return Math.round( requiredSteps.filter(
-				function ( step ) {
-					return step;
-				}
-			).length / requiredSteps.length * 100 );
 		},
 		currentZObjectLanguages: function ( state, getters ) {
 			var languageList = [];
