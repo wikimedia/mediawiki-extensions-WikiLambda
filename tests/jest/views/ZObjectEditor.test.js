@@ -7,7 +7,8 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	ZObjectEditor = require( '../../../resources/ext.wikilambda.edit/views/ZObjectEditor.vue' );
+	ZObjectEditor = require( '../../../resources/ext.wikilambda.edit/views/ZObjectEditor.vue' ),
+	ZObjectPublish = require( '../../../resources/ext.wikilambda.edit/components/ZObjectPublish.vue' );
 
 describe( 'ZObjectEditor', function () {
 	var getters,
@@ -59,6 +60,11 @@ describe( 'ZObjectEditor', function () {
 		var wrapper = shallowMount( ZObjectEditor );
 
 		expect( wrapper.find( '#ext-wikilambda-editor' ).exists() ).toBeTruthy();
+	} );
 
+	it( 'displays the ZObjectPublish component', function () {
+		var wrapper = shallowMount( ZObjectEditor );
+
+		expect( wrapper.findComponent( ZObjectPublish ).exists() ).toBeTruthy();
 	} );
 } );
