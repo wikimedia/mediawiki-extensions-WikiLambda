@@ -20,8 +20,8 @@ const extractErrorStructure = require( './schemata.js' ).methods.extractErrorStr
  * inclusion of other attributes.
  */
 const knownKeys = new Map( [
-	[ 'errors', { i18nId: 'wikilambda-functioncall-metadata-error-summary' } ],
-	[ 'validateErrors', { i18nId: 'wikilambda-functioncall-metadata-validator-error-summary' } ],
+	[ 'errors', { i18nId: 'wikilambda-functioncall-metadata-errors-summary' } ],
+	[ 'validateErrors', { i18nId: 'wikilambda-functioncall-metadata-validator-errors-summary' } ],
 	[ 'actualTestResult', { i18nId: 'wikilambda-functioncall-metadata-actual-result' } ],
 	[ 'expectedTestResult', { i18nId: 'wikilambda-functioncall-metadata-expected-result' } ],
 	[ 'implementationId', { i18nId: 'wikilambda-functioncall-metadata-implementation-id' } ],
