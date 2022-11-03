@@ -7,10 +7,11 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilamba-publish-zobject">
+	<div class="ext-wikilambda-publish-zobject">
 		<cdx-button
-			class="ext-wikilamba-publish-zobject__publish-button"
+			class="ext-wikilambda-publish-zobject__publish-button"
 			:action="action"
+			:disabled="isDisabled"
 			@click.stop="handlePublish">
 			{{ $i18n( 'wikilambda-publishnew' ).text() }}
 		</cdx-button>
@@ -36,6 +37,11 @@ module.exports = exports = {
 	},
 	props: {
 		shouldUnattachImplementationAndTester: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		isDisabled: {
 			type: Boolean,
 			required: false,
 			default: false

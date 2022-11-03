@@ -127,7 +127,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await secondArgumentLabelInput.setValue( 'second argument label, in Chinese' );
 
 		// ACT: Attempt to click publish button,  before output is set (invalid).
-		await wrapper.find( '.ext-wikilamba-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
 
 		// Publish Dialog does not open.
 		const publishDialog = wrapper.findComponent( PublishDialog );
@@ -175,7 +175,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 			.setValue( 'second argument label, in French' );
 
 		// ACT: Click publish button.
-		await wrapper.find( '.ext-wikilamba-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
 		await wrapper.vm.$nextTick();
 
 		// ACT: Click publish button in dialog.

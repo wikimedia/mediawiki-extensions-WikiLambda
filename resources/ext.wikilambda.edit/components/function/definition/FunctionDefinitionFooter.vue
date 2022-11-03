@@ -7,7 +7,9 @@
 	-->
 	<div class="ext-wikilambda-function-definition-footer">
 		<div class="ext-wikilambda-function-definition-footer__actions">
-			<z-object-publish :should-unattach-implementation-and-tester="shouldUnattachImplementationAndTester">
+			<z-object-publish
+				:should-unattach-implementation-and-tester="shouldUnattachImplementationAndTester"
+				:is-disabled="publishDisabled">
 			</z-object-publish>
 			<!-- TODO: The following is just a placeholder until it is possible to attach implementation / Testers -->
 			<cdx-button
@@ -46,6 +48,11 @@ module.exports = exports = {
 			type: Boolean
 		},
 		shouldUnattachImplementationAndTester: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		publishDisabled: {
 			type: Boolean,
 			required: false,
 			default: false

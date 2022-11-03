@@ -60,7 +60,7 @@ describe( 'ZObjectPublish', function () {
 
 	it( 'opens the publish dialog if validateZObject returns isValid true', async function () {
 		var wrapper = mount( ZObjectPublish );
-		await wrapper.find( '.ext-wikilamba-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
 
 		const publishDialog = wrapper.findComponent( PublishDialog );
 
@@ -79,7 +79,7 @@ describe( 'ZObjectPublish', function () {
 		} );
 
 		var wrapper = mount( ZObjectPublish );
-		await wrapper.find( '.ext-wikilamba-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
 
 		const publishDialog = wrapper.findComponent( PublishDialog );
 		expect( publishDialog.vm.showDialog ).toBe( false );
@@ -91,7 +91,7 @@ describe( 'ZObjectPublish', function () {
 		var wrapper = mount( ZObjectPublish );
 
 		// ACT: open dialog
-		await wrapper.find( '.ext-wikilamba-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
 		await wrapper.vm.$nextTick();
 
 		// ACT: enter summary
@@ -111,7 +111,7 @@ describe( 'ZObjectPublish', function () {
 		var wrapper = mount( ZObjectPublish );
 
 		// ACT: open dialog
-		await wrapper.find( '.ext-wikilamba-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
 		await wrapper.vm.$nextTick();
 
 		const cancelButton = wrapper.findComponent( '#cancel-button' );
@@ -142,7 +142,7 @@ describe( 'ZObjectPublish', function () {
 		var wrapper = mount( ZObjectPublish );
 
 		// ACT: open dialog
-		await wrapper.find( '.ext-wikilamba-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
 		await wrapper.vm.$nextTick();
 
 		const dialog = wrapper.getComponent( Dialog );
@@ -173,7 +173,7 @@ describe( 'ZObjectPublish', function () {
 		var wrapper = mount( ZObjectPublish );
 
 		// ACT: open dialog
-		await wrapper.find( '.ext-wikilamba-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
 		await wrapper.vm.$nextTick();
 
 		const dialog = wrapper.getComponent( Dialog );
@@ -201,7 +201,7 @@ describe( 'ZObjectPublish', function () {
 		var wrapper = mount( ZObjectPublish );
 
 		// ACT: open dialog
-		await wrapper.find( '.ext-wikilamba-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
 		await wrapper.vm.$nextTick();
 
 		const publishButton = wrapper.findComponent( '#primary-button' );

@@ -136,7 +136,7 @@ module.exports = exports = {
 		legalText: function () {
 			// TODO(T321744) Show mobile text on mobile.
 			if ( this.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) {
-				return this.$i18n( 'wikilamba-edit-copyrightwarning-implementation' );
+				return this.$i18n( 'wikilambda-edit-copyrightwarning-implementation' );
 			} else {
 				return this.$i18n( 'wikilambda-edit-copyrightwarning-function' );
 			}

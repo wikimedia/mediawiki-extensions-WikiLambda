@@ -99,6 +99,7 @@ module.exports = exports = {
 					isMainZObject: this.isMainZObject
 				};
 				this.setPageZObjectValue( payload );
+				this.$emit( 'updated-name' );
 			}
 		},
 		functionNameLabel: function () {

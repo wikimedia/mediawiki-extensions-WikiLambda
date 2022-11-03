@@ -117,11 +117,12 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		await clickItemInMenu( argumentTypeSelectorLookup, 'Monolingual stringset' );
 
 		// ACT: Click publish button.
-		await wrapper.find( '.ext-wikilamba-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
 		await wrapper.vm.$nextTick();
 
 		const baseDialog = wrapper.getComponent( Dialog );
 		const warningMessage = baseDialog.find( '.ext-wikilambda-publishdialog__warnings__message' );
+		// ASSERT: The warning message is shown in the dialog indicating the user has changed the argument type.
 		expect( warningMessage.text() ).toBe( 'wikilambda-publish-input-changed-impact-prompt' );
 
 		const publishDialog = wrapper.findComponent( PublishDialog );
@@ -202,7 +203,7 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		await thirdLanguageAliasInput.trigger( 'keydown', { key: 'enter' } );
 
 		// ACT: Click publish button.
-		await wrapper.find( '.ext-wikilamba-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
 
 		// ACT: Add a summary of your changes.
 		publishDialog.getComponent( CdxTextInput ).vm.$emit( 'input', 'my changes summary' );

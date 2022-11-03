@@ -28,11 +28,13 @@
 				<function-definition-name
 					:z-lang="labelLanguage.zLang"
 					:is-main-z-object="isMainZObject( labelLanguage.zLang, index )"
+					@updated-name="updatedLabel"
 				></function-definition-name>
 				<!-- component that displays aliases for a language -->
 				<function-definition-aliases
 					:z-lang="labelLanguage.zLang"
 					:is-main-z-object="index === 0"
+					@updated-alias="updatedLabel"
 				></function-definition-aliases>
 				<function-definition-inputs
 					:is-mobile="isMobile"
@@ -41,6 +43,7 @@
 					:can-edit="canEditFunction"
 					:tooltip-icon="adminTooltipIcon"
 					:tooltip-message="adminTooltipMessage"
+					@updated-argument-label="updatedLabel"
 				></function-definition-inputs>
 				<template v-if="index === 0">
 					<function-definition-output
@@ -64,23 +67,15 @@
 		<function-definition-footer
 			:is-editing="isEditingExistingFunction"
 			:should-unattach-implementation-and-tester="shouldUnattachImplementationAndTester"
+			:publish-disabled="!isDirty"
 			@cancel="handleCancel"
 		></function-definition-footer>
 
-		<dialog-container
-			ref="dialogBox"
-			:cancel-button-text="dialogInfo.cancelButtonText"
-			:confirm-button-text="dialogInfo.confirmButtonText"
-			@confirm-dialog="dialogInfo.onConfirm"
-		>
-			<template #dialog-container-title>
-				<strong>{{ dialogInfo.title }}</strong>
-			</template>
-
-			<template>
-				{{ dialogInfo.description }}
-			</template>
-		</dialog-container>
+		<leave-editor-dialog
+			:show-dialog="showLeaveEditorDialog"
+			:continue-callback="leaveEditorCallback"
+			@close-dialog="closeLeaveEditorDialog">
+		</leave-editor-dialog>
 	</main>
 </template>
 
@@ -91,15 +86,14 @@ var FunctionDefinitionInputs = require( '../../components/function/definition/Fu
 var FunctionDefinitionOutput = require( '../../components/function/definition/FunctionDefinitionOutput.vue' );
 var FunctionDefinitionFooter = require( '../../components/function/definition/FunctionDefinitionFooter.vue' );
 var FnEditorZLanguageSelector = require( '../../components/editor/FnEditorZLanguageSelector.vue' );
+var LeaveEditorDialog = require( '../../components/editor/LeaveEditorDialog.vue' );
 var useBreakpoints = require( '../../composables/useBreakpoints.js' );
 var icons = require( '../../../lib/icons.json' );
 var mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 var Constants = require( '../../Constants.js' );
 var typeUtils = require( '../../mixins/typeUtils.js' );
-var CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	DialogContainer = require( '../../components/base/DialogContainer.vue' );
-
+var CdxButton = require( '@wikimedia/codex' ).CdxButton;
 // @vue/component
 module.exports = exports = {
 	name: 'function-definition',
@@ -110,8 +104,8 @@ module.exports = exports = {
 		'function-definition-output': FunctionDefinitionOutput,
 		'function-definition-footer': FunctionDefinitionFooter,
 		'fn-editor-zlanguage-selector': FnEditorZLanguageSelector,
-		'cdx-button': CdxButton,
-		'dialog-container': DialogContainer
+		'leave-editor-dialog': LeaveEditorDialog,
+		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],
 	setup: function () {
@@ -124,14 +118,10 @@ module.exports = exports = {
 		return {
 			labelLanguages: [],
 			initialInputTypes: [],
+			hasUpdatedLabels: false,
 			initialOutputType: '',
-			dialogInfo: {
-				title: '',
-				description: '',
-				cancelButtonText: '',
-				confirmButtonText: '',
-				onConfirm: ''
-			}
+			showLeaveEditorDialog: false,
+			leaveEditorCallback: ''
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -149,10 +139,6 @@ module.exports = exports = {
 		'getUserZlangZID',
 		'isUserLoggedIn'
 	] ),
-	mapGetters(
-		'router',
-		[ 'getQueryParams' ]
-	),
 	{
 		canEditFunction: function () {
 			// TODO(T301667): restrict to only certain user roles
@@ -160,6 +146,9 @@ module.exports = exports = {
 		},
 		shouldUnattachImplementationAndTester: function () {
 			return this.validateInputTypeChanged() || this.validateOutputTypeChanged();
+		},
+		isDirty: function () {
+			return this.validateInputTypeChanged() || this.validateOutputTypeChanged() || this.hasUpdatedLabels;
 		},
 		isMobile: function () {
 			return this.breakpoint.current.value === Constants.breakpointsTypes.MOBILE;
@@ -274,6 +263,12 @@ module.exports = exports = {
 		'changeType',
 		'setError'
 	] ), {
+		closeLeaveEditorDialog: function () {
+			this.showLeaveEditorDialog = false;
+		},
+		updatedLabel: function () {
+			this.hasUpdatedLabels = true;
+		},
 		/**
 		 * Gets called when user clicks on the button
 		 * adds another language label section
@@ -335,37 +330,18 @@ module.exports = exports = {
 			return inputTypeChanged;
 		},
 		validateOutputTypeChanged: function () {
-			return this.currentOutput.value !== this.initialOutputType;
+			return ( this.currentOutput.value !== this.initialOutputType ) && this.currentOutput.value !== '';
 		},
 		handleCancel: function () {
-			// if leaving without saving edits
-			if ( this.isEditingExistingFunction ) {
-				this.dialogInfo = {
-					title: this.$i18n( 'wikilambda-function-are-you-sure-dialog-header' ).text(),
-					description: this.$i18n( 'wikilambda-function-are-you-sure-dialog-description' ).text(),
-					cancelButtonText: this.$i18n( 'wikilambda-continue-editing' ).text(),
-					confirmButtonText: this.$i18n( 'wikilambda-discard-edits' ).text(),
-					onConfirm: this.confirmCancel
+			if ( this.isDirty ) {
+				this.showLeaveEditorDialog = true;
+				this.leaveEditorCallback = function () {
+					history.back();
 				};
-				this.$refs.dialogBox.openDialog();
 			} else {
-				// if not editing, go to previous page
+				// If not editing or there are no changes, go to the previous page.
 				history.back();
 			}
-		},
-		confirmCancel: function () {
-			this.resetDialogInfo();
-			this.$refs.dialogBox.closeDialog();
-			window.location.href = new mw.Title( this.getQueryParams.title ).getUrl();
-		},
-		resetDialogInfo: function () {
-			this.dialogInfo = {
-				title: '',
-				description: '',
-				cancelButtonText: '',
-				confirmButtonText: '',
-				onConfirm: ''
-			};
 		},
 		/**
 		 *  The main zObject labels are displayed on the Page title.
@@ -382,6 +358,25 @@ module.exports = exports = {
 				( id ) => id[ Constants.Z_REFERENCE_ID ] === this.getUserZlangZID ) ?
 				zLang === this.getUserZlangZID :
 				index === 0;
+		},
+		handleClickAway: function ( e ) {
+			let target = e.target;
+
+			// Find if what was clicked was a link.
+			while ( target && target.tagName !== 'A' ) {
+				target = target.parentNode;
+				if ( !target ) {
+					return;
+				}
+			}
+			if ( target.href && this.isDirty ) {
+				this.showLeaveEditorDialog = true;
+				e.preventDefault();
+				this.leaveEditorCallback = function () {
+					window.removeEventListener( 'click', this.handleClickAway );
+					window.location.href = target.href;
+				}.bind( this );
+			}
 		}
 	} ),
 	watch: {
@@ -456,6 +451,7 @@ module.exports = exports = {
 		if ( this.isNewZObject ) {
 			this.changeTypeToFunction();
 		}
+		window.addEventListener( 'click', this.handleClickAway );
 	},
 	beforeUnmount: function () {
 		// Clear zobject function scaffolding when unmounted
@@ -465,6 +461,7 @@ module.exports = exports = {
 			const zObjectValue = this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, zObject );
 			this.removeZObjectChildren( zObjectValue.id );
 		}
+		window.removeEventListener( 'click', this.handleClickAway );
 	}
 };
 </script>
