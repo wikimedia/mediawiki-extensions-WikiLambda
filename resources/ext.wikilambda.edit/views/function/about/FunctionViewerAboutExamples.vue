@@ -5,7 +5,7 @@
 		@copyright 2022– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-function-viewer-about-aliases">
+	<div v-if="exampleList.length > 0" class="ext-wikilambda-function-viewer-about-aliases">
 		<function-viewer-about-examples-table
 			:header="header"
 			:body="exampleList"

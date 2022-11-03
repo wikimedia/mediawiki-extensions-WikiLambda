@@ -5,9 +5,9 @@
 		@copyright 2022– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-function-viewer-names">
+	<div v-if="getFunctionNames.length > 0" class="ext-wikilambda-function-viewer-names">
 		<function-viewer-sidebar
-			:list="getFunctionNames"
+			:list="visibleFunctionNames"
 			:z-lang="getUserZlangZID"
 			:button-type="buttonType"
 			:button-text="buttonText"
@@ -65,38 +65,40 @@ module.exports = exports = {
 		getFunctionNames: function () {
 			var allLabels = [];
 
-			if ( this.showAllLangs ) {
-				for ( var index in this.getFunctionMonolingualNames ) {
-					var labelObject = this.getFunctionMonolingualNames[ index ],
-						language = this.getNestedZObjectById( labelObject.id, [
-							Constants.Z_MONOLINGUALSTRING_LANGUAGE,
-							Constants.Z_REFERENCE_ID
-						] ).value;
+			for ( var index in this.getFunctionMonolingualNames ) {
+				var labelObject = this.getFunctionMonolingualNames[ index ],
+					language = this.getNestedZObjectById( labelObject.id, [
+						Constants.Z_MONOLINGUALSTRING_LANGUAGE,
+						Constants.Z_REFERENCE_ID
+					] ).value;
 
-					if ( language !== this.getUserZlangZID ) {
-						var label = this.getNestedZObjectById( labelObject.id, [
-							Constants.Z_MONOLINGUALSTRING_VALUE,
-							Constants.Z_STRING_VALUE
-						] ).value;
+				if ( language !== this.getUserZlangZID ) {
+					var label = this.getNestedZObjectById( labelObject.id, [
+						Constants.Z_MONOLINGUALSTRING_VALUE,
+						Constants.Z_STRING_VALUE
+					] ).value;
 
-						if ( label ) {
-							var isoCode = this.getZkeys[ language ][
-								Constants.Z_PERSISTENTOBJECT_VALUE
-							][
-								Constants.Z_NATURAL_LANGUAGE_ISO_CODE
-							];
+					if ( label && this.getZkeys[ language ] ) {
+						var isoCode = this.getZkeys[ language ][
+							Constants.Z_PERSISTENTOBJECT_VALUE
+						][
+							Constants.Z_NATURAL_LANGUAGE_ISO_CODE
+						];
 
-							allLabels.push( {
-								label,
-								language,
-								languageLabel: this.getZkeyLabels[ language ],
-								isoCode
-							} );
-						}
+						allLabels.push( {
+							label,
+							language,
+							languageLabel: this.getZkeyLabels[ language ],
+							isoCode
+						} );
 					}
 				}
 			}
+
 			return allLabels;
+		},
+		visibleFunctionNames: function () {
+			return this.showAllLangs ? this.getFunctionNames : [];
 		},
 		buttonText: function () {
 			if ( this.showAllLangs ) {
