@@ -38,6 +38,7 @@
 	"wikilambda-function-are-you-sure-dialog-header": "本当によろしいですか?",
 	"wikilambda-function-are-you-sure-dialog-description": "保存せずに編集から離れてもよろしいですか？",
 	"wikilambda-functioncall-metadata-dialog-header": "メタデータ",
+	"wikilambda-functioncall-metadata-errors-summary": "エラーの要約",
 	"wikilambda-functioncall-metadata-errors-none": "なし",
 	"wikilambda-editor-tester-list-label": "テスターの一覧",
 	"wikilambda-tester-selector": "テスターを選択",

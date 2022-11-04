@@ -1,10 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
-			"Vipz"
+			"Vipz",
+			"Vlad5250"
 		]
 	},
 	"wikilambda-editor-fn-step-function-about": "O funkciji",
 	"wikilambda-editor-fn-step-function-details": "Detalji",
+	"wikilambda-editor-publish-dialog-header": "Objavi svoje izmjene",
+	"wikilambda-editor-publish-dialog-summary-label": "Sažetak izmjene",
+	"wikilambda-editor-publish-dialog-how-did-you-improve-label": "Na koji način ste poboljšali ovu stranicu?",
 	"wikilambda-function-about-summary": "Ova funkcija mijenja englesku riječ iz jednine u množinu, ali možda bude grešaka kod rjeđih riječi jer je engleski čudan jezik. Probajte ovu funkciju!"
 }

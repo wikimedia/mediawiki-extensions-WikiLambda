@@ -22,5 +22,6 @@
 	"wikilambda-argument-typeselector-label": "Scacchie 'nu tupe pe stu argomende",
 	"wikilambda-function-typeselector-label": "Scacchie 'na funzione",
 	"wikilambda-return-typeselector-label": "Scacchie 'nu tupe da turnà",
-	"wikilambda-editor-label-addlanguage-label": "Aggiunge 'na lènghe"
+	"wikilambda-editor-label-addlanguage-label": "Aggiunge 'na lènghe",
+	"wikilambda-zobject-missing-attached-function": "'Na funzione associate jè cercate"
 }

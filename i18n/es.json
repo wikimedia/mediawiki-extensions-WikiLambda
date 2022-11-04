@@ -220,6 +220,7 @@
 	"wikilambda-editor-output-title": "Salida",
 	"wikilambda-editor-publish-dialog-header": "Publica tus cambios",
 	"wikilambda-editor-publish-dialog-summary-label": "Editar resumen",
+	"wikilambda-editor-publish-dialog-summary-placeholder": "Alias añadidos en inglés",
 	"wikilambda-editor-publish-dialog-how-did-you-improve-label": "¿Cómo has mejorado la página?",
 	"wikilambda-ztyped-pair-placeholder": "Selecciona un tipo",
 	"wikilambda-ztyped-pair-key-label": "Clave",
@@ -243,5 +244,6 @@
 	"wikilambda-function-viewer-details-sidebar-summary": "Cualquiera puede editar etiquetas, pero el tipo de entrada/salida y el conteo solo pueden ser editados por usuarios con permisos especiales.",
 	"wikilambda-function-viewer-details-table-view-all": "Ver todo",
 	"wikilambda-function-viewer-details-table-view-less": "Ver menos",
-	"wikilambda-toast-close": "Cerrar"
+	"wikilambda-toast-close": "Cerrar",
+	"wikilambda-zobject-missing-attached-function": "Se requiere una función asociada"
 }

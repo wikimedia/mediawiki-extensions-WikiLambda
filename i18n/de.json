@@ -105,6 +105,7 @@
 	"wikilambda-function-are-you-sure-dialog-description": "Bist du sicher, dass du den Bearbeitungsmodus verlassen möchtest, ohne vorher zu veröffentlichen?",
 	"wikilambda-functioncall-metadata-dialog-header": "Metadaten",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Fehler}}",
+	"wikilambda-functioncall-metadata-errors-summary": "Zusammenfassung der Fehler",
 	"wikilambda-functioncall-metadata-errors-none": "Keine",
 	"wikilambda-functioncall-metadata-implementation-id": "Implementierungs-ID",
 	"wikilambda-functioncall-metadata-implementation-type": "Implementierungstyp",
@@ -119,6 +120,7 @@
 	"wikilambda-functioncall-metadata-expected-result": "Erwartetes Ergebnis",
 	"wikilambda-functioncall-metadata-actual-result": "Tatsächliches Ergebnis",
 	"wikilambda-functioncall-metadata-validator-errors": "{{PLURAL:$1|Validierungsfehler}}",
+	"wikilambda-functioncall-metadata-validator-errors-summary": "Zusammenfassung der Fehler",
 	"wikilambda-functioncall-error": "Fehler beim Funktionsaufruf: $1",
 	"wikilambda-functioncall-error-category": "Seiten mit fehlerhaften Wikifunctions-Aufrufen",
 	"wikilambda-functioncall-error-category-desc": "Seiten mit Aufrufen von Wikifunktionen, die zu einem allgemeinen Fehler führen",
@@ -232,5 +234,6 @@
 	"wikilambda-function-viewer-details-table-view-all": "Alle ansehen",
 	"wikilambda-function-viewer-details-table-view-less": "Weniger ansehen",
 	"wikilambda-toast-close": "Schließen",
-	"wikilambda-missing-function-output-error-message": "Eine Funktion erfordert eine Ausgabe"
+	"wikilambda-missing-function-output-error-message": "Eine Funktion erfordert eine Ausgabe",
+	"wikilambda-zobject-missing-attached-function": "Eine zugeordnete Funktion ist erforderlich"
 }

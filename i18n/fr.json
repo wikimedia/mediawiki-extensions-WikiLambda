@@ -116,6 +116,7 @@
 	"wikilambda-function-are-you-sure-dialog-description": "Êtes-vous sûr de vouloir quitter le mode d’édition sans publier auparavant ?",
 	"wikilambda-functioncall-metadata-dialog-header": "Métadonnées",
 	"wikilambda-functioncall-metadata-errors": "Erreur{{PLURAL:$1||s}}",
+	"wikilambda-functioncall-metadata-errors-summary": "Résumé des erreurs",
 	"wikilambda-functioncall-metadata-errors-none": "Aucune",
 	"wikilambda-functioncall-metadata-implementation-id": "Identifiant de mise en œuvre",
 	"wikilambda-functioncall-metadata-implementation-type": "Type de mise en œuvre",
@@ -136,6 +137,7 @@
 	"wikilambda-functioncall-metadata-expected-result": "Résultat attendu",
 	"wikilambda-functioncall-metadata-actual-result": "Résultat obtenu",
 	"wikilambda-functioncall-metadata-validator-errors": "Erreur{{PLURAL:$1||s}} du validateur",
+	"wikilambda-functioncall-metadata-validator-errors-summary": "Résumé des erreurs du validateur",
 	"wikilambda-functioncall-error": "Erreur d’appel de fonction : $1",
 	"wikilambda-functioncall-error-category": "Pages contenant des appels erronés à Wikifonctions",
 	"wikilambda-functioncall-error-category-desc": "Pages avec des appels à Wikifonctions qui aboutissent à une erreur générale",
@@ -252,5 +254,6 @@
 	"wikilambda-function-viewer-details-table-view-all": "Afficher tout",
 	"wikilambda-function-viewer-details-table-view-less": "Afficher moins",
 	"wikilambda-toast-close": "Fermer",
-	"wikilambda-missing-function-output-error-message": "Une fonction nécessite une sortie"
+	"wikilambda-missing-function-output-error-message": "Une fonction nécessite une sortie",
+	"wikilambda-zobject-missing-attached-function": "Une fonction associée est requise"
 }

@@ -10,11 +10,14 @@
 	"wikilambda-publish-input-changed-impact-prompt": "Siz bul funkciyanıń kirgiziw maydanın hám shıǵıw túrin ózgerttińiz. Hámme bar qosımshalar hám testler ámeldegi funksiyadan ajıratıladı. Dawam etiwdi qáleysizbe?",
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "Siz bul funkciyanıń kirgiziw maydanın hám shıǵıw túrin ózgerttińiz. Hámme bar qosımshalar hám testler ámeldegi funksiyadan ajıratıladı. Dawam etiwdi qáleysizbe?",
 	"wikilambda-editor-leave-edit-mode-header": "Redaktorlaw rejimin tárk etiw",
+	"wikilambda-functioncall-metadata-errors-summary": "Qáte juwmaq",
 	"wikilambda-functioncall-metadata-implementation-id": "Ámelge asırıw identifikatorı",
 	"wikilambda-functioncall-metadata-implementation-type": "Ámelge asırıw túri",
+	"wikilambda-functioncall-metadata-validator-errors-summary": "Tastıyıqlawshınıń qáte juwmaǵı",
 	"wikilambda-editor-publish-dialog-header": "Ózgerislerdi járiyalaw",
 	"wikilambda-editor-publish-dialog-summary-label": "Juwmaqtı redaktorlaw",
 	"wikilambda-editor-publish-dialog-summary-placeholder": "Ingliz tilinde laqaplar qosıldı.",
 	"wikilambda-editor-publish-dialog-how-did-you-improve-label": "Bul betti qalay jaqsıladıńız?",
-	"wikilambda-function-viewer-details-table-view-all": "Hámmesin kóriw"
+	"wikilambda-function-viewer-details-table-view-all": "Hámmesin kóriw",
+	"wikilambda-zobject-missing-attached-function": "Baylanısqan funktsiya talap etiledi"
 }

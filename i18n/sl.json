@@ -19,6 +19,7 @@
 	"wikilambda-edit-copyrightwarning-function": "S klikom »objavi« se strinjate s <a href=\"//foundation.wikimedia.org/wiki/Terms_of_Use\">pogoji uporabe</a> in nepreklicn soglašate, da se vaš prispevek objavi pod <a href=\"//creativecommons.org/publicdomain/zero/1.0/\" title=\"Opredelitev licence Creative Commons CC0\">licenco Creative Commons CC0</a>.",
 	"wikilamba-edit-copyrightwarning-implementation": "S klikom »objavi« se strinjate s <a href=\"//foundation.wikimedia.org/wiki/Terms_of_Use\">pogoji uporabe</a> in nepreklicno soglašate, da se vaš prispevek objavi pod <a href=\"https://www.apache.org/licenses/LICENSE-2.0\" title=\"Opredelitev licence Apache 2.0\">licenco Apache 2.0</a>.",
 	"wikilambda-editor-leave-edit-mode-header": "Izhod iz načina urejanja",
+	"wikilambda-functioncall-metadata-errors-summary": "Povzetek napak",
 	"wikilambda-functioncall-metadata-implementation-id": "ID izvedbe",
 	"wikilambda-functioncall-metadata-implementation-type": "Vrsta izvedbe",
 	"wikilambda-functioncall-metadata-orchestration-hostname": "Orkestracijski strežnik",
@@ -26,6 +27,7 @@
 	"wikilambda-functioncall-metadata-expected-result": "Pričakovani rezultat",
 	"wikilambda-functioncall-metadata-actual-result": "Dejanski rezultat",
 	"wikilambda-functioncall-metadata-validator-errors": "{{PLURAL:$1|Napaka|Napake}} validatorja",
+	"wikilambda-functioncall-metadata-validator-errors-summary": "Povzetek napak preverjalnika",
 	"wikilambda-editor-tester-list-label": "Seznam preizkusov",
 	"wikilambda-tester-selector": "Izberite preizkus",
 	"wikilambda-tester-status-pending": "V teku ...",
@@ -46,5 +48,6 @@
 	"wikilambda-editor-publish-dialog-summary-label": "Povzetek urejanja",
 	"wikilambda-editor-publish-dialog-summary-placeholder": "Dodane sopomenke v angleščini",
 	"wikilambda-editor-publish-dialog-how-did-you-improve-label": "Kako ste izboljšali to stran?",
-	"wikilambda-missing-function-output-error-message": "Funkcija zahteva izhod"
+	"wikilambda-missing-function-output-error-message": "Funkcija zahteva izhod",
+	"wikilambda-zobject-missing-attached-function": "Potrebna je povezana funkcija"
 }
