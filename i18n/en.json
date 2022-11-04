@@ -154,6 +154,7 @@
 	"wikilambda-functioncall-error-nonstringinput": "Function call error: the ZFunction '$1' takes a '$3' instead of a string as input '$2', and so cannot be called",
 	"wikilambda-functioncall-error-nonstringinput-category": "Pages with Wikifunctions calls using non-string ZObjects",
 	"wikilambda-functioncall-error-nonstringinput-category-desc": "Pages with attempted calls to Wikifunctions with a ZFunction that doesn't take a string",
+	"wikilambda-performtest-error-nonimplementation": "Perform test error: '$1' isn't an implementation.",
 	"wikilambda-editor-tester-list-label": "Test List",
 	"wikilambda-tester-selector": "Select a test",
 	"wikilambda-tester-none-found": "There are currently no test cases for this function.",

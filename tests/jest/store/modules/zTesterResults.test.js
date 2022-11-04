@@ -140,145 +140,205 @@ describe( 'zTesterResults Vuex module', function () {
 			} );
 		} );
 
-		it( 'should allow for resetting a given test result', function () {
-			zTesterResultsModule.mutations.setZTesterResult( context.state, { key: 'Z10000:Z10001:Z10002', result: 'Z41' } );
+		describe( 'resetTestResult', () => {
+			it( 'should allow for resetting a given test result', function () {
+				zTesterResultsModule.mutations.setZTesterResult( context.state, { key: 'Z10000:Z10001:Z10002', result: 'Z41' } );
 
-			expect( zTesterResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' ) ).toBe( true );
+				expect( zTesterResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' ) ).toBe( true );
 
-			zTesterResultsModule.actions.resetTestResult( context, {
-				zFunctionId: 'Z10000',
-				zTesterId: 'Z10001',
-				zImplementationId: 'Z10002'
+				zTesterResultsModule.actions.resetTestResult( context, {
+					zFunctionId: 'Z10000',
+					zTesterId: 'Z10001',
+					zImplementationId: 'Z10002'
+				} );
+
+				expect( zTesterResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' ) ).toBe( undefined );
 			} );
 
-			expect( zTesterResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' ) ).toBe( undefined );
 		} );
 
-		it( 'should perform the provided tests (passing)', function () {
-			var zFunctionId = 'Z10000',
-				zImplementations = [ 'Z10001', 'Z10002' ],
-				zTesters = [ 'Z10003', 'Z10004' ];
+		describe( 'getTestResults', () => {
+			it( 'should perform the provided tests (passing)', function () {
+				var zFunctionId = 'Z10000',
+					zImplementations = [ 'Z10001', 'Z10002' ],
+					zTesters = [ 'Z10003', 'Z10004' ];
 
-			return zTesterResultsModule.actions.getTestResults( context, {
-				zFunctionId: zFunctionId,
-				zImplementations: zImplementations,
-				zTesters: zTesters
-			} ).then( function () {
-				var result = zTesterResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
+				return zTesterResultsModule.actions.getTestResults( context, {
+					zFunctionId: zFunctionId,
+					zImplementations: zImplementations,
+					zTesters: zTesters
+				} ).then( function () {
+					var result = zTesterResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
+
+					expect( getMock ).toHaveBeenCalledWith( {
+						action: 'wikilambda_perform_test',
+						wikilambda_perform_test_zfunction: zFunctionId,
+						wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
+						wikilambda_perform_test_ztesters: zTesters.join( '|' ),
+						wikilambda_perform_test_nocache: false
+					} );
+					expect( context.commit ).toHaveBeenCalledTimes( 7 );
+					expect( Object.keys( context.state.zTesterResults ).length )
+						.toEqual( zTesters.length * zImplementations.length );
+
+					expect( result.passing ).toBe( zTesters.length * zImplementations.length );
+				} );
+			} );
+
+			it( 'should perform the provided tests (failing)', function () {
+				var zFunctionId = 'Z10000',
+					zImplementations = [ 'Z10001', 'Z10002' ],
+					zTesters = [ 'Z10003', 'Z10004' ];
+
+				booleanReturn = Constants.Z_BOOLEAN_FALSE;
+
+				return zTesterResultsModule.actions.getTestResults( context, {
+					zFunctionId: zFunctionId,
+					zImplementations: zImplementations,
+					zTesters: zTesters
+				} ).then( function () {
+					var result = zTesterResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
+
+					expect( getMock ).toHaveBeenCalledWith( {
+						action: 'wikilambda_perform_test',
+						wikilambda_perform_test_zfunction: zFunctionId,
+						wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
+						wikilambda_perform_test_ztesters: zTesters.join( '|' ),
+						wikilambda_perform_test_nocache: false
+					} );
+					expect( context.commit ).toHaveBeenCalledTimes( 7 );
+					expect( Object.keys( context.state.zTesterResults ).length )
+						.toEqual( zTesters.length * zImplementations.length );
+
+					expect( result.passing ).toBe( 0 );
+				} );
+			} );
+
+			it( 'should not reset the tests when not to', function () {
+				var zFunctionId = 'Z10000',
+					zImplementations = [ 'Z10001', 'Z10002' ],
+					zTesters = [ 'Z10003', 'Z10004' ];
+
+				return zTesterResultsModule.actions.getTestResults( context, {
+					zFunctionId: zFunctionId,
+					zImplementations: zImplementations,
+					zTesters: zTesters
+				} ).then( function () {
+					expect( context.commit ).not.toHaveBeenCalledWith( 'clearZTesterResults' );
+				} );
+			} );
+
+			it( 'should reset the tests when directed to', function () {
+				var zFunctionId = 'Z10000',
+					zImplementations = [ 'Z10001', 'Z10002' ],
+					zTesters = [ 'Z10003', 'Z10004' ];
+
+				return zTesterResultsModule.actions.getTestResults( context, {
+					zFunctionId: zFunctionId,
+					zImplementations: zImplementations,
+					zTesters: zTesters,
+					clearPreviousResults: true
+				} ).then( function () {
+					expect( context.commit ).toHaveBeenCalledWith( 'clearZTesterResults' );
+				} );
+			} );
+
+			it( 'should perform the provided tests (API error)', function () {
+				var zFunctionId = 'Z10000',
+					zImplementations = [ 'Z10001', 'Z10002' ],
+					zTesters = [ 'Z10003', 'Z10004' ];
+
+				getMock = jest.fn( function () {
+					return new Promise( function ( resolve, reject ) {
+						reject( 'API error' );
+					} );
+				} );
+
+				return zTesterResultsModule.actions.getTestResults( context, {
+					zFunctionId: zFunctionId,
+					zImplementations: zImplementations,
+					zTesters: zTesters
+				} ).then( function () {
+					var result = zTesterResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
+
+					expect( getMock ).toHaveBeenCalledWith( {
+						action: 'wikilambda_perform_test',
+						wikilambda_perform_test_zfunction: zFunctionId,
+						wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
+						wikilambda_perform_test_ztesters: zTesters.join( '|' ),
+						wikilambda_perform_test_nocache: false
+					} );
+					expect( context.commit ).toHaveBeenCalledTimes( 4 );
+					expect( Object.keys( context.state.zTesterResults ).length )
+						.toEqual( 0 );
+
+					expect( result.passing ).toBe( 0 );
+					expect( context.state.errorState ).toBe( true );
+				} );
+			} );
+
+			it( 'should not perform the tests if already fetching', function () {
+				context.state.fetchingTestResults = true;
+
+				zTesterResultsModule.actions.getTestResults( context );
+
+				expect( context.commit ).not.toHaveBeenCalled();
+			} );
+
+			it( 'should pass JSON for the current object to the API, if implementation ID matches current ' +
+				'object and current object is not new', async () => {
+				const currentObject = {
+						lovely: 'object'
+					},
+					zFunctionId = 'Z10000',
+					zImplementations = [ 'Z10001', 'Z10002' ],
+					zTesters = [ 'Z10003', 'Z10004' ];
+				context.getters.getCurrentZObjectId = 'Z10001';
+				context.getters.getZObjectAsJson = currentObject;
+
+				await zTesterResultsModule.actions.getTestResults( context, {
+					zFunctionId: zFunctionId,
+					zImplementations: zImplementations,
+					zTesters: zTesters
+				} );
 
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
 					wikilambda_perform_test_zfunction: zFunctionId,
-					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
+					wikilambda_perform_test_zimplementations: [ JSON.stringify( currentObject ), 'Z10002' ].join( '|' ),
 					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 					wikilambda_perform_test_nocache: false
 				} );
-				expect( context.commit ).toHaveBeenCalledTimes( 7 );
-				expect( Object.keys( context.state.zTesterResults ).length )
-					.toEqual( zTesters.length * zImplementations.length );
-
-				expect( result.passing ).toBe( zTesters.length * zImplementations.length );
 			} );
-		} );
 
-		it( 'should perform the provided tests (failing)', function () {
-			var zFunctionId = 'Z10000',
-				zImplementations = [ 'Z10001', 'Z10002' ],
-				zTesters = [ 'Z10003', 'Z10004' ];
+			it( 'should pass JSON for the current inner object to the API, if implementation ID matches current ' +
+			'object and current object is new', async () => {
+				const currentObject = {
+						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
+							lovely: 'object'
+						}
+					},
+					zFunctionId = 'Z10000',
+					zImplementations = [ 'Z0', 'Z10002' ],
+					zTesters = [ 'Z10003', 'Z10004' ];
+				context.getters.getCurrentZObjectId = 'Z0';
+				context.getters.getZObjectAsJson = currentObject;
 
-			booleanReturn = Constants.Z_BOOLEAN_FALSE;
-
-			return zTesterResultsModule.actions.getTestResults( context, {
-				zFunctionId: zFunctionId,
-				zImplementations: zImplementations,
-				zTesters: zTesters
-			} ).then( function () {
-				var result = zTesterResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
+				await zTesterResultsModule.actions.getTestResults( context, {
+					zFunctionId: zFunctionId,
+					zImplementations: zImplementations,
+					zTesters: zTesters
+				} );
 
 				expect( getMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_perform_test',
 					wikilambda_perform_test_zfunction: zFunctionId,
-					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
+					wikilambda_perform_test_zimplementations: [
+						JSON.stringify( currentObject[ Constants.Z_PERSISTENTOBJECT_VALUE ] ), 'Z10002' ].join( '|' ),
 					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
 					wikilambda_perform_test_nocache: false
 				} );
-				expect( context.commit ).toHaveBeenCalledTimes( 7 );
-				expect( Object.keys( context.state.zTesterResults ).length )
-					.toEqual( zTesters.length * zImplementations.length );
-
-				expect( result.passing ).toBe( 0 );
 			} );
-		} );
-
-		it( 'should not reset the tests when not to', function () {
-			var zFunctionId = 'Z10000',
-				zImplementations = [ 'Z10001', 'Z10002' ],
-				zTesters = [ 'Z10003', 'Z10004' ];
-
-			return zTesterResultsModule.actions.getTestResults( context, {
-				zFunctionId: zFunctionId,
-				zImplementations: zImplementations,
-				zTesters: zTesters
-			} ).then( function () {
-				expect( context.commit ).not.toHaveBeenCalledWith( 'clearZTesterResults' );
-			} );
-		} );
-
-		it( 'should reset the tests when directed to', function () {
-			var zFunctionId = 'Z10000',
-				zImplementations = [ 'Z10001', 'Z10002' ],
-				zTesters = [ 'Z10003', 'Z10004' ];
-
-			return zTesterResultsModule.actions.getTestResults( context, {
-				zFunctionId: zFunctionId,
-				zImplementations: zImplementations,
-				zTesters: zTesters,
-				clearPreviousResults: true
-			} ).then( function () {
-				expect( context.commit ).toHaveBeenCalledWith( 'clearZTesterResults' );
-			} );
-		} );
-
-		it( 'should perform the provided tests (API error)', function () {
-			var zFunctionId = 'Z10000',
-				zImplementations = [ 'Z10001', 'Z10002' ],
-				zTesters = [ 'Z10003', 'Z10004' ];
-
-			getMock = jest.fn( function () {
-				return new Promise( function ( resolve, reject ) {
-					reject( 'API error' );
-				} );
-			} );
-
-			return zTesterResultsModule.actions.getTestResults( context, {
-				zFunctionId: zFunctionId,
-				zImplementations: zImplementations,
-				zTesters: zTesters
-			} ).then( function () {
-				var result = zTesterResultsModule.getters.getZTesterPercentage( context.state )( 'Z10000' );
-
-				expect( getMock ).toHaveBeenCalledWith( {
-					action: 'wikilambda_perform_test',
-					wikilambda_perform_test_zfunction: zFunctionId,
-					wikilambda_perform_test_zimplementations: zImplementations.join( '|' ),
-					wikilambda_perform_test_ztesters: zTesters.join( '|' ),
-					wikilambda_perform_test_nocache: false
-				} );
-				expect( context.commit ).toHaveBeenCalledTimes( 4 );
-				expect( Object.keys( context.state.zTesterResults ).length )
-					.toEqual( 0 );
-
-				expect( result.passing ).toBe( 0 );
-				expect( context.state.errorState ).toBe( true );
-			} );
-		} );
-
-		it( 'should not perform the tests if already fetching', function () {
-			context.state.fetchingTestResults = true;
-
-			zTesterResultsModule.actions.getTestResults( context );
-
-			expect( context.commit ).not.toHaveBeenCalled();
 		} );
 	} );
 } );

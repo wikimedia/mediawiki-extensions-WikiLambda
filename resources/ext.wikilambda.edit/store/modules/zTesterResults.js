@@ -10,8 +10,9 @@ var Vue = require( 'vue' ),
 	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
 
 /**
- * Loop through a given array and replace the current Object or the placeholder object with a full object
- * This is required to be able to see proper test result whil changin implementations and testers.
+ * Loop through the given array of ZIDs and if a ZID is for the object currently being edited, or for a new object,
+ * replace it with a JSON representation of the full persistent object (if editing existing object) or inner object
+ * (if new object). This is required to be able to see proper test results while changing implementations and testers.
  *
  * @param {Object} context
  * @param {Array} items - List of implementations or testers
@@ -22,12 +23,16 @@ function replaceCurrentObjectWithFullJSONObject( context, items, newItemZObject 
 	return ( items || [] ).map( function ( item ) {
 		// if the item is the current object replace it
 		if ( !context.getters.getViewMode && item === context.getters.getCurrentZObjectId ) {
-			return canonicalize(
-				JSON.parse( JSON.stringify( context.getters.getZObjectAsJson ) )
-			);
+			var zobject = context.getters.getZObjectAsJson;
+			if ( item === Constants.NEW_ZID_PLACEHOLDER ) {
+				// If this object is not yet persisted, pass only the inner object to the API, as otherwise the API
+				// will complain about the placeholder ID Z0 not existing.
+				zobject = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+			}
+			return JSON.stringify( canonicalize( JSON.parse( JSON.stringify( zobject ) ) ) );
 		}
 
-		// if the item has a placeholder value, it means that it is a new implementation/tester, replace it
+		// if the item has a placeholder ZID, it means that it is a new implementation/tester, replace it
 		if ( item === Constants.NEW_ZID_PLACEHOLDER && newItemZObject ) {
 			return canonicalize(
 				JSON.parse( JSON.stringify( newItemZObject ) )
