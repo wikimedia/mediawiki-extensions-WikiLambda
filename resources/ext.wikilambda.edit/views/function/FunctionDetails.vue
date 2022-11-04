@@ -26,6 +26,7 @@
 				:can-deactivate="areAvailableImplementationsSelected"
 				:empty-text="zImplementationsFetched ?
 					$i18n( 'wikilambda-implementation-none-found' ) : $i18n( 'wikilambda-loading' )"
+				:is-loading="zImplementationsLoading"
 				@update-page="updateImplementationPage"
 				@reset-view="resetImplementationView"
 				@approve="approveImplementations"
@@ -42,6 +43,7 @@
 				:can-deactivate="areAvailableTestersSelected"
 				:empty-text="zTestersFetched ?
 					$i18n( 'wikilambda-tester-none-found' ) : $i18n( 'wikilambda-loading' )"
+				:is-loading="zTestersLoading"
 				@update-page="updateTestersPage"
 				@reset-view="resetTestersView"
 				@approve="approveTesters"
@@ -102,7 +104,9 @@ module.exports = exports = {
 			testerZidToState: {},
 			currentToast: null,
 			zImplementationsFetched: false,
-			zTestersFetched: false
+			zImplementationsLoading: false,
+			zTestersFetched: false,
+			zTestersLoading: false
 		};
 	},
 	computed: $.extend( {},
@@ -439,63 +443,67 @@ module.exports = exports = {
 		},
 		approveImplementations: function () {
 			// TODO(T316566): ensure only those with the correct permissions can approve/deactivate
+			this.zImplementationsLoading = true;
 			const zidsToAttach = Object.keys( this.implZidToState ).filter( ( zid ) =>
 				this.implZidToState[ zid ].checked && !this.implZidToState[ zid ].available );
 			const context = this;
 			this.attachZImplementations( {
 				functionId: this.zobjectId,
 				implementationZIds: zidsToAttach
-			} ).then( function ( pageTitle ) {
-				if ( pageTitle ) {
-					window.location.href = new mw.Title( pageTitle ).getUrl();
-				}
+			} ).then( function () {
+				context.implZidToState = {};
 			} ).catch( function ( error ) {
 				context.currentToast = error.error.message;
+			} ).finally( function () {
+				context.zImplementationsLoading = false;
 			} );
 		},
 		deactivateImplementations: function () {
+			this.zImplementationsLoading = true;
 			const zidsToDetach = Object.keys( this.implZidToState ).filter( ( zid ) =>
 				this.implZidToState[ zid ].checked && this.implZidToState[ zid ].available );
 			const context = this;
 			this.detachZImplementations( {
 				functionId: this.zobjectId,
 				implementationZIds: zidsToDetach
-			} ).then( function ( pageTitle ) {
-				if ( pageTitle ) {
-					window.location.href = new mw.Title( pageTitle ).getUrl();
-				}
+			} ).then( function () {
+				context.implZidToState = {};
 			} ).catch( function ( error ) {
 				context.currentToast = error.error.message;
+			} ).finally( function () {
+				context.zImplementationsLoading = false;
 			} );
 		},
 		approveTesters: function () {
+			this.zTestersLoading = true;
 			const zidsToAttach = Object.keys( this.testerZidToState ).filter( ( zid ) =>
 				this.testerZidToState[ zid ].checked && !this.testerZidToState[ zid ].available );
 			const context = this;
 			this.attachZTesters( {
 				functionId: this.zobjectId,
 				testerZIds: zidsToAttach
-			} ).then( function ( pageTitle ) {
-				if ( pageTitle ) {
-					window.location.href = new mw.Title( pageTitle ).getUrl();
-				}
+			} ).then( function () {
+				context.testerZidToState = {};
 			} ).catch( function ( error ) {
 				context.currentToast = error.error.message;
+			} ).finally( function () {
+				context.zTestersLoading = false;
 			} );
 		},
 		deactivateTesters: function () {
+			this.zTestersLoading = true;
 			const zidsToDetach = Object.keys( this.testerZidToState ).filter( ( zid ) =>
 				this.testerZidToState[ zid ].checked && this.testerZidToState[ zid ].available );
 			const context = this;
 			this.detachZTesters( {
 				functionId: this.zobjectId,
 				testerZIds: zidsToDetach
-			} ).then( function ( pageTitle ) {
-				if ( pageTitle ) {
-					window.location.href = new mw.Title( pageTitle ).getUrl();
-				}
+			} ).then( function () {
+				context.testerZidToState = {};
 			} ).catch( function ( error ) {
 				context.currentToast = error.error.message;
+			} ).finally( function () {
+				context.zTestersLoading = false;
 			} );
 		},
 		closeToast: function () {

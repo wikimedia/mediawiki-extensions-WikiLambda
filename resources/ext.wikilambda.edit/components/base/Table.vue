@@ -12,6 +12,12 @@
 		<div class="ext-wikilambda-table__title">
 			<slot name="table-title"></slot>
 		</div>
+		<cdx-progress-bar
+			v-if="isLoading"
+			class="ext-wikilambda-table__loading"
+			inline
+		>
+		</cdx-progress-bar>
 		<div class="ext-wikilambda-table__body">
 			<div v-if="!header && body.length === 0" class="ext-wikilambda-table__body__empty">
 				<slot name="table-empty-text"></slot>
@@ -72,9 +78,14 @@
 </template>
 
 <script>
+var CdxProgressBar = require( '@wikimedia/codex' ).CdxProgressBar;
+
 // @vue/component
 module.exports = exports = {
 	name: 'table-container',
+	components: {
+		'cdx-progress-bar': CdxProgressBar
+	},
 	props: {
 		header: { // example: { language: "Language" } or { language: { title: "Language" mobile: false } }
 			type: Object,
@@ -93,6 +104,10 @@ module.exports = exports = {
 		isBordered: {
 			type: Boolean,
 			default: false
+		},
+		isLoading: {
+			type: Boolean,
+			default: false
 		}
 	}
 };
@@ -102,10 +117,15 @@ module.exports = exports = {
 @import './../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-table {
+	position: relative;
 	border: 1px solid @wmui-color-base80;
 
 	&__title {
 		white-space: nowrap;
+	}
+
+	&__loading {
+		position: absolute;
 	}
 
 	&__body {
@@ -114,6 +134,12 @@ module.exports = exports = {
 
 		table {
 			margin: 0;
+		}
+
+		&__empty {
+			height: 50px;
+			display: flex;
+			align-items: center;
 		}
 	}
 

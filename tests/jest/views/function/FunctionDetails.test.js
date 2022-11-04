@@ -248,7 +248,7 @@ describe( 'FunctionDetails', function () {
 	} );
 
 	describe( 'approve & deactivate buttons', () => {
-		it( 'attach checked implementation and load returned page, without error toast', ( done ) => {
+		it( 'attach checked implementation, without error toast', ( done ) => {
 			var wrapper = shallowMount( FunctionDetails, { props: { zobjectId: 123 } } );
 			const implTable = wrapper.findAllComponents( FunctionViewerDetailsTable )[ 0 ];
 			implTable.props( 'header' ).checkbox.props[ 'onUpdate:modelValue' ]( true );
@@ -260,13 +260,12 @@ describe( 'FunctionDetails', function () {
 					functionId: 123,
 					implementationZIds: [ 'Z333' ]
 				} );
-				expect( window.location.href ).toEqual( 'newPage' );
 				expect( wrapper.findComponent( CdxMessage ).exists() ).toBe( false );
 				done();
 			} );
 		} );
 
-		it( 'detach checked implementation and load returned page, without error toast', ( done ) => {
+		it( 'detach checked implementation, without error toast', ( done ) => {
 			var wrapper = shallowMount( FunctionDetails, { props: { zobjectId: 123 } } );
 			const implTable = wrapper.findAllComponents( FunctionViewerDetailsTable )[ 0 ];
 			implTable.props( 'header' ).checkbox.props[ 'onUpdate:modelValue' ]( true );
@@ -278,13 +277,12 @@ describe( 'FunctionDetails', function () {
 					functionId: 123,
 					implementationZIds: [ 'Z444' ]
 				} );
-				expect( window.location.href ).toEqual( 'newPage' );
 				expect( wrapper.findComponent( CdxMessage ).exists() ).toBe( false );
 				done();
 			} );
 		} );
 
-		it( 'attach checked tester and load returned page, without error toast', ( done ) => {
+		it( 'attach checked tester, without error toast', ( done ) => {
 			var wrapper = shallowMount( FunctionDetails, { props: { zobjectId: 123 } } );
 			const testerTable = wrapper.findAllComponents( FunctionViewerDetailsTable )[ 1 ];
 			testerTable.props( 'header' ).checkbox.props[ 'onUpdate:modelValue' ]( true );
@@ -296,13 +294,12 @@ describe( 'FunctionDetails', function () {
 					functionId: 123,
 					testerZIds: [ 'Z111' ]
 				} );
-				expect( window.location.href ).toEqual( 'newPage' );
 				expect( wrapper.findComponent( CdxMessage ).exists() ).toBe( false );
 				done();
 			} );
 		} );
 
-		it( 'detach checked tester and load returned page, without error toast', ( done ) => {
+		it( 'detach checked tester, without error toast', ( done ) => {
 			var wrapper = shallowMount( FunctionDetails, { props: { zobjectId: 123 } } );
 			const testerTable = wrapper.findAllComponents( FunctionViewerDetailsTable )[ 1 ];
 			testerTable.props( 'header' ).checkbox.props[ 'onUpdate:modelValue' ]( true );
@@ -314,7 +311,6 @@ describe( 'FunctionDetails', function () {
 					functionId: 123,
 					testerZIds: [ 'Z222' ]
 				} );
-				expect( window.location.href ).toEqual( 'newPage' );
 				expect( wrapper.findComponent( CdxMessage ).exists() ).toBe( false );
 				done();
 			} );
