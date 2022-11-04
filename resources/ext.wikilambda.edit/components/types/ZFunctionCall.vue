@@ -9,6 +9,7 @@
 		{{ zFunctionCallKeyLabels[ Constants.Z_FUNCTION_CALL_FUNCTION ] }}:
 		<z-object-selector
 			v-if="!selectedFunction"
+			class="ext-wikilambda-function-call-block__select-function"
 			:type="Constants.Z_FUNCTION"
 			:placeholder="$i18n( 'wikilambda-function-typeselector-label' ).text()"
 			:selected-id="zFunctionId"
