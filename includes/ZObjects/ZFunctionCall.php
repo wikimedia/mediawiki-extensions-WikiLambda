@@ -77,7 +77,7 @@ class ZFunctionCall extends ZObject {
 	 * @return string
 	 */
 	public function getZValue(): string {
-		return $this->data[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ]->getZValue();
+		return (string)( $this->data[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ]->getZValue() );
 	}
 
 	/**
