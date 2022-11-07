@@ -7,10 +7,11 @@
 	-->
 	<div class="ext-wikilambda-function-definition-footer">
 		<div class="ext-wikilambda-function-definition-footer__actions">
-			<z-object-publish></z-object-publish>
+			<z-object-publish :should-unattach-implementation-and-tester="shouldUnattachImplementationAndTester">
+			</z-object-publish>
 			<!-- TODO: The following is just a placeholder until it is possible to attach implementation / Testers -->
 			<cdx-button
-				v-if="isEditing "
+				v-if="isEditing"
 				@click="handleFallbackClick"
 			>
 				{{ $i18n( 'wikilambda-fallback' ).text() }}
@@ -43,6 +44,11 @@ module.exports = exports = {
 	props: {
 		isEditing: {
 			type: Boolean
+		},
+		shouldUnattachImplementationAndTester: {
+			type: Boolean,
+			required: false,
+			default: false
 		}
 	},
 	methods: $.extend( {},

@@ -63,6 +63,7 @@
 
 		<function-definition-footer
 			:is-editing="isEditingExistingFunction"
+			:should-unattach-implementation-and-tester="shouldUnattachImplementationAndTester"
 			@cancel="handleCancel"
 		></function-definition-footer>
 
@@ -136,6 +137,7 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getZkeyLabels',
 		'getCurrentZLanguage',
+		'getCurrentZObjectId',
 		'currentZObjectLanguages',
 		'isNewZObject',
 		'getViewMode',
@@ -155,6 +157,9 @@ module.exports = exports = {
 		canEditFunction: function () {
 			// TODO(T301667): restrict to only certain user roles
 			return this.isNewZObject ? true : this.isUserLoggedIn;
+		},
+		shouldUnattachImplementationAndTester: function () {
+			return this.validateInputTypeChanged() || this.validateOutputTypeChanged();
 		},
 		isMobile: function () {
 			return this.breakpoint.current.value === Constants.breakpointsTypes.MOBILE;
@@ -266,7 +271,8 @@ module.exports = exports = {
 	methods: $.extend( mapActions( [
 		'setCurrentZLanguage',
 		'removeZObjectChildren',
-		'changeType'
+		'changeType',
+		'setError'
 	] ), {
 		/**
 		 * Gets called when user clicks on the button
@@ -403,6 +409,38 @@ module.exports = exports = {
 				if ( this.labelLanguages.length === 0 &&
 					this.selectedLanguages[ this.selectedLanguages.length - 1 ].label !== undefined ) {
 					this.labelLanguages = this.selectedLanguages;
+				}
+			}
+		},
+		shouldUnattachImplementationAndTester: {
+			handler: function () {
+				if ( this.isEditingExistingFunction ) {
+					if ( this.shouldUnattachImplementationAndTester ) {
+						const inputTypeChanged = this.validateInputTypeChanged();
+						const outputTypeChanged = this.validateOutputTypeChanged();
+						const payload = {
+							internalId: this.getCurrentZObjectId,
+							errorState: true,
+							errorMessage: '',
+							errorType: Constants.errorTypes.WARNING
+						};
+						let errorMessage;
+
+						if ( inputTypeChanged && outputTypeChanged ) {
+							errorMessage = this.$i18n( 'wikilambda-publish-input-and-output-changed-impact-prompt' ).text();
+						} else if ( inputTypeChanged ) {
+							errorMessage = this.$i18n( 'wikilambda-publish-input-changed-impact-prompt' ).text();
+						} else {
+							errorMessage = this.$i18n( 'wikilambda-publish-output-changed-impact-prompt' ).text();
+						}
+						payload.errorMessage = errorMessage;
+						this.setError( payload );
+					} else {
+						this.setError( {
+							internalId: this.getCurrentZObjectId,
+							errorState: false
+						} );
+					}
 				}
 			}
 		}
