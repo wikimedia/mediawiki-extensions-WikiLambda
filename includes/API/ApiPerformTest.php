@@ -84,7 +84,6 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 		$targetFunction = $targetObject->getInnerZObject();
 
-		// FIXME: Handle an inline ZImplementation (for when it's not been created yet)
 		if ( empty( $requestedImplementations ) ) {
 			$targetFunctionImplementions = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS );
 			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionImplementions';
@@ -102,12 +101,15 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		// 2. For each implementation, run each tester
 		$responseArray = [];
 		foreach ( $requestedImplementations as $implementation ) {
-
-			$implementationName = (string)$implementation;
-
-			// Because these are strings which look like references, we're getting '"Z901"' rather than
-			// 'Z901', so just splice back out the quotes.
-			$implementationName = str_replace( '"', '', $implementationName );
+			if ( is_string( $implementation ) ) {
+				$decodedJson = FormatJson::decode( $implementation );
+				// If not JSON, assume we have received a ZID.
+				$implementation = $decodedJson
+					? ZObjectFactory::create( $decodedJson )
+					: new ZReference( $implementation );
+			}
+			$implementationZid = $this->getZid( $implementation );
+			$implementationListEntry = $this->getImplementationListEntry( $implementation );
 
 			// Re-use our copy of the target function, setting the implementations to just the one
 			// we're testing now
@@ -115,7 +117,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS,
 				new ZTypedList(
 					ZTypedList::buildType( new ZReference( ZTypeRegistry::Z_IMPLEMENTATION ) ),
-					new ZReference( $implementationName )
+					$implementationListEntry
 				)
 			);
 			foreach ( $requestedTesters as $testerName ) {
@@ -216,7 +218,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 				// Stash the response
 				$testResult = [ 'zFunctionId' => $zfunction,
-					'zImplementationId' => $implementationName,
+					'zImplementationId' => $implementationZid,
 					'zTesterId' => $testerName,
 					'testMetadata' => $testMetadata,
 					'validateStatus' => $validateResultItem
@@ -263,6 +265,29 @@ class ApiPerformTest extends WikiLambdaApiBase {
 			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zErrorObject );
 			return new ZResponseEnvelope( null, $zResponseMap );
 		}
+	}
+
+	private function getZid( $zobject ) {
+		if ( $zobject->getZType() === ZTypeRegistry::Z_REFERENCE ) {
+			return $zobject->getValueByKey( ZTypeRegistry::Z_REFERENCE_VALUE );
+		} elseif ( $zobject->getZType() === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
+			return $zobject
+				->getValueByKey( ZTypeRegistry::Z_PERSISTENTOBJECT_ID )
+				->getValueByKey( ZTypeRegistry::Z_STRING_VALUE );
+		}
+		// Use placeholder ZID for non-persisted objects.
+		return 'Z0';
+	}
+
+	private function getImplementationListEntry( $zobject ) {
+		if ( $zobject->getZType() === ZTypeRegistry::Z_REFERENCE ||
+				$zobject->getZType() === ZTypeRegistry::Z_IMPLEMENTATION ) {
+			return $zobject;
+		} elseif ( $zobject->getZType() === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
+			return $this->getImplementationListEntry(
+				$zobject->getValueByKey( ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ) );
+		}
+		$this->dieWithError( [ "wikilambda-performtest-error-nonimplementation", $zobject ] );
 	}
 
 	/**
