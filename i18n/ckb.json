@@ -1,8 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"GoRaN"
+			"GoRaN",
+			"Sarchia"
 		]
 	},
-	"wikilambda-persistentzobject-contents": "ناوەڕۆکەکان"
+	"wikilambda-persistentzobject-contents": "ناوەڕۆکەکان",
+	"wikilambda-tester-status-passed": "دەرچوون",
+	"wikilambda-tester-status-failed": "شکست",
+	"wikilambda-editor-publish-dialog-header": "گۆڕانکارییەکانت بڵاو بکەوە",
+	"wikilambda-editor-publish-dialog-summary-label": "کورتەی دەستکاری"
 }
