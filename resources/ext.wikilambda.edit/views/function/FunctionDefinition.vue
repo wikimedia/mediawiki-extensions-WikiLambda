@@ -63,7 +63,6 @@
 
 		<function-definition-footer
 			:is-editing="isEditingExistingFunction"
-			@publish="validateInputOutputTypeChanged"
 			@cancel="handleCancel"
 		></function-definition-footer>
 
@@ -122,8 +121,6 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			currentToast: null,
-			toastIntent: 'success',
 			labelLanguages: [],
 			initialInputTypes: [],
 			initialOutputType: '',
@@ -268,18 +265,9 @@ module.exports = exports = {
 	} ),
 	methods: $.extend( mapActions( [
 		'setCurrentZLanguage',
-		'submitZObject',
 		'removeZObjectChildren',
-		'validateZObject',
 		'changeType'
 	] ), {
-		publishSuccessful: function ( toastMessage ) {
-			this.toastIntent = 'success';
-			this.currentToast = toastMessage;
-		},
-		closeToast: function () {
-			this.currentToast = null;
-		},
 		/**
 		 * Gets called when user clicks on the button
 		 * adds another language label section
@@ -316,37 +304,6 @@ module.exports = exports = {
 				readOnly: true
 			};
 		},
-		/**
-		 * publish function changes and redirect to the view page
-		 *
-		 * @param {Object} summary
-		 * @param {boolean} shouldUnattachImplentationAndTester
-		 */
-		handlePublish: function ( summary, shouldUnattachImplentationAndTester ) {
-			if ( this.dialogInfo.title ) {
-				this.resetDialogInfo();
-				this.$refs.dialogBox.closeDialog();
-			}
-
-			const context = this;
-
-			this.validateZObject().then( function ( validity ) {
-				if ( validity.isValid ) {
-					context.submitZObject(
-						{
-							summary,
-							shouldUnattachImplentationAndTester
-						} ).then( function ( pageTitle ) {
-						if ( pageTitle ) {
-							window.location.href = new mw.Title( pageTitle ).getUrl();
-						}
-					} ).catch( function ( error ) {
-						context.toastIntent = 'error';
-						context.currentToast = error.error.message;
-					} );
-				}
-			} );
-		},
 		changeTypeToFunction: function () {
 			var zObject = this.getZObjectChildrenById( 0 ); // We fetch the Root object
 			var Z2K2 =
@@ -373,45 +330,6 @@ module.exports = exports = {
 		},
 		validateOutputTypeChanged: function () {
 			return this.currentOutput.value !== this.initialOutputType;
-		},
-		validateInputOutputTypeChanged: function ( summary ) {
-			const inputTypeChanged = this.validateInputTypeChanged();
-			const outputTypeChanged = this.validateOutputTypeChanged();
-
-			if ( this.isEditingExistingFunction &&
-				( inputTypeChanged || outputTypeChanged )
-			) {
-				this.dialogInfo = {
-					title: this.$i18n( 'wikilambda-function-are-you-sure-dialog-header' ).text(),
-					description: '',
-					cancelButtonText: this.$i18n( 'wikilambda-continue-editing' ).text(),
-					confirmButtonText: this.$i18n( 'wikilambda-publishnew' ).text(),
-					onConfirm: function () { return this.handlePublish( summary, true ); }.bind( this )
-				};
-				if ( inputTypeChanged && outputTypeChanged ) {
-					this.dialogInfo.description = this.$i18n( 'wikilambda-publish-input-and-output-changed-impact-prompt' ).text();
-				} else if ( inputTypeChanged ) {
-					this.dialogInfo.description = this.$i18n( 'wikilambda-publish-input-changed-impact-prompt' ).text();
-				} else if ( outputTypeChanged ) {
-					this.dialogInfo.description = this.$i18n( 'wikilambda-publish-output-changed-impact-prompt' ).text();
-				}
-				this.$refs.dialogBox.openDialog();
-			} else if ( !this.isEditingExistingFunction && this.isMobile ) {
-				this.dialogInfo = {
-					title: this.$i18n( 'wikilambda-publishnew' ).text(),
-					description: this.$i18n( 'wikilambda-special-function-definition-publish-description' ).text(),
-					cancelButtonText: this.$i18n( 'wikilambda-cancel' ).text(),
-					confirmButtonText: this.$i18n( 'wikilambda-confirm' ).text(),
-					onConfirm: function () {
-						this.resetDialogInfo();
-						this.$refs.dialogBox.closeDialog();
-						this.handlePublish( summary, true );
-					}.bind( this )
-				};
-				this.$refs.dialogBox.openDialog();
-			} else {
-				this.handlePublish( summary );
-			}
 		},
 		handleCancel: function () {
 			// if leaving without saving edits

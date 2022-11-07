@@ -10,44 +10,29 @@ var VueTestUtils = require( '@vue/test-utils' ),
 	FunctionDefinitionFooter = require( '../../../../../resources/ext.wikilambda.edit/components/function/definition/FunctionDefinitionFooter.vue' );
 
 describe( 'FunctionDefinitionFooter', function () {
-	var getters;
-
-	beforeEach( function () {
-		getters = {
-			currentZFunctionHasValidInputs: jest.fn(),
-			currentZFunctionHasOutput: jest.fn(),
-			isNewZObject: jest.fn()
+	beforeEach( () => {
+		var getters = {
+			getErrors: jest.fn( function () {
+				return {};
+			} )
 		};
-
 		global.store.hotUpdate( {
 			getters: getters
 		} );
 
 	} );
-
 	it( 'renders without errors', function () {
 		var wrapper = VueTestUtils.shallowMount( FunctionDefinitionFooter );
 
 		expect( wrapper.find( '.ext-wikilambda-function-definition-footer' ).exists() ).toBeTruthy();
 	} );
-	it( 'triggers the "publish" event on button click', function () {
-		getters.currentZFunctionHasOutput.mockReturnValue( true );
-		getters.currentZFunctionHasValidInputs.mockReturnValue( true );
 
-		var wrapper = VueTestUtils.shallowMount( FunctionDefinitionFooter, {
-			props: {
-				isEditing: true
-			},
-			global: {
-				stubs: { CdxButton: false }
-			}
-		} );
-		const button = wrapper.findComponent( '.ext-wikilambda-function-definition-footer__publish-button' );
-		expect( button.exists() ).toBeTruthy();
-		return button.trigger( 'click' ).then( function () {
-			expect( wrapper.emitted().publish ).toBeTruthy();
-		} );
+	it( 'displays the ZObjectPublish component', function () {
+		var wrapper = VueTestUtils.mount( FunctionDefinitionFooter );
+
+		expect( wrapper.find( '.ext-wikilamba-publish-zobject' ).exists() ).toBeTruthy();
 	} );
+
 	it( 'triggers the "cancel" event on cancel button click', function () {
 		var wrapper = VueTestUtils.shallowMount( FunctionDefinitionFooter, {
 			props: {

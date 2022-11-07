@@ -13,6 +13,7 @@ const { CdxLookup, CdxTextInput } = require( '@wikimedia/codex' ),
 	mount = require( '@vue/test-utils' ).mount,
 	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
+	PublishDialog = require( '../../../resources/ext.wikilambda.edit/components/editor/PublishDialog.vue' ),
 	ApiMock = require( './helpers/apiMock.js' ),
 	apiGetMock = require( './helpers/apiGetMock.js' ),
 	expectedNewFunctionPostedToApi = require( './objects/expectedNewFunctionPostedToApi.js' );
@@ -28,6 +29,11 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 	let apiPostWithEditTokenMock;
 	let wrapper;
 	beforeEach( () => {
+		// Needed because of the Teleported component.
+		const el = document.createElement( 'div' );
+		el.id = 'ext-wikilambda-app';
+		document.body.appendChild( el );
+
 		jest.useFakeTimers();
 
 		global.window = Object.create( window );
@@ -120,12 +126,17 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		const secondArgumentLabelInput = wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 1 ];
 		await secondArgumentLabelInput.setValue( 'second argument label, in Chinese' );
 
-		// ACT: Click publish button, before output is set (invalid)
-		await wrapper.get( '.ext-wikilambda-function-definition-footer__publish-button' ).trigger( 'click' );
-		jest.runAllTimers();
+		// ACT: Attempt to click publish button,  before output is set (invalid).
+		await wrapper.find( '.ext-wikilamba-publish-zobject__publish-button' ).trigger( 'click' );
 
-		// ASSERT: Invalid ZObject was NOT posted to the API.
-		expect( apiPostWithEditTokenMock ).not.toHaveBeenCalled();
+		// Publish Dialog does not open.
+		const publishDialog = wrapper.findComponent( PublishDialog );
+		expect( publishDialog.vm.showDialog ).toBe( false );
+		const publishButton = wrapper.findComponent( '#primary-button' );
+		expect( publishButton.exists() ).toBeFalsy();
+
+		const warning = wrapper.find( '.ext-wikilambda-select-zobject__error' );
+		expect( warning.exists() ).toBeTruthy();
 
 		// ACT: Select a type for the output.
 		const outputTypeSelectorLookup =
@@ -164,9 +175,11 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 			.setValue( 'second argument label, in French' );
 
 		// ACT: Click publish button.
-		await wrapper.get( '.ext-wikilambda-function-definition-footer__publish-button' ).trigger( 'click' );
-		jest.runAllTimers();
+		await wrapper.find( '.ext-wikilamba-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.vm.$nextTick();
 
+		// ACT: Click publish button in dialog.
+		await publishDialog.findComponent( '#primary-button' ).trigger( 'click' );
 		await pageChange( wrapper );
 
 		// ASSERT: Location is changed to page returned by API.

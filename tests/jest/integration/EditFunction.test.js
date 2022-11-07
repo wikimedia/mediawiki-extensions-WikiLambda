@@ -13,6 +13,7 @@ const { CdxLookup, CdxTextInput } = require( '@wikimedia/codex' ),
 	mount = require( '@vue/test-utils' ).mount,
 	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
+	PublishDialog = require( '../../../resources/ext.wikilambda.edit/components/editor/PublishDialog.vue' ),
 	apiGetMock = require( './helpers/apiGetMock.js' ),
 	ApiMock = require( './helpers/apiMock.js' ),
 	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' ),
@@ -38,6 +39,11 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 	let apiPostWithEditTokenMock;
 	let wrapper;
 	beforeEach( () => {
+		// Needed because of the Teleported component.
+		const el = document.createElement( 'div' );
+		el.id = 'ext-wikilambda-app';
+		document.body.appendChild( el );
+
 		jest.useFakeTimers();
 
 		global.window = Object.create( window );
@@ -165,8 +171,15 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		await thirdLanguageAliasInput.trigger( 'keydown', { key: 'enter' } );
 
 		// ACT: Click publish button.
-		await wrapper.get( '.ext-wikilambda-function-definition-footer__publish-button' ).trigger( 'click' );
-		jest.runAllTimers();
+		await wrapper.find( '.ext-wikilamba-publish-zobject__publish-button' ).trigger( 'click' );
+
+		const publishDialog = wrapper.findComponent( PublishDialog );
+
+		// ACT: Add a summary of your changes.
+		publishDialog.getComponent( CdxTextInput ).vm.$emit( 'input', 'my changes summary' );
+
+		// ACT: Click publish button in dialog.
+		await publishDialog.findComponent( '#primary-button' ).trigger( 'click' );
 
 		await pageChange( wrapper );
 
@@ -176,7 +189,7 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		// ASSERT: Correct ZID and ZObject were posted to the API.
 		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_edit',
-			summary: '',
+			summary: 'my changes summary',
 			zid: functionZid,
 			zobject: JSON.stringify( expectedEditedFunctionPostedToApi )
 		} );

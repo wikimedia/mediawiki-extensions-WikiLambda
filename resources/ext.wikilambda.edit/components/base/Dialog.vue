@@ -34,8 +34,9 @@
 				</cdx-button>
 				<cdx-button
 					id="primary-button"
-					action="destructive"
 					type="primary"
+					:action="primaryButtonStyle"
+					:disabled="primaryButtonDisabled"
 					@click="$emit( 'confirm-dialog' )"
 				>
 					{{ confirmButtonText }}
@@ -110,6 +111,21 @@ module.exports = exports = {
 		size: {
 			type: String,
 			default: 'small'
+		},
+		primaryButtonDisabled: {
+			type: Boolean,
+			// eslint-disable-next-line vue/no-boolean-default
+			default: false,
+			required: false
+		},
+		buttonAction: {
+			type: String,
+			required: false
+		}
+	},
+	computed: {
+		primaryButtonStyle: function () {
+			return this.buttonAction || 'destructive';
 		}
 	},
 	methods: {
