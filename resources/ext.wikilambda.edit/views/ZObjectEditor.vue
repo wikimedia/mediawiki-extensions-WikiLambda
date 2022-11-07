@@ -12,27 +12,7 @@
 			@input="updateZobject"
 		></z-object>
 		<template v-if="showEditCommand">
-			<div
-				class="ext-wikilambda-publishControl">
-				<!-- TODO (T270304): Replace this with a full save dialog (copywarn, IPwarn, minor edit box, …)? -->
-				<cdx-button
-					:primary="true"
-					:progressive="true"
-					:framed="true"
-					@click="submit">
-					{{ submitButtonLabel }}
-				</cdx-button>
-				<label
-					class="ext-wikilambda-editSummary-label"
-					for="summary"> {{ $i18n( 'wikilambda-summarylabel' ).text() }}
-				</label>
-				<input
-					v-model="summary"
-					class="ext-wikilambda-editSummary"
-					:placeholder="submitButtonDescriptionPrompt"
-					name="summary"
-				>
-			</div>
+			<z-object-publish></z-object-publish>
 			<cdx-button
 				v-if="isNewZObject"
 				@click="navigateToFunctionEditor">
@@ -62,6 +42,7 @@
 
 <script>
 var ZObject = require( '../components/ZObject.vue' ),
+	ZObjectPublish = require( '../components/ZObjectPublish.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	mapGetters = require( 'vuex' ).mapGetters,
@@ -74,13 +55,13 @@ module.exports = exports = {
 	name: 'z-object-editor',
 	components: {
 		'z-object': ZObject,
+		'z-object-publish': ZObjectPublish,
 		'cdx-button': CdxButton,
 		'cdx-message': CdxMessage
 	},
 	mixins: [ typeUtils ],
 	data: function () {
 		return {
-			summary: '',
 			Constants: Constants
 		};
 	},
@@ -90,22 +71,6 @@ module.exports = exports = {
 		isNewZObject: 'isNewZObject',
 		getZObjectChildrenById: 'getZObjectChildrenById'
 	} ), {
-		submitButtonLabel: function () {
-			if ( this.createNewPage ) {
-				return mw.msg(
-					mw.config.get( 'wgEditSubmitButtonLabelPublish' ) ?
-						'wikilambda-publishnew' : 'wikilambda-savenew'
-				);
-			} else {
-				return mw.msg(
-					mw.config.get( 'wgEditSubmitButtonLabelPublish' ) ?
-						'wikilambda-publishchanges' : 'wikilambda-savechanges'
-				);
-			}
-		},
-		submitButtonDescriptionPrompt: function () {
-			return this.$i18n( 'wikilambda-publish-summary-prompt' ).text();
-		},
 		showEditCommand: function () {
 			// TODO: Move this into its own vuex store as things gets more complicated and more view settings are set
 			// we currently hide the save command for evaluate function call.
@@ -156,32 +121,6 @@ module.exports = exports = {
 @import 'mediawiki.mixins';
 @import './../../lib/sd-base-variables.less';
 @import './../../lib/wikimedia-ui-base.less';
-
-.ext-wikilambda-publishControl {
-	// Be as wide as possible!
-	.flex( 1, 1, auto, 0 );
-	// … but not too wide
-	max-width: 50em;
-
-	.ext-wikilambda-editSummary {
-		min-width: 25em;
-		box-shadow: inset 0 0 0 1px transparent;
-		.transition( ~'border-color 250ms, box-shadow 250ms' );
-		background-color: @background-color-base;
-		border: @border-width-base @border-style-base @border-color-base;
-		border-radius: @border-radius-base;
-		box-sizing: border-box;
-		color: @color-base--emphasized;
-		font-size: inherit;
-		height: @sd-size-base;
-		line-height: @sd-line-height-base;
-
-		&::placeholder {
-			color: @color-placeholder;
-			opacity: 1;
-		}
-	}
-}
 
 .ext-wikilambda-expertModeToggle {
 	margin: 1em 0 0 0;

@@ -72,7 +72,6 @@
 	"wikilambda-savechanges": "Save changes",
 	"wikilambda-summarylabel": "Summary:",
 	"wikilambda-languagelabel": "Language",
-	"wikilambda-publish-summary-prompt": "Describe what you changed",
 	"wikilambda-publish-input-changed-impact-prompt": "You changed the input field of this function. All existing implementations and tests will be detached from the current function. Do you want to proceed?",
 	"wikilambda-publish-output-changed-impact-prompt": "You changed the output type of this function. All existing implementations and tests will be detached from the current function. Do you want to proceed?",
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "You changed the input field and output type of this function. All existing implementations and tests will be detached from the current function. Do you want to proceed?",

@@ -82,7 +82,6 @@
 	"wikilambda-savechanges": "Label for the submit button when updating an existing ZObject on a private wiki",
 	"wikilambda-summarylabel": "Label for summary of changes in the edited ZObject\n{{identical|Summary}}",
 	"wikilambda-languagelabel": "Label for language selector",
-	"wikilambda-publish-summary-prompt": "Placeholder label for summary of changes in the edited ZObject.",
 	"wikilambda-publish-input-changed-impact-prompt": "Description for impact of editing function input type",
 	"wikilambda-publish-output-changed-impact-prompt": "Description for impact of editing function output type",
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "Description for impact of editing function input and output type",

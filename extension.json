@@ -265,7 +265,6 @@
 				"wikilambda-savechanges",
 				"wikilambda-summarylabel",
 				"wikilambda-languagelabel",
-				"wikilambda-publish-summary-prompt",
 				"wikilambda-publish-input-changed-impact-prompt",
 				"wikilambda-publish-output-changed-impact-prompt",
 				"wikilambda-publish-input-and-output-changed-impact-prompt",
