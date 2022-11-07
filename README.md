@@ -39,9 +39,14 @@ Much further functionality is to come.
   }
   ```
 * Run `docker-compose exec mediawiki composer update` or similar.
+* In your `mediawiki/extensions/` subdirectory, also clone the WikimediaMessages extension:
+  ```
+  git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/WikimediaMessages
+  ```
 * Add the following to your `LocalSettings.php` file:
   ```
   wfLoadExtension( 'WikiLambda' );
+  wfLoadExtension( 'WikimediaMessages' );
   ```
 * Run `php maintenance/update.php` (or `docker-compose exec mediawiki php maintenance/update.php` if MediaWiki is setup through Docker) to provision necessary schemas and initial content (this step could take around 20 minutes).
 
