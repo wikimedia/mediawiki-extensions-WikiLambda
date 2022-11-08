@@ -79,7 +79,6 @@
 	"wikilambda-savechanges": "Enregistrer les modifications",
 	"wikilambda-summarylabel": "Résumé :",
 	"wikilambda-languagelabel": "Langue",
-	"wikilambda-publish-summary-prompt": "Décrivez ce que vous avez modifié",
 	"wikilambda-publish-input-changed-impact-prompt": "Vous avez modifié le champ de saisie de cette fonction. Toutes les mises en œuvre et tous les tests existants seront détachés de la fonction actuelle. Voulez-vous poursuivre ?",
 	"wikilambda-publish-output-changed-impact-prompt": "Vous avez modifié le type de sortie de cette fonction. Toutes les mises en œuvre et tous les tests existants seront détachés de la fonction actuelle. Voulez-vous poursuivre ?",
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "Vous avez modifié le champ d’entrée et le type de sortie de cette fonction. Toutes les mises en œuvre et tous les tests existants seront détachés de la fonction actuelle. Voulez-vous poursuivre ?",

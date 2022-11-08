@@ -59,7 +59,6 @@
 	"wikilambda-publishchanges": "Опублікувати зміни",
 	"wikilambda-savechanges": "Зберегти зміни",
 	"wikilambda-summarylabel": "Опис:",
-	"wikilambda-publish-summary-prompt": "Опишіть, що ви змінили",
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "Ви змінили поле введення та тип виведення цієї функції. Усі існуючі реалізації та тести буде від’єднано від поточної функції. Ви бажаєте продовжити?",
 	"wikilambda-loading": "Завантаження даних",
 	"wikilambda-typeselector-label": "Оберіть тип",

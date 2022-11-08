@@ -85,7 +85,6 @@
 	"wikilambda-savechanges": "Guardar cambios",
 	"wikilambda-summarylabel": "Resumen:",
 	"wikilambda-languagelabel": "Idioma",
-	"wikilambda-publish-summary-prompt": "Describe lo que has cambiado",
 	"wikilambda-loading": "Cargando datos",
 	"wikilambda-typeselector-label": "Seleccionar tipo",
 	"wikilambda-argument-typeselector-label": "Seleccione un Tipo para este argumento",

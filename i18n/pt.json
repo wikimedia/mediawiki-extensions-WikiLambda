@@ -67,7 +67,6 @@
 	"wikilambda-savechanges": "Gravar alterações",
 	"wikilambda-summarylabel": "Resumo:",
 	"wikilambda-languagelabel": "Língua",
-	"wikilambda-publish-summary-prompt": "Descreva o que alterou",
 	"wikilambda-publish-input-changed-impact-prompt": "Alterou o campo de entrada desta função. Todas as implementações e testes existentes serão desanexados da função atual. Quer prosseguir?",
 	"wikilambda-publish-output-changed-impact-prompt": "Alterou o tipo da saída desta função. Todas as implementações e testes existentes serão desanexados da função atual. Quer prosseguir?",
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "Alterou o campo de entrada e o tipo da saída desta função. Todas as implementações e testes existentes serão desanexados da função atual. Quer prosseguir?",
