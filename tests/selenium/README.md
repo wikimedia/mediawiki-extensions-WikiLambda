@@ -1,6 +1,8 @@
 # Selenium tests
 For more information see https://www.mediawiki.org/wiki/Selenium
 
+And the WebDriver API used here: https://webdriver.io/docs/api
+
 ## Setup
 See https://www.mediawiki.org/wiki/MediaWiki-Docker/Extension/WikiLambda
 
