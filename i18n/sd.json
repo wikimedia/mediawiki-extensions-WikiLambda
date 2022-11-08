@@ -6,5 +6,7 @@
 	},
 	"wikilambda-persistentzobject-contents": "فھرست",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "ٻولي",
-	"wikilambda-metadata-language-column": "ٻولي"
+	"wikilambda-metadata-language-column": "ٻولي",
+	"wikilambda-metadata-label-column": "ليبل",
+	"wikilambda-metadata-aka-column": "المعروف/عرف"
 }
