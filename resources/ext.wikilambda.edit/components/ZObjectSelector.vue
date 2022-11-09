@@ -246,34 +246,34 @@ module.exports = exports = {
 					if ( payload && payload.length > 0 ) {
 						payload.forEach(
 							function ( result ) {
-								// filter out aliases - do we want searching by alias to work?
-								if ( result.is_primary > 0 ) {
-									var zid = result.page_title,
-										lang = result.page_lang,
-										label = result.label;
-									// Update lookupResults list
-									// If we are searching for Types (this.type === Constants.Z_TYPE)
-									// we should exclude Z1, Z2, Z7 and Z9 from the results
-									if ( !self.isExcludedZType( zid ) ) {
-										if ( self.usedLanguageZids ? !self.isUsedLanguage( zid ) : true ) {
-											self.lookupResults.push(
-												{
-													value: zid,
-													label
-												}
-											);
-										}
-									}
-									// Update zKeyLabels in the Vuex store
-									if ( !( zid in self.zkeyLabels ) ) {
-										self.addAllZKeyLabels( [ {
-											zid,
-											label,
-											lang
-										} ] );
+								var zid = result.page_title,
+									lang = result.page_lang,
+									label = result.label;
 
-										zKeys.push( zid );
+								// TODO (T322757): Show aliases ( result.is_primary === 0 ) differently
+
+								// Update lookupResults list
+								// If we are searching for Types (this.type === Constants.Z_TYPE)
+								// we should exclude Z1, Z2, Z7 and Z9 from the results
+								if ( !self.isExcludedZType( zid ) ) {
+									if ( self.usedLanguageZids ? !self.isUsedLanguage( zid ) : true ) {
+										self.lookupResults.push(
+											{
+												value: zid,
+												label
+											}
+										);
 									}
+								}
+								// Update zKeyLabels in the Vuex store
+								if ( !( zid in self.zkeyLabels ) ) {
+									self.addAllZKeyLabels( [ {
+										zid,
+										label,
+										lang
+									} ] );
+
+									zKeys.push( zid );
 								}
 							}
 						);
