@@ -9,10 +9,9 @@
 	<div id="ext-wikilambda-editor">
 		<z-object
 			:persistent="true"
-			@input="updateZobject"
 		></z-object>
 		<template v-if="showEditCommand">
-			<z-object-publish></z-object-publish>
+			<z-object-publish :is-disabled="!isDirty"></z-object-publish>
 			<cdx-button
 				v-if="isNewZObject"
 				@click="navigateToFunctionEditor">
@@ -69,22 +68,22 @@ module.exports = exports = {
 		createNewPage: 'isCreateNewPage',
 		message: 'getZObjectMessage',
 		isNewZObject: 'isNewZObject',
-		getZObjectChildrenById: 'getZObjectChildrenById'
+		getZObjectChildrenById: 'getZObjectChildrenById',
+		getIsZObjectDirty: 'getIsZObjectDirty'
 	} ), {
 		showEditCommand: function () {
 			// TODO: Move this into its own vuex store as things gets more complicated and more view settings are set
 			// we currently hide the save command for evaluate function call.
 			return mw.config.get( 'wgCanonicalSpecialPageName' ) !== 'EvaluateFunctionCall';
+		},
+		isDirty: function () {
+			return this.getIsZObjectDirty;
 		}
 	} ),
 	methods: $.extend( {},
 		mapActions( [ 'submitZObject', 'changeType', 'validateZObject' ] ),
 		mapActions( 'router', [ 'navigate' ] ),
 		{
-			updateZobject: function ( newZobject ) {
-				this.zobject = newZobject;
-			},
-
 			submit: function () {
 				const context = this;
 				this.validateZObject().then( function ( validity ) {

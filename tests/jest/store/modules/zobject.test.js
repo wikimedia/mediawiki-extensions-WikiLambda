@@ -395,6 +395,20 @@ describe( 'zobject Vuex module', function () {
 					.toEqual( [ 'Z333', 'Z444' ] );
 			} );
 		} );
+
+		describe( 'getIsZObjectDirty', function () {
+			it( 'returns the default isZObjectDirty false', function () {
+				expect( zobjectModule.getters.getIsZObjectDirty( state ) )
+					.toEqual( false );
+			} );
+
+			it( 'returns isZObjectDirty from the updated state', function () {
+				state.isZObjectDirty = true;
+
+				expect( zobjectModule.getters.getIsZObjectDirty( state ) )
+					.toEqual( true );
+			} );
+		} );
 	} );
 
 	describe( 'Mutations', function () {
@@ -437,6 +451,14 @@ describe( 'zobject Vuex module', function () {
 				} );
 			} );
 		} );
+
+		describe( 'setIsZObjectDirty', function () {
+			it( 'Updates the isZObjectDirty value', function () {
+				zobjectModule.mutations.setIsZObjectDirty( state, true );
+
+				expect( state.isZObjectDirty ).toEqual( true );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', function () {
@@ -477,6 +499,14 @@ describe( 'zobject Vuex module', function () {
 			expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedChangeTypePayload );
 			expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
 			expect( context.state.zobject ).toEqual( zobjectTree );
+		} );
+
+		it( 'Dispatches isZObjectDirty', function () {
+			const isZObjectDirty = true;
+			zobjectModule.actions.setIsZObjectDirty( context, isZObjectDirty );
+
+			expect( context.commit ).toHaveBeenCalledTimes( 1 );
+			expect( context.commit ).toHaveBeenCalledWith( 'setIsZObjectDirty', isZObjectDirty );
 		} );
 
 		it( 'Dispatches errors for an invalid zFunction', function () {

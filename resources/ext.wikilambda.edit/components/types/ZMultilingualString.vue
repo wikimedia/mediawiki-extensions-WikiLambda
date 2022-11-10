@@ -94,7 +94,7 @@ module.exports = exports = {
 		}
 	),
 	methods: $.extend( {},
-		mapActions( [ 'addZMonolingualString' ] ),
+		mapActions( [ 'addZMonolingualString', 'setIsZObjectDirty' ] ),
 		{
 			/**
 			 * Fires a `change` event with the index of a Monolingual String
@@ -127,6 +127,7 @@ module.exports = exports = {
 						parentId: this.monolingualStringsParentId
 					};
 				this.addZMonolingualString( payload );
+				this.setIsZObjectDirty( true );
 				this.$refs.langSelector.clearResults();
 			},
 

@@ -104,7 +104,7 @@ module.exports = exports = {
 		}
 	),
 	methods: $.extend( {},
-		mapActions( [ 'setZObjectValue', 'removeZObject', 'removeZObjectChildren', 'fetchZKeys' ] ),
+		mapActions( [ 'setZObjectValue', 'removeZObject', 'removeZObjectChildren', 'fetchZKeys', 'setIsZObjectDirty' ] ),
 		{
 			/**
 			 * Remove a specif language and its children from the Zobject
@@ -113,6 +113,7 @@ module.exports = exports = {
 			removeLang: function () {
 				this.removeZObjectChildren( this.zobjectId );
 				this.removeZObject( this.zobjectId );
+				this.setIsZObjectDirty( true );
 			},
 			/**
 			 * Update the Value of a specific Language bu its ID
@@ -126,6 +127,7 @@ module.exports = exports = {
 					value: event.target.value
 				};
 				this.setZObjectValue( payload );
+				this.setIsZObjectDirty( true );
 			}
 		} ),
 	mounted: function () {

@@ -37,7 +37,8 @@ module.exports = exports = {
 	},
 	extends: ZTypedList,
 	computed: mapGetters( [ 'getNextObjectId' ] ),
-	methods: $.extend( mapActions( [ 'addZArgument', 'removeZObjectChildren', 'removeZObject', 'recalculateZArgumentList' ] ), {
+	methods: $.extend( mapActions(
+		[ 'addZArgument', 'removeZObjectChildren', 'removeZObject', 'recalculateZArgumentList', 'setIsZObjectDirty' ] ), {
 		addNewItem: function ( /* event */ ) {
 			var nextId = this.getNextObjectId,
 				payload = {
@@ -48,11 +49,13 @@ module.exports = exports = {
 			this.addZObject( payload );
 
 			this.addZArgument( { id: nextId } );
+			this.setIsZObjectDirty( true );
 		},
 		removeItem: function ( itemId ) {
 			this.removeZObjectChildren( itemId );
 			this.removeZObject( itemId );
 			this.recalculateZArgumentList( this.zobjectId );
+			this.setIsZObjectDirty( true );
 		}
 	} )
 };

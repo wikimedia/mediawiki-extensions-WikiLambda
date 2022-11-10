@@ -18,6 +18,7 @@
 
 <script>
 var mapGetters = require( 'vuex' ).mapGetters,
+	mapActions = require( 'vuex' ).mapActions,
 	typeUtils = require( '../mixins/typeUtils.js' ),
 	schemata = require( '../mixins/schemata.js' ),
 	CodeEditor = require( './base/CodeEditor.vue' );
@@ -94,44 +95,49 @@ module.exports = exports = {
 			}
 		}
 	),
-	methods: {
-		codeChangeHandler: function ( val ) {
-			this.codeEditorState = val;
-			// this will ensure non-clickout events
-			// (like clicking the submit button directly) still get processed the same way
-			// however this will trigger a lot of false positives so there is probably a smarter way to do this
-			// TODO (T301286): find  a more performant solution
-			this.onClickoutHandler();
-		},
-		onClickoutHandler: function () {
-			if ( this.readonly ) {
-				return;
-			}
-			var json,
-				self = this;
-			if ( this.zobjectId !== undefined ) {
-				try {
-					json = JSON.parse( this.codeEditorState );
-				} catch ( error ) {
-					// JSON parse failed, do nothing
+	methods: $.extend( {},
+		mapActions( [
+			'setIsZObjectDirty'
+		] ),
+		{
+			codeChangeHandler: function ( val ) {
+				this.codeEditorState = val;
+				// this will ensure non-clickout events
+				// (like clicking the submit button directly) still get processed the same way
+				// however this will trigger a lot of false positives so there is probably a smarter way to do this
+				// TODO (T301286): find  a more performant solution
+				this.onClickoutHandler();
+			},
+			onClickoutHandler: function () {
+				if ( this.readonly ) {
 					return;
 				}
-
-				this.$store.dispatch( 'injectZObject', {
-					zobject: json,
-					key: this.zobject.key,
-					id: this.zobjectId,
-					parent: this.zobject.parent
-				} ).then( function ( newType ) {
-					if ( self.isValidZidFormat( newType ) ) {
-						self.$emit( 'change-literal', newType );
+				var json,
+					self = this;
+				if ( this.zobjectId !== undefined ) {
+					try {
+						json = JSON.parse( this.codeEditorState );
+					} catch ( error ) {
+						// JSON parse failed, do nothing
+						return;
 					}
-				} ).catch( function ( error ) {
-					throw error;
-				} );
+					this.$store.dispatch( 'injectZObject', {
+						zobject: json,
+						key: this.zobject.key,
+						id: this.zobjectId,
+						parent: this.zobject.parent
+					} ).then( function ( newType ) {
+						if ( self.isValidZidFormat( newType ) ) {
+							self.$emit( 'change-literal', newType );
+						}
+					} ).catch( function ( error ) {
+						throw error;
+					} );
+				}
+				this.setIsZObjectDirty( true );
 			}
 		}
-	},
+	),
 	watch: {
 		zobjectRaw: function () {
 			this.codeEditorState = this.canonicalJson;

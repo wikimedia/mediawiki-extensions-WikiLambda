@@ -250,7 +250,8 @@ module.exports = exports = {
 		'initializeResultId',
 		'injectZObject',
 		'removeZObject',
-		'removeZObjectChildren'
+		'removeZObjectChildren',
+		'setIsZObjectDirty'
 	] ), {
 		typeHandler: function ( zid ) {
 			// Clear out results when function is changed or removed.
@@ -275,6 +276,8 @@ module.exports = exports = {
 					}
 				}.bind( this ) );
 			}.bind( this ) );
+
+			this.setIsZObjectDirty( true );
 		},
 		findArgumentId: function ( key ) {
 			return this.findKeyInArray( key, this.zobject ).id;

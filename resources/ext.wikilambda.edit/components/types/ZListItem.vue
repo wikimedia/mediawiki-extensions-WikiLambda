@@ -87,7 +87,7 @@ module.exports = exports = {
 			}
 		} ),
 	methods: $.extend( {},
-		mapActions( [ 'changeType' ] ),
+		mapActions( [ 'changeType', 'setIsZObjectDirty' ] ),
 		{
 			/*
 			* Sets the current list item type.
@@ -100,6 +100,7 @@ module.exports = exports = {
 					id: this.zobjectId
 				};
 				this.changeType( payload );
+				this.setIsZObjectDirty( true );
 			}
 		} ),
 	beforeCreate: function () {

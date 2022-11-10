@@ -82,7 +82,8 @@ module.exports = exports = {
 	methods: $.extend( {},
 		mapActions( [
 			'addZObject',
-			'removeZObjectChildren'
+			'removeZObjectChildren',
+			'setIsZObjectDirty'
 		] ),
 		mapMutations( [ 'addAllZKeyLabels' ] ),
 		{
@@ -115,6 +116,7 @@ module.exports = exports = {
 			 */
 			removeKey: function ( objectId ) {
 				this.removeZObjectChildren( objectId );
+				this.setIsZObjectDirty( true );
 			}
 		}
 	),

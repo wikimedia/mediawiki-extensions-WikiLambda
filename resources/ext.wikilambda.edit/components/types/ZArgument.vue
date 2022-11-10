@@ -102,13 +102,14 @@ module.exports = exports = {
 				return this.zKeyLabels[ Constants.Z_ARGUMENT_LABEL ];
 			}
 		} ),
-	methods: $.extend( mapActions( [ 'fetchZKeys', 'setZObjectValue' ] ), {
+	methods: $.extend( mapActions( [ 'fetchZKeys', 'setZObjectValue', 'setIsZObjectDirty' ] ), {
 		typeHandler: function ( type ) {
 			var payload = {
 				id: this.argumentTypeItem.id,
 				value: type
 			};
 			this.setZObjectValue( payload );
+			this.setIsZObjectDirty( true );
 		}
 	} ),
 	mounted: function () {
