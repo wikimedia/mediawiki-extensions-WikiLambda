@@ -225,6 +225,7 @@ module.exports = exports = {
 						parent: this.zMultilingualStringsetValueId
 					} );
 				}
+				this.$emit( 'updated-alias' );
 			},
 			updateAlias: function ( aliasStringValueId, value ) {
 				this.clearAliasError();
@@ -233,6 +234,7 @@ module.exports = exports = {
 					value: value
 				};
 				this.setZObjectValue( payload );
+				this.$emit( 'updated-alias' );
 			},
 			removeAlias: function ( aliasStringValueId ) {
 				this.clearAliasError();
@@ -241,6 +243,7 @@ module.exports = exports = {
 				this.removeZObjectChildren( aliasStringObject.id );
 				this.removeZObject( aliasStringObject.id );
 				this.recalculateZListIndex( aliasStringSetId );
+				this.$emit( 'updated-alias' );
 			},
 			clearAliasError: function () {
 				this.repeatAlias = null;

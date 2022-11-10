@@ -30,7 +30,7 @@ describe( 'FunctionDefinitionFooter', function () {
 	it( 'displays the ZObjectPublish component', function () {
 		var wrapper = VueTestUtils.mount( FunctionDefinitionFooter );
 
-		expect( wrapper.find( '.ext-wikilamba-publish-zobject' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-publish-zobject' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'triggers the "cancel" event on cancel button click', function () {

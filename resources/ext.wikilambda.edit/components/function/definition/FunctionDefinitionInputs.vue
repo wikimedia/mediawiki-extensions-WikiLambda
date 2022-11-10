@@ -170,6 +170,7 @@ module.exports = exports = {
 		},
 		updateArgumentLabel: function () {
 			this.setAvailableZArguments( this.zFunctionId );
+			this.$emit( 'updated-argument-label' );
 		},
 		setActiveInput: function ( index ) {
 			this.activeInputIndex = index;
