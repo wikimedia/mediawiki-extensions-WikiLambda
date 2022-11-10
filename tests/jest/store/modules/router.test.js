@@ -169,153 +169,537 @@ describe( 'router Vuex module', function () {
 				function () {
 					window.mw.Uri.mockImplementation( function () {
 						return {
-							query: {}
+							query: {},
+							path: new window.mw.Title( Constants.PATHS.CREATE_Z_OBJECT_TITLE ).getUrl()
 						};
 					} );
 				}
 			);
 
-			it( 'default current view to zObject viewer', function () {
+			describe( 'Edit Function Route loads Function Editor', function () {
 
-				routerInstance.actions.evaluateUri( context );
+				describe( 'with URL Format One (/w/index.php)', function () {
+					it( 'When action is edit and view is not passed', function () {
+						context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
 
-				expect( context.dispatch ).toHaveBeenCalled();
-				expect( context.dispatch ).toHaveBeenCalledWith(
-					'changeCurrentView', Constants.VIEWS.Z_OBJECT_VIEWER );
-			} );
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: {
+									action: Constants.ACTIONS.EDIT,
+									title: 'Z0'
+								},
+								path: new window.mw.Title( 'Z0' ).getUrl( { title: 'Z0', action: Constants.ACTIONS.EDIT } )
+							};
+						} );
 
-			describe( 'when mw.Uri includes a value for "view"', function () {
-				it( 'changes the current view', function () {
-					var fakeView = 'zobject-viewer',
-						fakeParams = 'fakeParameter';
-					window.mw.Uri.mockImplementationOnce( function () {
-						return {
-							query: {
-								view: fakeView,
-								fakeParams: fakeParams
-							}
-						};
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
 					} );
 
-					routerInstance.actions.evaluateUri( context );
+					it( 'When action is edit and view is passed as function editor', function () {
+						context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
+						const queryParams = {
+							action: Constants.ACTIONS.EDIT,
+							title: 'Z0',
+							view: Constants.VIEWS.FUNCTION_EDITOR
+						};
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
+							};
+						} );
 
-					expect( context.dispatch ).toHaveBeenCalled();
-					expect( context.dispatch ).toHaveBeenNthCalledWith( 1, 'changeCurrentView', fakeView );
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
+					} );
 				} );
 
-				it( 'renders VIEW_Z_OBJECT when the view passed is equal to Z_OBJECT_VIEWER and ZID is Z_FUNCTION', function () {
+				describe( 'with URL Format Two (/wiki/{{title}})', function () {
+					it( 'When action is edit and view is not passed', function () {
+						context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
+
+						const queryParams = {
+							action: Constants.ACTIONS.EDIT,
+							title: 'Z0'
+						};
+
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
+					} );
+
+					it( 'When action is edit and view is passed', function () {
+						context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
+						const queryParams = {
+							action: Constants.ACTIONS.EDIT,
+							title: 'Z0',
+							view: Constants.VIEWS.FUNCTION_EDITOR
+						};
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
+					} );
+				} );
+
+			} );
+
+			describe( 'Edit ZObject Route loads ZObject Editor', function () {
+
+				describe( 'with URL Format One (/w/index.php)', function () {
+					it( 'When action is edit and view is not passed', function () {
+
+						window.mw.Uri.mockImplementationOnce( function () {
+							const queryParams = {
+								action: Constants.ACTIONS.EDIT,
+								title: 'Z0'
+							};
+							return {
+								query: queryParams,
+								path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
+					} );
+
+					it( 'When action is edit and view is passed as zoject editor', function () {
+						const queryParams = {
+							action: Constants.ACTIONS.EDIT,
+							title: 'Z0',
+							view: Constants.VIEWS.Z_OBJECT_EDITOR
+						};
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
+					} );
+
+					it( 'When action is edit, zobject is a function and view is passed as zoject editor', function () {
+						context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
+						const queryParams = {
+							action: Constants.ACTIONS.EDIT,
+							title: 'Z0',
+							view: Constants.VIEWS.Z_OBJECT_EDITOR
+						};
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
+					} );
+				} );
+
+				describe( 'with URL Format Two (/wiki/{{title}})', function () {
+					it( 'When action is edit and view is not passed', function () {
+						const queryParams = {
+							action: Constants.ACTIONS.EDIT,
+							title: 'Z0'
+						};
+
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
+					} );
+
+					it( 'When action is edit and view is passed as zobject editor', function () {
+						const queryParams = {
+							action: Constants.ACTIONS.EDIT,
+							title: 'Z0',
+							view: Constants.VIEWS.Z_OBJECT_EDITOR
+						};
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
+					} );
+
+					it( 'When action is edit, zobject is a function and view is passed as zobject editor', function () {
+						context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
+						const queryParams = {
+							action: Constants.ACTIONS.EDIT,
+							title: 'Z0',
+							view: Constants.VIEWS.Z_OBJECT_EDITOR
+						};
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
+					} );
+				} );
+
+			} );
+
+			describe( 'View Function Route loads Function Viewer', function () {
+
+				describe( 'with URL Format One (/w/index.php)', function () {
+					it( 'When zobject is a function', function () {
+						context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
+
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: {
+									title: 'Z0'
+								},
+								path: new window.mw.Title( 'Z0' ).getUrl( { title: 'Z0' } )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
+					} );
+
+					it( 'When zobject is a function and view is passed as function viewer', function () {
+						context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
+						const queryParams = {
+							title: 'Z0',
+							view: Constants.VIEWS.FUNCTION_VIEWER
+						};
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
+					} );
+
+					it( 'When zobject is a function and an invalid view is passed', function () {
+						context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
+						const queryParams = {
+							title: 'Z0',
+							view: Constants.VIEWS.FUNCTION_EDITOR
+						};
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
+					} );
+				} );
+
+				describe( 'with URL Format Two (/wiki/{{title}})', function () {
+					it( 'When zobject is a function', function () {
+						context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
+
+						const queryParams = {
+							title: 'Z0'
+						};
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
+					} );
+
+					it( 'When zobject is a function and view is passed as function viewer', function () {
+						context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
+						const queryParams = {
+							title: 'Z0',
+							view: Constants.VIEWS.FUNCTION_VIEWER
+						};
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
+					} );
+
+					it( 'When zobject is a function and an invalid view is passed', function () {
+						context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
+						const queryParams = {
+							title: 'Z0',
+							view: Constants.VIEWS.FUNCTION_EDITOR
+						};
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
+					} );
+				} );
+
+			} );
+
+			describe( 'View ZObject Route loads ZObject Viewer', function () {
+
+				describe( 'with URL Format One (/w/index.php)', function () {
+					it( 'When view is not passed', function () {
+
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: {
+									title: 'Z0'
+								},
+								path: new window.mw.Title( 'Z0' ).getUrl( { title: 'Z0', action: Constants.ACTIONS.EDIT } )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.Z_OBJECT_VIEWER );
+					} );
+
+					it( 'When view is passed as zoject viewer', function () {
+						const queryParams = {
+							title: 'Z0',
+							view: Constants.VIEWS.Z_OBJECT_VIEWER
+						};
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.Z_OBJECT_VIEWER );
+					} );
+
+					it( 'When zobject is a function and view is passed as zoject viewer', function () {
+						context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
+						const queryParams = {
+							title: 'Z0',
+							view: Constants.VIEWS.Z_OBJECT_VIEWER
+						};
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( 'Z0' ).getUrl( queryParams )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.Z_OBJECT_VIEWER );
+					} );
+				} );
+
+				describe( 'with URL Format Two (/wiki/{{title}})', function () {
+					it( 'When view is not passed', function () {
+						const queryParams = {
+							title: 'Z0'
+						};
+
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( queryParams )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.Z_OBJECT_VIEWER );
+					} );
+
+					it( 'When view is passed as zobject viewer', function () {
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: {
+									title: 'Z0',
+									view: Constants.VIEWS.Z_OBJECT_VIEWER
+								},
+								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( { view: Constants.VIEWS.Z_OBJECT_VIEWER } )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.Z_OBJECT_VIEWER );
+					} );
+
+					it( 'When zobject is a function and view is passed as zobject viewer', function () {
+						context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: {
+									title: 'Z0',
+									view: Constants.VIEWS.Z_OBJECT_VIEWER
+								},
+								path: new window.mw.Title( 'Z0' ).getUrl() + '?' + global.toQueryParam( { view: Constants.VIEWS.Z_OBJECT_VIEWER } )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.Z_OBJECT_VIEWER );
+					} );
+				} );
+
+			} );
+
+			describe( 'Create Function Route loads Function Editor', function () {
+
+				describe( 'with URL Format One (/w/index.php)', function () {
+					it( 'When zid is passed as Z8(Z_FUNCTION)', function () {
+						const queryParams = {
+							zid: Constants.Z_FUNCTION
+						};
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( Constants.PATHS.CREATE_Z_OBJECT_TITLE ).getUrl( queryParams )
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
+					} );
+				} );
+
+				describe( 'with URL Format Two (/wiki/{{title}})', function () {
+					it( 'When zid is passed as Z8(Z_FUNCTION)', function () {
+						const queryParams = {
+							zid: Constants.Z_FUNCTION
+						};
+						window.mw.Uri.mockImplementationOnce( function () {
+							return {
+								query: queryParams,
+								path: new window.mw.Title( Constants.PATHS.CREATE_Z_OBJECT_TITLE ).getUrl()
+							};
+						} );
+
+						routerInstance.actions.evaluateUri( context );
+
+						expect( context.dispatch ).toHaveBeenCalled();
+						expect( context.dispatch ).toHaveBeenCalledWith(
+							'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
+					} );
+				} );
+
+			} );
+
+			describe( 'Create ZObject Route loads ZObject Editor', function () {
+				it( 'with URL Format One (/w/index.php)', function () {
 					window.mw.Uri.mockImplementationOnce( function () {
 						return {
 							query: {
-								zid: Constants.Z_FUNCTION,
-								view: Constants.VIEWS.Z_OBJECT_VIEWER
+								title: Constants.PATHS.CREATE_Z_OBJECT_TITLE,
+								zid: Constants.Z_IMPLEMENTATION
 							},
-							path: Constants.PATHS.VIEW_Z_OBJECT
-						};
-					} );
-
-					routerInstance.actions.evaluateUri( context );
-
-					expect( context.dispatch ).toHaveBeenCalled();
-					expect( context.dispatch ).toHaveBeenCalledWith(
-						'changeCurrentView', Constants.VIEWS.Z_OBJECT_VIEWER );
-				} );
-
-			} );
-
-			describe( 'changes current view to Function Editor', function () {
-				it( 'when query zid is equal to Z_FUNCTION', function () {
-					window.mw.Uri.mockImplementationOnce( function () {
-						return {
-							query: {
-								zid: Constants.Z_FUNCTION
-							},
-							path: Constants.PATHS.EDIT_Z_OBJECT
-						};
-					} );
-
-					routerInstance.actions.evaluateUri( context );
-
-					expect( context.dispatch ).toHaveBeenCalled();
-					expect( context.dispatch ).toHaveBeenCalledWith(
-						'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
-				} );
-				it( 'when getCurrentZObjectType is equal to Z_FUNCTION', function () {
-					context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
-					window.mw.Uri.mockImplementationOnce( function () {
-						return {
-							path: Constants.PATHS.EDIT_Z_OBJECT,
-							query: {}
-						};
-					} );
-
-					routerInstance.actions.evaluateUri( context );
-
-					expect( context.dispatch ).toHaveBeenCalled();
-					expect( context.dispatch ).toHaveBeenCalledWith(
-						'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
-				} );
-				it( 'when view is FUNCTION_EDITOR and it is a new zObject page', function () {
-					context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
-					window.mw.Uri.mockImplementationOnce( function () {
-						return {
-							query: {
-								zid: Constants.Z_FUNCTION,
-								view: Constants.VIEWS.FUNCTION_EDITOR
-							},
-							path: Constants.PATHS.CREATE_Z_OBJECT
-						};
-					} );
-
-					mw.Title = jest.fn( function ( title ) {
-						return {
-							getUrl: jest.fn( function () {
-								return '/wiki/' + title;
-							} )
-						};
-					} );
-
-					routerInstance.actions.evaluateUri( context );
-
-					expect( context.dispatch ).toHaveBeenCalled();
-					expect( context.dispatch ).toHaveBeenCalledWith(
-						'changeCurrentView', Constants.VIEWS.FUNCTION_EDITOR );
-				} );
-			} );
-
-			describe( 'changes current view to Function Viewer', function () {
-				it( 'when query zid is equal to Z_FUNCTION', function () {
-					window.mw.Uri.mockImplementationOnce( function () {
-						return {
-							query: {
-								zid: Constants.Z_FUNCTION
-							}
-						};
-					} );
-
-					routerInstance.actions.evaluateUri( context );
-
-					expect( context.dispatch ).toHaveBeenCalled();
-					expect( context.dispatch ).toHaveBeenCalledWith(
-						'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
-				} );
-				it( 'when getCurrentZObjectType is equal tp Z_FUNCTION', function () {
-					context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
-
-					routerInstance.actions.evaluateUri( context );
-
-					expect( context.dispatch ).toHaveBeenCalled();
-					expect( context.dispatch ).toHaveBeenCalledWith(
-						'changeCurrentView', Constants.VIEWS.FUNCTION_VIEWER );
-				} );
-			} );
-
-			describe( 'changes current view to zObject Editor', function () {
-				it( 'when uri path is Evaluate function call', function () {
-					window.mw.Uri.mockImplementationOnce( function () {
-						return {
-							path: Constants.PATHS.EVALUATE_FUNCTION_CALL,
-							query: {}
+							path: new window.mw.Title( Constants.PATHS.CREATE_Z_OBJECT_TITLE )
+								.getUrl( { zid: Constants.Z_IMPLEMENTATION } )
 						};
 					} );
 
@@ -325,43 +709,12 @@ describe( 'router Vuex module', function () {
 					expect( context.dispatch ).toHaveBeenCalledWith(
 						'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
 				} );
-				it( 'when uri path is Create zObject', function () {
+
+				it( 'with URL Format Two (/wiki/{{title}})', function () {
 					window.mw.Uri.mockImplementationOnce( function () {
 						return {
-							path: Constants.PATHS.CREATE_Z_OBJECT,
-							query: {}
-						};
-					} );
-
-					routerInstance.actions.evaluateUri( context );
-
-					expect( context.dispatch ).toHaveBeenCalled();
-					expect( context.dispatch ).toHaveBeenCalledWith(
-						'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
-				} );
-				it( 'when uri path is edit zObject', function () {
-					window.mw.Uri.mockImplementationOnce( function () {
-						return {
-							path: Constants.PATHS.EDIT_Z_OBJECT,
-							query: {}
-						};
-					} );
-
-					routerInstance.actions.evaluateUri( context );
-
-					expect( context.dispatch ).toHaveBeenCalled();
-					expect( context.dispatch ).toHaveBeenCalledWith(
-						'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
-				} );
-
-				it( 'when uri path is edit zObject(function) and the view passed is equal to zObject editor', function () {
-					window.mw.Uri.mockImplementationOnce( function () {
-						return {
-							query: {
-								zid: Constants.Z_FUNCTION,
-								view: Constants.VIEWS.Z_OBJECT_EDITOR
-							},
-							path: Constants.PATHS.EDIT_Z_OBJECT
+							query: {},
+							path: new window.mw.Title( Constants.PATHS.CREATE_Z_OBJECT_TITLE ).getUrl()
 						};
 					} );
 
@@ -372,6 +725,42 @@ describe( 'router Vuex module', function () {
 						'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
 				} );
 			} );
+
+			describe( 'Evaluate Function Route loads ZObject Editor', function () {
+				it( 'with URL Format One (/w/index.php)', function () {
+					window.mw.Uri.mockImplementationOnce( function () {
+						return {
+							query: {
+								title: Constants.PATHS.EVALUATE_FUNCTION_CALL_TITLE
+							},
+							path: new window.mw.Title( Constants.PATHS.EVALUATE_FUNCTION_CALL_TITLE )
+								.getUrl( { title: Constants.PATHS.EVALUATE_FUNCTION_CALL_TITLE } )
+						};
+					} );
+
+					routerInstance.actions.evaluateUri( context );
+
+					expect( context.dispatch ).toHaveBeenCalled();
+					expect( context.dispatch ).toHaveBeenCalledWith(
+						'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
+				} );
+
+				it( 'with URL Format Two (/wiki/{{title}})', function () {
+					window.mw.Uri.mockImplementationOnce( function () {
+						return {
+							query: {},
+							path: new window.mw.Title( Constants.PATHS.EVALUATE_FUNCTION_CALL_TITLE ).getUrl()
+						};
+					} );
+
+					routerInstance.actions.evaluateUri( context );
+
+					expect( context.dispatch ).toHaveBeenCalled();
+					expect( context.dispatch ).toHaveBeenCalledWith(
+						'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
+				} );
+			} );
+
 		} );
 
 		describe( 'changeCurrentView', function () {

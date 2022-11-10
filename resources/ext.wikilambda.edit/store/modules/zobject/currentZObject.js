@@ -133,7 +133,6 @@ module.exports = exports = {
 		getCurrentZObjectType: function ( state, getters ) {
 			var zobject = getters.getZObjectAsJson,
 				type;
-
 			if ( zobject && zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] ) {
 				type = zobject[
 					Constants.Z_PERSISTENTOBJECT_VALUE ][
@@ -234,7 +233,7 @@ module.exports = exports = {
 					Z1K1: Constants.Z_REFERENCE,
 					[ Constants.Z_REFERENCE_ID ]: languageCode
 				};
-			} );
+			} ) || [];
 		},
 		/**
 		 * Return the boolean value, equivalend to if currentZObjectId is placeholder

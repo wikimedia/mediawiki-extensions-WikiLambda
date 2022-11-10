@@ -45,7 +45,8 @@ module.exports = exports = {
 	},
 	computed: $.extend(
 		mapGetters( [
-			'getZObjectInitialized'
+			'getZObjectInitialized',
+			'isNewZObject'
 		] ), mapGetters(
 			'router',
 			[ 'getCurrentView' ]
@@ -67,6 +68,16 @@ module.exports = exports = {
 		);
 
 		window.onpopstate = function () {
+			// Reinitialize zObject is current zobject is new and user changes route
+			if ( this.isNewZObject ) {
+				this.initializeZObject().then(
+					function () {
+						this.evaluateUri();
+					}.bind( this )
+				);
+				return;
+			}
+
 			this.evaluateUri();
 		}.bind( this );
 	}

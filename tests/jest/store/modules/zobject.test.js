@@ -110,11 +110,6 @@ describe( 'zobject Vuex module', function () {
 				postWithEditToken: postWithEditTokenMock
 			};
 		} );
-		mw.Title = jest.fn( function () {
-			return {
-				getUrl: jest.fn()
-			};
-		} );
 	} );
 
 	describe( 'Getters', function () {

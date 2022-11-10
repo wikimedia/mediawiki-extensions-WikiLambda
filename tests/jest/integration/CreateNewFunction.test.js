@@ -42,21 +42,13 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 				] )
 			};
 		} );
-
-		window.mw.Uri.mockImplementation( () => {
+		const queryParams = {
+			zid: Constants.Z_FUNCTION
+		};
+		window.mw.Uri.mockImplementationOnce( function () {
 			return {
-				path: Constants.PATHS.CREATE_Z_OBJECT,
-				query: {
-					view: Constants.VIEWS.FUNCTION_EDITOR
-				}
-			};
-		} );
-
-		mw.Title = jest.fn( function ( title ) {
-			return {
-				getUrl: jest.fn( function () {
-					return '/wiki/' + title;
-				} )
+				query: queryParams,
+				path: new window.mw.Title( Constants.PATHS.CREATE_Z_OBJECT_TITLE ).getUrl( queryParams )
 			};
 		} );
 	} );

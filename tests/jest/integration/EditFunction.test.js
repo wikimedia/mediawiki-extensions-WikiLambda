@@ -58,12 +58,13 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 
 		window.mw.Uri.mockImplementation( () => {
 			return {
-				path: Constants.PATHS.EDIT_Z_OBJECT,
 				query: {
 					action: Constants.ACTIONS.EDIT,
-					view: Constants.VIEWS.FUNCTION_EDITOR,
 					title: functionZid
-				}
+				},
+				path: new window.mw.Title( functionZid ).getUrl( {
+					title: functionZid, action: Constants.ACTIONS.EDIT
+				} )
 			};
 		} );
 		global.mw.config.get = ( endpoint ) => {
@@ -155,7 +156,7 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		await fireEvent.click( within( publishDialog ).getByText( 'Publish' ) );
 
 		// ASSERT: Location is changed to page returned by API.
-		await waitFor( () => expect( window.location.href ).toEqual( 'newPage?success=true' ) );
+		await waitFor( () => expect( window.location.href ).toEqual( '/wiki/newPage?success=true' ) );
 
 		// ASSERT: Correct ZID and ZObject were posted to the API.
 		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {

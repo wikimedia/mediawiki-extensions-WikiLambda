@@ -58,10 +58,8 @@ describe( 'Wikilambda frontend, running a function on evaluate function call vie
 
 		window.mw.Uri.mockImplementation( () => {
 			return {
-				path: Constants.PATHS.EVALUATE_FUNCTION_CALL,
-				query: {
-					view: Constants.VIEWS.Z_OBJECT_EDITOR
-				}
+				path: new window.mw.Title( Constants.PATHS.EVALUATE_FUNCTION_CALL_TITLE ).getUrl(),
+				query: {}
 			};
 		} );
 

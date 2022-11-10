@@ -3,11 +3,22 @@
 // Assign things to "global" here if you want them to be globally available during tests
 
 const fs = require( 'fs' ),
-	path = require( 'path' );
+	path = require( 'path' ),
+	Constants = require( './resources/ext.wikilambda.edit/Constants.js' ),
+	vueTestUtils = require( '@vue/test-utils' ),
+	vuex = require( 'vuex' );
 
 global.$ = require( 'jquery' );
 
 global.mockLocalStorage = {};
+
+global.toQueryParam = function ( param ) {
+	return Object.keys( param )
+		.map( ( key ) => {
+			return key + '=' + param[ key ];
+		} )
+		.join( '&' );
+};
 
 function Api() {}
 Api.prototype.get = jest.fn().mockReturnValue( $.Deferred().resolve().promise() );
@@ -17,8 +28,13 @@ class Title {
 		this.page = page;
 	}
 
-	getUrl() {
-		return this.page;
+	getUrl( param ) {
+		if ( param && Object.keys( param ).length > 0 ) {
+			param.title = this.page;
+			return Constants.PATHS.ROUTE_FORMAT_ONE + '?' + global.toQueryParam( param );
+		}
+
+		return Constants.PATHS.ROUTE_FORMAT_TWO + this.page;
 	}
 }
 
@@ -92,9 +108,6 @@ global.mw = {
 };
 
 // Mock i18n & store for all tests
-var vueTestUtils = require( '@vue/test-utils' );
-var vuex = require( 'vuex' );
-
 global.$i18n = jest.fn( function ( str ) {
 	return new Mocki18n( str );
 } );

@@ -7,9 +7,8 @@
 
 'use strict';
 
-const Constants = require( '../../../../../resources/ext.wikilambda.edit/Constants.js' );
-
 var VueTestUtils = require( '@vue/test-utils' ),
+	Constants = require( '../../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	FunctionViewerSidebar = require( '../../../../../resources/ext.wikilambda.edit/views/function/details/FunctionViewerDetailsSidebar.vue' );
 
@@ -78,13 +77,6 @@ describe( 'FunctionViewerDetailsSidebar', function () {
 		global.store.hotUpdate( {
 			getters: getters
 		} );
-		mw.Title = jest.fn( function ( title ) {
-			return {
-				getUrl: jest.fn( function () {
-					return '/wiki/' + title;
-				} )
-			};
-		} );
 	} );
 
 	it( 'renders without errors', function () {
@@ -98,7 +90,9 @@ describe( 'FunctionViewerDetailsSidebar', function () {
 		var link = wrapper.find( '#ext-wikilambda-function-viewer-details-sidebar__link--implementation' );
 
 		expect( link.attributes( 'href' ) ).toBeTruthy();
-		expect( link.attributes().href ).toBe( '/wiki/Special:CreateZObject?zid=Z14&Z14K1=Z12345' );
+		expect( link.attributes().href ).toContain( Constants.PATHS.CREATE_Z_OBJECT_TITLE );
+		expect( link.attributes().href ).toContain( 'zid=' + Constants.Z_IMPLEMENTATION );
+		expect( link.attributes().href ).toContain( Constants.Z_IMPLEMENTATION_FUNCTION + '=Z12345' );
 
 	} );
 
@@ -107,7 +101,9 @@ describe( 'FunctionViewerDetailsSidebar', function () {
 		var link = wrapper.find( '#ext-wikilambda-function-viewer-details-sidebar__link--tester' );
 
 		expect( link.attributes( 'href' ) ).toBeTruthy();
-		expect( link.attributes().href ).toBe( '/wiki/Special:CreateZObject?zid=Z20&Z20K1=Z12345' );
+		expect( link.attributes().href ).toContain( Constants.PATHS.CREATE_Z_OBJECT_TITLE );
+		expect( link.attributes().href ).toContain( 'zid=' + Constants.Z_TESTER );
+		expect( link.attributes().href ).toContain( Constants.Z_TESTER_FUNCTION + '=Z12345' );
 
 	} );
 

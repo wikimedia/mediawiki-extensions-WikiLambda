@@ -43,12 +43,16 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 				] )
 			};
 		} );
+
 		window.mw.Uri.mockImplementation( () => {
 			return {
-				path: Constants.PATHS.CREATE_Z_OBJECT,
 				query: {
-					view: Constants.VIEWS.FUNCTION_EDITOR
-				}
+					title: Constants.PATHS.CREATE_Z_OBJECT_TITLE,
+					zid: Constants.Z_FUNCTION
+				},
+				path: new window.mw.Title( Constants.PATHS.CREATE_Z_OBJECT_TITLE ).getUrl( {
+					title: Constants.PATHS.CREATE_Z_OBJECT_TITLE
+				} )
 			};
 		} );
 

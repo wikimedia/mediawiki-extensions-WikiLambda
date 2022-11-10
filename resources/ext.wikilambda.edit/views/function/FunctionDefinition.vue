@@ -356,7 +356,8 @@ module.exports = exports = {
 		 *  @return {boolean} isMainZObject
 		 */
 		isMainZObject: function ( zLang, index ) {
-			return this.currentZObjectLanguages.some(
+			var languageList = this.currentZObjectLanguages || [];
+			return languageList.some(
 				( id ) => id[ Constants.Z_REFERENCE_ID ] === this.getUserZlangZID ) ?
 				zLang === this.getUserZlangZID :
 				index === 0;
@@ -456,13 +457,6 @@ module.exports = exports = {
 		window.addEventListener( 'click', this.handleClickAway );
 	},
 	beforeUnmount: function () {
-		// Clear zobject function scaffolding when unmounted
-		// This cleans up scaffolding for when user click the back button and returns to the base createZObject page
-		if ( this.isNewZObject ) {
-			const zObject = this.getZObjectChildrenById( 0 );
-			const zObjectValue = this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, zObject );
-			this.removeZObjectChildren( zObjectValue.id );
-		}
 		window.removeEventListener( 'click', this.handleClickAway );
 	}
 };
