@@ -129,12 +129,13 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		// ACT: Attempt to click publish button,  before output is set (invalid).
 		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
 
-		// Publish Dialog does not open.
+		// ASSERT: Publish Dialog does not open.
 		const publishDialog = wrapper.findComponent( PublishDialog );
 		expect( publishDialog.vm.showDialog ).toBe( false );
 		const publishButton = wrapper.findComponent( '#primary-button' );
 		expect( publishButton.exists() ).toBeFalsy();
 
+		// ASSERT: The error warning exists on the zobject showing the user they have not set an output type.
 		const warning = wrapper.find( '.ext-wikilambda-select-zobject__error' );
 		expect( warning.exists() ).toBeTruthy();
 
