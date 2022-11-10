@@ -159,6 +159,22 @@ const stringLabelLookupApiResponse = {
 	]
 };
 
+const functionLabelLookupApiResponse = {
+	wikilambdasearch_labels: [
+		{
+			page_namespace: 0,
+			page_title: existingFunctionZid,
+			page_type: Constants.Z_FUNCTION,
+			return_type: Constants.Z_BOOLEAN,
+			label: 'function name, in Chinese',
+			is_primary: '1',
+			page_id: 0,
+			page_content_model: 'zobject',
+			page_lang: Constants.Z_NATURAL_LANGUAGE_ENGLISH
+		}
+	]
+};
+
 const associatedImplementationsSearchResponse = {
 	wikilambdafn_search: [
 		{ page_namespace: 0,
@@ -203,6 +219,8 @@ const labelsApiResponseBuilder = ( type, search ) => {
 		return frenchLabelLookupApiResponse;
 	} else if ( type === Constants.Z_TYPE && 'String'.includes( search ) ) {
 		return stringLabelLookupApiResponse;
+	} else if ( type === Constants.Z_FUNCTION && 'function name, in Chinese'.includes( search ) ) {
+		return functionLabelLookupApiResponse;
 	}
 };
 
@@ -257,6 +275,11 @@ const typeLabelsRequest = {
 	list: 'wikilambdasearch_labels',
 	wikilambdasearch_type: Constants.Z_TYPE
 };
+const functionLabelsRequest = {
+	action: 'query',
+	list: 'wikilambdasearch_labels',
+	wikilambdasearch_type: Constants.Z_FUNCTION
+};
 const loadZObjectsRequest = {
 	action: 'query',
 	list: 'wikilambdaload_zobjects'
@@ -288,7 +311,7 @@ const loadZObjectsMatcher = ( expectedRequest, actualRequest ) =>
 	basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list' ] );
 const zObjectSearchMatcher = ( expectedRequest, actualRequest ) =>
 	basicFieldMatcher( expectedRequest, actualRequest, [ 'action', 'list', 'wikilambdafn_zfunction_id', 'wikilambdafn_type' ] );
-const performTestMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action' ] );
+const actionMatcher = ( expectedRequest, actualRequest ) => basicFieldMatcher( expectedRequest, actualRequest, [ 'action' ] );
 
 // Responses
 const labelsResponse = ( request ) =>
@@ -317,5 +340,6 @@ module.exports = exports = {
 	zObjectSearchResponse,
 	performTestRequest,
 	performTestResponse,
-	performTestMatcher
+	actionMatcher,
+	functionLabelsRequest
 };
