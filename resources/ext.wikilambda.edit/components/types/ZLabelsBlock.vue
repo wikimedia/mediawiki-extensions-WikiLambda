@@ -226,22 +226,16 @@ module.exports = exports = {
 		 * @return {string}
 		 */
 		userLangAliasString: function () {
-			var str = '';
-
-			this.getLanguageAliases( this.getUserZlangZID )
-				.forEach( function ( aliasId ) {
+			return this.getLanguageAliases( this.getUserZlangZID )
+				.map( function ( aliasId ) {
 					var alias = this.getNestedZObjectById( aliasId, [
 						Constants.Z_STRING_VALUE
 					] );
 
-					if ( str.length ) {
-						str += '  |  ' + alias.value;
-					} else {
-						str = alias.value;
-					}
-				}.bind( this ) );
-
-			return str;
+					return alias.value;
+				}.bind( this ) )
+				.filter( ( value ) => !!value )
+				.join( ' | ' );
 		}
 	} ),
 	methods: $.extend( mapActions( [
