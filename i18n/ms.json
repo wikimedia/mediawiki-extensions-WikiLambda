@@ -1,12 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
+			"Anakmalaysia",
 			"Tofeiku"
 		]
 	},
 	"wikilambda-reference": "Rujukan",
 	"wikilambda-literal": "Harfiah",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Hanya pengguna dengan kebenaran khas",
+	"wikilambda-publish-lose-changes-prompt": "Jika anda keluar tanpa menyiarkan terlebih dahulu, suntingan anda akan hilang.",
 	"wikilambda-function-viewer-aliases-header": "Juga dikenali sebagai",
 	"wikilambda-function-viewer-aliases-show-language-button": "Tunjuk lebih bahasa",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Sorok senarai",

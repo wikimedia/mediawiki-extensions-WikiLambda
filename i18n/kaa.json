@@ -12,6 +12,7 @@
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "<p>Siz bul funkciyanıń kirgiziw maydanın hám shıǵıw túrin ózgerttińiz. <strong>Hámme bar qosımshalar hám testler ámeldegi funkciyadan ajıratıladı.</strong> Dawam etiwdi qáleysizbe?</p>",
 	"wikilambda-edit-copyrightwarning-function": "<p>\"Járiyalaw\" knopkasın basıw arqalı siz <a href=\"//foundation.wikimedia.org/wiki/Terms_of_Use\">Terms of Use</a> Paydalanıw shártlerine razılıq bildiresiz hám <a href=\"//creativecommons.org/publicdomain/zero/1.0/\" title=\"Definition of the Creative Commons CC0 License\">Creative Commons CC0 License</a> astında óz úlesińizdi qoyıwǵa ózgertip bolmaytuǵın tárizde razılıq bildiresiz.</p>",
 	"wikilambda-editor-leave-edit-mode-header": "Redaktorlaw rejimin tárk etiw",
+	"wikilambda-publish-lose-changes-prompt": "Eger siz kirgizgen ózgerislerińizdi járiyalamastan ketseńiz, olardı joǵaltasız.",
 	"wikilambda-functioncall-metadata-errors-summary": "Qáte juwmaq",
 	"wikilambda-functioncall-metadata-implementation-id": "Ámelge asırıw identifikatorı",
 	"wikilambda-functioncall-metadata-implementation-type": "Ámelge asırıw túri",

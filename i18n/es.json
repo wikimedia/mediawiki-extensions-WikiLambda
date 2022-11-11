@@ -97,7 +97,7 @@
 	"wikilambda-return-typeselector-label": "Selecciona un Tipo para devolver",
 	"wikilambda-zobjectselector-label": "Objeto Z",
 	"wikilambda-edit-copyrightwarning-function": "<p>Al hacer clic en «Publicar», aceptas los <a href=\"//foundation.wikimedia.org/wiki/Terms_of_Use\">Términos de uso</a> y aceptas de manera irrevocable publicar tu contribución bajo la <a href=\"//creativecommons.org/publicdomain/zero/1.0/\" title=\"Definición de la licencia Creative Commons CC0\">licencia Creative Commons CC0</a>.</p>",
-	"wikilamba-edit-copyrightwarning-implementation": "Al hacer clic en «Publicar», aceptas los <a href=\"//foundation.wikimedia.org/wiki/Terms_of_Use\">Términos de uso</a> y aceptas de manera irrevocable publicar tu contribución bajo la <a href=\"https://www.apache.org/licenses/LICENSE-2.0\" title=\"Definición de la Licencia Apache 2.0\">licencia Apache 2.0</a>.",
+	"wikilambda-edit-copyrightwarning-implementation": "Al hacer clic en «Publicar», aceptas los <a href=\"//foundation.wikimedia.org/wiki/Terms_of_Use\">Términos de uso</a> y aceptas de manera irrevocable publicar tu contribución bajo la <a href=\"https://www.apache.org/licenses/LICENSE-2.0\" title=\"Definición de la Licencia Apache 2.0\">licencia Apache 2.0</a>.",
 	"wikilambda-editor-leave-edit-mode-header": "Salir del modo de edición",
 	"wikilambda-editor-label-addlanguage-label": "Selecciona idioma",
 	"wikilambda-editor-label-removelanguage-tooltip": "Quitar este idioma de esta etiqueta",

@@ -79,7 +79,7 @@
 	"wikilambda-return-typeselector-label": "נא לבחור את סוג הערך המוחזר",
 	"wikilambda-zobjectselector-label": "עצם Z",
 	"wikilambda-edit-copyrightwarning-function": "לחיצה על \"פרסום\" מהווה את הסכמתך ל<a href=\"//foundation.wikimedia.org/wiki/Terms_of_Use/he\">תנאי השימוש</a>, ואת הסכמתך הבלתי־חוזרת לשחרור התרומה שלך לפי תנאי <a href=\"//creativecommons.org/publicdomain/zero/1.0/deed.he\" title=\"Definition of the Creative Commons CC0 License\">רישיון קריאייטיב קומונז CC0</a>.",
-	"wikilamba-edit-copyrightwarning-implementation": "לחיצה על \"פרסום\" מהווה את הסכמתך ל<a href=\"//foundation.wikimedia.org/wiki/Terms_of_Use/he\">תנאי השימוש</a>, ואת הסכמתך הבלתי־חוזרת לשחרור התרומה שלך לפי תנאי <a href=\"https://www.apache.org/licenses/LICENSE-2.0\" title=\"Definition of the Apache 2.0 License\">רישיון אפאצ'י 2.0</a>.",
+	"wikilambda-edit-copyrightwarning-implementation": "לחיצה על \"פרסום\" מהווה את הסכמתך ל<a href=\"//foundation.wikimedia.org/wiki/Terms_of_Use/he\">תנאי השימוש</a>, ואת הסכמתך הבלתי־חוזרת לשחרור התרומה שלך לפי תנאי <a href=\"https://www.apache.org/licenses/LICENSE-2.0\" title=\"Definition of the Apache 2.0 License\">רישיון אפאצ'י 2.0</a>.",
 	"wikilambda-editor-leave-edit-mode-header": "לעזוב את מצב העריכה",
 	"wikilambda-editor-label-addlanguage-label": "בחירת שפה",
 	"wikilambda-editor-label-removelanguage-tooltip": "הסרת השפה הזאת מהתווית הזאת",
