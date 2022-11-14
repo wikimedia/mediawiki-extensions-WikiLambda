@@ -1554,6 +1554,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::getLabelOfErrorTypeKey
 	 */
 	public function testExtractHumanReadableZObject_repeatedLabel() {
+		$this->markTestSkipped( 'No pre-defined ZObjects have the same label right now.' );
 		$this->insertZids( [ 'Z17' ] );
 		$en = $this->makeLanguage( 'en' );
 		$data = [
@@ -1562,7 +1563,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			'Z881' => $this->getZPersistentObject( 'Z881' ),
 		];
 
-		// Z1K1 and Z881K1 have the same english label (type)
+		// Z1K1 and Z881K1 used to have the same Z1002/English label ('type')
 		$zobject = '{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z881","Z881K1":"Z6" },"K1":"string"}';
 		$translated = '{"type":{"type":"Function call","function":"Typed list","type (Z881K1)":"Z6"},'
 			. '"K1":"string"}';
@@ -1592,7 +1593,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 			. ' "Z881K1":"Z6" }, "K1":"string"}';
 		$translated = '{"type":{"type":"Function call",'
 			. '"function":{"type":"Z8","Z8K1":["Z17"],"Z8K2":"Z4","Z8K3":["Z20"],"Z8K4":["Z14"],"Z8K5":"Typed list"},'
-			. '"type (Z881K1)":"Z6"},"K1":"string"}';
+			. '"item type":"Z6"},"K1":"string"}';
 		$result = ZObjectUtils::extractHumanReadableZObject( json_decode( $zobject ), $data, $en );
 		$this->assertSame( $translated, json_encode( $result ) );
 	}
