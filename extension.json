@@ -255,6 +255,8 @@
 				}
 			],
 			"messages": [
+				"wikifunctions-edit-copyrightwarning-function",
+				"wikifunctions-edit-copyrightwarning-implementation",
 				"wikilambda-publishnew",
 				"wikilambda-savenew",
 				"wikilambda-cancel",
@@ -295,8 +297,6 @@
 				"wikilambda-argref",
 				"wikilambda-typeselector-label",
 				"wikilambda-zobjectselector-label",
-				"wikilambda-edit-copyrightwarning-function",
-				"wikilambda-edit-copyrightwarning-implementation",
 				"wikilambda-editor-additem",
 				"wikilambda-editor-removeitem",
 				"wikilambda-editor-clearitem",

@@ -81,8 +81,6 @@
 	"wikilambda-function-typeselector-label": "Select a Function",
 	"wikilambda-return-typeselector-label": "Select a Type to return",
 	"wikilambda-zobjectselector-label": "ZObject",
-	"wikilambda-edit-copyrightwarning-function": "By clicking \"publish\", you agree to the <a href=\"//foundation.wikimedia.org/wiki/Terms_of_Use\">Terms of Use</a>, and you irrevocably agree to release your contribution under the <a href=\"//creativecommons.org/publicdomain/zero/1.0/\" title=\"Definition of the Creative Commons CC0 License\">Creative Commons CC0 License</a>.",
-	"wikilambda-edit-copyrightwarning-implementation": "By clicking \"publish\", you agree to the <a href=\"//foundation.wikimedia.org/wiki/Terms_of_Use\">Terms of Use</a>, and you irrevocably agree to release your contribution under the <a href=\"https://www.apache.org/licenses/LICENSE-2.0\" title=\"Definition of the Apache 2.0 License\">Apache 2.0 License</a>.",
 	"wikilambda-editor-additem": "➕",
 	"wikilambda-editor-removeitem": "🗑️",
 	"wikilambda-editor-clearitem": "🧽",
