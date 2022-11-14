@@ -17,7 +17,10 @@
 	"license-name": "MIT",
 	"type": "parserhook",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.39.0",
+		"extensions": {
+			"WikimediaMessages": "*"
+		}
 	},
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\WikiLambda\\": "includes/"
