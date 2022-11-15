@@ -18,7 +18,9 @@
 			"DiegoAmbrocio",
 			"Ice bulldog",
 			"MarcoAurelio",
-			"Raos10"
+			"Raos10",
+			"La Mantis",
+			"SpikeShroom"
 		]
 	},
 	"wikilambda-desc": "Proporcionar wikis de Wikimedia con una función de analizador gramático de wikitexto para llamar a la evaluación de funciones escritas, administradas y evaluadas en un wiki central.",
@@ -31,7 +33,7 @@
 	"wikilambda-typeunavailable": "Tipo no reconocido",
 	"wikilambda-prohibitedcreationtype": "El Objeto Z proporcionado es un tipo '$1', el cual no se permite crear.",
 	"wikilambda-noresult": "La búsqueda no ha dado ningún resultado.",
-	"wikilambda-labelclash": "La etiqueta del contenido proporcionado choca con el '$1' del Objeto Z para la etiqueta en '$2'.",
+	"wikilambda-labelclash": "La etiqueta del contenido proporcionado choca con el «$1» del Objeto Z para la etiqueta en «$2».",
 	"wikilambda-persistentzobject": "Objeto Z",
 	"wikilambda-persistentzobject-metadata": "Etiquetas y alias",
 	"wikilambda-persistentzobject-contents": "Contenido",
@@ -118,7 +120,7 @@
 	"wikilambda-tester-status-running": "EJECUTANDO...",
 	"wikilambda-tester-status-passed": "APROBADO",
 	"wikilambda-tester-status-failed": "FALLO",
-	"wikilambda-tester-results-title": "Resultados del probador",
+	"wikilambda-tester-results-title": "Resultados de la prueba",
 	"wikilambda-tester-failure-expected": "Esperado",
 	"wikilambda-tester-failure-actual": "Recibido",
 	"wikilambda-tester-function-duration": "Duración",
