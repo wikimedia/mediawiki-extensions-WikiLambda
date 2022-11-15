@@ -75,11 +75,11 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		// FIXME: Handle an inline ZFunction (for when it's not been created yet)?
 		$targetTitle = Title::newFromText( $zfunction, NS_MAIN );
 		if ( !( $targetTitle->exists() ) ) {
-			$this->dieWithError( [ "wikilambda-functioncall-error-unknown", $zfunction ] );
+			$this->dieWithError( [ "wikilambda-performtest-error-unknown-zid", $zfunction ] );
 		}
 		$targetObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
 		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
-			$this->dieWithError( [ "wikilambda-functioncall-error-nonfunction", $zfunction ] );
+			$this->dieWithError( [ "wikilambda-performtest-error-nonfunction", $zfunction ] );
 		}
 
 		$targetFunction = $targetObject->getInnerZObject();
@@ -91,7 +91,6 @@ class ApiPerformTest extends WikiLambdaApiBase {
 			$requestedImplementations = $targetFunctionImplementions->getAsArray();
 		}
 
-		// FIXME: Handle an inline ZTester (for when it's not been created yet)
 		if ( empty( $requestedTesters ) ) {
 			$targetFunctionTesters = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_TESTERS );
 			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionTesters';
@@ -120,24 +119,22 @@ class ApiPerformTest extends WikiLambdaApiBase {
 					$implementationListEntry
 				)
 			);
-			foreach ( $requestedTesters as $testerName ) {
+			foreach ( $requestedTesters as $requestedTester ) {
+				if ( is_string( $requestedTester ) ) {
+					$decodedJson = FormatJson::decode( $requestedTester );
+					// If not JSON, assume we have received a ZID.
+					$requestedTester = $decodedJson
+						? ZObjectFactory::create( $decodedJson )
+						: new ZReference( $requestedTester );
+				}
+				$testerZid = $this->getZid( $requestedTester );
+				$testerObject = $this->getTesterObject( $requestedTester );
 
 				// TODO (T297707): Work out if this has been cached before (check revisions of objects?), and
 				// if so reply with that instead of executing.
 
-				if ( $testerName instanceof ZReference ) {
-					$testerName = $testerName->getZValue();
-				}
-
-				$targetTesterTitle = Title::newFromText( $testerName, NS_MAIN );
-				if ( !( $targetTesterTitle && $targetTesterTitle->exists() ) ) {
-					// FIXME: Throw?
-					continue;
-				}
-				$tester = $this->zObjectStore->fetchZObjectByTitle( $targetTesterTitle )->getInnerZObject();
-
 				// Use tester to create a function call of the test case inputs
-				$testFunctionCall = $tester->getValueByKey( ZTypeRegistry::Z_TESTER_CALL );
+				$testFunctionCall = $testerObject->getValueByKey( ZTypeRegistry::Z_TESTER_CALL );
 				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall $testFunctionCall';
 
 				// Set the target function of the cal too our modified copy of the target function with only the
@@ -155,7 +152,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 					$testResultObject->getErrors() :
 					$testResultObject->getZValue();
 
-				$validateFunctionCall = $tester->getValueByKey( ZTypeRegistry::Z_TESTER_VALIDATION );
+				$validateFunctionCall = $testerObject->getValueByKey( ZTypeRegistry::Z_TESTER_VALIDATION );
 				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall $validateFunctionCall';
 
 				$targetValidationFunctionZID = $validateFunctionCall->getZValue();
@@ -219,7 +216,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				// Stash the response
 				$testResult = [ 'zFunctionId' => $zfunction,
 					'zImplementationId' => $implementationZid,
-					'zTesterId' => $testerName,
+					'zTesterId' => $testerZid,
 					'testMetadata' => $testMetadata,
 					'validateStatus' => $validateResultItem
 				];
@@ -288,6 +285,22 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				$zobject->getValueByKey( ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ) );
 		}
 		$this->dieWithError( [ "wikilambda-performtest-error-nonimplementation", $zobject ] );
+	}
+
+	private function getTesterObject( $zobject ) {
+		if ( $zobject->getZType() === ZTypeRegistry::Z_REFERENCE ) {
+			$zid = $this->getZid( $zobject );
+			$title = Title::newFromText( $zid, NS_MAIN );
+			if ( !( $title->exists() ) ) {
+				$this->dieWithError( [ "wikilambda-performtest-error-unknown-zid", $zid ] );
+			}
+			return $this->getTesterObject( $this->zObjectStore->fetchZObjectByTitle( $title )->getInnerZObject() );
+		} elseif ( $zobject->getZType() === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
+			return $this->getTesterObject( $zobject->getValueByKey( ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ) );
+		} elseif ( $zobject->getZType() === ZTypeRegistry::Z_TESTER ) {
+			return $zobject;
+		}
+		$this->dieWithError( [ "wikilambda-performtest-error-nontester", $zobject ] );
 	}
 
 	/**
