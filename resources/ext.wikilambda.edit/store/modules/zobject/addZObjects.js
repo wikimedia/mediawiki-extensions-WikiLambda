@@ -611,7 +611,7 @@ module.exports = exports = {
 			// we fetch a list of keys within this generic object
 			if ( payload.type !== Constants.Z_OBJECT && context.rootGetters.getZkeys[ payload.type ] ) {
 
-				// Normal types are nested in a persisten object value,
+				// Normal types are nested in a persistent object value,
 				// dynamically generated types from functionToType are not
 				object = context
 					.rootGetters
@@ -731,6 +731,7 @@ module.exports = exports = {
 			context.dispatch( 'addZObject', { key: Constants.Z_TYPE_VALIDATOR, value: 'object', parent: objectId } );
 			context.dispatch( 'changeType', { id: nextId, type: Constants.Z_REFERENCE, value: Constants.Z_VALIDATE_OBJECT } );
 		},
+
 		/**
 		 * Changes the type of a specific zObject.
 		 * This is the central point for handling the object scaffolding
@@ -740,6 +741,17 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		changeType: function ( context, payload ) {
+
+			// TODO the whole changeType function could be the following block:
+			const value = typeUtils.getScaffolding( payload.type );
+			// FIXME I have added the following value check so that we can continue to re-use
+			// this method from the old components. But as soon as we remove all the deprecated
+			// components, we should not returned undefined from getScaffolding, but the
+			// default case should be the Z_OBJECT one.
+			if ( value ) {
+				return context.dispatch( 'injectZObjectFromRowId', { rowId: payload.id, value } );
+			}
+
 			context.dispatch( 'removeZObjectChildren', payload.id );
 			return context.dispatch( 'fetchZKeys', { zids: [ payload.type ] } )
 				.then( function () {

@@ -158,7 +158,17 @@ var Constants = {
 		DESKTOP: 'DESKTOP',
 		DESKTOP_WIDE: 'DESKTOP_WIDE',
 		DESKTOP_EXTRAWIDE: 'DESKTOP_EXTRAWIDE'
-	};
+	},
+	builtinComponents = {
+		[ Constants.Z_MONOLINGUALSTRING ]: 'z-monolingual-string',
+		[ Constants.Z_STRING ]: 'z-string',
+		[ Constants.Z_REFERENCE ]: 'z-reference'
+	},
+	resolverTypes = [
+		Constants.Z_REFERENCE,
+		Constants.Z_FUNCTION_CALL,
+		Constants.Z_ARGUMENT_REFERENCE
+	];
 
 Constants.Z_MODE_SELECTOR_MODES = modes;
 Constants.Z_TYPED_OBEJECTS_LIST = typedObjectsList;
@@ -169,5 +179,11 @@ Constants.errorTypes = errorTypes;
 Constants.breakpoints = breakpoints;
 Constants.breakpointsTypes = breakpointsTypes;
 Constants.implementationModes = implementationModes;
+Constants.COLOR_NESTING_LEVELS = 9;
+Constants.BUILTIN_COMPONENTS = builtinComponents;
+Constants.RESOLVER_TYPES = resolverTypes;
+
+Constants.ROW_VALUE_OBJECT = 'object';
+Constants.ROW_VALUE_ARRAY = 'array';
 
 module.exports = Constants;

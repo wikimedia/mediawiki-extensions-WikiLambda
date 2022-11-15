@@ -16,6 +16,14 @@ var Constants = require( '../../Constants.js' ),
 	debounceZObjectLookup = null,
 	DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT = 300;
 
+/**
+ * Returns whether the object is a reference type from the parent object
+ * E.g. "Z1K1: {Z1K1: Z9}"
+ *
+ * @param {Object} object row of the internal zobject table
+ * @param {Object} parentObject row of the internal zobject table
+ * @return {boolean}
+ */
 function isObjectTypeDeclaration( object, parentObject ) {
 	var isReference = object.value === Constants.Z_REFERENCE;
 	var isObjectType = parentObject.key === Constants.Z_OBJECT_TYPE;
@@ -23,10 +31,32 @@ function isObjectTypeDeclaration( object, parentObject ) {
 	return isReference && isObjectType;
 }
 
+/**
+ * Returns whether the value of the function call id (E.g. {Z7K1: Z881}) is
+ * a known generic type with a custom component
+ *
+ * @param {Object} functionCallId object row where key is Z7K1
+ * @return {boolean}
+ */
 function isTypedObjectWithCustomComponent( functionCallId ) {
 	var istypedObject = Constants.Z_TYPED_OBEJECTS_LIST.indexOf( functionCallId.value ) !== -1;
 
 	return istypedObject;
+}
+
+/**
+ * Returns whether a given row is terminal, which means that
+ * the value is a string but is not ROW_VALUE_OBJECT nor ROW_VALUE_ARRAY
+ *
+ * TODO: once we have a Row class, this should be a class method (e.g. Row.isTerminal())
+ *
+ * @param {Object} row
+ * @return {boolean}
+ */
+function isTerminalRow( row ) {
+	return ( ( typeof row.value === 'string' ) &&
+		( row.value !== Constants.ROW_VALUE_OBJECT ) &&
+		( row.value !== Constants.ROW_VALUE_ARRAY ) );
 }
 
 /**
@@ -47,6 +77,12 @@ function unattachImplementationsAndTesters( zobject ) {
 	return zobject;
 }
 
+/**
+ * Returns whether a given persisted function returns a Type/Z4
+ *
+ * @param {Object} objectDeclaration persisted function zobject
+ * @return {boolean}
+ */
 function isFunctionToType( objectDeclaration ) {
 	if ( objectDeclaration ) {
 		var isTypeFunction =
@@ -219,7 +255,12 @@ function isNotObjectOrArrayRoot( object ) {
 	return [ 'array', 'object' ].indexOf( object.value ) === -1;
 }
 
-function retriveFunctionCallId( getZObjectChildrenById, object ) {
+/**
+ * @param {Function} getZObjectChildrenById state getter
+ * @param {Array} object
+ * @return {Object}
+ */
+function retrieveFunctionCallId( getZObjectChildrenById, object ) {
 	var functionCall = typeUtils.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, object );
 
 	if ( functionCall && functionCall.value === 'object' ) {
@@ -274,6 +315,522 @@ module.exports = exports = {
 		isZObjectDirty: false
 	},
 	getters: {
+
+		/* NEW GETTERS */
+
+		/***********************************************************************
+		 * INTERFACE METHODS
+		 *
+		 * These are the methods that will be commonly used from the components.
+		 * These methods should never return internal structure of the zobject
+		 * table. The only internal information they may return are row IDs so
+		 * that they can pass them onto their child components.
+		 ***********************************************************************/
+
+		/**
+		 * Return a specific zObject key given its row ID or
+		 * undefined if the row ID doesn't exist
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZObjectKeyByRowId: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {string | undefined}
+			 */
+			function fetchZObjectKey( rowId ) {
+				const row = getters.getRowById( rowId );
+				return ( row !== undefined ) ?
+					row.key :
+					undefined;
+			}
+			return fetchZObjectKey;
+		},
+
+		/**
+		 * Returns string with the value if the row exists and
+		 * is terminal, else returns undefined
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZObjectValueByRowId: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {string | undefined} terminal value
+			 */
+			function fetchZObjectValue( rowId ) {
+				const row = getters.getRowById( rowId );
+				return ( ( row !== undefined ) && isTerminalRow( row ) ) ?
+					row.value :
+					undefined;
+			}
+			return fetchZObjectValue;
+		},
+
+		/************************************************************
+		 * INTERFACE METHODS FOR TYPES
+		 ************************************************************/
+
+		/**
+		 * Returns the terminal value of Z6K1/String value of a ZObject
+		 * assumed to be a string
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZStringTerminalValue: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {string | undefined}
+			 */
+			function findZStringTerminalValue( rowId ) {
+				return getters.getZObjectTerminalValue( rowId, Constants.Z_STRING_VALUE );
+			}
+
+			return findZStringTerminalValue;
+		},
+
+		/**
+		 * Returns the terminal value of Z6K1/String value of a ZObject
+		 * assumed to be a string
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZReferenceTerminalValue: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {string | undefined}
+			 */
+			function findZReferenceTerminalValue( rowId ) {
+				return getters.getZObjectTerminalValue( rowId, Constants.Z_REFERENCE_ID );
+			}
+
+			return findZReferenceTerminalValue;
+		},
+
+		/**
+		 * Returns the terminal value of Z11K2
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZMonolingualTextValue: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {string | undefined}
+			 */
+			function findZMonolingualTextValue( rowId ) {
+				const stringRow = getters.getRowByKeyPath( [ Constants.Z_MONOLINGUALSTRING_VALUE ], rowId );
+				return stringRow ?
+					getters.getZStringTerminalValue( stringRow.id ) :
+					undefined;
+			}
+			return findZMonolingualTextValue;
+		},
+
+		/**
+		 * Returns the terminal value of Z11K2
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZMonolingualLangValue: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {string | undefined} rowId
+			 */
+			function findZMonolingualLangValue( rowId ) {
+				const langRow = getters.getRowByKeyPath( [ Constants.Z_MONOLINGUALSTRING_LANGUAGE ], rowId );
+				// FIXME Consider that language could be a literal instead of only reference
+				return getters.getZReferenceTerminalValue( langRow.id );
+			}
+			return findZMonolingualLangValue;
+		},
+
+		/**
+		 * Returns the string representation for the type of the ZObject
+		 * represented by the value of the rowId passed as parameter
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZObjectTypeByRowId: function ( state, getters ) {
+			/**
+			 * @param {number} id
+			 * @return {string | undefined} type
+			 */
+			function findZObjectTypeById( id ) {
+
+				const row = getters.getRowById( id );
+
+				// Three end conditions:
+				// 1. If id (row Id) doesn't exist and returns undefined
+				if ( !row || row.id === row.parent ) {
+					return undefined;
+				}
+
+				// 2. If the row is TERMINAL it's either a string or reference value
+				if ( isTerminalRow( row ) ) {
+					return ( row.key === Constants.Z_REFERENCE_ID ) ?
+						Constants.Z_REFERENCE :
+						Constants.Z_STRING;
+				}
+
+				// 3. If the row is an ARRAY, we return typed list
+				if ( row.value === Constants.ROW_VALUE_ARRAY ) {
+					return Constants.Z_TYPED_LIST;
+				}
+
+				// If it's an object we get its Z1K1 and analyze it:
+				// E.g. from { Z1K1: Z9 } the type is Z9
+				// E.g. from { Z1K1: Z7, Z7K1: Z881 } the type is Z7
+				// E.g. from { Z1K1: { Z1K1: Z9, Z9K1: Z7 } } the type is Z7
+				// But
+				// E.g. from { Z1K1: { Z1K1: Z9, Z9K1: Z2 } } the type is Z2
+				// E.g. from { Z1K1: { Z1K1: Z7, Z7K1: Z881 ... } } the type is Z881
+				const typeRow = getters.getRowByKeyPath( [ Constants.Z_OBJECT_TYPE ], id );
+				if ( !typeRow ) {
+					// Return if undefined
+					return undefined;
+				}
+
+				// If typeRow is Terminal, return its value
+				// E.g. { Z1K1: Z9 }, return Z9
+				// E.g. { Z1K1: Z7, Z7K1: Z881 }, return Z7
+				if ( isTerminalRow( typeRow ) ) {
+					return typeRow.value;
+				}
+
+				// If typeRow is NOT Terminal, return the value of its type
+				// E.g. from { Z1K1: { Z1K1: Z9, Z9K1: Z7 } } the type is Z7
+				// A type can be expressed in different modes:
+				// We need a method that, similarly to getReferenceValue, it gets ObjectTypeValue
+				// This method will know where to look depending on the mode
+				// * Literal: { Z1K1: Z4, Z4K1: Z10000 ... }
+				// * Resolvers:
+				//   * Reference { Z1K1: Z9, Z9K1: Z10000 }
+				//   * Function call { Z1K1: Z7, Z7K1: Z881, ... }
+				//   * Argument reference { Z1K1: Z18, Z18K1: "K1" }
+				return getters.getZTypeStringRepresentation( typeRow.id );
+			}
+
+			return findZObjectTypeById;
+		},
+
+		/**
+		 * Returns the depth (from 0 to n) of the zobject
+		 * represented by a given rowId
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getDepthByRowId: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @param {number} depth
+			 * @return {number}
+			 */
+			function findDepth( rowId, depth = 0 ) {
+				const row = getters.getRowById( rowId );
+				return ( row.parent === undefined ) ?
+					depth :
+					findDepth( row.parent, depth + 1 );
+			}
+			return findDepth;
+		},
+
+		/******************************************************************
+		 * INTERNAL METHODS
+		 *
+		 * Should not be called from components. If we observe the need
+		 * of calling these from a component probably needs we need another
+		 * interface method that wraps it.
+		 ******************************************************************/
+
+		/**
+		 * Returns a row object given its row ID. Note that the row ID is its
+		 * parameter row.id and it is different than the indexx
+		 *
+		 * TODO: When we have Row object, must return that instead
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getRowById: function ( state ) {
+			/**
+			 * @param {number|undefined} rowId
+			 * @return {Object} row
+			 */
+			function fetchRowId( rowId ) {
+				return ( rowId === undefined ) ?
+					undefined :
+					state.zobject.find( function ( item ) {
+						return item.id === rowId;
+					} );
+			}
+			return fetchRowId;
+		},
+
+		/**
+		 * Returns all the children rows given a parent rowId
+		 *
+		 * TODO: When we have Row object, must return that instead
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getChildrenByParentRowId: function ( state ) {
+			/**
+			 * @param {number} rowId
+			 * @param {Array} rows
+			 * @return {Array}
+			 */
+			function fetchChildrenRows( rowId ) {
+				return state.zobject.filter( function ( row ) {
+					return ( row.parent === rowId );
+				} );
+			}
+			return fetchChildrenRows;
+		},
+
+		/**
+		 * Return the parent rowId of a given rowId
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getParentRowId: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @param {number} parent rowId
+			 * @return {number}
+			 */
+			function findParent( rowId ) {
+				const row = getters.getRowById( rowId );
+				return row.parent;
+			}
+			return findParent;
+		},
+
+		/**
+		 * Given a starting rowId and an array of keys that form a path,
+		 * follow that path down and return the resulting row.
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getRowByKeyPath: function ( state, getters ) {
+			/**
+			 * @param {Array} path sequence of keys that specify a path to follow down the ZObject
+			 * @param {number} rowId starting row Id
+			 * @return {Object} resulting row
+			 */
+			function followPath( path = [], rowId = 0 ) {
+				// End condition, if the path is empty, return the row by rowId
+				if ( path.length === 0 ) {
+					return getters.getRowById( rowId );
+				}
+
+				// Else, follow the sequence of keys by finding the child with
+				// the head key and recourse
+				const head = path[ 0 ];
+				const tail = path.slice( 1 );
+				const children = getters.getChildrenByParentRowId( rowId );
+				const child = children.find( function ( row ) {
+					return ( row.key === head );
+				} );
+
+				// Follow the path of keys parting from the child
+				return ( child === undefined ) ?
+					undefined :
+					followPath( tail, child.id );
+			}
+			return followPath;
+		},
+
+		/**
+		 * Returns the terminal value of a Z9/Reference or a Z6/String
+		 * nested under a sequence of their keys.
+		 *
+		 * E.g. getZObjectTerminalValue( rowId, Z9K1 ) would return the
+		 * terminal value in objects like { Z9K1: { Z9K1: "value" }},
+		 * { Z9K1: "value"} or "value"
+		 *
+		 * This is a generalized method to be called from the specific
+		 * methods getZStringTerminalValue or getZReferenceTerminalValue
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZObjectTerminalValue: function ( state, getters ) {
+			/**
+			 * @param {number} rowId an integer representing an existing rowId
+			 * @param {string} terminalKey either string or reference terminal key
+			 * @return {string | undefined}
+			 */
+			function findTerminalValue( rowId, terminalKey ) {
+				const row = getters.getRowById( rowId );
+				if ( isTerminalRow( row ) ) {
+					return row.value ?
+						row.value :
+						undefined;
+				} else {
+					const valueRow = getters.getRowByKeyPath( [ terminalKey ], row.id );
+					return valueRow ?
+						findTerminalValue( valueRow.id, terminalKey ) :
+						undefined;
+				}
+			}
+			return findTerminalValue;
+		},
+
+		/**
+		 * Returns the next available rowId
+		 *
+		 * @param {Object} state
+		 * @return {number}
+		 */
+		getNextRowId: function ( state ) {
+			let highestObjectId = 0;
+
+			if ( state.zobject.length === 0 ) {
+				return highestObjectId;
+			}
+
+			state.zobject.forEach( function ( item ) {
+				if ( item.id > highestObjectId ) {
+					highestObjectId = item.id;
+				}
+			} );
+
+			return highestObjectId + 1;
+		},
+
+		/**
+		 * Returns whether the rowId is inside an implementation
+		 * composition (Z14K2), which will determine whether
+		 * we can use argument references in its type selectors.
+		 *
+		 * TODO: add unit tests
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		isInsideComposition: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {boolean}
+			 */
+			function findCompositionFromRowId( rowId ) {
+				if ( rowId ) {
+					// Zero or undefined, return false and end
+					return false;
+				}
+				const row = getters.getRowById( rowId );
+				return ( row.key === Constants.Z_IMPLEMENTATION_COMPOSITION ) ?
+					true :
+					findCompositionFromRowId( row.parent );
+			}
+
+			return findCompositionFromRowId;
+		},
+
+		/**
+		 * Returns the string representation of a type found
+		 * at the given rowID
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZTypeStringRepresentation: function ( state, getters ) {
+
+			/**
+			 * @param {number} rowId
+			 * @return {string | undefined}
+			 */
+			function findZTypeTerminalValue( rowId ) {
+				// rowId points at a row where the key is Z1K1 and the
+				// value is an object that must resolve to a type.
+				//
+				// This type object can have different shapes (modes).
+				// We need a method that, similarly to getReferenceValue,
+				// it returns a string value that identifies the type.
+				// This method will know where to look depending on the mode:
+				//
+				// * Literal: { Z1K1: Z4, Z4K1: Z10000 ... }
+				// * Literal: { Z1K1: {Z1K1: Z9, Z9K1: Z4}, Z4K1: {Z1K1: Z6, Z6K1: Z10000}... }
+				// * Resolvers:
+				// ** Reference { Z1K1: Z9, Z9K1: Z10000 }
+				// ** Function call { Z1K1: Z7, Z7K1: Z881, ... }
+				// ** Argument reference { Z1K1: Z18, Z18K1: "K1" }
+
+				const typeRow = getters.getRowByKeyPath( [ Constants.Z_OBJECT_TYPE ], rowId );
+
+				// If it's terminal, it's a reference, return value of Z9K1
+				if ( isTerminalRow( typeRow ) ) {
+					return getters.getZReferenceTerminalValue( rowId );
+				}
+
+				// If it's not terminal, get the value of Z1K1.Z9K1 to find the mode
+				let type;
+				const mode = getters.getZReferenceTerminalValue( typeRow.id );
+
+				switch ( mode ) {
+					case Constants.Z_TYPE:
+						type = getters.getRowByKeyPath( [
+							Constants.Z_TYPE_IDENTITY,
+							Constants.Z_STRING_VALUE
+						], rowId );
+						break;
+
+					case Constants.Z_FUNCTION_CALL:
+						// FIXME account for a Z_FUNCTION_CALL key containing a literal
+						// function or any other resolver, not only references.
+						type = getters.getRowByKeyPath( [
+							Constants.Z_FUNCTION_CALL,
+							Constants.Z_REFERENCE_ID
+						], rowId );
+						break;
+
+					case Constants.Z_ARGUMENT_REFERENCE:
+						type = getters.getRowByKeyPath( [
+							Constants.Z_ARGUMENT_REFERENCE,
+							Constants.Z_STRING
+						], rowId );
+						break;
+
+					default:
+						type = undefined;
+				}
+
+				return type ?
+					type.value :
+					undefined;
+			}
+
+			return findZTypeTerminalValue;
+		},
+
+		/* END NEW GETTERS */
+
 		getActiveLangSelection: function ( state ) {
 			return state.activeLangSelection;
 		},
@@ -505,7 +1062,8 @@ module.exports = exports = {
 		},
 		getZObjectTypeById: function ( state, getters ) {
 			/**
-			 * Return the type of a specific zObject by its ID. If the type cannot be found it will return undefined
+			 * Return the type of a specific zObject by its ID.
+			 * If the type cannot be found it will return undefined
 			 *
 			 * @param {number} id
 			 * @return {string | undefined} type
@@ -514,21 +1072,34 @@ module.exports = exports = {
 				var type,
 					currentObject = getters.getZObjectById( id ),
 					childrenObject = [];
+
+				// If id (row Id) doesn't exist and returns undefined
+				// FIXME: If the id is the same as the parent it returns undefined ????
 				if ( !currentObject || currentObject.id === currentObject.parent ) {
 					return type;
 				}
-				if ( currentObject.value === '' ) {
-					return Constants.Z_STRING;
+
+				// If the row is TERMINAL, we return the value if the key is Z1K1, else undefined
+				if ( isTerminalRow( currentObject ) ) {
+					return ( currentObject.key === Constants.Z_OBJECT_TYPE ) ?
+						currentObject.value :
+						undefined;
 				}
+
+				// Checks the value
 				switch ( currentObject.value ) {
+
+					// If the value is NON TERMINAL and it's an array, returns typed list
 					case 'array':
 						type = Constants.Z_TYPED_LIST;
 						break;
+
+					// If the value is NON TERMINA and it's an object...
 					case 'object':
 						childrenObject = getters.getZObjectChildrenById( id );
 						var objectType = typeUtils.findKeyInArray( Constants.Z_OBJECT_TYPE, childrenObject ),
 							referenceId = typeUtils.findKeyInArray( Constants.Z_REFERENCE_ID, childrenObject ),
-							functionCallId = retriveFunctionCallId( getters.getZObjectChildrenById, childrenObject );
+							functionCallId = retrieveFunctionCallId( getters.getZObjectChildrenById, childrenObject );
 						if ( isObjectTypeDeclaration( objectType, currentObject ) ) {
 							type = referenceId.value;
 						} else if ( isTypedObjectWithCustomComponent( functionCallId ) ) {
@@ -541,6 +1112,8 @@ module.exports = exports = {
 							type = findZObjectTypeById( objectType.id );
 						}
 						break;
+
+					// FIXME If the value is TERMINAL, it returns undefined, unless it was an empty string ???
 					default:
 						type = undefined;
 						break;
@@ -672,6 +1245,43 @@ module.exports = exports = {
 		}
 	},
 	mutations: {
+
+		/* NEW MUTATIONS */
+
+		/**
+		 * This is the most atomic setter. It sets the value
+		 * of a given row, given the rowIndex and the value.
+		 *
+		 * @param {Object} state
+		 * @param {Object} payload
+		 * @param {number} payload.rowIndex
+		 * @param {string|undefined} payload.value
+		 */
+		setValueByRowIndex: function ( state, payload ) {
+			const item = state.zobject[ payload.rowIndex ];
+			item.value = payload.value;
+			// Modification of an array item cannot be detected
+			// so it's not reactive. That's why we must run splice
+			state.zobject.splice( payload.rowIndex, 1, item );
+		},
+
+		/**
+		 * Push a row into the zobject state. The row already
+		 * has the necessary IDs and details set, so it is not
+		 * necessary to recalculate anything nor look at the
+		 * table indices, simply push.
+		 *
+		 * FIXME: When we create ZObjectRow class, row must be of type ZObjectRow
+		 *
+		 * @param {Object} state
+		 * @param {Object} row
+		 */
+		pushRow: function ( state, row ) {
+			state.zobject.push( row );
+		},
+
+		/* END NEW MUTATIONS */
+
 		setZObject: function ( state, payload ) {
 			state.zobject = payload;
 		},
@@ -1305,30 +1915,30 @@ module.exports = exports = {
 		},
 		/**
 		 * Remove all the children of a specific zObject. Useful to clean up existing data.
+		 * FIXME: add tests, check that all descendants are removed in objects and arrays
 		 *
 		 * @param {Object} context
-		 * @param {number} objectId
+		 * @param {number} rowId
 		 */
-		removeZObjectChildren: function ( context, objectId ) {
-			var children = [],
-				childrensId = [];
-
-			if ( [ undefined, null ].indexOf( objectId ) !== -1 ) {
+		removeZObjectChildren: function ( context, rowId ) {
+			if ( ( rowId === undefined ) || ( rowId === null ) ) {
 				return;
 			}
 
-			children = context.getters.getZObjectChildrenById( objectId );
-			childrensId = children.map( function ( child ) {
-				if ( child.value === 'object' ) {
+			const childRows = context.getters.getZObjectChildrenById( rowId );
+			childRows.forEach( function ( child ) {
+				// If not terminal, recurse to remove all progenie
+				if (
+					( child.value === Constants.ROW_VALUE_OBJECT ) ||
+					( child.value === Constants.ROW_VALUE_ARRAY )
+				) {
 					context.dispatch( 'removeZObjectChildren', child.id );
 				}
-				return child.id;
-			} );
-
-			childrensId.forEach( function ( id ) {
-				context.dispatch( 'removeZObject', id );
+				// Then remove child
+				context.dispatch( 'removeZObject', child.id );
 			} );
 		},
+
 		/**
 		 * Add a single entry in the zObject tree.
 		 *
@@ -1349,6 +1959,7 @@ module.exports = exports = {
 			context.commit( 'addZObject', payload );
 			return payload.id;
 		},
+
 		/**
 		 * Add a multiple entry in the zObject tree.
 		 *
@@ -1366,6 +1977,7 @@ module.exports = exports = {
 
 			return newObjectIds;
 		},
+
 		/**
 		 * Reset an object to its initial state
 		 *
@@ -1572,6 +2184,108 @@ module.exports = exports = {
 		},
 		setIsZObjectDirty: function ( context, value ) {
 			context.commit( 'setIsZObjectDirty', value );
+		},
+
+		/* NEW ACTIONS */
+
+		/**
+		 * Set the value of a key.
+		 * The value can be a terminal value (string) or it can be an array
+		 * or an object. Depending on the kind of value passed, this method will
+		 * handle all necessary changes:
+		 * 1. Walk down the path passed as payload.keyPath and find the rowId
+		 *    from which the changes should be made.
+		 * 2. If the value is a terminal value (string), call the setValue action
+		 * 3. If the value is more complex, call the injectZObjectFromRowId action,
+		 *    which will make sure that all the current children are deleted and
+		 *    the necessary rows are inserted at non-colliding ids.
+		 *
+		 * TODO: All the ubercomplex setters should be replaced with this or
+		 * combinations of this.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {number} payload.rowId
+		 * @param {Array} payload.keyPath
+		 * @param {Object|Array|string} payload.value
+		 */
+		setValueByRowIdAndPath: function ( context, payload ) {
+			// 1. Find the row that will be parent for the given payload.value
+			const row = context.getters.getRowByKeyPath( payload.keyPath, payload.rowId );
+			// 2. Is the value a string? Call atomic action setValueByRowId
+			// 3. Is the value an object or array? Call action inject
+			if ( typeof payload.value === 'string' ) {
+				context.dispatch( 'setValueByRowId', { rowId: row.id, value: payload.value } );
+			} else {
+				context.dispatch( 'injectZObjectFromRowId', { rowId: row.id, value: payload.value } );
+			}
+		},
+
+		/**
+		 * Most atomic action to edit the state. Perform the atomic mutation (index, value)
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {number} payload.rowId
+		 * @param {Object|Array|string} payload.value
+		 */
+		setValueByRowId: function ( context, payload ) {
+			// FIXME make sure that the getIndex getters is only used in here.
+			// Because setValueByRowId is the most atomic of all actions, the
+			// following method should not be called from anywhere else. All more
+			// complex actions should instead use rowId so that the rowIndex remains
+			// a concept only internal to this method. We can then move the
+			// getRowIndexByRowId to be an internal function in here so that the
+			// index concepts stops being accessible from other modules and components
+			function getRowIndexByRowId( rowId ) {
+				let index;
+				for ( const i in context.state.zobject ) {
+					if ( context.state.zobject[ i ].id === rowId ) {
+						index = i;
+						break;
+					}
+				}
+				return index;
+			}
+
+			const rowIndex = getRowIndexByRowId( payload.rowId );
+			context.commit( 'setValueByRowIndex', { rowIndex, value: payload.value } );
+		},
+
+		/**
+		 * Flattens an input ZObject into a table structure and inserts the rows
+		 * into the global state. This action makes sure of a few things:
+		 * 1. If it's called with a parent row, all the current children will
+		 *    be removed, and the new children will be added with non-colliding IDs
+		 * 2. If it's called with no parent row, the ZObject will be inserted fully,
+		 *    including a root row with parent and key set to undefined.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {number|undefined} payload.rowId parent rowId or undefined if root
+		 * @param {Object|Array|string} payload.value ZObject to inject
+		 * @return {Promise} type
+		 */
+		injectZObjectFromRowId: function ( context, payload ) {
+
+			const hasParent = payload.rowId !== undefined;
+			let parentRow = hasParent ? context.getters.getRowById( payload.rowId ) : undefined;
+			const nextRowId = hasParent ? context.getters.getNextRowId : undefined;
+
+			const rows = zobjectTreeUtils.convertZObjectToRows( payload.value, parentRow, nextRowId );
+
+			// Remove all necessary children that are pending from the parent
+			if ( hasParent ) {
+				parentRow = rows.shift();
+				context.dispatch( 'removeZObjectChildren', parentRow.id );
+				context.dispatch( 'setValueByRowId', { rowId: parentRow.id, value: parentRow.value } );
+			}
+
+			// Push all the rows, they already have their required IDs
+			rows.forEach( function ( row ) {
+				context.commit( 'pushRow', row );
+			} );
 		}
+		/* END NEW ACTIONS */
 	}
 };

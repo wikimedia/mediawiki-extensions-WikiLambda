@@ -32,6 +32,7 @@
 			:status="errorInputStatus"
 			@input="onInput"
 			@focusout="onFocusOut"
+			@focus="onFocus"
 		>
 			<template #no-results>
 				No results found.
@@ -360,6 +361,9 @@ module.exports = exports = {
 			},
 			onFocusOut: function () {
 				this.$emit( 'focus-out' );
+			},
+			onFocus: function () {
+				this.$emit( 'focus' );
 			},
 			typeUrl: function () {
 				return new mw.Title( this.selectedId ).getUrl();

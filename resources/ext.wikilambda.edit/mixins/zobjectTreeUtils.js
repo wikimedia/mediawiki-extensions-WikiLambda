@@ -10,6 +10,72 @@ var Constants = require( '../Constants.js' ),
 
 module.exports = exports = {
 	methods: {
+		/**
+		 * Convert a ZObject represented as a JS object into a flat array of
+		 * rows, where each row represents a key-value. Every row has an ID,
+		 * a key, a value and the row ID of its parent. Depending on the input
+		 * parameters, the generated array of rows will be adapted to pend from
+		 * a given parent row, or will be the whole ZObject to represent as the
+		 * global state.
+		 *
+		 * @param {Object} zObject
+		 * @param {Object} parentRow the row object from which the resulting object will pend
+		 * @param {Object} startingRowId the first available rowID in the global state table
+		 * @return {Array}
+		 */
+		convertZObjectToRows: function ( zObject, parentRow, startingRowId ) {
+
+			// Raise an exception if parentRow is set and nextAvailableId is not to avoid overwriting IDs
+			if ( parentRow && !startingRowId ) {
+				throw new Error( 'The parameter startingRowId must be set when inserting a ZObject under a parentRow' );
+			}
+
+			const zObjectRows = [];
+			let nextAvailableId = startingRowId || 0;
+
+			function flattenZObject( value, key, parentRowId, isExistingParent = false ) {
+				if ( typeof value === 'string' ) {
+					// ROW IS TERMINAL
+					// Push a new row with its final value as 'value'
+					zObjectRows.push( { id: nextAvailableId, key, value, parent: parentRowId } );
+					nextAvailableId++;
+				} else {
+					// ROW IS NOT TERMINAL
+					// Push a non-terminal row with value set to either array or object
+					// We don't push the parent if it's already a row in the zObjectTable
+					let rowId;
+					const type = Array.isArray( value ) ? Constants.ROW_VALUE_ARRAY : Constants.ROW_VALUE_OBJECT;
+
+					if ( isExistingParent ) {
+						// We are inserting the already existing parent with its own id,
+						// key and parent; the only thing that may change is the value.
+						// The calling method will have to decide whether to insert it or replace it.
+						rowId = parentRow.id;
+						zObjectRows.push( { id: rowId, key, value: type, parent: parentRow.parent } );
+					} else {
+						rowId = nextAvailableId;
+						zObjectRows.push( { id: rowId, key, value: type, parent: parentRowId } );
+						nextAvailableId++;
+					}
+
+					// And for every child, recurse with current rowId as parentRowId
+					for ( const objectKey in value ) {
+						flattenZObject( value[ objectKey ], objectKey, rowId );
+					}
+				}
+			}
+
+			// Initial call, if there's a parent, link with key and parent id, else undefined
+			flattenZObject(
+				normalize( zObject ),
+				parentRow ? parentRow.key : undefined,
+				parentRow ? parentRow.id : undefined,
+				!!parentRow
+			);
+
+			return zObjectRows;
+		},
+
 		convertZObjectToTree: function ( zObject, startingKey, startingId, startingParentId ) {
 
 			var zObjectTree = [];

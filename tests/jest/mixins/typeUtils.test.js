@@ -279,4 +279,86 @@ describe( 'typeUtils mixin', function () {
 			} );
 		} );
 	} );
+
+	describe( 'typeToString', function () {
+		describe( 'Return persisted type zid', function () {
+			it( 'when value is string', function () {
+				var type = typeUtils.typeToString( Constants.Z_STRING );
+				expect( type ).toBe( Constants.Z_STRING );
+			} );
+			it( 'when value is a reference to a string', function () {
+				var type = typeUtils.typeToString( {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+					[ Constants.Z_REFERENCE_ID ]: Constants.Z_STRING
+				} );
+				expect( type ).toBe( Constants.Z_STRING );
+			} );
+			it( 'when value is a literal', function () {
+				var type = typeUtils.typeToString( {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_TYPE,
+					[ Constants.Z_TYPE_IDENTITY ]: Constants.Z_STRING
+				} );
+				expect( type ).toBe( Constants.Z_STRING );
+			} );
+			it( 'when value is a literal and identity is a normal reference', function () {
+				var type = typeUtils.typeToString( {
+					[ Constants.Z_OBJECT_TYPE ]: {
+						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+						[ Constants.Z_REFERENCE_ID ]: Constants.Z_TYPE
+					},
+					[ Constants.Z_TYPE_IDENTITY ]: {
+						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+						[ Constants.Z_REFERENCE_ID ]: Constants.Z_STRING
+					}
+				} );
+				expect( type ).toBe( Constants.Z_STRING );
+			} );
+		} );
+
+		describe( 'Return function call identity', function () {
+			it( 'with zero arguments', function () {
+				var type = typeUtils.typeToString( {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: 'Z10000'
+				} );
+				expect( type ).toBe( 'Z10000' );
+			} );
+			it( 'with zero arguments and normal reference', function () {
+				var type = typeUtils.typeToString( {
+					[ Constants.Z_OBJECT_TYPE ]: {
+						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+						[ Constants.Z_REFERENCE_ID ]: Constants.Z_FUNCTION_CALL
+					},
+					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: {
+						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+						[ Constants.Z_REFERENCE_ID ]: 'Z10000'
+					}
+				} );
+				expect( type ).toBe( 'Z10000' );
+			} );
+			// FIXME: let's just return the function call id for now, but maybe in
+			// the future we want, for example, to return Z881(Z6) or Z882(Z6, Z40)
+			it( 'with one argument', function () {
+				var type = typeUtils.typeToString( {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_LIST,
+					[ Constants.Z_TYPED_LIST_TYPE ]: Constants.Z_STRING
+				} );
+				expect( type ).toBe( Constants.Z_TYPED_LIST );
+				// expect( type ).toBe( `${Constants.Z_TYPED_LIST}(${Constants.Z_STRING})` );
+			} );
+			it( 'with more than one argument', function () {
+				var type = typeUtils.typeToString( {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_PAIR,
+					[ Constants.Z_TYPED_PAIR_TYPE1 ]: Constants.Z_STRING,
+					[ Constants.Z_TYPED_PAIR_TYPE2 ]: Constants.Z_BOOLEAN
+				} );
+				expect( type ).toBe( Constants.Z_TYPED_PAIR );
+				// expect( type ).toBe(
+				//   `${Constants.Z_TYPED_PAIR}(${Constants.Z_STRING},${Constants.Z_BOOLEAN})`
+				// );
+			} );
+		} );
+	} );
 } );
