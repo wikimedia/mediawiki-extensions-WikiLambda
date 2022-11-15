@@ -175,6 +175,8 @@ module.exports = exports = {
 		 * @return {string}
 		 */
 		adminTooltipMessage: function () {
+			// TODO (T299604): Instead of just "users with special permissions", once the right exists we should
+			// actually check which group has the right, fetch its display name, and display it in this text.
 			return this.$i18n( 'wikilambda-editor-fn-edit-definition-tooltip-content' ).text();
 		},
 		/**
