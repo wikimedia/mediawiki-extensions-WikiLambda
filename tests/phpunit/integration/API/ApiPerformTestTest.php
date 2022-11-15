@@ -41,8 +41,13 @@ class ApiPerformTestTest extends ApiTestCase {
 
 	/**
 	 * @dataProvider provideExecuteSuccessfully
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::__construct
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::execute
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::executeGenerator
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::executeFunctionCall
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::getZid
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::getImplementationListEntry
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::getTesterObject
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::run
 	 */
 	public function testExecuteSuccessfully(
