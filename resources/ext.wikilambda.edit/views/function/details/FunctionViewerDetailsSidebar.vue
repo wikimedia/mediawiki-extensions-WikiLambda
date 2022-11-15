@@ -12,7 +12,7 @@
 			:body="formattedBodyData"
 		>
 		</table-container>
-		<template v-if="showFunctionDefinitionItems">
+		<template v-if="showFunctionDefinitionItems && hasMultiLangs">
 			<cdx-button
 				class="ext-wikilambda-function-viewer-details-sidebar__button"
 				@click="showAllLangs = !showAllLangs"
@@ -91,7 +91,8 @@ module.exports = exports = {
 	data: function () {
 		return {
 			showFunctionDefinitionItems: true,
-			showAllLangs: false
+			showAllLangs: false,
+			hasMultiLangs: false
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -175,6 +176,10 @@ module.exports = exports = {
 						class: argumentIndex > 0 ? 'ext-wikilambda-function-viewer-details-sidebar__table-bordered-row' : 'ext-wikilambda-function-viewer-details-sidebar__table-borderless-row'
 					}
 				} );
+
+				if ( this.monolingualStrings( argumentId ).length > 1 ) {
+					this.hasMultiLangs = true;
+				}
 
 				// get the label for each input
 				var stringData = this.monolingualStrings( argumentId ).map( function ( item ) {
