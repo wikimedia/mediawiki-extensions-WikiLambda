@@ -88,8 +88,6 @@
 	"wikilambda-function-typeselector-label": "Sélectionner une fonction",
 	"wikilambda-return-typeselector-label": "Sélectionner un type à retourner",
 	"wikilambda-zobjectselector-label": "Z-Objet",
-	"wikilambda-edit-copyrightwarning-function": "En cliquant sur « Publier », vous acceptez les <a href=\"//foundation.wikimedia.org/wiki/Terms_of_Use/fr\">Conditions d’utilisation</a> et vous acceptez irrévocablement de placer votre contribution sous la <a href=\"//creativecommons.org/publicdomain/zero/1.0/\" title=\"Définition de la Licence Creative Commons CC0\">Licence Creative Commons CC0</a>.",
-	"wikilambda-edit-copyrightwarning-implementation": "En cliquant sur « publier », vous acceptez les <a href=\"//foundation.wikimedia.org/wiki/Terms_of_Use/fr\">Conditions d’utilisation</a> et vous acceptez irrévocablement de placer votre contribution sous la <a href=\"https://www.apache.org/licenses/LICENSE-2.0\" title=\"Définition de la Licence Apache 2.0\">Licence Apache 2.0</a>.",
 	"wikilambda-editor-leave-edit-mode-header": "Quitter le mode modification",
 	"wikilambda-editor-label-addlanguage-label": "Sélectionner la langue",
 	"wikilambda-editor-label-removelanguage-tooltip": "Enlever cette langue du libellé",

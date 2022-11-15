@@ -7,6 +7,5 @@
 	"wikilambda-publish-input-changed-impact-prompt": "<p>Cambiaches o campo de entrada desta función. <strong>Todas as implementacións e probas existentes serán desvinculadas da función actual.</strong> Queres continuar?</p>",
 	"wikilambda-publish-output-changed-impact-prompt": "<p>Cambiaches o tipo de saída desta función. <strong>Todas as implementacións e probas existentes serán desligadas da función actual.</strong> Queres continuar?</p>",
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "<p>Cambiaches o campo de entrada e o tipo de saída desta función. <strong>Todas as implementacións e probas existentes serán desvinculadas da función actual.</strong> Queres continuar?</p>",
-	"wikilambda-edit-copyrightwarning-function": "<p>Ao facer clic en \"publicar\", vostede acepta as <a href=\"//foundation.wikimedia.org/wiki/Terms_of_Use\">condicións de uso</a> e acepta de forma irrevocable publicar a súa contribución baixo a <a href=\"//creativecommons.org/publicdomain/zero/1.0/\" title=\"Definición da licenza Creative Commons CC0\">licenza Creative Commons CC0</a> .</p>",
 	"wikilambda-performtest-error-nonimplementation": "Erro ó realizar unha proba: '$1' non se aplica."
 }

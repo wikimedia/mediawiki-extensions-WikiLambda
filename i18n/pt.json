@@ -75,8 +75,6 @@
 	"wikilambda-argument-typeselector-label": "Selecionar um tipo para este argumento",
 	"wikilambda-function-typeselector-label": "Selecionar uma função",
 	"wikilambda-return-typeselector-label": "Selecionar um tipo para devolver",
-	"wikilambda-edit-copyrightwarning-function": "<p>Ao clicar \"publicar\", concorda com as <a href=\"//foundation.wikimedia.org/wiki/Special:MyLanguage/Terms_of_Use/pt\">condições de utilização</a> e em irrevogavelmente publicar as suas contribuições com a <a href=\"//creativecommons.org/publicdomain/zero/1.0/deed.pt\" title=\"Definição da licença Creative Commons CC0\">licença Creative Commons CC0</a>.</p>",
-	"wikilambda-edit-copyrightwarning-implementation": "Ao clicar \"publicar\", concorda com as <a href=\"//foundation.wikimedia.org/wiki/Special:MyLanguage/Terms_of_Use/pt\">condições de utilização</a> e em irrevogavelmente publicar as suas contribuições com a <a href=\"https://www.apache.org/licenses/LICENSE-2.0\" title=\"Definição da licença Apache 2,0\">licença Apache 2,0</a>.",
 	"wikilambda-editor-leave-edit-mode-header": "Sair do modo de edição",
 	"wikilambda-editor-label-addlanguage-label": "Selecionar língua",
 	"wikilambda-editor-label-removelanguage-tooltip": "Remover esta língua desta etiqueta",
