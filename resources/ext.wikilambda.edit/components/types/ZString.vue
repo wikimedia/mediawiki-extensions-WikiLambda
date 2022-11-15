@@ -57,7 +57,7 @@ module.exports = exports = {
 		}
 	} ),
 	methods: $.extend( {},
-		mapActions( [ 'setZObjectValue' ] ),
+		mapActions( [ 'setZObjectValue', 'setIsZObjectDirty' ] ),
 		{
 		/**
 		 * called setObjectValueById to update the current zobject entry value
@@ -70,6 +70,7 @@ module.exports = exports = {
 					value: event.target.value
 				};
 				this.setZObjectValue( payload );
+				this.setIsZObjectDirty( true );
 			}
 		} )
 };

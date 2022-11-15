@@ -107,7 +107,8 @@ module.exports = exports = {
 	methods: $.extend( {},
 		mapActions( [
 			'setZObjectValue',
-			'fetchZKeys'
+			'fetchZKeys',
+			'setIsZObjectDirty'
 		] ),
 		{
 			/**
@@ -121,6 +122,7 @@ module.exports = exports = {
 					value: value
 				};
 				this.setZObjectValue( payload );
+				this.setIsZObjectDirty( true );
 			}
 		}
 	),

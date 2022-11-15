@@ -257,7 +257,8 @@ module.exports = exports = {
 		},
 		isSavingZObject: false,
 		ZObjectInitialized: false,
-		activeLangSelection: ''
+		activeLangSelection: '',
+		isZObjectDirty: false
 	},
 	getters: {
 		getActiveLangSelection: function ( state ) {
@@ -652,6 +653,9 @@ module.exports = exports = {
 
 				return attachedImplementations;
 			};
+		},
+		getIsZObjectDirty: function ( state ) {
+			return state.isZObjectDirty;
 		}
 	},
 	mutations: {
@@ -703,6 +707,9 @@ module.exports = exports = {
 		},
 		setActiveLangSelection: function ( state, payload ) {
 			state.activeLangSelection = payload;
+		},
+		setIsZObjectDirty: function ( state, value ) {
+			state.isZObjectDirty = value;
 		}
 	},
 	actions: {
@@ -1454,6 +1461,9 @@ module.exports = exports = {
 				context.commit( 'setZObject', zObjectCopy );
 				throw e;
 			} );
+		},
+		setIsZObjectDirty: function ( context, value ) {
+			context.commit( 'setIsZObjectDirty', value );
 		}
 	}
 };

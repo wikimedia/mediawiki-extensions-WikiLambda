@@ -215,7 +215,8 @@ module.exports = exports = {
 			'setZImplementationType',
 			'setAvailableZArguments',
 			'setZCodeLanguage',
-			'injectZObject'
+			'injectZObject',
+			'setIsZObjectDirty'
 		] ),
 		{
 			updateZFunctionType: function ( val ) {
@@ -223,6 +224,7 @@ module.exports = exports = {
 					id: this.zFunction.id,
 					value: val
 				} );
+				this.setIsZObjectDirty( true );
 			},
 			selectLanguage: function ( payload ) {
 				this.setZCodeLanguage( payload );
@@ -235,6 +237,7 @@ module.exports = exports = {
 			},
 			updateCode: function ( payload ) {
 				this.injectZObject( payload );
+				this.setIsZObjectDirty( true );
 			},
 			changeImplMode: function ( mode ) {
 				this.setZImplementationType( {

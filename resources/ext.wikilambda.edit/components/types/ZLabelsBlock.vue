@@ -245,7 +245,8 @@ module.exports = exports = {
 		'injectZObject',
 		'removeZObjectChildren',
 		'removeZObject',
-		'recalculateZListIndex'
+		'recalculateZListIndex',
+		'setIsZObjectDirty'
 	] ), {
 		/**
 		 * Returns the internal Id that identifies the
@@ -374,6 +375,7 @@ module.exports = exports = {
 				};
 
 			this.addZMonolingualString( payload );
+			this.setIsZObjectDirty( true );
 			this.showAllSelectedLanguages = true;
 			this.selectedLang = langZid;
 			// this is necessary because it is an anti-pattern
@@ -406,6 +408,7 @@ module.exports = exports = {
 				this.removeZObjectChildren( aliasId );
 				this.removeZObject( aliasId );
 			}
+			this.setIsZObjectDirty( true );
 		},
 		/**
 		 * Remove one alias from the alias list of a given language
