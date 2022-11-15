@@ -150,6 +150,17 @@ module.exports = exports = {
 				// set the global argument ID to look up type and label
 				var argumentId = this.zArgumentList[ argumentIndex ].id;
 				var zArgumentType = this.zArgumentType( argumentId );
+				var text = '';
+				if ( this.zArgumentTypeLabel( zArgumentType ) ) {
+					text = {
+						title: this.zArgumentTypeLabel( zArgumentType ),
+						component: 'a',
+						props: {
+							href: new mw.Title( zArgumentType ).getUrl()
+						},
+						class: argumentIndex > 0 ? 'ext-wikilambda-function-viewer-details-sidebar__table-bordered-row' : 'ext-wikilambda-function-viewer-details-sidebar__table-borderless-row'
+					};
+				}
 
 				// Corresponding to "INPUT X" in a row
 				tableData.push( {
@@ -166,14 +177,7 @@ module.exports = exports = {
 						title: '',
 						class: argumentIndex > 0 ? 'ext-wikilambda-function-viewer-details-sidebar__table-bordered-row' : 'ext-wikilambda-function-viewer-details-sidebar__table-borderless-row'
 					},
-					text: {
-						title: this.zArgumentTypeLabel( zArgumentType ),
-						component: 'a',
-						props: {
-							href: new mw.Title( zArgumentType ).getUrl()
-						},
-						class: argumentIndex > 0 ? 'ext-wikilambda-function-viewer-details-sidebar__table-bordered-row' : 'ext-wikilambda-function-viewer-details-sidebar__table-borderless-row'
-					}
+					text: text
 				} );
 
 				// get the label for each input
