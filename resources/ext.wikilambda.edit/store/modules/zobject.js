@@ -189,15 +189,28 @@ function removeEmptyAliasLabelValues( context ) {
 	var aliasList = context.getters.getAllItemsFromListById( aliasListId );
 
 	aliasList.forEach( function ( alias ) {
-		var aliasLabelArrayId = context.getters.getNestedZObjectById( alias.id, [
+		var aliasLabelId = context.getters.getNestedZObjectById( alias.id, [
 			Constants.Z_MONOLINGUALSTRINGSET_VALUE ] ).id;
-		var aliasLabelArray = context.getters.getAllItemsFromListById( aliasLabelArrayId );
+		var aliasLabelArray = context.getters.getAllItemsFromListById( aliasLabelId );
 
 		if ( aliasLabelArray.length === 0 ) {
 			context.dispatch( 'removeZObjectChildren', alias.id );
 			context.dispatch( 'removeZObject', alias.id );
+		} else {
+			for ( let index = 0; index < aliasLabelArray.length; index++ ) {
+				const aliasLabelItemId = aliasLabelArray[ index ];
+				const aliasLabelItemIdItems = context.getters.getZObjectChildrenById( aliasLabelItemId.id );
+
+				if ( aliasLabelItemIdItems.length === 0 ||
+					( aliasLabelItemIdItems.length > 1 && !aliasLabelItemIdItems[ 1 ].value )
+				) {
+					context.dispatch( 'removeZObjectChildren', aliasLabelItemId.id );
+					context.dispatch( 'removeZObject', aliasLabelItemId.id );
+				}
+			}
 		}
 
+		context.dispatch( 'recalculateZListIndex', aliasLabelId );
 		context.dispatch( 'recalculateZListIndex', aliasListId );
 	} );
 }
@@ -1019,6 +1032,7 @@ module.exports = exports = {
 			context.commit( 'setIsSavingZObject', true );
 
 			var zobject = transformZObjectForSubmission( context, shouldUnattachImplementationAndTester );
+
 			// eslint-disable-next-line compat/compat
 			return new Promise( function ( resolve, reject ) {
 				saveZObject(

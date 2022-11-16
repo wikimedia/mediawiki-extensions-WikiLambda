@@ -84,8 +84,10 @@ module.exports = exports = {
 			this.$emit( 'edit-chip', id, name );
 		},
 		addChip: function () {
-			this.$emit( 'add-chip', this.newText );
-			this.newText = '';
+			if ( this.newText ) {
+				this.$emit( 'add-chip', this.newText );
+				this.newText = '';
+			}
 		},
 		removeChip: function ( id ) {
 			this.$emit( 'remove-chip', id );
