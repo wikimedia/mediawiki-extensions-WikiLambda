@@ -102,7 +102,21 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await aliasInput.trigger( 'keydown', { key: 'enter' } );
 
 		// ACT: Select a type for the first argument.
-		const argumentTypeSelectorLookup =
+		var argumentTypeSelectorLookup =
+			wrapper.get( '.ext-wikilambda-editor-input-list-item__selector' ).getComponent( CdxLookup );
+		argumentTypeSelectorLookup.vm.$emit( 'input', 'Str' );
+		await awaitLookup( wrapper );
+		await clickItemInMenu( argumentTypeSelectorLookup, 'String' );
+
+		// ACT: Delete the argument you just selected.
+		await wrapper.find( '.ext-wikilambda-editor-input-list-item__action-delete' ).trigger( 'click' );
+
+		// ASSERT: No inputs show.
+		expect( wrapper.find( '.ext-wikilambda-editor-input-list-item__selector' ).exists() ).toBeFalsy();
+
+		// ACT: Add an input and select the type.
+		await wrapper.get( '.ext-wikilambda-function-definition-inputs__add-input-button' ).trigger( 'click' );
+		argumentTypeSelectorLookup =
 			wrapper.get( '.ext-wikilambda-editor-input-list-item__selector' ).getComponent( CdxLookup );
 		argumentTypeSelectorLookup.vm.$emit( 'input', 'Str' );
 		await awaitLookup( wrapper );
@@ -113,7 +127,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await argumentLabelInput.setValue( 'first argument label, in Chinese' );
 
 		// ACT: Add another argument.
-		await wrapper.get( '.ext-wikilambda-editor-input-list-item__button' ).trigger( 'click' );
+		await wrapper.get( '.ext-wikilambda-function-definition-inputs__add-another-input-button' ).trigger( 'click' );
 
 		// ACT: Select a type for the second argument.
 		const secondArgumentTypeSelectorLookup =

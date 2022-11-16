@@ -32,15 +32,19 @@
 				class="ext-wikilambda-function-definition-inputs__row"
 				:z-lang="zLang"
 				:zobject-id="argument.id"
-				:show-add-new-input="showAddNewInput( isMainZObject, index )"
 				:can-edit-type="canEditType"
 				:is-mobile="isMobile"
 				:is-active="activeInputIndex === index"
 				:show-index="zArgumentList.length > 1"
 				@update-argument-label="updateArgumentLabel"
-				@add-new-input="addNewItem"
 				@active-input="setActiveInput">
 			</function-definition-inputs-item>
+			<div
+				:class="addInputButtonClass"
+				role="button"
+				@click="addNewItem">
+				{{ addNewItemText }}
+			</div>
 		</div>
 	</div>
 </template>
@@ -140,6 +144,16 @@ module.exports = exports = {
 		},
 		canEditType: function () {
 			return this.canEdit && this.isMainZObject;
+		},
+		addNewItemText: function () {
+			return this.zArgumentList.length === 0 ?
+				this.$i18n( 'wikilambda-function-definition-inputs-item-add-first-input-button' ).text() :
+				this.$i18n( 'wikilambda-function-definition-inputs-item-add-input-button' ).text();
+		},
+		addInputButtonClass: function () {
+			return this.zArgumentList.length === 0 ?
+				'ext-wikilambda-function-definition-inputs__add-input-button ext-wikilambda-edit__text-button' :
+				'ext-wikilambda-function-definition-inputs__add-another-input-button ext-wikilambda-edit__text-button';
 		}
 	} ),
 	methods: $.extend( mapActions( [
@@ -212,6 +226,15 @@ module.exports = exports = {
 		margin-left: 8px;
 		width: 16px;
 		height: 16px;
+	}
+
+	&__add-input-button {
+		cursor: pointer;
+	}
+
+	&__add-another-input-button {
+		margin-top: 8px;
+		cursor: pointer;
 	}
 
 	@media screen and ( min-width: @width-breakpoint-tablet ) {
