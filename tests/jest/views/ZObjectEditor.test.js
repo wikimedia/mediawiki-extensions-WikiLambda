@@ -10,7 +10,8 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	ZObjectEditor = require( '../../../resources/ext.wikilambda.edit/views/ZObjectEditor.vue' ),
-	ZObjectPublish = require( '../../../resources/ext.wikilambda.edit/components/ZObjectPublish.vue' );
+	ZObjectPublish = require( '../../../resources/ext.wikilambda.edit/components/ZObjectPublish.vue' ),
+	Dialog = require( '../../../resources/ext.wikilambda.edit/components/base/Dialog.vue' );
 
 describe( 'ZObjectEditor', function () {
 	var getters,
@@ -18,6 +19,11 @@ describe( 'ZObjectEditor', function () {
 		mutations;
 
 	beforeEach( function () {
+		// Needed because of the Teleported component.
+		const el = document.createElement( 'div' );
+		el.id = 'ext-wikilambda-app';
+		document.body.appendChild( el );
+
 		getters = {
 			isCreateNewPage: jest.fn( function () {
 				return true;
@@ -34,7 +40,9 @@ describe( 'ZObjectEditor', function () {
 				};
 			} ),
 			currentZObjectIsValid: jest.fn(),
-			isNewZObject: jest.fn(),
+			isNewZObject: jest.fn( function () {
+				return true;
+			} ),
 			getZObjectTypeById: createGettersWithFunctionsMock(),
 			getErrors: createGettersWithFunctionsMock( {} ),
 			getCurrentZObjectType: createGettersWithFunctionsMock(),
@@ -62,6 +70,11 @@ describe( 'ZObjectEditor', function () {
 		mw.language.getFallbackLanguageChain = jest.fn( function () {
 			return 'en';
 		} );
+	} );
+
+	afterEach( () => {
+		// Clear the element that was added for the Teleported dialog component.
+		document.body.outerHTML = '';
 	} );
 
 	it( 'renders without errors', function () {
@@ -95,4 +108,23 @@ describe( 'ZObjectEditor', function () {
 		const publishButton = wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' );
 		expect( publishButton.attributes( 'disabled' ) ).toBeUndefined();
 	} );
+
+	it( 'shows the leave editor dialog if the Create Function button, which navigates away from the editor, is clicked before changes are saved',
+		async function () {
+			getters.getIsZObjectDirty = jest.fn( function () {
+				return true;
+			} );
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+			const wrapper = mount( ZObjectEditor );
+
+			await wrapper.get( '.ext-wikilambda-editor__navigate-to-function-editor' ).trigger( 'click' );
+			await wrapper.vm.$nextTick();
+
+			const leaveEditorDialog = wrapper.getComponent( Dialog );
+			const leaveDialogMessage = leaveEditorDialog.find( '.ext-wikilambda-leaveeditordialog__message' );
+
+			expect( leaveDialogMessage.text() ).toBe( 'wikilambda-publish-lose-changes-prompt' );
+		} );
 } );

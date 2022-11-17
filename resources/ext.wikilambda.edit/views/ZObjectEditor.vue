@@ -14,7 +14,8 @@
 			<z-object-publish :is-disabled="!isDirty"></z-object-publish>
 			<cdx-button
 				v-if="isNewZObject"
-				@click="navigateToFunctionEditor">
+				class="ext-wikilambda-editor__navigate-to-function-editor"
+				@click.stop="navigateToFunctionEditor">
 				{{ $i18n( 'wikilambda-create-function' ).text() }}
 			</cdx-button>
 			<cdx-button
@@ -36,12 +37,18 @@
 				{{ message }}
 			</cdx-message>
 		</template>
+		<leave-editor-dialog
+			:show-dialog="showLeaveEditorDialog"
+			:continue-callback="leaveEditorCallback"
+			@close-dialog="closeLeaveEditorDialog">
+		</leave-editor-dialog>
 	</div>
 </template>
 
 <script>
 var ZObject = require( '../components/ZObject.vue' ),
 	ZObjectPublish = require( '../components/ZObjectPublish.vue' ),
+	LeaveEditorDialog = require( '../components/editor/LeaveEditorDialog.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	mapGetters = require( 'vuex' ).mapGetters,
@@ -55,13 +62,16 @@ module.exports = exports = {
 	components: {
 		'z-object': ZObject,
 		'z-object-publish': ZObjectPublish,
+		'leave-editor-dialog': LeaveEditorDialog,
 		'cdx-button': CdxButton,
 		'cdx-message': CdxMessage
 	},
 	mixins: [ typeUtils ],
 	data: function () {
 		return {
-			Constants: Constants
+			Constants: Constants,
+			showLeaveEditorDialog: false,
+			leaveEditorCallback: ''
 		};
 	},
 	computed: $.extend( mapGetters( {
@@ -109,10 +119,47 @@ module.exports = exports = {
 			},
 
 			navigateToFunctionEditor: function () {
-				this.navigate( { to: Constants.VIEWS.FUNCTION_EDITOR } );
+				if ( this.isDirty ) {
+					this.showLeaveEditorDialog = true;
+					this.leaveEditorCallback = function () {
+						this.navigate( { to: Constants.VIEWS.FUNCTION_EDITOR } );
+					}.bind( this );
+				} else {
+					this.navigate( { to: Constants.VIEWS.FUNCTION_EDITOR } );
+				}
+			},
+
+			closeLeaveEditorDialog: function () {
+				this.showLeaveEditorDialog = false;
+			},
+
+			handleClickAway: function ( e ) {
+				let target = e.target;
+
+				// Find if what was clicked was a link.
+				while ( target && target.tagName !== 'A' ) {
+					target = target.parentNode;
+					if ( !target ) {
+						return;
+					}
+				}
+				if ( target.href && this.isDirty ) {
+					this.showLeaveEditorDialog = true;
+					e.preventDefault();
+					this.leaveEditorCallback = function () {
+						window.removeEventListener( 'click', this.handleClickAway );
+						window.location.href = target.href;
+					}.bind( this );
+				}
 			}
 		}
-	)
+	),
+	mounted: function () {
+		window.addEventListener( 'click', this.handleClickAway );
+	},
+	beforeUnmount: function () {
+		window.removeEventListener( 'click', this.handleClickAway );
+	}
 };
 </script>
 
