@@ -131,6 +131,35 @@ describe( 'FunctionDetails', function () {
 		expect( testerTableItems[ 1 ].state.props.text ).toEqual( 'wikilambda-function-implementation-state-available' );
 	} );
 
+	describe( 'Implementations without labels display the ZID', () => {
+		beforeEach( function () {
+			getters.getZkeyLabels = () => {
+				return {
+					Z333: 'Z333 name'
+				};
+			};
+
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+		} );
+		it( 'in the implementations table', function () {
+			var wrapper = shallowMount( FunctionDetails );
+			const implTableItems = wrapper.findAllComponents( FunctionViewerDetailsTable )[ 0 ].props( 'body' );
+
+			expect( implTableItems[ 0 ].name.title ).toEqual( 'Z333 name' );
+			expect( implTableItems[ 1 ].name.title ).toEqual( 'Z444' );
+		} );
+
+		it( 'in the testers table header', function () {
+			var wrapper = shallowMount( FunctionDetails );
+			const testerTableHeaderItems = wrapper.findAllComponents( FunctionViewerDetailsTable )[ 1 ].props( 'header' );
+
+			expect( testerTableHeaderItems.Z333.title ).toEqual( 'Z333 name' );
+			expect( testerTableHeaderItems.Z444.title ).toEqual( 'Z444' );
+		} );
+	} );
+
 	describe( 'implementation select-all checkbox', () => {
 		it( 'is unchecked when not all checkboxes below are checked', ( done ) => {
 			var wrapper = shallowMount( FunctionDetails );

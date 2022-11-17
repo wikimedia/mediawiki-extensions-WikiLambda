@@ -219,6 +219,11 @@ module.exports = exports = {
 						};
 					}
 
+					var implementationLabel = this.getZkeyLabels[ visibleImplementations[ index ] ];
+					if ( !implementationLabel ) {
+						implementationLabel = visibleImplementations[ index ];
+					}
+
 					// create the table data for the implementations table
 					tableData.push( {
 						checkbox: {
@@ -234,7 +239,7 @@ module.exports = exports = {
 							id: this.getZkeyLabels[ visibleImplementations[ index ] ]
 						},
 						name: {
-							title: this.getZkeyLabels[ visibleImplementations[ index ] ],
+							title: implementationLabel,
 							component: 'a',
 							props: {
 								href: new mw.Title( visibleImplementations[ index ] ).getUrl()
@@ -298,9 +303,13 @@ module.exports = exports = {
 
 				// create one column per implementation selected (or for all implementations if none are selected)
 				for ( const zid in this.implZidToState ) {
+					var implementationLabel = this.getZkeyLabels[ zid ];
+					if ( !implementationLabel ) {
+						implementationLabel = zid;
+					}
 					if ( this.implZidToState[ zid ].checked || !this.areAnyImplementationsChecked ) {
 						headers[ zid ] = {
-							title: this.getZkeyLabels[ zid ],
+							title: implementationLabel,
 							class: 'ext-wikilambda-function-details-table-text'
 						};
 					}
