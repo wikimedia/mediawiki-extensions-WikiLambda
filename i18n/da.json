@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Antonla",
-			"Saederup92"
+			"Saederup92",
+			"SiGNOUT"
 		]
 	},
 	"wikilambda-persistentzobject-contents": "Indhold",
@@ -12,6 +13,7 @@
 	"wikilambda-typeselector-label": "Vælg en type",
 	"wikilambda-function-typeselector-label": "Vælg en funktion",
 	"wikilambda-editor-label-addlanguage-label": "Tilføj sprog",
+	"wikilambda-publish-lose-changes-prompt": "Hvis du forlader siden uden at udgive først mister du dine ændringer.",
 	"wikilambda-implementation-selector-code": "Kode",
 	"wikilambda-metadata-language-column": "Sprog",
 	"wikilambda-metadata-aka-column": "Også kendt som",
