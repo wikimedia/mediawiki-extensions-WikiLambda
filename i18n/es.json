@@ -27,7 +27,7 @@
 	"content-model-zobject": "Objeto Z",
 	"wikilambda-emptylabel": "Objeto Z sin etiqueta",
 	"wikilambda-history-title": "Historial de revisiones de «$1» ($2)",
-	"wikilambda-invalidzobjecttitle": "El título proporcionado «$1» no es válido para un Objeto Z.",
+	"wikilambda-invalidzobjecttitle": "El título proporcionado '$1' no es válido para un Objeto Z.",
 	"wikilambda-invalidzobject": "El contenido proporcionado no constituye un Objeto Z válido.",
 	"wikilambda-invalidcontenttype": "El contenido proporcionado no es una clase de Objeto Z.",
 	"wikilambda-typeunavailable": "Tipo no reconocido",
