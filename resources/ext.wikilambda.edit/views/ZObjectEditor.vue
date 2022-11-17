@@ -96,8 +96,8 @@ module.exports = exports = {
 		{
 			submit: function () {
 				const context = this;
-				this.validateZObject().then( function ( validity ) {
-					if ( validity.isValid ) {
+				this.validateZObject().then( function ( isValid ) {
+					if ( isValid ) {
 						context.submitZObject( { summary: context.summary } ).then( function ( pageTitle ) {
 							if ( pageTitle ) {
 								window.location.href = new mw.Title( pageTitle ).getUrl();

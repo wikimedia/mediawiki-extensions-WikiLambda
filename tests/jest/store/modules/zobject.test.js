@@ -523,17 +523,18 @@ describe( 'zobject Vuex module', function () {
 			const isValid = zobjectModule.actions.validateZObject( context );
 			expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
 			expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
-			expect( isValid ).toEqual( { isValid: false } );
+			expect( isValid ).toEqual( false );
 		} );
 
-		it( 'Dispatches errors for an invalid zImplementation', function () {
+		it( 'Dispatches errors for a zImplementation with no function and no code defined', function () {
 			context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 			context.state = {
 				zobject: [
 					{ id: 0, value: 'object' },
 					{ key: 'Z2K2', value: 'object', parent: 0, id: 7 },
 					{ key: 'Z14K1', value: 'object', parent: 7, id: 35 },
-					{ key: 'Z9K1', value: '', parent: 35, id: 37 }
+					{ key: 'Z9K1', value: '', parent: 35, id: 37 },
+					{ key: 'Z14K3', value: 'object', parent: 7, id: 54 }
 				]
 			};
 			context.getters.getZObjectAsJson = {
@@ -542,23 +543,36 @@ describe( 'zobject Vuex module', function () {
 					Z14K1: {
 						Z1K1: Constants.Z_REFERENCE,
 						Z9K1: ''
+					},
+					Z14K3: {
+						Z16K2: {
+							Z1K1: Constants.Z_STRING,
+							Z6K1: undefined
+						}
 					}
 				}
 			};
 			context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
 
-			const mockError = {
+			const mockErrorNoFunction = {
 				errorMessage: 'wikilambda-zobject-missing-attached-function',
 				errorState: true,
 				errorType: 'error',
 				internalId: 37
 			};
 
-			const isValid = zobjectModule.actions.validateZObject( context );
-			expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-			expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
-			expect( isValid ).toEqual( { isValid: false } );
+			const mockErrorNoCode = {
+				internalId: 54,
+				errorState: true,
+				errorMessage: 'wikilambda-zimplementation-code-missing',
+				errorType: Constants.errorTypes.ERROR
+			};
 
+			const isValid = zobjectModule.actions.validateZObject( context );
+			expect( context.dispatch ).toHaveBeenCalledTimes( 2 );
+			expect( context.dispatch ).toHaveBeenNthCalledWith( 1, 'setError', mockErrorNoFunction );
+			expect( context.dispatch ).toHaveBeenNthCalledWith( 2, 'setError', mockErrorNoCode );
+			expect( isValid ).toEqual( false );
 		} );
 
 		it( 'Dispatches errors for an invalid zTester', function () {
@@ -568,7 +582,9 @@ describe( 'zobject Vuex module', function () {
 					{ id: 0, value: 'object' },
 					{ key: 'Z2K2', value: 'object', parent: 0, id: 7 },
 					{ key: 'Z20K1', value: 'object', parent: 7, id: 35 },
-					{ key: 'Z9K1', value: '', parent: 35, id: 37 }
+					{ key: 'Z9K1', value: '', parent: 35, id: 37 },
+					{ key: 'Z20K2', value: 'object', parent: 7, id: 38 },
+					{ key: 'Z20K3', value: 'object', parent: 7, id: 41 }
 				]
 			};
 			context.getters.getZObjectAsJson = {
@@ -577,22 +593,47 @@ describe( 'zobject Vuex module', function () {
 					Z20K1: {
 						Z1K1: Constants.Z_REFERENCE,
 						Z9K1: ''
+					},
+					Z20K2: {
+						Z1K1: Constants.Z_FUNCTION_CALL,
+						Z7K1: ''
+					},
+					Z20K3: {
+						Z1K1: Constants.Z_FUNCTION_CALL,
+						Z7K1: ''
 					}
 				}
 			};
+
 			context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
 
-			const mockError = {
+			const mockErrorNoFunction = {
+				internalId: 37,
 				errorMessage: 'wikilambda-zobject-missing-attached-function',
 				errorState: true,
-				errorType: 'error',
-				internalId: 37
+				errorType: 'error'
+			};
+
+			const mockErrorNoFunctionCall = {
+				internalId: 38,
+				errorState: true,
+				errorMessage: 'wikilambda-zobject-missing-attached-function',
+				errorType: Constants.errorTypes.ERROR
+			};
+
+			const mockErrorNoResultValidation = {
+				internalId: 41,
+				errorState: true,
+				errorMessage: 'wikilambda-zobject-missing-attached-function',
+				errorType: Constants.errorTypes.ERROR
 			};
 
 			const isValid = zobjectModule.actions.validateZObject( context );
-			expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-			expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
-			expect( isValid ).toEqual( { isValid: false } );
+			expect( context.dispatch ).toHaveBeenCalledTimes( 3 );
+			expect( context.dispatch ).toHaveBeenNthCalledWith( 1, 'setError', mockErrorNoFunction );
+			expect( context.dispatch ).toHaveBeenNthCalledWith( 2, 'setError', mockErrorNoFunctionCall );
+			expect( context.dispatch ).toHaveBeenNthCalledWith( 3, 'setError', mockErrorNoResultValidation );
+			expect( isValid ).toEqual( false );
 		} );
 
 		it( 'Does not dispatch errors for a valid zFunction', function () {
@@ -601,7 +642,7 @@ describe( 'zobject Vuex module', function () {
 
 			const isValid = zobjectModule.actions.validateZObject( context );
 			expect( context.dispatch ).not.toHaveBeenCalled();
-			expect( isValid ).toEqual( { isValid: true } );
+			expect( isValid ).toEqual( true );
 		} );
 
 		it( 'Initialize ZObject, create new page, initial value for Z2K2', function () {

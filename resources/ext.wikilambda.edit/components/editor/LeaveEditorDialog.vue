@@ -13,6 +13,7 @@
 			size="auto"
 			:custom-class="leaveEditorDialogCustomClass"
 			:show-action-buttons="true"
+			:button-action="buttonAction"
 			:cancel-button-text="$i18n( 'wikilambda-continue-editing' ).text()"
 			:confirm-button-text="$i18n( 'wikilambda-discard-edits' ).text()"
 			@exit-dialog="stayOnPage"
@@ -53,7 +54,8 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			leaveEditorDialogCustomClass: 'ext-wikilambda-leave-editor-dialog-custom-class'
+			leaveEditorDialogCustomClass: 'ext-wikilambda-leave-editor-dialog-custom-class',
+			buttonAction: 'secondary'
 		};
 	},
 	methods: {
@@ -99,6 +101,23 @@ module.exports = exports = {
 		button {
 			margin-right: 16px;
 			width: fit-content;
+		}
+
+		/* stylelint-disable-next-line */
+		#primary-button {
+			color: @wmui-color-red50;
+		}
+	}
+
+	@media screen and ( max-width: @width-breakpoint-tablet ) {
+		&__action-buttons {
+			display: flex;
+			flex-direction: column;
+
+			button {
+				margin-bottom: 8px;
+				width: 100%;
+			}
 		}
 	}
 }

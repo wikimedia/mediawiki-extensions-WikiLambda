@@ -258,5 +258,7 @@
 	"wikilambda-function-viewer-details-table-view-less": "View less",
 	"wikilambda-toast-close": "Close",
 	"wikilambda-missing-function-output-error-message": "A function requires an output",
-	"wikilambda-zobject-missing-attached-function": "An associated function is required"
+	"wikilambda-zobject-missing-attached-function": "A function is required",
+	"wikilambda-zimplememntation-composition-missing": "A composition must be defined",
+	"wikilambda-zimplementation-code-missing": "Code must be defined"
 }

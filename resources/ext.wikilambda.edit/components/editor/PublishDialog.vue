@@ -134,12 +134,13 @@ module.exports = exports = {
 			return this.warnings.length !== 0;
 		},
 		legalText: function () {
-			// TODO(T321744) Show mobile text on mobile.
+			// Special message for implementations (Apache 2.0 licence for code).
 			if ( this.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) {
 				return this.$i18n( 'wikifunctions-edit-copyrightwarning-implementation' );
-			} else {
-				return this.$i18n( 'wikifunctions-edit-copyrightwarning-function' );
 			}
+
+			// General message for all other kinds of ZObjects (CC0).
+			return this.$i18n( 'wikifunctions-edit-copyrightwarning-function' );
 		}
 	} ),
 	methods: $.extend( mapActions( [

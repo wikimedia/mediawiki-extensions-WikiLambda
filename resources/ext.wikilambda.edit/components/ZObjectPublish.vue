@@ -57,8 +57,8 @@ module.exports = exports = {
 		mapActions( [ 'validateZObject' ] ),
 		{
 			handlePublish: function () {
-				this.validateZObject().then( function ( validation ) {
-					if ( validation.isValid ) {
+				this.validateZObject().then( function ( isValid ) {
+					if ( isValid ) {
 						this.showPublishDialog = true;
 					}
 				}.bind( this ) );
