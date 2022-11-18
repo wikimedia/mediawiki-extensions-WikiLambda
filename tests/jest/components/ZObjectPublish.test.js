@@ -40,7 +40,7 @@ describe( 'ZObjectPublish', function () {
 		actions = {
 			submitZObject: submitZObjectMock,
 			validateZObject: jest.fn( function () {
-				return { isValid: true };
+				return true;
 			} ),
 			setError: jest.fn()
 		};
@@ -71,7 +71,7 @@ describe( 'ZObjectPublish', function () {
 
 	it( 'does not open the publish dialog if validateZObject returns isValid false', async function () {
 		actions.validateZObject = jest.fn( function () {
-			return { isValid: false };
+			return false;
 		} );
 
 		global.store.hotUpdate( {

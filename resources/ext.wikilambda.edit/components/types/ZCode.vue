@@ -24,6 +24,14 @@
 			:value="editorValue"
 			@change="updateCode"
 		></code-editor>
+		<cdx-message
+			v-if="errorState"
+			class="ext-wikilambda-select-zobject__error"
+			:type="errorType"
+			inline
+		>
+			{{ errorMessage }}
+		</cdx-message>
 	</div>
 </template>
 
@@ -32,6 +40,7 @@ var Constants = require( '../../Constants.js' ),
 	typeUtils = require( './../../mixins/typeUtils.js' ),
 	CodeEditor = require( '../base/CodeEditor.vue' ),
 	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
+	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -39,7 +48,8 @@ var Constants = require( '../../Constants.js' ),
 module.exports = exports = {
 	components: {
 		'code-editor': CodeEditor,
-		'cdx-select': CdxSelect
+		'cdx-select': CdxSelect,
+		'cdx-message': CdxMessage
 	},
 	mixins: [ typeUtils ],
 	inject: {
@@ -64,7 +74,8 @@ module.exports = exports = {
 	computed: $.extend(
 		mapGetters( [
 			'getAllProgrammingLangs',
-			'getZObjectChildrenById'
+			'getZObjectChildrenById',
+			'getErrors'
 		] ),
 		{
 			zobject: function () {
@@ -127,11 +138,33 @@ module.exports = exports = {
 				}
 
 				return programmingLangs;
+			},
+			errorState: function () {
+				// the error is not guaranteed to exist
+				if ( this.getErrors[ this.zobjectId ] ) {
+					return this.getErrors[ this.zobjectId ].state;
+				}
+
+				return false;
+			},
+			errorMessage: function () {
+				if ( this.getErrors[ this.zobjectId ] ) {
+					const messageStr = this.getErrors[ this.zobjectId ].message;
+					return this.$i18n( messageStr ).text();
+				}
+				return null;
+			},
+			errorType: function () {
+				if ( this.getErrors[ this.zobjectId ] ) {
+					return this.getErrors[ this.zobjectId ].type;
+				}
+				return null;
 			}
 		} ),
 	methods: $.extend(
 		mapActions( [
-			'fetchAllZProgrammingLanguages'
+			'fetchAllZProgrammingLanguages',
+			'setError'
 		] ),
 		{
 			/**
@@ -160,6 +193,11 @@ module.exports = exports = {
 				};
 
 				this.$emit( 'update-code', payload );
+
+				this.setError( {
+					internalId: this.zobjectId,
+					errorState: false
+				} );
 			}
 		} ),
 	watch: {

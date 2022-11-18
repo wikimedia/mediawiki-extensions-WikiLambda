@@ -847,9 +847,9 @@ module.exports = exports = {
 		/**
 		 *
 		 * @param {Object} context
-		 * @return {Object}
+		 * @return {boolean}
 		 *
-		 * Return an Object, including a value indicating if the current Z Object is valid based on type requirements
+		 * Return a boolean indicating if the current Z Object is valid based on type requirements
 		 *
 		 * Update error store with any errors found while validating
 		 */
@@ -858,7 +858,7 @@ module.exports = exports = {
 				zobject = context.getters.getZObjectAsJson;
 
 			var internalId,
-				validityResults = { isValid: true };
+				isValid = true;
 
 			switch ( zobjectType ) {
 				case Constants.Z_FUNCTION:
@@ -870,9 +870,9 @@ module.exports = exports = {
 							errorMessage: 'wikilambda-missing-function-output-error-message',
 							errorType: Constants.errorTypes.ERROR
 						} );
-						validityResults.isValid = false;
+						isValid = false;
 					}
-					return validityResults;
+					return isValid;
 				case Constants.Z_IMPLEMENTATION:
 					internalId = getZImplementationFunctionId(
 						typeUtils.findKeyInArray,
@@ -887,27 +887,121 @@ module.exports = exports = {
 							errorMessage: 'wikilambda-zobject-missing-attached-function',
 							errorType: Constants.errorTypes.ERROR
 						} );
-						validityResults.isValid = false;
+						isValid = false;
 					}
-					return validityResults;
+
+					// if implementation type is composition
+					if ( zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_COMPOSITION ] ) {
+						// invalid if composition hasn't been defined
+						if ( !zobject[
+							Constants.Z_PERSISTENTOBJECT_VALUE
+						][
+							Constants.Z_IMPLEMENTATION_COMPOSITION
+						] [
+							Constants.Z_FUNCTION_CALL_FUNCTION
+						][
+							Constants.Z_REFERENCE_ID
+						] ) {
+							internalId = typeUtils.findKeyInArray(
+								Constants.Z_IMPLEMENTATION_COMPOSITION,
+								context.state.zobject
+							).id;
+							context.dispatch( 'setError', {
+								internalId,
+								errorState: true,
+								errorMessage: 'wikilambda-zimplememntation-composition-missing',
+								errorType: Constants.errorTypes.ERROR
+							} );
+							isValid = false;
+						}
+					}
+					// if implementation type is code
+					if ( zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_CODE ] ) {
+						// invalid if no code is defined
+						if ( !zobject[
+							Constants.Z_PERSISTENTOBJECT_VALUE
+						][
+							Constants.Z_IMPLEMENTATION_CODE
+						][
+							Constants.Z_CODE_CODE
+						][
+							Constants.Z_STRING_VALUE
+						] ) {
+							internalId = typeUtils.findKeyInArray(
+								Constants.Z_IMPLEMENTATION_CODE,
+								context.state.zobject
+							).id;
+							context.dispatch( 'setError', {
+								internalId,
+								errorState: true,
+								errorMessage: 'wikilambda-zimplementation-code-missing',
+								errorType: Constants.errorTypes.ERROR
+							} );
+							isValid = false;
+						}
+					}
+					return isValid;
 				case Constants.Z_TESTER:
-					internalId = getZTesterFunctionId(
-						typeUtils.findKeyInArray,
-						context
-					);
+					// invalid if no function is defined
 					if ( !zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
 						Constants.Z_TESTER_FUNCTION ][ Constants.Z_REFERENCE_ID ] ) {
+						internalId = getZTesterFunctionId(
+							typeUtils.findKeyInArray,
+							context
+						);
 						context.dispatch( 'setError', {
 							internalId,
 							errorState: true,
 							errorMessage: 'wikilambda-zobject-missing-attached-function',
 							errorType: Constants.errorTypes.ERROR
 						} );
-						validityResults.isValid = false;
+						isValid = false;
 					}
-					return validityResults;
+					// invalid if no function call is set
+					if ( !zobject[
+						Constants.Z_PERSISTENTOBJECT_VALUE
+					][
+						Constants.Z_TESTER_CALL
+					][
+						Constants.Z_FUNCTION_CALL_FUNCTION
+					] [
+						Constants.Z_REFERENCE_ID
+					] ) {
+						internalId = typeUtils.findKeyInArray( Constants.Z_TESTER_CALL, context.state.zobject ).id;
+						context.dispatch( 'setError', {
+							internalId,
+							errorState: true,
+							errorMessage: 'wikilambda-zobject-missing-attached-function',
+							errorType: Constants.errorTypes.ERROR
+						} );
+						isValid = false;
+					}
+					// invalid if no result validation is set
+					if ( !zobject[
+						Constants.Z_PERSISTENTOBJECT_VALUE
+					][
+						Constants.Z_TESTER_VALIDATION
+					][
+						Constants.Z_FUNCTION_CALL_FUNCTION
+					][
+						Constants.Z_REFERENCE_ID
+					]
+					) {
+						internalId = typeUtils.findKeyInArray(
+							Constants.Z_TESTER_VALIDATION,
+							context.state.zobject
+						).id;
+						context.dispatch( 'setError', {
+							internalId,
+							errorState: true,
+							errorMessage: 'wikilambda-zobject-missing-attached-function',
+							errorType: Constants.errorTypes.ERROR
+						} );
+						isValid = false;
+					}
+					return isValid;
 				default:
-					return validityResults;
+					return isValid;
 			}
 		},
 		/**

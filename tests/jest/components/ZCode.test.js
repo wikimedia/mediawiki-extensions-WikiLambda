@@ -44,6 +44,9 @@ describe( 'ZCode', () => {
 					},
 				getAllProgrammingLangs: jest.fn( () => {
 					return {};
+				} ),
+				getErrors: jest.fn( function () {
+					return {};
 				} )
 			}
 		} );

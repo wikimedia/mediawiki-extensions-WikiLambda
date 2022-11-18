@@ -13,6 +13,7 @@
 			:type="Constants.Z_FUNCTION"
 			:placeholder="$i18n( 'wikilambda-function-typeselector-label' ).text()"
 			:selected-id="zFunctionId"
+			:zobject-id="zobjectId"
 			@input="typeHandler"
 		></z-object-selector>
 		<template v-else>

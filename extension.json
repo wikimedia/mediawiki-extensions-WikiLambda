@@ -458,7 +458,9 @@
 				"wikilambda-function-viewer-details-table-view-less",
 				"wikilambda-toast-close",
 				"wikilambda-missing-function-output-error-message",
-				"wikilambda-zobject-missing-attached-function"
+				"wikilambda-zobject-missing-attached-function",
+				"wikilambda-zimplememntation-composition-missing",
+				"wikilambda-zimplementation-code-missing"
 			]
 		}
 	},
