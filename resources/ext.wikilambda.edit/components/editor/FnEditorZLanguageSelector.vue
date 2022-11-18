@@ -6,23 +6,21 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-language-selector">
-		<template>
-			<div class="ext-wikilambda-language-selector__label">
-				<label for="ext-wikilambda-language-selector__add-language" class="ext-wikilambda-app__text-regular">
-					{{ $i18n( 'wikilambda-languagelabel' ).text() }}
-				</label>
-			</div>
-			<z-object-selector
-				ref="languageSelector"
-				class="ext-wikilambda-language-selector__add-language"
-				:used-languages="currentZObjectLanguages"
-				:type="Constants.Z_NATURAL_LANGUAGE"
-				:selected-id="zLanguage"
-				:initial-selection-label="getZkeyLabels[ zLanguage ]"
-				@input="addNewLang"
-				@focus-out="clearLookupToFallback"
-			></z-object-selector>
-		</template>
+		<div class="ext-wikilambda-language-selector__label">
+			<label for="ext-wikilambda-language-selector__add-language" class="ext-wikilambda-app__text-regular">
+				{{ $i18n( 'wikilambda-languagelabel' ).text() }}
+			</label>
+		</div>
+		<z-object-selector
+			ref="languageSelector"
+			class="ext-wikilambda-language-selector__add-language"
+			:used-languages="currentZObjectLanguages"
+			:type="Constants.Z_NATURAL_LANGUAGE"
+			:selected-id="zLanguage"
+			:initial-selection-label="getZkeyLabels[ zLanguage ]"
+			@input="addNewLang"
+			@focus-out="clearLookupToFallback"
+		></z-object-selector>
 	</div>
 </template>
 
@@ -44,6 +42,7 @@ module.exports = exports = {
 			default: ''
 		}
 	},
+	emits: [ 'change' ],
 	computed: $.extend( mapGetters( [
 		'currentZObjectLanguages',
 		'getNestedZObjectById',

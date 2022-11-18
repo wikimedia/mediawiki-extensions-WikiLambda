@@ -41,10 +41,11 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 			.text() ).toEqual( 'Tester name, in English' );
 
 		// ASSERT: The "attached" tester is shown as available.
-		expect( secondTesterRow.get( '.ext-wikilambda-chip' ).attributes( 'text' ) )
+		expect( secondTesterRow.get( '.ext-wikilambda-chip' ).text() )
 			.toEqual( 'wikilambda-function-implementation-state-available' );
 
-		await ticksUntilTrue( wrapper, () => wrapper.findAll( '.ext-wikilambda-tester-result-status--RUNNING' ).length === 0 );
+		await ticksUntilTrue( wrapper,
+			() => wrapper.findAll( '.ext-wikilambda-tester-result-status--RUNNING' ).length === 0 );
 
 		// ASSERT: The "attached" tester shows as failing all implementation tests.
 		expect( secondTesterRow.findAll( '.ext-wikilambda-tester-result-status--FAIL' ).length )

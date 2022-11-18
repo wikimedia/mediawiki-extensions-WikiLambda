@@ -38,7 +38,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 			.text() ).toEqual( 'Implementation by composition, in English' );
 
 		// ASSERT: The "attached" implementation is shown as available.
-		expect( firstImplementationRow.get( '.ext-wikilambda-chip' ).attributes( 'text' ) )
+		expect( firstImplementationRow.get( '.ext-wikilambda-chip' ).text() )
 			.toEqual( 'wikilambda-function-implementation-state-available' );
 
 		// ACT: Select the "attached" implementation in the table.

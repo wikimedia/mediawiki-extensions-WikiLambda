@@ -52,7 +52,6 @@
 </template>
 
 <script>
-var Vue = require( 'vue' );
 var TableContainer = require( '../../../components/base/Table.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	Constants = require( '../../../Constants.js' ),
@@ -60,12 +59,7 @@ var TableContainer = require( '../../../components/base/Table.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	icons = require( '../../../../lib/icons.json' ),
-	useBreakpoints = require( '../../../composables/useBreakpoints.js' ),
-	WikilambdaChip = require( '../../../components/base/Chip.vue' );
-
-Vue.component( 'cdx-icon', CdxIcon.default || CdxIcon );
-Vue.component( 'cdx-button', CdxButton.default || CdxButton );
-Vue.component( 'wikilambda-chip', WikilambdaChip.default || WikilambdaChip );
+	useBreakpoints = require( '../../../composables/useBreakpoints.js' );
 
 // @vue/component
 module.exports = exports = {

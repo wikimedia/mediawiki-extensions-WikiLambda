@@ -23,40 +23,38 @@
 			<template #dialog-container-title>
 				<strong>{{ $i18n( 'wikilambda-editor-publish-dialog-header' ).text() }}</strong>
 			</template>
-			<template>
-				<div v-if="hasErrors" class="ext-wikilambda-publishdialog__errors">
-					<div v-for="error in errors" :key="error.id">
-						<cdx-message class="ext-wikilambda-publishdialog__errors__message"
-							type="error">{{ error.message }}</cdx-message>
-					</div>
+			<div v-if="hasErrors" class="ext-wikilambda-publishdialog__errors">
+				<div v-for="error in errors" :key="error.id">
+					<cdx-message class="ext-wikilambda-publishdialog__errors__message"
+						type="error">{{ error.message }}</cdx-message>
 				</div>
+			</div>
 
-				<div v-if="hasWarnings" class="ext-wikilambda-publishdialog__warnings">
-					<div v-for="warning in warnings" :key="warning.id">
-						<cdx-message class="ext-wikilambda-publishdialog__warnings__message"
-							type="warning">
-							<p v-html="warning.message"></p>
-						</cdx-message>
-					</div>
+			<div v-if="hasWarnings" class="ext-wikilambda-publishdialog__warnings">
+				<div v-for="warning in warnings" :key="warning.id">
+					<cdx-message class="ext-wikilambda-publishdialog__warnings__message"
+						type="warning">
+						<p v-html="warning.message"></p>
+					</cdx-message>
 				</div>
+			</div>
 
-				<div class="ext-wikilambda-publishdialog__summary">
-					<div class="ext-wikilambda-publishdialog__summary-label">
-						<label for="ext-wikilambda-publishdialog__summary-input"
-							class="ext-wikilambda-app__text-regular">
-							{{ $i18n( 'wikilambda-editor-publish-dialog-how-did-you-improve-label' )
-								.text() }}
-						</label>
-					</div>
-					<cdx-text-input
-						id="ext-wikilambda-publishdialog__summary-input"
-						v-model="summary"
-						class="ext-wikilambda-publishdialog__summary-input"
-						:aria-label="$i18n( 'wikilambda-editor-publish-dialog-summary-label' ).text()"
-						:placeholder="$i18n( 'wikilambda-editor-publish-dialog-summary-placeholder' ).text()"
-					></cdx-text-input>
+			<div class="ext-wikilambda-publishdialog__summary">
+				<div class="ext-wikilambda-publishdialog__summary-label">
+					<label for="ext-wikilambda-publishdialog__summary-input"
+						class="ext-wikilambda-app__text-regular">
+						{{ $i18n( 'wikilambda-editor-publish-dialog-how-did-you-improve-label' )
+							.text() }}
+					</label>
 				</div>
-			</template>
+				<cdx-text-input
+					id="ext-wikilambda-publishdialog__summary-input"
+					v-model="summary"
+					class="ext-wikilambda-publishdialog__summary-input"
+					:aria-label="$i18n( 'wikilambda-editor-publish-dialog-summary-label' ).text()"
+					:placeholder="$i18n( 'wikilambda-editor-publish-dialog-summary-placeholder' ).text()"
+				></cdx-text-input>
+			</div>
 		</dialog-container>
 	</div>
 </template>

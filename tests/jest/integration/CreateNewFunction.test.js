@@ -7,8 +7,7 @@
  */
 'use strict';
 
-const { CdxLookup, CdxTextInput } = require( '@wikimedia/codex' ),
-	{ awaitLookup, clickItemInMenu, pageChange } = require( './helpers/interactionHelpers.js' ),
+const { awaitLookup, clickItemInMenu, pageChange } = require( './helpers/interactionHelpers.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	mount = require( '@vue/test-utils' ).mount,
 	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
@@ -85,15 +84,13 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 	} );
 	it( 'allows creating a new function, making use of most important features', async () => {
 		// ACT: Select a natural language.
-		const languageSelectorLookup =
-			wrapper.get( '.ext-wikilambda-language-selector__add-language' ).getComponent( CdxLookup );
-		languageSelectorLookup.vm.$emit( 'input', 'Chin' );
+		const languageSelectorLookup = wrapper.get( '.ext-wikilambda-language-selector__add-language' );
+		languageSelectorLookup.get( 'input' ).setValue( 'Chin' );
 		await awaitLookup( wrapper );
 		await clickItemInMenu( languageSelectorLookup, 'Chinese' );
 
 		// ACT: Enter a name for the function.
-		wrapper.get( '.ext-wikilambda-function-definition-name' ).getComponent( CdxTextInput )
-			.vm.$emit( 'input', 'function name, in Chinese' );
+		wrapper.get( '.ext-wikilambda-function-definition-name input' ).setValue( 'function name, in Chinese' );
 		await wrapper.vm.$nextTick();
 
 		// ACT: Enter an alias for the function.
@@ -102,9 +99,8 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await aliasInput.trigger( 'keydown', { key: 'enter' } );
 
 		// ACT: Select a type for the first argument.
-		var argumentTypeSelectorLookup =
-			wrapper.get( '.ext-wikilambda-editor-input-list-item__selector' ).getComponent( CdxLookup );
-		argumentTypeSelectorLookup.vm.$emit( 'input', 'Str' );
+		let argumentTypeSelectorLookup = wrapper.get( '.ext-wikilambda-editor-input-list-item__selector' );
+		argumentTypeSelectorLookup.get( 'input' ).setValue( 'Str' );
 		await awaitLookup( wrapper );
 		await clickItemInMenu( argumentTypeSelectorLookup, 'String' );
 
@@ -116,9 +112,8 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 
 		// ACT: Add an input and select the type.
 		await wrapper.get( '.ext-wikilambda-function-definition-inputs__add-input-button' ).trigger( 'click' );
-		argumentTypeSelectorLookup =
-			wrapper.get( '.ext-wikilambda-editor-input-list-item__selector' ).getComponent( CdxLookup );
-		argumentTypeSelectorLookup.vm.$emit( 'input', 'Str' );
+		argumentTypeSelectorLookup = wrapper.get( '.ext-wikilambda-editor-input-list-item__selector' );
+		argumentTypeSelectorLookup.get( 'input' ).setValue( 'Str' );
 		await awaitLookup( wrapper );
 		await clickItemInMenu( argumentTypeSelectorLookup, 'String' );
 
@@ -131,8 +126,8 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 
 		// ACT: Select a type for the second argument.
 		const secondArgumentTypeSelectorLookup =
-			wrapper.findAll( '.ext-wikilambda-editor-input-list-item__selector' )[ 1 ].getComponent( CdxLookup );
-		secondArgumentTypeSelectorLookup.vm.$emit( 'input', 'Str' );
+			wrapper.findAll( '.ext-wikilambda-editor-input-list-item__selector' )[ 1 ];
+		secondArgumentTypeSelectorLookup.get( 'input' ).setValue( 'Str' );
 		await awaitLookup( wrapper );
 		await clickItemInMenu( secondArgumentTypeSelectorLookup, 'String' );
 
@@ -154,9 +149,8 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		expect( warning.exists() ).toBeTruthy();
 
 		// ACT: Select a type for the output.
-		const outputTypeSelectorLookup =
-			wrapper.get( '.ext-wikilambda-function-definition-output__selector' ).getComponent( CdxLookup );
-		outputTypeSelectorLookup.vm.$emit( 'input', 'Str' );
+		const outputTypeSelectorLookup = wrapper.get( '.ext-wikilambda-function-definition-output__selector' );
+		outputTypeSelectorLookup.get( 'input' ).setValue( 'Str' );
 		await awaitLookup( wrapper );
 		await clickItemInMenu( outputTypeSelectorLookup, 'String' );
 
@@ -165,14 +159,14 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 
 		// ACT: Select a second natural language.
 		const secondLanguageSelectorLookup =
-			wrapper.findAll( '.ext-wikilambda-language-selector__add-language' )[ 1 ].getComponent( CdxLookup );
-		secondLanguageSelectorLookup.vm.$emit( 'input', 'Fren' );
+			wrapper.findAll( '.ext-wikilambda-language-selector__add-language' )[ 1 ];
+		secondLanguageSelectorLookup.get( 'input' ).setValue( 'Fren' );
 		await awaitLookup( wrapper );
 		await clickItemInMenu( secondLanguageSelectorLookup, 'French' );
 
 		// ACT: Enter a name in the second language.
-		wrapper.findAll( '.ext-wikilambda-function-definition-name' )[ 1 ].getComponent( CdxTextInput )
-			.vm.$emit( 'input', 'function name, in French' );
+		wrapper.findAll( '.ext-wikilambda-function-definition-name' )[ 1 ].get( 'input' )
+			.setValue( 'function name, in French' );
 		await wrapper.vm.$nextTick();
 
 		// ACT: Enter an alias in the second language.

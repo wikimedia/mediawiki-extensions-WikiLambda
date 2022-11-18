@@ -58,7 +58,6 @@ var icons = require( '../../../lib/icons.json' );
 // @vue/component
 module.exports = exports = {
 	name: 'base-dialog',
-	compatConfig: { MODE: 3 },
 	components: {
 		'cdx-icon': CdxIcon,
 		'cdx-button': CdxButton
