@@ -4,7 +4,8 @@
 			"Brettchenweber",
 			"Druesenfieber",
 			"ElBe",
-			"FF-11"
+			"FF-11",
+			"Justman10000"
 		]
 	},
 	"wikilambda-desc": "Bereitstellung einer Wikitext-Parser-Funktion für Wikimedia-Wikis, um die Auswertung von Funktionen aufzurufen, die in einem zentralen Wiki geschrieben, verwaltet und ausgewertet werden.",
@@ -134,7 +135,10 @@
 	"wikilambda-functioncall-error-nonstringinput": "Funktionsaufruffehler: die ZFunktion „$1“ nimmt als Eingabe „$2“ ein „$3“ statt eines Strings und kann daher nicht aufgerufen werden",
 	"wikilambda-functioncall-error-nonstringinput-category": "Seiten mit Wikifunktionsaufrufen, die ZObjects verwenden, die keine Strings sind",
 	"wikilambda-functioncall-error-nonstringinput-category-desc": "Seiten mit versuchten Aufrufen von Wikifunctions mit einer ZFunction, die keine Zeichenkette annimmt",
+	"wikilambda-performtest-error-nonfunction": "Testfehler durchführen: '$1' ist keine Funktion.",
 	"wikilambda-performtest-error-nonimplementation": "Fehler bei der Durchführung des Tests: „$1“ ist keine Implementierung",
+	"wikilambda-performtest-error-nontester": "Fehler bei der Testdurchführung: '$1' ist kein Tester.",
+	"wikilambda-performtest-error-unknown-zid": "Testfehler durchführen: '$1' ist kein bekanntes ZObject",
 	"wikilambda-editor-tester-list-label": "Testliste",
 	"wikilambda-tester-selector": "Einen Test wählen",
 	"wikilambda-tester-none-found": "Derzeit gibt es keine Tests für diese Funktion.",
@@ -234,5 +238,6 @@
 	"wikilambda-function-viewer-details-table-view-less": "Weniger ansehen",
 	"wikilambda-toast-close": "Schließen",
 	"wikilambda-missing-function-output-error-message": "Eine Funktion erfordert eine Ausgabe",
-	"wikilambda-zobject-missing-attached-function": "Eine zugeordnete Funktion ist erforderlich"
+	"wikilambda-zobject-missing-attached-function": "Eine Funktion ist erforderlich",
+	"wikilambda-zimplementation-code-missing": "Code muss definiert werden"
 }

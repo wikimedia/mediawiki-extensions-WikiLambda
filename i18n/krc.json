@@ -4,5 +4,9 @@
 			"Къарачайлы"
 		]
 	},
-	"wikilambda-publish-lose-changes-prompt": "Ал басмалаусуз чыкъсагъыз, тюзетиулеригиз тас боллукъдула."
+	"wikilambda-publish-lose-changes-prompt": "Ал басмалаусуз чыкъсагъыз, тюзетиулеригиз тас боллукъдула.",
+	"wikilambda-performtest-error-nonfunction": "Тест этиуде халат: '$1' функция тюлдю.",
+	"wikilambda-performtest-error-nontester": "Тест этиуню халаты: '$1' тестер тюлдю.",
+	"wikilambda-performtest-error-unknown-zid": "Тест этиуде халат: '$1'  белгили ZOобъект тюлдю",
+	"wikilambda-editor-fn-edit-definition-tooltip-content": "Кечериксиз! Къуру энчи эркинликлери болгъан къошулуучла, басмаланнгандан сора функцияны айгъакълауун тюрлендирирге боллукоъдула."
 }
