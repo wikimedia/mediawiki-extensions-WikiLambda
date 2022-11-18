@@ -15,7 +15,6 @@ use ContentHandler;
 use FormatJson;
 use Html;
 use IContextSource;
-use Language;
 use MediaWiki\Content\Renderer\ContentParseParams;
 use MediaWiki\Content\Transform\PreSaveTransformParams;
 use MediaWiki\Content\ValidationParams;
@@ -183,17 +182,7 @@ class ZObjectContentHandler extends ContentHandler {
 			$languageZid = ZLangRegistry::singleton()->getLanguageZidFromCode( $languageCode );
 
 			$fullLabels = $zObject->getLabels();
-			// TODO (T304009): We should not create Language objects directly, that's not supported upstream.
-			$returnLanguage = new Language(
-				$languageCode,
-				$services->getNamespaceInfo(),
-				$services->getLocalisationCache(),
-				$services->getLanguageNameUtils(),
-				$services->getLanguageFallback(),
-				$services->getLanguageConverterFactory(),
-				$services->getHookContainer(),
-				$services->getMainConfig()
-			);
+			$returnLanguage = $services->getLanguageFactory()->getLanguage( $languageCode );
 			$returnLabel = $fullLabels->getStringForLanguage( $returnLanguage );
 
 			$returnLabelObject = (object)[

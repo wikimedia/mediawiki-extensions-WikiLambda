@@ -179,8 +179,8 @@ class ZMultiLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 			$testObject->getAliasesForLanguage( $spanish )
 		);
 
-		$invalidLang = $this->makeLanguage( '&&&' );
-		$invalidMono = new ZMonoLingualStringSet( new ZReference( '&&&' ), [ new ZString( 'Invalid item' ) ] );
+		$invalidLang = $this->makeLanguage( 'blargh' );
+		$invalidMono = new ZMonoLingualStringSet( new ZReference( 'blargh' ), [ new ZString( 'Invalid item' ) ] );
 		$testObject->setMonoLingualStringSet( $invalidMono );
 		$this->assertFalse( $testObject->isValid() );
 		$this->assertSame(

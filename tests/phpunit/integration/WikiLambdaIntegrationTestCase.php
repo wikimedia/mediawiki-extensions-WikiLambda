@@ -127,26 +127,8 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 	 */
 	protected function makeLanguage( string $code ) {
 		$services = MediaWikiServices::getInstance();
-
 		$languageFactory = $services->getLanguageFactory();
-
-		try {
-			return $languageFactory->getLanguage( $code );
-		} catch ( \MWException $th ) {
-			// We support language codes that MediaWiki won't, so in extremis we may need to roll
-			// our own.
-			// TODO (T304009): We should not create Language objects directly, that's not supported upstream.
-			return new Language(
-				$code,
-				$services->getNamespaceInfo(),
-				$services->getLocalisationCache(),
-				$services->getLanguageNameUtils(),
-				$services->getLanguageFallback(),
-				$services->getLanguageConverterFactory(),
-				$services->getHookContainer(),
-				$services->getMainConfig()
-			);
-		}
+		return $languageFactory->getLanguage( $code );
 	}
 
 	/**
