@@ -16,6 +16,7 @@
 	"wikilambda-functioncall-metadata-implementation-id": "Ámelge asırıw identifikatorı",
 	"wikilambda-functioncall-metadata-implementation-type": "Ámelge asırıw túri",
 	"wikilambda-functioncall-metadata-validator-errors-summary": "Tastıyıqlawshınıń qáte juwmaǵı",
+	"wikilambda-performtest-error-nonfunction": "Sınaq qátesi: '$1' funkciya emes.",
 	"wikilambda-performtest-error-nonimplementation": "Sınaq qátesi: '$1' orınlanıw emes.",
 	"wikilambda-tester-status-pending": "Kútilmekte...",
 	"wikilambda-tester-status-running": "Islep atır...",
@@ -26,5 +27,7 @@
 	"wikilambda-editor-publish-dialog-summary-placeholder": "Ingliz tilinde laqaplar qosıldı.",
 	"wikilambda-editor-publish-dialog-how-did-you-improve-label": "Bul betti qalay jaqsıladıńız?",
 	"wikilambda-function-viewer-details-table-view-all": "Hámmesin kóriw",
-	"wikilambda-zobject-missing-attached-function": "Baylanısqan funktsiya talap etiledi"
+	"wikilambda-zobject-missing-attached-function": "Funktsiya talap etiledi",
+	"wikilambda-zimplememntation-composition-missing": "Quramı anıqlanıwı kerek",
+	"wikilambda-zimplementation-code-missing": "Kodı anıqlanıwı kerek"
 }

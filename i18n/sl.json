@@ -53,5 +53,7 @@
 	"wikilambda-editor-publish-dialog-summary-placeholder": "Dodane sopomenke v angleščini",
 	"wikilambda-editor-publish-dialog-how-did-you-improve-label": "Kako ste izboljšali to stran?",
 	"wikilambda-missing-function-output-error-message": "Funkcija zahteva izhod",
-	"wikilambda-zobject-missing-attached-function": "Potrebna je povezana funkcija"
+	"wikilambda-zobject-missing-attached-function": "Potrebna je funkcija",
+	"wikilambda-zimplememntation-composition-missing": "Opredeliti je treba sestavo",
+	"wikilambda-zimplementation-code-missing": "Opredeliti je treba kodo"
 }

@@ -3,6 +3,7 @@
 		"authors": [
 			"Afaz",
 			"Funa-enpitu",
+			"Kkairri",
 			"MathXplore",
 			"Portal18",
 			"RYOUMA1117",
@@ -14,6 +15,7 @@
 	},
 	"wikilambda-invalidzobjecttitle": "提供されたタイトル'$1' は  ZObject　には無効です。",
 	"wikilambda-noresult": "検索結果が得られませんでした",
+	"wikilambda-persistentzobject-contents": "目次",
 	"wikilambda-orchestrated-loading": "オーケストレーションを実行します、お待ちください",
 	"wikilambda-edit": "編集",
 	"wikilambda-helplink-button": "ヘルプ",
@@ -86,5 +88,7 @@
 	"wikilambda-function-viewer-aliases-show-language-button": "他の言語も表示する",
 	"wikilambda-function-viewer-aliases-hide-language-button": "リストを隠す",
 	"wikilambda-function-viewer-names-show-languages-button": "他の言語で名前を表示する",
-	"wikilambda-function-viewer-details-table-view-all": "すべて表示"
+	"wikilambda-function-viewer-details-table-view-all": "すべて表示",
+	"wikilambda-zobject-missing-attached-function": "関数が必要です",
+	"wikilambda-zimplementation-code-missing": "コードを定義する必要があります"
 }

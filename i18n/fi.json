@@ -20,6 +20,9 @@
 	"wikilambda-editor-label-addlanguage-label": "Lisää kieli",
 	"wikilambda-editor-label-select-programming-language-label": "Valitse ohjelmointikieli:",
 	"wikilambda-implementation-none-found": "Tällä hetkellä tälle toiminnolle ei ole toteutuksia.",
+	"wikilambda-performtest-error-nonfunction": "Suoritustestin virhe: '$1' ei ole funktio.",
+	"wikilambda-performtest-error-nontester": "Suoritustestin virhe: '$1' ei ole testaaja.",
+	"wikilambda-performtest-error-unknown-zid": "Suoritustestin virhe: '$1' ei ole tunnettu ZObject",
 	"wikilambda-tester-none-found": "Tällä hetkellä tälle toiminnolle ei ole testitapauksia.",
 	"wikilambda-tester-create-new": "Luo uusi testi",
 	"wikilambda-tester-status-pending": "ODOTTAA...",
@@ -45,6 +48,7 @@
 	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "Valitse kirjoitetun luettelon tyyppi",
 	"wikilambda-function-definition-output-label": "Ulostulon tyyppi",
 	"wikilambda-function-definition-output-selector": "Valitse tyyppi",
+	"wikilambda-editor-fn-edit-definition-tooltip-content": "Pahoittelut! Vain erityisoikeudet omistavat käyttäjät voivat muuttaa funktion määritelmää, kun se on julkaistu.",
 	"wikilambda-editor-input-title": "Syöte",
 	"wikilambda-editor-default-name": "Nimetön",
 	"wikilambda-editor-implementation-title": "Toteutus",
@@ -54,5 +58,6 @@
 	"wikilambda-ztyped-pair-placeholder": "Valitse tyyppi",
 	"wikilambda-ztyped-pair-key-label": "Avain",
 	"wikilambda-ztyped-pair-value-label": "Arvo",
-	"wikilambda-optional": "valinnainen"
+	"wikilambda-optional": "valinnainen",
+	"wikilambda-zimplementation-code-missing": "Koodi on määritettävä"
 }

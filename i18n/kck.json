@@ -5,5 +5,8 @@
 		]
 	},
 	"wikilambda-function-viewer-details-table-view-all": "Linga kose",
-	"wikilambda-function-viewer-details-table-view-less": "linga kuhomanana"
+	"wikilambda-function-viewer-details-table-view-less": "linga kuhomanana",
+	"wikilambda-zobject-missing-attached-function": "kunohingisiwa kohakika",
+	"wikilambda-zimplememntation-composition-missing": "Kumundebo kwakafanila tugwa",
+	"wikilambda-zimplementation-code-missing": "Khodi yakafanila tugwa"
 }
