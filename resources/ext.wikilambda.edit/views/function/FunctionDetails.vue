@@ -328,6 +328,9 @@ module.exports = exports = {
 					this.getPaginatedTesters[ this.currentTesterPage ];
 				for ( const index in visibleTesters ) {
 					var testerLabel = this.getZkeyLabels[ visibleTesters[ index ] ];
+					if ( !testerLabel ) {
+						testerLabel = visibleTesters[ index ];
+					}
 					var isAvailable = this.isFunctionItemAttached(
 						visibleTesters[ index ],
 						this.getAttachedZTesters( this.zobjectId )

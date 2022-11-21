@@ -160,6 +160,27 @@ describe( 'FunctionDetails', function () {
 		} );
 	} );
 
+	describe( 'Testers without labels display the ZID', () => {
+		beforeEach( function () {
+			getters.getZkeyLabels = () => {
+				return {
+					Z222: 'Z222 name'
+				};
+			};
+
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+		} );
+		it( 'in the testers table rows', function () {
+			var wrapper = shallowMount( FunctionDetails );
+			const testerTableItems = wrapper.findAllComponents( FunctionViewerDetailsTable )[ 1 ].props( 'body' );
+
+			expect( testerTableItems[ 0 ].name.title ).toEqual( 'Z111' );
+			expect( testerTableItems[ 1 ].name.title ).toEqual( 'Z222 name' );
+		} );
+	} );
+
 	describe( 'implementation select-all checkbox', () => {
 		it( 'is unchecked when not all checkboxes below are checked', ( done ) => {
 			var wrapper = shallowMount( FunctionDetails );
