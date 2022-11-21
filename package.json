@@ -5,6 +5,7 @@
 		"test": "grunt test && npm run test:unit",
 		"test:unit": "jest",
 		"selenium-test": "wdio tests/selenium/wdio.conf.js",
+		"selenium-daily": "npm run selenium-test",
 		"doc": "jsdoc -c jsdoc.json",
 		"coverage": "npm run test:unit",
 		"lint": "grunt test",
