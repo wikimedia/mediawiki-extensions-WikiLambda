@@ -162,8 +162,7 @@ module.exports = exports = {
 			var shouldUnattachImplementationAndTester = this.shouldUnattachImplementationAndTester;
 			this.submitZObject( { summary, shouldUnattachImplementationAndTester } ).then( function ( pageTitle ) {
 				if ( pageTitle ) {
-					window.location.href = new mw.Title( pageTitle ).getUrl();
-					// TODO(T321741): Add success snackbar to redirected page.
+					window.location.href = new mw.Title( pageTitle ).getUrl() + '?success=true';
 				}
 			} ).catch( function ( error ) {
 				const payload = {

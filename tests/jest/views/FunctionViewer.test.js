@@ -11,6 +11,7 @@ var VueTestUtils = require( '@vue/test-utils' ),
 
 describe( 'FunctionViewer', function () {
 	var getters;
+	const functionZid = 'Z12345';
 
 	beforeEach( function () {
 		getters = {
@@ -18,6 +19,12 @@ describe( 'FunctionViewer', function () {
 
 		global.store.hotUpdate( {
 			getters: getters
+		} );
+
+		window.mw.Uri.mockImplementation( () => {
+			return {
+				path: '/wiki/' + functionZid
+			};
 		} );
 
 		VueTestUtils.config.global.mocks.$i18n = jest.fn().mockImplementation( function () {
@@ -31,5 +38,25 @@ describe( 'FunctionViewer', function () {
 		var wrapper = VueTestUtils.shallowMount( FunctionViewer );
 
 		expect( wrapper.find( '.ext-wikilambda-function-viewer' ).exists() ).toBeTruthy();
+	} );
+
+	it( 'does not display success message by default', function () {
+		var wrapper = VueTestUtils.shallowMount( FunctionViewer );
+
+		expect( wrapper.find( '.ext-wikilambda-function-viewer__message' ).exists() ).toBeFalsy();
+	} );
+
+	it( 'displays success message if indicated in url', function () {
+		window.mw.Uri.mockImplementation( () => {
+			return {
+				path: '/wiki/' + functionZid,
+				query: {
+					success: 'true'
+				}
+			};
+		} );
+		var wrapper = VueTestUtils.shallowMount( FunctionViewer );
+
+		expect( wrapper.find( '.ext-wikilambda-function-viewer__message' ).exists() ).toBeTruthy();
 	} );
 } );

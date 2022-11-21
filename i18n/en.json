@@ -64,6 +64,7 @@
 	"wikilambda-special-objectsbytype-typeheader": "All Types",
 	"wikilambda-special-objectsbytype-empty": "No persistent ZObjects found for this type.",
 	"wikilambda-publishnew": "Publish",
+	"wikilambda-publish-successful": "Your changes have been successfully published!",
 	"wikilambda-cancel": "Cancel",
 	"wikilambda-confirm": "Confirm",
 	"wikilambda-savenew": "Save",

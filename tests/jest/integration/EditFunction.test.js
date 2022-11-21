@@ -214,7 +214,7 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		await pageChange( wrapper );
 
 		// ASSERT: Location is changed to page returned by API.
-		expect( window.location.href ).toEqual( 'newPage' );
+		expect( window.location.href ).toEqual( 'newPage?success=true' );
 
 		// ASSERT: Correct ZID and ZObject were posted to the API.
 		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
