@@ -454,6 +454,11 @@ module.exports = exports = {
 			this.changeTypeToFunction();
 		}
 		window.addEventListener( 'click', this.handleClickAway );
+		window.onbeforeunload = function () {
+			if ( this.isDirty ) {
+				return true;
+			}
+		}.bind( this );
 	},
 	beforeUnmount: function () {
 		// Clear zobject function scaffolding when unmounted
