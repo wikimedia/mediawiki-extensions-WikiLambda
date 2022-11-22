@@ -102,7 +102,8 @@ module.exports = exports = {
 		'getZkeyLabels',
 		'getCurrentZLanguage',
 		'getZObjectTypeById',
-		'getCurrentZObjectId'
+		'getCurrentZObjectId',
+		'getZkeys'
 	] ), {
 		// format inputs/output header to pass to the table in expected format
 		formattedHeaderData: function () {
@@ -219,6 +220,7 @@ module.exports = exports = {
 						};
 					} else if ( this.showAllLangs ) {
 						// corresponding to a "LABEL" row in the user's current language (no language chip)
+						const languageInfo = this.languageInfo( monolingualStringLanguage );
 						return {
 							label: {
 								title: this.$i18n( 'wikilambda-metadata-label-column' ).text(),
@@ -233,7 +235,8 @@ module.exports = exports = {
 								props: {
 									editableContainer: false,
 									readonly: true,
-									text: this.languageLabel( monolingualStringLanguage )
+									text: languageInfo.isoCode.toUpperCase(),
+									title: languageInfo.label
 								},
 								class: 'ext-wikilambda-function-viewer-details-sidebar__table-borderless-row'
 							},
@@ -392,9 +395,18 @@ module.exports = exports = {
 				}
 				return item;
 			},
-			/* language ZID -> language plain text in current user language */
-			languageLabel: function ( monolingualStringLanguage ) {
-				return this.getZkeyLabels[ monolingualStringLanguage ];
+			/* language ZID -> language plain text in current user language and language isocode */
+			languageInfo: function ( monolingualStringLanguage ) {
+				const isoCode = this.getZkeys[ monolingualStringLanguage ][
+					Constants.Z_PERSISTENTOBJECT_VALUE
+				][
+					Constants.Z_NATURAL_LANGUAGE_ISO_CODE
+				];
+
+				return {
+					isoCode,
+					label: this.getZkeyLabels[ monolingualStringLanguage ]
+				};
 			},
 			/* get the ZID of the language of the monolingual string */
 			monolingualStringLanguage: function ( multilingualObject ) {

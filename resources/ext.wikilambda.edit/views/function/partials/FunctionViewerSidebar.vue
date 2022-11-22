@@ -11,9 +11,6 @@
 				<div
 					v-if="item.language !== zLang"
 					class="ext-wikilambda-function-viewer-sidebar__chip-container"
-					@mouseover="hoveringIndex = index"
-					@mouseleave="hoveringIndex = -1"
-					@touchstart="hoveringIndex = ( hoveringIndex === index ? -1 : index )"
 				>
 					<chip
 						class="ext-wikilambda-function-viewer-sidebar__chip-item"
@@ -21,19 +18,8 @@
 						:editable-container="false"
 						:readonly="true"
 						:text="item.isoCode.toUpperCase()"
-						:hover-text="item.languageLabel"
+						:title="item.languageLabel"
 					></chip>
-				</div>
-				{{ item.label }}
-				<div
-					v-if="hoveringIndex === index && item.language !== zLang"
-					class="ext-wikilambda-function-viewer-sidebar__chip-hover"
-				>
-					<span
-						class="ext-wikilambda-function-viewer-sidebar__chip-hover-text"
-					>
-						{{ item.languageLabel }}
-					</span>
 				</div>
 			</li>
 		</ul>
@@ -93,11 +79,6 @@ module.exports = exports = {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			hoveringIndex: -1
-		};
-	},
 	methods: {
 		changeShowLangs: function () {
 			this.$emit( 'changeShowLangs' );
@@ -126,17 +107,6 @@ module.exports = exports = {
 		&-item {
 			margin-right: 8px;
 			display: inline-block;
-		}
-
-		&-hover {
-			margin-top: 15px;
-			margin-bottom: 15px;
-		}
-
-		&-hover-text {
-			background-color: @wmui-color-base70;
-			padding: 5px;
-			box-shadow: 0 4px 4px rgba( 0, 0, 0, 0.25 );
 		}
 	}
 
