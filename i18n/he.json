@@ -247,5 +247,7 @@
 	"wikilambda-function-viewer-details-table-view-less": "להציג פחות",
 	"wikilambda-toast-close": "סגירה",
 	"wikilambda-missing-function-output-error-message": "פונקציה דורשת פלט",
-	"wikilambda-zobject-missing-attached-function": "נדרשת פונקציה משויכת"
+	"wikilambda-zobject-missing-attached-function": "נדרשת פונקציה",
+	"wikilambda-zimplememntation-composition-missing": "חובה להגדיר הרכבה",
+	"wikilambda-zimplementation-code-missing": "חובה להגדיר קוד"
 }

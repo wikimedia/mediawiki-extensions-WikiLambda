@@ -269,6 +269,6 @@
 	"wikilambda-toast-close": "Label for button that closes a toast (that shows an error or success message).",
 	"wikilambda-missing-function-output-error-message": "Error message for a submitted ZFunction that is missing a function output",
 	"wikilambda-zobject-missing-attached-function": "Error message for a ZObject that requires an associated function and is missing one",
-	"wikilambda-zimplememntation-composition-missing": "Error message for a ZImplementation that is missing a composition definition",
+	"wikilambda-zimplememntation-composition-missing": "Error message for a ZImplementation that is missing a composition definition.\n\n{{doc-wikilambda}}",
 	"wikilambda-zimplementation-code-missing": "Error message for a ZImplementation that is missing a code definition"
 }
