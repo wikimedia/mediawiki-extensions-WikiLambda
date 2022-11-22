@@ -5,11 +5,17 @@
 			"MathXplore",
 			"Portal18",
 			"Tamaki Wakita",
-			"RYOUMA1117"
+			"RYOUMA1117",
+			"Funa-enpitu",
+			"Kkairri",
+			"Shirayuki",
+			"Sou0012",
+			"春春眠眠"
 		]
 	},
 	"wikilambda-invalidzobjecttitle": "提供されたタイトル'$1' は  ZObject　には無効です。",
 	"wikilambda-noresult": "検索結果が得られませんでした",
+	"wikilambda-persistentzobject-contents": "目次",
 	"wikilambda-orchestrated-loading": "オーケストレーションを実行します、お待ちください",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "言語",
 	"wikilambda-publishnew": "公開",

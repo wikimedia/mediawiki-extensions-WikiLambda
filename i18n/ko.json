@@ -10,6 +10,7 @@
 	},
 	"wikilambda-invalidzobjecttitle": "지정된 '$1' 제목은 ZObject에 유효하지 않습니다.",
 	"wikilambda-noresult": "검색에 결과가 제공되지 않았습니다.",
+	"wikilambda-persistentzobject-contents": "내용",
 	"wikilambda-special-callfunction-intro": "공동체 정책과 저작권, 특허 규정을 준수해 주십시오.",
 	"wikilambda-special-callfunction-nojs": "이 페이지는 자바스크립트 사용이 필요합니다.",
 	"wikilambda-special-createzobject": "새 ZObject 만들기",

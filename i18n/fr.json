@@ -10,7 +10,8 @@
 			"Pols12",
 			"Verdy p",
 			"Wladek92",
-			"Thibaut120094"
+			"Thibaut120094",
+			"SleaY"
 		]
 	},
 	"wikilambda-desc": "Fournit aux wikis de Wikimedia une fonction d’analyseur syntaxique de wikicode pour appeler l’évaluation des fonctions écrites, gérées et évaluées sur un wiki central.",
@@ -26,7 +27,7 @@
 	"wikilambda-labelclash": "Le libellé du contenu fourni est en conflit avec le Z-Objet « $1 » pour le libellé dans « $2 ».",
 	"wikilambda-persistentzobject": "Z-Objet",
 	"wikilambda-persistentzobject-metadata": "Libellés et alias",
-	"wikilambda-persistentzobject-contents": "Contenu",
+	"wikilambda-persistentzobject-contents": "Contenus",
 	"wikilambda-multilingualstring-nofallback": "Aucun libellé défini dans cette langue ni dans les langues de repli acceptées.",
 	"wikilambda-viewmode-nojs": "Affichage réduit de cette page sans Javascript.",
 	"wikilambda-diff-incompatible": "Le système ne peut pas afficher les différences entre un Z-Objet et un non-Z-Objet.",
