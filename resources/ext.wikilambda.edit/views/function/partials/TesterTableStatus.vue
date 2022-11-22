@@ -14,7 +14,7 @@
 		<span class="ext-wikilambda-tester-table__message-status">
 			{{ status }}
 		</span>
-		<cdx-icon
+		<cdx-icon v-if="testerStatus !== undefined"
 			:icon="messageIcon"
 			class="ext-wikilambda-tester-table__message-icon ext-wikilambda-tester-table__message-icon--info"
 			@click.stop="handleMessageIconClick"
