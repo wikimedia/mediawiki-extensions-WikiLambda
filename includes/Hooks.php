@@ -457,8 +457,10 @@ class Hooks implements
 		// Rather than (rather expensively) fetching the whole object from the ZObjectStore, see if the labels are in
 		// the labels table already, which is very much faster:
 		$zLangRegistry = ZLangRegistry::singleton();
+		$zid = $targetTitle->getBaseText();
+
 		$label = $zObjectStore->fetchZObjectLabel(
-			$targetTitle->getBaseText(),
+			$zid,
 			$context->getLanguage()->getCode(),
 			true
 		);
@@ -476,7 +478,7 @@ class Hooks implements
 			$label = $targetZObject->getLabels()
 				->buildStringForLanguage( $context->getLanguage() )
 				->fallbackWithEnglish()
-				->placeholderNoFallback()
+				->placeholderForTitle()
 				->getString();
 		}
 
@@ -485,8 +487,7 @@ class Hooks implements
 		//
 		// &$text: the contents that the <a> tag should have; either a *plain, unescaped string* or a HtmlArmor object.
 		//
-		// TODO: Consider also showing the ZID?
-		$text = $label;
+		$text = $context->msg( 'wikilambda-zobject-title', [ $label, $zid ] )->text();
 	}
 
 	/**
