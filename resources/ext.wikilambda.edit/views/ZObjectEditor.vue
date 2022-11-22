@@ -156,11 +156,6 @@ module.exports = exports = {
 	),
 	mounted: function () {
 		window.addEventListener( 'click', this.handleClickAway );
-		window.onbeforeunload = function () {
-			if ( this.isDirty ) {
-				return true;
-			}
-		}.bind( this );
 	},
 	beforeUnmount: function () {
 		window.removeEventListener( 'click', this.handleClickAway );
