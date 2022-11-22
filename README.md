@@ -26,6 +26,10 @@ Much further functionality is to come.
   ```
   git clone --recurse-submodules --remote-submodules https://gerrit.wikimedia.org/r/mediawiki/extensions/WikiLambda
   ```
+* In your `mediawiki/extensions/` subdirectory, also clone the WikimediaMessages extension:
+  ```
+  git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/WikimediaMessages
+  ```
 * Extend MediaWiki's composer dependencies to use ours by adding a `composer.local.json` file in your `mediawiki/` directory:
   ```
   {
@@ -39,10 +43,6 @@ Much further functionality is to come.
   }
   ```
 * Run `docker-compose exec mediawiki composer update` or similar.
-* In your `mediawiki/extensions/` subdirectory, also clone the WikimediaMessages extension:
-  ```
-  git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/WikimediaMessages
-  ```
 * Add the following to your `LocalSettings.php` file:
   ```
   wfLoadExtension( 'WikiLambda' );
@@ -52,11 +52,13 @@ Much further functionality is to come.
 
 Done! Navigate to the newly created `Z1` page on your wiki to verify that the extension is successfully installed.
 
-### Orchestration and evaluation
+### Back-end services
+
+WikiLambda uses two back-end services for running user-defined and built-in functions in a secure, scalable environment; an "evaluator" that runs user-defined native code, and an "orchestrator" that recieves execution requests and determines what to run.
 
 #### Default experience using Beta Wikifunctions
 
-On install, the extension will try to use the orchestrator and evaluator services of the [Beta Cluster version of Wikifunctions](https://wikifunctions.beta.wmflabs.org/). The services provide for running user-defined and built-in functions in a secure, scalable environment. The default configuration will let you do rudimentary tests with the built-in objects, but not with custom on-wiki content (as they are pointed at the content of Beta Wikifunctions).
+On install, the extension will try to use the orchestrator and evaluator services of the [Beta Cluster version of Wikifunctions](https://wikifunctions.beta.wmflabs.org/). This default configuration will let you do rudimentary tests with the built-in objects, but not with custom on-wiki content (as they are pointed at the content of Beta Wikifunctions).
 
 You can test your installation by running the PHPUnit test suite as described in the MediaWiki install instructions: `docker-compose exec mediawiki php tests/phpunit/phpunit.php extensions/WikiLambda/tests/phpunit/integration/API/ApiFunctionCallTest.php`. If the tests all pass, your installation has successfully called the configured function orchestrator with the calls, executed them, and got the expected results back. Congratulations!
 
@@ -87,9 +89,9 @@ If you would instead like to develop changes to the function orchestrator or eva
   `blubber .pipeline/blubber.yaml development | docker build -t local-orchestrator -f - .`
 * Alter `mediawiki/docker-compose.override.yaml` to replace `image: docker-registry...` in the `function-orchestrator` service stanza to read `image: local-orchestrator:latest`.
 
-If changing the evaluator, follow the same steps but for the evaluator image.
+If changing the evaluator, follow the same steps but for the evaluator image and directory.
 
-### Data Model (vuex)
+### Front-end data model (Vuex)
 
 Abstract Wikimedia uses a [Vuex](https://vuex.vuejs.org/) data model to store state and manipulate the data being provided by the PHP API.
 
@@ -139,9 +141,10 @@ To simplify the overall structure the above zObject is translated in the followi
 | 10 | Z11K2     | 7         | Buongiorno   |
 
 The array data model allows us to manage the data in a more intuitive way. Each vue component is able to define its own scope by the use of Id's. For example the component that handles monolingual string will be rendered twice. One will be provided a Property of zObjectId of 3 and one with the value of 7. Doing so will allow the component to self manage the render (get all children of ID 3 or ID 7) and the manipulation of the data (modify Z11K2 of the monolingual with ID 7), and simplify the overall structure of the data.
+
 ### Selenium Tests
 
-A set of Selenium test used to test E2E of the application is available within the project. The tests require a specific version of node (10) to run, and it is suggested therefore to use "fresh-node" to run them locally without the need to modify the personal environment.
+A set of Selenium tests, used to run end-to-end tests of the application, is available within the project. The tests require an environment with specific versions of things to run, and so it is suggested you use "fresh-node" to run them locally without the need to modify your personal environment.
 
 The tests need a specific set of environment variable to be avaialable. Please see the following list on how to set this `https://www.mediawiki.org/wiki/Selenium/How-to/Set_environment_variables`
 
@@ -178,7 +181,7 @@ NOTE: the tests will produce some snapshot after completition (both on failure a
 
 WikiLambda uses [PoolCounter](https://www.mediawiki.org/wiki/Extension:PoolCounter) to limit the number of concurrent function calls a user may have in flight at any given time. In order to set the concurrency limit, you need to add configuration for a `WikiLambdaFunctionCall` pool to [$wgPoolCounterConf](https://www.mediawiki.org/wiki/Manual:$wgPoolCounterConf) in `LocalSettings.php`.
 
-The example below allows user to have at most two functions executing at a given time, placing any function calls that exceed the concurrency limit in a queue:
+The example below allows users to have at most two functions executing at a given time, placing any function calls that exceed the concurrency limit in a queue:
 
 ```
 $wgPoolCounterConf = [
