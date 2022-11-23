@@ -137,6 +137,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 	public const Z_ERRORTYPE = 'Z50';
 	public const Z_ERRORTYPE_KEYS = 'Z50K1';
 
+	// Keep in sync with function-schemata's `typesBuiltIntoWikiLambda`
 	private const BUILT_IN_TYPES = [
 		self::Z_OBJECT => 'ZObject',
 		self::Z_PERSISTENTOBJECT => 'ZPersistentObject',
