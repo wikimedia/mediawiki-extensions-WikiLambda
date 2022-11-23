@@ -12,7 +12,8 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	FunctionDefinitionInputsItem = require( '../../../../../resources/ext.wikilambda.edit/components/function/definition/FunctionDefinitionInputsItem.vue' ),
-	ZObjectSelector = require( '../../../../../resources/ext.wikilambda.edit/components/ZObjectSelector.vue' );
+	ZObjectSelector = require( '../../../../../resources/ext.wikilambda.edit/components/ZObjectSelector.vue' ),
+	icons = require( '../../../fixtures/icons.json' );
 
 describe( 'FunctionDefinitionInputsItem', function () {
 	var getters,
@@ -104,9 +105,13 @@ describe( 'FunctionDefinitionInputsItem', function () {
 				getters: getters
 			} );
 			var wrapper = mount( FunctionDefinitionInputsItem, {
+				data() {
+					return {
+						icons: icons
+					};
+				},
 				props: {
-					canEditType: true,
-					showAddNewInput: true
+					canEditType: true
 				}
 			} );
 

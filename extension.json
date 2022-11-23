@@ -391,6 +391,7 @@
 				"wikilambda-function-definition-inputs-item-typed-list-placeholder",
 				"wikilambda-function-definition-inputs-item-input-placeholder",
 				"wikilambda-function-definition-inputs-item-add-input-button",
+				"wikilambda-function-definition-inputs-item-add-first-input-button",
 				"wikilambda-function-definition-output-label",
 				"wikilambda-function-definition-output-selector",
 				"wikilambda-function-definition-can-publish-message",

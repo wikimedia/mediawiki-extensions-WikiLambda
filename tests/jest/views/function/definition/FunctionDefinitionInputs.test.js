@@ -18,7 +18,7 @@ describe( 'FunctionDefinitionInputs', function () {
 		getters = {
 			getNestedZObjectById: createGettersWithFunctionsMock( { id: 10 } ),
 			getZObjectTypeById: createGettersWithFunctionsMock(),
-			getAllItemsFromListById: createGettersWithFunctionsMock(),
+			getAllItemsFromListById: createGettersWithFunctionsMock( [] ),
 			getNextObjectId: jest.fn()
 		};
 		actions = {
@@ -37,5 +37,26 @@ describe( 'FunctionDefinitionInputs', function () {
 		var wrapper = shallowMount( FunctionDefinitionInputs );
 
 		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs' ).exists() ).toBeTruthy();
+	} );
+
+	it( 'displays the "add an input" button if there are no arguments', function () {
+		var wrapper = shallowMount( FunctionDefinitionInputs );
+
+		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs__add-input-button' ).text() )
+			.toEqual( 'wikilambda-function-definition-inputs-item-add-first-input-button' );
+	} );
+
+	it( 'displays the "add another input" button if there is an existing argument', function () {
+		getters.getAllItemsFromListById = createGettersWithFunctionsMock( [
+			{ id: 6, key: '1', value: 'object', parent: 4 }
+		] );
+		global.store.hotUpdate( {
+			getters: getters
+		} );
+
+		var wrapper = shallowMount( FunctionDefinitionInputs );
+
+		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs__add-another-input-button' ).text() )
+			.toEqual( 'wikilambda-function-definition-inputs-item-add-input-button' );
 	} );
 } );

@@ -28,7 +28,7 @@
 			</cdx-button>
 
 			<cdx-button
-				v-if="index !== 0 && canEditType"
+				v-if="canEditType"
 				type="quiet"
 				class="ext-wikilambda-editor-input-list-item__header__action-delete"
 				@click="removeInput"
@@ -74,15 +74,16 @@
 				:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
 				@input="setArgumentLabel( zobjectId, $event.target.value )"
 			></cdx-text-input>
+
+			<cdx-button
+				v-if="canEditType && !isMobile"
+				type="quiet"
+				class="ext-wikilambda-editor-input-list-item__action-delete"
+				@click="removeInput"
+			>
+				<cdx-icon :icon="icons.cdxIconTrash"></cdx-icon>
+			</cdx-button>
 		</div>
-		<template v-if="showAddNewInput">
-			<div
-				class="ext-wikilambda-editor-input-list-item__button ext-wikilambda-edit__text-button"
-				role="button"
-				@click="$emit( 'add-new-input' )">
-				{{ $i18n( 'wikilambda-function-definition-inputs-item-add-input-button' ).text() }}
-			</div>
-		</template>
 	</div>
 </template>
 
@@ -115,12 +116,6 @@ module.exports = exports = {
 		zobjectId: {
 			type: Number,
 			required: true
-		},
-		/**
-		 * if user has permissions to add new input
-		 */
-		showAddNewInput: {
-			type: Boolean
 		},
 		/**
 		 * if user has permissions to edit the input type
@@ -333,6 +328,14 @@ module.exports = exports = {
 		}
 	}
 
+	&__action-delete {
+		.cdx-icon {
+			color: @wmui-color-red50;
+			width: 16px;
+			height: 16px;
+		}
+	}
+
 	&__header {
 		display: flex;
 		justify-content: space-between;
@@ -386,14 +389,6 @@ module.exports = exports = {
 		width: 100%;
 	}
 
-	&__button {
-		white-space: nowrap;
-		cursor: pointer;
-		position: absolute;
-		bottom: 0;
-		left: 0;
-	}
-
 	@media screen and ( min-width: @width-breakpoint-tablet ) {
 		padding: 0;
 		gap: 20px;
@@ -421,10 +416,6 @@ module.exports = exports = {
 
 		&__input {
 			width: auto;
-		}
-
-		&__button {
-			position: relative;
 		}
 	}
 }
