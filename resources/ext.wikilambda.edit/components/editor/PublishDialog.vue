@@ -25,28 +25,18 @@
 			</template>
 			<template>
 				<div v-if="hasErrors" class="ext-wikilambda-publishdialog__errors">
-					<cdx-icon class="ext-wikilambda-publishdialog__errors__icon"
-						:icon="errorIcon">
-					</cdx-icon>
-					<div class="ext-wikilambda-publishdialog__errors__messages">
-						<div v-for="error in errors"
-							:key="error.id"
-							class="ext-wikilambda-publishdialog__errors__message"
-							v-html="error.message">
-						</div>
+					<div v-for="error in errors" :key="error.id">
+						<cdx-message class="ext-wikilambda-publishdialog__errors__message"
+							type="error">{{ error.message }}</cdx-message>
 					</div>
 				</div>
 
 				<div v-if="hasWarnings" class="ext-wikilambda-publishdialog__warnings">
-					<cdx-icon class="ext-wikilambda-publishdialog__warnings__icon"
-						:icon="warningIcon">
-					</cdx-icon>
-					<div class="ext-wikilambda-publishdialog__warnings__messages">
-						<div v-for="warning in warnings"
-							:key="warning.id"
-							class="ext-wikilambda-publishdialog__warnings__message"
-							v-html="warning.message">
-						</div>
+					<div v-for="warning in warnings" :key="warning.id">
+						<cdx-message class="ext-wikilambda-publishdialog__warnings__message"
+							type="warning">
+							<p v-html="warning.message"></p>
+						</cdx-message>
 					</div>
 				</div>
 
@@ -73,10 +63,9 @@
 
 <script>
 const Constants = require( '../../Constants.js' ),
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
+	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	DialogContainer = require( '../base/DialogContainer.vue' ),
-	icons = require( '../../../lib/icons.json' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
@@ -84,8 +73,8 @@ const Constants = require( '../../Constants.js' ),
 module.exports = exports = {
 	name: 'publish-dialog',
 	components: {
-		'cdx-icon': CdxIcon,
 		'cdx-text-input': CdxTextInput,
+		'cdx-message': CdxMessage,
 		'dialog-container': DialogContainer
 	},
 	inject: {
@@ -106,8 +95,6 @@ module.exports = exports = {
 	data: function () {
 		return {
 			summary: '',
-			errorIcon: icons.cdxIconError,
-			warningIcon: icons.cdxIconAlert,
 			publishDialogCustomClass: 'ext-wikilambda-publishdialog-custom-class',
 			buttonAction: 'progressive'
 		};
@@ -192,43 +179,16 @@ module.exports = exports = {
 .ext-wikilambda-publishdialog {
 	display: flex;
 
-	&__warnings {
-		align-items: flex-start;
-		background: #fef6e7;
-		border: solid 1px #fc3;
-		display: flex;
-		flex-direction: row;
-		padding: 16px 24px;
+	&__errors {
 		margin: 8px 16px;
-
-		&__icon {
-			color: #fc3;
-			padding-right: 8px;
-		}
-
-		&__messages {
-			display: flex;
-			flex-direction: column;
-		}
 	}
 
-	&__errors {
-		align-items: flex-start;
-		background: #ffe7e6;
-		border: solid 1px #d33;
-		display: flex;
-		flex-direction: row;
-		padding: 16px 24px;
+	&__warnings {
 		margin: 8px 16px;
 
-		&__icon {
-			color: #d33;
-			padding-right: 8px;
-		}
-
-		&__messages {
-			display: flex;
-			flex-direction: column;
+		p:first-child {
+			margin-top: 0;
+			hyphens: none;
 		}
 	}
 
