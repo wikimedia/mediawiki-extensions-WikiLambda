@@ -20,6 +20,7 @@
 						:text="item.isoCode.toUpperCase()"
 						:title="item.languageLabel"
 					></chip>
+					{{ item.label }}
 				</div>
 			</li>
 		</ul>
