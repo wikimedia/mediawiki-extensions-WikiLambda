@@ -98,7 +98,7 @@
 	"wikilambda-editor-zobject-clearitem-tooltip": "Effacer cette valeur",
 	"wikilambda-editor-label-select-programming-language-label": "Sélectionner le langage de programmation :",
 	"wikilambda-modeselector-genericliteral": "gén.",
-	"wikilambda-publish-lose-changes-prompt": "Si vous partez sans publier auparavant, vous perdrez vos modifications.",
+	"wikilambda-publish-lose-changes-prompt": "Si vous quittez sans avoir d’abord publié, vous perdrez vos modifications.",
 	"specialpages-group-wikilambda": "Pages de Wikifonctions",
 	"wikilambda-editor-argument-list-label": "Liste d’arguments",
 	"wikilambda-editor-implementation-list-label": "Liste de mises en œuvre",
