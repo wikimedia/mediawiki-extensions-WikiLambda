@@ -6,11 +6,16 @@
 			"Portal18",
 			"RYOUMA1117",
 			"Sou0012",
-			"Tamaki Wakita"
+			"Tamaki Wakita",
+			"Funa-enpitu",
+			"Kkairri",
+			"Shirayuki",
+			"春春眠眠"
 		]
 	},
 	"wikilambda-invalidzobjecttitle": "提供されたタイトル'$1' は  ZObject　には無効です。",
 	"wikilambda-noresult": "検索結果が得られませんでした",
+	"wikilambda-persistentzobject-contents": "目次",
 	"wikilambda-orchestrated-loading": "オーケストレーションを実行します、お待ちください",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "言語",
 	"wikilambda-publishnew": "公開",

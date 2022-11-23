@@ -10,7 +10,8 @@
 			"Pols12",
 			"Thibaut120094",
 			"Verdy p",
-			"Wladek92"
+			"Wladek92",
+			"SleaY"
 		]
 	},
 	"wikilambda-desc": "Fournit aux wikis de Wikimedia une fonction d’analyseur syntaxique de wikicode pour appeler l’évaluation des fonctions écrites, gérées et évaluées sur un wiki central.",
@@ -26,7 +27,7 @@
 	"wikilambda-labelclash": "Le libellé du contenu fourni est en conflit avec le Z-Objet « $1 » pour le libellé dans « $2 ».",
 	"wikilambda-persistentzobject": "Z-Objet",
 	"wikilambda-persistentzobject-metadata": "Libellés et alias",
-	"wikilambda-persistentzobject-contents": "Contenu",
+	"wikilambda-persistentzobject-contents": "Contenus",
 	"wikilambda-persistentzobject-description": "Commencer à créer votre Z-Objet en sélectionnant un type ci-dessous. Vous pouvez créer une fonction en cliquant sur ce lien :",
 	"wikilambda-multilingualstring-nofallback": "Aucun libellé défini dans cette langue ni dans les langues de repli acceptées.",
 	"wikilambda-viewmode-nojs": "Affichage réduit de cette page sans Javascript.",
