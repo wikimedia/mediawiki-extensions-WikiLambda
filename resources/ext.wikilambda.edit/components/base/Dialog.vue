@@ -149,7 +149,9 @@ module.exports = exports = {
 	width: 100%;
 	height: 100%;
 	background: #ffffffbd;
-	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -183,6 +185,7 @@ module.exports = exports = {
 	}
 
 	&__header {
+		align-items: center;
 		display: flex;
 		justify-content: space-between;
 		padding: 8px 2px 6px 16px;
@@ -207,7 +210,7 @@ module.exports = exports = {
 	}
 
 	&__body {
-		padding: 0 16px 16px;
+		padding: 0 24px 0 24px;
 	}
 
 	&__action-buttons {
@@ -219,13 +222,20 @@ module.exports = exports = {
 	}
 
 	&__legal-text {
-		margin: 16px 32px;
+		font-size: 0.85em;
+		line-height: 1.6;
+		padding: 16px 24px;
 		color: @wmui-color-base30;
 
 		hr {
 			color: #c8ccd1;
 			margin-bottom: 8px;
 		}
+	}
+
+	&__divider {
+		margin-bottom: 12px;
+		margin-top: 0;
 	}
 }
 </style>

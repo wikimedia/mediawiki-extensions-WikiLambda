@@ -180,11 +180,11 @@ module.exports = exports = {
 	display: flex;
 
 	&__errors {
-		margin: 8px 16px;
+		padding: 8px 0;
 	}
 
 	&__warnings {
-		margin: 8px 16px;
+		padding: 8px 0;
 
 		p:first-child {
 			margin-top: 0;
@@ -195,11 +195,11 @@ module.exports = exports = {
 	&__summary {
 		display: flex;
 		flex-direction: column;
-		padding: 8px 16px;
+		padding: 8px 0;
 	}
 
 	&__summary-label {
-		padding-bottom: 8px;
+		padding-bottom: 4px;
 	}
 }
 
@@ -210,7 +210,7 @@ module.exports = exports = {
 .ext-wikilambda-publishdialog-custom-class .ext-wikilambda-dialog {
 	&__header {
 		margin-top: 16px;
-		padding: 0 32px;
+		padding: 0 24px;
 
 		&__title {
 			font-size: 1.1em;
@@ -220,12 +220,12 @@ module.exports = exports = {
 	&__action-buttons {
 		display: flex;
 		justify-content: flex-end;
-		margin-right: 32px;
+		padding-right: 24px;
 
 		button {
 			margin-left: 10px;
 			cursor: pointer;
-			width: 96px;
+			width: fit-content;
 		}
 	}
 }

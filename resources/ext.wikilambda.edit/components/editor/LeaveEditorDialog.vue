@@ -79,14 +79,9 @@ module.exports = exports = {
 <style lang="less">
 @import './../../../lib/wikimedia-ui-base.less';
 
-.ext-wikilambda-leaveeditordialog__message {
-	padding: 8px 16px 0 16px;
-}
-
 .ext-wikilambda-leave-editor-dialog-custom-class .ext-wikilambda-dialog {
 	&__header {
-		margin-top: 16px;
-		padding: 0 32px;
+		padding: 21px 24px 15px 24px;
 
 		&__title {
 			font-size: 1.1em;
@@ -96,10 +91,10 @@ module.exports = exports = {
 	&__action-buttons {
 		display: flex;
 		justify-content: flex-end;
-		padding: 16px 16px;
+		padding: 16px 18px;
 
 		button {
-			margin-right: 16px;
+			margin-right: 8px;
 			width: fit-content;
 		}
 
@@ -113,6 +108,7 @@ module.exports = exports = {
 		&__action-buttons {
 			display: flex;
 			flex-direction: column;
+			padding: 16px 24px;
 
 			button {
 				margin-bottom: 8px;
