@@ -192,6 +192,7 @@
 	"wikilambda-function-definition-inputs-label": "Eingabetyp",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "Typ auswählen",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Weitere Eingabe hinzufügen",
+	"wikilambda-function-definition-inputs-item-add-first-input-button": "+ Eingabe hinzufügen",
 	"wikilambda-function-definition-output-label": "Art der Ausgabe",
 	"wikilambda-function-definition-output-selector": "Typ auswählen",
 	"wikilambda-function-definition-example-title": "Beispiele für die Verwendung der Funktion",

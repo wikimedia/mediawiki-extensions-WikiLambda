@@ -46,6 +46,7 @@
 	"wikilambda-metadata-duplicate-alias-error": "»$1« že obstaja",
 	"wikilambda-metadata-all-languages": "Prikaži vse vnesene jezike",
 	"wikilambda-persistentobject-details-label": "Podrobnosti",
+	"wikilambda-function-definition-inputs-item-add-first-input-button": "+ Dodaj vnos",
 	"wikilambda-editor-fn-step-function-details": "Podrobnosti",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "Oprostite! Opredelitev funkcije lahko po objavi funkcije spreminjajo samo uporabniki s posebnimi dovoljenji.",
 	"wikilambda-editor-publish-dialog-header": "Objava vnesenih sprememb",

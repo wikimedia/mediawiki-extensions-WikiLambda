@@ -210,6 +210,7 @@
 	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "Sélectionner un type pour votre liste typée",
 	"wikilambda-function-definition-inputs-item-input-placeholder": "Libellé d’entrée",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Ajouter une autre entrée",
+	"wikilambda-function-definition-inputs-item-add-first-input-button": "+ Ajouter une entrée",
 	"wikilambda-function-definition-output-label": "Type de sortie",
 	"wikilambda-function-definition-output-selector": "Sélectionner un type",
 	"wikilambda-function-definition-example-title": "Exemples d’utilisation de la fonction",

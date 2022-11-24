@@ -200,6 +200,7 @@
 	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "נא לבחור סוג לרשימה של איברים בעלי סוג {{GENDER:|שאתה יוצר|שאת יוצרת}}",
 	"wikilambda-function-definition-inputs-item-input-placeholder": "תווית קלט",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ הוספה של קלט אחר",
+	"wikilambda-function-definition-inputs-item-add-first-input-button": "+ הוספת קלט",
 	"wikilambda-function-definition-output-label": "סוג הפלט",
 	"wikilambda-function-definition-output-selector": "נא לבחור סוג",
 	"wikilambda-function-definition-example-title": "דוגמאות לשימוש בפונקציה",
