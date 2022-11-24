@@ -8,11 +8,14 @@
 			"RYOUMA1117",
 			"Sou0012",
 			"Tamaki Wakita",
-			"春春眠眠"
+			"春春眠眠",
+			"Kkairri",
+			"Shirayuki"
 		]
 	},
 	"wikilambda-invalidzobjecttitle": "提供されたタイトル'$1' は  ZObject　には無効です。",
 	"wikilambda-noresult": "検索結果が得られませんでした",
+	"wikilambda-persistentzobject-contents": "目次",
 	"wikilambda-orchestrated-loading": "オーケストレーションを実行します、お待ちください",
 	"wikilambda-edit": "編集",
 	"wikilambda-show-more": "さらに表示する",

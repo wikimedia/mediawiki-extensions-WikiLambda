@@ -10,6 +10,7 @@
 	},
 	"wikilambda-invalidzobjecttitle": "지정된 '$1' 제목은 ZObject에 유효하지 않습니다.",
 	"wikilambda-noresult": "검색에 결과가 제공되지 않았습니다.",
+	"wikilambda-persistentzobject-contents": "내용",
 	"wikilambda-edit": "편집",
 	"wikilambda-show-more": "더 보기",
 	"wikilambda-hide-more": "더 숨기기",
