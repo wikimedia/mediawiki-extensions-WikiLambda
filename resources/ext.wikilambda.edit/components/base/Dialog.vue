@@ -8,6 +8,7 @@
 	<div class="ext-wikilambda-dialog">
 		<div
 			v-clickout="clickToClose"
+			role="dialog"
 			class="ext-wikilambda-dialog__box"
 			:class="[ 'ext-wikilambda-dialog__box--size-' + size, customClass ]">
 			<div class="ext-wikilambda-dialog__header">

@@ -7,11 +7,16 @@
 	-->
 	<div :class="classZObjectKey">
 		<!-- zKey label -->
-		<span v-if="zKey">{{ zKeyLabel }}</span>
+		<label
+			v-if="zKey"
+			:id="'ext-wikilambda-zobject-key-label-' + zKey">
+			{{ zKeyLabel }}
+		</label>
 
 		<!-- If type isn't selected, show type selector -->
 		<z-object-selector
 			v-if="!zType"
+			:aria-labelledby="'ext-wikilambda-zobject-key-label-' + zKey"
 			:type="Constants.Z_TYPE"
 			:return-type="Constants.Z_TYPE"
 			:placeholder="$i18n( 'wikilambda-typeselector-label' ).text()"
@@ -19,7 +24,10 @@
 		></z-object-selector>
 
 		<!-- If there's a type, we render the appropriate component -->
-		<template v-else>
+		<div
+			v-else
+			class="ext-wikilambda-zobject-key-value"
+			:aria-labelledby="'ext-wikilambda-zobject-key-label-' + zKey">
 			<!-- Check if zobject is actually a list  -->
 			<span v-if="zType === Constants.Z_TYPED_LIST && zListType.key === '0'">
 				{{ zTypeLabel }} &rarr;
@@ -72,7 +80,7 @@
 				:parent-type="parentType"
 				:readonly="readonly"
 			></z-object>
-		</template>
+		</div>
 	</div>
 </template>
 
@@ -263,6 +271,10 @@ module.exports = exports = {
 }
 
 .ext-wikilambda-zobject-key-inline {
+	display: inline;
+}
+
+.ext-wikilambda-zobject-key-value {
 	display: inline;
 }
 </style>

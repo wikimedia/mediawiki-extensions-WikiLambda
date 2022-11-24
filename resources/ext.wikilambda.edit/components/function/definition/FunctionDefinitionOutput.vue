@@ -7,7 +7,9 @@
 	-->
 	<div class="ext-wikilambda-function-definition-output">
 		<div class="ext-wikilambda-function-definition-output__label">
-			<label class="ext-wikilambda-app__text-regular">
+			<label
+				id="ext-wikilambda-function-definition-output__label-label"
+				class="ext-wikilambda-app__text-regular">
 				{{ $i18n( 'wikilambda-function-definition-output-label' ).text() }}
 			</label>
 			<tooltip
@@ -25,6 +27,7 @@
 			ref="typeSelector"
 			:type="Constants.Z_TYPE"
 			class="ext-wikilambda-function-definition-output__selector"
+			aria-labelledby="ext-wikilambda-function-definition-output__label-label"
 			:placeholder="$i18n( 'wikilambda-function-definition-output-selector' ).text()"
 			:selected-id="zReturnType.value"
 			:initial-selection-label="zReturnTypeLabel"

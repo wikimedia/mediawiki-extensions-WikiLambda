@@ -7,7 +7,9 @@
 	-->
 	<div class="ext-wikilambda-function-definition-name">
 		<div class="ext-wikilambda-function-definition-name__label">
-			<label for="ext-wikilambda-function-definition-name__input" class="ext-wikilambda-app__text-regular">
+			<label
+				:for="'ext-wikilambda-function-definition-name__input' + zLang"
+				class="ext-wikilambda-app__text-regular">
 				{{ functionNameLabel }}
 			</label>
 			<!-- TODO (T298479): replace href with correct URL -->
@@ -21,7 +23,7 @@
 		</div>
 
 		<cdx-text-input
-			id="ext-wikilambda-function-definition-name__input"
+			:id="'ext-wikilambda-function-definition-name__input' + zLang"
 			v-model="zobjectLabel"
 			class="ext-wikilambda-function-definition-name__input"
 			:aria-label="$i18n( 'wikilambda-function-definition-name-label' ).text()"

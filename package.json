@@ -14,6 +14,8 @@
 	"devDependencies": {
 		"@babel/core": "7.16.10",
 		"@babel/preset-env": "7.16.10",
+		"@testing-library/jest-dom": "5.16.5",
+		"@testing-library/vue": "6.6.1",
 		"@vue/compat": "3.2.37",
 		"@vue/test-utils": "2.0.0-rc.21",
 		"@vue/vue3-jest": "27.0.0-alpha.4",
@@ -39,6 +41,11 @@
 		"vuex": "4.0.2",
 		"wdio-mediawiki": "2.1.0",
 		"webdriverio": "7.16.13"
+	},
+	"overrides": {
+		"@testing-library/vue": {
+			"@vue/test-utils": "$@vue/test-utils"
+		}
 	},
 	"eslintIgnore": [
 		"vendor/**"

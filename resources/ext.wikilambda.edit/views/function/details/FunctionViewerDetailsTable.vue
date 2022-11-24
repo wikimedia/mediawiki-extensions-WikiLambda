@@ -10,11 +10,14 @@
 			:header="header"
 			:body="body"
 			:is-loading="isLoading"
+			:aria-labelledby="'ext-wikilambda-function-details-table__title__text-' + name"
 			class="ext-wikilambda-function-details-table__body"
 		>
 			<template #table-title>
 				<div class="ext-wikilambda-function-details-table__title">
-					<span class="ext-wikilambda-function-details-table__title__text">
+					<span
+						:id="'ext-wikilambda-function-details-table__title__text-' + name"
+						class="ext-wikilambda-function-details-table__title__text">
 						{{ title }}
 					</span>
 					<!-- TODO (T310164): replace with button group -->
@@ -114,6 +117,10 @@ module.exports = exports = {
 		isLoading: {
 			type: Boolean,
 			default: false
+		},
+		name: {
+			type: String,
+			required: true
 		}
 	},
 	setup: function () {

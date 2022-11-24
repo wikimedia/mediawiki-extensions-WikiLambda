@@ -6,10 +6,12 @@
  */
 'use strict';
 
-const Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
-	{ ticksUntilTrue } = require( './helpers/interactionHelpers.js' ),
-	{ runSetup } = require( './helpers/functionViewerDetailsTestSetup.js' ),
-	FunctionViewerDetailsTable = require( '../../../resources/ext.wikilambda.edit/views/function/details/FunctionViewerDetailsTable.vue' ),
+require( '@testing-library/jest-dom' );
+
+const { fireEvent, waitFor } = require( '@testing-library/vue' ),
+	{ within } = require( '@testing-library/dom' ),
+	{ renderForFunctionViewer, runSetup, runTeardown } = require( './helpers/functionViewerDetailsTestHelpers.js' ),
+	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' ),
 	existingImplementationInCodeFromApi = require( './objects/existingImplementationInCodeFromApi.js' ),
 	existingImplementationByCompositionFromApi = require( './objects/existingImplementationByCompositionFromApi.js' ),
@@ -25,35 +27,35 @@ const existingFailedTesterZid = existingTesterFromApi.failedTesterZid;
 
 describe( 'WikiLambda frontend, function viewer details tab', () => {
 	let apiPostWithEditTokenMock;
-	let wrapper;
 	beforeEach( () => {
 		const setupResult = runSetup();
-		wrapper = setupResult.wrapper;
 		apiPostWithEditTokenMock = setupResult.apiPostWithEditTokenMock;
 	} );
-	it( 'allows attaching a function implementation', async () => {
-		// ACT: select the 'details' tab.
-		await wrapper.get( '#cdx-function-details-1-label a' ).trigger( 'click' );
 
-		const implementationTable = wrapper.findAll( '.ext-wikilambda-function-details-table' )[ 0 ];
-		await ticksUntilTrue( wrapper, () => implementationTable && implementationTable.exists() );
-		const secondImplementationRow = implementationTable.findAll( '.ext-wikilambda-table__content__row' )[ 2 ];
+	afterEach( () => {
+		runTeardown();
+	} );
+
+	it( 'allows attaching a function implementation', async () => {
+		const { findByLabelText, findByRole } = renderForFunctionViewer();
+
+		// ACT: select the 'details' tab.
+		await fireEvent.click( await findByRole( 'tab', { name: 'Details' } ) );
 
 		// ASSERT: The "unattached" implementation is shown in the table.
-		expect( secondImplementationRow.findAll( '.ext-wikilambda-table__content__row__item' )[ 1 ]
-			.text() ).toEqual( 'Implementation in code, in English' );
+		const implementationsTable = await findByLabelText( 'Implementations' );
+		const secondImplementationRow = within( implementationsTable ).getAllByRole( 'row' )[ 2 ];
+		await waitFor(
+			() => expect( secondImplementationRow ).toHaveTextContent( 'Implementation in code, in English' ) );
 
 		// ASSERT: The "unattached" implementation is shown as proposed.
-		expect( secondImplementationRow.get( '.ext-wikilambda-chip' ).text() )
-			.toEqual( 'wikilambda-function-implementation-state-proposed' );
+		expect( secondImplementationRow ).toHaveTextContent( 'Proposed' );
 
 		// ACT: Select the "unattached" implementation in the table.
-		wrapper.findAllComponents( FunctionViewerDetailsTable )[ 0 ]
-			.props( 'body' )[ 1 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
-		await wrapper.vm.$nextTick();
+		await fireEvent.update( within( secondImplementationRow ).getByRole( 'checkbox' ), true );
 
 		// ACT: Click approve button.
-		await wrapper.get( '.ext-wikilambda-function-details-table__title__buttons__approve-button' ).trigger( 'click' );
+		await fireEvent.click( within( implementationsTable ).getByText( 'Approve' ) );
 
 		// ASSERT: Correct ZObject was posted to the API.
 		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {

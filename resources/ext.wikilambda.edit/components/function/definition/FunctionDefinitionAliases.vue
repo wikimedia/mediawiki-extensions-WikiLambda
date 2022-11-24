@@ -8,7 +8,7 @@
 	<div class="ext-wikilambda-function-definition-aliases">
 		<div class="ext-wikilambda-function-definition-aliases__label">
 			<label
-				for="ext-wikilambda-function-definition-aliases__input"
+				id="ext-wikilambda-function-definition-aliases__inputs-label"
 				class="ext-wikilambda-app__text-regular"
 			>
 				{{ functionAliasLabel }}
@@ -22,11 +22,13 @@
 				{{ $i18n( "wikilambda-function-definition-alias-example" ) }}
 			</a>
 		</div>
-		<div class="ext-wikilambda-function-definition-aliases__inputs">
+		<div
+			class="ext-wikilambda-function-definition-aliases__inputs"
+			aria-labelledby="ext-wikilambda-function-definition-aliases__inputs-label">
 			<chips
 				:chips="getCurrentLanguageAliases"
 				:input-placeholder="functionDefinitionAliasPlaceholder"
-				:input-aria-label="$i18n( 'wikilambda-function-definition-alias-label' )"
+				:input-aria-label="$i18n( 'wikilambda-function-definition-alias-label-new' )"
 				@add-chip="addAliasForLanguage"
 				@edit-chip="updateAlias"
 				@remove-chip="removeAlias"

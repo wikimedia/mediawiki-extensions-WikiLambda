@@ -96,7 +96,8 @@ describe( 'ZFunctionTesterReport', function () {
 				zFunctionId: ''
 			}
 		} );
-		expect( wrapper.find( 'p' ).text() ).toBe( 'wikilambda-tester-no-results' );
+		expect( wrapper.find( 'p' ).text() )
+			.toBe( 'No test results found. Please add an implementation and a test to see results.' );
 	} );
 
 	// TODO (T303072): This test is skipped because overriding computed properties is no longer

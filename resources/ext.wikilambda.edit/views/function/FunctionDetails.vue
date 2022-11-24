@@ -16,6 +16,7 @@
 		</section>
 		<section class="ext-wikilambda-function-details__tables">
 			<function-viewer-details-table
+				name="implementations"
 				:header="implementationsHeader"
 				:body="implementationBody"
 				:title="$i18n( 'wikilambda-function-implementation-table-header' ).text()"
@@ -33,6 +34,7 @@
 				@deactivate="deactivateImplementations"
 			></function-viewer-details-table>
 			<function-viewer-details-table
+				name="testers"
 				:header="testersHeader"
 				:body="testersBody"
 				:title="$i18n( 'wikilambda-function-test-cases-table-header' ).text()"

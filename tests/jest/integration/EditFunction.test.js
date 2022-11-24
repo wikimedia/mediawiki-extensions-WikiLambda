@@ -7,14 +7,14 @@
  */
 'use strict';
 
-const { CdxTextInput } = require( '@wikimedia/codex' ),
-	{ awaitLookup, clickItemInMenu, pageChange } = require( './helpers/interactionHelpers.js' ),
+require( '@testing-library/jest-dom' );
+
+const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
+	{ within } = require( '@testing-library/dom' ),
+	{ clickLookupResult } = require( './helpers/interactionHelpers.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
-	mount = require( '@vue/test-utils' ).mount,
 	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
-	PublishDialog = require( '../../../resources/ext.wikilambda.edit/components/editor/PublishDialog.vue' ),
-	Dialog = require( '../../../resources/ext.wikilambda.edit/components/base/Dialog.vue' ),
 	apiGetMock = require( './helpers/apiGetMock.js' ),
 	ApiMock = require( './helpers/apiMock.js' ),
 	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' ),
@@ -38,7 +38,6 @@ const performTest =
 
 describe( 'WikiLambda frontend, editing an existing function, on function-editor view', () => {
 	let apiPostWithEditTokenMock;
-	let wrapper;
 	beforeEach( () => {
 		// Needed because of the Teleported component.
 		const el = document.createElement( 'div' );
@@ -100,120 +99,107 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 					return {};
 			}
 		};
-
-		wrapper = mount( App, { global: { plugins: [ store ] } } );
 	} );
 
 	afterEach( () => {
 		document.body.outerHTML = '';
+		jest.runOnlyPendingTimers();
+		jest.useRealTimers();
 	} );
 
+	// TODO(T323764): This test is currently extremely long. Consider moving some of the less-used functionality (e.g.
+	// adding a function name and then immediately deleting it) into separate test cases.
 	it( 'allows editing the function, making use of most important features', async () => {
+		const { findAllByLabelText, findByRole, getAllByLabelText, getByText } =
+			render( App, { global: { plugins: [ store ] } } );
+
 		// ACT: Change the first argument type.
-		const argumentTypeSelectorLookup = wrapper.get( '.ext-wikilambda-editor-input-list-item__selector' );
-		argumentTypeSelectorLookup.get( 'input' ).setValue( 'Str' );
-		await awaitLookup( wrapper );
-		await clickItemInMenu( argumentTypeSelectorLookup, 'Monolingual stringset' );
+		const chineseArgumentsArea = ( await findAllByLabelText( 'Input type' ) )[ 0 ];
+		const firstArgumentTypeInput = within( chineseArgumentsArea ).getAllByDisplayValue( 'String' )[ 0 ];
+		await fireEvent.update( firstArgumentTypeInput, 'Str' );
+		await clickLookupResult( chineseArgumentsArea, 'Monolingual stringset' );
 
 		// ACT: Click publish button.
-		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
-		await wrapper.vm.$nextTick();
+		await fireEvent.click( getByText( 'Publish' ) );
 
-		const baseDialog = wrapper.getComponent( Dialog );
-		const warningMessage = baseDialog.find( '.ext-wikilambda-publishdialog__warnings__message' );
 		// ASSERT: The warning message is shown in the dialog indicating the user has changed the argument type.
-		expect( warningMessage.text() ).toBe( 'wikilambda-publish-input-changed-impact-prompt' );
+		let publishDialog = await findByRole( 'dialog' );
+		expect( publishDialog ).toHaveTextContent( 'You changed the input field of this function.' );
 
-		const publishDialog = wrapper.findComponent( PublishDialog );
 		// ACT: Close publish dialog.
-		await publishDialog.findComponent( '#cancel-button' ).trigger( 'click' );
-		await wrapper.vm.$nextTick();
+		await fireEvent.click( within( publishDialog ).getByText( 'Cancel' ) );
 
 		// ACT: Change the first argument type back to the original type.
-		argumentTypeSelectorLookup.get( 'input' ).setValue( 'Str' );
-		await awaitLookup( wrapper );
-		await clickItemInMenu( argumentTypeSelectorLookup, 'String' );
+		await fireEvent.update( firstArgumentTypeInput, 'Str' );
+		await clickLookupResult( chineseArgumentsArea, 'String' );
 
-		// ACT: Edit the name of the function.
-		wrapper.get( '.ext-wikilambda-function-definition-name input' ).setValue( 'edited function name, in Chinese' );
-		await wrapper.vm.$nextTick();
+		// ACT: Edit the name of the function in Chinese (the first language).
+		await fireEvent.update( getAllByLabelText( 'Name (optional)' )[ 0 ], 'edited function name, in Chinese' );
 
-		// ACT: Add a second alias for the function.
-		const aliasInput = wrapper.get( '.ext-wikilambda-function-definition-aliases__inputs input' );
-		await aliasInput.setValue( 'second function alias, in Chinese' );
-		await aliasInput.trigger( 'keydown', { key: 'enter' } );
+		// ACT: Add a second alias for the function in Chinese.
+		const chineseAliasInput = getAllByLabelText( 'New alias' )[ 0 ];
+		await fireEvent.update( chineseAliasInput, 'second function alias, in Chinese' );
+		await fireEvent.keyDown( chineseAliasInput, { key: 'enter' } );
 
 		// ACT: Add a label for the first argument.
-		await wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 0 ]
-			.setValue( 'newly added first argument label, in Chinese' );
+		await fireEvent.update(
+			within( chineseArgumentsArea ).getAllByPlaceholderText( 'Input label' )[ 0 ],
+			'newly added first argument label, in Chinese' );
 
-		// [ACT: Don't enter a label for the second argument, in the first language.]
+		// [ACT: Don't enter a label for the second argument in Chinese.]
 
-		// Second language is Afrikaans fetched from the API with only two argument labels.
-		// ACT: Edit the label for the first argument.
-		await wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 2 ]
-			.setValue( 'edited first argument label, in Afrikaans' );
+		// ACT: Edit the label for the first argument in Afrikaans (the second language).
+		const afrikaansArgumentsArea = getAllByLabelText( 'Input type' )[ 1 ];
+		await fireEvent.update(
+			within( afrikaansArgumentsArea ).getAllByPlaceholderText( 'Input label' )[ 0 ],
+			'edited first argument label, in Afrikaans' );
 
-		// Second language is Afrikaans fetched from the API with only two argument labels.
-		// ACT: Edit the label for the first argument.
-		await wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 2 ]
-			.setValue( 'edited first argument label, in Afrikaans' );
+		// ACT: Enter a name for the function in Afrikaans.
+		const afrikaansNameInput = getAllByLabelText( 'Name (optional)' )[ 1 ];
+		await fireEvent.update( afrikaansNameInput, 'function name, in Afrikaans' );
 
-		// ACT: Enter a name in the second language.
-		wrapper.findAll( '.ext-wikilambda-function-definition-name' )[ 1 ].get( 'input' )
-			.setValue( 'function name, in Afrikaans' );
-		await wrapper.vm.$nextTick();
+		// ACT: Delete the just-entered function name in Afrikaans.
+		await fireEvent.update( afrikaansNameInput, '' );
 
-		// ACT: Delete the name.
-		wrapper.findAll( '.ext-wikilambda-function-definition-name' )[ 1 ].get( 'input' )
-			.setValue( '' );
-		await wrapper.vm.$nextTick();
+		// ACT: Enter an alias in Afrikaans.
+		const afrikaansAliasesContainer = getAllByLabelText( 'Aliases (optional)' )[ 1 ];
+		const afrikaansAliasInput = within( afrikaansAliasesContainer ).getByRole( 'textbox' );
+		await fireEvent.update( afrikaansAliasInput, 'first function alias, in Afrikaans' );
+		await fireEvent.keyDown( afrikaansAliasInput, { key: 'enter' } );
 
-		// ACT: Enter an alias in the second language.
-		const secondLanguageAliasInput =
-			wrapper.findAll( '.ext-wikilambda-function-definition-aliases__inputs input' )[ 1 ];
-		await secondLanguageAliasInput.setValue( 'first function alias, in Afrikaans' );
-		await secondLanguageAliasInput.trigger( 'keydown', { key: 'enter' } );
-
-		// ACT: Delete the alias.
-		const aliasChipsContainer = wrapper.findAll( '.ext-wikilambda-function-definition-aliases__inputs' )[ 1 ]
-			.get( '.ext-wikilambda-chip_icon' );
-		await aliasChipsContainer.trigger( 'click' );
+		// ACT: Delete the just-entered alias in Afrikaans.
+		await fireEvent.click( within( afrikaansAliasesContainer ).getByLabelText( 'Remove item' ) );
 
 		// ACT: Click "Add labels in another language".
-		await wrapper.get( '.ext-wikilambda-function-definition__action-add-input-button' ).trigger( 'click' );
+		await fireEvent.click( getByText( '+ Add labels in another language' ) );
 
-		// ACT: Select a third natural language.
-		const thirdLanguageSelectorLookup =
-			wrapper.findAll( '.ext-wikilambda-language-selector__add-language' )[ 2 ];
-		thirdLanguageSelectorLookup.get( 'input' ).setValue( 'Fren' );
-		await awaitLookup( wrapper );
-		await clickItemInMenu( thirdLanguageSelectorLookup, 'French' );
+		// ACT: Select French as a third natural language.
+		const thirdLanguageSelector = getAllByLabelText( 'Language' )[ 2 ];
+		await fireEvent.update( within( thirdLanguageSelector ).getByRole( 'combobox' ), 'Fren' );
+		await clickLookupResult( thirdLanguageSelector, 'French' );
 
-		// ACT: Enter a name in the third language.
-		wrapper.findAll( '.ext-wikilambda-function-definition-name' )[ 2 ].get( 'input' )
-			.setValue( 'function name, in French' );
-		await wrapper.vm.$nextTick();
+		// ACT: Enter a name in French.
+		await fireEvent.update( getAllByLabelText( 'Name (optional)' )[ 2 ], 'function name, in French' );
 
-		// ACT: Enter an alias in the third language.
-		const thirdLanguageAliasInput =
-			wrapper.findAll( '.ext-wikilambda-function-definition-aliases__inputs input' )[ 2 ];
-		await thirdLanguageAliasInput.setValue( 'function alias, in French' );
-		await thirdLanguageAliasInput.trigger( 'keydown', { key: 'enter' } );
+		// ACT: Enter an alias in French.
+		const frenchAliasInput = within( getAllByLabelText( 'Aliases (optional)' )[ 2 ] ).getByRole( 'textbox' );
+		await fireEvent.update( frenchAliasInput, 'function alias, in French' );
+		await fireEvent.keyDown( frenchAliasInput, { key: 'enter' } );
 
 		// ACT: Click publish button.
-		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
+		await fireEvent.click( getByText( 'Publish' ) );
 
 		// ACT: Add a summary of your changes.
-		publishDialog.getComponent( CdxTextInput ).get( 'input' ).setValue( 'my changes summary' );
+		publishDialog = await findByRole( 'dialog' );
+		await fireEvent.update(
+			within( publishDialog ).getByLabelText( 'How did you improve this page?' ),
+			'my changes summary' );
 
 		// ACT: Click publish button in dialog.
-		await publishDialog.findComponent( '#primary-button' ).trigger( 'click' );
-
-		await pageChange( wrapper );
+		await fireEvent.click( within( publishDialog ).getByText( 'Publish' ) );
 
 		// ASSERT: Location is changed to page returned by API.
-		expect( window.location.href ).toEqual( 'newPage?success=true' );
+		await waitFor( () => expect( window.location.href ).toEqual( 'newPage?success=true' ) );
 
 		// ASSERT: Correct ZID and ZObject were posted to the API.
 		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {

@@ -125,6 +125,7 @@ describe( 'ZObjectEditor', function () {
 			const leaveEditorDialog = wrapper.getComponent( Dialog );
 			const leaveDialogMessage = leaveEditorDialog.find( '.ext-wikilambda-leaveeditordialog__message' );
 
-			expect( leaveDialogMessage.text() ).toBe( 'wikilambda-publish-lose-changes-prompt' );
+			expect( leaveDialogMessage.text() )
+				.toBe( 'If you leave without publishing first, you will lose your edits.' );
 		} );
 } );
