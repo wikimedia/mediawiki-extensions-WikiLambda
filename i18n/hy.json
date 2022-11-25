@@ -19,6 +19,7 @@
 	"wikilambda-functioncall-metadata-dialog-header": "Մետատվյալներ",
 	"wikilambda-function-implementation-language-label": "Լեզու",
 	"wikilambda-function-definition-footer-label": "Խմբագրել մեկնաբանությունը",
+	"wikilambda-function-definition-inputs-item-add-first-input-button": "+ Ավելացնել մուտքագրում",
 	"wikilambda-function-viewer-aliases-show-language-button": "Ցույց տալ ավելի շատ լեզուներ",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Թաքցնել ցանկը",
 	"wikilambda-function-viewer-details-table-view-all": "Տեսնել բոլորը",

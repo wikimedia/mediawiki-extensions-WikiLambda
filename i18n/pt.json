@@ -197,6 +197,7 @@
 	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "Selecionar um tipo para a sua lista de tipo determinado",
 	"wikilambda-function-definition-inputs-item-input-placeholder": "Etiqueta da entrada",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Adicionar outra entrada",
+	"wikilambda-function-definition-inputs-item-add-first-input-button": "+ Adicionar uma entrada",
 	"wikilambda-function-definition-output-label": "Tipo da saída",
 	"wikilambda-function-definition-output-selector": "Selecionar um tipo",
 	"wikilambda-function-definition-example-title": "Exemplos de uso da função",
