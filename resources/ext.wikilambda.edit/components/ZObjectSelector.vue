@@ -29,6 +29,7 @@
 			:menu-items="lookupResults"
 			:end-icon="lookupIcon"
 			:initial-input-value="initialInputValue"
+			:status="errorInputStatus"
 			@input="onInput"
 			@focusout="onFocusOut"
 		>
@@ -174,22 +175,21 @@ module.exports = exports = {
 			lookupIcon: function () {
 				return icons.cdxIconExpand;
 			},
+			isError: function () {
+				// the error is not guaranteed to exist
+				return this.getErrors[ this.zobjectId ];
+			},
 			errorType: function () {
-				if ( this.getErrors[ this.zobjectId ] ) {
-					return this.getErrors[ this.zobjectId ].type;
-				}
-				return null;
+				return this.isError ? this.getErrors[ this.zobjectId ].type : null;
 			},
 			errorState: function () {
-				// the error is not guaranteed to exist
-				if ( this.getErrors[ this.zobjectId ] ) {
-					return this.getErrors[ this.zobjectId ].state;
-				}
-
-				return false;
+				return this.isError ? this.getErrors[ this.zobjectId ].state : false;
+			},
+			errorInputStatus: function () {
+				return this.errorState ? 'error' : 'default';
 			},
 			errorMessage: function () {
-				if ( this.getErrors[ this.zobjectId ] ) {
+				if ( this.isError ) {
 					const messageStr = this.getErrors[ this.zobjectId ].message;
 					return this.$i18n( messageStr ).text();
 				}
