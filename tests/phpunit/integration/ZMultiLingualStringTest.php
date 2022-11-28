@@ -295,8 +295,8 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 			$testObject->getStringForLanguage( $spanish )
 		);
 
-		$invalidLang = $this->makeLanguage( '&&&' );
-		$invalidMono = new ZMonoLingualString( new ZReference( '&&&' ), new ZString( 'Invalid item' ) );
+		$invalidLang = $this->makeLanguage( 'blargh' );
+		$invalidMono = new ZMonoLingualString( new ZReference( 'blargh' ), new ZString( 'Invalid item' ) );
 		$testObject->setMonoLingualString( $invalidMono );
 		$this->assertFalse( $testObject->isValid() );
 		$this->assertSame(
