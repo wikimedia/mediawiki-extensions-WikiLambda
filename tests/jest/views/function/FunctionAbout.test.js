@@ -5,13 +5,32 @@
  * @license MIT
  */
 'use strict';
+
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
+	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	FunctionAbout = require( '../../../../resources/ext.wikilambda.edit/views/function/FunctionAbout.vue' );
 describe( 'FunctionAbout', function () {
+	var getters;
+	var actions;
+
+	const otherId = 1;
+	const multilingualStringValueId = 2;
+	const multiLingualStringsetId = 3;
+	const monolingualStringsetId = 4;
+	const zFunctionTestersId = 5;
+	const zFunctionTesterId = 6;
 
 	beforeEach( function () {
+		getters = {
+			getUserZlangZID: jest.fn().mockReturnValue( Constants.Z_NATURAL_LANGUAGE_ENGLISH ),
+			getNestedZObjectById: createGettersWithFunctionsMock( { id: otherId } ),
+			getAllItemsFromListById: createGettersWithFunctionsMock( [] )
+		};
+
 		global.store.hotUpdate( {
-			getters: {}
+			getters: getters,
+			actions: actions
 		} );
 	} );
 
@@ -19,5 +38,100 @@ describe( 'FunctionAbout', function () {
 		var wrapper = shallowMount( FunctionAbout );
 
 		expect( wrapper.find( '.ext-wikilambda-function-about' ).exists() ).toBeTruthy();
+	} );
+
+	it( 'does not display the sidebar if there are no aliases, names or tester examples', async function () {
+		var wrapper = shallowMount( FunctionAbout );
+
+		await wrapper.vm.$nextTick();
+		expect( wrapper.find( '.ext-wikilambda-function-about__sidebar' ).exists() ).toBeFalsy();
+	} );
+
+	it( 'displays the sidebar if there are names in an additional language', async function () {
+		getters.getNestedZObjectById = () => ( id, keys ) => {
+			if ( id === 0 &&
+				keys[ 0 ] === Constants.Z_PERSISTENTOBJECT_LABEL &&
+				keys[ 1 ] === Constants.Z_MULTILINGUALSTRING_VALUE ) {
+				return { id: multilingualStringValueId };
+			} else if ( id === monolingualStringsetId && keys.length === 2 &&
+				keys[ 0 ] === Constants.Z_MONOLINGUALSTRING_LANGUAGE &&
+				keys[ 1 ] === Constants.Z_REFERENCE_ID ) {
+				return { value: Constants.Z_NATURAL_LANGUAGE_AFRIKAANS };
+			} else if ( id === monolingualStringsetId && keys.length === 2 &&
+				keys[ 0 ] === Constants.Z_MONOLINGUALSTRING_VALUE &&
+				keys[ 1 ] === Constants.Z_STRING_VALUE ) {
+				return { value: 'Afrikaans name' };
+			} else {
+				return { id: otherId };
+			}
+		};
+
+		getters.getAllItemsFromListById = () => ( id ) => {
+			if ( id === multilingualStringValueId ) {
+				return [ { id: monolingualStringsetId, key: '1', value: 'object' } ];
+			} else {
+				return [];
+			}
+		};
+
+		global.store.hotUpdate( {
+			getters: getters
+		} );
+
+		var wrapper = shallowMount( FunctionAbout );
+
+		expect( wrapper.find( '.ext-wikilambda-function-about__sidebar' ).exists() ).toBeTruthy();
+	} );
+
+	it( 'displays the sidebar if there are aliases', async function () {
+		getters.getNestedZObjectById = () => ( id, keys ) => {
+			if ( keys[ 0 ] === Constants.Z_PERSISTENTOBJECT_ALIASES &&
+				keys[ 1 ] === Constants.Z_MULTILINGUALSTRINGSET_VALUE ) {
+				return { id: multiLingualStringsetId };
+			} else {
+				return { id: otherId };
+			}
+		};
+		getters.getAllItemsFromListById = () => ( id ) => {
+			if ( id === multiLingualStringsetId ) {
+				return [ { id: monolingualStringsetId, key: '1', value: 'object', parent: otherId } ];
+			} else {
+				return [];
+			}
+		};
+
+		global.store.hotUpdate( {
+			getters: getters
+		} );
+
+		var wrapper = shallowMount( FunctionAbout );
+
+		expect( wrapper.find( '.ext-wikilambda-function-about__sidebar' ).exists() ).toBeTruthy();
+	} );
+
+	it( 'displays the sidebar if there are tester examples', async function () {
+		getters.getNestedZObjectById = () => ( id, keys ) => {
+			if ( keys[ 0 ] === Constants.Z_PERSISTENTOBJECT_VALUE &&
+				keys[ 1 ] === Constants.Z_FUNCTION_TESTERS ) {
+				return { id: zFunctionTestersId };
+			} else {
+				return { id: otherId };
+			}
+		};
+		getters.getAllItemsFromListById = () => ( id ) => {
+			if ( id === zFunctionTestersId ) {
+				return [ { id: zFunctionTesterId, key: '1', value: 'object', parent: otherId } ];
+			} else {
+				return [];
+			}
+		};
+
+		global.store.hotUpdate( {
+			getters: getters
+		} );
+
+		var wrapper = shallowMount( FunctionAbout );
+
+		expect( wrapper.find( '.ext-wikilambda-function-about__sidebar' ).exists() ).toBeTruthy();
 	} );
 } );

@@ -11,7 +11,7 @@
 				{{ $i18n( 'wikilambda-function-about-summary' ).text() }}
 			</text-component>
 		</div>
-		<section class="ext-wikilambda-function-about__sidebar">
+		<section v-if="!hideSidebar" class="ext-wikilambda-function-about__sidebar">
 			<div class="ext-wikilambda-function-about__examples">
 				<function-viewer-about-examples></function-viewer-about-examples>
 			</div>
@@ -35,6 +35,7 @@ var FunctionViewerAboutAliases = require( './about/FunctionViewerAboutAliases.vu
 	FunctionViewerAboutDetails = require( './about/FunctionViewerAboutDetails.vue' ),
 	FunctionViewerAboutExamples = require( './about/FunctionViewerAboutExamples.vue' ),
 	TextComponent = require( '../../components/base/Text.vue' ),
+	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
@@ -48,7 +49,40 @@ module.exports = exports = {
 		'text-component': TextComponent
 	},
 	computed: $.extend( {},
-		mapGetters( [ 'getCurrentZObjectId' ] )
+		mapGetters( [ 'getUserZlangZID', 'getNestedZObjectById', 'getAllItemsFromListById' ] ),
+		{
+			hideNames: function () {
+				var namesListId = this.getNestedZObjectById( 0, [
+					Constants.Z_PERSISTENTOBJECT_LABEL,
+					Constants.Z_MULTILINGUALSTRING_VALUE
+				] ).id;
+				var namesList = this.getAllItemsFromListById( namesListId );
+
+				return !namesList.some( function ( nameListLabel ) {
+					var language = this.getNestedZObjectById( nameListLabel.id, [
+						Constants.Z_MONOLINGUALSTRING_LANGUAGE,
+						Constants.Z_REFERENCE_ID
+					] ).value;
+
+					return language !== this.getUserZlangZID;
+				}.bind( this ) );
+			},
+			hideAliases: function () {
+				return this.getAllItemsFromListById( this.getNestedZObjectById( 0, [
+					Constants.Z_PERSISTENTOBJECT_ALIASES,
+					Constants.Z_MULTILINGUALSTRINGSET_VALUE
+				] ).id ).length === 0;
+			},
+			hideExamples: function () {
+				return this.getAllItemsFromListById( this.getNestedZObjectById( 0, [
+					Constants.Z_PERSISTENTOBJECT_VALUE,
+					Constants.Z_FUNCTION_TESTERS
+				] ).id ).length === 0;
+			},
+			hideSidebar: function () {
+				return this.hideNames && this.hideExamples && this.hideAliases;
+			}
+		}
 	)
 };
 </script>

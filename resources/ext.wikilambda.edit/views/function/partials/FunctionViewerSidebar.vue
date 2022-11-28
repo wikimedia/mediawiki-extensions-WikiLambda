@@ -9,7 +9,6 @@
 		>
 			<li>
 				<div
-					v-if="item.language !== zLang"
 					class="ext-wikilambda-function-viewer-sidebar__chip-container"
 				>
 					<chip
@@ -74,10 +73,6 @@ module.exports = exports = {
 			required: false,
 			// eslint-disable-next-line
 			default: true
-		},
-		zLang: {
-			type: String,
-			required: true
 		}
 	},
 	methods: {
