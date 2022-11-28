@@ -5,4 +5,5 @@
 	<file>.</file>
 	<exclude-pattern>resources/lib</exclude-pattern>
 	<exclude-pattern>function-schemata</exclude-pattern>
+	<exclude-pattern>tests/selenium</exclude-pattern>
 </ruleset>
