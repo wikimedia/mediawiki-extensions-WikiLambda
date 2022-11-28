@@ -51,6 +51,11 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 				path: new window.mw.Title( Constants.PATHS.CREATE_Z_OBJECT_TITLE ).getUrl( queryParams )
 			};
 		} );
+
+		mw.track = jest.fn( function ( trackkey, trackmessage ) {
+			// eslint-disable-next-line no-console
+			console.log( 'Log emitted: ' + trackkey + ' - ' + trackmessage );
+		} );
 	} );
 
 	afterEach( () => {

@@ -56,6 +56,11 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 			};
 		} );
 
+		mw.track = jest.fn( function ( trackkey, trackmessage ) {
+			// eslint-disable-next-line no-console
+			console.log( 'Log emitted: ' + trackkey + ' - ' + trackmessage );
+		} );
+
 		window.mw.Uri.mockImplementation( () => {
 			return {
 				query: {

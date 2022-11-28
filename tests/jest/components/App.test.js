@@ -98,6 +98,8 @@ describe( 'App.vue', function () {
 	} );
 
 	it( 'Initializes the app on load', function () {
+		jest.clearAllMocks();
+
 		mockGetZObjectInitializedValue = true;
 
 		shallowMount( App, {

@@ -7,7 +7,10 @@
 	-->
 	<div id="ext-wikilambda-app" class="ext-wikilambda-edit">
 		<template v-if="getZObjectInitialized && isAppSetup">
-			<component :is="getCurrentView"></component>
+			<component
+				:is="getCurrentView"
+				@mounted="newViewMounted"
+			></component>
 		</template>
 		<span v-else>
 			{{ $i18n( 'wikilambda-loading' ).text() }}
@@ -24,6 +27,8 @@ var configureCompat = require( 'vue' ).configureCompat,
 	ZObjectViewer = require( '../views/ZObjectViewer.vue' ),
 	ZObjectEditor = require( '../views/ZObjectEditor.vue' ),
 	DefaultView = require( '../views/DefaultView.vue' );
+
+const startTime = Date.now();
 
 configureCompat( { MODE: 3 } );
 
@@ -49,14 +54,36 @@ module.exports = exports = {
 		mapGetters( [
 			'getZObjectInitialized',
 			'isNewZObject'
-		] ), mapGetters(
+		] ),
+		mapGetters(
 			'router',
 			[ 'getCurrentView' ]
 		)
 	),
 	methods: $.extend(
-		mapActions( [ 'initializeZObject', 'initialize' ] ),
-		mapActions( 'router', [ 'evaluateUri' ] )
+		mapActions( [
+			'initializeZObject',
+			'initialize'
+		] ),
+		mapActions(
+			'router',
+			[ 'evaluateUri' ]
+		),
+		{
+			/**
+			 * Instrument how long our view took to load, split by type of view
+			 */
+			newViewMounted: function () {
+				// HACK: Is there a nicer way to split this by type of view?
+				// eslint-disable-next-line no-undef
+				const viewName = ( window.vueInstance && window.vueInstance.getCurrentView ) || 'testComponent';
+
+				mw.track(
+					'timing.wikiLambda.newView.' + viewName + '.mounted',
+					Date.now() - startTime
+				);
+			}
+		}
 	),
 	created: function () {
 		// Set zobject

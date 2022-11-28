@@ -119,6 +119,7 @@ module.exports = exports = {
 		}
 	),
 	mounted: function () {
+		this.$emit( 'mounted' );
 		window.addEventListener( 'click', this.handleClickAway );
 	},
 	beforeUnmount: function () {
