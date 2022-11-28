@@ -4,6 +4,9 @@
 			"McDutchie"
 		]
 	},
+	"wikilambda-desc": "Forni al wikis de Wikimedia un function analysator de wikitexto pro appellar le evalutation de functiones scribite, gerite e evalutate sur un wiki central.",
+	"wikilambda-history-title": "Historia de versiones de \"$1\" ($2)",
+	"wikilambda-invalidzobjecttitle": "Le titulo fornite, '$1', non es valide pro un ZObject.",
 	"wikilambda-typeunavailable": "Typo non recognoscite",
 	"wikilambda-persistentzobject-description": "Comencia a crear tu ZObject seligente un typo hic infra. Tu pote crear un function cliccante sur iste ligamine:",
 	"wikilambda-edit": "Modificar",
