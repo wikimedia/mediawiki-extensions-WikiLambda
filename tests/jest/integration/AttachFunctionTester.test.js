@@ -43,10 +43,11 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 			.text() ).toEqual( 'Tester name, in English' );
 
 		// ASSERT: The "unattached" tester is shown as proposed.
-		expect( firstTesterRow.get( '.ext-wikilambda-chip' ).attributes( 'text' ) )
+		expect( firstTesterRow.get( '.ext-wikilambda-chip' ).text() )
 			.toEqual( 'wikilambda-function-implementation-state-proposed' );
 
-		await ticksUntilTrue( wrapper, () => wrapper.findAll( '.ext-wikilambda-tester-result-status--RUNNING' ).length === 0 );
+		await ticksUntilTrue( wrapper,
+			() => wrapper.findAll( '.ext-wikilambda-tester-result-status--RUNNING' ).length === 0 );
 
 		// ASSERT: The "unattached" tester shows as passing all implementation tests.
 		expect( firstTesterRow.findAll( '.ext-wikilambda-tester-result-status--PASS' ).length )

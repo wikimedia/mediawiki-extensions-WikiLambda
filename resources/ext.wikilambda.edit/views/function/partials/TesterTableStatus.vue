@@ -30,19 +30,17 @@
 			<template #dialog-container-title>
 				<span v-html="dialogTitle"></span>
 			</template>
-			<template>
-				<!-- TODO (T320669): Construct this more nicely, perhaps with a Codex link component? -->
-				<div class="ext-wikilambda-metadatadialog-helplink">
-					<cdx-icon :icon="helpLinkIcon()"></cdx-icon>
-					<a
-						:title="tooltipMetaDataHelpLink"
-						href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/Function_call_metadata"
-						target="_blank">
-						{{ $i18n( 'wikilambda-helplink-button' ).text() }}
-					</a>
-				</div>
-				<span v-html="dialogText"></span>
-			</template>
+			<!-- TODO (T320669): Construct this more nicely, perhaps with a Codex link component? -->
+			<div class="ext-wikilambda-metadatadialog-helplink">
+				<cdx-icon :icon="helpLinkIcon()"></cdx-icon>
+				<a
+					:title="tooltipMetaDataHelpLink"
+					href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/Function_call_metadata"
+					target="_blank">
+					{{ $i18n( 'wikilambda-helplink-button' ).text() }}
+				</a>
+			</div>
+			<span v-html="dialogText"></span>
 		</dialog-container>
 	</div>
 </template>

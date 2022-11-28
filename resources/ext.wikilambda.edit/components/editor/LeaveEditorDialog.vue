@@ -23,11 +23,9 @@
 			<template #dialog-container-title>
 				<strong>{{ $i18n( 'wikilambda-editor-leave-edit-mode-header' ).text() }}</strong>
 			</template>
-			<template>
-				<div class="ext-wikilambda-leaveeditordialog__message">
-					{{ $i18n( 'wikilambda-publish-lose-changes-prompt' ).text() }}
-				</div>
-			</template>
+			<div class="ext-wikilambda-leaveeditordialog__message">
+				{{ $i18n( 'wikilambda-publish-lose-changes-prompt' ).text() }}
+			</div>
 		</dialog-container>
 	</div>
 </template>

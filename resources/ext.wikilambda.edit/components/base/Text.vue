@@ -59,7 +59,7 @@ module.exports = exports = {
 	},
 	methods: {
 		toggleTruncateText() {
-			this.fullText = this.$slots.default()[ 0 ].text.trim();
+			this.fullText = this.$slots.default()[ 0 ].children.trim();
 
 			if ( this.truncate === 0 || this.fullText.length < this.truncate ) {
 				return;
@@ -80,7 +80,7 @@ module.exports = exports = {
 		}
 	},
 	beforeUpdate: function () {
-		if ( this.fullText !== this.$slots.default()[ 0 ].text.trim() ) {
+		if ( this.fullText !== this.$slots.default()[ 0 ].children.trim() ) {
 			this.toggleTruncateText();
 		}
 	},

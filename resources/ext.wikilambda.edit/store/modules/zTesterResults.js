@@ -5,8 +5,7 @@
  * @license MIT
  */
 
-var Vue = require( 'vue' ),
-	Constants = require( '../../Constants.js' ),
+var Constants = require( '../../Constants.js' ),
 	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
 
 /**
@@ -137,8 +136,8 @@ module.exports = exports = {
 		 * @param {Object} result.metadata
 		 */
 		setZTesterResult: function ( state, result ) {
-			Vue.set( state.zTesterResults, result.key, result.result );
-			Vue.set( state.zTesterMetadata, result.key, result.metadata );
+			state.zTesterResults[ result.key ] = result.result;
+			state.zTesterMetadata[ result.key ] = result.metadata;
 		},
 		/**
 		 * Set the fetching state of the test results

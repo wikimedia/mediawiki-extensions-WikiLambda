@@ -44,7 +44,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 			.text() ).toEqual( 'Implementation in code, in English' );
 
 		// ASSERT: The "unattached" implementation is shown as proposed.
-		expect( secondImplementationRow.get( '.ext-wikilambda-chip' ).attributes( 'text' ) )
+		expect( secondImplementationRow.get( '.ext-wikilambda-chip' ).text() )
 			.toEqual( 'wikilambda-function-implementation-state-proposed' );
 
 		// ACT: Select the "unattached" implementation in the table.

@@ -55,7 +55,8 @@
 </template>
 
 <script>
-const TableContainer = require( '../../../components/base/Table.vue' ),
+const CdxButton = require( '@wikimedia/codex' ).CdxButton,
+	TableContainer = require( '../../../components/base/Table.vue' ),
 	Pagination = require( '../../../components/base/Pagination.vue' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	Constants = require( '../../../Constants.js' ),
@@ -65,6 +66,7 @@ const TableContainer = require( '../../../components/base/Table.vue' ),
 module.exports = exports = {
 	name: 'function-viewer-details-table',
 	components: {
+		'cdx-button': CdxButton,
 		'table-container': TableContainer,
 		pagination: Pagination
 	},

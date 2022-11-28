@@ -7,13 +7,16 @@
 
 'use strict';
 
-const mount = require( '@vue/test-utils' ).mount,
+const configureCompat = require( 'vue' ).configureCompat,
+	mount = require( '@vue/test-utils' ).mount,
 	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	PublishDialog = require( '../../../resources/ext.wikilambda.edit/components/editor/PublishDialog.vue' ),
 	Dialog = require( '../../../resources/ext.wikilambda.edit/components/base/Dialog.vue' ),
 	ZObjectPublish = require( '../../../resources/ext.wikilambda.edit/components/ZObjectPublish.vue' ),
 	{ CdxTextInput } = require( '@wikimedia/codex' );
+
+configureCompat( { MODE: 3 } );
 
 describe( 'ZObjectPublish', function () {
 	var getters,
@@ -95,7 +98,7 @@ describe( 'ZObjectPublish', function () {
 		await wrapper.vm.$nextTick();
 
 		// ACT: enter summary
-		wrapper.getComponent( CdxTextInput ).vm.$emit( 'input', 'my changes summary' );
+		wrapper.getComponent( CdxTextInput ).get( 'input' ).setValue( 'my changes summary' );
 
 		const publishButton = wrapper.findComponent( '#primary-button' );
 		expect( publishButton.exists() ).toBeTruthy();

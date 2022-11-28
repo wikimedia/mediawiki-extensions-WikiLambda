@@ -5,8 +5,7 @@
  * @license MIT
  */
 
-var Vue = require( 'vue' ),
-	Constants = require( '../../Constants.js' ),
+var Constants = require( '../../Constants.js' ),
 	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject;
 
 module.exports = exports = {
@@ -60,7 +59,7 @@ module.exports = exports = {
 		 * @param {string} payload.zid
 		 */
 		addZArgumentInfo: function ( state, payload ) {
-			Vue.set( state.zArguments, payload.zid, payload );
+			state.zArguments[ payload.zid ] = payload;
 		},
 		/**
 		 * Reset the zArguments object in the state

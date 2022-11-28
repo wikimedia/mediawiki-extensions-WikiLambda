@@ -16,12 +16,15 @@
 </template>
 
 <script>
-var mapGetters = require( 'vuex' ).mapGetters,
+var configureCompat = require( 'vue' ).configureCompat,
+	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	FunctionEditor = require( '../views/FunctionEditor.vue' ),
 	FunctionViewer = require( '../views/FunctionViewer.vue' ),
 	ZObjectViewer = require( '../views/ZObjectViewer.vue' ),
 	ZObjectEditor = require( '../views/ZObjectEditor.vue' );
+
+configureCompat( { MODE: 3 } );
 
 // @vue/component
 module.exports = exports = {

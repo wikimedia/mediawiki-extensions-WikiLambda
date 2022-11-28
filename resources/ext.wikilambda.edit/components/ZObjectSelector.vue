@@ -113,6 +113,7 @@ module.exports = exports = {
 			default: -1
 		}
 	},
+	emits: [ 'input', 'focus-out', 'input-removed' ],
 	data: function () {
 		return {
 			lookupResults: [],

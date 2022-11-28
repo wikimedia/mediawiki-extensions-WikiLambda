@@ -7,7 +7,7 @@
  */
 'use strict';
 
-const { CdxLookup, CdxTextInput } = require( '@wikimedia/codex' ),
+const { CdxTextInput } = require( '@wikimedia/codex' ),
 	{ awaitLookup, clickItemInMenu, pageChange } = require( './helpers/interactionHelpers.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	mount = require( '@vue/test-utils' ).mount,
@@ -110,9 +110,8 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 
 	it( 'allows editing the function, making use of most important features', async () => {
 		// ACT: Change the first argument type.
-		const argumentTypeSelectorLookup =
-		wrapper.get( '.ext-wikilambda-editor-input-list-item__selector' ).getComponent( CdxLookup );
-		argumentTypeSelectorLookup.vm.$emit( 'input', 'Str' );
+		const argumentTypeSelectorLookup = wrapper.get( '.ext-wikilambda-editor-input-list-item__selector' );
+		argumentTypeSelectorLookup.get( 'input' ).setValue( 'Str' );
 		await awaitLookup( wrapper );
 		await clickItemInMenu( argumentTypeSelectorLookup, 'Monolingual stringset' );
 
@@ -131,13 +130,12 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		await wrapper.vm.$nextTick();
 
 		// ACT: Change the first argument type back to the original type.
-		argumentTypeSelectorLookup.vm.$emit( 'input', 'Str' );
+		argumentTypeSelectorLookup.get( 'input' ).setValue( 'Str' );
 		await awaitLookup( wrapper );
 		await clickItemInMenu( argumentTypeSelectorLookup, 'String' );
 
 		// ACT: Edit the name of the function.
-		wrapper.get( '.ext-wikilambda-function-definition-name' ).getComponent( CdxTextInput )
-			.vm.$emit( 'input', 'edited function name, in Chinese' );
+		wrapper.get( '.ext-wikilambda-function-definition-name input' ).setValue( 'edited function name, in Chinese' );
 		await wrapper.vm.$nextTick();
 
 		// ACT: Add a second alias for the function.
@@ -162,13 +160,13 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 			.setValue( 'edited first argument label, in Afrikaans' );
 
 		// ACT: Enter a name in the second language.
-		wrapper.findAll( '.ext-wikilambda-function-definition-name' )[ 1 ].getComponent( CdxTextInput )
-			.vm.$emit( 'input', 'function name, in Afrikaans' );
+		wrapper.findAll( '.ext-wikilambda-function-definition-name' )[ 1 ].get( 'input' )
+			.setValue( 'function name, in Afrikaans' );
 		await wrapper.vm.$nextTick();
 
 		// ACT: Delete the name.
-		wrapper.findAll( '.ext-wikilambda-function-definition-name' )[ 1 ].getComponent( CdxTextInput )
-			.vm.$emit( 'input', '' );
+		wrapper.findAll( '.ext-wikilambda-function-definition-name' )[ 1 ].get( 'input' )
+			.setValue( '' );
 		await wrapper.vm.$nextTick();
 
 		// ACT: Enter an alias in the second language.
@@ -178,7 +176,8 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		await secondLanguageAliasInput.trigger( 'keydown', { key: 'enter' } );
 
 		// ACT: Delete the alias.
-		const aliasChipsContainer = wrapper.findAll( '.ext-wikilambda-function-definition-aliases__inputs' )[ 1 ].get( '.ext-wikilambda-chip_icon' );
+		const aliasChipsContainer = wrapper.findAll( '.ext-wikilambda-function-definition-aliases__inputs' )[ 1 ]
+			.get( '.ext-wikilambda-chip_icon' );
 		await aliasChipsContainer.trigger( 'click' );
 
 		// ACT: Click "Add labels in another language".
@@ -186,14 +185,14 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 
 		// ACT: Select a third natural language.
 		const thirdLanguageSelectorLookup =
-			wrapper.findAll( '.ext-wikilambda-language-selector__add-language' )[ 2 ].getComponent( CdxLookup );
-		thirdLanguageSelectorLookup.vm.$emit( 'input', 'Fren' );
+			wrapper.findAll( '.ext-wikilambda-language-selector__add-language' )[ 2 ];
+		thirdLanguageSelectorLookup.get( 'input' ).setValue( 'Fren' );
 		await awaitLookup( wrapper );
 		await clickItemInMenu( thirdLanguageSelectorLookup, 'French' );
 
 		// ACT: Enter a name in the third language.
-		wrapper.findAll( '.ext-wikilambda-function-definition-name' )[ 2 ].getComponent( CdxTextInput )
-			.vm.$emit( 'input', 'function name, in French' );
+		wrapper.findAll( '.ext-wikilambda-function-definition-name' )[ 2 ].get( 'input' )
+			.setValue( 'function name, in French' );
 		await wrapper.vm.$nextTick();
 
 		// ACT: Enter an alias in the third language.
@@ -206,7 +205,7 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
 
 		// ACT: Add a summary of your changes.
-		publishDialog.getComponent( CdxTextInput ).vm.$emit( 'input', 'my changes summary' );
+		publishDialog.getComponent( CdxTextInput ).get( 'input' ).setValue( 'my changes summary' );
 
 		// ACT: Click publish button in dialog.
 		await publishDialog.findComponent( '#primary-button' ).trigger( 'click' );

@@ -62,21 +62,13 @@
 </template>
 
 <script>
-var Vue = require( 'vue' );
 var FunctionViewerDetailsSidebar = require( './details/FunctionViewerDetailsSidebar.vue' ),
 	FunctionViewerDetailsTable = require( './details/FunctionViewerDetailsTable.vue' ),
 	Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	CdxCheckbox = require( '@wikimedia/codex' ).CdxCheckbox,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
-	WikilambdaChip = require( '../../components/base/Chip.vue' ),
-	TableTesterStatus = require( './partials/TesterTableStatus.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
-
-Vue.component( 'cdx-checkbox', CdxCheckbox.default || CdxCheckbox );
-Vue.component( 'wikilambda-chip', WikilambdaChip.default || WikilambdaChip );
-Vue.component( 'tester-table-status', TableTesterStatus );
 
 // @vue/component
 module.exports = exports = {
