@@ -6,6 +6,7 @@
 			"GpieroMW",
 			"Lorem Ipsum",
 			"Luca.favorido",
+			"McDutchie",
 			"Noretta93",
 			"Sofia Stecchi",
 			"Stefano"
@@ -65,8 +66,8 @@
 	"wikilambda-metadata-all-languages": "Mostra tutte le lingue inserite",
 	"wikilambda-metadata-fewer-languages": "Mostra meno lingue",
 	"wikilambda-persistentobject-details-label": "Dettagli",
-	"wikilambda-function-is-attached": "Questo oggetto è associato a questa funzione.",
-	"wikilambda-function-is-not-attached": "Questo oggetto non è associato a questa funzione.",
+	"wikilambda-function-is-attached": "Questo oggetto è associato alla sua funzione.",
+	"wikilambda-function-is-not-attached": "Questo oggetto non è associato alla sua funzione.",
 	"wikilambda-function-definition-name-label": "Nome",
 	"wikilambda-function-definition-edit": "Modifica definizione",
 	"wikilambda-function-implementation-name-label": "Nome",

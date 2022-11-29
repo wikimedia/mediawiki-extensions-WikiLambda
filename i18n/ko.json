@@ -83,6 +83,7 @@
 	"wikilambda-function-definition-edit": "정의 편집",
 	"wikilambda-function-implementation-name-label": "이름",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "유형을 선택하세요.",
+	"wikilambda-function-definition-inputs-item-add-first-input-button": "+ 입력 추가",
 	"wikilambda-function-definition-output-label": "출력 종류",
 	"wikilambda-function-definition-output-selector": "유형을 선택하세요.",
 	"wikilambda-editor-additional-details-label": "추가 상세 정보",
