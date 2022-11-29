@@ -83,7 +83,7 @@
 	"wikilambda-argref-default-label": "נא לבחור ארגומנט",
 	"wikilambda-implementation-selector": "בחירת מימוש",
 	"wikilambda-implementation-none-found": "לא נמצאו מימושים.",
-	"wikilambda-implementation-create-new": "יציאת מימוש חדש",
+	"wikilambda-implementation-create-new": "יצירת מימוש חדש",
 	"wikilambda-functioncall-error": "שגיאה בקריאה לפונקציה: $1",
 	"wikilambda-functioncall-error-category": "דפים עם קריאות לוויקיפונקציות שגרמו לשגיאות",
 	"wikilambda-functioncall-error-category-desc": "דפים עם קריאות לוויקיפונקציות שגרמו לשגיאה כללית",
