@@ -32,42 +32,29 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="language in displayedSelectedLanguages" :key="language.Z9K1">
+					<tr v-for="language in displayedSelectedLanguages" :key="language[ Constants.Z_REFERENCE_ID ]">
 						<td>
 							<cdx-button
 								v-if="!viewmode"
 								:destructive="true"
-								@click="removeLang( language.Z9K1 )"
+								@click="removeLang( language[ Constants.Z_REFERENCE_ID ] )"
 							>
 								{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
 							</cdx-button>
-							{{ getZkeyLabels[ language.Z9K1 ] }}
+							{{ getZkeyLabels[ language[ Constants.Z_REFERENCE_ID ] ] }}
 						</td>
 						<td>
 							<z-string
-								:zobject-id="getLanguageLabelStringId( language.Z9K1 )"
+								:zobject-id="getLanguageLabelStringId( language[ Constants.Z_REFERENCE_ID ] )"
 							></z-string>
 						</td>
 						<td>
-							<div v-for="( alias, index ) in getLanguageAliases( language.Z9K1 )" :key="index">
-								<cdx-button
-									v-if="!viewmode"
-									:destructive="true"
-									@click="removeAlias( alias, language.Z9K1 )"
-								>
-									{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
-								</cdx-button>
-								<z-string
-									:zobject-id="alias"
-								></z-string>
-							</div>
-							<div v-if="!viewmode">
-								<cdx-button
-									@click="addAliasForLanguage( language.Z9K1 )"
-								>
-									{{ $i18n( 'wikilambda-editor-additem' ).text() }}
-								</cdx-button> {{ $i18n( 'wikilambda-metadata-add-alias' ).text() }}
-							</div>
+							<z-label-block-aliases
+								:zobject-id="zobjectId"
+								:language="language"
+								:language-aliases="getLanguageAliases( language[ Constants.Z_REFERENCE_ID ] )"
+								:z-object-alias-id="zObjectAliasId"
+							></z-label-block-aliases>
 						</td>
 					</tr>
 				</tbody>
@@ -100,7 +87,8 @@ var Constants = require( '../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxToggleButton = require( '@wikimedia/codex' ).CdxToggleButton,
 	ZString = require( './ZString.vue' ),
-	ZObjectSelector = require( '../ZObjectSelector.vue' );
+	ZObjectSelector = require( '../ZObjectSelector.vue' ),
+	ZLabelBlockAliases = require( '../function/ZLabelBlockAliases.vue' );
 
 // @vue/component
 module.exports = exports = {
@@ -108,7 +96,8 @@ module.exports = exports = {
 		'cdx-button': CdxButton,
 		'cdx-toggle-button': CdxToggleButton,
 		'z-string': ZString,
-		'z-object-selector': ZObjectSelector
+		'z-object-selector': ZObjectSelector,
+		'z-label-block-aliases': ZLabelBlockAliases
 	},
 	mixins: [ typeUtils ],
 	inject: {
@@ -240,9 +229,6 @@ module.exports = exports = {
 	} ),
 	methods: $.extend( mapActions( [
 		'addZMonolingualString',
-		'addZObject',
-		'addZString',
-		'injectZObject',
 		'removeZObjectChildren',
 		'removeZObject',
 		'recalculateZListIndex',
@@ -409,73 +395,6 @@ module.exports = exports = {
 				this.removeZObject( aliasId );
 			}
 			this.setIsZObjectDirty( true );
-		},
-		/**
-		 * Remove one alias from the alias list of a given language
-		 * by providing its ZObject internal table id
-		 *
-		 * @param {number} alias
-		 * @param {string} language
-		 */
-		removeAlias: function ( alias, language ) {
-			this.removeZObjectChildren( alias );
-			this.removeZObject( alias );
-
-			const aliasListId = this.getLanguageAliasStringsetId( language );
-			this.recalculateZListIndex( aliasListId );
-		},
-		/**
-		 * Add an alias in a language. The language already exists for
-		 * labels, but there might or might not already exists aliases or
-		 * even an alias block for this language.
-		 *
-		 * @param {string} language
-		 */
-		addAliasForLanguage: function ( language ) {
-			const existingAliasId = this.getLanguageAliasStringsetId( language ),
-				nextId = this.getNextObjectId;
-
-			if ( existingAliasId ) {
-				// If the monolingualStringSet for the given language exists,
-				// add one more string to the list.
-				const nextIndexLanguageAliases = this.getLanguageAliases( language ).length + 1;
-
-				const payload = {
-					key: nextIndexLanguageAliases.toString(),
-					value: 'object',
-					parent: existingAliasId
-				};
-
-				this.addZObject( payload );
-				this.addZString( { id: nextId } );
-
-			} else {
-				// If the monolingualStringSet for the given language does not exist,
-				// create a monolingualStringSet object with an empty array of strings
-				// and add it to the list.
-				const nextIndexAliases = this.getZObjectAliases.length + 1;
-				const multilingualAliasesId = this.getNestedZObjectById( this.zObjectAliasId, [
-					Constants.Z_MULTILINGUALSTRINGSET_VALUE
-				] ).id;
-
-				const payload = {
-					key: nextIndexAliases.toString(),
-					value: 'object',
-					parent: multilingualAliasesId
-				};
-
-				this.addZObject( payload );
-				this.injectZObject( {
-					zobject: {
-						Z1K1: Constants.Z_MONOLINGUALSTRINGSET,
-						Z31K1: language,
-						Z31K2: [ Constants.Z_STRING, '' ]
-					},
-					key: nextIndexAliases.toString(),
-					id: nextId,
-					parent: multilingualAliasesId
-				} );
-			}
 		}
 	} ),
 	watch: {
