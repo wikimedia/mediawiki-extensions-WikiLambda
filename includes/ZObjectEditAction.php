@@ -46,6 +46,11 @@ class ZObjectEditAction extends Action {
 	 * @return string
 	 */
 	protected function getPageTitleMsg() {
+		// If the page doesn't exist (e.g. it's been deleted), return nothing.
+		if ( $this->getTargetZObject() === false ) {
+			return '';
+		}
+
 		// the language object of the user's preferred language
 		$zObjectLabelsWithLang = $this->getTargetZObjectWithLabels();
 
