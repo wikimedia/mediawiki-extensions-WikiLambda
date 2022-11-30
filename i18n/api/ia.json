@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"apihelp-wikilambda_fetch-summary": "Obtener le modello JSON de ZObjects.",
+	"apihelp-wikilambda_fetch-param-zids": "Le ZIDs del ZObject a obtener.",
+	"apihelp-wikilambda_fetch-param-language": "Le lingua in le qual restituer resultatos."
+}

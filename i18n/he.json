@@ -90,7 +90,7 @@
 	"wikilambda-argref-default-label": "נא לבחור ארגומנט",
 	"wikilambda-implementation-selector": "בחירת מימוש",
 	"wikilambda-implementation-none-found": "לא נמצאו מימושים.",
-	"wikilambda-implementation-create-new": "יציאת מימוש חדש",
+	"wikilambda-implementation-create-new": "יצירת מימוש חדש",
 	"wikilambda-function-are-you-sure-dialog-header": "באמת?",
 	"wikilambda-function-are-you-sure-dialog-description": "האם ברצונך באמת לעזוב את מצב העריכה בלי לפרסם קודם?",
 	"wikilambda-functioncall-error": "שגיאה בקריאה לפונקציה: $1",

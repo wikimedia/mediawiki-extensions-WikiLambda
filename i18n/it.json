@@ -7,7 +7,9 @@
 			"Luca.favorido",
 			"Noretta93",
 			"Sofia Stecchi",
-			"Stefano"
+			"Stefano",
+			"GpieroMW",
+			"McDutchie"
 		]
 	},
 	"wikilambda-invalidzobjecttitle": "Il titolo '$1' mostrato non è valido per uno ZObject.",
@@ -46,8 +48,8 @@
 	"wikilambda-metadata-all-languages": "Mostra tutte le lingue inserite",
 	"wikilambda-metadata-fewer-languages": "Mostra meno lingue",
 	"wikilambda-persistentobject-details-label": "Dettagli",
-	"wikilambda-function-is-attached": "Questo oggetto è associato a questa funzione.",
-	"wikilambda-function-is-not-attached": "Questo oggetto non è associato a questa funzione.",
+	"wikilambda-function-is-attached": "Questo oggetto è associato alla sua funzione.",
+	"wikilambda-function-is-not-attached": "Questo oggetto non è associato alla sua funzione.",
 	"wikilambda-function-definition-name-label": "Nome",
 	"wikilambda-function-definition-footer-placeholder": "Descrivi brevemente le tue modifiche",
 	"wikilambda-function-definition-footer-label": "Oggetto della modifica",
