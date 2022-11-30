@@ -383,6 +383,7 @@
 				"wikilambda-function-definition-name-placeholder",
 				"wikilambda-function-definition-name-example",
 				"wikilambda-function-definition-alias-label",
+				"wikilambda-function-definition-alias-label-new",
 				"wikilambda-function-definition-alias-placeholder",
 				"wikilambda-function-definition-alias-example",
 				"wikilambda-metadata-duplicate-alias-error",
@@ -394,6 +395,7 @@
 				"wikilambda-function-definition-inputs-item-input-placeholder",
 				"wikilambda-function-definition-inputs-item-add-input-button",
 				"wikilambda-function-definition-inputs-item-add-first-input-button",
+				"wikilambda-function-definition-inputs-item-remove",
 				"wikilambda-function-definition-output-label",
 				"wikilambda-function-definition-output-selector",
 				"wikilambda-function-definition-can-publish-message",
@@ -463,7 +465,8 @@
 				"wikilambda-missing-function-output-error-message",
 				"wikilambda-zobject-missing-attached-function",
 				"wikilambda-zimplememntation-composition-missing",
-				"wikilambda-zimplementation-code-missing"
+				"wikilambda-zimplementation-code-missing",
+				"wikilambda-chip-remove"
 			]
 		}
 	},

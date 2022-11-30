@@ -22,6 +22,7 @@
 		<div
 			v-if="editableContainer"
 			class="ext-wikilambda-chip_icon"
+			:aria-label="$i18n( 'wikilambda-chip-remove' ).text()"
 			@click="handleRemove"
 		>
 			<cdx-icon

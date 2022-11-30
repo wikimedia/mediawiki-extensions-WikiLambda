@@ -7,12 +7,14 @@
  */
 'use strict';
 
-const { awaitLookup, clickItemInMenu, pageChange } = require( './helpers/interactionHelpers.js' ),
+require( '@testing-library/jest-dom' );
+
+const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
+	{ within } = require( '@testing-library/dom' ),
+	{ clickLookupResult } = require( './helpers/interactionHelpers.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
-	mount = require( '@vue/test-utils' ).mount,
 	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
-	PublishDialog = require( '../../../resources/ext.wikilambda.edit/components/editor/PublishDialog.vue' ),
 	ApiMock = require( './helpers/apiMock.js' ),
 	apiGetMock = require( './helpers/apiGetMock.js' ),
 	expectedNewFunctionPostedToApi = require( './objects/expectedNewFunctionPostedToApi.js' );
@@ -26,7 +28,6 @@ const initializeRootZObject =
 
 describe( 'WikiLambda frontend, on function-editor view', () => {
 	let apiPostWithEditTokenMock;
-	let wrapper;
 	beforeEach( () => {
 		// Needed because of the Teleported component.
 		const el = document.createElement( 'div' );
@@ -80,119 +81,117 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 				} )
 			};
 		} );
-		wrapper = mount( App, { global: { plugins: [ store ] } } );
 	} );
+
+	afterEach( () => {
+		jest.runOnlyPendingTimers();
+		jest.useRealTimers();
+	} );
+
+	// TODO(T323764): This test is currently extremely long. Consider moving some of the less-used functionality (e.g.
+	// trying to publish a function without an output type) into separate test cases.
 	it( 'allows creating a new function, making use of most important features', async () => {
-		// ACT: Select a natural language.
-		const languageSelectorLookup = wrapper.get( '.ext-wikilambda-language-selector__add-language' );
-		languageSelectorLookup.get( 'input' ).setValue( 'Chin' );
-		await awaitLookup( wrapper );
-		await clickItemInMenu( languageSelectorLookup, 'Chinese' );
+		const { findByLabelText, findByRole, getAllByLabelText, getByLabelText, getByText, queryByRole } =
+			render( App, { global: { plugins: [ store ] } } );
 
-		// ACT: Enter a name for the function.
-		wrapper.get( '.ext-wikilambda-function-definition-name input' ).setValue( 'function name, in Chinese' );
-		await wrapper.vm.$nextTick();
+		// ACT: Select Chinese as the natural language.
+		const languageSelector = await findByLabelText( 'Language' );
+		await fireEvent.update( within( languageSelector ).getByRole( 'combobox' ), 'Chin' );
+		await clickLookupResult( languageSelector, 'Chinese' );
 
-		// ACT: Enter an alias for the function.
-		const aliasInput = wrapper.get( '.ext-wikilambda-function-definition-aliases__inputs input' );
-		await aliasInput.setValue( 'function alias, in Chinese' );
-		await aliasInput.trigger( 'keydown', { key: 'enter' } );
+		// ACT: Enter a name for the function in Chinese.
+		await fireEvent.update( getByLabelText( 'Name (optional)' ), 'function name, in Chinese' );
+
+		// ACT: Enter an alias for the function in Chinese.
+		const aliasInput = within( getByLabelText( 'Aliases (optional)' ) ).getByRole( 'textbox' );
+		await fireEvent.update( aliasInput, 'function alias, in Chinese' );
+		await fireEvent.keyDown( aliasInput, { key: 'enter' } );
 
 		// ACT: Select a type for the first argument.
-		let argumentTypeSelectorLookup = wrapper.get( '.ext-wikilambda-editor-input-list-item__selector' );
-		argumentTypeSelectorLookup.get( 'input' ).setValue( 'Str' );
-		await awaitLookup( wrapper );
-		await clickItemInMenu( argumentTypeSelectorLookup, 'String' );
+		const argumentsArea = getByLabelText( 'Input type' );
+		await fireEvent.update( within( argumentsArea ).getByPlaceholderText( 'Select a type' ), 'Str' );
+		await clickLookupResult( argumentsArea, 'String' );
 
-		// ACT: Delete the argument you just selected.
-		await wrapper.find( '.ext-wikilambda-editor-input-list-item__action-delete' ).trigger( 'click' );
+		// ACT: Delete the just-selected argument.
+		await fireEvent.click( within( argumentsArea ).getByLabelText( 'Remove input' ) );
 
-		// ASSERT: No inputs show.
-		expect( wrapper.find( '.ext-wikilambda-editor-input-list-item__selector' ).exists() ).toBeFalsy();
+		// ASSERT: No arguments show.
+		expect( within( argumentsArea ).queryByPlaceholderText( 'Select a type' ) ).not.toBeInTheDocument();
+		expect( within( argumentsArea ).queryByText( 'String' ) ).not.toBeInTheDocument();
 
-		// ACT: Add an input and select the type.
-		await wrapper.get( '.ext-wikilambda-function-definition-inputs__add-input-button' ).trigger( 'click' );
-		argumentTypeSelectorLookup = wrapper.get( '.ext-wikilambda-editor-input-list-item__selector' );
-		argumentTypeSelectorLookup.get( 'input' ).setValue( 'Str' );
-		await awaitLookup( wrapper );
-		await clickItemInMenu( argumentTypeSelectorLookup, 'String' );
+		// ACT: Add an argument.
+		await fireEvent.click( getByText( '+ Add an input' ) );
 
-		// ACT: Enter a label for the first argument.
-		const argumentLabelInput = wrapper.get( '.ext-wikilambda-editor-input-list-item__label input' );
-		await argumentLabelInput.setValue( 'first argument label, in Chinese' );
+		// ACT: Select a type for the first argument again.
+		await fireEvent.update( within( argumentsArea ).getByPlaceholderText( 'Select a type' ), 'Str' );
+		await clickLookupResult( argumentsArea, 'String' );
+
+		// ACT: Enter a label for the first argument in Chinese.
+		await fireEvent.update(
+			within( argumentsArea ).getAllByPlaceholderText( 'Input label' )[ 0 ],
+			'first argument label, in Chinese' );
 
 		// ACT: Add another argument.
-		await wrapper.get( '.ext-wikilambda-function-definition-inputs__add-another-input-button' ).trigger( 'click' );
+		await fireEvent.click( getByText( '+ Add another input' ) );
 
 		// ACT: Select a type for the second argument.
-		const secondArgumentTypeSelectorLookup =
-			wrapper.findAll( '.ext-wikilambda-editor-input-list-item__selector' )[ 1 ];
-		secondArgumentTypeSelectorLookup.get( 'input' ).setValue( 'Str' );
-		await awaitLookup( wrapper );
-		await clickItemInMenu( secondArgumentTypeSelectorLookup, 'String' );
+		await fireEvent.update( within( argumentsArea ).getAllByPlaceholderText( 'Select a type' )[ 1 ], 'Str' );
+		await clickLookupResult( within( argumentsArea ).getAllByRole( 'listbox', { hidden: true } )[ 1 ], 'String' );
 
-		// ACT: Enter a label for the second argument.
-		const secondArgumentLabelInput = wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 1 ];
-		await secondArgumentLabelInput.setValue( 'second argument label, in Chinese' );
+		// ACT: Enter a label for the second argument in Chinese.
+		await fireEvent.update(
+			within( argumentsArea ).getAllByPlaceholderText( 'Input label' )[ 1 ],
+			'second argument label, in Chinese' );
 
 		// ACT: Attempt to click publish button,  before output is set (invalid).
-		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
+		await fireEvent.click( getByText( 'Publish' ) );
 
 		// ASSERT: Publish Dialog does not open.
-		const publishDialog = wrapper.findComponent( PublishDialog );
-		expect( publishDialog.vm.showDialog ).toBe( false );
-		const publishButton = wrapper.findComponent( '#primary-button' );
-		expect( publishButton.exists() ).toBeFalsy();
+		expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument();
 
 		// ASSERT: The error warning exists on the zobject showing the user they have not set an output type.
-		const warning = wrapper.find( '.ext-wikilambda-select-zobject__error' );
-		expect( warning.exists() ).toBeTruthy();
+		const outputArea = getByLabelText( 'Output type' );
+		expect( outputArea ).toHaveTextContent( 'A function requires an output' );
 
 		// ACT: Select a type for the output.
-		const outputTypeSelectorLookup = wrapper.get( '.ext-wikilambda-function-definition-output__selector' );
-		outputTypeSelectorLookup.get( 'input' ).setValue( 'Str' );
-		await awaitLookup( wrapper );
-		await clickItemInMenu( outputTypeSelectorLookup, 'String' );
+		await fireEvent.update( within( outputArea ).getByRole( 'combobox' ), 'Str' );
+		await clickLookupResult( outputArea, 'String' );
 
 		// ACT: Click "Add labels in another language".
-		await wrapper.get( '.ext-wikilambda-function-definition__action-add-input-button' ).trigger( 'click' );
+		await fireEvent.click( getByText( '+ Add labels in another language' ) );
 
-		// ACT: Select a second natural language.
-		const secondLanguageSelectorLookup =
-			wrapper.findAll( '.ext-wikilambda-language-selector__add-language' )[ 1 ];
-		secondLanguageSelectorLookup.get( 'input' ).setValue( 'Fren' );
-		await awaitLookup( wrapper );
-		await clickItemInMenu( secondLanguageSelectorLookup, 'French' );
+		// ACT: Select French as the second natural language.
+		const secondLanguageSelector = getAllByLabelText( 'Language' )[ 1 ];
+		await fireEvent.update( within( secondLanguageSelector ).getByRole( 'combobox' ), 'Fren' );
+		await clickLookupResult( secondLanguageSelector, 'French' );
 
-		// ACT: Enter a name in the second language.
-		wrapper.findAll( '.ext-wikilambda-function-definition-name' )[ 1 ].get( 'input' )
-			.setValue( 'function name, in French' );
-		await wrapper.vm.$nextTick();
+		// ACT: Enter a name in French.
+		await fireEvent.update( getAllByLabelText( 'Name (optional)' )[ 1 ], 'function name, in French' );
 
-		// ACT: Enter an alias in the second language.
-		const secondLanguageAliasInput =
-			wrapper.findAll( '.ext-wikilambda-function-definition-aliases__inputs input' )[ 1 ];
-		await secondLanguageAliasInput.setValue( 'function alias, in French' );
-		await secondLanguageAliasInput.trigger( 'keydown', { key: 'enter' } );
+		// ACT: Enter an alias in French
+		const frenchAliasInput = within( getAllByLabelText( 'Aliases (optional)' )[ 1 ] ).getByRole( 'textbox' );
+		await fireEvent.update( frenchAliasInput, 'function alias, in French' );
+		await fireEvent.keyDown( frenchAliasInput, { key: 'enter' } );
 
-		// ACT: Enter a label for the first argument, in the second language.
-		await wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 2 ]
-			.setValue( 'first argument label, in French' );
+		// ACT: Enter a label for the first argument, in French.
+		const frenchArgumentsArea = getAllByLabelText( 'Input type' )[ 1 ];
+		await fireEvent.update(
+			within( frenchArgumentsArea ).getAllByPlaceholderText( 'Input label' )[ 0 ],
+			'first argument label, in French' );
 
-		// ACT: Enter a label for the second argument, in the second language.
-		await wrapper.findAll( '.ext-wikilambda-editor-input-list-item__label input' )[ 3 ]
-			.setValue( 'second argument label, in French' );
+		// ACT: Enter a label for the second argument, in French.
+		await fireEvent.update(
+			within( frenchArgumentsArea ).getAllByPlaceholderText( 'Input label' )[ 1 ],
+			'second argument label, in French' );
 
 		// ACT: Click publish button.
-		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
-		await wrapper.vm.$nextTick();
+		await fireEvent.click( getByText( 'Publish' ) );
 
 		// ACT: Click publish button in dialog.
-		await publishDialog.findComponent( '#primary-button' ).trigger( 'click' );
-		await pageChange( wrapper );
+		await fireEvent.click( within( await findByRole( 'dialog' ) ).getByText( 'Publish' ) );
 
 		// ASSERT: Location is changed to page returned by API.
-		expect( window.location.href ).toEqual( '/wiki/newPage?success=true' );
+		await waitFor( () => expect( window.location.href ).toEqual( '/wiki/newPage?success=true' ) );
 
 		// ASSERT: Correct ZObject was posted to the API.
 		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {

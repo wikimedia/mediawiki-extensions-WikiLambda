@@ -1,6 +1,10 @@
-/* eslint-disable no-implicit-globals */
+/* eslint-disable no-implicit-globals, no-undef */
 /* global global, jest, mockLocalStorage */
 // Assign things to "global" here if you want them to be globally available during tests
+
+const fs = require( 'fs' ),
+	path = require( 'path' );
+
 global.$ = require( 'jquery' );
 
 global.mockLocalStorage = {};
@@ -18,13 +22,15 @@ class Title {
 	}
 }
 
+const englishMessages = JSON.parse( fs.readFileSync( path.join( __dirname, './i18n/en.json' ) ) );
+
 class Mocki18n {
 	constructor( string ) {
 		this.string = string;
 	}
 
 	text() {
-		return this.string;
+		return englishMessages[ this.string ];
 	}
 
 	toString() {

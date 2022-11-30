@@ -43,7 +43,7 @@ describe( 'FunctionDefinitionInputs', function () {
 		var wrapper = shallowMount( FunctionDefinitionInputs );
 
 		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs__add-input-button' ).text() )
-			.toEqual( 'wikilambda-function-definition-inputs-item-add-first-input-button' );
+			.toEqual( '+ Add an input' );
 	} );
 
 	it( 'displays the "add another input" button if there is an existing argument', function () {
@@ -57,6 +57,6 @@ describe( 'FunctionDefinitionInputs', function () {
 		var wrapper = shallowMount( FunctionDefinitionInputs );
 
 		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs__add-another-input-button' ).text() )
-			.toEqual( 'wikilambda-function-definition-inputs-item-add-input-button' );
+			.toEqual( '+ Add another input' );
 	} );
 } );

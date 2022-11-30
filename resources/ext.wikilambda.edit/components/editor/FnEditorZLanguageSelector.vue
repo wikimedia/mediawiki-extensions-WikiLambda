@@ -7,13 +7,16 @@
 	-->
 	<div class="ext-wikilambda-language-selector">
 		<div class="ext-wikilambda-language-selector__label">
-			<label for="ext-wikilambda-language-selector__add-language" class="ext-wikilambda-app__text-regular">
+			<label
+				id="ext-wikilambda-language-selector__add-language-label"
+				class="ext-wikilambda-app__text-regular">
 				{{ $i18n( 'wikilambda-languagelabel' ).text() }}
 			</label>
 		</div>
 		<z-object-selector
 			ref="languageSelector"
 			class="ext-wikilambda-language-selector__add-language"
+			aria-labelledby="ext-wikilambda-language-selector__add-language-label"
 			:used-languages="currentZObjectLanguages"
 			:type="Constants.Z_NATURAL_LANGUAGE"
 			:selected-id="zLanguage"

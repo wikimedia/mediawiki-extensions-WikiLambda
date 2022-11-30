@@ -204,6 +204,7 @@
 	"wikilambda-function-definition-name-placeholder": "Enter a descriptive function name",
 	"wikilambda-function-definition-name-example": "See name examples.",
 	"wikilambda-function-definition-alias-label": "Aliases",
+	"wikilambda-function-definition-alias-label-new": "New alias",
 	"wikilambda-function-definition-alias-placeholder": "Enter an alternative function name",
 	"wikilambda-function-definition-alias-example": "See alias examples.",
 	"wikilambda-function-definition-footer-placeholder": "Briefly describe your changes",
@@ -214,6 +215,7 @@
 	"wikilambda-function-definition-inputs-item-input-placeholder": "Input label",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Add another input",
 	"wikilambda-function-definition-inputs-item-add-first-input-button": "+ Add an input",
+	"wikilambda-function-definition-inputs-item-remove": "Remove input",
 	"wikilambda-function-definition-output-label": "Output type",
 	"wikilambda-function-definition-output-selector": "Select a type",
 	"wikilambda-function-definition-example-title": "Examples for using the function",
@@ -263,5 +265,6 @@
 	"wikilambda-missing-function-output-error-message": "A function requires an output",
 	"wikilambda-zobject-missing-attached-function": "A function is required",
 	"wikilambda-zimplememntation-composition-missing": "A composition must be defined",
-	"wikilambda-zimplementation-code-missing": "Code must be defined"
+	"wikilambda-zimplementation-code-missing": "Code must be defined",
+	"wikilambda-chip-remove": "Remove item"
 }

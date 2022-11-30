@@ -6,7 +6,9 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-function-definition-inputs">
-		<div class="ext-wikilambda-function-definition-inputs_label">
+		<div
+			:id="'ext-wikilambda-function-definition-inputs_label_' + zLang"
+			class="ext-wikilambda-function-definition-inputs_label">
 			<label class="ext-wikilambda-app__text-regular">
 				{{ $i18n( 'wikilambda-function-definition-inputs-label' ) }}
 			</label>
@@ -22,6 +24,7 @@
 			</tooltip>
 		</div>
 		<div
+			:aria-labelledby="'ext-wikilambda-function-definition-inputs_label_' + zLang"
 			class="ext-wikilambda-function-definition-inputs__inputs"
 			:class="{ 'ext-wikilambda-function-definition-inputs__padded': isMainZObject }"
 		>

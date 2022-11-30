@@ -1,10 +1,10 @@
 /* eslint-disable compat/compat */
 'use strict';
 
-const mount = require( '@vue/test-utils' ).mount,
-	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+const { render } = require( '@testing-library/vue' ),
 	store = require( '../../../../resources/ext.wikilambda.edit/store/index.js' ),
 	App = require( '../../../../resources/ext.wikilambda.edit/components/App.vue' ),
+	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	apiGetMock = require( './apiGetMock.js' ),
 	ApiMock = require( './apiMock.js' ),
 	existingFunctionFromApi = require( '../objects/existingFunctionFromApi.js' );
@@ -69,14 +69,24 @@ const runSetup = function () {
 		}
 	};
 
-	const wrapper = mount( App, { global: { plugins: [ store ] } } );
-
 	return {
-		wrapper: wrapper,
 		apiPostWithEditTokenMock: apiPostWithEditTokenMock
 	};
 };
 
+const runTeardown = () => {
+	jest.runOnlyPendingTimers();
+	jest.useRealTimers();
+};
+
+const renderForFunctionViewer = () =>
+	// By default, `render` mounts the app on a <div> element which is a child of document.body. For some reason
+	// this causes CdxTabs to throw an error when a new tab is navigated to on the functon viewer page. To avoid this,
+	// we pass `render` a parentless <div> to mount on.
+	render( App, { container: document.createElement( 'div' ), global: { plugins: [ store ] } } );
+
 module.exports = {
-	runSetup: runSetup
+	runSetup: runSetup,
+	runTeardown: runTeardown,
+	renderForFunctionViewer: renderForFunctionViewer
 };

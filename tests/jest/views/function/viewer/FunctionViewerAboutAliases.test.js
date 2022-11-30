@@ -39,7 +39,7 @@ describe( 'FunctionViewerAliases', function () {
 
 		expect( wrapper.find( '.ext-wikilambda-function-viewer-aliases' ).exists() ).toBeTruthy();
 		expect( wrapper.findComponent( FunctionViewerSidebar ).exists() ).toBeTruthy();
-		expect( wrapper.find( '.ext-wikilambda-function-viewer-aliases__header' ).text() ).toEqual( 'wikilambda-function-viewer-aliases-header' );
+		expect( wrapper.find( '.ext-wikilambda-function-viewer-aliases__header' ).text() ).toEqual( 'Also known as' );
 	} );
 
 	it( 'filters function aliases to current language when showAllLangs is false', function () {

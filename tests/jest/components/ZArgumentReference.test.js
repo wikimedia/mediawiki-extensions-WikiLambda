@@ -47,7 +47,7 @@ describe( 'ZArgumentReference', () => {
 		expect( options.length ).toEqual( 4 );
 
 		expect( options[ 1 ].element.innerHTML ).toEqual( 'word' );
-		expect( options[ 2 ].element.innerHTML ).toEqual( 'wikilambda-function-viewer-details-input-number' );
+		expect( options[ 2 ].element.innerHTML ).toEqual( 'Input $1' );
 		expect( options[ 3 ].element.innerHTML ).toEqual( 'woord' );
 	} );
 } );

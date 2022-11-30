@@ -79,6 +79,7 @@
 				v-if="canEditType && !isMobile"
 				type="quiet"
 				class="ext-wikilambda-editor-input-list-item__action-delete"
+				:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-remove' ).text()"
 				@click="removeInput"
 			>
 				<cdx-icon :icon="icons.cdxIconTrash"></cdx-icon>

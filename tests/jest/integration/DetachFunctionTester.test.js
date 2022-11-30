@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*!
  * WikiLambda integration test for detaching a function tester.
  *
@@ -7,10 +6,12 @@
  */
 'use strict';
 
-const Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
-	{ ticksUntilTrue } = require( './helpers/interactionHelpers.js' ),
-	{ runSetup } = require( './helpers/functionViewerDetailsTestSetup.js' ),
-	FunctionViewerDetailsTable = require( '../../../resources/ext.wikilambda.edit/views/function/details/FunctionViewerDetailsTable.vue' ),
+require( '@testing-library/jest-dom' );
+
+const { fireEvent, waitFor } = require( '@testing-library/vue' ),
+	{ within } = require( '@testing-library/dom' ),
+	{ renderForFunctionViewer, runSetup, runTeardown } = require( './helpers/functionViewerDetailsTestHelpers.js' ),
+	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' ),
 	existingImplementationByCompositionFromApi = require( './objects/existingImplementationByCompositionFromApi.js' ),
 	expected = require( './objects/expectedZFunctionWithImplementationsAndTesters.js' );
@@ -21,44 +22,37 @@ const implementationByCompositionZid =
 
 describe( 'WikiLambda frontend, function viewer details tab', () => {
 	let apiPostWithEditTokenMock;
-	let wrapper;
 	beforeEach( () => {
 		const setupResult = runSetup();
-		wrapper = setupResult.wrapper;
 		apiPostWithEditTokenMock = setupResult.apiPostWithEditTokenMock;
 	} );
 
-	it( 'allows detaching a function tester', async () => {
-		// ACT: select the 'details' tab.
-		await wrapper.get( '#cdx-function-details-1-label a' ).trigger( 'click' );
+	afterEach( () => {
+		runTeardown();
+	} );
 
-		const testerTable = wrapper.findAll( '.ext-wikilambda-function-details-table' )[ 1 ];
-		await ticksUntilTrue( wrapper, () => testerTable && testerTable.exists() );
-		const secondTesterRow = testerTable.findAll( '.ext-wikilambda-table__content__row' )[ 2 ];
+	it( 'allows detaching a function tester', async () => {
+		const { findByLabelText, findByRole } = renderForFunctionViewer();
+
+		// ACT: select the 'details' tab.
+		await fireEvent.click( await findByRole( 'tab', { name: 'Details' } ) );
 
 		// ASSERT: The "attached" tester is shown in the table.
-		expect( secondTesterRow.findAll( '.ext-wikilambda-table__content__row__item' )[ 1 ]
-			.text() ).toEqual( 'Tester name, in English' );
+		const testersTable = await findByLabelText( 'Test cases' );
+		const secondTesterRow = within( testersTable ).getAllByRole( 'row' )[ 2 ];
+		await waitFor( () => expect( secondTesterRow ).toHaveTextContent( 'Tester name, in English' ) );
 
 		// ASSERT: The "attached" tester is shown as available.
-		expect( secondTesterRow.get( '.ext-wikilambda-chip' ).text() )
-			.toEqual( 'wikilambda-function-implementation-state-available' );
-
-		await ticksUntilTrue( wrapper,
-			() => wrapper.findAll( '.ext-wikilambda-tester-result-status--RUNNING' ).length === 0 );
+		expect( secondTesterRow ).toHaveTextContent( 'Available' );
 
 		// ASSERT: The "attached" tester shows as failing all implementation tests.
-		expect( secondTesterRow.findAll( '.ext-wikilambda-tester-result-status--FAIL' ).length )
-			.toEqual( 2 );
+		await waitFor( () => expect( within( secondTesterRow ).getAllByText( 'Fail' ) ).toHaveLength( 2 ) );
 
 		// ACT: Select the "attached" implementation in the table.
-		wrapper.findAllComponents( FunctionViewerDetailsTable )[ 1 ]
-			.props( 'body' )[ 1 ].checkbox.props[ 'onUpdate:modelValue' ]( true );
-		await wrapper.vm.$nextTick();
+		await fireEvent.update( within( secondTesterRow ).getByRole( 'checkbox' ), true );
 
 		// ACT: Click deactivate button.
-		await wrapper.findAllComponents( FunctionViewerDetailsTable )[ 1 ]
-			.get( '.ext-wikilambda-function-details-table__title__buttons__deactivate-button' ).trigger( 'click' );
+		await fireEvent.click( within( testersTable ).getByText( 'Deactivate' ) );
 
 		// ASSERT: Correct ZObject was posted to the API.
 		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
