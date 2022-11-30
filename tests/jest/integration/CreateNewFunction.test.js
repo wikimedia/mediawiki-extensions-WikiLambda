@@ -192,7 +192,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await pageChange( wrapper );
 
 		// ASSERT: Location is changed to page returned by API.
-		expect( window.location.href ).toEqual( '/wiki/newPage' );
+		expect( window.location.href ).toEqual( '/wiki/newPage?success=true' );
 
 		// ASSERT: Correct ZObject was posted to the API.
 		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {

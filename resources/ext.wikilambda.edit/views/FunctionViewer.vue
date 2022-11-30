@@ -25,12 +25,19 @@
 				</keep-alive>
 			</cdx-tab>
 		</cdx-tabs>
+		<div v-if="displaySuccessMessage" class="ext-wikilambda-function-viewer__message">
+			<cdx-message class="ext-wikilambda-function-viewer__message__success"
+				:auto-dismiss="true" type="success">
+				{{ $i18n( 'wikilambda-publish-successful' ).text() }}
+			</cdx-message>
+		</div>
 	</div>
 </template>
 
 <script>
 var CdxTab = require( '@wikimedia/codex' ).CdxTab,
 	CdxTabs = require( '@wikimedia/codex' ).CdxTabs,
+	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	functionAbout = require( './function/FunctionAbout.vue' ),
 	functionDetails = require( './function/FunctionDetails.vue' );
 
@@ -41,7 +48,8 @@ module.exports = exports = {
 		'function-about': functionAbout,
 		'function-details': functionDetails,
 		'cdx-tab': CdxTab,
-		'cdx-tabs': CdxTabs
+		'cdx-tabs': CdxTabs,
+		'cdx-message': CdxMessage
 	},
 	data: function () {
 		return {
@@ -57,11 +65,35 @@ module.exports = exports = {
 				}
 			]
 		};
+	},
+	computed: {
+		displaySuccessMessage: function () {
+			if ( mw.Uri().query ) {
+				return mw.Uri().query.success === 'true';
+			}
+			return false;
+		}
 	}
 };
 </script>
 
 <style lang="less">
 @import './../../lib/wikimedia-ui-base.less';
+
+.ext-wikilambda-function-viewer {
+	&__message {
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+
+		&__success {
+			max-width: 100%;
+		}
+	}
+}
 
 </style>

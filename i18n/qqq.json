@@ -75,6 +75,7 @@
 	"wikilambda-special-objectsbytype-typeheader": "Header for list of types.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-objectsbytype-empty": "Messages shown for Special:ObjectsByType when there are no matches.\n\n{{doc-wikilambda}}",
 	"wikilambda-publishnew": "Label for the submit button when creating a ZObject on a public wiki\n{{identical|Publish}}",
+	"wikilambda-publish-successful": "Message indicating that the user's changes were successfully saved.",
 	"wikilambda-cancel": "Label for the cancel button\n\n{{Identical|Cancel}}",
 	"wikilambda-confirm": "Label for the confirm button",
 	"wikilambda-savenew": "Label for the submit button when creating a ZObject on a private wiki\n{{identical|Save}}",
