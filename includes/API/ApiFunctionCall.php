@@ -80,6 +80,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			'doValidate' => false
 		];
 
+		// TODO (T307742): Memoize the call and cache the response via WANCache getWithSetCallback too?
 		$work = new PoolCounterWorkViaCallback( 'WikiLambdaFunctionCall', $this->getUser()->getName(), [
 			'doWork' => function () use ( $jsonQuery ) {
 				return $this->orchestrator->orchestrate( $jsonQuery );
