@@ -62,6 +62,7 @@
 	"wikilambda-special-objectsbytype-typeheader": "Alle Typen",
 	"wikilambda-special-objectsbytype-empty": "Keine persistenten ZObjects für diesen Typ gefunden.",
 	"wikilambda-publishnew": "Veröffentlichen",
+	"wikilambda-publish-successful": "Deine Änderungen wurden erfolgreich veröffentlicht!",
 	"wikilambda-cancel": "Abbrechen",
 	"wikilambda-confirm": "Bestätigen",
 	"wikilambda-savenew": "Speichern",
@@ -185,6 +186,7 @@
 	"wikilambda-function-definition-name-placeholder": "Gib einen beschreibenden Funktionsnamen ein",
 	"wikilambda-function-definition-name-example": "Siehe Namensbeispiele.",
 	"wikilambda-function-definition-alias-label": "Aliasse",
+	"wikilambda-function-definition-alias-label-new": "Neuer Alias",
 	"wikilambda-function-definition-alias-placeholder": "Gib einen alternativen Funktionsnamen ein",
 	"wikilambda-function-definition-alias-example": "Siehe Beispiele für Alias.",
 	"wikilambda-function-definition-footer-placeholder": "Beschreibe deine Änderungen kurz",
@@ -193,6 +195,7 @@
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "Typ auswählen",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Weitere Eingabe hinzufügen",
 	"wikilambda-function-definition-inputs-item-add-first-input-button": "+ Eingabe hinzufügen",
+	"wikilambda-function-definition-inputs-item-remove": "Eingabe entfernen",
 	"wikilambda-function-definition-output-label": "Art der Ausgabe",
 	"wikilambda-function-definition-output-selector": "Typ auswählen",
 	"wikilambda-function-definition-example-title": "Beispiele für die Verwendung der Funktion",
@@ -240,5 +243,6 @@
 	"wikilambda-toast-close": "Schließen",
 	"wikilambda-missing-function-output-error-message": "Eine Funktion erfordert eine Ausgabe",
 	"wikilambda-zobject-missing-attached-function": "Eine Funktion ist erforderlich",
-	"wikilambda-zimplementation-code-missing": "Code muss definiert werden"
+	"wikilambda-zimplementation-code-missing": "Code muss definiert werden",
+	"wikilambda-chip-remove": "Objekt entfernen"
 }

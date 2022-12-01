@@ -3,6 +3,7 @@
 		"authors": [
 			"Bengtsson96",
 			"Sabelöga",
+			"Tore",
 			"WikiPhoenix"
 		]
 	},
@@ -29,6 +30,7 @@
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Språk",
 	"wikilambda-special-objectsbytype-typeheader": "Alla typer",
 	"wikilambda-publishnew": "Publicera",
+	"wikilambda-publish-successful": "Dina ändringar har publicerats!",
 	"wikilambda-cancel": "Avbryt",
 	"wikilambda-confirm": "Bekräfta",
 	"wikilambda-savenew": "Spara",

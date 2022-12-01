@@ -59,6 +59,7 @@
 	"wikilambda-special-objectsbytype-typeheader": "Todos os tipos",
 	"wikilambda-special-objectsbytype-empty": "Não foi encontrado nenhum Objeto-Z persistente deste tipo.",
 	"wikilambda-publishnew": "Publicar",
+	"wikilambda-publish-successful": "As suas alterações foram publicadas!",
 	"wikilambda-cancel": "Cancelar",
 	"wikilambda-confirm": "Confirmar",
 	"wikilambda-savenew": "Gravar",
@@ -188,6 +189,7 @@
 	"wikilambda-function-definition-name-placeholder": "Introduza um nome de função descritivo",
 	"wikilambda-function-definition-name-example": "Veja exemplos de nomes.",
 	"wikilambda-function-definition-alias-label": "Nomes alternativos",
+	"wikilambda-function-definition-alias-label-new": "Novo nome alternativo",
 	"wikilambda-function-definition-alias-placeholder": "Introduza um nome de função alternativo",
 	"wikilambda-function-definition-alias-example": "Ver exemplos de nomes alternativos.",
 	"wikilambda-function-definition-footer-placeholder": "Descreva sucintamente as suas alterações",
@@ -198,6 +200,7 @@
 	"wikilambda-function-definition-inputs-item-input-placeholder": "Etiqueta da entrada",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Adicionar outra entrada",
 	"wikilambda-function-definition-inputs-item-add-first-input-button": "+ Adicionar uma entrada",
+	"wikilambda-function-definition-inputs-item-remove": "Remover entrada",
 	"wikilambda-function-definition-output-label": "Tipo da saída",
 	"wikilambda-function-definition-output-selector": "Selecionar um tipo",
 	"wikilambda-function-definition-example-title": "Exemplos de uso da função",
@@ -247,5 +250,6 @@
 	"wikilambda-missing-function-output-error-message": "Uma função requer um resultado de saída",
 	"wikilambda-zobject-missing-attached-function": "É necessária uma função",
 	"wikilambda-zimplememntation-composition-missing": "Tem de ser definida uma composição",
-	"wikilambda-zimplementation-code-missing": "Tem de ser definido código"
+	"wikilambda-zimplementation-code-missing": "Tem de ser definido código",
+	"wikilambda-chip-remove": "Remover elemento"
 }

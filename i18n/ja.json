@@ -256,5 +256,6 @@
 	"wikilambda-missing-function-output-error-message": "関数には出力が必要です",
 	"wikilambda-zobject-missing-attached-function": "関数が必要です",
 	"wikilambda-zimplememntation-composition-missing": "構成を定義する必要があります",
-	"wikilambda-zimplementation-code-missing": "コードを定義する必要があります"
+	"wikilambda-zimplementation-code-missing": "コードを定義する必要があります",
+	"wikilambda-chip-remove": "項目を除去"
 }
