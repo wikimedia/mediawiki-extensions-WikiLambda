@@ -10,6 +10,7 @@
 	"wikilambda-special-edit-function-definition-description": "Urejate stran z opredelitvijo funkcije. Opredelitev funkcije lahko spremeni $1. Oznake lahko ureja vsakdo. Svoje delo shranite s klikom spodnjega modrega gumba Objavi.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Jezik",
 	"wikilambda-publishnew": "Objavi",
+	"wikilambda-publish-successful": "Vaše spremembe so bile uspešno objavljene!",
 	"wikilambda-cancel": "Prekliči",
 	"wikilambda-savenew": "Shrani",
 	"wikilambda-summarylabel": "Povzetek:",
@@ -46,7 +47,9 @@
 	"wikilambda-metadata-duplicate-alias-error": "»$1« že obstaja",
 	"wikilambda-metadata-all-languages": "Prikaži vse vnesene jezike",
 	"wikilambda-persistentobject-details-label": "Podrobnosti",
+	"wikilambda-function-definition-alias-label-new": "Nova sopomenka",
 	"wikilambda-function-definition-inputs-item-add-first-input-button": "+ Dodaj vnos",
+	"wikilambda-function-definition-inputs-item-remove": "Odstrani vnos",
 	"wikilambda-editor-fn-step-function-details": "Podrobnosti",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "Oprostite! Opredelitev funkcije lahko po objavi funkcije spreminjajo samo uporabniki s posebnimi dovoljenji.",
 	"wikilambda-editor-publish-dialog-header": "Objava vnesenih sprememb",
@@ -56,5 +59,6 @@
 	"wikilambda-missing-function-output-error-message": "Funkcija zahteva izhod",
 	"wikilambda-zobject-missing-attached-function": "Potrebna je funkcija",
 	"wikilambda-zimplememntation-composition-missing": "Opredeliti je treba sestavo",
-	"wikilambda-zimplementation-code-missing": "Opredeliti je treba kodo"
+	"wikilambda-zimplementation-code-missing": "Opredeliti je treba kodo",
+	"wikilambda-chip-remove": "Odstrani predmet"
 }

@@ -7,5 +7,14 @@
 	"apihelp-wikilambda_fetch-summary": "Obtener le modello JSON de ZObjects.",
 	"apihelp-wikilambda_fetch-param-zids": "Le ZIDs del ZObject a obtener.",
 	"apihelp-wikilambda_fetch-param-revisions": "Le versiones del ZIDs relevante a obtener. Si non es definite, isto obtenera le ultime versiones.",
-	"apihelp-wikilambda_fetch-param-language": "Le lingua in le qual restituer resultatos."
+	"apihelp-wikilambda_fetch-param-language": "Le lingua in le qual restituer resultatos.",
+	"apihelp-wikilambda_fetch-example-single": "Obtener un singule ZObject, Z1.",
+	"apihelp-wikilambda_fetch-example-single-old": "Obtener le version 12 de un singule ZObject, Z1.",
+	"apihelp-wikilambda_fetch-example-multiple": "Obtener tres ZObjects: Z1, Z2 e Z3.",
+	"apihelp-wikilambda_fetch-example-multiple-old": "Obtener le version 12 del ZObject Z1, le version 14 de Z2 e le version 25 de Z3.",
+	"apierror-wikilambda_fetch-missingzid": "Le ZID date '$1' non existe sur iste wiki.",
+	"apihelp-wikilambda_function_call-param-zobject": "ZObject pro le appello de function",
+	"apihelp-wikilambda_function_call-example-generic-list": "Invocar un function que restitue le prime elemento de un lista typate",
+	"apihelp-wikilambda_function_call-example-generic-pair": "Invocar un function que restitue le secunde elemento de un Par<Catena,Par<Catena,Booleano>>",
+	"apihelp-wikilambda_function_call-example-generic-map": "Invocar un function que mappa le elemento de un Mappa generic in un clave date con un version de su valor como catena de characteres"
 }
