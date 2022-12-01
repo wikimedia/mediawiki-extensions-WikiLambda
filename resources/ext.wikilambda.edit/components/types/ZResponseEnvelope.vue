@@ -35,17 +35,13 @@
 				{{ metricsButtonText }}
 			</cdx-button>
 		</div>
-		<dialog-container
-			ref="dialogBox"
-			size="auto"
-			:show-action-buttons="false"
-			@exit-dialog="showMetrics = false"
-			@close-dialog="showMetrics = false"
+		<!-- eslint-disable vue/no-v-model-argument -->
+		<!-- eslint-disable vue/no-unsupported-features -->
+		<cdx-dialog
+			v-model:open="showMetrics"
+			:title="dialogTitle"
+			close-button-label="Close"
 		>
-			<!-- TODO (T320670): This should be a call to a dialog component, not a filled-in template. -->
-			<template #dialog-container-title>
-				<strong>{{ dialogTitle }}</strong>
-			</template>
 			<!-- TODO (T320669): Construct this more nicely, perhaps with a Codex link component? -->
 			<div class="ext-wikilambda-metadatadialog-helplink">
 				<cdx-icon :icon="helpLinkIcon()"></cdx-icon>
@@ -57,7 +53,7 @@
 				</a>
 			</div>
 			<span v-html="dialogText"></span>
-		</dialog-container>
+		</cdx-dialog>
 	</div>
 </template>
 
@@ -67,8 +63,8 @@ var Constants = require( '../../Constants.js' ),
 	ZObjectKey = require( '../ZObjectKey.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	icons = require( '../../../lib/icons.json' ),
-	DialogContainer = require( '../base/DialogContainer.vue' ),
 	portray = require( '../../mixins/portray.js' ),
 	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
 	schemata = require( '../../mixins/schemata.js' ),
@@ -81,7 +77,7 @@ module.exports = exports = {
 		'z-object-key': ZObjectKey,
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon,
-		'dialog-container': DialogContainer
+		'cdx-dialog': CdxDialog
 	},
 	mixins: [ typeUtils, portray, schemata ],
 	props: {
@@ -155,7 +151,6 @@ module.exports = exports = {
 	methods: $.extend( mapActions( [ 'fetchZKeys' ] ), {
 		openMetrics: function () {
 			this.showMetrics = true;
-			this.$refs.dialogBox.openDialog();
 		},
 		getZMapValue: function ( zMapId, key ) {
 			const listOfPairs = this.getNestedZObjectById( zMapId, [ Constants.Z_TYPED_OBJECT_ELEMENT_1 ] );

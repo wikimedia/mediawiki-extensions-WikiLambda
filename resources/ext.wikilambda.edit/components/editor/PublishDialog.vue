@@ -6,56 +6,63 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-publishdialog">
-		<dialog-container
-			ref="dialogBox"
-			size="auto"
-			:show-action-buttons="true"
-			:custom-class="publishDialogCustomClass"
-			:confirm-button-text="$i18n( 'wikilambda-publishnew' ).text()"
-			:cancel-button-text="$i18n( 'wikilambda-cancel' ).text()"
-			:legal-text="legalText"
-			:primary-button-disabled="hasErrors"
-			:button-action="buttonAction"
-			@exit-dialog="closeDialog"
-			@close-dialog="closeDialog"
-			@confirm-dialog="publishZObject">
-
-			<template #dialog-container-title>
-				<strong>{{ $i18n( 'wikilambda-editor-publish-dialog-header' ).text() }}</strong>
-			</template>
-			<div v-if="hasErrors" class="ext-wikilambda-publishdialog__errors">
-				<div v-for="error in errors" :key="error.id">
-					<cdx-message class="ext-wikilambda-publishdialog__errors__message"
-						type="error">{{ error.message }}</cdx-message>
-				</div>
-			</div>
-
-			<div v-if="hasWarnings" class="ext-wikilambda-publishdialog__warnings">
-				<div v-for="warning in warnings" :key="warning.id">
-					<cdx-message class="ext-wikilambda-publishdialog__warnings__message"
-						type="warning">
-						<p v-html="warning.message"></p>
-					</cdx-message>
-				</div>
-			</div>
-
+		<!-- eslint-disable vue/no-v-model-argument -->
+		<!-- eslint-disable vue/no-unsupported-features -->
+		<cdx-dialog
+			:open="showDialog"
+			close-button-label="Close"
+			:title="$i18n( 'wikilambda-editor-publish-dialog-header' ).text()"
+			:primary-action="primaryActionText()"
+			:default-action="defaultActionText()"
+			@update:open="closeDialog"
+			@primary="publishZObject"
+			@default="closeDialog"
+		>
 			<div class="ext-wikilambda-publishdialog__summary">
-				<div class="ext-wikilambda-publishdialog__summary-label">
-					<label for="ext-wikilambda-publishdialog__summary-input"
-						class="ext-wikilambda-app__text-regular">
-						{{ $i18n( 'wikilambda-editor-publish-dialog-how-did-you-improve-label' )
-							.text() }}
-					</label>
+				<div v-if="hasErrors" class="ext-wikilambda-publishdialog__errors">
+					<div v-for="error in errors" :key="error.id">
+						<cdx-message
+							class="ext-wikilambda-publishdialog__errors__message"
+							type="error"
+						>
+							{{ error.message }}
+						</cdx-message>
+					</div>
 				</div>
-				<cdx-text-input
-					id="ext-wikilambda-publishdialog__summary-input"
-					v-model="summary"
-					class="ext-wikilambda-publishdialog__summary-input"
-					:aria-label="$i18n( 'wikilambda-editor-publish-dialog-summary-label' ).text()"
-					:placeholder="$i18n( 'wikilambda-editor-publish-dialog-summary-placeholder' ).text()"
-				></cdx-text-input>
+				<div v-if="hasWarnings" class="ext-wikilambda-publishdialog__warnings">
+					<div v-for="warning in warnings" :key="warning.id">
+						<cdx-message
+							class="ext-wikilambda-publishdialog__warnings__message"
+							type="warning"
+						>
+							<p v-html="warning.message"></p>
+						</cdx-message>
+					</div>
+				</div>
+
+				<div class="ext-wikilambda-publishdialog__summary">
+					<div class="ext-wikilambda-publishdialog__summary-label">
+						<label for="ext-wikilambda-publishdialog__summary-input"
+							class="ext-wikilambda-app__text-regular">
+							{{ $i18n( 'wikilambda-editor-publish-dialog-how-did-you-improve-label' )
+								.text() }}
+						</label>
+					</div>
+					<cdx-text-input
+						id="ext-wikilambda-publishdialog__summary-input"
+						v-model="summary"
+						class="ext-wikilambda-publishdialog__summary-input"
+						:aria-label="$i18n( 'wikilambda-editor-publish-dialog-summary-label' ).text()"
+						:placeholder="$i18n( 'wikilambda-editor-publish-dialog-summary-placeholder' ).text()"
+					></cdx-text-input>
+				</div>
+
+				<div>
+					<hr class="ext-wikilambda-dialog__divider">
+					<div v-html="legalText"></div>
+				</div>
 			</div>
-		</dialog-container>
+		</cdx-dialog>
 	</div>
 </template>
 
@@ -63,7 +70,7 @@
 const Constants = require( '../../Constants.js' ),
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
-	DialogContainer = require( '../base/DialogContainer.vue' ),
+	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
@@ -73,7 +80,7 @@ module.exports = exports = {
 	components: {
 		'cdx-text-input': CdxTextInput,
 		'cdx-message': CdxMessage,
-		'dialog-container': DialogContainer
+		'cdx-dialog': CdxDialog
 	},
 	inject: {
 		viewmode: { default: false }
@@ -92,9 +99,7 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			summary: '',
-			publishDialogCustomClass: 'ext-wikilambda-publishdialog-custom-class',
-			buttonAction: 'progressive'
+			summary: ''
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -158,15 +163,17 @@ module.exports = exports = {
 				};
 				this.setError( payload );
 			}.bind( this ) );
+		},
+		primaryActionText: function () {
+			return {
+				label: this.$i18n( 'wikilambda-publishnew' ).text(),
+				actionType: 'progressive'
+			};
+		},
+		defaultActionText: function () {
+			return { label: this.$i18n( 'wikilambda-cancel' ).text() };
 		}
-	} ),
-	watch: {
-		showDialog: function () {
-			if ( this.showDialog ) {
-				this.$refs.dialogBox.openDialog();
-			}
-		}
-	}
+	} )
 };
 </script>
 
@@ -197,33 +204,6 @@ module.exports = exports = {
 
 	&__summary-label {
 		padding-bottom: 4px;
-	}
-}
-
-.ext-wikilambda-publishdialog-custom-class {
-	width: 512px;
-}
-
-.ext-wikilambda-publishdialog-custom-class .ext-wikilambda-dialog {
-	&__header {
-		margin-top: 16px;
-		padding: 0 24px;
-
-		&__title {
-			font-size: 1.1em;
-		}
-	}
-
-	&__action-buttons {
-		display: flex;
-		justify-content: flex-end;
-		padding-right: 24px;
-
-		button {
-			margin-left: 10px;
-			cursor: pointer;
-			width: fit-content;
-		}
 	}
 }
 </style>

@@ -10,8 +10,7 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	ZObjectEditor = require( '../../../resources/ext.wikilambda.edit/views/ZObjectEditor.vue' ),
-	ZObjectPublish = require( '../../../resources/ext.wikilambda.edit/components/ZObjectPublish.vue' ),
-	Dialog = require( '../../../resources/ext.wikilambda.edit/components/base/Dialog.vue' );
+	ZObjectPublish = require( '../../../resources/ext.wikilambda.edit/components/ZObjectPublish.vue' );
 
 describe( 'ZObjectEditor', function () {
 	var getters,
@@ -122,10 +121,7 @@ describe( 'ZObjectEditor', function () {
 			await wrapper.get( '.ext-wikilambda-editor__navigate-to-function-editor' ).trigger( 'click' );
 			await wrapper.vm.$nextTick();
 
-			const leaveEditorDialog = wrapper.getComponent( Dialog );
-			const leaveDialogMessage = leaveEditorDialog.find( '.ext-wikilambda-leaveeditordialog__message' );
-
-			expect( leaveDialogMessage.text() )
-				.toBe( 'If you leave without publishing first, you will lose your edits.' );
+			const leaveEditorDialog = wrapper.findComponent( { name: 'cdx-dialog' } );
+			expect( leaveEditorDialog ).toBeTruthy();
 		} );
 } );

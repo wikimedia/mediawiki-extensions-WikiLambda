@@ -11,9 +11,12 @@
 			:persistent="true"
 		></z-object>
 		<div v-if="displaySuccessMessage" class="ext-wikilambda-view__message">
-			<cdx-message class="ext-wikilambda-view__message__success"
+			<cdx-message
+				class="ext-wikilambda-view__message__success"
 				:auto-dismiss="true"
-				type="success">{{ $i18n( 'wikilambda-publish-successful' ).text() }}
+				type="success"
+			>
+				{{ $i18n( 'wikilambda-publish-successful' ).text() }}
 			</cdx-message>
 		</div>
 		<cdx-button @click="$store.dispatch( 'toggleExpertMode' )">

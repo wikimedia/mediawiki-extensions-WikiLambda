@@ -6,38 +6,34 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-
 	<div class="ext-wikilambda-leaveeditordialog">
-		<dialog-container
-			ref="dialogBox"
-			size="auto"
-			:custom-class="leaveEditorDialogCustomClass"
-			:show-action-buttons="true"
-			:button-action="buttonAction"
-			:cancel-button-text="$i18n( 'wikilambda-continue-editing' ).text()"
-			:confirm-button-text="$i18n( 'wikilambda-discard-edits' ).text()"
-			@exit-dialog="stayOnPage"
-			@close-dialog="stayOnPage"
-			@confirm-dialog="leavePage">
-
-			<template #dialog-container-title>
-				<strong>{{ $i18n( 'wikilambda-editor-leave-edit-mode-header' ).text() }}</strong>
-			</template>
-			<div class="ext-wikilambda-leaveeditordialog__message">
+		<!-- eslint-disable vue/no-v-model-argument -->
+		<!-- eslint-disable vue/no-unsupported-features -->
+		<cdx-dialog
+			:open="showDialog"
+			close-button-label="Close"
+			:title="$i18n( 'wikilambda-editor-leave-edit-mode-header' ).text()"
+			:primary-action="primaryActionText()"
+			:default-action="defaultActionText()"
+			@update:open="stayOnPage"
+			@primary="leavePage"
+			@default="stayOnPage"
+		>
+			<div>
 				{{ $i18n( 'wikilambda-publish-lose-changes-prompt' ).text() }}
 			</div>
-		</dialog-container>
+		</cdx-dialog>
 	</div>
 </template>
 
 <script>
-var DialogContainer = require( '../base/DialogContainer.vue' );
+var CdxDialog = require( '@wikimedia/codex' ).CdxDialog;
 
 // @vue/components
 module.exports = exports = {
 	name: 'leave-editor-dialog',
 	components: {
-		'dialog-container': DialogContainer
+		'cdx-dialog': CdxDialog
 	},
 	props: {
 		showDialog: {
@@ -50,70 +46,22 @@ module.exports = exports = {
 			required: true
 		}
 	},
-	data: function () {
-		return {
-			leaveEditorDialogCustomClass: 'ext-wikilambda-leave-editor-dialog-custom-class',
-			buttonAction: 'secondary'
-		};
-	},
 	methods: {
 		stayOnPage: function () {
 			this.$emit( 'close-dialog' );
 		},
 		leavePage: function () {
 			this.continueCallback();
-		}
-	},
-	watch: {
-		showDialog: function () {
-			if ( this.showDialog ) {
-				this.$refs.dialogBox.openDialog();
-			}
+		},
+		primaryActionText: function () {
+			return {
+				label: this.$i18n( 'wikilambda-discard-edits' ).text(),
+				actionType: 'destructive'
+			};
+		},
+		defaultActionText: function () {
+			return { label: this.$i18n( 'wikilambda-continue-editing' ).text() };
 		}
 	}
 };
 </script>
-
-<style lang="less">
-@import './../../../lib/wikimedia-ui-base.less';
-
-.ext-wikilambda-leave-editor-dialog-custom-class .ext-wikilambda-dialog {
-	&__header {
-		padding: 21px 24px 15px 24px;
-
-		&__title {
-			font-size: 1.1em;
-		}
-	}
-
-	&__action-buttons {
-		display: flex;
-		justify-content: flex-end;
-		padding: 16px 18px;
-
-		button {
-			margin-right: 8px;
-			width: fit-content;
-		}
-
-		/* stylelint-disable-next-line */
-		#primary-button {
-			color: @wmui-color-red50;
-		}
-	}
-
-	@media screen and ( max-width: @width-breakpoint-tablet ) {
-		&__action-buttons {
-			display: flex;
-			flex-direction: column;
-			padding: 16px 24px;
-
-			button {
-				margin-bottom: 8px;
-				width: 100%;
-			}
-		}
-	}
-}
-
-</style>
