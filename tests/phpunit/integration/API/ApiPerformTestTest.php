@@ -3,6 +3,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
 
 use ApiTestCase;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiPerformTest
@@ -55,10 +56,10 @@ class ApiPerformTestTest extends ApiTestCase {
 		$requestedZImplementations,
 		$requestedZTesters,
 		$expectedResults,
-		$expectedError = null
+		$expectedThrownError = null
 	) {
-		if ( $expectedError ) {
-		   $this->expectExceptionMessage( $expectedError );
+		if ( $expectedThrownError ) {
+		   $this->expectExceptionMessage( $expectedThrownError );
 		}
 
 		$results = $this->doApiRequestWithToken( [
@@ -68,7 +69,7 @@ class ApiPerformTestTest extends ApiTestCase {
 			'wikilambda_perform_test_ztesters' => $requestedZTesters
 		] )[0]['query']['wikilambda_perform_test'];
 
-		if ( $expectedError ) {
+		if ( $expectedThrownError ) {
 			return;
 		}
 
@@ -94,6 +95,26 @@ class ApiPerformTestTest extends ApiTestCase {
 				json_decode( $expectedResults[$i]['validateStatus'] ),
 				json_decode( $results[$i]['validateStatus'] )
 			);
+			if ( array_key_exists( 'functionCallErrorType', $expectedResults[$i] ) ) {
+				$this->assertEquals(
+					'errors',
+					json_decode( $results[$i]['testMetadata'] )->K1[1]->K1
+				);
+				$this->assertEquals(
+					$expectedResults[$i]['functionCallErrorType'],
+					json_decode( $results[$i]['testMetadata'] )->K1[1]->K2->{ZTypeRegistry::Z_ERROR_TYPE}
+				);
+			}
+			if ( array_key_exists( 'validationCallErrorType', $expectedResults[$i] ) ) {
+				$this->assertEquals(
+					'validateErrors',
+					json_decode( $results[$i]['testMetadata'] )->K1[9]->K1
+				);
+				$this->assertEquals(
+					$expectedResults[$i]['validationCallErrorType'],
+					json_decode( $results[$i]['testMetadata'] )->K1[9]->K2->{ZTypeRegistry::Z_ERROR_TYPE}
+				);
+			}
 		}
 	}
 
@@ -204,12 +225,56 @@ class ApiPerformTestTest extends ApiTestCase {
 			[],
 			'Perform test error: \'Z123456789\' isn\'t a known ZObject'
 		];
+		yield 'Request specifies non-existent implementation' => [
+			'Z813',
+			'Z123456789',
+			'Z8130',
+			[
+				[
+					'zimplementationId' => 'Z123456789',
+					'ztesterId' => 'Z8130',
+					'validateStatus' => "\"Z42\"",
+					// Error in evaluation
+					'functionCallErrorType' => 'Z507',
+				]
+			],
+		];
 		yield 'Request specifies non-existent tester' => [
 			'Z813',
 			'',
 			'Z123456789',
 			[],
 			'Perform test error: \'Z123456789\' isn\'t a known ZObject'
+		];
+		yield 'Request specifies non-function as function' => [
+			'Z8130',
+			'',
+			'',
+			[],
+			'Perform test error: \'Z8130\' isn\'t a function'
+		];
+		yield 'Request specifies non-implementation as implementation, by reference' => [
+			'Z813',
+			'Z8130',
+			'Z8130',
+			[
+				[
+					'zimplementationId' => 'Z8130',
+					'ztesterId' => 'Z8130',
+					'validateStatus' => "\"Z42\"",
+					// Not wellformed error
+					'functionCallErrorType' => 'Z502'
+				]
+			],
+		];
+		yield 'Request specifies non-implementation as implementation, by JSON' => [
+			'Z813',
+			$this->getTestFileContents( 'existing-ztester.json' ),
+			'',
+			[],
+			'Perform test error: \'{ "Z1K1": "Z20", "Z20K1": "Z813", "Z20K2": { "Z1K1": "Z7", "Z7K1": "Z813", ' .
+				'"Z813K1": [ "Z1" ] }, "Z20K3": { "Z1K1": "Z7", "Z7K1": "Z844", "Z844K2": { "Z1K1": "Z40", "Z40K1": ' .
+				'"Z41" } } }\' isn\'t an implementation'
 		];
 		yield 'Request specifies non-tester as tester' => [
 			'Z813',
@@ -218,6 +283,36 @@ class ApiPerformTestTest extends ApiTestCase {
 			[],
 			'Perform test error: \'{ "Z1K1": "Z14", "Z14K1": "Z813", "Z14K3": { "Z1K1": "Z16", "Z16K1": { "Z1K1": ' .
 				'"Z61", "Z61K1": "python" }, "Z16K2": "def Z813(Z813K1):\n\treturn True" } }\' isn\'t a tester.'
+		];
+		yield 'Request specifies implementation that throws an error' => [
+			'Z813',
+			str_replace(
+				"return False", "throw 'some error'", $this->getTestFileContents( 'new-zimplementation.json' ) ),
+			'Z8130',
+			[
+				[
+					'zimplementationId' => 'Z0',
+					'ztesterId' => 'Z8130',
+					'validateStatus' => "\"Z42\"",
+					// Error in evaluation
+					'functionCallErrorType' => 'Z507'
+				]
+			]
+		];
+		yield 'Request specifies tester that throws an error' => [
+			'Z813',
+			'',
+			// Adjust tester so that its validation call tries to call boolean equality on a non-boolean
+			str_replace( "Z42", "not a boolean", $this->getTestFileContents( 'new-ztester.json' ) ),
+			[
+				[
+					'zimplementationId' => 'Z913',
+					'ztesterId' => 'Z0',
+					'validateStatus' => "\"Z42\"",
+					// Error in evaluation
+					'validationCallErrorType' => 'Z507'
+				]
+			]
 		];
 	}
 }
