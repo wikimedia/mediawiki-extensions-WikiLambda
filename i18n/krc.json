@@ -13,9 +13,12 @@
 	"wikilambda-performtest-error-nonimplementation": "Тестни джетишиминде халат: $1 тындырыу тюлдю.",
 	"wikilambda-performtest-error-nontester": "Тест этиуню халаты: '$1' тестер тюлдю.",
 	"wikilambda-performtest-error-unknown-zid": "Тест этиуде халат: '$1'  белгили ZOобъект тюлдю",
+	"wikilambda-function-definition-alias-label-new": "Джангы псевдоним",
 	"wikilambda-function-definition-inputs-item-add-first-input-button": "+ Киргизиу къош",
+	"wikilambda-function-definition-inputs-item-remove": "Киргизтиуню (джазыуну) кетер",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "Кечериксиз! Къуру энчи эркинликлери болгъан къошулуучла, басмаланнгандан сора функцияны айгъакълауун тюрлендирирге боллукоъдула.",
 	"wikilambda-zobject-missing-attached-function": "Функция керекди",
 	"wikilambda-zimplememntation-composition-missing": "Композиция белгиленирге керекди",
-	"wikilambda-zimplementation-code-missing": "Код белгиленирге керекди"
+	"wikilambda-zimplementation-code-missing": "Код белгиленирге керекди",
+	"wikilambda-chip-remove": "Пунктну кетер"
 }

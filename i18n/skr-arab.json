@@ -10,5 +10,7 @@
 	"wikilambda-tester-status-failed": "فیل",
 	"wikilambda-function-definition-name-label": "ناں",
 	"wikilambda-function-definition-footer-label": "تبدیلی دا خلاصہ",
-	"wikilambda-zobject-missing-attached-function": "ہک عمل ضروری ہے"
+	"wikilambda-function-definition-inputs-item-remove": "ان پٹ ہٹاؤ",
+	"wikilambda-zobject-missing-attached-function": "ہک عمل ضروری ہے",
+	"wikilambda-chip-remove": "آئٹم ہٹاؤ"
 }

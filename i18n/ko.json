@@ -84,6 +84,7 @@
 	"wikilambda-function-implementation-name-label": "이름",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "유형을 선택하세요.",
 	"wikilambda-function-definition-inputs-item-add-first-input-button": "+ 입력 추가",
+	"wikilambda-function-definition-inputs-item-remove": "입력 제거",
 	"wikilambda-function-definition-output-label": "출력 종류",
 	"wikilambda-function-definition-output-selector": "유형을 선택하세요.",
 	"wikilambda-editor-additional-details-label": "추가 상세 정보",
@@ -102,5 +103,6 @@
 	"wikilambda-function-viewer-aliases-header": "다른 이름",
 	"wikilambda-function-viewer-aliases-show-language-button": "더 많은 언어 보기",
 	"wikilambda-function-viewer-aliases-hide-language-button": "목록 숨기기",
-	"wikilambda-function-viewer-names-show-languages-button": "다른 언어로 이름 표시"
+	"wikilambda-function-viewer-names-show-languages-button": "다른 언어로 이름 표시",
+	"wikilambda-chip-remove": "항목 제거"
 }
