@@ -173,36 +173,8 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				}
 
 				$validateResultItem = $validateResult->getZValue();
-				if (
-					(
-						$validateResultItem instanceof ZObject &&
-						(
-							(
-								$validateResultItem instanceof ZReference &&
-								$validateResultItem->getZValue() === ZTypeRegistry::Z_BOOLEAN_FALSE
-							) ||
-							(
-								$validateResultItem->getZType() === ZTypeRegistry::Z_BOOLEAN &&
-								$validateResultItem->getValueByKey( ZTypeRegistry::Z_BOOLEAN_VALUE )
-									=== ZTypeRegistry::Z_BOOLEAN_FALSE
-							)
-						)
-					) || (
-						$validateResultItem instanceof \stdClass &&
-						(
-							(
-								$validateResultItem->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_REFERENCE &&
-								$validateResultItem->{ ZTypeRegistry::Z_REFERENCE_VALUE }
-									=== ZTypeRegistry::Z_BOOLEAN_FALSE
-							) ||
-							(
-								$validateResultItem->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_BOOLEAN &&
-								$validateResultItem->{ ZTypeRegistry::Z_BOOLEAN_VALUE }
-									=== ZTypeRegistry::Z_BOOLEAN_FALSE
-							)
-						)
-					)
-				) {
+
+				if ( $this->isFalse( $validateResultItem ) ) {
 					// Add the expected and actual values to the metadata map
 					$testMetadata->setValueForKey( new ZString( "actualTestResult" ),
 						$validateTestValue );
@@ -301,6 +273,23 @@ class ApiPerformTest extends WikiLambdaApiBase {
 			return $zobject;
 		}
 		$this->dieWithError( [ "wikilambda-performtest-error-nontester", $zobject ] );
+	}
+
+	private function isFalse( $object ) {
+		if ( $object instanceof ZObject ) {
+			if ( $object instanceof ZReference ) {
+				return $this->isFalse( $object->getZValue() );
+			} elseif ( $object->getZType() === ZTypeRegistry::Z_BOOLEAN ) {
+				return $this->isFalse( $object->getValueByKey( ZTypeRegistry::Z_BOOLEAN_VALUE ) );
+			}
+		} elseif ( $object instanceof \stdClass ) {
+			if ( $object->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_REFERENCE ) {
+				return $this->isFalse( $object->{ ZTypeRegistry::Z_REFERENCE_VALUE } );
+			} elseif ( $object->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_BOOLEAN ) {
+				return $this->isFalse( $object->{ ZTypeRegistry::Z_BOOLEAN_VALUE } );
+			}
+		}
+		return $object === ZTypeRegistry::Z_BOOLEAN_FALSE;
 	}
 
 	/**

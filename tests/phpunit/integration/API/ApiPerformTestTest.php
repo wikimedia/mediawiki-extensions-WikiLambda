@@ -49,6 +49,7 @@ class ApiPerformTestTest extends ApiTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::getZid
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::getImplementationListEntry
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::getTesterObject
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::isFalse
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::run
 	 */
 	public function testExecuteSuccessfully(
@@ -95,6 +96,32 @@ class ApiPerformTestTest extends ApiTestCase {
 				json_decode( $expectedResults[$i]['validateStatus'] ),
 				json_decode( $results[$i]['validateStatus'] )
 			);
+			if ( array_key_exists( 'expectedValue', $expectedResults[$i] ) ) {
+				$actualExpectedValueItem = current( array_filter(
+					json_decode( $results[$i]['testMetadata'] )->K1,
+					static function ( $item ) {
+						return property_exists( $item, 'K1' ) && $item->K1 === 'expectedTestResult';
+					}
+				) );
+				$this->assertNotFalse( $actualExpectedValueItem );
+				$this->assertEquals(
+					json_decode( $expectedResults[$i]['expectedValue'] ),
+					$actualExpectedValueItem->K2
+				);
+			}
+			if ( array_key_exists( 'actualValue', $expectedResults[$i] ) ) {
+				$actualActualValueItem = current( array_filter(
+					json_decode( $results[$i]['testMetadata'] )->K1,
+					static function ( $item ) {
+						return property_exists( $item, 'K1' ) && $item->K1 === 'actualTestResult';
+					}
+				) );
+				$this->assertNotFalse( $actualActualValueItem );
+				$this->assertEquals(
+					json_decode( $expectedResults[$i]['actualValue'] ),
+					$actualActualValueItem->K2
+				);
+			}
 			if ( array_key_exists( 'functionCallErrorType', $expectedResults[$i] ) ) {
 				$this->assertEquals(
 					'errors',
@@ -156,7 +183,9 @@ class ApiPerformTestTest extends ApiTestCase {
 				[
 					'zimplementationId' => 'Z0',
 					'ztesterId' => 'Z8130',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}"
+					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
+					'expectedValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
+					'actualValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}"
 				],
 				[
 					'zimplementationId' => 'Z0',
@@ -173,7 +202,9 @@ class ApiPerformTestTest extends ApiTestCase {
 				[
 					'zimplementationId' => 'Z1000000',
 					'ztesterId' => 'Z8130',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}"
+					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
+					'expectedValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
+					'actualValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}"
 				],
 				[
 					'zimplementationId' => 'Z1000000',
@@ -202,7 +233,9 @@ class ApiPerformTestTest extends ApiTestCase {
 				[
 					'zimplementationId' => 'Z913',
 					'ztesterId' => 'Z0',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}"
+					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
+					'expectedValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
+					'actualValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 				]
 			]
 		];
@@ -214,7 +247,9 @@ class ApiPerformTestTest extends ApiTestCase {
 				[
 					'zimplementationId' => 'Z913',
 					'ztesterId' => 'Z2000000',
-					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}"
+					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
+					'expectedValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
+					'actualValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 				]
 			]
 		];
