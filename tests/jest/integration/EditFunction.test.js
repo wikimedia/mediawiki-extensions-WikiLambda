@@ -12,6 +12,7 @@ require( '@testing-library/jest-dom' );
 const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
 	{ clickLookupResult } = require( './helpers/interactionHelpers.js' ),
+	{ runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
@@ -39,32 +40,9 @@ const performTest =
 describe( 'WikiLambda frontend, editing an existing function, on function-editor view', () => {
 	let apiPostWithEditTokenMock;
 	beforeEach( () => {
-		// Needed because of the Teleported component.
-		const el = document.createElement( 'div' );
-		el.id = 'ext-wikilambda-app';
-		document.body.appendChild( el );
+		const setupResult = runSetup();
+		apiPostWithEditTokenMock = setupResult.apiPostWithEditTokenMock;
 
-		jest.useFakeTimers();
-
-		global.window = Object.create( window );
-		Object.defineProperty( window, 'location', {
-			value: {
-				href: 'currentPage'
-			}
-		} );
-
-		// This is necessary to allow FunctionDefinition to attempt to scroll to second language without crashing.
-		document.getElementById = ( selector ) => {
-			if ( selector === 'fnDefinitionContainer' ) {
-				return {};
-			}
-		};
-
-		apiPostWithEditTokenMock = jest.fn( () => Promise.resolve( {
-			wikilambda_edit: {
-				page: 'newPage'
-			}
-		} ) );
 		mw.Api = jest.fn( () => {
 			return {
 				postWithEditToken: apiPostWithEditTokenMock,
@@ -102,13 +80,9 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 	} );
 
 	afterEach( () => {
-		document.body.outerHTML = '';
-		jest.runOnlyPendingTimers();
-		jest.useRealTimers();
+		runTeardown();
 	} );
 
-	// TODO(T323764): This test is currently extremely long. Consider moving some of the less-used functionality (e.g.
-	// adding a function name and then immediately deleting it) into separate test cases.
 	it( 'allows editing the function, making use of most important features', async () => {
 		const { findAllByLabelText, findByRole, getAllByLabelText, getByText } =
 			render( App, { global: { plugins: [ store ] } } );
@@ -141,34 +115,16 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		await fireEvent.update( chineseAliasInput, 'second function alias, in Chinese' );
 		await fireEvent.keyDown( chineseAliasInput, { key: 'enter' } );
 
-		// ACT: Add a label for the first argument.
+		// ACT: Add a label for the first argument in Chinese.
 		await fireEvent.update(
 			within( chineseArgumentsArea ).getAllByPlaceholderText( 'Input label' )[ 0 ],
 			'newly added first argument label, in Chinese' );
-
-		// [ACT: Don't enter a label for the second argument in Chinese.]
 
 		// ACT: Edit the label for the first argument in Afrikaans (the second language).
 		const afrikaansArgumentsArea = getAllByLabelText( 'Input type' )[ 1 ];
 		await fireEvent.update(
 			within( afrikaansArgumentsArea ).getAllByPlaceholderText( 'Input label' )[ 0 ],
 			'edited first argument label, in Afrikaans' );
-
-		// ACT: Enter a name for the function in Afrikaans.
-		const afrikaansNameInput = getAllByLabelText( 'Name (optional)' )[ 1 ];
-		await fireEvent.update( afrikaansNameInput, 'function name, in Afrikaans' );
-
-		// ACT: Delete the just-entered function name in Afrikaans.
-		await fireEvent.update( afrikaansNameInput, '' );
-
-		// ACT: Enter an alias in Afrikaans.
-		const afrikaansAliasesContainer = getAllByLabelText( 'Aliases (optional)' )[ 1 ];
-		const afrikaansAliasInput = within( afrikaansAliasesContainer ).getByRole( 'textbox' );
-		await fireEvent.update( afrikaansAliasInput, 'first function alias, in Afrikaans' );
-		await fireEvent.keyDown( afrikaansAliasInput, { key: 'enter' } );
-
-		// ACT: Delete the just-entered alias in Afrikaans.
-		await fireEvent.click( within( afrikaansAliasesContainer ).getByLabelText( 'Remove item' ) );
 
 		// ACT: Click "Add labels in another language".
 		await fireEvent.click( getByText( '+ Add labels in another language' ) );
