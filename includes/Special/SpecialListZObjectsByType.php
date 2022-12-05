@@ -53,7 +53,6 @@ class SpecialListZObjectsByType extends SpecialPage {
 	 */
 	public function execute( $type ) {
 		$this->setHeaders();
-		$this->outputHeader( 'wikilambda-special-objectsbytype-summary' );
 
 		$output = $this->getOutput();
 
@@ -100,6 +99,8 @@ class SpecialListZObjectsByType extends SpecialPage {
 		$wikitext .= "\n== ";
 		$wikitext .= $this->msg( 'wikilambda-special-objectsbytype-typeheader' );
 		$wikitext .= " ==\n";
+		$wikitext .= $this->msg( 'wikilambda-special-objectsbytype-summary' );
+		$wikitext .= "\n";
 		foreach ( $typesList as $type => $label ) {
 			$wikitext .= ": [[Special:ListZObjectsByType/$type|$label]] ($type)\n";
 		}
