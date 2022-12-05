@@ -62,7 +62,7 @@
 	"apihelp-query+wikilambdaload_zobjects-example-canonical": "Rechercher le Z-Objet Z12 et retourner sa représentation canonique en JSON.",
 	"apierror-query+wikilambdaload_zobjects-unloadable": "Le Z-StockageObjet n’a pas pu charger la page pour « $1 ».",
 	"apierror-query+wikilambdaload_zobjects-notzobject": "Le Z-StockageObjet a chargé un objet autre qu’un Z-Objet pour « $1 ».",
-	"apihelp-wikilambda_edit-example-create": "Créer un nouveau Z-Objet de type Z6, avec la valeur « valeur » et l’étiquette « étiquette ».",
+	"apihelp-wikilambda_edit-example-create": "Créer un nouveau Z-Objet de type Z6, avec la valeur « value » et le libellé « label ».",
 	"apihelp-wikilambda_edit-example-edit-incorrect": "Tentative de mettre à jour le Z-Objet Z010 avec une donnée incorrecte",
 	"apihelp-wikilambda_edit-summary": "Créer ou modifier un Z-Objet.",
 	"apihelp-wikilambda_edit-param-summary": "Modifier le message de résumé",

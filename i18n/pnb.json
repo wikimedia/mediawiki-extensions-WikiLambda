@@ -36,6 +36,8 @@
 	"wikilambda-summarylabel": "خلاصہ:",
 	"wikilambda-languagelabel": "بولی",
 	"wikilambda-implementation-selector-code": "کوڈ",
+	"wikilambda-functioncall-metadata-dialog-header": "میٹاڈیٹا",
+	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|غلطی|غلطیاں}}",
 	"wikilambda-functioncall-metadata-errors-none": "کوئی نہیں",
 	"wikilambda-create-function": "پھلن بݨاؤ",
 	"wikilambda-create-type": "قسم دا ڈھانچا بݨاؤ",
@@ -53,5 +55,6 @@
 	"wikilambda-ztyped-pair-placeholder": "کجھ قسم چݨو",
 	"wikilambda-ztyped-pair-key-label": "کنجی",
 	"wikilambda-ztyped-pair-value-label": "مُل",
-	"wikilambda-toast-close": "بند کرو"
+	"wikilambda-toast-close": "بند کرو",
+	"wikilambda-chip-remove": "مد مٹاؤ"
 }

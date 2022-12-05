@@ -95,5 +95,6 @@
 	"wikilambda-function-viewer-aliases-show-language-button": "Mostra altre lingue",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Nascondi elenco",
 	"wikilambda-function-viewer-names-show-languages-button": "Mostra il nome in altre lingue",
-	"wikilambda-toast-close": "Chiudi"
+	"wikilambda-toast-close": "Chiudi",
+	"wikilambda-chip-remove": "Rimuovi elemento"
 }
