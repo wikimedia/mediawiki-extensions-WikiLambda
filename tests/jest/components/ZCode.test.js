@@ -9,6 +9,7 @@
 const Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' );
 
 var VueTestUtils = require( '@vue/test-utils' ),
+	CodeEditor = require( '../../../resources/ext.wikilambda.edit/components/base/CodeEditor.vue' ),
 	ZCode = require( '../../../resources/ext.wikilambda.edit/components/types/ZCode.vue' );
 
 const zobjectId = 1;
@@ -110,5 +111,11 @@ describe( 'ZCode', () => {
 
 		expect( wrapper.findComponent( { name: 'cdx-select' } ).exists() ).toEqual( false );
 		expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'readOnly' ) ).toEqual( true );
+	} );
+	it( 'updates code for valid strings', async () => {
+		var wrapper = VueTestUtils.shallowMount( ZCode );
+		wrapper.getComponent( CodeEditor ).vm.$emit( 'change', 'def() {}' );
+		await wrapper.vm.$nextTick();
+		expect( wrapper.emitted( 'update-code' ) ).toBeTruthy();
 	} );
 } );
