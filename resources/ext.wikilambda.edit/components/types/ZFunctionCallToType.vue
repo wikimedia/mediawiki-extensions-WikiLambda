@@ -98,15 +98,7 @@ module.exports = exports = {
 			}.bind( this ) );
 		},
 		allArgumentsTypeSet: function () {
-			var allArgumentsTypeSet = true;
-
-			this.functionCallArguments.forEach( ( argument ) => {
-				if ( argument.value === '' ) {
-					allArgumentsTypeSet = false;
-				}
-			} );
-
-			return allArgumentsTypeSet;
+			return this.functionCallArguments.every( ( argument ) => argument.value !== '' );
 		},
 		dynamicZKey: function () {
 			return this.zObjectType + '(' + this.functionCallArgumentsType.join( ',' ) + ')';

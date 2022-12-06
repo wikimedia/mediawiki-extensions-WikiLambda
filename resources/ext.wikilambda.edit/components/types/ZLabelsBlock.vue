@@ -242,26 +242,22 @@ module.exports = exports = {
 		 * @return {string}
 		 */
 		getLanguageLabelId: function ( language ) {
-			var labels = this.getZObjectChildrenById(
-					this.getNestedZObjectById( this.zobjectId, [
-						Constants.Z_PERSISTENTOBJECT_LABEL,
-						Constants.Z_MULTILINGUALSTRING_VALUE
-					] ).id
-				),
-				labelId;
+			const labels = this.getZObjectChildrenById(
+				this.getNestedZObjectById( this.zobjectId, [
+					Constants.Z_PERSISTENTOBJECT_LABEL,
+					Constants.Z_MULTILINGUALSTRING_VALUE
+				] ).id
+			);
 
-			labels.forEach( function ( label ) {
-				var labelLang = this.getNestedZObjectById( label.id, [
+			const labelFound = labels.find( function ( label ) {
+				const labelLang = this.getNestedZObjectById( label.id, [
 					Constants.Z_MONOLINGUALSTRING_LANGUAGE,
 					Constants.Z_REFERENCE_ID
 				] );
 
-				if ( labelLang.value === language ) {
-					labelId = label.id;
-				}
-			}.bind( this ) );
-
-			return labelId;
+				return labelLang.value === language;
+			} );
+			return labelFound && labelFound.id;
 		},
 		/**
 		 * Returns the internal Id that identifies the string
@@ -271,28 +267,13 @@ module.exports = exports = {
 		 * @return {string}
 		 */
 		getLanguageLabelStringId: function ( language ) {
-			var labels = this.getZObjectChildrenById(
-					this.getNestedZObjectById( this.zobjectId, [
-						Constants.Z_PERSISTENTOBJECT_LABEL,
-						Constants.Z_MULTILINGUALSTRING_VALUE
-					] ).id
-				),
-				labelStringId;
-
-			labels.forEach( function ( label ) {
-				var labelLang = this.getNestedZObjectById( label.id, [
-					Constants.Z_MONOLINGUALSTRING_LANGUAGE,
-					Constants.Z_REFERENCE_ID
-				] );
-
-				if ( labelLang.value === language ) {
-					labelStringId = this.getNestedZObjectById( label.id, [
-						Constants.Z_MONOLINGUALSTRING_VALUE
-					] ).id;
-				}
-			}.bind( this ) );
-
-			return labelStringId;
+			const labelId = this.getLanguageLabelId( language );
+			if ( !labelId ) {
+				return null;
+			}
+			return this.getNestedZObjectById( labelId, [
+				Constants.Z_MONOLINGUALSTRING_VALUE
+			] ).id;
 		},
 		/**
 		 * Returns the table ID of the MonolingualStringSet

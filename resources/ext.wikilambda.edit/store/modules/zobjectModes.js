@@ -64,13 +64,7 @@ module.exports = exports = {
 			 * @return {boolean}
 			 */
 			return function ( selectedMode ) {
-				var modeIdValid = false;
-				modes.forEach( function ( mode ) {
-					if ( mode.key === selectedMode ) {
-						modeIdValid = true;
-					}
-				} );
-				return modeIdValid;
+				return modes.some( ( mode ) => mode.key === selectedMode );
 			};
 		},
 		getTypeByMode: function () {
@@ -85,15 +79,10 @@ module.exports = exports = {
 			 * @return {string} type
 			 */
 			return function ( payload ) {
-				var type = payload.literalType;
-
-				modes.forEach( function ( mode ) {
-					if ( mode.key === payload.selectedMode && mode.type ) {
-						type = mode.type;
-					}
-				} );
-
-				return type;
+				const modeFound = modes.find( ( mode ) =>
+					mode.key === payload.selectedMode && mode.type
+				);
+				return modeFound ? modeFound.type : payload.literalType;
 			};
 		},
 		getModeByType: function () {
@@ -105,14 +94,11 @@ module.exports = exports = {
 			 * @return {string} mode
 			 */
 			return function ( currentType ) {
-				var selectedMode = Constants.Z_KEY_MODES.LITERAL;
-				modes.forEach( function ( mode ) {
-					if ( mode.type === currentType ) {
-						selectedMode = mode.key;
-					}
-				} );
+				const modeFound = modes.find( ( mode ) =>
+					mode.type === currentType
+				);
 
-				return selectedMode;
+				return modeFound ? modeFound.key : Constants.Z_KEY_MODES.LITERAL;
 			};
 		}
 	}

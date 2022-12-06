@@ -268,12 +268,15 @@ module.exports = exports = {
 				if ( this.selectedFunctionJson ) {
 					var zKeys = [];
 
-					this.selectedFunctionJson[
-						Constants.Z_PERSISTENTOBJECT_VALUE ][
-						Constants.Z_FUNCTION_ARGUMENTS ]
-						.forEach( function ( argument ) {
-							zKeys.push( argument[ Constants.Z_ARGUMENT_TYPE ] );
-						} );
+					zKeys.push(
+						...this.selectedFunctionJson[
+							Constants.Z_PERSISTENTOBJECT_VALUE
+						][
+							Constants.Z_FUNCTION_ARGUMENTS
+						].map(
+							( argument ) => argument[ Constants.Z_ARGUMENT_TYPE ]
+						)
+					);
 
 					zKeys.push( this.selectedFunctionJson[
 						Constants.Z_PERSISTENTOBJECT_VALUE ][
