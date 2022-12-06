@@ -19,6 +19,7 @@
 		>
 		</cdx-select>
 		<code-editor
+			class="ext-wikilambda-zcode__code-editor"
 			:mode="selectedLanguage"
 			:read-only="!selectedLanguage || viewmode || readonly"
 			:value="editorValue"
@@ -182,22 +183,27 @@ module.exports = exports = {
 				this.$emit( 'select-language', payload );
 			},
 			updateCode: function ( code ) {
-				var payload = {
-					zobject: {
-						Z1K1: Constants.Z_STRING,
-						Z6K1: code
-					},
-					id: this.codeItem.id,
-					key: Constants.Z_CODE_CODE,
-					parent: this.zobjectId
-				};
+				// there is an edge case where acejs will trigger an empty change that we process as an event object
+				// we don't want to update our object with that bad data
+				// TODO(T324605): this deserves a deeper investigation
+				if ( typeof code !== 'object' ) {
+					var payload = {
+						zobject: {
+							Z1K1: Constants.Z_STRING,
+							Z6K1: code
+						},
+						id: this.codeItem.id,
+						key: Constants.Z_CODE_CODE,
+						parent: this.zobjectId
+					};
 
-				this.$emit( 'update-code', payload );
+					this.$emit( 'update-code', payload );
 
-				this.setError( {
-					internalId: this.zobjectId,
-					errorState: false
-				} );
+					this.setError( {
+						internalId: this.zobjectId,
+						errorState: false
+					} );
+				}
 			}
 		} ),
 	watch: {
