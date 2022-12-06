@@ -106,7 +106,7 @@ describe( 'Wikilambda frontend, running a function on evaluate function call vie
 			.toBeInTheDocument();
 
 		// ACT: Enter a value for the first argument.
-		await fireEvent.change(
+		await fireEvent.input(
 			within( getByLabelText( 'first argument label, in Afrikaans:' ) ).getByRole( 'textbox' ),
 			{ target: { value: 'first argument value' } } );
 
@@ -118,7 +118,7 @@ describe( 'Wikilambda frontend, running a function on evaluate function call vie
 			.toBeInTheDocument();
 
 		// ACT: Enter a value for the second argument.
-		await fireEvent.change(
+		await fireEvent.input(
 			within( getByLabelText( 'second argument label, in Afrikaans:' ) ).getByRole( 'textbox' ),
 			{ target: { value: 'second argument value' } } );
 

@@ -12,7 +12,7 @@
 				v-else
 				class="ext-wikilambda-zstring"
 				:value="zobjectStringValueItem.value"
-				@change="onInput"
+				@input="onInput"
 			>
 		</span>
 	</div>
