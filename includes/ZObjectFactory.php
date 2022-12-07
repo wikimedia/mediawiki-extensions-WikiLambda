@@ -18,6 +18,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use Title;
 
@@ -264,7 +265,14 @@ class ZObjectFactory {
 			$rawListType = array_shift( $object );
 			$listType = self::createChild( $rawListType );
 
-			if ( !( $listType instanceof ZReference ) && !( $listType instanceof ZFunctionCall ) ) {
+			if ( !(
+				// Mostly we expect direct references to ZTypes (but we don't check it's a type)
+				$listType instanceof ZReference ||
+				// … sometimes it's a ZFunctionCall to make a ZType (but we don't check it's a type)
+				$listType instanceof ZFunctionCall ||
+				// … occasionally it's an inline ZType (or a dereferenced one)
+				$listType instanceof ZType
+			) ) {
 				throw new ZErrorException(
 					ZErrorFactory::createZErrorInstance(
 						ZErrorTypeRegistry::Z_ERROR_WRONG_LIST_TYPE,
