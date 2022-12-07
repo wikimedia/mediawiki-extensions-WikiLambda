@@ -57,6 +57,7 @@
 	"wikilambda-function-implementation-state-available": "Disponibel",
 	"wikilambda-function-implementation-state-proposed": "Proposéiert",
 	"wikilambda-function-definition-alias-label": "Aliasen",
+	"wikilambda-function-definition-alias-label-new": "Neien Alias",
 	"wikilambda-function-definition-footer-placeholder": "Beschreift Är Ännerunge kuerz",
 	"wikilambda-function-definition-footer-label": "Resumé vun der Ännerung",
 	"wikilambda-function-definition-example-title": "Beispiller fir d'Benotze vun der Funktioun",
@@ -73,5 +74,6 @@
 	"wikilambda-ztyped-pair-value-label": "Wäert",
 	"wikilambda-zerror": "ZError vum Typ $1",
 	"wikilambda-optional": "fakultativ",
-	"wikilambda-continue-editing": "Virufuere mat Änneren"
+	"wikilambda-continue-editing": "Virufuere mat Änneren",
+	"wikilambda-chip-remove": "Element ewechhuelen"
 }
