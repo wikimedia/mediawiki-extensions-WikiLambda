@@ -1,8 +1,40 @@
 {
 	"@metadata": {
 		"authors": [
-			"Abbas dhothar"
+			"Abbas dhothar",
+			"Bgo eiu"
 		]
 	},
-	"wikilambda-speciallistduplicatezobjectlabels-language": "بولی"
+	"content-model-zobject": "ذ۔ چیز",
+	"wikilambda-typeunavailable": "نامعلوم قسم",
+	"wikilambda-persistentzobject-contents": "مواد",
+	"wikilambda-reference": "پچھاݨ",
+	"wikilambda-literal": "ظاہر",
+	"wikilambda-genericliteral": "عام ظاہر",
+	"wikilambda-call-function": "پھلن سدو",
+	"wikilambda-functioncall": "پھلن سدݨ",
+	"wikilambda-orchestrated": "وجݨوں نتیجہ",
+	"wikilambda-json": "جےسون",
+	"wikilambda-special-createzobject": "نویں ذ۔ چیز بݨاؤ",
+	"wikilambda-special-define-function": "پھلن نوں شکل دیݨا",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "بولی",
+	"wikilambda-special-objectsbytype-typeheader": "ساریاں قسماں",
+	"wikilambda-publishnew": "چاپو",
+	"wikilambda-cancel": "رد کرو",
+	"wikilambda-confirm": "پکا کرو",
+	"wikilambda-savenew": "سامبھو",
+	"wikilambda-publishchanges": "تبدیلیاں چھاپو",
+	"wikilambda-savechanges": "تبدیلیاں سامبھو",
+	"wikilambda-summarylabel": "خلاصہ:",
+	"wikilambda-implementation-selector-code": "کوڈ",
+	"wikilambda-create-function": "پھلن بݨاؤ",
+	"wikilambda-create-type": "قسم دا ڈھانچا بݨاؤ",
+	"wikilambda-expert-mode-json-label": "موجودہ ذ۔ چیز",
+	"wikilambda-metadata-language-column": "بولی",
+	"wikilambda-metadata-label-column": "چیپی",
+	"wikilambda-persistentobject-details-label": "ویروے",
+	"wikilambda-function-definition-name-label": "ناں",
+	"wikilambda-ztyped-pair-placeholder": "کجھ قسم چݨو",
+	"wikilambda-ztyped-pair-key-label": "کنجی",
+	"wikilambda-ztyped-pair-value-label": "مُل"
 }

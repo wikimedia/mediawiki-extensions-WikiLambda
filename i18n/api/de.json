@@ -3,7 +3,8 @@
 		"authors": [
 			"ElBe",
 			"FF-11",
-			"FF11"
+			"FF11",
+			"McDutchie"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Holt das JSON-Modell von ZObjects.",
@@ -19,7 +20,7 @@
 	"apihelp-wikilambda_function_call-example-user-defined-generic-type": "Erzeugen eines Z4/Typs mit einer benutzerdefinierten Funktion und Verwendung dieses Z4/Typs als Z1K1/Typ eines ZObjekts",
 	"apihelp-wikilambda_function_call-example-composition": "Aufrufen einer Zusammenstellung: Wenn das erste Argument wahr ist, sortiere das zweite; sonst, gib es unberührt zurück",
 	"apihelp-wikilambda_function_call-example-notempty": "Ruft die „not empty“-Funktion als Komposition auf: gibt true zurück, wenn die Eingabeliste mindestens ein Element enthält",
-	"apihelp-wikilambda_function_call-example-map": "Aufrufen der Map-Funktion: eine Funktion und eine Liste von Zeichenketten, Rückgabe des Ergebnisses der Ausführung der Funktion über jede Zeichenkette",
+	"apihelp-wikilambda_function_call-example-map": "Aufrufen der Map-Funktion: gegeben eine Funktion und eine Liste von Zeichenketten, wird das Ergebnis der Ausführung der Funktion über jede Zeichenkette zurückgegeben",
 	"apihelp-wikilambda_function_call-example-apply": "Aufrufen der Funktion Apply: eine Funktion und eine Zeichenkette geben das Ergebnis der Ausführung der Funktion über die Zeichenkette zurück",
 	"apihelp-wikilambda_function_call-example-if": "Aufruf vom eingebauten Z802 (If) mit falschem Vorzeichen.",
 	"apihelp-wikilambda_function_call-example-native-js-code": "Aufrufen von selbst geschriebenem JavaScript-Code",
