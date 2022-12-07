@@ -345,7 +345,7 @@ class ApiPerformTestTest extends ApiTestCase {
 					'ztesterId' => 'Z0',
 					'validateStatus' => "\"Z42\"",
 					// Error in evaluation
-					'validationCallErrorType' => 'Z507'
+					'validationCallErrorType' => 'Z518'
 				]
 			]
 		];
