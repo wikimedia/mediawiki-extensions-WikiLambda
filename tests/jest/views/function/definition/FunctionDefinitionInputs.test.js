@@ -39,14 +39,18 @@ describe( 'FunctionDefinitionInputs', function () {
 		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs' ).exists() ).toBeTruthy();
 	} );
 
-	it( 'displays the "add an input" button if there are no arguments', function () {
-		var wrapper = shallowMount( FunctionDefinitionInputs );
+	it( 'displays the "add an input" button if the user has edit permission and there are no arguments', function () {
+		var wrapper = shallowMount( FunctionDefinitionInputs, {
+			props: {
+				canEdit: true
+			}
+		} );
 
 		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs__add-input-button' ).text() )
 			.toEqual( '+ Add an input' );
 	} );
 
-	it( 'displays the "add another input" button if there is an existing argument', function () {
+	it( 'displays the "add another input" button if the user has edit permission and there is an existing argument', function () {
 		getters.getAllItemsFromListById = createGettersWithFunctionsMock( [
 			{ id: 6, key: '1', value: 'object', parent: 4 }
 		] );
@@ -54,9 +58,39 @@ describe( 'FunctionDefinitionInputs', function () {
 			getters: getters
 		} );
 
-		var wrapper = shallowMount( FunctionDefinitionInputs );
+		var wrapper = shallowMount( FunctionDefinitionInputs, {
+			props: {
+				canEdit: true
+			}
+		} );
 
 		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs__add-another-input-button' ).text() )
 			.toEqual( '+ Add another input' );
+	} );
+
+	it( 'does not display the "add input" if the user does not have edit permissions', function () {
+		var wrapper = shallowMount( FunctionDefinitionInputs, {
+			props: {
+				canEdit: false
+			}
+		} );
+
+		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs__add-input-button' ).exists() ).toBeFalsy();
+	} );
+
+	it( 'does not display the "add another input" button if the user does not have edit permissions', function () {
+		getters.getAllItemsFromListById = createGettersWithFunctionsMock( [
+			{ id: 6, key: '1', value: 'object', parent: 4 }
+		] );
+		global.store.hotUpdate( {
+			getters: getters
+		} );
+		var wrapper = shallowMount( FunctionDefinitionInputs, {
+			props: {
+				canEdit: false
+			}
+		} );
+
+		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs__add-another-input-button' ).exists() ).toBeFalsy();
 	} );
 } );

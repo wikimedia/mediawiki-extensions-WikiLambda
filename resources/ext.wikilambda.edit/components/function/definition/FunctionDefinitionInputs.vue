@@ -43,6 +43,7 @@
 				@active-input="setActiveInput">
 			</function-definition-inputs-item>
 			<div
+				v-if="canEdit"
 				:class="addInputButtonClass"
 				role="button"
 				@click="addNewItem">
