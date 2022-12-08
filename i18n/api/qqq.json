@@ -5,7 +5,8 @@
 			"Cory Massaro",
 			"Genoveva Galarza",
 			"James D. Forrester",
-			"Umherirrender"
+			"Umherirrender",
+			"McDutchie"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "{{doc-apihelp-summary|wikilambda_fetch}}\n\n{{doc-wikilambda}}",
@@ -23,7 +24,7 @@
 	"apihelp-wikilambda_function_call-example-generic-map": "{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_function_call-example-user-defined-generic-type": "{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_function_call-example-composition": "{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",
-	"apihelp-wikilambda_function_call-example-notempty": "{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",
+	"apihelp-wikilambda_function_call-example-notempty": "\"iff\" is an abbreviation of \"if and only if\".\n\n{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_function_call-example-map": "{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_function_call-example-apply": "{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",
 	"apihelp-wikilambda_function_call-example-if": "{{doc-apihelp-summary|query+wikilambda_function_call}}\n\n{{doc-wikilambda}}",
