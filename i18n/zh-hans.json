@@ -4,6 +4,7 @@
 			"GraceL",
 			"GuoPC",
 			"Hmgrmb",
+			"Lantianjialiang",
 			"LittlePaw365",
 			"NACHOgao3",
 			"Qeqo",
@@ -26,6 +27,7 @@
 	"wikilambda-hide-more": "隐藏更多",
 	"wikilambda-hide-error": "隐藏错误",
 	"wikilambda-argref": "参数参考",
+	"wikilambda-publish-successful": "您的更改已成功发布！",
 	"wikilambda-cancel": "取消",
 	"wikilambda-editor-label-addlanguage-label": "选择语言",
 	"wikilambda-editor-label-select-programming-language-label": "选择编程语言：",
@@ -50,8 +52,10 @@
 	"wikilambda-metadata-all-languages": "显示所有输入的语言",
 	"wikilambda-metadata-fewer-languages": "显示更少语言",
 	"wikilambda-persistentobject-details-label": "详情",
+	"wikilambda-function-definition-alias-label-new": "新别名",
 	"wikilambda-function-definition-footer-placeholder": "简要描述您的修改",
 	"wikilambda-function-definition-footer-label": "编辑摘要",
+	"wikilambda-function-definition-inputs-item-remove": "删除输入",
 	"wikilambda-editor-fn-step-function-about": "关于",
 	"wikilambda-editor-fn-step-function-details": "详情",
 	"wikilambda-editor-input-typed-list-placeholder": "列表类型",
@@ -60,5 +64,6 @@
 	"wikilambda-ztyped-pair-key-label": "密钥",
 	"wikilambda-ztyped-pair-value-label": "值",
 	"wikilambda-function-viewer-details-input-number": "输入$1",
-	"wikilambda-function-viewer-details-sidebar-summary": "任何人都可以编辑标签，但是输入/输出类型或count只能被拥有特定权限的用户编辑。"
+	"wikilambda-function-viewer-details-sidebar-summary": "任何人都可以编辑标签，但是输入/输出类型或count只能被拥有特定权限的用户编辑。",
+	"wikilambda-chip-remove": "移除项目"
 }
