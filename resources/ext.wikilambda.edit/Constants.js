@@ -5,7 +5,7 @@
  * @license MIT
  */
 var Constants = {
-		EXCLUDED_Z_TYPES: [ 'Z2', 'Z7' ],
+		EXCLUDED_Z_TYPES: [ 'Z2', 'Z3', 'Z5', 'Z7', 'Z9', 'Z16', 'Z17', 'Z18', 'Z21', 'Z22', 'Z39' ],
 		NEW_ZID_PLACEHOLDER: 'Z0',
 		Z_OBJECT: 'Z1',
 		Z_OBJECT_TYPE: 'Z1K1',
