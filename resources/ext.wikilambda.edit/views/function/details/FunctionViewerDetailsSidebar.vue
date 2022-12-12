@@ -317,13 +317,21 @@ module.exports = exports = {
 			return this.breakpoint.current.value === Constants.breakpointsTypes.MOBILE;
 		},
 		editUrl: function () {
-			return new mw.Title( this.getCurrentZObjectId ).getUrl() + '?view=function-editor';
+			return new mw.Title( this.getCurrentZObjectId ).getUrl( {
+				action: 'edit'
+			} );
 		},
 		newTesterLink: function () {
-			return new mw.Title( 'Special:CreateZObject' ).getUrl() + `?zid=${Constants.Z_TESTER}&${Constants.Z_TESTER_FUNCTION}=${this.getCurrentZObjectId}`;
+			return new mw.Title( 'Special:CreateZObject' ).getUrl( {
+				zid: Constants.Z_TESTER,
+				[ Constants.Z_TESTER_FUNCTION ]: this.getCurrentZObjectId
+			} );
 		},
 		newImplementationLink: function () {
-			return new mw.Title( 'Special:CreateZObject' ).getUrl() + `?zid=${Constants.Z_IMPLEMENTATION}&${Constants.Z_IMPLEMENTATION_FUNCTION}=${this.getCurrentZObjectId}`;
+			return new mw.Title( 'Special:CreateZObject' ).getUrl( {
+				zid: Constants.Z_IMPLEMENTATION,
+				[ Constants.Z_IMPLEMENTATION_FUNCTION ]: this.getCurrentZObjectId
+			} );
 		}
 	} ),
 	methods: $.extend( {},

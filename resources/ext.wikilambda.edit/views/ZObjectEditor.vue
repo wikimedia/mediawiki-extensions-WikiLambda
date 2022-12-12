@@ -122,10 +122,10 @@ module.exports = exports = {
 				if ( this.isDirty ) {
 					this.showLeaveEditorDialog = true;
 					this.leaveEditorCallback = function () {
-						this.navigate( { to: Constants.VIEWS.FUNCTION_EDITOR } );
+						this.navigate( { params: { zid: Constants.Z_FUNCTION }, to: Constants.VIEWS.FUNCTION_EDITOR } );
 					}.bind( this );
 				} else {
-					this.navigate( { to: Constants.VIEWS.FUNCTION_EDITOR } );
+					this.navigate( { params: { zid: Constants.Z_FUNCTION }, to: Constants.VIEWS.FUNCTION_EDITOR } );
 				}
 			},
 

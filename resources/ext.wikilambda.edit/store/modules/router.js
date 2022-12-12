@@ -9,46 +9,36 @@
 const Constants = require( '../../Constants.js' );
 
 /**
- * @param {string} uriPath
+ * @param {Object} uriQuery The contextual mw.Uri's query sub-object
  * @return {boolean}
  */
-const isEvaluateFunctionCallPath = function ( uriPath ) {
-	return uriPath === new mw.Title( 'Special:EvaluateFunctionCall' ).getUrl();
+const isEvaluateFunctionCallPath = function ( uriQuery ) {
+	return uriQuery.title === 'Special:EvaluateFunctionCall';
 };
 
 /**
- * @param {string} uriPath
+ * @param {Object} uriQuery The contextual mw.Uri's query sub-object
  * @return {boolean}
  */
-const isNewOrExistingObjectPath = function ( uriPath ) {
-	const newUrl = new mw.Title( 'Special:CreateZObject' ).getUrl();
-	return [ newUrl, Constants.PATHS.EDIT_Z_OBJECT ].indexOf( uriPath ) !== -1;
+const isNewOrExistingZObject = function ( uriQuery ) {
+	let response = false;
+	if ( uriQuery.title === 'Special:CreateZObject' ||
+		uriQuery.action === 'edit'
+	) {
+		response = true;
+	}
+
+	return response;
 };
 
 /**
  * Analyses the zObject to determine if it is a function
  *
  * @param {Object} context The ZObject context in which we're operating
- * @param {Object} uriQuery The contextual mw.Uri's query sub-object
  * @return {boolean}
  */
-const isFunction = function ( context, uriQuery ) {
-	return uriQuery.zid === Constants.Z_FUNCTION || context.rootGetters.getCurrentZObjectType === Constants.Z_FUNCTION;
-};
-
-/**
- * Analyses the path and zObject to determine if the current view is the functionEditor
- *
- * @param {Object} context The ZObject context in which we're operating
- * @param {Object} uriQuery The contextual mw.Uri's query sub-object
- * @param {Object} uriPath The contextual mw.Uri's path sub-object
- * @return {boolean}
- */
-const isFunctionEditor = function ( context, uriQuery, uriPath ) {
-	var isEditpath = Constants.PATHS.EDIT_Z_OBJECT.indexOf( uriPath ) !== -1;
-	var isFunctionObject = isFunction( context, uriQuery );
-
-	return isEditpath && isFunctionObject;
+const isExistingFunction = function ( context ) {
+	return context.rootGetters.getCurrentZObjectType === Constants.Z_FUNCTION;
 };
 
 /**
@@ -148,23 +138,30 @@ module.exports = {
 		evaluateUri: function ( context ) {
 			var uri = mw.Uri();
 
-			if ( isFunctionEditor( context, uri.query, uri.path ) ) {
-				let currentFunctionEditorView = Constants.VIEWS.FUNCTION_EDITOR;
-				// should allow user explicitly set view to zobject-editor view
-				if ( uri.query.view === Constants.VIEWS.Z_OBJECT_EDITOR ) {
-					currentFunctionEditorView = uri.query.view;
-				}
-				context.dispatch( 'changeCurrentView', currentFunctionEditorView );
-			} else if ( isEvaluateFunctionCallPath( uri.path ) ) {
-				context.dispatch( 'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
-			} else if ( isNewOrExistingObjectPath( uri.path ) ) {
+			// Set title of mw query if url is in /wiki/{{ title }} format
+			if ( !uri.query.title && uri.path.indexOf( '/wiki' ) !== -1 ) {
+				const lastPathIndex = uri.path.lastIndexOf( '/' );
+				uri.query.title = uri.path.slice( lastPathIndex + 1 );
+			}
+
+			if ( isNewOrExistingZObject( uri.query ) ) {
 				let currentEditorView = Constants.VIEWS.Z_OBJECT_EDITOR;
-				// should show new function creation view if passed in url
-				if ( uri.query.view === Constants.VIEWS.FUNCTION_EDITOR ) {
-					currentEditorView = uri.query.view;
+
+				// Check if ZID is set to handle create function zobject page
+				// Check if is an existing function to handle editing existing function
+				if (
+					( uri.query.zid === Constants.Z_FUNCTION ||
+						isExistingFunction( context ) ) &&
+					uri.query.view !== Constants.VIEWS.Z_OBJECT_EDITOR
+				) {
+					currentEditorView = Constants.VIEWS.FUNCTION_EDITOR;
 				}
+
 				context.dispatch( 'changeCurrentView', currentEditorView );
-			} else if ( isFunction( context, uri.query ) ) {
+
+			} else if ( isEvaluateFunctionCallPath( uri.query ) ) {
+				context.dispatch( 'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
+			} else if ( isExistingFunction( context ) ) {
 				let currentFunctionViewerView = Constants.VIEWS.FUNCTION_VIEWER;
 				// should allow user explicitly set view to zobject-viewer view
 				if ( uri.query.view === Constants.VIEWS.Z_OBJECT_VIEWER ) {
