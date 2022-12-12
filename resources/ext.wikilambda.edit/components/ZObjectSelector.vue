@@ -367,6 +367,16 @@ module.exports = exports = {
 		}
 	),
 	watch: {
+		initialSelectionLabel: {
+			handler: function () {
+				// Trigger a rerender when initial input value changes,
+				// This might occur due to slow network request for a particular label
+				// Also make sure not to trigger rerender if the user has typed an input
+				if ( !this.inputValue ) {
+					this.lookupKey += 1;
+				}
+			}
+		},
 		selectedValue: {
 			handler: function ( zId ) {
 				if ( this.selectedValue === null ) {
