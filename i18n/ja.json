@@ -11,6 +11,7 @@
 			"Shirayuki",
 			"Sou0012",
 			"Tamaki Wakita",
+			"バレロン",
 			"春春眠眠"
 		]
 	},
@@ -207,6 +208,7 @@
 	"wikilambda-function-definition-inputs-item-input-placeholder": "ラベルを入力",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ 別の入力を追加",
 	"wikilambda-function-definition-inputs-item-add-first-input-button": "+ 入力を追加",
+	"wikilambda-function-definition-inputs-item-remove": "入力をクリア",
 	"wikilambda-function-definition-output-label": "出力タイプ",
 	"wikilambda-function-definition-output-selector": "種類を選択してください",
 	"wikilambda-function-definition-example-title": "関数の使用例",
