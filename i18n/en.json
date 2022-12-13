@@ -169,6 +169,7 @@
 	"wikilambda-tester-results-title": "Test Results",
 	"wikilambda-tester-results-caption": "Results of function tests against implementations",
 	"wikilambda-tester-results-current-implementation": "Current implementation",
+	"wikilambda-tester-results-current-test": "Current test",
 	"wikilambda-tester-no-results": "No test results found. Please add an implementation and a test to see results.",
 	"wikilambda-tester-results-percentage-label": "Total Tests Passing",
 	"wikilambda-tester-run-testers": "Run All Tests",

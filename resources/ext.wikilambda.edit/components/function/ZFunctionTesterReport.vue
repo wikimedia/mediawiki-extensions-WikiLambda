@@ -18,6 +18,7 @@
 						<th
 							v-for="implementation in implementations"
 							:key="implementation"
+							class="ext-wikilambda-fn-tester-results__header-cell"
 							scope="col"
 						>
 							{{ getZkeyLabels[ implementation ] ||
@@ -27,10 +28,11 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="( test, index ) in testers" :key="index">
+					<tr v-for="( test, index ) in testers" :key="index"
+						class="ext-wikilambda-fn-tester-results__row">
 						<template v-if="typeof test === 'string'">
 							<th scope="row">
-								{{ getZkeyLabels[ test ] }}
+								{{ getZkeyLabels[ test ] || $i18n( 'wikilambda-tester-results-current-test' ).text() }}
 							</th>
 							<td v-for="implementation in implementations" :key="implementation">
 								<z-tester-impl-result
@@ -136,6 +138,10 @@ module.exports = exports = {
 		zImplementationId: {
 			type: String,
 			default: null
+		},
+		zTesterId: {
+			type: String,
+			default: null
 		}
 	},
 	data: function () {
@@ -163,46 +169,30 @@ module.exports = exports = {
 				return [];
 			}
 
-			var implementations = [];
-
-			// if the current root element is actually a function
-			if ( this.getCurrentZObjectId === this.zFunctionId ) {
-				// we make a deep copy, otherwise we will change the original getters
-				implementations = implementations.concat( this.getZImplementations );
+			if ( this.zImplementationId ) {
+				return [ this.zImplementationId ];
 			} else {
-				// if we are viewing a single implementation or tester, fetch the info from the zKey
 				const fetched = this.getZkeys[ this.zFunctionId ][
 					Constants.Z_PERSISTENTOBJECT_VALUE ][
 					Constants.Z_FUNCTION_IMPLEMENTATIONS ];
-				// Slice off the first item in the canonical form array; this is a string representing the type
-				implementations = implementations.concat( Array.isArray( fetched ) ? fetched.slice( 1 ) : [] );
+				// Slice off the first item in the canonical form array; this is a string representing the type.
+				return Array.isArray( fetched ) ? fetched.slice( 1 ) : [];
 			}
-
-			// The following will happen if we are creating a new zImplementation.
-			// doing so will allow us to see the result as we write it
-			if ( this.zImplementationId === Constants.NEW_ZID_PLACEHOLDER ) {
-				implementations.push( this.zImplementationId );
-			}
-			return implementations;
 		},
 		testers: function () {
 			if ( !this.zFunctionId || !this.getZkeys[ this.zFunctionId ] ) {
 				return [];
 			}
-			var testers = [];
-			// if the current root element is actually a function
-			if ( this.getCurrentZObjectId === this.zFunctionId ) {
-				testers = testers.concat( this.getZTesters );
+
+			if ( this.zTesterId ) {
+				return [ this.zTesterId ];
 			} else {
-				// if we are viewing a single implementation or tester, fetch the info from the zKey
 				const fetched = this.getZkeys[ this.zFunctionId ][
 					Constants.Z_PERSISTENTOBJECT_VALUE ][
 					Constants.Z_FUNCTION_TESTERS ];
-				// Slice off the first item in the canonical form array; this is a string representing the type
-				testers = testers.concat( Array.isArray( fetched ) ? fetched.slice( 1 ) : [] );
+				// Slice off the first item in the canonical form array; this is a string representing the type.
+				return Array.isArray( fetched ) ? fetched.slice( 1 ) : [];
 			}
-
-			return testers;
 		},
 		resultCount: function () {
 			return this.getZTesterPercentage( this.zFunctionId );

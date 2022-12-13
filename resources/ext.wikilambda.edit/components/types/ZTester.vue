@@ -33,6 +33,7 @@
 		</z-function-call>
 		<z-function-tester-report
 			:z-function-id="zFunctionId"
+			:z-tester-id="zTesterId"
 		>
 			<template #run-testers="{ click }">
 				<cdx-button @click="click">
@@ -103,8 +104,7 @@ module.exports = exports = {
 			return this.findKeyInArray( Constants.Z_TESTER_VALIDATION, this.zobject );
 		},
 		zFunctionId: function () {
-			return this.getNestedZObjectById( this.zCall.id, [
-				Constants.Z_FUNCTION_CALL_FUNCTION,
+			return this.getNestedZObjectById( this.zFunction.id, [
 				Constants.Z_REFERENCE_ID
 			] ).value || '';
 		},

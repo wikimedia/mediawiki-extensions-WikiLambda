@@ -179,6 +179,7 @@
 	"wikilambda-tester-results-title": "Header for the tester results table",
 	"wikilambda-tester-results-caption": "Caption for the tester results table",
 	"wikilambda-tester-results-current-implementation": "Text to display above the test runner results of the current implementation",
+	"wikilambda-tester-results-current-test": "Text to display by the test runner results of the current test",
 	"wikilambda-tester-no-results": "Text to display when no test runner results are available to display",
 	"wikilambda-tester-results-percentage-label": "Label for the count and percentage of passing testers",
 	"wikilambda-tester-run-testers": "Button text to re-run all testers and implementation for a given function.",
