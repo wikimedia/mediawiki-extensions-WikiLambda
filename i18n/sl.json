@@ -40,6 +40,7 @@
 	"wikilambda-tester-status-failed": "Neuespešno",
 	"wikilambda-tester-results-title": "Rezultati preizkusov",
 	"wikilambda-tester-results-caption": "Rezultati preizkusov funkcij glede na uvedbo",
+	"wikilambda-tester-results-current-test": "Trenutni preizkus",
 	"wikilambda-tester-no-results": "Ni rezultatov preizkusov. Za ogled rezultatov dodajte izvedbo in preizkus.",
 	"wikilambda-tester-results-percentage-label": "Skupno opravljenih preizkusov",
 	"wikilambda-tester-run-testers": "Izvedi vse preizkuse",
