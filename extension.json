@@ -168,8 +168,6 @@
 				"ext.wikilambda.edit/components/base/Chip.vue",
 				"ext.wikilambda.edit/components/base/ChipContainer.vue",
 				"ext.wikilambda.edit/components/base/Text.vue",
-				"ext.wikilambda.edit/components/base/Dialog.vue",
-				"ext.wikilambda.edit/components/base/DialogContainer.vue",
 				"ext.wikilambda.edit/components/types/ZListItem.vue",
 				"ext.wikilambda.edit/components/types/ZTypedList.vue",
 				"ext.wikilambda.edit/components/types/ZTypedPair.vue",

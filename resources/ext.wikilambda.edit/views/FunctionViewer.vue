@@ -26,8 +26,11 @@
 			</cdx-tab>
 		</cdx-tabs>
 		<div v-if="displaySuccessMessage" class="ext-wikilambda-function-viewer__message">
-			<cdx-message class="ext-wikilambda-function-viewer__message__success"
-				:auto-dismiss="true" type="success">
+			<cdx-message
+				class="ext-wikilambda-function-viewer__message__success"
+				:auto-dismiss="true"
+				type="success"
+			>
 				{{ $i18n( 'wikilambda-publish-successful' ).text() }}
 			</cdx-message>
 		</div>

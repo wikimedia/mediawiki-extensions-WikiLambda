@@ -37,7 +37,7 @@ describe( 'LeaveEditorDialog', function () {
 			}
 		} );
 		await wrapper.setProps( { showDialog: true } );
-		const discardEditsButton = wrapper.findComponent( '#primary-button' );
+		const discardEditsButton = wrapper.findComponent( '.cdx-dialog__footer__primary-action' );
 
 		wrapper.vm.$nextTick( function () {
 			// ACT: click discard edits and continue button.
@@ -56,7 +56,7 @@ describe( 'LeaveEditorDialog', function () {
 		} );
 
 		await wrapper.setProps( { showDialog: true } );
-		const continueEditingButton = wrapper.findComponent( '#cancel-button' );
+		const continueEditingButton = wrapper.findComponent( '.cdx-dialog__footer__default-action' );
 
 		wrapper.vm.$nextTick( function () {
 			// ACT: click continue editing button.

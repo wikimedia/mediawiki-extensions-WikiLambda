@@ -11,7 +11,8 @@
 			:class="statusIconClass"
 		></cdx-icon>
 		{{ status }}
-		<cdx-icon v-if="testerStatus !== undefined"
+		<cdx-icon
+			v-if="testerStatus !== undefined"
 			:icon="messageIcon"
 			class="ext-wikilambda-tester-result-message-icon"
 			@click.stop="emitTesterKeys"

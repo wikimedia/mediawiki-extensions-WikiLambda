@@ -14,22 +14,22 @@
 		<span class="ext-wikilambda-tester-table__message-status">
 			{{ status }}
 		</span>
-		<cdx-icon v-if="testerStatus !== undefined"
+		<cdx-icon
+			v-if="testerStatus !== undefined"
 			:icon="messageIcon"
 			class="ext-wikilambda-tester-table__message-icon ext-wikilambda-tester-table__message-icon--info"
 			@click.stop="handleMessageIconClick"
 		></cdx-icon>
-		<dialog-container
-			ref="dialogBox"
-			size="auto"
-			:show-action-buttons="false"
-			@exit-dialog="showMetadata = false"
-			@close-dialog="showMetadata = false"
+		<!-- eslint-disable vue/no-v-model-argument -->
+		<!-- eslint-disable vue/no-unsupported-features -->
+		<cdx-dialog
+			v-model:open="showMetadata"
+			:title="$i18n( 'wikilambda-functioncall-metadata-dialog-header' ).text()"
+			close-button-label="Close"
 		>
-			<!-- TODO (T320670): This should be a call to a dialog component, not a filled-in template. -->
-			<template #dialog-container-title>
-				<span v-html="dialogTitle"></span>
-			</template>
+			<strong>{{ implementationLabel }}</strong>
+			<br>
+			<strong>{{ testerLabel }}</strong>
 			<!-- TODO (T320669): Construct this more nicely, perhaps with a Codex link component? -->
 			<div class="ext-wikilambda-metadatadialog-helplink">
 				<cdx-icon :icon="helpLinkIcon()"></cdx-icon>
@@ -41,7 +41,7 @@
 				</a>
 			</div>
 			<span v-html="dialogText"></span>
-		</dialog-container>
+		</cdx-dialog>
 	</div>
 </template>
 
@@ -49,8 +49,8 @@
 var Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	icons = require( '../../../../lib/icons.json' ),
-	DialogContainer = require( '../../../components/base/DialogContainer.vue' ),
 	schemata = require( '../../../mixins/schemata.js' ),
 	portray = require( '../../../mixins/portray.js' ),
 	mapActions = require( 'vuex' ).mapActions;
@@ -60,7 +60,7 @@ module.exports = exports = {
 	name: 'tester-table-status',
 	components: {
 		'cdx-icon': CdxIcon,
-		'dialog-container': DialogContainer
+		'cdx-dialog': CdxDialog
 	},
 	mixins: [ portray, schemata ],
 	props: {
@@ -137,15 +137,15 @@ module.exports = exports = {
 			this.fetchZKeys( { zids: metadataZIDs } );
 			return this.portrayMetadataMap( metadata, this.getZkeyLabels );
 		},
-		dialogTitle: function () {
-			const testerLabel = this.getZkeyLabels[ this.zTesterId ] ||
+		implementationLabel: function () {
+			return this.getZkeyLabels[ this.zImplementationId ];
+		},
+		testerLabel: function () {
+			return this.getZkeyLabels[ this.zTesterId ] ||
 				( this.getNewTesterZObjects &&
 					this.getNewTesterZObjects[ Constants.Z_PERSISTENTOBJECT_LABEL ][
 						Constants.Z_MULTILINGUALSTRING_VALUE ][ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ][
 						Constants.Z_STRING_VALUE ] );
-			const implementationLabel = this.getZkeyLabels[ this.zImplementationId ];
-			return '<strong>' + this.$i18n( 'wikilambda-functioncall-metadata-dialog-header' ).text() + '<br>' +
-				implementationLabel + '<br>' + testerLabel + '</strong>';
 		},
 		tooltipMetaDataHelpLink: function () {
 			return this.$i18n( 'wikilambda-helplink-tooltip' ).text();
@@ -157,10 +157,8 @@ module.exports = exports = {
 			// TODO(T316567): Check if results are ready before showing metadata dialog
 			if ( !this.showMetadata ) {
 				this.showMetadata = true;
-				this.$refs.dialogBox.openDialog();
 			} else {
 				this.showMetadata = false;
-				this.$refs.dialogBox.closeDialog();
 			}
 		},
 		helpLinkIcon: function () {

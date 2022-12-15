@@ -76,17 +76,16 @@
 					</tr>
 				</tfoot>
 			</table>
-			<dialog-container
-				ref="dialogBox"
-				size="auto"
-				:show-action-buttons="false"
-				@exit-dialog="showMetrics = false"
+			<!-- eslint-disable vue/no-v-model-argument -->
+			<!-- eslint-disable vue/no-unsupported-features -->
+			<cdx-dialog
+				v-model:open="showMetrics"
+				:title="$i18n( 'wikilambda-functioncall-metadata-dialog-header' ).text()"
+				:close-button-label="Close"
 			>
-				<!-- TODO (T320670): This should be a call to a dialog component, not a filled-in template. -->
-				<template #dialog-container-title>
-					<span v-html="dialogTitle"></span>
-				</template>
-				<!-- TODO (T320669): Construct this more nicely, perhaps with a Codex link component? -->
+				<strong> {{ implementationLabel }}</strong>
+				<br>
+				<strong> {{ testerLabel }}</strong>
 				<div class="ext-wikilambda-metadatadialog-helplink">
 					<cdx-icon :icon="helpLinkIcon()"></cdx-icon>
 					<a
@@ -96,8 +95,8 @@
 						{{ $i18n( 'wikilambda-helplink-button' ).text() }}
 					</a>
 				</div>
-				<span v-html="dialogText"></span>
-			</dialog-container>
+				<span v-if="( activeZTesterId || activeZImplementationId )"></span>
+			</cdx-dialog>
 		</template>
 		<div v-else>
 			<p>{{ $i18n( 'wikilambda-tester-no-results' ).text() }}</p>
@@ -113,9 +112,9 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	icons = require( '../../../lib/icons.json' ),
 	ZTesterImplResult = require( './ZTesterImplResult.vue' ),
-	DialogContainer = require( '../base/DialogContainer.vue' ),
 	portray = require( '../../mixins/portray.js' );
 
 // @vue/component
@@ -124,7 +123,7 @@ module.exports = exports = {
 		'z-tester-impl-result': ZTesterImplResult,
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon,
-		'dialog-container': DialogContainer
+		'cdx-dialog': CdxDialog
 	},
 	mixins: [ typeUtils, schemata, portray ],
 	inject: {
@@ -217,15 +216,12 @@ module.exports = exports = {
 			this.fetchZKeys( { zids: metadataZIDs } );
 			return this.portrayMetadataMap( metadata, this.getZkeyLabels );
 		},
-		dialogTitle: function () {
-			if ( !this.activeZTesterId || !this.activeZImplementationId ) {
-				return '';
-			}
-			const testerLabel = this.getZkeyLabels[ this.activeZTesterId ] ||
+		testerLabel: function () {
+			return !this.activeZTesterId ? '' : this.getZkeyLabels[ this.activeZTesterId ] ||
 				( this.getNewTesterZObjects && this.getNewTesterZObjects.Z2K3.Z12K1[ 0 ].Z11K2.Z6K1 );
-			const implementationLabel = this.getZkeyLabels[ this.activeZImplementationId ];
-			return '<strong>' + this.$i18n( 'wikilambda-functioncall-metadata-dialog-header' ).text() + '<br>' +
-				implementationLabel + '<br>' + testerLabel + '</strong>';
+		},
+		implementationLabel: function () {
+			return !this.activeZImplementationId ? '' : this.getZkeyLabels[ this.activeZImplementationId ];
 		},
 		tooltipMetaDataHelpLink: function () {
 			return this.$i18n( 'wikilambda-helplink-tooltip' ).text();
@@ -244,7 +240,6 @@ module.exports = exports = {
 			this.activeZImplementationId = keys.zImplementationId;
 			this.activeZTesterId = keys.zTesterId;
 			this.showMetrics = true;
-			this.$refs.dialogBox.openDialog();
 		},
 		helpLinkIcon: function () {
 			return icons.cdxIconHelpNotice;
@@ -272,6 +267,8 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
+@import './../../../lib/wikimedia-ui-base.less';
+
 .ext-wikilambda-fn-tester-results {
 	border-spacing: 10px 5px;
 	max-width: 90vw;
