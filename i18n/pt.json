@@ -154,6 +154,7 @@
 	"wikilambda-tester-results-title": "Resultados dos testes",
 	"wikilambda-tester-results-caption": "Resultados dos testes das implementações da função",
 	"wikilambda-tester-results-current-implementation": "Implementação atual",
+	"wikilambda-tester-results-current-test": "Teste atual",
 	"wikilambda-tester-no-results": "Não foi encontrado nenhum resultado de testes. Adicione uma implementação e um teste para ver os resultados, por favor.",
 	"wikilambda-tester-results-percentage-label": "Total de testes passados",
 	"wikilambda-tester-run-testers": "Executar todos os testes",
