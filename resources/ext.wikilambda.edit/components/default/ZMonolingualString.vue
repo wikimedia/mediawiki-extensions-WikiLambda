@@ -6,13 +6,16 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-monolingual-string">
-		<template v-if="!edit">
+		<div v-if="!edit">
 			<p><span class="ext-wikilambda-lang-chip">{{ langIso }}</span> {{ text }}</p>
-		</template>
-		<template v-else>
+		</div>
+		<div v-else :class="inputContainerClass">
 			<span class="ext-wikilambda-lang-chip">{{ langIso }}</span>
-			<input v-model="text" type="text">
-		</template>
+			<input v-model="text" type="text"
+				class="ext-wikilambda-monolingual-string__input"
+				@focus="setIsInputActive( true )"
+				@focusout="setIsInputActive( false )">
+		</div>
 	</div>
 </template>
 
@@ -35,10 +38,14 @@ module.exports = exports = {
 			required: true
 		}
 	},
+	data: function () {
+		return {
+			isInputActive: false
+		};
+	},
 	computed: $.extend(
 		mapGetters( [
 			'getLabel',
-			'getZObjectKeyByRowId',
 			'getZMonolingualTextValue',
 			'getZMonolingualLangValue'
 		] ),
@@ -114,14 +121,27 @@ module.exports = exports = {
 			 */
 			langIso: function () {
 				return this.langLabelObj ? this.langLabelObj.label : this.lang;
+			},
+
+			inputContainerClass: function () {
+				return {
+					'ext-wikilambda-monolingual-string__edit-mode': true,
+					'ext-wikilambda-monolingual-string__edit-mode-active': this.isInputActive
+				};
 			}
 		}
-	)
+	),
+	methods: {
+		setIsInputActive: function ( isActive ) {
+			this.isInputActive = isActive;
+		}
+	}
 };
 
 </script>
 
 <style lang="less">
+@import './../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-monolingual-string {
 	p {
@@ -129,11 +149,47 @@ module.exports = exports = {
 	}
 
 	span.ext-wikilambda-lang-chip {
+		margin-right: 5px;
+		margin-top: 3px;
+		margin-bottom: 3px;
 		font-size: 0.8em;
-		background: #dedede;
+		border: 1px solid @wmui-color-base50;
 		padding: 2px 5px;
-		border-radius: 4px;
+		border-radius: 100px;
 		text-transform: uppercase;
+	}
+
+	&__edit-mode {
+		display: flex;
+		flex: 1 auto;
+		flex-wrap: nowrap;
+		border-radius: 2px;
+		padding: 0 8px;
+		border-width: 1px;
+		border-style: solid;
+		border-color: @wmui-color-base50;
+		box-shadow: inset 0 0 0 1px transparent;
+		max-width: 15%;
+		min-width: 220px;
+	}
+
+	&__edit-mode-active {
+		max-width: 100%;
+
+		@media screen and ( min-width: @width-breakpoint-tablet ) {
+			max-width: 50%;
+		}
+	}
+
+	&__input {
+		flex-grow: inherit;
+		height: 26px;
+		padding: 2px 0;
+		border: 0;
+		outline: 0;
+		font-family: inherit;
+		font-size: inherit;
+		line-height: 1.43em;
 	}
 }
 
