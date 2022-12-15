@@ -28,7 +28,7 @@
 				v-else
 				class="ext-wikilambda-zstring"
 				:value="monolingualStringValue.value"
-				@change="updateLangString( $event, monolingualStringValue.id )"
+				@input="updateLangString( $event, monolingualStringValue.id )"
 			>
 		</div>
 	</div>
