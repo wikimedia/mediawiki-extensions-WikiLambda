@@ -121,7 +121,6 @@ var Constants = require( '../../../Constants.js' ),
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	icons = require( './../../../../lib/icons.json' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
-	debounceSetArgumentLabel = null,
 	debounceSetArgumentLabelTimeout = 300;
 // @vue/component
 module.exports = exports = {
@@ -183,6 +182,7 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
+			debounceSetArgumentLabel: null,
 			icons: icons
 		};
 	},
@@ -281,8 +281,8 @@ module.exports = exports = {
 		},
 		handleInputChange: function ( event ) {
 			const input = event.target.value;
-			clearTimeout( debounceSetArgumentLabel );
-			debounceSetArgumentLabel = setTimeout( function () {
+			clearTimeout( this.debounceSetArgumentLabel );
+			this.debounceSetArgumentLabel = setTimeout( function () {
 				this.setArgumentLabel( input );
 			}.bind( this ), debounceSetArgumentLabelTimeout );
 		},

@@ -8,9 +8,16 @@
 'use strict';
 const Page = require( 'wdio-mediawiki/Page' );
 class CreateZObjectPage extends Page {
+	get createFunctionLink() { return $( 'a=Create Function' ); }
 	get title() { return $( '#firstHeading' ); }
+
 	open() {
 		return super.openTitle( 'Special:CreateZObject' );
 	}
+
+	switchToFunctionView() {
+		return this.createFunctionLink.click();
+	}
+
 }
 module.exports = new CreateZObjectPage();
