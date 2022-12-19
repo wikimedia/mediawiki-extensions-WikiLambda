@@ -367,14 +367,7 @@ module.exports = exports = {
 			 * @return {number} index
 			 */
 			return function ( id ) {
-				var objectIndex = 0;
-				state.zobject.forEach( function ( item, index ) {
-					if ( item.id === id ) {
-						objectIndex = index;
-					}
-				} );
-
-				return objectIndex;
+				return state.zobject.findIndex( ( item ) => item.id === id );
 			};
 		},
 		getZObjectChildrenById: function ( state, getters ) {
@@ -910,7 +903,7 @@ module.exports = exports = {
 							Constants.Z_PERSISTENTOBJECT_VALUE
 						][
 							Constants.Z_IMPLEMENTATION_COMPOSITION
-						] [
+						][
 							Constants.Z_FUNCTION_CALL_FUNCTION
 						][
 							Constants.Z_REFERENCE_ID
@@ -977,7 +970,7 @@ module.exports = exports = {
 						Constants.Z_TESTER_CALL
 					][
 						Constants.Z_FUNCTION_CALL_FUNCTION
-					] [
+					][
 						Constants.Z_REFERENCE_ID
 					] ) {
 						internalId = typeUtils.findKeyInArray( Constants.Z_TESTER_CALL, context.state.zobject ).id;

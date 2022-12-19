@@ -159,21 +159,17 @@ module.exports = exports = {
 		] ),
 		{
 			getLanguageAliasStringsetId: function ( language ) {
-				var aliasId;
-				this.getZObjectAliases.forEach(
-					function ( alias ) {
-						var aliasLang = this.getNestedZObjectById( alias.id, [
-							Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE,
-							Constants.Z_REFERENCE_ID
-						] );
-						if ( aliasLang.value === language ) {
-							aliasId = this.getNestedZObjectById( alias.id, [
-								Constants.Z_MONOLINGUALSTRINGSET_VALUE
-							] ).id;
-						}
-					}.bind( this )
-				);
-				return aliasId;
+				const aliasFound = this.getZObjectAliases.find( ( alias ) => {
+					const aliasLang = this.getNestedZObjectById( alias.id, [
+						Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE,
+						Constants.Z_REFERENCE_ID
+					] );
+					return aliasLang.value === language;
+				} );
+
+				return aliasFound && ( this.getNestedZObjectById( aliasFound.id, [
+					Constants.Z_MONOLINGUALSTRINGSET_VALUE
+				] ).id );
 			},
 			addAliasForLanguage: function ( newAlias ) {
 				// show an error message if a user enters a duplicate alias

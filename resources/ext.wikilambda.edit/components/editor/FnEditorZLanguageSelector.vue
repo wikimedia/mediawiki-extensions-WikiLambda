@@ -93,26 +93,30 @@ module.exports = exports = {
 			return this.currentZObjectLanguages.some( ( zObjLang ) =>
 				zObjLang[ Constants.Z_REFERENCE_ID ] === zId );
 		},
+		/**
+		 * Returns the internal Id that identifies the
+		 * Monolingual String object for a given language Zid
+		 *
+		 * @param {string} language
+		 * @return {string}
+		 */
 		getLanguageLabelId: function ( language ) {
-			var labels = this.getAllItemsFromListById(
-					this.getNestedZObjectById( 0, [
-						Constants.Z_PERSISTENTOBJECT_LABEL,
-						Constants.Z_MULTILINGUALSTRING_VALUE
-					] ).id ),
-				labelId;
+			const labels = this.getAllItemsFromListById(
+				this.getNestedZObjectById( 0, [
+					Constants.Z_PERSISTENTOBJECT_LABEL,
+					Constants.Z_MULTILINGUALSTRING_VALUE
+				] ).id
+			);
 
-			labels.forEach( function ( label ) {
+			const labelFound = labels.find( ( label ) => {
 				var labelLang = this.getNestedZObjectById( label.id, [
 					Constants.Z_MONOLINGUALSTRING_LANGUAGE,
 					Constants.Z_REFERENCE_ID
 				] );
 
-				if ( labelLang.value === language ) {
-					labelId = label.id;
-				}
-			}.bind( this ) );
-
-			return labelId;
+				return labelLang.value === language;
+			} );
+			return labelFound && labelFound.id;
 		},
 		resetArgumentListLabelsForLang: function ( language ) {
 			var argumentsList = this.getAllItemsFromListById(

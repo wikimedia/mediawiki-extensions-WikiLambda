@@ -90,37 +90,26 @@ module.exports = exports = {
 			return reconstructJson( zObjectTree, parentId, rootIsArray );
 		},
 		getNextObjectId: function ( zObject ) {
-			var highestObjectId = 0;
-
 			if ( !zObject || zObject.length === 0 ) {
-				return highestObjectId;
+				return 0;
 			}
 
-			zObject.forEach( function ( item ) {
-				if ( item.id > highestObjectId ) {
-					highestObjectId = item.id;
-				}
-			} );
+			const highestObjectId = Math.max(
+				...zObject.map( ( item ) => item.id )
+			);
 			return highestObjectId + 1;
 		},
 		findLatestKey: function ( zObject, zid ) {
-			var
-				keyRegex = new RegExp( '^' + zid + 'K([0-9]+)$' ),
-				latestKey = 0;
+			const keyRegex = new RegExp( '^' + zid + 'K([0-9]+)$' );
+			const defaultKey = 0;
 
-			zObject.forEach( function ( item ) {
-				var
-					potentialKey,
-					match = item.value && item.value.match( keyRegex );
-				if ( match ) {
-					potentialKey = parseInt( match[ 1 ], 10 );
-					if ( potentialKey > latestKey ) {
-						latestKey = potentialKey;
-					}
-				}
-			} );
-
-			return latestKey;
+			return Math.max(
+				defaultKey,
+				...zObject.map( function ( item ) {
+					const match = item.value && item.value.match( keyRegex );
+					return match ? parseInt( match[ 1 ], 10 ) : -1;
+				} )
+			);
 		}
 	}
 };
