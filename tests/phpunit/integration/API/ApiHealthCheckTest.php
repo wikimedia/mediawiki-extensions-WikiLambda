@@ -8,7 +8,6 @@ use ApiTestCase;
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiHealthCheck
  * @group API
  * @group Standalone
- * @group Broken
  */
 class ApiHealthCheckTest extends ApiTestCase {
 	/**
