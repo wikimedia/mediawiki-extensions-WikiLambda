@@ -256,7 +256,7 @@ module.exports = exports = {
 				] );
 
 				return labelLang.value === language;
-			} );
+			}.bind( this ) );
 			return labelFound && labelFound.id;
 		},
 		/**
