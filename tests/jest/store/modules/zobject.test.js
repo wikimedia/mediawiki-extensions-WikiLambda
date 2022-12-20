@@ -23,19 +23,19 @@ var fs = require( 'fs' ),
 		}
 	},
 	zobjectTree = [
-		{ id: 0, value: 'object' },
+		{ id: 0, value: Constants.ROW_VALUE_OBJECT },
 		{ key: 'Z1K1', value: 'Z2', parent: 0, id: 1 },
-		{ key: 'Z2K1', value: 'object', parent: 0, id: 2 },
-		{ key: 'Z2K2', value: 'object', parent: 0, id: 3 },
+		{ key: 'Z2K1', value: Constants.ROW_VALUE_OBJECT, parent: 0, id: 2 },
+		{ key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 0, id: 3 },
 		{ key: 'Z1K1', value: 'Z9', parent: 2, id: 4 },
 		{ key: 'Z9K1', value: 'Z0', parent: 2, id: 5 },
-		{ key: 'Z2K3', value: 'object', parent: 0, id: 6 },
+		{ key: 'Z2K3', value: Constants.ROW_VALUE_OBJECT, parent: 0, id: 6 },
 		{ key: 'Z1K1', value: 'Z12', parent: 6, id: 7 },
-		{ key: 'Z12K1', value: 'array', parent: 6, id: 8 },
-		{ key: '0', value: 'object', parent: 8, id: 9 },
+		{ key: 'Z12K1', value: Constants.ROW_VALUE_ARRAY, parent: 6, id: 8 },
+		{ key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 8, id: 9 },
 		{ key: 'Z1K1', value: 'Z9', parent: 9, id: 10 },
 		{ key: 'Z9K1', value: 'Z11', parent: 9, id: 11 },
-		{ key: '1', value: 'object', parent: 8, id: 12 },
+		{ key: '1', value: Constants.ROW_VALUE_OBJECT, parent: 8, id: 12 },
 		{ key: 'Z1K1', value: 'Z11', parent: 12, id: 13 },
 		{ key: 'Z11K1', value: 'Z1002', parent: 12, id: 14 },
 		{ key: 'Z11K2', value: '', parent: 12, id: 15 },
@@ -1647,6 +1647,187 @@ describe( 'zobject Vuex module', function () {
 						expect( context.commit ).toHaveBeenCalledWith( 'setZObject', initialZObject );
 					}
 				} );
+			} );
+		} );
+
+		/* NEW ACTIONS: */
+		describe( 'injectZObjectFromRowId', function () {
+			beforeEach( function () {
+				context.state = {
+					zobject: zobjectTree
+				};
+				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
+				context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+				context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
+				context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
+
+				context.commit = jest.fn( function ( mutationType, payload ) {
+					zobjectModule.mutations[ mutationType ]( context.state, payload );
+				} );
+				context.dispatch = jest.fn( function ( actionType, payload ) {
+					zobjectModule.actions[ actionType ]( context, payload );
+					return {
+						then: function ( fn ) {
+							return fn();
+						}
+					};
+				} );
+			} );
+
+			it( 'Inject string zobject value', function () {
+				const zObject = 'stringness';
+				const expected = [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ key: 'Z1K1', value: 'Z2', parent: 0, id: 1 },
+					{ key: 'Z2K1', value: Constants.ROW_VALUE_OBJECT, parent: 0, id: 2 },
+					{ key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 0, id: 3 },
+					{ key: 'Z1K1', value: 'Z9', parent: 2, id: 4 },
+					{ key: 'Z9K1', value: 'Z0', parent: 2, id: 5 },
+					{ key: 'Z2K3', value: Constants.ROW_VALUE_OBJECT, parent: 0, id: 6 },
+					{ key: 'Z1K1', value: 'Z12', parent: 6, id: 7 },
+					{ key: 'Z12K1', value: Constants.ROW_VALUE_ARRAY, parent: 6, id: 8 },
+					{ key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 8, id: 9 },
+					{ key: 'Z1K1', value: 'Z9', parent: 9, id: 10 },
+					{ key: 'Z9K1', value: 'Z11', parent: 9, id: 11 },
+					{ key: '1', value: Constants.ROW_VALUE_OBJECT, parent: 8, id: 12 },
+					{ key: 'Z1K1', value: 'Z11', parent: 12, id: 13 },
+					{ key: 'Z11K1', value: 'Z1002', parent: 12, id: 14 },
+					{ key: 'Z11K2', value: '', parent: 12, id: 15 },
+					{ key: 'Z1K1', value: 'Z6', parent: 3, id: 18 },
+					{ key: 'Z6K1', value: 'stringness', parent: 3, id: 19 }
+				];
+
+				zobjectModule.actions.injectZObjectFromRowId( context, {
+					rowId: 3,
+					value: zObject
+				} );
+
+				expect( context.state.zobject ).toEqual( expected );
+			} );
+
+			it( 'Inject array of strings into zobject value', function () {
+				const zObject = [ 'Z6', 'stringful', 'stringlord' ];
+				const expected = [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ key: 'Z1K1', value: 'Z2', parent: 0, id: 1 },
+					{ key: 'Z2K1', value: Constants.ROW_VALUE_OBJECT, parent: 0, id: 2 },
+					{ key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0, id: 3 },
+					{ key: 'Z1K1', value: 'Z9', parent: 2, id: 4 },
+					{ key: 'Z9K1', value: 'Z0', parent: 2, id: 5 },
+					{ key: 'Z2K3', value: Constants.ROW_VALUE_OBJECT, parent: 0, id: 6 },
+					{ key: 'Z1K1', value: 'Z12', parent: 6, id: 7 },
+					{ key: 'Z12K1', value: Constants.ROW_VALUE_ARRAY, parent: 6, id: 8 },
+					{ key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 8, id: 9 },
+					{ key: 'Z1K1', value: 'Z9', parent: 9, id: 10 },
+					{ key: 'Z9K1', value: 'Z11', parent: 9, id: 11 },
+					{ key: '1', value: Constants.ROW_VALUE_OBJECT, parent: 8, id: 12 },
+					{ key: 'Z1K1', value: 'Z11', parent: 12, id: 13 },
+					{ key: 'Z11K1', value: 'Z1002', parent: 12, id: 14 },
+					{ key: 'Z11K2', value: '', parent: 12, id: 15 },
+
+					{ id: 20, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 3 },
+					{ id: 21, key: 'Z1K1', value: 'Z9', parent: 20 },
+					{ id: 22, key: 'Z9K1', value: 'Z6', parent: 20 },
+					{ id: 23, key: '1', value: Constants.ROW_VALUE_OBJECT, parent: 3 },
+					{ id: 24, key: 'Z1K1', value: 'Z6', parent: 23 },
+					{ id: 25, key: 'Z6K1', value: 'stringful', parent: 23 },
+					{ id: 26, key: '2', value: Constants.ROW_VALUE_OBJECT, parent: 3 },
+					{ id: 27, key: 'Z1K1', value: 'Z6', parent: 26 },
+					{ id: 28, key: 'Z6K1', value: 'stringlord', parent: 26 }
+				];
+
+				zobjectModule.actions.injectZObjectFromRowId( context, {
+					rowId: 3,
+					value: zObject
+				} );
+
+				expect( context.state.zobject ).toEqual( expected );
+			} );
+
+			it( 'Inject zobject into zobject value', function () {
+				const zObject = {
+					Z1K1: 'Z11',
+					Z11K1: {
+						Z1K1: 'Z60',
+						Z60K1: 'pang'
+					},
+					Z11K2: 'Gñeee'
+				};
+
+				const expected = [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ key: 'Z1K1', value: 'Z2', parent: 0, id: 1 },
+					{ key: 'Z2K1', value: Constants.ROW_VALUE_OBJECT, parent: 0, id: 2 },
+					{ key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 0, id: 3 },
+					{ key: 'Z1K1', value: 'Z9', parent: 2, id: 4 },
+					{ key: 'Z9K1', value: 'Z0', parent: 2, id: 5 },
+					{ key: 'Z2K3', value: Constants.ROW_VALUE_OBJECT, parent: 0, id: 6 },
+					{ key: 'Z1K1', value: 'Z12', parent: 6, id: 7 },
+					{ key: 'Z12K1', value: Constants.ROW_VALUE_ARRAY, parent: 6, id: 8 },
+					{ key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 8, id: 9 },
+					{ key: 'Z1K1', value: 'Z9', parent: 9, id: 10 },
+					{ key: 'Z9K1', value: 'Z11', parent: 9, id: 11 },
+					{ key: '1', value: Constants.ROW_VALUE_OBJECT, parent: 8, id: 12 },
+					{ key: 'Z1K1', value: 'Z11', parent: 12, id: 13 },
+					{ key: 'Z11K1', value: 'Z1002', parent: 12, id: 14 },
+					{ key: 'Z11K2', value: '', parent: 12, id: 15 },
+
+					{ id: 29, key: 'Z1K1', value: Constants.ROW_VALUE_OBJECT, parent: 3 },
+					{ id: 30, key: 'Z1K1', value: 'Z9', parent: 29 },
+					{ id: 31, key: 'Z9K1', value: 'Z11', parent: 29 },
+					{ id: 32, key: 'Z11K1', value: Constants.ROW_VALUE_OBJECT, parent: 3 },
+					{ id: 33, key: 'Z1K1', value: Constants.ROW_VALUE_OBJECT, parent: 32 },
+					{ id: 34, key: 'Z1K1', value: 'Z9', parent: 33 },
+					{ id: 35, key: 'Z9K1', value: 'Z60', parent: 33 },
+					{ id: 36, key: 'Z60K1', value: Constants.ROW_VALUE_OBJECT, parent: 32 },
+					{ id: 37, key: 'Z1K1', value: 'Z6', parent: 36 },
+					{ id: 38, key: 'Z6K1', value: 'pang', parent: 36 },
+					{ id: 39, key: 'Z11K2', value: Constants.ROW_VALUE_OBJECT, parent: 3 },
+					{ id: 40, key: 'Z1K1', value: 'Z6', parent: 39 },
+					{ id: 41, key: 'Z6K1', value: 'Gñeee', parent: 39 }
+				];
+
+				zobjectModule.actions.injectZObjectFromRowId( context, {
+					rowId: 3,
+					value: zObject
+				} );
+
+				expect( context.state.zobject ).toEqual( expected );
+			} );
+
+			it( 'Inject zobject into root', function () {
+				const zObject = {
+					Z1K1: 'Z11',
+					Z11K1: {
+						Z1K1: 'Z60',
+						Z60K1: 'pang'
+					},
+					Z11K2: 'Gñeee'
+				};
+
+				const expected = [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 42, key: 'Z1K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+					{ id: 43, key: 'Z1K1', value: 'Z9', parent: 42 },
+					{ id: 44, key: 'Z9K1', value: 'Z11', parent: 42 },
+					{ id: 45, key: 'Z11K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+					{ id: 46, key: 'Z1K1', value: Constants.ROW_VALUE_OBJECT, parent: 45 },
+					{ id: 47, key: 'Z1K1', value: 'Z9', parent: 46 },
+					{ id: 48, key: 'Z9K1', value: 'Z60', parent: 46 },
+					{ id: 49, key: 'Z60K1', value: Constants.ROW_VALUE_OBJECT, parent: 45 },
+					{ id: 50, key: 'Z1K1', value: 'Z6', parent: 49 },
+					{ id: 51, key: 'Z6K1', value: 'pang', parent: 49 },
+					{ id: 52, key: 'Z11K2', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+					{ id: 53, key: 'Z1K1', value: 'Z6', parent: 52 },
+					{ id: 54, key: 'Z6K1', value: 'Gñeee', parent: 52 }
+				];
+
+				zobjectModule.actions.injectZObjectFromRowId( context, {
+					rowId: 0,
+					value: zObject
+				} );
+
+				expect( context.state.zobject ).toEqual( expected );
 			} );
 		} );
 	} );

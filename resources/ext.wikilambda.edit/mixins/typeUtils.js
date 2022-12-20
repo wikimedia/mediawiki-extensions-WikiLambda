@@ -76,6 +76,50 @@ var Constants = require( '../Constants.js' ),
 			isValidZidFormat: function ( zid ) {
 				return /^Z\d+$/.test( zid );
 			},
+			/**
+			 * Validate if a string is a valid global Key
+			 *
+			 * @param {string} key
+			 * @return {boolean}
+			 */
+			isGlobalKey: function ( key ) {
+				return /^Z\d+K\d+$/.test( key );
+			},
+			/**
+			 * Get the Zid part of a global Key
+			 *
+			 * @param {string} key
+			 * @return {string}
+			 */
+			getZidOfGlobalKey: function ( key ) {
+				return key.split( 'K' )[ 0 ];
+			},
+			/**
+			 * Get the Z3/Key object given a key string
+			 * from a list of Z3/Key items
+			 *
+			 * @param {string} key
+			 * @param {Array} list
+			 * @return {Object}
+			 */
+			getKeyFromKeyList: function ( key, list ) {
+				return list.find( function ( item ) {
+					return ( item[ Constants.Z_KEY_ID ] === key );
+				} );
+			},
+			/**
+			 * Get the Z17/Argument object given a key string
+			 * from a list of Z17/Argument items
+			 *
+			 * @param {string} key
+			 * @param {Array} list
+			 * @return {Object}
+			 */
+			getArgFromArgList: function ( key, list ) {
+				return list.find( function ( item ) {
+					return ( item[ Constants.Z_ARGUMENT_KEY ] === key );
+				} );
+			},
 			zObjectToString: function ( zObject ) {
 				if ( typeof zObject === 'undefined' ) {
 					return '';
@@ -108,6 +152,104 @@ var Constants = require( '../Constants.js' ),
 			},
 			isFunctionItemAttached( item, attachedItems ) {
 				return attachedItems.indexOf( item ) > -1;
+			},
+
+			/**
+			 * Transform the value of a Z1K1 key (object type) to a string.
+			 * When the type is a reference, return the Zid of the referred type.
+			 * When the type is a literal, return the stringified value of Z4K1.
+			 * When the type is a function call, return the function ID and the arguments in
+			 * brackets.
+			 *
+			 * @param {Object|string} type
+			 * @return {string}
+			 */
+			typeToString: function ( type ) {
+				if ( typeof type === 'string' ) {
+					return type;
+				} else {
+					const mode = typeUtils.methods.typeToString( type[ Constants.Z_OBJECT_TYPE ] );
+					let typeString;
+
+					switch ( mode ) {
+						case Constants.Z_REFERENCE:
+							typeString = type[ Constants.Z_REFERENCE_ID ];
+							break;
+
+						case Constants.Z_FUNCTION_CALL:
+							typeString = type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
+							break;
+
+						case Constants.Z_TYPE:
+							typeString = type[ Constants.Z_TYPE_IDENTITY ];
+							break;
+
+						case Constants.Z_ARGUMENT_REFERENCE:
+							typeString = type[ Constants.Z_ARGUMENT_REFERENCE_KEY ];
+							break;
+
+						default:
+							typeString = undefined;
+					}
+
+					return ( typeof typeString === 'object' ) ?
+						typeUtils.methods.typeToString( typeString ) :
+						typeString;
+				}
+			},
+			/**
+			 * Return the empty structure of builtin types that we will
+			 * create when creating these types in the interface.
+			 *
+			 * The way these scaffoldings are created also determines whether
+			 * certain sub-types are initiated as literals or as references
+			 * (E.g. Z11K1, monolingual language, is preferred as a reference
+			 * to a Z60 than as a literal, so when creating the scaffolding
+			 * we give the structure of an empty reference)
+			 *
+			 * FIXME: Once we deprecate the old code from changeType, getScaffolding
+			 * should not return undefined, but have the Empty object (Z1) return as
+			 * default case.
+			 *
+			 * @param {string} type
+			 * @return {Object|Array}
+			 */
+			getScaffolding: function ( type ) {
+				switch ( type ) {
+					case Constants.Z_OBJECT:
+						// Empty object:
+						// {
+						//  Z1K1: { Z1K1: Z9, Z9K1: '' }
+						// }
+						return {
+							[ Constants.Z_OBJECT_TYPE ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: ''
+							}
+						};
+
+					case Constants.Z_MONOLINGUALSTRING:
+						// Empty monolingual string:
+						// {
+						//  Z1K1: Z11
+						//  Z11K1: { Z1K1: Z9, Z9K1: '' }
+						//  Z11K2: { Z1K1: Z6, Z6K1: '' }
+						// }
+						return {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
+							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: ''
+							},
+							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_STRING,
+								[ Constants.Z_STRING_VALUE ]: ''
+							}
+						};
+
+					default:
+						return undefined;
+				}
 			}
 		}
 	};

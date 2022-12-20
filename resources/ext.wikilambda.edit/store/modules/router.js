@@ -144,6 +144,18 @@ module.exports = {
 				uri.query.title = uri.path.slice( lastPathIndex + 1 );
 			}
 
+			// ----------------
+			// START TEMPORARY BLOCK
+			// Temporary Router Intervention for DefaultView POC
+			// TODO: Remove this and replace with final routing strategy when
+			// we finish the default component work and we are ready to switch
+			if ( uri.query.view === 'default-view' ) {
+				context.dispatch( 'changeCurrentView', 'default-view' );
+				return;
+			}
+			// END TEMPORARY BLOCK
+			// ----------------
+
 			if ( isNewOrExistingZObject( uri.query ) ) {
 				let currentEditorView = Constants.VIEWS.Z_OBJECT_EDITOR;
 

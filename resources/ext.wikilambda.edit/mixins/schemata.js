@@ -103,6 +103,14 @@ function isZid( k ) {
 	return k.match( /^Z[1-9]\d*$/ ) !== null;
 }
 
+/**
+ * Return the ZObject in semi-normalized form. This means that the strings
+ * and references will be normalized, but a canonical list will still be
+ * left as a canonical list. This has also been referred to as Hybrid form
+ *
+ * @param {Object | Array | string} zobject
+ * @return {Object|Array|undefined}
+ */
 function normalize( zobject ) {
 	var normal = {},
 		keys;

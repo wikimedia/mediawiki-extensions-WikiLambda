@@ -6,13 +6,9 @@
  */
 
 var Constants = require( '../../Constants.js' ),
+	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
 	resolvePromiseList = {},
 	zKeystoFetch = [];
-
-function generateRequestName( keysList ) {
-	const sortedKeys = keysList.sort();
-	return sortedKeys.join( '-' );
-}
 
 module.exports = exports = {
 	state: {
@@ -29,6 +25,66 @@ module.exports = exports = {
 		getZkeys: function ( state ) {
 			return state.zKeys;
 		},
+
+		/**
+		 * Given a global ZKey (ZnKm) it returns a string that reflects
+		 * its expected value type (if any). Else it returns Z1.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getExpectedTypeOfKey: function ( state ) {
+			/**
+			 * @param {string} key
+			 * @return {string}
+			 */
+			return function ( key ) {
+
+				// If the key is undefined, then this is the root object,
+				// the expected type is always Z2/Persistent object type
+				if ( key === undefined ) {
+					return Constants.Z_PERSISTENTOBJECT;
+				}
+
+				// TODO: if this is an array index, (an integer),
+				// should we return the expected type for the typed list?
+				if ( typeUtils.isGlobalKey( key ) ) {
+					let type;
+					const zid = typeUtils.getZidOfGlobalKey( key );
+
+					if ( state.zKeys[ zid ] ) {
+						const zobject = state.zKeys[ zid ][ Constants.Z_PERSISTENTOBJECT_VALUE ];
+						const ztype = zobject[ Constants.Z_OBJECT_TYPE ];
+
+						switch ( ztype ) {
+							// Return the key value type if zid belongs to a type
+							case Constants.Z_TYPE:
+								var zkey = typeUtils.getKeyFromKeyList( key, zobject[ Constants.Z_TYPE_KEYS ] );
+								type = zkey ? zkey[ Constants.Z_KEY_TYPE ] : Constants.Z_OBJECT;
+								break;
+
+							// Return the argument type if the zid belongs to a function
+							case Constants.Z_FUNCTION:
+								var zarg = typeUtils.getArgFromArgList(
+									key,
+									zobject[ Constants.Z_FUNCTION_ARGUMENTS ]
+								);
+								type = zarg ? zarg[ Constants.Z_ARGUMENT_TYPE ] : Constants.Z_OBJECT;
+								break;
+
+							// If not found, return Z1/ZObject (any) type
+							default:
+								return Constants.Z_OBJECT;
+						}
+						return typeUtils.typeToString( type );
+					}
+				}
+
+				// If key is a not found, a list index or a local key, return Z1/Object (any) type
+				return Constants.Z_OBJECT;
+			};
+		},
+
 		/**
 		 * Returns all fetched zids and their label, which will be in the
 		 * user selected language if available, or in the closes fallback.
@@ -48,6 +104,26 @@ module.exports = exports = {
 		},
 		getAllZKeyLanguageLabels: function ( state ) {
 			return state.zKeyAllLanguageLabels;
+		},
+
+		/**
+		 * Returns the label of the ID of a ZKey, ZPersistentObject or ZArgumentDeclaration.
+		 * The label is in the user selected language, if available, or else in the closest fallback.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getLabel: function ( state ) {
+			/**
+			 * @param {string} id of the ZPersistentObject, ZKey or ZArgumentDeclaration
+			 * @return {Object} contains zid, label and lang properties
+			 */
+			function findLabel( id ) {
+				return state.zKeyAllLanguageLabels.find( function ( label ) {
+					return ( label.zid === id );
+				} );
+			}
+			return findLabel;
 		}
 	},
 	mutations: {
@@ -99,6 +175,11 @@ module.exports = exports = {
 
 			if ( zKeystoFetch.length === 0 ) {
 				return Promise.resolve();
+			}
+
+			function generateRequestName( keysList ) {
+				const sortedKeys = keysList.sort();
+				return sortedKeys.join( '-' );
 			}
 
 			function dispatchPerformZKeyFetch( fetchZids ) {

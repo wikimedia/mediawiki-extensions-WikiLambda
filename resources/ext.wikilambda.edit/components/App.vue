@@ -22,7 +22,8 @@ var configureCompat = require( 'vue' ).configureCompat,
 	FunctionEditor = require( '../views/FunctionEditor.vue' ),
 	FunctionViewer = require( '../views/FunctionViewer.vue' ),
 	ZObjectViewer = require( '../views/ZObjectViewer.vue' ),
-	ZObjectEditor = require( '../views/ZObjectEditor.vue' );
+	ZObjectEditor = require( '../views/ZObjectEditor.vue' ),
+	DefaultView = require( '../views/DefaultView.vue' );
 
 configureCompat( { MODE: 3 } );
 
@@ -33,7 +34,8 @@ module.exports = exports = {
 		'function-editor': FunctionEditor,
 		'function-viewer': FunctionViewer,
 		'zobject-viewer': ZObjectViewer,
-		'zobject-editor': ZObjectEditor
+		'zobject-editor': ZObjectEditor,
+		'default-view': DefaultView
 	},
 	inject: {
 		viewmode: { default: false }
