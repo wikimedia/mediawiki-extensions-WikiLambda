@@ -331,7 +331,6 @@ module.exports = exports = {
 
 	&__action-delete {
 		.cdx-icon {
-			color: @wmui-color-red50;
 			width: 16px;
 			height: 16px;
 		}
@@ -367,7 +366,6 @@ module.exports = exports = {
 
 		&__action-delete {
 			.cdx-icon {
-				color: @wmui-color-red50;
 				width: 16px;
 				height: 16px;
 			}
