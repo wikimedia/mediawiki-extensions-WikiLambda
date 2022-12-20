@@ -12,8 +12,9 @@
 var Constants = require( '../Constants.js' ),
 	typeUtils = require( './typeUtils.js' ).methods;
 
-// Note: This is intentionally "wrong" in that it allows for Z0
-const referenceRe = /^Z\d+(K[1-9]\d*)?$/;
+// Note: This is intentionally "wrong" in that it allows for Z0.
+// It excludes letters so as not to apply to keys (containing a 'K').
+const referenceRe = /^Z0*[1-9]*\d*$/;
 const errorTypeReferenceRe = /^Z5\d{2}$/;
 
 function canonicalizeZ6OrZ9( zobject ) {

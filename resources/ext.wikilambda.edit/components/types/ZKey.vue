@@ -81,21 +81,6 @@ module.exports = exports = {
 	),
 	methods: $.extend( {},
 		mapActions( [ 'changeType' ] )
-	),
-	watch: {
-		zObjectKeyValue: {
-			handler( value ) {
-				if ( !value && this.zObjectKey ) {
-					const payload = {
-						id: this.zObjectKey.id,
-						type: Constants.Z_STRING,
-						value: this.zKeyValue
-					};
-					this.changeType( payload ).then();
-				}
-			},
-			deep: true
-		}
-	}
+	)
 };
 </script>
