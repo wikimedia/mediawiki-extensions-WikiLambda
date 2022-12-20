@@ -9,7 +9,8 @@
 			"Tranve",
 			"Weather Top Wizard",
 			"Winston Sung",
-			"Iceman1415"
+			"Iceman1415",
+			"捍粵者"
 		]
 	},
 	"wikilambda-desc": "為維基媒體的 Wiki 提供 wikitext 解析器功能，來呼叫對於在中央 Wiki 上編寫、管理、評估的功能之評估。",
@@ -41,7 +42,7 @@
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "現有 ZObject",
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "衝突的 ZObject",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "語言",
-	"wikilambda-publishnew": "發布",
+	"wikilambda-publishnew": "發佈",
 	"wikilambda-confirm": "確認",
 	"wikilambda-savenew": "儲存",
 	"wikilambda-publishchanges": "發布變更",

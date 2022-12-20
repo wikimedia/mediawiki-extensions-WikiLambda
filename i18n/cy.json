@@ -1,10 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Robin Owain"
+			"Robin Owain",
+			"Afalau"
 		]
 	},
 	"wikilambda-viewmode-nojs": "Arddangosir y dudalen hon yn rhannol, heb JavaScript.",
-	"wikilambda-editor-label-addlanguage-label": "Ychwanegwch iaith:",
+	"wikilambda-editor-label-addlanguage-label": "Dewiswch iaith:",
 	"wikilambda-editor-label-removelanguage-tooltip": "Dilwech yr iaith hon o'r label"
 }
