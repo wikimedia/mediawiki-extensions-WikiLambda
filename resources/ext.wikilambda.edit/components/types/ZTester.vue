@@ -14,8 +14,8 @@
 		<span class="ext-wikilambda-is-tester-associated">
 			<cdx-icon :icon="associatedIcon()"></cdx-icon>
 			({{ isTesterAttached ?
-				$i18n( 'wikilambda-function-is-attached' ).text() :
-				$i18n( 'wikilambda-function-is-not-attached' ).text()
+				$i18n( 'wikilambda-function-is-approved' ).text() :
+				$i18n( 'wikilambda-function-is-not-approved' ).text()
 			}})
 		</span>
 		<div>{{ callLabel }}:</div>

@@ -28,8 +28,8 @@
 				<span class="ext-wikilambda-zimplementation__-is-impl-associated">
 					<cdx-icon :icon="associatedIcon()"></cdx-icon>
 					({{ isImplementationAttached ?
-						$i18n( 'wikilambda-function-is-attached' ).text() :
-						$i18n( 'wikilambda-function-is-not-attached' ).text()
+						$i18n( 'wikilambda-function-is-approved' ).text() :
+						$i18n( 'wikilambda-function-is-not-approved' ).text()
 					}})
 				</span>
 			</template>

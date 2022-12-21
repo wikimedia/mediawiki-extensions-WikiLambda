@@ -45,8 +45,8 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 		const firstTesterRow = within( testersTable ).getAllByRole( 'row' )[ 1 ];
 		await waitFor( () => expect( firstTesterRow ).toHaveTextContent( 'Tester name, in English' ) );
 
-		// ASSERT: The "unattached" tester is shown as proposed.
-		expect( firstTesterRow ).toHaveTextContent( 'Proposed' );
+		// ASSERT: The "unattached" tester is shown as deactivated.
+		expect( firstTesterRow ).toHaveTextContent( 'Deactivated' );
 
 		// ASSERT: The "unattached" tester shows as passing all implementation tests.
 		await waitFor( () => expect( within( firstTesterRow ).getAllByText( 'Pass' ) ).toHaveLength( 2 ) );

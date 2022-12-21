@@ -251,8 +251,8 @@ module.exports = exports = {
 								readonly: true,
 								text: this.$i18n(
 									isAvailable ?
-										'wikilambda-function-implementation-state-available' :
-										'wikilambda-function-implementation-state-proposed'
+										'wikilambda-function-implementation-state-approved' :
+										'wikilambda-function-implementation-state-deactivated'
 								).text(),
 								intent: isAvailable ? 'success' : 'warning'
 							},
@@ -384,8 +384,8 @@ module.exports = exports = {
 							readonly: true,
 							text: this.$i18n(
 								isAvailable ?
-									'wikilambda-function-implementation-state-available' :
-									'wikilambda-function-implementation-state-proposed'
+									'wikilambda-function-implementation-state-approved' :
+									'wikilambda-function-implementation-state-deactivated'
 							).text(),
 							intent: isAvailable ? 'success' : 'warning'
 						},

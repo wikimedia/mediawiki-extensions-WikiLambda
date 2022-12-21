@@ -48,8 +48,8 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 		await waitFor(
 			() => expect( secondImplementationRow ).toHaveTextContent( 'Implementation in code, in English' ) );
 
-		// ASSERT: The "unattached" implementation is shown as proposed.
-		expect( secondImplementationRow ).toHaveTextContent( 'Proposed' );
+		// ASSERT: The "unattached" implementation is shown as deactivated.
+		expect( secondImplementationRow ).toHaveTextContent( 'Deactivated' );
 
 		// ACT: Select the "unattached" implementation in the table.
 		await fireEvent.update( within( secondImplementationRow ).getByRole( 'checkbox' ), true );

@@ -111,11 +111,11 @@ describe( 'FunctionDetails', function () {
 		expect( implTableItems[ 0 ].checkbox.props.modelValue ).toBe( false );
 		expect( implTableItems[ 0 ].language.title.string ).toEqual( 'wikilambda-implementation-selector-built-in' );
 		expect( implTableItems[ 0 ].name.title ).toEqual( 'Z333 name' );
-		expect( implTableItems[ 0 ].state.props.text ).toEqual( 'Proposed' );
+		expect( implTableItems[ 0 ].state.props.text ).toEqual( 'Deactivated' );
 		expect( implTableItems[ 1 ].checkbox.props.modelValue ).toBe( false );
 		expect( implTableItems[ 1 ].language.title.string ).toEqual( 'wikilambda-implementation-selector-composition' );
 		expect( implTableItems[ 1 ].name.title ).toEqual( 'Z444 name' );
-		expect( implTableItems[ 1 ].state.props.text ).toEqual( 'Available' );
+		expect( implTableItems[ 1 ].state.props.text ).toEqual( 'Approved' );
 	} );
 
 	it( 'passes testers to table correctly', () => {
@@ -125,10 +125,10 @@ describe( 'FunctionDetails', function () {
 		expect( testerTableItems ).toHaveLength( 2 );
 		expect( testerTableItems[ 0 ].checkbox.props.modelValue ).toBe( false );
 		expect( testerTableItems[ 0 ].name.title ).toEqual( 'Z111 name' );
-		expect( testerTableItems[ 0 ].state.props.text ).toEqual( 'Proposed' );
+		expect( testerTableItems[ 0 ].state.props.text ).toEqual( 'Deactivated' );
 		expect( testerTableItems[ 1 ].checkbox.props.modelValue ).toBe( false );
 		expect( testerTableItems[ 1 ].name.title ).toEqual( 'Z222 name' );
-		expect( testerTableItems[ 1 ].state.props.text ).toEqual( 'Available' );
+		expect( testerTableItems[ 1 ].state.props.text ).toEqual( 'Approved' );
 	} );
 
 	describe( 'Implementations without labels display the ZID', () => {

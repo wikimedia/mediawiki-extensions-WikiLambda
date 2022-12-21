@@ -42,8 +42,8 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 		const secondTesterRow = within( testersTable ).getAllByRole( 'row' )[ 2 ];
 		await waitFor( () => expect( secondTesterRow ).toHaveTextContent( 'Tester name, in English' ) );
 
-		// ASSERT: The "attached" tester is shown as available.
-		expect( secondTesterRow ).toHaveTextContent( 'Available' );
+		// ASSERT: The "attached" tester is shown as approved.
+		expect( secondTesterRow ).toHaveTextContent( 'Approved' );
 
 		// ASSERT: The "attached" tester shows as failing all implementation tests.
 		await waitFor( () => expect( within( secondTesterRow ).getAllByText( 'Fail' ) ).toHaveLength( 2 ) );
