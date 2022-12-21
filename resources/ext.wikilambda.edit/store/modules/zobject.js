@@ -1353,7 +1353,7 @@ module.exports = exports = {
 				rootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
 				context.commit( 'addZObject', rootObject );
 
-				context.dispatch( 'changeType', {
+				return context.dispatch( 'changeType', {
 					id: 0,
 					type: Constants.Z_PERSISTENTOBJECT
 				} ).then( function () {
