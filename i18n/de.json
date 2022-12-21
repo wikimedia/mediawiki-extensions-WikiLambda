@@ -43,7 +43,6 @@
 	"wikilambda-special-define-function-summary": "Eine Funktion enthält eine Definition, möglicherweise mehrere Implementierungen und erfordert Tests zur Validierung. Auf der folgenden Registerkarte „Funktionsdefinition“ werden die Eingabe, die Ausgabe und die Bezeichnungen der Funktion definiert, unter „Implementierung“ werden die Implementierungen bearbeitet und gespeichert und unter „Test“ wird sichergestellt, dass sich die Funktion wie erwartet verhält.",
 	"wikilambda-special-createzobject-intro": "Vergewissere dich, dass du die Gemeinschaftsrichtlinien sowie die Urheberrechts- und Patentvorschriften befolgst.",
 	"wikilambda-special-createzobject-nojs": "Diese Seite erfordert die Verwendung von JavaScript.",
-	"wikilambda-special-function-definition-publish-description": "Dadurch wird deine Arbeit im Internet veröffentlicht",
 	"wikilambda-special-edit-function-definition-description": "Du bearbeitest die Funktionsdefinitionsseite. $1 kann die Definition der Funktion ändern. Alle können die Bezeichnungen bearbeiten. Stelle sicher, dass du deine Arbeit speicherst, indem du auf die blaue Schaltfläche Veröffentlichen klickst.",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Nur Benutzer mit besonderen Rechten",
 	"wikilambda-special-evaluatefunctioncall": "Einen Funktionsaufruf auswerten",

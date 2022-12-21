@@ -50,7 +50,6 @@
 	"wikilambda-special-define-function-summary": "関数には定義が含まれており、場合によっては複数の実装が含まれており、検証テストが必要です。下の「関数定義」タブは、関数の入力、出力、およびラベルを定義するためのものです。「実装」は、実装を編集および保存するためのものです。「テスト」は、関数が期待どおりに動作することを確認するためのものです。",
 	"wikilambda-special-createzobject-intro": "コミュニティのポリシー、および著作権と特許の規則に従っていることを確認してください。",
 	"wikilambda-special-createzobject-nojs": "このページではJavaScriptを使用する必要があります。",
-	"wikilambda-special-function-definition-publish-description": "これにより、あなたの作品がインターネットに公開されます",
 	"wikilambda-special-edit-function-definition-description": "関数定義ページを編集しています。 $1は関数の定義を変更できます。誰でもラベルを編集できます。下の青い [公開] ボタンをクリックして、作品を保存してください。",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "特別な許可がある利用者に限る",
 	"wikilambda-special-evaluatefunctioncall": "関数呼び出しを評価する",

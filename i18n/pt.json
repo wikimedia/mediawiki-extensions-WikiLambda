@@ -40,7 +40,6 @@
 	"wikilambda-special-define-function-summary": "Uma função contém uma definição, possivelmente várias implementações e requer testes de validação. O separador 'Definição da função' abaixo é para definir a entrada, a saída e as etiquetas   da função, 'Implementação' é para editar e armazenar implementações e 'Testes' é para garantir que a função se comporta conforme esperado.",
 	"wikilambda-special-createzobject-intro": "Certifique-se de que respeita as práticas da comunidade e as regras respeitantes a direitos de autor e patentes.",
 	"wikilambda-special-createzobject-nojs": "Esta página requer o uso de JavaScript.",
-	"wikilambda-special-function-definition-publish-description": "Isto irá publicar o seu trabalho na internet",
 	"wikilambda-special-edit-function-definition-description": "Está a editar a página de definição da função. $1 podem alterar a definição da função. Todos podem editar as etiquetas. Certifique-se de que grava o seu trabalho clicando no botão azul \"Publicar\" abaixo.",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Só utilizadores com permissões especiais",
 	"wikilambda-special-evaluatefunctioncall": "Calcular uma chamada de função",

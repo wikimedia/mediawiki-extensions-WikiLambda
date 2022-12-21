@@ -60,7 +60,6 @@
 	"wikilambda-special-define-function-summary": "Una función contiene una definición, sus múltiples implementaciones posibles y requiere pruebas para su validación. La pestaña «Definición de función» a continuación es para definir la entrada, la salida y las etiquetas de la función, «Implementación» es para editar y almacenar implementaciones, y «Prueba» es para garantizar que la función se comporta como se espera.",
 	"wikilambda-special-createzobject-intro": "Asegúrate de que sigues las políticas de la comunidad y las reglas de derechos de autor y patentes.",
 	"wikilambda-special-createzobject-nojs": "Para utilizar esta página se necesita JavaScript.",
-	"wikilambda-special-function-definition-publish-description": "Esto publicará tu trabajo en Internet.",
 	"wikilambda-special-edit-function-definition-description": "Estás editando la página de definición de función. $1 puede cambiar la definición de la función. Todos pueden editar las etiquetas. Asegúrate de guardar tu trabajo haciendo clic en el botón azul (Publicar) a continuación.",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Solo usuarios con permisos especiales",
 	"wikilambda-special-evaluatefunctioncall": "Evalúa una llamada de función",

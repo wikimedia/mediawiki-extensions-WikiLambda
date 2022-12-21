@@ -52,7 +52,6 @@
 	"wikilambda-special-define-function-summary": "Une fonction contient une définition, éventuellement avec plusieurs mises en œuvre, et nécessite des tests pour la validation. L’onglet « Définition de la fonction » ci-dessous permet de définir les entrées, sorties et libellés de la fonction, «Mise en œuvre » permet de modifier et stocker des mises en œuvre et « Test » permet de s’assurer que la fonction se comporte comme prévu.",
 	"wikilambda-special-createzobject-intro": "Assurez-vous que vous suivez les politiques de la communauté, ainsi que les règles relatives aux droits d’auteur et aux brevets.",
 	"wikilambda-special-createzobject-nojs": "Cette page nécessite JavaScript pour être utilisée.",
-	"wikilambda-special-function-definition-publish-description": "Cela publiera votre travail sur Internet",
 	"wikilambda-special-edit-function-definition-description": "Vous modifiez la page de définition de la fonction. « $1 » peut modifier la définition de la fonction. Tout le monde peut modifier les libellés. Assurez-vous d’enregistrer votre travail en cliquant sur le bouton bleu « Publier » ci-dessous.",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Seulement les utilisateurs avec des droits spéciaux",
 	"wikilambda-special-evaluatefunctioncall": "Évaluer un appel de fonction",

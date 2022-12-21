@@ -39,7 +39,6 @@
 	"wikilambda-special-define-function-summary": "Un function contine un definition e possibilemente plure implementationes, e require tests pro validation. Le scheda 'Definition del function' hic infra es pro definir le entrata, le sortita e le etiquettas del function. 'Implementation' es pro modificar e immagazinar implementationes e 'Test' es pro assecurar se que le function se comporta como previste.",
 	"wikilambda-special-createzobject-intro": "Assecura te de sequer le politicas del communitate e le regulas del derecto de autor e de patentes.",
 	"wikilambda-special-createzobject-nojs": "Iste pagina require le uso de JavaScript.",
-	"wikilambda-special-function-definition-publish-description": "Isto publicara tu travalio sur internet.",
 	"wikilambda-special-edit-function-definition-description": "Tu modifica ora le pagina de definition del function. $1 pote modificar le definition del function. Tote le mundo pote modificar le etiquettas. Assecura te de salveguardar tu travalio cliccante sur le button blau \"Publicar\" hic infra.",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Solmente usatores con permissiones special",
 	"wikilambda-special-evaluatefunctioncall": "Evalutar un appello de function",

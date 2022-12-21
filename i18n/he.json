@@ -42,7 +42,6 @@
 	"wikilambda-special-define-function-summary": "פונקציה מכילה הגדרה, כמה מימושים אפשריים, ודורשת בדיקות לווידוא נכונות. הלשונית \"הגדרת פונקציה\" להלן מיועדת להגדרת הקלט, הפלט, והתוויות של הפונקציה. \"מימוש\" מיועדת לעריכה ואחסון של מימושים, ו\"בדיקה\" מיועדת לווידוא שהפונקציה מתנהגת כמו שצריך.",
 	"wikilambda-special-createzobject-intro": "{{GENDER:|ודא שאתה ממלא|ודאי שאת ממלאת}} את מדיניות הקהילה, ואת כללי זכויות היוצרים והפטנטים.",
 	"wikilambda-special-createzobject-nojs": "הדף הזה דורש הפעלה של JavaScript.",
-	"wikilambda-special-function-definition-publish-description": "זה יפרסם את העבודה שלך באינטרנט",
 	"wikilambda-special-edit-function-definition-description": "{{GENDER:|אתה עורך|את עורכת}} את דף הגדרת הפונקציה. $1 יכולים לערוך את הגדרת הפונקציה. כל אחד יכול לערוך את התוויות. נא לוודא שהעבודה שלך נשמרת באמצעות לחיצה על כפתור הפרסום הכחול למטה.",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "רק משתמשים עם הרשאות מיוחדות",
 	"wikilambda-special-evaluatefunctioncall": "הערכה של קריאה לפונקציה",
