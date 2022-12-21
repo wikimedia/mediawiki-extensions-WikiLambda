@@ -43,6 +43,7 @@
 	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "ZObject conflitante",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Idioma",
 	"wikilambda-publishnew": "Publicar",
+	"wikilambda-publish-successful": "As suas alterações foram publicadas!",
 	"wikilambda-savenew": "Salvar",
 	"wikilambda-publishchanges": "Publicar alterações",
 	"wikilambda-savechanges": "Salvar alterações",
@@ -78,6 +79,7 @@
 	"wikilambda-tester-status-failed": "FALHOU",
 	"wikilambda-tester-results-title": "Resultados do teste",
 	"wikilambda-tester-results-caption": "Resultados de testadores de função em relação a implementações",
+	"wikilambda-tester-results-current-test": "Teste atual",
 	"wikilambda-tester-run-testers": "Executar todos os testadores",
 	"wikilambda-metadata-show-languages": "Mostrar caixa de rótulos",
 	"wikilambda-metadata-hide-languages": "Ocultar caixa de rótulos",
@@ -87,6 +89,8 @@
 	"wikilambda-metadata-all-languages": "Mostrar todos os idiomas inseridos",
 	"wikilambda-metadata-fewer-languages": "Mostrar menos idiomas",
 	"wikilambda-persistentobject-details-label": "Detalhes",
+	"wikilambda-function-definition-alias-label-new": "Novo nome alternativo",
+	"wikilambda-function-definition-inputs-item-remove": "Remover entrada",
 	"wikilambda-editor-fn-step-function-details": "Detalhes",
 	"wikilambda-editor-input-title": "Entrada de texto",
 	"wikilambda-editor-input-type-placeholder": "Tipo da entrada",
@@ -94,5 +98,6 @@
 	"wikilambda-function-viewer-aliases-hide-language-button": "Ocultar lista",
 	"wikilambda-function-viewer-names-show-languages-button": "Mostrar nome em outros idiomas",
 	"wikilambda-function-viewer-details-table-view-all": "Ver tudo",
-	"wikilambda-function-viewer-details-table-view-less": "Ver menos"
+	"wikilambda-function-viewer-details-table-view-less": "Ver menos",
+	"wikilambda-chip-remove": "Remover item"
 }

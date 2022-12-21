@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"AJBot2",
+			"Agam Riyandana",
 			"DARMAS BUDI SANTOSO",
 			"Daud I.F. Argana",
 			"Farras",
@@ -35,7 +36,6 @@
 	"wikilambda-special-define-function-summary": "Fungsi mengandung sebuah definisi, satu atau lebih implementasi, dan memerlukan uji coba untuk validasi. Tab 'Definisi Fungsi' di bawah adalah tempat mendefinisikan masukan, keluaran, dan label fungsi, 'Implementasi' adalah tempat mengubah dan menyimpan implementasi, dan 'Uji Coba' adalah tempat memastikan fungsi bertingkah seperti yang diperkirakan.",
 	"wikilambda-special-createzobject-intro": "Pastikan Anda mengikuti kebijakan komunitas, serta aturan paten dan hak cipta.",
 	"wikilambda-special-createzobject-nojs": "Halaman ini memerlukan JavaScript agar bisa digunakan.",
-	"wikilambda-special-edit-function-definition-description": "You are editing the function definition page. $1 can change the definiton of the function. Everyone can edit the labels. Make sure to save your work by clicking the blue Publish button below.",
 	"wikilambda-special-evaluatefunctioncall": "Mengevaluasi pemanggilan fungsi",
 	"wikilambda-special-evaluatefunctioncall-summary": "Formulir ini membolehkan Anda mengevaluasi pemanggilan fungsi.",
 	"wikilambda-special-evaluatefunctioncall-intro": "Pastikan Anda mengikuti kebijakan komunitas, serta aturan paten dan hak cipta.",
@@ -52,7 +52,6 @@
 	"wikilambda-special-objectsbytype-typeheader": "Semua Tipe",
 	"wikilambda-special-objectsbytype-empty": "Tidak ditemukan ZObjek yang bersinambung untuk tipe ini.",
 	"wikilambda-publishnew": "Terbitkan",
-	"wikilambda-publish-successful": "Your changes have been successfully published!",
 	"wikilambda-cancel": "Batal",
 	"wikilambda-savenew": "Simpan",
 	"wikilambda-fallback": "Editor cadangan",
@@ -109,6 +108,7 @@
 	"wikilambda-tester-results-title": "Hasil Penguji",
 	"wikilambda-tester-results-caption": "Hasil penguji fungsi terhadap implementasi",
 	"wikilambda-tester-results-current-implementation": "Implementasi saat ini",
+	"wikilambda-tester-results-current-test": "Tes saat ini",
 	"wikilambda-tester-no-results": "Tidak ditemukan hasil penguji. Silakan tambahkan sebuah implementasi dan sebuah penguji untuk melihat hasilnya.",
 	"wikilambda-tester-results-percentage-label": "Total Penguji yang Lulus",
 	"wikilambda-tester-run-testers": "Jalankan Semua Penguji",
@@ -137,7 +137,6 @@
 	"wikilambda-function-definition-name-placeholder": "Masukkan nama fungsi yang deskriptif",
 	"wikilambda-function-definition-name-example": "Lihat contoh nama.",
 	"wikilambda-function-definition-alias-label": "Alias",
-	"wikilambda-function-definition-alias-label-new": "New alias",
 	"wikilambda-function-definition-alias-placeholder": "Masukkan nama lain untuk nama fungsi",
 	"wikilambda-function-definition-alias-example": "Lihat contoh alias.",
 	"wikilambda-function-definition-footer-placeholder": "Jelaskan secara singkat pengubahan Anda",
@@ -147,7 +146,7 @@
 	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "Pilih tipe dari daftar tipe Anda",
 	"wikilambda-function-definition-inputs-item-input-placeholder": "Label masukan",
 	"wikilambda-function-definition-inputs-item-add-input-button": "+ Tambahkan masukan lainnya",
-	"wikilambda-function-definition-inputs-item-remove": "Remove input",
+	"wikilambda-function-definition-inputs-item-add-first-input-button": "+ Tambahkan masukan",
 	"wikilambda-function-definition-output-label": "Tipe hasil",
 	"wikilambda-function-definition-output-selector": "Masukkan tipe",
 	"wikilambda-function-definition-can-publish-message": "Anda telah menyelesaikan definisinya! Simpan pekerjaan Anda dengan menekan 'Terbitkan' di bawah",
@@ -169,6 +168,5 @@
 	"wikilambda-ztyped-map-placeholder": "Pilih tipe peta",
 	"wikilambda-ztyped-map-description": "Tipe peta",
 	"wikilambda-zerror": "ZGalat tipe $1",
-	"wikilambda-optional": "opsional",
-	"wikilambda-chip-remove": "Remove item"
+	"wikilambda-optional": "opsional"
 }
