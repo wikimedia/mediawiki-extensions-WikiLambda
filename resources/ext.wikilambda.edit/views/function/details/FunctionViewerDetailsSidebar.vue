@@ -27,9 +27,6 @@
 			</a>
 		</template>
 
-		<div class="ext-wikilambda-function-viewer-details-sidebar__summary">
-			{{ $i18n( 'wikilambda-function-viewer-details-sidebar-summary' ).text() }}
-		</div>
 		<div class="ext-wikilambda-function-viewer-details-sidebar__links">
 			<div class="ext-wikilambda-function-viewer-details-sidebar__link">
 				<a
