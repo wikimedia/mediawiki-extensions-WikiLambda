@@ -19,10 +19,7 @@ const zFunctionWithImplementationsAndTesters = function ( implementations, teste
 				{
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_ARGUMENT,
 					[ Constants.Z_ARGUMENT_TYPE ]: Constants.Z_STRING,
-					[ Constants.Z_ARGUMENT_KEY ]: {
-						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_STRING,
-						[ Constants.Z_STRING_VALUE ]: zid + 'K1'
-					},
+					[ Constants.Z_ARGUMENT_KEY ]: zid + 'K1',
 					[ Constants.Z_ARGUMENT_LABEL ]: {
 						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
 						[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [
@@ -38,10 +35,7 @@ const zFunctionWithImplementationsAndTesters = function ( implementations, teste
 				{
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_ARGUMENT,
 					[ Constants.Z_ARGUMENT_TYPE ]: Constants.Z_STRING,
-					[ Constants.Z_ARGUMENT_KEY ]: {
-						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_STRING,
-						[ Constants.Z_STRING_VALUE ]: zid + 'K2'
-					},
+					[ Constants.Z_ARGUMENT_KEY ]: zid + 'K2',
 					[ Constants.Z_ARGUMENT_LABEL ]: {
 						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
 						[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [

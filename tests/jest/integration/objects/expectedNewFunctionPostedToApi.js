@@ -15,10 +15,7 @@ module.exports = {
 			{
 				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_ARGUMENT,
 				[ Constants.Z_ARGUMENT_TYPE ]: Constants.Z_STRING,
-				[ Constants.Z_ARGUMENT_KEY ]: {
-					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_STRING,
-					[ Constants.Z_STRING_VALUE ]: 'Z0K1'
-				},
+				[ Constants.Z_ARGUMENT_KEY ]: 'Z0K1',
 				[ Constants.Z_ARGUMENT_LABEL ]: {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
 					[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [
@@ -39,10 +36,7 @@ module.exports = {
 			{
 				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_ARGUMENT,
 				[ Constants.Z_ARGUMENT_TYPE ]: Constants.Z_STRING,
-				[ Constants.Z_ARGUMENT_KEY ]: {
-					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_STRING,
-					[ Constants.Z_STRING_VALUE ]: 'Z0K2'
-				},
+				[ Constants.Z_ARGUMENT_KEY ]: 'Z0K2',
 				[ Constants.Z_ARGUMENT_LABEL ]: {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
 					[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [
