@@ -129,8 +129,6 @@
 	"wikilambda-persistentobject-details-label": "Rincian",
 	"wikilambda-persistentobject-evaluate-function": "Evaluasi Fungsi",
 	"wikilambda-implementation-selector-none": "Ini adalah implementasi bawaan. Kodenya merupakan bagian dari inti perangkat lunak, dan tidak ditampilkan di sini.",
-	"wikilambda-function-is-attached": "Objek ini terkait dengan fungsinya.",
-	"wikilambda-function-is-not-attached": "Objek ini tidak terkait dengan fungsinya.",
 	"wikilambda-function-definition-add-other-label-languages-title": "+ Tambahkan label dalam bahasa lain",
 	"wikilambda-function-definition-name-label": "Nama",
 	"wikilambda-function-implementation-language-label": "Bahasa",

@@ -158,8 +158,6 @@
 	"wikilambda-persistentobject-details-label": "Szczegóły",
 	"wikilambda-persistentobject-evaluate-function": "Wykonaj funkcję",
 	"wikilambda-implementation-selector-none": "To jest wbudowana implementacja. Kod jest częścią oprogramowania i nie jest tutaj wyświetlany.",
-	"wikilambda-function-is-attached": "Ten obiekt jest powiązany z jego funkcją.",
-	"wikilambda-function-is-not-attached": "Ten obiekt nie jest powiązany z jego funkcją.",
 	"wikilambda-function-definition-add-other-label-languages-title": "+ Dodaj etykiety w innym języku",
 	"wikilambda-function-definition-name-label": "Nazwa",
 	"wikilambda-function-definition-edit": "Edytuj definicję",
@@ -167,8 +165,6 @@
 	"wikilambda-function-implementation-language-label": "Język",
 	"wikilambda-function-implementation-state-label": "Status",
 	"wikilambda-function-implementation-tests-passed-label": "Testy zdane",
-	"wikilambda-function-implementation-state-available": "Dostępna",
-	"wikilambda-function-implementation-state-proposed": "Proponowana",
 	"wikilambda-function-definition-name-placeholder": "Wpisz opisową nazwę funkcji",
 	"wikilambda-function-definition-name-example": "Zobacz przykłady nazw.",
 	"wikilambda-function-definition-alias-label": "Aliasy",
@@ -216,6 +212,5 @@
 	"wikilambda-function-viewer-aliases-show-language-button": "Pokaż więcej języków",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Ukryj listę",
 	"wikilambda-function-viewer-names-show-languages-button": "Pokaż nazwę w innych językach",
-	"wikilambda-function-viewer-details-input-number": "Wejście $1",
-	"wikilambda-function-viewer-details-sidebar-summary": "Każdy może edytować etykiety, ale typ wejścia/wyjścia i liczba mogą być edytowane tylko przez użytkowników ze specjalnymi uprawnieniami."
+	"wikilambda-function-viewer-details-input-number": "Wejście $1"
 }

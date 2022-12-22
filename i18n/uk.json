@@ -133,8 +133,6 @@
 	"wikilambda-persistentobject-details-label": "Деталі",
 	"wikilambda-persistentobject-evaluate-function": "Оцінити функцію",
 	"wikilambda-implementation-selector-none": "Це вбудована реалізація. Код є частиною основного програмного забезпечення і тут не відображається.",
-	"wikilambda-function-is-attached": "Цей об'єкт пов'язаний зі своєю функцією.",
-	"wikilambda-function-is-not-attached": "Цей об'єкт не пов'язаний зі своєю функцією.",
 	"wikilambda-function-definition-add-other-label-languages-title": "+ Додати назви іншою мовою",
 	"wikilambda-function-definition-name-label": "Назва",
 	"wikilambda-function-definition-name-placeholder": "Введіть описову назву функції",

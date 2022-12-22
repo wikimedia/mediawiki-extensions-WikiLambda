@@ -37,7 +37,6 @@
 	"wikilambda-function-definition-name-label": "Nimi",
 	"wikilambda-function-implementation-name-label": "Nimi",
 	"wikilambda-function-implementation-language-label": "Kieli",
-	"wikilambda-function-implementation-state-available": "Saatavilla",
 	"wikilambda-function-definition-name-placeholder": "Anna kuvaavan funktion nimi",
 	"wikilambda-function-definition-name-example": "Katso nimiesimerkit.",
 	"wikilambda-function-definition-alias-label": "Aliakset",

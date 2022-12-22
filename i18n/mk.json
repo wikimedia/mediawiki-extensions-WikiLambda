@@ -109,8 +109,6 @@
 	"wikilambda-function-implementation-name-label": "Име",
 	"wikilambda-function-implementation-language-label": "Јазик",
 	"wikilambda-function-implementation-state-label": "Состојба",
-	"wikilambda-function-implementation-state-available": "Достапно",
-	"wikilambda-function-implementation-state-proposed": "Предложено",
 	"wikilambda-function-definition-name-example": "Видете примери за имиња.",
 	"wikilambda-function-definition-alias-label": "Истозначници",
 	"wikilambda-function-definition-footer-placeholder": "Накратко опишете ги вашите промени",

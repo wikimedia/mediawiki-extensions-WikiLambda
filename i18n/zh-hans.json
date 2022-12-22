@@ -64,6 +64,5 @@
 	"wikilambda-ztyped-pair-key-label": "密钥",
 	"wikilambda-ztyped-pair-value-label": "值",
 	"wikilambda-function-viewer-details-input-number": "输入$1",
-	"wikilambda-function-viewer-details-sidebar-summary": "任何人都可以编辑标签，但是输入/输出类型或count只能被拥有特定权限的用户编辑。",
 	"wikilambda-chip-remove": "移除项目"
 }

@@ -9,6 +9,8 @@
 	"wikilambda-tester-status-passed": "پاس",
 	"wikilambda-tester-status-failed": "فیل",
 	"wikilambda-function-definition-name-label": "ناں",
+	"wikilambda-function-implementation-state-approved": "منظور تھی ڳیا",
+	"wikilambda-function-implementation-state-deactivated": "غیر فعال تھی ڳیا",
 	"wikilambda-function-definition-alias-label-new": "نواں عرفی ناں",
 	"wikilambda-function-definition-footer-label": "تبدیلی دا خلاصہ",
 	"wikilambda-function-definition-inputs-item-remove": "ان پٹ ہٹاؤ",

@@ -217,7 +217,7 @@
 	"wikilambda-function-definition-alias-label-new": "Label for text input box where user enters a new function alias",
 	"wikilambda-function-definition-alias-placeholder": "Placeholder for input box where user can enter an alternative name (or alias) for the given function",
 	"wikilambda-function-definition-alias-example": "Link to examples of function aliases",
-	"wikilambda-function-definition-footer-placeholder": "Placeholder for the function footer",
+	"wikilambda-function-definition-footer-placeholder": "Placeholder for the function footer\n{{Identical|Describe your changes}}",
 	"wikilambda-function-definition-footer-label": "Label for the function footer",
 	"wikilambda-function-definition-inputs-label": "Label for the function Inputs",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "Placeholder for the function input type selector",
