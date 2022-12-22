@@ -70,3 +70,12 @@ module.exports = exports = {
 	)
 };
 </script>
+
+<style lang="less">
+
+.ext-wikilambda-publish-zobject {
+	&__publish-button {
+		margin-right: 10px;
+	}
+}
+</style>

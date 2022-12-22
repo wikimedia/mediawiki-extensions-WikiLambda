@@ -14,12 +14,14 @@
 			<!-- TODO: The following is just a placeholder until it is possible to attach implementation / Testers -->
 			<cdx-button
 				v-if="isEditing"
+				class="ext-wikilambda-function-definition-footer__actions-button"
 				@click="handleFallbackClick"
 			>
 				{{ $i18n( 'wikilambda-fallback' ).text() }}
 			</cdx-button>
 			<cdx-button
-				class="ext-wikilambda-function-definition-footer__actions__cancel"
+				id="ext-wikilambda-function-definition-footer__actions__cancel"
+				class="ext-wikilambda-function-definition-footer__actions-button"
 				action="destructive"
 				type="primary"
 				@click.stop="handleCancel"
@@ -88,7 +90,7 @@ module.exports = exports = {
 	&__actions {
 		display: flex;
 
-		button {
+		&-button {
 			margin-right: 10px;
 			cursor: pointer;
 		}

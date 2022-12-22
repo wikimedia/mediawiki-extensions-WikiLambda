@@ -43,7 +43,7 @@ describe( 'FunctionDefinitionFooter', function () {
 			}
 		} );
 
-		const cancelButton = wrapper.find( '.ext-wikilambda-function-definition-footer__actions__cancel' );
+		const cancelButton = wrapper.find( '#ext-wikilambda-function-definition-footer__actions__cancel' );
 		expect( cancelButton.exists() ).toBeTruthy();
 		return cancelButton.trigger( 'click' ).then( function () {
 			expect( wrapper.emitted().cancel ).toBeTruthy();
