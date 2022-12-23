@@ -192,6 +192,7 @@
 	"wikilambda-function-implementation-language-label": "言語",
 	"wikilambda-function-implementation-state-label": "状態",
 	"wikilambda-function-implementation-tests-passed-label": "合格したテスト",
+	"wikilambda-function-implementation-state-approved": "承認済",
 	"wikilambda-function-definition-name-placeholder": "わかりやすい関数名を入力してください",
 	"wikilambda-function-definition-name-example": "名前の例を参照してください。",
 	"wikilambda-function-definition-alias-label": "別名",

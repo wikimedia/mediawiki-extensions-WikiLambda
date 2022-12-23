@@ -15,6 +15,7 @@
 	"wikilambda-call-function": "Gọi Hàm",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Ngôn ngữ",
 	"wikilambda-publishnew": "Đăng",
+	"wikilambda-publish-successful": "Thay đổi của bạn đã được xuất bản thành công!",
 	"wikilambda-savenew": "Lưu",
 	"wikilambda-publishchanges": "Đăng thay đổi",
 	"wikilambda-savechanges": "Lưu thay đổi",
@@ -29,11 +30,15 @@
 	"wikilambda-tester-status-pending": "ĐANG CHỜ…",
 	"wikilambda-tester-status-running": "ĐANG CHẠY…",
 	"wikilambda-tester-status-passed": "QUA",
+	"wikilambda-tester-results-current-test": "Bài kiểm tra hiện tại",
 	"wikilambda-function-is-approved": "Đối tượng này được phê duyệt cho chức năng này.",
 	"wikilambda-function-is-not-approved": "Đối tượng này không được phê duyệt cho chức năng này.",
 	"wikilambda-function-implementation-state-approved": "Đã được phê duyệt",
 	"wikilambda-function-implementation-state-deactivated": "hủy kích hoạt",
+	"wikilambda-function-definition-alias-label-new": "bí danh mới",
+	"wikilambda-function-definition-inputs-item-remove": "Xóa đầu vào",
 	"wikilambda-editor-fn-step-function-definition": "Định nghĩa Hàm",
 	"wikilambda-editor-fn-step-function-about": "Giới thiệu",
-	"wikilambda-editor-fn-step-function-details": "Chi tiết"
+	"wikilambda-editor-fn-step-function-details": "Chi tiết",
+	"wikilambda-chip-remove": "Loại bỏ mục"
 }

@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ильгиз"
+		]
+	},
+	"wikilambda-function-is-approved": "Бу объект бу функция өчен расланган.",
+	"wikilambda-function-is-not-approved": "Бу объект бу функция өчен расланмаган.",
+	"wikilambda-function-implementation-state-approved": "Расланган",
+	"wikilambda-function-implementation-state-deactivated": "Эштән чыгарылган"
+}

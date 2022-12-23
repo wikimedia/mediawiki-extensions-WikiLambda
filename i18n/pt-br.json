@@ -89,6 +89,8 @@
 	"wikilambda-metadata-all-languages": "Mostrar todos os idiomas inseridos",
 	"wikilambda-metadata-fewer-languages": "Mostrar menos idiomas",
 	"wikilambda-persistentobject-details-label": "Detalhes",
+	"wikilambda-function-implementation-state-approved": "Aprovado",
+	"wikilambda-function-implementation-state-deactivated": "Desativado",
 	"wikilambda-function-definition-alias-label-new": "Novo nome alternativo",
 	"wikilambda-function-definition-inputs-item-remove": "Remover entrada",
 	"wikilambda-editor-fn-step-function-details": "Detalhes",
