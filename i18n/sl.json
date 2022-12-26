@@ -54,6 +54,7 @@
 	"wikilambda-function-implementation-state-approved": "Odobreno",
 	"wikilambda-function-implementation-state-deactivated": "Onemogočeno",
 	"wikilambda-function-definition-alias-label-new": "Nova sopomenka",
+	"wikilambda-function-definition-footer-label": "Povzetek urejanja",
 	"wikilambda-function-definition-inputs-item-add-first-input-button": "+ Dodaj vnos",
 	"wikilambda-function-definition-inputs-item-remove": "Odstrani vnos",
 	"wikilambda-editor-fn-step-function-details": "Podrobnosti",

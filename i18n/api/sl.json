@@ -4,5 +4,6 @@
 			"Eleassar"
 		]
 	},
-	"apihelp-wikilambda_function_call-example-socket": "Ustvarite in prikličite funkcijo, ki uporablja ponovni vstop za povratni klic orkestratorja"
+	"apihelp-wikilambda_function_call-example-socket": "Ustvarite in prikličite funkcijo, ki uporablja ponovni vstop za povratni klic orkestratorja",
+	"apihelp-wikilambda_edit-param-summary": "Sprememba povzetka urejanj"
 }

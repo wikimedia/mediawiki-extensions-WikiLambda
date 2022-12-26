@@ -10,5 +10,7 @@
 	"wikilambda-hide-more": "Сакриј више",
 	"wikilambda-metadata-all-languages": "Прикажи све унесене језике",
 	"wikilambda-persistentobject-details-label": "Детаљи",
+	"wikilambda-function-implementation-state-approved": "Одобрено",
+	"wikilambda-function-implementation-state-deactivated": "Деактивирано",
 	"wikilambda-chip-remove": "Уклони ставку"
 }
