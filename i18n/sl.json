@@ -10,7 +10,9 @@
 	"wikilambda-cancel": "Prekliči",
 	"wikilambda-savenew": "Shrani",
 	"wikilambda-summarylabel": "Povzetek:",
+	"wikilambda-metadata-language-column": "Jezik",
 	"wikilambda-metadata-all-languages": "Prikaži vse vnesene jezike",
 	"wikilambda-persistentobject-details-label": "Podrobnosti",
+	"wikilambda-function-definition-footer-label": "Povzetek urejanja",
 	"wikilambda-editor-fn-step-function-details": "Podrobnosti"
 }
