@@ -546,6 +546,10 @@ class ZObjectStore {
 		// Set language filter
 		$conditions = [ 'wlzl_language' => $languages ];
 
+		// Set primary labels only, no aliases.
+		// TODO(T323930): Include alias labels again once FE styling is implemented.
+		$conditions[ 'wlzl_label_primary' ] = '1';
+
 		// Set type filter
 		$typeConditions = [];
 		if ( $type != null ) {
