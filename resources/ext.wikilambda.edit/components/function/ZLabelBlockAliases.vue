@@ -137,6 +137,16 @@ module.exports = exports = {
 			this.removeZObject( alias );
 
 			this.recalculateZListIndex( this.getLanguageAliasStringsetId );
+
+			// If we removed the last alias, delete the Z31 empty alias block.
+			if ( this.languageAliases.length === 1 ) {
+				var monoLingualStringSetId = this.getAllItemsFromListById(
+					this.getNestedZObjectById( this.zobjectId, [
+						Constants.Z_PERSISTENTOBJECT_ALIASES,
+						Constants.Z_MULTILINGUALSTRINGSET_VALUE
+					] ).id )[ 0 ].id;
+				this.removeZObject( monoLingualStringSetId );
+			}
 		},
 		/**
 		 * Add an alias in a language. The language already exists for
