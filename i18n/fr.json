@@ -165,7 +165,7 @@
 	"wikilambda-function-definition-alias-label": "Alias",
 	"wikilambda-function-definition-alias-placeholder": "Saisir des synonymes pour le nom de fonction",
 	"wikilambda-function-definition-alias-example": "Voir les exemples d’alias.",
-	"wikilambda-function-definition-footer-placeholder": "Décrire brièvement vos modifications",
+	"wikilambda-function-definition-footer-placeholder": "Décrivez brièvement vos modifications",
 	"wikilambda-function-definition-footer-label": "Modifier le résumé",
 	"wikilambda-function-definition-footer-implementation-button": "Écrire une mise en œuvre",
 	"wikilambda-function-definition-inputs-label": "Type d’entrée",

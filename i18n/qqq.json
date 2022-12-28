@@ -176,7 +176,7 @@
 	"wikilambda-function-definition-alias-label": "Label for the function alias",
 	"wikilambda-function-definition-alias-placeholder": "Placeholder for the function aliases",
 	"wikilambda-function-definition-alias-example": "Link to examples of function aliases",
-	"wikilambda-function-definition-footer-placeholder": "Placeholder for the function footer",
+	"wikilambda-function-definition-footer-placeholder": "Placeholder for the function footer\n{{Identical|Describe your changes}}",
 	"wikilambda-function-definition-footer-label": "Label for the function footer",
 	"wikilambda-function-definition-footer-implementation-button": "Label for the write implementation button",
 	"wikilambda-function-definition-inputs-label": "Label for the function Inputs",
