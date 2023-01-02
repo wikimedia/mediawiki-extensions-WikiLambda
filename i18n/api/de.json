@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Brettchenweber",
 			"ElBe",
 			"FF-11",
 			"FF11",
@@ -43,7 +44,7 @@
 	"apihelp-query+wikilambdasearch_labels-param-return_type": "Schränkt Übereinstimmungen auf ZFunktionen ein, die den angegebenen Typ zurückgeben können, einschließlich solcher, die ein generisches ZObject zurückgeben.",
 	"apihelp-query+wikilambdasearch_labels-param-strict_return_type": "Beschränkung des Rückgabetyps auf den angegebenen Typ, ausgenommen generisches ZObject",
 	"apihelp-query+wikilambdasearch_labels-param-limit": "Die maximale Anzahl von Ergebnissen, die zurückgegeben werden sollen",
-	"apihelp-query+wikilambda-example-simple": "Suche nach ZObjects, deren Bezeichnung „foo“ auf Englisch übereinstimmt",
+	"apihelp-query+wikilambda-example-simple": "Suche nach ZObjects, deren Bezeichnung mit „foo“ auf Englisch übereinstimmt",
 	"apihelp-query+wikilambda-example-nofallback": "Sucht nach ZObjects, deren Bezeichnung mit „foo“ auf Französisch übereinstimmt, und akzeptiert keine Fallback-Sprachen",
 	"apihelp-query+wikilambda-example-type": "Suche nach ZObjects vom Typ „Z4“, Rückgabe von englischen Bezeichnungen",
 	"apihelp-query+wikilambda-example-return-type": "Suche nach ZObjects des Rückgabetyps „Z40“ oder „Z1“, Rückgabe englischer Bezeichnungen",

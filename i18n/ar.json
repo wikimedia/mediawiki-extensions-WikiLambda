@@ -24,6 +24,8 @@
 	"wikilambda-tester-create-new": "قم بإنشاء اختبار جديد",
 	"wikilambda-metadata-duplicate-alias-error": "$1 موجود بالفعل.",
 	"wikilambda-function-definition-edit": "عدل التعريف",
+	"wikilambda-function-implementation-state-approved": "مقبول",
+	"wikilambda-function-implementation-state-deactivated": "غير مفعل",
 	"wikilambda-editor-additional-details-label": "تفاصيل إضافية",
 	"wikilambda-editor-fn-step-function-details": "تفاصيل",
 	"wikilambda-editor-default-name": "غير معنونة",
