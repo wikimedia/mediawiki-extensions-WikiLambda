@@ -10,20 +10,23 @@
 			<!-- Zero state, select a literal type -->
 			<z-object-selector
 				v-if="!value"
+				:class="selectorClass"
 				:type="selectType"
 				:zobject-id="rowId"
 				@input="setValue"
+				@focus="setIsSelectorActive( true )"
+				@focus-out="setIsSelectorActive( false )"
 			></z-object-selector>
 			<!-- Non-Zero state, select mode -->
 			<!-- eslint-disable vue/no-v-model-argument -->
 			<!-- eslint-disable vue/no-unsupported-features -->
-			<cdx-select
-				v-else
-				v-model:selected="value"
-				class="ext-wikilambda-zobject-type"
-				:menu-items="typeOptions"
-				@update:selected="setValue"
-			></cdx-select>
+			<div v-else class="ext-wikilambda-type-mode__select">
+				<cdx-select
+					v-model:selected="value"
+					:menu-items="typeOptions"
+					@update:selected="setValue"
+				></cdx-select>
+			</div>
 		</template>
 		<template v-else>
 			<a :href="valueUrl">{{ valueLabel }}</a>
@@ -63,7 +66,8 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			selectType: Constants.Z_TYPE
+			selectType: Constants.Z_TYPE,
+			isSelectorActive: false
 		};
 	},
 	computed: $.extend(
@@ -172,6 +176,13 @@ module.exports = exports = {
 				if ( this.value ) {
 					return new mw.Title( this.value ).getUrl();
 				}
+			},
+
+			selectorClass: function () {
+				return {
+					'ext-wikilambda-type-mode__selector': true,
+					'ext-wikilambda-type-mode__selector-active': this.isSelectorActive
+				};
 			}
 		} ),
 	methods: {
@@ -208,16 +219,54 @@ module.exports = exports = {
 					value: value
 				} );
 			}
+		},
+
+		setIsSelectorActive: function ( isActive ) {
+			this.isSelectorActive = isActive;
 		}
 	}
 };
 </script>
 
 <style lang="less">
+@import './../../../lib/wikimedia-ui-base.less';
+
 .ext-wikilambda-type-mode {
-	.cdx-lookup {
-		width: auto;
-		display: inline-block;
+	&__select {
+		.cdx-select.cdx-select--enabled.cdx-select--expanded {
+			width: 100%;
+			display: inline-block;
+		}
+
+		.cdx-select {
+			width: auto;
+			display: inline-block;
+		}
+
+		@media screen and ( min-width: @width-breakpoint-tablet ) {
+			.cdx-select.cdx-select--enabled.cdx-select--expanded {
+				width: 50%;
+				display: inline-block;
+			}
+		}
+	}
+
+	&__selector {
+		.cdx-lookup {
+			display: inline-block;
+		}
+	}
+
+	&__selector-active {
+		.cdx-lookup {
+			width: 100%;
+		}
+
+		@media screen and ( min-width: @width-breakpoint-tablet ) {
+			.cdx-lookup {
+				width: 50%;
+			}
+		}
 	}
 }
 </style>

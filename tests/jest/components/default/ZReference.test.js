@@ -150,16 +150,16 @@ describe( 'ZReference', () => {
 			expect( wrapper.find( '.ext-wikilambda-reference__selector' ) ).toBeTruthy();
 
 			var selector = wrapper.get( '.ext-wikilambda-reference' ).getComponent( ZObjectSelector );
+			expect( wrapper.find( '.ext-wikilambda-reference__selector-active' ).exists() ).toBeFalsy();
+
 			selector.vm.$emit( 'focus' );
 			await wrapper.vm.$nextTick();
 
-			expect( wrapper.find( '.ext-wikilambda-reference__selector' ).exists() ).toBeFalsy();
 			expect( wrapper.find( '.ext-wikilambda-reference__selector-active' ).exists() ).toBeTruthy();
 
 			selector.vm.$emit( 'focus-out' );
 			await wrapper.vm.$nextTick();
 
-			expect( wrapper.find( '.ext-wikilambda-reference__selector' ).exists() ).toBeTruthy();
 			expect( wrapper.find( '.ext-wikilambda-reference__selector-active' ).exists() ).toBeFalsy();
 		} );
 	} );

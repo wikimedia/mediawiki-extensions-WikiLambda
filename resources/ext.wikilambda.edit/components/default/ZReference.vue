@@ -18,8 +18,8 @@
 				:type="selectType"
 				:zobject-id="rowId"
 				@input="setValue"
-				@focus="setSelectorClassActive"
-				@focus-out="removeSelectorClassActive"
+				@focus="setIsSelectorActive( true )"
+				@focus-out="setIsSelectorActive( false )"
 			></z-object-selector>
 		</template>
 	</div>
@@ -54,7 +54,7 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			selectorClass: 'ext-wikilambda-reference__selector'
+			isSelectorActive: false
 		};
 	},
 	computed: $.extend(
@@ -143,6 +143,13 @@ module.exports = exports = {
 			 */
 			key: function () {
 				return this.getZObjectKeyByRowId( this.rowId );
+			},
+
+			selectorClass: function () {
+				return {
+					'ext-wikilambda-reference__selector': true,
+					'ext-wikilambda-reference__selector-active': this.isSelectorActive
+				};
 			}
 		}
 	),
@@ -160,12 +167,8 @@ module.exports = exports = {
 			this.$emit( 'set-value', { keyPath, value } );
 		},
 
-		setSelectorClassActive: function () {
-			this.selectorClass = 'ext-wikilambda-reference__selector-active';
-		},
-
-		removeSelectorClassActive: function () {
-			this.selectorClass = 'ext-wikilambda-reference__selector';
+		setIsSelectorActive: function ( isActive ) {
+			this.isSelectorActive = isActive;
 		}
 	}
 };
@@ -176,24 +179,21 @@ module.exports = exports = {
 @import './../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-reference {
+	&__selector {
+		.cdx-lookup {
+			display: inline-block;
+		}
+	}
+
 	&__selector-active {
 		.cdx-lookup {
 			width: 100%;
-			display: inline-block;
 		}
 
 		@media screen and ( min-width: @width-breakpoint-tablet ) {
 			.cdx-lookup {
 				width: 50%;
-				display: inline-block;
 			}
-		}
-	}
-
-	&__selector {
-		.cdx-lookup {
-			width: auto;
-			display: inline-block;
 		}
 	}
 }
