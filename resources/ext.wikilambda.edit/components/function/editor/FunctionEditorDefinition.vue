@@ -340,14 +340,15 @@ module.exports = exports = {
 			return ( this.currentOutput.value !== this.initialOutputType ) && this.currentOutput.value !== '';
 		},
 		handleCancel: function () {
+			const cancelTargetUrl = this.isNewZObject ? new mw.Title( 'Wikifunctions:Main_Page' ).getUrl() : new mw.Title( this.getCurrentZObjectId ).getUrl();
 			if ( this.isDirty ) {
 				this.showLeaveEditorDialog = true;
 				this.leaveEditorCallback = function () {
-					history.back();
+					window.location.href = cancelTargetUrl;
 				};
 			} else {
-				// If not editing or there are no changes, go to the previous page.
-				history.back();
+				// If there are no changes, go immediately without showing the dialog.
+				window.location.href = cancelTargetUrl;
 			}
 		},
 		/**
