@@ -24,9 +24,7 @@ describe( 'ZFunctionTesterReport', function () {
 					Z10000: 'FN',
 					Z10001: 'IMPL',
 					Z10002: 'TESTER',
-					Z10003: 'TESTER2',
-					Z10004: 'IMPL2',
-					Z10005: 'IMPL3'
+					Z10004: 'IMPL2'
 				};
 			} ),
 			getZkeys: jest.fn( function () {
@@ -140,7 +138,7 @@ describe( 'ZFunctionTesterReport', function () {
 
 		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' ).length ).toBe( 2 );
 		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' )[ 0 ].text() ).toBe( 'TESTER' );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' )[ 1 ].text() ).toBe( 'TESTER2' );
+		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' )[ 1 ].text() ).toBe( 'Z10003' );
 	} );
 
 	it( 'displays "current tester" and all available implementations if a new zTester is being created', async function () {
@@ -179,10 +177,10 @@ describe( 'ZFunctionTesterReport', function () {
 		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' ).length ).toBe( 3 );
 		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 0 ].text() ).toBe( 'IMPL' );
 		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 1 ].text() ).toBe( 'IMPL2' );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 2 ].text() ).toBe( 'IMPL3' );
+		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 2 ].text() ).toBe( 'Z10005' );
 	} );
 
-	it( 'if displayed on a ZImplementation page, only shows that ZImplementation', function () {
+	it( 'if displayed on a ZImplementation page, only shows that ZImplementation as current implementation', function () {
 		getters.getCurrentZObjectId = jest.fn( function () {
 			return 'Z10001';
 		} );
@@ -213,14 +211,14 @@ describe( 'ZFunctionTesterReport', function () {
 		} );
 
 		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' ).length ).toBe( 1 );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 0 ].text() ).toBe( 'IMPL' );
+		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 0 ].text() ).toBe( 'Current implementation' );
 
 		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' ).length ).toBe( 2 );
 		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' )[ 0 ].text() ).toBe( 'TESTER' );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' )[ 1 ].text() ).toBe( 'TESTER2' );
+		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' )[ 1 ].text() ).toBe( 'Z10003' );
 	} );
 
-	it( 'if displayed on a ZTester page, only shows that ZTester', function () {
+	it( 'if displayed on a ZTester page, only shows that ZTester as current test', function () {
 		getters.getCurrentZObjectId = jest.fn( function () {
 			return 'Z10002';
 		} );
@@ -251,12 +249,12 @@ describe( 'ZFunctionTesterReport', function () {
 		} );
 
 		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' ).length ).toBe( 1 );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' )[ 0 ].text() ).toBe( 'TESTER' );
+		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' )[ 0 ].text() ).toBe( 'Current test' );
 
 		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' ).length ).toBe( 3 );
 		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 0 ].text() ).toBe( 'IMPL' );
 		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 1 ].text() ).toBe( 'IMPL2' );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 2 ].text() ).toBe( 'IMPL3' );
+		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 2 ].text() ).toBe( 'Z10005' );
 	} );
 
 	// TODO (T303072): This test is skipped because overriding computed properties is no longer
