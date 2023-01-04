@@ -6,10 +6,13 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-function-call-block">
-		{{ zFunctionCallKeyLabels[ Constants.Z_FUNCTION_CALL_FUNCTION ] }}:
+		<label id="ext-wikilambda-function-call-block__select-function-label">
+			{{ zFunctionCallKeyLabels[ Constants.Z_FUNCTION_CALL_FUNCTION ] }}:
+		</label>
 		<z-object-selector
 			v-if="!selectedFunction"
 			class="ext-wikilambda-function-call-block__select-function"
+			aria-labelledby="ext-wikilambda-function-call-block__select-function-label"
 			:type="Constants.Z_FUNCTION"
 			:placeholder="$i18n( 'wikilambda-function-typeselector-label' ).text()"
 			:selected-id="zFunctionId"

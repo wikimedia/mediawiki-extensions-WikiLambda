@@ -17,7 +17,7 @@
 			{{ showMoreLanguagesLabel }}
 		</cdx-toggle-button>
 		<template v-if="showMoreLanguages">
-			<table>
+			<table :aria-label="$i18n( 'wikilambda-metadata-labels-table-label' ).text()">
 				<thead>
 					<tr>
 						<th scope="col">
