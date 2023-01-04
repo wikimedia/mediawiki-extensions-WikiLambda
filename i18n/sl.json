@@ -10,8 +10,14 @@
 	"wikilambda-cancel": "Prekliči",
 	"wikilambda-savenew": "Shrani",
 	"wikilambda-summarylabel": "Povzetek:",
+	"wikilambda-typeselector-label": "Izberite vrsto",
+	"wikilambda-function-typeselector-label": "Izberite funkcijo",
 	"wikilambda-metadata-language-column": "Jezik",
 	"wikilambda-metadata-all-languages": "Prikaži vse vnesene jezike",
 	"wikilambda-persistentobject-details-label": "Podrobnosti",
-	"wikilambda-function-definition-footer-label": "Povzetek urejanja"
+	"wikilambda-function-definition-footer-label": "Povzetek urejanja",
+	"wikilambda-function-definition-inputs-item-selector-placeholder": "Izberite vrsto",
+	"wikilambda-function-definition-output-selector": "Izberite vrsto",
+	"wikilambda-ztyped-pair-placeholder": "Izberite vrsto",
+	"wikilambda-ztyped-map-placeholder": "Izberite vrsto karte"
 }
