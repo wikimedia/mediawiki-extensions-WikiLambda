@@ -21,8 +21,8 @@
 							class="ext-wikilambda-fn-tester-results__header-cell"
 							scope="col"
 						>
-							{{ getZkeyLabels[ implementation ] ||
-								$i18n( 'wikilambda-tester-results-current-implementation' ).text()
+							{{
+								implementationLabel( implementation )
 							}}
 						</th>
 					</tr>
@@ -32,7 +32,7 @@
 						class="ext-wikilambda-fn-tester-results__row">
 						<template v-if="typeof test === 'string'">
 							<th scope="row">
-								{{ getZkeyLabels[ test ] || $i18n( 'wikilambda-tester-results-current-test' ).text() }}
+								{{ testLabel( test ) }}
 							</th>
 							<td v-for="implementation in implementations" :key="implementation">
 								<z-tester-impl-result
@@ -83,9 +83,9 @@
 				:title="$i18n( 'wikilambda-functioncall-metadata-dialog-header' ).text()"
 				:close-button-label="Close"
 			>
-				<strong> {{ implementationLabel }}</strong>
+				<strong> {{ activeImplementationLabel }}</strong>
 				<br>
-				<strong> {{ testerLabel }}</strong>
+				<strong> {{ activeTesterLabel }}</strong>
 				<div class="ext-wikilambda-metadatadialog-helplink">
 					<cdx-icon :icon="helpLinkIcon()"></cdx-icon>
 					<a
@@ -216,12 +216,11 @@ module.exports = exports = {
 			this.fetchZKeys( { zids: metadataZIDs } );
 			return this.portrayMetadataMap( metadata, this.getZkeyLabels );
 		},
-		testerLabel: function () {
-			return !this.activeZTesterId ? '' : this.getZkeyLabels[ this.activeZTesterId ] ||
-				( this.getNewTesterZObjects && this.getNewTesterZObjects.Z2K3.Z12K1[ 0 ].Z11K2.Z6K1 );
+		activeTesterLabel: function () {
+			return !this.activeZTesterId ? '' : ( this.getZkeyLabels[ this.activeZTesterId ] || this.activeZTesterId );
 		},
-		implementationLabel: function () {
-			return !this.activeZImplementationId ? '' : this.getZkeyLabels[ this.activeZImplementationId ];
+		activeImplementationLabel: function () {
+			return !this.activeZImplementationId ? '' : ( this.getZkeyLabels[ this.activeZImplementationId ] || this.activeZImplementationId );
 		},
 		tooltipMetaDataHelpLink: function () {
 			return this.$i18n( 'wikilambda-helplink-tooltip' ).text();
@@ -243,6 +242,16 @@ module.exports = exports = {
 		},
 		helpLinkIcon: function () {
 			return icons.cdxIconHelpNotice;
+		},
+		implementationLabel: function ( implementation ) {
+			return this.zImplementationId ?
+				this.$i18n( 'wikilambda-tester-results-current-implementation' ).text() :
+				( this.getZkeyLabels[ implementation ] || implementation );
+		},
+		testLabel: function ( test ) {
+			return this.zTesterId ?
+				this.$i18n( 'wikilambda-tester-results-current-test' ).text() :
+				( this.getZkeyLabels[ test ] || test );
 		}
 	} ),
 	watch: {
