@@ -13,17 +13,6 @@
 		<template v-if="showEditCommand">
 			<z-object-publish :is-disabled="!isDirty"></z-object-publish>
 			<cdx-button
-				v-if="isNewZObject"
-				class="ext-wikilambda-editor__navigate-to-function-editor"
-				@click.stop="navigateToFunctionEditor">
-				{{ $i18n( 'wikilambda-create-function' ).text() }}
-			</cdx-button>
-			<cdx-button
-				v-if="isNewZObject"
-				@click="changePersistentObjectValue( Constants.Z_TYPE )">
-				{{ $i18n( 'wikilambda-create-type' ).text() }}
-			</cdx-button>
-			<cdx-button
 				class="ext-wikilambda-expertModeToggle"
 				@click="$store.dispatch( 'toggleExpertMode' )">
 				<template v-if="$store.getters.isExpertMode">
@@ -53,7 +42,6 @@ var ZObject = require( '../components/ZObject.vue' ),
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	Constants = require( '../Constants.js' ),
 	typeUtils = require( '../mixins/typeUtils.js' );
 
 // @vue/component
@@ -69,7 +57,6 @@ module.exports = exports = {
 	mixins: [ typeUtils ],
 	data: function () {
 		return {
-			Constants: Constants,
 			showLeaveEditorDialog: false,
 			leaveEditorCallback: ''
 		};
@@ -77,7 +64,6 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( {
 		createNewPage: 'isCreateNewPage',
 		message: 'getZObjectMessage',
-		isNewZObject: 'isNewZObject',
 		getZObjectChildrenById: 'getZObjectChildrenById',
 		getIsZObjectDirty: 'getIsZObjectDirty'
 	} ), {
@@ -105,28 +91,6 @@ module.exports = exports = {
 						} );
 					}
 				} );
-			},
-
-			changePersistentObjectValue: function ( type ) {
-				var zObject = this.getZObjectChildrenById( 0 ); // We fetch the Root object
-				var zPersistentObjectValue =
-					this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, zObject );
-
-				return this.changeType( {
-					id: zPersistentObjectValue.id,
-					type: type
-				} );
-			},
-
-			navigateToFunctionEditor: function () {
-				if ( this.isDirty ) {
-					this.showLeaveEditorDialog = true;
-					this.leaveEditorCallback = function () {
-						this.navigate( { params: { zid: Constants.Z_FUNCTION }, to: Constants.VIEWS.FUNCTION_EDITOR } );
-					}.bind( this );
-				} else {
-					this.navigate( { params: { zid: Constants.Z_FUNCTION }, to: Constants.VIEWS.FUNCTION_EDITOR } );
-				}
 			},
 
 			closeLeaveEditorDialog: function () {

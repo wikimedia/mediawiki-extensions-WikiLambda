@@ -107,21 +107,4 @@ describe( 'ZObjectEditor', function () {
 		const publishButton = wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' );
 		expect( publishButton.attributes( 'disabled' ) ).toBeUndefined();
 	} );
-
-	it( 'shows the leave editor dialog if the Create Function button, which navigates away from the editor, is clicked before changes are saved',
-		async function () {
-			getters.getIsZObjectDirty = jest.fn( function () {
-				return true;
-			} );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
-			const wrapper = mount( ZObjectEditor );
-
-			await wrapper.get( '.ext-wikilambda-editor__navigate-to-function-editor' ).trigger( 'click' );
-			await wrapper.vm.$nextTick();
-
-			const leaveEditorDialog = wrapper.findComponent( { name: 'cdx-dialog' } );
-			expect( leaveEditorDialog ).toBeTruthy();
-		} );
 } );
