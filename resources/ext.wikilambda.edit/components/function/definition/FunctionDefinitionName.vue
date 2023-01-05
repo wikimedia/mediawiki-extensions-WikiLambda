@@ -12,14 +12,9 @@
 				class="ext-wikilambda-app__text-regular">
 				{{ functionNameLabel }}
 			</label>
-			<!-- TODO (T298479): replace href with correct URL -->
-			<a
-				v-if="isMainZObject"
-				href="#"
-				class="ext-wikilambda-app__text-smaller"
-			>
-				{{ $i18n( 'wikilambda-function-definition-name-example' ).text() }}
-			</a>
+			<span class="ext-wikilambda-function-definition-name__description">
+				{{ $i18n( 'wikilambda-function-definition-name-description' ).text() }}
+			</span>
 		</div>
 
 		<cdx-text-input
@@ -137,9 +132,21 @@ module.exports = exports = {
 		width: 300px;
 	}
 
+	&__description {
+		color: @wmui-color-base20;
+	}
+
 	@media screen and ( max-width: @width-breakpoint-tablet ) {
 		& {
 			flex-direction: column;
+
+			&__input {
+				width: 100%;
+			}
+
+			&__label {
+				width: auto;
+			}
 		}
 	}
 }

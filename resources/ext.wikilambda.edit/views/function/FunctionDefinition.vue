@@ -33,7 +33,6 @@
 				<!-- component that displays aliases for a language -->
 				<function-definition-aliases
 					:z-lang="labelLanguage.zLang"
-					:is-main-z-object="index === 0"
 					@updated-alias="updatedLabel"
 				></function-definition-aliases>
 				<function-definition-inputs
@@ -476,7 +475,6 @@ module.exports = exports = {
 				margin-bottom: 15px;
 
 				&__selector {
-					margin-bottom: 40px;
 					display: flex;
 				}
 
@@ -503,7 +501,13 @@ module.exports = exports = {
 	@media screen and ( min-width: @width-breakpoint-tablet ) {
 		&__container {
 			border: 1px solid @wmui-color-base80;
-			padding-left: 27px;
+			padding-left: 16px;
+			padding-right: 16px;
+
+			&__input__language {
+				display: flex;
+				width: 300px;
+			}
 		}
 
 		&__action-add-input {

@@ -12,6 +12,10 @@
 				class="ext-wikilambda-app__text-regular">
 				{{ $i18n( 'wikilambda-function-definition-output-label' ).text() }}
 			</label>
+			<span class="ext-wikilambda-function-definition-output__description">
+				{{ $i18n( 'wikilambda-function-definition-output-description' ).text() }}
+				<a :href="getTypeUrl()"> {{ $i18n( 'wikilambda-function-definition-output-types' ).text() }} </a>
+			</span>
 			<tooltip
 				v-if="tooltipMessage && !canEdit"
 				:content="tooltipMessage"
@@ -118,6 +122,9 @@ module.exports = exports = {
 			if ( !this.zReturnType.value ) {
 				this.$refs.typeSelector.clearResults();
 			}
+		},
+		getTypeUrl: function () {
+			return new mw.Title( Constants.PATHS.LIST_ZOBJECTS_BY_TYPE_TYPE ).getUrl();
 		}
 	} )
 };
@@ -129,16 +136,15 @@ module.exports = exports = {
 
 .ext-wikilambda-function-definition-output {
 	display: flex;
-	flex-direction: column;
 
 	&__selector {
 		margin-right: 6px;
-		width: auto;
+		width: 300px;
 	}
 
 	&__label {
 		display: flex;
-		flex: none;
+		flex-direction: column;
 		width: 153px;
 	}
 
@@ -148,11 +154,14 @@ module.exports = exports = {
 		height: 16px;
 	}
 
-	@media screen and ( min-width: @width-breakpoint-tablet ) {
-		display: flex;
-		flex-direction: row;
+	&__description {
+		color: @wmui-color-base20;
+	}
 
-		&__selector {
+	@media screen and ( max-width: @width-breakpoint-tablet ) {
+		flex-direction: column;
+
+		&__label {
 			width: auto;
 		}
 	}

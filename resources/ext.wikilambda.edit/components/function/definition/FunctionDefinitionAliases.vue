@@ -13,14 +13,9 @@
 			>
 				{{ functionAliasLabel }}
 			</label>
-			<!-- TODO (T298479): replace href with correct URL -->
-			<a
-				v-if="isMainZObject"
-				href="#"
-				class="ext-wikilambda-app__text-smaller"
-			>
-				{{ $i18n( "wikilambda-function-definition-alias-example" ) }}
-			</a>
+			<span class="ext-wikilambda-function-definition-aliases__description">
+				{{ $i18n( 'wikilambda-function-definition-alias-description' ).text() }}
+			</span>
 		</div>
 		<div
 			class="ext-wikilambda-function-definition-aliases__inputs"
@@ -62,9 +57,6 @@ module.exports = exports = {
 		zobjectId: {
 			type: Number,
 			default: 0
-		},
-		isMainZObject: {
-			type: Boolean
 		},
 		/**
 		 * zID of item label language
@@ -272,9 +264,21 @@ module.exports = exports = {
 		width: 153px;
 	}
 
+	&__description {
+		color: @wmui-color-base20;
+	}
+
 	@media screen and ( max-width: @width-breakpoint-tablet ) {
 		& {
 			flex-direction: column;
+
+			&__inputs {
+				width: 100%;
+			}
+
+			&__label {
+				width: auto;
+			}
 		}
 	}
 }

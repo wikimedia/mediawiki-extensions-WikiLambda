@@ -1,11 +1,10 @@
 <template>
 	<!--
 		WikiLambda Vue component for an individual input to be set for a ZFunction in the Function editor.
-
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-editor-input-list-item">
+	<div class="ext-wikilambda-editor-input-list-item" role="inputs-item-container">
 		<div
 			v-if="isMobile"
 			class="ext-wikilambda-editor-input-list-item__header"
@@ -20,65 +19,80 @@
 				<span
 					class="ext-wikilambda-editor-input-list-item__header__title__text"
 				>
-					{{
-						$i18n( 'wikilambda-function-viewer-details-input-number', inputNumber ) +
-							( selectedLabel && !isActive ? ': ' + selectedLabel : '' )
-					}}
+					{{ functionInputLabel }}
 				</span>
 			</cdx-button>
-
 			<cdx-button
 				v-if="canEditType"
 				type="quiet"
-				class="ext-wikilambda-editor-input-list-item__header__action-delete"
+				:class="trashIconClass"
 				@click="removeInput"
 			>
 				<cdx-icon :icon="icons.cdxIconTrash"></cdx-icon>
 			</cdx-button>
 		</div>
-
 		<div class="ext-wikilambda-editor-input-list-item__body">
-			<z-object-selector
-				v-if="( !canEditType && getTypeOfArgument ) || canEditType"
-				ref="typeSelector"
-				:type="Constants.Z_TYPE"
-				class="ext-wikilambda-editor-input-list-item__selector"
-				:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text()"
-				:selected-id="getTypeOfArgument"
-				:initial-selection-label="selectedLabel"
-				:readonly="!canEditType"
-				:zobject-id="getZArgumentType.id"
-				@input="setArgumentType( $event )"
-				@focus-out="clearIfUnset"
-			></z-object-selector>
-			<!--
-				TODO: This is hardcoded for now as it is the first complex input,
-				In the future we should provide an UI that will allow user to define complex types
-				automatically (for example set a function call that require x argument to be set
-				and show them automatically)
-			-->
-			<z-object-selector
-				v-if="getTypeOfArgument === Constants.Z_TYPED_LIST"
-				class="ext-wikilambda-editor-input-list-item__selector"
-				:label="$i18n( 'wikilambda-function-definition-inputs-item-typed-list-placeholder' ).text()"
-				:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-typed-list-placeholder' ).text()"
-				@input="setListTypedList"
-				@clear="setListTypedList"
-			>
-			</z-object-selector>
-
-			<cdx-text-input
-				v-model="getArgumentLabel"
-				class="ext-wikilambda-editor-input-list-item__label"
-				:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
-				:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
-				@input="setArgumentLabel( zobjectId, $event.target.value )"
-			></cdx-text-input>
-
+			<div v-if="isMobile">
+				<span class="ext-wikilambda-editor-input-list-item__body--description">
+					{{ $i18n( 'wikilambda-function-definition-inputs-description' ).text() }}
+					<a :href="getTypeUrl()"> {{ $i18n( 'wikilambda-function-definition-input-types' ).text() }} </a>
+				</span>
+			</div>
+			<div class="ext-wikilambda-editor-input-list-item__body--entry">
+				<span
+					v-if="index === 0 || isMobile"
+					class="ext-wikilambda-editor-input-list-item__body--entry-text"
+				>
+					{{ $i18n( 'wikilambda-function-definition-input-item-type' ).text() }}
+				</span>
+				<z-object-selector
+					v-if="( !canEditType && getTypeOfArgument ) || canEditType"
+					ref="typeSelector"
+					:type="Constants.Z_TYPE"
+					class="ext-wikilambda-editor-input-list-item__selector"
+					:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text()"
+					:selected-id="getTypeOfArgument"
+					:initial-selection-label="selectedLabel"
+					:readonly="!canEditType"
+					:zobject-id="getZArgumentType.id"
+					@input="setArgumentType( $event )"
+					@focus-out="clearIfUnset"
+				></z-object-selector>
+				<!--
+					TODO: This is hardcoded for now as it is the first complex input,
+					In the future we should provide an UI that will allow user to define complex types
+					automatically (for example set a function call that require x argument to be set
+					and show them automatically)
+				-->
+				<z-object-selector
+					v-if="getTypeOfArgument === Constants.Z_TYPED_LIST"
+					class="ext-wikilambda-editor-input-list-item__selector"
+					:label="$i18n( 'wikilambda-function-definition-inputs-item-typed-list-placeholder' ).text()"
+					:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-typed-list-placeholder' ).text()"
+					@input="setListTypedList"
+					@clear="setListTypedList"
+				>
+				</z-object-selector>
+			</div>
+			<div class="ext-wikilambda-editor-input-list-item__body--entry">
+				<span
+					v-if="index === 0 || isMobile"
+					class="ext-wikilambda-editor-input-list-item__body--entry-text"
+				>
+					{{ $i18n( 'wikilambda-function-definition-input-item-label' ).text() }}
+				</span>
+				<cdx-text-input
+					v-model="getArgumentLabel"
+					class="ext-wikilambda-editor-input-list-item__label"
+					:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
+					:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
+					@input="setArgumentLabel( zobjectId, $event.target.value )"
+				></cdx-text-input>
+			</div>
 			<cdx-button
 				v-if="canEditType && !isMobile"
 				type="quiet"
-				class="ext-wikilambda-editor-input-list-item__action-delete"
+				:class="trashIconClass"
 				:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-remove' ).text()"
 				@click="removeInput"
 			>
@@ -98,7 +112,6 @@ var Constants = require( '../../../Constants.js' ),
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	icons = require( './../../../../lib/icons.json' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' );
-
 // @vue/component
 module.exports = exports = {
 	name: 'function-definition-inputs-item',
@@ -179,7 +192,6 @@ module.exports = exports = {
 			var zArgumentTypeId = this.getNestedZObjectById( this.zobjectId, [
 				Constants.Z_ARGUMENT_TYPE
 			] ).id;
-
 			if ( this.getZObjectTypeById( zArgumentTypeId ) === Constants.Z_REFERENCE ) {
 				return this.getNestedZObjectById( zArgumentTypeId, [
 					Constants.Z_REFERENCE_ID
@@ -196,7 +208,6 @@ module.exports = exports = {
 		},
 		getArgumentLabel: function () {
 			var labels = this.getZObjectChildrenById( this.getArgumentLabels.id );
-
 			for ( var index in labels ) {
 				var lang = this.getNestedZObjectById( labels[ index ].id, [
 						Constants.Z_MONOLINGUALSTRING_LANGUAGE,
@@ -206,16 +217,28 @@ module.exports = exports = {
 						Constants.Z_MONOLINGUALSTRING_VALUE,
 						Constants.Z_STRING_VALUE
 					] );
-
 				if ( lang.value === this.zLang ) {
 					return value.value;
 				}
 			}
-
 			return null;
 		},
 		selectedLabel: function () {
 			return this.getTypeOfArgument ? this.getZkeyLabels[ this.getTypeOfArgument ] : '';
+		},
+		trashIconClass: function () {
+			return this.index === 0 ?
+				'ext-wikilambda-editor-input-list-item__header__action-delete--first' :
+				'ext-wikilambda-editor-input-list-item__header__action-delete';
+		},
+		functionInputLabel: function () {
+			return (
+				this.$i18n( 'wikilambda-function-viewer-details-input-number', this.inputNumber ) +
+				( this.selectedLabel && !this.isActive ? ': ' + this.selectedLabel : '' ) +
+				' (' +
+				this.$i18n( 'wikilambda-optional' ) +
+				') '
+			);
 		}
 	} ),
 	methods: $.extend( mapActions( [
@@ -230,18 +253,14 @@ module.exports = exports = {
 			if ( ( !this.getArgumentLabel && !this.getArgumentLabels.id ) || !this.zLang ) {
 				return;
 			}
-
 			var lang = this.zLang;
-
 			if ( this.currentZObjectLanguages.indexOf( lang ) === -1 ) {
 				this.addZMonolingualString( {
 					lang: lang,
 					parentId: this.getArgumentLabels.id
 				} );
 			}
-
 			var labels = this.getZObjectChildrenById( this.getArgumentLabels.id );
-
 			for ( var index in labels ) {
 				var labelLang = this.getNestedZObjectById( labels[ index ].id, [
 						Constants.Z_MONOLINGUALSTRING_LANGUAGE,
@@ -251,7 +270,6 @@ module.exports = exports = {
 						Constants.Z_MONOLINGUALSTRING_VALUE,
 						Constants.Z_STRING_VALUE
 					] );
-
 				if ( labelLang.value === lang ) {
 					this.setZObjectValue( {
 						id: value.id,
@@ -264,7 +282,6 @@ module.exports = exports = {
 		},
 		setArgumentType: function ( type ) {
 			var payload;
-
 			if ( type === Constants.Z_TYPED_LIST ) {
 				payload = {
 					id: this.getZArgumentType.id,
@@ -300,6 +317,9 @@ module.exports = exports = {
 			const zId = this.zobjectId;
 			this.removeZObjectChildren( zId );
 			this.removeZObject( zId );
+		},
+		getTypeUrl: function () {
+			return new mw.Title( Constants.PATHS.LIST_ZOBJECTS_BY_TYPE_TYPE ).getUrl();
 		}
 	} ),
 	watch: {
@@ -319,6 +339,10 @@ module.exports = exports = {
 	padding: 24px 0;
 	border-bottom: 1px solid @wmui-color-base80;
 
+	&__label {
+		width: 100%;
+	}
+
 	&__body {
 		width: 100%;
 		display: none;
@@ -327,12 +351,28 @@ module.exports = exports = {
 		& > * {
 			margin-top: 10px;
 		}
+
+		&--entry {
+			display: flex;
+
+			&-text {
+				width: 50px;
+			}
+		}
+
+		&--description {
+			color: @wmui-color-base20;
+		}
 	}
 
 	&__action-delete {
 		.cdx-icon {
 			width: 16px;
 			height: 16px;
+		}
+
+		&--first {
+			padding-top: 18px;
 		}
 	}
 
@@ -364,13 +404,6 @@ module.exports = exports = {
 			}
 		}
 
-		&__action-delete {
-			.cdx-icon {
-				width: 16px;
-				height: 16px;
-			}
-		}
-
 		&--active {
 			.ext-wikilambda-editor-input-list-item__header__title {
 				.cdx-icon {
@@ -382,10 +415,10 @@ module.exports = exports = {
 				display: flex;
 			}
 		}
-	}
 
-	&__selector {
-		width: 100%;
+		&__action-delete--first {
+			padding-top: 18px;
+		}
 	}
 
 	@media screen and ( min-width: @width-breakpoint-tablet ) {
@@ -406,6 +439,10 @@ module.exports = exports = {
 			& > * {
 				margin-top: 0;
 				margin-right: 6px;
+			}
+
+			&--entry {
+				display: block;
 			}
 		}
 

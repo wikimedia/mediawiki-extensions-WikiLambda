@@ -5,13 +5,21 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-function-definition-inputs">
+	<div class="ext-wikilambda-function-definition-inputs" role="inputs-container">
 		<div
+			v-if="!isMobile"
 			:id="'ext-wikilambda-function-definition-inputs_label_' + zLang"
 			class="ext-wikilambda-function-definition-inputs_label">
-			<label class="ext-wikilambda-app__text-regular">
-				{{ $i18n( 'wikilambda-function-definition-inputs-label' ) }}
+			<label
+				class="ext-wikilambda-app__text-regular"
+				aria-labelledby="wikilambda-function-definition-inputs-label"
+			>
+				{{ functionInputsLabel }}
 			</label>
+			<span class="ext-wikilambda-function-definition-inputs__description">
+				{{ $i18n( 'wikilambda-function-definition-inputs-description' ).text() }}
+				<a :href="getTypeUrl()"> {{ $i18n( 'wikilambda-function-definition-input-types' ).text() }} </a>
+			</span>
 			<tooltip
 				v-if="tooltipMessage && !canEdit"
 				:content="tooltipMessage"
@@ -158,6 +166,14 @@ module.exports = exports = {
 			return this.zArgumentList.length === 0 ?
 				'ext-wikilambda-function-definition-inputs__add-input-button ext-wikilambda-edit__text-button' :
 				'ext-wikilambda-function-definition-inputs__add-another-input-button ext-wikilambda-edit__text-button';
+		},
+		functionInputsLabel: function () {
+			return (
+				this.$i18n( 'wikilambda-function-definition-inputs-label' ) +
+				' (' +
+				this.$i18n( 'wikilambda-optional' ) +
+				') '
+			);
 		}
 	} ),
 	methods: $.extend( mapActions( [
@@ -192,6 +208,9 @@ module.exports = exports = {
 		},
 		setActiveInput: function ( index ) {
 			this.activeInputIndex = index;
+		},
+		getTypeUrl: function () {
+			return new mw.Title( Constants.PATHS.LIST_ZOBJECTS_BY_TYPE_TYPE ).getUrl();
 		}
 	} ),
 	watch: {
@@ -210,9 +229,14 @@ module.exports = exports = {
 @import './../../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-function-definition-inputs {
-	display: block;
-	position: relative;
+	display: flex;
 	margin-bottom: 26px;
+
+	&_label {
+		display: flex;
+		flex-direction: column;
+		width: 153px;
+	}
 
 	&__padded {
 		padding-bottom: 40px;
@@ -220,10 +244,7 @@ module.exports = exports = {
 
 	& > div:first-of-type {
 		width: 153px;
-	}
-
-	&_label {
-		display: none;
+		flex-direction: column;
 	}
 
 	&_tooltip-icon {
@@ -241,16 +262,28 @@ module.exports = exports = {
 		cursor: pointer;
 	}
 
-	@media screen and ( min-width: @width-breakpoint-tablet ) {
+	&__description {
+		color: @wmui-color-base20;
+	}
+
+	&__row {
 		display: flex;
+		gap: 8px;
+	}
+
+	@media screen and ( max-width: @width-breakpoint-tablet ) {
+		display: block;
+
+		&__row {
+			display: block;
+		}
 
 		&__padded {
 			padding-bottom: 0;
 		}
 
-		&_label {
-			display: flex;
-			flex: none;
+		& > div:first-of-type {
+			width: auto;
 		}
 	}
 }

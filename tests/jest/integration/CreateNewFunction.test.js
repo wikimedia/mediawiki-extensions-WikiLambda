@@ -1,4 +1,3 @@
-/* eslint-disable compat/compat */
 /*!
  * WikiLambda integration test for creating new function.
  *
@@ -63,7 +62,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 	} );
 
 	it( 'allows creating a new function, making use of most important features', async () => {
-		const { findByLabelText, findByRole, getAllByLabelText, getByLabelText, getByText } =
+		const { findByLabelText, findByRole, getAllByLabelText, getByLabelText, getByText, findAllByRole } =
 			render( App, { global: { plugins: [ store ] } } );
 
 		// ACT: Select Chinese as the natural language.
@@ -75,18 +74,18 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await fireEvent.update( getByLabelText( 'Name (optional)' ), 'function name, in Chinese' );
 
 		// ACT: Enter an alias for the function in Chinese.
-		const aliasInput = within( getByLabelText( 'Aliases (optional)' ) ).getByRole( 'textbox' );
+		const aliasInput = within( getByLabelText( 'Alternative names (optional)' ) ).getByRole( 'textbox' );
 		await fireEvent.update( aliasInput, 'function alias, in Chinese' );
 		await fireEvent.keyDown( aliasInput, { key: 'enter' } );
 
 		// ACT: Select a type for the first argument.
-		const argumentsArea = getByLabelText( 'Input type' );
+		const argumentsArea = await findByRole( 'inputs-container' );
 		await fireEvent.update( within( argumentsArea ).getByPlaceholderText( 'Select a type' ), 'Str' );
 		await clickLookupResult( argumentsArea, 'String' );
 
 		// ACT: Enter a label for the first argument in Chinese.
 		await fireEvent.update(
-			within( argumentsArea ).getAllByPlaceholderText( 'Input label' )[ 0 ],
+			within( argumentsArea ).getAllByPlaceholderText( 'E.g. Celsius' )[ 0 ],
 			'first argument label, in Chinese' );
 
 		// ACT: Add another argument.
@@ -98,11 +97,11 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 
 		// ACT: Enter a label for the second argument in Chinese.
 		await fireEvent.update(
-			within( argumentsArea ).getAllByPlaceholderText( 'Input label' )[ 1 ],
+			within( argumentsArea ).getAllByPlaceholderText( 'E.g. Celsius' )[ 1 ],
 			'second argument label, in Chinese' );
 
 		// ACT: Select a type for the output.
-		const outputArea = getByLabelText( 'Output type' );
+		const outputArea = getByLabelText( 'Output' );
 		await fireEvent.update( within( outputArea ).getByRole( 'combobox' ), 'Str' );
 		await clickLookupResult( outputArea, 'String' );
 
@@ -118,19 +117,19 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await fireEvent.update( getAllByLabelText( 'Name (optional)' )[ 1 ], 'function name, in French' );
 
 		// ACT: Enter an alias in French
-		const frenchAliasInput = within( getAllByLabelText( 'Aliases (optional)' )[ 1 ] ).getByRole( 'textbox' );
+		const frenchAliasInput = within( getAllByLabelText( 'Alternative names (optional)' )[ 1 ] ).getByRole( 'textbox' );
 		await fireEvent.update( frenchAliasInput, 'function alias, in French' );
 		await fireEvent.keyDown( frenchAliasInput, { key: 'enter' } );
 
 		// ACT: Enter a label for the first argument, in French.
-		const frenchArgumentsArea = getAllByLabelText( 'Input type' )[ 1 ];
+		const frenchArgumentsArea = ( await findAllByRole( 'inputs-container' ) )[ 1 ];
 		await fireEvent.update(
-			within( frenchArgumentsArea ).getAllByPlaceholderText( 'Input label' )[ 0 ],
+			within( frenchArgumentsArea ).getAllByPlaceholderText( 'E.g. Celsius' )[ 0 ],
 			'first argument label, in French' );
 
 		// ACT: Enter a label for the second argument, in French.
 		await fireEvent.update(
-			within( frenchArgumentsArea ).getAllByPlaceholderText( 'Input label' )[ 1 ],
+			within( frenchArgumentsArea ).getAllByPlaceholderText( 'E.g. Celsius' )[ 1 ],
 			'second argument label, in French' );
 
 		// ACT: Click publish button.

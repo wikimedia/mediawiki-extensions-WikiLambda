@@ -135,6 +135,7 @@ var Constants = {
 	paths = {
 		CREATE_Z_OBJECT_TITLE: 'Special:CreateZObject',
 		EVALUATE_FUNCTION_CALL_TITLE: 'Special:EvaluateFunctionCall',
+		LIST_ZOBJECTS_BY_TYPE_TYPE: 'Special:ListZObjectsByType/Z4',
 		ROUTE_FORMAT_ONE: '/w/index.php',
 		ROUTE_FORMAT_TWO: '/wiki/'
 	},
