@@ -9,15 +9,23 @@
 		<!-- eslint-disable vue/no-v-model-argument -->
 		<!-- eslint-disable vue/no-unsupported-features -->
 		<cdx-dialog
+			id="publish-dialog"
+			title=""
 			:open="showDialog"
-			close-button-label="Close"
-			:title="$i18n( 'wikilambda-editor-publish-dialog-header' ).text()"
-			:primary-action="primaryActionText()"
-			:default-action="defaultActionText()"
 			@update:open="closeDialog"
-			@primary="publishZObject"
-			@default="closeDialog"
 		>
+			<div class="ext-wikilambda-publishdialog__header">
+				<span class="ext-wikilambda-publishdialog__header__title">
+					{{ $i18n( 'wikilambda-editor-publish-dialog-header' ).text() }}
+				</span>
+				<cdx-button
+					type="quiet"
+					class="ext-wikilambda-publishdialog__header__close-button"
+					@click="closeDialog"
+				>
+					<cdx-icon :icon="icons.cdxIconClose"></cdx-icon>
+				</cdx-button>
+			</div>
 			<div class="ext-wikilambda-publishdialog__summary">
 				<div v-if="hasErrors" class="ext-wikilambda-publishdialog__errors">
 					<div v-for="error in errors" :key="error.id">
@@ -42,8 +50,10 @@
 
 				<div class="ext-wikilambda-publishdialog__summary">
 					<div class="ext-wikilambda-publishdialog__summary-label">
-						<label for="ext-wikilambda-publishdialog__summary-input"
-							class="ext-wikilambda-app__text-regular">
+						<label
+							for="ext-wikilambda-publishdialog__summary-input"
+							class="ext-wikilambda-app__text-regular"
+						>
 							{{ $i18n( 'wikilambda-editor-publish-dialog-how-did-you-improve-label' )
 								.text() }}
 						</label>
@@ -56,10 +66,28 @@
 						:placeholder="$i18n( 'wikilambda-editor-publish-dialog-summary-placeholder' ).text()"
 					></cdx-text-input>
 				</div>
+				<div class="ext-wikilambda-publishdialog__actions">
+					<!-- TODO: (T325821) replace with codex footer slot when available -->
+					<cdx-button
+						class="ext-wikilambda-publishdialog__actions__button-publish"
+						action="progressive"
+						type="primary"
+						@click="publishZObject"
+					>
+						{{ $i18n( 'wikilambda-publishnew' ).text() }}
+					</cdx-button>
 
-				<div>
-					<hr class="ext-wikilambda-dialog__divider">
-					<div v-html="legalText"></div>
+					<cdx-button
+						class="ext-wikilambda-publishdialog__actions__button-cancel"
+						type="primary"
+						@click="closeDialog"
+					>
+						{{ $i18n( 'wikilambda-cancel' ).text() }}
+					</cdx-button>
+				</div>
+				<div class="ext-wikilambda-publishdialog__divider">
+					<hr>
+					<div class="ext-wikilambda-publishdialog__legal-text" v-html="legalText"></div>
 				</div>
 			</div>
 		</cdx-dialog>
@@ -71,6 +99,9 @@ const Constants = require( '../../Constants.js' ),
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
+	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	icons = require( '../../../lib/icons.json' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
@@ -80,7 +111,9 @@ module.exports = exports = {
 	components: {
 		'cdx-text-input': CdxTextInput,
 		'cdx-message': CdxMessage,
-		'cdx-dialog': CdxDialog
+		'cdx-dialog': CdxDialog,
+		'cdx-button': CdxButton,
+		'cdx-icon': CdxIcon
 	},
 	inject: {
 		viewmode: { default: false }
@@ -99,7 +132,8 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			summary: ''
+			summary: '',
+			icons: icons
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -163,15 +197,6 @@ module.exports = exports = {
 				};
 				this.setError( payload );
 			}.bind( this ) );
-		},
-		primaryActionText: function () {
-			return {
-				label: this.$i18n( 'wikilambda-publishnew' ).text(),
-				actionType: 'progressive'
-			};
-		},
-		defaultActionText: function () {
-			return { label: this.$i18n( 'wikilambda-cancel' ).text() };
 		}
 	} )
 };
@@ -180,9 +205,21 @@ module.exports = exports = {
 <style lang="less">
 @import './../../../lib/wikimedia-ui-base.less';
 
-.ext-wikilambda-publishdialog {
-	display: flex;
+/* stylelint-disable selector-max-id */
+#publish-dialog .cdx-dialog__header {
+	display: none;
+}
 
+#publish-dialog .cdx-dialog__body {
+	margin: 0 8px;
+}
+
+hr {
+	color: #c8ccd1;
+	margin-bottom: 16px;
+}
+
+.ext-wikilambda-publishdialog {
 	&__errors {
 		padding: 8px 0;
 	}
@@ -200,10 +237,60 @@ module.exports = exports = {
 		display: flex;
 		flex-direction: column;
 		padding: 8px 0;
+		color: @wmui-color-base30;
 	}
 
 	&__summary-label {
 		padding-bottom: 4px;
+	}
+
+	&__divider {
+		margin-top: 16px;
+	}
+
+	&__actions {
+		display: flex;
+		flex-direction: row-reverse;
+
+		&__button-cancel {
+			margin-right: 8px;
+		}
+	}
+
+	&__legal-text {
+		color: @wmui-color-base30;
+	}
+
+	&__body {
+		padding: 0 16px 16px;
+	}
+
+	&__header {
+		display: flex;
+		justify-content: space-between;
+		padding: 8px 0;
+		position: sticky;
+		top: 0;
+		background: @wmui-color-base100;
+
+		&__title {
+			width: 100%;
+			font-weight: bold;
+			font-size: 1.15em;
+			margin: auto;
+		}
+
+		&__close-button {
+			display: flex;
+			color: #202122;
+			justify-content: center;
+			align-items: center;
+			height: 32px;
+			width: 32px;
+			background: none;
+			border: 0;
+			margin: auto;
+		}
 	}
 }
 </style>

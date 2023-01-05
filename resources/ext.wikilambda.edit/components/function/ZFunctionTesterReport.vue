@@ -28,8 +28,11 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="( test, index ) in testers" :key="index"
-						class="ext-wikilambda-fn-tester-results__row">
+					<tr
+						v-for="( test, index ) in testers"
+						:key="index"
+						class="ext-wikilambda-fn-tester-results__row"
+					>
 						<template v-if="typeof test === 'string'">
 							<th scope="row">
 								{{ testLabel( test ) }}

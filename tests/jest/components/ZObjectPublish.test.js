@@ -67,7 +67,7 @@ describe( 'ZObjectPublish', function () {
 		const publishDialog = wrapper.findComponent( PublishDialog );
 
 		expect( publishDialog.vm.showDialog ).toBe( true );
-		const publishButton = wrapper.findComponent( '.cdx-dialog__footer__primary-action' );
+		const publishButton = wrapper.findComponent( '.ext-wikilambda-publishdialog__actions__button-publish' );
 		expect( publishButton.exists() ).toBeTruthy();
 	} );
 
@@ -85,7 +85,7 @@ describe( 'ZObjectPublish', function () {
 
 		const publishDialog = wrapper.findComponent( PublishDialog );
 		expect( publishDialog.vm.showDialog ).toBe( false );
-		const publishButton = wrapper.findComponent( '.cdx-dialog__footer__primary-action' );
+		const publishButton = wrapper.findComponent( '.ext-wikilambda-publishdialog__actions__button-publish' );
 		expect( publishButton.exists() ).toBeFalsy();
 	} );
 
@@ -99,7 +99,7 @@ describe( 'ZObjectPublish', function () {
 		// ACT: enter summary
 		wrapper.getComponent( CdxTextInput ).get( 'input' ).setValue( 'my changes summary' );
 
-		const publishButton = wrapper.findComponent( '.cdx-dialog__footer__primary-action' );
+		const publishButton = wrapper.findComponent( '.ext-wikilambda-publishdialog__actions__button-publish' );
 		expect( publishButton.exists() ).toBeTruthy();
 
 		wrapper.vm.$nextTick( function () {
@@ -116,7 +116,7 @@ describe( 'ZObjectPublish', function () {
 		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
 		await wrapper.vm.$nextTick();
 
-		const cancelButton = wrapper.findComponent( '.cdx-dialog__footer__default-action' );
+		const cancelButton = wrapper.findComponent( '.ext-wikilambda-publishdialog__actions__button-cancel' );
 		expect( cancelButton.exists() ).toBeTruthy();
 
 		wrapper.vm.$nextTick( function () {
@@ -206,7 +206,7 @@ describe( 'ZObjectPublish', function () {
 		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
 		await wrapper.vm.$nextTick();
 
-		const publishButton = wrapper.findComponent( '.cdx-dialog__footer__primary-action' );
+		const publishButton = wrapper.findComponent( '.ext-wikilambda-publishdialog__actions__button-publish' );
 
 		// ACT: click publish button
 		await publishButton.trigger( 'click' );

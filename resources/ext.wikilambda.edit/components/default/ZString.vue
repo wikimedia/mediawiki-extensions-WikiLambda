@@ -12,7 +12,7 @@
 		<input
 			v-else
 			v-model="value"
-			:class=stringInputClass
+			:class="stringInputClass"
 			type="text"
 			@focus="setInputClassActive"
 			@focusout="removeInputClassActive">
