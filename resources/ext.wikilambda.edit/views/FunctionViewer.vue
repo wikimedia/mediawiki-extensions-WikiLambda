@@ -76,6 +76,9 @@ module.exports = exports = {
 			}
 			return false;
 		}
+	},
+	mounted: function () {
+		this.$emit( 'mounted' );
 	}
 };
 </script>

@@ -28,6 +28,11 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 	beforeEach( () => {
 		const setupResult = runSetup();
 		apiPostWithEditTokenMock = setupResult.apiPostWithEditTokenMock;
+
+		mw.track = jest.fn( function ( trackkey, trackmessage ) {
+			// eslint-disable-next-line no-console
+			console.log( 'Log emitted: ' + trackkey + ' - ' + trackmessage );
+		} );
 	} );
 
 	afterEach( () => {

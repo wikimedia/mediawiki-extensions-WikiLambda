@@ -56,6 +56,11 @@ describe( 'Wikilambda frontend, running a function on evaluate function call vie
 			};
 		} );
 
+		mw.track = jest.fn( function ( trackkey, trackmessage ) {
+			// eslint-disable-next-line no-console
+			console.log( 'Log emitted: ' + trackkey + ' - ' + trackmessage );
+		} );
+
 		window.mw.Uri.mockImplementation( () => {
 			return {
 				path: new window.mw.Title( Constants.PATHS.EVALUATE_FUNCTION_CALL_TITLE ).getUrl(),

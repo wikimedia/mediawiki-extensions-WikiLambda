@@ -22,6 +22,9 @@ module.exports = exports = {
 	name: 'function-editor',
 	components: {
 		'function-definition': functionDefinition
+	},
+	mounted: function () {
+		this.$emit( 'mounted' );
 	}
 };
 </script>
