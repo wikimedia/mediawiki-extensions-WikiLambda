@@ -12,7 +12,7 @@
 			</text-component>
 		</div>
 		<section v-if="!hideSidebar" class="ext-wikilambda-function-about__sidebar">
-			<div class="ext-wikilambda-function-about__examples">
+			<div v-if="!hideExamples" class="ext-wikilambda-function-about__examples">
 				<function-viewer-about-examples></function-viewer-about-examples>
 			</div>
 			<div class="ext-wikilambda-function-about__names">
@@ -73,11 +73,9 @@ module.exports = exports = {
 					Constants.Z_MULTILINGUALSTRINGSET_VALUE
 				] ).id ).length === 0;
 			},
+			// TODO(T320274): Fix and re-show tester examples table.
 			hideExamples: function () {
-				return this.getAllItemsFromListById( this.getNestedZObjectById( 0, [
-					Constants.Z_PERSISTENTOBJECT_VALUE,
-					Constants.Z_FUNCTION_TESTERS
-				] ).id ).length === 0;
+				return true;
 			},
 			hideSidebar: function () {
 				return this.hideNames && this.hideExamples && this.hideAliases;

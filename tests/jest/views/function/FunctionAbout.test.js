@@ -40,7 +40,7 @@ describe( 'FunctionAbout', function () {
 		expect( wrapper.find( '.ext-wikilambda-function-about' ).exists() ).toBeTruthy();
 	} );
 
-	it( 'does not display the sidebar if there are no aliases, names or tester examples', async function () {
+	it( 'does not display the sidebar if there are no aliases or names', async function () {
 		var wrapper = shallowMount( FunctionAbout );
 
 		await wrapper.vm.$nextTick();
@@ -109,7 +109,8 @@ describe( 'FunctionAbout', function () {
 		expect( wrapper.find( '.ext-wikilambda-function-about__sidebar' ).exists() ).toBeTruthy();
 	} );
 
-	it( 'displays the sidebar if there are tester examples', async function () {
+	// TODO(T320274): Update this test for showing the sidebar once tester examples table fixed and reimplemented.
+	it( 'does not display the sidebar for tester examples as the table is hidden', async function () {
 		getters.getNestedZObjectById = () => ( id, keys ) => {
 			if ( keys[ 0 ] === Constants.Z_PERSISTENTOBJECT_VALUE &&
 				keys[ 1 ] === Constants.Z_FUNCTION_TESTERS ) {
@@ -132,6 +133,6 @@ describe( 'FunctionAbout', function () {
 
 		var wrapper = shallowMount( FunctionAbout );
 
-		expect( wrapper.find( '.ext-wikilambda-function-about__sidebar' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-about__sidebar' ).exists() ).toBeFalsy();
 	} );
 } );
