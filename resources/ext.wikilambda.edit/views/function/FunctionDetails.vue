@@ -567,6 +567,12 @@ module.exports = exports = {
 	}
 
 	@media screen and ( max-width: @width-breakpoint-tablet ) {
+		flex-flow: column wrap;
+
+		&__tables {
+			width: 100%;
+		}
+
 		&__sidebar {
 			flex: auto;
 		}
