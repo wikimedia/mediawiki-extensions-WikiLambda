@@ -17,6 +17,7 @@
 	"wikilambda-desc": "Fournit aux wikis de Wikimedia une fonction d’analyseur syntaxique de wikicode pour appeler l’évaluation des fonctions écrites, gérées et évaluées sur un wiki central.",
 	"content-model-zobject": "Z-Objet",
 	"wikilambda-history-title": "Historique de révision de « $1 » ($2)",
+	"wikilambda-zobject-title": "$1 ($2)",
 	"wikilambda-invalidzobjecttitle": "Le titre fourni « $1 » n’est pas valide pour un Z-Objet.",
 	"wikilambda-invalidzobject": "Le contenu fourni n’est pas un Z-Objet valide.",
 	"wikilambda-invalidcontenttype": "Le contenu fourni n’est pas une classe de Z-Objet.",
