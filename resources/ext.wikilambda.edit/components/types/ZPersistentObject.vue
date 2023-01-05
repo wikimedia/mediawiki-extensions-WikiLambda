@@ -131,20 +131,15 @@ module.exports = exports = {
 	methods: $.extend( mapActions( [
 		'removeZObjectChildren',
 		'changeType'
-	] ), {
+	] ), mapActions( 'router', [ 'navigate' ] ), {
 		removeKey: function ( objectId ) {
 			this.removeZObjectChildren( objectId );
 		},
-
 		navigateToCreateFunction: function () {
-			var zObject = this.getZObjectChildrenById( 0 ); // We fetch the Root object
-			var Z2K2 =
-				this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, zObject );
-
-			this.changeType( {
-				id: Z2K2.id,
-				type: Constants.Z_FUNCTION
-			} );
+			var payload = {
+				to: Constants.VIEWS.FUNCTION_EDITOR
+			};
+			this.navigate( payload );
 		}
 	} )
 };
