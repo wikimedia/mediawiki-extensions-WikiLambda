@@ -9,7 +9,9 @@
 		<div class="ext-wikilambda-function-details__summary">
 			{{ $i18n( 'wikilambda-function-details-summary' ).text() }}
 			<!-- TODO(T309199): link to process page once it exists -->
-			<a href="#"> {{ $i18n( 'wikilambda-function-details-summary-learn-more' ).text() }} </a>
+			<a href="https://www.mediawiki.org/wiki/Extension:WikiLambda/Approving_Implementations_and_Testers" target="_blank">
+				{{ $i18n( 'wikilambda-function-details-summary-learn-more' ).text() }}
+			</a>
 		</div>
 		<section class="ext-wikilambda-function-details__sidebar">
 			<function-viewer-details-sidebar :zobject-id="zobjectId"></function-viewer-details-sidebar>
