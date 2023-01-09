@@ -248,7 +248,8 @@ describe( 'zTesters Vuex module ', function () {
 						list: 'wikilambdafn_search',
 						format: 'json',
 						wikilambdafn_zfunction_id: 'Z801',
-						wikilambdafn_type: 'Z20'
+						wikilambdafn_type: 'Z20',
+						wikilambdafn_limit: 100
 					} );
 					expect( commitMock ).toHaveBeenCalledWith( 'setZTesters', [ 'Z8010', 'Z8011' ] );
 				} );
