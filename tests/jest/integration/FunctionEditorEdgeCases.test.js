@@ -96,7 +96,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		expect( within( argumentsArea ).queryByText( 'String' ) ).not.toBeInTheDocument();
 
 		// ACT: Add an argument.
-		await fireEvent.click( getByText( '+ Add an input' ) );
+		await fireEvent.click( getByText( 'Add an input' ) );
 
 		// ACT: Select a type for the first argument again.
 		await fireEvent.update( within( argumentsArea ).getByPlaceholderText( 'Select a type' ), 'Str' );
@@ -126,7 +126,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await clickLookupResult( outputArea, 'String' );
 
 		// ACT: Add another argument.
-		await fireEvent.click( getByText( '+ Add another input' ) );
+		await fireEvent.click( getByText( 'Add another input' ) );
 
 		// ACT: Select a type for the second argument.
 		await fireEvent.update( within( argumentsArea ).getAllByPlaceholderText( 'Select a type' )[ 1 ], 'Str' );

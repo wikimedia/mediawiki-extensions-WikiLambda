@@ -75,7 +75,7 @@ module.exports = exports = {
 
 .ext-wikilambda-publish-zobject {
 	&__publish-button {
-		margin-right: 10px;
+		margin-right: 16px;
 	}
 }
 </style>

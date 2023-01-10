@@ -12,36 +12,40 @@
 		>
 			<cdx-button
 				type="quiet"
-				class="ext-wikilambda-editor-input-list-item__header__title"
+				class="ext-wikilambda-editor-input-list-item__header__action-expand"
 				@click="toggleActive"
 			>
 				<cdx-icon :icon="icons.cdxIconExpand"></cdx-icon>
-				<span
-					class="ext-wikilambda-editor-input-list-item__header__title__text"
-				>
-					{{ functionInputLabel }}
-				</span>
 			</cdx-button>
+			<span class="ext-wikilambda-editor-input-list-item__header__text">
+				{{
+					$i18n( 'wikilambda-function-viewer-details-input-number', inputNumber ).text() +
+						( selectedLabel && !isActive ? ': ' + selectedLabel : '' )
+				}}
+			</span>
 			<cdx-button
 				v-if="canEditType"
 				type="quiet"
-				:class="trashIconClass"
+				class="ext-wikilambda-editor-input-list-item__header__action-delete"
 				@click="removeInput"
 			>
 				<cdx-icon :icon="icons.cdxIconTrash"></cdx-icon>
 			</cdx-button>
 		</div>
 		<div class="ext-wikilambda-editor-input-list-item__body">
-			<div v-if="isMobile">
-				<span class="ext-wikilambda-editor-input-list-item__body--description">
-					{{ $i18n( 'wikilambda-function-definition-inputs-description' ).text() }}
-					<a :href="getTypeUrl()"> {{ $i18n( 'wikilambda-function-definition-input-types' ).text() }} </a>
-				</span>
-			</div>
-			<div class="ext-wikilambda-editor-input-list-item__body--entry">
+			<span
+				v-if="isMobile"
+				class="ext-wikilambda-editor-input-list-item__body__description">
+				{{ $i18n( 'wikilambda-function-definition-inputs-description' ).text() }}
+				<a :href="getTypeUrl()"> {{ $i18n( 'wikilambda-function-definition-input-types' ).text() }} </a>
+			</span>
+			<div
+				v-if="isMainLanguageBlock"
+				class="ext-wikilambda-editor-input-list-item__body__entry"
+			>
 				<span
 					v-if="index === 0 || isMobile"
-					class="ext-wikilambda-editor-input-list-item__body--entry-text"
+					class="ext-wikilambda-editor-input-list-item__body__entry-text"
 				>
 					{{ $i18n( 'wikilambda-function-definition-input-item-type' ).text() }}
 				</span>
@@ -49,7 +53,9 @@
 					v-if="( !canEditType && getTypeOfArgument ) || canEditType"
 					ref="typeSelector"
 					:type="Constants.Z_TYPE"
-					class="ext-wikilambda-editor-input-list-item__selector"
+					class="
+						ext-wikilambda-editor-input-list-item__body__entry-field
+						ext-wikilambda-editor-input-list-item__selector"
 					:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text()"
 					:selected-id="getTypeOfArgument"
 					:initial-selection-label="selectedLabel"
@@ -66,7 +72,9 @@
 				-->
 				<z-object-selector
 					v-if="getTypeOfArgument === Constants.Z_TYPED_LIST"
-					class="ext-wikilambda-editor-input-list-item__selector"
+					class="
+						ext-wikilambda-editor-input-list-item__body__entry-field
+						ext-wikilambda-editor-input-list-item__selector"
 					:label="$i18n( 'wikilambda-function-definition-inputs-item-typed-list-placeholder' ).text()"
 					:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-typed-list-placeholder' ).text()"
 					@input="setListTypedList"
@@ -74,16 +82,18 @@
 				>
 				</z-object-selector>
 			</div>
-			<div class="ext-wikilambda-editor-input-list-item__body--entry">
+			<div class="ext-wikilambda-editor-input-list-item__body__entry">
 				<span
 					v-if="index === 0 || isMobile"
-					class="ext-wikilambda-editor-input-list-item__body--entry-text"
+					class="ext-wikilambda-editor-input-list-item__body__entry-text"
 				>
 					{{ $i18n( 'wikilambda-function-definition-input-item-label' ).text() }}
 				</span>
 				<cdx-text-input
 					v-model="getArgumentLabel"
-					class="ext-wikilambda-editor-input-list-item__label"
+					class="
+						ext-wikilambda-editor-input-list-item__body__entry-field
+						ext-wikilambda-editor-input-list-item__label"
 					:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
 					:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
 					@input="setArgumentLabel( zobjectId, $event.target.value )"
@@ -92,7 +102,7 @@
 			<cdx-button
 				v-if="canEditType && !isMobile"
 				type="quiet"
-				:class="trashIconClass"
+				class="ext-wikilambda-editor-input-list-item__header__action-delete"
 				:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-remove' ).text()"
 				@click="removeInput"
 			>
@@ -129,6 +139,13 @@ module.exports = exports = {
 		},
 		zobjectId: {
 			type: Number,
+			required: true
+		},
+		/**
+		 * If this input is in the main language block
+		 */
+		isMainLanguageBlock: {
+			type: Boolean,
 			required: true
 		},
 		/**
@@ -225,20 +242,6 @@ module.exports = exports = {
 		},
 		selectedLabel: function () {
 			return this.getTypeOfArgument ? this.getZkeyLabels[ this.getTypeOfArgument ] : '';
-		},
-		trashIconClass: function () {
-			return this.index === 0 ?
-				'ext-wikilambda-editor-input-list-item__header__action-delete--first' :
-				'ext-wikilambda-editor-input-list-item__header__action-delete';
-		},
-		functionInputLabel: function () {
-			return (
-				this.$i18n( 'wikilambda-function-viewer-details-input-number', this.inputNumber ) +
-				( this.selectedLabel && !this.isActive ? ': ' + this.selectedLabel : '' ) +
-				' (' +
-				this.$i18n( 'wikilambda-optional' ) +
-				') '
-			);
 		}
 	} ),
 	methods: $.extend( mapActions( [
@@ -336,8 +339,7 @@ module.exports = exports = {
 
 .ext-wikilambda-editor-input-list-item {
 	flex-direction: column;
-	padding: 24px 0;
-	border-bottom: 1px solid @wmui-color-base80;
+	padding-bottom: @spacing-50;
 
 	&__label {
 		width: 100%;
@@ -347,32 +349,38 @@ module.exports = exports = {
 		width: 100%;
 		display: none;
 		flex-direction: column;
+		margin-bottom: 0;
 
-		& > * {
-			margin-top: 10px;
-		}
-
-		&--entry {
+		&__entry {
 			display: flex;
+			align-items: center;
+			gap: @spacing-100;
+			margin-bottom: @spacing-50;
 
 			&-text {
-				width: 50px;
+				font-weight: @font-weight-bold;
+			}
+
+			&-field {
+				flex: 1;
 			}
 		}
 
-		&--description {
-			color: @wmui-color-base20;
+		&__description {
+			opacity: 0.8;
+			color: @color-subtle;
+			font-size: @wl-font-size-description-mobile;
+			line-height: @wl-line-height-description-mobile;
+			letter-spacing: @wl-letter-spacing-description-mobile;
+			display: inline-block;
+			margin-bottom: @spacing-50;
 		}
 	}
 
 	&__action-delete {
 		.cdx-icon {
-			width: 16px;
-			height: 16px;
-		}
-
-		&--first {
-			padding-top: 18px;
+			width: @size-100;
+			height: @size-100;
 		}
 	}
 
@@ -381,31 +389,35 @@ module.exports = exports = {
 		justify-content: space-between;
 		width: 100%;
 
-		&__title {
-			display: flex;
-			align-items: center;
-			gap: 8px;
-			width: 100%;
-			padding: 0;
-			flex: 1;
+		&__text {
+			flex-grow: 1;
+			font-weight: @font-weight-bold;
+			display: inline-block;
+			line-height: @size-200;
+			margin-left: @spacing-50;
+		}
+
+		&__action-expand {
+			flex-grow: 0;
 
 			.cdx-icon {
-				width: 30px;
-				height: 30px;
+				width: @size-100;
+				height: @size-100;
 				transform: rotate( 180deg );
-
-				svg {
-					width: 16px;
-				}
 			}
+		}
 
-			&__text {
-				font-weight: @font-weight-normal;
+		&__action-delete {
+			flex-grow: 0;
+
+			.cdx-icon {
+				width: @size-100;
+				height: @size-100;
 			}
 		}
 
 		&--active {
-			.ext-wikilambda-editor-input-list-item__header__title {
+			.ext-wikilambda-editor-input-list-item__header__action-expand {
 				.cdx-icon {
 					transform: rotate( 0deg );
 				}
@@ -415,34 +427,39 @@ module.exports = exports = {
 				display: flex;
 			}
 		}
-
-		&__action-delete--first {
-			padding-top: 18px;
-		}
 	}
 
+	/* DESKTOP styles */
 	@media screen and ( min-width: @width-breakpoint-tablet ) {
 		padding: 0;
-		gap: 20px;
 		flex-direction: row;
 		border-bottom: 0;
-		margin-top: 6px;
 
 		&:first-child {
 			margin-top: 0;
 		}
 
+		&__row:first-of-type {
+			.ext-wikilambda-editor-input-list-item__header__action-delete {
+				margin-top: @spacing-200;
+			}
+		}
+
 		&__body {
 			display: flex;
 			flex-direction: row;
+			margin-bottom: @spacing-50;
 
-			& > * {
+			&__entry {
 				margin-top: 0;
-				margin-right: 6px;
-			}
-
-			&--entry {
+				margin-right: @spacing-50;
 				display: block;
+				margin-bottom: 0;
+
+				&-text {
+					display: block;
+					line-height: @spacing-200;
+				}
 			}
 		}
 

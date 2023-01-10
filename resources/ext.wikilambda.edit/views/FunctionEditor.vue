@@ -38,24 +38,6 @@ module.exports = exports = {
 		&__content {
 			width: 100%;
 		}
-
-		@media screen and ( min-width: @width-breakpoint-desktop-wide ) {
-			display: grid;
-			grid-template-columns: 1fr 300px;
-			gap: 50px;
-
-			&__content {
-				position: relative;
-				flex: 0 1 100%;
-				display: flex;
-				flex-direction: column;
-
-				section {
-					width: 80%;
-					margin: 45px auto;
-				}
-			}
-		}
 	}
 }
 </style>

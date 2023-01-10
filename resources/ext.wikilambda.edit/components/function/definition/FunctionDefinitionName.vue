@@ -10,7 +10,8 @@
 			<label
 				:for="'ext-wikilambda-function-definition-name__input' + zLang"
 				class="ext-wikilambda-app__text-regular">
-				{{ functionNameLabel }}
+				{{ $i18n( 'wikilambda-function-definition-name-label' ).text() }}
+				<span>({{ $i18n( 'wikilambda-optional' ).text() }})</span>
 			</label>
 			<span class="ext-wikilambda-function-definition-name__description">
 				{{ $i18n( 'wikilambda-function-definition-name-description' ).text() }}
@@ -98,9 +99,6 @@ module.exports = exports = {
 				this.setPageZObjectValue( payload );
 				this.$emit( 'updated-name' );
 			}
-		},
-		functionNameLabel: function () {
-			return this.$i18n( 'wikilambda-function-definition-name-label' ).text() + ' (' + this.$i18n( 'wikilambda-optional' ).text() + ')';
 		}
 	} ),
 	methods: $.extend( mapActions( [
@@ -120,22 +118,33 @@ module.exports = exports = {
 
 .ext-wikilambda-function-definition-name {
 	display: flex;
-	margin-bottom: 26px;
+	margin-bottom: @spacing-150;
 
 	&__label {
 		display: flex;
 		flex-direction: column;
-		width: 153px;
-	}
+		width: @wl-field-label-width;
+		margin-right: @spacing-150;
 
-	&__input {
-		width: 300px;
+		& > label {
+			line-height: @size-200;
+			font-weight: @font-weight-bold;
+
+			& > span {
+				font-weight: @font-weight-normal;
+			}
+		}
 	}
 
 	&__description {
-		color: @wmui-color-base20;
+		opacity: 0.8;
+		color: @color-subtle;
+		font-size: @wl-font-size-description;
+		line-height: @wl-line-height-description;
+		display: inline-block;
 	}
 
+	/* MOBILE styles */
 	@media screen and ( max-width: @width-breakpoint-tablet ) {
 		& {
 			flex-direction: column;
@@ -146,6 +155,17 @@ module.exports = exports = {
 
 			&__label {
 				width: auto;
+
+				& > label {
+					line-height: inherit;
+				}
+			}
+
+			&__description {
+				font-size: @wl-font-size-description-mobile;
+				line-height: @wl-line-height-description-mobile;
+				letter-spacing: @wl-letter-spacing-description-mobile;
+				margin-bottom: @spacing-50;
 			}
 		}
 	}

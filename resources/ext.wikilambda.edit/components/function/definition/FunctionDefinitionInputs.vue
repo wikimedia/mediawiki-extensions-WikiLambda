@@ -8,33 +8,36 @@
 	<div class="ext-wikilambda-function-definition-inputs" role="inputs-container">
 		<div
 			v-if="!isMobile"
-			:id="'ext-wikilambda-function-definition-inputs_label_' + zLang"
-			class="ext-wikilambda-function-definition-inputs_label">
-			<label
-				class="ext-wikilambda-app__text-regular"
-				aria-labelledby="wikilambda-function-definition-inputs-label"
-			>
-				{{ functionInputsLabel }}
-			</label>
+			:id="'ext-wikilambda-function-definition-inputs__label_' + zLang"
+			class="ext-wikilambda-function-definition-inputs__label">
+			<div class="ext-wikilambda-function-definition-inputs__label-block">
+				<label
+					class="ext-wikilambda-app__text-regular"
+					aria-labelledby="wikilambda-function-definition-inputs-label"
+				>
+					{{ $i18n( 'wikilambda-function-definition-inputs-label' ).text() }}
+					<span>({{ $i18n( 'wikilambda-optional' ).text() }})</span>
+				</label>
+				<tooltip
+					v-if="tooltipMessage && !canEdit"
+					:content="tooltipMessage"
+				>
+					<cdx-icon
+						v-if="tooltipIcon"
+						class="ext-wikilambda-function-definition-inputs__tooltip-icon"
+						:icon="tooltipIcon">
+					</cdx-icon>
+				</tooltip>
+			</div>
 			<span class="ext-wikilambda-function-definition-inputs__description">
 				{{ $i18n( 'wikilambda-function-definition-inputs-description' ).text() }}
 				<a :href="getTypeUrl()"> {{ $i18n( 'wikilambda-function-definition-input-types' ).text() }} </a>
 			</span>
-			<tooltip
-				v-if="tooltipMessage && !canEdit"
-				:content="tooltipMessage"
-			>
-				<cdx-icon
-					v-if="tooltipIcon"
-					class="ext-wikilambda-function-definition-inputs_tooltip-icon"
-					:icon="tooltipIcon">
-				</cdx-icon>
-			</tooltip>
 		</div>
 		<div
-			:aria-labelledby="'ext-wikilambda-function-definition-inputs_label_' + zLang"
+			:aria-labelledby="'ext-wikilambda-function-definition-inputs__label_' + zLang"
 			class="ext-wikilambda-function-definition-inputs__inputs"
-			:class="{ 'ext-wikilambda-function-definition-inputs__padded': isMainZObject }"
+			:class="{ 'ext-wikilambda-function-definition-inputs__padded': isMainLanguageBlock }"
 		>
 			<function-definition-inputs-item
 				v-for="( argument, index ) in zArgumentList"
@@ -46,17 +49,19 @@
 				:can-edit-type="canEditType"
 				:is-mobile="isMobile"
 				:is-active="activeInputIndex === index"
+				:is-main-language-block="isMainLanguageBlock"
 				:show-index="zArgumentList.length > 1"
 				@update-argument-label="updateArgumentLabel"
 				@active-input="setActiveInput">
 			</function-definition-inputs-item>
-			<div
+			<cdx-button
 				v-if="canEdit"
 				:class="addInputButtonClass"
-				role="button"
-				@click="addNewItem">
+				@click="addNewItem"
+			>
+				<cdx-icon :icon="icons.cdxIconAdd"></cdx-icon>
 				{{ addNewItemText }}
-			</div>
+			</cdx-button>
 		</div>
 	</div>
 </template>
@@ -67,7 +72,9 @@ var Constants = require( '../../../Constants.js' ),
 	functionDefinitionInputsItem = require( './FunctionDefinitionInputsItem.vue' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	Tooltip = require( '../../base/Tooltip.vue' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	icons = require( './../../../../lib/icons.json' ),
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
@@ -76,6 +83,7 @@ module.exports = exports = {
 	components: {
 		'function-definition-inputs-item': functionDefinitionInputsItem,
 		tooltip: Tooltip,
+		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},
 	mixins: [ typeUtils ],
@@ -84,7 +92,7 @@ module.exports = exports = {
 			type: Number,
 			default: 0
 		},
-		isMainZObject: {
+		isMainLanguageBlock: {
 			type: Boolean
 		},
 		/**
@@ -129,7 +137,8 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			activeInputIndex: this.isMainZObject ? 0 : -1
+			icons: icons,
+			activeInputIndex: this.isMainLanguageBlock ? 0 : -1
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -155,7 +164,7 @@ module.exports = exports = {
 			return this.getAllItemsFromListById( this.zArgumentId );
 		},
 		canEditType: function () {
-			return this.canEdit && this.isMainZObject;
+			return this.canEdit && this.isMainLanguageBlock;
 		},
 		addNewItemText: function () {
 			return this.zArgumentList.length === 0 ?
@@ -164,16 +173,8 @@ module.exports = exports = {
 		},
 		addInputButtonClass: function () {
 			return this.zArgumentList.length === 0 ?
-				'ext-wikilambda-function-definition-inputs__add-input-button ext-wikilambda-edit__text-button' :
-				'ext-wikilambda-function-definition-inputs__add-another-input-button ext-wikilambda-edit__text-button';
-		},
-		functionInputsLabel: function () {
-			return (
-				this.$i18n( 'wikilambda-function-definition-inputs-label' ) +
-				' (' +
-				this.$i18n( 'wikilambda-optional' ) +
-				') '
-			);
+				'ext-wikilambda-function-definition-inputs__add-input-button' :
+				'ext-wikilambda-function-definition-inputs__add-another-input-button';
 		}
 	} ),
 	methods: $.extend( mapActions( [
@@ -197,10 +198,11 @@ module.exports = exports = {
 				lang: this.zLang
 			};
 			this.addZArgument( argumentPayload );
+			this.setActiveInput( this.zArgumentList.length - 1 );
 		},
 		// We need this function otherwise the build will fail
-		showAddNewInput: function ( isMainZObject, index ) {
-			return isMainZObject && index === this.zArgumentList.length - 1;
+		showAddNewInput: function ( isMainLanguageBlock, index ) {
+			return isMainLanguageBlock && index === this.zArgumentList.length - 1;
 		},
 		updateArgumentLabel: function () {
 			this.setAvailableZArguments( this.zFunctionId );
@@ -230,47 +232,67 @@ module.exports = exports = {
 
 .ext-wikilambda-function-definition-inputs {
 	display: flex;
-	margin-bottom: 26px;
+	margin-bottom: @spacing-150;
 
-	&_label {
+	&__label-block {
 		display: flex;
-		flex-direction: column;
-		width: 153px;
+		align-items: center;
+
+		& > label {
+			line-height: @spacing-200;
+			font-weight: @font-weight-bold;
+
+			& > span {
+				font-weight: @font-weight-normal;
+			}
+		}
 	}
 
-	&__padded {
-		padding-bottom: 40px;
+	&__label {
+		display: flex;
+		flex-direction: column;
+		width: @wl-field-label-width;
+		margin-right: @spacing-150;
 	}
 
 	& > div:first-of-type {
-		width: 153px;
+		width: @wl-field-label-width;
 		flex-direction: column;
 	}
 
-	&_tooltip-icon {
-		margin-left: 8px;
-		width: 16px;
-		height: 16px;
-	}
-
-	&__add-input-button {
-		cursor: pointer;
-	}
-
-	&__add-another-input-button {
-		margin-top: 8px;
-		cursor: pointer;
+	&__tooltip-icon {
+		margin-left: @spacing-50;
+		width: @size-100;
+		height: @size-100;
 	}
 
 	&__description {
-		color: @wmui-color-base20;
+		opacity: 0.8;
+		color: @color-subtle;
+		font-size: @wl-font-size-description;
+		line-height: @wl-line-height-description;
+		display: inline-block;
 	}
 
 	&__row {
 		display: flex;
-		gap: 8px;
+		gap: @spacing-50;
 	}
 
+	/* DESKTOP styles */
+	@media screen and ( min-width: @width-breakpoint-tablet ) {
+		&__row:last-of-type {
+			margin-bottom: @spacing-50;
+		}
+
+		&__row:first-of-type {
+			.ext-wikilambda-editor-input-list-item__header__action-delete {
+				margin-top: @spacing-200;
+			}
+		}
+	}
+
+	/* MOBILE styles */
 	@media screen and ( max-width: @width-breakpoint-tablet ) {
 		display: block;
 
@@ -278,8 +300,14 @@ module.exports = exports = {
 			display: block;
 		}
 
-		&__padded {
-			padding-bottom: 0;
+		&__label {
+			& > label {
+				line-height: inherit;
+			}
+		}
+
+		&__description {
+			margin-bottom: @spacing-50;
 		}
 
 		& > div:first-of-type {

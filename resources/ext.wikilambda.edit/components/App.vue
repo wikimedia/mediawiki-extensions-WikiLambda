@@ -75,7 +75,7 @@ module.exports = exports = {
 			 */
 			newViewMounted: function () {
 				// HACK: Is there a nicer way to split this by type of view?
-				// eslint-disable-next-line no-undef
+
 				const viewName = ( window.vueInstance && window.vueInstance.getCurrentView ) || 'testComponent';
 
 				mw.track(

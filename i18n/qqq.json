@@ -235,6 +235,7 @@
 	"wikilambda-function-definition-output-label": "Label for the function Output",
 	"wikilambda-function-definition-output-description": "Description for function output input",
 	"wikilambda-function-definition-output-types": "Label for link to ZObject types",
+	"wikilambda-function-definition-output-type-label": "Label for the function Output type selector",
 	"wikilambda-function-definition-output-selector": "Label for the function Output type selector",
 	"wikilambda-function-definition-example-title": "Title for function definition input and output example",
 	"wikilambda-function-definition-can-publish-message": "Toast message for a function definition that is ready to publish.\n\n\"Publish\" is {{msg-mw|Wikilambda-publishnew}}.",
