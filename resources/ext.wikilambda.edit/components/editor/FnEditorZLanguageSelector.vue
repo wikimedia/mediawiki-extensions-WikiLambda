@@ -182,6 +182,10 @@ module.exports = exports = {
 		min-width: 100px;
 	}
 
+	&__add-language {
+		width: 300px;
+	}
+
 	&__label {
 		display: flex;
 		flex-direction: column;

@@ -1,4 +1,3 @@
-/* eslint-disable compat/compat */
 /*!
  * WikiLambda integration test for editing a function.
  *
@@ -90,11 +89,11 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 	} );
 
 	it( 'allows editing the function, making use of most important features', async () => {
-		const { findAllByLabelText, findByRole, getAllByLabelText, getByText } =
+		const { findByRole, getAllByLabelText, getByText, findAllByRole } =
 			render( App, { global: { plugins: [ store ] } } );
 
 		// ACT: Change the first argument type.
-		const chineseArgumentsArea = ( await findAllByLabelText( 'Input type' ) )[ 0 ];
+		const chineseArgumentsArea = ( await findAllByRole( 'inputs-container' ) )[ 0 ];
 		const firstArgumentTypeInput = within( chineseArgumentsArea ).getAllByDisplayValue( 'String' )[ 0 ];
 		await fireEvent.update( firstArgumentTypeInput, 'Str' );
 		await clickLookupResult( chineseArgumentsArea, 'Monolingual stringset' );
@@ -123,13 +122,13 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 
 		// ACT: Add a label for the first argument in Chinese.
 		await fireEvent.update(
-			within( chineseArgumentsArea ).getAllByPlaceholderText( 'Input label' )[ 0 ],
+			within( chineseArgumentsArea ).getAllByPlaceholderText( 'E.g. Celsius' )[ 0 ],
 			'newly added first argument label, in Chinese' );
 
 		// ACT: Edit the label for the first argument in Afrikaans (the second language).
-		const afrikaansArgumentsArea = getAllByLabelText( 'Input type' )[ 1 ];
+		const afrikaansArgumentsArea = ( await findAllByRole( 'inputs-container' ) )[ 1 ];
 		await fireEvent.update(
-			within( afrikaansArgumentsArea ).getAllByPlaceholderText( 'Input label' )[ 0 ],
+			within( afrikaansArgumentsArea ).getAllByPlaceholderText( 'E.g. Celsius' )[ 0 ],
 			'edited first argument label, in Afrikaans' );
 
 		// ACT: Click "Add labels in another language".
@@ -144,7 +143,7 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		await fireEvent.update( getAllByLabelText( 'Name (optional)' )[ 2 ], 'function name, in French' );
 
 		// ACT: Enter an alias in French.
-		const frenchAliasInput = within( getAllByLabelText( 'Aliases (optional)' )[ 2 ] ).getByRole( 'textbox' );
+		const frenchAliasInput = within( getAllByLabelText( 'Alternative names (optional)' )[ 2 ] ).getByRole( 'textbox' );
 		await fireEvent.update( frenchAliasInput, 'function alias, in French' );
 		await fireEvent.keyDown( frenchAliasInput, { key: 'enter' } );
 

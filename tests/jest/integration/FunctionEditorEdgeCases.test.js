@@ -1,4 +1,3 @@
-/* eslint-disable compat/compat */
 /*!
  * WikiLambda integration test for creating new function.
  *
@@ -85,7 +84,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await clickLookupResult( languageSelector, 'Chinese' );
 
 		// ACT: Select a type for the first argument.
-		const argumentsArea = getByLabelText( 'Input type' );
+		const argumentsArea = await findByRole( 'inputs-container' );
 		await fireEvent.update( within( argumentsArea ).getByPlaceholderText( 'Select a type' ), 'Str' );
 		await clickLookupResult( argumentsArea, 'String' );
 
@@ -104,7 +103,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await clickLookupResult( argumentsArea, 'String' );
 
 		// ACT: Enter an alias in Chinese.
-		const chineseAliasesContainer = getAllByLabelText( 'Aliases (optional)' )[ 0 ];
+		const chineseAliasesContainer = getAllByLabelText( 'Alternative names (optional)' )[ 0 ];
 		const chineseAliasInput = within( chineseAliasesContainer ).getByRole( 'textbox' );
 		await fireEvent.update( chineseAliasInput, 'first function alias, in Chinese' );
 		await fireEvent.keyDown( chineseAliasInput, { key: 'enter' } );
@@ -119,7 +118,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument();
 
 		// ASSERT: The error warning exists on the zobject showing the user they have not set an output type.
-		const outputArea = getByLabelText( 'Output type' );
+		const outputArea = getByLabelText( 'Output' );
 		expect( outputArea ).toHaveTextContent( 'A function requires an output' );
 
 		// ACT: Select a type for the output.
