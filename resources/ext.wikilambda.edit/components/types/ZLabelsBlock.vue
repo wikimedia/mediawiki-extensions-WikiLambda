@@ -69,6 +69,7 @@
 				</cdx-toggle-button>
 			</div>
 			<z-object-selector
+				v-if="!viewmode"
 				ref="languageSelector"
 				:used-languages="selectedLanguages"
 				:type="Constants.Z_NATURAL_LANGUAGE"
