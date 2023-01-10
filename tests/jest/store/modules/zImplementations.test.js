@@ -142,7 +142,8 @@ describe( 'zImplementations Vuex module ', () => {
 						list: 'wikilambdafn_search',
 						format: 'json',
 						wikilambdafn_zfunction_id: 'Z801',
-						wikilambdafn_type: 'Z14'
+						wikilambdafn_type: 'Z14',
+						wikilambdafn_limit: 100
 					} );
 					expect( commitMock ).toHaveBeenCalledWith( 'setZImplementations', [ 'Z10001', 'Z10002' ] );
 				} );

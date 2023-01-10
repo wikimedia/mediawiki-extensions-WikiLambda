@@ -44,7 +44,8 @@ module.exports = exports = {
 				list: 'wikilambdafn_search',
 				format: 'json',
 				wikilambdafn_zfunction_id: zFunctionId,
-				wikilambdafn_type: Constants.Z_IMPLEMENTATION
+				wikilambdafn_type: Constants.Z_IMPLEMENTATION,
+				wikilambdafn_limit: Constants.API_LIMIT_MAX
 			} ).then( function ( response ) {
 				var zidList = response.query.wikilambdafn_search.map( function ( zidItem ) {
 					return zidItem.zid;

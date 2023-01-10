@@ -182,6 +182,7 @@ Constants.implementationModes = implementationModes;
 Constants.COLOR_NESTING_LEVELS = 9;
 Constants.BUILTIN_COMPONENTS = builtinComponents;
 Constants.RESOLVER_TYPES = resolverTypes;
+Constants.API_LIMIT_MAX = 100;
 
 Constants.ROW_VALUE_OBJECT = 'object';
 Constants.ROW_VALUE_ARRAY = 'array';
