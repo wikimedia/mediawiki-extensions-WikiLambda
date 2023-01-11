@@ -5,6 +5,10 @@
 		]
 	},
 	"wikilambda-persistentzobject-contents": "Vsebina",
+	"wikilambda-special-createzobject": "Ustvari nov ZObjekt",
+	"wikilambda-special-createzobject-intro": "Zagotovite, da upoštevate politike skupnosti ter pravila o avtorskih pravicah in patentih.",
+	"wikilambda-special-evaluatefunctioncall-intro": "Zagotovite, da upoštevate politike skupnosti ter pravila o avtorskih pravicah in patentih.",
+	"wikilambda-special-listduplicatezobjectlabels": "Strani ZObject s podvojenimi oznakami",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Jezik",
 	"wikilambda-publishnew": "Objavi",
 	"wikilambda-cancel": "Prekliči",
@@ -12,6 +16,10 @@
 	"wikilambda-summarylabel": "Povzetek:",
 	"wikilambda-typeselector-label": "Izberite vrsto",
 	"wikilambda-function-typeselector-label": "Izberite funkcijo",
+	"wikilambda-editor-zobject-addkey": "Dodaj ključ:",
+	"wikilambda-implementation-create-new": "Ustvari novo implementacijo",
+	"wikilambda-functioncall-error": "Napaka pri klicu funkcije: $1",
+	"wikilambda-functioncall-error-category": "Strani z napačnimi klici Wikifunkcij",
 	"wikilambda-metadata-language-column": "Jezik",
 	"wikilambda-metadata-all-languages": "Prikaži vse vnesene jezike",
 	"wikilambda-persistentobject-details-label": "Podrobnosti",
@@ -19,5 +27,6 @@
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "Izberite vrsto",
 	"wikilambda-function-definition-output-selector": "Izberite vrsto",
 	"wikilambda-ztyped-pair-placeholder": "Izberite vrsto",
+	"wikilambda-ztyped-pair-key-label": "Ključ",
 	"wikilambda-ztyped-map-placeholder": "Izberite vrsto karte"
 }
