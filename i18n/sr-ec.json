@@ -13,5 +13,6 @@
 	"wikilambda-function-is-approved": "Објекат је одобрен за ову функцију.",
 	"wikilambda-function-implementation-state-approved": "Одобрено",
 	"wikilambda-function-implementation-state-deactivated": "Деактивирано",
+	"wikilambda-function-definition-input-item-type": "Тип",
 	"wikilambda-chip-remove": "Уклони ставку"
 }
