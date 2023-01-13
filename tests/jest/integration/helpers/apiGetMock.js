@@ -271,10 +271,14 @@ const performTestResponseBuilder = ( zfunction, zimplementations, ztesters ) => 
 		var successTestResults = [];
 		var failedTestResults = [];
 		ztesters.split( '|' ).forEach( function ( ztester ) {
+			let jsonTester;
+			try {
+				jsonTester = JSON.parse( ztester );
+			} catch ( e ) {}
 			if ( ztester === existingTesterFromApi.successTesterZid ) {
 				successTestResults = [ ...successTestResults,
 					...performTestResponseResults( zFunctionId, zimplementations, ztester, true ) ];
-			} else if ( ztester === existingTesterFromApi.failedTesterZid ) {
+			} else if ( ztester === existingTesterFromApi.failedTesterZid || jsonTester ) {
 				failedTestResults = [ ...failedTestResults,
 					...performTestResponseResults( zFunctionId, zimplementations, ztester, false ) ];
 			} else {
