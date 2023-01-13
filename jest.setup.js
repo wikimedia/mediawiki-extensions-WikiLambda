@@ -91,7 +91,10 @@ global.mw = {
 			mockLocalStorage[ key ] = value;
 		} )
 	},
-	track: jest.fn(),
+	track: jest.fn( function ( trackkey, trackmessage ) {
+		// eslint-disable-next-line no-console
+		console.log( 'Log emitted: ' + trackkey + ' - ' + trackmessage );
+	} ),
 	message: jest.fn( function ( str ) {
 		return new Mocki18n( str );
 	} ),
