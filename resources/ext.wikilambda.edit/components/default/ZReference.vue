@@ -12,14 +12,12 @@
 		<template v-else>
 			<z-object-selector
 				v-if="isValueReady"
-				:class="selectorClass"
 				:selected-id="value"
 				:initial-selection-label="valueLabel"
 				:type="selectType"
 				:zobject-id="rowId"
+				:fit-width="true"
 				@input="setValue"
-				@focus="setIsSelectorActive( true )"
-				@focus-out="setIsSelectorActive( false )"
 			></z-object-selector>
 		</template>
 	</div>
@@ -54,7 +52,6 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			isSelectorActive: false
 		};
 	},
 	computed: $.extend(
@@ -143,13 +140,6 @@ module.exports = exports = {
 			 */
 			key: function () {
 				return this.getZObjectKeyByRowId( this.rowId );
-			},
-
-			selectorClass: function () {
-				return {
-					'ext-wikilambda-reference__selector': true,
-					'ext-wikilambda-reference__selector-active': this.isSelectorActive
-				};
 			}
 		}
 	),
@@ -165,10 +155,6 @@ module.exports = exports = {
 				[ Constants.Z_REFERENCE_ID ] :
 				[];
 			this.$emit( 'set-value', { keyPath, value } );
-		},
-
-		setIsSelectorActive: function ( isActive ) {
-			this.isSelectorActive = isActive;
 		}
 	}
 };
@@ -177,25 +163,4 @@ module.exports = exports = {
 
 <style lang="less">
 @import './../../../lib/wikimedia-ui-base.less';
-
-.ext-wikilambda-reference {
-	&__selector {
-		.cdx-lookup {
-			display: inline-block;
-		}
-	}
-
-	&__selector-active {
-		.cdx-lookup {
-			width: 100%;
-		}
-
-		@media screen and ( min-width: @width-breakpoint-tablet ) {
-			.cdx-lookup {
-				width: 50%;
-			}
-		}
-	}
-}
-
 </style>

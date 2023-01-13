@@ -8,7 +8,11 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<span class="ext-wikilambda-select-zobject">
+	<span
+		class="ext-wikilambda-select-zobject"
+		:class="{ 'ext-wikilambda-select-zobject__fitted': fitWidth }"
+		:style="{ width: fieldWidth }"
+	>
 		<div v-if="readonly || viewmode" class="ext-wikilambda-select-zobject__link">
 			<a
 				:href="typeUrl()"
@@ -79,6 +83,10 @@ module.exports = exports = {
 		viewmode: { default: false }
 	},
 	props: {
+		fitWidth: {
+			type: Boolean,
+			default: false
+		},
 		type: {
 			type: String,
 			default: ''
@@ -118,6 +126,7 @@ module.exports = exports = {
 	emits: [ 'input', 'focus-out', 'input-removed' ],
 	data: function () {
 		return {
+			active: false,
 			lookupResults: [],
 			lookupDelayTimer: null,
 			lookupDelayMs: 300,
@@ -195,6 +204,39 @@ module.exports = exports = {
 					return this.$i18n( messageStr ).text();
 				}
 				return null;
+			},
+			/**
+			 * This computed property calculates the width of the field depending on its value
+			 *
+			 * TODO: Because this is a not a monospace font, the larger the word is, the
+			 * less space it occupies in ch, so probably we should remove a %:
+			 *
+			 * > 1ch is usually wider than the average character width, usually by around 20-30%
+			 *
+			 * Refs:
+			 * https://stackoverflow.com/questions/3392493/adjust-width-of-input-field-to-its-input
+			 * https://meyerweb.com/eric/thoughts/2018/06/28/what-is-the-css-ch-unit/
+			 *
+			 * @return {string}
+			 */
+			fieldWidth: function () {
+				if ( !this.fitWidth ) {
+					return 'auto';
+				}
+				if ( this.active ) {
+					return '100%';
+				}
+				// If no value or placeholder, default is 20 characters
+				var chars = 20;
+				if ( this.selectedText && ( this.selectedText.length > 0 ) ) {
+					// Two extra characters to account for inner padding
+					chars = this.selectedText.length + 6;
+				} else if ( this.lookupPlaceholder && ( this.lookupPlaceholder.length > 0 ) ) {
+					chars = this.lookupPlaceholder.length + 6;
+				}
+				// Subtract 20%
+				chars = Math.ceil( chars - chars * 0.1 );
+				return `${chars}ch`;
 			}
 		}
 	),
@@ -360,9 +402,11 @@ module.exports = exports = {
 				}
 			},
 			onFocusOut: function () {
+				this.active = false;
 				this.$emit( 'focus-out' );
 			},
 			onFocus: function () {
+				this.active = true;
 				this.$emit( 'focus' );
 			},
 			typeUrl: function () {
@@ -407,7 +451,18 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
+@import '../ext.wikilambda.edit.less';
+
 .ext-wikilambda-select-zobject {
+	&__fitted {
+		transition: @wl-transition-field-expand;
+		display: inline-block;
+
+		.cdx-text-input__input {
+			min-width: auto;
+		}
+	}
+
 	&__link {
 		min-height: 32px;
 		display: inline-flex;

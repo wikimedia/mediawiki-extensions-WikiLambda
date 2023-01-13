@@ -9,24 +9,27 @@
 		<p v-if="!edit">
 			{{ value }}
 		</p>
-		<input
+		<wl-text-input
 			v-else
 			v-model="value"
-			:class="stringInputClass"
-			type="text"
-			@focus="setInputClassActive"
-			@focusout="removeInputClassActive">
+			:fit-width="true"
+			aria-label=""
+			placeholder=""
+		></wl-text-input>
 	</div>
 </template>
 
 <script>
-var
+var TextInput = require( '../base/TextInput.vue' ),
 	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
 	name: 'z-string',
+	components: {
+		'wl-text-input': TextInput
+	},
 	props: {
 		rowId: {
 			type: Number,
@@ -40,7 +43,6 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			stringInputClass: 'ext-wikilambda-string__input'
 		};
 	},
 	computed: $.extend(
@@ -92,16 +94,7 @@ module.exports = exports = {
 				return this.getZObjectKeyByRowId( this.rowId );
 			}
 		}
-	),
-	methods: {
-		setInputClassActive: function () {
-			this.stringInputClass = 'ext-wikilambda-string__input-active';
-		},
-
-		removeInputClassActive: function () {
-			this.stringInputClass = 'ext-wikilambda-string__input';
-		}
-	}
+	)
 };
 
 </script>
@@ -112,14 +105,6 @@ module.exports = exports = {
 .ext-wikilambda-string {
 	p {
 		margin: 0;
-	}
-
-	&__input-active {
-		width: 100%;
-
-		@media screen and ( min-width: @width-breakpoint-tablet ) {
-			width: 50%;
-		}
 	}
 }
 </style>

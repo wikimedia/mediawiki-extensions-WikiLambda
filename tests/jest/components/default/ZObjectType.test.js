@@ -108,7 +108,7 @@ describe( 'ZReference', () => {
 				}
 			} );
 
-			expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.selected ).toEqual( 'Z17' );
+			expect( wrapper.findComponent( { name: 'wl-select' } ).vm.selected ).toEqual( 'Z17' );
 		} );
 
 		it( 'emits a selector change value', () => {
@@ -118,7 +118,7 @@ describe( 'ZReference', () => {
 				}
 			} );
 
-			wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected', 'String' );
+			wrapper.findComponent( { name: 'wl-select' } ).vm.$emit( 'update:selected', 'String' );
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [], value: 'String' } ] ] );
 		} );
@@ -131,16 +131,16 @@ describe( 'ZReference', () => {
 					}
 				} );
 
-				expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems.length ).toBe( 3 );
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems.length ).toBe( 3 );
 
 				// Resolver type: Z-Reference
-				expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 0 ].value ).toBe( 'Z9' );
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 0 ].value ).toBe( 'Z9' );
 
 				// Resolver type: Z Function Call
-				expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 1 ].value ).toBe( 'Z7' );
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 1 ].value ).toBe( 'Z7' );
 
 				// Resolver type: Selected value type
-				expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 2 ].value ).toBe( 'Z17' );
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 2 ].value ).toBe( 'Z17' );
 			} );
 
 			it( 'if the type selector is inside a composition', async () => {
@@ -157,19 +157,19 @@ describe( 'ZReference', () => {
 					}
 				} );
 
-				expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems.length ).toBe( 4 );
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems.length ).toBe( 4 );
 
 				// Resolver type: Z-Reference
-				expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 0 ].value ).toBe( 'Z9' );
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 0 ].value ).toBe( 'Z9' );
 
 				// Resolver type: Z Function Call
-				expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 1 ].value ).toBe( 'Z7' );
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 1 ].value ).toBe( 'Z7' );
 
 				// Resolver type: Z Argument Reference
-				expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 2 ].value ).toBe( 'Z18' );
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 2 ].value ).toBe( 'Z18' );
 
 				// Selected value type
-				expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 3 ].value ).toBe( 'Z17' );
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 3 ].value ).toBe( 'Z17' );
 			} );
 
 			it( 'if the type selected is a resolver type, shows the bound type if there is one', async () => {
@@ -186,44 +186,17 @@ describe( 'ZReference', () => {
 					}
 				} );
 
-				expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems.length ).toBe( 3 );
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems.length ).toBe( 3 );
 
 				// Resolver type: Z-Reference
-				expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 0 ].value ).toBe( 'Z9' );
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 0 ].value ).toBe( 'Z9' );
 
 				// Resolver type: Z Function Call
-				expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 1 ].value ).toBe( 'Z7' );
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 1 ].value ).toBe( 'Z7' );
 
 				// Selected value type
-				expect( wrapper.findComponent( { name: 'cdx-select' } ).vm.menuItems[ 2 ].value ).toBe( 'Z6' );
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 2 ].value ).toBe( 'Z6' );
 			} );
-		} );
-
-		it( 'adds focus styling on selector focus', async () => {
-			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock();
-
-			global.store.hotUpdate( {
-				getters: getters
-			} );
-
-			var wrapper = shallowMount( ZObjectType, {
-				props: {
-					edit: true
-				}
-			} );
-
-			var selector = wrapper.get( '.ext-wikilambda-type-mode__selector' ).getComponent( ZObjectSelector );
-			expect( wrapper.find( '.ext-wikilambda-type-mode__selector-active' ).exists() ).toBeFalsy();
-
-			selector.vm.$emit( 'focus' );
-			await wrapper.vm.$nextTick();
-
-			expect( wrapper.find( '.ext-wikilambda-type-mode__selector-active' ).exists() ).toBeTruthy();
-
-			selector.vm.$emit( 'focus-out' );
-			await wrapper.vm.$nextTick();
-
-			expect( wrapper.find( '.ext-wikilambda-type-mode__selector-active' ).exists() ).toBeFalsy();
 		} );
 	} );
 } );
