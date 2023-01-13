@@ -82,23 +82,35 @@
 			<!-- eslint-disable vue/no-v-model-argument -->
 			<!-- eslint-disable vue/no-unsupported-features -->
 			<cdx-dialog
+				id="metadata-dialog"
 				v-model:open="showMetrics"
-				:title="$i18n( 'wikilambda-functioncall-metadata-dialog-header' ).text()"
-				:close-button-label="Close"
+				title=""
 			>
+				<div class="ext-wikilambda-metadatadialog__header">
+					<span class="ext-wikilambda-metadatadialog__header__title">
+						{{ $i18n( 'wikilambda-functioncall-metadata-dialog-header' ).text() }}
+					</span>
+					<div class="ext-wikilambda-metadatadialog__header__helplink">
+						<cdx-icon :icon="helpLinkIcon()"></cdx-icon>
+						<a
+							:title="tooltipMetaDataHelpLink"
+							href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/Function_call_metadata"
+							target="_blank">
+							{{ $i18n( 'wikilambda-helplink-button' ).text() }}
+						</a>
+					</div>
+					<cdx-button
+						type="quiet"
+						class="ext-wikilambda-metadatadialog__header__close-button"
+						@click="showMetrics = false"
+					>
+						<cdx-icon :icon="icons.cdxIconClose"></cdx-icon>
+					</cdx-button>
+				</div>
 				<strong> {{ activeImplementationLabel }}</strong>
 				<br>
 				<strong> {{ activeTesterLabel }}</strong>
-				<div class="ext-wikilambda-metadatadialog-helplink">
-					<cdx-icon :icon="helpLinkIcon()"></cdx-icon>
-					<a
-						:title="tooltipMetaDataHelpLink"
-						href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/Function_call_metadata"
-						target="_blank">
-						{{ $i18n( 'wikilambda-helplink-button' ).text() }}
-					</a>
-				</div>
-				<span v-if="( activeZTesterId || activeZImplementationId )"></span>
+				<span v-html="dialogText"></span>
 			</cdx-dialog>
 		</template>
 		<div v-else>
@@ -151,7 +163,8 @@ module.exports = exports = {
 			activeZImplementationId: null,
 			activeZTesterId: null,
 			Constants: Constants,
-			showMetrics: false
+			showMetrics: false,
+			icons: icons
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -281,6 +294,11 @@ module.exports = exports = {
 <style lang="less">
 @import './../../../lib/wikimedia-ui-base.less';
 
+/* stylelint-disable selector-max-id */
+#metadata-dialog .cdx-dialog__header {
+	display: none;
+}
+
 .ext-wikilambda-fn-tester-results {
 	border-spacing: 10px 5px;
 	max-width: 90vw;
@@ -297,7 +315,37 @@ module.exports = exports = {
 	text-align: right;
 }
 
-.ext-wikilambda-metadatadialog-helplink {
-	float: right;
+.ext-wikilambda-metadatadialog {
+	&__header {
+		display: flex;
+		justify-content: space-between;
+		padding: 8px 0;
+		position: sticky;
+		top: 0;
+		background: @wmui-color-base100;
+
+		&__helplink {
+			float: right;
+		}
+
+		&__title {
+			width: 100%;
+			font-weight: bold;
+			font-size: 1.15em;
+			margin: auto;
+		}
+
+		&__close-button {
+			display: flex;
+			color: #202122;
+			justify-content: center;
+			align-items: center;
+			height: 32px;
+			width: 32px;
+			background: none;
+			border: 0;
+			margin: auto;
+		}
+	}
 }
 </style>
