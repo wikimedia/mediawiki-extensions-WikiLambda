@@ -38,19 +38,31 @@
 		<!-- eslint-disable vue/no-v-model-argument -->
 		<!-- eslint-disable vue/no-unsupported-features -->
 		<cdx-dialog
+			id="metadata-dialog"
 			v-model:open="showMetrics"
-			:title="dialogTitle"
-			close-button-label="Close"
+			title=""
 		>
-			<!-- TODO (T320669): Construct this more nicely, perhaps with a Codex link component? -->
-			<div class="ext-wikilambda-metadatadialog-helplink">
-				<cdx-icon :icon="helpLinkIcon()"></cdx-icon>
-				<a
-					:title="tooltipMetaDataHelpLink"
-					href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/Function_call_metadata"
-					target="_blank">
-					{{ $i18n( 'wikilambda-helplink-button' ).text() }}
-				</a>
+			<div class="ext-wikilambda-metadatadialog__header">
+				<span class="ext-wikilambda-metadatadialog__header__title">
+					{{ dialogTitle }}
+				</span>
+				<!-- TODO (T320669): Construct this more nicely, perhaps with a Codex link component? -->
+				<div class="ext-wikilambda-metadatadialog__header__helplink">
+					<cdx-icon :icon="helpLinkIcon()"></cdx-icon>
+					<a
+						:title="tooltipMetaDataHelpLink"
+						href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/Function_call_metadata"
+						target="_blank">
+						{{ $i18n( 'wikilambda-helplink-button' ).text() }}
+					</a>
+				</div>
+				<cdx-button
+					type="quiet"
+					class="ext-wikilambda-metadatadialog__header__close-button"
+					@click="showMetrics = false"
+				>
+					<cdx-icon :icon="icons.cdxIconClose"></cdx-icon>
+				</cdx-button>
 			</div>
 			<span v-html="dialogText"></span>
 		</cdx-dialog>
@@ -93,7 +105,8 @@ module.exports = exports = {
 	data: function () {
 		return {
 			showError: true,
-			showMetrics: false
+			showMetrics: false,
+			icons: icons
 		};
 	},
 	computed: $.extend( mapGetters( [
