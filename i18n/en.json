@@ -46,7 +46,7 @@
 	"wikilambda-special-define-function-summary": "A function contains a definition, possibly multiple implementations, and requires tests for validation. The 'Function Definition' tab below is for defining the input, output, and labels of the function, 'Implementation' is for editing and storing implementations, and 'Test' is for ensuring the function behaves as expected.",
 	"wikilambda-special-createzobject-intro": "Make sure that you follow community policies, and copyright and patent rules.",
 	"wikilambda-special-createzobject-nojs": "This page requires JavaScript to be used.",
-	"wikilambda-special-edit-function-definition-description": "You are editing the function definition page. $1 can change the definiton of the function. Everyone can edit the labels. Make sure to save your work by clicking the blue Publish button below.",
+	"wikilambda-special-edit-function-definition-description": "You are editing the function definition page. $1 can change the definition of the function. Everyone can edit the labels. Make sure to save your work by clicking the blue Publish button below.",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Only users with special permissions",
 	"wikilambda-special-evaluatefunctioncall": "Evaluate a function call",
 	"wikilambda-special-evaluatefunctioncall-summary": "This form lets you evaluate a function call.",
