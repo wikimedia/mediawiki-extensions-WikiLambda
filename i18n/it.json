@@ -78,6 +78,7 @@
 	"wikilambda-function-definition-inputs-description": "Che tipo di dati accetta la funzione?",
 	"wikilambda-function-definition-input-item-type": "Tipo",
 	"wikilambda-function-definition-input-item-label": "Etichetta",
+	"wikilambda-function-definition-output-description": "Che tipo di dati restituisce la funzione?",
 	"wikilambda-function-definition-output-selector": "Seleziona un tipo",
 	"wikilambda-function-implementation-table-header": "Implementazioni",
 	"wikilambda-editor-fn-step-function-definition": "Definizione funzione",

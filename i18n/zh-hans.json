@@ -3,6 +3,7 @@
 		"authors": [
 			"GraceL",
 			"GuoPC",
+			"Hehua",
 			"Hmgrmb",
 			"Lantianjialiang",
 			"LittlePaw365",
@@ -55,7 +56,10 @@
 	"wikilambda-function-definition-alias-label-new": "新别名",
 	"wikilambda-function-definition-footer-placeholder": "简要描述您的修改",
 	"wikilambda-function-definition-footer-label": "编辑摘要",
+	"wikilambda-function-definition-inputs-label": "输入",
 	"wikilambda-function-definition-inputs-item-remove": "删除输入",
+	"wikilambda-function-definition-input-item-type": "类型",
+	"wikilambda-function-definition-output-label": "输出",
 	"wikilambda-editor-fn-step-function-about": "关于",
 	"wikilambda-editor-fn-step-function-details": "详情",
 	"wikilambda-editor-input-typed-list-placeholder": "列表类型",
