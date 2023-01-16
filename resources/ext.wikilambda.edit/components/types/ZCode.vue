@@ -20,6 +20,7 @@
 		</cdx-select>
 		<code-editor
 			class="ext-wikilambda-zcode__code-editor"
+			:aria-label="$i18n( 'wikilambda-code-editor-label' ).text()"
 			:mode="selectedLanguage"
 			:read-only="!selectedLanguage || viewmode || readonly"
 			:value="editorValue"

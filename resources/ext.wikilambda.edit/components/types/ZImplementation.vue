@@ -7,10 +7,11 @@
 	-->
 	<div class="ext-wikilambda-zimplementation">
 		<div>
-			{{ functionLabel }}:
+			<label id="ext-wikilambda-zimplementation_function-label">{{ functionLabel }}:</label>
 			<z-object-selector
 				v-if="!viewmode && implMode && isFunctionLabelReady"
 				class="ext-wikilambda-zimplementation__function-selector"
+				aria-labelledby="ext-wikilambda-zimplementation_function-label"
 				:type="Constants.Z_FUNCTION"
 				:placeholder="$i18n( 'wikilambda-function-typeselector-label' ).text()"
 				:selected-id="zFunction.value"

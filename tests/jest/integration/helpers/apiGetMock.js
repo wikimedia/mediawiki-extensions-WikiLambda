@@ -61,11 +61,17 @@ const zObjectApiResponseBuilder = ( zids, language ) => {
 		}
 
 		if ( language === 'en' ) {
-			// The backend is expected to filter out non-en persistent object labels.
+			// The backend is expected to only return English persistent object label, or the first label if
+			// English not present.
+			const labels =
+				data[ Constants.Z_PERSISTENTOBJECT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
+			let labelToReturn = labels.find( ( item ) =>
+				item[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] === Constants.Z_NATURAL_LANGUAGE_ENGLISH );
+			if ( !labelToReturn ) {
+				labelToReturn = labels[ 0 ];
+			}
 			data[ Constants.Z_PERSISTENTOBJECT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ] =
-				data[ Constants.Z_PERSISTENTOBJECT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ].filter( ( item ) =>
-					!item[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] ||
-					item[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] === Constants.Z_NATURAL_LANGUAGE_ENGLISH );
+				[ Constants.Z_MONOLINGUALSTRING ].concat( labelToReturn ? [ labelToReturn ] : [] );
 		} else if ( language ) {
 			throw new Error( 'Test does not support API call with non-en language' );
 		}
@@ -159,6 +165,22 @@ const stringLabelLookupApiResponse = {
 	]
 };
 
+const stringEqualityLabelLookupApiResponse = {
+	wikilambdasearch_labels: [
+		{
+			page_namespace: 0,
+			page_title: 'Z866',
+			page_type: Constants.Z_FUNCTION,
+			return_type: Constants.Z_BOOLEAN,
+			label: 'String equality',
+			is_primary: '1',
+			page_id: 0,
+			page_content_model: 'zobject',
+			page_lang: Constants.Z_NATURAL_LANGUAGE_ENGLISH
+		}
+	]
+};
+
 const functionLabelLookupApiResponse = {
 	wikilambdasearch_labels: [
 		{
@@ -219,6 +241,8 @@ const labelsApiResponseBuilder = ( type, search ) => {
 		return frenchLabelLookupApiResponse;
 	} else if ( type === Constants.Z_TYPE && 'String'.includes( search ) ) {
 		return stringLabelLookupApiResponse;
+	} else if ( type === Constants.Z_FUNCTION && 'String equality'.includes( search ) ) {
+		return stringEqualityLabelLookupApiResponse;
 	} else if ( type === Constants.Z_FUNCTION && 'function name, in Chinese'.includes( search ) ) {
 		return functionLabelLookupApiResponse;
 	}
@@ -235,9 +259,10 @@ const searchApiResponseBuilder = ( zfunctionId, type ) => {
 };
 
 function isRequestMatchingZFunction( requestZfunction, zfunction ) {
-	return requestZfunction === JSON.stringify( zfunction ) ||
-	JSON.parse( requestZfunction )[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ] ===
-		zfunction[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
+	const zfunctionId = zfunction[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
+	return requestZfunction === zfunctionId ||
+		requestZfunction === JSON.stringify( zfunction ) ||
+		JSON.parse( requestZfunction )[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ] === zfunctionId;
 }
 
 const performTestResponseBuilder = ( zfunction, zimplementations, ztesters ) => {

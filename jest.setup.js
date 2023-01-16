@@ -84,17 +84,14 @@ global.mw = {
 		}
 	},
 	storage: {
-		get: jest.fn( function () {
-			return function ( key ) {
-				return mockLocalStorage[ key ];
-			};
+		get: jest.fn( function ( key ) {
+			return mockLocalStorage[ key ];
 		} ),
-		set: jest.fn( function () {
-			return function ( key, value ) {
-				mockLocalStorage[ key ] = value;
-			};
+		set: jest.fn( function ( key, value ) {
+			mockLocalStorage[ key ] = value;
 		} )
 	},
+	track: jest.fn(),
 	message: jest.fn( function ( str ) {
 		return new Mocki18n( str );
 	} ),
