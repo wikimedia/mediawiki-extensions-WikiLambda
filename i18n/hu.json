@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Eukarióta",
 			"Hanna Tardos",
 			"Máté"
 		]
@@ -32,10 +33,17 @@
 	"wikilambda-editor-zobject-removekey-tooltip": "Kulcs/érték eltávolítása a Zobjectről",
 	"wikilambda-function-definition-name-placeholder": "Pl. Celsius átváltása Fahrenheitre",
 	"wikilambda-function-definition-alias-label": "További nevek",
-	"wikilambda-function-definition-alias-placeholder": "Pl. Celsiusról Fahrenheitre, Hőmérsékletváltás",
-	"wikilambda-function-definition-inputs-item-input-placeholder": "Pl. Celsius",
+	"wikilambda-function-definition-alias-placeholder": "Pl. hőmérséklet-átváltás Celsiusról Fahrenheitre",
+	"wikilambda-function-definition-alias-description": "Adj hozzá további neveket, hogy mások könnyen megtalálják ezt a függvényt.",
+	"wikilambda-function-definition-inputs-label": "Bevitel",
+	"wikilambda-function-definition-inputs-item-input-placeholder": "Pl. Celsius fok",
+	"wikilambda-function-definition-inputs-description": "Milyen adattípusokat fogad el a függvény?",
+	"wikilambda-function-definition-input-types": "Lásd a bemeneti típusok listáját.",
 	"wikilambda-function-definition-input-item-type": "Típus",
 	"wikilambda-function-definition-input-item-label": "Címke",
+	"wikilambda-function-definition-output-label": "Kimenet",
+	"wikilambda-function-definition-output-description": "Milyen adattípust ad vissza a függvény?",
+	"wikilambda-function-definition-output-types": "Lásd a kimeneti adattípusok listáját.",
 	"wikilambda-function-about-summary": "Mikor elérhetővé válik, ide kerül majd a funkció leírásának összefoglalója, ahol kifejtheted, miért jött létre, hogy használják, és milyen alternatív megoldások működhetnek különböző helyzetekben. Szerkesztés módban ez egy többnyelvű, szerkeszthető wikiszövegdoboz lesz.",
 	"wikilambda-function-viewer-details-table-view-all": "Összes megtekintése",
 	"wikilambda-function-viewer-details-table-view-less": "Mutass kevesebbet"

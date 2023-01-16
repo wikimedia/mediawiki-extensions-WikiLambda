@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Aram",
 			"GoRaN",
 			"Sarchia"
 		]
@@ -8,6 +9,9 @@
 	"wikilambda-persistentzobject-contents": "ناوەڕۆکەکان",
 	"wikilambda-tester-status-passed": "دەرچوون",
 	"wikilambda-tester-status-failed": "شکست",
+	"wikilambda-function-definition-alias-label": "ناوە جێگرەوەکان",
+	"wikilambda-function-definition-input-item-type": "جۆر",
+	"wikilambda-function-definition-output-label": "ئەنجام",
 	"wikilambda-editor-publish-dialog-header": "گۆڕانکارییەکانت بڵاو بکەوە",
 	"wikilambda-editor-publish-dialog-summary-label": "کورتەی دەستکاری"
 }

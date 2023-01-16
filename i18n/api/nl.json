@@ -1,8 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
+			"McDutchie",
 			"NthnH"
 		]
 	},
-	"apihelp-wikilambda_function_call-example-native-js-code": "Beroep doen op door de gebruiker geschreven JavaScript-code"
+	"apihelp-wikilambda_function_call-example-native-js-code": "Beroep doen op door de gebruiker geschreven JavaScript-code",
+	"apihelp-wikilambda_function_call-example-curry": "Een \"curried\"-functie aanroepen",
+	"apihelp-wikilambda_function_call-example-socket": "Een functie aanroepen die gebruik maakt van \"reentrance\" om terug te schakelen naar de \"orchestrator\"",
+	"apihelp-wikilambda_function_call-example-timeout": "Roep een functie aan die voor altijd probeert te blijven draaien, en dus een time-out krijgt"
 }
