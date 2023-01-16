@@ -6,8 +6,9 @@
 		@license MIT
 	-->
 	<div>
-		{{ functionLabel }}:
+		<label id="ext-wikilambda-ztester_function-label">{{ functionLabel }}:</label>
 		<z-reference
+			aria-labelledby="ext-wikilambda-ztester_function-label"
 			:search-type="Constants.Z_FUNCTION"
 			:zobject-id="zFunction.id"
 		></z-reference>
@@ -18,14 +19,16 @@
 				$i18n( 'wikilambda-function-is-not-approved' ).text()
 			}})
 		</span>
-		<div>{{ callLabel }}:</div>
+		<label id="ext-wikilambda-ztester_call-label">{{ callLabel }}:</label>
 		<z-function-call
+			aria-labelledby="ext-wikilambda-ztester_call-label"
 			:zobject-id="zCall.id"
 			hide-call-button
 		>
 		</z-function-call>
-		<div>{{ validatorLabel }}:</div>
+		<label id="ext-wikilambda-ztester_validator-label">{{ validatorLabel }}:</label>
 		<z-function-call
+			aria-labelledby="ext-wikilambda-ztester_validator-label"
 			:zobject-id="zValidation.id"
 			hide-first-argument
 			hide-call-button
