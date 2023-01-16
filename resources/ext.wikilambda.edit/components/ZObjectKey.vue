@@ -39,7 +39,7 @@
 				></z-object>
 			</span>
 			<span v-else>
-				<a :href="zTypeLink" :target="!viewmode ? '_blank' : ''">{{ zTypeLabel }}</a>
+				<a :href="zTypeLink" :target="!viewmode ? '_self' : ''">{{ zTypeLabel }}</a>
 			</span>
 
 			<z-key-mode-selector
