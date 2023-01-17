@@ -54,15 +54,21 @@ Done! Navigate to the newly created `Z1` page on your wiki to verify that the ex
 
 ### Back-end services
 
-WikiLambda uses two back-end services for running user-defined and built-in functions in a secure, scalable environment; an "evaluator" that runs user-defined native code, and an "orchestrator" that recieves execution requests and determines what to run.
+WikiLambda uses two back-end services for running user-defined and built-in functions in a secure, scalable environment; an "evaluator" that runs user-defined native code, and an "orchestrator" that receives execution requests and determines what to run.
 
 #### Default experience using Beta Wikifunctions
 
 On install, the extension will try to use the orchestrator and evaluator services of the [Beta Cluster version of Wikifunctions](https://wikifunctions.beta.wmflabs.org/). This default configuration will let you do rudimentary tests with the built-in objects, but not with custom on-wiki content (as they are pointed at the content of Beta Wikifunctions).
 
-You can test your installation by running the PHPUnit test suite as described in the MediaWiki install instructions: `docker-compose exec mediawiki php tests/phpunit/phpunit.php extensions/WikiLambda/tests/phpunit/integration/API/ApiFunctionCallTest.php`. If the tests all pass, your installation has successfully called the configured function orchestrator with the calls, executed them, and got the expected results back. Congratulations!
+You can test your installation by running the PHPUnit test suite as described in the MediaWiki install instructions:
 
-You can evaluate an arbitrary function call by navigating to `localhost:8080/wiki/Special:CreateZObject`, adding a new key/value pair whose value is of type `Z7`, and selecting a function.
+```
+docker-compose exec mediawiki php tests/phpunit/phpunit.php extensions/WikiLambda/tests/phpunit/integration/API/ApiFunctionCallTest.php
+```
+
+If the tests all pass, your installation has successfully called the configured function orchestrator with the calls, executed them, and got the expected results back. Congratulations!
+
+You can evaluate an arbitrary function call by navigating to `localhost:8080/wiki/Special:EvaluateFunctionCall`, and selecting a function.
 
 #### Local services
 
