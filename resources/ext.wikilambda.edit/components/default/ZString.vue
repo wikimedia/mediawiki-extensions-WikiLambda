@@ -100,11 +100,13 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import './../../../lib/wikimedia-ui-base.less';
+@import '../../ext.wikilambda.edit.variables.less';
+@import '../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-string {
 	p {
 		margin: 0;
+		color: @color-base;
 	}
 }
 </style>

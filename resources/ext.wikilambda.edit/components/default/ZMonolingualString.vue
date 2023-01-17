@@ -148,6 +148,7 @@ module.exports = exports = {
 .ext-wikilambda-monolingual-string {
 	p {
 		margin: 0;
+		color: @color-base;
 	}
 
 	span.ext-wikilambda-lang-chip {

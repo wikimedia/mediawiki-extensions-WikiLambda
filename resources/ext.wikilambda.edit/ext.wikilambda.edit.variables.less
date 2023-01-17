@@ -9,38 +9,48 @@
 // TODO: Replace all the following with codex design-tokens when usable
 // https://doc.wikimedia.org/codex/latest/design-tokens
 // -------
+@spacing-25: 4px;
 @spacing-50: 8px;
+@spacing-75: 12px;
 @spacing-100: 16px;
 @spacing-150: 24px;
 @spacing-200: 32px;
 
 @size-50: 8px;
+@size-75: 12px;
 @size-100: 16px;
+@size-125: 20px;
 @size-150: 24px;
 @size-200: 32px;
 
+@color-base: #202122;
 @color-subtle: #54595d;
+@color-progressive: #36c;
+@color-progressive--hover: #447ff5;
+@color-progressive--active: #2a4b8d;
+@color-progressive--focus: #36c;
+@color-visited: #6b4ba1;
 
-// Typography
-// ----------
-@wl-label-text-transform: capitalize;
+@border-color-interactive: #72777d;
+
+@transition-duration-medium: 250ms;
+@transition-timing-function-system: ease;
 
 // Spacing
 // -------
 @wl-key-value-margin-top: 0;
-@wl-key-value-margin-bottom: 10px;
 @wl-key-value-margin-right: 0;
+@wl-key-value-margin-bottom: @spacing-75;
 @wl-key-value-margin-left: 0;
 
-@wl-key-value-set-margin-top: 10;
-@wl-key-value-set-margin-bottom: 10px;
+@wl-key-value-set-margin-top: 0;
 @wl-key-value-set-margin-right: 0;
-@wl-key-value-set-margin-left: 6px;
+@wl-key-value-set-margin-bottom: @spacing-75;
+@wl-key-value-set-margin-left: 9px;
 
 // Nesting
 // -------
 
-@wl-color-grey: #888; // grey
 // Colorblind friendly palette:
 @wl-color-indigo: #332288; // indigo
 @wl-color-cyan: #88CCEE; // cyan
@@ -52,18 +62,14 @@
 @wl-color-wine: #882255; // wine
 @wl-color-purple: #AA4499; // purple
 
-@wl-key-value-color-neutral: @wl-color-grey;
 // Expert mode depths color:
-@wl-key-value-color-0: @wl-color-grey;
-@wl-key-value-color-1: @wl-color-indigo;
-@wl-key-value-color-2: @wl-color-cyan;
-@wl-key-value-color-3: @wl-color-teal;
+@wl-key-value-color-0: @color-subtle;
+@wl-key-value-color-1: @wl-color-wine;
+@wl-key-value-color-2: @wl-color-olive;
+@wl-key-value-color-3: @wl-color-purple;
 @wl-key-value-color-4: @wl-color-green;
-@wl-key-value-color-5: @wl-color-olive;
-@wl-key-value-color-6: @wl-color-sand;
-@wl-key-value-color-7: @wl-color-rose;
-@wl-key-value-color-8: @wl-color-wine;
-@wl-key-value-color-9: @wl-color-purple;
+@wl-key-value-color-5: @wl-color-indigo;
+@wl-key-value-color-6: @wl-color-rose;
 
 // Transitions
 @wl-transition-field-expand: width 200ms ease-out;
@@ -75,7 +81,7 @@
 @wl-key-value-border-bottom-style: solid;
 @wl-key-value-border-right-width: 0;
 @wl-key-value-border-right-style: solid;
-@wl-key-value-border-left-width: 3px;
+@wl-key-value-border-left-width: 1px;
 @wl-key-value-border-left-style: solid;
 
 // Function Editor Variables
