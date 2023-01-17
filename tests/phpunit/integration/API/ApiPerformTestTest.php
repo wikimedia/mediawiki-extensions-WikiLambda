@@ -32,6 +32,7 @@ class ApiPerformTestTest extends ApiTestCase {
 
 		$this->tablesUsed[] = 'wikilambda_zobject_labels';
 		$this->tablesUsed[] = 'wikilambda_zobject_function_join';
+		$this->tablesUsed[] = 'wikilambda_ztester_results';
 	}
 
 	public function addDBData() {

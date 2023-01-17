@@ -1,0 +1,75 @@
+[
+	{
+		"name": "wikilambda_ztester_results",
+		"comment": "Cached results of ZTesters to avoid having to re-run them.",
+		"columns": [
+			{
+				"name": "wlztr_id",
+				"comment": "Unique ID for index purposes",
+				"type": "bigint",
+				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
+			},
+			{
+				"name": "wlztr_zfunction_zid",
+				"comment": "The ZFunction's ZID",
+				"type": "binary",
+				"options": { "length": 32, "notnull": true }
+			},
+			{
+				"name": "wlztr_zfunction_revision",
+				"comment": "The ZFunction's revision",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{
+				"name": "wlztr_zimplementation_zid",
+				"comment": "The ZImplementation's ZID",
+				"type": "binary",
+				"options": { "length": 32, "notnull": true }
+			},
+			{
+				"name": "wlztr_zimplementation_revision",
+				"comment": "The ZImplementation's revision",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{
+				"name": "wlztr_ztester_zid",
+				"comment": "The ZTester's ZID",
+				"type": "binary",
+				"options": { "length": 32, "notnull": true }
+			},
+			{
+				"name": "wlztr_ztester_revision",
+				"comment": "The ZTester's revision",
+				"type": "integer",
+				"options": { "unsigned": true, "notnull": true }
+			},
+			{
+				"name": "wlztr_pass",
+				"comment": "Boolean value indicating whether this ZTester run for this ZImplementation passed.",
+				"type": "mwtinyint",
+				"options": { "notnull": true, "default": 1 }
+			},
+			{
+				"name": "wlztr_returnobject",
+				"comment": "The JSON of the returned ZTester run",
+				"type": "blob",
+				"options": { "notnull": true, "length": 16777215 }
+			}
+		],
+		"indexes": [
+			{
+				"name": "wlztr_lookup",
+				"columns": [ "wlztr_zfunction_zid", "wlztr_zimplementation_zid", "wlztr_ztester_zid" ],
+				"unique": false
+			},
+			{
+				"name": "wlztr_revisions_unique",
+				"columns": [ "wlztr_zfunction_revision", "wlztr_zimplementation_revision", "wlztr_ztester_revision" ],
+				"unique": true
+			}
+		],
+		"pk": [ "wlztr_id" ]
+	}
+]

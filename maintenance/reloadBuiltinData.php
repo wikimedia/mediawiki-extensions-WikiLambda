@@ -198,10 +198,12 @@ class ReloadBuiltinData extends Maintenance {
 			// 2.b. Clear all secondary tables
 			$this->zObjectStore->clearLabelsSecondaryTables();
 			$this->zObjectStore->clearFunctionsSecondaryTables();
+			$this->zObjectStore->clearTesterResultsSecondaryTables();
 		} else {
 			// 2. Clear only builtin zids from secondary tables
 			$this->zObjectStore->deleteFromLabelsSecondaryTables( $builtinZids );
 			$this->zObjectStore->deleteFromFunctionsSecondaryTables( $builtinZids );
+			$this->zObjectStore->deleteFromTesterResultsSecondaryTables( $builtinZids );
 		}
 
 		// 3. Call Hooks:createInitialContent
