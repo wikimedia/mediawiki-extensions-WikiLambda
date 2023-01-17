@@ -11,7 +11,8 @@
 				id="ext-wikilambda-function-definition-aliases__inputs-label"
 				class="ext-wikilambda-app__text-regular"
 			>
-				{{ functionAliasLabel }}
+				{{ $i18n( 'wikilambda-function-definition-alias-label' ).text() }}
+				<span>({{ $i18n( 'wikilambda-optional' ).text() }})</span>
 			</label>
 			<span class="ext-wikilambda-function-definition-aliases__description">
 				{{ $i18n( 'wikilambda-function-definition-alias-description' ).text() }}
@@ -119,14 +120,6 @@ module.exports = exports = {
 					}
 				}
 				return [];
-			},
-			functionAliasLabel: function () {
-				return (
-					this.$i18n( 'wikilambda-function-definition-alias-label' ) +
-					' (' +
-					this.$i18n( 'wikilambda-optional' ) +
-					') '
-				);
 			},
 			functionDefinitionAliasPlaceholder: function () {
 				if (
@@ -248,11 +241,7 @@ module.exports = exports = {
 
 .ext-wikilambda-function-definition-aliases {
 	display: flex;
-	margin-bottom: 26px;
-
-	&__inputs {
-		width: 300px;
-	}
+	margin-bottom: @spacing-150;
 
 	&__error {
 		color: @wmui-color-red50;
@@ -261,13 +250,28 @@ module.exports = exports = {
 	&__label {
 		display: flex;
 		flex-direction: column;
-		width: 153px;
+		width: @wl-field-label-width;
+		margin-right: @spacing-150;
+
+		& > label {
+			line-height: @size-200;
+			font-weight: @font-weight-bold;
+
+			& > span {
+				font-weight: @font-weight-normal;
+			}
+		}
 	}
 
 	&__description {
-		color: @wmui-color-base20;
+		opacity: 0.8;
+		color: @color-subtle;
+		font-size: @wl-font-size-description;
+		line-height: @wl-line-height-description;
+		display: inline-block;
 	}
 
+	/* MOBILE styles */
 	@media screen and ( max-width: @width-breakpoint-tablet ) {
 		& {
 			flex-direction: column;
@@ -278,6 +282,17 @@ module.exports = exports = {
 
 			&__label {
 				width: auto;
+
+				& > label {
+					line-height: inherit;
+				}
+			}
+
+			&__description {
+				font-size: @wl-font-size-description-mobile;
+				line-height: @wl-line-height-description-mobile;
+				letter-spacing: @wl-letter-spacing-description-mobile;
+				margin-bottom: @spacing-50;
 			}
 		}
 	}

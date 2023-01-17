@@ -84,7 +84,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 			'first argument label, in Chinese' );
 
 		// ACT: Add another argument.
-		await fireEvent.click( getByText( '+ Add another input' ) );
+		await fireEvent.click( getByText( 'Add another input' ) );
 
 		// ACT: Select a type for the second argument.
 		await fireEvent.update( within( argumentsArea ).getAllByPlaceholderText( 'Select a type' )[ 1 ], 'Str' );
@@ -101,7 +101,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await clickLookupResult( outputArea, 'String' );
 
 		// ACT: Click "Add labels in another language".
-		await fireEvent.click( getByText( '+ Add labels in another language' ) );
+		await fireEvent.click( getByText( 'Add labels in another language' ) );
 
 		// ACT: Select French as the second natural language.
 		const secondLanguageSelector = getAllByLabelText( 'Language' )[ 1 ];

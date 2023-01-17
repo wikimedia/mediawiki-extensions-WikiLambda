@@ -43,11 +43,14 @@ describe( 'FunctionDefinitionInputs', function () {
 		var wrapper = shallowMount( FunctionDefinitionInputs, {
 			props: {
 				canEdit: true
+			},
+			global: {
+				stubs: { CdxButton: false }
 			}
 		} );
 
 		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs__add-input-button' ).text() )
-			.toEqual( '+ Add an input' );
+			.toEqual( 'Add an input' );
 	} );
 
 	it( 'displays the "add another input" button if the user has edit permission and there is an existing argument', function () {
@@ -61,11 +64,14 @@ describe( 'FunctionDefinitionInputs', function () {
 		var wrapper = shallowMount( FunctionDefinitionInputs, {
 			props: {
 				canEdit: true
+			},
+			global: {
+				stubs: { CdxButton: false }
 			}
 		} );
 
 		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs__add-another-input-button' ).text() )
-			.toEqual( '+ Add another input' );
+			.toEqual( 'Add another input' );
 	} );
 
 	it( 'does not display the "add input" if the user does not have edit permissions', function () {

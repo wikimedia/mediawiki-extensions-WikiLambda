@@ -127,7 +127,7 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 			'edited first argument label, in Afrikaans' );
 
 		// ACT: Click "Add labels in another language".
-		await fireEvent.click( getByText( '+ Add labels in another language' ) );
+		await fireEvent.click( getByText( 'Add labels in another language' ) );
 
 		// ACT: Select French as a third natural language.
 		const thirdLanguageSelector = getAllByLabelText( 'Language' )[ 2 ];

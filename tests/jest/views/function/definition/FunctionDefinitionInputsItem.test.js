@@ -111,6 +111,7 @@ describe( 'FunctionDefinitionInputsItem', function () {
 					};
 				},
 				props: {
+					isMainLanguageBlock: true,
 					canEditType: true
 				}
 			} );

@@ -85,13 +85,14 @@ module.exports = exports = {
 	display: flex;
 	flex-direction: column;
 	background-color: @wmui-color-base90;
-	padding: 30px;
+	padding: @spacing-100;
+	margin-top: @spacing-150;
 
 	&__actions {
 		display: flex;
 
 		&-button {
-			margin-right: 10px;
+			margin-right: @spacing-100;
 			cursor: pointer;
 		}
 	}

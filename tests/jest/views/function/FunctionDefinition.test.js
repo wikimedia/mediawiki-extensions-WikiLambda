@@ -18,7 +18,7 @@ var VueTestUtils = require( '@vue/test-utils' ),
 
 describe( 'FunctionDefinition', function () {
 	let getters;
-	const addBtnClass = '.ext-wikilambda-function-definition__action-add-input-button';
+	const addBtnClass = '.ext-wikilambda-function-definition__action-add-language-button';
 
 	beforeEach( function () {
 		getters = {

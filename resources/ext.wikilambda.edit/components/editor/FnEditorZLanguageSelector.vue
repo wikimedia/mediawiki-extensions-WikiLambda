@@ -176,25 +176,36 @@ module.exports = exports = {
 
 <style lang="less">
 @import '../../../lib/wikimedia-ui-base.less';
+@import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-language-selector {
-	&__select {
-		min-width: 100px;
-	}
-
-	&__add-language {
-		width: 300px;
-	}
+	display: flex;
 
 	&__label {
 		display: flex;
 		flex-direction: column;
-		width: 153px;
+		width: @wl-field-label-width;
+		margin-right: @spacing-150;
+
+		& > label {
+			line-height: @size-200;
+			font-weight: @font-weight-bold;
+
+			& > span {
+				font-weight: @font-weight-normal;
+			}
+		}
 	}
 
 	@media screen and ( max-width: @width-breakpoint-tablet ) {
 		& {
 			flex-direction: column;
+		}
+
+		&__label {
+			& > label {
+				line-height: inherit;
+			}
 		}
 	}
 }

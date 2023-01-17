@@ -11,7 +11,9 @@
 		</div>
 		<div v-else :class="inputContainerClass">
 			<span class="ext-wikilambda-lang-chip">{{ langIso }}</span>
-			<input v-model="text" type="text"
+			<input
+				v-model="text"
+				type="text"
 				class="ext-wikilambda-monolingual-string__input"
 				@focus="setIsInputActive( true )"
 				@focusout="setIsInputActive( false )">

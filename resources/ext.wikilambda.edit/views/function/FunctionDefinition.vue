@@ -35,15 +35,17 @@
 					:z-lang="labelLanguage.zLang"
 					@updated-alias="updatedLabel"
 				></function-definition-aliases>
+				<!-- component that displays list of inputs for a language -->
 				<function-definition-inputs
 					:is-mobile="isMobile"
 					:z-lang="labelLanguage.zLang"
-					:is-main-z-object="index === 0"
+					:is-main-language-block="index === 0"
 					:can-edit="canEditFunction"
 					:tooltip-icon="adminTooltipIcon"
 					:tooltip-message="adminTooltipMessage"
 					@updated-argument-label="updatedLabel"
 				></function-definition-inputs>
+				<!-- component that displays output for a language -->
 				<template v-if="index === 0">
 					<function-definition-output
 						:can-edit="canEditFunction"
@@ -53,12 +55,12 @@
 				</template>
 			</div>
 		</div>
-		<div class="ext-wikilambda-function-definition__action-add-input">
+		<div class="ext-wikilambda-function-definition__action-add-language">
 			<cdx-button
-				class="ext-wikilambda-function-definition__action-add-input-button"
-				type="quiet"
+				class="ext-wikilambda-function-definition__action-add-language-button"
 				@click="addLabelInOtherLanguages"
 			>
+				<cdx-icon :icon="icons.cdxIconAdd"></cdx-icon>
 				{{ $i18n( 'wikilambda-function-definition-add-other-label-languages-title' ).text() }}
 			</cdx-button>
 		</div>
@@ -88,11 +90,13 @@ var FnEditorZLanguageSelector = require( '../../components/editor/FnEditorZLangu
 var LeaveEditorDialog = require( '../../components/editor/LeaveEditorDialog.vue' );
 var useBreakpoints = require( '../../composables/useBreakpoints.js' );
 var icons = require( '../../../lib/icons.json' );
-var mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions;
 var Constants = require( '../../Constants.js' );
 var typeUtils = require( '../../mixins/typeUtils.js' );
 var CdxButton = require( '@wikimedia/codex' ).CdxButton;
+var CdxIcon = require( '@wikimedia/codex' ).CdxIcon;
+var mapGetters = require( 'vuex' ).mapGetters,
+	mapActions = require( 'vuex' ).mapActions;
+
 // @vue/component
 module.exports = exports = {
 	name: 'function-definition',
@@ -104,7 +108,8 @@ module.exports = exports = {
 		'function-definition-footer': FunctionDefinitionFooter,
 		'fn-editor-zlanguage-selector': FnEditorZLanguageSelector,
 		'leave-editor-dialog': LeaveEditorDialog,
-		'cdx-button': CdxButton
+		'cdx-button': CdxButton,
+		'cdx-icon': CdxIcon
 	},
 	mixins: [ typeUtils ],
 	setup: function () {
@@ -115,6 +120,7 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
+			icons: icons,
 			labelLanguages: [],
 			initialInputTypes: [],
 			hasUpdatedLabels: false,
@@ -166,7 +172,7 @@ module.exports = exports = {
 		 * @return {Object}
 		 */
 		adminTooltipIcon: function () {
-			return icons.cdxIconInfoFilled;
+			return icons.cdxIconLock;
 		},
 		/**
 		 * message for admin tooltip
@@ -462,63 +468,32 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
+@import '../../ext.wikilambda.edit.less';
 @import './../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-function-definition {
 	&__container {
-		padding-top: 20px;
-
 		&__input {
-			margin-bottom: 40px;
+			padding-top: @spacing-150;
+			border-bottom: 1px solid @wmui-color-base80;
+
+			&:first-child {
+				border-top: 1px solid @wmui-color-base80;
+			}
 
 			&__language {
-				margin-bottom: 15px;
+				margin-bottom: @spacing-150;
 
 				&__selector {
 					display: flex;
 				}
-
-				&__title {
-					font-size: 2em;
-				}
 			}
 		}
 	}
 
-	&__action-add-input {
-		height: 40px;
-		margin: 40px 0;
-
-		button {
-			height: 100%;
-			font-weight: bold;
-			background: transparent;
-			border: 0;
-			color: @wmui-color-base0;
-		}
-	}
-
-	@media screen and ( min-width: @width-breakpoint-tablet ) {
-		&__container {
-			border: 1px solid @wmui-color-base80;
-			padding-left: 16px;
-			padding-right: 16px;
-
-			&__input__language {
-				display: flex;
-				width: 300px;
-			}
-		}
-
-		&__action-add-input {
-			background: @wmui-color-base80;
-			margin: 0;
-
-			button {
-				padding-left: 27px;
-				padding-right: 27px;
-			}
-		}
+	&__action-add-language {
+		border-bottom: 1px solid @wmui-color-base80;
+		padding: @spacing-150 0;
 	}
 }
 </style>

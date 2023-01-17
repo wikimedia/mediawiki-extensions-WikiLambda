@@ -7,39 +7,48 @@
 	-->
 	<div class="ext-wikilambda-function-definition-output">
 		<div class="ext-wikilambda-function-definition-output__label">
-			<label
-				id="ext-wikilambda-function-definition-output__label-label"
-				class="ext-wikilambda-app__text-regular">
-				{{ $i18n( 'wikilambda-function-definition-output-label' ).text() }}
-			</label>
+			<div class="ext-wikilambda-function-definition-output__label-block">
+				<label
+					id="ext-wikilambda-function-definition-output__label-label"
+					class="ext-wikilambda-app__text-regular">
+					{{ $i18n( 'wikilambda-function-definition-output-label' ).text() }}
+				</label>
+				<tooltip
+					v-if="tooltipMessage && !canEdit"
+					:content="tooltipMessage"
+				>
+					<cdx-icon
+						v-if="tooltipIcon"
+						class="ext-wikilambda-function-definition-output__tooltip-icon"
+						:icon="tooltipIcon">
+					</cdx-icon>
+				</tooltip>
+			</div>
 			<span class="ext-wikilambda-function-definition-output__description">
 				{{ $i18n( 'wikilambda-function-definition-output-description' ).text() }}
 				<a :href="getTypeUrl()"> {{ $i18n( 'wikilambda-function-definition-output-types' ).text() }} </a>
 			</span>
-			<tooltip
-				v-if="tooltipMessage && !canEdit"
-				:content="tooltipMessage"
-			>
-				<cdx-icon
-					v-if="tooltipIcon"
-					class="ext-wikilambda-function-definition-output_tooltip-icon"
-					:icon="tooltipIcon">
-				</cdx-icon>
-			</tooltip>
 		</div>
-		<z-object-selector
-			ref="typeSelector"
-			:type="Constants.Z_TYPE"
-			class="ext-wikilambda-function-definition-output__selector"
-			aria-labelledby="ext-wikilambda-function-definition-output__label-label"
-			:placeholder="$i18n( 'wikilambda-function-definition-output-selector' ).text()"
-			:selected-id="zReturnType.value"
-			:initial-selection-label="zReturnTypeLabel"
-			:readonly="!canEdit"
-			:zobject-id="zReturnTypeId"
-			@input="setReturnType"
-			@focus-out="clearIfUnset"
-		></z-object-selector>
+		<div class="ext-wikilambda-function-definition-output__body">
+			<span class="ext-wikilambda-function-definition-output__body__entry-text">
+				{{ $i18n( 'wikilambda-function-definition-output-type-label' ).text() }}
+			</span>
+			<z-object-selector
+				ref="typeSelector"
+				:type="Constants.Z_TYPE"
+				class="
+					ext-wikilambda-function-definition-output__body__entry-field
+					ext-wikilambda-function-definition-output__selector"
+				aria-labelledby="ext-wikilambda-function-definition-output__label-label"
+				:placeholder="$i18n( 'wikilambda-function-definition-output-selector' ).text()"
+				:selected-id="zReturnType.value"
+				:initial-selection-label="zReturnTypeLabel"
+				:readonly="!canEdit"
+				:zobject-id="zReturnTypeId"
+				@input="setReturnType"
+				@focus-out="clearIfUnset"
+			></z-object-selector>
+		</div>
 	</div>
 </template>
 
@@ -136,33 +145,73 @@ module.exports = exports = {
 
 .ext-wikilambda-function-definition-output {
 	display: flex;
+	margin-bottom: @spacing-150;
 
-	&__selector {
-		margin-right: 6px;
-		width: 300px;
+	&__body {
+		display: flex;
+		flex-direction: column;
+
+		&__entry-text {
+			display: block;
+			line-height: @size-200;
+			font-weight: @font-weight-bold;
+		}
+	}
+
+	&__label-block {
+		display: flex;
+		align-items: center;
+
+		& > label {
+			line-height: @size-200;
+			font-weight: @font-weight-bold;
+		}
 	}
 
 	&__label {
 		display: flex;
 		flex-direction: column;
-		width: 153px;
+		width: @wl-field-label-width;
+		margin-right: @spacing-150;
 	}
 
-	&_tooltip-icon {
-		margin-left: 8px;
-		width: 16px;
-		height: 16px;
+	&__tooltip-icon {
+		margin-left: @spacing-50;
+		width: @size-100;
+		height: @size-100;
 	}
 
 	&__description {
-		color: @wmui-color-base20;
+		opacity: 0.8;
+		color: @color-subtle;
+		font-size: @wl-font-size-description;
+		line-height: @wl-line-height-description;
+		display: inline-block;
 	}
 
+	/* MOBILE styles */
 	@media screen and ( max-width: @width-breakpoint-tablet ) {
 		flex-direction: column;
 
 		&__label {
 			width: auto;
+
+			& > label {
+				line-height: inherit;
+			}
+		}
+
+		&__description {
+			font-size: @wl-font-size-description-mobile;
+			line-height: @wl-line-height-description-mobile;
+			letter-spacing: @wl-letter-spacing-description-mobile;
+			margin-bottom: @spacing-50;
+		}
+
+		&__body {
+			flex-direction: row;
+			align-items: center;
+			gap: @spacing-100;
 		}
 	}
 }
