@@ -2,8 +2,10 @@
 	"@metadata": {
 		"authors": [
 			"Kareyac",
-			"QuickQuokka"
+			"QuickQuokka",
+			"StanProg"
 		]
 	},
+	"wikilambda-persistentzobject-contents": "Съдържание",
 	"wikilambda-editor-fn-step-function-details": "Детайли"
 }

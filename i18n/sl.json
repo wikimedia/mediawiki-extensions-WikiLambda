@@ -5,6 +5,8 @@
 		]
 	},
 	"wikilambda-persistentzobject-contents": "Vsebina",
+	"wikilambda-show-more": "Prikaži več",
+	"wikilambda-hide-more": "Skrij več",
 	"wikilambda-show-error": "Pokaži napako",
 	"wikilambda-hide-error": "Skrij napako",
 	"wikilambda-special-createzobject": "Ustvari nov ZObjekt",
@@ -17,6 +19,7 @@
 	"wikilambda-cancel": "Prekliči",
 	"wikilambda-savenew": "Shrani",
 	"wikilambda-summarylabel": "Povzetek:",
+	"wikilambda-loading": "Nalaganje podatkov",
 	"wikilambda-typeselector-label": "Izberite vrsto",
 	"wikilambda-function-typeselector-label": "Izberite funkcijo",
 	"wikilambda-editor-zobject-addkey": "Dodaj ključ:",
