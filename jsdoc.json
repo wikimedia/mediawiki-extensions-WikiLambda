@@ -13,6 +13,7 @@
 	"recurseDepth": 10,
 	"source": {
 		"include": [ "resources" ],
+		"exclude": [ "resources/lib" ],
 		"includePattern": ".+\\.js$"
 	},
 	"tags": {},
