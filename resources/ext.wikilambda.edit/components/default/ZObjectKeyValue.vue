@@ -17,7 +17,7 @@
 			<wl-expanded-toggle
 				v-if="hasExpandedMode"
 				:expanded="expanded"
-				@click.stop="( expanded = !expanded )"
+				@click="( expanded = !expanded )"
 			></wl-expanded-toggle>
 			<label v-if="key">{{ keyLabel }}</label>
 		</p>
