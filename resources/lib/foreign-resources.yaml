@@ -1,10 +1,10 @@
 ace:
   type: tar
-  src: https://codeload.github.com/ajaxorg/ace-builds/tar.gz/v1.4.12
-  integrity: sha384-tYfLQ+OaifwE3R/C9rS5Kjk5IScD3kij7QjKQwq/kzrF0hnYEYibb9fx/LJgYo78
+  src: https://codeload.github.com/ajaxorg/ace-builds/tar.gz/v1.14.0
+  integrity: sha384-AtmO7vKLml4aY3obu8H3n4P3q6qsuJaG+mpTbX2/SdL8h5dRzOalGVBygKlpYjlh
 
   dest:
-    ace-builds-1.4.12/src/:
-    ace-builds-1.4.12/ChangeLog.txt:
-    ace-builds-1.4.12/LICENSE:
-    ace-builds-1.4.12/README.md:
+    ace-builds-1.14.0/src/:
+    ace-builds-1.14.0/ChangeLog.txt:
+    ace-builds-1.14.0/LICENSE:
+    ace-builds-1.14.0/README.md:
