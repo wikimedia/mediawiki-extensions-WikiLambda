@@ -78,6 +78,7 @@
 	"wikilambda-function-definition-name-example": "См. примеры названий.",
 	"wikilambda-function-definition-footer-placeholder": "Кратко опишите Ваши правки",
 	"wikilambda-function-definition-footer-label": "Описание изменений",
+	"wikilambda-function-definition-input-item-type": "Тип",
 	"wikilambda-function-definition-example-title": "Примеры использования функции",
 	"wikilambda-editor-fn-edit-definition-tooltip-content": "Приносим свои извинения! Только администраторы могут изменить описание функции после его публикации.",
 	"wikilambda-ztyped-pair-value-label": "Значение",

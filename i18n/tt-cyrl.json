@@ -4,6 +4,8 @@
 			"Ильгиз"
 		]
 	},
+	"wikilambda-code-editor-label": "Кодны төзуче",
+	"wikilambda-metadata-labels-table-label": "Билгеләр",
 	"wikilambda-function-is-approved": "Бу объект бу функция өчен расланган.",
 	"wikilambda-function-is-not-approved": "Бу объект бу функция өчен расланмаган.",
 	"wikilambda-function-implementation-state-approved": "Расланган",
