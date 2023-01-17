@@ -74,7 +74,6 @@ module.exports = exports = {
 	computed: $.extend(
 		mapGetters( [
 			'getLabel',
-			'getZObjectKeyByRowId',
 			'getZReferenceTerminalValue',
 			'isInsideComposition',
 			'getParentExpectedType'

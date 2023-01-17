@@ -467,6 +467,65 @@ module.exports = exports = {
 			return findZMonolingualLangValue;
 		},
 
+		getZCodeLanguage: function ( state, getters ) {
+			function findZCodeValue( rowId ) {
+				return getters.getRowByKeyPath( [
+					Constants.Z_CODE_LANGUAGE,
+					Constants.Z_PROGRAMMING_LANGUAGE_CODE
+				], rowId );
+			}
+			return findZCodeValue;
+		},
+
+		/**
+		 * Returns the terminal value of Z16K1
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZCode: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {string | undefined} rowId
+			 */
+			function findZCode( rowId ) {
+				return getters.getRowByKeyPath( [ Constants.Z_CODE_CODE ], rowId );
+			}
+			return findZCode;
+		},
+
+		getZComposition: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {string | undefined} rowId
+			 */
+			function findZComposition( rowId ) {
+				return getters.getRowByKeyPath( [ Constants.Z_IMPLEMENTATION_COMPOSITION ], rowId );
+			}
+			return findZComposition;
+		},
+
+		getZCodeId: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {string | undefined} rowId
+			 */
+			function findZCode( rowId ) {
+				return getters.getRowByKeyPath( [ Constants.Z_IMPLEMENTATION_CODE ], rowId );
+			}
+			return findZCode;
+		},
+
+		getZCodeFunction: function ( state, getters ) {
+			function findZFunction( rowId ) {
+				const functionRow = getters.getRowByKeyPath( [ Constants.Z_IMPLEMENTATION_FUNCTION ], rowId );
+				return getters.getZReferenceTerminalValue( functionRow.id );
+			}
+
+			return findZFunction;
+		},
+
 		/**
 		 * Returns the terminal reference Value of Z40K1
 		 *
@@ -690,6 +749,7 @@ module.exports = exports = {
 					undefined :
 					followPath( tail, child.id );
 			}
+
 			return followPath;
 		},
 
@@ -1837,16 +1897,14 @@ module.exports = exports = {
 		 * @param {Object} payload
 		 */
 		setZCodeLanguage: function ( context, payload ) {
-			var zobject = context.getters.getZObjectById( payload.id );
-
 			context.dispatch( 'injectZObject', {
 				zobject: {
 					Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
 					Z61K1: payload.value
 				},
 				key: Constants.Z_CODE_LANGUAGE,
-				id: payload.id,
-				parent: zobject.parent
+				id: payload.zobject.id,
+				parent: payload.zobject.parent
 			} );
 		},
 		/**
@@ -2238,6 +2296,7 @@ module.exports = exports = {
 		 * @param {Object|Array|string} payload.value
 		 */
 		setValueByRowIdAndPath: function ( context, payload ) {
+
 			// 1. Find the row that will be parent for the given payload.value
 			const row = context.getters.getRowByKeyPath( payload.keyPath, payload.rowId );
 			// 2. Is the value a string? Call atomic action setValueByRowId
@@ -2292,7 +2351,7 @@ module.exports = exports = {
 		 * @param {Object} payload
 		 * @param {number|undefined} payload.rowId parent rowId or undefined if root
 		 * @param {Object|Array|string} payload.value ZObject to inject
-		 * @return {Promise} type
+		 *
 		 */
 		injectZObjectFromRowId: function ( context, payload ) {
 

@@ -16,6 +16,7 @@
 		:style="{ width: fieldWidth }"
 		:menu-items="menuItems"
 		:disabled="disabled"
+		:default-label="defaultLabel"
 		v-bind="$attrs"
 	></cdx-select>
 </template>
@@ -50,6 +51,11 @@ module.exports = exports = {
 		menuItems: {
 			type: Array,
 			required: true
+		},
+		defaultLabel: {
+			type: String,
+			required: false,
+			default: ''
 		}
 	},
 	computed: {

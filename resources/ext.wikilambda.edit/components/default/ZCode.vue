@@ -1,70 +1,62 @@
 <template>
 	<!--
-		WikiLambda Vue component for ZCode objects.
+		WikiLambda Vue component for Z6/String objects.
 
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-zcode">
-		<span v-if="viewmode || readonly">{{ selectedLanguage }}</span>
+	<div class="ext-wikilambda-code">
+		<span v-if="!edit">{{ selectedLanguage }}</span>
 		<!-- eslint-disable vue/no-v-model-argument -->
 		<!-- eslint-disable vue/no-unsupported-features -->
-		<cdx-select
+		<wl-select
 			v-else
 			v-model:selected="selectedLanguage"
 			class="ext-wikilambda-zcode__language-selector"
 			:menu-items="programmingLangsList"
 			:default-label="$i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
+			:fit-width="true"
 			@update:selected="selectLanguage"
 		>
-		</cdx-select>
+		</wl-select>
 		<code-editor
 			class="ext-wikilambda-zcode__code-editor"
-			:aria-label="$i18n( 'wikilambda-code-editor-label' ).text()"
 			:mode="selectedLanguage"
-			:read-only="!selectedLanguage || viewmode || readonly"
+			:read-only="!edit"
 			:value="editorValue"
 			@change="updateCode"
 		></code-editor>
-		<cdx-message
-			v-if="errorState"
-			class="ext-wikilambda-select-zobject__error"
-			:type="errorType"
-			inline
-		>
-			{{ errorMessage }}
-		</cdx-message>
 	</div>
 </template>
 
 <script>
 var Constants = require( '../../Constants.js' ),
-	typeUtils = require( './../../mixins/typeUtils.js' ),
 	CodeEditor = require( '../base/CodeEditor.vue' ),
-	CdxSelect = require( '@wikimedia/codex' ).CdxSelect,
-	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
-	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters;
+	Select = require( '../base/Select.vue' ),
+	mapGetters = require( 'vuex' ).mapGetters,
+	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-code',
 	components: {
 		'code-editor': CodeEditor,
-		'cdx-select': CdxSelect,
-		'cdx-message': CdxMessage
-	},
-	mixins: [ typeUtils ],
-	inject: {
-		viewmode: { default: false }
+		'wl-select': Select
 	},
 	props: {
-		zobjectId: {
+		rowId: {
 			type: Number,
-			required: true
+			required: false,
+			default: 0
 		},
-		readonly: {
+		parentId: {
+			type: Number,
+			required: false,
+			default: 0
+		},
+		edit: {
 			type: Boolean,
-			default: false
+			required: true
 		}
 	},
 	data: function () {
@@ -76,39 +68,37 @@ module.exports = exports = {
 	computed: $.extend(
 		mapGetters( [
 			'getAllProgrammingLangs',
-			'getZObjectChildrenById',
-			'getErrors'
+			'getErrors',
+			'getZCodeLanguage',
+			'getZCode',
+			'getZStringTerminalValue',
+			'getZCodeFunction',
+			'getZarguments'
 		] ),
 		{
-			zobject: function () {
-				return this.getZObjectChildrenById( this.zobjectId );
-			},
-			zCodeLanguage: function () {
-				return this.findKeyInArray( Constants.Z_CODE_LANGUAGE, this.zobject );
-			},
-			zCodeProgrammingLanguage: function () {
-				return this.findKeyInArray(
-					Constants.Z_STRING_VALUE,
-					this.getZObjectChildrenById(
-						this.findKeyInArray(
-							Constants.Z_PROGRAMMING_LANGUAGE_CODE,
-							this.getZObjectChildrenById( this.zCodeLanguage.id )
-						).id
-					)
-				);
+			codeItem: function () {
+				return this.getZCode( this.rowId );
 			},
 			codeValue: function () {
-				return this.findKeyInArray(
-					Constants.Z_STRING_VALUE,
-					this.getZObjectChildrenById( this.codeItem.id )
-				).value;
+				return this.getZStringTerminalValue( this.codeItem.id );
 			},
-			codeItem: function () {
-				return this.findKeyInArray( Constants.Z_CODE_CODE, this.zobject );
+			zCodeProgrammingLanguage: function () {
+				return this.getZCodeLanguage( this.rowId );
+			},
+			zCodeProgrammingValue: function () {
+				return this.getZStringTerminalValue( this.zCodeProgrammingLanguage.id );
+			},
+			zFunction: function () {
+				return this.getZCodeFunction( this.parentId );
+			},
+			selectedFunctionArguments: function () {
+				return Object.keys( this.getZarguments ).map( function ( arg ) {
+					return this.getZarguments[ arg ];
+				}.bind( this ) );
 			},
 			selectedLanguage: {
 				get: function () {
-					return this.zCodeProgrammingLanguage.value || '';
+					return this.zCodeProgrammingValue || '';
 				},
 				set: function ( val ) {
 					this.selectLanguage( val );
@@ -162,7 +152,8 @@ module.exports = exports = {
 				}
 				return null;
 			}
-		} ),
+		}
+	),
 	methods: $.extend(
 		mapActions( [
 			'fetchAllZProgrammingLanguages',
@@ -177,28 +168,45 @@ module.exports = exports = {
 			selectLanguage: function ( value ) {
 				this.allowSetEditorValue = true;
 
-				var payload = {
-					zobject: this.zCodeLanguage,
-					value: value
-				};
-				this.$emit( 'select-language', payload );
+				// update selected language
+				this.$emit( 'set-value', {
+					keyPath: [
+						Constants.Z_CODE_LANGUAGE,
+						Constants.Z_PROGRAMMING_LANGUAGE_CODE
+					],
+					value
+				} );
+
+				// update boiler plate code
+				let updatedBoilerPlateCode = '';
+				switch ( value ) {
+					case 'javascript':
+						updatedBoilerPlateCode = 'function ' + this.zFunction + '( ' + this.selectedFunctionArguments + ' ) {\n\n}';
+						break;
+					case 'python':
+						updatedBoilerPlateCode = 'def ' + this.zFunction + '(' + this.selectedFunctionArguments + '):\n\t';
+						break;
+					case 'lua':
+						updatedBoilerPlateCode = 'function ' + this.zFunction + '(' + this.selectedFunctionArguments + ')\n\t\nend';
+						break;
+					default:
+						break;
+				}
+
+				this.$emit( 'set-value', {
+					keyPath: [ Constants.Z_CODE_CODE ],
+					value: updatedBoilerPlateCode
+				} );
 			},
 			updateCode: function ( code ) {
 				// there is an edge case where acejs will trigger an empty change that we process as an event object
 				// we don't want to update our object with that bad data
 				// TODO(T324605): this deserves a deeper investigation
 				if ( typeof code !== 'object' ) {
-					var payload = {
-						zobject: {
-							Z1K1: Constants.Z_STRING,
-							Z6K1: code
-						},
-						id: this.codeItem.id,
-						key: Constants.Z_CODE_CODE,
-						parent: this.zobjectId
-					};
-
-					this.$emit( 'update-code', payload );
+					this.$emit( 'set-value', {
+						keyPath: [ Constants.Z_CODE_CODE ],
+						value: code
+					} );
 
 					this.setError( {
 						internalId: this.zobjectId,
@@ -230,6 +238,8 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
+@import '../../ext.wikilambda.edit.variables.less';
+
 .ext-wikilambda-zcode {
 	display: block;
 	padding: 1em;
@@ -238,6 +248,7 @@ module.exports = exports = {
 
 	&__language-selector {
 		width: 200px;
+		margin-bottom: @spacing-50;
 	}
 }
 
