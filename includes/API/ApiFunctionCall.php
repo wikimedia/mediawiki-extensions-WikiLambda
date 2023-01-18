@@ -261,6 +261,9 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			'action=wikilambda_function_call&wikilambda_function_call_zobject='
 				. $this->createExample( 'example-timeout.json' )
 				=> 'apihelp-wikilambda_function_call-example-timeout',
+			'action=wikilambda_function_call&wikilambda_function_call_zobject='
+				. $this->createExample( 'example-orchestrator-timeout.json' )
+				=> 'apihelp-wikilambda_function_call-example-orchestrator-timeout',
 		];
 	}
 
