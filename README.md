@@ -192,7 +192,7 @@ The example below allows users to have at most two functions executing at a give
 ```
 $wgPoolCounterConf = [
     'WikiLambdaFunctionCall' => [
-        'class' => MediaWiki\Extension\PoolCounter\Client::class,
+        'class' => MediaWiki\PoolCounter\PoolCounterClient::class,
         'timeout' => 1, // wait timeout in seconds
         'workers' => 2, // maximum number of active threads in each pool
         'maxqueue' => 5, // maximum number of total threads in each pool
