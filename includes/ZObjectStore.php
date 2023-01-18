@@ -299,8 +299,7 @@ class ZObjectStore {
 
 			// (T275940): Check the user has the right for certain kinds of edit to certain kinds of type
 
-			// TODO (T275940): limit creation of Z61/Programming language, …
-
+			// Only special users can create/edit: …
 			switch ( $ztype ) {
 				// Z4/Type
 				case ZTypeRegistry::Z_TYPE:
@@ -392,11 +391,28 @@ class ZObjectStore {
 					}
 					break;
 
+				// Z61/Programming language
+				case ZTypeRegistry::Z_PROGRAMMINGLANGUAGE:
+					if ( !$permissionManager->userCan(
+						( $creating ? 'wikilambda-create-programming' : 'wikilambda-edit-programming' ),
+						$user,
+						$title
+					) ) {
+						$error = ZErrorFactory::createZErrorInstance(
+							ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
+							// TODO: Custom error message?
+							[
+								'message' => wfMessage( 'nocreatetext' )->text()
+							]
+						);
+						return ZObjectPage::newFatal( $error );
+					}
+					break;
+
 				default:
 					// This is fine.
 					break;
 			}
-
 		}
 
 		// We prepare the content to be saved
