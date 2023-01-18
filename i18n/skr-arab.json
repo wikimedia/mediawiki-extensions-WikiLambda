@@ -8,6 +8,7 @@
 	"wikilambda-cancel": "منسوخ",
 	"wikilambda-tester-status-passed": "پاس",
 	"wikilambda-tester-status-failed": "فیل",
+	"wikilambda-metadata-labels-table-label": "لیبل",
 	"wikilambda-function-definition-name-label": "ناں",
 	"wikilambda-function-implementation-state-approved": "منظور تھی ڳیا",
 	"wikilambda-function-implementation-state-deactivated": "غیر فعال تھی ڳیا",

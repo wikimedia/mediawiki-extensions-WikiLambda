@@ -59,6 +59,7 @@
 	"wikilambda-enable-expert-mode": "Abilità modalità esperto",
 	"wikilambda-disable-expert-mode": "Disabilità modalità esperto",
 	"wikilambda-expert-mode-json-label": "ZObject corrente",
+	"wikilambda-metadata-labels-table-label": "Etichette",
 	"wikilambda-metadata-language-column": "Lingua",
 	"wikilambda-metadata-label-column": "Etichetta",
 	"wikilambda-metadata-aka-column": "Anche conosciuto come",

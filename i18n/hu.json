@@ -31,6 +31,8 @@
 	"wikilambda-editor-zlist-removeitem-tooltip": "Elem eltávolítása a ZListről",
 	"wikilambda-editor-zobject-addkey": "Kulcs hozzáadása:",
 	"wikilambda-editor-zobject-removekey-tooltip": "Kulcs/érték eltávolítása a Zobjectről",
+	"wikilambda-code-editor-label": "Kódszerkesztő",
+	"wikilambda-metadata-labels-table-label": "Címkék",
 	"wikilambda-function-definition-name-placeholder": "Pl. Celsius átváltása Fahrenheitre",
 	"wikilambda-function-definition-alias-label": "További nevek",
 	"wikilambda-function-definition-alias-placeholder": "Pl. hőmérséklet-átváltás Celsiusról Fahrenheitre",
