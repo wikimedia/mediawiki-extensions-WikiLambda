@@ -6,7 +6,8 @@
 	},
 	"apihelp-wikilambda_function_call-example-curry": "Priklic curryrane funkcije",
 	"apihelp-wikilambda_function_call-example-socket": "Priklic funkcije, ki uporablja ponovni vstop za povratni klic orkestratorja",
-	"apihelp-wikilambda_function_call-example-timeout": "Priklic funkcije, ki se poskuša izvajati večno in tako prekorači časovno omejitev",
+	"apihelp-wikilambda_function_call-example-timeout": "Prikličite funkcijo, ki se poskuša izvajati večno in tako v ocenjevalniku prekorači časovno omejitev",
+	"apihelp-wikilambda_function_call-example-orchestrator-timeout": "Prikličite funkcijo, ki se poskuša predolgo izvajati v orkestratorju, zato prekorači časovno omejitev",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Iskalni izraz",
 	"apihelp-wikilambda_edit-param-summary": "Sprememba povzetka urejanj"
 }

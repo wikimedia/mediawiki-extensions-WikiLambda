@@ -154,7 +154,7 @@
 	"wikilambda-tester-status-pending": "V teku ...",
 	"wikilambda-tester-status-running": "Teče ...",
 	"wikilambda-tester-status-passed": "Opravljeno",
-	"wikilambda-tester-status-failed": "Neuespešno",
+	"wikilambda-tester-status-failed": "Neuspešno",
 	"wikilambda-tester-results-title": "Rezultati preizkusov",
 	"wikilambda-tester-results-caption": "Rezultati preizkusov funkcij glede na uvedbo",
 	"wikilambda-tester-results-current-implementation": "Trenutna izvedba",

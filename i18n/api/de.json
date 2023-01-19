@@ -33,6 +33,8 @@
 	"apihelp-wikilambda_function_call-example-user-defined-javascript": "Aufrufen einer JavaScript-Funktion mit einem benutzerdefinierten Typ.",
 	"apihelp-wikilambda_function_call-example-user-defined-validation": "Aufrufen einer benutzerdefinierten, in Python implementierten Validierungsfunktion",
 	"apihelp-wikilambda_function_call-example-curry": "Aufrufen einer Currying-Funktion",
+	"apihelp-wikilambda_function_call-example-timeout": "Aufrufen einer Funktion, die versucht, ewig zu laufen, und deshalb im Evaluator eine Zeitüberschreitung verursacht",
+	"apihelp-wikilambda_function_call-example-orchestrator-timeout": "Aufrufen einer Funktion, die im Orchestrator zu lange läuft und deshalb eine Zeitüberschreitung verursacht",
 	"apihelp-wikilambda_function_call-summary": "Aufrufen einer Funktion durch Aufruf des Funktions-Orchestrators",
 	"apihelp-wikilambda_health_check-summary": "Führe eine Zustandsprüfung für den Wikilambda-Endpunkt durch",
 	"apihelp-query+wikilambdasearch_labels-summary": "Mit diesem API-Abfragelistengenerator kannst du ZObjects nach Bezeichnungen in einer bestimmten Sprache durchsuchen. Er dient in erster Linie zur Unterstützung des Look-Ahead-Suchsystems.",

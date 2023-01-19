@@ -7,6 +7,7 @@
 	},
 	"wikilambda-function-definition-input-item-type": "Vrsta",
 	"wikilambda-function-definition-output-label": "Izlaz",
+	"wikilambda-function-definition-output-type-label": "Vrsta",
 	"wikilambda-editor-fn-step-function-about": "O funkciji",
 	"wikilambda-editor-fn-step-function-details": "Detalji",
 	"wikilambda-editor-publish-dialog-header": "Objavi svoje izmjene",

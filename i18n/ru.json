@@ -71,7 +71,7 @@
 	"wikilambda-metadata-duplicate-alias-error": "'$1' уже существует",
 	"wikilambda-metadata-fewer-languages": "Показать меньше языков",
 	"wikilambda-persistentobject-details-label": "Подробности",
-	"wikilambda-function-definition-add-other-label-languages-title": "+ Добавить метки на другом языке",
+	"wikilambda-function-definition-add-other-label-languages-title": "Добавить метки на другом языке",
 	"wikilambda-function-definition-name-label": "Название",
 	"wikilambda-function-implementation-name-label": "Имя",
 	"wikilambda-function-implementation-language-label": "Язык",

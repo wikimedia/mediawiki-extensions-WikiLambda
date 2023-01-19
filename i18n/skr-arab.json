@@ -19,6 +19,7 @@
 	"wikilambda-function-definition-input-item-type": "قسم",
 	"wikilambda-function-definition-input-item-label": "لیبل",
 	"wikilambda-function-definition-output-label": "آؤٹ پٹ",
+	"wikilambda-function-definition-output-type-label": "قسم",
 	"wikilambda-zobject-missing-attached-function": "ہک عمل ضروری ہے",
 	"wikilambda-chip-remove": "آئٹم ہٹاؤ"
 }
