@@ -17,7 +17,7 @@
 			<wl-expanded-toggle
 				v-if="hasExpandedMode"
 				:expanded="expanded"
-				@click="( expanded = !expanded )"
+				@toggle="toggleExpanded"
 			></wl-expanded-toggle>
 			<label v-if="key">{{ keyLabel }}</label>
 		</p>
@@ -407,6 +407,12 @@ module.exports = exports = {
 					keyPath: payload.keyPath ? payload.keyPath : [],
 					value: payload.value
 				} );
+			},
+			/**
+			 * Toggles on and off the expanded flag
+			 */
+			toggleExpanded: function () {
+				this.expanded = !this.expanded;
 			}
 		} )
 };

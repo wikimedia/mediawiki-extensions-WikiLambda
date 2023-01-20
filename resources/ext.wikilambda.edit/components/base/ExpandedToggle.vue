@@ -10,7 +10,7 @@
 		:class="expanded ? 'ext-wikilambda-expanded-toggle-on' : 'ext-wikilambda-expanded-toggle-off'"
 		:icon="icons.cdxIconExpand"
 		icon-label="Expand"
-		@click="$emit( 'click' )">
+		@click.prevent="$emit( 'toggle', $event )">
 	</cdx-icon>
 </template>
 
