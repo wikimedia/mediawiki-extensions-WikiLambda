@@ -360,20 +360,16 @@ class ApiPerformTestTest extends ApiTestCase {
 			'wgWikiLambdaOrchestratorLocation' => 'https://wikifunctions-not-the-orchestrator.wmflabs.org'
 		] );
 
+		$this->expectExceptionMessage(
+			'Could not resolve host \'https://wikifunctions-not-the-orchestrator.wmflabs.org\', probably because the ' .
+			'orchestrator is not running. Please consult the README to add the orchestrator to your docker-compose ' .
+			'configuration.' );
+
 		$results = $this->doApiRequestWithToken( [
 			'action' => 'wikilambda_perform_test',
 			'wikilambda_perform_test_zfunction' => 'Z813',
 			'wikilambda_perform_test_zimplementations' => 'Z913',
 			'wikilambda_perform_test_ztesters' => 'Z8130'
 		] )[0]['query']['wikilambda_perform_test'];
-
-		$this->assertEquals(
-			'errors',
-			json_decode( $results[0]['testMetadata'] )->K1[1]->K1
-		);
-		$this->assertEquals(
-			'Z507',
-			json_decode( $results[0]['testMetadata'] )->K1[1]->K2->{ZTypeRegistry::Z_ERROR_TYPE}
-		);
 	}
 }

@@ -295,6 +295,9 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		} catch ( ConnectException $exception ) {
 			$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
 		} catch ( ClientException | ServerException $exception ) {
+			if ( $exception->getResponse()->getStatusCode() === 404 ) {
+				$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
+			}
 			$zErrorObject = ApiFunctionCall::wrapMessageInZError(
 				$exception->getResponse()->getReasonPhrase(),
 				$zObject
