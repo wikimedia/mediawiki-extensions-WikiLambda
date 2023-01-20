@@ -29,7 +29,9 @@
 			</div>
 		</template>
 		<template v-else>
-			<a :href="valueUrl">{{ valueLabel }}</a>
+			<a
+				class="ext-wikilambda-edit-link"
+				:href="valueUrl">{{ valueLabel }}</a>
 		</template>
 	</div>
 </template>
@@ -215,3 +217,47 @@ module.exports = exports = {
 	}
 };
 </script>
+
+<style lang="less">
+@import '../../ext.wikilambda.edit.less';
+@import '../../../lib/wikimedia-ui-base.less';
+
+.ext-wikilambda-type-mode {
+	&__select {
+		.cdx-select.cdx-select--enabled.cdx-select--expanded {
+			width: 100%;
+			display: inline-block;
+		}
+
+		.cdx-select {
+			width: auto;
+			display: inline-block;
+		}
+
+		@media screen and ( min-width: @width-breakpoint-tablet ) {
+			.cdx-select.cdx-select--enabled.cdx-select--expanded {
+				width: 50%;
+				display: inline-block;
+			}
+		}
+	}
+
+	&__selector {
+		.cdx-lookup {
+			display: inline-block;
+		}
+	}
+
+	&__selector-active {
+		.cdx-lookup {
+			width: 100%;
+		}
+
+		@media screen and ( min-width: @width-breakpoint-tablet ) {
+			.cdx-lookup {
+				width: 50%;
+			}
+		}
+	}
+}
+</style>

@@ -463,6 +463,15 @@ module.exports = exports = {
 		}
 	}
 
+	.cdx-text-input__icon {
+		svg {
+			width: @size-75;
+			height: @size-75;
+			min-width: @size-75;
+			min-height: @size-75;
+		}
+	}
+
 	&__link {
 		min-height: 32px;
 		display: inline-flex;

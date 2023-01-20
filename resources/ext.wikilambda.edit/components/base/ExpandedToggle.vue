@@ -40,9 +40,26 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
+@import '../../ext.wikilambda.edit.variables.less';
 
 .ext-wikilambda-expanded {
-	transition: transform 0.1s linear;
+	transition: transform @transition-duration-medium @transition-timing-function-system;
+	margin-right: @spacing-25;
+
+	@media ( prefers-reduced-motion ) {
+		transition: transform 0ms unset;
+	}
+
+	&.cdx-icon {
+		color: @border-color-interactive;
+		width: @size-125;
+		height: @size-125;
+
+		svg {
+			width: @size-75;
+			height: @size-75;
+		}
+	}
 
 	&.ext-wikilambda-expanded-toggle-off {
 		transform: rotate( -90deg );

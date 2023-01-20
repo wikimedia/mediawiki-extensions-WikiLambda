@@ -7,7 +7,9 @@
 	-->
 	<div class="ext-wikilambda-reference">
 		<template v-if="!edit">
-			<a :href="valueUrl">{{ valueLabel }}</a>
+			<a
+				class="ext-wikilambda-edit-link"
+				:href="valueUrl">{{ valueLabel }}</a>
 		</template>
 		<template v-else>
 			<z-object-selector

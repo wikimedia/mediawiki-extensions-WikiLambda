@@ -110,7 +110,7 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.variables.less';
 
 .ext-wikilambda-key-value-set {
-	padding-left: @wl-key-value-set-margin-left;
+	padding-left: 14px;
 
 	&.ext-wikilambda-key-level-1 {
 		border-color: @wl-key-value-color-1;
@@ -135,18 +135,6 @@ module.exports = exports = {
 	&.ext-wikilambda-key-level-6 {
 		border-color: @wl-key-value-color-6;
 	}
-
-	&.ext-wikilambda-key-level-7 {
-		border-color: @wl-key-value-color-7;
-	}
-
-	&.ext-wikilambda-key-level-8 {
-		border-color: @wl-key-value-color-8;
-	}
-
-	&.ext-wikilambda-key-level-9 {
-		border-color: @wl-key-value-color-9;
-	}
 	border-top: @wl-key-value-border-top-width @wl-key-value-border-top-style;
 	border-bottom: @wl-key-value-border-bottom-width @wl-key-value-border-bottom-style;
 	border-right: @wl-key-value-border-right-width @wl-key-value-border-right-style;
@@ -154,6 +142,8 @@ module.exports = exports = {
 
 	&.ext-wikilambda-key-level-0 {
 		border: 0;
+		margin: 0;
+		padding: 0;
 	}
 }
 

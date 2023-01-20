@@ -12,7 +12,7 @@
 		<!-- Key -->
 		<p
 			class="ext-wikilambda-key-block"
-			:class="[ expandedModeClass, nestingDepthClass ]"
+			:class="[ expandedModeClass, nestingDepthClass, editModeClass ]"
 		>
 			<wl-expanded-toggle
 				v-if="hasExpandedMode"
@@ -22,7 +22,10 @@
 			<label v-if="key">{{ keyLabel }}</label>
 		</p>
 		<!-- Value -->
-		<p class="ext-wikilambda-value-block">
+		<p
+			class="ext-wikilambda-value-block"
+			:class="{ 'ext-wikilambda-value-block__padded': ( hasExpandedMode && !expanded ) }"
+		>
 			<component
 				:is="zobjectComponent"
 				:edit="editComponent"
@@ -210,6 +213,15 @@ module.exports = exports = {
 			 */
 			expandedModeClass: function () {
 				return ( this.expanded && this.hasExpandedMode ) ? 'ext-wikilambda-expanded-on' : 'ext-wikilambda-expanded-off';
+			},
+
+			/**
+			 * Returns the css class that identifies the edit or view mode
+			 *
+			 * @return {string}
+			 */
+			editModeClass: function () {
+				return this.editComponent ? 'ext-wikilambda-edit-on' : 'ext-wikilambda-edit-off';
 			},
 
 			/**
@@ -419,23 +431,35 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import '../../ext.wikilambda.edit.variables.less';
+@import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-key-value {
 	.ext-wikilambda-key-block {
 		margin: 0;
+		display: flex;
+		align-items: center;
+		color: @color-subtle;
 
 		label {
-			text-transform: @wl-label-text-transform;
+			text-transform: capitalize;
+			line-height: @size-125;
 		}
 
 		&.ext-wikilambda-expanded-off {
-			color: @wl-key-value-color-neutral;
-			font-weight: normal;
+			color: @color-subtle;
+			font-weight: @font-weight-normal;
+
+			&.ext-wikilambda-edit-on {
+				margin-bottom: @spacing-25;
+			}
 		}
 
 		&.ext-wikilambda-expanded-on {
-			font-weight: bold;
+			font-weight: @font-weight-normal;
+
+			& > .cdx-icon {
+				color: inherit;
+			}
 
 			&.ext-wikilambda-key-level-0 {
 				color: @wl-key-value-color-0;
@@ -464,14 +488,6 @@ module.exports = exports = {
 			&.ext-wikilambda-key-level-6 {
 				color: @wl-key-value-color-6;
 			}
-
-			&.ext-wikilambda-key-level-7 {
-				color: @wl-key-value-color-7;
-			}
-
-			&.ext-wikilambda-key-level-8 {
-				color: @wl-key-value-color-8;
-			}
 		}
 	}
 
@@ -482,8 +498,12 @@ module.exports = exports = {
 		margin-bottom: @wl-key-value-margin-bottom;
 		margin-left: @wl-key-value-margin-left;
 
+		&__padded {
+			margin-left: @spacing-150;
+		}
+
 		.ext-wikilambda-key-value-set {
-			margin-top: @wl-key-value-set-margin-top;
+			padding-top: @wl-key-value-set-margin-top;
 			margin-right: @wl-key-value-set-margin-right;
 			margin-bottom: @wl-key-value-set-margin-bottom;
 			margin-left: @wl-key-value-set-margin-left;
