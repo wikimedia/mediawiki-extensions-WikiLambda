@@ -14,6 +14,7 @@
 			<input
 				v-model="text"
 				type="text"
+				placeholder="Enter text"
 				class="ext-wikilambda-monolingual-string__input"
 				@focus="setIsInputActive( true )"
 				@focusout="setIsInputActive( false )">
@@ -48,6 +49,7 @@ module.exports = exports = {
 	computed: $.extend(
 		mapGetters( [
 			'getLabel',
+			'getZkeys',
 			'getZMonolingualTextValue',
 			'getZMonolingualLangValue'
 		] ),
@@ -117,12 +119,20 @@ module.exports = exports = {
 			/**
 			 * Return the text that identifies the language in which
 			 * this Monolingual String is written.
-			 * TODO: Currently returns language label, but must return ISO code
 			 *
 			 * @return {string}
 			 */
 			langIso: function () {
-				return this.langLabelObj ? this.langLabelObj.label : this.lang;
+				// Set fallback as language label or lang if ISOcode is not available
+				var isoCode = this.langLabelObj ? this.langLabelObj.label : this.lang;
+				if ( this.langLabelObj && this.getZkeys[ this.langLabelObj.zid ] ) {
+					isoCode = this.getZkeys[ this.langLabelObj.zid ][
+						Constants.Z_PERSISTENTOBJECT_VALUE
+					][
+						Constants.Z_NATURAL_LANGUAGE_ISO_CODE
+					];
+				}
+				return isoCode;
 			},
 
 			inputContainerClass: function () {
@@ -159,6 +169,11 @@ module.exports = exports = {
 		padding: 2px 5px;
 		border-radius: 100px;
 		text-transform: uppercase;
+
+		&:empty {
+			width: 36px;
+			border: 1px dashed @wmui-color-base50;
+		}
 	}
 
 	&__edit-mode {

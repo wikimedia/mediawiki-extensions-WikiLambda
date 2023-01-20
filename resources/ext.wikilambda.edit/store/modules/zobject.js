@@ -450,7 +450,18 @@ module.exports = exports = {
 			 */
 			function findZMonolingualLangValue( rowId ) {
 				const langRow = getters.getRowByKeyPath( [ Constants.Z_MONOLINGUALSTRING_LANGUAGE ], rowId );
-				// FIXME Consider that language could be a literal instead of only reference
+
+				const zObjectType = getters.getZObjectTypeByRowId( langRow.id );
+
+				// If zobject language type is a natural language, return the
+				// language code value
+				if ( zObjectType === Constants.Z_NATURAL_LANGUAGE ) {
+					return getters.getRowByKeyPath( [
+						Constants.Z_NATURAL_LANGUAGE_ISO_CODE,
+						Constants.Z_STRING_VALUE
+					], langRow.id ).value;
+				}
+
 				return getters.getZReferenceTerminalValue( langRow.id );
 			}
 			return findZMonolingualLangValue;
