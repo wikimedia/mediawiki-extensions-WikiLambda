@@ -8,6 +8,7 @@
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	TextInput = require( '../../../../resources/ext.wikilambda.edit/components/base/TextInput.vue' ),
 	ZString = require( '../../../../resources/ext.wikilambda.edit/components/default/ZString.vue' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
 
@@ -54,8 +55,7 @@ describe( 'ZString', () => {
 					}
 				} );
 
-				const input = wrapper.find( 'input' );
-				await input.setValue( 'my string value' );
+				await wrapper.getComponent( TextInput ).vm.$emit( 'input', 'my string value' );
 
 				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ 'Z6K1' ], value: 'my string value' } ] ] );
 			} );
@@ -76,32 +76,9 @@ describe( 'ZString', () => {
 				}
 			} );
 
-			const input = wrapper.find( 'input' );
-			await input.setValue( 'my string value' );
+			await wrapper.getComponent( TextInput ).vm.$emit( 'input', 'my string value' );
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [], value: 'my string value' } ] ] );
-		} );
-
-		it( 'adds focus styling on input focus', async () => {
-			var wrapper = shallowMount( ZString, {
-				props: {
-					edit: true
-				}
-			} );
-
-			expect( wrapper.find( '.ext-wikilambda-string__input' ) ).toBeTruthy();
-
-			await wrapper.find( 'input' ).trigger( 'focus' );
-			await wrapper.vm.$nextTick();
-
-			expect( wrapper.find( '.ext-wikilambda-string__input' ).exists() ).toBeFalsy();
-			expect( wrapper.find( '.ext-wikilambda-string__input-active' ).exists() ).toBeTruthy();
-
-			await wrapper.find( 'input' ).trigger( 'focusout' );
-			await wrapper.vm.$nextTick();
-
-			expect( wrapper.find( '.ext-wikilambda-string__input' ).exists() ).toBeTruthy();
-			expect( wrapper.find( '.ext-wikilambda-string__input-active' ).exists() ).toBeFalsy();
 		} );
 	} );
 } );

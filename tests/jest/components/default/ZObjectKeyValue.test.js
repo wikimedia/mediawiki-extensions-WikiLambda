@@ -10,7 +10,8 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	ExpandedToggle = require( '../../../../resources/ext.wikilambda.edit/components/base/ExpandedToggle' ),
+	ExpandedToggle = require( '../../../../resources/ext.wikilambda.edit/components/base/ExpandedToggle.vue' ),
+	TextInput = require( '../../../../resources/ext.wikilambda.edit/components/base/TextInput.vue' ),
 	ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.edit/components/default/ZObjectKeyValue.vue' ),
 	ZMonolingualString = require( '../../../../resources/ext.wikilambda.edit/components/default/ZMonolingualString.vue' ),
 	ZString = require( '../../../../resources/ext.wikilambda.edit/components/default/ZString.vue' ),
@@ -439,8 +440,7 @@ describe( 'ZObjectKeyValue', () => {
 				}
 			} );
 
-			const input = wrapper.find( 'input' );
-			await input.setValue( 'my string value' );
+			await wrapper.getComponent( TextInput ).vm.$emit( 'input', 'my string value' );
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ Constants.Z_STRING_VALUE ], value: 'my string value' } ] ] );
 		} );
@@ -468,8 +468,7 @@ describe( 'ZObjectKeyValue', () => {
 				}
 			} );
 
-			const input = wrapper.find( 'input' );
-			await input.setValue( 'my string value' );
+			await wrapper.getComponent( TextInput ).vm.$emit( 'input', 'my string value' );
 
 			expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), { keyPath: [ Constants.Z_STRING_VALUE ], rowId: 2, value: 'my string value' } );
 		} );

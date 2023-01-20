@@ -7,7 +7,6 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ZReference = require( '../../../../resources/ext.wikilambda.edit/components/default/ZReference.vue' ),
@@ -86,7 +85,7 @@ describe( 'ZReference', () => {
 				}
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-reference__selector' ).exists() ).toBeTruthy();
+			expect( wrapper.getComponent( ZObjectSelector ).exists() ).toBeTruthy();
 
 			await wrapper.getComponent( ZObjectSelector ).vm.$emit( 'input', 'String' );
 
@@ -109,7 +108,7 @@ describe( 'ZReference', () => {
 				}
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-reference__selector' ).exists() ).toBeTruthy();
+			expect( wrapper.getComponent( ZObjectSelector ).exists() ).toBeTruthy();
 
 			await wrapper.getComponent( ZObjectSelector ).vm.$emit( 'input', 'String' );
 
@@ -125,42 +124,6 @@ describe( 'ZReference', () => {
 			} );
 
 			expect( wrapper.vm.selectType ).toBe( Constants.Z_ARGUMENT_KEY );
-		} );
-
-		it( 'adds focus styling on selector focus', async () => {
-			getters.getErrors = createGettersWithFunctionsMock( {} );
-
-			var actions = {
-				fetchZKeys: jest.fn( function () {
-					return true;
-				} )
-			};
-
-			global.store.hotUpdate( {
-				getters: getters,
-				actions: actions
-			} );
-
-			var wrapper = mount( ZReference, {
-				props: {
-					edit: true
-				}
-			} );
-
-			expect( wrapper.find( '.ext-wikilambda-reference__selector' ) ).toBeTruthy();
-
-			var selector = wrapper.get( '.ext-wikilambda-reference' ).getComponent( ZObjectSelector );
-			expect( wrapper.find( '.ext-wikilambda-reference__selector-active' ).exists() ).toBeFalsy();
-
-			selector.vm.$emit( 'focus' );
-			await wrapper.vm.$nextTick();
-
-			expect( wrapper.find( '.ext-wikilambda-reference__selector-active' ).exists() ).toBeTruthy();
-
-			selector.vm.$emit( 'focus-out' );
-			await wrapper.vm.$nextTick();
-
-			expect( wrapper.find( '.ext-wikilambda-reference__selector-active' ).exists() ).toBeFalsy();
 		} );
 	} );
 } );
