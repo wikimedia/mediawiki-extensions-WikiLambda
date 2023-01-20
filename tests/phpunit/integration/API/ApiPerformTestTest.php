@@ -351,4 +351,29 @@ class ApiPerformTestTest extends ApiTestCase {
 			]
 		];
 	}
+
+	/**
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::executeFunctionCall
+	 */
+	public function testExecuteFailure_noServer() {
+		$this->setMwGlobals( [
+			'wgWikiLambdaOrchestratorLocation' => 'https://wikifunctions-not-the-orchestrator.wmflabs.org'
+		] );
+
+		$results = $this->doApiRequestWithToken( [
+			'action' => 'wikilambda_perform_test',
+			'wikilambda_perform_test_zfunction' => 'Z813',
+			'wikilambda_perform_test_zimplementations' => 'Z913',
+			'wikilambda_perform_test_ztesters' => 'Z8130'
+		] )[0]['query']['wikilambda_perform_test'];
+
+		$this->assertEquals(
+			'errors',
+			json_decode( $results[0]['testMetadata'] )->K1[1]->K1
+		);
+		$this->assertEquals(
+			'Z507',
+			json_decode( $results[0]['testMetadata'] )->K1[1]->K2->{ZTypeRegistry::Z_ERROR_TYPE}
+		);
+	}
 }
