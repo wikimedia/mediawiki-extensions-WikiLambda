@@ -172,7 +172,7 @@ var Constants = {
 	];
 
 Constants.Z_MODE_SELECTOR_MODES = modes;
-Constants.Z_TYPED_OBEJECTS_LIST = typedObjectsList;
+Constants.Z_TYPED_OBJECTS_LIST = typedObjectsList;
 Constants.VIEWS = views;
 Constants.PATHS = paths;
 Constants.ACTIONS = actions;

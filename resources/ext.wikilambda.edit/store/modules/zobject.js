@@ -39,7 +39,7 @@ function isObjectTypeDeclaration( object, parentObject ) {
  * @return {boolean}
  */
 function isTypedObjectWithCustomComponent( functionCallId ) {
-	var istypedObject = Constants.Z_TYPED_OBEJECTS_LIST.indexOf( functionCallId.value ) !== -1;
+	var istypedObject = Constants.Z_TYPED_OBJECTS_LIST.indexOf( functionCallId.value ) !== -1;
 
 	return istypedObject;
 }
@@ -260,7 +260,7 @@ function isNotObjectOrArrayRoot( object ) {
  * @param {Array} object
  * @return {Object}
  */
-function retrieveFunctionCallId( getZObjectChildrenById, object ) {
+function retrieveFunctionCallFunctionZid( getZObjectChildrenById, object ) {
 	var functionCall = typeUtils.findKeyInArray( Constants.Z_FUNCTION_CALL_FUNCTION, object );
 
 	if ( functionCall && functionCall.value === 'object' ) {
@@ -1075,12 +1075,11 @@ module.exports = exports = {
 			function findZObjectTypeById( id ) {
 				var type,
 					currentObject = getters.getZObjectById( id ),
-					childrenObject = [];
-
+					children = [];
 				// If id (row Id) doesn't exist and returns undefined
 				// FIXME: If the id is the same as the parent it returns undefined ????
 				if ( !currentObject || currentObject.id === currentObject.parent ) {
-					return type;
+					return undefined;
 				}
 
 				// If the row is TERMINAL, we return the value if the key is Z1K1, else undefined
@@ -1100,15 +1099,21 @@ module.exports = exports = {
 
 					// If the value is NON TERMINA and it's an object...
 					case 'object':
-						childrenObject = getters.getZObjectChildrenById( id );
-						var objectType = typeUtils.findKeyInArray( Constants.Z_OBJECT_TYPE, childrenObject ),
-							referenceId = typeUtils.findKeyInArray( Constants.Z_REFERENCE_ID, childrenObject ),
-							functionCallId = retrieveFunctionCallId( getters.getZObjectChildrenById, childrenObject );
+						children = getters.getZObjectChildrenById( id );
+						var objectType = typeUtils.findKeyInArray( Constants.Z_OBJECT_TYPE, children ),
+							referenceId = typeUtils.findKeyInArray( Constants.Z_REFERENCE_ID, children ),
+							functionCallFunctionZid =
+								retrieveFunctionCallFunctionZid( getters.getZObjectChildrenById, children ),
+							objectTypeFunctionCallFunctionZid =
+								retrieveFunctionCallFunctionZid(
+									getters.getZObjectChildrenById, getters.getZObjectChildrenById( objectType.id ) );
 						if ( isObjectTypeDeclaration( objectType, currentObject ) ) {
 							type = referenceId.value;
-						} else if ( isTypedObjectWithCustomComponent( functionCallId ) ) {
-							type = functionCallId.value;
-						} else if ( functionCallId && isFunctionToType( getters.getZkeys[ functionCallId.value ] ) ) {
+						} else if ( isTypedObjectWithCustomComponent( objectTypeFunctionCallFunctionZid ) ) {
+							type = objectTypeFunctionCallFunctionZid.value;
+						} else if (
+							functionCallFunctionZid &&
+								isFunctionToType( getters.getZkeys[ functionCallFunctionZid.value ] ) ) {
 							type = Constants.Z_FUNCTION_CALL_TO_TYPE;
 						} else if ( isNotObjectOrArrayRoot( objectType ) ) {
 							type = objectType.value;

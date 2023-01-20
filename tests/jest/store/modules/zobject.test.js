@@ -404,6 +404,63 @@ describe( 'zobject Vuex module', function () {
 					.toEqual( true );
 			} );
 		} );
+
+		describe( 'getZObjectTypeById', () => {
+			var getters;
+			beforeEach( function () {
+				getters = {};
+				getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( state, getters );
+				getters.getZObjectById = zobjectModule.getters.getZObjectById( state, getters );
+			} );
+			it( 'when object is a call to a function that does not return a type, returns Z_FUNCTION_CALL', () => {
+				state.zobject = [
+					{ value: Constants.ROW_VALUE_OBJECT, id: 0 },
+					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_FUNCTION_CALL, parent: 0, id: 1 },
+					{ key: Constants.Z_FUNCTION_CALL_FUNCTION, value: 'Z12345', parent: 0, id: 2 }
+				];
+				getters.getZkeys = {
+					Z12345: {
+						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION,
+							[ Constants.Z_FUNCTION_RETURN_TYPE ]: Constants.Z_STRING
+						}
+					}
+				};
+
+				expect( zobjectModule.getters.getZObjectTypeById( state, getters )( 0 ) )
+					.toEqual( Constants.Z_FUNCTION_CALL );
+			} );
+			it( 'when object is a call to a function that returns a type, returns FUNCTION_CALL_TO_TYPE', () => {
+				state.zobject = [
+					{ value: Constants.ROW_VALUE_OBJECT, id: 0 },
+					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_FUNCTION_CALL, parent: 0, id: 1 },
+					{ key: Constants.Z_FUNCTION_CALL_FUNCTION, value: Constants.Z_TYPED_PAIR, parent: 0, id: 2 }
+				];
+				getters.getZkeys = {
+					[ Constants.Z_TYPED_PAIR ]: {
+						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION,
+							[ Constants.Z_FUNCTION_RETURN_TYPE ]: Constants.Z_TYPE
+						}
+					}
+				};
+
+				expect( zobjectModule.getters.getZObjectTypeById( state, getters )( 0 ) )
+					.toEqual( Constants.Z_FUNCTION_CALL_TO_TYPE );
+			} );
+			it( `when object has as its type a call to a function that returns a type, and that returned type has a
+				dedicated UI component, returns that type`, () => {
+				state.zobject = [
+					{ value: Constants.ROW_VALUE_OBJECT, id: 0 },
+					{ key: Constants.Z_OBJECT_TYPE, value: Constants.ROW_VALUE_OBJECT, parent: 0, id: 1 },
+					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_FUNCTION_CALL, parent: 1, id: 2 },
+					{ key: Constants.Z_FUNCTION_CALL_FUNCTION, value: Constants.Z_TYPED_PAIR, parent: 1, id: 3 }
+				];
+
+				expect( zobjectModule.getters.getZObjectTypeById( state, getters )( 0 ) )
+					.toEqual( Constants.Z_TYPED_PAIR );
+			} );
+		} );
 	} );
 
 	describe( 'Mutations', function () {
