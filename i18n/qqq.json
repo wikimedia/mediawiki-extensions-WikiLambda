@@ -25,6 +25,7 @@
 	"group-functionmaintainer": "In WikiLambda, \"maintainers\" are users who have the full rights to develop and modify functions.\n\n{{doc-group|functionmaintainer}}",
 	"group-functionmaintainer-member": "In WikiLambda, \"maintainers\" are users who have the full rights to develop and modify functions.\n\n{{doc-group|functionmaintainer|member}}",
 	"grouppage-functionmaintainer": "In WikiLambda, \"maintainers\" are users who have the full rights to develop and modify functions.\n\n{{doc-group|functionmaintainer|page}}",
+	"wikilambda-updated-implementations-summary": "{{Ignore}}\n\nThe edit comment made by the system user when updating a function's Z8K4/implementations property.",
 	"wikilambda-history-title": "Title of the page showing the history of edits to a ZObject, similar to {{msg-mw|wikibase-history-title-with-label}}.\n\nParameters:\n* $1 – The title in the user's language, or a fallback language if not set.\n* $2 – The ZID (actual wiki page title) of the page.",
 	"wikilambda-zobject-title": "Title of link to a zobject with name and zid.\n\nParameters:\n* $1 – The title in the user's language, or a fallback language if not set.\n* $2 – The ZID (actual wiki page title) of the page.",
 	"wikilambda-invalidzobjecttitle": "Error shown when a user tries to create a ZObject with an invalid title.\n\nParameters:\n* $1 - The given, invalid title.\n\n{{doc-wikilambda}}",

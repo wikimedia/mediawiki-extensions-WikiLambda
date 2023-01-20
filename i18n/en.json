@@ -15,6 +15,7 @@
 	"group-functionmaintainer": "Maintainers",
 	"group-functionmaintainer-member": "{{GENDER:$1|maintainer}}",
 	"grouppage-functionmaintainer": "Maintainers",
+	"wikilambda-updated-implementations-summary": "Updated the implementation list",
 	"wikilambda-history-title": "Revision history of \"$1\" ($2)",
 	"wikilambda-zobject-title": "$1 ($2)",
 	"wikilambda-invalidzobjecttitle": "The provided title '$1' is not valid for a ZObject.",
