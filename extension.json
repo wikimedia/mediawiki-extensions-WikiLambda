@@ -50,6 +50,58 @@
 	"ConfigRegistry": {
 		"WikiLambda": "GlobalVarConfig::newInstance"
 	},
+	"AvailableRights": [
+		"wikilambda-create",
+		"wikilambda-create-type",
+		"wikilambda-create-function",
+		"wikilambda-create-implementation",
+		"wikilambda-create-tester",
+		"wikilambda-create-predefined",
+		"wikilambda-create-language",
+		"wikilambda-create-programming",
+		"wikilambda-edit",
+		"wikilambda-edit-type",
+		"wikilambda-edit-function",
+		"wikilambda-edit-implementation",
+		"wikilambda-edit-tester",
+		"wikilambda-edit-predefined",
+		"wikilambda-edit-language",
+		"wikilambda-edit-programming",
+		"wikilambda-connect-implementation",
+		"wikilambda-disconnect-implementation",
+		"wikilambda-connect-tester",
+		"wikilambda-disconnect-tester",
+		"wikilambda-execute"
+	],
+	"GroupPermissions": {
+		"*": {
+			"wikilambda-execute": true
+		},
+		"user": {
+			"wikilambda-create": true,
+			"wikilambda-create-type": true,
+			"wikilambda-create-function": true,
+			"wikilambda-create-implementation": true,
+			"wikilambda-create-tester": true,
+			"wikilambda-edit": true,
+			"wikilambda-edit-type": true,
+			"wikilambda-edit-function": true,
+			"wikilambda-edit-implementation": true,
+			"wikilambda-edit-tester": true
+		},
+		"sysop": {
+			"wikilambda-create-predefined": true,
+			"wikilambda-create-language": true,
+			"wikilambda-create-programming": true,
+			"wikilambda-edit-predefined": true,
+			"wikilambda-edit-language": true,
+			"wikilambda-edit-programming": true,
+			"wikilambda-connect-implementation": true,
+			"wikilambda-disconnect-implementation": true,
+			"wikilambda-connect-tester": true,
+			"wikilambda-disconnect-tester": true
+		}
+	},
 	"HookHandlers": {
 		"WikiLambdaHooks": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\Hooks"
