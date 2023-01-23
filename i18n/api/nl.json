@@ -8,5 +8,6 @@
 	"apihelp-wikilambda_function_call-example-native-js-code": "Beroep doen op door de gebruiker geschreven JavaScript-code",
 	"apihelp-wikilambda_function_call-example-curry": "Een \"curried\"-functie aanroepen",
 	"apihelp-wikilambda_function_call-example-socket": "Een functie aanroepen die gebruik maakt van \"reentrance\" om terug te schakelen naar de \"orchestrator\"",
-	"apihelp-wikilambda_function_call-example-timeout": "Een functie aanroepen die eeuwig probeert te lopen, en dus door de evaluator wegens overschrijding van de maximumlooptijd wordt afgebroken"
+	"apihelp-wikilambda_function_call-example-timeout": "Een functie aanroepen die eeuwig probeert te lopen, en dus door de evaluator wegens overschrijding van de maximumlooptijd wordt afgebroken",
+	"apihelp-wikilambda_function_call-example-orchestrator-timeout": "Een functie aanroepen die te lang probeert te blijven draaien in de orchestrator, waardoor er een time-out optreedt"
 }
