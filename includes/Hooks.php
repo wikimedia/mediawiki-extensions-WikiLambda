@@ -292,6 +292,8 @@ class Hooks implements
 	 * whether the ZObject has any dependencies, according to the dependencies.json manifest file, and if so,
 	 * inserts all the dependencies before trying the current ZObject.
 	 *
+	 * Runs in a static context and so can't be part of the normal code in ZObjectStore.
+	 *
 	 * @param DatabaseUpdater $updater
 	 * @param string $filename
 	 * @param array $dependencies
