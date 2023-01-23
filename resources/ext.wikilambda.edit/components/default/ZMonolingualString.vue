@@ -9,27 +9,31 @@
 		<div v-if="!edit">
 			<p><span class="ext-wikilambda-lang-chip">{{ langIso }}</span> {{ text }}</p>
 		</div>
-		<div v-else :class="inputContainerClass">
-			<span class="ext-wikilambda-lang-chip">{{ langIso }}</span>
-			<input
+		<div
+			v-else
+			class="ext-wikilambda-monolingual-string__edit-mode">
+			<wl-text-input
 				v-model="text"
-				type="text"
+				:fit-width="true"
+				:chip="langIso"
 				placeholder="Enter text"
-				class="ext-wikilambda-monolingual-string__input"
-				@focus="setIsInputActive( true )"
-				@focusout="setIsInputActive( false )">
+				class="ext-wikilambda-monolingual-string__input">
+			</wl-text-input>
 		</div>
 	</div>
 </template>
 
 <script>
-var
+var TextInput = require( '../base/TextInput.vue' ),
 	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
 	name: 'z-monolingual-string',
+	components: {
+		'wl-text-input': TextInput
+	},
 	props: {
 		rowId: {
 			type: Number,
@@ -40,11 +44,6 @@ module.exports = exports = {
 			type: Boolean,
 			required: true
 		}
-	},
-	data: function () {
-		return {
-			isInputActive: false
-		};
 	},
 	computed: $.extend(
 		mapGetters( [
@@ -93,10 +92,8 @@ module.exports = exports = {
 
 			/**
 			 * Returns the language Zid of the Monolingual string
-			 * object represented in this component.
-			 * FIXME This assumes that the language is a reference,
-			 * but it could be a literal. We should fix this logic
-			 * for that case.
+			 * object represented in this component, or the language code
+			 * if lang is a literal.
 			 *
 			 * @return {string}
 			 */
@@ -133,81 +130,33 @@ module.exports = exports = {
 					];
 				}
 				return isoCode;
-			},
-
-			inputContainerClass: function () {
-				return {
-					'ext-wikilambda-monolingual-string__edit-mode': true,
-					'ext-wikilambda-monolingual-string__edit-mode-active': this.isInputActive
-				};
 			}
 		}
-	),
-	methods: {
-		setIsInputActive: function ( isActive ) {
-			this.isInputActive = isActive;
-		}
-	}
+	)
 };
 
 </script>
 
 <style lang="less">
+@import '../../ext.wikilambda.edit.variables.less';
 @import './../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-monolingual-string {
 	p {
 		margin: 0;
 		color: @color-base;
-	}
+		display: flex;
+		flex-direction: row;
+		align-items: center;
 
-	span.ext-wikilambda-lang-chip {
-		margin-right: 5px;
-		margin-top: 3px;
-		margin-bottom: 3px;
-		font-size: 0.8em;
-		border: 1px solid @wmui-color-base50;
-		padding: 2px 5px;
-		border-radius: 100px;
-		text-transform: uppercase;
-
-		&:empty {
-			width: 36px;
-			border: 1px dashed @wmui-color-base50;
+		.ext-wikilambda-lang-chip {
+			margin-right: @spacing-50;
 		}
 	}
 
 	&__edit-mode {
-		display: flex;
-		flex: 1 auto;
-		flex-wrap: nowrap;
-		border-radius: 2px;
-		padding: 0 8px;
-		border-width: 1px;
-		border-style: solid;
-		border-color: @wmui-color-base50;
-		box-shadow: inset 0 0 0 1px transparent;
-		max-width: 15%;
-		min-width: 220px;
-	}
-
-	&__edit-mode-active {
-		max-width: 100%;
-
-		@media screen and ( min-width: @width-breakpoint-tablet ) {
-			max-width: 50%;
-		}
-	}
-
-	&__input {
-		flex-grow: inherit;
-		height: 26px;
-		padding: 2px 0;
-		border: 0;
-		outline: 0;
-		font-family: inherit;
-		font-size: inherit;
-		line-height: 1.43em;
+		position: relative;
+		height: @size-200;
 	}
 }
 

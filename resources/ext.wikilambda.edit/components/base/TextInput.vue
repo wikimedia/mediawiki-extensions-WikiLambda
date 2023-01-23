@@ -6,19 +6,25 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<cdx-text-input
-		:id="id"
-		v-model="value"
-		class="ext-wikilambda-edit-text-input"
-		:class="{ 'ext-wikilambda-edit-text-input__fitted': fitWidth }"
-		:style="{ width: fieldWidth }"
-		:aria-label="ariaLabel"
-		:placeholder="placeholder"
-		:disabled="disabled"
-		v-bind="$attrs"
-		@focus="active = true"
-		@blur="active = false"
-	></cdx-text-input>
+	<div class="ext-wikilambda-edit-text-input">
+		<span
+			v-if="hasChip"
+			class="ext-wikilambda-lang-chip"
+		>{{ chip }}</span>
+		<cdx-text-input
+			:id="id"
+			v-model="value"
+			class="ext-wikilambda-edit-text-input__field"
+			:class="inputClasses"
+			:style="{ width: fieldWidth }"
+			:aria-label="ariaLabel"
+			:placeholder="placeholder"
+			:disabled="disabled"
+			v-bind="$attrs"
+			@focus="active = true"
+			@blur="active = false"
+		></cdx-text-input>
+	</div>
 </template>
 
 <script>
@@ -55,6 +61,10 @@ module.exports = exports = {
 		fitWidth: {
 			type: Boolean,
 			default: false
+		},
+		chip: {
+			type: String,
+			required: false
 		}
 	},
 	data: function () {
@@ -99,9 +109,36 @@ module.exports = exports = {
 			} else if ( this.placeholder && ( this.placeholder.length > 0 ) ) {
 				chars = this.placeholder.length;
 			}
-			// Subtract 20%
+			// Subtract 10% to accomodate a fixed width font
 			chars = Math.ceil( chars - chars * 0.1 );
+			// Add 5 chars if it has language chip
+			if ( this.hasChip ) {
+				chars = chars + 5;
+			}
 			return `${chars}ch`;
+		},
+		/**
+		 * Whether the text input has an embed language chip
+		 *
+		 * @return {boolean}
+		 */
+		hasChip: function () {
+			return ( this.chip !== undefined );
+		},
+		inputClasses: function () {
+			const classes = [];
+			if ( this.fitWidth ) {
+				classes.push( 'ext-wikilambda-edit-text-input__fitted' );
+			}
+			if ( this.hasChip ) {
+				classes.push( 'ext-wikilambda-edit-text-input__chipped' );
+				if ( this.chip.length > 2 ) {
+					classes.push( 'ext-wikilambda-edit-text-input__chipped__lg' );
+				} else {
+					classes.push( 'ext-wikilambda-edit-text-input__chipped__sm' );
+				}
+			}
+			return classes;
 		}
 	}
 };
@@ -111,12 +148,40 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-edit-text-input {
+	height: inherit;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+
 	&__fitted {
 		transition: @wl-transition-field-expand;
 
 		.cdx-text-input__input {
 			min-width: auto;
 		}
+	}
+
+	&__chipped {
+		position: absolute;
+		top: 0;
+
+		&__lg {
+			.cdx-text-input__input {
+				padding-left: calc( 8px + 40px + 8px );
+			}
+		}
+
+		&__sm {
+			.cdx-text-input__input {
+				padding-left: calc( 8px + 36px + 8px );
+			}
+		}
+	}
+
+	span.ext-wikilambda-lang-chip {
+		position: relative;
+		z-index: 10;
+		left: @spacing-50;
 	}
 }
 </style>
