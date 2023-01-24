@@ -242,6 +242,7 @@
 				"ext.wikilambda.edit/components/default/ZObjectType.vue",
 				"ext.wikilambda.edit/components/default/ZReference.vue",
 				"ext.wikilambda.edit/components/default/ZString.vue",
+				"ext.wikilambda.edit/components/default/ZBoolean.vue",
 				"ext.wikilambda.edit/components/base/ExpandedToggle.vue",
 				"lib/ace/src/ace.js",
 				{

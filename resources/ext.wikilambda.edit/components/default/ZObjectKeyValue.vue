@@ -49,6 +49,7 @@ var
 	ZObjectType = require( './ZObjectType.vue' ),
 	ZString = require( './ZString.vue' ),
 	ZReference = require( './ZReference.vue' ),
+	ZBoolean = require( './ZBoolean.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -61,7 +62,8 @@ module.exports = exports = {
 		'z-object-key-value-set': ZObjectKeyValueSet,
 		'z-object-type': ZObjectType,
 		'z-string': ZString,
-		'z-reference': ZReference
+		'z-reference': ZReference,
+		'z-boolean': ZBoolean
 	},
 	props: {
 		rowId: {
@@ -352,6 +354,10 @@ module.exports = exports = {
 				}
 				if ( ( this.type === Constants.Z_STRING ) && !this.expanded ) {
 					return 'z-string';
+				}
+
+				if ( ( this.type === Constants.Z_BOOLEAN ) && !this.expanded ) {
+					return 'z-boolean';
 				}
 
 				// If there's no builtin component, always show expanded mode
