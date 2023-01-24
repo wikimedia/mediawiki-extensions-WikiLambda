@@ -1,11 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
-			"Yupik"
+			"Yupik",
+			"Kimberli Mäkäräinen (WMNO)"
 		]
 	},
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Giella",
 	"wikilambda-savenew": "Vurke",
+	"wikilambda-editor-label-addlanguage-label": "Vállje giela",
+	"wikilambda-editor-label-select-programming-language-label": "Valjii ohjelmistemkielâ:",
 	"wikilambda-functioncall-metadata-dialog-header": "Metadata",
 	"wikilambda-editor-name-title": "Namma"
 }
