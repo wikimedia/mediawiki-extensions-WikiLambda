@@ -122,8 +122,7 @@ class ReloadBuiltinData extends Maintenance {
 			}
 		);
 
-		$creatingUserName = wfMessage( 'wikilambda-systemuser' )->inLanguage( 'en' )->text();
-		$creatingUser = User::newSystemUser( $creatingUserName, [ 'steal' => true ] );
+		// FIXME: This should be a 'reload' message.
 		$creatingComment = wfMessage( 'wikilambda-bootstrapcreationeditsummary' )->inLanguage( 'en' )->text();
 
 		// Naturally sort, so Z2 gets created before Z12 etc.
@@ -139,11 +138,10 @@ class ReloadBuiltinData extends Maintenance {
 			}
 
 			// And we update the data
-			$response = $this->zObjectStore->updateZObject(
+			$response = $this->zObjectStore->updateZObjectAsSystemUser(
 				/* String zid */ $zid,
 				/* String content */ $data,
 				/* Edit summary */ $creatingComment,
-				/* User */ $creatingUser,
 				/* Flags */ 0
 			);
 

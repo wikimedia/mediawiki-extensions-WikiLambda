@@ -298,6 +298,21 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Create or update a ZObject it in the Database as a System User
+	 *
+	 * @param string $zid
+	 * @param string $data
+	 * @param string $summary
+	 * @param int $flags
+	 * @return ZObjectPage
+	 */
+	public function updateZObjectAsSystemUser( string $zid, string $data, string $summary, int $flags = EDIT_UPDATE ) {
+		$creatingUserName = wfMessage( 'wikilambda-systemuser' )->inLanguage( 'en' )->text();
+		$user = User::newSystemUser( $creatingUserName, [ 'steal' => true ] );
+		return $this->updateZObject( $zid, $data, $summary, $user, $flags );
+	}
+
+	/**
 	 * Delete the labels from the wikilambda_zobject_labels database that correspond
 	 * to the given ZID.
 	 *
