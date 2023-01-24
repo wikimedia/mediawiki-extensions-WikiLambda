@@ -163,7 +163,8 @@ var Constants = {
 	builtinComponents = {
 		[ Constants.Z_MONOLINGUALSTRING ]: 'z-monolingual-string',
 		[ Constants.Z_STRING ]: 'z-string',
-		[ Constants.Z_REFERENCE ]: 'z-reference'
+		[ Constants.Z_REFERENCE ]: 'z-reference',
+		[ Constants.Z_BOOLEAN ]: 'z-boolean'
 	},
 	resolverTypes = [
 		Constants.Z_REFERENCE,

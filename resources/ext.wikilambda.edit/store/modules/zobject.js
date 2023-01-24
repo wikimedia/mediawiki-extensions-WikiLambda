@@ -468,6 +468,25 @@ module.exports = exports = {
 		},
 
 		/**
+		 * Returns the terminal reference Value of Z40K1
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZBooleanValue: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {string | undefined}
+			 */
+			function findZBooleanValue( rowId ) {
+				const booleanRow = getters.getRowByKeyPath( [ Constants.Z_BOOLEAN_IDENTITY ], rowId );
+				return getters.getZReferenceTerminalValue( booleanRow.id );
+			}
+			return findZBooleanValue;
+		},
+
+		/**
 		 * Returns the string representation for the type of the ZObject
 		 * represented by the value of the rowId passed as parameter
 		 *
