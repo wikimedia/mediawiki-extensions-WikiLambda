@@ -96,7 +96,7 @@
 						ext-wikilambda-editor-input-list-item__label"
 					:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
 					:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
-					@input="setArgumentLabel( zobjectId, $event.target.value )"
+					@input="handleInputChange"
 				></cdx-text-input>
 			</div>
 			<cdx-button
@@ -121,7 +121,9 @@ var Constants = require( '../../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	icons = require( './../../../../lib/icons.json' ),
-	typeUtils = require( '../../../mixins/typeUtils.js' );
+	typeUtils = require( '../../../mixins/typeUtils.js' ),
+	debounceSetArgumentLabel = null,
+	debounceSetArgumentLabelTimeout = 300;
 // @vue/component
 module.exports = exports = {
 	name: 'function-definition-inputs-item',
@@ -252,17 +254,11 @@ module.exports = exports = {
 		'removeZObject',
 		'removeZObjectChildren'
 	] ), {
-		setArgumentLabel: function ( id, input ) {
+		setArgumentLabel: function ( input ) {
 			if ( ( !this.getArgumentLabel && !this.getArgumentLabels.id ) || !this.zLang ) {
 				return;
 			}
 			var lang = this.zLang;
-			if ( this.currentZObjectLanguages.indexOf( lang ) === -1 ) {
-				this.addZMonolingualString( {
-					lang: lang,
-					parentId: this.getArgumentLabels.id
-				} );
-			}
 			var labels = this.getZObjectChildrenById( this.getArgumentLabels.id );
 			for ( var index in labels ) {
 				var labelLang = this.getNestedZObjectById( labels[ index ].id, [
@@ -273,6 +269,7 @@ module.exports = exports = {
 						Constants.Z_MONOLINGUALSTRING_VALUE,
 						Constants.Z_STRING_VALUE
 					] );
+
 				if ( labelLang.value === lang ) {
 					this.setZObjectValue( {
 						id: value.id,
@@ -282,6 +279,13 @@ module.exports = exports = {
 					return;
 				}
 			}
+		},
+		handleInputChange: function ( event ) {
+			const input = event.target.value;
+			clearTimeout( debounceSetArgumentLabel );
+			debounceSetArgumentLabel = setTimeout( function () {
+				this.setArgumentLabel( input );
+			}.bind( this ), debounceSetArgumentLabelTimeout );
 		},
 		setArgumentType: function ( type ) {
 			var payload;
@@ -326,8 +330,27 @@ module.exports = exports = {
 		}
 	} ),
 	watch: {
-		zLang: function () {
-			this.setArgumentLabel( this.zobjectId, null );
+		zLang: {
+			immediate: true,
+			handler: function ( value ) {
+				if ( value ) {
+					const labels = this.getZObjectChildrenById( this.getArgumentLabels.id );
+					for ( let index = 0; index < labels.length; index++ ) {
+						const labelLang = this.getNestedZObjectById( labels[ index ].id, [
+							Constants.Z_MONOLINGUALSTRING_LANGUAGE,
+							Constants.Z_REFERENCE_ID
+						] );
+						if ( labelLang.value === value ) {
+							return;
+						}
+					}
+					// Add monoliguanl string to zobject if it does not already exist
+					this.addZMonolingualString( {
+						lang: value,
+						parentId: this.getArgumentLabels.id
+					} );
+				}
+			}
 		}
 	}
 };

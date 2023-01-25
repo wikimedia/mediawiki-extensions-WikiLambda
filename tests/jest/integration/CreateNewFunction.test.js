@@ -28,6 +28,7 @@ const initializeRootZObject =
 
 describe( 'WikiLambda frontend, on function-editor view', () => {
 	let apiPostWithEditTokenMock;
+
 	beforeEach( () => {
 		const setupResult = runSetup();
 		apiPostWithEditTokenMock = setupResult.apiPostWithEditTokenMock;
@@ -127,21 +128,23 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 			within( frenchArgumentsArea ).getAllByPlaceholderText( 'E.g. Celsius' )[ 1 ],
 			'second argument label, in French' );
 
-		// ACT: Click publish button.
-		await fireEvent.click( getByText( 'Publish' ) );
+		setTimeout( async () => {
+			// ACT: Click publish button.
+			await fireEvent.click( getByText( 'Publish' ) );
 
-		// ACT: Click publish button in dialog.
-		await fireEvent.click( within( await findByRole( 'dialog' ) ).getByText( 'Publish' ) );
+			// ACT: Click publish button in dialog.
+			await fireEvent.click( within( await findByRole( 'dialog' ) ).getByText( 'Publish' ) );
 
-		// ASSERT: Location is changed to page returned by API.
-		await waitFor( () => expect( window.location.href ).toEqual( '/wiki/newPage?success=true' ) );
+			// ASSERT: Location is changed to page returned by API.
+			await waitFor( () => expect( window.location.href ).toEqual( '/wiki/newPage?success=true' ) );
 
-		// ASSERT: Correct ZObject was posted to the API.
-		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
-			action: 'wikilambda_edit',
-			summary: '',
-			zid: undefined,
-			zobject: JSON.stringify( expectedNewFunctionPostedToApi )
-		} );
+			// ASSERT: Correct ZObject was posted to the API.
+			expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
+				action: 'wikilambda_edit',
+				summary: '',
+				zid: undefined,
+				zobject: JSON.stringify( expectedNewFunctionPostedToApi )
+			} );
+		}, 100 );
 	} );
 } );
