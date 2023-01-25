@@ -155,8 +155,6 @@
 				"mobile"
 			],
 			"styles": [
-				"ext.wikilambda.edit/ext.wikilambda.edit.variables.less",
-				"ext.wikilambda.edit/ext.wikilambda.edit.less",
 				"ext.wikilambda.specialpages/ext.wikilambda.specialpages.less"
 			]
 		},
@@ -164,6 +162,10 @@
 			"targets": [
 				"desktop",
 				"mobile"
+			],
+			"styles": [
+				"ext.wikilambda.edit/ext.wikilambda.edit.variables.less",
+				"ext.wikilambda.edit/ext.wikilambda.edit.less"
 			],
 			"es6": true,
 			"dependencies": [
