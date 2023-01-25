@@ -63,7 +63,7 @@ module.exports = exports = {
 		'z-object-type': ZObjectType,
 		'z-string': ZString,
 		'z-reference': ZReference,
-		'z-boolean': ZBoolean
+		'wl-z-boolean': ZBoolean
 	},
 	props: {
 		rowId: {
@@ -357,7 +357,7 @@ module.exports = exports = {
 				}
 
 				if ( ( this.type === Constants.Z_BOOLEAN ) && !this.expanded ) {
-					return 'z-boolean';
+					return 'wl-z-boolean';
 				}
 
 				// If there's no builtin component, always show expanded mode
