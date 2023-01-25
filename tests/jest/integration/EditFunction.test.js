@@ -142,27 +142,30 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		await fireEvent.update( frenchAliasInput, 'function alias, in French' );
 		await fireEvent.keyDown( frenchAliasInput, { key: 'enter' } );
 
-		// ACT: Click publish button.
-		await fireEvent.click( getByText( 'Publish' ) );
+		// TODO: Remove settimeout and use jest.useFakeTimers instead
+		setTimeout( async () => {
+			// ACT: Click publish button.
+			await fireEvent.click( getByText( 'Publish' ) );
 
-		// ACT: Add a summary of your changes.
-		publishDialog = await findByRole( 'dialog' );
-		await fireEvent.update(
-			within( publishDialog ).getByLabelText( 'How did you improve this page?' ),
-			'my changes summary' );
+			// ACT: Add a summary of your changes.
+			publishDialog = await findByRole( 'dialog' );
+			await fireEvent.update(
+				within( publishDialog ).getByLabelText( 'How did you improve this page?' ),
+				'my changes summary' );
 
-		// ACT: Click publish button in dialog.
-		await fireEvent.click( within( publishDialog ).getByText( 'Publish' ) );
+			// ACT: Click publish button in dialog.
+			await fireEvent.click( within( publishDialog ).getByText( 'Publish' ) );
 
-		// ASSERT: Location is changed to page returned by API.
-		await waitFor( () => expect( window.location.href ).toEqual( '/wiki/newPage?success=true' ) );
+			// ASSERT: Location is changed to page returned by API.
+			await waitFor( () => expect( window.location.href ).toEqual( '/wiki/newPage?success=true' ) );
 
-		// ASSERT: Correct ZID and ZObject were posted to the API.
-		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
-			action: 'wikilambda_edit',
-			summary: 'my changes summary',
-			zid: functionZid,
-			zobject: JSON.stringify( expectedEditedFunctionPostedToApi )
-		} );
+			// ASSERT: Correct ZID and ZObject were posted to the API.
+			expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
+				action: 'wikilambda_edit',
+				summary: 'my changes summary',
+				zid: functionZid,
+				zobject: JSON.stringify( expectedEditedFunctionPostedToApi )
+			} );
+		}, 100 );
 	} );
 } );
