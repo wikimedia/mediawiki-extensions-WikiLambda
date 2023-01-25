@@ -112,7 +112,7 @@
 	"wikilambda-functioncall-error-nonfunction": "Erreur d’appel de fonction : le Z-Objet « $1 » n’est pas une Z-Fonction et ne peut donc pas être appelé.",
 	"wikilambda-functioncall-error-nonfunction-category": "Pages avec des appels à Wikifonctions sur des Z-Objets non fonctionnels",
 	"wikilambda-functioncall-error-nonfunction-category-desc": "Pages avec des tentatives d’appels à Wikifonctions avec un Z-Objet non fonctionnel",
-	"wikilambda-functioncall-error-nonstringoutput": "Erreur d’appel de fonction : la fonction Z-Fonction « $1 » ne produit pas une chaîne de caractères pouvant être affichée dans une page.",
+	"wikilambda-functioncall-error-nonstringoutput": "Erreur d’appel de fonction : la Z-Fonction « $1 » ne produit pas une chaîne de caractères pouvant être affichée dans une page.",
 	"wikilambda-functioncall-error-nonstringoutput-category": "Pages contenant des appels à Wikifonctions créant des Z-Objets autres que des chaines de caractères",
 	"wikilambda-functioncall-error-nonstringoutput-category-desc": "Pages avec des tentatives d’appels à Wikifonctions avec une Z-Fonction qui ne renvoie pas une chaîne de caractères",
 	"wikilambda-functioncall-error-nonstringinput": "Erreur d’appel de fonction : la Z-Fonction « $1 » prend un « $3 » au lieu d’une chaîne de caractères comme entrée « $2 » et ne peut donc pas être appelée.",

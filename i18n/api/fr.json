@@ -70,7 +70,7 @@
 	"apihelp-query+wikilambdafn_search-param-zfunction_id": "L’ID de Z-Fonction à rechercher",
 	"apihelp-query+wikilambdafn_search-param-type": "Le type de Z-Objet référencé par la Z-Fonction à rechercher",
 	"apierror-wikilambda_perform_test-not-connected": "Impossible de résoudre l’hôte « $1 », probablement parce que l’orchestrateur ne tourne pas. Veuillez consulter le README pour ajouter l’orchestrateur à votre configuration « docker-compose ».",
-	"apihelp-wikilambda_perform_test-example": "Passer les tests sur des Z-Fonctions, Z-Mises en oeuvre et Z-Testeurs complètement fournis",
+	"apihelp-wikilambda_perform_test-example": "Passer les tests sur des Z-Fonctions, Z-MisesEnŒuvre et Z-Testeurs complètement fournis",
 	"apihelp-wikilambda_perform_test-summary": "Point de terminaison pour interroger les résultats de test pour une Z-Fonction. Accepte une Z-Fonction, une liste de Z-MisesEnŒuvres, et une liste de Z-Testeurs. Accepte soit une liste de Z-ID ou le Z-Objet complet pour la fonction, les mises en œuvre et les testeurs. Accepte aussi une clé pour utiliser un cache de serveur ou non.",
 	"apihelp-wikilambda_perform_test-param-zfunction": "L’ID (ou objet) de la Z-Fonction à tester",
 	"apihelp-wikilambda_perform_test-param-zimplementations": "La liste des identifiants de Z-MiseEnŒuvre (ou objets) à tester",
