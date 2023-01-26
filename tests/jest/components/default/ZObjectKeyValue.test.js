@@ -18,6 +18,9 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	ZReference = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZReference.vue' ),
 	ZObjectType = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectType.vue' ),
 	ZObjectKeyValueSet = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectKeyValueSet.vue' ),
+	ZCode = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZCode.vue' ),
+	ZBoolean = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZBoolean.vue' ),
+	ZTypedList = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedList.vue' ),
 	WlSelect = require( '../../../../resources/ext.wikilambda.edit/components/base/Select.vue' );
 
 const parentRowId = 1;
@@ -123,6 +126,54 @@ describe( 'ZObjectKeyValue', () => {
 			} );
 
 			expect( wrapper.findComponent( ZString ).exists() ).toBe( true );
+		} );
+
+		it( 'z code', () => {
+			getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, Constants.Z_CODE );
+
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+
+			var wrapper = shallowMount( ZObjectKeyValue, {
+				props: {
+					rowId: rowId
+				}
+			} );
+
+			expect( wrapper.findComponent( ZCode ).exists() ).toBe( true );
+		} );
+
+		it( 'z boolean', () => {
+			getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, Constants.Z_BOOLEAN );
+
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+
+			var wrapper = shallowMount( ZObjectKeyValue, {
+				props: {
+					rowId: rowId
+				}
+			} );
+
+			expect( wrapper.findComponent( ZBoolean ).exists() ).toBe( true );
+		} );
+
+		it( 'z typed list', () => {
+			getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, Constants.Z_TYPED_LIST );
+
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+
+			var wrapper = shallowMount( ZObjectKeyValue, {
+				props: {
+					rowId: rowId
+				}
+			} );
+
+			expect( wrapper.findComponent( ZTypedList ).exists() ).toBe( true );
 		} );
 
 		it( 'z object type', () => {

@@ -1394,7 +1394,6 @@ module.exports = exports = {
 		setZObjectValue: function ( state, payload ) {
 			var item = state.zobject[ payload.index ];
 			item.value = payload.value;
-
 			state.zobject.splice( payload.index, 1, item );
 		},
 		setZObjectKey: function ( state, payload ) {
@@ -2277,6 +2276,8 @@ module.exports = exports = {
 		 * @param {Object|Array|string} payload.value
 		 */
 		setValueByRowIdAndPath: function ( context, payload ) {
+			// assume this isn't an append unless explicitly stated
+			const append = payload.append ? payload.append : false;
 			// 1. Find the row that will be parent for the given payload.value
 			const row = context.getters.getRowByKeyPath( payload.keyPath, payload.rowId );
 			// 2. Is the value a string? Call atomic action setValueByRowId
@@ -2284,7 +2285,7 @@ module.exports = exports = {
 			if ( typeof payload.value === 'string' ) {
 				context.dispatch( 'setValueByRowId', { rowId: row.id, value: payload.value } );
 			} else {
-				context.dispatch( 'injectZObjectFromRowId', { rowId: row.id, value: payload.value } );
+				context.dispatch( 'injectZObjectFromRowId', { rowId: row.id, value: payload.value, append } );
 			}
 		},
 
@@ -2337,7 +2338,6 @@ module.exports = exports = {
 		 *        children
 		 */
 		injectZObjectFromRowId: function ( context, payload ) {
-
 			let rows;
 			const hasParent = payload.rowId !== undefined;
 
@@ -2371,6 +2371,17 @@ module.exports = exports = {
 			rows.forEach( function ( row ) {
 				context.commit( 'pushRow', row );
 			} );
+		},
+		/**
+		 *
+		 * Removes an item from a ZTypedList
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 */
+		removeItemFromTypedList: function ( context, payload ) {
+			context.dispatch( 'removeZObjectChildren', payload.rowId );
+			context.dispatch( 'removeZObject', payload.rowId );
 		}
 		/* END NEW ACTIONS */
 	}

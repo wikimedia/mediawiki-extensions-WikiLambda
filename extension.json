@@ -252,6 +252,7 @@
 				"ext.wikilambda.edit/components/base/Chip.vue",
 				"ext.wikilambda.edit/components/base/ChipContainer.vue",
 				"ext.wikilambda.edit/components/base/CodeEditor.vue",
+				"ext.wikilambda.edit/components/base/ContextMenu.vue",
 				"ext.wikilambda.edit/components/base/Dialog.vue",
 				"ext.wikilambda.edit/components/base/DialogContainer.vue",
 				"ext.wikilambda.edit/components/base/ExpandedToggle.vue",
@@ -272,6 +273,9 @@
 				"ext.wikilambda.edit/components/default-view-types/ZObjectType.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZReference.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZString.vue",
+				"ext.wikilambda.edit/components/default-view-types/ZTypedList.vue",
+				"ext.wikilambda.edit/components/default-view-types/ZTypedListType.vue",
+				"ext.wikilambda.edit/components/default-view-types/ZTypedListItem.vue",
 				"ext.wikilambda.edit/components/main-types/ZArgument.vue",
 				"ext.wikilambda.edit/components/main-types/ZArgumentList.vue",
 				"ext.wikilambda.edit/components/main-types/ZArgumentReference.vue",
@@ -354,7 +358,9 @@
 						"cdxIconFunction",
 						"cdxIconFunctionArgument",
 						"cdxIconInstance",
-						"cdxIconLiteral"
+						"cdxIconLiteral",
+						"cdxIconMarkup",
+						"cdxIconEllipsis"
 					]
 				}
 			],
@@ -577,7 +583,14 @@
 				"wikilambda-zobject-missing-attached-function",
 				"wikilambda-zimplememntation-composition-missing",
 				"wikilambda-zimplementation-code-missing",
-				"wikilambda-chip-remove"
+				"wikilambda-chip-remove",
+				"wikilambda-add-list-item-button",
+				"wikilambda-list-items-label",
+				"wikilambda-list-item-label",
+				"wikilambda-context-menu",
+				"wikilambda-add-list-item",
+				"wikilambda-delete-list-item",
+				"wikilambda-list-items-type-label"
 			]
 		}
 	},

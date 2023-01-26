@@ -150,6 +150,31 @@ var Constants = require( '../Constants.js' ),
 
 				return array;
 			},
+
+			/**
+			 * Determine if a key indicates a typed list type.
+			 *
+			 * @param {string} key
+			 * @return {boolean}
+			 */
+			isKeyTypedListType: function ( key ) {
+				return key === '0';
+			},
+
+			/**
+			 * Determines if a key indicates a typed list item. This will be true when a key
+			 * is a stringified number greater than 0 (0 indicates the type of a typed list)
+			 *
+			 * @param {string} key
+			 * @return {boolean}
+			 */
+			isKeyTypedListItem: function ( key ) {
+				const numericalKey = Number( key );
+				// CHECK: is it okay to disable this?
+				// eslint-disable-next-line compat/compat
+				return Number.isInteger( numericalKey ) && numericalKey > 0;
+			},
+
 			isFunctionItemAttached( item, attachedItems ) {
 				return attachedItems.indexOf( item ) > -1;
 			},
@@ -171,7 +196,9 @@ var Constants = require( '../Constants.js' ),
 					return type;
 				} else {
 					const mode = typeUtils.methods.typeToString( type[ Constants.Z_OBJECT_TYPE ] );
-					let typeString;
+					let typeString,
+						typeStringParam1, // used for typed lists and typed pairs
+						typeStringParam2; // used for typed pairs
 
 					switch ( mode ) {
 						case Constants.Z_REFERENCE:
@@ -179,7 +206,22 @@ var Constants = require( '../Constants.js' ),
 							break;
 
 						case Constants.Z_FUNCTION_CALL:
-							typeString = type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
+							if ( type[ Constants.Z_FUNCTION_CALL_FUNCTION ] === Constants.Z_TYPED_LIST ) {
+								// if function is a typed list
+								typeStringParam1 = type[ Constants.Z_TYPED_LIST_TYPE ];
+								typeString = typeStringParam1 ?
+									`${type[ Constants.Z_FUNCTION_CALL_FUNCTION ]}(${typeStringParam1})` :
+									type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
+							} else if ( type[ Constants.Z_FUNCTION_CALL_FUNCTION ] === Constants.Z_TYPED_PAIR ) {
+								// if function is a typed pair
+								typeStringParam1 = type[ Constants.Z_TYPED_PAIR_TYPE1 ];
+								typeStringParam2 = type[ Constants.Z_TYPED_PAIR_TYPE2 ];
+								typeString = typeStringParam1 && typeStringParam2 ?
+									`${type[ Constants.Z_FUNCTION_CALL_FUNCTION ]}(${typeStringParam1},${typeStringParam2})` :
+									type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
+							} else {
+								typeString = type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
+							}
 							break;
 
 						case Constants.Z_TYPE:
@@ -199,6 +241,24 @@ var Constants = require( '../Constants.js' ),
 						typeString;
 				}
 			},
+
+			/**
+			 * Parse the type from a typed list string
+			 * Ex: 'Z881(Z11)' will return 'Z11'
+			 *
+			 *
+			 * @param {string} typeString
+			 * @return {string}
+			 */
+			typedListStringToType: function ( typeString ) {
+				// not guaranteed to be defined as a Z881
+				if ( typeString.indexOf( Constants.Z_TYPED_LIST ) > -1 ) {
+					const regExp = /\(([^)]+)\)/;
+					return regExp.exec( typeString )[ 1 ];
+				}
+				return typeString;
+			},
+
 			/**
 			 * Return the empty structure of builtin types that we will
 			 * create when creating these types in the interface.
@@ -229,6 +289,12 @@ var Constants = require( '../Constants.js' ),
 								[ Constants.Z_REFERENCE_ID ]: ''
 							}
 						};
+					case Constants.Z_STRING:
+						// Empty object:
+						// {
+						//  Z1K1: { Z1K1: Z6, Z6K1: '' }
+						// }
+						return '';
 
 					case Constants.Z_MONOLINGUALSTRING:
 						// Empty monolingual string:

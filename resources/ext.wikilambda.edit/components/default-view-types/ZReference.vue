@@ -17,6 +17,7 @@
 				:initial-selection-label="valueLabel"
 				:type="selectType"
 				:zobject-id="rowId"
+				:readonly="disabled"
 				:fit-width="true"
 				@input="setValue"
 			></wl-z-object-selector>
@@ -49,6 +50,10 @@ module.exports = exports = {
 		expectedType: {
 			type: String,
 			default: ''
+		},
+		disabled: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data: function () {

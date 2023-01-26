@@ -8,9 +8,10 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-key-value">
+	<div :class="rootClass">
 		<!-- Key -->
 		<p
+			v-if="renderKeyBlock"
 			class="ext-wikilambda-key-block"
 			:class="[ expandedModeClass, nestingDepthClass, editModeClass ]"
 		>
@@ -21,22 +22,33 @@
 			></wl-expanded-toggle>
 			<wl-localized-label
 				v-if="keyLabel"
+				:class="expandedModeLabelClass"
 				:label-data="keyLabel"
 			></wl-localized-label>
+			<!-- Optional context menu for displaying key/value actions -->
+			<wl-context-menu
+				v-if="showContextMenu"
+				class="ext-wikilambda-key-block__context-menu"
+				:menu-items="contextMenuItems"
+				@context-action="contextMenuAction"
+			></wl-context-menu>
 		</p>
 		<!-- Value -->
 		<p
 			class="ext-wikilambda-value-block"
-			:class="{ 'ext-wikilambda-value-block__padded': ( hasExpandedMode && !expanded ) }"
+			:class="paddedClass"
 		>
 			<component
 				:is="zobjectComponent"
-				:edit="editComponent"
+				:class="shiftLeft"
+				:edit="edit"
+				:disabled="disableEdit"
 				:expanded="expanded"
 				:depth="depth"
 				:row-id="rowId"
 				:expected-type="expectedType"
 				:parent-id="parentRowId"
+				:list-type="listType"
 				@set-value="setValue"
 				@set-type="setType"
 			></component>
@@ -48,6 +60,7 @@
 var
 	Constants = require( '../../Constants.js' ),
 	ExpandedToggle = require( '../base/ExpandedToggle.vue' ),
+	ContextMenu = require( '../base/ContextMenu.vue' ),
 	LocalizedLabel = require( '../base/LocalizedLabel.vue' ),
 	ZMonolingualString = require( './ZMonolingualString.vue' ),
 	ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' ),
@@ -56,6 +69,8 @@ var
 	ZCode = require( './ZCode.vue' ),
 	ZReference = require( './ZReference.vue' ),
 	ZBoolean = require( './ZBoolean.vue' ),
+	ZTypedList = require( './ZTypedList.vue' ),
+	typeUtils = require( '../../mixins/typeUtils.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -65,14 +80,17 @@ module.exports = exports = {
 	components: {
 		'wl-expanded-toggle': ExpandedToggle,
 		'wl-localized-label': LocalizedLabel,
+		'wl-context-menu': ContextMenu,
 		'wl-z-code': ZCode,
 		'wl-z-monolingual-string': ZMonolingualString,
 		'wl-z-object-key-value-set': ZObjectKeyValueSet,
 		'wl-z-object-type': ZObjectType,
 		'wl-z-string': ZString,
 		'wl-z-reference': ZReference,
-		'wl-z-boolean': ZBoolean
+		'wl-z-boolean': ZBoolean,
+		'wl-z-typed-list': ZTypedList
 	},
+	mixins: [ typeUtils ],
 	props: {
 		rowId: {
 			type: Number,
@@ -82,6 +100,10 @@ module.exports = exports = {
 		edit: {
 			type: Boolean,
 			required: true
+		},
+		listType: {
+			type: String,
+			default: null
 		}
 	},
 	data: function () {
@@ -97,42 +119,32 @@ module.exports = exports = {
 	},
 	computed: $.extend(
 		mapGetters( [
+			'getUserZlangZID',
 			'getLabelData',
 			'getExpectedTypeOfKey',
 			'getDepthByRowId',
 			'getParentRowId',
 			'getZObjectKeyByRowId',
 			'getZObjectValueByRowId',
-			'getZObjectTypeByRowId'
+			'getZObjectTypeByRowId',
+			'getChildrenByParentRowId',
+			'getZReferenceTerminalValue'
 		] ),
 		{
 			/**
 			 * Returns whether we want to disable the edit mode for a given key-value.
 			 * Note that this is not the same thing as bounding the type, or disabling
-			 * expanded mode. This is for very special cases, such as the root ZObject
-			 * type (it will always be a Literal Persistent Object).
-			 * Currently there are no other cases of key-values that, in edit mode,
-			 * should be prevented from being editted.
-			 * FIXME: Challenge this assumption
+			 * expanded mode. This does not coerce the component to render in view mode,
+			 * just disables the selectability of the component.
+			 * FIXME: Validate the cases for doing this
 			 * FIXME: Do we have to show "Type: Persistent object" or should we remove it?
 			 *
 			 * @return {boolean}
 			 */
 			disableEdit: function () {
-				return (
-					( this.key === Constants.Z_OBJECT_TYPE ) &&
-					( this.parentExpectedType === Constants.Z_PERSISTENTOBJECT )
-				);
-			},
-
-			/**
-			 * Returns whether the component will be shown in edit mode, which
-			 * depends on the global edit state but can be intervened with disableEdit.
-			 *
-			 * @return {boolean}
-			 */
-			editComponent: function () {
-				return this.edit && !this.disableEdit;
+				// the root ZObject type (it will always be a Literal Persistent Object).
+				return ( this.key === Constants.Z_OBJECT_TYPE ) &&
+					( this.parentExpectedType === Constants.Z_PERSISTENTOBJECT );
 			},
 
 			/**
@@ -178,6 +190,18 @@ module.exports = exports = {
 			 * @return {LabelData}
 			 */
 			keyLabel: function () {
+				// since the FE represents typed lists in canonical form, we need to hardcode typed list keys
+				if ( this.isKeyTypedListItem( this.key ) &&
+					this.expanded &&
+					this.hasExpandedMode
+				) {
+					return {
+						zid: `${Constants.Z_TYPED_LIST}K${this.key}`,
+						label: this.$i18n( 'wikilambda-list-item-label' ).text(),
+						lang: this.getUserZlangZID
+					};
+				}
+
 				return this.getLabelData( this.key );
 			},
 
@@ -212,13 +236,54 @@ module.exports = exports = {
 				return ( this.expanded && this.hasExpandedMode ) ? 'ext-wikilambda-expanded-on' : 'ext-wikilambda-expanded-off';
 			},
 
+			expandedModeLabelClass: function () {
+				return ( this.hasExpandedMode ) ? 'ext-wikilambda-key-block__label' : '';
+			},
+
 			/**
 			 * Returns the css class that identifies the edit or view mode
 			 *
 			 * @return {string}
 			 */
 			editModeClass: function () {
-				return this.editComponent ? 'ext-wikilambda-edit-on' : 'ext-wikilambda-edit-off';
+				return this.edit ? 'ext-wikilambda-edit-on' : 'ext-wikilambda-edit-off';
+			},
+
+			/**
+			 * Finds the correct root class depending on if the item is part of a list or not
+			 *
+			 * @return {string}
+			 */
+			rootClass: function () {
+				var classList = [ 'ext-wikilambda-key-value' ];
+				// this class is only required for non-terminal items in collapsed mode
+				if ( this.listType && !this.expanded && this.hasExpandedMode ) {
+					classList.push( 'ext-wikilambda-key-value-inherit' );
+				}
+				// string list items require different treatment because
+				// they have a <li> bullet point (but only in view mode)
+				if ( this.listType && this.type === Constants.Z_STRING && !this.edit ) {
+					classList.push( 'ext-wikilambda-key-value-inline-table' );
+				}
+
+				return classList;
+			},
+
+			paddedClass: function () {
+				var classList = [];
+				// typed lists will manage padding independently
+
+				if ( this.type === Constants.Z_TYPED_LIST ) {
+					return classList;
+				}
+				// but do not push items within the list
+				if ( this.listType ) {
+					classList.push( 'ext-wikilambda-value-block__list-item' );
+				} else if ( this.hasExpandedMode && !this.expanded ) {
+					classList.push( 'ext-wikilambda-value-block__padded' );
+				}
+
+				return classList;
 			},
 
 			/**
@@ -247,7 +312,16 @@ module.exports = exports = {
 			 * @return {string}
 			 */
 			expectedType: function () {
-				// FIXME: expected type changes if this is a typed list
+				// list types and list items don't have real keys - their keys are just list indices
+				// if the item is list item, the type of each item must be whatever the type of the list is
+				if ( this.isKeyTypedListItem( this.parentKey ) && this.listType !== Constants.Z_OBJECT ) {
+					return this.listType;
+				}
+				// if the item is the type of the list, it is limited by the type the parent
+				if ( this.isKeyTypedListType( this.parentKey ) ) {
+					return this.typedListStringToType( this.parentExpectedType );
+				}
+
 				// FIXME: expected type changes if this is a resolver type
 				if ( this.key === Constants.Z_REFERENCE_ID ) {
 					return this.parentExpectedType;
@@ -255,6 +329,7 @@ module.exports = exports = {
 				if ( this.key === Constants.Z_OBJECT_TYPE ) {
 					return this.parentExpectedType;
 				}
+
 				return this.getExpectedTypeOfKey( this.key );
 			},
 
@@ -271,7 +346,8 @@ module.exports = exports = {
 					// If the key is terminal Z6K1 or Z9K1, no expanded mode
 					if (
 						( this.key === Constants.Z_STRING_VALUE ) ||
-						( this.key === Constants.Z_REFERENCE_ID )
+						( this.key === Constants.Z_REFERENCE_ID ) ||
+						( this.key === Constants.Z_OBJECT_TYPE ) // this will be true for list items in list of type Z1
 					) {
 						return false;
 					}
@@ -329,17 +405,14 @@ module.exports = exports = {
 				}
 
 				// BY TYPE
-
-				// TODO: Create typed list component.
 				// The typed list is a component that should not be shown
 				// with ZObjectKeyValueSet, so it lacks expanded mode. The
-				// ZObjectList component will then be in charge of handling
+				// ZTypedList component will then be in charge of handling
 				// the type, binding it if necessary (E.g. if the parentType is
 				// bound) or allowing for its edition.
-				// When we have a typed list component, do:
-				// if ( this.type === Constants.Z_TYPED_LIST ) {
-				//   return 'wl-z-object-typed-list'
-				// }
+				if ( this.type === Constants.Z_TYPED_LIST ) {
+					return 'wl-z-typed-list';
+				}
 
 				if ( ( this.type === Constants.Z_MONOLINGUALSTRING ) && !this.expanded ) {
 					return 'wl-z-monolingual-string';
@@ -360,10 +433,64 @@ module.exports = exports = {
 
 				// If there's no builtin component, always show expanded mode
 				return 'wl-z-object-key-value-set';
+			},
+
+			/**
+			 * Logic for when to render the context menu. It can be used to display
+			 * actions for a key/value. Currently the only use cases involve typed lists.
+			 * TODO (T330189): create a case for adding an item to a typed list
+			 *
+			 * @return {boolean}
+			 */
+			showContextMenu: function () {
+				// only allow actions in edit mode
+				if ( !this.edit ) {
+					return false;
+				}
+
+				// CASE: delete items from a typed list
+				// it is only rendered for a ZTypedListItem that IS expanded
+				if ( this.isKeyTypedListItem( this.key ) && this.expanded ) {
+					return true;
+				}
+				return false;
+			},
+
+			/**
+			 * The list of action items for the context menu to display.
+			 *
+			 * @return {Array}
+			 */
+			contextMenuItems: function () {
+				// case 1: add items to a typed list
+				if ( this.type === Constants.Z_TYPED_LIST && !this.expanded ) {
+					return [ {
+						label: this.$i18n( 'wikilambda-add-list-item' ).text(),
+						value: Constants.contextMenuItems.ADD_LIST_ITEM
+					} ];
+				}
+
+				// case 2: delete items from a typed list
+				if ( this.isKeyTypedListItem( this.key ) && this.expanded ) {
+					return [ {
+						label: this.$i18n( 'wikilambda-delete-list-item' ).text(),
+						value: Constants.contextMenuItems.DELETE_LIST_ITEM
+					} ];
+				}
+			},
+
+			/**
+			 * Do not render the key block if none of the conditions exist.
+			 * The <p> tag has default padding that we do not want if no content is rendered.
+			 *
+			 * @return {boolean}
+			 */
+			renderKeyBlock: function () {
+				return this.hasExpandedMode || this.keyLabel || this.showContextMenu;
 			}
 		} ),
 	methods: $.extend(
-		mapActions( [ 'setValueByRowIdAndPath', 'changeType' ] ),
+		mapActions( [ 'setValueByRowIdAndPath', 'changeType', 'removeItemFromTypedList' ] ),
 		{
 			/**
 			 * Handles the modification of the ZObject when the changed key-value
@@ -378,7 +505,8 @@ module.exports = exports = {
 			setType: function ( payload ) {
 				this.changeType( {
 					id: this.rowId,
-					type: payload.value
+					type: payload.value,
+					append: payload.append ? payload.append : false
 				} );
 			},
 
@@ -429,6 +557,21 @@ module.exports = exports = {
 			 */
 			toggleExpanded: function () {
 				this.expanded = !this.expanded;
+			},
+
+			/**
+			 * Process context menu actions
+			 *
+			 * @param {string} action
+			 */
+			contextMenuAction: function ( action ) {
+				if ( action === Constants.contextMenuItems.DELETE_LIST_ITEM ) {
+					// TODO(T324242): replace with new setter when it exists
+					// TODO(T331132): can we create a 'revert delete' workflow?
+					this.removeItemFromTypedList( {
+						rowId: this.rowId
+					} );
+				}
 			}
 		} )
 };
@@ -438,11 +581,27 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-key-value {
+	.ext-wikilambda-key-value-inherit {
+		display: inherit;
+	}
+
+	.ext-wikilambda-key-value-inline-table {
+		display: inline-table;
+	}
+
 	.ext-wikilambda-key-block {
-		margin: 0;
+		margin: 0; // override vector default <p> behavior
 		display: flex;
 		align-items: center;
 		color: @color-subtle;
+
+		&__label {
+			margin-left: @spacing-50;
+		}
+
+		&__context-menu {
+			margin-left: @spacing-50;
+		}
 
 		label {
 			text-transform: capitalize;
@@ -454,7 +613,7 @@ module.exports = exports = {
 			font-weight: @font-weight-normal;
 
 			&.ext-wikilambda-edit-on {
-				margin-bottom: @spacing-25;
+				margin-bottom: @spacing-50;
 			}
 		}
 
@@ -494,13 +653,19 @@ module.exports = exports = {
 			}
 		}
 	}
-
 	/* stylelint-disable declaration-block-no-redundant-longhand-properties */
 	.ext-wikilambda-value-block {
 		margin-top: @wl-key-value-margin-top;
 		margin-right: @wl-key-value-margin-right;
 		margin-bottom: @wl-key-value-margin-bottom;
 		margin-left: @wl-key-value-margin-left;
+
+		&__list-item {
+			margin-bottom: 0;
+			display: flex;
+			align-items: center;
+			margin-left: @spacing-25;
+		}
 
 		&__padded {
 			margin-left: @spacing-150;
@@ -514,5 +679,4 @@ module.exports = exports = {
 		}
 	}
 }
-
 </style>
