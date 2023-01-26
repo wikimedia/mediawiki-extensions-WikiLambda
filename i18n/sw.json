@@ -4,6 +4,8 @@
 			"Wangombe"
 		]
 	},
+	"action-wikilambda-execute": "endesha ZFunctions",
+	"right-wikilambda-create-type": "Unda ZObles mpya za ZType",
 	"wikilambda-show-more": "Onyesha zaidi",
 	"wikilambda-hide-more": "Ficha Zaidi",
 	"wikilambda-editor-fn-step-function-about": "Kuhusu",

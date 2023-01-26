@@ -233,7 +233,7 @@
 	"wikilambda-expert-mode-json-label": "Label for the JSON 'expert mode' view of the ZObject.",
 	"wikilambda-metadata-show-languages": "Label for button to show initial languages in the metadata.",
 	"wikilambda-metadata-hide-languages": "Label for button to hide initial languages in the metadata.",
-	"wikilambda-metadata-labels-table-label": "Label for table that shows labels",
+	"wikilambda-metadata-labels-table-label": "Label for table that shows labels\n{{identical|Label}}",
 	"wikilambda-metadata-language-column": "Label for the language column in the metadata table.\n{{identical|Language}}",
 	"wikilambda-metadata-label-column": "Label for the label column in the metadata table.\n{{identical|Label}}",
 	"wikilambda-metadata-aka-column": "Label for the 'Also known as' column in the metadata table.",
