@@ -51,6 +51,25 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $invalidZIDStatus->hasMessage( 'wikilambda-invalidzobject' ) );
 	}
 
+	/**
+	 * @covers ::registerExtension
+	 */
+	public function testRegisterExtension() {
+		$zObjectTitle = Title::newFromText( 'Z1' );
+		$this->assertTrue( $zObjectTitle->isContentPage() );
+	}
+
+	/**
+	 * @covers ::onNamespaceIsMovable
+	 */
+	public function testOnNamespaceIsMovable() {
+		$zObjectTitle = Title::newFromText( 'Z1' );
+		$this->assertFalse( $zObjectTitle->isMovable() );
+
+		$zObjectTalkTitle = Title::newFromText( 'Z1', NS_TALK );
+		$this->assertTrue( $zObjectTalkTitle->isMovable() );
+	}
+
 	protected function getRecentChangesPage(): SpecialRecentChanges {
 		return new SpecialRecentChanges(
 			$this->getServiceContainer()->getWatchedItemStore(),
