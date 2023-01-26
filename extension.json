@@ -113,8 +113,7 @@
 		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
 		"NamespaceIsMovable": "WikiLambdaHooks",
 		"ParserFirstCallInit": "WikiLambdaHooks",
-		"HtmlPageLinkRendererEnd": "WikiLambdaHooks",
-		"CodeEditorGetPageLanguage": "MediaWiki\\Extension\\WikiLambda\\Hooks::onCodeEditorGetPageLanguage"
+		"HtmlPageLinkRendererEnd": "WikiLambdaHooks"
 	},
 	"MessagesDirs": {
 		"WikiLambda": [
