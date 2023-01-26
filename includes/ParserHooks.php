@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use Html;
 use MediaWiki\Extension\WikiLambda\API\ApiFunctionCall;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\MediaWikiServices;
 use Parser;
 use PPFrame;
@@ -35,42 +36,6 @@ class ParserHooks implements
 		if ( $config->get( 'WikiLambdaEnableParserFunction' ) ) {
 			$parser->setFunctionHook( 'function', [ self::class , 'parserFunctionCallback' ], Parser::SFH_OBJECT_ARGS );
 		}
-	}
-
-	/**
-	 * Construct the JSON for a Z7/FunctionCall.
-	 *
-	 * FIXME (T300518): This shouldn't really exist here.
-	 *
-	 * @param string $target The ZID of the target function
-	 * @param string[] $arguments The arguments to pass to the call
-	 * @return string
-	 */
-	private static function createFunctionCallJSON( $target, $arguments ): string {
-		$callObject = [];
-
-		$callObject[ ZTypeRegistry::Z_OBJECT_TYPE ] = [
-			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_REFERENCE,
-			ZTypeRegistry::Z_REFERENCE_VALUE => ZTypeRegistry::Z_FUNCTIONCALL
-		];
-		$callObject[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ] = [
-			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_REFERENCE,
-			ZTypeRegistry::Z_REFERENCE_VALUE => $target
-		];
-
-		for ( $i = 0; $i < count( $arguments ); $i++ ) {
-
-			$key = $target . 'K' . ( $i + 1 );
-
-			$callObject[$key] = [
-				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_STRING,
-				ZTypeRegistry::Z_STRING_VALUE => $arguments[ $i ],
-			];
-		}
-
-		$returnString = json_encode( $callObject );
-
-		return $returnString;
 	}
 
 	/**
@@ -178,9 +143,7 @@ class ParserHooks implements
 
 		$arguments = array_slice( $cleanedArgs, 1 );
 
-		$call = self::createFunctionCallJSON( $target, $arguments );
-
-		// $call = ( new ZFunctionCall( $target, $arguments ) )->getSerialized();
+		$call = ( new ZFunctionCall( $target, $arguments ) )->getSerialized();
 
 		// TODO: We want a much finer control on execution time than this.
 		// TODO: Actually do this, or something similar?
