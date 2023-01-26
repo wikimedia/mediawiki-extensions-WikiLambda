@@ -21,6 +21,7 @@
 				v-model="value"
 				:input-value="radio.value"
 				:name="'boolean-radios-' + rowId"
+				:inline="true"
 			>
 				{{ radio.label }}
 			</cdx-radio>
