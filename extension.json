@@ -105,6 +105,9 @@
 	"HookHandlers": {
 		"WikiLambdaHooks": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\Hooks"
+		},
+		"WikiLambdaParserHooks": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\ParserHooks"
 		}
 	},
 	"Hooks": {
@@ -112,7 +115,7 @@
 		"MultiContentSave": "WikiLambdaHooks",
 		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
 		"NamespaceIsMovable": "WikiLambdaHooks",
-		"ParserFirstCallInit": "WikiLambdaHooks",
+		"ParserFirstCallInit": "WikiLambdaParserHooks",
 		"HtmlPageLinkRendererEnd": "WikiLambdaHooks"
 	},
 	"MessagesDirs": {

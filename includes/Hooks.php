@@ -13,9 +13,7 @@ namespace MediaWiki\Extension\WikiLambda;
 use ApiMessage;
 use CommentStoreComment;
 use DatabaseUpdater;
-use Html;
 use HtmlArmor;
-use MediaWiki\Extension\WikiLambda\API\ApiFunctionCall;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Linker\LinkRenderer;
@@ -23,11 +21,8 @@ use MediaWiki\Linker\LinkTarget;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
 use MessageSpecifier;
-use Parser;
-use PPFrame;
 use RequestContext;
 use RuntimeException;
-use Sanitizer;
 use Status;
 use Title;
 use User;
@@ -38,7 +33,6 @@ class Hooks implements
 	\MediaWiki\Storage\Hook\MultiContentSaveHook,
 	\MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook,
 	\MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook,
-	\MediaWiki\Hook\ParserFirstCallInitHook,
 	\MediaWiki\Linker\Hook\HtmlPageLinkRendererEndHook
 	{
 
@@ -473,195 +467,5 @@ class Hooks implements
 		// &$text: the contents that the <a> tag should have; either a *plain, unescaped string* or a HtmlArmor object.
 		//
 		$text = $context->msg( 'wikilambda-zobject-title', [ $label, $zid ] )->text();
-	}
-
-	/**
-	 * Register {{#function:…}} as a wikitext parser function to trigger function evaluation.
-	 *
-	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/ParserFirstCallInit
-	 *
-	 * @param Parser $parser
-	 */
-	public function onParserFirstCallInit( $parser ) {
-		$config = MediaWikiServices::getInstance()->getMainConfig();
-		if ( $config->get( 'WikiLambdaEnableParserFunction' ) ) {
-			$parser->setFunctionHook( 'function', [ self::class , 'parserFunctionCallback' ], Parser::SFH_OBJECT_ARGS );
-		}
-	}
-
-	/**
-	 * Construct the JSON for a Z7/FunctionCall.
-	 *
-	 * FIXME (T300518): This shouldn't really exist here.
-	 *
-	 * @param string $target The ZID of the target function
-	 * @param string[] $arguments The arguments to pass to the call
-	 * @return string
-	 */
-	private static function createFunctionCallJSON( $target, $arguments ): string {
-		$callObject = [];
-
-		$callObject[ ZTypeRegistry::Z_OBJECT_TYPE ] = [
-			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_REFERENCE,
-			ZTypeRegistry::Z_REFERENCE_VALUE => ZTypeRegistry::Z_FUNCTIONCALL
-		];
-		$callObject[ ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION ] = [
-			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_REFERENCE,
-			ZTypeRegistry::Z_REFERENCE_VALUE => $target
-		];
-
-		for ( $i = 0; $i < count( $arguments ); $i++ ) {
-
-			$key = $target . 'K' . ( $i + 1 );
-
-			$callObject[$key] = [
-				ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_STRING,
-				ZTypeRegistry::Z_STRING_VALUE => $arguments[ $i ],
-			];
-		}
-
-		$returnString = json_encode( $callObject );
-
-		return $returnString;
-	}
-
-	/**
-	 * @param Parser $parser
-	 * @param PPFrame $frame
-	 * @param array $args
-	 * @return array
-	 */
-	public static function parserFunctionCallback( Parser $parser, $frame, $args = [] ) {
-		// TODO: Turn $args into the request more properly.
-
-		$cleanupInput = static function ( $input ) use ( $frame ) {
-			return trim( Sanitizer::decodeCharReferences( $frame->expand( $input ) ) );
-		};
-
-		$cleanedArgs = array_map( $cleanupInput, $args );
-
-		$target = $cleanedArgs[0];
-
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$targetTitle = Title::newFromText( $target, NS_MAIN );
-		if ( !( $targetTitle->exists() ) ) {
-			// User is trying to use a function that doesn't exist
-			$ret = Html::errorBox(
-				wfMessage(
-					'wikilambda-functioncall-error-unknown',
-					$target
-				)->parseAsBlock()
-			);
-			$parser->addTrackingCategory( 'wikilambda-functioncall-error-unknown-category' );
-			return [ $ret ];
-		}
-
-		$targetObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
-
-		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
-			// User is trying to use a ZObject that's not a ZFunction
-			$ret = Html::errorBox(
-				wfMessage(
-					'wikilambda-functioncall-error-nonfunction',
-					$target
-				)->parseAsBlock()
-			);
-			$parser->addTrackingCategory( 'wikilambda-functioncall-error-nonfunction-category' );
-			return [ $ret ];
-		}
-
-		$targetFunction = $targetObject->getInnerZObject();
-
-		if (
-			$targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_RETURN_TYPE )->getZValue()
-				!== ZTypeRegistry::Z_STRING
-			) {
-			// User is trying to use a ZFunction that returns something other than a Z6/String
-			$ret = Html::errorBox(
-				wfMessage(
-					'wikilambda-functioncall-error-nonstringoutput',
-					$target
-				)->parseAsBlock()
-			);
-			$parser->addTrackingCategory( 'wikilambda-functioncall-error-nonstringoutput-category' );
-			return [ $ret ];
-		}
-
-		$targetFunctionArguments = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_ARGUMENTS );
-		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionArguments';
-		$nonStringArgumentsDefinition = array_filter(
-			$targetFunctionArguments->getAsArray(),
-			static function ( $arg_value ) {
-				return !(
-					is_object( $arg_value )
-					&& $arg_value->getValueByKey( ZTypeRegistry::Z_OBJECT_TYPE )->getZValue()
-						=== ZTypeRegistry::Z_ARGUMENTDECLARATION
-					&& $arg_value->getValueByKey( ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE )->getZValue()
-						=== ZTypeRegistry::Z_STRING
-				);
-			},
-			ARRAY_FILTER_USE_BOTH
-		);
-
-		if ( count( $nonStringArgumentsDefinition ) ) {
-
-			// TODO: Would be nice to deal with multiple
-			$nonStringArgumentDefinition = $nonStringArgumentsDefinition[ 0 ];
-
-			$nonStringArgumentType = $nonStringArgumentDefinition->getValueByKey(
-				ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE
-			);
-			$nonStringArgument = $nonStringArgumentDefinition->getValueByKey(
-				ZTypeRegistry::Z_ARGUMENTDECLARATION_ID
-			);
-
-			// User is trying to use a ZFunction that takes something other than a Z6/String
-			$ret = Html::errorBox(
-				wfMessage(
-					'wikilambda-functioncall-error-nonstringinput',
-					$target,
-					$nonStringArgument,
-					$nonStringArgumentType
-				)->parseAsBlock()
-			);
-			$parser->addTrackingCategory( 'wikilambda-functioncall-error-nonstringinput-category' );
-			return [ $ret ];
-		}
-
-		$arguments = array_slice( $cleanedArgs, 1 );
-
-		$call = self::createFunctionCallJSON( $target, $arguments );
-
-		// TODO: We want a much finer control on execution time than this.
-		// TODO: Actually do this, or something similar?
-		// set_time_limit( 1 );
-		// TODO: We should retain this object for re-use if there's more than one call per page.
-		try {
-			$ret = [
-				ApiFunctionCall::makeRequest( $call ),
-				/* Force content to be escaped */ 'nowiki'
-			];
-		} catch ( \Throwable $th ) {
-			$parser->addTrackingCategory( 'wikilambda-functioncall-error-category' );
-			if ( $th instanceof ZErrorException ) {
-				$errorMessage = $th->getZErrorMessage();
-			} else {
-				// Something went wrong elsewhere; no nice translatable ZError to show, sadly.
-				$errorMessage = $th->getMessage();
-			}
-
-			$ret = Html::errorBox(
-				wfMessage( 'wikilambda-functioncall-error', $errorMessage )->parseAsBlock()
-			);
-		} finally {
-			// Restore time limits to status quo.
-			// TODO: Actually do this, or something similar?
-			// set_time_limit( 0 );
-		}
-
-		return [
-			trim( $ret ),
-			/* Force content to be escaped */ 'nowiki'
-		];
 	}
 }
