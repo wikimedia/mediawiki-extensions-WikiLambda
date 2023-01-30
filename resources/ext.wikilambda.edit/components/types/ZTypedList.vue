@@ -8,7 +8,7 @@
 	<div class="ext-wikilambda-ztypedlist">
 		<div class="ext-wikilambda-ztypedlist__container">
 			<ul>
-				<z-list-item
+				<wl-z-list-item
 					v-for="( item ) in ZlistItems"
 					:key="item.id"
 					:z-type="Constants.Z_TYPE"
@@ -16,7 +16,7 @@
 					:ztype-id="item.id"
 					:readonly="readonly"
 					@remove-item="removeItem"
-				></z-list-item>
+				></wl-z-list-item>
 				<li v-if="!( viewmode || readonly )">
 					<cdx-button
 						class="z-list-add"
@@ -41,9 +41,9 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-typed-list',
+	name: 'wl-z-typed-list',
 	components: {
-		'z-list-item': ZListItem,
+		'wl-z-list-item': ZListItem,
 		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],

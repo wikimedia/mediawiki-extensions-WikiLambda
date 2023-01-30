@@ -61,6 +61,7 @@
 var Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	icons = require( '../../../../lib/icons.json' ),
 	schemata = require( '../../../mixins/schemata.js' ),
@@ -69,9 +70,10 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'tester-table-status',
+	name: 'wl-tester-table-status',
 	components: {
 		'cdx-icon': CdxIcon,
+		'cdx-button': CdxButton,
 		'cdx-dialog': CdxDialog
 	},
 	mixins: [ portray, schemata ],

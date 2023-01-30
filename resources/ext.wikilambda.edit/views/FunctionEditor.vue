@@ -8,7 +8,7 @@
 	<div class="ext-wikilambda-function-editor">
 		<div class="ext-wikilambda-function-editor__main">
 			<main class="ext-wikilambda-function-editor__main__content">
-				<function-definition></function-definition>
+				<wl-function-definition></wl-function-definition>
 			</main>
 		</div>
 	</div>
@@ -19,9 +19,9 @@ var functionDefinition = require( './function/FunctionDefinition.vue' );
 
 // @vue/component
 module.exports = exports = {
-	name: 'function-editor',
+	name: 'wl-function-editor',
 	components: {
-		'function-definition': functionDefinition
+		'wl-function-definition': functionDefinition
 	},
 	mounted: function () {
 		this.$emit( 'mounted' );

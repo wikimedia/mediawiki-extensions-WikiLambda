@@ -7,11 +7,11 @@
 	-->
 	<!-- TODO (T300537): Add a loading indicator, once T300538 is done upstream. -->
 	<div id="ext-wikilambda-editor">
-		<z-object
+		<wl-z-object
 			:persistent="true"
-		></z-object>
+		></wl-z-object>
 		<template v-if="showEditCommand">
-			<z-object-publish :is-disabled="!isDirty"></z-object-publish>
+			<wl-z-object-publish :is-disabled="!isDirty"></wl-z-object-publish>
 			<cdx-button
 				class="ext-wikilambda-expertModeToggle"
 				@click="$store.dispatch( 'toggleExpertMode' )">
@@ -26,11 +26,11 @@
 				{{ message }}
 			</cdx-message>
 		</template>
-		<leave-editor-dialog
+		<wl-leave-editor-dialog
 			:show-dialog="showLeaveEditorDialog"
 			:continue-callback="leaveEditorCallback"
-			@close-dialog="closeLeaveEditorDialog">
-		</leave-editor-dialog>
+			@close-dialog="closeLeaveEditorDialog"
+		></wl-leave-editor-dialog>
 	</div>
 </template>
 
@@ -46,11 +46,11 @@ var ZObject = require( '../components/ZObject.vue' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-object-editor',
+	name: 'wl-z-object-editor',
 	components: {
-		'z-object': ZObject,
-		'z-object-publish': ZObjectPublish,
-		'leave-editor-dialog': LeaveEditorDialog,
+		'wl-z-object': ZObject,
+		'wl-z-object-publish': ZObjectPublish,
+		'wl-leave-editor-dialog': LeaveEditorDialog,
 		'cdx-button': CdxButton,
 		'cdx-message': CdxMessage
 	},

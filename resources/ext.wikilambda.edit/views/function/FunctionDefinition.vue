@@ -15,28 +15,27 @@
 				class="ext-wikilambda-function-definition__container__input"
 			>
 				<div class="ext-wikilambda-function-definition__container__input__language">
-					<fn-editor-zlanguage-selector
+					<wl-fn-editor-zlanguage-selector
 						class="ext-wikilambda-function-definition__container__input__language__selector"
 						:z-language="labelLanguage.zLang"
 						@change="function ( value ) {
 							return setInputLangByIndex( value, index )
 						}"
-					>
-					</fn-editor-zlanguage-selector>
+					></wl-fn-editor-zlanguage-selector>
 				</div>
 				<!-- component that displays names for a language -->
-				<function-definition-name
+				<wl-function-definition-name
 					:z-lang="labelLanguage.zLang"
 					:is-main-z-object="isMainZObject( labelLanguage.zLang, index )"
 					@updated-name="updatedLabel"
-				></function-definition-name>
+				></wl-function-definition-name>
 				<!-- component that displays aliases for a language -->
-				<function-definition-aliases
+				<wl-function-definition-aliases
 					:z-lang="labelLanguage.zLang"
 					@updated-alias="updatedLabel"
-				></function-definition-aliases>
+				></wl-function-definition-aliases>
 				<!-- component that displays list of inputs for a language -->
-				<function-definition-inputs
+				<wl-function-definition-inputs
 					:is-mobile="isMobile"
 					:z-lang="labelLanguage.zLang"
 					:is-main-language-block="index === 0"
@@ -44,14 +43,14 @@
 					:tooltip-icon="adminTooltipIcon"
 					:tooltip-message="adminTooltipMessage"
 					@updated-argument-label="updatedLabel"
-				></function-definition-inputs>
+				></wl-function-definition-inputs>
 				<!-- component that displays output for a language -->
 				<template v-if="index === 0">
-					<function-definition-output
+					<wl-function-definition-output
 						:can-edit="canEditFunction"
 						:tooltip-icon="adminTooltipIcon"
 						:tooltip-message="adminTooltipMessage"
-					></function-definition-output>
+					></wl-function-definition-output>
 				</template>
 			</div>
 		</div>
@@ -65,18 +64,18 @@
 			</cdx-button>
 		</div>
 
-		<function-definition-footer
+		<wl-function-definition-footer
 			:is-editing="isEditingExistingFunction"
 			:should-unattach-implementation-and-tester="shouldUnattachImplementationAndTester"
 			:publish-disabled="!isDirty"
 			@cancel="handleCancel"
-		></function-definition-footer>
+		></wl-function-definition-footer>
 
-		<leave-editor-dialog
+		<wl-leave-editor-dialog
 			:show-dialog="showLeaveEditorDialog"
 			:continue-callback="leaveEditorCallback"
-			@close-dialog="closeLeaveEditorDialog">
-		</leave-editor-dialog>
+			@close-dialog="closeLeaveEditorDialog"
+		></wl-leave-editor-dialog>
 	</main>
 </template>
 
@@ -99,15 +98,15 @@ var mapGetters = require( 'vuex' ).mapGetters,
 
 // @vue/component
 module.exports = exports = {
-	name: 'function-definition',
+	name: 'wl-function-definition',
 	components: {
-		'function-definition-name': FunctionDefinitionName,
-		'function-definition-aliases': FunctionDefinitionAliases,
-		'function-definition-inputs': FunctionDefinitionInputs,
-		'function-definition-output': FunctionDefinitionOutput,
-		'function-definition-footer': FunctionDefinitionFooter,
-		'fn-editor-zlanguage-selector': FnEditorZLanguageSelector,
-		'leave-editor-dialog': LeaveEditorDialog,
+		'wl-function-definition-name': FunctionDefinitionName,
+		'wl-function-definition-aliases': FunctionDefinitionAliases,
+		'wl-function-definition-inputs': FunctionDefinitionInputs,
+		'wl-function-definition-output': FunctionDefinitionOutput,
+		'wl-function-definition-footer': FunctionDefinitionFooter,
+		'wl-fn-editor-zlanguage-selector': FnEditorZLanguageSelector,
+		'wl-leave-editor-dialog': LeaveEditorDialog,
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},

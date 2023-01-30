@@ -21,15 +21,14 @@
 		<div
 			class="ext-wikilambda-function-definition-aliases__inputs"
 			aria-labelledby="ext-wikilambda-function-definition-aliases__inputs-label">
-			<chips
+			<wl-chips-container
 				:chips="getCurrentLanguageAliases"
 				:input-placeholder="functionDefinitionAliasPlaceholder"
 				:input-aria-label="$i18n( 'wikilambda-function-definition-alias-label-new' )"
 				@add-chip="addAliasForLanguage"
 				@edit-chip="updateAlias"
 				@remove-chip="removeAlias"
-			>
-			</chips>
+			></wl-chips-container>
 			<p
 				v-if="repeatAlias"
 				class="ext-wikilambda-function-definition-aliases__error"
@@ -49,9 +48,9 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'function-definition-aliases',
+	name: 'wl-function-definition-aliases',
 	components: {
-		chips: ChipContainer
+		'wl-chips-container': ChipContainer
 	},
 	mixins: [ typeUtils ],
 	props: {

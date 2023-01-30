@@ -73,7 +73,7 @@ var Constants = require( '../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-object-selector',
+	name: 'wl-z-object-selector',
 	components: {
 		'cdx-message': CdxMessage,
 		'cdx-lookup': CdxLookup

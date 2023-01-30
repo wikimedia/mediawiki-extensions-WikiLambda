@@ -7,14 +7,14 @@
 	-->
 	<div>
 		<!-- Root zobject key value has no key and the zobject Index is 0 -->
-		<z-object-key-value
-			:edit="edit">
-		</z-object-key-value>
+		<wl-z-object-key-value
+			:edit="edit"
+		></wl-z-object-key-value>
 
-		<z-object-json
+		<wl-z-object-json
 			:readonly="true"
 			:zobject-raw="getZObjectAsJson"
-		></z-object-json>
+		></wl-z-object-json>
 	</div>
 </template>
 
@@ -27,10 +27,10 @@ var
 
 // @vue/component
 module.exports = exports = {
-	name: 'default-view',
+	name: 'wl-default-view',
 	components: {
-		'z-object-key-value': ZObjectKeyValue,
-		'z-object-json': ZObjectJson
+		'wl-z-object-key-value': ZObjectKeyValue,
+		'wl-z-object-json': ZObjectJson
 	},
 	data: function () {
 		return {};

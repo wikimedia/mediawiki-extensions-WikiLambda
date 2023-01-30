@@ -36,6 +36,7 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-argument-reference',
 	mixins: [ typeUtils ],
 	inject: {
 		viewmode: { default: false }

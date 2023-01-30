@@ -7,9 +7,9 @@
 	-->
 	<!-- TODO (T300537): Add a loading indicator, once T300538 is done upstream. -->
 	<div id="ext-wikilambda-view">
-		<z-object
+		<wl-z-object
 			:persistent="true"
-		></z-object>
+		></wl-z-object>
 		<div v-if="displaySuccessMessage" class="ext-wikilambda-view__message">
 			<cdx-message
 				class="ext-wikilambda-view__message__success"
@@ -37,9 +37,9 @@ var CdxMessage = require( '@wikimedia/codex' ).CdxMessage;
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-object-viewer',
+	name: 'wl-z-object-viewer',
 	components: {
-		'z-object': ZObject,
+		'wl-z-object': ZObject,
 		'cdx-button': CdxButton,
 		'cdx-message': CdxMessage
 	},

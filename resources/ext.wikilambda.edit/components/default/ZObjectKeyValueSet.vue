@@ -11,7 +11,7 @@
 		class="ext-wikilambda-key-value-set"
 		:class="nestingDepthClass"
 	>
-		<z-object-key-value
+		<wl-z-object-key-value
 			v-for="rowIdItem in childRowIds"
 			:key="rowIdItem"
 			:row-id="rowIdItem"
@@ -19,7 +19,7 @@
 			:parent-key="parentKey"
 			:edit="edit"
 			v-bind="$attrs"
-		></z-object-key-value>
+		></wl-z-object-key-value>
 	</div>
 </template>
 
@@ -28,7 +28,7 @@ var mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-object-key-value-set',
+	name: 'wl-z-object-key-value-set',
 	components: {
 		// Leave components as an empty object to add the ZObjectKeyValue later
 	},
@@ -101,7 +101,7 @@ module.exports = exports = {
 		} ),
 	beforeCreate: function () {
 		// Need to delay require of ZObjectKeyValue to avoid loop
-		this.$options.components[ 'z-object-key-value' ] = require( './ZObjectKeyValue.vue' );
+		this.$options.components[ 'wl-z-object-key-value' ] = require( './ZObjectKeyValue.vue' );
 	}
 };
 </script>

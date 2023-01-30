@@ -44,7 +44,7 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-implementation-list-item',
+	name: 'wl-z-implementation-list-item',
 	components: {
 		'cdx-button': CdxButton
 	},

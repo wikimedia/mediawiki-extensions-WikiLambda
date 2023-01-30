@@ -7,14 +7,14 @@
 	-->
 	<div :class="classZObjectKey">
 		<!-- VIEW MODE -->
-		<z-object-generic
+		<wl-z-object-generic
 			v-if="viewmode"
 			:zobject-id="zobjectId"
 			:type="type"
 			:persistent="persistent"
 			:readonly="readonly"
-			:parent-type="parentType">
-		</z-object-generic>
+			:parent-type="parentType"
+		></wl-z-object-generic>
 		<!-- EDIT MODE -->
 		<template v-else>
 			<template
@@ -22,25 +22,27 @@
 			>
 				<span>
 					<label>{{ zTypeKeylabel }}</label>
-					<z-object
+					<wl-z-object
 						:zobject-id="zObjectKeysId"
 						:readonly="readonly"
-						:persistent="false"></z-object>
+						:persistent="false"
+					></wl-z-object>
 				</span>
 				<span>
 					<label>{{ zTypeValidatorlabel }}</label>
-					<z-object
+					<wl-z-object
 						:zobject-id="zTypeValidatorId"
 						:readonly="readonly"
-						:persistent="false"></z-object>
+						:persistent="false"
+					></wl-z-object>
 				</span>
 			</template>
-			<z-object-selector
+			<wl-z-object-selector
 				v-else
 				:type="Constants.Z_TYPE"
 				:placeholder="$i18n( 'wikilambda-typeselector-label' ).text()"
 				@input="onTypeChange"
-			></z-object-selector>
+			></wl-z-object-selector>
 		</template>
 	</div>
 </template>
@@ -56,10 +58,10 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-type',
+	name: 'wl-z-type',
 	components: {
-		'z-object-selector': ZObjectSelector,
-		'z-object-generic': ZObjectGeneric
+		'wl-z-object-selector': ZObjectSelector,
+		'wl-z-object-generic': ZObjectGeneric
 	},
 	mixins: [ typeUtils ],
 	inject: {
@@ -152,7 +154,7 @@ module.exports = exports = {
 		}
 	},
 	beforeCreate: function () {
-		this.$options.components[ 'z-object' ] = require( '../ZObject.vue' );
+		this.$options.components[ 'wl-z-object' ] = require( '../ZObject.vue' );
 	}
 };
 

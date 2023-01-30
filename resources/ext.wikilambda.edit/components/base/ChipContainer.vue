@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-chip-container" @click="focusInput">
-		<chip
+		<wl-chip
 			v-for="chip in chips"
 			:key="chip.id"
 			:index="chip.id"
@@ -15,7 +15,7 @@
 			class="ext-wikilambda-chip-container__item"
 			@edit-chip="editChip"
 			@remove-chip="removeChip"
-		></chip>
+		></wl-chip>
 		<input
 			v-if="canAdd"
 			ref="chipInput"
@@ -33,9 +33,9 @@ var Chip = require( './Chip.vue' );
 
 // @vue/component
 module.exports = exports = {
-	name: 'chip-container',
+	name: 'wl-chip-container',
 	components: {
-		chip: Chip
+		'wl-chip': Chip
 	},
 	props: {
 		chips: {

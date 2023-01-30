@@ -6,13 +6,13 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-inline-tester-validator">
-		<z-object-selector
+		<wl-z-object-selector
 			v-if="!selectedFunction"
 			:type="Constants.Z_FUNCTION"
 			:placeholder="$i18n( 'wikilambda-function-typeselector-label' )"
 			:selected-id="zFunctionId"
 			@input="typeHandler"
-		></z-object-selector>
+		></wl-z-object-selector>
 		<template v-else>
 			<cdx-button
 				v-if="!viewmode"
@@ -22,11 +22,11 @@
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
 			</cdx-button>
-			<z-reference
+			<wl-z-reference
 				:zobject-key="selectedFunctionPersistentValue"
 				search-type="Z8"
 				:readonly="true"
-			></z-reference>
+			></wl-z-reference>
 		</template>
 		<div class="ext-wikilambda-inline-tester-validator">
 			<span v-for="argument in zFunctionArguments.slice( 1 )" :key="argument.key">
@@ -34,12 +34,12 @@
 				<!-- ZInlineTesterValidation -> ZObjectKey -> ZObject -> ZFunction -> ZTesterList ->
 					ZTesterAdHoc -> ZInlineTesterValidation -->
 				<!-- eslint-disable-next-line vue/no-unregistered-components -->
-				<z-object-key
+				<wl-z-object-key
 					:zobject-id="findArgumentId( argument.key )"
 					:persistent="false"
 					:parent-type="Constants.Z_FUNCTION_CALL"
 					:z-key="argument.key"
-				></z-object-key>
+				></wl-z-object-key>
 			</span>
 		</div>
 	</div>
@@ -53,6 +53,7 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-inline-tester-validation',
 	components: {
 		'cdx-button': CdxButton
 	},

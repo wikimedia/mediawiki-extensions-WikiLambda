@@ -7,10 +7,10 @@
 	-->
 	<div class="ext-wikilambda-function-definition-footer">
 		<div class="ext-wikilambda-function-definition-footer__actions">
-			<z-object-publish
+			<wl-z-object-publish
 				:should-unattach-implementation-and-tester="shouldUnattachImplementationAndTester"
-				:is-disabled="publishDisabled">
-			</z-object-publish>
+				:is-disabled="publishDisabled"
+			></wl-z-object-publish>
 			<!-- TODO: The following is just a placeholder until it is possible to attach implementation / Testers -->
 			<cdx-button
 				v-if="isEditing"
@@ -40,10 +40,10 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'function-definition-footer',
+	name: 'wl-function-definition-footer',
 	components: {
 		'cdx-button': CdxButton,
-		'z-object-publish': ZObjectPublish
+		'wl-z-object-publish': ZObjectPublish
 	},
 	props: {
 		isEditing: {

@@ -14,9 +14,9 @@
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
 			</cdx-button>
-			<z-string
+			<wl-z-string
 				:zobject-id="alias"
-			></z-string>
+			></wl-z-string>
 		</div>
 		<div v-if="!viewmode">
 			<cdx-button
@@ -37,9 +37,10 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-label-block-aliases',
 	components: {
 		'cdx-button': CdxButton,
-		'z-string': ZString
+		'wl-z-string': ZString
 	},
 	inject: {
 		viewmode: { default: false }

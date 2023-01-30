@@ -8,22 +8,23 @@
 	<div class="ext-wikilambda-function-call-to-type-block">
 		<template v-if="!allArgumentsTypeSet">
 			<div v-for="( argument, index ) in functionCallArguments" :key="argument.id">
-				<z-object-selector
+				<wl-z-object-selector
 					:type="Constants.zType"
 					:placeholder="$i18n( 'wikilambda-ztyped-map-placeholder' ).text()"
 					:readonly="readonly"
 					@input="onTypeChange( $event, argument.id, index )"
-				></z-object-selector>
+				></wl-z-object-selector>
 			</div>
 		</template>
 		<template v-else>
 			<!-- eslint-disable-next-line vue/no-unregistered-components -->
-			<z-object
+			<wl-z-object
 				v-for="key in objectKeys"
 				:key="key.id"
 				:zobject-id="key.id"
 				:readonly="readonly"
-				:persistent="false"></z-object>
+				:persistent="false"
+			></wl-z-object>
 		</template>
 	</div>
 </template>
@@ -37,8 +38,9 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-function-call-to-type',
 	components: {
-		'z-object-selector': ZObjectSelector
+		'wl-z-object-selector': ZObjectSelector
 	},
 	mixins: [ typeUtils ],
 	inject: {
@@ -131,7 +133,7 @@ module.exports = exports = {
 		}
 	},
 	beforeCreate: function () {
-		this.$options.components[ 'z-object' ] = require( '../ZObject.vue' );
+		this.$options.components[ 'wl-z-object' ] = require( '../ZObject.vue' );
 	}
 };
 </script>

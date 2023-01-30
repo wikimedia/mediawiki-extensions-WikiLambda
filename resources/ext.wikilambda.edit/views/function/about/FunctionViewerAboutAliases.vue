@@ -12,7 +12,7 @@
 		<div class="ext-wikilambda-function-viewer-aliases__header">
 			{{ $i18n( 'wikilambda-function-viewer-aliases-header' ) }}
 		</div>
-		<function-viewer-sidebar
+		<wl-function-viewer-sidebar
 			:list="getSelectedAliases( getUserZlangZID )"
 			:z-lang="getUserZlangZID"
 			:button-type="buttonType"
@@ -20,7 +20,7 @@
 			:button-icon="buttonIcon"
 			:should-show-button="multipleAliasLang"
 			@change-show-langs="showAllLangs = !showAllLangs"
-		></function-viewer-sidebar>
+		></wl-function-viewer-sidebar>
 	</div>
 </template>
 
@@ -33,9 +33,9 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'function-viewer-about-aliases',
+	name: 'wl-function-viewer-about-aliases',
 	components: {
-		'function-viewer-sidebar': FunctionViewerSidebar
+		'wl-function-viewer-sidebar': FunctionViewerSidebar
 	},
 	mixins: [ typeUtils ],
 	props: {

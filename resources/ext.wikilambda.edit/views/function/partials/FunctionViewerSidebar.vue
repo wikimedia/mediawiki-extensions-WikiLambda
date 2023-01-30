@@ -11,14 +11,14 @@
 				<div
 					class="ext-wikilambda-function-viewer-sidebar__chip-container"
 				>
-					<chip
+					<wl-chip
 						class="ext-wikilambda-function-viewer-sidebar__chip-item"
 						:index="index"
 						:editable-container="false"
 						:readonly="true"
 						:text="item.isoCode.toUpperCase()"
 						:title="item.languageLabel"
-					></chip>
+					></wl-chip>
 					{{ item.label }}
 				</div>
 			</li>
@@ -45,9 +45,9 @@ var Chip = require( '../../../components/base/Chip.vue' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'sidebar-list-container',
+	name: 'wl-sidebar-list-container',
 	components: {
-		chip: Chip,
+		'wl-chip': Chip,
 		'cdx-icon': CdxIcon,
 		'cdx-button': CdxButton
 	},

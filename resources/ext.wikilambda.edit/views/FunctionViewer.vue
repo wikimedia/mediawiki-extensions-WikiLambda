@@ -20,8 +20,8 @@
 					<component
 						:is="tab.name"
 						v-if="tab.name === currentTab"
-						:name="tab.name">
-					</component>
+						:name="tab.name"
+					></component>
 				</keep-alive>
 			</cdx-tab>
 		</cdx-tabs>
@@ -46,24 +46,24 @@ var CdxTab = require( '@wikimedia/codex' ).CdxTab,
 
 // @vue/component
 module.exports = exports = {
-	name: 'function-viewer',
+	name: 'wl-function-viewer',
 	components: {
-		'function-about': functionAbout,
-		'function-details': functionDetails,
+		'wl-function-about': functionAbout,
+		'wl-function-details': functionDetails,
 		'cdx-tab': CdxTab,
 		'cdx-tabs': CdxTabs,
 		'cdx-message': CdxMessage
 	},
 	data: function () {
 		return {
-			currentTab: 'function-about',
+			currentTab: 'wl-function-about',
 			tabsData: [
 				{
-					name: 'function-about',
+					name: 'wl-function-about',
 					label: this.$i18n( 'wikilambda-editor-fn-step-function-about' ).text()
 				},
 				{
-					name: 'function-details',
+					name: 'wl-function-details',
 					label: this.$i18n( 'wikilambda-editor-fn-step-function-details' ).text()
 				}
 			]

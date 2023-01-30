@@ -8,28 +8,28 @@
 	<div>
 		<div>
 			<h3>{{ zReturnTypeLabel }}</h3>
-			<z-object-selector
+			<wl-z-object-selector
 				v-if="isReturnTypeLabelReady"
 				:type="Constants.Z_TYPE"
 				:placeholder="$i18n( 'wikilambda-return-typeselector-label' ).text()"
 				:selected-id="zReturnType.value"
 				:initial-selection-label="selectedZReturnTypeLabel"
 				@input="updateZReturnType"
-			></z-object-selector>
+			></wl-z-object-selector>
 		</div>
-		<z-argument-list
+		<wl-z-argument-list
 			:zobject-id="zArgumentId"
-		></z-argument-list>
+		></wl-z-argument-list>
 		<template v-if="!isCreateNewPage">
-			<z-implementation-list
+			<wl-z-implementation-list
 				:zobject-id="zImplementationId"
-			></z-implementation-list>
-			<z-tester-list
+			></wl-z-implementation-list>
+			<wl-z-tester-list
 				:zobject-id="zTesterId"
-			></z-tester-list>
-			<z-function-tester-report
+			></wl-z-tester-list>
+			<wl-z-function-tester-report
 				:z-function-id="zFunctionId"
-			></z-function-tester-report>
+			></wl-z-function-tester-report>
 		</template>
 	</div>
 </template>
@@ -47,12 +47,13 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-function',
 	components: {
-		'z-argument-list': ZArgumentList,
-		'z-object-selector': ZObjectSelector,
-		'z-implementation-list': ZImplementationList,
-		'z-tester-list': ZTesterList,
-		'z-function-tester-report': ZFunctionTesterReport
+		'wl-z-argument-list': ZArgumentList,
+		'wl-z-object-selector': ZObjectSelector,
+		'wl-z-implementation-list': ZImplementationList,
+		'wl-z-tester-list': ZTesterList,
+		'wl-z-function-tester-report': ZFunctionTesterReport
 	},
 	mixins: [ typeUtils ],
 	provide: function () {

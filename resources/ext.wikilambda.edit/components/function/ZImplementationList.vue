@@ -10,14 +10,14 @@
 			{{ $i18n( 'wikilambda-editor-implementation-list-label' ).text() }}
 		</h3>
 		<ul class="ext-wikilambda-zlist-no-bullets">
-			<z-implementation-list-item
+			<wl-z-implementation-list-item
 				v-for="( item ) in ZlistItems"
 				:key="item.id"
 				:zobject-id="item.id"
 				:viewmode="getViewMode"
 				:z-type="Constants.Z_IMPLEMENTATION"
 				@remove-item="removeItem"
-			></z-implementation-list-item>
+			></wl-z-implementation-list-item>
 			<li v-if="!getViewMode">
 				<cdx-button
 					:title="tooltipAddListItem"
@@ -46,9 +46,9 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-implementation-list',
+	name: 'wl-z-implementation-list',
 	components: {
-		'z-implementation-list-item': ZImplementationListItem,
+		'wl-z-implementation-list-item': ZImplementationListItem,
 		'cdx-button': CdxButton
 	},
 	extends: ZTypedList,

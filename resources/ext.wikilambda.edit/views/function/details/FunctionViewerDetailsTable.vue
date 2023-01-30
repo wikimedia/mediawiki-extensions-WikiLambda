@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-function-details-table">
-		<table-container
+		<wl-table
 			:header="header"
 			:body="body"
 			:is-loading="isLoading"
@@ -45,15 +45,15 @@
 					<span>{{ emptyText }}</span>
 				</div>
 			</template>
-		</table-container>
-		<pagination
+		</wl-table>
+		<wl-pagination
 			v-if="totalPages > 1"
 			:total-pages="totalPages"
 			:current-page="currentPage"
 			:showing-all="showingAll"
 			@update-page="updateCurrentPage"
 			@reset-view="resetView"
-		></pagination>
+		></wl-pagination>
 	</div>
 </template>
 
@@ -67,11 +67,11 @@ const CdxButton = require( '@wikimedia/codex' ).CdxButton,
 
 // @vue/component
 module.exports = exports = {
-	name: 'function-viewer-details-table',
+	name: 'wl-function-viewer-details-table',
 	components: {
 		'cdx-button': CdxButton,
-		'table-container': TableContainer,
-		pagination: Pagination
+		'wl-table': TableContainer,
+		'wl-pagination': Pagination
 	},
 	mixins: [ typeUtils ],
 	props: {

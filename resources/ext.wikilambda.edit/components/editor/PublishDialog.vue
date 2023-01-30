@@ -107,7 +107,7 @@ const Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'publish-dialog',
+	name: 'wl-publish-dialog',
 	components: {
 		'cdx-text-input': CdxTextInput,
 		'cdx-message': CdxMessage,

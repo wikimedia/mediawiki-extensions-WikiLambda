@@ -14,10 +14,10 @@
 			</a>
 		</div>
 		<section class="ext-wikilambda-function-details__sidebar">
-			<function-viewer-details-sidebar :zobject-id="zobjectId"></function-viewer-details-sidebar>
+			<wl-function-viewer-details-sidebar :zobject-id="zobjectId"></wl-function-viewer-details-sidebar>
 		</section>
 		<section class="ext-wikilambda-function-details__tables">
-			<function-viewer-details-table
+			<wl-function-viewer-details-table
 				name="implementations"
 				:header="implementationsHeader"
 				:body="implementationBody"
@@ -34,8 +34,8 @@
 				@reset-view="resetImplementationView"
 				@approve="approveImplementations"
 				@deactivate="deactivateImplementations"
-			></function-viewer-details-table>
-			<function-viewer-details-table
+			></wl-function-viewer-details-table>
+			<wl-function-viewer-details-table
 				name="testers"
 				:header="testersHeader"
 				:body="testersBody"
@@ -52,7 +52,7 @@
 				@reset-view="resetTestersView"
 				@approve="approveTesters"
 				@deactivate="deactivateTesters"
-			></function-viewer-details-table>
+			></wl-function-viewer-details-table>
 		</section>
 		<cdx-message
 			v-if="shouldShowToast"
@@ -76,10 +76,10 @@ var FunctionViewerDetailsSidebar = require( './details/FunctionViewerDetailsSide
 
 // @vue/component
 module.exports = exports = {
-	name: 'function-details',
+	name: 'wl-function-details',
 	components: {
-		'function-viewer-details-sidebar': FunctionViewerDetailsSidebar,
-		'function-viewer-details-table': FunctionViewerDetailsTable,
+		'wl-function-viewer-details-sidebar': FunctionViewerDetailsSidebar,
+		'wl-function-viewer-details-table': FunctionViewerDetailsTable,
 		'cdx-message': CdxMessage
 	},
 	mixins: [ typeUtils ],
@@ -247,7 +247,7 @@ module.exports = exports = {
 							class: 'ext-wikilambda-function-details-table-item'
 						},
 						state: {
-							component: 'wikilambda-chip',
+							component: 'wl-chip',
 							props: {
 								editableContainer: false,
 								readonly: true,
@@ -368,7 +368,7 @@ module.exports = exports = {
 					for ( const zid in this.implZidToState ) {
 						if ( this.implZidToState[ zid ].checked || !this.areAnyImplementationsChecked ) {
 							tableData[ index ][ zid ] = {
-								component: 'tester-table-status',
+								component: 'wl-tester-table-status',
 								props: {
 									zFunctionId: this.getCurrentZObjectId,
 									zImplementationId: zid,
@@ -380,7 +380,7 @@ module.exports = exports = {
 					}
 
 					tableData[ index ].state = {
-						component: 'wikilambda-chip',
+						component: 'wl-chip',
 						props: {
 							editableContainer: false,
 							readonly: true,

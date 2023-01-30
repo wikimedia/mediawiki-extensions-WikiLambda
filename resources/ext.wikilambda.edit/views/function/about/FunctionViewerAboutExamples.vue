@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<div v-if="exampleList.length > 0" class="ext-wikilambda-function-viewer-about-aliases">
-		<function-viewer-about-examples-table
+		<wl-table
 			:header="header"
 			:body="exampleList"
 		>
@@ -17,7 +17,7 @@
 					{{ title }}
 				</div>
 			</template>
-		</function-viewer-about-examples-table>
+		</wl-table>
 	</div>
 </template>
 
@@ -29,9 +29,9 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'function-viewer-about-examples',
+	name: 'wl-function-viewer-about-examples',
 	components: {
-		'function-viewer-about-examples-table': TableContainer
+		'wl-table': TableContainer
 	},
 	mixins: [ typeUtils ],
 	data: function () {

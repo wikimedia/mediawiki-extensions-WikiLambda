@@ -24,7 +24,7 @@ var CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 
 // @vue/component
 module.exports = exports = {
-	name: 'text-component',
+	name: 'wl-base-text',
 	components: {
 		'cdx-icon': CdxIcon
 	},

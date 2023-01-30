@@ -6,21 +6,21 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-multilingual">
-		<z-monolingual-string
+		<wl-z-monolingual-string
 			v-for="( z11Object ) in monolingualStrings"
 			:key="z11Object.id"
 			:zobject-id="z11Object.id"
 			class="ext-wikilambda-monolingual"
 			:readonly="readonly || getViewMode"
-		></z-monolingual-string>
+		></wl-z-monolingual-string>
 		<div class="ext-wikilambda-monolingual">
-			<z-object-selector
+			<wl-z-object-selector
 				v-if="!( readonly || getViewMode )"
 				ref="langSelector"
 				:used-languages="usedLanguages"
 				:type="Constants.Z_NATURAL_LANGUAGE"
 				@input="addNewLang"
-			></z-object-selector>
+			></wl-z-object-selector>
 		</div>
 	</div>
 </template>
@@ -35,10 +35,10 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-multilingual-string',
+	name: 'wl-z-multilingual-string',
 	components: {
-		'z-monolingual-string': ZMonolingualString,
-		'z-object-selector': ZObjectSelector
+		'wl-z-monolingual-string': ZMonolingualString,
+		'wl-z-object-selector': ZObjectSelector
 	},
 	mixins: [ typeUtils ],
 	props: {

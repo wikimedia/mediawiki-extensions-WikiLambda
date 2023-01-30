@@ -7,9 +7,9 @@
 	-->
 	<div :class="{ 'ext-wikilambda-persistentobject-labelsblock': hasDetailsToDisplay }">
 		<div v-if="zObjectValue.id">
-			<z-labels-block
+			<wl-z-labels-block
 				:zobject-id="zobjectId"
-			></z-labels-block>
+			></wl-z-labels-block>
 			<h2 class="ext-wikilambda-persistentobject-header">
 				{{ $i18n( 'wikilambda-persistentzobject-contents' ).text() }}
 			</h2>
@@ -28,12 +28,12 @@
 						{{ $i18n( 'wikilambda-editor-clearitem' ).text() }}
 					</cdx-button>
 				</div>
-				<z-object-key
+				<wl-z-object-key
 					:key="Constants.Z_PERSISTENTOBJECT_VALUE"
 					:zobject-id="zObjectValue.id"
 					:parent-type="zObjectType"
 					:readonly="isBuiltIn || ( viewmode || readonly )"
-				></z-object-key>
+				></wl-z-object-key>
 			</div>
 		</div>
 		<div v-if="hasDetailsToDisplay" class="ext-wikilambda-sidebar">
@@ -45,16 +45,16 @@
 					<h3>
 						{{ $i18n( 'wikilambda-persistentobject-evaluate-function' ).text() }}
 					</h3>
-					<z-function-evaluator></z-function-evaluator>
+					<wl-z-function-evaluator></wl-z-function-evaluator>
 				</template>
 				<div v-if="$store.getters.isExpertMode">
 					<h3>
 						{{ $i18n( 'wikilambda-expert-mode-json-label' ).text() }}
 					</h3>
-					<z-object-json
+					<wl-z-object-json
 						:readonly="true"
 						:zobject-raw="getZObjectAsJson"
-					></z-object-json>
+					></wl-z-object-json>
 				</div>
 			</div>
 		</div>
@@ -74,11 +74,12 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-persistent-object',
 	components: {
-		'z-object-key': ZObjectKey,
-		'z-labels-block': ZLabelsBlock,
-		'z-function-evaluator': ZFunctionEvaluator,
-		'z-object-json': ZObjectJson,
+		'wl-z-object-key': ZObjectKey,
+		'wl-z-labels-block': ZLabelsBlock,
+		'wl-z-function-evaluator': ZFunctionEvaluator,
+		'wl-z-object-json': ZObjectJson,
 		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],

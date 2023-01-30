@@ -12,7 +12,7 @@
 				:href="valueUrl">{{ valueLabel }}</a>
 		</template>
 		<template v-else>
-			<z-object-selector
+			<wl-z-object-selector
 				v-if="isValueReady"
 				:selected-id="value"
 				:initial-selection-label="valueLabel"
@@ -20,7 +20,7 @@
 				:zobject-id="rowId"
 				:fit-width="true"
 				@input="setValue"
-			></z-object-selector>
+			></wl-z-object-selector>
 		</template>
 	</div>
 </template>
@@ -33,9 +33,9 @@ var
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-reference',
+	name: 'wl-z-reference',
 	components: {
-		'z-object-selector': ZObjectSelector
+		'wl-z-object-selector': ZObjectSelector
 	},
 	props: {
 		rowId: {

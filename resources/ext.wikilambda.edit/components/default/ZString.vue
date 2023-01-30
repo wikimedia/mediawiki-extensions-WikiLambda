@@ -26,7 +26,7 @@ var TextInput = require( '../base/TextInput.vue' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-string',
+	name: 'wl-z-string',
 	components: {
 		'wl-text-input': TextInput
 	},

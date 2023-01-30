@@ -6,14 +6,14 @@
 		@license MIT
 	-->
 	<div v-if="getFunctionNames.length > 0" class="ext-wikilambda-function-viewer-names">
-		<function-viewer-sidebar
+		<wl-function-viewer-sidebar
 			:list="visibleFunctionNames"
 			:z-lang="getUserZlangZID"
 			:button-type="buttonType"
 			:button-text="buttonText"
 			:button-icon="buttonIcon"
 			@change-show-langs="showAllLangs = !showAllLangs"
-		></function-viewer-sidebar>
+		></wl-function-viewer-sidebar>
 	</div>
 </template>
 
@@ -26,9 +26,9 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'function-viewer-about-names',
+	name: 'wl-function-viewer-about-names',
 	components: {
-		'function-viewer-sidebar': FunctionViewerSidebar
+		'wl-function-viewer-sidebar': FunctionViewerSidebar
 	},
 	mixins: [ typeUtils ],
 	props: {

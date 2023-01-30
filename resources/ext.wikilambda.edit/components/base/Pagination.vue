@@ -45,7 +45,7 @@ var CdxButton = require( '@wikimedia/codex' ).CdxButton,
 
 // @vue/component
 module.exports = exports = {
-	name: 'pagination-component',
+	name: 'wl-pagination-component',
 	components: {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon

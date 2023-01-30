@@ -6,13 +6,13 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-json">
-		<code-editor
+		<wl-code-editor
 			v-clickout="onClickoutHandler"
 			mode="json"
 			:value="initialJson"
 			:read-only="readonly || viewmode"
 			@change="codeChangeHandler"
-		></code-editor>
+		></wl-code-editor>
 	</div>
 </template>
 
@@ -25,8 +25,9 @@ var mapGetters = require( 'vuex' ).mapGetters,
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-object-json',
 	components: {
-		'code-editor': CodeEditor
+		'wl-code-editor': CodeEditor
 	},
 	directives: {
 		clickout: {

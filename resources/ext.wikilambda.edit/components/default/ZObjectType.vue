@@ -8,14 +8,14 @@
 	<div class="ext-wikilambda-type-mode">
 		<template v-if="edit">
 			<!-- Zero state, select a literal type -->
-			<z-object-selector
+			<wl-z-object-selector
 				v-if="!value"
 				class="ext-wikilambda-type-mode__selector"
 				:type="selectType"
 				:zobject-id="rowId"
 				:fit-width="true"
 				@input="setValue"
-			></z-object-selector>
+			></wl-z-object-selector>
 			<!-- Non-Zero state, select mode -->
 			<!-- eslint-disable vue/no-v-model-argument -->
 			<!-- eslint-disable vue/no-unsupported-features -->
@@ -31,7 +31,10 @@
 		<template v-else>
 			<a
 				class="ext-wikilambda-edit-link"
-				:href="valueUrl">{{ valueLabel }}</a>
+				:href="valueUrl"
+			>
+				{{ valueLabel }}
+			</a>
 		</template>
 	</div>
 </template>
@@ -46,9 +49,9 @@ var
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-object-type',
+	name: 'wl-z-object-type',
 	components: {
-		'z-object-selector': ZObjectSelector,
+		'wl-z-object-selector': ZObjectSelector,
 		'wl-select': Select
 	},
 	props: {

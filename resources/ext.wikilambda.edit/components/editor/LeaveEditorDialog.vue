@@ -31,7 +31,7 @@ var CdxDialog = require( '@wikimedia/codex' ).CdxDialog;
 
 // @vue/components
 module.exports = exports = {
-	name: 'leave-editor-dialog',
+	name: 'wl-leave-editor-dialog',
 	components: {
 		'cdx-dialog': CdxDialog
 	},

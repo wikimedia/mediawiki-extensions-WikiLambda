@@ -8,21 +8,21 @@
 	<div>
 		<div>
 			{{ typeLabel }}:
-			<z-object-selector
+			<wl-z-object-selector
 				v-if="isArgumentTypeLabelReady"
 				:type="Constants.Z_TYPE"
 				:placeholder="$i18n( 'wikilambda-argument-typeselector-label' )"
 				:selected-id="argumentType"
 				:initial-selection-label="selectedArgumentTypeLabel"
 				@input="typeHandler"
-			></z-object-selector>
+			></wl-z-object-selector>
 		</div>
 		<div>
 			{{ labelsLabel }}:
-			<z-multilingual-string
+			<wl-z-multilingual-string
 				v-if="argumentLabelsId"
 				:zobject-id="argumentLabelsId"
-			></z-multilingual-string>
+			></wl-z-multilingual-string>
 		</div>
 	</div>
 </template>
@@ -37,9 +37,10 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-argument',
 	components: {
-		'z-object-selector': ZObjectSelector,
-		'z-multilingual-string': ZMultilingualString
+		'wl-z-object-selector': ZObjectSelector,
+		'wl-z-multilingual-string': ZMultilingualString
 	},
 	mixins: [ typeUtils ],
 	props: {

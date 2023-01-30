@@ -8,14 +8,14 @@
 	<div>
 		<h3>{{ $i18n( 'wikilambda-editor-tester-list-label' ).text() }}</h3>
 		<ul class="ext-wikilambda-zlist-no-bullets">
-			<z-tester-list-item
+			<wl-z-tester-list-item
 				v-for="( item ) in ZlistItems"
 				:key="item.id"
 				:zobject-id="item.id"
 				:viewmode="getViewMode"
 				:z-type="Constants.Z_TESTER"
 				@remove-item="removeItem"
-			></z-tester-list-item>
+			></wl-z-tester-list-item>
 			<li v-if="!getViewMode">
 				<cdx-button
 					:title="tooltipAddListItem"
@@ -28,11 +28,11 @@
 		<div v-if="getViewMode && ZlistItems.length <= 0">
 			{{ $i18n( 'wikilambda-tester-none-found' ).text() }}
 		</div>
-		<z-tester-ad-hoc
+		<wl-z-tester-ad-hoc
 			v-if="getNewTesterId"
 			:zobject-id="getNewTesterId"
 			:z-tester-list-id="zobjectId"
-		></z-tester-ad-hoc>
+		></wl-z-tester-ad-hoc>
 		<cdx-button v-if="!getViewMode && !getNewTesterId" @click="createNewTester">
 			{{ $i18n( 'wikilambda-tester-create-new' ).text() }}
 		</cdx-button>
@@ -53,9 +53,10 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-tester-list',
 	components: {
-		'z-tester-list-item': ZTesterListItem,
-		'z-tester-ad-hoc': ZTesterAdHoc,
+		'wl-z-tester-list-item': ZTesterListItem,
+		'wl-z-tester-ad-hoc': ZTesterAdHoc,
 		'cdx-button': CdxButton
 	},
 	extends: ZTypedList,

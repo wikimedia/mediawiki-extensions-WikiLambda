@@ -14,14 +14,14 @@
 		</label>
 
 		<!-- If type isn't selected, show type selector -->
-		<z-object-selector
+		<wl-z-object-selector
 			v-if="!zType"
 			:aria-labelledby="'ext-wikilambda-zobject-key-label-' + zKey"
 			:type="Constants.Z_TYPE"
 			:return-type="Constants.Z_TYPE"
 			:placeholder="$i18n( 'wikilambda-typeselector-label' ).text()"
 			@input="onTypeChange"
-		></z-object-selector>
+		></wl-z-object-selector>
 
 		<!-- If there's a type, we render the appropriate component -->
 		<div
@@ -31,18 +31,18 @@
 			<!-- Check if zobject is actually a list  -->
 			<span v-if="zType === Constants.Z_TYPED_LIST && zListType.key === '0'">
 				{{ zTypeLabel }} &rarr;
-				<z-object
+				<wl-z-object
 					:zobject-id="zListType.id"
 					:persistent="false"
 					:readonly="readonly"
 					:reference-type="Constants.Z_TYPE"
-				></z-object>
+				></wl-z-object>
 			</span>
 			<span v-else>
 				<a :href="zTypeLink" :target="!viewmode ? '_self' : ''">{{ zTypeLabel }}</a>
 			</span>
 
-			<z-key-mode-selector
+			<wl-z-key-mode-selector
 				v-if="!( viewmode || readonly ) &&
 					selectedMode && !isIdentityKey &&
 					zType !== Constants.Z_OBJECT &&
@@ -51,35 +51,35 @@
 				:parent-type="parentType"
 				:literal-type="literalType"
 				@change="onModeChange"
-			></z-key-mode-selector>
-			<z-object-generic
+			></wl-z-key-mode-selector>
+			<wl-z-object-generic
 				v-if="selectedMode === Constants.Z_KEY_MODES.GENERIC_LITERAL"
 				:zobject-id="zobjectId"
 				:type="zType"
 				:persistent="false"
 				:readonly="readonly"
-			></z-object-generic>
-			<z-reference
+			></wl-z-object-generic>
+			<wl-z-reference
 				v-else-if="selectedMode === Constants.Z_KEY_MODES.REFERENCE"
 				:zobject-id="zobjectId"
 				:readonly="readonly"
 				:search-type="literalType"
-			></z-reference>
-			<z-object-json
+			></wl-z-reference>
+			<wl-z-object-json
 				v-else-if="selectedMode === Constants.Z_KEY_MODES.JSON"
 				:zobject-id="zobjectId"
 				:readonly="readonly"
 				@change-literal="onliteralChange"
-			></z-object-json>
+			></wl-z-object-json>
 			<!-- Constants.Z_KEY_MODES.FUNCTION_CALL -->
 			<!-- Constants.Z_KEY_MODES.LITERAL -->
-			<z-object
+			<wl-z-object
 				v-else
 				:zobject-id="zobjectId"
 				:persistent="false"
 				:parent-type="parentType"
 				:readonly="readonly"
-			></z-object>
+			></wl-z-object>
 		</div>
 	</div>
 </template>
@@ -98,13 +98,13 @@ var Constants = require( '../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-object-key',
+	name: 'wl-z-object-key',
 	components: {
-		'z-object-selector': ZObjectSelector,
-		'z-reference': ZReference,
-		'z-key-mode-selector': ZKeyModeSelector,
-		'z-object-json': ZObjectJson,
-		'z-object-generic': ZObjectGeneric
+		'wl-z-object-selector': ZObjectSelector,
+		'wl-z-reference': ZReference,
+		'wl-z-key-mode-selector': ZKeyModeSelector,
+		'wl-z-object-json': ZObjectJson,
+		'wl-z-object-generic': ZObjectGeneric
 	},
 	mixins: [ typeUtils ],
 	inject: {
@@ -243,7 +243,7 @@ module.exports = exports = {
 		}
 	},
 	beforeCreate: function () {
-		this.$options.components[ 'z-object' ] = require( './ZObject.vue' );
+		this.$options.components[ 'wl-z-object' ] = require( './ZObject.vue' );
 	},
 	mounted: function () {
 		if ( this.getZkeyLiteralType( this.zKey ) ) {

@@ -16,16 +16,15 @@
 			:menu-items="programmingLangsList"
 			:default-label="$i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
 			@update:selected="selectLanguage"
-		>
-		</cdx-select>
-		<code-editor
+		></cdx-select>
+		<wl-code-editor
 			class="ext-wikilambda-zcode__code-editor"
 			:aria-label="$i18n( 'wikilambda-code-editor-label' ).text()"
 			:mode="selectedLanguage"
 			:read-only="!selectedLanguage || viewmode || readonly"
 			:value="editorValue"
 			@change="updateCode"
-		></code-editor>
+		></wl-code-editor>
 		<cdx-message
 			v-if="errorState"
 			class="ext-wikilambda-select-zobject__error"
@@ -48,8 +47,9 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-code',
 	components: {
-		'code-editor': CodeEditor,
+		'wl-code-editor': CodeEditor,
 		'cdx-select': CdxSelect,
 		'cdx-message': CdxMessage
 	},

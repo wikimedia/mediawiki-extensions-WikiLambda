@@ -7,11 +7,11 @@
 	-->
 	<div class="ext-wikilambda-zresponseenvelope">
 		<div>
-			<z-object-key
+			<wl-z-object-key
 				:zobject-id="zValue.id"
 				:parent-type="Constants.Z_RESPONSEENVELOPE"
 				:readonly="readonly"
-			></z-object-key>
+			></wl-z-object-key>
 		</div>
 		<div v-if="containsError" class="ext-wikilambda-zresponseenvelope__show-error">
 			<cdx-button
@@ -22,11 +22,11 @@
 		</div>
 		<div v-if="containsError && showError" class="ext-wikilambda-zresponseenvelope__error">
 			<hr>
-			<z-object-key
+			<wl-z-object-key
 				:zobject-id="zError.id"
 				:parent-type="Constants.Z_RESPONSEENVELOPE"
 				:readonly="readonly"
-			></z-object-key>
+			></wl-z-object-key>
 		</div>
 		<div class="ext-wikilambda-zresponseenvelope__show-metrics">
 			<cdx-button
@@ -85,8 +85,9 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-response-envelope',
 	components: {
-		'z-object-key': ZObjectKey,
+		'wl-z-object-key': ZObjectKey,
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon,
 		'cdx-dialog': CdxDialog

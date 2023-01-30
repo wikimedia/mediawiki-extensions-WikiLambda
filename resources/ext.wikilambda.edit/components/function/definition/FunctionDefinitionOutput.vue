@@ -13,7 +13,7 @@
 					class="ext-wikilambda-app__text-regular">
 					{{ $i18n( 'wikilambda-function-definition-output-label' ).text() }}
 				</label>
-				<tooltip
+				<wl-tooltip
 					v-if="tooltipMessage && !canEdit"
 					:content="tooltipMessage"
 				>
@@ -22,7 +22,7 @@
 						class="ext-wikilambda-function-definition-output__tooltip-icon"
 						:icon="tooltipIcon">
 					</cdx-icon>
-				</tooltip>
+				</wl-tooltip>
 			</div>
 			<span class="ext-wikilambda-function-definition-output__description">
 				{{ $i18n( 'wikilambda-function-definition-output-description' ).text() }}
@@ -33,7 +33,7 @@
 			<span class="ext-wikilambda-function-definition-output__body__entry-text">
 				{{ $i18n( 'wikilambda-function-definition-output-type-label' ).text() }}
 			</span>
-			<z-object-selector
+			<wl-z-object-selector
 				ref="typeSelector"
 				:type="Constants.Z_TYPE"
 				class="
@@ -47,7 +47,7 @@
 				:zobject-id="zReturnTypeId"
 				@input="setReturnType"
 				@focus-out="clearIfUnset"
-			></z-object-selector>
+			></wl-z-object-selector>
 		</div>
 	</div>
 </template>
@@ -62,10 +62,10 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'function-definition-output',
+	name: 'wl-function-definition-output',
 	components: {
-		'z-object-selector': ZObjectSelector,
-		tooltip: Tooltip,
+		'wl-z-object-selector': ZObjectSelector,
+		'wl-tooltip': Tooltip,
 		'cdx-icon': CdxIcon
 	},
 	props: {

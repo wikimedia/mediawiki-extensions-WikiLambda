@@ -35,7 +35,7 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-boolean',
+	name: 'wl-z-boolean',
 	mixins: [ typeUtils ],
 	inject: {
 		viewmode: { default: false }
@@ -90,12 +90,9 @@ module.exports = exports = {
 			}
 		}
 	} ),
-	methods: $.extend( mapActions( [
+	methods: mapActions( [
 		'setZObjectValue'
-	] ),
-	{
-
-	} )
+	] )
 };
 </script>
 

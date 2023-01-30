@@ -7,18 +7,18 @@
 	-->
 	<div class="ext-wikilambda-zTypedMap">
 		<template v-if="requiresTypeForList">
-			<z-object-selector
+			<wl-z-object-selector
 				:type="Constants.zType"
 				:placeholder="$i18n( 'wikilambda-ztyped-map-placeholder' ).text()"
 				:readonly="readonly"
 				@input="onMapTypeChange( $event, 0 )"
-			></z-object-selector>
-			<z-object-selector
+			></wl-z-object-selector>
+			<wl-z-object-selector
 				:type="Constants.zType"
 				:placeholder="$i18n( 'wikilambda-ztyped-map-placeholder' ).text()"
 				:readonly="readonly"
 				@input="onMapTypeChange( $event, 1 )"
-			></z-object-selector>
+			></wl-z-object-selector>
 		</template>
 		<template v-else>
 			<p>
@@ -28,10 +28,10 @@
 				( {{ Key1Label }}, {{ Key2Label }} )
 			</p>
 
-			<z-typed-list
+			<wl-z-typed-list
 				:zobject-id="zNestedTypedList.id"
-				:readonly="readonly">
-			</z-typed-list>
+				:readonly="readonly"
+			></wl-z-typed-list>
 		</template>
 	</div>
 </template>
@@ -46,10 +46,10 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-typed-map',
+	name: 'wl-z-typed-map',
 	components: {
-		'z-object-selector': ZObjectSelector,
-		'z-typed-list': ZTypedList
+		'wl-z-object-selector': ZObjectSelector,
+		'wl-z-typed-list': ZTypedList
 	},
 	mixins: [ typeUtils ],
 	inject: {
@@ -158,7 +158,7 @@ module.exports = exports = {
 		}
 	},
 	beforeCreate: function () {
-		this.$options.components[ 'z-object' ] = require( './../ZObject.vue' );
+		this.$options.components[ 'wl-z-object' ] = require( './../ZObject.vue' );
 	}
 };
 </script>

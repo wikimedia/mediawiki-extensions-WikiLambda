@@ -8,7 +8,7 @@
 	<div class="ext-wikilambda-zimplementation">
 		<div>
 			<label id="ext-wikilambda-zimplementation_function-label">{{ functionLabel }}:</label>
-			<z-object-selector
+			<wl-z-object-selector
 				v-if="!viewmode && implMode && isFunctionLabelReady"
 				class="ext-wikilambda-zimplementation__function-selector"
 				aria-labelledby="ext-wikilambda-zimplementation_function-label"
@@ -18,13 +18,13 @@
 				:initial-selection-label="selectedFunctionLabel"
 				:zobject-id="zFunction.id"
 				@input="updateZFunctionType"
-			></z-object-selector>
+			></wl-z-object-selector>
 			<template v-else>
-				<z-reference
+				<wl-z-reference
 					v-if="zFunction.value"
 					:zobject-key="zFunction.value"
 					:readonly="true"
-				></z-reference>
+				></wl-z-reference>
 				<span v-else>{{ $i18n( 'wikilambda-invalidzobject' ).text() }}</span>
 				<span class="ext-wikilambda-zimplementation__-is-impl-associated">
 					<cdx-icon :icon="associatedIcon()"></cdx-icon>
@@ -49,21 +49,21 @@
 		<div v-if="implMode === null">
 			<span>{{ $i18n( 'wikilambda-implementation-selector-none' ).text() }}</span>
 		</div>
-		<z-code
+		<wl-z-code
 			v-if="implMode === Constants.implementationModes.CODE"
 			:zobject-id="zCodeId"
 			@select-language="selectLanguage"
 			@update-code="updateCode"
-		></z-code>
-		<z-object
+		></wl-z-code>
+		<wl-z-object
 			v-if="implMode === Constants.implementationModes.COMPOSITION"
 			:zobject-id="zCompositionId"
 			:persistent="false"
-		></z-object>
-		<z-function-tester-report
+		></wl-z-object>
+		<wl-z-function-tester-report
 			:z-function-id="zFunction.value || ''"
 			:z-implementation-id="zImplementationId"
-		></z-function-tester-report>
+		></wl-z-function-tester-report>
 	</div>
 </template>
 
@@ -83,10 +83,10 @@ var Constants = require( '../../Constants.js' ),
 // @vue/component
 module.exports = exports = {
 	components: {
-		'z-code': ZCode,
-		'z-object-selector': ZObjectSelector,
-		'z-reference': ZReference,
-		'z-function-tester-report': ZFunctionTesterReport,
+		'wl-z-code': ZCode,
+		'wl-z-object-selector': ZObjectSelector,
+		'wl-z-reference': ZReference,
+		'wl-z-function-tester-report': ZFunctionTesterReport,
 		'cdx-select': CdxSelect,
 		'cdx-icon': CdxIcon
 	},
@@ -291,7 +291,7 @@ module.exports = exports = {
 		}
 	},
 	beforeCreate: function () {
-		this.$options.components[ 'z-object' ] = require( '../ZObject.vue' );
+		this.$options.components[ 'wl-z-object' ] = require( '../ZObject.vue' );
 	},
 	mounted: function () {
 		if ( this.zCodeId ) {

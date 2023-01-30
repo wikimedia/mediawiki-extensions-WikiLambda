@@ -27,12 +27,12 @@
 				{{ getZkeyLabels[ zTesterId ] }}
 			</option>
 		</select>
-		<z-reference
+		<wl-z-reference
 			v-else
 			:zobject-id="zobjectId"
 			:search-type="zType"
 			:readonly="true"
-		></z-reference>
+		></wl-z-reference>
 	</li>
 </template>
 
@@ -46,9 +46,9 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-tester-list-item',
+	name: 'wl-z-tester-list-item',
 	components: {
-		'z-reference': ZReference,
+		'wl-z-reference': ZReference,
 		'cdx-button': CdxButton
 	},
 	extends: ZListItem,

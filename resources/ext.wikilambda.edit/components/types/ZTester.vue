@@ -7,11 +7,11 @@
 	-->
 	<div>
 		<label id="ext-wikilambda-ztester_function-label">{{ functionLabel }}:</label>
-		<z-reference
+		<wl-z-reference
 			aria-labelledby="ext-wikilambda-ztester_function-label"
 			:search-type="Constants.Z_FUNCTION"
 			:zobject-id="zFunction.id"
-		></z-reference>
+		></wl-z-reference>
 		<span class="ext-wikilambda-is-tester-associated">
 			<cdx-icon :icon="associatedIcon()"></cdx-icon>
 			({{ isTesterAttached ?
@@ -20,21 +20,19 @@
 			}})
 		</span>
 		<label id="ext-wikilambda-ztester_call-label">{{ callLabel }}:</label>
-		<z-function-call
+		<wl-z-function-call
 			aria-labelledby="ext-wikilambda-ztester_call-label"
 			:zobject-id="zCall.id"
 			hide-call-button
-		>
-		</z-function-call>
+		></wl-z-function-call>
 		<label id="ext-wikilambda-ztester_validator-label">{{ validatorLabel }}:</label>
-		<z-function-call
+		<wl-z-function-call
 			aria-labelledby="ext-wikilambda-ztester_validator-label"
 			:zobject-id="zValidation.id"
 			hide-first-argument
 			hide-call-button
-		>
-		</z-function-call>
-		<z-function-tester-report
+		></wl-z-function-call>
+		<wl-z-function-tester-report
 			:z-function-id="zFunctionId"
 			:z-tester-id="zTesterId"
 		>
@@ -43,7 +41,7 @@
 					{{ $i18n( 'wikilambda-tester-run-tester' ).text() }}
 				</cdx-button>
 			</template>
-		</z-function-tester-report>
+		</wl-z-function-tester-report>
 	</div>
 </template>
 
@@ -61,9 +59,9 @@ var Constants = require( '../../Constants.js' ),
 // @vue/component
 module.exports = exports = {
 	components: {
-		'z-function-call': ZFunctionCall,
-		'z-reference': ZReference,
-		'z-function-tester-report': ZFunctionTesterReport,
+		'wl-z-function-call': ZFunctionCall,
+		'wl-z-reference': ZReference,
+		'wl-z-function-tester-report': ZFunctionTesterReport,
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},

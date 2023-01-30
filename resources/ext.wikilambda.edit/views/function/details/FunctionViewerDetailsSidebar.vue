@@ -6,12 +6,11 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-function-viewer-details-sidebar">
-		<table-container
+		<wl-table
 			class="ext-wikilambda-function-viewer-details-sidebar__table"
 			:header="formattedHeaderData"
 			:body="formattedBodyData"
-		>
-		</table-container>
+		></wl-table>
 		<template v-if="showFunctionDefinitionItems && hasMultiLangs">
 			<cdx-button
 				class="ext-wikilambda-function-viewer-details-sidebar__button"
@@ -60,9 +59,9 @@ var TableContainer = require( '../../../components/base/Table.vue' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'function-viewer-details-sidebar',
+	name: 'wl-function-viewer-details-sidebar',
 	components: {
-		'table-container': TableContainer,
+		'wl-table': TableContainer,
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},
@@ -222,7 +221,7 @@ module.exports = exports = {
 								class: 'ext-wikilambda-function-viewer-details-sidebar__table-borderless-row'
 							},
 							language: {
-								component: 'wikilambda-chip',
+								component: 'wl-chip',
 								props: {
 									editableContainer: false,
 									readonly: true,

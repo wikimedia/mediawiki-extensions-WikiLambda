@@ -7,13 +7,13 @@
 	-->
 	<div :class="classZObject">
 		<!-- Depending on the type, it will render a different component -->
-		<z-object-selector
+		<wl-z-object-selector
 			v-if="type === Constants.Z_OBJECT"
 			:type="Constants.Z_TYPE"
 			:return-type="Constants.Z_TYPE"
 			:placeholder="$i18n( 'wikilambda-argument-typeselector-label' ).text()"
 			@input="changeZObjectType"
-		></z-object-selector>
+		></wl-z-object-selector>
 
 		<component
 			:is="determineComponent"
@@ -58,30 +58,30 @@ var Constants = require( '../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-object',
+	name: 'wl-z-object',
 	components: {
-		'z-multilingual-string': ZMultilingualString,
-		'z-reference': ZReference,
-		'z-string': ZString,
-		'z-object-generic': ZObjectGeneric,
-		'z-code': ZCode,
-		'z-argument': ZArgument,
-		'z-function-call': ZFunctionCall,
-		'z-object-selector': ZObjectSelector,
-		'z-function': ZFunction,
-		'z-boolean': ZBoolean,
-		'z-implementation': ZImplementation,
-		'z-argument-reference': ZArgumentReference,
-		'z-tester': ZTester,
-		'z-persistentobject': ZPersistentObject,
-		'z-character': ZCharacter,
-		'z-responseenvelope': ZResponseEnvelope,
-		'z-type': ZType,
-		'z-typed-list': ZTypedList,
-		'z-typed-pair': ZTypedPair,
-		'z-typed-map': ZTypedMap,
-		'z-function-call-to-type': ZFunctionCallToType,
-		'z-key': ZKey
+		'wl-z-multilingual-string': ZMultilingualString,
+		'wl-z-reference': ZReference,
+		'wl-z-string': ZString,
+		'wl-z-object-generic': ZObjectGeneric,
+		'wl-z-code': ZCode,
+		'wl-z-argument': ZArgument,
+		'wl-z-function-call': ZFunctionCall,
+		'wl-z-object-selector': ZObjectSelector,
+		'wl-z-function': ZFunction,
+		'wl-z-boolean': ZBoolean,
+		'wl-z-implementation': ZImplementation,
+		'wl-z-argument-reference': ZArgumentReference,
+		'wl-z-tester': ZTester,
+		'wl-z-persistentobject': ZPersistentObject,
+		'wl-z-character': ZCharacter,
+		'wl-z-responseenvelope': ZResponseEnvelope,
+		'wl-z-type': ZType,
+		'wl-z-typed-list': ZTypedList,
+		'wl-z-typed-pair': ZTypedPair,
+		'wl-z-typed-map': ZTypedMap,
+		'wl-z-function-call-to-type': ZFunctionCallToType,
+		'wl-z-key': ZKey
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -140,58 +140,58 @@ module.exports = exports = {
 			determineComponent: function () {
 				switch ( this.type ) {
 					case Constants.Z_PERSISTENTOBJECT:
-						return 'z-persistentobject';
+						return 'wl-z-persistentobject';
 					case Constants.Z_STRING:
-						return 'z-string';
+						return 'wl-z-string';
 					case Constants.Z_REFERENCE:
-						return 'z-reference';
+						return 'wl-z-reference';
 					case Constants.Z_MULTILINGUALSTRING:
-						return 'z-multilingual-string';
+						return 'wl-z-multilingual-string';
 					case Constants.Z_TYPED_LIST:
 						if ( this.zObject && this.zObject.value === 'array' ) {
-							return 'z-typed-list';
+							return 'wl-z-typed-list';
 						} else {
-							return 'z-object-generic';
+							return 'wl-z-object-generic';
 						}
 					case Constants.Z_TYPED_PAIR:
-						return 'z-typed-pair';
+						return 'wl-z-typed-pair';
 					case Constants.Z_TYPED_MAP:
-						return 'z-typed-map';
+						return 'wl-z-typed-map';
 					case Constants.Z_CODE:
-						return 'z-code';
+						return 'wl-z-code';
 					case Constants.Z_ARGUMENT:
-						return 'z-argument';
+						return 'wl-z-argument';
 					case Constants.Z_FUNCTION_CALL:
-						return 'z-function-call';
+						return 'wl-z-function-call';
 					case Constants.Z_FUNCTION:
 						// Prevent rendering the ZFunction component is not the root element
 						if ( this.parentType === Constants.Z_PERSISTENTOBJECT ) {
-							return 'z-function';
+							return 'wl-z-function';
 						} else {
-							return 'z-object-generic';
+							return 'wl-z-object-generic';
 						}
 					case Constants.Z_BOOLEAN:
-						return 'z-boolean';
+						return 'wl-z-boolean';
 					case Constants.Z_IMPLEMENTATION:
-						return 'z-implementation';
+						return 'wl-z-implementation';
 					case Constants.Z_ARGUMENT_REFERENCE:
-						return 'z-argument-reference';
+						return 'wl-z-argument-reference';
 					case Constants.Z_NOTHING:
-						return 'z-nothing';
+						return 'wl-z-nothing';
 					case Constants.Z_TESTER:
-						return 'z-tester';
+						return 'wl-z-tester';
 					case Constants.Z_CHARACTER:
-						return 'z-character';
+						return 'wl-z-character';
 					case Constants.Z_RESPONSEENVELOPE:
-						return 'z-responseenvelope';
+						return 'wl-z-responseenvelope';
 					case Constants.Z_TYPE:
-						return 'z-type';
+						return 'wl-z-type';
 					case Constants.Z_FUNCTION_CALL_TO_TYPE:
-						return 'z-function-call-to-type';
+						return 'wl-z-function-call-to-type';
 					case Constants.Z_KEY:
-						return 'z-key';
+						return 'wl-z-key';
 					default:
-						return 'z-object-generic';
+						return 'wl-z-object-generic';
 				}
 			}
 		} ),

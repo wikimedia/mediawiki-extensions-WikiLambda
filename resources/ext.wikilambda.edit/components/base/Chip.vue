@@ -38,7 +38,7 @@ var CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 
 // @vue/component
 module.exports = exports = {
-	name: 'chip-item',
+	name: 'wl-chip-item',
 	components: {
 		'cdx-icon': CdxIcon
 	},

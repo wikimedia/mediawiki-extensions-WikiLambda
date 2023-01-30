@@ -13,12 +13,12 @@
 				ZTesterAdHoc -> ZInlinetesterCall
 			-->
 			<!-- eslint-disable-next-line vue/no-unregistered-components -->
-			<z-object-key
+			<wl-z-object-key
 				:zobject-id="findArgumentId( argument.key )"
 				:persistent="false"
 				:parent-type="Constants.Z_FUNCTION_CALL"
 				:z-key="argument.key"
-			></z-object-key>
+			></wl-z-object-key>
 		</span>
 	</div>
 </template>
@@ -29,6 +29,7 @@ var ZFunctionCall = require( '../types/ZFunctionCall.vue' ),
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-inline-tester-call',
 	extends: ZFunctionCall,
 	provide: function () {
 		return {

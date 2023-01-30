@@ -44,17 +44,17 @@
 							{{ getZkeyLabels[ language[ Constants.Z_REFERENCE_ID ] ] }}
 						</td>
 						<td>
-							<z-string
+							<wl-z-string
 								:zobject-id="getLanguageLabelStringId( language[ Constants.Z_REFERENCE_ID ] )"
-							></z-string>
+							></wl-z-string>
 						</td>
 						<td>
-							<z-label-block-aliases
+							<wl-z-label-block-aliases
 								:zobject-id="zobjectId"
 								:language="language"
 								:language-aliases="getLanguageAliases( language[ Constants.Z_REFERENCE_ID ] )"
 								:z-object-alias-id="zObjectAliasId"
-							></z-label-block-aliases>
+							></wl-z-label-block-aliases>
 						</td>
 					</tr>
 				</tbody>
@@ -68,14 +68,14 @@
 					{{ showAllSelectedLanguagesLabel }}
 				</cdx-toggle-button>
 			</div>
-			<z-object-selector
+			<wl-z-object-selector
 				v-if="!viewmode"
 				ref="languageSelector"
 				:used-languages="selectedLanguages"
 				:type="Constants.Z_NATURAL_LANGUAGE"
 				:selected-id="selectedLang"
 				@input="addNewLang"
-			></z-object-selector>
+			></wl-z-object-selector>
 		</template>
 	</div>
 </template>
@@ -96,9 +96,9 @@ module.exports = exports = {
 	components: {
 		'cdx-button': CdxButton,
 		'cdx-toggle-button': CdxToggleButton,
-		'z-string': ZString,
-		'z-object-selector': ZObjectSelector,
-		'z-label-block-aliases': ZLabelBlockAliases
+		'wl-z-string': ZString,
+		'wl-z-object-selector': ZObjectSelector,
+		'wl-z-label-block-aliases': ZLabelBlockAliases
 	},
 	mixins: [ typeUtils ],
 	inject: {

@@ -15,13 +15,13 @@
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
 			</cdx-button>
-			<z-object-key
+			<wl-z-object-key
 				:z-key="value.key"
 				:zobject-id="value.id"
 				:parent-type="zObjectType"
 				:readonly="readonly"
 			>
-			</z-object-key>
+			</wl-z-object-key>
 		</li>
 	</ul>
 </template>
@@ -36,7 +36,7 @@ var Constants = require( '../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-object-key-list',
+	name: 'wl-z-object-key-list',
 	components: {
 		'cdx-button': CdxButton
 	},
@@ -123,7 +123,7 @@ module.exports = exports = {
 
 	beforeCreate: function () {
 		// Need to delay require of ZObjectKey to avoid loop
-		this.$options.components[ 'z-object-key' ] = require( './ZObjectKey.vue' );
+		this.$options.components[ 'wl-z-object-key' ] = require( './ZObjectKey.vue' );
 	}
 };
 </script>

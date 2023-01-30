@@ -7,20 +7,20 @@
 	-->
 	<div v-if="selectedFunction" class="ext-wikilambda-function-call-block ext-wikilambda-function-call-block__runner">
 		{{ zFunctionCallKeyLabels[ Constants.Z_FUNCTION_CALL_FUNCTION ] }}:
-		<z-reference
+		<wl-z-reference
 			:zobject-key="selectedFunctionPersistentValue"
 			:search-type="Constants.Z_FUNCTION"
 			:readonly="true"
-		></z-reference>
+		></wl-z-reference>
 		<ul>
 			<li v-for="argument in zFunctionArguments" :key="argument.key">
-				<z-object-key
+				<wl-z-object-key
 					:zobject-id="findArgumentId( argument.key )"
 					:persistent="false"
 					:parent-type="Constants.Z_FUNCTION_CALL"
 					:z-key="argument.key"
 					:readonly="hasNoImplementations()"
-				></z-object-key>
+				></wl-z-object-key>
 			</li>
 		</ul>
 		<cdx-button :disabled="hasNoImplementations()" @click="callFunctionHandler">
@@ -29,24 +29,24 @@
 		<div v-if="resultZObject || orchestrating" class="ext-wikilambda-orchestrated-result">
 			<template v-if="resultZObject">
 				<span>{{ $i18n( 'wikilambda-orchestrated' ).text() }}</span>
-				<z-key-mode-selector
+				<wl-z-key-mode-selector
 					:mode="orchestratedMode"
 					:parent-type="Constants.Z_FUNCTION_CALL"
 					:available-modes="displayModes"
 					@change="orchestratedMode = $event"
-				></z-key-mode-selector>
+				></wl-z-key-mode-selector>
 				<div>
-					<z-object-json
+					<wl-z-object-json
 						v-if="orchestratedMode === Constants.Z_KEY_MODES.JSON"
 						:readonly="true"
 						:zobject-id="resultId"
-					></z-object-json>
-					<z-object-key
+					></wl-z-object-json>
+					<wl-z-object-key
 						v-else
 						:zobject-id="resultId"
 						:parent-type="Constants.Z_RESPONSEENVELOPE"
 						:readonly="true"
-					></z-object-key>
+					></wl-z-object-key>
 				</div>
 			</template>
 			<template v-else-if="orchestrating">
@@ -64,6 +64,7 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-function-call-runner',
 	components: {
 		'cdx-button': CdxButton
 	},

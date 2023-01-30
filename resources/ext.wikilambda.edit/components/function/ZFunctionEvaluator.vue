@@ -6,9 +6,9 @@
 		@license MIT
 	-->
 	<div v-if="resultId">
-		<z-function-call-runner
+		<wl-z-function-call-runner
 			:zobject-id="functionCallId"
-		></z-function-call-runner>
+		></wl-z-function-call-runner>
 	</div>
 </template>
 
@@ -20,8 +20,9 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-function-evaluator',
 	components: {
-		'z-function-call-runner': ZFunctionCallRunner
+		'wl-z-function-call-runner': ZFunctionCallRunner
 	},
 	data: function () {
 		return {

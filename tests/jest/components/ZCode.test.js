@@ -63,7 +63,7 @@ describe( 'ZCode', () => {
 	it( 'sets code value in editor on first load', () => {
 		var wrapper = VueTestUtils.shallowMount( ZCode, { props: { zobjectId: zobjectId } } );
 
-		expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'value' ) ).toEqual( initialCodeValue );
+		expect( wrapper.findComponent( { name: 'wl-code-editor' } ).props( 'value' ) ).toEqual( initialCodeValue );
 	} );
 
 	it( 'set code value in editor when it is updated in store following a language change', ( done ) => {
@@ -73,7 +73,7 @@ describe( 'ZCode', () => {
 		global.store.commit( 'setCodeValue', 'new' );
 
 		wrapper.vm.$nextTick( () => {
-			expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'value' ) ).toEqual( 'new' );
+			expect( wrapper.findComponent( { name: 'wl-code-editor' } ).props( 'value' ) ).toEqual( 'new' );
 			done();
 		} );
 	} );
@@ -84,7 +84,7 @@ describe( 'ZCode', () => {
 		global.store.commit( 'setCodeValue', 'new' );
 
 		wrapper.vm.$nextTick( () => {
-			expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'value' ) ).toEqual( initialCodeValue );
+			expect( wrapper.findComponent( { name: 'wl-code-editor' } ).props( 'value' ) ).toEqual( initialCodeValue );
 			done();
 		} );
 	} );
@@ -93,14 +93,14 @@ describe( 'ZCode', () => {
 		var wrapper = VueTestUtils.shallowMount( ZCode, { props: { zobjectId: zobjectId } } );
 
 		expect( wrapper.findComponent( { name: 'cdx-select' } ).exists() ).toEqual( true );
-		expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'readOnly' ) ).toEqual( false );
+		expect( wrapper.findComponent( { name: 'wl-code-editor' } ).props( 'readOnly' ) ).toEqual( false );
 	} );
 
 	it( 'disables programming language selector and code editor when in read-only mode', () => {
 		var wrapper = VueTestUtils.shallowMount( ZCode, { props: { zobjectId: zobjectId, readonly: true } } );
 
 		expect( wrapper.findComponent( { name: 'cdx-select' } ).exists() ).toEqual( false );
-		expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'readOnly' ) ).toEqual( true );
+		expect( wrapper.findComponent( { name: 'wl-code-editor' } ).props( 'readOnly' ) ).toEqual( true );
 	} );
 
 	it( 'disables programming language selector and code editor when in view mode', () => {
@@ -110,7 +110,7 @@ describe( 'ZCode', () => {
 		} );
 
 		expect( wrapper.findComponent( { name: 'cdx-select' } ).exists() ).toEqual( false );
-		expect( wrapper.findComponent( { name: 'code-editor' } ).props( 'readOnly' ) ).toEqual( true );
+		expect( wrapper.findComponent( { name: 'wl-code-editor' } ).props( 'readOnly' ) ).toEqual( true );
 	} );
 	it( 'updates code for valid strings', async () => {
 		var wrapper = VueTestUtils.shallowMount( ZCode );

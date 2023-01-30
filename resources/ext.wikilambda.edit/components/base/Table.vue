@@ -81,20 +81,20 @@
 var CdxProgressBar = require( '@wikimedia/codex' ).CdxProgressBar,
 	CdxCheckbox = require( '@wikimedia/codex' ).CdxCheckbox,
 	TableTesterStatus = require( '../../views/function/partials/TesterTableStatus.vue' ),
-	WikilambdaChip = require( './Chip.vue' ),
+	Chip = require( './Chip.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon;
 
 // @vue/component
 module.exports = exports = {
-	name: 'table-container',
+	name: 'wl-table-container',
 	components: {
 		'cdx-progress-bar': CdxProgressBar,
 		'cdx-checkbox': CdxCheckbox,
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon,
-		'wikilambda-chip': WikilambdaChip,
-		'tester-table-status': TableTesterStatus
+		'wl-chip': Chip,
+		'wl-tester-table-status': TableTesterStatus
 	},
 	props: {
 		header: { // example: { language: "Language" } or { language: { title: "Language" mobile: false } }

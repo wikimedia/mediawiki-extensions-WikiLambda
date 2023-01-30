@@ -36,7 +36,7 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'function-definition-name',
+	name: 'wl-function-definition-name',
 	components: {
 		'cdx-text-input': CdxTextInput
 	},

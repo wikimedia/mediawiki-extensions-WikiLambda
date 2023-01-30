@@ -9,7 +9,7 @@
 		<label id="ext-wikilambda-function-call-block__select-function-label">
 			{{ zFunctionCallKeyLabels[ Constants.Z_FUNCTION_CALL_FUNCTION ] }}:
 		</label>
-		<z-object-selector
+		<wl-z-object-selector
 			v-if="!selectedFunction"
 			class="ext-wikilambda-function-call-block__select-function"
 			aria-labelledby="ext-wikilambda-function-call-block__select-function-label"
@@ -18,7 +18,7 @@
 			:selected-id="zFunctionId"
 			:zobject-id="zobjectId"
 			@input="typeHandler"
-		></z-object-selector>
+		></wl-z-object-selector>
 		<template v-else>
 			<cdx-button
 				v-if="!viewmode"
@@ -29,20 +29,20 @@
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
 			</cdx-button>
-			<z-reference
+			<wl-z-reference
 				:zobject-key="selectedFunctionPersistentValue"
 				:search-type="Constants.Z_FUNCTION"
 				:readonly="true"
-			></z-reference>
+			></wl-z-reference>
 		</template>
 		<ul>
 			<li v-for="argument in zFunctionArguments" :key="argument.key">
-				<z-object-key
+				<wl-z-object-key
 					:zobject-id="findArgumentId( argument.key )"
 					:persistent="false"
 					:parent-type="Constants.Z_FUNCTION_CALL"
 					:z-key="argument.key"
-				></z-object-key>
+				></wl-z-object-key>
 			</li>
 		</ul>
 		<cdx-button
@@ -54,24 +54,24 @@
 		<div v-if="resultZObject || orchestrating" class="ext-wikilambda-orchestrated-result">
 			<template v-if="resultZObject">
 				<span>{{ $i18n( 'wikilambda-orchestrated' ).text() }}</span>
-				<z-key-mode-selector
+				<wl-z-key-mode-selector
 					:mode="orchestratedMode"
 					:parent-type="Constants.Z_FUNCTION_CALL"
 					:available-modes="displayModes"
 					@change="orchestratedMode = $event"
-				></z-key-mode-selector>
+				></wl-z-key-mode-selector>
 				<div>
-					<z-object-json
+					<wl-z-object-json
 						v-if="orchestratedMode === Constants.Z_KEY_MODES.JSON"
 						:readonly="true"
 						:zobject-id="resultId"
-					></z-object-json>
-					<z-object-key
+					></wl-z-object-json>
+					<wl-z-object-key
 						v-else
 						:zobject-id="resultId"
 						:parent-type="Constants.Z_RESPONSEENVELOPE"
 						:readonly="true"
-					></z-object-key>
+					></wl-z-object-key>
 				</div>
 			</template>
 			<template v-else-if="orchestrating">
@@ -95,12 +95,13 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-function-call',
 	components: {
-		'z-object-selector': ZObjectSelector,
-		'z-object-json': ZObjectJson,
-		'z-object-key': ZObjectKey,
-		'z-key-mode-selector': ZKeyModeSelector,
-		'z-reference': ZReference,
+		'wl-z-object-selector': ZObjectSelector,
+		'wl-z-object-json': ZObjectJson,
+		'wl-z-object-key': ZObjectKey,
+		'wl-z-key-mode-selector': ZKeyModeSelector,
+		'wl-z-reference': ZReference,
 		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],

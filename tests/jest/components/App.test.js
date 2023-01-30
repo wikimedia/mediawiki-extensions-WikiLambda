@@ -56,7 +56,7 @@ describe( 'App.vue', function () {
 		} );
 
 		expect( wrapper.componentVM.isAppSetup ).toBe( false );
-		expect( wrapper.findComponent( { name: 'function-editor' } ).exists() ).toBe( false );
+		expect( wrapper.findComponent( { name: 'wl-function-editor' } ).exists() ).toBe( false );
 		expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-loading' );
 	} );
 
@@ -74,7 +74,7 @@ describe( 'App.vue', function () {
 		} );
 
 		expect( wrapper.componentVM.isAppSetup ).toBe( false );
-		expect( wrapper.findComponent( { name: 'function-editor' } ).exists() ).toBe( false );
+		expect( wrapper.findComponent( { name: 'wl-function-editor' } ).exists() ).toBe( false );
 	} );
 
 	it( 'Renders the router view when getZObjectInitialized is true and initializeZObject has completed', async () => {
@@ -94,7 +94,7 @@ describe( 'App.vue', function () {
 		await wrapper.vm.$nextTick();
 
 		expect( wrapper.componentVM.isAppSetup ).toBe( true );
-		expect( wrapper.findComponent( { name: 'function-editor' } ).exists() ).toBe( true );
+		expect( wrapper.findComponent( { name: 'wl-function-editor' } ).exists() ).toBe( true );
 	} );
 
 	it( 'Initializes the app on load', function () {

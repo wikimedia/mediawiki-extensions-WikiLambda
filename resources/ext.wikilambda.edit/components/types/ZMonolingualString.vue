@@ -43,7 +43,7 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-monolingual-string',
+	name: 'wl-z-monolingual-string',
 	components: {
 		'cdx-button': CdxButton
 	},

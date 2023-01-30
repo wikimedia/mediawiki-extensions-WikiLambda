@@ -31,7 +31,7 @@
 <script>
 // @vue/component
 module.exports = exports = {
-	name: 'tooltip-item',
+	name: 'wl-tooltip-item',
 	// TODO (T301481): smart positioning of tooltip
 	props: {
 		header: {

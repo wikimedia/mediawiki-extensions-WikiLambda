@@ -24,20 +24,20 @@
 			<span v-if="viewmode || readonly || type">
 				<a :href="typeLink" :target="!viewmode ? '_blank' : ''">{{ typeLabel }}</a>
 			</span>
-			<z-object-selector
+			<wl-z-object-selector
 				v-else
 				:type="Constants.Z_TYPE"
 				:return-type="Constants.Z_TYPE"
 				:placeholder="$i18n( 'wikilambda-typeselector-label' ).text()"
 				:selected-id="type"
 				@input="onTypeChange"
-			></z-object-selector>
+			></wl-z-object-selector>
 		</span>
 
-		<z-object-key-list
+		<wl-z-object-key-list
 			:zobject-id="zobjectId"
 			:readonly="readonly"
-		></z-object-key-list>
+		></wl-z-object-key-list>
 	</div>
 </template>
 
@@ -49,7 +49,7 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-key',
+	name: 'wl-z-key',
 	extends: ZObjectGeneric,
 	computed: $.extend( {},
 		mapGetters( [

@@ -6,7 +6,7 @@
 		@license MIT
 	-->
 	<Teleport v-if="isVisible" to="#ext-wikilambda-app">
-		<base-dialog
+		<wl-base-dialog
 			:custom-class="customClass"
 			:cancel-button-text="cancelButtonTextOrDefault"
 			:confirm-button-text="confirmButtonTextOrDefault"
@@ -24,7 +24,7 @@
 				<slot name="dialog-container-title"></slot>
 			</template>
 			<slot></slot>
-		</base-dialog>
+		</wl-base-dialog>
 	</Teleport>
 </template>
 
@@ -33,9 +33,9 @@ var Dialog = require( './Dialog.vue' );
 
 // @vue/component
 module.exports = exports = {
-	name: 'base-dialog-container',
+	name: 'wl-base-dialog-container',
 	components: {
-		'base-dialog': Dialog
+		'wl-base-dialog': Dialog
 	},
 	props: {
 		cancelButtonText: {

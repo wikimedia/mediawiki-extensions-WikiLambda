@@ -13,7 +13,7 @@
 				{{ $i18n( 'wikilambda-languagelabel' ).text() }}
 			</label>
 		</div>
-		<z-object-selector
+		<wl-z-object-selector
 			ref="languageSelector"
 			class="ext-wikilambda-language-selector__add-language"
 			aria-labelledby="ext-wikilambda-language-selector__add-language-label"
@@ -23,7 +23,7 @@
 			:initial-selection-label="getZkeyLabels[ zLanguage ]"
 			@input="addNewLang"
 			@focus-out="clearLookupToFallback"
-		></z-object-selector>
+		></wl-z-object-selector>
 	</div>
 </template>
 
@@ -36,8 +36,9 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-fn-editor-z-language-selector',
 	components: {
-		'z-object-selector': ZObjectSelector
+		'wl-z-object-selector': ZObjectSelector
 	},
 	props: {
 		zLanguage: {

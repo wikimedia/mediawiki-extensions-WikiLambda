@@ -49,7 +49,7 @@
 				>
 					{{ $i18n( 'wikilambda-function-definition-input-item-type' ).text() }}
 				</span>
-				<z-object-selector
+				<wl-z-object-selector
 					v-if="( !canEditType && getTypeOfArgument ) || canEditType"
 					ref="typeSelector"
 					:type="Constants.Z_TYPE"
@@ -63,14 +63,14 @@
 					:zobject-id="getZArgumentType.id"
 					@input="setArgumentType( $event )"
 					@focus-out="clearIfUnset"
-				></z-object-selector>
+				></wl-z-object-selector>
 				<!--
 					TODO: This is hardcoded for now as it is the first complex input,
 					In the future we should provide an UI that will allow user to define complex types
 					automatically (for example set a function call that require x argument to be set
 					and show them automatically)
 				-->
-				<z-object-selector
+				<wl-z-object-selector
 					v-if="getTypeOfArgument === Constants.Z_TYPED_LIST"
 					class="
 						ext-wikilambda-editor-input-list-item__body__entry-field
@@ -79,8 +79,7 @@
 					:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-typed-list-placeholder' ).text()"
 					@input="setListTypedList"
 					@clear="setListTypedList"
-				>
-				</z-object-selector>
+				></wl-z-object-selector>
 			</div>
 			<div class="ext-wikilambda-editor-input-list-item__body__entry">
 				<span
@@ -126,9 +125,9 @@ var Constants = require( '../../../Constants.js' ),
 	debounceSetArgumentLabelTimeout = 300;
 // @vue/component
 module.exports = exports = {
-	name: 'function-definition-inputs-item',
+	name: 'wl-function-definition-inputs-item',
 	components: {
-		'z-object-selector': ZObjectSelector,
+		'wl-z-object-selector': ZObjectSelector,
 		'cdx-icon': CdxIcon,
 		'cdx-button': CdxButton,
 		'cdx-text-input': CdxTextInput

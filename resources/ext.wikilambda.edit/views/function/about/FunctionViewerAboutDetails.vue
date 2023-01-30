@@ -12,15 +12,15 @@
 		<h3>
 			{{ $i18n( 'wikilambda-persistentobject-evaluate-function' ).text() }}
 		</h3>
-		<z-function-evaluator></z-function-evaluator>
+		<wl-z-function-evaluator></wl-z-function-evaluator>
 		<div>
 			<h3>
 				{{ $i18n( 'wikilambda-expert-mode-json-label' ).text() }}
 			</h3>
-			<z-object-json
+			<wl-z-object-json
 				:readonly="true"
 				:zobject-raw="getZObjectAsJson"
-			></z-object-json>
+			></wl-z-object-json>
 		</div>
 	</div>
 </template>
@@ -32,10 +32,10 @@ var mapGetters = require( 'vuex' ).mapGetters,
 
 // @vue/component
 module.exports = exports = {
-	name: 'function-viewer-about-details',
+	name: 'wl-function-viewer-about-details',
 	components: {
-		'z-function-evaluator': ZFunctionEvaluator,
-		'z-object-json': ZObjectJson
+		'wl-z-function-evaluator': ZFunctionEvaluator,
+		'wl-z-object-json': ZObjectJson
 	},
 	computed: mapGetters( [
 		'getZObjectAsJson'

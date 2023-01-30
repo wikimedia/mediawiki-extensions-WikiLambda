@@ -30,7 +30,7 @@ var TextInput = require( '../base/TextInput.vue' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-monolingual-string',
+	name: 'wl-z-monolingual-string',
 	components: {
 		'wl-text-input': TextInput
 	},

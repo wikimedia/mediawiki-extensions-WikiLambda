@@ -7,8 +7,9 @@
 	-->
 	<div id="ext-wikilambda-app" class="ext-wikilambda-edit">
 		<template v-if="getZObjectInitialized && isAppSetup">
+			<!-- Append wl- prefix to the router current view, to help reference component correctly -->
 			<component
-				:is="getCurrentView"
+				:is="`wl-${getCurrentView}`"
 				@mounted="newViewMounted"
 			></component>
 		</template>
@@ -36,11 +37,11 @@ configureCompat( { MODE: 3 } );
 module.exports = exports = {
 	name: 'app',
 	components: {
-		'function-editor': FunctionEditor,
-		'function-viewer': FunctionViewer,
-		'zobject-viewer': ZObjectViewer,
-		'zobject-editor': ZObjectEditor,
-		'default-view': DefaultView
+		'wl-function-editor': FunctionEditor,
+		'wl-function-viewer': FunctionViewer,
+		'wl-zobject-viewer': ZObjectViewer,
+		'wl-zobject-editor': ZObjectEditor,
+		'wl-default-view': DefaultView
 	},
 	inject: {
 		viewmode: { default: false }

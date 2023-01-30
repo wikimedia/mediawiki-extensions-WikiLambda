@@ -18,7 +18,7 @@
 					{{ $i18n( 'wikilambda-function-definition-inputs-label' ).text() }}
 					<span>({{ $i18n( 'wikilambda-optional' ).text() }})</span>
 				</label>
-				<tooltip
+				<wl-tooltip
 					v-if="tooltipMessage && !canEdit"
 					:content="tooltipMessage"
 				>
@@ -27,7 +27,7 @@
 						class="ext-wikilambda-function-definition-inputs__tooltip-icon"
 						:icon="tooltipIcon">
 					</cdx-icon>
-				</tooltip>
+				</wl-tooltip>
 			</div>
 			<span class="ext-wikilambda-function-definition-inputs__description">
 				{{ $i18n( 'wikilambda-function-definition-inputs-description' ).text() }}
@@ -39,7 +39,7 @@
 			class="ext-wikilambda-function-definition-inputs__inputs"
 			:class="{ 'ext-wikilambda-function-definition-inputs__padded': isMainLanguageBlock }"
 		>
-			<function-definition-inputs-item
+			<wl-function-definition-inputs-item
 				v-for="( argument, index ) in zArgumentList"
 				:key="argument.id"
 				:index="index"
@@ -52,8 +52,8 @@
 				:is-main-language-block="isMainLanguageBlock"
 				:show-index="zArgumentList.length > 1"
 				@update-argument-label="updateArgumentLabel"
-				@active-input="setActiveInput">
-			</function-definition-inputs-item>
+				@active-input="setActiveInput"
+			></wl-function-definition-inputs-item>
 			<cdx-button
 				v-if="canEdit"
 				:class="addInputButtonClass"
@@ -79,10 +79,10 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'function-definition-inputs',
+	name: 'wl-function-definition-inputs',
 	components: {
-		'function-definition-inputs-item': functionDefinitionInputsItem,
-		tooltip: Tooltip,
+		'wl-function-definition-inputs-item': functionDefinitionInputsItem,
+		'wl-tooltip': Tooltip,
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},

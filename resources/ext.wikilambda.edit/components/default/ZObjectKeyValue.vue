@@ -57,16 +57,16 @@ var
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-object-key-value',
+	name: 'wl-z-object-key-value',
 	components: {
 		'wl-expanded-toggle': ExpandedToggle,
-		'z-monolingual-string': ZMonolingualString,
-		'z-object-key-value-set': ZObjectKeyValueSet,
-		'z-object-type': ZObjectType,
-		'z-string': ZString,
-		'z-reference': ZReference,
-		'wl-z-boolean': ZBoolean,
-		'wl-z-code': ZCode
+		'wl-z-code': ZCode,
+		'wl-z-monolingual-string': ZMonolingualString,
+		'wl-z-object-key-value-set': ZObjectKeyValueSet,
+		'wl-z-object-type': ZObjectType,
+		'wl-z-string': ZString,
+		'wl-z-reference': ZReference,
+		'wl-z-boolean': ZBoolean
 	},
 	props: {
 		rowId: {
@@ -333,7 +333,7 @@ module.exports = exports = {
 				// BY KEY
 				// Z1K1 has a special component to handle ZObjectType and mode:
 				if ( ( this.key === Constants.Z_OBJECT_TYPE ) && !this.expanded ) {
-					return 'z-object-type';
+					return 'wl-z-object-type';
 				}
 
 				// BY TYPE
@@ -346,17 +346,17 @@ module.exports = exports = {
 				// bound) or allowing for its edition.
 				// When we have a typed list component, do:
 				// if ( this.type === Constants.Z_TYPED_LIST ) {
-				//   return 'z-object-typed-list'
+				//   return 'wl-z-object-typed-list'
 				// }
 
 				if ( ( this.type === Constants.Z_MONOLINGUALSTRING ) && !this.expanded ) {
-					return 'z-monolingual-string';
+					return 'wl-z-monolingual-string';
 				}
 				if ( ( this.type === Constants.Z_REFERENCE ) && !this.expanded ) {
-					return 'z-reference';
+					return 'wl-z-reference';
 				}
 				if ( ( this.type === Constants.Z_STRING ) && !this.expanded ) {
-					return 'z-string';
+					return 'wl-z-string';
 				}
 
 				if ( ( this.type === Constants.Z_BOOLEAN ) && !this.expanded ) {
@@ -367,7 +367,7 @@ module.exports = exports = {
 				}
 
 				// If there's no builtin component, always show expanded mode
-				return 'z-object-key-value-set';
+				return 'wl-z-object-key-value-set';
 			}
 		} ),
 	methods: $.extend(

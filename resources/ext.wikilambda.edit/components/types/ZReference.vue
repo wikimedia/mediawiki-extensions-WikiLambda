@@ -15,14 +15,14 @@
 				{{ referenceLabel }}
 			</a>
 		</span>
-		<z-object-selector
+		<wl-z-object-selector
 			v-else-if="isReferenceReady"
 			:selected-id="referenceValue"
 			:initial-selection-label="referenceLabel"
 			:type="searchType"
 			:zobject-id="referenceItem.id"
 			@input="setZReference"
-		></z-object-selector>
+		></wl-z-object-selector>
 	</div>
 </template>
 
@@ -35,9 +35,9 @@ var Constants = require( './../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-reference',
+	name: 'wl-z-reference',
 	components: {
-		'z-object-selector': ZObjectSelector
+		'wl-z-object-selector': ZObjectSelector
 	},
 	mixins: [ typeUtils ],
 	inject: {

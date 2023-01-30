@@ -15,11 +15,11 @@
 			@click.stop="handlePublish">
 			{{ $i18n( 'wikilambda-publishnew' ).text() }}
 		</cdx-button>
-		<publish-dialog
+		<wl-z-publish-dialog
 			:show-dialog="showPublishDialog"
 			:should-unattach-implementation-and-tester="shouldUnattachImplementationAndTester"
-			@close-dialog="closeDialog">
-		</publish-dialog>
+			@close-dialog="closeDialog"
+		></wl-z-publish-dialog>
 	</div>
 </template>
 
@@ -30,10 +30,10 @@ var CdxButton = require( '@wikimedia/codex' ).CdxButton,
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-object-publish',
+	name: 'wl-z-object-publish',
 	components: {
 		'cdx-button': CdxButton,
-		'publish-dialog': PublishDialog
+		'wl-z-publish-dialog': PublishDialog
 	},
 	props: {
 		shouldUnattachImplementationAndTester: {

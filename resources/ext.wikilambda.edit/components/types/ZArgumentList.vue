@@ -8,13 +8,13 @@
 	<div>
 		<h3>{{ $i18n( 'wikilambda-editor-argument-list-label' ).text() }}</h3>
 		<ul class="ext-wikilambda-zlist-no-bullets">
-			<z-list-item
+			<wl-z-list-item
 				v-for="( item ) in ZlistItems"
 				:key="item.id"
 				:zobject-id="item.id"
 				:viewmode="viewmode"
 				@remove-item="removeItem"
-			></z-list-item>
+			></wl-z-list-item>
 			<li v-if="!viewmode">
 				<cdx-button :title="tooltipAddListItem" @click="addNewItem">
 					{{ $i18n( 'wikilambda-editor-additem' ).text() }}
@@ -32,6 +32,7 @@ var mapActions = require( 'vuex' ).mapActions,
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-argument-list',
 	components: {
 		'cdx-button': CdxButton
 	},

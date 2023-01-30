@@ -6,18 +6,18 @@
 		@license MIT
 	-->
 	<div v-if="zobject.length">
-		<z-multilingual-string
+		<wl-z-multilingual-string
 			:zobject-id="labelsId"
 			:readonly="true"
-		></z-multilingual-string>
-		<z-inline-tester-call
+		></wl-z-multilingual-string>
+		<wl-z-inline-tester-call
 			v-if="call"
 			:zobject-id="call.id"
-		></z-inline-tester-call>
-		<z-inline-tester-validation
+		></wl-z-inline-tester-call>
+		<wl-z-inline-tester-validation
 			v-if="validator"
 			:zobject-id="validator.id"
-		></z-inline-tester-validation>
+		></wl-z-inline-tester-validation>
 		<div>
 			<cdx-button @click="saveAdHocTester">
 				{{ submitButtonLabel }}
@@ -39,10 +39,11 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-tester-ad-hoc',
 	components: {
-		'z-inline-tester-call': ZInlineTesterCall,
-		'z-inline-tester-validation': ZInlineTesterValidation,
-		'z-multilingual-string': ZMultilingualString,
+		'wl-z-inline-tester-call': ZInlineTesterCall,
+		'wl-z-inline-tester-validation': ZInlineTesterValidation,
+		'wl-z-multilingual-string': ZMultilingualString,
 		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils, schemata ],

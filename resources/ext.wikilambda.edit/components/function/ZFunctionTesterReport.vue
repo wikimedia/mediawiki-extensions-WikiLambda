@@ -38,12 +38,12 @@
 								{{ testLabel( test ) }}
 							</th>
 							<td v-for="implementation in implementations" :key="implementation">
-								<z-tester-impl-result
+								<wl-z-tester-impl-result
 									:z-function-id="zFunctionId"
 									:z-implementation-id="implementation"
 									:z-tester-id="test"
 									@set-keys="setActiveTesterKeys"
-								></z-tester-impl-result>
+								></wl-z-tester-impl-result>
 							</td>
 						</template>
 						<!-- FIXME T314469: The template for the else clause should treat tester literal objects
@@ -53,12 +53,12 @@
 								{{ test.Z2K3.Z12K1[ 0 ].Z11K2.Z6K1 }}
 							</th>
 							<td v-for="implementation in implementations" :key="implementation">
-								<z-tester-impl-result
+								<wl-z-tester-impl-result
 									:z-function-id="zFunctionId"
 									:z-implementation-id="implementation"
 									:z-tester-id="test[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ]"
 									@set-keys="setActiveTesterKeys"
-								></z-tester-impl-result>
+								></wl-z-tester-impl-result>
 							</td>
 						</template>
 					</tr>
@@ -134,8 +134,9 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
+	name: 'wl-z-function-tester-report',
 	components: {
-		'z-tester-impl-result': ZTesterImplResult,
+		'wl-z-tester-impl-result': ZTesterImplResult,
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon,
 		'cdx-dialog': CdxDialog

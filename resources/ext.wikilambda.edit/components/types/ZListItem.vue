@@ -15,20 +15,20 @@
 		>
 			{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
 		</cdx-button>
-		<z-object-selector
+		<wl-z-object-selector
 			v-if="isEmptyObject"
 			:type="zType"
 			:return-type="zType"
 			:placeholder="$i18n( 'wikilambda-typeselector-label' ).text()"
 			:readonly="readonly"
 			@input="onTypeChange"
-		></z-object-selector>
-		<z-object
+		></wl-z-object-selector>
+		<wl-z-object
 			v-else
 			:zobject-id="zobjectId"
 			:persistent="false"
 			:readonly="readonly"
-		></z-object>
+		></wl-z-object>
 	</li>
 </template>
 
@@ -41,9 +41,9 @@ var typeUtils = require( '../../mixins/typeUtils.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-list-item',
+	name: 'wl-z-list-item',
 	components: {
-		'z-object-selector': ZObjectSelector,
+		'wl-z-object-selector': ZObjectSelector,
 		'cdx-button': CdxButton
 	},
 	mixins: [ typeUtils ],
@@ -104,7 +104,7 @@ module.exports = exports = {
 			}
 		} ),
 	beforeCreate: function () {
-		this.$options.components[ 'z-object' ] = require( './../ZObject.vue' );
+		this.$options.components[ 'wl-z-object' ] = require( './../ZObject.vue' );
 	}
 };
 </script>

@@ -27,7 +27,7 @@ var Constants = require( './../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-character',
+	name: 'wl-z-character',
 	mixins: [ typeUtils ],
 	inject: {
 		viewmode: { default: false }

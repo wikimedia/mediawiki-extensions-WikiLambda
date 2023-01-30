@@ -9,39 +9,39 @@
 		<template v-if="requiresTypeForList">
 			<div>
 				<label>{{ $i18n( 'wikilambda-ztyped-pair-key-label' ).text() }}:</label>
-				<z-object-selector
+				<wl-z-object-selector
 					:type="Constants.zType"
 					:placeholder="$i18n( 'wikilambda-ztyped-pair-placeholder' ).text()"
 					:readonly="readonly"
 					@input="onPairTypeChange( $event, 0 )"
-				></z-object-selector>
+				></wl-z-object-selector>
 			</div>
 			<div>
 				<label>{{ $i18n( 'wikilambda-ztyped-pair-value-label' ).text() }}:</label>
-				<z-object-selector
+				<wl-z-object-selector
 					:type="Constants.zType"
 					:placeholder="$i18n( 'wikilambda-ztyped-pair-placeholder' ).text()"
 					:readonly="readonly"
 					@input="onPairTypeChange( $event, 1 )"
-				></z-object-selector>
+				></wl-z-object-selector>
 			</div>
 		</template>
 		<template v-else>
 			<div>
 				<label>{{ $i18n( 'wikilambda-ztyped-pair-key-label' ).text() }}: ( {{ Key1Label }} ):</label>
-				<z-object
+				<wl-z-object
 					:zobject-id="zTypedPairKey1.id"
 					:persistent="false"
 					:readonly="readonly"
-				></z-object>
+				></wl-z-object>
 			</div>
 			<div>
 				<label>{{ $i18n( 'wikilambda-ztyped-pair-value-label' ).text() }}: ( {{ Key2Label }} ):</label>
-				<z-object
+				<wl-z-object
 					:zobject-id="zTypedPairKey2.id"
 					:persistent="false"
 					:readonly="readonly"
-				></z-object>
+				></wl-z-object>
 			</div>
 		</template>
 	</div>
@@ -56,9 +56,9 @@ var Constants = require( '../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'z-typed-pair',
+	name: 'wl-z-typed-pair',
 	components: {
-		'z-object-selector': ZObjectSelector
+		'wl-z-object-selector': ZObjectSelector
 	},
 	mixins: [ typeUtils ],
 	inject: {
@@ -170,7 +170,7 @@ module.exports = exports = {
 		}
 	},
 	beforeCreate: function () {
-		this.$options.components[ 'z-object' ] = require( './../ZObject.vue' );
+		this.$options.components[ 'wl-z-object' ] = require( './../ZObject.vue' );
 	}
 };
 </script>
