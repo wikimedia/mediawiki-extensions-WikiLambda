@@ -418,6 +418,37 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::createNewZObject
+	 * @covers ::updateZObject
+	 */
+	public function testUpdateZObject_editProhibited_unauthedUserMakingImplementation() {
+		// For the purpose of this test, deny logged-in users the ability to create a Z14/Implementation
+		global $wgGroupPermissions;
+		$modifiedPerms = $wgGroupPermissions;
+		$modifiedPerms['user']['wikilambda-create-implementation'] = false;
+		$this->setMwGlobals( 'wgGroupPermissions', $modifiedPerms );
+
+		// Implementation isn't a guaranteed type by our testing system, so inject it just for this test.
+		$this->insertZids( [ 'Z14' ] );
+
+		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+			. '"Z2K2": {'
+				. ' "Z1K1": "Z14",'
+				. ' "Z14K1": "Z1",'
+				. ' "Z14K4": "Z0"'
+				. '},'
+			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+
+		$status = $this->zobjectStore->createNewZObject(
+			$input,
+			'Creation summary',
+			$this->getTestUser()->getUser()
+		);
+		$this->assertFalse( $status->isOK() );
+		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT, $status->getErrors() );
+	}
+
+	/**
 	 * @covers ::insertZObjectLabels
 	 */
 	public function testInsertZObjectLabels() {
