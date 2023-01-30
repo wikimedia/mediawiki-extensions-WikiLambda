@@ -107,7 +107,7 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import '../../ext.wikilambda.edit.variables.less';
+@import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-key-value-set {
 	padding-left: 14px;

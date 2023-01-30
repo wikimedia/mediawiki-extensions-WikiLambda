@@ -138,7 +138,7 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import '../../ext.wikilambda.edit.variables.less';
+@import '../../ext.wikilambda.edit.less';
 @import './../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-monolingual-string {
