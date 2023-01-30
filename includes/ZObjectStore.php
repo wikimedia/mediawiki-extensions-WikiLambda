@@ -299,7 +299,7 @@ class ZObjectStore {
 
 			// (T275940): Check the user has the right for certain kinds of edit to certain kinds of type
 
-			// TODO (T275940): limit creation of Z60/Natural language, Z61/Programming language, …
+			// TODO (T275940): limit creation of Z61/Programming language, …
 
 			switch ( $ztype ) {
 				// Z4/Type
@@ -360,6 +360,24 @@ class ZObjectStore {
 				case ZTypeRegistry::Z_TESTER:
 					if ( !$permissionManager->userCan(
 						( $creating ? 'wikilambda-create-tester' : 'wikilambda-edit-tester' ),
+						$user,
+						$title
+					) ) {
+						$error = ZErrorFactory::createZErrorInstance(
+							ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
+							// TODO: Custom error message?
+							[
+								'message' => wfMessage( 'nocreatetext' )->text()
+							]
+						);
+						return ZObjectPage::newFatal( $error );
+					}
+					break;
+
+				// Z60/Natural language
+				case ZTypeRegistry::Z_LANGUAGE:
+					if ( !$permissionManager->userCan(
+						( $creating ? 'wikilambda-create-language' : 'wikilambda-edit-language' ),
 						$user,
 						$title
 					) ) {
