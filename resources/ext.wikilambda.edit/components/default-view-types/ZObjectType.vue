@@ -78,8 +78,7 @@ module.exports = exports = {
 		mapGetters( [
 			'getLabel',
 			'getZReferenceTerminalValue',
-			'isInsideComposition',
-			'getParentExpectedType'
+			'isInsideComposition'
 		] ),
 		{
 			/**
