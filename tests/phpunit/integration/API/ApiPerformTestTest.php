@@ -344,9 +344,9 @@ class ApiPerformTestTest extends ApiTestCase {
 				[
 					'zimplementationId' => 'Z913',
 					'ztesterId' => 'Z0',
-					'validateStatus' => "\"Z42\"",
-					// Object type mismatch
-					'validationCallErrorType' => 'Z518'
+					'validateStatus' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}",
+					'expectedValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"not a boolean\"}",
+					'actualValue' => "{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 				]
 			]
 		];
