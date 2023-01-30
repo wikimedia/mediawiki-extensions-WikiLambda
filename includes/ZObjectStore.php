@@ -186,6 +186,8 @@ class ZObjectStore {
 	public function updateZObject( string $zid, string $data, string $summary, User $user, int $flags = EDIT_UPDATE ) {
 		$title = $this->titleFactory->newFromText( $zid, NS_MAIN );
 
+		$creating = ( $flags === EDIT_NEW );
+
 		if ( !( $title instanceof Title ) ) {
 			$error = ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_INVALID_TITLE,
@@ -272,6 +274,25 @@ class ZObjectStore {
 				$error = ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_DISALLOWED_ROOT_ZOBJECT,
 					[ 'data' => $ztype ]
+				);
+				return ZObjectPage::newFatal( $error );
+			}
+
+			// TODO: (T303338) Allow the edit anyway if it's just adjusting the labels of a ZObject
+
+			// Don't allow creates or edits to "pre-defined" ZObjecst (where ZID < 10,000)
+			if (
+				substr( $zObjectId, 1 ) < 10000 &&
+				!$permissionManager->userCan(
+					( $creating ? 'wikilambda-create-predefined' : 'wikilambda-edit-predefined' ),
+					$user,
+					$title
+				)
+			) {
+				$error = ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
+					// TODO: Custom error message?
+					[ 'message' => wfMessage( 'nocreatetext' )->text() ]
 				);
 				return ZObjectPage::newFatal( $error );
 			}
