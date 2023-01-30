@@ -297,9 +297,34 @@ class ZObjectStore {
 				return ZObjectPage::newFatal( $error );
 			}
 
-			// TODO (T275940): Check the user has the right for certain kinds of edit to certain kinds of type
-			// (e.g. limits on creation of Z60/Natural language, Z61/Programming language, …; limits on edits
-			// on built-in items)
+			// (T275940): Check the user has the right for certain kinds of edit to certain kinds of type
+
+			// TODO (T275940): limit creation of Z60/Natural language, Z61/Programming language, …
+
+			switch ( $ztype ) {
+				// Z4/Type
+				case ZTypeRegistry::Z_TYPE:
+					if ( !$permissionManager->userCan(
+						( $creating ? 'wikilambda-create-type' : 'wikilambda-edit-type' ),
+						$user,
+						$title
+					) ) {
+						$error = ZErrorFactory::createZErrorInstance(
+							ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
+							// TODO: Custom error message?
+							[
+								'message' => wfMessage( 'nocreatetext' )->text()
+							]
+						);
+						return ZObjectPage::newFatal( $error );
+					}
+					break;
+
+				default:
+					// This is fine.
+					break;
+			}
+
 		}
 
 		// We prepare the content to be saved

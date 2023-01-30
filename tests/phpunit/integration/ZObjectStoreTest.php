@@ -354,6 +354,39 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::createNewZObject
+	 * @covers ::updateZObject
+	 */
+	public function testUpdateZObject_editProhibited_unauthedUserMakingType() {
+		// For the purpose of this test, deny logged-in users the ability to create a Z4/Type
+		global $wgGroupPermissions;
+		$modifiedPerms = $wgGroupPermissions;
+		$modifiedPerms['user']['wikilambda-create-type'] = false;
+		$this->setMwGlobals( 'wgGroupPermissions', $modifiedPerms );
+
+		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+			. '"Z2K2": {'
+				. ' "Z1K1": "Z4",'
+				. ' "Z4K1": "Z0",'
+				. ' "Z4K2": [ "Z3", {'
+					. ' "Z1K1": "Z3",'
+					. ' "Z3K1": "Z6",'
+					. ' "Z3K2": "Z0K1",'
+					. ' "Z3K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } '
+				. '} ],'
+				. ' "Z4K3": "Z101" },'
+			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+
+		$status = $this->zobjectStore->createNewZObject(
+			$input,
+			'Creation summary',
+			$this->getTestUser()->getUser()
+		);
+		$this->assertFalse( $status->isOK() );
+		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT, $status->getErrors() );
+	}
+
+	/**
 	 * @covers ::insertZObjectLabels
 	 */
 	public function testInsertZObjectLabels() {
