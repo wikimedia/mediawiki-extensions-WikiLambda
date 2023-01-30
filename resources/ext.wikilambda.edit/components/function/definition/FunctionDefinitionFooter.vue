@@ -84,7 +84,7 @@ module.exports = exports = {
 .ext-wikilambda-function-definition-footer {
 	display: flex;
 	flex-direction: column;
-	background-color: @wmui-color-base90;
+	background-color: @background-color-interactive-subtle;
 	padding: @spacing-100;
 	margin-top: @spacing-150;
 

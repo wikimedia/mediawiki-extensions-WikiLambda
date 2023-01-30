@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-@import '../lib/wikimedia-ui-base.less';
+@import ( reference ) '../../../resources/lib/codex-design-tokens/theme-wikimedia-ui.less';
 
 .ext-wikilambda-viewpage-header {
 	&-label {
@@ -13,14 +13,14 @@
 	}
 
 	&--title-untitled {
-		color: @wmui-color-base50;
+		color: @color-placeholder;
 	}
 
 	&--iso-code {
-		background-color: @wmui-color-base80;
-		border: 1px solid @wmui-color-base50;
-		border-radius: 12px;
-		padding: 0 4px;
+		background-color: @background-color-interactive;
+		border: 1px solid @border-color-base;
+		border-radius: @border-radius-pill;
+		padding: 0 @spacing-25;
 	}
 
 	[ data-title ] {
@@ -34,7 +34,7 @@
 		left: 100%;
 		padding: 8px;
 		box-shadow: 0 4px 4px rgba( 0, 0, 0, 0.25 );
-		background-image: -webkit-linear-gradient( top, @wmui-color-base70, @wmui-color-base70 );
+		background-image: -webkit-linear-gradient( top, @background-color-disabled, @background-color-disabled );
 		z-index: 99999;
 		visibility: hidden;
 		font-family: 'Helvetica Neue', sans-serif;
@@ -47,7 +47,7 @@
 	}
 
 	&-zid {
-		color: #ccc;
+		color: @color-placeholder;
 		padding-left: 1em;
 		font-size: 70%;
 		font-weight: lighter;
@@ -62,7 +62,7 @@
 	}
 
 	&-type {
-		color: #888;
+		color: @color-placeholder;
 		font-style: italic;
 		font-size: 60%;
 	}

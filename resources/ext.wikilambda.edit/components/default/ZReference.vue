@@ -162,7 +162,3 @@ module.exports = exports = {
 };
 
 </script>
-
-<style lang="less">
-@import './../../../lib/wikimedia-ui-base.less';
-</style>

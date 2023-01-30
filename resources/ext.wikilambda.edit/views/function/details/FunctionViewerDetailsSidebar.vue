@@ -443,26 +443,26 @@ module.exports = exports = {
 
 	&__edit-function {
 		display: block;
-		margin-top: 12px;
+		margin-top: @spacing-75;
 		font-weight: @font-weight-bold;
 	}
 
 	&__summary:extend(.ext-wikilambda-edit__text-regular) {
-		color: @wmui-color-base30;
-		margin-top: 30px;
+		color: @color-disabled;
+		margin-top: @spacing-200;
 	}
 
 	&__button {
-		margin-top: 20px;
-		margin-bottom: 10px;
+		margin-top: @spacing-125;
+		margin-bottom: @spacing-50;
 	}
 
 	&__link {
-		padding-bottom: 16px;
+		padding-bottom: @spacing-100;
 	}
 
 	&__links {
-		padding-top: 20px;
+		padding-top: @spacing-125;
 	}
 
 	&__table {
@@ -487,8 +487,8 @@ module.exports = exports = {
 
 		&-title {
 			font-weight: @font-weight-bold;
-			padding: 5px 16px;
-			color: @wmui-color-base0;
+			padding: @spacing-25 @spacing-100;
+			color: @color-emphasized;
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
@@ -496,7 +496,7 @@ module.exports = exports = {
 
 		&-borderless-row {
 			border-top: 0;
-			margin-top: 8px;
+			margin-top: @spacing-50;
 			max-height: 30px;
 		}
 

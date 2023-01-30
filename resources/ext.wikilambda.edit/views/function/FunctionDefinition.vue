@@ -469,16 +469,15 @@ module.exports = exports = {
 
 <style lang="less">
 @import '../../ext.wikilambda.edit.less';
-@import './../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-function-definition {
 	&__container {
 		&__input {
 			padding-top: @spacing-150;
-			border-bottom: 1px solid @wmui-color-base80;
+			border-bottom: 1px solid @border-color-subtle;
 
 			&:first-child {
-				border-top: 1px solid @wmui-color-base80;
+				border-top: 1px solid @border-color-subtle;
 			}
 
 			&__language {
@@ -492,7 +491,7 @@ module.exports = exports = {
 	}
 
 	&__action-add-language {
-		border-bottom: 1px solid @wmui-color-base80;
+		border-bottom: 1px solid @border-color-subtle;
 		padding: @spacing-150 0;
 	}
 }

@@ -30,8 +30,6 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import './../../lib/wikimedia-ui-base.less';
-@import './../../lib/sd-base-variables.less';
 
 .ext-wikilambda-function-editor {
 	&__main {

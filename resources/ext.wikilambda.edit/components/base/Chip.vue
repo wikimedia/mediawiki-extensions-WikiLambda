@@ -93,21 +93,20 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import './../../../lib/wikimedia-ui-base.less';
-@import './../../../lib/sd-base-variables.less';
+@import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-chip {
 	display: inline-flex;
-	background-color: @wmui-color-base80;
+	background-color: @background-color-interactive;
 	border-width: 1.5px;
 	border-style: solid;
-	border-radius: 100px;
+	border-radius: @border-radius-pill;
 	padding: 0 8px;
 	margin-top: 2.5px;
 	margin-bottom: 2.5px;
 	vertical-align: middle;
 	max-width: 100%;
-	.sd-box-sizing( border-box );
+	box-sizing: @box-sizing-base;
 
 	&_text {
 		height: 100%;
@@ -133,23 +132,23 @@ module.exports = exports = {
 	}
 
 	&_notice {
-		background-color: @wmui-color-base80;
-		border-color: @wmui-color-base50;
+		background-color: @background-color-interactive;
+		border-color: @border-color-base;
 	}
 
 	&_warning {
-		background-color: @wmui-color-yellow90;
-		border-color: @wmui-color-yellow30;
+		background-color: @background-color-warning-subtle;
+		border-color: @border-color-warning;
 	}
 
 	&_error {
-		background-color: @wmui-color-red90;
-		border-color: @wmui-color-red30;
+		background-color: @background-color-error-subtle;
+		border-color: @border-color-error;
 	}
 
 	&_success {
-		background-color: @wmui-color-green90;
-		border-color: @wmui-color-green30;
+		background-color: @background-color-success-subtle;
+		border-color: @border-color-success;
 	}
 }
 

@@ -102,18 +102,18 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import './../../../lib/wikimedia-ui-base.less';
+@import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-chip-container {
 	display: flex;
 	flex: 1 auto;
 	flex-flow: wrap;
-	border-radius: 2px;
-	padding: 0 8px;
-	border-width: 1px;
-	border-style: solid;
-	border-color: @wmui-color-base50;
-	box-shadow: inset 0 0 0 1px transparent;
+	border-radius: @border-radius-base;
+	padding: 0 @spacing-50;
+	border-width: @border-width-base;
+	border-style: @border-style-base;
+	border-color: @border-color-base;
+	box-shadow: @box-shadow-inset-small transparent;
 
 	&__item {
 		margin-right: 5px;

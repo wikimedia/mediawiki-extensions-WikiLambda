@@ -152,34 +152,34 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import './../../../../lib/wikimedia-ui-base.less';
+@import '../../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-function-details-table {
-	margin-bottom: 40px;
+	margin-bottom: @spacing-250;
 
 	&__body {
 		&-link {
-			color: @wmui-color-accent50;
+			color: @color-primary;
 		}
 	}
 
 	&__row--active {
-		background: @wmui-color-accent90;
+		background: @background-color-progressive-subtle;
 	}
 
 	&__empty {
-		padding: 0 16px;
-		font-weight: @font-weight-base;
-		color: @wmui-color-base30;
+		padding: 0 @spacing-100;
+		font-weight: @font-weight-normal;
+		color: @color-placeholder;
 		white-space: pre-wrap;
 	}
 
 	&__title {
 		font-weight: @font-weight-bold;
-		color: @wmui-color-base10;
+		color: @color-base;
 		word-break: break-all;
-		background: @wmui-color-base80;
-		padding: 0 16px;
+		background: @background-color-interactive;
+		padding: 0 @spacing-100;
 		height: 50px;
 		display: flex;
 		align-items: center;
@@ -187,7 +187,7 @@ module.exports = exports = {
 		&__text {
 			display: block;
 			width: 100%;
-			margin-right: 10px;
+			margin-right: @spacing-50;
 			white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;
@@ -196,25 +196,25 @@ module.exports = exports = {
 		&__buttons {
 			margin-left: auto;
 			display: flex;
-			column-gap: 12px;
+			column-gap: @spacing-75;
 		}
 	}
 
 	&-text {
-		padding-right: 32px;
+		padding-right: @spacing-200;
 		font-weight: @font-weight-bold;
-		color: @wmui-color-base10;
+		color: @color-base;
 		word-break: break-all;
 
 		&:first-child {
-			width: 20px;
-			padding-left: 16px;
-			padding-right: 16px;
+			width: @size-125;
+			padding-left: @spacing-100;
+			padding-right: @spacing-100;
 		}
 	}
 
 	&-item {
-		padding-right: 16px;
+		padding-right: @spacing-100;
 
 		a {
 			display: block; /* Fallback for non-webkit */
@@ -234,7 +234,7 @@ module.exports = exports = {
 		}
 
 		&:first-child {
-			padding-left: 16px;
+			padding-left: @spacing-100;
 		}
 	}
 

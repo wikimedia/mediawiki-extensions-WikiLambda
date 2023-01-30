@@ -85,7 +85,7 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import '../../../../lib/wikimedia-ui-base.less';
+@import '../../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-function-viewer-sidebar {
 	ul {
@@ -94,14 +94,14 @@ module.exports = exports = {
 	}
 
 	&__chip {
-		margin-bottom: 15px;
+		margin-bottom: @spacing-100;
 
 		&-container {
 			display: inline-block;
 		}
 
 		&-item {
-			margin-right: 8px;
+			margin-right: @spacing-50;
 			display: inline-block;
 		}
 	}

@@ -124,11 +124,11 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import './../../../lib/wikimedia-ui-base.less';
+@import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-table {
 	position: relative;
-	border: 1px solid @wmui-color-base80;
+	border: 1px solid @border-color-subtle;
 
 	&__title {
 		white-space: nowrap;
@@ -165,7 +165,7 @@ module.exports = exports = {
 				height: 50px;
 				align-items: center;
 				vertical-align: middle;
-				border-top: 1px solid @wmui-color-base80;
+				border-top: 1px solid @border-color-subtle;
 				font-size: 1em;
 				line-height: 1.4em;
 				letter-spacing: -0.003em;
@@ -201,8 +201,8 @@ module.exports = exports = {
 
 	&[ data-has-border='true' ] {
 		.ext-wikilambda-table__content .ext-wikilambda-table__content__row__item {
-			border-top: 1px solid @wmui-color-base80;
-			border-right: 1px solid @wmui-color-base80;
+			border-top: 1px solid @border-color-subtle;
+			border-right: 1px solid @border-color-subtle;
 		}
 
 		.ext-wikilambda-table__content .ext-wikilambda-table__content__row__item:last-child {

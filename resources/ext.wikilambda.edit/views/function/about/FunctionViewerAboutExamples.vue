@@ -89,25 +89,25 @@ module.exports = exports = {
 		&-title {
 			display: flex;
 			align-items: center;
-			height: 50px;
-			background-color: @wmui-color-base80;
-			padding: 0 16px;
-			color: @wmui-color-base0;
+			height: @size-300;
+			background-color: @background-color-interactive;
+			padding: 0 @spacing-100;
+			color: @color-base;
 			font-weight: @font-weight-bold;
 		}
 
 		&-header-item {
-			padding-left: 16px;
-			padding-right: 16px;
+			padding-left: @spacing-100;
+			padding-right: @spacing-100;
 			font-weight: @font-weight-bold;
-			background-color: @wmui-color-base90;
-			border-top: 1px solid @wmui-color-base80;
-			border-right: 1px solid @wmui-color-base80;
+			background-color: @background-color-interactive-subtle;
+			border-top: 1px solid @border-color-subtle;
+			border-right: 1px solid @border-color-subtle;
 		}
 
 		&-item {
-			padding-left: 16px;
-			padding-right: 16px;
+			padding-left: @spacing-100;
+			padding-right: @spacing-100;
 			text-transform: capitalize;
 		}
 	}

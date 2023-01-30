@@ -141,7 +141,6 @@ module.exports = exports = {
 
 <style lang="less">
 @import '../../../ext.wikilambda.edit.less';
-@import './../../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-function-definition-output {
 	display: flex;

@@ -10,8 +10,8 @@
 			{{ truncateTitle }}
 			<cdx-icon
 				class="ext-wikilambda-text-toggle-truncate__icon"
+				:class="truncateClass"
 				:icon="icons.cdxIconExpand"
-				width="15"
 			>
 			</cdx-icon>
 		</span>
@@ -55,6 +55,12 @@ module.exports = exports = {
 		 */
 		truncateTitle: function () {
 			return this.shortendText ? this.$i18n( 'wikilambda-show-more' ).text() : this.$i18n( 'wikilambda-hide-more' ).text();
+		},
+		/**
+		 * @return {string}
+		 */
+		truncateClass: function () {
+			return this.shortendText ? '' : 'ext-wikilambda-text-toggle-truncate__icon__inverted';
 		}
 	},
 	methods: {
@@ -91,22 +97,26 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import './../../../lib/wikimedia-ui-base.less';
+@import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-text-toggle-truncate {
 	display: flex;
 	align-items: center;
 	justify-content: end;
-	margin-top: 15px;
-	color: @wmui-color-base10;
+	margin-top: @spacing-100;
+	color: @color-base;
 	font-weight: @font-weight-bold;
 
 	&__icon {
-		margin-left: 9px;
+		margin-left: @spacing-50;
 
 		svg {
-			width: 15px;
-			height: 15px;
+			width: @size-100;
+			height: @size-100;
+		}
+
+		&__inverted {
+			transform: rotate( 180deg );
 		}
 	}
 }
