@@ -87,14 +87,12 @@ module.exports = exports = {
 
 <style lang="less">
 @import '../../ext.wikilambda.edit.less';
-@import './../../../lib/wikimedia-ui-base.less';
-@import './../../../lib/sd-base-variables.less';
 
 .ext-wikilambda-function-about {
-	padding-top: 16px;
+	padding-top: @spacing-100;
 
 	&__summary:extend(.ext-wikilambda-edit__text-regular) {
-		color: @wmui-color-base30;
+		color: @color-placeholder;
 		grid-column: 1 ~'/' span 2;
 		margin-bottom: 32px;
 	}

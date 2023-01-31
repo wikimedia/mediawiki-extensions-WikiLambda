@@ -358,7 +358,6 @@ module.exports = exports = {
 
 <style lang="less">
 @import '../../../ext.wikilambda.edit.less';
-@import './../../../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-editor-input-list-item {
 	flex-direction: column;

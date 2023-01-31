@@ -142,7 +142,7 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import './../../../lib/wikimedia-ui-base.less';
+@import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-dialog {
 	position: fixed;
@@ -158,10 +158,10 @@ module.exports = exports = {
 	z-index: 999;
 
 	&__box {
-		background: @wmui-color-base100;
-		border: solid 1px @wmui-color-base50;
-		border-radius: 2px;
-		box-shadow: 0 2px 2px rgba( 0, 0, 0, 0.25 );
+		background: @background-color-base;
+		border: solid 1px @border-color-base;
+		border-radius: @border-radius-base;
+		box-shadow: @box-shadow-drop-medium;
 		min-width: 300px;
 		max-width: 75%;
 		max-height: 75%;
@@ -180,7 +180,7 @@ module.exports = exports = {
 	}
 
 	&_text {
-		padding: 15px;
+		padding: @spacing-100;
 		display: flex;
 	}
 
@@ -191,7 +191,7 @@ module.exports = exports = {
 		padding: 8px 2px 6px 16px;
 		position: sticky;
 		top: 0;
-		background: @wmui-color-base100;
+		background: @background-color-base;
 
 		&__title {
 			width: 100%;
@@ -199,11 +199,11 @@ module.exports = exports = {
 
 		&__close-button {
 			display: flex;
-			color: #202122;
+			color: @color-base;
 			justify-content: center;
 			align-items: center;
-			height: 32px;
-			width: 32px;
+			height: @size-200;
+			width: @size-200;
 			background: none;
 			border: 0;
 		}
@@ -222,19 +222,19 @@ module.exports = exports = {
 	}
 
 	&__legal-text {
-		font-size: 0.85em;
-		line-height: 1.6;
-		padding: 16px 24px;
-		color: @wmui-color-base30;
+		font-size: @wl-font-size-base;
+		line-height: @line-height-medium;
+		padding: @spacing-100 @spacing-150;
+		color: @color-placeholder;
 
 		hr {
-			color: #c8ccd1;
-			margin-bottom: 8px;
+			color: @border-color-subtle;
+			margin-bottom: @spacing-50;
 		}
 	}
 
 	&__divider {
-		margin-bottom: 12px;
+		margin-bottom: @spacing-75;
 		margin-top: 0;
 	}
 }

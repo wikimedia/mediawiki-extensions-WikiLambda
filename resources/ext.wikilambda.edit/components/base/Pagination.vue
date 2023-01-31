@@ -104,17 +104,16 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import './../../../lib/sd-base-variables.less';
-@import './../../../lib/wikimedia-ui-base.less';
+@import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-pagination {
-	padding-top: 8px;
-	padding-bottom: 18px;
+	padding-top: @spacing-50;
+	padding-bottom: @spacing-100;
 	display: flex;
 
 	&__view-all {
 		flex: none;
-		height: 32px;
+		height: @size-200;
 	}
 
 	&__page-selector {
@@ -123,17 +122,17 @@ module.exports = exports = {
 		margin-left: auto;
 
 		&__input {
-			width: 32px;
-			height: 32px;
+			width: @size-200;
+			height: @size-200;
 			margin: 0;
 			text-align: center;
-			border: 1px solid @wmui-color-base50;
-			border-radius: 2px;
-			.sd-box-sizing( border-box );
+			border: 1px solid @border-color-base;
+			border-radius: @border-radius-base;
+			box-sizing: @box-sizing-base;
 		}
 
 		&__total-pages {
-			height: 32px;
+			height: @size-200;
 			text-align: center;
 			padding: 0 6px;
 		}
@@ -141,7 +140,7 @@ module.exports = exports = {
 		&__action {
 			padding-left: 0;
 			padding-right: 0;
-			margin-left: 8px;
+			margin-left: @spacing-50;
 		}
 	}
 }

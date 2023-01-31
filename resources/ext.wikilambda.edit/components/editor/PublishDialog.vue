@@ -203,7 +203,7 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import './../../../lib/wikimedia-ui-base.less';
+@import '../../ext.wikilambda.edit.less';
 
 /* stylelint-disable selector-max-id */
 #publish-dialog .cdx-dialog__header {
@@ -211,21 +211,21 @@ module.exports = exports = {
 }
 
 #publish-dialog .cdx-dialog__body {
-	margin: 0 8px;
+	margin: 0 @spacing-50;
 }
 
 hr {
-	color: #c8ccd1;
-	margin-bottom: 16px;
+	color: @border-color-subtle;
+	margin-bottom: @spacing-100;
 }
 
 .ext-wikilambda-publishdialog {
 	&__errors {
-		padding: 8px 0;
+		padding: @spacing-50 0;
 	}
 
 	&__warnings {
-		padding: 8px 0;
+		padding: @spacing-50 0;
 
 		p:first-child {
 			margin-top: 0;
@@ -236,16 +236,16 @@ hr {
 	&__summary {
 		display: flex;
 		flex-direction: column;
-		padding: 8px 0;
-		color: @wmui-color-base30;
+		padding: @spacing-50 0;
+		color: @color-placeholder;
 	}
 
 	&__summary-label {
-		padding-bottom: 4px;
+		padding-bottom: @spacing-25;
 	}
 
 	&__divider {
-		margin-top: 16px;
+		margin-top: @spacing-100;
 	}
 
 	&__actions {
@@ -253,25 +253,25 @@ hr {
 		flex-direction: row-reverse;
 
 		&__button-cancel {
-			margin-right: 8px;
+			margin-right: @spacing-50;
 		}
 	}
 
 	&__legal-text {
-		color: @wmui-color-base30;
+		color: @color-placeholder;
 	}
 
 	&__body {
-		padding: 0 16px 16px;
+		padding: 0 @spacing-100 @spacing-100;
 	}
 
 	&__header {
 		display: flex;
 		justify-content: space-between;
-		padding: 8px 0;
+		padding: @spacing-50 0;
 		position: sticky;
 		top: 0;
-		background: @wmui-color-base100;
+		background: @background-color-base;
 
 		&__title {
 			width: 100%;
@@ -282,11 +282,11 @@ hr {
 
 		&__close-button {
 			display: flex;
-			color: #202122;
+			color: @color-notice;
 			justify-content: center;
 			align-items: center;
-			height: 32px;
-			width: 32px;
+			height: @size-200;
+			width: @size-200;
 			background: none;
 			border: 0;
 			margin: auto;

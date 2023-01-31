@@ -175,7 +175,6 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import '../../../lib/wikimedia-ui-base.less';
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-language-selector {

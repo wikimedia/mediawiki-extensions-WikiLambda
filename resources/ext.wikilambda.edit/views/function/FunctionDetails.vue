@@ -546,20 +546,20 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import './../../../lib/wikimedia-ui-base.less';
+@import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-function-details {
 	display: flex;
 	-webkit-flex-flow: row wrap;
 	flex-flow: row wrap;
-	row-gap: 10px;
-	column-gap: 80px;
+	row-gap: @spacing-100;
+	column-gap: @spacing-400;
 
 	&__summary:extend(.ext-wikilambda-edit__text-regular) {
-		color: @wmui-color-base30;
-		margin-bottom: 32px;
-		width: 100%;
-		padding-top: 16px;
+		color: @color-placeholder;
+		margin-bottom: @spacing-200;
+		width: @size-full;
+		padding-top: @spacing-100;
 	}
 
 	&__tables {
@@ -572,7 +572,7 @@ module.exports = exports = {
 		flex-flow: column wrap;
 
 		&__tables {
-			width: 100%;
+			width: @size-full;
 		}
 
 		&__sidebar {

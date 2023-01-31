@@ -63,7 +63,7 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import './../../../lib/wikimedia-ui-base.less';
+@import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-tooltip {
 	&_button {
@@ -74,17 +74,17 @@ module.exports = exports = {
 	&_content {
 		position: absolute;
 		width: 200px;
-		padding: 10px;
-		margin-top: 5px;
+		padding: @spacing-50;
+		margin-top: @spacing-25;
 		text-align: left;
-		background: @wmui-color-base100;
-		box-shadow: 1px 1px @wmui-color-base50;
-		border: solid 1px @wmui-color-base50;
-		font-weight: normal;
-		z-index: 100;
+		background: @background-color-base;
+		box-shadow: @box-shadow-drop-small;
+		border: solid 1px @border-color-base;
+		font-weight: @font-weight-normal;
+		z-index: @z-index-overlay;
 
 		&_header {
-			font-weight: bold;
+			font-weight: @font-weight-bold;
 			margin-bottom: 5%;
 		}
 	}
@@ -103,14 +103,14 @@ module.exports = exports = {
 
 	&_content:after {
 		border-color: rgba( 255, 255, 255, 0 );
-		border-bottom-color: @wmui-color-base100;
+		border-bottom-color: @border-color-inverted;
 		border-width: 10px;
 		margin-left: -10px;
 	}
 
 	&_content:before {
 		border-color: rgba( 255, 255, 255, 0 );
-		border-bottom-color: @wmui-color-base50;
+		border-bottom-color: @border-color-base;
 		border-width: 11px;
 		margin-left: -11px;
 	}

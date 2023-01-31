@@ -191,8 +191,6 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import './../../../lib/wikimedia-ui-base.less';
-
 .ext-wikilambda-zresponseenvelope {
 	&__show-error {
 		padding: 10px 0;

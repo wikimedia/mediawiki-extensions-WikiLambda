@@ -186,17 +186,17 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import '../../../../lib/wikimedia-ui-base.less';
+@import '../../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-function-viewer-aliases {
 	&__header {
-		color: @wmui-color-base0;
-		font-size: 16;
+		color: @color-base;
+		font-size: 1em;
 		font-weight: @font-weight-bold;
 	}
 
 	&__item {
-		line-height: @line-height-base;
+		line-height: @line-height-medium;
 		margin-top: 1em;
 		margin-bottom: 1em;
 	}

@@ -179,13 +179,13 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-zTypedPair {
-	background: @wmui-color-base80;
-	border: 1px solid @wmui-color-base20;
+	background: @background-color-interactive;
+	border: 1px solid @border-color-interactive;
 	padding: 1em;
 }
 
 input.ext-wikilambda-zstring {
-	background: #eef;
+	background: @background-color-interactive;
 }
 
 ul.ext-wikilambda-zTypedPair-no-bullets {

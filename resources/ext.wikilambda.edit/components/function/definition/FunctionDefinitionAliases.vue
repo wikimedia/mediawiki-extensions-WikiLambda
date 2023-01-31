@@ -244,7 +244,7 @@ module.exports = exports = {
 	margin-bottom: @spacing-150;
 
 	&__error {
-		color: @wmui-color-red50;
+		color: @color-error;
 	}
 
 	&__label {

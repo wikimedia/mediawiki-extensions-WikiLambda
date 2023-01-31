@@ -98,7 +98,7 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import '../../../lib/wikimedia-ui-base.less';
+@import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-tester-result {
 	&-message-icon {
@@ -107,15 +107,15 @@ module.exports = exports = {
 
 	&-status {
 		&--PASS {
-			color: @wmui-color-green30;
+			color: @color-success;
 		}
 
 		&--FAIL {
-			color: @wmui-color-red30;
+			color: @color-error;
 		}
 
 		&--RUNNING {
-			color: @wmui-color-yellow50;
+			color: @color-warning;
 		}
 	}
 }

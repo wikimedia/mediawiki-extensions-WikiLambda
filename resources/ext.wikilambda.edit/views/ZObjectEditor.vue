@@ -130,8 +130,6 @@ module.exports = exports = {
 
 <style lang="less">
 @import 'mediawiki.mixins';
-@import './../../lib/sd-base-variables.less';
-@import './../../lib/wikimedia-ui-base.less';
 
 .ext-wikilambda-expertModeToggle {
 	margin: 1em 0 0 0;

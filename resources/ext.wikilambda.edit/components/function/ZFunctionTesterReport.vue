@@ -292,7 +292,7 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import './../../../lib/wikimedia-ui-base.less';
+@import '../../ext.wikilambda.edit.less';
 
 /* stylelint-disable selector-max-id */
 #metadata-dialog .cdx-dialog__header {
@@ -319,10 +319,10 @@ module.exports = exports = {
 	&__header {
 		display: flex;
 		justify-content: space-between;
-		padding: 8px 0;
+		padding: @spacing-50 0;
 		position: sticky;
 		top: 0;
-		background: @wmui-color-base100;
+		background: @background-color-base;
 
 		&__helplink {
 			float: right;
@@ -337,11 +337,11 @@ module.exports = exports = {
 
 		&__close-button {
 			display: flex;
-			color: #202122;
+			color: @color-base;
 			justify-content: center;
 			align-items: center;
-			height: 32px;
-			width: 32px;
+			height: @size-200;
+			width: @size-200;
 			background: none;
 			border: 0;
 			margin: auto;
