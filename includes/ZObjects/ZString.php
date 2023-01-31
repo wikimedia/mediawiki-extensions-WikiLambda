@@ -21,12 +21,34 @@ class ZString extends ZObject {
 	public function __construct( $value = '' ) {
 		if ( is_string( $value ) || $value === null ) {
 			$this->data[ ZTypeRegistry::Z_STRING_VALUE ] = $value;
-		} elseif ( is_array( $value ) ) {
-			$this->data[ ZTypeRegistry::Z_STRING_VALUE ] = $value[0];
-		} else {
-			$this->data[ ZTypeRegistry::Z_STRING_VALUE ] =
-				get_object_vars( $value )[ ZTypeRegistry::Z_STRING_VALUE ] ?? null;
+			return;
 		}
+
+		if ( is_array( $value ) ) {
+			$this->data[ ZTypeRegistry::Z_STRING_VALUE ] = $value[0];
+			return;
+		}
+
+		if ( $value instanceof ZString ) {
+			$this->data[ZTypeRegistry::Z_STRING_VALUE] = $value->getZValue();
+			return;
+		}
+
+		// Possibly a serialised version of a ZString; pull out the value and use it if so, otherwise we'll default.
+		if ( $value instanceof \stdclass ) {
+			$arrayObject = get_object_vars( $value );
+			if (
+				array_key_exists( 'data', $arrayObject )
+				&& array_key_exists( ZTypeRegistry::Z_STRING_VALUE, $arrayObject['data'] )
+				&& is_string( $arrayObject['data'][ZTypeRegistry::Z_STRING_VALUE] )
+			) {
+				$this->data[ZTypeRegistry::Z_STRING_VALUE] = $arrayObject['data'][ZTypeRegistry::Z_STRING_VALUE];
+				return;
+			}
+		}
+
+		// Otherwise give up and have it as null
+		$this->data[ ZTypeRegistry::Z_STRING_VALUE ] = null;
 	}
 
 	/**
