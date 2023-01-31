@@ -335,6 +335,25 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::updateZObject
+	 */
+	public function testUpdateZObject_editProhibited_basicUserMakingPreDefined() {
+		$zid = 'Z400';
+		$input = '{ "Z1K1": "Z2", "Z2K1": "' . $zid . '",'
+			. '"Z2K2": "hello",'
+			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+
+		$status = $this->zobjectStore->updateZObject(
+			$zid,
+			$input,
+			'Update summary',
+			$this->getTestUser()->getUser()
+		);
+		$this->assertFalse( $status->isOK() );
+		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT, $status->getErrors() );
+	}
+
+	/**
 	 * @covers ::insertZObjectLabels
 	 */
 	public function testInsertZObjectLabels() {
