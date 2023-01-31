@@ -176,11 +176,11 @@ class ZObjectStore {
 	/**
 	 * Create or update a ZObject it in the Database
 	 *
-	 * @param string $zid
-	 * @param string $data
-	 * @param string $summary
-	 * @param User $user
-	 * @param int $flags
+	 * @param string $zid The ZID of the page to create/update, e.g. 'Z12345'
+	 * @param string $data The ZObject's JSON to store, in string form, i.e. "{ Z1K1: "Z2", Z2K1: … }"
+	 * @param string $summary An edit summary to display in the page's history, Recent Changes, watchlists, etc.
+	 * @param User $user The user making the edit.
+	 * @param int $flags Either EDIT_UPDATE (default) if editing or EDIT_NEW if creating a page
 	 * @return ZObjectPage
 	 */
 	public function updateZObject( string $zid, string $data, string $summary, User $user, int $flags = EDIT_UPDATE ) {
