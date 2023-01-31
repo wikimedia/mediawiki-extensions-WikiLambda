@@ -33,6 +33,7 @@
 				:depth="depth"
 				:row-id="rowId"
 				:expected-type="expectedType"
+				:parent-id="parentRowId"
 				@set-value="setValue"
 				@set-type="setType"
 			></component>
@@ -48,6 +49,7 @@ var
 	ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' ),
 	ZObjectType = require( './ZObjectType.vue' ),
 	ZString = require( './ZString.vue' ),
+	ZCode = require( './ZCode.vue' ),
 	ZReference = require( './ZReference.vue' ),
 	ZBoolean = require( './ZBoolean.vue' ),
 	mapActions = require( 'vuex' ).mapActions,
@@ -63,7 +65,8 @@ module.exports = exports = {
 		'z-object-type': ZObjectType,
 		'z-string': ZString,
 		'z-reference': ZReference,
-		'wl-z-boolean': ZBoolean
+		'wl-z-boolean': ZBoolean,
+		'wl-z-code': ZCode
 	},
 	props: {
 		rowId: {
@@ -358,6 +361,9 @@ module.exports = exports = {
 
 				if ( ( this.type === Constants.Z_BOOLEAN ) && !this.expanded ) {
 					return 'wl-z-boolean';
+				}
+				if ( ( this.type === Constants.Z_CODE ) && !this.expanded ) {
+					return 'wl-z-code';
 				}
 
 				// If there's no builtin component, always show expanded mode

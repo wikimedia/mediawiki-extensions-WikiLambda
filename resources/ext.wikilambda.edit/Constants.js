@@ -164,7 +164,8 @@ var Constants = {
 		[ Constants.Z_MONOLINGUALSTRING ]: 'z-monolingual-string',
 		[ Constants.Z_STRING ]: 'z-string',
 		[ Constants.Z_REFERENCE ]: 'z-reference',
-		[ Constants.Z_BOOLEAN ]: 'z-boolean'
+		[ Constants.Z_BOOLEAN ]: 'z-boolean',
+		[ Constants.Z_CODE ]: 'z-code'
 	},
 	resolverTypes = [
 		Constants.Z_REFERENCE,
