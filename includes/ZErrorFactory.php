@@ -668,7 +668,7 @@ class ZErrorFactory {
 
 		return new ZError(
 			$zErrorType,
-			self::createGenericError( $zErrorType, $zErrorValue )
+			self::createTypedError( $zErrorType, $zErrorValue )
 		);
 	}
 
@@ -679,7 +679,7 @@ class ZErrorFactory {
 	 * @param ZObject[] $errorValues
 	 * @return ZTypedError
 	 */
-	public static function createGenericError( $errorType, $errorValues ) {
+	private static function createTypedError( $errorType, $errorValues ) {
 		return new ZTypedError( ZTypedError::buildType( $errorType ), $errorValues );
 	}
 
