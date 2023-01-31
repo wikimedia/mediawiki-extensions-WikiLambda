@@ -71,6 +71,19 @@ class ParserHooks implements
 
 		$targetObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
 
+		// ZObjectStore's fetchZObjectByTitle() will return a ZObjectContent, so just check it's a valid ZObject
+		if ( !$targetObject->isValid() ) {
+			// User is trying to use an invalid ZObject or somehow non-ZObject in our namespace
+			$ret = Html::errorBox(
+				wfMessage(
+					'wikilambda-functioncall-error-invalid-zobject',
+					$target
+				)->parseAsBlock()
+			);
+			$parser->addTrackingCategory( 'wikilambda-functioncall-error-invalid-zobject-category' );
+			return [ $ret ];
+		}
+
 		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
 			// User is trying to use a ZObject that's not a ZFunction
 			$ret = Html::errorBox(
