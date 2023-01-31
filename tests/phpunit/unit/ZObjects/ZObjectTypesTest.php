@@ -75,7 +75,7 @@ class ZObjectTypesTest extends \MediaWikiUnitTestCase {
 			new ZFunctionCall( new ZReference( 'Z881' ),
 			[ 'Z881K1' => new ZReference( 'Z6' ) ] )
 		);
-		$genericError = new ZTypedError(
+		$typedError = new ZTypedError(
 			new ZFunctionCall( new ZReference( 'Z885' ),
 			[ 'Z885K1' => new ZReference( 'Z500' ) ] )
 		);
@@ -110,8 +110,8 @@ class ZObjectTypesTest extends \MediaWikiUnitTestCase {
 			'quote' => [ $zQuote, 'Z99', true, true ],
 			'key reference' => [ $zKeyReference, 'Z39', true, true ],
 			'function call' => [ $zFunctionCall, 'Z7', true, true ],
-			'generic list' => [ $typedList, 'Z881', true, false ],
-			'generic error' => [ $genericError, 'Z885', true, false ],
+			'typed list' => [ $typedList, 'Z881', true, false ],
+			'typed error' => [ $typedError, 'Z885', true, false ],
 		];
 	}
 }

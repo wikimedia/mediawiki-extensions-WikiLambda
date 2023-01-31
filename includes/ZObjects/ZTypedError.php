@@ -51,7 +51,7 @@ class ZTypedError extends ZObject {
 	}
 
 	/**
-	 * Build the function call that defines the type of this Generic Error
+	 * Build the function call that defines the type of this Typed Error
 	 *
 	 * @param string $errorType
 	 * @return ZFunctionCall
@@ -67,7 +67,7 @@ class ZTypedError extends ZObject {
 	 * @inheritDoc
 	 */
 	public function isValid(): bool {
-		// To validate an instance of a generic error, we need to check
+		// To validate an instance of a typed error, we need to check
 		// the keys and types of the errortype object
 		return true;
 	}
@@ -82,7 +82,7 @@ class ZTypedError extends ZObject {
 	}
 
 	/**
-	 * Returns the Zid of the errortype that represents this ZGenericError instance
+	 * Returns the Zid of the errortype that represents this ZTypedError instance
 	 *
 	 * @return string The zid of the ZErrorType
 	 */

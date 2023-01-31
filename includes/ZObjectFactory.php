@@ -481,7 +481,7 @@ class ZObjectFactory {
 		// Check for canonical arrays
 		if ( is_array( $object ) ) {
 			// FIXME (T298126): We should probably infer the type of ZObjects contained in
-			// this array instead of just creating a generic list of Z1s
+			// this array instead of just creating an untyped list of Z1s
 			return new ZFunctionCall(
 				new ZReference( ZTypeRegistry::Z_FUNCTION_TYPED_LIST ),
 				[ ZTypeRegistry::Z_FUNCTION_TYPED_LIST_TYPE => ZTypeRegistry::Z_OBJECT_TYPE ]
