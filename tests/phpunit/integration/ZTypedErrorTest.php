@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WikiLambda integration test suite for the ZGenericError class
+ * WikiLambda integration test suite for the ZTypedError class
  *
  * @copyright 2020– WikiLambda team; see AUTHORS.txt
  * @license MIT
@@ -11,14 +11,14 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use FormatJson;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedError;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZGenericError
+ * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedError
  * @group Database
  */
-class ZGenericErrorTest extends WikiLambdaIntegrationTestCase {
+class ZTypedErrorTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
@@ -30,7 +30,7 @@ class ZGenericErrorTest extends WikiLambdaIntegrationTestCase {
 		$genericError = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z885", "Z885K1": "Z502" } }';
 		$testObject = ZObjectFactory::create( json_decode( $genericError ) );
 
-		$this->assertInstanceOf( ZGenericError::class, $testObject );
+		$this->assertInstanceOf( ZTypedError::class, $testObject );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( "Z502", $testObject->getErrorType() );
 	}
@@ -47,7 +47,7 @@ class ZGenericErrorTest extends WikiLambdaIntegrationTestCase {
 			. ' "K2": "value 2" }';
 		$testObject = ZObjectFactory::create( json_decode( $genericError ) );
 
-		$this->assertInstanceOf( ZGenericError::class, $testObject );
+		$this->assertInstanceOf( ZTypedError::class, $testObject );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( "Z502", $testObject->getErrorType() );
 		$this->assertSame(
@@ -77,7 +77,7 @@ class ZGenericErrorTest extends WikiLambdaIntegrationTestCase {
 		$functionCallJson = '{ "Z1K1": "Z7", "Z7K1": "Z885", "Z885K1": "Z502" }';
 
 		$functionCall = ZObjectFactory::create( json_decode( $functionCallJson ) );
-		$testObject = new ZGenericError(
+		$testObject = new ZTypedError(
 			$functionCall,
 			[ new ZString( "value 1" ), new ZString( "value 2" ) ]
 		);
@@ -86,7 +86,7 @@ class ZGenericErrorTest extends WikiLambdaIntegrationTestCase {
 			. ' "K1": "value 1",'
 			. ' "K2": "value 2" }';
 
-		$this->assertInstanceOf( ZGenericError::class, $testObject );
+		$this->assertInstanceOf( ZTypedError::class, $testObject );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( "Z502", $testObject->getErrorType() );
 		$this->assertSame(
