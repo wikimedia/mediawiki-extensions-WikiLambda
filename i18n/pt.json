@@ -6,6 +6,7 @@
 		]
 	},
 	"wikilambda-desc": "Fornece às wikis da Wikimedia uma função de análise sintática de texto wiki para chamar a execução de funções escritas, geridas e executadas numa wiki central.",
+	"content-model-zobject": "Objeto-Z",
 	"wikilambda-emptylabel": "Objeto-Z não etiquetado",
 	"wikilambda-history-title": "Historial de revisões de \"$1\" ($2)",
 	"wikilambda-invalidzobjecttitle": "O título fornecido '$1' não é válido para um Objeto-Z.",
@@ -15,6 +16,7 @@
 	"wikilambda-prohibitedcreationtype": "O Objeto-Z fornecido é do tipo '$1', cuja criação não é permitida.",
 	"wikilambda-noresult": "A pesquisa não forneceu nenhum resultado.",
 	"wikilambda-labelclash": "A etiqueta do conteúdo fornecido entra em conflito com o Objeto-Z '$1' para a etiqueta em '$2'.",
+	"wikilambda-persistentzobject": "Objeto-Z",
 	"wikilambda-persistentzobject-metadata": "Etiquetas e nomes alternativos",
 	"wikilambda-persistentzobject-contents": "Conteúdo",
 	"wikilambda-persistentzobject-description": "Comece a criar o seu Objeto-Z selecionando um dos tipos abaixo. Pode criar uma função clicando nesta hiperligação:",

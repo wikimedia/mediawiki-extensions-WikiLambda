@@ -14,7 +14,7 @@
 	"wikilambda-invalidcontenttype": "התוכן שסופק אינו מחלקה שמייצגת עצם Z.",
 	"wikilambda-typeunavailable": "סוג לא מוכר",
 	"wikilambda-prohibitedcreationtype": "עצם ה־Z שסופק הוא מסוג \"$1\", שאין אפשרות ליצור.",
-	"wikilambda-noresult": "החיפוש לא הניב שום תוצאה",
+	"wikilambda-noresult": "החיפוש לא הניב שום תוצאה.",
 	"wikilambda-labelclash": "התווית של התוכן שסופק מתנגש עם עצם ה־Z בעל המזהה $1 עבור התווית בשפה $2.",
 	"wikilambda-persistentzobject": "עצם Z",
 	"wikilambda-persistentzobject-metadata": "תוויות וכינויים",
