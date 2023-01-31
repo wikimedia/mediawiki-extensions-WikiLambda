@@ -24,7 +24,7 @@
 </template>
 
 <script>
-var ZFunctionCall = require( '../types/ZFunctionCall.vue' ),
+var ZFunctionCall = require( '../main-types/ZFunctionCall.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component

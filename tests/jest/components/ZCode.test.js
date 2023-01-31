@@ -10,7 +10,7 @@ const Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js'
 
 var VueTestUtils = require( '@vue/test-utils' ),
 	CodeEditor = require( '../../../resources/ext.wikilambda.edit/components/base/CodeEditor.vue' ),
-	ZCode = require( '../../../resources/ext.wikilambda.edit/components/types/ZCode.vue' );
+	ZCode = require( '../../../resources/ext.wikilambda.edit/components/main-types/ZCode.vue' );
 
 const zobjectId = 1;
 const codeItemId = 2;

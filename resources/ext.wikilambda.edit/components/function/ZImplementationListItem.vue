@@ -37,7 +37,7 @@
 
 <script>
 var Constants = require( '../../Constants.js' ),
-	ZListItem = require( '../types/ZListItem.vue' ),
+	ZListItem = require( '../main-types/ZListItem.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;

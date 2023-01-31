@@ -11,7 +11,7 @@ const configureCompat = require( 'vue' ).configureCompat,
 	mount = require( '@vue/test-utils' ).mount,
 	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
-	PublishDialog = require( '../../../resources/ext.wikilambda.edit/components/editor/PublishDialog.vue' ),
+	PublishDialog = require( '../../../resources/ext.wikilambda.edit/components/base/PublishDialog.vue' ),
 	ZObjectPublish = require( '../../../resources/ext.wikilambda.edit/components/ZObjectPublish.vue' ),
 	{ CdxTextInput } = require( '@wikimedia/codex' );
 

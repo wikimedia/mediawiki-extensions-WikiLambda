@@ -89,6 +89,8 @@ module.exports = exports = {
 		 * Returns all fetched zids and their label, which will be in the
 		 * user selected language if available, or in the closes fallback.
 		 *
+		 * TODO: Soon to be deprecated, in favor of getLabel( zid )
+		 *
 		 * @param {Object} state
 		 * @param {Object} getters
 		 * @return {Object} map of { zid, label } values

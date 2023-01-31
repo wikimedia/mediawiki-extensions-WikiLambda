@@ -2,7 +2,7 @@
 'use strict';
 
 var VueTestUtils = require( '@vue/test-utils' ),
-	ZFunctionCall = require( '../../../resources/ext.wikilambda.edit/components/types/ZFunctionCall.vue' );
+	ZFunctionCall = require( '../../../resources/ext.wikilambda.edit/components/main-types/ZFunctionCall.vue' );
 const { CdxButton } = require( '@wikimedia/codex' );
 const Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' );
 

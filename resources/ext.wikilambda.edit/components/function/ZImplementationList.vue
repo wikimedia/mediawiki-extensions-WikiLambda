@@ -41,7 +41,7 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	ZTypedList = require( '../types/ZTypedList.vue' ),
+	ZTypedList = require( '../main-types/ZTypedList.vue' ),
 	ZImplementationListItem = require( './ZImplementationListItem.vue' );
 
 // @vue/component

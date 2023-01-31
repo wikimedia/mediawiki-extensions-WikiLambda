@@ -1,7 +1,7 @@
 'use strict';
 
 var VueTestUtils = require( '@vue/test-utils' ),
-	ZResponseEnvelope = require( '../../../resources/ext.wikilambda.edit/components/types/ZResponseEnvelope.vue' ),
+	ZResponseEnvelope = require( '../../../resources/ext.wikilambda.edit/components/main-types/ZResponseEnvelope.vue' ),
 	ZObjectKey = require( '../../../resources/ext.wikilambda.edit/components/ZObjectKey.vue' );
 const { CdxButton } = require( '@wikimedia/codex' );
 const Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' );

@@ -37,7 +37,7 @@
 <script>
 var ZObject = require( '../components/ZObject.vue' ),
 	ZObjectPublish = require( '../components/ZObjectPublish.vue' ),
-	LeaveEditorDialog = require( '../components/editor/LeaveEditorDialog.vue' ),
+	LeaveEditorDialog = require( '../components/base/LeaveEditorDialog.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	mapGetters = require( 'vuex' ).mapGetters,

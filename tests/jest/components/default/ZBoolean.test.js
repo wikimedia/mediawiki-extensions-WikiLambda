@@ -10,7 +10,7 @@ const { CdxRadio } = require( '@wikimedia/codex' );
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	ZBoolean = require( '../../../../resources/ext.wikilambda.edit/components/default/ZBoolean.vue' );
+	ZBoolean = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZBoolean.vue' );
 
 describe( 'ZBoolean', () => {
 	var getters;

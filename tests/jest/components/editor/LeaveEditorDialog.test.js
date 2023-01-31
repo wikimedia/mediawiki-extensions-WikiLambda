@@ -8,7 +8,7 @@
 
 var mount = require( '@vue/test-utils' ).mount,
 	shallowMount = require( '@vue/test-utils' ).shallowMount,
-	LeaveEditorDialog = require( '../../../../resources/ext.wikilambda.edit/components/editor/LeaveEditorDialog.vue' );
+	LeaveEditorDialog = require( '../../../../resources/ext.wikilambda.edit/components/base/LeaveEditorDialog.vue' );
 
 describe( 'LeaveEditorDialog', function () {
 	beforeEach( function () {

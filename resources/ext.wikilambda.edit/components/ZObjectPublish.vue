@@ -26,7 +26,7 @@
 <script>
 var CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapActions = require( 'vuex' ).mapActions,
-	PublishDialog = require( './editor/PublishDialog.vue' );
+	PublishDialog = require( './base/PublishDialog.vue' );
 
 // @vue/component
 module.exports = exports = {

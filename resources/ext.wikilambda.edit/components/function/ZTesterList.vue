@@ -49,7 +49,7 @@ var Constants = require( '../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	ZTesterListItem = require( './ZTesterListItem.vue' ),
 	ZTesterAdHoc = require( './ZTesterAdHoc.vue' ),
-	ZTypedList = require( '../types/ZTypedList.vue' );
+	ZTypedList = require( '../main-types/ZTypedList.vue' );
 
 // @vue/component
 module.exports = exports = {

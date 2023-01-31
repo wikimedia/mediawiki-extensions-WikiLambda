@@ -9,7 +9,7 @@
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	ZReference = require( '../../../../resources/ext.wikilambda.edit/components/default/ZReference.vue' ),
+	ZReference = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZReference.vue' ),
 	ZObjectSelector = require( '../../../../resources/ext.wikilambda.edit/components/ZObjectSelector.vue' );
 
 describe( 'ZReference', () => {
