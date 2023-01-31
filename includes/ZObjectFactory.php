@@ -130,7 +130,7 @@ class ZObjectFactory {
 			throw new ZErrorException(
 				// FIXME (T300506) Detail persistent object-related errors
 				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_GENERIC,
+					ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 					[
 						'message' => "ZPersistentObject not valid"
 					]

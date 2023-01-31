@@ -35,7 +35,7 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 			count( $revisions ) !== count( $ZIDs )
 		) {
 			$zErrorObject = ZErrorFactory::createZErrorInstance(
-				ZErrorTypeRegistry::Z_ERROR_GENERIC,
+				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 				[
 					'message' => "You must specify a revision for each ZID"
 				]

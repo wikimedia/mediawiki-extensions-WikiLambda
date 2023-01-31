@@ -481,7 +481,7 @@ class ZErrorFactory {
 		$zErrorValue = [];
 
 		switch ( $zErrorType ) {
-			case ZErrorTypeRegistry::Z_ERROR_GENERIC:
+			case ZErrorTypeRegistry::Z_ERROR_UNKNOWN:
 				$zErrorValue[] = new ZString( $payload['message'] );
 				break;
 
@@ -691,7 +691,7 @@ class ZErrorFactory {
 	 */
 	public static function createUnknownValidationError( $message ): ZError {
 		$zError = self::createZErrorInstance(
-			ZErrorTypeRegistry::Z_ERROR_GENERIC,
+			ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 			[ 'message' => $message ]
 		);
 		return self::createValidationZError( $zError );
