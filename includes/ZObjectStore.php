@@ -228,18 +228,28 @@ class ZObjectStore {
 			return ZObjectPage::newFatal( $error );
 		}
 
-		// Double-check that the user has permissions to edit (should be caught by the lower parts of the stack)
+		// Check that the user has the permissions to make the edit they're attempting
+
 		// TODO (T312090): This should use the Authority concept, not the soon-to-be-legacy PermissionManager.
 		$permissionManager = MediaWikiServices::getInstance()->getPermissionManager();
-		if ( !$permissionManager->userCan( 'edit', $user, $title ) ) {
-			if ( !( $title->exists() ) ) {
+
+		if ( !( $title->exists() ) ) {
+			if (
+				!$permissionManager->userCan( 'edit', $user, $title ) ||
+				!$permissionManager->userCan( 'wikilambda-create', $user, $title )
+			) {
 				// User is trying to create a page and is prohibited, e.g. logged-out.
 				$error = ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
 					[ 'message' => wfMessage( 'nocreatetext' )->text() ]
 				);
 				return ZObjectPage::newFatal( $error );
-			} else {
+			}
+		} else {
+			if (
+				!$permissionManager->userCan( 'edit', $user, $title ) ||
+				!$permissionManager->userCan( 'wikilambda-edit', $user, $title )
+			) {
 				// User is trying to edit a page and is prohibited, e.g. blocked, but we don't know why,
 				// so give them the most generic error that MediaWiki has.
 				$error = ZErrorFactory::createZErrorInstance(
