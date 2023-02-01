@@ -1,6 +1,6 @@
 {
 	"extends": "stylelint-config-wikimedia",
 	"rules": {
-		"selector-class-pattern": "^(ext-wikilambda-|sd-|cdx-)"
+		"selector-class-pattern": "^(ext-wikilambda-|cdx-|)"
 	}
 }
