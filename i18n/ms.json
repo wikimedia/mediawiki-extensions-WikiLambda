@@ -11,6 +11,7 @@
 	"wikilambda-publish-lose-changes-prompt": "Jika anda keluar tanpa menyiarkan terlebih dahulu, suntingan anda akan hilang.",
 	"wikilambda-code-editor-label": "Penyunting kod",
 	"wikilambda-metadata-labels-table-label": "Label",
+	"wikilambda-function-definition-inputs-item-input-placeholder": "Contohnya, Celsius",
 	"wikilambda-function-definition-input-item-type": "Jenis",
 	"wikilambda-function-definition-input-item-label": "Label",
 	"wikilambda-function-definition-output-type-label": "Jenis",

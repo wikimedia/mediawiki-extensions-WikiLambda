@@ -13,7 +13,8 @@
 			"Sou0012",
 			"Tamaki Wakita",
 			"バレロン",
-			"春春眠眠"
+			"春春眠眠",
+			"背番号4のエース"
 		]
 	},
 	"wikilambda-desc": "ウィキメディアのウィキにウィキテキストのパーサー関数を指定して、中央のウィキで記述、管理、評価された関数の評価を呼び出します。",
@@ -140,6 +141,9 @@
 	"wikilambda-functioncall-error-unknown": "関数呼び出しエラー: ' $1 ' は既知の Zオブジェクトではありません",
 	"wikilambda-functioncall-error-unknown-category": "不明な Zオブジェクトへのウィキファンクションズ呼び出しを含むページ",
 	"wikilambda-functioncall-error-unknown-category-desc": "不明なZオブジェクトを要求するウィキ関数の呼び出しを試みたページ",
+	"wikilambda-functioncall-error-invalid-zobject": "関数の呼び出しエラー:Zオブジェクト' $1 'はZ関数ではないため、呼び出しに失敗しました",
+	"wikilambda-functioncall-error-invalid-zobject-category": "不明なZオブジェクトへのウィキファンクションズ呼び出しを含んでいるページ",
+	"wikilambda-functioncall-error-invalid-zobject-category-desc": "関数以外の Zオブジェクトを使用してウィキファンクションズの呼び出しを試みたページ",
 	"wikilambda-functioncall-error-nonfunction": "関数呼び出しエラー: Zオブジェクト ' $1 ' は Z関数ではないため、呼び出すことができません",
 	"wikilambda-functioncall-error-nonfunction-category": "非関数Zオブジェクトへのウィキファクションズ呼び出しを含むページ",
 	"wikilambda-functioncall-error-nonfunction-category-desc": "関数以外の Zオブジェクトを使用してウィキファンクションズの呼び出しを試みたページ",
