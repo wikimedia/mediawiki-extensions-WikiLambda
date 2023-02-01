@@ -214,6 +214,37 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::updateZObjectAsSystemUser
+	 * @covers ::fetchZObjectByTitle
+	 */
+	public function testUpdateZObjectAsSystemUser() {
+		$basicUser = $this->getTestUser()->getUser();
+
+		$zid = 'Z401';
+		$input = '{ "Z1K1": "Z2", "Z2K1": "Z401",'
+			. '"Z2K2": "hello",'
+			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+
+		// We try to create a new ZObject of a banned ZID (Z401), per DISALLOWED_ROOT_ZOBJECTS
+		$status = $this->zobjectStore->updateZObject(
+			$zid,
+			$input,
+			'Creation summary',
+			$basicUser
+		);
+		$this->assertFalse( $status->isOK() );
+
+		// We try to create a new but invalid ZObject, this time as the system
+		$status = $this->zobjectStore->updateZObjectAsSystemUser(
+			$zid,
+			$input,
+			'Creation summary',
+			EDIT_NEW
+		);
+		$this->assertTrue( $status->isOK() );
+	}
+
+	/**
 	 * @covers ::updateZObject
 	 * @covers ::fetchZObjectByTitle
 	 */
