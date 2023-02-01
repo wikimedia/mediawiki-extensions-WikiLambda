@@ -186,6 +186,7 @@
 			"packageFiles": [
 				"ext.wikilambda.edit/index.js",
 				"ext.wikilambda.edit/Constants.js",
+				"ext.wikilambda.edit/store/classes/LabelData.js",
 				"ext.wikilambda.edit/store/index.js",
 				"ext.wikilambda.edit/store/state.js",
 				"ext.wikilambda.edit/store/actions.js",
@@ -235,6 +236,7 @@
 				"ext.wikilambda.edit/components/base/DialogContainer.vue",
 				"ext.wikilambda.edit/components/base/ExpandedToggle.vue",
 				"ext.wikilambda.edit/components/base/LeaveEditorDialog.vue",
+				"ext.wikilambda.edit/components/base/LocalizedLabel.vue",
 				"ext.wikilambda.edit/components/base/Pagination.vue",
 				"ext.wikilambda.edit/components/base/PublishDialog.vue",
 				"ext.wikilambda.edit/components/base/Select.vue",

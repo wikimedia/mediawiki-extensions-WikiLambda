@@ -18,9 +18,7 @@ describe( 'ZMonolingualString', () => {
 	beforeEach( () => {
 		getters = {
 			getLabel: createGettersWithFunctionsMock( { label: 'English', lang: 'Z1002', zid: 'Z1002' } ),
-			getZkeys: jest.fn( function () {
-				return { Z1002: { Z2K2: { Z60K1: 'EN' } } };
-			} ),
+			getLanguageIsoCodeOfZLang: createGettersWithFunctionsMock( 'EN' ),
 			getZMonolingualTextValue: createGettersWithFunctionsMock( 'my label' ),
 			getZMonolingualLangValue: createGettersWithFunctionsMock( 'Z10002' )
 		};
@@ -110,10 +108,7 @@ describe( 'ZMonolingualString', () => {
 		} );
 
 		it( 'displays a three-character chip', () => {
-			getters.getZkeys = jest.fn( function () {
-				return { Z1002: { Z2K2: { Z60K1: 'ABC' } } };
-			} );
-
+			getters.getLanguageIsoCodeOfZLang = createGettersWithFunctionsMock( 'ABC' );
 			global.store.hotUpdate( {
 				getters: getters
 			} );

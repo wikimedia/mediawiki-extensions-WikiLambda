@@ -16,7 +16,8 @@ describe( 'ZReference', () => {
 	var getters;
 	beforeEach( () => {
 		getters = {
-			getLabel: createGettersWithFunctionsMock( { zid: 'Z6', label: 'String', lang: 'Z1002' } ),
+			getLabel: createGettersWithFunctionsMock( 'String' ),
+			getLabelData: createGettersWithFunctionsMock( { zid: 'Z6', label: 'String', lang: 'Z1002' } ),
 			getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z6' ),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( '0' )
 		};
@@ -49,7 +50,9 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'displays the reference link with its value if there is no label', () => {
-			getters.getLabel = createGettersWithFunctionsMock();
+			// If there's no label data stored, getLabel returns input key
+			getters.getLabel = createGettersWithFunctionsMock( 'Z6' );
+			getters.getLabelData = createGettersWithFunctionsMock();
 
 			global.store.hotUpdate( {
 				getters: getters
@@ -94,7 +97,8 @@ describe( 'ZReference', () => {
 
 		it( 'displays a selector and emits the value with an empty keyPath if its key is a Z_REFERENCE_ID (Z9K1)', async () => {
 			getters = {
-				getLabel: createGettersWithFunctionsMock( { zid: 'Z6', label: 'String', lang: 'Z1002' } ),
+				getLabel: createGettersWithFunctionsMock( 'String' ),
+				getLabelData: createGettersWithFunctionsMock( { zid: 'Z6', label: 'String', lang: 'Z1002' } ),
 				getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z6' ),
 				getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z9K1' )
 			};
