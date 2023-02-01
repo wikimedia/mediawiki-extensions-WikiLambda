@@ -12,7 +12,6 @@ namespace MediaWiki\Extension\WikiLambda\Tests;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKey;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKeyReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
@@ -24,6 +23,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 
 /**
@@ -75,7 +75,7 @@ class ZObjectTypesTest extends \MediaWikiUnitTestCase {
 			new ZFunctionCall( new ZReference( 'Z881' ),
 			[ 'Z881K1' => new ZReference( 'Z6' ) ] )
 		);
-		$genericError = new ZGenericError(
+		$genericError = new ZTypedError(
 			new ZFunctionCall( new ZReference( 'Z885' ),
 			[ 'Z885K1' => new ZReference( 'Z500' ) ] )
 		);

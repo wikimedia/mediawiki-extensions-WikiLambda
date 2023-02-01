@@ -1,6 +1,7 @@
 <?php
+
 /**
- * WikiLambda ZGenericError
+ * WikiLambda ZTypedError
  *
  * @file
  * @ingroup Extensions
@@ -13,7 +14,7 @@ namespace MediaWiki\Extension\WikiLambda\ZObjects;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
-class ZGenericError extends ZObject {
+class ZTypedError extends ZObject {
 
 	/**
 	 * Create a new typed error instance

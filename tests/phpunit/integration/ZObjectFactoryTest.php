@@ -12,12 +12,12 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZGenericError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 
 /**
@@ -255,7 +255,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 			],
 			'function call type: error type builtin' => [
 				json_decode( '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z885", "Z885K1": "Z500" } }' ),
-				ZGenericError::class
+				ZTypedError::class
 			],
 			'function call type: user defined' => [
 				json_decode( '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z883" } }' ),

@@ -234,7 +234,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 		self::Z_FUNCTION_TYPED_LIST => 'ZTypedList',
 		self::Z_FUNCTION_TYPED_PAIR => 'ZTypedPair',
 		self::Z_FUNCTION_TYPED_MAP => 'ZTypedMap',
-		self::Z_FUNCTION_ERRORTYPE_TO_TYPE => 'ZGenericError'
+		self::Z_FUNCTION_ERRORTYPE_TO_TYPE => 'ZTypedError'
 	];
 
 	/**
