@@ -79,39 +79,13 @@
 					</tr>
 				</tfoot>
 			</table>
-			<!-- eslint-disable vue/no-v-model-argument -->
-			<!-- eslint-disable vue/no-unsupported-features -->
-			<cdx-dialog
-				id="metadata-dialog"
-				v-model:open="showMetrics"
-				title=""
-			>
-				<div class="ext-wikilambda-metadatadialog__header">
-					<span class="ext-wikilambda-metadatadialog__header__title">
-						{{ $i18n( 'wikilambda-functioncall-metadata-dialog-header' ).text() }}
-					</span>
-					<div class="ext-wikilambda-metadatadialog__header__helplink">
-						<cdx-icon :icon="helpLinkIcon()"></cdx-icon>
-						<a
-							:title="tooltipMetaDataHelpLink"
-							href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/Function_call_metadata"
-							target="_blank">
-							{{ $i18n( 'wikilambda-helplink-button' ).text() }}
-						</a>
-					</div>
-					<cdx-button
-						type="quiet"
-						class="ext-wikilambda-metadatadialog__header__close-button"
-						@click="showMetrics = false"
-					>
-						<cdx-icon :icon="icons.cdxIconClose"></cdx-icon>
-					</cdx-button>
-				</div>
-				<strong> {{ activeImplementationLabel }}</strong>
-				<br>
-				<strong> {{ activeTesterLabel }}</strong>
-				<span v-html="dialogText"></span>
-			</cdx-dialog>
+			<wl-metadata-dialog
+				:show-dialog="showMetrics"
+				:implementation-label="activeImplementationLabel"
+				:tester-label="activeTesterLabel"
+				:metadata="metadata"
+				@close-dialog="showMetrics = false"
+			></wl-metadata-dialog>
 		</template>
 		<div v-else>
 			<p>{{ $i18n( 'wikilambda-tester-no-results' ).text() }}</p>
@@ -122,26 +96,21 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	schemata = require( '../../mixins/schemata.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
-	icons = require( '../../../lib/icons.json' ),
-	ZTesterImplResult = require( './ZTesterImplResult.vue' ),
-	portray = require( '../../mixins/portray.js' );
+	MetadataDialog = require( './viewer/details/ZMetadataDialog.vue' ),
+	ZTesterImplResult = require( './ZTesterImplResult.vue' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-z-function-tester-report',
 	components: {
 		'wl-z-tester-impl-result': ZTesterImplResult,
-		'cdx-button': CdxButton,
-		'cdx-icon': CdxIcon,
-		'cdx-dialog': CdxDialog
+		'wl-metadata-dialog': MetadataDialog,
+		'cdx-button': CdxButton
 	},
-	mixins: [ typeUtils, schemata, portray ],
+	mixins: [ typeUtils ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -164,8 +133,7 @@ module.exports = exports = {
 			activeZImplementationId: null,
 			activeZTesterId: null,
 			Constants: Constants,
-			showMetrics: false,
-			icons: icons
+			showMetrics: false
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -222,25 +190,18 @@ module.exports = exports = {
 				this.$i18n( 'wikilambda-tester-status-passed' ).text() :
 				this.$i18n( 'wikilambda-tester-status-failed' ).text();
 		},
-		dialogText: function () {
+		metadata: function () {
 			if ( !this.activeZTesterId || !this.activeZImplementationId ) {
 				return '';
 			}
-			const metadata = this.getZTesterMetadata(
+			return this.getZTesterMetadata(
 				this.zFunctionId, this.activeZTesterId, this.activeZImplementationId );
-			// Ensure ZIDs appearing in metadata have been fetched
-			const metadataZIDs = this.extractZIDs( metadata );
-			this.fetchZKeys( { zids: metadataZIDs } );
-			return this.portrayMetadataMap( metadata, this.getZkeyLabels );
 		},
 		activeTesterLabel: function () {
 			return !this.activeZTesterId ? '' : ( this.getZkeyLabels[ this.activeZTesterId ] || this.activeZTesterId );
 		},
 		activeImplementationLabel: function () {
 			return !this.activeZImplementationId ? '' : ( this.getZkeyLabels[ this.activeZImplementationId ] || this.activeZImplementationId );
-		},
-		tooltipMetaDataHelpLink: function () {
-			return this.$i18n( 'wikilambda-helplink-tooltip' ).text();
 		}
 	} ),
 	methods: $.extend( mapActions( [ 'fetchZKeys', 'getTestResults' ] ), {
@@ -256,9 +217,6 @@ module.exports = exports = {
 			this.activeZImplementationId = keys.zImplementationId;
 			this.activeZTesterId = keys.zTesterId;
 			this.showMetrics = true;
-		},
-		helpLinkIcon: function () {
-			return icons.cdxIconHelpNotice;
 		},
 		implementationLabel: function ( implementation ) {
 			return this.zImplementationId ?
@@ -293,12 +251,6 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-@import '../../ext.wikilambda.edit.less';
-
-/* stylelint-disable selector-max-id */
-#metadata-dialog .cdx-dialog__header {
-	display: none;
-}
 
 .ext-wikilambda-fn-tester-results {
 	border-spacing: 10px 5px;
@@ -314,39 +266,5 @@ module.exports = exports = {
 	padding: 10px 0;
 	border-top: 3px double #000;
 	text-align: right;
-}
-
-.ext-wikilambda-metadatadialog {
-	&__header {
-		display: flex;
-		justify-content: space-between;
-		padding: @spacing-50 0;
-		position: sticky;
-		top: 0;
-		background: @background-color-base;
-
-		&__helplink {
-			float: right;
-		}
-
-		&__title {
-			width: 100%;
-			font-weight: bold;
-			font-size: 1.15em;
-			margin: auto;
-		}
-
-		&__close-button {
-			display: flex;
-			color: @color-base;
-			justify-content: center;
-			align-items: center;
-			height: @size-200;
-			width: @size-200;
-			background: none;
-			border: 0;
-			margin: auto;
-		}
-	}
 }
 </style>

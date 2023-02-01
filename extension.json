@@ -278,6 +278,7 @@
 				"ext.wikilambda.edit/components/function/ZFunctionEvaluator.vue",
 				"ext.wikilambda.edit/components/function/ZFunctionTesterReport.vue",
 				"ext.wikilambda.edit/components/function/ZFunctionTesterTable.vue",
+				"ext.wikilambda.edit/components/function/viewer/details/ZMetadataDialog.vue",
 				"ext.wikilambda.edit/components/function/ZImplementationList.vue",
 				"ext.wikilambda.edit/components/function/ZImplementationListItem.vue",
 				"ext.wikilambda.edit/components/function/ZInlineTesterCall.vue",
