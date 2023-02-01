@@ -9,7 +9,7 @@
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	TextInput = require( '../../../../resources/ext.wikilambda.edit/components/base/TextInput.vue' ),
-	ZString = require( '../../../../resources/ext.wikilambda.edit/components/default/ZString.vue' ),
+	ZString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZString.vue' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
 
 describe( 'ZString', () => {

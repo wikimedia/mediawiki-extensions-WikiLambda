@@ -1,7 +1,7 @@
 'use strict';
 
 var VueTestUtils = require( '@vue/test-utils' ),
-	ZFunction = require( '../../../resources/ext.wikilambda.edit/components/types/ZFunction.vue' );
+	ZFunction = require( '../../../resources/ext.wikilambda.edit/components/main-types/ZFunction.vue' );
 const Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' );
 
 const currentZObjectId = 123;

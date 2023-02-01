@@ -33,7 +33,7 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	ZString = require( '../types/ZString.vue' );
+	ZString = require( '../main-types/ZString.vue' );
 
 // @vue/component
 module.exports = exports = {

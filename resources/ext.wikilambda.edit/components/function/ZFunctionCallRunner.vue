@@ -59,7 +59,7 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	ZFunctionCall = require( '../types/ZFunctionCall.vue' ),
+	ZFunctionCall = require( '../main-types/ZFunctionCall.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component

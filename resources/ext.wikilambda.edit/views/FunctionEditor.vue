@@ -8,20 +8,20 @@
 	<div class="ext-wikilambda-function-editor">
 		<div class="ext-wikilambda-function-editor__main">
 			<main class="ext-wikilambda-function-editor__main__content">
-				<wl-function-definition></wl-function-definition>
+				<wl-function-editor-definition></wl-function-editor-definition>
 			</main>
 		</div>
 	</div>
 </template>
 
 <script>
-var functionDefinition = require( './function/FunctionDefinition.vue' );
+var FunctionEditorDefinition = require( '../components/function/editor/FunctionEditorDefinition.vue' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-function-editor',
 	components: {
-		'wl-function-definition': functionDefinition
+		'wl-function-editor-definition': FunctionEditorDefinition
 	},
 	mounted: function () {
 		this.$emit( 'mounted' );

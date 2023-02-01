@@ -363,7 +363,7 @@ module.exports = exports = {
 					self.validatorSetError( 'wikilambda-invalidzobject' );
 				}
 			},
-			// used by ZLabelsBlock, ZMultilingualString and FnEditorZLanguageSelector components to
+			// used by ZLabelsBlock, ZMultilingualString and FunctionEditorLanguage components to
 			// automatically add and clear labels.
 			clearResults: function () {
 				this.lookupResults = [];

@@ -35,7 +35,7 @@ var Constants = require( '../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	ZInlineTesterCall = require( './ZInlineTesterCall.vue' ),
 	ZInlineTesterValidation = require( './ZInlineTesterValidation.vue' ),
-	ZMultilingualString = require( '../types/ZMultilingualString.vue' );
+	ZMultilingualString = require( '../main-types/ZMultilingualString.vue' );
 
 // @vue/component
 module.exports = exports = {

@@ -88,7 +88,7 @@
 var Constants = require( '../Constants.js' ),
 	ZObjectSelector = require( './ZObjectSelector.vue' ),
 	ZKeyModeSelector = require( './ZKeyModeSelector.vue' ),
-	ZReference = require( './types/ZReference.vue' ),
+	ZReference = require( './main-types/ZReference.vue' ),
 	ZObjectJson = require( './ZObjectJson.vue' ),
 	ZObjectGeneric = require( './ZObjectGeneric.vue' ),
 	mapState = require( 'vuex' ).mapState,

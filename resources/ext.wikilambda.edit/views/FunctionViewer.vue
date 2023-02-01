@@ -41,29 +41,29 @@
 var CdxTab = require( '@wikimedia/codex' ).CdxTab,
 	CdxTabs = require( '@wikimedia/codex' ).CdxTabs,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
-	functionAbout = require( './function/FunctionAbout.vue' ),
-	functionDetails = require( './function/FunctionDetails.vue' );
+	FunctionViewerAbout = require( '../components/function/viewer/FunctionViewerAbout.vue' ),
+	FunctionViewerDetails = require( '../components/function/viewer/FunctionViewerDetails.vue' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-function-viewer',
 	components: {
-		'wl-function-about': functionAbout,
-		'wl-function-details': functionDetails,
+		'wl-function-viewer-about': FunctionViewerAbout,
+		'wl-function-viewer-details': FunctionViewerDetails,
 		'cdx-tab': CdxTab,
 		'cdx-tabs': CdxTabs,
 		'cdx-message': CdxMessage
 	},
 	data: function () {
 		return {
-			currentTab: 'wl-function-about',
+			currentTab: 'wl-function-viewer-about',
 			tabsData: [
 				{
-					name: 'wl-function-about',
+					name: 'wl-function-viewer-about',
 					label: this.$i18n( 'wikilambda-editor-fn-step-function-about' ).text()
 				},
 				{
-					name: 'wl-function-details',
+					name: 'wl-function-viewer-details',
 					label: this.$i18n( 'wikilambda-editor-fn-step-function-details' ).text()
 				}
 			]

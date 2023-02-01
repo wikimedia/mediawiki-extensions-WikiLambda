@@ -21,7 +21,7 @@
 <script>
 
 var
-	ZObjectKeyValue = require( '../components/default/ZObjectKeyValue.vue' ),
+	ZObjectKeyValue = require( '../components/default-view-types/ZObjectKeyValue.vue' ),
 	ZObjectJson = require( '../components/ZObjectJson.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 

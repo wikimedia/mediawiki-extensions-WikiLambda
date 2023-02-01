@@ -8,7 +8,7 @@
 
 var VueTestUtils = require( '@vue/test-utils' ),
 	createGettersWithFunctionsMock = require( '../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	ZImplementation = require( '../../../resources/ext.wikilambda.edit/components/types/ZImplementation.vue' ),
+	ZImplementation = require( '../../../resources/ext.wikilambda.edit/components/main-types/ZImplementation.vue' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' );
 
 describe( 'ZImplementation', function () {

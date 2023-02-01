@@ -38,8 +38,8 @@
 
 <script>
 var Constants = require( '../../Constants.js' ),
-	ZListItem = require( '../types/ZListItem.vue' ),
-	ZReference = require( '../types/ZReference.vue' ),
+	ZListItem = require( '../main-types/ZListItem.vue' ),
+	ZReference = require( '../main-types/ZReference.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;

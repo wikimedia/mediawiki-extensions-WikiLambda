@@ -9,7 +9,7 @@
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	ZMonolingualString = require( '../../../../resources/ext.wikilambda.edit/components/default/ZMonolingualString.vue' ),
+	ZMonolingualString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZMonolingualString.vue' ),
 	TextInput = require( '../../../../resources/ext.wikilambda.edit/components/base/TextInput.vue' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
 
