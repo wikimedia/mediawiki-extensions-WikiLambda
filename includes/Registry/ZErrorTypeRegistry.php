@@ -21,7 +21,7 @@ use Title;
 class ZErrorTypeRegistry extends ZObjectRegistry {
 
 	// TODO (T300512): Bring all constants (error types ZIDs) to schemata
-	public const Z_ERROR_GENERIC = 'Z500';
+	public const Z_ERROR_UNKNOWN = 'Z500';
 	public const Z_ERROR_INVALID_SYNTAX = 'Z501';
 	public const Z_ERROR_NOT_WELLFORMED = 'Z502';
 	public const Z_ERROR_ZID_NOT_FOUND = 'Z504';
@@ -65,7 +65,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	public const Z_ERROR_USER_CANNOT_EDIT = 'Z557';
 
 	private const BUILT_IN_ERRORS = [
-		'Z500' => 'Z_ERROR_GENERIC',
+		'Z500' => 'Z_ERROR_UNKNOWN',
 		'Z501' => 'Z_ERROR_INVALID_SYNTAX',
 		'Z502' => 'Z_ERROR_NOT_WELLFORMED',
 		'Z504' => 'Z_ERROR_ZID_NOT_FOUND',

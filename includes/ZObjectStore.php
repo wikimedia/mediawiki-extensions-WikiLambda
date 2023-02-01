@@ -309,7 +309,7 @@ class ZObjectStore {
 		} catch ( \Exception $e ) {
 			// Error: Database or a deeper MediaWiki error, e.g. a general editing rate limit
 			$error = ZErrorFactory::createZErrorInstance(
-				ZErrorTypeRegistry::Z_ERROR_GENERIC,
+				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 				[ 'message' => $e->getMessage() ]
 			);
 			return ZObjectPage::newFatal( $error );
@@ -318,7 +318,7 @@ class ZObjectStore {
 		if ( !$status->isOK() ) {
 			// Error: Other doUserEditContent related errors
 			$error = ZErrorFactory::createZErrorInstance(
-				ZErrorTypeRegistry::Z_ERROR_GENERIC,
+				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 				[ 'message' => $status->getMessage() ]
 			);
 			return ZObjectPage::newFatal( $error );

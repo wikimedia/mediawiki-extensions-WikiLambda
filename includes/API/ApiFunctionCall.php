@@ -336,7 +336,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 	 */
 	public static function wrapMessageInZError( $message, $call ): ZError {
 		$wrappedError = ZErrorFactory::createZErrorInstance(
-			ZErrorTypeRegistry::Z_ERROR_GENERIC, [ 'message' => $message ]
+			ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [ 'message' => $message ]
 		);
 		$zerror = ZErrorFactory::createZErrorInstance(
 			ZErrorTypeRegistry::Z_ERROR_EVALUATION,
