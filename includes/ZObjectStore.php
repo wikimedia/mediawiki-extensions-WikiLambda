@@ -356,6 +356,24 @@ class ZObjectStore {
 					}
 					break;
 
+				// Z20/Tester
+				case ZTypeRegistry::Z_TESTER:
+					if ( !$permissionManager->userCan(
+						( $creating ? 'wikilambda-create-tester' : 'wikilambda-edit-tester' ),
+						$user,
+						$title
+					) ) {
+						$error = ZErrorFactory::createZErrorInstance(
+							ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
+							// TODO: Custom error message?
+							[
+								'message' => wfMessage( 'nocreatetext' )->text()
+							]
+						);
+						return ZObjectPage::newFatal( $error );
+					}
+					break;
+
 				default:
 					// This is fine.
 					break;
