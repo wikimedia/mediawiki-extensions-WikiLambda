@@ -338,6 +338,24 @@ class ZObjectStore {
 					}
 					break;
 
+				// Z14/Implementation
+				case ZTypeRegistry::Z_IMPLEMENTATION:
+					if ( !$permissionManager->userCan(
+						( $creating ? 'wikilambda-create-implementation' : 'wikilambda-edit-implementation' ),
+						$user,
+						$title
+					) ) {
+						$error = ZErrorFactory::createZErrorInstance(
+							ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
+							// TODO: Custom error message?
+							[
+								'message' => wfMessage( 'nocreatetext' )->text()
+							]
+						);
+						return ZObjectPage::newFatal( $error );
+					}
+					break;
+
 				default:
 					// This is fine.
 					break;
