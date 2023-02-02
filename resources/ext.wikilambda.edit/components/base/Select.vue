@@ -88,11 +88,13 @@ module.exports = exports = {
 
 .ext-wikilambda-edit-select {
 	&__fitted {
+		&.cdx-select-vue,
 		&.cdx-select {
 			transition: @wl-transition-field-expand;
 			min-width: fit-content;
 
-			.cdx-select__handle {
+			.cdx-select__handle,
+			.cdx-select-vue__handle {
 				min-width: auto;
 			}
 

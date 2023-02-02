@@ -180,7 +180,7 @@ module.exports = exports = {
 
 	span.ext-wikilambda-lang-chip {
 		position: relative;
-		z-index: 10;
+		z-index: 3;
 		left: @spacing-50;
 	}
 }
