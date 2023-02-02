@@ -512,6 +512,31 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
+	 * @covers ::createNewZObject
+	 * @covers ::updateZObject
+	 */
+	public function testUpdateZObject_editProhibited_unauthedUserMakingLanguage() {
+		// Language isn't a guaranteed type by our testing system, so inject it just for this test.
+		$this->insertZids( [ 'Z60' ] );
+
+		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+			. '"Z2K2": {'
+				. ' "Z1K1": "Z60",'
+				. ' "Z60K1": "qqq",'
+				. ' "Z60K2": [ "Z6" ]'
+				. '},'
+			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+
+		$status = $this->zobjectStore->createNewZObject(
+			$input,
+			'Creation summary',
+			$this->getTestUser()->getUser()
+		);
+		$this->assertFalse( $status->isOK() );
+		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT, $status->getErrors() );
+	}
+
+	/**
 	 * @covers ::insertZObjectLabels
 	 */
 	public function testInsertZObjectLabels() {
