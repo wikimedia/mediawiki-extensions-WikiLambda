@@ -9,7 +9,6 @@
 		<div>
 			<h3>{{ zReturnTypeLabel }}</h3>
 			<wl-z-object-selector
-				v-if="isReturnTypeLabelReady"
 				:type="Constants.Z_TYPE"
 				:placeholder="$i18n( 'wikilambda-return-typeselector-label' ).text()"
 				:selected-id="zReturnType.value"
@@ -127,9 +126,6 @@ module.exports = exports = {
 			},
 			selectedZReturnTypeLabel: function () {
 				return this.getZkeyLabels[ this.zReturnType.value ];
-			},
-			isReturnTypeLabelReady: function () {
-				return this.zReturnType.value ? !!this.selectedZReturnTypeLabel : true;
 			},
 			zReturnTypeLabel: function () {
 				return this.getZkeyLabels[ Constants.Z_FUNCTION_RETURN_TYPE ];

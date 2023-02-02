@@ -9,7 +9,7 @@
 		<div>
 			<label id="ext-wikilambda-zimplementation_function-label">{{ functionLabel }}:</label>
 			<wl-z-object-selector
-				v-if="!viewmode && implMode && isFunctionLabelReady"
+				v-if="!viewmode && implMode"
 				class="ext-wikilambda-zimplementation__function-selector"
 				aria-labelledby="ext-wikilambda-zimplementation_function-label"
 				:type="Constants.Z_FUNCTION"
@@ -165,13 +165,6 @@ module.exports = exports = {
 			},
 			selectedFunctionLabel: function () {
 				return this.getZkeyLabels[ this.zFunction.value ];
-			},
-			isFunctionLabelReady: function () {
-				// this will be false if re-routed from an existing function
-				if ( this.isNewZObject ) {
-					return true;
-				}
-				return !!this.selectedFunctionLabel;
 			},
 			selectedFunctionJson: function () {
 				return this.getZkeys[ this.zFunction.value ];

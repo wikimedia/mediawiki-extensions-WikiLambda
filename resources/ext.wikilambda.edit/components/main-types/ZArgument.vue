@@ -9,7 +9,6 @@
 		<div>
 			{{ typeLabel }}:
 			<wl-z-object-selector
-				v-if="isArgumentTypeLabelReady"
 				:type="Constants.Z_TYPE"
 				:placeholder="$i18n( 'wikilambda-argument-typeselector-label' )"
 				:selected-id="argumentType"

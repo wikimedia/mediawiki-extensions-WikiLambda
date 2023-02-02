@@ -13,7 +13,6 @@
 		</template>
 		<template v-else>
 			<wl-z-object-selector
-				v-if="isValueReady"
 				:selected-id="value"
 				:initial-selection-label="valueLabel"
 				:type="selectType"
@@ -100,26 +99,6 @@ module.exports = exports = {
 			 */
 			valueUrl: function () {
 				return new mw.Title( this.value ).getUrl();
-			},
-
-			/**
-			 * Returns whether the value and its value label are ready
-			 *
-			 * @return {boolean}
-			 */
-			isValueReady: function () {
-				// It is necessary that CdxLookup select and initialInputValue are
-				// both set before rendering the component. If select is set and its
-				// label (initialInputValue) hasn't been fetched yet, the text value
-				// in the component will be the one passed in the select parameter.
-				// For this reason we don't render the component until we have both
-				// values.
-				// TODO: move this functionality into inside of the ZObjectSelector
-				// component so that it can be used from outside without being
-				// concerned about this. In fact, every ZObjectSelector is used for
-				// ZObjects and the important value is the zid. We shouldn't have to
-				// pass in the initializing label at all.
-				return this.value ? !!this.valueLabelObj : true;
 			},
 
 			/**

@@ -16,7 +16,6 @@
 			</a>
 		</span>
 		<wl-z-object-selector
-			v-else-if="isReferenceReady"
 			:selected-id="referenceValue"
 			:initial-selection-label="referenceLabel"
 			:type="searchType"
@@ -82,9 +81,6 @@ module.exports = exports = {
 			},
 			referenceLabel: function () {
 				return this.getZkeyLabels[ this.referenceValue ];
-			},
-			isReferenceReady: function () {
-				return this.referenceValue ? !!this.referenceLabel : true;
 			},
 			isReadOnly: function () {
 				return this.viewmode || this.readonly || this.getCurrentZObjectId === this.referenceValue;
