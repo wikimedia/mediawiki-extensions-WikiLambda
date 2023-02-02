@@ -247,16 +247,14 @@ module.exports = exports = {
 							class: 'ext-wikilambda-function-details-table-item'
 						},
 						state: {
-							component: 'wl-chip',
+							component: 'cdx-info-chip',
+							title: this.$i18n(
+								isAvailable ?
+									'wikilambda-function-implementation-state-approved' :
+									'wikilambda-function-implementation-state-deactivated'
+							).text(),
 							props: {
-								editableContainer: false,
-								readonly: true,
-								text: this.$i18n(
-									isAvailable ?
-										'wikilambda-function-implementation-state-approved' :
-										'wikilambda-function-implementation-state-deactivated'
-								).text(),
-								intent: isAvailable ? 'success' : 'warning'
+								status: isAvailable ? 'success' : 'warning'
 							},
 							class: 'ext-wikilambda-function-details-table-item'
 						},
@@ -380,16 +378,14 @@ module.exports = exports = {
 					}
 
 					tableData[ index ].state = {
-						component: 'wl-chip',
+						component: 'cdx-info-chip',
+						title: this.$i18n(
+							isAvailable ?
+								'wikilambda-function-implementation-state-approved' :
+								'wikilambda-function-implementation-state-deactivated'
+						).text(),
 						props: {
-							editableContainer: false,
-							readonly: true,
-							text: this.$i18n(
-								isAvailable ?
-									'wikilambda-function-implementation-state-approved' :
-									'wikilambda-function-implementation-state-deactivated'
-							).text(),
-							intent: isAvailable ? 'success' : 'warning'
+							status: isAvailable ? 'success' : 'warning'
 						},
 						class: 'ext-wikilambda-function-details-table-item'
 					};
