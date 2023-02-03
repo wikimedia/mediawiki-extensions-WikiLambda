@@ -12,6 +12,7 @@ var Constants = require( '../../Constants.js' ),
 	getParameterByName = require( '../../mixins/urlUtils.js' ).methods.getParameterByName,
 	addZObjects = require( './zobject/addZObjects.js' ),
 	currentZObject = require( './zobject/currentZObject.js' ),
+	Row = require( '../classes/Row.js' ),
 	saveZObject = require( '../../mixins/api.js' ).methods.saveZObject,
 	debounceZObjectLookup = null,
 	DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT = 300;
@@ -42,21 +43,6 @@ function isTypedObjectWithCustomComponent( functionCallId ) {
 	var istypedObject = Constants.Z_TYPED_OBJECTS_LIST.indexOf( functionCallId.value ) !== -1;
 
 	return istypedObject;
-}
-
-/**
- * Returns whether a given row is terminal, which means that
- * the value is a string but is not ROW_VALUE_OBJECT nor ROW_VALUE_ARRAY
- *
- * TODO: once we have a Row class, this should be a class method (e.g. Row.isTerminal())
- *
- * @param {Object} row
- * @return {boolean}
- */
-function isTerminalRow( row ) {
-	return ( ( typeof row.value === 'string' ) &&
-		( row.value !== Constants.ROW_VALUE_OBJECT ) &&
-		( row.value !== Constants.ROW_VALUE_ARRAY ) );
 }
 
 /**
@@ -364,7 +350,7 @@ module.exports = exports = {
 			 */
 			function fetchZObjectValue( rowId ) {
 				const row = getters.getRowById( rowId );
-				return ( ( row !== undefined ) && isTerminalRow( row ) ) ?
+				return ( ( row !== undefined ) && row.isTerminal() ) ?
 					row.value :
 					undefined;
 			}
@@ -569,14 +555,14 @@ module.exports = exports = {
 				}
 
 				// 2. If the row is TERMINAL it's either a string or reference value
-				if ( isTerminalRow( row ) ) {
+				if ( row.isTerminal() ) {
 					return ( row.key === Constants.Z_REFERENCE_ID ) ?
 						Constants.Z_REFERENCE :
 						Constants.Z_STRING;
 				}
 
 				// 3. If the row is an ARRAY, we return typed list
-				if ( row.value === Constants.ROW_VALUE_ARRAY ) {
+				if ( row.isArray() ) {
 					return Constants.Z_TYPED_LIST;
 				}
 
@@ -596,7 +582,7 @@ module.exports = exports = {
 				// If typeRow is Terminal, return its value
 				// E.g. { Z1K1: Z9 }, return Z9
 				// E.g. { Z1K1: Z7, Z7K1: Z881 }, return Z7
-				if ( isTerminalRow( typeRow ) ) {
+				if ( typeRow.isTerminal() ) {
 					return typeRow.value;
 				}
 
@@ -651,8 +637,6 @@ module.exports = exports = {
 		 * Returns a row object given its row ID. Note that the row ID is its
 		 * parameter row.id and it is different than the indexx
 		 *
-		 * TODO: When we have Row object, must return that instead
-		 *
 		 * @param {Object} state
 		 * @param {Object} getters
 		 * @return {Function}
@@ -660,7 +644,7 @@ module.exports = exports = {
 		getRowById: function ( state ) {
 			/**
 			 * @param {number|undefined} rowId
-			 * @return {Object} row
+			 * @return {Row} row
 			 */
 			function fetchRowId( rowId ) {
 				return ( rowId === undefined ) ?
@@ -673,9 +657,8 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns all the children rows given a parent rowId
-		 *
-		 * TODO: When we have Row object, must return that instead
+		 * Returns all the children rows given a parent rowId, else
+		 * returns an empty list.
 		 *
 		 * @param {Object} state
 		 * @param {Object} getters
@@ -693,6 +676,28 @@ module.exports = exports = {
 				} );
 			}
 			return fetchChildrenRows;
+		},
+
+		/**
+		 * Return the next available array key or index given an
+		 * array parent Id
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getNextArrayIndex: function ( state, getters ) {
+			/**
+			 * @param {number} parentRowId
+			 * @return {number}
+			 */
+			function fetchNextArrayIndexOfParentRowId( parentRowId ) {
+				const children = getters.getChildrenByParentRowId( parentRowId );
+				// TODO: should we check that the sequence of children keys is
+				// continuous and doesn't have any gaps?
+				return children.length;
+			}
+			return fetchNextArrayIndexOfParentRowId;
 		},
 
 		/**
@@ -727,7 +732,7 @@ module.exports = exports = {
 			/**
 			 * @param {Array} path sequence of keys that specify a path to follow down the ZObject
 			 * @param {number} rowId starting row Id
-			 * @return {Object} resulting row
+			 * @return {Row} resulting row
 			 */
 			function followPath( path = [], rowId = 0 ) {
 				// End condition, if the path is empty, return the row by rowId
@@ -776,7 +781,11 @@ module.exports = exports = {
 			 */
 			function findTerminalValue( rowId, terminalKey ) {
 				const row = getters.getRowById( rowId );
-				if ( isTerminalRow( row ) ) {
+				// Row not found is undefined
+				if ( row === undefined ) {
+					return undefined;
+				}
+				if ( row.isTerminal() ) {
 					return row.value ?
 						row.value :
 						undefined;
@@ -875,7 +884,7 @@ module.exports = exports = {
 				const typeRow = getters.getRowByKeyPath( [ Constants.Z_OBJECT_TYPE ], rowId );
 
 				// If it's terminal, it's a reference, return value of Z9K1
-				if ( isTerminalRow( typeRow ) ) {
+				if ( typeRow.isTerminal() ) {
 					return getters.getZReferenceTerminalValue( rowId );
 				}
 
@@ -972,7 +981,7 @@ module.exports = exports = {
 			 * Return a specific zObject given its ID.
 			 *
 			 * @param {number} id
-			 * @return {Object} zObjectItem
+			 * @return {Row} zObjectItem
 			 */
 			return function ( id ) {
 				return state.zobject.filter( function ( item ) {
@@ -1045,12 +1054,13 @@ module.exports = exports = {
 					}
 
 					if ( objectProps.parent === parentId ) {
-						var childObject = {
-							id: objectProps.id,
-							key: objectProps.key,
-							value: objectProps.value,
-							parent: objectProps.parent
-						};
+						const childObject = new Row(
+							objectProps.id,
+							objectProps.key,
+							objectProps.value,
+							objectProps.parent
+						);
+						// FIXME: why are row.language and row.languageString necessary?
 						if ( language ) {
 							childObject.language = language;
 							childObject.languageString = getters.getNestedZObjectById(
@@ -1130,7 +1140,7 @@ module.exports = exports = {
 					} );
 
 					result.forEach( function ( child ) {
-						if ( isNotObjectOrArrayRoot( child ) ) {
+						if ( child.isTerminal() ) {
 							return;
 						}
 
@@ -1148,6 +1158,8 @@ module.exports = exports = {
 			 * Return the type of a specific zObject by its ID.
 			 * If the type cannot be found it will return undefined
 			 *
+			 * TODO: Deprecate in favor of getZObjectTypeByRowId
+			 *
 			 * @param {number} id
 			 * @return {string | undefined} type
 			 */
@@ -1155,6 +1167,7 @@ module.exports = exports = {
 				var type,
 					currentObject = getters.getZObjectById( id ),
 					children = [];
+
 				// If id (row Id) doesn't exist and returns undefined
 				// FIXME: If the id is the same as the parent it returns undefined ????
 				if ( !currentObject || currentObject.id === currentObject.parent ) {
@@ -1162,7 +1175,7 @@ module.exports = exports = {
 				}
 
 				// If the row is TERMINAL, we return the value if the key is Z1K1, else undefined
-				if ( isTerminalRow( currentObject ) ) {
+				if ( currentObject.isTerminal() ) {
 					return ( currentObject.key === Constants.Z_OBJECT_TYPE ) ?
 						currentObject.value :
 						undefined;
@@ -1359,10 +1372,8 @@ module.exports = exports = {
 		 * necessary to recalculate anything nor look at the
 		 * table indices, simply push.
 		 *
-		 * FIXME: When we create ZObjectRow class, row must be of type ZObjectRow
-		 *
 		 * @param {Object} state
-		 * @param {Object} row
+		 * @param {Row} row
 		 */
 		pushRow: function ( state, row ) {
 			state.zobject.push( row );
@@ -1370,6 +1381,13 @@ module.exports = exports = {
 
 		/* END NEW MUTATIONS */
 
+		/**
+		 * TODO: audit this function, we shouldn't be using this
+		 * except for the initial setup
+		 *
+		 * @param {Object} state
+		 * @param {Object} payload
+		 */
 		setZObject: function ( state, payload ) {
 			state.zobject = payload;
 		},
@@ -1395,7 +1413,11 @@ module.exports = exports = {
 			state.zobject.splice( index, 1 );
 		},
 		addZObject: function ( state, payload ) {
-			state.zobject.push( payload );
+			if ( payload instanceof Row ) {
+				state.zobject.push( payload );
+			} else {
+				state.zobject.push( new Row( payload.id, payload.key, payload.value, payload.parent ) );
+			}
 		},
 		setCreateNewPage: function ( state, payload ) {
 			state.createNewPage = payload;
@@ -1540,18 +1562,18 @@ module.exports = exports = {
 					};
 				}
 
-				const zobjectTree = zobjectTreeUtils.convertZObjectToTree( zobject );
+				const zobjectRows = zobjectTreeUtils.convertZObjectToRows( zobject );
 
 				// Get all zIds within the object.
 				// We get main zId again because we previously did not add its labels
 				// to the keyLabels object in the store. We will this way take
 				// advantage of the backend making language fallback decisions
-				let listOfZIdWithinObject = generateZIDListFromObjectTree( zobjectTree );
+				let listOfZIdWithinObject = generateZIDListFromObjectTree( zobjectRows );
 				listOfZIdWithinObject.push( zId );
 				listOfZIdWithinObject = [ ...new Set( listOfZIdWithinObject ) ];
 
 				context.dispatch( 'fetchZKeys', { zids: listOfZIdWithinObject } );
-				context.commit( 'setZObject', zobjectTree );
+				context.commit( 'setZObject', zobjectRows );
 				context.commit( 'setZObjectInitialized', true );
 			} );
 		},
@@ -1816,36 +1838,17 @@ module.exports = exports = {
 		 * The Object received by the server is in JSON format, so we convert it
 		 * to our Tree structure.
 		 *
+		 * TODO: Deprecate in favor of injectZObjectFromRowId
+		 *
 		 * @param {Object} context
 		 * @param {Object} payload
 		 * @return {Promise} type
 		 */
 		injectZObject: function ( context, payload ) {
-			var zobjectTree = zobjectTreeUtils.convertZObjectToTree(
-					payload.zobject,
-					payload.key,
-					payload.id,
-					payload.parent
-				),
-				zobjectRoot = zobjectTree.shift();
-
-			context.dispatch( 'removeZObjectChildren', payload.id );
-			context.dispatch( 'setZObjectValue', zobjectRoot );
-			zobjectTree.forEach( function ( zobject ) {
-				var nextId = zobjectTreeUtils.getNextObjectId( context.state.zobject );
-				zobjectTree.forEach( function ( childZObject ) {
-					if ( !childZObject.matched && childZObject.parent === zobject.id ) {
-						childZObject.parent = nextId;
-						childZObject.matched = true;
-					}
-				} );
-				zobject.id = nextId;
-				context.dispatch( 'addZObject', zobject );
+			context.dispatch( 'injectZObjectFromRowId', {
+				rowId: payload.id,
+				value: payload.zobject
 			} );
-			// We use native Promises with a polyfill, so this should work even in IE11
-			// eslint-disable-next-line compat/compat
-			return Promise.resolve( context.getters.getZObjectTypeById( zobjectRoot.id ) );
-
 		},
 		/**
 		 * Recalculate the internal keys of a ZList in its zobject table representation.
@@ -2014,10 +2017,7 @@ module.exports = exports = {
 			const childRows = context.getters.getZObjectChildrenById( rowId );
 			childRows.forEach( function ( child ) {
 				// If not terminal, recurse to remove all progenie
-				if (
-					( child.value === Constants.ROW_VALUE_OBJECT ) ||
-					( child.value === Constants.ROW_VALUE_ARRAY )
-				) {
+				if ( !child.isTerminal() ) {
 					context.dispatch( 'removeZObjectChildren', child.id );
 				}
 				// Then remove child
@@ -2286,6 +2286,8 @@ module.exports = exports = {
 		 *    which will make sure that all the current children are deleted and
 		 *    the necessary rows are inserted at non-colliding ids.
 		 *
+		 * TODO: Add massive amounts of tests for this
+		 *
 		 * TODO: All the ubercomplex setters should be replaced with this or
 		 * combinations of this.
 		 *
@@ -2296,7 +2298,6 @@ module.exports = exports = {
 		 * @param {Object|Array|string} payload.value
 		 */
 		setValueByRowIdAndPath: function ( context, payload ) {
-
 			// 1. Find the row that will be parent for the given payload.value
 			const row = context.getters.getRowByKeyPath( payload.keyPath, payload.rowId );
 			// 2. Is the value a string? Call atomic action setValueByRowId
@@ -2343,7 +2344,9 @@ module.exports = exports = {
 		 * Flattens an input ZObject into a table structure and inserts the rows
 		 * into the global state. This action makes sure of a few things:
 		 * 1. If it's called with a parent row, all the current children will
-		 *    be removed, and the new children will be added with non-colliding IDs
+		 *    be removed, and the new children will be added with non-colliding IDs.
+		 *    If the parent row is a list, the flag append will permit adding the new
+		 *    value into the existing list items.
 		 * 2. If it's called with no parent row, the ZObject will be inserted fully,
 		 *    including a root row with parent and key set to undefined.
 		 *
@@ -2351,21 +2354,38 @@ module.exports = exports = {
 		 * @param {Object} payload
 		 * @param {number|undefined} payload.rowId parent rowId or undefined if root
 		 * @param {Object|Array|string} payload.value ZObject to inject
-		 *
+		 * @param {boolean | undefined} payload.append Flag to append the new object and not remove
+		 *        children
 		 */
 		injectZObjectFromRowId: function ( context, payload ) {
 
+			let rows;
 			const hasParent = payload.rowId !== undefined;
-			let parentRow = hasParent ? context.getters.getRowById( payload.rowId ) : undefined;
-			const nextRowId = hasParent ? context.getters.getNextRowId : undefined;
 
-			const rows = zobjectTreeUtils.convertZObjectToRows( payload.value, parentRow, nextRowId );
-
-			// Remove all necessary children that are pending from the parent
 			if ( hasParent ) {
+				let parentRow = context.getters.getRowById( payload.rowId );
+				const nextRowId = context.getters.getNextRowId;
+
+				// Convert input payload.value into table rows with parent
+				if ( payload.append ) {
+					// If we append to a list, calculate the index from which we need to enter the value
+					const index = context.getters.getNextArrayIndex( payload.rowId );
+					rows = zobjectTreeUtils.convertZObjectToRows( payload.value, parentRow, nextRowId, true, index );
+				} else {
+					rows = zobjectTreeUtils.convertZObjectToRows( payload.value, parentRow, nextRowId );
+				}
+
+				// Reset the parent value in case it's changed
 				parentRow = rows.shift();
-				context.dispatch( 'removeZObjectChildren', parentRow.id );
 				context.dispatch( 'setValueByRowId', { rowId: parentRow.id, value: parentRow.value } );
+
+				// Remove all necessary children that are dangling from this parent, if append is not set
+				if ( !payload.append ) {
+					context.dispatch( 'removeZObjectChildren', parentRow.id );
+				}
+			} else {
+				// Convert input payload.value into table rows with no parent
+				rows = zobjectTreeUtils.convertZObjectToRows( payload.value );
 			}
 
 			// Push all the rows, they already have their required IDs

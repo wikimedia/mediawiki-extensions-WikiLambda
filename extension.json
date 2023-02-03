@@ -206,6 +206,7 @@
 				"ext.wikilambda.edit/store/modules/zImplementations.js",
 				"ext.wikilambda.edit/store/modules/zTypedList.js",
 				"ext.wikilambda.edit/store/modules/router.js",
+				"ext.wikilambda.edit/store/classes/Row.js",
 				"ext.wikilambda.edit/mixins/typeUtils.js",
 				"ext.wikilambda.edit/mixins/urlUtils.js",
 				"ext.wikilambda.edit/mixins/zobjectTreeUtils.js",
