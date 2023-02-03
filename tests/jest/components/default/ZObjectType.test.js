@@ -17,7 +17,6 @@ describe( 'ZReference', () => {
 	beforeEach( () => {
 		getters = {
 			isInsideComposition: createGettersWithFunctionsMock( false ),
-			getParentExpectedType: createGettersWithFunctionsMock( false ),
 			getLabel: createGettersWithFunctionsMock( { zid: 'Z17', label: 'Argument declaration', lang: 'Z1002' } ),
 			getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z17' ),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( '0' )

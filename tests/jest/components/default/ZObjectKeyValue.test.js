@@ -17,7 +17,8 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	ZString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZString.vue' ),
 	ZReference = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZReference.vue' ),
 	ZObjectType = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectType.vue' ),
-	ZObjectKeyValueSet = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectKeyValueSet.vue' );
+	ZObjectKeyValueSet = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectKeyValueSet.vue' ),
+	WlSelect = require( '../../../../resources/ext.wikilambda.edit/components/base/Select.vue' );
 
 const parentRowId = 1;
 const rowId = 2;
@@ -450,8 +451,32 @@ describe( 'ZObjectKeyValue', () => {
 
 		} );
 
-		it( 'when the changed key-value is a type', () => {
+		it( 'when the changed key-value is a type', async () => {
+			getters.isInsideComposition = createGettersWithFunctionsMock( false );
+			getters.getLabel = createGettersWithFunctionsMock( { zid: 'Z17', label: 'Argument declaration', lang: 'Z1002' } );
+			getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z17' );
+			getters.getZObjectKeyByRowId = createFunctionsMockForId( rowId, Constants.Z_OBJECT_TYPE );
 
+			global.store.hotUpdate( {
+				getters: getters
+			} );
+
+			var wrapper = mount( ZObjectKeyValue, {
+				props: {
+					edit: true,
+					rowId: rowId
+				}
+			} );
+
+			const ZObjectTypeComponent = wrapper.getComponent( ZObjectType );
+			expect( ZObjectTypeComponent.exists() ).toBeTruthy();
+
+			const selectComponent = wrapper.getComponent( WlSelect );
+			expect( selectComponent.exists() ).toBeTruthy();
+
+			await selectComponent.vm.$emit( 'update:selected', 'Reference' );
+			expect( ZObjectTypeComponent.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [], value: 'Reference' } ] ] );
+			expect( wrapper.emitted() ).toHaveProperty( 'set-type', [ [ { keyPath: [], value: 'Reference' } ] ] );
 		} );
 
 		it( 'for a simple change that is isolated to the key-value pair', async () => {
