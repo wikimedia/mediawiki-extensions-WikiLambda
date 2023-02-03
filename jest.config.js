@@ -44,23 +44,23 @@ module.exports = {
 	],
 
 	coverageThreshold: {
-		global: { // No thresholds per-file yet, as we don't pass on all files
-			branches: 0,
-			lines: 0,
-			functions: 0,
-			statements: 0
+		global: {
+			branches: 67,
+			lines: 75,
+			functions: 70,
+			statements: 75
 		},
 		'./resources/ext.wikilambda.edit/': {
-			branches: 33,
-			lines: 43,
-			functions: 28,
-			statements: 0
+			branches: 67,
+			lines: 75,
+			functions: 70,
+			statements: 75
 		},
 		'./resources/ext.wikilambda.edit/store': {
-			branches: 41,
-			lines: 55,
-			functions: 59,
-			statements: -455
+			branches: 63,
+			lines: 75,
+			functions: 81,
+			statements: 76
 		}
 	},
 
