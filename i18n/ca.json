@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Fitoschido",
+			"Robertgarrigos",
 			"Skurz0"
 		]
 	},
@@ -9,5 +10,8 @@
 	"wikilambda-special-evaluatefunctioncall-summary": "Aquest formulari permet avaluar una crida a una funció",
 	"wikilambda-special-evaluatefunctioncall-intro": "Assegura't que segueixes les polítiques de la comunitat, i copyright i regles de patent.",
 	"wikilambda-special-evaluatefunctioncall-nojs": "Aquesta pàgina requereix JavaScript per ser utilitzada.",
-	"wikilambda-speciallistduplicatezobjectlabels-language": "Llengua"
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Llengua",
+	"wikilambda-functioncall-error-invalid-zobject": "Error de trucada de funció: l'element\" $1\" no és un ZObject vàlid, per tant, no es pot cridar",
+	"wikilambda-functioncall-error-invalid-zobject-category": "Les pàgines amb Wikifunctions criden a objectes ZO no vàlids",
+	"wikilambda-functioncall-error-invalid-zobject-category-desc": "Pàgines amb intents de trucada a Wikifunctions amb un ZObject no vàlid"
 }
