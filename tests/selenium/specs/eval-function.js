@@ -9,7 +9,7 @@ describe( 'function evaluation', function () {
 		const ListFunctions = await ListZObjectsByType.openFunctionsList();
 		await ListFunctions.openFunction( 'echo' );
 
-		FunctionPage.callFunctionWithString( 'foobar' );
+		await FunctionPage.callFunctionWithString( 'foobar' );
 		assert.equal( await FunctionPage.responseEnvelopZObject.getText(), 'foobar', 'The response should be "foobar"' );
 	} );
 } );
