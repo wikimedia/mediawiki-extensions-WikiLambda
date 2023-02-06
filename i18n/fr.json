@@ -188,7 +188,7 @@
 	"wikilambda-functioncall-error-unknown-category-desc": "Pages avec des tentatives d’appels à Wikifonctions qui demandent un Z-Objet inconnu",
 	"wikilambda-functioncall-error-invalid-zobject": "Erreur d’appel de fonction : l’élément « $1 » n’est pas un Z-Objet valide et ne peut donc pas être appelé.",
 	"wikilambda-functioncall-error-invalid-zobject-category": "Pages avec des appels de Wikifonctions vers des Z-Objets non valides",
-	"wikilambda-functioncall-error-invalid-zobject-category-desc": "Pages avec des tentatives d’appels de Wikifonctions avec un Z-Objet non fonctionnel",
+	"wikilambda-functioncall-error-invalid-zobject-category-desc": "Pages avec des tentatives d’appels à Wikifonctions avec un Z-Objet non valide",
 	"wikilambda-functioncall-error-nonfunction": "Erreur d’appel de fonction : le Z-Objet « $1 » n’est pas une Z-Fonction et ne peut donc pas être appelé.",
 	"wikilambda-functioncall-error-nonfunction-category": "Pages avec des appels de Wikifonctions vers des Z-Objets non fonctionnels",
 	"wikilambda-functioncall-error-nonfunction-category-desc": "Pages avec des tentatives d’appels à Wikifonctions avec un Z-Objet non fonctionnel",

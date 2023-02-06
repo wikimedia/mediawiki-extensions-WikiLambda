@@ -10,6 +10,7 @@
 			"Melissadilara",
 			"Mim.saitkilic",
 			"MuratTheTurkish",
+			"Rapsar",
 			"SaldırganSincap",
 			"Sayginer"
 		]
@@ -129,7 +130,7 @@
 	"wikilambda-function-definition-alias-placeholder": "Fonksiyon adı için eş anlam gir",
 	"wikilambda-function-definition-alias-example": "Takma ad örneklerini gör.",
 	"wikilambda-function-definition-footer-placeholder": "Değişikliklerinizi kısaca açıklayın",
-	"wikilambda-function-definition-footer-label": "Özeti düzenle",
+	"wikilambda-function-definition-footer-label": "Özeti değiştir",
 	"wikilambda-function-definition-inputs-label": "Giriş türü",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "Bir tür seçin",
 	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "Yazdığınız liste için bir tür seçiniz",

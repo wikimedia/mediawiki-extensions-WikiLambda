@@ -4,6 +4,10 @@
 			"TayfunEt."
 		]
 	},
+	"wikilambda-code-editor-label": "Kod redaktory",
+	"wikilambda-metadata-labels-table-label": "Bellikler",
+	"wikilambda-function-definition-input-item-type": "Görnüşi",
+	"wikilambda-function-definition-output-type-label": "Görnüşi",
 	"wikilambda-function-viewer-details-table-view-all": "Hemmesini gormek",
 	"wikilambda-function-viewer-details-table-view-less": "Az gör"
 }

@@ -7,5 +7,10 @@
 	},
 	"wikilambda-viewmode-nojs": "Arddangosir y dudalen hon yn rhannol, heb JavaScript.",
 	"wikilambda-editor-label-addlanguage-label": "Dewiswch iaith:",
-	"wikilambda-editor-label-removelanguage-tooltip": "Dilwech yr iaith hon o'r label"
+	"wikilambda-editor-label-removelanguage-tooltip": "Dilwech yr iaith hon o'r label",
+	"wikilambda-function-definition-inputs-label": "Mewnbwn",
+	"wikilambda-function-definition-inputs-item-add-input-button": "Ychwanegu mewnbwn arall",
+	"wikilambda-function-definition-inputs-item-add-first-input-button": "Ychwanegu mewnbwn",
+	"wikilambda-function-definition-output-label": "Allbwn",
+	"wikilambda-function-definition-output-type-label": "Math"
 }
