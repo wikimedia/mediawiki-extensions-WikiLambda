@@ -6,6 +6,7 @@
  */
 var Constants = require( '../Constants.js' ),
 	typeUtils = require( './typeUtils.js' ).methods,
+	Row = require( '../store/classes/Row.js' ),
 	normalize = require( './schemata.js' ).methods.normalizeZObject;
 
 module.exports = exports = {
@@ -20,24 +21,34 @@ module.exports = exports = {
 		 *
 		 * @param {Object} zObject
 		 * @param {Object} parentRow the row object from which the resulting object will pend
-		 * @param {Object} startingRowId the first available rowID in the global state table
+		 * @param {number} startingRowId the first available rowID in the global state table
+		 * @param {boolean} appendToList whether to append item into parent list
+		 * @param {number} appendFromIndex in the case of lists, specify the index from which
+		 *        to append items, else will start from 0
+		 * @param {number} firstAvailableListIndex
 		 * @return {Array}
 		 */
-		convertZObjectToRows: function ( zObject, parentRow, startingRowId ) {
+		convertZObjectToRows: function (
+			zObject, parentRow, startingRowId, appendToList = false, appendFromIndex = 0 ) {
 
 			// Raise an exception if parentRow is set and nextAvailableId is not to avoid overwriting IDs
 			if ( parentRow && !startingRowId ) {
 				throw new Error( 'The parameter startingRowId must be set when inserting a ZObject under a parentRow' );
 			}
 
+			// Raise an exception if appendToList is set and parentRow is not
+			if ( !parentRow && appendToList ) {
+				throw new Error( 'It is only possible to append to list when inserting a ZObject under a parentRow' );
+			}
+
 			const zObjectRows = [];
 			let nextAvailableId = startingRowId || 0;
 
-			function flattenZObject( value, key, parentRowId, isExistingParent = false ) {
+			function flattenZObject( value, key, parentRowId, isExistingParent = false, startingIndex = 0 ) {
 				if ( typeof value === 'string' ) {
 					// ROW IS TERMINAL
 					// Push a new row with its final value as 'value'
-					zObjectRows.push( { id: nextAvailableId, key, value, parent: parentRowId } );
+					zObjectRows.push( new Row( nextAvailableId, key, value, parentRowId ) );
 					nextAvailableId++;
 				} else {
 					// ROW IS NOT TERMINAL
@@ -51,31 +62,49 @@ module.exports = exports = {
 						// key and parent; the only thing that may change is the value.
 						// The calling method will have to decide whether to insert it or replace it.
 						rowId = parentRow.id;
-						zObjectRows.push( { id: rowId, key, value: type, parent: parentRow.parent } );
+						zObjectRows.push( new Row( rowId, key, type, parentRow.parent ) );
 					} else {
 						rowId = nextAvailableId;
-						zObjectRows.push( { id: rowId, key, value: type, parent: parentRowId } );
+						zObjectRows.push( new Row( rowId, key, type, parentRowId ) );
 						nextAvailableId++;
 					}
 
 					// And for every child, recurse with current rowId as parentRowId
 					for ( const objectKey in value ) {
-						flattenZObject( value[ objectKey ], objectKey, rowId );
+						const rowKey = ( type === Constants.ROW_VALUE_ARRAY ) ?
+							String( parseInt( objectKey ) + startingIndex ) :
+							objectKey;
+						flattenZObject( value[ objectKey ], rowKey, rowId );
 					}
 				}
 			}
 
+			// If we are to append the value to a parent list, wrap value in Array
+			const childValue = appendToList ?
+				Array.isArray( zObject ) ? zObject : [ zObject ] :
+				zObject;
+
 			// Initial call, if there's a parent, link with key and parent id, else undefined
 			flattenZObject(
-				normalize( zObject ),
+				normalize( childValue ),
 				parentRow ? parentRow.key : undefined,
 				parentRow ? parentRow.id : undefined,
-				!!parentRow
+				!!parentRow,
+				appendFromIndex
 			);
 
 			return zObjectRows;
 		},
 
+		/**
+		 * @param {Object} zObject
+		 * @param {string} startingKey the row object from which the resulting object will pend
+		 * @param {number} startingId the first available rowID in the global state table
+		 * @param {number} startingParentId the first available rowID in the global state table
+		 * @return {Array}
+		 *
+		 * TODO: Deprecate in favor of convertZObjectToRows
+		 */
 		convertZObjectToTree: function ( zObject, startingKey, startingId, startingParentId ) {
 
 			var zObjectTree = [];
@@ -112,6 +141,16 @@ module.exports = exports = {
 			}
 			return zObjectTree;
 		},
+
+		/**
+		 * Converts the zObject flattened table into a nested object starting
+		 * from a given rowId
+		 *
+		 * @param {Array} zObjectTree array of Row objects
+		 * @param {number} parentId starting rowId
+		 * @param {boolean} rootIsArray
+		 * @return {Object}
+		 */
 		convertZObjectTreetoJson: function ( zObjectTree, parentId, rootIsArray ) {
 			function reconstructJson( object, layer, isArrayChild ) {
 				var json = {},

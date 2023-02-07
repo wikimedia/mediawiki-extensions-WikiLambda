@@ -1,7 +1,31 @@
 var tableUtils = require( '../../../resources/ext.wikilambda.edit/mixins/zobjectTreeUtils.js' ).methods,
+	Row = require( '../../../resources/ext.wikilambda.edit/store/classes/Row.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' );
 
 describe( 'tableUtils mixin', function () {
+
+	describe( 'convertZObjectToRows with wrong parameters', function () {
+
+		it( 'throws an exception when calling with parentRow but no nextAvailableId', function () {
+			const zObject = 'the stringy one';
+			const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_OBJECT, 9 );
+
+			expect( function () {
+				tableUtils.convertZObjectToRows( zObject, parentRow );
+			} ).toThrow( Error );
+		} );
+
+		it( 'throws an exception when calling with appendToList but no parentRow', function () {
+			const zObject = 'the stringy one';
+			const parentRow = undefined;
+			const nextAvailableId = 20;
+			const appendToList = true;
+
+			expect( function () {
+				tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId, appendToList );
+			} ).toThrow( Error );
+		} );
+	} );
 
 	describe( 'convertZObjectToRows without parent', function () {
 
@@ -13,7 +37,7 @@ describe( 'tableUtils mixin', function () {
 				{ id: 1, key: 'Z1K1', value: 'Z6', parent: 0 },
 				{ id: 2, key: 'Z6K1', value: 'the stringy one', parent: 0 }
 			];
-			expect( rows ).toStrictEqual( expected );
+			expect( rows ).toEqual( expected );
 		} );
 
 		it( 'converts a reference', function () {
@@ -24,7 +48,7 @@ describe( 'tableUtils mixin', function () {
 				{ id: 1, key: 'Z1K1', value: 'Z9', parent: 0 },
 				{ id: 2, key: 'Z9K1', value: 'Z12345', parent: 0 }
 			];
-			expect( rows ).toStrictEqual( expected );
+			expect( rows ).toEqual( expected );
 		} );
 
 		it( 'converts a typed list of strings', function () {
@@ -42,7 +66,7 @@ describe( 'tableUtils mixin', function () {
 				{ id: 8, key: 'Z1K1', value: 'Z6', parent: 7 },
 				{ id: 9, key: 'Z6K1', value: 'stringlord', parent: 7 }
 			];
-			expect( rows ).toStrictEqual( expected );
+			expect( rows ).toEqual( expected );
 		} );
 
 		it( 'converts a multilevel object', function () {
@@ -71,16 +95,15 @@ describe( 'tableUtils mixin', function () {
 				{ id: 12, key: 'Z1K1', value: 'Z6', parent: 11 },
 				{ id: 13, key: 'Z6K1', value: 'Gñeee', parent: 11 }
 			];
-			expect( rows ).toStrictEqual( expected );
+			expect( rows ).toEqual( expected );
 		} );
-
 	} );
 
 	describe( 'convertZObjectToRows with parent', function () {
 
 		it( 'converts a terminal string', function () {
 			const zObject = 'the stringy one';
-			const parentRow = { id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 9 };
+			const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_OBJECT, 9 );
 			const nextAvailableId = 20;
 
 			const rows = tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId );
@@ -89,12 +112,12 @@ describe( 'tableUtils mixin', function () {
 				{ id: 20, key: 'Z1K1', value: 'Z6', parent: 10 },
 				{ id: 21, key: 'Z6K1', value: 'the stringy one', parent: 10 }
 			];
-			expect( rows ).toStrictEqual( expected );
+			expect( rows ).toEqual( expected );
 		} );
 
 		it( 'converts a reference', function () {
 			const zObject = 'Z12345';
-			const parentRow = { id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 9 };
+			const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_OBJECT, 9 );
 			const nextAvailableId = 20;
 
 			const rows = tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId );
@@ -103,12 +126,12 @@ describe( 'tableUtils mixin', function () {
 				{ id: 20, key: 'Z1K1', value: 'Z9', parent: 10 },
 				{ id: 21, key: 'Z9K1', value: 'Z12345', parent: 10 }
 			];
-			expect( rows ).toStrictEqual( expected );
+			expect( rows ).toEqual( expected );
 		} );
 
 		it( 'converts a typed list of strings', function () {
 			const zObject = [ 'Z6', 'stringful', 'stringlord' ];
-			const parentRow = { id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 9 };
+			const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_OBJECT, 9 );
 			const nextAvailableId = 20;
 
 			const rows = tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId );
@@ -124,7 +147,7 @@ describe( 'tableUtils mixin', function () {
 				{ id: 27, key: 'Z1K1', value: 'Z6', parent: 26 },
 				{ id: 28, key: 'Z6K1', value: 'stringlord', parent: 26 }
 			];
-			expect( rows ).toStrictEqual( expected );
+			expect( rows ).toEqual( expected );
 		} );
 
 		it( 'converts a multilevel object', function () {
@@ -136,10 +159,11 @@ describe( 'tableUtils mixin', function () {
 				},
 				Z11K2: 'Gñeee'
 			};
-			const parentRow = { id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 9 };
+			const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_OBJECT, 9 );
 			const nextAvailableId = 20;
 
 			const rows = tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId );
+
 			const expected = [
 				{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 9 },
 				{ id: 20, key: 'Z1K1', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
@@ -156,7 +180,142 @@ describe( 'tableUtils mixin', function () {
 				{ id: 31, key: 'Z1K1', value: 'Z6', parent: 30 },
 				{ id: 32, key: 'Z6K1', value: 'Gñeee', parent: 30 }
 			];
-			expect( rows ).toStrictEqual( expected );
+			expect( rows ).toEqual( expected );
+		} );
+	} );
+
+	describe( 'convertZObjectToRows when parent is a list', function () {
+		it( 'insert a string in a parent list from index 0', function () {
+			const zObject = 'the stringy one';
+			const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_ARRAY, 9 );
+			const nextAvailableId = 20;
+			const appendToList = true;
+
+			const rows = tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId, appendToList );
+			const expected = [
+				{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 9 },
+				{ id: 20, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
+				{ id: 21, key: 'Z1K1', value: 'Z6', parent: 20 },
+				{ id: 22, key: 'Z6K1', value: 'the stringy one', parent: 20 }
+			];
+			expect( rows ).toEqual( expected );
+		} );
+
+		it( 'insert a string in a parent list from index 2', function () {
+			const zObject = 'the stringy one';
+			const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_ARRAY, 9 );
+			const nextAvailableId = 20;
+			const appendToList = true;
+			const fromIndex = 2;
+
+			const rows = tableUtils.convertZObjectToRows(
+				zObject,
+				parentRow,
+				nextAvailableId,
+				appendToList,
+				fromIndex
+			);
+			const expected = [
+				{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 9 },
+				{ id: 20, key: '2', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
+				{ id: 21, key: 'Z1K1', value: 'Z6', parent: 20 },
+				{ id: 22, key: 'Z6K1', value: 'the stringy one', parent: 20 }
+			];
+			expect( rows ).toEqual( expected );
+		} );
+
+		it( 'insert a list of strings in a parent list from index 0', function () {
+			const zObject = [ 'the stringy one', 'the stringy two' ];
+			const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_ARRAY, 9 );
+			const nextAvailableId = 20;
+			const appendToList = true;
+
+			const rows = tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId, appendToList );
+			const expected = [
+				{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 9 },
+				{ id: 20, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
+				{ id: 21, key: 'Z1K1', value: 'Z6', parent: 20 },
+				{ id: 22, key: 'Z6K1', value: 'the stringy one', parent: 20 },
+				{ id: 23, key: '1', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
+				{ id: 24, key: 'Z1K1', value: 'Z6', parent: 23 },
+				{ id: 25, key: 'Z6K1', value: 'the stringy two', parent: 23 }
+			];
+			expect( rows ).toEqual( expected );
+		} );
+
+		it( 'insert a list of strings in a parent list from index 2', function () {
+			const zObject = [ 'the stringy one', 'the stringy two' ];
+			const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_ARRAY, 9 );
+			const nextAvailableId = 20;
+			const appendToList = true;
+			const fromIndex = 2;
+
+			const rows = tableUtils.convertZObjectToRows(
+				zObject,
+				parentRow,
+				nextAvailableId,
+				appendToList,
+				fromIndex
+			);
+			const expected = [
+				{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 9 },
+				{ id: 20, key: '2', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
+				{ id: 21, key: 'Z1K1', value: 'Z6', parent: 20 },
+				{ id: 22, key: 'Z6K1', value: 'the stringy one', parent: 20 },
+				{ id: 23, key: '3', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
+				{ id: 24, key: 'Z1K1', value: 'Z6', parent: 23 },
+				{ id: 25, key: 'Z6K1', value: 'the stringy two', parent: 23 }
+			];
+			expect( rows ).toEqual( expected );
+		} );
+
+		it( 'insert a list of lists in a parent list', function () {
+			const zObject = [ [ 'first stringly list' ], [ 'second stringly list' ] ];
+			const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_ARRAY, 9 );
+			const nextAvailableId = 20;
+			const appendToList = true;
+
+			const rows = tableUtils.convertZObjectToRows( zObject, parentRow, nextAvailableId, appendToList );
+			const expected = [
+				{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 9 },
+				{ id: 20, key: '0', value: Constants.ROW_VALUE_ARRAY, parent: 10 },
+				{ id: 21, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 20 },
+				{ id: 22, key: 'Z1K1', value: 'Z6', parent: 21 },
+				{ id: 23, key: 'Z6K1', value: 'first stringly list', parent: 21 },
+				{ id: 24, key: '1', value: Constants.ROW_VALUE_ARRAY, parent: 10 },
+				{ id: 25, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 24 },
+				{ id: 26, key: 'Z1K1', value: 'Z6', parent: 25 },
+				{ id: 27, key: 'Z6K1', value: 'second stringly list', parent: 25 }
+			];
+			expect( rows ).toEqual( expected );
+		} );
+
+		it( 'insert a list of lists in a parent list from index 2', function () {
+			const zObject = [ [ 'first stringly list' ], [ 'second stringly list' ] ];
+			const parentRow = new Row( 10, 'Z2K2', Constants.ROW_VALUE_ARRAY, 9 );
+			const nextAvailableId = 20;
+			const appendToList = true;
+			const fromIndex = 2;
+
+			const rows = tableUtils.convertZObjectToRows(
+				zObject,
+				parentRow,
+				nextAvailableId,
+				appendToList,
+				fromIndex
+			);
+			const expected = [
+				{ id: 10, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 9 },
+				{ id: 20, key: '2', value: Constants.ROW_VALUE_ARRAY, parent: 10 },
+				{ id: 21, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 20 },
+				{ id: 22, key: 'Z1K1', value: 'Z6', parent: 21 },
+				{ id: 23, key: 'Z6K1', value: 'first stringly list', parent: 21 },
+				{ id: 24, key: '3', value: Constants.ROW_VALUE_ARRAY, parent: 10 },
+				{ id: 25, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 24 },
+				{ id: 26, key: 'Z1K1', value: 'Z6', parent: 25 },
+				{ id: 27, key: 'Z6K1', value: 'second stringly list', parent: 25 }
+			];
+			expect( rows ).toEqual( expected );
 		} );
 	} );
 } );
