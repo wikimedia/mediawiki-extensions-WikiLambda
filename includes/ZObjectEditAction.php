@@ -47,7 +47,7 @@ class ZObjectEditAction extends Action {
 	 */
 	protected function getPageTitleMsg() {
 		// If the page doesn't exist (e.g. it's been deleted), return nothing.
-		if ( $this->getTargetZObject() === false ) {
+		if ( !$this->getTargetZObject() ) {
 			return '';
 		}
 
