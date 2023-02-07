@@ -221,14 +221,12 @@ module.exports = exports = {
 								class: 'ext-wikilambda-function-viewer-details-sidebar__table-borderless-row'
 							},
 							language: {
-								component: 'wl-chip',
+								component: 'cdx-info-chip',
+								title: languageInfo.isoCode.toUpperCase(),
+								class: 'ext-wikilambda-function-viewer-details-sidebar__table-borderless-row',
 								props: {
-									editableContainer: false,
-									readonly: true,
-									text: languageInfo.isoCode.toUpperCase(),
 									title: languageInfo.label
-								},
-								class: 'ext-wikilambda-function-viewer-details-sidebar__table-borderless-row'
+								}
 							},
 							text: {
 								title: monolingualStringValue.value,

@@ -11,14 +11,12 @@
 				<div
 					class="ext-wikilambda-function-viewer-sidebar__chip-container"
 				>
-					<wl-chip
+					<cdx-info-chip
 						class="ext-wikilambda-function-viewer-sidebar__chip-item"
-						:index="index"
-						:editable-container="false"
-						:readonly="true"
-						:text="item.isoCode.toUpperCase()"
 						:title="item.languageLabel"
-					></wl-chip>
+					>
+						{{ item.isoCode.toUpperCase() }}
+					</cdx-info-chip>
 					{{ item.label }}
 				</div>
 			</li>
@@ -39,7 +37,7 @@
 </template>
 
 <script>
-var Chip = require( '../../base/Chip.vue' ),
+var CdxInfoChip = require( '@wikimedia/codex' ).CdxInfoChip,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon;
 
@@ -47,7 +45,7 @@ var Chip = require( '../../base/Chip.vue' ),
 module.exports = exports = {
 	name: 'wl-function-viewer-sidebar',
 	components: {
-		'wl-chip': Chip,
+		'cdx-info-chip': CdxInfoChip,
 		'cdx-icon': CdxIcon,
 		'cdx-button': CdxButton
 	},

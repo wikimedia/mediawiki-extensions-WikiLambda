@@ -50,6 +50,7 @@ var Constants = require( '../../../Constants.js' ),
 module.exports = exports = {
 	name: 'wl-function-definition-aliases',
 	components: {
+		// TODO: replace with codex filter chip when available
 		'wl-chips-container': ChipContainer
 	},
 	mixins: [ typeUtils ],

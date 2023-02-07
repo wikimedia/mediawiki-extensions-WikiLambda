@@ -81,7 +81,7 @@
 var CdxProgressBar = require( '@wikimedia/codex' ).CdxProgressBar,
 	CdxCheckbox = require( '@wikimedia/codex' ).CdxCheckbox,
 	ZFunctionTesterTable = require( '../function/ZFunctionTesterTable.vue' ),
-	Chip = require( './Chip.vue' ),
+	CdxInfoChip = require( '@wikimedia/codex' ).CdxInfoChip,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon;
 
@@ -93,7 +93,7 @@ module.exports = exports = {
 		'cdx-checkbox': CdxCheckbox,
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon,
-		'wl-chip': Chip,
+		'cdx-info-chip': CdxInfoChip,
 		'wl-z-function-tester-table': ZFunctionTesterTable
 	},
 	props: {
