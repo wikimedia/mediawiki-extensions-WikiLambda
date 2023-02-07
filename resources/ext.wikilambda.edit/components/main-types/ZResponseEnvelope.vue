@@ -1,7 +1,6 @@
 <template>
 	<!--
 		WikiLambda Vue component for ZResponseEnvelope objects.
-
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
@@ -82,7 +81,6 @@ var Constants = require( '../../Constants.js' ),
 	schemata = require( '../../mixins/schemata.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
-
 // @vue/component
 module.exports = exports = {
 	name: 'wl-z-response-envelope',
