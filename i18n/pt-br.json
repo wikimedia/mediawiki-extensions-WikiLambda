@@ -8,10 +8,12 @@
 			"Mariagarbin",
 			"Svjatysberega",
 			"YuriNikolai",
-			"Fúlvio"
+			"Fúlvio",
+			"LeFaith",
+			"Mello25"
 		]
 	},
-	"wikilambda-desc": "Fornecendo as wikis da Wikimedia uma função de analisador de wikitexto para chamar a avaliação de funções escritas, gerenciadas e avaliadas em um wiki central.",
+	"wikilambda-desc": "Fornecer wikis da Wikimedia com uma função de analisador de wikitexto para chamar a avaliação de funções escritas, gerenciadas e avaliadas em uma wiki central.",
 	"wikilambda-emptylabel": "ZObject sem rótulo",
 	"wikilambda-history-title": "Histórico de revisões de \"$1\" ($2)",
 	"wikilambda-invalidzobjecttitle": "O título fornecido '$1' não é válido para um ZObject.",
@@ -74,7 +76,7 @@
 	"wikilambda-implementation-selector-composition": "Composição",
 	"wikilambda-argref-default-label": "Selecione um argumento",
 	"wikilambda-implementation-selector": "Selecione a implementação",
-	"wikilambda-implementation-none-found": "Nenhuma implementação encontrada.",
+	"wikilambda-implementation-none-found": "Atualmente não há implementações para esta função",
 	"wikilambda-implementation-create-new": "Crie uma nova implementação",
 	"wikilambda-editor-tester-list-label": "Lista de testadores",
 	"wikilambda-tester-status-pending": "PENDENTE...",
