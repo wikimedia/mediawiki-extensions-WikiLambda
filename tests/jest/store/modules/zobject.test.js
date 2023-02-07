@@ -1844,18 +1844,21 @@ describe( 'zobject Vuex module', function () {
 				zobjectModule.actions.attachZTesters( context,
 					{ functionId: 0, testerZIds: [ 'Z777', 'Z888' ] } );
 
+				// Contains first item:
 				expect( context.state.zobject ).toContainEqual(
 					{ key: '4', value: 'object', parent: 18, id: 36 } );
 				expect( context.state.zobject ).toContainEqual(
-					{ key: '5', value: 'object', parent: 18, id: 37 } );
+					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 36, id: 37 } );
 				expect( context.state.zobject ).toContainEqual(
-					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 36, id: 38 } );
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z777', parent: 36, id: 38 } );
+
+				// Contains second item:
 				expect( context.state.zobject ).toContainEqual(
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z777', parent: 36, id: 39 } );
+					{ key: '5', value: 'object', parent: 18, id: 39 } );
 				expect( context.state.zobject ).toContainEqual(
-					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 37, id: 40 } );
+					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 39, id: 40 } );
 				expect( context.state.zobject ).toContainEqual(
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z888', parent: 37, id: 41 } );
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z888', parent: 39, id: 41 } );
 
 				expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
 			} );
@@ -1876,18 +1879,21 @@ describe( 'zobject Vuex module', function () {
 				zobjectModule.actions.attachZImplementations( context,
 					{ functionId: 0, implementationZIds: [ 'Z777', 'Z888' ] } );
 
+				// Contains first item:
 				expect( context.state.zobject ).toContainEqual(
 					{ key: '4', value: 'object', parent: 19, id: 36 } );
 				expect( context.state.zobject ).toContainEqual(
-					{ key: '5', value: 'object', parent: 19, id: 37 } );
+					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 36, id: 37 } );
 				expect( context.state.zobject ).toContainEqual(
-					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 36, id: 38 } );
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z777', parent: 36, id: 38 } );
+
+				// Contains second item:
 				expect( context.state.zobject ).toContainEqual(
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z777', parent: 36, id: 39 } );
+					{ key: '5', value: 'object', parent: 19, id: 39 } );
 				expect( context.state.zobject ).toContainEqual(
-					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 37, id: 40 } );
+					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 39, id: 40 } );
 				expect( context.state.zobject ).toContainEqual(
-					{ key: Constants.Z_REFERENCE_ID, value: 'Z888', parent: 37, id: 41 } );
+					{ key: Constants.Z_REFERENCE_ID, value: 'Z888', parent: 39, id: 41 } );
 
 				expect( context.dispatch ).toHaveBeenCalledWith( 'submitZObject', '' );
 			} );

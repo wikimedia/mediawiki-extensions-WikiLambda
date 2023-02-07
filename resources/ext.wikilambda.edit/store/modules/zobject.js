@@ -2128,35 +2128,24 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		attachZTesters: function ( context, payload ) {
+			// Save a copy of the pre-submission ZObject in case the submission returns an error
 			const zObjectCopy = JSON.parse( JSON.stringify( context.state.zobject ) );
-			const listId = context.getters.getNestedZObjectById( payload.functionId, [
+
+			// Get tester list (Z8K3) row following the appropriate keyPath Z2K2.Z8K3 from the root
+			const listRow = context.getters.getRowByKeyPath( [
 				Constants.Z_PERSISTENTOBJECT_VALUE,
 				Constants.Z_FUNCTION_TESTERS
-			] ).id;
-			const currentListLength = context.getters.getZObjectChildrenById( listId ).length;
+			] );
 
-			const newListItems = [];
-			for ( let i = 0; i < payload.testerZIds.length; i++ ) {
-				newListItems.push( {
-					key: String( currentListLength + i ),
-					value: 'object',
-					parent: listId
-				} );
-			}
-
-			return context.dispatch( 'addZObjects', newListItems ).then( ( newListItemIds ) => {
-				for ( let i = 0; i < newListItemIds.length; i++ ) {
-					context.dispatch( 'addZReference', {
-						id: newListItemIds[ i ],
-						value: payload.testerZIds[ i ]
+			return context
+				.dispatch( 'injectZObjectFromRowId', { rowId: listRow.id, value: payload.testerZIds, append: true } )
+				.then( () => {
+					return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
+						// Reset old ZObject if something failed
+						context.commit( 'setZObject', zObjectCopy );
+						throw e;
 					} );
-				}
-
-				return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
-					context.commit( 'setZObject', zObjectCopy );
-					throw e;
 				} );
-			} );
 		},
 		/**
 		 * Removes the given testers from the given function's list of approved testers, and submits the
@@ -2204,34 +2193,24 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		attachZImplementations: function ( context, payload ) {
+			// Save a copy of the pre-submission ZObject in case the submission returns an error
 			const zObjectCopy = JSON.parse( JSON.stringify( context.state.zobject ) );
-			const listId = context.getters.getNestedZObjectById( payload.functionId, [
+
+			// Get implementation list (Z8K4) row following the appropriate keyPath Z2K2.Z8K4 from the root
+			const listRow = context.getters.getRowByKeyPath( [
 				Constants.Z_PERSISTENTOBJECT_VALUE,
 				Constants.Z_FUNCTION_IMPLEMENTATIONS
-			] ).id;
-			const currentListLength = context.getters.getZObjectChildrenById( listId ).length;
+			] );
 
-			const newListItems = [];
-			for ( let i = 0; i < payload.implementationZIds.length; i++ ) {
-				newListItems.push( {
-					key: String( currentListLength + i ),
-					value: 'object',
-					parent: listId
-				} );
-			}
-			return context.dispatch( 'addZObjects', newListItems ).then( ( newListItemIds ) => {
-				for ( let i = 0; i < newListItemIds.length; i++ ) {
-					context.dispatch( 'addZReference', {
-						id: newListItemIds[ i ],
-						value: payload.implementationZIds[ i ]
+			return context
+				.dispatch( 'injectZObjectFromRowId', { rowId: listRow.id, value: payload.implementationZIds, append: true } )
+				.then( () => {
+					return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
+						// Reset old ZObject if something failed
+						context.commit( 'setZObject', zObjectCopy );
+						throw e;
 					} );
-				}
-
-				return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
-					context.commit( 'setZObject', zObjectCopy );
-					throw e;
 				} );
-			} );
 		},
 		/**
 		 * Removes the given implementations from the given function's list of approved implementations, and submits the
