@@ -182,9 +182,9 @@ class ZObject {
 	}
 
 	/**
-	 * Return the generic content of this ZObject.
+	 * Return the untyped content of this ZObject.
 	 *
-	 * @return mixed The generic content of this ZObject; most ZObject types will implement specific
+	 * @return mixed The basic content of this ZObject; most ZObject types will implement specific
 	 * accessors specific to that type.
 	 */
 	public function getZValue() {

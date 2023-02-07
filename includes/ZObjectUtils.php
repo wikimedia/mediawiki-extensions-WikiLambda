@@ -204,7 +204,7 @@ class ZObjectUtils {
 					)
 				);
 			}
-			// Check generic wellformedness of the value
+			// Check general wellformedness of the value
 			try {
 				self::isValidZObject( $value );
 			} catch ( ZErrorException $e ) {

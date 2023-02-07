@@ -496,7 +496,7 @@ class ZErrorFactory {
 
 			case ZErrorTypeRegistry::Z_ERROR_EVALUATION:
 				$zErrorValue[] = $payload['functionCall'];
-				// FIXME (T300505): Create ZError instance of propagated error, or wrap it in a generic ZError
+				// FIXME (T300505): Create ZError instance of propagated error, or wrap it in an untyped ZError
 				$zErrorValue[] = $payload['error'];
 				break;
 

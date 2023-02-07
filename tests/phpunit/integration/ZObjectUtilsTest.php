@@ -289,24 +289,24 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{ "Z1K1": "Z60", "K1": "test" }',
 				'{ "Z1K1": "Z60", "Z60K1": "test" }',
 			],
-			// Generic list examples
-			'empty generic list' => [
+			// Typed list examples
+			'empty typed list' => [
 				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } }',
 				'["Z1"]'
 			],
-			'single object in a generic list' => [
+			'single object in a typed list' => [
 				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
 					. '"K1": "a",'
 					. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } }',
 				'["Z1", "a"]'
 			],
-			'single string in generic list' => [
+			'single string in typed list' => [
 				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 					. ' "K1": "a",'
 					. ' "K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } } }',
 				'["Z6", "a"]'
 			],
-			'two strings in a generic list' => [
+			'two strings in a typed list' => [
 				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 					. '"K1": "a",'
 					. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
@@ -314,13 +314,13 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 					. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } } } }',
 				'["Z6", "a", "b"]'
 			],
-			'empty generic list in generic list' => [
+			'empty typed list in typed list' => [
 				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
 					. ' "K1": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } },'
 					. ' "K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } } }',
 				'["Z1", ["Z1"]]'
 			],
-			'two empty generic lists in generic list' => [
+			'two empty typed lists in typed list' => [
 				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
 					. ' "K1": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } },'
 					. ' "K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
@@ -1512,23 +1512,23 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function provideIterativeList() {
-		$generic1 = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } }';
-		$generic2 = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
+		$typedList1 = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } }';
+		$typedList2 = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 			. '"K1": "first string",'
 			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } } }';
-		$generic3 = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
+		$typedList3 = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 			. '"K1": "first string",'
 			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 			. '"K1": "second string",'
 			. '"K2": { "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } } } }';
-		$emptyGeneric = ZObjectFactory::createChild( json_decode( $generic1 ) );
-		$genericOne = ZObjectFactory::createChild( json_decode( $generic2 ) );
-		$genericTwo = ZObjectFactory::createChild( json_decode( $generic3 ) );
+		$emptyTyped = ZObjectFactory::createChild( json_decode( $typedList1 ) );
+		$typedOne = ZObjectFactory::createChild( json_decode( $typedList2 ) );
+		$typedTwo = ZObjectFactory::createChild( json_decode( $typedList3 ) );
 		return [
 			'normal array' => [ [ "eins", "zwei" ], 2 ],
-			'empty generic list' => [ $emptyGeneric, 0 ],
-			'generic list with one element' => [ $genericOne, 1 ],
-			'generic list with two elements' => [ $genericTwo, 2 ],
+			'empty typed list' => [ $emptyTyped, 0 ],
+			'typed list with one element' => [ $typedOne, 1 ],
+			'typed list with two elements' => [ $typedTwo, 2 ],
 		];
 	}
 

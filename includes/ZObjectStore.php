@@ -253,7 +253,7 @@ class ZObjectStore {
 				!$permissionManager->userCan( 'wikilambda-edit', $user, $title )
 			) {
 				// User is trying to edit a page and is prohibited, e.g. blocked, but we don't know why,
-				// so give them the most generic error that MediaWiki has.
+				// so give them the most general error that MediaWiki has.
 				$error = ZErrorFactory::createZErrorInstance(
 					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
 					[ 'message' => wfMessage( 'badaccess-group0' )->text() ]
