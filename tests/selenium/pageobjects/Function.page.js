@@ -6,7 +6,7 @@ class FunctionPage extends Page {
 	get firstInputZString() { return $( 'input.ext-wikilambda-zstring' ); }
 	get callButton() { return $( 'button=Call Function' ); }
 	get responseEnvelopZObject() { return $( '.ext-wikilambda-zresponseenvelope .ext-wikilambda-zobject' ); }
-	get menu() { return $( '.cdx-menu' ); }
+	get menu() { return $( '.ext-wikilambda-zobject-key .cdx-menu' ); }
 
 	getMenuOptionByTextContent( textContent ) {
 		return this.menu.$( `bdi=${textContent}` );
