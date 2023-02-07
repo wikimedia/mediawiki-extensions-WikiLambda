@@ -230,7 +230,8 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			$zid,
 			$input,
 			'Creation summary',
-			$basicUser
+			$basicUser,
+			EDIT_NEW
 		);
 		$this->assertFalse( $status->isOK() );
 
@@ -359,7 +360,8 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			$zid,
 			$input,
 			'Update summary',
-			$loggedOutUser
+			$loggedOutUser,
+			EDIT_NEW
 		);
 		$this->assertFalse( $status->isOK() );
 		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT, $status->getErrors() );
@@ -378,7 +380,8 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			$zid,
 			$input,
 			'Update summary',
-			$this->getTestUser()->getUser()
+			$this->getTestUser()->getUser(),
+			EDIT_NEW
 		);
 		$this->assertFalse( $status->isOK() );
 		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT, $status->getErrors() );

@@ -1,0 +1,43 @@
+{
+	"description": "Sysop can the object type",
+	"authorized": true,
+	"rights": [
+		"edit",
+		"wikilambda-edit",
+		"wikilambda-edit-object-type"
+	],
+	"groups": [ "sysop" ],
+	"dependencies": [],
+	"zid": "Z10015",
+	"oldValue": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z10015"
+		},
+		"Z2K2": {
+			"Z1K1": "Z11",
+			"Z11K1": "Z1002",
+			"Z11K2": "string"
+		},
+		"Z2K3": {
+			"Z1K1": "Z12",
+			"Z12K1": [ "Z11" ]
+		}
+	},
+	"newValue": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z10015"
+		},
+		"Z2K2": {
+			"Z1K1": "Z12",
+			"Z12K1": [ "Z11" ]
+		},
+		"Z2K3": {
+			"Z1K1": "Z12",
+			"Z12K1": [ "Z11" ]
+		}
+	}
+}

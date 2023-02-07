@@ -413,6 +413,40 @@ class ZErrorFactory {
 	}
 
 	/**
+	 * Create a Z5/ZError of the type Z502/Not wellformed
+	 *
+	 * @param string $right
+	 * @param ZObjectContent $content
+	 * @param int $flags whether is edit EDIT_UPDATE or create EDIT_NEW
+	 * @return ZError
+	 */
+	public static function createAuthorizationZError( $right, $content, $flags ): ZError {
+		$error = null;
+
+		switch ( $right ) {
+			case 'edit':
+			case 'wikilambda-create':
+			case 'wikilambda-edit':
+				$message = ( $flags === EDIT_NEW ) ? 'nocreatetext' : 'badaccess-group0';
+				$error = self::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
+					[ 'message' => wfMessage( $message )->text() ]
+				);
+				break;
+
+			default:
+				// Return descriptive error message using the right action message:
+				$message = wfMessage( 'apierror-permissiondenied', wfMessage( "action-$right" ) )->text();
+				$error = self::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
+					[ 'message' => $message ]
+				);
+		}
+
+		return $error;
+	}
+
+	/**
 	 * Create a Z5/ZError of the type Z526/Key not wellformed
 	 *
 	 * @param string $key

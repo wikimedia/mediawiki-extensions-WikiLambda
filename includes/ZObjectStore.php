@@ -169,7 +169,6 @@ class ZObjectStore {
 		$zid = $this->getNextAvailableZid();
 		$zPlaceholderRegex = '/\"' . ZTypeRegistry::Z_NULL_REFERENCE . '(K[1-9]\d*)?\"/';
 		$zObjectString = preg_replace( $zPlaceholderRegex, "\"$zid$1\"", $data );
-
 		return $this->updateZObject( $zid, $zObjectString, $summary, $user, EDIT_NEW );
 	}
 
@@ -186,8 +185,7 @@ class ZObjectStore {
 	public function updateZObject( string $zid, string $data, string $summary, User $user, int $flags = EDIT_UPDATE ) {
 		$title = $this->titleFactory->newFromText( $zid, NS_MAIN );
 
-		$creating = ( $flags === EDIT_NEW );
-
+		// ERROR: Title is empty or invalid
 		if ( !( $title instanceof Title ) ) {
 			$error = ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_INVALID_TITLE,
@@ -195,6 +193,9 @@ class ZObjectStore {
 			);
 			return ZObjectPage::newFatal( $error );
 		}
+
+		// If edit flag or title did not exist, we are creating a new object
+		$creating = ( $flags === EDIT_NEW ) || !( $title->exists() );
 
 		try {
 			$content = ZObjectContentHandler::makeContent( $data, $title );
@@ -220,9 +221,19 @@ class ZObjectStore {
 			return ZObjectPage::newFatal( $error );
 		}
 
+		$ztype = $content->getZType();
+
+		// Stop from creating and editing any types form DISALLOWED_ROOT_ZOBJECT
+		if ( in_array( $ztype, ZTypeRegistry::DISALLOWED_ROOT_ZOBJECTS ) ) {
+			$error = ZErrorFactory::createZErrorInstance(
+				ZErrorTypeRegistry::Z_ERROR_DISALLOWED_ROOT_ZOBJECT,
+				[ 'data' => $content->getZType() ]
+			);
+			return ZObjectPage::newFatal( $error );
+		}
+
 		// Find the label conflicts.
 		$labels = $content->getLabels()->getValueAsList();
-		$ztype = $content->getZType();
 		$clashes = $this->findZObjectLabelConflicts( $zid, $ztype, $labels );
 
 		if ( count( $clashes ) > 0 ) {
@@ -230,189 +241,20 @@ class ZObjectStore {
 			return ZObjectPage::newFatal( $error );
 		}
 
-		// Check that the user has the permissions to make the edit they're attempting
-
-		// TODO (T312090): This should use the Authority concept, not the soon-to-be-legacy PermissionManager.
-		$permissionManager = MediaWikiServices::getInstance()->getPermissionManager();
-
-		if ( !( $title->exists() ) ) {
-			if (
-				!$permissionManager->userCan( 'edit', $user, $title ) ||
-				!$permissionManager->userCan( 'wikilambda-create', $user, $title )
-			) {
-				// User is trying to create a page and is prohibited, e.g. logged-out.
-				$error = ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
-					[ 'message' => wfMessage( 'nocreatetext' )->text() ]
-				);
-				return ZObjectPage::newFatal( $error );
-			}
-		} else {
-			if (
-				!$permissionManager->userCan( 'edit', $user, $title ) ||
-				!$permissionManager->userCan( 'wikilambda-edit', $user, $title )
-			) {
-				// User is trying to edit a page and is prohibited, e.g. blocked, but we don't know why,
-				// so give them the most general error that MediaWiki has.
-				$error = ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
-					[ 'message' => wfMessage( 'badaccess-group0' )->text() ]
-				);
-				return ZObjectPage::newFatal( $error );
-			}
+		// Use ZObjectAuthorization service to check that the user has the required permissions
+		// while creating or editing an object
+		$fromContent = null;
+		if ( !$creating ) {
+			$currentRevision = $this->revisionStore->getKnownCurrentRevision( $title );
+			$fromContent = $currentRevision->getSlots()->getContent( SlotRecord::MAIN );
+			'@phan-var ZObjectContent $fromContent';
 		}
+		$authorizationService = WikiLambdaServices::getZObjectAuthorization();
+		$status = $authorizationService->authorize( $fromContent, $content, $user, $title );
 
-		// Prohibit certain kinds of edit to regular users; system users are allowed to edit anything, as
-		// otherwise the initial content injection / etc. would fail.
-		if ( !$user->isSystemUser() ) {
-			// (T278175) Prohibit certain kinds of ZTypes from being instantiated as top-level wiki pages
-			if (
-				in_array( $ztype, ZTypeRegistry::DISALLOWED_ROOT_ZOBJECTS )
-				// We only care at creation time; edits (e.g. label changes) are OK.
-				&& !$title->exists()
-			) {
-				$error = ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_DISALLOWED_ROOT_ZOBJECT,
-					[ 'data' => $ztype ]
-				);
-				return ZObjectPage::newFatal( $error );
-			}
-
-			// TODO: (T303338) Allow the edit anyway if it's just adjusting the labels of a ZObject
-
-			// Don't allow creates or edits to "pre-defined" ZObjecst (where ZID < 10,000)
-			if (
-				substr( $zObjectId, 1 ) < 10000 &&
-				!$permissionManager->userCan(
-					( $creating ? 'wikilambda-create-predefined' : 'wikilambda-edit-predefined' ),
-					$user,
-					$title
-				)
-			) {
-				$error = ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
-					// TODO: Custom error message?
-					[ 'message' => wfMessage( 'nocreatetext' )->text() ]
-				);
-				return ZObjectPage::newFatal( $error );
-			}
-
-			// (T275940): Check the user has the right for certain kinds of edit to certain kinds of type
-
-			// Only special users can create/edit: …
-			switch ( $ztype ) {
-				// Z4/Type
-				case ZTypeRegistry::Z_TYPE:
-					if ( !$permissionManager->userCan(
-						( $creating ? 'wikilambda-create-type' : 'wikilambda-edit-type' ),
-						$user,
-						$title
-					) ) {
-						$error = ZErrorFactory::createZErrorInstance(
-							ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
-							// TODO: Custom error message?
-							[
-								'message' => wfMessage( 'nocreatetext' )->text()
-							]
-						);
-						return ZObjectPage::newFatal( $error );
-					}
-					break;
-
-				// Z8/Function
-				case ZTypeRegistry::Z_FUNCTION:
-					if ( !$permissionManager->userCan(
-						( $creating ? 'wikilambda-create-function' : 'wikilambda-edit-function' ),
-						$user,
-						$title
-					) ) {
-						$error = ZErrorFactory::createZErrorInstance(
-							ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
-							// TODO: Custom error message?
-							[
-								'message' => wfMessage( 'nocreatetext' )->text()
-							]
-						);
-						return ZObjectPage::newFatal( $error );
-					}
-					break;
-
-				// Z14/Implementation
-				case ZTypeRegistry::Z_IMPLEMENTATION:
-					if ( !$permissionManager->userCan(
-						( $creating ? 'wikilambda-create-implementation' : 'wikilambda-edit-implementation' ),
-						$user,
-						$title
-					) ) {
-						$error = ZErrorFactory::createZErrorInstance(
-							ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
-							// TODO: Custom error message?
-							[
-								'message' => wfMessage( 'nocreatetext' )->text()
-							]
-						);
-						return ZObjectPage::newFatal( $error );
-					}
-					break;
-
-				// Z20/Tester
-				case ZTypeRegistry::Z_TESTER:
-					if ( !$permissionManager->userCan(
-						( $creating ? 'wikilambda-create-tester' : 'wikilambda-edit-tester' ),
-						$user,
-						$title
-					) ) {
-						$error = ZErrorFactory::createZErrorInstance(
-							ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
-							// TODO: Custom error message?
-							[
-								'message' => wfMessage( 'nocreatetext' )->text()
-							]
-						);
-						return ZObjectPage::newFatal( $error );
-					}
-					break;
-
-				// Z60/Natural language
-				case ZTypeRegistry::Z_LANGUAGE:
-					if ( !$permissionManager->userCan(
-						( $creating ? 'wikilambda-create-language' : 'wikilambda-edit-language' ),
-						$user,
-						$title
-					) ) {
-						$error = ZErrorFactory::createZErrorInstance(
-							ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
-							// TODO: Custom error message?
-							[
-								'message' => wfMessage( 'nocreatetext' )->text()
-							]
-						);
-						return ZObjectPage::newFatal( $error );
-					}
-					break;
-
-				// Z61/Programming language
-				case ZTypeRegistry::Z_PROGRAMMINGLANGUAGE:
-					if ( !$permissionManager->userCan(
-						( $creating ? 'wikilambda-create-programming' : 'wikilambda-edit-programming' ),
-						$user,
-						$title
-					) ) {
-						$error = ZErrorFactory::createZErrorInstance(
-							ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT,
-							// TODO: Custom error message?
-							[
-								'message' => wfMessage( 'nocreatetext' )->text()
-							]
-						);
-						return ZObjectPage::newFatal( $error );
-					}
-					break;
-
-				default:
-					// This is fine.
-					break;
-			}
+		// Return AuthorizationStatus->error if authorization service failed
+		if ( !$status->isValid() ) {
+			return ZObjectPage::newFatal( $status->getErrors() );
 		}
 
 		// We prepare the content to be saved
@@ -452,7 +294,12 @@ class ZObjectStore {
 	 */
 	public function updateZObjectAsSystemUser( string $zid, string $data, string $summary, int $flags = EDIT_UPDATE ) {
 		$creatingUserName = wfMessage( 'wikilambda-systemuser' )->inLanguage( 'en' )->text();
+		// System user must belong to all privileged groups in order to
+		// perform all zobject creation and editing actions:
 		$user = User::newSystemUser( $creatingUserName, [ 'steal' => true ] );
+		$user->addGroup( 'sysop' );
+		$user->addGroup( 'functionmaintainer' );
+		$user->addGroup( 'functioneer' );
 		return $this->updateZObject( $zid, $data, $summary, $user, $flags );
 	}
 

@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\MediaWikiServices;
 
 /**
@@ -25,4 +26,9 @@ return [
 		);
 	},
 
+	'WikiLambdaZObjectAuthorization' => static function ( MediaWikiServices $services ) {
+		return new ZObjectAuthorization(
+			$services->getPermissionManager()
+		);
+	},
 ];

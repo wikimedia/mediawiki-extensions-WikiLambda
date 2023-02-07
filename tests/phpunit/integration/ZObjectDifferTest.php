@@ -9,7 +9,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use Diff\DiffOp\Diff\Diff;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
 
 /**
@@ -29,7 +28,7 @@ class ZObjectDifferTest extends WikiLambdaIntegrationTestCase {
 			$this->toDiffArray( $newValue )
 		);
 
-		$flats = ZObjectDiffer::flattenDiff( new Diff( $diffOps ) );
+		$flats = ZObjectDiffer::flattenDiff( $diffOps );
 
 		// Assert that the number of diffOps is the expected one
 		$this->assertCount(
@@ -89,8 +88,6 @@ class ZObjectDifferTest extends WikiLambdaIntegrationTestCase {
 	 * @return array
 	 */
 	private function toDiffArray( $object ): array {
-		return [
-			'root' => json_decode( json_encode( $object ), true )
-		];
+		return json_decode( json_encode( $object ), true );
 	}
 }

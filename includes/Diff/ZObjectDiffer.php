@@ -50,31 +50,30 @@ class ZObjectDiffer {
 	 * @param array|string $newValues The second array
 	 *
 	 * @throws Exception
-	 * @return DiffOp[]
+	 * @return DiffOp returns either an atomic DiffOp or a new
 	 */
-	public function doDiff( $oldValues, $newValues ): array {
-		$diffs = [];
-
+	public function doDiff( $oldValues, $newValues ): DiffOp {
 		$oldDiffer = $this->getDifferType( $oldValues );
 		$newDiffer = $this->getDifferType( $newValues );
 
 		if ( $oldDiffer !== $newDiffer ) {
 			// If the type is different, register a DiffOpChange
-			$diffs[] = new DiffOpChange( $oldValues, $newValues );
+			return new DiffOpChange( $oldValues, $newValues );
 		} elseif ( $oldDiffer === self::DIFF_ASSOCIATIVE ) {
 			// If the items are associative arrays, call ZObjectMapDiffer::doDiff
-			$diffs = $this->mapDiffer->doDiff( $oldValues, $newValues );
+			return new Diff( $this->mapDiffer->doDiff( $oldValues, $newValues ) );
 		} elseif ( $oldDiffer === self::DIFF_ARRAY ) {
 			// If the items are non-associative arrays, call ZObjectListDiffer::doDiff
-			$diffs = $this->listDiffer->doDiff( $oldValues, $newValues );
+			return new Diff( $this->listDiffer->doDiff( $oldValues, $newValues ), true );
 		} else {
 			// If the items are strings and not equal, register a DiffOpChange
 			if ( !$this->comparer->valuesAreEqual( $oldValues, $newValues ) ) {
-				$diffs[] = new DiffOpChange( $oldValues, $newValues );
+				return new DiffOpChange( $oldValues, $newValues );
 			}
 		}
 
-		return $diffs;
+		// Return an empty diff
+		return new Diff( [] );
 	}
 
 	/**
@@ -83,7 +82,7 @@ class ZObjectDiffer {
 	 * @param array|string $input
 	 * @return int
 	 */
-	private function getDifferType( $input ): int {
+	protected function getDifferType( $input ): int {
 		if ( is_array( $input ) ) {
 			return $this->isAssociative( $input )
 				? self::DIFF_ASSOCIATIVE

@@ -3,9 +3,6 @@
  * WikiLambda ZObjectListDiffer. Implements doDiff to calculate the diff
  * between two non-associative arrays or lists.
  *
- * TODO: Consider creating a special operation for list type change when
- * the diff is detected on the first item of the arrays (Benjamin arrays)
- *
  * @file
  * @ingroup Extensions
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
@@ -15,7 +12,6 @@
 namespace MediaWiki\Extension\WikiLambda\Diff;
 
 use Diff\Differ\Differ;
-use Diff\DiffOp\Diff\Diff;
 use Diff\DiffOp\DiffOp;
 use Diff\DiffOp\DiffOpAdd;
 use Diff\DiffOp\DiffOpRemove;
@@ -89,8 +85,9 @@ class ZObjectListDiffer implements Differ {
 				$newItem = $newArray[ $index ];
 
 				$itemDiff = $this->zObjectDiffer->doDiff( $oldItem, $newItem );
-				if ( count( $itemDiff ) > 0 ) {
-					$listDiff[ $index ] = new Diff( $itemDiff, false );
+
+				if ( $itemDiff->isAtomic() || ( $itemDiff->count() > 0 ) ) {
+					$listDiff[ $index ] = $itemDiff;
 				}
 			}
 		} else {
@@ -99,45 +96,45 @@ class ZObjectListDiffer implements Differ {
 			if ( count( $oldArray ) > count( $newArray ) ) {
 				// If $oldArray has more items than $newArray, the
 				// matrix has more rows than colums, so we need to
-				// find which row has been deleted by finding the
-				// row with a larger number of edits.
-				$deletedIndex = $matrix->getIndexOfMostEditedRow();
+				// find which rows have been deleted by finding the
+				// n ones with a larger number of edits.
+				$deletedIndices = $matrix->getIndicesOfRemovedItems();
 				for ( $index = 0; $index < count( $oldArray ); $index++ ) {
-					if ( $index === $deletedIndex ) {
+					if ( in_array( $index, $deletedIndices ) ) {
+						// If this is one of the deleted items, create Remove operation:
 						$listDiff[ $index ] = new DiffOpRemove( $oldArray[ $index ] );
 					} else {
-						// There is an extra row in the matrix to make it square,
-						// so we recalculate the row index
-						$rowIndex = $index > $deletedIndex ? $index + 1 : $index;
-						// FIXME: when we return the diffOps of the rows after the
-						// deletion should we report a index change diff as well?
-						if ( $matrix->hasDiffOps( $rowIndex, $index ) ) {
-							$listDiff[ $index ] = new Diff( $matrix->getDiffOps( $rowIndex, $index ) );
+						// If this is one of the non deleted items, add any changes
+						// available in the appropriate position of the matrix:
+						$normalizer = $matrix->getNormalizer( $deletedIndices, $index );
+						$colIndex = $index - $normalizer;
+						if ( $matrix->hasDiffOps( $index, $colIndex ) ) {
+							$listDiff[ $index ] = $matrix->getDiffOps( $index, $colIndex );
 						}
 					}
 				}
 			} else {
 				// If $newArray has more items than $oldArray, the
 				// matrix has more colums than rows, and we need to
-				// find which column has been deleted by finding the
-				// column with a larger number of edits.
-				$addedIndex = $matrix->getIndexOfMostEditedCol();
+				// find which columns have been added by finding the
+				// n ones with a larger number of edits.
+				$addedIndices = $matrix->getIndicesOfAddedItems();
 				for ( $index = 0; $index < count( $newArray ); $index++ ) {
-					if ( $index === $addedIndex ) {
+					if ( in_array( $index, $addedIndices ) ) {
+						// If this is one of the deleted items, create Add operation:
 						$listDiff[ $index ] = new DiffOpAdd( $newArray[ $index ] );
 					} else {
-						// There is an extra column in the matrix for it to be
-						// square, so we recalculate the col index.
-						$colIndex = $index > $addedIndex ? $index + 1 : $index;
-						if ( $matrix->hasDiffOps( $index, $colIndex ) ) {
-							$listDiff[ $index ] = new Diff( $matrix->getDiffOps( $index, $colIndex ) );
+						// If this is one of the non deleted items, add any changes
+						// available in the appropriate position of the matrix:
+						$normalizer = $matrix->getNormalizer( $addedIndices, $index );
+						$rowIndex = $index - $normalizer;
+						if ( $matrix->hasDiffOps( $rowIndex, $index ) ) {
+							$listDiff[ $index ] = $matrix->getDiffOps( $rowIndex, $index );
 						}
 					}
 				}
 			}
 		}
-
 		return $listDiff;
 	}
-
 }

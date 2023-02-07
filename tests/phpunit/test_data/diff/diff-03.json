@@ -2,7 +2,7 @@
 	"ignore": false,
 	"description": "Change text of the label of the first argument.",
 	"diffs": {
-		"root.Z2K2.Z8K1.1.Z17K3.Z12K1.1.Z11K2": {
+		"Z2K2.Z8K1.1.Z17K3.Z12K1.1.Z11K2": {
 			"type": "change",
 			"oldvalue": "mushroomx",
 			"newvalue": "mushroom"

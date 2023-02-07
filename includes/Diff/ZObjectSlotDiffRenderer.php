@@ -11,7 +11,6 @@
 namespace MediaWiki\Extension\WikiLambda\Diff;
 
 use Content;
-use Diff\DiffOp\Diff\Diff;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use SlotDiffRenderer;
 
@@ -31,8 +30,6 @@ class ZObjectSlotDiffRenderer extends SlotDiffRenderer {
 			( $newContent === null ) ? [] : $this->toDiffArray( $newContent )
 		);
 
-		$diffObj = new Diff( $diff, true );
-
 		// FIXME: Return string representation of the diff
 		return '';
 	}
@@ -46,8 +43,6 @@ class ZObjectSlotDiffRenderer extends SlotDiffRenderer {
 	 */
   private function toDiffArray( Content $content ): array {
 		'@phan-var ZObjectContent $content';
-		return [
-			'root' => json_decode( json_encode( $content->getObject() ), true )
-		];
+		return json_decode( json_encode( $content->getObject() ), true );
   }
 }

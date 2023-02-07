@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\MediaWikiServices;
 
 /**
@@ -24,4 +25,10 @@ class WikiLambdaServices {
 		return MediaWikiServices::getInstance()->getService( 'WikiLambdaZObjectStore' );
 	}
 
+	/**
+	 * @return ZObjectAuthorization
+	 */
+	public static function getZObjectAuthorization(): ZObjectAuthorization {
+		return MediaWikiServices::getInstance()->getService( 'WikiLambdaZObjectAuthorization' );
+	}
 }

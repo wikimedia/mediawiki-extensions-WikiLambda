@@ -11,6 +11,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Diff;
 
+use Diff\DiffOp\Diff\Diff;
 use Diff\DiffOp\DiffOp;
 
 class DiffMatrix {
@@ -69,15 +70,11 @@ class DiffMatrix {
 			for ( $j = 0; $j < count( $this->newArray ); $j++ ) {
 				$newItem = $this->newArray[ $j ];
 				$itemDiff = $this->zObjectDiffer->doDiff( $oldItem, $newItem );
+				$itemEditCount = count( $itemDiff );
 
 				// We set the diff and diff count collections of this class
 				$this->diffMatrix[ $i ][ $j ] = $itemDiff;
-				$this->diffCountMatrix[ $i ][ $j ] = count( $itemDiff );
-				// FIXME: count of edits cannot be done so simply as to count the roots,
-				// we need either to implement a diff counter, or to directly do the
-				// translation from tree of diff into list of diffs before the return of
-				// zobjectDiffer->doDiff() and zobjectMapDiffer->doDiff()
-				$itemEditCount = count( $itemDiff );
+				$this->diffCountMatrix[ $i ][ $j ] = $itemEditCount;
 				$this->editCountByRow[ $i ] += $itemEditCount;
 				$this->editCountByCol[ $j ] += $itemEditCount;
 			}
@@ -89,13 +86,13 @@ class DiffMatrix {
 	 *
 	 * @param int $row
 	 * @param int $col
-	 * @return DiffOp[]
+	 * @return DiffOp
 	 */
-	public function getDiffOps( int $row, int $col ): array {
+	public function getDiffOps( int $row, int $col ): DiffOp {
 		return (
 			( $row >= count( $this->diffMatrix ) ) ||
 			( $col >= count( $this->diffMatrix[ $row ] ) )
-		) ? [] : $this->diffMatrix[ $row ][ $col ];
+		) ? new Diff( [] ) : $this->diffMatrix[ $row ][ $col ];
 	}
 
 	/**
@@ -132,45 +129,68 @@ class DiffMatrix {
 	}
 
 	/**
-	 * Return the index of the row (old values) that was most edited,
-	 * which will be the one most likely removed in the case that oldArray
+	 * Return the indices of the rows (old values) that were most edited,
+	 * which will be the ones most likely removed in the case that oldArray
 	 * has more items than newArray.
+	 * The number of indices returned is always the difference between
+	 * number of old items and number of new items.
 	 *
-	 * @return int
+	 * @return int[]
 	 */
-	public function getIndexOfMostEditedRow(): int {
-		return $this->getIndexOfMax( $this->editCountByRow );
+	public function getIndicesOfRemovedItems(): array {
+		$numItems = count( $this->oldArray ) - count( $this->newArray );
+		return $this->getIndicesOfMax( $this->editCountByRow, $numItems );
 	}
 
 	/**
-	 * Return the index of the col (new values) that was most edited,
-	 * which will be the one most likely added in the case that oldArray
+	 * Return the indices of the cols (new values) that were most edited,
+	 * which will be the ones most likely added in the case that oldArray
 	 * has less items than newArray.
+	 * The number of indices returned is always the difference between
+	 * number of new items and number of old items.
 	 *
-	 * @return int
+	 * @return int[]
 	 */
-	public function getIndexOfMostEditedCol(): int {
-		return $this->getIndexOfMax( $this->editCountByCol );
+	public function getIndicesOfAddedItems(): array {
+		$numItems = count( $this->newArray ) - count( $this->oldArray );
+		return $this->getIndicesOfMax( $this->editCountByCol, $numItems );
 	}
 
 	/**
-	 * Helper function to get the index of the highest integer from the
+	 * Helper function to get the indices of the n highest values from a
 	 * given array. In case of two equal values, the returned index will
 	 * be the first one found.
 	 *
-	 * @param int[] $numbers
+	 * @param int[] $vector
+	 * @param int $numItems
+	 * @return array
+	 */
+	private function getIndicesOfMax( array $vector, int $numItems ): array {
+		$vectorCopy = array_merge( [], $vector );
+		uasort(
+			$vectorCopy,
+			static function ( int $a, int $b ) {
+				return ( $a == $b ) ? 0 : ( ( $a < $b ) ? 1 : -1 );
+			}
+		);
+		return array_slice( array_keys( $vectorCopy ), 0, $numItems );
+	}
+
+	/**
+	 * Return integer that calculates the correct row or column index
+	 * to access a particular matrix element depending on the items
+	 * that have been removed or added in the diff.
+	 *
+	 * @param int[] $indices
+	 * @param int $index
 	 * @return int
 	 */
-	private function getIndexOfMax( $numbers ): int {
-		$max = 0;
-		$maxIndex = 0;
-		for ( $i = 0; $i < count( $numbers ); $i++ ) {
-			if ( $numbers[$i] > $max ) {
-				$max = $numbers[$i];
-				$maxIndex = $i;
+	public function getNormalizer( array $indices, int $index ): int {
+		return count( array_filter(
+			$indices, static function ( int $i ) use ( $index ) {
+				return ( $i < $index );
 			}
-		}
-		return $maxIndex;
+		) );
 	}
 
 	/**

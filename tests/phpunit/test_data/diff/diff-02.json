@@ -2,7 +2,7 @@
 	"ignore": false,
 	"description": "Added Z2K4 key and value.",
 	"diffs": {
-		"root.Z2K4": {
+		"Z2K4": {
 			"type": "add",
 			"newvalue": {
 				"Z1K1": "Z32",

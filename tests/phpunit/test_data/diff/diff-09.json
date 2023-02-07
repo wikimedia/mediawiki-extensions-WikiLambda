@@ -1,14 +1,21 @@
 {
 	"ignore": false,
-	"description": "Connect implementation and tester.",
+	"description": "Disconnect and connect implementations and testers (same number of elements in the lists)",
 	"diffs": {
 		"Z2K2.Z8K3.1": {
-			"type": "add",
-			"newvalue": "Z10004"
+			"type": "change",
+			"oldvalue": "Z10004",
+			"newvalue": "Z10006"
+		},
+		"Z2K2.Z8K3.2": {
+			"type": "change",
+			"oldvalue": "Z10005",
+			"newvalue": "Z10007"
 		},
 		"Z2K2.Z8K4.1": {
-			"type": "add",
-			"newvalue": "Z10003"
+			"type": "change",
+			"oldvalue": "Z10003",
+			"newvalue": "Z10008"
 		}
 	},
 	"oldValue": {
@@ -40,10 +47,13 @@
 			],
 			"Z8K2": "Z6",
 			"Z8K3": [
-				"Z20"
+				"Z20",
+				"Z10004",
+				"Z10005"
 			],
 			"Z8K4": [
-				"Z14"
+				"Z14",
+				"Z10003"
 			],
 			"Z8K5": "Z10001"
 		},
@@ -89,11 +99,12 @@
 			"Z8K2": "Z6",
 			"Z8K3": [
 				"Z20",
-				"Z10004"
+				"Z10006",
+				"Z10007"
 			],
 			"Z8K4": [
 				"Z14",
-				"Z10003"
+				"Z10008"
 			],
 			"Z8K5": "Z10001"
 		},

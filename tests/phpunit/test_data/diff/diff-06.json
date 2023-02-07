@@ -1,12 +1,12 @@
 {
 	"ignore": false,
-	"description": "Disattach implementation and tester.",
+	"description": "Disconnect implementation and tester.",
 	"diffs": {
-		"root.Z2K2.Z8K3.1": {
+		"Z2K2.Z8K3.1": {
 			"type": "remove",
 			"oldvalue": "Z10004"
 		},
-		"root.Z2K2.Z8K4.1": {
+		"Z2K2.Z8K4.1": {
 			"type": "remove",
 			"oldvalue": "Z10003"
 		}

@@ -265,6 +265,11 @@ class ZObjectFactory {
 			$rawListType = array_shift( $object );
 			$listType = self::createChild( $rawListType );
 
+			// TODO (T330321): All of the checks in the following if block have already been
+			// checked during static validation, but the following block is:
+			//  A) Incomplete (lacks other possible resolvers)
+			//  B) Doesn't check that the objects resolve to ZType (not sure if we wanna do that)
+			// So either we remove it completely, or we fix B.
 			if ( !(
 				// Mostly we expect direct references to ZTypes (but we don't check it's a type)
 				$listType instanceof ZReference ||
@@ -289,8 +294,11 @@ class ZObjectFactory {
 				try {
 					$item = self::createChild( $value );
 				} catch ( ZErrorException $e ) {
+					// We increment the index to point at the correct array item
+					// because we removed the first element by doing array_shift
+					$arrayIndex = $index + 1;
 					throw new ZErrorException(
-						ZErrorFactory::createArrayElementZError( (string)$index, $e->getZError() )
+						ZErrorFactory::createArrayElementZError( (string)( $arrayIndex ), $e->getZError() )
 					);
 				}
 				$items[] = $item;

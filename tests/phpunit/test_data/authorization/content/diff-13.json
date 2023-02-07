@@ -1,0 +1,35 @@
+{
+	"description": "Changing string value doesn't mean changing type",
+	"authorized": true,
+	"rights": [
+		"edit",
+		"wikilambda-edit"
+	],
+	"groups": [],
+	"dependencies": [],
+	"zid": "Z10013",
+	"oldValue": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z10013"
+		},
+		"Z2K2": "this is a string...",
+		"Z2K3": {
+			"Z1K1": "Z12",
+			"Z12K1": [ "Z11" ]
+		}
+	},
+	"newValue": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z10013"
+		},
+		"Z2K2": "... and this another string",
+		"Z2K3": {
+			"Z1K1": "Z12",
+			"Z12K1": [ "Z11" ]
+		}
+	}
+}

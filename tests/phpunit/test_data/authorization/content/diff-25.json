@@ -1,0 +1,36 @@
+{
+	"description": "Function maintainer can edit a builtin object",
+	"authorized": true,
+	"rights": [
+		"edit",
+		"wikilambda-edit",
+		"wikilambda-edit-predefined"
+	],
+	"groups": [ "functioneer", "functionmaintainer" ],
+	"dependencies": [],
+	"zid": "Z9025",
+	"oldValue": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z9025"
+		},
+		"Z2K2": "this is a builtin object",
+		"Z2K3": {
+			"Z1K1": "Z12",
+			"Z12K1": [ "Z11" ]
+		}
+	},
+	"newValue": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z9025"
+		},
+		"Z2K2": "this really is a builtin object",
+		"Z2K3": {
+			"Z1K1": "Z12",
+			"Z12K1": [ "Z11" ]
+		}
+	}
+}

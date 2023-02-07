@@ -1,16 +1,16 @@
 {
 	"ignore": false,
-	"description": "Change value and type.",
+	"description": "Element of array with two changes.",
 	"diffs": {
-		"Z2K2": {
+		"Z2K3.Z12K1.1.Z11K1": {
 			"type": "change",
-			"oldvalue": "once a string...",
-			"newvalue": { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "... always a string" }
+			"oldvalue": "Z1002",
+			"newvalue": "Z1003"
 		},
 		"Z2K3.Z12K1.1.Z11K2": {
 			"type": "change",
-			"oldvalue": "Some string",
-			"newvalue": "Some monolingual text"
+			"oldvalue": "Mushroom scientific name",
+			"newvalue": "Nombre científico de la seta"
 		}
 	},
 	"oldValue": {
@@ -19,7 +19,7 @@
 			"Z1K1": "Z6",
 			"Z6K1": "Z10001"
 		},
-		"Z2K2": "once a string...",
+		"Z2K2": "stringsome",
 		"Z2K3": {
 			"Z1K1": "Z12",
 			"Z12K1": [
@@ -27,7 +27,7 @@
 				{
 					"Z1K1": "Z11",
 					"Z11K1": "Z1002",
-					"Z11K2": "Some string"
+					"Z11K2": "Mushroom scientific name"
 				}
 			]
 		}
@@ -38,19 +38,15 @@
 			"Z1K1": "Z6",
 			"Z6K1": "Z10001"
 		},
-		"Z2K2": {
-			"Z1K1": "Z11",
-			"Z11K1": "Z1002",
-			"Z11K2": "... always a string"
-		},
+		"Z2K2": "stringsome",
 		"Z2K3": {
 			"Z1K1": "Z12",
 			"Z12K1": [
 				"Z11",
 				{
 					"Z1K1": "Z11",
-					"Z11K1": "Z1002",
-					"Z11K2": "Some monolingual text"
+					"Z11K1": "Z1003",
+					"Z11K2": "Nombre científico de la seta"
 				}
 			]
 		}

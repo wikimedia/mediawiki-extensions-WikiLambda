@@ -1,0 +1,55 @@
+{
+	"description": "User can add a label to an object",
+	"authorized": true,
+	"rights": [
+		"edit",
+		"wikilambda-edit",
+		"wikilambda-edit-object-label"
+	],
+	"groups": [],
+	"dependencies": [],
+	"zid": "Z10001",
+	"oldValue": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z10001"
+		},
+		"Z2K2": "string figures",
+		"Z2K3": {
+			"Z1K1": "Z12",
+			"Z12K1": [
+				"Z11",
+				{
+					"Z1K1": "Z11",
+					"Z11K1": "Z1002",
+					"Z11K2": "String Figures"
+				}
+			]
+		}
+	},
+	"newValue": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z10001"
+		},
+		"Z2K2": "string figures",
+		"Z2K3": {
+			"Z1K1": "Z12",
+			"Z12K1": [
+				"Z11",
+				{
+					"Z1K1": "Z11",
+					"Z11K1": "Z1002",
+					"Z11K2": "String Figures"
+				},
+				{
+					"Z1K1": "Z11",
+					"Z11K1": "Z1003",
+					"Z11K2": "Figuras de Cuerdas"
+				}
+			]
+		}
+	}
+}

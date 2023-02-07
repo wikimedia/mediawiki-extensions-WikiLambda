@@ -1,21 +1,19 @@
 {
-	"ignore": false,
-	"description": "Connect implementation and tester.",
-	"diffs": {
-		"Z2K2.Z8K3.1": {
-			"type": "add",
-			"newvalue": "Z10004"
-		},
-		"Z2K2.Z8K4.1": {
-			"type": "add",
-			"newvalue": "Z10003"
-		}
-	},
+	"description": "User can add argument labels to a function",
+	"authorized": true,
+	"rights": [
+		"edit",
+		"wikilambda-edit",
+		"wikilambda-edit-argument-label"
+	],
+	"groups": [],
+	"dependencies": [ "Z17" ],
+	"zid": "Z10004",
 	"oldValue": {
 		"Z1K1": "Z2",
 		"Z2K1": {
 			"Z1K1": "Z6",
-			"Z6K1": "Z10001"
+			"Z6K1": "Z10004"
 		},
 		"Z2K2": {
 			"Z1K1": "Z8",
@@ -23,8 +21,8 @@
 				"Z17",
 				{
 					"Z1K1": "Z17",
-					"Z17K1": "Z10000",
-					"Z17K2": "Z10001K1",
+					"Z17K1": "Z3",
+					"Z17K2": "Z10004K1",
 					"Z17K3": {
 						"Z1K1": "Z12",
 						"Z12K1": [
@@ -32,20 +30,16 @@
 							{
 								"Z1K1": "Z11",
 								"Z11K1": "Z1002",
-								"Z11K2": "mushroom"
+								"Z11K2": "first"
 							}
 						]
 					}
 				}
 			],
 			"Z8K2": "Z6",
-			"Z8K3": [
-				"Z20"
-			],
-			"Z8K4": [
-				"Z14"
-			],
-			"Z8K5": "Z10001"
+			"Z8K3": [ "Z20" ],
+			"Z8K4": [ "Z14", "Z10010" ],
+			"Z8K5": "Z10004"
 		},
 		"Z2K3": {
 			"Z1K1": "Z12",
@@ -54,7 +48,7 @@
 				{
 					"Z1K1": "Z11",
 					"Z11K1": "Z1002",
-					"Z11K2": "Mushroom scientific name"
+					"Z11K2": "Figure String"
 				}
 			]
 		}
@@ -63,7 +57,7 @@
 		"Z1K1": "Z2",
 		"Z2K1": {
 			"Z1K1": "Z6",
-			"Z6K1": "Z10001"
+			"Z6K1": "Z10004"
 		},
 		"Z2K2": {
 			"Z1K1": "Z8",
@@ -71,8 +65,8 @@
 				"Z17",
 				{
 					"Z1K1": "Z17",
-					"Z17K1": "Z10000",
-					"Z17K2": "Z10001K1",
+					"Z17K1": "Z3",
+					"Z17K2": "Z10004K1",
 					"Z17K3": {
 						"Z1K1": "Z12",
 						"Z12K1": [
@@ -80,22 +74,21 @@
 							{
 								"Z1K1": "Z11",
 								"Z11K1": "Z1002",
-								"Z11K2": "mushroom"
+								"Z11K2": "first"
+							},
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1003",
+								"Z11K2": "primera"
 							}
 						]
 					}
 				}
 			],
 			"Z8K2": "Z6",
-			"Z8K3": [
-				"Z20",
-				"Z10004"
-			],
-			"Z8K4": [
-				"Z14",
-				"Z10003"
-			],
-			"Z8K5": "Z10001"
+			"Z8K3": [ "Z20" ],
+			"Z8K4": [ "Z14", "Z10010" ],
+			"Z8K5": "Z10004"
 		},
 		"Z2K3": {
 			"Z1K1": "Z12",
@@ -104,7 +97,7 @@
 				{
 					"Z1K1": "Z11",
 					"Z11K1": "Z1002",
-					"Z11K2": "Mushroom scientific name"
+					"Z11K2": "Figure String"
 				}
 			]
 		}

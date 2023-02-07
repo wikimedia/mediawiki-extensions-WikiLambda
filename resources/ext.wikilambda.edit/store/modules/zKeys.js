@@ -212,7 +212,7 @@ module.exports = exports = {
 		 * Returns the string label of the ID of a ZKey, ZPersistentObject or ZArgumentDeclaration
 		 * or the string ID if the label is not available.
 		 *
-		 * @param {Object} state
+		 * @param {Object} _state
 		 * @param {Object} getters
 		 * @return {Function}
 		 */

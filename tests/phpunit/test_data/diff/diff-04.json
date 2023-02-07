@@ -2,7 +2,7 @@
 	"ignore": false,
 	"description": "Remove second element from the list of arguments.",
 	"diffs": {
-		"root.Z2K2.Z8K1.2": {
+		"Z2K2.Z8K1.2": {
 			"type": "remove",
 			"oldvalue": {
 				"Z1K1": "Z17",

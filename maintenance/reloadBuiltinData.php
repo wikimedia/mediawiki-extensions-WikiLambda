@@ -142,7 +142,7 @@ class ReloadBuiltinData extends Maintenance {
 				/* String zid */ $zid,
 				/* String content */ $data,
 				/* Edit summary */ $creatingComment,
-				/* Flags */ 0
+				/* Update flags */ EDIT_UPDATE
 			);
 
 			if ( $response->isOK() ) {
