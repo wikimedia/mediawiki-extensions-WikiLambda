@@ -145,6 +145,16 @@ class ZObjectEditAction extends Action {
 
 		$output->addModuleStyles( [ 'ext.wikilambda.editpage.styles' ] );
 
+		// (T328679) If the page doesn't exist yet, route the user to the ZObject creation system
+		// rather than running the code below that assumes the ZObject exists.
+		if ( !$this->getTitle()->exists() ) {
+			$this->generateZObjectPayload( $output, $this->getContext(), [
+				'createNewPage' => true,
+				'zId' => $zId,
+			] );
+			return;
+		}
+
 		// (T290217) Show page title
 		// NOTE setPageTitle sets both the HTML <title> header and the <h1> tag
 		$output->setPageTitle( $this->getPageTitleMsg() );
