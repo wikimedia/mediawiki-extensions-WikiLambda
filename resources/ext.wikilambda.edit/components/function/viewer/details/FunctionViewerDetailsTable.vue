@@ -211,6 +211,12 @@ module.exports = exports = {
 			padding-left: @spacing-100;
 			padding-right: @spacing-100;
 		}
+
+		.cdx-checkbox {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
 	}
 
 	&-item {
@@ -231,6 +237,9 @@ module.exports = exports = {
 
 		.cdx-checkbox {
 			width: 22.85px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
 		}
 
 		&:first-child {
