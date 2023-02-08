@@ -21,9 +21,13 @@
 							class="ext-wikilambda-fn-tester-results__header-cell"
 							scope="col"
 						>
-							{{
-								implementationLabel( implementation )
-							}}
+							<a
+								:href="implementation"
+							>
+								{{
+									implementationLabel( implementation )
+								}}
+							</a>
 						</th>
 					</tr>
 				</thead>
