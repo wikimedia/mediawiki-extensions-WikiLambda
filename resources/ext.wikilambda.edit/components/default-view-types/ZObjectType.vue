@@ -96,12 +96,12 @@ module.exports = exports = {
 				// Resolver types: reference and function always available
 				const options = [
 					{
-						label: this.getOptionLabel( Constants.Z_REFERENCE ),
+						label: this.getLabel( Constants.Z_REFERENCE ),
 						value: Constants.Z_REFERENCE,
 						icon: icons.cdxIconLink
 					},
 					{
-						label: this.getOptionLabel( Constants.Z_FUNCTION_CALL ),
+						label: this.getLabel( Constants.Z_FUNCTION_CALL ),
 						value: Constants.Z_FUNCTION_CALL,
 						// TODO: Decide final icon for function call
 						icon: icons.cdxIconCode
@@ -110,7 +110,7 @@ module.exports = exports = {
 				// Resolver types: argument reference only if we are inside a composition
 				if ( this.isInsideComposition( this.rowId ) ) {
 					options.push( {
-						label: this.getOptionLabel( Constants.Z_ARGUMENT_REFERENCE ),
+						label: this.getLabel( Constants.Z_ARGUMENT_REFERENCE ),
 						value: Constants.Z_ARGUMENT_REFERENCE,
 						// TODO: Decide final icon for argument reference
 						icon: icons.cdxIconMarkup
@@ -129,7 +129,7 @@ module.exports = exports = {
 				} else {
 					// Else, show the bound type if any
 					options.push( {
-						label: this.getOptionLabel( this.expectedType ),
+						label: this.getLabel( this.expectedType ),
 						value: this.expectedType,
 						// TODO: Decide final icon for literal
 						icon: icons.cdxIconEdit
@@ -149,24 +149,13 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Returns the label object for the selected type or undefined
+			 * Returns the label object for the selected type or the value
 			 * if no label is found.
-			 * TODO implement Label class and update JSDoc
-			 *
-			 * @return {Object|undefined}
-			 */
-			valueLabelObj: function () {
-				return this.value ? this.getLabel( this.value ) : undefined;
-			},
-
-			/**
-			 * Returns the string value of the label for the selected type.
-			 * If no label is found, returns the key.
 			 *
 			 * @return {string}
 			 */
 			valueLabel: function () {
-				return this.valueLabelObj ? this.valueLabelObj.label : this.value;
+				return this.value ? this.getLabel( this.value ) : undefined;
 			},
 
 			/**
@@ -181,24 +170,6 @@ module.exports = exports = {
 			}
 		} ),
 	methods: {
-		/**
-		 * Given a option value, fetches the label object and, if available
-		 * returns the label string for displaying in the type option selector.
-		 * Else, returns the type Zid.
-		 *
-		 * @param {string} type
-		 * @return {string}
-		 */
-		getOptionLabel: function ( type ) {
-			// TODO if the label is in a different language than the user's,
-			// should we return the language chip of the available label?
-			// How can we show the language fallback information in the selector?
-			const labelObj = this.getLabel( type );
-			return ( labelObj === undefined ) ?
-				type :
-				labelObj.label;
-		},
-
 		/**
 		 * Emits the event setValue so that ZObjectKey can update
 		 * the terminal value in the ZObject data table.

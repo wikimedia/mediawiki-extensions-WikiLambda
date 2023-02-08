@@ -48,7 +48,7 @@ module.exports = exports = {
 	computed: $.extend(
 		mapGetters( [
 			'getLabel',
-			'getZkeys',
+			'getLanguageIsoCodeOfZLang',
 			'getZMonolingualTextValue',
 			'getZMonolingualLangValue'
 		] ),
@@ -105,11 +105,14 @@ module.exports = exports = {
 			 * Returns the object { label, lang, zid } with the linguistic
 			 * information of the language zid or undefined if the zid
 			 * doesn't exist or wasn't found.
-			 * TODO: Create Label class or interface
 			 *
-			 * @return {Object|undefined}
+			 * TODO (T329103): This is currently not used, but are we showing the
+			 * language name when we hover over the language ISO code chip? If so,
+			 * this is the string that should be shown
+			 *
+			 * @return {string}
 			 */
-			langLabelObj: function () {
+			langLabel: function () {
 				return this.getLabel( this.lang );
 			},
 
@@ -120,16 +123,7 @@ module.exports = exports = {
 			 * @return {string}
 			 */
 			langIso: function () {
-				// Set fallback as language label or lang if ISOcode is not available
-				var isoCode = this.langLabelObj ? this.langLabelObj.label : this.lang;
-				if ( this.langLabelObj && this.getZkeys[ this.langLabelObj.zid ] ) {
-					isoCode = this.getZkeys[ this.langLabelObj.zid ][
-						Constants.Z_PERSISTENTOBJECT_VALUE
-					][
-						Constants.Z_NATURAL_LANGUAGE_ISO_CODE
-					];
-				}
-				return isoCode;
+				return this.getLanguageIsoCodeOfZLang( this.lang );
 			}
 		}
 	)

@@ -161,6 +161,8 @@ var Constants = require( '../Constants.js' ),
 			 * When the type is a function call, return the function ID and the arguments in
 			 * brackets.
 			 *
+			 * TODO (T328639): Write tests
+			 *
 			 * @param {Object|string} type
 			 * @return {string}
 			 */

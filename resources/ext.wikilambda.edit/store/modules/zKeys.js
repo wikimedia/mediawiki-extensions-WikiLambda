@@ -1,5 +1,6 @@
 /*!
- * WikiLambda Vue editor: zKeys Vuex module
+ * WikiLambda Vue editor: zKeys Vuex module to fetch, store and
+ * provide auxiliary data from other ZObejcts (labels, keys, etc.)
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -7,23 +8,74 @@
 
 var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
+	LabelData = require( '../classes/LabelData.js' ),
 	resolvePromiseList = {},
 	zKeystoFetch = [];
 
 module.exports = exports = {
 	state: {
 		/**
-		 * Collection of zKey information
+		 * Collection of ZPersistent objects fetched
+		 * and indexed by their ZID.
+		 *
+		 * TODO (T329105): rename to fetchedZObjects, persistedZObjects...
 		 */
 		zKeys: {},
 		/**
-		 * Collection of zKey labels in all languages
+		 * Collection of LabelData object indexed by the identifier of
+		 * the ZKey, ZPersistentObject or ZArgumentDeclaration.
+		 */
+		labels: {},
+		/**
+		 * Collection of LabelData objects for all the
+		 * gathered objects, keys and arguments.
+		 *
+		 * TODO (T329105): rename to labels, allLabels, labelData...
+		 * TODO (T329106): There's only one per key, and every time they are used the
+		 * collection is filtered. Should we replace this for an object where the
+		 * index is the key (Zn when zid, or ZnKm when key or argument)
 		 */
 		zKeyAllLanguageLabels: []
 	},
 	getters: {
+		/**
+		 * Returns the object with all fetched ZPersistent objects stored
+		 *
+		 * @param {Object} state
+		 * @return {Object}
+		 *
+		 * TODO (T329106): Deprecate. This is an overkill, no way the state should return ALL
+		 * the data to any component. Create a getPersistedObject(zid) method and
+		 * deprecate this one.
+		 */
 		getZkeys: function ( state ) {
 			return state.zKeys;
+		},
+
+		/**
+		 * Returns the string value of the language Iso code if the object
+		 * has been fetched and is stored in the state.
+		 * If not available, returns the input zid.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getLanguageIsoCodeOfZLang: function ( state ) {
+			/**
+			 * @param {string} zid
+			 * @return {string}
+			 */
+			function findLanguageCode( zid ) {
+				if ( state.zKeys[ zid ] ) {
+					const zobject = state.zKeys[ zid ][ Constants.Z_PERSISTENTOBJECT_VALUE ];
+					const ztype = zobject[ Constants.Z_OBJECT_TYPE ];
+					if ( ztype === Constants.Z_NATURAL_LANGUAGE ) {
+						return zobject[ Constants.Z_NATURAL_LANGUAGE_ISO_CODE ];
+					}
+				}
+				return zid;
+			}
+			return findLanguageCode;
 		},
 
 		/**
@@ -46,7 +98,7 @@ module.exports = exports = {
 					return Constants.Z_PERSISTENTOBJECT;
 				}
 
-				// TODO: if this is an array index, (an integer),
+				// TODO (T324251): if this is an array index, (an integer),
 				// should we return the expected type for the typed list?
 				if ( typeUtils.isGlobalKey( key ) ) {
 					let type;
@@ -88,8 +140,10 @@ module.exports = exports = {
 		/**
 		 * Returns all fetched zids and their label, which will be in the
 		 * user selected language if available, or in the closes fallback.
+		 * The returned collection is in the shape of key-values where key is the
+		 * zid and value is the string label.
 		 *
-		 * TODO: Soon to be deprecated, in favor of getLabel( zid )
+		 * TODO (T329106): Deprecate in favor of getLabel( zid )
 		 *
 		 * @param {Object} state
 		 * @param {Object} getters
@@ -104,26 +158,72 @@ module.exports = exports = {
 			} );
 			return allLabels;
 		},
+
+		/**
+		 * Returns the whole collection of gathered labels.
+		 *
+		 * @param {Object} state
+		 * @return {Array} of LabelData objects
+		 *
+		 * TODO (T329106): Deprecate. No components should use this
+		 */
 		getAllZKeyLanguageLabels: function ( state ) {
 			return state.zKeyAllLanguageLabels;
 		},
 
 		/**
-		 * Returns the label of the ID of a ZKey, ZPersistentObject or ZArgumentDeclaration.
-		 * The label is in the user selected language, if available, or else in the closest fallback.
+		 * Returns the persisted object for a given ZID if that was
+		 * fetched from the DB and saved in the state. Else returns undefined
 		 *
 		 * @param {Object} state
 		 * @return {Function}
 		 */
-		getLabel: function ( state ) {
+		getPersistedObject: function ( state ) {
+			/**
+			 * @param {string} zid of the ZPersistentObject
+			 * @return {Object|undefined} persisted ZObject
+			 */
+			function findPersistedObject( zid ) {
+				return state.zKeys[ zid ];
+			}
+			return findPersistedObject;
+		},
+
+		/**
+		 * Returns the LabelData of the ID of a ZKey, ZPersistentObject or ZArgumentDeclaration.
+		 * The label is in the user selected language, if available, or else in the closest fallback.
+		 * If not available, returns undefined.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getLabelData: function ( state ) {
 			/**
 			 * @param {string} id of the ZPersistentObject, ZKey or ZArgumentDeclaration
-			 * @return {Object} contains zid, label and lang properties
+			 * @return {LabelData|undefined} contains zid, label and lang properties
+			 */
+			function findLabelData( id ) {
+				return state.labels[ id ];
+			}
+			return findLabelData;
+		},
+
+		/**
+		 * Returns the string label of the ID of a ZKey, ZPersistentObject or ZArgumentDeclaration
+		 * or the string ID if the label is not available.
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getLabel: function ( _state, getters ) {
+			/**
+			 * @param {string} id of the ZPersistentObject, ZKey or ZArgumentDeclaration
+			 * @return {string} label or id
 			 */
 			function findLabel( id ) {
-				return state.zKeyAllLanguageLabels.find( function ( label ) {
-					return ( label.zid === id );
-				} );
+				const labelData = getters.getLabelData( id );
+				return labelData ? labelData.label : id;
 			}
 			return findLabel;
 		}
@@ -132,14 +232,30 @@ module.exports = exports = {
 		/**
 		 * Add zid info to the state
 		 *
+		 * TODO (T329105): Rename this to something like setObject
+		 *
 		 * @param {Object} state
 		 * @param {Object} payload
 		 */
 		addZKeyInfo: function ( state, payload ) {
 			state.zKeys[ payload.zid ] = payload.info;
 		},
+
+		/**
+		 * Save the LabelData object for a given ID
+		 * of a ZPersistentObject, ZKey or ZArgumentDeclaration.
+		 *
+		 * @param {Object} state
+		 * @param {LabelData} labelData
+		 */
+		setLabel: function ( state, labelData ) {
+			state.labels[ labelData.zid ] = labelData;
+		},
+
 		/**
 		 * Add labels info to the state
+		 *
+		 * TODO (T329106): Deprecate
 		 *
 		 * @param {Object} state
 		 * @param {Array} allKeyLanguageLabels
@@ -270,6 +386,14 @@ module.exports = exports = {
 					// (or none) as they have already been filtered by the back-end to the given
 					// language or any of its available fallbacks.
 					if ( multiStr.length === 1 ) {
+						const labelData = new LabelData(
+							zid,
+							multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
+							multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
+						);
+						context.commit( 'setLabel', labelData );
+
+						// TODO (T329107): remove below
 						zObjectLabels.push( {
 							zid,
 							label: multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
@@ -277,7 +401,7 @@ module.exports = exports = {
 						} );
 					}
 
-					// FIXME shall we factorize this mmutationn with the next?
+					// TODO (T329107): remove below
 					context.commit( 'addAllZKeyLabels', zObjectLabels );
 
 					// 3. State mutation:
@@ -303,6 +427,15 @@ module.exports = exports = {
 								][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
 
 								if ( keyLabels.length === 1 ) {
+
+									const labelData = new LabelData(
+										key[ Constants.Z_KEY_ID ],
+										keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
+										keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
+									);
+									context.commit( 'setLabel', labelData );
+
+									// TODO (T329107): remove below
 									zKeyLabels.push( {
 										zid: key[ Constants.Z_KEY_ID ],
 										label: keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
@@ -325,6 +458,15 @@ module.exports = exports = {
 								][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
 
 								if ( argLabels.length === 1 ) {
+
+									const labelData = new LabelData(
+										arg[ Constants.Z_ARGUMENT_KEY ],
+										argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
+										argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
+									);
+									context.commit( 'setLabel', labelData );
+
+									// TODO (T329107): remove below
 									zKeyLabels.push( {
 										zid: arg[ Constants.Z_ARGUMENT_KEY ],
 										label: argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
@@ -338,6 +480,7 @@ module.exports = exports = {
 							// Do nothing
 					}
 
+					// TODO (T329107): remove below
 					context.commit( 'addAllZKeyLabels', zKeyLabels );
 
 				} );

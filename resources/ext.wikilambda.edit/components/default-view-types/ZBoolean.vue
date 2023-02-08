@@ -52,7 +52,6 @@ module.exports = exports = {
 		}
 	},
 	computed: $.extend( mapGetters( [
-		'getZkeyLabels',
 		'getLabel',
 		'getZBooleanValue'
 	] ),
@@ -71,11 +70,8 @@ module.exports = exports = {
 				} );
 			}
 		},
-		valueLabelObj: function () {
-			return this.getLabel( this.value );
-		},
 		valueLabel: function () {
-			return this.valueLabelObj ? this.valueLabelObj.label : this.value;
+			return this.getLabel( this.value );
 		},
 		valueUrl: function () {
 			return new mw.Title( this.value ).getUrl();
@@ -83,11 +79,11 @@ module.exports = exports = {
 		radioChoices: function () {
 			return [
 				{
-					label: this.getZkeyLabels[ Constants.Z_BOOLEAN_TRUE ],
+					label: this.getLabel( Constants.Z_BOOLEAN_TRUE ),
 					value: Constants.Z_BOOLEAN_TRUE
 				},
 				{
-					label: this.getZkeyLabels[ Constants.Z_BOOLEAN_FALSE ],
+					label: this.getLabel( Constants.Z_BOOLEAN_FALSE ),
 					value: Constants.Z_BOOLEAN_FALSE
 				}
 			];

@@ -63,7 +63,7 @@ module.exports = exports = {
 		] ),
 		{
 			/**
-			 * Returns the value of the selected reference
+			 * Returns the value of the selected reference.
 			 *
 			 * @return {string}
 			 */
@@ -72,24 +72,13 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Returns the label object for the selected reference or undefined
-			 * if no label is found.
-			 * TODO implement Label class and update JSDoc
-			 *
-			 * @return {Object|undefined}
-			 */
-			valueLabelObj: function () {
-				return this.value ? this.getLabel( this.value ) : undefined;
-			},
-
-			/**
 			 * Returns the string value of the label for the selected reference.
-			 * If no label is found, returns the key.
+			 * If no label is found, returns undefined.
 			 *
-			 * @return {string}
+			 * @return {string|undefined}
 			 */
 			valueLabel: function () {
-				return this.valueLabelObj ? this.valueLabelObj.label : this.value;
+				return this.value ? this.getLabel( this.value ) : undefined;
 			},
 
 			/**

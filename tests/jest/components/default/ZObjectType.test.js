@@ -17,7 +17,8 @@ describe( 'ZReference', () => {
 	beforeEach( () => {
 		getters = {
 			isInsideComposition: createGettersWithFunctionsMock( false ),
-			getLabel: createGettersWithFunctionsMock( { zid: 'Z17', label: 'Argument declaration', lang: 'Z1002' } ),
+			getLabel: createGettersWithFunctionsMock( 'Argument declaration' ),
+			getLabelData: createGettersWithFunctionsMock( { zid: 'Z17', label: 'Argument declaration', lang: 'Z1002' } ),
 			getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z17' ),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( '0' )
 		};
@@ -50,7 +51,8 @@ describe( 'ZReference', () => {
 		} );
 
 		it( 'displays the reference link with its value if there is no label', () => {
-			getters.getLabel = createGettersWithFunctionsMock();
+			// If there's no label data stored, getLabel returns input key
+			getters.getLabel = createGettersWithFunctionsMock( 'Z17' );
 
 			global.store.hotUpdate( {
 				getters: getters

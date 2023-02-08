@@ -41,7 +41,7 @@ describe( 'ZObjectKeyValue', () => {
 		actions;
 	beforeEach( () => {
 		getters = {
-			getLabel: createGettersWithFunctionsMock( { zid: Constants.Z_PERSISTENTOBJECT_ID, label: 'id', lang: Constants.Z_NATURAL_LANGUAGE_ENGLISH } ),
+			getLabelData: createGettersWithFunctionsMock( { zid: Constants.Z_PERSISTENTOBJECT_ID, label: 'id', lang: Constants.Z_NATURAL_LANGUAGE_ENGLISH } ),
 			getZReferenceTerminalValue: jest.fn(),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( keyId ),
 			getExpectedTypeOfKey: createGettersWithFunctionsMock(),
@@ -61,7 +61,10 @@ describe( 'ZObjectKeyValue', () => {
 			},
 			getZObjectValueByRowId: createGettersWithFunctionsMock(),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_STRING ),
-			getZStringTerminalValue: createGettersWithFunctionsMock( 'string terminal value' )
+			getZStringTerminalValue: createGettersWithFunctionsMock( 'string terminal value' ),
+			getLabel: createGettersWithFunctionsMock( 'Function call' ),
+			getLanguageIsoCodeOfZLang: createGettersWithFunctionsMock( 'EN' ),
+			getUserZlangZID: createGettersWithFunctionsMock( 'Z1002' )
 		};
 		actions = {
 			setValueByRowIdAndPath: jest.fn(),

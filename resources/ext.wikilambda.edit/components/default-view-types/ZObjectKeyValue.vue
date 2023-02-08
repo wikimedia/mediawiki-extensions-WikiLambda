@@ -19,7 +19,10 @@
 				:expanded="expanded"
 				@toggle="toggleExpanded"
 			></wl-expanded-toggle>
-			<label v-if="key">{{ keyLabel }}</label>
+			<wl-localized-label
+				v-if="keyLabel"
+				:label-data="keyLabel"
+			></wl-localized-label>
 		</p>
 		<!-- Value -->
 		<p
@@ -45,6 +48,7 @@
 var
 	Constants = require( '../../Constants.js' ),
 	ExpandedToggle = require( '../base/ExpandedToggle.vue' ),
+	LocalizedLabel = require( '../base/LocalizedLabel.vue' ),
 	ZMonolingualString = require( './ZMonolingualString.vue' ),
 	ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' ),
 	ZObjectType = require( './ZObjectType.vue' ),
@@ -60,6 +64,7 @@ module.exports = exports = {
 	name: 'wl-z-object-key-value',
 	components: {
 		'wl-expanded-toggle': ExpandedToggle,
+		'wl-localized-label': LocalizedLabel,
 		'wl-z-code': ZCode,
 		'wl-z-monolingual-string': ZMonolingualString,
 		'wl-z-object-key-value-set': ZObjectKeyValueSet,
@@ -92,7 +97,7 @@ module.exports = exports = {
 	},
 	computed: $.extend(
 		mapGetters( [
-			'getLabel',
+			'getLabelData',
 			'getExpectedTypeOfKey',
 			'getDepthByRowId',
 			'getParentRowId',
@@ -168,25 +173,12 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Returns the object { label, lang, zid } with the linguistic
-			 * information of the key in the user language or undefined
-			 * if the key doesn't exist or wasn't found.
-			 * TODO: Create Label class or interface
+			 * Returns the label data object of the given key.
 			 *
-			 * @return {Object|undefined}
-			 */
-			keyLabelObj: function () {
-				return this.key ? this.getLabel( this.key ) : undefined;
-			},
-
-			/**
-			 * Returns the label of the key in the user language or
-			 * the raw key if the label wasn't found.
-			 *
-			 * @return {string}
+			 * @return {LabelData}
 			 */
 			keyLabel: function () {
-				return this.keyLabelObj ? this.keyLabelObj.label : this.key;
+				return this.getLabelData( this.key );
 			},
 
 			/**
