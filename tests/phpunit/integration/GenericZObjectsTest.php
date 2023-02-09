@@ -381,7 +381,16 @@ EOT;
 }
 EOT;
 
-		$status = $this->editPage( 'Z1014', $igboContent, 'Create self-referencing ZLanguage', NS_MAIN );
+		$maintainerAuthority = static::getTestUser( [ 'functionmaintainer' ] )->getAuthority();
+
+		$status = $this->editPage(
+			'Z1014',
+			$igboContent,
+			'Create self-referencing ZLanguage',
+			NS_MAIN,
+			$maintainerAuthority
+		);
+
 		$this->assertTrue(
 			$status->isOK(),
 			'ZLanguage with self-reference has been created'
@@ -389,7 +398,8 @@ EOT;
 
 		// Create new ZObject using the Store, where self-references are Z0
 		$store = WikiLambdaServices::getZObjectStore();
-		$sysopUser = $this->getTestSysop()->getUser();
+		$maintainerUser = $this->getTestUser( [ 'functionmaintainer' ] )->getUser();
+
 		$newLang = <<<EOT
 {
 	"Z1K1": "Z2",
@@ -411,7 +421,7 @@ EOT;
 	}
 }
 EOT;
-		$page = $store->createNewZObject( $newLang, 'New ZLang', $sysopUser );
+		$page = $store->createNewZObject( $newLang, 'New ZLang', $maintainerUser );
 		$this->assertTrue(
 			$page->isOK(),
 			'ZLanguage with null (Z0) self-reference has been created'
@@ -440,7 +450,7 @@ EOT;
 	}
 }
 EOT;
-		$page = $store->createNewZObject( $newZObject, 'New ZObject', $sysopUser );
+		$page = $store->createNewZObject( $newZObject, 'New ZObject', $maintainerUser );
 		$this->assertTrue(
 			$page->isOK(),
 			'ZObject with labels in the two previously inserted languages has been created'

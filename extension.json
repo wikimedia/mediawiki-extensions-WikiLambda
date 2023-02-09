@@ -90,13 +90,15 @@
 			"wikilambda-edit-implementation": true,
 			"wikilambda-edit-tester": true
 		},
-		"sysop": {
+		"functionmaintainer": {
 			"wikilambda-create-predefined": true,
 			"wikilambda-create-language": true,
 			"wikilambda-create-programming": true,
 			"wikilambda-edit-predefined": true,
 			"wikilambda-edit-language": true,
-			"wikilambda-edit-programming": true,
+			"wikilambda-edit-programming": true
+		},
+		"functioneer": {
 			"wikilambda-connect-implementation": true,
 			"wikilambda-disconnect-implementation": true,
 			"wikilambda-connect-tester": true,
