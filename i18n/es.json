@@ -216,7 +216,7 @@
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "Selecciona un tipo",
 	"wikilambda-function-definition-inputs-item-typed-list-placeholder": "Selecciona un tipo para su lista escrita",
 	"wikilambda-function-definition-inputs-item-input-placeholder": "Etiqueta de entrada",
-	"wikilambda-function-definition-inputs-item-add-input-button": "+ Agregar otra entrada",
+	"wikilambda-function-definition-inputs-item-add-input-button": "Agregar otra entrada",
 	"wikilambda-function-definition-inputs-item-add-first-input-button": "Agregar una entrada",
 	"wikilambda-function-definition-inputs-item-remove": "Eliminar entrada",
 	"wikilambda-function-definition-output-label": "Tipo de salida",
