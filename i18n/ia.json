@@ -5,6 +5,12 @@
 		]
 	},
 	"wikilambda-desc": "Forni al wikis de Wikimedia un function analysator de wikitexto pro appellar le evalutation de functiones scribite, gerite e evalutate sur un wiki central.",
+	"group-functioneer": "Functionarios",
+	"group-functioneer-member": "functionari{{GENDER:$1|o|a}}",
+	"grouppage-functioneer": "Functionarios",
+	"group-functionmaintainer": "Mantenitores",
+	"group-functionmaintainer-member": "mantenit{{GENDER:$1|or|rice}}",
+	"grouppage-functionmaintainer": "Mantenitores",
 	"wikilambda-history-title": "Historia de versiones de \"$1\" ($2)",
 	"wikilambda-invalidzobjecttitle": "Le titulo fornite, '$1', non es valide pro un ZObject.",
 	"wikilambda-invalidzobject": "Le contento fornite non es un ZObject valide.",

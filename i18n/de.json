@@ -9,6 +9,12 @@
 		]
 	},
 	"wikilambda-desc": "Bereitstellung einer Wikitext-Parser-Funktion für Wikimedia-Wikis, um die Auswertung von Funktionen aufzurufen, die in einem zentralen Wiki geschrieben, verwaltet und ausgewertet werden.",
+	"group-functioneer": "Funktionsträger",
+	"group-functioneer-member": "{{GENDER:$1|Funktionsträger|Funktionsträgerin}}",
+	"grouppage-functioneer": "Funktionsträger",
+	"group-functionmaintainer": "Maintainer",
+	"group-functionmaintainer-member": "{{GENDER:$1|Maintainer|Maintainerin}}",
+	"grouppage-functionmaintainer": "Maintainer",
 	"wikilambda-history-title": "Versionsgeschichte von „$1“ ($2)",
 	"wikilambda-invalidzobjecttitle": "Der angegebene Titel „$1“ ist für ein ZObject nicht gültig.",
 	"wikilambda-invalidzobject": "Der bereitgestellte Inhalt ist kein gültiges ZObjekt.",
