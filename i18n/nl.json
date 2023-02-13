@@ -10,6 +10,12 @@
 			"Romaine"
 		]
 	},
+	"group-functioneer": "Functionarissen",
+	"group-functioneer-member": "{{GENDER:$1|functionaris}}",
+	"grouppage-functioneer": "Functionarissen",
+	"group-functionmaintainer": "Onderhouders",
+	"group-functionmaintainer-member": "{{GENDER:$1|onderhouder}}",
+	"grouppage-functionmaintainer": "Onderhouders",
 	"wikilambda-invalidzobjecttitle": "De opgegeven titel '$1' is niet geldig voor een ZObject.",
 	"wikilambda-noresult": "De zoekopdracht heeft geen resultaat opgeleverd.",
 	"action-wikilambda-create": "überhaupt nieuwe ZObjects aan te maken",
