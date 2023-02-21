@@ -5,7 +5,10 @@
 			"Daud I.F. Argana",
 			"Farras",
 			"Syman51",
-			"Veracious"
+			"Veracious",
+			"Agam Riyandana",
+			"DARMAS BUDI SANTOSO",
+			"Rachmat04"
 		]
 	},
 	"wikilambda-desc": "Menyediakan wiki Wikimedia sebuah fungsi parser teks wiki untuk memanggil evaluasi fungsi yang ditulis, dikelola, dan dievaluasi dari suatu wiki pusat.",
@@ -71,7 +74,7 @@
 	"wikilambda-argument-typeselector-label": "Pilih Nilai untuk argumen ini",
 	"wikilambda-function-typeselector-label": "Pilih Fungsi",
 	"wikilambda-return-typeselector-label": "Pilih Tipe untuk diberikan",
-	"wikilambda-editor-label-addlanguage-label": "Tambah bahasa",
+	"wikilambda-editor-label-addlanguage-label": "Pilih bahasa",
 	"wikilambda-editor-label-removelanguage-tooltip": "Hapus bahasa ini dari label ini",
 	"wikilambda-editor-zlist-additem-tooltip": "Menambahkan sebuah butir ke ZList ini",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Menghapus butir ini dari ZList ini",
@@ -88,7 +91,7 @@
 	"wikilambda-implementation-selector-composition": "Komposisi",
 	"wikilambda-argref-default-label": "Pilih argumen",
 	"wikilambda-implementation-selector": "Pilih implementasi",
-	"wikilambda-implementation-none-found": "Implementasi tidak ditemukan.",
+	"wikilambda-implementation-none-found": "Saat ini tidak ada pelaksanaan bagi fungsi ini",
 	"wikilambda-implementation-create-new": "Buat implementasi baru",
 	"wikilambda-functioncall-error": "Galat pemanggilan fungsi: $1",
 	"wikilambda-functioncall-error-category": "Halaman dengan galat panggilan Wikifungsi",
@@ -107,7 +110,7 @@
 	"wikilambda-functioncall-error-nonstringinput-category-desc": "Halaman dengan usaha memanggil Wikifungsi dengan ZFungsi yang tidak menerima untaian",
 	"wikilambda-editor-tester-list-label": "Daftar Penguji",
 	"wikilambda-tester-selector": "Memilih penguji",
-	"wikilambda-tester-none-found": "Penguji tidak ditemukan.",
+	"wikilambda-tester-none-found": "Saat ini tidak ada kasus pengujian pada fungsi ini.",
 	"wikilambda-tester-create-new": "Buat sebuah penguji baru",
 	"wikilambda-tester-status-pending": "MENUNGGU...",
 	"wikilambda-tester-status-running": "MENJALANKAN...",
