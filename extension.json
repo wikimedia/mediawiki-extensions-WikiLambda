@@ -612,5 +612,8 @@
 	"ServiceWiringFiles": [
 		"includes/ServiceWiring.php"
 	],
+	"JobClasses": {
+		"updateImplementations": "MediaWiki\\Extension\\WikiLambda\\API\\UpdateImplementationsJob"
+	},
 	"manifest_version": 2
 }

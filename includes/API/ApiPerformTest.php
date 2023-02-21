@@ -18,13 +18,16 @@ use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZFunction;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\MediaWikiServices;
 use Title;
@@ -70,6 +73,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		$functionZid = $params[ 'zfunction' ];
 		$requestedImplementations = $params[ 'zimplementations' ] ?: [];
 		$requestedTesters = $params[ 'ztesters' ] ?: [];
+		$updateImplementationRanking = (bool)$params[ 'updateImplementationRanking' ];
 
 		// 1. Work out matrix of what we want for what
 		// FIXME: Handle an inline ZFunction (for when it's not been created yet)?
@@ -80,6 +84,10 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 		// Needed for caching.
 		$functionRevision = $targetTitle->getLatestRevID();
+		// We only update the implementation ranking if $requestedImplementations and
+		// $requestedTesters are both empty, and not all results come from the cache.
+		// This var is used to track those conditions.
+		$canUpdateImplementationRanking = true;
 
 		$targetObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
 		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
@@ -91,18 +99,23 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		if ( empty( $requestedImplementations ) ) {
 			$targetFunctionImplementions = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS );
 			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionImplementions';
-
 			$requestedImplementations = $targetFunctionImplementions->getAsArray();
+		} else {
+			$canUpdateImplementationRanking = false;
 		}
 
 		if ( empty( $requestedTesters ) ) {
 			$targetFunctionTesters = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_TESTERS );
 			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionTesters';
 			$requestedTesters = $targetFunctionTesters->getAsArray();
+		} else {
+			$canUpdateImplementationRanking = false;
 		}
 
 		// 2. For each implementation, run each tester
 		$responseArray = [];
+		// Map of $implementationZid:$testerMap; used for implementation ranking
+		$implementationMap = [];
 		foreach ( $requestedImplementations as $implementation ) {
 			$inlineImplementation = false;
 			if ( is_string( $implementation ) ) {
@@ -115,7 +128,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 					$implementation = new ZReference( $implementation );
 				}
 			}
-			$implementationZid = $this->getZid( $implementation );
+			$implementationZid = self::getZid( $implementation );
 			$implementationListEntry = $this->getImplementationListEntry( $implementation );
 
 			// Note that the Implementation ZID can be non-Z0 if it's being run on an unsaved edit.
@@ -132,6 +145,8 @@ class ApiPerformTest extends WikiLambdaApiBase {
 					$implementationListEntry
 				)
 			);
+			// Map of $testerZid:$testResult for a particular implementation
+			$testerMap = [];
 			foreach ( $requestedTesters as $requestedTester ) {
 				$passed = true;
 				$testResult = [
@@ -151,7 +166,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 					}
 				}
 
-				$testerZid = $this->getZid( $requestedTester );
+				$testerZid = self::getZid( $requestedTester );
 				$testResult[ 'zTesterId' ] = $testerZid;
 				$testerObject = $this->getTesterObject( $requestedTester );
 
@@ -183,6 +198,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 						$testResult[ 'testMetadata'] = $possiblyCachedResult->getZMetadata();
 
 						$responseArray[] = $testResult;
+						$testerMap[ $testerZid ] = $testResult;
 						continue;
 					}
 				}
@@ -228,7 +244,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 				$validateResultItem = $validateResult->getZValue();
 
-				if ( $this->isFalse( $validateResultItem ) ) {
+				if ( self::isFalse( $validateResultItem ) ) {
 					$passed = false;
 					// Add the expected and actual values to the metadata map
 					$testMetadata->setValueForKey(
@@ -265,12 +281,29 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				}
 
 				// Stash the response
-				$testResult[ 'validateStatus'] = $validateResultItem;
+				$testResult[ 'validateStatus' ] = $validateResultItem;
 				$testResult[ 'testMetadata' ] = $testMetadata;
 				$responseArray[] = $testResult;
+				// Update bookkeeping for the call to updateImplementationRanking
+				$testerMap[ $testerZid ] = $testResult;
+				$canUpdateImplementationRanking = false;
+
 			}
+			$implementationMap[ $implementationZid ] = $testerMap;
 		}
-		// 3. Return the response.
+
+		// 3. Maybe update implementation ranking (in persistent storage)
+		if ( $updateImplementationRanking && !$canUpdateImplementationRanking ) {
+			// TODO( T330027 ): Replace wfDebug (here and elsewhere) with a specific logger
+			wfDebug( 'Not updating implementation ranking because implementations are '
+				. 'specified, testers are specified, or all results are from cache' );
+		}
+		if ( $updateImplementationRanking && $canUpdateImplementationRanking ) {
+			$this->maybeUpdateImplementationRanking( $functionZid, $functionRevision,
+				$implementationMap );
+		}
+
+		// 4. Return the response.
 		$pageResult->addValue( [ 'query' ], $this->getModuleName(), $responseArray );
 	}
 
@@ -314,18 +347,6 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		}
 	}
 
-	private function getZid( $zobject ): string {
-		if ( $zobject->getZType() === ZTypeRegistry::Z_REFERENCE ) {
-			return $zobject->getValueByKey( ZTypeRegistry::Z_REFERENCE_VALUE );
-		} elseif ( $zobject->getZType() === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
-			return $zobject
-				->getValueByKey( ZTypeRegistry::Z_PERSISTENTOBJECT_ID )
-				->getValueByKey( ZTypeRegistry::Z_STRING_VALUE );
-		}
-		// Use placeholder ZID for non-persisted objects.
-		return 'Z0';
-	}
-
 	private function getImplementationListEntry( $zobject ) {
 		if ( $zobject->getZType() === ZTypeRegistry::Z_REFERENCE ||
 				$zobject->getZType() === ZTypeRegistry::Z_IMPLEMENTATION ) {
@@ -339,7 +360,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 	private function getTesterObject( $zobject ) {
 		if ( $zobject->getZType() === ZTypeRegistry::Z_REFERENCE ) {
-			$zid = $this->getZid( $zobject );
+			$zid = self::getZid( $zobject );
 			$title = Title::newFromText( $zid, NS_MAIN );
 			if ( !( $title->exists() ) ) {
 				$this->dieWithError( [ "wikilambda-performtest-error-unknown-zid", $zid ] );
@@ -353,18 +374,18 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		$this->dieWithError( [ "wikilambda-performtest-error-nontester", $zobject ] );
 	}
 
-	private function isFalse( $object ) {
+	private static function isFalse( $object ) {
 		if ( $object instanceof ZObject ) {
 			if ( $object instanceof ZReference ) {
-				return $this->isFalse( $object->getZValue() );
+				return self::isFalse( $object->getZValue() );
 			} elseif ( $object->getZType() === ZTypeRegistry::Z_BOOLEAN ) {
-				return $this->isFalse( $object->getValueByKey( ZTypeRegistry::Z_BOOLEAN_VALUE ) );
+				return self::isFalse( $object->getValueByKey( ZTypeRegistry::Z_BOOLEAN_VALUE ) );
 			}
 		} elseif ( $object instanceof \stdClass ) {
 			if ( $object->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_REFERENCE ) {
-				return $this->isFalse( $object->{ ZTypeRegistry::Z_REFERENCE_VALUE } );
+				return self::isFalse( $object->{ ZTypeRegistry::Z_REFERENCE_VALUE } );
 			} elseif ( $object->{ ZTypeRegistry::Z_OBJECT_TYPE } === ZTypeRegistry::Z_BOOLEAN ) {
-				return $this->isFalse( $object->{ ZTypeRegistry::Z_BOOLEAN_VALUE } );
+				return self::isFalse( $object->{ ZTypeRegistry::Z_BOOLEAN_VALUE } );
 			}
 		}
 		return $object === ZTypeRegistry::Z_BOOLEAN_FALSE;
@@ -387,7 +408,12 @@ class ApiPerformTest extends WikiLambdaApiBase {
 			'ztesters' => [
 				ParamValidator::PARAM_ISMULTI => true,
 				ParamValidator::PARAM_REQUIRED => false,
-			]
+			],
+			'updateImplementationRanking' => [
+				ParamValidator::PARAM_TYPE => 'boolean',
+				ParamValidator::PARAM_DEFAULT => false,
+				ParamValidator::PARAM_REQUIRED => false,
+			],
 		];
 	}
 
@@ -414,4 +440,167 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		return true;
 	}
 
+	/**
+	 * Retrieves the $metadataMap value for ZString($keyString) and converts it to a float.  It must
+	 * be a value of type ZString, whose underlying string begins with a float, e.g. '320.815 ms'.
+	 * If ZString($keyString) isn't used in $metadataMap, returns zero.
+	 *
+	 * N.B. We do not check the units here; we assume that they are always the same (i.e.,
+	 * milliseconds) for the values retrieved by this function.  This consistency is primarily
+	 * the responsibility of the backend services that generate the metadata elements.
+	 *
+	 * @param ZTypedMap $metadataMap
+	 * @param string $keyString
+	 * @return float
+	 */
+	private static function getNumericMetadataValue( $metadataMap, $keyString ) {
+		$key = new ZString( $keyString );
+		$value = $metadataMap->getValueGivenKey( $key );
+		if ( !$value ) {
+			return 0;
+		}
+		$value = $value->getZValue();
+		return floatval( $value );
+	}
+
+	/**
+	 * Callback for uasort() to order the implementations for a function that's been tested
+	 * @param array $a Implementation stats
+	 * @param array $b Implementation stats
+	 * @return int Result of comparison
+	 */
+	private static function compareImplementationStats( $a, $b ) {
+		if ( $a[ 'numFailed' ] < $b[ 'numFailed' ] ) {
+			return -1;
+		}
+		if ( $b[ 'numFailed' ] < $a[ 'numFailed' ] ) {
+			return 1;
+		}
+		if ( $a[ 'averageTime' ] < $b[ 'averageTime' ] ) {
+			return -1;
+		}
+		if ( $b[ 'averageTime' ] < $a[ 'averageTime' ] ) {
+			return 1;
+		}
+		return 0;
+	}
+
+	/**
+	 * Based on tester results contained in $implementationMap, order the implementations of the
+	 * given function from best-performing to worst-performing (in terms of speed).  If the
+	 * ordering is significantly different than the previous ordering for this function, instantiate
+	 * an asynchronous job to update Z8K4/implementations in the function's persistent storage.
+	 *
+	 * TODO( T329138 ): Consider whether average Cpu usage is good enough to determine the ranking.
+	 *   Should we eliminate implementations that are outliers relative to others on the same test?
+	 *   Should we consider non-CPU time needed to, e.g., retrieve info from Wikidata?
+	 *
+	 * @param string $functionZid
+	 * @param int $functionRevision
+	 * @param array $implementationMap contains $implementationZid => $testerMap, for each tested
+	 * implementation.  $testerMap contains $testerZid => $testResult for each tester. See
+	 * ApiPerformTest::run for the structure of $testResult.
+	 */
+	public static function maybeUpdateImplementationRanking(
+		$functionZid, $functionRevision, $implementationMap
+	) {
+		// We don't currently support updates involving a Z0, and we don't expect to get any here.
+		// (However, it could happen if the value of Z8K4 has been manually edited.)
+		unset( $implementationMap[ ZTypeRegistry::Z_NULL_REFERENCE ] );
+
+		if ( count( $implementationMap ) <= 1 ) {
+			// If 1, no point in updating.  If 0, something's wrong (shouldn't happen).
+			return;
+		}
+
+		// Record which implementation is first in Z8K4 before this update happens
+		$previousFirst = array_key_first( $implementationMap );
+
+		// For each implementation, get (count of tests-failed) and (average runtime of tests)
+		// and add them into $implementationMap.
+		// TODO( T314539 ): Revisit Use of (count of tests-failed) after failing implementations are
+		//   routinely deactivated
+		foreach ( $implementationMap as $implementationZid => $testerMap ) {
+			$numFailed = 0;
+			$averageTime = 0.0;
+			foreach ( $testerMap as $testerId => $testResult ) {
+				if ( self::isFalse( $testResult[ 'validateStatus' ] ) ) {
+					$numFailed++;
+				}
+				$metadataMap = $testResult[ 'testMetadata' ];
+				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap $metadataMap';
+				$averageTime +=
+					( self::getNumericMetadataValue( $metadataMap, 'orchestrationCpuUsage' )
+					+ self::getNumericMetadataValue( $metadataMap, 'evaluationCpuUsage' )
+					+ self::getNumericMetadataValue( $metadataMap, 'executionCpuUsage' ) );
+			}
+			$averageTime = $averageTime / count( $testerMap );
+			$implementationMap[ $implementationZid ][ 'numFailed' ] = $numFailed;
+			$implementationMap[ $implementationZid ][ 'averageTime' ] = $averageTime;
+		}
+
+		uasort( $implementationMap, [ self::class, 'compareImplementationStats' ] );
+
+		$implementationRankingZids = array_keys( $implementationMap );
+
+		// Bail out if the update isn't well justified
+		// TODO( T329138 ): Also consider:
+		//   Check if the new first element is only marginally better than
+		//     the (newly reported) average time of $previousFirst.
+		//   Check if all of the average times are roughly indistinguishable.
+		if ( array_key_first( $implementationMap ) === $previousFirst ) {
+			return;
+		}
+
+		$updateImplementationsJob = new UpdateImplementationsJob(
+			[ 'functionZid' => $functionZid,
+				'functionRevision' => $functionRevision,
+				'implementationRankingZids' => $implementationRankingZids
+			] );
+		// TODO( T330033 ): Consider using an injected service for the following
+		$services = MediaWikiServices::getInstance();
+		$jobQueueGroup = $services->getJobQueueGroup();
+		$jobQueueGroup->push( $updateImplementationsJob );
+	}
+
+	private static function getZid( $zobject ): string {
+		if ( $zobject->getZType() === ZTypeRegistry::Z_REFERENCE ) {
+			return $zobject->getValueByKey( ZTypeRegistry::Z_REFERENCE_VALUE );
+		} elseif ( $zobject->getZType() === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
+			return $zobject
+				->getValueByKey( ZTypeRegistry::Z_PERSISTENTOBJECT_ID )
+				->getValueByKey( ZTypeRegistry::Z_STRING_VALUE );
+		}
+		// Use placeholder ZID for non-persisted objects.
+		return ZTypeRegistry::Z_NULL_REFERENCE;
+	}
+
+	/**
+	 * For the given function, get Z8K4/implementations and return a list of ZIDs for them.
+	 *
+	 * Used by UpdateImplementationsJob.
+	 *
+	 * @param ZFunction $targetFunction
+	 * @return array
+	 * @throws ZErrorException from ZObjectFactory::create
+	 */
+	public static function getImplementationZids( $targetFunction ) {
+		$implementationZids = [];
+		$targetFunctionImplementations = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS );
+		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionImplementations';
+		$currentImplementations = $targetFunctionImplementations->getAsArray();
+		foreach ( $currentImplementations as $implementation ) {
+			if ( is_string( $implementation ) ) {
+				$decodedJson = FormatJson::decode( $implementation );
+				// If not JSON, assume we have received a ZID.
+				if ( $decodedJson ) {
+					$implementation = ZObjectFactory::create( $decodedJson );
+				} else {
+					$implementation = new ZReference( $implementation );
+				}
+			}
+			$implementationZids[] = self::getZid( $implementation );
+		}
+		return $implementationZids;
+	}
 }
