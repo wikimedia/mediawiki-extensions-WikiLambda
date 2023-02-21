@@ -7,5 +7,12 @@
 	"wikilambda-hide-more": "Sakrij više",
 	"wikilambda-metadata-all-languages": "Prikaži sve unesene jezike",
 	"wikilambda-persistentobject-details-label": "Detalji",
+	"wikilambda-function-is-approved": "Objekat je odobren za ovu funkciju.",
+	"wikilambda-function-implementation-state-approved": "Odobreno",
+	"wikilambda-function-implementation-state-deactivated": "Deaktivirano",
+	"wikilambda-function-definition-alias-label": "Druga imena",
+	"wikilambda-function-definition-inputs-label": "Ulaz",
+	"wikilambda-function-definition-input-item-type": "Tip",
+	"wikilambda-function-definition-output-label": "Izlaz",
 	"wikilambda-chip-remove": "Ukloni stavku"
 }
