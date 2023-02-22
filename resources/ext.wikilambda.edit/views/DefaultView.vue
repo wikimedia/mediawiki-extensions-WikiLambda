@@ -15,6 +15,10 @@
 			:readonly="true"
 			:zobject-raw="getZObjectAsJson"
 		></wl-z-object-json>
+
+		<wl-z-object-publish
+			v-if="edit"
+		></wl-z-object-publish>
 	</div>
 </template>
 
@@ -23,12 +27,14 @@
 var
 	ZObjectKeyValue = require( '../components/default-view-types/ZObjectKeyValue.vue' ),
 	ZObjectJson = require( '../components/ZObjectJson.vue' ),
+	ZObjectPublish = require( '../components/ZObjectPublish.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-default-view',
 	components: {
+		'wl-z-object-publish': ZObjectPublish,
 		'wl-z-object-key-value': ZObjectKeyValue,
 		'wl-z-object-json': ZObjectJson
 	},
