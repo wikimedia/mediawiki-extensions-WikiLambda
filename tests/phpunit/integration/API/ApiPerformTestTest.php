@@ -201,6 +201,7 @@ class ApiPerformTestTest extends ApiTestCase {
 				]
 			]
 		];
+
 		yield 'Request specifies implementation by reference' => [
 			'Z813',
 			'Z913',
@@ -219,6 +220,7 @@ class ApiPerformTestTest extends ApiTestCase {
 				]
 			]
 		];
+
 		yield 'Request specifies JSON for new implementation' => [
 			'Z813',
 			$this->getTestFileContents( 'new-zimplementation.json' ),
@@ -239,6 +241,7 @@ class ApiPerformTestTest extends ApiTestCase {
 				]
 			]
 		];
+
 		yield 'Request specifies JSON for edited version of existing implementation' => [
 			'Z813',
 			str_replace( "True", "False", $this->getTestFileContents( 'existing-zimplementation.json' ) ),
@@ -259,6 +262,7 @@ class ApiPerformTestTest extends ApiTestCase {
 				]
 			]
 		];
+
 		yield 'Request specifies tester by reference' => [
 			'Z813',
 			'',
@@ -272,6 +276,7 @@ class ApiPerformTestTest extends ApiTestCase {
 				]
 			]
 		];
+
 		yield 'Request specifies JSON for new tester' => [
 			'Z813',
 			'',
@@ -287,6 +292,7 @@ class ApiPerformTestTest extends ApiTestCase {
 				]
 			]
 		];
+
 		yield 'Request specifies JSON for edited version of existing tester' => [
 			'Z813',
 			'',
@@ -302,6 +308,7 @@ class ApiPerformTestTest extends ApiTestCase {
 				]
 			]
 		];
+
 		yield 'Request specifies non-existent function' => [
 			'Z123456789',
 			'',
@@ -310,6 +317,7 @@ class ApiPerformTestTest extends ApiTestCase {
 			[],
 			'Perform test error: \'Z123456789\' isn\'t a known ZObject'
 		];
+
 		yield 'Request specifies non-existent implementation' => [
 			'Z813',
 			'Z123456789',
@@ -325,6 +333,7 @@ class ApiPerformTestTest extends ApiTestCase {
 				]
 			],
 		];
+
 		yield 'Request specifies non-existent tester' => [
 			'Z813',
 			'',
@@ -333,6 +342,7 @@ class ApiPerformTestTest extends ApiTestCase {
 			[],
 			'Perform test error: \'Z123456789\' isn\'t a known ZObject'
 		];
+
 		yield 'Request specifies non-function as function' => [
 			'Z8130',
 			'',
@@ -341,6 +351,9 @@ class ApiPerformTestTest extends ApiTestCase {
 			[],
 			'Perform test error: \'Z8130\' isn\'t a function'
 		];
+
+		// TODO (T330431): Uncomment when bug in orchestrator is resolved
+		/*
 		yield 'Request specifies non-implementation as implementation, by reference' => [
 			'Z813',
 			'Z8130',
@@ -356,6 +369,8 @@ class ApiPerformTestTest extends ApiTestCase {
 				]
 			],
 		];
+		*/
+
 		yield 'Request specifies non-implementation as implementation, by JSON' => [
 			'Z813',
 			$this->getTestFileContents( 'existing-ztester.json' ),
@@ -366,6 +381,7 @@ class ApiPerformTestTest extends ApiTestCase {
 				'"Z813K1": [ "Z1" ] }, "Z20K3": { "Z1K1": "Z7", "Z7K1": "Z844", "Z844K2": { "Z1K1": "Z40", "Z40K1": ' .
 				'"Z41" } } }\' isn\'t an implementation'
 		];
+
 		yield 'Request specifies non-tester as tester' => [
 			'Z813',
 			'',
@@ -375,6 +391,7 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Perform test error: \'{ "Z1K1": "Z14", "Z14K1": "Z813", "Z14K3": { "Z1K1": "Z16", "Z16K1": { "Z1K1": ' .
 				'"Z61", "Z61K1": "python" }, "Z16K2": "def Z813(Z813K1):\n\treturn True" } }\' isn\'t a tester.'
 		];
+
 		yield 'Request specifies implementation that throws an error' => [
 			'Z813',
 			str_replace(
@@ -391,6 +408,7 @@ class ApiPerformTestTest extends ApiTestCase {
 				]
 			]
 		];
+
 		yield 'Request specifies tester that throws an error' => [
 			'Z813',
 			'',
@@ -407,6 +425,7 @@ class ApiPerformTestTest extends ApiTestCase {
 				]
 			]
 		];
+
 		yield 'Request with no implementations or testers specified' => [
 			'Z813',
 			'',
