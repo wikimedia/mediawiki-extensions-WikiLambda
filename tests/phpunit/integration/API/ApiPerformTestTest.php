@@ -332,8 +332,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Perform test error: \'Z8130\' isn\'t a function'
 		];
 
-		// TODO (T330431): Uncomment when bug in orchestrator is resolved
-		/*
 		yield 'Request specifies non-implementation as implementation, by reference' => [
 			'Z813',
 			'Z8130',
@@ -344,11 +342,10 @@ class ApiPerformTestTest extends ApiTestCase {
 					'ztesterId' => 'Z8130',
 					'validateStatus' => "\"Z42\"",
 					// Not wellformed error
-					'functionCallErrorType' => 'Z502'
+					'functionCallErrorType' => 'Z517'
 				]
 			],
 		];
-		*/
 
 		yield 'Request specifies non-implementation as implementation, by JSON' => [
 			'Z813',
