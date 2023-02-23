@@ -16,6 +16,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
+use MediaWiki\Extension\WikiLambda\Jobs\CacheTesterResultsJob;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
@@ -266,18 +267,27 @@ class ApiPerformTest extends WikiLambdaApiBase {
 					!$validateResult->hasErrors()
 				) {
 					// Store a fake ZResponseEnvelope of the validation result and the real meta-data run
+					// via an asynchronous job so that we don't trigger a "DB write on API GET" performance
+					// error.
 					$stashedResult = new ZResponseEnvelope( $validateResultItem, $testMetadata );
 
-					$this->zObjectStore->insertZTesterResult(
-						$functionZid,
-						$functionRevision,
-						$implementationZid,
-						$implementationRevision,
-						$testerZid,
-						$testerRevision,
-						$passed,
-						$stashedResult->__toString()
+					$cacheTesterResultsJob = new CacheTesterResultsJob(
+						[
+							'functionZid' => $functionZid,
+							'functionRevision' => $functionRevision,
+							'implementationZid' => $implementationZid,
+							'implementationRevision' => $implementationRevision,
+							'testerZid' => $testerZid,
+							'testerRevision' => $testerRevision,
+							'passed' => $passed,
+							'stashedResult' => $stashedResult->__toString()
+							]
 					);
+
+					// TODO (T330033): Consider using an injected service for the following
+					$services = MediaWikiServices::getInstance();
+					$jobQueueGroup = $services->getJobQueueGroup();
+					$jobQueueGroup->push( $cacheTesterResultsJob );
 				}
 
 				// Stash the response
