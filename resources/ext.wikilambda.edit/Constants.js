@@ -165,12 +165,13 @@ var Constants = {
 		DELETE_LIST_ITEM: 'delete_list_item'
 	},
 	builtinComponents = {
-		[ Constants.Z_MONOLINGUALSTRING ]: 'z-monolingual-string',
-		[ Constants.Z_STRING ]: 'z-string',
-		[ Constants.Z_REFERENCE ]: 'z-reference',
-		[ Constants.Z_BOOLEAN ]: 'z-boolean',
-		[ Constants.Z_CODE ]: 'z-code',
-		[ Constants.Z_TYPED_LIST ]: 'z-typed-list'
+		[ Constants.Z_FUNCTION_CALL ]: 'wl-z-function-call',
+		[ Constants.Z_MONOLINGUALSTRING ]: 'wl-z-monolingual-string',
+		[ Constants.Z_STRING ]: 'wl-z-string',
+		[ Constants.Z_REFERENCE ]: 'wl-z-reference',
+		[ Constants.Z_BOOLEAN ]: 'wl-z-boolean',
+		[ Constants.Z_CODE ]: 'wl-z-code',
+		[ Constants.Z_TYPED_LIST ]: 'wl-z-typed-list'
 	},
 	linkedTypes = [
 		Constants.Z_TYPE,

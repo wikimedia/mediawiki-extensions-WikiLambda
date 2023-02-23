@@ -453,6 +453,84 @@ module.exports = exports = {
 			return findZMonolingualLangValue;
 		},
 
+		/**
+		 * Returns the zid of the function given the rowId of a function call
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZFunctionCallFunctionId: function ( _state, getters ) {
+			/**
+			 * @param {string} rowId
+			 * @return {string}
+			 */
+			function findZFunctionId( rowId ) {
+				const zFunction = getters.getRowByKeyPath(
+					[ Constants.Z_FUNCTION_CALL_FUNCTION ],
+					rowId
+				);
+				if ( !zFunction ) {
+					return undefined;
+				}
+				return getters.getZObjectTerminalValue( zFunction.id, Constants.Z_REFERENCE_ID );
+			}
+			return findZFunctionId;
+		},
+
+		/**
+		 * Returns the argument key-values of a function call given the
+		 * rowId of the function call object.
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZFunctionCallArguments: function ( _state, getters ) {
+			/**
+			 * @param {string} rowId
+			 * @return {Array}
+			 */
+			function findZFunctionArgs( rowId ) {
+				const children = getters.getChildrenByParentRowId( rowId );
+				return children.filter( ( row ) => {
+					return ( row.key !== Constants.Z_OBJECT_TYPE ) &&
+					( row.key !== Constants.Z_FUNCTION_CALL_FUNCTION );
+				} );
+			}
+			return findZFunctionArgs;
+		},
+
+		/**
+		 * Given a function Zid, it inspects its function definition
+		 * stored in the state and returns an array of its arguments.
+		 * It returns undefined if the function is not available or the
+		 * zid does not belong to a valid function.
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZFunctionArgumentDeclarations: function ( _state, getters ) {
+			/**
+			 * @param {string} zid
+			 * @return {Array}
+			 */
+			function findZFunctionArguments( zid ) {
+				const func = getters.getPersistedObject( zid );
+				if ( func === undefined ) {
+					return undefined;
+				}
+				const obj = func[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				if ( obj[ Constants.Z_OBJECT_TYPE ] !== Constants.Z_FUNCTION ) {
+					return undefined;
+				}
+				// Remove benjamin type item
+				return obj[ Constants.Z_FUNCTION_ARGUMENTS ].slice( 1 );
+			}
+			return findZFunctionArguments;
+		},
+
 		getZCodeLanguage: function ( state, getters ) {
 			function findZCodeValue( rowId ) {
 				return getters.getRowByKeyPath( [
@@ -1033,6 +1111,9 @@ module.exports = exports = {
 			 * This will support development of small reusable components
 			 * If language is passed, the language zid and object will be returned as a property
 			 *
+			 * TODO (T329107): Deprecate this in favor of getChildrenByParentRowId, after investigating
+			 * the need for row.language and row.languageString (below)
+			 *
 			 * @param {number} parentId
 			 * @param {string} language
 			 * @param {string} parentType
@@ -1394,6 +1475,7 @@ module.exports = exports = {
 		setZObjectValue: function ( state, payload ) {
 			var item = state.zobject[ payload.index ];
 			item.value = payload.value;
+
 			state.zobject.splice( payload.index, 1, item );
 		},
 		setZObjectKey: function ( state, payload ) {
@@ -1999,6 +2081,8 @@ module.exports = exports = {
 		/**
 		 * Remove a specific zobject. This method does NOT remove its children.
 		 *
+		 * TODO (T333529): add tests
+		 *
 		 * @param {Object} context
 		 * @param {number} objectId
 		 */
@@ -2011,7 +2095,8 @@ module.exports = exports = {
 		},
 		/**
 		 * Remove all the children of a specific zObject. Useful to clean up existing data.
-		 * FIXME: add tests, check that all descendants are removed in objects and arrays
+		 *
+		 * TODO (T333529): add tests, check that all descendants are removed in objects and arrays
 		 *
 		 * @param {Object} context
 		 * @param {number} rowId
@@ -2103,6 +2188,7 @@ module.exports = exports = {
 		lookupZObject: function ( context, payload ) {
 			var api = new mw.Api(),
 				queryType = 'wikilambdasearch_labels';
+
 			return new Promise( function ( resolve ) {
 				clearTimeout( debounceZObjectLookup );
 				debounceZObjectLookup = setTimeout( function () {
@@ -2297,6 +2383,58 @@ module.exports = exports = {
 		},
 
 		/**
+		 * Sets the argument keys to their initial blank values of a function call given
+		 * its rowId when the function ID (Z7K1) changes, and removes the arguments of the
+		 * old function id.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {string} payload.parentId
+		 * @param {string} payload.functionZid
+		 * @return {Promise}
+		 */
+		setZFunctionCallArguments: function ( context, payload ) {
+			const allActions = [];
+
+			// 1. Get new argument definitions from payload.functionZid
+			const newArgs = context.getters.getZFunctionArgumentDeclarations( payload.functionZid );
+			const newKeys = newArgs.map( ( arg ) => {
+				return arg[ Constants.Z_ARGUMENT_KEY ];
+			} );
+
+			// 2. Get function call arguments from parentId
+			const oldArgs = context.getters.getZFunctionCallArguments( payload.parentId );
+			const oldKeys = oldArgs.map( ( arg ) => {
+				return arg.key;
+			} );
+
+			// 3. For every key of parent: if it's not in new keys, remove it
+			oldArgs.forEach( function ( arg ) {
+				if ( newKeys.indexOf( arg.key ) < 0 ) {
+					allActions.push( context.dispatch( 'removeZObjectChildren', arg.id ) );
+					allActions.push( context.dispatch( 'removeZObject', arg.id ) );
+				}
+			} );
+
+			// 4. For every key of new arguments: If parent doesn't have it, set it to blank object
+			newArgs.forEach( function ( arg ) {
+				if ( oldKeys.indexOf( arg[ Constants.Z_ARGUMENT_KEY ] ) ) {
+					const blank = context.getters.createObjectByType( {
+						type: arg[ Constants.Z_ARGUMENT_TYPE ],
+						link: true
+					} );
+					allActions.push( context.dispatch( 'injectKeyValueFromRowId', {
+						rowId: payload.parentId,
+						key: arg[ Constants.Z_ARGUMENT_KEY ],
+						value: blank
+					} ) );
+				}
+			} );
+
+			return Promise.all( allActions );
+		},
+
+		/**
 		 * Most atomic action to edit the state. Perform the atomic mutation (index, value)
 		 *
 		 * @param {Object} context
@@ -2343,10 +2481,12 @@ module.exports = exports = {
 		 * @param {Object|Array|string} payload.value ZObject to inject
 		 * @param {boolean | undefined} payload.append Flag to append the new object and not remove
 		 *        children
+		 * @return {Promise}
 		 */
 		injectZObjectFromRowId: function ( context, payload ) {
-			let rows;
 			const hasParent = payload.rowId !== undefined;
+			const allActions = [];
+			let rows;
 
 			if ( hasParent ) {
 				let parentRow = context.getters.getRowById( payload.rowId );
@@ -2363,11 +2503,14 @@ module.exports = exports = {
 
 				// Reset the parent value in case it's changed
 				parentRow = rows.shift();
-				context.dispatch( 'setValueByRowId', { rowId: parentRow.id, value: parentRow.value } );
+				allActions.push( context.dispatch( 'setValueByRowId', {
+					rowId: parentRow.id,
+					value: parentRow.value
+				} ) );
 
 				// Remove all necessary children that are dangling from this parent, if append is not set
 				if ( !payload.append ) {
-					context.dispatch( 'removeZObjectChildren', parentRow.id );
+					allActions.push( context.dispatch( 'removeZObjectChildren', parentRow.id ) );
 				}
 			} else {
 				// Convert input payload.value into table rows with no parent
@@ -2376,11 +2519,35 @@ module.exports = exports = {
 
 			// Push all the rows, they already have their required IDs
 			rows.forEach( function ( row ) {
+				allActions.push( context.commit( 'pushRow', row ) );
+			} );
+
+			return Promise.all( allActions );
+		},
+
+		/**
+		 * Given a key and a JSON object value, transforms into rows and inserts it
+		 * under the given parent ID. This method is used to add new keys into an
+		 * existing parent object, generally used for function call.
+		 * Assumes that the key doesn't exist.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {number} payload.rowId
+		 * @param {string} payload.key
+		 * @param {Object} payload.value
+		 */
+		injectKeyValueFromRowId: function ( context, payload ) {
+			const value = { [ payload.key ]: payload.value };
+			const parentRow = context.getters.getRowById( payload.rowId );
+			const nextRowId = context.getters.getNextRowId;
+			const rows = zobjectTreeUtils.convertZObjectToRows( value, parentRow, nextRowId, false, 0, false );
+			rows.forEach( function ( row ) {
 				context.commit( 'pushRow', row );
 			} );
 		},
+
 		/**
-		 *
 		 * Removes an item from a ZTypedList
 		 *
 		 * @param {Object} context
@@ -2392,7 +2559,6 @@ module.exports = exports = {
 		},
 
 		/**
-		 *
 		 * Removes all items from a ZTypedList
 		 * This should never be called directly, but is used before submitting a zobject
 		 * in which a typed list has changed type, rendering the items invalid

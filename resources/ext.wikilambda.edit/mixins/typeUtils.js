@@ -589,6 +589,20 @@ var Constants = require( '../Constants.js' ),
 							}
 						};
 
+					case Constants.Z_BOOLEAN:
+						// Empty boolean:
+						// {
+						//  Z1K1: Z40
+						//  Z40K1: { Z1K1: Z9, Z9K1: '' }
+						// }
+						return {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_BOOLEAN,
+							[ Constants.Z_BOOLEAN_IDENTITY ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: ''
+							}
+						};
+
 					default:
 						return undefined;
 				}
@@ -597,7 +611,7 @@ var Constants = require( '../Constants.js' ),
 			/**
 			 * Given the canonical representation of a type,
 			 * it generates the payload that will be passed to the
-			 * getBlankObjectByType method that will create an initial
+			 * createObjectByType method that will create an initial
 			 * scaffolding of an object of that type.
 			 *
 			 * This accounts for two special cases:
@@ -606,7 +620,7 @@ var Constants = require( '../Constants.js' ),
 			 * scaffolding of a reference instead of a literal
 			 * 2) Typed lists, pairs and maps require some special treatment
 			 * to extract the value of their type keys before calling to
-			 * getBlankObjectType
+			 * createObjectByType
 			 *
 			 * @param {Object|string} keyType
 			 * @return {Object}

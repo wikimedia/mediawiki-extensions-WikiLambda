@@ -25,11 +25,11 @@ module.exports = exports = {
 		 * @param {boolean} appendToList whether to append item into parent list
 		 * @param {number} appendFromIndex in the case of lists, specify the index from which
 		 *        to append items, else will start from 0
-		 * @param {number} firstAvailableListIndex
+		 * @param {boolean} returnParent whether to return the parent row in the row array
 		 * @return {Array}
 		 */
 		convertZObjectToRows: function (
-			zObject, parentRow, startingRowId, appendToList = false, appendFromIndex = 0 ) {
+			zObject, parentRow, startingRowId, appendToList = false, appendFromIndex = 0, returnParent = true ) {
 
 			// Raise an exception if parentRow is set and nextAvailableId is not to avoid overwriting IDs
 			if ( parentRow && !startingRowId ) {
@@ -92,6 +92,10 @@ module.exports = exports = {
 				!!parentRow,
 				appendFromIndex
 			);
+
+			if ( !returnParent ) {
+				zObjectRows.shift();
+			}
 
 			return zObjectRows;
 		},

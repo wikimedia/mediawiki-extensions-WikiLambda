@@ -176,6 +176,7 @@ module.exports = exports = {
 		 * @param {string} value
 		 */
 		setValue: function ( value ) {
+			// TODO (T331878) Error occurs while changing the value of mode selector
 			// Do not emit a value if there's no change to avoid
 			// unnecessarily altering the rest of the ZObject
 			if ( value !== this.value ) {
