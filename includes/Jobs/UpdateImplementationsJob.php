@@ -1,9 +1,10 @@
 <?php
 
-namespace MediaWiki\Extension\WikiLambda\API;
+namespace MediaWiki\Extension\WikiLambda\Jobs;
 
 use GenericParameterJob;
 use Job;
+use MediaWiki\Extension\WikiLambda\API\ApiPerformTest;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;

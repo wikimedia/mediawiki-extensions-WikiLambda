@@ -647,7 +647,7 @@
 	],
 	"JobClasses": {
 		"cacheTesterResults": "MediaWiki\\Extension\\WikiLambda\\Jobs\\CacheTesterResultsJob",
-		"updateImplementations": "MediaWiki\\Extension\\WikiLambda\\API\\UpdateImplementationsJob"
+		"updateImplementations": "MediaWiki\\Extension\\WikiLambda\\Jobs\\UpdateImplementationsJob"
 	},
 	"manifest_version": 2
 }

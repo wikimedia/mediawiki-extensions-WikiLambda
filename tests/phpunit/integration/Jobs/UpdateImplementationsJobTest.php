@@ -1,9 +1,9 @@
 <?php
 
-namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
+namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Jobs;
 
 use MediaWiki\Extension\WikiLambda\API\ApiPerformTest;
-use MediaWiki\Extension\WikiLambda\API\UpdateImplementationsJob;
+use MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
@@ -13,7 +13,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use Title;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\UpdateImplementationsJob
+ * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob
  * @group API
  * @group Database
  * @group medium
@@ -45,8 +45,8 @@ class UpdateImplementationsJobTest extends WikiLambdaIntegrationTestCase {
 	 * @group API
 	 * @group Database
 	 * @group medium
-	 * @covers \MediaWiki\Extension\WikiLambda\API\UpdateImplementationsJob::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\API\UpdateImplementationsJob::run
+	 * @covers \MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob::__construct
+	 * @covers \MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob::run
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::getImplementationZids
 	 */
 	public function testRun() {
