@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use BagOStuff;
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
 use MediaWiki\MediaWikiServices;
 
@@ -30,5 +31,12 @@ class WikiLambdaServices {
 	 */
 	public static function getZObjectAuthorization(): ZObjectAuthorization {
 		return MediaWikiServices::getInstance()->getService( 'WikiLambdaZObjectAuthorization' );
+	}
+
+	/**
+	 * @return BagOStuff
+	 */
+	public static function getZObjectStash(): BagOStuff {
+		return MediaWikiServices::getInstance()->getService( 'WikiLambdaZObjectStash' );
 	}
 }

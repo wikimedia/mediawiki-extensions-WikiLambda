@@ -42,7 +42,7 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$Z902 = preg_replace( '/[\s\n]/', '', $Z902 );
 
 		$orchestrator = new OrchestratorRequest( $client );
-		$result = $orchestrator->orchestrate( json_decode( $Z902 ) )->getBody();
+		$result = $orchestrator->orchestrate( json_decode( $Z902 ) );
 		$this->assertEquals( json_decode( $expectedString ), json_decode( $result ) );
 	}
 
