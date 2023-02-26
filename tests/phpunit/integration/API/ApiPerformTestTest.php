@@ -18,7 +18,7 @@ use Title;
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiPerformTest
  * @group API
  * @group Database
- * @group medium
+ * @group Standalone
  */
 class ApiPerformTestTest extends ApiTestCase {
 
