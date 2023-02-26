@@ -106,7 +106,7 @@ class ZMonoLingualStringSet extends ZObject {
 	 * @return string Language Zid
 	 */
 	public function getLanguage() {
-		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ]->getZValue();
+		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRINGSET_LANGUAGE ]->getZValue() ?? '';
 	}
 
 	/**

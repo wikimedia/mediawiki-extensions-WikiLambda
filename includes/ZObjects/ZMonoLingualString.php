@@ -78,13 +78,13 @@ class ZMonoLingualString extends ZObject {
 	 * @return string Language Zid
 	 */
 	public function getLanguage() {
-		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ]->getZValue();
+		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_LANGUAGE ]->getZValue() ?? '';
 	}
 
 	/**
 	 * Get the string value of this ZMonoLingualString
 	 *
-	 * @return string String value
+	 * @return ?string String value
 	 */
 	public function getString() {
 		return $this->data[ ZTypeRegistry::Z_MONOLINGUALSTRING_VALUE ]->getZValue();
