@@ -48,7 +48,8 @@ Much further functionality is to come.
   wfLoadExtension( 'WikiLambda' );
   wfLoadExtension( 'WikimediaMessages' );
   ```
-* Run `php maintenance/update.php` (or `docker-compose exec mediawiki php maintenance/update.php` if MediaWiki is setup through Docker) to provision necessary schemas and initial content (this step could take around 20 minutes).
+* Run `php maintenance/run.php createAndPromote --custom-groups functioneer,functionmaintainer --force Admin` (or `docker-compose exec mediawiki php maintenance/run.php createAndPromote --custom-groups functioneer,functionmaintainer --force Admin` if MediaWiki is setup through Docker) to give your Admin user the special rights for creating and editing ZObjects.
+* Run `php maintenance/run.php update` (or `docker-compose exec mediawiki php maintenance/run.php update` if MediaWiki is setup through Docker) to provision necessary schemas and initial content (this step could take around 20 minutes).
 
 Done! Navigate to the newly created `Z1` page on your wiki to verify that the extension is successfully installed.
 
