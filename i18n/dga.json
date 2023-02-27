@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"Alhaji Yakubu",
+			"Domo John",
+			"Kuukye",
+			"Robert"
+		]
+	},
+	"action-wikilambda-create-unit": "maale ZDori Zboma bompaaba",
+	"action-wikilambda-edit-argument-label": "Maaleŋ sɛge nɔkpeɛne yelzuri naŋ daŋ be ,ZFunction poɔ",
+	"action-wikilambda-edit-attached-implementation": "Kyoɔre a Zimplementation na naŋ tɔne eŋ a ZFunction",
+	"action-wikilambda-edit-builtin-function": "Kyoɔre a ZFunction naŋ waa a kompiita iriwulii",
+	"action-wikilambda-edit-function-definition": "Maale sɛge boma naŋ daŋ be be pare ane Tɔna",
+	"action-wikilambda-edit-object-alias": "Maaleŋ sɛge aliases naŋ daŋ be ZObject poɔ",
+	"action-wikilambda-edit-object-label": "Maaleŋ sɛge yoe naŋ daŋ be ZObject poɔ",
+	"action-wikilambda-edit-object-type": "Kyoɔre a ZObject bale na naŋ daŋ bebe",
+	"action-wikilambda-edit-running-function": "Sɛgere Ztontonne naŋ mare Ztoma De tommoŋ eŋ",
+	"action-wikilambda-edit-unit": "Kyoɔre Zunit ZObject na daŋ bebe",
+	"action-wikilambda-edit-user-function": "kyoɔre a soba-iriwulo ZFunction na naŋ daŋ bebe",
+	"right-wikilambda-edit-argument-label": "Kyoɔre ZFunction nɔkpeɛne manewulii na daŋ bebe",
+	"right-wikilambda-edit-attached-implementation": "Leɛre maale eŋ ZImplementation naŋ laŋ me a ZFunction",
+	"right-wikilambda-edit-attached-tester": "Kyoɔre ZTester naŋ tɔne eŋ a ZFunction",
+	"right-wikilambda-edit-builtin-function": "Kyoɔre ZFunction naŋ waa kompiita-iriwulii",
+	"right-wikilambda-edit-function-definition": "Kyoɔre ZFunction na naŋ daŋ be dɔlɔ",
+	"right-wikilambda-edit-key-label": "Kyoɔre a ZType nɛbbie na naŋ daŋ bebe",
+	"right-wikilambda-edit-object-label": "Kyoɔre ZObject manewulii na naŋ daŋ bebe",
+	"right-wikilambda-edit-object-type": "Kyoɔre a ZObject bale na naŋ daŋ bebe",
+	"right-wikilambda-edit-running-function": "Maaleŋ sɛge ZFunction naŋ laŋ be ZImplementation",
+	"right-wikilambda-edit-unit": "Kyoɔre a Zunit ZObject na naŋ daŋ bebe",
+	"right-wikilambda-edit-user-function": "Iri neɛ naŋ daŋ taa ZFunction tons neŋ toma"
+}
