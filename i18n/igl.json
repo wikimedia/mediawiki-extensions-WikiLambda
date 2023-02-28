@@ -1,9 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"AgnesAbah"
+			"AgnesAbah",
+			"Amire80"
 		]
 	},
-	"wikilambda-function-is-not-approved": "Má dówó téwnyi tódó Ukolo kidéyi",
+	"wikilambda-function-is-not-approved": "Má dówó téwnyi tódó úkólò kidéyi.",
 	"wikilambda-function-implementation-state-approved": "Dówóto"
 }
