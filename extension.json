@@ -18,7 +18,7 @@
 	"license-name": "MIT",
 	"type": "parserhook",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.40.0",
 		"extensions": {
 			"WikimediaMessages": "*"
 		}
@@ -170,37 +170,21 @@
 	},
 	"ResourceModules": {
 		"ext.wikilambda.viewpage.styles": {
-			"targets": [
-				"desktop",
-				"mobile"
-			],
 			"styles": [
 				"ext.wikilambda.viewpage/ext.wikilambda.viewpage.less"
 			]
 		},
 		"ext.wikilambda.editpage.styles": {
-			"targets": [
-				"desktop",
-				"mobile"
-			],
 			"styles": [
 				"ext.wikilambda.editpage/ext.wikilambda.editpage.less"
 			]
 		},
 		"ext.wikilambda.specialpages.styles": {
-			"targets": [
-				"desktop",
-				"mobile"
-			],
 			"styles": [
 				"ext.wikilambda.specialpages/ext.wikilambda.specialpages.less"
 			]
 		},
 		"ext.wikilambda.edit": {
-			"targets": [
-				"desktop",
-				"mobile"
-			],
 			"styles": [
 				"ext.wikilambda.edit/ext.wikilambda.edit.variables.less",
 				"ext.wikilambda.edit/ext.wikilambda.edit.less"
