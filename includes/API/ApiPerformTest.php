@@ -87,8 +87,8 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		// Needed for caching.
 		$functionRevision = $targetTitle->getLatestRevID();
 		// We only update the implementation ranking if $requestedImplementations and
-		// $requestedTesters are both empty, and not all results come from the cache.
-		// This var is used to track those conditions.
+		// $requestedTesters are both empty, and no results come from the cache.
+		// This var tracks those conditions.
 		$canUpdateImplementationRanking = true;
 
 		$targetObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
@@ -200,7 +200,10 @@ class ApiPerformTest extends WikiLambdaApiBase {
 						$testResult[ 'testMetadata'] = $possiblyCachedResult->getZMetadata();
 
 						$responseArray[] = $testResult;
-						$testerMap[ $testerZid ] = $testResult;
+						// Strategy: only update when all results are live (none from cache).
+						// (And given that, there's no point in updating $testerMap here.)
+						// TODO(T330370): Revisit this strategy when we have more experience with it
+						$canUpdateImplementationRanking = false;
 						continue;
 					}
 				}
@@ -297,8 +300,6 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				$responseArray[] = $testResult;
 				// Update bookkeeping for the call to updateImplementationRanking
 				$testerMap[ $testerZid ] = $testResult;
-				$canUpdateImplementationRanking = false;
-
 			}
 			$implementationMap[ $implementationZid ] = $testerMap;
 		}
