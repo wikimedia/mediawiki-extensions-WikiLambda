@@ -10,17 +10,23 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
+use MediaWiki\Logger\LoggerFactory;
+use Psr\Log\LoggerInterface;
 use Title;
 
 /**
  */
 class UpdateImplementationsJob extends Job implements GenericParameterJob {
 
+	/** @var LoggerInterface */
+	protected $logger;
+
 	/**
 	 * @param array $params
 	 */
 	public function __construct( array $params ) {
 		parent::__construct( 'updateImplementations', $params );
+		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 	}
 
 	/**
@@ -54,6 +60,11 @@ class UpdateImplementationsJob extends Job implements GenericParameterJob {
 				return false;
 			}
 		}
+
+		$this->logger->info(
+			__CLASS__ . ' functionZid={$functionZid}; functionRevision={$functionRevision}',
+			[ 'implementationRankingZids' => $implementationRankingZids ]
+		);
 
 		$implementationRanking = [];
 		foreach ( $implementationRankingZids as $implementationZid ) {

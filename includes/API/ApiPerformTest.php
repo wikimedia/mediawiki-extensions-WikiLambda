@@ -31,6 +31,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use Title;
 use Wikimedia\ParamValidator\ParamValidator;
@@ -524,6 +525,9 @@ class ApiPerformTest extends WikiLambdaApiBase {
 			// If 1, no point in updating.  If 0, something's wrong (shouldn't happen).
 			return;
 		}
+
+		LoggerFactory::getInstance( 'WikiLambda' )
+			->info( __METHOD__ . ' functionZid={$functionZid}; functionRevision={$functionRevision}' );
 
 		// Record which implementation is first in Z8K4 before this update happens
 		$previousFirst = array_key_first( $implementationMap );
