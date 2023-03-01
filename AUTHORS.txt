@@ -6,7 +6,7 @@ The WikiLambda team comprises several contributors, of whom those who have commi
 * Dani de Waal <ddwaal-ctr@wikimedia.org>
 * Julia Kieserman <jkieserman@wikimedia.org>
 * Simone Cuomo <simone@thisdot.co>
-* Adesoji <adesoji@thisdot.co>
+* Adesoji <temitopeadesoji23@gmail.com>
 * Cory Massaro <cmassaro@wikimedia.org>
 * David Martin <dmartin@wikimedia.org>
 * EWright <edmund.wright@gmail.com>
