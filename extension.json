@@ -350,9 +350,11 @@
 						"cdxIconNext",
 						"cdxIconPrevious",
 						"cdxIconDownTriangle",
-						"cdxIconCode",
 						"cdxIconEdit",
-						"cdxIconMarkup"
+						"cdxIconFunction",
+						"cdxIconFunctionArgument",
+						"cdxIconInstance",
+						"cdxIconLiteral"
 					]
 				}
 			],

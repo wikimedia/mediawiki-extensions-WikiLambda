@@ -98,13 +98,12 @@ module.exports = exports = {
 					{
 						label: this.getLabel( Constants.Z_REFERENCE ),
 						value: Constants.Z_REFERENCE,
-						icon: icons.cdxIconLink
+						icon: icons.cdxIconInstance
 					},
 					{
 						label: this.getLabel( Constants.Z_FUNCTION_CALL ),
 						value: Constants.Z_FUNCTION_CALL,
-						// TODO: Decide final icon for function call
-						icon: icons.cdxIconCode
+						icon: icons.cdxIconFunction
 					}
 				];
 				// Resolver types: argument reference only if we are inside a composition
@@ -112,8 +111,7 @@ module.exports = exports = {
 					options.push( {
 						label: this.getLabel( Constants.Z_ARGUMENT_REFERENCE ),
 						value: Constants.Z_ARGUMENT_REFERENCE,
-						// TODO: Decide final icon for argument reference
-						icon: icons.cdxIconMarkup
+						icon: icons.cdxIconFunctionArgument
 					} );
 				}
 
@@ -123,16 +121,14 @@ module.exports = exports = {
 					options.push( {
 						label: this.valueLabel,
 						value: this.value,
-						// TODO: Decide final icon for literal
-						icon: icons.cdxIconEdit
+						icon: icons.cdxIconLiteral
 					} );
 				} else {
 					// Else, show the bound type if any
 					options.push( {
 						label: this.getLabel( this.expectedType ),
 						value: this.expectedType,
-						// TODO: Decide final icon for literal
-						icon: icons.cdxIconEdit
+						icon: icons.cdxIconLiteral
 					} );
 				}
 
