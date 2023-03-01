@@ -21,9 +21,10 @@ use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Revision\SlotRecord;
-use Title;
-use TitleArray;
-use TitleFactory;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleArray;
+use MediaWiki\Title\TitleFactory;
+use Psr\Log\LoggerInterface;
 use User;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\ILoadBalancer;
@@ -45,22 +46,28 @@ class ZObjectStore {
 	/** @var RevisionStore */
 	protected $revisionStore;
 
+	/** @var LoggerInterface */
+	private $logger;
+
 	/**
 	 * @param ILoadBalancer $loadBalancer
 	 * @param TitleFactory $titleFactory
 	 * @param WikiPageFactory $wikiPageFactory
 	 * @param RevisionStore $revisionStore
+	 * @param LoggerInterface $logger
 	 */
 	public function __construct(
 		ILoadBalancer $loadBalancer,
 		TitleFactory $titleFactory,
 		WikiPageFactory $wikiPageFactory,
-		RevisionStore $revisionStore
+		RevisionStore $revisionStore,
+		LoggerInterface $logger
 	) {
 		$this->loadBalancer = $loadBalancer;
 		$this->titleFactory = $titleFactory;
 		$this->wikiPageFactory = $wikiPageFactory;
 		$this->revisionStore = $revisionStore;
+		$this->logger = $logger;
 	}
 
 	/**
@@ -909,10 +916,16 @@ class ZObjectStore {
 			}
 
 			// Something's gone wrong, somehow
-			wfDebug( __METHOD__ . ' retrieved a non-ZResponseEnvelope: ' . $responseObjectString );
+			$this->logger->error(
+				__METHOD__ . ' retrieved a non-ZResponseEnvelope: ' . $responseObjectString,
+				[ 'responseObject' => $responseObjectString ]
+			);
 		} catch ( \Throwable $th ) {
 			// Something's gone differently wrong, somehow
-			wfDebug( __METHOD__ . ' threw from ZObjectFactory.' );
+			$this->logger->error(
+				__METHOD__ . ' threw from ZObjectFactory',
+				[ 'throwable' => $th ]
+			);
 		}
 
 		return null;

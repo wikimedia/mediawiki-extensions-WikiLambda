@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 
 /**
@@ -22,7 +23,8 @@ return [
 			$services->getDBLoadBalancer(),
 			$services->getTitleFactory(),
 			$services->getWikiPageFactory(),
-			$services->getRevisionStore()
+			$services->getRevisionStore(),
+			LoggerFactory::getInstance( 'WikiLambda' )
 		);
 	},
 
