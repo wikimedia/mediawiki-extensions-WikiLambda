@@ -16,6 +16,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
+use JobQueueGroup;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheTesterResultsJob;
 use MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
@@ -33,7 +34,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use Title;
+use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiPerformTest extends WikiLambdaApiBase {
@@ -47,16 +48,23 @@ class ApiPerformTest extends WikiLambdaApiBase {
 	/** @var string */
 	private $orchestratorHost;
 
+	/** @var JobQueueGroup */
+	private $jobQueueGroup;
+
 	public function __construct( $query, $moduleName, ZObjectStore $zObjectStore ) {
 		parent::__construct( $query, $moduleName, 'wikilambda_perform_test_' );
 
 		$this->zObjectStore = $zObjectStore;
 
-		$config = MediaWikiServices::getInstance()->
-			getConfigFactory()->makeConfig( 'WikiLambda' );
+		$services = MediaWikiServices::getInstance();
+
+		$config = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
 		$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
 		$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
 		$this->orchestrator = new OrchestratorRequest( $client );
+
+		// TODO (T330033): Consider injecting this service rather than just fetching from main
+		$this->jobQueueGroup = $services->getJobQueueGroup();
 	}
 
 	public function execute() {
@@ -292,10 +300,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 							]
 					);
 
-					// TODO (T330033): Consider using an injected service for the following
-					$services = MediaWikiServices::getInstance();
-					$jobQueueGroup = $services->getJobQueueGroup();
-					$jobQueueGroup->push( $cacheTesterResultsJob );
+					$this->jobQueueGroup->push( $cacheTesterResultsJob );
 				}
 
 				// Stash the response
@@ -586,6 +591,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				'functionRevision' => $functionRevision,
 				'implementationRankingZids' => $implementationRankingZids
 			] );
+		// NOTE: As this code is static for testing purposes, we can't use $this->jobQueueGroup here
 		// TODO( T330033 ): Consider using an injected service for the following
 		$services = MediaWikiServices::getInstance();
 		$jobQueueGroup = $services->getJobQueueGroup();
