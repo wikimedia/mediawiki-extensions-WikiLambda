@@ -76,7 +76,6 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		$functionZid = $params[ 'zfunction' ];
 		$requestedImplementations = $params[ 'zimplementations' ] ?: [];
 		$requestedTesters = $params[ 'ztesters' ] ?: [];
-		$updateImplementationRanking = (bool)$params[ 'updateImplementationRanking' ];
 
 		// 1. Work out matrix of what we want for what
 		// FIXME: Handle an inline ZFunction (for when it's not been created yet)?
@@ -87,33 +86,32 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 		// Needed for caching.
 		$functionRevision = $targetTitle->getLatestRevID();
-		// We only update the implementation ranking if $requestedImplementations and
-		// $requestedTesters are both empty, and no results come from the cache.
-		// This var tracks those conditions.
-		$canUpdateImplementationRanking = true;
 
 		$targetObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
 		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
 			$this->dieWithError( [ "wikilambda-performtest-error-nonfunction", $functionZid ] );
 		}
-
 		$targetFunction = $targetObject->getInnerZObject();
+		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
 
 		if ( empty( $requestedImplementations ) ) {
 			$targetFunctionImplementions = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS );
 			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionImplementions';
 			$requestedImplementations = $targetFunctionImplementions->getAsArray();
-		} else {
-			$canUpdateImplementationRanking = false;
 		}
 
 		if ( empty( $requestedTesters ) ) {
 			$targetFunctionTesters = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_TESTERS );
 			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionTesters';
 			$requestedTesters = $targetFunctionTesters->getAsArray();
-		} else {
-			$canUpdateImplementationRanking = false;
 		}
+
+		// We only update the implementation ranking for attached implementations and testers,
+		// and only if all attached implementations and testers are included in the results,
+		// and no results come from the cache.  These vars are used to track those conditions.
+		$attachedImplementationZids = self::getImplementationZids( $targetFunction );
+		$attachedTesterZids = self::getTesterZids( $targetFunction );
+		$canUpdateImplementationRanking = true;
 
 		// 2. For each implementation, run each tester
 		$responseArray = [];
@@ -201,10 +199,15 @@ class ApiPerformTest extends WikiLambdaApiBase {
 						$testResult[ 'testMetadata'] = $possiblyCachedResult->getZMetadata();
 
 						$responseArray[] = $testResult;
-						// Strategy: only update when all results are live (none from cache).
-						// (And given that, there's no point in updating $testerMap here.)
-						// TODO(T330370): Revisit this strategy when we have more experience with it
-						$canUpdateImplementationRanking = false;
+						if ( in_array( $testerZid, $attachedTesterZids ) &&
+							in_array( $implementationZid, $attachedImplementationZids ) ) {
+							// Implementation ranking only involves attached implementations and
+							// testers.  To get the best possible ranking, we want all such
+							// test results to be "fresh" (not from the cache).  Here, we have
+							// a result from the cache, so we choose not to update the ranking.
+							// TODO(T330370): Revisit this strategy when we have more experience with it
+							$canUpdateImplementationRanking = false;
+						}
 						continue;
 					}
 				}
@@ -299,21 +302,24 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				$testResult[ 'validateStatus' ] = $validateResultItem;
 				$testResult[ 'testMetadata' ] = $testMetadata;
 				$responseArray[] = $testResult;
-				// Update bookkeeping for the call to updateImplementationRanking
-				$testerMap[ $testerZid ] = $testResult;
+				// Update bookkeeping for the call to maybeUpdateImplementationRanking
+				if ( in_array( $testerZid, $attachedTesterZids ) &&
+					in_array( $implementationZid, $attachedImplementationZids ) ) {
+					$testerMap[$testerZid] = $testResult;
+				}
 			}
-			$implementationMap[ $implementationZid ] = $testerMap;
+			if ( in_array( $implementationZid, $attachedImplementationZids ) ) {
+				$implementationMap[ $implementationZid ] = $testerMap;
+			}
 		}
 
 		// 3. Maybe update implementation ranking (in persistent storage)
-		if ( $updateImplementationRanking && !$canUpdateImplementationRanking ) {
-			// TODO( T330027 ): Replace wfDebug (here and elsewhere) with a specific logger
-			wfDebug( 'Not updating implementation ranking because implementations are '
-				. 'specified, testers are specified, or all results are from cache' );
-		}
-		if ( $updateImplementationRanking && $canUpdateImplementationRanking ) {
+		if ( $canUpdateImplementationRanking ) {
 			$this->maybeUpdateImplementationRanking( $functionZid, $functionRevision,
-				$implementationMap );
+				$implementationMap, $attachedImplementationZids, $attachedTesterZids );
+		} else {
+			// TODO( T330027 ): Replace wfDebug (here and elsewhere) with a specific logger
+			wfDebug( 'Not updating implementation ranking because some results are from cache' );
 		}
 
 		// 4. Return the response.
@@ -422,11 +428,6 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				ParamValidator::PARAM_ISMULTI => true,
 				ParamValidator::PARAM_REQUIRED => false,
 			],
-			'updateImplementationRanking' => [
-				ParamValidator::PARAM_TYPE => 'boolean',
-				ParamValidator::PARAM_DEFAULT => false,
-				ParamValidator::PARAM_REQUIRED => false,
-			],
 		];
 	}
 
@@ -513,16 +514,28 @@ class ApiPerformTest extends WikiLambdaApiBase {
 	 * @param array $implementationMap contains $implementationZid => $testerMap, for each tested
 	 * implementation.  $testerMap contains $testerZid => $testResult for each tester. See
 	 * ApiPerformTest::run for the structure of $testResult.
+	 * @param array $attachedImplementationZids
+	 * @param array $attachedTesterZids
 	 */
 	public static function maybeUpdateImplementationRanking(
-		$functionZid, $functionRevision, $implementationMap
+		$functionZid, $functionRevision, $implementationMap, $attachedImplementationZids, $attachedTesterZids
 	) {
 		// We don't currently support updates involving a Z0, and we don't expect to get any here.
-		// (However, it could happen if the value of Z8K4 has been manually edited.)
+		// (However, it maybe could happen if the value of Z8K4 has been manually edited.)
 		unset( $implementationMap[ ZTypeRegistry::Z_NULL_REFERENCE ] );
 
 		if ( count( $implementationMap ) <= 1 ) {
-			// If 1, no point in updating.  If 0, something's wrong (shouldn't happen).
+			// No point in updating.
+			return;
+		}
+
+		// We only update if we have results for all currently attached implementations,
+		// and all currently attached testers.  We already know that the implementations and
+		// testers in the maps are attached; now we check whether all attached ones are present.
+		$implementationZids = array_keys( $implementationMap );
+		$testerZids = array_keys( reset( $implementationMap ) );
+		if ( array_diff( $attachedImplementationZids, $implementationZids ) ||
+			array_diff( $attachedTesterZids, $testerZids ) ) {
 			return;
 		}
 
@@ -556,7 +569,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		}
 
 		uasort( $implementationMap, [ self::class, 'compareImplementationStats' ] );
-
+		// Get the ranked Zids
 		$implementationRankingZids = array_keys( $implementationMap );
 
 		// Bail out if the update isn't well justified
@@ -594,7 +607,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 	/**
 	 * For the given function, get Z8K4/implementations and return a list of ZIDs for them.
 	 *
-	 * Used by UpdateImplementationsJob.
+	 * TODO( T329254 ): Consider moving into ZFunction
 	 *
 	 * @param ZFunction $targetFunction
 	 * @return array
@@ -618,5 +631,34 @@ class ApiPerformTest extends WikiLambdaApiBase {
 			$implementationZids[] = self::getZid( $implementation );
 		}
 		return $implementationZids;
+	}
+
+	/**
+	 * For the given function, get Z8K3/testers and return a list of ZIDs for them.
+	 *
+	 * TODO( T329254 ): Consider consolidating with getImplementationZids and moving into ZFunction
+	 *
+	 * @param ZFunction $targetFunction
+	 * @return array
+	 * @throws ZErrorException from ZObjectFactory::create
+	 */
+	public static function getTesterZids( $targetFunction ) {
+		$testerZids = [];
+		$targetFunctionTesters = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_TESTERS );
+		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionTesters';
+		$currentTesters = $targetFunctionTesters->getAsArray();
+		foreach ( $currentTesters as $tester ) {
+			if ( is_string( $tester ) ) {
+				$decodedJson = FormatJson::decode( $tester );
+				// If not JSON, assume we have received a ZID.
+				if ( $decodedJson ) {
+					$tester = ZObjectFactory::create( $decodedJson );
+				} else {
+					$tester = new ZReference( $tester );
+				}
+			}
+			$testerZids[] = self::getZid( $tester );
+		}
+		return $testerZids;
 	}
 }

@@ -67,20 +67,16 @@ class ApiPerformTestTest extends ApiTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::isFalse
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::run
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::maybeUpdateImplementationRanking
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::getImplementationZids
+	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::getTesterZids
 	 */
 	public function testExecuteSuccessfully(
 		$requestedFunction,
 		$requestedZImplementations,
 		$requestedZTesters,
-		$updateImplementationRanking,
 		$expectedResults,
 		$expectedThrownError = null
 	) {
-		if ( !$updateImplementationRanking ) {
-			// In the testing framework, boolean params don't go through as true / false;
-			// either they are present or not.  This assignment causes the param to not be present.
-			$updateImplementationRanking = null;
-		}
 		if ( $expectedThrownError ) {
 			$this->expectExceptionMessage( $expectedThrownError );
 		}
@@ -89,8 +85,7 @@ class ApiPerformTestTest extends ApiTestCase {
 			'action' => 'wikilambda_perform_test',
 			'wikilambda_perform_test_zfunction' => $requestedFunction,
 			'wikilambda_perform_test_zimplementations' => $requestedZImplementations,
-			'wikilambda_perform_test_ztesters' => $requestedZTesters,
-			'wikilambda_perform_test_updateImplementationRanking' => $updateImplementationRanking
+			'wikilambda_perform_test_ztesters' => $requestedZTesters
 		] )[0]['query']['wikilambda_perform_test'];
 
 		if ( $expectedThrownError ) {
@@ -170,20 +165,16 @@ class ApiPerformTestTest extends ApiTestCase {
 		// Checks related to ApiPerformTest::maybeUpdateImplementationRanking
 		$targetTitle = Title::newFromText( $requestedFunction, NS_MAIN );
 		$functionRevisionBefore = $targetTitle->getLatestRevID();
-		if ( $requestedZImplementations !== '' || $requestedZTesters !== '' ||
-			!$updateImplementationRanking ) {
+		$targetObject = $this->store->fetchZObjectByTitle( $targetTitle );
+		$targetFunction = $targetObject->getInnerZObject();
+		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
+		$targetImplementationZids = ApiPerformTest::getImplementationZids( $targetFunction );
+		$targetTesterZids = ApiPerformTest::getTesterZids( $targetFunction );
+		if ( count( $targetImplementationZids ) <= 1 ||
+			array_diff( $targetImplementationZids, $requestedZImplementations ) ||
+			array_diff( $targetTesterZids, $requestedZTesters ) ) {
 			// No update to implementation ranking should be done
 			$this->assertEquals( $functionRevisionBefore, $targetTitle->getLatestRevID() );
-		}
-		if ( $updateImplementationRanking ) {
-			$targetObject = $this->store->fetchZObjectByTitle( $targetTitle );
-			$targetFunction = $targetObject->getInnerZObject();
-			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
-			$targetImplementationZids = ApiPerformTest::getImplementationZids( $targetFunction );
-			if ( count( $targetImplementationZids ) <= 1 ) {
-				// No update to implementation ranking should be done
-				$this->assertEquals( $functionRevisionBefore, $targetTitle->getLatestRevID() );
-			}
 		}
 	}
 
@@ -192,7 +183,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Z813',
 			'Z913',
 			'Z8130',
-			false,
 			[
 				[
 					'zimplementationId' => 'Z913',
@@ -206,7 +196,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Z813',
 			'Z913',
 			'',
-			false,
 			[
 				[
 					'zimplementationId' => 'Z913',
@@ -225,7 +214,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Z813',
 			$this->getTestFileContents( 'new-zimplementation.json' ),
 			'',
-			false,
 			[
 				[
 					'zimplementationId' => 'Z0',
@@ -246,7 +234,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Z813',
 			str_replace( "True", "False", $this->getTestFileContents( 'existing-zimplementation.json' ) ),
 			'',
-			false,
 			[
 				[
 					'zimplementationId' => 'Z1000000',
@@ -267,7 +254,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Z813',
 			'',
 			'Z8130',
-			false,
 			[
 				[
 					'zimplementationId' => 'Z913',
@@ -281,7 +267,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Z813',
 			'',
 			$this->getTestFileContents( 'new-ztester.json' ),
-			false,
 			[
 				[
 					'zimplementationId' => 'Z913',
@@ -297,7 +282,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Z813',
 			'',
 			str_replace( "Z41", "Z42", $this->getTestFileContents( 'existing-ztester.json' ) ),
-			false,
 			[
 				[
 					'zimplementationId' => 'Z913',
@@ -313,7 +297,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Z123456789',
 			'',
 			'',
-			false,
 			[],
 			'Perform test error: \'Z123456789\' isn\'t a known ZObject'
 		];
@@ -322,7 +305,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Z813',
 			'Z123456789',
 			'Z8130',
-			false,
 			[
 				[
 					'zimplementationId' => 'Z123456789',
@@ -338,7 +320,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Z813',
 			'',
 			'Z123456789',
-			false,
 			[],
 			'Perform test error: \'Z123456789\' isn\'t a known ZObject'
 		];
@@ -347,7 +328,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Z8130',
 			'',
 			'',
-			false,
 			[],
 			'Perform test error: \'Z8130\' isn\'t a function'
 		];
@@ -358,7 +338,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Z813',
 			'Z8130',
 			'Z8130',
-			false,
 			[
 				[
 					'zimplementationId' => 'Z8130',
@@ -375,7 +354,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Z813',
 			$this->getTestFileContents( 'existing-ztester.json' ),
 			'',
-			false,
 			[],
 			'Perform test error: \'{ "Z1K1": "Z20", "Z20K1": "Z813", "Z20K2": { "Z1K1": "Z7", "Z7K1": "Z813", ' .
 				'"Z813K1": [ "Z1" ] }, "Z20K3": { "Z1K1": "Z7", "Z7K1": "Z844", "Z844K2": { "Z1K1": "Z40", "Z40K1": ' .
@@ -386,7 +364,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Z813',
 			'',
 			'Z1000000',
-			false,
 			[],
 			'Perform test error: \'{ "Z1K1": "Z14", "Z14K1": "Z813", "Z14K3": { "Z1K1": "Z16", "Z16K1": { "Z1K1": ' .
 				'"Z61", "Z61K1": "python" }, "Z16K2": "def Z813(Z813K1):\n\treturn True" } }\' isn\'t a tester.'
@@ -397,7 +374,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			str_replace(
 				"return False", "throw 'some error'", $this->getTestFileContents( 'new-zimplementation.json' ) ),
 			'Z8130',
-			false,
 			[
 				[
 					'zimplementationId' => 'Z0',
@@ -414,7 +390,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'',
 			// Adjust tester so that its validation call tries to call boolean equality on a non-boolean
 			str_replace( "Z42", "not a boolean", $this->getTestFileContents( 'new-ztester.json' ) ),
-			false,
 			[
 				[
 					'zimplementationId' => 'Z913',
@@ -430,7 +405,6 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Z813',
 			'',
 			'',
-			true,
 			[
 				[
 					'zimplementationId' => 'Z913',
@@ -517,9 +491,14 @@ class ApiPerformTestTest extends ApiTestCase {
 		$implementationMap[ 'Z91301' ][ 'Z8131' ][ 'testMetadata' ] = $metadataMap3;
 		$implementationMap[ 'Z91302' ][ 'Z8130' ][ 'testMetadata' ] = $metadataMap4;
 		$implementationMap[ 'Z91302' ][ 'Z8131' ][ 'testMetadata' ] = $metadataMap5;
+		$targetObject = $this->store->fetchZObjectByTitle( $targetTitle );
+		$targetFunction = $targetObject->getInnerZObject();
+		$targetImplementationZids = ApiPerformTest::getImplementationZids( $targetFunction );
+		$targetTesterZids = ApiPerformTest::getTesterZids( $targetFunction );
 
 		// 3.
-		ApiPerformTest::maybeUpdateImplementationRanking( $functionZid, $functionRevision_0, $implementationMap );
+		ApiPerformTest::maybeUpdateImplementationRanking( $functionZid, $functionRevision_0,
+			$implementationMap, $targetImplementationZids, $targetTesterZids );
 
 		if ( !$expectedRanking ) {
 			// In these cases no update should happen
