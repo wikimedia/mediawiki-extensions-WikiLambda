@@ -14,7 +14,7 @@ use Content;
 use DataUpdate;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
-use Title;
+use MediaWiki\Title\Title;
 
 class ZObjectSecondaryDataUpdate extends DataUpdate {
 
@@ -113,16 +113,22 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		}
 
 		// If appropriate, clear wikilambda_ztester_results for this ZID
-		if ( $ztype === ZTypeRegistry::Z_FUNCTION ) {
-			$zObjectStore->deleteZFunctionFromZTesterResultsCache( $zid );
-		}
+		// FIXME: Only do this for the old revision not the new one.
+		switch ( $ztype ) {
+			case ZTypeRegistry::Z_FUNCTION:
+				$zObjectStore->deleteZFunctionFromZTesterResultsCache( $zid );
+				break;
 
-		if ( $ztype === ZTypeRegistry::Z_IMPLEMENTATION ) {
-			$zObjectStore->deleteZImplementationFromZTesterResultsCache( $zid );
-		}
+			case ZTypeRegistry::Z_IMPLEMENTATION:
+				$zObjectStore->deleteZImplementationFromZTesterResultsCache( $zid );
+				break;
 
-		if ( $ztype === ZTypeRegistry::Z_TESTER ) {
-			$zObjectStore->deleteZTesterFromZTesterResultsCache( $zid );
+			case ZTypeRegistry::Z_TESTER:
+				$zObjectStore->deleteZTesterFromZTesterResultsCache( $zid );
+				break;
+
+			default:
+				// No action.
 		}
 	}
 }
