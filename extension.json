@@ -359,6 +359,7 @@
 				}
 			],
 			"messages": [
+				"wikilambda-metadata-help-link",
 				"wikifunctions-edit-copyrightwarning-function",
 				"wikifunctions-edit-copyrightwarning-implementation",
 				"wikilambda-publishnew",

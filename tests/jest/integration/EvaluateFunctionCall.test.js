@@ -74,6 +74,8 @@ describe( 'Wikilambda frontend, running a function on evaluate function call vie
 					return {};
 			}
 		};
+
+		mw.internalWikiUrlencode = jest.fn( ( url ) => url );
 	} );
 
 	afterEach( () => {

@@ -21,7 +21,7 @@
 				<a
 					:title="tooltipMetaDataHelpLink"
 					class="ext-wikilambda-metadatadialog__header__helplink-text"
-					href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/Function_call_metadata"
+					:href="parsedMetaDataHelpLink"
 					target="_blank">
 					{{ $i18n( 'wikilambda-helplink-button' ).text() }}
 				</a>
@@ -95,6 +95,10 @@ module.exports = exports = {
 			const metadataZIDs = this.extractZIDs( this.metadata );
 			this.fetchZKeys( { zids: metadataZIDs } );
 			return this.portrayMetadataMap( this.metadata, this.getZkeyLabels );
+		},
+		parsedMetaDataHelpLink: function () {
+			const unformattedLink = this.$i18n( 'wikilambda-metadata-help-link' ).text();
+			return mw.internalWikiUrlencode( unformattedLink );
 		}
 	} ),
 	methods: $.extend( mapActions( [ 'fetchZKeys' ] ), {

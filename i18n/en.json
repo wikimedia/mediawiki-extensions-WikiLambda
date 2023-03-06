@@ -5,6 +5,7 @@
 			"James D. Forrester"
 		]
 	},
+	"wikilambda-metadata-help-link": "https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/Function_call_metadata",
 	"wikilambda-desc": "Providing Wikimedia wikis with a wikitext parser function to call evaluation of functions written, managed, and evaluated on a central wiki.",
 	"content-model-zobject": "ZObject",
 	"wikilambda-systemuser": "WikiLambda system",
