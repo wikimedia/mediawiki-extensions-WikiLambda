@@ -50,7 +50,7 @@
 					<cdx-icon :icon="helpLinkIcon()"></cdx-icon>
 					<a
 						:title="tooltipMetaDataHelpLink"
-						href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Wikifunctions/Function_call_metadata"
+						:href="parsedMetaDataHelpLink"
 						target="_blank">
 						{{ $i18n( 'wikilambda-helplink-button' ).text() }}
 					</a>
@@ -158,6 +158,10 @@ module.exports = exports = {
 		},
 		tooltipMetaDataHelpLink: function () {
 			return this.$i18n( 'wikilambda-helplink-tooltip' ).text();
+		},
+		parsedMetaDataHelpLink: function () {
+			const unformattedLink = this.$i18n( 'wikilambda-metadata-help-link' ).text();
+			return mw.internalWikiUrlencode( unformattedLink );
 		}
 	} ),
 	methods: $.extend( mapActions( [ 'fetchZKeys' ] ), {
