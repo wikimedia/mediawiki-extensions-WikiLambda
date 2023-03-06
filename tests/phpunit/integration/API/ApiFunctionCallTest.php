@@ -198,6 +198,12 @@ class ApiFunctionCallTest extends ApiTestCase {
 			'Z24',
 		];
 
+		yield 'Supply an implementation with an unsupported language; back off to the second' => [
+			$this->readTestFile( 'example-bad-first-implementation.json' ),
+			// @phpcs:ignore Generic.Files.LineLength.TooLong
+			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
+		];
+
 		// TODO (T325593): Call the example-timeout example; ensure the correct error is returned.
 	}
 }
