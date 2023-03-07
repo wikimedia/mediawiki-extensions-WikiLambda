@@ -328,7 +328,6 @@ module.exports = exports = {
 				resolvePromiseList[ promiseName ] = {};
 			}
 
-			// eslint-disable-next-line compat/compat
 			resolvePromiseList[ promiseName ].promise = new Promise( function ( resolve ) {
 				resolvePromiseList[ promiseName ].resolve = resolve;
 				dispatchPerformZKeyFetch( zKeystoFetch );

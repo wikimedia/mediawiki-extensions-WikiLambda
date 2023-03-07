@@ -4,7 +4,6 @@
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-/* eslint-disable compat/compat */
 'use strict';
 
 require( '@testing-library/jest-dom' );

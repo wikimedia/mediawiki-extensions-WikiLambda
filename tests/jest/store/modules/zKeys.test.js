@@ -1,4 +1,3 @@
-/* eslint-disable compat/compat */
 /*!
  * WikiLambda unit test suite for the zKeys Vuex module
  *

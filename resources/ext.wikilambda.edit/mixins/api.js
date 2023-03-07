@@ -22,7 +22,6 @@ module.exports = exports = {
 					canonicalize( zobject )
 				)
 			} ).then( function ( data ) {
-				// eslint-disable-next-line compat/compat
 				return new Promise( function ( resolve ) {
 					var normalResponse = JSON.parse(
 							data.query.wikilambda_function_call.data

@@ -77,7 +77,6 @@ describe( 'ZFunctionTesterReport', function () {
 			}
 		} );
 
-		// eslint-disable-next-line compat/compat
 		return new Promise( function ( resolve ) {
 			setTimeout( function () {
 				expect( getTestResultsMock ).toHaveBeenCalled();

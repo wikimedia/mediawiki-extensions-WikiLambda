@@ -1,4 +1,3 @@
-/* eslint-disable compat/compat */
 /*!
  * WikiLambda integration test for cancelling out of the function editor on a new zobject.
  *
