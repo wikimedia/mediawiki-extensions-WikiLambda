@@ -138,6 +138,22 @@
 			"wikilambda-edit-unit": true
 		}
 	},
+	"AddGroups": {
+		"sysop": [
+			"functioneer"
+		],
+		"bureaucrat": [
+			"functionmaintainer"
+		]
+	},
+	"RemoveGroups": {
+		"sysop": [
+			"functioneer"
+		],
+		"bureaucrat": [
+			"functionmaintainer"
+		]
+	},
 	"HookHandlers": {
 		"WikiLambdaHooks": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\Hooks"
