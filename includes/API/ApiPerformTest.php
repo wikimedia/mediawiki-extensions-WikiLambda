@@ -540,12 +540,17 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 	public static function maybeUpdateImplementationRanking(
 		$functionZid, $functionRevision, $implementationMap, $attachedImplementationZids, $attachedTesterZids
 	) {
+		// NOTE: As this code is static for testing purposes, we can't use $this->getLogger() here
+		$logger = LoggerFactory::getInstance( 'WikiLambda' );
+
 		// We don't currently support updates involving a Z0, and we don't expect to get any here.
 		// (However, it maybe could happen if the value of Z8K4 has been manually edited.)
 		unset( $implementationMap[ ZTypeRegistry::Z_NULL_REFERENCE ] );
 
 		if ( count( $implementationMap ) <= 1 ) {
 			// No point in updating.
+			$logger->info( __METHOD__ . ' Bailing: count <= 1;' .
+				' functionZid={$functionZid}; functionRevision={$functionRevision}' );
 			return;
 		}
 
@@ -556,12 +561,16 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 		$testerZids = array_keys( reset( $implementationMap ) );
 		if ( array_diff( $attachedImplementationZids, $implementationZids ) ||
 			array_diff( $attachedTesterZids, $testerZids ) ) {
+			$logger->info( __METHOD__ . ' Bailing: missing results for attached implementations or testers;' .
+				' functionZid={$functionZid}; functionRevision={$functionRevision}',
+				[
+					'attachedImplementationZids' => $attachedImplementationZids,
+					'implementationZids' => $implementationZids,
+					'attachedTesterZids' => $attachedTesterZids,
+					'testerZids' => $testerZids
+				] );
 			return;
 		}
-
-		// NOTE: As this code is static for testing purposes, we can't use $this->getLogger() here
-		LoggerFactory::getInstance( 'WikiLambda' )
-			->info( __METHOD__ . ' functionZid={$functionZid}; functionRevision={$functionRevision}' );
 
 		// Record which implementation is first in Z8K4 before this update happens
 		$previousFirst = array_key_first( $implementationMap );
@@ -599,8 +608,15 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 		//     the (newly reported) average time of $previousFirst.
 		//   Check if all of the average times are roughly indistinguishable.
 		if ( array_key_first( $implementationMap ) === $previousFirst ) {
+			$logger->info( __METHOD__ . ' Bailing: same first element {$previousFirst};' .
+				' functionZid={$functionZid}; functionRevision={$functionRevision}' );
 			return;
 		}
+
+		$logger->info( __METHOD__ . ' Creating update job for' .
+			' functionZid={$functionZid}, functionRevision={$functionRevision}',
+			[ 'implementationRankingZids' => $implementationRankingZids ]
+		);
 
 		$updateImplementationsJob = new UpdateImplementationsJob(
 			[ 'functionZid' => $functionZid,

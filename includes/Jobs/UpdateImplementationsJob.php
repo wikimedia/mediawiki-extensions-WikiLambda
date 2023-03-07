@@ -57,12 +57,18 @@ class UpdateImplementationsJob extends Job implements GenericParameterJob {
 				( count( $implementationRankingZids ) !== count( $currentImplementationZids ) )
 				|| array_diff( $implementationRankingZids, $currentImplementationZids )
 			) {
+				$this->logger->debug( __CLASS__ . ' Bailing: attached ZIDs have changed!' .
+					' functionZid={$functionZid}; functionRevision={$functionRevision}',
+					[
+						'implementationRankingZids' => $implementationRankingZids,
+						'currentImplementationZids' => $currentImplementationZids
+					] );
 				return false;
 			}
 		}
 
 		$this->logger->info(
-			__CLASS__ . ' functionZid={$functionZid}; functionRevision={$functionRevision}',
+			__CLASS__ . ' Updating functionZid={$functionZid}; functionRevision={$functionRevision}',
 			[ 'implementationRankingZids' => $implementationRankingZids ]
 		);
 
