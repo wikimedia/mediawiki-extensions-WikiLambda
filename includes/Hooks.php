@@ -42,6 +42,9 @@ class Hooks implements
 		global $wgNamespaceContentModels;
 		$wgNamespaceContentModels[ NS_MAIN ] = CONTENT_MODEL_ZOBJECT;
 
+		global $wgNamespaceProtection;
+		$wgNamespaceProtection[ NS_MAIN ] = [ 'wikilambda-edit', 'wikilambda-create' ];
+
 		// (T267232) Prevent ZObject pages from being transcluded; sadly this isn't available as
 		// an extension.json attribute as of yet.
 		global $wgNonincludableNamespaces;
