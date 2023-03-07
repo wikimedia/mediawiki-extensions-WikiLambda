@@ -336,16 +336,13 @@ describe( 'typeUtils mixin', function () {
 				} );
 				expect( type ).toBe( 'Z10000' );
 			} );
-			// FIXME: let's just return the function call id for now, but maybe in
-			// the future we want, for example, to return Z881(Z6) or Z882(Z6, Z40)
 			it( 'with one argument', function () {
 				var type = typeUtils.typeToString( {
 					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
 					[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_LIST,
 					[ Constants.Z_TYPED_LIST_TYPE ]: Constants.Z_STRING
 				} );
-				expect( type ).toBe( Constants.Z_TYPED_LIST );
-				// expect( type ).toBe( `${Constants.Z_TYPED_LIST}(${Constants.Z_STRING})` );
+				expect( type ).toBe( `${Constants.Z_TYPED_LIST}(${Constants.Z_STRING})` );
 			} );
 			it( 'with more than one argument', function () {
 				var type = typeUtils.typeToString( {
@@ -354,10 +351,8 @@ describe( 'typeUtils mixin', function () {
 					[ Constants.Z_TYPED_PAIR_TYPE1 ]: Constants.Z_STRING,
 					[ Constants.Z_TYPED_PAIR_TYPE2 ]: Constants.Z_BOOLEAN
 				} );
-				expect( type ).toBe( Constants.Z_TYPED_PAIR );
-				// expect( type ).toBe(
-				//   `${Constants.Z_TYPED_PAIR}(${Constants.Z_STRING},${Constants.Z_BOOLEAN})`
-				// );
+				expect( type ).toBe( `${Constants.Z_TYPED_PAIR}(${Constants.Z_STRING},${Constants.Z_BOOLEAN})`
+				);
 			} );
 		} );
 	} );

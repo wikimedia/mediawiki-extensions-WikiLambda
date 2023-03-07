@@ -44,7 +44,6 @@ module.exports = exports = {
 
 .ext-wikilambda-expanded {
 	transition: transform @transition-duration-medium @transition-timing-function-system;
-	margin-right: @spacing-25;
 
 	@media ( prefers-reduced-motion ) {
 		transition: transform 0ms unset;

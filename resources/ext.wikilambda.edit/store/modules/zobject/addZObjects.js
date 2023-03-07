@@ -745,15 +745,18 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		changeType: function ( context, payload ) {
+			// append is false by default
+			const append = payload.append ? payload.append : false;
 
 			// TODO the whole changeType function could be the following block:
 			const value = typeUtils.getScaffolding( payload.type );
+
 			// FIXME I have added the following value check so that we can continue to re-use
 			// this method from the old components. But as soon as we remove all the deprecated
 			// components, we should not returned undefined from getScaffolding, but the
 			// default case should be the Z_OBJECT one.
-			if ( value ) {
-				return context.dispatch( 'injectZObjectFromRowId', { rowId: payload.id, value } );
+			if ( value !== undefined ) {
+				return context.dispatch( 'injectZObjectFromRowId', { rowId: payload.id, value, append } );
 			}
 
 			context.dispatch( 'removeZObjectChildren', payload.id );

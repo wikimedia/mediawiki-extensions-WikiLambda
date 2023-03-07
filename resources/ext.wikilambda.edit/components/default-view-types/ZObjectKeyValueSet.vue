@@ -79,17 +79,6 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Returns the array of rowIds for the child key-values to
-			 * render them with a ZObjectKeyValue component each.
-			 *
-			 * @return {Array}
-			 */
-			childrenTwo: function () {
-				return this.getChildrenByParentRowId( this.rowId )
-					.map( function ( row ) { return row.id; } );
-			},
-
-			/**
 			 * Returns the parent key of the set of key-values represented
 			 * in this component.
 			 *

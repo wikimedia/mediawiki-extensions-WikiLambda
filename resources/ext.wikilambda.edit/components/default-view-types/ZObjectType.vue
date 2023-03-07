@@ -24,6 +24,7 @@
 					v-model:selected="value"
 					:menu-items="typeOptions"
 					:fit-width="true"
+					:disabled="disabled"
 					@update:selected="setValue"
 				></wl-select>
 			</div>
@@ -67,6 +68,10 @@ module.exports = exports = {
 		expectedType: {
 			type: String,
 			default: ''
+		},
+		disabled: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data: function () {

@@ -105,8 +105,8 @@ module.exports = exports = {
 		{
 			classZObjectKey: function () {
 				return {
-					'ext-wikilambda-ztype': true,
-					'ext-wikilambda-ztype__no-border': this.readonly || !this.isChildOfPersistentObject
+					'ext-wikilambda-ztype-main': true,
+					'ext-wikilambda-ztype-main__no-border': this.readonly || !this.isChildOfPersistentObject
 				};
 			},
 			zobject: function () {
@@ -161,13 +161,13 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-.ext-wikilambda-ztype {
+.ext-wikilambda-ztype-main {
 	background: #fff;
 	outline: 2px dashed #808080;
 	padding: 1em;
 }
 
-.ext-wikilambda-ztype__no-border {
+.ext-wikilambda-ztype-main__no-border {
 	outline: 0;
 }
 </style>

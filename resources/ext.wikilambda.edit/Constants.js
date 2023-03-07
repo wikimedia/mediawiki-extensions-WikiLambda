@@ -160,12 +160,17 @@ var Constants = {
 		DESKTOP_WIDE: 'DESKTOP_WIDE',
 		DESKTOP_EXTRAWIDE: 'DESKTOP_EXTRAWIDE'
 	},
+	contextMenuItems = {
+		ADD_LIST_ITEM: 'add_list_item',
+		DELETE_LIST_ITEM: 'delete_list_item'
+	},
 	builtinComponents = {
 		[ Constants.Z_MONOLINGUALSTRING ]: 'z-monolingual-string',
 		[ Constants.Z_STRING ]: 'z-string',
 		[ Constants.Z_REFERENCE ]: 'z-reference',
 		[ Constants.Z_BOOLEAN ]: 'z-boolean',
-		[ Constants.Z_CODE ]: 'z-code'
+		[ Constants.Z_CODE ]: 'z-code',
+		[ Constants.Z_TYPED_LIST ]: 'z-typed-list'
 	},
 	resolverTypes = [
 		Constants.Z_REFERENCE,
@@ -182,6 +187,7 @@ Constants.errorTypes = errorTypes;
 Constants.breakpoints = breakpoints;
 Constants.breakpointsTypes = breakpointsTypes;
 Constants.implementationModes = implementationModes;
+Constants.contextMenuItems = contextMenuItems;
 Constants.COLOR_NESTING_LEVELS = 6;
 Constants.BUILTIN_COMPONENTS = builtinComponents;
 Constants.RESOLVER_TYPES = resolverTypes;
