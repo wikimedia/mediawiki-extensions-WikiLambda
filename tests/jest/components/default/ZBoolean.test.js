@@ -1,7 +1,7 @@
 /*!
  * WikiLambda unit test suite for the default ZString component.
  *
- * @copyright 2023– Abstract Wikipedia team; see AUTHORS.txt
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 'use strict';

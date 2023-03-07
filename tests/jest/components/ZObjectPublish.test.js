@@ -1,7 +1,7 @@
 /*!
  * WikiLambda unit test suite for the z object publish component.
  *
- * @copyright 2022– Abstract Wikipedia team; see AUTHORS.txt
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 
