@@ -143,7 +143,7 @@ module.exports = exports = {
 			margin: auto;
 
 			&-text {
-				margin-left: @spacing-25;
+				margin-left: @spacing-50;
 				margin-right: @spacing-100;
 			}
 		}
