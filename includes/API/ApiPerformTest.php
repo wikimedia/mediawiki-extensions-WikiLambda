@@ -35,9 +35,11 @@ use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class ApiPerformTest extends WikiLambdaApiBase {
+class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 
 	/** @var ZObjectStore */
 	protected $zObjectStore;
@@ -50,6 +52,9 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 	/** @var JobQueueGroup */
 	private $jobQueueGroup;
+
+	/** @var LoggerInterface */
+	private $logger;
 
 	public function __construct( $query, $moduleName, ZObjectStore $zObjectStore ) {
 		parent::__construct( $query, $moduleName, 'wikilambda_perform_test_' );
@@ -65,6 +70,8 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 		// TODO (T330033): Consider injecting this service rather than just fetching from main
 		$this->jobQueueGroup = $services->getJobQueueGroup();
+
+		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
 	}
 
 	public function execute() {
@@ -202,7 +209,10 @@ class ApiPerformTest extends WikiLambdaApiBase {
 							new ZString( date( 'Y-m-d\TH:i:s\Z' ) )
 						);
 
-						wfDebug( 'Cache result hit: ' . $possiblyCachedResult->getZValue() );
+						$this->getLogger()->debug(
+							'Cache result hit: ' . $possiblyCachedResult->getZValue(),
+							[]
+						);
 						$testResult[ 'validateStatus' ] = $possiblyCachedResult->getZValue();
 						$testResult[ 'testMetadata'] = $possiblyCachedResult->getZMetadata();
 
@@ -323,8 +333,13 @@ class ApiPerformTest extends WikiLambdaApiBase {
 			$this->maybeUpdateImplementationRanking( $functionZid, $functionRevision,
 				$implementationMap, $attachedImplementationZids, $attachedTesterZids );
 		} else {
-			// TODO( T330027 ): Replace wfDebug (here and elsewhere) with a specific logger
-			wfDebug( 'Not updating implementation ranking because some results are from cache' );
+			$this->getLogger()->info(
+				__METHOD__ . ' Not updating implementation ranking',
+				[
+					'functionZid' => $functionZid,
+					'canUpdateImplementationRanking' => $canUpdateImplementationRanking
+				]
+			);
 		}
 
 		// 4. Return the response.
@@ -544,6 +559,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 			return;
 		}
 
+		// NOTE: As this code is static for testing purposes, we can't use $this->getLogger() here
 		LoggerFactory::getInstance( 'WikiLambda' )
 			->info( __METHOD__ . ' functionZid={$functionZid}; functionRevision={$functionRevision}' );
 
@@ -666,5 +682,13 @@ class ApiPerformTest extends WikiLambdaApiBase {
 			$testerZids[] = self::getZid( $tester );
 		}
 		return $testerZids;
+	}
+
+	public function setLogger( LoggerInterface $logger ) {
+		$this->logger = $logger;
+	}
+
+	public function getLogger() {
+		return $this->logger;
 	}
 }
