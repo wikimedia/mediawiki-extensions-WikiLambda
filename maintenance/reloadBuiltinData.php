@@ -13,6 +13,7 @@
 
 use MediaWiki\Extension\WikiLambda\Hooks;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\DeletePageFactory;
 use MediaWiki\Page\WikiPageFactory;
@@ -85,7 +86,8 @@ class ReloadBuiltinData extends Maintenance {
 			$services->getDBLoadBalancer(),
 			$services->getTitleFactory(),
 			$services->getWikiPageFactory(),
-			$services->getRevisionStore()
+			$services->getRevisionStore(),
+			LoggerFactory::getInstance( 'WikiLambda' )
 		);
 
 		$force = $this->getOption( 'force' );
