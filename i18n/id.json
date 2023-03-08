@@ -171,5 +171,12 @@
 	"wikilambda-ztyped-map-placeholder": "Pilih tipe peta",
 	"wikilambda-ztyped-map-description": "Tipe peta",
 	"wikilambda-zerror": "ZGalat tipe $1",
-	"wikilambda-optional": "opsional"
+	"wikilambda-optional": "opsional",
+	"wikilambda-add-list-item-button": "Tambah butir",
+	"wikilambda-list-items-label": "Daftar butir",
+	"wikilambda-list-items-type-label": "Daftar jenis butir",
+	"wikilambda-list-item-label": "Butir",
+	"wikilambda-context-menu": "Menu Konteks",
+	"wikilambda-add-list-item": "Tambahkan Butir",
+	"wikilambda-delete-list-item": "Hapus Butir"
 }

@@ -12,6 +12,7 @@
 			"Shirayuki",
 			"Sou0012",
 			"Tamaki Wakita",
+			"もなー(偽物)",
 			"バレロン",
 			"春春眠眠",
 			"背番号4のエース"
@@ -265,5 +266,12 @@
 	"wikilambda-zobject-missing-attached-function": "関数が必要です",
 	"wikilambda-zimplememntation-composition-missing": "構成を定義する必要があります",
 	"wikilambda-zimplementation-code-missing": "コードを定義する必要があります",
-	"wikilambda-chip-remove": "項目を除去"
+	"wikilambda-chip-remove": "項目を除去",
+	"wikilambda-add-list-item-button": "項目を追加",
+	"wikilambda-list-items-label": "リスト項目",
+	"wikilambda-list-items-type-label": "リスト項目のタイプ",
+	"wikilambda-list-item-label": "項目",
+	"wikilambda-context-menu": "コンテキスト メニュー",
+	"wikilambda-add-list-item": "項目を追加",
+	"wikilambda-delete-list-item": "削除された項目"
 }

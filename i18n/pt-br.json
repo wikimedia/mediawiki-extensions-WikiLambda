@@ -139,5 +139,12 @@
 	"wikilambda-function-viewer-names-show-languages-button": "Mostrar nome em outros idiomas",
 	"wikilambda-function-viewer-details-table-view-all": "Ver tudo",
 	"wikilambda-function-viewer-details-table-view-less": "Ver menos",
-	"wikilambda-chip-remove": "Remover item"
+	"wikilambda-chip-remove": "Remover item",
+	"wikilambda-add-list-item-button": "Adicionar item",
+	"wikilambda-list-items-label": "Listar itens",
+	"wikilambda-list-items-type-label": "Listar tipo de items",
+	"wikilambda-list-item-label": "Item",
+	"wikilambda-context-menu": "Menu de contexto",
+	"wikilambda-add-list-item": "Adicionar item",
+	"wikilambda-delete-list-item": "Excluir item"
 }

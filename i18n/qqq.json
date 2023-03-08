@@ -8,6 +8,7 @@
 			"FF-11",
 			"Genoveva Galarza",
 			"James D. Forrester",
+			"Jdforrester",
 			"Mormegil",
 			"Raymond",
 			"Robby",
@@ -15,7 +16,7 @@
 			"Verdy p"
 		]
 	},
-	"wikilambda-metadata-help-link": "External link to the help page for the function metadata.",
+	"wikilambda-metadata-help-link": "External link to the help page for the function metadata. {{Optional}}",
 	"wikilambda-desc": "{{desc|name=WikiLambda|url=https://www.mediawiki.org/wiki/Extension:WikiLambda}}\n\n{{doc-wikilambda}}",
 	"content-model-zobject": "The label used when describing the page contents for the ZObject content. See also {{msg-mw|wikilambda-persistentzobject}}, {{msg-mw|wikilambda-emptylabel}}, and {{msg-mw|content-model-wikibase-item}}.\n\n{{doc-wikilambda}}",
 	"wikilambda-systemuser": "{{Ignore}}\n\nThe user name of the system user that creates the initial content of the wiki.",

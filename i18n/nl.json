@@ -223,5 +223,12 @@
 	"wikilambda-function-viewer-details-table-view-all": "Alles weergeven",
 	"wikilambda-function-viewer-details-table-view-less": "Minder weergeven",
 	"wikilambda-toast-close": "Sluiten",
-	"wikilambda-chip-remove": "Item verwijderen"
+	"wikilambda-chip-remove": "Item verwijderen",
+	"wikilambda-add-list-item-button": "Item toevoegen",
+	"wikilambda-list-items-label": "Lijstitems",
+	"wikilambda-list-items-type-label": "Type lijstitems",
+	"wikilambda-list-item-label": "Item",
+	"wikilambda-context-menu": "Contextmenu",
+	"wikilambda-add-list-item": "Item toevoegen",
+	"wikilambda-delete-list-item": "Item verwijderen"
 }
