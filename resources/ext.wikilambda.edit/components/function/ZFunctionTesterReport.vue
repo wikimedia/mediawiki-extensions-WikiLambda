@@ -39,7 +39,9 @@
 					>
 						<template v-if="typeof test === 'string'">
 							<th scope="row">
-								{{ testLabel( test ) }}
+								<a :href="test">
+									{{ testLabel( test ) }}
+								</a>
 							</th>
 							<td v-for="implementation in implementations" :key="implementation">
 								<wl-z-tester-impl-result
