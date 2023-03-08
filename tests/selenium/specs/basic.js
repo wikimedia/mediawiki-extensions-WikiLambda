@@ -1,3 +1,10 @@
+/*!
+ * WikiLambda browser test suite of basic tests
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 'use strict';
 const CreateZObjectPage = require( '../pageobjects/CreateZObject.page' ),
 	EvaluateFunctionCall = require( '../pageobjects/EvaluateFunctionCall.page' ),

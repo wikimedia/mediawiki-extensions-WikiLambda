@@ -2,7 +2,7 @@
 	<!--
 		WikiLambda Vue component for viewing function aliases in different languages.
 
-		@copyright 2022– Abstract Wikipedia team; see AUTHORS.txt
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
 	<div

@@ -1,3 +1,10 @@
+/*!
+ * WikiLambda unit test suite for the typeUtils mixin
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 var typeUtils = require( '../../../resources/ext.wikilambda.edit/mixins/typeUtils.js' ).methods,
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' );
 

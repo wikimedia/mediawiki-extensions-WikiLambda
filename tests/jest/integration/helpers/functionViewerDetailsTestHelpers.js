@@ -1,3 +1,9 @@
+/*!
+ * WikiLambda unit test suite function viewer helper.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
 'use strict';
 
 const { render } = require( '@testing-library/vue' ),

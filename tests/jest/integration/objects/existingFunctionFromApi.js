@@ -1,3 +1,9 @@
+/*!
+ * WikiLambda integration test expected API response object for an existing function.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
 'use strict';
 
 const Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),

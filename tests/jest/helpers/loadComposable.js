@@ -1,3 +1,9 @@
+/*!
+ * WikiLambda unit test suite loadComposable helper.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
 var Vue = require( 'vue' );
 
 module.exports = function loadComposable( composable ) {

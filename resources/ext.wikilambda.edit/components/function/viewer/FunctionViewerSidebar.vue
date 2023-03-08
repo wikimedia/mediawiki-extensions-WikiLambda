@@ -1,4 +1,10 @@
 <template>
+	<!--
+		WikiLambda Vue component for the sidebar in the ZFunction Viewer.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
 	<div
 		class="ext-wikilambda-function-viewer-sidebar"
 	>

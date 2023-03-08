@@ -1,3 +1,10 @@
+/*!
+ * WikiLambda unit test suite for the tableUtils mixin
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 var tableUtils = require( '../../../resources/ext.wikilambda.edit/mixins/zobjectTreeUtils.js' ).methods,
 	Row = require( '../../../resources/ext.wikilambda.edit/store/classes/Row.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' );

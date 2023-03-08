@@ -1,4 +1,13 @@
 <?php
+/**
+ * Maintenance script to manage foreign resources controlled by the WikiLambda
+ * extension.
+ *
+ * @file
+ * @ingroup Extensions
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
 
 namespace MediaWiki\Extension\WikiLambda\Maintenance;
 
