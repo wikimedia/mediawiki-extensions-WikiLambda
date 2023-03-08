@@ -1,6 +1,5 @@
 'use strict';
-const assert = require( 'assert' ),
-	ListZObjectsByType = require( '../pageobjects/ListZObjectsByType.page' ),
+const ListZObjectsByType = require( '../pageobjects/ListZObjectsByType.page' ),
 	FunctionPage = require( '../pageobjects/Function.page' );
 
 describe( 'function evaluation', function () {
@@ -10,6 +9,6 @@ describe( 'function evaluation', function () {
 		await ListFunctions.openFunction( 'echo' );
 
 		await FunctionPage.callFunctionWithString( 'foobar' );
-		assert.equal( await FunctionPage.responseEnvelopZObject.getText(), 'foobar', 'The response should be "foobar"' );
+		await expect( await FunctionPage.responseEnvelopZObject ).toHaveText( 'foobar', { message: 'The response should be "foobar"' } );
 	} );
 } );
