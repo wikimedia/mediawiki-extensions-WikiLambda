@@ -12,6 +12,9 @@ namespace MediaWiki\Extension\WikiLambda\Jobs;
 use GenericParameterJob;
 use Job;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\Logger\LoggerFactory;
+use Psr\Log\LoggerInterface;
 
 /**
  * Asynchronous job to write out the results of a function tester run to the database,
@@ -19,21 +22,36 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
  */
 class CacheTesterResultsJob extends Job implements GenericParameterJob {
 
+	/** @var LoggerInterface */
+	private $logger;
+
+	/** @var ZObjectStore */
+	private $zObjectStore;
+
 	/**
 	 * @param array $params
 	 */
 	public function __construct( array $params ) {
 		parent::__construct( 'cacheTesterResults', $params );
+		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
+
+		// TODO (T330030): Consider accessing the ZObjectStore as an injected service
+		$this->zObjectStore = WikiLambdaServices::getZObjectStore();
+
+		$this->logger->debug(
+			__CLASS__ . ' created',
+			[
+				'functionZid' => $this->params['functionZid'],
+				'functionRevision' => $this->params['functionRevision']
+			]
+		);
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function run() {
-		// TODO (T330030): Consider accessing the ZObjectStore as an injected service
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
-
-		$zObjectStore->insertZTesterResult(
+		$success = $this->zObjectStore->insertZTesterResult(
 			$this->params['functionZid'],
 			$this->params['functionRevision'],
 			$this->params['implementationZid'],
@@ -43,6 +61,31 @@ class CacheTesterResultsJob extends Job implements GenericParameterJob {
 			$this->params['passed'],
 			$this->params['stashedResult']
 		);
+
+		if ( $success ) {
+			$this->logger->debug(
+				__CLASS__ . ' Updated cache for tester result',
+				[
+					'functionZid' => $this->params['functionZid'],
+					'functionRevision' => $this->params['functionRevision']
+				]
+			);
+		} else {
+			$this->logger->info(
+				__CLASS__ . ' Failed to update cache for tester result',
+				[
+					'functionZid' => $this->params['functionZid'],
+					'functionRevision' => $this->params['functionRevision'],
+					'implementationZid' => $this->params['implementationZid'],
+					'implementationRevision' => $this->params['implementationRevision'],
+					'testerZid' => $this->params['testerZid'],
+					'testerRevision' => $this->params['testerRevision'],
+					'passed' => $this->params['passed'],
+					'stashedResult' => $this->params['stashedResult']
+				]
+			);
+
+		}
 
 		return true;
 	}

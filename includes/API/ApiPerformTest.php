@@ -223,7 +223,7 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 							// testers.  To get the best possible ranking, we want all such
 							// test results to be "fresh" (not from the cache).  Here, we have
 							// a result from the cache, so we choose not to update the ranking.
-							// TODO(T330370): Revisit this strategy when we have more experience with it
+							// TODO (T330370): Revisit this strategy when we have more experience with it
 							$canUpdateImplementationRanking = false;
 						}
 						continue;
@@ -295,6 +295,14 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 					// Store a fake ZResponseEnvelope of the validation result and the real meta-data run
 					// via an asynchronous job so that we don't trigger a "DB write on API GET" performance
 					// error.
+					$this->getLogger()->debug(
+						'Tester result cache job triggered',
+						[
+							'functionZid' => $functionZid,
+							'functionRevision' => $functionRevision
+						]
+					);
+
 					$stashedResult = new ZResponseEnvelope( $validateResultItem, $testMetadata );
 
 					$cacheTesterResultsJob = new CacheTesterResultsJob(
@@ -525,7 +533,7 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 	 * ordering is significantly different than the previous ordering for this function, instantiate
 	 * an asynchronous job to update Z8K4/implementations in the function's persistent storage.
 	 *
-	 * TODO( T329138 ): Consider whether average Cpu usage is good enough to determine the ranking.
+	 * TODO (T329138): Consider whether average Cpu usage is good enough to determine the ranking.
 	 *   Should we eliminate implementations that are outliers relative to others on the same test?
 	 *   Should we consider non-CPU time needed to, e.g., retrieve info from Wikidata?
 	 *
@@ -549,8 +557,14 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 
 		if ( count( $implementationMap ) <= 1 ) {
 			// No point in updating.
-			$logger->info( __METHOD__ . ' Bailing: count <= 1;' .
-				' functionZid={$functionZid}; functionRevision={$functionRevision}' );
+			$logger->info(
+				__METHOD__ . ' Bailing: Implementation count <= 1',
+				[
+					'functionZid' => $functionZid,
+					'functionRevision' => $functionRevision,
+					'implementationMap' => $implementationMap
+				]
+			);
 			return;
 		}
 
@@ -561,14 +575,18 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 		$testerZids = array_keys( reset( $implementationMap ) );
 		if ( array_diff( $attachedImplementationZids, $implementationZids ) ||
 			array_diff( $attachedTesterZids, $testerZids ) ) {
-			$logger->info( __METHOD__ . ' Bailing: missing results for attached implementations or testers;' .
-				' functionZid={$functionZid}; functionRevision={$functionRevision}',
+			$logger->info(
+				__METHOD__ . ' Bailing: Missing results for attached implementations or testers',
 				[
+					'functionZid' => $functionZid,
+					'functionRevision' => $functionRevision,
 					'attachedImplementationZids' => $attachedImplementationZids,
 					'implementationZids' => $implementationZids,
 					'attachedTesterZids' => $attachedTesterZids,
-					'testerZids' => $testerZids
-				] );
+					'testerZids' => $testerZids,
+					'implementationMap' => $implementationMap
+				]
+			);
 			return;
 		}
 
@@ -577,7 +595,7 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 
 		// For each implementation, get (count of tests-failed) and (average runtime of tests)
 		// and add them into $implementationMap.
-		// TODO( T314539 ): Revisit Use of (count of tests-failed) after failing implementations are
+		// TODO (T314539): Revisit Use of (count of tests-failed) after failing implementations are
 		//   routinely deactivated
 		foreach ( $implementationMap as $implementationZid => $testerMap ) {
 			$numFailed = 0;
@@ -603,19 +621,31 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 		$implementationRankingZids = array_keys( $implementationMap );
 
 		// Bail out if the update isn't well justified
-		// TODO( T329138 ): Also consider:
+		// TODO (T329138): Also consider:
 		//   Check if the new first element is only marginally better than
 		//     the (newly reported) average time of $previousFirst.
 		//   Check if all of the average times are roughly indistinguishable.
 		if ( array_key_first( $implementationMap ) === $previousFirst ) {
-			$logger->info( __METHOD__ . ' Bailing: same first element {$previousFirst};' .
-				' functionZid={$functionZid}; functionRevision={$functionRevision}' );
+			$logger->info(
+				__METHOD__ . ' Bailing: Same first element',
+				[
+					'functionZid' => $functionZid,
+					'functionRevision' => $functionRevision,
+					'previousFirst' => $previousFirst,
+					'implementationMap' => $implementationMap
+				]
+			);
 			return;
 		}
 
-		$logger->info( __METHOD__ . ' Creating update job for' .
-			' functionZid={$functionZid}, functionRevision={$functionRevision}',
-			[ 'implementationRankingZids' => $implementationRankingZids ]
+		$logger->info(
+			__METHOD__ . ' Creating update job',
+			[
+				'functionZid' => $functionZid,
+				'functionRevision' => $functionRevision,
+				'implementationRankingZids' => $implementationRankingZids,
+				'implementationMap' => $implementationMap
+			]
 		);
 
 		$updateImplementationsJob = new UpdateImplementationsJob(
@@ -624,7 +654,7 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 				'implementationRankingZids' => $implementationRankingZids
 			] );
 		// NOTE: As this code is static for testing purposes, we can't use $this->jobQueueGroup here
-		// TODO( T330033 ): Consider using an injected service for the following
+		// TODO (T330033): Consider using an injected service for the following
 		$services = MediaWikiServices::getInstance();
 		$jobQueueGroup = $services->getJobQueueGroup();
 		$jobQueueGroup->push( $updateImplementationsJob );
@@ -645,7 +675,7 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 	/**
 	 * For the given function, get Z8K4/implementations and return a list of ZIDs for them.
 	 *
-	 * TODO( T329254 ): Consider moving into ZFunction
+	 * TODO (T329254): Consider moving into ZFunction
 	 *
 	 * @param ZFunction $targetFunction
 	 * @return array
@@ -674,7 +704,7 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 	/**
 	 * For the given function, get Z8K3/testers and return a list of ZIDs for them.
 	 *
-	 * TODO( T329254 ): Consider consolidating with getImplementationZids and moving into ZFunction
+	 * TODO (T329254): Consider consolidating with getImplementationZids and moving into ZFunction
 	 *
 	 * @param ZFunction $targetFunction
 	 * @return array
