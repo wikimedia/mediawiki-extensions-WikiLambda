@@ -2,11 +2,19 @@
 	"@metadata": {
 		"authors": [
 			"Dr Lotus Black",
+			"Msuantak",
 			"Ninjastrikers",
 			"ခွန်ပညာႏ(တောင်ႏကီꩻ)"
 		]
 	},
 	"wikilambda-editor-label-addlanguage-label": "ဘာသာစကား ထည့်သွင်းရန်",
 	"wikilambda-editor-input-title": "ထည့်သွင်းမှု",
-	"wikilambda-editor-input-type-placeholder": "ထည့်သွင်းမှု အမျိုးအစား"
+	"wikilambda-editor-input-type-placeholder": "ထည့်သွင်းမှု အမျိုးအစား",
+	"wikilambda-add-list-item-button": "ပစ္စည်းထည့်ပါ",
+	"wikilambda-list-items-label": "ပစ္စည်းစာရင်း",
+	"wikilambda-list-items-type-label": "အမျိုးအစားများ စာရင်း",
+	"wikilambda-list-item-label": "ပစ္စည်းများ",
+	"wikilambda-context-menu": "နောက်ကြောင်းဆက်စပ် အညွှန်း",
+	"wikilambda-add-list-item": "ပစ္စည်းထည့်ပါ",
+	"wikilambda-delete-list-item": "ပစ္စည်းကို ဖျက်ပါ"
 }

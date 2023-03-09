@@ -25,5 +25,8 @@
 	"wikilambda-function-viewer-aliases-show-language-button": "Ցույց տալ ավելի շատ լեզուներ",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Թաքցնել ցանկը",
 	"wikilambda-function-viewer-details-table-view-all": "Տեսնել բոլորը",
-	"wikilambda-function-viewer-details-table-view-less": "Ցուցադրել ավելի սեղմ"
+	"wikilambda-function-viewer-details-table-view-less": "Ցուցադրել ավելի սեղմ",
+	"wikilambda-add-list-item-button": "Ավելացնել տարր",
+	"wikilambda-list-item-label": "Տարր",
+	"wikilambda-add-list-item": "Ավելացնել տարր"
 }

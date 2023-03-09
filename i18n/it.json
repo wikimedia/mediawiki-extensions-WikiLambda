@@ -103,5 +103,10 @@
 	"wikilambda-function-viewer-aliases-hide-language-button": "Nascondi elenco",
 	"wikilambda-function-viewer-names-show-languages-button": "Mostra il nome in altre lingue",
 	"wikilambda-toast-close": "Chiudi",
-	"wikilambda-chip-remove": "Rimuovi elemento"
+	"wikilambda-chip-remove": "Rimuovi elemento",
+	"wikilambda-add-list-item-button": "Aggiungi elemento",
+	"wikilambda-list-items-label": "Elenco elementi",
+	"wikilambda-list-item-label": "Elemento",
+	"wikilambda-add-list-item": "Aggiungi elemento",
+	"wikilambda-delete-list-item": "Cancella elemento"
 }

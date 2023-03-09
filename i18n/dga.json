@@ -4,6 +4,7 @@
 			"Alhaji Yakubu",
 			"Amire80",
 			"Domo John",
+			"Felicia",
 			"Kuukye",
 			"Robert"
 		]
@@ -37,5 +38,7 @@
 	"right-wikilambda-edit-object-type": "Kyoɔre a ZObject bale na naŋ daŋ bebe",
 	"right-wikilambda-edit-running-function": "Maaleŋ sɛge ZFunction naŋ laŋ be ZImplementation",
 	"right-wikilambda-edit-unit": "Kyoɔre a Zunit ZObject na naŋ daŋ bebe",
-	"right-wikilambda-edit-user-function": "Iri neɛ naŋ daŋ taa ZFunction tons neŋ toma"
+	"right-wikilambda-edit-user-function": "Iri neɛ naŋ daŋ taa ZFunction tons neŋ toma",
+	"wikilambda-list-items-label": "Boma porebo ganle",
+	"wikilambda-delete-list-item": "Iribarebo boma"
 }

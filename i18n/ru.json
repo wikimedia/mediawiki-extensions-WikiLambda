@@ -90,5 +90,9 @@
 	"wikilambda-function-viewer-details-table-view-less": "Показать компактно",
 	"wikilambda-toast-close": "Закрыть",
 	"wikilambda-zobject-missing-attached-function": "Требуется функция",
-	"wikilambda-chip-remove": "Удалить элемент"
+	"wikilambda-chip-remove": "Удалить элемент",
+	"wikilambda-add-list-item-button": "Добавить элемент",
+	"wikilambda-list-item-label": "Элемент",
+	"wikilambda-add-list-item": "Добавить элемент",
+	"wikilambda-delete-list-item": "Удалённый элемент"
 }
