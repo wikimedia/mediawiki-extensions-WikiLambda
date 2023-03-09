@@ -1752,7 +1752,6 @@ module.exports = exports = {
 
 			var zobject = transformZObjectForSubmission( context, shouldUnattachImplementationAndTester );
 
-			// eslint-disable-next-line compat/compat
 			return new Promise( function ( resolve, reject ) {
 				saveZObject(
 					zobject,
@@ -2095,7 +2094,6 @@ module.exports = exports = {
 		lookupZObject: function ( context, payload ) {
 			var api = new mw.Api(),
 				queryType = 'wikilambdasearch_labels';
-			// eslint-disable-next-line compat/compat
 			return new Promise( function ( resolve ) {
 				clearTimeout( debounceZObjectLookup );
 				debounceZObjectLookup = setTimeout( function () {

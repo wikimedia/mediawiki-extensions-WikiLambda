@@ -1,4 +1,3 @@
-/* eslint-disable compat/compat */
 'use strict';
 
 const Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),

@@ -66,7 +66,6 @@ describe( 'zobject Vuex module', function () {
 		} );
 		// eslint-disable-next-line no-unused-vars
 		postWithEditTokenMock = jest.fn( function ( payload ) {
-			// eslint-disable-next-line compat/compat
 			return new Promise( function ( resolve ) {
 				resolve( {
 					wikilambda_edit: {

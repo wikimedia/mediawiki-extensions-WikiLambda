@@ -1,4 +1,3 @@
-/* eslint-disable compat/compat */
 'use strict';
 
 const { render } = require( '@testing-library/vue' ),

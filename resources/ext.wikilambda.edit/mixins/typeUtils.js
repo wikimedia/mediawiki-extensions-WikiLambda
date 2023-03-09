@@ -170,8 +170,6 @@ var Constants = require( '../Constants.js' ),
 			 */
 			isKeyTypedListItem: function ( key ) {
 				const numericalKey = Number( key );
-				// CHECK: is it okay to disable this?
-				// eslint-disable-next-line compat/compat
 				return Number.isInteger( numericalKey ) && numericalKey > 0;
 			},
 

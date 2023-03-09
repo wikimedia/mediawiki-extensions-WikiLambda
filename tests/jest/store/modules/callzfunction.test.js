@@ -50,7 +50,6 @@ describe( 'callZFunction Vuex module', function () {
 		it( 'Call MW API for function orchestration; set orchestrationResult', function () {
 			// eslint-disable-next-line no-unused-vars
 			postMock = jest.fn( function ( payload ) {
-				// eslint-disable-next-line compat/compat
 				return new Promise( function ( resolve ) {
 					resolve( {
 						query: {
@@ -77,7 +76,6 @@ describe( 'callZFunction Vuex module', function () {
 
 			// eslint-disable-next-line no-unused-vars
 			postMock = jest.fn( function ( payload ) {
-				// eslint-disable-next-line compat/compat
 				return new Promise( function ( resolve, reject ) {
 					reject( error );
 				} );

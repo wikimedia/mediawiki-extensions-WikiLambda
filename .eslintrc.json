@@ -10,6 +10,10 @@
 		"exports": true
 	},
 	"rules": {
+		"compat/compat": [
+			"error",
+			"last 2 chrome versions, last 2 firefox versions, last 2 opera versions, last 2 edge versions, safari >= 14, iOS >= 14"
+		],
 		"max-len": [
 			"error",
 			{

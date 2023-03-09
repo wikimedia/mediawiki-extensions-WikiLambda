@@ -1,4 +1,4 @@
-/* eslint-disable no-undef, compat/compat, no-restricted-syntax */
+/* eslint-disable no-undef, no-restricted-syntax */
 'use strict';
 
 const Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),

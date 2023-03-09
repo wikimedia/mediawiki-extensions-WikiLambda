@@ -1,4 +1,3 @@
-/* eslint-disable compat/compat */
 /*!
  * WikiLambda integration test for evaluating a function call on the Special: Evaluate Function Call page.
  *

@@ -11,6 +11,7 @@
 			"error",
 			{ "properties": "never" }
 		],
+		"compat/compat": "off",
 		"no-implicit-globals": "off"
 	}
 }
