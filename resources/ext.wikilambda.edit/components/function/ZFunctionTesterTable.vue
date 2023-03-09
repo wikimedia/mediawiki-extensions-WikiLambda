@@ -2,7 +2,7 @@
 	<!--
 		WikiLambda Vue component for the details tab in the ZFunction Viewer.
 
-		@copyright 2022– Abstract Wikipedia team; see AUTHORS.txt
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
 	<div class="ext-wikilambda-tester-table">

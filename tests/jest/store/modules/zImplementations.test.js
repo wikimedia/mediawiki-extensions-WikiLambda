@@ -1,3 +1,10 @@
+/*!
+ * WikiLambda unit test suite for the implementations Vuex store module
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 var zImplementationsModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zImplementations.js' ),
 	mockImplementations = [
 		{

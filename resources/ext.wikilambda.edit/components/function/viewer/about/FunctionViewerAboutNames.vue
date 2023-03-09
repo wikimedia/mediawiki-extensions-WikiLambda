@@ -2,7 +2,7 @@
 	<!--
 		WikiLambda Vue component for viewing a function name in different languages.
 
-		@copyright 2022– Abstract Wikipedia team; see AUTHORS.txt
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
 	<div v-if="getFunctionNames.length > 0" class="ext-wikilambda-function-viewer-names">

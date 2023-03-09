@@ -1,7 +1,7 @@
 /*!
  * WikiLambda Vue editor: Store module for frontend error-related state, actions, mutations and getters
  *
- * @copyright 2022– Abstract Wikipedia team; see AUTHORS.txt
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 

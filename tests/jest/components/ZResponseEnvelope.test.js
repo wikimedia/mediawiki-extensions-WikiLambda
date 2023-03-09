@@ -1,3 +1,9 @@
+/*!
+ * WikiLambda unit test suite for the ZResponseEnvelope component and related files.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
 'use strict';
 
 var VueTestUtils = require( '@vue/test-utils' ),

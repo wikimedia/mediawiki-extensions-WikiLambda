@@ -1,3 +1,10 @@
+/*!
+ * WikiLambda unit test suite for the testers Vuex store module
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 var zTestersModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zTesters.js' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	state,

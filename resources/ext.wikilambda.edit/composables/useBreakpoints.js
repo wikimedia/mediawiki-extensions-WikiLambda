@@ -1,3 +1,9 @@
+/**
+ * WikiLambda Vue editor: useBreakpoints composable
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
 var Vue = require( 'vue' );
 
 module.exports = function useBreakpoints( breakpoints ) {

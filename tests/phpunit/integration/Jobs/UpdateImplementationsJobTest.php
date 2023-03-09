@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @file
+ * @ingroup Extensions
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Jobs;
 
 use MediaWiki\Extension\WikiLambda\API\ApiPerformTest;

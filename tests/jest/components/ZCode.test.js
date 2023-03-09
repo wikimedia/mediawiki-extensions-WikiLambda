@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the function-definition-name component and related files.
+ * WikiLambda unit test suite for the ZCode component and related files.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

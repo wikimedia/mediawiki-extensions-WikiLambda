@@ -1,3 +1,10 @@
+/*!
+ * WikiLambda unit test suite interaction helper.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 'use strict';
 
 const { fireEvent } = require( '@testing-library/vue' ),

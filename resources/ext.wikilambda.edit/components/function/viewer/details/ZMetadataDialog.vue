@@ -2,7 +2,7 @@
 	<!--
 		WikiLambda Vue component for the Metadata Dialog.
 
-		@copyright 2023– Abstract Wikipedia team; see AUTHORS.txt
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
 	<cdx-dialog

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @file
+ * @ingroup Extensions
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 namespace MediaWiki\Extension\WikiLambda\Jobs;
 
 use GenericParameterJob;

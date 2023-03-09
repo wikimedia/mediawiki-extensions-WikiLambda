@@ -1,3 +1,10 @@
+/*!
+ * WikiLambda unit test suite for the schemata mixin
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 /* eslint-disable no-undef */
 var schemata = require( '../../../resources/ext.wikilambda.edit/mixins/schemata.js' ).methods,
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),

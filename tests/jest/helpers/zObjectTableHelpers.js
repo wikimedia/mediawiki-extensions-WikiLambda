@@ -1,3 +1,9 @@
+/*!
+ * WikiLambda unit test suite tableDataToRowObjects helper.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
 var Row = require( '../../../resources/ext.wikilambda.edit/store/classes/Row.js' );
 
 var tableDataToRowObjects = function ( tableData ) {

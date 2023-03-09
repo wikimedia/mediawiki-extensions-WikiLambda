@@ -1,3 +1,10 @@
+/*!
+ * WikiLambda unit test suite mock Api helper.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 /* eslint-disable no-undef, no-restricted-syntax */
 'use strict';
 

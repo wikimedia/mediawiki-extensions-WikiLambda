@@ -1,3 +1,10 @@
+/*!
+ * WikiLambda browser test suite of evaluating a function (CUJ1)
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 'use strict';
 const ListZObjectsByType = require( '../pageobjects/ListZObjectsByType.page' ),
 	FunctionPage = require( '../pageobjects/Function.page' );

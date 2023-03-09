@@ -1,3 +1,10 @@
+/*!
+ * WikiLambda unit test suite mock objects.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 var mockLabels = {
 	Z1K1: {
 		Z1K1: 'Z9',

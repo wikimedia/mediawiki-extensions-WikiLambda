@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the App component and related files.
+ * WikiLambda unit test suite for the useBreakpoints composable.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

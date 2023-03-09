@@ -1,3 +1,10 @@
+/*!
+ * WikiLambda unit test suite for the programmging Languages Vuex store module
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 var programmingLanguagesModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/programmingLanguages.js' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	mockZProgrammingLanguages = [

@@ -1,3 +1,9 @@
+/*!
+ * WikiLambda unit test suite function editor helper.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
 'use strict';
 
 const runSetup = function () {
