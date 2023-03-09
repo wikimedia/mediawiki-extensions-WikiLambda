@@ -11,15 +11,31 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use FauxRequest;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Title\Title;
 use RequestContext;
 use SpecialRecentChanges;
-use Title;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Hooks
  * @group Database
  */
 class HooksTest extends WikiLambdaIntegrationTestCase {
+	/**
+	 * @covers ::onMultiContentSave
+	 */
+	public function testOnMultiContentSave_otherNameSpace() {
+		$invalidTitleText = 'This is a title';
+
+		$invalidZIDStatus = $this->editPage(
+			$invalidTitleText, ZTestType::TEST_ENCODING, 'Test content', NS_PROJECT
+		);
+
+		$this->assertTrue( $invalidZIDStatus->isOK() );
+
+		$invalidTitle = Title::newFromText( $invalidTitleText, NS_PROJECT );
+		$this->assertTrue( $invalidTitle->exists() );
+	}
+
 	/**
 	 * @covers ::onMultiContentSave
 	 */
