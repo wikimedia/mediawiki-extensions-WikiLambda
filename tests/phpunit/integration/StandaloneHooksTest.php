@@ -130,6 +130,68 @@ class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * @covers ::onMultiContentSave
 	 */
+	public function testOnMultiContentSave_unlabelled() {
+		// Insert ZTestType
+
+		$unlabelledObject = <<<EOT
+{
+	"Z1K1": "Z2",
+	"Z2K1": "Z0",
+	"Z2K2": {
+		"Z1K1": "Z4",
+		"Z4K1": "Z111",
+		"Z4K2": [
+			"Z3",
+			{
+				"Z1K1": "Z3",
+				"Z3K1": "Z6",
+				"Z3K2": "Z111K1",
+				"Z3K3": {
+					"Z1K1": "Z12",
+					"Z12K1": [
+						"Z11"
+					]
+				}
+			},
+			{
+				"Z1K1": "Z3",
+				"Z3K1": "Z6",
+				"Z3K2": "Z111K2",
+				"Z3K3": {
+					"Z1K1": "Z12",
+					"Z12K1": [
+						"Z11"
+					]
+				}
+			}
+		],
+		"Z4K3": "Z111"
+	},
+	"Z2K3": {
+		"Z1K1": "Z12",
+		"Z12K1": [
+			"Z11"
+		]
+	},
+	"Z2K4": {
+		"Z1K1": "Z32",
+		"Z32K1": [
+			"Z31"
+		]
+	}
+}
+EOT;
+
+		$status = $this->editPage(
+			ZTestType::TEST_ZID, ZTestType::TEST_ENCODING, 'First test insertion', NS_MAIN
+		);
+
+		$this->assertTrue( $status->isOK() );
+	}
+
+	/**
+	 * @covers ::onMultiContentSave
+	 */
 	public function testOnMultiContentSave_clashingLabels_caught() {
 		// Insert ZTestType
 		$this->registerLangs( ZTestType::TEST_LANGS );
