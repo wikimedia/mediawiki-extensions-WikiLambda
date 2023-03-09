@@ -57,6 +57,18 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 	public function testRegisterExtension() {
 		$zObjectTitle = Title::newFromText( 'Z1' );
 		$this->assertTrue( $zObjectTitle->isContentPage() );
+
+		$this->assertSame( 'zobject', CONTENT_MODEL_ZOBJECT ?? '' );
+		$this->assertSame( $zObjectTitle->getContentModel(), CONTENT_MODEL_ZOBJECT );
+
+		$this->assertFalse( $zObjectTitle->isWikitextPage() );
+
+		global $wgNonincludableNamespaces;
+		$this->assertArrayHasKey( NS_MAIN, $wgNonincludableNamespaces );
+
+		global $wgNamespaceProtection;
+		$this->assertContains( 'wikilambda-edit', $wgNamespaceProtection[NS_MAIN] );
+		$this->assertContains( 'wikilambda-create', $wgNamespaceProtection[NS_MAIN] );
 	}
 
 	/**
