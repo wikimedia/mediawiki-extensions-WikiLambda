@@ -50,7 +50,7 @@ class UpdateImplementationsJob extends Job implements GenericParameterJob {
 
 		$targetTitle = Title::newFromText( $functionZid, NS_MAIN );
 		$currentRevision = $targetTitle->getLatestRevID();
-		// TODO( T330030 ): Consider accessing the ZObjectStore as an injected service
+		// TODO (T330030): Consider accessing the ZObjectStore as an injected service
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjectStore $zObjectStore';
 		$targetObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
@@ -64,19 +64,26 @@ class UpdateImplementationsJob extends Job implements GenericParameterJob {
 				( count( $implementationRankingZids ) !== count( $currentImplementationZids ) )
 				|| array_diff( $implementationRankingZids, $currentImplementationZids )
 			) {
-				$this->logger->debug( __CLASS__ . ' Bailing: attached ZIDs have changed!' .
-					' functionZid={$functionZid}; functionRevision={$functionRevision}',
+				$this->logger->debug(
+					__CLASS__ . ' Bailing: attached ZIDs have changed!',
 					[
+						'functionZid' => $functionZid,
+						'functionRevision' => $functionRevision,
 						'implementationRankingZids' => $implementationRankingZids,
 						'currentImplementationZids' => $currentImplementationZids
-					] );
+					]
+				);
 				return false;
 			}
 		}
 
 		$this->logger->info(
-			__CLASS__ . ' Updating functionZid={$functionZid}; functionRevision={$functionRevision}',
-			[ 'implementationRankingZids' => $implementationRankingZids ]
+			__CLASS__ . ' Editing Function to update Implementations order',
+			[
+				'functionZid' => $functionZid,
+				'functionRevision' => $functionRevision,
+				'implementationRankingZids' => $implementationRankingZids
+			]
 		);
 
 		$implementationRanking = [];
@@ -92,7 +99,7 @@ class UpdateImplementationsJob extends Job implements GenericParameterJob {
 				$implementationRanking
 			)
 		);
-		// TODO( T330032 ): Consider accessing wfMessage as an injected service
+		// TODO (T330032): Consider accessing wfMessage as an injected service
 		$updatingComment = wfMessage( 'wikilambda-updated-implementations-summary' )
 			->inLanguage( 'en' )->text();
 		$zObjectStore->updateZObjectAsSystemUser( $functionZid,
