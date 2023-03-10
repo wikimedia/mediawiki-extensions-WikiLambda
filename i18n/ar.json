@@ -32,5 +32,7 @@
 	"wikilambda-editor-publish-dialog-summary-label": "ملخص التعديل",
 	"wikilambda-continue-editing": "مواصلة التعديل",
 	"wikilambda-discard-edits": "تجاهل التعديلات",
-	"wikilambda-function-details-summary-learn-more": "تعلم المزيد عن عملية المراجعة."
+	"wikilambda-function-details-summary-learn-more": "تعلم المزيد عن عملية المراجعة.",
+	"wikilambda-list-items-label": "عناصر القائمة",
+	"wikilambda-context-menu": "قائمة السياق"
 }

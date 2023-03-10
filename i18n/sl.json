@@ -346,5 +346,12 @@
 	"wikilambda-zobject-missing-attached-function": "Potrebna je funkcija",
 	"wikilambda-zimplememntation-composition-missing": "Opredeliti je treba sestavo",
 	"wikilambda-zimplementation-code-missing": "Opredeliti je treba kodo",
-	"wikilambda-chip-remove": "Odstrani predmet"
+	"wikilambda-chip-remove": "Odstrani predmet",
+	"wikilambda-add-list-item-button": "Dodaj predmet",
+	"wikilambda-list-items-label": "Predmeti seznama",
+	"wikilambda-list-items-type-label": "Vrsta seznama predmetov",
+	"wikilambda-list-item-label": "Predmet",
+	"wikilambda-context-menu": "Kontekstni meni",
+	"wikilambda-add-list-item": "Dodaj predmet",
+	"wikilambda-delete-list-item": "Izbriši predmet"
 }
