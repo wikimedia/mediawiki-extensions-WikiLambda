@@ -366,5 +366,6 @@
 	"wikilambda-list-item-label": "Item",
 	"wikilambda-context-menu": "Context Menu",
 	"wikilambda-add-list-item": "Add Item",
-	"wikilambda-delete-list-item": "Delete Item"
+	"wikilambda-delete-list-item": "Delete Item",
+	"wikilambda-list-type-change-publish-dialog-warning": "You changed the type of one or more lists. On publish, all list items will be deleted"
 }

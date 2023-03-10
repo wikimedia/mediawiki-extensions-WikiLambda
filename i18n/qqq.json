@@ -377,5 +377,6 @@
 	"wikilambda-list-item-label": "Label for single item in a list",
 	"wikilambda-context-menu": "Title for a context menu",
 	"wikilambda-add-list-item": "Label for a button that adds an item to a list",
-	"wikilambda-delete-list-item": "Label for a button that removes an item from a list"
+	"wikilambda-delete-list-item": "Label for a button that removes an item from a list",
+	"wikilambda-list-type-change-publish-dialog-warning": "Warning message when the type of a typed list is changed that list items will be removed"
 }

@@ -6,30 +6,29 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-ztyped-list-type">
-		<!-- TODO(T330190): include a flow for removing children items if type has changed-->
 		<label class="ext-wikilambda-ztyped-list-type__label">
 			{{ keyLabel }}
 		</label>
-		<wl-z-object-type
+		<wl-z-object-key-value
 			:row-id="rowId"
 			:edit="edit"
-			:expected-type="expectedType"
-			@set-value="setValue"
-		></wl-z-object-type>
+			:list-type="listType"
+			@change-event="changeType"
+		></wl-z-object-key-value>
 	</div>
 </template>
 
 <script>
-var ZObjectType = require( './ZObjectType.vue' ),
-	typeUtils = require( '../../mixins/typeUtils.js' ),
-	mapActions = require( 'vuex' ).mapActions,
-	mapGetters = require( 'vuex' ).mapGetters;
+var typeUtils = require( '../../mixins/typeUtils.js' ),
+	Constants = require( '../../Constants.js' ),
+	mapGetters = require( 'vuex' ).mapGetters,
+	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-z-typed-list-type',
 	components: {
-		'wl-z-object-type': ZObjectType
+		//
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -45,12 +44,23 @@ module.exports = exports = {
 		parentRowId: {
 			type: String,
 			default: undefined
+		},
+		listType: {
+			type: String,
+			default: null
+		},
+		listItemsRowIds: {
+			type: Array,
+			default() {
+				return [];
+			}
 		}
 	},
 	computed: $.extend( mapGetters( [
 		'getLabelData',
 		'getExpectedTypeOfKey',
-		'getZObjectKeyByRowId'
+		'getZObjectKeyByRowId',
+		'getChildrenByParentRowId'
 	] ),
 	{
 		/**
@@ -84,19 +94,31 @@ module.exports = exports = {
 			return this.$i18n( 'wikilambda-list-items-type-label' ).text();
 		}
 	} ),
-	methods: $.extend( mapActions( [ 'setValueByRowIdAndPath' ] ),
+	methods: $.extend( mapActions( [ 'setListItemsForRemoval', 'setError' ] ),
 		{
-			// although this is duplicated code from ZObjectKeyValue, we are too deeply nested
-			// to try bubbling this event up, so we just call the method directly here.
-			setValue: function ( payload ) {
-				this.setValueByRowIdAndPath( {
-					rowId: this.rowId,
-					keyPath: payload.keyPath ? payload.keyPath : [],
-					value: payload.value
-				} );
+			changeType: function ( payload ) {
+				// if the type of the list has changed, warn the user this will delete list items (now the 'wrong' type)
+				// if the type was changed to Z1, we don't need to do this
+				// TODO: we can be smarter here and check each item to know what actually needs to be deleted
+				// (instead of deleting all items)
+				if ( payload.value !== Constants.Z_OBJECT && payload.value !== this.listType ) {
+
+					// TODO (T332990): Revisit how we want to display a warning to the user about deletion
+					this.setError( {
+						internalId: this.parentRowId,
+						errorState: true,
+						errorMessage: this.$i18n( 'wikilambda-list-type-change-publish-dialog-warning' ).text(),
+						errorType: Constants.errorTypes.WARNING
+					} );
+
+					this.setListItemsForRemoval( { listItems: this.listItemsRowIds } );
+				}
 			}
 		}
-	)
+	),
+	beforeCreate: function () {
+		this.$options.components[ 'wl-z-object-key-value' ] = require( './ZObjectKeyValue.vue' );
+	}
 };
 </script>
 

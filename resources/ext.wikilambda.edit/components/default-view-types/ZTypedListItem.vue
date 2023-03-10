@@ -73,7 +73,6 @@ module.exports = exports = {
 
 .ext-wikilambda-ztyped-list-item {
 	width: 100%;
-	margin-bottom: @spacing-25;
 
 	&-bullet {
 		height: @size-25;
@@ -87,6 +86,7 @@ module.exports = exports = {
 
 	&-flex {
 		display: flex;
+		flex: 1;
 	}
 
 	&__last-element {

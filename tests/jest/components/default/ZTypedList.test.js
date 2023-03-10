@@ -25,11 +25,7 @@ describe( 'ZTypedList', () => {
 				{ id: 41, key: '2', parent: 27, value: 'object' }
 			] ),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( 'Z6' ),
-			getLabelData: createGettersWithFunctionsMock(
-				{ zid: 'Z881K1', label: 'type', lang: 'Z1002' }
-			),
-			getExpectedTypeOfKey: createGettersWithFunctionsMock( 'Z1' ),
-			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z2K2' )
+			getZObjectValueByRowId: createGettersWithFunctionsMock( 'Z6' )
 		};
 		global.store.hotUpdate( {
 			getters: getters
