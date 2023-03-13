@@ -9,7 +9,6 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Jobs;
 
-use MediaWiki\Extension\WikiLambda\API\ApiPerformTest;
 use MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
@@ -54,7 +53,8 @@ class UpdateImplementationsJobTest extends WikiLambdaIntegrationTestCase {
 	 * @group medium
 	 * @covers \MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob::__construct
 	 * @covers \MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob::run
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::getImplementationZids
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction::getImplementationZids
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction::getAssociatedZids
 	 */
 	public function testRun() {
 		$functionZid = 'Z813';
@@ -106,7 +106,7 @@ class UpdateImplementationsJobTest extends WikiLambdaIntegrationTestCase {
 		// Retrieve Z8K4/implementations (as ZIDs) and confirm correct
 		$targetObject = $this->store->fetchZObjectByTitle( $targetTitle );
 		$targetFunction = $targetObject->getInnerZObject();
-		$targetImplementationZids = ApiPerformTest::getImplementationZids( $targetFunction );
+		$targetImplementationZids = $targetFunction->getImplementationZids();
 		$this->assertTrue( $targetImplementationZids === $implementationRankingZids );
 
 		// 4. Update with a 4th ranking, again using job queue, but containing different elements
