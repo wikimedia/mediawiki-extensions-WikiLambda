@@ -63,7 +63,7 @@ describe( 'ZTesterImplResult', function () {
 				zTesterId: zTesterId
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'Running...' );
+		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'Running…' );
 	} );
 
 	it( 'displays passed status when result is passed', function () {
@@ -99,7 +99,7 @@ describe( 'ZTesterImplResult', function () {
 				zTesterId: zTesterId
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'Pending...' );
+		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'Pending…' );
 	} );
 
 	it( 'displays pending status when tester missing', function () {
@@ -111,6 +111,6 @@ describe( 'ZTesterImplResult', function () {
 				zTesterId: ''
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'Pending...' );
+		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'Pending…' );
 	} );
 } );
