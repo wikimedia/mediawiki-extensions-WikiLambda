@@ -452,8 +452,7 @@ class ApiPerformTestTest extends ApiTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::compareImplementationStats
 	 */
 	public function testMaybeUpdateImplementationRanking(
-		$validateStatuses,
-		$metadataValues,
+		$testResults,
 		$expectedRanking
 	) {
 		$functionZid = 'Z813';
@@ -468,33 +467,14 @@ class ApiPerformTestTest extends ApiTestCase {
 		$this->assertTrue( $functionRevision_1 > $functionRevision_0 );
 
 		// 2. Prepare the arguments to maybeUpdateImplementationRanking()
-		$metadataMap0 = $this->makeMetadataMap( $metadataValues[ 0 ] );
-		$metadataMap1 = $this->makeMetadataMap( $metadataValues[ 1 ] );
-		$metadataMap2 = $this->makeMetadataMap( $metadataValues[ 2 ] );
-		$metadataMap3 = $this->makeMetadataMap( $metadataValues[ 3 ] );
-		$metadataMap4 = $this->makeMetadataMap( $metadataValues[ 4 ] );
-		$metadataMap5 = $this->makeMetadataMap( $metadataValues[ 5 ] );
 		// The structure of $implementationMap is described in comments of maybeUpdateImplementationRanking
-		$implementationMap = json_decode(
-			$this->getTestFileContents( 'updateImplementationRanking-arg3.json' ), true );
-		$implementationMap[ 'Z91300' ][ 'Z8130' ][ 'validateStatus' ] =
-			$this->makeZBoolean( $validateStatuses[ 0 ] );
-		$implementationMap[ 'Z91300' ][ 'Z8131' ][ 'validateStatus' ] =
-			$this->makeZBoolean( $validateStatuses[ 1 ] );
-		$implementationMap[ 'Z91301' ][ 'Z8130' ][ 'validateStatus' ] =
-			$this->makeZBoolean( $validateStatuses[ 2 ] );
-		$implementationMap[ 'Z91301' ][ 'Z8131' ][ 'validateStatus' ] =
-			$this->makeZBoolean( $validateStatuses[ 3 ] );
-		$implementationMap[ 'Z91302' ][ 'Z8130' ][ 'validateStatus' ] =
-			$this->makeZBoolean( $validateStatuses[ 4 ] );
-		$implementationMap[ 'Z91302' ][ 'Z8131' ][ 'validateStatus' ] =
-			$this->makeZBoolean( $validateStatuses[ 5 ] );
-		$implementationMap[ 'Z91300' ][ 'Z8130' ][ 'testMetadata' ] = $metadataMap0;
-		$implementationMap[ 'Z91300' ][ 'Z8131' ][ 'testMetadata' ] = $metadataMap1;
-		$implementationMap[ 'Z91301' ][ 'Z8130' ][ 'testMetadata' ] = $metadataMap2;
-		$implementationMap[ 'Z91301' ][ 'Z8131' ][ 'testMetadata' ] = $metadataMap3;
-		$implementationMap[ 'Z91302' ][ 'Z8130' ][ 'testMetadata' ] = $metadataMap4;
-		$implementationMap[ 'Z91302' ][ 'Z8131' ][ 'testMetadata' ] = $metadataMap5;
+		$implementationMap = [];
+		foreach ( $testResults as $values ) {
+			$metadataMap = $this->makeMetadataMap( array_slice( $values, 2, 3 ) );
+			$implementationMap[ $values[ 0 ] ][ $values[ 1 ] ][ 'testMetadata' ] = $metadataMap;
+			$implementationMap[ $values[ 0 ] ][ $values[ 1 ] ][ 'validateStatus' ] =
+				$this->makeZBoolean( $values[ 5 ] );
+		}
 		$targetObject = $this->store->fetchZObjectByTitle( $targetTitle );
 		$targetFunction = $targetObject->getInnerZObject();
 		$targetImplementationZids = ApiPerformTest::getImplementationZids( $targetFunction );
@@ -525,119 +505,136 @@ class ApiPerformTestTest extends ApiTestCase {
 
 	public function provideMaybeUpdateImplementationRanking() {
 		yield 'Request specifies orchestrationCpuUsage values calling for an update' => [
-			// validateStatus for each of the (pretend) tester runs
-			[ true, true, true, true, true, true ],
 			[
-				// CPU metadata values for the 2 testers of implementation Z91300
-				[ '620.049 ms', null, null ], [ '670 ms', null, null ],
-				// CPU metadata values for the 2 testers of implementation Z91301
-				[ '520.026 ms', null, null ], [ '500 ms', null, null ],
-				// CPU metadata values for the 2 testers of implementation Z91302
-				[ '420.026 ms', null, null ], [ '420.02 ms', null, null ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
+				[ 'Z91300', 'Z8130', '620.049 ms', null, null, true ],
+				[ 'Z91300', 'Z8131', '670 ms', null, null, true ],
+				[ 'Z91301', 'Z8130', '520.026 ms', null, null, true ],
+				[ 'Z91301', 'Z8131', '500 ms', null, null, true ],
+				[ 'Z91302', 'Z8130', '420.026 ms', null, null, true ],
+				[ 'Z91302', 'Z8131', '420.02 ms', null, null, true ]
 			],
 			[ 'Z91302', 'Z91301', 'Z91300' ]
 		];
 		yield 'Request specifies orchestrationCpuUsage values calling for NO update' => [
-			// validateStatus for each of the (pretend) tester runs
-			[ true, true, true, true, true, true ],
 			[
-				// CPU metadata values for the 2 testers of implementation Z91300
-				[ '420.026 ms', null, null ], [ '420.02 ms', null, null ],
-				// CPU metadata values for the 2 testers of implementation Z91301
-				[ '520.026 ms', null, null ], [ '500 ms', null, null ],
-				// CPU metadata values for the 2 testers of implementation Z91302
-				[ '620.049 ms', null, null ], [ '670 ms', null, null ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
+				[ 'Z91300', 'Z8130', '420.026 ms', null, null, true ],
+				[ 'Z91300', 'Z8131', '420.02 ms', null, null, true ],
+				[ 'Z91301', 'Z8130', '520.026 ms', null, null, true ],
+				[ 'Z91301', 'Z8131', '500 ms', null, null, true ],
+				[ 'Z91302', 'Z8130', '620.049 ms', null, null, true ],
+				[ 'Z91302', 'Z8131', '670 ms', null, null, true ]
 			],
 			null
 		];
 		yield 'Request specifies ..CpuUsage values calling for an update' => [
-			// validateStatus for each of the (pretend) tester runs
-			[ true, true, true, true, true, true ],
 			[
-				// CPU metadata values for the 2 testers of implementation Z91300
-				[ '1620.049 ms', '20.049 ms', '20.040 ms' ], [ '1670 ms', '20.049 ms', '20.000 ms' ],
-				// CPU metadata values for the 2 testers of implementation Z91301
-				[ '520.026 ms', '520.026 ms', '520.026 ms' ], [ '500 ms', null, '520.026 ms' ],
-				// CPU metadata values for the 2 testers of implementation Z91302
-				[ '520.026 ms', '520.026 ms', '520.026 ms' ], [ '500 ms', '10 ms', '520.026 ms' ],
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
+				[ 'Z91300', 'Z8130', '1620.049 ms', '20.049 ms', '20.040 ms', true ],
+				[ 'Z91300', 'Z8131', '1670 ms', '20.049 ms', '20.000 ms', true ],
+				[ 'Z91301', 'Z8130', '520.026 ms', '520.026 ms', '520.026 ms', true ],
+				[ 'Z91301', 'Z8131', '500 ms', null, '520.026 ms', true ],
+				[ 'Z91302', 'Z8130', '520.026 ms', '520.026 ms', '520.026 ms', true ],
+				[ 'Z91302', 'Z8131', '500 ms', '10 ms', '520.026 ms', true ]
 			],
 			[ 'Z91301', 'Z91302', 'Z91300' ]
 		];
 		yield 'Request specifies ..CpuUsage values calling for NO update' => [
-			// validateStatus for each of the (pretend) tester runs
-			[ true, true, true, true, true, true ],
 			[
-				// CPU metadata values for the 2 testers of implementation Z91300
-				[ '520.026 ms', '520.026 ms', '520.026 ms' ], [ '500 ms', null, '520.026 ms' ],
-				// CPU metadata values for the 2 testers of implementation Z91301
-				[ '520.026 ms', '520.026 ms', '520.026 ms' ], [ '500 ms', '10 ms', '520.026 ms' ],
-				// CPU metadata values for the 2 testers of implementation Z91302
-				[ '1620.049 ms', '20.049 ms', '20.040 ms' ], [ '1670 ms', '20.049 ms', '20.000 ms' ],
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
+				[ 'Z91300', 'Z8130', '520.026 ms', '520.026 ms', '520.026 ms', true ],
+				[ 'Z91300', 'Z8131', '500 ms', null, '520.026 ms', true ],
+				[ 'Z91301', 'Z8130', '520.026 ms', '520.026 ms', '520.026 ms', true ],
+				[ 'Z91301', 'Z8131', '500 ms', '10 ms', '520.026 ms', true ],
+				[ 'Z91302', 'Z8130', '1620.049 ms', '20.049 ms', '20.040 ms', true ],
+				[ 'Z91302', 'Z8131', '1670 ms', '20.049 ms', '20.000 ms', true ]
 			],
 			null
 		];
 		yield 'Request specifies validateStatus values calling for an update' => [
-			// validateStatus for each of the (pretend) tester runs
-			[ true, false, true, true, true, true ],
 			[
-				// CPU metadata values for the 2 testers of implementation Z91300
-				[ '420.026 ms', null, null ], [ '420.02 ms', null, null ],
-				// CPU metadata values for the 2 testers of implementation Z91301
-				[ '520.026 ms', null, null ], [ '500 ms', null, null ],
-				// CPU metadata values for the 2 testers of implementation Z91302
-				[ '620.049 ms', null, null ], [ '670 ms', null, null ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
+				[ 'Z91300', 'Z8130', '420.026 ms', null, null, true ],
+				[ 'Z91300', 'Z8131', '420.02 ms', null, null, false ],
+				[ 'Z91301', 'Z8130', '520.026 ms', null, null, true ],
+				[ 'Z91301', 'Z8131', '500 ms', null, null, true ],
+				[ 'Z91302', 'Z8130', '620.049 ms', null, null, true ],
+				[ 'Z91302', 'Z8131', '670 ms', null, null, true ]
 			],
 			[ 'Z91301', 'Z91302', 'Z91300' ]
 		];
 		yield 'Request specifies validateStatus values calling for an update (2)' => [
-			// validateStatus for each of the (pretend) tester runs
-			[ false, false, true, false, false, true ],
 			[
-				// CPU metadata values for the 2 testers of implementation Z91300
-				[ '420.026 ms', null, null ], [ '420.02 ms', null, null ],
-				// CPU metadata values for the 2 testers of implementation Z91301
-				[ '520.026 ms', null, null ], [ '500 ms', null, null ],
-				// CPU metadata values for the 2 testers of implementation Z91302
-				[ '620.049 ms', null, null ], [ '670 ms', null, null ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
+				[ 'Z91300', 'Z8130', '420.026 ms', null, null, false ],
+				[ 'Z91300', 'Z8131', '420.02 ms', null, null, false ],
+				[ 'Z91301', 'Z8130', '520.026 ms', null, null, true ],
+				[ 'Z91301', 'Z8131', '500 ms', null, null, false ],
+				[ 'Z91302', 'Z8130', '620.049 ms', null, null, false ],
+				[ 'Z91302', 'Z8131', '670 ms', null, null, true ]
 			],
 			[ 'Z91301', 'Z91302', 'Z91300' ]
 		];
 		yield 'Request specifies validateStatus values calling for NO update' => [
-			// validateStatus for each of the (pretend) tester runs
-			[ true, true, true, false, false, true ],
 			[
-				// CPU metadata values for the 2 testers of implementation Z91300
-				[ '620.049 ms', null, null ], [ '670 ms', null, null ],
-				// CPU metadata values for the 2 testers of implementation Z91301
-				[ '520.026 ms', null, null ], [ '500 ms', null, null ],
-				// CPU metadata values for the 2 testers of implementation Z91302
-				[ '420.026 ms', null, null ], [ '420.02 ms', null, null ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
+				[ 'Z91300', 'Z8130', '620.049 ms', null, null, true ],
+				[ 'Z91300', 'Z8131', '670 ms', null, null, true ],
+				[ 'Z91301', 'Z8130', '520.026 ms', null, null, true ],
+				[ 'Z91301', 'Z8131', '500 ms', null, null, false ],
+				[ 'Z91302', 'Z8130', '420.026 ms', null, null, false ],
+				[ 'Z91302', 'Z8131', '420.02 ms', null, null, true ]
 			],
 			null
 		];
 		yield 'Request specifies validateStatus+metadata values calling for an update' => [
-			// validateStatus for each of the (pretend) tester runs
-			[ true, false, true, false, true, false ],
 			[
-				// CPU metadata values for the 2 testers of implementation Z91300
-				[ '520.026 ms', '520.026 ms', '20.049 ms' ], [ '500 ms', '520.026 ms', '20.049 ms' ],
-				// CPU metadata values for the 2 testers of implementation Z91301
-				[ '620.049 ms', '620.049 ms', null ], [ '670 ms', '620.049 ms', null ],
-				// CPU metadata values for the 2 testers of implementation Z91302
-				[ '420.026 ms', '420.026 ms', null ], [ '420.02 ms', '420.026 ms', null ],
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
+				[ 'Z91300', 'Z8130', '520.026 ms', '520.026 ms', '20.049 ms', true ],
+				[ 'Z91300', 'Z8131', '500 ms', '520.026 ms', '20.049 ms', false ],
+				[ 'Z91301', 'Z8130', '620.049 ms', '620.049 ms', null, true ],
+				[ 'Z91301', 'Z8131', '670 ms', '620.049 ms', null, false ],
+				[ 'Z91302', 'Z8130', '420.026 ms', '420.026 ms', null, true ],
+				[ 'Z91302', 'Z8131', '420.02 ms', '420.026 ms', null, false ]
 			],
 			[ 'Z91302', 'Z91300', 'Z91301' ]
 		];
 		yield 'Request specifies validateStatus+metadata values calling for NO update' => [
-			// validateStatus for each of the (pretend) tester runs
-			[ true, false, true, false, true, false ],
 			[
-				// CPU metadata values for the 2 testers of implementation Z91300
-				[ '420.026 ms', null, null ], [ '420.02 ms', null, null ],
-				// CPU metadata values for the 2 testers of implementation Z91301
-				[ '520.026 ms', null, null ], [ '500 ms', null, null ],
-				// CPU metadata values for the 2 testers of implementation Z91302
-				[ '620.049 ms', null, null ], [ '670 ms', null, null ]
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
+				[ 'Z91300', 'Z8130', '420.026 ms', null, null, true ],
+				[ 'Z91300', 'Z8131', '420.02 ms', null, null, false ],
+				[ 'Z91301', 'Z8130', '520.026 ms', null, null, true ],
+				[ 'Z91301', 'Z8131', '500 ms', null, null, false ],
+				[ 'Z91302', 'Z8130', '620.049 ms', null, null, true ],
+				[ 'Z91302', 'Z8131', '670 ms', null, null, false ]
+			],
+			null
+		];
+		yield 'Request specifies only a single test result' => [
+			[
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
+				[ 'Z91300', 'Z8130', '420.026 ms', null, null, true ]
+			],
+			null
+		];
+		yield 'Request specifies a proper subset of the attached implementations' => [
+			[
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
+				[ 'Z91300', 'Z8130', '420.026 ms', null, null, true ],
+				[ 'Z91300', 'Z8131', '420.02 ms', null, null, false ],
+				[ 'Z91301', 'Z8130', '520.026 ms', null, null, true ],
+				[ 'Z91301', 'Z8131', '500 ms', null, null, false ]
+			],
+			null
+		];
+		yield 'Request specifies a proper subset of the attached testers' => [
+			[
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
+				[ 'Z91300', 'Z8130', '420.026 ms', null, null, true ],
+				[ 'Z91301', 'Z8130', '520.026 ms', null, null, true ],
+				[ 'Z91302', 'Z8130', '620.049 ms', null, null, true ]
 			],
 			null
 		];
