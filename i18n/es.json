@@ -273,5 +273,11 @@
 	"wikilambda-zobject-missing-attached-function": "Se requiere una función",
 	"wikilambda-zimplememntation-composition-missing": "Una composición debe ser definida",
 	"wikilambda-zimplementation-code-missing": "El código debe ser definido",
-	"wikilambda-chip-remove": "Eliminar elemento"
+	"wikilambda-chip-remove": "Eliminar elemento",
+	"wikilambda-add-list-item-button": "Añadir elemento",
+	"wikilambda-list-items-type-label": "Tipo de elementos de lista",
+	"wikilambda-list-item-label": "Elemento",
+	"wikilambda-context-menu": "Menú contextual",
+	"wikilambda-add-list-item": "Añadir elemento",
+	"wikilambda-delete-list-item": "Eliminar elemento"
 }
