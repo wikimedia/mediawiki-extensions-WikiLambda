@@ -30,7 +30,8 @@ return [
 
 	'WikiLambdaZObjectAuthorization' => static function ( MediaWikiServices $services ) {
 		return new ZObjectAuthorization(
-			$services->getPermissionManager()
+			$services->getPermissionManager(),
+			LoggerFactory::getInstance( 'WikiLambda' )
 		);
 	},
 ];

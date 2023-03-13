@@ -15,22 +15,30 @@ use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Permissions\PermissionManager;
+use MediaWiki\Title\Title;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Yaml\Yaml;
-use Title;
 use User;
 
-class ZObjectAuthorization {
+class ZObjectAuthorization implements LoggerAwareInterface {
 
 	/** @var PermissionManager */
 	protected $permissionManager;
 
+	/** @var LoggerInterface */
+	private $logger;
+
 	/**
 	 * @param PermissionManager $permissionManager
+	 * @param LoggerInterface $logger
 	 */
-	public function __construct( PermissionManager $permissionManager ) {
+	public function __construct( PermissionManager $permissionManager, LoggerInterface $logger ) {
 		// TODO (T312090): This should use the Authority concept,
 		// not the soon-to-be-legacy PermissionManager.
 		$this->permissionManager = $permissionManager;
+
+		$this->logger = $logger;
 	}
 
 	/**
@@ -210,8 +218,14 @@ class ZObjectAuthorization {
 			try {
 				$pass = call_user_func( $filterMethod, $fromContent, $toContent, $title, $filterArgs );
 			} catch ( \Exception $e ) {
-				// Filter is specified in the rules but method is not available; return false
-				// wfDebugLog( "error", $e );
+				$this->getLogger()->warning(
+					'Filter is specified in the rules but method is not available; returning false',
+					[
+						'filterClass' => $filterClass,
+						'title' => $title,
+						'exception' => $e
+					]
+				);
 				$pass = false;
 			}
 		}
@@ -291,5 +305,19 @@ class ZObjectAuthorization {
 			return ( !array_key_exists( 'type', $rule ) || ( $rule[ 'type' ] === $type ) );
 		} );
 		return $filteredRules;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function setLogger( LoggerInterface $logger ) {
+		$this->logger = $logger;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getLogger() {
+		return $this->logger;
 	}
 }
