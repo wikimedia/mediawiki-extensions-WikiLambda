@@ -32,8 +32,6 @@ describe( 'Wikilambda frontend, running a function on evaluate function call vie
 		el.id = 'ext-wikilambda-app';
 		document.body.appendChild( el );
 
-		global.window = Object.create( window );
-
 		jest.useFakeTimers().setSystemTime( new Date( '2022-11-09T19:56:53Z' ) );
 
 		apiPostWithFunctionCallMock = jest.fn( () => Promise.resolve(

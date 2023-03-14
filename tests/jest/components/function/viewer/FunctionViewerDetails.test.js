@@ -20,7 +20,6 @@ describe( 'FunctionViewerDetails', function () {
 	var actionsThrowError;
 
 	beforeEach( function () {
-		global.window = Object.create( window );
 		Object.defineProperty( window, 'location', {
 			value: {
 				href: 'currentPage'
