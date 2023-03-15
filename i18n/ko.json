@@ -71,6 +71,7 @@
 	"wikilambda-editor-tester-list-label": "테스트 목록",
 	"wikilambda-tester-selector": "테스트 선택",
 	"wikilambda-tester-create-new": "새 테스트 만들기",
+	"wikilambda-tester-status-running": "실행 중…",
 	"wikilambda-tester-status-passed": "통과",
 	"wikilambda-tester-status-failed": "실패",
 	"wikilambda-tester-results-title": "테스트 결과",

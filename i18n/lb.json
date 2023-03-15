@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Robby"
+			"Robby",
+			"Volvox"
 		]
 	},
 	"wikilambda-typeunavailable": "Onbekannten Typ",
@@ -37,6 +38,7 @@
 	"wikilambda-functioncall-metadata-actual-result": "Wierklecht Resultat",
 	"wikilambda-editor-tester-list-label": "Lëscht vun den Tester",
 	"wikilambda-tester-selector": "En Test eraussichen",
+	"wikilambda-tester-status-running": "Leeft...",
 	"wikilambda-tester-results-title": "Test Resultater",
 	"wikilambda-tester-results-current-implementation": "Aktuell Ëmsetzung",
 	"wikilambda-tester-run-testers": "All Tester maachen",
