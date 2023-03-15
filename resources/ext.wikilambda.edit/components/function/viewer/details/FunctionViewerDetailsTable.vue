@@ -159,7 +159,7 @@ module.exports = exports = {
 
 	&__body {
 		&-link {
-			color: @color-primary;
+			color: @color-progressive;
 		}
 	}
 
