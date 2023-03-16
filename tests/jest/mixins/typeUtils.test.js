@@ -405,10 +405,7 @@ describe( 'typeUtils mixin', function () {
 						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
 						[ Constants.Z_REFERENCE_ID ]: ''
 					},
-					[ Constants.Z_MONOLINGUALSTRING_VALUE ]: {
-						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_STRING,
-						[ Constants.Z_STRING_VALUE ]: ''
-					}
+					[ Constants.Z_MONOLINGUALSTRING_VALUE ]: ''
 				} );
 			} );
 		} );

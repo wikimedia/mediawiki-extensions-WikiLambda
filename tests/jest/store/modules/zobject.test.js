@@ -12,6 +12,7 @@ var fs = require( 'fs' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	Row = require( '../../../../resources/ext.wikilambda.edit/store/classes/Row.js' ),
 	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
+	mockApiZkeys = require( '../../fixtures/mocks.js' ).mockApiZkeys,
 	zobject = {
 		Z1K1: 'Z2',
 		Z2K1: 'Z0',
@@ -1525,12 +1526,11 @@ describe( 'zobject Vuex module', function () {
 			expect( zobjectModule.getters.getZObjectById( context.state )( 31 ) ).toEqual( { key: 'Z6K1', value: 'Z10006K2', parent: 29, id: 31 } );
 		} );
 
-		describe( 'Add ZObjects', function () {
+		describe( 'changeType', function () {
 			beforeEach( function () {
 				context.state = {
-					zobject: [
-						{ id: 0, value: 'object' }
-					]
+					zobject: tableDataToRowObjects( [ { id: 0, value: Constants.ROW_VALUE_OBJECT } ] ),
+					zKeys: mockApiZkeys
 				};
 				context.rootState = {
 					zobjectModule: context.state
@@ -1550,13 +1550,25 @@ describe( 'zobject Vuex module', function () {
 							{ zobjectModule: context.state },
 							context.getters );
 				} );
-				context.getters.getNextKey =
-					zobjectModule.getters.getNextKey(
-						context.state,
-						context.getters,
-						{ zobjectModule: context.state },
-						context.getters );
+				Object.keys( zobjectModule.modules.addZObjects.getters ).forEach( function ( key ) {
+					context.getters[ key ] =
+						zobjectModule.modules.addZObjects.getters[ key ](
+							context.state,
+							context.getters,
+							{ zobjectModule: context.state },
+							context.getters );
+				} );
+				context.getters.getNextKey = zobjectModule.getters.getNextKey(
+					context.state,
+					context.getters,
+					{ zobjectModule: context.state },
+					context.getters
+				);
+				context.getters.getPersistedObject = function ( key ) {
+					return context.state.zKeys[ key ];
+				};
 				context.getters.getZkeys = {};
+				context.getters.getUserZlangZID = 'Z1003';
 				context.commit = jest.fn( function ( mutationType, payload ) {
 					zobjectModule.mutations[ mutationType ]( context.state, payload );
 				} );
@@ -1568,19 +1580,15 @@ describe( 'zobject Vuex module', function () {
 							}
 						};
 					}
-
 					var maybeFn = zobjectModule.actions[ actionType ];
-
 					if ( typeof maybeFn === 'function' ) {
 						maybeFn( context, payload );
 					} else {
 						maybeFn = zobjectModule.modules.addZObjects.actions[ actionType ];
-
 						if ( typeof maybeFn === 'function' ) {
 							maybeFn( context, payload );
 						}
 					}
-
 					return {
 						then: function ( fn ) {
 							return fn();
@@ -1597,186 +1605,942 @@ describe( 'zobject Vuex module', function () {
 				} );
 			} );
 
-			it( 'adds a valid ZPersistentObject', function () {
-				zobjectModule.modules.addZObjects.actions.addZPersistentObject( context, 0 );
-
-				expect( zobjectModule
-					.modules
-					.currentZObject
-					.getters
-					.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual(
-					{ Z1K1: { Z1K1: 'Z9', Z9K1: 'Z2' },
-						Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
-						Z2K2: undefined,
-						Z2K3: { Z1K1: {
-							Z1K1: 'Z9', Z9K1: 'Z12'
-						}, Z12K1: [ {
-							Z1K1: 'Z9',
-							Z9K1: 'Z11'
-						} ] },
-						Z2K4: { Z1K1: {
-							Z1K1: 'Z9', Z9K1: 'Z32'
-						}, Z32K1: [ { Z1K1: 'Z9', Z9K1: 'Z31' } ] }
-					} );
-			} );
-
-			it( 'adds a valid ZMultilingualString', function () {
-				zobjectModule.modules.addZObjects.actions.addZMultilingualString( context, { id: 0, lang: 'Z1004', value: 'test label' } );
-
-				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: { Z1K1: 'Z6', Z6K1: 'test label', Z9K1: 'Z1004' }, Z12K1: [ {
-					Z1K1: 'Z9',
-					Z9K1: 'Z11'
-				}, {
-					Z11K1: undefined, // 'object'
-					Z11K2: undefined, // 'object'
-					Z1K1: 'Z11'
-				} ] } );
-			} );
-
-			it( 'adds a valid empty ZString', function () {
-				zobjectModule.modules.addZObjects.actions.addZString( context, { id: 0 } );
-
-				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z6', Z6K1: '' } );
-			} );
-
-			it( 'adds a valid prefilled ZString', function () {
-				zobjectModule.modules.addZObjects.actions.addZString( context, { id: 0, value: 'Hello world' } );
-
-				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z6', Z6K1: 'Hello world' } );
-			} );
-
-			it( 'adds a valid ZList', function () {
-				zobjectModule.modules.addZObjects.actions.addZTypedList( context, { id: 0 } );
-
-				expect( context.state.zobject ).toEqual( [
-					{ id: 0, value: 'array' },
-					{
-						id: 1,
-						key: '0',
-						parent: 0,
-						value: 'object'
-					},
-					{
-						id: 2,
-						key: 'Z1K1',
-						parent: 1,
-						value: 'Z9'
-					},
-					{
-						id: 3,
-						key: 'Z9K1',
-						parent: 1,
-						value: 'Z1'
-					}
-				] );
-
-				expect( zobjectModule
-					.modules
-					.currentZObject
-					.getters
-					.getZObjectAsJson(
+			describe( 'add ZPersistentObject', function () {
+				it( 'adds a valid ZPersistentObject', function () {
+					const payload = { id: 0, type: Constants.Z_PERSISTENTOBJECT };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
 						context.state,
 						context.getters,
 						context.rootState,
 						context.getters
-					)
-				).toEqual( [ {
-					Z1K1: 'Z9',
-					Z9K1: 'Z1'
-				} ] );
-			} );
-
-			it( 'adds a valid empty ZReference', function () {
-				zobjectModule.modules.addZObjects.actions.addZReference( context, { id: 0 } );
-
-				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z9', Z9K1: '' } );
-			} );
-
-			it( 'adds a valid prefilled ZReference', function () {
-				zobjectModule.modules.addZObjects.actions.addZReference( context, { id: 0, value: 'Z1' } );
-
-				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z1' } );
-			} );
-
-			it( 'adds a valid ZArgument', function () {
-				zobjectModule.modules.addZObjects.actions.addZArgument( context, { id: 0 } );
-
-				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z17', Z17K1: { Z1K1: 'Z9', Z9K1: '' }, Z17K2: { Z1K1: 'Z6', Z6K1: 'Z0K1' }, Z17K3: { Z1K1: 'Z12', Z12K1: [ {
-					Z1K1: 'Z9',
-					Z9K1: 'Z11'
-				} ] } } );
-			} );
-
-			it( 'adds a valid ZFunctionCall', function () {
-				zobjectModule.modules.addZObjects.actions.addZFunctionCall( context, { id: 0 } );
-
-				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( { Z1K1: 'Z7', Z7K1: '' } );
-			} );
-
-			it( 'adds a valid ZImplementation', function () {
-				zobjectModule.modules.addZObjects.actions.addZImplementation( context, 0 );
-
-				expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, context.rootState, context.rootGetters ) ).toEqual( { Z1K1: 'Z14', Z14K1: { Z1K1: 'Z9', Z9K1: '' }, Z14K2: { Z1K1: 'Z7', Z7K1: '' }, Z14K3: undefined } );
-			} );
-
-			it( 'adds a valid ZFunction', function () {
-				zobjectModule.modules.addZObjects.actions.addZFunction( context, 0 );
-
-				expect( zobjectModule
-					.modules
-					.currentZObject
-					.getters
-					.getZObjectAsJson( context.state, context.getters, context.rootState, context.getters ) ).toEqual( {
-					Z1K1: 'Z8',
-					Z8K1: [
-						{
-							Z1K1: 'Z9',
-							Z9K1: 'Z17'
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z2' },
+						Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
+						Z2K2: undefined,
+						Z2K3: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z12' },
+							Z12K1: [
+								{ Z1K1: 'Z9', Z9K1: 'Z11' },
+								{
+									Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+									Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1003' },
+									Z11K2: { Z1K1: 'Z6', Z6K1: '' }
+								}
+							]
 						},
-						{
-							Z1K1: 'Z17',
-							Z17K1: {
-								Z1K1: 'Z9',
-								Z9K1: ''
-							},
-							Z17K2: {
-								Z1K1: 'Z6',
-								Z6K1: 'Z0K1'
-							},
-							Z17K3: {
-								Z1K1: 'Z12',
-								Z12K1: [
-									{
-										Z1K1: 'Z9',
-										Z9K1: 'Z11'
-									}
-								]
+						Z2K4: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z32' },
+							Z32K1: [ { Z1K1: 'Z9', Z9K1: 'Z31' } ]
+						}
+					} );
+				} );
+			} );
+
+			describe( 'add ZMonolingualString', function () {
+				it( 'adds a valid ZMonolingualString with empty values', function () {
+					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRING };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+						Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1003' },
+						Z11K2: { Z1K1: 'Z6', Z6K1: '' }
+					} );
+				} );
+
+				it( 'adds a valid ZMonolingualString with initial values', function () {
+					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRING, lang: 'Z1004', value: 'test label' };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+						Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1004' },
+						Z11K2: { Z1K1: 'Z6', Z6K1: 'test label' }
+					} );
+				} );
+
+				it( 'adds a valid ZMonolingualString and clears existing values', function () {
+					context.state.zobject = tableDataToRowObjects( [
+						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+						{ id: 2, key: 'Z1K1', value: 'Z9', parent: 1 },
+						{ id: 3, key: 'Z9K1', value: 'Z11', parent: 1 }
+					] );
+					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+					const payload = { id: 1, type: Constants.Z_MONOLINGUALSTRING, lang: 'Z1004', value: 'test label' };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z2K2: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+							Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1004' },
+							Z11K2: { Z1K1: 'Z6', Z6K1: 'test label' }
+						}
+					} );
+				} );
+
+				it( 'appends a valid ZMonolingualString to a list', function () {
+					context.state.zobject = tableDataToRowObjects( [
+						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 1, key: 'Z12K1', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
+						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
+						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
+						{ id: 4, key: 'Z9K1', value: 'Z11', parent: 2 }
+					] );
+					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+					const payload = { id: 1, type: Constants.Z_MONOLINGUALSTRING, lang: 'Z1004', value: 'test label', append: true };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z12K1: [
+							{ Z1K1: 'Z9', Z9K1: 'Z11' },
+							{
+								Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+								Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1004' },
+								Z11K2: { Z1K1: 'Z6', Z6K1: 'test label' }
 							}
+						]
+					} );
+				} );
+			} );
+
+			describe( 'add ZMultilingualString', function () {
+				it( 'adds a valid ZMultilingualString with empty values', function () {
+					const payload = { id: 0, type: Constants.Z_MULTILINGUALSTRING };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z12' },
+						Z12K1: [
+							{ Z1K1: 'Z9', Z9K1: 'Z11' }
+						]
+					} );
+				} );
+
+				it( 'adds a valid ZMultilingualString with empty monolingual', function () {
+					const payload = { id: 0, type: Constants.Z_MULTILINGUALSTRING, value: '' };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z12' },
+						Z12K1: [
+							{ Z1K1: 'Z9', Z9K1: 'Z11' },
+							{
+								Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+								Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1003' },
+								Z11K2: { Z1K1: 'Z6', Z6K1: '' }
+							}
+						]
+					} );
+				} );
+				it( 'adds a valid ZMultilingualString with initial values', function () {
+					const payload = { id: 0, type: Constants.Z_MULTILINGUALSTRING, lang: 'Z1004', value: 'test label' };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z12' },
+						Z12K1: [
+							{ Z1K1: 'Z9', Z9K1: 'Z11' },
+							{
+								Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+								Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1004' },
+								Z11K2: { Z1K1: 'Z6', Z6K1: 'test label' }
+							}
+						]
+					} );
+				} );
+			} );
+
+			describe( 'add ZString', function () {
+				it( 'adds a valid empty ZString', function () {
+					const payload = { id: 0, type: Constants.Z_STRING };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( { Z1K1: 'Z6', Z6K1: '' } );
+				} );
+
+				it( 'adds a valid prefilled ZString', function () {
+					const payload = { id: 0, type: Constants.Z_STRING, value: 'Hello world' };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( { Z1K1: 'Z6', Z6K1: 'Hello world' } );
+				} );
+
+				it( 'adds a valid ZString and clears existing values', function () {
+					context.state.zobject = tableDataToRowObjects( [
+						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+						{ id: 2, key: 'Z1K1', value: 'Z9', parent: 1 },
+						{ id: 3, key: 'Z9K1', value: 'Z11', parent: 1 }
+					] );
+					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+					const payload = { id: 1, type: Constants.Z_STRING, value: 'Hello world' };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z2K2: { Z1K1: 'Z6', Z6K1: 'Hello world' }
+					} );
+				} );
+
+				it( 'appends a valid ZString to a list', function () {
+					context.state.zobject = tableDataToRowObjects( [
+						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
+						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
+						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
+						{ id: 4, key: 'Z9K1', value: 'Z1', parent: 2 }
+					] );
+					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+					const payload = { id: 1, type: Constants.Z_STRING, value: 'Hello world', append: true };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z2K2: [
+							{ Z1K1: 'Z9', Z9K1: 'Z1' },
+							{ Z1K1: 'Z6', Z6K1: 'Hello world' }
+						]
+					} );
+				} );
+			} );
+
+			describe( 'add ZReference', function () {
+				it( 'adds a valid empty ZReference', function () {
+					const payload = { id: 0, type: Constants.Z_REFERENCE };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( { Z1K1: 'Z9', Z9K1: '' } );
+				} );
+
+				it( 'adds a valid prefilled ZReference', function () {
+					const payload = { id: 0, type: Constants.Z_REFERENCE, value: 'Z1' };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( { Z1K1: 'Z9', Z9K1: 'Z1' } );
+				} );
+
+				it( 'adds a valid ZReference and clears existing values', function () {
+					context.state.zobject = tableDataToRowObjects( [
+						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+						{ id: 2, key: 'Z1K1', value: 'Z6', parent: 1 },
+						{ id: 3, key: 'Z6K1', value: 'Bye', parent: 1 }
+					] );
+					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+					const payload = { id: 1, type: Constants.Z_REFERENCE, value: 'Z1' };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z2K2: { Z1K1: 'Z9', Z9K1: 'Z1' }
+					} );
+				} );
+
+				it( 'appends a valid ZReference to a list', function () {
+					context.state.zobject = tableDataToRowObjects( [
+						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
+						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
+						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
+						{ id: 4, key: 'Z9K1', value: 'Z4', parent: 2 }
+					] );
+					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+					const payload = { id: 1, type: Constants.Z_REFERENCE, value: 'Z11', append: true };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z2K2: [
+							{ Z1K1: 'Z9', Z9K1: 'Z4' },
+							{ Z1K1: 'Z9', Z9K1: 'Z11' }
+						]
+					} );
+				} );
+			} );
+
+			describe( 'add ZArgument', function () {
+				it( 'adds a valid ZArgument', function () {
+					const payload = { id: 0, type: Constants.Z_ARGUMENT };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z17' },
+						Z17K1: { Z1K1: 'Z9', Z9K1: '' },
+						Z17K2: { Z1K1: 'Z6', Z6K1: 'Z0K1' },
+						Z17K3: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z12' },
+							Z12K1: [
+								{ Z1K1: 'Z9', Z9K1: 'Z11' }
+							]
 						}
-					],
-					Z8K2: {
-						Z1K1: 'Z9',
-						Z9K1: ''
-					},
-					Z8K3: [
-						{
-							Z1K1: 'Z9',
-							Z9K1: 'Z20'
+					} );
+				} );
+
+				it( 'adds a valid ZArgument with initial values', function () {
+					const payload = { id: 0, type: Constants.Z_ARGUMENT, value: 'Z1000K2' };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z17' },
+						Z17K1: { Z1K1: 'Z9', Z9K1: '' },
+						Z17K2: { Z1K1: 'Z6', Z6K1: 'Z1000K2' },
+						Z17K3: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z12' },
+							Z12K1: [
+								{ Z1K1: 'Z9', Z9K1: 'Z11' }
+							]
 						}
-					],
-					Z8K4: [
-						{
-							Z1K1: 'Z9',
-							Z9K1: 'Z14'
+					} );
+				} );
+
+				it( 'appends a valid ZArgument to a list', function () {
+					context.state.zobject = tableDataToRowObjects( [
+						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 1, key: 'Z8K1', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
+						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
+						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
+						{ id: 4, key: 'Z9K1', value: 'Z17', parent: 2 }
+					] );
+					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+					const payload = { id: 1, type: Constants.Z_ARGUMENT, value: 'Z1000K2', append: true };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z8K1: [
+							{ Z1K1: 'Z9', Z9K1: 'Z17' },
+							{
+								Z1K1: { Z1K1: 'Z9', Z9K1: 'Z17' },
+								Z17K1: { Z1K1: 'Z9', Z9K1: '' },
+								Z17K2: { Z1K1: 'Z6', Z6K1: 'Z1000K2' },
+								Z17K3: {
+									Z1K1: { Z1K1: 'Z9', Z9K1: 'Z12' },
+									Z12K1: [
+										{ Z1K1: 'Z9', Z9K1: 'Z11' }
+									]
+								}
+							}
+						]
+					} );
+				} );
+			} );
+
+			describe( 'add ZFunctionCall', function () {
+				it( 'adds a valid empty ZFunctionCall', function () {
+					const payload = { id: 0, type: Constants.Z_FUNCTION_CALL };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+						Z7K1: { Z1K1: 'Z9', Z9K1: '' }
+					} );
+				} );
+
+				it( 'adds a valid ZFunctionCall with initial values', function () {
+					const payload = { id: 0, type: Constants.Z_FUNCTION_CALL, value: 'Z10001' };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+						Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10001' }
+					} );
+				} );
+
+				it( 'appends a valid ZFunctionCall to a list', function () {
+					context.state.zobject = tableDataToRowObjects( [
+						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
+						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
+						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
+						{ id: 4, key: 'Z9K1', value: 'Z1', parent: 2 }
+					] );
+					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+					const payload = { id: 1, type: Constants.Z_FUNCTION_CALL, value: 'Z10001', append: true };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z2K2: [
+							{ Z1K1: 'Z9', Z9K1: 'Z1' },
+							{
+								Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+								Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10001' }
+							}
+						]
+					} );
+				} );
+			} );
+
+			describe( 'add ZImplementation', function () {
+				it( 'adds a valid ZImplementation', function () {
+					const payload = { id: 0, type: Constants.Z_IMPLEMENTATION };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z14' },
+						Z14K1: { Z1K1: 'Z9', Z9K1: '' },
+						Z14K2: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+							Z7K1: { Z1K1: 'Z9', Z9K1: '' }
 						}
-					],
-					Z8K5: {
-						Z1K1: 'Z9',
-						Z9K1: 'Z0'
-					}
+					} );
+				} );
+
+				it( 'adds a valid ZImplementation for a given function Zid', function () {
+					const payload = { id: 0, type: Constants.Z_IMPLEMENTATION };
+					window.location = {
+						href: 'http://localhost:8080/wiki/Special:CreateZObject?zid=Z14&Z14K1=Z10001'
+					};
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z14' },
+						Z14K1: { Z1K1: 'Z9', Z9K1: 'Z10001' },
+						Z14K2: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+							Z7K1: { Z1K1: 'Z9', Z9K1: '' }
+						}
+					} );
+				} );
+			} );
+
+			describe( 'add ZFunction', function () {
+				it( 'adds a valid ZFunction', function () {
+					const payload = { id: 0, type: Constants.Z_FUNCTION };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z8' },
+						Z8K1: [
+							{ Z1K1: 'Z9', Z9K1: 'Z17' },
+							{
+								Z1K1: { Z1K1: 'Z9', Z9K1: 'Z17' },
+								Z17K1: { Z1K1: 'Z9', Z9K1: '' },
+								Z17K2: { Z1K1: 'Z6', Z6K1: 'Z0K1' },
+								Z17K3: {
+									Z1K1: { Z1K1: 'Z9', Z9K1: 'Z12' },
+									Z12K1: [
+										{ Z1K1: 'Z9', Z9K1: 'Z11' }
+									]
+								}
+							}
+						],
+						Z8K2: { Z1K1: 'Z9', Z9K1: '' },
+						Z8K3: [ { Z1K1: 'Z9', Z9K1: 'Z20' } ],
+						Z8K4: [ { Z1K1: 'Z9', Z9K1: 'Z14' } ],
+						Z8K5: { Z1K1: 'Z9', Z9K1: 'Z0' }
+					} );
+				} );
+
+				it( 'adds a valid ZFunction with set zid', function () {
+					const payload = { id: 0, type: Constants.Z_FUNCTION };
+					context.getters.getCurrentZObjectId = 'Z10000';
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z8' },
+						Z8K1: [
+							{ Z1K1: 'Z9', Z9K1: 'Z17' },
+							{
+								Z1K1: { Z1K1: 'Z9', Z9K1: 'Z17' },
+								Z17K1: { Z1K1: 'Z9', Z9K1: '' },
+								Z17K2: { Z1K1: 'Z6', Z6K1: 'Z10000K1' },
+								Z17K3: {
+									Z1K1: { Z1K1: 'Z9', Z9K1: 'Z12' },
+									Z12K1: [
+										{ Z1K1: 'Z9', Z9K1: 'Z11' }
+									]
+								}
+							}
+						],
+						Z8K2: { Z1K1: 'Z9', Z9K1: '' },
+						Z8K3: [ { Z1K1: 'Z9', Z9K1: 'Z20' } ],
+						Z8K4: [ { Z1K1: 'Z9', Z9K1: 'Z14' } ],
+						Z8K5: { Z1K1: 'Z9', Z9K1: 'Z10000' }
+					} );
+				} );
+			} );
+
+			describe( 'add ZType', function () {
+				it( 'adds a valid ZType', function () {
+					const payload = { id: 0, type: Constants.Z_TYPE };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z4' },
+						Z4K1: { Z1K1: 'Z9', Z9K1: 'Z0' },
+						Z4K2: [ { Z1K1: 'Z9', Z9K1: 'Z3' } ],
+						Z4K3: { Z1K1: 'Z9', Z9K1: 'Z101' }
+					} );
+				} );
+
+				it( 'appends a valid ZType to a list', function () {
+					context.state.zobject = tableDataToRowObjects( [
+						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
+						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
+						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
+						{ id: 4, key: 'Z9K1', value: 'Z4', parent: 2 }
+					] );
+					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+					const payload = { id: 1, type: Constants.Z_TYPE, append: true };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z2K2: [
+							{ Z1K1: 'Z9', Z9K1: 'Z4' },
+							{
+								Z1K1: { Z1K1: 'Z9', Z9K1: 'Z4' },
+								Z4K1: { Z1K1: 'Z9', Z9K1: 'Z0' },
+								Z4K2: [ { Z1K1: 'Z9', Z9K1: 'Z3' } ],
+								Z4K3: { Z1K1: 'Z9', Z9K1: 'Z101' }
+							}
+						]
+					} );
+				} );
+			} );
+
+			describe( 'add ZTypedList', function () {
+				it( 'adds a valid ZTypedList', function () {
+					const payload = { id: 0, type: Constants.Z_TYPED_LIST };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( [ { Z1K1: 'Z9', Z9K1: 'Z1' } ] );
+				} );
+
+				it( 'adds a valid ZTypedList of a given type', function () {
+					const payload = { id: 0, type: Constants.Z_TYPED_LIST, value: 'Z11' };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( [ { Z1K1: 'Z9', Z9K1: 'Z11' } ] );
+				} );
+
+				// FIXME append a list to a list does concat instead. This is because the common use case is
+				// append a list of zids into the tester or implementation list.
+				it( 'appends a valid ZTypedList to a list', function () {
+					context.state.zobject = tableDataToRowObjects( [
+						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
+						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
+						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
+						{ id: 4, key: 'Z9K1', value: 'Z1', parent: 2 }
+					] );
+					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+					const payload = { id: 1, type: Constants.Z_TYPED_LIST, value: 'Z6', append: true };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z2K2: [
+							{ Z1K1: 'Z9', Z9K1: 'Z1' },
+							{ Z1K1: 'Z9', Z9K1: 'Z6' }
+						]
+					} );
+				} );
+			} );
+
+			describe( 'add ZTypedPair', function () {
+				it( 'adds a valid ZTypedPair with empty values', function () {
+					const payload = { id: 0, type: Constants.Z_TYPED_PAIR };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+							Z7K1: { Z1K1: 'Z9', Z9K1: 'Z882' },
+							Z882K1: { Z1K1: 'Z9', Z9K1: '' },
+							Z882K2: { Z1K1: 'Z9', Z9K1: '' }
+						},
+						K1: undefined,
+						K2: undefined
+					} );
+				} );
+
+				it( 'adds a valid ZTypedPair with initial types', function () {
+					const payload = { id: 0, type: Constants.Z_TYPED_PAIR, values: [ 'Z6', 'Z11' ] };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+							Z7K1: { Z1K1: 'Z9', Z9K1: 'Z882' },
+							Z882K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
+							Z882K2: { Z1K1: 'Z9', Z9K1: 'Z11' }
+						},
+						K1: { Z1K1: 'Z6', Z6K1: '' },
+						K2: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
+							Z11K1: { Z1K1: 'Z9', Z9K1: '' },
+							Z11K2: { Z1K1: 'Z6', Z6K1: '' }
+						}
+					} );
+				} );
+
+				it( 'appends a valid ZTypedPair to a list', function () {
+					context.state.zobject = tableDataToRowObjects( [
+						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
+						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
+						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
+						{ id: 4, key: 'Z9K1', value: 'Z1', parent: 2 }
+					] );
+					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+					const payload = { id: 1, type: Constants.Z_TYPED_PAIR, values: [ 'Z6', 'Z6' ], append: true };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z2K2: [
+							{ Z1K1: 'Z9', Z9K1: 'Z1' },
+							{
+								Z1K1: {
+									Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+									Z7K1: { Z1K1: 'Z9', Z9K1: 'Z882' },
+									Z882K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
+									Z882K2: { Z1K1: 'Z9', Z9K1: 'Z6' }
+								},
+								K1: { Z1K1: 'Z6', Z6K1: '' },
+								K2: { Z1K1: 'Z6', Z6K1: '' }
+							}
+						]
+					} );
+				} );
+			} );
+
+			describe( 'add ZTypedMap', function () {
+				it( 'adds a valid ZTypedMap with empty values', function () {
+					const payload = { id: 0, type: Constants.Z_TYPED_MAP };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+							Z7K1: { Z1K1: 'Z9', Z9K1: 'Z883' },
+							Z883K1: { Z1K1: 'Z9', Z9K1: '' },
+							Z883K2: { Z1K1: 'Z9', Z9K1: '' }
+						}
+					} );
+				} );
+
+				it( 'adds a valid ZTypedMap with initial types', function () {
+					const payload = { id: 0, type: Constants.Z_TYPED_MAP, values: [ 'Z6', 'Z1' ] };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+							Z7K1: { Z1K1: 'Z9', Z9K1: 'Z883' },
+							Z883K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
+							Z883K2: { Z1K1: 'Z9', Z9K1: 'Z1' }
+						}
+					} );
+				} );
+
+				it( 'appends a valid ZTypedMap to a list', function () {
+					context.state.zobject = tableDataToRowObjects( [
+						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
+						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
+						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
+						{ id: 4, key: 'Z9K1', value: 'Z1', parent: 2 }
+					] );
+					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+					const payload = { id: 1, type: Constants.Z_TYPED_MAP, values: [ 'Z6', 'Z1' ], append: true };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z2K2: [
+							{ Z1K1: 'Z9', Z9K1: 'Z1' },
+							{
+								Z1K1: {
+									Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+									Z7K1: { Z1K1: 'Z9', Z9K1: 'Z883' },
+									Z883K1: { Z1K1: 'Z9', Z9K1: 'Z6' },
+									Z883K2: { Z1K1: 'Z9', Z9K1: 'Z1' }
+								}
+							}
+						]
+					} );
+				} );
+			} );
+
+			describe( 'add GenericObject', function () {
+				it( 'adds a valid object of known type', function () {
+					const payload = { id: 0, type: Constants.Z_KEY };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z3' },
+						Z3K1: { Z1K1: 'Z9', Z9K1: '' },
+						Z3K2: { Z1K1: 'Z6', Z6K1: '' },
+						Z3K3: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z12' },
+							Z12K1: [
+								{ Z1K1: 'Z9', Z9K1: 'Z11' }
+							]
+						}
+					} );
+				} );
+
+				it( 'adds a valid object of known type with typed lists', function () {
+					const payload = { id: 0, type: Constants.Z_MULTILINGUALSTRINGSET };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z32' },
+						Z32K1: [ { Z1K1: 'Z9', Z9K1: 'Z31' } ]
+					} );
+				} );
+
+				it( 'adds a valid object of known type with typed lists and referred keys', function () {
+					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRINGSET };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z31' },
+						Z31K1: { Z1K1: 'Z9', Z9K1: '' },
+						Z31K2: [ { Z1K1: 'Z9', Z9K1: 'Z6' } ]
+					} );
+				} );
+
+				it( 'adds a valid object of an unknown type', function () {
+					const payload = { id: 0, type: 'Z10000' };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z10000' }
+					} );
+				} );
+
+				it( 'adds a valid object of a type defined by a function call', function () {
+					const payload = { id: 0, type: { Z1K1: 'Z7', Z7K1: 'Z10001', Z10001K1: 'Z6' } };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+							Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10001' },
+							Z10001K1: { Z1K1: 'Z9', Z9K1: 'Z6' }
+						}
+					} );
+				} );
+
+				it( 'appends a valid generic object to a list', function () {
+					context.state.zobject = tableDataToRowObjects( [
+						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
+						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
+						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
+						{ id: 4, key: 'Z9K1', value: 'Z1', parent: 2 }
+					] );
+					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+					const payload = { id: 1, type: 'Z10002', append: true };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z2K2: [
+							{ Z1K1: 'Z9', Z9K1: 'Z1' },
+							{
+								Z1K1: { Z1K1: 'Z9', Z9K1: 'Z10002' }
+							}
+						]
+					} );
+				} );
+
+				it( 'appends a valid generic object typed by a function call to a list', function () {
+					context.state.zobject = tableDataToRowObjects( [
+						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
+						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
+						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
+						{ id: 4, key: 'Z9K1', value: 'Z1', parent: 2 }
+					] );
+					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+					const payload = { id: 1, type: { Z1K1: 'Z7', Z7K1: 'Z10003', Z10003K1: 'Z6' }, append: true };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z2K2: [
+							{ Z1K1: 'Z9', Z9K1: 'Z1' },
+							{
+								Z1K1: {
+									Z1K1: { Z1K1: 'Z9', Z9K1: 'Z7' },
+									Z7K1: { Z1K1: 'Z9', Z9K1: 'Z10003' },
+									Z10003K1: { Z1K1: 'Z9', Z9K1: 'Z6' }
+								}
+							}
+						]
+					} );
 				} );
 			} );
 		} );
+
 		describe( 'Attach and detach testers and implementations', function () {
 			beforeEach( function () {
 				context.state = {

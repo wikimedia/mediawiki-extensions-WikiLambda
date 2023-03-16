@@ -267,15 +267,26 @@ var Constants = require( '../Constants.js' ),
 			 * to a Z60 than as a literal, so when creating the scaffolding
 			 * we give the structure of an empty reference)
 			 *
-			 * FIXME: Once we deprecate the old code from changeType, getScaffolding
-			 * should not return undefined, but have the Empty object (Z1) return as
-			 * default case.
-			 *
 			 * @param {string} type
 			 * @return {Object|Array}
 			 */
 			getScaffolding: function ( type ) {
 				switch ( type ) {
+					case Constants.Z_STRING:
+						// Empty string: ''
+						return '';
+
+					case Constants.Z_REFERENCE:
+						// Empty reference:
+						// {
+						//  Z1K1: Z9
+						//  Z9K1: ''
+						// }
+						return {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+							[ Constants.Z_REFERENCE_ID ]: ''
+						};
+
 					case Constants.Z_OBJECT:
 						// Empty object:
 						// {
@@ -287,19 +298,26 @@ var Constants = require( '../Constants.js' ),
 								[ Constants.Z_REFERENCE_ID ]: ''
 							}
 						};
-					case Constants.Z_STRING:
-						// Empty object:
+
+					case Constants.Z_MULTILINGUALSTRING:
+						// Empty monolingual string:
 						// {
-						//  Z1K1: { Z1K1: Z6, Z6K1: '' }
+						//  Z1K1: Z12
+						//  Z12K1: [ Z11 ]
 						// }
-						return '';
+						return {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
+							[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [
+								Constants.Z_MONOLINGUALSTRING
+							]
+						};
 
 					case Constants.Z_MONOLINGUALSTRING:
 						// Empty monolingual string:
 						// {
 						//  Z1K1: Z11
 						//  Z11K1: { Z1K1: Z9, Z9K1: '' }
-						//  Z11K2: { Z1K1: Z6, Z6K1: '' }
+						//  Z11K2: ''
 						// }
 						return {
 							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
@@ -307,15 +325,329 @@ var Constants = require( '../Constants.js' ),
 								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
 								[ Constants.Z_REFERENCE_ID ]: ''
 							},
-							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: {
+							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: ''
+						};
+
+					case Constants.Z_FUNCTION_CALL:
+						// Empty function call:
+						// {
+						//  Z1K1: Z7
+						//  Z7K1: { Z1K1: Z9, Z9K1: '' }
+						// }
+						return {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+							[ Constants.Z_FUNCTION_CALL_FUNCTION ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: ''
+							}
+						};
+
+					case Constants.Z_FUNCTION:
+						// Empty function
+						// {
+						//  Z1K1: 'Z8',
+						//  Z8K1: [ 'Z17' ],
+						//  Z8K2: { Z1K1: 'Z9', Z9K1: '' },
+						//  Z8K3: [ 'Z20' ],
+						//  Z8K4: [ 'Z14' ],
+						//  Z8K5: { Z1K1: 'Z9', Z9K1: '' },
+						// }
+						return {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION,
+							[ Constants.Z_FUNCTION_ARGUMENTS ]: [ Constants.Z_ARGUMENT ],
+							[ Constants.Z_FUNCTION_RETURN_TYPE ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: ''
+							},
+							[ Constants.Z_FUNCTION_TESTERS ]: [ Constants.Z_TESTER ],
+							[ Constants.Z_FUNCTION_IMPLEMENTATIONS ]: [ Constants.Z_IMPLEMENTATION ],
+							[ Constants.Z_FUNCTION_IDENTITY ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: ''
+							}
+						};
+
+					case Constants.Z_ARGUMENT:
+						// Empty argument declaration:
+						// {
+						//  Z1K1: 'Z17',
+						//  Z17K1: { Z1K1: 'Z9', Z9K1: '' },
+						//  Z17K2: { Z1K1: 'Z6', Z6K1: 'Z0K1' },
+						//  Z17K3: { Z1K1: 'Z12', Z12K1: [ Z11 ] }
+						// }
+						return {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_ARGUMENT,
+							[ Constants.Z_ARGUMENT_TYPE ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: ''
+							},
+							[ Constants.Z_ARGUMENT_KEY ]: '',
+							[ Constants.Z_ARGUMENT_LABEL ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
+								[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [
+									Constants.Z_MONOLINGUALSTRING
+								]
+							}
+						};
+
+					case Constants.Z_IMPLEMENTATION:
+						// Empty implementation
+						// {
+						//  Z1K1: 'Z14',
+						//  Z14K1: { Z1K1: 'Z9', Z9K1: '' },
+						//  Z14K2: { Z1K1: 'Z7', Z7K1: '' }
+						// }
+						return {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_IMPLEMENTATION,
+							[ Constants.Z_IMPLEMENTATION_FUNCTION ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: ''
+							},
+							[ Constants.Z_IMPLEMENTATION_COMPOSITION ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+								[ Constants.Z_FUNCTION_CALL_FUNCTION ]: {
+									[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+									[ Constants.Z_REFERENCE_ID ]: ''
+								}
+							}
+						};
+
+					case Constants.Z_TESTER:
+						// Empty implementation
+						// {
+						//  Z1K1: 'Z20',
+						//  Z20K1: { Z1K1: 'Z9', Z9K1: '' }
+						//  Z20K2: {
+						//   Z1K1: 'Z7',
+						//   Z7K1: { Z1K1: 'Z9', Z9K1: '' }
+						//  },
+						//  Z20K3: {
+						//   Z1K1: 'Z7',
+						//   Z7K1: { Z1K1: 'Z9', Z9K1: '' }
+						//  }
+						// }
+						return {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_TESTER,
+							[ Constants.Z_TESTER_FUNCTION ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: ''
+							},
+							[ Constants.Z_TESTER_CALL ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+								[ Constants.Z_FUNCTION_CALL_FUNCTION ]: {
+									[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+									[ Constants.Z_REFERENCE_ID ]: ''
+								}
+							},
+							[ Constants.Z_TESTER_VALIDATION ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+								[ Constants.Z_FUNCTION_CALL_FUNCTION ]: {
+									[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+									[ Constants.Z_REFERENCE_ID ]: ''
+								}
+							}
+						};
+
+					case Constants.Z_PERSISTENTOBJECT:
+						// Empty persistent object:
+						// {
+						//  Z1K1: 'Z2',
+						//  Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
+						//  Z2K2: undefined,
+						//  Z2K3: {
+						//  Z1K1: { Z1K1: 'Z9', Z9K1: 'Z12' }
+						//   Z12K1: [ Z11 ]
+						//  },
+						//  Z2K4: {
+						//   Z1K1: { Z1K1: 'Z9', Z9K1: 'Z32' }
+						//   Z32K1: [ Z31 ]
+						//  }
+						// }
+						return {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_PERSISTENTOBJECT,
+							[ Constants.Z_PERSISTENTOBJECT_ID ]: {
 								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_STRING,
-								[ Constants.Z_STRING_VALUE ]: ''
+								[ Constants.Z_STRING_VALUE ]: Constants.NEW_ZID_PLACEHOLDER
+							},
+							[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {},
+							[ Constants.Z_PERSISTENTOBJECT_LABEL ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
+								[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [ Constants.Z_MONOLINGUALSTRING ]
+							},
+							[ Constants.Z_PERSISTENTOBJECT_ALIASES ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRINGSET,
+								[ Constants.Z_MULTILINGUALSTRINGSET_VALUE ]: [ Constants.Z_MONOLINGUALSTRINGSET ]
+							}
+						};
+
+					case Constants.Z_TYPE:
+						// Empty type:
+						// {
+						//  Z1K1: 'Z4',
+						//  Z4K1: { Z1K1: 'Z9', Z9K1: 'Z0' },
+						//  Z4K2: [ 'Z3' ]
+						//  Z4K3: { Z1K1: 'Z9', Z9K1: '' }
+						// }
+						return {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_TYPE,
+							[ Constants.Z_TYPE_IDENTITY ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: Constants.NEW_ZID_PLACEHOLDER
+							},
+							[ Constants.Z_TYPE_KEYS ]: [ Constants.Z_KEY ],
+							[ Constants.Z_TYPE_VALIDATOR ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: ''
+							}
+						};
+
+					case Constants.Z_KEY:
+						// Empty type:
+						// {
+						//  Z1K1: 'Z3',
+						//  Z3K1: { Z1K1: 'Z9', Z9K1: '' },
+						//  Z3K2: '',
+						//  Z3K3: {
+						//   Z1K1: 'Z12',
+						//   Z12K1: [ 'Z11' ]
+						//  }
+						// }
+						return {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_TYPE,
+							[ Constants.Z_KEY_TYPE ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: ''
+							},
+							[ Constants.Z_KEY_ID ]: '',
+							[ Constants.Z_KEY_LABEL ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
+								[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [ Constants.Z_MONOLINGUALSTRING ]
+							}
+						};
+
+					case Constants.Z_TYPED_LIST:
+						// Empty typed list (canonical):
+						// [ { Z1K1: 'Z9', Z9K1: '' } ]
+						return [
+							{
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: ''
+							}
+						];
+
+					case Constants.Z_TYPED_PAIR:
+						// Empty typed pair:
+						// {
+						//  Z1K1: {
+						//   Z1K1: Z7,
+						//   Z7K1: Z882,
+						//   Z882K1: { Z1K1: Z9, Z9K1: '' }
+						//   Z882K2: { Z1K1: Z9, Z9K1: '' }
+						//  },
+						//  K1: {}
+						//  K2: {}
+						// }
+						return {
+							[ Constants.Z_OBJECT_TYPE ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+								[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_PAIR,
+								[ Constants.Z_TYPED_PAIR_TYPE1 ]: {
+									[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+									[ Constants.Z_REFERENCE_ID ]: ''
+								},
+								[ Constants.Z_TYPED_PAIR_TYPE2 ]: {
+									[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+									[ Constants.Z_REFERENCE_ID ]: ''
+								}
+							},
+							[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ]: {},
+							[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ]: {}
+						};
+
+					case Constants.Z_TYPED_MAP:
+						// Empty typed map:
+						// {
+						//  Z1K1: {
+						//   Z1K1: Z7,
+						//   Z7K1: Z883,
+						//   Z883K1: { Z1K1: Z9, Z9K1: '' }
+						//   Z883K2: { Z1K1: Z9, Z9K1: '' }
+						//  }
+						// }
+						return {
+							[ Constants.Z_OBJECT_TYPE ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION_CALL,
+								[ Constants.Z_FUNCTION_CALL_FUNCTION ]: Constants.Z_TYPED_MAP,
+								[ Constants.Z_TYPED_MAP_TYPE1 ]: {
+									[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+									[ Constants.Z_REFERENCE_ID ]: ''
+								},
+								[ Constants.Z_TYPED_MAP_TYPE2 ]: {
+									[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+									[ Constants.Z_REFERENCE_ID ]: ''
+								}
 							}
 						};
 
 					default:
 						return undefined;
 				}
+			},
+
+			/**
+			 * Given the canonical representation of a type,
+			 * it generates the payload that will be passed to the
+			 * getBlankObjectByType method that will create an initial
+			 * scaffolding of an object of that type.
+			 *
+			 * This accounts for two special cases:
+			 * 1) Some types are more commonly persisted and referred to rather
+			 * than added literally. When these appear, we instance the
+			 * scaffolding of a reference instead of a literal
+			 * 2) Typed lists, pairs and maps require some special treatment
+			 * to extract the value of their type keys before calling to
+			 * getBlankObjectType
+			 *
+			 * @param {Object|string} keyType
+			 * @return {Object}
+			 */
+			initializePayloadForType: function ( keyType ) {
+				// We detect those types that will be added as references rather than literal objects:
+				const type = Constants.LINKED_TYPES.indexOf( keyType ) > -1 ?
+					Constants.Z_REFERENCE :
+					keyType;
+				var payload = { type };
+				// We need to hardcode the initialization payload for typed list/pair/map cases:
+				if ( type[ Constants.Z_FUNCTION_CALL_FUNCTION ] ) {
+					const functionId = type[ Constants.Z_FUNCTION_CALL_FUNCTION ];
+					switch ( functionId ) {
+						case Constants.Z_TYPED_LIST:
+							payload = {
+								type: Constants.Z_TYPED_LIST,
+								value: type[ Constants.Z_TYPED_LIST_TYPE ]
+							};
+							break;
+						case Constants.Z_TYPED_PAIR:
+							payload = {
+								type: Constants.Z_TYPED_LIST,
+								values: [
+									type[ Constants.Z_TYPED_PAIR_TYPE1 ],
+									type[ Constants.Z_TYPED_PAIR_TYPE2 ]
+								]
+							};
+							break;
+						case Constants.Z_TYPED_MAP:
+							payload = {
+								type: Constants.Z_TYPED_MAP,
+								values: [
+									type[ Constants.Z_TYPED_MAP_TYPE1 ],
+									type[ Constants.Z_TYPED_MAP_TYPE2 ]
+								]
+							};
+							break;
+					}
+				}
+				return payload;
 			}
 		}
 	};

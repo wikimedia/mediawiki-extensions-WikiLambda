@@ -90,7 +90,7 @@ module.exports = exports = {
 			// Create a K1 with the correct type
 			context.dispatch( 'addZObject', { key: Constants.Z_TYPED_OBJECT_ELEMENT_1, value: 'object', parent: newItemParentId } );
 			if ( payload.value instanceof Object && payload.value.type && payload.value.values ) {
-				context.dispatch( 'changeType', { id: nextId, type: payload.value.type, values: payload.value.values, isDeclaration: false } );
+				context.dispatch( 'changeType', { id: nextId, type: payload.value.type, values: payload.value.values } );
 			} else {
 				context.dispatch( 'changeType', { id: nextId, type: payload.value } );
 			}

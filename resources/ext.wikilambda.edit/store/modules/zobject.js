@@ -808,7 +808,7 @@ module.exports = exports = {
 		getNextRowId: function ( state ) {
 			let highestObjectId = 0;
 
-			if ( state.zobject.length === 0 ) {
+			if ( !state.zobject || state.zobject.length === 0 ) {
 				return highestObjectId;
 			}
 

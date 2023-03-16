@@ -77,7 +77,7 @@ module.exports = exports = {
 		}
 	} ),
 	methods: $.extend( {},
-		mapActions( [ 'submitZObject', 'changeType', 'validateZObject' ] ),
+		mapActions( [ 'submitZObject', 'validateZObject' ] ),
 		mapActions( 'router', [ 'navigate' ] ),
 		{
 			submit: function () {

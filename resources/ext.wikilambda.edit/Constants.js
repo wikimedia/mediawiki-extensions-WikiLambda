@@ -172,6 +172,15 @@ var Constants = {
 		[ Constants.Z_CODE ]: 'z-code',
 		[ Constants.Z_TYPED_LIST ]: 'z-typed-list'
 	},
+	linkedTypes = [
+		Constants.Z_TYPE,
+		Constants.Z_TESTER,
+		Constants.Z_BOOLEAN,
+		Constants.Z_IMPLEMENTATION,
+		Constants.Z_FUNCTION,
+		Constants.Z_NATURAL_LANGUAGE,
+		Constants.Z_PROGRAMMING_LANGUAGE
+	],
 	resolverTypes = [
 		Constants.Z_REFERENCE,
 		Constants.Z_FUNCTION_CALL,
@@ -191,6 +200,7 @@ Constants.contextMenuItems = contextMenuItems;
 Constants.COLOR_NESTING_LEVELS = 6;
 Constants.BUILTIN_COMPONENTS = builtinComponents;
 Constants.RESOLVER_TYPES = resolverTypes;
+Constants.LINKED_TYPES = linkedTypes;
 Constants.API_LIMIT_MAX = 100;
 
 Constants.ROW_VALUE_OBJECT = 'object';
