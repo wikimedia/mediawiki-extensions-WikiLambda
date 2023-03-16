@@ -10,7 +10,10 @@
 
 namespace MediaWiki\Extension\WikiLambda\ZObjects;
 
+use FormatJson;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 
 class ZFunction extends ZObject {
 
@@ -157,4 +160,64 @@ class ZFunction extends ZObject {
 		}
 		return $this->data[ ZTypeRegistry::Z_FUNCTION_ARGUMENTS ]->getAsArray();
 	}
+
+	/**
+	 * Get the Z8K3/Testers and return a list of ZIDs for them.
+	 *
+	 * @return string[]
+	 * @throws ZErrorException from ZObjectFactory::create
+	 */
+	public function getTesterZids() {
+		return $this->getAssociatedZids( ZTypeRegistry::Z_FUNCTION_TESTERS );
+	}
+
+	/**
+	 * Get the Z8K4/Implementations and return a list of ZIDs for them.
+	 *
+	 * @return string[]
+	 * @throws ZErrorException from ZObjectFactory::create
+	 */
+	public function getImplementationZids() {
+		return $this->getAssociatedZids( ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS );
+	}
+
+	/**
+	 * @param string $key One of ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS or ZTypeRegistry::Z_FUNCTION_TESTERS
+	 * @return string[]
+	 * @throws ZErrorException from ZObjectFactory::create
+	 */
+	private function getAssociatedZids( $key ) {
+		$zids = [];
+		$associatedList = $this->getValueByKey( $key );
+
+		if ( !$associatedList ) {
+			return [];
+		}
+
+		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $associatedList';
+		$associatedArray = $associatedList->getAsArray();
+
+		foreach ( $associatedArray as $item ) {
+			if ( is_string( $item ) ) {
+				$decodedJson = FormatJson::decode( $item );
+				// If not JSON, assume we have received a ZID.
+				if ( $decodedJson ) {
+					$item = ZObjectFactory::create( $decodedJson );
+				} else {
+					$item = new ZReference( $item );
+				}
+			}
+
+			$zids[] = ( $item->getZType() === ZTypeRegistry::Z_REFERENCE ) ?
+				$item->getValueByKey( ZTypeRegistry::Z_REFERENCE_VALUE ) :
+				(
+					( $item->getZType() === ZTypeRegistry::Z_PERSISTENTOBJECT_ID ) ?
+						$item->getValueByKey( ZTypeRegistry::Z_PERSISTENTOBJECT_ID )->
+							getValueByKey( ZTypeRegistry::Z_STRING_VALUE ) :
+						ZTypeRegistry::Z_NULL_REFERENCE
+				);
+		}
+		return $zids;
+	}
+
 }

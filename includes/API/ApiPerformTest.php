@@ -21,9 +21,7 @@ use MediaWiki\Extension\WikiLambda\Jobs\CacheTesterResultsJob;
 use MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
-use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZFunction;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
@@ -124,8 +122,9 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 		// We only update the implementation ranking for attached implementations and testers,
 		// and only if all attached implementations and testers are included in the results,
 		// and no results come from the cache.  These vars are used to track those conditions.
-		$attachedImplementationZids = self::getImplementationZids( $targetFunction );
-		$attachedTesterZids = self::getTesterZids( $targetFunction );
+		$attachedImplementationZids = $targetFunction->getImplementationZids();
+		$attachedTesterZids = $targetFunction->getTesterZids();
+
 		$canUpdateImplementationRanking = true;
 
 		// 2. For each implementation, run each tester
@@ -338,8 +337,13 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 
 		// 3. Maybe update implementation ranking (in persistent storage)
 		if ( $canUpdateImplementationRanking ) {
-			$this->maybeUpdateImplementationRanking( $functionZid, $functionRevision,
-				$implementationMap, $attachedImplementationZids, $attachedTesterZids );
+			$this->maybeUpdateImplementationRanking(
+				$functionZid,
+				$functionRevision,
+				$implementationMap,
+				$attachedImplementationZids,
+				$attachedTesterZids
+			);
 		} else {
 			$this->getLogger()->info(
 				__METHOD__ . ' Not updating implementation ranking',
@@ -670,64 +674,6 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 		}
 		// Use placeholder ZID for non-persisted objects.
 		return ZTypeRegistry::Z_NULL_REFERENCE;
-	}
-
-	/**
-	 * For the given function, get Z8K4/implementations and return a list of ZIDs for them.
-	 *
-	 * TODO (T329254): Consider moving into ZFunction
-	 *
-	 * @param ZFunction $targetFunction
-	 * @return array
-	 * @throws ZErrorException from ZObjectFactory::create
-	 */
-	public static function getImplementationZids( $targetFunction ) {
-		$implementationZids = [];
-		$targetFunctionImplementations = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS );
-		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionImplementations';
-		$currentImplementations = $targetFunctionImplementations->getAsArray();
-		foreach ( $currentImplementations as $implementation ) {
-			if ( is_string( $implementation ) ) {
-				$decodedJson = FormatJson::decode( $implementation );
-				// If not JSON, assume we have received a ZID.
-				if ( $decodedJson ) {
-					$implementation = ZObjectFactory::create( $decodedJson );
-				} else {
-					$implementation = new ZReference( $implementation );
-				}
-			}
-			$implementationZids[] = self::getZid( $implementation );
-		}
-		return $implementationZids;
-	}
-
-	/**
-	 * For the given function, get Z8K3/testers and return a list of ZIDs for them.
-	 *
-	 * TODO (T329254): Consider consolidating with getImplementationZids and moving into ZFunction
-	 *
-	 * @param ZFunction $targetFunction
-	 * @return array
-	 * @throws ZErrorException from ZObjectFactory::create
-	 */
-	public static function getTesterZids( $targetFunction ) {
-		$testerZids = [];
-		$targetFunctionTesters = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_TESTERS );
-		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionTesters';
-		$currentTesters = $targetFunctionTesters->getAsArray();
-		foreach ( $currentTesters as $tester ) {
-			if ( is_string( $tester ) ) {
-				$decodedJson = FormatJson::decode( $tester );
-				// If not JSON, assume we have received a ZID.
-				if ( $decodedJson ) {
-					$tester = ZObjectFactory::create( $decodedJson );
-				} else {
-					$tester = new ZReference( $tester );
-				}
-			}
-			$testerZids[] = self::getZid( $tester );
-		}
-		return $testerZids;
 	}
 
 	public function setLogger( LoggerInterface $logger ) {

@@ -11,7 +11,6 @@ namespace MediaWiki\Extension\WikiLambda\Jobs;
 
 use GenericParameterJob;
 use Job;
-use MediaWiki\Extension\WikiLambda\API\ApiPerformTest;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
@@ -45,7 +44,7 @@ class UpdateImplementationsJob extends Job implements GenericParameterJob {
 
 	/**
 	 * @return bool
-	 * @throws ZErrorException from ApiPerformTest::getImplementationZids
+	 * @throws ZErrorException from ZFunction::getImplementationZids
 	 */
 	public function run() {
 		$this->logger->info(
@@ -73,7 +72,7 @@ class UpdateImplementationsJob extends Job implements GenericParameterJob {
 		// Last-moment update-compatibility check
 		if ( $currentRevision !== $functionRevision ) {
 			// If Z8K4/implementations elements are different than those in the ranking, bail out
-			$currentImplementationZids = ApiPerformTest::getImplementationZids( $targetFunction );
+			$currentImplementationZids = $targetFunction->getImplementationZids();
 			if (
 				( count( $implementationRankingZids ) !== count( $currentImplementationZids ) )
 				|| array_diff( $implementationRankingZids, $currentImplementationZids )

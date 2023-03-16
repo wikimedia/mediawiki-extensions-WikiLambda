@@ -19,7 +19,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedPair;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiPerformTest
@@ -74,8 +74,9 @@ class ApiPerformTestTest extends ApiTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::isFalse
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::run
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::maybeUpdateImplementationRanking
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::getImplementationZids
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::getTesterZids
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction::getTesterZids
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction::getImplementationZids
+	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction::getAssociatedZids
 	 */
 	public function testExecuteSuccessfully(
 		$requestedFunction,
@@ -175,8 +176,8 @@ class ApiPerformTestTest extends ApiTestCase {
 		$targetObject = $this->store->fetchZObjectByTitle( $targetTitle );
 		$targetFunction = $targetObject->getInnerZObject();
 		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
-		$targetImplementationZids = ApiPerformTest::getImplementationZids( $targetFunction );
-		$targetTesterZids = ApiPerformTest::getTesterZids( $targetFunction );
+		$targetImplementationZids = $targetFunction->getImplementationZids();
+		$targetTesterZids = $targetFunction->getTesterZids();
 		if ( count( $targetImplementationZids ) <= 1 ||
 			array_diff( $targetImplementationZids, $requestedZImplementations ) ||
 			array_diff( $targetTesterZids, $requestedZTesters ) ) {
@@ -497,8 +498,8 @@ class ApiPerformTestTest extends ApiTestCase {
 		$implementationMap[ 'Z91302' ][ 'Z8131' ][ 'testMetadata' ] = $metadataMap5;
 		$targetObject = $this->store->fetchZObjectByTitle( $targetTitle );
 		$targetFunction = $targetObject->getInnerZObject();
-		$targetImplementationZids = ApiPerformTest::getImplementationZids( $targetFunction );
-		$targetTesterZids = ApiPerformTest::getTesterZids( $targetFunction );
+		$targetImplementationZids = $targetFunction->getImplementationZids();
+		$targetTesterZids = $targetFunction->getTesterZids();
 
 		// 3.
 		ApiPerformTest::maybeUpdateImplementationRanking( $functionZid, $functionRevision_0,
@@ -519,7 +520,7 @@ class ApiPerformTestTest extends ApiTestCase {
 		$targetObject = $this->store->fetchZObjectByTitle( $targetTitle );
 		$targetFunction = $targetObject->getInnerZObject();
 		'@pha-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
-		$targetImplementationZids = ApiPerformTest::getImplementationZids( $targetFunction );
+		$targetImplementationZids = $targetFunction->getImplementationZids();
 		$this->assertTrue( $expectedRanking === $targetImplementationZids );
 	}
 
