@@ -13,7 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\Registry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * A registry service for ZErrorType

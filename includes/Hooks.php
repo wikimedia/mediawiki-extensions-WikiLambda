@@ -20,11 +20,11 @@ use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
+use MediaWiki\Title\Title;
 use MessageSpecifier;
 use RequestContext;
 use RuntimeException;
 use Status;
-use Title;
 use User;
 
 class Hooks implements

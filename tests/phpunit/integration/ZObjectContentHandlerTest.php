@@ -23,8 +23,8 @@ use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Revision\SlotRenderingProvider;
+use MediaWiki\Title\Title;
 use ParserOptions;
-use Title;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectContentHandler

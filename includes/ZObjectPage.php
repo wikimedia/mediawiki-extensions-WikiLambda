@@ -11,7 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
-use Title;
+use MediaWiki\Title\Title;
 use WikiPage;
 
 class ZObjectPage {

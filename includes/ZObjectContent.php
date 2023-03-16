@@ -20,8 +20,8 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualStringSet;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use Status;
-use Title;
 
 /**
  * This class represents the wrapper for a ZObject, as stored in MediaWiki. Though its form is

@@ -16,7 +16,7 @@ use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * A registry service for ZObject implementations.

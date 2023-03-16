@@ -15,7 +15,7 @@ use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * A registry service for ZLanguage and language codes

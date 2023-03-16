@@ -14,8 +14,8 @@ use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Languages\LanguageFallback;
+use MediaWiki\Title\Title;
 use SpecialPage;
-use Title;
 
 class SpecialListZObjectsByType extends SpecialPage {
 	/** @var ZObjectStore */

@@ -25,11 +25,11 @@ use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRenderingProvider;
+use MediaWiki\Title\Title;
 use MWException;
 use ParserOutput;
 use RequestContext;
 use StatusValue;
-use Title;
 
 class ZObjectContentHandler extends ContentHandler {
 	use ZObjectEditingPageTrait;

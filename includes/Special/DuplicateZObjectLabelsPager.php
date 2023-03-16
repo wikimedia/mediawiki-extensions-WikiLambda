@@ -14,9 +14,9 @@ use Html;
 use MediaWiki\Cache\LinkBatchFactory;
 use MediaWiki\Languages\LanguageNameUtils;
 use MediaWiki\Linker\LinkRenderer;
+use MediaWiki\Title\Title;
 use SpecialPage;
 use TablePager;
-use Title;
 
 class DuplicateZObjectLabelsPager extends TablePager {
 

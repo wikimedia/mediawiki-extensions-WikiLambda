@@ -18,8 +18,8 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Title\Title;
 use Status;
-use Title;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectContent

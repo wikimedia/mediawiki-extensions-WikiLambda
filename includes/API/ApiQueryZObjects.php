@@ -19,7 +19,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\Languages\LanguageNameUtils;
-use Title;
+use MediaWiki\Title\Title;
 use TitleFactory;
 use Wikimedia\ParamValidator\ParamValidator;
 

@@ -17,8 +17,8 @@ use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Title\Title;
 use Psr\Log\LoggerInterface;
-use Title;
 
 /**
  */
