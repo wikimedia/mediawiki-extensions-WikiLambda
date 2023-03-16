@@ -10,7 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectFactory

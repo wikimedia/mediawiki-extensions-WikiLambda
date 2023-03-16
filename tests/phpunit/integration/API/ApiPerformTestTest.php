@@ -19,7 +19,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedPair;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiPerformTest

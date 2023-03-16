@@ -10,7 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
-use Title;
+use MediaWiki\Title\Title;
 
 /**
  * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry
@@ -126,7 +126,7 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 					]
 				}
 			}
-		] 
+		]
 	},
 	"Z2K3": {
 		"Z1K1": "Z12",

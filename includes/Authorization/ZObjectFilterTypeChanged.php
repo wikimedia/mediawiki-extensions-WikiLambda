@@ -11,7 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda\Authorization;
 
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
-use Title;
+use MediaWiki\Title\Title;
 
 class ZObjectFilterTypeChanged implements ZObjectFilter {
 

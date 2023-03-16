@@ -13,7 +13,7 @@ namespace MediaWiki\Extension\WikiLambda\Authorization;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
-use Title;
+use MediaWiki\Title\Title;
 
 class ZObjectFilterIsRunnable implements ZObjectFilter {
 

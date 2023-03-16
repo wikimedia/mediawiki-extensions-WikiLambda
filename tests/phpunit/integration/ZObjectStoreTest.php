@@ -17,8 +17,8 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use stdClass;
-use Title;
 use Wikimedia\Rdbms\IResultWrapper;
 
 /**
