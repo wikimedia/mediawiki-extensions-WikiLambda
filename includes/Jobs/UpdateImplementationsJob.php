@@ -33,13 +33,6 @@ class UpdateImplementationsJob extends Job implements GenericParameterJob {
 	public function __construct( array $params ) {
 		parent::__construct( 'updateImplementations', $params );
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );
-
-		$this->logger->info(
-			__METHOD__ . ' Job created!',
-			[
-				'params' => $params
-			]
-		);
 	}
 
 	/**
@@ -47,13 +40,6 @@ class UpdateImplementationsJob extends Job implements GenericParameterJob {
 	 * @throws ZErrorException from ZFunction::getImplementationZids
 	 */
 	public function run() {
-		$this->logger->info(
-			__METHOD__ . ' Job being run!',
-			[
-				'params' => $this->params
-			]
-		);
-
 		// ZID of the function whose Z8K4/implementations are to be updated
 		$functionZid = $this->params[ 'functionZid' ];
 		// Function revision detected by the creator/caller of this job
@@ -90,7 +76,7 @@ class UpdateImplementationsJob extends Job implements GenericParameterJob {
 			}
 		}
 
-		$this->logger->info(
+		$this->logger->debug(
 			__CLASS__ . ' Editing Function {functionZid} to update Implementations order',
 			[
 				'functionZid' => $functionZid,
