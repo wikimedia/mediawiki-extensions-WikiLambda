@@ -11,7 +11,7 @@
 			:class="{ 'ext-wikilambda-editor-input-list-item__header--active': isActive }"
 		>
 			<cdx-button
-				type="quiet"
+				weight="quiet"
 				class="ext-wikilambda-editor-input-list-item__header__action-expand"
 				@click="toggleActive"
 			>
@@ -25,7 +25,7 @@
 			</span>
 			<cdx-button
 				v-if="canEditType"
-				type="quiet"
+				weight="quiet"
 				class="ext-wikilambda-editor-input-list-item__header__action-delete"
 				@click="removeInput"
 			>
@@ -100,7 +100,7 @@
 			</div>
 			<cdx-button
 				v-if="canEditType && !isMobile"
-				type="quiet"
+				weight="quiet"
 				class="ext-wikilambda-editor-input-list-item__header__action-delete"
 				:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-remove' ).text()"
 				@click="removeInput"

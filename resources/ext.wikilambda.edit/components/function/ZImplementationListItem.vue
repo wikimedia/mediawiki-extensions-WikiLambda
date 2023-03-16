@@ -9,7 +9,7 @@
 		<cdx-button
 			v-if="!( getViewMode || readonly )"
 			class="z-list-item-remove"
-			:destructive="true"
+			action="destructive"
 			:title="tooltipRemoveListItem"
 			@click="$emit( 'remove-item', zobjectId )"
 		>

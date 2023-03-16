@@ -15,7 +15,7 @@
 		<wl-function-viewer-sidebar
 			:list="getSelectedAliases( getUserZlangZID )"
 			:z-lang="getUserZlangZID"
-			:button-type="buttonType"
+			:button-weight="buttonWeight"
 			:button-text="buttonText"
 			:button-icon="buttonIcon"
 			:should-show-button="multipleAliasLang"
@@ -119,7 +119,7 @@ module.exports = exports = {
 			}
 			return this.$i18n( 'wikilambda-function-viewer-aliases-show-language-button' ).text();
 		},
-		buttonType: function () {
+		buttonWeight: function () {
 			if ( this.showAllLangs ) {
 				return 'quiet';
 			}

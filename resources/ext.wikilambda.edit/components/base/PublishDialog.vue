@@ -19,7 +19,7 @@
 					{{ $i18n( 'wikilambda-editor-publish-dialog-header' ).text() }}
 				</span>
 				<cdx-button
-					type="quiet"
+					weight="quiet"
 					class="ext-wikilambda-publishdialog__header__close-button"
 					@click="closeDialog"
 				>
@@ -71,7 +71,7 @@
 					<cdx-button
 						class="ext-wikilambda-publishdialog__actions__button-publish"
 						action="progressive"
-						type="primary"
+						weight="primary"
 						@click="publishZObject"
 					>
 						{{ $i18n( 'wikilambda-publishnew' ).text() }}
@@ -79,7 +79,6 @@
 
 					<cdx-button
 						class="ext-wikilambda-publishdialog__actions__button-cancel"
-						type="primary"
 						@click="closeDialog"
 					>
 						{{ $i18n( 'wikilambda-cancel' ).text() }}

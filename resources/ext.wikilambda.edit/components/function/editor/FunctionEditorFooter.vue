@@ -23,7 +23,7 @@
 				id="ext-wikilambda-function-definition-footer__actions__cancel"
 				class="ext-wikilambda-function-definition-footer__actions-button"
 				action="destructive"
-				type="primary"
+				weight="primary"
 				@click.stop="handleCancel"
 			>
 				{{ $i18n( 'wikilambda-cancel' ).text() }}

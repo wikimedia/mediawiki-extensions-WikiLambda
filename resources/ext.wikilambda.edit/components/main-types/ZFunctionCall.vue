@@ -24,7 +24,7 @@
 				v-if="!viewmode"
 				class="ext-wikilambda-function-call-clear-function-button"
 				:title="$i18n( 'wikilambda-editor-zobject-removekey-tooltip' ).text()"
-				:destructive="true"
+				action="destructive"
 				@click="typeHandler"
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}

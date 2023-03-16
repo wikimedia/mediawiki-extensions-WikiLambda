@@ -10,7 +10,7 @@
 			<cdx-button
 				v-if="!( readonly )"
 				:title="tooltipRemoveLang"
-				:destructive="true"
+				action="destructive"
 				@click="removeLang"
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
