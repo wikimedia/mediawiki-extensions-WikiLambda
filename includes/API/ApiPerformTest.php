@@ -591,7 +591,7 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 		}
 
 		// Record which implementation is first in Z8K4 before this update happens
-		$previousFirst = array_key_first( $implementationMap );
+		$previousFirst = array_key_first( $attachedImplementationZids );
 
 		// For each implementation, get (count of tests-failed) and (average runtime of tests)
 		// and add them into $implementationMap.
