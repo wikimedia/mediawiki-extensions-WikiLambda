@@ -588,7 +588,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertEquals( 3, $res->numRows() );
 
 		$conflicts = $this->zobjectStore->findZObjectLabelConflicts( 'Z333', 'Z4', $labels );
-		$this->assertEquals( count( $conflicts ), 3 );
+		$this->assertCount( 3, $conflicts );
 	}
 
 	/**
@@ -606,10 +606,10 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $response );
 
 		$conflicts = $this->zobjectStore->findZObjectLabelConflicts( 'Z333', 'Z4', $labels );
-		$this->assertEquals( count( $conflicts ), 3 );
+		$this->assertCount( 3, $conflicts );
 
 		$conflicts = $this->zobjectStore->findZObjectLabelConflicts( 'Z333', 'Z4', [ self::ZLANG['de'] => 'label' ] );
-		$this->assertEquals( count( $conflicts ), 0 );
+		$this->assertCount( 0, $conflicts );
 	}
 
 	/**
@@ -710,9 +710,9 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$zids = $this->zobjectStore->fetchZidsOfType( 'Z7' );
 		sort( $zids );
 
-		$this->assertSame( $zids, [ 'Z444', 'Z445', 'Z446' ] );
-		$this->assertSame( $this->zobjectStore->fetchZidsOfType( 'Z8' ), [ 'Z447' ] );
-		$this->assertSame( $this->zobjectStore->fetchZidsOfType( 'Z888' ), [] );
+		$this->assertSame( [ 'Z444', 'Z445', 'Z446' ], $zids );
+		$this->assertSame( [ 'Z447' ], $this->zobjectStore->fetchZidsOfType( 'Z8' ) );
+		$this->assertSame( [], $this->zobjectStore->fetchZidsOfType( 'Z888' ) );
 	}
 
 	/**

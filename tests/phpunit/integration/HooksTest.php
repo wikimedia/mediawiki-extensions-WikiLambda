@@ -75,7 +75,7 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $zObjectTitle->isContentPage() );
 
 		$this->assertSame( 'zobject', CONTENT_MODEL_ZOBJECT ?? '' );
-		$this->assertSame( $zObjectTitle->getContentModel(), CONTENT_MODEL_ZOBJECT );
+		$this->assertSame( CONTENT_MODEL_ZOBJECT, $zObjectTitle->getContentModel() );
 
 		$this->assertFalse( $zObjectTitle->isWikitextPage() );
 

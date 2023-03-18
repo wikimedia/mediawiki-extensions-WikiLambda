@@ -26,7 +26,7 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testSingleton() {
 		$registry = ZErrorTypeRegistry::singleton();
-		$this->assertEquals( get_class( $registry ), ZErrorTypeRegistry::class );
+		$this->assertEquals( ZErrorTypeRegistry::class, get_class( $registry ) );
 		$this->assertEquals( $registry, ZErrorTypeRegistry::singleton() );
 	}
 
