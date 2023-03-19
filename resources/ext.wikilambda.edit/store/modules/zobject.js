@@ -531,7 +531,18 @@ module.exports = exports = {
 			return findZFunctionArguments;
 		},
 
+		/**
+		 * Returns the row of a Z16/Code programming language key (Z16K1)
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
 		getZCodeLanguage: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {Row | undefined}
+			 */
 			function findZCodeValue( rowId ) {
 				return getters.getRowByKeyPath( [
 					Constants.Z_CODE_LANGUAGE,
@@ -551,7 +562,7 @@ module.exports = exports = {
 		getZCode: function ( state, getters ) {
 			/**
 			 * @param {number} rowId
-			 * @return {string | undefined} rowId
+			 * @return {Row | undefined}
 			 */
 			function findZCode( rowId ) {
 				return getters.getRowByKeyPath( [ Constants.Z_CODE_CODE ], rowId );
@@ -559,10 +570,17 @@ module.exports = exports = {
 			return findZCode;
 		},
 
+		/**
+		 * Returns the row of a Z14/Implementation's composition (Z14K2)
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
 		getZComposition: function ( state, getters ) {
 			/**
 			 * @param {number} rowId
-			 * @return {string | undefined} rowId
+			 * @return {Row | undefined}
 			 */
 			function findZComposition( rowId ) {
 				return getters.getRowByKeyPath( [ Constants.Z_IMPLEMENTATION_COMPOSITION ], rowId );
@@ -570,10 +588,17 @@ module.exports = exports = {
 			return findZComposition;
 		},
 
+		/**
+		 * Returns the row of a Z14/Implementation's code (Z14K3)
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
 		getZCodeId: function ( state, getters ) {
 			/**
 			 * @param {number} rowId
-			 * @return {string | undefined} rowId
+			 * @return {Row | undefined}
 			 */
 			function findZCode( rowId ) {
 				return getters.getRowByKeyPath( [ Constants.Z_IMPLEMENTATION_CODE ], rowId );
@@ -581,7 +606,18 @@ module.exports = exports = {
 			return findZCode;
 		},
 
+		/**
+		 * Returns the Zid of the function (Z14K1) of a given Z14/Implementation
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
 		getZCodeFunction: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {string | undefined}
+			 */
 			function findZFunction( rowId ) {
 				const functionRow = getters.getRowByKeyPath( [ Constants.Z_IMPLEMENTATION_FUNCTION ], rowId );
 				return getters.getZReferenceTerminalValue( functionRow.id );
