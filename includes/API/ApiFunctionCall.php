@@ -56,6 +56,8 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 	}
 
 	/**
+	 * TODO: Use WikiLambdaApiBase::executeFunctionCall() rather than rolling our own.
+	 *
 	 * @param ApiPageSet|null $resultPageSet
 	 */
 	private function run( $resultPageSet = null ) {

@@ -67,7 +67,6 @@ class ApiPerformTestTest extends ApiTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::__construct
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::execute
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::executeGenerator
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::executeFunctionCall
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::getImplementationListEntry
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::getTesterObject
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::isFalse
@@ -77,6 +76,7 @@ class ApiPerformTestTest extends ApiTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction::getImplementationZids
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction::getAssociatedZids
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getZid
+	 * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase::executeFunctionCall
 	 * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase::setUpOrchestrator
 	 */
 	public function testExecuteSuccessfully(
