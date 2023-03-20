@@ -422,6 +422,12 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 			$registry->isZObjectInstanceOfType( new ZString( 'Hello' ), $booleanZObjectReference->getZValue() ),
 			"A non-reference ZObject which is not of the right type is seen as such."
 		);
+
+		$randomReference = ZObjectFactory::create( "Z400" );
+		$this->assertFalse(
+			$registry->isZObjectInstanceOfType( $randomReference, $booleanZObjectReference->getZValue() ),
+			"A reference pointing to an unknown ZID returns false, rather than throws."
+		);
 	}
 
 	/**
