@@ -30,7 +30,7 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 	 */
 	public function testSingleton() {
 		$registry = ZTypeRegistry::singleton();
-		$this->assertEquals( get_class( $registry ), ZTypeRegistry::class );
+		$this->assertEquals( ZTypeRegistry::class, get_class( $registry ) );
 		$this->assertEquals( $registry, ZTypeRegistry::singleton() );
 	}
 

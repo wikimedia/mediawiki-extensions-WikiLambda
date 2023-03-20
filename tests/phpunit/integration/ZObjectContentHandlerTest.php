@@ -85,8 +85,8 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertTrue( is_string( $serialized ) );
 		$this->assertSame(
-			FormatJson::encode( FormatJson::parse( $serialized )->value ),
-			$expected
+			$expected,
+			FormatJson::encode( FormatJson::parse( $serialized )->value )
 		);
 	}
 
@@ -253,7 +253,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 	public function testGetActionOverrides() {
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 		$overrides = $handler->getActionOverrides();
-		$this->assertSame( $overrides[ 'edit' ], ZObjectEditAction::class );
+		$this->assertSame( ZObjectEditAction::class, $overrides[ 'edit' ] );
 	}
 
 	/**

@@ -34,7 +34,7 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 	 * @covers ::initialize
 	 */
 	public function testSingleton() {
-		$this->assertEquals( get_class( $this->registry ), ZLangRegistry::class );
+		$this->assertEquals( ZLangRegistry::class, get_class( $this->registry ) );
 		$this->assertEquals( $this->registry, ZLangRegistry::singleton() );
 	}
 
@@ -91,7 +91,7 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 	public function testGetLanguageZidFromCode_registered() {
 		$zid = $this->registry->getLanguageZidFromCode( 'en' );
 		$this->assertTrue( $this->registry->isLanguageKnownGivenCode( 'en' ) );
-		$this->assertSame( $zid, self::ZLANG['en'] );
+		$this->assertSame( self::ZLANG['en'], $zid );
 	}
 
 	/**
@@ -117,7 +117,7 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		$zid = $this->registry->getLanguageZidFromCode( 'zh' );
 		$this->assertTrue( $this->registry->isLanguageKnownGivenCode( 'zh' ) );
 		$this->assertTrue( $this->registry->isZidCached( self::ZLANG['zh'] ) );
-		$this->assertSame( $zid, self::ZLANG['zh'] );
+		$this->assertSame( self::ZLANG['zh'], $zid );
 	}
 
 	/**
@@ -200,7 +200,7 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->registry->register( self::ZLANG['fr'], 'fr' );
 
 		$zids = $this->registry->getLanguageZids( [ 'en', 'es', 'fr' ] );
-		$this->assertSame( $zids, [ self::ZLANG['en'], self::ZLANG['es'], self::ZLANG['fr'] ] );
+		$this->assertSame( [ self::ZLANG['en'], self::ZLANG['es'], self::ZLANG['fr'] ], $zids );
 	}
 
 	/**
@@ -212,6 +212,6 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->registry->register( self::ZLANG['fr'], 'fr' );
 
 		$zids = $this->registry->getLanguageZids( [ 'bar', 'es', 'fr', 'foo' ] );
-		$this->assertSame( $zids, [ self::ZLANG['es'], self::ZLANG['fr'] ] );
+		$this->assertSame( [ self::ZLANG['es'], self::ZLANG['fr'] ], $zids );
 	}
 }
