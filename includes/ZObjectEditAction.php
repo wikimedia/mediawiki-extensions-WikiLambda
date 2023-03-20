@@ -164,7 +164,10 @@ class ZObjectEditAction extends Action {
 		if ( $zObjectLabelsWithLang[ 'title' ] === 'Function' ) {
 			$linkLabel = Html::element(
 				'a',
-				[ 'class' => 'ext-wikilambda-editpage-header-description--link' ],
+				[
+					'class' => 'ext-wikilambda-editpage-header-description--link',
+					'href' => 'wikilambda-users-help-link'
+				],
 				$this->msg( 'wikilambda-special-edit-function-definition-special-permission-link-label' )->text()
 			);
 
