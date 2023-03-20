@@ -12,14 +12,12 @@ namespace MediaWiki\Extension\WikiLambda\API;
 
 use ApiPageSet;
 use FormatJson;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use JobQueueGroup;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheTesterResultsJob;
 use MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob;
-use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
@@ -43,12 +41,6 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 	/** @var ZObjectStore */
 	protected $zObjectStore;
 
-	/** @var OrchestratorRequest */
-	protected $orchestrator;
-
-	/** @var string */
-	private $orchestratorHost;
-
 	/** @var JobQueueGroup */
 	private $jobQueueGroup;
 
@@ -60,14 +52,10 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 
 		$this->zObjectStore = $zObjectStore;
 
-		$services = MediaWikiServices::getInstance();
-
-		$config = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
-		$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
-		$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
-		$this->orchestrator = new OrchestratorRequest( $client );
+		$this->setUpOrchestrator();
 
 		// TODO (T330033): Consider injecting this service rather than just fetching from main
+		$services = MediaWikiServices::getInstance();
 		$this->jobQueueGroup = $services->getJobQueueGroup();
 
 		$this->logger = LoggerFactory::getInstance( 'WikiLambda' );

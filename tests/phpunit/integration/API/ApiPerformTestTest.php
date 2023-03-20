@@ -77,6 +77,7 @@ class ApiPerformTestTest extends ApiTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction::getImplementationZids
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction::getAssociatedZids
 	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getZid
+	 * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase::setUpOrchestrator
 	 */
 	public function testExecuteSuccessfully(
 		$requestedFunction,
