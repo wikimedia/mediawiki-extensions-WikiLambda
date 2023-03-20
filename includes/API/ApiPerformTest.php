@@ -12,15 +12,11 @@ namespace MediaWiki\Extension\WikiLambda\API;
 
 use ApiPageSet;
 use FormatJson;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Exception\ServerException;
 use JobQueueGroup;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheTesterResultsJob;
 use MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
@@ -346,46 +342,6 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 
 		// 4. Return the response.
 		$pageResult->addValue( [ 'query' ], $this->getModuleName(), $responseArray );
-	}
-
-	/**
-	 * TODO: Move into a super-class of this a ApiFunctionCall so both can use it?
-	 *
-	 * @param ZFunctionCall $zObject
-	 * @param bool $validate
-	 * @return ZResponseEnvelope|\GuzzleHttp\Psr7\Stream
-	 */
-	private function executeFunctionCall( $zObject, $validate ) {
-		$queryArguments = [
-			'zobject' => $zObject->getSerialized(),
-			'doValidate' => $validate
-		];
-		try {
-			$response = $this->orchestrator->orchestrate( $queryArguments );
-			$responseContents = FormatJson::decode( $response->getBody()->getContents() );
-			$responseObject = ZObjectFactory::create( $responseContents );
-			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope $responseObject';
-			return $responseObject;
-		} catch ( ConnectException $exception ) {
-			$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
-		} catch ( ClientException | ServerException $exception ) {
-			if ( $exception->getResponse()->getStatusCode() === 404 ) {
-				$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
-			}
-			$zErrorObject = ApiFunctionCall::wrapMessageInZError(
-				$exception->getResponse()->getReasonPhrase(),
-				$zObject
-			);
-			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zErrorObject );
-			return new ZResponseEnvelope( null, $zResponseMap );
-		} catch ( \Exception $exception ) {
-			$zErrorObject = ApiFunctionCall::wrapMessageInZError(
-				$exception->getMessage(),
-				$zObject
-			);
-			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zErrorObject );
-			return new ZResponseEnvelope( null, $zResponseMap );
-		}
 	}
 
 	private function getImplementationListEntry( $zobject ) {
