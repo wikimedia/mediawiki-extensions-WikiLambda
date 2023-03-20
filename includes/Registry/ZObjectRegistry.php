@@ -33,6 +33,10 @@ abstract class ZObjectRegistry {
 	private function __construct() {
 		$class = get_called_class();
 		if ( !array_key_exists( $class, self::$instances ) ) {
+			/**
+			 * @codeCoverageIgnore Our test suites always create these first in setUp(), so
+			 * we never run this line in test coverage.
+			 */
 			$this->initialize();
 		}
 	}
