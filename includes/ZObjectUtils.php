@@ -1077,4 +1077,26 @@ class ZObjectUtils {
 		// Otherwise, no.
 		return false;
 	}
+
+	/**
+	 * Get the ZID of the input if it's a persistent ZObject or a reference to one.
+	 *
+	 * @param mixed $zobject The ZObject to examine for
+	 * @return string The ZID of the given ZObject, or Z0
+	 */
+	public static function getZid( $zobject ): string {
+		if ( $zobject instanceof ZObject ) {
+			if ( $zobject instanceof ZReference || $zobject->getZType() === ZTypeRegistry::Z_REFERENCE ) {
+				return $zobject->getValueByKey( ZTypeRegistry::Z_REFERENCE_VALUE );
+			}
+			if ( $zobject instanceof ZPersistentObject || $zobject->getZType() === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
+				return $zobject
+					->getValueByKey( ZTypeRegistry::Z_PERSISTENTOBJECT_ID )
+					->getValueByKey( ZTypeRegistry::Z_STRING_VALUE );
+			}
+		}
+
+		// Use placeholder ZID for non-persisted objects.
+		return ZTypeRegistry::Z_NULL_REFERENCE;
+	}
 }
