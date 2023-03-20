@@ -82,13 +82,14 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 		// 1. Work out matrix of what we want for what
 		// FIXME: Handle an inline ZFunction (for when it's not been created yet)?
 		$targetTitle = Title::newFromText( $functionZid, NS_MAIN );
-		if ( !( $targetTitle->exists() ) ) {
+		if ( !$targetTitle || !( $targetTitle->exists() ) ) {
 			$this->dieWithError( [ "wikilambda-performtest-error-unknown-zid", $functionZid ] );
 		}
 
 		// Needed for caching.
 		$functionRevision = $targetTitle->getLatestRevID();
 
+		// @phan-suppress-next-line PhanTypeMismatchArgumentNullable
 		$targetObject = $this->zObjectStore->fetchZObjectByTitle( $targetTitle );
 		if ( $targetObject->getZType() !== ZTypeRegistry::Z_FUNCTION ) {
 			$this->dieWithError( [ "wikilambda-performtest-error-nonfunction", $functionZid ] );
