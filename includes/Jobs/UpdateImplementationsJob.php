@@ -115,8 +115,18 @@ class UpdateImplementationsJob extends Job implements GenericParameterJob {
 		// TODO (T330032): Consider accessing wfMessage as an injected service
 		$updatingComment = wfMessage( 'wikilambda-updated-implementations-summary' )
 			->inLanguage( 'en' )->text();
-		$zObjectStore->updateZObjectAsSystemUser( $functionZid,
+		$editStatus = $zObjectStore->updateZObjectAsSystemUser( $functionZid,
 			$targetObject->getZObject()->__toString(), $updatingComment );
+
+		$this->logger->info(
+			__CLASS__ . ' Edited Function to update Implementations order',
+			[
+				'functionZid' => $functionZid,
+				'functionRevision' => $functionRevision,
+				'status' => $editStatus
+			]
+		);
+
 		return true;
 	}
 }
