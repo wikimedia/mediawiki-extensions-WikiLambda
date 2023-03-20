@@ -163,7 +163,7 @@ class ZMultiLingualString extends ZObject {
 	 * @param ZMonoLingualString $value The new value to set.
 	 */
 	public function setMonoLingualString( ZMonoLingualString $value ): void {
-		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $value->getLanguage() ] = $value;
+		$this->data[ ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE ][ $value->getLanguage() ?? '' ] = $value;
 	}
 
 	/**
