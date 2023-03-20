@@ -30,6 +30,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
@@ -143,7 +144,7 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 					$implementation = new ZReference( $implementation );
 				}
 			}
-			$implementationZid = self::getZid( $implementation );
+			$implementationZid = ZObjectUtils::getZid( $implementation );
 			$implementationListEntry = $this->getImplementationListEntry( $implementation );
 
 			// Note that the Implementation ZID can be non-Z0 if it's being run on an unsaved edit.
@@ -181,7 +182,7 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 					}
 				}
 
-				$testerZid = self::getZid( $requestedTester );
+				$testerZid = ZObjectUtils::getZid( $requestedTester );
 				$testResult[ 'zTesterId' ] = $testerZid;
 				$testerObject = $this->getTesterObject( $requestedTester );
 
@@ -411,7 +412,7 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 
 	private function getTesterObject( $zobject ) {
 		if ( $zobject->getZType() === ZTypeRegistry::Z_REFERENCE ) {
-			$zid = self::getZid( $zobject );
+			$zid = ZObjectUtils::getZid( $zobject );
 			$title = Title::newFromText( $zid, NS_MAIN );
 			if ( !( $title->exists() ) ) {
 				$this->dieWithError( [ "wikilambda-performtest-error-unknown-zid", $zid ] );
@@ -662,18 +663,6 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 		$services = MediaWikiServices::getInstance();
 		$jobQueueGroup = $services->getJobQueueGroup();
 		$jobQueueGroup->push( $updateImplementationsJob );
-	}
-
-	private static function getZid( $zobject ): string {
-		if ( $zobject->getZType() === ZTypeRegistry::Z_REFERENCE ) {
-			return $zobject->getValueByKey( ZTypeRegistry::Z_REFERENCE_VALUE );
-		} elseif ( $zobject->getZType() === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
-			return $zobject
-				->getValueByKey( ZTypeRegistry::Z_PERSISTENTOBJECT_ID )
-				->getValueByKey( ZTypeRegistry::Z_STRING_VALUE );
-		}
-		// Use placeholder ZID for non-persisted objects.
-		return ZTypeRegistry::Z_NULL_REFERENCE;
 	}
 
 	public function setLogger( LoggerInterface $logger ) {
