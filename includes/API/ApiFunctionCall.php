@@ -14,11 +14,9 @@ use ApiMain;
 use ApiPageSet;
 use DerivativeContext;
 use FauxRequest;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
-use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
@@ -27,7 +25,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
-use MediaWiki\MediaWikiServices;
 use PoolCounterWorkViaCallback;
 use RequestContext;
 use Status;
@@ -35,22 +32,13 @@ use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiFunctionCall extends WikiLambdaApiBase {
 
-	/** @var OrchestratorRequest */
-	protected $orchestrator;
-
-	/** @var string */
-	private $orchestratorHost;
-
 	/**
 	 * @inheritDoc
 	 */
 	public function __construct( $query, $moduleName ) {
 		parent::__construct( $query, $moduleName, 'wikilambda_function_call_' );
 
-		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
-		$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
-		$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
-		$this->orchestrator = new OrchestratorRequest( $client );
+		$this->setUpOrchestrator();
 	}
 
 	/**

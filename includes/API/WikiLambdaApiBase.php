@@ -3,7 +3,10 @@
 namespace MediaWiki\Extension\WikiLambda\API;
 
 use ApiBase;
+use GuzzleHttp\Client;
+use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
+use MediaWiki\MediaWikiServices;
 
 /**
  * WikiLambda Base API util
@@ -19,6 +22,20 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
  */
 
 abstract class WikiLambdaApiBase extends ApiBase {
+
+	/** @var OrchestratorRequest */
+	protected $orchestrator;
+
+	/** @var string */
+	protected $orchestratorHost;
+
+	protected function setUpOrchestrator() {
+		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
+		$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
+		$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
+		$this->orchestrator = new OrchestratorRequest( $client );
+	}
+
 	/**
 	 * @param ZError $zerror
 	 */

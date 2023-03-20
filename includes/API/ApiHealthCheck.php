@@ -15,22 +15,13 @@
 namespace MediaWiki\Extension\WikiLambda\API;
 
 use ApiPageSet;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
-use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
-use MediaWiki\MediaWikiServices;
 use PoolCounterWorkViaCallback;
 use Status;
 
 class ApiHealthCheck extends WikiLambdaApiBase {
-
-	/** @var OrchestratorRequest */
-	protected $orchestrator;
-
-	/** @var string */
-	private $orchestratorHost;
 
 	/**
 	 * @inheritDoc
@@ -38,10 +29,7 @@ class ApiHealthCheck extends WikiLambdaApiBase {
 	public function __construct( $query, $moduleName ) {
 		parent::__construct( $query, $moduleName, 'wikilambda_health_check_' );
 
-		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
-		$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
-		$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
-		$this->orchestrator = new OrchestratorRequest( $client );
+		$this->setUpOrchestrator();
 	}
 
 	/**
