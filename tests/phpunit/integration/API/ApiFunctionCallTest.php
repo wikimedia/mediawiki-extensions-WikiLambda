@@ -51,7 +51,9 @@ class ApiFunctionCallTest extends ApiTestCase {
 	 */
 	public function testExecuteSuccessfulViaBetaCluster(
 		$requestString,
-		$expectedString
+		$expectedString = null,
+		$callBack = null,
+		$expectedError = null
 	) {
 		$result = [];
 		$orchestrationResult = [];
@@ -81,7 +83,12 @@ class ApiFunctionCallTest extends ApiTestCase {
 		$resultEnvelope = json_decode( $orchestrationResult[ 'data' ], true );
 		$actualString = $resultEnvelope[ 'Z22K1' ];
 		$actual = $actualString;
-		$this->assertEquals( $expected, $actual );
+		if ( $callBack == null ) {
+			$callBack = function ( $expected, $actual ) {
+				$this->assertEquals( $expected, $actual );
+			};
+		}
+		$callBack( $expected, $actual );
 		// TODO (T314609): Also test error cases.
 	}
 
@@ -170,6 +177,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 		yield 'Invoke user-defined validation function implemented in Python' => [
 			json_encode( $validationZ7 ),
 			'Z24',
+			null,
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			"{\"Z1K1\":\"Z5\",\"Z5K1\":{\"Z1K1\":\"Z518\",\"Z518K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z1000\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[{\"Z1K1\":\"Z17\",\"Z17K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z1000\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[{\"Z1K1\":\"Z17\",\"Z17K1\":\"Z1000000\",\"Z17K2\":\"Z1001K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[],\"Z8K4\":[{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z1001\",\"Z14K3\":{\"Z1K1\":\"Z16\",\"Z16K1\":{\"Z1K1\":\"Z61\",\"Z61K1\":\"python-3\"},\"Z16K2\":\"def Z1001(Z1001K1):\\n  if Z1001K1.Z1000000K1 != 'A':\\n    raise Exception('does that look like an A to you???')\\n  return Z1001K1\"}}],\"Z8K5\":\"Z1001\"}},\"Z17K2\":\"Z1001K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[],\"Z8K4\":[{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z1001\",\"Z14K3\":{\"Z1K1\":\"Z16\",\"Z16K1\":{\"Z1K1\":\"Z61\",\"Z61K1\":\"python-3\"},\"Z16K2\":\"def Z1001(Z1001K1):\\n  if Z1001K1.Z1000000K1 != 'A':\\n    raise Exception('does that look like an A to you???')\\n  return Z1001K1\"}}],\"Z8K5\":\"Z1001\"}},\"Z518K2\":{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z1000\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[{\"Z1K1\":\"Z17\",\"Z17K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z1000\"}],\"Z4K3\":{\"Z1K1\":\"Z8\",\"Z8K1\":[{\"Z1K1\":\"Z17\",\"Z17K1\":\"Z1000000\",\"Z17K2\":\"Z1001K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[],\"Z8K4\":[{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z1001\",\"Z14K3\":{\"Z1K1\":\"Z16\",\"Z16K1\":{\"Z1K1\":\"Z61\",\"Z61K1\":\"python-3\"},\"Z16K2\":\"def Z1001(Z1001K1):\\n  if Z1001K1.Z1000000K1 != 'A':\\n    raise Exception('does that look like an A to you???')\\n  return Z1001K1\"}}],\"Z8K5\":\"Z1001\"}},\"Z17K2\":\"Z1001K1\",\"Z17K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[]}}],\"Z8K2\":\"Z4\",\"Z8K3\":[],\"Z8K4\":[{\"Z1K1\":\"Z14\",\"Z14K1\":\"Z1001\",\"Z14K3\":{\"Z1K1\":\"Z16\",\"Z16K1\":{\"Z1K1\":\"Z61\",\"Z61K1\":\"python-3\"},\"Z16K2\":\"def Z1001(Z1001K1):\\n  if Z1001K1.Z1000000K1 != 'A':\\n    raise Exception('does that look like an A to you???')\\n  return Z1001K1\"}}],\"Z8K5\":\"Z1001\"}},\"Z1000000K1\":\"a\"},\"Z518K3\":{\"Z1K1\":\"Z5\",\"Z5K2\":\"does that look like an A to you???\"}}}}",
 		];
@@ -202,14 +210,38 @@ class ApiFunctionCallTest extends ApiTestCase {
 
 		yield 'Create and invoke a curried function' => [
 			json_encode( $curry ),
-			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
-			'Z24',
+			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 		];
 
 		yield 'Supply an implementation with an unsupported language; back off to the second' => [
 			$this->readTestFile( 'example-bad-first-implementation.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
+		];
+
+		$Z823 = [
+			"Z1K1" => "Z7",
+			"Z7K1" => "Z823",
+			"Z823K1" => [
+				"Z1K1" => "Z99",
+				"Z99K1" => [
+					"Z1K1" => "Z7",
+					"Z7K1" => "Z802",
+					"Z802K1" => "Z41",
+					"Z802K2" => "the truth",
+					"Z802K3" => "the facts"
+				]
+			]
+		];
+		yield 'Ensure Z823 propagates invariants' => [
+			json_encode( $Z823 ),
+			// @phpcs:ignore Generic.Files.LineLength.TooLong
+			"{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z1\",\"Z882K2\":\"Z1\"},\"K1\":\"the truth\",\"K2\":{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z883\",\"Z883K1\":\"Z6\",\"Z883K2\":\"Z1\"},\"K1\":[{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"implementationId\",\"K2\":{\"Z1K1\":\"Z6\",\"Z6K1\":\"Z902\"}},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"implementationType\",\"K2\":\"BuiltIn\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationMemoryUsage\",\"K2\":\"91.91 MiB\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationCpuUsage\",\"K2\":\"24.322 ms\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationStartTime\",\"K2\":\"2023-03-21T22:34:23.609Z\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationEndTime\",\"K2\":\"2023-03-21T22:34:23.642Z\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationDuration\",\"K2\":\"33 ms\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationHostname\",\"K2\":\"22ca7c26028f\"}]}}",
+			function ( $expected, $actual ) {
+				$this->assertEquals( $expected['Z1K1'], $actual['Z1K1'] );
+				$this->assertEquals( $expected['K1'], $actual['K1'] );
+				// TODO (T314609): Also test that metadata has correct keys.
+			}
 		];
 
 		// TODO (T325593): Call the example-timeout example; ensure the correct error is returned.
