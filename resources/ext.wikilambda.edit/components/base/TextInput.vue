@@ -6,11 +6,15 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-edit-text-input">
-		<span
+	<div class="ext-wikilambda-edit-text-input" :style="inputCssVariablesStyle">
+		<cdx-info-chip
 			v-if="hasChip"
+			ref="chipComponent"
 			class="ext-wikilambda-lang-chip"
-		>{{ chip }}</span>
+		>
+			{{ chip.toUpperCase() }}
+		</cdx-info-chip>
+
 		<cdx-text-input
 			:id="id"
 			v-model="value"
@@ -29,12 +33,14 @@
 
 <script>
 var CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput;
+var CdxInfoChip = require( '@wikimedia/codex' ).CdxInfoChip;
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-text-input',
 	components: {
-		'cdx-text-input': CdxTextInput
+		'cdx-text-input': CdxTextInput,
+		'cdx-info-chip': CdxInfoChip
 	},
 	inheritAttrs: false,
 	props: {
@@ -69,7 +75,9 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			active: false
+			active: false,
+			chipComponent: null,
+			chipWidth: 72
 		};
 	},
 	computed: {
@@ -79,6 +87,11 @@ module.exports = exports = {
 		value: {
 			get() { return this.modelValue; },
 			set( value ) { this.$emit( 'update:modelValue', value ); }
+		},
+		inputCssVariablesStyle: function () {
+			return {
+				'--chipWidthPx': `${this.chipWidth}px`
+			};
 		},
 		/**
 		 * This computed property calculates the width of the field depending on its value
@@ -111,9 +124,9 @@ module.exports = exports = {
 			}
 			// Subtract 10% to accomodate a fixed width font
 			chars = Math.ceil( chars - chars * 0.1 );
-			// Add 5 chars if it has language chip
+			// Add 5 chars + chip.length (to make it larger if there's more text in the chip) if it has language chip
 			if ( this.hasChip ) {
-				chars = chars + 5;
+				chars = chars + ( this.chip.length + 5 );
 			}
 			return `${chars}ch`;
 		},
@@ -132,14 +145,31 @@ module.exports = exports = {
 			}
 			if ( this.hasChip ) {
 				classes.push( 'ext-wikilambda-edit-text-input__chipped' );
-				if ( this.chip.length > 2 ) {
-					classes.push( 'ext-wikilambda-edit-text-input__chipped__lg' );
-				} else {
-					classes.push( 'ext-wikilambda-edit-text-input__chipped__sm' );
-				}
 			}
 			return classes;
 		}
+	},
+	methods: {
+		getAndStoreChipWidth() {
+			if ( !this.chipComponent ) {
+				return;
+			}
+
+			this.chipWidth = this.chipComponent.$el.offsetWidth;
+		}
+	},
+	watch: {
+		chip: {
+			handler: function () {
+				this.getAndStoreChipWidth();
+			},
+			immediate: true,
+			flush: 'post'
+		}
+	},
+	mounted() {
+		this.chipComponent = this.$refs.chipComponent;
+		this.getAndStoreChipWidth();
 	}
 };
 </script>
@@ -165,23 +195,22 @@ module.exports = exports = {
 		position: absolute;
 		top: 0;
 
-		&__lg {
-			.cdx-text-input__input {
-				padding-left: calc( 8px + 40px + 8px );
-			}
-		}
-
-		&__sm {
-			.cdx-text-input__input {
-				padding-left: calc( 8px + 36px + 8px );
-			}
+		.cdx-text-input__input {
+			--spacing-50: @spacing-50;
+			padding-left: ~'calc( var(--spacing-50) + var(--chipWidthPx) + var(--spacing-50) )';
 		}
 	}
 
-	span.ext-wikilambda-lang-chip {
+	.ext-wikilambda-lang-chip {
 		position: relative;
+		top: 2px;
 		z-index: 3;
 		left: @spacing-50;
+		min-width: calc( 36px - 16px );
+
+		.cdx-info-chip--text {
+			font-size: ~'14px';
+		}
 	}
 }
 </style>
