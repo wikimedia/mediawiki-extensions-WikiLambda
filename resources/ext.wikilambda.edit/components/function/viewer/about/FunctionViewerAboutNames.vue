@@ -9,7 +9,7 @@
 		<wl-function-viewer-sidebar
 			:list="visibleFunctionNames"
 			:z-lang="getUserZlangZID"
-			:button-type="buttonType"
+			:button-weight="buttonWeight"
 			:button-text="buttonText"
 			:button-icon="buttonIcon"
 			@change-show-langs="showAllLangs = !showAllLangs"
@@ -106,7 +106,7 @@ module.exports = exports = {
 			}
 			return this.$i18n( 'wikilambda-function-viewer-names-show-languages-button' ).text();
 		},
-		buttonType: function () {
+		buttonWeight: function () {
 			if ( this.showAllLangs ) {
 				return 'quiet';
 			}

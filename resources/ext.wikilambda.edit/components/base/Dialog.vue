@@ -16,7 +16,7 @@
 					<slot name="dialog-title"></slot>
 				</div>
 				<cdx-button
-					type="quiet"
+					weight="quiet"
 					class="ext-wikilambda-dialog__header__close-button"
 					@click="$emit( 'exit-dialog' )"
 				>
@@ -35,7 +35,7 @@
 				</cdx-button>
 				<cdx-button
 					id="primary-button"
-					type="primary"
+					weight="primary"
 					:action="primaryButtonStyle"
 					:disabled="primaryButtonDisabled"
 					@click="$emit( 'confirm-dialog' )"

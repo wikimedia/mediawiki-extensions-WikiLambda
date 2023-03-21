@@ -56,7 +56,7 @@
 					</a>
 				</div>
 				<cdx-button
-					type="quiet"
+					weight="quiet"
 					class="ext-wikilambda-metadatadialog__header__close-button"
 					@click="showMetrics = false"
 				>

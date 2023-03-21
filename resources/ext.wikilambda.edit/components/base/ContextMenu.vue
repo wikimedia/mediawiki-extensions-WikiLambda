@@ -12,7 +12,7 @@
 		class="ext-wikilambda-context-menu"
 	>
 		<cdx-button
-			type="quiet"
+			weight="quiet"
 			:aria-label="$i18n( 'wikilambda-context-menu' ).text()"
 			@click="showMenu = !showMenu"
 		>

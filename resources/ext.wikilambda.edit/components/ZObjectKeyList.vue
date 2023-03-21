@@ -10,7 +10,7 @@
 			<cdx-button
 				v-if="!( viewmode || readonly )"
 				:title="tooltipRemoveZObjectKey"
-				:destructive="true"
+				action="destructive"
 				@click="removeKey( value.id )"
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}

@@ -30,7 +30,7 @@
 		<cdx-button
 			v-if="shouldShowButton"
 			class="ext-wikilambda-function-viewer-sidebar__button"
-			:type="buttonType"
+			:weight="buttonWeight"
 			@click="changeShowLangs"
 		>
 			<cdx-icon
@@ -64,7 +64,7 @@ module.exports = exports = {
 			type: String,
 			required: true
 		},
-		buttonType: {
+		buttonWeight: {
 			type: String,
 			required: true
 		},

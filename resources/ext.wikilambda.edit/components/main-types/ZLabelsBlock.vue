@@ -36,7 +36,7 @@
 						<td>
 							<cdx-button
 								v-if="!viewmode"
-								:destructive="true"
+								action="destructive"
 								@click="removeLang( language[ Constants.Z_REFERENCE_ID ] )"
 							>
 								{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}

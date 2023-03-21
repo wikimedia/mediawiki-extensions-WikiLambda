@@ -9,7 +9,7 @@
 		<div v-for="( alias, index ) in languageAliases" :key="index">
 			<cdx-button
 				v-if="!viewmode"
-				:destructive="true"
+				action="destructive"
 				@click="removeAlias( alias )"
 			>
 				{{ $i18n( 'wikilambda-editor-removeitem' ).text() }}
