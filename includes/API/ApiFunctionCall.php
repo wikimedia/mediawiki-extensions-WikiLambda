@@ -38,7 +38,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 	public function __construct( $query, $moduleName ) {
 		parent::__construct( $query, $moduleName, 'wikilambda_function_call_' );
 
-		$this->setUpOrchestrator();
+		$this->setUp();
 	}
 
 	/**

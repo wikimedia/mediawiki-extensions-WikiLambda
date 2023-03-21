@@ -47,7 +47,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::execute
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::executeGenerator
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::run
-	 * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase::setUpOrchestrator
+	 * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase::setUp
 	 */
 	public function testExecuteSuccessfulViaBetaCluster(
 		$requestString,

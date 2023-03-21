@@ -21,7 +21,7 @@ class ApiHealthCheckTest extends ApiTestCase {
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiHealthCheck::execute
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiHealthCheck::run
 	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiHealthCheck::runOneCheck
-	 * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase::setUpOrchestrator
+	 * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase::setUp
 	 */
 	public function testExecuteSuccessfulViaBetaCluster() {
 		$result = [];

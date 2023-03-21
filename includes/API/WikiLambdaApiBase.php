@@ -13,8 +13,11 @@ use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use PoolCounterWorkViaCallback;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 use Status;
 
 /**
@@ -29,7 +32,7 @@ use Status;
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-abstract class WikiLambdaApiBase extends ApiBase {
+abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface {
 
 	/** @var OrchestratorRequest */
 	protected $orchestrator;
@@ -37,7 +40,12 @@ abstract class WikiLambdaApiBase extends ApiBase {
 	/** @var string */
 	protected $orchestratorHost;
 
-	protected function setUpOrchestrator() {
+	/** @var LoggerInterface */
+	protected $logger;
+
+	protected function setUp() {
+		$this->setLogger( LoggerFactory::getInstance( 'WikiLambda' ) );
+
 		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
 		$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
 		$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
@@ -75,6 +83,14 @@ abstract class WikiLambdaApiBase extends ApiBase {
 	 * @return ZResponseEnvelope
 	 */
 	protected function executeFunctionCall( $zObject, $validate ) {
+		$this->getLogger()->debug(
+			__METHOD__ . ' called',
+			[
+				'zObject' => $zObject,
+				'validate' => $validate,
+			]
+		);
+
 		$queryArguments = [
 			'zobject' => $zObject->getSerialized(),
 			'doValidate' => $validate
@@ -94,7 +110,18 @@ abstract class WikiLambdaApiBase extends ApiBase {
 			);
 			$response = $work->execute();
 
-			$responseContents = FormatJson::decode( $response->getBody()->getContents() );
+			$responsePayload = $response->getBody()->getContents();
+
+			$this->getLogger()->debug(
+				__METHOD__ . ' executed successfully',
+				[
+					'zObject' => $zObject,
+					'validate' => $validate,
+					'response' => $responsePayload,
+				]
+			);
+
+			$responseContents = FormatJson::decode( $responsePayload );
 			$responseObject = ZObjectFactory::create( $responseContents );
 			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope $responseObject';
 			return $responseObject;
@@ -104,11 +131,31 @@ abstract class WikiLambdaApiBase extends ApiBase {
 			if ( $exception->getResponse()->getStatusCode() === 404 ) {
 				$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
 			}
+
+			$this->getLogger()->warning(
+				__METHOD__ . ' failed to execute with a ClientException/ServerException: {exception}',
+				[
+					'zObject' => $zObject,
+					'validate' => $validate,
+					'exception' => $exception,
+				]
+			);
+
 			return $this->returnWithZError(
 				$exception->getResponse()->getReasonPhrase(),
 				$zObject->getSerialized()
 			);
 		} catch ( \Exception $exception ) {
+
+			$this->getLogger()->warning(
+				__METHOD__ . ' failed to execute with a general Exception: {exception}',
+				[
+					'zObject' => $zObject,
+					'validate' => $validate,
+					'exception' => $exception,
+				]
+			);
+
 			return $this->returnWithZError(
 				$exception->getMessage(),
 				$zObject->getSerialized()
@@ -116,4 +163,13 @@ abstract class WikiLambdaApiBase extends ApiBase {
 		}
 	}
 
+	/** @inheritDoc */
+	public function setLogger( LoggerInterface $logger ) {
+		$this->logger = $logger;
+	}
+
+	/** @inheritDoc */
+	public function getLogger() {
+		return $this->logger;
+	}
 }

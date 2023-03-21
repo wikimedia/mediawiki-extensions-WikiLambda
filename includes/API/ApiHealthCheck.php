@@ -29,7 +29,7 @@ class ApiHealthCheck extends WikiLambdaApiBase {
 	public function __construct( $query, $moduleName ) {
 		parent::__construct( $query, $moduleName, 'wikilambda_health_check_' );
 
-		$this->setUpOrchestrator();
+		$this->setUp();
 	}
 
 	/**
