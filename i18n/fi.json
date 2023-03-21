@@ -19,6 +19,7 @@
 	"wikilambda-published": "Julkaistu!",
 	"wikilambda-cancel": "Peruuta",
 	"wikilambda-savenew": "Tallenna",
+	"wikilambda-languagelabel": "Kieli",
 	"wikilambda-editor-label-addlanguage-label": "Valitse kieli",
 	"wikilambda-editor-label-select-programming-language-label": "Valitse ohjelmointikieli:",
 	"wikilambda-implementation-none-found": "Tällä hetkellä tälle toiminnolle ei ole toteutuksia.",
