@@ -58,7 +58,7 @@ module.exports = exports = {
 		}
 	} ),
 	methods: $.extend( {}, mapActions( [
-		'addZMonolingualString',
+		'changeType',
 		'removeZObject',
 		'removeZObjectChildren',
 		'recalculateZListIndex'
@@ -77,17 +77,18 @@ module.exports = exports = {
 				return;
 			}
 
-			var lang = zId,
-				zLabelParentId = this.getNestedZObjectById( 0, [
-					Constants.Z_PERSISTENTOBJECT_LABEL,
-					Constants.Z_MULTILINGUALSTRING_VALUE
-				] ).id,
-				payload = {
-					lang: lang,
-					parentId: zLabelParentId
-				};
+			const zLabelParentId = this.getNestedZObjectById( 0, [
+				Constants.Z_PERSISTENTOBJECT_LABEL,
+				Constants.Z_MULTILINGUALSTRING_VALUE
+			] ).id;
 
-			this.addZMonolingualString( payload );
+			this.changeType( {
+				type: Constants.Z_MONOLINGUALSTRING,
+				lang: zId,
+				id: zLabelParentId,
+				append: true
+			} );
+
 			this.setLocalZLanguage( zId );
 		},
 		isSelectedLang: function ( zId ) {

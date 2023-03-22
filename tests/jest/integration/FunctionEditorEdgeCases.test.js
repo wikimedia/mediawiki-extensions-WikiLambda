@@ -93,6 +93,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await fireEvent.click( getByText( 'Add an input' ) );
 
 		// ACT: Select a type for the first argument again.
+		await waitFor( () => expect( within( argumentsArea ).getAllByPlaceholderText( 'Select a type' ).length ).toEqual( 1 ) );
 		await fireEvent.update( within( argumentsArea ).getByPlaceholderText( 'Select a type' ), 'Str' );
 		await clickLookupResult( argumentsArea, 'String' );
 
@@ -123,6 +124,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await fireEvent.click( getByText( 'Add another input' ) );
 
 		// ACT: Select a type for the second argument.
+		await waitFor( () => expect( within( argumentsArea ).getAllByPlaceholderText( 'Select a type' ).length ).toEqual( 2 ) );
 		await fireEvent.update( within( argumentsArea ).getAllByPlaceholderText( 'Select a type' )[ 1 ], 'Str' );
 		await clickLookupResult( within( argumentsArea ).getAllByRole( 'listbox', { hidden: true } )[ 1 ], 'String' );
 

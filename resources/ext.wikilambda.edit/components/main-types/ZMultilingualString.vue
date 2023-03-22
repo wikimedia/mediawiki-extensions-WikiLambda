@@ -94,7 +94,10 @@ module.exports = exports = {
 		}
 	),
 	methods: $.extend( {},
-		mapActions( [ 'addZMonolingualString', 'setIsZObjectDirty' ] ),
+		mapActions( [
+			'changeType',
+			'setIsZObjectDirty'
+		] ),
 		{
 			/**
 			 * Fires a `change` event with the index of a Monolingual String
@@ -111,8 +114,8 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Triggers a `addZMonolingualString` action with the language code of the new
-			 * Monolingual String to add to the Multilingual String.
+			 * Triggers a `changeType` action with the language code of the
+			 * new Monolingual String to add to the Multilingual String.
 			 *
 			 * @param {string} zId
 			 */
@@ -121,12 +124,12 @@ module.exports = exports = {
 					return;
 				}
 
-				var lang = zId,
-					payload = {
-						lang: lang,
-						parentId: this.monolingualStringsParentId
-					};
-				this.addZMonolingualString( payload );
+				this.changeType( {
+					type: Constants.Z_MONOLINGUALSTRING,
+					lang: zId,
+					id: this.monolingualStringsParentId,
+					append: true
+				} );
 				this.setIsZObjectDirty( true );
 				this.$refs.langSelector.clearResults();
 			},

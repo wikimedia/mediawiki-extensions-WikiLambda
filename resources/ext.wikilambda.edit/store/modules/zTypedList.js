@@ -98,7 +98,8 @@ module.exports = exports = {
 			// Create a K2 and set its type to the current list type
 			nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
 			context.dispatch( 'addZObject', { key: Constants.Z_TYPED_OBJECT_ELEMENT_2, value: 'object', parent: newItemParentId } );
-			context.dispatch( 'addZTypedList', {
+			context.dispatch( 'changeType', {
+				type: Constants.Z_TYPED_LIST,
 				id: nextId,
 				value: payload.value
 			} );

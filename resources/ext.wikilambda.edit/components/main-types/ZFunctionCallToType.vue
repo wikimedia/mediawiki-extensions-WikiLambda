@@ -108,11 +108,11 @@ module.exports = exports = {
 	} ),
 	methods: $.extend( mapActions( [
 		'changeType',
-		'addZReference',
 		'retriveTypeOfFunctionToType'
 	] ), {
 		onTypeChange: function ( type, argumentId, index ) {
-			this.addZReference( {
+			this.changeType( {
+				type: Constants.Z_REFERENCE,
 				value: type,
 				id: argumentId
 			} );

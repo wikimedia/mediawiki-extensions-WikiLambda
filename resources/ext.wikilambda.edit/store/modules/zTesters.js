@@ -240,7 +240,7 @@ module.exports = exports = {
 		 * @param {Object} context
 		 * @param {Object} payload
 		 * @param {number} payload.testerId
-		 * @param {number} payload.nextTesterIndex
+		 * @param {number} payload.parent
 		 */
 		saveNewTester: function ( context, payload ) {
 			var zobject = canonicalize( context.getters.getZObjectAsJsonById( payload.testerId ) ),
@@ -250,16 +250,11 @@ module.exports = exports = {
 				newZid = result.title;
 				return context.dispatch( 'fetchZTesters', context.getters.getCurrentZObjectId );
 			} ).then( function () {
-				var nextId = context.getters.getNextObjectId;
-
-				context.dispatch( 'addZObject', {
-					key: payload.nextTesterIndex,
-					value: 'object',
-					parent: payload.parent
-				} );
-				context.dispatch( 'addZReference', {
+				context.dispatch( 'changeType', {
+					type: Constants.Z_REFERENCE,
 					value: newZid,
-					id: nextId
+					id: payload.parent,
+					append: true
 				} );
 
 				context.dispatch( 'removeZObjectChildren', payload.testerId );

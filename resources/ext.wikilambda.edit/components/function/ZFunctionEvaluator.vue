@@ -38,15 +38,17 @@ module.exports = exports = {
 	} ),
 	methods: mapActions( [
 		'initializeResultId',
-		'addZFunctionCall',
+		'changeType',
 		'injectZObject'
 	] ),
 	mounted: function () {
 		this.initializeResultId( this.functionCallId )
 			.then( function ( id ) {
 				this.functionCallId = id;
-
-				return this.addZFunctionCall( { id: this.functionCallId } );
+				return this.changeType( {
+					type: Constants.Z_FUNCTION_CALL,
+					id: this.functionCallId
+				} );
 			}.bind( this ) )
 			.then( function () {
 				return this.initializeResultId( this.resultId );

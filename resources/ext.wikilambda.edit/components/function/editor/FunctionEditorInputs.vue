@@ -178,27 +178,18 @@ module.exports = exports = {
 		}
 	} ),
 	methods: $.extend( mapActions( [
-		'addZObject',
-		'addZArgument',
+		'changeType',
 		'setAvailableZArguments'
 	] ), {
 		addNewItem: function ( /* event */ ) {
-			var nextId = this.getNextObjectId,
-				payload = {
-					// since first item is type, new key is argmentList + 1
-					key: `${this.zArgumentList.length + 1}`,
-					value: 'object',
-					parent: this.zArgumentId
-				};
-
-			this.addZObject( payload );
-
-			var argumentPayload = {
-				id: nextId,
-				lang: this.zLang
-			};
-			this.addZArgument( argumentPayload );
-			this.setActiveInput( this.zArgumentList.length - 1 );
+			this.changeType( {
+				type: Constants.Z_ARGUMENT,
+				id: this.zArgumentId,
+				lang: this.zLang,
+				append: true
+			} ).then( () => {
+				this.setActiveInput( this.zArgumentList.length - 1 );
+			} );
 		},
 		// We need this function otherwise the build will fail
 		showAddNewInput: function ( isMainLanguageBlock, index ) {

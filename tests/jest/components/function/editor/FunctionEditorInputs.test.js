@@ -23,7 +23,7 @@ describe( 'FunctionEditorInputs', function () {
 		};
 		actions = {
 			addZObject: jest.fn(),
-			addZArgument: jest.fn(),
+			changeType: jest.fn(),
 			setAvailableZArguments: jest.fn()
 		};
 

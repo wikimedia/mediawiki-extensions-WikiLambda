@@ -52,7 +52,11 @@ module.exports = exports = {
 		'cdx-button': CdxButton
 	},
 	extends: ZTypedList,
-	computed: $.extend( mapGetters( [ 'getNextObjectId', 'getCurrentZObjectId', 'getViewMode' ] ),
+	computed: $.extend(
+		mapGetters( [
+			'getCurrentZObjectId',
+			'getViewMode'
+		] ),
 		{
 			Constants: function () {
 				return Constants;
@@ -62,21 +66,13 @@ module.exports = exports = {
 			}
 		}
 	),
-	methods: $.extend( mapActions( [ 'addZReference' ] ), {
+	methods: $.extend( mapActions( [ 'changeType' ] ), {
 		addNewItem: function ( /* event */ ) {
-			var nextId = this.getNextObjectId,
-				payload = {
-					// since first item is type, new key is items length + 1
-					key: `${this.ZlistItemsLength + 1}`,
-					value: 'object',
-					parent: this.zobjectId
-				};
-
-			this.addZObject( payload );
-
-			this.addZReference( {
+			this.changeType( {
+				type: Constants.Z_REFERENCE,
 				value: '',
-				id: nextId
+				id: this.zobjectId,
+				append: true
 			} );
 		}
 	} )

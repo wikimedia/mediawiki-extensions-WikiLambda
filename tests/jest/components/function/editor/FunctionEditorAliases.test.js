@@ -85,7 +85,7 @@ describe( 'FunctionEditorAliases', () => {
 		actions = {
 			setZObjectValue: jest.fn(),
 			addZObject: jest.fn(),
-			addZString: jest.fn(),
+			changeType: jest.fn(),
 			injectZObject: jest.fn(),
 			removeZObjectChildren: jest.fn(),
 			removeZObject: jest.fn(),
@@ -133,14 +133,11 @@ describe( 'FunctionEditorAliases', () => {
 
 			wrapper.getComponent( ChipContainer ).vm.$emit( 'add-chip', 'new alias' );
 
-			expect( actions.addZObject ).toHaveBeenCalledWith( expect.anything(), {
-				key: '1',
+			expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
+				type: Constants.Z_STRING,
+				id: monolingualStringsetValueId,
 				value: 'new alias',
-				parent: monolingualStringsetValueId
-			} );
-			expect( actions.addZString ).toHaveBeenCalledWith( expect.anything(), {
-				id: nextId,
-				value: 'new alias'
+				append: true
 			} );
 		} );
 		it( 'for an new language, adds new alias', () => {
@@ -182,8 +179,7 @@ describe( 'FunctionEditorAliases', () => {
 
 			expect( wrapper.get( '.ext-wikilambda-function-definition-aliases__error' ).exists() ).toBe( true );
 
-			expect( actions.addZObject ).not.toHaveBeenCalled();
-			expect( actions.addZString ).not.toHaveBeenCalled();
+			expect( actions.changeType ).not.toHaveBeenCalled();
 		} );
 	} );
 } );

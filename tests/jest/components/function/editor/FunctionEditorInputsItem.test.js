@@ -67,7 +67,7 @@ describe( 'FunctionEditorInputsItem', function () {
 			wrapper.vm.getArgumentLabels = jest.fn().mockReturnValue( {} );
 			wrapper.vm.setArgumentLabel();
 
-			expect( actions.addZMonolingualString ).not.toHaveBeenCalled();
+			expect( actions.changeType ).not.toHaveBeenCalled();
 		} );
 		it( 'adds a new language', function () {
 			var mockZLabel = {
@@ -91,10 +91,15 @@ describe( 'FunctionEditorInputsItem', function () {
 			} );
 
 			wrapper.vm.setArgumentLabel();
-			expect( actions.addZMonolingualString ).toHaveBeenCalled();
-			expect( actions.addZMonolingualString ).toHaveBeenCalledWith(
+			expect( actions.changeType ).toHaveBeenCalled();
+			expect( actions.changeType ).toHaveBeenCalledWith(
 				expect.anything(),
-				{ lang: 'Z10002', parentId: mockZLabel.id }
+				{
+					type: Constants.Z_MONOLINGUALSTRING,
+					lang: 'Z10002',
+					id: mockZLabel.id,
+					append: true
+				}
 			);
 		} );
 		it( 'clears on focus-out if a value is typed but then not selected', function () {

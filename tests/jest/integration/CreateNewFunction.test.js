@@ -88,6 +88,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await fireEvent.click( getByText( 'Add another input' ) );
 
 		// ACT: Select a type for the second argument.
+		await waitFor( () => expect( within( argumentsArea ).getAllByPlaceholderText( 'Select a type' ).length ).toEqual( 2 ) );
 		await fireEvent.update( within( argumentsArea ).getAllByPlaceholderText( 'Select a type' )[ 1 ], 'Str' );
 		await clickLookupResult( within( argumentsArea ).getAllByRole( 'listbox', { hidden: true } )[ 1 ], 'String' );
 

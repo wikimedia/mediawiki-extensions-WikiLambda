@@ -130,7 +130,10 @@ module.exports = exports = {
 		}
 	),
 	methods: $.extend( {},
-		mapActions( [ 'fetchZKeys', 'addZReference', 'removeZObjectChildren' ] ),
+		mapActions( [
+			'fetchZKeys',
+			'changeType'
+		] ),
 		{
 			/**
 			 * Sets the type of a ZObject key.
@@ -139,12 +142,11 @@ module.exports = exports = {
 			 * @param {number} id
 			 */
 			onTypeChange: function ( type ) {
-				var payload = {
+				this.changeType( {
+					type: Constants.Z_REFERENCE,
 					id: this.zobjectId,
 					value: type
-				};
-				this.removeZObjectChildren( this.zobjectId );
-				this.addZReference( payload );
+				} );
 			}
 		}
 	),

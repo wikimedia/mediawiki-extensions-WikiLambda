@@ -66,11 +66,11 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( {},
-		mapGetters( {
-			getListTypeById: 'getListTypeById',
-			getZObjectChildrenById: 'getZObjectChildrenById',
-			getAllItemsFromListById: 'getAllItemsFromListById'
-		} ),
+		mapGetters( [
+			'getListTypeById',
+			'getZObjectChildrenById',
+			'getAllItemsFromListById'
+		] ),
 		{
 			ZlistTypeId: function () {
 				return this.getListTypeById( this.zobjectId );
@@ -95,27 +95,25 @@ module.exports = exports = {
 		} ),
 	methods: $.extend( {},
 		mapActions( [
-			'addZObject', 'recalculateZListIndex', 'removeZObject', 'removeZObjectChildren', 'addTypetoList', 'changeType'
+			'recalculateZListIndex',
+			'removeZObject',
+			'removeZObjectChildren',
+			'addTypetoList',
+			'changeType'
 		] ),
 		{
 			onTypedListChange: function ( type ) {
-				this.addTypetoList( { type: type, objectId: this.zobjectId } );
+				this.addTypetoList( {
+					type: type,
+					objectId: this.zobjectId
+				} );
 			},
 			addNewItem: function ( /* event */ ) {
-				var payload = {
-					// since first item is type, new key is items length + 1
-					key: `${this.ZlistItemsLength + 1}`,
-					value: 'object',
-					parent: this.zobjectId
-				};
-
-				var zListType = this.ZListType.value;
-				this.addZObject( payload ).then( function ( zobjectId ) {
-					this.changeType( {
-						type: zListType,
-						id: zobjectId
-					} );
-				}.bind( this ) );
+				this.changeType( {
+					type: this.ZListType.value,
+					id: this.zobjectId,
+					append: true
+				} );
 			},
 			/**
 			 * Remove this item form the ZList

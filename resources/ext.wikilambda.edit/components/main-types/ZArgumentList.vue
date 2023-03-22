@@ -25,7 +25,8 @@
 </template>
 
 <script>
-var mapActions = require( 'vuex' ).mapActions,
+var Constants = require( '../../Constants.js' ),
+	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	ZTypedList = require( './ZTypedList.vue' );
@@ -39,17 +40,19 @@ module.exports = exports = {
 	extends: ZTypedList,
 	computed: mapGetters( [ 'getNextObjectId' ] ),
 	methods: $.extend( mapActions(
-		[ 'addZArgument', 'removeZObjectChildren', 'removeZObject', 'recalculateZArgumentList', 'setIsZObjectDirty' ] ), {
+		[
+			'changeType',
+			'removeZObjectChildren',
+			'removeZObject',
+			'recalculateZArgumentList',
+			'setIsZObjectDirty'
+		] ), {
 		addNewItem: function ( /* event */ ) {
-			var nextId = this.getNextObjectId,
-				payload = {
-					key: `${this.ZlistItemsLength + 1}`,
-					value: 'object',
-					parent: this.zobjectId
-				};
-			this.addZObject( payload );
-
-			this.addZArgument( { id: nextId } );
+			this.changeType( {
+				type: Constants.Z_ARGUMENT,
+				id: this.zobjectId,
+				append: true
+			} );
 			this.setIsZObjectDirty( true );
 		},
 		removeItem: function ( itemId ) {

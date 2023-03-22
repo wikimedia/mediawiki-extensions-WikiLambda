@@ -75,22 +75,15 @@ module.exports = exports = {
 	}
 	),
 	methods: $.extend( mapActions( [
-		'addZReference',
+		'changeType',
 		'createNewTester'
 	] ), {
 		addNewItem: function ( /* event */ ) {
-			var nextId = this.getNextObjectId,
-				payload = {
-					// since first item is type, new key is items length + 1
-					key: `${this.ZlistItemsLength + 1}`,
-					value: 'object',
-					parent: this.zobjectId
-				};
-			this.addZObject( payload );
-
-			this.addZReference( {
+			this.changeType( {
+				type: Constants.Z_REFERENCE,
 				value: '',
-				id: nextId
+				id: this.zobjectId,
+				append: true
 			} );
 		}
 	} )

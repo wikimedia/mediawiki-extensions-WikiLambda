@@ -93,9 +93,11 @@ module.exports = exports = {
 			set: function ( value ) {
 				var id = this.getFunctionName.id;
 				if ( !id ) {
-					this.addZMonolingualString( {
-						parentId: this.getFunctionNameMultilingualId,
-						lang: this.zLang
+					this.changeType( {
+						type: Constants.Z_MONOLINGUALSTRING,
+						lang: this.zLang,
+						id: this.getFunctionNameMultilingualId,
+						append: true
 					} );
 				}
 				var payload = {
@@ -110,7 +112,7 @@ module.exports = exports = {
 	} ),
 	methods: $.extend( mapActions( [
 		'setPageZObjectValue',
-		'addZMonolingualString'
+		'changeType'
 	] ), {
 		/**
 		 * This method debounces the change in the model for performance

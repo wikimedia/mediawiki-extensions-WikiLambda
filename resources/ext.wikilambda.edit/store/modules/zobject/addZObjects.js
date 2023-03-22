@@ -611,66 +611,6 @@ module.exports = exports = {
 			}
 		},
 
-		addZFunctionCall: function ( context, payload ) {
-			payload.type = Constants.Z_FUNCTION_CALL;
-			const value = context.getters.createObjectByType( payload );
-			return context.dispatch( 'injectZObjectFromRowId', {
-				rowId: payload.id,
-				value,
-				append: payload.append || false
-			} );
-		},
-		addZReference: function ( context, payload ) {
-			payload.type = Constants.Z_REFERENCE;
-			const value = context.getters.createObjectByType( payload );
-			return context.dispatch( 'injectZObjectFromRowId', {
-				rowId: payload.id,
-				value,
-				append: payload.append || false
-			} );
-		},
-		addZString: function ( context, payload ) {
-			payload.type = Constants.Z_STRING;
-			const value = context.getters.createObjectByType( payload );
-			return context.dispatch( 'injectZObjectFromRowId', {
-				rowId: payload.id,
-				value,
-				append: payload.append || false
-			} );
-		},
-		addZArgument: function ( context, payload ) {
-			payload.type = Constants.Z_ARGUMENT;
-			const value = context.getters.createObjectByType( payload );
-			return context.dispatch( 'injectZObjectFromRowId', {
-				rowId: payload.id,
-				value,
-				append: payload.append || false
-			} );
-		},
-		addZMonolingualString: function ( context, payload ) {
-			const newPayload = {
-				type: Constants.Z_MONOLINGUALSTRING,
-				id: payload.parentId,
-				lang: payload.lang,
-				value: payload.value
-			};
-			const value = context.getters.createObjectByType( newPayload );
-			return context.dispatch( 'injectZObjectFromRowId', {
-				rowId: payload.parentId,
-				value,
-				append: true
-			} );
-		},
-		addZTypedList: function ( context, payload ) {
-			payload.type = Constants.Z_TYPED_LIST;
-			const value = context.getters.createObjectByType( payload );
-			return context.dispatch( 'injectZObjectFromRowId', {
-				rowId: payload.id,
-				value,
-				append: payload.append || false
-			} );
-		},
-
 		/**
 		 * Changes the type, inserts or append a specific zObject given its type.
 		 *

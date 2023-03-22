@@ -247,7 +247,6 @@ module.exports = exports = {
 	} ),
 	methods: $.extend( mapActions( [
 		'setZObjectValue',
-		'addZMonolingualString',
 		'changeType',
 		'setTypeOfTypedList',
 		'removeZObject',
@@ -344,9 +343,11 @@ module.exports = exports = {
 						}
 					}
 					// Add monoliguanl string to zobject if it does not already exist
-					this.addZMonolingualString( {
+					this.changeType( {
+						type: Constants.Z_MONOLINGUALSTRING,
 						lang: value,
-						parentId: this.getArgumentLabels.id
+						id: this.getArgumentLabels.id,
+						append: true
 					} );
 				}
 			}
