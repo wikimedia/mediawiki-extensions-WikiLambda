@@ -257,6 +257,8 @@
 	"wikilambda-tester-create-new": "Label for creating a new tester",
 	"wikilambda-tester-status-pending": "Label for a pending test runner",
 	"wikilambda-tester-status-running": "Label for a running test runner",
+	"wikilambda-tester-status-run": "Label for the button to run a test",
+	"wikilambda-tester-status-cancel": "Label for the button to cancel running a test",
 	"wikilambda-tester-status-passed": "Label for a passing test runner",
 	"wikilambda-tester-status-failed": "Label for a failed test runner",
 	"wikilambda-tester-results-title": "Header for the tester results table",
@@ -379,5 +381,6 @@
 	"wikilambda-context-menu": "Title for a context menu",
 	"wikilambda-add-list-item": "Label for a button that adds an item to a list",
 	"wikilambda-delete-list-item": "Label for a button that removes an item from a list",
-	"wikilambda-list-type-change-publish-dialog-warning": "Warning message when the type of a typed list is changed that list items will be removed"
+	"wikilambda-list-type-change-publish-dialog-warning": "Warning message when the type of a typed list is changed that list items will be removed",
+	"wikilambda-tester-details": "Link to open details of tester results"
 }

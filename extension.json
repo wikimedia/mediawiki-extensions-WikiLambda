@@ -376,7 +376,11 @@
 						"cdxIconInstance",
 						"cdxIconLiteral",
 						"cdxIconMarkup",
-						"cdxIconEllipsis"
+						"cdxIconEllipsis",
+						"cdxIconReload",
+						"cdxIconClock",
+						"cdxIconSuccess",
+						"cdxIconCancel"
 					]
 				}
 			],
@@ -467,6 +471,8 @@
 				"wikilambda-tester-create-new",
 				"wikilambda-tester-status-pending",
 				"wikilambda-tester-status-running",
+				"wikilambda-tester-status-run",
+				"wikilambda-tester-status-cancel",
 				"wikilambda-tester-status-passed",
 				"wikilambda-tester-status-failed",
 				"wikilambda-tester-results-title",
@@ -608,7 +614,7 @@
 				"wikilambda-add-list-item",
 				"wikilambda-delete-list-item",
 				"wikilambda-list-items-type-label",
-				"wikilambda-list-type-change-publish-dialog-warning"
+				"wikilambda-tester-details"
 			]
 		}
 	},

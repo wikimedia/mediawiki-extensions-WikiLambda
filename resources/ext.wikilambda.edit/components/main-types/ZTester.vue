@@ -35,6 +35,7 @@
 		<wl-z-function-tester-report
 			:z-function-id="zFunctionId"
 			:z-tester-id="zTesterId"
+			:report-type="Constants.Z_TESTER"
 		>
 			<template #run-testers="{ click }">
 				<cdx-button @click="click">
