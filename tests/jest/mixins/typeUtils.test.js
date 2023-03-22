@@ -363,4 +363,132 @@ describe( 'typeUtils mixin', function () {
 			} );
 		} );
 	} );
+
+	describe( 'isGlobalKey', function () {
+		it( 'return true if string is a valid global Key', function () {
+			var result = typeUtils.isGlobalKey( 'Z123K123' );
+			expect( result ).toBeTruthy();
+		} );
+		it( 'return false if string is not a valid global Key', function () {
+			var result = typeUtils.isGlobalKey( 'Z123K12K' );
+			expect( result ).toBeFalsy();
+		} );
+	} );
+
+	describe( 'getZidOfGlobalKey', function () {
+		it( 'return Zid of a global key', function () {
+			var result = typeUtils.getZidOfGlobalKey( 'Z123K123' );
+			expect( result ).toBe( 'Z123' );
+		} );
+	} );
+
+	describe( 'getScaffolding', function () {
+		describe( 'return empty object', function () {
+			it( `of reference if type is ${Constants.Z_OBJECT}`, function () {
+				var result = typeUtils.getScaffolding( Constants.Z_OBJECT );
+				expect( result ).toStrictEqual( {
+					[ Constants.Z_OBJECT_TYPE ]: {
+						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+						[ Constants.Z_REFERENCE_ID ]: ''
+					}
+				} );
+			} );
+			it( `of string if type is ${Constants.Z_STRING}`, function () {
+				var result = typeUtils.getScaffolding( Constants.Z_STRING );
+				expect( result ).toBe( '' );
+			} );
+			it( `of monolingual string if type is ${Constants.Z_MONOLINGUALSTRING}`, function () {
+				var result = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRING );
+				expect( result ).toStrictEqual( {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
+					[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: {
+						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+						[ Constants.Z_REFERENCE_ID ]: ''
+					},
+					[ Constants.Z_MONOLINGUALSTRING_VALUE ]: {
+						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_STRING,
+						[ Constants.Z_STRING_VALUE ]: ''
+					}
+				} );
+			} );
+		} );
+		describe( 'return undefined', function () {
+			it( 'if type is other than reference, string, or monolingual string', function () {
+				var result = typeUtils.getScaffolding( 'Z123' );
+				expect( result ).toBeUndefined();
+			} );
+		} );
+	} );
+
+	describe( 'getKeyFromKeyList', function () {
+		it( `return the ${Constants.Z_KEY} object if given a key string from a list of ${Constants.Z_KEY} items`, function () {
+			var key = Constants.Z_MONOLINGUALSTRING_LANGUAGE;
+			var keyObject = {
+				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_KEY,
+				[ Constants.Z_KEY_TYPE ]: Constants.Z_NATURAL_LANGUAGE,
+				[ Constants.Z_KEY_ID ]: Constants.Z_MONOLINGUALSTRING_LANGUAGE,
+				[ Constants.Z_KEY_LABEL ]: {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
+					[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [
+						Constants.Z_MONOLINGUALSTRING,
+						{
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
+							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'language'
+						}
+					]
+				}
+			};
+			var list = [
+				Constants.Z_KEY,
+				keyObject,
+				{
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_KEY,
+					[ Constants.Z_KEY_TYPE ]: Constants.Z_STRING,
+					[ Constants.Z_KEY_ID ]: Constants.Z_MONOLINGUALSTRING_VALUE,
+					[ Constants.Z_KEY_LABEL ]: {
+						[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
+						[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [
+							Constants.Z_MONOLINGUALSTRING,
+							{
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
+								[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+								[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'text'
+							}
+						]
+					}
+				}
+			];
+			var result = typeUtils.getKeyFromKeyList( key, list );
+			expect( result ).toStrictEqual( keyObject );
+		} );
+	} );
+
+	describe( 'getArgFromArgList', function () {
+		it( `return the ${Constants.Z_ARGUMENT} object if given a key string from a list of ${Constants.Z_ARGUMENT} items`, function () {
+			var key = 'Z801K1';
+			var keyObject = {
+				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_ARGUMENT,
+				[ Constants.Z_ARGUMENT_TYPE ]: Constants.Z_OBJECT,
+				[ Constants.Z_ARGUMENT_KEY ]: 'Z801K1',
+				[ Constants.Z_ARGUMENT_LABEL ]: {
+					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
+					[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [
+						Constants.Z_MONOLINGUALSTRING,
+						{
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
+							[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'input argument'
+						}
+					]
+				}
+			};
+			var list = [
+				Constants.Z_ARGUMENT,
+				keyObject
+			];
+			var result = typeUtils.getArgFromArgList( key, list );
+			expect( result ).toStrictEqual( keyObject );
+		} );
+	} );
 } );
