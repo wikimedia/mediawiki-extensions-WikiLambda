@@ -351,10 +351,10 @@ class ZTypeRegistry extends ZObjectRegistry {
 	 * Returns the class name given a built-in function Zid
 	 *
 	 * @param string $zid The zid of the built-in ZFunction
-	 * @return string Class name for the built-in
+	 * @return ?string Class name for the built-in, or null if not known
 	 */
-	public function getZFunctionBuiltInName( string $zid ): string {
-		return self::BUILT_IN_TYPE_FUNCTIONS[ $zid ];
+	public function getZFunctionBuiltInName( string $zid ): ?string {
+		return self::BUILT_IN_TYPE_FUNCTIONS[ $zid ] ?? null;
 	}
 
 	/**

@@ -447,4 +447,53 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 			"Asking if an item is a reference to an unknown ZID throws."
 		);
 	}
+
+	/**
+	 * @covers ::isZFunctionBuiltIn
+	 * @covers ::getZFunctionBuiltInName
+	 */
+	public function testIsZFunctionBuiltIn() {
+		$registry = ZTypeRegistry::singleton();
+
+		$this->assertTrue(
+			$registry->isZFunctionBuiltIn( ZTypeRegistry::Z_FUNCTION_TYPED_LIST ),
+			"The registry knows about typed lists."
+		);
+		$this->assertSame(
+			'ZTypedList',
+			$registry->getZFunctionBuiltInName( ZTypeRegistry::Z_FUNCTION_TYPED_LIST )
+		);
+
+		$this->assertTrue(
+			$registry->isZFunctionBuiltIn( ZTypeRegistry::Z_FUNCTION_TYPED_PAIR ),
+			"The registry knows about typed pairs."
+		);
+		$this->assertSame(
+			'ZTypedPair',
+			$registry->getZFunctionBuiltInName( ZTypeRegistry::Z_FUNCTION_TYPED_PAIR )
+		);
+
+		$this->assertTrue(
+			$registry->isZFunctionBuiltIn( ZTypeRegistry::Z_FUNCTION_TYPED_MAP ),
+			"The registry knows about typed maps."
+		);
+		$this->assertSame(
+			'ZTypedMap', $registry->getZFunctionBuiltInName( ZTypeRegistry::Z_FUNCTION_TYPED_MAP )
+		);
+
+		$this->assertTrue(
+			$registry->isZFunctionBuiltIn( ZTypeRegistry::Z_FUNCTION_ERRORTYPE_TO_TYPE ),
+			"The registry knows about typed errors."
+		);
+		$this->assertSame(
+			'ZTypedError',
+			$registry->getZFunctionBuiltInName( ZTypeRegistry::Z_FUNCTION_ERRORTYPE_TO_TYPE )
+		);
+
+		$this->assertFalse(
+			$registry->isZFunctionBuiltIn( 'Z801' ),
+			"The registry doesn't think the Echo function is a type function."
+		);
+		$this->assertNull( $registry->getZFunctionBuiltInName( 'Z801' ) );
+	}
 }
