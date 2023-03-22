@@ -1,5 +1,3 @@
-<!-- eslint-disable vue/no-unsupported-features -->
-<!-- eslint-disable vue/no-v-model-argument -->
 <template>
 	<!--
 		WikiLambda Vue component for a context-menu

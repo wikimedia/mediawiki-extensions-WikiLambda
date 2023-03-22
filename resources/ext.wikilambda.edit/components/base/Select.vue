@@ -6,8 +6,6 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<!-- eslint-disable vue/no-v-model-argument -->
-	<!-- eslint-disable vue/no-unsupported-features -->
 	<cdx-select
 		:id="id"
 		v-model:selected="value"

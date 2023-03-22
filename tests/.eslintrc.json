@@ -12,6 +12,8 @@
 			{ "properties": "never" }
 		],
 		"compat/compat": "off",
-		"no-implicit-globals": "off"
+		"no-implicit-globals": "off",
+		"no-restricted-syntax": "off",
+		"no-undef": "off"
 	}
 }

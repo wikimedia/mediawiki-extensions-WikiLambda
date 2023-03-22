@@ -7,8 +7,6 @@
 	-->
 	<div class="ext-wikilambda-code">
 		<span v-if="!edit">{{ selectedLanguage }}</span>
-		<!-- eslint-disable vue/no-v-model-argument -->
-		<!-- eslint-disable vue/no-unsupported-features -->
 		<wl-select
 			v-else
 			v-model:selected="selectedLanguage"

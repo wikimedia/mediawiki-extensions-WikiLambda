@@ -17,8 +17,6 @@
 				@input="setValue"
 			></wl-z-object-selector>
 			<!-- Non-Zero state, select mode -->
-			<!-- eslint-disable vue/no-v-model-argument -->
-			<!-- eslint-disable vue/no-unsupported-features -->
 			<div v-else class="ext-wikilambda-type-mode__select">
 				<wl-select
 					v-model:selected="value"

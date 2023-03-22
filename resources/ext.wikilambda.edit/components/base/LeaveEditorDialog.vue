@@ -7,8 +7,6 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-leaveeditordialog">
-		<!-- eslint-disable vue/no-v-model-argument -->
-		<!-- eslint-disable vue/no-unsupported-features -->
 		<cdx-dialog
 			:open="showDialog"
 			close-button-label="Close"

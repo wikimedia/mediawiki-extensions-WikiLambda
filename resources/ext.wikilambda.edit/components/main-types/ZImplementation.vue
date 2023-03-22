@@ -36,8 +36,6 @@
 			</template>
 		</div>
 		<div v-if="!viewmode && implMode">
-			<!-- eslint-disable vue/no-v-model-argument -->
-			<!-- eslint-disable vue/no-unsupported-features -->
 			<cdx-select
 				v-model:selected="implMode"
 				class="ext-wikilambda-zimplementation__mode-selector"

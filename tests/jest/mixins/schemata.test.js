@@ -5,7 +5,6 @@
  * @license MIT
  */
 
-/* eslint-disable no-undef */
 var schemata = require( '../../../resources/ext.wikilambda.edit/mixins/schemata.js' ).methods,
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	canonicalize = schemata.canonicalizeZObject,

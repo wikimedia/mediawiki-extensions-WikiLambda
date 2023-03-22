@@ -7,8 +7,6 @@
 	-->
 	<div class="ext-wikilambda-zcode">
 		<span v-if="viewmode || readonly">{{ selectedLanguage }}</span>
-		<!-- eslint-disable vue/no-v-model-argument -->
-		<!-- eslint-disable vue/no-unsupported-features -->
 		<cdx-select
 			v-else
 			v-model:selected="selectedLanguage"
