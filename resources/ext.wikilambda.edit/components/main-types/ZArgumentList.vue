@@ -7,7 +7,7 @@
 	-->
 	<div>
 		<h3>{{ $i18n( 'wikilambda-editor-argument-list-label' ).text() }}</h3>
-		<ul class="ext-wikilambda-zlist-no-bullets">
+		<ul class="ext-wikilambda-zlist-no-bullets ext-wikilambda-zargumentlist">
 			<wl-z-list-item
 				v-for="( item ) in ZlistItems"
 				:key="item.id"

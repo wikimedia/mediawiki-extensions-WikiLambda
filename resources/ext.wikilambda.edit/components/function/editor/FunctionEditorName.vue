@@ -20,10 +20,11 @@
 
 		<cdx-text-input
 			:id="'ext-wikilambda-function-definition-name__input' + zLang"
-			v-model="zobjectLabel"
+			:model-value="zobjectLabel"
 			class="ext-wikilambda-function-definition-name__input"
 			:aria-label="$i18n( 'wikilambda-function-definition-name-label' ).text()"
 			:placeholder="$i18n( 'wikilambda-function-definition-name-placeholder' ).text()"
+			@input="setZObjectLabel"
 		></cdx-text-input>
 	</div>
 </template>
@@ -32,7 +33,8 @@
 var Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput;
+	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
+	debounceSetZObjectLabelTimeout = 300;
 
 // @vue/component
 module.exports = exports = {
@@ -58,6 +60,11 @@ module.exports = exports = {
 			type: String,
 			required: true
 		}
+	},
+	data: function () {
+		return {
+			debounceSetZObjectLabel: null
+		};
 	},
 	computed: $.extend( mapGetters( [
 		'getZObjectChildrenById',
@@ -104,7 +111,20 @@ module.exports = exports = {
 	methods: $.extend( mapActions( [
 		'setPageZObjectValue',
 		'addZMonolingualString'
-	] ) ),
+	] ), {
+		/**
+		 * This method debounces the change in the model for performance
+		 *
+		 * @param {Event} event The input event
+		 */
+		setZObjectLabel( event ) {
+			const input = event.target.value;
+			clearTimeout( this.debounceSetZObjectLabel );
+			this.debounceSetZObjectLabel = setTimeout( function () {
+				this.zobjectLabel = input;
+			}.bind( this ), debounceSetZObjectLabelTimeout );
+		}
+	} ),
 	watch: {
 		zLang: function () {
 			this.zobjectLabel = null;
