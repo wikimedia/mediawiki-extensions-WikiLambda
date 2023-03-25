@@ -145,7 +145,7 @@ module.exports = exports = {
 			let html = '<ul>';
 			for ( const suberror of suberrors ) {
 				html = html + '<li>' + this.messageForSuberror( suberror, labels ) + '</li>';
-				if ( suberror.children !== [] ) {
+				if ( suberror.children.length !== 0 ) {
 					html = html + this.formatZErrorSummary( suberror.children, labels );
 				}
 			}
