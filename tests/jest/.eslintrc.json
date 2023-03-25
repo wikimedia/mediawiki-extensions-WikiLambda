@@ -1,5 +1,8 @@
 {
 	"globals": {
 		"global": true
+	},
+	"rules": {
+		"es-x/no-async-functions": "warn"
 	}
 }
