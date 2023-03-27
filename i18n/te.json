@@ -5,6 +5,7 @@
 			"Chaduvari",
 			"Pranayraj1985",
 			"Tmamatha",
+			"V Bhavya",
 			"Veeven"
 		]
 	},
@@ -19,5 +20,7 @@
 	"wikilambda-editor-fn-step-function-about": "గురించి",
 	"wikilambda-editor-fn-step-function-details": "వివరాలు",
 	"wikilambda-continue-editing": "దిద్దుబాటు కొనసాగించండి",
-	"wikilambda-discard-edits": "సవరణలను తోసిపుచ్చండి"
+	"wikilambda-discard-edits": "సవరణలను తోసిపుచ్చండి",
+	"wikilambda-add-list-item": "వస్తువు జోడించు",
+	"wikilambda-delete-list-item": "తొలగించిన అంశం"
 }
