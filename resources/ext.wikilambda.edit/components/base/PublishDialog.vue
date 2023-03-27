@@ -6,8 +6,6 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-publishdialog">
-		<!-- eslint-disable vue/no-v-model-argument -->
-		<!-- eslint-disable vue/no-unsupported-features -->
 		<cdx-dialog
 			id="publish-dialog"
 			title=""

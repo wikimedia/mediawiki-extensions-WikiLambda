@@ -6,8 +6,6 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-function-viewer">
-		<!-- eslint-disable vue/no-v-model-argument -->
-		<!-- eslint-disable vue/no-unsupported-features -->
 		<cdx-tabs v-model:active="currentTab">
 			<cdx-tab
 				v-for="( tab, index ) in tabsData"

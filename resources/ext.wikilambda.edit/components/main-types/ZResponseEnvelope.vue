@@ -34,8 +34,6 @@
 				{{ metricsButtonText }}
 			</cdx-button>
 		</div>
-		<!-- eslint-disable vue/no-v-model-argument -->
-		<!-- eslint-disable vue/no-unsupported-features -->
 		<cdx-dialog
 			id="metadata-dialog"
 			v-model:open="showMetrics"

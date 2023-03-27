@@ -21,8 +21,6 @@
 				{{ selectedText }}
 			</a>
 		</div>
-		<!-- eslint-disable vue/no-v-model-argument -->
-		<!-- eslint-disable vue/no-unsupported-features -->
 		<!-- TODO: add error state when implemented in codex -->
 		<cdx-lookup
 			v-else

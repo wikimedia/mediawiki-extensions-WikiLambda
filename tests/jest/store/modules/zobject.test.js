@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /*!
  * WikiLambda unit test suite for the zobject Vuex module
  *

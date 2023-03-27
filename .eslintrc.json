@@ -36,7 +36,15 @@
 			"error",
 			"kebab-case"
 		],
-		"vue/no-undef-properties": "off",
+		"vue/no-undef-components": "warn",
+		"vue/no-undef-properties": "warn",
+		"vue/no-unsupported-features": [
+			"error",
+			{
+				"version": "^3.0.0",
+				"ignores": []
+			}
+		],
 		"vue/no-unregistered-components": [
 			"warn",
 			{
@@ -47,6 +55,6 @@
 				]
 			}
 		],
-		"vue/no-undef-components": "warn"
+		"vue/no-v-model-argument": "warn"
 	}
 }
