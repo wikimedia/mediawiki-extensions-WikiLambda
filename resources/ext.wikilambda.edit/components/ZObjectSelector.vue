@@ -429,7 +429,6 @@ module.exports = exports = {
 					this.$emit( 'input-removed' );
 				}
 				this.$emit( 'input', zId );
-
 				this.setError( {
 					internalId: this.zobjectId,
 					errorState: false
@@ -487,6 +486,7 @@ module.exports = exports = {
 
 	&__error {
 		padding-top: 6px;
+		width: max-content;
 	}
 }
 </style>

@@ -117,6 +117,7 @@ module.exports = exports = {
 					id: this.zobjectId,
 					type: type
 				};
+
 				this.changeType( payload );
 			}
 		}

@@ -747,7 +747,6 @@ module.exports = exports = {
 		changeType: function ( context, payload ) {
 			// append is false by default
 			const append = payload.append ? payload.append : false;
-
 			// TODO the whole changeType function could be the following block:
 			const value = typeUtils.getScaffolding( payload.type );
 

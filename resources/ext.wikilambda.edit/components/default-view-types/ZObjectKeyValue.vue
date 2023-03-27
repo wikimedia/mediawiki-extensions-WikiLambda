@@ -51,6 +51,7 @@
 				:list-type="listType"
 				@set-value="setValue"
 				@set-type="setType"
+				@change-event="changeEvent"
 			></component>
 		</p>
 	</div>
@@ -126,9 +127,7 @@ module.exports = exports = {
 			'getParentRowId',
 			'getZObjectKeyByRowId',
 			'getZObjectValueByRowId',
-			'getZObjectTypeByRowId',
-			'getChildrenByParentRowId',
-			'getZReferenceTerminalValue'
+			'getZObjectTypeByRowId'
 		] ),
 		{
 			/**
@@ -142,6 +141,21 @@ module.exports = exports = {
 			 * @return {boolean}
 			 */
 			disableEdit: function () {
+				// if the item is a typed list and the type of that list is enforced, the edit should be disabled
+				if ( this.isKeyTypedListType( this.parentKey ) || this.isKeyTypedListType( this.key ) ) {
+					return this.expectedType !== Constants.Z_OBJECT;
+				}
+
+				// if this is an item in a typed list and the type of that item,
+				// it should be disabled unless the list is of type 'any'
+				// an item can have multiple input fields (ex: monolingual string),
+				// so this should be limited to the object type field
+				if ( ( this.key === Constants.Z_OBJECT_TYPE ) &&
+					( this.isKeyTypedListItem( this.parentKey ) || this.isKeyTypedListItem( this.key ) )
+				) {
+					return this.listType !== Constants.Z_OBJECT;
+				}
+
 				// the root ZObject type (it will always be a Literal Persistent Object).
 				return ( this.key === Constants.Z_OBJECT_TYPE ) &&
 					( this.parentExpectedType === Constants.Z_PERSISTENTOBJECT );
@@ -256,6 +270,11 @@ module.exports = exports = {
 			 */
 			rootClass: function () {
 				var classList = [ 'ext-wikilambda-key-value' ];
+
+				if ( this.isKeyTypedListType( this.key ) && this.edit && !this.expanded ) {
+					classList.push( 'ext-wikilambda-key-value-flex' );
+				}
+
 				// this class is only required for non-terminal items in collapsed mode
 				if ( this.listType && !this.expanded && this.hasExpandedMode ) {
 					classList.push( 'ext-wikilambda-key-value-inherit' );
@@ -271,14 +290,22 @@ module.exports = exports = {
 
 			paddedClass: function () {
 				var classList = [];
-				// typed lists will manage padding independently
 
+				if ( this.edit && this.isKeyTypedListType( this.key ) ) {
+					return classList;
+				}
+
+				// typed lists will manage padding independently
 				if ( this.type === Constants.Z_TYPED_LIST ) {
 					return classList;
 				}
-				// but do not push items within the list
+
+				// non-terminal list items with labels should be indented when they are collapsed
 				if ( this.listType ) {
-					classList.push( 'ext-wikilambda-value-block__list-item' );
+
+					if ( this.edit && !this.expanded && this.hasExpandedMode && this.keyLabel ) {
+						classList.push( 'ext-wikilambda-value-block__padded' );
+					}
 				} else if ( this.hasExpandedMode && !this.expanded ) {
 					classList.push( 'ext-wikilambda-value-block__padded' );
 				}
@@ -312,14 +339,30 @@ module.exports = exports = {
 			 * @return {string}
 			 */
 			expectedType: function () {
+				// if this is the type of a list
+				if ( this.isKeyTypedListType( this.key ) ) {
+					return this.typedListStringToType( this.parentExpectedType );
+				}
+
+				// if the type of a list is expanded, we will be nested
+				// so need to go two levels up to get the expected type
+				// this is required to limit the select options in edit mode
+				if ( this.isKeyTypedListType( this.parentKey ) ) {
+					// get the grandparent expected type
+					const grandparentRowId = this.getParentRowId( this.parentRowId );
+					const grandparentKey = this.getZObjectKeyByRowId( grandparentRowId );
+					const grandparentExpectedType = this.getExpectedTypeOfKey( grandparentKey );
+
+					return this.typedListStringToType( grandparentExpectedType );
+				}
+
 				// list types and list items don't have real keys - their keys are just list indices
 				// if the item is list item, the type of each item must be whatever the type of the list is
-				if ( this.isKeyTypedListItem( this.parentKey ) && this.listType !== Constants.Z_OBJECT ) {
+				if (
+					( this.isKeyTypedListItem( this.parentKey ) || this.isKeyTypedListItem( this.key ) ) &&
+					this.listType !== Constants.Z_OBJECT
+				) {
 					return this.listType;
-				}
-				// if the item is the type of the list, it is limited by the type the parent
-				if ( this.isKeyTypedListType( this.parentKey ) ) {
-					return this.typedListStringToType( this.parentExpectedType );
 				}
 
 				// FIXME: expected type changes if this is a resolver type
@@ -489,91 +532,112 @@ module.exports = exports = {
 				return this.hasExpandedMode || this.keyLabel || this.showContextMenu;
 			}
 		} ),
-	methods: $.extend(
-		mapActions( [ 'setValueByRowIdAndPath', 'changeType', 'removeItemFromTypedList' ] ),
-		{
-			/**
-			 * Handles the modification of the ZObject when the changed key-value
-			 * is a type. This needs to call the changeType action, which handles
-			 * the clearing of the old content and the initialization of a new
-			 * scaffolding object representing the new type.
-			 *
-			 * @param {Object} payload
-			 * @param {Object} payload.keyPath sequence of keys till the value to edit
-			 * @param {Object | Array | string} payload.value new value
-			 */
-			setType: function ( payload ) {
-				this.changeType( {
-					id: this.rowId,
-					type: payload.value,
-					append: payload.append ? payload.append : false
-				} );
-			},
+	methods: $.extend( mapActions( [
+		'setValueByRowIdAndPath',
+		'changeType',
+		'removeItemFromTypedList'
+	] ),
+	{
+		/**
+		 * Handles the modification of the ZObject when the changed key-value
+		 * is a type. This needs to call the changeType action, which handles
+		 * the clearing of the old content and the initialization of a new
+		 * scaffolding object representing the new type.
+		 *
+		 * @param {Object} payload
+		 * @param {Object} payload.keyPath sequence of keys till the value to edit
+		 * @param {Object | Array | string} payload.value new value
+		 */
+		setType: function ( payload ) {
+			this.changeType( {
+				id: this.rowId,
+				type: payload.value,
+				append: payload.append ? payload.append : false
+			} );
+		},
 
-			/**
-			 * Handles the modification of the state value for the key-value
-			 * represented in this component. Depending on the whether this
-			 * change involves further changes, it will emit the event further
-			 * up.
-			 *
-			 * @param {Object} payload
-			 * @param {Object} payload.keyPath sequence of keys till the value to edit
-			 * @param {Object | Array | string} payload.value new value
-			 */
-			setValue: function ( payload ) {
-				// COMPLEX changes
-				// They affect the rest of the ZObject, not only this key-value
-
-				// 1. If the value of Z1K1 changes, tell parent key to change its type
-				if ( this.key === Constants.Z_OBJECT_TYPE ) {
-					this.$emit( 'set-type', payload );
-					return;
-				}
-
-				// 2. If the value of Z1K1.Z9K1 changes, pass the set value responsability
-				if ( ( this.key === Constants.Z_REFERENCE_ID ) &&
-					( this.parentKey === Constants.Z_OBJECT_TYPE ) ) {
-					this.$emit( 'set-value', payload );
-					return;
-				}
-
-				// FIXME If the value of Z7K1 changes, we need to change all keys, which
-				// probably means that we need to pass up the responsability the way we
-				// have done it with Z1K1.
-				if ( this.key === Constants.Z_FUNCTION_CALL_FUNCTION ) {
-					return;
-				}
-
-				// SIMPLE changes
-				// They don't affect the rest of the ZObject, only this key-value
-				this.setValueByRowIdAndPath( {
-					rowId: this.rowId,
-					keyPath: payload.keyPath ? payload.keyPath : [],
-					value: payload.value
-				} );
-			},
-			/**
-			 * Toggles on and off the expanded flag
-			 */
-			toggleExpanded: function () {
-				this.expanded = !this.expanded;
-			},
-
-			/**
-			 * Process context menu actions
-			 *
-			 * @param {string} action
-			 */
-			contextMenuAction: function ( action ) {
-				if ( action === Constants.contextMenuItems.DELETE_LIST_ITEM ) {
-					// TODO(T324242): replace with new setter when it exists
-					// TODO(T331132): can we create a 'revert delete' workflow?
-					this.removeItemFromTypedList( {
-						rowId: this.rowId
-					} );
-				}
+		/**
+		 * Handles the modification of the state value for the key-value
+		 * represented in this component. Depending on the whether this
+		 * change involves further changes, it will emit the event further
+		 * up.
+		 *
+		 * @param {Object} payload
+		 * @param {Object} payload.keyPath sequence of keys till the value to edit
+		 * @param {Object | Array | string} payload.value new value
+		 */
+		setValue: function ( payload ) {
+			// if the type of a typed list changed, notify the parent to take action
+			if ( this.isKeyTypedListType( this.parentKey ) || this.isKeyTypedListType( this.key ) ) {
+				this.$emit( 'change-event', payload );
 			}
-		} )
+
+			// COMPLEX changes
+			// They affect the rest of the ZObject, not only this key-value
+
+			// 1. If the value of Z1K1 changes, tell parent key to change its type
+			if ( this.key === Constants.Z_OBJECT_TYPE ) {
+				this.$emit( 'set-type', payload );
+				return;
+			}
+
+			// 2. If the value of Z1K1.Z9K1 changes, pass the set value responsability
+			if ( ( this.key === Constants.Z_REFERENCE_ID ) &&
+				( this.parentKey === Constants.Z_OBJECT_TYPE ) ) {
+				this.$emit( 'set-value', payload );
+				return;
+			}
+
+			// FIXME If the value of Z7K1 changes, we need to change all keys, which
+			// probably means that we need to pass up the responsability the way we
+			// have done it with Z1K1.
+			if ( this.key === Constants.Z_FUNCTION_CALL_FUNCTION ) {
+				return;
+			}
+
+			// SIMPLE changes
+			// They don't affect the rest of the ZObject, only this key-value
+			this.setValueByRowIdAndPath( {
+				rowId: this.rowId,
+				keyPath: payload.keyPath ? payload.keyPath : [],
+				value: payload.value
+			} );
+		},
+
+		/**
+		 * Generic handler to bubble up change events. This can be utilized by any component
+		 * that acts as a wrapper to ZObjectKeyValue and wants to recieve events from children.
+		 *
+		 * It is currently used by ZTypedListType, to be notified of a type change to a list
+		 *
+		 * @param {Object} payload
+		 */
+		changeEvent: function ( payload ) {
+			this.$parent.$emit( 'change-event', payload );
+		},
+
+		/**
+		 * Toggles on and off the expanded flag
+		 */
+		toggleExpanded: function () {
+			this.expanded = !this.expanded;
+		},
+
+		/**
+		 * Process context menu actions
+		 *
+		 * @param {string} action
+		 */
+		contextMenuAction: function ( action ) {
+			if ( action === Constants.contextMenuItems.DELETE_LIST_ITEM ) {
+				// TODO(T324242): replace with new setter when it exists
+				// TODO(T331132): can we create a 'revert delete' workflow?
+				this.removeItemFromTypedList( {
+					rowId: this.rowId
+				} );
+			}
+		}
+	} )
 };
 </script>
 
@@ -581,6 +645,8 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-key-value {
+	flex: 1;
+
 	.ext-wikilambda-key-value-inherit {
 		display: inherit;
 	}
@@ -589,8 +655,11 @@ module.exports = exports = {
 		display: inline-table;
 	}
 
+	.ext-wikilambda-key-value-flex {
+		display: flex;
+	}
+
 	.ext-wikilambda-key-block {
-		margin: 0; // override vector default <p> behavior
 		display: flex;
 		align-items: center;
 		color: @color-subtle;
@@ -655,17 +724,11 @@ module.exports = exports = {
 	}
 	/* stylelint-disable declaration-block-no-redundant-longhand-properties */
 	.ext-wikilambda-value-block {
+		flex: 1;
 		margin-top: @wl-key-value-margin-top;
 		margin-right: @wl-key-value-margin-right;
 		margin-bottom: @wl-key-value-margin-bottom;
 		margin-left: @wl-key-value-margin-left;
-
-		&__list-item {
-			margin-bottom: 0;
-			display: flex;
-			align-items: center;
-			margin-left: @spacing-25;
-		}
 
 		&__padded {
 			margin-left: @spacing-150;

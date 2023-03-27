@@ -2008,6 +2008,38 @@ describe( 'zobject Vuex module', function () {
 			} );
 		} );
 
+		describe( 'Modifies typed lists', function () {
+
+			it( 'Removes invalid items from a list', function () {
+				context.state = {};
+
+				context.state.zobject = tableDataToRowObjects( [
+					{ id: 7, key: Constants.Z_PERSISTENTOBJECT_VALUE, parent: 0, value: 'array' },
+					{ id: 8, key: '0', parent: 7, value: 'object' },
+					{ id: 9, key: Constants.Z_OBJECT_TYPE, parent: 8, value: Constants.Z_REFERENCE },
+					{ id: 10, key: Constants.Z_STRING_VALUE, parent: 8, value: Constants.Z_STRING },
+					{ id: 11, key: '1', parent: 7, value: 'object' },
+					{ id: 12, key: Constants.Z_OBJECT_TYPE, parent: 11, value: Constants.Z_STRING },
+					{ id: 13, key: Constants.Z_STRING_VALUE, parent: 11, value: 'alabama' },
+					{ id: 14, key: '2', parent: 7, value: 'object' },
+					{ id: 15, key: Constants.Z_OBJECT_TYPE, parent: 14, value: Constants.Z_STRING },
+					{ id: 16, key: Constants.Z_STRING_VALUE, parent: 14, value: 'arizona' },
+					{ id: 17, key: '3', parent: 7, value: 'object' },
+					{ id: 18, key: Constants.Z_OBJECT_TYPE, parent: 17, value: Constants.Z_STRING },
+					{ id: 19, key: Constants.Z_STRING_VALUE, parent: 17, value: 'alaska' },
+					{ id: 20, key: '4', parent: 7, value: 'object' },
+					{ id: 21, key: Constants.Z_OBJECT_TYPE, parent: 20, value: Constants.Z_STRING },
+					{ id: 22, key: Constants.Z_STRING_VALUE, parent: 20, value: 'arkansas' }
+				] );
+				context.getters.getInvalidListItems = [ 13, 16, 19, 22 ];
+
+				zobjectModule.actions.submitZObject( context, { summary: 'A summary' } );
+
+				expect( context.dispatch ).toHaveBeenNthCalledWith( 1, 'removeAllItemsFromTypedList', [ 13, 16, 19, 22 ] );
+				expect( context.dispatch ).toHaveBeenNthCalledWith( 2, 'setListItemsForRemoval', { listItems: [ ] } );
+			} );
+		} );
+
 		/* NEW ACTIONS: */
 		describe( 'injectZObjectFromRowId', function () {
 			beforeEach( function () {

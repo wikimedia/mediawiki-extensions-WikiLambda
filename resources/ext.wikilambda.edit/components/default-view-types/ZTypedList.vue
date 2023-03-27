@@ -12,10 +12,11 @@
 		<!-- Type of list -->
 		<wl-z-typed-list-type
 			v-if="expanded"
-			:row-id="typeRowId"
+			:row-id="zTypeRowId"
 			:edit="edit"
 			:list-type="type"
 			:parent-row-id="rowId"
+			:list-items-row-ids="listItemsRowIds"
 		></wl-z-typed-list-type>
 		<!-- Label for list items -->
 		<label
@@ -92,7 +93,8 @@ module.exports = exports = {
 	computed: $.extend(
 		mapGetters( [
 			'getChildrenByParentRowId',
-			'getZObjectTypeByRowId'
+			'getZObjectTypeByRowId',
+			'getZObjectValueByRowId'
 		] ),
 		{
 			/**
@@ -113,22 +115,33 @@ module.exports = exports = {
 				return this.childRowIds.slice( 1 );
 			},
 			/**
-			 * Returns the id for the first item on the list, which represents the type
+			 * Returns the id for the first item on the list, which represents the zType
+			 *
+			 * @return {string}
+			 */
+			zTypeRowId: function () {
+				return this.childRowIds[ 0 ];
+			},
+
+			/**
+			 * Returns the id for the value of the zType
 			 *
 			 * @return {string}
 			 */
 			typeRowId: function () {
-				return this.childRowIds[ 0 ];
+				return this.getChildrenByParentRowId( this.zTypeRowId )
+					.map( function ( row ) { return row.id; } )[ 1 ];
 			},
+
 			/**
-			 * The ZID of the type of this list
+			 * Returns the string representation of the value of the zType
 			 *
-			 * @return {string} type
+			 * @return {string}
 			 */
 			type: function () {
-				// FIXME(T331149): figure out how to handle when the type is a function call
-				return this.getZObjectTypeByRowId( this.typeRowId );
+				return this.getZObjectValueByRowId( this.typeRowId );
 			},
+
 			/**
 			 * Returns the css class that identifies the nesting level
 			 *
@@ -144,6 +157,11 @@ module.exports = exports = {
 				}
 			},
 
+			/**
+			 * The class that indents the list
+			 *
+			 * @return {string}
+			 */
 			indentation: function () {
 				return this.expanded ? 'typed-list-expanded' : 'typed-list-collapsed';
 			},

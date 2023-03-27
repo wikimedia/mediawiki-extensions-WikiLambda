@@ -8,9 +8,10 @@
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	mount = require( '@vue/test-utils' ).mount,
+	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	ZTypedListType = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedListType.vue' ),
-	WlSelect = require( '../../../../resources/ext.wikilambda.edit/components/base/Select.vue' );
+	ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectKeyValue.vue' );
 
 describe( 'ZTypedListType', () => {
 	var getters,
@@ -24,14 +25,25 @@ describe( 'ZTypedListType', () => {
 			getExpectedTypeOfKey: createGettersWithFunctionsMock( 'Z1' ),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( '0' ),
 			getLabel: createGettersWithFunctionsMock( 'English' ),
-			getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z1' ),
-			isInsideComposition: createGettersWithFunctionsMock( false ),
-			getLanguageIsoCodeOfZLang: createGettersWithFunctionsMock( 'en' ),
-			getUserZlangZID: createGettersWithFunctionsMock( true )
+			getErrors: createGettersWithFunctionsMock( {} ),
+
+			// getters for mount, ZObjectKeyValue
+			getZReferenceTerminalValue: jest.fn(),
+			getDepthByRowId: () => () => { return 1; },
+			getParentRowId: () => () => { return 2; },
+			getZObjectValueByRowId: createGettersWithFunctionsMock(),
+			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_STRING ),
+			getZStringTerminalValue: createGettersWithFunctionsMock( 'string terminal value' ),
+			getLanguageIsoCodeOfZLang: createGettersWithFunctionsMock( 'EN' ),
+			getUserZlangZID: createGettersWithFunctionsMock( 'Z1002' ),
+			getChildrenByParentRowId: createGettersWithFunctionsMock( [
+				{ id: 2, key: '0', parent: 1, value: 'object' }
+			] )
 		};
 
 		actions = {
-			setValueByRowIdAndPath: jest.fn()
+			setListItemsForRemoval: jest.fn(),
+			setError: jest.fn()
 		};
 
 		global.store.hotUpdate( {
@@ -60,24 +72,31 @@ describe( 'ZTypedListType', () => {
 		expect( wrapper.find( 'div' ).exists() ).toBe( true );
 	} );
 
-	it( 'sets type when the child event emits a change', async () => {
+	it( 'sets list items for removal when type changes', () => {
 		var wrapper = mount( ZTypedListType, {
 			props: {
 				edit: true
 			}
 		} );
 
-		const selectComponent = wrapper.getComponent( WlSelect );
-		expect( selectComponent.exists() ).toBeTruthy();
+		const mockPayload = { keyPath: [], value: Constants.Z_CHARACTER };
+		wrapper.findComponent( ZObjectKeyValue ).vm.$emit( 'change-event', mockPayload );
 
-		await selectComponent.vm.$emit( 'update:selected', 'Reference' );
-		expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith(
-			expect.anything(),
-			{
-				keyPath: [],
-				rowId: 0,
-				value: 'Reference'
+		expect( actions.setError ).toHaveBeenCalled();
+		expect( actions.setListItemsForRemoval ).toHaveBeenCalled();
+	} );
+
+	it( 'it does not set list items for removal if type changes to Z1', () => {
+		var wrapper = mount( ZTypedListType, {
+			props: {
+				edit: true
 			}
-		);
+		} );
+
+		const mockPayload = { keyPath: [], value: Constants.Z_OBJECT };
+		wrapper.findComponent( ZObjectKeyValue ).vm.$emit( 'change-event', mockPayload );
+
+		expect( actions.setError ).not.toHaveBeenCalled();
+		expect( actions.setListItemsForRemoval ).not.toHaveBeenCalled();
 	} );
 } );

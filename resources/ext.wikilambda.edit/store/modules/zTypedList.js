@@ -51,10 +51,17 @@ function setTypeOfTypedObject( context, payload ) {
 }
 module.exports = exports = {
 	state: {
+		invalidListItems: {}
 	},
 	getters: {
+		getInvalidListItems: function ( state ) {
+			return state.invalidListItems;
+		}
 	},
 	mutations: {
+		setInvalidListItems: function ( state, listItems ) {
+			state.invalidListItems = listItems;
+		}
 	},
 	actions: {
 		/**
@@ -221,6 +228,7 @@ module.exports = exports = {
 			// context.dispatch( 'addTypedListMapItem', createTypedListPayload );
 
 		},
+
 		/**
 		 * Remove an item from the generic List. Due to the structure of the list.
 		 * this required object to be shift accross.
@@ -278,6 +286,16 @@ module.exports = exports = {
 					}
 				} );
 			}
+		},
+		/**
+		 *
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {boolean} payload.listItems
+		 */
+		setListItemsForRemoval: function ( context, payload ) {
+			context.commit( 'setInvalidListItems', payload.listItems );
 		}
 	}
 };

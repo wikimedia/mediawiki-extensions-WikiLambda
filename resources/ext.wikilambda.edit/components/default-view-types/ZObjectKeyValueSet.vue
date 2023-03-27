@@ -18,6 +18,7 @@
 			:parent-expected-type="expectedType"
 			:parent-key="parentKey"
 			:edit="edit"
+			:list-type="listType"
 			v-bind="$attrs"
 		></wl-z-object-key-value>
 	</div>
@@ -50,6 +51,12 @@ module.exports = exports = {
 		expectedType: {
 			type: String,
 			required: true
+		},
+		// just a pass through to nested ZObjectKeyValue components
+		listType: {
+			type: String,
+			required: false,
+			default: null
 		}
 	},
 	computed: $.extend(

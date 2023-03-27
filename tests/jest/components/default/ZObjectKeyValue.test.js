@@ -67,7 +67,11 @@ describe( 'ZObjectKeyValue', () => {
 			getZStringTerminalValue: createGettersWithFunctionsMock( 'string terminal value' ),
 			getLabel: createGettersWithFunctionsMock( 'Function call' ),
 			getLanguageIsoCodeOfZLang: createGettersWithFunctionsMock( 'EN' ),
-			getUserZlangZID: createGettersWithFunctionsMock( 'Z1002' )
+			getUserZlangZID: createGettersWithFunctionsMock( 'Z1002' ),
+			getChildrenByParentRowId: createGettersWithFunctionsMock( [
+				{ id: 2, key: '0', parent: 1, value: 'object' }
+			] ),
+			zkeyLabels: createGettersWithFunctionsMock( 'String' )
 		};
 		actions = {
 			setValueByRowIdAndPath: jest.fn(),

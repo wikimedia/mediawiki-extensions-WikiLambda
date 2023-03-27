@@ -1750,8 +1750,17 @@ module.exports = exports = {
 		submitZObject: function ( context, { summary, shouldUnattachImplementationAndTester } ) {
 			context.commit( 'setIsSavingZObject', true );
 
-			var zobject = transformZObjectForSubmission( context, shouldUnattachImplementationAndTester );
+			// when a list has changed type and the items are no longer valid
+			if ( context.getters.getInvalidListItems && context.getters.getInvalidListItems.length > 0 ) {
+				context.dispatch( 'removeAllItemsFromTypedList', context.getters.getInvalidListItems );
 
+				// clear the list
+				context.dispatch( 'setListItemsForRemoval', {
+					listItems: []
+				} );
+			}
+
+			var zobject = transformZObjectForSubmission( context, shouldUnattachImplementationAndTester );
 			return new Promise( function ( resolve, reject ) {
 				saveZObject(
 					zobject,
@@ -2380,6 +2389,22 @@ module.exports = exports = {
 		removeItemFromTypedList: function ( context, payload ) {
 			context.dispatch( 'removeZObjectChildren', payload.rowId );
 			context.dispatch( 'removeZObject', payload.rowId );
+		},
+
+		/**
+		 *
+		 * Removes all items from a ZTypedList
+		 * This should never be called directly, but is used before submitting a zobject
+		 * in which a typed list has changed type, rendering the items invalid
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 */
+		removeAllItemsFromTypedList: function ( context, payload ) {
+			for ( var index in payload ) {
+				context.dispatch( 'removeZObjectChildren', payload.rowId );
+				context.dispatch( 'removeZObject', payload[ index ] );
+			}
 		}
 		/* END NEW ACTIONS */
 	}

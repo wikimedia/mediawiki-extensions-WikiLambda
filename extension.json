@@ -607,7 +607,8 @@
 				"wikilambda-context-menu",
 				"wikilambda-add-list-item",
 				"wikilambda-delete-list-item",
-				"wikilambda-list-items-type-label"
+				"wikilambda-list-items-type-label",
+				"wikilambda-list-type-change-publish-dialog-warning"
 			]
 		}
 	},
