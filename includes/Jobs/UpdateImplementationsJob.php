@@ -123,7 +123,8 @@ class UpdateImplementationsJob extends Job implements GenericParameterJob {
 			[
 				'functionZid' => $functionZid,
 				'functionRevision' => $functionRevision,
-				'status' => $editStatus
+				'statusOK' => $editStatus->isOK(),
+				'statusErrors' => $editStatus->getErrors(),
 			]
 		);
 
