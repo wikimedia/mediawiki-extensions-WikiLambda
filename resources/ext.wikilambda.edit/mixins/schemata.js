@@ -201,7 +201,7 @@ function getValueFromCanonicalZMap( zMap, key ) {
  */
 function traverse( zobject, callback ) {
 	if ( zobject !== null && typeof zobject === 'object' ) {
-		// eslint-disable-next-line es/no-object-entries
+		// eslint-disable-next-line es-x/no-object-entries
 		Object.entries( zobject ).forEach( ( [ key, value ] ) => {
 			callback( key, value );
 			traverse( value, callback );
@@ -347,7 +347,7 @@ function extractNestedSuberrors( zobject, errorType ) {
 	var nested = [];
 	if ( zobject !== null && typeof zobject === 'object' ) {
 		const keysToTraverse = errorKeysToTraverse.get( errorType );
-		// eslint-disable-next-line es/no-object-entries
+		// eslint-disable-next-line es-x/no-object-entries
 		Object.entries( zobject ).forEach( ( [ key, value ] ) => {
 			// We've already looked inside Z1K1/type; no need to look again
 			if ( key !== Constants.Z_OBJECT_TYPE &&
