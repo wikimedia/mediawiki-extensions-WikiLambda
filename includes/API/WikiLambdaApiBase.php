@@ -56,6 +56,20 @@ abstract class WikiLambdaApiBase extends ApiBase {
 	}
 
 	/**
+	 * @param string $errorMessage
+	 * @param string $zFunctionCallString
+	 * @return ZResponseEnvelope
+	 */
+	private function returnWithZError( $errorMessage, $zFunctionCallString ): ZResponseEnvelope {
+		$zErrorObject = ApiFunctionCall::wrapMessageInZError(
+			$errorMessage,
+			$zFunctionCallString
+		);
+		$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zErrorObject );
+		return new ZResponseEnvelope( null, $zResponseMap );
+	}
+
+	/**
 	 * @param ZFunctionCall $zObject
 	 * @param bool $validate
 	 * @return ZResponseEnvelope
@@ -90,19 +104,15 @@ abstract class WikiLambdaApiBase extends ApiBase {
 			if ( $exception->getResponse()->getStatusCode() === 404 ) {
 				$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
 			}
-			$zErrorObject = ApiFunctionCall::wrapMessageInZError(
+			return $this->returnWithZError(
 				$exception->getResponse()->getReasonPhrase(),
-				$zObject
+				$zObject->getSerialized()
 			);
-			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zErrorObject );
-			return new ZResponseEnvelope( null, $zResponseMap );
 		} catch ( \Exception $exception ) {
-			$zErrorObject = ApiFunctionCall::wrapMessageInZError(
+			return $this->returnWithZError(
 				$exception->getMessage(),
-				$zObject
+				$zObject->getSerialized()
 			);
-			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zErrorObject );
-			return new ZResponseEnvelope( null, $zResponseMap );
 		}
 	}
 
