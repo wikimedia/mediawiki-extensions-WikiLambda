@@ -355,5 +355,6 @@
 	"wikilambda-list-item-label": "Objekt",
 	"wikilambda-context-menu": "Kontextmenü",
 	"wikilambda-add-list-item": "Objekt hinzufügen",
-	"wikilambda-delete-list-item": "Objekt löschen"
+	"wikilambda-delete-list-item": "Objekt löschen",
+	"wikilambda-list-type-change-publish-dialog-warning": "Du hast den Typ einer oder mehrerer Listen geändert. Bei der Veröffentlichung werden alle Listenelemente gelöscht"
 }

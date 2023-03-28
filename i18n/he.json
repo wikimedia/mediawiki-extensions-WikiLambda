@@ -352,5 +352,6 @@
 	"wikilambda-list-item-label": "פריט",
 	"wikilambda-context-menu": "תפריט הקשר",
 	"wikilambda-add-list-item": "הוספת פריט",
-	"wikilambda-delete-list-item": "למחוק פריט"
+	"wikilambda-delete-list-item": "למחוק פריט",
+	"wikilambda-list-type-change-publish-dialog-warning": "שינית את הסוג של רשימה אחת או יותר. בעת פרסום, כל פריטי הרשימה יימחקו"
 }
