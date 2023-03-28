@@ -117,7 +117,7 @@ module.exports = exports = {
 			// If no value or placeholder, default is 20 characters
 			var chars = 20;
 			if ( this.modelValue && ( this.modelValue.length > 0 ) ) {
-				// Two extra characters to account for inner padding
+				// Three extra characters to account for inner padding
 				chars = this.modelValue.length + 3;
 			} else if ( this.placeholder && ( this.placeholder.length > 0 ) ) {
 				chars = this.placeholder.length;
