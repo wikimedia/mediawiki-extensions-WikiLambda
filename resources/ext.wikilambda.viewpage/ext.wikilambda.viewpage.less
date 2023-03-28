@@ -27,7 +27,7 @@
 		position: relative;
 	}
 
-	[ data-title ]:after {
+	[ data-title ]::after {
 		content: attr( data-title );
 		position: absolute;
 		bottom: -1.6em;
@@ -40,7 +40,7 @@
 		font-family: 'Helvetica Neue', sans-serif;
 	}
 
-	[ data-title ]:hover:after {
+	[ data-title ]:hover::after {
 		opacity: 1;
 		transition: all 0.1s ease 0.5s;
 		visibility: visible;
@@ -53,11 +53,11 @@
 		font-weight: lighter;
 	}
 
-	&-zid:before {
+	&-zid::before {
 		content: '(';
 	}
 
-	&-zid:after {
+	&-zid::after {
 		content: ')';
 	}
 

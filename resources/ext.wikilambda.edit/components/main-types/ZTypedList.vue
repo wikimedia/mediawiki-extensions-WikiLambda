@@ -145,11 +145,11 @@ input.ext-wikilambda-zstring {
 	background: #eef;
 }
 
-.ext-wikilambda-ztypedlist__container:before {
+.ext-wikilambda-ztypedlist__container::before {
 	content: '[';
 }
 
-.ext-wikilambda-ztypedlist__container:after {
+.ext-wikilambda-ztypedlist__container::after {
 	content: ']';
 }
 

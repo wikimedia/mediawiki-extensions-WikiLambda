@@ -89,8 +89,8 @@ module.exports = exports = {
 		}
 	}
 
-	&_content:after,
-	&_content:before {
+	&_content::after,
+	&_content::before {
 		bottom: 100%;
 		left: 10%;
 		border: solid transparent;
@@ -101,14 +101,14 @@ module.exports = exports = {
 		pointer-events: none;
 	}
 
-	&_content:after {
+	&_content::after {
 		border-color: rgba( 255, 255, 255, 0 );
 		border-bottom-color: @border-color-inverted;
 		border-width: 10px;
 		margin-left: -10px;
 	}
 
-	&_content:before {
+	&_content::before {
 		border-color: rgba( 255, 255, 255, 0 );
 		border-bottom-color: @border-color-base;
 		border-width: 11px;
