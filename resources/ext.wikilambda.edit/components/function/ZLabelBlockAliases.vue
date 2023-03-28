@@ -107,9 +107,7 @@ module.exports = exports = {
 		}
 	} ),
 	methods: $.extend( mapActions( [
-		'addZObject',
 		'changeType',
-		'injectZObject',
 		'removeZObjectChildren',
 		'removeZObject',
 		'recalculateZListIndex'
@@ -156,9 +154,9 @@ module.exports = exports = {
 		 *
 		 */
 		addAliasForLanguage: function () {
-			const nextId = this.getNextObjectId;
-
 			if ( this.languageAliases.length > 0 && this.getLanguageAliasStringsetId ) {
+				// If monolingual string set for the given language exists,
+				// add new string to the list.
 				this.changeType( {
 					type: Constants.Z_STRING,
 					id: this.getLanguageAliasStringsetId,
@@ -169,30 +167,15 @@ module.exports = exports = {
 				// If the monolingualStringSet for the given language does not exist,
 				// create a monolingualStringSet object with an empty array of strings
 				// and add it to the list.
-
-				// TODO (T332793): add Z_MONOLINGUALSTRINGSET to changeType and replace this
-				// hardcoded addZObject and injectZObject with changeType
-				const nextIndexAliases = this.getZObjectAliases.length + 1;
 				const multilingualAliasesId = this.getNestedZObjectById( this.zObjectAliasId, [
 					Constants.Z_MULTILINGUALSTRINGSET_VALUE
 				] ).id;
-
-				const payload = {
-					key: nextIndexAliases.toString(),
-					value: 'object',
-					parent: multilingualAliasesId
-				};
-
-				this.addZObject( payload );
-				this.injectZObject( {
-					zobject: {
-						Z1K1: Constants.Z_MONOLINGUALSTRINGSET,
-						Z31K1: this.getLanguageWithReference,
-						Z31K2: [ Constants.Z_STRING, '' ]
-					},
-					key: nextIndexAliases.toString(),
-					id: nextId,
-					parent: multilingualAliasesId
+				this.changeType( {
+					type: Constants.Z_MONOLINGUALSTRINGSET,
+					id: multilingualAliasesId,
+					value: '',
+					lang: this.getLanguageWithReference,
+					append: true
 				} );
 			}
 		}

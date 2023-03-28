@@ -39,6 +39,8 @@ module.exports = exports = {
 						return getters.createZMultilingualString( payload );
 					case Constants.Z_MONOLINGUALSTRING:
 						return getters.createZMonolingualString( payload );
+					case Constants.Z_MONOLINGUALSTRINGSET:
+						return getters.createZMonolingualStringSet( payload );
 					case Constants.Z_ARGUMENT:
 						return getters.createZArgument( payload );
 					case Constants.Z_FUNCTION_CALL:
@@ -172,21 +174,55 @@ module.exports = exports = {
 			/**
 			 * @param {Object} payload
 			 * @param {number} payload.id
-			 * @param {string} payload.value string value of the first monolingual string
-			 * @param {string} payload.lang zid of the language for the first monolingual string
+			 * @param {string} payload.value string value of the monolingual string
+			 * @param {string} payload.lang zid of the language for the monolingual string
 			 * @param {boolean} payload.append
 			 * @return {Object}
 			 */
 			function newZMonolingualString( payload ) {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRING );
-				// Initialize first monolingual string
+				// Initialize monolingual string
 				const lang = payload.lang || getters.getUserZlangZID;
 				value[ Constants.Z_MONOLINGUALSTRING_VALUE ] = payload.value || '';
 				value[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ] = lang;
 				return value;
 			}
 			return newZMonolingualString;
+		},
+
+		/**
+		 * Return a blank and initialized zMonolingualStringSet.
+		 * The value will result in a json representation equal to:
+		 * {
+		 *  Z1K1: Z31,
+		 *  Z31K1: { Z1K1: Z9, Z9K1: payload.lang },
+		 *  Z31K2: [ 'Z6', { Z1K1: Z6, Z6K1: payload.value } ]
+		 * }
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		createZMonolingualStringSet: function ( _state, getters ) {
+			/**
+			 * @param {Object} payload
+			 * @param {number} payload.id
+			 * @param {string} payload.value string value of the first string in the list
+			 * @param {string} payload.lang zid of the language for the first monolingual string
+			 * @param {boolean} payload.append
+			 * @return {Object}
+			 */
+			function newZMonolingualStringSet( payload ) {
+				// Get scaffolding
+				const value = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRINGSET );
+				// Initialize language and first string
+				const lang = payload.lang || getters.getUserZlangZID;
+				value[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ][ Constants.Z_REFERENCE_ID ] = lang;
+				value[ Constants.Z_MONOLINGUALSTRINGSET_VALUE ].push( payload.value || '' );
+				return value;
+			}
+			return newZMonolingualStringSet;
 		},
 
 		/**

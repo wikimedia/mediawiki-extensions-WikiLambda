@@ -152,20 +152,12 @@ describe( 'FunctionEditorAliases', () => {
 
 			wrapper.getComponent( ChipContainer ).vm.$emit( 'add-chip', 'new alias' );
 
-			expect( actions.addZObject ).toHaveBeenCalledWith( expect.anything(), {
-				key: '2',
-				value: 'object',
-				parent: multilingualStringsetValueId
-			} );
-			expect( actions.injectZObject ).toHaveBeenCalledWith( expect.anything(), {
-				zobject: {
-					Z1K1: Constants.Z_MONOLINGUALSTRINGSET,
-					Z31K1: Constants.Z_NATURAL_LANGUAGE_CHINESE,
-					Z31K2: [ Constants.Z_STRING, 'new alias' ]
-				},
-				key: '2',
-				id: nextId,
-				parent: multilingualStringsetValueId
+			expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
+				type: Constants.Z_MONOLINGUALSTRINGSET,
+				lang: Constants.Z_NATURAL_LANGUAGE_CHINESE,
+				value: 'new alias',
+				id: multilingualStringsetValueId,
+				append: true
 			} );
 		} );
 		it( 'with a value that matches an existing alias in the current language, ' +

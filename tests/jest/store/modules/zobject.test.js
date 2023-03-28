@@ -1780,6 +1780,66 @@ describe( 'zobject Vuex module', function () {
 				} );
 			} );
 
+			describe( 'add ZMonolingualStringSet', function () {
+				it( 'adds a valid ZMonolingualStringSet with empty values', function () {
+					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRINGSET };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z31' },
+						Z31K1: { Z1K1: 'Z9', Z9K1: 'Z1003' },
+						Z31K2: [ { Z1K1: 'Z9', Z9K1: 'Z6' }, { Z1K1: 'Z6', Z6K1: '' } ]
+					} );
+				} );
+
+				it( 'adds a valid ZMonolingualStringSet with initial values', function () {
+					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRINGSET, lang: 'Z1004', value: 'test alias' };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z31' },
+						Z31K1: { Z1K1: 'Z9', Z9K1: 'Z1004' },
+						Z31K2: [ { Z1K1: 'Z9', Z9K1: 'Z6' }, { Z1K1: 'Z6', Z6K1: 'test alias' } ]
+					} );
+				} );
+
+				it( 'appends a valid ZMonolingualStringSet to a ZMultilingualStringSet', function () {
+					context.state.zobject = tableDataToRowObjects( [
+						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 1, key: 'Z32K1', value: Constants.ROW_VALUE_ARRAY, parent: 0 },
+						{ id: 2, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 1 },
+						{ id: 3, key: 'Z1K1', value: 'Z9', parent: 2 },
+						{ id: 4, key: 'Z9K1', value: 'Z31', parent: 2 }
+					] );
+					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+					const payload = { id: 1, type: Constants.Z_MONOLINGUALSTRINGSET, lang: 'Z1004', value: 'test alias', append: true };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z32K1: [
+							{ Z1K1: 'Z9', Z9K1: 'Z31' },
+							{
+								Z1K1: { Z1K1: 'Z9', Z9K1: 'Z31' },
+								Z31K1: { Z1K1: 'Z9', Z9K1: 'Z1004' },
+								Z31K2: [ { Z1K1: 'Z9', Z9K1: 'Z6' }, { Z1K1: 'Z6', Z6K1: 'test alias' } ]
+							}
+						]
+					} );
+				} );
+			} );
+
 			describe( 'add ZString', function () {
 				it( 'adds a valid empty ZString', function () {
 					const payload = { id: 0, type: Constants.Z_STRING };
@@ -2435,21 +2495,6 @@ describe( 'zobject Vuex module', function () {
 					) ).toEqual( {
 						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z32' },
 						Z32K1: [ { Z1K1: 'Z9', Z9K1: 'Z31' } ]
-					} );
-				} );
-
-				it( 'adds a valid object of known type with typed lists and referred keys', function () {
-					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRINGSET };
-					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
-					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
-						context.state,
-						context.getters,
-						context.rootState,
-						context.getters
-					) ).toEqual( {
-						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z31' },
-						Z31K1: { Z1K1: 'Z9', Z9K1: '' },
-						Z31K2: [ { Z1K1: 'Z9', Z9K1: 'Z6' } ]
 					} );
 				} );
 

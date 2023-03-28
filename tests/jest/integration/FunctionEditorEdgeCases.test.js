@@ -104,7 +104,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await fireEvent.keyDown( chineseAliasInput, { key: 'enter' } );
 
 		// ACT: Delete the just-entered alias in Chinese [ EDGE CASE ].
-		await fireEvent.click( within( chineseAliasesContainer ).getByLabelText( 'Remove item' ) );
+		await fireEvent.click( await waitFor( () => within( chineseAliasesContainer ).getByLabelText( 'Remove item' ) ) );
 
 		// ACT: Attempt to click publish button,  before output is set (invalid) [ EDGE CASE ].
 		await fireEvent.click( getByText( 'Publish' ) );

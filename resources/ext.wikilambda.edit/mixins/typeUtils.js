@@ -328,6 +328,24 @@ var Constants = require( '../Constants.js' ),
 							[ Constants.Z_MONOLINGUALSTRING_VALUE ]: ''
 						};
 
+					case Constants.Z_MONOLINGUALSTRINGSET:
+						// Empty monolingual string set:
+						// {
+						//  Z1K1: Z31,
+						//  Z31K1: { Z1K1: Z9, Z9K1: payload.lang },
+						//  Z31K2: [ 'Z6', { Z1K1: Z6, Z6K1: payload.value } ]
+						// }
+						return {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRINGSET,
+							[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
+								[ Constants.Z_REFERENCE_ID ]: ''
+							},
+							[ Constants.Z_MONOLINGUALSTRINGSET_VALUE ]: [
+								Constants.Z_STRING
+							]
+						};
+
 					case Constants.Z_FUNCTION_CALL:
 						// Empty function call:
 						// {
