@@ -21,6 +21,7 @@ class FunctionPage extends Page {
 	get editMenuItem() { return $( 'a[title*="Edit this page"]' ); }
 	get showNameInOtherLanguages() { return $( 'button*=Show name in other languages' ); }
 	get showMoreAliases() { return $( 'button*=Show more languages' ); }
+	get sidebarTable() { return $( '.ext-wikilambda-function-viewer-details-sidebar' ); }
 
 	/**
 	 * @async
@@ -39,6 +40,18 @@ class FunctionPage extends Page {
 
 	getArgumentLabel( label ) {
 		return $( `td=${label}` );
+	}
+
+	async getInputType( inputTypeLabel, inputType ) {
+		const row = await this.sidebarTable.$( `td=${inputTypeLabel}` ).parentElement();
+		const type = await row.$( `a=${inputType}` );
+		return type;
+	}
+
+	async getOutputType( outputTypeLabel, outputType ) {
+		const row = await this.sidebarTable.$( `td=${outputTypeLabel}` ).parentElement();
+		const type = await row.$( `a=${outputType}` );
+		return type;
 	}
 
 	getNameInOtherLanguage( name ) {

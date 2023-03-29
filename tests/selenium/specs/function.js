@@ -37,6 +37,8 @@ describe( 'Function', function () {
 			FRENCH: [ 'premier argument', 'second argument' ],
 			GERMAN: [ 'erstes Argument', 'zweites Argument' ]
 		};
+		const INPUT_TYPES = [ 'String', 'Boolean' ];
+		const OUTPUT_TYPE = 'String';
 		before( function () {
 			functionTitle = 'zzz-FunctionCreationTest-' + Date.now();
 			alias = util.getTestString( 'alias-' );
@@ -50,10 +52,10 @@ describe( 'Function', function () {
 				name: functionTitle,
 				alias: ALIASES.ENGLISH,
 				inputs: [
-					{ type: 'String', label: ARGUMENT_LABELS.ENGLISH[ 0 ] },
-					{ type: 'Boolean', label: ARGUMENT_LABELS.ENGLISH[ 1 ] }
+					{ type: INPUT_TYPES[ 0 ], label: ARGUMENT_LABELS.ENGLISH[ 0 ] },
+					{ type: INPUT_TYPES[ 1 ], label: ARGUMENT_LABELS.ENGLISH[ 1 ] }
 				],
-				outputType: 'String'
+				outputType: OUTPUT_TYPE
 			} );
 			await FunctionForm.addLanguageContainer( {
 				language: 'French',
@@ -95,6 +97,16 @@ describe( 'Function', function () {
 			for ( const label of labelValues ) {
 				assert.strictEqual( await FunctionPage.getArgumentLabel( label ).isExisting(), true, `label "${label}" should exist in the list of arguments in the Details view` );
 			}
+		} );
+
+		it( 'should display the input types', async function () {
+			for ( const [ index, inputType ] of INPUT_TYPES.entries() ) {
+				await expect( await FunctionPage.getInputType( `Input ${index + 1}`, inputType ) ).toBeExisting( { message: `input ${index + 1} should have ${inputType} type` } );
+			}
+		} );
+
+		it( 'should display the output type', async function () {
+			await expect( await FunctionPage.getOutputType( 'Output', OUTPUT_TYPE ) ).toBeExisting( { message: `Output should have ${OUTPUT_TYPE} type` } );
 		} );
 
 		it( 'should edit the function to remove a label', async function () {
