@@ -505,7 +505,7 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 		// (However, it maybe could happen if the value of Z8K4 has been manually edited.)
 		unset( $implementationMap[ ZTypeRegistry::Z_NULL_REFERENCE ] );
 
-		if ( count( $implementationMap ) <= 1 ) {
+		if ( count( $attachedImplementationZids ) <= 1 ) {
 			// No point in updating.
 			$logger->info(
 				__METHOD__ . ' Bailing: Implementation count <= 1',
@@ -541,7 +541,7 @@ class ApiPerformTest extends WikiLambdaApiBase implements LoggerAwareInterface {
 		}
 
 		// Record which implementation is first in Z8K4 before this update happens
-		$previousFirst = array_key_first( $attachedImplementationZids );
+		$previousFirst = $attachedImplementationZids[ 0 ];
 
 		// For each implementation, get (count of tests-failed) and (average runtime of tests)
 		// and add them into $implementationMap.
