@@ -14,6 +14,7 @@
 	"wikilambda-editor-label-select-programming-language-label": "ప్రోగ్రామింగ్ భాషను ఎంచుకోండి",
 	"wikilambda-function-are-you-sure-dialog-header": "నిశ్చయించుకున్నారా?",
 	"wikilambda-function-are-you-sure-dialog-description": "ప్రచురించకుండానే దిద్దుబాటు స్థితి నుండి వెళ్ళిపోడానికి నిశ్చయించుకున్నారా?",
+	"wikilambda-tester-status-pending": "పెండింగ్‌లో ఉంది...",
 	"wikilambda-tester-results-title": "పరీక్ష ఫలితాలు",
 	"wikilambda-metadata-language-column": "భాష",
 	"wikilambda-metadata-label-column": "సూచిక (లేబెల్)",
@@ -21,6 +22,7 @@
 	"wikilambda-editor-fn-step-function-details": "వివరాలు",
 	"wikilambda-continue-editing": "దిద్దుబాటు కొనసాగించండి",
 	"wikilambda-discard-edits": "సవరణలను తోసిపుచ్చండి",
+	"wikilambda-list-item-label": "అంశం",
 	"wikilambda-add-list-item": "వస్తువు జోడించు",
 	"wikilambda-delete-list-item": "తొలగించిన అంశం"
 }
