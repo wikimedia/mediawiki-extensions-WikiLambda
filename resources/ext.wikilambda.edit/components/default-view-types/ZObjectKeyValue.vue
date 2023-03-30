@@ -478,6 +478,7 @@ module.exports = exports = {
 				}
 
 				// If there's no builtin component, always show expanded mode
+				this.expanded = true;
 				return 'wl-z-object-key-value-set';
 			},
 
