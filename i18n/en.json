@@ -246,6 +246,8 @@
 	"wikilambda-tester-create-new": "Create a new test",
 	"wikilambda-tester-status-pending": "Pending…",
 	"wikilambda-tester-status-running": "Running…",
+	"wikilambda-tester-status-run": "Run",
+	"wikilambda-tester-status-cancel": "Cancel",
 	"wikilambda-tester-status-passed": "Pass",
 	"wikilambda-tester-status-failed": "Fail",
 	"wikilambda-tester-results-title": "Test Results",
@@ -368,5 +370,6 @@
 	"wikilambda-context-menu": "Context Menu",
 	"wikilambda-add-list-item": "Add Item",
 	"wikilambda-delete-list-item": "Delete Item",
-	"wikilambda-list-type-change-publish-dialog-warning": "You changed the type of one or more lists. On publish, all list items will be deleted"
+	"wikilambda-list-type-change-publish-dialog-warning": "You changed the type of one or more lists. On publish, all list items will be deleted",
+	"wikilambda-tester-details": "Details"
 }

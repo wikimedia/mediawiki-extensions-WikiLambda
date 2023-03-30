@@ -53,6 +53,9 @@ module.exports = exports = {
 		errorMessage: ''
 	},
 	getters: {
+		getFetchingTestResults: function ( state ) {
+			return state.fetchingTestResults;
+		},
 		getZTesterResults: function ( state ) {
 			/**
 			 * Retrieve the result value zTester a specific set of Function, tester and implementation.

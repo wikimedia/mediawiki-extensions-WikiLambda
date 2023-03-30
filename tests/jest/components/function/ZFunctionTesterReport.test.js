@@ -18,7 +18,6 @@ describe( 'ZFunctionTesterReport', function () {
 
 	beforeEach( function () {
 		getters = {
-			getZObjectChildrenById: jest.fn(),
 			getZkeyLabels: jest.fn( function () {
 				return {
 					Z10000: 'FN',
@@ -33,8 +32,6 @@ describe( 'ZFunctionTesterReport', function () {
 			getViewMode: jest.fn( function () {
 				return false;
 			} ),
-			getNestedZObjectById: jest.fn(),
-			getZObjectAsJsonById: jest.fn(),
 			getZTesterPercentage: jest.fn( function () {
 				return function () {
 					return {
@@ -43,13 +40,6 @@ describe( 'ZFunctionTesterReport', function () {
 						percentage: 100
 					};
 				};
-			} ),
-			getCurrentZObjectId: jest.fn(),
-			getZTesters: jest.fn( function () {
-				return [ 'Z10002', 'Z10003' ];
-			} ),
-			getZImplementations: jest.fn( function () {
-				return [ 'Z10001', 'Z10004', 'Z10005' ];
 			} )
 		};
 		global.store.hotUpdate( {
@@ -102,7 +92,7 @@ describe( 'ZFunctionTesterReport', function () {
 			.toBe( 'No test results found. Please add an implementation and a test to see results.' );
 	} );
 
-	it( 'displays "current implementation" and all available testers if a new zImplementation is being created', async function () {
+	it( 'displays all available testers if a new zImplementation is being created', async function () {
 		getters.getCurrentZObjectId = jest.fn( function () {
 			return Constants.NEW_ZID_PLACEHOLDER;
 		} );
@@ -128,19 +118,19 @@ describe( 'ZFunctionTesterReport', function () {
 		var wrapper = VueTestUtils.shallowMount( ZFunctionTesterReport, {
 			props: {
 				zFunctionId: 'Z10000',
-				zImplementationId: Constants.NEW_ZID_PLACEHOLDER
+				zImplementationId: Constants.NEW_ZID_PLACEHOLDER,
+				reportType: Constants.Z_IMPLEMENTATION
 			}
 		} );
 
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' ).length ).toBe( 1 );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 0 ].text() ).toBe( 'Current implementation' );
+		expect( wrapper.vm.zIds ).toEqual( [ 'Z10002', 'Z10003' ] );
 
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' ).length ).toBe( 2 );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' )[ 0 ].text() ).toBe( 'TESTER' );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' )[ 1 ].text() ).toBe( 'Z10003' );
+		var content = wrapper.findAll( '.ext-wikilambda-function-tester-report__result' );
+		expect( content.length ).toBe( 2 );
+
 	} );
 
-	it( 'displays "current tester" and all available implementations if a new zTester is being created', async function () {
+	it( 'displays all available implementations if a new zTester is being created', async function () {
 		getters.getCurrentZObjectId = jest.fn( function () {
 			return Constants.NEW_ZID_PLACEHOLDER;
 		} );
@@ -166,20 +156,20 @@ describe( 'ZFunctionTesterReport', function () {
 		var wrapper = VueTestUtils.shallowMount( ZFunctionTesterReport, {
 			props: {
 				zFunctionId: 'Z10000',
-				zTesterId: Constants.NEW_ZID_PLACEHOLDER
+				zTesterId: Constants.NEW_ZID_PLACEHOLDER,
+				reportType: Constants.Z_TESTER
 			}
 		} );
 
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' ).length ).toBe( 1 );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' )[ 0 ].text() ).toBe( 'Current test' );
+		expect( wrapper.vm.zIds ).toEqual( [ 'Z10001', 'Z10004', 'Z10005' ] );
+		expect( wrapper.find( '.ext-wikilambda-function-tester-report__title' ).text() ).toEqual( 'Implementations' );
 
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' ).length ).toBe( 3 );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 0 ].text() ).toBe( 'IMPL' );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 1 ].text() ).toBe( 'IMPL2' );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 2 ].text() ).toBe( 'Z10005' );
+		var content = wrapper.findAll( '.ext-wikilambda-function-tester-report__result' );
+		expect( content.length ).toBe( 3 );
+
 	} );
 
-	it( 'if displayed on a ZImplementation page, only shows that ZImplementation as current implementation', function () {
+	it( 'if displayed on a ZImplementation page, only shows testers', function () {
 		getters.getCurrentZObjectId = jest.fn( function () {
 			return 'Z10001';
 		} );
@@ -205,19 +195,17 @@ describe( 'ZFunctionTesterReport', function () {
 		var wrapper = VueTestUtils.shallowMount( ZFunctionTesterReport, {
 			props: {
 				zFunctionId: 'Z10000',
-				zImplementationId: 'Z10001'
+				zImplementationId: 'Z10001',
+				reportType: Constants.Z_IMPLEMENTATION
 			}
 		} );
 
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' ).length ).toBe( 1 );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 0 ].text() ).toBe( 'Current implementation' );
+		expect( wrapper.find( '.ext-wikilambda-function-tester-report__title' ).text() ).toEqual( 'Test cases' );
+		expect( wrapper.vm.zIds ).toEqual( [ 'Z10002', 'Z10003' ] );
 
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' ).length ).toBe( 2 );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' )[ 0 ].text() ).toBe( 'TESTER' );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' )[ 1 ].text() ).toBe( 'Z10003' );
 	} );
 
-	it( 'if displayed on a ZTester page, only shows that ZTester as current test', function () {
+	it( 'if displayed on a ZTester page, only shows ZImplementations', function () {
 		getters.getCurrentZObjectId = jest.fn( function () {
 			return 'Z10002';
 		} );
@@ -243,17 +231,14 @@ describe( 'ZFunctionTesterReport', function () {
 		var wrapper = VueTestUtils.shallowMount( ZFunctionTesterReport, {
 			props: {
 				zFunctionId: 'Z10000',
-				zTesterId: 'Z10002'
+				zTesterId: 'Z10002',
+				reportType: Constants.Z_TESTER
 			}
 		} );
 
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' ).length ).toBe( 1 );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__row' )[ 0 ].text() ).toBe( 'Current test' );
+		expect( wrapper.find( '.ext-wikilambda-function-tester-report__title' ).text() ).toEqual( 'Implementations' );
+		expect( wrapper.vm.zIds ).toEqual( [ 'Z10001', 'Z10004', 'Z10005' ] );
 
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' ).length ).toBe( 3 );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 0 ].text() ).toBe( 'IMPL' );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 1 ].text() ).toBe( 'IMPL2' );
-		expect( wrapper.findAll( '.ext-wikilambda-fn-tester-results__header-cell' )[ 2 ].text() ).toBe( 'Z10005' );
 	} );
 
 	// TODO (T303072): This test is skipped because overriding computed properties is no longer

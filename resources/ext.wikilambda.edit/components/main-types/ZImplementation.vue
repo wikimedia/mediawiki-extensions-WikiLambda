@@ -61,6 +61,7 @@
 		<wl-z-function-tester-report
 			:z-function-id="zFunction.value || ''"
 			:z-implementation-id="zImplementationId"
+			:report-type="Constants.Z_IMPLEMENTATION"
 		></wl-z-function-tester-report>
 	</div>
 </template>

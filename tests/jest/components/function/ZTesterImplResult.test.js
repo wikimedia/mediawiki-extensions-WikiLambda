@@ -7,6 +7,8 @@
 'use strict';
 
 var mount = require( '@vue/test-utils' ).mount,
+	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ZTesterImplResult = require( '../../../../resources/ext.wikilambda.edit/components/function/ZTesterImplResult.vue' );
 
 describe( 'ZTesterImplResult', function () {
@@ -14,6 +16,7 @@ describe( 'ZTesterImplResult', function () {
 		zFunctionId,
 		zImplementationId,
 		zTesterId,
+		reportType,
 		returnStatus = jest.fn( function () {
 			return testStatus;
 		} );
@@ -22,12 +25,14 @@ describe( 'ZTesterImplResult', function () {
 		zFunctionId = 'Z10000';
 		zImplementationId = 'Z10001';
 		zTesterId = 'Z10002';
+		reportType = Constants.Z_TESTER;
 
 		global.store.hotUpdate( {
 			getters: {
 				getZTesterResults: jest.fn( function () {
 					return returnStatus;
-				} )
+				} ),
+				getZkeyLabels: createGettersWithFunctionsMock()
 			}
 		} );
 	} );
@@ -37,7 +42,8 @@ describe( 'ZTesterImplResult', function () {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
-				zTesterId: zTesterId
+				zTesterId: zTesterId,
+				reportType: reportType
 			}
 		} );
 		expect( wrapper.find( '.ext-wikilambda-tester-result' ).exists() ).toBeTruthy();
@@ -48,7 +54,8 @@ describe( 'ZTesterImplResult', function () {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
-				zTesterId: zTesterId
+				zTesterId: zTesterId,
+				reportType: reportType
 			}
 		} );
 		expect( returnStatus ).toHaveBeenCalledWith( zFunctionId, zTesterId, zImplementationId );
@@ -60,10 +67,11 @@ describe( 'ZTesterImplResult', function () {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
-				zTesterId: zTesterId
+				zTesterId: zTesterId,
+				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'Running…' );
+		expect( wrapper.find( '.ext-wikilambda-tester-result__footer-status' ).text() ).toBe( 'Running…' );
 	} );
 
 	it( 'displays passed status when result is passed', function () {
@@ -72,10 +80,11 @@ describe( 'ZTesterImplResult', function () {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
-				zTesterId: zTesterId
+				zTesterId: zTesterId,
+				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'Pass' );
+		expect( wrapper.find( '.ext-wikilambda-tester-result__footer-status' ).text() ).toBe( 'Pass' );
 	} );
 
 	it( 'displays failed status when result is failed', function () {
@@ -84,10 +93,11 @@ describe( 'ZTesterImplResult', function () {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
-				zTesterId: zTesterId
+				zTesterId: zTesterId,
+				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'Fail' );
+		expect( wrapper.find( '.ext-wikilambda-tester-result__footer-status' ).text() ).toBe( 'Fail' );
 	} );
 
 	it( 'displays pending status when implementation missing', function () {
@@ -96,10 +106,11 @@ describe( 'ZTesterImplResult', function () {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: '',
-				zTesterId: zTesterId
+				zTesterId: zTesterId,
+				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'Pending…' );
+		expect( wrapper.find( '.ext-wikilambda-tester-result__footer-status' ).text() ).toBe( 'Pending…' );
 	} );
 
 	it( 'displays pending status when tester missing', function () {
@@ -108,9 +119,10 @@ describe( 'ZTesterImplResult', function () {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
-				zTesterId: ''
+				zTesterId: '',
+				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-tester-result' ).text() ).toBe( 'Pending…' );
+		expect( wrapper.find( '.ext-wikilambda-tester-result__footer-status' ).text() ).toBe( 'Pending…' );
 	} );
 } );

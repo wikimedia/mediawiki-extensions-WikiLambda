@@ -6,17 +6,30 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-tester-result">
-		<cdx-icon
-			:icon="statusIcon"
-			:class="statusIconClass"
-		></cdx-icon>
-		{{ status }}
-		<cdx-icon
-			v-if="testerStatus !== undefined"
-			:icon="messageIcon"
-			class="ext-wikilambda-tester-result-message-icon"
-			@click.stop="emitTesterKeys"
-		></cdx-icon>
+		<div class="ext-wikilambda-tester-result__header">
+			<cdx-icon
+				:icon="statusIcon"
+				:class="statusIconClass"
+				size="small"
+			></cdx-icon>
+			<a
+				:href="titleLink"
+				class="ext-wikilambda-tester-result__title"
+			>
+				{{ title }}
+			</a>
+		</div>
+
+		<div class="ext-wikilambda-tester-result__footer">
+			<span class="ext-wikilambda-tester-result__footer-status"> {{ statusMessage }} </span>
+			<a
+				v-if="!isRunning"
+				role="button"
+				@click="emitTesterKeys"
+			>
+				{{ $i18n( 'wikilambda-tester-details' ).text() }}
+			</a>
+		</div>
 	</div>
 </template>
 
@@ -24,9 +37,12 @@
 var mapGetters = require( 'vuex' ).mapGetters,
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	Constants = require( '../../Constants.js' ),
 	icons = require( '../../../../lib/icons.json' );
+
 // @vue/component
 module.exports = exports = {
+	name: 'wl-tester-impl-result',
 	components: {
 		'cdx-icon': CdxIcon
 	},
@@ -43,47 +59,72 @@ module.exports = exports = {
 		zTesterId: {
 			type: String,
 			required: true
+		},
+		reportType: {
+			type: String,
+			default: Constants.Z_TESTER
 		}
 	},
 	computed: $.extend( mapGetters( [
-		'getZTesterResults'
+		'getZTesterResults',
+		'getZkeyLabels'
 	] ), {
 		testerStatus: function () {
 			return this.getZTesterResults( this.zFunctionId, this.zTesterId, this.zImplementationId );
 		},
+		title: function () {
+			return this.reportType === Constants.Z_TESTER ? this.getZkeyLabels[ this.zImplementationId ] :
+				this.getZkeyLabels[ this.zTesterId ];
+		},
+		titleLink: function () {
+			const zid = this.reportType === Constants.Z_TESTER ? this.zImplementationId : this.zTesterId;
+			return new mw.Title( zid ).getUrl();
+		},
 		status: function () {
 			if ( !( this.zImplementationId ) || !( this.zTesterId ) ) {
-				return this.$i18n( 'wikilambda-tester-status-pending' ).text();
+				return Constants.testerStatus.PENDING;
 			}
 			if ( this.testerStatus === true ) {
-				return this.$i18n( 'wikilambda-tester-status-passed' ).text();
+				return Constants.testerStatus.PASSED;
 			}
 			if ( this.testerStatus === false ) {
-				return this.$i18n( 'wikilambda-tester-status-failed' ).text();
+				return Constants.testerStatus.FAILED;
 			}
-			return this.$i18n( 'wikilambda-tester-status-running' ).text();
+			return Constants.testerStatus.RUNNING;
+		},
+		isRunning: function () {
+			return this.status === Constants.testerStatus.RUNNING;
+		},
+		statusMessage: function () {
+			switch ( this.status ) {
+				case Constants.testerStatus.PENDING:
+					return this.$i18n( 'wikilambda-tester-status-pending' ).text();
+				case Constants.testerStatus.PASSED:
+					return this.$i18n( 'wikilambda-tester-status-passed' ).text();
+				case Constants.testerStatus.FAILED:
+					return this.$i18n( 'wikilambda-tester-status-failed' ).text();
+				default:
+					return this.$i18n( 'wikilambda-tester-status-running' ).text();
+			}
 		},
 		statusIcon: function () {
-			if ( this.testerStatus === true ) {
-				return icons.cdxIconCheck;
+			if ( this.status === Constants.testerStatus.PASSED ) {
+				return icons.cdxIconSuccess;
 			}
-			if ( this.testerStatus === false ) {
-				return icons.cdxIconClose;
+			if ( this.status === Constants.testerStatus.FAILED ) {
+				return icons.cdxIconClear;
 			}
 			// This will be used both for pending and running statuses
-			return icons.cdxIconAlert;
+			return icons.cdxIconClock;
 		},
 		statusIconClass: function () {
-			if ( this.testerStatus === true ) {
+			if ( this.status === Constants.testerStatus.PASSED ) {
 				return 'ext-wikilambda-tester-result-status--PASS';
 			}
-			if ( this.testerStatus === false ) {
+			if ( this.status === Constants.testerStatus.FAILED ) {
 				return 'ext-wikilambda-tester-result-status--FAIL';
 			}
 			return 'ext-wikilambda-tester-result-status--RUNNING';
-		},
-		messageIcon: function () {
-			return icons.cdxIconInfo;
 		}
 	} ),
 	methods: {
@@ -101,8 +142,21 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-tester-result {
-	&-message-icon {
-		cursor: pointer;
+	&__header {
+		display: flex;
+		align-items: center;
+	}
+
+	/* TODO: update with codex dark link when available */
+	&__title {
+		margin-left: @spacing-50;
+		margin-right: 0;
+		display: block;
+		color: @color-base;
+	}
+
+	&__title:visited {
+		color: @color-base;
 	}
 
 	&-status {
@@ -118,6 +172,14 @@ module.exports = exports = {
 			color: @color-warning;
 		}
 	}
-}
 
+	&__footer {
+		margin-left: calc( @spacing-100 + @spacing-50 );
+
+		&-status {
+			color: @color-subtle;
+			margin-right: @spacing-50;
+		}
+	}
+}
 </style>

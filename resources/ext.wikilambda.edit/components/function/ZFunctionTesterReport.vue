@@ -5,96 +5,46 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div>
+	<div class="ext-wikilambda-function-tester-report">
 		<h2>{{ $i18n( 'wikilambda-tester-results-title' ).text() }}</h2>
-		<template v-if="zFunctionId && implementations.length > 0 && testers.length > 0">
-			<table
-				class="ext-wikilambda-fn-tester-results"
+		<div
+			v-if="zFunctionId && implementations.length > 0 && testers.length > 0"
+			class="ext-wikilambda-function-tester-report__content"
+		>
+			<div class="ext-wikilambda-function-tester-report__header">
+				<!-- TODO (T326665): use codex component when it exists -->
+				<span class="ext-wikilambda-function-tester-report__title"> {{ title }} </span>
+				<cdx-button :aria-label="reloadLabel" type="quiet">
+					<cdx-icon
+						:icon="reloadIcon"
+						@click.stop="runTesters"
+					></cdx-icon>
+				</cdx-button>
+			</div>
+			<div
+				v-for="item in zIds"
+				:key="item"
+				class="ext-wikilambda-function-tester-report__container"
 			>
-				<caption>{{ $i18n( 'wikilambda-tester-results-caption' ) }}</caption>
-				<thead>
-					<tr>
-						<th scope="col"></th>
-						<th
-							v-for="implementation in implementations"
-							:key="implementation"
-							class="ext-wikilambda-fn-tester-results__header-cell"
-							scope="col"
-						>
-							<a
-								:href="implementation"
-							>
-								{{
-									implementationLabel( implementation )
-								}}
-							</a>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr
-						v-for="( test, index ) in testers"
-						:key="index"
-						class="ext-wikilambda-fn-tester-results__row"
-					>
-						<template v-if="typeof test === 'string'">
-							<th scope="row">
-								<a :href="test">
-									{{ testLabel( test ) }}
-								</a>
-							</th>
-							<td v-for="implementation in implementations" :key="implementation">
-								<wl-z-tester-impl-result
-									:z-function-id="zFunctionId"
-									:z-implementation-id="implementation"
-									:z-tester-id="test"
-									@set-keys="setActiveTesterKeys"
-								></wl-z-tester-impl-result>
-							</td>
-						</template>
-						<!-- FIXME T314469: The template for the else clause should treat tester literal objects
-						differently, as they will not be persistent objects but objects of type Z20/Tester -->
-						<template v-else>
-							<th scope="row">
-								{{ test.Z2K3.Z12K1[ 0 ].Z11K2.Z6K1 }}
-							</th>
-							<td v-for="implementation in implementations" :key="implementation">
-								<wl-z-tester-impl-result
-									:z-function-id="zFunctionId"
-									:z-implementation-id="implementation"
-									:z-tester-id="test[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ]"
-									@set-keys="setActiveTesterKeys"
-								></wl-z-tester-impl-result>
-							</td>
-						</template>
-					</tr>
-				</tbody>
-				<tfoot>
-					<tr>
-						<td>
-							<slot name="run-testers" :click="runTesters">
-								<cdx-button v-if="!getViewMode" @click="runTesters">
-									{{ $i18n( 'wikilambda-tester-run-testers' ).text() }}
-								</cdx-button>
-							</slot>
-						</td>
-						<td :colspan="implementations.length" class="ext-wikilambda-fn-tester-result">
-							{{ $i18n( 'wikilambda-tester-results-percentage-label' ).text() }}:
-							{{ resultCount.passing }}/{{ resultCount.total }} ({{ resultCount.percentage }}%)
-						</td>
-					</tr>
-				</tfoot>
-			</table>
-			<wl-metadata-dialog
-				:show-dialog="showMetrics"
-				:implementation-label="activeImplementationLabel"
-				:tester-label="activeTesterLabel"
-				:metadata="metadata"
-				@close-dialog="showMetrics = false"
-			></wl-metadata-dialog>
-		</template>
+				<wl-z-tester-impl-result
+					class="ext-wikilambda-function-tester-report__result"
+					:z-function-id="zFunctionId"
+					:z-implementation-id="reportType === Constants.Z_TESTER ? item : zImplementationId"
+					:z-tester-id="reportType === Constants.Z_TESTER ? zTesterId : item"
+					:report-type="reportType"
+					@set-keys="setActiveTesterKeys"
+				></wl-z-tester-impl-result>
+				<wl-metadata-dialog
+					:show-dialog="showMetrics"
+					:implementation-label="activeImplementationLabel"
+					:tester-label="activeTesterLabel"
+					:metadata="metadata"
+					@close-dialog="showMetrics = false"
+				></wl-metadata-dialog>
+			</div>
+		</div>
 		<div v-else>
-			<p>{{ $i18n( 'wikilambda-tester-no-results' ).text() }}</p>
+			<p> {{ $i18n( 'wikilambda-tester-no-results' ).text() }} </p>
 		</div>
 	</div>
 </template>
@@ -105,6 +55,8 @@ var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
+	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	icons = require( '../../../lib/icons.json' ),
 	MetadataDialog = require( './viewer/details/ZMetadataDialog.vue' ),
 	ZTesterImplResult = require( './ZTesterImplResult.vue' );
 
@@ -114,13 +66,18 @@ module.exports = exports = {
 	components: {
 		'wl-z-tester-impl-result': ZTesterImplResult,
 		'wl-metadata-dialog': MetadataDialog,
-		'cdx-button': CdxButton
+		'cdx-button': CdxButton,
+		'cdx-icon': CdxIcon
 	},
 	mixins: [ typeUtils ],
 	inject: {
 		viewmode: { default: false }
 	},
 	props: {
+		reportType: {
+			type: String,
+			default: Constants.Z_FUNCTION
+		},
 		zFunctionId: {
 			type: String,
 			required: true
@@ -138,22 +95,28 @@ module.exports = exports = {
 		return {
 			activeZImplementationId: null,
 			activeZTesterId: null,
-			Constants: Constants,
-			showMetrics: false
+			showMetrics: false,
+			Constants: Constants
 		};
 	},
 	computed: $.extend( mapGetters( [
 		'getZkeyLabels',
 		'getZkeys',
 		'getZTesterPercentage',
-		'getCurrentZObjectId',
-		'getNewTesterZObjects',
-		'getZTesterResults',
 		'getZTesterMetadata',
 		'getViewMode',
+		'getZTesters',
 		'getZImplementations',
-		'getZTesters'
+		'getFetchingTestResults'
 	] ), {
+		title: function () {
+			return this.reportType === Constants.Z_TESTER ?
+				this.$i18n( 'wikilambda-function-implementation-table-header' ).text() :
+				this.$i18n( 'wikilambda-function-test-cases-table-header' ).text();
+		},
+		zIds: function () {
+			return this.reportType === Constants.Z_TESTER ? this.implementations : this.testers;
+		},
 		implementations: function () {
 			if ( !this.zFunctionId || !this.getZkeys[ this.zFunctionId ] ) {
 				return [];
@@ -187,15 +150,6 @@ module.exports = exports = {
 		resultCount: function () {
 			return this.getZTesterPercentage( this.zFunctionId );
 		},
-		activeTesterStatus: function () {
-			return this.getZTesterResults(
-				this.zFunctionId,
-				this.activeZTesterId,
-				this.activeZImplementationId
-			) === true ?
-				this.$i18n( 'wikilambda-tester-status-passed' ).text() :
-				this.$i18n( 'wikilambda-tester-status-failed' ).text();
-		},
 		metadata: function () {
 			if ( !this.activeZTesterId || !this.activeZImplementationId ) {
 				return '';
@@ -208,6 +162,14 @@ module.exports = exports = {
 		},
 		activeImplementationLabel: function () {
 			return !this.activeZImplementationId ? '' : ( this.getZkeyLabels[ this.activeZImplementationId ] || this.activeZImplementationId );
+		},
+		reloadIcon: function () {
+			return this.getFetchingTestResults ? icons.cdxIconCancel : icons.cdxIconReload;
+		},
+		reloadLabel: function () {
+			return this.getFetchingTestResults ?
+				this.$i18n( 'wikilambda-tester-status-cancel' ).text() :
+				this.$i18n( 'wikilambda-tester-status-run' ).text();
 		}
 	} ),
 	methods: $.extend( mapActions( [ 'fetchZKeys', 'getTestResults' ] ), {
@@ -257,20 +219,37 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
+@import '../../ext.wikilambda.edit.less';
 
-.ext-wikilambda-fn-tester-results {
-	border-spacing: 10px 5px;
-	max-width: 90vw;
-	overflow-x: auto;
-}
+.ext-wikilambda-function-tester-report {
+	&__content {
+		border: 1px solid @background-color-disabled;
+		padding: @spacing-75;
+		margin: @spacing-100 0;
+	}
 
-.ext-wikilambda-fn-tester-results caption {
-	white-space: nowrap;
-}
+	&__title {
+		font-weight: bold;
+	}
 
-.ext-wikilambda-fn-tester-results tfoot td.ext-wikilambda-fn-tester-result {
-	padding: 10px 0;
-	border-top: 3px double #000;
-	text-align: right;
+	&__header {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		margin-bottom: calc( @spacing-125 - @spacing-35 );
+
+		> button {
+			margin-top: -@spacing-35; // (32px button - 20px icon) / 2
+			margin-right: -@spacing-35;
+		}
+	}
+
+	&__container {
+		margin-bottom: @spacing-50;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
 }
 </style>

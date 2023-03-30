@@ -164,6 +164,12 @@ var Constants = {
 		ADD_LIST_ITEM: 'add_list_item',
 		DELETE_LIST_ITEM: 'delete_list_item'
 	},
+	testerStatus = {
+		PENDING: 'pending',
+		PASSED: 'passed',
+		FAILED: 'failed',
+		RUNNING: 'running'
+	},
 	builtinComponents = {
 		[ Constants.Z_FUNCTION_CALL ]: 'wl-z-function-call',
 		[ Constants.Z_MONOLINGUALSTRING ]: 'wl-z-monolingual-string',
@@ -198,6 +204,7 @@ Constants.breakpoints = breakpoints;
 Constants.breakpointsTypes = breakpointsTypes;
 Constants.implementationModes = implementationModes;
 Constants.contextMenuItems = contextMenuItems;
+Constants.testerStatus = testerStatus;
 Constants.COLOR_NESTING_LEVELS = 6;
 Constants.BUILTIN_COMPONENTS = builtinComponents;
 Constants.RESOLVER_TYPES = resolverTypes;
