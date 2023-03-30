@@ -1,7 +1,6 @@
 {
 	"extends": "stylelint-config-wikimedia",
 	"rules": {
-		"selector-class-pattern": "^(ext-wikilambda-|cdx-|)",
-		"selector-pseudo-element-colon-notation": null
+		"selector-class-pattern": "^(ext-wikilambda-|cdx-|)"
 	}
 }
