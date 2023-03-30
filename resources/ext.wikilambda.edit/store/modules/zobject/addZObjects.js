@@ -27,9 +27,22 @@ module.exports = exports = {
 			 * @param {number} payload.id the parent rowId for the new object
 			 * @param {Object} payload.value initialization values
 			 * @param {boolean} payload.append whether to append the new zobject to a list
+			 * @param {boolean} payload.link whether to default to reference over literal
 			 * @return {Object}
 			 */
 			function newObjectByType( payload ) {
+				// If payload.link is true, we are prioritizing creating a
+				// blank reference over the literal object. This happens for the
+				// types Constants.LINKED_TYPES, which are generally persisted and
+				// linked (Z8/Function, Z4/Type, etc.)
+				// We want to do this when we add new keys, new items to a list,
+				// arguments to a function call, or similar cases. We don't want
+				// to do this when we create the blank object for the page root.
+				if ( payload.link ) {
+					if ( Constants.LINKED_TYPES.indexOf( payload.type ) > -1 ) {
+						return getters.createZReference( payload );
+					}
+				}
 				switch ( payload.type ) {
 					case Constants.Z_REFERENCE:
 						return getters.createZReference( payload );

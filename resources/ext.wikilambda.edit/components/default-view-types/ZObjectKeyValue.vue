@@ -70,6 +70,7 @@ var
 	ZCode = require( './ZCode.vue' ),
 	ZReference = require( './ZReference.vue' ),
 	ZBoolean = require( './ZBoolean.vue' ),
+	ZFunctionCall = require( './ZFunctionCall.vue' ),
 	ZTypedList = require( './ZTypedList.vue' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	mapActions = require( 'vuex' ).mapActions,
@@ -83,6 +84,7 @@ module.exports = exports = {
 		'wl-localized-label': LocalizedLabel,
 		'wl-context-menu': ContextMenu,
 		'wl-z-code': ZCode,
+		'wl-z-function-call': ZFunctionCall,
 		'wl-z-monolingual-string': ZMonolingualString,
 		'wl-z-object-key-value-set': ZObjectKeyValueSet,
 		'wl-z-object-type': ZObjectType,
@@ -389,8 +391,7 @@ module.exports = exports = {
 					// If the key is terminal Z6K1 or Z9K1, no expanded mode
 					if (
 						( this.key === Constants.Z_STRING_VALUE ) ||
-						( this.key === Constants.Z_REFERENCE_ID ) ||
-						( this.key === Constants.Z_OBJECT_TYPE ) // this will be true for list items in list of type Z1
+						( this.key === Constants.Z_REFERENCE_ID )
 					) {
 						return false;
 					}
@@ -421,7 +422,7 @@ module.exports = exports = {
 				}
 
 				// If the type doesn't have any builting component, it must
-				// be always shown in its expanded-mode rerepsentation--the set
+				// be always shown in its expanded-mode representation--the set
 				// of key values, so we won't show the expanded mode toggle
 				if ( Object.keys( Constants.BUILTIN_COMPONENTS ).indexOf( this.type ) < 0 ) {
 					return false;
@@ -456,7 +457,9 @@ module.exports = exports = {
 				if ( this.type === Constants.Z_TYPED_LIST ) {
 					return 'wl-z-typed-list';
 				}
-
+				if ( ( this.type === Constants.Z_FUNCTION_CALL ) && !this.expanded ) {
+					return 'wl-z-function-call';
+				}
 				if ( ( this.type === Constants.Z_MONOLINGUALSTRING ) && !this.expanded ) {
 					return 'wl-z-monolingual-string';
 				}
@@ -533,8 +536,9 @@ module.exports = exports = {
 			}
 		} ),
 	methods: $.extend( mapActions( [
-		'setValueByRowIdAndPath',
 		'changeType',
+		'setValueByRowIdAndPath',
+		'setZFunctionCallArguments',
 		'removeItemFromTypedList'
 	] ),
 	{
@@ -588,11 +592,16 @@ module.exports = exports = {
 				return;
 			}
 
-			// FIXME If the value of Z7K1 changes, we need to change all keys, which
+			// 3. If the value of Z7K1 changes, we need to change all keys, which
 			// probably means that we need to pass up the responsability the way we
 			// have done it with Z1K1.
 			if ( this.key === Constants.Z_FUNCTION_CALL_FUNCTION ) {
-				return;
+				// Set new function call arguments and remove old ones and
+				// continue to have this key set by setValueByRowIdAndPath
+				this.setZFunctionCallArguments( {
+					parentId: this.parentRowId,
+					functionZid: payload.value
+				} );
 			}
 
 			// SIMPLE changes

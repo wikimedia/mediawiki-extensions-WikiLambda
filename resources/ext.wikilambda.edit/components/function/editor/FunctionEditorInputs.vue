@@ -142,7 +142,6 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getZObject',
 		'getNextObjectId',
 		'getAllItemsFromListById',
 		'getNestedZObjectById'
@@ -154,6 +153,12 @@ module.exports = exports = {
 				Constants.Z_REFERENCE_ID
 			] ).value;
 		},
+		// TODO (T331979): Audit this component, it's difficult to understand why this
+		// is working at all. When the function is set, zArgumentId is the parent row id
+		// but when it isn't set, the value is Z0?
+		// This means that the "addNewItem" is calling addZObject with parent set to Z0 which
+		// should never ever happen. Either this is not properly tested or this is doing
+		// something unpredictble behind. Let's figure it out.
 		zArgumentId: function () {
 			return this.getNestedZObjectById( this.zobjectId, [
 				Constants.Z_PERSISTENTOBJECT_VALUE,

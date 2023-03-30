@@ -58,7 +58,7 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 		await fireEvent.click( within( testersTable ).getByText( 'Approve' ) );
 
 		// ASSERT: Correct ZObject was posted to the API.
-		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
+		await waitFor( () => expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
 			action: 'wikilambda_edit',
 			summary: '',
 			zid: functionZid,
@@ -68,6 +68,6 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 						[ implementationByCompositionZid ], [ existingFailedTesterZid, existingSuccessTesterZid ]
 					)
 				)
-		} );
+		} ) );
 	} );
 } );
