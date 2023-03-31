@@ -234,6 +234,8 @@
 	"wikilambda-tester-create-new": "Ustvari nov test",
 	"wikilambda-tester-status-pending": "V teku ...",
 	"wikilambda-tester-status-running": "Teče ...",
+	"wikilambda-tester-status-run": "Izvedi",
+	"wikilambda-tester-status-cancel": "Prekliči",
 	"wikilambda-tester-status-passed": "Opravljeno",
 	"wikilambda-tester-status-failed": "Neuspešno",
 	"wikilambda-tester-results-title": "Rezultati preizkusov",
@@ -354,5 +356,6 @@
 	"wikilambda-context-menu": "Kontekstni meni",
 	"wikilambda-add-list-item": "Dodaj predmet",
 	"wikilambda-delete-list-item": "Izbriši predmet",
-	"wikilambda-list-type-change-publish-dialog-warning": "Spremenili ste vrsto enega ali več seznamov. Ob objavi bodo vsi elementi seznama izbrisani"
+	"wikilambda-list-type-change-publish-dialog-warning": "Spremenili ste vrsto enega ali več seznamov. Ob objavi bodo vsi elementi seznama izbrisani",
+	"wikilambda-tester-details": "Podrobnosti"
 }

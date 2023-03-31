@@ -229,6 +229,8 @@
 	"wikilambda-tester-create-new": "Crear un nove test",
 	"wikilambda-tester-status-pending": "Pendente…",
 	"wikilambda-tester-status-running": "In execution…",
+	"wikilambda-tester-status-run": "Executar",
+	"wikilambda-tester-status-cancel": "Cancellar",
 	"wikilambda-tester-status-passed": "Passate",
 	"wikilambda-tester-status-failed": "Fallite",
 	"wikilambda-tester-results-title": "Resultatos del test",
@@ -348,5 +350,7 @@
 	"wikilambda-list-item-label": "Elemento",
 	"wikilambda-context-menu": "Menu contextual",
 	"wikilambda-add-list-item": "Adder elemento",
-	"wikilambda-delete-list-item": "Deler elemento"
+	"wikilambda-delete-list-item": "Deler elemento",
+	"wikilambda-list-type-change-publish-dialog-warning": "Tu ha cambiate le typo de un o plure listas. Al publication, tote le elementos del lista essera delite.",
+	"wikilambda-tester-details": "Detalios"
 }

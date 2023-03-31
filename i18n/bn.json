@@ -45,6 +45,7 @@
 	"wikilambda-functioncall-metadata-orchestration-cpu-usage": "সুসমন্বিত সিপিইউ ব্যবহার",
 	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "মূল্যায়ন CPU ব্যবহার",
 	"wikilambda-functioncall-metadata-execution-cpu-usage": "কার্যবাহ সিপিইউ ব্যবহার",
+	"wikilambda-tester-status-run": "চালান",
 	"wikilambda-metadata-labels-table-label": "লেবেল",
 	"wikilambda-metadata-language-column": "ভাষা",
 	"wikilambda-metadata-label-column": "লেবেল",

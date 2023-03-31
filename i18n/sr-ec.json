@@ -9,6 +9,8 @@
 	"wikilambda-show-more": "Прикажи више",
 	"wikilambda-hide-more": "Сакриј више",
 	"wikilambda-tester-status-pending": "На чекању…",
+	"wikilambda-tester-status-run": "Покрени",
+	"wikilambda-tester-status-cancel": "Откажи",
 	"wikilambda-metadata-all-languages": "Прикажи све унесене језике",
 	"wikilambda-persistentobject-details-label": "Детаљи",
 	"wikilambda-function-is-approved": "Објекат је одобрен за ову функцију.",
@@ -19,5 +21,6 @@
 	"wikilambda-function-definition-input-item-type": "Тип",
 	"wikilambda-function-definition-output-label": "Излаз",
 	"wikilambda-chip-remove": "Уклони ставку",
-	"wikilambda-list-items-label": "Списак ставки"
+	"wikilambda-list-items-label": "Списак ставки",
+	"wikilambda-tester-details": "Детаљи"
 }

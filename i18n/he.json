@@ -233,6 +233,8 @@
 	"wikilambda-tester-create-new": "יצירת בדיקה חדשה",
 	"wikilambda-tester-status-pending": "בהמתנה...",
 	"wikilambda-tester-status-running": "בהרצה...",
+	"wikilambda-tester-status-run": "הרצה",
+	"wikilambda-tester-status-cancel": "ביטול",
 	"wikilambda-tester-status-passed": "עברה",
 	"wikilambda-tester-status-failed": "נכשלה",
 	"wikilambda-tester-results-title": "תוצאות בדיקה",
@@ -353,5 +355,6 @@
 	"wikilambda-context-menu": "תפריט הקשר",
 	"wikilambda-add-list-item": "הוספת פריט",
 	"wikilambda-delete-list-item": "למחוק פריט",
-	"wikilambda-list-type-change-publish-dialog-warning": "שינית את הסוג של רשימה אחת או יותר. בעת פרסום, כל פריטי הרשימה יימחקו"
+	"wikilambda-list-type-change-publish-dialog-warning": "שינית את הסוג של רשימה אחת או יותר. בעת פרסום, כל פריטי הרשימה יימחקו",
+	"wikilambda-tester-details": "פרטים"
 }

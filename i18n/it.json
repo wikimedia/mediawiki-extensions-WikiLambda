@@ -58,6 +58,8 @@
 	"wikilambda-tester-selector": "Seleziona un test",
 	"wikilambda-tester-none-found": "Al momento non ci sono casi di test per questa funzione.",
 	"wikilambda-tester-status-running": "In esecuzione…",
+	"wikilambda-tester-status-run": "Esegui",
+	"wikilambda-tester-status-cancel": "Annulla",
 	"wikilambda-tester-run-testers": "Esegui tutti i test",
 	"wikilambda-tester-run-tester": "Esegui test",
 	"wikilambda-enable-expert-mode": "Abilità modalità esperto",
@@ -110,5 +112,6 @@
 	"wikilambda-list-item-label": "Elemento",
 	"wikilambda-add-list-item": "Aggiungi elemento",
 	"wikilambda-delete-list-item": "Cancella elemento",
-	"wikilambda-list-type-change-publish-dialog-warning": "Hai cambiato il tipo di uno o più elenchi. Alla pubblicazione, tutti gli elementi dell'elenco verranno cancellati"
+	"wikilambda-list-type-change-publish-dialog-warning": "Hai cambiato il tipo di uno o più elenchi. Alla pubblicazione, tutti gli elementi dell'elenco verranno cancellati",
+	"wikilambda-tester-details": "Dettagli"
 }

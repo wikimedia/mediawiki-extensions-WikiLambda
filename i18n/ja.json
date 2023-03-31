@@ -182,6 +182,8 @@
 	"wikilambda-tester-create-new": "新しいテストを作成する",
 	"wikilambda-tester-status-pending": "保留中...",
 	"wikilambda-tester-status-running": "実行中...",
+	"wikilambda-tester-status-run": "実行",
+	"wikilambda-tester-status-cancel": "キャンセル",
 	"wikilambda-tester-status-passed": "合格",
 	"wikilambda-tester-status-failed": "失敗",
 	"wikilambda-tester-results-title": "テスト結果",
@@ -291,5 +293,6 @@
 	"wikilambda-list-item-label": "項目",
 	"wikilambda-context-menu": "コンテキスト メニュー",
 	"wikilambda-add-list-item": "項目を追加",
-	"wikilambda-delete-list-item": "削除された項目"
+	"wikilambda-delete-list-item": "削除された項目",
+	"wikilambda-tester-details": "詳細"
 }

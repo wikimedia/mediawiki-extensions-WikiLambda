@@ -105,6 +105,8 @@
 	"wikilambda-editor-tester-list-label": "Lista de testes",
 	"wikilambda-tester-status-pending": "Pendente...",
 	"wikilambda-tester-status-running": "Executando...",
+	"wikilambda-tester-status-run": "Executar",
+	"wikilambda-tester-status-cancel": "Cancelar",
 	"wikilambda-tester-status-failed": "Falhou",
 	"wikilambda-tester-results-title": "Resultados do teste",
 	"wikilambda-tester-results-caption": "Resultados de testes de função em relação a implementações",
@@ -146,5 +148,6 @@
 	"wikilambda-list-item-label": "Item",
 	"wikilambda-context-menu": "Menu de contexto",
 	"wikilambda-add-list-item": "Adicionar item",
-	"wikilambda-delete-list-item": "Excluir item"
+	"wikilambda-delete-list-item": "Excluir item",
+	"wikilambda-tester-details": "Detalhes"
 }
