@@ -7,10 +7,10 @@
 	-->
 	<div
 		class="ext-wikilambda-ztyped-list-item"
-		:class="containerStyle"
+		:class="containerClass"
 	>
 		<div
-			v-if="isTerminalItem"
+			v-if="isTerminal"
 			class="ext-wikilambda-ztyped-list-item-bullet">
 		</div>
 		<wl-z-object-key-value
@@ -23,6 +23,9 @@
 </template>
 
 <script>
+var Constants = require( '../../Constants.js' ),
+	mapGetters = require( 'vuex' ).mapGetters;
+
 // @vue/component
 module.exports = exports = {
 	name: 'wl-z-typed-list-item',
@@ -42,18 +45,46 @@ module.exports = exports = {
 		listType: {
 			type: String,
 			required: true
-		},
-		isTerminalItem: {
-			type: Boolean,
-			default: false
 		}
 	},
-	computed:
-	{
-		containerStyle: function () {
-			return this.isTerminalItem ? 'ext-wikilambda-ztyped-list-item' : 'ext-wikilambda-ztyped-list-item-flex';
+	computed: $.extend(
+		mapGetters( [ 'getZObjectTypeByRowId' ] ),
+		{
+			/**
+			 * Whether a given item is terminal, which will determine
+			 * whether or not it's preceded by a bullet point
+			 *
+			 * @param {number} itemRowId
+			 * @return {boolean}
+			 */
+			isTerminal: function () {
+				// we cannot assume an item is the same type as the list type
+				// because in the case of a Z1 typed list, each element can be different
+				const itemType = this.getZObjectTypeByRowId( this.rowId );
+
+				// although the logic is similar to `hasExpandedMode`,
+				// that can't be passed down because it needs to check
+				// different properties (and it has different rules for edit)
+				const isTerminalListItem = (
+					itemType === Constants.Z_OBJECT ||
+					itemType === Constants.Z_STRING ||
+					itemType === Constants.Z_REFERENCE
+				);
+
+				return isTerminalListItem && !this.edit;
+			},
+			/**
+			 * Returns the class name of the list item container div
+			 *
+			 * @return {string}
+			 */
+			containerClass: function () {
+				return this.isTerminal ?
+					'ext-wikilambda-ztyped-list-item' :
+					'ext-wikilambda-ztyped-list-item-flex';
+			}
 		}
-	},
+	),
 	methods: {
 		// ZTypedList calls this property on a new item added to the list
 		// in order to access the child component, ZObjectKeyValue

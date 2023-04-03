@@ -243,7 +243,9 @@ var Constants = require( '../Constants.js' ),
 			/**
 			 * Parse the type from a typed list string
 			 * Ex: 'Z881(Z11)' will return 'Z11'
+			 * Ex: 'Z11' will return 'Z11'
 			 *
+			 * TODO (T334117): does not account for Z881(Z881(Z11)) for example
 			 *
 			 * @param {string} typeString
 			 * @return {string}

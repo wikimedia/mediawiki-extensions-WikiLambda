@@ -59,8 +59,7 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getLabelData',
 		'getExpectedTypeOfKey',
-		'getZObjectKeyByRowId',
-		'getChildrenByParentRowId'
+		'getZObjectKeyByRowId'
 	] ),
 	{
 		/**

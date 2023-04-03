@@ -12,9 +12,9 @@
 		<!-- Type of list -->
 		<wl-z-typed-list-type
 			v-if="expanded"
-			:row-id="zTypeRowId"
+			:row-id="itemTypeRowId"
 			:edit="edit"
-			:list-type="type"
+			:list-type="itemType"
 			:parent-row-id="rowId"
 			:list-items-row-ids="listItemsRowIds"
 		></wl-z-typed-list-type>
@@ -39,8 +39,7 @@
 					ref="listItemElements"
 					:row-id="item"
 					:edit="edit"
-					:list-type="type"
-					:is-terminal-item="isTerminalItem( item )"
+					:list-type="itemType"
 				></wl-z-typed-list-item>
 			</li>
 		</ul>
@@ -58,7 +57,6 @@
 <script>
 var ZTypedListItem = require( './ZTypedListItem.vue' ),
 	ZTypedListType = require( './ZTypedListType.vue' ),
-	Constants = require( '../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
@@ -93,8 +91,7 @@ module.exports = exports = {
 	computed: $.extend(
 		mapGetters( [
 			'getChildrenByParentRowId',
-			'getZObjectTypeByRowId',
-			'getZObjectValueByRowId'
+			'getTypedListItemType'
 		] ),
 		{
 			/**
@@ -106,6 +103,7 @@ module.exports = exports = {
 				return this.getChildrenByParentRowId( this.rowId )
 					.map( function ( row ) { return row.id; } );
 			},
+
 			/**
 			 * Returns the list items without the type (the first item in the list)
 			 *
@@ -114,32 +112,25 @@ module.exports = exports = {
 			listItemsRowIds: function () {
 				return this.childRowIds.slice( 1 );
 			},
+
 			/**
-			 * Returns the id for the first item on the list, which represents the zType
+			 * Returns the id for the first item on the list,
+			 * which represents the type of the list items
 			 *
 			 * @return {string}
 			 */
-			zTypeRowId: function () {
+			itemTypeRowId: function () {
 				return this.childRowIds[ 0 ];
 			},
 
 			/**
-			 * Returns the id for the value of the zType
+			 * Returns the string representation of the expected
+			 * type for the list items
 			 *
 			 * @return {string}
 			 */
-			typeRowId: function () {
-				return this.getChildrenByParentRowId( this.zTypeRowId )
-					.map( function ( row ) { return row.id; } )[ 1 ];
-			},
-
-			/**
-			 * Returns the string representation of the value of the zType
-			 *
-			 * @return {string}
-			 */
-			type: function () {
-				return this.getZObjectValueByRowId( this.typeRowId );
+			itemType: function () {
+				return this.getTypedListItemType( this.rowId );
 			},
 
 			/**
@@ -179,23 +170,7 @@ module.exports = exports = {
 	),
 	methods: $.extend( {}, mapActions( [ 'recalculateZListIndex' ] ), {
 		addListItem: function () {
-			this.$emit( 'set-type', { value: this.type, append: true } );
-		},
-		isTerminalItem: function ( item ) {
-			// we cannot assume an item is the same type as the list type
-			// because in the case of a Z1 typed list, each element can be different
-			const itemType = this.getZObjectTypeByRowId( item );
-
-			// although the logic is similar to `hasExpandedMode`,
-			// that can't be passed down because it needs to check
-			// different properties (and it has different rules for edit)
-			const isTerminalListItem = (
-				itemType === Constants.Z_OBJECT ||
-				itemType === Constants.Z_STRING ||
-				itemType === Constants.Z_REFERENCE
-			);
-
-			return isTerminalListItem && !this.edit;
+			this.$emit( 'set-type', { value: this.itemType, append: true } );
 		}
 	} ),
 	watch: {

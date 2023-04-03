@@ -48,7 +48,6 @@
 				:row-id="rowId"
 				:expected-type="expectedType"
 				:parent-id="parentRowId"
-				:list-type="listType"
 				@set-value="setValue"
 				@set-type="setType"
 				@change-event="changeEvent"
@@ -129,7 +128,8 @@ module.exports = exports = {
 			'getParentRowId',
 			'getZObjectKeyByRowId',
 			'getZObjectValueByRowId',
-			'getZObjectTypeByRowId'
+			'getZObjectTypeByRowId',
+			'getTypedListItemType'
 		] ),
 		{
 			/**
@@ -137,27 +137,17 @@ module.exports = exports = {
 			 * Note that this is not the same thing as bounding the type, or disabling
 			 * expanded mode. This does not coerce the component to render in view mode,
 			 * just disables the selectability of the component.
-			 * FIXME: Validate the cases for doing this
-			 * FIXME: Do we have to show "Type: Persistent object" or should we remove it?
 			 *
 			 * @return {boolean}
 			 */
 			disableEdit: function () {
-				// if the item is a typed list and the type of that list is enforced, the edit should be disabled
-				if ( this.isKeyTypedListType( this.parentKey ) || this.isKeyTypedListType( this.key ) ) {
-					return this.expectedType !== Constants.Z_OBJECT;
+				// If the key is that of a typed list type (zero):
+				// 1. If parent expected type is Z1: return false (allow edit)
+				// 2. If parent expected type is Z881(Z1): return false (allow edit)
+				// 3. If parent expected type is Z881(Zn): return true (disable edit)
+				if ( this.isKeyTypedListType( this.key ) ) {
+					return ( this.typedListStringToType( this.parentExpectedType ) !== Constants.Z_OBJECT );
 				}
-
-				// if this is an item in a typed list and the type of that item,
-				// it should be disabled unless the list is of type 'any'
-				// an item can have multiple input fields (ex: monolingual string),
-				// so this should be limited to the object type field
-				if ( ( this.key === Constants.Z_OBJECT_TYPE ) &&
-					( this.isKeyTypedListItem( this.parentKey ) || this.isKeyTypedListItem( this.key ) )
-				) {
-					return this.listType !== Constants.Z_OBJECT;
-				}
-
 				// the root ZObject type (it will always be a Literal Persistent Object).
 				return ( this.key === Constants.Z_OBJECT_TYPE ) &&
 					( this.parentExpectedType === Constants.Z_PERSISTENTOBJECT );
@@ -249,9 +239,16 @@ module.exports = exports = {
 			 * @return {string}
 			 */
 			expandedModeClass: function () {
-				return ( this.expanded && this.hasExpandedMode ) ? 'ext-wikilambda-expanded-on' : 'ext-wikilambda-expanded-off';
+				return ( this.expanded && this.hasExpandedMode ) ?
+					'ext-wikilambda-expanded-on' :
+					'ext-wikilambda-expanded-off';
 			},
 
+			/**
+			 * Returns the css class for the label when it can be expanded
+			 *
+			 * @return {string}
+			 */
 			expandedModeLabelClass: function () {
 				return ( this.hasExpandedMode ) ? 'ext-wikilambda-key-block__label' : '';
 			},
@@ -290,6 +287,11 @@ module.exports = exports = {
 				return classList;
 			},
 
+			/**
+			 * Returns the classes names to handle padded blocks
+			 *
+			 * @return {Array}
+			 */
 			paddedClass: function () {
 				var classList = [];
 
@@ -326,11 +328,24 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Returns the expected type of the parent key
+			 * Returns the expected type of the parent key. If the key is of
+			 * a typed list item, it returns the list item expected type.
 			 *
 			 * @return {string}
 			 */
 			parentExpectedType: function () {
+				// If parent key is a numerical index, it's the key of a typed list type/item
+				// 1. If index is zero, it should always expect a Z4/Type in any mode
+				if ( this.isKeyTypedListType( this.parentKey ) ) {
+					return Constants.Z_TYPE;
+				}
+				// 2. If item index (not zero), it should expect the typed list type
+				if ( this.isKeyTypedListItem( this.parentKey ) ) {
+					const typedListRowId = this.getParentRowId( this.parentRowId );
+					return this.getTypedListItemType( typedListRowId );
+				}
+
+				// If ZnKn shaped key, get expected from the key definition
 				return this.getExpectedTypeOfKey( this.parentKey );
 			},
 
@@ -341,30 +356,16 @@ module.exports = exports = {
 			 * @return {string}
 			 */
 			expectedType: function () {
-				// if this is the type of a list
+				// If key is a numerical index, this is the key of a typed list type/item
+				// 1. If index is zero, it should always expect a Z4/Type
 				if ( this.isKeyTypedListType( this.key ) ) {
-					return this.typedListStringToType( this.parentExpectedType );
+					return Constants.Z_TYPE;
 				}
 
-				// if the type of a list is expanded, we will be nested
-				// so need to go two levels up to get the expected type
-				// this is required to limit the select options in edit mode
-				if ( this.isKeyTypedListType( this.parentKey ) ) {
-					// get the grandparent expected type
-					const grandparentRowId = this.getParentRowId( this.parentRowId );
-					const grandparentKey = this.getZObjectKeyByRowId( grandparentRowId );
-					const grandparentExpectedType = this.getExpectedTypeOfKey( grandparentKey );
-
-					return this.typedListStringToType( grandparentExpectedType );
-				}
-
-				// list types and list items don't have real keys - their keys are just list indices
-				// if the item is list item, the type of each item must be whatever the type of the list is
-				if (
-					( this.isKeyTypedListItem( this.parentKey ) || this.isKeyTypedListItem( this.key ) ) &&
-					this.listType !== Constants.Z_OBJECT
-				) {
-					return this.listType;
+				// 2. If index is > zero, the type of each item must be whatever
+				// the type of the list is, or Z1 if listType is undefined
+				if ( this.isKeyTypedListItem( this.key ) ) {
+					return this.listType || Constants.Z_OBJECT;
 				}
 
 				// FIXME: expected type changes if this is a resolver type
@@ -404,6 +405,13 @@ module.exports = exports = {
 					) {
 						return false;
 					}
+				}
+
+				// TERMINAL rule for typed list type:
+				if ( this.isKeyTypedListType( this.key ) ) {
+					// The parent expected type can be either Z1, Z881(Z1) or Z881(Zn)
+					// In both Z881(Z1) and Z881(Zn) we should disallow expansion:
+					return ( this.parentExpectedType === Constants.Z_OBJECT );
 				}
 
 				// TERMINAL rules for both view and edit:
@@ -548,6 +556,8 @@ module.exports = exports = {
 		 * is a type. This needs to call the changeType action, which handles
 		 * the clearing of the old content and the initialization of a new
 		 * scaffolding object representing the new type.
+		 *
+		 * FIXME: we should not be using this to add a list item
 		 *
 		 * @param {Object} payload
 		 * @param {Object} payload.keyPath sequence of keys till the value to edit

@@ -119,6 +119,7 @@ module.exports = exports = {
 				}
 
 				// Literal type:
+				// FIXME (T330635): Add both options
 				if ( Constants.RESOLVER_TYPES.indexOf( this.value ) < 0 ) {
 					// If literal is selected, show its label
 					options.push( {
@@ -176,7 +177,6 @@ module.exports = exports = {
 		 * @param {string} value
 		 */
 		setValue: function ( value ) {
-			// TODO (T331878) Error occurs while changing the value of mode selector
 			// Do not emit a value if there's no change to avoid
 			// unnecessarily altering the rest of the ZObject
 			if ( value !== this.value ) {

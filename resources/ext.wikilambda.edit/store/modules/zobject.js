@@ -357,6 +357,29 @@ module.exports = exports = {
 			return fetchZObjectValue;
 		},
 
+		/**
+		 * Returns the depth (from 0 to n) of the zobject
+		 * represented by a given rowId
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getDepthByRowId: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @param {number} depth
+			 * @return {number}
+			 */
+			function findDepth( rowId, depth = 0 ) {
+				const row = getters.getRowById( rowId );
+				return ( row.parent === undefined ) ?
+					depth :
+					findDepth( row.parent, depth + 1 );
+			}
+			return findDepth;
+		},
+
 		/************************************************************
 		 * INTERFACE METHODS FOR TYPES
 		 ************************************************************/
@@ -717,26 +740,26 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns the depth (from 0 to n) of the zobject
-		 * represented by a given rowId
+		 * Returns the item type of a typed list given the parent
+		 * rowId of the list object
 		 *
 		 * @param {Object} state
 		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		getDepthByRowId: function ( state, getters ) {
+		getTypedListItemType: function ( state, getters ) {
 			/**
-			 * @param {number} rowId
-			 * @param {number} depth
-			 * @return {number}
+			 * @param {number} parentRowId
+			 * @return {string|undefined}
 			 */
-			function findDepth( rowId, depth = 0 ) {
-				const row = getters.getRowById( rowId );
-				return ( row.parent === undefined ) ?
-					depth :
-					findDepth( row.parent, depth + 1 );
+			function findTypedListItemType( parentRowId ) {
+				const typeRow = getters.getRowByKeyPath( [ '0' ], parentRowId );
+				if ( !typeRow ) {
+					return undefined;
+				}
+				return getters.getZTypeStringRepresentation( typeRow.id );
 			}
-			return findDepth;
+			return findTypedListItemType;
 		},
 
 		/******************************************************************
@@ -974,7 +997,6 @@ module.exports = exports = {
 		 * @return {Function}
 		 */
 		getZTypeStringRepresentation: function ( state, getters ) {
-
 			/**
 			 * @param {number} rowId
 			 * @return {string | undefined}
@@ -997,6 +1019,10 @@ module.exports = exports = {
 
 				const typeRow = getters.getRowByKeyPath( [ Constants.Z_OBJECT_TYPE ], rowId );
 
+				if ( !typeRow ) {
+					return undefined;
+				}
+
 				// If it's terminal, it's a reference, return value of Z9K1
 				if ( typeRow.isTerminal() ) {
 					return getters.getZReferenceTerminalValue( rowId );
@@ -1018,15 +1044,15 @@ module.exports = exports = {
 						// FIXME account for a Z_FUNCTION_CALL key containing a literal
 						// function or any other resolver, not only references.
 						type = getters.getRowByKeyPath( [
-							Constants.Z_FUNCTION_CALL,
+							Constants.Z_FUNCTION_CALL_FUNCTION,
 							Constants.Z_REFERENCE_ID
 						], rowId );
 						break;
 
 					case Constants.Z_ARGUMENT_REFERENCE:
 						type = getters.getRowByKeyPath( [
-							Constants.Z_ARGUMENT_REFERENCE,
-							Constants.Z_STRING
+							Constants.Z_ARGUMENT_REFERENCE_KEY,
+							Constants.Z_STRING_VALUE
 						], rowId );
 						break;
 
@@ -1213,6 +1239,7 @@ module.exports = exports = {
 				return childrenObjects;
 			};
 		},
+
 		getListTypeById: function ( state ) {
 			/**
 			 * Return the type of children of a specific zObject(typedlist) by its ID
