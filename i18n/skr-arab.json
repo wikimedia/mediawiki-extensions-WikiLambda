@@ -8,6 +8,8 @@
 	"wikilambda-cancel": "منسوخ",
 	"wikilambda-code-editor-label": "کوڈ ایڈیٹر",
 	"wikilambda-tester-status-pending": "وچار ہیٹھ",
+	"wikilambda-tester-status-run": "دوڑ",
+	"wikilambda-tester-status-cancel": "منسوخ",
 	"wikilambda-tester-status-passed": "پاس",
 	"wikilambda-tester-status-failed": "فیل",
 	"wikilambda-metadata-labels-table-label": "لیبل",
@@ -28,5 +30,6 @@
 	"wikilambda-chip-remove": "آئٹم ہٹاؤ",
 	"wikilambda-list-item-label": "آئٹم",
 	"wikilambda-add-list-item": "آئٹم شامل کرو",
-	"wikilambda-delete-list-item": "آئٹم مٹاؤ"
+	"wikilambda-delete-list-item": "آئٹم مٹاؤ",
+	"wikilambda-tester-details": "تفصیلاں"
 }

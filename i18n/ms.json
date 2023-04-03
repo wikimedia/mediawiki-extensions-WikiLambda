@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Anakmalaysia",
+			"Hakimi97",
 			"Tofeiku"
 		]
 	},
@@ -10,6 +11,8 @@
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Hanya pengguna dengan kebenaran khas",
 	"wikilambda-publish-lose-changes-prompt": "Jika anda keluar tanpa menyiarkan terlebih dahulu, suntingan anda akan hilang.",
 	"wikilambda-code-editor-label": "Penyunting kod",
+	"wikilambda-tester-status-run": "Jalankan",
+	"wikilambda-tester-status-cancel": "Batalkan",
 	"wikilambda-metadata-labels-table-label": "Label",
 	"wikilambda-function-definition-add-other-label-languages-title": "Tambah label dalam bahasa lain",
 	"wikilambda-function-definition-inputs-item-input-placeholder": "Contohnya, Celsius",
@@ -20,5 +23,6 @@
 	"wikilambda-function-viewer-aliases-show-language-button": "Tunjuk lebih bahasa",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Sorok senarai",
 	"wikilambda-function-viewer-names-show-languages-button": "Tunjuk nama dalam bahasa lain",
-	"wikilambda-chip-remove": "Buang butir"
+	"wikilambda-chip-remove": "Buang butir",
+	"wikilambda-tester-details": "Butiran"
 }

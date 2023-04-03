@@ -11,6 +11,7 @@
 	"wikilambda-cancel": "रद्द करें",
 	"wikilambda-confirm": "सुनिश्चित करें",
 	"wikilambda-function-are-you-sure-dialog-header": "क्या आप निश्चित हैं?",
+	"wikilambda-tester-status-cancel": "रद्द करें",
 	"wikilambda-function-implementation-name-label": "नाम",
 	"wikilambda-function-definition-inputs-label": "इनपुट",
 	"wikilambda-function-definition-input-item-type": "प्रकार",
@@ -24,5 +25,6 @@
 	"wikilambda-continue-editing": "संपादन जारी रखें",
 	"wikilambda-discard-edits": "संपादन रद्द करें",
 	"wikilambda-function-viewer-details-table-view-all": "सभी देखें",
-	"wikilambda-list-item-label": "आयटम"
+	"wikilambda-list-item-label": "आयटम",
+	"wikilambda-tester-details": "विवरण"
 }

@@ -39,6 +39,7 @@
 	"wikilambda-editor-tester-list-label": "Lëscht vun den Tester",
 	"wikilambda-tester-selector": "En Test eraussichen",
 	"wikilambda-tester-status-running": "Leeft...",
+	"wikilambda-tester-status-cancel": "Ofbriechen",
 	"wikilambda-tester-results-title": "Test Resultater",
 	"wikilambda-tester-results-current-implementation": "Aktuell Ëmsetzung",
 	"wikilambda-tester-run-testers": "All Tester maachen",
@@ -82,5 +83,6 @@
 	"wikilambda-zerror": "ZError vum Typ $1",
 	"wikilambda-optional": "fakultativ",
 	"wikilambda-continue-editing": "Virufuere mat Änneren",
-	"wikilambda-chip-remove": "Element ewechhuelen"
+	"wikilambda-chip-remove": "Element ewechhuelen",
+	"wikilambda-tester-details": "Detailer"
 }

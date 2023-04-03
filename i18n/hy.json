@@ -18,6 +18,7 @@
 	"wikilambda-publishchanges": "Հիշել փոփոխությունները",
 	"wikilambda-savechanges": "Պահպանել փոփոխությունները",
 	"wikilambda-functioncall-metadata-dialog-header": "Մետատվյալներ",
+	"wikilambda-tester-status-cancel": "Չեղարկել",
 	"wikilambda-function-implementation-language-label": "Լեզու",
 	"wikilambda-function-definition-footer-label": "Խմբագրել մեկնաբանությունը",
 	"wikilambda-function-definition-inputs-item-add-input-button": "Ավելացրել ևս մեկ մուտքագրում",
@@ -28,5 +29,6 @@
 	"wikilambda-function-viewer-details-table-view-less": "Ցուցադրել ավելի սեղմ",
 	"wikilambda-add-list-item-button": "Ավելացնել տարր",
 	"wikilambda-list-item-label": "Տարր",
-	"wikilambda-add-list-item": "Ավելացնել տարր"
+	"wikilambda-add-list-item": "Ավելացնել տարր",
+	"wikilambda-tester-details": "Մանրամասներ"
 }
