@@ -9,12 +9,15 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Permissions\PermissionManager;
 use PoolCounterWorkViaCallback;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -43,13 +46,20 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	/** @var LoggerInterface */
 	protected $logger;
 
+	/** @var PermissionManager */
+	protected $permissionManager;
+
 	protected function setUp() {
 		$this->setLogger( LoggerFactory::getInstance( 'WikiLambda' ) );
 
-		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'WikiLambda' );
+		$services = MediaWikiServices::getInstance();
+
+		$config = $services->getConfigFactory()->makeConfig( 'WikiLambda' );
 		$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
 		$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
 		$this->orchestrator = new OrchestratorRequest( $client );
+
+		$this->permissionManager = $services->getPermissionManager();
 	}
 
 	/**
@@ -90,6 +100,11 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 				'validate' => $validate,
 			]
 		);
+
+		if ( !$this->permissionManager->userHasRight( $this->getContext()->getUser(), 'wikilambda-execute' ) ) {
+			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EVALUATE, [] );
+			$this->dieWithZError( $zError );
+		}
 
 		$queryArguments = [
 			'zobject' => $zObject->getSerialized(),
