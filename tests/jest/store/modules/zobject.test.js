@@ -2073,7 +2073,7 @@ describe( 'zobject Vuex module', function () {
 					) ).toEqual( {
 						Z2K2: {
 							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
-							Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1003' },
+							Z11K1: { Z1K1: 'Z9', Z9K1: '' },
 							Z11K2: { Z1K1: 'Z6', Z6K1: '' }
 						}
 					} );
@@ -2123,7 +2123,7 @@ describe( 'zobject Vuex module', function () {
 						context.getters
 					) ).toEqual( {
 						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z11' },
-						Z11K1: { Z1K1: 'Z9', Z9K1: 'Z1003' },
+						Z11K1: { Z1K1: 'Z9', Z9K1: '' },
 						Z11K2: { Z1K1: 'Z6', Z6K1: '' }
 					} );
 				} );
@@ -2266,7 +2266,7 @@ describe( 'zobject Vuex module', function () {
 						context.getters
 					) ).toEqual( {
 						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z31' },
-						Z31K1: { Z1K1: 'Z9', Z9K1: 'Z1003' },
+						Z31K1: { Z1K1: 'Z9', Z9K1: '' },
 						Z31K2: [ { Z1K1: 'Z9', Z9K1: 'Z6' }, { Z1K1: 'Z6', Z6K1: '' } ]
 					} );
 				} );

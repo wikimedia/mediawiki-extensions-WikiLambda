@@ -196,7 +196,7 @@ module.exports = exports = {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRING );
 				// Initialize monolingual string
-				const lang = payload.lang || getters.getUserZlangZID;
+				const lang = payload.lang || '';
 				value[ Constants.Z_MONOLINGUALSTRING_VALUE ] = payload.value || '';
 				value[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ] = lang;
 				return value;
@@ -230,7 +230,7 @@ module.exports = exports = {
 				// Get scaffolding
 				const value = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRINGSET );
 				// Initialize language and first string
-				const lang = payload.lang || getters.getUserZlangZID;
+				const lang = payload.lang || '';
 				value[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ][ Constants.Z_REFERENCE_ID ] = lang;
 				value[ Constants.Z_MONOLINGUALSTRINGSET_VALUE ].push( payload.value || '' );
 				return value;
