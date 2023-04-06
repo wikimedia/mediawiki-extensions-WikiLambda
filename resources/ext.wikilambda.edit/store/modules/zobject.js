@@ -446,7 +446,7 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns the terminal value of Z11K2
+		 * Returns the terminal value of Z11K1
 		 *
 		 * @param {Object} state
 		 * @param {Object} getters
