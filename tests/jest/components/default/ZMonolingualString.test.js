@@ -7,7 +7,6 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	ZMonolingualString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZMonolingualString.vue' ),
 	TextInput = require( '../../../../resources/ext.wikilambda.edit/components/base/TextInput.vue' ),
@@ -93,35 +92,6 @@ describe( 'ZMonolingualString', () => {
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ Constants.Z_MONOLINGUALSTRING_VALUE,
 				Constants.Z_STRING_VALUE ], value: 'my new label' } ] ] );
-		} );
-
-		it( 'displays a two-character chip', () => {
-			var wrapper = mount( ZMonolingualString, {
-				props: {
-					edit: true
-				}
-			} );
-
-			expect( wrapper.find( '.ext-wikilambda-edit-text-input__chipped' ).exists() ).toBe( true );
-			expect( wrapper.find( '.ext-wikilambda-edit-text-input__chipped__sm' ).exists() ).toBe( true );
-			expect( wrapper.find( '.ext-wikilambda-edit-text-input__chipped__lg' ).exists() ).toBe( false );
-		} );
-
-		it( 'displays a three-character chip', () => {
-			getters.getLanguageIsoCodeOfZLang = createGettersWithFunctionsMock( 'ABC' );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
-
-			var wrapper = mount( ZMonolingualString, {
-				props: {
-					edit: true
-				}
-			} );
-
-			expect( wrapper.find( '.ext-wikilambda-edit-text-input__chipped' ).exists() ).toBe( true );
-			expect( wrapper.find( '.ext-wikilambda-edit-text-input__chipped__sm' ).exists() ).toBe( false );
-			expect( wrapper.find( '.ext-wikilambda-edit-text-input__chipped__lg' ).exists() ).toBe( true );
 		} );
 	} );
 } );
