@@ -118,23 +118,25 @@ module.exports = exports = {
 					} );
 				}
 
-				// Literal type:
-				// FIXME (T330635): Add both options
-				if ( Constants.RESOLVER_TYPES.indexOf( this.value ) < 0 ) {
-					// If literal is selected, show its label
+				// Literal type: if type is unbound and selected type is not a resolver,
+				// add selected literal type
+				if (
+					( this.expectedType === Constants.Z_OBJECT ) &&
+					( Constants.RESOLVER_TYPES.indexOf( this.value ) < 0 )
+				) {
 					options.push( {
 						label: this.valueLabel,
 						value: this.value,
 						icon: icons.cdxIconLiteral
 					} );
-				} else {
-					// Else, show the bound type if any
-					options.push( {
-						label: this.getLabel( this.expectedType ),
-						value: this.expectedType,
-						icon: icons.cdxIconLiteral
-					} );
 				}
+
+				// Literal type: add expected literal type
+				options.push( {
+					label: this.getLabel( this.expectedType ),
+					value: this.expectedType,
+					icon: icons.cdxIconLiteral
+				} );
 
 				return options;
 			},

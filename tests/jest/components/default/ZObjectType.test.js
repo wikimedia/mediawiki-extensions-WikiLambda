@@ -125,10 +125,11 @@ describe( 'ZReference', () => {
 		} );
 
 		describe( 'it displays the correct options in the selector dropdown', () => {
-			it( 'if a literal type is selected', async () => {
+			it( 'if a literal type is selected and its type is bound', async () => {
 				var wrapper = shallowMount( ZObjectType, {
 					props: {
-						edit: true
+						edit: true,
+						expectedType: Constants.Z_ARGUMENT
 					}
 				} );
 
@@ -144,6 +145,29 @@ describe( 'ZReference', () => {
 				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 2 ].value ).toBe( 'Z17' );
 			} );
 
+			it( 'if a literal type is selected and its type is unbound', async () => {
+				var wrapper = shallowMount( ZObjectType, {
+					props: {
+						edit: true,
+						expectedType: Constants.Z_OBJECT
+					}
+				} );
+
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems.length ).toBe( 4 );
+
+				// Resolver type: Z-Reference
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 0 ].value ).toBe( 'Z9' );
+
+				// Resolver type: Z Function Call
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 1 ].value ).toBe( 'Z7' );
+
+				// Resolver type: Selected value type
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 2 ].value ).toBe( 'Z17' );
+
+				// Resolver type: Object type
+				expect( wrapper.findComponent( { name: 'wl-select' } ).vm.menuItems[ 3 ].value ).toBe( 'Z1' );
+			} );
+
 			it( 'if the type selector is inside a composition', async () => {
 				getters.isInsideComposition = createGettersWithFunctionsMock( true );
 
@@ -154,7 +178,7 @@ describe( 'ZReference', () => {
 				var wrapper = shallowMount( ZObjectType, {
 					props: {
 						edit: true,
-						expectedType: Constants.Z_STRING
+						expectedType: Constants.Z_ARGUMENT
 					}
 				} );
 
