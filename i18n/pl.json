@@ -5,6 +5,7 @@
 			"Mruczek",
 			"Msz2001",
 			"Rail",
+			"WaldiSt",
 			"Woytecr"
 		]
 	},
@@ -131,8 +132,10 @@
 	"wikilambda-tester-selector": "Wybierz tester",
 	"wikilambda-tester-none-found": "Nie znaleziono testerów.",
 	"wikilambda-tester-create-new": "Utwórz nowy test",
-	"wikilambda-tester-status-pending": "OCZEKUJE...",
-	"wikilambda-tester-status-running": "TRWA...",
+	"wikilambda-tester-status-pending": "Oczekuje...",
+	"wikilambda-tester-status-running": "Uruchomiony...",
+	"wikilambda-tester-status-run": "Uruchom",
+	"wikilambda-tester-status-cancel": "Anuluj",
 	"wikilambda-tester-status-passed": "PRZESZEDŁ",
 	"wikilambda-tester-status-failed": "NIE POWIÓDŁ SIĘ",
 	"wikilambda-tester-results-title": "Wyniki testowania",
@@ -212,5 +215,7 @@
 	"wikilambda-function-viewer-aliases-show-language-button": "Pokaż więcej języków",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Ukryj listę",
 	"wikilambda-function-viewer-names-show-languages-button": "Pokaż nazwę w innych językach",
-	"wikilambda-function-viewer-details-input-number": "Wejście $1"
+	"wikilambda-function-viewer-details-input-number": "Wejście $1",
+	"wikilambda-list-type-change-publish-dialog-warning": "Zmieniłeś typ co najmniej jednej listy. Podczas publikowania wszystkie elementy listy zostaną usunięte",
+	"wikilambda-tester-details": "Szczegóły"
 }

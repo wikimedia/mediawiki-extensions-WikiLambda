@@ -37,6 +37,7 @@
 	"wikilambda-tester-create-new": "ایجاد آزمون تازه",
 	"wikilambda-tester-status-pending": "در انتظار...",
 	"wikilambda-tester-status-running": "در حال اجرا...",
+	"wikilambda-tester-status-cancel": "لغو",
 	"wikilambda-tester-status-passed": "موفق",
 	"wikilambda-tester-status-failed": "ناموفق",
 	"wikilambda-tester-results-title": "نتایج آزمایش",
@@ -61,5 +62,6 @@
 	"wikilambda-editor-input-type-placeholder": "نوع ورودی",
 	"wikilambda-editor-input-label-placeholder": "نام این ورودی چیست؟",
 	"wikilambda-editor-input-default-label": "ورودی",
-	"wikilambda-editor-output-title": "خروجی"
+	"wikilambda-editor-output-title": "خروجی",
+	"wikilambda-tester-details": "جزئیات"
 }
