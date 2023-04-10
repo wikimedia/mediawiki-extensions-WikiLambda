@@ -723,7 +723,7 @@ class ZObjectUtils {
 	 */
 	public static function getZObjectReferenceFromKey( string $input ): string {
 		preg_match( "/^\s*(Z[1-9]\d*)?(K\d+)\s*$/", $input, $matches );
-		return $matches[1];
+		return $matches[1] ?? '';
 	}
 
 	/**
