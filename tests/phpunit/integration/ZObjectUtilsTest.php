@@ -1063,6 +1063,9 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 
 	public function provideGetZObjectReferenceFromKey() {
 		return [
+			'empty string' => [ '', '' ],
+			'non-key' => [ 'Hello!', '' ],
+
 			'local key' => [ 'K1', '' ],
 
 			'Simple global key' => [ 'Z1K1', 'Z1' ],
