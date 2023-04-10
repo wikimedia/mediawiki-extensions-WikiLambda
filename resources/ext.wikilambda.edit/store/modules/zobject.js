@@ -2458,12 +2458,16 @@ module.exports = exports = {
 		 */
 		setZFunctionCallArguments: function ( context, payload ) {
 			const allActions = [];
+			let newArgs = [];
+			let newKeys = [];
 
 			// 1. Get new argument definitions from payload.functionZid
-			const newArgs = context.getters.getZFunctionArgumentDeclarations( payload.functionZid );
-			const newKeys = newArgs.map( ( arg ) => {
-				return arg[ Constants.Z_ARGUMENT_KEY ];
-			} );
+			if ( payload.functionZid ) {
+				newArgs = context.getters.getZFunctionArgumentDeclarations( payload.functionZid );
+				newKeys = newArgs.map( ( arg ) => {
+					return arg[ Constants.Z_ARGUMENT_KEY ];
+				} );
+			}
 
 			// 2. Get function call arguments from parentId
 			const oldArgs = context.getters.getZFunctionCallArguments( payload.parentId );

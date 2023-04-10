@@ -578,10 +578,16 @@ module.exports = exports = {
 		 * up.
 		 *
 		 * @param {Object} payload
+		 * @param {Object} payload.value object to set as value for this key-value
 		 * @param {Object} payload.keyPath sequence of keys till the value to edit
 		 * @param {Object | Array | string} payload.value new value
 		 */
 		setValue: function ( payload ) {
+			// If value is null or undefined, do nothing
+			if ( payload.value === null || payload.value === undefined ) {
+				return;
+			}
+
 			// if the type of a typed list changed, notify the parent to take action
 			if ( this.isKeyTypedListType( this.parentKey ) || this.isKeyTypedListType( this.key ) ) {
 				this.$emit( 'change-event', payload );

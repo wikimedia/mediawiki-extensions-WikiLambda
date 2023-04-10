@@ -1243,7 +1243,7 @@ describe( 'zobject Vuex module', function () {
 	// TODO (T328428): Add tests for new actions:
 	// * [x] injectZObjectFromRowId
 	// * [x] injectKeyValueFromRowId
-	// * [ ] setZFunctionCallArguments
+	// * [x] setZFunctionCallArguments
 	// * [ ] setValueByRowIdAndPath
 	// * [ ] setValueByRowId
 	// * [ ] removeItemFromTypedList
@@ -3610,6 +3610,24 @@ describe( 'zobject Vuex module', function () {
 							{ zobjectModule: context.state },
 							context.getters );
 				} );
+			} );
+
+			it( 'unsets the available args and sets none if functionId is null or undefined', function () {
+				const expected = [
+					{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+					{ id: 1, key: 'Z1K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+					{ id: 2, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 1 },
+					{ id: 3, key: 'Z9K1', value: Constants.Z_FUNCTION_CALL, parent: 1 },
+					{ id: 4, key: 'Z7K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+					{ id: 5, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 4 },
+					// Function Zid:
+					{ id: 6, key: 'Z9K1', value: Constants.Z_TYPED_LIST, parent: 4 }
+				];
+				zobjectModule.actions.setZFunctionCallArguments( context, {
+					parentId: 0,
+					functionZid: null
+				} );
+				expect( context.state.zobject ).toEqual( expected );
 			} );
 
 			it( 'sets one function argument for the function Typed list', function () {
