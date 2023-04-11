@@ -12,17 +12,13 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
 use ApiTestCase;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiHealthCheck
+ * @covers \MediaWiki\Extension\WikiLambda\API\ApiHealthCheck
+ * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase
  * @group API
  * @group Standalone
  */
 class ApiHealthCheckTest extends ApiTestCase {
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiHealthCheck::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiHealthCheck::run
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiHealthCheck::runOneCheck
-	 * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase::setUp
-	 */
+
 	public function testExecuteSuccessfulViaBetaCluster() {
 		$result = [];
 		$orchestrationResult = [];

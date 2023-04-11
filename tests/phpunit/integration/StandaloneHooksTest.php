@@ -22,15 +22,12 @@ use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\SelectQueryBuilder;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Hooks
+ * @covers \MediaWiki\Extension\WikiLambda\Hooks
  * @group Database
  * @group Standalone
  */
 class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers ::createInitialContent
-	 */
 	public function testCreateInitialContent_called() {
 		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions/';
 		$zidsToLoad = array_filter(
@@ -66,10 +63,6 @@ class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( [], $missingLanguages, 'WikiLambda has a ZObject for each language MediaWiki supports' );
 	}
 
-	/**
-	 * @covers ::createInitialContent
-	 * @covers ::insertContentObject
-	 */
 	public function testCreateInitialContent_inserted() {
 		$updater = DatabaseUpdater::newForDB( $this->db );
 		HooksDataPathMock::createInitialContent( $updater );
@@ -110,9 +103,6 @@ class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( json_encode( $zidsToLoad ), json_encode( $loadedZids ) );
 	}
 
-	/**
-	 * @covers ::onMultiContentSave
-	 */
 	public function testOnMultiContentSave_nullEdit() {
 		// Insert ZTestType
 		$this->registerLangs( ZTestType::TEST_LANGS );
@@ -127,9 +117,6 @@ class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $nullEditStatus->hasMessage( 'edit-no-change' ) );
 	}
 
-	/**
-	 * @covers ::onMultiContentSave
-	 */
 	public function testOnMultiContentSave_unlabelled() {
 		// Insert ZTestType
 
@@ -189,9 +176,6 @@ EOT;
 		$this->assertTrue( $status->isOK() );
 	}
 
-	/**
-	 * @covers ::onMultiContentSave
-	 */
 	public function testOnMultiContentSave_clashingLabels_caught() {
 		// Insert ZTestType
 		$this->registerLangs( ZTestType::TEST_LANGS );
@@ -225,9 +209,6 @@ EOT;
 		$this->assertFalse( $secondTitle->exists( Title::READ_LATEST ) );
 	}
 
-	/**
-	 * @covers ::onMultiContentSave
-	 */
 	public function testOnMultiContentSave_alias() {
 		// Insert ZTestType
 		$this->registerLangs( ZTestType::TEST_LANGS );

@@ -27,17 +27,12 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZObject
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObject
  */
 class ZObjectTypesTest extends \MediaWikiUnitTestCase {
 
 	/**
 	 * @dataProvider provideZObjectTypes
-	 * @covers ::isBuiltin
-	 * @covers ::isTypeReference
-	 * @covers ::isTypeFunctionCall
-	 * @covers ::getZType
-	 * @covers ::getZTypeObject
 	 */
 	public function testIsCorrectZType( $input, $expectedType, $isBuiltin, $isTypeReference ) {
 		$this->assertSame( $isBuiltin, $input->isBuiltin() );

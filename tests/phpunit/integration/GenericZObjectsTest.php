@@ -18,7 +18,8 @@ use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectContent
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
  * @group Database
  */
 class GenericZObjectsTest extends WikiLambdaIntegrationTestCase {
@@ -255,8 +256,6 @@ EOT;
 
 	/**
 	 * This test proves that a self-referencing ZType and an on-wiki implementation of it can be created.
-	 *
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 */
 	public function testInstanceOfSelfReferencingType() {
 		$baseTypeTitleText = 'Z991';
@@ -353,8 +352,6 @@ EOT;
 
 	/**
 	 * This test inserts a ZLanguage with a label in the same language (self-reference)
-	 *
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 */
 	public function testInstanceOfSelfReferencingLang() {
 		$status = $this->insertZids( [ 'Z60' ] );
@@ -460,8 +457,6 @@ EOT;
 	/**
 	 * This test proves that a ZType with list (Z10) and type (Z4) keys and an implementation of it can be created.
 	 * TODO (T298133): Remove whenever we stop supporting Z10s
-	 *
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 */
 	public function testInstanceOfListUsingType() {
 		// Create ZListUsingType (Z890)

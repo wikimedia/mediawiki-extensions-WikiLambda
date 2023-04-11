@@ -17,18 +17,11 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap
  */
 class ZResponseEnvelopeTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::getDefinition
-	 * @covers ::getZType
-	 * @covers ::getZValue
-	 * @covers ::hasErrors
-	 * @covers ::isValid
-	 */
 	public function testCreation_constructor_working() {
 		$testResponse = new ZString( 'Hello!' );
 
@@ -42,17 +35,6 @@ class ZResponseEnvelopeTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( ZTypeRegistry::Z_UNIT, $testObject->getZMetadata()->{ ZTypeRegistry::Z_OBJECT_TYPE } );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::getDefinition
-	 * @covers ::getErrors
-	 * @covers ::getZMetadata
-	 * @covers ::getZType
-	 * @covers ::hasErrors
-	 * @covers ::isValid
-	 * @covers ::wrapInResponseMap
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap::getValueGivenKey
-	 */
 	public function testCreation_constructor_error() {
 		$testError = new ZError( 'Z507', new ZString( 'error message' ) );
 		$zMap = ZResponseEnvelope::wrapInResponseMap( 'errors', $testError );
@@ -73,14 +55,6 @@ class ZResponseEnvelopeTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $error->getZErrorType(), $testError->getZErrorType() );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::getDefinition
-	 * @covers ::getZType
-	 * @covers ::getZValue
-	 * @covers ::hasErrors
-	 * @covers ::isValid
-	 */
 	public function testCreation_factory_working() {
 		$stringZObject = <<<EOT
 {
@@ -100,15 +74,6 @@ EOT;
 		$this->assertSame( ZTypeRegistry::Z_VOID, $testObject->getZMetadata()->getZValue() );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::getDefinition
-	 * @covers ::getErrors
-	 * @covers ::getZMetadata
-	 * @covers ::getZType
-	 * @covers ::hasErrors
-	 * @covers ::isValid
-	 */
 	public function testCreation_factory_mapped_errors() {
 		$stringZObject = <<<EOT
 {

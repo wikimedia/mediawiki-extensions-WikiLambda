@@ -21,16 +21,13 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectFactory
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils
  * @group Database
  */
 class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 
 	/**
-	 * @covers ::create
-	 * @covers ::extractObjectType
-	 * @covers ::createChild
-	 * @covers ::createKeyValues
 	 * @dataProvider provideCreateValidInput
 	 */
 	public function testCreate_valid( $input, $zObjectClass ) {
@@ -52,10 +49,6 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @covers ::create
-	 * @covers ::extractObjectType
-	 * @covers ::createChild
-	 * @covers ::createKeyValues
 	 * @dataProvider provideCreateInvalidInput
 	 */
 	public function testCreate_invalid( $input, $zErrorType ) {
@@ -87,13 +80,6 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @covers ::createPersistentContent
-	 * @covers ::extractObjectType
-	 * @covers ::extractInnerObject
-	 * @covers ::create
-	 * @covers ::createChild
-	 * @covers ::createKeyValues
-	 * @covers ::trackSelfReference
 	 * @dataProvider provideCreatePersistentValidInput
 	 */
 	public function testCreatePersistent_valid( $input, $zObjectInnerClass, $dependencies = null ) {
@@ -163,13 +149,6 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @covers ::createPersistentContent
-	 * @covers ::extractObjectType
-	 * @covers ::extractInnerObject
-	 * @covers ::create
-	 * @covers ::createChild
-	 * @covers ::createKeyValues
-	 * @covers ::trackSelfReference
 	 * @dataProvider provideCreatePersistentInvalidInput
 	 */
 	public function testCreatePersistent_invalid( $input, $zErrorType ) {
@@ -227,8 +206,6 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @covers ::createChild
-	 * @covers ::createKeyValues
 	 * @dataProvider provideCreateChildValidInput
 	 */
 	public function testCreateChild_valid( $input, $zObjectClass, $dependencies = null ) {
@@ -266,8 +243,6 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @covers ::createChild
-	 * @covers ::createKeyValues
 	 * @dataProvider provideCreateChildInvalidInput
 	 */
 	public function testCreateChild_invalid( $input, $zErrorType ) {
@@ -303,11 +278,6 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @covers ::createCustom
-	 * @covers ::createChild
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isValidZObject
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isValidZObjectList
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isValidZObjectRecord
 	 * @dataProvider provideCreateCustomValidInput
 	 */
 	public function testCreateCustom_valid( $input, $dependencies = null ) {
@@ -325,11 +295,6 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @covers ::createCustom
-	 * @covers ::createChild
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isValidZObject
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isValidZObjectList
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isValidZObjectRecord
 	 * @dataProvider provideCreateCustomInvalidInput
 	 */
 	public function testCreateCustom_invalid( $input, $zErrorType ) {

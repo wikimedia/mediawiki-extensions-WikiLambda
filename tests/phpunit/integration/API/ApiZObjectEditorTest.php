@@ -19,7 +19,8 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Title\Title;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor
+ * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore
  * @group Database
  * @group API
  */
@@ -46,9 +47,6 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		$langs->register( self::ES, 'es' );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
-	 */
 	public function testCreateFailed_invalidJson() {
 		$data = '{ invalidJson ]';
 
@@ -64,7 +62,6 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 	/**
 	 * @dataProvider provideInvalidZObjects
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
 	 */
 	public function testCreateFailed_invalidZObject( $input ) {
 		// We don't need to test all validation errors here, we should do
@@ -89,9 +86,6 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		];
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
-	 */
 	public function testUpdateFailed_unmatchingZid() {
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z999",'
 			. ' "Z2K2": "string",'
@@ -108,9 +102,6 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
-	 */
 	public function testCreateFailed_labelClash() {
 		$sysopUser = $this->getTestSysop()->getUser();
 		$firstZid = $this->store->getNextAvailableZid();
@@ -133,10 +124,9 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	}
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
 	 * @group Broken
 	 *
-	 * FIXME (T309386): Opis doesn't detect failures that Ajv does with
+	 * TODO (T309386): Opis doesn't detect failures that Ajv does with
 	 * current schemata implementation of typed lists. When fixed, uncomment
 	 * this test.
 	 */
@@ -162,9 +152,6 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		] );
 	 }
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
-	 */
 	public function testUpdateFailed_invalidTitle() {
 		$invalidZid = 'ZID';
 		$data = '{ "Z1K1": "Z2", "Z2K1": "' . $invalidZid . '",'
@@ -184,10 +171,6 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore::createNewZObject
-	 */
 	public function testCreateFailed_invalidType() {
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z400",'
 			. ' "Z2K2": { '
@@ -210,10 +193,6 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore::createNewZObject
-	 */
 	public function testCreateSuccess() {
 		$newZid = $this->store->getNextAvailableZid();
 
@@ -232,9 +211,6 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		$this->assertEquals( $result[0]['wikilambda_edit']['page'], $newZid );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
-	 */
 	public function testCreateSuccess_missingSummary() {
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
 			. ' "Z2K2": "string",'
@@ -249,10 +225,6 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		$this->assertTrue( $result[0]['wikilambda_edit']['success'], 'should create a ZObject with no summary passed' );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectEditor::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore::updateZObject
-	 */
 	public function testUpdateSuccess() {
 		$sysopUser = $this->getTestSysop()->getUser();
 		$newZid = $this->store->getNextAvailableZid();

@@ -13,24 +13,16 @@ use FormatJson;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZQuote
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZQuote
  */
 class ZQuoteTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::getZValue
-	 * @covers ::isValid
-	 */
 	public function testConstructor() {
 		$testObject = new ZQuote( 'this is a quote' );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'this is a quote', $testObject->getZValue() );
 	}
 
-	/**
-	 * @covers ::getSerialized
-	 */
 	public function testGetSerialized() {
 		$testObject = new ZQuote( 'this is a quote' );
 		$this->assertSame(
@@ -39,11 +31,6 @@ class ZQuoteTest extends WikiLambdaIntegrationTestCase {
 		 );
 	}
 
-	/**
-	 * @covers ::getZType
-	 * @covers ::isBuiltIn
-	 * @covers ::getDefinition
-	 */
 	public function testGetZType() {
 		$testObject = new ZQuote( 'this is a quote' );
 

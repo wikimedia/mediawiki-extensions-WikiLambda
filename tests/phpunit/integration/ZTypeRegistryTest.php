@@ -17,26 +17,19 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Title\Title;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry
+ * @covers \MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry
+ * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContentHandler
  * @group Database
  */
 class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::singleton
-	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::__construct
-	 * @covers ::initialize
-	 * @covers ::register
-	 */
 	public function testSingleton() {
 		$registry = ZTypeRegistry::singleton();
 		$this->assertEquals( ZTypeRegistry::class, get_class( $registry ) );
 		$this->assertEquals( $registry, ZTypeRegistry::singleton() );
 	}
 
-	/**
-	 * @covers ::isZTypeBuiltIn
-	 */
 	public function testIsZTypeBuiltIn() {
 		$registry = ZTypeRegistry::singleton();
 
@@ -44,9 +37,6 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $registry->isZTypeBuiltIn( ZTypeRegistry::Z_OBJECT ), "'Z1' is defined as a built-in." );
 	}
 
-	/**
-	 * @covers ::getCachedZObjectKeys
-	 */
 	public function testGetCachedZObjectKeys() {
 		$registry = ZTypeRegistry::singleton();
 
@@ -56,10 +46,6 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->assertContains( 'Z1', $objectKeys, "'Z1' defined as a built-in." );
 	}
 
-	/**
-	 * @covers ::isZObjectKeyCached
-	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::isZidCached
-	 */
 	public function testIsZObjectKeyCached() {
 		$registry = ZTypeRegistry::singleton();
 
@@ -69,10 +55,6 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $registry->isZidCached( 'Z1' ), "'Z1' is defined as a built-in (upstream method)." );
 	}
 
-	/**
-	 * @covers ::isZObjectKeyKnown
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContentHandler::makeContent
-	 */
 	public function testIsZObjectKeyKnown() {
 		$this->registerLangs( ZTestType::TEST_LANGS );
 
@@ -98,9 +80,6 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::isZObjectKeyKnown
-	 */
 	public function testIsZObjectKeyKnown_rejectNonTypes() {
 		$this->registerLangs( ZTestType::TEST_LANGS );
 
@@ -120,9 +99,6 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::getCachedZObjectTypes
-	 */
 	public function testGetCachedZObjectTypes() {
 		$registry = ZTypeRegistry::singleton();
 
@@ -132,9 +108,6 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->assertContains( 'ZObject', $objectTypes, "'ZObject' defined as a built-in." );
 	}
 
-	/**
-	 * @covers ::isZObjectTypeCached
-	 */
 	public function testIsZObjectTypeCached() {
 		$registry = ZTypeRegistry::singleton();
 
@@ -144,8 +117,6 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * TODO: Once this method tests the database, these tests should be expanded to cover DB reads.
-	 *
-	 * @covers ::isZObjectTypeKnown
 	 */
 	public function testIsZObjectTypeKnown() {
 		$registry = ZTypeRegistry::singleton();
@@ -160,9 +131,6 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::getZObjectKeyFromType
-	 */
 	public function testGetZObjectKeyFromType() {
 		$registry = ZTypeRegistry::singleton();
 
@@ -180,9 +148,6 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::getZObjectTypeFromKey
-	 */
 	public function testGetZObjectTypeFromKey() {
 		$registry = ZTypeRegistry::singleton();
 
@@ -196,9 +161,6 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::register
-	 */
 	public function testRegisterTypeFailed_keyRegistered() {
 		$registry = ZTypeRegistry::singleton();
 
@@ -215,9 +177,6 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::register
-	 */
 	public function testRegisterTypeFailed_typeRegistered() {
 		$registry = ZTypeRegistry::singleton();
 
@@ -234,9 +193,6 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::register
-	 */
 	public function testRegisterType() {
 		$registry = ZTypeRegistry::singleton();
 
@@ -265,11 +221,6 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		$registry->unregister( $zid );
 	}
 
-	/**
-	 * @covers ::unregister
-	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::clear
-	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::clearAll
-	 */
 	public function testUnregister() {
 		$registry = ZTypeRegistry::singleton();
 
@@ -330,10 +281,6 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::unregisterZid
-	 * @covers ::unregister
-	 */
 	public function testUnregisterZid() {
 		$registry = ZTypeRegistry::singleton();
 
@@ -362,9 +309,6 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::isZObjectInstanceOfType
-	 */
 	public function testIsZObjectInstanceOfType() {
 		// Ensure that Z4/Type, Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
 		$this->insertZids( [ 'Z4', 'Z6', 'Z40', 'Z41' ] );
@@ -430,9 +374,6 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::isZObjectInstanceOfType
-	 */
 	public function testIsZObjectInstanceOfTyp_throws() {
 		// Ensure that Z4/Type, Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
 		$this->insertZids( [ 'Z4' ] );
@@ -448,10 +389,6 @@ class ZTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::isZFunctionBuiltIn
-	 * @covers ::getZFunctionBuiltInName
-	 */
 	public function testIsZFunctionBuiltIn() {
 		$registry = ZTypeRegistry::singleton();
 

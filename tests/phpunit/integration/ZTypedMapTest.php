@@ -19,20 +19,12 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedPair;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedMap
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
  * @group Database
  */
 class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::buildType
-	 * @covers ::getKeyType
-	 * @covers ::getValueType
-	 * @covers ::getList
-	 * @covers ::isValid
-	 * @covers ::getValueGivenKey
-	 */
 	public function testCreate_emptyMap_constructor() {
 		$testObject = new ZTypedMap(
 			ZTypedMap::buildType( 'Z6', 'Z40' )
@@ -55,16 +47,6 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( null, $testObject->getValueGivenKey( new ZString( 'Unknown key' ) ) );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::getDefinition
-	 * @covers ::getKeyType
-	 * @covers ::getValueType
-	 * @covers ::getList
-	 * @covers ::isValid
-	 * @covers ::getValueGivenKey
-	 */
 	public function testCreate_emptyMap() {
 		$typedMapStdObject = (object)[
 			'Z1K1' => (object)[ 'Z1K1' => 'Z7', 'Z7K1' => 'Z883', 'Z883K1' => 'Z6', 'Z883K2' => 'Z40' ],
@@ -88,15 +70,6 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( null, $testObject->getValueGivenKey( new ZString( 'Unknown key' ) ) );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::buildType
-	 * @covers ::getKeyType
-	 * @covers ::getValueType
-	 * @covers ::getList
-	 * @covers ::isValid
-	 * @covers ::getValueGivenKey
-	 */
 	public function testCreate_filledMap_constructor() {
 		// Ensure that Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
 		$this->insertZids( [ 'Z6', 'Z40', 'Z41' ] );
@@ -147,16 +120,6 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( null, $testObject->getValueGivenKey( new ZString( 'Unknown key' ) ) );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::getDefinition
-	 * @covers ::getKeyType
-	 * @covers ::getValueType
-	 * @covers ::getList
-	 * @covers ::isValid
-	 * @covers ::getValueGivenKey
-	 */
 	public function testCreate_filledMap() {
 		// Ensure that Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
 		$this->insertZids( [ 'Z6', 'Z40', 'Z41' ] );
@@ -220,14 +183,6 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * Note that we're only doing a constructor-based version of this test, because the manual
 	 * ZObject notation is such a pain to write out.
-	 *
-	 * @covers ::__construct
-	 * @covers ::buildType
-	 * @covers ::getKeyType
-	 * @covers ::getValueType
-	 * @covers ::getList
-	 * @covers ::isValid
-	 * @covers ::getValueGivenKey
 	 */
 	public function testCreate_filledMapTwoEntries_constructor() {
 		// Ensure that Z6/String, Z40/Boolean, and Z41/True and Z/42 False instances of Boolean are all available
@@ -297,15 +252,6 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( null, $testObject->getValueGivenKey( new ZString( 'Unknown key' ) ) );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::buildType
-	 * @covers ::getKeyType
-	 * @covers ::getValueType
-	 * @covers ::getList
-	 * @covers ::isValid
-	 * @covers ::getValueGivenKey
-	 */
 	public function testCreate_mismatchedMap_constructor() {
 		// Ensure that Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
 		$this->insertZids( [ 'Z6', 'Z40', 'Z41' ] );
@@ -355,16 +301,6 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( null, $testObject->getValueGivenKey( new ZString( 'Unknown key' ) ) );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::getDefinition
-	 * @covers ::getKeyType
-	 * @covers ::getValueType
-	 * @covers ::getList
-	 * @covers ::isValid
-	 * @covers ::getValueGivenKey
-	 */
 	public function testCreate_mismatchedMap() {
 		// Ensure that Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
 		$this->insertZids( [ 'Z6', 'Z40', 'Z41' ] );
@@ -425,15 +361,6 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @covers ::__construct
-	 * @covers ::buildType
-	 * @covers ::getKeyType
-	 * @covers ::getValueType
-	 * @covers ::getList
-	 * @covers ::isValid
-	 * @covers ::setValueForKey
-	 * @covers ::getValueGivenKey
-	 *
 	 * This test adds the use of setValueForKey.
 	 */
 	public function testSetValueForKey_emptyMap() {
@@ -512,15 +439,6 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @covers ::__construct
-	 * @covers ::buildType
-	 * @covers ::getKeyType
-	 * @covers ::getValueType
-	 * @covers ::getList
-	 * @covers ::isValid
-	 * @covers ::setValueForKey
-	 * @covers ::getValueGivenKey
-	 *
 	 * This test adds the use of setValueForKey, and also uses Z1 for valueType of the pair and map,
 	 * with map values of 2 different types.
 	 */
@@ -595,9 +513,6 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( null, $testObject->getValueGivenKey( new ZString( 'Unknown key' ) ) );
 	}
 
-	/**
-	 * @covers ::setValueForKey
-	 */
 	public function testSetValueForKey_invalidMap() {
 		$this->insertZids( [ 'Z1', 'Z6', 'Z40', 'Z41', 'Z42' ] );
 
@@ -611,9 +526,6 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 		$invalidObject->setValueForKey( new ZString( 'Testing1' ), new ZReference( 'Z42' ) );
 	}
 
-	/**
-	 * @covers ::setValueForKey
-	 */
 	public function testSetValueForKey_invalidKey() {
 		$this->insertZids( [ 'Z1', 'Z6', 'Z40', 'Z41', 'Z42' ] );
 
@@ -632,9 +544,6 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 		$testObject->setValueForKey( new ZQuote( 'Invalid key type!' ), $falseRef );
 	}
 
-	/**
-	 * @covers ::setValueForKey
-	 */
 	public function testSetValueForKey_invalidKeyReferenceOrFunctionCallPassesAnyway() {
 		$this->insertZids( [ 'Z1', 'Z6', 'Z40', 'Z41', 'Z42' ] );
 
@@ -659,9 +568,6 @@ class ZTypedMapTest extends WikiLambdaIntegrationTestCase {
 		$testObject->setValueForKey( $pairType, $falseRef );
 	}
 
-	/**
-	 * @covers ::setValueForKey
-	 */
 	public function testSetValueForKey_invalidValue() {
 		$this->insertZids( [ 'Z1', 'Z6', 'Z40', 'Z41', 'Z42' ] );
 

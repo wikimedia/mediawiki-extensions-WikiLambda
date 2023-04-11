@@ -13,7 +13,7 @@ use MediaWiki\Extension\WikiLambda\Validation\SchemataUtils;
 use MediaWiki\Extension\WikiLambda\Validation\ZObjectStructureValidator;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZErrorFactory
+ * @covers \MediaWiki\Extension\WikiLambda\ZErrorFactory
  * @group Database
  */
 class ZErrorFactoryTest extends WikiLambdaIntegrationTestCase {
@@ -24,7 +24,6 @@ class ZErrorFactoryTest extends WikiLambdaIntegrationTestCase {
 	private $genericErrors = [ 'Z500', 'Z524', 'Z526', 'Z502', 'Z509' ];
 
 	/**
-	 * @covers ::buildStructureValidationZError
 	 * @dataProvider provideNormalTestObjects
 	 */
 	public function testNormalFormErrors( $object, $errors, $phpErrors ) {
@@ -75,7 +74,6 @@ class ZErrorFactoryTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	/**
-	 * @covers ::buildStructureValidationZError
 	 * @dataProvider provideCanonicalTestObjects
 	 */
 	public function testCanonicalFormErrors( $object, $errors, $phpErrors = [] ) {

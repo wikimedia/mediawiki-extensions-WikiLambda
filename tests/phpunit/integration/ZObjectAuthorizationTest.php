@@ -18,7 +18,12 @@ use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Title\Title;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization
+ * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization
+ * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterInRange
+ * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterIsRunnable
+ * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterTypeChanged
+ * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterIsAttached
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore
  * @group Database
  */
 class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
@@ -36,17 +41,6 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideContentDiffs
-	 * @covers ::authorize
-	 * @covers ::getRequiredEditRights
-	 * @covers ::pathMatches
-	 * @covers ::opMatches
-	 * @covers ::filterMatches
-	 * @covers ::getRightsByOp
-	 * @covers ::getDiffOps
-	 * @covers ::getRulesByType
-	 * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterInRange::pass
-	 * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterIsRunnable::pass
-	 * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterTypeChanged::pass
 	 * @param string $zid
 	 * @param array $dependencies
 	 * @param array $oldValue
@@ -120,17 +114,6 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 		return $testData;
 	}
 
-	/**
-	 * @covers ::authorize
-	 * @covers ::getRequiredEditRights
-	 * @covers ::pathMatches
-	 * @covers ::opMatches
-	 * @covers ::filterMatches
-	 * @covers ::getRightsByOp
-	 * @covers ::getDiffOps
-	 * @covers ::getRulesByType
-	 * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectFilterIsAttached::pass
-	 */
 	public function testAttached() {
 		$user = $this->getTestUser()->getUser();
 		$functioneer = $this->getTestUser( [ "functioneer" ] )->getUser();
@@ -242,8 +225,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @dataProvider providePersistedEdits
-	 * @covers ::authorize
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore::createNewZObject
+	 *
 	 * @param array $dependencies
 	 * @param string $zid
 	 * @param array $newValue

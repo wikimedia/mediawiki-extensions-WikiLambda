@@ -13,29 +13,18 @@ use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Title\Title;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry
+ * @covers \MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry
+ * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry
  * @group Database
  */
 class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::singleton
-	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::__construct
-	 * @covers ::initialize
-	 * @covers ::singleton
-	 */
 	public function testSingleton() {
 		$registry = ZErrorTypeRegistry::singleton();
 		$this->assertEquals( ZErrorTypeRegistry::class, get_class( $registry ) );
 		$this->assertEquals( $registry, ZErrorTypeRegistry::singleton() );
 	}
 
-	/**
-	 * @covers ::register
-	 * @covers ::isZErrorTypeKnown
-	 * @covers ::isZErrorTypeCached
-	 * @covers ::unregister
-	 */
 	public function testCacheZErrorType() {
 		$builtinErrorType = 'Z501';
 		$customErrorType = 'Z5000';
@@ -64,10 +53,6 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::isZErrorTypeKnown
-	 * @covers ::isZErrorTypeCached
-	 */
 	public function testIsZErrorTypeKnown_typeNotFound() {
 		$registry = ZErrorTypeRegistry::singleton();
 		$errorType = 'Z5000';
@@ -78,10 +63,6 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::isZErrorTypeKnown
-	 * @covers ::isZErrorTypeCached
-	 */
 	public function testIsZErrorTypeKnown_typeNotValid() {
 		$registry = ZErrorTypeRegistry::singleton();
 		$invalidErrorType = 'Z6';
@@ -93,13 +74,6 @@ class ZErrorTypeRegistryTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::isZErrorTypeKnown
-	 * @covers ::isZErrorTypeCached
-	 * @covers ::getZErrorTypeLabel
-	 * @covers ::register
-	 * @covers ::unregister
-	 */
 	public function testIsZErrorTypeKnown_valid() {
 		$errorType = 'Z5000';
 		$errorContent = <<<EOT

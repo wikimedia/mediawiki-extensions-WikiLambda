@@ -15,7 +15,8 @@ use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Title\Title;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry
+ * @covers \MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry
+ * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry
  * @group Database
  */
 class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
@@ -28,29 +29,16 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->registry = ZLangRegistry::singleton();
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::singleton
-	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::__construct
-	 * @covers ::initialize
-	 */
 	public function testSingleton() {
 		$this->assertEquals( ZLangRegistry::class, get_class( $this->registry ) );
 		$this->assertEquals( $this->registry, ZLangRegistry::singleton() );
 	}
 
-	/**
-	 * @covers ::getLanguageCodeFromZid
-	 */
 	public function testGetLanguageCodeFromZid_registered() {
 		$code = $this->registry->getLanguageCodeFromZid( self::ZLANG['en'] );
 		$this->assertSame( 'en', $code );
 	}
 
-	/**
-	 * @covers ::getLanguageCodeFromZid
-	 * @covers ::fetchLanguageCodeFromZid
-	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::register
-	 */
 	public function testGetLanguageCodeFromZid_unregistered() {
 		// We make sure that the language is saved in the database but not cached
 		$this->registry->register( self::ZLANG['es'], 'es' );
@@ -61,20 +49,12 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'es', $code );
 	}
 
-	/**
-	 * @covers ::getLanguageCodeFromZid
-	 * @covers ::fetchLanguageCodeFromZid
-	 */
 	public function testGetLanguageCodeFromZid_notFound() {
 		$notFoundZid = 'Z999';
 		$this->expectException( ZErrorException::class );
 		$this->registry->getLanguageCodeFromZid( $notFoundZid );
 	}
 
-	/**
-	 * @covers ::getLanguageCodeFromZid
-	 * @covers ::fetchLanguageCodeFromZid
-	 */
 	public function testGetLanguageCodeFromZid_notValid() {
 		// We make sure that the invalid zid is saved in the database
 		$this->insertZids( [ 'Z60' ] );
@@ -84,23 +64,12 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->registry->getLanguageCodeFromZid( $notValidZid );
 	}
 
-	/**
-	 * @covers ::isLanguageKnownGivenCode
-	 * @covers ::getLanguageZidFromCode
-	 */
 	public function testGetLanguageZidFromCode_registered() {
 		$zid = $this->registry->getLanguageZidFromCode( 'en' );
 		$this->assertTrue( $this->registry->isLanguageKnownGivenCode( 'en' ) );
 		$this->assertSame( self::ZLANG['en'], $zid );
 	}
 
-	/**
-	 * @covers ::getLanguageZidFromCode
-	 * @covers ::fetchLanguageZidFromCode
-	 * @covers ::getLanguageCodeFromContent
-	 * @covers ::isLanguageKnownGivenCode
-	 * @covers \MediaWiki\Extension\WikiLambda\Registry\ZObjectRegistry::register
-	 */
 	public function testGetLanguageZidFromCode_unregistered() {
 		// We make sure that the language is saved in the database but not cached
 		$this->registry->register( self::ZLANG['zh'], 'zh' );
@@ -120,11 +89,6 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( self::ZLANG['zh'], $zid );
 	}
 
-	/**
-	 * @covers ::isLanguageKnownGivenCode
-	 * @covers ::getLanguageZidFromCode
-	 * @covers ::fetchLanguageZidFromCode
-	 */
 	public function testGetLanguageZidFromCode_notFound() {
 		$notFoundCode = 'foo';
 		$this->assertFalse( $this->registry->isLanguageKnownGivenCode( $notFoundCode ) );
@@ -137,9 +101,6 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->registry->getLanguageZidFromCode( $notFoundCode );
 	}
 
-	/**
-	 * @covers ::getLanguageCodeFromContent
-	 */
 	public function testGetLanguageCodeFromContent_found() {
 		$zid = self::ZLANG['fr'];
 		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions';
@@ -151,9 +112,6 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'fr', $code );
 	}
 
-	/**
-	 * @covers ::getLanguageCodeFromContent
-	 */
 	public function testGetLanguageCodeFromContent_notFound() {
 		$zid = 'Z60';
 		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions';
@@ -165,36 +123,22 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->assertFalse( $found );
 	}
 
-	/**
-	 * @covers ::isValidLanguageZid
-	 */
 	public function testIsValidLanguageZid() {
 		$isValid = $this->registry->isValidLanguageZid( 'Z1002' );
 		$this->assertTrue( $isValid );
 	}
 
-	/**
-	 * @covers ::isValidLanguageZid
-	 */
 	public function testIsValidLanguageZid_notValidRef() {
 		$isValid = $this->registry->isValidLanguageZid( 'invalidString' );
 		$this->assertFalse( $isValid );
 	}
 
-	/**
-	 * @covers ::isValidLanguageZid
-	 * @covers ::getLanguageCodeFromZid
-	 */
 	public function testIsValidLanguageZid_notValidLang() {
 		$unknownZid = 'Z888';
 		$isValid = $this->registry->isValidLanguageZid( $unknownZid );
 		$this->assertFalse( $isValid );
 	}
 
-	/**
-	 * @covers ::getLanguageZids
-	 * @covers ::getLanguageZidFromCode
-	 */
 	public function testGetLanguageZids() {
 		$this->registry->register( self::ZLANG['es'], 'es' );
 		$this->registry->register( self::ZLANG['fr'], 'fr' );
@@ -203,10 +147,6 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( [ self::ZLANG['en'], self::ZLANG['es'], self::ZLANG['fr'] ], $zids );
 	}
 
-	/**
-	 * @covers ::getLanguageZids
-	 * @covers ::getLanguageZidFromCode
-	 */
 	public function testGetLanguageZids_incomplete() {
 		$this->registry->register( self::ZLANG['es'], 'es' );
 		$this->registry->register( self::ZLANG['fr'], 'fr' );

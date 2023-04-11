@@ -12,14 +12,11 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use Parser;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ParserHooks
+ * @covers \MediaWiki\Extension\WikiLambda\ParserHooks
  * @group Database
  */
 class ParserHooksTest extends WikiLambdaIntegrationTestCase {
-	/**
-	 * @covers ::onParserFirstCallInit
-	 * @covers ::parserFunctionCallback
-	 */
+
 	public function testOnParserFirstCallInit() {
 		$parser = $this->createMock( Parser::class );
 		$parser->expects( $this->exactly( 1 ) )

@@ -20,19 +20,12 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 use MediaWiki\MediaWikiServices;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZType
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZType
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
  */
 class ZTypeTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZObject
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getInnerZObject
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
-	 */
 	public function testPersistentCreation() {
 		$services = MediaWikiServices::getInstance();
 		$this->registerLangs( [ 'fr' ] );
@@ -79,7 +72,6 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideIsValid
-	 * @covers ::isValid
 	 */
 	public function testIsValid( $inputIdentity, $inputKeys, $inputValidator, $expected ) {
 		$testObject = new ZType(
@@ -125,9 +117,6 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 		];
 	}
 
-	/**
-	 * @covers ::isValid
-	 */
 	public function testTypedListOfKeys() {
 		$typedListOfKeys = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z3" } }';
 		$typedList = ZObjectFactory::create( json_decode( $typedListOfKeys ) );
@@ -144,7 +133,7 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertTrue( $testObject->isValid() );
 
-		// FIXME (T298642) As soon as the canonical validator in function schemata can admit generic lists,
+		// TODO (T298642): As soon as the canonical validator in function schemata can admit generic lists,
 		// the following test should pass:
 		// $typeJson = '{"Z1K1":"Z4","Z4K1":"Z1234","Z4K2":{'
 		//  . '"Z1K1":{"Z1K1":"Z7","Z7K1":"Z881","Z881K1":"Z3"}},"Z4K3":"Z101"}';

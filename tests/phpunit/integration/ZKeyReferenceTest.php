@@ -12,24 +12,16 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZKeyReference;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZKeyReference
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZKeyReference
  */
 class ZKeyReferenceTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::getZValue
-	 * @covers ::isValid
-	 */
 	public function testConstructor() {
 		$testObject = new ZKeyReference( 'K1' );
 		$this->assertTrue( $testObject->isValid() );
 		$this->assertSame( 'K1', $testObject->getZValue() );
 	}
 
-	/**
-	 * @covers ::isValid
-	 */
 	public function testIsValid() {
 		$testObject = new ZKeyReference( 'K1' );
 		$this->assertTrue( $testObject->isValid() );
@@ -41,11 +33,6 @@ class ZKeyReferenceTest extends WikiLambdaIntegrationTestCase {
 		$this->assertFalse( $testObject->isValid() );
 	}
 
-	/**
-	 * @covers ::getZType
-	 * @covers ::isBuiltIn
-	 * @covers ::getDefinition
-	 */
 	public function testGetZType() {
 		$testObject = new ZKeyReference( 'K1' );
 

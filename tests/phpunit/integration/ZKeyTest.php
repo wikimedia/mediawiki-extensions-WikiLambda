@@ -19,19 +19,12 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZKey
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZKey
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
  */
 class ZKeyTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers ::getZType
-	 * @covers ::getKeyType
-	 * @covers ::getKeyId
-	 * @covers ::getKeyLabel
-	 * @covers ::getZValue
-	 * @covers ::isValid
-	 * @covers ::getDefinition
-	 */
 	public function testCreation_constructors() {
 		$testRef = new ZReference( 'Z6' );
 		$testKey = new ZString( 'Z6K1' );
@@ -49,16 +42,6 @@ class ZKeyTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $testObject->isValid() );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::getZType
-	 * @covers ::getKeyType
-	 * @covers ::getKeyId
-	 * @covers ::getKeyLabel
-	 * @covers ::getZValue
-	 * @covers ::isValid
-	 * @covers ::getDefinition
-	 */
 	public function testCreation_factory() {
 		$stringZObject = <<<EOT
 {
@@ -86,19 +69,6 @@ EOT;
 		$this->assertTrue( $testObject->isValid() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getInnerZObject
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
-	 * @covers ::isValid
-	 * @covers ::getKeyType
-	 * @covers ::getKeyId
-	 * @covers ::getKeyLabel
-	 */
 	public function testPersistentCreation_disallowed() {
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent( <<<EOT
@@ -148,7 +118,6 @@ EOT
 
 	/**
 	 * @dataProvider provideIsValid
-	 * @covers ::isValid
 	 */
 	public function testIsValid( $inputType, $inputIdentity, $inputLabel, $inputLangs, $expected ) {
 		if ( $inputLangs ) {

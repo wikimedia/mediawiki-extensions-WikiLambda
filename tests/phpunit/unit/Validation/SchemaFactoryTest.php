@@ -16,10 +16,11 @@ use MediaWiki\Extension\WikiLambda\Validation\YumYumYamlLoader;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * @covers \MediaWiki\Extension\WikiLambda\Validation\SchemaFactory
+ */
 final class SchemaFactoryTest extends TestCase {
-	/**
-	 * @covers MediaWiki\Extension\WikiLambda\Validation\SchemaFactory::getNormalFormFactory
-	 */
+
 	public function testNormal(): void {
 		$mockLoader = $this->createMock( YumYumYamlLoader::class );
 		$mockLoader->expects( $this->once() )->method( 'registerPath' )->with(
@@ -31,18 +32,12 @@ final class SchemaFactoryTest extends TestCase {
 		$this->assertInstanceOf( SchemaFactory::class, $factory );
 	}
 
-	/**
-	 * @covers MediaWiki\Extension\WikiLambda\Validation\SchemaFactory::getNormalFormFactory
-	 */
 	public function testSchema(): void {
 		$factory = SchemaFactory::getNormalFormFactory();
 		$schema = $factory->create( "Z3" );
 		$this->assertInstanceOf( SchemaWrapper::class, $schema );
 	}
 
-	/**
-	 * @covers MediaWiki\Extension\WikiLambda\Validation\SchemaFactory::getStandAloneFactory
-	 */
 	public function testStandAlone(): void {
 		$factory = SchemaFactory::getStandAloneFactory();
 		$yamlContents = "type: string";

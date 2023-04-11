@@ -12,13 +12,11 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer
+ * @covers \MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer
  */
 class ZObjectDifferTest extends WikiLambdaIntegrationTestCase {
 
 	/**
-	 * @covers ::__construct
-	 * @covers ::doDiff
 	 * @dataProvider provideDiffData
 	 */
 	public function testDiff( $oldValue, $newValue, $description, $expectedDiffs ) {

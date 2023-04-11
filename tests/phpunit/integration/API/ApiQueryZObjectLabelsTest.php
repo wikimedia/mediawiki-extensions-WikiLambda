@@ -13,7 +13,7 @@ use ApiTestCase;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels
+ * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels
  * @group Database
  * @group API
  */
@@ -112,10 +112,6 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 		];
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
-	 */
 	public function testNoResults() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -127,10 +123,6 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 		$this->assertEquals( [ 'batchcomplete' => true ], $result[0] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
-	 */
 	public function testSearchByType() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -150,10 +142,6 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 		$this->assertEquals( $expected, $result[0] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
-	 */
 	public function testSearchByReturnType() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -173,10 +161,6 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 		$this->assertEquals( $expected, $result[0] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
-	 */
 	public function testSearchByStrictReturnType() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -196,10 +180,6 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 		$this->assertEquals( $expected, $result[0] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
-	 */
 	public function testSearchByTypeAndReturnType() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -222,10 +202,6 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 		$this->assertEquals( $expected, $result[0] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
-	 */
 	public function testSearchByTypeAndStrictReturnType() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -249,9 +225,6 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 	}
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
-	 *
 	 * TODO: Test setContinueEnumParameter when numRows() > limit.
 	 */
 	public function testLimit() {
@@ -286,8 +259,6 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 	}
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
 	 */
 	public function testSearchByLanguageNoFallback() {
 		$result = $this->doApiRequest( [
@@ -313,8 +284,6 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 	}
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
 	 * @group Broken
 	 */
 	public function testSearchByLanguageNotNoFallback() {
@@ -343,8 +312,6 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 	}
 
 	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
 	 * @group Broken
 	 */
 	public function testSearchByLabelInexact() {
@@ -370,10 +337,6 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 		$this->assertEquals( $expected, $result[0] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
-	 */
 	public function testSearchByLabelExact() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -393,10 +356,6 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 		$this->assertEquals( $expected, $result[0] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjectLabels::run
-	 */
 	public function testContinue() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',

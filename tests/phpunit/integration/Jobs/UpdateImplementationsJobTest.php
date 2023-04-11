@@ -19,7 +19,8 @@ use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Title\Title;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob
+ * @covers \MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction
  * @group API
  * @group Database
  * @group medium
@@ -47,15 +48,6 @@ class UpdateImplementationsJobTest extends WikiLambdaIntegrationTestCase {
 		$this->insertBuiltinObjects( [ 'Z14', 'Z16', 'Z17', 'Z20', 'Z40', 'Z61', 'Z813', 'Z8130', 'Z8131', 'Z913' ] );
 	}
 
-	/**
-	 * @group API
-	 * @group Database
-	 * @group medium
-	 * @covers \MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob::run
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction::getImplementationZids
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction::getAssociatedZids
-	 */
 	public function testRun() {
 		$functionZid = 'Z813';
 		$targetTitle = Title::newFromText( $functionZid, NS_MAIN );

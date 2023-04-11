@@ -14,18 +14,14 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZFunction;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZReference
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
  * @group Database
  */
 class ZFunctionTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::getZValue
-	 * @covers ::getDefinition
-	 */
 	public function testCreation() {
 		$strFunction = '{"Z1K1":"Z8", "Z8K1":["Z17"], "Z8K2":"Z6", "Z8K3":["Z20"], "Z8K4":["Z14"], "Z8K5":"Z88888"}';
 		$zobject = ZObjectFactory::create( json_decode( $strFunction ) );
@@ -33,13 +29,6 @@ class ZFunctionTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $zobject->isValid() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::createPersistentContent
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::getZValue
-	 * @covers ::getDefinition
-	 */
 	public function testPersistentCreation() {
 		$strFunction = '{"Z1K1":"Z8", "Z8K1":["Z17"], "Z8K2":"Z6", "Z8K3":["Z20"], "Z8K4":["Z14"], "Z8K5":"Z88888"}';
 		$zobject = ZObjectFactory::createPersistentContent( json_decode( $strFunction ) );
@@ -50,9 +39,6 @@ class ZFunctionTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideTestNotValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::createChild
-	 * @covers ::__construct
-	 * @covers ::isValid
 	 */
 	public function testNotValid( $input ) {
 		// We use createChild so that the ZObjects don't get validated against schemata and raise Z502 validation errors
@@ -107,10 +93,6 @@ class ZFunctionTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideTestReturnType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::createChild
-	 * @covers ::getReturnType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall::getReturnType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZReference::getZValue
 	 */
 	public function testReturnType( $input, $returnType, $dependencies = [] ) {
 		$this->insertZids( $dependencies );
@@ -155,8 +137,6 @@ class ZFunctionTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideTestGetIdentity
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::createChild
-	 * @covers ::getIdentity
 	 */
 	public function testGetIdentity( $input, $identity ) {
 		$zobject = ZObjectFactory::createChild( json_decode( $input ) );

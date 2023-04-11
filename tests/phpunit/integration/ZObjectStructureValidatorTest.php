@@ -15,25 +15,17 @@ use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Validation\ZObjectStructureValidator
+ * @covers \MediaWiki\Extension\WikiLambda\Validation\ZObjectStructureValidator
+ * @covers \MediaWiki\Extension\WikiLambda\Validation\ValidationStatus
  */
 class ZObjectStructureValidatorTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers ::createCanonicalValidator
-	 */
 	public function testCanonical_validatorNotFound() {
 		$this->expectException( ZErrorException::class );
 		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_ZTYPE_NOT_FOUND );
 		$validator = ZObjectStructureValidator::createCanonicalValidator( "Z987654321" );
 	}
 
-	/**
-	 * @covers ::createCanonicalValidator
-	 * @covers ::validate
-	 * @covers MediaWiki\Extension\WikiLambda\Validation\ValidationStatus::isValid
-	 * @covers MediaWiki\Extension\WikiLambda\Validation\ValidationStatus::getErrors
-	 */
 	public function testCanonical_valid() {
 		$canonicalZ2 = '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z400" },'
 			. ' "Z2K2": "valid content", "Z2K3": { "Z1K1": "Z12", "Z12K1": ["Z11"] } }';
@@ -44,12 +36,6 @@ class ZObjectStructureValidatorTest extends WikiLambdaIntegrationTestCase {
 		$this->assertNull( $status->getErrors() );
 	}
 
-	/**
-	 * @covers ::createCanonicalValidator
-	 * @covers ::validate
-	 * @covers MediaWiki\Extension\WikiLambda\Validation\ValidationStatus::isValid
-	 * @covers MediaWiki\Extension\WikiLambda\Validation\ValidationStatus::getErrors
-	 */
 	public function testCanonical_invalid() {
 		$canonicalZ2 = '{ "Z1K1": "Z2", "Z2K1": "Z6", "Z2K2": "invalid content" }';
 		$validator = ZObjectStructureValidator::createCanonicalValidator( "Z2" );
@@ -59,21 +45,12 @@ class ZObjectStructureValidatorTest extends WikiLambdaIntegrationTestCase {
 		$this->assertInstanceOf( ZError::class, $status->getErrors() );
 	}
 
-	/**
-	 * @covers ::createNormalValidator
-	 */
 	public function testNormal_validatorNotFound() {
 		$this->expectException( ZErrorException::class );
 		$this->expectExceptionMessage( ZErrorTypeRegistry::Z_ERROR_ZTYPE_NOT_FOUND );
 		$validator = ZObjectStructureValidator::createNormalValidator( "Z987654321" );
 	}
 
-	/**
-	 * @covers ::createNormalValidator
-	 * @covers ::validate
-	 * @covers MediaWiki\Extension\WikiLambda\Validation\ValidationStatus::isValid
-	 * @covers MediaWiki\Extension\WikiLambda\Validation\ValidationStatus::getErrors
-	 */
 	public function testNormal_valid() {
 		$normalZ2 = '{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z2" },'
 			. '"Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0"},'
@@ -90,12 +67,6 @@ class ZObjectStructureValidatorTest extends WikiLambdaIntegrationTestCase {
 		$this->assertNull( $status->getErrors() );
 	}
 
-	/**
-	 * @covers ::createNormalValidator
-	 * @covers ::validate
-	 * @covers MediaWiki\Extension\WikiLambda\Validation\ValidationStatus::isValid
-	 * @covers MediaWiki\Extension\WikiLambda\Validation\ValidationStatus::getErrors
-	 */
 	public function testNormal_invalid() {
 		$normalZ2 = '{ "Z1K1": "Z2", "Z2K1": "Z6", "Z2K2": "invalid content" }';
 		$validator = ZObjectStructureValidator::createNormalValidator( "Z2" );

@@ -22,7 +22,10 @@ use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Title\Title;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiPerformTest
+ * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest
+ * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils
  * @group API
  * @group Database
  * @group Standalone
@@ -64,20 +67,6 @@ class ApiPerformTestTest extends ApiTestCase {
 
 	/**
 	 * @dataProvider provideExecuteSuccessfully
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::executeGenerator
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::getImplementationListEntry
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::getTesterObject
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::isFalse
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::run
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::maybeUpdateImplementationRanking
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction::getTesterZids
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction::getImplementationZids
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction::getAssociatedZids
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getZid
-	 * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase::executeFunctionCall
-	 * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase::setUp
 	 */
 	public function testExecuteSuccessfully(
 		$requestedFunction,
@@ -426,9 +415,6 @@ class ApiPerformTestTest extends ApiTestCase {
 		];
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::executeFunctionCall
-	 */
 	public function testExecuteFailure_noServer() {
 		$this->setMwGlobals( [
 			'wgWikiLambdaOrchestratorLocation' => 'https://wikifunctions-not-the-orchestrator.wmflabs.org'
@@ -449,9 +435,6 @@ class ApiPerformTestTest extends ApiTestCase {
 
 	/**
 	 * @dataProvider provideMaybeUpdateImplementationRanking
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::maybeUpdateImplementationRanking
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::getNumericMetadataValue
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiPerformTest::compareImplementationStats
 	 */
 	public function testMaybeUpdateImplementationRanking(
 		$testResults,

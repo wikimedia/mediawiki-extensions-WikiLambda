@@ -25,34 +25,24 @@ use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Title\Title;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZObject
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObject
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils
  * @group Database
  */
 class ZObjectTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers ::getValueByKey
-	 */
 	public function testGetValueByKey_stringValue() {
 		$testObject = ZObjectFactory::create( 'foo' );
 		$this->assertSame( 'Z6', $testObject->getZType() );
 		$this->assertSame( 'foo', $testObject->getZValue() );
 	}
 
-	/**
-	 * @covers ::getValueByKey
-	 */
 	public function testGetValueByKey_undefinedKey() {
 		$testObject = ZObjectFactory::create( 'foo' );
 		$this->assertNull( $testObject->getValueByKey( 'Z1K999' ) );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::getZType
-	 * @covers ::getDefinition
-	 * @covers ::isBuiltin
-	 */
 	public function testConstruct_builtinType() {
 		$testObject = (object)[
 			"Z1K1" => "Z6",
@@ -64,10 +54,6 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Z6', $testZObject->getZType() );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::getZType
-	 */
 	public function testConstruct_customType() {
 		// Create type Z111
 		$this->registerLangs( ZTestType::TEST_LANGS );
@@ -89,18 +75,6 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Z111', $testZObject->getZType() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::isTypeReference
-	 * @covers ::isTypeFunctionCall
-	 * @covers ::isBuiltin
-	 * @covers ::getZType
-	 * @covers ::getZTypeObject
-	 * @covers ::getDefinition
-	 * @covers ::getValueByKey
-	 */
 	public function testConstruct_persistedType() {
 		$this->insertZids( [ 'Z60' ] );
 
@@ -116,18 +90,6 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$this->assertInstanceOf( ZReference::class, $testObject->getZTypeObject() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::isTypeReference
-	 * @covers ::isTypeFunctionCall
-	 * @covers ::isBuiltin
-	 * @covers ::getZType
-	 * @covers ::getZTypeObject
-	 * @covers ::getDefinition
-	 * @covers ::getValueByKey
-	 */
 	public function testConstruct_functionCallType() {
 		$this->insertZids( [ 'Z17', 'Z882' ] );
 
@@ -148,9 +110,6 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$this->assertInstanceOf( ZFunctionCall::class, $testObject->getZTypeObject() );
 	}
 
-	/**
-	 * @covers ::getLinkedZObjects()
-	 */
 	public function test_getLinkedZObjects() {
 		// Create type Z111
 		$this->registerLangs( ZTestType::TEST_LANGS );
@@ -167,9 +126,6 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$this->assertContains( "Z111", $testZObject->getLinkedZObjects() );
 	}
 
-	/**
-	 * @covers ::__toString()
-	 */
 	public function test__toString() {
 		// Create type Z111
 		$this->registerLangs( ZTestType::TEST_LANGS );
@@ -202,14 +158,6 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'second demonstration key', $reserialisedObject->Z111K2 );
 	}
 
-	/**
-	 * @covers ::getHumanReadable()
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getRequiredZids
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::extractHumanReadableZObject
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfReference
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfGlobalKey
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfTypeKey
-	 */
 	public function test_getHumanReadable() {
 		// Insert all the ZIDs that we need in the DB to get their labels
 		$this->insertZids( [ "Z1", "Z11", "Z60", "Z1003" ] );
@@ -230,14 +178,6 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::getHumanReadable()
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getRequiredZids
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::extractHumanReadableZObject
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfReference
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfGlobalKey
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfTypeKey
-	 */
 	public function test_getHumanReadable_testType() {
 		// Insert all the ZIDs that we need in the DB to get their labels and key labels and translate Z111
 		$this->insertZids( [
@@ -269,13 +209,6 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::getHumanReadable()
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::extractHumanReadableZObject
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfReference
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfGlobalKey
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfTypeKey
-	 */
 	public function test_getHumanReadable_languages() {
 		// Insert all the ZIDs that we need in the DB to get their labels
 		$this->insertZids( [ "Z1", "Z11", "Z60", "Z1003" ] );
@@ -297,13 +230,6 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::getHumanReadable()
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::extractHumanReadableZObject
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfReference
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfGlobalKey
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfTypeKey
-	 */
 	public function test_getHumanReadable_nonTranslatableKeys() {
 		// Insert all the ZIDs that we need in the DB to get their labels and key labels and translate Z111
 		$this->insertZids(
@@ -373,16 +299,6 @@ EOT;
 		);
 	}
 
-	/**
-	 * @covers ::getHumanReadable()
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::extractHumanReadableZObject
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfReference
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfGlobalKey
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfLocalKey
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfTypeKey
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfFunctionArgument
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::getLabelOfErrorTypeKey
-	 */
 	public function test_getHumanReadable_errors() {
 		// Insert all the ZIDs that we need in the DB to get their labels
 		$this->insertZids(

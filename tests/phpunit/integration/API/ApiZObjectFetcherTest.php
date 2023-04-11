@@ -15,7 +15,8 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiZObjectFetcher
+ * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectFetcher
+ * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase
  * @group Database
  * @group API
  */
@@ -30,10 +31,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 		$this->tablesUsed[] = 'page';
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectFetcher::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase::dieWithZError
-	 */
 	public function testFailsWithMalformedTitle() {
 		$unnamable = 'nope; can\'t name it';
 
@@ -52,9 +49,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 		] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectFetcher::execute
-	 */
 	public function testFailsWithUnknownReference() {
 		$unknownZid = 'Z199999';
 		$this->assertFalse(
@@ -78,9 +72,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 		] );
 	}
 
-	/**
-	 * @coversNothing (only core param validation)
-	 */
 	public function testFailsWithEmptyZid() {
 		$this->setExpectedApiException( [ 'apierror-missingparam', 'zids' ] );
 		$this->doApiRequest( [
@@ -90,9 +81,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 		] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectFetcher::execute
-	 */
 	public function testSucceedsWithValidZids() {
 		// Insert necessary ZIDs
 		$dataPath = dirname( __DIR__, 4 ) . '/function-schemata/data/definitions/';
@@ -123,9 +111,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 		);
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectFetcher::execute
-	 */
 	public function testSucceedsWithZidAndRevision() {
 		// Insert necessary ZIDs
 		$dataPath = dirname( __DIR__, 4 ) . '/function-schemata/data/definitions/';
@@ -153,9 +138,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 		);
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectFetcher::execute
-	 */
 	public function testSilentlyEmptyWithMismatchedRevision() {
 		// Insert necessary ZIDs
 		$dataPath = dirname( __DIR__, 4 ) . '/function-schemata/data/definitions/';
@@ -177,9 +159,6 @@ class ApiZObjectFetcherTest extends ApiTestCase {
 		$this->assertNull( $result[0]["Z1"]["wikilambda_fetch"] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiZObjectFetcher::execute
-	 */
 	public function testFailsWithTwoZidsButOneRevision() {
 		// Insert necessary ZIDs
 		$dataPath = dirname( __DIR__, 4 ) . '/function-schemata/data/definitions/';

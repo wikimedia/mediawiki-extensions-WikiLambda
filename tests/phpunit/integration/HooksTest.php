@@ -16,13 +16,11 @@ use RequestContext;
 use SpecialRecentChanges;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\Hooks
+ * @covers \MediaWiki\Extension\WikiLambda\Hooks
  * @group Database
  */
 class HooksTest extends WikiLambdaIntegrationTestCase {
-	/**
-	 * @covers ::onMultiContentSave
-	 */
+
 	public function testOnMultiContentSave_otherNameSpace() {
 		$invalidTitleText = 'This is a title';
 
@@ -36,9 +34,6 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $invalidTitle->exists() );
 	}
 
-	/**
-	 * @covers ::onMultiContentSave
-	 */
 	public function testOnMultiContentSave_badTitle() {
 		$invalidTitleText = 'Bad page title';
 
@@ -53,9 +48,6 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 		$this->assertFalse( $invalidTitle->exists() );
 	}
 
-	/**
-	 * @covers ::onMultiContentSave
-	 */
 	public function testOnMultiContentSave_badContent() {
 		$invalidContent = '{"Z1K1": "Z3"}';
 
@@ -67,9 +59,6 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $invalidZIDStatus->hasMessage( 'wikilambda-invalidzobject' ) );
 	}
 
-	/**
-	 * @covers ::registerExtension
-	 */
 	public function testRegisterExtension() {
 		$zObjectTitle = Title::newFromText( 'Z1' );
 		$this->assertTrue( $zObjectTitle->isContentPage() );
@@ -87,9 +76,6 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 		$this->assertContains( 'wikilambda-create', $wgNamespaceProtection[NS_MAIN] );
 	}
 
-	/**
-	 * @covers ::onNamespaceIsMovable
-	 */
 	public function testOnNamespaceIsMovable() {
 		$zObjectTitle = Title::newFromText( 'Z1' );
 		$this->assertFalse( $zObjectTitle->isMovable() );
@@ -107,9 +93,6 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::onHtmlPageLinkRendererEnd
-	 */
 	public function testOnHtmlPageLinkRendererEnd_noDoubleEscape() {
 		$createdStatus = $this->editPage(
 			ZTestType::TEST_ZID, ZTestType::TEST_HTML_ESCAPE, 'Test html escape', NS_MAIN

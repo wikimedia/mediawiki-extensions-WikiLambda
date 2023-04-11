@@ -13,15 +13,13 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 use MediaWiki\Title\Title;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectFactory
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
  * @group Database
  */
 class OptionalKeysTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * This test proves that an on-wiki implementation can be made of a PHP-backed but non-built-in ZType.
-	 *
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
 	 */
 	public function testInstanceOfTypeWithOptionalKeys() {
 		// Create ZOptionalType (Z10101)

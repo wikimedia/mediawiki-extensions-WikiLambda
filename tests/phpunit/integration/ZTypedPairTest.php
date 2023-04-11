@@ -15,20 +15,12 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedPair;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedPair
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedPair
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
  * @group Database
  */
 class ZTypedPairTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::buildType
-	 * @covers ::getFirstType
-	 * @covers ::getFirstElement
-	 * @covers ::getSecondType
-	 * @covers ::getSecondElement
-	 * @covers ::isValid
-	 */
 	public function testCreate_emptyPair_constructor() {
 		$testObject = new ZTypedPair(
 			ZTypedPair::buildType( 'Z6', 'Z40' )
@@ -49,16 +41,6 @@ class ZTypedPairTest extends WikiLambdaIntegrationTestCase {
 		$this->assertNull( $testObject->getSecondElement() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::getDefinition
-	 * @covers ::getFirstType
-	 * @covers ::getFirstElement
-	 * @covers ::getSecondType
-	 * @covers ::getSecondElement
-	 * @covers ::isValid
-	 */
 	public function testCreate_emptyPair() {
 		$typedPairStdObject = (object)[
 			'Z1K1' => (object)[ 'Z1K1' => 'Z7', 'Z7K1' => 'Z882', 'Z882K1' => 'Z6', 'Z882K2' => 'Z40' ],
@@ -80,15 +62,6 @@ class ZTypedPairTest extends WikiLambdaIntegrationTestCase {
 		$this->assertNull( $testObject->getSecondElement() );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::buildType
-	 * @covers ::getFirstType
-	 * @covers ::getFirstElement
-	 * @covers ::getSecondType
-	 * @covers ::getSecondElement
-	 * @covers ::isValid
-	 */
 	public function testCreate_filledPair_constructor() {
 		// Ensure that Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
 		$this->insertZids( [ 'Z6', 'Z40', 'Z41' ] );
@@ -118,17 +91,6 @@ class ZTypedPairTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( "Z41", $secondElement->getZValue() );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::buildType
-	 * @covers ::getFirstType
-	 * @covers ::getFirstElement
-	 * @covers ::getSecondType
-	 * @covers ::getSecondElement
-	 * @covers ::setFirstElement
-	 * @covers ::setSecondElement
-	 * @covers ::isValid
-	 */
 	public function testElementSetters() {
 		// Ensure that Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
 		$this->insertZids( [ 'Z6', 'Z40', 'Z41', 'Z42' ] );
@@ -161,16 +123,6 @@ class ZTypedPairTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( "Z42", $secondElement->getZValue() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::getDefinition
-	 * @covers ::getFirstType
-	 * @covers ::getFirstElement
-	 * @covers ::getSecondType
-	 * @covers ::getSecondElement
-	 * @covers ::isValid
-	 */
 	public function testCreate_filledPair() {
 		// Ensure that Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
 		$this->insertZids( [ 'Z6', 'Z40', 'Z41' ] );
@@ -201,16 +153,6 @@ class ZTypedPairTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( "Z41", $secondElement->getZValue() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::getDefinition
-	 * @covers ::getFirstType
-	 * @covers ::getFirstElement
-	 * @covers ::getSecondType
-	 * @covers ::getSecondElement
-	 * @covers ::isValid
-	 */
 	public function testCreate_filledPairLocalKeyNames() {
 		// Ensure that Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
 		$this->insertZids( [ 'Z6', 'Z40', 'Z41' ] );
@@ -241,15 +183,6 @@ class ZTypedPairTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( "Z41", $secondElement->getZValue() );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::buildType
-	 * @covers ::getFirstType
-	 * @covers ::getFirstElement
-	 * @covers ::getSecondType
-	 * @covers ::getSecondElement
-	 * @covers ::isValid
-	 */
 	public function testCreate_mismatchedPair_constructor() {
 		// Ensure that Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
 		$this->insertZids( [ 'Z6', 'Z40', 'Z41' ] );
@@ -280,16 +213,6 @@ class ZTypedPairTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( "Failing", $secondElement->getZValue() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::getDefinition
-	 * @covers ::getFirstType
-	 * @covers ::getFirstElement
-	 * @covers ::getSecondType
-	 * @covers ::getSecondElement
-	 * @covers ::isValid
-	 */
 	public function testCreate_mismatchedPair() {
 		// Ensure that Z6/String, Z40/Boolean, and Z41/True instance of Boolean are all available
 		$this->insertZids( [ 'Z6', 'Z40', 'Z41' ] );

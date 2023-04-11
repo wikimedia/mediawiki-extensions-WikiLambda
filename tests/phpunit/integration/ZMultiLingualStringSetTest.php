@@ -19,20 +19,13 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualStringSet
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualStringSet
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
  */
 class ZMultiLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::getZType
-	 * @covers ::getZValue
-	 * @covers ::isLanguageProvidedValue
-	 * @covers ::getAliasesForLanguage
-	 * @covers ::getAliasesForLanguageCode
-	 * @covers ::isValid
-	 * @covers ::getDefinition
-	 */
 	public function testCreation() {
 		$this->registerLangs( [ 'es', 'de', 'fr' ] );
 
@@ -112,9 +105,6 @@ class ZMultiLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 */
 	public function testStaticCreation() {
 		$testObject = ZObjectFactory::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MULTILINGUALSTRINGSET,
@@ -133,9 +123,6 @@ class ZMultiLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Z32', $testObject->getZType() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 */
 	public function testStaticCreation_invalidNoValueKey() {
 		$this->expectException( ZErrorException::class );
 		$invalidObject = ZObjectFactory::create( (object)[
@@ -143,11 +130,6 @@ class ZMultiLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 		] );
 	}
 
-	/**
-	 * @covers ::setMonoLingualStringSet
-	 * @covers ::isLanguageProvidedValue
-	 * @covers ::isValid
-	 */
 	public function testModification() {
 		$this->registerLangs( [ 'fr', 'es' ] );
 
@@ -189,16 +171,6 @@ class ZMultiLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getInnerZObject
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
-	 */
 	public function testPersistentCreation() {
 		$this->registerLangs( [ 'fr' ] );
 

@@ -22,7 +22,7 @@ use stdClass;
 use Wikimedia\Rdbms\IResultWrapper;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjectStore
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore
  * @group Database
  */
 class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
@@ -38,20 +38,11 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore = WikiLambdaServices::getZObjectStore();
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::getNextAvailableZid
-	 */
 	public function testGetNextAvailableZid_first() {
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$this->assertEquals( 'Z10000', $zid );
 	}
 
-	/**
-	 * @covers ::createNewZObject
-	 * @covers ::fetchZObjectByTitle
-	 * @covers ::fetchAllZids
-	 */
 	public function testFetchZObjectByTitle_valid() {
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$sysopUser = $this->getTestSysop()->getUser();
@@ -80,9 +71,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( [ $zid ], $zids );
 	}
 
-	/**
-	 * @covers ::fetchZObjectByTitle
-	 */
 	public function testFetchZObjectByTitle_invalid() {
 		$invalidZid = 'Z0999';
 		$title = Title::newFromText( $invalidZid, NS_MAIN );
@@ -95,11 +83,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertNotContains( $invalidZid, $zids );
 	}
 
-	/**
-	 * @covers ::fetchBatchZObjects
-	 * @covers ::getNextAvailableZid
-	 * @covers ::fetchAllZids
-	 */
 	public function testFetchBatchZObjects() {
 		$sysopUser = $this->getTestSysop()->getUser();
 
@@ -146,7 +129,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideCreateNewZObject
-	 * @covers ::createNewZObject
 	 */
 	public function testCreateNewZObject( $input, $expected ) {
 		$sysopUser = $this->getTestSysop()->getUser();
@@ -188,9 +170,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		];
 	}
 
-	/**
-	 * @covers ::createNewZObject
-	 */
 	public function testCreateNewZObject_canonicalized() {
 		$sysopUser = $this->getTestSysop()->getUser();
 
@@ -213,10 +192,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertEquals( json_decode( $zobject->getText() ), json_decode( $savedZObject ) );
 	}
 
-	/**
-	 * @covers ::updateZObjectAsSystemUser
-	 * @covers ::fetchZObjectByTitle
-	 */
 	public function testUpdateZObjectAsSystemUser() {
 		$basicUser = $this->getTestUser()->getUser();
 
@@ -245,10 +220,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $status->isOK() );
 	}
 
-	/**
-	 * @covers ::updateZObject
-	 * @covers ::fetchZObjectByTitle
-	 */
 	public function testUpdateZObject() {
 		$sysopUser = $this->getTestSysop()->getUser();
 
@@ -282,9 +253,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertEquals( $zobject->getText(), $refetchedZObject->getText() );
 	}
 
-	/**
-	 * @covers ::updateZObject
-	 */
 	public function testUpdateZObject_nonTitle() {
 		$status = $this->zobjectStore->updateZObject(
 			'',
@@ -296,9 +264,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_INVALID_TITLE, $status->getErrors() );
 	}
 
-	/**
-	 * @covers ::updateZObject
-	 */
 	public function testUpdateZObject_nonContent() {
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$status = $this->zobjectStore->updateZObject(
@@ -311,9 +276,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_INVALID_JSON, $status->getErrors() );
 	}
 
-	/**
-	 * @covers ::updateZObject
-	 */
 	public function testUpdateZObject_badContent() {
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$status = $this->zobjectStore->updateZObject(
@@ -326,9 +288,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_SCHEMA_TYPE_MISMATCH, $status->getErrors() );
 	}
 
-	/**
-	 * @covers ::updateZObject
-	 */
 	public function testUpdateZObject_badZ2K2() {
 		$zid = $this->zobjectStore->getNextAvailableZid();
 		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
@@ -345,9 +304,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_UNMATCHING_ZID, $status->getErrors() );
 	}
 
-	/**
-	 * @covers ::updateZObject
-	 */
 	public function testUpdateZObject_editProhibited_loggedOut() {
 		$loggedOutUser = $this->getServiceContainer()->getUserFactory()->newAnonymous( '127.0.0.1' );
 
@@ -367,9 +323,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT, $status->getErrors() );
 	}
 
-	/**
-	 * @covers ::updateZObject
-	 */
 	public function testUpdateZObject_editProhibited_basicUserMakingPreDefined() {
 		$zid = 'Z400';
 		$input = '{ "Z1K1": "Z2", "Z2K1": "' . $zid . '",'
@@ -387,10 +340,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT, $status->getErrors() );
 	}
 
-	/**
-	 * @covers ::createNewZObject
-	 * @covers ::updateZObject
-	 */
 	public function testUpdateZObject_editProhibited_unauthedUserMakingType() {
 		// For the purpose of this test, deny logged-in users the ability to create a Z4/Type
 		global $wgGroupPermissions;
@@ -420,10 +369,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT, $status->getErrors() );
 	}
 
-	/**
-	 * @covers ::createNewZObject
-	 * @covers ::updateZObject
-	 */
 	public function testUpdateZObject_editProhibited_unauthedUserMakingFunction() {
 		// For the purpose of this test, deny logged-in users the ability to create a Z8/Function
 		global $wgGroupPermissions;
@@ -451,10 +396,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT, $status->getErrors() );
 	}
 
-	/**
-	 * @covers ::createNewZObject
-	 * @covers ::updateZObject
-	 */
 	public function testUpdateZObject_editProhibited_unauthedUserMakingImplementation() {
 		// For the purpose of this test, deny logged-in users the ability to create a Z14/Implementation
 		global $wgGroupPermissions;
@@ -482,10 +423,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT, $status->getErrors() );
 	}
 
-	/**
-	 * @covers ::createNewZObject
-	 * @covers ::updateZObject
-	 */
 	public function testUpdateZObject_editProhibited_unauthedUserMakingTester() {
 		// For the purpose of this test, deny logged-in users the ability to create a Z20/Tester
 		global $wgGroupPermissions;
@@ -514,10 +451,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT, $status->getErrors() );
 	}
 
-	/**
-	 * @covers ::createNewZObject
-	 * @covers ::updateZObject
-	 */
 	public function testUpdateZObject_editProhibited_unauthedUserMakingLanguage() {
 		// Language isn't a guaranteed type by our testing system, so inject it just for this test.
 		$this->insertZids( [ 'Z60' ] );
@@ -539,10 +472,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT, $status->getErrors() );
 	}
 
-	/**
-	 * @covers ::createNewZObject
-	 * @covers ::updateZObject
-	 */
 	public function testUpdateZObject_editProhibited_unauthedUserMakingProgramming() {
 		// Programming language isn't a guaranteed type by our testing system, so inject it just for this test.
 		$this->insertZids( [ 'Z61' ] );
@@ -563,9 +492,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringContainsString( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EDIT, $status->getErrors() );
 	}
 
-	/**
-	 * @covers ::insertZObjectLabels
-	 */
 	public function testInsertZObjectLabels() {
 		$labels = [
 			self::ZLANG['en'] => 'label',
@@ -591,10 +517,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertCount( 3, $conflicts );
 	}
 
-	/**
-	 * @covers ::insertZObjectLabels
-	 * @covers ::findZObjectLabelConflicts
-	 */
 	public function testFindZObjectLabelConflicts() {
 		$labels = [
 			self::ZLANG['en'] => 'label',
@@ -612,9 +534,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertCount( 0, $conflicts );
 	}
 
-	/**
-	 * @covers ::insertZObjectLabelConflicts
-	 */
 	public function testInsertZObjectLabelConflicts() {
 		$conflicts = [
 			self::ZLANG['en'] => 'Z222',
@@ -637,10 +556,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertEquals( 3, $res->numRows() );
 	}
 
-	/**
-	 * @covers ::insertZObjectLabels
-	 * @covers ::deleteZObjectLabelsByZid
-	 */
 	public function testDeleteZObjectLabelsByZid() {
 		$labels = [
 			self::ZLANG['en'] => 'label',
@@ -665,10 +580,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 0, $res->numRows() );
 	}
 
-	/**
-	 * @covers ::insertZObjectLabelConflicts
-	 * @covers ::deleteZObjectLabelConflictsByZid
-	 */
 	public function testDeleteZObjectLabelConflictsByZid() {
 		$this->zobjectStore->insertZObjectLabelConflicts( 'Z222', [ self::ZLANG['en'] => 'Z333' ] );
 		$this->zobjectStore->insertZObjectLabelConflicts( 'Z333', [ self::ZLANG['es'] => 'Z444' ] );
@@ -687,9 +598,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 0, $res->numRows() );
 	}
 
-	/**
-	 * @covers ::fetchZidsOfType
-	 */
 	public function testFetchZidsOfType() {
 		$response = $this->zobjectStore->insertZObjectLabels(
 			'Z444', 'Z7', [ self::ZLANG['en'] => 'label for Z7' ]
@@ -715,9 +623,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( [], $this->zobjectStore->fetchZidsOfType( 'Z888' ) );
 	}
 
-	/**
-	 * @covers ::searchZObjectLabels
-	 */
 	public function testSearchZObjectLabels_exactMatch() {
 		$response = $this->zobjectStore->insertZObjectLabels(
 			'Z450', 'Z7', [ self::ZLANG['en'] => 'example' ]
@@ -742,9 +647,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 3, $res->numRows() );
 	}
 
-	/**
-	 * @covers ::searchZObjectLabels
-	 */
 	public function testSearchZObjectLabels_type() {
 		$response = $this->zobjectStore->insertZObjectLabels(
 			'Z453', 'Z7', [ self::ZLANG['en'] => 'example' ]
@@ -769,9 +671,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 1, $res->numRows() );
 	}
 
-	/**
-	 * @covers ::searchZObjectLabels
-	 */
 	public function testSearchZObjectLabels_languages() {
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z456', 'Z6', [ self::ZLANG['en'] => 'txt' ] );
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z457', 'Z6', [ self::ZLANG['es'] => 'txt' ] );
@@ -787,9 +686,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( self::ZLANG['fr'], $res->fetchRow()[ 'wlzl_language' ] );
 	}
 
-	/**
-	 * @covers ::searchZObjectLabels
-	 */
 	public function testSearchZObjectLabels_pagination() {
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z459', 'Z6', [ self::ZLANG['en'] => 'label one' ] );
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z460', 'Z6', [ self::ZLANG['en'] => 'label two' ] );
@@ -856,9 +752,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'label five', $res->fetchRow()[ 'wlzl_label' ] );
 	}
 
-	/**
-	 * @covers ::fetchZObjectLabel
-	 */
 	public function testFetchZObjectLabel() {
 		$response = $this->zobjectStore->insertZObjectLabels(
 			'Z464',
@@ -904,9 +797,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::insertZFunctionReference
-	 */
 	public function testInsertZFunctionReference() {
 		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
 		$this->assertTrue( $response );
@@ -925,10 +815,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 1, $res->numRows() );
 	}
 
-	/**
-	 * @covers ::insertZFunctionReference
-	 * @covers ::findFirstZImplementationFunction
-	 */
 	public function testFindFirstZImplementationFunction() {
 		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
 		$this->assertTrue( $response );
@@ -938,11 +824,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertEquals( 'Z10029', $zid );
 	}
 
-	/**
-	 * @covers ::insertZFunctionReference
-	 * @covers ::findReferencedZObjectsByZFunctionId
-	 * @covers ::findReferencedZObjectsByZFunctionIdAsList
-	 */
 	public function testFindReferencedZObjectsByZFunctionId() {
 		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
 		$this->assertTrue( $response );
@@ -959,10 +840,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertEquals( [ 'Z10030', 'Z10031' ], $res );
 	}
 
-	/**
-	 * @covers ::insertZFunctionReference
-	 * @covers ::deleteZFunctionReference
-	 */
 	public function testDeleteZFunctionReference() {
 		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
 		$this->assertTrue( $response );
@@ -983,9 +860,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 0, $res->numRows() );
 	}
 
-	/**
-	 * @covers ::fetchZFunctionReturnType
-	 */
 	public function testFetchZFunctionReturnType() {
 		$this->insertZids( [ 'Z17', 'Z801', 'Z844' ] );
 
@@ -1007,9 +881,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::clearFunctionsSecondaryTables
-	 */
 	public function testClearFunctionsSecondaryTables() {
 		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
 		$response = $this->zobjectStore->insertZFunctionReference( 'Z10031', 'Z10029', 'Z14' );
@@ -1036,9 +907,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 0, $res->numRows(), 'The secondary function join table has been wiped clean' );
 	}
 
-	/**
-	 * @covers ::clearLabelsSecondaryTables
-	 */
 	public function testClearLabelsSecondaryTables() {
 		$labels = [
 			self::ZLANG['en'] => 'label',
@@ -1092,9 +960,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 0, $resConflicts->numRows(), 'The secondary label conflicts table has been wiped clean' );
 	}
 
-	/**
-	 * @covers ::deleteFromFunctionsSecondaryTables
-	 */
 	public function testDeleteFromFunctionsSecondaryTables() {
 		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
 		$response = $this->zobjectStore->insertZFunctionReference( 'Z10031', 'Z10028', 'Z14' );
@@ -1124,9 +989,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 1, $res->numRows(), 'The secondary function join table has been cleared of the given zids' );
 	}
 
-	/**
-	 * @covers ::deleteFromLabelsSecondaryTables
-	 */
 	public function testDeleteFromLabelsSecondaryTables() {
 		$labels1 = [ self::ZLANG['en'] => 'label1', ];
 		$labels2 = [ self::ZLANG['en'] => 'label2', ];
@@ -1206,10 +1068,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			->fetchResultSet();
 	}
 
-	/**
-	 * @covers ::insertZTesterResult
-	 * @covers ::findZTesterResult
-	 */
 	public function testInsertZTesterResult() {
 		$this->injectZTesterResults();
 
@@ -1245,10 +1103,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $findRes instanceof ZResponseEnvelope );
 	}
 
-	/**
-	 * @covers ::insertZTesterResult
-	 * @covers ::findZTesterResult
-	 */
 	public function testInsertZTesterResult_invalidContent() {
 		$this->zobjectStore->insertZTesterResult(
 			'Z410', 1, 'Z401', 2, 'Z402', 3, true, 'Hello I am an erroneous input'
@@ -1258,9 +1112,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertNull( $findRes );
 	}
 
-	/**
-	 * @covers ::deleteFromTesterResultsSecondaryTables
-	 */
 	public function testDeleteFromTesterResultsSecondaryTables() {
 		$this->injectZTesterResults();
 
@@ -1275,9 +1126,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 0, $res->numRows() );
 	}
 
-	/**
-	 * @covers ::deleteZFunctionFromZTesterResultsCache
-	 */
 	public function testDeleteZFunctionFromZTesterResultsCache() {
 		$this->injectZTesterResults();
 
@@ -1292,9 +1140,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 0, $res->numRows() );
 	}
 
-	/**
-	 * @covers ::deleteZImplementationFromZTesterResultsCache
-	 */
 	public function testDeleteZImplementationFromZTesterResultsCache() {
 		$this->injectZTesterResults();
 
@@ -1309,9 +1154,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 0, $res->numRows() );
 	}
 
-	/**
-	 * @covers ::deleteZTesterFromZTesterResultsCache
-	 */
 	public function testDeleteZTesterFromZTesterResultsCache() {
 		$this->injectZTesterResults();
 
@@ -1334,9 +1176,6 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 0, $res->numRows() );
 	}
 
-	/**
-	 * @covers ::clearTesterResultsSecondaryTables
-	 */
 	public function testClearTesterResultsSecondaryTables() {
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_REPLICA );
 		$res = $dbr->newSelectQueryBuilder()

@@ -16,13 +16,11 @@ use GuzzleHttp\Psr7\Response;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 
 /**
- * @coversDefaultClass MediaWiki\Extension\WikiLambda\OrchestratorRequest;
+ * @covers MediaWiki\Extension\WikiLambda\OrchestratorRequest
+ * @covers MediaWiki\Extension\WikiLambda\API\ApiFunctionCall
  */
 class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::execute
-	 */
 	public function testExecute() {
 		$mock = new MockHandler();
 		$handler = HandlerStack::create( $mock );

@@ -13,7 +13,7 @@ use ApiTestCase;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiQueryZFunctionReference
+ * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZFunctionReference
  * @group Database
  * @group API
  */
@@ -55,10 +55,6 @@ class ApiQueryZFunctionReferenceTest extends ApiTestCase {
 		}
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZFunctionReference::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZFunctionReference::run
-	 */
 	public function testNoResults() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -77,10 +73,6 @@ class ApiQueryZFunctionReferenceTest extends ApiTestCase {
 			], $result[0] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZFunctionReference::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZFunctionReference::run
-	 */
 	public function testLimit() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -108,10 +100,6 @@ class ApiQueryZFunctionReferenceTest extends ApiTestCase {
 		$this->assertEquals( $expected, $result[0] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZFunctionReference::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZFunctionReference::run
-	 */
 	public function testSearch() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',

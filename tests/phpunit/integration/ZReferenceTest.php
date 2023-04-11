@@ -15,15 +15,11 @@ use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZReference
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZReference
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
  */
 class ZReferenceTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getErrors
-	 */
 	public function testPersistentCreation_disallowed() {
 		$testObject = new ZObjectContent( '"Z9"' );
 		$this->assertFalse( $testObject->isValid() );
@@ -49,12 +45,6 @@ class ZReferenceTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::getZType
-	 * @covers ::getDefinition
-	 * @covers ::isBuiltin
-	 */
 	public function testGetZType() {
 		$testObject = new ZReference( 'Z1' );
 		$this->assertSame( 'Z9', $testObject->getZType(), 'ZType of directly-created ZReference' );
@@ -62,10 +52,6 @@ class ZReferenceTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Z9', $testObject->getZType(), 'ZType of indirectly-created ZReference' );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::getZValue
-	 */
 	public function testGetZValue() {
 		$testObject = new ZReference( 'Z1' );
 		$this->assertSame( 'Z1', $testObject->getZValue(), 'Value of directly-created ZReference' );
@@ -73,10 +59,6 @@ class ZReferenceTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Z1', $testObject->getZValue(), 'Value of indirectly-created ZReference' );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 */
 	public function testIsValid() {
 		$testObject = new ZReference( '' );
 		$this->assertFalse( $testObject->isValid(), 'Empty ZReferences are invalid' );

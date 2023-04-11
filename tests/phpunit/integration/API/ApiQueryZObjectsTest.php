@@ -16,7 +16,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Title\Title;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiQueryZobjects
+ * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZobjects
  * @group Database
  * @group API
  */
@@ -55,10 +55,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		$page->clear();
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
-	 */
 	public function testNotFound() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -72,10 +68,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		$this->assertFalse( $zObjects[$this->unavailableZid]['success'] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
-	 */
 	public function testNotValidZid() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -89,10 +81,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		$this->assertFalse( $zObjects[$this->notValidZid]['success'] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
-	 */
 	public function testMultipleZidsOneNotFound() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -107,10 +95,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		$this->assertTrue( $zObjects['Z111']['success'] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
-	 */
 	public function testMultipleZidsOneNotValid() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -125,10 +109,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		$this->assertTrue( $zObjects['Z111']['success'] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
-	 */
 	public function testMultipleZidsErrors() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -144,10 +124,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		$this->assertTrue( $zObjects['Z111']['success'] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
-	 */
 	public function testNoLanguageFilter() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -171,10 +147,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		}
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
-	 */
 	public function testAvailableLanguage() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -201,10 +173,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		}
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
-	 */
 	public function testUnavailableLanguage() {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
@@ -231,10 +199,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		}
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::run
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiQueryZObjects::execute
-	 */
 	public function testNormalForm() {
 		$result_normal = $this->doApiRequest( [
 			'action' => 'query',

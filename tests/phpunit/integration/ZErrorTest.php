@@ -15,53 +15,31 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZError
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZError
  * @group Database
  */
 class ZErrorTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 */
 	public function testCreate_invalidErrorType() {
 		$testObject = new ZError( 'invalid', new ZString( 'error message' ) );
 		$this->assertFalse( $testObject->isValid() );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 */
 	public function testCreate_unknownErrorType() {
 		$testObject = new ZError( 'Z999', new ZString( 'error message' ) );
 		$this->assertFalse( $testObject->isValid() );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 */
 	public function testCreate_wrongValue() {
 		$testObject = new ZError( 'Z501', 'error message' );
 		$this->assertFalse( $testObject->isValid() );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 */
 	public function testCreate_invalidValue() {
 		$testObject = new ZError( 'Z501', new ZReference( '' ) );
 		$this->assertFalse( $testObject->isValid() );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::getZValue
-	 * @covers ::getMessage
-	 */
 	public function testCreate_valid() {
 		$testObject = new ZError( 'Z501', new ZString( 'error message' ) );
 		$this->assertTrue( $testObject->isValid() );

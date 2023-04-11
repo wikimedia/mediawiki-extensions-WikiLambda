@@ -13,19 +13,12 @@ use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
  * @group Database
  */
 class ZFunctionCallTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::getZValue
-	 * @covers ::getReturnType
-	 * @covers ::getDefinition
-	 */
 	public function testPersistentCreation_oneArg() {
 		$this->insertZids( [ 'Z17', 'Z881' ] );
 		$strFunctionCall = '{"Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z3"}';
@@ -35,14 +28,6 @@ class ZFunctionCallTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( "Z4", $zobject->getReturnType() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::getZValue
-	 * @covers ::getReturnType
-	 * @covers ::getDefinition
-	 */
 	public function testPersistentCreation_twoArgs() {
 		$this->insertZids( [ 'Z17', 'Z882' ] );
 		$strFunctionCall = '{"Z1K1": "Z7", "Z7K1": "Z882", "Z882K1": "Z6", "Z882K2": "Z1"}';
@@ -53,11 +38,6 @@ class ZFunctionCallTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( "Z4", $zobject->getReturnType() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 */
 	public function testTypedList() {
 		// Z881 must be persisted to successfully return its type.
 		// Z881 requires Z8 and Z17 to be present as well.
@@ -130,11 +110,6 @@ EOT;
 		$this->assertTrue( $zobject->isValid() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 */
 	public function testTypedListInner() {
 		// Z881 must be persisted to successfully return its type.
 		// Z881 requires Z8 and Z17 to be present as well.
@@ -170,11 +145,6 @@ EOT;
 		$this->assertTrue( $zobject->isValid() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::getReturnType
-	 */
 	public function testReturnType() {
 		$this->insertZids( [ 'Z17', 'Z881', 'Z813' ] );
 

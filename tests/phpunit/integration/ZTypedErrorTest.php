@@ -15,17 +15,12 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedError;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedError
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedError
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
  * @group Database
  */
 class ZTypedErrorTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::getErrorType
-	 */
 	public function testCreate_objectFactory_empty() {
 		$genericError = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z885", "Z885K1": "Z502" } }';
 		$testObject = ZObjectFactory::create( json_decode( $genericError ) );
@@ -35,12 +30,6 @@ class ZTypedErrorTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( "Z502", $testObject->getErrorType() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::getErrorType
-	 */
 	public function testCreate_objectFactory_twoKeys() {
 		$genericError = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z885", "Z885K1": "Z502" },'
 			. ' "K1": "value 1",'
@@ -56,11 +45,6 @@ class ZTypedErrorTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::getZType
-	 * @covers ::getDefinition
-	 * @covers ::isBuiltin
-	 */
 	public function testGetZType() {
 		$genericError = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z885", "Z885K1": "Z502" } }';
 		$testObject = ZObjectFactory::create( json_decode( $genericError ) );
@@ -68,11 +52,6 @@ class ZTypedErrorTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Z885', $testObject->getZType() );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::getErrorType
-	 */
 	public function testCreate_constructor() {
 		$functionCallJson = '{ "Z1K1": "Z7", "Z7K1": "Z885", "Z885K1": "Z502" }';
 
@@ -100,9 +79,6 @@ class ZTypedErrorTest extends WikiLambdaIntegrationTestCase {
 	 * it pass, but that's also built-in, and this test doesn't justify its existence or raise
 	 * code coverage(?), so leaving it as `@group Broken` for now.
 	 *
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::getErrorType
 	 * @group Broken
 	 */
 	public function testCreate_nobuiltin() {

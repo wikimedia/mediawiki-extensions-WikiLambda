@@ -15,20 +15,12 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZString
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZString
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
  */
 class ZStringTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getInnerZObject
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
-	 */
 	public function testPersistentCreation() {
 		$testObject = new ZObjectContent( '""' );
 		$this->assertTrue( $testObject->isValid() );
@@ -79,12 +71,6 @@ class ZStringTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $innerTestObject->getZValue(), $outerTestObject->getZValue() );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::getZType
-	 * @covers ::getDefinition
-	 * @covers ::isBuiltin
-	 */
 	public function testGetZType() {
 		$testObject = new ZString( 'Test' );
 		$this->assertSame( 'Z6', $testObject->getZType(), 'ZType of directly-created ZStrings' );
@@ -93,11 +79,6 @@ class ZStringTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Z6', $testObject->getZType(), 'ZType of indirectly-created ZStrings' );
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::getZValue
-	 * @covers ::getSerialized
-	 */
 	public function testGetZValue() {
 		$testObject = new ZString();
 		$this->assertSame( '', $testObject->getZValue(), 'ZValue of implicit null is the empty string' );
@@ -151,10 +132,6 @@ class ZStringTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 */
 	public function testIsValid() {
 		$testObject = new ZString();
 		$this->assertTrue( $testObject->isValid(), 'Blank ZStrings are valid' );

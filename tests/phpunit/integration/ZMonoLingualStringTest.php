@@ -18,19 +18,13 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualString
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
  */
 class ZMonoLingualStringTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::getZType
-	 * @covers ::getLanguage
-	 * @covers ::getString
-	 * @covers ::getZValue
-	 * @covers ::isValid
-	 * @covers ::getDefinition
-	 */
 	public function testCreation() {
 		$testObject = new ZMonoLingualString(
 			new ZReference( 'Z1002' ),
@@ -43,9 +37,6 @@ class ZMonoLingualStringTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $testObject->isValid() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 */
 	public function testStaticCreation() {
 		$testObject = ZObjectFactory::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MONOLINGUALSTRING,
@@ -59,9 +50,6 @@ class ZMonoLingualStringTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $testObject->isValid() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 */
 	public function testStaticCreation_invalidNoLanguageKey() {
 		$this->expectException( ZErrorException::class );
 
@@ -71,9 +59,6 @@ class ZMonoLingualStringTest extends WikiLambdaIntegrationTestCase {
 		] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 */
 	public function testStaticCreation_invalidNoValueKey() {
 		$this->expectException( ZErrorException::class );
 		$invalidObject = ZObjectFactory::create( (object)[
@@ -82,9 +67,6 @@ class ZMonoLingualStringTest extends WikiLambdaIntegrationTestCase {
 		] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 */
 	public function testStaticCreation_invalidLanguageReference() {
 		$this->expectException( ZErrorException::class );
 		$invalidObject = ZObjectFactory::create( (object)[
@@ -94,16 +76,6 @@ class ZMonoLingualStringTest extends WikiLambdaIntegrationTestCase {
 		] );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getInnerZObject
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
-	 */
 	public function testPersistentCreation() {
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent( '{ "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "Demonstration item" }' );

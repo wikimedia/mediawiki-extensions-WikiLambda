@@ -12,7 +12,8 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\Api;
 use ApiTestCase;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall
+ * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall
+ * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase
  * @group API
  * @group Standalone
  * @group medium
@@ -44,10 +45,6 @@ class ApiFunctionCallTest extends ApiTestCase {
 
 	/**
 	 * @dataProvider provideExecuteSuccessfulViaBetaCluster
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::execute
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::executeGenerator
-	 * @covers \MediaWiki\Extension\WikiLambda\API\ApiFunctionCall::run
-	 * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase::setUp
 	 */
 	public function testExecuteSuccessfulViaBetaCluster(
 		$requestString,

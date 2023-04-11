@@ -19,20 +19,14 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZMultiLingualString
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
+ * @covers \MediaWiki\Extension\WikiLambda\StringForLanguageBuilder
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
  */
 class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers ::__construct
-	 * @covers ::getZType
-	 * @covers ::getZValue
-	 * @covers ::isLanguageProvidedValue
-	 * @covers ::getStringForLanguage
-	 * @covers ::getStringForLanguageCode
-	 * @covers ::isValid
-	 * @covers ::getDefinition
-	 */
 	public function testCreation() {
 		$this->registerLangs( [ 'es', 'de', 'fr' ] );
 
@@ -118,13 +112,6 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::buildStringForLanguage
-	 * @covers \MediaWiki\Extension\WikiLambda\StringForLanguageBuilder::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\StringForLanguageBuilder::fallbackWithEnglish
-	 * @covers \MediaWiki\Extension\WikiLambda\StringForLanguageBuilder::placeholderNoFallback
-	 * @covers \MediaWiki\Extension\WikiLambda\StringForLanguageBuilder::getStringAndLanguageCode
-	 */
 	public function testGetStringAndLanguageCode() {
 		$this->registerLangs( [ 'en' ] );
 		$germanLang = $this->makeLanguage( 'de' );
@@ -182,12 +169,6 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers ::buildStringForLanguage
-	 * @covers \MediaWiki\Extension\WikiLambda\StringForLanguageBuilder::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\StringForLanguageBuilder::placeholderForTitle
-	 * @covers \MediaWiki\Extension\WikiLambda\StringForLanguageBuilder::getString
-	 */
 	public function testTitleCreation() {
 		$englishLang = $this->makeLanguage( 'en' );
 		// test title comes back correctly when it exists
@@ -221,9 +202,6 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 */
 	public function testStaticCreation() {
 		$testObject = ZObjectFactory::create( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MULTILINGUALSTRING,
@@ -239,9 +217,6 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Z12', $testObject->getZType() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 */
 	public function testStaticCreation_invalidNoValueKey() {
 		$this->expectException( ZErrorException::class );
 		$invalidObject = ZObjectFactory::create( (object)[
@@ -249,13 +224,6 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 		] );
 	}
 
-	/**
-	 * @covers ::setMonoLingualString
-	 * @covers ::setStringForLanguage
-	 * @covers ::isLanguageProvidedValue
-	 * @covers ::removeValue
-	 * @covers ::isValid
-	 */
 	public function testModification() {
 		$this->registerLangs( [ 'fr', 'es' ] );
 
@@ -308,16 +276,6 @@ class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 		$testObject->removeValue( $invalidLang );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::__construct
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::isValid
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent::getInnerZObject
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZType
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getZValue
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject::getInnerZObject
-	 */
 	public function testPersistentCreation() {
 		$this->registerLangs( [ 'fr' ] );
 

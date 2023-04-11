@@ -20,17 +20,12 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
 
 /**
- * @coversDefaultClass \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils
  */
 class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::isEmpty
-	 * @covers ::getElementType
-	 */
 	public function testCreate_emptyList() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } }';
 		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
@@ -42,12 +37,6 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( "Z6", $testObject->getElementType()->getZValue() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::getElementType
-	 */
 	public function testCreate_listOfStrings() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 			. '"K1": "first string",'
@@ -60,12 +49,6 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( "Z6", $testObject->getElementType()->getZValue() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::getElementType
-	 */
 	public function testCreate_largerListOfStrings() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 			. '"K1": "first string",'
@@ -80,11 +63,6 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( "Z6", $testObject->getElementType()->getZValue() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 */
 	public function testCreate_invalidListOfStrings() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 			. '"K1": "first string",'
@@ -97,11 +75,6 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$this->assertFalse( $testObject->isValid() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 */
 	public function testCreate_listOfMixed() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
 			. '"K1": "first string",'
@@ -116,17 +89,6 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( "Z1", $testObject->getElementType()->getZValue() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::isEmpty
-	 * @covers ::getElementType
-	 * @covers ::appendArray
-	 * @covers ::getAsArray
-	 * @covers ::checkNewElementTypes
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isCompatibleType
-	 */
 	public function testAppendArray_emptyList() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } }';
 		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
@@ -146,16 +108,6 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'New string', $firstListItem->getZValue() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::getElementType
-	 * @covers ::appendArray
-	 * @covers ::getAsArray
-	 * @covers ::checkNewElementTypes
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isCompatibleType
-	 */
 	public function testAppendArray_listOfStrings() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 			. '"K1": "first string",'
@@ -179,15 +131,6 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'New string', $secondListItem->getZValue() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::appendArray
-	 * @covers ::getAsArray
-	 * @covers ::checkNewElementTypes
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isCompatibleType
-	 */
 	public function testAppendArray_listOfMixed() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
 			. '"K1": "first string",'
@@ -220,15 +163,6 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Z41', $fourthListItem->getZValue() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::appendArray
-	 * @covers ::getAsArray
-	 * @covers ::checkNewElementTypes
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isCompatibleType
-	 */
 	public function testAppendEmptyArray_listOfMixed() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
 			. '"K1": "first string",'
@@ -253,14 +187,6 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Z111', $secondListItem->getZValue() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::appendArray
-	 * @covers ::checkNewElementTypes
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isCompatibleType
-	 */
 	public function testAppendArray_badElementType() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 			. '"K1": "first string",'
@@ -278,15 +204,6 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$testObject->appendArray( $newElements );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::appendArray
-	 * @covers ::getAsArray
-	 * @covers ::checkNewElementTypes
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isCompatibleType
-	 */
 	public function testAppendArray_uncheckedElementTypes() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 			. '"K1": "first string",'
@@ -319,15 +236,6 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$this->assertFalse( $testObject->isValid() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::appendZTypedList
-	 * @covers ::getAsArray
-	 * @covers ::checkNewElementTypes
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isCompatibleType
-	 */
 	public function testAppendZTypedList_listOfMixed() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
 			. '"K1": "first string",'
@@ -362,15 +270,6 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( 'Z41', $fourthListItem->getZValue() );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isValid
-	 * @covers ::appendArray
-	 * @covers ::getAsArray
-	 * @covers ::checkNewElementTypes
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils::isCompatibleType
-	 */
 	public function testAppendZTypedList_badElementType() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 			. '"K1": "first string",'
@@ -390,12 +289,6 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$testObject->appendZTypedList( $newElements );
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::getAsArray
-	 * @covers ::getZValue
-	 */
 	public function test_typedListToArray() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" },'
 			. '"K1": "first string",'
@@ -413,10 +306,6 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideListsInCanonicalForm
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::getAsArray
-	 * @covers ::getZValue
 	 */
 	public function test_createCanonicalForm( $canonicalFormArray, $type, $isEmpty, $canonical, $normal ) {
 		$testObject = ZObjectFactory::create( json_decode( $canonicalFormArray ) );
@@ -521,13 +410,6 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		];
 	}
 
-	/**
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::isEmpty
-	 * @covers ::getAsArray
-	 * @covers ::getZValue
-	 */
 	public function test_emptyTypedListToArray() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } }';
 		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
@@ -538,11 +420,6 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		$this->assertCount( 0,  $array );
 	}
 
-	/**
-	 * @covers ::getZType
-	 * @covers ::isBuiltin
-	 * @covers ::getDefinition
-	 */
 	public function test_getZType() {
 		$typedList = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } }';
 		$testObject = ZObjectFactory::create( json_decode( $typedList ) );
@@ -552,9 +429,6 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 
 	/**
 	 * @dataProvider provideSerializedForms
-	 * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory::create
-	 * @covers ::__construct
-	 * @covers ::getSerialized
 	 */
 	public function test_serialize( $typed, $canonical, $normal ) {
 		$testObject = ZObjectFactory::create( json_decode( $typed ) );
