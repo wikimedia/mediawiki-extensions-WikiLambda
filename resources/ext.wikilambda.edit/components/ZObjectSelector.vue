@@ -30,7 +30,7 @@
 			:placeholder="lookupPlaceholder"
 			:menu-items="lookupResults"
 			:end-icon="lookupIcon"
-			:initial-input-value="initialInputValue"
+			:initial-input-value="initialSelectionLabel"
 			:status="errorInputStatus"
 			@input="onInput"
 			@focusout="onFocusOut"
@@ -131,7 +131,7 @@ module.exports = exports = {
 			inputValue: '',
 			valueEmitted: false,
 			lookupKey: 1,
-			selectedValue: this.selectedId
+			selectedValue: this.initialSelectionLabel ? this.initialSelectionLabel : this.selectedId
 		};
 	},
 	computed: $.extend( {},
