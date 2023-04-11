@@ -102,28 +102,13 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Returns the object { label, lang, zid } with the linguistic
-			 * information of the language zid or undefined if the zid
-			 * doesn't exist or wasn't found.
-			 *
-			 * TODO (T329103): This is currently not used, but are we showing the
-			 * language name when we hover over the language ISO code chip? If so,
-			 * this is the string that should be shown
-			 *
-			 * @return {string}
-			 */
-			langLabel: function () {
-				return this.getLabel( this.lang );
-			},
-
-			/**
 			 * Return the text that identifies the language in which
 			 * this Monolingual String is written.
 			 *
 			 * @return {string}
 			 */
 			langIso: function () {
-				return this.getLanguageIsoCodeOfZLang( this.lang );
+				return this.getLanguageIsoCodeOfZLang( this.lang ) || '';
 			}
 		}
 	)
