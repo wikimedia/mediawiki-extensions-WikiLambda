@@ -7,7 +7,12 @@
 	-->
 	<div class="ext-wikilambda-monolingual-string">
 		<div v-if="!edit">
-			<p><span class="ext-wikilambda-lang-chip">{{ langIso }}</span> {{ text }}</p>
+			<p>
+				<cdx-info-chip class="ext-wikilambda-lang-chip">
+					{{ langIso.toUpperCase() }}
+				</cdx-info-chip>
+				{{ text }}
+			</p>
 		</div>
 		<div
 			v-else
@@ -25,6 +30,7 @@
 
 <script>
 var TextInput = require( '../base/TextInput.vue' ),
+	CdxInfoChip = require( '@wikimedia/codex' ).CdxInfoChip,
 	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -32,7 +38,8 @@ var TextInput = require( '../base/TextInput.vue' ),
 module.exports = exports = {
 	name: 'wl-z-monolingual-string',
 	components: {
-		'wl-text-input': TextInput
+		'wl-text-input': TextInput,
+		'cdx-info-chip': CdxInfoChip
 	},
 	props: {
 		rowId: {

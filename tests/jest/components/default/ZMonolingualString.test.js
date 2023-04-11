@@ -7,6 +7,7 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
+	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	ZMonolingualString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZMonolingualString.vue' ),
 	TextInput = require( '../../../../resources/ext.wikilambda.edit/components/base/TextInput.vue' ),
@@ -37,7 +38,7 @@ describe( 'ZMonolingualString', () => {
 		} );
 
 		it( 'displays a language chip', () => {
-			var wrapper = shallowMount( ZMonolingualString, {
+			var wrapper = mount( ZMonolingualString, {
 				props: {
 					edit: false
 				}
@@ -70,7 +71,7 @@ describe( 'ZMonolingualString', () => {
 		} );
 
 		it( 'displays a language chip', () => {
-			var wrapper = shallowMount( ZMonolingualString, {
+			var wrapper = mount( ZMonolingualString, {
 				props: {
 					edit: false
 				}
