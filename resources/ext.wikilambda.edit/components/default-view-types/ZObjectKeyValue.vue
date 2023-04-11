@@ -389,6 +389,13 @@ module.exports = exports = {
 			hasExpandedMode: function () {
 				if ( this.edit ) {
 					// TERMINAL rules for edit:
+					// If the key is Z1K1 and the value is Z6, no expanded mode
+					if (
+						( this.key === Constants.Z_OBJECT_TYPE ) &&
+						( this.value === Constants.Z_STRING )
+					) {
+						return false;
+					}
 					// If the key is terminal Z6K1 or Z9K1, no expanded mode
 					if (
 						( this.key === Constants.Z_STRING_VALUE ) ||
