@@ -71,6 +71,7 @@ var
 	ZBoolean = require( './ZBoolean.vue' ),
 	ZFunctionCall = require( './ZFunctionCall.vue' ),
 	ZTypedList = require( './ZTypedList.vue' ),
+	LabelData = require( '../../store/classes/LabelData.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
@@ -197,15 +198,12 @@ module.exports = exports = {
 			 */
 			keyLabel: function () {
 				// since the FE represents typed lists in canonical form, we need to hardcode typed list keys
-				if ( this.isKeyTypedListItem( this.key ) &&
-					this.expanded &&
-					this.hasExpandedMode
-				) {
-					return {
-						zid: `${Constants.Z_TYPED_LIST}K${this.key}`,
-						label: this.$i18n( 'wikilambda-list-item-label' ).text(),
-						lang: this.getUserZlangZID
-					};
+				if ( this.isKeyTypedListItem( this.key ) && this.expanded ) {
+					return new LabelData(
+						null,
+						this.$i18n( 'wikilambda-list-item-label' ).text(),
+						this.getUserZlangZID
+					);
 				}
 
 				return this.getLabelData( this.key );
@@ -239,9 +237,7 @@ module.exports = exports = {
 			 * @return {string}
 			 */
 			expandedModeClass: function () {
-				return ( this.expanded && this.hasExpandedMode ) ?
-					'ext-wikilambda-expanded-on' :
-					'ext-wikilambda-expanded-off';
+				return this.expanded ? 'ext-wikilambda-expanded-on' : 'ext-wikilambda-expanded-off';
 			},
 
 			/**
@@ -250,7 +246,7 @@ module.exports = exports = {
 			 * @return {string}
 			 */
 			expandedModeLabelClass: function () {
-				return ( this.hasExpandedMode ) ? 'ext-wikilambda-key-block__label' : '';
+				return this.hasExpandedMode ? 'ext-wikilambda-key-block__label' : '';
 			},
 
 			/**
