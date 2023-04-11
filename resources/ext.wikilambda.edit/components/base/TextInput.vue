@@ -242,18 +242,6 @@ module.exports = exports = {
 		z-index: 3;
 		left: @spacing-50;
 		min-width: calc( 36px - 16px );
-
-		.cdx-info-chip--text {
-			font-size: ~'14px';
-		}
-
-		&__empty {
-			border: 1px dashed @border-color-base;
-
-			.cdx-info-chip--text {
-				height: 22px;
-			}
-		}
 	}
 }
 </style>
