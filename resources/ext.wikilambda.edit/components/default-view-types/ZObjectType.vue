@@ -6,35 +6,35 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-type-mode">
-		<template v-if="edit">
+		<div
+			v-if="edit"
+			class="ext-wikilambda-type-mode__select"
+		>
 			<!-- Zero state, select a literal type -->
 			<wl-z-object-selector
 				v-if="!value"
-				class="ext-wikilambda-type-mode__selector"
 				:type="selectType"
 				:zobject-id="rowId"
 				:fit-width="true"
 				@input="setValue"
 			></wl-z-object-selector>
 			<!-- Non-Zero state, select mode -->
-			<div v-else class="ext-wikilambda-type-mode__select">
-				<wl-select
-					v-model:selected="value"
-					:menu-items="typeOptions"
-					:fit-width="true"
-					:disabled="disabled"
-					@update:selected="setValue"
-				></wl-select>
-			</div>
-		</template>
-		<template v-else>
-			<a
-				class="ext-wikilambda-edit-link"
-				:href="valueUrl"
-			>
-				{{ valueLabel }}
-			</a>
-		</template>
+			<wl-select
+				v-else
+				v-model:selected="value"
+				:menu-items="typeOptions"
+				:fit-width="true"
+				:disabled="disabled"
+				@update:selected="setValue"
+			></wl-select>
+		</div>
+		<a
+			v-else
+			class="ext-wikilambda-edit-link"
+			:href="valueUrl"
+		>
+			{{ valueLabel }}
+		</a>
 	</div>
 </template>
 
@@ -211,24 +211,6 @@ module.exports = exports = {
 			.cdx-select.cdx-select--enabled.cdx-select--expanded {
 				width: 50%;
 				display: inline-block;
-			}
-		}
-	}
-
-	&__selector {
-		.cdx-lookup {
-			display: inline-block;
-		}
-	}
-
-	&__selector-active {
-		.cdx-lookup {
-			width: 100%;
-		}
-
-		@media screen and ( min-width: @width-breakpoint-tablet ) {
-			.cdx-lookup {
-				width: 50%;
 			}
 		}
 	}

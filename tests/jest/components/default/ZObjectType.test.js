@@ -94,7 +94,7 @@ describe( 'ZReference', () => {
 				}
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-type-mode__selector' ).exists() ).toBeTruthy();
+			expect( wrapper.findComponent( { name: 'wl-z-object-selector' } ).exists() ).toBeTruthy();
 			expect( wrapper.vm.selectType ).toBe( Constants.Z_TYPE );
 
 			await wrapper.getComponent( ZObjectSelector ).vm.$emit( 'input', 'String' );
