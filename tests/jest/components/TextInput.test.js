@@ -17,6 +17,14 @@ describe( 'TextInput', () => {
 			expect( chip.exists() ).toBe( true );
 			expect( chip.text().toUpperCase() ).toBe( 'EN' );
 		} );
+
+		it( 'renders an empty language chip when provided with an empty string as chip prop', () => {
+			const wrapper = mount( TextInput, {
+				props: { chip: '' }
+			} );
+			const chip = wrapper.find( '.ext-wikilambda-lang-chip__empty' );
+			expect( chip.exists() ).toBe( true );
+		} );
 	} );
 
 	describe( 'functionality', () => {

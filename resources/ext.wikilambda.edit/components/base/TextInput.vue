@@ -6,11 +6,15 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-edit-text-input" :style="inputCssVariablesStyle">
+	<div
+		class="ext-wikilambda-edit-text-input"
+		:style="inputCssVariablesStyle"
+	>
 		<cdx-info-chip
 			v-if="hasChip"
 			ref="chipComponent"
 			class="ext-wikilambda-lang-chip"
+			:class="{ 'ext-wikilambda-lang-chip__empty': hasEmptyChip }"
 		>
 			{{ chip.toUpperCase() }}
 		</cdx-info-chip>
@@ -88,15 +92,11 @@ module.exports = exports = {
 			get() { return this.modelValue; },
 			set( value ) { this.$emit( 'update:modelValue', value ); }
 		},
-		inputCssVariablesStyle: function () {
-			return {
-				'--chipWidthPx': `${this.chipWidth}px`
-			};
-		},
+
 		/**
 		 * This computed property calculates the width of the field depending on its value
 		 *
-		 * TODO: Because this is a not a monospace font, the larger the word is, the
+		 * Because this is a not a monospace font, the larger the word is, the
 		 * less space it occupies in ch, so probably we should remove a %:
 		 *
 		 * > 1ch is usually wider than the average character width, usually by around 20-30%
@@ -127,9 +127,14 @@ module.exports = exports = {
 			// Add 5 chars + chip.length (to make it larger if there's more text in the chip) if it has language chip
 			if ( this.hasChip ) {
 				chars = chars + ( this.chip.length + 5 );
+				// An empty chip is like a 2 character chip
+				if ( this.hasEmptyChip ) {
+					chars = chars + 2;
+				}
 			}
 			return `${chars}ch`;
 		},
+
 		/**
 		 * Whether the text input has an embed language chip
 		 *
@@ -138,6 +143,36 @@ module.exports = exports = {
 		hasChip: function () {
 			return ( this.chip !== undefined );
 		},
+
+		/**
+		 * Whether the text input has an embed language chip
+		 * but the chip has an empty value
+		 *
+		 * @return {boolean}
+		 */
+		hasEmptyChip: function () {
+			return ( this.chip === '' );
+		},
+
+		/**
+		 * Returns the dynamically calculated width of the inner language chip
+		 *
+		 * @return {string}
+		 */
+		inputCssVariablesStyle: function () {
+			return {
+				'--chipWidthPx': `${this.chipWidth}px`
+			};
+		},
+
+		/**
+		 * Returns the css class names for the text input: "fitted" when the
+		 * width needs to adapt on focus, and "chipped" when it contains an
+		 * inner language chip inside the text field. These classes are not
+		 * exclusive.
+		 *
+		 * @return {Array}
+		 */
 		inputClasses: function () {
 			const classes = [];
 			if ( this.fitWidth ) {
@@ -210,6 +245,14 @@ module.exports = exports = {
 
 		.cdx-info-chip--text {
 			font-size: ~'14px';
+		}
+
+		&__empty {
+			border: 1px dashed @border-color-base;
+
+			.cdx-info-chip--text {
+				height: 22px;
+			}
 		}
 	}
 }
