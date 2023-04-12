@@ -281,6 +281,7 @@
 				"ext.wikilambda.edit/components/base/Text.vue",
 				"ext.wikilambda.edit/components/base/TextInput.vue",
 				"ext.wikilambda.edit/components/base/Tooltip.vue",
+				"ext.wikilambda.edit/components/base/WidgetBase.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZBoolean.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZCode.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZFunctionCall.vue",
@@ -354,6 +355,7 @@
 				"ext.wikilambda.edit/components/widgets/About.vue",
 				"ext.wikilambda.edit/components/widgets/AboutEditMetadataDialog.vue",
 				"ext.wikilambda.edit/components/widgets/AboutViewLanguagesDialog.vue",
+				"ext.wikilambda.edit/components/widgets/FunctionExplorer.vue",
 				"lib/ace/src/ace.js",
 				{
 					"name": "lib/icons.json",
@@ -387,7 +389,8 @@
 						"cdxIconReload",
 						"cdxIconClock",
 						"cdxIconSuccess",
-						"cdxIconCancel"
+						"cdxIconCancel",
+						"cdxIconHistory"
 					]
 				}
 			],
@@ -635,7 +638,12 @@
 				"wikilambda-about-widget-publish-button",
 				"wikilambda-about-widget-view-languages-title",
 				"wikilambda-about-widget-add-language",
-				"wikilambda-about-widget-search-language-placeholder"
+				"wikilambda-about-widget-search-language-placeholder",
+				"wikilambda-function-explorer-title",
+				"wikilambda-function-inputs-title",
+				"wikilambda-function-explorer-copied-text",
+				"wikilambda-function-explorer-name-title",
+				"wikilambda-function-view-function-button-text"
 			]
 		}
 	},

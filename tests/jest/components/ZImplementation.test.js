@@ -68,6 +68,7 @@ describe( 'ZImplementation', function () {
 		expect( wrapper.find( '.ext-wikilambda-zimplementation__function-selector' ).exists() ).toBe( true );
 	} );
 	it( 'does not show the function selector in view only mode', function () {
+
 		var wrapper = VueTestUtils.shallowMount( ZImplementation, {
 			props: {
 				viewMode: true

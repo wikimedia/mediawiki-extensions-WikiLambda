@@ -62,10 +62,18 @@
 			:z-implementation-id="zImplementationId"
 			:report-type="Constants.Z_IMPLEMENTATION"
 		></wl-z-function-tester-report>
+
+		<wl-function-explorer
+			:function-zid="zFunction.value"
+			:edit="edit"
+			:implementation="implMode"
+		>
+		</wl-function-explorer>
 	</div>
 </template>
 
 <script>
+
 var Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
@@ -73,6 +81,7 @@ var Constants = require( '../../Constants.js' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( '../../../lib/icons.json' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
+	FunctionExplorer = require( '../widgets/FunctionExplorer.vue' ),
 	ZCode = require( './ZCode.vue' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	ZReference = require( './ZReference.vue' ),
@@ -85,6 +94,7 @@ module.exports = exports = {
 		'wl-z-object-selector': ZObjectSelector,
 		'wl-z-reference': ZReference,
 		'wl-z-function-tester-report': ZFunctionTesterReport,
+		'wl-function-explorer': FunctionExplorer,
 		'cdx-select': CdxSelect,
 		'cdx-icon': CdxIcon
 	},
@@ -108,6 +118,7 @@ module.exports = exports = {
 	},
 	computed: $.extend( {},
 		mapGetters( [
+			'getViewMode',
 			'getZObjectById',
 			'getZObjectChildrenById',
 			'getZkeyLabels',
@@ -116,9 +127,13 @@ module.exports = exports = {
 			'getZarguments',
 			'isNewZObject'
 		] ),
+		mapGetters( 'router', [ 'getQueryParams' ] ),
 		{
 			Constants: function () {
 				return Constants;
+			},
+			edit: function () {
+				return !this.getViewMode;
 			},
 			zobject: function () {
 				return this.getZObjectChildrenById( this.zobjectId );

@@ -386,5 +386,10 @@
 	"wikilambda-about-widget-publish-button": "Continue to publish",
 	"wikilambda-about-widget-view-languages-title": "Labels in other languages",
 	"wikilambda-about-widget-add-language": "Add language",
-	"wikilambda-about-widget-search-language-placeholder": "Search language"
+	"wikilambda-about-widget-search-language-placeholder": "Search language",
+	"wikilambda-function-explorer-title": "Function explorer",
+	"wikilambda-function-inputs-title": "Inputs",
+	"wikilambda-function-explorer-copied-text": "Copied!",
+	"wikilambda-function-explorer-name-title": "Name",
+	"wikilambda-function-view-function-button-text": "View function"
 }

@@ -397,5 +397,10 @@
 	"wikilambda-about-widget-publish-button": "Button to continue to the publish dialog experience to save the changes",
 	"wikilambda-about-widget-view-languages-title": "Title of the About widget View Languages dialog",
 	"wikilambda-about-widget-add-language": "Button to add metadata in a language that has no information available",
-	"wikilambda-about-widget-search-language-placeholder": "Placeholder for the search language input field"
+	"wikilambda-about-widget-search-language-placeholder": "Placeholder for the search language input field",
+	"wikilambda-function-explorer-title": "The title of the function explorer component",
+	"wikilambda-function-inputs-title": "The header title for the inputs section of the function explorer",
+	"wikilambda-function-explorer-copied-text": "Text displayed when something is copied to the clipboard",
+	"wikilambda-function-explorer-name-title": "The title shown before the function name in the function explorer",
+	"wikilambda-function-view-function-button-text": "The text shown in the view function button in the function explorer"
 }

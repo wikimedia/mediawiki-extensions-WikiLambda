@@ -113,4 +113,42 @@ module.exports = exports = {
 	border-radius: 2px;
 	margin-bottom: @spacing-100;
 }
+
+.row {
+	display: flex;
+	flex-wrap: wrap;
+	margin-left: -15px;
+	margin-right: -15px;
+}
+
+.generate-columns(@index) when (@index <= 24) {
+	.col-@{index} {
+		flex-basis: calc( 100% / 24 * @index );
+		max-width: calc( 100% / 24 * @index );
+	}
+
+	.generate-responsive-columns( @index, mobile );
+	.generate-responsive-columns( @index, tablet );
+	.generate-responsive-columns( @index, desktop );
+
+	.generate-columns( @index + 1 );
+}
+
+.generate-responsive-columns(@index, @size) {
+	@media ( min-width: ~'@{min-width-breakpoint-@{size}}' ) and ( max-width: ~'@{max-width-breakpoint-@{size}}' ) {
+		.col-@{size}-@{index} {
+			flex-basis: calc( 100% / 24 * @index );
+			max-width: calc( 100% / 24 * @index );
+		}
+	}
+}
+
+.col {
+	padding-left: 15px;
+	padding-right: 15px;
+	flex-grow: 1;
+	min-width: 0;
+}
+
+.generate-columns( 1 );
 </style>

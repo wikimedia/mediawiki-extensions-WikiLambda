@@ -542,12 +542,10 @@ module.exports = exports = {
 	watch: {
 		selectedLabel: {
 			handler: function () {
-				// Trigger a rerender when initial input value changes,
+				// Trigger a rerender when the selected label changes
 				// This might occur due to slow network request for a particular label
 				// Also make sure not to trigger rerender if the user has typed an input
-				if ( !this.inputValue ) {
-					this.lookupKey += 1;
-				}
+				this.lookupKey += 1;
 			}
 		}
 	},
