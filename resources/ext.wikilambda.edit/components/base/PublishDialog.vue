@@ -267,7 +267,7 @@ hr {
 		justify-content: space-between;
 		padding: @spacing-50 0;
 		position: sticky;
-		top: 0;
+		top: @spacing-100;
 		background: @background-color-base;
 
 		&__title {
