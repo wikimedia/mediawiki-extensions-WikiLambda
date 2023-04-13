@@ -48,6 +48,8 @@ module.exports = exports = {
 						return getters.createZReference( payload );
 					case Constants.Z_STRING:
 						return getters.createZString( payload );
+					case Constants.Z_BOOLEAN:
+						return getters.createZBoolean( payload );
 					case Constants.Z_MULTILINGUALSTRING:
 						return getters.createZMultilingualString( payload );
 					case Constants.Z_MONOLINGUALSTRING:
@@ -66,6 +68,8 @@ module.exports = exports = {
 						return getters.createZType( payload );
 					case Constants.Z_IMPLEMENTATION:
 						return getters.createZImplementation( payload );
+					case Constants.Z_CODE:
+						return getters.createZCode( payload );
 					case Constants.Z_TESTER:
 						return getters.createZTester( payload );
 					case Constants.Z_TYPED_LIST:
@@ -329,6 +333,35 @@ module.exports = exports = {
 		},
 
 		/**
+		 * Return a blank and initialized zBoolean.
+		 * The value will result in a json representation equal to:
+		 * {
+		 *   Z1K1: Z40,
+		 *   Z40K1: { Z1K1: Z9, Z9K1: payload.value }
+		 * }
+		 *
+		 * @param {Object} _state
+		 * @return {Function}
+		 */
+		createZBoolean: function ( _state ) {
+			/**
+			 * @param {Object} payload
+			 * @param {number} payload.id
+			 * @param {string} payload.value
+			 * @param {boolean} payload.append
+			 * @return {Object}
+			 */
+			function newZBoolean( payload ) {
+				// Get scaffolding
+				const value = typeUtils.getScaffolding( Constants.Z_BOOLEAN );
+				// Initialize value with the boolean Zid, if any
+				value[ Constants.Z_BOOLEAN_IDENTITY ][ Constants.Z_REFERENCE_ID ] = payload.value || '';
+				return value;
+			}
+			return newZBoolean;
+		},
+
+		/**
 		 * Return a blank and initialized zType.
 		 * The value will result in a json representation equal to:
 		 * {
@@ -444,6 +477,33 @@ module.exports = exports = {
 				return value;
 			}
 			return newZImplementation;
+		},
+
+		/**
+		 * Return a blank and initialized zCode.
+		 * The value will result in a json representation equal to:
+		 *
+		 * {
+		 *  Z1K1: Z16
+		 *  Z16K1: { Z1K1: Z61, Z61K1: '' },
+		 *  Z16K2: ''
+		 * }
+		 *
+		 * @param {Object} _state
+		 * @return {Function}
+		 */
+		createZCode: function ( _state ) {
+			/**
+			 * @param {Object} _payload
+			 * @param {number} _payload.id
+			 * @param {boolean} _payload.append
+			 * @return {Object}
+			 */
+			function newZCode( _payload ) {
+				// Get scaffolding
+				return typeUtils.getScaffolding( Constants.Z_CODE );
+			}
+			return newZCode;
 		},
 
 		/**

@@ -385,6 +385,26 @@ module.exports = exports = {
 		 ************************************************************/
 
 		/**
+		 * Returns the row Id where the persistent object value starts (Z2K2 key)
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZPersistentContentRowId: function ( _state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {number | undefined}
+			 */
+			function findContent( rowId = 0 ) {
+				const row = getters.getRowByKeyPath( [ Constants.Z_PERSISTENTOBJECT_VALUE ], rowId );
+				return row ? row.id : undefined;
+			}
+
+			return findContent;
+		},
+
+		/**
 		 * Returns the terminal value of Z6K1/String value of a ZObject
 		 * assumed to be a string
 		 *
@@ -542,11 +562,11 @@ module.exports = exports = {
 			function findZFunctionArguments( zid ) {
 				const func = getters.getPersistedObject( zid );
 				if ( func === undefined ) {
-					return undefined;
+					return [];
 				}
 				const obj = func[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 				if ( obj[ Constants.Z_OBJECT_TYPE ] !== Constants.Z_FUNCTION ) {
-					return undefined;
+					return [];
 				}
 				// Remove benjamin type item
 				return obj[ Constants.Z_FUNCTION_ARGUMENTS ].slice( 1 );
@@ -555,24 +575,104 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns the row of a Z16/Code programming language key (Z16K1)
+		 * Returns the row ID of the target function of an implementation
+		 * given the implementation rowId
 		 *
-		 * @param {Object} state
+		 * @param {Object} _state
 		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		getZCodeLanguage: function ( state, getters ) {
+		getZImplementationFunctionRowId: function ( _state, getters ) {
 			/**
 			 * @param {number} rowId
-			 * @return {Row | undefined}
+			 * @return {number | undefined}
 			 */
-			function findZCodeValue( rowId ) {
-				return getters.getRowByKeyPath( [
-					Constants.Z_CODE_LANGUAGE,
-					Constants.Z_PROGRAMMING_LANGUAGE_CODE
-				], rowId );
+			function findFunctionId( rowId ) {
+				const functionRef = getters.getRowByKeyPath( [ Constants.Z_IMPLEMENTATION_FUNCTION ], rowId );
+				if ( functionRef === undefined ) {
+					return undefined;
+				}
+				return functionRef.id;
 			}
-			return findZCodeValue;
+			return findFunctionId;
+		},
+
+		/**
+		 * Returns the terminal function Zid of the target function of an implementation
+		 * given the implementation rowId
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZImplementationFunctionZid: function ( _state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {string | undefined}
+			 */
+			function findFunctionZid( rowId ) {
+				const functionRowId = getters.getZImplementationFunctionRowId( rowId );
+				return functionRowId ? getters.getZReferenceTerminalValue( functionRowId ) : undefined;
+			}
+			return findFunctionZid;
+		},
+
+		/**
+		 * Returns the type of implementation selected for a given
+		 * implmentation rowId. The type is what of all mutually exclusive
+		 * keys is present in the current implementation: Z14K2 (composition),
+		 * Z14K3 (code) or Z14K4 (builtin).
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZImplementationContentType: function ( _state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {string | undefined}
+			 */
+			function findImplementationType( rowId ) {
+				const children = getters.getChildrenByParentRowId( rowId );
+				// get all child keys and remove Z1K1 and Z14K1
+				const childKeys = children
+					.filter( function ( child ) {
+						const allowedKeys = [
+							Constants.Z_IMPLEMENTATION_CODE,
+							Constants.Z_IMPLEMENTATION_COMPOSITION,
+							Constants.Z_IMPLEMENTATION_BUILT_IN
+						];
+						return ( allowedKeys.indexOf( child.key ) > -1 ) && ( child.value !== undefined );
+					} )
+					.map( function ( child ) {
+						return child.key;
+					} );
+				// childKeys should only have one element after the filtering
+				return ( childKeys.length === 1 ) ? childKeys[ 0 ] : undefined;
+			}
+			return findImplementationType;
+		},
+
+		/**
+		 * Returns the rowId for the implementation content given
+		 * an implementation rowId and the type of content defined
+		 * by its key (Z14K2 for composition and Z14K3 for code)
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZImplementationContentRowId: function ( _state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @param {string} key
+			 * @return {number | undefined}
+			 */
+			function findImplementationContent( rowId, key ) {
+				const row = getters.getRowByKeyPath( [ key ], rowId );
+				return row ? row.id : undefined;
+			}
+			return findImplementationContent;
 		},
 
 		/**
@@ -582,71 +682,40 @@ module.exports = exports = {
 		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		getZCode: function ( state, getters ) {
-			/**
-			 * @param {number} rowId
-			 * @return {Row | undefined}
-			 */
-			function findZCode( rowId ) {
-				return getters.getRowByKeyPath( [ Constants.Z_CODE_CODE ], rowId );
-			}
-			return findZCode;
-		},
-
-		/**
-		 * Returns the row of a Z14/Implementation's composition (Z14K2)
-		 *
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @return {Function}
-		 */
-		getZComposition: function ( state, getters ) {
-			/**
-			 * @param {number} rowId
-			 * @return {Row | undefined}
-			 */
-			function findZComposition( rowId ) {
-				return getters.getRowByKeyPath( [ Constants.Z_IMPLEMENTATION_COMPOSITION ], rowId );
-			}
-			return findZComposition;
-		},
-
-		/**
-		 * Returns the row of a Z14/Implementation's code (Z14K3)
-		 *
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @return {Function}
-		 */
-		getZCodeId: function ( state, getters ) {
-			/**
-			 * @param {number} rowId
-			 * @return {Row | undefined}
-			 */
-			function findZCode( rowId ) {
-				return getters.getRowByKeyPath( [ Constants.Z_IMPLEMENTATION_CODE ], rowId );
-			}
-			return findZCode;
-		},
-
-		/**
-		 * Returns the Zid of the function (Z14K1) of a given Z14/Implementation
-		 *
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @return {Function}
-		 */
-		getZCodeFunction: function ( state, getters ) {
+		getZCodeString: function ( state, getters ) {
 			/**
 			 * @param {number} rowId
 			 * @return {string | undefined}
 			 */
-			function findZFunction( rowId ) {
-				const functionRow = getters.getRowByKeyPath( [ Constants.Z_IMPLEMENTATION_FUNCTION ], rowId );
-				return getters.getZReferenceTerminalValue( functionRow.id );
+			function findZCode( rowId ) {
+				const codeRow = getters.getRowByKeyPath( [ Constants.Z_CODE_CODE ], rowId );
+				return codeRow ? getters.getZStringTerminalValue( codeRow.id ) : undefined;
 			}
+			return findZCode;
+		},
 
-			return findZFunction;
+		/**
+		 * Returns the row of a Z16/Code programming language key (Z16K1)
+		 *
+		 * TODO (T296815); Assumes programming language is always a literal.
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZCodeProgrammingLanguage: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {string | undefined}
+			 */
+			function findZCodeLanguage( rowId ) {
+				const languageRow = getters.getRowByKeyPath( [
+					Constants.Z_CODE_LANGUAGE,
+					Constants.Z_PROGRAMMING_LANGUAGE_CODE
+				], rowId );
+				return languageRow ? getters.getZStringTerminalValue( languageRow.id ) : undefined;
+			}
+			return findZCodeLanguage;
 		},
 
 		/**
@@ -2502,6 +2571,48 @@ module.exports = exports = {
 		},
 
 		/**
+		 * Sets the new implementation key and removes the previous one when changing
+		 * an implementation content from code to composition or viceversa. These keys
+		 * need to be exclusive and the content for the new key needs to be correctly
+		 * initialized with either a ZCode/Z16 object or with a ZFunctionCall/Z7.
+		 *
+		 * @param {Object} context
+		 * @param {Object} payload
+		 * @param {number} payload.parentId
+		 * @param {string} payload.key
+		 * @return {Promise}
+		 */
+		setZImplementationContentType: function ( context, payload ) {
+			const allKeys = [
+				Constants.Z_IMPLEMENTATION_CODE,
+				Constants.Z_IMPLEMENTATION_COMPOSITION,
+				Constants.Z_IMPLEMENTATION_BUILT_IN
+			];
+			const removeKeys = allKeys.filter( function ( key ) {
+				return ( key !== payload.key );
+			} );
+			// Remove unchecked implementation types
+			removeKeys.forEach( function ( key ) {
+				const keyRow = context.getters.getRowByKeyPath( [ key ], payload.parentId );
+				if ( keyRow ) {
+					context.dispatch( 'removeZObjectChildren', keyRow.id );
+					context.dispatch( 'removeZObject', keyRow.id );
+				}
+			} );
+			// Get new implementation content
+			const blankType = ( payload.key === Constants.Z_IMPLEMENTATION_CODE ) ?
+				Constants.Z_CODE :
+				Constants.Z_FUNCTION_CALL;
+			const blankObject = context.getters.createObjectByType( { type: blankType } );
+			// Add new key-value
+			context.dispatch( 'injectKeyValueFromRowId', {
+				rowId: payload.parentId,
+				key: payload.key,
+				value: blankObject
+			} );
+		},
+
+		/**
 		 * Most atomic action to edit the state. Perform the atomic mutation (index, value)
 		 *
 		 * @param {Object} context
@@ -2609,6 +2720,7 @@ module.exports = exports = {
 			const parentRow = context.getters.getRowById( payload.rowId );
 			const nextRowId = context.getters.getNextRowId;
 			const rows = zobjectTreeUtils.convertZObjectToRows( value, parentRow, nextRowId, false, 0, false );
+
 			rows.forEach( function ( row ) {
 				context.commit( 'pushRow', row );
 			} );

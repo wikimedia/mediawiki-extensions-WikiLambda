@@ -10,8 +10,7 @@
 	-->
 	<div :class="rootClass">
 		<!-- Key -->
-		<p
-			v-if="renderKeyBlock"
+		<div
 			class="ext-wikilambda-key-block"
 			:class="[ expandedModeClass, nestingDepthClass, editModeClass ]"
 		>
@@ -21,7 +20,7 @@
 				@toggle="toggleExpanded"
 			></wl-expanded-toggle>
 			<wl-localized-label
-				v-if="keyLabel"
+				v-if="keyLabel && !hideKey"
 				:class="expandedModeLabelClass"
 				:label-data="keyLabel"
 			></wl-localized-label>
@@ -32,9 +31,9 @@
 				:menu-items="contextMenuItems"
 				@context-action="contextMenuAction"
 			></wl-context-menu>
-		</p>
+		</div>
 		<!-- Value -->
-		<p
+		<div
 			class="ext-wikilambda-value-block"
 			:class="paddedClass"
 		>
@@ -52,7 +51,7 @@
 				@set-type="setType"
 				@change-event="changeEvent"
 			></component>
-		</p>
+		</div>
 	</div>
 </template>
 
@@ -70,6 +69,7 @@ var
 	ZReference = require( './ZReference.vue' ),
 	ZBoolean = require( './ZBoolean.vue' ),
 	ZFunctionCall = require( './ZFunctionCall.vue' ),
+	ZImplementation = require( './ZImplementation.vue' ),
 	ZTypedList = require( './ZTypedList.vue' ),
 	LabelData = require( '../../store/classes/LabelData.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
@@ -85,6 +85,7 @@ module.exports = exports = {
 		'wl-context-menu': ContextMenu,
 		'wl-z-code': ZCode,
 		'wl-z-function-call': ZFunctionCall,
+		'wl-z-implementation': ZImplementation,
 		'wl-z-monolingual-string': ZMonolingualString,
 		'wl-z-object-key-value-set': ZObjectKeyValueSet,
 		'wl-z-object-type': ZObjectType,
@@ -107,6 +108,11 @@ module.exports = exports = {
 		listType: {
 			type: String,
 			default: null
+		},
+		hideKey: {
+			type: Boolean,
+			required: false,
+			default: false
 		}
 	},
 	data: function () {
@@ -205,7 +211,6 @@ module.exports = exports = {
 						this.getUserZlangZID
 					);
 				}
-
 				return this.getLabelData( this.key );
 			},
 
@@ -417,6 +422,23 @@ module.exports = exports = {
 					return ( this.parentExpectedType === Constants.Z_OBJECT );
 				}
 
+				// TERMINAL rules for implementation:
+				// * no expansion allowed for implementation component
+				// * no expansion allowed for target function reference
+				// * no expansion allowed for code component
+				//   * TODO (T296815): This is because the programming language selection
+				//     is hardcoded and it must only set literal Z61 with very limited values.
+				//     Once this is fixed, we will be able to edit this, and select reference
+				//     to persisted languages. When that happens, we'll need to remove this
+				//     restriction and allow for code component to be expanded.
+				if (
+					( this.type === Constants.Z_IMPLEMENTATION ) ||
+					( this.key === Constants.Z_IMPLEMENTATION_CODE ) ||
+					( this.key === Constants.Z_IMPLEMENTATION_FUNCTION )
+				) {
+					return false;
+				}
+
 				// TERMINAL rules for both view and edit:
 				// If the key is Z1K1:
 				if ( this.key === Constants.Z_OBJECT_TYPE ) {
@@ -468,6 +490,15 @@ module.exports = exports = {
 				if ( this.type === Constants.Z_TYPED_LIST ) {
 					return 'wl-z-typed-list';
 				}
+				// Implementation doesn't have an expanded mode
+				if ( this.type === Constants.Z_IMPLEMENTATION ) {
+					return 'wl-z-implementation';
+				}
+				// Code doesn't have an expanded mode
+				if ( ( this.type === Constants.Z_CODE ) ) {
+					return 'wl-z-code';
+				}
+
 				if ( ( this.type === Constants.Z_FUNCTION_CALL ) && !this.expanded ) {
 					return 'wl-z-function-call';
 				}
@@ -480,12 +511,8 @@ module.exports = exports = {
 				if ( ( this.type === Constants.Z_STRING ) && !this.expanded ) {
 					return 'wl-z-string';
 				}
-
 				if ( ( this.type === Constants.Z_BOOLEAN ) && !this.expanded ) {
 					return 'wl-z-boolean';
-				}
-				if ( ( this.type === Constants.Z_CODE ) && !this.expanded ) {
-					return 'wl-z-code';
 				}
 
 				// If there's no builtin component, always show expanded mode
@@ -535,22 +562,14 @@ module.exports = exports = {
 						value: Constants.contextMenuItems.DELETE_LIST_ITEM
 					} ];
 				}
-			},
-
-			/**
-			 * Do not render the key block if none of the conditions exist.
-			 * The <p> tag has default padding that we do not want if no content is rendered.
-			 *
-			 * @return {boolean}
-			 */
-			renderKeyBlock: function () {
-				return this.hasExpandedMode || this.keyLabel || this.showContextMenu;
 			}
-		} ),
+		}
+	),
 	methods: $.extend( mapActions( [
 		'changeType',
 		'setValueByRowIdAndPath',
 		'setZFunctionCallArguments',
+		'setZImplementationContentType',
 		'removeItemFromTypedList'
 	] ),
 	{
@@ -560,11 +579,12 @@ module.exports = exports = {
 		 * the clearing of the old content and the initialization of a new
 		 * scaffolding object representing the new type.
 		 *
-		 * FIXME: we should not be using this to add a list item
+		 * TODO (T334604): we should not be using this method to add a list item
 		 *
 		 * @param {Object} payload
 		 * @param {Object} payload.keyPath sequence of keys till the value to edit
 		 * @param {Object | Array | string} payload.value new value
+		 * @param {boolean} payload.append whether to append a new blank object to a list
 		 */
 		setType: function ( payload ) {
 			this.changeType( {
@@ -624,6 +644,17 @@ module.exports = exports = {
 				} );
 			}
 
+			// 4. If we are changing an implementation type, we need to clear
+			// the unselected key and fill the other one with a blank value.
+			if ( this.type === Constants.Z_IMPLEMENTATION ) {
+				const contentType = payload.keyPath[ 0 ];
+				this.setZImplementationContentType( {
+					parentId: this.rowId,
+					key: contentType
+				} );
+				return;
+			}
+
 			// SIMPLE changes
 			// They don't affect the rest of the ZObject, only this key-value
 			this.setValueByRowIdAndPath( {
@@ -675,6 +706,7 @@ module.exports = exports = {
 
 .ext-wikilambda-key-value {
 	flex: 1;
+	margin-bottom: @spacing-75;
 
 	.ext-wikilambda-key-value-inherit {
 		display: inherit;
@@ -703,7 +735,7 @@ module.exports = exports = {
 
 		label {
 			text-transform: capitalize;
-			line-height: @size-125;
+			line-height: 1.6;
 		}
 
 		&.ext-wikilambda-expanded-off {
@@ -711,7 +743,7 @@ module.exports = exports = {
 			font-weight: @font-weight-normal;
 
 			&.ext-wikilambda-edit-on {
-				margin-bottom: @spacing-50;
+				margin-bottom: @spacing-25;
 			}
 		}
 

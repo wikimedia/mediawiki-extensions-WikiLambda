@@ -1,29 +1,48 @@
 <template>
 	<!--
-		WikiLambda Vue component for Z6/String objects.
+		WikiLambda Vue component for Z16/Code objects.
 
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
 	<div class="ext-wikilambda-code">
-		<span v-if="!edit">{{ selectedLanguage }}</span>
-		<wl-select
-			v-else
-			v-model:selected="selectedLanguage"
-			class="ext-wikilambda-zcode__language-selector"
-			:menu-items="programmingLangsList"
-			:default-label="$i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
-			:fit-width="true"
-			@update:selected="selectLanguage"
-		>
-		</wl-select>
-		<code-editor
-			class="ext-wikilambda-zcode__code-editor"
-			:mode="selectedLanguage"
-			:read-only="!edit"
-			:value="editorValue"
-			@change="updateCode"
-		></code-editor>
+		<!-- Programming language block -->
+		<div class="ext-wikilambda-key-value">
+			<div class="ext-wikilambda-key-block">
+				<label>{{ programmingLanguageLabel }}</label>
+			</div>
+			<div class="ext-wikilambda-value-block">
+				<span
+					v-if="!edit"
+					class="ext-wikilambda-value-text"
+				>{{ programmingLanguageValue }}</span>
+				<wl-select
+					v-else
+					v-model:selected="programmingLanguageValue"
+					class="ext-wikilambda-value-input ext-wikilambda-code__language-selector"
+					:menu-items="programmingLanguageMenuItems"
+					:default-label="$i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
+					:fit-width="true"
+					@update:selected="selectLanguage"
+				>
+				</wl-select>
+			</div>
+		</div>
+		<!-- Code editor block -->
+		<div class="ext-wikilambda-key-value">
+			<div class="ext-wikilambda-key-block">
+				<label>{{ codeLabel }}</label>
+			</div>
+			<div class="ext-wikilambda-value-block">
+				<code-editor
+					class="ext-wikilambda-code__code-editor"
+					:mode="programmingLanguageValue"
+					:read-only="!edit"
+					:value="editorValue"
+					@change="updateCode"
+				></code-editor>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -67,42 +86,85 @@ module.exports = exports = {
 		mapGetters( [
 			'getAllProgrammingLangs',
 			'getErrors',
-			'getZCodeLanguage',
-			'getZCode',
-			'getZStringTerminalValue',
-			'getZCodeFunction',
-			'getZarguments'
+			'getLabel',
+			'getZCodeProgrammingLanguage',
+			'getZCodeString',
+			'getZFunctionArgumentDeclarations',
+			'getZImplementationFunctionZid'
 		] ),
 		{
-			codeItem: function () {
-				return this.getZCode( this.rowId );
+			/**
+			 * Returns the label of the key Z16K2
+			 *
+			 * @return {string}
+			 */
+			codeLabel: function () {
+				return this.getLabel( Constants.Z_CODE_CODE );
 			},
+
+			/**
+			 * Terminal string with the code of the function
+			 * implementation or undefined if not found
+			 *
+			 * @return {string | undefined}
+			 */
 			codeValue: function () {
-				return this.getZStringTerminalValue( this.codeItem.id );
+				return this.getZCodeString( this.rowId );
 			},
-			zCodeProgrammingLanguage: function () {
-				return this.getZCodeLanguage( this.rowId );
+
+			/**
+			 * Returns the label of the key Z16K1
+			 *
+			 * @return {string}
+			 */
+			programmingLanguageLabel: function () {
+				return this.getLabel( Constants.Z_CODE_LANGUAGE );
 			},
-			zCodeProgrammingValue: function () {
-				return this.getZStringTerminalValue( this.zCodeProgrammingLanguage.id );
-			},
-			zFunction: function () {
-				return this.getZCodeFunction( this.parentId );
-			},
-			selectedFunctionArguments: function () {
-				return Object.keys( this.getZarguments ).map( function ( arg ) {
-					return this.getZarguments[ arg ];
-				}.bind( this ) );
-			},
-			selectedLanguage: {
+
+			/**
+			 * Terminal string with the programming language in which
+			 * the code is written or undefined if not found
+			 *
+			 * @return {string | undefined}
+			 */
+			programmingLanguageValue: {
 				get: function () {
-					return this.zCodeProgrammingValue || '';
+					return this.getZCodeProgrammingLanguage( this.rowId ) || '';
 				},
 				set: function ( val ) {
 					this.selectLanguage( val );
 				}
 			},
-			programmingLangsList: function () {
+
+			/**
+			 * Zid of the target function that this code will implement
+			 *
+			 * @return {string | undefined }
+			 */
+			functionZid: function () {
+				return this.getZImplementationFunctionZid( this.parentId );
+			},
+
+			/**
+			 * Returns an array of strings with the keys of the selected
+			 * target function for the implementation (Z14K1)
+			 *
+			 * @return {Array}
+			 */
+			functionArgumentKeys: function () {
+				return this.getZFunctionArgumentDeclarations( this.functionZid )
+					.map( function ( arg ) {
+						return arg[ Constants.Z_ARGUMENT_KEY ];
+					} );
+			},
+
+			/**
+			 * Returns the appropriately formatted menu items to load the wl-select
+			 * component with the different programming language options
+			 *
+			 * @return {Array}
+			 */
+			programmingLanguageMenuItems: function () {
 				var programmingLangs = [];
 				if ( this.getAllProgrammingLangs.length > 0 ) {
 					for ( var lang in this.getAllProgrammingLangs ) {
@@ -126,40 +188,57 @@ module.exports = exports = {
 						);
 					}
 				}
-
 				return programmingLangs;
 			},
+
+			/**
+			 * Returns whether the code object is in an error state
+			 *
+			 * @return {boolean}
+			 */
 			errorState: function () {
 				// the error is not guaranteed to exist
-				if ( this.getErrors[ this.zobjectId ] ) {
-					return this.getErrors[ this.zobjectId ].state;
+				if ( this.getErrors[ this.rowId ] ) {
+					return this.getErrors[ this.rowId ].state;
 				}
-
 				return false;
 			},
+
+			/**
+			 * Returns the localized text that describes the error, if any,
+			 * else returns an emoty string.
+			 *
+			 * @return {string}
+			 */
 			errorMessage: function () {
-				if ( this.getErrors[ this.zobjectId ] ) {
-					const messageStr = this.getErrors[ this.zobjectId ].message;
+				if ( this.getErrors[ this.rowId ] && this.getErrors[ this.rowId ].state ) {
+					const messageStr = this.getErrors[ this.rowId ].message;
 					return this.$i18n( messageStr ).text();
 				}
-				return null;
+				return '';
 			},
+
+			/**
+			 * Returns the string identifying the error type, if any,
+			 * else returns undefined.
+			 *
+			 * @return {string | undefined}
+			 */
 			errorType: function () {
-				if ( this.getErrors[ this.zobjectId ] ) {
-					return this.getErrors[ this.zobjectId ].type;
-				}
-				return null;
+				return this.getErrors[ this.rowId ] ? this.getErrors[ this.rowId ].type : undefined;
 			}
 		}
 	),
 	methods: $.extend(
 		mapActions( [
+			'fetchZKeys',
 			'fetchAllZProgrammingLanguages',
 			'setError'
 		] ),
 		{
 			/**
-			 * Sets the value Z_PROGRAMMING_LANGUAGE_CODE.
+			 * Sets the value of the Code programming language key (Z16K1) and
+			 * initializes the value of the of the Code content key (Z16K2)
 			 *
 			 * @param {string} value
 			 */
@@ -179,13 +258,19 @@ module.exports = exports = {
 				let updatedBoilerPlateCode = '';
 				switch ( value ) {
 					case 'javascript':
-						updatedBoilerPlateCode = 'function ' + this.zFunction + '( ' + this.selectedFunctionArguments + ' ) {\n\n}';
+						updatedBoilerPlateCode = 'function ' +
+							this.functionZid + '( ' +
+							this.functionArgumentKeys.join( ', ' ) + ' ) {\n\n}';
 						break;
 					case 'python':
-						updatedBoilerPlateCode = 'def ' + this.zFunction + '(' + this.selectedFunctionArguments + '):\n\t';
+						updatedBoilerPlateCode = 'def ' +
+							this.functionZid + '(' +
+							this.functionArgumentKeys.join( ', ' ) + '):\n\t';
 						break;
 					case 'lua':
-						updatedBoilerPlateCode = 'function ' + this.zFunction + '(' + this.selectedFunctionArguments + ')\n\t\nend';
+						updatedBoilerPlateCode = 'function ' +
+							this.functionZid + '(' +
+							this.functionArgumentKeys.join( ', ' ) + ')\n\t\nend';
 						break;
 					default:
 						break;
@@ -196,6 +281,12 @@ module.exports = exports = {
 					value: updatedBoilerPlateCode
 				} );
 			},
+
+			/**
+			 * Updates the value of the Code content key (Z16K2)
+			 *
+			 * @param {string} code
+			 */
 			updateCode: function ( code ) {
 				// there is an edge case where acejs will trigger an empty change that we process as an event object
 				// we don't want to update our object with that bad data
@@ -207,7 +298,7 @@ module.exports = exports = {
 					} );
 
 					this.setError( {
-						internalId: this.zobjectId,
+						internalId: this.rowId,
 						errorState: false
 					} );
 				}
@@ -228,6 +319,7 @@ module.exports = exports = {
 		}
 	},
 	mounted: function () {
+		this.fetchZKeys( { zids: [ Constants.Z_CODE ] } );
 		if ( this.getAllProgrammingLangs.length <= 0 ) {
 			this.fetchAllZProgrammingLanguages();
 		}
@@ -238,21 +330,24 @@ module.exports = exports = {
 <style lang="less">
 @import '../../ext.wikilambda.edit.variables.less';
 
-.ext-wikilambda-zcode {
-	display: block;
-	padding: 1em;
-	outline: 1px dashed #888;
-	max-width: 600px;
+.ext-wikilambda-code {
+	& > .ext-wikilambda-key-value {
+		& > .ext-wikilambda-key-block {
+			margin-bottom: 0;
 
-	&__language-selector {
-		width: 200px;
-		margin-bottom: @spacing-50;
-	}
-}
+			label {
+				font-weight: bold;
+				color: @color-base;
+			}
+		}
 
-@media only screen and ( min-width: 600px ) {
-	.ext-wikilambda-zcode {
-		width: 600px;
+		& > .ext-wikilambda-value-block {
+			margin-bottom: @spacing-25;
+
+			.ext-wikilambda-value-input {
+				margin-top: @spacing-25;
+			}
+		}
 	}
 }
 </style>

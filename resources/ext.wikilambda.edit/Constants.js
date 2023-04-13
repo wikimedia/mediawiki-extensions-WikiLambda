@@ -172,6 +172,7 @@ var Constants = {
 	},
 	builtinComponents = {
 		[ Constants.Z_FUNCTION_CALL ]: 'wl-z-function-call',
+		[ Constants.Z_IMPLEMENTATION ]: 'wl-z-implementation',
 		[ Constants.Z_MONOLINGUALSTRING ]: 'wl-z-monolingual-string',
 		[ Constants.Z_STRING ]: 'wl-z-string',
 		[ Constants.Z_REFERENCE ]: 'wl-z-reference',
@@ -182,11 +183,10 @@ var Constants = {
 	linkedTypes = [
 		Constants.Z_TYPE,
 		Constants.Z_TESTER,
-		Constants.Z_BOOLEAN,
 		Constants.Z_IMPLEMENTATION,
 		Constants.Z_FUNCTION,
-		Constants.Z_NATURAL_LANGUAGE,
-		Constants.Z_PROGRAMMING_LANGUAGE
+		Constants.Z_NATURAL_LANGUAGE
+		// TODO (T296815): Constants.Z_PROGRAMMING_LANGUAGE
 	],
 	resolverTypes = [
 		Constants.Z_REFERENCE,

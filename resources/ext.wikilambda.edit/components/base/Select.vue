@@ -75,7 +75,7 @@ module.exports = exports = {
 			if ( !this.fitWidth ) {
 				return 'auto';
 			}
-			return '0ch';
+			return '10ch';
 		}
 	}
 };

@@ -432,6 +432,22 @@ var Constants = require( '../Constants.js' ),
 							}
 						};
 
+					case Constants.Z_CODE:
+						// Empty code:
+						// {
+						//  Z1K1: Z16
+						//  Z16K1: { Z1K1: Z61, Z61K1: '' },
+						//  Z16K2: ''
+						// }
+						return {
+							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_CODE,
+							[ Constants.Z_CODE_LANGUAGE ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_PROGRAMMING_LANGUAGE,
+								[ Constants.Z_PROGRAMMING_LANGUAGE_CODE ]: ''
+							},
+							[ Constants.Z_CODE_CODE ]: ''
+						};
+
 					case Constants.Z_TESTER:
 						// Empty implementation
 						// {
