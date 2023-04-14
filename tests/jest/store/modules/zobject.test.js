@@ -1188,6 +1188,182 @@ describe( 'zobject Vuex module', function () {
 				expect( stringType ).toBe( expectedType );
 			} );
 		} );
+
+		describe( 'getZStringTerminalValue', () => {
+			var getters;
+			beforeEach( () => {
+				getters = {};
+				getters.getRowById = zobjectModule.getters.getRowById( state );
+				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+			} );
+
+			it( 'returns the terminal value of a zstring when rowId corresponds to parent object row', () => {
+				state.zobject = tableDataToRowObjects( [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z1K1', value: Constants.Z_STRING, parent: 0 },
+					{ id: 2, key: 'Z6K1', value: 'myString', parent: 0 }
+				] );
+
+				const expected = 'myString';
+				expect( zobjectModule.getters.getZStringTerminalValue( state, getters )( 0 ) ).toBe( expected );
+			} );
+
+			it( 'returns the terminal value of a zstring when rowId corresponds to the row with the ZString value', () => {
+				state.zobject = tableDataToRowObjects( [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z1K1', value: Constants.Z_STRING, parent: 0 },
+					{ id: 2, key: 'Z6K1', value: 'myString', parent: 0 }
+				] );
+
+				const expected = 'myString';
+				expect( zobjectModule.getters.getZStringTerminalValue( state, getters )( 2 ) ).toBe( expected );
+			} );
+
+			it( 'returns undefined if a non-existent rowId is provided', () => {
+				state.zobject = tableDataToRowObjects( [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z1K1', value: Constants.Z_STRING, parent: 0 },
+					{ id: 2, key: 'Z6K1', value: 'myString', parent: 0 }
+				] );
+
+				expect( zobjectModule.getters.getZStringTerminalValue( state, getters )( 3 ) ).toBeUndefined();
+			} );
+		} );
+
+		describe( 'getZReferenceTerminalValue', () => {
+			var getters;
+			beforeEach( () => {
+				getters = {};
+				getters.getRowById = zobjectModule.getters.getRowById( state );
+				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+			} );
+
+			it( 'returns the terminal value of a zreference when rowId corresponds to the row with the reference value', () => {
+				state.zobject = tableDataToRowObjects( [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 0 },
+					{ id: 2, key: 'Z9K1', value: 'Z10001', parent: 0 }
+				] );
+
+				const expected = 'Z10001';
+				expect( zobjectModule.getters.getZReferenceTerminalValue( state, getters )( 2 ) ).toBe( expected );
+			} );
+
+			it( 'returns the terminal value of a zreference when rowId corresponds to parent object row', () => {
+				state.zobject = tableDataToRowObjects( [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 0 },
+					{ id: 2, key: 'Z9K1', value: 'Z10001', parent: 0 }
+				] );
+
+				const expected = 'Z10001';
+				expect( zobjectModule.getters.getZReferenceTerminalValue( state, getters )( 0 ) ).toBe( expected );
+			} );
+
+			it( 'returns undefined if a non-existent rowId is provided', () => {
+				state.zobject = tableDataToRowObjects( [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 0 },
+					{ id: 2, key: 'Z9K1', value: 'Z10001', parent: 0 }
+				] );
+
+				expect( zobjectModule.getters.getZReferenceTerminalValue( state, getters )( 3 ) ).toBeUndefined();
+			} );
+		} );
+
+		describe( 'ZMonolingualString', () => {
+			describe( 'getZMonolingualTextValue', () => {
+				var getters;
+				beforeEach( () => {
+					getters = {};
+					getters.getRowById = zobjectModule.getters.getRowById( state );
+					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+					getters.getZStringTerminalValue = zobjectModule.getters.getZStringTerminalValue( state, getters );
+
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+						{ id: 1, key: 'Z1K1', value: Constants.Z_MONOLINGUALSTRING, parent: 0 },
+						{ id: 2, key: 'Z11K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+						{ id: 3, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 2 },
+						{ id: 4, key: 'Z9K1', value: 'Z1002', parent: 2 },
+						{ id: 5, key: 'Z11K2', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+						{ id: 6, key: 'Z1K1', value: Constants.Z_STRING, parent: 5 },
+						{ id: 7, key: 'Z6K1', value: 'mystring', parent: 5 }
+					] );
+				} );
+				it( 'gets the text value of a ZMonolingualString', () => {
+					const expected = 'mystring';
+
+					expect( zobjectModule.getters.getZMonolingualTextValue( state, getters )( 0 ) ).toBe( expected );
+				} );
+
+				it( 'should return undefined when an incorrect rowId is passed in', () => {
+					expect( zobjectModule.getters.getZMonolingualTextValue( state, getters )( 4 ) ).toBeUndefined();
+				} );
+			} );
+
+			describe( 'getZMonolingualLangValue', () => {
+				var getters;
+				beforeEach( () => {
+					getters = {};
+					getters.getRowById = zobjectModule.getters.getRowById( state );
+					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+					getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
+					getters.getZReferenceTerminalValue =
+					getters.getZObjectTerminalValue =
+					zobjectModule.getters.getZObjectTerminalValue( state, getters );
+					getters.getZReferenceTerminalValue =
+					zobjectModule.getters.getZReferenceTerminalValue( state, getters );
+					getters.getZObjectTypeByRowId =
+					zobjectModule.getters.getZObjectTypeByRowId( state, getters );
+				} );
+
+				it( 'gets the language value of a ZMonolingualString when the language is a Z_REFERENCE', () => {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+						{ id: 1, key: 'Z1K1', value: Constants.Z_MONOLINGUALSTRING, parent: 0 },
+						{ id: 2, key: 'Z11K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+						{ id: 3, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 2 },
+						{ id: 4, key: 'Z9K1', value: 'Z1002', parent: 2 },
+						{ id: 5, key: 'Z11K2', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+						{ id: 6, key: 'Z1K1', value: Constants.Z_STRING, parent: 5 },
+						{ id: 7, key: 'Z6K1', value: 'mystring', parent: 5 }
+					] );
+
+					const expected = 'Z1002';
+
+					expect( zobjectModule.getters.getZMonolingualLangValue( state, getters )( 0 ) ).toBe( expected );
+				} );
+
+				it( 'gets the language value of a ZMonolingualString when the language is a Z_NATURAL_LANGUAGE', () => {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+						{ id: 1, key: 'Z1K1', value: Constants.Z_MONOLINGUALSTRING, parent: 0 },
+						{ id: 2, key: 'Z11K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+						{ id: 3, key: 'Z1K1', value: Constants.Z_NATURAL_LANGUAGE, parent: 2 },
+						{ id: 4, key: 'Z60K1', value: Constants.ROW_VALUE_OBJECT, parent: 2 },
+						{ id: 5, key: 'Z1K1', value: Constants.Z_STRING, parent: 4 },
+						{ id: 6, key: 'Z6K1', value: 'Z1002', parent: 4 },
+						{ id: 7, key: 'Z11K2', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+						{ id: 8, key: 'Z1K1', value: Constants.Z_STRING, parent: 7 },
+						{ id: 9, key: 'Z6K1', value: 'mystring', parent: 7 }
+					] );
+
+					const expected = 'Z1002';
+
+					expect( zobjectModule.getters.getZMonolingualLangValue( state, getters )( 0 ) ).toBe( expected );
+				} );
+
+			} );
+
+		} );
 	} );
 
 	describe( 'Mutations', function () {
