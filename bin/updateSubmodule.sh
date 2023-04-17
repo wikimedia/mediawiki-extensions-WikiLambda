@@ -1,7 +1,7 @@
 #!/bin/bash -eu
 
 # This script generates a commit that updates the function-schemata submodule
-# ./bin/updateSubmodule.sh        updates to master
+# ./bin/updateSubmodule.sh        updates to main
 # ./bin/updateSubmodule.sh hash   updates to specified hash
 
 # cd to the function-schemata directory
@@ -34,8 +34,8 @@ then
 	TARGET="$1"
 	TARGETDESC="$1"
 else
-	TARGET=origin/master
-	TARGETDESC="HEAD ($(git rev-parse --short origin/master))"
+	TARGET=origin/main
+	TARGETDESC="HEAD ($(git rev-parse --short origin/main))"
 fi
 
 # Generate commit summary
@@ -52,7 +52,7 @@ $NEWCHANGES
 $TASKS
 END
 )
-# Check out master of function-schemata
+# Check out target of function-schemata
 git checkout $TARGET
 
 # Commit
