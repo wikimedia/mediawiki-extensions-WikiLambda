@@ -14,7 +14,7 @@
 			<div class="ext-wikilambda-function-tester-report__header">
 				<!-- TODO (T326665): use codex component when it exists -->
 				<span class="ext-wikilambda-function-tester-report__title"> {{ title }} </span>
-				<cdx-button :aria-label="reloadLabel" type="quiet">
+				<cdx-button :aria-label="reloadLabel" weight="quiet">
 					<cdx-icon
 						:icon="reloadIcon"
 						@click.stop="runTesters"

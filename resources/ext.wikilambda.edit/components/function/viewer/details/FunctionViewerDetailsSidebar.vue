@@ -121,7 +121,7 @@ module.exports = exports = {
 					component: 'cdx-button',
 					props: {
 						class: 'ext-wikilambda-function-viewer-details-sidebar__table-bold',
-						type: 'quiet',
+						weight: 'quiet',
 						action: 'progressive',
 						onClick: this.handleEditClick
 					},
