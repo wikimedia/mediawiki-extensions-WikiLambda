@@ -38,7 +38,7 @@
 	"wikilambda-function-definition-name-label": "Nimi",
 	"wikilambda-function-implementation-name-label": "Nimi",
 	"wikilambda-function-implementation-language-label": "Kieli",
-	"wikilambda-function-definition-name-placeholder": "Anna kuvaavan funktion nimi",
+	"wikilambda-function-definition-name-placeholder": "Esim. muunna Celsius Fahrenheitiksi",
 	"wikilambda-function-definition-name-example": "Katso nimiesimerkit.",
 	"wikilambda-function-definition-alias-label": "Vaihtoehtoiset nimet",
 	"wikilambda-function-definition-alias-example": "Katso esimerkit aliaksista.",

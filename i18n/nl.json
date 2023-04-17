@@ -7,7 +7,8 @@
 			"McDutchie",
 			"Nieuwsgierige Gebruiker",
 			"Robin van der Vliet",
-			"Romaine"
+			"Romaine",
+			"Sjoerddebruin"
 		]
 	},
 	"group-functioneer": "Functionarissen",
@@ -149,6 +150,8 @@
 	"wikilambda-tester-create-new": "Nieuwe test aanmaken",
 	"wikilambda-tester-status-pending": "In behandeling...",
 	"wikilambda-tester-status-running": "Bezig met uitvoeren...",
+	"wikilambda-tester-status-run": "Uitvoeren",
+	"wikilambda-tester-status-cancel": "Annuleren",
 	"wikilambda-tester-status-passed": "Geslaagd",
 	"wikilambda-tester-status-failed": "Mislukt",
 	"wikilambda-tester-results-title": "Test resultaten",
@@ -230,5 +233,6 @@
 	"wikilambda-list-item-label": "Item",
 	"wikilambda-context-menu": "Contextmenu",
 	"wikilambda-add-list-item": "Item toevoegen",
-	"wikilambda-delete-list-item": "Item verwijderen"
+	"wikilambda-delete-list-item": "Item verwijderen",
+	"wikilambda-tester-details": "Details"
 }

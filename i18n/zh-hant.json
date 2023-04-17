@@ -56,6 +56,8 @@
 	"wikilambda-editor-zobject-removekey-tooltip": "從這個 ZList 移除此鍵/值",
 	"wikilambda-implementation-selector-built-in": "內建",
 	"wikilambda-function-are-you-sure-dialog-header": "您確定嗎？",
+	"wikilambda-tester-status-run": "執行",
+	"wikilambda-tester-status-cancel": "取消",
 	"wikilambda-function-implementation-name-label": "名稱",
 	"wikilambda-function-implementation-language-label": "語言",
 	"wikilambda-function-implementation-state-label": "狀態",
@@ -65,5 +67,6 @@
 	"wikilambda-function-viewer-aliases-show-language-button": "顯示更多語言",
 	"wikilambda-function-viewer-aliases-hide-language-button": "隱藏清單",
 	"wikilambda-function-viewer-details-table-view-all": "檢視全部",
-	"wikilambda-function-viewer-details-table-view-less": "檢視較少"
+	"wikilambda-function-viewer-details-table-view-less": "檢視較少",
+	"wikilambda-tester-details": "詳細資訊"
 }
