@@ -91,7 +91,7 @@ This will provide you with your own orchestrator and evaluator service, pointed 
 If you would instead like to develop changes to the function orchestrator or evaluator, you will need to use a locally-built version of the services. To do this for the orchestrator:
 
 * [Get Blubber](https://wikitech.wikimedia.org/wiki/Blubber/Download#Blubber_as_a_(micro)Service) so you can build the service images
-* In a directory outside of your MediaWiki checkout, clone the services via `git clone --recurse-submodules --remote-submodules https://gerrit.wikimedia.org/r/mediawiki/services/function-orchestrator`.
+* In a directory outside of your MediaWiki checkout, clone the services via `git clone --recurse-submodules --remote-submodules https://gitlab.wikimedia.org/repos/abstract-wiki/wikifunctions/function-orchestrator`.
 * From the root of your function-orchestrator installation, run
   `blubber .pipeline/blubber.yaml development | docker build -t local-orchestrator -f - .`
 * Alter `mediawiki/docker-compose.override.yaml` to replace `image: docker-registry...` in the `function-orchestrator` service stanza to read `image: local-orchestrator:latest`.
