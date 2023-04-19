@@ -616,7 +616,9 @@
 				"wikilambda-add-list-item",
 				"wikilambda-delete-list-item",
 				"wikilambda-list-items-type-label",
-				"wikilambda-tester-details"
+				"wikilambda-tester-details",
+				"wikilambda-zobject-to-string-select-object",
+				"wikilambda-zobject-to-string-enter-string"
 			]
 		}
 	},

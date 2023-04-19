@@ -7,7 +7,10 @@
 	-->
 	<div class="ext-wikilambda-function-call">
 		<cdx-icon :icon="icon"></cdx-icon>
-		<wl-z-object-to-string :row-id="rowId">
+		<wl-z-object-to-string
+			:row-id="rowId"
+			v-bind="$attrs"
+		>
 		</wl-z-object-to-string>
 	</div>
 </template>
@@ -24,6 +27,7 @@ module.exports = exports = {
 		'wl-z-object-to-string': ZObjectToString,
 		'cdx-icon': CdxIcon
 	},
+	inheritAttrs: false,
 	props: {
 		rowId: {
 			type: Number,

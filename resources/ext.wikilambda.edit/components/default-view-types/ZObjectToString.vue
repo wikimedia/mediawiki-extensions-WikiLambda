@@ -10,7 +10,15 @@
 		class="ext-wikilambda-zobject-to-string"
 		role="ext-wikilambda-zobject-to-string-link">
 		<div class="ext-wikilambda-zobject-to-string">
-			<a :href="link">{{ name }}</a>
+			<a
+				v-if="isBlank"
+				class="ext-wikilambda-zobject-to-string-blank"
+				@click="expand"
+			>{{ name }}</a>
+			<a
+				v-else
+				:href="link"
+			>{{ name }}</a>
 		</div>
 		<div
 			v-if="hasChildren"
@@ -21,7 +29,10 @@
 				v-for="( row, index ) in childRows"
 				:key="index"
 			>
-				<wl-z-object-to-string :row-id="row.id"></wl-z-object-to-string>
+				<wl-z-object-to-string
+					:row-id="row.id"
+					@expand="expand"
+				></wl-z-object-to-string>
 				<span v-if="hasComma( index )">,&nbsp;</span>
 			</template>)
 		</div>
@@ -54,11 +65,13 @@ module.exports = exports = {
 	computed: $.extend(
 		mapGetters( [
 			'getLabel',
+			'getExpectedTypeOfKey',
 			'getZFunctionCallFunctionId',
 			'getZFunctionCallArguments',
 			'getZReferenceTerminalValue',
 			'getZStringTerminalValue',
 			'getZObjectTypeByRowId',
+			'getZObjectKeyByRowId',
 			'getChildrenByParentRowId'
 		] ),
 		{
@@ -94,6 +107,7 @@ module.exports = exports = {
 			type: function () {
 				return this.getZObjectTypeByRowId( this.rowId );
 			},
+
 			/**
 			 * Returns the value to represent in string format depending
 			 * on the type:
@@ -115,33 +129,82 @@ module.exports = exports = {
 				}
 				return this.type;
 			},
+
 			/**
-			 * Returns the human readable string that identifies this object
+			 * Returns the human readable string that identifies this object.
+			 * If value is undefined, we generate the placeholder depending
+			 * on its type.
 			 *
 			 * @return {string}
 			 */
 			name: function () {
+				if ( this.isBlank ) {
+					return this.placeholder;
+				}
 				return ( this.type === Constants.Z_STRING ) ?
 					this.value :
 					this.getLabel( this.value );
 			},
-			/**
-			 * Returns whether the object represented should link to somewhere
-			 * or not. Only terminal strings don't have a link.
-			 *
-			 * @return {boolean}
-			 */
-			hasLink: function () {
-				return ( this.type !== Constants.Z_STRING );
-			},
+
 			/**
 			 * Returns the link to the object if it has any.
 			 *
 			 * @return {string}
 			 */
 			link: function () {
-				return this.hasLink ? new mw.Title( this.value ).getUrl() : '';
+				return ( this.hasLink && !this.isBlank ) ? new mw.Title( this.value ).getUrl() : '';
 			},
+
+			/**
+			 * Returns the key of the key-value pair of this component.
+			 *
+			 * @return {string}
+			 */
+			key: function () {
+				return this.getZObjectKeyByRowId( this.rowId );
+			},
+
+			/**
+			 * Returns the expected (or bound) type for the value of
+			 * the key-value pair represented in this component.
+			 *
+			 * @return {string}
+			 */
+			expectedType: function () {
+				return this.getExpectedTypeOfKey( this.key );
+			},
+
+			/**
+			 * Returns a type-dependent placeholder to be printed in
+			 * cases of undefined values.
+			 *
+			 * @return {string}
+			 */
+			placeholder: function () {
+				let missingType = this.type;
+				if ( missingType === Constants.Z_STRING ) {
+					return this.$i18n( 'wikilambda-zobject-to-string-enter-string' );
+				}
+				if ( missingType === Constants.Z_FUNCTION_CALL ) {
+					missingType = Constants.Z_FUNCTION;
+				}
+				if ( Constants.RESOLVER_TYPES.indexOf( missingType ) > -1 ) {
+					missingType = this.expectedType;
+				}
+				const label = missingType ? this.getLabel( missingType ) : this.getLabel( Constants.Z_OBJECT );
+				return this.$i18n( 'wikilambda-zobject-to-string-select-object', label );
+			},
+
+			/**
+			 * Returns whether the object represented should link to somewhere
+			 * or not. Only non-blank terminal strings don't have a link.
+			 *
+			 * @return {boolean}
+			 */
+			hasLink: function () {
+				return this.isBlank || ( this.type !== Constants.Z_STRING );
+			},
+
 			/**
 			 * Returns whether this object is terminal (Z6/String or Z9/Reference).
 			 *
@@ -151,6 +214,16 @@ module.exports = exports = {
 				return ( this.type === Constants.Z_STRING ) ||
 					( this.type === Constants.Z_REFERENCE );
 			},
+
+			/**
+			 * Returns whether this object is blank (value is undefined)
+			 *
+			 * @return {boolean}
+			 */
+			isBlank: function () {
+				return ( this.value === undefined );
+			},
+
 			/**
 			 * Returns the array of children to represent in parenthesis.
 			 * These are the arguments in case this object is a function call,
@@ -171,6 +244,7 @@ module.exports = exports = {
 						return ( row.key !== Constants.Z_OBJECT_TYPE );
 					} );
 			},
+
 			/**
 			 * Returns whether this object has any children to represent
 			 *
@@ -190,6 +264,15 @@ module.exports = exports = {
 		 */
 		hasComma: function ( index ) {
 			return ( ( index + 1 ) < this.childRows.length );
+		},
+
+		/**
+		 * Emits event 'expand' when an unselected value is clicked.
+		 * This will trigger the event till the nearest ZObjectKeyValue
+		 * parent, who will toggle the expansion flag.
+		 */
+		expand: function () {
+			this.$emit( 'expand' );
 		}
 	}
 };
@@ -203,5 +286,21 @@ module.exports = exports = {
 	flex-flow: row wrap;
 	justify-content: flex-start;
 	gap: 0;
+
+	a.ext-wikilambda-zobject-to-string-blank {
+		color: @color-destructive;
+	}
+
+	a.ext-wikilambda-zobject-to-string-blank:hover {
+		color: @color-destructive--hover;
+	}
+
+	a.ext-wikilambda-zobject-to-string-blank:active {
+		color: @color-destructive--active;
+	}
+
+	a.ext-wikilambda-zobject-to-string-blank:focus {
+		color: @color-destructive--focus;
+	}
 }
 </style>
