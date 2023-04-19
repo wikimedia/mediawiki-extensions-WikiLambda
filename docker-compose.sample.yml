@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   function-orchestrator:
-    image: docker-registry.wikimedia.org/wikimedia/mediawiki-services-function-orchestrator:latest
+    image: docker-registry.wikimedia.org/repos/abstract-wiki/wikifunctions/function-orchestrator:latest
     ports:
       - 6254:6254
     environment:
