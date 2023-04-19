@@ -88,7 +88,7 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 		return new SpecialRecentChanges(
 			$this->getServiceContainer()->getWatchedItemStore(),
 			$this->getServiceContainer()->getMessageCache(),
-			$this->getServiceContainer()->getDBLoadBalancer(),
+			$this->getServiceContainer()->getDBLoadBalancerFactory(),
 			$this->getServiceContainer()->getUserOptionsLookup()
 		);
 	}
