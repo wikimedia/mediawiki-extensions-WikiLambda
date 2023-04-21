@@ -100,11 +100,11 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 		// We only update the implementation ranking for attached implementations and testers,
 		// and only if all attached implementations and testers are included in the results,
-		// and no results come from the cache.  These vars are used to track those conditions.
+		// and at least one result is live (not from cache).  These vars are used to track
+		// those conditions.
 		$attachedImplementationZids = $targetFunction->getImplementationZids();
 		$attachedTesterZids = $targetFunction->getTesterZids();
-
-		$canUpdateImplementationRanking = true;
+		$canUpdateImplementationRanking = false;
 
 		// 2. For each implementation, run each tester
 		$responseArray = [];
@@ -195,15 +195,6 @@ class ApiPerformTest extends WikiLambdaApiBase {
 						$testResult[ 'testMetadata'] = $possiblyCachedResult->getZMetadata();
 
 						$responseArray[] = $testResult;
-						if ( in_array( $testerZid, $attachedTesterZids ) &&
-							in_array( $implementationZid, $attachedImplementationZids ) ) {
-							// Implementation ranking only involves attached implementations and
-							// testers.  To get the best possible ranking, we want all such
-							// test results to be "fresh" (not from the cache).  Here, we have
-							// a result from the cache, so we choose not to update the ranking.
-							// TODO (T330370): Revisit this strategy when we have more experience with it
-							$canUpdateImplementationRanking = false;
-						}
 						continue;
 					}
 				}
@@ -303,12 +294,20 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				$testResult[ 'validateStatus' ] = $validateResultItem;
 				$testResult[ 'testMetadata' ] = $testMetadata;
 				$responseArray[] = $testResult;
-				// Update bookkeeping for the call to maybeUpdateImplementationRanking
+
+				// Update bookkeeping for the call to maybeUpdateImplementationRanking, if needed.
+				// Implementation ranking only involves attached implementations and testers.
 				if ( in_array( $testerZid, $attachedTesterZids ) &&
 					in_array( $implementationZid, $attachedImplementationZids ) ) {
 					$testerMap[$testerZid] = $testResult;
+					// Since this $testResult is "live" (not from cache), indicating that the
+					// function, implementation, or tester has changed, we should check
+					// if there is an improved implementation ranking
+					// TODO (T330370): Revisit this strategy when we have more experience with it
+					$canUpdateImplementationRanking = true;
 				}
 			}
+			// Update bookkeeping for the call to maybeUpdateImplementationRanking, if needed.
 			if ( in_array( $implementationZid, $attachedImplementationZids ) ) {
 				$implementationMap[ $implementationZid ] = $testerMap;
 			}
