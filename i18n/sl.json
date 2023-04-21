@@ -165,7 +165,7 @@
 	"wikilambda-editor-zobject-addkey": "Dodaj ključ:",
 	"wikilambda-editor-zobject-removekey-tooltip": "Odstrani ta ključ/vrednost iz ZObjekta",
 	"wikilambda-editor-zobject-clearitem-tooltip": "Izbrišite to vrednost",
-	"wikilambda-editor-label-select-programming-language-label": "Izberite programski jezik:",
+	"wikilambda-editor-label-select-programming-language-label": "Izberite programski jezik",
 	"wikilambda-modeselector-genericliteral": "gen.",
 	"wikilambda-publish-lose-changes-prompt": "Če boste stran zapustili, ne da bi jo najprej objavili, boste izgubili svoja urejanja.",
 	"specialpages-group-wikilambda": "Strani Wikifunkcij",

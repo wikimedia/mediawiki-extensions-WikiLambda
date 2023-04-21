@@ -118,7 +118,7 @@
 	"wikilambda-editor-zobject-addkey": "Añadir clave:",
 	"wikilambda-editor-zobject-removekey-tooltip": "Eliminar esta clave/valor del Objeto Z",
 	"wikilambda-editor-zobject-clearitem-tooltip": "Dejar en blanco este valor",
-	"wikilambda-editor-label-select-programming-language-label": "Seleccionar lenguaje de programación:",
+	"wikilambda-editor-label-select-programming-language-label": "Seleccionar lenguaje de programación",
 	"wikilambda-modeselector-genericliteral": "gen",
 	"wikilambda-publish-lose-changes-prompt": "Si te vas sin publicar primero, perderás tus ediciones.",
 	"specialpages-group-wikilambda": "Páginas de Wikifunciones",

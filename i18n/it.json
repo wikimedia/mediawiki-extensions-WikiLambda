@@ -40,7 +40,7 @@
 	"wikilambda-editor-label-addlanguage-label": "Seleziona lingua",
 	"wikilambda-editor-label-removelanguage-tooltip": "Rimuovi questa lingua da questa etichetta",
 	"wikilambda-editor-zobject-addkey": "Aggiungi chiave:",
-	"wikilambda-editor-label-select-programming-language-label": "Seleziona linguaggio di programmazione:",
+	"wikilambda-editor-label-select-programming-language-label": "Seleziona il linguaggio di programmazione",
 	"wikilambda-implementation-selector-code": "Codice",
 	"wikilambda-argref-default-label": "Seleziona un argomento",
 	"wikilambda-implementation-none-found": "Al momento non ci sono implementazioni per questa funzione",

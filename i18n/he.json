@@ -164,7 +164,7 @@
 	"wikilambda-editor-zobject-addkey": "הוספת מפתח:",
 	"wikilambda-editor-zobject-removekey-tooltip": "הסרת המפתח והערך הזה מעצם ה־Z",
 	"wikilambda-editor-zobject-clearitem-tooltip": "לרוקן את הערך הזה",
-	"wikilambda-editor-label-select-programming-language-label": "{{GENDER:|בחר|בחרי}} שפת תכנות:",
+	"wikilambda-editor-label-select-programming-language-label": "{{GENDER:|בחר|בחרי}} שפת תכנות",
 	"wikilambda-modeselector-genericliteral": "כללי",
 	"wikilambda-publish-lose-changes-prompt": "אם {{GENDER:|תעזוב|תעזבי}} מבלי לפרסם, {{GENDER:|תאבד|תאבדי}} את העריכות שלך.",
 	"specialpages-group-wikilambda": "דפי ויקיפונקציות",

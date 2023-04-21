@@ -175,7 +175,7 @@
 	"wikilambda-editor-zobject-addkey": "Ajouter une clé :",
 	"wikilambda-editor-zobject-removekey-tooltip": "Supprimer cette clé/valeur du Z-Objet",
 	"wikilambda-editor-zobject-clearitem-tooltip": "Effacer cette valeur",
-	"wikilambda-editor-label-select-programming-language-label": "Sélectionner le langage de programmation :",
+	"wikilambda-editor-label-select-programming-language-label": "Sélectionner le langage de programmation",
 	"wikilambda-modeselector-genericliteral": "gén.",
 	"wikilambda-publish-lose-changes-prompt": "Si vous quittez sans avoir d’abord publié, vous perdrez vos modifications.",
 	"specialpages-group-wikilambda": "Pages de Wikifonctions",

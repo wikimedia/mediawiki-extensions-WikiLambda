@@ -113,7 +113,7 @@
 	"wikilambda-editor-zobject-addkey": "キーを追加:",
 	"wikilambda-editor-zobject-removekey-tooltip": "このキー/値をZオブジェクトから削除",
 	"wikilambda-editor-zobject-clearitem-tooltip": "この値を空白にする",
-	"wikilambda-editor-label-select-programming-language-label": "プログラミングの言語を選択してください：",
+	"wikilambda-editor-label-select-programming-language-label": "プログラミング言語を選択してください",
 	"wikilambda-modeselector-genericliteral": "汎用",
 	"wikilambda-publish-lose-changes-prompt": "最初に公開せずに終了すると、編集内容が失われます。",
 	"specialpages-group-wikilambda": "ウィキファンクションズのページ",

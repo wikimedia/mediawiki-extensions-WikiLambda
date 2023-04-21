@@ -160,7 +160,7 @@
 	"wikilambda-editor-zobject-addkey": "Adder clave:",
 	"wikilambda-editor-zobject-removekey-tooltip": "Remover iste clave/valor del ZObject",
 	"wikilambda-editor-zobject-clearitem-tooltip": "Vacuar iste valor",
-	"wikilambda-editor-label-select-programming-language-label": "Selige linguage de programmation:",
+	"wikilambda-editor-label-select-programming-language-label": "Seliger linguage de programmation",
 	"wikilambda-modeselector-genericliteral": "gen",
 	"wikilambda-publish-lose-changes-prompt": "Si tu quita sin publicar primo, tu perdera tu modificationes.",
 	"specialpages-group-wikilambda": "Paginas de Wikifunctiones",

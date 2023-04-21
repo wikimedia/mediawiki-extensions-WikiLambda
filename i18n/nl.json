@@ -3,6 +3,7 @@
 		"authors": [
 			"Aranka",
 			"Daanboven",
+			"HanV",
 			"Mainframe98",
 			"McDutchie",
 			"Nieuwsgierige Gebruiker",
@@ -122,7 +123,7 @@
 	"wikilambda-typeselector-label": "Selecteer Type",
 	"wikilambda-function-typeselector-label": "Selecteer een Functie",
 	"wikilambda-editor-label-addlanguage-label": "Kies een taal",
-	"wikilambda-editor-label-select-programming-language-label": "Selecteer programmeertaal:",
+	"wikilambda-editor-label-select-programming-language-label": "Selecteer programmeertaal",
 	"wikilambda-implementation-selector-code": "Code",
 	"wikilambda-implementation-selector-composition": "Samenstelling",
 	"wikilambda-code-editor-label": "Code-editor",
