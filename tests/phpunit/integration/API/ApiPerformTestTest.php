@@ -597,6 +597,36 @@ class ApiPerformTestTest extends ApiTestCase {
 			],
 			null
 		];
+		yield 'Bailing due to relativeThreshold' => [
+			[
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
+				// Average time for Z91302 >= $relativeThreshold * average time for Z91300;
+				// only marginally better so we don't update.
+				// $relativeThreshold is defined in ApiPerformTest.php
+				[ 'Z91300', 'Z8130', '620.049 ms', null, null, true ],
+				[ 'Z91300', 'Z8131', '670 ms', null, null, true ],
+				[ 'Z91301', 'Z8130', '540.026 ms', null, null, true ],
+				[ 'Z91301', 'Z8131', '540 ms', null, null, true ],
+				[ 'Z91302', 'Z8130', '520.026 ms', null, null, true ],
+				[ 'Z91302', 'Z8131', '520.02 ms', null, null, true ]
+			],
+			null
+		];
+		yield 'NOT Bailing due to relativeThreshold, because of status values' => [
+			[
+				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status
+				// Average time for Z91302 >= $relativeThreshold * average time for Z91300,
+				// BUT Z91300 has a false status, so we SHOULD update.
+				// $relativeThreshold is defined in ApiPerformTest.php
+				[ 'Z91300', 'Z8130', '620.049 ms', null, null, true ],
+				[ 'Z91300', 'Z8131', '670 ms', null, null, false ],
+				[ 'Z91301', 'Z8130', '540.026 ms', null, null, true ],
+				[ 'Z91301', 'Z8131', '540 ms', null, null, true ],
+				[ 'Z91302', 'Z8130', '520.026 ms', null, null, true ],
+				[ 'Z91302', 'Z8131', '520.02 ms', null, null, true ]
+			],
+			[ 'Z91302', 'Z91301', 'Z91300' ]
+		];
 		yield 'Request specifies only a single test result' => [
 			[
 				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status

@@ -561,14 +561,10 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 		uasort( $implementationMap, [ self::class, 'compareImplementationStats' ] );
 		// Get the ranked Zids
-		$implementationRankingZids = array_keys( $implementationMap );
 
-		// Bail out if the update isn't well justified
-		// TODO (T329138): Also consider:
-		//   Check if the new first element is only marginally better than
-		//     the (newly reported) average time of $previousFirst.
-		//   Check if all of the average times are roughly indistinguishable.
-		if ( array_key_first( $implementationMap ) === $previousFirst ) {
+		// Bail out if the new first element is the same as the previous
+		$newFirst = array_key_first( $implementationMap );
+		if ( $newFirst === $previousFirst ) {
 			$logger->info(
 				__METHOD__ . ' Bailing: Same first element',
 				[
@@ -581,6 +577,30 @@ class ApiPerformTest extends WikiLambdaApiBase {
 			return;
 		}
 
+		// Bail out if the performance of $newFirst is only marginally better than the
+		// performance of $previousFirst.  Note: if numFailed of $newFirst is less than
+		// numFailed of $previousFirst, then we should *not* bail out.
+		// TODO (T329138): Also consider:
+		//   Check if all of the average times are roughly indistinguishable.
+		$previousFirstStats = $implementationMap[ $previousFirst ];
+		$newFirstStats = $implementationMap[ $newFirst ];
+		$relativeThreshold = 0.8;
+		if ( $newFirstStats[ 'averageTime' ] >= $relativeThreshold * $previousFirstStats[ 'averageTime' ] &&
+			$newFirstStats[ 'numFailed' ] >= $previousFirstStats[ 'numFailed' ] ) {
+			$logger->info(
+				__METHOD__ . ' Bailing: New first element only marginally better than previous',
+				[
+					'functionZid' => $functionZid,
+					'functionRevision' => $functionRevision,
+					'previousFirst' => $previousFirst,
+					'newFirst' => $newFirst,
+					'implementationMap' => $implementationMap
+				]
+			);
+			return;
+		}
+
+		$implementationRankingZids = array_keys( $implementationMap );
 		$logger->info(
 			__METHOD__ . ' Creating update job',
 			[
