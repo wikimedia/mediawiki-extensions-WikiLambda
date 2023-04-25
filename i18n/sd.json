@@ -6,11 +6,15 @@
 	},
 	"wikilambda-persistentzobject-contents": "فھرست",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "ٻولي",
+	"wikilambda-publishnew": "ڇاپيو",
+	"wikilambda-languagelabel": "ٻولي",
 	"wikilambda-metadata-language-column": "ٻولي",
 	"wikilambda-metadata-label-column": "ليبل",
 	"wikilambda-metadata-aka-column": "المعروف/عرف",
+	"wikilambda-function-implementation-language-label": "ٻولي",
 	"wikilambda-function-definition-footer-label": "سنوار جو تَتُ",
 	"wikilambda-editor-name-title": "نالو",
 	"wikilambda-editor-input-default-label": "انپٽ",
+	"wikilambda-discard-edits": "سنوارون ڦٽو ڪريو",
 	"wikilambda-function-viewer-aliases-header": "المعروف/عرف"
 }
