@@ -6,7 +6,8 @@
  */
 'use strict';
 
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
+const { waitFor } = require( '@testing-library/vue' ),
+	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	ZObjectToString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectToString.vue' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
@@ -190,6 +191,101 @@ describe( 'ZObjectToString', () => {
 			it( 'renders each argument with another ZObjectToString component', () => {
 				const wrapper = shallowMount( ZObjectToString );
 				expect( wrapper.findAllComponents( ZObjectToString ) ).toHaveLength( 2 );
+			} );
+		} );
+	} );
+
+	describe( 'with empty values', () => {
+
+		describe( 'for a terminal blank string', () => {
+			beforeEach( () => {
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z6' );
+				getters.getZStringTerminalValue = createGettersWithFunctionsMock( undefined );
+				global.store.hotUpdate( { getters: getters } );
+			} );
+
+			it( 'renders without errors', () => {
+				const wrapper = shallowMount( ZObjectToString );
+				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-text]' ).exists() ).toBe( false );
+				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' ).exists() ).toBe( true );
+			} );
+
+			it( 'renders the string terminal value', () => {
+				const wrapper = shallowMount( ZObjectToString );
+				const stringElement = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
+				expect( stringElement.text() ).toBe( 'Enter String' );
+			} );
+
+			it( 'triggers an expand event when clicking the link', () => {
+				const wrapper = shallowMount( ZObjectToString );
+				const link = wrapper.find( '.ext-wikilambda-zobject-to-string-blank' );
+				link.trigger( 'click' );
+				waitFor( () => expect( wrapper.emitted( 'expand' ) ).toBeTruthy() );
+			} );
+		} );
+
+		describe( 'for a terminal empty reference language', () => {
+			beforeEach( () => {
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z9' );
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z11K1' );
+				getters.getExpectedTypeOfKey = createGettersWithFunctionsMock( 'Z60' );
+				getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( undefined );
+				getters.getLabel = createGettersWithFunctionsMock( 'Language' );
+				global.store.hotUpdate( { getters: getters } );
+			} );
+
+			it( 'renders without errors', () => {
+				const wrapper = shallowMount( ZObjectToString );
+				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' ).exists() ).toBe( true );
+				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-text]' ).exists() ).toBe( false );
+			} );
+
+			it( 'renders the link to referred zobject', () => {
+				const wrapper = shallowMount( ZObjectToString );
+				const linkWrapper = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
+				const referenceLink = linkWrapper.get( 'a' );
+				expect( referenceLink.attributes().href ).toBe( undefined );
+				// TODO: Consider testing that the label is 'Select Language'?
+				expect( referenceLink.text() ).toEqual( 'Select $1' );
+			} );
+
+			it( 'triggers an expand event when clicking the link', () => {
+				const wrapper = shallowMount( ZObjectToString );
+				const link = wrapper.find( '.ext-wikilambda-zobject-to-string-blank' );
+				link.trigger( 'click' );
+				waitFor( () => expect( wrapper.emitted( 'expand' ) ).toBeTruthy() );
+			} );
+		} );
+
+		describe( 'for a function call with an empty function', () => {
+			beforeEach( () => {
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z7' );
+				getters.getZFunctionCallFunctionId = createGettersWithFunctionsMock( undefined );
+				getters.getZFunctionCallArguments = createGettersWithFunctionsMock( [] );
+				getters.getLabel = createGettersWithFunctionsMock( 'Function' );
+				global.store.hotUpdate( { getters: getters } );
+			} );
+
+			it( 'renders without errors', () => {
+				const wrapper = shallowMount( ZObjectToString );
+				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' ).exists() ).toBe( true );
+				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-text]' ).exists() ).toBe( false );
+			} );
+
+			it( 'renders the link to called function', () => {
+				const wrapper = shallowMount( ZObjectToString );
+				const linkWrapper = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
+				const referenceLink = linkWrapper.get( 'a' );
+				expect( referenceLink.attributes().href ).toBe( undefined );
+				// TODO: Consider testing that the label is 'Select Function'?
+				expect( referenceLink.text() ).toEqual( 'Select $1' );
+			} );
+
+			it( 'triggers an expand event when clicking the link', () => {
+				const wrapper = shallowMount( ZObjectToString );
+				const link = wrapper.find( '.ext-wikilambda-zobject-to-string-blank' );
+				link.trigger( 'click' );
+				waitFor( () => expect( wrapper.emitted( 'expand' ) ).toBeTruthy() );
 			} );
 		} );
 	} );

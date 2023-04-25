@@ -50,6 +50,7 @@
 				@set-value="setValue"
 				@set-type="setType"
 				@change-event="changeEvent"
+				@expand="toggleExpanded"
 			></component>
 		</div>
 	</div>
