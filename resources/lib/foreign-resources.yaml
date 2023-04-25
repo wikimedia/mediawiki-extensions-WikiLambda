@@ -1,13 +1,13 @@
 ace:
   license: BSD-3-Clause
-  homepage: https://github.com/ajaxorg/ace-builds 
+  homepage: https://github.com/ajaxorg/ace-builds
   version: 1.14.0
   type: tar
   src: https://codeload.github.com/ajaxorg/ace-builds/tar.gz/v1.14.0
   integrity: sha384-AtmO7vKLml4aY3obu8H3n4P3q6qsuJaG+mpTbX2/SdL8h5dRzOalGVBygKlpYjlh
 
   dest:
-    ace-builds-1.14.0/src/:
+    ace-builds-1.14.0/src:
     ace-builds-1.14.0/ChangeLog.txt:
     ace-builds-1.14.0/LICENSE:
     ace-builds-1.14.0/README.md:

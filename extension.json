@@ -18,7 +18,7 @@
 	"license-name": "MIT",
 	"type": "parserhook",
 	"requires": {
-		"MediaWiki": ">= 1.40.0",
+		"MediaWiki": ">= 1.41.0",
 		"extensions": {
 			"WikimediaMessages": "*"
 		}
@@ -622,6 +622,7 @@
 			]
 		}
 	},
+	"ForeignResourcesDir": "resources/lib",
 	"APIModules": {
 		"wikilambda_fetch": "MediaWiki\\Extension\\WikiLambda\\API\\ApiZObjectFetcher",
 		"wikilambda_edit": "MediaWiki\\Extension\\WikiLambda\\API\\ApiZObjectEditor",
