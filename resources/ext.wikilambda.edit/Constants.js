@@ -173,6 +173,7 @@ var Constants = {
 	builtinComponents = {
 		[ Constants.Z_FUNCTION_CALL ]: 'wl-z-function-call',
 		[ Constants.Z_IMPLEMENTATION ]: 'wl-z-implementation',
+		[ Constants.Z_TESTER ]: 'wl-z-tester',
 		[ Constants.Z_MONOLINGUALSTRING ]: 'wl-z-monolingual-string',
 		[ Constants.Z_STRING ]: 'wl-z-string',
 		[ Constants.Z_REFERENCE ]: 'wl-z-reference',
