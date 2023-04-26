@@ -27,7 +27,7 @@ require_once "$IP/maintenance/Maintenance.php";
 
 class ReloadBuiltinData extends Maintenance {
 
-	// TODO: T260314: magical future of having changes re-apply
+	// TODO (T335418): Magical future of having changes re-apply
 
 	/**
 	 * @var ZObjectStore
