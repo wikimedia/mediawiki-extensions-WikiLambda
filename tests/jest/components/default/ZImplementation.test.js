@@ -98,6 +98,20 @@ describe( 'ZImplementation', () => {
 			expect( typeBlock.find( '.ext-wikilambda-value-block' ).text() ).toBe( 'code' );
 		} );
 
+		it( 'it renders non editable function for a builtin', () => {
+			getters.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K4' );
+			global.store.hotUpdate( { getters: getters } );
+			var wrapper = shallowMount( ZImplementation, {
+				props: {
+					edit: false
+				}
+			} );
+			const functionBlock = wrapper.find( '.ext-wikilambda-implementation-function' );
+			expect( functionBlock.exists() ).toBe( true );
+			expect( functionBlock.findComponent( { name: 'wl-z-object-key-value' } ).exists() ).toBe( true );
+			expect( functionBlock.findComponent( { name: 'wl-z-object-key-value' } ).props( 'edit' ) ).toBe( false );
+		} );
+
 		it( 'it renders the warning message for a builtin', () => {
 			getters.getZImplementationContentType = createGettersWithFunctionsMock( 'Z14K4' );
 			global.store.hotUpdate( { getters: getters } );
@@ -174,7 +188,7 @@ describe( 'ZImplementation', () => {
 			global.store.hotUpdate( { getters: getters } );
 			var wrapper = shallowMount( ZImplementation, {
 				props: {
-					edit: false
+					edit: true
 				}
 			} );
 			const functionBlock = wrapper.find( '.ext-wikilambda-implementation-function' );
@@ -188,7 +202,7 @@ describe( 'ZImplementation', () => {
 			global.store.hotUpdate( { getters: getters } );
 			var wrapper = shallowMount( ZImplementation, {
 				props: {
-					edit: false
+					edit: true
 				}
 			} );
 			const typeBlock = wrapper.find( '.ext-wikilambda-implementation-type' );
