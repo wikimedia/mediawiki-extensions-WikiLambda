@@ -156,6 +156,8 @@
 	"wikilambda-argument-typeselector-label": "Izberite vrsto za ta argument",
 	"wikilambda-function-typeselector-label": "Izberite funkcijo",
 	"wikilambda-return-typeselector-label": "Izberite vrsto za vrnitev",
+	"wikilambda-zobject-to-string-select-object": "Izberi $1",
+	"wikilambda-zobject-to-string-enter-string": "Vnesite niz",
 	"wikilambda-zobjectselector-label": "ZObjekt",
 	"wikilambda-editor-leave-edit-mode-header": "Izhod iz načina urejanja",
 	"wikilambda-editor-label-addlanguage-label": "Izberite jezik",

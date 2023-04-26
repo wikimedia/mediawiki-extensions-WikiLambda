@@ -166,6 +166,8 @@
 	"wikilambda-argument-typeselector-label": "Sélectionner un type pour cet argument",
 	"wikilambda-function-typeselector-label": "Sélectionner une fonction",
 	"wikilambda-return-typeselector-label": "Sélectionner un type à retourner",
+	"wikilambda-zobject-to-string-select-object": "Sélectionner : $1",
+	"wikilambda-zobject-to-string-enter-string": "Saisissez une chaîne",
 	"wikilambda-zobjectselector-label": "Z-Objet",
 	"wikilambda-editor-leave-edit-mode-header": "Quitter le mode modification",
 	"wikilambda-editor-label-addlanguage-label": "Sélectionner la langue",

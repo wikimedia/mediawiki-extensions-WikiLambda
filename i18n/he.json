@@ -155,6 +155,8 @@
 	"wikilambda-argument-typeselector-label": "נא לבחור סוג עבור הארגומנט הזה",
 	"wikilambda-function-typeselector-label": "נא לבחור פונקציה",
 	"wikilambda-return-typeselector-label": "נא לבחור את סוג הערך המוחזר",
+	"wikilambda-zobject-to-string-select-object": "נא לבחור את $1",
+	"wikilambda-zobject-to-string-enter-string": "נא להזין מחרוזת",
 	"wikilambda-zobjectselector-label": "עצם Z",
 	"wikilambda-editor-leave-edit-mode-header": "לעזוב את מצב העריכה",
 	"wikilambda-editor-label-addlanguage-label": "בחירת שפה",
