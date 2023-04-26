@@ -195,6 +195,12 @@ class ApiPerformTest extends WikiLambdaApiBase {
 						$testResult[ 'testMetadata'] = $possiblyCachedResult->getZMetadata();
 
 						$responseArray[] = $testResult;
+						// Update bookkeeping for the call to maybeUpdateImplementationRanking, if needed.
+						// Implementation ranking only involves attached implementations and testers.
+						if ( in_array( $testerZid, $attachedTesterZids ) &&
+							in_array( $implementationZid, $attachedImplementationZids ) ) {
+							$testerMap[$testerZid] = $testResult;
+						}
 						continue;
 					}
 				}
