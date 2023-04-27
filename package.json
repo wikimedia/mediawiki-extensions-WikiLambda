@@ -24,7 +24,7 @@
 		"@wdio/local-runner": "7.16.13",
 		"@wdio/mocha-framework": "7.16.13",
 		"@wdio/spec-reporter": "7.16.13",
-		"@wikimedia/codex": "0.8.0",
+		"@wikimedia/codex": "0.9.1",
 		"eslint-config-wikimedia": "0.24.0",
 		"eslint-plugin-jest": "25.7.0",
 		"grunt": "1.6.1",
