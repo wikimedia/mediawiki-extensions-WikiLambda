@@ -71,6 +71,7 @@ var
 	ZBoolean = require( './ZBoolean.vue' ),
 	ZFunctionCall = require( './ZFunctionCall.vue' ),
 	ZImplementation = require( './ZImplementation.vue' ),
+	ZTester = require( './ZTester.vue' ),
 	ZTypedList = require( './ZTypedList.vue' ),
 	LabelData = require( '../../store/classes/LabelData.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
@@ -87,6 +88,7 @@ module.exports = exports = {
 		'wl-z-code': ZCode,
 		'wl-z-function-call': ZFunctionCall,
 		'wl-z-implementation': ZImplementation,
+		'wl-z-tester': ZTester,
 		'wl-z-monolingual-string': ZMonolingualString,
 		'wl-z-object-key-value-set': ZObjectKeyValueSet,
 		'wl-z-object-type': ZObjectType,
@@ -440,6 +442,16 @@ module.exports = exports = {
 					return false;
 				}
 
+				// TERMINAL rules for tester:
+				// * no expansion allowed for tester component
+				// * no expansion allowed for target function reference
+				if (
+					( this.type === Constants.Z_TESTER ) ||
+					( this.key === Constants.Z_TESTER_FUNCTION )
+				) {
+					return false;
+				}
+
 				// TERMINAL rules for both view and edit:
 				// If the key is Z1K1:
 				if ( this.key === Constants.Z_OBJECT_TYPE ) {
@@ -498,6 +510,10 @@ module.exports = exports = {
 				// Code doesn't have an expanded mode
 				if ( ( this.type === Constants.Z_CODE ) ) {
 					return 'wl-z-code';
+				}
+				// Tester doesn't have an expanded mode
+				if ( this.type === Constants.Z_TESTER ) {
+					return 'wl-z-tester';
 				}
 
 				if ( ( this.type === Constants.Z_FUNCTION_CALL ) && !this.expanded ) {

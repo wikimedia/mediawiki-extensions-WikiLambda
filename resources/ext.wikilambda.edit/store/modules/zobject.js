@@ -2518,6 +2518,8 @@ module.exports = exports = {
 		 * Sets the argument keys to their initial blank values of a function call given
 		 * its rowId when the function ID (Z7K1) changes, and removes the arguments of the
 		 * old function id.
+		 * Exception: When the function call is the value of a tester result validation (Z20K3)
+		 * the first argument should not be added.
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
@@ -2553,6 +2555,12 @@ module.exports = exports = {
 			} );
 
 			// 4. For every key of new arguments: If parent doesn't have it, set it to blank object
+			// 4.a. If parent key is a tester validation function, omit the first argument
+			const parentRow = context.getters.getRowById( payload.parentId );
+			if ( parentRow.key === Constants.Z_TESTER_VALIDATION ) {
+				newArgs.shift();
+			}
+			// 4.b. Initialize all the new function call arguments
 			newArgs.forEach( function ( arg ) {
 				if ( oldKeys.indexOf( arg[ Constants.Z_ARGUMENT_KEY ] ) ) {
 					const blank = context.getters.createObjectByType( {

@@ -4419,6 +4419,46 @@ describe( 'zobject Vuex module', function () {
 				} );
 				expect( context.state.zobject ).toEqual( expected );
 			} );
+
+			it( 'sets only the second argument when its parent is a tester result validation call', function () {
+				context.state.zobject = tableDataToRowObjects( [
+					{ id: 0, key: undefined, parent: undefined, value: 'object' },
+					{ id: 1, key: 'Z1K1', parent: 0, value: 'object' },
+					{ id: 2, key: 'Z1K1', parent: 1, value: 'Z9' },
+					{ id: 3, key: 'Z9K1', parent: 1, value: 'Z20' },
+					{ id: 4, key: 'Z20K3', parent: 0, value: 'object' },
+					{ id: 5, key: 'Z1K1', parent: 4, value: 'object' },
+					{ id: 6, key: 'Z1K1', parent: 5, value: 'Z9' },
+					{ id: 7, key: 'Z9K1', parent: 5, value: 'Z7' },
+					{ id: 8, key: 'Z7K1', parent: 4, value: 'object' },
+					{ id: 9, key: 'Z1K1', parent: 8, value: 'Z9' },
+					{ id: 10, key: 'Z9K1', parent: 8, value: 'Z882' }
+				] );
+				context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
+				const functionZid = 'Z882';
+				const expected = [
+					{ id: 0, key: undefined, parent: undefined, value: 'object' },
+					{ id: 1, key: 'Z1K1', parent: 0, value: 'object' },
+					{ id: 2, key: 'Z1K1', parent: 1, value: 'Z9' },
+					{ id: 3, key: 'Z9K1', parent: 1, value: 'Z20' },
+					{ id: 4, key: 'Z20K3', parent: 0, value: 'object' },
+					{ id: 5, key: 'Z1K1', parent: 4, value: 'object' },
+					{ id: 6, key: 'Z1K1', parent: 5, value: 'Z9' },
+					{ id: 7, key: 'Z9K1', parent: 5, value: 'Z7' },
+					{ id: 8, key: 'Z7K1', parent: 4, value: 'object' },
+					{ id: 9, key: 'Z1K1', parent: 8, value: 'Z9' },
+					{ id: 10, key: 'Z9K1', parent: 8, value: 'Z882' },
+					// Only second argument:
+					{ id: 11, key: 'Z882K2', parent: 4, value: 'object' },
+					{ id: 12, key: 'Z1K1', parent: 11, value: 'Z9' },
+					{ id: 13, key: 'Z9K1', parent: 11, value: '' }
+				];
+				zobjectModule.actions.setZFunctionCallArguments( context, {
+					parentId: 4,
+					functionZid
+				} );
+				expect( context.state.zobject ).toEqual( expected );
+			} );
 		} );
 
 		describe( 'setZImplementationContentType', function () {

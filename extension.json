@@ -292,6 +292,7 @@
 				"ext.wikilambda.edit/components/default-view-types/ZObjectType.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZReference.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZString.vue",
+				"ext.wikilambda.edit/components/default-view-types/ZTester.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZTypedList.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZTypedListType.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZTypedListItem.vue",
