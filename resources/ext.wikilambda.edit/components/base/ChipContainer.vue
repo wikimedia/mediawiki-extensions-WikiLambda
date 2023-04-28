@@ -12,7 +12,6 @@
 			:index="chip.id"
 			:text="chip.value"
 			:readonly="readonly"
-			class="ext-wikilambda-chip-container__item"
 			@edit-chip="editChip"
 			@remove-chip="removeChip"
 		></wl-chip>
@@ -108,28 +107,26 @@ module.exports = exports = {
 	display: flex;
 	flex: 1 auto;
 	flex-flow: wrap;
+	gap: @spacing-25;
 	border-radius: @border-radius-base;
-	padding: 0 @spacing-50;
+	padding: @spacing-25 @spacing-50;
 	border-width: @border-width-base;
 	border-style: @border-style-base;
 	border-color: @border-color-base;
 	box-shadow: @box-shadow-inset-small transparent;
 
-	&__item {
-		margin-right: 5px;
-		margin-top: 3px;
-		margin-bottom: 3px;
+	.ext-wikilambda-chip {
+		margin: 0;
 	}
 
 	&__input {
 		flex-grow: inherit;
-		height: 26px;
-		padding: 2px 0;
+		padding: 0;
 		border: 0;
 		outline: 0;
 		font-family: inherit;
 		font-size: inherit;
-		line-height: 1.43em;
+		height: @spacing-150;
 	}
 }
 </style>

@@ -27,6 +27,7 @@ var Constants = {
 		Z_PERSISTENTOBJECT_VALUE: 'Z2K2',
 		Z_PERSISTENTOBJECT_LABEL: 'Z2K3',
 		Z_PERSISTENTOBJECT_ALIASES: 'Z2K4',
+		Z_PERSISTENTOBJECT_DESCRIPTION: 'Z2K5',
 		Z_KEY: 'Z3',
 		Z_KEY_TYPE: 'Z3K1',
 		Z_KEY_ID: 'Z3K2',
@@ -224,6 +225,8 @@ Constants.BUILTIN_COMPONENTS = builtinComponents;
 Constants.RESOLVER_TYPES = resolverTypes;
 Constants.LINKED_TYPES = linkedTypes;
 Constants.API_LIMIT_MAX = 100;
+Constants.ABOUT_DIALOG_MAX_ITEMS = 5;
+Constants.DESCRIPTION_CHARS_MAX = 100;
 
 Constants.ROW_VALUE_OBJECT = 'object';
 Constants.ROW_VALUE_ARRAY = 'array';

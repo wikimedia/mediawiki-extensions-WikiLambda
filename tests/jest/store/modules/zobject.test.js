@@ -126,6 +126,13 @@ describe( 'zobject Vuex module', function () {
 	// * [x] getZTypeStringRepresentation
 	// * [x] getTypedListItemType
 	// * [x] getZPersistentContentRowId
+	// * [x] getZPersistentNameLangs
+	// * [x] getZPersistentName
+	// * [x] getZPersistentDescriptionLangs
+	// * [x] getZPersistentDescription
+	// * [x] getZPersistentAliasLangs
+	// * [x] getZPersistentAlias
+	// * [x] getMetadataLanguages
 	// * [x] getZImplementationFunctionRowId
 	// * [x] getZImplementationFunctionZid
 	// * [x] getZImplementationContentType
@@ -136,6 +143,9 @@ describe( 'zobject Vuex module', function () {
 	// * [x] getZReferenceTerminalValue
 	// * [x] getZMonolingualTextValue
 	// * [x] getZMonolingualLangValue
+	// * [x] getZMonolingualStringsetValues
+	// * [x] getZMonolingualStringsetLang
+	// * [x] getZMultilingualLanguageList
 	// * [ ] getZBooleanValue
 	// * [ ] getZObjectTypeByRowId
 	// * [ ] getDepthByRowId
@@ -1362,61 +1372,841 @@ describe( 'zobject Vuex module', function () {
 
 					expect( zobjectModule.getters.getZMonolingualLangValue( state, getters )( 0 ) ).toBe( expected );
 				} );
-
 			} );
 		} );
 
-		describe( 'getZPersistentContentRowId', function () {
-			var getters;
-			beforeEach( function () {
-				getters = {};
-				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
-				getters.getRowById = zobjectModule.getters.getRowById( state );
-				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+		describe( 'ZMultilingualString', () => {
+			describe( 'getZMultilingualLanguageList', function () {
+				var getters;
+				beforeEach( function () {
+					getters = {};
+					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+					getters.getRowById = zobjectModule.getters.getRowById( state );
+					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+					getters.getZMonolingualLangValue = zobjectModule.getters.getZMonolingualLangValue( state, getters );
+					getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
+					getters.getZReferenceTerminalValue = zobjectModule.getters
+						.getZReferenceTerminalValue( state, getters );
+					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+					getters.getLanguageIsoCodeOfZLang = function ( key ) {
+						return key === 'Z1002' ? 'en' : 'es';
+					};
+				} );
+
+				it( 'returns empty array when the row is not found', function () {
+					state.zobject = [];
+					const rowId = 0;
+					const expected = [];
+					const metadata = zobjectModule.getters.getZMultilingualLanguageList( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
+
+				it( 'returns empty list when the multilingual string is empty', function () {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 10, key: 'Z2K3', value: 'object', parent: 0 },
+						{ id: 11, key: 'Z1K1', value: 'object', parent: 10 },
+						{ id: 12, key: 'Z1K1', value: 'Z9', parent: 11 },
+						{ id: 13, key: 'Z9K1', value: 'Z12', parent: 11 },
+						{ id: 14, key: 'Z12K1', value: 'array', parent: 10 },
+						{ id: 15, key: '0', value: 'object', parent: 14 },
+						{ id: 16, key: 'Z1K1', value: 'Z9', parent: 15 },
+						{ id: 17, key: 'Z9K1', value: 'Z11', parent: 15 }
+					] );
+					const rowId = 14;
+					const expected = [];
+					const metadata = zobjectModule.getters.getZMultilingualLanguageList( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
+
+				it( 'returns list with one item', function () {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 10, key: 'Z2K3', value: 'object', parent: 0 },
+						{ id: 11, key: 'Z1K1', value: 'object', parent: 10 },
+						{ id: 12, key: 'Z1K1', value: 'Z9', parent: 11 },
+						{ id: 13, key: 'Z9K1', value: 'Z12', parent: 11 },
+						{ id: 14, key: 'Z12K1', value: 'array', parent: 10 },
+						{ id: 15, key: '0', value: 'object', parent: 14 },
+						{ id: 16, key: 'Z1K1', value: 'Z9', parent: 15 },
+						{ id: 17, key: 'Z9K1', value: 'Z11', parent: 15 },
+						{ id: 18, key: '1', value: 'object', parent: 14 },
+						{ id: 19, key: 'Z1K1', value: 'object', parent: 18 },
+						{ id: 20, key: 'Z1K1', value: 'Z9', parent: 19 },
+						{ id: 21, key: 'Z9K1', value: 'Z11', parent: 19 },
+						{ id: 22, key: 'Z11K1', value: 'object', parent: 18 },
+						{ id: 23, key: 'Z1K1', value: 'Z9', parent: 22 },
+						{ id: 24, key: 'Z9K1', value: 'Z1002', parent: 22 },
+						{ id: 25, key: 'Z11K2', value: 'object', parent: 18 },
+						{ id: 26, key: 'Z1K1', value: 'Z6', parent: 25 },
+						{ id: 27, key: 'Z6K1', value: 'test', parent: 25 }
+					] );
+					const rowId = 14;
+					const expected = [ {
+						langZid: 'Z1002',
+						langIsoCode: 'en',
+						rowId: 18
+					} ];
+					const metadata = zobjectModule.getters.getZMultilingualLanguageList( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
+
+				it( 'returns list with two items', function () {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 10, key: 'Z2K3', value: 'object', parent: 0 },
+						{ id: 11, key: 'Z1K1', value: 'object', parent: 10 },
+						{ id: 12, key: 'Z1K1', value: 'Z9', parent: 11 },
+						{ id: 13, key: 'Z9K1', value: 'Z12', parent: 11 },
+						{ id: 14, key: 'Z12K1', value: 'array', parent: 10 },
+						{ id: 15, key: '0', value: 'object', parent: 14 },
+						{ id: 16, key: 'Z1K1', value: 'Z9', parent: 15 },
+						{ id: 17, key: 'Z9K1', value: 'Z11', parent: 15 },
+						{ id: 18, key: '1', value: 'object', parent: 14 },
+						{ id: 19, key: 'Z1K1', value: 'object', parent: 18 },
+						{ id: 20, key: 'Z1K1', value: 'Z9', parent: 19 },
+						{ id: 21, key: 'Z9K1', value: 'Z11', parent: 19 },
+						{ id: 22, key: 'Z11K1', value: 'object', parent: 18 },
+						{ id: 23, key: 'Z1K1', value: 'Z9', parent: 22 },
+						{ id: 24, key: 'Z9K1', value: 'Z1002', parent: 22 },
+						{ id: 25, key: 'Z11K2', value: 'object', parent: 18 },
+						{ id: 26, key: 'Z1K1', value: 'Z6', parent: 25 },
+						{ id: 27, key: 'Z6K1', value: 'in english', parent: 25 },
+						{ id: 28, key: '2', value: 'object', parent: 14 },
+						{ id: 29, key: 'Z1K1', value: 'object', parent: 28 },
+						{ id: 30, key: 'Z1K1', value: 'Z9', parent: 29 },
+						{ id: 31, key: 'Z9K1', value: 'Z11', parent: 29 },
+						{ id: 32, key: 'Z11K1', value: 'object', parent: 28 },
+						{ id: 33, key: 'Z1K1', value: 'Z9', parent: 32 },
+						{ id: 34, key: 'Z9K1', value: 'Z1003', parent: 32 },
+						{ id: 35, key: 'Z11K2', value: 'object', parent: 28 },
+						{ id: 36, key: 'Z1K1', value: 'Z6', parent: 35 },
+						{ id: 37, key: 'Z6K1', value: 'en español', parent: 35 }
+					] );
+					const rowId = 14;
+					const expected = [
+						{ langZid: 'Z1002', langIsoCode: 'en', rowId: 18 },
+						{ langZid: 'Z1003', langIsoCode: 'es', rowId: 28 }
+					];
+					const metadata = zobjectModule.getters.getZMultilingualLanguageList( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
+			} );
+		} );
+
+		describe( 'ZMonolingualStringSet', () => {
+			describe( 'getZMonolingualStringsetValues', () => {
+				var getters;
+				beforeEach( () => {
+					getters = {};
+					getters.getRowById = zobjectModule.getters.getRowById( state );
+					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+					getters.getZStringTerminalValue = zobjectModule.getters.getZStringTerminalValue( state, getters );
+				} );
+
+				it( 'returns an empty array when row not found', () => {
+					state.zobject = [];
+					const rowId = 0;
+					const expected = [];
+					const returned = zobjectModule.getters.getZMonolingualStringsetValues( state, getters )( rowId );
+					expect( returned ).toStrictEqual( expected );
+				} );
+
+				it( 'returns an empty array when ZMonolingualStringset has an empty array', () => {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 36, key: 'Z2K2', value: 'object', parent: 0 },
+						{ id: 37, key: 'Z1K1', value: 'object', parent: 36 },
+						{ id: 38, key: 'Z1K1', value: 'Z9', parent: 37 },
+						{ id: 39, key: 'Z9K1', value: 'Z31', parent: 37 },
+						{ id: 40, key: 'Z31K1', value: 'object', parent: 36 },
+						{ id: 41, key: 'Z1K1', value: 'Z9', parent: 40 },
+						{ id: 42, key: 'Z9K1', value: 'Z1002', parent: 40 },
+						{ id: 43, key: 'Z31K2', value: 'array', parent: 36 },
+						{ id: 44, key: '0', value: 'object', parent: 43 },
+						{ id: 45, key: 'Z1K1', value: 'Z9', parent: 44 },
+						{ id: 46, key: 'Z9K1', value: 'Z6', parent: 44 }
+					] );
+					const rowId = 36;
+					const expected = [];
+					const returned = zobjectModule.getters.getZMonolingualStringsetValues( state, getters )( rowId );
+					expect( returned ).toStrictEqual( expected );
+				} );
+
+				it( 'returns an array with one item', () => {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 36, key: 'Z2K2', value: 'object', parent: 0 },
+						{ id: 37, key: 'Z1K1', value: 'object', parent: 36 },
+						{ id: 38, key: 'Z1K1', value: 'Z9', parent: 37 },
+						{ id: 39, key: 'Z9K1', value: 'Z31', parent: 37 },
+						{ id: 40, key: 'Z31K1', value: 'object', parent: 36 },
+						{ id: 41, key: 'Z1K1', value: 'Z9', parent: 40 },
+						{ id: 42, key: 'Z9K1', value: 'Z1002', parent: 40 },
+						{ id: 43, key: 'Z31K2', value: 'array', parent: 36 },
+						{ id: 44, key: '0', value: 'object', parent: 43 },
+						{ id: 45, key: 'Z1K1', value: 'Z9', parent: 44 },
+						{ id: 46, key: 'Z9K1', value: 'Z6', parent: 44 },
+						{ id: 47, key: '1', value: 'object', parent: 43 },
+						{ id: 48, key: 'Z1K1', value: 'Z6', parent: 47 },
+						{ id: 49, key: 'Z6K1', value: 'one', parent: 47 }
+					] );
+					const rowId = 36;
+					const expected = [ { rowId: 47, value: 'one' } ];
+					const returned = zobjectModule.getters.getZMonolingualStringsetValues( state, getters )( rowId );
+					expect( returned ).toStrictEqual( expected );
+				} );
 			} );
 
-			it( 'returns undefined when the rowId is undefined', function () {
-				state.zobject = [];
-				const rowId = undefined;
-				const expectedRowId = undefined;
-				const contentRowId = zobjectModule.getters.getZPersistentContentRowId( state, getters )( rowId );
-				expect( contentRowId ).toBe( expectedRowId );
+			describe( 'getZMonolingualStringsetLang', () => {
+				var getters;
+				beforeEach( () => {
+					getters = {};
+					getters.getRowById = zobjectModule.getters.getRowById( state );
+					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+					getters.getZReferenceTerminalValue = zobjectModule.getters
+						.getZReferenceTerminalValue( state, getters );
+					getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
+				} );
+
+				it( 'returns undefined when row not found', () => {
+					state.zobject = [];
+					const rowId = 0;
+					const expected = undefined;
+					const returned = zobjectModule.getters.getZMonolingualStringsetLang( state, getters )( rowId );
+					expect( returned ).toStrictEqual( expected );
+				} );
+
+				it( 'returns language zid of ZMonolingualStringset', () => {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 36, key: 'Z2K2', value: 'object', parent: 0 },
+						{ id: 37, key: 'Z1K1', value: 'object', parent: 36 },
+						{ id: 38, key: 'Z1K1', value: 'Z9', parent: 37 },
+						{ id: 39, key: 'Z9K1', value: 'Z31', parent: 37 },
+						{ id: 40, key: 'Z31K1', value: 'object', parent: 36 },
+						{ id: 41, key: 'Z1K1', value: 'Z9', parent: 40 },
+						{ id: 42, key: 'Z9K1', value: 'Z1002', parent: 40 },
+						{ id: 43, key: 'Z31K2', value: 'array', parent: 36 },
+						{ id: 44, key: '0', value: 'object', parent: 43 },
+						{ id: 45, key: 'Z1K1', value: 'Z9', parent: 44 },
+						{ id: 46, key: 'Z9K1', value: 'Z6', parent: 44 }
+					] );
+					const rowId = 36;
+					const expected = 'Z1002';
+					const returned = zobjectModule.getters.getZMonolingualStringsetLang( state, getters )( rowId );
+					expect( returned ).toStrictEqual( expected );
+				} );
+			} );
+		} );
+
+		describe( 'ZPersistentObject', () => {
+			describe( 'getZPersistentContentRowId', function () {
+				var getters;
+				beforeEach( function () {
+					getters = {};
+					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+					getters.getRowById = zobjectModule.getters.getRowById( state );
+					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+				} );
+
+				it( 'returns undefined when the rowId is undefined', function () {
+					state.zobject = [];
+					const rowId = undefined;
+					const expectedRowId = undefined;
+					const contentRowId = zobjectModule.getters.getZPersistentContentRowId( state, getters )( rowId );
+					expect( contentRowId ).toBe( expectedRowId );
+				} );
+
+				it( 'returns undefined when the row does not exist', function () {
+					state.zobject = [];
+					const rowId = 0;
+					const expectedRowId = undefined;
+					const contentRowId = zobjectModule.getters.getZPersistentContentRowId( state, getters )( rowId );
+					expect( contentRowId ).toBe( expectedRowId );
+				} );
+
+				it( 'returns row where persistent object content starts (key Z2K2)', function () {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 18, key: 'Z2K2', parent: 0, value: 'object' },
+						{ id: 19, key: 'Z1K1', parent: 18, value: 'object' },
+						{ id: 20, key: 'Z1K1', parent: 19, value: 'Z9' },
+						{ id: 21, key: 'Z9K1', parent: 19, value: 'Z11' }
+					] );
+					const rowId = 0;
+					const expectedRowId = 18;
+					const contentRowId = zobjectModule.getters.getZPersistentContentRowId( state, getters )( rowId );
+					expect( contentRowId ).toBe( expectedRowId );
+				} );
+
+				it( 'returns row where persistent object content starts (key Z2K2) with input rowId', function () {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 17, value: 'object' },
+						{ id: 18, key: 'Z2K2', parent: 17, value: 'object' },
+						{ id: 19, key: 'Z1K1', parent: 18, value: 'object' },
+						{ id: 20, key: 'Z1K1', parent: 19, value: 'Z9' },
+						{ id: 21, key: 'Z9K1', parent: 19, value: 'Z11' }
+					] );
+					const rowId = 17;
+					const expectedRowId = 18;
+					const contentRowId = zobjectModule.getters.getZPersistentContentRowId( state, getters )( rowId );
+					expect( contentRowId ).toBe( expectedRowId );
+				} );
 			} );
 
-			it( 'returns undefined when the row does not exist', function () {
-				state.zobject = [];
-				const rowId = 0;
-				const expectedRowId = undefined;
-				const contentRowId = zobjectModule.getters.getZPersistentContentRowId( state, getters )( rowId );
-				expect( contentRowId ).toBe( expectedRowId );
+			describe( 'getZPersistentNameLangs', function () {
+				var getters;
+				beforeEach( function () {
+					getters = {};
+					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+					getters.getRowById = zobjectModule.getters.getRowById( state );
+					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+					getters.getZMultilingualLanguageList = zobjectModule.getters
+						.getZMultilingualLanguageList( state, getters );
+					getters.getZMonolingualLangValue = zobjectModule.getters.getZMonolingualLangValue( state, getters );
+					getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
+					getters.getZReferenceTerminalValue = zobjectModule.getters
+						.getZReferenceTerminalValue( state, getters );
+					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+					getters.getLanguageIsoCodeOfZLang = function () {
+						return 'en';
+					};
+				} );
+
+				it( 'returns empty array when the row is not found', function () {
+					state.zobject = [];
+					const rowId = 0;
+					const expected = [];
+					const metadata = zobjectModule.getters.getZPersistentNameLangs( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
+
+				it( 'returns empty list when the name multilingual string is empty', function () {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 10, key: 'Z2K3', value: 'object', parent: 0 },
+						{ id: 11, key: 'Z1K1', value: 'object', parent: 10 },
+						{ id: 12, key: 'Z1K1', value: 'Z9', parent: 11 },
+						{ id: 13, key: 'Z9K1', value: 'Z12', parent: 11 },
+						{ id: 14, key: 'Z12K1', value: 'array', parent: 10 },
+						{ id: 15, key: '0', value: 'object', parent: 14 },
+						{ id: 16, key: 'Z1K1', value: 'Z9', parent: 15 },
+						{ id: 17, key: 'Z9K1', value: 'Z11', parent: 15 }
+					] );
+					const rowId = 0;
+					const expected = [];
+					const metadata = zobjectModule.getters.getZPersistentNameLangs( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
+
+				it( 'returns list with one item', function () {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 10, key: 'Z2K3', value: 'object', parent: 0 },
+						{ id: 11, key: 'Z1K1', value: 'object', parent: 10 },
+						{ id: 12, key: 'Z1K1', value: 'Z9', parent: 11 },
+						{ id: 13, key: 'Z9K1', value: 'Z12', parent: 11 },
+						{ id: 14, key: 'Z12K1', value: 'array', parent: 10 },
+						{ id: 15, key: '0', value: 'object', parent: 14 },
+						{ id: 16, key: 'Z1K1', value: 'Z9', parent: 15 },
+						{ id: 17, key: 'Z9K1', value: 'Z11', parent: 15 },
+						{ id: 18, key: '1', value: 'object', parent: 14 },
+						{ id: 19, key: 'Z1K1', value: 'object', parent: 18 },
+						{ id: 20, key: 'Z1K1', value: 'Z9', parent: 19 },
+						{ id: 21, key: 'Z9K1', value: 'Z11', parent: 19 },
+						{ id: 22, key: 'Z11K1', value: 'object', parent: 18 },
+						{ id: 23, key: 'Z1K1', value: 'Z9', parent: 22 },
+						{ id: 24, key: 'Z9K1', value: 'Z1002', parent: 22 },
+						{ id: 25, key: 'Z11K2', value: 'object', parent: 18 },
+						{ id: 26, key: 'Z1K1', value: 'Z6', parent: 25 },
+						{ id: 27, key: 'Z6K1', value: 'test', parent: 25 }
+					] );
+					const rowId = 0;
+					const expected = [ {
+						langZid: 'Z1002',
+						langIsoCode: 'en',
+						rowId: 18
+					} ];
+					const metadata = zobjectModule.getters.getZPersistentNameLangs( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
 			} );
 
-			it( 'returns row where persistent object content starts (key Z2K2)', function () {
-				state.zobject = tableDataToRowObjects( [
-					{ id: 0, value: 'object' },
-					{ id: 18, key: 'Z2K2', parent: 0, value: 'object' },
-					{ id: 19, key: 'Z1K1', parent: 18, value: 'object' },
-					{ id: 20, key: 'Z1K1', parent: 19, value: 'Z9' },
-					{ id: 21, key: 'Z9K1', parent: 19, value: 'Z11' }
-				] );
-				const rowId = 0;
-				const expectedRowId = 18;
-				const contentRowId = zobjectModule.getters.getZPersistentContentRowId( state, getters )( rowId );
-				expect( contentRowId ).toBe( expectedRowId );
+			describe( 'getZPersistentName', function () {
+				var getters;
+				beforeEach( function () {
+					getters = {};
+					getters.getZPersistentNameLangs = zobjectModule.getters.getZPersistentNameLangs( state, getters );
+					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+					getters.getRowById = zobjectModule.getters.getRowById( state );
+					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+					getters.getZMultilingualLanguageList = zobjectModule.getters
+						.getZMultilingualLanguageList( state, getters );
+					getters.getZMonolingualLangValue = zobjectModule.getters.getZMonolingualLangValue( state, getters );
+					getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
+					getters.getZReferenceTerminalValue = zobjectModule.getters
+						.getZReferenceTerminalValue( state, getters );
+					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+					getters.getLanguageIsoCodeOfZLang = function ( key ) {
+						return key === 'Z1002' ? 'en' : 'es';
+					};
+					mw.language.getFallbackLanguageChain = jest.fn( function () {
+						return [ 'es', 'en' ];
+					} );
+				} );
+
+				it( 'returns metadata in user language', function () {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 10, key: 'Z2K3', value: 'object', parent: 0 },
+						{ id: 11, key: 'Z1K1', value: 'object', parent: 10 },
+						{ id: 12, key: 'Z1K1', value: 'Z9', parent: 11 },
+						{ id: 13, key: 'Z9K1', value: 'Z12', parent: 11 },
+						{ id: 14, key: 'Z12K1', value: 'array', parent: 10 },
+						{ id: 15, key: '0', value: 'object', parent: 14 },
+						{ id: 16, key: 'Z1K1', value: 'Z9', parent: 15 },
+						{ id: 17, key: 'Z9K1', value: 'Z11', parent: 15 },
+						{ id: 18, key: '1', value: 'object', parent: 14 },
+						{ id: 19, key: 'Z1K1', value: 'object', parent: 18 },
+						{ id: 20, key: 'Z1K1', value: 'Z9', parent: 19 },
+						{ id: 21, key: 'Z9K1', value: 'Z11', parent: 19 },
+						{ id: 22, key: 'Z11K1', value: 'object', parent: 18 },
+						{ id: 23, key: 'Z1K1', value: 'Z9', parent: 22 },
+						{ id: 24, key: 'Z9K1', value: 'Z1002', parent: 22 },
+						{ id: 25, key: 'Z11K2', value: 'object', parent: 18 },
+						{ id: 26, key: 'Z1K1', value: 'Z6', parent: 25 },
+						{ id: 27, key: 'Z6K1', value: 'in english', parent: 25 },
+						{ id: 28, key: '2', value: 'object', parent: 14 },
+						{ id: 29, key: 'Z1K1', value: 'object', parent: 28 },
+						{ id: 30, key: 'Z1K1', value: 'Z9', parent: 29 },
+						{ id: 31, key: 'Z9K1', value: 'Z11', parent: 29 },
+						{ id: 32, key: 'Z11K1', value: 'object', parent: 28 },
+						{ id: 33, key: 'Z1K1', value: 'Z9', parent: 32 },
+						{ id: 34, key: 'Z9K1', value: 'Z1003', parent: 32 },
+						{ id: 35, key: 'Z11K2', value: 'object', parent: 28 },
+						{ id: 36, key: 'Z1K1', value: 'Z6', parent: 35 },
+						{ id: 37, key: 'Z6K1', value: 'en español', parent: 35 }
+					] );
+					const rowId = 0;
+					const expected = {
+						langZid: 'Z1003',
+						langIsoCode: 'es',
+						rowId: 28
+					};
+					const metadata = zobjectModule.getters.getZPersistentName( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
+
+				it( 'returns metadata in fallback language', function () {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 10, key: 'Z2K3', value: 'object', parent: 0 },
+						{ id: 11, key: 'Z1K1', value: 'object', parent: 10 },
+						{ id: 12, key: 'Z1K1', value: 'Z9', parent: 11 },
+						{ id: 13, key: 'Z9K1', value: 'Z12', parent: 11 },
+						{ id: 14, key: 'Z12K1', value: 'array', parent: 10 },
+						{ id: 15, key: '0', value: 'object', parent: 14 },
+						{ id: 16, key: 'Z1K1', value: 'Z9', parent: 15 },
+						{ id: 17, key: 'Z9K1', value: 'Z11', parent: 15 },
+						{ id: 18, key: '1', value: 'object', parent: 14 },
+						{ id: 19, key: 'Z1K1', value: 'object', parent: 18 },
+						{ id: 20, key: 'Z1K1', value: 'Z9', parent: 19 },
+						{ id: 21, key: 'Z9K1', value: 'Z11', parent: 19 },
+						{ id: 22, key: 'Z11K1', value: 'object', parent: 18 },
+						{ id: 23, key: 'Z1K1', value: 'Z9', parent: 22 },
+						{ id: 24, key: 'Z9K1', value: 'Z1002', parent: 22 },
+						{ id: 25, key: 'Z11K2', value: 'object', parent: 18 },
+						{ id: 26, key: 'Z1K1', value: 'Z6', parent: 25 },
+						{ id: 27, key: 'Z6K1', value: 'test', parent: 25 }
+					] );
+					const rowId = 0;
+					const expected = {
+						langZid: 'Z1002',
+						langIsoCode: 'en',
+						rowId: 18
+					};
+					const metadata = zobjectModule.getters.getZPersistentName( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
 			} );
 
-			it( 'returns row where persistent object content starts (key Z2K2) with input rowId', function () {
-				state.zobject = tableDataToRowObjects( [
-					{ id: 17, value: 'object' },
-					{ id: 18, key: 'Z2K2', parent: 17, value: 'object' },
-					{ id: 19, key: 'Z1K1', parent: 18, value: 'object' },
-					{ id: 20, key: 'Z1K1', parent: 19, value: 'Z9' },
-					{ id: 21, key: 'Z9K1', parent: 19, value: 'Z11' }
-				] );
-				const rowId = 17;
-				const expectedRowId = 18;
-				const contentRowId = zobjectModule.getters.getZPersistentContentRowId( state, getters )( rowId );
-				expect( contentRowId ).toBe( expectedRowId );
+			describe( 'getZPersistentDescriptionLangs', function () {
+				var getters;
+				beforeEach( function () {
+					getters = {};
+					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+					getters.getRowById = zobjectModule.getters.getRowById( state );
+					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+					getters.getZMultilingualLanguageList = zobjectModule.getters
+						.getZMultilingualLanguageList( state, getters );
+					getters.getZMonolingualLangValue = zobjectModule.getters.getZMonolingualLangValue( state, getters );
+					getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
+					getters.getZReferenceTerminalValue = zobjectModule.getters
+						.getZReferenceTerminalValue( state, getters );
+					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+					getters.getLanguageIsoCodeOfZLang = function () {
+						return 'en';
+					};
+				} );
+
+				it( 'returns empty array when the row is not found', function () {
+					state.zobject = [];
+					const rowId = 0;
+					const expected = [];
+					const metadata = zobjectModule.getters.getZPersistentDescriptionLangs( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
+
+				it( 'returns empty list when the description multilingual string is empty', function () {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 10, key: 'Z2K5', value: 'object', parent: 0 },
+						{ id: 11, key: 'Z1K1', value: 'object', parent: 10 },
+						{ id: 12, key: 'Z1K1', value: 'Z9', parent: 11 },
+						{ id: 13, key: 'Z9K1', value: 'Z12', parent: 11 },
+						{ id: 14, key: 'Z12K1', value: 'array', parent: 10 },
+						{ id: 15, key: '0', value: 'object', parent: 14 },
+						{ id: 16, key: 'Z1K1', value: 'Z9', parent: 15 },
+						{ id: 17, key: 'Z9K1', value: 'Z11', parent: 15 }
+					] );
+					const rowId = 0;
+					const expected = [];
+					const metadata = zobjectModule.getters.getZPersistentDescriptionLangs( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
+
+				it( 'returns list with one item', function () {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 10, key: 'Z2K5', value: 'object', parent: 0 },
+						{ id: 11, key: 'Z1K1', value: 'object', parent: 10 },
+						{ id: 12, key: 'Z1K1', value: 'Z9', parent: 11 },
+						{ id: 13, key: 'Z9K1', value: 'Z12', parent: 11 },
+						{ id: 14, key: 'Z12K1', value: 'array', parent: 10 },
+						{ id: 15, key: '0', value: 'object', parent: 14 },
+						{ id: 16, key: 'Z1K1', value: 'Z9', parent: 15 },
+						{ id: 17, key: 'Z9K1', value: 'Z11', parent: 15 },
+						{ id: 18, key: '1', value: 'object', parent: 14 },
+						{ id: 19, key: 'Z1K1', value: 'object', parent: 18 },
+						{ id: 20, key: 'Z1K1', value: 'Z9', parent: 19 },
+						{ id: 21, key: 'Z9K1', value: 'Z11', parent: 19 },
+						{ id: 22, key: 'Z11K1', value: 'object', parent: 18 },
+						{ id: 23, key: 'Z1K1', value: 'Z9', parent: 22 },
+						{ id: 24, key: 'Z9K1', value: 'Z1002', parent: 22 },
+						{ id: 25, key: 'Z11K2', value: 'object', parent: 18 },
+						{ id: 26, key: 'Z1K1', value: 'Z6', parent: 25 },
+						{ id: 27, key: 'Z6K1', value: 'test', parent: 25 }
+					] );
+					const rowId = 0;
+					const expected = [ {
+						langZid: 'Z1002',
+						langIsoCode: 'en',
+						rowId: 18
+					} ];
+					const metadata = zobjectModule.getters.getZPersistentDescriptionLangs( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
+			} );
+
+			describe( 'getZPersistentDescription', function () {
+				var getters;
+				beforeEach( function () {
+					getters = {};
+					getters.getZPersistentDescriptionLangs = zobjectModule.getters
+						.getZPersistentDescriptionLangs( state, getters );
+					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+					getters.getRowById = zobjectModule.getters.getRowById( state );
+					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+					getters.getZMultilingualLanguageList = zobjectModule.getters
+						.getZMultilingualLanguageList( state, getters );
+					getters.getZMonolingualLangValue = zobjectModule.getters.getZMonolingualLangValue( state, getters );
+					getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
+					getters.getZReferenceTerminalValue = zobjectModule.getters
+						.getZReferenceTerminalValue( state, getters );
+					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+					getters.getLanguageIsoCodeOfZLang = function ( key ) {
+						return key === 'Z1002' ? 'en' : 'es';
+					};
+					mw.language.getFallbackLanguageChain = jest.fn( function () {
+						return [ 'es', 'en' ];
+					} );
+				} );
+
+				it( 'returns metadata in user language', function () {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 10, key: 'Z2K5', value: 'object', parent: 0 },
+						{ id: 11, key: 'Z1K1', value: 'object', parent: 10 },
+						{ id: 12, key: 'Z1K1', value: 'Z9', parent: 11 },
+						{ id: 13, key: 'Z9K1', value: 'Z12', parent: 11 },
+						{ id: 14, key: 'Z12K1', value: 'array', parent: 10 },
+						{ id: 15, key: '0', value: 'object', parent: 14 },
+						{ id: 16, key: 'Z1K1', value: 'Z9', parent: 15 },
+						{ id: 17, key: 'Z9K1', value: 'Z11', parent: 15 },
+						{ id: 18, key: '1', value: 'object', parent: 14 },
+						{ id: 19, key: 'Z1K1', value: 'object', parent: 18 },
+						{ id: 20, key: 'Z1K1', value: 'Z9', parent: 19 },
+						{ id: 21, key: 'Z9K1', value: 'Z11', parent: 19 },
+						{ id: 22, key: 'Z11K1', value: 'object', parent: 18 },
+						{ id: 23, key: 'Z1K1', value: 'Z9', parent: 22 },
+						{ id: 24, key: 'Z9K1', value: 'Z1002', parent: 22 },
+						{ id: 25, key: 'Z11K2', value: 'object', parent: 18 },
+						{ id: 26, key: 'Z1K1', value: 'Z6', parent: 25 },
+						{ id: 27, key: 'Z6K1', value: 'in english', parent: 25 },
+						{ id: 28, key: '2', value: 'object', parent: 14 },
+						{ id: 29, key: 'Z1K1', value: 'object', parent: 28 },
+						{ id: 30, key: 'Z1K1', value: 'Z9', parent: 29 },
+						{ id: 31, key: 'Z9K1', value: 'Z11', parent: 29 },
+						{ id: 32, key: 'Z11K1', value: 'object', parent: 28 },
+						{ id: 33, key: 'Z1K1', value: 'Z9', parent: 32 },
+						{ id: 34, key: 'Z9K1', value: 'Z1003', parent: 32 },
+						{ id: 35, key: 'Z11K2', value: 'object', parent: 28 },
+						{ id: 36, key: 'Z1K1', value: 'Z6', parent: 35 },
+						{ id: 37, key: 'Z6K1', value: 'en español', parent: 35 }
+					] );
+					const rowId = 0;
+					const expected = {
+						langZid: 'Z1003',
+						langIsoCode: 'es',
+						rowId: 28
+					};
+					const metadata = zobjectModule.getters.getZPersistentDescription( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
+
+				it( 'returns metadata in fallback language', function () {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 10, key: 'Z2K5', value: 'object', parent: 0 },
+						{ id: 11, key: 'Z1K1', value: 'object', parent: 10 },
+						{ id: 12, key: 'Z1K1', value: 'Z9', parent: 11 },
+						{ id: 13, key: 'Z9K1', value: 'Z12', parent: 11 },
+						{ id: 14, key: 'Z12K1', value: 'array', parent: 10 },
+						{ id: 15, key: '0', value: 'object', parent: 14 },
+						{ id: 16, key: 'Z1K1', value: 'Z9', parent: 15 },
+						{ id: 17, key: 'Z9K1', value: 'Z11', parent: 15 },
+						{ id: 18, key: '1', value: 'object', parent: 14 },
+						{ id: 19, key: 'Z1K1', value: 'object', parent: 18 },
+						{ id: 20, key: 'Z1K1', value: 'Z9', parent: 19 },
+						{ id: 21, key: 'Z9K1', value: 'Z11', parent: 19 },
+						{ id: 22, key: 'Z11K1', value: 'object', parent: 18 },
+						{ id: 23, key: 'Z1K1', value: 'Z9', parent: 22 },
+						{ id: 24, key: 'Z9K1', value: 'Z1002', parent: 22 },
+						{ id: 25, key: 'Z11K2', value: 'object', parent: 18 },
+						{ id: 26, key: 'Z1K1', value: 'Z6', parent: 25 },
+						{ id: 27, key: 'Z6K1', value: 'test', parent: 25 }
+					] );
+					const rowId = 0;
+					const expected = {
+						langZid: 'Z1002',
+						langIsoCode: 'en',
+						rowId: 18
+					};
+					const metadata = zobjectModule.getters.getZPersistentDescription( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
+			} );
+
+			describe( 'getZPersistentAliasLangs', function () {
+				var getters;
+				beforeEach( function () {
+					getters = {};
+					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+					getters.getRowById = zobjectModule.getters.getRowById( state );
+					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+					getters.getZMonolingualStringsetLang = zobjectModule.getters
+						.getZMonolingualStringsetLang( state, getters );
+					getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
+					getters.getZReferenceTerminalValue = zobjectModule.getters
+						.getZReferenceTerminalValue( state, getters );
+					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+					getters.getLanguageIsoCodeOfZLang = function () {
+						return 'en';
+					};
+				} );
+
+				it( 'returns empty array when the row is not found', function () {
+					state.zobject = [];
+					const rowId = 0;
+					const expected = [];
+					const metadata = zobjectModule.getters.getZPersistentAliasLangs( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
+
+				it( 'returns empty list when the description multilingual string is empty', function () {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 28, key: 'Z2K4', value: 'object', parent: 0 },
+						{ id: 29, key: 'Z1K1', value: 'object', parent: 28 },
+						{ id: 30, key: 'Z1K1', value: 'Z9', parent: 29 },
+						{ id: 31, key: 'Z9K1', value: 'Z32', parent: 29 },
+						{ id: 32, key: 'Z32K1', value: 'array', parent: 28 },
+						{ id: 33, key: '0', value: 'object', parent: 32 },
+						{ id: 34, key: 'Z1K1', value: 'Z9', parent: 33 },
+						{ id: 35, key: 'Z9K1', value: 'Z31', parent: 33 }
+					] );
+					const rowId = 0;
+					const expected = [];
+					const metadata = zobjectModule.getters.getZPersistentAliasLangs( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
+
+				it( 'returns list with one item', function () {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 28, key: 'Z2K4', value: 'object', parent: 0 },
+						{ id: 29, key: 'Z1K1', value: 'object', parent: 28 },
+						{ id: 30, key: 'Z1K1', value: 'Z9', parent: 29 },
+						{ id: 31, key: 'Z9K1', value: 'Z32', parent: 29 },
+						{ id: 32, key: 'Z32K1', value: 'array', parent: 28 },
+						{ id: 33, key: '0', value: 'object', parent: 32 },
+						{ id: 34, key: 'Z1K1', value: 'Z9', parent: 33 },
+						{ id: 35, key: 'Z9K1', value: 'Z31', parent: 33 },
+						{ id: 36, key: '1', value: 'object', parent: 32 },
+						{ id: 37, key: 'Z1K1', value: 'object', parent: 36 },
+						{ id: 38, key: 'Z1K1', value: 'Z9', parent: 37 },
+						{ id: 39, key: 'Z9K1', value: 'Z31', parent: 37 },
+						{ id: 40, key: 'Z31K1', value: 'object', parent: 36 },
+						{ id: 41, key: 'Z1K1', value: 'Z9', parent: 40 },
+						{ id: 42, key: 'Z9K1', value: 'Z1002', parent: 40 },
+						{ id: 43, key: 'Z31K2', value: 'array', parent: 36 },
+						{ id: 44, key: '0', value: 'object', parent: 43 },
+						{ id: 45, key: 'Z1K1', value: 'Z9', parent: 44 },
+						{ id: 46, key: 'Z9K1', value: 'Z6', parent: 44 }
+					] );
+					const rowId = 0;
+					const expected = [ {
+						langZid: 'Z1002',
+						langIsoCode: 'en',
+						rowId: 36
+					} ];
+					const metadata = zobjectModule.getters.getZPersistentAliasLangs( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
+			} );
+
+			describe( 'getZPersistentAlias', function () {
+				var getters;
+				beforeEach( function () {
+					getters = {};
+					getters.getZPersistentAliasLangs = zobjectModule.getters.getZPersistentAliasLangs( state, getters );
+					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+					getters.getRowById = zobjectModule.getters.getRowById( state );
+					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+					getters.getZMonolingualStringsetLang = zobjectModule.getters
+						.getZMonolingualStringsetLang( state, getters );
+					getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
+					getters.getZReferenceTerminalValue = zobjectModule.getters
+						.getZReferenceTerminalValue( state, getters );
+					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+					getters.getLanguageIsoCodeOfZLang = function () {
+						return 'en';
+					};
+					mw.language.getFallbackLanguageChain = jest.fn( function () {
+						return [ 'es', 'en' ];
+					} );
+				} );
+
+				it( 'returns metadata in user language or fallback', function () {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, value: 'object' },
+						{ id: 28, key: 'Z2K4', value: 'object', parent: 0 },
+						{ id: 29, key: 'Z1K1', value: 'object', parent: 28 },
+						{ id: 30, key: 'Z1K1', value: 'Z9', parent: 29 },
+						{ id: 31, key: 'Z9K1', value: 'Z32', parent: 29 },
+						{ id: 32, key: 'Z32K1', value: 'array', parent: 28 },
+						{ id: 33, key: '0', value: 'object', parent: 32 },
+						{ id: 34, key: 'Z1K1', value: 'Z9', parent: 33 },
+						{ id: 35, key: 'Z9K1', value: 'Z31', parent: 33 },
+						{ id: 36, key: '1', value: 'object', parent: 32 },
+						{ id: 37, key: 'Z1K1', value: 'object', parent: 36 },
+						{ id: 38, key: 'Z1K1', value: 'Z9', parent: 37 },
+						{ id: 39, key: 'Z9K1', value: 'Z31', parent: 37 },
+						{ id: 40, key: 'Z31K1', value: 'object', parent: 36 },
+						{ id: 41, key: 'Z1K1', value: 'Z9', parent: 40 },
+						{ id: 42, key: 'Z9K1', value: 'Z1002', parent: 40 },
+						{ id: 43, key: 'Z31K2', value: 'array', parent: 36 },
+						{ id: 44, key: '0', value: 'object', parent: 43 },
+						{ id: 45, key: 'Z1K1', value: 'Z9', parent: 44 },
+						{ id: 46, key: 'Z9K1', value: 'Z6', parent: 44 }
+					] );
+					const rowId = 0;
+					const expected = {
+						langZid: 'Z1002',
+						langIsoCode: 'en',
+						rowId: 36
+					};
+					const metadata = zobjectModule.getters.getZPersistentAlias( state, getters )( rowId );
+					expect( metadata ).toStrictEqual( expected );
+				} );
+			} );
+
+			describe( 'getMetadataLanguages', function () {
+				it( 'returns empty list', function () {
+					getters.getZPersistentNameLangs = jest.fn( function () {
+						return [];
+					} );
+					getters.getZPersistentDescriptionLangs = jest.fn( function () {
+						return [];
+					} );
+					getters.getZPersistentAliasLangs = jest.fn( function () {
+						return [];
+					} );
+					const expected = [];
+					const languages = zobjectModule.getters.getMetadataLanguages( state, getters )();
+					expect( languages ).toStrictEqual( expected );
+				} );
+
+				it( 'returns set of non repeated languages', function () {
+					getters.getZPersistentNameLangs = jest.fn( function () {
+						return [
+							{ langZid: 'Z1002', langIsoCode: 'en', rowId: 1 }
+						];
+					} );
+					getters.getZPersistentDescriptionLangs = jest.fn( function () {
+						return [
+							{ langZid: 'Z1003', langIsoCode: 'en', rowId: 1 },
+							{ langZid: 'Z1004', langIsoCode: 'fr', rowId: 2 }
+						];
+					} );
+					getters.getZPersistentAliasLangs = jest.fn( function () {
+						return [
+							{ langZid: 'Z1005', langIsoCode: 'ru', rowId: 1 }
+						];
+					} );
+					const expected = [ 'Z1002', 'Z1003', 'Z1004', 'Z1005' ];
+					const languages = zobjectModule.getters.getMetadataLanguages( state, getters )();
+					expect( languages ).toStrictEqual( expected );
+				} );
+
+				it( 'returns set of repeated languages', function () {
+					getters.getZPersistentNameLangs = jest.fn( function () {
+						return [
+							{ langZid: 'Z1002', langIsoCode: 'en', rowId: 1 },
+							{ langZid: 'Z1003', langIsoCode: 'es', rowId: 2 }
+						];
+					} );
+					getters.getZPersistentDescriptionLangs = jest.fn( function () {
+						return [
+							{ langZid: 'Z1002', langIsoCode: 'en', rowId: 1 },
+							{ langZid: 'Z1003', langIsoCode: 'es', rowId: 2 }
+						];
+					} );
+					getters.getZPersistentAliasLangs = jest.fn( function () {
+						return [
+							{ langZid: 'Z1002', langIsoCode: 'en', rowId: 1 },
+							{ langZid: 'Z1003', langIsoCode: 'es', rowId: 2 }
+						];
+					} );
+					const expected = [ 'Z1002', 'Z1003' ];
+					const languages = zobjectModule.getters.getMetadataLanguages( state, getters )();
+					expect( languages ).toStrictEqual( expected );
+				} );
 			} );
 		} );
 
@@ -2408,7 +3198,15 @@ describe( 'zobject Vuex module', function () {
 				{ id: 43, key: 'Z31K2', value: 'array', parent: 36 },
 				{ id: 44, key: '0', value: 'object', parent: 43 },
 				{ id: 45, key: 'Z1K1', value: 'Z9', parent: 44 },
-				{ id: 46, key: 'Z9K1', value: 'Z6', parent: 44 }
+				{ id: 46, key: 'Z9K1', value: 'Z6', parent: 44 },
+				{ id: 47, key: 'Z2K5', value: 'object', parent: 0 },
+				{ id: 48, key: 'Z1K1', value: 'object', parent: 47 },
+				{ id: 49, key: 'Z1K1', value: 'Z9', parent: 48 },
+				{ id: 50, key: 'Z9K1', value: 'Z12', parent: 48 },
+				{ id: 51, key: 'Z12K1', value: 'array', parent: 47 },
+				{ id: 52, key: '0', value: 'object', parent: 51 },
+				{ id: 53, key: 'Z1K1', value: 'Z9', parent: 52 },
+				{ id: 54, key: 'Z9K1', value: 'Z11', parent: 52 }
 			];
 
 			zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
@@ -2838,6 +3636,12 @@ describe( 'zobject Vuex module', function () {
 						Z2K4: {
 							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z32' },
 							Z32K1: [ { Z1K1: 'Z9', Z9K1: 'Z31' } ]
+						},
+						Z2K5: {
+							Z1K1: { Z1K1: 'Z9', Z9K1: 'Z12' },
+							Z12K1: [
+								{ Z1K1: 'Z9', Z9K1: 'Z11' }
+							]
 						}
 					} );
 				} );
@@ -2998,12 +3802,12 @@ describe( 'zobject Vuex module', function () {
 					) ).toEqual( {
 						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z31' },
 						Z31K1: { Z1K1: 'Z9', Z9K1: '' },
-						Z31K2: [ { Z1K1: 'Z9', Z9K1: 'Z6' }, { Z1K1: 'Z6', Z6K1: '' } ]
+						Z31K2: [ { Z1K1: 'Z9', Z9K1: 'Z6' } ]
 					} );
 				} );
 
-				it( 'adds a valid ZMonolingualStringSet with initial values', function () {
-					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRINGSET, lang: 'Z1004', value: 'test alias' };
+				it( 'adds a valid ZMonolingualStringSet with initial value', function () {
+					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRINGSET, lang: 'Z1004', value: [ 'test alias' ] };
 					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
 					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
 						context.state,
@@ -3017,6 +3821,25 @@ describe( 'zobject Vuex module', function () {
 					} );
 				} );
 
+				it( 'adds a valid ZMonolingualStringSet with two initial values', function () {
+					const payload = { id: 0, type: Constants.Z_MONOLINGUALSTRINGSET, lang: 'Z1004', value: [ 'one', 'two' ] };
+					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
+					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
+						context.state,
+						context.getters,
+						context.rootState,
+						context.getters
+					) ).toEqual( {
+						Z1K1: { Z1K1: 'Z9', Z9K1: 'Z31' },
+						Z31K1: { Z1K1: 'Z9', Z9K1: 'Z1004' },
+						Z31K2: [
+							{ Z1K1: 'Z9', Z9K1: 'Z6' },
+							{ Z1K1: 'Z6', Z6K1: 'one' },
+							{ Z1K1: 'Z6', Z6K1: 'two' }
+						]
+					} );
+				} );
+
 				it( 'appends a valid ZMonolingualStringSet to a ZMultilingualStringSet', function () {
 					context.state.zobject = tableDataToRowObjects( [
 						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
@@ -3026,7 +3849,7 @@ describe( 'zobject Vuex module', function () {
 						{ id: 4, key: 'Z9K1', value: 'Z31', parent: 2 }
 					] );
 					context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
-					const payload = { id: 1, type: Constants.Z_MONOLINGUALSTRINGSET, lang: 'Z1004', value: 'test alias', append: true };
+					const payload = { id: 1, type: Constants.Z_MONOLINGUALSTRINGSET, lang: 'Z1004', value: [ 'test alias' ], append: true };
 					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
 					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
 						context.state,

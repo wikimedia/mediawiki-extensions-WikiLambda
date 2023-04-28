@@ -155,7 +155,7 @@ describe( 'FunctionEditorAliases', () => {
 			expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
 				type: Constants.Z_MONOLINGUALSTRINGSET,
 				lang: Constants.Z_NATURAL_LANGUAGE_CHINESE,
-				value: 'new alias',
+				value: [ 'new alias' ],
 				id: multilingualStringsetValueId,
 				append: true
 			} );
