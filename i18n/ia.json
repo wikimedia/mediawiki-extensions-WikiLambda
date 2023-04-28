@@ -152,6 +152,8 @@
 	"wikilambda-argument-typeselector-label": "Selige un typo pro iste argumento",
 	"wikilambda-function-typeselector-label": "Selige un function",
 	"wikilambda-return-typeselector-label": "Selige un typo a restituer",
+	"wikilambda-zobject-to-string-select-object": "Selige $1",
+	"wikilambda-zobject-to-string-enter-string": "Insere catena",
 	"wikilambda-editor-leave-edit-mode-header": "Exir del modo de modification",
 	"wikilambda-editor-label-addlanguage-label": "Selige lingua",
 	"wikilambda-editor-label-removelanguage-tooltip": "Remover iste lingua de iste etiquetta",
