@@ -8,6 +8,7 @@
 	"wikilambda-edit": "Уреди",
 	"wikilambda-show-more": "Прикажи више",
 	"wikilambda-hide-more": "Сакриј више",
+	"wikilambda-zobject-to-string-select-object": "Изабери $1",
 	"wikilambda-tester-status-pending": "На чекању…",
 	"wikilambda-tester-status-run": "Покрени",
 	"wikilambda-tester-status-cancel": "Откажи",

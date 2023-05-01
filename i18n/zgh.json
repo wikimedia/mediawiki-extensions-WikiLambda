@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Brahim-essaidi"
+			"Brahim-essaidi",
+			"ⵣⵉⵔⵉ ⴰⵎⵖⵏⴰⵙ"
 		]
 	},
-	"wikilambda-speciallistduplicatezobjectlabels-language": "ⵜⵓⵜⵍⴰⵢⵜ"
+	"wikilambda-speciallistduplicatezobjectlabels-language": "ⵜⵓⵜⵍⴰⵢⵜ",
+	"wikilambda-zobject-to-string-select-object": "ⵙⵜⵉ 1$"
 }
