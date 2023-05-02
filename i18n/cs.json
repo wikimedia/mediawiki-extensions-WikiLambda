@@ -61,7 +61,7 @@
 	"wikilambda-editor-label-addlanguage-label": "Vybrat jazyk",
 	"wikilambda-editor-label-removelanguage-tooltip": "Odebrat tento jazyk z tohoto štítku",
 	"wikilambda-editor-zobject-clearitem-tooltip": "Vyprázdnit tuto hodnotu",
-	"wikilambda-editor-label-select-programming-language-label": "Vyberte programovací jazyk:",
+	"wikilambda-editor-label-select-programming-language-label": "Vyberte programovací jazyk",
 	"wikilambda-functioncall-metadata-dialog-header": "Metadata",
 	"wikilambda-functioncall-metadata-errors-none": "Nic",
 	"wikilambda-functioncall-metadata-evaluation-start-time": "Čas zahájení hodnocení",

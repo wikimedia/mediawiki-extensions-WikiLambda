@@ -19,7 +19,7 @@
 	"wikilambda-savenew": "Tallenna",
 	"wikilambda-languagelabel": "Kieli",
 	"wikilambda-editor-label-addlanguage-label": "Valitse kieli",
-	"wikilambda-editor-label-select-programming-language-label": "Valitse ohjelmointikieli:",
+	"wikilambda-editor-label-select-programming-language-label": "Valitse ohjelmointikieli",
 	"wikilambda-implementation-none-found": "Tällä hetkellä tälle toiminnolle ei ole toteutuksia.",
 	"wikilambda-performtest-error-nonfunction": "Suoritustestin virhe: '$1' ei ole funktio.",
 	"wikilambda-performtest-error-nontester": "Suoritustestin virhe: '$1' ei ole testaaja.",
