@@ -1,13 +1,28 @@
 {
 	"@metadata": {
 		"authors": [
-			"Tofeiku"
+			"Tofeiku",
+			"Anakmalaysia",
+			"Hakimi97"
 		]
 	},
 	"wikilambda-reference": "Rujukan",
 	"wikilambda-literal": "Harfiah",
 	"wikilambda-special-edit-function-definition-title": "Sunting takrifan fungsi",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "Hanya pengguna dengan kebenaran khas",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Bahasa",
+	"wikilambda-special-objectsbytype-typeheader": "Semua Jenis",
+	"wikilambda-publishnew": "Terbitkan",
+	"wikilambda-cancel": "Batalkan",
+	"wikilambda-confirm": "Sahkan",
+	"wikilambda-savenew": "Simpan",
+	"wikilambda-publishchanges": "Terbit perubahan",
+	"wikilambda-savechanges": "Simpan perubahan",
+	"wikilambda-summarylabel": "Ringkasan:",
+	"wikilambda-languagelabel": "Bahasa",
+	"wikilambda-implementation-selector-code": "Kod",
+	"wikilambda-functioncall-metadata-dialog-header": "Metadata",
+	"wikilambda-functioncall-metadata-errors-none": "Tiada",
 	"wikilambda-function-viewer-aliases-header": "Juga dikenali sebagai",
 	"wikilambda-function-viewer-aliases-show-language-button": "Tunjuk lebih bahasa",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Sorok senarai",
