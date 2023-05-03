@@ -1,9 +1,21 @@
 {
 	"@metadata": {
 		"authors": [
-			"Tofeiku"
+			"Tofeiku",
+			"Anakmalaysia",
+			"Hakimi97"
 		]
 	},
 	"wikilambda-reference": "Rujukan",
-	"wikilambda-literal": "Harfiah"
+	"wikilambda-literal": "Harfiah",
+	"wikilambda-speciallistduplicatezobjectlabels-language": "Bahasa",
+	"wikilambda-special-objectsbytype-typeheader": "Semua Jenis",
+	"wikilambda-publishnew": "Terbitkan",
+	"wikilambda-cancel": "Batalkan",
+	"wikilambda-confirm": "Sahkan",
+	"wikilambda-savenew": "Simpan",
+	"wikilambda-publishchanges": "Terbit perubahan",
+	"wikilambda-savechanges": "Simpan perubahan",
+	"wikilambda-summarylabel": "Ringkasan:",
+	"wikilambda-implementation-selector-code": "Kod"
 }
