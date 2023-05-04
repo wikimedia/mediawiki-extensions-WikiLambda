@@ -101,4 +101,34 @@ module.exports = exports = {
 		}
 	}
 }
+
+/* stylelint-disable declaration-property-unit-disallowed-list */
+span.ext-wikilambda-lang-chip {
+	font-size: 1em;
+	font-weight: @font-weight-normal;
+	line-height: calc( 22.4px - 2px );
+	color: @color-base;
+	border: 1px solid @border-color-base;
+	border-radius: @border-radius-pill;
+	min-width: 36px;
+	padding: 0 5px;
+	text-transform: uppercase;
+	text-align: center;
+	display: inline-block;
+	box-sizing: border-box;
+	height: 22px;
+	min-height: 22px;
+
+	&:empty {
+		width: 36px;
+		height: 22px;
+		min-width: 36px;
+		border: 1px dashed @border-color-base;
+	}
+
+	@media screen and ( max-width: @width-breakpoint-tablet ) {
+		font-size: 0.875em;
+	}
+}
+
 </style>
