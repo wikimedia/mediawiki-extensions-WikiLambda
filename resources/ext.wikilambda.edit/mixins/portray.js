@@ -100,6 +100,8 @@ module.exports = exports = {
 					continue;
 				}
 				const keyInfo = knownKeys.get( key );
+				// Message keys specified in knownKeys above.
+				// eslint-disable-next-line mediawiki/msg-doc
 				const displayKey = keyInfo ? this.$i18n( keyInfo.i18nId ).text() : key;
 				const value = this.maybeStringify( entry[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ] ||
 					entry[ Constants.Z_TYPED_PAIR_TYPE2 ] );
@@ -136,6 +138,7 @@ module.exports = exports = {
 					this.$i18n( 'wikilambda-functioncall-metadata-errors-none' ).text() + '</li>';
 			}
 			// The knownKeys keys display "Error summary: ..." or "Validator error summary: ..."
+			// eslint-disable-next-line mediawiki/msg-doc
 			const i18nKey = this.$i18n( knownKeys.get( key ).i18nId ).text();
 			let html = '<li><b>' + i18nKey + ':</b><br>';
 			html = html + this.formatZErrorSummary( suberrors, labels );
@@ -259,6 +262,8 @@ module.exports = exports = {
 			if ( value === undefined ) {
 				return '';
 			}
+			// Message keys specified in knownKeys above.
+			// eslint-disable-next-line mediawiki/msg-doc
 			const i18nKey = this.$i18n( knownKeys.get( key ).i18nId ).text();
 			return '<li><b>' + i18nKey + ':</b> ' + getDatetimeRelativeValue( value ) + '</li>';
 		},
@@ -285,6 +290,8 @@ module.exports = exports = {
 				value = value[ Constants.Z_STRING_VALUE ];
 			}
 			value = this.maybeStringify( value );
+			// Message keys specified in knownKeys above.
+			// eslint-disable-next-line mediawiki/msg-doc
 			const i18nKey = this.$i18n( knownKeys.get( key ).i18nId ).text();
 			return '<li><b>' + i18nKey + ':</b> ' + value + '</li>';
 		},
@@ -304,6 +311,8 @@ module.exports = exports = {
 				return '';
 			}
 			value = this.maybeStringify( value );
+			// Message keys specified in knownKeys above.
+			// eslint-disable-next-line mediawiki/msg-doc
 			const i18nKey = this.$i18n( knownKeys.get( key ).i18nId ).text();
 			return '<li><b>' + i18nKey + ':</b> ' + value + '</li>';
 		}

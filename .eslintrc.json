@@ -55,7 +55,6 @@
 				]
 			}
 		],
-		"vue/no-v-model-argument": "warn",
-		"mediawiki/msg-doc": "warn"
+		"vue/no-v-model-argument": "warn"
 	}
 }

@@ -280,6 +280,8 @@ module.exports = exports = {
 		errorMessage: function () {
 			if ( this.getErrors[ this.rowId ] && this.getErrors[ this.rowId ].state ) {
 				const messageStr = this.getErrors[ this.rowId ].message;
+				// TODO (T336873): These messages could be arbitrary and might not be defined.
+				// eslint-disable-next-line mediawiki/msg-doc
 				return this.$i18n( messageStr ).text();
 			}
 			return '';
@@ -542,10 +544,12 @@ module.exports = exports = {
 	watch: {
 		selectedLabel: {
 			handler: function () {
-				// Trigger a rerender when the selected label changes
+				// Trigger a rerender when initial input value changes,
 				// This might occur due to slow network request for a particular label
 				// Also make sure not to trigger rerender if the user has typed an input
-				this.lookupKey += 1;
+				if ( !this.inputValue ) {
+					this.lookupKey += 1;
+				}
 			}
 		}
 	},

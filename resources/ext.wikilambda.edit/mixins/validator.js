@@ -50,6 +50,7 @@ module.exports = exports = {
 			if ( this.validatorErrorMessages.indexOf( this.validatorCurrentError ) === -1 ) {
 				return '';
 			}
+			// eslint-disable-next-line mediawiki/msg-doc
 			return this.$i18n( this.validatorCurrentError ).text();
 		}
 	}
