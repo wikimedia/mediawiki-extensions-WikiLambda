@@ -52,15 +52,14 @@
 				<wl-z-object-selector
 					v-if="( !canEditType && getTypeOfArgument ) || canEditType"
 					ref="typeSelector"
-					:type="Constants.Z_TYPE"
 					class="
 						ext-wikilambda-editor-input-list-item__body__entry-field
 						ext-wikilambda-editor-input-list-item__selector"
+					:disabled="!canEditType"
 					:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text()"
-					:selected-id="getTypeOfArgument"
-					:initial-selection-label="selectedLabel"
-					:readonly="!canEditType"
-					:zobject-id="getZArgumentType.id"
+					:row-id="getZArgumentType.id"
+					:selected-zid="getTypeOfArgument"
+					:type="Constants.Z_TYPE"
 					@input="setArgumentType( $event )"
 					@focus-out="clearIfUnset"
 				></wl-z-object-selector>

@@ -6,7 +6,8 @@
  */
 'use strict';
 
-const Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
+const { waitFor } = require( '@testing-library/vue' ),
+	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	{ CdxLookup } = require( '@wikimedia/codex' ),
 	mount = require( '@vue/test-utils' ).mount,
 	ZObjectSelector = require( '../../../resources/ext.wikilambda.edit/components/ZObjectSelector.vue' );
@@ -81,7 +82,9 @@ describe( 'ZObjectSelector', function () {
 
 		var lookup = wrapper.getComponent( CdxLookup );
 		lookup.vm.$emit( 'input', 'Stri' );
-
-		expect( lookupMock ).toHaveBeenLastCalledWith( expect.anything(), { input: 'Stri', returnType: '', type: Constants.Z_TYPE } );
+		waitFor( () => expect( lookupMock ).toHaveBeenLastCalledWith(
+			expect.anything(),
+			{ input: 'Stri', returnType: '', type: Constants.Z_TYPE }
+		) );
 	} );
 } );

@@ -17,7 +17,7 @@
 			<wl-z-object-selector
 				v-if="!( readonly || getViewMode )"
 				ref="langSelector"
-				:used-languages="usedLanguages"
+				:exclude-zids="usedLanguages"
 				:type="Constants.Z_NATURAL_LANGUAGE"
 				@input="addNewLang"
 			></wl-z-object-selector>

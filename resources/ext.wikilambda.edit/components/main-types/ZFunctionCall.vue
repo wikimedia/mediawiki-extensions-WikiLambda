@@ -15,8 +15,8 @@
 			aria-labelledby="ext-wikilambda-function-call-block__select-function-label"
 			:type="Constants.Z_FUNCTION"
 			:placeholder="$i18n( 'wikilambda-function-typeselector-label' ).text()"
-			:selected-id="zFunctionId"
-			:zobject-id="zobjectId"
+			:selected-zid="zFunctionId"
+			:row-id="zobjectId"
 			@input="typeHandler"
 		></wl-z-object-selector>
 		<template v-else>

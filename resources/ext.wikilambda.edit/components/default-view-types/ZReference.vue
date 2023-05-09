@@ -13,12 +13,11 @@
 		</template>
 		<template v-else>
 			<wl-z-object-selector
-				:selected-id="value"
-				:initial-selection-label="valueLabel"
-				:type="selectType"
-				:zobject-id="rowId"
-				:readonly="disabled"
+				:disabled="disabled"
 				:fit-width="true"
+				:row-id="rowId"
+				:selected-zid="value"
+				:type="selectType"
 				@input="setValue"
 			></wl-z-object-selector>
 		</template>

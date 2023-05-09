@@ -71,9 +71,9 @@
 			<wl-z-object-selector
 				v-if="!viewmode"
 				ref="languageSelector"
-				:used-languages="selectedLanguages"
+				:exclude-zids="selectedLanguages"
 				:type="Constants.Z_NATURAL_LANGUAGE"
-				:selected-id="selectedLang"
+				:selected-zid="selectedLang"
 				@input="addNewLang"
 			></wl-z-object-selector>
 		</template>

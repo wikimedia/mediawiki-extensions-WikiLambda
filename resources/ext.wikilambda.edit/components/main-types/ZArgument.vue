@@ -11,8 +11,7 @@
 			<wl-z-object-selector
 				:type="Constants.Z_TYPE"
 				:placeholder="$i18n( 'wikilambda-argument-typeselector-label' )"
-				:selected-id="argumentType"
-				:initial-selection-label="selectedArgumentTypeLabel"
+				:selected-zid="argumentType"
 				@input="typeHandler"
 			></wl-z-object-selector>
 		</div>
@@ -71,12 +70,6 @@ module.exports = exports = {
 				}
 
 				return argumentType;
-			},
-			selectedArgumentTypeLabel: function () {
-				return this.zKeyLabels[ this.argumentTypeItem.value ];
-			},
-			isArgumentTypeLabelReady: function () {
-				return this.argumentTypeItem.value ? !!this.selectedArgumentTypeLabel : true;
 			},
 			argumentType: function () {
 				if ( this.argumentTypeItem ) {

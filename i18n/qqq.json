@@ -174,6 +174,7 @@
 	"wikilambda-zobject-to-string-select-object": "Call to action for selecting a blank object in the ZObjectToString component.\n\n{{doc-wikilambda}}",
 	"wikilambda-zobject-to-string-enter-string": "Call to action for entering a string in the ZObjectToString component.\n\n{{doc-wikilambda}}",
 	"wikilambda-zobjectselector-label": "{{optional}}\nLabel for the ZObject selector, that searches using labels and offers a list of existing ZObjects.\n\n{{doc-wikilambda}}",
+	"wikilambda-zobjectselector-no-results": "Message shown when the lookup call returns no results.\n\n{{doc-wikilambda}}",
 	"wikilambda-editor-additem": "{{ignore}}Label for button to add item",
 	"wikilambda-editor-removeitem": "{{ignore}}Label for button to delete item",
 	"wikilambda-editor-clearitem": "{{ignore}}Label for button to clear item",

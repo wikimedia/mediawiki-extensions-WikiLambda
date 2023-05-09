@@ -5,7 +5,20 @@
  * @license MIT
  */
 var Constants = {
-		EXCLUDED_Z_TYPES: [ 'Z2', 'Z3', 'Z5', 'Z7', 'Z9', 'Z16', 'Z17', 'Z18', 'Z21', 'Z22', 'Z39' ],
+		// TODO (T336292): Rethink why are we ecluding all these types from general selection?
+		// EXCLUDED_Z_TYPES: [ 'Z2', 'Z3', 'Z5', 'Z7', 'Z9', 'Z16', 'Z17', 'Z18', 'Z21', 'Z22', 'Z39' ],
+		// Z2: OK - only will be a root zobject, it should not be selected for anything else
+		// Z5: always generated dynamically... but shouldn't we be able to select it as a function
+		//     output for example?
+		// Z7: OK - selected as a mode, never as a type
+		// Z9: OK - selected as a mode, never as a type
+		// Z16: why can't we use code for things?
+		// Z17: also not sure why are we not allowing this
+		// Z18: OK - selected as mode, never as a type
+		// Z21: we cannot create as root but why can't we choose this for example as an output type?
+		// Z22: OK - never show, it's a dynamically created internal type
+		// Z39: cannot create as root, but why can't we choose this for other things?
+		EXCLUDED_Z_TYPES: [ 'Z2', 'Z7', 'Z9', 'Z18', 'Z22' ],
 		NEW_ZID_PLACEHOLDER: 'Z0',
 		Z_OBJECT: 'Z1',
 		Z_OBJECT_TYPE: 'Z1K1',

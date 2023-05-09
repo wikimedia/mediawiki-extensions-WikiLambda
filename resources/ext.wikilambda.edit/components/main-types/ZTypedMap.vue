@@ -10,13 +10,13 @@
 			<wl-z-object-selector
 				:type="Constants.zType"
 				:placeholder="$i18n( 'wikilambda-ztyped-map-placeholder' ).text()"
-				:readonly="readonly"
+				:disabled="readonly"
 				@input="onMapTypeChange( $event, 0 )"
 			></wl-z-object-selector>
 			<wl-z-object-selector
 				:type="Constants.zType"
 				:placeholder="$i18n( 'wikilambda-ztyped-map-placeholder' ).text()"
-				:readonly="readonly"
+				:disabled="readonly"
 				@input="onMapTypeChange( $event, 1 )"
 			></wl-z-object-selector>
 		</template>
