@@ -78,7 +78,7 @@ class UpdateImplementationsJob extends Job implements GenericParameterJob {
 				|| array_diff( $implementationRankingZids, $currentImplementationZids )
 			) {
 				$this->logger->debug(
-					__CLASS__ . ' Bailing: attached ZIDs have changed!',
+					__CLASS__ . ' Bailing on {functionZid}: attached ZIDs have changed!',
 					[
 						'functionZid' => $functionZid,
 						'functionRevision' => $functionRevision,
@@ -91,7 +91,7 @@ class UpdateImplementationsJob extends Job implements GenericParameterJob {
 		}
 
 		$this->logger->info(
-			__CLASS__ . ' Editing Function to update Implementations order',
+			__CLASS__ . ' Editing Function {functionZid} to update Implementations order',
 			[
 				'functionZid' => $functionZid,
 				'functionRevision' => $functionRevision,
@@ -119,7 +119,7 @@ class UpdateImplementationsJob extends Job implements GenericParameterJob {
 			$targetObject->getZObject()->__toString(), $updatingComment );
 
 		$this->logger->info(
-			__CLASS__ . ' Edited Function to update Implementations order',
+			__CLASS__ . ' Edited Function {functionZid} to update Implementations order',
 			[
 				'functionZid' => $functionZid,
 				'functionRevision' => $functionRevision,

@@ -506,7 +506,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		if ( count( $attachedImplementationZids ) <= 1 ) {
 			// No point in updating.
 			$logger->info(
-				__METHOD__ . ' Bailing: Implementation count <= 1',
+				__METHOD__ . ' Not updating {functionZid}: Implementation count <= 1',
 				[
 					'functionZid' => $functionZid,
 					'functionRevision' => $functionRevision,
@@ -524,7 +524,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		if ( array_diff( $attachedImplementationZids, $implementationZids ) ||
 			array_diff( $attachedTesterZids, $testerZids ) ) {
 			$logger->info(
-				__METHOD__ . ' Bailing: Missing results for attached implementations or testers',
+				__METHOD__ . ' Not updating {functionZid}: Missing results for attached implementations or testers',
 				[
 					'functionZid' => $functionZid,
 					'functionRevision' => $functionRevision,
@@ -571,7 +571,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		$newFirst = array_key_first( $implementationMap );
 		if ( $newFirst === $previousFirst ) {
 			$logger->info(
-				__METHOD__ . ' Bailing: Same first element',
+				__METHOD__ . ' Not updating {functionZid}: Same first element',
 				[
 					'functionZid' => $functionZid,
 					'functionRevision' => $functionRevision,
@@ -593,7 +593,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		if ( $newFirstStats[ 'averageTime' ] >= $relativeThreshold * $previousFirstStats[ 'averageTime' ] &&
 			$newFirstStats[ 'numFailed' ] >= $previousFirstStats[ 'numFailed' ] ) {
 			$logger->info(
-				__METHOD__ . ' Bailing: New first element only marginally better than previous',
+				__METHOD__ . ' Not updating {functionZid}: New first element only marginally better than previous',
 				[
 					'functionZid' => $functionZid,
 					'functionRevision' => $functionRevision,
@@ -607,7 +607,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 		$implementationRankingZids = array_keys( $implementationMap );
 		$logger->info(
-			__METHOD__ . ' Creating update job',
+			__METHOD__ . ' Creating UpdateImplementationsJob for {functionZid}',
 			[
 				'functionZid' => $functionZid,
 				'functionRevision' => $functionRevision,
