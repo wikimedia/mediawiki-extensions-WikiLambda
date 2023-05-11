@@ -29,7 +29,7 @@
 				:type="Constants.Z_TYPE"
 				:return-type="Constants.Z_TYPE"
 				:placeholder="$i18n( 'wikilambda-typeselector-label' ).text()"
-				:selected-id="type"
+				:selected-zid="type"
 				@input="onTypeChange"
 			></wl-z-object-selector>
 		</span>

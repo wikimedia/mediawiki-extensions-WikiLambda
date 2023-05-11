@@ -35,16 +35,15 @@
 			</span>
 			<wl-z-object-selector
 				ref="typeSelector"
-				:type="Constants.Z_TYPE"
 				class="
 					ext-wikilambda-function-definition-output__body__entry-field
 					ext-wikilambda-function-definition-output__selector"
 				aria-labelledby="ext-wikilambda-function-definition-output__label-label"
+				:disabled="!canEdit"
 				:placeholder="$i18n( 'wikilambda-function-definition-output-selector' ).text()"
-				:selected-id="zReturnType.value"
-				:initial-selection-label="zReturnTypeLabel"
-				:readonly="!canEdit"
-				:zobject-id="zReturnTypeId"
+				:row-id="zReturnTypeId"
+				:selected-zid="zReturnType.value"
+				:type="Constants.Z_TYPE"
 				@input="setReturnType"
 				@focus-out="clearIfUnset"
 			></wl-z-object-selector>
@@ -112,9 +111,6 @@ module.exports = exports = {
 				Constants.Z_FUNCTION_RETURN_TYPE,
 				Constants.Z_REFERENCE_ID
 			] );
-		},
-		zReturnTypeLabel: function () {
-			return this.zReturnType.value ? this.getZkeyLabels[ this.zReturnType.value ] : '';
 		}
 	} ),
 	methods: $.extend( mapActions( [

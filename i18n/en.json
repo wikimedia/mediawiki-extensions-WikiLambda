@@ -163,6 +163,7 @@
 	"wikilambda-zobject-to-string-select-object": "Select $1",
 	"wikilambda-zobject-to-string-enter-string": "Enter String",
 	"wikilambda-zobjectselector-label": "ZObject",
+	"wikilambda-zobjectselector-no-results": "No results found.",
 	"wikilambda-editor-additem": "➕",
 	"wikilambda-editor-removeitem": "🗑️",
 	"wikilambda-editor-clearitem": "🧽",

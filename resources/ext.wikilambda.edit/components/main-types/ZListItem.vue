@@ -20,7 +20,7 @@
 			:type="zType"
 			:return-type="zType"
 			:placeholder="$i18n( 'wikilambda-typeselector-label' ).text()"
-			:readonly="readonly"
+			:disabled="readonly"
 			@input="onTypeChange"
 		></wl-z-object-selector>
 		<wl-z-object

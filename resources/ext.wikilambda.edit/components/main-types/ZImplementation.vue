@@ -14,9 +14,8 @@
 				aria-labelledby="ext-wikilambda-zimplementation_function-label"
 				:type="Constants.Z_FUNCTION"
 				:placeholder="$i18n( 'wikilambda-function-typeselector-label' ).text()"
-				:selected-id="zFunction.value"
-				:initial-selection-label="selectedFunctionLabel"
-				:zobject-id="zFunction.id"
+				:selected-zid="zFunction.value"
+				:row-id="zFunction.id"
 				@input="updateZFunctionType"
 			></wl-z-object-selector>
 			<template v-else>
@@ -161,9 +160,6 @@ module.exports = exports = {
 			},
 			functionLabel: function () {
 				return this.getZkeyLabels[ Constants.Z_IMPLEMENTATION_FUNCTION ];
-			},
-			selectedFunctionLabel: function () {
-				return this.getZkeyLabels[ this.zFunction.value ];
 			},
 			selectedFunctionJson: function () {
 				return this.getZkeys[ this.zFunction.value ];

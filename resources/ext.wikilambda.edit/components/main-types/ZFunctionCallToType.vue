@@ -11,7 +11,7 @@
 				<wl-z-object-selector
 					:type="Constants.zType"
 					:placeholder="$i18n( 'wikilambda-ztyped-map-placeholder' ).text()"
-					:readonly="readonly"
+					:disabled="readonly"
 					@input="onTypeChange( $event, argument.id, index )"
 				></wl-z-object-selector>
 			</div>

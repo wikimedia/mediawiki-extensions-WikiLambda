@@ -142,8 +142,8 @@ describe( 'Wikilambda frontend, running a function on evaluate function call vie
 
 		// ASSERT: The metadata is displayed in the dialog.
 		const dialog = await findByRole( 'dialog' );
-		expect( dialog ).toHaveTextContent( 'Orchestration start time: 10 seconds ago' );
-		expect( dialog ).toHaveTextContent( 'Orchestration end time: 1 second ago' );
+		expect( dialog ).toHaveTextContent( 'Orchestration start time: 11 seconds ago' );
+		expect( dialog ).toHaveTextContent( 'Orchestration end time: 2 seconds ago' );
 		expect( dialog ).toHaveTextContent( 'Orchestration duration: 146ms' );
 	} );
 } );

@@ -13,9 +13,9 @@
 			<!-- Zero state, select a literal type -->
 			<wl-z-object-selector
 				v-if="!value"
-				:type="selectType"
-				:zobject-id="rowId"
 				:fit-width="true"
+				:row-id="rowId"
+				:type="selectType"
 				@input="setValue"
 			></wl-z-object-selector>
 			<!-- Non-Zero state, select mode -->

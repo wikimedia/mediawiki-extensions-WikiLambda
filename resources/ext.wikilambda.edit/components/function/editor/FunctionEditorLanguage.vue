@@ -17,10 +17,9 @@
 			ref="languageSelector"
 			class="ext-wikilambda-language-selector__add-language"
 			aria-labelledby="ext-wikilambda-language-selector__add-language-label"
-			:used-languages="currentZObjectLanguages"
+			:exclude-zids="currentZObjectLanguages"
+			:selected-zid="zLanguage"
 			:type="Constants.Z_NATURAL_LANGUAGE"
-			:selected-id="zLanguage"
-			:initial-selection-label="getZkeyLabels[ zLanguage ]"
 			@input="addNewLang"
 			@focus-out="clearLookupToFallback"
 		></wl-z-object-selector>

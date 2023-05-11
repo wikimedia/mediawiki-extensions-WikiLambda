@@ -12,7 +12,7 @@
 				<wl-z-object-selector
 					:type="Constants.zType"
 					:placeholder="$i18n( 'wikilambda-ztyped-pair-placeholder' ).text()"
-					:readonly="readonly"
+					:disabled="readonly"
 					@input="onPairTypeChange( $event, 0 )"
 				></wl-z-object-selector>
 			</div>
@@ -21,7 +21,7 @@
 				<wl-z-object-selector
 					:type="Constants.zType"
 					:placeholder="$i18n( 'wikilambda-ztyped-pair-placeholder' ).text()"
-					:readonly="readonly"
+					:disabled="readonly"
 					@input="onPairTypeChange( $event, 1 )"
 				></wl-z-object-selector>
 			</div>

@@ -16,10 +16,9 @@
 			</a>
 		</span>
 		<wl-z-object-selector
-			:selected-id="referenceValue"
-			:initial-selection-label="referenceLabel"
+			:selected-zid="referenceValue"
 			:type="searchType"
-			:zobject-id="referenceItem.id"
+			:row-id="referenceItem.id"
 			@input="setZReference"
 		></wl-z-object-selector>
 	</div>
