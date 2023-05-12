@@ -330,7 +330,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 			);
 		} else {
 			$this->getLogger()->info(
-				__METHOD__ . ' Not updating implementation ranking',
+				__METHOD__ . ' Not updating {functionZid} implementation ranking; no live results',
 				[
 					'functionZid' => $functionZid,
 					'canUpdateImplementationRanking' => $canUpdateImplementationRanking
