@@ -158,6 +158,7 @@
 	"wikilambda-zobject-to-string-select-object": "נא לבחור את $1",
 	"wikilambda-zobject-to-string-enter-string": "נא להזין מחרוזת",
 	"wikilambda-zobjectselector-label": "עצם Z",
+	"wikilambda-zobjectselector-no-results": "לא נמצאו תוצאות.",
 	"wikilambda-editor-leave-edit-mode-header": "לעזוב את מצב העריכה",
 	"wikilambda-editor-label-addlanguage-label": "בחירת שפה",
 	"wikilambda-editor-label-removelanguage-tooltip": "הסרת השפה הזאת מהתווית הזאת",

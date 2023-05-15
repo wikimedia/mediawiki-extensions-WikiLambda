@@ -25,6 +25,7 @@
 	"wikilambda-savechanges": "Változtatások mentése",
 	"wikilambda-summarylabel": "Összefoglaló:",
 	"wikilambda-typeselector-label": "Érték típusa",
+	"wikilambda-zobject-to-string-select-object": "$1 kiválasztása",
 	"wikilambda-editor-label-addlanguage-label": "Nyelv hozzáadása",
 	"wikilambda-editor-label-removelanguage-tooltip": "Nyelv eltávolítása",
 	"wikilambda-editor-zlist-additem-tooltip": "Elem hozzáadása a ZListhez",

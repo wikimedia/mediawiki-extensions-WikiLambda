@@ -162,6 +162,7 @@
 	"wikilambda-zobject-to-string-select-object": "$1 auswählen",
 	"wikilambda-zobject-to-string-enter-string": "Zeichenfolge eingeben",
 	"wikilambda-zobjectselector-label": "ZObjekt",
+	"wikilambda-zobjectselector-no-results": "Keine Ergebnisse gefunden.",
 	"wikilambda-editor-leave-edit-mode-header": "Bearbeitungsmodus verlassen",
 	"wikilambda-editor-label-addlanguage-label": "Sprache auswählen",
 	"wikilambda-editor-label-removelanguage-tooltip": "Entferne diese Sprache von dieser Bezeichnung",

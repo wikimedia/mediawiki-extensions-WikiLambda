@@ -36,6 +36,7 @@
 	"wikilambda-argument-typeselector-label": "Seleziona un tipo per questo argomento",
 	"wikilambda-function-typeselector-label": "Seleziona una funzione",
 	"wikilambda-return-typeselector-label": "Seleziona un tipo da restituire",
+	"wikilambda-zobjectselector-no-results": "Nessun risultato trovato.",
 	"wikilambda-editor-leave-edit-mode-header": "Esci dalla modalità di modifica",
 	"wikilambda-editor-label-addlanguage-label": "Seleziona lingua",
 	"wikilambda-editor-label-removelanguage-tooltip": "Rimuovi questa lingua da questa etichetta",
