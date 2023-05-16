@@ -1032,8 +1032,6 @@ module.exports = exports = {
 		 * composition (Z14K2), which will determine whether
 		 * we can use argument references in its type selectors.
 		 *
-		 * TODO: add unit tests
-		 *
 		 * @param {Object} state
 		 * @param {Object} getters
 		 * @return {Function}
@@ -1044,11 +1042,11 @@ module.exports = exports = {
 			 * @return {boolean}
 			 */
 			function findCompositionFromRowId( rowId ) {
-				if ( rowId ) {
-					// Zero or undefined, return false and end
+				const row = getters.getRowById( rowId );
+				if ( !row ) {
+					// Not found or reached the root, return false and end
 					return false;
 				}
-				const row = getters.getRowById( rowId );
 				return ( row.key === Constants.Z_IMPLEMENTATION_COMPOSITION ) ?
 					true :
 					findCompositionFromRowId( row.parent );

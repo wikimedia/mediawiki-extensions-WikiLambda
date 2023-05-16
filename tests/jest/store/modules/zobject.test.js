@@ -141,7 +141,7 @@ describe( 'zobject Vuex module', function () {
 	// * [ ] getDepthByRowId
 	// * [ ] getParentRowId
 	// * [ ] getNextRowId
-	// * [ ] isInsideComposition
+	// * [x] isInsideComposition
 
 	describe( 'Getters', function () {
 		describe( 'getZObjectById', function () {
@@ -1916,6 +1916,110 @@ describe( 'zobject Vuex module', function () {
 				const expected = 'def Z10001:';
 				const lang = zobjectModule.getters.getZCodeString( state, getters )( rowId );
 				expect( lang ).toBe( expected );
+			} );
+		} );
+
+		describe( 'isInsideComposition', function () {
+			var getters;
+			beforeEach( function () {
+				getters = {};
+				getters.getRowById = zobjectModule.getters.getRowById( state );
+			} );
+
+			it( 'returns false when the rowId is undefined', function () {
+				state.zobject = [];
+				const rowId = undefined;
+				const expected = false;
+				const result = zobjectModule.getters.isInsideComposition( state, getters )( rowId );
+				expect( result ).toBe( expected );
+			} );
+
+			it( 'returns false when the rowId is not found', function () {
+				state.zobject = [];
+				const rowId = 10;
+				const expected = false;
+				const result = zobjectModule.getters.isInsideComposition( state, getters )( rowId );
+				expect( result ).toBe( expected );
+			} );
+
+			it( 'returns false when the row is zero (root)', function () {
+				state.zobject = tableDataToRowObjects( [
+					{ id: 0, key: undefined, parent: undefined, value: 'object' },
+					{ id: 1, key: 'Z1K1', parent: 0, value: 'object' },
+					{ id: 2, key: 'Z1K1', parent: 1, value: 'Z9' },
+					{ id: 3, key: 'Z9K1', parent: 1, value: 'Z2' }
+				] );
+				const rowId = 0;
+				const expected = false;
+				const result = zobjectModule.getters.isInsideComposition( state, getters )( rowId );
+				expect( result ).toBe( expected );
+			} );
+
+			it( 'returns false when no parent has composition/Z14K2 key', function () {
+				state.zobject = tableDataToRowObjects( [
+					{ id: 0, key: undefined, parent: undefined, value: 'object' },
+					{ id: 1, key: 'Z1K1', parent: 0, value: 'object' },
+					{ id: 2, key: 'Z1K1', parent: 1, value: 'Z9' },
+					{ id: 3, key: 'Z9K1', parent: 1, value: 'Z2' },
+					{ id: 4, key: 'Z2K2', parent: 0, value: 'object' },
+					{ id: 5, key: 'Z1K1', parent: 4, value: 'object' },
+					{ id: 6, key: 'Z1K1', parent: 5, value: 'Z9' },
+					{ id: 7, key: 'Z9K1', parent: 5, value: 'Z14' },
+					{ id: 8, key: 'Z14K1', parent: 4, value: 'object' },
+					{ id: 9, key: 'Z1K1', parent: 8, value: 'Z9' },
+					{ id: 10, key: 'Z9K1', parent: 8, value: 'Z10001' },
+					{ id: 11, key: 'Z14K3', parent: 4, value: 'object' },
+					{ id: 12, key: 'Z1K1', parent: 11, value: 'object' },
+					{ id: 13, key: 'Z1K1', parent: 12, value: 'Z9' },
+					{ id: 14, key: 'Z9K1', parent: 12, value: 'Z16' },
+					{ id: 15, key: 'Z16K1', parent: 11, value: 'object' },
+					{ id: 16, key: 'Z1K1', parent: 15, value: 'object' },
+					{ id: 17, key: 'Z1K1', parent: 16, value: 'Z9' },
+					{ id: 18, key: 'Z9K1', parent: 16, value: 'Z61' },
+					{ id: 19, key: 'Z61K1', parent: 15, value: 'object' },
+					{ id: 20, key: 'Z1K1', parent: 19, value: 'Z6' },
+					{ id: 21, key: 'Z6K1', parent: 19, value: 'python' },
+					{ id: 22, key: 'Z16K2', parent: 11, value: 'object' },
+					{ id: 23, key: 'Z1K1', parent: 22, value: 'Z6' },
+					{ id: 24, key: 'Z6K1', parent: 22, value: 'def Z10001:' }
+				] );
+				const rowId = 24;
+				const expected = false;
+				const result = zobjectModule.getters.isInsideComposition( state, getters )( rowId );
+				expect( result ).toBe( expected );
+			} );
+
+			it( 'returns true when a parent has composition/Z14K2 key', function () {
+				state.zobject = tableDataToRowObjects( [
+					{ id: 0, key: undefined, parent: undefined, value: 'object' },
+					{ id: 1, key: 'Z1K1', parent: 0, value: 'object' },
+					{ id: 2, key: 'Z1K1', parent: 1, value: 'Z9' },
+					{ id: 3, key: 'Z9K1', parent: 1, value: 'Z2' },
+					{ id: 4, key: 'Z2K2', parent: 0, value: 'object' },
+					{ id: 5, key: 'Z1K1', parent: 4, value: 'object' },
+					{ id: 6, key: 'Z1K1', parent: 5, value: 'Z9' },
+					{ id: 7, key: 'Z9K1', parent: 5, value: 'Z14' },
+					{ id: 8, key: 'Z14K1', parent: 4, value: 'object' },
+					{ id: 9, key: 'Z1K1', parent: 8, value: 'Z9' },
+					{ id: 10, key: 'Z9K1', parent: 8, value: 'Z10001' },
+					{ id: 11, key: 'Z14K2', parent: 4, value: 'object' },
+					{ id: 12, key: 'Z1K1', parent: 11, value: 'object' },
+					{ id: 13, key: 'Z1K1', parent: 12, value: 'Z9' },
+					{ id: 14, key: 'Z9K1', parent: 12, value: 'Z7' },
+					{ id: 15, key: 'Z7K1', parent: 11, value: 'object' },
+					{ id: 16, key: 'Z1K1', parent: 15, value: 'Z9' },
+					{ id: 17, key: 'Z9K1', parent: 15, value: 'Z10002' },
+					{ id: 18, key: 'Z10002K1', parent: 11, value: 'object' },
+					{ id: 19, key: 'Z1K1', parent: 18, value: 'Z6' },
+					{ id: 20, key: 'Z6K1', parent: 18, value: 'uno' },
+					{ id: 21, key: 'Z10002K2', parent: 11, value: 'object' },
+					{ id: 22, key: 'Z1K1', parent: 21, value: 'Z6' },
+					{ id: 23, key: 'Z6K1', parent: 21, value: 'dos' }
+				] );
+				const rowId = 23;
+				const expected = true;
+				const result = zobjectModule.getters.isInsideComposition( state, getters )( rowId );
+				expect( result ).toBe( expected );
 			} );
 		} );
 	} );
