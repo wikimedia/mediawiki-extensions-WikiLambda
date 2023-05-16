@@ -11,7 +11,7 @@
 			:persistent="true"
 		></wl-z-object>
 		<template v-if="showEditCommand">
-			<wl-z-object-publish :is-disabled="!isDirty"></wl-z-object-publish>
+			<wl-publish-widget :is-disabled="!isDirty"></wl-publish-widget>
 			<cdx-button
 				class="ext-wikilambda-expertModeToggle"
 				@click="$store.dispatch( 'toggleExpertMode' )">
@@ -36,7 +36,7 @@
 
 <script>
 var ZObject = require( '../components/ZObject.vue' ),
-	ZObjectPublish = require( '../components/ZObjectPublish.vue' ),
+	PublishWidget = require( '../components/widgets/Publish.vue' ),
 	LeaveEditorDialog = require( '../components/base/LeaveEditorDialog.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
@@ -49,7 +49,7 @@ module.exports = exports = {
 	name: 'wl-z-object-editor',
 	components: {
 		'wl-z-object': ZObject,
-		'wl-z-object-publish': ZObjectPublish,
+		'wl-publish-widget': PublishWidget,
 		'wl-leave-editor-dialog': LeaveEditorDialog,
 		'cdx-button': CdxButton,
 		'cdx-message': CdxMessage

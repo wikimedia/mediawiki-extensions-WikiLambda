@@ -564,6 +564,10 @@ module.exports = exports = {
 @import '../ext.wikilambda.edit.less';
 
 .ext-wikilambda-select-zobject {
+	.cdx-text-input__input {
+		min-width: auto;
+	}
+
 	&__fitted {
 		transition: @wl-transition-field-expand;
 		display: inline-block;

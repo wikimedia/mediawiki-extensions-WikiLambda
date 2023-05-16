@@ -7,10 +7,10 @@
 'use strict';
 
 const
-	Constants = require( '../../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	FunctionExplorer = require( '../../../../../resources/ext.wikilambda.edit/components/widgets/FunctionExplorer.vue' ),
+	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+	FunctionExplorer = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionExplorer.vue' ),
 	mount = require( '@vue/test-utils' ).mount,
-	icons = require( '../../../fixtures/icons.json' );
+	icons = require( '../../fixtures/icons.json' );
 
 const reverseStringFunctionArguments = [
 	{
@@ -157,7 +157,7 @@ describe( 'FunctionExplorer', function () {
 				wrapper = createFunctionExplorerWrapper( {
 					functionZid: REVERSE_STRING_FUNCTION_ZID,
 					edit: true,
-					implementation: Constants.implementationModes.CODE
+					implementation: Constants.Z_IMPLEMENTATION_CODE
 				} );
 			} );
 

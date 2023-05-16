@@ -7,7 +7,6 @@
 'use strict';
 
 const mount = require( '@vue/test-utils' ).mount,
-	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	About = require( '../../../../resources/ext.wikilambda.edit/components/widgets/About.vue' ),
 	AboutEditMetadataDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/AboutEditMetadataDialog.vue' ),
@@ -49,12 +48,12 @@ describe( 'About', () => {
 
 	describe( 'Zero-blank state', () => {
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( About, { props: { edit: true } } );
+			const wrapper = mount( About, { props: { edit: true } } );
 			expect( wrapper.find( '.ext-wikilambda-about' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders name block with empty placeholder', () => {
-			const wrapper = shallowMount( About, { props: { edit: true } } );
+			const wrapper = mount( About, { props: { edit: true } } );
 			const nameBlock = wrapper.find( '.ext-wikilambda-about-name' );
 			expect( nameBlock.find( '.ext-wikilambda-about-title' ).exists() ).toBe( true );
 			expect( nameBlock.find( '.ext-wikilambda-about-title' ).text() ).toBe( 'name' );
@@ -65,13 +64,13 @@ describe( 'About', () => {
 		} );
 
 		it( 'renders edit button in the header', () => {
-			const wrapper = shallowMount( About, { props: { edit: true } } );
-			const header = wrapper.find( '.ext-wikilambda-content-title' );
+			const wrapper = mount( About, { props: { edit: true } } );
+			const header = wrapper.find( '.ext-wikilambda-widget-base-header' );
 			expect( header.findComponent( { name: 'cdx-button' } ).exists() ).toBe( true );
 		} );
 
 		it( 'does not render view languages button', () => {
-			const wrapper = shallowMount( About, { props: { edit: true } } );
+			const wrapper = mount( About, { props: { edit: true } } );
 			expect( wrapper.find( '.ext-wikilambda-content-buttons' ).exists() ).toBe( false );
 		} );
 
@@ -83,7 +82,7 @@ describe( 'About', () => {
 			} );
 
 			// ACT: Get header button and trigger click
-			const header = wrapper.find( '.ext-wikilambda-content-title' );
+			const header = wrapper.find( '.ext-wikilambda-widget-base-header' );
 			header.findComponent( { name: 'cdx-button' } ).vm.$emit( 'click' );
 			await wrapper.vm.$nextTick();
 
@@ -122,12 +121,12 @@ describe( 'About', () => {
 		} );
 
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( About, { props: { edit: true } } );
+			const wrapper = mount( About, { props: { edit: true } } );
 			expect( wrapper.find( '.ext-wikilambda-about' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders selected values', () => {
-			const wrapper = shallowMount( About, { props: { edit: true } } );
+			const wrapper = mount( About, { props: { edit: true } } );
 
 			// ASSERT: Renders name
 			const nameBlock = wrapper.find( '.ext-wikilambda-about-name' );
@@ -143,7 +142,7 @@ describe( 'About', () => {
 		} );
 
 		it( 'does not render view languages button', () => {
-			const wrapper = shallowMount( About, { props: { edit: true } } );
+			const wrapper = mount( About, { props: { edit: true } } );
 			expect( wrapper.find( '.ext-wikilambda-content-buttons' ).exists() ).toBe( false );
 		} );
 
@@ -155,7 +154,7 @@ describe( 'About', () => {
 			} );
 
 			// ACT: Get header button and trigger click
-			const header = wrapper.find( '.ext-wikilambda-content-title' );
+			const header = wrapper.find( '.ext-wikilambda-widget-base-header' );
 			header.findComponent( { name: 'cdx-button' } ).vm.$emit( 'click' );
 			await wrapper.vm.$nextTick();
 
@@ -194,12 +193,12 @@ describe( 'About', () => {
 		} );
 
 		it( 'renders without errors', () => {
-			const wrapper = shallowMount( About, { props: { edit: true } } );
+			const wrapper = mount( About, { props: { edit: true } } );
 			expect( wrapper.find( '.ext-wikilambda-about' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders selected values', () => {
-			const wrapper = shallowMount( About, { props: { edit: true } } );
+			const wrapper = mount( About, { props: { edit: true } } );
 
 			// ASSERT: Renders name in non-user language
 			const nameBlock = wrapper.find( '.ext-wikilambda-about-name' );
@@ -229,7 +228,7 @@ describe( 'About', () => {
 			} );
 
 			// ACT: Get header button and trigger click
-			const header = wrapper.find( '.ext-wikilambda-content-title' );
+			const header = wrapper.find( '.ext-wikilambda-widget-base-header' );
 			header.findComponent( { name: 'cdx-button' } ).vm.$emit( 'click' );
 			await wrapper.vm.$nextTick();
 

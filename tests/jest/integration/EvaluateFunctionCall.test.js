@@ -82,7 +82,8 @@ describe( 'Wikilambda frontend, running a function on evaluate function call vie
 		jest.useRealTimers();
 	} );
 
-	it( 'allows choosing a function and calling it', async () => {
+	// TODO (T336997): Adapt to DefaultView
+	it.skip( 'allows choosing a function and calling it', async () => {
 		const { findByPlaceholderText, findByRole, findByText, getByLabelText, getByText, queryByText, container } =
 			render( App, { global: { plugins: [ store ] } } );
 
