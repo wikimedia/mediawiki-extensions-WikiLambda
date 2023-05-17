@@ -103,7 +103,10 @@ module.exports = exports = {
 			return this.functionCallArguments.every( ( argument ) => argument.value !== '' );
 		},
 		dynamicZKey: function () {
-			return this.zObjectType + '(' + this.functionCallArgumentsType.join( ',' ) + ')';
+			return this.zObjectType + mw.msg(
+				'parentheses',
+				this.functionCallArgumentsType.join( mw.msg( 'comma-separator' ) )
+			);
 		}
 	} ),
 	methods: $.extend( mapActions( [
