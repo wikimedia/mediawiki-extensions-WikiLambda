@@ -491,13 +491,17 @@ var Constants = require( '../Constants.js' ),
 						//  Z2K1: { Z1K1: 'Z6', Z6K1: 'Z0' },
 						//  Z2K2: undefined,
 						//  Z2K3: {
-						//  Z1K1: { Z1K1: 'Z9', Z9K1: 'Z12' }
+						//   Z1K1: { Z1K1: 'Z9', Z9K1: 'Z12' }
 						//   Z12K1: [ Z11 ]
 						//  },
 						//  Z2K4: {
 						//   Z1K1: { Z1K1: 'Z9', Z9K1: 'Z32' }
 						//   Z32K1: [ Z31 ]
-						//  }
+						//  },
+						//  Z2K5: {
+						//   Z1K1: { Z1K1: 'Z9', Z9K1: 'Z12' }
+						//   Z12K1: [ Z11 ]
+						//  },
 						// }
 						return {
 							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_PERSISTENTOBJECT,
@@ -513,6 +517,10 @@ var Constants = require( '../Constants.js' ),
 							[ Constants.Z_PERSISTENTOBJECT_ALIASES ]: {
 								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRINGSET,
 								[ Constants.Z_MULTILINGUALSTRINGSET_VALUE ]: [ Constants.Z_MONOLINGUALSTRINGSET ]
+							},
+							[ Constants.Z_PERSISTENTOBJECT_DESCRIPTION ]: {
+								[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
+								[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [ Constants.Z_MONOLINGUALSTRING ]
 							}
 						};
 

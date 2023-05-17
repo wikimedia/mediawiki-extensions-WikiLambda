@@ -183,7 +183,7 @@ module.exports = exports = {
 					this.changeType( {
 						type: Constants.Z_MONOLINGUALSTRINGSET,
 						id: this.zMultilingualStringsetValueId,
-						value: newAlias,
+						value: [ newAlias ],
 						lang: language,
 						append: true
 					} );

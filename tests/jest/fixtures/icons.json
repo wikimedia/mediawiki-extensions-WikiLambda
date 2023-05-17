@@ -18,5 +18,6 @@
 	"cdxIconReload": "<path d=\"M11 9V4H9v5H4v2h5v5h2v-5h5V9z\"/>",
 	"cdxIconClock": "<path d=\"M11 9V4H9v5H4v2h5v5h2v-5h5V9z\"/>",
 	"cdxIconSuccess": "<path d=\"M11 9V4H9v5H4v2h5v5h2v-5h5V9z\"/>",
-	"cdxIconCancel": "<path d=\"M11 9V4H9v5H4v2h5v5h2v-5h5V9z\"/>"
+	"cdxIconCancel": "<path d=\"M11 9V4H9v5H4v2h5v5h2v-5h5V9z\"/>",
+	"cdxIconEdit": "<path d=\"M11 9V4H9v5H4v2h5v5h2v-5h5V9z\"/>"
 }

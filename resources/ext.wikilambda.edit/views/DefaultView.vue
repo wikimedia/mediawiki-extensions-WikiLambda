@@ -6,6 +6,11 @@
 		@license MIT
 	-->
 	<div>
+		<!-- Widget ZObject Labels -->
+		<wl-about-widget
+			:edit="edit"
+		></wl-about-widget>
+
 		<!-- Persistent Object content block -->
 		<div class="ext-wikilambda-content">
 			<div class="ext-wikilambda-content-title">
@@ -14,14 +19,6 @@
 			<wl-z-object-key-value
 				:hide-key="true"
 				:row-id="contentRowId"
-				:edit="edit"
-			></wl-z-object-key-value>
-		</div>
-
-		<!-- Widget ZObject Labels -->
-		<div class="ext-wikilambda-widget">
-			<wl-z-object-key-value
-				:row-id="labelRowId"
 				:edit="edit"
 			></wl-z-object-key-value>
 		</div>
@@ -45,16 +42,17 @@
 
 <script>
 
-var Constants = require( '../Constants.js' ),
-	ZObjectKeyValue = require( '../components/default-view-types/ZObjectKeyValue.vue' ),
+var ZObjectKeyValue = require( '../components/default-view-types/ZObjectKeyValue.vue' ),
 	ZObjectJson = require( '../components/ZObjectJson.vue' ),
 	ZObjectPublish = require( '../components/ZObjectPublish.vue' ),
+	AboutWidget = require( '../components/widgets/About.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-default-view',
 	components: {
+		'wl-about-widget': AboutWidget,
 		'wl-z-object-publish': ZObjectPublish,
 		'wl-z-object-key-value': ZObjectKeyValue,
 		'wl-z-object-json': ZObjectJson
@@ -86,15 +84,6 @@ module.exports = exports = {
 			 */
 			contentRowId: function () {
 				return this.getZPersistentContentRowId() || 0;
-			},
-
-			/**
-			 * Returns the row ID from which the label (Z2K3) starts.
-			 *
-			 * @return {number|undefined}
-			 */
-			labelRowId: function () {
-				return this.getRowByKeyPath( [ Constants.Z_PERSISTENTOBJECT_LABEL ] ).id;
 			}
 		}
 	)

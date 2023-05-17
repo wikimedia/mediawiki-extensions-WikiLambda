@@ -31,6 +31,7 @@
 			v-bind="$attrs"
 			@focus="active = true"
 			@blur="active = false"
+			@input="onUpdate"
 		></cdx-text-input>
 	</div>
 </template>
@@ -75,6 +76,11 @@ module.exports = exports = {
 		chip: {
 			type: String,
 			required: false
+		},
+		maxChars: {
+			type: Number,
+			required: false,
+			default: undefined
 		}
 	},
 	data: function () {
@@ -191,6 +197,13 @@ module.exports = exports = {
 			}
 
 			this.chipWidth = this.chipComponent.$el.offsetWidth;
+		},
+		onUpdate: function () {
+			if ( this.maxChars ) {
+				if ( this.value.length > this.maxChars ) {
+					this.value = this.value.slice( 0, Math.max( 0, this.maxChars ) );
+				}
+			}
 		}
 	},
 	watch: {

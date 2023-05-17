@@ -132,7 +132,7 @@ module.exports = exports = {
 	}
 
 	&_notice {
-		background-color: @background-color-interactive;
+		background-color: @background-color-base;
 		border-color: @border-color-base;
 	}
 

@@ -225,7 +225,7 @@ module.exports = exports = {
 			/**
 			 * @param {Object} payload
 			 * @param {number} payload.id
-			 * @param {string} payload.value string value of the first string in the list
+			 * @param {Array} payload.value Array list of strings for the list
 			 * @param {string} payload.lang zid of the language for the first monolingual string
 			 * @param {boolean} payload.append
 			 * @return {Object}
@@ -236,7 +236,11 @@ module.exports = exports = {
 				// Initialize language and first string
 				const lang = payload.lang || '';
 				value[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ][ Constants.Z_REFERENCE_ID ] = lang;
-				value[ Constants.Z_MONOLINGUALSTRINGSET_VALUE ].push( payload.value || '' );
+				if ( payload.value ) {
+					payload.value.forEach( ( stringValue ) => {
+						value[ Constants.Z_MONOLINGUALSTRINGSET_VALUE ].push( stringValue );
+					} );
+				}
 				return value;
 			}
 			return newZMonolingualStringSet;

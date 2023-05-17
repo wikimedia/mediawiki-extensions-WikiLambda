@@ -351,6 +351,9 @@
 				"ext.wikilambda.edit/components/function/viewer/about/FunctionViewerAboutNames.vue",
 				"ext.wikilambda.edit/components/function/viewer/details/FunctionViewerDetailsSidebar.vue",
 				"ext.wikilambda.edit/components/function/viewer/details/FunctionViewerDetailsTable.vue",
+				"ext.wikilambda.edit/components/widgets/About.vue",
+				"ext.wikilambda.edit/components/widgets/AboutEditMetadataDialog.vue",
+				"ext.wikilambda.edit/components/widgets/AboutViewLanguagesDialog.vue",
 				"lib/ace/src/ace.js",
 				{
 					"name": "lib/icons.json",
@@ -620,7 +623,19 @@
 				"wikilambda-list-items-type-label",
 				"wikilambda-tester-details",
 				"wikilambda-zobject-to-string-select-object",
-				"wikilambda-zobject-to-string-enter-string"
+				"wikilambda-zobject-to-string-enter-string",
+				"wikilambda-about-widget-title",
+				"wikilambda-about-widget-language-count-button",
+				"wikilambda-about-widget-edit-metadata-title",
+				"wikilambda-about-widget-name-placeholder",
+				"wikilambda-about-widget-description-placeholder",
+				"wikilambda-about-widget-aliases-placeholder",
+				"wikilambda-about-widget-aliases-caption",
+				"wikilambda-about-widget-done-button",
+				"wikilambda-about-widget-publish-button",
+				"wikilambda-about-widget-view-languages-title",
+				"wikilambda-about-widget-add-language",
+				"wikilambda-about-widget-search-language-placeholder"
 			]
 		}
 	},

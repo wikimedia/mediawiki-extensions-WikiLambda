@@ -15,11 +15,11 @@
 			@click.stop="handlePublish">
 			{{ $i18n( 'wikilambda-publishnew' ).text() }}
 		</cdx-button>
-		<wl-z-publish-dialog
+		<wl-publish-dialog
 			:show-dialog="showPublishDialog"
 			:should-unattach-implementation-and-tester="shouldUnattachImplementationAndTester"
 			@close-dialog="closeDialog"
-		></wl-z-publish-dialog>
+		></wl-publish-dialog>
 	</div>
 </template>
 
@@ -33,7 +33,7 @@ module.exports = exports = {
 	name: 'wl-z-object-publish',
 	components: {
 		'cdx-button': CdxButton,
-		'wl-z-publish-dialog': PublishDialog
+		'wl-publish-dialog': PublishDialog
 	},
 	props: {
 		shouldUnattachImplementationAndTester: {
