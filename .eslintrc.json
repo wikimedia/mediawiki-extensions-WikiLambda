@@ -14,6 +14,7 @@
 			"error",
 			"last 2 chrome versions, last 2 firefox versions, last 2 opera versions, last 2 edge versions, safari >= 14, iOS >= 14"
 		],
+		"es-x/no-promise-prototype-finally": "off",
 		"max-len": [
 			"error",
 			{
@@ -36,8 +37,9 @@
 			"error",
 			"kebab-case"
 		],
-		"vue/no-undef-components": "warn",
-		"vue/no-undef-properties": "warn",
+		"vue/no-undef-components": "off",
+		"vue/no-undef-properties": "off",
+		"vue/require-explicit-emits": "off",
 		"vue/no-unsupported-features": [
 			"error",
 			{
@@ -51,6 +53,8 @@
 				"ignorePatterns": [
 					"router-link",
 					"router-view",
+					"wl-z-reference",
+					"wl-z-list-item",
 					"z-object"
 				]
 			}

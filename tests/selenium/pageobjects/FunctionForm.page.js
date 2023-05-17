@@ -52,6 +52,7 @@ class FunctionForm extends Page {
 	async publishFunction( summary = 'Published function for tests' ) {
 		// Dirty workaround to let the model being updated after the last debounce
 		// (see the FunctionEditorInputsItem.vue file)
+		// eslint-disable-next-line wdio/no-pause
 		await browser.pause( 300 );
 		await this.publishFunctionButton.click();
 		await this.editSummaryInValidationPopupField.setValue( summary );
