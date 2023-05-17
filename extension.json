@@ -392,6 +392,8 @@
 				}
 			],
 			"messages": [
+				"comma-separator",
+				"parentheses",
 				"wikilambda-metadata-help-link",
 				"wikifunctions-edit-copyrightwarning-function",
 				"wikifunctions-edit-copyrightwarning-implementation",
