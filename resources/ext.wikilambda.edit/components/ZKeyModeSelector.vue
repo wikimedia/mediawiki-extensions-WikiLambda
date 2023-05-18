@@ -83,6 +83,13 @@ module.exports = exports = {
 			this.$emit( 'change', modeValue );
 		},
 		translate: function ( value ) {
+			// Messages of key modes take from Constants.Z_KEY_MODES
+			// * wikilambda-modeselector-reference
+			// * wikilambda-modeselector-literal
+			// * wikilambda-modeselector-genericliteral
+			// * wikilambda-modeselector-functioncall
+			// * wikilambda-modeselector-json
+			// * wikilambda-modeselector-argref
 			return this.$i18n( value ).text();
 		}
 	},

@@ -213,6 +213,8 @@ module.exports = exports = {
 			errorMessage: function () {
 				if ( this.getErrors[ this.rowId ] && this.getErrors[ this.rowId ].state ) {
 					const messageStr = this.getErrors[ this.rowId ].message;
+					// TODO (T336873): These messages could be arbitrary and might not be defined.
+					// eslint-disable-next-line mediawiki/msg-doc
 					return this.$i18n( messageStr ).text();
 				}
 				return '';
