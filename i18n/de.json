@@ -375,5 +375,10 @@
 	"wikilambda-about-widget-publish-button": "Veröffentlichung fortsetzen",
 	"wikilambda-about-widget-view-languages-title": "Beschriftungen in anderen Sprachen",
 	"wikilambda-about-widget-add-language": "Sprache hinzufügen",
-	"wikilambda-about-widget-search-language-placeholder": "Sprache suchen"
+	"wikilambda-about-widget-search-language-placeholder": "Sprache suchen",
+	"wikilambda-function-explorer-title": "Funktions-Explorer",
+	"wikilambda-function-inputs-title": "Eingaben",
+	"wikilambda-function-explorer-copied-text": "Kopiert!",
+	"wikilambda-function-explorer-name-title": "Name",
+	"wikilambda-function-view-function-button-text": "Funktion ansehen"
 }

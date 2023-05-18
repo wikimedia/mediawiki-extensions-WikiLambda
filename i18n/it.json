@@ -114,5 +114,16 @@
 	"wikilambda-add-list-item": "Aggiungi elemento",
 	"wikilambda-delete-list-item": "Cancella elemento",
 	"wikilambda-list-type-change-publish-dialog-warning": "Hai cambiato il tipo di uno o più elenchi. Alla pubblicazione, tutti gli elementi dell'elenco verranno cancellati",
-	"wikilambda-tester-details": "Dettagli"
+	"wikilambda-tester-details": "Dettagli",
+	"wikilambda-about-widget-title": "Informazioni",
+	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 lingua|$1 lingue}}",
+	"wikilambda-about-widget-name-placeholder": "Inserisci il nome",
+	"wikilambda-about-widget-description-placeholder": "Inserisci una descrizione",
+	"wikilambda-about-widget-aliases-placeholder": "Inserisci gli alias",
+	"wikilambda-about-widget-aliases-caption": "Premi il tasto Invio dopo ogni alias",
+	"wikilambda-about-widget-done-button": "Fatto",
+	"wikilambda-about-widget-publish-button": "Continua a pubblicare",
+	"wikilambda-about-widget-view-languages-title": "Etichette in altre lingue",
+	"wikilambda-about-widget-add-language": "Aggiungi lingua",
+	"wikilambda-about-widget-search-language-placeholder": "Cerca lingua"
 }

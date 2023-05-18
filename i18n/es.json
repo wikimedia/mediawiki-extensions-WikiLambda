@@ -19,6 +19,7 @@
 			"La Mantis",
 			"MarcoAurelio",
 			"Mpayansilva",
+			"No se",
 			"Raos10",
 			"Reverse88",
 			"SpikeShroom"
@@ -183,6 +184,8 @@
 	"wikilambda-tester-create-new": "Crear una prueba nueva",
 	"wikilambda-tester-status-pending": "Pendiente...",
 	"wikilambda-tester-status-running": "Ejecutándose...",
+	"wikilambda-tester-status-run": "Comenzar",
+	"wikilambda-tester-status-cancel": "Cancelar",
 	"wikilambda-tester-status-passed": "Aprobado",
 	"wikilambda-tester-status-failed": "Fallo",
 	"wikilambda-tester-results-title": "Resultados de la prueba",

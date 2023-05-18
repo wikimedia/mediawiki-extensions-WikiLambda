@@ -370,5 +370,22 @@
 	"wikilambda-add-list-item": "Ajouter un élément",
 	"wikilambda-delete-list-item": "Effacer l’élément",
 	"wikilambda-list-type-change-publish-dialog-warning": "Vous avez modifié le type d’une ou plusieurs listes. Lors de la publication, tous les éléments de la liste seront supprimés.",
-	"wikilambda-tester-details": "Détails"
+	"wikilambda-tester-details": "Détails",
+	"wikilambda-about-widget-title": "À propos",
+	"wikilambda-about-widget-language-count-button": "$1 langue{{PLURAL:$1||s}}",
+	"wikilambda-about-widget-edit-metadata-title": "Modification des informations",
+	"wikilambda-about-widget-name-placeholder": "Saisissez le nom",
+	"wikilambda-about-widget-description-placeholder": "Saisissez une description",
+	"wikilambda-about-widget-aliases-placeholder": "Saisissez des alias",
+	"wikilambda-about-widget-aliases-caption": "Appuyez sur la touche retour après chaque alias",
+	"wikilambda-about-widget-done-button": "Terminé",
+	"wikilambda-about-widget-publish-button": "Continuer pour publier",
+	"wikilambda-about-widget-view-languages-title": "Libellés dans d’autres langues",
+	"wikilambda-about-widget-add-language": "Ajouter une langue",
+	"wikilambda-about-widget-search-language-placeholder": "Rechercher une langue",
+	"wikilambda-function-explorer-title": "Explorateur de fonctions",
+	"wikilambda-function-inputs-title": "Entrées",
+	"wikilambda-function-explorer-copied-text": "Copié !",
+	"wikilambda-function-explorer-name-title": "Nom",
+	"wikilambda-function-view-function-button-text": "Afficher la fonction"
 }

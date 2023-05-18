@@ -359,5 +359,17 @@
 	"wikilambda-add-list-item": "הוספת פריט",
 	"wikilambda-delete-list-item": "למחוק פריט",
 	"wikilambda-list-type-change-publish-dialog-warning": "שינית את הסוג של רשימה אחת או יותר. בעת פרסום, כל פריטי הרשימה יימחקו",
-	"wikilambda-tester-details": "פרטים"
+	"wikilambda-tester-details": "פרטים",
+	"wikilambda-about-widget-title": "אודות",
+	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|שפה אחת|$1 שפות}}",
+	"wikilambda-about-widget-edit-metadata-title": "עריכת מידע",
+	"wikilambda-about-widget-name-placeholder": "נא להזין שם",
+	"wikilambda-about-widget-description-placeholder": "נא להזין תיאור",
+	"wikilambda-about-widget-aliases-placeholder": "נא להזין כינויים",
+	"wikilambda-about-widget-aliases-caption": "יש ללחוץ על מקש אמטר לאחר כל כינוי",
+	"wikilambda-about-widget-done-button": "בוצע",
+	"wikilambda-about-widget-publish-button": "להמשיך לפרסם",
+	"wikilambda-about-widget-view-languages-title": "תוויות בשפות אחרות",
+	"wikilambda-about-widget-add-language": "הוספת שפה",
+	"wikilambda-about-widget-search-language-placeholder": "חיפוש שפה"
 }

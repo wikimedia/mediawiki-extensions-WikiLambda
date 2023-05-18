@@ -294,5 +294,8 @@
 	"wikilambda-context-menu": "コンテキスト メニュー",
 	"wikilambda-add-list-item": "項目を追加",
 	"wikilambda-delete-list-item": "削除された項目",
-	"wikilambda-tester-details": "詳細"
+	"wikilambda-tester-details": "詳細",
+	"wikilambda-about-widget-done-button": "完了",
+	"wikilambda-about-widget-add-language": "言語を追加",
+	"wikilambda-function-explorer-copied-text": "コピーしました"
 }

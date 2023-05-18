@@ -360,5 +360,22 @@
 	"wikilambda-add-list-item": "Dodaj predmet",
 	"wikilambda-delete-list-item": "Izbriši predmet",
 	"wikilambda-list-type-change-publish-dialog-warning": "Spremenili ste vrsto enega ali več seznamov. Ob objavi bodo vsi elementi seznama izbrisani",
-	"wikilambda-tester-details": "Podrobnosti"
+	"wikilambda-tester-details": "Podrobnosti",
+	"wikilambda-about-widget-title": "O projektu",
+	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 jezik|$1 jezika|$1 jeziki|$1 jezikov}}",
+	"wikilambda-about-widget-edit-metadata-title": "Uredi podatke",
+	"wikilambda-about-widget-name-placeholder": "Vnesite ime",
+	"wikilambda-about-widget-description-placeholder": "Vnesite opis",
+	"wikilambda-about-widget-aliases-placeholder": "Vnesite sopomenke",
+	"wikilambda-about-widget-aliases-caption": "Za vsako sopomenko pritisnite vnašalko",
+	"wikilambda-about-widget-done-button": "Končano",
+	"wikilambda-about-widget-publish-button": "Nadaljuj z objavo",
+	"wikilambda-about-widget-view-languages-title": "Oznake v drugih jezikih",
+	"wikilambda-about-widget-add-language": "Dodaj jezik",
+	"wikilambda-about-widget-search-language-placeholder": "Poiščite jezik",
+	"wikilambda-function-explorer-title": "Raziskovalec funkcij",
+	"wikilambda-function-inputs-title": "Vnosi",
+	"wikilambda-function-explorer-copied-text": "Kopirano!",
+	"wikilambda-function-explorer-name-title": "Ime",
+	"wikilambda-function-view-function-button-text": "Ogled funkcije"
 }

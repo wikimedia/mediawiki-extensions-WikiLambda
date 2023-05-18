@@ -355,5 +355,17 @@
 	"wikilambda-add-list-item": "Adder elemento",
 	"wikilambda-delete-list-item": "Deler elemento",
 	"wikilambda-list-type-change-publish-dialog-warning": "Tu ha cambiate le typo de un o plure listas. Al publication, tote le elementos del lista essera delite.",
-	"wikilambda-tester-details": "Detalios"
+	"wikilambda-tester-details": "Detalios",
+	"wikilambda-about-widget-title": "A proposito",
+	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 lingua|$1 linguas}}",
+	"wikilambda-about-widget-edit-metadata-title": "Modificar information",
+	"wikilambda-about-widget-name-placeholder": "Insere nomine",
+	"wikilambda-about-widget-description-placeholder": "Insere description",
+	"wikilambda-about-widget-aliases-placeholder": "Insere aliases",
+	"wikilambda-about-widget-aliases-caption": "Preme le clave RETURN post cata alias",
+	"wikilambda-about-widget-done-button": "Facite",
+	"wikilambda-about-widget-publish-button": "Continuar a publicar",
+	"wikilambda-about-widget-view-languages-title": "Etiquettas in altere linguas",
+	"wikilambda-about-widget-add-language": "Adder lingua",
+	"wikilambda-about-widget-search-language-placeholder": "Cercar lingua"
 }
