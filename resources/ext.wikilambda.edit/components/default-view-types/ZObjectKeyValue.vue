@@ -67,6 +67,7 @@ var
 	ZObjectType = require( './ZObjectType.vue' ),
 	ZString = require( './ZString.vue' ),
 	ZCode = require( './ZCode.vue' ),
+	ZEvaluationResult = require( './ZEvaluationResult.vue' ),
 	ZReference = require( './ZReference.vue' ),
 	ZBoolean = require( './ZBoolean.vue' ),
 	ZFunctionCall = require( './ZFunctionCall.vue' ),
@@ -86,6 +87,7 @@ module.exports = exports = {
 		'wl-localized-label': LocalizedLabel,
 		'wl-context-menu': ContextMenu,
 		'wl-z-code': ZCode,
+		'wl-z-evaluation-result': ZEvaluationResult,
 		'wl-z-function-call': ZFunctionCall,
 		'wl-z-implementation': ZImplementation,
 		'wl-z-tester': ZTester,
@@ -452,6 +454,11 @@ module.exports = exports = {
 					return false;
 				}
 
+				// TERMINAL rules for Evaluation Result: no expansion allowed
+				if ( this.type === Constants.Z_RESPONSEENVELOPE ) {
+					return false;
+				}
+
 				// TERMINAL rules for both view and edit:
 				// If the key is Z1K1:
 				if ( this.key === Constants.Z_OBJECT_TYPE ) {
@@ -514,6 +521,10 @@ module.exports = exports = {
 				// Tester doesn't have an expanded mode
 				if ( this.type === Constants.Z_TESTER ) {
 					return 'wl-z-tester';
+				}
+				// Evaluation result doesn't have an expanded mode
+				if ( this.type === Constants.Z_RESPONSEENVELOPE ) {
+					return 'wl-z-evaluation-result';
 				}
 
 				if ( ( this.type === Constants.Z_FUNCTION_CALL ) && !this.expanded ) {
@@ -649,7 +660,18 @@ module.exports = exports = {
 				return;
 			}
 
-			// 3. If the value of Z7K1 changes, we need to change all keys, which
+			// 3. If we are changing an implementation type, we need to clear
+			// the unselected key and fill the other one with a blank value.
+			if ( this.type === Constants.Z_IMPLEMENTATION ) {
+				const contentType = payload.keyPath[ 0 ];
+				this.setZImplementationContentType( {
+					parentId: this.rowId,
+					key: contentType
+				} );
+				return;
+			}
+
+			// 4. If the value of Z7K1 changes, we need to change all keys, which
 			// probably means that we need to pass up the responsability the way we
 			// have done it with Z1K1.
 			if ( this.key === Constants.Z_FUNCTION_CALL_FUNCTION ) {
@@ -659,17 +681,6 @@ module.exports = exports = {
 					parentId: this.parentRowId,
 					functionZid: payload.value
 				} );
-			}
-
-			// 4. If we are changing an implementation type, we need to clear
-			// the unselected key and fill the other one with a blank value.
-			if ( this.type === Constants.Z_IMPLEMENTATION ) {
-				const contentType = payload.keyPath[ 0 ];
-				this.setZImplementationContentType( {
-					parentId: this.rowId,
-					key: contentType
-				} );
-				return;
 			}
 
 			// SIMPLE changes

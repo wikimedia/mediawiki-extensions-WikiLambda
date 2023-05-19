@@ -393,6 +393,46 @@ describe( 'tableUtils mixin', function () {
 					expect( json ).toBeUndefined();
 				} );
 			} );
+
+			describe( 'when there are detached zobject trees in the table', function () {
+				it( 'should return a valid JSON object', function () {
+					const zObjectTree = tableDataToRowObjects( [
+						{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+						{ id: 2, key: 'Z1K1', value: Constants.Z_STRING, parent: 1 },
+						{ id: 3, key: 'Z6K1', value: 'good string', parent: 1 },
+						{ id: 4, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 5, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 4 },
+						{ id: 6, key: 'Z1K1', value: Constants.Z_STRING, parent: 5 },
+						{ id: 7, key: 'Z6K1', value: 'detached string', parent: 5 }
+					] );
+
+					let json;
+					json = tableUtils.convertZObjectTreetoJson( zObjectTree );
+					expect( json ).toEqual( {
+						Z2K2: {
+							Z1K1: Constants.Z_STRING,
+							Z6K1: 'good string'
+						}
+					} );
+
+					json = tableUtils.convertZObjectTreetoJson( zObjectTree, 0 );
+					expect( json ).toEqual( {
+						Z2K2: {
+							Z1K1: Constants.Z_STRING,
+							Z6K1: 'good string'
+						}
+					} );
+
+					json = tableUtils.convertZObjectTreetoJson( zObjectTree, 4 );
+					expect( json ).toEqual( {
+						Z2K2: {
+							Z1K1: Constants.Z_STRING,
+							Z6K1: 'detached string'
+						}
+					} );
+				} );
+			} );
 		} );
 	} );
 

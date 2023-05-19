@@ -161,6 +161,22 @@ describe( 'zkeys Vuex module', function () {
 				expect( zkeysModule.getters.getLanguageIsoCodeOfZLang( state )( 'Z1003' ) ).toEqual( 'es' );
 			} );
 		} );
+
+		describe( 'getAttachedImplementations', function () {
+			it( 'Returns empty array if the zid is not available in the state', function () {
+				expect( zkeysModule.getters.getAttachedImplementations( state )( 'Z802' ) ).toEqual( [] );
+			} );
+
+			it( 'Returns empty array if the zid is not of a function', function () {
+				state.zKeys = mockApiZkeys;
+				expect( zkeysModule.getters.getAttachedImplementations( state )( 'Z6' ) ).toEqual( [] );
+			} );
+
+			it( 'Returns array with the implementations of a given function', function () {
+				state.zKeys = mockApiZkeys;
+				expect( zkeysModule.getters.getAttachedImplementations( state )( 'Z802' ) ).toEqual( [ 'Z902' ] );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', function () {

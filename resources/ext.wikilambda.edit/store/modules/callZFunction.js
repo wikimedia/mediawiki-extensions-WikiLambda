@@ -5,13 +5,14 @@
  * @license MIT
  */
 
-var performFunctionCall = require( '../../mixins/api.js' ).methods.performFunctionCall;
+var Constants = require( '../../Constants.js' ),
+	performFunctionCall = require( '../../mixins/api.js' ).methods.performFunctionCall;
 
 module.exports = exports = {
 	actions: {
 		/**
-		 * Create a new result record, that is detached from the main zObject (using parent -1)
-		 * if a record exist, it reset it by removing all childrens
+		 * Create a new result record, that is detached from the main zObject.
+		 * If the given record exists, it resets it by removing all children.
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
@@ -19,14 +20,23 @@ module.exports = exports = {
 		 * @return {number} resultId
 		 */
 		initializeResultId: function ( context, payload ) {
-			var resultId = payload || context.getters.getNextObjectId;
-			if ( resultId === context.getters.getNextObjectId ) {
-				context.commit( 'addZObject', { id: resultId, key: undefined, parent: -1, value: 'object' } );
+			let rowId;
+			const row = context.getters.getRowById( payload );
+			if ( row ) {
+				// payload is a valid row Id, remove its children
+				rowId = row.id;
+				context.dispatch( 'removeZObjectChildren', rowId );
 			} else {
-				context.dispatch( 'removeZObjectChildren', resultId );
+				// payload is not a row ID, add new rowId
+				rowId = context.getters.getNextRowId;
+				context.commit( 'addZObject', {
+					id: rowId,
+					key: undefined,
+					parent: undefined,
+					value: Constants.ROW_VALUE_OBJECT
+				} );
 			}
-
-			return resultId;
+			return rowId;
 		},
 		/**
 		 * Calls orchestrator and sets orchestrationResult

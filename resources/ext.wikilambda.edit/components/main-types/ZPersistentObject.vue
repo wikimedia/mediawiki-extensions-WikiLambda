@@ -45,7 +45,6 @@
 					<h3>
 						{{ $i18n( 'wikilambda-persistentobject-evaluate-function' ).text() }}
 					</h3>
-					<wl-z-function-evaluator></wl-z-function-evaluator>
 				</template>
 				<div v-if="$store.getters.isExpertMode">
 					<h3>
@@ -69,7 +68,6 @@ var Constants = require( '../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	ZObjectKey = require( '../ZObjectKey.vue' ),
 	ZLabelsBlock = require( './ZLabelsBlock.vue' ),
-	ZFunctionEvaluator = require( '../function/ZFunctionEvaluator.vue' ),
 	ZObjectJson = require( '../ZObjectJson.vue' );
 
 // @vue/component
@@ -78,7 +76,6 @@ module.exports = exports = {
 	components: {
 		'wl-z-object-key': ZObjectKey,
 		'wl-z-labels-block': ZLabelsBlock,
-		'wl-z-function-evaluator': ZFunctionEvaluator,
 		'wl-z-object-json': ZObjectJson,
 		'cdx-button': CdxButton
 	},

@@ -13,6 +13,7 @@
 			<!-- Zero state, select a literal type -->
 			<wl-z-object-selector
 				v-if="!value"
+				:edit="edit"
 				:fit-width="true"
 				:row-id="rowId"
 				:type="selectType"

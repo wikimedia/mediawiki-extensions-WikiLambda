@@ -13,6 +13,7 @@
 		</template>
 		<template v-else>
 			<wl-z-object-selector
+				:edit="edit"
 				:disabled="disabled"
 				:fit-width="true"
 				:row-id="rowId"
