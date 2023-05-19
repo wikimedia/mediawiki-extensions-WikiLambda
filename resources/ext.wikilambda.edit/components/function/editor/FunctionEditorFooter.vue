@@ -6,49 +6,27 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-function-definition-footer">
-		<div class="ext-wikilambda-function-definition-footer__actions">
-			<wl-z-object-publish
-				:should-unattach-implementation-and-tester="shouldUnattachImplementationAndTester"
-				:is-disabled="publishDisabled"
-			></wl-z-object-publish>
-			<!-- TODO: The following is just a placeholder until it is possible to attach implementation / Testers -->
-			<cdx-button
-				v-if="isEditing"
-				class="ext-wikilambda-function-definition-footer__actions-button"
-				@click="handleFallbackClick"
-			>
-				{{ $i18n( 'wikilambda-fallback' ).text() }}
-			</cdx-button>
-			<cdx-button
-				id="ext-wikilambda-function-definition-footer__actions__cancel"
-				class="ext-wikilambda-function-definition-footer__actions-button"
-				action="destructive"
-				weight="primary"
-				@click.stop="handleCancel"
-			>
-				{{ $i18n( 'wikilambda-cancel' ).text() }}
-			</cdx-button>
-		</div>
+		<wl-publish-widget
+			:should-unattach-implementation-and-tester="shouldUnattachImplementationAndTester"
+			:is-disabled="publishDisabled"
+			:show-cancel="true"
+			@cancel="handleCancel"
+		></wl-publish-widget>
 	</div>
 </template>
 
 <script>
 var Constants = require( '../../../Constants.js' ),
-	ZObjectPublish = require( '../../ZObjectPublish.vue' ),
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
+	PublishWidget = require( '../../widgets/Publish.vue' ),
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-function-definition-footer',
 	components: {
-		'cdx-button': CdxButton,
-		'wl-z-object-publish': ZObjectPublish
+		'wl-publish-widget': PublishWidget
 	},
 	props: {
-		isEditing: {
-			type: Boolean
-		},
 		shouldUnattachImplementationAndTester: {
 			type: Boolean,
 			required: false,
@@ -82,19 +60,11 @@ module.exports = exports = {
 @import '../../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-function-definition-footer {
-	display: flex;
-	flex-direction: column;
-	background-color: @background-color-interactive-subtle;
-	padding: @spacing-100;
+	padding: 0;
 	margin-top: @spacing-150;
 
-	&__actions {
-		display: flex;
-
-		&-button {
-			margin-right: @spacing-100;
-			cursor: pointer;
-		}
+	.cdx-card {
+		background-color: @background-color-interactive-subtle;
 	}
 }
 </style>

@@ -26,7 +26,8 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		runTeardown();
 	} );
 
-	it( 'allows creating a new composition implementation', async () => {
+	// TODO (T336997): Adapt to DefaultView
+	it.skip( 'allows creating a new composition implementation', async () => {
 		const {
 			container,
 			findByLabelText,

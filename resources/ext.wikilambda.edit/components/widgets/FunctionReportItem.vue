@@ -1,12 +1,14 @@
 <template>
 	<!--
-		WikiLambda Vue component for displaying and triggering the result of a tester against a given implementation.
+		WikiLambda Vue component for displaying a result item of running
+		a function's testers against its implementations or a funciton's
+		implementations against its testers.
 
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-tester-result">
-		<div class="ext-wikilambda-tester-result__header">
+	<div class="ext-wikilambda-function-report-item">
+		<div class="ext-wikilambda-function-report-item__header">
 			<cdx-icon
 				:icon="statusIcon"
 				:class="statusIconClass"
@@ -14,20 +16,20 @@
 			></cdx-icon>
 			<a
 				:href="titleLink"
-				class="ext-wikilambda-tester-result__title"
-			>
-				{{ title }}
+				class="ext-wikilambda-function-report-item__title"
+			>{{ title }}
 			</a>
 		</div>
 
-		<div class="ext-wikilambda-tester-result__footer">
-			<span class="ext-wikilambda-tester-result__footer-status"> {{ statusMessage }} </span>
+		<div class="ext-wikilambda-function-report-item__footer">
+			<span class="ext-wikilambda-function-report-item__footer-status">
+				{{ statusMessage }}
+			</span>
 			<a
 				v-if="!isRunning"
 				role="button"
 				@click="emitTesterKeys"
-			>
-				{{ $i18n( 'wikilambda-tester-details' ).text() }}
+			>{{ $i18n( 'wikilambda-tester-details' ).text() }}
 			</a>
 		</div>
 	</div>
@@ -42,7 +44,7 @@ var mapGetters = require( 'vuex' ).mapGetters,
 
 // @vue/component
 module.exports = exports = {
-	name: 'wl-tester-impl-result',
+	name: 'wl-function-report-item',
 	components: {
 		'cdx-icon': CdxIcon
 	},
@@ -119,12 +121,12 @@ module.exports = exports = {
 		},
 		statusIconClass: function () {
 			if ( this.status === Constants.testerStatus.PASSED ) {
-				return 'ext-wikilambda-tester-result-status--PASS';
+				return 'ext-wikilambda-function-report-item-status--PASS';
 			}
 			if ( this.status === Constants.testerStatus.FAILED ) {
-				return 'ext-wikilambda-tester-result-status--FAIL';
+				return 'ext-wikilambda-function-report-item-status--FAIL';
 			}
-			return 'ext-wikilambda-tester-result-status--RUNNING';
+			return 'ext-wikilambda-function-report-item-status--RUNNING';
 		}
 	} ),
 	methods: {
@@ -141,10 +143,14 @@ module.exports = exports = {
 <style lang="less">
 @import '../../ext.wikilambda.edit.less';
 
-.ext-wikilambda-tester-result {
+.ext-wikilambda-function-report-item {
 	&__header {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
+
+		.cdx-icon {
+			margin-top: @spacing-25;
+		}
 	}
 
 	/* TODO: update with codex dark link when available */

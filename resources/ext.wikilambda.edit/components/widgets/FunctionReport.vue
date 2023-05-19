@@ -1,52 +1,60 @@
 <template>
 	<!--
-		WikiLambda Vue component for displaying the results of running testers against a function's implementations.
+		WikiLambda Vue component for displaying the results of running
+		a function's testers against its implementations or a funciton's
+		implementations against its testers.
 
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-function-tester-report">
-		<h2>{{ $i18n( 'wikilambda-tester-results-title' ).text() }}</h2>
-		<div
-			v-if="zFunctionId && implementations.length > 0 && testers.length > 0"
-			class="ext-wikilambda-function-tester-report__content"
-		>
-			<div class="ext-wikilambda-function-tester-report__header">
-				<!-- TODO (T326665): use codex component when it exists -->
-				<span class="ext-wikilambda-function-tester-report__title"> {{ title }} </span>
-				<cdx-button :aria-label="reloadLabel" weight="quiet">
-					<cdx-icon
-						:icon="reloadIcon"
-						@click.stop="runTesters"
-					></cdx-icon>
-				</cdx-button>
-			</div>
-			<div
-				v-for="item in zIds"
-				:key="item"
-				class="ext-wikilambda-function-tester-report__container"
+	<wl-widget-base
+		class="ext-wikilambda-function-report"
+		:has-header-action="hasItems"
+	>
+		<!-- Widget header -->
+		<template #header>
+			{{ title }}
+		</template>
+		<template #header-action>
+			<cdx-button
+				weight="quiet"
+				:aria-label="reloadLabel"
+				@click="runTesters"
 			>
-				<wl-z-tester-impl-result
-					class="ext-wikilambda-function-tester-report__result"
-					:z-function-id="zFunctionId"
-					:z-implementation-id="reportType === Constants.Z_TESTER ? item : zImplementationId"
-					:z-tester-id="reportType === Constants.Z_TESTER ? zTesterId : item"
-					:report-type="reportType"
-					@set-keys="setActiveTesterKeys"
-				></wl-z-tester-impl-result>
-				<wl-metadata-dialog
-					:show-dialog="showMetrics"
-					:implementation-label="activeImplementationLabel"
-					:tester-label="activeTesterLabel"
-					:metadata="metadata"
-					@close-dialog="showMetrics = false"
-				></wl-metadata-dialog>
+				<cdx-icon :icon="reloadIcon"></cdx-icon>
+			</cdx-button>
+		</template>
+
+		<!-- Widget main -->
+		<template #main>
+			<div v-if="hasItems">
+				<div
+					v-for="item in zIds"
+					:key="item"
+					class="ext-wikilambda-function-report__items"
+				>
+					<wl-function-report-item
+						class="ext-wikilambda-function-report__result"
+						:z-function-id="zFunctionId"
+						:z-implementation-id="reportType === Constants.Z_TESTER ? item : zImplementationId"
+						:z-tester-id="reportType === Constants.Z_TESTER ? zTesterId : item"
+						:report-type="reportType"
+						@set-keys="setActiveTesterKeys"
+					></wl-function-report-item>
+					<wl-metadata-dialog
+						:show-dialog="showMetrics"
+						:implementation-label="activeImplementationLabel"
+						:tester-label="activeTesterLabel"
+						:metadata="metadata"
+						@close-dialog="showMetrics = false"
+					></wl-metadata-dialog>
+				</div>
 			</div>
-		</div>
-		<div v-else>
-			<p> {{ $i18n( 'wikilambda-tester-no-results' ).text() }} </p>
-		</div>
-	</div>
+			<div v-else>
+				<p> {{ $i18n( 'wikilambda-tester-no-results' ).text() }} </p>
+			</div>
+		</template>
+	</wl-widget-base>
 </template>
 
 <script>
@@ -57,15 +65,18 @@ var Constants = require( '../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( '../../../lib/icons.json' ),
-	MetadataDialog = require( './viewer/details/ZMetadataDialog.vue' ),
-	ZTesterImplResult = require( './ZTesterImplResult.vue' );
+	// TODO move
+	WidgetBase = require( '../base/WidgetBase.vue' ),
+	MetadataDialog = require( '../function/viewer/details/ZMetadataDialog.vue' ),
+	FunctionReportItem = require( './FunctionReportItem.vue' );
 
 // @vue/component
 module.exports = exports = {
-	name: 'wl-z-function-tester-report',
+	name: 'wl-function-report-widget',
 	components: {
-		'wl-z-tester-impl-result': ZTesterImplResult,
+		'wl-function-report-item': FunctionReportItem,
 		'wl-metadata-dialog': MetadataDialog,
+		'wl-widget-base': WidgetBase,
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},
@@ -82,13 +93,9 @@ module.exports = exports = {
 			type: String,
 			required: true
 		},
-		zImplementationId: {
+		rootZid: {
 			type: String,
-			default: null
-		},
-		zTesterId: {
-			type: String,
-			default: null
+			required: true
 		}
 	},
 	data: function () {
@@ -104,11 +111,21 @@ module.exports = exports = {
 		'getZkeys',
 		'getZTesterPercentage',
 		'getZTesterMetadata',
-		'getViewMode',
-		'getZTesters',
-		'getZImplementations',
 		'getFetchingTestResults'
 	] ), {
+		hasItems: function () {
+			return (
+				this.zFunctionId &&
+				this.implementations.length > 0 &&
+				this.testers.length > 0
+			);
+		},
+		zImplementationId: function () {
+			return ( this.reportType === Constants.Z_IMPLEMENTATION ) ? this.rootZid : null;
+		},
+		zTesterId: function () {
+			return ( this.reportType === Constants.Z_TESTER ) ? this.rootZid : null;
+		},
 		title: function () {
 			return this.reportType === Constants.Z_TESTER ?
 				this.$i18n( 'wikilambda-function-implementation-table-header' ).text() :
@@ -221,34 +238,28 @@ module.exports = exports = {
 <style lang="less">
 @import '../../ext.wikilambda.edit.less';
 
-.ext-wikilambda-function-tester-report {
-	&__content {
-		border: 1px solid @background-color-disabled;
-		padding: @spacing-75;
-		margin: @spacing-100 0;
-	}
-
-	&__title {
-		font-weight: bold;
-	}
-
-	&__header {
-		display: flex;
-		align-items: flex-start;
-		justify-content: space-between;
-		margin-bottom: calc( @spacing-125 - @spacing-35 );
-
-		> button {
-			margin-top: -@spacing-35; // (32px button - 20px icon) / 2
-			margin-right: -@spacing-35;
-		}
-	}
-
-	&__container {
+.ext-wikilambda-function-report {
+	&__items {
 		margin-bottom: @spacing-50;
 
 		&:last-child {
 			margin-bottom: 0;
+		}
+	}
+
+	.cdx-card__text__description {
+		.ext-wikilambda-function-report-item-status {
+			&--PASS {
+				color: @color-success;
+			}
+
+			&--FAIL {
+				color: @color-error;
+			}
+
+			&--RUNNING {
+				color: @color-warning;
+			}
 		}
 	}
 }

@@ -9,15 +9,14 @@
 
 const configureCompat = require( 'vue' ).configureCompat,
 	mount = require( '@vue/test-utils' ).mount,
-	shallowMount = require( '@vue/test-utils' ).shallowMount,
-	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
-	PublishDialog = require( '../../../resources/ext.wikilambda.edit/components/base/PublishDialog.vue' ),
-	ZObjectPublish = require( '../../../resources/ext.wikilambda.edit/components/ZObjectPublish.vue' ),
+	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+	PublishDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/PublishDialog.vue' ),
+	PublishWidget = require( '../../../../resources/ext.wikilambda.edit/components/widgets/Publish.vue' ),
 	{ CdxTextInput } = require( '@wikimedia/codex' );
 
 configureCompat( { MODE: 3 } );
 
-describe( 'ZObjectPublish', function () {
+describe( 'Publish widget', function () {
 	var getters,
 		actions,
 		submitZObjectMock = jest.fn();
@@ -55,14 +54,14 @@ describe( 'ZObjectPublish', function () {
 	} );
 
 	it( 'renders without errors', function () {
-		var wrapper = shallowMount( ZObjectPublish );
+		var wrapper = mount( PublishWidget );
 
 		expect( wrapper.find( 'div' ).exists() ).toBe( true );
 	} );
 
 	it( 'opens the publish dialog if validateZObject returns isValid true', async function () {
-		var wrapper = mount( ZObjectPublish );
-		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
+		var wrapper = mount( PublishWidget );
+		await wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
 
 		const publishDialog = wrapper.findComponent( PublishDialog );
 
@@ -80,8 +79,8 @@ describe( 'ZObjectPublish', function () {
 			actions: actions
 		} );
 
-		var wrapper = mount( ZObjectPublish );
-		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
+		var wrapper = mount( PublishWidget );
+		await wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
 
 		const publishDialog = wrapper.findComponent( PublishDialog );
 		expect( publishDialog.vm.showDialog ).toBe( false );
@@ -90,10 +89,10 @@ describe( 'ZObjectPublish', function () {
 	} );
 
 	it( 'publish dialog triggers the "publish" event on button click and submits the input summary', async function () {
-		var wrapper = mount( ZObjectPublish );
+		var wrapper = mount( PublishWidget );
 
 		// ACT: open dialog
-		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
 		await wrapper.vm.$nextTick();
 
 		// ACT: enter summary
@@ -110,10 +109,10 @@ describe( 'ZObjectPublish', function () {
 	} );
 
 	it( 'publish dialog triggers the "close dialog" event on cancel button click', async function () {
-		var wrapper = mount( ZObjectPublish );
+		var wrapper = mount( PublishWidget );
 
 		// ACT: open dialog
-		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
 		await wrapper.vm.$nextTick();
 
 		const cancelButton = wrapper.findComponent( '.ext-wikilambda-publishdialog__actions__button-cancel' );
@@ -141,10 +140,10 @@ describe( 'ZObjectPublish', function () {
 			getters: getters
 		} );
 
-		var wrapper = mount( ZObjectPublish );
+		var wrapper = mount( PublishWidget );
 
 		// ACT: open dialog
-		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
 		await wrapper.vm.$nextTick();
 
 		const dialog = wrapper.findComponent( { name: 'cdx-dialog' } );
@@ -172,10 +171,10 @@ describe( 'ZObjectPublish', function () {
 			getters: getters
 		} );
 
-		var wrapper = mount( ZObjectPublish );
+		var wrapper = mount( PublishWidget );
 
 		// ACT: open dialog
-		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
 		await wrapper.vm.$nextTick();
 
 		const dialog = wrapper.findComponent( { name: 'cdx-dialog' } );
@@ -200,10 +199,10 @@ describe( 'ZObjectPublish', function () {
 			actions: actions
 		} );
 
-		var wrapper = mount( ZObjectPublish );
+		var wrapper = mount( PublishWidget );
 
 		// ACT: open dialog
-		await wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' ).trigger( 'click' );
+		await wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
 		await wrapper.vm.$nextTick();
 
 		const publishButton = wrapper.findComponent( '.ext-wikilambda-publishdialog__actions__button-publish' );

@@ -25,9 +25,9 @@
 			<wl-z-tester-list
 				:zobject-id="zTesterId"
 			></wl-z-tester-list>
-			<wl-z-function-tester-report
+			<wl-function-report-widget
 				:z-function-id="zFunctionId"
-			></wl-z-function-tester-report>
+			></wl-function-report-widget>
 		</template>
 	</div>
 </template>
@@ -41,7 +41,7 @@ var Constants = require( '../../Constants.js' ),
 	ZTesterList = require( '../function/ZTesterList.vue' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
-	ZFunctionTesterReport = require( '../function/ZFunctionTesterReport.vue' );
+	FunctionReportWidget = require( '../widgets/FunctionReport.vue' );
 
 // @vue/component
 module.exports = exports = {
@@ -51,7 +51,7 @@ module.exports = exports = {
 		'wl-z-object-selector': ZObjectSelector,
 		'wl-z-implementation-list': ZImplementationList,
 		'wl-z-tester-list': ZTesterList,
-		'wl-z-function-tester-report': ZFunctionTesterReport
+		'wl-function-report-widget': FunctionReportWidget
 	},
 	mixins: [ typeUtils ],
 	provide: function () {

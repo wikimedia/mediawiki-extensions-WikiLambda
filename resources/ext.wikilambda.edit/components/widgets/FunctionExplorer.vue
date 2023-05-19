@@ -35,7 +35,7 @@
 						{{ $i18n( 'wikilambda-function-explorer-name-title' ) }}
 					</h5>
 					<span
-						v-if="implementation === Constants.implementationModes.CODE"
+						v-if="implementation === Constants.Z_IMPLEMENTATION_CODE"
 						class="ext-wikilambda-function-explorer-copyable"
 						:class="{ 'ext-wikilambda-function-explorer-untitled': functionisUntitled }"
 						data-testid="function-zid"
@@ -93,7 +93,7 @@
 								arg.type
 							}}</a>
 						<span
-							v-if="implementation === Constants.implementationModes.CODE"
+							v-if="implementation === Constants.Z_IMPLEMENTATION_CODE"
 							class="ext-wikilambda-function-explorer-copyable"
 							data-testid="function-input-zkey"
 							data-title="Click to copy"

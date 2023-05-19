@@ -9,35 +9,42 @@
 const Constants = require( '../../Constants.js' );
 
 /**
+ * Whether the URL is to Special Evaluate Function Call page
+ *
  * @param {Object} uriQuery The contextual mw.Uri's query sub-object
  * @return {boolean}
  */
 const isEvaluateFunctionCallPath = function ( uriQuery ) {
-	return uriQuery.title === 'Special:EvaluateFunctionCall';
+	return ( uriQuery.title === Constants.PATHS.EVALUATE_FUNCTION_CALL_TITLE );
 };
 
 /**
+ * Whether the URL contains the action edit
+ *
  * @param {Object} uriQuery The contextual mw.Uri's query sub-object
  * @return {boolean}
  */
-const isNewOrExistingZObject = function ( uriQuery ) {
-	let response = false;
-	if ( uriQuery.title === 'Special:CreateZObject' ||
-		uriQuery.action === 'edit'
-	) {
-		response = true;
-	}
-
-	return response;
+const isEditPath = function ( uriQuery ) {
+	return ( uriQuery.action === 'edit' );
 };
 
 /**
- * Analyses the zObject to determine if it is a function
+ * Whether the URL is to Special Create ZObject page
+ *
+ * @param {Object} uriQuery The contextual mw.Uri's query sub-object
+ * @return {boolean}
+ */
+const isCreatePath = function ( uriQuery ) {
+	return ( uriQuery.title === Constants.PATHS.CREATE_Z_OBJECT_TITLE );
+};
+
+/**
+ * Whether the Root ZObject presented in the view or edit page is a Z8/Function
  *
  * @param {Object} context The ZObject context in which we're operating
  * @return {boolean}
  */
-const isExistingFunction = function ( context ) {
+const isFunctionRootObject = function ( context ) {
 	return context.rootGetters.getCurrentZObjectType === Constants.Z_FUNCTION;
 };
 
@@ -54,7 +61,6 @@ const viewIsInvalid = function ( view ) {
 			viewExist = true;
 		}
 	} );
-
 	return !viewExist;
 };
 
@@ -144,45 +150,41 @@ module.exports = {
 				uri.query.title = uri.path.slice( lastPathIndex + 1 );
 			}
 
-			// ----------------
-			// START TEMPORARY BLOCK
-			// Temporary Router Intervention for DefaultView POC
-			// TODO: Remove this and replace with final routing strategy when
-			// we finish the default component work and we are ready to switch
-			if ( uri.query.view === 'default-view' ) {
-				context.dispatch( 'changeCurrentView', 'default-view' );
+			let currentView;
+
+			// 1. if Special page Create
+			if ( isCreatePath( uri.query ) ) {
+				// I we have zid=Z8 in the uri, render function edit view
+				// Else, render default view
+				currentView = ( uri.query.zid === Constants.Z_FUNCTION ) ?
+					Constants.VIEWS.FUNCTION_EDITOR :
+					Constants.VIEWS.DEFAULT_VIEW;
+
+				// Change view and end?
+				context.dispatch( 'changeCurrentView', currentView );
 				return;
 			}
-			// END TEMPORARY BLOCK
-			// ----------------
 
-			if ( isNewOrExistingZObject( uri.query ) ) {
-				let currentEditorView = Constants.VIEWS.Z_OBJECT_EDITOR;
-
-				// Check if ZID is set to handle create function zobject page
-				// Check if is an existing function to handle editing existing function
-				if (
-					( uri.query.zid === Constants.Z_FUNCTION ||
-						isExistingFunction( context ) ) &&
-					uri.query.view !== Constants.VIEWS.Z_OBJECT_EDITOR
-				) {
-					currentEditorView = Constants.VIEWS.FUNCTION_EDITOR;
-				}
-
-				context.dispatch( 'changeCurrentView', currentEditorView );
-
-			} else if ( isEvaluateFunctionCallPath( uri.query ) ) {
-				context.dispatch( 'changeCurrentView', Constants.VIEWS.Z_OBJECT_EDITOR );
-			} else if ( isExistingFunction( context ) ) {
-				let currentFunctionViewerView = Constants.VIEWS.FUNCTION_VIEWER;
-				// should allow user explicitly set view to zobject-viewer view
-				if ( uri.query.view === Constants.VIEWS.Z_OBJECT_VIEWER ) {
-					currentFunctionViewerView = uri.query.view;
-				}
-				context.dispatch( 'changeCurrentView', currentFunctionViewerView );
-			} else {
-				context.dispatch( 'changeCurrentView', Constants.VIEWS.Z_OBJECT_VIEWER );
+			// 2. if Special page Evaluate Function Call
+			if ( isEvaluateFunctionCallPath( uri.query ) ) {
+				// FIXME wait wat!?
+				currentView = Constants.VIEWS.DEFAULT_VIEW;
+				context.dispatch( 'changeCurrentView', currentView );
+				return;
 			}
+
+			if ( isFunctionRootObject( context ) ) {
+				currentView = isEditPath( uri.query ) ?
+					Constants.VIEWS.FUNCTION_EDITOR :
+					Constants.VIEWS.FUNCTION_VIEWER;
+
+				// Change view and end?
+				context.dispatch( 'changeCurrentView', currentView );
+				return;
+			}
+
+			currentView = Constants.VIEWS.DEFAULT_VIEW;
+			context.dispatch( 'changeCurrentView', currentView );
 		},
 		/**
 		 * Handle the changes of a view and replace the history state.

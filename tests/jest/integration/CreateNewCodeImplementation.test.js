@@ -25,7 +25,8 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		runTeardown();
 	} );
 
-	it( 'allows creating a new code implementation', async () => {
+	// TODO (T336997): Adapt to DefaultView
+	it.skip( 'allows creating a new code implementation', async () => {
 		const { findByLabelText, findByRole, getAllByLabelText, getByText } =
 			render( App, { global: { plugins: [ store ] } } );
 

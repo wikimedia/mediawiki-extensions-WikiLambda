@@ -39,6 +39,9 @@ describe( 'ZImplementation', function () {
 			} ),
 			isNewZObject: jest.fn( function () {
 				return true;
+			} ),
+			getViewMode: jest.fn( function () {
+				return false;
 			} )
 		};
 
@@ -61,7 +64,7 @@ describe( 'ZImplementation', function () {
 		var wrapper = VueTestUtils.shallowMount( ZImplementation, {
 			data() {
 				return {
-					implMode: Constants.implementationModes.CODE
+					implMode: Constants.Z_IMPLEMENTATION_CODE
 				};
 			}
 		} );

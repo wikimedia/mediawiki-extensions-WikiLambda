@@ -5,9 +5,16 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-content">
-		<div class="ext-wikilambda-content-title">
+	<wl-widget-base
+		class="ext-wikilambda-about"
+		:has-header-action="true"
+		:has-footer-action="languageCount > 1"
+	>
+		<!-- Widget header -->
+		<template #header>
 			{{ $i18n( 'wikilambda-about-widget-title' ).text() }}
+		</template>
+		<template #header-action>
 			<cdx-button
 				weight="quiet"
 				aria-label="Edit"
@@ -15,89 +22,98 @@
 			>
 				<cdx-icon :icon="icons.cdxIconEdit"></cdx-icon>
 			</cdx-button>
-		</div>
-		<div class="ext-wikilambda-about">
+		</template>
+
+		<!-- Widget main -->
+		<template #main>
 			<!-- Name block -->
-			<div class="ext-wikilambda-about-name">
-				<div class="ext-wikilambda-about-title">
-					{{ nameLabel }}
-				</div>
-				<div
-					class="ext-wikilambda-about-value"
-					:class="{ 'ext-wikilambda-about-name-untitled': !hasName }"
-				>
-					{{ name }}
-				</div>
-			</div>
-			<!-- Description block -->
-			<div
-				v-if="hasDescription"
-				class="ext-wikilambda-about-description"
-			>
-				<div class="ext-wikilambda-about-title">
-					{{ descriptionLabel }}
-				</div>
-				<div class="ext-wikilambda-about-value">
-					{{ description }}
-				</div>
-			</div>
-			<!-- Aliases block -->
-			<div
-				v-if="hasAliases"
-				class="ext-wikilambda-about-aliases"
-			>
-				<div class="ext-wikilambda-about-title">
-					{{ aliasesLabel }}
-				</div>
-				<div class="ext-wikilambda-about-value">
-					<span
-						v-for="( alias, index ) in aliases"
-						:key="'alias-' + index"
+			<div class="ext-wikilambda-about-fields">
+				<div class="ext-wikilambda-about-name">
+					<div class="ext-wikilambda-about-title">
+						{{ nameLabel }}
+					</div>
+					<div
+						class="ext-wikilambda-about-value"
+						:class="{ 'ext-wikilambda-about-name-untitled': !hasName }"
 					>
-						<span v-if="index !== 0">, </span>{{ alias.value }}
-					</span>
+						{{ name }}
+					</div>
+				</div>
+				<!-- Description block -->
+				<div
+					v-if="hasDescription"
+					class="ext-wikilambda-about-description"
+				>
+					<div class="ext-wikilambda-about-title">
+						{{ descriptionLabel }}
+					</div>
+					<div class="ext-wikilambda-about-value">
+						{{ description }}
+					</div>
+				</div>
+				<!-- Aliases block -->
+				<div
+					v-if="hasAliases"
+					class="ext-wikilambda-about-aliases"
+				>
+					<div class="ext-wikilambda-about-title">
+						{{ aliasesLabel }}
+					</div>
+					<div class="ext-wikilambda-about-value">
+						<span
+							v-for="( alias, index ) in aliases"
+							:key="'alias-' + index"
+						>
+							<span v-if="index !== 0">, </span>{{ alias.value }}
+						</span>
+					</div>
 				</div>
 			</div>
-		</div>
-		<div
-			v-if="languageCount > 1"
-			class="ext-wikilambda-content-buttons"
-		>
-			<cdx-button @click="openViewLanguagesDialog">
-				<cdx-icon :icon="icons.cdxIconLanguage"></cdx-icon>
-				{{ $i18n( 'wikilambda-about-widget-language-count-button', languageCount ).text() }}
-			</cdx-button>
-		</div>
-		<!-- Dialogs -->
-		<wl-about-view-languages-dialog
-			:open="showViewLanguagesDialog"
-			@open-add-language="openEditLanguageDialog"
-			@open-edit-language="openEditLanguageDialog"
-			@close="showViewLanguagesDialog = false"
-		>
-		</wl-about-view-languages-dialog>
-		<wl-about-edit-metadata-dialog
-			:edit="edit"
-			:for-language="selectedLanguage"
-			:open="showEditMetadataDialog"
-			@change-selected-language="openEditLanguageDialog"
-			@close="showEditMetadataDialog = false"
-			@publish="showPublishDialog = true"
-		>
-		</wl-about-edit-metadata-dialog>
-		<wl-publish-dialog
-			v-if="!edit"
-			:show-dialog="showPublishDialog"
-			@close-dialog="showPublishDialog = false"
-		></wl-publish-dialog>
-	</div>
+			<!-- Dialogs -->
+			<wl-about-view-languages-dialog
+				:open="showViewLanguagesDialog"
+				@open-add-language="openEditLanguageDialog"
+				@open-edit-language="openEditLanguageDialog"
+				@close="showViewLanguagesDialog = false"
+			>
+			</wl-about-view-languages-dialog>
+			<wl-about-edit-metadata-dialog
+				:edit="edit"
+				:for-language="selectedLanguage"
+				:open="showEditMetadataDialog"
+				@change-selected-language="openEditLanguageDialog"
+				@close="showEditMetadataDialog = false"
+				@publish="showPublishDialog = true"
+			>
+			</wl-about-edit-metadata-dialog>
+			<wl-publish-dialog
+				v-if="!edit"
+				:show-dialog="showPublishDialog"
+				@close-dialog="showPublishDialog = false"
+			></wl-publish-dialog>
+		</template>
+
+		<!-- Widget footer -->
+		<template v-if="languageCount > 1" #footer>
+			<div
+				v-if="languageCount > 1"
+				class="ext-wikilambda-content-buttons"
+			>
+				<cdx-button @click="openViewLanguagesDialog">
+					<cdx-icon :icon="icons.cdxIconLanguage"></cdx-icon>
+					{{ $i18n( 'wikilambda-about-widget-language-count-button', languageCount ).text() }}
+				</cdx-button>
+			</div>
+		</template>
+	</wl-widget-base>
 </template>
 
 <script>
 const Constants = require( '../../Constants.js' ),
 	AboutViewLanguagesDialog = require( './AboutViewLanguagesDialog.vue' ),
 	AboutEditMetadataDialog = require( './AboutEditMetadataDialog.vue' ),
-	PublishDialog = require( '../base/PublishDialog.vue' ),
+	PublishDialog = require( './PublishDialog.vue' ),
+	WidgetBase = require( '../base/WidgetBase.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( '../../../lib/icons.json' ),
@@ -111,7 +127,8 @@ module.exports = exports = {
 		'cdx-button': CdxButton,
 		'wl-about-view-languages-dialog': AboutViewLanguagesDialog,
 		'wl-about-edit-metadata-dialog': AboutEditMetadataDialog,
-		'wl-publish-dialog': PublishDialog
+		'wl-publish-dialog': PublishDialog,
+		'wl-widget-base': WidgetBase
 	},
 	props: {
 		edit: {
@@ -306,22 +323,13 @@ module.exports = exports = {
 <style lang="less">
 @import '../../ext.wikilambda.edit.less';
 
-.ext-wikilambda-content {
-	color: @color-base;
+.ext-wikilambda-about-fields {
+	& > div {
+		margin-bottom: @spacing-100;
 
-	.ext-wikilambda-content-title {
-		display: flex;
-		justify-content: space-between;
-	}
-
-	.ext-wikilambda-content-buttons {
-		padding-top: @spacing-25;
-	}
-}
-
-.ext-wikilambda-about {
-	.ext-wikilambda-about-name-untitled {
-		color: @color-placeholder;
+		&:last-child {
+			margin-bottom: 0;
+		}
 	}
 
 	.ext-wikilambda-about-title {
@@ -334,7 +342,9 @@ module.exports = exports = {
 	}
 
 	.ext-wikilambda-about-value {
-		margin-bottom: @spacing-100;
+		&.ext-wikilambda-about-name-untitled {
+			color: @color-placeholder;
+		}
 	}
 }
 </style>

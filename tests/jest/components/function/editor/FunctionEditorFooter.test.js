@@ -27,14 +27,14 @@ describe( 'FunctionEditorFooter', function () {
 		expect( wrapper.find( '.ext-wikilambda-function-definition-footer' ).exists() ).toBeTruthy();
 	} );
 
-	it( 'displays the ZObjectPublish component', function () {
+	it( 'displays the PublishWidget component', function () {
 		var wrapper = VueTestUtils.mount( FunctionEditorFooter );
 
-		expect( wrapper.find( '.ext-wikilambda-publish-zobject' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-publish-widget' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'triggers the "cancel" event on cancel button click', function () {
-		var wrapper = VueTestUtils.shallowMount( FunctionEditorFooter, {
+		var wrapper = VueTestUtils.mount( FunctionEditorFooter, {
 			props: {
 				isEditing: true
 			},
@@ -43,7 +43,7 @@ describe( 'FunctionEditorFooter', function () {
 			}
 		} );
 
-		const cancelButton = wrapper.find( '#ext-wikilambda-function-definition-footer__actions__cancel' );
+		const cancelButton = wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' );
 		expect( cancelButton.exists() ).toBeTruthy();
 		return cancelButton.trigger( 'click' ).then( function () {
 			expect( wrapper.emitted().cancel ).toBeTruthy();

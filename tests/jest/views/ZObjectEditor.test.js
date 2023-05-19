@@ -10,7 +10,7 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	ZObjectEditor = require( '../../../resources/ext.wikilambda.edit/views/ZObjectEditor.vue' ),
-	ZObjectPublish = require( '../../../resources/ext.wikilambda.edit/components/ZObjectPublish.vue' );
+	PublishWidget = require( '../../../resources/ext.wikilambda.edit/components/widgets/Publish.vue' );
 
 describe( 'ZObjectEditor', function () {
 	var getters,
@@ -82,16 +82,16 @@ describe( 'ZObjectEditor', function () {
 		expect( wrapper.find( '#ext-wikilambda-editor' ).exists() ).toBeTruthy();
 	} );
 
-	it( 'displays the ZObjectPublish component', function () {
+	it( 'displays the Publish widget', function () {
 		var wrapper = shallowMount( ZObjectEditor );
 
-		expect( wrapper.findComponent( ZObjectPublish ).exists() ).toBeTruthy();
+		expect( wrapper.findComponent( PublishWidget ).exists() ).toBeTruthy();
 	} );
 
 	it( 'publish button is disabled when the zobject is not dirty (there are no changes)', function () {
 		var wrapper = mount( ZObjectEditor );
 
-		const publishButton = wrapper.get( '.ext-wikilambda-publish-zobject__publish-button' );
+		const publishButton = wrapper.get( '.ext-wikilambda-publish-widget__publish-button' );
 		expect( publishButton.attributes( 'disabled' ) ).toBeDefined();
 	} );
 
@@ -104,7 +104,7 @@ describe( 'ZObjectEditor', function () {
 		} );
 		const wrapper = mount( ZObjectEditor );
 
-		const publishButton = wrapper.find( '.ext-wikilambda-publish-zobject__publish-button' );
+		const publishButton = wrapper.get( '.ext-wikilambda-publish-widget__publish-button' );
 		expect( publishButton.attributes( 'disabled' ) ).toBeUndefined();
 	} );
 } );

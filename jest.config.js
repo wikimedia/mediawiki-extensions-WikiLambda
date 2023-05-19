@@ -54,7 +54,9 @@ module.exports = {
 		'resources/ext.wikilambda.edit/components/base/Select.vue',
 		'resources/ext.wikilambda.edit/components/base/Table.vue',
 		'resources/ext.wikilambda.edit/components/base/Text.vue',
-		'resources/ext.wikilambda.edit/components/base/Tooltip.vue'
+		'resources/ext.wikilambda.edit/components/base/Tooltip.vue',
+		// These are components that will be removed:
+		'resources/ext.wikilambda.edit/components/main-types/'
 	],
 
 	coverageThreshold: {

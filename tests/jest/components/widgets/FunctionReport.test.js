@@ -6,10 +6,10 @@
  */
 'use strict';
 var VueTestUtils = require( '@vue/test-utils' ),
-	ZFunctionTesterReport = require( '../../../../resources/ext.wikilambda.edit/components/function/ZFunctionTesterReport.vue' ),
+	FunctionReport = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionReport.vue' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
 
-describe( 'ZFunctionTesterReport', function () {
+describe( 'FunctionReport', function () {
 	var fetchZKeysMock = jest.fn( function () {
 			return true;
 		} ),
@@ -40,6 +40,9 @@ describe( 'ZFunctionTesterReport', function () {
 						percentage: 100
 					};
 				};
+			} ),
+			getFetchingTestResults: jest.fn( function () {
+				return false;
 			} )
 		};
 		global.store.hotUpdate( {
@@ -52,7 +55,7 @@ describe( 'ZFunctionTesterReport', function () {
 	} );
 
 	it( 'renders without errors', function () {
-		var wrapper = VueTestUtils.shallowMount( ZFunctionTesterReport, {
+		var wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: ''
 			}
@@ -61,7 +64,7 @@ describe( 'ZFunctionTesterReport', function () {
 	} );
 
 	it( 'triggers the tests on load', function () {
-		VueTestUtils.shallowMount( ZFunctionTesterReport, {
+		VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: ''
 			}
@@ -83,7 +86,7 @@ describe( 'ZFunctionTesterReport', function () {
 	} );
 
 	it( 'displays no results when no implementations or testers found', function () {
-		var wrapper = VueTestUtils.shallowMount( ZFunctionTesterReport, {
+		var wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: ''
 			}
@@ -115,7 +118,7 @@ describe( 'ZFunctionTesterReport', function () {
 			getters: getters
 		} );
 
-		var wrapper = VueTestUtils.shallowMount( ZFunctionTesterReport, {
+		var wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
 				zImplementationId: Constants.NEW_ZID_PLACEHOLDER,
@@ -125,7 +128,7 @@ describe( 'ZFunctionTesterReport', function () {
 
 		expect( wrapper.vm.zIds ).toEqual( [ 'Z10002', 'Z10003' ] );
 
-		var content = wrapper.findAll( '.ext-wikilambda-function-tester-report__result' );
+		var content = wrapper.findAll( '.ext-wikilambda-function-report__result' );
 		expect( content.length ).toBe( 2 );
 
 	} );
@@ -153,7 +156,7 @@ describe( 'ZFunctionTesterReport', function () {
 			getters: getters
 		} );
 
-		var wrapper = VueTestUtils.shallowMount( ZFunctionTesterReport, {
+		var wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
 				zTesterId: Constants.NEW_ZID_PLACEHOLDER,
@@ -162,9 +165,9 @@ describe( 'ZFunctionTesterReport', function () {
 		} );
 
 		expect( wrapper.vm.zIds ).toEqual( [ 'Z10001', 'Z10004', 'Z10005' ] );
-		expect( wrapper.find( '.ext-wikilambda-function-tester-report__title' ).text() ).toEqual( 'Implementations' );
+		expect( wrapper.find( '.ext-wikilambda-widget-base-header-slot' ).text() ).toEqual( 'Implementations' );
 
-		var content = wrapper.findAll( '.ext-wikilambda-function-tester-report__result' );
+		var content = wrapper.findAll( '.ext-wikilambda-function-report__result' );
 		expect( content.length ).toBe( 3 );
 
 	} );
@@ -192,7 +195,7 @@ describe( 'ZFunctionTesterReport', function () {
 			getters: getters
 		} );
 
-		var wrapper = VueTestUtils.shallowMount( ZFunctionTesterReport, {
+		var wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
 				zImplementationId: 'Z10001',
@@ -200,7 +203,7 @@ describe( 'ZFunctionTesterReport', function () {
 			}
 		} );
 
-		expect( wrapper.find( '.ext-wikilambda-function-tester-report__title' ).text() ).toEqual( 'Test cases' );
+		expect( wrapper.find( '.ext-wikilambda-widget-base-header-slot' ).text() ).toEqual( 'Test cases' );
 		expect( wrapper.vm.zIds ).toEqual( [ 'Z10002', 'Z10003' ] );
 
 	} );
@@ -228,7 +231,7 @@ describe( 'ZFunctionTesterReport', function () {
 			getters: getters
 		} );
 
-		var wrapper = VueTestUtils.shallowMount( ZFunctionTesterReport, {
+		var wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
 				zTesterId: 'Z10002',
@@ -236,7 +239,7 @@ describe( 'ZFunctionTesterReport', function () {
 			}
 		} );
 
-		expect( wrapper.find( '.ext-wikilambda-function-tester-report__title' ).text() ).toEqual( 'Implementations' );
+		expect( wrapper.find( '.ext-wikilambda-widget-base-header-slot' ).text() ).toEqual( 'Implementations' );
 		expect( wrapper.vm.zIds ).toEqual( [ 'Z10001', 'Z10004', 'Z10005' ] );
 
 	} );
@@ -246,7 +249,7 @@ describe( 'ZFunctionTesterReport', function () {
 	it.skip( 'triggers the tests on button click', function () {
 		var expectedImplementationId = 'Z10001',
 			expectedTesterId = 'Z10002',
-			wrapper = VueTestUtils.shallowMount( ZFunctionTesterReport, {
+			wrapper = VueTestUtils.mount( FunctionReport, {
 				props: {
 					zFunctionId: 'Z10000',
 					zImplementationId: expectedImplementationId,

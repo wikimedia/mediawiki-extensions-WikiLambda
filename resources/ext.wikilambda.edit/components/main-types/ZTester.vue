@@ -32,7 +32,7 @@
 			hide-first-argument
 			hide-call-button
 		></wl-z-function-call>
-		<wl-z-function-tester-report
+		<wl-function-report-widget
 			:z-function-id="zFunctionId"
 			:z-tester-id="zTesterId"
 			:report-type="Constants.Z_TESTER"
@@ -42,7 +42,7 @@
 					{{ $i18n( 'wikilambda-tester-run-tester' ).text() }}
 				</cdx-button>
 			</template>
-		</wl-z-function-tester-report>
+		</wl-function-report-widget>
 	</div>
 </template>
 
@@ -55,14 +55,14 @@ var Constants = require( '../../Constants.js' ),
 	icons = require( '../../../lib/icons.json' ),
 	ZFunctionCall = require( './ZFunctionCall.vue' ),
 	ZReference = require( './ZReference.vue' ),
-	ZFunctionTesterReport = require( '../function/ZFunctionTesterReport.vue' );
+	FunctionReportWidget = require( '../widgets/FunctionReport.vue' );
 
 // @vue/component
 module.exports = exports = {
 	components: {
 		'wl-z-function-call': ZFunctionCall,
 		'wl-z-reference': ZReference,
-		'wl-z-function-tester-report': ZFunctionTesterReport,
+		'wl-function-report-widget': FunctionReportWidget,
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},

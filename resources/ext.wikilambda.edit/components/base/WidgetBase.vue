@@ -8,8 +8,8 @@
 	<cdx-card class="ext-wikilambda-widget-base">
 		<template #title>
 			<div
-				class="ext-wikilambda-widget-base-header-wrapper"
-				:class="`${hasHeaderAction ? 'ext-wikilambda-widget-base-header-wrapper-with-action' : ''}`"
+				class="ext-wikilambda-widget-base-header"
+				:class="`${hasHeaderAction ? 'ext-wikilambda-widget-base-header-with-action' : ''}`"
 			>
 				<div class="ext-wikilambda-widget-base-header-slot">
 					<slot name="header"></slot>
@@ -57,6 +57,7 @@ module.exports = exports = {
 
 .ext-wikilambda-widget-base {
 	border-color: @border-color-subtle;
+	margin-bottom: @spacing-125;
 
 	.cdx-card__text {
 		width: 100%;
@@ -71,13 +72,13 @@ module.exports = exports = {
 	}
 }
 
-.ext-wikilambda-widget-base-header-wrapper {
+.ext-wikilambda-widget-base-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-start;
 	margin-bottom: @spacing-125;
 
-	&.ext-wikilambda-widget-base-header-wrapper-with-action {
+	&.ext-wikilambda-widget-base-header-with-action {
 		margin-bottom: @spacing-50;
 	}
 }

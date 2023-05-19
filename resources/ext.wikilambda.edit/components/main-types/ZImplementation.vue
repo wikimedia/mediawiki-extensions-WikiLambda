@@ -47,21 +47,21 @@
 			<span>{{ $i18n( 'wikilambda-implementation-selector-none' ).text() }}</span>
 		</div>
 		<wl-z-code
-			v-if="implMode === Constants.implementationModes.CODE"
+			v-if="implMode === Constants.Z_IMPLEMENTATION_CODE"
 			:zobject-id="zCodeId"
 			@select-language="selectLanguage"
 			@update-code="updateCode"
 		></wl-z-code>
 		<wl-z-object
-			v-if="implMode === Constants.implementationModes.COMPOSITION"
+			v-if="implMode === Constants.Z_IMPLEMENTATION_COMPOSITION"
 			:zobject-id="zCompositionId"
 			:persistent="false"
 		></wl-z-object>
-		<wl-z-function-tester-report
+		<wl-function-report-widget
 			:z-function-id="zFunction.value || ''"
 			:z-implementation-id="zImplementationId"
 			:report-type="Constants.Z_IMPLEMENTATION"
-		></wl-z-function-tester-report>
+		></wl-function-report-widget>
 
 		<wl-function-explorer
 			:function-zid="zFunction.value"
@@ -85,7 +85,7 @@ var Constants = require( '../../Constants.js' ),
 	ZCode = require( './ZCode.vue' ),
 	ZObjectSelector = require( '../ZObjectSelector.vue' ),
 	ZReference = require( './ZReference.vue' ),
-	ZFunctionTesterReport = require( '../function/ZFunctionTesterReport.vue' );
+	FunctionReportWidget = require( '../widgets/FunctionReport.vue' );
 
 // @vue/component
 module.exports = exports = {
@@ -93,7 +93,7 @@ module.exports = exports = {
 		'wl-z-code': ZCode,
 		'wl-z-object-selector': ZObjectSelector,
 		'wl-z-reference': ZReference,
-		'wl-z-function-tester-report': ZFunctionTesterReport,
+		'wl-function-report-widget': FunctionReportWidget,
 		'wl-function-explorer': FunctionExplorer,
 		'cdx-select': CdxSelect,
 		'cdx-icon': CdxIcon
@@ -200,11 +200,11 @@ module.exports = exports = {
 			implementationModeItems: function () {
 				return [
 					{
-						value: Constants.implementationModes.COMPOSITION,
+						value: Constants.Z_IMPLEMENTATION_COMPOSITION,
 						label: this.$i18n( 'wikilambda-implementation-selector-composition' ).text()
 					},
 					{
-						value: Constants.implementationModes.CODE,
+						value: Constants.Z_IMPLEMENTATION_CODE,
 						label: this.$i18n( 'wikilambda-implementation-selector-code' ).text()
 					}
 				];
@@ -298,9 +298,9 @@ module.exports = exports = {
 	},
 	mounted: function () {
 		if ( this.zCodeId ) {
-			this.implMode = Constants.implementationModes.CODE;
+			this.implMode = Constants.Z_IMPLEMENTATION_CODE;
 		} else if ( this.zCompositionId ) {
-			this.implMode = Constants.implementationModes.COMPOSITION;
+			this.implMode = Constants.Z_IMPLEMENTATION_COMPOSITION;
 		}
 	}
 };

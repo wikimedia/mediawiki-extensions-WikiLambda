@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the ZTesterImplResult component and related files.
+ * WikiLambda unit test suite for the FunctionReportItem component and related files.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -9,9 +9,9 @@
 var mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	ZTesterImplResult = require( '../../../../resources/ext.wikilambda.edit/components/function/ZTesterImplResult.vue' );
+	FunctionReportItem = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionReportItem.vue' );
 
-describe( 'ZTesterImplResult', function () {
+describe( 'FunctionReportItem', function () {
 	var testStatus,
 		zFunctionId,
 		zImplementationId,
@@ -38,7 +38,7 @@ describe( 'ZTesterImplResult', function () {
 	} );
 
 	it( 'renders without errors', function () {
-		var wrapper = mount( ZTesterImplResult, {
+		var wrapper = mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
@@ -46,11 +46,11 @@ describe( 'ZTesterImplResult', function () {
 				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-tester-result' ).exists() ).toBeTruthy();
+		expect( wrapper.find( '.ext-wikilambda-function-report-item' ).exists() ).toBeTruthy();
 	} );
 
 	it( 'fetches the test result for the provided IDs from Vuex', function () {
-		mount( ZTesterImplResult, {
+		mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
@@ -63,7 +63,7 @@ describe( 'ZTesterImplResult', function () {
 
 	it( 'displays running status when no result found', function () {
 		testStatus = undefined;
-		var wrapper = mount( ZTesterImplResult, {
+		var wrapper = mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
@@ -71,12 +71,12 @@ describe( 'ZTesterImplResult', function () {
 				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-tester-result__footer-status' ).text() ).toBe( 'Running…' );
+		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Running…' );
 	} );
 
 	it( 'displays passed status when result is passed', function () {
 		testStatus = true;
-		var wrapper = mount( ZTesterImplResult, {
+		var wrapper = mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
@@ -84,12 +84,12 @@ describe( 'ZTesterImplResult', function () {
 				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-tester-result__footer-status' ).text() ).toBe( 'Pass' );
+		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Pass' );
 	} );
 
 	it( 'displays failed status when result is failed', function () {
 		testStatus = false;
-		var wrapper = mount( ZTesterImplResult, {
+		var wrapper = mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
@@ -97,12 +97,12 @@ describe( 'ZTesterImplResult', function () {
 				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-tester-result__footer-status' ).text() ).toBe( 'Fail' );
+		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Fail' );
 	} );
 
 	it( 'displays pending status when implementation missing', function () {
 		testStatus = undefined;
-		var wrapper = mount( ZTesterImplResult, {
+		var wrapper = mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: '',
@@ -110,12 +110,12 @@ describe( 'ZTesterImplResult', function () {
 				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-tester-result__footer-status' ).text() ).toBe( 'Pending…' );
+		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Pending…' );
 	} );
 
 	it( 'displays pending status when tester missing', function () {
 		testStatus = undefined;
-		var wrapper = mount( ZTesterImplResult, {
+		var wrapper = mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
 				zImplementationId: zImplementationId,
@@ -123,6 +123,6 @@ describe( 'ZTesterImplResult', function () {
 				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-tester-result__footer-status' ).text() ).toBe( 'Pending…' );
+		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Pending…' );
 	} );
 } );

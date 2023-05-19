@@ -127,10 +127,6 @@ var Constants = {
 		Z_FUNCTION_CALL_TO_TYPE: 'function_call_to_type',
 		PAGINATION_SIZE: 5
 	},
-	implementationModes = {
-		CODE: 'code',
-		COMPOSITION: 'composition'
-	},
 	modes = [
 		{ key: Constants.Z_KEY_MODES.REFERENCE, value: 'wikilambda-modeselector-reference', label: 'wikilambda-reference', type: Constants.Z_REFERENCE },
 		{ key: Constants.Z_KEY_MODES.FUNCTION_CALL, value: 'wikilambda-modeselector-functioncall', label: 'wikilambda-functioncall', type: Constants.Z_FUNCTION_CALL },
@@ -143,8 +139,7 @@ var Constants = {
 	views = {
 		FUNCTION_EDITOR: 'function-editor',
 		FUNCTION_VIEWER: 'function-viewer',
-		Z_OBJECT_EDITOR: 'zobject-editor',
-		Z_OBJECT_VIEWER: 'zobject-viewer'
+		DEFAULT_VIEW: 'default-view'
 	},
 	paths = {
 		CREATE_Z_OBJECT_TITLE: 'Special:CreateZObject',
@@ -217,7 +212,6 @@ Constants.ACTIONS = actions;
 Constants.errorTypes = errorTypes;
 Constants.breakpoints = breakpoints;
 Constants.breakpointsTypes = breakpointsTypes;
-Constants.implementationModes = implementationModes;
 Constants.contextMenuItems = contextMenuItems;
 Constants.testerStatus = testerStatus;
 Constants.COLOR_NESTING_LEVELS = 6;
