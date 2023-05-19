@@ -125,5 +125,7 @@
 	"wikilambda-about-widget-publish-button": "Continua a pubblicare",
 	"wikilambda-about-widget-view-languages-title": "Etichette in altre lingue",
 	"wikilambda-about-widget-add-language": "Aggiungi lingua",
-	"wikilambda-about-widget-search-language-placeholder": "Cerca lingua"
+	"wikilambda-about-widget-search-language-placeholder": "Cerca lingua",
+	"wikilambda-function-explorer-copied-text": "Copiato!",
+	"wikilambda-function-explorer-name-title": "Nome"
 }

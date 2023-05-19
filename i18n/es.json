@@ -300,5 +300,7 @@
 	"wikilambda-add-list-item": "Añadir elemento",
 	"wikilambda-delete-list-item": "Eliminar elemento",
 	"wikilambda-list-type-change-publish-dialog-warning": "Ha cambiado el tipo de una o más listas. Al publicar, todos los elementos de la lista serán eliminados",
-	"wikilambda-tester-details": "Detalles"
+	"wikilambda-tester-details": "Detalles",
+	"wikilambda-about-widget-done-button": "Hecho",
+	"wikilambda-about-widget-add-language": "Añadir idioma"
 }

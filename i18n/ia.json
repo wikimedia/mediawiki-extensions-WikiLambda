@@ -367,5 +367,10 @@
 	"wikilambda-about-widget-publish-button": "Continuar a publicar",
 	"wikilambda-about-widget-view-languages-title": "Etiquettas in altere linguas",
 	"wikilambda-about-widget-add-language": "Adder lingua",
-	"wikilambda-about-widget-search-language-placeholder": "Cercar lingua"
+	"wikilambda-about-widget-search-language-placeholder": "Cercar lingua",
+	"wikilambda-function-explorer-title": "Explorator de functiones",
+	"wikilambda-function-inputs-title": "Entratas",
+	"wikilambda-function-explorer-copied-text": "Copiate!",
+	"wikilambda-function-explorer-name-title": "Nomine",
+	"wikilambda-function-view-function-button-text": "Monstrar function"
 }

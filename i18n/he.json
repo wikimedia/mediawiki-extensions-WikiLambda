@@ -371,5 +371,10 @@
 	"wikilambda-about-widget-publish-button": "להמשיך לפרסם",
 	"wikilambda-about-widget-view-languages-title": "תוויות בשפות אחרות",
 	"wikilambda-about-widget-add-language": "הוספת שפה",
-	"wikilambda-about-widget-search-language-placeholder": "חיפוש שפה"
+	"wikilambda-about-widget-search-language-placeholder": "חיפוש שפה",
+	"wikilambda-function-explorer-title": "סייר פונקציות",
+	"wikilambda-function-inputs-title": "קלטים",
+	"wikilambda-function-explorer-copied-text": "הועתק!",
+	"wikilambda-function-explorer-name-title": "שם",
+	"wikilambda-function-view-function-button-text": "הצגת הפונקציות"
 }

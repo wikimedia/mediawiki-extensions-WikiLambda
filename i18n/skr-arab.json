@@ -34,6 +34,11 @@
 	"wikilambda-add-list-item": "آئٹم شامل کرو",
 	"wikilambda-delete-list-item": "آئٹم مٹاؤ",
 	"wikilambda-tester-details": "تفصیلاں",
+	"wikilambda-about-widget-title": "تعارف",
+	"wikilambda-about-widget-name-placeholder": "ناں درج کرو",
+	"wikilambda-about-widget-done-button": "تھی ڳیا",
+	"wikilambda-about-widget-add-language": "زبان شامل کرو",
+	"wikilambda-about-widget-search-language-placeholder": "زبان ڳولو",
 	"wikilambda-function-explorer-copied-text": "نقل تھی ڳئے!",
 	"wikilambda-function-explorer-name-title": "ناں"
 }

@@ -94,5 +94,7 @@
 	"wikilambda-add-list-item-button": "Добавить элемент",
 	"wikilambda-list-item-label": "Элемент",
 	"wikilambda-add-list-item": "Добавить элемент",
-	"wikilambda-delete-list-item": "Удалённый элемент"
+	"wikilambda-delete-list-item": "Удалённый элемент",
+	"wikilambda-about-widget-done-button": "Готово",
+	"wikilambda-about-widget-add-language": "Добавить язык"
 }

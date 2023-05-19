@@ -16,5 +16,9 @@
 	"wikilambda-list-item-label": "ပစ္စည်းများ",
 	"wikilambda-context-menu": "နောက်ကြောင်းဆက်စပ် အညွှန်း",
 	"wikilambda-add-list-item": "ပစ္စည်းထည့်ပါ",
-	"wikilambda-delete-list-item": "ပစ္စည်းကို ဖျက်ပါ"
+	"wikilambda-delete-list-item": "ပစ္စည်းကို ဖျက်ပါ",
+	"wikilambda-about-widget-title": "အကြောင်း",
+	"wikilambda-about-widget-done-button": "ပြီးပြီ",
+	"wikilambda-about-widget-add-language": "ဘာသာစကား ထည့်သွင်းရန်",
+	"wikilambda-about-widget-search-language-placeholder": "ဘာသာစကား ရှာဖွေရန်"
 }
