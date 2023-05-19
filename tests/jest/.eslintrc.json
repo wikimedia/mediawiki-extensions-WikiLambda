@@ -1,8 +1,16 @@
 {
+	"plugins": [
+		"jest"
+	],
 	"globals": {
 		"global": true
 	},
+	"env": {
+		"jest/globals": true
+	},
 	"rules": {
-		"es-x/no-async-functions": "warn"
+		"no-var": "off",
+		"strict": "off",
+		"es-x/no-async-functions": "off"
 	}
 }

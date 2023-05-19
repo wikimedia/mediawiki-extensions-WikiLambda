@@ -58,6 +58,7 @@ const zObjectApiResponseBuilder = ( zids, language ) => {
 		if ( zObjectResponses[ zid ] ) {
 			data = zObjectResponses[ zid ];
 		} else {
+			// eslint-disable-next-line security/detect-non-literal-fs-filename
 			const json = fs.readFileSync( path.join(
 				__dirname, '../../../../function-schemata/data/definitions/' + zid + '.json' ) );
 			if ( !json ) {

@@ -1,19 +1,14 @@
 {
-	"plugins": [ "jest" ],
-	"parserOptions": {
-		"ecmaVersion": 2017
-	},
-	"env": {
-		"jest/globals": true
-	},
+	"root": true,
+	"extends": [
+		"wikimedia/server"
+	],
 	"rules": {
 		"camelcase": [
 			"error",
 			{ "properties": "never" }
 		],
-		"compat/compat": "off",
-		"no-implicit-globals": "off",
-		"no-restricted-syntax": "off",
+		"max-len": "off",
 		"no-undef": "off"
 	}
 }

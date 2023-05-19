@@ -1,6 +1,5 @@
 {
 	"rules": {
-		"no-implicit-globals": "off",
-		"es-x/no-promise-prototype-finally": "warn"
+		"no-implicit-globals": "off"
 	}
 }
