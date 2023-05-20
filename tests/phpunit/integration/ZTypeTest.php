@@ -30,8 +30,8 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 		$services = MediaWikiServices::getInstance();
 		$this->registerLangs( [ 'fr' ] );
 
-		$english = $this->makeLanguage( 'en' );
-		$french = $this->makeLanguage( 'fr' );
+		$english = self::makeLanguage( 'en' );
+		$french = self::makeLanguage( 'fr' );
 
 		$this->hideDeprecated( '::create' );
 		$testObject = new ZObjectContent( ZTestType::TEST_ENCODING );
@@ -83,7 +83,7 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $expected, $testObject->isValid() );
 	}
 
-	public function provideIsValid() {
+	public static function provideIsValid() {
 		$validZ4Key = new ZKey( new ZReference( 'Z6' ), new ZString( 'Z4K1' ), [] );
 		$listOfKeys = ZTypedList::buildType( new ZReference( 'Z3' ) );
 		$validZ4KeyList = new ZTypedList( $listOfKeys, [ $validZ4Key ] );

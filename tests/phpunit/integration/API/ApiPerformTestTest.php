@@ -43,7 +43,7 @@ class ApiPerformTestTest extends ApiTestCase {
 		}
 	}
 
-	private function getTestFileContents( $fileName ): string {
+	private static function getTestFileContents( $fileName ): string {
 		// @codingStandardsIgnoreLine
 		$baseDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'test_data' . DIRECTORY_SEPARATOR . 'perform_test';
 		$fullFile = $baseDir . DIRECTORY_SEPARATOR . $fileName;
@@ -61,8 +61,8 @@ class ApiPerformTestTest extends ApiTestCase {
 
 	public function addDBData() {
 		$this->insertBuiltinObjects( [ 'Z14', 'Z16', 'Z17', 'Z20', 'Z40', 'Z61', 'Z813', 'Z8130', 'Z8131', 'Z913' ] );
-		$this->editPage( 'Z1000000', $this->getTestFileContents( 'existing-zimplementation.json' ), '', NS_MAIN );
-		$this->editPage( 'Z2000000', $this->getTestFileContents( 'existing-ztester.json' ), '', NS_MAIN );
+		$this->editPage( 'Z1000000', self::getTestFileContents( 'existing-zimplementation.json' ), '', NS_MAIN );
+		$this->editPage( 'Z2000000', self::getTestFileContents( 'existing-ztester.json' ), '', NS_MAIN );
 	}
 
 	/**
@@ -176,7 +176,7 @@ class ApiPerformTestTest extends ApiTestCase {
 		}
 	}
 
-	public function provideExecuteSuccessfully() {
+	public static function provideExecuteSuccessfully() {
 		yield 'Request specifies implementation and tester, both by reference' => [
 			'Z813',
 			'Z913',
@@ -210,7 +210,7 @@ class ApiPerformTestTest extends ApiTestCase {
 
 		yield 'Request specifies JSON for new implementation' => [
 			'Z813',
-			$this->getTestFileContents( 'new-zimplementation.json' ),
+			self::getTestFileContents( 'new-zimplementation.json' ),
 			'',
 			[
 				[
@@ -230,7 +230,7 @@ class ApiPerformTestTest extends ApiTestCase {
 
 		yield 'Request specifies JSON for edited version of existing implementation' => [
 			'Z813',
-			str_replace( "True", "False", $this->getTestFileContents( 'existing-zimplementation.json' ) ),
+			str_replace( "True", "False", self::getTestFileContents( 'existing-zimplementation.json' ) ),
 			'',
 			[
 				[
@@ -264,7 +264,7 @@ class ApiPerformTestTest extends ApiTestCase {
 		yield 'Request specifies JSON for new tester' => [
 			'Z813',
 			'',
-			$this->getTestFileContents( 'new-ztester.json' ),
+			self::getTestFileContents( 'new-ztester.json' ),
 			[
 				[
 					'zimplementationId' => 'Z913',
@@ -279,7 +279,7 @@ class ApiPerformTestTest extends ApiTestCase {
 		yield 'Request specifies JSON for edited version of existing tester' => [
 			'Z813',
 			'',
-			str_replace( "Z41", "Z42", $this->getTestFileContents( 'existing-ztester.json' ) ),
+			str_replace( "Z41", "Z42", self::getTestFileContents( 'existing-ztester.json' ) ),
 			[
 				[
 					'zimplementationId' => 'Z913',
@@ -347,7 +347,7 @@ class ApiPerformTestTest extends ApiTestCase {
 
 		yield 'Request specifies non-implementation as implementation, by JSON' => [
 			'Z813',
-			$this->getTestFileContents( 'existing-ztester.json' ),
+			self::getTestFileContents( 'existing-ztester.json' ),
 			'',
 			[],
 			'Perform test error: \'{ "Z1K1": "Z20", "Z20K1": "Z813", "Z20K2": { "Z1K1": "Z7", "Z7K1": "Z813", ' .
@@ -367,7 +367,7 @@ class ApiPerformTestTest extends ApiTestCase {
 		yield 'Request specifies implementation that throws an error' => [
 			'Z813',
 			str_replace(
-				"return False", "throw 'some error'", $this->getTestFileContents( 'new-zimplementation.json' ) ),
+				"return False", "throw 'some error'", self::getTestFileContents( 'new-zimplementation.json' ) ),
 			'Z8130',
 			[
 				[
@@ -384,7 +384,7 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Z813',
 			'',
 			// Adjust tester so that its validation call tries to call boolean equality on a non-boolean
-			str_replace( "Z42", "not a boolean", $this->getTestFileContents( 'new-ztester.json' ) ),
+			str_replace( "Z42", "not a boolean", self::getTestFileContents( 'new-ztester.json' ) ),
 			[
 				[
 					'zimplementationId' => 'Z913',
@@ -488,7 +488,7 @@ class ApiPerformTestTest extends ApiTestCase {
 		$this->assertTrue( $expectedRanking === $targetImplementationZids );
 	}
 
-	public function provideMaybeUpdateImplementationRanking() {
+	public static function provideMaybeUpdateImplementationRanking() {
 		yield 'Request specifies orchestrationCpuUsage values calling for an update' => [
 			[
 				// Implementation, tester, OrchestratorCPU, EvaluatorCPU, ExecutorCPU, status

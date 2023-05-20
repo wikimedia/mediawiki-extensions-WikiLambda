@@ -328,7 +328,7 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	public function provideListsInCanonicalForm() {
+	public static function provideListsInCanonicalForm() {
 		return [
 			'Canonical form empty array of Z1s' => [
 				'[ "Z1" ]',
@@ -444,7 +444,7 @@ class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	public function provideSerializedForms() {
+	public static function provideSerializedForms() {
 		return [
 			'empty list' => [
 				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z1" } }',

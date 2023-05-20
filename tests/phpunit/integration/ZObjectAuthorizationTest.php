@@ -87,7 +87,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 		$this->assertEquals( $expectedAuthorized, $authorized->isValid() );
 	}
 
-	public function provideContentDiffs() {
+	public static function provideContentDiffs() {
 		$testData = [];
 
 		$diffDir = dirname( __DIR__, 1 ) . '/test_data/authorization/content/';
@@ -271,7 +271,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 		}
 	}
 
-	public function providePersistedEdits() {
+	public static function providePersistedEdits() {
 		$testData = [];
 
 		$diffDir = dirname( __DIR__, 1 ) . '/test_data/authorization/persisted/';

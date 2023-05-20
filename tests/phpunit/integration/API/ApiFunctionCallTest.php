@@ -26,7 +26,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 	 * @param string $fileName
 	 * @return string file contents
 	 */
-	private function readTestFile( $fileName ): string {
+	private static function readTestFile( $fileName ): string {
 		// @codingStandardsIgnoreLine
 		$baseDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'test_data';
 		$fullFile = $baseDir . DIRECTORY_SEPARATOR . $fileName;
@@ -39,8 +39,8 @@ class ApiFunctionCallTest extends ApiTestCase {
 	 * @param string $fileName
 	 * @return array file contents (JSON-decoded)
 	 */
-	private function readTestFileAsArray( $fileName ): array {
-		return json_decode( $this->readTestFile( $fileName ), true );
+	private static function readTestFileAsArray( $fileName ): array {
+		return json_decode( self::readTestFile( $fileName ), true );
 	}
 
 	/**
@@ -89,7 +89,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 		// TODO (T314609): Also test error cases.
 	}
 
-	public function provideExecuteSuccessfulViaBetaCluster() {
+	public static function provideExecuteSuccessfulViaBetaCluster() {
 		// TODO (T311801): Share this logic with the ApiFunctionCall examples.
 		yield 'Manual echo' => [
 			'{"Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Hello, testers!" }',
@@ -97,76 +97,76 @@ class ApiFunctionCallTest extends ApiTestCase {
 		];
 
 		yield 'Invoke built-in Z802/If with false predicate' => [
-			$this->readTestFile( 'Z902_false.json' ),
+			self::readTestFile( 'Z902_false.json' ),
 			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z42\"}"
 		];
 
 		yield 'Invoke user-written JavaScript code' => [
-			$this->readTestFile( 'evaluated-js.json' ),
+			self::readTestFile( 'evaluated-js.json' ),
 			"13"
 		];
 
 		yield 'Invoke user-written Python 3 code' => [
-			$this->readTestFile( 'evaluated-python.json' ),
+			self::readTestFile( 'evaluated-python.json' ),
 			"13"
 		];
 
 		yield 'Invoke a composition: if first argument is true, sort second; else, return it intact' => [
-			$this->readTestFile( 'example-composition.json' ),
+			self::readTestFile( 'example-composition.json' ),
 			'        abcddeeeefghhijklmnoooopqrrttuuvwxyz'
 		];
 
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		yield 'Invoke the \"not empty\" function as a composition: returns true iff input list contains at least one element' => [
-			$this->readTestFile( 'example-notempty.json' ),
+			self::readTestFile( 'example-notempty.json' ),
 			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 		];
 
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		yield 'Invoke the Map function: given a function and a list of strings, return the result of running the function over each string' => [
-			$this->readTestFile( 'example-map.json' ),
+			self::readTestFile( 'example-map.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			"[{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z6\",\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z6K1\",\"Z3K3\":{\"Z1K1\":\"Z12\",\"Z12K1\":[\"Z11\",{\"Z1K1\":\"Z11\",\"Z11K1\":\"Z1002\",\"Z11K2\":\"value\"}]}}],\"Z4K3\":\"Z106\"},\"acab\",\"acab\",\"bacab\"]"
 		];
 
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		yield 'Invoke the Apply function: given a function and a string, return the result of running the function over the string' => [
-			$this->readTestFile( 'example-apply.json' ),
+			self::readTestFile( 'example-apply.json' ),
 			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 		];
 
 		yield 'Invoke a function that returns the first element of a typed List' => [
-			$this->readTestFile( 'example-generic-list.json' ),
+			self::readTestFile( 'example-generic-list.json' ),
 			'who are these coming to the sacrifice'
 		];
 
 		yield 'Invoke a function that returns the second element of a Pair<String,Pair<String,Bool>>' => [
-			$this->readTestFile( 'example-generic-pair.json' ),
+			self::readTestFile( 'example-generic-pair.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 		];
 
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		yield 'Invoke a function that maps the element of a typed Map at a given key to a string version of its value' => [
-			$this->readTestFile( 'example-generic-map.json' ),
+			self::readTestFile( 'example-generic-map.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			'{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z6"},"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},"K1":"true?","K2":"True"}]}'
 		];
 
 		yield 'Invoke Python function using a user-defined type' => [
-			$this->readTestFile( 'example-user-defined-python.json' ),
+			self::readTestFile( 'example-user-defined-python.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			"{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z1000\"}],\"Z4K3\":\"Z831\"},\"Z1000000K1\":\"5\"}"
 		];
 
 		yield 'Invoke JavaScript function using a user-defined type' => [
-			$this->readTestFile( 'example-user-defined-javascript.json' ),
+			self::readTestFile( 'example-user-defined-javascript.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			"{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z1000000\",\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"Z1000000K1\",\"Z3K3\":\"Z1000\"}],\"Z4K3\":\"Z831\"},\"Z1000000K1\":\"5\"}"
 		];
 
-		$ZMillion = $this->readTestFileAsArray( 'user-defined-validation-type.json' );
-		$validationZ7 = $this->readTestFileAsArray( 'example-user-defined-validation.json' );
+		$ZMillion = self::readTestFileAsArray( 'user-defined-validation-type.json' );
+		$validationZ7 = self::readTestFileAsArray( 'example-user-defined-validation.json' );
 		$ZMillion["Z4K3"]["Z8K1"][1]["Z17K1"] = $ZMillion;
 		$validationZ7["Z801K1"]["Z1K1"] = $ZMillion;
 
@@ -180,17 +180,17 @@ class ApiFunctionCallTest extends ApiTestCase {
 		];
 
 		yield 'Generate a Z4/Type with a user-defined function and use that Z4/Type as a ZObject\'s Z1K1/Type' => [
-			$this->readTestFile( 'example-user-defined-generic-type.json' ),
+			self::readTestFile( 'example-user-defined-generic-type.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			"{\"Z1K1\":{\"Z1K1\":\"Z4\",\"Z4K1\":\"Z10101\",\"Z4K2\":[\"Z3\",{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z6\",\"Z3K2\":\"K1\",\"Z3K3\":\"Z1000\"},{\"Z1K1\":\"Z3\",\"Z3K1\":\"Z40\",\"Z3K2\":\"K2\",\"Z3K3\":\"Z1000\"}],\"Z4K3\":\"Z831\"},\"K1\":\"TRUE\",\"K2\":{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}}"
 		];
 
-		$curryImplementation = $this->readTestFileAsArray( 'curry-implementation-Z10088.json' );
-		$curryFunction = $this->readTestFileAsArray( 'curry-Z10087.json' );
+		$curryImplementation = self::readTestFileAsArray( 'curry-implementation-Z10088.json' );
+		$curryFunction = self::readTestFileAsArray( 'curry-Z10087.json' );
 		$curryFunction["Z8K4"][1] = $curryImplementation;
-		$curryFunctionCall = $this->readTestFileAsArray( 'curry-call-Z30086.json' );
+		$curryFunctionCall = self::readTestFileAsArray( 'curry-call-Z30086.json' );
 		$curryFunctionCall["Z8K4"][1]["Z14K2"]["Z7K1"]["Z7K1"] = $curryFunction;
-		$andFunction = $this->readTestFileAsArray( 'and-Z10007.json' );
+		$andFunction = self::readTestFileAsArray( 'and-Z10007.json' );
 		$curry = [
 			"Z1K1" => "Z7",
 			"Z7K1" => $curryFunctionCall,
@@ -211,7 +211,7 @@ class ApiFunctionCallTest extends ApiTestCase {
 		];
 
 		yield 'Supply an implementation with an unsupported language; back off to the second' => [
-			$this->readTestFile( 'example-bad-first-implementation.json' ),
+			self::readTestFile( 'example-bad-first-implementation.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}",
 		];
@@ -234,9 +234,9 @@ class ApiFunctionCallTest extends ApiTestCase {
 			json_encode( $Z823 ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			"{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z1\",\"Z882K2\":\"Z1\"},\"K1\":\"the truth\",\"K2\":{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z883\",\"Z883K1\":\"Z6\",\"Z883K2\":\"Z1\"},\"K1\":[{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"implementationId\",\"K2\":{\"Z1K1\":\"Z6\",\"Z6K1\":\"Z902\"}},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"implementationType\",\"K2\":\"BuiltIn\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationMemoryUsage\",\"K2\":\"91.91 MiB\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationCpuUsage\",\"K2\":\"24.322 ms\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationStartTime\",\"K2\":\"2023-03-21T22:34:23.609Z\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationEndTime\",\"K2\":\"2023-03-21T22:34:23.642Z\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationDuration\",\"K2\":\"33 ms\"},{\"Z1K1\":{\"Z1K1\":\"Z7\",\"Z7K1\":\"Z882\",\"Z882K1\":\"Z6\",\"Z882K2\":\"Z1\"},\"K1\":\"orchestrationHostname\",\"K2\":\"22ca7c26028f\"}]}}",
-			function ( $expected, $actual ) {
-				$this->assertEquals( $expected['Z1K1'], $actual['Z1K1'] );
-				$this->assertEquals( $expected['K1'], $actual['K1'] );
+			static function ( $expected, $actual ) {
+				self::assertEquals( $expected['Z1K1'], $actual['Z1K1'] );
+				self::assertEquals( $expected['K1'], $actual['K1'] );
 				// TODO (T314609): Also test that metadata has correct keys.
 			}
 		];

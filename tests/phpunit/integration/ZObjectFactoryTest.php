@@ -36,7 +36,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 		$this->assertInstanceOf( $zObjectClass, $zobject );
 	}
 
-	public function provideCreateValidInput() {
+	public static function provideCreateValidInput() {
 		return [
 			'string' => [ 'string object', ZString::class ],
 			'reference' => [ 'Z6', ZReference::class ],
@@ -57,7 +57,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 		ZObjectFactory::create( $input );
 	}
 
-	public function provideCreateInvalidInput() {
+	public static function provideCreateInvalidInput() {
 		return [
 			'number' => [ 3, ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED ],
 			'no type' => [
@@ -92,7 +92,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 		$this->assertInstanceOf( $zObjectInnerClass, $zobject->getInnerZObject() );
 	}
 
-	public function provideCreatePersistentValidInput() {
+	public static function provideCreatePersistentValidInput() {
 		return [
 			'string' => [ 'string object', ZString::class ],
 			'array' => [ [ 'Z6', 'one string', 'another string' ], ZTypedList::class ],
@@ -157,7 +157,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 		ZObjectFactory::createPersistentContent( $input );
 	}
 
-	public function provideCreatePersistentInvalidInput() {
+	public static function provideCreatePersistentInvalidInput() {
 		return [
 			'number' => [ 3, ZErrorTypeRegistry::Z_ERROR_NOT_WELLFORMED ],
 			'disallowed root' => [ 'Z6', ZErrorTypeRegistry::Z_ERROR_DISALLOWED_ROOT_ZOBJECT ],
@@ -217,7 +217,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 		$this->assertInstanceOf( $zObjectClass, $zobject );
 	}
 
-	public function provideCreateChildValidInput() {
+	public static function provideCreateChildValidInput() {
 		return [
 			'zobject' => [ new ZObject( 'Z1' ), ZObject::class ],
 			'zstring' => [ new ZString( 'holi' ), ZString::class ],
@@ -251,7 +251,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 		ZObjectFactory::createChild( $input );
 	}
 
-	public function provideCreateChildInvalidInput() {
+	public static function provideCreateChildInvalidInput() {
 		return [
 			'number' => [ 3, ZErrorTypeRegistry::Z_ERROR_INVALID_FORMAT ],
 			'invalid item' => [
@@ -288,7 +288,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 		$this->assertInstanceOf( ZObject::class, $zobject );
 	}
 
-	public function provideCreateCustomValidInput() {
+	public static function provideCreateCustomValidInput() {
 		return [
 			'custom type' => [ json_decode( '{ "Z1K1": "Z60", "Z60K1": "invent" }' ), [ 'Z60' ] ],
 		];
@@ -303,7 +303,7 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 		ZObjectFactory::createCustom( $input );
 	}
 
-	public function provideCreateCustomInvalidInput() {
+	public static function provideCreateCustomInvalidInput() {
 		return [
 			'invalid' => [
 				3,

@@ -127,7 +127,7 @@ EOT
 		$this->assertSame( $expected, $testObject->isValid() );
 	}
 
-	public function provideIsValid() {
+	public static function provideIsValid() {
 		$testRef = new ZReference( 'Z6' );
 		$testId = new ZString( 'Z6K1' );
 		$testString1 = new ZMonoLingualString(

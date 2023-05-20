@@ -79,7 +79,7 @@ class ApiZObjectEditorTest extends ApiTestCase {
 		] );
 	}
 
-	public function provideInvalidZObjects() {
+	public static function provideInvalidZObjects() {
 		return [
 			'missing key type' => [ '{}' ],
 			'invalid key type' => [ '{"Z1K1": "Z09"}' ]

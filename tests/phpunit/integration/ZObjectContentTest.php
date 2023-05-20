@@ -171,7 +171,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 		$testObject = new ZObjectContent( $zobjectText );
 		$testObject->isValid();
 
-		$english = $this->makeLanguage( 'en' );
+		$english = self::makeLanguage( 'en' );
 
 		$this->assertInstanceOf( ZObject::class, $testObject->getInnerZObject() );
 		$this->assertInstanceOf( ZString::class, $testObject->getInnerZObject() );
@@ -185,7 +185,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 	public function testPersistentGetterWrappers_invalid() {
 		$testObject = new ZObjectContent( '{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z401" } }' );
 		$exceptions = [];
-		$english = $this->makeLanguage( 'en' );
+		$english = self::makeLanguage( 'en' );
 
 		try {
 			$testObject->getInnerZObject();
@@ -254,7 +254,7 @@ class ZObjectContentTest extends WikiLambdaIntegrationTestCase {
 		$testObject = new ZObjectContent( $zobjectText );
 
 		$this->assertTrue( $testObject->isValid() );
-		$english = $this->makeLanguage( 'en' );
+		$english = self::makeLanguage( 'en' );
 		$this->assertSame( 'Demonstration type (Z111)',
 			$testObject->getTypeString( $english ) );
 		$this->assertSame(

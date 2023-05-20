@@ -25,7 +25,7 @@ final class SimpleSchemataTest extends ValidationTestCase {
 		$this->testValidation( $validator, $testObjects );
 	}
 
-	public function provideValidSchemata() {
+	public static function provideValidSchemata() {
 		$directoryGlob = SchemataUtils::joinPath( SchemataUtils::testDataDirectory(), "simple_schemata", "*" );
 		$fileNames = glob( $directoryGlob );
 		$factory = SchemaFactory::getStandAloneFactory();
@@ -49,7 +49,7 @@ final class SimpleSchemataTest extends ValidationTestCase {
 		// $this->assertIsNull( $validator );
 	}
 
-	public function provideParseFailures() {
+	public static function provideParseFailures() {
 		$directoryGlob = SchemataUtils::joinPath( SchemataUtils::testDataDirectory(), "simple_schemata", "*" );
 		$fileNames = glob( $directoryGlob );
 		$factory = SchemaFactory::getStandAloneFactory();

@@ -46,7 +46,7 @@ class ZFunctionTest extends WikiLambdaIntegrationTestCase {
 		$this->assertFalse( $zobject->isValid() );
 	}
 
-	public function provideTestNotValid() {
+	public static function provideTestNotValid() {
 		return [
 			'list of args wrong type' => [
 				'{"Z1K1": "Z8", "Z8K1": "wrong type", "Z8K2": "Z6", "Z8K3": [ "Z20" ], "Z8K4": [ "Z14" ],'
@@ -100,7 +100,7 @@ class ZFunctionTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $zobject->getReturnType(), $returnType );
 	}
 
-	public function provideTestReturnType() {
+	public static function provideTestReturnType() {
 		return [
 			'return type is reference' => [
 				'{"Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": "Z6", "Z8K3": [ "Z20" ], "Z8K4": [ "Z14" ],'
@@ -143,7 +143,7 @@ class ZFunctionTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $zobject->getIdentity(), $identity );
 	}
 
-	public function provideTestGetIdentity() {
+	public static function provideTestGetIdentity() {
 		return [
 			'identity is reference' => [
 				'{"Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": "Z6", "Z8K3": [ "Z20" ],'

@@ -51,7 +51,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $expected, ZObjectUtils::isValidSerialisedZObject( $input ) );
 	}
 
-	public function provideIsValidSerialisedZObject() {
+	public static function provideIsValidSerialisedZObject() {
 		return [
 			'invalid JSON' => [ '{ bad JSON! Tut, tut.', false ],
 
@@ -108,7 +108,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $expected, ZObjectUtils::isValidZObjectResolver( $input ) );
 	}
 
-	public function provideIsValidZObjectResolver() {
+	public static function provideIsValidZObjectResolver() {
 		yield 'Empty string' => [ '', false ];
 		yield 'Contentful string' => [ 'Hello', false ];
 		yield 'Reference string' => [ 'Z123', true ];
@@ -136,7 +136,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	public function provideCanonicalize() {
+	public static function provideCanonicalize() {
 		return [
 			'empty mixed list' => [ '["Z1"]', '["Z1"]' ],
 			'empty list of strings' => [ '["Z6"]', '["Z6"]' ],
@@ -332,7 +332,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	public function provideOrderZKeyIDs() {
+	public static function provideOrderZKeyIDs() {
 		return [
 			'same local' => [ 'K1', 'K1', 0 ],
 			'same global' => [ 'Z1K1', 'Z1K1', 0 ],
@@ -355,7 +355,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $output, ZObjectUtils::comparableString( $input ) );
 	}
 
-	public function provideComparableString() {
+	public static function provideComparableString() {
 		return [
 			'identity blank match' => [ '', '' ],
 			'identity match' => [ 'hello', 'hello' ],
@@ -388,7 +388,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	public function provideFilterZMultilingualStringsToLanguage() {
+	public static function provideFilterZMultilingualStringsToLanguage() {
 		return [
 			'empty zobject' => [
 				'{}',
@@ -515,7 +515,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	public function provideGetPreferredMonolingualString() {
+	public static function provideGetPreferredMonolingualString() {
 		return [
 			'no monolingual string and no languages' => [ '["Z11"]', [], '["Z11"]', ],
 			'no monolingual string and one languages' => [ '["Z11"]', [ self::EN ], '["Z11"]', ],
@@ -585,7 +585,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	public function provideTypeEqualTo() {
+	public static function provideTypeEqualTo() {
 		return [
 			'equal canonical types' => [ '"Z11"', '"Z11"', true ],
 			'non equal canonical types' => [ '"Z11"', '"Z12"', false ],
@@ -676,7 +676,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	public function provideNormalize() {
+	public static function provideNormalize() {
 		return [
 				'normalize empty zobject' => [
 				'{}',
@@ -815,7 +815,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	public function provideNormalizeZStringsAndZReferences() {
+	public static function provideNormalizeZStringsAndZReferences() {
 		return [
 			'normalize empty zobject' => [
 				'{}',
@@ -899,7 +899,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $expected, ZObjectUtils::isValidZObjectKey( $input ) );
 	}
 
-	public function provideIsValidZObjectKey() {
+	public static function provideIsValidZObjectKey() {
 		return [
 			'empty string' => [ '', false ],
 
@@ -927,7 +927,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $expected, ZObjectUtils::isValidZObjectReference( $input ) );
 	}
 
-	public function provideIsValidZObjectReference() {
+	public static function provideIsValidZObjectReference() {
 		return [
 			'empty string' => [ '', false ],
 
@@ -941,7 +941,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		];
 	}
 
-	public function provideIsValidZObjectReferenceWithWhitespace() {
+	public static function provideIsValidZObjectReferenceWithWhitespace() {
 		return [
 			'Whitespace-suffixed ZID' => [ "Z1 ", true ],
 			'Whitespace-prefixed ZID' => [ " Z1", true ],
@@ -956,7 +956,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $expected, ZObjectUtils::isValidOrNullZObjectReference( $input ) );
 	}
 
-	public function provideIsValidOrNullZObjectReference() {
+	public static function provideIsValidOrNullZObjectReference() {
 		return [
 			'empty string' => [ '', false ],
 			'Simple ZID' => [ 'Z1', true ],
@@ -981,7 +981,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $expected, ZObjectUtils::isValidId( $input ) );
 	}
 
-	public function provideIsValidNonZObjectId() {
+	public static function provideIsValidNonZObjectId() {
 		return [
 			'Simple QID' => [ 'Q1', true ],
 			'Big QID' => [ 'Q1234567890', true ],
@@ -996,7 +996,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $expected, ZObjectUtils::isValidZObjectGlobalKey( $input ) );
 	}
 
-	public function provideIsValidZObjectGlobalKey() {
+	public static function provideIsValidZObjectGlobalKey() {
 		return [
 			'empty string' => [ '', false ],
 
@@ -1024,7 +1024,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $expected, ZObjectUtils::getZObjectReferenceFromKey( $input ) );
 	}
 
-	public function provideGetZObjectReferenceFromKey() {
+	public static function provideGetZObjectReferenceFromKey() {
 		return [
 			'empty string' => [ '', '' ],
 			'non-key' => [ 'Hello!', '' ],
@@ -1046,7 +1046,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $expected, ZObjectUtils::getRequiredZids( $input ) );
 	}
 
-	public function provideGetRequiredZids() {
+	public static function provideGetRequiredZids() {
 		return [
 			'string with ref' => [ 'Z1', [ 'Z1' ] ],
 			'string without ref' => [ 'text', [] ],
@@ -1088,8 +1088,8 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	public function testGetLabelOfFunctionArgument() {
 		$this->insertZids( [ 'Z17' ] );
 
-		$en = $this->makeLanguage( 'en' );
-		$ru = $this->makeLanguage( 'ru' );
+		$en = self::makeLanguage( 'en' );
+		$ru = self::makeLanguage( 'ru' );
 
 		// Result for a non-Function is just the requested key
 		$persistentObjectOfZ2 = $this->getZPersistentObject( 'Z2' );
@@ -1112,7 +1112,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 
 	public function testExtractHumanReadableZObject_global() {
 		$this->insertZids( [ 'Z17', 'Z50' ] );
-		$en = $this->makeLanguage( 'en' );
+		$en = self::makeLanguage( 'en' );
 		$data = [
 			'Z1' => $this->getZPersistentObject( 'Z1' ),
 			'Z504' => $this->getZPersistentObject( 'Z504' ),
@@ -1127,7 +1127,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 
 	public function testExtractHumanReadableZObject_unknownKeys() {
 		$this->insertZids( [ 'Z8', 'Z17', 'Z50' ] );
-		$en = $this->makeLanguage( 'en' );
+		$en = self::makeLanguage( 'en' );
 		$data = [
 			'Z1' => $this->getZPersistentObject( 'Z1' ),
 			'Z504' => $this->getZPersistentObject( 'Z504' ),
@@ -1148,7 +1148,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 
 	public function testExtractHumanReadableZObject_local() {
 		$this->insertZids( [ 'Z17', 'Z50' ] );
-		$en = $this->makeLanguage( 'en' );
+		$en = self::makeLanguage( 'en' );
 		$data = [
 			'Z6' => $this->getZPersistentObject( 'Z6' ),
 			'Z504' => $this->getZPersistentObject( 'Z504' )
@@ -1179,13 +1179,13 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $expected, ZObjectUtils::getLabelOfReference( 'Z111', $zobject, $lang ) );
 	}
 
-	public function provideGetLabelOfReference() {
+	public static function provideGetLabelOfReference() {
 		return [
 			'simple label in English' => [
 				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3": { "Z1K1":"Z12", "Z12K1":["Z11",'
 					. '{"Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "label"}'
 					. ']}}',
-				$this->makeLanguage( 'en' ),
+				self::makeLanguage( 'en' ),
 				[ 'en' ],
 				'label'
 			],
@@ -1193,7 +1193,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3":{"Z1K1":"Z12", "Z12K1":["Z11",'
 					. '{"Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2":"label"}'
 					. ']}}',
-				$this->makeLanguage( 'es' ),
+				self::makeLanguage( 'es' ),
 				[ 'en', 'es' ],
 				'label'
 			],
@@ -1202,13 +1202,13 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 					. '{"Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2":"label"},'
 					. '{"Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2":"etiqueta"}'
 					. ']}}',
-				$this->makeLanguage( 'es' ),
+				self::makeLanguage( 'es' ),
 				[ 'en', 'es' ],
 				'etiqueta'
 			],
 			'no label available' => [
 				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3":{"Z1K1":"Z12", "Z12K1":["Z11"]}}',
-				$this->makeLanguage( 'es' ),
+				self::makeLanguage( 'es' ),
 				[ 'es' ],
 				'Z111'
 			],
@@ -1216,7 +1216,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 				'{"Z1K1":"Z2", "Z2K1":"Z111", "Z2K2":"empty object", "Z2K3": {"Z1K1":"Z12", "Z12K1":["Z11",'
 					. '{"Z1K1": "Z11", "Z11K1": "Z1003", "Z11K2":"etiqueta"}'
 					. ']}}',
-				$this->makeLanguage( 'de' ),
+				self::makeLanguage( 'de' ),
 				[ 'de' ],
 				'Z111'
 			],
@@ -1232,25 +1232,25 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $expected, ZObjectUtils::getLabelOfGlobalKey( $key, $ztype, $lang ) );
 	}
 
-	public function provideGetLabelOfGlobalKey_type() {
+	public static function provideGetLabelOfGlobalKey_type() {
 		return [
 			'existing label in existing lang' => [
-				'Z111K1', $this->makeLanguage( 'en' ), 'Demonstration key'
+				'Z111K1', self::makeLanguage( 'en' ), 'Demonstration key'
 			],
 			'existing label in other existing lang' => [
-				'Z111K1', $this->makeLanguage( 'fr' ), 'Index pour démonstration'
+				'Z111K1', self::makeLanguage( 'fr' ), 'Index pour démonstration'
 			],
 			'existing label in non existing lang, falls back to english' => [
-				'Z111K1', $this->makeLanguage( 'zh' ), 'Demonstration key'
+				'Z111K1', self::makeLanguage( 'zh' ), 'Demonstration key'
 			],
 			'existing label in other existing lang' => [
-				'Z111K2', $this->makeLanguage( 'fr' ), 'Autre index pour démonstration'
+				'Z111K2', self::makeLanguage( 'fr' ), 'Autre index pour démonstration'
 			],
 			'existing label in non existing lang, falls back to french' => [
-				'Z111K2', $this->makeLanguage( 'pcd' ), 'Autre index pour démonstration'
+				'Z111K2', self::makeLanguage( 'pcd' ), 'Autre index pour démonstration'
 			],
 			'non existing label' => [
-				'Z111K3', $this->makeLanguage( 'en' ), 'Z111K3'
+				'Z111K3', self::makeLanguage( 'en' ), 'Z111K3'
 			],
 		];
 	}
@@ -1261,7 +1261,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 
 		$this->assertSame(
 			'Z1002K1',
-			ZObjectUtils::getLabelOfTypeKey( 'Z1002K1', $zobject, $this->makeLanguage( 'en' ) )
+			ZObjectUtils::getLabelOfTypeKey( 'Z1002K1', $zobject, self::makeLanguage( 'en' ) )
 		);
 	}
 
@@ -1271,11 +1271,11 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	public function testGetLabelOfTypeKey_unknown( $key, $zobject ) {
 		$this->assertSame(
 			$key,
-			ZObjectUtils::getLabelOfTypeKey( $key, $zobject, $this->makeLanguage( 'en' ) )
+			ZObjectUtils::getLabelOfTypeKey( $key, $zobject, self::makeLanguage( 'en' ) )
 		);
 	}
 
-	public function provideGetLabelOfTypeKey_unknown() {
+	public static function provideGetLabelOfTypeKey_unknown() {
 		$type1 = ZObjectFactory::createChild( json_decode(
 			'{ "Z1K1": "Z4", "Z4K1": "Z11111", "Z4K2": ["Z3",'
 			. '{ "Z1K1": "Z3", "Z3K1": "Z6", "Z3K2": "Z11111K1" }'
@@ -1313,16 +1313,16 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $expected, ZObjectUtils::getLabelOfGlobalKey( $key, $zerrortype, $lang ) );
 	}
 
-	public function provideGetLabelOfGlobalKey_error() {
+	public static function provideGetLabelOfGlobalKey_error() {
 		return [
 			'existing label in existing lang' => [
-				'Z504K1', $this->makeLanguage( 'en' ), 'ZID'
+				'Z504K1', self::makeLanguage( 'en' ), 'ZID'
 			],
 			'existing label in non existing lang, english fallback' => [
-				'Z504K1', $this->makeLanguage( 'fr' ), 'ZID'
+				'Z504K1', self::makeLanguage( 'fr' ), 'ZID'
 			],
 			'non existing label in existing lang' => [
-				'Z504K2', $this->makeLanguage( 'en' ), 'Z504K2'
+				'Z504K2', self::makeLanguage( 'en' ), 'Z504K2'
 			],
 		];
 	}
@@ -1332,7 +1332,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$language = $this->getZPersistentObject( 'Z1002' );
 		$this->assertSame(
 			'Z1002K1',
-			ZObjectUtils::getLabelOfGlobalKey( 'Z1002K1', $language, $this->makeLanguage( 'en' ) )
+			ZObjectUtils::getLabelOfGlobalKey( 'Z1002K1', $language, self::makeLanguage( 'en' ) )
 		);
 	}
 
@@ -1350,27 +1350,27 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $expected, ZObjectUtils::getLabelOfLocalKey( $key, $zobject, $data, $lang ) );
 	}
 
-	public function provideGetLabelOfLocalKey() {
+	public static function provideGetLabelOfLocalKey() {
 		return [
 			'valid local label' => [
-				'K1', '{ "Z1K1": "Z6", "K1": "tasty soup" }', $this->makeLanguage( 'en' ), 'value'
+				'K1', '{ "Z1K1": "Z6", "K1": "tasty soup" }', self::makeLanguage( 'en' ), 'value'
 			],
 			'invalid local label' => [
-				'K2', '{ "Z1K1": "Z6", "K2": "tasty soup" }', $this->makeLanguage( 'en' ), 'K2'
+				'K2', '{ "Z1K1": "Z6", "K2": "tasty soup" }', self::makeLanguage( 'en' ), 'K2'
 			],
 			'valid second local label' => [
-				'K2', '{ "Z1K1": "Z11", "K2": "tasty soup", "K1": "Z1002" }', $this->makeLanguage( 'en' ), 'text'
+				'K2', '{ "Z1K1": "Z11", "K2": "tasty soup", "K1": "Z1002" }', self::makeLanguage( 'en' ), 'text'
 			],
 			'local label from errortype' => [
 				'K1',
 				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z885", "Z885K1": "Z504"}, "K1": "Z404" }',
-				$this->makeLanguage( 'en' ),
+				self::makeLanguage( 'en' ),
 				'ZID'
 			],
 			'invalid local label from errortype' => [
 				'K2',
 				'{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z885", "Z885K1": "Z504"}, "K1": "Z404" }',
-				$this->makeLanguage( 'en' ),
+				self::makeLanguage( 'en' ),
 				'K2'
 			]
 		];
@@ -1387,7 +1387,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		);
 	}
 
-	public function provideGetErrorTypeKeys() {
+	public static function provideGetErrorTypeKeys() {
 		$id = new ZReference( 'Z5555' );
 		$labels = new ZMultiLingualString( [] );
 		$errorType = new ZReference( 'Z50' );
@@ -1410,19 +1410,19 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		return [
 			'no error keys key' => [
 				new ZPersistentObject( $id, $value1, $labels ),
-				$this->makeLanguage( 'en' )
+				self::makeLanguage( 'en' )
 			],
 			'empty key array' => [
 				new ZPersistentObject( $id, $value2, $labels ),
-				$this->makeLanguage( 'en' )
+				self::makeLanguage( 'en' )
 			],
 			'found key with no labels' => [
 				new ZPersistentObject( $id, $value3, $labels ),
-				$this->makeLanguage( 'en' )
+				self::makeLanguage( 'en' )
 			],
 			'found key with empty labels' => [
 				new ZPersistentObject( $id, $value4, $labels ),
-				$this->makeLanguage( 'en' )
+				self::makeLanguage( 'en' )
 			]
 		];
 	}
@@ -1436,7 +1436,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		$this->assertCount( $count, $list );
 	}
 
-	public function provideIterativeList() {
+	public static function provideIterativeList() {
 		$typedList1 = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" } }';
 		$typedList2 = '{ "Z1K1": { "Z1K1": "Z7", "Z7K1": "Z881", "Z881K1": "Z6" },'
 			. '"K1": "first string",'
@@ -1458,7 +1458,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testExtractHumanReadableZObject_failOnInvalid() {
-		$en = $this->makeLanguage( 'en' );
+		$en = self::makeLanguage( 'en' );
 
 		$this->expectException( ZErrorException::class );
 		ZObjectUtils::extractHumanReadableZObject( 1000, [], $en );
@@ -1467,7 +1467,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 	public function testExtractHumanReadableZObject_repeatedLabel() {
 		$this->markTestSkipped( 'No pre-defined ZObjects have the same label right now.' );
 		$this->insertZids( [ 'Z17' ] );
-		$en = $this->makeLanguage( 'en' );
+		$en = self::makeLanguage( 'en' );
 		$data = [
 			'Z1' => $this->getZPersistentObject( 'Z1' ),
 			'Z7' => $this->getZPersistentObject( 'Z7' ),
@@ -1485,7 +1485,7 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 
 	public function testExtractHumanReadableZObject_literalFunction() {
 		$this->insertZids( [ 'Z17' ] );
-		$en = $this->makeLanguage( 'en' );
+		$en = self::makeLanguage( 'en' );
 		$data = [
 			'Z1' => $this->getZPersistentObject( 'Z1' ),
 			'Z7' => $this->getZPersistentObject( 'Z7' ),

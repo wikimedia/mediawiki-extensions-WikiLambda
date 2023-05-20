@@ -45,7 +45,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( $expected, $handler->canBeUsedOn( Title::newFromText( $input ) ) );
 	}
 
-	public function provideCanBeUsedOn() {
+	public static function provideCanBeUsedOn() {
 		return [
 			'Main NS ZObject page' => [ 'Z1', true ],
 			'Main talk page' => [ 'Talk:Z1', false ],
@@ -167,7 +167,7 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		);
 
 		$services = MediaWikiServices::getInstance();
-		$language = $this->makeLanguage( 'de' );
+		$language = self::makeLanguage( 'de' );
 
 		$this->assertSame(
 			wfMessage( 'wikilambda-multilingualstring-nofallback' )->inLanguage( $language )->text(),

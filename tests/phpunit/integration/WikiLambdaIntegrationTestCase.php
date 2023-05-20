@@ -125,7 +125,7 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 	 * @param string $code
 	 * @return Language
 	 */
-	protected function makeLanguage( string $code ) {
+	protected static function makeLanguage( string $code ) {
 		$services = MediaWikiServices::getInstance();
 		$languageFactory = $services->getLanguageFactory();
 		return $languageFactory->getLanguage( $code );

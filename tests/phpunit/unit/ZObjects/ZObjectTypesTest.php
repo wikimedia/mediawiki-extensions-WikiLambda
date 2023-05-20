@@ -50,7 +50,7 @@ class ZObjectTypesTest extends \MediaWikiUnitTestCase {
 		}
 	}
 
-	public function provideZObjectTypes() {
+	public static function provideZObjectTypes() {
 		$zReference = new ZReference( "Z111" );
 		$zString = new ZString( "Z111K1" );
 		$zMonoLingualString = new ZMonoLingualString( new ZReference( "Z1002" ), new ZString( "text" ) );

@@ -143,7 +143,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		}
 	}
 
-	public function provideCreateNewZObject() {
+	public static function provideCreateNewZObject() {
 		return [
 			'incorrect JSON' => [
 				'{ "Z1K1"; Z2 ]',

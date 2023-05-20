@@ -163,15 +163,15 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$this->insertZids( [ "Z1", "Z11", "Z60", "Z1003" ] );
 
 		$zref = ZObjectFactory::create( "Z11" );
-		$labelizedRef = $zref->getHumanReadable( $this->makeLanguage( 'en' ) );
+		$labelizedRef = $zref->getHumanReadable( self::makeLanguage( 'en' ) );
 		$this->assertSame( 'Monolingual text', $labelizedRef );
 
 		$zlist = ZObjectFactory::create( [ "Z11", "Z1003", "Z404" ] );
-		$labelizedList = $zlist->getHumanReadable( $this->makeLanguage( 'en' ) );
+		$labelizedList = $zlist->getHumanReadable( self::makeLanguage( 'en' ) );
 		$this->assertSame( [ 'Monolingual text', 'Spanish', 'Z404' ], $labelizedList );
 
 		$ztext = ZObjectFactory::create( (object)[ "Z1K1" => "Z11", "Z11K1" => "Z1003", "Z11K2" => "ejemplo" ] );
-		$labelizedText = $ztext->getHumanReadable( $this->makeLanguage( 'en' ) );
+		$labelizedText = $ztext->getHumanReadable( self::makeLanguage( 'en' ) );
 		$this->assertSame(
 			FormatJson::encode( [ 'type' => 'Monolingual text', 'language' => 'Spanish', 'text' => 'ejemplo' ] ),
 			FormatJson::encode( $labelizedText )
@@ -201,7 +201,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 
 		// Assert that ZTestType is labelized correctly
 		$zobject = ZObjectFactory::create( json_decode( ZTestType::TEST_ENCODING ) );
-		$labelized = $zobject->getHumanReadable( $this->makeLanguage( 'en' ) );
+		$labelized = $zobject->getHumanReadable( self::makeLanguage( 'en' ) );
 
 		$this->assertSame(
 			FormatJson::encode( FormatJson::decode( ZTestType::TEST_LABELIZED ), true, FormatJson::UTF8_OK ),
@@ -223,7 +223,7 @@ class ZObjectTest extends WikiLambdaIntegrationTestCase {
 		$status = $this->editPage( 'Z11', $data, 'Z11 update with labels in Spanish', NS_MAIN );
 
 		$ztext = ZObjectFactory::create( (object)[ "Z1K1" => "Z11", "Z11K1" => "Z1003", "Z11K2" => "ejemplo" ] );
-		$labelizedTextEs = $ztext->getHumanReadable( $this->makeLanguage( 'es' ) );
+		$labelizedTextEs = $ztext->getHumanReadable( self::makeLanguage( 'es' ) );
 		$this->assertSame(
 			FormatJson::encode( [ 'tipo' => 'Texto monolingüe', 'lenguaje' => 'español', 'texto' => 'ejemplo' ] ),
 			FormatJson::encode( $labelizedTextEs )

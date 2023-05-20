@@ -60,7 +60,7 @@ class ZErrorFactoryTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * Reads the error data file normal_Z2.yaml from function-schemata and collects the testing data
 	 */
-	public function provideNormalTestObjects() {
+	public static function provideNormalTestObjects() {
 		$file = SchemataUtils::joinPath( SchemataUtils::testDataDirectory(), "errors", "normal_Z2.yaml" );
 		$testDescriptor = json_decode( SchemataUtils::readYamlAsSecretJson( $file ) );
 
@@ -110,7 +110,7 @@ class ZErrorFactoryTest extends WikiLambdaIntegrationTestCase {
 	/**
 	 * Reads the error data file canonical_Z2.yaml from function-schemata and collects the testing data
 	 */
-	public function provideCanonicalTestObjects() {
+	public static function provideCanonicalTestObjects() {
 		$file = SchemataUtils::joinPath( SchemataUtils::testDataDirectory(), "errors", "canonical_Z2.yaml" );
 		$testDescriptor = json_decode( SchemataUtils::readYamlAsSecretJson( $file ) );
 

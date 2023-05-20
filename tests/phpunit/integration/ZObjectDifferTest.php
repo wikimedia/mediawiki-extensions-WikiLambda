@@ -52,7 +52,7 @@ class ZObjectDifferTest extends WikiLambdaIntegrationTestCase {
 		}
 	}
 
-	public function provideDiffData() {
+	public static function provideDiffData() {
 		$testData = [];
 
 		$diffDir = dirname( __DIR__, 1 ) . '/test_data/diff/';

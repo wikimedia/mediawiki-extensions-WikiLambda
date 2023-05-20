@@ -26,7 +26,7 @@ final class NormalZObjectTest extends ValidationTestCase {
 		$this->testValidation( $validator, $testDescriptor->test_objects );
 	}
 
-	public function provideZIDs() {
+	public static function provideZIDs() {
 		// Keep in lock-step with CanonicalZObjectTest::provideZIDs()
 		return [
 			// FIXME (T309386): Opis doesn't detect failures that Ajv does with
