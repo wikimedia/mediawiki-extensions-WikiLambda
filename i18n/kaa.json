@@ -29,5 +29,10 @@
 	"wikilambda-function-viewer-details-table-view-all": "Hámmesin kóriw",
 	"wikilambda-zobject-missing-attached-function": "Funktsiya talap etiledi",
 	"wikilambda-zimplememntation-composition-missing": "Quramı anıqlanıwı kerek",
-	"wikilambda-zimplementation-code-missing": "Kodı anıqlanıwı kerek"
+	"wikilambda-zimplementation-code-missing": "Kodı anıqlanıwı kerek",
+	"wikilambda-about-widget-title": "Haqqında",
+	"wikilambda-about-widget-done-button": "Orınlandı",
+	"wikilambda-about-widget-add-language": "Til qosıw",
+	"wikilambda-function-explorer-copied-text": "Kóshirmelendi!",
+	"wikilambda-function-explorer-name-title": "At"
 }

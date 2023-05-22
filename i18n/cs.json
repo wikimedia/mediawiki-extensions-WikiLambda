@@ -66,6 +66,7 @@
 	"wikilambda-editor-zobject-clearitem-tooltip": "Vyprázdnit tuto hodnotu",
 	"wikilambda-editor-label-select-programming-language-label": "Vyberte programovací jazyk",
 	"specialpages-group-wikilambda": "Stránky Wikifunkcí",
+	"wikilambda-implementation-none-found": "Pro tuto funkci momentálně nejsou žádné implementace.",
 	"wikilambda-implementation-create-new": "Vytvořit novou implementaci",
 	"wikilambda-function-are-you-sure-dialog-header": "Jste si jisti?",
 	"wikilambda-functioncall-metadata-dialog-header": "Metadata",
