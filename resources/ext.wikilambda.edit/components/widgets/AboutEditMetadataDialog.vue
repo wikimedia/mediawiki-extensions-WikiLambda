@@ -38,7 +38,7 @@
 					</div>
 					<div class="ext-wikilambda-about-edit-metadata-field">
 						<wl-z-object-selector
-							:edit="edit"
+							:edit="true"
 							:disabled="freezeLanguage"
 							:selected-zid="forLanguage"
 							:type="languageType"
