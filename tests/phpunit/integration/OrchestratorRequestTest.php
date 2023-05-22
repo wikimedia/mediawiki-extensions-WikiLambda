@@ -46,4 +46,18 @@ class OrchestratorRequestTest extends \MediaWikiIntegrationTestCase {
 		$this->assertEquals( json_decode( $expectedString ), json_decode( $result ) );
 	}
 
+	public function testSupportedProgrammingLanguages() {
+		$mock = new MockHandler();
+		$handler = HandlerStack::create( $mock );
+		$client = new Client( [ 'handler' => $handler ] );
+
+		$expectedString = '[ "python3000" ]';
+
+		$mock->append( new Response( 200, [], $expectedString ) );
+
+		$orchestrator = new OrchestratorRequest( $client );
+		$result = $orchestrator->getSupportedProgrammingLanguages()->getBody();
+		$this->assertEquals( json_decode( $expectedString ), json_decode( $result ) );
+	}
+
 }

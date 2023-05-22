@@ -660,7 +660,8 @@
 			"services": [
 				"WikiLambdaZObjectStore"
 			]
-		}
+		},
+		"wikilambda_supported_programming_languages": "MediaWiki\\Extension\\WikiLambda\\API\\ApiSupportedProgrammingLanguages"
 	},
 	"APIListModules": {
 		"wikilambdasearch_labels": "MediaWiki\\Extension\\WikiLambda\\API\\ApiQueryZObjectLabels",

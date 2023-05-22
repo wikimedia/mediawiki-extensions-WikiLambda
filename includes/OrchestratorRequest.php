@@ -46,6 +46,14 @@ class OrchestratorRequest {
 	}
 
 	/**
+	 * @return ResponseInterface response object returned by orchestrator
+	 */
+	public function getSupportedProgrammingLanguages(): ResponseInterface {
+		// TODO: Use getAsync here.
+		return $this->guzzleClient->get( '/1/v1/supported-programming-languages/' );
+	}
+
+	/**
 	 * @param string $query
 	 * @return ResponseInterface response object returned by orchestrator
 	 */
