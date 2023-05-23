@@ -63,5 +63,19 @@
 	"wikilambda-editor-input-label-placeholder": "نام این ورودی چیست؟",
 	"wikilambda-editor-input-default-label": "ورودی",
 	"wikilambda-editor-output-title": "خروجی",
-	"wikilambda-tester-details": "جزئیات"
+	"wikilambda-tester-details": "جزئیات",
+	"wikilambda-about-widget-title": "درباره",
+	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 زبان}}",
+	"wikilambda-about-widget-edit-metadata-title": "ویرایش اطلاعات",
+	"wikilambda-about-widget-name-placeholder": "نام را وارد کنید",
+	"wikilambda-about-widget-description-placeholder": "توضیحی وارد کنید",
+	"wikilambda-about-widget-aliases-placeholder": "نام‌های مستعار را وارد کنید",
+	"wikilambda-about-widget-done-button": "انجام شد",
+	"wikilambda-about-widget-publish-button": "ادامه دادن به انتشار",
+	"wikilambda-about-widget-view-languages-title": "برچسب‌های به سایر زبان‌ها",
+	"wikilambda-about-widget-add-language": "افزودن زبان",
+	"wikilambda-about-widget-search-language-placeholder": "جستجوی زبان",
+	"wikilambda-function-explorer-copied-text": "کپی شد!",
+	"wikilambda-function-explorer-name-title": "نام",
+	"wikilambda-function-view-function-button-text": "مشاهدهٔ تابع"
 }
