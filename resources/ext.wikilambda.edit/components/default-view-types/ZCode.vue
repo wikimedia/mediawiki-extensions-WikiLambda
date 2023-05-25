@@ -23,7 +23,6 @@
 					:menu-items="programmingLanguageMenuItems"
 					:default-label="$i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
 					:fit-width="true"
-					@update:selected="selectLanguage"
 				>
 				</wl-select>
 			</div>
@@ -132,7 +131,9 @@ module.exports = exports = {
 					return this.getZCodeProgrammingLanguage( this.rowId ) || '';
 				},
 				set: function ( val ) {
-					this.selectLanguage( val );
+					if ( val !== this.programmingLanguageValue ) {
+						this.selectLanguage( val );
+					}
 				}
 			},
 
@@ -251,7 +252,8 @@ module.exports = exports = {
 				this.$emit( 'set-value', {
 					keyPath: [
 						Constants.Z_CODE_LANGUAGE,
-						Constants.Z_PROGRAMMING_LANGUAGE_CODE
+						Constants.Z_PROGRAMMING_LANGUAGE_CODE,
+						Constants.Z_STRING_VALUE
 					],
 					value
 				} );
@@ -279,7 +281,7 @@ module.exports = exports = {
 				}
 
 				this.$emit( 'set-value', {
-					keyPath: [ Constants.Z_CODE_CODE ],
+					keyPath: [ Constants.Z_CODE_CODE, Constants.Z_STRING_VALUE ],
 					value: updatedBoilerPlateCode
 				} );
 			},
@@ -295,7 +297,7 @@ module.exports = exports = {
 				// TODO(T324605): this deserves a deeper investigation
 				if ( typeof code !== 'object' ) {
 					this.$emit( 'set-value', {
-						keyPath: [ Constants.Z_CODE_CODE ],
+						keyPath: [ Constants.Z_CODE_CODE, Constants.Z_STRING_VALUE ],
 						value: code
 					} );
 
