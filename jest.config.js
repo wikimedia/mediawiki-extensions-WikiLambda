@@ -60,23 +60,24 @@ module.exports = {
 	],
 
 	coverageThreshold: {
+		// This is our soft target, but doesn't actually affect any of our code as we over-ride below for now
 		global: {
-			branches: 67,
-			lines: 75,
-			functions: 70,
-			statements: 75
+			branches: 90,
+			lines: 90,
+			functions: 90,
+			statements: 90
 		},
 		'./resources/ext.wikilambda.edit/': {
-			branches: 67,
-			lines: 75,
-			functions: 70,
-			statements: 75
+			branches: 72,
+			lines: 79,
+			functions: 80,
+			statements: 79
 		},
 		'./resources/ext.wikilambda.edit/store': {
-			branches: 63,
-			lines: 75,
-			functions: 81,
-			statements: 76
+			branches: 76,
+			lines: 85,
+			functions: 90,
+			statements: 85
 		}
 	},
 
