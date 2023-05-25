@@ -50,5 +50,8 @@
 	"wikilambda-editor-label-select-programming-language-label": "Velg programmeringsspråk:",
 	"wikilambda-tester-create-new": "Opprett en ny test",
 	"wikilambda-function-definition-footer-placeholder": "Beskriv endringene dine kort",
-	"wikilambda-function-definition-footer-label": "Redigeringsforklaring"
+	"wikilambda-function-definition-footer-label": "Redigeringsforklaring",
+	"wikilambda-about-widget-edit-metadata-title": "Rediger informasjon",
+	"wikilambda-about-widget-publish-button": "Fortsett å publisere",
+	"wikilambda-about-widget-view-languages-title": "Etiketter på andre språk"
 }

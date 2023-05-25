@@ -59,5 +59,8 @@
 	"wikilambda-ztyped-pair-key-label": "Avain",
 	"wikilambda-ztyped-pair-value-label": "Arvo",
 	"wikilambda-optional": "valinnainen",
-	"wikilambda-zimplementation-code-missing": "Koodi on määritettävä"
+	"wikilambda-zimplementation-code-missing": "Koodi on määritettävä",
+	"wikilambda-about-widget-add-language": "Lisää kieli",
+	"wikilambda-function-explorer-copied-text": "Kopioitu!",
+	"wikilambda-function-explorer-name-title": "Nimi"
 }

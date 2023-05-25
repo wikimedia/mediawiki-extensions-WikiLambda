@@ -30,6 +30,7 @@
 	"wikilambda-summarylabel": "요약:",
 	"wikilambda-loading": "데이터 로드 중",
 	"wikilambda-zobject-to-string-select-object": "$1 선택",
+	"wikilambda-zobjectselector-no-results": "결과가 없습니다.",
 	"wikilambda-editor-label-addlanguage-label": "언어 추가",
 	"wikilambda-editor-label-removelanguage-tooltip": "이 레이블에서 이 언어를 제거합니다",
 	"wikilambda-editor-zobject-addkey": "키 추가:",
@@ -110,5 +111,17 @@
 	"wikilambda-function-viewer-aliases-show-language-button": "더 많은 언어 보기",
 	"wikilambda-function-viewer-aliases-hide-language-button": "목록 숨기기",
 	"wikilambda-function-viewer-names-show-languages-button": "다른 언어로 이름 표시",
-	"wikilambda-chip-remove": "항목 제거"
+	"wikilambda-chip-remove": "항목 제거",
+	"wikilambda-about-widget-title": "정보",
+	"wikilambda-about-widget-name-placeholder": "이름 입력",
+	"wikilambda-about-widget-description-placeholder": "설명 입력",
+	"wikilambda-about-widget-aliases-placeholder": "다른 이름 입력",
+	"wikilambda-about-widget-done-button": "완료",
+	"wikilambda-about-widget-publish-button": "계속 게시",
+	"wikilambda-about-widget-view-languages-title": "다른 언어의 레이블",
+	"wikilambda-about-widget-add-language": "언어 추가",
+	"wikilambda-about-widget-search-language-placeholder": "언어 검색",
+	"wikilambda-function-inputs-title": "입력",
+	"wikilambda-function-explorer-copied-text": "복사 완료!",
+	"wikilambda-function-explorer-name-title": "이름"
 }

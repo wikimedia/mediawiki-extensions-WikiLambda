@@ -71,5 +71,15 @@
 	"wikilambda-editor-input-typed-list-placeholder": "তালিকার ধরন",
 	"wikilambda-editor-input-default-label": "ইনপুট",
 	"wikilambda-editor-output-title": "আউটপুট",
-	"wikilambda-optional": "ঐচ্ছিক"
+	"wikilambda-optional": "ঐচ্ছিক",
+	"wikilambda-about-widget-title": "সম্পর্কে",
+	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1টি ভাষা}}",
+	"wikilambda-about-widget-edit-metadata-title": "তথ্য সম্পাদনা করুন",
+	"wikilambda-about-widget-name-placeholder": "নাম লিখুন",
+	"wikilambda-about-widget-done-button": "সম্পন্ন",
+	"wikilambda-about-widget-view-languages-title": "অন্যান্য ভাষায় লেবেল",
+	"wikilambda-about-widget-add-language": "ভাষা যোগ করুন",
+	"wikilambda-function-explorer-copied-text": "অনুলিপি হয়েছে!",
+	"wikilambda-function-explorer-name-title": "নাম",
+	"wikilambda-function-view-function-button-text": "ফাংশন দেখুন"
 }
