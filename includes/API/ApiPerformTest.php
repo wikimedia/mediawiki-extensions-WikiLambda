@@ -415,10 +415,19 @@ class ApiPerformTest extends WikiLambdaApiBase {
 	protected function getExamplesMessages() {
 		$exampleZid = $this->zObjectStore->findFirstZImplementationFunction();
 
+		$queryPrefix = 'action=wikilambda_perform_test&format=json&wikilambda_perform_test_zfunction=';
+
 		return [
-			'action=wikilambda_perform_test&format=json&wikilambda_perform_test_zfunction='
-				. $exampleZid
+			$queryPrefix . $exampleZid
 				=> 'apihelp-wikilambda_perform_test-example',
+			$queryPrefix . 'Z801'
+				=> 'apihelp-wikilambda_perform_test-z801',
+			$queryPrefix . 'Z801&wikilambda_perform_test_zimplementations=Z901'
+				=> 'apihelp-wikilambda_perform_test-z801-implementation',
+			$queryPrefix . 'Z801&wikilambda_perform_test_ztesters=Z8010|Z8011'
+				=> 'apihelp-wikilambda_perform_test-z801-tester',
+			$queryPrefix . 'Z801&wikilambda_perform_test_zimplementations=Z901&wikilambda_perform_test_ztesters=Z8010'
+				=> 'apihelp-wikilambda_perform_test-z801-implementation-and-testers',
 		];
 	}
 
