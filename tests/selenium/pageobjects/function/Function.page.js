@@ -153,7 +153,7 @@ class FunctionPage extends Page {
 	 * @async
 	 * @return {void}
 	 */
-	async goToCreateImplementation() {
+	async goToCreateImplementationLink() {
 		await ElementActions.doClick( this.createAImplementation );
 	}
 }
