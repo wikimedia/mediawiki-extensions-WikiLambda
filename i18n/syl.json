@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Sadidmibzalhan"
+			"Sadidmibzalhan",
+			"এম আবু সাঈদ"
 		]
 	},
-	"wikilambda-missing-function-output-error-message": "ꠄꠉꠥ ꠚꠣꠋꠡꠘꠞ ꠄꠉꠥ ꠀꠃꠐꠙꠥꠐ ꠟꠣꠉꠦ"
+	"wikilambda-missing-function-output-error-message": "ꠄꠉꠥ ꠚꠣꠋꠡꠘꠞ ꠄꠉꠥ ꠀꠃꠐꠙꠥꠐ ꠟꠣꠉꠦ",
+	"wikilambda-function-explorer-name-title": "ꠘꠣꠝ"
 }

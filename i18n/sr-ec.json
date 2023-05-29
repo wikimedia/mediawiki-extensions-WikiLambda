@@ -24,5 +24,11 @@
 	"wikilambda-function-definition-output-label": "Излаз",
 	"wikilambda-chip-remove": "Уклони ставку",
 	"wikilambda-list-items-label": "Списак ставки",
-	"wikilambda-tester-details": "Детаљи"
+	"wikilambda-tester-details": "Детаљи",
+	"wikilambda-about-widget-title": "О",
+	"wikilambda-about-widget-edit-metadata-title": "Уреди информације",
+	"wikilambda-about-widget-done-button": "Урађено",
+	"wikilambda-about-widget-add-language": "Додај језик",
+	"wikilambda-function-explorer-copied-text": "Копирано!",
+	"wikilambda-function-explorer-name-title": "Име"
 }
