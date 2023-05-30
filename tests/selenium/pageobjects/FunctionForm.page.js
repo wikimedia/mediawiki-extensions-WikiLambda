@@ -1,7 +1,6 @@
 'use strict';
 const Page = require( 'wdio-mediawiki/Page' );
 const { LanguageContainerComponent, FirstLanguageContainerComponent } = require( '../componentobjects/function-form/LanguageContainer.component' );
-const CreateZObjectPage = require( './CreateZObject.page' );
 
 class FunctionForm extends Page {
 	get publishFunctionButton() { return $( 'button=Publish' ); }
@@ -12,8 +11,7 @@ class FunctionForm extends Page {
 	}
 
 	async open() {
-		await CreateZObjectPage.open( 'Special:CreateZObject?zid=z8' );
-		await CreateZObjectPage.switchToFunctionView();
+		await super.openTitle( 'Special:CreateZObject', { zid: 'Z8' } );
 	}
 
 	getFirstLanguageContainer() {
