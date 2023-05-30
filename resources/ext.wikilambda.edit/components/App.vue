@@ -79,6 +79,14 @@ module.exports = exports = {
 					'timing.wikiLambda.newView.' + viewName + '.mounted',
 					Date.now() - startTime
 				);
+
+				// Log using Metrics Platform
+				// TODO: Once this is fully vetted, remove above call to mw.track()
+				const customData = {
+					viewname: viewName,
+					loadtime: Date.now() - startTime
+				};
+				mw.eventLog.dispatch( 'wf.ui.newView.mounted', customData );
 			}
 		}
 	),
