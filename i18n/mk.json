@@ -52,7 +52,7 @@
 	"wikilambda-special-listduplicatezobjectlabels-summary": "Страницава покажува кои ZObjects се создадени со дуплирани натписи. Во пребарувањта ќе се појави само првиот, така што треба да се поправаат само тие.",
 	"wikilambda-speciallistduplicatezobjectlabels-empty": "Тековно нема ZObjects со дуплирани натписи.",
 	"wikilambda-speciallistduplicatezobjectlabels-existing": "Постоечки ZObject",
-	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "Спротиставен ZObject",
+	"wikilambda-speciallistduplicatezobjectlabels-conflicting": "Спротивставен ZObject",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Јазик",
 	"wikilambda-special-objectsbytype": "Наведи ги сите ZObjects од даден тип",
 	"wikilambda-special-objectsbytype-listheader": "Сите ZObjects од типот $1 ($2)",

@@ -12,7 +12,8 @@
 			"MuratTheTurkish",
 			"SaldırganSincap",
 			"Sayginer",
-			"Rapsar"
+			"Rapsar",
+			"MrSchipunov"
 		]
 	},
 	"wikilambda-desc": "Wikimedia vikilerine, merkezi bir vikide yazılan, yönetilen ve değerlendirilen işlevlerin değerlendirilmesi için vikimetin ayrıştırıcı işlevi sağlar.",
@@ -72,6 +73,7 @@
 	"wikilambda-publishchanges": "Değişiklikleri yayımla",
 	"wikilambda-savechanges": "Değişiklikleri kaydet",
 	"wikilambda-summarylabel": "Özet:",
+	"wikilambda-languagelabel": "Dil",
 	"wikilambda-publish-summary-prompt": "Neleri değiştirdiğinizi açıklayın",
 	"wikilambda-loading": "Veri yükleniyor",
 	"wikilambda-typeselector-label": "Bir Tür seçin",
@@ -120,6 +122,7 @@
 	"wikilambda-tester-run-tester": "Testerı Çalıştır",
 	"wikilambda-enable-expert-mode": "Uzman Modunu etkinleştir",
 	"wikilambda-disable-expert-mode": "Uzman Modunu Etkisizleştir",
+	"wikilambda-create-function": "İşlev Oluştur",
 	"wikilambda-create-type": "Tür Oluştur",
 	"wikilambda-expert-mode-json-label": "Geçerli ZObject",
 	"wikilambda-metadata-show-languages": "Etiketler kutusunu göster",
@@ -135,8 +138,11 @@
 	"wikilambda-persistentobject-evaluate-function": "İşlevi Değerlendir",
 	"wikilambda-implementation-selector-none": "Bu dahili bir uyarlama. Kod, çekirdek yazılımın bir parçası, ve burada görüntülenmiyor.",
 	"wikilambda-function-definition-name-label": "Ad",
+	"wikilambda-function-definition-edit": "Açıklamayı düzenle",
 	"wikilambda-function-implementation-name-label": "Ad",
+	"wikilambda-function-implementation-language-label": "Dil",
 	"wikilambda-function-implementation-state-label": "Durum",
+	"wikilambda-function-implementation-tests-passed-label": "Geçen Testler",
 	"wikilambda-function-implementation-state-available": "Mevcut",
 	"wikilambda-function-definition-name-placeholder": "Açıklayıcı işlev adı giriniz",
 	"wikilambda-function-definition-name-example": "Ad örneklerini gör",
