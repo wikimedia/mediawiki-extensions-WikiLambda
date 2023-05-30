@@ -136,14 +136,6 @@ class ZObjectFactoryTest extends WikiLambdaIntegrationTestCase {
 				),
 				ZObject::class,
 				[ 'Z60' ]
-			],
-			'Z13' => [
-				json_decode(
-					'{"Z1K1":"Z2","Z2K1":{"Z1K1":"Z6","Z6K1":"Z13"},'
-						. '"Z2K2":["Z1"],"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11",'
-						. '{"Z1K1":"Z11","Z11K1":"Z1002","Z11K2":"Empty list"}]}}'
-				),
-				ZObject::class
 			]
 		];
 	}

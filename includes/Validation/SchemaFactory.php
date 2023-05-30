@@ -85,9 +85,7 @@ class SchemaFactory {
 	 * @return SchemaWrapper|null
 	 */
 	public function create( $ZID ) {
-		if ( $ZID == "Z13" ) {
-			$ZID = "LIST";
-		} elseif ( $ZID == ZTypeRegistry::Z_BOOLEAN_TRUE || $ZID == ZTypeRegistry::Z_BOOLEAN_FALSE ) {
+		if ( $ZID == ZTypeRegistry::Z_BOOLEAN_TRUE || $ZID == ZTypeRegistry::Z_BOOLEAN_FALSE ) {
 			$ZID = ZTypeRegistry::Z_BOOLEAN;
 		}
 		// FIXME (T300514): Assert that this->loader is not null.
