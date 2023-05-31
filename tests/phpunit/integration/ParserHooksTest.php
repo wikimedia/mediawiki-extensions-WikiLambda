@@ -18,6 +18,11 @@ use Parser;
 class ParserHooksTest extends WikiLambdaIntegrationTestCase {
 
 	public function testOnParserFirstCallInit() {
+		// Force-enable our code
+		$this->setMwGlobals( [
+			'wgWikiLambdaEnableParserFunction' => true,
+		] );
+
 		$parser = $this->createMock( Parser::class );
 		$parser->expects( $this->exactly( 1 ) )
 			->method( 'setFunctionHook' )

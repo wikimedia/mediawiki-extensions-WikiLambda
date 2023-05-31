@@ -41,7 +41,7 @@
 		},
 		"WikiLambdaEnableParserFunction": {
 			"description": "Enable the {{#function:…}} extension.",
-			"value": true
+			"value": false
 		},
 		"WikiLambdaOrchestratorLocation": {
 			"description": "Host and port of the function orchestrator.",
