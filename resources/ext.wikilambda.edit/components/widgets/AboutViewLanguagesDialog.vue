@@ -219,7 +219,7 @@ module.exports = exports = {
 		 * @return {boolean}
 		 */
 		hasAnyMetadata: function ( langZid ) {
-			return ( this.allLangs.indexOf( langZid ) > -1 );
+			return ( this.allLangs.includes( langZid ) );
 		},
 
 		/**
@@ -276,7 +276,7 @@ module.exports = exports = {
 				type: Constants.Z_NATURAL_LANGUAGE
 			} ).then( ( payload ) => {
 				// If the string searched has changed, do not show the search result
-				if ( this.searchTerm.indexOf( substring ) === -1 ) {
+				if ( !this.searchTerm.includes( substring ) ) {
 					return;
 				}
 				// Compile information for every search result

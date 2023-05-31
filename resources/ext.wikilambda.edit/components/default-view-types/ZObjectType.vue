@@ -122,7 +122,7 @@ module.exports = exports = {
 				// add selected literal type
 				if (
 					( this.expectedType === Constants.Z_OBJECT ) &&
-					( Constants.RESOLVER_TYPES.indexOf( this.value ) < 0 )
+					( !Constants.RESOLVER_TYPES.includes( this.value ) )
 				) {
 					options.push( {
 						label: this.valueLabel,

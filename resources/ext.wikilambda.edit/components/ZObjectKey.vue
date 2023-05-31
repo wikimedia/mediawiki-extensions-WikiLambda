@@ -163,7 +163,7 @@ module.exports = exports = {
 					Constants.Z_REFERENCE,
 					Constants.Z_BOOLEAN,
 					Constants.Z_ARGUMENT_REFERENCE
-				].indexOf( this.zType ) !== -1;
+				].includes( this.zType );
 			},
 			zType: function () {
 				return this.getZObjectTypeById( this.zobjectId );

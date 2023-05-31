@@ -176,7 +176,7 @@ module.exports = exports = {
 				this.zObjectAliases[ Constants.Z_MULTILINGUALSTRINGSET_VALUE ].forEach( function ( alias ) {
 					if ( alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ] ) {
 						var lang = alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ][ Constants.Z_REFERENCE_ID ];
-						if ( languageList.indexOf( lang ) === -1 ) {
+						if ( !languageList.includes( lang ) ) {
 							languageList.push( lang );
 						}
 					}

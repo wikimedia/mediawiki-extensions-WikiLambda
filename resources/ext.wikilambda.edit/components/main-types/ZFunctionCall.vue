@@ -243,7 +243,7 @@ module.exports = exports = {
 		},
 		displayModes: function () {
 			return Constants.Z_MODE_SELECTOR_MODES.filter( function ( mode ) {
-				return [ Constants.Z_KEY_MODES.LITERAL, Constants.Z_KEY_MODES.JSON ].indexOf( mode.key ) > -1;
+				return [ Constants.Z_KEY_MODES.LITERAL, Constants.Z_KEY_MODES.JSON ].includes( mode.key );
 			} );
 		}
 	} ),
@@ -276,7 +276,7 @@ module.exports = exports = {
 				parent: this.zobjectId
 			} ).then( function () {
 				this.zobject.forEach( function ( row ) {
-					if ( argumentKeys.indexOf( row.key ) > -1 ) {
+					if ( argumentKeys.includes( row.key ) ) {
 						this.removeZObject( row.id );
 					}
 				}.bind( this ) );

@@ -77,7 +77,7 @@ module.exports = exports = {
 				const aliases = this.zObjectAliases[ Constants.Z_MULTILINGUALSTRINGSET_VALUE ].slice( 1 );
 				aliases.forEach( function ( alias ) {
 					var lang = alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ][ Constants.Z_REFERENCE_ID ];
-					if ( languageList.indexOf( lang ) === -1 ) {
+					if ( !languageList.includes( lang ) ) {
 						languageList.push( lang );
 					}
 				} );

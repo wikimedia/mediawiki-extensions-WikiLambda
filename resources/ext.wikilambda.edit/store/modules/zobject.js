@@ -40,7 +40,7 @@ function isObjectTypeDeclaration( object, parentObject ) {
  * @return {boolean}
  */
 function isTypedObjectWithCustomComponent( functionCallId ) {
-	var istypedObject = Constants.Z_TYPED_OBJECTS_LIST.indexOf( functionCallId.value ) !== -1;
+	var istypedObject = Constants.Z_TYPED_OBJECTS_LIST.includes( functionCallId.value );
 
 	return istypedObject;
 }
@@ -238,7 +238,7 @@ function removeEmptyAliasLabelValues( context ) {
 }
 
 function isNotObjectOrArrayRoot( object ) {
-	return [ 'array', 'object' ].indexOf( object.value ) === -1;
+	return ![ 'array', 'object' ].includes( object.value );
 }
 
 /**
@@ -927,7 +927,7 @@ module.exports = exports = {
 							Constants.Z_IMPLEMENTATION_COMPOSITION,
 							Constants.Z_IMPLEMENTATION_BUILT_IN
 						];
-						return ( allowedKeys.indexOf( child.key ) > -1 ) && ( child.value !== undefined );
+						return ( allowedKeys.includes( child.key ) ) && ( child.value !== undefined );
 					} )
 					.map( function ( child ) {
 						return child.key;
@@ -2875,7 +2875,7 @@ module.exports = exports = {
 
 			// 3. For every key of parent: if it's not in new keys, remove it
 			oldArgs.forEach( function ( arg ) {
-				if ( newKeys.indexOf( arg.key ) < 0 ) {
+				if ( !newKeys.includes( arg.key ) ) {
 					allActions.push( context.dispatch( 'removeZObjectChildren', arg.id ) );
 					allActions.push( context.dispatch( 'removeZObject', arg.id ) );
 				}
@@ -2890,7 +2890,7 @@ module.exports = exports = {
 
 			// 4.b. Initialize all the new function call arguments
 			newArgs.forEach( function ( arg ) {
-				if ( oldKeys.indexOf( arg[ Constants.Z_ARGUMENT_KEY ] ) < 0 ) {
+				if ( !oldKeys.includes( arg[ Constants.Z_ARGUMENT_KEY ] ) ) {
 					const blank = context.getters.createObjectByType( {
 						type: arg[ Constants.Z_ARGUMENT_TYPE ],
 						link: true

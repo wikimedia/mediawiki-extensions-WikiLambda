@@ -174,7 +174,7 @@ var Constants = require( '../Constants.js' ),
 			},
 
 			isFunctionItemAttached( item, attachedItems ) {
-				return attachedItems.indexOf( item ) > -1;
+				return attachedItems.includes( item );
 			},
 
 			/**
@@ -252,7 +252,7 @@ var Constants = require( '../Constants.js' ),
 			 */
 			typedListStringToType: function ( typeString ) {
 				// not guaranteed to be defined as a Z881
-				if ( typeString.indexOf( Constants.Z_TYPED_LIST ) > -1 ) {
+				if ( typeString.includes( Constants.Z_TYPED_LIST ) ) {
 					const regExp = /\(([^)]+)\)/;
 					return regExp.exec( typeString )[ 1 ];
 				}
@@ -678,7 +678,7 @@ var Constants = require( '../Constants.js' ),
 			 */
 			initializePayloadForType: function ( keyType ) {
 				// We detect those types that will be added as references rather than literal objects:
-				const type = Constants.LINKED_TYPES.indexOf( keyType ) > -1 ?
+				const type = Constants.LINKED_TYPES.includes( keyType ) ?
 					Constants.Z_REFERENCE :
 					keyType;
 				var payload = { type };

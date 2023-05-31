@@ -39,7 +39,7 @@ module.exports = exports = {
 				// arguments to a function call, or similar cases. We don't want
 				// to do this when we create the blank object for the page root.
 				if ( payload.link ) {
-					if ( Constants.LINKED_TYPES.indexOf( payload.type ) > -1 ) {
+					if ( Constants.LINKED_TYPES.includes( payload.type ) ) {
 						return getters.createZReference( payload );
 					}
 				}

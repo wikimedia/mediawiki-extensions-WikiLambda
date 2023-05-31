@@ -74,7 +74,7 @@ function canonicalize( zobject ) {
 			return canonicalize( element );
 		} );
 	} else if (
-		[ Constants.Z_REFERENCE, Constants.Z_STRING ].indexOf( zobject[ Constants.Z_OBJECT_TYPE ] ) > -1
+		[ Constants.Z_REFERENCE, Constants.Z_STRING ].includes( zobject[ Constants.Z_OBJECT_TYPE ] )
 	) {
 		canon = canonicalizeZ6OrZ9( zobject );
 	} else if ( zobject[ Constants.Z_OBJECT_TYPE ] &&

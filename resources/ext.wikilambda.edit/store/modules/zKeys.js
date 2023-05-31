@@ -285,7 +285,7 @@ module.exports = exports = {
 				if ( zId &&
 					zId !== Constants.NEW_ZID_PLACEHOLDER &&
 					!( zId in context.state.zKeys ) &&
-					( zKeystoFetch.indexOf( zId ) === -1 )
+					( !zKeystoFetch.includes( zId ) )
 				) {
 					zKeystoFetch.push( zId );
 				}

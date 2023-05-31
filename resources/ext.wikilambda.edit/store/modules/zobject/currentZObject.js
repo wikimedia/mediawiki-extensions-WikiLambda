@@ -19,7 +19,7 @@ function addLanguagesFromNameLabels( getters, langsList ) {
 		zObjectLabels[ Constants.Z_MULTILINGUALSTRING_VALUE ].forEach( function ( label ) {
 			if ( label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] ) {
 				var lang = label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ];
-				if ( langsList.indexOf( lang ) === -1 ) {
+				if ( !langsList.includes( lang ) ) {
 					langsList.push(
 						label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ]
 					);
@@ -49,7 +49,7 @@ function addLanguagesFromArgumentLabels( getters, langsList ) {
 							if ( label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] ) {
 								var lang =
 								label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ];
-								if ( langsList.indexOf( lang ) === -1 ) {
+								if ( !langsList.includes( lang ) ) {
 									langsList.push(
 										label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ]
 									);
@@ -76,7 +76,7 @@ function addLanguagesFromAliasLabels( getters, langsList ) {
 		zAliases[ Constants.Z_MULTILINGUALSTRINGSET_VALUE ].forEach( function ( alias ) {
 			if ( alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ] ) {
 				var lang = alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ][ Constants.Z_REFERENCE_ID ];
-				if ( langsList.indexOf( lang ) === -1 ) {
+				if ( !langsList.includes( lang ) ) {
 					langsList.push(
 						alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ][ Constants.Z_REFERENCE_ID ]
 					);
@@ -153,7 +153,7 @@ module.exports = exports = {
 		 * @return {boolean}
 		 */
 		isCurrentZObjectExecutable: function ( state, getters ) {
-			return [ Constants.Z_FUNCTION, Constants.Z_IMPLEMENTATION ].indexOf( getters.getCurrentZObjectType ) !== -1;
+			return [ Constants.Z_FUNCTION, Constants.Z_IMPLEMENTATION ].includes( getters.getCurrentZObjectType );
 		},
 		// TODO: use this check for ZFunction warnings
 		currentZFunctionHasValidInputs: function ( state, getters ) {

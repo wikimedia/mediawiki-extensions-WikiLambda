@@ -37,7 +37,7 @@ module.exports = exports = {
 	props: {
 		as: {
 			validator: function ( value ) {
-				return [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'strong', 'div' ].indexOf( value ) !== -1;
+				return [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'strong', 'div' ].includes( value );
 			},
 			type: String,
 			default: 'p'

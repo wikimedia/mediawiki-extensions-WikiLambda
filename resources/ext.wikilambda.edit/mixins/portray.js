@@ -95,7 +95,7 @@ module.exports = exports = {
 				if ( typeof key === 'object' && key[ Constants.Z_OBJECT_TYPE ] === Constants.Z_STRING_VALUE ) {
 					key = key[ Constants.Z_STRING_VALUE ];
 				}
-				// eslint-disable-next-line es-x/no-array-prototype-includes
+
 				if ( keysUsed.includes( key ) ) {
 					continue;
 				}

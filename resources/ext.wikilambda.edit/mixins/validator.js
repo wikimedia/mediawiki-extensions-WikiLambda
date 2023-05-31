@@ -24,7 +24,7 @@ module.exports = exports = {
 		 */
 		validatorSetError: function ( error ) {
 
-			if ( this.validatorErrorMessages.indexOf( error ) === -1 ) {
+			if ( !this.validatorErrorMessages.includes( error ) ) {
 				return;
 			}
 
@@ -47,7 +47,7 @@ module.exports = exports = {
 				return '';
 			}
 
-			if ( this.validatorErrorMessages.indexOf( this.validatorCurrentError ) === -1 ) {
+			if ( !this.validatorErrorMessages.includes( this.validatorCurrentError ) ) {
 				return '';
 			}
 			// eslint-disable-next-line mediawiki/msg-doc

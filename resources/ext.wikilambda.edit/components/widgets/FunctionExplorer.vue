@@ -295,7 +295,7 @@ module.exports = exports = {
 			}, 2000 );
 		},
 		showValueOrCopiedMessage( value ) {
-			if ( this.itemsCopied.indexOf( value ) !== -1 ) {
+			if ( this.itemsCopied.includes( value ) ) {
 				return this.$i18n( 'wikilambda-function-explorer-copied-text' ).text();
 			}
 
