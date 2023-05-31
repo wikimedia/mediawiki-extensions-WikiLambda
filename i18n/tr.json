@@ -12,7 +12,8 @@
 			"SaldırganSincap",
 			"Sayginer",
 			"Khalvar",
-			"Rapsar"
+			"Rapsar",
+			"MrSchipunov"
 		]
 	},
 	"wikilambda-desc": "Wikimedia vikilerine, merkezi bir vikide yazılan, yönetilen ve değerlendirilen işlevlerin değerlendirilmesi için vikimetin ayrıştırıcı işlevi sağlar.",
@@ -115,6 +116,7 @@
 	"wikilambda-tester-run-tester": "Testerı Çalıştır",
 	"wikilambda-enable-expert-mode": "Uzman Modunu etkinleştir",
 	"wikilambda-disable-expert-mode": "Uzman Modunu Etkisizleştir",
+	"wikilambda-create-function": "İşlev Oluştur",
 	"wikilambda-create-type": "Tür Oluştur",
 	"wikilambda-expert-mode-json-label": "Geçerli ZObject",
 	"wikilambda-metadata-show-languages": "Etiketler kutusunu göster",
