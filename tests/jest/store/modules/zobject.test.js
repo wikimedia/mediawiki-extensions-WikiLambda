@@ -5224,7 +5224,7 @@ describe( 'zobject Vuex module', function () {
 						{ id: 4, key: 'Z7K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
 						{ id: 5, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 4 },
 						// Function Zid:
-						{ id: 6, key: 'Z9K1', value: Constants.Z_TYPED_LIST, parent: 4 },
+						{ id: 6, key: 'Z9K1', value: Constants.Z_TYPED_PAIR, parent: 4 },
 						// Old arguments:
 						{ id: 7, key: Constants.Z_TYPED_PAIR_TYPE1, value: Constants.ROW_VALUE_OBJECT, parent: 0 },
 						{ id: 8, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 7 },
@@ -5281,7 +5281,7 @@ describe( 'zobject Vuex module', function () {
 					{ id: 4, key: 'Z7K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
 					{ id: 5, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 4 },
 					// Function Zid:
-					{ id: 6, key: 'Z9K1', value: Constants.Z_TYPED_LIST, parent: 4 }
+					{ id: 6, key: 'Z9K1', value: Constants.Z_TYPED_PAIR, parent: 4 }
 				];
 				zobjectModule.actions.setZFunctionCallArguments( context, {
 					parentId: 0,
@@ -5299,7 +5299,7 @@ describe( 'zobject Vuex module', function () {
 					{ id: 4, key: 'Z7K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
 					{ id: 5, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 4 },
 					// Function Zid:
-					{ id: 6, key: 'Z9K1', value: Constants.Z_TYPED_LIST, parent: 4 },
+					{ id: 6, key: 'Z9K1', value: Constants.Z_TYPED_PAIR, parent: 4 },
 					// New arguments:
 					{ id: 17, key: Constants.Z_TYPED_LIST_TYPE, parent: 0, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 18, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 17 },
@@ -5313,9 +5313,6 @@ describe( 'zobject Vuex module', function () {
 			} );
 
 			it( 'sets three function arguments for the function If', function () {
-				const functionZid = 'Z802';
-				const functionZidRow = context.state.zobject.find( ( row ) => ( row.id === 6 ) );
-				functionZidRow.value = functionZid;
 				const expected = [
 					{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
 					{ id: 1, key: 'Z1K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
@@ -5324,7 +5321,7 @@ describe( 'zobject Vuex module', function () {
 					{ id: 4, key: 'Z7K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
 					{ id: 5, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 4 },
 					// Function Zid:
-					{ id: 6, key: 'Z9K1', value: functionZid, parent: 4 },
+					{ id: 6, key: 'Z9K1', value: Constants.Z_TYPED_PAIR, parent: 4 },
 					// New arguments:
 					{ id: 17, key: 'Z802K1', parent: 0, value: Constants.ROW_VALUE_OBJECT },
 					{ id: 18, key: 'Z1K1', parent: 17, value: Constants.ROW_VALUE_OBJECT },
@@ -5344,7 +5341,36 @@ describe( 'zobject Vuex module', function () {
 				];
 				zobjectModule.actions.setZFunctionCallArguments( context, {
 					parentId: 0,
-					functionZid
+					functionZid: 'Z802'
+				} );
+				expect( context.state.zobject ).toEqual( expected );
+			} );
+
+			it( 'makes no changes when the new function Id is the same as the old', function () {
+				const expected = [
+					{ id: 0, key: undefined, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+					{ id: 1, key: 'Z1K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+					{ id: 2, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 1 },
+					{ id: 3, key: 'Z9K1', value: Constants.Z_FUNCTION_CALL, parent: 1 },
+					{ id: 4, key: 'Z7K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+					{ id: 5, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 4 },
+					// Function Zid:
+					{ id: 6, key: 'Z9K1', value: Constants.Z_TYPED_PAIR, parent: 4 },
+					// Old arguments:
+					{ id: 7, key: Constants.Z_TYPED_PAIR_TYPE1, value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+					{ id: 8, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 7 },
+					{ id: 9, key: 'Z9K1', value: Constants.Z_STRING, parent: 7 },
+					{ id: 10, key: Constants.Z_TYPED_PAIR_TYPE2, value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+					{ id: 11, key: 'Z1K1', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
+					{ id: 12, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 11 },
+					{ id: 13, key: 'Z9K1', value: Constants.Z_FUNCTION_CALL, parent: 11 },
+					{ id: 14, key: 'Z7K1', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
+					{ id: 15, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 14 },
+					{ id: 16, key: 'Z9K1', value: 'Z100001', parent: 14 }
+				];
+				zobjectModule.actions.setZFunctionCallArguments( context, {
+					parentId: 0,
+					functionZid: Constants.Z_TYPED_PAIR
 				} );
 				expect( context.state.zobject ).toEqual( expected );
 			} );

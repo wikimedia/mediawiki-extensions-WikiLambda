@@ -2887,9 +2887,10 @@ module.exports = exports = {
 			if ( parentRow.key === Constants.Z_TESTER_VALIDATION ) {
 				newArgs.shift();
 			}
+
 			// 4.b. Initialize all the new function call arguments
 			newArgs.forEach( function ( arg ) {
-				if ( oldKeys.indexOf( arg[ Constants.Z_ARGUMENT_KEY ] ) ) {
+				if ( oldKeys.indexOf( arg[ Constants.Z_ARGUMENT_KEY ] ) < 0 ) {
 					const blank = context.getters.createObjectByType( {
 						type: arg[ Constants.Z_ARGUMENT_TYPE ],
 						link: true
