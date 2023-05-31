@@ -8,6 +8,7 @@
 'use strict';
 const Page = require( 'wdio-mediawiki/Page' );
 const ObjectSelector = require( './utils/ObjectSelector' );
+const ElementActions = require( '../utils/ElementActions' );
 
 class FunctionPage extends Page {
 	get functionTitle() { return $( '.ext-wikilambda-viewpage-header-title--function-name' ); }
@@ -15,13 +16,15 @@ class FunctionPage extends Page {
 	get firstInputZString() { return $( 'input.ext-wikilambda-zstring' ); }
 	get callButton() { return $( 'button=Call Function' ); }
 	get responseEnvelopZObject() { return $( '.ext-wikilambda-zresponseenvelope .ext-wikilambda-zobject' ); }
-	get detailsTab() { return $( 'ul[role=tablist]' ).$( '=Details' ); }
+	get detailsTab() { return $( '//a[@role="tab" and text()="Details"]' ); }
 	get showMoreLanguageButton() { return $( 'button=Show more languages' ); }
 	get hideListButton() { return $( 'button=Hide list' ); }
 	get editMenuItem() { return $( 'a[title*="Edit this page"]' ); }
 	get showNameInOtherLanguages() { return $( 'button*=Show name in other languages' ); }
 	get showMoreAliases() { return $( 'button*=Show more languages' ); }
 	get sidebarTable() { return $( '.ext-wikilambda-function-viewer-details-sidebar' ); }
+	get createANewTestLink() { return $( 'a=Create a new test' ); }
+	get createAImplementation() { return $( 'a=Create a new implementation' ); }
 
 	/**
 	 * @async
@@ -64,6 +67,46 @@ class FunctionPage extends Page {
 
 	async editFunction() {
 		await this.editMenuItem.click();
+	}
+
+	/**
+	 * Open the Function page
+	 *
+	 * @async
+	 * @param {string} ZId - ZObject of type Z4
+	 */
+	async open( ZId ) {
+		await super.openTitle( ZId );
+	}
+
+	/**
+	 * Click on the detials tab
+	 *
+	 * @async
+	 * @return {void}
+	 */
+	async switchToDetailsTab() {
+		await ElementActions.doClick( this.detailsTab );
+	}
+
+	/**
+	 * Click on the "Create a new test" link
+	 *
+	 * @async
+	 * @return {void}
+	 */
+	async goToCreateNewTestLink() {
+		await ElementActions.doClick( this.createANewTestLink );
+	}
+
+	/**
+	 * Click on the "Create a new implementation" link
+	 *
+	 * @async
+	 * @return {void}
+	 */
+	async goToCreateImplementation() {
+		await ElementActions.doClick( this.createAImplementation );
 	}
 }
 
