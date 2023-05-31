@@ -1,6 +1,6 @@
 'use strict';
 
-const ObjectSelector = require( '../../pageobjects/utils/ObjectSelector' );
+const ObjectSelector = require( '../ObjectSelector' );
 
 class LanguageContainerComponent {
 	get languageField() {

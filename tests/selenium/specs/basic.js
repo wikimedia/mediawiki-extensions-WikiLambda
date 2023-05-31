@@ -6,9 +6,9 @@
  */
 
 'use strict';
-const CreateZObjectPage = require( '../pageobjects/CreateZObject.page' ),
-	EvaluateFunctionCall = require( '../pageobjects/EvaluateFunctionCall.page' ),
-	ListZObjectsByType = require( '../pageobjects/ListZObjectsByType.page' );
+const CreateZObjectPage = require( '../pageobjects/special/CreateZObject.page' ),
+	EvaluateFunctionCall = require( '../pageobjects/special/EvaluateFunctionCall.page' ),
+	ListZObjectsByType = require( '../pageobjects/special/ListZObjectsByType.page' );
 describe( 'Installation checks', function () {
 
 	describe( 'CreateZObject', function () {

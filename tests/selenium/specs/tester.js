@@ -16,7 +16,7 @@
 
 'use strict';
 const LoginPage = require( 'wdio-mediawiki/LoginPage' );
-const FunctionPage = require( '../pageobjects/Function.page' );
+const FunctionPage = require( '../pageobjects/function/Function.page' );
 const TesterForm = require( '../pageobjects/tester/TesterForm.page' );
 const TesterPage = require( '../pageobjects/tester/Tester.page' );
 

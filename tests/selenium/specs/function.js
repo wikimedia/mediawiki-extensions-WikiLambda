@@ -7,9 +7,9 @@
 
 'use strict';
 const assert = require( 'assert' ),
-	ListZObjectsByType = require( '../pageobjects/ListZObjectsByType.page' ),
-	FunctionForm = require( '../pageobjects/FunctionForm.page' ),
-	FunctionPage = require( '../pageobjects/Function.page' ),
+	ListZObjectsByType = require( '../pageobjects/special/ListZObjectsByType.page' ),
+	FunctionForm = require( '../pageobjects/function/FunctionForm.page' ),
+	FunctionPage = require( '../pageobjects/function/Function.page' ),
 	util = require( 'wdio-mediawiki/Util' ),
 	LoginPage = require( 'wdio-mediawiki/LoginPage' );
 

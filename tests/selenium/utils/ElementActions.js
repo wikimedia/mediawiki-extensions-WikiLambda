@@ -6,6 +6,7 @@
  * [3] Get the text from the selector
  * [4] Clear the input
  * [5] Get the value from the input selector
+ * [6] Scroll the element into the viewport
  */
 
 'use strict';
@@ -89,6 +90,18 @@ class ElementActions {
 		await inputSelector.waitForDisplayed();
 		await inputSelector.click();
 		await inputSelector.setValue( '' );
+	}
+
+	/**
+	 * Scroll element into viewport
+	 *
+	 * @async
+	 * @param {Promise<WebdriverIOElementType>} selector - Selector of the element
+	 * @return {void}
+	 */
+	async scrollIntoView( selector ) {
+		await selector.waitForExist();
+		await selector.scrollIntoView( { block: 'center', inline: 'center' } );
 	}
 }
 

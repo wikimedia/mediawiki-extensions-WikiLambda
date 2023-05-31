@@ -1,6 +1,6 @@
 'use strict';
 const Page = require( 'wdio-mediawiki/Page' );
-const { LanguageContainerComponent, FirstLanguageContainerComponent } = require( '../componentobjects/function-form/LanguageContainer.component' );
+const { LanguageContainerComponent, FirstLanguageContainerComponent } = require( '../../componentobjects/function-form/LanguageContainer.component' );
 
 class FunctionForm extends Page {
 	get publishFunctionButton() { return $( 'button=Publish' ); }

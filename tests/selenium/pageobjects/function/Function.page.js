@@ -7,8 +7,8 @@
 
 'use strict';
 const Page = require( 'wdio-mediawiki/Page' );
-const ObjectSelector = require( './utils/ObjectSelector' );
-const ElementActions = require( '../utils/ElementActions' );
+const ObjectSelector = require( '../../componentobjects/ObjectSelector' );
+const ElementActions = require( '../../utils/ElementActions' );
 
 class FunctionPage extends Page {
 	get functionTitle() { return $( '.ext-wikilambda-viewpage-header-title--function-name' ); }
@@ -19,7 +19,7 @@ class FunctionPage extends Page {
 	get detailsTab() { return $( '//a[@role="tab" and text()="Details"]' ); }
 	get showMoreLanguageButton() { return $( 'button=Show more languages' ); }
 	get hideListButton() { return $( 'button=Hide list' ); }
-	get editMenuItem() { return $( 'a[title*="Edit this page"]' ); }
+	get editSourceLink() { return $( '//a[contains(@title, "Edit")]/span[contains(text(),"Edit")]' ); }
 	get showNameInOtherLanguages() { return $( 'button*=Show name in other languages' ); }
 	get showMoreAliases() { return $( 'button*=Show more languages' ); }
 	get sidebarTable() { return $( '.ext-wikilambda-function-viewer-details-sidebar' ); }
@@ -65,8 +65,15 @@ class FunctionPage extends Page {
 		return $( '.ext-wikilambda-function-about__aliases' ).$( `div*=${label}` );
 	}
 
+	/**
+	 * Click on the "edit" link
+	 *
+	 * @async
+	 * @return {void}
+	 */
 	async editFunction() {
-		await this.editMenuItem.click();
+		await ElementActions.scrollIntoView( this.editSourceLink );
+		await ElementActions.doClick( this.editSourceLink );
 	}
 
 	/**
