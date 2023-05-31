@@ -146,11 +146,11 @@ describe( 'zobject Vuex module', function () {
 	// * [x] getZMonolingualStringsetValues
 	// * [x] getZMonolingualStringsetLang
 	// * [x] getZMultilingualLanguageList
-	// * [ ] getZBooleanValue
-	// * [ ] getZObjectTypeByRowId
-	// * [ ] getDepthByRowId
-	// * [ ] getParentRowId
-	// * [ ] getNextRowId
+	// * [x] getZBooleanValue
+	// * [x] getZObjectTypeByRowId
+	// * [x] getDepthByRowId
+	// * [x] getParentRowId
+	// * [x] getNextRowId
 	// * [x] isInsideComposition
 
 	describe( 'Getters', function () {
@@ -2812,6 +2812,298 @@ describe( 'zobject Vuex module', function () {
 				expect( result ).toBe( expected );
 			} );
 		} );
+
+		describe( 'getZBooleanValue', function () {
+			beforeEach( function () {
+				context.state = { };
+
+				context.state.zobject = tableDataToRowObjects(
+					[
+						{ id: 1, key: Constants.Z_OBJECT_TYPE, value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+						{ id: 2, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 1 },
+						{ id: 3, key: Constants.Z_REFERENCE_ID, value: Constants.Z_PERSISTENTOBJECT, parent: 1 },
+						{
+							id: 4,
+							key: Constants.Z_PERSISTENTOBJECT_ID,
+							value: Constants.ROW_VALUE_OBJECT,
+							parent: 0
+						},
+						{ id: 5, key: Constants.Z_OBJECT_TYPE, value: Constants.ROW_VALUE_ARRAY, parent: 4 },
+						{ id: 6, key: '1', value: Constants.ROW_VALUE_OBJECT, parent: 5 },
+						{ id: 7, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_BOOLEAN, parent: 6 },
+						{ id: 8, key: Constants.Z_BOOLEAN_IDENTITY, value: Constants.Z_BOOLEAN_TRUE, parent: 6 },
+						{ id: 9, key: '2', value: Constants.ROW_VALUE_OBJECT, parent: 5 },
+						{ id: 10, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_BOOLEAN, parent: 9 },
+						{ id: 11, key: Constants.Z_BOOLEAN_IDENTITY, value: Constants.Z_BOOLEAN_FALSE, parent: 9 }
+					]
+				);
+
+				context.getters.getChildrenByParentRowId =
+				zobjectModule.getters.getChildrenByParentRowId( context.state );
+				context.getters.getRowById =
+				zobjectModule.getters.getRowById( context.state );
+				context.getters.getRowByKeyPath =
+				zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
+				context.getters.getZReferenceTerminalValue =
+				zobjectModule.getters.getZReferenceTerminalValue( context.state, context.getters );
+				context.getters.getZObjectTerminalValue =
+				zobjectModule.getters.getZObjectTerminalValue( context.state, context.getters );
+				context.getters.getZBooleanValue =
+				zobjectModule.getters.getZBooleanValue( context.state, context.getters );
+			} );
+
+			it( 'returns Z41(true) when the boolean value is true', function () {
+				// rowId of the parent of the boolean value
+				const rowId = 6;
+				const expected = Constants.Z_BOOLEAN_TRUE;
+				const result = context.getters.getZBooleanValue( rowId );
+
+				expect( result ).toBe( expected );
+			} );
+
+			it( 'returns Z42(false) when the boolean value is true', function () {
+				// rowId of the parent of the boolean value
+				const rowId = 9;
+				const expected = Constants.Z_BOOLEAN_FALSE;
+				const result = context.getters.getZBooleanValue( rowId );
+				expect( result ).toBe( expected );
+			} );
+
+			it( 'returns undefined when the rowId is NOT a boolean', function () {
+				const rowId = 2;
+				const result = context.getters.getZBooleanValue( rowId );
+
+				expect( result ).toBeUndefined();
+			} );
+
+			it( 'returns undefined when the rowId does NOT exist', function () {
+				const rowId = 100;
+				const result = context.getters.getZBooleanValue( rowId );
+
+				expect( result ).toBeUndefined();
+			} );
+		} );
+
+		describe( 'getZObjectTypeByRowId', function () {
+			beforeEach( function () {
+				context.state = { };
+
+				context.state.zobject = tableDataToRowObjects( [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 10, key: Constants.Z_PERSISTENTOBJECT_LABEL, value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+					{ id: 11, key: Constants.Z_OBJECT_TYPE, value: Constants.ROW_VALUE_OBJECT, parent: 10 },
+					{ id: 12, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 11 },
+					{ id: 13, key: Constants.Z_REFERENCE_ID, value: Constants.Z_MULTILINGUALSTRING, parent: 11 },
+					{ id: 14, key: Constants.Z_MULTILINGUALSTRING_VALUE, value: Constants.ROW_VALUE_ARRAY, parent: 10 },
+					{ id: 15, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 14 },
+					{ id: 16, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 15 },
+					{ id: 17, key: Constants.Z_REFERENCE_ID, value: Constants.Z_MONOLINGUALSTRING, parent: 15 },
+					{ id: 18, key: '1', value: Constants.ROW_VALUE_OBJECT, parent: 14 },
+					{ id: 19, key: Constants.Z_OBJECT_TYPE, value: Constants.ROW_VALUE_OBJECT, parent: 18 },
+					{ id: 20, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 19 },
+					{ id: 21, key: Constants.Z_REFERENCE_ID, value: Constants.Z_MONOLINGUALSTRING, parent: 19 },
+					{ id: 22, key: Constants.Z_MONOLINGUALSTRING_LANGUAGE, value: Constants.ROW_VALUE_OBJECT, parent: 18 },
+					{ id: 23, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 22 },
+					{ id: 24, key: Constants.Z_REFERENCE_ID, value: Constants.Z_NATURAL_LANGUAGE_ENGLISH, parent: 22 },
+					{ id: 25, key: Constants.Z_MONOLINGUALSTRING_VALUE, value: Constants.ROW_VALUE_OBJECT, parent: 18 },
+					{ id: 26, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_STRING, parent: 25 },
+					{ id: 27, key: Constants.Z_STRING_VALUE, value: 'test', parent: 25 },
+					// From here, the ZObject is incorrect:
+					{ id: 28, key: '2', value: Constants.ROW_VALUE_OBJECT, parent: 14 },
+					{ id: 32, key: Constants.Z_MONOLINGUALSTRING_LANGUAGE, value: Constants.ROW_VALUE_OBJECT, parent: 28 },
+					{ id: 33, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 32 },
+					{ id: 34, key: Constants.Z_REFERENCE_ID, value: Constants.Z_NATURAL_LANGUAGE_ENGLISH, parent: 32 },
+					{ id: 35, key: Constants.Z_MONOLINGUALSTRING_VALUE, value: Constants.ROW_VALUE_OBJECT, parent: 28 },
+					{ id: 36, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_STRING, parent: 35 },
+					{ id: 37, key: Constants.Z_STRING_VALUE, value: 'test', parent: 35 }
+				] );
+
+				context.getters.getChildrenByParentRowId =
+				zobjectModule.getters.getChildrenByParentRowId( context.state );
+				context.getters.getRowById =
+				zobjectModule.getters.getRowById( context.state );
+				context.getters.getRowByKeyPath =
+				zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
+				context.getters.getZReferenceTerminalValue =
+				zobjectModule.getters.getZReferenceTerminalValue( context.state, context.getters );
+				context.getters.getZTypeStringRepresentation =
+				zobjectModule.getters.getZTypeStringRepresentation( context.state, context.getters );
+				context.getters.getZObjectTypeByRowId =
+				zobjectModule.getters.getZObjectTypeByRowId( context.state, context.getters );
+				context.getters.getZObjectTerminalValue =
+				zobjectModule.getters.getZObjectTerminalValue( context.state, context.getters );
+			} );
+
+			it( 'should return undefined if rowId is undefined or falsy', () => {
+				const rowId = null;
+				expect( context.getters.getZObjectTypeByRowId( rowId ) ).toBeUndefined();
+			} );
+
+			it( 'should return undefined if rowId is not found', () => {
+				const rowId = 100;
+				expect( context.getters.getZObjectTypeByRowId( rowId ) ).toBeUndefined();
+			} );
+
+			it( 'should return Constants.Z_REFERENCE if the row is terminal and has key Constants.Z_REFERENCE_ID', () => {
+				const rowId = 21;
+
+				expect( context.getters.getZObjectTypeByRowId( rowId ) ).toBe( Constants.Z_REFERENCE );
+			} );
+
+			it( 'should return Constants.Z_STRING if the row is terminal and does NOT have key Constants.Z_REFERENCE_ID', () => {
+				const rowId1 = 27;
+
+				expect( context.getters.getZObjectTypeByRowId( rowId1 ) ).toBe( Constants.Z_STRING );
+			} );
+
+			it( 'should return Constants.Z_TYPED_LIST if the row is an array', () => {
+				const rowId = 14;
+
+				expect( context.getters.getZObjectTypeByRowId( rowId ) ).toBe( Constants.Z_TYPED_LIST );
+			} );
+
+			it( 'should return the type value if the typeRow is terminal', () => {
+				const rowId = 19;
+
+				// Assuming getRowById returns a type row that is terminal
+				const result = context.getters.getZObjectTypeByRowId( rowId );
+				expect( result ).toBe( Constants.Z_REFERENCE );
+			} );
+
+			it( 'should return undefined if the typeRow could NOT be found', function () {
+				const rowId = 28;
+
+				expect( context.getters.getZObjectTypeByRowId( rowId ) ).toBeUndefined();
+			} );
+
+			it( 'returns the string representation of the type of an object', () => {
+				const rowId = 18;
+
+				expect( context.getters.getZObjectTypeByRowId( rowId ) ).toBe( Constants.Z_MONOLINGUALSTRING );
+			} );
+
+		} );
+
+		describe( 'getDepthByRowId', function () {
+			beforeEach( function () {
+				context.state = { };
+
+				context.state.zobject = tableDataToRowObjects( [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 10, key: Constants.Z_PERSISTENTOBJECT_LABEL, value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+					{ id: 11, key: Constants.Z_OBJECT_TYPE, value: Constants.ROW_VALUE_OBJECT, parent: 10 },
+					{ id: 12, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 11 },
+					{ id: 13, key: Constants.Z_REFERENCE_ID, value: Constants.Z_MULTILINGUALSTRING, parent: 11 },
+					{ id: 14, key: Constants.Z_MULTILINGUALSTRING_VALUE, value: Constants.ROW_VALUE_ARRAY, parent: 10 },
+					{ id: 15, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 14 },
+					{ id: 16, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 15 },
+					{ id: 17, key: Constants.Z_REFERENCE_ID, value: Constants.Z_MONOLINGUALSTRING, parent: 15 },
+					{ id: 18, key: '1', value: Constants.ROW_VALUE_OBJECT, parent: 14 },
+					{ id: 19, key: Constants.Z_OBJECT_TYPE, value: Constants.ROW_VALUE_OBJECT, parent: 18 },
+					{ id: 20, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 19 },
+					{ id: 21, key: Constants.Z_REFERENCE_ID, value: Constants.Z_MONOLINGUALSTRING, parent: 19 },
+					{ id: 22, key: Constants.Z_MONOLINGUALSTRING_LANGUAGE, value: Constants.ROW_VALUE_OBJECT, parent: 18 },
+					{ id: 23, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 22 },
+					{ id: 24, key: Constants.Z_REFERENCE_ID, value: Constants.Z_NATURAL_LANGUAGE_ENGLISH, parent: 22 },
+					{ id: 25, key: Constants.Z_MONOLINGUALSTRING_VALUE, value: Constants.ROW_VALUE_OBJECT, parent: 18 },
+					{ id: 26, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_STRING, parent: 25 },
+					{ id: 27, key: Constants.Z_STRING_VALUE, value: 'test', parent: 25 }
+				] );
+
+				context.getters.getChildrenByParentRowId =
+				zobjectModule.getters.getChildrenByParentRowId( context.state );
+				context.getters.getRowById =
+				zobjectModule.getters.getRowById( context.state );
+				context.getters.getDepthByRowId =
+				zobjectModule.getters.getDepthByRowId( context.state, context.getters );
+			} );
+
+			it( 'should return 0 if the row has no parent', () => {
+				const rowId = 0;
+
+				expect( context.getters.getDepthByRowId( rowId ) ).toBe( 0 );
+			} );
+
+			it( 'should return the correct depth when the row has a parent', () => {
+				const rowId = 10;
+
+				expect( context.getters.getDepthByRowId( rowId ) ).toBe( 1 );
+			} );
+
+			it( 'should return the correct depth for nested parents', () => {
+				const rowId = 27;
+
+				expect( context.getters.getDepthByRowId( rowId ) ).toBe( 5 );
+			} );
+		} );
+
+		describe( 'getParentRowId', function () {
+			beforeEach( function () {
+				context.state = { };
+
+				context.state.zobject = tableDataToRowObjects(
+					[
+						{ id: 1, key: Constants.Z_OBJECT_TYPE, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 2, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 1 },
+						{ id: 3, key: Constants.Z_REFERENCE_ID, value: Constants.Z_PERSISTENTOBJECT, parent: 1 },
+						{
+							id: 4,
+							key: Constants.Z_PERSISTENTOBJECT_ID,
+							value: Constants.ROW_VALUE_OBJECT,
+							parent: 1
+						}
+					]
+				);
+
+				context.getters.getChildrenByParentRowId =
+				zobjectModule.getters.getChildrenByParentRowId( context.state );
+				context.getters.getRowById =
+				zobjectModule.getters.getRowById( context.state );
+				context.getters.getParentRowId = zobjectModule.getters.getParentRowId( context.state, context.getters );
+			} );
+
+			it( 'should return the parent rowId of a given rowId', () => {
+				const rowId = 2;
+
+				expect( context.getters.getParentRowId( rowId ) ).toBe( 1 );
+			} );
+
+			it( 'should return undefined if the rowId has no parent', () => {
+				const rowId = 1;
+
+				expect( context.getters.getParentRowId( rowId ) ).toBeUndefined();
+			} );
+		} );
+
+		describe( 'getNextRowId', function () {
+			beforeEach( function () {
+				context.state = { };
+
+				context.state.zobject = tableDataToRowObjects(
+					[
+						{ id: 1, key: Constants.Z_OBJECT_TYPE, value: Constants.ROW_VALUE_OBJECT, parent: undefined },
+						{ id: 2, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 1 },
+						{ id: 3, key: Constants.Z_REFERENCE_ID, value: Constants.Z_PERSISTENTOBJECT, parent: 1 },
+						{
+							id: 4,
+							key: Constants.Z_PERSISTENTOBJECT_ID,
+							value: Constants.ROW_VALUE_OBJECT,
+							parent: 1
+						}
+					]
+				);
+				context.getters.getNextRowId = zobjectModule.getters.getNextRowId;
+			} );
+
+			it( 'should return 0 if zobject is empty', () => {
+				expect( context.getters.getNextRowId( [] ) ).toBe( 0 );
+			} );
+
+			it( 'should return the next available rowId', () => {
+				expect( context.getters.getNextRowId( context.state ) ).toBe( 5 );
+			} );
+		} );
+
 	} );
 
 	describe( 'Mutations', function () {
@@ -2862,6 +3154,55 @@ describe( 'zobject Vuex module', function () {
 				expect( state.isZObjectDirty ).toEqual( true );
 			} );
 		} );
+
+		describe( 'setValueByRowIndex', function () {
+			beforeEach( function () {
+				context.state = { };
+
+				context.state.zobject = tableDataToRowObjects( [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: Constants.Z_OBJECT_TYPE, value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+					{ id: 2, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 1 },
+					{ id: 3, key: Constants.Z_REFERENCE_ID, value: Constants.Z_PERSISTENTOBJECT, parent: 1 },
+					{ id: 4, key: Constants.Z_PERSISTENTOBJECT_VALUE, value: Constants.ROW_VALUE_ARRAY, parent: 0 },
+					{ id: 5, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 4 },
+					{ id: 6, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 5 },
+					{ id: 7, key: Constants.Z_REFERENCE_ID, value: Constants.Z_STRING, parent: 5 },
+					{ id: 8, key: '1', value: Constants.ROW_VALUE_OBJECT, parent: 4 },
+					{ id: 9, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_STRING, parent: 8 },
+					{ id: 10, key: Constants.Z_STRING_VALUE, value: 'Foo', parent: 8 }
+				] );
+			} );
+
+			it( 'sets the value by the row index', function () {
+				const expectedValue = 'Test String';
+				const payload = { rowIndex: 7, value: expectedValue };
+
+				zobjectModule.mutations.setValueByRowIndex( context.state, payload );
+
+				expect( context.state.zobject[ 7 ].value ).toEqual( expectedValue );
+			} );
+		} );
+
+		describe( 'pushRow', function () {
+			beforeEach( function () {
+				context.state = { };
+
+				context.state.zobject = tableDataToRowObjects( [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT }
+				] );
+			} );
+
+			it( 'pushes a new row to the zobject', function () {
+				const payload = new Row( 1, Constants.Z_OBJECT_TYPE, Constants.ROW_VALUE_OBJECT, 0 );
+				const expectedValue = Constants.ROW_VALUE_OBJECT;
+
+				zobjectModule.mutations.pushRow( context.state, payload );
+
+				expect( context.state.zobject[ 1 ].value ).toEqual( expectedValue );
+			} );
+
+		} );
 	} );
 
 	// TODO (T328428): Add tests for new actions:
@@ -2869,10 +3210,10 @@ describe( 'zobject Vuex module', function () {
 	// * [x] injectKeyValueFromRowId
 	// * [x] setZFunctionCallArguments
 	// * [x] setZImplementationContentType
-	// * [ ] setValueByRowIdAndPath
-	// * [ ] setValueByRowId
-	// * [ ] removeItemFromTypedList
-	// * [ ] removeAllItemsFromTypedList
+	// * [x] setValueByRowIdAndPath
+	// * [x] setValueByRowId
+	// * [x] removeItemFromTypedList
+	// * [x] removeAllItemsFromTypedList
 
 	describe( 'Actions', function () {
 		var defaultHref = window.location.href;
@@ -5535,5 +5876,219 @@ describe( 'zobject Vuex module', function () {
 				expect( context.state.zobject ).toEqual( expected );
 			} );
 		} );
+
+		describe( 'setValueByRowIdAndPath', function () {
+			beforeEach( function () {
+				context.state = { };
+
+				context.state.zobject = tableDataToRowObjects( [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: Constants.Z_OBJECT_TYPE, value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+					{ id: 2, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 1 },
+					{ id: 3, key: Constants.Z_REFERENCE_ID, value: Constants.Z_PERSISTENTOBJECT, parent: 1 },
+					{ id: 4, key: Constants.Z_PERSISTENTOBJECT_VALUE, value: Constants.ROW_VALUE_ARRAY, parent: 0 },
+					{ id: 5, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 4 },
+					{ id: 6, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 5 },
+					{ id: 7, key: Constants.Z_REFERENCE_ID, value: Constants.Z_STRING, parent: 5 },
+					{ id: 8, key: '1', value: Constants.ROW_VALUE_OBJECT, parent: 4 },
+					{ id: 9, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_STRING, parent: 8 },
+					{ id: 10, key: Constants.Z_STRING_VALUE, value: 'Foo', parent: 8 }
+				] );
+
+				context.getters.getRowById = zobjectModule.getters
+					.getRowById( context.state );
+				context.getters.getChildrenByParentRowId = zobjectModule.getters
+					.getChildrenByParentRowId( context.state );
+				context.getters.getRowByKeyPath = zobjectModule.getters
+					.getRowByKeyPath( context.state, context.getters );
+				context.getters.getChildrenByParentRowId = zobjectModule.getters
+					.getChildrenByParentRowId( context.state );
+				context.getters.getNextArrayIndex = zobjectModule.getters
+					.getNextArrayIndex( context.state, context.getters );
+				context.getters.getNextRowId = zobjectModule.getters
+					.getNextRowId( context.state, context.getters );
+				context.dispatch = jest.fn( function ( actionType, payload ) {
+					zobjectModule.actions[ actionType ]( context, payload );
+					return {
+						then: function ( fn ) {
+							return fn();
+						}
+					};
+				} );
+
+			} );
+
+			describe( 'when value is a string', function () {
+				it( 'should dispatch an action', function () {
+					const payload = {
+						rowId: 8,
+						keyPath: [ Constants.Z_STRING_VALUE ],
+						value: 'Test String'
+					};
+
+					zobjectModule.actions.setValueByRowIdAndPath( context, payload );
+
+					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+				} );
+				it( 'should dispatch the setValueByRowId action with an object containing rowId and value', function () {
+					const expectedStringValue = 'Test String';
+
+					const payload = {
+						rowId: 8,
+						keyPath: [ Constants.Z_STRING_VALUE ],
+						value: expectedStringValue
+					};
+
+					zobjectModule.actions.setValueByRowIdAndPath( context, payload );
+
+					expect( context.dispatch ).toHaveBeenCalledWith( 'setValueByRowId', { rowId: 10, value: expectedStringValue } );
+				} );
+			} );
+
+			describe( 'when value is an array', function () {
+
+				it( 'should dispatch an action', function () {
+					const payload = {
+						rowId: 4,
+						keyPath: [ '1', Constants.Z_STRING_VALUE ],
+						value: [ Constants.Z_STRING ]
+					};
+
+					zobjectModule.actions.setValueByRowIdAndPath( context, payload );
+
+					expect( context.dispatch ).toHaveBeenCalled();
+
+				} );
+				it( 'should dispatch the injectZObjectFromRowId action with an object containing rowId, value and append as false', function () {
+					const expectedStringValue = 'Test String';
+					const payload = {
+						rowId: 4,
+						keyPath: [ '1', Constants.Z_STRING_VALUE ],
+						value: [ expectedStringValue ]
+					};
+
+					zobjectModule.actions.setValueByRowIdAndPath( context, payload );
+
+					expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObjectFromRowId', { append: false, rowId: 10, value: [ expectedStringValue ] } );
+				} );
+
+				describe( 'when append has been set', function () {
+					it( 'should dispatch the injectZObjectFromRowId action with an object containing an append value that matches the set append value', function () {
+						const expectedStringValue = 'Test String';
+						const appendValue = true;
+
+						const payload = {
+							rowId: 4,
+							keyPath: [ '1', Constants.Z_STRING_VALUE ],
+							value: [ expectedStringValue ],
+							append: appendValue
+						};
+
+						zobjectModule.actions.setValueByRowIdAndPath( context, payload );
+
+						expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObjectFromRowId', { append: appendValue, rowId: 10, value: [ expectedStringValue ] } );
+					} );
+				} );
+
+				describe( 'when the row could not be found', function () {
+					it( 'should NOT dispatch any actions', function () {
+						const payload = {
+							rowId: null, // A non-existent row
+							keyPath: [ Constants.Z_STRING_VALUE ],
+							value: 'Test String'
+						};
+
+						zobjectModule.actions.setValueByRowIdAndPath( context, payload );
+
+						expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
+					} );
+				} );
+
+			} );
+
+		} );
+
+		describe( 'setValueByRowId', function () {
+			beforeEach( function () {
+				context.state = { };
+
+				context.state.zobject = tableDataToRowObjects( [
+					{ id: 0, value: Constants.ROW_VALUE_OBJECT },
+					{ id: 1, key: Constants.Z_OBJECT_TYPE, value: Constants.ROW_VALUE_OBJECT, parent: 0 },
+					{ id: 2, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 1 },
+					{ id: 3, key: Constants.Z_REFERENCE_ID, value: Constants.Z_PERSISTENTOBJECT, parent: 1 },
+					{ id: 4, key: Constants.Z_PERSISTENTOBJECT_VALUE, value: Constants.ROW_VALUE_ARRAY, parent: 0 },
+					{ id: 5, key: '0', value: Constants.ROW_VALUE_OBJECT, parent: 4 },
+					{ id: 6, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: 5 },
+					{ id: 7, key: Constants.Z_REFERENCE_ID, value: Constants.Z_STRING, parent: 5 },
+					{ id: 8, key: '1', value: Constants.ROW_VALUE_OBJECT, parent: 4 },
+					{ id: 9, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_STRING, parent: 8 },
+					{ id: 10, key: Constants.Z_STRING_VALUE, value: 'Foo', parent: 8 }
+				] );
+			} );
+
+			describe( 'when rowId is valid', function () {
+				it( 'should call the setValueByRowIndex mutation with the correct rowIndex and value', function () {
+					const expectedStringValue = 'Test String';
+					const payload = {
+						rowId: 10,
+						value: expectedStringValue
+					};
+
+					zobjectModule.actions.setValueByRowId( context, payload );
+
+					expect( context.commit ).toHaveBeenCalledWith( 'setValueByRowIndex', { rowIndex: '10', value: expectedStringValue } );
+				} );
+			} );
+
+			describe( 'when rowId is invalid', function () {
+				it( 'should call the setValueByRowIndex mutation with rowIndex set to undefined', function () {
+					const expectedStringValue = 'Test String';
+					const payload = {
+						rowId: null,
+						value: expectedStringValue
+					};
+
+					zobjectModule.actions.setValueByRowId( context, payload );
+
+					expect( context.commit ).toHaveBeenCalledWith( 'setValueByRowIndex', { rowIndex: undefined, value: expectedStringValue } );
+				} );
+			} );
+		} );
+
+		describe( 'removeItemFromTypedList', function () {
+			it( 'should dispatch the removeZObjectChildren action  ', function () {
+				const payload = { rowId: 4 };
+				zobjectModule.actions.removeItemFromTypedList( context, payload );
+
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', 4 );
+			} );
+
+			it( 'should dispatch the removeZObject action ', function () {
+				const payload = { rowId: 4 };
+				zobjectModule.actions.removeItemFromTypedList( context, payload );
+
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObject', 4 );
+			} );
+		} );
+
+		describe( 'removeAllItemsFromTypedList', function () {
+			it( 'should dispatch the removeZObjectChildren action with the current rowId as the payload', function () {
+				const payload = { rowId: 4, listItems: [ 11, 14 ] };
+				zobjectModule.actions.removeAllItemsFromTypedList( context, payload );
+
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', 4 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', [ 11, 14 ] );
+			} );
+
+			it( 'should dispatch the removeZObject action with each ', function () {
+				const payload = { rowId: 4, listItems: [ 11, 14 ] };
+
+				zobjectModule.actions.removeAllItemsFromTypedList( context, payload );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObject', 4 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObject', [ 11, 14 ] );
+			} );
+		} );
+
 	} );
 } );

@@ -1017,6 +1017,11 @@ module.exports = exports = {
 			 */
 			function findZBooleanValue( rowId ) {
 				const booleanRow = getters.getRowByKeyPath( [ Constants.Z_BOOLEAN_IDENTITY ], rowId );
+
+				if ( !booleanRow ) {
+					return;
+				}
+
 				return getters.getZReferenceTerminalValue( booleanRow.id );
 			}
 			return findZBooleanValue;
@@ -2811,8 +2816,9 @@ module.exports = exports = {
 		 * handle all necessary changes:
 		 * 1. Walk down the path passed as payload.keyPath and find the rowId
 		 *    from which the changes should be made.
-		 * 2. If the value is a terminal value (string), call the setValue action
-		 * 3. If the value is more complex, call the injectZObjectFromRowId action,
+		 * 2. If the row is `undefined`, halt execution
+		 * 3. If the value is a terminal value (string), call the setValue action
+		 * 4. If the value is more complex, call the injectZObjectFromRowId action,
 		 *    which will make sure that all the current children are deleted and
 		 *    the necessary rows are inserted at non-colliding ids.
 		 *
@@ -2832,9 +2838,12 @@ module.exports = exports = {
 			const append = payload.append ? payload.append : false;
 			// 1. Find the row that will be parent for the given payload.value
 			const row = context.getters.getRowByKeyPath( payload.keyPath, payload.rowId );
-			// 2. Is the value a string? Call atomic action setValueByRowId
-			// 3. Is the value an object or array? Call action inject
-			if ( typeof payload.value === 'string' ) {
+			// 2. If the row is `undefined`, halt execution
+			// 3. Is the value a string? Call atomic action setValueByRowId
+			// 4. Is the value an object or array? Call action inject
+			if ( row === undefined ) {
+				return;
+			} else if ( typeof payload.value === 'string' ) {
 				context.dispatch( 'setValueByRowId', { rowId: row.id, value: payload.value } );
 			} else {
 				context.dispatch( 'injectZObjectFromRowId', { rowId: row.id, value: payload.value, append } );
@@ -3082,7 +3091,7 @@ module.exports = exports = {
 		 */
 		removeAllItemsFromTypedList: function ( context, payload ) {
 			for ( var index in payload ) {
-				context.dispatch( 'removeZObjectChildren', payload.rowId );
+				context.dispatch( 'removeZObjectChildren', payload[ index ] );
 				context.dispatch( 'removeZObject', payload[ index ] );
 			}
 		}
