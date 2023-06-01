@@ -169,7 +169,8 @@
 		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
 		"NamespaceIsMovable": "PageEditingHandler",
 		"ParserFirstCallInit": "WikiLambdaParserHooks",
-		"HtmlPageLinkRendererEnd": "PageRenderingHandler"
+		"HtmlPageLinkRendererEnd": "PageRenderingHandler",
+		"WebRequestPathInfoRouter": "PageRenderingHandler"
 	},
 	"MessagesDirs": {
 		"WikiLambda": [
