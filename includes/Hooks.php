@@ -28,7 +28,6 @@ use Status;
 use User;
 
 class Hooks implements
-	\MediaWiki\Hook\BeforePageDisplayHook,
 	\MediaWiki\Hook\NamespaceIsMovableHook,
 	\MediaWiki\Storage\Hook\MultiContentSaveHook,
 	\MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook,
@@ -49,19 +48,6 @@ class Hooks implements
 		// an extension.json attribute as of yet.
 		global $wgNonincludableNamespaces;
 		$wgNonincludableNamespaces[] = NS_MAIN;
-	}
-
-	/**
-	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/BeforePageDisplay
-	 *
-	 * @param \OutputPage $out
-	 * @param \Skin $skin
-	 */
-	public function onBeforePageDisplay( $out, $skin ): void {
-		$config = $out->getConfig();
-		if ( $config->get( 'WikiLambdaEnable' ) ) {
-			// Do something.
-		}
 	}
 
 	/**
