@@ -415,7 +415,7 @@ module.exports = exports = {
 			 */
 			function findDepth( rowId, depth = 0 ) {
 				const row = getters.getRowById( rowId );
-				return ( row.parent === undefined ) ?
+				return ( !row || ( row.parent === undefined ) ) ?
 					depth :
 					findDepth( row.parent, depth + 1 );
 			}
@@ -1121,6 +1121,43 @@ module.exports = exports = {
 			return findTypedListItemType;
 		},
 
+		/**
+		 * Returns a particular key-value in the Metadata object given
+		 * the Metadata object rowId and a string key. Returns undefined
+		 * if nothing is found under the given key.
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getMapValueByKey: function ( _state, getters ) {
+			/**
+			 * @param {string} rowId
+			 * @param {string} key
+			 * @return {Row|undefined}
+			 */
+			function findMapValue( rowId, key ) {
+				const listRow = getters.getRowByKeyPath( [ Constants.Z_TYPED_OBJECT_ELEMENT_1 ], rowId );
+				if ( !listRow ) {
+					return undefined;
+				}
+				const pairs = getters.getChildrenByParentRowId( listRow.id ).slice( 1 );
+				for ( const pair of pairs ) {
+					const keyRow = getters.getRowByKeyPath( [ Constants.Z_TYPED_OBJECT_ELEMENT_1 ], pair.id );
+					if ( !keyRow ) {
+						continue;
+					}
+					const keyString = getters.getZStringTerminalValue( keyRow.id );
+					if ( keyString === key ) {
+						const valueRow = getters.getRowByKeyPath( [ Constants.Z_TYPED_OBJECT_ELEMENT_2 ], pair.id );
+						return valueRow;
+					}
+				}
+				return undefined;
+			}
+			return findMapValue;
+		},
+
 		/******************************************************************
 		 * INTERNAL METHODS
 		 *
@@ -1211,7 +1248,7 @@ module.exports = exports = {
 			 */
 			function findParent( rowId ) {
 				const row = getters.getRowById( rowId );
-				return row.parent;
+				return row ? row.parent : undefined;
 			}
 			return findParent;
 		},

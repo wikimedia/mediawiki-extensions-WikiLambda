@@ -155,7 +155,7 @@ module.exports = exports = {
 		 * @param {boolean} rootIsArray
 		 * @return {Object}
 		 */
-		convertZObjectTreetoJson: function ( zObjectTree, parentId, rootIsArray ) {
+		convertZObjectTreetoJson: function ( zObjectTree, parentId = 0, rootIsArray = false ) {
 			function reconstructJson( object, layer, isArrayChild ) {
 				var json = {},
 					value,

@@ -9,10 +9,9 @@
 		<h2>
 			{{ $i18n( 'wikilambda-persistentobject-details-label' ).text() }}
 		</h2>
-		<h3>
-			{{ $i18n( 'wikilambda-persistentobject-evaluate-function' ).text() }}
-		</h3>
-		<wl-z-function-evaluator></wl-z-function-evaluator>
+		<wl-function-evaluator-widget
+			:function-zid="getCurrentZObjectId"
+		></wl-function-evaluator-widget>
 		<div>
 			<h3>
 				{{ $i18n( 'wikilambda-expert-mode-json-label' ).text() }}
@@ -27,17 +26,18 @@
 
 <script>
 var mapGetters = require( 'vuex' ).mapGetters,
-	ZFunctionEvaluator = require( '../../ZFunctionEvaluator.vue' ),
+	FunctionEvaluatorWidget = require( '../../../widgets/FunctionEvaluator.vue' ),
 	ZObjectJson = require( '../../../ZObjectJson.vue' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-function-viewer-about-details',
 	components: {
-		'wl-z-function-evaluator': ZFunctionEvaluator,
+		'wl-function-evaluator-widget': FunctionEvaluatorWidget,
 		'wl-z-object-json': ZObjectJson
 	},
 	computed: mapGetters( [
+		'getCurrentZObjectId',
 		'getZObjectAsJson'
 	] )
 };

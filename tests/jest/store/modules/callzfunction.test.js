@@ -6,7 +6,10 @@
  */
 'use strict';
 
-var callZFunctionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/callZFunction.js' ),
+var tableDataToRowObjects = require( '../../helpers/zObjectTableHelpers.js' ).tableDataToRowObjects,
+	callZFunctionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/callZFunction.js' ),
+	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
+	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	functionCall = {
 		Z1K1: {
 			Z1K1: 'Z9',
@@ -47,95 +50,137 @@ describe( 'callZFunction Vuex module', function () {
 	} );
 
 	describe( 'Actions', function () {
-		it( 'Call MW API for function orchestration; set orchestrationResult', function () {
-			// eslint-disable-next-line no-unused-vars
-			postMock = jest.fn( function ( payload ) {
-				return new Promise( function ( resolve ) {
-					resolve( {
-						query: {
-							wikilambda_function_call: {
-								data: expectedData
+
+		describe( 'initializeResultId', () => {
+			beforeEach( function () {
+				context.state = {
+					zobject: tableDataToRowObjects( [
+						{ id: 0, key: undefined, parent: undefined, value: 'object' },
+						{ id: 1, key: 'Z1K1', parent: 0, value: 'Z6' },
+						{ id: 2, key: 'Z6K1', parent: 0, value: 'not a map' }
+					] )
+				};
+				context.getters = {
+					getRowById: zobjectModule.getters.getRowById( context.state ),
+					getNextRowId: zobjectModule.getters.getNextRowId( context.state )
+				};
+			} );
+
+			it( 'it adds a detached row when rowId is not a valid row', () => {
+				const payload = '';
+				const rowId = callZFunctionModule.actions.initializeResultId( context, payload );
+				expect( rowId ).toBe( 3 );
+				expect( context.commit ).toHaveBeenCalledTimes( 1 );
+				expect( context.commit ).toHaveBeenCalledWith( 'addZObject', {
+					id: 3,
+					key: undefined,
+					parent: undefined,
+					value: Constants.ROW_VALUE_OBJECT
+				} );
+			} );
+
+			it( 'it removes children when rowId is a valid row', () => {
+				const payload = 0;
+				const rowId = callZFunctionModule.actions.initializeResultId( context, payload );
+				expect( rowId ).toBe( 0 );
+				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', 0 );
+			} );
+		} );
+
+		describe( 'callZFunction', () => {
+			it( 'Call MW API for function orchestration; set orchestrationResult', function () {
+				// eslint-disable-next-line no-unused-vars
+				postMock = jest.fn( function ( payload ) {
+					return new Promise( function ( resolve ) {
+						resolve( {
+							query: {
+								wikilambda_function_call: {
+									data: expectedData
+								}
 							}
-						}
+						} );
 					} );
 				} );
-			} );
 
-			callZFunctionModule.actions.callZFunction(
-				context, { zobject: functionCall }
-			);
+				callZFunctionModule.actions.callZFunction(
+					context, { zobject: functionCall }
+				);
 
-			expect( postMock ).toHaveBeenCalledWith( {
-				action: 'wikilambda_function_call',
-				wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall )
-			} );
-		} );
-
-		it( 'Call MW API for function orchestration; set error as orchestrationResult', function () {
-			var error = 'one tissue, used';
-
-			// eslint-disable-next-line no-unused-vars
-			postMock = jest.fn( function ( payload ) {
-				return new Promise( function ( resolve, reject ) {
-					reject( error );
+				expect( postMock ).toHaveBeenCalledWith( {
+					action: 'wikilambda_function_call',
+					wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall )
 				} );
 			} );
 
-			callZFunctionModule.actions.callZFunction(
-				context, { zobject: functionCall }
-			);
+			it( 'Call MW API for function orchestration; set error as orchestrationResult', function () {
+				var error = 'one tissue, used';
 
-			expect( postMock ).toHaveBeenCalledWith( {
-				action: 'wikilambda_function_call',
-				wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall )
+				// eslint-disable-next-line no-unused-vars
+				postMock = jest.fn( function ( payload ) {
+					return new Promise( function ( resolve, reject ) {
+						reject( error );
+					} );
+				} );
+
+				callZFunctionModule.actions.callZFunction(
+					context, { zobject: functionCall }
+				);
+
+				expect( postMock ).toHaveBeenCalledWith( {
+					action: 'wikilambda_function_call',
+					wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall )
+				} );
 			} );
 		} );
 	} );
 
-	it( 'Add orchestration result to the zobject tree (no prior result)', function () {
-		var result = { Z1K1: 'Z6', Z6K1: 'A new string' },
-			payload = { result: result, resultId: 6 },
-			nextId = 6;
-		context.getters = {
-			getOrchestrationResultId: null,
-			getNextObjectId: nextId
-		};
+	describe( 'addZFunctionResultToTree', () => {
+		it( 'Add orchestration result to the zobject tree (no prior result)', function () {
+			var result = { Z1K1: 'Z6', Z6K1: 'A new string' },
+				payload = { result: result, resultId: 6 },
+				nextId = 6;
+			context.getters = {
+				getOrchestrationResultId: null,
+				getNextObjectId: nextId
+			};
 
-		context.commit = jest.fn( function () {
-			return;
+			context.commit = jest.fn( function () {
+				return;
+			} );
+
+			callZFunctionModule.actions.addZFunctionResultToTree( context, payload );
+
+			expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObject', {
+				zobject: result,
+				key: '',
+				id: nextId,
+				parent: ''
+			} );
 		} );
 
-		callZFunctionModule.actions.addZFunctionResultToTree( context, payload );
+		it( 'Add orchestration result to the zobject tree (with prior result)', function () {
+			var result = { Z1K1: 'Z6', Z6K1: 'A new string' },
+				payload = { result: result, resultId: 6 },
+				nextId = 6;
+			context.getters = {
+				getOrchestrationResultId: nextId,
+				getNextObjectId: nextId
+			};
 
-		expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObject', {
-			zobject: result,
-			key: '',
-			id: nextId,
-			parent: ''
-		} );
-	} );
+			context.commit = jest.fn( function () {
+				return;
+			} );
 
-	it( 'Add orchestration result to the zobject tree (with prior result)', function () {
-		var result = { Z1K1: 'Z6', Z6K1: 'A new string' },
-			payload = { result: result, resultId: 6 },
-			nextId = 6;
-		context.getters = {
-			getOrchestrationResultId: nextId,
-			getNextObjectId: nextId
-		};
+			callZFunctionModule.actions.addZFunctionResultToTree( context, payload );
 
-		context.commit = jest.fn( function () {
-			return;
-		} );
-
-		callZFunctionModule.actions.addZFunctionResultToTree( context, payload );
-
-		expect( context.commit ).toHaveBeenCalledTimes( 0 );
-		expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObject', {
-			zobject: result,
-			key: '',
-			id: nextId,
-			parent: ''
+			expect( context.commit ).toHaveBeenCalledTimes( 0 );
+			expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObject', {
+				zobject: result,
+				key: '',
+				id: nextId,
+				parent: ''
+			} );
 		} );
 	} );
 } );

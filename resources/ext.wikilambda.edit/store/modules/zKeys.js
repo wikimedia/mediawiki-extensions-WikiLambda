@@ -226,6 +226,29 @@ module.exports = exports = {
 				return labelData ? labelData.label : id;
 			}
 			return findLabel;
+		},
+
+		/**
+		 * Returns the array of implementations of a persisted Function
+		 * stored in the global state, given its Function Zid
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getAttachedImplementations: function ( state ) {
+			/**
+			 * @param {string} zid
+			 * @return {Array}
+			 */
+			function findImplementations( zid ) {
+				const func = state.zKeys[ zid ];
+				if ( func ) {
+					const imps = func[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_IMPLEMENTATIONS ];
+					return imps ? imps.slice( 1 ) : [];
+				}
+				return [];
+			}
+			return findImplementations;
 		}
 	},
 	mutations: {

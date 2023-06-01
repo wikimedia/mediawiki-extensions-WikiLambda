@@ -47,13 +47,19 @@
 					:report-type="contentType"
 				></wl-function-report-widget>
 
-				<!-- Widget ZObject JSON -->
+				<wl-function-evaluator-widget
+					v-if="hasFunctionWidgets"
+					:function-zid="targetFunctionZid"
+				></wl-function-evaluator-widget>
+
+				<!-- Widget ZObject JSON: Leave here for development purposes.
 				<div class="ext-wikilambda-widget ext-wikilambda-widget-json">
 					<wl-z-object-json
 						:readonly="true"
 						:zobject-raw="getZObjectAsJson"
 					></wl-z-object-json>
 				</div>
+				-->
 			</div>
 		</div>
 	</div>
@@ -63,7 +69,8 @@
 
 var Constants = require( '../Constants.js' ),
 	ZObjectKeyValue = require( '../components/default-view-types/ZObjectKeyValue.vue' ),
-	ZObjectJson = require( '../components/ZObjectJson.vue' ),
+	// ZObjectJson = require( '../components/ZObjectJson.vue' ),
+	FunctionEvaluatorWidget = require( '../components/widgets/FunctionEvaluator.vue' ),
 	FunctionExplorerWidget = require( '../components/widgets/FunctionExplorer.vue' ),
 	AboutWidget = require( '../components/widgets/About.vue' ),
 	PublishWidget = require( '../components/widgets/Publish.vue' ),
@@ -76,10 +83,11 @@ module.exports = exports = {
 	components: {
 		'wl-about-widget': AboutWidget,
 		'wl-publish-widget': PublishWidget,
+		'wl-function-evaluator-widget': FunctionEvaluatorWidget,
 		'wl-function-explorer-widget': FunctionExplorerWidget,
 		'wl-function-report-widget': FunctionReportWidget,
-		'wl-z-object-key-value': ZObjectKeyValue,
-		'wl-z-object-json': ZObjectJson
+		// 'wl-z-object-json': ZObjectJson,
+		'wl-z-object-key-value': ZObjectKeyValue
 	},
 	data: function () {
 		return {};
