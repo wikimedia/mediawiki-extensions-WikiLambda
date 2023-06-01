@@ -13,5 +13,9 @@
 	"apihelp-wikilambda_edit-example-edit-incorrect": "Poskus posodobitve ZObjekta Z010 z nepravilnimi podatki",
 	"apihelp-wikilambda_edit-param-summary": "Sprememba povzetka urejanj",
 	"apierror-wikilambda_supported_programming_languages-not-connected": "Ni bilo mogoče razrešiti gostitelja »$1«, verjetno zato, ker orkestrator ne deluje. Prosimo, preberite README, če želite dodati orkestrator vaši konfiguraciji docker-compose.",
-	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "Programske jezike ste zshtevali prevečkrat."
+	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "Programske jezike ste zshtevali prevečkrat.",
+	"apihelp-wikilambda_perform_test-z801": "Izvedba vseh testov ZTesters za vse ZIzvedbe ZFunkcije Z801/Echo",
+	"apihelp-wikilambda_perform_test-z801-implementation": "Izvedba vseh testov ZTesters za ZImplementation Z901/Built-in of ZFunction Z801/Echo",
+	"apihelp-wikilambda_perform_test-z801-tester": "Izvedba testerja Z8010/Echo Tester za nize in Z8011/Echo Tester za nize UTF8 za vse izvedbe ZFunkcije Z801/Echo",
+	"apihelp-wikilambda_perform_test-z801-implementation-and-testers": "Izvedbah vse ZTester Z8010 za ZImplementacijo Z901/Built-in ZFunkcije Z801/Echo"
 }

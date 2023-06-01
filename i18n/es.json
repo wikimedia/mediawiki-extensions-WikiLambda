@@ -302,5 +302,10 @@
 	"wikilambda-list-type-change-publish-dialog-warning": "Ha cambiado el tipo de una o más listas. Al publicar, todos los elementos de la lista serán eliminados",
 	"wikilambda-tester-details": "Detalles",
 	"wikilambda-about-widget-done-button": "Hecho",
-	"wikilambda-about-widget-add-language": "Añadir idioma"
+	"wikilambda-about-widget-add-language": "Añadir idioma",
+	"wikilambda-function-explorer-title": "Explorador de funciones",
+	"wikilambda-function-inputs-title": "Entradas",
+	"wikilambda-function-explorer-copied-text": "Se copió.",
+	"wikilambda-function-explorer-name-title": "Nombre",
+	"wikilambda-function-view-function-button-text": "Ver función"
 }
