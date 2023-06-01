@@ -5,7 +5,6 @@
  * @license MIT
  */
 var Constants = require( '../Constants.js' ),
-	typeUtils = require( './typeUtils.js' ).methods,
 	Row = require( '../store/classes/Row.js' ),
 	normalize = require( './schemata.js' ).methods.normalizeZObject;
 
@@ -98,52 +97,6 @@ module.exports = exports = {
 			}
 
 			return zObjectRows;
-		},
-
-		/**
-		 * @param {Object} zObject
-		 * @param {string} startingKey the row object from which the resulting object will pend
-		 * @param {number} startingId the first available rowID in the global state table
-		 * @param {number} startingParentId the first available rowID in the global state table
-		 * @return {Array}
-		 *
-		 * TODO: Deprecate in favor of convertZObjectToRows
-		 */
-		convertZObjectToTree: function ( zObject, startingKey, startingId, startingParentId ) {
-
-			var zObjectTree = [];
-
-			function tranverseJson( value, key, parentId ) {
-				var valueType = typeUtils.getZObjectType( value ),
-					currentId = zObjectTree.length,
-					type,
-					objectKey;
-
-				// When the node is terminal, push a new row with its final value as 'value'
-				if ( typeof value === 'string' ) {
-					zObjectTree.push( { id: currentId, key: key, value: value, parent: parentId } );
-					return;
-				}
-
-				// Else, push a new row with its type (array or object) as 'value'
-				type = valueType === Constants.Z_TYPED_LIST ? 'array' : 'object';
-				zObjectTree.push( { id: currentId, key: key, value: type, parent: parentId } );
-
-				// And for every child, perform the same operation
-				for ( objectKey in value ) {
-					tranverseJson( value[ objectKey ], objectKey, currentId );
-				}
-			}
-
-			if ( startingId !== undefined ) {
-				zObjectTree.length = startingId;
-			}
-			tranverseJson( normalize( zObject ), startingKey, startingParentId );
-
-			if ( startingId !== undefined ) {
-				zObjectTree.splice( 0, startingId );
-			}
-			return zObjectTree;
 		},
 
 		/**

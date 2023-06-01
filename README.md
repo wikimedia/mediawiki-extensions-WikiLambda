@@ -131,7 +131,7 @@ An example of a zObject JSON (mutlilingual string):
 ```
 The provided example have 2 different instances of a monolingual string (Z11). If we would have been using JSON in our data model, we would have found difficult to manage the data. The Vue components would have had to have a complex flow of data all the way up, and modification of data (for example change Buongiorno to Buon giorno) would have been difficult due to the multiple instances of the same structure withint he JSON.
 
-To simplify the overall structure the above zObject is translated in the following array structure at first load in the method "convertZObjectToTree" in the `zobjectThreeUtils.js` mixins folder.
+To simplify the overall structure the above zObject is translated in the following array structure at first load in the method "convertZObjectToRows" in the `zobjectThreeUtils.js` mixins folder.
 
 | id | key       | parent    | value        |
 |----|-----------|-----------|--------------|
