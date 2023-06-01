@@ -17,6 +17,7 @@
 			<a
 				:href="titleLink"
 				class="ext-wikilambda-function-report-item__title"
+				:class="{ 'ext-wikilambda-function-report-item__title--no-label': !titleLabelExists }"
 			>{{ title }}
 			</a>
 		</div>
@@ -74,9 +75,15 @@ module.exports = exports = {
 		testerStatus: function () {
 			return this.getZTesterResults( this.zFunctionId, this.zTesterId, this.zImplementationId );
 		},
-		title: function () {
+		titleLabel: function () {
 			return this.reportType === Constants.Z_TESTER ? this.getZkeyLabels[ this.zImplementationId ] :
 				this.getZkeyLabels[ this.zTesterId ];
+		},
+		titleLabelExists: function () {
+			return this.titleLabel !== undefined;
+		},
+		title: function () {
+			return this.titleLabelExists ? this.titleLabel : this.$i18n( 'wikilambda-editor-default-name' ).text();
 		},
 		titleLink: function () {
 			const zid = this.reportType === Constants.Z_TESTER ? this.zImplementationId : this.zTesterId;
@@ -186,6 +193,13 @@ module.exports = exports = {
 			color: @color-subtle;
 			margin-right: @spacing-50;
 		}
+	}
+}
+
+.ext-wikilambda-function-report-item__title--no-label {
+	&:link,
+	&:visited {
+		color: @color-placeholder;
 	}
 }
 </style>
