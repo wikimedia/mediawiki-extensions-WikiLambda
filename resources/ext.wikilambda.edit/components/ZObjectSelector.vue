@@ -323,7 +323,7 @@ module.exports = exports = {
 			 * @return {boolean}
 			 */
 			isExcludedZid: function ( zid ) {
-				return ( ( this.excludeZids.indexOf( zid ) !== -1 ) || this.isDisallowedType( zid ) );
+				return ( this.excludeZids.includes( zid ) || this.isDisallowedType( zid ) );
 			},
 
 			/**
@@ -340,7 +340,7 @@ module.exports = exports = {
 			isDisallowedType: function ( zid ) {
 				return (
 					( this.type === Constants.Z_TYPE ) &&
-					( Constants.EXCLUDED_Z_TYPES.indexOf( zid ) !== -1 )
+					Constants.EXCLUDED_Z_TYPES.includes( zid )
 				);
 			},
 
@@ -375,7 +375,7 @@ module.exports = exports = {
 					returnType: this.returnType
 				} ).then( ( payload ) => {
 					// If the string searched has changed, do not show the search result
-					if ( this.inputValue.indexOf( input ) === -1 ) {
+					if ( !this.inputValue.includes( input ) ) {
 						return;
 					}
 					const getZkeys = [];

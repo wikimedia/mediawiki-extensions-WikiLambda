@@ -29,6 +29,7 @@
 			}
 		],
 		"no-var": "off",
+		"es-x/no-array-prototype-includes": "off",
 		"jsdoc/require-param-type": "error",
 		"jsdoc/require-returns": "error",
 		"jsdoc/check-types": "error",

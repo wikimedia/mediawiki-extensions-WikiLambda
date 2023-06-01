@@ -87,7 +87,7 @@ module.exports = exports = {
 		// This are the argument needed for the function call to be performed
 		functionCallArguments: function () {
 			var keys = this.zobjectChildren.filter( function ( child ) {
-				return child.key.indexOf( this.zObjectType ) !== -1;
+				return child.key.includes( this.zObjectType );
 			}.bind( this ) );
 
 			return keys;

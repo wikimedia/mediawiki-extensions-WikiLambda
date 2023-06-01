@@ -462,7 +462,7 @@ module.exports = exports = {
 
 					// If the type is any but literal (resolvers like reference,
 					// function call or argument reference) then no expanded mode
-					if ( Constants.RESOLVER_TYPES.indexOf( this.value ) > -1 ) {
+					if ( Constants.RESOLVER_TYPES.includes( this.value ) ) {
 						return false;
 					}
 				}
@@ -470,7 +470,7 @@ module.exports = exports = {
 				// If the type doesn't have any builting component, it must
 				// be always shown in its expanded-mode representation--the set
 				// of key values, so we won't show the expanded mode toggle
-				if ( Object.keys( Constants.BUILTIN_COMPONENTS ).indexOf( this.type ) < 0 ) {
+				if ( !Object.keys( Constants.BUILTIN_COMPONENTS ).includes( this.type ) ) {
 					return false;
 				}
 				return true;

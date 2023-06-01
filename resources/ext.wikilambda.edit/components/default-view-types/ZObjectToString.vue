@@ -188,7 +188,7 @@ module.exports = exports = {
 				if ( missingType === Constants.Z_FUNCTION_CALL ) {
 					missingType = Constants.Z_FUNCTION;
 				}
-				if ( Constants.RESOLVER_TYPES.indexOf( missingType ) > -1 ) {
+				if ( Constants.RESOLVER_TYPES.includes( missingType ) ) {
 					missingType = this.expectedType;
 				}
 				const label = missingType ? this.getLabel( missingType ) : this.getLabel( Constants.Z_OBJECT );

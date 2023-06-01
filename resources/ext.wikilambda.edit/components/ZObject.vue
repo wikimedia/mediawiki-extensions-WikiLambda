@@ -129,7 +129,7 @@ module.exports = exports = {
 					Constants.Z_BOOLEAN,
 					Constants.Z_ARGUMENT_REFERENCE,
 					Constants.Z_CHARACTER
-				].indexOf( this.type ) !== -1;
+				].includes( this.type );
 			},
 			classZObject: function () {
 				return {

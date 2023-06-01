@@ -109,7 +109,7 @@ module.exports = exports = {
 			 */
 			return function ( zid ) {
 				var results = Object.keys( state.zTesterResults ).filter( function ( key ) {
-						return key.indexOf( zid ) !== -1 && state.zTesterResults[ key ] !== undefined;
+						return key.includes( zid ) && state.zTesterResults[ key ] !== undefined;
 					} ),
 					total = results.length,
 					passing = results.filter( function ( key ) {

@@ -145,7 +145,7 @@ module.exports = {
 			var uri = mw.Uri();
 
 			// Set title of mw query if url is in /wiki/{{ title }} format
-			if ( !uri.query.title && uri.path.indexOf( '/wiki' ) !== -1 ) {
+			if ( !uri.query.title && uri.path.includes( '/wiki' ) ) {
 				const lastPathIndex = uri.path.lastIndexOf( '/' );
 				uri.query.title = uri.path.slice( lastPathIndex + 1 );
 			}

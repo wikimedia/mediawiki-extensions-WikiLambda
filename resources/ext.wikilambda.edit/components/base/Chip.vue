@@ -63,7 +63,7 @@ module.exports = exports = {
 		},
 		intent: {
 			validator: function ( value ) {
-				return [ 'notice', 'warning', 'error', 'success' ].indexOf( value ) !== -1;
+				return [ 'notice', 'warning', 'error', 'success' ].includes( value );
 			},
 			type: String,
 			default: 'notice',
