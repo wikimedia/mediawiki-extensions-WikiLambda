@@ -25,8 +25,6 @@ var configureCompat = require( 'vue' ).configureCompat,
 	mapActions = require( 'vuex' ).mapActions,
 	FunctionEditor = require( '../views/FunctionEditor.vue' ),
 	FunctionViewer = require( '../views/FunctionViewer.vue' ),
-	ZObjectViewer = require( '../views/ZObjectViewer.vue' ),
-	ZObjectEditor = require( '../views/ZObjectEditor.vue' ),
 	DefaultView = require( '../views/DefaultView.vue' );
 
 const startTime = Date.now();
@@ -39,8 +37,6 @@ module.exports = exports = {
 	components: {
 		'wl-function-editor': FunctionEditor,
 		'wl-function-viewer': FunctionViewer,
-		'wl-zobject-viewer': ZObjectViewer,
-		'wl-zobject-editor': ZObjectEditor,
 		'wl-default-view': DefaultView
 	},
 	inject: {
