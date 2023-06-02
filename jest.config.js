@@ -68,10 +68,10 @@ module.exports = {
 			statements: 90
 		},
 		'./resources/ext.wikilambda.edit/': {
-			branches: 72,
-			lines: 79,
-			functions: 80,
-			statements: 79
+			branches: 75,
+			lines: 82,
+			functions: 85,
+			statements: 82
 		},
 		'./resources/ext.wikilambda.edit/mixins': {
 			branches: 73,
@@ -80,10 +80,10 @@ module.exports = {
 			statements: 66
 		},
 		'./resources/ext.wikilambda.edit/store': {
-			branches: 76,
-			lines: 85,
-			functions: 89,
-			statements: 85
+			branches: 80,
+			lines: 89,
+			functions: 93,
+			statements: 89
 		}
 	},
 
