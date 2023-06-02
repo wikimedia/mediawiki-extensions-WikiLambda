@@ -86,8 +86,7 @@ module.exports = exports = {
 		// Set zobject
 		this.initializeZObject().then(
 			function () {
-				this.initialize( this.$i18n );
-				$.$i18n = this.$i18n;
+				this.initialize();
 				this.evaluateUri();
 				this.isAppSetup = true;
 			}.bind( this )

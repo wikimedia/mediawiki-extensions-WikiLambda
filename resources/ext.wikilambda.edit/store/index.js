@@ -9,7 +9,6 @@
 var Vuex = require( 'vuex' ),
 	state = require( './state.js' ),
 	actions = require( './actions.js' ),
-	mutations = require( './mutations.js' ),
 	getters = require( './getters.js' ),
 	argumentsModule = require( './modules/arguments.js' ),
 	zobjectModule = require( './modules/zobject.js' ),
@@ -28,7 +27,6 @@ var Vuex = require( 'vuex' ),
 module.exports = Vuex.createStore( {
 	state: state,
 	actions: actions,
-	mutations: mutations,
 	getters: getters,
 	modules: {
 		argumentsModule: argumentsModule,

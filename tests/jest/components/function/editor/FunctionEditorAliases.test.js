@@ -72,11 +72,18 @@ describe( 'FunctionEditorAliases', () => {
 					return strings;
 				}
 			},
-			getZObjectById: () => ( id ) => {
+			getRowById: () => ( id ) => {
 				if ( id === stringValueId ) {
 					return { parent: stringId };
 				} else if ( id === stringId ) {
 					return { id: stringId, parent: monolingualStringsetValueId };
+				}
+			},
+			getParentRowId: () => ( id ) => {
+				if ( id === stringValueId ) {
+					return stringId;
+				} else if ( id === stringId ) {
+					return monolingualStringsetValueId;
 				}
 			},
 			getNextObjectId: () => nextId

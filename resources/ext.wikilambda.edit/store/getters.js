@@ -8,37 +8,6 @@
 var Constants = require( '../Constants.js' );
 
 module.exports = exports = {
-	getZkeyLiteralType: function ( state, getters ) {
-
-		/**
-		 * Retrieve the literal type (actual type) of a specific ZKey. This is mainly used in the modeselector.
-		 *
-		 * @param {number} parentKey
-		 * @return {string} LiteralType
-		 */
-		return function ( parentKey ) {
-			if ( !parentKey ) {
-				return;
-			}
-
-			const type = parentKey.match( /Z[1-9]\d*/ )[ 0 ];
-			if ( getters.getZkeys[ type ] ) {
-				const keysArray = getters.getZkeys[
-					type
-				][
-					Constants.Z_PERSISTENTOBJECT_VALUE
-				][
-					Constants.Z_TYPE_KEYS
-				];
-
-				const keyFound = keysArray && keysArray.find(
-					( key ) => key[ Constants.Z_KEY_ID ] === parentKey
-				);
-				return keyFound ? keyFound[ Constants.Z_KEY_TYPE ] : null;
-			}
-
-		};
-	},
 	paginateList: function () {
 		return function ( items ) {
 			var paginatedItems = {};

@@ -231,37 +231,6 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Remove an item from the generic List. Due to the structure of the list.
-		 * this required object to be shift accross.
-		 *
-		 * @param {Object} context
-		 * @param {Object} item
-		 * @param {number} item.id
-		 * @param {number} item.parent
-		 */
-		removeTypedListItem: function ( context, item ) {
-			var currentListItemParentId = context.getters.getZObjectById( item.parent ).id;
-			var currentItemK2 = context.getters.getNestedZObjectById( item.parent,
-				[ Constants.Z_TYPED_OBJECT_ELEMENT_2 ] );
-			var currentItemNestedElement = context.getters.getNestedZObjectById( item.parent,
-				[ Constants.Z_TYPED_OBJECT_ELEMENT_2, Constants.Z_TYPED_OBJECT_ELEMENT_1 ] );
-
-			// If nested values are available, shift them one level up by changing its parent
-			if ( currentItemNestedElement ) {
-				var nestedItemNestedList = context.getters.getNestedZObjectById( item.parent,
-					[ Constants.Z_TYPED_OBJECT_ELEMENT_2, Constants.Z_TYPED_OBJECT_ELEMENT_2 ] );
-
-				context.dispatch( 'setZObjectParent', { id: currentItemNestedElement.id, parent: currentListItemParentId } );
-				context.dispatch( 'setZObjectParent', { id: nestedItemNestedList.id, parent: currentListItemParentId } );
-			}
-
-			// remove the K1 and K2 values and its children
-			context.dispatch( 'removeZObjectChildren', item.id );
-			context.dispatch( 'removeZObject', item.id );
-			context.dispatch( 'removeZObjectChildren', currentItemK2.id );
-			context.dispatch( 'removeZObject', currentItemK2.id );
-		},
-		/**
 		 * Perform a function call to retrieve the return typed of a "Function to Type"
 		 *
 		 * @param {Object} context
