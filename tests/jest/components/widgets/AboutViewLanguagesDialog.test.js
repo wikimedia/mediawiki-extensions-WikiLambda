@@ -31,7 +31,13 @@ describe( 'AboutViewLanguagesDialog', () => {
 	beforeEach( () => {
 		getters = $.extend( getters, {
 			getMetadataLanguages: createGettersWithFunctionsMock( [ langs.en.langZid, langs.es.langZid ] ),
-			getZPersistentNameLangs: createGettersWithFunctionsMock( [ langs.en, langs.es ] ),
+			getZPersistentName: () => ( langZid ) => {
+				const names = {
+					[ langs.en.langZid ]: langs.en,
+					[ langs.es.langZid ]: langs.es
+				};
+				return names[ langZid ];
+			},
 			getZMonolingualTextValue: () => ( rowId ) => {
 				return rowId === 0 ? 'name' : 'nombre';
 			},
@@ -83,7 +89,15 @@ describe( 'AboutViewLanguagesDialog', () => {
 					langs.hr.langZid,
 					langs.te.langZid
 				] ),
-				getZPersistentNameLangs: createGettersWithFunctionsMock( [ langs.en, langs.es, langs.eu, langs.qu ] ),
+				getZPersistentName: () => ( langZid ) => {
+					const names = {
+						[ langs.en.langZid ]: langs.en,
+						[ langs.es.langZid ]: langs.es,
+						[ langs.eu.langZid ]: langs.eu,
+						[ langs.qu.langZid ]: langs.qu
+					};
+					return names[ langZid ];
+				},
 				getZMonolingualTextValue: () => ( rowId ) => {
 					const names = [ 'Name', 'Nombre', 'Izena', 'Suti' ];
 					return names[ rowId ];
