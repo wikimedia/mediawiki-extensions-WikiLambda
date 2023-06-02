@@ -104,7 +104,7 @@ module.exports = exports = {
 		'getLabel',
 		'getMetadataLanguages',
 		'getZMonolingualTextValue',
-		'getZPersistentNameLangs'
+		'getZPersistentName'
 	] ), {
 		/**
 		 * Returns a list of all the language Zids that are present
@@ -118,15 +118,6 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns a list of all Name/Label (Z2K3) rows available
-		 *
-		 * @return {Array}
-		 */
-		allNameObjects: function () {
-			return this.getZPersistentNameLangs();
-		},
-
-		/**
 		 * Builds the list of items that correspond to the available
 		 * languages in the object. Each item contains the language Zid
 		 * and label, the Name/Label in that languege, and the flags
@@ -136,7 +127,7 @@ module.exports = exports = {
 		 */
 		localItems: function () {
 			return this.allLangs.map( ( langZid ) => {
-				const thisName = this.getNameForLanguage( langZid );
+				const thisName = this.getZPersistentName( langZid );
 				return {
 					langZid,
 					langLabel: this.getLabel( langZid ),
@@ -198,19 +189,6 @@ module.exports = exports = {
 		'fetchZKeys',
 		'lookupZObject'
 	] ), {
-		/**
-		 * Returns the name object for a given language. This object
-		 * contains the information of the rowId where the name is.
-		 *
-		 * @param {string} langZid
-		 * @return {string}
-		 */
-		getNameForLanguage: function ( langZid ) {
-			return this.allNameObjects.find( function ( lang ) {
-				return ( lang.langZid === langZid );
-			} );
-		},
-
 		/**
 		 * Returns whether the given language Zid has any metadata
 		 * in the current object (either name, description or aliases)
@@ -282,7 +260,7 @@ module.exports = exports = {
 				// Compile information for every search result
 				this.lookupResults = payload
 					.map( ( result ) => {
-						const name = this.getNameForLanguage( result.page_title );
+						const name = this.getZPersistentName( result.page_title );
 						allZids.push( result.page_title );
 						return {
 							langZid: result.page_title,

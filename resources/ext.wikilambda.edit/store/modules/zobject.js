@@ -540,8 +540,10 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns the best name for the ZPersistent object depending
-		 * on the user preferred languge and the languages available.
+		 * Returns the name for the ZPersistent object for a given
+		 * lang Zid. If language isn't passed as a parameter, returns
+		 * the best name for the ZPersistent object depending on the
+		 * user preferred languge and the languages available.
 		 *
 		 * @param {Object} _state
 		 * @param {Object} getters
@@ -549,19 +551,25 @@ module.exports = exports = {
 		 */
 		getZPersistentName: function ( _state, getters ) {
 			/**
+			 * @param {string|undefined} langZid
 			 * @param {number} rowId
-			 * @return {Object}
+			 * @return {Object|undefined}
 			 */
-			function findName( rowId = 0 ) {
-				return selectBestLanguage( getters.getZPersistentNameLangs( rowId ) );
+			function findName( langZid = null, rowId = 0 ) {
+				const allNames = getters.getZPersistentNameLangs( rowId );
+				return langZid ?
+					allNames.find( ( lang ) => ( lang.langZid === langZid ) ) :
+					selectBestLanguage( allNames );
 			}
 
 			return findName;
 		},
 
 		/**
-		 * Returns the best description for the ZPersistent object depending
-		 * on the user preferred languge and the languages available.
+		 * Returns the description for the ZPersistent object for a given
+		 * lang Zid. If language isn't passed as a parameter, returns the
+		 * best description for the ZPersistent object depending on the
+		 * user preferred languge and the languages available.
 		 *
 		 * @param {Object} _state
 		 * @param {Object} getters
@@ -569,19 +577,25 @@ module.exports = exports = {
 		 */
 		getZPersistentDescription: function ( _state, getters ) {
 			/**
+			 * @param {string|undefined} langZid
 			 * @param {number} rowId
-			 * @return {Object}
+			 * @return {Object|undefined}
 			 */
-			function findDescription( rowId = 0 ) {
-				return selectBestLanguage( getters.getZPersistentDescriptionLangs( rowId ) );
+			function findDescription( langZid = null, rowId = 0 ) {
+				const allDescriptions = getters.getZPersistentDescriptionLangs( rowId );
+				return langZid ?
+					allDescriptions.find( ( lang ) => ( lang.langZid === langZid ) ) :
+					selectBestLanguage( allDescriptions );
 			}
 
 			return findDescription;
 		},
 
 		/**
-		 * Returns the best alias for the ZPersistent object depending
-		 * on the user preferred languge and the languages available.
+		 * Returns the alias for the ZPersistent object for a given
+		 * lang Zid. If language isn't passed as a parameter, returns
+		 * the best alias for the ZPersistent object depending on the
+		 * user preferred languge and the languages available.
 		 *
 		 * @param {Object} _state
 		 * @param {Object} getters
@@ -589,11 +603,15 @@ module.exports = exports = {
 		 */
 		getZPersistentAlias: function ( _state, getters ) {
 			/**
+			 * @param {string|undefined} langZid
 			 * @param {number} rowId
-			 * @return {Object}
+			 * @return {Object|undefined}
 			 */
-			function findAlias( rowId = 0 ) {
-				return selectBestLanguage( getters.getZPersistentAliasLangs( rowId ) );
+			function findAlias( langZid = null, rowId = 0 ) {
+				const allAlias = getters.getZPersistentAliasLangs( rowId );
+				return langZid ?
+					allAlias.find( ( lang ) => ( lang.langZid === langZid ) ) :
+					selectBestLanguage( allAlias );
 			}
 
 			return findAlias;

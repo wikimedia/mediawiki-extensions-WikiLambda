@@ -19,9 +19,9 @@ describe( 'AboutEditMetadataDialog', () => {
 			getRowByKeyPath: createGettersWithFunctionsMock( undefined ),
 			getZMonolingualTextValue: createGettersWithFunctionsMock( '' ),
 			getZMonolingualStringsetValues: createGettersWithFunctionsMock( [] ),
-			getZPersistentAliasLangs: createGettersWithFunctionsMock( [] ),
-			getZPersistentDescriptionLangs: createGettersWithFunctionsMock( [] ),
-			getZPersistentNameLangs: createGettersWithFunctionsMock( [] ),
+			getZPersistentAlias: createGettersWithFunctionsMock( undefined ),
+			getZPersistentDescription: createGettersWithFunctionsMock( undefined ),
+			getZPersistentName: createGettersWithFunctionsMock( undefined ),
 			getErrors: createGettersWithFunctionsMock( {} ),
 			getLabel: () => ( key ) => {
 				const labels = {
@@ -158,9 +158,9 @@ describe( 'AboutEditMetadataDialog', () => {
 			const aliasValues = [ { rowId: 4, value: 'one' }, { rowId: 5, value: 'two' } ];
 
 			getters = $.extend( getters, {
-				getZPersistentAliasLangs: createGettersWithFunctionsMock( [ alias ] ),
-				getZPersistentDescriptionLangs: createGettersWithFunctionsMock( [ description ] ),
-				getZPersistentNameLangs: createGettersWithFunctionsMock( [ name ] ),
+				getZPersistentAlias: createGettersWithFunctionsMock( alias ),
+				getZPersistentDescription: createGettersWithFunctionsMock( description ),
+				getZPersistentName: createGettersWithFunctionsMock( name ),
 				getZMonolingualStringsetValues: createGettersWithFunctionsMock( aliasValues ),
 				getZMonolingualTextValue: () => ( rowId ) => {
 					return rowId === 1 ? 'name' : 'some description';

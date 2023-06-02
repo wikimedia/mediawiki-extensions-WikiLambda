@@ -160,44 +160,17 @@ module.exports = exports = {
 		'getRowByKeyPath',
 		'getZMonolingualTextValue',
 		'getZMonolingualStringsetValues',
-		'getZPersistentAliasLangs',
-		'getZPersistentDescriptionLangs',
-		'getZPersistentNameLangs'
+		'getZPersistentAlias',
+		'getZPersistentDescription',
+		'getZPersistentName'
 	] ), {
-		/**
-		 * Returns a list of all Name/Label (Z2K3) rows available
-		 *
-		 * @return {Array}
-		 */
-		allNameObjects: function () {
-			return this.getZPersistentNameLangs();
-		},
-		/**
-		 * Returns a list of all Description (Z2K5) rows available
-		 *
-		 * @return {Array}
-		 */
-		allDescriptionObjects: function () {
-			return this.getZPersistentDescriptionLangs();
-		},
-		/**
-		 * Returns a list of all Alias (Z2K4) rows available
-		 *
-		 * @return {Array}
-		 */
-		allAliasObjects: function () {
-			return this.getZPersistentAliasLangs();
-		},
-
 		/**
 		 * Returns the Name/Label (Z2K3) row for the selected language.
 		 *
 		 * @return {Object}
 		 */
 		currentNameObject: function () {
-			return this.allNameObjects.find( ( lang ) => {
-				return ( lang.langZid === this.forLanguage );
-			} );
+			return this.getZPersistentName( this.forLanguage );
 		},
 		/**
 		 * Returns the Description (Z2K5) row for the selected language.
@@ -205,9 +178,7 @@ module.exports = exports = {
 		 * @return {Object}
 		 */
 		currentDescriptionObject: function () {
-			return this.allDescriptionObjects.find( ( lang ) => {
-				return ( lang.langZid === this.forLanguage );
-			} );
+			return this.getZPersistentDescription( this.forLanguage );
 		},
 		/**
 		 * Returns the Alias (Z2K4) row for the selected language.
@@ -215,9 +186,7 @@ module.exports = exports = {
 		 * @return {Object}
 		 */
 		currentAliasObject: function () {
-			return this.allAliasObjects.find( ( lang ) => {
-				return ( lang.langZid === this.forLanguage );
-			} );
+			return this.getZPersistentAlias( this.forLanguage );
 		},
 
 		/**
