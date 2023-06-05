@@ -26,9 +26,7 @@ describe( 'FunctionViewerAliases', function () {
 				parent: 1
 			} ),
 			getUserZlangZID: jest.fn(),
-			getZkeyLabels: jest.fn().mockReturnValue( {
-				Z1002: ''
-			} ),
+			getLabel: createGettersWithFunctionsMock(),
 			getZkeys: jest.fn().mockReturnValue( {
 				Z1002: {
 					Z1K1: 'Z2',

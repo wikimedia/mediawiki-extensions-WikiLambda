@@ -25,17 +25,7 @@ module.exports = exports = {
 		 * Collection of LabelData object indexed by the identifier of
 		 * the ZKey, ZPersistentObject or ZArgumentDeclaration.
 		 */
-		labels: {},
-		/**
-		 * Collection of LabelData objects for all the
-		 * gathered objects, keys and arguments.
-		 *
-		 * TODO (T329105): rename to labels, allLabels, labelData...
-		 * TODO (T329106): There's only one per key, and every time they are used the
-		 * collection is filtered. Should we replace this for an object where the
-		 * index is the key (Zn when zid, or ZnKm when key or argument)
-		 */
-		zKeyAllLanguageLabels: []
+		labels: {}
 	},
 	getters: {
 		/**
@@ -135,28 +125,6 @@ module.exports = exports = {
 				// If key is a not found, a list index or a local key, return Z1/Object (any) type
 				return Constants.Z_OBJECT;
 			};
-		},
-
-		/**
-		 * Returns all fetched zids and their label, which will be in the
-		 * user selected language if available, or in the closes fallback.
-		 * The returned collection is in the shape of key-values where key is the
-		 * zid and value is the string label.
-		 *
-		 * TODO (T329106): Deprecate in favor of getLabel( zid )
-		 *
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @return {Object} map of { zid, label } values
-		 */
-		getZkeyLabels: function ( state, getters ) {
-			const allLabels = {};
-			state.zKeyAllLanguageLabels.forEach( function ( label ) {
-				if ( !allLabels[ label.zid ] || ( label.lang === getters.getCurrentZLanguage ) ) {
-					allLabels[ label.zid ] = label.label;
-				}
-			} );
-			return allLabels;
 		},
 
 		/**
@@ -261,18 +229,6 @@ module.exports = exports = {
 		 */
 		setLabel: function ( state, labelData ) {
 			state.labels[ labelData.zid ] = labelData;
-		},
-
-		/**
-		 * Add labels info to the state
-		 *
-		 * TODO (T329106): Deprecate
-		 *
-		 * @param {Object} state
-		 * @param {Array} allKeyLanguageLabels
-		 */
-		addAllZKeyLabels: function ( state, allKeyLanguageLabels ) {
-			state.zKeyAllLanguageLabels = state.zKeyAllLanguageLabels.concat( allKeyLanguageLabels );
 		}
 	},
 	actions: {
@@ -387,7 +343,6 @@ module.exports = exports = {
 
 					// 2. State mutation:
 					// Add zObject label in user's selected language
-					const zObjectLabels = [];
 					const multiStr = zidInfo[
 						Constants.Z_PERSISTENTOBJECT_LABEL
 					][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
@@ -402,21 +357,11 @@ module.exports = exports = {
 							multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
 						);
 						context.commit( 'setLabel', labelData );
-
-						// TODO (T329107): remove below
-						zObjectLabels.push( {
-							zid,
-							label: multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
-							lang: multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
-						} );
 					}
 
-					// TODO (T329107): remove below
-					context.commit( 'addAllZKeyLabels', zObjectLabels );
 					// 3. State mutation:
 					// Add the key or argument labels from the selected language to the store
 					let zKeys;
-					const zKeyLabels = [];
 					const zType = ( typeof zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ] === 'object' ) ?
 						zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] :
 						undefined;
@@ -443,13 +388,6 @@ module.exports = exports = {
 										keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
 									);
 									context.commit( 'setLabel', labelData );
-
-									// TODO (T329107): remove below
-									zKeyLabels.push( {
-										zid: key[ Constants.Z_KEY_ID ],
-										label: keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
-										lang: keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
-									} );
 								}
 							} );
 							break;
@@ -474,13 +412,6 @@ module.exports = exports = {
 										argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
 									);
 									context.commit( 'setLabel', labelData );
-
-									// TODO (T329107): remove below
-									zKeyLabels.push( {
-										zid: arg[ Constants.Z_ARGUMENT_KEY ],
-										label: argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
-										lang: argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
-									} );
 								}
 							} );
 							break;
@@ -488,10 +419,6 @@ module.exports = exports = {
 						default:
 							// Do nothing
 					}
-
-					// TODO (T329107): remove below
-					context.commit( 'addAllZKeyLabels', zKeyLabels );
-
 				} );
 
 				// performFetch resolves to the list of zIds fetched.

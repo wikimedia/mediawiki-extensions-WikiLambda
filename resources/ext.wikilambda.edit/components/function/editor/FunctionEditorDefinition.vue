@@ -120,6 +120,7 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
+			zobjectId: 0,
 			icons: icons,
 			labelLanguages: [],
 			initialInputTypes: [],
@@ -130,7 +131,7 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getZkeyLabels',
+		'getLabel',
 		'getCurrentZLanguage',
 		'getCurrentZObjectId',
 		'currentZObjectLanguages',
@@ -183,14 +184,6 @@ module.exports = exports = {
 			// TODO (T299604): Instead of just "users with special permissions", once the right exists we should
 			// actually check which group has the right, fetch its display name, and display it in this text.
 			return this.$i18n( 'wikilambda-editor-fn-edit-definition-tooltip-content' ).text();
-		},
-		/**
-		 * zobject ID
-		 *
-		 * @return {number}
-		 */
-		zobjectId: function () {
-			return this.getZkeyLabels[ 0 ];
 		},
 		/**
 		 * zobjectId
@@ -247,7 +240,7 @@ module.exports = exports = {
 				formattedLanguages.push( {
 					zLang: languageList[ item ][ Constants.Z_REFERENCE_ID ],
 					// get the label for the language zId
-					label: this.getZkeyLabels[ languageList[ item ][ Constants.Z_REFERENCE_ID ] ],
+					label: this.getLabel( languageList[ item ][ Constants.Z_REFERENCE_ID ] ),
 					readOnly: true
 				} );
 			}
@@ -308,7 +301,7 @@ module.exports = exports = {
 			}
 			this.labelLanguages[ index ] = {
 				zLang: lang,
-				label: this.getZkeyLabels[ lang ],
+				label: this.getLabel( lang ),
 				readOnly: true
 			};
 		},
@@ -452,7 +445,7 @@ module.exports = exports = {
 	mounted: function () {
 		if ( !this.zObjectLabels ) {
 			this.labelLanguages.push( {
-				label: this.getZkeyLabels[ this.getCurrentZLanguage ],
+				label: this.getLabel( this.getCurrentZLanguage ),
 				zLang: this.getCurrentZLanguage,
 				readonly: false
 			} );

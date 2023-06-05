@@ -107,7 +107,7 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getZkeyLabels',
+		'getLabel',
 		'getZkeys',
 		'getZTesterPercentage',
 		'getZTesterMetadata',
@@ -175,10 +175,10 @@ module.exports = exports = {
 				this.zFunctionId, this.activeZTesterId, this.activeZImplementationId );
 		},
 		activeTesterLabel: function () {
-			return !this.activeZTesterId ? '' : ( this.getZkeyLabels[ this.activeZTesterId ] || this.activeZTesterId );
+			return !this.activeZTesterId ? '' : this.getLabel( this.activeZTesterId );
 		},
 		activeImplementationLabel: function () {
-			return !this.activeZImplementationId ? '' : ( this.getZkeyLabels[ this.activeZImplementationId ] || this.activeZImplementationId );
+			return !this.activeZImplementationId ? '' : this.getLabel( this.activeZImplementationId );
 		},
 		reloadIcon: function () {
 			return this.getFetchingTestResults ? icons.cdxIconCancel : icons.cdxIconReload;
@@ -206,12 +206,12 @@ module.exports = exports = {
 		implementationLabel: function ( implementation ) {
 			return this.zImplementationId ?
 				this.$i18n( 'wikilambda-tester-results-current-implementation' ).text() :
-				( this.getZkeyLabels[ implementation ] || implementation );
+				this.getLabel( implementation );
 		},
 		testLabel: function ( test ) {
 			return this.zTesterId ?
 				this.$i18n( 'wikilambda-tester-results-current-test' ).text() :
-				( this.getZkeyLabels[ test ] || test );
+				this.getLabel( test );
 		}
 	} ),
 	watch: {

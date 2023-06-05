@@ -6,6 +6,7 @@
  */
 'use strict';
 var VueTestUtils = require( '@vue/test-utils' ),
+	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	FunctionReport = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionReport.vue' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
 
@@ -18,31 +19,14 @@ describe( 'FunctionReport', function () {
 
 	beforeEach( function () {
 		getters = {
-			getZkeyLabels: jest.fn( function () {
-				return {
-					Z10000: 'FN',
-					Z10001: 'IMPL',
-					Z10002: 'TESTER',
-					Z10004: 'IMPL2'
-				};
-			} ),
-			getZkeys: jest.fn( function () {
-				return {};
-			} ),
-			getViewMode: jest.fn( function () {
-				return false;
-			} ),
-			getZTesterPercentage: jest.fn( function () {
-				return function () {
-					return {
-						passing: 1,
-						total: 1,
-						percentage: 100
-					};
-				};
-			} ),
-			getFetchingTestResults: jest.fn( function () {
-				return false;
+			getLabel: createGettersWithFunctionsMock(),
+			getZkeys: createGettersWithFunctionsMock(),
+			getViewMode: createGettersWithFunctionsMock(),
+			getFetchingTestResults: createGettersWithFunctionsMock( false ),
+			getZTesterPercentage: createGettersWithFunctionsMock( {
+				passing: 1,
+				total: 1,
+				percentage: 100
 			} )
 		};
 		global.store.hotUpdate( {

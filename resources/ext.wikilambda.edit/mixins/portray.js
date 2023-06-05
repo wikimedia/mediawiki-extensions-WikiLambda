@@ -53,18 +53,18 @@ module.exports = exports = {
 		 * readable style, using raw HTML markup
 		 *
 		 * @param {Object} zMap a Z883/Typed map, in canonical form
-		 * @param {Array} labels
+		 * @param {Function} getLabel
 		 * @return {string}
 		 */
-		portrayMetadataMap: function ( zMap, labels ) {
+		portrayMetadataMap: function ( zMap, getLabel ) {
 			var keysUsed = [];
 			let html = '<span><ul>';
 			// First, portray the known/expected metadata keys and their values
 			// If there's no 'errors' value, keyAndZErrorSummary will display 'None'
-			html = html + this.keyAndZErrorSummary( zMap, 'errors', labels, keysUsed );
+			html = html + this.keyAndZErrorSummary( zMap, 'errors', getLabel, keysUsed );
 			// With 'validateErrors', we don't want to display 'None', so check here if there's a value
 			if ( getValueFromCanonicalZMap( zMap, 'validateErrors' ) ) {
-				html = html + this.keyAndZErrorSummary( zMap, 'validateErrors', labels, keysUsed );
+				html = html + this.keyAndZErrorSummary( zMap, 'validateErrors', getLabel, keysUsed );
 			}
 			html = html + this.keyAndArbitraryValue( zMap, 'expectedTestResult', keysUsed );
 			html = html + this.keyAndArbitraryValue( zMap, 'actualTestResult', keysUsed );
@@ -118,11 +118,11 @@ module.exports = exports = {
 		 *
 		 * @param {Object} zMap a Z883/Typed map, in canonical form
 		 * @param {string} key
-		 * @param {Array} labels
+		 * @param {Function} getLabel
 		 * @param {Array} keysUsed any keys used (or checked) here are added to this array
 		 * @return {string}
 		 */
-		keyAndZErrorSummary: function ( zMap, key, labels, keysUsed ) {
+		keyAndZErrorSummary: function ( zMap, key, getLabel, keysUsed ) {
 			keysUsed.push( key );
 			let suberrors;
 			const error = getValueFromCanonicalZMap( zMap, key );
@@ -141,15 +141,15 @@ module.exports = exports = {
 			// eslint-disable-next-line mediawiki/msg-doc
 			const i18nKey = this.$i18n( knownKeys.get( key ).i18nId ).text();
 			let html = '<li><b>' + i18nKey + ':</b><br>';
-			html = html + this.formatZErrorSummary( suberrors, labels );
+			html = html + this.formatZErrorSummary( suberrors, getLabel );
 			return html + '</li>';
 		},
-		formatZErrorSummary: function ( suberrors, labels ) {
+		formatZErrorSummary: function ( suberrors, getLabel ) {
 			let html = '<ul>';
 			for ( const suberror of suberrors ) {
-				html = html + '<li>' + this.messageForSuberror( suberror, labels ) + '</li>';
+				html = html + '<li>' + this.messageForSuberror( suberror, getLabel ) + '</li>';
 				if ( suberror.children.length !== 0 ) {
-					html = html + this.formatZErrorSummary( suberror.children, labels );
+					html = html + this.formatZErrorSummary( suberror.children, getLabel );
 				}
 			}
 			return html + '</ul>';
@@ -160,13 +160,13 @@ module.exports = exports = {
 		 * more about the suberror objects.
 		 *
 		 * @param {Object} subError
-		 * @param {Array} labels
+		 * @param {Function} getLabel
 		 * @return {string}
 		 */
-		messageForSuberror: function ( subError, labels ) {
+		messageForSuberror: function ( subError, getLabel ) {
 			let message;
 			const errorType = subError.errorType;
-			const errorLabel = labels[ errorType ];
+			const errorLabel = getLabel( errorType );
 			message = '[' + errorType + '/' + errorLabel + ']';
 			if ( subError.explanation ) {
 				message = message + ' ' + subError.explanation;

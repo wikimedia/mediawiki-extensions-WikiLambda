@@ -28,9 +28,6 @@ describe( 'ZObjectSelector', function () {
 			errors: {}
 		};
 		getters = {
-			getZkeyLabels: jest.fn( function () {
-				return {};
-			} ),
 			getZkeys: jest.fn( function () {
 				return {};
 			} ),

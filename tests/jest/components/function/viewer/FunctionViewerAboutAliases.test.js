@@ -41,11 +41,12 @@ describe( 'FunctionViewerAliases', function () {
 					}
 				};
 			} ),
-			getZkeyLabels: () => {
-				return {
+			getLabel: () => ( zid ) => {
+				const labels = {
 					[ Constants.Z_NATURAL_LANGUAGE_AFRIKAANS ]: 'AF',
 					[ Constants.Z_NATURAL_LANGUAGE_ENGLISH ]: 'EN'
 				};
+				return labels[ zid ];
 			},
 			getAllItemsFromListById: () => ( parentId ) => {
 				if ( parentId === multilingualStringsetValueId ) {

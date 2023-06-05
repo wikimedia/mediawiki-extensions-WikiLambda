@@ -108,7 +108,7 @@ module.exports = exports = {
 	computed: $.extend( {},
 		mapGetters( [
 			'getAttachedZTesters',
-			'getZkeyLabels',
+			'getLabel',
 			'getPaginatedImplementations',
 			'getZImplementations',
 			'getAttachedZImplementations',
@@ -215,7 +215,7 @@ module.exports = exports = {
 						};
 					}
 
-					var implementationLabel = this.getZkeyLabels[ visibleImplementations[ index ] ];
+					var implementationLabel = this.getLabel( visibleImplementations[ index ] );
 					if ( !implementationLabel ) {
 						implementationLabel = visibleImplementations[ index ];
 					}
@@ -232,7 +232,7 @@ module.exports = exports = {
 								}.bind( this )
 							},
 							class: 'ext-wikilambda-function-details-table-item',
-							id: this.getZkeyLabels[ visibleImplementations[ index ] ]
+							id: this.getLabel( visibleImplementations[ index ] )
 						},
 						name: {
 							title: implementationLabel,
@@ -297,7 +297,7 @@ module.exports = exports = {
 
 				// create one column per implementation selected (or for all implementations if none are selected)
 				for ( const zid in this.implZidToState ) {
-					var implementationLabel = this.getZkeyLabels[ zid ];
+					var implementationLabel = this.getLabel( zid );
 					if ( !implementationLabel ) {
 						implementationLabel = zid;
 					}
@@ -321,7 +321,7 @@ module.exports = exports = {
 				const visibleTesters = this.testerShowAll ? this.getZTesters :
 					this.getPaginatedTesters[ this.currentTesterPage ];
 				for ( const index in visibleTesters ) {
-					var testerLabel = this.getZkeyLabels[ visibleTesters[ index ] ];
+					var testerLabel = this.getLabel( visibleTesters[ index ] );
 					if ( !testerLabel ) {
 						testerLabel = visibleTesters[ index ];
 					}

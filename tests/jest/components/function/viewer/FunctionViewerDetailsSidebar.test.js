@@ -67,9 +67,7 @@ describe( 'FunctionViewerDetailsSidebar', function () {
 				};
 			} ),
 			getNestedZObjectById: createGettersWithFunctionsMock( { id: idLangOne, value: Constants.Z_STRING } ),
-			getZkeyLabels: jest.fn( function () {
-				return {};
-			} ),
+			getLabel: createGettersWithFunctionsMock(),
 			getCurrentZLanguage: jest.fn(),
 			getZObjectTypeById: createGettersWithFunctionsMock( Constants.Z_REFERENCE )
 		};

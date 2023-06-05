@@ -47,7 +47,7 @@ module.exports = exports = {
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
 		'getUserZlangZID',
-		'getZkeyLabels',
+		'getLabel',
 		'getZkeys'
 	] ), {
 		zobject: function () {
@@ -88,7 +88,7 @@ module.exports = exports = {
 						allLabels.push( {
 							label,
 							language,
-							languageLabel: this.getZkeyLabels[ language ],
+							languageLabel: this.getLabel( language ),
 							isoCode
 						} );
 					}

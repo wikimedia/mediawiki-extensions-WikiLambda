@@ -27,8 +27,8 @@ module.exports = exports = {
 				var inputOutput = [];
 				for ( let index = 0; index < zIDs.length; index++ ) {
 					const zid = zIDs[ index ];
-					if ( getters.getZkeyLabels[ zid ] ) {
-						const zObjectValue = getters.getZkeyLabels[ zid ].split( ' -> ' );
+					if ( getters.getLabel( zid ) ) {
+						const zObjectValue = getters.getLabel( zid ).split( ' -> ' );
 						inputOutput.push( {
 							input: zObjectValue[ 0 ],
 							output: zObjectValue[ 1 ]

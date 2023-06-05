@@ -96,8 +96,7 @@ module.exports = exports = {
 		}
 	},
 	computed: $.extend( mapGetters( [
-		'getNestedZObjectById',
-		'getZkeyLabels'
+		'getNestedZObjectById'
 	] ), {
 		Constants: function () {
 			return Constants;

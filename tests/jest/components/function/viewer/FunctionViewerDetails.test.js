@@ -72,14 +72,14 @@ describe( 'FunctionViewerDetails', function () {
 					}
 				};
 			},
-			getZkeyLabels: () => {
-				return {
+			getLabel: () => ( zid ) => {
+				const labels = {
 					Z111: 'Z111 name',
 					Z222: 'Z222 name',
 					Z333: 'Z333 name',
 					Z444: 'Z444 name'
 				};
-
+				return labels[ zid ];
 			},
 			getCurrentZObjectId: jest.fn( () => {
 				return 'Z555';
@@ -132,10 +132,11 @@ describe( 'FunctionViewerDetails', function () {
 
 	describe( 'Implementations without labels display the ZID', () => {
 		beforeEach( function () {
-			getters.getZkeyLabels = () => {
-				return {
+			getters.getLabel = () => ( zid ) => {
+				const labels = {
 					Z333: 'Z333 name'
 				};
+				return labels[ zid ];
 			};
 
 			global.store.hotUpdate( {
@@ -161,10 +162,11 @@ describe( 'FunctionViewerDetails', function () {
 
 	describe( 'Testers without labels display the ZID', () => {
 		beforeEach( function () {
-			getters.getZkeyLabels = () => {
-				return {
+			getters.getLabel = () => ( zid ) => {
+				const labels = {
 					Z222: 'Z222 name'
 				};
+				return labels[ zid ];
 			};
 
 			global.store.hotUpdate( {
