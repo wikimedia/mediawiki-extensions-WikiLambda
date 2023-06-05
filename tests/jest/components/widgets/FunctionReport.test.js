@@ -20,7 +20,22 @@ describe( 'FunctionReport', function () {
 	beforeEach( function () {
 		getters = {
 			getLabel: createGettersWithFunctionsMock(),
-			getZkeys: createGettersWithFunctionsMock(),
+			getStoredObject: createGettersWithFunctionsMock( {
+				[ Constants.Z_PERSISTENTOBJECT_VALUE ]:
+				{
+					[ Constants.Z_FUNCTION_TESTERS ]: [
+						Constants.Z_TESTER,
+						'Z10002',
+						'Z10003'
+					],
+					[ Constants.Z_FUNCTION_IMPLEMENTATIONS ]: [
+						Constants.Z_IMPLEMENTATION,
+						'Z10001',
+						'Z10004',
+						'Z10005'
+					]
+				}
+			} ),
 			getViewMode: createGettersWithFunctionsMock(),
 			getFetchingTestResults: createGettersWithFunctionsMock( false ),
 			getZTesterPercentage: createGettersWithFunctionsMock( {
@@ -84,20 +99,6 @@ describe( 'FunctionReport', function () {
 			return Constants.NEW_ZID_PLACEHOLDER;
 		} );
 
-		getters.getZkeys = jest.fn( function () {
-			return {
-				Z10001: {
-					[ Constants.Z_PERSISTENTOBJECT_VALUE ]:
-						{ [ Constants.Z_OBJECT_TYPE ]: Constants.Z_IMPLEMENTATION }
-				},
-				Z10000: {
-					[ Constants.Z_PERSISTENTOBJECT_VALUE ]:
-						{ [ Constants.Z_FUNCTION_TESTERS ]: [ Constants.Z_TESTER, 'Z10002', 'Z10003' ],
-							[ Constants.Z_FUNCTION_IMPLEMENTATIONS ]: [ Constants.Z_IMPLEMENTATION, 'Z10001', 'Z10004', 'Z10005' ] }
-				}
-			};
-		} );
-
 		global.store.hotUpdate( {
 			getters: getters
 		} );
@@ -120,20 +121,6 @@ describe( 'FunctionReport', function () {
 	it( 'displays all available implementations if a new zTester is being created', async function () {
 		getters.getCurrentZObjectId = jest.fn( function () {
 			return Constants.NEW_ZID_PLACEHOLDER;
-		} );
-
-		getters.getZkeys = jest.fn( function () {
-			return {
-				Z10001: {
-					[ Constants.Z_PERSISTENTOBJECT_VALUE ]:
-						{ [ Constants.Z_OBJECT_TYPE ]: Constants.Z_TESTER }
-				},
-				Z10000: {
-					[ Constants.Z_PERSISTENTOBJECT_VALUE ]:
-						{ [ Constants.Z_FUNCTION_TESTERS ]: [ Constants.Z_TESTER, 'Z10002', 'Z10003' ],
-							[ Constants.Z_FUNCTION_IMPLEMENTATIONS ]: [ Constants.Z_IMPLEMENTATION, 'Z10001', 'Z10004', 'Z10005' ] }
-				}
-			};
 		} );
 
 		global.store.hotUpdate( {
@@ -161,20 +148,6 @@ describe( 'FunctionReport', function () {
 			return 'Z10001';
 		} );
 
-		getters.getZkeys = jest.fn( function () {
-			return {
-				Z10001: {
-					[ Constants.Z_PERSISTENTOBJECT_VALUE ]:
-						{ [ Constants.Z_OBJECT_TYPE ]: Constants.Z_IMPLEMENTATION }
-				},
-				Z10000: {
-					[ Constants.Z_PERSISTENTOBJECT_VALUE ]:
-						{ [ Constants.Z_FUNCTION_TESTERS ]: [ Constants.Z_TESTER, 'Z10002', 'Z10003' ],
-							[ Constants.Z_FUNCTION_IMPLEMENTATIONS ]: [ Constants.Z_IMPLEMENTATION, 'Z10001', 'Z10004', 'Z10005' ] }
-				}
-			};
-		} );
-
 		global.store.hotUpdate( {
 			getters: getters
 		} );
@@ -195,20 +168,6 @@ describe( 'FunctionReport', function () {
 	it( 'if displayed on a ZTester page, only shows ZImplementations', function () {
 		getters.getCurrentZObjectId = jest.fn( function () {
 			return 'Z10002';
-		} );
-
-		getters.getZkeys = jest.fn( function () {
-			return {
-				Z10002: {
-					[ Constants.Z_PERSISTENTOBJECT_VALUE ]:
-						{ [ Constants.Z_OBJECT_TYPE ]: Constants.Z_TESTER }
-				},
-				Z10000: {
-					[ Constants.Z_PERSISTENTOBJECT_VALUE ]:
-						{ [ Constants.Z_FUNCTION_TESTERS ]: [ Constants.Z_TESTER, 'Z10002', 'Z10006' ],
-							[ Constants.Z_FUNCTION_IMPLEMENTATIONS ]: [ Constants.Z_IMPLEMENTATION, 'Z10001', 'Z10004', 'Z10005' ] }
-				}
-			};
 		} );
 
 		global.store.hotUpdate( {

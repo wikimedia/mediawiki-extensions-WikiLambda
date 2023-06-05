@@ -48,18 +48,6 @@ describe( 'zkeys Vuex module', function () {
 
 	describe( 'Getters', function () {
 
-		// TODO (T329107): Deprecate
-		describe( 'getZkeys', function () {
-			it( 'Returns empty object if no zKeys are defined in the state', function () {
-				expect( zkeysModule.getters.getZkeys( state ) ).toEqual( {} );
-			} );
-
-			it( 'Returns the zKeys defined in the state', function () {
-				state.zKeys = mockApiZkeys;
-				expect( zkeysModule.getters.getZkeys( state ) ).toEqual( mockApiZkeys );
-			} );
-		} );
-
 		describe( 'getLabel', function () {
 			beforeEach( function () {
 				context.getters.getLabelData = zkeysModule.getters.getLabelData( state );
@@ -86,14 +74,14 @@ describe( 'zkeys Vuex module', function () {
 			} );
 		} );
 
-		describe( 'getPersistedObject', function () {
+		describe( 'getStoredObject', function () {
 			it( 'Returns if the zid is not available in the state', function () {
-				expect( zkeysModule.getters.getPersistedObject( state )( 'Z10000' ) ).toEqual( undefined );
+				expect( zkeysModule.getters.getStoredObject( state )( 'Z10000' ) ).toEqual( undefined );
 			} );
 
 			it( 'Returns the whole object if available in the state', function () {
 				state.zKeys = mockApiZkeys;
-				expect( zkeysModule.getters.getPersistedObject( state )( 'Z6' ) ).toEqual( mockApiZkeys.Z6 );
+				expect( zkeysModule.getters.getStoredObject( state )( 'Z6' ) ).toEqual( mockApiZkeys.Z6 );
 			} );
 		} );
 
@@ -248,7 +236,7 @@ describe( 'zkeys Vuex module', function () {
 					expect( getMock ).toHaveBeenCalledTimes( 1 );
 					expect( getResolveMock ).toHaveBeenCalledTimes( 1 );
 					expect( context.commit ).toHaveBeenCalledTimes( 11 );
-					expect( context.commit ).toHaveBeenCalledWith( 'addZKeyInfo', expectedAddZKeyInfoCall );
+					expect( context.commit ).toHaveBeenCalledWith( 'setStoredObject', expectedAddZKeyInfoCall );
 					resolve();
 				}, 1000 );
 			} );

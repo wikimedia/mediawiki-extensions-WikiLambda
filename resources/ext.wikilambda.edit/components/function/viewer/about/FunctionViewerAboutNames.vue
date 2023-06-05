@@ -48,7 +48,7 @@ module.exports = exports = {
 		'getNestedZObjectById',
 		'getUserZlangZID',
 		'getLabel',
-		'getZkeys'
+		'getStoredObject'
 	] ), {
 		zobject: function () {
 			return this.getZObjectChildrenById( this.zobjectId );
@@ -78,8 +78,9 @@ module.exports = exports = {
 						Constants.Z_STRING_VALUE
 					] ).value;
 
-					if ( label && this.getZkeys[ language ] ) {
-						var isoCode = this.getZkeys[ language ][
+					const langObject = this.getStoredObject( language );
+					if ( label && langObject ) {
+						var isoCode = langObject[
 							Constants.Z_PERSISTENTOBJECT_VALUE
 						][
 							Constants.Z_NATURAL_LANGUAGE_ISO_CODE

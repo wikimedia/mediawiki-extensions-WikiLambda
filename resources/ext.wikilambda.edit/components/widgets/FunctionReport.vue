@@ -108,7 +108,7 @@ module.exports = exports = {
 	},
 	computed: $.extend( mapGetters( [
 		'getLabel',
-		'getZkeys',
+		'getStoredObject',
 		'getZTesterPercentage',
 		'getZTesterMetadata',
 		'getFetchingTestResults'
@@ -135,14 +135,15 @@ module.exports = exports = {
 			return this.reportType === Constants.Z_TESTER ? this.implementations : this.testers;
 		},
 		implementations: function () {
-			if ( !this.zFunctionId || !this.getZkeys[ this.zFunctionId ] ) {
+			const functionObject = this.getStoredObject( this.zFunctionId );
+			if ( !this.zFunctionId || !functionObject ) {
 				return [];
 			}
 
 			if ( this.zImplementationId ) {
 				return [ this.zImplementationId ];
 			} else {
-				const fetched = this.getZkeys[ this.zFunctionId ][
+				const fetched = functionObject[
 					Constants.Z_PERSISTENTOBJECT_VALUE ][
 					Constants.Z_FUNCTION_IMPLEMENTATIONS ];
 				// Slice off the first item in the canonical form array; this is a string representing the type.
@@ -150,14 +151,15 @@ module.exports = exports = {
 			}
 		},
 		testers: function () {
-			if ( !this.zFunctionId || !this.getZkeys[ this.zFunctionId ] ) {
+			const functionObject = this.getStoredObject( this.zFunctionId );
+			if ( !this.zFunctionId || !functionObject ) {
 				return [];
 			}
 
 			if ( this.zTesterId ) {
 				return [ this.zTesterId ];
 			} else {
-				const fetched = this.getZkeys[ this.zFunctionId ][
+				const fetched = functionObject[
 					Constants.Z_PERSISTENTOBJECT_VALUE ][
 					Constants.Z_FUNCTION_TESTERS ];
 				// Slice off the first item in the canonical form array; this is a string representing the type.

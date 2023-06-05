@@ -400,13 +400,13 @@ describe( 'zobject Vuex module', function () {
 					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_FUNCTION_CALL, parent: 0, id: 1 },
 					{ key: Constants.Z_FUNCTION_CALL_FUNCTION, value: 'Z12345', parent: 0, id: 2 }
 				] );
-				getters.getZkeys = {
-					Z12345: {
+				getters.getStoredObject = function () {
+					return {
 						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
 							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION,
 							[ Constants.Z_FUNCTION_RETURN_TYPE ]: Constants.Z_STRING
 						}
-					}
+					};
 				};
 
 				expect( zobjectModule.getters.getZObjectTypeById( state, getters )( 0 ) )
@@ -418,13 +418,13 @@ describe( 'zobject Vuex module', function () {
 					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_FUNCTION_CALL, parent: 0, id: 1 },
 					{ key: Constants.Z_FUNCTION_CALL_FUNCTION, value: Constants.Z_TYPED_PAIR, parent: 0, id: 2 }
 				] );
-				getters.getZkeys = {
-					[ Constants.Z_TYPED_PAIR ]: {
+				getters.getStoredObject = function () {
+					return {
 						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
 							[ Constants.Z_OBJECT_TYPE ]: Constants.Z_FUNCTION,
 							[ Constants.Z_FUNCTION_RETURN_TYPE ]: Constants.Z_TYPE
 						}
-					}
+					};
 				};
 
 				expect( zobjectModule.getters.getZObjectTypeById( state, getters )( 0 ) )
@@ -842,7 +842,7 @@ describe( 'zobject Vuex module', function () {
 			var getters = {};
 			beforeEach( function () {
 				state.zKeys = mockApiZkeys;
-				getters.getPersistedObject = function ( key ) {
+				getters.getStoredObject = function ( key ) {
 					return state.zKeys[ key ];
 				};
 			} );
@@ -3728,12 +3728,8 @@ describe( 'zobject Vuex module', function () {
 				zobject: tableDataToRowObjects( zobjectTree )
 			};
 			context.rootGetters = {
-				getZkeys: {
-					Z40: {
-						Z2K2: {
-							Z1K1: 'Z4'
-						}
-					}
+				getStoredObject: function () {
+					return { Z2K2: { Z1K1: 'Z4' } };
 				}
 			};
 			delete window.location;
@@ -3742,9 +3738,7 @@ describe( 'zobject Vuex module', function () {
 			};
 			mw.config = {
 				get: jest.fn( function () {
-					return {
-						createNewPage: true
-					};
+					return { createNewPage: true };
 				} )
 			};
 			zobjectModule.actions.initializeZObject( context );
@@ -3991,8 +3985,8 @@ describe( 'zobject Vuex module', function () {
 			context.state = {
 				zobject: tableDataToRowObjects( zobjectTree )
 			};
-			context.getters.getZkeys = {
-				Z1234: { Z1K1: 'test', Z2K1: 'test' }
+			context.getters.getStoredObject = function () {
+				return { Z1K1: 'test', Z2K1: 'test' };
 			};
 			mw.config = {
 				get: jest.fn( function () {
@@ -4235,10 +4229,9 @@ describe( 'zobject Vuex module', function () {
 					{ zobjectModule: context.state },
 					context.getters
 				);
-				context.getters.getPersistedObject = function ( key ) {
-					return context.state.zKeys[ key ];
+				context.getters.getStoredObject = function ( zid ) {
+					return context.state.zKeys[ zid ];
 				};
-				context.getters.getZkeys = {};
 				context.getters.getUserZlangZID = 'Z1003';
 				context.commit = jest.fn( function ( mutationType, payload ) {
 					zobjectModule.mutations[ mutationType ]( context.state, payload );
@@ -4265,10 +4258,6 @@ describe( 'zobject Vuex module', function () {
 							return fn();
 						}
 					};
-				} );
-
-				context.rootGetters = $.extend( context.getters, {
-					getZkeys: JSON.parse( fs.readFileSync( path.join( __dirname, './zobject/getZkeys.json' ) ) )
 				} );
 
 				context.rootState.i18n = jest.fn( function () {
@@ -5878,7 +5867,7 @@ describe( 'zobject Vuex module', function () {
 					.getZFunctionArgumentDeclarations( context.state, context.getters );
 				context.getters.getZFunctionCallArguments = zobjectModule.getters
 					.getZFunctionCallArguments( context.state, context.getters );
-				context.getters.getPersistedObject = function ( key ) {
+				context.getters.getStoredObject = function ( key ) {
 					return context.state.zKeys[ key ];
 				};
 				context.commit = jest.fn( function ( mutationType, payload ) {
@@ -6062,7 +6051,7 @@ describe( 'zobject Vuex module', function () {
 				context.commit = jest.fn( function ( mutationType, payload ) {
 					zobjectModule.mutations[ mutationType ]( context.state, payload );
 				} );
-				context.getters.getPersistedObject = function ( key ) {
+				context.getters.getStoredObject = function ( key ) {
 					return context.state.zKeys[ key ];
 				};
 				context.dispatch = jest.fn( function ( actionType, payload ) {

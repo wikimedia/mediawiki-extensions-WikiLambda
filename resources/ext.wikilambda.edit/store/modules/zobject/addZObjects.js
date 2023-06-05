@@ -105,7 +105,7 @@ module.exports = exports = {
 			 * @return {Object}
 			 */
 			function newGenericObject( payload ) {
-				const persisted = getters.getPersistedObject( payload.type );
+				const persisted = getters.getStoredObject( payload.type );
 				const value = {
 					[ Constants.Z_OBJECT_TYPE ]: payload.type
 				};

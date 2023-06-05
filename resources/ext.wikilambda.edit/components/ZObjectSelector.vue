@@ -142,7 +142,7 @@ module.exports = exports = {
 	computed: $.extend( {}, mapGetters( [
 		'getLabel',
 		'getLabelData',
-		'getPersistedObject',
+		'getStoredObject',
 		'getErrors'
 	] ), {
 
@@ -357,7 +357,7 @@ module.exports = exports = {
 					return true;
 				}
 				// Else, check that the selected zid has a matching type:
-				const fetchedObject = this.getPersistedObject( zid );
+				const fetchedObject = this.getStoredObject( zid );
 				const zidType = fetchedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ];
 				return ( this.type === zidType );
 			},
@@ -378,7 +378,7 @@ module.exports = exports = {
 					if ( !this.inputValue.includes( input ) ) {
 						return;
 					}
-					const getZkeys = [];
+					const zids = [];
 					this.lookupResults = [];
 					// Update lookupResults list
 					if ( payload && payload.length > 0 ) {
@@ -390,11 +390,11 @@ module.exports = exports = {
 								this.lookupResults.push( { value, label } );
 							}
 							// Gather all zids to request them for the data store
-							getZkeys.push( value );
+							zids.push( value );
 						} );
 						// Once lookupResults are gathered, fetch and collect all the data;
 						// fetchZKeys makes sure that only the missing zids are requested
-						this.fetchZKeys( { zids: getZkeys } );
+						this.fetchZKeys( { zids } );
 					} else {
 						this.validatorSetError( 'wikilambda-noresult' );
 					}
@@ -417,7 +417,7 @@ module.exports = exports = {
 
 				// I the Zid has the correct format, validate and select.
 				// If the object is not yet saved in the store, fetch and then validate.
-				const fetchedObject = this.getPersistedObject( zid );
+				const fetchedObject = this.getStoredObject( zid );
 				if ( fetchedObject ) {
 					this.validateAndSelectZid( zid );
 				} else {
@@ -437,7 +437,7 @@ module.exports = exports = {
 			 * @param {string} zid string of a fetched and valid Zid
 			 */
 			validateAndSelectZid: function ( zid ) {
-				const fetchedObject = this.getPersistedObject( zid );
+				const fetchedObject = this.getStoredObject( zid );
 
 				// If not stored, it has been requested and nothing
 				// was returned, which means the Zid is invalid:

@@ -55,7 +55,7 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getAllItemsFromListById',
 		'getZObjectAsJsonById',
-		'getZkeys',
+		'getStoredObject',
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
 		'getUserZlangZID',
@@ -95,10 +95,9 @@ module.exports = exports = {
 		langAliasString: function () {
 			var languageAliases = this.getLanguageAliases( this.selectedLanguages );
 			return languageAliases.map( function ( alias ) {
-				if ( this.getZkeys[ alias.language ] && this.getZkeys[ alias.language ][
-					Constants.Z_PERSISTENTOBJECT_VALUE
-				] ) {
-					var isoCode = this.getZkeys[ alias.language ][
+				const langObject = this.getStoredObject( alias.language );
+				if ( langObject && langObject[ Constants.Z_PERSISTENTOBJECT_VALUE ] ) {
+					var isoCode = langObject[
 						Constants.Z_PERSISTENTOBJECT_VALUE
 					][
 						Constants.Z_NATURAL_LANGUAGE_ISO_CODE

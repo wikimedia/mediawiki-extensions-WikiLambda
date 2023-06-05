@@ -187,7 +187,7 @@ module.exports = exports = {
 	},
 	computed: $.extend(
 		mapGetters( [
-			'getPersistedObject',
+			'getStoredObject',
 			'getZFunctionArgumentDeclarations',
 			'getLabelData',
 			'getCurrentZLanguage',
@@ -201,7 +201,7 @@ module.exports = exports = {
 				return this.getLabelOrUntitledObject( this.currentFunctionZid ).text;
 			},
 			functionObject: function () {
-				return this.getPersistedObject( this.currentFunctionZid );
+				return this.getStoredObject( this.currentFunctionZid );
 			},
 			functionArguments: function () {
 				const args = this.getZFunctionArgumentDeclarations( this.currentFunctionZid );

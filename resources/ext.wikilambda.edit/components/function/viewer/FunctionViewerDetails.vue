@@ -114,7 +114,7 @@ module.exports = exports = {
 			'getAttachedZImplementations',
 			'getPaginatedTesters',
 			'getZTesters',
-			'getZkeys',
+			'getStoredObject',
 			'getCurrentZObjectId'
 		] ),
 		{
@@ -177,7 +177,7 @@ module.exports = exports = {
 
 					// get the language of the implementation
 					var language = this.$i18n( 'wikilambda-implementation-selector-composition' );
-					var zImplementationObj = this.getZkeys[ visibleImplementations[ index ] ];
+					var zImplementationObj = this.getStoredObject( visibleImplementations[ index ] );
 					if ( zImplementationObj && zImplementationObj[ Constants.Z_PERSISTENTOBJECT_VALUE ] &&
 						zImplementationObj[
 							Constants.Z_PERSISTENTOBJECT_VALUE
