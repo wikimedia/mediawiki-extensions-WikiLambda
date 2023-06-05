@@ -7,19 +7,18 @@
 
 'use strict';
 const Page = require( 'wdio-mediawiki/Page' );
-const ObjectSelector = require( '../../componentobjects/ObjectSelector' );
 const ElementActions = require( '../../utils/ElementActions' );
+const EvaluateFunctionBlock = require( '../../componentobjects/EvaluateFunctionBlock' );
+const InputDropdown = require( '../../componentobjects/InputDropdown' );
+const { Element: WebdriverIOElementType } = require( 'webdriverio' );
 
 class FunctionPage extends Page {
 	get functionTitle() { return $( '.ext-wikilambda-viewpage-header-title--function-name' ); }
-	get firstInputTypeSelection() { return $( 'input[placeholder="Select a Type"]' ); }
-	get firstInputZString() { return $( 'input.ext-wikilambda-zstring' ); }
-	get callButton() { return $( 'button=Call Function' ); }
-	get responseEnvelopZObject() { return $( '.ext-wikilambda-zresponseenvelope .ext-wikilambda-zobject' ); }
+	get functionZIdSelector() { return $( 'span.ext-wikilambda-viewpage-header-zid' ); }
 	get detailsTab() { return $( '//a[@role="tab" and text()="Details"]' ); }
 	get showMoreLanguageButton() { return $( 'button=Show more languages' ); }
 	get hideListButton() { return $( 'button=Hide list' ); }
-	get editSourceLink() { return $( '//a[contains(@title, "Edit")]/span[contains(text(),"Edit")]' ); }
+	get editSourceLink() { return $( '//nav[@aria-label="Views"]//a[contains(@title, "Edit")]/span[contains(text(),"Edit")]' ); }
 	get showNameInOtherLanguages() { return $( 'button*=Show name in other languages' ); }
 	get showMoreAliases() { return $( 'button*=Show more languages' ); }
 	get sidebarTable() { return $( '.ext-wikilambda-function-viewer-details-sidebar' ); }
@@ -27,18 +26,45 @@ class FunctionPage extends Page {
 	get createAImplementation() { return $( 'a=Create a new implementation' ); }
 
 	/**
-	 * @async
-	 *
 	 * Call the function with only one parameter which is of type string.
 	 *
-	 * @param {string} param The parameters to call the function with
+	 * @async
+	 * @param {string} ZObjectLabel - Function label which is being evaluated
+	 * @param {string} param - parameters to call the function with
+	 * @return {void}
 	 */
-	async callFunctionWithString( param ) {
-		const objectSelector = await ObjectSelector.fromInputField( this.firstInputTypeSelection );
-		await objectSelector.select( 'String' );
-		await this.firstInputZString.setValue( param );
-		await this.callButton.click();
-		await this.responseEnvelopZObject.waitForExist();
+	async callFunctionWithString( ZObjectLabel, param ) {
+		await EvaluateFunctionBlock.toggleFunctionCallBlock();
+		await EvaluateFunctionBlock.setFunction( ZObjectLabel );
+		const functionCallBlock = EvaluateFunctionBlock.functionCallBlock;
+
+		/**
+		 * Input the type "String"
+		 */
+		const typeBlock = functionCallBlock.$( './/label[text()=" type" and @class!=""]//parent::div//following-sibling::div' );
+		await InputDropdown.setInputDropdown( typeBlock, typeBlock.$( './/input[@placeholder="Select a Type"]' ), 'String' );
+
+		/**
+		 * Input the param
+		 */
+		const valueBlock = functionCallBlock.$( './/label[text()=" value"]/parent::div/following-sibling::div' );
+		await ElementActions.setInput( valueBlock.$( './/input' ), param );
+
+		/**
+		 * call function
+		 */
+		await EvaluateFunctionBlock.callFunction();
+	}
+
+	/**
+	 * Get the result selector of the Evaluate Function Block
+	 *
+	 * @async
+	 * @param {string} result - expected result
+	 * @return {WebdriverIOElementType}
+	 */
+	async getEvaluateFunctionResultSelector( result ) {
+		return EvaluateFunctionBlock.resultBlock.$( `.//p[text()="${result}"]` );
 	}
 
 	getArgumentLabel( label ) {
@@ -66,14 +92,29 @@ class FunctionPage extends Page {
 	}
 
 	/**
+	 * Get the ZId of the function page
+	 *
+	 * @async
+	 * @return {string}
+	 */
+	async getFunctionZId() {
+		const text = await ElementActions.getText( this.functionZIdSelector );
+		return text;
+	}
+
+	/**
 	 * Click on the "edit" link
 	 *
 	 * @async
 	 * @return {void}
 	 */
-	async editFunction() {
-		await ElementActions.scrollIntoView( this.editSourceLink );
-		await ElementActions.doClick( this.editSourceLink );
+	async clickOnEditSourceLink() {
+		/**
+		 * Temporary workaround to open the edit form.
+		 * Clicking on "edit" link sometimes do not open the edit form.
+		 */
+		const ZId = await this.getFunctionZId();
+		super.openTitle( ZId, { action: 'edit' } );
 	}
 
 	/**

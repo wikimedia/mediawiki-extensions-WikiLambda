@@ -20,8 +20,9 @@ describe( 'Function', function () {
 			const ListFunctions = await ListZObjectsByType.openFunctionsList();
 			await ListFunctions.openFunction( 'echo' );
 
-			await FunctionPage.callFunctionWithString( 'foobar' );
-			await expect( await FunctionPage.responseEnvelopZObject ).toHaveText( 'foobar', { message: 'The response should be "foobar"' } );
+			await FunctionPage.callFunctionWithString( 'Echo', 'foobar' );
+			await expect( await FunctionPage.getEvaluateFunctionResultSelector( 'foobar' ) )
+				.toBeExisting( { message: 'The response "foobar" is not displayed' } );
 		} );
 	} );
 	describe( 'Function editor (CUJ2)', function () {
@@ -73,7 +74,6 @@ describe( 'Function', function () {
 		} );
 
 		it( 'should display the function name', async function () {
-			await FunctionPage.callButton.waitForExist();
 			await FunctionPage.showNameInOtherLanguages.click();
 			assert.strictEqual( await FunctionPage.functionTitle.getText(), functionTitle );
 			assert.strictEqual( await FunctionPage.getNameInOtherLanguage( functionTitle + '-French' ).isExisting(), true, 'Should display function name in French' );
@@ -110,13 +110,12 @@ describe( 'Function', function () {
 		} );
 
 		it( 'should edit the function to remove a label', async function () {
-			await FunctionPage.editFunction();
+			await FunctionPage.clickOnEditSourceLink();
 			await FunctionForm.removeInput( 1 );
 			await FunctionForm.publishFunction();
 		} );
 
 		it( 'should display the function details without the removed label', async function () {
-			await FunctionPage.callButton.waitForExist();
 			await FunctionPage.detailsTab.click();
 			await FunctionPage.showMoreLanguageButton.click();
 			assert.strictEqual( await FunctionPage.getArgumentLabel( ARGUMENT_LABELS.FRENCH[ 0 ] ).isExisting(), true, 'French first argument should exist' );

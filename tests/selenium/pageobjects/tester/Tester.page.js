@@ -21,7 +21,7 @@ class Tester extends Page {
 	get contentBlock() { return ContentBlock.contentBlock; }
 	get callFunctionBlock() { return this.contentBlock.$( '//div[@role="ext-wikilambda-tester-call"]' ); }
 	get validationBlock() { return this.contentBlock.$( '//div[@role="ext-wikilambda-tester-validation"]' ); }
-	get editSourceLink() { return $( '//a[contains(@title, "Edit")]/span[contains(text(),"Edit")]' ); }
+	get editSourceLink() { return $( '//nav[@aria-label="Views"]//a[contains(@title, "Edit")]/span[contains(text(),"Edit")]' ); }
 
 	// #region Header
 
@@ -54,8 +54,12 @@ class Tester extends Page {
 	 * @return {void}
 	 */
 	async clickOnEditSourceLink() {
-		await ElementActions.scrollIntoView( this.editSourceLink );
-		await ElementActions.doClick( this.editSourceLink );
+		/**
+		 * Temporary workaround to open the edit form.
+		 * Clicking on "edit" link sometimes do not open the edit form.
+		 */
+		const ZId = await this.getTesterZId();
+		super.openTitle( ZId, { action: 'edit' } );
 	}
 
 	// #endregion
