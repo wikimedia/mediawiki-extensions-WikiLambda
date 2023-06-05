@@ -1875,7 +1875,6 @@ module.exports = exports = {
 				const zTesterListId = getters.getNestedZObjectById(
 					functionId, [
 						Constants.Z_PERSISTENTOBJECT_VALUE,
-
 						Constants.Z_FUNCTION_TESTERS
 					] ).id;
 				const zTesterList = getters.getZObjectChildrenById( zTesterListId );

@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the zobjectModes Vuex module
+ * WikiLambda unit test suite for the zTesterResults Vuex module
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

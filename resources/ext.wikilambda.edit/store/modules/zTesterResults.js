@@ -1,5 +1,5 @@
 /*!
- * WikiLambda Vue editor: Module for storing, retrieving, and running test runners
+ * WikiLambda Vue editor: Module for storing, retrieving, and running test runners.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -15,10 +15,9 @@ var Constants = require( '../../Constants.js' ),
  *
  * @param {Object} context
  * @param {Array} items - List of implementations or testers
- * @param {Object} newItemZObject - Full zObject of the implementation or tester
  * @return {Array}
  */
-function replaceCurrentObjectWithFullJSONObject( context, items, newItemZObject ) {
+function replaceCurrentObjectWithFullJSONObject( context, items ) {
 	return ( items || [] ).map( function ( item ) {
 		// if the item is the current object replace it
 		if ( !context.getters.getViewMode && item === context.getters.getCurrentZObjectId ) {
@@ -29,13 +28,6 @@ function replaceCurrentObjectWithFullJSONObject( context, items, newItemZObject 
 				zobject = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 			}
 			return JSON.stringify( canonicalize( JSON.parse( JSON.stringify( zobject ) ) ) );
-		}
-
-		// if the item has a placeholder ZID, it means that it is a new implementation/tester, replace it
-		if ( item === Constants.NEW_ZID_PLACEHOLDER && newItemZObject ) {
-			return canonicalize(
-				JSON.parse( JSON.stringify( newItemZObject ) )
-			);
 		}
 
 		return item;
@@ -223,8 +215,7 @@ module.exports = exports = {
 			);
 			var testers = replaceCurrentObjectWithFullJSONObject(
 				context,
-				payload.zTesters,
-				context.getters.getNewTesterZObjects
+				payload.zTesters
 			);
 
 			return api.get( {

@@ -32,8 +32,7 @@
 </template>
 
 <script>
-var Constants = require( '../../Constants.js' ),
-	mapGetters = require( 'vuex' ).mapGetters,
+var mapGetters = require( 'vuex' ).mapGetters,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	MetadataDialog = require( './viewer/details/ZMetadataDialog.vue' ),
 	icons = require( '../../../../../lib/icons.json' ),
@@ -68,7 +67,6 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getZTesterResults',
 		'getZTesterMetadata',
-		'getNewTesterZObjects',
 		'getZkeyLabels'
 	] ), {
 		testerStatus: function () {
@@ -119,11 +117,7 @@ module.exports = exports = {
 			return this.getZkeyLabels[ this.zImplementationId ];
 		},
 		testerLabel: function () {
-			return this.getZkeyLabels[ this.zTesterId ] ||
-				( this.getNewTesterZObjects &&
-					this.getNewTesterZObjects[ Constants.Z_PERSISTENTOBJECT_LABEL ][
-						Constants.Z_MULTILINGUALSTRING_VALUE ][ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ][
-						Constants.Z_STRING_VALUE ] );
+			return this.getZkeyLabels[ this.zTesterId ];
 		},
 		tooltipMetaDataHelpLink: function () {
 			return this.$i18n( 'wikilambda-helplink-tooltip' ).text();

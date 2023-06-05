@@ -9,18 +9,6 @@ var Constants = require( '../../Constants.js' ),
 	zobjectTreeUtils = require( '../../mixins/zobjectTreeUtils.js' ).methods,
 	performFunctionCall = require( '../../mixins/api.js' ).methods.performFunctionCall;
 
-function getNewItemParentId( nestedChildren, rootId ) {
-	var items = nestedChildren.filter( function ( child ) {
-		return child.key === Constants.Z_TYPED_OBJECT_ELEMENT_2;
-	} );
-
-	if ( items.length === 0 ) {
-		return rootId;
-	} else {
-		return items[ items.length - 1 ].id;
-	}
-}
-
 /**
  * Set one or multiple types for the specificed typed Object
  *
@@ -32,7 +20,6 @@ function getNewItemParentId( nestedChildren, rootId ) {
  * @param {string} payload.types.argumentZObjectId
  */
 function setTypeOfTypedObject( context, payload ) {
-
 	payload.types.forEach( function ( type ) {
 		var genericValue,
 			genericObjectType = // the object can either be nested in a Z_OBJECT_TYPE or directly set.
@@ -47,8 +34,8 @@ function setTypeOfTypedObject( context, payload ) {
 
 		context.dispatch( 'setZObjectValue', genericValue );
 	} );
-
 }
+
 module.exports = exports = {
 	state: {
 		invalidListItems: {}
@@ -83,6 +70,26 @@ module.exports = exports = {
 		 * @param {string | Object} payload.value
 		 */
 		addTypedListMapItem: function ( context, payload ) {
+			/**
+			 * Return the rowId of the parent under which we will add
+			 * a new map item.
+			 *
+			 * @param {Array} children
+			 * @param {number} rootId
+			 * @return {number} rowId
+			 */
+			function getNewItemParentId( children, rootId ) {
+				var items = children.filter( function ( child ) {
+					return child.key === Constants.Z_TYPED_OBJECT_ELEMENT_2;
+				} );
+
+				if ( items.length === 0 ) {
+					return rootId;
+				} else {
+					return items[ items.length - 1 ].id;
+				}
+			}
+
 			var nestedChildren = context.getters.getZObjectChildrenByIdRecursively( payload.id ),
 				newItemParentId = getNewItemParentId( nestedChildren, payload.id ),
 				nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
