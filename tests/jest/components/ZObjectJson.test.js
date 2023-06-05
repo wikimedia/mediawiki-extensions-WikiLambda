@@ -20,7 +20,7 @@ describe( 'ZObjectJson', function () {
 					return {};
 				} );
 			},
-			getZObjectById: function () {
+			getRowById: function () {
 				return jest.fn( function () {
 					return [];
 				} );

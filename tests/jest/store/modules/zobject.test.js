@@ -10,7 +10,6 @@ var fs = require( 'fs' ),
 	path = require( 'path' ),
 	tableDataToRowObjects = require( '../../helpers/zObjectTableHelpers.js' ).tableDataToRowObjects,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	Row = require( '../../../../resources/ext.wikilambda.edit/store/classes/Row.js' ),
 	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
 	mockApiZkeys = require( '../../fixtures/mocks.js' ).mockApiZkeys,
 	zobject = {
@@ -155,15 +154,6 @@ describe( 'zobject Vuex module', function () {
 	// * [x] isInsideComposition
 
 	describe( 'Getters', function () {
-		describe( 'getZObjectById', function () {
-			it( 'Returns current zObject by its ID', function () {
-				var result = { id: 1, key: 'Z1K1', value: 'Z2', parent: 0 };
-				state.zobject = tableDataToRowObjects( zobjectTree );
-
-				expect( zobjectModule.getters.getZObjectById( state )( 1 ) ).toEqual( result );
-			} );
-		} );
-
 		describe( 'getZObjectIndexById', function () {
 			it( 'Returns current zObject by its index', function () {
 				var result = 10;
@@ -245,39 +235,9 @@ describe( 'zobject Vuex module', function () {
 			} );
 		} );
 
-		describe( 'getListTypeById', function () {
-
-			it( 'Returns list type when calling getListTypeById', function () {
-				var result = { key: '0', value: 'object', parent: 8, id: 9 };
-				state.zobject = tableDataToRowObjects( zobjectTree );
-
-				expect( zobjectModule.getters.getListTypeById( state )( 8 ) ).toEqual( result );
-			} );
-
-		} );
-
 		describe( 'isCreateNewPage', function () {
 			it( 'Returns whether the current state has `createNewPage`', function () {
 				expect( zobjectModule.getters.isCreateNewPage( state ) ).toBe( true );
-			} );
-		} );
-
-		describe( 'getZObjectMessage', function () {
-			it( 'Returns the current zobjectMessage', function () {
-				expect( zobjectModule.getters.getZObjectMessage( state ) ).toEqual( {
-					type: 'error',
-					text: null
-				} );
-
-				state.zobjectMessage = {
-					type: 'notice',
-					text: 'Something noticeable'
-				};
-
-				expect( zobjectModule.getters.getZObjectMessage( state ) ).toEqual( {
-					type: 'notice',
-					text: 'Something noticeable'
-				} );
 			} );
 		} );
 
@@ -286,26 +246,6 @@ describe( 'zobject Vuex module', function () {
 				state.zobject = tableDataToRowObjects( zobjectTree );
 
 				expect( zobjectModule.getters.getNextKey( state, { getCurrentZObjectId: 'Z0' } ) ).toEqual( 'Z0K1' );
-			} );
-		} );
-
-		describe( 'getLatestObjectIndex', function () {
-			it( 'Returns latest index for a key', function () {
-				state.zobject = tableDataToRowObjects( zobjectTree ).concat( [ new Row( 18, 'Z6K1', 'Z0K4', 0 ) ] );
-
-				expect( zobjectModule.getters.getLatestObjectIndex( state )( 'Z0' ) ).toEqual( 4 );
-			} );
-
-			it( 'Returns 0 when no key is found for passed ZID', function () {
-				state.zobject = tableDataToRowObjects( zobjectTree ).concat( [ new Row( 18, 'Z6K1', 'Z42K4', 0 ) ] );
-
-				expect( zobjectModule.getters.getLatestObjectIndex( state )( 'Z0' ) ).toEqual( 0 );
-			} );
-
-			it( 'Skip items with no value', function () {
-				state.zobject = [ new Row( 18, 'Z6K1', undefined, 0 ) ];
-
-				expect( zobjectModule.getters.getLatestObjectIndex( state )( 'Z0' ) ).toEqual( 0 );
 			} );
 		} );
 
@@ -452,7 +392,7 @@ describe( 'zobject Vuex module', function () {
 			beforeEach( function () {
 				getters = {};
 				getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( state, getters );
-				getters.getZObjectById = zobjectModule.getters.getZObjectById( state, getters );
+				getters.getRowById = zobjectModule.getters.getRowById( state, getters );
 			} );
 			it( 'when object is a call to a function that does not return a type, returns Z_FUNCTION_CALL', () => {
 				state.zobject = tableDataToRowObjects( [
@@ -699,9 +639,8 @@ describe( 'zobject Vuex module', function () {
 			it( 'returns correct row when keyPath is complex', () => {
 				state.zobject = tableDataToRowObjects( zobjectTree );
 				const keyPath = [ 'Z2K2', 'Z6K1' ];
-				const rowId = 0;
 				const expected = { key: 'Z6K1', value: '', parent: 3, id: 17 };
-				expect( zobjectModule.getters.getRowByKeyPath( state, getters )( keyPath, rowId ) ).toEqual( expected );
+				expect( zobjectModule.getters.getRowByKeyPath( state, getters )( keyPath ) ).toEqual( expected );
 			} );
 
 			it( 'returns correct row when keyPath is complex, walks through objects and lists, and starts from non-root row', () => {
@@ -3578,28 +3517,6 @@ describe( 'zobject Vuex module', function () {
 			} );
 		} );
 
-		describe( 'setMessage', function () {
-			it( 'Sets message to provided value', function () {
-				var message = {
-					type: 'error',
-					text: 'An error occurred'
-				};
-
-				zobjectModule.mutations.setMessage( state, message );
-
-				expect( state.zobjectMessage ).toEqual( message );
-			} );
-
-			it( 'Sets message to default when no payload is found', function () {
-				zobjectModule.mutations.setMessage( state );
-
-				expect( state.zobjectMessage ).toEqual( {
-					type: 'notice',
-					text: null
-				} );
-			} );
-		} );
-
 		describe( 'setIsZObjectDirty', function () {
 			it( 'Updates the isZObjectDirty value', function () {
 				zobjectModule.mutations.setIsZObjectDirty( state, true );
@@ -4157,38 +4074,6 @@ describe( 'zobject Vuex module', function () {
 			expect( context.commit ).toHaveBeenCalledTimes( 1 );
 		} );
 
-		it( 'Reset the root ZObject by ID', function () {
-			context.state = {
-				zobject: tableDataToRowObjects( zobjectTree )
-			};
-			context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
-
-			context.dispatch = jest.fn();
-
-			zobjectModule.actions.resetZObject( context, 0 );
-
-			expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', {
-				id: 0,
-				type: 'Z2'
-			} );
-		} );
-
-		it( 'Reset a given ZObject by ID', function () {
-			context.state = {
-				zobject: tableDataToRowObjects( zobjectTree )
-			};
-			context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
-
-			context.dispatch = jest.fn();
-
-			zobjectModule.actions.resetZObject( context, 3 );
-
-			expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', {
-				id: 3,
-				type: 'Z6'
-			} );
-		} );
-
 		// In the event that a ZList item is removed, the indeces of the remaining items need to be updated.
 		// This is to prevent a null value from appearing in the generated JSON array.
 		it( 'Recalculate an existing ZList\'s keys to remove missing indeces', function () {
@@ -4242,7 +4127,7 @@ describe( 'zobject Vuex module', function () {
 			zobjectModule.actions.recalculateZListIndex( context, 3 );
 
 			// Validate that recalculate correctly updated the index
-			expect( zobjectModule.getters.getZObjectById( context.state )( 20 ) ).toEqual( { key: '0', value: 'object', parent: 3, id: 20 } );
+			expect( zobjectModule.getters.getRowById( context.state )( 20 ) ).toEqual( { key: '0', value: 'object', parent: 3, id: 20 } );
 			expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, { zobjectModule: context.state }, context.getters ).Z2K2 ).toEqual( [ { Z1K1: 'Z6', Z6K1: 'second' } ] );
 		} );
 
@@ -4308,8 +4193,8 @@ describe( 'zobject Vuex module', function () {
 			// Perform recalculate
 			zobjectModule.actions.recalculateZArgumentList( context, 8 );
 			// Third list item, has now become second list item.
-			expect( zobjectModule.getters.getZObjectById( context.state )( 26 ) ).toEqual( { key: '1', value: 'object', parent: 8, id: 26 } );
-			expect( zobjectModule.getters.getZObjectById( context.state )( 31 ) ).toEqual( { key: 'Z6K1', value: 'Z10006K2', parent: 29, id: 31 } );
+			expect( zobjectModule.getters.getRowById( context.state )( 26 ) ).toEqual( { key: '1', value: 'object', parent: 8, id: 26 } );
+			expect( zobjectModule.getters.getRowById( context.state )( 31 ) ).toEqual( { key: 'Z6K1', value: 'Z10006K2', parent: 29, id: 31 } );
 		} );
 
 		describe( 'changeType', function () {

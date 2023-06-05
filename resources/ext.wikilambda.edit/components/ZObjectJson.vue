@@ -71,11 +71,14 @@ module.exports = exports = {
 			initialJson: ''
 		};
 	},
-	computed: $.extend( {},
-		mapGetters( [ 'getZObjectAsJsonById', 'getZObjectById' ] ),
+	computed: $.extend(
+		mapGetters( [
+			'getZObjectAsJsonById',
+			'getRowById'
+		] ),
 		{
 			zobject: function () {
-				return this.getZObjectById( this.zobjectId );
+				return this.getRowById( this.zobjectId );
 			},
 			zobjectJson: function () {
 				if ( this.zobjectRaw !== undefined ) {
@@ -96,7 +99,7 @@ module.exports = exports = {
 			}
 		}
 	),
-	methods: $.extend( {},
+	methods: $.extend(
 		mapActions( [
 			'setIsZObjectDirty'
 		] ),

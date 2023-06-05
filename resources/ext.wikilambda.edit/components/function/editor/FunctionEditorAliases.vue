@@ -81,7 +81,8 @@ module.exports = exports = {
 			'getNestedZObjectById',
 			'getNextObjectId',
 			'getCurrentZLanguage',
-			'getZObjectById'
+			'getRowById',
+			'getParentRowId'
 		] ),
 		{
 			zMultilingualStringsetValueId: function () {
@@ -201,7 +202,7 @@ module.exports = exports = {
 			},
 			removeAlias: function ( aliasStringValueId ) {
 				this.clearAliasError();
-				const aliasStringObject = this.getZObjectById( this.getZObjectById( aliasStringValueId ).parent );
+				const aliasStringObject = this.getRowById( this.getParentRowId( aliasStringValueId ) );
 				const aliasStringSetId = aliasStringObject.parent;
 				this.removeZObjectChildren( aliasStringObject.id );
 				this.removeZObject( aliasStringObject.id );

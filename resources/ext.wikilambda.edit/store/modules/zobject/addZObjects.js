@@ -6,7 +6,6 @@
  */
 var Constants = require( '../../../Constants.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ).methods,
-	zobjectTreeUtils = require( '../../../mixins/zobjectTreeUtils.js' ).methods,
 	url = require( '../../../mixins/urlUtils.js' ).methods;
 
 /* eslint-disable no-unused-vars */
@@ -695,37 +694,6 @@ module.exports = exports = {
 
 	},
 	actions: {
-		/**
-		 * Create the required entry in the zobject table for the type of
-		 * a typed list (first item in the array).
-		 *
-		 * @param {Object} context
-		 * @param {Object} payload
-		 */
-		addTypetoList: function ( context, payload ) {
-			var listType = context.getters.getListTypeById( payload.objectId );
-			var zListTypeChildren;
-
-			if ( !listType.id ) {
-				var nextId = zobjectTreeUtils.getNextObjectId( context.rootState.zobjectModule.zobject );
-				var zObjectItems = [
-					{ key: '0', value: 'object', parent: payload.objectId },
-					{ key: Constants.Z_OBJECT_TYPE, value: Constants.Z_REFERENCE, parent: nextId },
-					{ key: Constants.Z_REFERENCE_ID, value: payload.type, parent: nextId }
-				];
-				context.dispatch( 'addZObjects', zObjectItems );
-			} else {
-				zListTypeChildren = typeUtils.findKeyInArray(
-					Constants.Z_REFERENCE_ID,
-					context.getters.getZObjectChildrenById( listType.id ) );
-
-				context.dispatch( 'setZObjectValue', {
-					id: zListTypeChildren.id,
-					value: payload.type
-				} );
-			}
-		},
-
 		/**
 		 * Changes the type, inserts or append a specific zObject given its type.
 		 *

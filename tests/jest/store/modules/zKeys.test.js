@@ -10,10 +10,6 @@ var zkeysModule = require( '../../../../resources/ext.wikilambda.edit/store/modu
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	mockApiReponse = require( '../../fixtures/mocks.js' ).mockApiReponse,
 	mockApiZkeys = require( '../../fixtures/mocks.js' ).mockApiZkeys,
-	mockAllZKeyLanguageLabels = [
-		{ zid: 'Z1', label: 'Object', lang: 'Z1002' },
-		{ zid: 'Z6', label: 'String', lang: 'Z1002' }
-	],
 	mockLabels = {
 		Z1: { zid: 'Z1', label: 'Object', lang: 'Z1002' },
 		Z6: { zid: 'Z6', label: 'String', lang: 'Z1002' }
@@ -61,18 +57,6 @@ describe( 'zkeys Vuex module', function () {
 			it( 'Returns the zKeys defined in the state', function () {
 				state.zKeys = mockApiZkeys;
 				expect( zkeysModule.getters.getZkeys( state ) ).toEqual( mockApiZkeys );
-			} );
-		} );
-
-		// TODO (T329107): Deprecate
-		describe( 'getAllZKeyLanguageLabels', function () {
-			it( 'Returns empty array if no zKeyAllLanguageLabels are defined in the state', function () {
-				expect( zkeysModule.getters.getAllZKeyLanguageLabels( state ) ).toEqual( [] );
-			} );
-
-			it( 'Returns the zKeysAllLanguages defined in the state', function () {
-				state.zKeyAllLanguageLabels = mockAllZKeyLanguageLabels;
-				expect( zkeysModule.getters.getAllZKeyLanguageLabels( state ) ).toEqual( mockAllZKeyLanguageLabels );
 			} );
 		} );
 

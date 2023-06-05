@@ -16,9 +16,7 @@
 </template>
 
 <script>
-var Constants = require( '../../../Constants.js' ),
-	PublishWidget = require( '../../widgets/Publish.vue' ),
-	mapActions = require( 'vuex' ).mapActions;
+const PublishWidget = require( '../../widgets/Publish.vue' );
 
 // @vue/component
 module.exports = exports = {
@@ -38,20 +36,11 @@ module.exports = exports = {
 			default: false
 		}
 	},
-	methods: $.extend( {},
-		mapActions( 'router', [ 'navigate' ] ),
-		{
-			handleCancel: function () {
-				this.$emit( 'cancel' );
-			},
-			handleFallbackClick: function () {
-				var payload = {
-					to: Constants.VIEWS.Z_OBJECT_EDITOR
-				};
-				this.navigate( payload );
-			}
+	methods: {
+		handleCancel: function () {
+			this.$emit( 'cancel' );
 		}
-	)
+	}
 };
 
 </script>

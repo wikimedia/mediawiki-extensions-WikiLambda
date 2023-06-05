@@ -226,7 +226,6 @@
 				"ext.wikilambda.edit/store/state.js",
 				"ext.wikilambda.edit/store/actions.js",
 				"ext.wikilambda.edit/store/getters.js",
-				"ext.wikilambda.edit/store/mutations.js",
 				"ext.wikilambda.edit/store/modules/arguments.js",
 				"ext.wikilambda.edit/store/modules/zobject.js",
 				"ext.wikilambda.edit/store/modules/zobject/addZObjects.js",

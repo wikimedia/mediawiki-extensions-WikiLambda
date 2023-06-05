@@ -160,18 +160,6 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns the whole collection of gathered labels.
-		 *
-		 * @param {Object} state
-		 * @return {Array} of LabelData objects
-		 *
-		 * TODO (T329106): Deprecate. No components should use this
-		 */
-		getAllZKeyLanguageLabels: function ( state ) {
-			return state.zKeyAllLanguageLabels;
-		},
-
-		/**
 		 * Returns the persisted object for a given ZID if that was
 		 * fetched from the DB and saved in the state. Else returns undefined
 		 *
@@ -384,13 +372,13 @@ module.exports = exports = {
 				zIds.forEach( function ( zid ) {
 
 					if ( !( 'success' in response.query.wikilambdaload_zobjects[ zid ] ) ) {
-						// TODO (T315002) add error into error notification pool
+						// TODO (T337457) add error into error global state module
 						return;
 					}
 
 					// 1. State mutation:
 					// Add filtered zObject to zKeys state object
-					// TODO (T315004) Fix terminology, this should not be addZkeyInfo but addZObjectInfo
+					// TODO (T329105) Fix terminology, this should not be addZkeyInfo but addZObjectInfo
 					const zidInfo = response.query.wikilambdaload_zobjects[ zid ].data;
 					context.commit( 'addZKeyInfo', {
 						zid: zid,
@@ -425,7 +413,6 @@ module.exports = exports = {
 
 					// TODO (T329107): remove below
 					context.commit( 'addAllZKeyLabels', zObjectLabels );
-
 					// 3. State mutation:
 					// Add the key or argument labels from the selected language to the store
 					let zKeys;
