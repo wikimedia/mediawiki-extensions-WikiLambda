@@ -125,7 +125,7 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 					. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
 				'rights' => [ 'wikilambda-create-type' ],
 				'allowed' => [
-					'basic' => true, 'functioneer' => true, 'maintainer' => true, 'sysop' => true
+					'basic' => false, 'functioneer' => true, 'maintainer' => true, 'sysop' => false
 				],
 				'allowedPredefined' => [
 					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
