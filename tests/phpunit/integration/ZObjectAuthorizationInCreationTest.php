@@ -39,7 +39,7 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore = WikiLambdaServices::getZObjectStore();
 		$this->zobjectAuthorization = WikiLambdaServices::getZObjectAuthorization();
 
-		$this->insertZids( [ 'Z1', 'Z2', 'Z6', 'Z3', 'Z4' ] );
+		$this->insertZids( [ 'Z1', 'Z2', 'Z6', 'Z3', 'Z4', 'Z8', 'Z17' ] );
 	}
 
 	/**
@@ -117,8 +117,9 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 		$typesToTry = [
 			'type (Z4 instance)' => [
 				'content' =>
-					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, "Z2K2": { '
-						. '"Z1K1": "Z4", "Z4K1": "Z0", "Z4K2": [ "Z3", '
+					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, "Z2K2": { "Z1K1": "Z4", '
+						. '"Z4K1": "Z0", '
+						. '"Z4K2": [ "Z3", '
 							. '{ "Z1K1": "Z3", "Z3K1": "Z6", "Z3K2": "Z0K1", "Z3K3": '
 							. '{ "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ], '
 						. '"Z4K3": "Z101" }, '
@@ -132,8 +133,27 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 				],
 			],
 
-			// TODO: Pre-defined (ZID < 10k) function (Z8 instance)
-			// TODO: User-defined (ZID > 10k) function (Z8 instance)
+			'function (Z8 instance)' => [
+				'content' =>
+					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, "Z2K2": { "Z1K1": "Z8", '
+						. '"Z8K1": [ "Z17", { "Z1K1": "Z17", '
+							. '"Z17K1": "Z6", '
+							. '"Z17K2": "Z0K1", '
+							. '"Z17K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ], '
+						. '"Z8K2": "Z6", '
+						. '"Z8K3": [ "Z20" ], '
+						. '"Z8K4": [ "Z14" ], '
+						. '"Z8K5": "Z0" }, '
+					. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
+				'rights' => [ 'wikilambda-create-function' ],
+				'allowed' => [
+					'basic' => true, 'functioneer' => true, 'maintainer' => true, 'sysop' => true
+				],
+				'allowedPredefined' => [
+					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+				],
+			],
+
 			// TODO: Pre-defined (ZID < 10k) implementation (Z14 instance)
 			// TODO: User-defined (ZID > 10k) implementation (Z14 instance)
 			// TODO: Pre-defined (ZID < 10k) tester (Z20 instance)
