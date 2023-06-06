@@ -16,7 +16,7 @@ class AboutBlock {
 	get languageInputSelector() { return this.detailsInputDialogBox.$( '//input[@placeholder="Select language"]' ); }
 	get labelInputSelector() { return this.detailsInputDialogBox.$( '//input[@placeholder="Enter name"]' ); }
 	get descriptionInputSelector() { return this.detailsInputDialogBox.$( '//input[@placeholder="Enter description"]' ); }
-	get aliasInputSelector() { return this.detailsInputDialogBox.$( '//input[@placeholder="Enter aliases"]' ); }
+	get aliasInputSelector() { return this.detailsInputDialogBox.$( '//input[@placeholder="Enter aliases" or @placeholder=""]' ); }
 	get doneButton() { return this.detailsInputDialogBox.$( 'button=Done' ); }
 	get cancelButton() { return this.detailsInputDialogBox.$( 'button=Cancel' ); }
 	get showLanguagesButton() { return this.aboutBlock.$( './/button[contains(text(),"languages")]' ); }
@@ -108,6 +108,7 @@ class AboutBlock {
 		await ElementActions.setInput( this.labelInputSelector, label );
 		await ElementActions.setInput( this.descriptionInputSelector, description );
 		await ElementActions.setInput( this.aliasInputSelector, alias );
+		await browser.keys( [ 'Enter' ] );
 	}
 
 	/**
