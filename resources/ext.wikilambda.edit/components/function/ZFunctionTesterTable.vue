@@ -67,7 +67,7 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getZTesterResults',
 		'getZTesterMetadata',
-		'getZkeyLabels'
+		'getLabel'
 	] ), {
 		testerStatus: function () {
 			return this.getZTesterResults( this.zFunctionId, this.zTesterId, this.zImplementationId );
@@ -114,10 +114,10 @@ module.exports = exports = {
 			return metadata || '';
 		},
 		implementationLabel: function () {
-			return this.getZkeyLabels[ this.zImplementationId ];
+			return this.getLabel( this.zImplementationId );
 		},
 		testerLabel: function () {
-			return this.getZkeyLabels[ this.zTesterId ];
+			return this.getLabel( this.zTesterId );
 		},
 		tooltipMetaDataHelpLink: function () {
 			return this.$i18n( 'wikilambda-helplink-tooltip' ).text();

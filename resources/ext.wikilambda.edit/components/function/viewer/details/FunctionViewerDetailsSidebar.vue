@@ -89,7 +89,7 @@ module.exports = exports = {
 		'getAllItemsFromListById',
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
-		'getZkeyLabels',
+		'getLabel',
 		'getCurrentZLanguage',
 		'getZObjectTypeById',
 		'getCurrentZObjectId',
@@ -292,7 +292,7 @@ module.exports = exports = {
 		},
 		/* get the plaintext label of the return type of the output */
 		zReturnTypeLabel: function () {
-			return this.getZkeyLabels[ this.zReturnType ];
+			return this.getLabel( this.zReturnType );
 		},
 		// functions for correct icon/text for language button
 		buttonText: function () {
@@ -351,7 +351,7 @@ module.exports = exports = {
 			},
 			/* get the plaintext label for the argument type */
 			zArgumentTypeLabel: function ( zArgumentType ) {
-				return this.getZkeyLabels[ zArgumentType ];
+				return this.getLabel( zArgumentType );
 			},
 			/* get the list of string labels for the current argument input */
 			monolingualStrings: function ( argumentId ) {
@@ -401,7 +401,7 @@ module.exports = exports = {
 
 				return {
 					isoCode,
-					label: this.getZkeyLabels[ monolingualStringLanguage ]
+					label: this.getLabel( monolingualStringLanguage )
 				};
 			},
 			/* get the ZID of the language of the monolingual string */

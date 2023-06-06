@@ -17,10 +17,10 @@ describe( 'FunctionEditorName', function () {
 		getters = {
 			getNestedZObjectById: createGettersWithFunctionsMock( { id: 10 } ),
 			getZObjectChildrenById: createGettersWithFunctionsMock(),
-			getZkeyLabels: jest.fn(),
+			getLabel: createGettersWithFunctionsMock(),
+			getZObjectLabel: createGettersWithFunctionsMock(),
 			getUserZlangZID: jest.fn(),
-			getNextObjectId: jest.fn(),
-			getZObjectLabel: createGettersWithFunctionsMock()
+			getNextObjectId: jest.fn()
 		};
 
 		global.store.hotUpdate( {

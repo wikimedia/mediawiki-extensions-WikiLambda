@@ -89,12 +89,12 @@ module.exports = exports = {
 			icons: icons
 		};
 	},
-	computed: $.extend( mapGetters( [ 'getZkeyLabels' ] ), {
+	computed: $.extend( mapGetters( [ 'getLabel' ] ), {
 		dialogText: function () {
 			// Ensure ZIDs appearing in metadata have been fetched
 			const metadataZIDs = this.extractZIDs( this.metadata );
 			this.fetchZKeys( { zids: metadataZIDs } );
-			return this.portrayMetadataMap( this.metadata, this.getZkeyLabels );
+			return this.portrayMetadataMap( this.metadata, this.getLabel );
 		},
 		parsedMetaDataHelpLink: function () {
 			const unformattedLink = this.$i18n( 'wikilambda-metadata-help-link' ).text();

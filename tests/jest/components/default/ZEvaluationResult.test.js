@@ -15,7 +15,7 @@ describe( 'ZEvaluationResult', () => {
 	var getters;
 	beforeEach( () => {
 		getters = {
-			getZkeyLabels: createGettersWithFunctionsMock( [] ),
+			getLabel: createGettersWithFunctionsMock(),
 			getMapValueByKey: createGettersWithFunctionsMock( undefined ),
 			getRowByKeyPath: createGettersWithFunctionsMock( undefined ),
 			getZObjectAsJsonById: createGettersWithFunctionsMock( {} )

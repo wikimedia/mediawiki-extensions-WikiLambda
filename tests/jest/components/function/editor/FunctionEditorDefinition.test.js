@@ -22,7 +22,11 @@ describe( 'FunctionEditorDefinition', function () {
 
 	beforeEach( function () {
 		getters = {
-			getZkeyLabels: () => { return { Z1002: 'Martian', Z1004: 'Whale-talk' }; },
+			getLabel: () => ( zid ) => {
+				return ( zid === 'Z1002' ) ? 'Martian' :
+					( zid === 'Z1004' ) ? 'Whale-talk' :
+						zid;
+			},
 			getCurrentZLanguage: jest.fn().mockReturnValue( 'Z10002' ),
 			currentZFunctionHasValidInputs: () => false,
 			currentZFunctionHasOutput: () => false,

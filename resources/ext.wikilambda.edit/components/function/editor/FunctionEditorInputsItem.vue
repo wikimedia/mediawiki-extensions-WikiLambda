@@ -191,7 +191,7 @@ module.exports = exports = {
 		'getNestedZObjectById',
 		'getCurrentZLanguage',
 		'getZObjectTypeById',
-		'getZkeyLabels',
+		'getLabel',
 		'currentZObjectLanguages'
 	] ), {
 		inputNumber: function () {
@@ -241,7 +241,7 @@ module.exports = exports = {
 			return null;
 		},
 		selectedLabel: function () {
-			return this.getTypeOfArgument ? this.getZkeyLabels[ this.getTypeOfArgument ] : '';
+			return this.getTypeOfArgument ? this.getLabel( this.getTypeOfArgument ) : '';
 		}
 	} ),
 	methods: $.extend( mapActions( [

@@ -70,14 +70,15 @@ module.exports = exports = {
 	},
 	computed: $.extend( mapGetters( [
 		'getZTesterResults',
-		'getZkeyLabels'
+		'getLabel'
 	] ), {
 		testerStatus: function () {
 			return this.getZTesterResults( this.zFunctionId, this.zTesterId, this.zImplementationId );
 		},
 		titleLabel: function () {
-			return this.reportType === Constants.Z_TESTER ? this.getZkeyLabels[ this.zImplementationId ] :
-				this.getZkeyLabels[ this.zTesterId ];
+			return this.reportType === Constants.Z_TESTER ?
+				this.getLabel( this.zImplementationId ) :
+				this.getLabel( this.zTesterId );
 		},
 		titleLabelExists: function () {
 			return this.titleLabel !== undefined;

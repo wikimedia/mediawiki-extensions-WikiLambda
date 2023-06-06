@@ -131,10 +131,10 @@ module.exports = exports = {
 					// We can either return an object or a straight string.
 					if ( typeof argument[ Constants.Z_ARGUMENT_TYPE ] === 'object' ) {
 						typeZid = argument[ Constants.Z_ARGUMENT_TYPE ][ Constants.Z_OBJECT_TYPE ];
-						typeLabel = context.getters.getZkeyLabels[ typeZid ];
+						typeLabel = context.getters.getLabel( typeZid );
 					} else {
 						typeZid = argument[ Constants.Z_ARGUMENT_TYPE ];
-						typeLabel = context.getters.getZkeyLabels[ typeZid ];
+						typeLabel = context.getters.getLabel( typeZid );
 					}
 
 					if ( typeof zid === 'object' ) {

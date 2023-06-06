@@ -111,7 +111,7 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getZkeyLabels',
+		'getLabel',
 		'getMapValueByKey',
 		'getRowByKeyPath',
 		'getZObjectAsJsonById'
@@ -279,7 +279,7 @@ module.exports = exports = {
 			// Ensure ZIDs appearing in metadata map have been fetched
 			const metadataZIDs = this.extractZIDs( zMapJSON );
 			this.fetchZKeys( { zids: metadataZIDs } );
-			return this.portrayMetadataMap( zMapJSON, this.getZkeyLabels );
+			return this.portrayMetadataMap( zMapJSON, this.getLabel );
 		}
 	} ),
 	beforeCreate: function () {

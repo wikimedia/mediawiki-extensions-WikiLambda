@@ -239,19 +239,7 @@ describe( 'zkeys Vuex module', function () {
 					expectedAddZKeyInfoCall = expect.objectContaining( {
 						zid: expect.any( String ),
 						info: expect.any( Object )
-					} ),
-					expectedAddAllZKeyLabelsCall = expect.arrayContaining( [
-						{
-							zid: expect.any( String ),
-							lang: expect.any( String ),
-							label: expect.any( String )
-						},
-						{
-							zid: expect.any( String ),
-							lang: expect.any( String ),
-							label: expect.any( String )
-						}
-					] );
+					} );
 
 				zkeysModule.actions.performZKeyFetch( context, { zids: zIdsToSearch } );
 
@@ -259,9 +247,8 @@ describe( 'zkeys Vuex module', function () {
 					expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 					expect( getMock ).toHaveBeenCalledTimes( 1 );
 					expect( getResolveMock ).toHaveBeenCalledTimes( 1 );
-					expect( context.commit ).toHaveBeenCalledTimes( 17 );
+					expect( context.commit ).toHaveBeenCalledTimes( 11 );
 					expect( context.commit ).toHaveBeenCalledWith( 'addZKeyInfo', expectedAddZKeyInfoCall );
-					expect( context.commit ).toHaveBeenCalledWith( 'addAllZKeyLabels', expectedAddAllZKeyLabelsCall );
 					resolve();
 				}, 1000 );
 			} );

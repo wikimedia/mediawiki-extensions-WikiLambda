@@ -157,10 +157,7 @@ describe( 'arguments Vuex module', function () {
 						}
 					}
 				};
-				context.getters.getZkeyLabels = {
-					Z40: 'Boolean'
-				};
-
+				context.getters.getLabel = jest.fn( () => 'Boolean' );
 				context.getters.getZObjectAsJson = jest.fn( function () {
 					return true;
 				} );

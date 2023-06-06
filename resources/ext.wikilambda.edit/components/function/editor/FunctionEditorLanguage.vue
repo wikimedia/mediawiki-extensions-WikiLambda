@@ -49,7 +49,6 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'currentZObjectLanguages',
 		'getNestedZObjectById',
-		'getZkeyLabels',
 		'getAllItemsFromListById'
 	] ), {
 		Constants: function () {

@@ -17,8 +17,7 @@ describe( 'ZBoolean', () => {
 	beforeEach( () => {
 		getters = {
 			getZBooleanValue: createGettersWithFunctionsMock( 14 ),
-			getLabel: createGettersWithFunctionsMock( 'false' ),
-			getZkeyLabels: createGettersWithFunctionsMock()
+			getLabel: createGettersWithFunctionsMock( 'false' )
 		};
 		global.store.hotUpdate( {
 			getters: getters

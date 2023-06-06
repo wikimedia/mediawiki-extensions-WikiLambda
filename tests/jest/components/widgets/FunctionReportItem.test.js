@@ -32,7 +32,7 @@ describe( 'FunctionReportItem', function () {
 				getZTesterResults: jest.fn( function () {
 					return returnStatus;
 				} ),
-				getZkeyLabels: createGettersWithFunctionsMock()
+				getLabel: createGettersWithFunctionsMock()
 			}
 		} );
 	} );
