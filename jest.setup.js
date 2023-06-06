@@ -95,6 +95,12 @@ global.mw = {
 		// eslint-disable-next-line no-console
 		console.log( 'Log emitted: ' + trackkey + ' - ' + trackmessage );
 	} ),
+	eventLog: {
+		dispatch: jest.fn( function ( eventName, customData ) {
+			// eslint-disable-next-line no-console
+			console.log( 'Metrics Platform event emitted: ' + eventName + ' - ' + JSON.stringify( customData ) );
+		} )
+	},
 	message: jest.fn( function ( str ) {
 		return new Mocki18n( str );
 	} ),

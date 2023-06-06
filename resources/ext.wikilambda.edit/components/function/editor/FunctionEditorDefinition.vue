@@ -341,14 +341,25 @@ module.exports = exports = {
 		},
 		handleCancel: function () {
 			const cancelTargetUrl = this.isNewZObject ? new mw.Title( 'Wikifunctions:Main_Page' ).getUrl() : new mw.Title( this.getCurrentZObjectId ).getUrl();
+			const customData = {
+				zlang: this.getUserZlangZID,
+				isloggedin: this.isUserLoggedIn,
+				isdirty: this.isDirty,
+				isnewzobject: this.isNewZObject,
+				// If not set, this will be Z0:
+				currentzobjectid: this.getCurrentZObjectId
+			};
+
 			if ( this.isDirty ) {
 				this.showLeaveEditorDialog = true;
 				this.leaveEditorCallback = function () {
 					window.location.href = cancelTargetUrl;
+					mw.eventLog.dispatch( 'wf.ui.functionEdit.cancel', customData );
 				};
 			} else {
 				// If there are no changes, go immediately without showing the dialog.
 				window.location.href = cancelTargetUrl;
+				mw.eventLog.dispatch( 'wf.ui.functionEdit.cancel', customData );
 			}
 		},
 		/**
