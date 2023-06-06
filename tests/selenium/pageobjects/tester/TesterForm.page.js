@@ -78,7 +78,7 @@ class TesterPage extends Page {
 	 * @return {string} - Name of the function
 	 */
 	async getFunctionExplorerName() {
-		const text = await FunctionExplorerBlock.getFunctionExplorerName();
+		const text = await FunctionExplorerBlock.getFunctionExplorerInputName();
 		return text;
 	}
 

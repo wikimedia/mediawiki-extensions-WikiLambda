@@ -6,10 +6,11 @@
 
 'use strict';
 const ElementActions = require( '../utils/ElementActions' );
+const InputDropdown = require( './InputDropdown' );
 
 class FunctionExplorerBlock {
 	get functionExplorerBlock() { return $( 'span.ext-wikilambda-function-explorer' ); }
-	get functionExplorerNameSelector() { return this.functionExplorerBlock.$( '//input[@placeholder="Select a Function"]' ); }
+	get functionNameInputSelector() { return this.functionExplorerBlock.$( './/section//input[@placeholder="Select a Function"]' ); }
 
 	/**
 	 * Get the name of the function for which the page is open
@@ -17,9 +18,22 @@ class FunctionExplorerBlock {
 	 * @async
 	 * @return {string} - Name of the function
 	 */
-	async getFunctionExplorerName() {
-		const name = await ElementActions.getValue( this.functionExplorerNameSelector );
+	async getFunctionExplorerInputName() {
+		const name = await ElementActions.getValue( this.functionNameInputSelector );
 		return name;
+	}
+
+	/**
+	 * Set the name of the function for which the page is open
+	 *
+	 * @async
+	 * @param {string} ZObjectLabel - ZObject of type Z8
+	 * @return {void}
+	 */
+	async setFunctionExplorerName( ZObjectLabel ) {
+		const parentSelector = this.functionNameInputSelector.$( './/ancestor::span[@data-testid]' );
+		await InputDropdown.setInputDropdown( parentSelector, this.functionNameInputSelector,
+			ZObjectLabel );
 	}
 }
 

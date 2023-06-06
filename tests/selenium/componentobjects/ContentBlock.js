@@ -12,6 +12,13 @@ const ElementActions = require( '../utils/ElementActions' );
 class ContentBlock {
 	get contentBlock() { return $( 'div.ext-wikilambda-content' ); }
 
+	// #region
+
+	/**
+	 * Here, the section strictly refers to that section of the content block which has
+	 * the label as " label" i.e. space before the label text
+	 */
+
 	/**
 	 * Get the section of the content block
 	 *
@@ -55,6 +62,8 @@ class ContentBlock {
 		const toggleButton = this.getSectionToggleButton( label, parentSection );
 		await ElementActions.doClick( toggleButton );
 	}
+
+	// #endregion
 }
 
 module.exports = new ContentBlock();
