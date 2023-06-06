@@ -53,7 +53,7 @@ class ApiHealthCheck extends WikiLambdaApiBase {
 	 * If there is any connection error, client error, or server error, an error will be thrown and the check
 	 * will be aborted.
 	 *
-	 * TODO: Use WikiLambdaApiBase::executeFunctionCall() rather than rolling our own.
+	 * TODO (T338251): Use WikiLambdaApiBase::executeFunctionCall() rather than rolling our own.
 	 *
 	 * @param string $requestFileName File in ../../tests/phpunit/test_data.
 	 * @param string $expectedOutcome The expected correct outcome that should be present in the Z22K1 field.
