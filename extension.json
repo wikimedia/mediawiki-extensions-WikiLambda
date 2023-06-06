@@ -35,10 +35,6 @@
 		"zobject": "MediaWiki\\Extension\\WikiLambda\\ZObjectContentHandler"
 	},
 	"config": {
-		"WikiLambdaEnable": {
-			"description": "Enable the extension.",
-			"value": true
-		},
 		"WikiLambdaEnableParserFunction": {
 			"description": "Enable the {{#function:…}} extension.",
 			"value": false
