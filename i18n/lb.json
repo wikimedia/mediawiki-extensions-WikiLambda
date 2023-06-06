@@ -26,6 +26,7 @@
 	"wikilambda-loading": "Donnéeë gi gelueden",
 	"wikilambda-typeselector-label": "Sicht en Typ eraus",
 	"wikilambda-function-typeselector-label": "Sicht eng Funktioun eraus",
+	"wikilambda-zobjectselector-no-results": "Keng Resultater fonnt.",
 	"wikilambda-editor-label-addlanguage-label": "Sprooch derbäisetzen",
 	"wikilambda-editor-label-removelanguage-tooltip": "Dës Sprooch vun dëser Etikett ewechhuelen",
 	"wikilambda-editor-zobject-addkey": "Schlëssel derbäisetzen:",
@@ -84,5 +85,9 @@
 	"wikilambda-optional": "fakultativ",
 	"wikilambda-continue-editing": "Virufuere mat Änneren",
 	"wikilambda-chip-remove": "Element ewechhuelen",
-	"wikilambda-tester-details": "Detailer"
+	"wikilambda-tester-details": "Detailer",
+	"wikilambda-about-widget-name-placeholder": "Numm aginn",
+	"wikilambda-about-widget-add-language": "Sprooch derbäisetzen",
+	"wikilambda-function-explorer-copied-text": "Kopéiert!",
+	"wikilambda-function-explorer-name-title": "Numm"
 }
