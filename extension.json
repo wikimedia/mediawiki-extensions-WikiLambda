@@ -98,7 +98,6 @@
 			"wikilambda-create-function": true,
 			"wikilambda-create-implementation": true,
 			"wikilambda-create-tester": true,
-			"wikilambda-create-type": true,
 			"wikilambda-edit": true,
 			"wikilambda-edit-argument-label": true,
 			"wikilambda-edit-function": true,
