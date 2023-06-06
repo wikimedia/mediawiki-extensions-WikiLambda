@@ -10,6 +10,7 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
+use GitInfo;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -22,11 +23,24 @@ class OrchestratorRequest {
 	/** @var Client */
 	protected $guzzleClient;
 
+	/** @var string */
+	protected $userAgentString;
+
 	/**
 	 * @param ClientInterface $client GuzzleHttp Client used for requests
 	 */
 	public function __construct( ClientInterface $client ) {
 		$this->guzzleClient = $client;
+
+		$this->userAgentString = 'wikifunctions-request/' . MW_VERSION;
+		// TODO: We should fetch this dynamically rather than use a global.
+		// phpcs:ignore MediaWiki.NamingConventions.ValidGlobalName.allowedPrefix
+		global $IP;
+		$gitInfo = new GitInfo( "$IP/extensions/WikiLambda" );
+		$gitHash = $gitInfo->getHeadSHA1();
+		if ( $gitHash !== false ) {
+			$this->userAgentString .= '-WL' . substr( $gitHash, 0, 8 );
+		}
 	}
 
 	/**
@@ -39,8 +53,7 @@ class OrchestratorRequest {
 		return $this->guzzleClient->post( '/1/v1/evaluate/', [
 			'json' => $query,
 			'headers' => [
-				// TODO: Get a reasonable version string for /our/ code, not MW's
-				'User-Agent' => 'wikifunctions-request/' . MW_VERSION,
+				'User-Agent' => $this->userAgentString,
 			],
 		] );
 	}
