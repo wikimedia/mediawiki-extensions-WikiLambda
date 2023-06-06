@@ -82,7 +82,7 @@ module.exports = exports = {
 			context.commit( 'resetZArgumentInfo' );
 
 			if ( context.getters.getCurrentZObjectId === zFunctionId ||
-					context.getters.getZkeys[ zFunctionId ] ) {
+					context.getters.getStoredObject( zFunctionId ) ) {
 				var zobject,
 					missingTypes = [];
 
@@ -96,7 +96,7 @@ module.exports = exports = {
 					);
 				} else {
 					// "JSON.parse( JSON.stringify() )" is to prevent zobject from updating Zkeys state when reassigned.
-					zobject = JSON.parse( JSON.stringify( context.getters.getZkeys[ zFunctionId ] ) );
+					zobject = JSON.parse( JSON.stringify( context.getters.getStoredObject( zFunctionId ) ) );
 				}
 
 				if ( !zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] ) {

@@ -28,7 +28,7 @@ describe( 'ZObjectSelector', function () {
 			errors: {}
 		};
 		getters = {
-			getZkeys: jest.fn( function () {
+			getStoredObject: jest.fn( function () {
 				return {};
 			} ),
 			getZLang: jest.fn( function () {

@@ -29,20 +29,6 @@ module.exports = exports = {
 	},
 	getters: {
 		/**
-		 * Returns the object with all fetched ZPersistent objects stored
-		 *
-		 * @param {Object} state
-		 * @return {Object}
-		 *
-		 * TODO (T329106): Deprecate. This is an overkill, no way the state should return ALL
-		 * the data to any component. Create a getPersistedObject(zid) method and
-		 * deprecate this one.
-		 */
-		getZkeys: function ( state ) {
-			return state.zKeys;
-		},
-
-		/**
 		 * Returns the string value of the language Iso code if the object
 		 * has been fetched and is stored in the state.
 		 * If not available, returns the input zid.
@@ -134,7 +120,7 @@ module.exports = exports = {
 		 * @param {Object} state
 		 * @return {Function}
 		 */
-		getPersistedObject: function ( state ) {
+		getStoredObject: function ( state ) {
 			/**
 			 * @param {string} zid of the ZPersistentObject
 			 * @return {Object|undefined} persisted ZObject
@@ -211,15 +197,12 @@ module.exports = exports = {
 		/**
 		 * Add zid info to the state
 		 *
-		 * TODO (T329105): Rename this to something like setObject
-		 *
 		 * @param {Object} state
 		 * @param {Object} payload
 		 */
-		addZKeyInfo: function ( state, payload ) {
+		setStoredObject: function ( state, payload ) {
 			state.zKeys[ payload.zid ] = payload.info;
 		},
-
 		/**
 		 * Save the LabelData object for a given ID
 		 * of a ZPersistentObject, ZKey or ZArgumentDeclaration.
@@ -334,16 +317,15 @@ module.exports = exports = {
 
 					// 1. State mutation:
 					// Add filtered zObject to zKeys state object
-					// TODO (T329105) Fix terminology, this should not be addZkeyInfo but addZObjectInfo
-					const zidInfo = response.query.wikilambdaload_zobjects[ zid ].data;
-					context.commit( 'addZKeyInfo', {
+					const fetchedObject = response.query.wikilambdaload_zobjects[ zid ].data;
+					context.commit( 'setStoredObject', {
 						zid: zid,
-						info: zidInfo
+						info: fetchedObject
 					} );
 
 					// 2. State mutation:
 					// Add zObject label in user's selected language
-					const multiStr = zidInfo[
+					const multiStr = fetchedObject[
 						Constants.Z_PERSISTENTOBJECT_LABEL
 					][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
 
@@ -362,8 +344,8 @@ module.exports = exports = {
 					// 3. State mutation:
 					// Add the key or argument labels from the selected language to the store
 					let zKeys;
-					const zType = ( typeof zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ] === 'object' ) ?
-						zidInfo[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] :
+					const zType = ( typeof fetchedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ] === 'object' ) ?
+						fetchedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] :
 						undefined;
 
 					switch ( zType ) {
@@ -371,7 +353,7 @@ module.exports = exports = {
 						case Constants.Z_TYPE:
 							// If the zObject is a type, get all key labels
 							// and commit to the store
-							zKeys = zidInfo[
+							zKeys = fetchedObject[
 								Constants.Z_PERSISTENTOBJECT_VALUE
 							][ Constants.Z_TYPE_KEYS ].slice( 1 );
 
@@ -395,7 +377,7 @@ module.exports = exports = {
 						case Constants.Z_FUNCTION:
 							// If the zObject is a function, get all argument
 							// declaration labels and commit to the store
-							zKeys = zidInfo[
+							zKeys = fetchedObject[
 								Constants.Z_PERSISTENTOBJECT_VALUE
 							][ Constants.Z_FUNCTION_ARGUMENTS ].slice( 1 );
 

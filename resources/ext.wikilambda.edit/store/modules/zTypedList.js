@@ -255,7 +255,7 @@ module.exports = exports = {
 
 					var canonicalZObject = data.response;
 					if ( canonicalZObject[ Constants.Z_RESPONSEENVELOPE_VALUE ] ) {
-						context.commit( 'addZKeyInfo', {
+						context.commit( 'setStoredObject', {
 							zid: payload.dynamicZKey,
 							info: canonicalZObject[ Constants.Z_RESPONSEENVELOPE_VALUE ]
 						} );

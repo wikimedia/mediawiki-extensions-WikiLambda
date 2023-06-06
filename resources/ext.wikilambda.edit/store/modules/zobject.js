@@ -859,7 +859,7 @@ module.exports = exports = {
 			 * @return {Array}
 			 */
 			function findZFunctionArguments( zid ) {
-				const func = getters.getPersistedObject( zid );
+				const func = getters.getStoredObject( zid );
 				if ( func === undefined ) {
 					return [];
 				}
@@ -1779,7 +1779,7 @@ module.exports = exports = {
 							type = objectTypeFunctionCallFunctionZid.value;
 						} else if (
 							functionCallFunctionZid &&
-								isFunctionToType( getters.getZkeys[ functionCallFunctionZid.value ] ) ) {
+								isFunctionToType( getters.getStoredObject( functionCallFunctionZid.value ) ) ) {
 							type = Constants.Z_FUNCTION_CALL_TO_TYPE;
 						} else if ( isNotObjectOrArrayRoot( objectType ) ) {
 							type = objectType.value;
@@ -2127,7 +2127,7 @@ module.exports = exports = {
 						.then( function () {
 							var Z2K2 =
 								typeUtils.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, context.state.zobject );
-							defaultKeys = context.rootGetters.getZkeys[ defaultType ];
+							defaultKeys = context.rootGetters.getStoredObject( defaultType );
 
 							// If `zid` is not a type, return.
 							if ( !defaultKeys ||

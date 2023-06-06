@@ -27,8 +27,8 @@ describe( 'FunctionViewerAliases', function () {
 	beforeEach( function () {
 		getters = {
 			getUserZlangZID: jest.fn().mockReturnValue( Constants.Z_NATURAL_LANGUAGE_ENGLISH ),
-			getZkeys: jest.fn( function () {
-				return {
+			getStoredObject: jest.fn( () => ( zid ) => {
+				const objects = {
 					[ Constants.Z_NATURAL_LANGUAGE_AFRIKAANS ]: {
 						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
 							[ Constants.Z_NATURAL_LANGUAGE_ISO_CODE ]: Constants.Z_NATURAL_LANGUAGE_ISO_CODE
@@ -40,6 +40,7 @@ describe( 'FunctionViewerAliases', function () {
 						}
 					}
 				};
+				return objects[ zid ];
 			} ),
 			getLabel: () => ( zid ) => {
 				const labels = {

@@ -48,114 +48,56 @@ describe( 'arguments Vuex module', function () {
 				} );
 			} );
 			it( 'Will set the stored ZArguments', function () {
-				context.getters.getZkeys = {
-					Z10033: {
-						Z1K1: 'Z2',
-						Z2K1: 'Z10033',
-						Z2K2: {
-							Z1K1: 'Z8',
-							Z8K1: [
-								'Z17',
-								{
-									Z1K1: 'Z17',
-									Z17K1: 'Z40',
-									Z17K2: {
-										Z1K1: 'Z6',
-										Z6K1: 'Z10033K1'
+				context.getters.getStoredObject = ( zid ) => {
+					const objects = {
+						Z10033: {
+							Z2K2: {
+								Z1K1: 'Z8',
+								Z8K1: [
+									'Z17',
+									{
+										Z1K1: 'Z17',
+										Z17K1: 'Z40',
+										Z17K2: {
+											Z1K1: 'Z6',
+											Z6K1: 'Z10033K1'
+										},
+										Z17K3: {
+											Z1K1: 'Z12',
+											Z12K1: [
+												'Z11',
+												{
+													Z1K1: 'Z11',
+													Z11K1: 'Z1002',
+													Z11K2: 'left'
+												}
+											]
+										}
 									},
-									Z17K3: {
-										Z1K1: 'Z12',
-										Z12K1: [
-											'Z11',
-											{
-												Z1K1: 'Z11',
-												Z11K1: 'Z1002',
-												Z11K2: 'left'
-											}
-										]
+									{
+										Z1K1: 'Z17',
+										Z17K1: 'Z40',
+										Z17K2: {
+											Z1K1: 'Z6',
+											Z6K1: 'Z10033K2'
+										},
+										Z17K3: {
+											Z1K1: 'Z12',
+											Z12K1: [
+												'Z11',
+												{
+													Z1K1: 'Z11',
+													Z11K1: 'Z1002',
+													Z11K2: 'right'
+												}
+											]
+										}
 									}
-								},
-								{
-									Z1K1: 'Z17',
-									Z17K1: 'Z40',
-									Z17K2: {
-										Z1K1: 'Z6',
-										Z6K1: 'Z10033K2'
-									},
-									Z17K3: {
-										Z1K1: 'Z12',
-										Z12K1: [
-											'Z11',
-											{
-												Z1K1: 'Z11',
-												Z11K1: 'Z1002',
-												Z11K2: 'right'
-											}
-										]
-									}
-								}
-							],
-							Z8K2: 'Z40',
-							Z8K3: [
-								'Z20'
-							],
-							Z8K4: [
-								'Z14',
-								'Z10034'
-							],
-							Z8K5: 'Z10033'
-						},
-						Z2K3: {
-							Z1K1: 'Z12',
-							Z12K1: [
-								'Z11',
-								{
-									Z1K1: 'Z11',
-									Z11K1: 'Z1002',
-									Z11K2: 'Nand'
-								}
-							]
+								]
+							}
 						}
-					},
-					Z40: {
-						Z1K1: 'Z2',
-						Z2K1: 'Z40',
-						Z2K2: {
-							Z1K1: 'Z4',
-							Z4K1: 'Z40',
-							Z4K2: [
-								'Z3',
-								{
-									Z1K1: 'Z3',
-									Z3K1: 'Z40',
-									Z3K2: 'Z40K1',
-									Z3K3: {
-										Z1K1: 'Z12',
-										Z12K1: [
-											'Z11',
-											{
-												Z1K1: 'Z11',
-												Z11K1: 'Z1002',
-												Z11K2: 'identity'
-											}
-										]
-									}
-								}
-							],
-							Z4K3: 'Z140'
-						},
-						Z2K3: {
-							Z1K1: 'Z12',
-							Z12K1: [
-								'Z11',
-								{
-									Z1K1: 'Z11',
-									Z11K1: 'Z1002',
-									Z11K2: 'Boolean'
-								}
-							]
-						}
-					}
+					};
+					return objects[ zid ];
 				};
 				context.getters.getLabel = jest.fn( () => 'Boolean' );
 				context.getters.getZObjectAsJson = jest.fn( function () {

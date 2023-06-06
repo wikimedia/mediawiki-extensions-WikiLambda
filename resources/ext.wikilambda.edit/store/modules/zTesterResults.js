@@ -222,7 +222,7 @@ module.exports = exports = {
 				action: 'wikilambda_perform_test',
 				wikilambda_perform_test_zfunction:
 					!context.getters.getViewMode && payload.zFunctionId === context.getters.getCurrentZObjectId ?
-						JSON.stringify( context.getters.getZkeys[ payload.zFunctionId ] ) :
+						JSON.stringify( context.getters.getStoredObject( payload.zFunctionId ) ) :
 						payload.zFunctionId,
 				wikilambda_perform_test_zimplementations: implementations.join( '|' ),
 				wikilambda_perform_test_ztesters: testers.join( '|' ),

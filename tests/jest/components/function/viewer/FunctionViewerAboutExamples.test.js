@@ -8,6 +8,7 @@
 'use strict';
 
 var VueTestUtils = require( '@vue/test-utils' ),
+	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	TableComponent = require( '../../../../../resources/ext.wikilambda.edit/components/base/Table.vue' ),
 	FunctionViewerExamples = require( '../../../../../resources/ext.wikilambda.edit/components/function/viewer/about/FunctionViewerAboutExamples.vue' );
 
@@ -17,15 +18,7 @@ describe( 'FunctionViewerAboutExamples', function () {
 			getCurrentZObjectId: jest.fn( function () {
 				return 'Z1002';
 			} ),
-			getZkeys: jest.fn( function () {
-				return {
-					Z1002: {
-						Z2K2: {
-							Z8K3: [ 'Z1003' ]
-						}
-					}
-				};
-			} ),
+			getStoredObject: createGettersWithFunctionsMock( { Z2K2: { Z8K3: [ 'Z1003' ] } } ),
 			getTestInputOutputByZIDs: jest.fn( function () {
 				return function () {
 					return [ {

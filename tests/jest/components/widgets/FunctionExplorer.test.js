@@ -36,7 +36,7 @@ const CAPITALIZE_STRING_FUNCTION_ZID = 'Z10002';
 let currentFunctionZid = REVERSE_STRING_FUNCTION_ZID;
 
 const mockFunctionExplorerComputed = {
-	getPersistedObject: () => mockReverseStringFunction,
+	getStoredObject: () => mockReverseStringFunction,
 	functionName: jest.fn( () => currentFunctionZid === REVERSE_STRING_FUNCTION_ZID ? 'Reverse string' : 'String is truthy' ),
 	functionArguments: jest.fn( () =>
 		currentFunctionZid === REVERSE_STRING_FUNCTION_ZID ?

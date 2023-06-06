@@ -59,18 +59,18 @@ describe( 'FunctionViewerDetails', function () {
 			getPaginatedImplementations: () => {
 				return { 1: [ 'Z333', 'Z444' ] };
 			},
-			getZkeys: () => {
-				return {
+			getStoredObject: () => ( zid ) => {
+				const objects = {
 					Z333: {
 						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
 							[ Constants.Z_IMPLEMENTATION_BUILT_IN ]: true
 						}
 					},
 					Z444: {
-						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
-						}
+						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: { }
 					}
 				};
+				return objects[ zid ];
 			},
 			getLabel: () => ( zid ) => {
 				const labels = {

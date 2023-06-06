@@ -51,11 +51,11 @@ module.exports = exports = {
 	},
 	computed: $.extend( mapGetters( [
 		'getCurrentZObjectId',
-		'getZkeys',
+		'getStoredObject',
 		'getTestInputOutputByZIDs'
 	] ), {
 		exampleList: function () {
-			var zObjectValue = this.getZkeys[ this.getCurrentZObjectId ];
+			var zObjectValue = this.getStoredObject( this.getCurrentZObjectId );
 			if ( !zObjectValue || !zObjectValue[ Constants.Z_PERSISTENTOBJECT_VALUE ][
 				Constants.Z_FUNCTION_TESTERS ] ) {
 				return [];

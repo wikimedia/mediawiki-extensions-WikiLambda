@@ -27,30 +27,7 @@ describe( 'FunctionViewerAliases', function () {
 			} ),
 			getUserZlangZID: jest.fn(),
 			getLabel: createGettersWithFunctionsMock(),
-			getZkeys: jest.fn().mockReturnValue( {
-				Z1002: {
-					Z1K1: 'Z2',
-					Z2K1: {
-						Z1K1: 'Z6',
-						Z6K1: 'Z1002'
-					},
-					Z2K2: {
-						Z1K1: 'Z60',
-						Z60K1: 'en'
-					},
-					Z2K3: {
-						Z1K1: 'Z12',
-						Z12K1: [
-							'Z11',
-							{
-								Z1K1: 'Z11',
-								Z11K1: 'Z1002',
-								Z11K2: 'Spanish'
-							}
-						]
-					}
-				}
-			} ),
+			getStoredObject: createGettersWithFunctionsMock( { Z2K2: { Z60K1: 'en' } } ),
 			getAllItemsFromListById: createGettersWithFunctionsMock( [
 				{
 					id: 4,

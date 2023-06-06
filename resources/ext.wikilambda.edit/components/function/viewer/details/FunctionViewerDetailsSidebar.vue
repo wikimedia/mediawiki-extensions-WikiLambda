@@ -93,7 +93,7 @@ module.exports = exports = {
 		'getCurrentZLanguage',
 		'getZObjectTypeById',
 		'getCurrentZObjectId',
-		'getZkeys'
+		'getStoredObject'
 	] ), {
 		// format inputs/output header to pass to the table in expected format
 		formattedHeaderData: function () {
@@ -393,11 +393,10 @@ module.exports = exports = {
 			},
 			/* language ZID -> language plain text in current user language and language isocode */
 			languageInfo: function ( monolingualStringLanguage ) {
-				const isoCode = this.getZkeys[ monolingualStringLanguage ][
-					Constants.Z_PERSISTENTOBJECT_VALUE
-				][
-					Constants.Z_NATURAL_LANGUAGE_ISO_CODE
-				];
+				const langObject = this.getStoredObject( monolingualStringLanguage );
+				const isoCode = langObject ?
+					langObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_NATURAL_LANGUAGE_ISO_CODE ] :
+					monolingualStringLanguage;
 
 				return {
 					isoCode,
