@@ -39,7 +39,7 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore = WikiLambdaServices::getZObjectStore();
 		$this->zobjectAuthorization = WikiLambdaServices::getZObjectAuthorization();
 
-		$this->insertZids( [ 'Z1', 'Z2', 'Z6', 'Z3', 'Z4', 'Z8', 'Z17' ] );
+		$this->insertZids( [ 'Z1', 'Z2', 'Z6', 'Z3', 'Z4', 'Z8', 'Z17', 'Z14', 'Z16', 'Z61', 'Z801' ] );
 	}
 
 	/**
@@ -154,8 +154,22 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 				],
 			],
 
-			// TODO: Pre-defined (ZID < 10k) implementation (Z14 instance)
-			// TODO: User-defined (ZID > 10k) implementation (Z14 instance)
+			'implementation (Z14 instance)' => [
+				'content' =>
+					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, "Z2K2": { "Z1K1": "Z14", '
+						. '"Z14K1": "Z801", "Z14K3": { "Z1K1": "Z16", '
+							. '"Z16K1": { "Z1K1": "Z61", "Z61K1": "Z601" }, '
+							. '"Z16K2": "function Z0( input ) {\n\treturn input;\n}" } }, '
+					. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }',
+				'rights' => [ 'wikilambda-create-implementation' ],
+				'allowed' => [
+					'basic' => true, 'functioneer' => true, 'maintainer' => true, 'sysop' => true
+				],
+				'allowedPredefined' => [
+					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+				],
+			],
+
 			// TODO: Pre-defined (ZID < 10k) tester (Z20 instance)
 			// TODO: User-defined (ZID > 10k) tester (Z20 instance)
 			// TODO: Pre-defined (ZID < 10k) language (Z60 instance)
