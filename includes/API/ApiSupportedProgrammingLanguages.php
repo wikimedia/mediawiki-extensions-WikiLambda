@@ -47,7 +47,7 @@ class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 	}
 
 	/**
-	 * TODO: Use WikiLambdaApiBase::executeFunctionCall() rather than rolling our own.
+	 * TODO (T338251): Use WikiLambdaApiBase::executeFunctionCall() rather than rolling our own.
 	 *
 	 * @param ApiPageSet|null $resultPageSet
 	 */

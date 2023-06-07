@@ -141,7 +141,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 			}
 
 			// Normalize ZObject
-			// TODO: If language parameter is present and canonical is set to false, we are
+			// TODO (T338252): If language parameter is present and canonical is set to false, we are
 			// walking the tree two times. It would be interesting to only walk it once, and
 			// perform all the transformations that are necessary on that same recursive walk.
 			if ( !$canonical ) {
@@ -155,7 +155,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 
 			if ( $resultPageSet ) {
 				if ( $title instanceof Title ) {
-					// FIXME: How to work out the result when using the generator?
+					// TODO (T338249): How to work out the result when using the generator?
 					$resultPageSet->setGeneratorData( $title, $result );
 				}
 			} else {

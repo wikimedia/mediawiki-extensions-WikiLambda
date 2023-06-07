@@ -100,9 +100,9 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 				'return_type' => $row->wlzl_return_type,
 				'label' => $row->wlzl_label,
 				'is_primary' => $row->wlzl_label_primary,
-				// FIXME: Implement, otherwise the generator won't work.
+				// TODO (T338248): Implement, otherwise the generator won't work.
 				'page_id' => 0,
-				// TODO: When we support redirects, implement.
+				// TODO (T258915): When we support redirects, implement.
 				'page_is_redirect' => false,
 				'page_content_model' => CONTENT_MODEL_ZOBJECT,
 				'page_lang' => $row->wlzl_language,

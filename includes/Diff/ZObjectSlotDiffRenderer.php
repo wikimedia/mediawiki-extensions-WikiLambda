@@ -30,7 +30,7 @@ class ZObjectSlotDiffRenderer extends SlotDiffRenderer {
 			( $newContent === null ) ? [] : $this->toDiffArray( $newContent )
 		);
 
-		// FIXME: Return string representation of the diff
+		// TODO (T284473): Return string representation of the diff
 		return '';
 	}
 

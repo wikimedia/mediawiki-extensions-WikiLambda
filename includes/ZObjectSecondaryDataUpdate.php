@@ -112,7 +112,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		}
 
 		// If appropriate, clear wikilambda_ztester_results for this ZID
-		// FIXME: Only do this for the old revision not the new one.
+		// TODO (T338247): Only do this for the old revision not the new one.
 		switch ( $ztype ) {
 			case ZTypeRegistry::Z_FUNCTION:
 				$zObjectStore->deleteZFunctionFromZTesterResultsCache( $zid );

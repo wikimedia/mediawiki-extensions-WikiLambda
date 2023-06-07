@@ -52,7 +52,7 @@ class ZObjectListDiffer implements Differ {
 		$listDiff = [];
 
 		/**
-		 * FIXME: According to T312259 the items in a list can be reordered.
+		 * TODO (T338250): According to T312259 the items in a list can be reordered.
 		 *
 		 * Current implementation will find diffs between the items on the
 		 * same position when the two lists have identical length.
