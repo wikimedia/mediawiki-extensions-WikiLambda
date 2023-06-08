@@ -33,7 +33,7 @@ use ParserOptions;
 class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 
 	public function testWrongContentModel() {
-		$this->expectException( \MWException::class );
+		$this->expectException( \InvalidArgumentException::class );
 		new ZObjectContentHandler( CONTENT_MODEL_WIKITEXT );
 	}
 
