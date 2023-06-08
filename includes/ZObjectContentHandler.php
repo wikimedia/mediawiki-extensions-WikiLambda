@@ -15,6 +15,7 @@ use ContentHandler;
 use FormatJson;
 use Html;
 use IContextSource;
+use InvalidArgumentException;
 use MediaWiki\Content\Renderer\ContentParseParams;
 use MediaWiki\Content\Transform\PreSaveTransformParams;
 use MediaWiki\Content\ValidationParams;
@@ -26,7 +27,6 @@ use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRenderingProvider;
 use MediaWiki\Title\Title;
-use MWException;
 use ParserOutput;
 use RequestContext;
 use StatusValue;
@@ -39,7 +39,7 @@ class ZObjectContentHandler extends ContentHandler {
 	 */
 	public function __construct( $modelId ) {
 		if ( $modelId !== CONTENT_MODEL_ZOBJECT ) {
-			throw new MWException( __CLASS__ . " initialised for invalid content model" );
+			throw new InvalidArgumentException( __CLASS__ . " initialised for invalid content model" );
 		}
 
 		parent::__construct( CONTENT_MODEL_ZOBJECT, [ CONTENT_FORMAT_TEXT ] );
@@ -274,8 +274,6 @@ class ZObjectContentHandler extends ContentHandler {
 	 * @param Content $content
 	 * @param ContentParseParams $cpoParams
 	 * @param ParserOutput &$parserOutput The output object to fill (reference).
-	 *
-	 * @throws MWException
 	 */
 	protected function fillParserOutput(
 		Content $content,
