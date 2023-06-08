@@ -156,6 +156,9 @@
 		"PageEditingHandler": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PageEditingHandler"
 		},
+		"PageRenderingHandler": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PageRenderingHandler"
+		},
 		"WikiLambdaParserHooks": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\ParserHooks"
 		}
@@ -166,7 +169,7 @@
 		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
 		"NamespaceIsMovable": "PageEditingHandler",
 		"ParserFirstCallInit": "WikiLambdaParserHooks",
-		"HtmlPageLinkRendererEnd": "WikiLambdaHooks"
+		"HtmlPageLinkRendererEnd": "PageRenderingHandler"
 	},
 	"MessagesDirs": {
 		"WikiLambda": [
