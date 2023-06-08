@@ -153,15 +153,18 @@
 		"WikiLambdaHooks": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\Hooks"
 		},
+		"PageEditingHandler": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\HookHandler\\PageEditingHandler"
+		},
 		"WikiLambdaParserHooks": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\ParserHooks"
 		}
 	},
 	"Hooks": {
-		"getUserPermissionsErrors": "WikiLambdaHooks",
-		"MultiContentSave": "WikiLambdaHooks",
+		"getUserPermissionsErrors": "PageEditingHandler",
+		"MultiContentSave": "PageEditingHandler",
 		"LoadExtensionSchemaUpdates": "WikiLambdaHooks",
-		"NamespaceIsMovable": "WikiLambdaHooks",
+		"NamespaceIsMovable": "PageEditingHandler",
 		"ParserFirstCallInit": "WikiLambdaParserHooks",
 		"HtmlPageLinkRendererEnd": "WikiLambdaHooks"
 	},

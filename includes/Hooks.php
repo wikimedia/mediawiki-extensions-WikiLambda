@@ -10,8 +10,6 @@
 
 namespace MediaWiki\Extension\WikiLambda;
 
-use ApiMessage;
-use CommentStoreComment;
 use DatabaseUpdater;
 use HtmlArmor;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
@@ -19,18 +17,12 @@ use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\Title;
-use MessageSpecifier;
 use RequestContext;
 use RuntimeException;
-use Status;
 use User;
 
 class Hooks implements
-	\MediaWiki\Hook\NamespaceIsMovableHook,
-	\MediaWiki\Storage\Hook\MultiContentSaveHook,
-	\MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook,
 	\MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook,
 	\MediaWiki\Linker\Hook\HtmlPageLinkRendererEndHook
 	{
@@ -48,99 +40,6 @@ class Hooks implements
 		// an extension.json attribute as of yet.
 		global $wgNonincludableNamespaces;
 		$wgNonincludableNamespaces[] = NS_MAIN;
-	}
-
-	/**
-	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/MultiContentSave
-	 *
-	 * @param \MediaWiki\Revision\RenderedRevision $renderedRevision
-	 * @param \MediaWiki\User\UserIdentity $user
-	 * @param CommentStoreComment $summary
-	 * @param int $flags
-	 * @param Status $hookStatus
-	 * @return bool|void
-	 */
-	public function onMultiContentSave( $renderedRevision, $user, $summary, $flags, $hookStatus ) {
-		$title = $renderedRevision->getRevision()->getPageAsLinkTarget();
-		if ( !$title->inNamespace( NS_MAIN ) ) {
-			return true;
-		}
-
-		$zid = $title->getDBkey();
-		if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
-			$hookStatus->fatal( 'wikilambda-invalidzobjecttitle', $zid );
-			return false;
-		}
-
-		$content = $renderedRevision->getRevision()->getSlots()->getContent( SlotRecord::MAIN );
-
-		if ( !( $content instanceof ZObjectContent ) ) {
-			$hookStatus->fatal( 'wikilambda-invalidcontenttype' );
-			return false;
-		}
-
-		if ( !$content->isValid() ) {
-			$hookStatus->fatal( 'wikilambda-invalidzobject' );
-			return false;
-		}
-
-		// (T260751) Ensure uniqueness of type / label / language triples on save.
-		$newLabels = $content->getLabels()->getValueAsList();
-
-		if ( $newLabels === [] ) {
-			// Unlabelled; don't error.
-			return true;
-		}
-
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$clashes = $zObjectStore->findZObjectLabelConflicts(
-			$zid,
-			$content->getZType(),
-			$newLabels
-		);
-
-		if ( $clashes === [] ) {
-			return true;
-		}
-
-		foreach ( $clashes as $language => $clash_zid ) {
-			$hookStatus->fatal( 'wikilambda-labelclash', $clash_zid, $language );
-		}
-
-		return false;
-	}
-
-	/**
-	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/getUserPermissionsErrors
-	 *
-	 * @param Title $title
-	 * @param User $user
-	 * @param string $action
-	 * @param array|string|MessageSpecifier &$result
-	 * @return bool|void
-	 */
-	public function onGetUserPermissionsErrors( $title, $user, $action, &$result ) {
-		if ( !$title->inNamespace( NS_MAIN ) ) {
-			return;
-		}
-
-		// TODO: Is there a nicer way of getting 'all change actions'?
-		if ( !( $action == 'create' || $action == 'edit' || $action == 'upload' ) ) {
-			return;
-		}
-
-		$zid = $title->getDBkey();
-		if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
-			$result = ApiMessage::create(
-				wfMessage( 'wikilambda-invalidzobjecttitle', $zid ),
-				'wikilambda-invalidzobjecttitle'
-			);
-			return false;
-		}
-
-		// TODO: Per-user rights checks (in getUserPermissionsErrorsExpensive instead)?
-
-		return true;
 	}
 
 	/**
@@ -357,23 +256,6 @@ class Hooks implements
 		}
 
 		return $status->isOK();
-	}
-
-	/**
-	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/NamespaceIsMovable
-	 *
-	 * @param int $index
-	 * @param bool &$result
-	 * @return bool|void
-	 */
-	public function onNamespaceIsMovable( $index, &$result ) {
-		if ( $index === NS_MAIN ) {
-			$result = false;
-			// Over-ride any other extensions which might have other ideas
-			return false;
-		}
-
-		return null;
 	}
 
 	/**
