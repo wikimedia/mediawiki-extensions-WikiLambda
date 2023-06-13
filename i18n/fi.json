@@ -23,6 +23,7 @@
 	"wikilambda-editor-label-addlanguage-label": "Valitse kieli",
 	"wikilambda-editor-label-select-programming-language-label": "Valitse ohjelmointikieli:",
 	"wikilambda-implementation-none-found": "Tällä hetkellä tälle toiminnolle ei ole toteutuksia.",
+	"wikilambda-function-are-you-sure-dialog-header": "Oletko varma?",
 	"wikilambda-tester-none-found": "Tällä hetkellä tälle toiminnolle ei ole testitapauksia.",
 	"wikilambda-tester-create-new": "Luo uusi testi",
 	"wikilambda-tester-status-pending": "ODOTTAA...",
@@ -70,5 +71,10 @@
 	"wikilambda-ztyped-pair-placeholder": "Valitse tyyppi",
 	"wikilambda-ztyped-pair-key-label": "Avain",
 	"wikilambda-ztyped-pair-value-label": "Arvo",
-	"wikilambda-optional": "valinnainen"
+	"wikilambda-optional": "valinnainen",
+	"wikilambda-continue-editing": "Jatka muokkaamista",
+	"wikilambda-discard-edits": "Hylkää muutokset",
+	"wikilambda-function-viewer-details-table-view-all": "Näytä kaikki",
+	"wikilambda-function-viewer-details-table-view-less": "Näytä vähemmän",
+	"wikilambda-toast-close": "Sulje"
 }
