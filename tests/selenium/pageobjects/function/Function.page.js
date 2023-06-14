@@ -156,6 +156,166 @@ class FunctionPage extends Page {
 	async goToCreateImplementationLink() {
 		await ElementActions.doClick( this.createAImplementation );
 	}
+
+	// #region Implementations Table
+
+	get implementationsTableBlock() { return $( '//div[@aria-labelledby="ext-wikilambda-function-details-table__title__text-implementations"]' ); }
+	get implementationsTableBlockHeader() { return this.implementationsTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__title")]' ); }
+	get implementationsTable() { return this.implementationsTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__body")]//table' ); }
+	get approveImplementationButton() { return this.implementationsTableBlockHeader.$( './/label[text()="Approve"]/parent::button' ); }
+	get deactivateImplementationButton() { return this.implementationsTableBlockHeader.$( './/label[text()="Deactivate"]/parent::button' ); }
+
+	/**
+	 * Click on the "Approve" button in the implementations table
+	 *
+	 * @async
+	 * @return {void}
+	 */
+	async approveImplementation() {
+		await ElementActions.doEnabledClick( this.approveImplementationButton );
+	}
+
+	/**
+	 * Click on the "Deactivate" button in the implementations table
+	 *
+	 * @async
+	 * @return {void}
+	 */
+	async deactivateImplementation() {
+		await ElementActions.doEnabledClick( this.deactivateImplementationButton );
+	}
+
+	/**
+	 * Get the row of the implementations table
+	 *
+	 * @param {number} index - index of the row in the table body
+	 * @return {WebdriverIOElementType}
+	 */
+	getImplementationsTableRow( index ) {
+		const tbody = this.implementationsTable.$( './tbody' );
+		return tbody.$$( './tr' )[ index ];
+	}
+
+	/**
+	 * Get the state of the Implementation
+	 *
+	 * @async
+	 * @param {number} index - index of the row in the table body
+	 * @return {string} - "Approved" or "Deactivated"
+	 */
+	async getImplementationsTableRowState( index ) {
+		const stateColumn = this.getImplementationsTableRow( index ).$$( './td' )[ 3 ];
+		const stateSelector = stateColumn.$( './/span[text()="Approved" or text()="Deactivated"]' );
+		const state = await ElementActions.getText( stateSelector );
+		return state;
+	}
+
+	/**
+	 * Click on the check box of the row of the implementations table
+	 *
+	 * @async
+	 * @param {number} index - index of the row in the table body
+	 * @return {void}
+	 */
+	async checkImplementationsTableRow( index ) {
+		const checkBox = this.getImplementationsTableRow( index ).$$( './td' )[ 0 ].$( './/input/following-sibling::span' );
+		await ElementActions.doClick( checkBox );
+	}
+
+	/**
+	 * Check all the row of implementations table by clicking
+	 * on the checkbox in the table head
+	 *
+	 * @async
+	 * @return {void}
+	 */
+	async checkAllImplementations() {
+		const thead = this.implementationsTable.$$( './thead/tr' )[ 0 ];
+		const checkBox = thead.$$( './th' )[ 0 ].$( './/input/following-sibling::span' );
+		await ElementActions.doClick( checkBox );
+	}
+
+	// #endregion
+
+	// #region Test cases Table
+
+	get testCasesTableBlock() { return $( '//div[@aria-labelledby="ext-wikilambda-function-details-table__title__text-testers"]' ); }
+	get testCasesTableBlockHeader() { return this.testCasesTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__title")]' ); }
+	get testCasesTable() { return this.testCasesTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__body")]//table' ); }
+	get approveTestCaseButton() { return this.testCasesTableBlockHeader.$( './/label[text()="Approve"]/parent::button' ); }
+	get deactivateTestCaseButton() { return this.testCasesTableBlockHeader.$( './/label[text()="Deactivate"]/parent::button' ); }
+
+	/**
+	 * Click on the "Approve" button in the test cases table
+	 *
+	 * @async
+	 * @return {void}
+	 */
+	async approveTestCase() {
+		await ElementActions.doEnabledClick( this.approveTestCaseButton );
+	}
+
+	/**
+	 * Click on the "Deactivate" button in the test cases table
+	 *
+	 * @async
+	 * @return {void}
+	 */
+	async deactivateTestCase() {
+		await ElementActions.doEnabledClick( this.deactivateTestCaseButton );
+	}
+
+	/**
+	 * Get the row of the test cases table
+	 *
+	 * @param {number} index - index of the row in the table body
+	 * @return {WebdriverIOElementType}
+	 */
+	getTestCasesTableRow( index ) {
+		const tbody = this.testCasesTable.$( './tbody' );
+		return tbody.$$( './tr' )[ index ];
+	}
+
+	/**
+	 * Get the state of the test case
+	 *
+	 * @async
+	 * @param {number} index - index of the row in the table body
+	 * @return {string} - "Approved" or "Deactivated"
+	 */
+	async getTestCasesTableRowState( index ) {
+		const stateColumn = this.getTestCasesTableRow( index ).$( 'td:last-child' );
+		const stateSelector = stateColumn.$( './/span[text()="Approved" or text()="Deactivated"]' );
+		const state = await ElementActions.getText( stateSelector );
+		return state;
+	}
+
+	/**
+	 * Click on the check box of the row of the test cases table
+	 *
+	 * @async
+	 * @param {number} index - index of the row in the table body
+	 * @return {void}
+	 */
+	async checkTestCasesTableRow( index ) {
+		const checkBox = this.getTestCasesTableRow( index ).$$( './td' )[ 0 ].$( './/input/following-sibling::span' );
+		await ElementActions.doClick( checkBox );
+	}
+
+	/**
+	 * Check all the row of test cases table by clicking
+	 * on the checkbox in the table head
+	 *
+	 * @async
+	 * @return {void}
+	 */
+	async checkAllTestCases() {
+		const thead = this.testCasesTable.$$( './thead/tr' )[ 0 ];
+		const checkBox = thead.$$( './th' )[ 0 ].$( './/input/following-sibling::span' );
+		await ElementActions.doClick( checkBox );
+	}
+
+	// #endregion
 }
 
 module.exports = new FunctionPage();
