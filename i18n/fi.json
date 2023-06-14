@@ -9,7 +9,8 @@
 			"Nwme",
 			"Pyscowicz",
 			"Rönttönen",
-			"Yupik"
+			"Yupik",
+			"Kyykaarme"
 		]
 	},
 	"wikilambda-special-evaluatefunctioncall-intro": "Varmista, että noudatat yhteisön käytäntöjä sekä tekijänoikeus- ja patenttisääntöjä.",
@@ -19,6 +20,7 @@
 	"wikilambda-savenew": "Tallenna",
 	"wikilambda-editor-label-addlanguage-label": "Lisää kieli",
 	"wikilambda-editor-label-select-programming-language-label": "Valitse ohjelmointikieli:",
+	"wikilambda-function-are-you-sure-dialog-header": "Oletko varma?",
 	"wikilambda-tester-status-pending": "ODOTTAA...",
 	"wikilambda-tester-results-title": "Testaimen tulokset",
 	"wikilambda-tester-status-label": "Testaimen tila",
@@ -63,5 +65,7 @@
 	"wikilambda-ztyped-pair-placeholder": "Valitse tyyppi",
 	"wikilambda-ztyped-pair-key-label": "Avain",
 	"wikilambda-ztyped-pair-value-label": "Arvo",
-	"wikilambda-optional": "valinnainen"
+	"wikilambda-optional": "valinnainen",
+	"wikilambda-continue-editing": "Jatka muokkaamista",
+	"wikilambda-discard-edits": "Hylkää muutokset"
 }
