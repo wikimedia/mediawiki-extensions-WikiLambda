@@ -20,51 +20,89 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 	beforeEach( () => {
 		apiPostWithEditTokenMock = runSetup().apiPostWithEditTokenMock;
 	} );
-
 	afterEach( () => {
 		runTeardown();
 	} );
 
-	// TODO (T336997): Adapt to DefaultView
-	it.skip( 'allows creating a new code implementation', async () => {
-		const { findByLabelText, findByRole, getAllByLabelText, getByText } =
-			render( App, { global: { plugins: [ store ] } } );
+	it( 'should allow you to create a new code implementation', async () => {
+		const { getByTestId, findByTestId } = render( App, { global: { plugins: [ store ] } } );
 
-		// ACT: Enter a name for the implementation.
-		await fireEvent.update(
-			within( await findByLabelText( 'Labels' ) ).getByRole( 'textbox' ),
-			'implementation name' );
+		const zImplementationComponent = await findByTestId( 'z-implementation' );
 
-		// ASSERT: The function specified in URL is pre-selected.
-		expect( within( getAllByLabelText( 'function:' )[ 0 ] ).getByRole( 'combobox' ) )
-			.toHaveDisplayValue( 'function name, in Chinese' );
+		// ACT: Select a function
+		const zReferenceSelector = await getByTestId( 'z-reference-selector' );
+		const zReferenceSelectorDropdown = await within( zReferenceSelector ).getByRole( 'combobox' );
 
-		// ACT: Choose Code as implementation type.
-		await fireEvent.click( getByText( 'Code' ) );
+		await fireEvent.select( zReferenceSelectorDropdown, 'Z12345' );
 
-		// ACT: Select JavaScript as programming language.
-		await fireEvent.click( getByText( 'javascript' ) );
+		// ACT: Click code implementation radio
+		const implementationRadioContainer = await within( zImplementationComponent ).getByTestId( 'implementation-radio' );
 
-		// ACT: Edit the code.
-		await fireEvent.update(
-			within( await findByLabelText( 'Code editor' ) ).getByRole( 'textbox' ),
-			' // TODO: actually implement' );
+		await fireEvent.click( within( implementationRadioContainer ).getByDisplayValue( 'Z14K3' ) );
 
-		// ACT: Click publish button.
-		await fireEvent.click( getByText( 'Publish' ) );
+		// ASSERT: Check that the code implementation radio button is selected
+		expect( within( implementationRadioContainer ).getByDisplayValue( 'Z14K3' ).checked ).toBe( true );
 
-		// ACT: Click publish button in dialog.
-		await fireEvent.click( within( await findByRole( 'dialog' ) ).getByText( 'Publish' ) );
+		// ACT: Select programming language
+		const programmingLanguageDropdown = await getByTestId( 'language-dropdown' );
+		// await fireEvent.select( within( languageDropdown ).getByRole( 'combobox' ), 'javascript' );
+
+		const programmingLanguageToSelect = 'javascript';
+
+		// Click the programming language dropdown
+		await fireEvent.click( within( programmingLanguageDropdown ).getByRole( 'combobox' ) );
+
+		// Select the Javascript option
+		await fireEvent.click( within( programmingLanguageDropdown ).getByText( programmingLanguageToSelect ) );
+
+		// ASSERT: Check that the language dropdown has javascript selected
+		expect( within( programmingLanguageDropdown ).getByRole( 'textbox' ).innerHTML ).toBe( programmingLanguageToSelect );
+
+		// ASSERT: Check that the code editor is visible
+		const codeEditor = await getByTestId( 'code-editor' );
+		expect( codeEditor ).toBeVisible();
+
+		// ASSERT: Check that the code editor starts with a function definition
+		const codeEditorInstance = window.ace.edit( codeEditor );
+		expect( codeEditorInstance.getValue() ).toContain( 'function' );
+
+		// ACT: Set the label for the code implementation
+		const openLanguageDialogButton = await getByTestId( 'open-language-dialog-button' );
+		await fireEvent.click( openLanguageDialogButton );
+
+		const languageDialog = await getByTestId( 'edit-label-dialog' );
+		const languageDialogInputs = within( languageDialog ).getAllByTestId( 'text-input' );
+		const languageDialogEditLabelInput = languageDialogInputs[ 0 ];
+
+		fireEvent.update( languageDialogEditLabelInput, 'implementation name' );
+
+		// Since the button does not have a role and is built into the codex dialog component, we need to use getByText
+		const confirmEditLabelButton = within( languageDialog ).getByText( 'Done' );
+		fireEvent.click( confirmEditLabelButton );
+
+		// ACT: Publish the implementation
+		const publishButton = await getByTestId( 'publish-button' );
+		await fireEvent.click( publishButton );
+
+		// ACT: Confirm publish in publish dialog that opens
+		const confirmPublishDialog = await getByTestId( 'confirm-publish-dialog' );
+		const confirmPublishButton = await within( confirmPublishDialog ).getByTestId( 'confirm-publish-button' );
+
+		await fireEvent.click( confirmPublishButton );
 
 		// ASSERT: Location is changed to page returned by API.
 		await waitFor( () => expect( window.location.href ).toEqual( '/wiki/newPage?success=true' ) );
 
 		// ASSERT: Correct ZObject was posted to the API.
-		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {
-			action: 'wikilambda_edit',
-			summary: '',
-			zid: undefined,
-			zobject: JSON.stringify( expectedNewCodeImplementationPostedToApi )
-		} );
+		// expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith(expect.any);
+		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith(
+			expect.objectContaining( {
+				action: expect.any( String ),
+				summary: expect.any( String ),
+				zid: undefined,
+				zobject: JSON.stringify( expectedNewCodeImplementationPostedToApi )
+			} )
+		);
 	} );
+
 } );

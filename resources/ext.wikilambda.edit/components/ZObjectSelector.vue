@@ -34,6 +34,7 @@
 				:end-icon="lookupIcon"
 				:initial-input-value="selectedLabel"
 				:status="errorLookupStatus"
+				data-testid="z-object-selector-lookup"
 				@update:selected="onSelect"
 				@input="onInput"
 				@focusout="onFocusOut"

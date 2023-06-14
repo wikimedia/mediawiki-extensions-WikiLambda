@@ -23,6 +23,7 @@
 						class="ext-wikilambda-value-input ext-wikilambda-code__language-selector"
 						:menu-items="programmingLanguageMenuItems"
 						:default-label="$i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
+						data-testid="language-dropdown"
 					>
 					</wl-select>
 				</div>
@@ -40,6 +41,7 @@
 						:mode="programmingLanguageValue"
 						:read-only="!edit"
 						:value="editorValue"
+						data-testid="code-editor"
 						@change="updateCode"
 					></code-editor>
 				</div>

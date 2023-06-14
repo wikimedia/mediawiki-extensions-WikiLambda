@@ -140,7 +140,6 @@
 
 <script>
 var
-	watchEffect = require( 'vue' ).watchEffect,
 	Constants = require( '../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
@@ -304,25 +303,15 @@ module.exports = exports = {
 
 	},
 	created: function () {
-		watchEffect(
-			( onInvalidate ) => {
-				const unwatch = this.$watch(
-					'functionObject',
-					( newFunctionObject ) => {
-						// Only update the initial function if a functionZid was provided
-						if ( this.functionZid ) {
-							this.initialFunctionObject = newFunctionObject || this.initialFunctionObject;
-						}
-
-						unwatch();
-					}
-				);
-
-				onInvalidate( () => {
-					unwatch();
-				} );
+		this.$watch(
+			'functionObject',
+			( newFunctionObject ) => {
+				// Only update the initial function if a functionZid was provided
+				if ( this.functionZid ) {
+					this.initialFunctionObject = newFunctionObject || this.initialFunctionObject;
+				}
 			},
-			{ flush: 'sync', once: true }
+			{ immediate: true }
 		);
 	}
 };

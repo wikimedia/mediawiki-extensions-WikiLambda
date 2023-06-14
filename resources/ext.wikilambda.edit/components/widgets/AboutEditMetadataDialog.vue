@@ -11,6 +11,7 @@
 			class="ext-wikilambda-about-edit-metadata"
 			:primary-action="primaryAction"
 			:default-action="defaultAction"
+			data-testid="edit-label-dialog"
 			@default="closeDialog"
 			@primary="saveChanges"
 			@update:open="closeDialog"
@@ -59,6 +60,7 @@
 						<wl-text-input
 							v-model="name"
 							:placeholder="namePlaceholder"
+							data-testid="edit-label-input"
 						></wl-text-input>
 					</div>
 				</div>

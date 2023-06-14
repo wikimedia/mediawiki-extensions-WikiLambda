@@ -18,6 +18,7 @@
 				:row-id="rowId"
 				:selected-zid="value"
 				:type="selectType"
+				data-testid="z-reference-selector"
 				@input="setValue"
 			></wl-z-object-selector>
 		</template>

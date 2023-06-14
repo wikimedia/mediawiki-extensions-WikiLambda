@@ -18,6 +18,7 @@
 			<cdx-button
 				weight="quiet"
 				aria-label="Edit"
+				data-testid="open-language-dialog-button"
 				@click="openUserLanguageDialog"
 			>
 				<cdx-icon :icon="icons.cdxIconEdit"></cdx-icon>

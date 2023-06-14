@@ -13,6 +13,7 @@
 				class="ext-wikilambda-publish-widget__publish-button"
 				action="progressive"
 				:disabled="isDisabled"
+				data-testid="publish-button"
 				@click.stop="handlePublish"
 			>
 				{{ $i18n( 'wikilambda-publishnew' ).text() }}

@@ -5,7 +5,10 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-publishdialog">
+	<div
+		class="ext-wikilambda-publishdialog"
+		data-testid="confirm-publish-dialog"
+	>
 		<cdx-dialog
 			id="publish-dialog"
 			title=""
@@ -70,6 +73,7 @@
 						class="ext-wikilambda-publishdialog__actions__button-publish"
 						action="progressive"
 						weight="primary"
+						data-testid="confirm-publish-button"
 						@click="publishZObject"
 					>
 						{{ $i18n( 'wikilambda-publishnew' ).text() }}

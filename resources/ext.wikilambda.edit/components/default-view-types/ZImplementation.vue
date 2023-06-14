@@ -5,7 +5,10 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-implementation">
+	<div
+		class="ext-wikilambda-implementation"
+		data-testid="z-implementation"
+	>
 		<!-- Function selection block -->
 		<div class="ext-wikilambda-implementation-function">
 			<wl-z-object-key-value
@@ -36,6 +39,7 @@
 					<div
 						v-else
 						class="ext-wikilambda-value-input"
+						data-testid="implementation-radio"
 					>
 						<cdx-radio
 							v-for="radio in radioChoices"
@@ -63,6 +67,7 @@
 				:skip-indent="isTypeCode"
 				:row-id="implementationContentRowId"
 				:edit="edit"
+				data-testid="implementation-content-block"
 			></wl-z-object-key-value>
 		</div>
 	</div>
@@ -92,6 +97,7 @@ module.exports = exports = {
 			required: true
 		}
 	},
+
 	computed: $.extend(
 		mapGetters( [
 			'getZImplementationFunctionRowId',

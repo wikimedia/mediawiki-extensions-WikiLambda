@@ -10,6 +10,7 @@
 	<div
 		class="ext-wikilambda-key-value-set"
 		:class="nestingDepthClass"
+		data-testid="z-object-key-value-set"
 	>
 		<wl-z-object-key-value
 			v-for="rowIdItem in childRowIds"
