@@ -139,6 +139,193 @@ class ImplementationForm extends Page {
 
 	// #endregion
 
+	// #region Composition Block
+
+	get compositionBlock() { return ContentBlock.getSectionOfContentBlock( 'composition' ); }
+
+	/**
+	 * Toggle the composition block
+	 *
+	 * @async
+	 * @return {void}
+	 */
+	async toggleCompositionBlock() {
+		await ContentBlock.toggleSection( 'composition' );
+	}
+
+	/**
+	 * Declare the Object type: CompositionBlockEntries
+	 *
+	 * @typedef {Object} FunctionCall
+	 * @property {string} functionCallLabel
+	 * @property {string} conditionType
+	 * @property {string} conditionValue
+	 * @property {string} thenType
+	 * @property {string} thenValue
+	 * @property {string} elseType
+	 * @property {string} elseValue
+	 *
+	 * @typedef {Object} CompositionBlockEntries
+	 * @property {FunctionCall} firstFunctionCallEntries
+	 * @property {FunctionCall} secondFunctionCallEntries
+	 */
+
+	/**
+	 * Fill the entries in the composition block.
+	 * This function is specific to set the composition block as per
+	 * the implementation of "Boolean equality" or "Z844" using "if else".
+	 *
+	 * @see https://wikifunctions.beta.wmflabs.org/wiki/Z10856
+	 *
+	 * [Function call] [If] - First Function Call
+	 * [a] condition [Argument reference] [Z844K1]
+	 * [b] then [Argument reference] [Z844K2]
+	 * [c] else [Function call] [If] - Second Function Call
+	 * [c1] condition [Argument reference] [Z844K2]
+	 * [c2] then [Boolean] [false]
+	 * [c3] else [Boolean] [true]
+	 *
+	 * @async
+	 * @param {CompositionBlockEntries} compositionBlockEntries
+	 * @return {void}
+	 */
+	async setCompositionBlock( compositionBlockEntries ) {
+		const { firstFunctionCallEntries, secondFunctionCallEntries } = compositionBlockEntries;
+
+		/**
+		 * Set the Function Call Block to "If"
+		 */
+		const functionBlock = ContentBlock.getSectionOfContentBlock( 'function', this.compositionBlock );
+		await InputDropdown.setInputDropdown( functionBlock, functionBlock.$( './/input[@placeholder="ZObject"]' ),
+			firstFunctionCallEntries.functionCallLabel );
+
+		let secondFunctionCallBlock;
+
+		// #region First Function call
+
+		{
+			/**
+			 * Set the condition type to "Argument reference"
+			 */
+			const conditionBlock = ContentBlock.getSectionOfContentBlock( 'condition', this.compositionBlock );
+			await ContentBlock.toggleSection( 'condition', this.compositionBlock );
+			const conditionTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', conditionBlock );
+			const conditionTypeInputSelector = conditionTypeBlock.$( './/span[@role="textbox"]' );
+			await InputDropdown.setInputDropdownReadOnly( conditionTypeBlock,
+				conditionTypeInputSelector, firstFunctionCallEntries.conditionType );
+
+			/**
+			 * Set the condition value to "Z844K1"
+			 */
+			const conditionValueInputBlock = ContentBlock.getSectionOfContentBlock( 'key id', conditionBlock );
+			await ElementActions.setInput( conditionValueInputBlock.$( 'input' ), firstFunctionCallEntries.conditionValue );
+
+			/**
+			 * Set the then type to "Argument reference"
+			 */
+			const thenBlock = ContentBlock.getSectionOfContentBlock( 'then', this.compositionBlock );
+
+			/**
+			 * Workaround against the Bug: T338011
+			 */
+			let thenTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', thenBlock );
+			await InputDropdown.setInputDropdown( thenTypeBlock, thenTypeBlock.$( 'input' ), 'Boolean' );
+
+			thenTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', thenBlock );
+			const thenNestedTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', thenTypeBlock );
+			const thenNestedTypeInputSelector = thenNestedTypeBlock.$( './/span[@role="textbox"]' );
+			await InputDropdown.setInputDropdownReadOnly( thenNestedTypeBlock,
+				thenNestedTypeInputSelector, firstFunctionCallEntries.thenType );
+
+			/**
+			 * Set the then value to "Z844K2"
+			 */
+			const thenValueInputBlock = ContentBlock.getSectionOfContentBlock( 'key id', thenBlock );
+			await ElementActions.setInput( thenValueInputBlock.$( 'input' ), firstFunctionCallEntries.thenValue );
+
+			/**
+			 * Set the else type to "Function call"
+			 */
+			const elseBlock = ContentBlock.getSectionOfContentBlock( 'else', this.compositionBlock );
+
+			/**
+			 * Workaround against the Bug: T338011
+			 */
+			let elseTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', elseBlock );
+			await InputDropdown.setInputDropdown( elseTypeBlock, elseTypeBlock.$( 'input' ), 'Boolean' );
+
+			elseTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', elseBlock );
+			const elseNestedTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', elseTypeBlock );
+			const elseNestedTypeInputSelector = elseNestedTypeBlock.$( './/span[@role="textbox"]' );
+			await InputDropdown.setInputDropdownReadOnly( elseNestedTypeBlock,
+				elseNestedTypeInputSelector, firstFunctionCallEntries.elseType );
+
+			/**
+			 * Set the else value to "If"
+			 */
+			const elseValueInputBlock = ContentBlock.getSectionOfContentBlock( 'function', elseBlock );
+			await InputDropdown.setInputDropdown( elseValueInputBlock, elseValueInputBlock.$( 'input' ), firstFunctionCallEntries.elseValue );
+
+			secondFunctionCallBlock = elseBlock;
+		}
+
+		// #endregion
+
+		// #region Second Function call
+
+		{
+			/**
+			 * Set the condition type to "Argument reference"
+			 */
+			const conditionBlock = ContentBlock.getSectionOfContentBlock( 'condition', secondFunctionCallBlock );
+			await ContentBlock.toggleSection( 'condition', secondFunctionCallBlock );
+			const conditionTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', conditionBlock );
+			const conditionTypeInputSelector = conditionTypeBlock.$( './/span[@role="textbox"]' );
+			await InputDropdown.setInputDropdownReadOnly( conditionTypeBlock,
+				conditionTypeInputSelector, secondFunctionCallEntries.conditionType );
+
+			/**
+			 * Set the condition value to "Z844K2"
+			 */
+			const conditionValueInputBlock = ContentBlock.getSectionOfContentBlock( 'key id', conditionBlock );
+			await ElementActions.setInput( conditionValueInputBlock.$( 'input' ), secondFunctionCallEntries.conditionValue );
+
+			/**
+			 * Set the then type to "Boolean"
+			 */
+			const thenBlock = ContentBlock.getSectionOfContentBlock( 'then', secondFunctionCallBlock );
+			await ContentBlock.toggleSection( 'type', thenBlock );
+			const thenTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', thenBlock );
+			const thenTypeInputBlock = ContentBlock.getSectionOfContentBlock( 'reference id', thenTypeBlock );
+			await InputDropdown.setInputDropdown( thenTypeInputBlock, thenTypeInputBlock.$( 'input' ), secondFunctionCallEntries.thenType );
+
+			/**
+			 * Set the then value to "false"
+			 */
+			const thenValueInputBlock = ContentBlock.getSectionOfContentBlock( 'identity', thenBlock );
+			await InputDropdown.setInputDropdown( thenValueInputBlock, thenValueInputBlock.$( 'input' ), secondFunctionCallEntries.thenValue );
+
+			/**
+			 * Set the else type to "Boolean"
+			 */
+			const elseBlock = ContentBlock.getSectionOfContentBlock( 'else', secondFunctionCallBlock.$( './div[2]' ) );
+			await ContentBlock.toggleSection( 'type', elseBlock );
+			const elseTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', elseBlock );
+			const elseTypeInputBlock = ContentBlock.getSectionOfContentBlock( 'reference id', elseTypeBlock );
+			await InputDropdown.setInputDropdown( elseTypeInputBlock, elseTypeInputBlock.$( 'input' ), secondFunctionCallEntries.elseType );
+
+			/**
+			 * Set the else value to "true"
+			 */
+			const elseValueInputBlock = ContentBlock.getSectionOfContentBlock( 'identity', elseBlock );
+			await InputDropdown.setInputDropdown( elseValueInputBlock, elseValueInputBlock.$( 'input' ), secondFunctionCallEntries.elseValue );
+		}
+
+		// #endregion
+	}
+
+	// #endregion
+
 	// #endregion
 
 	/**
