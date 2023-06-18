@@ -514,7 +514,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 
 		if ( count( $attachedImplementationZids ) <= 1 ) {
 			// No point in updating.
-			$logger->info(
+			$logger->debug(
 				__METHOD__ . ' Not updating {functionZid}: Implementation count <= 1',
 				[
 					'functionZid' => $functionZid,
@@ -532,7 +532,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		$testerZids = array_keys( reset( $implementationMap ) );
 		if ( array_diff( $attachedImplementationZids, $implementationZids ) ||
 			array_diff( $attachedTesterZids, $testerZids ) ) {
-			$logger->info(
+			$logger->debug(
 				__METHOD__ . ' Not updating {functionZid}: Missing results for attached implementations or testers',
 				[
 					'functionZid' => $functionZid,
@@ -579,7 +579,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		// Bail out if the new first element is the same as the previous
 		$newFirst = array_key_first( $implementationMap );
 		if ( $newFirst === $previousFirst ) {
-			$logger->info(
+			$logger->debug(
 				__METHOD__ . ' Not updating {functionZid}: Same first element',
 				[
 					'functionZid' => $functionZid,
@@ -601,7 +601,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		$relativeThreshold = 0.8;
 		if ( $newFirstStats[ 'averageTime' ] >= $relativeThreshold * $previousFirstStats[ 'averageTime' ] &&
 			$newFirstStats[ 'numFailed' ] >= $previousFirstStats[ 'numFailed' ] ) {
-			$logger->info(
+			$logger->debug(
 				__METHOD__ . ' Not updating {functionZid}: New first element only marginally better than previous',
 				[
 					'functionZid' => $functionZid,
