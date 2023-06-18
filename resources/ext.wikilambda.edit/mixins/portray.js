@@ -42,6 +42,12 @@ const knownKeys = new Map( [
 	[ 'executionMemoryUsage', { i18nId: 'wikilambda-functioncall-metadata-execution-memory-usage' } ]
 ] );
 
+// A list of keys to hide.
+const knownKeysToHide = [
+	// This is carried for debugging purposes and for cache eviction, and shouldn't be shown.
+	'loadedFromMediaWikiCache'
+];
+
 module.exports = exports = {
 	methods: {
 		maybeStringify: function ( value ) {
@@ -96,7 +102,9 @@ module.exports = exports = {
 					key = key[ Constants.Z_STRING_VALUE ];
 				}
 
-				if ( keysUsed.includes( key ) ) {
+				// Don't show this key if we know it shouldn't be shown to users, or we've already encountered it (bug?)
+				// eslint-disable-next-line es-x/no-array-prototype-includes
+				if ( knownKeysToHide.includes( key ) || keysUsed.includes( key ) ) {
 					continue;
 				}
 				const keyInfo = knownKeys.get( key );
