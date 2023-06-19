@@ -103,7 +103,7 @@ module.exports = exports = {
 				}
 
 				// Don't show this key if we know it shouldn't be shown to users, or we've already encountered it (bug?)
-				// eslint-disable-next-line es-x/no-array-prototype-includes
+
 				if ( knownKeysToHide.includes( key ) || keysUsed.includes( key ) ) {
 					continue;
 				}

@@ -16,8 +16,8 @@ describe( 'App.vue', function () {
 
 	beforeAll( function () {
 		actions = {
-			initializeZObject: jest.fn(),
-			initialize: jest.fn()
+			initializeView: jest.fn(),
+			prefetchZids: jest.fn()
 		};
 
 		global.store.hotUpdate( {
@@ -60,7 +60,7 @@ describe( 'App.vue', function () {
 		expect( global.$i18n ).toHaveBeenCalledWith( 'wikilambda-loading' );
 	} );
 
-	it( 'Does not render the router view when getZObjectInitialized is true but initializeZObject has not yet completed', async () => {
+	it( 'Does not render the router view when getZObjectInitialized is true but initializeView has not yet completed', async () => {
 		jest.clearAllMocks();
 
 		var wrapper;
@@ -77,7 +77,7 @@ describe( 'App.vue', function () {
 		expect( wrapper.findComponent( { name: 'wl-function-editor' } ).exists() ).toBe( false );
 	} );
 
-	it( 'Renders the router view when getZObjectInitialized is true and initializeZObject has completed', async () => {
+	it( 'Renders the router view when getZObjectInitialized is true and initializeView has completed', async () => {
 		jest.clearAllMocks();
 
 		var wrapper;
@@ -108,6 +108,6 @@ describe( 'App.vue', function () {
 			}
 		} );
 
-		expect( actions.initializeZObject ).toHaveBeenCalled();
+		expect( actions.initializeView ).toHaveBeenCalled();
 	} );
 } );

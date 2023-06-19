@@ -70,14 +70,6 @@ var Constants = {
 		Z_FUNCTION_STRING_EQUALITY: 'Z866',
 		Z_FUNCTION_BOOLEAN_EQUALITY: 'Z844',
 		Z_FUNCTION_VALIDATE_EVALUATION_RESULT: 'Z122',
-		Z_KEY_MODES: {
-			LITERAL: 'literal',
-			REFERENCE: 'reference',
-			FUNCTION_CALL: 'function_call',
-			GENERIC_LITERAL: 'generic_literal',
-			JSON: 'json',
-			ARGUMENT_REF: 'argument_ref'
-		},
 		Z_BOOLEAN: 'Z40',
 		Z_BOOLEAN_TRUE: 'Z41',
 		Z_BOOLEAN_FALSE: 'Z42',
@@ -127,14 +119,6 @@ var Constants = {
 		Z_FUNCTION_CALL_TO_TYPE: 'function_call_to_type',
 		PAGINATION_SIZE: 5
 	},
-	modes = [
-		{ key: Constants.Z_KEY_MODES.REFERENCE, value: 'wikilambda-modeselector-reference', label: 'wikilambda-reference', type: Constants.Z_REFERENCE },
-		{ key: Constants.Z_KEY_MODES.FUNCTION_CALL, value: 'wikilambda-modeselector-functioncall', label: 'wikilambda-functioncall', type: Constants.Z_FUNCTION_CALL },
-		{ key: Constants.Z_KEY_MODES.LITERAL, value: 'wikilambda-modeselector-literal', label: 'wikilambda-literal', type: null },
-		{ key: Constants.Z_KEY_MODES.GENERIC_LITERAL, value: 'wikilambda-modeselector-genericliteral', label: 'wikilambda-genericliteral', type: null },
-		{ key: Constants.Z_KEY_MODES.JSON, value: 'wikilambda-modeselector-json', label: 'wikilambda-json', type: null },
-		{ key: Constants.Z_KEY_MODES.ARGUMENT_REF, value: 'wikilambda-modeselector-argref', label: 'wikilambda-argref', type: Constants.Z_ARGUMENT_REFERENCE }
-	],
 	typedObjectsList = [ Constants.Z_TYPED_LIST, Constants.Z_TYPED_PAIR, Constants.Z_TYPED_MAP ],
 	views = {
 		FUNCTION_EDITOR: 'function-editor',
@@ -205,7 +189,6 @@ var Constants = {
 		Constants.Z_ARGUMENT_REFERENCE
 	];
 
-Constants.Z_MODE_SELECTOR_MODES = modes;
 Constants.Z_TYPED_OBJECTS_LIST = typedObjectsList;
 Constants.VIEWS = views;
 Constants.PATHS = paths;

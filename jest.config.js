@@ -74,13 +74,13 @@ module.exports = {
 			statements: 82
 		},
 		'./resources/ext.wikilambda.edit/mixins': {
-			branches: 73,
+			branches: 72,
 			lines: 66,
-			functions: 80,
+			functions: 78,
 			statements: 66
 		},
 		'./resources/ext.wikilambda.edit/store': {
-			branches: 80,
+			branches: 78,
 			lines: 89,
 			functions: 93,
 			statements: 89

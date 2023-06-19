@@ -193,42 +193,18 @@ function getValueFromCanonicalZMap( zMap, key ) {
 }
 
 /**
- * Traverses a ZObject calling the provided callback function for every
- * <key, value> pair. This a depth-first procedure.
- *
- * @param {Object} zobject
- * @param {Function} callback
- */
-function traverse( zobject, callback ) {
-	if ( zobject !== null && typeof zobject === 'object' ) {
-		// eslint-disable-next-line es-x/no-object-entries
-		Object.entries( zobject ).forEach( ( [ key, value ] ) => {
-			callback( key, value );
-			traverse( value, callback );
-		} );
-	}
-}
-
-/**
  * Finds all of the ZIDs appearing in an arbitrary ZObject.
  *
  * @param {Object|string} zobject a Z1/Object
  * @return {Set} Set of (string) ZIDs
  */
 function extractZIDs( zobject ) {
-	const found = new Set( [] );
-	// Handle the case of a lone canonical reference
-	if ( typeof zobject === 'string' && isZid( zobject ) ) {
-		found.add( zobject );
-	}
-
-	traverse( zobject, ( _key, value ) => {
-		if ( typeof value === 'string' && isZid( value ) ) {
-			found.add( value );
-		}
-	} );
-
-	return found;
+	const str = JSON.stringify( zobject );
+	const regexp = /"(Z[1-9]\d*)(K[1-9]\d*)?"/g;
+	const matches = [ ...str.matchAll( regexp ) ];
+	const allZids = matches.map( ( groups ) => groups[ 1 ] );
+	const uniqueZids = [ ...new Set( allZids ) ];
+	return uniqueZids;
 }
 
 /**

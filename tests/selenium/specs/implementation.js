@@ -117,7 +117,7 @@ describe( 'Implementation (CUJ 5)', () => {
 				 * Confirm that the implementation form is open
 				 */
 				await expect( await ImplementationForm.getFunctionExplorerName() )
-					.toBe( functionDetails.ZId, { message: 'Implementation form is not open' } );
+					.toBe( functionDetails.ZObjectLabel, { message: 'Implementation form is not open' } );
 			} );
 
 			it( 'should fill the entries in the about section', async () => {

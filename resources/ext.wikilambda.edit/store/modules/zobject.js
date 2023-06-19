@@ -9,6 +9,7 @@ var Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
 	zobjectTreeUtils = require( '../../mixins/zobjectTreeUtils.js' ).methods,
 	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
+	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs,
 	getParameterByName = require( '../../mixins/urlUtils.js' ).methods.getParameterByName,
 	addZObjects = require( './zobject/addZObjects.js' ),
 	currentZObject = require( './zobject/currentZObject.js' ),
@@ -257,32 +258,6 @@ function retrieveFunctionCallFunctionZid( getZObjectChildrenById, object ) {
 	return functionCall;
 }
 
-function generateZIDListFromObjectTree( objectTree ) {
-	let keysOrZids = new Set();
-	objectTree.forEach( function ( row ) {
-		keysOrZids.add( row.value );
-		if ( row.key !== undefined ) {
-			// We make sure that even integer keys are added as strings
-			// otherwise the following pattern match will raise an error
-			keysOrZids.add( `${row.key}` );
-		}
-	} );
-
-	keysOrZids = [ ...keysOrZids ]
-		.map( function ( str ) {
-			// If it matches Zid or Zkey, return Zid part, else false
-			const matches = str.match( /^(Z[1-9]\d*)(K[1-9]\d*)?$/ );
-			return matches ? matches.slice( 1 )[ 0 ] : false;
-		} )
-		.filter( function ( value ) {
-			// Filter false values
-			return value;
-		} );
-
-	// Return unique values
-	return [ ...new Set( keysOrZids ) ];
-}
-
 /**
  * Given a list of available languages for an object metadata
  * (name, description or alias), it checks the user language and
@@ -332,7 +307,7 @@ module.exports = exports = {
 	},
 	state: {
 		zobject: [],
-		createNewPage: true,
+		createNewPage: false,
 		isSavingZObject: false,
 		ZObjectInitialized: false,
 		activeLangSelection: '',
@@ -2083,90 +2058,124 @@ module.exports = exports = {
 	},
 	actions: {
 		/**
-		 * Handles the conversion and initization of a zObject.
-		 * The Object received by the server is in JSON format, so we convert it
-		 * to our Tree structure.
+		 * Handles the initization of the pages given the wgWikiLambda config parameters.
+		 * The page can be:
+		 * 1. A Create New ZObject page, when the flag createNewPage is true-
+		 * 2. A Evaluate Function Call page, when the flag evaluateFunctionCall
+		 *    is true or the zid property is empty.
+		 * 3. A View or Edit page of a persisted ZObject given its zid.
 		 *
 		 * @param {Object} context
 		 * @return {Promise}
 		 */
-		initializeZObject: function ( context ) {
+		initializeView: function ( context ) {
 			var editingData = mw.config.get( 'wgWikiLambda' ),
 				createNewPage = editingData.createNewPage,
 				evaluateFunctionCall = editingData.evaluateFunctionCall,
-				zId = editingData.zId,
-				rootObject;
-
-			context.commit( 'setCreateNewPage', createNewPage );
+				zId = editingData.zId;
 
 			// If createNewPage is true, ignore evaluateFunctionCall and any specified ZID.
 			if ( createNewPage ) {
-				context.commit( 'setCurrentZid', Constants.NEW_ZID_PLACEHOLDER );
+				return context.dispatch( 'initializeCreateNewPage' );
 
-				rootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
-				context.commit( 'addZObject', rootObject );
-
-				return context.dispatch( 'changeType', {
-					id: 0,
-					type: Constants.Z_PERSISTENTOBJECT
-				} ).then( function () {
-					// If `zid` url parameter is found, the new ZObject
-					// will be of the given type.
-					var defaultType = getParameterByName( 'zid' ),
-						defaultKeys;
-
-					context.commit( 'setZObjectInitialized', true );
-
-					// No `zid` parameter, return.
-					if ( !defaultType || !defaultType.match( /Z[1-9]\d*$/ ) ) {
-						return Promise.resolve();
-					}
-
-					// Else, fetch `zid` and make sure it's a type
-					return context.dispatch( 'fetchZKeys', { zids: [ defaultType ] } )
-						.then( function () {
-							var Z2K2 =
-								typeUtils.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, context.state.zobject );
-							defaultKeys = context.rootGetters.getStoredObject( defaultType );
-
-							// If `zid` is not a type, return.
-							if ( !defaultKeys ||
-								defaultKeys[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] !==
-								Constants.Z_TYPE
-							) {
-								return Promise.resolve();
-							}
-
-							// If `zid` is a type, dispatch `changeType` action
-							return context.dispatch( 'changeType', {
-								id: Z2K2.id,
-								type: defaultType
-							} );
-						} );
-				} );
-
-			// If evaluateFunctionCall is true, ignore any specified ZID. If no ZID specified, assume
-			// evaluateFunctionCall is true.
+			// If evaluateFunctionCall is true, ignore any specified ZID.
+			// If no ZID specified, assume evaluateFunctionCall is true.
 			} else if ( evaluateFunctionCall || !zId ) {
-				context.commit( 'setCurrentZid', Constants.NEW_ZID_PLACEHOLDER );
+				return context.dispatch( 'initializeEvaluateFunction' );
 
-				rootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
-				context.commit( 'addZObject', rootObject );
-
-				context.dispatch( 'changeType', {
-					id: 0,
-					type: Constants.Z_FUNCTION_CALL
-				} );
-				context.commit( 'setZObjectInitialized', true );
-
+			// Else, this is a view or edit page of an existing ZObject, so we
+			// fetch the info and set the root ZObject with the persisted data.
 			} else {
-				context.commit( 'setCurrentZid', zId );
-
 				return context.dispatch( 'initializeRootZObject', zId );
 			}
 		},
+
 		/**
-		 * Call to the wikilambdaload_zobjects API to fetch the root Zobject of the page
+		 * Initializes a Evaluate Function Call page, setting the root blank
+		 * function call object.
+		 *
+		 * @param {Object} context
+		 * @return {Promise}
+		 */
+		initializeEvaluateFunction: function ( context ) {
+			// Set current Zid to empty placeholder (Z0)
+			context.commit( 'setCurrentZid', Constants.NEW_ZID_PLACEHOLDER );
+
+			// Create root row for the blank object
+			const rootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
+			context.commit( 'addZObject', rootObject );
+
+			// Set the blank ZObject as a new ZFunctionCall
+			context.dispatch( 'changeType', {
+				id: 0,
+				type: Constants.Z_FUNCTION_CALL
+			} );
+			context.commit( 'setZObjectInitialized', true );
+		},
+
+		/**
+		 * Initializes a Create New ZObject page, setting the root blank
+		 * persistent object and setting the internal type to a given one, if
+		 * provided in the url Zid property.
+		 *
+		 * @param {Object} context
+		 * @return {Promise}
+		 */
+		initializeCreateNewPage: function ( context ) {
+			// Set createNewPage flag to true
+			context.commit( 'setCreateNewPage', true );
+
+			// Set current Zid to empty placeholder (Z0)
+			context.commit( 'setCurrentZid', Constants.NEW_ZID_PLACEHOLDER );
+
+			// Create root row for the blank object
+			const rootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
+			context.commit( 'addZObject', rootObject );
+
+			// Set the blank ZObject as a new ZPersistentObject
+			return context.dispatch( 'changeType', {
+				id: 0,
+				type: Constants.Z_PERSISTENTOBJECT
+			} ).then( function () {
+				// If `zid` url parameter is found, the new ZObject
+				// will be of the given type.
+				var defaultType = getParameterByName( 'zid' ),
+					defaultKeys;
+
+				context.commit( 'setZObjectInitialized', true );
+
+				// No `zid` parameter, return.
+				if ( !defaultType || !defaultType.match( /Z[1-9]\d*$/ ) ) {
+					return Promise.resolve();
+				}
+
+				// Else, fetch `zid` and make sure it's a type
+				return context.dispatch( 'fetchZKeys', { zids: [ defaultType ] } )
+					.then( function () {
+						var Z2K2 =
+							typeUtils.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, context.state.zobject );
+						defaultKeys = context.rootGetters.getStoredObject( defaultType );
+
+						// If `zid` is not a type, return.
+						if ( !defaultKeys ||
+							defaultKeys[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] !==
+							Constants.Z_TYPE
+						) {
+							return Promise.resolve();
+						}
+
+						// If `zid` is a type, dispatch `changeType` action
+						return context.dispatch( 'changeType', {
+							id: Z2K2.id,
+							type: defaultType
+						} );
+					} );
+			} );
+		},
+
+		/**
+		 * Initializes a view or edit page of a given zid from a persisted ZObject.
+		 * Calls to the wikilambdaload_zobjects API to fetch the root Zobject of the page
 		 * with all its unfiltered content (all language labels, etc). This call is done
 		 * only once and the method is separate from fetchZKeys because the logic to
 		 * treat the result is extremely different.
@@ -2176,6 +2185,9 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		initializeRootZObject: function ( context, zId ) {
+			// Set current Zid
+			context.commit( 'setCurrentZid', zId );
+
 			// Calling the API without language parameter so that we get
 			// the unfiltered multilingual object
 			const api = new mw.Api();
@@ -2208,18 +2220,15 @@ module.exports = exports = {
 					};
 				}
 
-				const zobjectRows = zobjectTreeUtils.convertZObjectToRows( zobject );
-
-				// Get all zIds within the object.
-				// We get main zId again because we previously did not add its labels
-				// to the keyLabels object in the store. We will this way take
-				// advantage of the backend making language fallback decisions
-				let listOfZIdWithinObject = generateZIDListFromObjectTree( zobjectRows );
-				listOfZIdWithinObject.push( zId );
-				listOfZIdWithinObject = [ ...new Set( listOfZIdWithinObject ) ];
-
+				// Get all zIds within the object:
+				const listOfZIdWithinObject = extractZIDs( zobject );
 				context.dispatch( 'fetchZKeys', { zids: listOfZIdWithinObject } );
+
+				// Convert to rows and set store:
+				const zobjectRows = zobjectTreeUtils.convertZObjectToRows( zobject );
 				context.commit( 'setZObject', zobjectRows );
+
+				// Set initialized as done:
 				context.commit( 'setZObjectInitialized', true );
 			} );
 		},
@@ -2857,12 +2866,18 @@ module.exports = exports = {
 			}
 
 			// 4.b. Initialize all the new function call arguments
+			let zids = [];
 			newArgs.forEach( function ( arg ) {
 				if ( !oldKeys.includes( arg[ Constants.Z_ARGUMENT_KEY ] ) ) {
 					const blank = context.getters.createObjectByType( {
 						type: arg[ Constants.Z_ARGUMENT_TYPE ],
 						link: true
 					} );
+
+					// Asynchronously fetch the necessary zids. We don't need to wait
+					// to the fetch call because these will only be needed for labels.
+					zids = zids.concat( extractZIDs( blank ) );
+
 					allActions.push( context.dispatch( 'injectKeyValueFromRowId', {
 						rowId: payload.parentId,
 						key: arg[ Constants.Z_ARGUMENT_KEY ],
@@ -2870,6 +2885,10 @@ module.exports = exports = {
 					} ) );
 				}
 			} );
+
+			// 4.c. Make sure that all the newly added referenced zids are fetched
+			zids = [ ...new Set( zids ) ];
+			context.dispatch( 'fetchZKeys', { zids } );
 
 			return Promise.all( allActions );
 		},

@@ -110,7 +110,7 @@ describe( 'Tester', () => {
 			 * Confirm that the test form is open
 			 */
 			await expect( await TesterForm.getFunctionExplorerName() )
-				.toBe( functionDetails.ZId );
+				.toBe( functionDetails.ZObjectLabel );
 		} );
 
 		it( 'should fill the entries in the about section', async () => {

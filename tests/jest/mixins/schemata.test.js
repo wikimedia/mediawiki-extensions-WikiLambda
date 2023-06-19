@@ -27,27 +27,32 @@ describe( 'schemata mixin', function () {
 
 	it( 'extracts ZID from normal string', function () {
 		expect( extractZIDs( { Z1K1: Constants.Z_STRING, Z6K1: 'Hello, Test!' } ) ).toEqual(
-			new Set( [ 'Z6' ] ) );
+			[ 'Z1', 'Z6' ]
+		);
 	} );
 
 	it( 'extracts no ZID from canonical string', function () {
 		expect( extractZIDs( 'Hello' ) ).toEqual(
-			new Set( [] ) );
+			[]
+		);
 	} );
 
 	it( 'extracts ZID from canonical reference', function () {
 		expect( extractZIDs( 'Z10023' ) ).toEqual(
-			new Set( [ 'Z10023' ] ) );
+			[ 'Z10023' ]
+		);
 	} );
 
 	it( 'extracts ZIDs from normal function', function () {
 		expect( extractZIDs( normalZFunction ) ).toEqual(
-			new Set( [ 'Z10023', 'Z11', 'Z12', 'Z14', 'Z16', 'Z17', 'Z2', 'Z6', 'Z61', 'Z8', 'Z9' ] ) );
+			[ 'Z1', 'Z9', 'Z2', 'Z6', 'Z10023', 'Z8', 'Z17', 'Z12', 'Z11', 'Z14', 'Z16', 'Z61' ]
+		);
 	} );
 
 	it( 'extracts ZIDs from canonical function', function () {
 		expect( extractZIDs( canonicalZFunction ) ).toEqual(
-			new Set( [ 'Z10023', 'Z11', 'Z12', 'Z14', 'Z16', 'Z17', 'Z2', 'Z6', 'Z61', 'Z8' ] ) );
+			[ 'Z1', 'Z2', 'Z6', 'Z10023', 'Z8', 'Z17', 'Z12', 'Z11', 'Z14', 'Z16', 'Z61' ]
+		);
 	} );
 
 	it( 'extracts error structure from a simple error object in relaxed format', function () {

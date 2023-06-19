@@ -52,20 +52,14 @@ module.exports = exports = {
 			'getZObjectInitialized',
 			'isNewZObject'
 		] ),
-		mapGetters(
-			'router',
-			[ 'getCurrentView' ]
-		)
+		mapGetters( 'router', [ 'getCurrentView' ] )
 	),
 	methods: $.extend(
 		mapActions( [
-			'initializeZObject',
-			'initialize'
+			'initializeView',
+			'prefetchZids'
 		] ),
-		mapActions(
-			'router',
-			[ 'evaluateUri' ]
-		),
+		mapActions( 'router', [ 'evaluateUri' ] ),
 		{
 			/**
 			 * Instrument how long our view took to load, split by type of view
@@ -92,9 +86,9 @@ module.exports = exports = {
 	),
 	created: function () {
 		// Set zobject
-		this.initializeZObject().then(
+		this.initializeView().then(
 			function () {
-				this.initialize();
+				this.prefetchZids();
 				this.evaluateUri();
 				this.isAppSetup = true;
 			}.bind( this )
@@ -103,7 +97,7 @@ module.exports = exports = {
 		window.onpopstate = function () {
 			// Reinitialize zObject is current zobject is new and user changes route
 			if ( this.isNewZObject ) {
-				this.initializeZObject().then(
+				this.initializeView().then(
 					function () {
 						this.evaluateUri();
 					}.bind( this )

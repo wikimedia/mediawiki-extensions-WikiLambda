@@ -6,6 +6,7 @@
  */
 var Constants = require( '../../../Constants.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ).methods,
+	extractZIDs = require( '../../../mixins/schemata.js' ).methods.extractZIDs,
 	url = require( '../../../mixins/urlUtils.js' ).methods;
 
 /* eslint-disable no-unused-vars */
@@ -706,20 +707,20 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		changeType: function ( context, payload ) {
-			return context
-				.dispatch( 'fetchZKeys', { zids: [ payload.type ] } )
-				.then( function () {
-					// Gets the blank scaffolding and initializes if the
-					// required initial values are present in the payload
-					const value = context.getters.createObjectByType( payload );
+			// Build the expected value to assign
+			const value = context.getters.createObjectByType( payload );
 
-					// Inject (replace or append) from row ID
-					return context.dispatch( 'injectZObjectFromRowId', {
-						rowId: payload.id,
-						value,
-						append: payload.append || false
-					} );
-				} );
+			// Asynchronously fetch the necessary zids. We don't need to wait
+			// to the fetch call because these will only be needed for labels.
+			const zids = extractZIDs( value );
+			context.dispatch( 'fetchZKeys', { zids } );
+
+			// Inject (replace or append) the value from a given row ID
+			return context.dispatch( 'injectZObjectFromRowId', {
+				rowId: payload.id,
+				value,
+				append: payload.append || false
+			} );
 		}
 	}
 };

@@ -30,6 +30,7 @@
 		],
 		"no-var": "off",
 		"es-x/no-array-prototype-includes": "off",
+		"es-x/no-string-prototype-matchall": "off",
 		"jsdoc/require-param-type": "error",
 		"jsdoc/require-returns": "error",
 		"jsdoc/check-types": "error",
