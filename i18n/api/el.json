@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Spyridon Eftychios Kokotos"
+		]
+	},
+	"apihelp-wikilambda_perform_test-z801": "Εκτελέστε όλους τους ZTesters για όλες τις ZImplementations της ZFunction Z801/Echo.",
+	"apihelp-wikilambda_perform_test-z801-implementation": "Εκτελέστε όλους τους ZTesters για την ZImplementation Z901/Built-in της συνάρτησης ZFunction Z801/Echo.",
+	"apihelp-wikilambda_perform_test-z801-tester": "Εκτελέστε τους ZTesters Z8010/Echo Tester για Strings και Z8011/Echo Tester για UTF8 Strings για όλες τις ZImplementations της ZFunction Z801/Echo.",
+	"apihelp-wikilambda_perform_test-z801-implementation-and-testers": "Εκτελέστε όλους τους ZTester Z8010 για την ZImplementation Z901/Built-in της ZFunction Z801/Echo."
+}
