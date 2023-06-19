@@ -185,12 +185,22 @@ module.exports = exports = {
 
 		/**
 		 * Returns whether the object has any available name
-		 * (in any language)
+		 * object (in any language). The object could have an
+		 * empty string.
+		 *
+		 * @return {boolean}
+		 */
+		hasNameObject: function () {
+			return this.selectedNameObject !== undefined;
+		},
+		/**
+		 * Returns whether the object has any available name
+		 * (in any language).
 		 *
 		 * @return {boolean}
 		 */
 		hasName: function () {
-			return this.selectedNameObject !== undefined;
+			return !!this.nameValue;
 		},
 		/**
 		 * Returns whether the object has any available description
@@ -212,7 +222,19 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns the string value for the selected name, if any
+		 * Returns the value of the selected name object, if any.
+		 * It can return an empty string.
+		 *
+		 * @return {string}
+		 */
+		nameValue: function () {
+			return this.hasNameObject ?
+				this.getZMonolingualTextValue( this.selectedNameObject.rowId ) :
+				'';
+		},
+		/**
+		 * Returns the string value to present as the name, if any, or "Untitled"
+		 * if no name object is present or the name object has an empty string.
 		 *
 		 * @return {string}
 		 */
