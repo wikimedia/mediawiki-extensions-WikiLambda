@@ -20,7 +20,6 @@ use MediaWiki\Content\Renderer\ContentParseParams;
 use MediaWiki\Content\Transform\PreSaveTransformParams;
 use MediaWiki\Content\ValidationParams;
 use MediaWiki\Extension\WikiLambda\Diff\ZObjectContentDifferenceEngine;
-use MediaWiki\Extension\WikiLambda\Diff\ZObjectSlotDiffRenderer;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -490,12 +489,5 @@ class ZObjectContentHandler extends ContentHandler {
 		return new ZObjectContentDifferenceEngine(
 			$context, $oldContentRevisionId, $newContentRevisionId, $recentChangesId, $refreshCache, $unhide
 		);
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	protected function getSlotDiffRendererWithOptions( IContextSource $context, $options = [] ) {
-		return new ZObjectSlotDiffRenderer();
 	}
 }
