@@ -16,6 +16,7 @@ describe( 'ZReference', () => {
 	var getters;
 	beforeEach( () => {
 		getters = {
+			getZLang: createGettersWithFunctionsMock( 'en' ),
 			getLabel: createGettersWithFunctionsMock( 'String' ),
 			getLabelData: createGettersWithFunctionsMock( { zid: 'Z6', label: 'String', lang: 'Z1002' } ),
 			getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z6' ),
@@ -45,7 +46,7 @@ describe( 'ZReference', () => {
 			} );
 
 			const referenceLink = wrapper.get( 'a' );
-			expect( referenceLink.attributes().href ).toBe( '/wiki/Z6' );
+			expect( referenceLink.attributes().href ).toBe( '/view/en/Z6' );
 			expect( referenceLink.text() ).toBe( 'String' );
 		} );
 
@@ -65,7 +66,7 @@ describe( 'ZReference', () => {
 			} );
 
 			const referenceLink = wrapper.get( 'a' );
-			expect( referenceLink.attributes().href ).toBe( '/wiki/Z6' );
+			expect( referenceLink.attributes().href ).toBe( '/view/en/Z6' );
 			expect( referenceLink.text() ).toBe( 'Z6' );
 		} );
 	} );

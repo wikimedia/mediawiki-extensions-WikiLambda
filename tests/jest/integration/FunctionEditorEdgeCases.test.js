@@ -137,7 +137,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await fireEvent.click( within( await findByRole( 'dialog' ) ).getByText( 'Publish' ) );
 
 		// ASSERT: Location is changed to page returned by API.
-		await waitFor( () => expect( window.location.href ).toEqual( '/wiki/newPage?success=true' ) );
+		await waitFor( () => expect( window.location.href ).toEqual( '/view/en/newPage?success=true' ) );
 
 		// ASSERT: Correct ZObject was posted to the API.
 		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {

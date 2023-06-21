@@ -77,7 +77,7 @@ describe( 'WikiLambda frontend, function-editor view, on a new function', () => 
 		await fireEvent.click( await findByText( 'Cancel' ) );
 
 		// ASSERT: Routed back to the ZObject page.
-		await waitFor( () => expect( window.location.href ).toEqual( '/wiki/Z12345' ) );
+		await waitFor( () => expect( window.location.href ).toEqual( '/view/en/Z12345' ) );
 	} );
 
 	it( 'allows cancelling after changes', async () => {
@@ -105,6 +105,6 @@ describe( 'WikiLambda frontend, function-editor view, on a new function', () => 
 		await fireEvent.click( within( await findByRole( 'dialog' ) ).getByText( 'Discard edits' ) );
 
 		// ASSERT: Routed back to the ZObject page.
-		await waitFor( () => expect( window.location.href ).toEqual( '/wiki/Z12345' ) );
+		await waitFor( () => expect( window.location.href ).toEqual( '/view/en/Z12345' ) );
 	} );
 } );

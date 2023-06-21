@@ -172,7 +172,7 @@ module.exports = exports = {
 		 */
 		selectedUrl: function () {
 			return this.selectedZid ?
-				new mw.Title( this.selectedZid ).getUrl() :
+				'/view/en' + this.selectedZid :
 				'';
 		},
 

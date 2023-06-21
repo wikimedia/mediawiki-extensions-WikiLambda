@@ -141,6 +141,7 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
+		'getZLang',
 		'getLabel',
 		'getCurrentZLanguage',
 		'getCurrentZObjectId',
@@ -341,7 +342,7 @@ module.exports = exports = {
 			return ( this.currentOutput.value !== this.initialOutputType ) && this.currentOutput.value !== '';
 		},
 		handleCancel: function () {
-			const cancelTargetUrl = this.isNewZObject ? new mw.Title( 'Wikifunctions:Main_Page' ).getUrl() : new mw.Title( this.getCurrentZObjectId ).getUrl();
+			const cancelTargetUrl = this.isNewZObject ? new mw.Title( 'Wikifunctions:Main_Page' ).getUrl() : '/view/' + this.getZLang + '/' + this.getCurrentZObjectId;
 			const customData = {
 				isnewzobject: this.isNewZObject,
 				// If not set, this will be Z0:

@@ -11,18 +11,13 @@ module.exports = exports = {
 	},
 	getters: {
 		/**
-		 * Get the user preferred language, which is also the first element of zLangs.
+		 * Get the user preferred language, which is also the first element of zLangs,
+		 * or default to English if undefined.
 		 *
 		 * @return {string}
 		 */
 		getZLang: function () {
-			var langs = mw.language.getFallbackLanguageChain();
-
-			if ( langs.length > 0 ) {
-				return langs[ 0 ];
-			} else {
-				return 'en';
-			}
+			return mw.language.getFallbackLanguageChain()[ 0 ] || 'en';
 		},
 
 		/**

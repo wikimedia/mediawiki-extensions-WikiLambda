@@ -142,6 +142,7 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
+		'getZLang',
 		'getNextObjectId',
 		'getAllItemsFromListById',
 		'getNestedZObjectById'
@@ -208,7 +209,9 @@ module.exports = exports = {
 			this.activeInputIndex = index;
 		},
 		getTypeUrl: function () {
-			return new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE ).getUrl();
+			return new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE ).getUrl(
+				{ uselang: this.getZLang }
+			);
 		}
 	} ),
 	watch: {

@@ -16,6 +16,7 @@ use FormatJson;
 use Html;
 use IContextSource;
 use InvalidArgumentException;
+use Language;
 use MediaWiki\Content\Renderer\ContentParseParams;
 use MediaWiki\Content\Transform\PreSaveTransformParams;
 use MediaWiki\Content\ValidationParams;
@@ -263,12 +264,6 @@ class ZObjectContentHandler extends ContentHandler {
 	/**
 	 * Set the HTML and add the appropriate styles.
 	 *
-	 * <span class="ext-wikilambda-viewpage-header">
-	 *     <span class="ext-wikilambda-viewpage-header-label firstHeading">multiply</span>
-	 *     <span class="ext-wikilambda-viewpage-header-zid">Z12345</span>
-	 *     <div class="ext-wikilambda-viewpage-header-type">ZFunction…</div>
-	 * </span>
-	 *
 	 * @inheritDoc
 	 * @param Content $content
 	 * @param ContentParseParams $cpoParams
@@ -283,8 +278,6 @@ class ZObjectContentHandler extends ContentHandler {
 			$parserOutput->setText( '' );
 			return;
 		}
-
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
 
 		$userLang = RequestContext::getMain()->getLanguage();
 
@@ -304,100 +297,32 @@ class ZObjectContentHandler extends ContentHandler {
 		}
 
 		$pageIdentity = $cpoParams->getPage();
-		$services = MediaWikiServices::getInstance();
 
 		// TODO: Re-work our code to use PageReferences rather than Titles
 		$title = Title::castFromPageReference( $pageIdentity );
 		'@phan-var Title $title';
 
-		$zobject = $content->getZObject();
-		$zobjectType = $content->getTypeStringAndLanguage( $userLang );
-
-		// the MW code of the user's preferred language (usually ISO code)
-		$userLanguageCode = $userLang->getCode();
-		// OBJECT TYPE language code ( MW code, which is usually ISO code ) (ex: 'en' )
-		$langCodeType = gettype( $zobjectType[ 'languageCode' ] ) === 'string' ? $zobjectType[ 'languageCode' ] : '';
-		// OBJECT TYPE language label (ex: English ) of the language currently being rendered
-		$langNameType = $services->getLanguageNameUtils()->getLanguageName( $langCodeType );
-
-		// OBJECT NAME label (ex: My function | Unknown) and language code (ex: 'en')
-		[
-			'title' => $labelText,
-			'languageCode' => $labelCodeName
-		] = $zobject->getLabels()->buildStringForLanguage( $userLang )
-			->fallbackWithEnglish()
-			->placeholderForTitle()
-			->getStringAndLanguageCode();
-
-		// OBJECT NAME language label (ex: English ) of the language currently being rendered
-		$labelStringName = $services->getLanguageNameUtils()->getLanguageName( $labelCodeName );
-
-		$isoCodeClassName = 'ext-wikilambda-viewpage-header--iso-code';
-
-		if ( $langNameType !== $labelStringName ) {
-			$isoCodeObjectName = $this->getIsoCodeIfUserLangIsDifferent(
-				$labelCodeName, $labelStringName, $userLanguageCode, $isoCodeClassName
-			);
-		} else {
-			// if we have two iso codes showing the same fallback language, only render the first one
-			$isoCodeObjectName = '';
-		}
-
-		// if the object type (ex: Function ) is not in the user's language,
-		// render an iso code for the language used
-		$isoCodeObjectType = $this->getIsoCodeIfUserLangIsDifferent(
-			$langCodeType, $langNameType, $userLanguageCode, $isoCodeClassName
-		);
-
-		$prefix = Html::element(
-			'span', [ 'class' => 'ext-wikilambda-viewpage-header-title' ],
-			$zobjectType[ 'title' ]
-		);
-
-		$untitledStyle = $labelText === wfMessage( 'wikilambda-editor-default-name' )->text() ?
-			'ext-wikilambda-viewpage-header--title-untitled' : null;
-
-		$label = Html::element(
-			'span',
-			[
-				'class' => [
-					'ext-wikilambda-viewpage-header-title',
-					'ext-wikilambda-viewpage-header-title--function-name',
-					$untitledStyle
-				]
-			],
-			$labelText
-		);
-
-		$id = Html::element(
-			'span',
-			[
-				'class' => 'ext-wikilambda-viewpage-header-zid'
-			],
-			$title->getText()
-		);
-
-		$type = Html::element(
-			'div', [ 'class' => 'ext-wikilambda-viewpage-header-type' ],
-			$zobjectType[ 'type' ]
-		);
-
-		$header = Html::rawElement(
-			'span',
-			[ 'class' => 'ext-wikilambda-viewpage-header' ],
-			$isoCodeObjectType . " " . $prefix
-			. wfMessage( 'colon-separator' )->text() . $isoCodeObjectName . " " . $label . ' ' . $id . $type
-		);
+		$header = static::createZObjectViewHeader( $content, $title, $userLang );
+		$parserOutput->setTitleText( $header );
 
 		$parserOutput->addModuleStyles( [ 'ext.wikilambda.viewpage.styles' ] );
-		$parserOutput->setTitleText( $header );
 
 		$parserOutput->addModules( [ 'ext.wikilambda.edit' ] );
 
-		$zObject = $zObjectStore->fetchZObjectByTitle( $title );
+		// $zObjectStore = WikiLambdaServices::getZObjectStore();
+		// $zObject = $zObjectStore->fetchZObjectByTitle( $title );
 
 		$zLangRegistry = ZLangRegistry::singleton();
 		$userLangCode = $userLang->getCode();
+
+		// Add the canonical page link to /view/<lang>/<zid>
+		$output = RequestContext::getMain()->getOutput();
+		$output->addLink( [
+				'rel' => 'canonical',
+				'hreflang' => $userLangCode,
+				'href' => "/view/$userLangCode/" . $title->getDBkey(),
+			] );
+
 		// If the userLang isn't recognised (e.g. it's qqx, or a language we don't support yet, or it's
 		// nonsense), then fall back to English.
 		$userLangZid = $zLangRegistry->getLanguageZidFromCode( $userLangCode, true );
@@ -439,6 +364,116 @@ class ZObjectContentHandler extends ContentHandler {
 		foreach ( $content->getInnerZObject()->getLinkedZObjects() as $link ) {
 			$parserOutput->addLink( Title::newFromText( $link, NS_MAIN ) );
 		}
+	}
+
+	/**
+	 * Generate the special "title" shown on view pages
+	 *
+	 * <span class="ext-wikilambda-viewpage-header">
+	 *     <span class="ext-wikilambda-viewpage-header-label firstHeading">multiply</span>
+	 *     <span class="ext-wikilambda-viewpage-header-zid">Z12345</span>
+	 *     <div class="ext-wikilambda-viewpage-header-type">ZFunction…</div>
+	 * </span>
+	 *
+	 * @param ZObjectContent $content
+	 * @param Title $title
+	 * @param Language $userLang
+	 * @return string
+	 */
+	public static function createZObjectViewHeader(
+		ZObjectContent $content, Title $title, Language $userLang
+	): string {
+		$services = MediaWikiServices::getInstance();
+
+		$zobject = $content->getZObject();
+
+		if ( !$zobject || !$zobject->isValid() ) {
+			// Soemthing's bad, let's give up.
+			return '';
+		}
+
+		$zobjectType = $content->getTypeStringAndLanguage( $userLang );
+
+		// the MW code of the user's preferred language (usually ISO code)
+		$userLanguageCode = $userLang->getCode();
+		// OBJECT TYPE language code ( MW code, which is usually ISO code ) (ex: 'en' )
+		$langCodeType = gettype( $zobjectType[ 'languageCode' ] ) === 'string' ? $zobjectType[ 'languageCode' ] : '';
+		// OBJECT TYPE language label (ex: English ) of the language currently being rendered
+		$langNameType = $services->getLanguageNameUtils()->getLanguageName( $langCodeType );
+
+		// OBJECT NAME label (ex: My function | Unknown) and language code (ex: 'en')
+		[
+			'title' => $labelText,
+			'languageCode' => $labelCodeName
+		] = $zobject->getLabels()->buildStringForLanguage( $userLang )
+			->fallbackWithEnglish()
+			->placeholderForTitle()
+			->getStringAndLanguageCode();
+
+		// OBJECT NAME language label (ex: English) of the language currently being rendered
+		$labelStringName = $services->getLanguageNameUtils()->getLanguageName( $labelCodeName );
+
+		$isoCodeClassName = 'ext-wikilambda-viewpage-header--iso-code';
+
+		if ( $langNameType !== $labelStringName ) {
+			$isoCodeObjectName = static::getIsoCodeIfUserLangIsDifferent(
+				$labelCodeName, $labelStringName, $userLanguageCode, $isoCodeClassName
+			);
+		} else {
+			// if we have two iso codes showing the same fallback language, only render the first one
+			$isoCodeObjectName = '';
+		}
+
+		// if the object type (ex: Function ) is not in the user's language,
+		// render an iso code for the language used
+		$isoCodeObjectType = static::getIsoCodeIfUserLangIsDifferent(
+			$langCodeType, $langNameType, $userLanguageCode, $isoCodeClassName
+		);
+
+		$prefix = Html::element(
+			'span', [ 'class' => 'ext-wikilambda-viewpage-header-title' ],
+			$zobjectType[ 'title' ]
+		);
+
+		$untitledStyle = $labelText === wfMessage( 'wikilambda-editor-default-name' )->text() ?
+			'ext-wikilambda-viewpage-header--title-untitled' : null;
+
+		$label = Html::element(
+			'span',
+			[
+				'class' => [
+					'ext-wikilambda-viewpage-header-title',
+					'ext-wikilambda-viewpage-header-title--function-name',
+					$untitledStyle
+				]
+			],
+			$labelText
+		);
+
+		$id = Html::element(
+			'span',
+			[
+				'class' => 'ext-wikilambda-viewpage-header-zid'
+			],
+			$title->getText()
+		);
+
+		$type = Html::element(
+			'div', [ 'class' => 'ext-wikilambda-viewpage-header-type' ],
+			$zobjectType[ 'type' ]
+		);
+
+		return Html::rawElement(
+			'span',
+			[
+				// Mark the header in the correct language, regardless of the rest of the page
+				// … but mark it back into their requested language if it's actually untitled
+				'lang' => ( $untitledStyle === null ? $userLanguageCode : $langCodeType ),
+				'class' => 'ext-wikilambda-viewpage-header'
+			],
+			$isoCodeObjectType . " " . $prefix
+			. wfMessage( 'colon-separator' )->text() . $isoCodeObjectName . " " . $label . ' ' . $id . $type
+		);
 	}
 
 	/**

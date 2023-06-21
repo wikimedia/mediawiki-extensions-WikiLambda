@@ -140,6 +140,7 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
+		'getZLang',
 		'getCurrentZObjectId',
 		'getCurrentZObjectType',
 		'getCurrentZImplementationContentType',
@@ -218,7 +219,7 @@ module.exports = exports = {
 				shouldUnattachImplementationAndTester
 			} ).then( ( pageTitle ) => {
 				if ( pageTitle ) {
-					window.location.href = new mw.Title( pageTitle ).getUrl() + '?success=true';
+					window.location.href = '/view/' + this.getZLang + '/' + pageTitle + '?success=true';
 				}
 			} ).catch( ( error ) => {
 				// If error.error.message: known ZError

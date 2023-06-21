@@ -176,7 +176,7 @@ class ImplementationForm extends Page {
 	 * This function is specific to set the composition block as per
 	 * the implementation of "Boolean equality" or "Z844" using "if else".
 	 *
-	 * @see https://wikifunctions.beta.wmflabs.org/wiki/Z10856
+	 * @see https://wikifunctions.beta.wmflabs.org/view/en/Z10856
 	 *
 	 * [Function call] [If] - First Function Call
 	 * [a] condition [Argument reference] [Z844K1]

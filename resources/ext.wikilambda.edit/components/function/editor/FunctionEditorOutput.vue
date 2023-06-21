@@ -96,6 +96,7 @@ module.exports = exports = {
 		}
 	},
 	computed: $.extend( mapGetters( [
+		'getZLang',
 		'getNestedZObjectById'
 	] ), {
 		Constants: function () {
@@ -128,7 +129,9 @@ module.exports = exports = {
 			}
 		},
 		getTypeUrl: function () {
-			return new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE ).getUrl();
+			return new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE ).getUrl(
+				{ uselang: this.getZLang }
+			);
 		}
 	} )
 };
