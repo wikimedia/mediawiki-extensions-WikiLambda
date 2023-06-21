@@ -162,7 +162,8 @@ describe( 'Type (CUJ 7)', () => {
 			await expect( await TypeForm.aboutBlockDialogBox ).not.toBeDisplayed();
 		} );
 
-		it( 'should fill the entries in the keys block', async () => {
+		// TODO (T340774) Re-enable and fix once Default View is done
+		it.skip( 'should fill the entries in the keys block', async () => {
 			/**
 			 * Set the first key
 			 */

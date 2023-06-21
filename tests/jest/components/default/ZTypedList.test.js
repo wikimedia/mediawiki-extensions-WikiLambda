@@ -11,7 +11,7 @@ const { CdxButton } = require( '@wikimedia/codex' );
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	ZTypedList = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedList.vue' ),
-	ZTypedListItem = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedListItem.vue' ),
+	ZTypedListItems = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedListItems.vue' ),
 	ZTypedListType = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedListType.vue' );
 
 describe( 'ZTypedList', () => {
@@ -89,10 +89,10 @@ describe( 'ZTypedList', () => {
 				}
 			} );
 
-			expect( wrapper.findComponent( ZTypedListItem ).exists() ).toBe( true );
+			expect( wrapper.findComponent( ZTypedListItems ).exists() ).toBe( true );
 		} );
 
-		it( 'shows the label when expanded', () => {
+		it( 'shows type and items when expanded', () => {
 			var wrapper = shallowMount( ZTypedList, {
 				props: {
 					edit: false,
@@ -100,10 +100,11 @@ describe( 'ZTypedList', () => {
 				}
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-ztyped-list__label' ).exists() ).toBe( true );
+			expect( wrapper.findComponent( ZTypedListType ).exists() ).toBe( true );
+			expect( wrapper.findComponent( ZTypedListItems ).exists() ).toBe( true );
 		} );
 
-		it( 'does not show the label when not expanded', () => {
+		it( 'does not show type when not expanded', () => {
 			var wrapper = shallowMount( ZTypedList, {
 				props: {
 					edit: false,
@@ -111,7 +112,8 @@ describe( 'ZTypedList', () => {
 				}
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-ztyped-list__label' ).exists() ).toBe( false );
+			expect( wrapper.findComponent( ZTypedListType ).exists() ).toBe( false );
+			expect( wrapper.findComponent( ZTypedListItems ).exists() ).toBe( true );
 		} );
 	} );
 
@@ -120,10 +122,19 @@ describe( 'ZTypedList', () => {
 			var wrapper = shallowMount( ZTypedList, {
 				props: {
 					edit: true
+				},
+				global: {
+					stubs: {
+						CdxButton: false,
+						WlZTypedListType: false,
+						WlZTypedListItems: false
+					}
 				}
 			} );
 
-			expect( wrapper.find( '.ext-wikilambda-ztyped-list__add-button' ).exists() ).toBe( true );
+			console.log( wrapper.html() );
+
+			expect( wrapper.find( '.ext-wikilambda-ztyped-list-add-button' ).exists() ).toBe( true );
 		} );
 
 		it( 'emits set-type when the add list item button is clicked', async () => {
@@ -132,11 +143,15 @@ describe( 'ZTypedList', () => {
 					edit: true
 				},
 				global: {
-					stubed: { CdxButton: false }
+					stubs: {
+						CdxButton: false,
+						WlZTypedListType: false,
+						WlZTypedListItems: false
+					}
 				}
 			} );
 
-			wrapper.get( '.ext-wikilambda-ztyped-list__add-button' ).getComponent( CdxButton ).vm.$emit( 'click' );
+			wrapper.get( '.ext-wikilambda-ztyped-list-add-button' ).getComponent( CdxButton ).vm.$emit( 'click' );
 			expect( wrapper.emitted() ).toHaveProperty( 'set-type', [ [ { append: true, value: 'Z6' } ] ] );
 		} );
 	} );

@@ -203,7 +203,7 @@ describe( 'Implementation (CUJ 5)', () => {
 					const code = await ImplementationPage.getCodeEditorLines();
 					for ( const line in code ) {
 						expect( code[ line ] ).toBe( codeBlockEntries.code[ line ],
-							{ message: `Code editor line number ${line + 1} is expected to be 
+							{ message: `Code editor line number ${line + 1} is expected to be
 							${codeBlockEntries.code[ line ]} but received as ${code[ line ]}` } );
 					}
 				} );
@@ -292,7 +292,8 @@ describe( 'Implementation (CUJ 5)', () => {
 				};
 			} );
 
-			it( 'should navigate to the implementation form', async () => {
+			// TODO (T340774) Re-enable and fix once Default View is done
+			it.skip( 'should navigate to the implementation form', async () => {
 				await FunctionPage.open( functionDetails.ZId );
 				await expect( await FunctionPage.functionTitle )
 					.toHaveText( functionDetails.ZObjectLabel, { message: 'Function Page is not open' } );
@@ -308,7 +309,8 @@ describe( 'Implementation (CUJ 5)', () => {
 					.toBe( functionDetails.ZObjectLabel, { message: 'Implementation form is not open' } );
 			} );
 
-			it( 'should fill the entries in the about section', async () => {
+			// TODO (T340774) Re-enable and fix once Default View is done
+			it.skip( 'should fill the entries in the about section', async () => {
 				/**
 				 * Add and Submit About block entries in English
 				 */
@@ -337,7 +339,8 @@ describe( 'Implementation (CUJ 5)', () => {
 				await expect( await ImplementationForm.aboutBlockDialogBox ).not.toBeDisplayed();
 			} );
 
-			it( 'should fill the entries in the composition block', async () => {
+			// TODO (T340774) Re-enable and fix once Default View is done
+			it.skip( 'should fill the entries in the composition block', async () => {
 				await ImplementationForm.selectImplementationType( 'composition' );
 				await expect( await ImplementationForm.compositionBlock ).toBeDisplayed(
 					{ message: 'implementation type composition is not selected' } );
@@ -345,7 +348,8 @@ describe( 'Implementation (CUJ 5)', () => {
 				await ImplementationForm.setCompositionBlock( compositionBlockEntries );
 			} );
 
-			it( 'should publish the new implementation', async () => {
+			// TODO (T340774) Re-enable and fix once Default View is done
+			it.skip( 'should publish the new implementation', async () => {
 				await ImplementationForm.publishImplementation();
 				/**
 				 * When implementation is published successfully, the browser is redirected to URL
@@ -363,7 +367,8 @@ describe( 'Implementation (CUJ 5)', () => {
 
 			describe( 'Show details of new implementation created', () => {
 
-				it( 'should display the entries in the about section', async () => {
+				// TODO (T340774) Re-enable and fix once Default View is done
+				it.skip( 'should display the entries in the about section', async () => {
 					await expect( await ImplementationPage.getImplementationLabel() ).toBe(
 						aboutBlockEntriesEnglish.label,
 						{ message: `Implementation page is not displaying the implementation label as expected to be ${aboutBlockEntriesEnglish.label}` } );

@@ -10,8 +10,6 @@
 	-->
 	<span
 		class="ext-wikilambda-select-zobject"
-		:class="{ 'ext-wikilambda-select-zobject__fitted': fitWidth }"
-		:style="{ width: fieldWidth }"
 	>
 		<!-- Show link when we are in view mode -->
 		<div
@@ -107,10 +105,6 @@ module.exports = exports = {
 		returnType: {
 			type: String,
 			default: ''
-		},
-		fitWidth: {
-			type: Boolean,
-			default: false
 		},
 		placeholder: {
 			type: [ String, Object ],
@@ -222,40 +216,6 @@ module.exports = exports = {
 				default:
 					return this.$i18n( 'wikilambda-zobjectselector-label' ).text();
 			}
-		},
-
-		/**
-		 * This computed property calculates the width of the field depending on its value
-		 *
-		 * TODO (T336291): Because this is a not a monospace font, the larger the word is, the
-		 * less space it occupies in ch, so probably we should remove a %:
-		 *
-		 * > 1ch is usually wider than the average character width, usually by around 20-30%
-		 *
-		 * Refs:
-		 * https://stackoverflow.com/questions/3392493/adjust-width-of-input-field-to-its-input
-		 * https://meyerweb.com/eric/thoughts/2018/06/28/what-is-the-css-ch-unit/
-		 *
-		 * @return {string}
-		 */
-		fieldWidth: function () {
-			if ( !this.fitWidth ) {
-				return 'auto';
-			}
-			if ( this.active ) {
-				return '100%';
-			}
-			// If no value or placeholder, default is 20 characters
-			var chars = 20;
-			if ( this.selectedLabel && ( this.selectedLabel.length > 0 ) ) {
-				// Two extra characters to account for inner padding
-				chars = this.selectedLabel.length + 6;
-			} else if ( this.lookupPlaceholder && ( this.lookupPlaceholder.length > 0 ) ) {
-				chars = this.lookupPlaceholder.length + 6;
-			}
-			// Subtract 20%
-			chars = Math.ceil( chars - chars * 0.1 );
-			return `${chars}ch`;
 		},
 
 		/**
@@ -568,26 +528,16 @@ module.exports = exports = {
 @import '../ext.wikilambda.edit.less';
 
 .ext-wikilambda-select-zobject {
-	.cdx-text-input__input {
-		min-width: auto;
+	.cdx-lookup {
+		width: fit-content;
+		min-width: 256px;
 	}
 
-	&__fitted {
-		transition: @wl-transition-field-expand;
-		display: inline-block;
-
-		.cdx-text-input__input {
-			min-width: auto;
-		}
-	}
-
-	.cdx-text-input__icon {
-		svg {
-			width: @size-75;
-			height: @size-75;
-			min-width: @size-75;
-			min-height: @size-75;
-		}
+	.cdx-text-input__end-icon {
+		width: @size-icon-x-small;
+		height: @size-icon-x-small;
+		min-width: @size-icon-x-small;
+		min-height: @size-icon-x-small;
 	}
 
 	&__link {

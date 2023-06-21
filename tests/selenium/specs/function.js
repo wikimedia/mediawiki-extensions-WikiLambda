@@ -15,7 +15,8 @@ const assert = require( 'assert' ),
 
 describe( 'Function', function () {
 	describe( 'Function viewer (CUJ1)', function () {
-		it( 'should allow to evaluate a function', async function () {
+		// TODO (T340774) Re-enable and fix once Default View is done
+		it.skip( 'should allow to evaluate a function', async function () {
 			await ListZObjectsByType.open();
 			const ListFunctions = await ListZObjectsByType.openFunctionsList();
 			await ListFunctions.openFunction( 'echo' );

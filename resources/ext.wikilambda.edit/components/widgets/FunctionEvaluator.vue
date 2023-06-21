@@ -36,6 +36,7 @@
 				<wl-z-object-key-value
 					v-if="hasResult"
 					:row-id="resultRowId"
+					:skip-indent="true"
 					:edit="false"
 				></wl-z-object-key-value>
 				<div v-else>

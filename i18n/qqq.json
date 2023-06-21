@@ -380,7 +380,7 @@
 	"wikilambda-add-list-item-button": "Label for button to add an item to a list",
 	"wikilambda-list-items-label": "Label for items in a list",
 	"wikilambda-list-items-type-label": "Label for the type of a list of items",
-	"wikilambda-list-item-label": "Label for single item in a list",
+	"wikilambda-list-item-label": "Label for single item in a list.\n\nParameters:\n* $1 - numerical index of the list item (starting from 1).",
 	"wikilambda-context-menu": "Title for a context menu",
 	"wikilambda-add-list-item": "Label for a button that adds an item to a list",
 	"wikilambda-delete-list-item": "Label for a button that removes an item from a list",

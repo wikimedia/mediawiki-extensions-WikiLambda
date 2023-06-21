@@ -7,7 +7,6 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	mount = require( '@vue/test-utils' ).mount,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	ZTypedListType = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZTypedListType.vue' ),
@@ -24,21 +23,13 @@ describe( 'ZTypedListType', () => {
 			),
 			getExpectedTypeOfKey: createGettersWithFunctionsMock( 'Z1' ),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( '0' ),
-			getLabel: createGettersWithFunctionsMock( 'English' ),
-			getErrors: createGettersWithFunctionsMock( {} ),
 
-			// getters for mount, ZObjectKeyValue
-			getZReferenceTerminalValue: jest.fn(),
+			// getters for ZObjectKeyValue
 			getDepthByRowId: () => () => { return 1; },
 			getParentRowId: () => () => { return 2; },
 			getZObjectValueByRowId: createGettersWithFunctionsMock(),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_STRING ),
-			getZStringTerminalValue: createGettersWithFunctionsMock( 'string terminal value' ),
-			getLanguageIsoCodeOfZLang: createGettersWithFunctionsMock( 'EN' ),
-			getUserZlangZID: createGettersWithFunctionsMock( 'Z1002' ),
-			getChildrenByParentRowId: createGettersWithFunctionsMock( [
-				{ id: 2, key: '0', parent: 1, value: 'object' }
-			] )
+			getUserZlangZID: createGettersWithFunctionsMock( 'Z1002' )
 		};
 
 		actions = {
@@ -73,9 +64,14 @@ describe( 'ZTypedListType', () => {
 	} );
 
 	it( 'sets list items for removal when type changes', () => {
-		var wrapper = mount( ZTypedListType, {
+		var wrapper = shallowMount( ZTypedListType, {
 			props: {
 				edit: true
+			},
+			global: {
+				stubs: {
+					WlZObjectKeyValue: false
+				}
 			}
 		} );
 
@@ -87,9 +83,14 @@ describe( 'ZTypedListType', () => {
 	} );
 
 	it( 'it does not set list items for removal if type changes to Z1', () => {
-		var wrapper = mount( ZTypedListType, {
+		var wrapper = shallowMount( ZTypedListType, {
 			props: {
 				edit: true
+			},
+			global: {
+				stubs: {
+					WlZObjectKeyValue: false
+				}
 			}
 		} );
 

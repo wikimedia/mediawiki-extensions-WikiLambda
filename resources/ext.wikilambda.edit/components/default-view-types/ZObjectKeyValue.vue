@@ -8,59 +8,77 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div :class="rootClass">
-		<!-- Key -->
+	<div
+		class="ext-wikilambda-key-value"
+		:class="rootClasses"
+	>
+		<!-- Space for square quiet button before the content for expand toggle or bullet -->
 		<div
-			class="ext-wikilambda-key-block"
-			:class="[ expandedModeClass, nestingDepthClass, editModeClass ]"
-		>
+			v-if="!skipIndent || hasExpandedMode"
+			class="ext-wikilambda-key-value-pre">
 			<wl-expanded-toggle
-				v-if="hasExpandedMode"
+				class="ext-wikilambda-key-value-pre-button"
+				:has-expanded-mode="hasExpandedMode"
 				:expanded="expanded"
-				@toggle="toggleExpanded"
+				@toggle="toggleExpanded( !expanded )"
 			></wl-expanded-toggle>
-			<wl-localized-label
-				v-if="keyLabel && !hideKey"
-				:class="expandedModeLabelClass"
-				:label-data="keyLabel"
-			></wl-localized-label>
-			<!-- Optional context menu for displaying key/value actions -->
-			<wl-context-menu
-				v-if="showContextMenu"
-				class="ext-wikilambda-key-block__context-menu"
-				:menu-items="contextMenuItems"
-				@context-action="contextMenuAction"
-			></wl-context-menu>
+			<div
+				v-if="expanded"
+				class="ext-wikilambda-key-value-pre-border"
+			></div>
 		</div>
-		<!-- Value -->
-		<div
-			class="ext-wikilambda-value-block"
-			:class="paddedClass"
-		>
-			<component
-				:is="zobjectComponent"
-				:class="shiftLeft"
-				:edit="edit"
-				:disabled="disableEdit"
-				:expanded="expanded"
-				:depth="depth"
-				:row-id="rowId"
-				:expected-type="expectedType"
-				:parent-id="parentRowId"
-				@set-value="setValue"
-				@set-type="setType"
-				@change-event="changeEvent"
-				@expand="toggleExpanded"
-			></component>
+
+		<!-- Main content: either only one row with value, or top row with key and then value -->
+		<div class="ext-wikilambda-key-value-main">
+			<!-- Key: conditional rendering -->
+			<div
+				v-if="!skipKey && keyLabel"
+				class="ext-wikilambda-key-block"
+				:class="expandedClass"
+			>
+				<wl-localized-label
+					:label-data="keyLabel"
+				></wl-localized-label>
+			</div>
+			<!-- Value: will always be rendered -->
+			<div class="ext-wikilambda-value-block">
+				<component
+					:is="zobjectComponent"
+					:class="shiftLeft"
+					:edit="edit"
+					:disabled="disableEdit"
+					:expanded="expanded"
+					:depth="depth"
+					:row-id="rowId"
+					:expected-type="expectedType"
+					:parent-id="parentRowId"
+					@set-value="setValue"
+					@set-type="setType"
+					@change-event="changeEvent"
+					@expand="toggleExpanded( !expanded )"
+				></component>
+			</div>
+		</div>
+
+		<!-- Space for square quiet button before the content for context menu button or bin button -->
+		<div class="ext-wikilambda-key-value-post">
+			<cdx-button
+				v-if="showActionButton"
+				weight="quiet"
+				class="ext-wikilambda-ztyped-list-delete-button"
+				@click="deleteListItem"
+			>
+				<cdx-icon :icon="icons.cdxIconTrash"></cdx-icon>
+			</cdx-button>
 		</div>
 	</div>
 </template>
 
 <script>
-var
+var CdxButton = require( '@wikimedia/codex' ).CdxButton,
+	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	Constants = require( '../../Constants.js' ),
 	ExpandedToggle = require( '../base/ExpandedToggle.vue' ),
-	ContextMenu = require( '../base/ContextMenu.vue' ),
 	LocalizedLabel = require( '../base/LocalizedLabel.vue' ),
 	ZMonolingualString = require( './ZMonolingualString.vue' ),
 	ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' ),
@@ -76,6 +94,7 @@ var
 	ZTypedList = require( './ZTypedList.vue' ),
 	LabelData = require( '../../store/classes/LabelData.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ),
+	icons = require( '../../../lib/icons.json' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -83,9 +102,10 @@ var
 module.exports = exports = {
 	name: 'wl-z-object-key-value',
 	components: {
+		'cdx-button': CdxButton,
+		'cdx-icon': CdxIcon,
 		'wl-expanded-toggle': ExpandedToggle,
 		'wl-localized-label': LocalizedLabel,
-		'wl-context-menu': ContextMenu,
 		'wl-z-code': ZCode,
 		'wl-z-evaluation-result': ZEvaluationResult,
 		'wl-z-function-call': ZFunctionCall,
@@ -114,7 +134,12 @@ module.exports = exports = {
 			type: String,
 			default: null
 		},
-		hideKey: {
+		skipKey: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		skipIndent: {
 			type: Boolean,
 			required: false,
 			default: false
@@ -122,6 +147,7 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
+			icons: icons,
 			/**
 			 * Expanded is a property of the key-value and it
 			 * passes down only into its direct child. Every
@@ -212,7 +238,14 @@ module.exports = exports = {
 				if ( this.isKeyTypedListItem( this.key ) && this.expanded ) {
 					return new LabelData(
 						null,
-						this.$i18n( 'wikilambda-list-item-label' ).text(),
+						this.$i18n( 'wikilambda-list-item-label', this.key ).text(),
+						this.getUserZlangZID
+					);
+				}
+				if ( this.isKeyTypedListType( this.key ) ) {
+					return new LabelData(
+						null,
+						this.$i18n( 'wikilambda-list-items-type-label' ).text(),
 						this.getUserZlangZID
 					);
 				}
@@ -238,7 +271,6 @@ module.exports = exports = {
 			 * @return {string}
 			 */
 			nestingDepthClass: function () {
-				return `ext-wikilambda-key-level-${this.depth}`;
 			},
 
 			/**
@@ -246,26 +278,10 @@ module.exports = exports = {
 			 *
 			 * @return {string}
 			 */
-			expandedModeClass: function () {
-				return this.expanded ? 'ext-wikilambda-expanded-on' : 'ext-wikilambda-expanded-off';
-			},
-
-			/**
-			 * Returns the css class for the label when it can be expanded
-			 *
-			 * @return {string}
-			 */
-			expandedModeLabelClass: function () {
-				return this.hasExpandedMode ? 'ext-wikilambda-key-block__label' : '';
-			},
-
-			/**
-			 * Returns the css class that identifies the edit or view mode
-			 *
-			 * @return {string}
-			 */
-			editModeClass: function () {
-				return this.edit ? 'ext-wikilambda-edit-on' : 'ext-wikilambda-edit-off';
+			expandedClass: function () {
+				return this.expanded ?
+					'ext-wikilambda-key-block-expanded' :
+					'ext-wikilambda-key-block-collapsed';
 			},
 
 			/**
@@ -273,8 +289,8 @@ module.exports = exports = {
 			 *
 			 * @return {string}
 			 */
-			rootClass: function () {
-				var classList = [ 'ext-wikilambda-key-value' ];
+			rootClasses: function () {
+				var classList = [ `ext-wikilambda-key-level-${this.depth}` ];
 
 				if ( this.isKeyTypedListType( this.key ) && this.edit && !this.expanded ) {
 					classList.push( 'ext-wikilambda-key-value-flex' );
@@ -288,36 +304,6 @@ module.exports = exports = {
 				// they have a <li> bullet point (but only in view mode)
 				if ( this.listType && this.type === Constants.Z_STRING && !this.edit ) {
 					classList.push( 'ext-wikilambda-key-value-inline-table' );
-				}
-
-				return classList;
-			},
-
-			/**
-			 * Returns the classes names to handle padded blocks
-			 *
-			 * @return {Array}
-			 */
-			paddedClass: function () {
-				var classList = [];
-
-				if ( this.edit && this.isKeyTypedListType( this.key ) ) {
-					return classList;
-				}
-
-				// typed lists will manage padding independently
-				if ( this.type === Constants.Z_TYPED_LIST ) {
-					return classList;
-				}
-
-				// non-terminal list items with labels should be indented when they are collapsed
-				if ( this.listType ) {
-
-					if ( this.edit && !this.expanded && this.hasExpandedMode && this.keyLabel ) {
-						classList.push( 'ext-wikilambda-value-block__padded' );
-					}
-				} else if ( this.hasExpandedMode && !this.expanded ) {
-					classList.push( 'ext-wikilambda-value-block__padded' );
 				}
 
 				return classList;
@@ -502,11 +488,11 @@ module.exports = exports = {
 				}
 
 				// BY TYPE
-				// The typed list is a component that should not be shown
-				// with ZObjectKeyValueSet, so it lacks expanded mode. The
-				// ZTypedList component will then be in charge of handling
-				// the type, binding it if necessary (E.g. if the parentType is
-				// bound) or allowing for its edition.
+				// The typed list is a component that should not be shown with
+				// ZObjectKeyValueSet, so it handles the expanded mode internally.
+				// ZTypedList component will be in charge of handling the type,
+				// binding it if necessary (E.g. if the parentType is bound)
+				// or allowing for its edition.
 				if ( this.type === Constants.Z_TYPED_LIST ) {
 					return 'wl-z-typed-list';
 				}
@@ -549,47 +535,16 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Logic for when to render the context menu. It can be used to display
-			 * actions for a key/value. Currently the only use cases involve typed lists.
-			 * TODO (T330189): create a case for adding an item to a typed list
+			 * Logic for when to render the key delete button.
 			 *
 			 * @return {boolean}
 			 */
-			showContextMenu: function () {
-				// only allow actions in edit mode
-				if ( !this.edit ) {
-					return false;
-				}
-
-				// CASE: delete items from a typed list
-				// it is only rendered for a ZTypedListItem that IS expanded
-				if ( this.isKeyTypedListItem( this.key ) && this.expanded ) {
-					return true;
-				}
-				return false;
-			},
-
-			/**
-			 * The list of action items for the context menu to display.
-			 *
-			 * @return {Array}
-			 */
-			contextMenuItems: function () {
-				// case 1: add items to a typed list
-				if ( this.type === Constants.Z_TYPED_LIST && !this.expanded ) {
-					return [ {
-						label: this.$i18n( 'wikilambda-add-list-item' ).text(),
-						value: Constants.contextMenuItems.ADD_LIST_ITEM
-					} ];
-				}
-
-				// case 2: delete items from a typed list
-				if ( this.isKeyTypedListItem( this.key ) && this.expanded ) {
-					return [ {
-						label: this.$i18n( 'wikilambda-delete-list-item' ).text(),
-						value: Constants.contextMenuItems.DELETE_LIST_ITEM
-					} ];
-				}
+			showActionButton: function () {
+				// When in edit mode, show button for typed list items
+				// Else, do not show button
+				return this.edit ?
+					this.isKeyTypedListItem( this.key ) :
+					false;
 			}
 		}
 	),
@@ -639,7 +594,13 @@ module.exports = exports = {
 				return;
 			}
 
-			// if the type of a typed list changed, notify the parent to take action
+			// If we are setting a typed list, we need to transform the whole parent object
+			if ( ( this.key === Constants.Z_FUNCTION_CALL_FUNCTION ) &&
+				( payload.value === Constants.Z_TYPED_LIST ) ) {
+				this.$parent.$emit( 'set-value', { keyPath: [], value: [ Constants.Z_OBJECT ] } );
+			}
+
+			// If the type of a typed list changed, notify the parent to take action
 			if ( this.isKeyTypedListType( this.parentKey ) || this.isKeyTypedListType( this.key ) ) {
 				this.$emit( 'change-event', payload );
 			}
@@ -649,7 +610,11 @@ module.exports = exports = {
 
 			// 1. If the value of Z1K1 changes, tell parent key to change its type
 			if ( this.key === Constants.Z_OBJECT_TYPE ) {
-				this.$emit( 'set-type', payload );
+				if ( Array.isArray( payload.value ) ) {
+					this.$emit( 'set-value', payload );
+				} else {
+					this.$emit( 'set-type', payload );
+				}
 				return;
 			}
 
@@ -706,24 +671,24 @@ module.exports = exports = {
 
 		/**
 		 * Toggles on and off the expanded flag
+		 *
+		 * @param {boolean} value
 		 */
-		toggleExpanded: function () {
-			this.expanded = !this.expanded;
+		toggleExpanded: function ( value ) {
+			this.expanded = value;
 		},
 
 		/**
-		 * Process context menu actions
+		 * Process delete item action
 		 *
 		 * @param {string} action
 		 */
-		contextMenuAction: function ( action ) {
-			if ( action === Constants.contextMenuItems.DELETE_LIST_ITEM ) {
-				// TODO(T324242): replace with new setter when it exists
-				// TODO(T331132): can we create a 'revert delete' workflow?
-				this.removeItemFromTypedList( {
-					rowId: this.rowId
-				} );
-			}
+		deleteListItem: function () {
+			// TODO(T324242): replace with new setter when it exists
+			// TODO(T331132): can we create a 'revert delete' workflow?
+			this.removeItemFromTypedList( {
+				rowId: this.rowId
+			} );
 		}
 	} )
 };
@@ -734,100 +699,85 @@ module.exports = exports = {
 
 .ext-wikilambda-key-value {
 	flex: 1;
-	margin-bottom: @spacing-75;
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-between;
+	margin-bottom: @spacing-50;
 
-	.ext-wikilambda-key-value-inherit {
-		display: inherit;
+	&.ext-wikilambda-key-level-0 {
+		--levelColor: @wl-key-value-color-0;
 	}
 
-	.ext-wikilambda-key-value-inline-table {
-		display: inline-table;
+	&.ext-wikilambda-key-level-1 {
+		--levelColor: @wl-key-value-color-1;
 	}
 
-	.ext-wikilambda-key-value-flex {
+	&.ext-wikilambda-key-level-2 {
+		--levelColor: @wl-key-value-color-2;
+	}
+
+	&.ext-wikilambda-key-level-3 {
+		--levelColor: @wl-key-value-color-3;
+	}
+
+	&.ext-wikilambda-key-level-4 {
+		--levelColor: @wl-key-value-color-4;
+	}
+
+	&.ext-wikilambda-key-level-5 {
+		--levelColor: @wl-key-value-color-5;
+	}
+
+	&.ext-wikilambda-key-level-6 {
+		--levelColor: @wl-key-value-color-6;
+	}
+
+	.ext-wikilambda-key-value-pre {
+		flex: 0 1;
 		display: flex;
-	}
-
-	.ext-wikilambda-key-block {
-		display: flex;
+		flex-direction: column;
 		align-items: center;
-		color: @color-subtle;
+		padding-right: @spacing-25;
 
-		&__label {
-			margin-left: @spacing-50;
-		}
+		.ext-wikilambda-key-value-pre-button {
+			flex: 0 1;
 
-		&__context-menu {
-			margin-left: @spacing-50;
-		}
-
-		label {
-			text-transform: capitalize;
-			line-height: 1.6;
-		}
-
-		&.ext-wikilambda-expanded-off {
-			color: @color-subtle;
-			font-weight: @font-weight-normal;
-
-			&.ext-wikilambda-edit-on {
-				margin-bottom: @spacing-25;
+			.ext-wikilambda-expand-toggle-expanded {
+				color: var( --levelColor );
 			}
 		}
 
-		&.ext-wikilambda-expanded-on {
-			font-weight: @font-weight-normal;
-
-			& > .cdx-icon {
-				color: inherit;
-			}
-
-			&.ext-wikilambda-key-level-0 {
-				color: @wl-key-value-color-0;
-			}
-
-			&.ext-wikilambda-key-level-1 {
-				color: @wl-key-value-color-1;
-			}
-
-			&.ext-wikilambda-key-level-2 {
-				color: @wl-key-value-color-2;
-			}
-
-			&.ext-wikilambda-key-level-3 {
-				color: @wl-key-value-color-3;
-			}
-
-			&.ext-wikilambda-key-level-4 {
-				color: @wl-key-value-color-4;
-			}
-
-			&.ext-wikilambda-key-level-5 {
-				color: @wl-key-value-color-5;
-			}
-
-			&.ext-wikilambda-key-level-6 {
-				color: @wl-key-value-color-6;
-			}
+		.ext-wikilambda-key-value-pre-border {
+			border-right: @border-width-base @border-style-base @border-color-base;
+			border-color: var( --levelColor );
+			flex: 1;
 		}
 	}
-	/* stylelint-disable declaration-block-no-redundant-longhand-properties */
-	.ext-wikilambda-value-block {
+
+	.ext-wikilambda-key-value-post {
+		flex: 0 1;
+	}
+
+	.ext-wikilambda-key-value-main {
 		flex: 1;
-		margin-top: @wl-key-value-margin-top;
-		margin-right: @wl-key-value-margin-right;
-		margin-bottom: @wl-key-value-margin-bottom;
-		margin-left: @wl-key-value-margin-left;
+		display: flex;
+		flex-direction: column;
+		min-height: @size-200;
+		justify-content: center;
 
-		&__padded {
-			margin-left: @spacing-150;
-		}
+		.ext-wikilambda-key-block {
+			padding: @spacing-25 0;
 
-		.ext-wikilambda-key-value-set {
-			padding-top: @wl-key-value-set-margin-top;
-			margin-right: @wl-key-value-set-margin-right;
-			margin-bottom: @wl-key-value-set-margin-bottom;
-			margin-left: @wl-key-value-set-margin-left;
+			label {
+				text-transform: capitalize;
+				color: @color-subtle;
+			}
+
+			&.ext-wikilambda-key-block-expanded {
+				label {
+					color: var( --levelColor );
+				}
+			}
 		}
 	}
 }

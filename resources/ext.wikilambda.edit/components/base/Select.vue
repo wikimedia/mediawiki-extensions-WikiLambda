@@ -10,8 +10,6 @@
 		:id="id"
 		v-model:selected="value"
 		class="ext-wikilambda-edit-select"
-		:class="{ 'ext-wikilambda-edit-select__fitted': fitWidth }"
-		:style="{ width: fieldWidth }"
 		:menu-items="menuItems"
 		:disabled="disabled"
 		:default-label="defaultLabel"
@@ -42,10 +40,6 @@ module.exports = exports = {
 			type: Boolean,
 			default: false
 		},
-		fitWidth: {
-			type: Boolean,
-			default: false
-		},
 		menuItems: {
 			type: Array,
 			required: true
@@ -63,44 +57,7 @@ module.exports = exports = {
 		value: {
 			get() { return this.selected; },
 			set( value ) { this.$emit( 'update:selected', value ); }
-		},
-		/**
-		 * Returns the width of the field depending on the fitWidth property.
-		 * Because the field has min-width:fit-width css property, we can return the
-		 * minimum width possible (0ch) and this will transition from fit-width to 100%
-		 *
-		 * @return {string}
-		 */
-		fieldWidth: function () {
-			if ( !this.fitWidth ) {
-				return 'auto';
-			}
-			return '10ch';
 		}
 	}
 };
 </script>
-
-<style lang="less">
-@import '../../ext.wikilambda.edit.less';
-
-.ext-wikilambda-edit-select {
-	&__fitted {
-		&.cdx-select-vue,
-		&.cdx-select {
-			transition: @wl-transition-field-expand;
-			min-width: fit-content;
-
-			.cdx-select__handle,
-			.cdx-select-vue__handle {
-				min-width: auto;
-			}
-
-			&--expanded {
-				/* stylelint-disable declaration-no-important */
-				width: 100% !important;
-			}
-		}
-	}
-}
-</style>

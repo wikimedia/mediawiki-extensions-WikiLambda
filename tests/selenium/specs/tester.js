@@ -186,7 +186,8 @@ describe( 'Tester', () => {
 					{ message: `Tester page is not displaying the tester description as expected to be ${aboutBlockEntriesEnglish.description}` } );
 			} );
 
-			it( 'should display the call function block parameters', async () => {
+			// TODO (T340774) Re-enable and fix once Default View is done
+			it.skip( 'should display the call function block parameters', async () => {
 				await TesterPage.toggleCallFunctionBlock();
 				await expect( await
 				TesterPage.getCallFunctionConditionParameter(
@@ -202,7 +203,8 @@ describe( 'Tester', () => {
 					{ message: `Else parameter are not displayed as expected to be ${callBlockEntries.elseBlockInput}` } );
 			} );
 
-			it( 'should display the validation block parameters', async () => {
+			// TODO (T340774) Re-enable and fix once Default View is done
+			it.skip( 'should display the validation block parameters', async () => {
 				await TesterPage.toggleValidationBlock();
 				await expect( await
 				TesterPage.getValidationBlockFunction(

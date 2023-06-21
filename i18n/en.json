@@ -369,7 +369,7 @@
 	"wikilambda-add-list-item-button": "Add item",
 	"wikilambda-list-items-label": "List items",
 	"wikilambda-list-items-type-label": "List items type",
-	"wikilambda-list-item-label": "Item",
+	"wikilambda-list-item-label": "Item $1",
 	"wikilambda-context-menu": "Context Menu",
 	"wikilambda-add-list-item": "Add Item",
 	"wikilambda-delete-list-item": "Delete Item",

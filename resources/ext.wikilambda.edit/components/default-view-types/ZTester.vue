@@ -11,6 +11,7 @@
 			<wl-z-object-key-value
 				:key="functionRowId"
 				:row-id="functionRowId"
+				:skip-indent="true"
 				:edit="edit"
 			></wl-z-object-key-value>
 		</div>
