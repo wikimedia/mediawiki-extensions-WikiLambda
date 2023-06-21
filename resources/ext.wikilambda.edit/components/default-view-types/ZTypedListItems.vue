@@ -174,6 +174,7 @@ module.exports = exports = {
 .ext-wikilambda-ztyped-list-items {
 	.ext-wikilambda-ztyped-list-add-button {
 		margin-top: @spacing-75;
+		margin-left: -@spacing-75;
 	}
 
 	.ext-wikilambda-ztyped-list-items-block {

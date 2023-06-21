@@ -14,7 +14,7 @@
 	>
 		<!-- Space for square quiet button before the content for expand toggle or bullet -->
 		<div
-			v-if="!skipIndent || hasExpandedMode"
+			v-if="hasPreColumn"
 			class="ext-wikilambda-key-value-pre">
 			<wl-expanded-toggle
 				class="ext-wikilambda-key-value-pre-button"
@@ -29,16 +29,24 @@
 		</div>
 
 		<!-- Main content: either only one row with value, or top row with key and then value -->
-		<div class="ext-wikilambda-key-value-main">
+		<div
+			class="ext-wikilambda-key-value-main"
+			:class="{ 'ext-wikilambda-key-value-main__no-indent': !hasPreColumn }"
+		>
 			<!-- Key: conditional rendering -->
 			<div
-				v-if="!skipKey && keyLabel"
+				v-if="showKeyLabel"
 				class="ext-wikilambda-key-block"
 				:class="expandedClass"
 			>
 				<wl-localized-label
+					v-if="keyLabel"
 					:label-data="keyLabel"
 				></wl-localized-label>
+				<label
+					v-else
+					class="ext-wikilambda-key-unlabelled"
+				>{{ undefinedKeyLabel }}</label>
 			</div>
 			<!-- Value: will always be rendered -->
 			<div class="ext-wikilambda-value-block">
@@ -229,13 +237,31 @@ module.exports = exports = {
 			},
 
 			/**
+			 * Returns whether to show the key label or not
+			 *
+			 * @return {boolean}
+			 */
+			showKeyLabel: function () {
+				if ( this.skipKey ) {
+					return false;
+				}
+				if ( this.isKeyTypedListItem( this.key ) ) {
+					return this.expanded;
+				}
+				if ( this.isKeyTypedListType( this.key ) ) {
+					return true;
+				}
+				return !!this.key;
+			},
+
+			/**
 			 * Returns the label data object of the given key.
 			 *
-			 * @return {LabelData}
+			 * @return {LabelData | undefined}
 			 */
 			keyLabel: function () {
 				// since the FE represents typed lists in canonical form, we need to hardcode typed list keys
-				if ( this.isKeyTypedListItem( this.key ) && this.expanded ) {
+				if ( this.isKeyTypedListItem( this.key ) ) {
 					return new LabelData(
 						null,
 						this.$i18n( 'wikilambda-list-item-label', this.key ).text(),
@@ -250,6 +276,17 @@ module.exports = exports = {
 					);
 				}
 				return this.getLabelData( this.key );
+			},
+
+			/**
+			 * Returns string for an undefined key label
+			 *
+			 * @return {string}
+			 */
+			undefinedKeyLabel: function () {
+				// TODO (T340845): consider whether to put "Unlabelled" or "Untitled"
+				// return 'Unlabelled';
+				return this.key;
 			},
 
 			/**
@@ -545,6 +582,16 @@ module.exports = exports = {
 				return this.edit ?
 					this.isKeyTypedListItem( this.key ) :
 					false;
+			},
+
+			/**
+			 * Whether the main block is preceded by the button and
+			 * indentation column.
+			 *
+			 * @return {boolean}
+			 */
+			hasPreColumn: function () {
+				return !this.skipIndent || this.hasExpandedMode;
 			}
 		}
 	),
@@ -771,6 +818,10 @@ module.exports = exports = {
 			label {
 				text-transform: capitalize;
 				color: @color-subtle;
+			}
+
+			label.ext-wikilambda-key-unlabelled {
+				color: @color-placeholder;
 			}
 
 			&.ext-wikilambda-key-block-expanded {

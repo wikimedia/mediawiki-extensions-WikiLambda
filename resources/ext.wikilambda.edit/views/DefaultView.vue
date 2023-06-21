@@ -204,7 +204,7 @@ module.exports = exports = {
 	}
 
 	> .ext-wikilambda-key-value {
-		> .ext-wikilambda-key-value-main {
+		> .ext-wikilambda-key-value-main__no-indent {
 			> .ext-wikilambda-value-block {
 				> .ext-wikilambda-key-value-set.ext-wikilambda-key-level-1 {
 					margin-left: 0;
