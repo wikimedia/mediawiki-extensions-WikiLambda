@@ -117,9 +117,9 @@ class ImplementationForm extends Page {
 	 * @return {void}
 	 */
 	async selectProgrammingLanguage( language ) {
-		const languageInputSelector = this.contentBlock.$( './/span[text()="Select programming language" and @role="textbox"]' );
-		const parentSelector = languageInputSelector.$( './/parent::div//parent::div' );
-		await InputDropdown.setInputDropdownReadOnly( parentSelector, languageInputSelector,
+		const languageBlock = this.contentBlock.$( './/label[text()="language"]/parent::div/parent::div' );
+		const languageInputSelector = languageBlock.$( './/div[@aria-haspopup="listbox" and @role="combobox"]' );
+		await InputDropdown.setInputDropdownReadOnly( languageBlock, languageInputSelector,
 			language );
 	}
 
@@ -210,7 +210,7 @@ class ImplementationForm extends Page {
 			const conditionBlock = ContentBlock.getSectionOfContentBlock( 'condition', this.compositionBlock );
 			await ContentBlock.toggleSection( 'condition', this.compositionBlock );
 			const conditionTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', conditionBlock );
-			const conditionTypeInputSelector = conditionTypeBlock.$( './/span[@role="textbox"]' );
+			const conditionTypeInputSelector = conditionTypeBlock.$( './/div[@aria-haspopup="listbox" and @role="combobox"]' );
 			await InputDropdown.setInputDropdownReadOnly( conditionTypeBlock,
 				conditionTypeInputSelector, firstFunctionCallEntries.conditionType );
 
@@ -233,7 +233,7 @@ class ImplementationForm extends Page {
 
 			thenTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', thenBlock );
 			const thenNestedTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', thenTypeBlock );
-			const thenNestedTypeInputSelector = thenNestedTypeBlock.$( './/span[@role="textbox"]' );
+			const thenNestedTypeInputSelector = thenNestedTypeBlock.$( './/div[@aria-haspopup="listbox" and @role="combobox"]' );
 			await InputDropdown.setInputDropdownReadOnly( thenNestedTypeBlock,
 				thenNestedTypeInputSelector, firstFunctionCallEntries.thenType );
 
@@ -256,7 +256,7 @@ class ImplementationForm extends Page {
 
 			elseTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', elseBlock );
 			const elseNestedTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', elseTypeBlock );
-			const elseNestedTypeInputSelector = elseNestedTypeBlock.$( './/span[@role="textbox"]' );
+			const elseNestedTypeInputSelector = elseNestedTypeBlock.$( './/div[@aria-haspopup="listbox" and @role="combobox"]' );
 			await InputDropdown.setInputDropdownReadOnly( elseNestedTypeBlock,
 				elseNestedTypeInputSelector, firstFunctionCallEntries.elseType );
 
@@ -280,7 +280,7 @@ class ImplementationForm extends Page {
 			const conditionBlock = ContentBlock.getSectionOfContentBlock( 'condition', secondFunctionCallBlock );
 			await ContentBlock.toggleSection( 'condition', secondFunctionCallBlock );
 			const conditionTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', conditionBlock );
-			const conditionTypeInputSelector = conditionTypeBlock.$( './/span[@role="textbox"]' );
+			const conditionTypeInputSelector = conditionTypeBlock.$( './/div[@aria-haspopup="listbox" and @role="combobox"]' );
 			await InputDropdown.setInputDropdownReadOnly( conditionTypeBlock,
 				conditionTypeInputSelector, secondFunctionCallEntries.conditionType );
 
