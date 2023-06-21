@@ -66,16 +66,9 @@ module.exports = exports = {
 			 */
 			newViewMounted: function () {
 				// HACK: Is there a nicer way to split this by type of view?
-
 				const viewName = ( window.vueInstance && window.vueInstance.getCurrentView ) || 'testComponent';
 
-				mw.track(
-					'timing.wikiLambda.newView.' + viewName + '.mounted',
-					Date.now() - startTime
-				);
-
 				// Log using Metrics Platform
-				// TODO: Once this is fully vetted, remove above call to mw.track()
 				const customData = {
 					viewname: viewName,
 					loadtime: Date.now() - startTime
