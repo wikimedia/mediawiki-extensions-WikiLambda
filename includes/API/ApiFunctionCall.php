@@ -80,16 +80,20 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			}
 		] );
 
+		$result = [ 'success' => false ];
 		try {
 			$response = $work->execute();
-			$result = [ 'success' => true, 'data' => $response->getBody() ];
+			$result['data'] = $response->getBody();
+			if ( is_object( $result['data'] ) ) {
+				$result['success'] = true;
+			}
 		} catch ( ConnectException $exception ) {
 			$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
 		} catch ( ClientException | ServerException $exception ) {
 			$zError = self::wrapMessageInZError( $exception->getResponse()->getReasonPhrase(), $zObject );
 			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zError );
 			$zResponseObject = new ZResponseEnvelope( null, $zResponseMap );
-			$result = [ 'data' => $zResponseObject->getSerialized() ];
+			$result['data'] = $zResponseObject->getSerialized();
 		}
 		$pageResult->addValue( [ 'query' ], $this->getModuleName(), $result );
 	}
