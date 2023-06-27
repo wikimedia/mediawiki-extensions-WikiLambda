@@ -125,8 +125,7 @@ class ReloadBuiltinData extends Maintenance {
 			}
 		);
 
-		// FIXME: This should be a 'reload' message.
-		$creatingComment = wfMessage( 'wikilambda-bootstrapcreationeditsummary' )->inLanguage( 'en' )->text();
+		$creatingComment = wfMessage( 'wikilambda-bootstrapupdatingeditsummary' )->inLanguage( 'en' )->text();
 
 		// Naturally sort, so Z2 gets created before Z12 etc.
 		natsort( $initialDataToLoadListing );
