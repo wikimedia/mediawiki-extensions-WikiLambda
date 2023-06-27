@@ -136,7 +136,10 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getCurrentZObjectId',
 		'getCurrentZObjectType',
-		'getErrors'
+		'getErrors',
+		'isUserLoggedIn',
+		'isNewZObject',
+		'getUserZlangZID'
 	] ), {
 		errors: function () {
 			return Object.keys( this.getErrors )
@@ -194,6 +197,15 @@ module.exports = exports = {
 				};
 				this.setError( payload );
 			}.bind( this ) );
+			// For a new function, zobjectid will be Z0
+			const customData = {
+				zlang: this.getUserZlangZID,
+				isloggedin: this.isUserLoggedIn,
+				isnewzobject: this.isNewZObject,
+				zobjectid: this.getCurrentZObjectId,
+				zobjecttype: this.getCurrentZObjectType
+			};
+			mw.eventLog.dispatch( 'wf.ui.editZObject.publish', customData );
 		}
 	} )
 };
