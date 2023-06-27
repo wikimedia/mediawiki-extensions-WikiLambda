@@ -12,7 +12,8 @@
 		<wl-function-evaluator-widget
 			:function-zid="getCurrentZObjectId"
 		></wl-function-evaluator-widget>
-		<div>
+		<!-- Widget ZObject JSON: Leave here for development purposes.
+			<div>
 			<h3>
 				{{ $i18n( 'wikilambda-expert-mode-json-label' ).text() }}
 			</h3>
@@ -21,24 +22,25 @@
 				:zobject-raw="getZObjectAsJson"
 			></wl-z-object-json>
 		</div>
+		-->
 	</div>
 </template>
 
 <script>
 var mapGetters = require( 'vuex' ).mapGetters,
-	FunctionEvaluatorWidget = require( '../../../widgets/FunctionEvaluator.vue' ),
-	ZObjectJson = require( '../../../ZObjectJson.vue' );
+	FunctionEvaluatorWidget = require( '../../../widgets/FunctionEvaluator.vue' );
+	// ZObjectJson = require( '../../../ZObjectJson.vue' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-function-viewer-about-details',
 	components: {
-		'wl-function-evaluator-widget': FunctionEvaluatorWidget,
-		'wl-z-object-json': ZObjectJson
+		'wl-function-evaluator-widget': FunctionEvaluatorWidget
+		// 'wl-z-object-json': ZObjectJson
 	},
 	computed: mapGetters( [
-		'getCurrentZObjectId',
-		'getZObjectAsJson'
+		'getCurrentZObjectId'
+		// 'getZObjectAsJson'
 	] )
 };
 
