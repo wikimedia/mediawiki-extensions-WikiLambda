@@ -340,19 +340,19 @@ module.exports = exports = {
 				isdirty: this.isDirty,
 				isnewzobject: this.isNewZObject,
 				// If not set, this will be Z0:
-				currentzobjectid: this.getCurrentZObjectId
+				zobjectid: this.getCurrentZObjectId
 			};
 
 			if ( this.isDirty ) {
 				this.showLeaveEditorDialog = true;
 				this.leaveEditorCallback = function () {
 					window.location.href = cancelTargetUrl;
-					mw.eventLog.dispatch( 'wf.ui.functionEdit.cancel', customData );
+					mw.eventLog.dispatch( 'wf.ui.editFunction.cancel', customData );
 				};
 			} else {
 				// If there are no changes, go immediately without showing the dialog.
 				window.location.href = cancelTargetUrl;
-				mw.eventLog.dispatch( 'wf.ui.functionEdit.cancel', customData );
+				mw.eventLog.dispatch( 'wf.ui.editFunction.cancel', customData );
 			}
 		},
 		/**
