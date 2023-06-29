@@ -167,8 +167,7 @@ module.exports = {
 
 			// 2. if Special page Evaluate Function Call
 			if ( isEvaluateFunctionCallPath( uri.query ) ) {
-				// FIXME wait wat!?
-				currentView = Constants.VIEWS.DEFAULT_VIEW;
+				currentView = Constants.VIEWS.FUNCTION_EVALUATOR;
 				context.dispatch( 'changeCurrentView', currentView );
 				return;
 			}

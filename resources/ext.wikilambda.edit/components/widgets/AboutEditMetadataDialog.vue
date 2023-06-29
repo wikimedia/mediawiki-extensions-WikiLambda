@@ -615,8 +615,6 @@ module.exports = exports = {
 	}
 
 	.ext-wikilambda-about-edit-metadata-language {
-		padding: 0 @spacing-150;
-
 		.ext-wikilambda-about-edit-metadata-title {
 			margin-top: @spacing-100;
 		}

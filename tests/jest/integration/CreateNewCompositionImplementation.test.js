@@ -27,7 +27,9 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 	} );
 
 	it( 'should allow you to create a new composition implementation', async () => {
-		const { getByTestId, findByTestId, getAllByTestId } = render( App, { global: { plugins: [ store ] } } );
+		const { getByTestId, findByTestId, getAllByTestId } = render( App, {
+			global: { plugins: [ store ], stubs: { WlFunctionEvaluatorWidget: true } }
+		} );
 
 		const zImplementationComponent = await findByTestId( 'z-implementation' );
 

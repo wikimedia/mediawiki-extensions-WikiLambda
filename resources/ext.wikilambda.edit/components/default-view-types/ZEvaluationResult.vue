@@ -9,53 +9,40 @@
 		<div class="ext-wikilambda-evaluation-result-result">
 			<wl-z-object-key-value
 				v-if="hasResult"
+				:skip-key="true"
 				:row-id="resultRowId"
 			></wl-z-object-key-value>
 		</div>
 
-		<!-- Button Bar -->
-		<div class="ext-wikilambda-evaluation-result-buttons">
-			<!-- Button to see metdata dialog -->
-			<cdx-button
-				class="ext-wikilambda-evaluation-result-buttons__metadata"
-				:disabled="!hasMetadata"
+		<!-- Action Bar -->
+		<div class="ext-wikilambda-evaluation-result-actions">
+			<a
+				v-if="hasMetadata"
+				class="ext-wikilambda-evaluation-result-actions__metadata"
+				role="button"
 				@click="showMetadata = !showMetadata"
-			>
-				{{ metadataButtonText }}
-			</cdx-button>
-			<!-- Button to see error dialog -->
-			<cdx-button
-				class="ext-wikilambda-evaluation-result-buttons__error"
-				:disabled="!hasError"
+			>{{ detailsText }}</a>
+			<a
+				v-if="hasError"
+				class="ext-wikilambda-evaluation-result-actions__error"
+				role="button"
 				@click="showError = !showError"
 			>
-				{{ errorButtonText }}
-			</cdx-button>
+				{{ errorText }}
+			</a>
 		</div>
 
 		<!-- All Dialogs -->
 		<div>
-			<!-- Metadata Dialog -->
-			<cdx-dialog
-				v-if="hasMetadata"
+			<!-- Function Metadata Dialog -->
+			<wl-function-metadata-dialog
 				:open="showMetadata"
 				class="ext-wikilambda-evaluation-result-metadata-dialog"
-				:close-button-label="closeLabel"
-				:title="metadataTitle"
-				@update:open="closeMetadata"
-			>
-				<!-- TODO (T320669): Construct this more nicely -->
-				<div class="ext-wikilambda-metadatadialog__header__helplink">
-					<cdx-icon :icon="icons.cdxIconHelpNotice"></cdx-icon>
-					<a
-						:title="tooltipMetaDataHelpLink"
-						:href="parsedMetaDataHelpLink"
-						target="_blank">
-						{{ $i18n( 'wikilambda-helplink-button' ).text() }}
-					</a>
-				</div>
-				<span v-html="dialogText"></span>
-			</cdx-dialog>
+				:implementation-label="activeImplementationLabel"
+				:tester-label="activeTesterLabel"
+				:metadata="metadata"
+				@close-dialog="showMetadata = false"
+			></wl-function-metadata-dialog>
 
 			<!-- Error Dialog -->
 			<cdx-dialog
@@ -63,10 +50,9 @@
 				:open="showError"
 				class="ext-wikilambda-evaluation-result-error-dialog"
 				:close-button-label="closeLabel"
-				:title="errorTitle"
-				@update:open="closeError"
+				:title="errorText"
+				@update:open="showError = false"
 			>
-				<!-- TODO (T317556): i18n Dialog title and Close when we have better design -->
 				<!-- TODO (T320669): Construct this more nicely -->
 				<wl-z-object-key-value
 					:row-id="errorRowId"
@@ -79,23 +65,18 @@
 
 <script>
 var Constants = require( '../../Constants.js' ),
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
-	icons = require( '../../../lib/icons.json' ),
-	portray = require( '../../mixins/portray.js' ),
-	schemata = require( '../../mixins/schemata.js' ),
+	FunctionMetadataDialog = require( '../widgets/FunctionMetadataDialog.vue' ),
 	canonicalize = require( '../../mixins/schemata.js' ).methods.canonicalizeZObject,
-	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions;
+	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-z-evaluation-result',
 	components: {
-		'cdx-button': CdxButton,
+		'wl-function-metadata-dialog': FunctionMetadataDialog,
 		'cdx-dialog': CdxDialog
 	},
-	mixins: [ schemata, portray ],
 	props: {
 		rowId: {
 			type: Number,
@@ -105,13 +86,11 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			icons: icons,
 			showMetadata: false,
 			showError: false
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getLabel',
 		'getMapValueByKey',
 		'getRowByKeyPath',
 		'getZObjectAsJsonById'
@@ -174,22 +153,16 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns the title for the Metadata dialog
+		 * Returns the metadata canonical ZObject that the
+		 * metadata dialog needs as an input, or undefined if
+		 * there's no metadata.
 		 *
-		 * @return {string}
+		 * @return {Object | undefined}
 		 */
-		metadataTitle: function () {
-			return this.$i18n( 'wikilambda-functioncall-metadata-dialog-header' ).text();
-		},
-
-		/**
-		 * Returns the title for the Error dialog
-		 * TODO(T312610): Depending on design choices, this dialog might go away
-		 *
-		 * @return {string}
-		 */
-		errorTitle: function () {
-			return this.$i18n( 'wikilambda-functioncall-metadata-dialog-header' ).text();
+		metadata: function () {
+			return this.hasMetadata ?
+				canonicalize( this.getZObjectAsJsonById( this.metadataRowId ) ) :
+				undefined;
 		},
 
 		/**
@@ -198,7 +171,7 @@ module.exports = exports = {
 		 * @return {string}
 		 */
 		closeLabel: function () {
-			return 'Close';
+			return this.$i18n( 'wikilambda-toast-close' ).text();
 		},
 
 		/**
@@ -221,22 +194,12 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns the text representation of the Metadata
-		 *
-		 * @return {string}
-		 */
-		dialogText: function () {
-			return this.metadataRowId ? this.dialogContent( this.metadataRowId ) : '';
-		},
-
-		/**
 		 * Returns the message of the "Show error" button
 		 *
 		 * @return {string}
 		 */
-		errorButtonText: function () {
-			// TODO(T312610): Depending on design choices, this button may go away
-			return this.$i18n( 'wikilambda-show-error' ).text();
+		errorText: function () {
+			return this.$i18n( 'wikilambda-functioncall-metadata-errors' ).text();
 		},
 
 		/**
@@ -244,51 +207,26 @@ module.exports = exports = {
 		 *
 		 * @return {string}
 		 */
-		metadataButtonText: function () {
-			// This button brings up the "metadata dialog" (internal name); we use the word "metrics" in the UI
-			// TODO(T312610): Depending on design choices, these button labels could change
-			return this.$i18n( 'wikilambda-show-metrics' ).text();
-		}
-	} ),
-	methods: $.extend( mapActions( [
-		'fetchZKeys'
-	] ), {
-		/**
-		 * Close the Metadata dialog
-		 */
-		closeMetadata: function () {
-			this.showMetadata = false;
-		},
-
-		/**
-		 * Close the Error dialog
-		 */
-		closeError: function () {
-			this.showError = false;
-		},
-
-		/**
-		 * Transforms the metadata object into text for the Metadata dialog
-		 * given the Metadata object rowId
-		 *
-		 * @param {string} rowId
-		 * @return {string}
-		 */
-		dialogContent: function ( rowId ) {
-			const zMapJSON = canonicalize( this.getZObjectAsJsonById( rowId ) );
-			// Ensure ZIDs appearing in metadata map have been fetched
-			const metadataZIDs = this.extractZIDs( zMapJSON );
-			this.fetchZKeys( { zids: metadataZIDs } );
-			return this.portrayMetadataMap( zMapJSON, this.getLabel );
+		detailsText: function () {
+			return this.$i18n( 'wikilambda-function-evaluator-result-details' ).text();
 		}
 	} ),
 	beforeCreate: function () {
 		// Need to delay require of ZObjectKeyValue to avoid loop
 		this.$options.components[ 'wl-z-object-key-value' ] = require( './ZObjectKeyValue.vue' );
-	},
-	mounted: function () {
-		this.fetchZKeys( { zids: [ Constants.Z_RESPONSEENVELOPE ] } );
 	}
 };
 
 </script>
+
+<style lang="less">
+@import '../../ext.wikilambda.edit.less';
+
+.ext-wikilambda-evaluation-result-actions {
+	display: flex;
+
+	a:not( :first-child ) {
+		margin-left: @spacing-50;
+	}
+}
+</style>

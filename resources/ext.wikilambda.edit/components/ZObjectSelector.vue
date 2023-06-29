@@ -210,6 +210,8 @@ module.exports = exports = {
 				return this.placeholder;
 			}
 			switch ( this.type ) {
+				case Constants.Z_FUNCTION:
+					return this.$i18n( 'wikilambda-function-typeselector-label' ).text();
 				case Constants.Z_NATURAL_LANGUAGE:
 					return this.$i18n( 'wikilambda-editor-label-addlanguage-label' ).text();
 				case Constants.Z_TYPE:

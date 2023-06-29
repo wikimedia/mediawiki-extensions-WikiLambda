@@ -64,11 +64,56 @@ module.exports = exports = {
 	}
 
 	.cdx-card__text__description {
+		color: @color-base;
 		margin-top: 0;
+
+		.cdx-icon {
+			color: @color-base;
+		}
 	}
 
 	.cdx-card__text__supporting-text {
+		color: @color-base;
 		margin-top: 0;
+	}
+
+	.cdx-select,
+	.cdx-select-vue {
+		min-width: auto;
+		max-width: @size-1600;
+		width: 100%;
+
+		&__handle {
+			min-width: auto;
+		}
+	}
+
+	.cdx-lookup {
+		min-width: auto;
+		max-width: @size-1600;
+		width: 100%;
+	}
+
+	.cdx-text-input {
+		min-width: auto;
+		max-width: @size-1600;
+		width: 100%;
+
+		&__input {
+			min-width: auto;
+		}
+	}
+
+	.cdx-dialog {
+		.cdx-text-input {
+			min-width: initial;
+			max-width: initial;
+			width: initial;
+
+			&__input {
+				min-width: initial;
+			}
+		}
 	}
 }
 

@@ -20,21 +20,20 @@
 			class="ext-wikilambda-tester-table__message-icon ext-wikilambda-tester-table__message-icon--info"
 			@click.stop="handleMessageIconClick"
 		></cdx-icon>
-		<wl-metadata-dialog
-			:show-dialog="showMetadata"
+		<wl-function-metadata-dialog
+			:open="showMetadata"
 			:implementation-label="implementationLabel"
 			:tester-label="testerLabel"
 			:metadata="metadata"
 			@close-dialog="showMetadata = false"
-		>
-		</wl-metadata-dialog>
+		></wl-function-metadata-dialog>
 	</div>
 </template>
 
 <script>
 var mapGetters = require( 'vuex' ).mapGetters,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	MetadataDialog = require( './viewer/details/ZMetadataDialog.vue' ),
+	FunctionMetadataDialog = require( '../widgets/FunctionMetadataDialog.vue' ),
 	icons = require( '../../../../../lib/icons.json' ),
 	mapActions = require( 'vuex' ).mapActions;
 
@@ -43,7 +42,7 @@ module.exports = exports = {
 	name: 'wl-z-function-tester-table',
 	components: {
 		'cdx-icon': CdxIcon,
-		'wl-metadata-dialog': MetadataDialog
+		'wl-function-metadata-dialog': FunctionMetadataDialog
 	},
 	props: {
 		zFunctionId: {

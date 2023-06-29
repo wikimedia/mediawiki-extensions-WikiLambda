@@ -41,13 +41,13 @@
 						:report-type="reportType"
 						@set-keys="setActiveTesterKeys"
 					></wl-function-report-item>
-					<wl-metadata-dialog
-						:show-dialog="showMetrics"
+					<wl-function-metadata-dialog
+						:open="showMetrics"
 						:implementation-label="activeImplementationLabel"
 						:tester-label="activeTesterLabel"
 						:metadata="metadata"
 						@close-dialog="showMetrics = false"
-					></wl-metadata-dialog>
+					></wl-function-metadata-dialog>
 				</div>
 			</div>
 			<div v-else>
@@ -65,9 +65,8 @@ var Constants = require( '../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( '../../../lib/icons.json' ),
-	// TODO move
 	WidgetBase = require( '../base/WidgetBase.vue' ),
-	MetadataDialog = require( '../function/viewer/details/ZMetadataDialog.vue' ),
+	FunctionMetadataDialog = require( './FunctionMetadataDialog.vue' ),
 	FunctionReportItem = require( './FunctionReportItem.vue' );
 
 // @vue/component
@@ -75,7 +74,7 @@ module.exports = exports = {
 	name: 'wl-function-report-widget',
 	components: {
 		'wl-function-report-item': FunctionReportItem,
-		'wl-metadata-dialog': MetadataDialog,
+		'wl-function-metadata-dialog': FunctionMetadataDialog,
 		'wl-widget-base': WidgetBase,
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon

@@ -23,6 +23,7 @@
 var configureCompat = require( 'vue' ).configureCompat,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
+	FunctionEvaluator = require( '../views/FunctionEvaluator.vue' ),
 	FunctionEditor = require( '../views/FunctionEditor.vue' ),
 	FunctionViewer = require( '../views/FunctionViewer.vue' ),
 	DefaultView = require( '../views/DefaultView.vue' );
@@ -35,6 +36,7 @@ configureCompat( { MODE: 3 } );
 module.exports = exports = {
 	name: 'app',
 	components: {
+		'wl-function-evaluator': FunctionEvaluator,
 		'wl-function-editor': FunctionEditor,
 		'wl-function-viewer': FunctionViewer,
 		'wl-default-view': DefaultView

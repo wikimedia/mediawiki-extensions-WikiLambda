@@ -123,6 +123,7 @@ var Constants = {
 	views = {
 		FUNCTION_EDITOR: 'function-editor',
 		FUNCTION_VIEWER: 'function-viewer',
+		FUNCTION_EVALUATOR: 'function-evaluator',
 		DEFAULT_VIEW: 'default-view'
 	},
 	paths = {
