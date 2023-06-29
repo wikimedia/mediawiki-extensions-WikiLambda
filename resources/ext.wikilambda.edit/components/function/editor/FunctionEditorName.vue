@@ -10,6 +10,7 @@
 			<label
 				:for="'ext-wikilambda-function-definition-name__input' + zLang"
 				class="ext-wikilambda-app__text-regular">
+				<!-- TODO: Instead fetch this from the Z2 via `getLabel( Constants.Z_PERSISTENTOBJECT_LABEL )` -->
 				{{ $i18n( 'wikilambda-function-definition-name-label' ).text() }}
 				<span>({{ $i18n( 'wikilambda-optional' ).text() }})</span>
 			</label>

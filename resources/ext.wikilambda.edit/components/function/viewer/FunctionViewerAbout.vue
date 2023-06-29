@@ -7,9 +7,7 @@
 	-->
 	<main class="ext-wikilambda-function-about">
 		<div class="ext-wikilambda-function-about__summary">
-			<wl-text-component :truncate="300">
-				{{ $i18n( 'wikilambda-function-about-summary' ).text() }}
-			</wl-text-component>
+			<wl-function-viewer-about-description></wl-function-viewer-about-description>
 		</div>
 		<section v-if="!hideSidebar" class="ext-wikilambda-function-about__sidebar">
 			<div v-if="!hideExamples" class="ext-wikilambda-function-about__examples">
@@ -33,7 +31,7 @@ var FunctionViewerAboutAliases = require( './about/FunctionViewerAboutAliases.vu
 	FunctionViewerAboutNames = require( './about/FunctionViewerAboutNames.vue' ),
 	FunctionViewerAboutDetails = require( './about/FunctionViewerAboutDetails.vue' ),
 	FunctionViewerAboutExamples = require( './about/FunctionViewerAboutExamples.vue' ),
-	TextComponent = require( '../../base/Text.vue' ),
+	FunctionViewerAboutDescription = require( './about/FunctionViewerAboutDescription.vue' ),
 	Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -45,7 +43,7 @@ module.exports = exports = {
 		'wl-function-viewer-about-names': FunctionViewerAboutNames,
 		'wl-function-viewer-about-details': FunctionViewerAboutDetails,
 		'wl-function-viewer-about-examples': FunctionViewerAboutExamples,
-		'wl-text-component': TextComponent
+		'wl-function-viewer-about-description': FunctionViewerAboutDescription
 	},
 	computed: $.extend( {},
 		mapGetters( [ 'getUserZlangZID', 'getNestedZObjectById', 'getAllItemsFromListById' ] ),

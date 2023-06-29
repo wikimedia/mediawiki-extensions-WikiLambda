@@ -11,6 +11,7 @@
 				id="ext-wikilambda-function-definition-aliases__inputs-label"
 				class="ext-wikilambda-app__text-regular"
 			>
+				<!-- TODO: Instead fetch this from the Z2 via `getLabel( Constants.Z_PERSISTENTOBJECT_ALIASES )` -->
 				{{ $i18n( 'wikilambda-function-definition-alias-label' ).text() }}
 				<span>({{ $i18n( 'wikilambda-optional' ).text() }})</span>
 			</label>

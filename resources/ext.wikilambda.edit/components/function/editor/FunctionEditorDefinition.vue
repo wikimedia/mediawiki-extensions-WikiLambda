@@ -31,6 +31,12 @@
 					:is-main-z-object="isMainZObject( labelLanguage.zLang, index )"
 					@updated-name="updatedLabel"
 				></wl-function-editor-name>
+				<!-- component that displays the description for a language -->
+				<wl-function-editor-description
+					:z-lang="labelLanguage.zLang"
+					@updated-description="updatedLabel"
+				>
+				</wl-function-editor-description>
 				<!-- component that displays aliases for a language -->
 				<wl-function-editor-aliases
 					:z-lang="labelLanguage.zLang"
@@ -84,6 +90,7 @@
 <script>
 var FunctionEditorLanguage = require( './FunctionEditorLanguage.vue' ),
 	FunctionEditorName = require( './FunctionEditorName.vue' ),
+	FunctionEditorDescription = require( './FunctionEditorDescription.vue' ),
 	FunctionEditorAliases = require( './FunctionEditorAliases.vue' ),
 	FunctionEditorInputs = require( './FunctionEditorInputs.vue' ),
 	FunctionEditorOutput = require( './FunctionEditorOutput.vue' ),
@@ -106,6 +113,7 @@ module.exports = exports = {
 		'wl-function-editor-name': FunctionEditorName,
 		'wl-function-editor-aliases': FunctionEditorAliases,
 		'wl-function-editor-inputs': FunctionEditorInputs,
+		'wl-function-editor-description': FunctionEditorDescription,
 		'wl-function-editor-output': FunctionEditorOutput,
 		'wl-function-editor-footer': FunctionEditorFooter,
 		'wl-function-editor-language': FunctionEditorLanguage,
