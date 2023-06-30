@@ -16,6 +16,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectPage;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Title\Title;
+use User;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Authorization\ZObjectAuthorization
@@ -221,6 +222,158 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 			$title
 		);
 		$this->assertTrue( $status->isValid(), 'Functioneer is authorized to edit attached tester' );
+	}
+
+	public function testUnattached() {
+		$loggedout = User::newFromId( 0 );
+		$user = $this->getTestUser()->getUser();
+		$functioneer = $this->getTestUser( [ 'functioneer' ] )->getUser();
+		$maintainer = $this->getTestUser( [ 'functioneer','functionmaintainer' ] )->getUser();
+
+		// SETUP:
+		$this->insertZids( [ 'Z17', 'Z14', 'Z16', 'Z20' ] );
+		$filePath = dirname( __DIR__, 1 ) . '/test_data/authorization/bare-function.json';
+		$originalFunction = json_decode( file_get_contents( $filePath ) );
+
+		// Insert new function
+		$functionPage = $this->zobjectStore->createNewZObject(
+			FormatJson::encode( $originalFunction ),
+			'Insert function',
+			$user
+		);
+		$this->assertTrue( $functionPage->isOK() );
+		$title = $functionPage->getTitle();
+
+		// Swap out the Z0s
+		$zid = $functionPage->getTitle()->getBaseText();
+		$originalFunction = json_decode( str_replace( 'Z0', $zid, json_encode( $originalFunction ) ) );
+
+		// Content change: Attempt to change the return type from 'Z40' to 'Z6'
+		$typeChangedFunction = json_decode( str_replace( 'Z40', 'Z6', json_encode( $originalFunction ) ) );
+		$oldContent = new ZObjectContent( FormatJson::encode( $originalFunction ) );
+
+		$newContent = new ZObjectContent( FormatJson::encode( $typeChangedFunction ) );
+		$this->assertTrue( $oldContent->isValid() );
+		$this->assertTrue( $newContent->isValid() );
+
+		// Assert that the correct rights are detected
+		$rights = $this->zobjectAuthorization->getRequiredEditRights(
+			$oldContent,
+			$newContent,
+			$title
+		);
+		$this->assertEquals( [
+			'edit',
+			'wikilambda-edit',
+			'wikilambda-edit-user-function'
+		], $rights );
+
+		// Request authorization finally goes through
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$loggedout,
+			$title
+		);
+		$this->assertFalse(
+			$status->isValid(),
+			'Logged-out user not is authorized to edit the type of an unattached function'
+		);
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$user,
+			$title
+		);
+		$this->assertFalse(
+			$status->isValid(),
+			'User is not authorized to edit the type of an unattached function'
+		);
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$functioneer,
+			$title
+		);
+		$this->assertTrue(
+			$status->isValid(),
+			'Functioneer is authorized to edit the type of an unattached function'
+		);
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$maintainer,
+			$title
+		);
+		$this->assertTrue(
+			$status->isValid(),
+			'Maintainer is authorized to edit the type of an unattached function'
+		);
+
+		// Label change: Attempt to add a label (to both the argument and the object)
+		$labelledFunction = json_decode(
+			str_replace( '"Z11"', '"Z11", { "Z1K1": "Z11", "Z11K1": "Z1002", "Z11K2": "Label" }',
+			json_encode( $originalFunction ) )
+		);
+		$oldContent = new ZObjectContent( FormatJson::encode( $originalFunction ) );
+		$newContent = new ZObjectContent( FormatJson::encode( $labelledFunction ) );
+		$this->assertTrue( $oldContent->isValid() );
+		$this->assertTrue( $newContent->isValid() );
+
+		// Assert that the correct rights are detected
+		$rights = $this->zobjectAuthorization->getRequiredEditRights(
+			$oldContent,
+			$newContent,
+			$title
+		);
+		$this->assertEquals( [
+			'edit',
+			'wikilambda-edit',
+			'wikilambda-edit-argument-label',
+			'wikilambda-edit-object-label'
+		], $rights );
+
+		// Request authorization finally goes through
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$loggedout,
+			$title
+		);
+		$this->assertFalse(
+			$status->isValid(),
+			'Logged-out user is not authorized to edit the labels of an unattached function'
+		);
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$user,
+			$title
+		);
+		$this->assertTrue(
+			$status->isValid(),
+			'User is authorized to edit the labels of an unattached function'
+		);
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$functioneer,
+			$title
+		);
+		$this->assertTrue(
+			$status->isValid(),
+			'Functioneer is also authorized to edit the labels of an unattached function'
+		);
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$maintainer,
+			$title
+		);
+		$this->assertTrue(
+			$status->isValid(),
+			'Functioneer is also authorized to edit the labels of an unattached function'
+		);
 	}
 
 	/**
