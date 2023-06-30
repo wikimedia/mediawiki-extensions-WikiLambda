@@ -199,11 +199,10 @@ module.exports = exports = {
 			}.bind( this ) );
 			// For a new function, zobjectid will be Z0
 			const customData = {
-				zlang: this.getUserZlangZID,
-				isloggedin: this.isUserLoggedIn,
 				isnewzobject: this.isNewZObject,
 				zobjectid: this.getCurrentZObjectId,
-				zobjecttype: this.getCurrentZObjectType
+				zobjecttype: this.getCurrentZObjectType,
+				zlang: this.getUserZlangZID
 			};
 			mw.eventLog.dispatch( 'wf.ui.editZObject.publish', customData );
 		}
