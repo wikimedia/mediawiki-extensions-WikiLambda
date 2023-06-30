@@ -24,6 +24,7 @@
 				v-model:selected="value"
 				:menu-items="typeOptions"
 				:disabled="disabled"
+				data-testid="z-object-type-select"
 				@update:selected="setValue"
 			></wl-select>
 		</div>

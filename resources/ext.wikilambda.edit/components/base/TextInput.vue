@@ -28,6 +28,7 @@
 			:placeholder="placeholder"
 			:disabled="disabled"
 			v-bind="$attrs"
+			data-testid="text-input"
 			@focus="active = true"
 			@blur="active = false"
 			@input="onUpdate"

@@ -85,58 +85,106 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		jest.useRealTimers();
 	} );
 
-	// TODO (T336997): Adapt to DefaultView
-	it.skip( 'allows creating a new tester', async () => {
+	it.only( 'allows creating a new tester', async () => {
 		const {
-			container,
-			findByLabelText,
 			findByRole,
-			getAllByLabelText,
-			getByLabelText,
-			getByText
+			findByTestId
 		} = render( App, { global: { plugins: [ store ] } } );
 
-		// ACT: Enter a name for the tester.
-		await fireEvent.update(
-			within( await findByLabelText( 'Labels' ) ).getByRole( 'textbox' ),
-			'tester name' );
-
+		//* -- Function call section
 		// ASSERT: The function specified in URL is pre-selected as the function under test.
-		expect( within( getAllByLabelText( 'function:' )[ 0 ] ).getByRole( 'combobox' ) )
+		const testerFunctionSelectContainer = await findByTestId( 'z-test-function-select-container' );
+		expect( within( testerFunctionSelectContainer ).getByRole( 'combobox' ) )
 			.toHaveDisplayValue( 'function name, in Chinese' );
 
-		// ACT: Select the function under test as the function call function.
-		await fireEvent.update(
-			within( getByLabelText( 'call:' ) ).getByPlaceholderText( 'Select a Function' ),
-			'func' );
-		await clickLookupResult( container, 'function name, in Chinese' );
+		//* -- Call section
+		const testerCallContainer = await findByRole( 'ext-wikilambda-tester-call' );
+
+		// ACT: Click the link to open the function call section.
+		const selectCallFunctionLink = testerCallContainer.getElementsByTagName( 'a' )[ 0 ];
+		await fireEvent.click( selectCallFunctionLink );
+
+		// ACT: Select the function under test as the function to call
+		const testerCallAccordionContainer = await within( testerCallContainer ).getByTestId( 'z-object-key-value-set' );
+		const callFunctionAccordion = await within( testerCallAccordionContainer ).getAllByTestId( 'z-object-key-value' )[ 1 ];
+		const callFunctionSelector = within( callFunctionAccordion ).getByRole( 'combobox' );
+
+		const testerCallFunctionName = 'function name, in Chinese';
+
+		await fireEvent.update( callFunctionSelector, testerCallFunctionName );
+		await clickLookupResult( callFunctionAccordion, testerCallFunctionName );
+
+		// ASSERT: The function under test is selected as the function to call.
+		expect( callFunctionSelector.value ).toBe( testerCallFunctionName );
+
+		const testerCallAccordionList = await within( testerCallAccordionContainer ).getAllByTestId( 'z-object-key-value' );
 
 		// ACT: Enter value for first argument.
-		await fireEvent.update(
-			await waitFor( () => within( getByLabelText( 'first argument label, in Afrikaans:' ) ).getByRole( 'textbox' ) ),
-			'first argument value' );
+		const firstCallArgumentAccordion = testerCallAccordionList[ 2 ];
+		const firstCallArgumentInput = within( firstCallArgumentAccordion ).getByTestId( 'text-input' );
+
+		await fireEvent.update( firstCallArgumentInput, 'first argument value' );
 
 		// ACT: Enter value for second argument.
-		await fireEvent.update(
-			within( getByLabelText( 'second argument label, in Afrikaans:' ) ).getByRole( 'textbox' ),
-			'second argument value' );
+		const secondCallArgumentAccordion = testerCallAccordionList[ 3 ];
+		const secondCallArgumentInput = within( secondCallArgumentAccordion ).getByTestId( 'text-input' );
+		await fireEvent.update( secondCallArgumentInput, 'second argument value' );
+
+		//* -- Validation section
+		const testerValidationContainer = await findByRole( 'ext-wikilambda-tester-validation' );
+
+		// ACT: Click the link to open the function call section.
+		const selectValidationFunctionLink = testerValidationContainer.getElementsByTagName( 'a' )[ 0 ];
+		await fireEvent.click( selectValidationFunctionLink );
 
 		// ACT: Select String Equality as the validation call function.
-		await fireEvent.update(
-			within( getByLabelText( 'result validation:' ) ).getByPlaceholderText( 'Select a Function' ),
-			'String eq' );
-		await clickLookupResult( container, 'String equality' );
+		const testerValidationAccordionContainer = await within( testerValidationContainer ).getByTestId( 'z-object-key-value-set' );
+		const validationFunctionAccordion = await within( testerValidationAccordionContainer ).getAllByTestId( 'z-object-key-value' )[ 1 ];
+		const validationFunctionSelector = within( validationFunctionAccordion ).getByRole( 'combobox' );
+
+		const validationFunctionNameToSelect = 'String equality';
+
+		await fireEvent.update( validationFunctionSelector, validationFunctionNameToSelect );
+		await clickLookupResult( validationFunctionAccordion, validationFunctionNameToSelect );
+
+		// ASSERT: The function under test is selected as the function to call.
+		expect( validationFunctionSelector.value ).toBe( validationFunctionNameToSelect );
+
+		const testerValidationAccordionList = await within( testerValidationContainer ).getAllByTestId( 'z-object-key-value' );
 
 		// ACT: Enter expected value to which function call result should be compared.
-		await fireEvent.update(
-			await waitFor( () => within( getByLabelText( 'second string:' ) ).getByRole( 'textbox' ) ),
-			'expected value' );
+		const validationArgumentAccordion = testerValidationAccordionList[ 3 ];
+		const validationArgumentInput = await within( validationArgumentAccordion ).getByTestId( 'text-input' );
+		await fireEvent.update( validationArgumentInput, 'expected value' );
 
-		// ACT: Click publish button.
-		await fireEvent.click( getByText( 'Publish' ) );
+		// ASSERT: The expected value is set.
+		expect( validationArgumentInput.value ).toBe( 'expected value' );
 
-		// ACT: Click publish button in dialog.
-		await fireEvent.click( within( await findByRole( 'dialog' ) ).getByText( 'Publish' ) );
+		//* -- Label section
+		// ACT: Set the label for the code implementation
+		const openLanguageDialogButton = await findByTestId( 'open-language-dialog-button' );
+		await fireEvent.click( openLanguageDialogButton );
+
+		const languageDialog = await findByTestId( 'edit-label-dialog' );
+		const languageDialogInputs = within( languageDialog ).getAllByTestId( 'text-input' );
+		const languageDialogEditLabelInput = languageDialogInputs[ 0 ];
+
+		fireEvent.update( languageDialogEditLabelInput, 'tester name' );
+
+		// Since the button does not have a role and is built into the codex dialog component, we need to use getByText
+		const confirmEditLabelButton = within( languageDialog ).getByText( 'Done' );
+		fireEvent.click( confirmEditLabelButton );
+
+		//* -- Publish section
+		// ACT: Publish the implementation
+		const publishButton = await findByTestId( 'publish-button' );
+		await fireEvent.click( publishButton );
+
+		// ACT: Confirm publish in publish dialog that opens
+		const confirmPublishDialog = await findByTestId( 'confirm-publish-dialog' );
+		const confirmPublishButton = await within( confirmPublishDialog ).getByTestId( 'confirm-publish-button' );
+
+		await fireEvent.click( confirmPublishButton );
 
 		// ASSERT: Location is changed to page returned by API.
 		await waitFor( () => expect( window.location.href ).toEqual( '/wiki/newPage?success=true' ) );

@@ -11,6 +11,7 @@
 	<div
 		class="ext-wikilambda-key-value"
 		:class="rootClasses"
+		data-testid="z-object-key-value"
 	>
 		<!-- Space for square quiet button before the content for expand toggle or bullet -->
 		<div
@@ -20,6 +21,7 @@
 				class="ext-wikilambda-key-value-pre-button"
 				:has-expanded-mode="hasExpandedMode"
 				:expanded="expanded"
+				data-testid="expanded-toggle"
 				@toggle="toggleExpanded( !expanded )"
 			></wl-expanded-toggle>
 			<div

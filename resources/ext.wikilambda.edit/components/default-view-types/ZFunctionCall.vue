@@ -10,6 +10,7 @@
 		<wl-z-object-to-string
 			:row-id="rowId"
 			v-bind="$attrs"
+			data-testid="z-object-to-string"
 		>
 		</wl-z-object-to-string>
 	</div>

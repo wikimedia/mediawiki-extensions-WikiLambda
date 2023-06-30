@@ -25,7 +25,7 @@ module.exports = {
 				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_PROGRAMMING_LANGUAGE,
 				[ Constants.Z_PROGRAMMING_LANGUAGE_CODE ]: 'javascript'
 			},
-			[ Constants.Z_CODE_CODE ]: 'function Z12345( Z12345K1, Z12345K2 ) {\n\n} // TODO: actually implement'
+			[ Constants.Z_CODE_CODE ]: 'function Z12345( Z12345K1, Z12345K2 ) {\n\n}'
 		}
 	},
 	[ Constants.Z_PERSISTENTOBJECT_LABEL ]: {
