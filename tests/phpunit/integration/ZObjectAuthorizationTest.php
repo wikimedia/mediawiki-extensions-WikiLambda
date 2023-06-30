@@ -285,9 +285,9 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 			$user,
 			$title
 		);
-		$this->assertFalse(
+		$this->assertTrue(
 			$status->isValid(),
-			'User is not authorized to edit the type of an unattached function'
+			'User is authorized to edit the type of an unattached function'
 		);
 		$status = $this->zobjectAuthorization->authorize(
 			$oldContent,
