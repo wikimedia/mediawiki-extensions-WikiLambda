@@ -14,7 +14,6 @@
 			<wl-z-object-selector
 				v-if="!value"
 				:edit="edit"
-				:fit-width="true"
 				:row-id="rowId"
 				:type="selectType"
 				@input="setValue"
@@ -24,7 +23,6 @@
 				v-else
 				v-model:selected="value"
 				:menu-items="typeOptions"
-				:fit-width="true"
 				:disabled="disabled"
 				@update:selected="setValue"
 			></wl-select>
@@ -192,28 +190,3 @@ module.exports = exports = {
 	}
 };
 </script>
-
-<style lang="less">
-@import '../../ext.wikilambda.edit.less';
-
-.ext-wikilambda-type-mode {
-	&__select {
-		.cdx-select.cdx-select--enabled.cdx-select--expanded {
-			width: 100%;
-			display: inline-block;
-		}
-
-		.cdx-select {
-			width: auto;
-			display: inline-block;
-		}
-
-		@media screen and ( min-width: @width-breakpoint-tablet ) {
-			.cdx-select.cdx-select--enabled.cdx-select--expanded {
-				width: 50%;
-				display: inline-block;
-			}
-		}
-	}
-}
-</style>

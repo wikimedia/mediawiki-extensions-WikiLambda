@@ -6,9 +6,6 @@
 		@license MIT
 	-->
 	<div class="ext-wikilambda-ztyped-list-type">
-		<label class="ext-wikilambda-ztyped-list-type__label">
-			{{ keyLabel }}
-		</label>
 		<wl-z-object-key-value
 			:row-id="rowId"
 			:edit="edit"
@@ -81,16 +78,6 @@ module.exports = exports = {
 		expectedType: function () {
 			const expectedType = this.getExpectedTypeOfKey( this.parentKey );
 			return this.typedListStringToType( expectedType );
-		},
-
-		/**
-		 * The label for a type of a list. This must be hardcoded because the FE represents these litsts
-		 * as benjamin arrays, which don't have a key to index on.
-		 *
-		 * @return {string}
-		 */
-		keyLabel: function () {
-			return this.$i18n( 'wikilambda-list-items-type-label' ).text();
 		}
 	} ),
 	methods: $.extend( mapActions( [ 'setListItemsForRemoval', 'setError' ] ),

@@ -331,54 +331,66 @@ module.exports = exports = {
 <style lang="less">
 @import '../../ext.wikilambda.edit.less';
 
-.ext-wikilambda-function-explorer-dark-link,
-.ext-wikilambda-function-explorer-dark-link:visited,
-.ext-wikilambda-function-explorer-dark-link:hover,
-.ext-wikilambda-function-explorer-dark-link:active {
-	color: @color-base;
-}
+.ext-wikilambda-function-explorer {
+	.cdx-lookup {
+		min-width: fit-content;
+	}
 
-.ext-wikilambda-function-explorer-heading-no-spacing {
-	margin-top: 0;
-	padding-top: 0;
-}
+	.cdx-text-input {
+		.cdx-text-input__input {
+			min-width: fit-content;
+		}
+	}
 
-.ext-wikilambda-function-explorer-function-name-wrapper {
-	margin-bottom: @spacing-25;
-}
+	.ext-wikilambda-function-explorer-dark-link,
+	.ext-wikilambda-function-explorer-dark-link:visited,
+	.ext-wikilambda-function-explorer-dark-link:hover,
+	.ext-wikilambda-function-explorer-dark-link:active {
+		color: @color-base;
+	}
 
-.ext-wikilambda-function-explorer-function-inputs-wrapper:not( :last-child ) {
-	margin-bottom: @spacing-50;
-}
+	.ext-wikilambda-function-explorer-heading-no-spacing {
+		margin-top: 0;
+		padding-top: 0;
+	}
 
-.ext-wikilambda-function-explorer-untitled {
-	color: @color-placeholder;
-}
+	.ext-wikilambda-function-explorer-function-name-wrapper {
+		margin-bottom: @spacing-25;
+	}
 
-.ext-wikilambda-function-explorer-function-inputs-title-wrapper,
-.ext-wikilambda-function-explorer-function-outputs-title-wrapper {
-	margin-top: @spacing-100;
-}
+	.ext-wikilambda-function-explorer-function-inputs-wrapper:not( :last-child ) {
+		margin-bottom: @spacing-50;
+	}
 
-.ext-wikilambda-function-explorer-flex {
-	display: flex;
-	align-items: center;
-}
+	.ext-wikilambda-function-explorer-untitled {
+		color: @color-placeholder;
+	}
 
-.ext-wikilambda-function-explorer-space-between {
-	justify-content: space-between;
-}
+	.ext-wikilambda-function-explorer-function-inputs-title-wrapper,
+	.ext-wikilambda-function-explorer-function-outputs-title-wrapper {
+		margin-top: @spacing-100;
+	}
 
-.ext-wikilambda-function-explorer-copyable {
-	font-family: @font-family-monospace;
-	cursor: pointer;
-}
+	.ext-wikilambda-function-explorer-flex {
+		display: flex;
+		align-items: center;
+	}
 
-.ext-wikilambda-function-explorer-button-view-function {
-	font-size: @wl-font-size-base;
-}
+	.ext-wikilambda-function-explorer-space-between {
+		justify-content: space-between;
+	}
 
-.ext-wikilambda-function-explorer-disabled {
-	cursor: not-allowed;
+	.ext-wikilambda-function-explorer-copyable {
+		font-family: @font-family-monospace;
+		cursor: pointer;
+	}
+
+	.ext-wikilambda-function-explorer-button-view-function {
+		font-size: @wl-font-size-base;
+	}
+
+	.ext-wikilambda-function-explorer-disabled {
+		cursor: not-allowed;
+	}
 }
 </style>

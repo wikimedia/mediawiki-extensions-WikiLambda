@@ -23,8 +23,7 @@
 			:id="id"
 			v-model="value"
 			class="ext-wikilambda-edit-text-input__field"
-			:class="inputClasses"
-			:style="{ width: fieldWidth }"
+			:class="{ 'ext-wikilambda-edit-text-input__chipped': hasChip }"
 			:aria-label="ariaLabel"
 			:placeholder="placeholder"
 			:disabled="disabled"
@@ -69,10 +68,6 @@ module.exports = exports = {
 			type: String,
 			required: false
 		},
-		fitWidth: {
-			type: Boolean,
-			default: false
-		},
 		chip: {
 			type: String,
 			required: false
@@ -97,48 +92,6 @@ module.exports = exports = {
 		value: {
 			get() { return this.modelValue; },
 			set( value ) { this.$emit( 'update:modelValue', value ); }
-		},
-
-		/**
-		 * This computed property calculates the width of the field depending on its value
-		 *
-		 * Because this is a not a monospace font, the larger the word is, the
-		 * less space it occupies in ch, so probably we should remove a %:
-		 *
-		 * > 1ch is usually wider than the average character width, usually by around 20-30%
-		 *
-		 * Refs:
-		 * https://stackoverflow.com/questions/3392493/adjust-width-of-input-field-to-its-input
-		 * https://meyerweb.com/eric/thoughts/2018/06/28/what-is-the-css-ch-unit/
-		 *
-		 * @return {string}
-		 */
-		fieldWidth: function () {
-			if ( !this.fitWidth ) {
-				return 'auto';
-			}
-			if ( this.active ) {
-				return '100%';
-			}
-			// If no value or placeholder, default is 20 characters
-			var chars = 20;
-			if ( this.modelValue && ( this.modelValue.length > 0 ) ) {
-				// Three extra characters to account for inner padding
-				chars = this.modelValue.length + 3;
-			} else if ( this.placeholder && ( this.placeholder.length > 0 ) ) {
-				chars = this.placeholder.length;
-			}
-			// Subtract 10% to accomodate a fixed width font
-			chars = Math.ceil( chars - chars * 0.1 );
-			// Add 5 chars + chip.length (to make it larger if there's more text in the chip) if it has language chip
-			if ( this.hasChip ) {
-				chars = chars + ( this.chip.length + 5 );
-				// An empty chip is like a 2 character chip
-				if ( this.hasEmptyChip ) {
-					chars = chars + 2;
-				}
-			}
-			return `${chars}ch`;
 		},
 
 		/**
@@ -169,25 +122,6 @@ module.exports = exports = {
 			return {
 				'--chipWidthPx': `${this.chipWidth}px`
 			};
-		},
-
-		/**
-		 * Returns the css class names for the text input: "fitted" when the
-		 * width needs to adapt on focus, and "chipped" when it contains an
-		 * inner language chip inside the text field. These classes are not
-		 * exclusive.
-		 *
-		 * @return {Array}
-		 */
-		inputClasses: function () {
-			const classes = [];
-			if ( this.fitWidth ) {
-				classes.push( 'ext-wikilambda-edit-text-input__fitted' );
-			}
-			if ( this.hasChip ) {
-				classes.push( 'ext-wikilambda-edit-text-input__chipped' );
-			}
-			return classes;
 		}
 	},
 	methods: {
@@ -226,18 +160,10 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-edit-text-input {
-	height: inherit;
+	min-height: @min-size-interactive-pointer;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-
-	&__fitted {
-		transition: @wl-transition-field-expand;
-
-		.cdx-text-input__input {
-			min-width: auto;
-		}
-	}
 
 	&__chipped {
 		position: absolute;
@@ -251,7 +177,6 @@ module.exports = exports = {
 
 	.ext-wikilambda-lang-chip {
 		position: relative;
-		top: 2px;
 		z-index: 3;
 		left: @spacing-50;
 		min-width: calc( 36px - 16px );

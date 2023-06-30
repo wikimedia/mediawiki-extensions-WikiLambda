@@ -19,7 +19,6 @@
 			class="ext-wikilambda-monolingual-string__edit-mode">
 			<wl-text-input
 				v-model="text"
-				:fit-width="true"
 				:chip="langIso"
 				placeholder="Enter text"
 				class="ext-wikilambda-monolingual-string__input">
@@ -132,7 +131,7 @@ module.exports = exports = {
 		color: @color-base;
 		display: flex;
 		flex-direction: row;
-		align-items: center;
+		align-items: flex-start;
 
 		.ext-wikilambda-lang-chip {
 			margin-right: @spacing-50;
@@ -141,7 +140,6 @@ module.exports = exports = {
 
 	&__edit-mode {
 		position: relative;
-		height: @size-200;
 	}
 }
 

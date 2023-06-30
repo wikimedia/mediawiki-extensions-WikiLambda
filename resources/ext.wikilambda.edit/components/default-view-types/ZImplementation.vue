@@ -11,6 +11,7 @@
 			<wl-z-object-key-value
 				:key="functionRowId"
 				:row-id="functionRowId"
+				:skip-indent="true"
 				:edit="edit && !isTypeBuiltin"
 			></wl-z-object-key-value>
 		</div>
@@ -58,7 +59,8 @@
 		>
 			<wl-z-object-key-value
 				:key="implementationContentRowId"
-				:hide-key="isTypeCode"
+				:skip-key="isTypeCode"
+				:skip-indent="isTypeCode"
 				:row-id="implementationContentRowId"
 				:edit="edit"
 			></wl-z-object-key-value>

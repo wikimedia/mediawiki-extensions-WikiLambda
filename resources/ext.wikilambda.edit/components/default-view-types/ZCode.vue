@@ -8,38 +8,41 @@
 	<div class="ext-wikilambda-code">
 		<!-- Programming language block -->
 		<div class="ext-wikilambda-key-value">
-			<div class="ext-wikilambda-key-block">
-				<label>{{ programmingLanguageLabel }}</label>
-			</div>
-			<div class="ext-wikilambda-value-block">
-				<span
-					v-if="!edit"
-					class="ext-wikilambda-value-text"
-				>{{ programmingLanguageValue }}</span>
-				<wl-select
-					v-else
-					v-model:selected="programmingLanguageValue"
-					class="ext-wikilambda-value-input ext-wikilambda-code__language-selector"
-					:menu-items="programmingLanguageMenuItems"
-					:default-label="$i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
-					:fit-width="true"
-				>
-				</wl-select>
+			<div class="ext-wikilambda-key-value-main">
+				<div class="ext-wikilambda-key-block">
+					<label>{{ programmingLanguageLabel }}</label>
+				</div>
+				<div class="ext-wikilambda-value-block">
+					<span
+						v-if="!edit"
+						class="ext-wikilambda-value-text"
+					>{{ programmingLanguageValue }}</span>
+					<wl-select
+						v-else
+						v-model:selected="programmingLanguageValue"
+						class="ext-wikilambda-value-input ext-wikilambda-code__language-selector"
+						:menu-items="programmingLanguageMenuItems"
+						:default-label="$i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
+					>
+					</wl-select>
+				</div>
 			</div>
 		</div>
 		<!-- Code editor block -->
 		<div class="ext-wikilambda-key-value">
-			<div class="ext-wikilambda-key-block">
-				<label>{{ codeLabel }}</label>
-			</div>
-			<div class="ext-wikilambda-value-block">
-				<code-editor
-					class="ext-wikilambda-code__code-editor"
-					:mode="programmingLanguageValue"
-					:read-only="!edit"
-					:value="editorValue"
-					@change="updateCode"
-				></code-editor>
+			<div class="ext-wikilambda-key-value-main">
+				<div class="ext-wikilambda-key-block">
+					<label>{{ codeLabel }}</label>
+				</div>
+				<div class="ext-wikilambda-value-block">
+					<code-editor
+						class="ext-wikilambda-code__code-editor"
+						:mode="programmingLanguageValue"
+						:read-only="!edit"
+						:value="editorValue"
+						@change="updateCode"
+					></code-editor>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -336,20 +339,22 @@ module.exports = exports = {
 
 .ext-wikilambda-code {
 	& > .ext-wikilambda-key-value {
-		& > .ext-wikilambda-key-block {
-			margin-bottom: 0;
+		& > .ext-wikilambda-key-value-main {
+			& > .ext-wikilambda-key-block {
+				margin-bottom: 0;
 
-			label {
-				font-weight: bold;
-				color: @color-base;
+				label {
+					font-weight: bold;
+					color: @color-base;
+				}
 			}
-		}
 
-		& > .ext-wikilambda-value-block {
-			margin-bottom: @spacing-25;
+			& > .ext-wikilambda-value-block {
+				margin-bottom: @spacing-25;
 
-			.ext-wikilambda-value-input {
-				margin-top: @spacing-25;
+				.ext-wikilambda-value-input {
+					margin-top: @spacing-25;
+				}
 			}
 		}
 	}

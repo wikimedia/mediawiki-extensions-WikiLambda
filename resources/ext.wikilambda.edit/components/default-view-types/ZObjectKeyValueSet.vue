@@ -99,40 +99,10 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-key-value-set {
-	padding-left: 14px;
+	margin-left: -@spacing-75;
 
-	&.ext-wikilambda-key-level-1 {
-		border-color: @wl-key-value-color-1;
-	}
-
-	&.ext-wikilambda-key-level-2 {
-		border-color: @wl-key-value-color-2;
-	}
-
-	&.ext-wikilambda-key-level-3 {
-		border-color: @wl-key-value-color-3;
-	}
-
-	&.ext-wikilambda-key-level-4 {
-		border-color: @wl-key-value-color-4;
-	}
-
-	&.ext-wikilambda-key-level-5 {
-		border-color: @wl-key-value-color-5;
-	}
-
-	&.ext-wikilambda-key-level-6 {
-		border-color: @wl-key-value-color-6;
-	}
-	border-top: @wl-key-value-border-top-width @wl-key-value-border-top-style;
-	border-bottom: @wl-key-value-border-bottom-width @wl-key-value-border-bottom-style;
-	border-right: @wl-key-value-border-right-width @wl-key-value-border-right-style;
-	border-left: @wl-key-value-border-left-width @wl-key-value-border-left-style;
-
-	&.ext-wikilambda-key-level-0 {
-		border: 0;
-		margin: 0;
-		padding: 0;
+	.ext-wikilambda-key-value:last-child {
+		margin-bottom: @spacing-0;
 	}
 }
 

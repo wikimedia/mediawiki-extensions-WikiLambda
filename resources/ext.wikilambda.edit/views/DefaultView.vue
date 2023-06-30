@@ -28,7 +28,8 @@
 						{{ $i18n( 'wikilambda-persistentzobject-contents' ).text() }}
 					</div>
 					<wl-z-object-key-value
-						:hide-key="true"
+						:skip-key="true"
+						:skip-indent="true"
 						:row-id="contentRowId"
 						:edit="edit"
 					></wl-z-object-key-value>
@@ -200,6 +201,16 @@ module.exports = exports = {
 	.ext-wikilambda-content-title {
 		font-weight: @font-weight-bold;
 		margin-bottom: @spacing-125;
+	}
+
+	> .ext-wikilambda-key-value {
+		> .ext-wikilambda-key-value-main {
+			> .ext-wikilambda-value-block {
+				> .ext-wikilambda-key-value-set.ext-wikilambda-key-level-1 {
+					margin-left: 0;
+				}
+			}
+		}
 	}
 }
 

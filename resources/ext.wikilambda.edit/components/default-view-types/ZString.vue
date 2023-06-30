@@ -12,7 +12,6 @@
 		<wl-text-input
 			v-else
 			v-model="value"
-			:fit-width="true"
 			aria-label=""
 			placeholder=""
 		></wl-text-input>

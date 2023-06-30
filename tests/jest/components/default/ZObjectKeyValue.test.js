@@ -7,7 +7,6 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ExpandedToggle = require( '../../../../resources/ext.wikilambda.edit/components/base/ExpandedToggle.vue' ),
@@ -243,7 +242,7 @@ describe( 'ZObjectKeyValue', () => {
 			expect( wrapper.findComponent( ExpandedToggle ).exists() ).toBe( true );
 		} );
 
-		describe( 'does not show expansion toggle if the key is a terminal', () => {
+		describe( 'shows disabled expansion toggle if the key is a terminal', () => {
 			it( 'Z6K1, string value', () => {
 				getters.getZObjectKeyByRowId = createFunctionsMockForId( rowId, Constants.Z_STRING_VALUE );
 
@@ -257,8 +256,9 @@ describe( 'ZObjectKeyValue', () => {
 						rowId: rowId
 					}
 				} );
-
-				expect( wrapper.findComponent( ExpandedToggle ).exists() ).toBe( false );
+				const toggle = wrapper.findComponent( ExpandedToggle );
+				expect( toggle.exists() ).toBe( true );
+				expect( toggle.vm.hasExpandedMode ).toBe( false );
 			} );
 
 			it( 'Z9K1, reference', () => {
@@ -275,7 +275,9 @@ describe( 'ZObjectKeyValue', () => {
 					}
 				} );
 
-				expect( wrapper.findComponent( ExpandedToggle ).exists() ).toBe( false );
+				const toggle = wrapper.findComponent( ExpandedToggle );
+				expect( toggle.exists() ).toBe( true );
+				expect( toggle.vm.hasExpandedMode ).toBe( false );
 			} );
 		} );
 	} );
@@ -310,7 +312,7 @@ describe( 'ZObjectKeyValue', () => {
 			expect( wrapper.findComponent( ExpandedToggle ).exists() ).toBe( true );
 		} );
 
-		describe( 'does not show expansion toggle if the key is a terminal', () => {
+		describe( 'shows disabled expansion toggle if the key is a terminal', () => {
 			it( 'Z6, string type', () => {
 				getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, Constants.Z_STRING );
 
@@ -325,7 +327,9 @@ describe( 'ZObjectKeyValue', () => {
 					}
 				} );
 
-				expect( wrapper.findComponent( ExpandedToggle ).exists() ).toBe( false );
+				const toggle = wrapper.findComponent( ExpandedToggle );
+				expect( toggle.exists() ).toBe( true );
+				expect( toggle.vm.hasExpandedMode ).toBe( false );
 			} );
 
 			it( 'Z9, reference type', () => {
@@ -342,13 +346,15 @@ describe( 'ZObjectKeyValue', () => {
 					}
 				} );
 
-				expect( wrapper.findComponent( ExpandedToggle ).exists() ).toBe( false );
+				const toggle = wrapper.findComponent( ExpandedToggle );
+				expect( toggle.exists() ).toBe( true );
+				expect( toggle.vm.hasExpandedMode ).toBe( false );
 			} );
 		} );
 	} );
 
 	describe( 'in either view or edit mode', () => {
-		describe( 'does not show expansion toggle if the key is a terminal', () => {
+		describe( 'shows disabled expansion toggle if the key is a terminal', () => {
 			it( 'Z1K1, with a bound parent type', () => {
 				getters.getZObjectKeyByRowId = () => ( id ) => {
 					if ( id === parentRowId ) {
@@ -373,7 +379,9 @@ describe( 'ZObjectKeyValue', () => {
 					}
 				} );
 
-				expect( wrapper.findComponent( ExpandedToggle ).exists() ).toBe( false );
+				const toggle = wrapper.findComponent( ExpandedToggle );
+				expect( toggle.exists() ).toBe( true );
+				expect( toggle.vm.hasExpandedMode ).toBe( false );
 			} );
 
 			it( 'resolver type value Z Reference', () => {
@@ -390,7 +398,9 @@ describe( 'ZObjectKeyValue', () => {
 					}
 				} );
 
-				expect( wrapper.findComponent( ExpandedToggle ).exists() ).toBe( false );
+				const toggle = wrapper.findComponent( ExpandedToggle );
+				expect( toggle.exists() ).toBe( true );
+				expect( toggle.vm.hasExpandedMode ).toBe( false );
 			} );
 
 			it( 'resolver type value Z Function Call', () => {
@@ -407,7 +417,9 @@ describe( 'ZObjectKeyValue', () => {
 					}
 				} );
 
-				expect( wrapper.findComponent( ExpandedToggle ).exists() ).toBe( false );
+				const toggle = wrapper.findComponent( ExpandedToggle );
+				expect( toggle.exists() ).toBe( true );
+				expect( toggle.vm.hasExpandedMode ).toBe( false );
 			} );
 
 			it( 'resolver type value Z Argument Reference', () => {
@@ -424,7 +436,9 @@ describe( 'ZObjectKeyValue', () => {
 					}
 				} );
 
-				expect( wrapper.findComponent( ExpandedToggle ).exists() ).toBe( false );
+				const toggle = wrapper.findComponent( ExpandedToggle );
+				expect( toggle.exists() ).toBe( true );
+				expect( toggle.vm.hasExpandedMode ).toBe( false );
 			} );
 
 			it( 'non built-in type', () => {
@@ -451,7 +465,9 @@ describe( 'ZObjectKeyValue', () => {
 					}
 				} );
 
-				expect( wrapper.findComponent( ExpandedToggle ).exists() ).toBe( false );
+				const toggle = wrapper.findComponent( ExpandedToggle );
+				expect( toggle.exists() ).toBe( true );
+				expect( toggle.vm.hasExpandedMode ).toBe( false );
 			} );
 		} );
 	} );
@@ -459,22 +475,27 @@ describe( 'ZObjectKeyValue', () => {
 	describe( 'handles the modification of the state for the key-value represented in the component', () => {
 		it( 'if the value of Z1K1 changes', () => {
 			getters.getZObjectKeyByRowId = createFunctionsMockForId( rowId, Constants.Z_OBJECT_TYPE );
-			getters.getZReferenceTerminalValue = createFunctionsMockForId( rowId, Constants.Z_ARGUMENT );
+			getters.getZReferenceTerminalValue = createFunctionsMockForId( rowId, Constants.Z_REFERENCE );
 			getters.isInsideComposition = createGettersWithFunctionsMock( false );
 
 			global.store.hotUpdate( {
 				getters: getters
 			} );
 
-			var wrapper = mount( ZObjectKeyValue, {
+			var wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
 					edit: true,
 					rowId: rowId
+				},
+				global: {
+					stubs: {
+						WlZObjectType: false,
+						WlSelect: false
+					}
 				}
 			} );
 
 			wrapper.findComponent( { name: 'cdx-select' } ).vm.$emit( 'update:selected', 'Function call' );
-
 			expect( wrapper.emitted() ).toHaveProperty( 'set-type', [ [ { keyPath: [], value: 'Function call' } ] ] );
 		} );
 
@@ -492,15 +513,19 @@ describe( 'ZObjectKeyValue', () => {
 				getters: getters
 			} );
 
-			var wrapper = mount( ZObjectKeyValue, {
+			var wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
 					edit: true,
 					rowId: rowId
+				},
+				global: {
+					stubs: {
+						WlZString: false
+					}
 				}
 			} );
 
 			await wrapper.getComponent( TextInput ).vm.$emit( 'input', 'my string value' );
-
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ Constants.Z_STRING_VALUE ], value: 'my string value' } ] ] );
 		} );
 
@@ -519,10 +544,16 @@ describe( 'ZObjectKeyValue', () => {
 				getters: getters
 			} );
 
-			var wrapper = mount( ZObjectKeyValue, {
+			var wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
 					edit: true,
 					rowId: rowId
+				},
+				global: {
+					stubs: {
+						WlZObjectType: false,
+						WlSelect: false
+					}
 				}
 			} );
 
@@ -544,15 +575,19 @@ describe( 'ZObjectKeyValue', () => {
 				getters: getters
 			} );
 
-			var wrapper = mount( ZObjectKeyValue, {
+			var wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
 					edit: true,
 					rowId: rowId
+				},
+				global: {
+					stubs: {
+						WlZString: false
+					}
 				}
 			} );
 
 			await wrapper.getComponent( TextInput ).vm.$emit( 'input', 'my string value' );
-
 			expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), { keyPath: [ Constants.Z_STRING_VALUE ], rowId: 2, value: 'my string value' } );
 		} );
 	} );

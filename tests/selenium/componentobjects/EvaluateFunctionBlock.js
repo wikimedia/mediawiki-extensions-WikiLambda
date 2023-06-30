@@ -25,7 +25,7 @@ class EvaluateFunctionBlock {
 	 * @return {void}
 	 */
 	async toggleFunctionCallBlock() {
-		const toggleButton = this.functionCallBlock.$( 'span.ext-wikilambda-expanded' );
+		const toggleButton = this.functionCallBlock.$( 'button.ext-wikilambda-expand-toggle' );
 		await ElementActions.doClick( toggleButton );
 	}
 
