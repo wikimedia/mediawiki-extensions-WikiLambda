@@ -93,7 +93,7 @@ class TesterPage extends Page {
 	 * @return {void}
 	 */
 	async expandCallFunctionBlock() {
-		const selectFunctionLink = this.callFunctionBlock.$( '//a[text()="Select Function"]' );
+		const selectFunctionLink = this.callFunctionBlock.$( './/a[text()="Select Function"]' );
 		await ElementActions.doClick( selectFunctionLink );
 	}
 
@@ -119,7 +119,7 @@ class TesterPage extends Page {
 		 * Function section of call function block
 		 */
 		const parentSelector = this.getCallFunctionBlockSection( 'function' );
-		const callFunctionBlockInputSelector = parentSelector.$( './/input[@placeholder="ZObject"]' );
+		const callFunctionBlockInputSelector = parentSelector.$( './/input[@placeholder="Select function"]' );
 		await InputDropdown.setInputDropdown(
 			parentSelector, callFunctionBlockInputSelector, ZObjectLabel );
 	}
@@ -184,7 +184,7 @@ class TesterPage extends Page {
 	 * @return {void}
 	 */
 	async expandValidationBlock() {
-		const selectFunctionLink = this.validationBlock.$( '//a[text()="Select Function"]' );
+		const selectFunctionLink = this.validationBlock.$( './/a[text()="Select Function"]' );
 		await ElementActions.doClick( selectFunctionLink );
 	}
 
@@ -211,7 +211,7 @@ class TesterPage extends Page {
 		 * Function section of validation block
 		 */
 		const parentSelector = this.getValidationBlockSection( 'function' );
-		const validationInputSelector = parentSelector.$( './/input[@placeholder="ZObject"]' );
+		const validationInputSelector = parentSelector.$( './/input[@placeholder="Select function"]' );
 		await InputDropdown.setInputDropdown(
 			parentSelector, validationInputSelector, ZObjectLabel );
 	}

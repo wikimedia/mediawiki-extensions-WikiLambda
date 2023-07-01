@@ -44,9 +44,9 @@ class ContentBlock {
 	 */
 	getSectionToggleButton( label, parentSection ) {
 		if ( !parentSection ) {
-			return this.contentBlock.$( `.//label[text()=" ${label}"]/preceding-sibling::span` );
+			return this.getSectionOfContentBlock( label ).$( './preceding-sibling::div[contains(@class,"ext-wikilambda-key-value-pre")]' );
 		}
-		return parentSection.$( `.//label[text()=" ${label}"]/preceding-sibling::span` );
+		return this.getSectionOfContentBlock( label, parentSection ).$( './preceding-sibling::div[contains(@class,"ext-wikilambda-key-value-pre")]' );
 	}
 
 	/**

@@ -84,20 +84,20 @@ describe( 'Implementation (CUJ 5)', () => {
 				aboutBlockEntriesEnglish = {
 					language: 'English',
 					label: `e2e-implementation-code-${time}-English`,
-					description: 'This is the description for the implementation via code',
-					alias: 'alias-English'
+					description: 'This is the description for the new implementation via code in English',
+					alias: 'alias in English'
 				};
 				aboutBlockEntriesFrench = {
 					language: 'French',
-					label: `e2e-implementation-code-${time}-French`,
-					description: 'This is the description for the implementation via code',
-					alias: 'alias-French'
+					label: `e2e-implementation-code-${time}-français`,
+					description: 'Ceci est la description de la nouvelle implémentation via le code en français',
+					alias: 'alias en français'
 				};
 				aboutBlockEntriesHindi = {
 					language: 'Hindi',
-					label: `e2e-implementation-code-${time}-Hindi`,
-					description: 'This is the description for the implementation via code',
-					alias: 'alias-Hindi'
+					label: `e2e-implementation-code-${time}-हिंदी`,
+					description: 'यह हिंदी में कोड के माध्यम से नए कार्यान्वयन का विवरण है',
+					alias: 'उपनाम हिंदी में'
 				};
 			} );
 
@@ -275,25 +275,24 @@ describe( 'Implementation (CUJ 5)', () => {
 				aboutBlockEntriesEnglish = {
 					language: 'English',
 					label: `e2e-implementation-composition-${time}-English`,
-					description: 'This is the description for the implementation via composition',
-					alias: 'alias-English'
+					description: 'This is the description for the new implementation via composition in English',
+					alias: 'alias in English'
 				};
 				aboutBlockEntriesFrench = {
 					language: 'French',
-					label: `e2e-implementation-composition-${time}-French`,
-					description: 'This is the description for the implementation via composition',
-					alias: 'alias-French'
+					label: `e2e-implementation-composition-${time}-français`,
+					description: 'Ceci est la description de la nouvelle implémentation via la composition en français',
+					alias: 'alias en français'
 				};
 				aboutBlockEntriesHindi = {
 					language: 'Hindi',
-					label: `e2e-implementation-composition-${time}-Hindi`,
-					description: 'This is the description for the implementation via composition',
-					alias: 'alias-Hindi'
+					label: `e2e-implementation-composition-${time}-हिंदी`,
+					description: 'यह हिंदी में रचना के माध्यम से नए कार्यान्वयन का विवरण है',
+					alias: 'उपनाम हिंदी में'
 				};
 			} );
 
-			// TODO (T340774) Re-enable and fix once Default View is done
-			it.skip( 'should navigate to the implementation form', async () => {
+			it( 'should navigate to the implementation form', async () => {
 				await FunctionPage.open( functionDetails.ZId );
 				await expect( await FunctionPage.functionTitle )
 					.toHaveText( functionDetails.ZObjectLabel, { message: 'Function Page is not open' } );
@@ -309,8 +308,7 @@ describe( 'Implementation (CUJ 5)', () => {
 					.toBe( functionDetails.ZObjectLabel, { message: 'Implementation form is not open' } );
 			} );
 
-			// TODO (T340774) Re-enable and fix once Default View is done
-			it.skip( 'should fill the entries in the about section', async () => {
+			it( 'should fill the entries in the about section', async () => {
 				/**
 				 * Add and Submit About block entries in English
 				 */
@@ -339,8 +337,7 @@ describe( 'Implementation (CUJ 5)', () => {
 				await expect( await ImplementationForm.aboutBlockDialogBox ).not.toBeDisplayed();
 			} );
 
-			// TODO (T340774) Re-enable and fix once Default View is done
-			it.skip( 'should fill the entries in the composition block', async () => {
+			it( 'should fill the entries in the composition block', async () => {
 				await ImplementationForm.selectImplementationType( 'composition' );
 				await expect( await ImplementationForm.compositionBlock ).toBeDisplayed(
 					{ message: 'implementation type composition is not selected' } );
@@ -348,8 +345,7 @@ describe( 'Implementation (CUJ 5)', () => {
 				await ImplementationForm.setCompositionBlock( compositionBlockEntries );
 			} );
 
-			// TODO (T340774) Re-enable and fix once Default View is done
-			it.skip( 'should publish the new implementation', async () => {
+			it( 'should publish the new implementation', async () => {
 				await ImplementationForm.publishImplementation();
 				/**
 				 * When implementation is published successfully, the browser is redirected to URL
@@ -367,8 +363,7 @@ describe( 'Implementation (CUJ 5)', () => {
 
 			describe( 'Show details of new implementation created', () => {
 
-				// TODO (T340774) Re-enable and fix once Default View is done
-				it.skip( 'should display the entries in the about section', async () => {
+				it( 'should display the entries in the about section', async () => {
 					await expect( await ImplementationPage.getImplementationLabel() ).toBe(
 						aboutBlockEntriesEnglish.label,
 						{ message: `Implementation page is not displaying the implementation label as expected to be ${aboutBlockEntriesEnglish.label}` } );

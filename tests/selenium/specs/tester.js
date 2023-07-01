@@ -72,20 +72,20 @@ describe( 'Tester', () => {
 			aboutBlockEntriesEnglish = {
 				language: 'English',
 				label: `e2e-Create-A-New-Test-${time}-English`,
-				description: 'This is the description for the test',
-				alias: 'alias-English'
+				description: 'This is the description for the new test in English',
+				alias: 'alias in English'
 			};
 			aboutBlockEntriesFrench = {
 				language: 'French',
-				label: `e2e-Create-A-New-Test-${time}-French`,
-				description: 'This is the description for the test',
-				alias: 'alias-French'
+				label: `e2e-Create-A-New-Test-${time}-français`,
+				description: 'Ceci est la description du nouveau test en français',
+				alias: 'alias en français'
 			};
 			aboutBlockEntriesHindi = {
 				language: 'Hindi',
-				label: `e2e-Create-A-New-Test-${time}-Hindi`,
-				description: 'This is the description for the test',
-				alias: 'alias-Hindi'
+				label: `e2e-Create-A-New-Test-${time}-हिंदी`,
+				description: 'यह हिंदी में नए टेस्ट का विवरण है',
+				alias: 'उपनाम हिंदी में'
 			};
 		} );
 
@@ -186,8 +186,7 @@ describe( 'Tester', () => {
 					{ message: `Tester page is not displaying the tester description as expected to be ${aboutBlockEntriesEnglish.description}` } );
 			} );
 
-			// TODO (T340774) Re-enable and fix once Default View is done
-			it.skip( 'should display the call function block parameters', async () => {
+			it( 'should display the call function block parameters', async () => {
 				await TesterPage.toggleCallFunctionBlock();
 				await expect( await
 				TesterPage.getCallFunctionConditionParameter(
@@ -203,8 +202,7 @@ describe( 'Tester', () => {
 					{ message: `Else parameter are not displayed as expected to be ${callBlockEntries.elseBlockInput}` } );
 			} );
 
-			// TODO (T340774) Re-enable and fix once Default View is done
-			it.skip( 'should display the validation block parameters', async () => {
+			it( 'should display the validation block parameters', async () => {
 				await TesterPage.toggleValidationBlock();
 				await expect( await
 				TesterPage.getValidationBlockFunction(
@@ -233,8 +231,8 @@ describe( 'Tester', () => {
 			aboutBlockEditEntries = {
 				language: 'English',
 				label: `e2e-edit-test-${time}-English`,
-				description: 'This is edited description for the test',
-				alias: 'alias-edit-English'
+				description: 'This is edited description for the test in English',
+				alias: 'edited alias in English'
 			};
 		} );
 

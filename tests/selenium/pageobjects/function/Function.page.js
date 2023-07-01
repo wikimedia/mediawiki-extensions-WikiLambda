@@ -24,36 +24,42 @@ class FunctionPage extends Page {
 	get sidebarTable() { return $( '.ext-wikilambda-function-viewer-details-sidebar' ); }
 	get createANewTestLink() { return $( 'a=Create a new test' ); }
 	get createAImplementation() { return $( 'a=Create a new implementation' ); }
+	get functionCallBlock() { return EvaluateFunctionBlock.functionCallBlock; }
 
 	/**
 	 * Call the function with only one parameter which is of type string.
 	 *
 	 * @async
-	 * @param {string} ZObjectLabel - Function label which is being evaluated
 	 * @param {string} param - parameters to call the function with
 	 * @return {void}
 	 */
-	async callFunctionWithString( ZObjectLabel, param ) {
-		await EvaluateFunctionBlock.toggleFunctionCallBlock();
-		await EvaluateFunctionBlock.setFunction( ZObjectLabel );
-		const functionCallBlock = EvaluateFunctionBlock.functionCallBlock;
-
+	async callFunctionWithString( param ) {
 		/**
 		 * Input the type "String"
 		 */
-		const typeBlock = functionCallBlock.$( './/label[text()=" type" and @class!=""]//parent::div//following-sibling::div' );
+		const typeBlock = this.functionCallBlock.$( './/label[text()=" type"]/parent::div/following-sibling::div' );
 		await InputDropdown.setInputDropdown( typeBlock, typeBlock.$( './/input[@placeholder="Select a Type"]' ), 'String' );
 
 		/**
 		 * Input the param
 		 */
-		const valueBlock = functionCallBlock.$( './/label[text()=" value"]/parent::div/following-sibling::div' );
+		const valueBlock = this.functionCallBlock.$( './/label[text()=" value"]/parent::div/following-sibling::div' );
 		await ElementActions.setInput( valueBlock.$( './/input' ), param );
 
 		/**
 		 * call function
 		 */
 		await EvaluateFunctionBlock.callFunction();
+	}
+
+	/**
+	 * Wait for the result of the function call
+	 *
+	 * @async
+	 * @return {void}
+	 */
+	async waitForResult() {
+		await EvaluateFunctionBlock.waitForResult();
 	}
 
 	/**
@@ -64,7 +70,7 @@ class FunctionPage extends Page {
 	 * @return {WebdriverIOElementType}
 	 */
 	async getEvaluateFunctionResultSelector( result ) {
-		return EvaluateFunctionBlock.resultBlock.$( `.//p[text()="${result}"]` );
+		return EvaluateFunctionBlock.orchestrationResultBlock.$( `.//p[text()="${result}"]` );
 	}
 
 	getArgumentLabel( label ) {

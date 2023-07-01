@@ -10,7 +10,7 @@ const InputDropdown = require( './InputDropdown' );
 
 class FunctionExplorerBlock {
 	get functionExplorerBlock() { return $( 'span.ext-wikilambda-function-explorer' ); }
-	get functionNameInputSelector() { return this.functionExplorerBlock.$( './/section//input[@placeholder="Select a Function"]' ); }
+	get functionNameInputSelector() { return this.functionExplorerBlock.$( './/section//input[@placeholder="Select function"]' ); }
 
 	/**
 	 * Get the name of the function for which the page is open

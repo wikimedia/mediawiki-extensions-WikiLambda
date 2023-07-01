@@ -15,13 +15,14 @@ const assert = require( 'assert' ),
 
 describe( 'Function', function () {
 	describe( 'Function viewer (CUJ1)', function () {
-		// TODO (T340774) Re-enable and fix once Default View is done
-		it.skip( 'should allow to evaluate a function', async function () {
+
+		it( 'should allow to evaluate a function', async function () {
 			await ListZObjectsByType.open();
 			const ListFunctions = await ListZObjectsByType.openFunctionsList();
 			await ListFunctions.openFunction( 'echo' );
 
-			await FunctionPage.callFunctionWithString( 'Echo', 'foobar' );
+			await expect( await FunctionPage.functionCallBlock ).toBeDisplayed();
+			await FunctionPage.callFunctionWithString( 'foobar' );
 			await expect( await FunctionPage.getEvaluateFunctionResultSelector( 'foobar' ) )
 				.toBeExisting( { message: 'The response "foobar" is not displayed' } );
 		} );

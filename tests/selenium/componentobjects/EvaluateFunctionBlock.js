@@ -7,38 +7,24 @@
 
 'use strict';
 const ElementActions = require( '../utils/ElementActions' );
-const InputDropdown = require( './InputDropdown' );
 
 class EvaluateFunctionBlock {
 	get evaluateFunctionBlock() { return $( 'span.ext-wikilambda-function-evaluator' ); }
-	get functionCallBlock() { return $( 'div.ext-wikilambda-function-evaluator-call' ); }
+	get functionCallBlock() { return this.evaluateFunctionBlock.$( 'div.ext-wikilambda-function-evaluator-inputs' ); }
 	get orchestrationResultBlock() { return $( 'div.ext-wikilambda-function-evaluator-result' ); }
-	get resultStatus() { return this.orchestrationResultBlock.$( 'div.ext-wikilambda-function-evaluator-result-status' ); }
-	get resultBlock() { return this.orchestrationResultBlock.$( './/label[text()=" result"]/parent::div/following-sibling::div' ); }
+	get resultStatus() { return this.orchestrationResultBlock.$( './/div[contains(text(),"Running")]' ); }
 
 	// #region Function Call Block
 
 	/**
-	 * Toggle the Function Call Block
+	 * Click on the "Run function" button
 	 *
 	 * @async
 	 * @return {void}
 	 */
-	async toggleFunctionCallBlock() {
-		const toggleButton = this.functionCallBlock.$( 'button.ext-wikilambda-expand-toggle' );
-		await ElementActions.doClick( toggleButton );
-	}
-
-	/**
-	 * Set the function for the Evaluation
-	 *
-	 * @async
-	 * @param {string} ZObjectLabel
-	 */
-	async setFunction( ZObjectLabel ) {
-		const parentBlock = this.functionCallBlock.$( './/label[text()=" function"]/parent::div/following-sibling::div' );
-		const input = parentBlock.$( './/input[@placeholder="ZObject"]' );
-		await InputDropdown.setInputDropdown( parentBlock, input, ZObjectLabel );
+	async callFunction() {
+		const button = this.evaluateFunctionBlock.$( './/button[text()="Run function"]' );
+		await ElementActions.doClick( button );
 	}
 
 	// #endregion
@@ -52,23 +38,13 @@ class EvaluateFunctionBlock {
 	 * @return {void}
 	 */
 	async waitForResult() {
+		await this.orchestrationResultBlock.waitForDisplayed( { message: 'Result Block not displayed' } );
 		await browser.waitUntil( async () => {
 			return ( await this.resultStatus ).isExisting() === false;
 		}, { timeoutMsg: 'The output of the function is not displayed' } );
 	}
 
 	// #endregion
-
-	/**
-	 * Click on the "Call Function" button
-	 *
-	 * @async
-	 * @return {void}
-	 */
-	async callFunction() {
-		const button = $( '//button[text()="Call Function"]' );
-		await ElementActions.doClick( button );
-	}
 }
 
 module.exports = new EvaluateFunctionBlock();

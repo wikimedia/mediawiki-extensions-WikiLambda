@@ -35,7 +35,8 @@ describe( 'Type (CUJ 7)', () => {
 		 */
 		const keysBlockEntries = {
 			firstKey: {
-				index: '0',
+				index: 0,
+				selectorIndex: 0,
 				valueType: 'String',
 				keyId: 'Z0K1',
 				textArray: [
@@ -52,7 +53,8 @@ describe( 'Type (CUJ 7)', () => {
 				]
 			},
 			secondKey: {
-				index: '1',
+				index: 1,
+				selectorIndex: 3,
 				valueType: 'String',
 				keyId: 'Z0K2',
 				textArray: [
@@ -64,7 +66,8 @@ describe( 'Type (CUJ 7)', () => {
 				]
 			},
 			thirdKey: {
-				index: '2',
+				index: 2,
+				selectorIndex: 5,
 				valueType: 'String',
 				keyId: 'Z0K3',
 				textArray: [
@@ -162,8 +165,7 @@ describe( 'Type (CUJ 7)', () => {
 			await expect( await TypeForm.aboutBlockDialogBox ).not.toBeDisplayed();
 		} );
 
-		// TODO (T340774) Re-enable and fix once Default View is done
-		it.skip( 'should fill the entries in the keys block', async () => {
+		it( 'should fill the entries in the keys block', async () => {
 			/**
 			 * Set the first key
 			 */
@@ -222,17 +224,18 @@ describe( 'Type (CUJ 7)', () => {
 			} );
 
 			it( 'should display the entries in the keys block', async () => {
-				[ 'firstKey', 'secondKey', 'thirdKey' ].forEach( async ( key ) => {
+				const keyArr = [ 'firstKey', 'secondKey', 'thirdKey' ];
+				for ( const key of keyArr ) {
 					const [ valueTypeSelector, keyIdSelector, textSelectorArray ] =
 					await TypePage.getKeysBlockItemSelectors( keysBlockEntries[ key ] );
-					await expect( valueTypeSelector ).toBeExisting( `${key} is not displaying the value Type as expected` );
-					await expect( keyIdSelector ).toBeExisting( `${key} is not displaying the key id as expected` );
+					await expect( valueTypeSelector ).toBeExisting( { message: `${key} is not displaying the value Type as expected` } );
+					await expect( keyIdSelector ).toBeExisting( { message: `${key} is not displaying the key id as expected` } );
 
 					for ( const i in textSelectorArray ) {
-						await expect( textSelectorArray[ i ].languageSelector ).toBeExisting( `${key} ${i + 1}th label is not displaying the language as expected` );
-						await expect( textSelectorArray[ i ].textSelector ).toBeExisting( `${key} ${i + 1}th label is not displaying the text as expected` );
+						await expect( textSelectorArray[ i ].languageSelector ).toBeExisting( { message: `${key} ${i + 1}th label is not displaying the language as expected` } );
+						await expect( textSelectorArray[ i ].textSelector ).toBeExisting( { message: `${key} ${i + 1}th label is not displaying the text as expected` } );
 					}
-				} );
+				}
 			} );
 
 			it( 'should display the entries in the validator block', async () => {

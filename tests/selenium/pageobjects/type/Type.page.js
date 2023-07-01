@@ -112,7 +112,7 @@ class Type extends Page {
 	 */
 	async getKeysBlockItemSelectors( expectedKeysBlockEntry ) {
 		const { index, valueType, keyId, textArray } = expectedKeysBlockEntry;
-		const keysBlockItem = await this.keysBlock.$$( './div/div/ul/li' )[ index ];
+		const keysBlockItem = await this.keysBlock.$$( './/label[contains(text()," Item")]/parent::div/parent::div' )[ index ];
 
 		const valueTypeBlock = ContentBlock.getSectionOfContentBlock( 'value type', keysBlockItem );
 		const valueTypeSelector = await valueTypeBlock.$( `.//a[text()="${valueType}"]` );
@@ -124,7 +124,7 @@ class Type extends Page {
 		const textsBlock = ContentBlock.getSectionOfContentBlock( 'texts', labelBlock );
 		const textItemArray = [];
 		for ( const i in textArray ) {
-			const item = await textsBlock.$$( './div/div/ul/li' )[ i ];
+			const item = await textsBlock.$$( './/div[@data-testid="z-object-key-value"]' )[ i ];
 			const languageSelector = await item.$( `.//span[text()="${textArray[ i ].languageShortName}"]` );
 			const textSelector = await item.$( `.//p[contains(text(),"${textArray[ i ].text}")]` );
 

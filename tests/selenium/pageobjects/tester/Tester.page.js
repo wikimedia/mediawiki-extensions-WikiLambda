@@ -19,8 +19,8 @@ class Tester extends Page {
 	get testerTitleSelector() { return $( 'span.ext-wikilambda-viewpage-header-title--function-name' ); }
 	get testerZIdSelector() { return $( 'span.ext-wikilambda-viewpage-header-zid' ); }
 	get contentBlock() { return ContentBlock.contentBlock; }
-	get callFunctionBlock() { return this.contentBlock.$( '//div[@role="ext-wikilambda-tester-call"]' ); }
-	get validationBlock() { return this.contentBlock.$( '//div[@role="ext-wikilambda-tester-validation"]' ); }
+	get callFunctionBlock() { return this.contentBlock.$( './/div[@role="ext-wikilambda-tester-call"]' ); }
+	get validationBlock() { return this.contentBlock.$( './/div[@role="ext-wikilambda-tester-validation"]' ); }
 	get editSourceLink() { return $( '//nav[@aria-label="Views"]//a[contains(@title, "Edit")]/span[contains(text(),"Edit")]' ); }
 
 	// #region Header

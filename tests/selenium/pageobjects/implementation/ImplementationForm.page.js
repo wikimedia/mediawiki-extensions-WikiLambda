@@ -196,7 +196,7 @@ class ImplementationForm extends Page {
 		 * Set the Function Call Block to "If"
 		 */
 		const functionBlock = ContentBlock.getSectionOfContentBlock( 'function', this.compositionBlock );
-		await InputDropdown.setInputDropdown( functionBlock, functionBlock.$( './/input[@placeholder="ZObject"]' ),
+		await InputDropdown.setInputDropdown( functionBlock, functionBlock.$( './/input[@placeholder="Select function"]' ),
 			firstFunctionCallEntries.functionCallLabel );
 
 		let secondFunctionCallBlock;

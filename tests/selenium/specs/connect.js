@@ -247,8 +247,7 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 				}
 			};
 
-			// TODO (T340774) Re-enable and fix once Default View is done
-			it.skip( 'should open the "Detail" view of the function page', async () => {
+			it( 'should open the "Detail" view of the function page', async () => {
 				await FunctionPage.open( functionDetails.ZId );
 				await expect( await FunctionPage.functionTitle )
 					.toHaveText( functionDetails.ZObjectLabel );
@@ -263,8 +262,7 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 					message: 'Implementations table is not displayed' } );
 			} );
 
-			// TODO (T340774) Re-enable and fix once Default View is done
-			it.skip( 'should not be able to either approve or deactivate the implementation', async () => {
+			it( 'should not be able to either approve or deactivate the implementation', async () => {
 				/**
 				 * "Approve" and "Deactivate" button should be disabled as nothing is selected
 				 */
@@ -303,8 +301,7 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 				}
 			};
 
-			// TODO (T340774) Re-enable and fix once Default View is done
-			it.skip( 'should open the "Detail" view of the function page', async () => {
+			it( 'should open the "Detail" view of the function page', async () => {
 				await FunctionPage.open( functionDetails.ZId );
 				await expect( await FunctionPage.functionTitle )
 					.toHaveText( functionDetails.ZObjectLabel );
@@ -319,8 +316,7 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 					message: 'Test cases table is not displayed' } );
 			} );
 
-			// TODO (T340774) Re-enable and fix once Default View is done
-			it.skip( 'should not be able to approve or deactivate the test case', async () => {
+			it( 'should not be able to approve or deactivate the test case', async () => {
 				/**
 				 * "Approve" and "Deactivate" button should be disabled as nothing is selected
 				 */
