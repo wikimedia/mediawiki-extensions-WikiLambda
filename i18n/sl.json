@@ -355,7 +355,7 @@
 	"wikilambda-add-list-item-button": "Dodaj predmet",
 	"wikilambda-list-items-label": "Predmeti seznama",
 	"wikilambda-list-items-type-label": "Vrsta seznama predmetov",
-	"wikilambda-list-item-label": "Predmet",
+	"wikilambda-list-item-label": "Predmet $1",
 	"wikilambda-context-menu": "Kontekstni meni",
 	"wikilambda-add-list-item": "Dodaj predmet",
 	"wikilambda-delete-list-item": "Izbriši predmet",

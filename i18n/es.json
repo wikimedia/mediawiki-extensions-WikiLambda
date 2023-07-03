@@ -295,7 +295,7 @@
 	"wikilambda-add-list-item-button": "Añadir elemento",
 	"wikilambda-list-items-label": "Elementos de la lista",
 	"wikilambda-list-items-type-label": "Tipo de elementos de lista",
-	"wikilambda-list-item-label": "Elemento",
+	"wikilambda-list-item-label": "Elemento $1",
 	"wikilambda-context-menu": "Menú contextual",
 	"wikilambda-add-list-item": "Añadir elemento",
 	"wikilambda-delete-list-item": "Eliminar elemento",

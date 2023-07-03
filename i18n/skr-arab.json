@@ -31,7 +31,7 @@
 	"wikilambda-function-definition-output-type-label": "قسم",
 	"wikilambda-zobject-missing-attached-function": "ہک عمل ضروری ہے",
 	"wikilambda-chip-remove": "آئٹم ہٹاؤ",
-	"wikilambda-list-item-label": "آئٹم",
+	"wikilambda-list-item-label": "آئٹم $1",
 	"wikilambda-add-list-item": "آئٹم شامل کرو",
 	"wikilambda-delete-list-item": "آئٹم مٹاؤ",
 	"wikilambda-tester-details": "تفصیلاں",

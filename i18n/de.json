@@ -358,7 +358,7 @@
 	"wikilambda-add-list-item-button": "Objekt hinzufügen",
 	"wikilambda-list-items-label": "Objekte auflisten",
 	"wikilambda-list-items-type-label": "Art der Datenobjekte auflisten",
-	"wikilambda-list-item-label": "Objekt",
+	"wikilambda-list-item-label": "Objekt $1",
 	"wikilambda-context-menu": "Kontextmenü",
 	"wikilambda-add-list-item": "Objekt hinzufügen",
 	"wikilambda-delete-list-item": "Objekt löschen",
