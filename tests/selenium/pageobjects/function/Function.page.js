@@ -161,6 +161,7 @@ class FunctionPage extends Page {
 
 	get implementationsTableBlock() { return $( '//div[@aria-labelledby="ext-wikilambda-function-details-table__title__text-implementations"]' ); }
 	get implementationsTableBlockHeader() { return this.implementationsTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__title")]' ); }
+	get implementationProgressBar() { return this.implementationsTableBlock.$( './div[@role="progressbar"]' ); }
 	get implementationsTable() { return this.implementationsTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__body")]//table' ); }
 	get approveImplementationButton() { return this.implementationsTableBlockHeader.$( './/label[text()="Approve"]/parent::button' ); }
 	get deactivateImplementationButton() { return this.implementationsTableBlockHeader.$( './/label[text()="Deactivate"]/parent::button' ); }
@@ -173,6 +174,10 @@ class FunctionPage extends Page {
 	 */
 	async approveImplementation() {
 		await ElementActions.doEnabledClick( this.approveImplementationButton );
+		await browser.waitUntil( async () => {
+			const progressBar = await this.implementationProgressBar;
+			return ( await progressBar.isExisting() ) === false;
+		}, { timeoutMssg: 'Approving the implementation taking too long' } );
 	}
 
 	/**
@@ -183,6 +188,10 @@ class FunctionPage extends Page {
 	 */
 	async deactivateImplementation() {
 		await ElementActions.doEnabledClick( this.deactivateImplementationButton );
+		await browser.waitUntil( async () => {
+			const progressBar = await this.implementationProgressBar;
+			return ( await progressBar.isExisting() ) === false;
+		}, { timeoutMssg: 'Deactivating the implementation taking too long' } );
 	}
 
 	/**
@@ -241,6 +250,7 @@ class FunctionPage extends Page {
 
 	get testCasesTableBlock() { return $( '//div[@aria-labelledby="ext-wikilambda-function-details-table__title__text-testers"]' ); }
 	get testCasesTableBlockHeader() { return this.testCasesTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__title")]' ); }
+	get testCaseProgressBar() { return this.testCasesTableBlock.$( './div[@role="progressbar"]' ); }
 	get testCasesTable() { return this.testCasesTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__body")]//table' ); }
 	get approveTestCaseButton() { return this.testCasesTableBlockHeader.$( './/label[text()="Approve"]/parent::button' ); }
 	get deactivateTestCaseButton() { return this.testCasesTableBlockHeader.$( './/label[text()="Deactivate"]/parent::button' ); }
@@ -253,6 +263,10 @@ class FunctionPage extends Page {
 	 */
 	async approveTestCase() {
 		await ElementActions.doEnabledClick( this.approveTestCaseButton );
+		await browser.waitUntil( async () => {
+			const progressBar = await this.testCaseProgressBar;
+			return ( await progressBar.isExisting() ) === false;
+		}, { timeoutMssg: 'Approving the test case taking too long' } );
 	}
 
 	/**
@@ -263,6 +277,10 @@ class FunctionPage extends Page {
 	 */
 	async deactivateTestCase() {
 		await ElementActions.doEnabledClick( this.deactivateTestCaseButton );
+		await browser.waitUntil( async () => {
+			const progressBar = await this.testCaseProgressBar;
+			return ( await progressBar.isExisting() ) === false;
+		}, { timeoutMssg: 'Deactivating the test case taking too long' } );
 	}
 
 	/**
