@@ -103,7 +103,10 @@ module.exports = exports = {
 			'getZImplementationContentType',
 			'getZReferenceTerminalValue',
 			'getZStringTerminalValue',
-			'getRowByKeyPath'
+			'getRowByKeyPath',
+			'isNewZObject',
+			'getCurrentZObjectId',
+			'getUserZlangZID'
 		] ), {
 			/**
 			 * Returns whether we are in an edit page according
@@ -184,7 +187,16 @@ module.exports = exports = {
 			}
 
 		}
-	)
+	),
+	mounted: function () {
+		mw.eventLog.dispatch( 'wf.ui.defaultView.load', {
+			edit: this.edit,
+			contenttype: this.contentType,
+			isnewzobject: this.isNewZObject,
+			zobjectid: this.getCurrentZObjectId,
+			zlang: this.getUserZlangZID
+		} );
+	}
 };
 </script>
 
