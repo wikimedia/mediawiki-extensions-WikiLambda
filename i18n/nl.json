@@ -231,7 +231,7 @@
 	"wikilambda-add-list-item-button": "Item toevoegen",
 	"wikilambda-list-items-label": "Lijstitems",
 	"wikilambda-list-items-type-label": "Type lijstitems",
-	"wikilambda-list-item-label": "Item",
+	"wikilambda-list-item-label": "Item $1",
 	"wikilambda-context-menu": "Contextmenu",
 	"wikilambda-add-list-item": "Item toevoegen",
 	"wikilambda-delete-list-item": "Item verwijderen",
