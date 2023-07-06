@@ -23,9 +23,14 @@
 			class="ext-wikilambda-tester-content"
 			role="ext-wikilambda-tester-call"
 		>
+			<div class="ext-wikilambda-key-block">
+				<label>{{ testerCallLabel }}</label>
+			</div>
 			<wl-z-object-key-value
 				:key="testerCallRowId"
+				:skip-key="true"
 				:row-id="testerCallRowId"
+				:error-id="testerCallRowId"
 				:edit="edit"
 			></wl-z-object-key-value>
 		</div>
@@ -34,9 +39,14 @@
 			class="ext-wikilambda-tester-content"
 			role="ext-wikilambda-tester-validation"
 		>
+			<div class="ext-wikilambda-key-block">
+				<label>{{ testerValidationLabel }}</label>
+			</div>
 			<wl-z-object-key-value
 				:key="testerValidationRowId"
+				:skip-key="true"
 				:row-id="testerValidationRowId"
+				:error-id="testerValidationRowId"
 				:edit="edit"
 			></wl-z-object-key-value>
 		</div>
@@ -65,7 +75,12 @@ module.exports = exports = {
 		}
 	},
 	computed: $.extend(
-		mapGetters( [ 'getRowByKeyPath' ] ),
+		mapGetters( [
+			'getLabel',
+			'getZTesterFunctionRowId',
+			'getZTesterCallRowId',
+			'getZTesterValidationRowId'
+		] ),
 		{
 			/**
 			 * Returns the row Id of the target function key: Z20K1
@@ -73,8 +88,7 @@ module.exports = exports = {
 			 * @return {number|undefined}
 			 */
 			functionRowId: function () {
-				const row = this.getRowByKeyPath( [ Constants.Z_TESTER_FUNCTION ], this.rowId );
-				return ( row !== undefined ) ? row.id : undefined;
+				return this.getZTesterFunctionRowId( this.rowId );
 			},
 
 			/**
@@ -83,8 +97,7 @@ module.exports = exports = {
 			 * @return {number|undefined}
 			 */
 			testerCallRowId: function () {
-				const row = this.getRowByKeyPath( [ Constants.Z_TESTER_CALL ], this.rowId );
-				return ( row !== undefined ) ? row.id : undefined;
+				return this.getZTesterCallRowId( this.rowId );
 			},
 
 			/**
@@ -93,8 +106,25 @@ module.exports = exports = {
 			 * @return {number|undefined}
 			 */
 			testerValidationRowId: function () {
-				const row = this.getRowByKeyPath( [ Constants.Z_TESTER_VALIDATION ], this.rowId );
-				return ( row !== undefined ) ? row.id : undefined;
+				return this.getZTesterValidationRowId( this.rowId );
+			},
+
+			/**
+			 * Returns the human readable label for the tester call
+			 *
+			 * @return {string}
+			 */
+			testerCallLabel: function () {
+				return this.getLabel( Constants.Z_TESTER_CALL );
+			},
+
+			/**
+			 * Returns the human readable label for the tester validation
+			 *
+			 * @return {string}
+			 */
+			testerValidationLabel: function () {
+				return this.getLabel( Constants.Z_TESTER_VALIDATION );
 			}
 		}
 	),
@@ -110,8 +140,16 @@ module.exports = exports = {
 
 .ext-wikilambda-tester {
 	.ext-wikilambda-tester-content {
-		border-top: 1px solid @border-color-subtle;
 		padding-top: @spacing-75;
+
+		> .ext-wikilambda-key-block {
+			margin-bottom: 0;
+
+			label {
+				font-weight: bold;
+				color: @color-base;
+			}
+		}
 	}
 
 	.ext-wikilambda-tester-function {

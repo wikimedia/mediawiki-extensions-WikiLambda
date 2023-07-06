@@ -191,6 +191,35 @@ module.exports = exports = {
 				return [];
 			}
 			return findImplementations;
+		},
+
+		/**
+		 * Given a function Zid, it inspects its function definition
+		 * stored in the state and returns an array of its arguments.
+		 * It returns undefined if the function is not available or the
+		 * zid does not belong to a valid function.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getInputsOfFunctionZid: function ( state ) {
+			/**
+			 * @param {string} zid
+			 * @return {Array}
+			 */
+			function findInputs( zid ) {
+				const func = state.zKeys[ zid ];
+				if ( func === undefined ) {
+					return [];
+				}
+				const obj = func[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				if ( obj[ Constants.Z_OBJECT_TYPE ] !== Constants.Z_FUNCTION ) {
+					return [];
+				}
+				// Remove benjamin type item
+				return obj[ Constants.Z_FUNCTION_ARGUMENTS ].slice( 1 );
+			}
+			return findInputs;
 		}
 	},
 	mutations: {

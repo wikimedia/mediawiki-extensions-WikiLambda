@@ -9,8 +9,11 @@
 var fs = require( 'fs' ),
 	path = require( 'path' ),
 	tableDataToRowObjects = require( '../../helpers/zObjectTableHelpers.js' ).tableDataToRowObjects,
+	zobjectToRows = require( '../../helpers/zObjectTableHelpers.js' ).zobjectToRows,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
+	errorModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/errors.js' ),
+	zKeyModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zKeys.js' ),
 	mockApiZkeys = require( '../../fixtures/mocks.js' ).mockApiZkeys,
 	zobject = {
 		Z1K1: 'Z2',
@@ -111,47 +114,6 @@ describe( 'zobject Vuex module', function () {
 			};
 		} );
 	} );
-
-	// TODO (T328428): Add tests for new getters:
-	// * [x] getRowById
-	// * [x] getZObjectKeyByRowId
-	// * [x] getZObjectValueByRowId
-	// * [x] getChildrenByParentRowId
-	// * [x] getRowByKeyPath
-	// * [x] getZObjectTerminalValue
-	// * [x] getZFunctionCallFunctionId
-	// * [x] getZFunctionCallArguments
-	// * [x] getZFunctionArgumentDeclarations
-	// * [x] getZTypeStringRepresentation
-	// * [x] getTypedListItemType
-	// * [x] getZPersistentContentRowId
-	// * [x] getZPersistentNameLangs
-	// * [x] getZPersistentName
-	// * [x] getZPersistentDescriptionLangs
-	// * [x] getZPersistentDescription
-	// * [x] getZPersistentAliasLangs
-	// * [x] getZPersistentAlias
-	// * [x] getMetadataLanguages
-	// * [x] getZImplementationFunctionRowId
-	// * [x] getZImplementationFunctionZid
-	// * [x] getZImplementationContentType
-	// * [x] getZImplementationContentRowId
-	// * [x] getZCodeProgrammingLanguage
-	// * [x] getZCodeString
-	// * [x] getZStringTerminalValue
-	// * [x] getZReferenceTerminalValue
-	// * [x] getZMonolingualTextValue
-	// * [x] getZMonolingualLangValue
-	// * [x] getZMonolingualStringsetValues
-	// * [x] getZMonolingualStringsetLang
-	// * [x] getZMultilingualLanguageList
-	// * [x] getZBooleanValue
-	// * [x] getZObjectTypeByRowId
-	// * [x] getDepthByRowId
-	// * [x] getParentRowId
-	// * [x] getNextRowId
-	// * [x] getMapValueByKey
-	// * [x] isInsideComposition
 
 	describe( 'Getters', function () {
 		describe( 'getZObjectIndexById', function () {
@@ -284,59 +246,97 @@ describe( 'zobject Vuex module', function () {
 			} );
 		} );
 
-		describe( 'currentZFunctionHasValidInputs', () => {
-			var zObjectAsjson;
+		describe( 'currentZFunctionInvalidInputs', () => {
+			var getters;
+			var currentZObject = zobjectModule.modules.currentZObject;
+
 			beforeEach( () => {
-				zObjectAsjson = JSON.parse( fs.readFileSync( path.join( __dirname, './zobject/zFunction.json' ) ) );
+				state = { zobject: [] };
+				getters = {};
+				getters.getRowById = zobjectModule.getters.getRowById( state, getters );
+				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+				getters.getZFunctionInputs = zobjectModule.getters.getZFunctionInputs( state, getters );
+				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+				getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
+				getters.getZStringTerminalValue = zobjectModule.getters.getZStringTerminalValue( state, getters );
+				getters.getZMonolingualTextValue = zobjectModule.getters.getZMonolingualTextValue( state, getters );
+				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
 			} );
 
-			it( 'returns true if all requirements met', () => {
-				expect( zobjectModule.modules.currentZObject.getters.currentZFunctionHasValidInputs( state, {
-					getCurrentZObjectType: Constants.Z_FUNCTION,
-					getZObjectAsJson: zObjectAsjson } ) ).toEqual( true );
+			it( 'returns empty array when no inputs', () => {
+				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17' ] } } );
+
+				const invalidInputs = currentZObject.getters.currentZFunctionInvalidInputs( state, getters );
+				expect( invalidInputs.length ).toEqual( 0 );
 			} );
 
-			it( 'returns false if current object not a function', () => {
-				expect( zobjectModule.modules.currentZObject.getters.currentZFunctionHasValidInputs( state, {
-					getCurrentZObjectType: Constants.Z_STRING,
-					getZObjectAsJson: zObjectAsjson } ) ).toEqual( false );
+			it( 'returns empty array when all inputs have set type', () => {
+				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
+					{
+						Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z999K1',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+					},
+					{
+						Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z999K2',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'label' } ] }
+					}
+				] } } );
+
+				const invalidInputs = currentZObject.getters.currentZFunctionInvalidInputs( state, getters );
+				expect( invalidInputs.length ).toEqual( 0 );
 			} );
 
-			it( ' returns false if an input has an empty type', () => {
-				zObjectAsjson[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ][ 1 ][
-					Constants.Z_ARGUMENT_TYPE ][ Constants.Z_REFERENCE_ID ] = '';
+			it( 'returns empty array when inputs have no type and no label', () => {
+				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
+					{
+						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K1',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+					},
+					{
+						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K2',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+					}
+				] } } );
 
-				expect( zobjectModule.modules.currentZObject.getters.currentZFunctionHasValidInputs( state, {
-					getCurrentZObjectType: Constants.Z_FUNCTION,
-					getZObjectAsJson: zObjectAsjson } ) ).toEqual( false );
+				const invalidInputs = currentZObject.getters.currentZFunctionInvalidInputs( state, getters );
+				expect( invalidInputs.length ).toEqual( 0 );
 			} );
 
-			it( ' returns false if an input has only an empty label', () => {
-				zObjectAsjson[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ][ 1 ][
-					Constants.Z_ARGUMENT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ][ 0 ][
-					Constants.Z_MONOLINGUALSTRING_VALUE ][ Constants.Z_STRING_VALUE ] = '';
+			it( 'returns input with empty type but non empty label', () => {
+				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
+					{
+						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K1',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'label' } ] }
+					},
+					{
+						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K2',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+					}
+				] } } );
 
-				expect( zobjectModule.modules.currentZObject.getters.currentZFunctionHasValidInputs( state, {
-					getCurrentZObjectType: Constants.Z_FUNCTION,
-					getZObjectAsJson: zObjectAsjson } ) ).toEqual( false );
+				const invalidInputs = currentZObject.getters.currentZFunctionInvalidInputs( state, getters );
+				// Expect first input to be invalid
+				expect( invalidInputs.length ).toEqual( 1 );
+				expect( invalidInputs[ 0 ].inputRow.key ).toEqual( '1' );
 			} );
 
-			it( ' returns false if an input has no label', () => {
-				zObjectAsjson[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ][ 1 ][
-					Constants.Z_ARGUMENT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ] = [];
+			it( 'returns all inputs with empty type but non empty label', () => {
+				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
+					{
+						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K1',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'first' } ] }
+					},
+					{
+						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K2',
+						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: 'segunda' } ] }
+					}
+				] } } );
 
-				expect( zobjectModule.modules.currentZObject.getters.currentZFunctionHasValidInputs( state, {
-					getCurrentZObjectType: Constants.Z_FUNCTION,
-					getZObjectAsJson: zObjectAsjson } ) ).toEqual( false );
-			} );
-
-			it( ' returns false if there are no inputs', () => {
-				zObjectAsjson[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ] =
-					[ Constants.Z_ARGUMENT ];
-
-				expect( zobjectModule.modules.currentZObject.getters.currentZFunctionHasValidInputs( state, {
-					getCurrentZObjectType: Constants.Z_FUNCTION,
-					getZObjectAsJson: zObjectAsjson } ) ).toEqual( false );
+				const invalidInputs = currentZObject.getters.currentZFunctionInvalidInputs( state, getters );
+				// Expect first and second inputs to be invalid
+				expect( invalidInputs.length ).toEqual( 2 );
+				expect( invalidInputs[ 0 ].inputRow.key ).toEqual( '1' );
+				expect( invalidInputs[ 1 ].inputRow.key ).toEqual( '2' );
 			} );
 		} );
 
@@ -838,32 +838,58 @@ describe( 'zobject Vuex module', function () {
 			} );
 		} );
 
-		describe( 'getZFunctionArgumentDeclarations', function () {
-			var getters = {};
+		describe( 'getZFunctionInputs', () => {
+			var getters;
 			beforeEach( function () {
-				state.zKeys = mockApiZkeys;
-				getters.getStoredObject = function ( key ) {
-					return state.zKeys[ key ];
-				};
+				getters = {};
+				getters.getRowById = zobjectModule.getters.getRowById( state );
+				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
 			} );
 
-			it( 'Returns empty array when the zid has not been fetched ', function () {
-				expect( zobjectModule.getters.getZFunctionArgumentDeclarations( state, getters )( 'Z999999' ) ).toHaveLength( 0 );
+			it( 'returns empty list when row is undefined', () => {
+				state.zobject = [];
+				const rowId = undefined;
+				const expected = [];
+				expect( zobjectModule.getters.getZFunctionInputs( state, getters )( rowId ) )
+					.toEqual( expected );
 			} );
-			it( 'Returns empty array when the zid is not a function', function () {
-				expect( zobjectModule.getters.getZFunctionArgumentDeclarations( state, getters )( 'Z32' ) ).toHaveLength( 0 );
+
+			it( 'returns undefined when row does not exist', () => {
+				state.zobject = [];
+				const rowId = 1;
+				const expected = [];
+				expect( zobjectModule.getters.getZFunctionInputs( state, getters )( rowId ) )
+					.toEqual( expected );
 			} );
-			it( 'Returns one argument with a one-argument function', function () {
-				const args = zobjectModule.getters.getZFunctionArgumentDeclarations( state, getters )( 'Z881' );
-				expect( args ).toHaveLength( 1 );
-				expect( args[ 0 ].Z17K2 ).toEqual( 'Z881K1' );
+
+			it( 'returns empty array when no inputs', () => {
+				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17' ] } } );
+				const rowId = 0;
+				const inputs = zobjectModule.getters.getZFunctionInputs( state, getters )( rowId );
+				expect( inputs ).toHaveLength( 0 );
 			} );
-			it( 'Returns all arguments with a three-argument function', function () {
-				const args = zobjectModule.getters.getZFunctionArgumentDeclarations( state, getters )( 'Z802' );
-				expect( args ).toHaveLength( 3 );
-				expect( args[ 0 ].Z17K2 ).toEqual( 'Z802K1' );
-				expect( args[ 1 ].Z17K2 ).toEqual( 'Z802K2' );
-				expect( args[ 2 ].Z17K2 ).toEqual( 'Z802K3' );
+
+			it( 'returns one function input row', () => {
+				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
+					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: '', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
+				] } } );
+				const rowId = 0;
+				const inputs = zobjectModule.getters.getZFunctionInputs( state, getters )( rowId );
+				expect( inputs ).toHaveLength( 1 );
+				expect( inputs[ 0 ].key ).toEqual( '1' );
+			} );
+
+			it( 'returns two function input rows', () => {
+				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
+					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: '', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
+					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: '', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
+				] } } );
+				const rowId = 0;
+				const inputs = zobjectModule.getters.getZFunctionInputs( state, getters )( rowId );
+				expect( inputs ).toHaveLength( 2 );
+				expect( inputs[ 0 ].key ).toEqual( '1' );
+				expect( inputs[ 1 ].key ).toEqual( '2' );
 			} );
 		} );
 
@@ -3526,16 +3552,6 @@ describe( 'zobject Vuex module', function () {
 		} );
 	} );
 
-	// TODO (T328428): Add tests for new actions:
-	// * [x] injectZObjectFromRowId
-	// * [x] injectKeyValueFromRowId
-	// * [x] setZFunctionCallArguments
-	// * [x] setZImplementationContentType
-	// * [x] setValueByRowIdAndPath
-	// * [x] setValueByRowId
-	// * [x] removeItemFromTypedList
-	// * [x] removeAllItemsFromTypedList
-
 	describe( 'Actions', function () {
 		var defaultHref = window.location.href;
 		beforeEach( function () {
@@ -3865,343 +3881,726 @@ describe( 'zobject Vuex module', function () {
 			expect( context.commit ).toHaveBeenCalledWith( 'setIsZObjectDirty', isZObjectDirty );
 		} );
 
-		it( 'Dispatches errors for an invalid zFunction', function () {
-			context.getters.currentZFunctionHasOutput = false;
-			context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
+		describe( 'validateZObject', () => {
+			describe( 'validate function', () => {
+				it( 'Does not dispatch error for a valid function', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
+					context.getters.getZObjectAsJson = {};
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+					context.getters.getRowByKeyPath = jest.fn( () => {
+						return { id: 2 };
+					} );
 
-			const mockError = {
-				errorMessage: 'wikilambda-missing-function-output-error-message',
-				errorState: true,
-				errorType: 'error',
-				internalId: 17
-			};
+					context.getters.currentZFunctionHasOutput = true;
+					context.getters.currentZFunctionInvalidInputs = [];
 
-			const isValid = zobjectModule.actions.validateZObject( context );
-			expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-			expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
-			expect( isValid ).toEqual( false );
-		} );
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
+					expect( isValid ).toEqual( true );
+				} );
 
-		it( 'Dispatches errors for a zImplementation with no function and no code defined', function () {
-			context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
-			context.state = {
-				zobject: tableDataToRowObjects( [
-					{ id: 0, value: 'object' },
-					{ key: 'Z2K2', value: 'object', parent: 0, id: 7 },
-					{ key: 'Z14K1', value: 'object', parent: 7, id: 35 },
-					{ key: 'Z9K1', value: '', parent: 35, id: 37 },
-					{ key: 'Z14K3', value: 'object', parent: 7, id: 54 }
-				] )
-			};
-			context.getters.getZObjectAsJson = {
-				Z2K2: {
-					Z1K1: Constants.Z_IMPLEMENTATION,
-					Z14K1: {
-						Z1K1: Constants.Z_REFERENCE,
-						Z9K1: ''
-					},
-					Z14K3: {
-						Z16K2: {
-							Z1K1: Constants.Z_STRING,
-							Z6K1: undefined
+				it( 'Dispatches errors for a function without output', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
+					context.getters.getZObjectAsJson = {};
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+					context.getters.getRowByKeyPath = jest.fn( () => {
+						return { id: 2 };
+					} );
+
+					context.getters.currentZFunctionHasOutput = false;
+					context.getters.currentZFunctionInvalidInputs = [];
+
+					const mockError = {
+						rowId: 2,
+						errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT,
+						errorType: Constants.errorTypes.ERROR
+					};
+
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+					expect( isValid ).toEqual( false );
+				} );
+
+				it( 'Dispatches errors for a function with one invalid input', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
+					context.getters.getZObjectAsJson = {};
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+
+					context.getters.currentZFunctionHasOutput = true;
+					context.getters.currentZFunctionInvalidInputs = [ { typeRow: { id: 3 } } ];
+
+					const mockError = {
+						rowId: 3,
+						errorCode: Constants.errorCodes.MISSING_FUNCTION_INPUT_TYPE,
+						errorType: Constants.errorTypes.ERROR
+					};
+
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+					expect( isValid ).toEqual( false );
+				} );
+
+				it( 'Dispatches errors for a function with many invalid inputs', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
+					context.getters.getZObjectAsJson = {};
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+
+					context.getters.currentZFunctionHasOutput = true;
+					context.getters.currentZFunctionInvalidInputs = [ { typeRow: { id: 3 } }, { typeRow: { id: 4 } } ];
+
+					const mockErrors = [ {
+						rowId: 3,
+						errorCode: Constants.errorCodes.MISSING_FUNCTION_INPUT_TYPE,
+						errorType: Constants.errorTypes.ERROR
+					}, {
+						rowId: 4,
+						errorCode: Constants.errorCodes.MISSING_FUNCTION_INPUT_TYPE,
+						errorType: Constants.errorTypes.ERROR
+					} ];
+
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 2 );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockErrors[ 0 ] );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockErrors[ 1 ] );
+					expect( isValid ).toEqual( false );
+				} );
+
+				it( 'Dispatches errors for a function with invalid output and input', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
+					context.getters.getZObjectAsJson = {};
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+					context.getters.getRowByKeyPath = jest.fn( () => {
+						return { id: 2 };
+					} );
+
+					context.getters.currentZFunctionHasOutput = false;
+					context.getters.currentZFunctionInvalidInputs = [ { typeRow: { id: 3 } } ];
+
+					const mockErrors = [ {
+						rowId: 2,
+						errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT,
+						errorType: Constants.errorTypes.ERROR
+					}, {
+						rowId: 3,
+						errorCode: Constants.errorCodes.MISSING_FUNCTION_INPUT_TYPE,
+						errorType: Constants.errorTypes.ERROR
+					} ];
+
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 2 );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockErrors[ 0 ] );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockErrors[ 1 ] );
+					expect( isValid ).toEqual( false );
+				} );
+			} );
+
+			describe( 'validate implementation', () => {
+				it( 'Does not dispatch error for a valid code implementation', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+					context.getters.getZObjectAsJson = {
+						Z2K2: {
+							Z1K1: Constants.Z_IMPLEMENTATION,
+							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
+							Z14K3: {
+								Z1K1: Constants.Z_CODE,
+								Z16K1: { Z1K1: Constants.Z_PROGRAMMING_LANGUAGE, Z61K1: { Z1K1: Constants.Z_STRING, Z6K1: 'lang' } },
+								Z16K2: { Z1K1: Constants.Z_STRING, Z6K1: 'some code' }
+							}
 						}
-					}
-				}
-			};
-			context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
+					};
 
-			const mockErrorNoFunction = {
-				errorMessage: 'wikilambda-zobject-missing-attached-function',
-				errorState: true,
-				errorType: 'error',
-				internalId: 37
-			};
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
+					expect( isValid ).toEqual( true );
+				} );
 
-			const mockErrorNoCode = {
-				internalId: 54,
-				errorState: true,
-				errorMessage: 'wikilambda-zimplementation-code-missing',
-				errorType: Constants.errorTypes.ERROR
-			};
+				it( 'Does not dispatch error for a valid composition implementation', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+					context.getters.getZObjectAsJson = {
+						Z2K2: {
+							Z1K1: Constants.Z_IMPLEMENTATION,
+							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
+							Z14K2: {
+								Z1K1: Constants.Z_FUNCTION_CALL,
+								Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z888' }
+							}
+						}
+					};
 
-			const isValid = zobjectModule.actions.validateZObject( context );
-			expect( context.dispatch ).toHaveBeenCalledTimes( 2 );
-			expect( context.dispatch ).toHaveBeenNthCalledWith( 1, 'setError', mockErrorNoFunction );
-			expect( context.dispatch ).toHaveBeenNthCalledWith( 2, 'setError', mockErrorNoCode );
-			expect( isValid ).toEqual( false );
-		} );
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
+					expect( isValid ).toEqual( true );
+				} );
 
-		it( 'Dispatches errors for an invalid zTester', function () {
-			context.getters.getCurrentZObjectType = Constants.Z_TESTER;
-			context.state = {
-				zobject: tableDataToRowObjects( [
-					{ id: 0, value: 'object' },
-					{ key: 'Z2K2', value: 'object', parent: 0, id: 7 },
-					{ key: 'Z20K1', value: 'object', parent: 7, id: 35 },
-					{ key: 'Z9K1', value: '', parent: 35, id: 37 },
-					{ key: 'Z20K2', value: 'object', parent: 7, id: 38 },
-					{ key: 'Z20K3', value: 'object', parent: 7, id: 41 }
-				] )
-			};
-			context.getters.getZObjectAsJson = {
-				Z2K2: {
-					Z1K1: Constants.Z_TESTER,
-					Z20K1: {
-						Z1K1: Constants.Z_REFERENCE,
-						Z9K1: ''
-					},
-					Z20K2: {
-						Z1K1: Constants.Z_FUNCTION_CALL,
-						Z7K1: ''
-					},
-					Z20K3: {
-						Z1K1: Constants.Z_FUNCTION_CALL,
-						Z7K1: ''
-					}
-				}
-			};
+				it( 'Does not dispatch error for a valid builtin implementation', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+					context.getters.getZObjectAsJson = {
+						Z2K2: {
+							Z1K1: Constants.Z_IMPLEMENTATION,
+							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
+							Z14K4: { Z1K1: Constants.Z_STRING, Z6K1: 'Z999' }
+						}
+					};
 
-			context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
+					expect( isValid ).toEqual( true );
+				} );
 
-			const mockErrorNoFunction = {
-				internalId: 37,
-				errorMessage: 'wikilambda-zobject-missing-attached-function',
-				errorState: true,
-				errorType: 'error'
-			};
+				it( 'Dispatches error for an implementation with missing target function', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+					context.getters.getZImplementationFunctionRowId = jest.fn( () => 2 );
+					context.getters.getZObjectAsJson = {
+						Z2K2: {
+							Z1K1: Constants.Z_IMPLEMENTATION,
+							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: '' },
+							Z14K4: { Z1K1: Constants.Z_STRING, Z6K1: 'Z999' }
+						}
+					};
 
-			const mockErrorNoFunctionCall = {
-				internalId: 38,
-				errorState: true,
-				errorMessage: 'wikilambda-zobject-missing-attached-function',
-				errorType: Constants.errorTypes.ERROR
-			};
+					const mockError = {
+						rowId: 2,
+						errorCode: Constants.errorCodes.MISSING_TARGET_FUNCTION,
+						errorType: Constants.errorTypes.ERROR
+					};
 
-			const mockErrorNoResultValidation = {
-				internalId: 41,
-				errorState: true,
-				errorMessage: 'wikilambda-zobject-missing-attached-function',
-				errorType: Constants.errorTypes.ERROR
-			};
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+					expect( isValid ).toEqual( false );
+				} );
 
-			const isValid = zobjectModule.actions.validateZObject( context );
-			expect( context.dispatch ).toHaveBeenCalledTimes( 3 );
-			expect( context.dispatch ).toHaveBeenNthCalledWith( 1, 'setError', mockErrorNoFunction );
-			expect( context.dispatch ).toHaveBeenNthCalledWith( 2, 'setError', mockErrorNoFunctionCall );
-			expect( context.dispatch ).toHaveBeenNthCalledWith( 3, 'setError', mockErrorNoResultValidation );
-			expect( isValid ).toEqual( false );
-		} );
+				it( 'Dispatches error for an implementation with missing composition', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+					context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
+					context.getters.getZObjectAsJson = {
+						Z2K2: {
+							Z1K1: Constants.Z_IMPLEMENTATION,
+							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
+							Z14K2: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: '' } }
+						}
+					};
 
-		it( 'Does not dispatch errors for a valid zFunction', function () {
-			context.getters.currentZFunctionHasOutput = true;
-			context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
+					const mockError = {
+						rowId: 2,
+						errorCode: Constants.errorCodes.MISSING_IMPLEMENTATION_COMPOSITION,
+						errorType: Constants.errorTypes.ERROR
+					};
 
-			const isValid = zobjectModule.actions.validateZObject( context );
-			expect( context.dispatch ).not.toHaveBeenCalled();
-			expect( isValid ).toEqual( true );
-		} );
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+					expect( isValid ).toEqual( false );
+				} );
 
-		it( 'Save new zobject', function () {
-			context.getters.isCreateNewPage = true;
-			context.getters.getCurrentZObjectId = 'Z0';
-			context.state = {
-				zobject: tableDataToRowObjects( zobjectTree )
-			};
-			zobjectModule.actions.submitZObject( context, { summary: 'A summary' } );
+				it( 'Dispatches error for a code implementation with missing programming language', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+					context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
+					context.getters.getRowByKeyPath = jest.fn( () => {
+						return { id: 3 };
+					} );
+					context.getters.getZObjectAsJson = {
+						Z2K2: {
+							Z1K1: Constants.Z_IMPLEMENTATION,
+							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
+							Z14K3: {
+								Z1K1: Constants.Z_CODE,
+								Z16K1: { Z1K1: Constants.Z_PROGRAMMING_LANGUAGE, Z61K1: { Z1K1: Constants.Z_STRING, Z6K1: '' } },
+								Z16K2: { Z1K1: Constants.Z_STRING, Z6K1: 'some code' }
+							}
+						}
+					};
 
-			expect( mw.Api ).toHaveBeenCalledTimes( 1 );
-			expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
-				action: 'wikilambda_edit',
-				summary: 'A summary',
-				zid: undefined,
-				zobject: JSON.stringify( zobject )
+					const mockError = {
+						rowId: 3,
+						errorCode: Constants.errorCodes.MISSING_IMPLEMENTATION_CODE_LANGUAGE,
+						errorType: Constants.errorTypes.ERROR
+					};
+
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+					expect( isValid ).toEqual( false );
+				} );
+
+				it( 'Dispatches error for a code implementation with missing code value', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+					context.getters.getZImplementationContentRowId = jest.fn( () => 2 );
+					context.getters.getRowByKeyPath = jest.fn( () => {
+						return { id: 4 };
+					} );
+					context.getters.getZObjectAsJson = {
+						Z2K2: {
+							Z1K1: Constants.Z_IMPLEMENTATION,
+							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
+							Z14K3: {
+								Z1K1: Constants.Z_CODE,
+								Z16K1: { Z1K1: Constants.Z_PROGRAMMING_LANGUAGE, Z61K1: { Z1K1: Constants.Z_STRING, Z6K1: 'lang' } },
+								Z16K2: { Z1K1: Constants.Z_STRING, Z6K1: '' }
+							}
+						}
+					};
+
+					const mockError = {
+						rowId: 4,
+						errorCode: Constants.errorCodes.MISSING_IMPLEMENTATION_CODE,
+						errorType: Constants.errorTypes.ERROR
+					};
+
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+					expect( isValid ).toEqual( false );
+				} );
 			} );
-			expect( context.commit ).toHaveBeenCalledTimes( 1 );
+
+			describe( 'validate tester', () => {
+				it( 'Does not dispatch error for a valid tester', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_TESTER;
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+					context.getters.getZObjectAsJson = {
+						Z2K2: {
+							Z1K1: Constants.Z_TESTER,
+							Z20K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
+							Z20K2: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z888' } },
+							Z20K3: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z777' } }
+						}
+					};
+
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
+					expect( isValid ).toEqual( true );
+				} );
+
+				it( 'Dispatches error for a tester with missing target function', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_TESTER;
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+					context.getters.getZTesterFunctionRowId = jest.fn( () => 2 );
+					context.getters.getZObjectAsJson = {
+						Z2K2: {
+							Z1K1: Constants.Z_TESTER,
+							Z20K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: '' },
+							Z20K2: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z888' } },
+							Z20K3: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z777' } }
+						}
+					};
+
+					const mockError = {
+						rowId: 2,
+						errorCode: Constants.errorCodes.MISSING_TARGET_FUNCTION,
+						errorType: Constants.errorTypes.ERROR
+					};
+
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+					expect( isValid ).toEqual( false );
+				} );
+
+				it( 'Dispatches error for a tester with missing call', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_TESTER;
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+					context.getters.getZTesterCallRowId = jest.fn( () => 3 );
+					context.getters.getZObjectAsJson = {
+						Z2K2: {
+							Z1K1: Constants.Z_TESTER,
+							Z20K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
+							Z20K2: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: '' } },
+							Z20K3: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z777' } }
+						}
+					};
+
+					const mockError = {
+						rowId: 3,
+						errorCode: Constants.errorCodes.MISSING_TESTER_CALL,
+						errorType: Constants.errorTypes.ERROR
+					};
+
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+					expect( isValid ).toEqual( false );
+				} );
+
+				it( 'Dispatches error for a tester with missing validation', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_TESTER;
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+					context.getters.getZTesterValidationRowId = jest.fn( () => 4 );
+					context.getters.getZObjectAsJson = {
+						Z2K2: {
+							Z1K1: Constants.Z_TESTER,
+							Z20K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
+							Z20K2: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z888' } },
+							Z20K3: { Z1K1: Constants.Z_FUNCTION_CALL, Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: '' } }
+						}
+					};
+
+					const mockError = {
+						rowId: 4,
+						errorCode: Constants.errorCodes.MISSING_TESTER_VALIDATION,
+						errorType: Constants.errorTypes.ERROR
+					};
+
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+					expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockError );
+					expect( isValid ).toEqual( false );
+				} );
+			} );
 		} );
 
-		it( 'Save existing zobject', function () {
-			context.getters.isCreateNewPage = false;
-			context.getters.getCurrentZObjectId = 'Z0';
-			context.state = {
-				zobject: tableDataToRowObjects( zobjectTree )
-			};
-			zobjectModule.actions.submitZObject( context, { summary: 'A summary' } );
+		describe( 'submitZObject', () => {
+			it( 'submits a new zobject to create', () => {
+				context.state = {
+					zobject: tableDataToRowObjects( zobjectTree )
+				};
+				context.getters.isCreateNewPage = true;
+				context.getters.getCurrentZObjectId = 'Z0';
+				context.getters.hasInvalidListItems = false;
+				context.getters.getRowByKeyPath = jest.fn( () => undefined );
 
-			expect( mw.Api ).toHaveBeenCalledTimes( 1 );
-			expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
-				action: 'wikilambda_edit',
-				summary: 'A summary',
-				zid: 'Z0',
-				zobject: JSON.stringify( zobject )
+				zobjectModule.actions.submitZObject( context, { summary: 'A summary' } );
+
+				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
+				expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
+					action: 'wikilambda_edit',
+					summary: 'A summary',
+					zid: undefined,
+					zobject: JSON.stringify( zobject )
+				} );
+				expect( context.commit ).toHaveBeenCalledTimes( 1 );
 			} );
-			expect( context.commit ).toHaveBeenCalledTimes( 1 );
-		} );
 
-		it( 'Remove zImplementation and zTester from zObject and Save existing zobject', function () {
-			context.getters.isCreateNewPage = false;
-			context.getters.getCurrentZObjectId = 'Z0';
-			const zobjectFunction = JSON.parse( fs.readFileSync( path.join( __dirname, './zobject/getZFunction.json' ) ) );
-			context.state = {
-				zobject: tableDataToRowObjects( zobjectFunction.ZObjectTree )
-			};
-			zobjectModule.actions.submitZObject( context, { summary: 'A summary', shouldUnattachImplementationAndTester: true } );
+			it( 'submits an existing zobject to edit', () => {
+				context.state = {
+					zobject: tableDataToRowObjects( zobjectTree )
+				};
+				context.getters.isCreateNewPage = false;
+				context.getters.getCurrentZObjectId = 'Z0';
+				context.getters.hasInvalidListItems = false;
+				context.getters.getRowByKeyPath = jest.fn( () => undefined );
 
-			expect( mw.Api ).toHaveBeenCalledTimes( 1 );
+				zobjectModule.actions.submitZObject( context, { summary: 'A summary' } );
 
-			zobjectFunction.ZObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_TESTERS ] =
-			[ Constants.Z_TESTER ];
-			zobjectFunction.ZObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_IMPLEMENTATIONS ] =
-			[ Constants.Z_IMPLEMENTATION ];
-
-			expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
-				action: 'wikilambda_edit',
-				summary: 'A summary',
-				zid: 'Z0',
-				zobject: JSON.stringify( zobjectFunction.ZObject )
+				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
+				expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
+					action: 'wikilambda_edit',
+					summary: 'A summary',
+					zid: 'Z0',
+					zobject: JSON.stringify( zobject )
+				} );
+				expect( context.commit ).toHaveBeenCalledTimes( 1 );
 			} );
-			expect( context.commit ).toHaveBeenCalledTimes( 1 );
-		} );
 
-		// In the event that a ZList item is removed, the indeces of the remaining items need to be updated.
-		// This is to prevent a null value from appearing in the generated JSON array.
-		it( 'Recalculate an existing ZList\'s keys to remove missing indeces', function () {
-			context.state = {
-				zobject: [
-					{ id: 0, value: 'object' },
-					{ key: 'Z1K1', value: 'Z2', parent: 0, id: 1 },
-					{ key: 'Z2K1', value: 'object', parent: 0, id: 2 },
-					{ key: 'Z2K2', value: 'array', parent: 0, id: 3 },
-					{ key: 'Z1K1', value: 'Z9', parent: 2, id: 4 },
-					{ key: 'Z9K1', value: 'Z0', parent: 2, id: 5 },
-					{ key: 'Z2K3', value: 'object', parent: 0, id: 6 },
-					{ key: 'Z1K1', value: 'Z12', parent: 6, id: 7 },
-					{ key: 'Z12K1', value: 'array', parent: 6, id: 8 },
-					{ key: '0', value: 'object', parent: 8, id: 9 },
-					{ key: 'Z1K1', value: 'Z11', parent: 9, id: 10 },
-					{ key: 'Z11K1', value: 'object', parent: 9, id: 11 },
-					{ key: 'Z1K1', value: 'Z9', parent: 11, id: 12 },
-					{ key: 'Z9K1', value: 'Z1002', parent: 11, id: 13 },
-					{ key: 'Z11K2', value: 'object', parent: 9, id: 14 },
-					{ key: 'Z1K1', value: 'Z6', parent: 14, id: 15 },
-					{ key: 'Z6K1', value: '', parent: 14, id: 16 },
-					{ key: '0', value: 'object', parent: 3, id: 17 },
-					{ key: 'Z1K1', value: 'Z6', parent: 17, id: 18 },
-					{ key: 'Z6K1', value: 'first', parent: 17, id: 19 },
-					{ key: '1', value: 'object', parent: 3, id: 20 },
-					{ key: 'Z1K1', value: 'Z6', parent: 20, id: 21 },
-					{ key: 'Z6K1', value: 'second', parent: 20, id: 22 }
-				]
-			};
-			context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
-			context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
-			context.getters.getZObjectAsJsonById = zobjectModule.getters.getZObjectAsJsonById( context.state );
-			context.commit = jest.fn( function ( mutationType, payload ) {
-				zobjectModule.mutations[ mutationType ]( context.state, payload );
+			it( 'submits a function after detaching implementations and tester if needed', () => {
+				const zobjectFunction = JSON.parse( fs.readFileSync( path.join( __dirname, './zobject/getZFunction.json' ) ) );
+				context.state = {
+					zobject: tableDataToRowObjects( zobjectFunction.ZObjectTree )
+				};
+				context.getters.isCreateNewPage = false;
+				context.getters.getCurrentZObjectId = 'Z0';
+				context.getters.hasInvalidListItems = false;
+				context.getters.getRowByKeyPath = jest.fn( () => undefined );
+
+				zobjectModule.actions.submitZObject( context, { summary: 'A summary', shouldUnattachImplementationAndTester: true } );
+
+				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
+				zobjectFunction.ZObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_TESTERS ] =
+					[ Constants.Z_TESTER ];
+				zobjectFunction.ZObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_IMPLEMENTATIONS ] =
+					[ Constants.Z_IMPLEMENTATION ];
+
+				expect( postWithEditTokenMock ).toHaveBeenCalledWith( {
+					action: 'wikilambda_edit',
+					summary: 'A summary',
+					zid: 'Z0',
+					zobject: JSON.stringify( zobjectFunction.ZObject )
+				} );
+				expect( context.commit ).toHaveBeenCalledTimes( 1 );
 			} );
-			context.dispatch = jest.fn( function ( actionType, payload ) {
-				zobjectModule.actions[ actionType ]( context, payload );
 
-				return {
-					then: function ( fn ) {
-						return fn();
+			it( 'removes empty name label values', () => {
+				const initialObject = {
+					Z1K1: 'Z2',
+					Z2K3: {
+						Z1K1: 'Z12',
+						Z12K1: [ // parent row Id 8
+							'Z11',
+							{ Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: '' }, // delete row Id 12
+							{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'one' }
+						]
 					}
 				};
+
+				context.state = { zobject: zobjectToRows( initialObject ) };
+				context.getters.isCreateNewPage = false;
+				context.getters.getCurrentZObjectId = 'Z0';
+				context.getters.hasInvalidListItems = false;
+				context.getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath(
+					context.state, context.getters );
+				context.getters.getChildrenByParentRowId = zobjectModule.getters.getZObjectChildrenById(
+					context.state, context.getters );
+				context.getters.getRowById = zobjectModule.getters.getRowById(
+					context.state, context.getters );
+				context.getters.getZMonolingualTextValue = zobjectModule.getters.getZMonolingualTextValue(
+					context.state, context.getters );
+				context.getters.getZStringTerminalValue = zobjectModule.getters.getZStringTerminalValue(
+					context.state, context.getters );
+				context.getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue(
+					context.state, context.getters );
+
+				zobjectModule.actions.submitZObject( context, { summary: 'A summary' } );
+
+				expect( context.dispatch ).toHaveBeenNthCalledWith( 1, 'removeItemsFromTypedList', {
+					listItems: [ 12 ],
+					parentRowId: 8
+				} );
 			} );
 
-			// Remove index 0 from the ZList
-			zobjectModule.actions.removeZObject( context, 17 );
-
-			// Perform recalculate
-			zobjectModule.actions.recalculateZListIndex( context, 3 );
-
-			// Validate that recalculate correctly updated the index
-			expect( zobjectModule.getters.getRowById( context.state )( 20 ) ).toEqual( { key: '0', value: 'object', parent: 3, id: 20 } );
-			expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson( context.state, context.getters, { zobjectModule: context.state }, context.getters ).Z2K2 ).toEqual( [ { Z1K1: 'Z6', Z6K1: 'second' } ] );
-		} );
-
-		it( 'Recalculate an existing ZArgumentList with the correct key values', function () {
-			context.state = {
-				zobject: [
-					{ id: 0, value: 'object' },
-					{ key: 'Z1K1', value: 'Z2', parent: 0, id: 1 },
-					{ key: 'Z2K1', value: 'object', parent: 0, id: 2 },
-					{ key: 'Z2K2', value: 'object', parent: 0, id: 3 },
-					{ key: 'Z1K1', value: 'Z6', parent: 2, id: 4 },
-					{ key: 'Z6K1', value: 'Z10006', parent: 2, id: 5 },
-					{ key: 'Z2K2', value: 'object', parent: 0, id: 6 },
-					{ key: 'Z1K1', value: 'Z8', parent: 6, id: 7 },
-					{ key: 'Z8K1', value: 'array', parent: 6, id: 8 },
-					{ key: '0', value: 'Z17', parent: 8, id: 9 },
-					{ key: '1', value: 'object', parent: 8, id: 10 },
-					{ key: 'Z1K1', value: 'Z17', parent: 10, id: 11 },
-					{ key: 'Z17K1', value: 'Z6', parent: 10, id: 12 },
-					{ key: 'Z17K2', value: 'object', parent: 10, id: 13 },
-					{ key: 'Z1K1', value: 'Z6', parent: 13, id: 14 },
-					{ key: 'Z6K1', value: 'Z10006K1', parent: 13, id: 15 },
-					{ key: 'Z17K3', value: 'object', parent: 10, id: 16 },
-					{ key: 'Z1K1', value: 'Z12', parent: 16, id: 17 },
-					{ key: 'Z12K1', value: 'array', parent: 16, id: 18 },
-					{ key: '2', value: 'object', parent: 8, id: 19 },
-					{ key: 'Z1K1', value: 'Z17', parent: 19, id: 20 },
-					{ key: 'Z17K1', value: 'Z6', parent: 19, id: 21 },
-					{ key: 'Z17K2', value: 'object', parent: 19, id: 22 },
-					{ key: 'Z1K1', value: 'Z6', parent: 22, id: 23 },
-					{ key: 'Z6K1', value: 'Z10006K2', parent: 22, id: 24 },
-					{ key: 'Z17K3', value: 'object', parent: 19, id: 25 },
-					{ key: '3', value: 'object', parent: 8, id: 26 },
-					{ key: 'Z1K1', value: 'Z17', parent: 26, id: 27 },
-					{ key: 'Z17K1', value: 'Z6', parent: 26, id: 28 },
-					{ key: 'Z17K2', value: 'object', parent: 26, id: 29 },
-					{ key: 'Z1K1', value: 'Z6', parent: 29, id: 30 },
-					{ key: 'Z6K1', value: 'Z10006K3', parent: 29, id: 31 },
-					{ key: 'Z17K3', value: 'object', parent: 26, id: 32 }
-				]
-			};
-			context.getters = {
-				getCurrentZObjectId: 'Z10006',
-				// List that is passed once second item has been removed.
-				getAllItemsFromListById: jest.fn().mockReturnValue( [ { key: '1', value: 'object', parent: 8, id: 10 }, { key: '3', value: 'object', parent: 8, id: 26 } ] ),
-				getZObjectChildrenById: zobjectModule.getters.getZObjectChildrenById( context.state ),
-				getZObjectIndexById: zobjectModule.getters.getZObjectIndexById( context.state )
-			};
-			context.commit = jest.fn( function ( mutationType, payload ) {
-				zobjectModule.mutations[ mutationType ]( context.state, payload );
-			} );
-			context.dispatch = jest.fn( function ( actionType, payload ) {
-				zobjectModule.actions[ actionType ]( context, payload );
-
-				return {
-					then: function ( fn ) {
-						return fn();
+			it( 'removes empty description values', () => {
+				const initialObject = {
+					Z1K1: 'Z2',
+					Z2K3: {
+						Z1K1: 'Z12',
+						Z12K1: [
+							'Z11',
+							{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'one' }
+						]
+					},
+					Z2K5: {
+						Z1K1: 'Z12',
+						Z12K1: [ // parent row Id 26
+							'Z11',
+							{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: '' }, // delete row Id 30
+							{ Z1K1: 'Z11', Z11K1: 'Z1004', Z11K2: '' } // delete row Id 40
+						]
 					}
 				};
+
+				context.state = { zobject: zobjectToRows( initialObject ) };
+				context.getters.isCreateNewPage = false;
+				context.getters.getCurrentZObjectId = 'Z0';
+				context.getters.hasInvalidListItems = false;
+				context.getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath(
+					context.state, context.getters );
+				context.getters.getChildrenByParentRowId = zobjectModule.getters.getZObjectChildrenById(
+					context.state, context.getters );
+				context.getters.getRowById = zobjectModule.getters.getRowById(
+					context.state, context.getters );
+				context.getters.getZMonolingualTextValue = zobjectModule.getters.getZMonolingualTextValue(
+					context.state, context.getters );
+				context.getters.getZStringTerminalValue = zobjectModule.getters.getZStringTerminalValue(
+					context.state, context.getters );
+				context.getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue(
+					context.state, context.getters );
+
+				zobjectModule.actions.submitZObject( context, { summary: 'A summary' } );
+
+				expect( context.dispatch ).toHaveBeenNthCalledWith( 1, 'removeItemsFromTypedList', {
+					listItems: [ 30, 40 ],
+					parentRowId: 26
+				} );
 			} );
-			// Remove second item from ZArgumentList.
-			zobjectModule.actions.removeZObject( context, 22 );
-			// Perform recalculate
-			zobjectModule.actions.recalculateZArgumentList( context, 8 );
-			// Third list item, has now become second list item.
-			expect( zobjectModule.getters.getRowById( context.state )( 26 ) ).toEqual( { key: '1', value: 'object', parent: 8, id: 26 } );
-			expect( zobjectModule.getters.getRowById( context.state )( 31 ) ).toEqual( { key: 'Z6K1', value: 'Z10006K2', parent: 29, id: 31 } );
+
+			it( 'removes invalid list items', function () {
+				const initialObject = {
+					Z2K2: [ // parent rowId 1
+						'Z6',
+						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'invalid' }, // invalid rowId 5
+						'valid'
+					],
+					Z2K3: {
+						Z1K1: 'Z12',
+						Z12K1: [ // parent rowId 22
+							'Z11',
+							{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'valid label 1' },
+							'invalid label 1', // invalid item 36
+							'invalid label 2', // invalid item 39
+							{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'valid label 2' }
+						]
+					}
+				};
+
+				context.state = { zobject: zobjectToRows( initialObject ) };
+				context.getters.isCreateNewPage = false;
+				context.getters.getCurrentZObjectId = 'Z0';
+				context.getters.getRowByKeyPath = jest.fn( () => undefined );
+				context.getters.hasInvalidListItems = true;
+				context.getters.getInvalidListItems = {
+					1: [ 5 ],
+					22: [ 36, 39 ]
+				};
+
+				zobjectModule.actions.submitZObject( context, { summary: 'A summary' } );
+
+				expect( context.dispatch ).toHaveBeenNthCalledWith( 1, 'removeItemsFromTypedList', {
+					parentRowId: 1,
+					listItems: [ 5 ]
+				} );
+				expect( context.dispatch ).toHaveBeenNthCalledWith( 2, 'removeItemsFromTypedList', {
+					parentRowId: 22,
+					listItems: [ 36, 39 ]
+				} );
+				expect( context.dispatch ).toHaveBeenNthCalledWith( 3, 'clearListItemsForRemoval' );
+			} );
+		} );
+
+		describe( 'recalculateTypedListKeys', () => {
+			// In the event that a ZList item is removed, the indeces of the remaining items need to be updated.
+			// This is to prevent a null value from appearing in the generated JSON array.
+			it( 'does not change a correct indexed list', () => {
+				const initialList = [
+					{ id: 0, key: undefined, parent: undefined, value: 'object' },
+					{ id: 1, key: 'Z2K2', parent: 0, value: 'array' },
+					{ id: 2, key: '0', parent: 1, value: 'object' },
+					{ id: 3, key: 'Z1K1', parent: 2, value: 'Z9' },
+					{ id: 4, key: 'Z9K1', parent: 2, value: 'Z6' },
+					{ id: 5, key: '1', parent: 1, value: 'object' },
+					{ id: 6, key: 'Z1K1', parent: 5, value: 'Z6' },
+					{ id: 7, key: 'Z6K1', parent: 5, value: 'one' },
+					{ id: 8, key: '2', parent: 1, value: 'object' },
+					{ id: 9, key: 'Z1K1', parent: 8, value: 'Z6' },
+					{ id: 10, key: 'Z6K1', parent: 8, value: 'two' }
+				];
+				context.state = { zobject: tableDataToRowObjects( initialList ) };
+				context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
+				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId(
+					context.state );
+				context.commit = jest.fn( ( mutationType, payload ) => {
+					zobjectModule.mutations[ mutationType ]( context.state, payload );
+				} );
+
+				zobjectModule.actions.recalculateTypedListKeys( context, 1 );
+				expect( context.state.zobject ).toEqual( initialList );
+			} );
+
+			it( 'recalculates indices for list with gaps', () => {
+				const initialList = [
+					{ id: 0, key: undefined, parent: undefined, value: 'object' },
+					{ id: 1, key: 'Z2K2', parent: 0, value: 'array' },
+					{ id: 2, key: '0', parent: 1, value: 'object' },
+					{ id: 3, key: 'Z1K1', parent: 2, value: 'Z9' },
+					{ id: 4, key: 'Z9K1', parent: 2, value: 'Z6' },
+					{ id: 5, key: '3', parent: 1, value: 'object' },
+					{ id: 6, key: 'Z1K1', parent: 5, value: 'Z6' },
+					{ id: 7, key: 'Z6K1', parent: 5, value: 'one' },
+					{ id: 8, key: '7', parent: 1, value: 'object' },
+					{ id: 9, key: 'Z1K1', parent: 8, value: 'Z6' },
+					{ id: 10, key: 'Z6K1', parent: 8, value: 'two' }
+				];
+
+				context.state = { zobject: tableDataToRowObjects( initialList ) };
+				context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
+				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId(
+					context.state );
+				context.commit = jest.fn( ( mutationType, payload ) => {
+					zobjectModule.mutations[ mutationType ]( context.state, payload );
+				} );
+
+				zobjectModule.actions.recalculateTypedListKeys( context, 1 );
+
+				// Set indices to [0, 1, 2]
+				initialList[ 5 ].key = '1';
+				initialList[ 8 ].key = '2';
+				expect( context.state.zobject ).toEqual( initialList );
+			} );
+		} );
+
+		describe( 'recalculateArgumentKeys', () => {
+			it( 'does not change arguments that are correctly numbered', () => {
+				const argList = {
+					Z8K1: [ 'Z17', // row Id 1
+						{
+							Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z999K1', // row Id 14
+							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+						},
+						{
+							Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z999K2', // row Id 32
+							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'label' } ] }
+						}
+					]
+				};
+
+				context.state = { zobject: zobjectToRows( argList ) };
+				context.getters.getCurrentZObjectId = 'Z999';
+				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
+				context.getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
+				context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
+				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId(
+					context.state );
+				context.commit = jest.fn( ( mutationType, payload ) => {
+					zobjectModule.mutations[ mutationType ]( context.state, payload );
+				} );
+
+				// Recalculate keys
+				zobjectModule.actions.recalculateArgumentKeys( context, 1 );
+
+				expect( context.getters.getRowById( 14 ).value ).toEqual( 'Z999K1' );
+				expect( context.getters.getRowById( 32 ).value ).toEqual( 'Z999K2' );
+			} );
+
+			it( 'renumbers argument keys to sequential numbers', () => {
+				const argList = {
+					Z8K1: [ 'Z17', // row Id 1
+						{
+							Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z999K2', // row Id 14
+							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+						},
+						{
+							Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z999K7', // row Id 32
+							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'label' } ] }
+						}
+					]
+				};
+
+				context.state = { zobject: zobjectToRows( argList ) };
+				context.getters.getCurrentZObjectId = 'Z999';
+				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
+				context.getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
+				context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
+				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId(
+					context.state );
+				context.commit = jest.fn( ( mutationType, payload ) => {
+					zobjectModule.mutations[ mutationType ]( context.state, payload );
+				} );
+
+				// Recalculate keys
+				zobjectModule.actions.recalculateArgumentKeys( context, 1 );
+
+				expect( context.getters.getRowById( 14 ).value ).toEqual( 'Z999K1' );
+				expect( context.getters.getRowById( 32 ).value ).toEqual( 'Z999K2' );
+			} );
 		} );
 
 		describe( 'changeType', function () {
 			beforeEach( function () {
+				// State
 				context.state = {
 					zobject: tableDataToRowObjects( [ { id: 0, value: Constants.ROW_VALUE_OBJECT } ] ),
-					zKeys: mockApiZkeys
+					zKeys: mockApiZkeys,
+					errors: {}
 				};
 				context.rootState = {
 					zobjectModule: context.state
 				};
-				Object.keys( zobjectModule.getters ).forEach( function ( key ) {
+				// Getters
+				Object.keys( zobjectModule.getters ).forEach( ( key ) => {
 					context.getters[ key ] =
 						zobjectModule.getters[ key ](
 							context.state, context.getters,
 							{ zobjectModule: context.state },
 							context.getters );
 				} );
-				Object.keys( zobjectModule.modules.currentZObject.getters ).forEach( function ( key ) {
+				Object.keys( zobjectModule.modules.currentZObject.getters ).forEach( ( key ) => {
 					context.getters[ key ] =
 						zobjectModule.modules.currentZObject.getters[ key ](
 							context.state,
@@ -4209,7 +4608,7 @@ describe( 'zobject Vuex module', function () {
 							{ zobjectModule: context.state },
 							context.getters );
 				} );
-				Object.keys( zobjectModule.modules.addZObjects.getters ).forEach( function ( key ) {
+				Object.keys( zobjectModule.modules.addZObjects.getters ).forEach( ( key ) => {
 					context.getters[ key ] =
 						zobjectModule.modules.addZObjects.getters[ key ](
 							context.state,
@@ -4223,39 +4622,28 @@ describe( 'zobject Vuex module', function () {
 					{ zobjectModule: context.state },
 					context.getters
 				);
-				context.getters.getStoredObject = function ( zid ) {
-					return context.state.zKeys[ zid ];
-				};
+				context.getters.getStoredObject = ( zid ) => context.state.zKeys[ zid ];
 				context.getters.getUserZlangZID = 'Z1003';
-				context.commit = jest.fn( function ( mutationType, payload ) {
-					zobjectModule.mutations[ mutationType ]( context.state, payload );
+				// Mutations
+				context.commit = jest.fn( ( mutationType, payload ) => {
+					if ( mutationType in zobjectModule.mutations ) {
+						zobjectModule.mutations[ mutationType ]( context.state, payload );
+					} else if ( mutationType in errorModule.mutations ) {
+						errorModule.mutations[ mutationType ]( context.state, payload );
+					}
 				} );
-				context.dispatch = jest.fn( function ( actionType, payload ) {
-					if ( actionType === 'fetchZKeys' ) {
-						return {
-							then: function ( fn ) {
-								return fn();
-							}
-						};
+				// Actions
+				context.dispatch = jest.fn( ( actionType, payload ) => {
+					// run zobject and addZObject module actions
+					if ( actionType in zobjectModule.actions ) {
+						zobjectModule.actions[ actionType ]( context, payload );
+					} else if ( actionType in zobjectModule.modules.addZObjects.actions ) {
+						zobjectModule.modules.addZObjects.actions[ actionType ]( context.state, payload );
 					}
-					var maybeFn = zobjectModule.actions[ actionType ];
-					if ( typeof maybeFn === 'function' ) {
-						maybeFn( context, payload );
-					} else {
-						maybeFn = zobjectModule.modules.addZObjects.actions[ actionType ];
-						if ( typeof maybeFn === 'function' ) {
-							maybeFn( context, payload );
-						}
-					}
+					// return then
 					return {
-						then: function ( fn ) {
-							return fn();
-						}
+						then: ( fn ) => fn()
 					};
-				} );
-
-				context.rootState.i18n = jest.fn( function () {
-					return 'mocked';
 				} );
 			} );
 
@@ -5356,7 +5744,8 @@ describe( 'zobject Vuex module', function () {
 						{ key: Constants.Z_REFERENCE_ID, value: 'Z444', parent: 25, id: 33 }, // existing impl 1
 						{ key: Constants.Z_REFERENCE_ID, value: 'Z555', parent: 26, id: 34 }, // existing impl 2
 						{ key: Constants.Z_REFERENCE_ID, value: 'Z666', parent: 27, id: 35 } // existing impl 3
-					] ) )
+					] ) ),
+					errors: {}
 				};
 				context.rootState = {
 					zobjectModule: context.state
@@ -5368,29 +5757,28 @@ describe( 'zobject Vuex module', function () {
 							{ zobjectModule: context.state },
 							context.getters );
 				} );
-				context.commit = jest.fn( function ( mutationType, payload ) {
-					zobjectModule.mutations[ mutationType ]( context.state, payload );
-				} );
-				context.dispatch = jest.fn( function ( actionType, payload ) {
-					var maybeFn = zobjectModule.actions[ actionType ];
-					var result;
-					if ( typeof maybeFn === 'function' ) {
-						result = maybeFn( context, payload );
-					} else {
-						maybeFn = zobjectModule.modules.addZObjects.actions[ actionType ];
 
-						if ( typeof maybeFn === 'function' ) {
-							result = maybeFn( context, payload );
-						}
+				// Mutations
+				context.commit = jest.fn( ( mutationType, payload ) => {
+					if ( mutationType in zobjectModule.mutations ) {
+						zobjectModule.mutations[ mutationType ]( context.state, payload );
+					} else if ( mutationType in errorModule.mutations ) {
+						errorModule.mutations[ mutationType ]( context.state, payload );
 					}
-
+				} );
+				// Actions
+				context.dispatch = jest.fn( ( actionType, payload ) => {
+					// run zobject and addZObject module actions
+					var result;
+					if ( actionType in zobjectModule.actions ) {
+						result = zobjectModule.actions[ actionType ]( context, payload );
+					} else if ( actionType in zobjectModule.modules.addZObjects.actions ) {
+						result = zobjectModule.modules.addZObjects.actions[ actionType ]( context.state, payload );
+					}
+					// return then and catch
 					return {
-						then: function ( fn ) {
-							return fn( result );
-						},
-						catch: function () {
-							return 'error';
-						}
+						then: ( fn ) => fn( result ),
+						catch: () => 'error'
 					};
 				} );
 			} );
@@ -5565,57 +5953,29 @@ describe( 'zobject Vuex module', function () {
 			} );
 		} );
 
-		describe( 'Modifies typed lists', function () {
-
-			it( 'Removes invalid items from a list', function () {
-				context.state = {};
-
-				context.state.zobject = tableDataToRowObjects( [
-					{ id: 7, key: Constants.Z_PERSISTENTOBJECT_VALUE, parent: 0, value: 'array' },
-					{ id: 8, key: '0', parent: 7, value: 'object' },
-					{ id: 9, key: Constants.Z_OBJECT_TYPE, parent: 8, value: Constants.Z_REFERENCE },
-					{ id: 10, key: Constants.Z_STRING_VALUE, parent: 8, value: Constants.Z_STRING },
-					{ id: 11, key: '1', parent: 7, value: 'object' },
-					{ id: 12, key: Constants.Z_OBJECT_TYPE, parent: 11, value: Constants.Z_STRING },
-					{ id: 13, key: Constants.Z_STRING_VALUE, parent: 11, value: 'alabama' },
-					{ id: 14, key: '2', parent: 7, value: 'object' },
-					{ id: 15, key: Constants.Z_OBJECT_TYPE, parent: 14, value: Constants.Z_STRING },
-					{ id: 16, key: Constants.Z_STRING_VALUE, parent: 14, value: 'arizona' },
-					{ id: 17, key: '3', parent: 7, value: 'object' },
-					{ id: 18, key: Constants.Z_OBJECT_TYPE, parent: 17, value: Constants.Z_STRING },
-					{ id: 19, key: Constants.Z_STRING_VALUE, parent: 17, value: 'alaska' },
-					{ id: 20, key: '4', parent: 7, value: 'object' },
-					{ id: 21, key: Constants.Z_OBJECT_TYPE, parent: 20, value: Constants.Z_STRING },
-					{ id: 22, key: Constants.Z_STRING_VALUE, parent: 20, value: 'arkansas' }
-				] );
-				context.getters.getInvalidListItems = [ 13, 16, 19, 22 ];
-
-				zobjectModule.actions.submitZObject( context, { summary: 'A summary' } );
-
-				expect( context.dispatch ).toHaveBeenNthCalledWith( 1, 'removeAllItemsFromTypedList', [ 13, 16, 19, 22 ] );
-				expect( context.dispatch ).toHaveBeenNthCalledWith( 2, 'setListItemsForRemoval', { listItems: [ ] } );
-			} );
-		} );
-
 		describe( 'injectZObjectFromRowId', function () {
 			beforeEach( function () {
 				context.state = {
-					zobject: tableDataToRowObjects( zobjectTree )
+					zobject: tableDataToRowObjects( zobjectTree ),
+					errors: {}
 				};
 				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
 				context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
 				context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
 				context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
-
-				context.commit = jest.fn( function ( mutationType, payload ) {
-					zobjectModule.mutations[ mutationType ]( context.state, payload );
+				// Mutations
+				context.commit = jest.fn( ( mutationType, payload ) => {
+					if ( mutationType in zobjectModule.mutations ) {
+						zobjectModule.mutations[ mutationType ]( context.state, payload );
+					} else if ( mutationType in errorModule.mutations ) {
+						errorModule.mutations[ mutationType ]( context.state, payload );
+					}
 				} );
-				context.dispatch = jest.fn( function ( actionType, payload ) {
+				// Actions
+				context.dispatch = jest.fn( ( actionType, payload ) => {
 					zobjectModule.actions[ actionType ]( context, payload );
 					return {
-						then: function ( fn ) {
-							return fn();
-						}
+						then: ( fn ) => fn()
 					};
 				} );
 			} );
@@ -5849,34 +6209,19 @@ describe( 'zobject Vuex module', function () {
 						{ id: 14, key: 'Z7K1', value: Constants.ROW_VALUE_OBJECT, parent: 10 },
 						{ id: 15, key: 'Z1K1', value: Constants.Z_REFERENCE, parent: 14 },
 						{ id: 16, key: 'Z9K1', value: 'Z100001', parent: 14 }
-					] )
+					] ),
+					errors: {}
 				};
 				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
 				context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
 				context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
-				context.getters.getChildrenByParentRowId = zobjectModule.getters
-					.getChildrenByParentRowId( context.state );
+				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( context.state );
 				context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
-				context.getters.getZFunctionArgumentDeclarations = zobjectModule.getters
-					.getZFunctionArgumentDeclarations( context.state, context.getters );
-				context.getters.getZFunctionCallArguments = zobjectModule.getters
-					.getZFunctionCallArguments( context.state, context.getters );
-				context.getters.getStoredObject = function ( key ) {
-					return context.state.zKeys[ key ];
-				};
-				context.commit = jest.fn( function ( mutationType, payload ) {
-					zobjectModule.mutations[ mutationType ]( context.state, payload );
-				} );
-				context.dispatch = jest.fn( function ( actionType, payload ) {
-					if ( actionType in zobjectModule.actions ) {
-						zobjectModule.actions[ actionType ]( context, payload );
-					}
-					return {
-						then: function ( fn ) {
-							return fn();
-						}
-					};
-				} );
+				context.getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( context.state, context.getters );
+				// Getters: zKey module
+				context.getters.getInputsOfFunctionZid = zKeyModule.getters.getInputsOfFunctionZid( context.state );
+				context.getters.getStoredObject = zKeyModule.getters.getStoredObject( context.state );
+				// Getters: addZObject module
 				Object.keys( zobjectModule.modules.addZObjects.getters ).forEach( function ( key ) {
 					context.getters[ key ] =
 						zobjectModule.modules.addZObjects.getters[ key ](
@@ -5884,6 +6229,23 @@ describe( 'zobject Vuex module', function () {
 							context.getters,
 							{ zobjectModule: context.state },
 							context.getters );
+				} );
+				// Mutations
+				context.commit = jest.fn( function ( mutationType, payload ) {
+					if ( mutationType in zobjectModule.mutations ) {
+						zobjectModule.mutations[ mutationType ]( context.state, payload );
+					} else if ( mutationType in errorModule.mutations ) {
+						errorModule.mutations[ mutationType ]( context.state, payload );
+					}
+				} );
+				// Actions
+				context.dispatch = jest.fn( function ( actionType, payload ) {
+					if ( actionType in zobjectModule.actions ) {
+						zobjectModule.actions[ actionType ]( context, payload );
+					}
+					return {
+						then: ( fn ) => fn()
+					};
 				} );
 			} );
 
@@ -6033,31 +6395,17 @@ describe( 'zobject Vuex module', function () {
 
 		describe( 'setZImplementationContentType', function () {
 			beforeEach( function () {
-				context.state = { zobject: [], zKeys: [] };
+				context.state = { zobject: [], zKeys: [], errors: {} };
+				// Getters
 				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
 				context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
-				context.getters.getZObjectIndexById = zobjectModule.getters
-					.getZObjectIndexById( context.state );
-				context.getters.getChildrenByParentRowId = zobjectModule.getters
-					.getChildrenByParentRowId( context.state );
-				context.getters.getRowByKeyPath = zobjectModule.getters
-					.getRowByKeyPath( context.state, context.getters );
-				context.getters.getZObjectChildrenById = zobjectModule.getters
-					.getZObjectChildrenById( context.state );
-				context.commit = jest.fn( function ( mutationType, payload ) {
-					zobjectModule.mutations[ mutationType ]( context.state, payload );
-				} );
-				context.getters.getStoredObject = function ( key ) {
-					return context.state.zKeys[ key ];
-				};
-				context.dispatch = jest.fn( function ( actionType, payload ) {
-					zobjectModule.actions[ actionType ]( context, payload );
-					return {
-						then: function ( fn ) {
-							return fn();
-						}
-					};
-				} );
+				context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
+				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( context.state );
+				context.getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
+				context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
+				// Getters: zKey module
+				context.getters.getStoredObject = zKeyModule.getters.getStoredObject( context.state );
+				// Getters: addZObject module
 				Object.keys( zobjectModule.modules.addZObjects.getters ).forEach( function ( key ) {
 					context.getters[ key ] =
 						zobjectModule.modules.addZObjects.getters[ key ](
@@ -6065,6 +6413,23 @@ describe( 'zobject Vuex module', function () {
 							context.getters,
 							{ zobjectModule: context.state },
 							context.getters );
+				} );
+				// Mutations
+				context.commit = jest.fn( function ( mutationType, payload ) {
+					if ( mutationType in zobjectModule.mutations ) {
+						zobjectModule.mutations[ mutationType ]( context.state, payload );
+					} else if ( mutationType in errorModule.mutations ) {
+						errorModule.mutations[ mutationType ]( context.state, payload );
+					}
+				} );
+				// Actions
+				context.dispatch = jest.fn( function ( actionType, payload ) {
+					zobjectModule.actions[ actionType ]( context, payload );
+					return {
+						then: function ( fn ) {
+							return fn();
+						}
+					};
 				} );
 			} );
 
@@ -6356,37 +6721,68 @@ describe( 'zobject Vuex module', function () {
 			} );
 		} );
 
-		describe( 'removeItemFromTypedList', function () {
-			it( 'should dispatch the removeZObjectChildren action  ', function () {
+		describe( 'removeItemFromTypedList', () => {
+			it( 'should do nothing if rowId does not exist', () => {
 				const payload = { rowId: 4 };
+				context.getters.getRowById = jest.fn( () => undefined );
+				zobjectModule.actions.removeItemFromTypedList( context, payload );
+
+				expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
+			} );
+
+			it( 'should dispatch the removeZObjectChildren action with row id', () => {
+				const payload = { rowId: 4 };
+				context.getters.getRowById = jest.fn( () => {
+					return { id: 4, parent: 3 };
+				} );
 				zobjectModule.actions.removeItemFromTypedList( context, payload );
 
 				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', 4 );
 			} );
 
-			it( 'should dispatch the removeZObject action ', function () {
+			it( 'should dispatch the removeZObject action with row id', () => {
 				const payload = { rowId: 4 };
+				context.getters.getRowById = jest.fn( () => {
+					return { id: 4, parent: 3 };
+				} );
 				zobjectModule.actions.removeItemFromTypedList( context, payload );
 
 				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObject', 4 );
+			} );
+
+			it( 'should dispatch the recalculateTypedListKeys action with parent id', () => {
+				const payload = { rowId: 4 };
+				context.getters.getRowById = jest.fn( () => {
+					return { id: 4, parent: 3 };
+				} );
+				zobjectModule.actions.removeItemFromTypedList( context, payload );
+
+				expect( context.dispatch ).toHaveBeenCalledWith( 'recalculateTypedListKeys', 3 );
 			} );
 		} );
 
-		describe( 'removeAllItemsFromTypedList', function () {
-			it( 'should dispatch the removeZObjectChildren action with the current rowId as the payload', function () {
-				const payload = { rowId: 4, listItems: [ 11, 14 ] };
-				zobjectModule.actions.removeAllItemsFromTypedList( context, payload );
+		describe( 'removeItemsFromTypedList', () => {
+			it( 'should dispatch a removeZObjectChildren action for each item in the list', () => {
+				const payload = { parentRowId: 4, listItems: [ 11, 14 ] };
+				zobjectModule.actions.removeItemsFromTypedList( context, payload );
 
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', 4 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', [ 11, 14 ] );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', 11 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObjectChildren', 14 );
 			} );
 
-			it( 'should dispatch the removeZObject action with each ', function () {
-				const payload = { rowId: 4, listItems: [ 11, 14 ] };
+			it( 'should dispatch the removeZObject action for each item in the list', () => {
+				const payload = { parentRowId: 4, listItems: [ 11, 14 ] };
+				zobjectModule.actions.removeItemsFromTypedList( context, payload );
 
-				zobjectModule.actions.removeAllItemsFromTypedList( context, payload );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObject', 4 );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObject', [ 11, 14 ] );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObject', 11 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'removeZObject', 14 );
+			} );
+
+			it( 'should dispatch the recalculateTypedListKeys actions with parent id', () => {
+				const payload = { parentRowId: 4, listItems: [ 11, 14 ] };
+				zobjectModule.actions.removeItemsFromTypedList( context, payload );
+
+				expect( context.dispatch ).toHaveBeenCalledWith( 'recalculateTypedListKeys', 4 );
 			} );
 		} );
 
@@ -6446,6 +6842,5 @@ describe( 'zobject Vuex module', function () {
 				expect( result ).toEqual( expected );
 			} );
 		} );
-
 	} );
 } );

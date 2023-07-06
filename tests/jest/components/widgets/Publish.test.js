@@ -9,6 +9,7 @@
 
 const configureCompat = require( 'vue' ).configureCompat,
 	mount = require( '@vue/test-utils' ).mount,
+	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	PublishDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/PublishDialog.vue' ),
 	PublishWidget = require( '../../../../resources/ext.wikilambda.edit/components/widgets/Publish.vue' ),
@@ -18,8 +19,8 @@ configureCompat( { MODE: 3 } );
 
 describe( 'Publish widget', function () {
 	var getters,
-		actions,
-		submitZObjectMock = jest.fn();
+		actions;
+
 	beforeEach( function () {
 		// Needed because of the Teleported component.
 		const el = document.createElement( 'div' );
@@ -27,26 +28,23 @@ describe( 'Publish widget', function () {
 		document.body.appendChild( el );
 
 		getters = {
-			getErrors: jest.fn( function () {
-				return {};
-			} ),
-			getCurrentZObjectId: jest.fn( function () {
-				return 0;
-			} ),
-			getCurrentZObjectType: jest.fn( function () {
-				return Constants.Z_FUNCTION;
-			} )
+			getErrors: createGettersWithFunctionsMock( [] ),
+			getCurrentZObjectId: createGettersWithFunctionsMock( 0 ),
+			getCurrentZObjectType: createGettersWithFunctionsMock( Constants.Z_FUNCTION ),
+			isNewZObject: createGettersWithFunctionsMock( true ),
+			getUserZlangZID: createGettersWithFunctionsMock( 'Z1002' )
 		};
-
 		actions = {
-			submitZObject: submitZObjectMock,
-			validateZObject: jest.fn( function () {
-				return true;
-			} ),
-			setError: jest.fn()
+			submitZObject: jest.fn(),
+			validateZObject: jest.fn( () => true ),
+			setError: jest.fn(),
+			clearValidationErrors: jest.fn(),
+			clearAllErrors: jest.fn()
 		};
-
-		global.store.hotUpdate( { getters: getters, actions: actions } );
+		global.store.hotUpdate( {
+			getters: getters,
+			actions: actions
+		} );
 	} );
 
 	afterEach( () => {
@@ -104,7 +102,9 @@ describe( 'Publish widget', function () {
 		wrapper.vm.$nextTick( function () {
 			// ACT: click publish button.
 			publishButton.trigger( 'click' );
-			expect( submitZObjectMock ).toHaveBeenCalledWith( expect.anything(), { shouldUnattachImplementationAndTester: false, summary: 'my changes summary' } );
+			expect( actions.submitZObject ).toHaveBeenCalledWith( expect.anything(), {
+				shouldUnattachImplementationAndTester: false,
+				summary: 'my changes summary' } );
 		} );
 	} );
 
@@ -128,14 +128,11 @@ describe( 'Publish widget', function () {
 	} );
 
 	it( 'displays received errors in the dialog box', async function () {
-		getters.getErrors = jest.fn( function () {
-			return { 0: {
-				state: true,
-				message: 'error to be displayed',
-				type: Constants.errorTypes.ERROR
-			} };
-		} );
-
+		getters.getErrors = createGettersWithFunctionsMock( [ {
+			code: undefined,
+			message: 'error to be displayed',
+			type: Constants.errorTypes.ERROR
+		} ] );
 		global.store.hotUpdate( {
 			getters: getters
 		} );
@@ -151,22 +148,24 @@ describe( 'Publish widget', function () {
 		const errors = dialog.find( '.ext-wikilambda-publishdialog__errors' );
 		expect( errors.exists() ).toBeTruthy();
 
-		const errorMessage = dialog.find( '.ext-wikilambda-publishdialog__errors__message' );
-		expect( errorMessage.text() ).toBe( 'error to be displayed' );
+		const errorMessages = errors.findAllComponents( { name: 'cdx-message' } );
+		expect( errorMessages.length ).toBe( 1 );
 
-		const warnings = dialog.findComponent( '.ext-wikilambda-publishdialog__warnings' );
-		expect( warnings.exists() ).toBeFalsy();
+		const errorMessage = errorMessages[ 0 ];
+		expect( errorMessage.text() ).toBe( 'error to be displayed' );
+		expect( errorMessage.props( 'type' ) ).toBe( Constants.errorTypes.ERROR );
 	} );
 
 	it( 'displays warnings in the dialog box', async function () {
-		getters.getErrors = jest.fn( function () {
-			return { 0: {
-				state: true,
-				message: 'warning to be displayed',
-				type: Constants.errorTypes.WARNING
-			} };
-		} );
-
+		getters.getErrors = createGettersWithFunctionsMock( [ {
+			code: Constants.errorCodes.TYPED_LIST_TYPE_CHANGED,
+			message: undefined,
+			type: Constants.errorTypes.WARNING
+		}, {
+			code: undefined,
+			message: 'custom warning message',
+			type: Constants.errorTypes.WARNING
+		} ] );
 		global.store.hotUpdate( {
 			getters: getters
 		} );
@@ -179,18 +178,24 @@ describe( 'Publish widget', function () {
 
 		const dialog = wrapper.findComponent( { name: 'cdx-dialog' } );
 
-		const warnings = dialog.find( '.ext-wikilambda-publishdialog__warnings' );
+		const warnings = dialog.find( '.ext-wikilambda-publishdialog__errors' );
 		expect( warnings.exists() ).toBeTruthy();
 
-		const warningMessage = dialog.find( '.ext-wikilambda-publishdialog__warnings__message' );
-		expect( warningMessage.text() ).toBe( 'warning to be displayed' );
+		const warningMessages = warnings.findAllComponents( { name: 'cdx-message' } );
+		expect( warningMessages.length ).toBe( 2 );
 
-		const errors = dialog.find( '.ext-wikilambda-publishdialog__errors' );
-		expect( errors.exists() ).toBeFalsy();
+		const firstWarning = warningMessages[ 0 ];
+		expect( firstWarning.props( 'type' ) ).toBe( Constants.errorTypes.WARNING );
+		expect( firstWarning.text() ).toBe(
+			'You changed the type of one or more lists. On publish, all list items will be deleted' );
+
+		const secondWarning = warningMessages[ 1 ];
+		expect( secondWarning.props( 'type' ) ).toBe( Constants.errorTypes.WARNING );
+		expect( secondWarning.text() ).toBe( 'custom warning message' );
 	} );
 
 	it( 'sets errors returned from the API to the store', async function () {
-		const mockErrorFromApi = { error: { message: 'error message from the  api' } };
+		const mockErrorFromApi = { error: { message: 'error message from the api' } };
 		const mockSetError = jest.fn();
 		actions.setError = mockSetError;
 		actions.submitZObject = jest.fn().mockRejectedValue( mockErrorFromApi );
@@ -211,6 +216,10 @@ describe( 'Publish widget', function () {
 		await publishButton.trigger( 'click' );
 		await wrapper.vm.$nextTick();
 
-		expect( mockSetError ).toHaveBeenCalledWith( expect.anything(), { errorMessage: 'error message from the  api', errorState: true, errorType: Constants.errorTypes.ERROR, internalId: 0 } );
+		expect( mockSetError ).toHaveBeenCalledWith( expect.anything(), {
+			rowId: 0,
+			errorMessage: 'error message from the api',
+			errorType: Constants.errorTypes.ERROR
+		} );
 	} );
 } );

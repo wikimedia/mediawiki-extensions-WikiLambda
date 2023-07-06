@@ -29,9 +29,9 @@ class ContentBlock {
 	 */
 	getSectionOfContentBlock( label, parentSection ) {
 		if ( !parentSection ) {
-			return this.contentBlock.$( `.//label[text()=" ${label}"]/parent::div/parent::div` );
+			return this.contentBlock.$( `.//label[text()="${label}"]/parent::div/parent::div` );
 		}
-		return parentSection.$( `.//label[text()=" ${label}"]/parent::div/parent::div` );
+		return parentSection.$( `.//label[text()="${label}"]/parent::div/parent::div` );
 	}
 
 	/**

@@ -14,7 +14,10 @@ describe( 'ZTester', () => {
 	var getters;
 	beforeEach( () => {
 		getters = {
-			getRowByKeyPath: createGettersWithFunctionsMock( 1 )
+			getLabel: createGettersWithFunctionsMock( 'label' ),
+			getZTesterFunctionRowId: createGettersWithFunctionsMock( 1 ),
+			getZTesterCallRowId: createGettersWithFunctionsMock( 1 ),
+			getZTesterValidationRowId: createGettersWithFunctionsMock( 1 )
 		};
 		global.store.hotUpdate( { getters: getters } );
 	} );

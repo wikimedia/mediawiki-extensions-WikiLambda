@@ -59,13 +59,19 @@
 		<div
 			v-if="!isTypeBuiltin"
 			class="ext-wikilambda-implementation-content"
-			:class="dividerClass"
 		>
+			<div
+				v-if="!isTypeCode"
+				class="ext-wikilambda-key-block"
+			>
+				<label>{{ implementationTypeLabel }}</label>
+			</div>
 			<wl-z-object-key-value
 				:key="implementationContentRowId"
-				:skip-key="isTypeCode"
+				:skip-key="true"
 				:skip-indent="isTypeCode"
 				:row-id="implementationContentRowId"
+				:error-id="implementationContentRowId"
 				:edit="edit"
 				data-testid="implementation-content-block"
 			></wl-z-object-key-value>
@@ -195,16 +201,6 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Return the class of the implementation block to add a border
-			 * when it's a composition
-			 *
-			 * @return {string}
-			 */
-			dividerClass: function () {
-				return this.isTypeCode ? '' : 'ext-wikilambda-implementation-content__divider';
-			},
-
-			/**
 			 * Returns the formatted choices for the Codex Radio component
 			 * to select the type of implementation (code vs composition)
 			 *
@@ -235,13 +231,6 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-implementation {
-	.ext-wikilambda-implementation-content {
-		&__divider {
-			border-top: 1px solid @border-color-subtle;
-			padding-top: @spacing-75;
-		}
-	}
-
 	.ext-wikilambda-implementation-function {
 		.ext-wikilambda-key-block {
 			margin-bottom: 0;
@@ -254,6 +243,8 @@ module.exports = exports = {
 	}
 
 	.ext-wikilambda-implementation-type {
+		padding-top: @spacing-75;
+
 		& > .ext-wikilambda-key-block {
 			margin-bottom: 0;
 
@@ -272,6 +263,19 @@ module.exports = exports = {
 
 			.ext-wikilambda-value-input {
 				margin-top: @spacing-25;
+			}
+		}
+	}
+
+	.ext-wikilambda-implementation-content {
+		padding-top: @spacing-75;
+
+		& > .ext-wikilambda-key-block {
+			margin-bottom: 0;
+
+			label {
+				font-weight: bold;
+				color: @color-base;
 			}
 		}
 	}

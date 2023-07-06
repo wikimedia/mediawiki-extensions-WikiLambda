@@ -6,7 +6,10 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div ref="editor" class="ext-wikilambda-codeEditor"></div>
+	<div
+		ref="editor"
+		class="ext-wikilambda-codeEditor"
+	></div>
 </template>
 
 <script>
@@ -103,7 +106,7 @@ module.exports = exports = {
 
 .ext-wikilambda-codeEditor {
 	width: 100%;
-	border: 1px solid #e0e0e0;
+	border: 1px solid @border-color-subtle;
 	min-height: 85px;
 	z-index: 0;
 	box-sizing: @box-sizing-base;

@@ -17,11 +17,18 @@ describe( 'FunctionEditorOutput', function () {
 
 	beforeEach( function () {
 		getters = {
-			getNestedZObjectById: createGettersWithFunctionsMock( { id: 10 } )
+			getNestedZObjectById: createGettersWithFunctionsMock( { id: 10 } ),
+			getErrors: createGettersWithFunctionsMock( [] )
+		};
+		actions = {
+			clearErrors: jest.fn(),
+			lookupZObject: jest.fn(),
+			fetchZKeys: jest.fn()
 		};
 
 		global.store.hotUpdate( {
-			getters: getters
+			getters: getters,
+			actions: actions
 		} );
 	} );
 
@@ -36,13 +43,6 @@ describe( 'FunctionEditorOutput', function () {
 		expect( wrapper.find( '.ext-wikilambda-function-definition-output__selector' ).exists() ).toBeTruthy();
 	} );
 	it( 'clears on focus-out if a value is typed but then not selected', function () {
-		getters.getErrors = jest.fn( function () {
-			return {};
-		} );
-		global.store.hotUpdate( {
-			getters: getters
-		} );
-
 		var wrapper = mount( FunctionEditorOutput );
 
 		var outputTypeSelector = wrapper.get( '.ext-wikilambda-function-definition-output' ).getComponent( ZObjectSelector );

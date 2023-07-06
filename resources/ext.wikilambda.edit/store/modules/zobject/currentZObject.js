@@ -182,36 +182,47 @@ module.exports = exports = {
 		isCurrentZObjectExecutable: function ( state, getters ) {
 			return [ Constants.Z_FUNCTION, Constants.Z_IMPLEMENTATION ].includes( getters.getCurrentZObjectType );
 		},
-		// TODO: use this check for ZFunction warnings
-		currentZFunctionHasValidInputs: function ( state, getters ) {
-			if ( getters.getCurrentZObjectType !== Constants.Z_FUNCTION ) {
-				return false;
-			}
 
-			var zobject = getters.getZObjectAsJson;
-			if ( !zobject || !zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ] ) {
-				return false;
-			}
-			var argumentList = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ];
-			// Remove argument type
-			argumentList.shift();
-			return argumentList.length > 0 && argumentList.every(
-				function ( arg ) {
-					var argumentTypeIsSet = !!arg[ Constants.Z_ARGUMENT_TYPE ] &&
-						!!arg[ Constants.Z_ARGUMENT_TYPE ][ Constants.Z_REFERENCE_ID ],
-						argumentMonolingualStringIsSet =
-							arg[ Constants.Z_ARGUMENT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ]
-								.filter(
-									function ( label ) {
-										return label[ Constants.Z_MONOLINGUALSTRING_VALUE ] &&
-											label[ Constants.Z_MONOLINGUALSTRING_VALUE ][
-												Constants.Z_STRING_VALUE ] !== '';
-									} ).length > 0;
+		/**
+		 * Returns the array of inputs that are invalid. An invalid
+		 * input has set labels but unset type
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {Array}
+		 */
+		currentZFunctionInvalidInputs: function ( state, getters ) {
+			const inputs = getters.getZFunctionInputs();
+			const invalidRows = [];
+			for ( const inputRow of inputs ) {
+				// Get the value of the input type
+				const inputTypeRow = getters.getRowByKeyPath( [ Constants.Z_ARGUMENT_TYPE ], inputRow.id );
+				const inputTypeValue = getters.getZReferenceTerminalValue( inputTypeRow.id );
 
-					return argumentTypeIsSet && argumentMonolingualStringIsSet;
+				// If the type is unset
+				if ( inputTypeValue === undefined ) {
+					// Get the value of input labels
+					const inputLabelsRow = getters.getRowByKeyPath( [
+						Constants.Z_ARGUMENT_LABEL,
+						Constants.Z_MULTILINGUALSTRING_VALUE
+					], inputRow.id );
+					const inputLabelRows = getters.getChildrenByParentRowId( inputLabelsRow.id ).slice( 1 );
+					const inputLabelValues = inputLabelRows
+						.map( ( row ) => getters.getZMonolingualTextValue( row.id ) )
+						.filter( ( text ) => !!text );
+
+					// If the type is unset but the labels are set, mark as invalid
+					if ( inputLabelValues.length > 0 ) {
+						invalidRows.push( {
+							inputRow: inputRow,
+							typeRow: inputTypeRow
+						} );
+					}
 				}
-			);
+			}
+			return invalidRows;
 		},
+
 		currentZFunctionHasOutput: function ( state, getters ) {
 			if ( getters.getCurrentZObjectType !== Constants.Z_FUNCTION ) {
 				return false;

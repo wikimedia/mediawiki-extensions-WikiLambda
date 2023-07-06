@@ -123,7 +123,7 @@ var Constants = require( '../../../Constants.js' ),
 	debounceSetArgumentLabelTimeout = 300;
 // @vue/component
 module.exports = exports = {
-	name: 'wl-function-definition-inputs-item',
+	name: 'wl-function-editor-inputs-item',
 	components: {
 		'wl-z-object-selector': ZObjectSelector,
 		'cdx-icon': CdxIcon,
@@ -248,8 +248,7 @@ module.exports = exports = {
 		'setZObjectValue',
 		'changeType',
 		'setTypeOfTypedList',
-		'removeZObject',
-		'removeZObjectChildren'
+		'removeItemFromTypedList'
 	] ), {
 		setArgumentLabel: function ( input ) {
 			if ( ( !this.getArgumentLabel && !this.getArgumentLabels.id ) || !this.zLang ) {
@@ -318,9 +317,7 @@ module.exports = exports = {
 			}
 		},
 		removeInput: function () {
-			const zId = this.zobjectId;
-			this.removeZObjectChildren( zId );
-			this.removeZObject( zId );
+			this.removeItemFromTypedList( { rowId: this.zobjectId } );
 		},
 		getTypeUrl: function () {
 			return new mw.Title( Constants.PATHS.LIST_ZOBJECTS_BY_TYPE_TYPE ).getUrl();
@@ -371,6 +368,7 @@ module.exports = exports = {
 		display: none;
 		flex-direction: column;
 		margin-bottom: 0;
+		align-items: flex-start;
 
 		&__entry {
 			display: flex;

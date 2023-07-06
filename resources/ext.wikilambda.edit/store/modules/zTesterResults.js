@@ -199,7 +199,13 @@ module.exports = exports = {
 		getTestResults: function ( context, payload ) {
 			var api = new mw.Api();
 
+			// If this API is already running, exit
 			if ( context.state.fetchingTestResults ) {
+				return;
+			}
+
+			// If function ZID is empty, exit
+			if ( !payload.zFunctionId ) {
 				return;
 			}
 
@@ -220,10 +226,7 @@ module.exports = exports = {
 
 			return api.get( {
 				action: 'wikilambda_perform_test',
-				wikilambda_perform_test_zfunction:
-					!context.getters.getViewMode && payload.zFunctionId === context.getters.getCurrentZObjectId ?
-						JSON.stringify( context.getters.getStoredObject( payload.zFunctionId ) ) :
-						payload.zFunctionId,
+				wikilambda_perform_test_zfunction: payload.zFunctionId,
 				wikilambda_perform_test_zimplementations: implementations.join( '|' ),
 				wikilambda_perform_test_ztesters: testers.join( '|' ),
 				wikilambda_perform_test_nocache: payload.nocache || false

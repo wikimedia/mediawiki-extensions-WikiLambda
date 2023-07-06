@@ -61,7 +61,7 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'wl-function-definition-output',
+	name: 'wl-function-editor-output',
 	components: {
 		'wl-z-object-selector': ZObjectSelector,
 		'wl-tooltip': Tooltip,

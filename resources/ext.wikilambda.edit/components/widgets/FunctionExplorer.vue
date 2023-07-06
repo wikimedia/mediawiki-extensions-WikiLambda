@@ -187,7 +187,7 @@ module.exports = exports = {
 	computed: $.extend(
 		mapGetters( [
 			'getStoredObject',
-			'getZFunctionArgumentDeclarations',
+			'getInputsOfFunctionZid',
 			'getLabelData',
 			'getCurrentZLanguage',
 			'getZImplementationContentType'
@@ -203,7 +203,7 @@ module.exports = exports = {
 				return this.getStoredObject( this.currentFunctionZid );
 			},
 			functionArguments: function () {
-				const args = this.getZFunctionArgumentDeclarations( this.currentFunctionZid );
+				const args = this.getInputsOfFunctionZid( this.currentFunctionZid );
 
 				if ( !args ) {
 					return [];

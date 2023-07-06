@@ -8,8 +8,8 @@
 	<label>
 		<span
 			v-if="!isUserLang"
-			class="ext-wikilambda-lang-chip">{{ labelLanguageIso }}</span>
-		{{ labelText }}
+			class="ext-wikilambda-lang-chip"
+		>{{ labelLanguageIso }}</span>{{ labelText }}
 	</label>
 </template>
 

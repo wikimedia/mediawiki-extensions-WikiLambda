@@ -72,24 +72,26 @@ module.exports = exports = {
 			showPublishDialog: false
 		};
 	},
-	methods: $.extend( {},
-		mapActions( [ 'validateZObject' ] ),
-		{
-			handlePublish: function () {
-				this.validateZObject().then( function ( isValid ) {
-					if ( isValid ) {
-						this.showPublishDialog = true;
-					}
-				}.bind( this ) );
-			},
-			handleCancel: function () {
-				this.$emit( 'cancel' );
-			},
-			closeDialog: function () {
-				this.showPublishDialog = false;
-			}
+	methods: $.extend( mapActions( [
+		'clearValidationErrors',
+		'validateZObject'
+	] ),
+	{
+		handlePublish: function () {
+			this.clearValidationErrors();
+			this.validateZObject().then( function ( isValid ) {
+				if ( isValid ) {
+					this.showPublishDialog = true;
+				}
+			}.bind( this ) );
+		},
+		handleCancel: function () {
+			this.$emit( 'cancel' );
+		},
+		closeDialog: function () {
+			this.showPublishDialog = false;
 		}
-	)
+	} )
 };
 </script>
 

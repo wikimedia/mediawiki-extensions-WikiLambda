@@ -365,9 +365,13 @@
 	"wikilambda-function-viewer-details-table-view-less": "Label for button to view less rows in a table",
 	"wikilambda-toast-close": "Label for button that closes a toast (that shows an error or success message).",
 	"wikilambda-missing-function-output-error-message": "Error message for a submitted ZFunction that is missing a function output",
+	"wikilambda-missing-function-input-type-error-message": "Error message for a submitted ZFunction that is missing an input type",
 	"wikilambda-zobject-missing-attached-function": "Error message for a ZObject that requires an associated function and is missing one",
 	"wikilambda-zimplememntation-composition-missing": "Error message for a ZImplementation that is missing a composition definition.\n\n{{doc-wikilambda}}",
-	"wikilambda-zimplementation-code-missing": "Error message for a ZImplementation that is missing a code definition",
+	"wikilambda-zimplementation-code-missing": "Error message for a code ZImplementation that is missing the code",
+	"wikilambda-zimplementation-code-language-missing": "Error message for a code ZImplementation that is missing the programming language",
+	"wikilambda-ztester-missing-call-function": "Error message for a ZTester that is missing a call function",
+	"wikilambda-ztester-missing-validation-function": "Error message for a ZTester that is missing a validation function",
 	"wikilambda-chip-remove": "Label for a button that removes an item from a list of items",
 	"wikilambda-add-list-item-button": "Label for button to add an item to a list",
 	"wikilambda-list-items-label": "Label for items in a list",
@@ -376,7 +380,6 @@
 	"wikilambda-context-menu": "Title for a context menu",
 	"wikilambda-add-list-item": "Label for a button that adds an item to a list",
 	"wikilambda-delete-list-item": "Label for a button that removes an item from a list",
-	"wikilambda-list-type-change-publish-dialog-warning": "Warning message when the type of a typed list is changed that list items will be removed",
 	"wikilambda-tester-details": "Link to open details of tester results",
 	"wikilambda-about-widget-title": "Title of the About widget",
 	"wikilambda-about-widget-language-count-button": "Button with number of available languages that triggers the dialog window to explore them",
@@ -402,5 +405,7 @@
 	"wikilambda-function-evaluator-running": "Message showing that the function evaluator is waiting for the return of the function call",
 	"wikilambda-function-evaluator-result": "The text shown in the function evaluator widget for the result section",
 	"wikilambda-function-evaluator-result-details": "Link to open the details dialog of the function evaluation result",
-	"wikilambda-function-evaluator-run-function": "Label for button that runs a function"
+	"wikilambda-function-evaluator-run-function": "Label for button that runs a function",
+	"wikilambda-unknown-save-error-message": "String to communicate that an unknown error happened during ZObject creation or edition",
+	"wikilambda-list-type-change-warning": "Warning message when the type of a typed list is changed that list items will be removed"
 }

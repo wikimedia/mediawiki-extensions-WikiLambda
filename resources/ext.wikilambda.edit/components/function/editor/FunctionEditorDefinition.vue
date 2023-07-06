@@ -6,6 +6,7 @@
 		@license MIT
 	-->
 	<main class="ext-wikilambda-function-definition">
+		<!-- Function Definition -->
 		<div
 			ref="fnDefinitionContainer"
 			class="ext-wikilambda-function-definition__container">
@@ -92,6 +93,7 @@ var FunctionEditorLanguage = require( './FunctionEditorLanguage.vue' ),
 	icons = require( '../../../../lib/icons.json' ),
 	Constants = require( '../../../Constants.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
+	eventLogger = require( '../../../mixins/eventLogUtils.js' ).methods,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	mapGetters = require( 'vuex' ).mapGetters,
@@ -139,7 +141,6 @@ module.exports = exports = {
 		'getViewMode',
 		'getZObjectChildrenById',
 		'getZObjectAsJsonById',
-		'getZObjectInitialized',
 		'getZargumentsArray',
 		'getNestedZObjectById',
 		'getUserZlangZID',
@@ -259,7 +260,6 @@ module.exports = exports = {
 	} ),
 	methods: $.extend( mapActions( [
 		'setCurrentZLanguage',
-		'removeZObjectChildren',
 		'changeType',
 		'setError'
 	] ), {
@@ -346,12 +346,12 @@ module.exports = exports = {
 				this.showLeaveEditorDialog = true;
 				this.leaveEditorCallback = function () {
 					window.location.href = cancelTargetUrl;
-					mw.eventLog.dispatch( 'wf.ui.editFunction.cancel', customData );
+					eventLogger.dispatchEvent( 'wf.ui.editFunction.cancel', customData );
 				};
 			} else {
 				// If there are no changes, go immediately without showing the dialog.
 				window.location.href = cancelTargetUrl;
-				mw.eventLog.dispatch( 'wf.ui.editFunction.cancel', customData );
+				eventLogger.dispatchEvent( 'wf.ui.editFunction.cancel', customData );
 			}
 		},
 		/**
@@ -425,27 +425,20 @@ module.exports = exports = {
 					if ( this.shouldUnattachImplementationAndTester ) {
 						const inputTypeChanged = this.validateInputTypeChanged();
 						const outputTypeChanged = this.validateOutputTypeChanged();
-						const payload = {
-							internalId: this.getCurrentZObjectId,
-							errorState: true,
-							errorMessage: '',
-							errorType: Constants.errorTypes.WARNING
-						};
-						let errorMessage;
 
+						let errorCode;
 						if ( inputTypeChanged && outputTypeChanged ) {
-							errorMessage = this.$i18n( 'wikilambda-publish-input-and-output-changed-impact-prompt' ).text();
+							errorCode = Constants.errorCodes.FUNCTION_INPUT_OUTPUT_CHANGED;
 						} else if ( inputTypeChanged ) {
-							errorMessage = this.$i18n( 'wikilambda-publish-input-changed-impact-prompt' ).text();
+							errorCode = Constants.errorCodes.FUNCTION_INPUT_CHANGED;
 						} else {
-							errorMessage = this.$i18n( 'wikilambda-publish-output-changed-impact-prompt' ).text();
+							errorCode = Constants.errorCodes.FUNCTION_OUTPUT_CHANGED;
 						}
-						payload.errorMessage = errorMessage;
-						this.setError( payload );
-					} else {
+
 						this.setError( {
-							internalId: this.getCurrentZObjectId,
-							errorState: false
+							rowId: 0,
+							errorType: Constants.errorTypes.WARNING,
+							errorCode
 						} );
 					}
 				}
@@ -464,7 +457,7 @@ module.exports = exports = {
 			this.changeTypeToFunction();
 		}
 		window.addEventListener( 'click', this.handleClickAway );
-		mw.eventLog.dispatch( 'wf.ui.editFunction.load', {
+		eventLogger.dispatchEvent( 'wf.ui.editFunction.load', {
 			isnewzobject: this.isNewZObject,
 			zobjectid: this.getCurrentZObjectId || null,
 			zlang: this.getUserZlangZID || null

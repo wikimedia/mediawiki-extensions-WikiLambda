@@ -43,11 +43,17 @@ module.exports = exports = {
 	getters: {
 		getInvalidListItems: function ( state ) {
 			return state.invalidListItems;
+		},
+		hasInvalidListItems: function ( state ) {
+			return ( Object.keys( state.invalidListItems ).length > 0 );
 		}
 	},
 	mutations: {
-		setInvalidListItems: function ( state, listItems ) {
-			state.invalidListItems = listItems;
+		setInvalidListItems: function ( state, payload ) {
+			state.invalidListItems[ payload.parentRowId ] = payload.listItems;
+		},
+		clearInvalidListItems: function ( state ) {
+			state.invalidListItems = {};
 		}
 	},
 	actions: {
@@ -110,8 +116,8 @@ module.exports = exports = {
 				id: nextId,
 				value: payload.value
 			} );
-
 		},
+
 		/**
 		 * Add a new item in a typed pair. This will create the following format:
 		 * {
@@ -134,6 +140,7 @@ module.exports = exports = {
 			context.dispatch( 'changeType', { id: key2Id, type: payload.types[ 1 ].value } );
 
 		},
+
 		/**
 		 * Select a type for a typed list
 		 *
@@ -152,6 +159,7 @@ module.exports = exports = {
 			};
 			setTypeOfTypedObject( context, type );
 		},
+
 		/**
 		 * Select types for a typed pair
 		 *
@@ -184,6 +192,7 @@ module.exports = exports = {
 			}
 
 		},
+
 		/**
 		 * Select types for a typed map. This will complete the following action:
 		 * - Set the types in the Map declaration
@@ -264,15 +273,26 @@ module.exports = exports = {
 				} );
 			}
 		},
+
 		/**
-		 *
+		 * Set items to remove for a particular list ID
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
+		 * @param {boolean} payload.parentRowId
 		 * @param {boolean} payload.listItems
 		 */
 		setListItemsForRemoval: function ( context, payload ) {
-			context.commit( 'setInvalidListItems', payload.listItems );
+			context.commit( 'setInvalidListItems', payload );
+		},
+
+		/**
+		 * Clear the collection of list items to remove
+		 *
+		 * @param {Object} context
+		 */
+		clearListItemsForRemoval: function ( context ) {
+			context.commit( 'clearInvalidListItems' );
 		}
 	}
 };

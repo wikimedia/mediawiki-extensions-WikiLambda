@@ -354,9 +354,13 @@
 	"wikilambda-function-viewer-details-table-view-less": "View less",
 	"wikilambda-toast-close": "Close",
 	"wikilambda-missing-function-output-error-message": "A function requires an output",
+	"wikilambda-missing-function-input-type-error-message": "An input requires a type",
 	"wikilambda-zobject-missing-attached-function": "A function is required",
 	"wikilambda-zimplememntation-composition-missing": "A composition must be defined",
 	"wikilambda-zimplementation-code-missing": "Code must be defined",
+	"wikilambda-zimplementation-code-language-missing": "Programming language must be defined",
+	"wikilambda-ztester-missing-call-function": "A tester must have a call function",
+	"wikilambda-ztester-missing-validation-function": "A tester must have a validation function",
 	"wikilambda-chip-remove": "Remove item",
 	"wikilambda-add-list-item-button": "Add item",
 	"wikilambda-list-items-label": "List items",
@@ -365,7 +369,6 @@
 	"wikilambda-context-menu": "Context Menu",
 	"wikilambda-add-list-item": "Add Item",
 	"wikilambda-delete-list-item": "Delete Item",
-	"wikilambda-list-type-change-publish-dialog-warning": "You changed the type of one or more lists. On publish, all list items will be deleted",
 	"wikilambda-tester-details": "Details",
 	"wikilambda-about-widget-title": "About",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 language|$1 languages}}",
@@ -391,5 +394,7 @@
 	"wikilambda-function-evaluator-running": "Running...",
 	"wikilambda-function-evaluator-result": "Result",
 	"wikilambda-function-evaluator-result-details": "Details",
-	"wikilambda-function-evaluator-run-function": "Run function"
+	"wikilambda-function-evaluator-run-function": "Run function",
+	"wikilambda-unknown-save-error-message": "Some error happened while attempting to save your changes.",
+	"wikilambda-list-type-change-warning": "You changed the type of one or more lists. On publish, all list items will be deleted"
 }

@@ -8,78 +8,104 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div
-		class="ext-wikilambda-key-value"
-		:class="rootClasses"
-		data-testid="z-object-key-value"
-	>
-		<!-- Space for square quiet button before the content for expand toggle or bullet -->
+	<div class="ext-wikilambda-key-value-row">
 		<div
-			v-if="hasPreColumn"
-			class="ext-wikilambda-key-value-pre">
-			<wl-expanded-toggle
-				class="ext-wikilambda-key-value-pre-button"
-				:has-expanded-mode="hasExpandedMode"
-				:expanded="expanded"
-				data-testid="expanded-toggle"
-				@toggle="toggleExpanded( !expanded )"
-			></wl-expanded-toggle>
-			<div
-				v-if="expanded"
-				class="ext-wikilambda-key-value-pre-border"
-			></div>
-		</div>
-
-		<!-- Main content: either only one row with value, or top row with key and then value -->
-		<div
-			class="ext-wikilambda-key-value-main"
-			:class="{ 'ext-wikilambda-key-value-main__no-indent': !hasPreColumn }"
+			class="ext-wikilambda-key-value"
+			:class="rootClasses"
+			data-testid="z-object-key-value"
 		>
-			<!-- Key: conditional rendering -->
+			<!-- Space for square quiet button before the content for expand toggle or bullet -->
 			<div
-				v-if="showKeyLabel"
-				class="ext-wikilambda-key-block"
-				:class="expandedClass"
-			>
-				<wl-localized-label
-					v-if="keyLabel"
-					:label-data="keyLabel"
-				></wl-localized-label>
-				<label
-					v-else
-					class="ext-wikilambda-key-unlabelled"
-				>{{ undefinedKeyLabel }}</label>
-			</div>
-			<!-- Value: will always be rendered -->
-			<div class="ext-wikilambda-value-block">
-				<component
-					:is="zobjectComponent"
-					:class="shiftLeft"
-					:edit="edit"
-					:disabled="disableEdit"
+				v-if="hasPreColumn"
+				class="ext-wikilambda-key-value-pre">
+				<wl-expanded-toggle
+					class="ext-wikilambda-key-value-pre-button"
+					:has-expanded-mode="hasExpandedMode"
 					:expanded="expanded"
-					:depth="depth"
-					:row-id="rowId"
-					:expected-type="expectedType"
-					:parent-id="parentRowId"
-					@set-value="setValue"
-					@set-type="setType"
-					@change-event="changeEvent"
-					@expand="toggleExpanded( !expanded )"
-				></component>
+					data-testid="expanded-toggle"
+					@toggle="toggleExpanded( !expanded )"
+				></wl-expanded-toggle>
+				<div
+					v-if="expanded"
+					class="ext-wikilambda-key-value-pre-border"
+				></div>
+			</div>
+
+			<!-- Main content: either only one row with value, or top row with key and then value -->
+			<div
+				class="ext-wikilambda-key-value-main"
+				:class="{ 'ext-wikilambda-key-value-main__no-indent': !hasPreColumn }"
+			>
+				<!-- Key: conditional rendering -->
+				<div
+					v-if="showKeyLabel"
+					class="ext-wikilambda-key-block"
+					:class="expandedClass"
+				>
+					<wl-localized-label
+						v-if="keyLabel"
+						:label-data="keyLabel"
+					></wl-localized-label>
+					<label
+						v-else
+						class="ext-wikilambda-key-unlabelled"
+					>{{ undefinedKeyLabel }}</label>
+				</div>
+				<!-- Value: will always be rendered -->
+				<div class="ext-wikilambda-value-block">
+					<component
+						:is="zobjectComponent"
+						:class="shiftLeft"
+						:edit="edit"
+						:disabled="disableEdit"
+						:expanded="expanded"
+						:depth="depth"
+						:row-id="rowId"
+						:expected-type="expectedType"
+						:parent-id="parentRowId"
+						@set-value="setValue"
+						@set-type="setType"
+						@change-event="changeEvent"
+						@expand="toggleExpanded( !expanded )"
+					></component>
+				</div>
+			</div>
+
+			<!-- Space for square quiet button before the content for context menu button or bin button -->
+			<div class="ext-wikilambda-key-value-post">
+				<cdx-button
+					v-if="showActionButton"
+					weight="quiet"
+					class="ext-wikilambda-ztyped-list-delete-button"
+					@click="deleteListItem"
+				>
+					<cdx-icon :icon="icons.cdxIconTrash"></cdx-icon>
+				</cdx-button>
 			</div>
 		</div>
 
-		<!-- Space for square quiet button before the content for context menu button or bin button -->
-		<div class="ext-wikilambda-key-value-post">
-			<cdx-button
-				v-if="showActionButton"
-				weight="quiet"
-				class="ext-wikilambda-ztyped-list-delete-button"
-				@click="deleteListItem"
+		<!-- Error row -->
+		<div v-if="hasErrors">
+			<div
+				v-for="( error, index ) in errors"
+				:key="'error-' + index"
+				class="ext-wikilambda-messages__box"
 			>
-				<cdx-icon :icon="icons.cdxIconTrash"></cdx-icon>
-			</cdx-button>
+				<cdx-message
+					v-for="( error, index ) in errors"
+					:key="'inline-error-' + rowId + '-' + index"
+					class="ext-wikilambda-key-value-inline-error"
+					:type="error.type"
+					:inline="true"
+				>
+					<template v-if="error.message">
+						{{ error.message }}
+					</template>
+					<template v-else>
+						{{ messageFromCode( error.code ) }}
+					</template>
+				</cdx-message>
+			</div>
 		</div>
 	</div>
 </template>
@@ -87,6 +113,7 @@
 <script>
 var CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	Constants = require( '../../Constants.js' ),
 	ExpandedToggle = require( '../base/ExpandedToggle.vue' ),
 	LocalizedLabel = require( '../base/LocalizedLabel.vue' ),
@@ -114,6 +141,7 @@ module.exports = exports = {
 	components: {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon,
+		'cdx-message': CdxMessage,
 		'wl-expanded-toggle': ExpandedToggle,
 		'wl-localized-label': LocalizedLabel,
 		'wl-z-code': ZCode,
@@ -153,6 +181,11 @@ module.exports = exports = {
 			type: Boolean,
 			required: false,
 			default: false
+		},
+		errorId: {
+			type: Number,
+			required: false,
+			default: null
 		}
 	},
 	data: function () {
@@ -177,9 +210,28 @@ module.exports = exports = {
 			'getZObjectKeyByRowId',
 			'getZObjectValueByRowId',
 			'getZObjectTypeByRowId',
-			'getTypedListItemType'
+			'getTypedListItemType',
+			'getErrors'
 		] ),
 		{
+			/**
+			 * Returns whether there are any errors
+			 *
+			 * @return {boolean}
+			 */
+			hasErrors: function () {
+				return this.errors.length > 0;
+			},
+
+			/**
+			 * Returns the errors associated to the given errorId
+			 *
+			 * @return {Array}
+			 */
+			errors: function () {
+				return this.errorId ? this.getErrors( this.errorId ) : [];
+			},
+
 			/**
 			 * Returns whether we want to disable the edit mode for a given key-value.
 			 * Note that this is not the same thing as bounding the type, or disabling
@@ -599,6 +651,7 @@ module.exports = exports = {
 	),
 	methods: $.extend( mapActions( [
 		'changeType',
+		'clearErrors',
 		'setValueByRowIdAndPath',
 		'setZFunctionCallArguments',
 		'setZImplementationContentType',
@@ -744,9 +797,18 @@ module.exports = exports = {
 		deleteListItem: function () {
 			// TODO(T324242): replace with new setter when it exists
 			// TODO(T331132): can we create a 'revert delete' workflow?
-			this.removeItemFromTypedList( {
-				rowId: this.rowId
-			} );
+			this.removeItemFromTypedList( { rowId: this.rowId } );
+		},
+
+		/**
+		 * Returns the translated message for a given error code
+		 *
+		 * @param {string} code
+		 * @return {string}
+		 */
+		messageFromCode: function ( code ) {
+
+			return this.$i18n( code ).text();
 		}
 	} )
 };
@@ -825,10 +887,10 @@ module.exports = exports = {
 
 		.ext-wikilambda-key-block {
 			padding: @spacing-25 0;
+			color: @color-subtle;
 
 			label {
 				text-transform: capitalize;
-				color: @color-subtle;
 			}
 
 			label.ext-wikilambda-key-unlabelled {

@@ -35,7 +35,7 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'wl-fn-editor-z-language-selector',
+	name: 'wl-function-editor-language',
 	components: {
 		'wl-z-object-selector': ZObjectSelector
 	},
@@ -57,9 +57,7 @@ module.exports = exports = {
 	} ),
 	methods: $.extend( {}, mapActions( [
 		'changeType',
-		'removeZObject',
-		'removeZObjectChildren',
-		'recalculateZListIndex'
+		'removeItemFromTypedList'
 	] ),
 	mapMutations( [
 		'setActiveLangSelection'
@@ -138,26 +136,14 @@ module.exports = exports = {
 					] );
 
 					if ( labelLang.value === language ) {
-						this.removeZObjectChildren( label.id );
-						this.removeZObject( label.id );
+						this.removeItemFromTypedList( { rowId: label.id } );
 					}
 				}.bind( this ) );
-
-				this.recalculateZListIndex( argumentLabelArrayId );
-
 			}.bind( this ) );
 		},
 		resetNameLabelForLang: function ( zId ) {
 			var labelId = this.getLanguageLabelId( zId );
-
-			this.removeZObjectChildren( labelId );
-			this.removeZObject( labelId );
-
-			var zLabelParentId = this.getNestedZObjectById( 0, [
-				Constants.Z_PERSISTENTOBJECT_LABEL,
-				Constants.Z_MULTILINGUALSTRING_VALUE
-			] ).id;
-			this.recalculateZListIndex( zLabelParentId );
+			this.removeItemFromTypedList( { rowId: labelId } );
 		},
 		resetPreviousLangForSelection: function ( zId ) {
 			this.resetArgumentListLabelsForLang( zId );

@@ -82,34 +82,6 @@ function isFunctionToType( objectDeclaration ) {
 	}
 }
 
-function getFunctionOutputId( getNestedZObjectById ) {
-	return getNestedZObjectById( 0, [
-		Constants.Z_PERSISTENTOBJECT_VALUE,
-		Constants.Z_FUNCTION_RETURN_TYPE,
-		Constants.Z_REFERENCE_ID
-	] ).id;
-}
-
-function getZImplementationFunctionId( findKeyInArray, context ) {
-	const persistentObjectId = findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, context.state.zobject ).id;
-	const persistentObject = context.getters.getZObjectChildrenById( persistentObjectId );
-	const zImplementationFunction = findKeyInArray(
-		[ Constants.Z_REFERENCE_ID, Constants.Z_STRING_VALUE ],
-		context.getters.getZObjectChildrenById(
-			findKeyInArray( Constants.Z_IMPLEMENTATION_FUNCTION, persistentObject ).id
-		)
-	);
-	return zImplementationFunction.id;
-}
-
-function getZTesterFunctionId( findKeyInArray, context ) {
-	const persistentObjectId = findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, context.state.zobject ).id;
-	const persistentObject = context.getters.getZObjectChildrenById( persistentObjectId );
-	const zTesterFunctionId = findKeyInArray( Constants.Z_TESTER_FUNCTION, persistentObject ).id;
-	const zReference = context.getters.getZObjectChildrenById( zTesterFunctionId );
-	return findKeyInArray( Constants.Z_REFERENCE_ID, zReference ).id;
-}
-
 /**
  * Runs actions on the global zobject to make it valid for submission.
  *
@@ -122,16 +94,19 @@ function getZTesterFunctionId( findKeyInArray, context ) {
  * @return {Object} zobject
  */
 function transformZObjectForSubmission( context, shouldUnattachImplementationAndTester ) {
-	removeEmptyNameLabelValues( context );
+	removeEmptyMonolingualValues( context, Constants.Z_PERSISTENTOBJECT_LABEL );
+	removeEmptyMonolingualValues( context, Constants.Z_PERSISTENTOBJECT_DESCRIPTION );
 	removeEmptyAliasLabelValues( context );
 
-	if ( context.getters.getNestedZObjectById( 0, [
+	const functionArguments = context.getters.getRowByKeyPath( [
 		Constants.Z_PERSISTENTOBJECT_VALUE,
-		Constants.Z_FUNCTION_ARGUMENTS ] ) ) {
-		removeEmptyArgumentLabelValues( context );
+		Constants.Z_FUNCTION_ARGUMENTS
+	], 0 );
+	if ( functionArguments ) {
+		removeEmptyArguments( context );
 	}
 
-	var zobject = canonicalize( zobjectTreeUtils.convertZObjectTreetoJson( context.state.zobject ) );
+	let zobject = canonicalize( zobjectTreeUtils.convertZObjectTreetoJson( context.state.zobject ) );
 
 	if ( shouldUnattachImplementationAndTester ) {
 		zobject = unattachImplementationsAndTesters( zobject );
@@ -141,28 +116,30 @@ function transformZObjectForSubmission( context, shouldUnattachImplementationAnd
 }
 
 /**
- * Removes the name label language objects with empty monolingual string values from the global zobject.
+ * Removes the name or description label language objects with empty monolingual string values from the global zobject.
  *
  * @param {Object} context
+ * @param {string} key Z_PERSISTENTOBJECT_LABEL or Z_PERSISTENTOBJECT_DESCRIPTION
  */
-function removeEmptyNameLabelValues( context ) {
-	var namesListId = context.getters.getNestedZObjectById( 0, [
-		Constants.Z_PERSISTENTOBJECT_LABEL,
-		Constants.Z_MULTILINGUALSTRING_VALUE
-	] ).id;
-	var namesList = context.getters.getAllItemsFromListById( namesListId );
-
-	namesList.forEach( function ( nameListLabel ) {
-		var labelString = context.getters.getNestedZObjectById( nameListLabel.id, [
-			Constants.Z_MONOLINGUALSTRING_VALUE,
-			Constants.Z_STRING_VALUE
-		] );
-		if ( !labelString.value ) {
-			context.dispatch( 'removeZObjectChildren', nameListLabel.id );
-			context.dispatch( 'removeZObject', nameListLabel.id );
-		}
+function removeEmptyMonolingualValues( context, key ) {
+	const listRow = context.getters.getRowByKeyPath( [ key, Constants.Z_MULTILINGUALSTRING_VALUE ], 0 );
+	if ( !listRow ) {
+		return;
+	}
+	const rows = context.getters.getChildrenByParentRowId( listRow.id ).slice( 1 );
+	const deleteRows = rows.filter( ( monolingualRow ) => {
+		const labelString = context.getters.getZMonolingualTextValue( monolingualRow.id );
+		return !labelString;
 	} );
-	context.dispatch( 'recalculateZListIndex', namesListId );
+	const deleteRowIds = deleteRows.map( ( row ) => row.id );
+
+	// Remove list of invalid items and, once all deleted, recalculate the array keys
+	if ( deleteRowIds.length > 0 ) {
+		context.dispatch( 'removeItemsFromTypedList', {
+			parentRowId: listRow.id,
+			listItems: deleteRowIds
+		} );
+	}
 }
 
 /**
@@ -170,33 +147,44 @@ function removeEmptyNameLabelValues( context ) {
  *
  * @param {Object} context
  */
-function removeEmptyArgumentLabelValues( context ) {
-	var argumentsList = context.getters.getAllItemsFromListById(
-		context.getters.getNestedZObjectById( 0, [
-			Constants.Z_PERSISTENTOBJECT_VALUE,
-			Constants.Z_FUNCTION_ARGUMENTS
-		] ).id );
+function removeEmptyArguments( context ) {
+	// For every argument, we remove it from the list if:
+	// 1. argument type is empty, and
+	// 2. argument labels are empty
+	// Else, we just clear the empty labels
+	const inputs = context.getters.getZFunctionInputs();
+	for ( const inputRow of inputs ) {
+		// Get the value of the input type
+		const inputTypeRow = context.getters.getRowByKeyPath( [ Constants.Z_ARGUMENT_TYPE ], inputRow.id );
+		const inputTypeValue = context.getters.getZReferenceTerminalValue( inputTypeRow.id );
 
-	argumentsList.forEach( function ( argument ) {
-		var argumentLabelArrayId = context.getters.getNestedZObjectById( argument.id, [
+		// Get the input labels
+		const inputLabelsRow = context.getters.getRowByKeyPath( [
 			Constants.Z_ARGUMENT_LABEL,
-			Constants.Z_MULTILINGUALSTRING_VALUE ] ).id;
-		var argumentLabelArray = context.getters.getAllItemsFromListById( argumentLabelArrayId );
+			Constants.Z_MULTILINGUALSTRING_VALUE
+		], inputRow.id );
+		const inputLabels = context.getters.getChildrenByParentRowId( inputLabelsRow.id ).slice( 1 );
 
-		argumentLabelArray.forEach( function ( argumentLabel ) {
-			var labelString = context.getters.getNestedZObjectById( argumentLabel.id, [
-				Constants.Z_MONOLINGUALSTRING_VALUE,
-				Constants.Z_STRING_VALUE
-			] );
-
-			if ( !labelString.value ) {
-				context.dispatch( 'removeZObjectChildren', argumentLabel.id );
-				context.dispatch( 'removeZObject', argumentLabel.id );
+		// Remove empty labels
+		const inputLabelValues = [];
+		for ( const labelRow of inputLabels ) {
+			const labelValue = context.getters.getZMonolingualTextValue( labelRow.id );
+			if ( !labelValue ) {
+				context.dispatch( 'removeItemFromTypedList', { rowId: labelRow.id } );
+			} else {
+				inputLabelValues.push( labelValue );
 			}
-		} );
+		}
 
-		context.dispatch( 'recalculateZListIndex', argumentLabelArrayId );
-	} );
+		// If input is empty and labels are empty, remove this item
+		if ( ( inputTypeValue === undefined ) && ( inputLabelValues.length === 0 ) ) {
+			context.dispatch( 'removeItemFromTypedList', { rowId: inputRow.id } );
+		}
+	}
+
+	if ( inputs.length > 0 ) {
+		context.dispatch( 'recalculateArgumentKeys', inputs[ 0 ].parent );
+	}
 }
 
 /**
@@ -233,8 +221,8 @@ function removeEmptyAliasLabelValues( context ) {
 			}
 		}
 
-		context.dispatch( 'recalculateZListIndex', aliasLabelId );
-		context.dispatch( 'recalculateZListIndex', aliasListId );
+		context.dispatch( 'recalculateTypedListKeys', aliasLabelId );
+		context.dispatch( 'recalculateTypedListKeys', aliasListId );
 	} );
 }
 
@@ -808,44 +796,111 @@ module.exports = exports = {
 			 * @param {string} rowId
 			 * @return {Array}
 			 */
-			function findZFunctionArgs( rowId ) {
+			function findZFunctionCallArgs( rowId ) {
 				const children = getters.getChildrenByParentRowId( rowId );
 				return children.filter( ( row ) => {
 					return ( row.key !== Constants.Z_OBJECT_TYPE ) &&
 					( row.key !== Constants.Z_FUNCTION_CALL_FUNCTION );
 				} );
 			}
-			return findZFunctionArgs;
+			return findZFunctionCallArgs;
 		},
 
 		/**
-		 * Given a function Zid, it inspects its function definition
-		 * stored in the state and returns an array of its arguments.
-		 * It returns undefined if the function is not available or the
-		 * zid does not belong to a valid function.
+		 * Returns the list of inputs for the function given
+		 * its rowId
 		 *
 		 * @param {Object} _state
 		 * @param {Object} getters
 		 * @return {Function}
 		 */
-		getZFunctionArgumentDeclarations: function ( _state, getters ) {
+		getZFunctionInputs: function ( _state, getters ) {
 			/**
-			 * @param {string} zid
+			 * @param {string} rowId
 			 * @return {Array}
 			 */
-			function findZFunctionArguments( zid ) {
-				const func = getters.getStoredObject( zid );
-				if ( func === undefined ) {
+			function findZFunctionInputs( rowId = 0 ) {
+				const inputsRow = getters.getRowByKeyPath(
+					[ Constants.Z_PERSISTENTOBJECT_VALUE, Constants.Z_FUNCTION_ARGUMENTS ],
+					rowId
+				);
+				if ( inputsRow === undefined ) {
 					return [];
 				}
-				const obj = func[ Constants.Z_PERSISTENTOBJECT_VALUE ];
-				if ( obj[ Constants.Z_OBJECT_TYPE ] !== Constants.Z_FUNCTION ) {
-					return [];
-				}
+				const inputs = getters.getChildrenByParentRowId( inputsRow.id );
 				// Remove benjamin type item
-				return obj[ Constants.Z_FUNCTION_ARGUMENTS ].slice( 1 );
+				return inputs.slice( 1 );
 			}
-			return findZFunctionArguments;
+			return findZFunctionInputs;
+		},
+
+		/**
+		 * Returns the row ID of the target function of a tester
+		 * given the tester rowId
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZTesterFunctionRowId: function ( _state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {number | undefined}
+			 */
+			function findFunctionId( rowId ) {
+				const functionRef = getters.getRowByKeyPath( [ Constants.Z_TESTER_FUNCTION ], rowId );
+				if ( functionRef === undefined ) {
+					return undefined;
+				}
+				return functionRef.id;
+			}
+			return findFunctionId;
+		},
+
+		/**
+		 * Returns the row ID of the call function call of a tester
+		 * given the tester rowId
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZTesterCallRowId: function ( _state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {number | undefined}
+			 */
+			function findCall( rowId ) {
+				const callRow = getters.getRowByKeyPath( [ Constants.Z_TESTER_CALL ], rowId );
+				if ( callRow === undefined ) {
+					return undefined;
+				}
+				return callRow.id;
+			}
+			return findCall;
+		},
+
+		/**
+		 * Returns the row ID of the validation function call of a tester
+		 * given the tester rowId
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZTesterValidationRowId: function ( _state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @return {number | undefined}
+			 */
+			function findValidation( rowId ) {
+				const validationRow = getters.getRowByKeyPath( [ Constants.Z_TESTER_VALIDATION ], rowId );
+				if ( validationRow === undefined ) {
+					return undefined;
+				}
+				return validationRow.id;
+			}
+			return findValidation;
 		},
 
 		/**
@@ -2241,36 +2296,58 @@ module.exports = exports = {
 		 */
 		validateZObject: function ( context ) {
 			const zobjectType = context.getters.getCurrentZObjectType,
-				zobject = context.getters.getZObjectAsJson;
+				zobject = context.getters.getZObjectAsJson,
+				contentRowId = context.getters.getZPersistentContentRowId();
 
-			var internalId,
+			var rowId,
+				invalidInputs,
 				isValid = true;
 
 			switch ( zobjectType ) {
+				// Validate ZFunction:
+				// * Output type not set
+				// * Input type not set
 				case Constants.Z_FUNCTION:
+					// invalid if a function doesn't have an output type
 					if ( !context.getters.currentZFunctionHasOutput ) {
-						internalId = getFunctionOutputId( context.getters.getNestedZObjectById );
+						rowId = context.getters.getRowByKeyPath( [
+							Constants.Z_FUNCTION_RETURN_TYPE,
+							Constants.Z_REFERENCE_ID
+						], contentRowId ).id;
 						context.dispatch( 'setError', {
-							internalId,
-							errorState: true,
-							errorMessage: 'wikilambda-missing-function-output-error-message',
+							rowId,
+							errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT,
 							errorType: Constants.errorTypes.ERROR
 						} );
 						isValid = false;
 					}
+
+					// invalid if any of the non-empty inputs doesn't have a type
+					invalidInputs = context.getters.currentZFunctionInvalidInputs;
+					if ( invalidInputs.length > 0 ) {
+						for ( const invalidRow of invalidInputs ) {
+							context.dispatch( 'setError', {
+								rowId: invalidRow.typeRow.id,
+								errorCode: Constants.errorCodes.MISSING_FUNCTION_INPUT_TYPE,
+								errorType: Constants.errorTypes.ERROR
+							} );
+						}
+						isValid = false;
+					}
 					return isValid;
+
+				// Validate ZImplementation:
+				// * Implementation function is not defined (Z14K1)
+				// * Composition implementation has undefined function call (Z14K2.Z7K1)
+				// * Code implementation has undefined code string (Z14K3.Z16K2)
 				case Constants.Z_IMPLEMENTATION:
-					internalId = getZImplementationFunctionId(
-						typeUtils.findKeyInArray,
-						context
-					);
 					// invalid if a function hasn't been defined
 					if ( !zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
 						Constants.Z_IMPLEMENTATION_FUNCTION ][ Constants.Z_REFERENCE_ID ] ) {
+						rowId = context.getters.getZImplementationFunctionRowId( contentRowId );
 						context.dispatch( 'setError', {
-							internalId,
-							errorState: true,
-							errorMessage: 'wikilambda-zobject-missing-attached-function',
+							rowId,
+							errorCode: Constants.errorCodes.MISSING_TARGET_FUNCTION,
 							errorType: Constants.errorTypes.ERROR
 						} );
 						isValid = false;
@@ -2288,21 +2365,51 @@ module.exports = exports = {
 						][
 							Constants.Z_REFERENCE_ID
 						] ) {
-							internalId = typeUtils.findKeyInArray(
-								Constants.Z_IMPLEMENTATION_COMPOSITION,
-								context.state.zobject
-							).id;
+							rowId = context.getters.getZImplementationContentRowId(
+								contentRowId,
+								Constants.Z_IMPLEMENTATION_COMPOSITION
+							);
 							context.dispatch( 'setError', {
-								internalId,
-								errorState: true,
-								errorMessage: 'wikilambda-zimplememntation-composition-missing',
+								rowId,
+								errorCode: Constants.errorCodes.MISSING_IMPLEMENTATION_COMPOSITION,
 								errorType: Constants.errorTypes.ERROR
 							} );
 							isValid = false;
 						}
 					}
+
 					// if implementation type is code
 					if ( zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_CODE ] ) {
+
+						// invalid if no programming language is defined
+						if ( !zobject[
+							Constants.Z_PERSISTENTOBJECT_VALUE
+						][
+							Constants.Z_IMPLEMENTATION_CODE
+						][
+							Constants.Z_CODE_LANGUAGE
+						][
+							Constants.Z_PROGRAMMING_LANGUAGE_CODE
+						][
+							Constants.Z_STRING_VALUE
+						] ) {
+							rowId = context.getters.getZImplementationContentRowId(
+								contentRowId,
+								Constants.Z_IMPLEMENTATION_CODE
+							);
+							const langRow = context.getters.getRowByKeyPath( [
+								Constants.Z_CODE_LANGUAGE,
+								Constants.Z_PROGRAMMING_LANGUAGE_CODE,
+								Constants.Z_STRING_VALUE
+							], rowId );
+							context.dispatch( 'setError', {
+								rowId: langRow.id,
+								errorCode: Constants.errorCodes.MISSING_IMPLEMENTATION_CODE_LANGUAGE,
+								errorType: Constants.errorTypes.ERROR
+							} );
+							isValid = false;
+						}
+
 						// invalid if no code is defined
 						if ( !zobject[
 							Constants.Z_PERSISTENTOBJECT_VALUE
@@ -2313,36 +2420,41 @@ module.exports = exports = {
 						][
 							Constants.Z_STRING_VALUE
 						] ) {
-							internalId = typeUtils.findKeyInArray(
-								Constants.Z_IMPLEMENTATION_CODE,
-								context.state.zobject
-							).id;
+							rowId = context.getters.getZImplementationContentRowId(
+								contentRowId,
+								Constants.Z_IMPLEMENTATION_CODE
+							);
+							const codeRow = context.getters.getRowByKeyPath( [
+								Constants.Z_CODE_CODE,
+								Constants.Z_STRING_VALUE
+							], rowId );
 							context.dispatch( 'setError', {
-								internalId,
-								errorState: true,
-								errorMessage: 'wikilambda-zimplementation-code-missing',
+								rowId: codeRow.id,
+								errorCode: Constants.errorCodes.MISSING_IMPLEMENTATION_CODE,
 								errorType: Constants.errorTypes.ERROR
 							} );
 							isValid = false;
 						}
 					}
 					return isValid;
+
+				// Validate ZTester:
+				// * Tester function is not defined (Z20K1)
+				// * Tester call has undefined function call (Z20K2.Z7K1)
+				// * Tester validation has undefined function call (Z20K3.Z7K1)
 				case Constants.Z_TESTER:
 					// invalid if no function is defined
 					if ( !zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
 						Constants.Z_TESTER_FUNCTION ][ Constants.Z_REFERENCE_ID ] ) {
-						internalId = getZTesterFunctionId(
-							typeUtils.findKeyInArray,
-							context
-						);
+						rowId = context.getters.getZTesterFunctionRowId( contentRowId );
 						context.dispatch( 'setError', {
-							internalId,
-							errorState: true,
-							errorMessage: 'wikilambda-zobject-missing-attached-function',
+							rowId,
+							errorCode: Constants.errorCodes.MISSING_TARGET_FUNCTION,
 							errorType: Constants.errorTypes.ERROR
 						} );
 						isValid = false;
 					}
+
 					// invalid if no function call is set
 					if ( !zobject[
 						Constants.Z_PERSISTENTOBJECT_VALUE
@@ -2353,15 +2465,15 @@ module.exports = exports = {
 					][
 						Constants.Z_REFERENCE_ID
 					] ) {
-						internalId = typeUtils.findKeyInArray( Constants.Z_TESTER_CALL, context.state.zobject ).id;
+						rowId = context.getters.getZTesterCallRowId( contentRowId );
 						context.dispatch( 'setError', {
-							internalId,
-							errorState: true,
-							errorMessage: 'wikilambda-zobject-missing-attached-function',
+							rowId,
+							errorCode: Constants.errorCodes.MISSING_TESTER_CALL,
 							errorType: Constants.errorTypes.ERROR
 						} );
 						isValid = false;
 					}
+
 					// invalid if no result validation is set
 					if ( !zobject[
 						Constants.Z_PERSISTENTOBJECT_VALUE
@@ -2373,14 +2485,10 @@ module.exports = exports = {
 						Constants.Z_REFERENCE_ID
 					]
 					) {
-						internalId = typeUtils.findKeyInArray(
-							Constants.Z_TESTER_VALIDATION,
-							context.state.zobject
-						).id;
+						rowId = context.getters.getZTesterValidationRowId( contentRowId );
 						context.dispatch( 'setError', {
-							internalId,
-							errorState: true,
-							errorMessage: 'wikilambda-zobject-missing-attached-function',
+							rowId,
+							errorCode: Constants.errorCodes.MISSING_TESTER_VALIDATION,
 							errorType: Constants.errorTypes.ERROR
 						} );
 						isValid = false;
@@ -2405,17 +2513,21 @@ module.exports = exports = {
 			context.commit( 'setIsSavingZObject', true );
 
 			// when a list has changed type and the items are no longer valid
-			if ( context.getters.getInvalidListItems && context.getters.getInvalidListItems.length > 0 ) {
-				context.dispatch( 'removeAllItemsFromTypedList', context.getters.getInvalidListItems );
-
-				// clear the list
-				context.dispatch( 'setListItemsForRemoval', {
-					listItems: []
-				} );
+			if ( context.getters.hasInvalidListItems ) {
+				const invalidLists = context.getters.getInvalidListItems;
+				for ( const parentRowId in invalidLists ) {
+					context.dispatch( 'removeItemsFromTypedList', {
+						parentRowId: parseInt( parentRowId ),
+						listItems: invalidLists[ parentRowId ]
+					} );
+				}
+				// clear the collection of list items removed
+				context.dispatch( 'clearListItemsForRemoval' );
 			}
 
-			var zobject = transformZObjectForSubmission( context, shouldUnattachImplementationAndTester );
-			return new Promise( function ( resolve, reject ) {
+			const zobject = transformZObjectForSubmission( context, shouldUnattachImplementationAndTester );
+
+			return new Promise( ( resolve, reject ) => {
 				saveZObject(
 					zobject,
 					context.getters.isCreateNewPage ? undefined : context.getters.getCurrentZObjectId,
@@ -2425,16 +2537,11 @@ module.exports = exports = {
 					return resolve( result.page );
 				} ).catch( function ( error ) {
 					context.commit( 'setIsSavingZObject', false );
-					context.dispatch( 'setError', {
-						internalId: 0,
-						errorState: true,
-						errorMessage: error && error.error ? error.error.info : '',
-						errorType: Constants.errorTypes.ERROR
-					} );
 					return reject( error );
 				} );
 			} );
 		},
+
 		/**
 		 * Set the value of the page zObject. This updates the title and set the ZObject value
 		 *
@@ -2516,45 +2623,44 @@ module.exports = exports = {
 		 * This should be used when an item is removed from a ZList.
 		 *
 		 * @param {Object} context
-		 * @param {number} zListId
+		 * @param {number} listRowId
 		 */
-		recalculateZListIndex: function ( context, zListId ) {
-			var zList = context.getters.getZObjectChildrenById( zListId );
+		recalculateTypedListKeys: function ( context, listRowId ) {
+			const children = context.getters.getChildrenByParentRowId( listRowId );
 
-			zList.forEach( function ( zObject, index ) {
+			children.forEach( function ( itemRow, index ) {
 				context.commit( 'setZObjectKey', {
-					index: context.getters.getZObjectIndexById( zObject.id ),
+					index: context.getters.getZObjectIndexById( itemRow.id ),
 					key: `${index}`
 				} );
 			} );
 		},
+
 		/**
 		 * Recalculate the keys and key values of a ZArgument List.
 		 * This should be used when an item is removed from a ZArgument list.
 		 *
 		 * @param {Object} context
-		 * @param {number} zListId
+		 * @param {number} listRowId
 		 */
-		recalculateZArgumentList: function ( context, zListId ) {
-			var zList = context.getters.getAllItemsFromListById( zListId );
+		recalculateArgumentKeys: function ( context, listRowId ) {
+			const args = context.getters.getChildrenByParentRowId( listRowId ).slice( 1 );
 
-			zList.forEach( function ( zObject, index ) {
-				var children = context.getters.getZObjectChildrenById( zObject.id );
-				var argumentKeyZObject = typeUtils.findKeyInArray( Constants.Z_ARGUMENT_KEY, children );
-				var argumentKeyChildren = context.getters.getZObjectChildrenById( argumentKeyZObject.id );
+			args.forEach( function ( argRow, index ) {
+				const argKeyRow = context.getters.getRowByKeyPath( [
+					Constants.Z_ARGUMENT_KEY,
+					Constants.Z_STRING_VALUE
+				], argRow.id );
 				context.commit( 'setZObjectValue', {
-					index: context.getters.getZObjectIndexById( argumentKeyChildren[ 1 ].id ),
+					index: context.getters.getZObjectIndexById( argKeyRow.id ),
 					value: `${context.getters.getCurrentZObjectId}K${index + 1}`
-				} );
-				context.commit( 'setZObjectKey', {
-					index: context.getters.getZObjectIndexById( zObject.id ),
-					key: `${index}`
 				} );
 			} );
 		},
 
 		/**
 		 * Remove a specific zobject. This method does NOT remove its children.
+		 * It also clears whatever errors are associated to this rowId.
 		 *
 		 * @param {Object} context
 		 * @param {number} objectId
@@ -2563,8 +2669,9 @@ module.exports = exports = {
 			if ( objectId === null || objectId === undefined ) {
 				return;
 			}
-			var objectIndex = context.getters.getZObjectIndexById( objectId );
+			const objectIndex = context.getters.getZObjectIndexById( objectId );
 			context.commit( 'removeZObject', objectIndex );
+			context.commit( 'clearErrorsForId', objectId );
 		},
 
 		/**
@@ -2704,7 +2811,7 @@ module.exports = exports = {
 				context.dispatch( 'removeZObjectChildren', listItemId );
 				context.dispatch( 'removeZObject', listItemId );
 			}
-			context.dispatch( 'recalculateZListIndex', listId );
+			context.dispatch( 'recalculateTypedListKeys', listId );
 			return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
 				// FIXME zObjectCopy is an array of objects and not an array of Rows
 				context.commit( 'setZObject', zObjectCopy );
@@ -2771,7 +2878,7 @@ module.exports = exports = {
 				context.dispatch( 'removeZObjectChildren', listItemId );
 				context.dispatch( 'removeZObject', listItemId );
 			}
-			context.dispatch( 'recalculateZListIndex', listId );
+			context.dispatch( 'recalculateTypedListKeys', listId );
 			return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
 				// FIXME zObjectCopy is an array of objects and not an array of Rows
 				context.commit( 'setZObject', zObjectCopy );
@@ -2838,7 +2945,7 @@ module.exports = exports = {
 
 			// 1. Get new argument definitions from payload.functionZid
 			if ( payload.functionZid ) {
-				newArgs = context.getters.getZFunctionArgumentDeclarations( payload.functionZid );
+				newArgs = context.getters.getInputsOfFunctionZid( payload.functionZid );
 				newKeys = newArgs.map( ( arg ) => {
 					return arg[ Constants.Z_ARGUMENT_KEY ];
 				} );
@@ -2911,17 +3018,16 @@ module.exports = exports = {
 				Constants.Z_IMPLEMENTATION_COMPOSITION,
 				Constants.Z_IMPLEMENTATION_BUILT_IN
 			];
-			const removeKeys = allKeys.filter( function ( key ) {
-				return ( key !== payload.key );
-			} );
 			// Remove unchecked implementation types
-			removeKeys.forEach( function ( key ) {
-				const keyRow = context.getters.getRowByKeyPath( [ key ], payload.parentId );
-				if ( keyRow ) {
-					context.dispatch( 'removeZObjectChildren', keyRow.id );
-					context.dispatch( 'removeZObject', keyRow.id );
+			for ( const key of allKeys ) {
+				if ( key !== payload.key ) {
+					const keyRow = context.getters.getRowByKeyPath( [ key ], payload.parentId );
+					if ( keyRow ) {
+						context.dispatch( 'removeZObjectChildren', keyRow.id );
+						context.dispatch( 'removeZObject', keyRow.id );
+					}
 				}
-			} );
+			}
 			// Get new implementation content
 			const blankType = ( payload.key === Constants.Z_IMPLEMENTATION_CODE ) ?
 				Constants.Z_CODE :
@@ -3054,10 +3160,19 @@ module.exports = exports = {
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
+		 * @param {number} payload.rowId row ID of the item to delete
 		 */
 		removeItemFromTypedList: function ( context, payload ) {
+			const row = context.getters.getRowById( payload.rowId );
+			if ( !row ) {
+				return;
+			}
+			const parentRowId = row.parent;
+			// remove item
 			context.dispatch( 'removeZObjectChildren', payload.rowId );
 			context.dispatch( 'removeZObject', payload.rowId );
+			// renumber children of parent starting from key
+			context.dispatch( 'recalculateTypedListKeys', parentRowId );
 		},
 
 		/**
@@ -3067,12 +3182,15 @@ module.exports = exports = {
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
+		 * @param {number} payload.parentRowId
+		 * @param {Array} payload.listItems
 		 */
-		removeAllItemsFromTypedList: function ( context, payload ) {
-			for ( var index in payload ) {
-				context.dispatch( 'removeZObjectChildren', payload[ index ] );
-				context.dispatch( 'removeZObject', payload[ index ] );
+		removeItemsFromTypedList: function ( context, payload ) {
+			for ( const itemRowId of payload.listItems ) {
+				context.dispatch( 'removeZObjectChildren', itemRowId );
+				context.dispatch( 'removeZObject', itemRowId );
 			}
+			context.dispatch( 'recalculateTypedListKeys', payload.parentRowId );
 		}
 	}
 };

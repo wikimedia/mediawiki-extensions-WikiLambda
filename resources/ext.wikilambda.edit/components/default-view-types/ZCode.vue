@@ -23,10 +23,25 @@
 						class="ext-wikilambda-value-input ext-wikilambda-code__language-selector"
 						:menu-items="programmingLanguageMenuItems"
 						:default-label="$i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
+						:status="( programmingLanguageErrors.length > 0 ) ? 'error' : 'default'"
 						data-testid="language-dropdown"
 					>
 					</wl-select>
 				</div>
+				<cdx-message
+					v-for="( error, index ) in programmingLanguageErrors"
+					:key="'language-error-' + index"
+					class="ext-wikilambda-key-value-inline-error"
+					:type="error.type"
+					:inline="true"
+				>
+					<template v-if="error.message">
+						{{ error.message }}
+					</template>
+					<template v-else>
+						{{ messageFromCode( error.code ) }}
+					</template>
+				</cdx-message>
 			</div>
 		</div>
 		<!-- Code editor block -->
@@ -45,6 +60,20 @@
 						@change="updateCode"
 					></code-editor>
 				</div>
+				<cdx-message
+					v-for="( error, index ) in codeErrors"
+					:key="'code-error-' + index"
+					class="ext-wikilambda-key-value-inline-error"
+					:type="error.type"
+					:inline="true"
+				>
+					<template v-if="error.message">
+						{{ error.message }}
+					</template>
+					<template v-else>
+						{{ messageFromCode( error.code ) }}
+					</template>
+				</cdx-message>
 			</div>
 		</div>
 	</div>
@@ -52,8 +81,10 @@
 
 <script>
 var Constants = require( '../../Constants.js' ),
+	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	CodeEditor = require( '../base/CodeEditor.vue' ),
 	Select = require( '../base/Select.vue' ),
+	errorUtils = require( '../../mixins/errorUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
@@ -61,9 +92,11 @@ var Constants = require( '../../Constants.js' ),
 module.exports = exports = {
 	name: 'wl-z-code',
 	components: {
+		'cdx-message': CdxMessage,
 		'code-editor': CodeEditor,
 		'wl-select': Select
 	},
+	mixins: [ errorUtils ],
 	props: {
 		rowId: {
 			type: Number,
@@ -91,9 +124,10 @@ module.exports = exports = {
 			'getAllProgrammingLangs',
 			'getErrors',
 			'getLabel',
+			'getRowByKeyPath',
 			'getZCodeProgrammingLanguage',
 			'getZCodeString',
-			'getZFunctionArgumentDeclarations',
+			'getInputsOfFunctionZid',
 			'getZImplementationFunctionZid'
 		] ),
 		{
@@ -114,6 +148,28 @@ module.exports = exports = {
 			 */
 			codeValue: function () {
 				return this.getZCodeString( this.rowId );
+			},
+
+			/**
+			 * Returns the rowId for the code value string
+			 *
+			 * @return {number | undefined}
+			 */
+			codeValueRowId: function () {
+				const codeRow = this.getRowByKeyPath( [
+					Constants.Z_CODE_CODE,
+					Constants.Z_STRING_VALUE
+				], this.rowId );
+				return codeRow ? codeRow.id : undefined;
+			},
+
+			/**
+			 * Returns code field errors
+			 *
+			 * @return {Array}
+			 */
+			codeErrors: function () {
+				return this.codeValueRowId ? this.getErrors( this.codeValueRowId ) : [];
 			},
 
 			/**
@@ -143,6 +199,29 @@ module.exports = exports = {
 			},
 
 			/**
+			 * Returns the rowId for the programming language string
+			 *
+			 * @return {number | undefined}
+			 */
+			programmingLanguageRowId: function () {
+				const langRow = this.getRowByKeyPath( [
+					Constants.Z_CODE_LANGUAGE,
+					Constants.Z_PROGRAMMING_LANGUAGE_CODE,
+					Constants.Z_STRING_VALUE
+				], this.rowId );
+				return langRow ? langRow.id : undefined;
+			},
+
+			/**
+			 * Returns programming language errors
+			 *
+			 * @return {Array}
+			 */
+			programmingLanguageErrors: function () {
+				return this.programmingLanguageRowId ? this.getErrors( this.programmingLanguageRowId ) : [];
+			},
+
+			/**
 			 * Zid of the target function that this code will implement
 			 *
 			 * @return {string | undefined }
@@ -158,7 +237,7 @@ module.exports = exports = {
 			 * @return {Array}
 			 */
 			functionArgumentKeys: function () {
-				return this.getZFunctionArgumentDeclarations( this.functionZid )
+				return this.getInputsOfFunctionZid( this.functionZid )
 					.map( function ( arg ) {
 						return arg[ Constants.Z_ARGUMENT_KEY ];
 					} );
@@ -241,7 +320,7 @@ module.exports = exports = {
 		mapActions( [
 			'fetchZKeys',
 			'fetchAllZProgrammingLanguages',
-			'setError'
+			'clearErrors'
 		] ),
 		{
 			/**
@@ -252,6 +331,9 @@ module.exports = exports = {
 			 */
 			selectLanguage: function ( value ) {
 				this.allowSetEditorValue = true;
+
+				// clear errors for language field
+				this.clearErrors( this.programmingLanguageRowId );
 
 				// update selected language
 				this.$emit( 'set-value', {
@@ -301,16 +383,23 @@ module.exports = exports = {
 				// we don't want to update our object with that bad data
 				// TODO(T324605): this deserves a deeper investigation
 				if ( typeof code !== 'object' ) {
+					this.clearErrors( this.codeValueRowId );
 					this.$emit( 'set-value', {
 						keyPath: [ Constants.Z_CODE_CODE, Constants.Z_STRING_VALUE ],
 						value: code
 					} );
-
-					this.setError( {
-						internalId: this.rowId,
-						errorState: false
-					} );
 				}
+			},
+
+			/**
+			 * Returns the translated message for a given error code
+			 *
+			 * @param {string} code
+			 * @return {string}
+			 */
+			messageFromCode: function ( code ) {
+				// eslint-disable-next-line mediawiki/msg-doc
+				return this.$i18n( code ).text();
 			}
 		} ),
 	watch: {
@@ -352,7 +441,7 @@ module.exports = exports = {
 			}
 
 			& > .ext-wikilambda-value-block {
-				margin-bottom: @spacing-25;
+				margin-bottom: @spacing-50;
 
 				.ext-wikilambda-value-input {
 					margin-top: @spacing-25;

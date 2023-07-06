@@ -37,13 +37,13 @@ class FunctionPage extends Page {
 		/**
 		 * Input the type "String"
 		 */
-		const typeBlock = this.functionCallBlock.$( './/label[text()=" type"]/parent::div/following-sibling::div' );
+		const typeBlock = this.functionCallBlock.$( './/label[text()="type"]/parent::div/following-sibling::div' );
 		await InputDropdown.setInputDropdown( typeBlock, typeBlock.$( './/input[@placeholder="Select a Type"]' ), 'String' );
 
 		/**
 		 * Input the param
 		 */
-		const valueBlock = this.functionCallBlock.$( './/label[text()=" value"]/parent::div/following-sibling::div' );
+		const valueBlock = this.functionCallBlock.$( './/label[text()="value"]/parent::div/following-sibling::div' );
 		await ElementActions.setInput( valueBlock.$( './/input' ), param );
 
 		/**

@@ -17,12 +17,14 @@ describe( 'ZCode', () => {
 		actions;
 	beforeEach( () => {
 		getters = {
+			getErrors: createGettersWithFunctionsMock( [] ),
+			getRowByKeyPath: createGettersWithFunctionsMock( 1 ),
 			getLabel: createGettersWithFunctionsMock( 'label' ),
 			getAllProgrammingLangs: createGettersWithFunctionsMock(),
 			getZCodeProgrammingLanguage: createGettersWithFunctionsMock( 'python' ),
 			getZCodeString: createGettersWithFunctionsMock( 'def Z10001(Z10001K1, Z10001K2):' ),
 			getZImplementationFunctionZid: createGettersWithFunctionsMock( 'Z10001' ),
-			getZFunctionArgumentDeclarations: createGettersWithFunctionsMock( [
+			getInputsOfFunctionZid: createGettersWithFunctionsMock( [
 				{ Z17K2: 'Z10001K1' },
 				{ Z17K2: 'Z10001K2' }
 			] )
@@ -30,10 +32,7 @@ describe( 'ZCode', () => {
 		actions = {
 			fetchAllZProgrammingLanguages: createGettersWithFunctionsMock(),
 			fetchZKeys: jest.fn(),
-			// eslint-disable-next-line no-unused-vars
-			setError: jest.fn( function ( context, payload ) {
-				return true;
-			} )
+			clearErrors: jest.fn()
 		};
 		global.store.hotUpdate( {
 			getters: getters,

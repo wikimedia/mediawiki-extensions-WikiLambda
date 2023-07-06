@@ -20,7 +20,7 @@ const PublishWidget = require( '../../widgets/Publish.vue' );
 
 // @vue/component
 module.exports = exports = {
-	name: 'wl-function-definition-footer',
+	name: 'wl-function-editor-footer',
 	components: {
 		'wl-publish-widget': PublishWidget
 	},

@@ -242,7 +242,8 @@
 				"ext.wikilambda.edit/mixins/typeUtils.js",
 				"ext.wikilambda.edit/mixins/urlUtils.js",
 				"ext.wikilambda.edit/mixins/zobjectTreeUtils.js",
-				"ext.wikilambda.edit/mixins/validator.js",
+				"ext.wikilambda.edit/mixins/errorUtils.js",
+				"ext.wikilambda.edit/mixins/eventLogUtils.js",
 				"ext.wikilambda.edit/mixins/schemata.js",
 				"ext.wikilambda.edit/mixins/portray.js",
 				"ext.wikilambda.edit/mixins/api.js",
@@ -562,9 +563,13 @@
 				"wikilambda-function-viewer-details-table-view-less",
 				"wikilambda-toast-close",
 				"wikilambda-missing-function-output-error-message",
+				"wikilambda-missing-function-input-type-error-message",
 				"wikilambda-zobject-missing-attached-function",
 				"wikilambda-zimplememntation-composition-missing",
 				"wikilambda-zimplementation-code-missing",
+				"wikilambda-zimplementation-code-language-missing",
+				"wikilambda-ztester-missing-call-function",
+				"wikilambda-ztester-missing-validation-function",
 				"wikilambda-chip-remove",
 				"wikilambda-add-list-item-button",
 				"wikilambda-list-items-label",
@@ -600,7 +605,9 @@
 				"wikilambda-function-evaluator-running",
 				"wikilambda-function-evaluator-result",
 				"wikilambda-function-evaluator-result-details",
-				"wikilambda-function-evaluator-run-function"
+				"wikilambda-function-evaluator-run-function",
+				"wikilambda-unknown-save-error-message",
+				"wikilambda-list-type-change-warning"
 			]
 		}
 	},

@@ -140,6 +140,21 @@ var Constants = {
 		WARNING: 'warning',
 		ERROR: 'error'
 	},
+	errorCodes = {
+		UNKNOWN_ERROR: 'wikilambda-unknown-save-error-message',
+		MISSING_FUNCTION_OUTPUT: 'wikilambda-missing-function-output-error-message',
+		MISSING_FUNCTION_INPUT_TYPE: 'wikilambda-missing-function-input-type-error-message',
+		MISSING_TARGET_FUNCTION: 'wikilambda-zobject-missing-attached-function',
+		MISSING_IMPLEMENTATION_COMPOSITION: 'wikilambda-zimplememntation-composition-missing',
+		MISSING_IMPLEMENTATION_CODE: 'wikilambda-zimplementation-code-missing',
+		MISSING_IMPLEMENTATION_CODE_LANGUAGE: 'wikilambda-zimplementation-code-language-missing',
+		MISSING_TESTER_CALL: 'wikilambda-ztester-missing-call-function',
+		MISSING_TESTER_VALIDATION: 'wikilambda-ztester-missing-validation-function',
+		TYPED_LIST_TYPE_CHANGED: 'wikilambda-list-type-change-warning',
+		FUNCTION_INPUT_OUTPUT_CHANGED: 'wikilambda-publish-input-and-output-changed-impact-prompt',
+		FUNCTION_INPUT_CHANGED: 'wikilambda-publish-input-changed-impact-prompt',
+		FUNCTION_OUTPUT_CHANGED: 'wikilambda-publish-output-changed-impact-prompt'
+	},
 	breakpoints = {
 		MOBILE: 320,
 		TABLET: 720,
@@ -195,6 +210,7 @@ Constants.VIEWS = views;
 Constants.PATHS = paths;
 Constants.ACTIONS = actions;
 Constants.errorTypes = errorTypes;
+Constants.errorCodes = errorCodes;
 Constants.breakpoints = breakpoints;
 Constants.breakpointsTypes = breakpointsTypes;
 Constants.contextMenuItems = contextMenuItems;

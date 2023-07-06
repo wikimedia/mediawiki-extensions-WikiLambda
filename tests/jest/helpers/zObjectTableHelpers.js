@@ -4,9 +4,10 @@
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-var Row = require( '../../../resources/ext.wikilambda.edit/store/classes/Row.js' );
+const Row = require( '../../../resources/ext.wikilambda.edit/store/classes/Row.js' ),
+	zobjectRowUtils = require( '../../../resources/ext.wikilambda.edit/mixins/zobjectTreeUtils.js' ).methods;
 
-var tableDataToRowObjects = function ( tableData ) {
+const tableDataToRowObjects = function ( tableData ) {
 	return tableData.map( function ( rowData ) {
 		return new Row(
 			rowData.id,
@@ -17,4 +18,11 @@ var tableDataToRowObjects = function ( tableData ) {
 	} );
 };
 
-module.exports = { tableDataToRowObjects };
+const zobjectToRows = function ( zobject ) {
+	return zobjectRowUtils.convertZObjectToRows( zobject );
+};
+
+module.exports = {
+	tableDataToRowObjects,
+	zobjectToRows
+};

@@ -67,8 +67,10 @@ module.exports = exports = {
 		color: @color-base;
 		margin-top: 0;
 
-		.cdx-icon {
-			color: @color-base;
+		.cdx-button {
+			.cdx-icon {
+				color: @color-base;
+			}
 		}
 	}
 

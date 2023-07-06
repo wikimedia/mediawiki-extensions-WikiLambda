@@ -23,6 +23,7 @@
 var configureCompat = require( 'vue' ).configureCompat,
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
+	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
 	FunctionEvaluator = require( '../views/FunctionEvaluator.vue' ),
 	FunctionEditor = require( '../views/FunctionEditor.vue' ),
 	FunctionViewer = require( '../views/FunctionViewer.vue' ),
@@ -41,6 +42,7 @@ module.exports = exports = {
 		'wl-function-viewer': FunctionViewer,
 		'wl-default-view': DefaultView
 	},
+	mixins: [ eventLogUtils ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -76,7 +78,7 @@ module.exports = exports = {
 					isnewzobject: this.isNewZObject,
 					loadtime: Date.now() - startTime
 				};
-				mw.eventLog.dispatch( 'wf.ui.newView.mounted', customData );
+				this.dispatchEvent( 'wf.ui.newView.mounted', customData );
 			}
 		}
 	),

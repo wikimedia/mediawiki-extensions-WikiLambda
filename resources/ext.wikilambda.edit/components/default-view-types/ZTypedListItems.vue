@@ -59,7 +59,6 @@ var ExpandedToggle = require( '../base/ExpandedToggle.vue' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	LabelData = require( '../../store/classes/LabelData.js' ),
 	icons = require( '../../../lib/icons.json' ),
-	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
@@ -135,20 +134,13 @@ module.exports = exports = {
 			}
 		}
 	),
-	methods: $.extend( mapActions( [
-		'recalculateZListIndex'
-	] ), {
+	methods: {
 		addListItem: function () {
 			this.$emit( 'add-list-item', { value: this.listType, append: true } );
 		}
-	} ),
+	},
 	watch: {
 		childRowIds: function ( list, prevList ) {
-			// If an item was deleted from the list
-			if ( list.length < prevList.length ) {
-				this.recalculateZListIndex( this.zobjectId );
-			}
-
 			// When a new item is added the list,
 			// toggle the expansion in the child component
 			if ( list.length > prevList.length ) {

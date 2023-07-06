@@ -102,7 +102,7 @@ module.exports = exports = {
 .ext-wikilambda-key-value-set {
 	margin-left: -@spacing-75;
 
-	.ext-wikilambda-key-value:last-child {
+	.ext-wikilambda-key-value-row:last-child {
 		margin-bottom: @spacing-0;
 	}
 }

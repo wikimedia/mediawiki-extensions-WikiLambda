@@ -21,14 +21,12 @@
 				target="_blank"
 			>{{ selectedLabel }}</a>
 		</div>
-		<!-- TODO (T336290): add error state when implemented in codex -->
 		<!-- Show fields when edit is false -->
 		<template v-else>
 			<cdx-lookup
 				:key="lookupKey"
 				v-model:selected="selectedValue"
 				:disabled="disabled"
-				:class="{ 'ext-wikilambda-select-zobject__input-invalid': validatorIsInvalid }"
 				:placeholder="lookupPlaceholder"
 				:menu-items="lookupResults"
 				:end-icon="lookupIcon"
@@ -44,17 +42,20 @@
 					{{ $i18n( 'wikilambda-zobjectselector-no-results' ).text() }}
 				</template>
 			</cdx-lookup>
-			<cdx-message
-				v-if="validatorIsInvalid"
-				:inline="true"
-				type="error"
-			>{{ validatorErrorMessage }}</cdx-message>
-			<cdx-message
-				v-if="errorState"
-				class="ext-wikilambda-select-zobject__error"
-				:type="errorType"
-				inline
-			>{{ errorMessage }}</cdx-message>
+			<div
+				v-if="hasFieldErrors"
+				class="ext-wikilambda-select-zobject__errors"
+			>
+				<cdx-message
+					v-for="( error, index ) in fieldErrors"
+					:key="'field-error-' + rowId + '-' + index"
+					:type="error.type"
+					:inline="true"
+				>
+					<template v-if="error.message">{{ error.message }}</template>
+					<template v-else>{{ messageFromCode( error.code ) }}</template>
+				</cdx-message>
+			</div>
 		</template>
 	</span>
 </template>
@@ -63,7 +64,7 @@
 var Constants = require( '../Constants.js' ),
 	CdxLookup = require( '@wikimedia/codex' ).CdxLookup,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
-	validator = require( '../mixins/validator.js' ),
+	errorUtils = require( '../mixins/errorUtils.js' ),
 	typeUtils = require( '../mixins/typeUtils.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters,
@@ -76,7 +77,7 @@ module.exports = exports = {
 		'cdx-message': CdxMessage,
 		'cdx-lookup': CdxLookup
 	},
-	mixins: [ validator, typeUtils ],
+	mixins: [ errorUtils, typeUtils ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -137,8 +138,7 @@ module.exports = exports = {
 	computed: $.extend( {}, mapGetters( [
 		'getLabel',
 		'getLabelData',
-		'getStoredObject',
-		'getErrors'
+		'getStoredObject'
 	] ), {
 
 		/**
@@ -222,45 +222,6 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns whether the code object is in an error state
-		 *
-		 * @return {boolean}
-		 */
-		errorState: function () {
-			// the error is not guaranteed to exist
-			if ( this.getErrors[ this.rowId ] ) {
-				return this.getErrors[ this.rowId ].state;
-			}
-			return false;
-		},
-
-		/**
-		 * Returns the localized text that describes the error, if any,
-		 * else returns an emoty string.
-		 *
-		 * @return {string}
-		 */
-		errorMessage: function () {
-			if ( this.getErrors[ this.rowId ] && this.getErrors[ this.rowId ].state ) {
-				const messageStr = this.getErrors[ this.rowId ].message;
-				// TODO (T336873): These messages could be arbitrary and might not be defined.
-				// eslint-disable-next-line mediawiki/msg-doc
-				return this.$i18n( messageStr ).text();
-			}
-			return '';
-		},
-
-		/**
-		 * Returns the string identifying the error type, if any,
-		 * else returns undefined.
-		 *
-		 * @return {string | undefined}
-		 */
-		errorType: function () {
-			return this.getErrors[ this.rowId ] ? this.getErrors[ this.rowId ].type : undefined;
-		},
-
-		/**
 		 * Status property for the Lookup component (ValidateStatusType).
 		 * Can take the values 'default' or 'error':
 		 * https://doc.wikimedia.org/codex/latest/components/types-and-constants.html#validationstatustype
@@ -268,14 +229,13 @@ module.exports = exports = {
 		 * @return {string}
 		 */
 		errorLookupStatus: function () {
-			return this.errorState ? 'error' : 'default';
+			return this.hasFieldErrors ? 'error' : 'default';
 		}
 	} ),
 	methods: $.extend( {},
 		mapActions( [
 			'lookupZObject',
-			'fetchZKeys',
-			'setError'
+			'fetchZKeys'
 		] ),
 		{
 			/**
@@ -359,7 +319,7 @@ module.exports = exports = {
 						// fetchZKeys makes sure that only the missing zids are requested
 						this.fetchZKeys( { zids } );
 					} else {
-						this.validatorSetError( 'wikilambda-noresult' );
+						this.setLocalError( { code: 'wikilambda-noresult' } );
 					}
 				} );
 			},
@@ -406,7 +366,7 @@ module.exports = exports = {
 				// was returned, which means the Zid is invalid:
 				if ( !fetchedObject ) {
 					this.clearResults();
-					this.validatorSetError( 'wikilambda-invalidzobject' );
+					this.setLocalError( { code: 'wikilambda-invalidzobject' } );
 					return;
 				}
 
@@ -414,7 +374,7 @@ module.exports = exports = {
 				// type restrictions, the Zid is invalid:
 				if ( !this.hasValidType( zid ) ) {
 					this.clearResults();
-					this.validatorSetError( 'wikilambda-invalidzobject' );
+					this.setLocalError( { code: 'wikilambda-invalidzobject' } );
 					return;
 				}
 
@@ -446,7 +406,7 @@ module.exports = exports = {
 			 */
 			onInput: function ( input ) {
 				this.inputValue = input;
-				this.validatorResetError();
+				this.clearFieldErrors();
 
 				// If empty input, clear and exit
 				if ( !input ) {
@@ -471,6 +431,17 @@ module.exports = exports = {
 			},
 
 			/**
+			 * Returns the translated message for a given error code
+			 *
+			 * @param {string} code
+			 * @return {string}
+			 */
+			messageFromCode: function ( code ) {
+				// eslint-disable-next-line mediawiki/msg-doc
+				return this.$i18n( code ).text();
+			},
+
+			/**
 			 * Model update event, sets the value of the field
 			 * either with an empty value or with a selected value
 			 * from the menu.
@@ -478,11 +449,8 @@ module.exports = exports = {
 			 * @param {string} value
 			 */
 			onSelect: function ( value ) {
+				this.clearFieldErrors();
 				this.$emit( 'input', value );
-				this.setError( {
-					internalId: this.rowId,
-					errorState: false
-				} );
 			},
 
 			/**
@@ -553,13 +521,8 @@ module.exports = exports = {
 		display: inline-flex;
 	}
 
-	&__input-invalid {
-		background: #fee;
-		border: 2px #f00 solid;
-	}
-
-	&__error {
-		padding-top: 6px;
+	&__errors {
+		margin-top: @spacing-50;
 		width: max-content;
 	}
 }

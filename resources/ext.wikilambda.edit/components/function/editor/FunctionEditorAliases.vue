@@ -48,7 +48,7 @@ var Constants = require( '../../../Constants.js' ),
 
 // @vue/component
 module.exports = exports = {
-	name: 'wl-function-definition-aliases',
+	name: 'wl-function-editor-aliases',
 	components: {
 		// TODO: replace with codex filter chip when available
 		'wl-chips-container': ChipContainer
@@ -135,11 +135,9 @@ module.exports = exports = {
 	),
 	methods: $.extend(
 		mapActions( [
-			'setZObjectValue',
 			'changeType',
-			'removeZObjectChildren',
-			'removeZObject',
-			'recalculateZListIndex'
+			'setZObjectValue',
+			'removeItemFromTypedList'
 		] ),
 		{
 			getLanguageAliasStringsetId: function ( language ) {
@@ -203,10 +201,7 @@ module.exports = exports = {
 			removeAlias: function ( aliasStringValueId ) {
 				this.clearAliasError();
 				const aliasStringObject = this.getRowById( this.getParentRowId( aliasStringValueId ) );
-				const aliasStringSetId = aliasStringObject.parent;
-				this.removeZObjectChildren( aliasStringObject.id );
-				this.removeZObject( aliasStringObject.id );
-				this.recalculateZListIndex( aliasStringSetId );
+				this.removeItemFromTypedList( { rowId: aliasStringObject.id } );
 				this.$emit( 'updated-alias' );
 			},
 			clearAliasError: function () {

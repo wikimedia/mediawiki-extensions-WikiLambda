@@ -149,6 +149,34 @@ describe( 'zkeys Vuex module', function () {
 				expect( zkeysModule.getters.getAttachedImplementations( state )( 'Z802' ) ).toEqual( [ 'Z902' ] );
 			} );
 		} );
+
+		describe( 'getInputsOfFunctionZid', function () {
+			beforeEach( function () {
+				state.zKeys = mockApiZkeys;
+			} );
+
+			it( 'Returns empty array when the zid has not been fetched ', function () {
+				expect( zkeysModule.getters.getInputsOfFunctionZid( state )( 'Z999999' ) ).toHaveLength( 0 );
+			} );
+
+			it( 'Returns empty array when the zid is not a function', function () {
+				expect( zkeysModule.getters.getInputsOfFunctionZid( state )( 'Z32' ) ).toHaveLength( 0 );
+			} );
+
+			it( 'Returns one argument with a one-argument function', function () {
+				const args = zkeysModule.getters.getInputsOfFunctionZid( state )( 'Z881' );
+				expect( args ).toHaveLength( 1 );
+				expect( args[ 0 ].Z17K2 ).toEqual( 'Z881K1' );
+			} );
+
+			it( 'Returns all arguments with a three-argument function', function () {
+				const args = zkeysModule.getters.getInputsOfFunctionZid( state )( 'Z802' );
+				expect( args ).toHaveLength( 3 );
+				expect( args[ 0 ].Z17K2 ).toEqual( 'Z802K1' );
+				expect( args[ 1 ].Z17K2 ).toEqual( 'Z802K2' );
+				expect( args[ 2 ].Z17K2 ).toEqual( 'Z802K3' );
+			} );
+		} );
 	} );
 
 	describe( 'Actions', function () {

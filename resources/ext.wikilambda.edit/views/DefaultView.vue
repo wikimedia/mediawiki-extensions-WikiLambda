@@ -80,6 +80,7 @@ var Constants = require( '../Constants.js' ),
 	AboutWidget = require( '../components/widgets/About.vue' ),
 	PublishWidget = require( '../components/widgets/Publish.vue' ),
 	FunctionReportWidget = require( '../components/widgets/FunctionReport.vue' ),
+	eventLogUtils = require( '../mixins/eventLogUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
@@ -94,6 +95,7 @@ module.exports = exports = {
 		// 'wl-z-object-json': ZObjectJson,
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
+	mixins: [ eventLogUtils ],
 	data: function () {
 		return {};
 	},
@@ -207,11 +209,10 @@ module.exports = exports = {
 					return this.getZImplementationContentType( this.contentRowId );
 				}
 			}
-
 		}
 	),
 	mounted: function () {
-		mw.eventLog.dispatch( 'wf.ui.defaultView.load', {
+		this.dispatchEvent( 'wf.ui.defaultView.load', {
 			edit: this.edit,
 			zobjecttype: this.contentType || null,
 			isnewzobject: this.isNewZObject,

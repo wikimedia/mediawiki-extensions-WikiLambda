@@ -90,13 +90,9 @@ describe( 'FunctionEditorAliases', () => {
 		};
 
 		actions = {
-			setZObjectValue: jest.fn(),
-			addZObject: jest.fn(),
 			changeType: jest.fn(),
-			injectZObject: jest.fn(),
-			removeZObjectChildren: jest.fn(),
-			removeZObject: jest.fn(),
-			recalculateZListIndex: jest.fn()
+			setZObjectValue: jest.fn(),
+			removeItemFromTypedList: jest.fn()
 		};
 
 		global.store.hotUpdate( {
@@ -130,9 +126,7 @@ describe( 'FunctionEditorAliases', () => {
 
 		wrapper.getComponent( ChipContainer ).vm.$emit( 'remove-chip', stringValueId );
 
-		expect( actions.removeZObjectChildren ).toHaveBeenCalledWith( expect.anything(), stringId );
-		expect( actions.removeZObject ).toHaveBeenCalledWith( expect.anything(), stringId );
-		expect( actions.recalculateZListIndex ).toHaveBeenCalledWith( expect.anything(), monolingualStringsetValueId );
+		expect( actions.removeItemFromTypedList ).toHaveBeenCalledWith( expect.anything(), { rowId: stringId } );
 	} );
 	describe( 'When a new chip is added in chip container', () => {
 		it( 'for an existing language, adds new alias', () => {

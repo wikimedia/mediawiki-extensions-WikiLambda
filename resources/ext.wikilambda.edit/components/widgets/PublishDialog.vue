@@ -28,27 +28,27 @@
 				</cdx-button>
 			</div>
 			<div class="ext-wikilambda-publishdialog__summary">
-				<div v-if="hasErrors" class="ext-wikilambda-publishdialog__errors">
-					<div v-for="error in errors" :key="error.id">
-						<cdx-message
-							class="ext-wikilambda-publishdialog__errors__message"
-							type="error"
-						>
+				<!-- Error and Warning section -->
+				<div
+					v-if="hasErrors"
+					class="ext-wikilambda-publishdialog__errors"
+				>
+					<cdx-message
+						v-for="( error, index ) in errors"
+						:key="'dialog-error-' + index"
+						class="ext-wikilambda-publishdialog__error"
+						:type="error.type"
+					>
+						<template v-if="error.message">
 							{{ error.message }}
-						</cdx-message>
-					</div>
-				</div>
-				<div v-if="hasWarnings" class="ext-wikilambda-publishdialog__warnings">
-					<div v-for="warning in warnings" :key="warning.id">
-						<cdx-message
-							class="ext-wikilambda-publishdialog__warnings__message"
-							type="warning"
-						>
-							<p v-html="warning.message"></p>
-						</cdx-message>
-					</div>
+						</template>
+						<template v-else>
+							{{ messageFromCode( error.code ) }}
+						</template>
+					</cdx-message>
 				</div>
 
+				<!-- Summary section -->
 				<div class="ext-wikilambda-publishdialog__summary">
 					<div class="ext-wikilambda-publishdialog__summary-label">
 						<label
@@ -103,6 +103,7 @@ const Constants = require( '../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( '../../../lib/icons.json' ),
+	eventLogUtils = require( '../../mixins/eventLogUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
@@ -116,6 +117,7 @@ module.exports = exports = {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},
+	mixins: [ eventLogUtils ],
 	inject: {
 		viewmode: { default: false }
 	},
@@ -145,62 +147,97 @@ module.exports = exports = {
 		'isNewZObject',
 		'getUserZlangZID'
 	] ), {
+		/**
+		 * Returns the array of errors and warnings of the page
+		 *
+		 * @return {Array}
+		 */
 		errors: function () {
-			return Object.keys( this.getErrors )
-				.map( ( key ) => this.getErrors[ key ] )
-				.filter( ( error ) => error.type === Constants.errorTypes.ERROR );
+			return this.getErrors( 0 );
 		},
-		warnings: function () {
-			return Object.keys( this.getErrors )
-				.map( ( key ) => this.getErrors[ key ] )
-				.filter( ( error ) => error.type === Constants.errorTypes.WARNING );
-		},
+
+		/**
+		 * Returns whether there are any errors in the page
+		 * to show in the publish dialog
+		 *
+		 * @return { boolean }
+		 */
 		hasErrors: function () {
 			return this.errors.length !== 0;
 		},
-		hasWarnings: function () {
-			return this.warnings.length !== 0;
-		},
-		legalText: function () {
-			// Special message for implementations (Apache 2.0 licence for code).
-			if ( this.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) {
-				return this.$i18n( 'wikifunctions-edit-copyrightwarning-implementation' );
-			}
 
-			// General message for all other kinds of ZObjects (CC0).
-			return this.$i18n( 'wikifunctions-edit-copyrightwarning-function' );
+		/**
+		 * Returns the legal text to display in the Publish Dialog, depending
+		 * on the type of object that is being submitted:
+		 * * Special message for implementations (Apache 2.0 licence for code).
+		 * * General message for all other kinds of ZObjects (CC0).
+		 *
+		 * @return { string }
+		 */
+		legalText: function () {
+			return ( this.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) ?
+				this.$i18n( 'wikifunctions-edit-copyrightwarning-implementation' ).text() :
+				this.$i18n( 'wikifunctions-edit-copyrightwarning-function' ).text();
 		}
 	} ),
 	methods: $.extend( mapActions( [
 		'submitZObject',
-		'setError'
+		'setError',
+		'clearAllErrors'
 	] ),
 	{
+		/**
+		 * Clears the error notifications and emits a close-dialog
+		 * event for the Publish widget to close the dialog.
+		 */
 		closeDialog: function () {
 			if ( this.hasErrors ) {
-				this.setError( {
-					internalId: this.getCurrentZObjectId,
-					errorState: false
-				} );
+				this.clearAllErrors();
 			}
 			this.$emit( 'close-dialog' );
 		},
+
+		/**
+		 * Submits the ZObject to the wikilambda_edit API
+		 * and handles the return value:
+		 * 1. If the response contains an error, saves the error
+		 *    in the store/errors module and displays the error messages
+		 *    in the Publish Dialog notification block.
+		 * 2. If the response is successful, navigates to the ZObject
+		 *    page.
+		 */
 		publishZObject: function () {
-			var summary = this.summary;
-			var shouldUnattachImplementationAndTester = this.shouldUnattachImplementationAndTester;
-			this.submitZObject( { summary, shouldUnattachImplementationAndTester } ).then( function ( pageTitle ) {
+			// Before sending the request we clear all error and warning notifications
+			this.clearAllErrors();
+
+			const summary = this.summary;
+			const shouldUnattachImplementationAndTester = this.shouldUnattachImplementationAndTester;
+
+			this.submitZObject( {
+				summary,
+				shouldUnattachImplementationAndTester
+			} ).then( ( pageTitle ) => {
 				if ( pageTitle ) {
 					window.location.href = new mw.Title( pageTitle ).getUrl() + '?success=true';
 				}
-			} ).catch( function ( error ) {
+			} ).catch( ( error ) => {
+				// If error.error.message: known ZError
+				// Else, PHP error or exception captured in error.error.info
+				// Additionally, if nothing available, show generic unknown error message
+				const errorMessage = ( error && error.error ) ?
+					( error.error.message || error.error.info ) :
+					undefined;
+
 				const payload = {
-					internalId: this.getCurrentZObjectId,
-					errorState: true,
-					errorMessage: error.error.message,
-					errorType: Constants.errorTypes.ERROR
+					rowId: 0,
+					errorType: Constants.errorTypes.ERROR,
+					errorMessage,
+					errorCode: !errorMessage ? Constants.errorCodes.UNKNOWN_ERROR : undefined
 				};
+
 				this.setError( payload );
-			}.bind( this ) );
+			} );
+
 			// Log using Metrics Platform
 			const customData = {
 				isnewzobject: this.isNewZObject,
@@ -212,7 +249,18 @@ module.exports = exports = {
 			if ( this.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) {
 				customData.implementationtype = this.getCurrentZImplementationContentType || null;
 			}
-			mw.eventLog.dispatch( 'wf.ui.editZObject.publish', customData );
+			this.dispatchEvent( 'wf.ui.editZObject.publish', customData );
+		},
+
+		/**
+		 * Returns the translated message for a given error code
+		 *
+		 * @param {string} code
+		 * @return {string}
+		 */
+		messageFromCode: function ( code ) {
+			// eslint-disable-next-line mediawiki/msg-doc
+			return this.$i18n( code ).text();
 		}
 	} )
 };

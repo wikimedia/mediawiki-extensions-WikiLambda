@@ -80,28 +80,31 @@ module.exports = exports = {
 			return this.typedListStringToType( expectedType );
 		}
 	} ),
-	methods: $.extend( mapActions( [ 'setListItemsForRemoval', 'setError' ] ),
-		{
-			changeType: function ( payload ) {
-				// if the type of the list has changed, warn the user this will delete list items (now the 'wrong' type)
-				// if the type was changed to Z1, we don't need to do this
-				// TODO: we can be smarter here and check each item to know what actually needs to be deleted
-				// (instead of deleting all items)
-				if ( payload.value !== Constants.Z_OBJECT && payload.value !== this.listType ) {
+	methods: $.extend( mapActions( [
+		'setListItemsForRemoval',
+		'setError'
+	] ), {
+		changeType: function ( payload ) {
+			// if the type of the list has changed, warn the user this will delete list items (now the 'wrong' type)
+			// if the type was changed to Z1, we don't need to do this
+			// TODO: we can be smarter here and check each item to know what actually needs to be deleted
+			// (instead of deleting all items)
+			if ( payload.value !== Constants.Z_OBJECT && payload.value !== this.listType ) {
 
-					// TODO (T332990): Revisit how we want to display a warning to the user about deletion
-					this.setError( {
-						internalId: this.parentRowId,
-						errorState: true,
-						errorMessage: this.$i18n( 'wikilambda-list-type-change-publish-dialog-warning' ).text(),
-						errorType: Constants.errorTypes.WARNING
-					} );
+				// TODO (T332990): Revisit how we want to display a warning to the user about deletion
+				this.setError( {
+					rowId: 0,
+					errorCode: Constants.errorCodes.TYPED_LIST_TYPE_CHANGED,
+					errorType: Constants.errorTypes.WARNING
+				} );
 
-					this.setListItemsForRemoval( { listItems: this.listItemsRowIds } );
-				}
+				this.setListItemsForRemoval( {
+					parentRowId: this.parentRowId,
+					listItems: this.listItemsRowIds
+				} );
 			}
 		}
-	),
+	} ),
 	beforeCreate: function () {
 		this.$options.components[ 'wl-z-object-key-value' ] = require( './ZObjectKeyValue.vue' );
 	}
