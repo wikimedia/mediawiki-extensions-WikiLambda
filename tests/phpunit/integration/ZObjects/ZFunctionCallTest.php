@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\Tests\Integration\ZObjects;
 use MediaWiki\Extension\WikiLambda\Tests\Integration\WikiLambdaIntegrationTestCase;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall
@@ -168,5 +169,49 @@ EOT;
 		$zobject = ZObjectFactory::create( json_decode( $strFunctionCall ) );
 		$this->assertInstanceOf( ZFunctionCall::class, $zobject );
 		$this->assertNull( $zobject->getReturnType() );
+	}
+
+	public function testGetSerialized() {
+		$expectedCanonical = json_decode( <<<EOT
+		{
+			"Z1K1": "Z7",
+			"Z7K1": "Z881",
+			"Z881K1": "Z3"
+		}
+		EOT );
+
+		$testObject = ZObjectFactory::create( $expectedCanonical );
+
+		$serializedObjectCanonical = $testObject->getSerialized( $testObject::FORM_CANONICAL );
+		$this->assertEquals( $expectedCanonical, $serializedObjectCanonical, 'Canonical serialization' );
+
+		$roundTripped = ZObjectFactory::create( $serializedObjectCanonical );
+		$this->assertEquals( $testObject, $roundTripped, 'Round trip through canonical serialization' );
+
+		$serializedObjectDefault = $testObject->getSerialized();
+		$this->assertEquals( $expectedCanonical, $serializedObjectDefault, 'Default serialization' );
+
+		$expectedNormal = json_decode( <<<EOT
+		{
+			"Z1K1": {
+				"Z1K1": "Z9",
+				"Z9K1": "Z7"
+			},
+			"Z7K1": {
+				"Z1K1": "Z9",
+				"Z9K1": "Z881"
+			},
+			"Z881K1": {
+				"Z1K1": "Z9",
+				"Z9K1": "Z3"
+			}
+		}
+		EOT );
+
+		$serializedObjectNormal = $testObject->getSerialized( $testObject::FORM_NORMAL );
+		$this->assertEquals( $expectedNormal, $serializedObjectNormal, 'Normal serialization' );
+
+		$roundTripped = ZObjectFactory::create( ZObjectUtils::canonicalize( $serializedObjectNormal ) );
+		$this->assertEquals( $testObject, $roundTripped, 'Round trip through normal serialization' );
 	}
 }

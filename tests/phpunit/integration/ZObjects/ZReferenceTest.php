@@ -15,6 +15,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZReference
@@ -100,5 +101,22 @@ class ZReferenceTest extends WikiLambdaIntegrationTestCase {
 			(array)$testObject->getSerialized( ZObject::FORM_NORMAL ),
 			'Serialised normal form of indirectly-created ZReference'
 		);
+
+		$testObject = new ZReference( 'Z1003' );
+
+		$serializedObjectCanonical = $testObject->getSerialized( $testObject::FORM_CANONICAL );
+		$this->assertEquals( "Z1003", $serializedObjectCanonical, 'Canonical serialization' );
+
+		$roundTripped = ZObjectFactory::create( $serializedObjectCanonical );
+		$this->assertEquals( $testObject, $roundTripped, 'Round trip through canonical serialization' );
+
+		$serializedObjectDefault = $testObject->getSerialized();
+		$this->assertEquals( "Z1003", $serializedObjectDefault, 'Default serialization' );
+
+		$serializedObjectNormal = $testObject->getSerialized( $testObject::FORM_NORMAL, 'Normal serialization' );
+		$this->assertEquals( json_decode( '{"Z1K1":"Z9","Z9K1":"Z1003"}' ), $serializedObjectNormal );
+
+		$roundTripped = ZObjectFactory::create( ZObjectUtils::canonicalize( $serializedObjectNormal ) );
+		$this->assertEquals( $testObject, $roundTripped, 'Round trip through normal serialization' );
 	}
 }

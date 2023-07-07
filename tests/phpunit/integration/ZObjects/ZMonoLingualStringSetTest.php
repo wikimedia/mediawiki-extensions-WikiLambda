@@ -17,6 +17,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualStringSet;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZMonoLingualStringSet
@@ -148,5 +149,109 @@ EOT
 			[ 'Demonstration item', 'Demonstration second item' ],
 			$testObject->getInnerZObject()->getStringSet()
 		);
+	}
+
+	public function testGetSerialized() {
+		$testObject = new ZMonoLingualStringSet(
+			new ZReference( 'Z1003' ),
+			[
+				new ZString( 'Elemento de demostración' ),
+				new ZString( 'Otro elemento de demostración' )
+			]
+		);
+		$expectedCanonical = json_decode(
+			<<<EOT
+{
+	"Z1K1": "Z31",
+	"Z31K1": "Z1003",
+	"Z31K2": [ "Z6", "Elemento de demostración", "Otro elemento de demostración" ]
+}
+EOT
+		);
+
+		$serializedObjectCanonical = $testObject->getSerialized( $testObject::FORM_CANONICAL );
+		$this->assertEquals( $expectedCanonical, $serializedObjectCanonical );
+
+		$roundTripped = ZObjectFactory::create( $serializedObjectCanonical );
+		$this->assertEquals( $testObject, $roundTripped, 'Round trip through canonical serialization' );
+
+		$serializedObjectDefault = $testObject->getSerialized();
+		$this->assertEquals( $expectedCanonical, $serializedObjectDefault );
+
+		$expectedNormal = json_decode(
+	<<<EOT
+{
+	"Z1K1": {
+		"Z1K1": "Z9",
+		"Z9K1": "Z31"
+	},
+	"Z31K1": {
+		"Z1K1": "Z9",
+		"Z9K1": "Z1003"
+	},
+	"Z31K2": {
+		"Z1K1": {
+			"Z1K1": {
+				"Z1K1": "Z9",
+				"Z9K1": "Z7"
+			},
+			"Z7K1": {
+				"Z1K1": "Z9",
+				"Z9K1": "Z881"
+			},
+			"Z881K1": {
+				"Z1K1": "Z9",
+				"Z9K1": "Z6"
+			}
+		},
+		"K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Elemento de demostración"
+		},
+		"K2": {
+			"Z1K1": {
+				"Z1K1": {
+					"Z1K1": "Z9",
+					"Z9K1": "Z7"
+				},
+				"Z7K1": {
+					"Z1K1": "Z9",
+					"Z9K1": "Z881"
+				},
+				"Z881K1": {
+					"Z1K1": "Z9",
+					"Z9K1": "Z6"
+				}
+			},
+			"K1": {
+				"Z1K1": "Z6",
+				"Z6K1": "Otro elemento de demostración"
+			},
+			"K2": {
+				"Z1K1": {
+					"Z1K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z7"
+					},
+					"Z7K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z881"
+					},
+					"Z881K1": {
+						"Z1K1": "Z9",
+						"Z9K1": "Z6"
+					}
+				}
+			}
+		}
+	}
+}
+EOT
+		);
+		$serializedObjectNormal = $testObject->getSerialized( $testObject::FORM_NORMAL );
+		$this->assertEquals( $expectedNormal, $serializedObjectNormal );
+
+		$roundTripped = ZObjectFactory::create( ZObjectUtils::canonicalize( $serializedObjectNormal ) );
+		$this->assertEquals( $testObject, $roundTripped, 'Round trip through normal serialization' );
 	}
 }
