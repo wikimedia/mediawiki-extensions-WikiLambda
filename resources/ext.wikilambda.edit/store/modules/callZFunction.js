@@ -6,6 +6,7 @@
  */
 
 var Constants = require( '../../Constants.js' ),
+	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs,
 	performFunctionCall = require( '../../mixins/api.js' ).methods.performFunctionCall;
 
 module.exports = exports = {
@@ -43,40 +44,29 @@ module.exports = exports = {
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
+		 * @param {Object} payload.functionCall
+		 * @param {Object} payload.resultRowId
 		 * @return {Promise}
 		 */
 		callZFunction: function ( context, payload ) {
-			return performFunctionCall( payload.zobject ).then( function ( data ) {
+			return performFunctionCall( payload.functionCall ).then( ( data ) => {
+				// Asynchronously collect the necessary labels
+				const zids = extractZIDs( data.response );
+				context.dispatch( 'fetchZKeys', { zids } );
 
-				var canonicalZObject = data.response;
-
-				context.dispatch(
-					'addZFunctionResultToTree',
-					{
-						result: canonicalZObject,
-						resultId: payload.resultId
-					}
-				);
-			} ).catch( function ( error ) {
-				context.dispatch( 'addZFunctionResultToTree', {
-					result: error,
-					resultId: payload.resultId
+				// Success, we inject the response object in the resultRowId
+				context.dispatch( 'injectZObjectFromRowId', {
+					rowId: payload.resultRowId,
+					value: data.response
 				} );
-			} );
-		},
-		/**
-		 * attach a function result to the zObject tree.
-		 * The result can either be a zObject or an error.
-		 *
-		 * @param {Object} context
-		 * @param {Object} payload
-		 */
-		addZFunctionResultToTree: function ( context, payload ) {
-			context.dispatch( 'injectZObject', {
-				zobject: payload.result,
-				key: '',
-				id: payload.resultId,
-				parent: ''
+			} ).catch( ( error ) => {
+				// Failure, we inject the error object in the resultRowId
+				// FIXME: figure out how we handle API failures correctly,
+				// do we get a zobject here, or an error message?
+				context.dispatch( 'injectZObjectFromRowId', {
+					rowId: payload.resultRowId,
+					value: error
+				} );
 			} );
 		}
 	}

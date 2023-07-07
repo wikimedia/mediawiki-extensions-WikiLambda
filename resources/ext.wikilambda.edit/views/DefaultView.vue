@@ -13,6 +13,7 @@
 					:edit="edit"
 				></wl-about-widget>
 
+				<!-- Widget Function Explorer -->
 				<wl-function-explorer-widget
 					v-if="hasFunctionWidgets"
 					:function-zid="targetFunctionZid"
@@ -48,9 +49,12 @@
 					:report-type="contentType"
 				></wl-function-report-widget>
 
+				<!-- Widget Function Evaluator -->
 				<wl-function-evaluator-widget
 					v-if="hasFunctionWidgets"
 					:function-zid="targetFunctionZid"
+					:content-row-id="contentRowId"
+					:for-implementation="isImplementationPage"
 				></wl-function-evaluator-widget>
 
 				<!-- Widget ZObject JSON: Leave here for development purposes.
@@ -137,13 +141,31 @@ module.exports = exports = {
 			},
 
 			/**
+			 * Whether the page contains function widgets (is an
+			 * implementation or a tester page)
+			 *
 			 * @return {boolean}
 			 */
 			hasFunctionWidgets: function () {
-				return (
-					( this.contentType === Constants.Z_IMPLEMENTATION ) ||
-					( this.contentType === Constants.Z_TESTER )
-				);
+				return this.isImplementationPage || this.isTesterPage;
+			},
+
+			/**
+			 * Whether the page is an implementation page
+			 *
+			 * @return {boolean}
+			 */
+			isImplementationPage: function () {
+				return this.contentType === Constants.Z_IMPLEMENTATION;
+			},
+
+			/**
+			 * Whether the page is an implementation page
+			 *
+			 * @return {boolean}
+			 */
+			isTesterPage: function () {
+				return this.contentType === Constants.Z_TESTER;
 			},
 
 			/**

@@ -104,7 +104,7 @@ describe( 'callZFunction Vuex module', function () {
 				} );
 
 				callZFunctionModule.actions.callZFunction(
-					context, { zobject: functionCall }
+					context, { functionCall }
 				);
 
 				expect( postMock ).toHaveBeenCalledWith( {
@@ -124,62 +124,13 @@ describe( 'callZFunction Vuex module', function () {
 				} );
 
 				callZFunctionModule.actions.callZFunction(
-					context, { zobject: functionCall }
+					context, { functionCall }
 				);
 
 				expect( postMock ).toHaveBeenCalledWith( {
 					action: 'wikilambda_function_call',
 					wikilambda_function_call_zobject: JSON.stringify( canonicalFunctionCall )
 				} );
-			} );
-		} );
-	} );
-
-	describe( 'addZFunctionResultToTree', () => {
-		it( 'Add orchestration result to the zobject tree (no prior result)', function () {
-			var result = { Z1K1: 'Z6', Z6K1: 'A new string' },
-				payload = { result: result, resultId: 6 },
-				nextId = 6;
-			context.getters = {
-				getOrchestrationResultId: null,
-				getNextObjectId: nextId
-			};
-
-			context.commit = jest.fn( function () {
-				return;
-			} );
-
-			callZFunctionModule.actions.addZFunctionResultToTree( context, payload );
-
-			expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObject', {
-				zobject: result,
-				key: '',
-				id: nextId,
-				parent: ''
-			} );
-		} );
-
-		it( 'Add orchestration result to the zobject tree (with prior result)', function () {
-			var result = { Z1K1: 'Z6', Z6K1: 'A new string' },
-				payload = { result: result, resultId: 6 },
-				nextId = 6;
-			context.getters = {
-				getOrchestrationResultId: nextId,
-				getNextObjectId: nextId
-			};
-
-			context.commit = jest.fn( function () {
-				return;
-			} );
-
-			callZFunctionModule.actions.addZFunctionResultToTree( context, payload );
-
-			expect( context.commit ).toHaveBeenCalledTimes( 0 );
-			expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObject', {
-				zobject: result,
-				key: '',
-				id: nextId,
-				parent: ''
 			} );
 		} );
 	} );

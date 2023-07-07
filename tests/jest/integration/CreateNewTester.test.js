@@ -86,10 +86,9 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 	} );
 
 	it.only( 'allows creating a new tester', async () => {
-		const {
-			findByRole,
-			findByTestId
-		} = render( App, { global: { plugins: [ store ] } } );
+		const { findByRole, findByTestId } = render( App, {
+			global: { plugins: [ store ], stubs: { WlFunctionEvaluatorWidget: true } }
+		} );
 
 		//* -- Function call section
 		// ASSERT: The function specified in URL is pre-selected as the function under test.

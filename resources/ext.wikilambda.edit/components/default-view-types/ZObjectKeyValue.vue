@@ -633,7 +633,6 @@ module.exports = exports = {
 		 * up.
 		 *
 		 * @param {Object} payload
-		 * @param {Object} payload.value object to set as value for this key-value
 		 * @param {Object} payload.keyPath sequence of keys till the value to edit
 		 * @param {Object | Array | string} payload.value new value
 		 */

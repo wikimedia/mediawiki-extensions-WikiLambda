@@ -780,7 +780,7 @@ module.exports = exports = {
 		getZFunctionCallFunctionId: function ( _state, getters ) {
 			/**
 			 * @param {string} rowId
-			 * @return {string}
+			 * @return {string | undefined}
 			 */
 			function findZFunctionId( rowId ) {
 				const zFunction = getters.getRowByKeyPath(

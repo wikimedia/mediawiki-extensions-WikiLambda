@@ -720,7 +720,7 @@ describe( 'router Vuex module', function () {
 				} );
 			} );
 
-			describe( 'Evaluate Function Route loads ZObject Editor', function () {
+			describe( 'Evaluate Function Route loads Function Evaluator view', function () {
 				it( 'with URL Format One (/w/index.php)', function () {
 					window.mw.Uri.mockImplementationOnce( function () {
 						return {
@@ -736,7 +736,7 @@ describe( 'router Vuex module', function () {
 
 					expect( context.dispatch ).toHaveBeenCalled();
 					expect( context.dispatch ).toHaveBeenCalledWith(
-						'changeCurrentView', Constants.VIEWS.DEFAULT_VIEW );
+						'changeCurrentView', Constants.VIEWS.FUNCTION_EVALUATOR );
 				} );
 
 				it( 'with URL Format Two (/wiki/{{title}})', function () {
@@ -751,7 +751,7 @@ describe( 'router Vuex module', function () {
 
 					expect( context.dispatch ).toHaveBeenCalled();
 					expect( context.dispatch ).toHaveBeenCalledWith(
-						'changeCurrentView', Constants.VIEWS.DEFAULT_VIEW );
+						'changeCurrentView', Constants.VIEWS.FUNCTION_EVALUATOR );
 				} );
 			} );
 		} );

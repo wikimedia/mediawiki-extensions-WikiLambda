@@ -94,14 +94,14 @@ describe( 'ZEvaluationResult', () => {
 			expect( wrapper.find( '.ext-wikilambda-evaluation-result' ).exists() ).toBe( true );
 		} );
 
-		it( 'renders metadata button', () => {
+		it( 'renders metadata link', () => {
 			var wrapper = shallowMount( ZEvaluationResult, {
 				props: {
 					edit: false
 				}
 			} );
-			const buttons = wrapper.find( '.ext-wikilambda-evaluation-result-buttons' );
-			expect( buttons.find( '.ext-wikilambda-evaluation-result-buttons__metadata' ).exists() ).toBe( true );
+			const actions = wrapper.find( '.ext-wikilambda-evaluation-result-actions' );
+			expect( actions.find( '.ext-wikilambda-evaluation-result-actions__metadata' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders metadata dialog', () => {
@@ -136,15 +136,15 @@ describe( 'ZEvaluationResult', () => {
 			expect( wrapper.find( '.ext-wikilambda-evaluation-result' ).exists() ).toBe( true );
 		} );
 
-		it( 'renders metadata and error buttons', () => {
+		it( 'renders metadata and error links', () => {
 			var wrapper = shallowMount( ZEvaluationResult, {
 				props: {
 					edit: false
 				}
 			} );
-			const buttons = wrapper.find( '.ext-wikilambda-evaluation-result-buttons' );
-			expect( buttons.find( '.ext-wikilambda-evaluation-result-buttons__metadata' ).exists() ).toBe( true );
-			expect( buttons.find( '.ext-wikilambda-evaluation-result-buttons__error' ).exists() ).toBe( true );
+			const actions = wrapper.find( '.ext-wikilambda-evaluation-result-actions' );
+			expect( actions.find( '.ext-wikilambda-evaluation-result-actions__metadata' ).exists() ).toBe( true );
+			expect( actions.find( '.ext-wikilambda-evaluation-result-actions__error' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders metadata and error dialogs', () => {
