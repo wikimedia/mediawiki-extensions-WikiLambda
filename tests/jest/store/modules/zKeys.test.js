@@ -172,7 +172,8 @@ describe( 'zkeys Vuex module', function () {
 						format: 'json',
 						wikilambdaload_zids: 'Z1',
 						wikilambdaload_language: context.rootGetters.zLang,
-						wikilambdaload_canonical: 'true'
+						wikilambdaload_canonical: 'true',
+						wikilambdaload_get_dependencies: 'true'
 					} );
 				} );
 			} );
@@ -187,7 +188,8 @@ describe( 'zkeys Vuex module', function () {
 						format: 'json',
 						wikilambdaload_zids: expectedWikilambdaloadZids,
 						wikilambdaload_language: context.rootGetters.zLang,
-						wikilambdaload_canonical: 'true'
+						wikilambdaload_canonical: 'true',
+						wikilambdaload_get_dependencies: 'true'
 					} );
 				} );
 			} );
@@ -216,7 +218,8 @@ describe( 'zkeys Vuex module', function () {
 						format: 'json',
 						wikilambdaload_zids: expectedWikilambdaloadZids,
 						wikilambdaload_language: context.rootGetters.zLang,
-						wikilambdaload_canonical: 'true'
+						wikilambdaload_canonical: 'true',
+						wikilambdaload_get_dependencies: 'true'
 					} );
 
 					Promise.resolve();

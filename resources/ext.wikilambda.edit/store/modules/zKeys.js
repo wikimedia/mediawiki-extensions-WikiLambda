@@ -304,9 +304,11 @@ module.exports = exports = {
 				format: 'json',
 				wikilambdaload_zids: payload.zids.join( '|' ),
 				wikilambdaload_language: context.getters.getZLang,
-				wikilambdaload_canonical: 'true'
-			} ).then( function ( response ) {
+				wikilambdaload_canonical: 'true',
+				wikilambdaload_get_dependencies: 'true'
+			} ).then( ( response ) => {
 
+				const requestedZids = payload.zids;
 				const zIds = Object.keys( response.query.wikilambdaload_zobjects );
 				zIds.forEach( function ( zid ) {
 
@@ -403,8 +405,8 @@ module.exports = exports = {
 					}
 				} );
 
-				// performFetch resolves to the list of zIds fetched.
-				return zIds;
+				// performFetch resolves to the list of zIds requested.
+				return requestedZids;
 			} );
 		}
 	}
