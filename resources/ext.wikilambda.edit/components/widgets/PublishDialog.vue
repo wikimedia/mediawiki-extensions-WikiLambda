@@ -140,8 +140,8 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getCurrentZObjectId',
 		'getCurrentZObjectType',
+		'getCurrentZImplementationContentType',
 		'getErrors',
-		'isUserLoggedIn',
 		'isNewZObject',
 		'getUserZlangZID'
 	] ), {
@@ -201,13 +201,17 @@ module.exports = exports = {
 				};
 				this.setError( payload );
 			}.bind( this ) );
-			// For a new function, zobjectid will be Z0
+			// Log using Metrics Platform
 			const customData = {
 				isnewzobject: this.isNewZObject,
 				zobjectid: this.getCurrentZObjectId,
 				zobjecttype: this.getCurrentZObjectType,
-				zlang: this.getUserZlangZID
+				zlang: this.getUserZlangZID,
+				haserrors: this.hasErrors
 			};
+			if ( this.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) {
+				customData.contenttype = this.getCurrentZImplementationContentType;
+			}
 			mw.eventLog.dispatch( 'wf.ui.editZObject.publish', customData );
 		}
 	} )

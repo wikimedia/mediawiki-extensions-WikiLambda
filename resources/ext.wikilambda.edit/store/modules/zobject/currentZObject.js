@@ -146,6 +146,33 @@ module.exports = exports = {
 			return type || false;
 		},
 		/**
+		 * Return the key indicating the content type of the current implementation:
+		 * 'Z14K2' (composition), 'Z14K3' (code) or 'Z14K4' (builtin).
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {string | null} currentZImplementationContentType
+		 */
+		getCurrentZImplementationContentType: function ( state, getters ) {
+			if ( getters.getCurrentZObjectType !== Constants.Z_IMPLEMENTATION ) {
+				return null;
+			}
+			var zobject = getters.getZObjectAsJson;
+			if ( zobject && zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ] ) {
+				zobject = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				if ( zobject[ Constants.Z_IMPLEMENTATION_CODE ] !== undefined ) {
+					return Constants.Z_IMPLEMENTATION_CODE;
+				}
+				if ( zobject[ Constants.Z_IMPLEMENTATION_COMPOSITION ] !== undefined ) {
+					return Constants.Z_IMPLEMENTATION_COMPOSITION;
+				}
+				if ( zobject[ Constants.Z_IMPLEMENTATION_BUILT_IN ] !== undefined ) {
+					return Constants.Z_IMPLEMENTATION_BUILT_IN;
+				}
+			}
+			return null;
+		},
+		/**
 		 * Return a boolean value indicating if the current zObject is executable.
 		 *
 		 * @param {Object} state
