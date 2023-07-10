@@ -130,7 +130,12 @@ module.exports = exports = {
 		'getRowByKeyPath',
 		'getStoredObject',
 		'getZFunctionCallFunctionId',
-		'getZObjectAsJsonById'
+		'getZObjectAsJsonById',
+		'getCurrentZObjectId',
+		'getCurrentZObjectType',
+		'getUserZlangZID',
+		'getZObjectTypeByRowId',
+		'getMapValueByKey'
 	] ), {
 		/**
 		 * Whether the widget has a pre-defined function
@@ -194,6 +199,41 @@ module.exports = exports = {
 				} )
 				// ... and we return only the row IDs
 				.map( function ( row ) { return row.id; } );
+		},
+
+		/**
+		 * Returns the rowId of the Response Envelope Metadata/Z22K2
+		 *
+		 * @return {string|undefined}
+		 */
+		metadataRowId: function () {
+			if ( this.resultRowId === '' ) {
+				return undefined;
+			}
+			const row = this.getRowByKeyPath( [ Constants.Z_RESPONSEENVELOPE_METADATA ], this.resultRowId );
+			return row ? row.id : undefined;
+		},
+
+		/**
+		 * Returns the rowId of the Metadata object with key 'errors'
+		 *
+		 * @return {string|undefined}
+		 */
+		errorRowId: function () {
+			if ( !this.metadataRowId ) {
+				return undefined;
+			}
+			const row = this.getMapValueByKey( this.metadataRowId, 'errors' );
+			return row ? row.id : undefined;
+		},
+
+		/**
+		 * Returns whether there's an error key in the metadata of the ZEvaluationResult given by this.resultRowId
+		 *
+		 * @return {boolean}
+		 */
+		resultHasError: function () {
+			return this.errorRowId !== undefined;
 		},
 
 		/**
@@ -336,6 +376,15 @@ module.exports = exports = {
 				.then( () => {
 					this.running = false;
 					this.hasResult = true;
+					// Log an event using Metrics Platform
+					const customData = {
+						selectedfunctionzid: this.selectedFunctionZid,
+						zobjectid: this.getCurrentZObjectId,
+						zobjecttype: this.getCurrentZObjectType,
+						resulthaserror: this.resultHasError,
+						zlang: this.getUserZlangZID
+					};
+					mw.eventLog.dispatch( 'wf.ui.callFunction', customData );
 				} );
 		},
 

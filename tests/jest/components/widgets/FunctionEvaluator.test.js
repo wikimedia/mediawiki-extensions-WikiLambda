@@ -72,7 +72,8 @@ describe( 'FunctionEvaluator', () => {
 			getZFunctionCallFunctionId: createGettersWithFunctionsMock( undefined ),
 			getAttachedImplementations: createGettersWithFunctionsMock( [] ),
 			getZObjectAsJsonById: createGettersWithFunctionsMock( '' ),
-			getLabel: createGettersWithFunctionsMock( 'Function' )
+			getLabel: createGettersWithFunctionsMock( 'Function' ),
+			getMapValueByKey: createGettersWithFunctionsMock( undefined )
 		};
 		actions = {
 			callZFunction: jest.fn(),
