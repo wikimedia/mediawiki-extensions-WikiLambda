@@ -6,6 +6,7 @@
 	},
 	"wikilambda-helplink-button": "مدد",
 	"wikilambda-cancel": "منسوخ",
+	"wikilambda-function-typeselector-label": "عمل چݨو",
 	"wikilambda-zobject-to-string-select-object": "چݨو $1",
 	"wikilambda-zobject-to-string-enter-string": "تند درج کرو",
 	"wikilambda-zobjectselector-no-results": "کوئی نتیجہ نی لبھا۔",
@@ -44,5 +45,12 @@
 	"wikilambda-about-widget-add-language": "زبان شامل کرو",
 	"wikilambda-about-widget-search-language-placeholder": "زبان ڳولو",
 	"wikilambda-function-explorer-copied-text": "نقل تھی ڳئے!",
-	"wikilambda-function-explorer-name-title": "ناں"
+	"wikilambda-function-explorer-name-title": "ناں",
+	"wikilambda-function-evaluator-title": "فنگشن ازماؤ",
+	"wikilambda-function-evaluator-title-function": "ایہ فنگشن ازماؤ",
+	"wikilambda-function-evaluator-enter-inputs": "ان پُٹ درج کرو",
+	"wikilambda-function-evaluator-running": "چلدا پئے۔۔۔",
+	"wikilambda-function-evaluator-result": "نتیجہ",
+	"wikilambda-function-evaluator-result-details": "تفصیلاں",
+	"wikilambda-function-evaluator-run-function": "فنگشن چلاؤ"
 }

@@ -3,6 +3,7 @@
 		"authors": [
 			"Adriendelucca",
 			"Huñvreüs",
+			"Lompezh",
 			"Y-M D"
 		]
 	},
@@ -10,5 +11,10 @@
 	"wikilambda-zobject-to-string-select-object": "Diuzañ $1",
 	"wikilambda-zobjectselector-no-results": "N'eus bet kavet disoc'h ebet.",
 	"wikilambda-function-are-you-sure-dialog-description": "Ha sur oc’h e fell deoc’h mont kuit eus ar mod kemmañ hep embann?",
-	"wikilambda-discard-edits": "Nullañ kemmoù"
+	"wikilambda-discard-edits": "Nullañ kemmoù",
+	"wikilambda-function-evaluator-title-function": "Esaeañ an arc'hwel-mañ",
+	"wikilambda-function-evaluator-title-implementation": "Esaeañ an emplantañ-mañ",
+	"wikilambda-function-evaluator-enter-inputs": "Bizskrivañ data enkas",
+	"wikilambda-function-evaluator-result": "Disoc'h",
+	"wikilambda-function-evaluator-result-details": "Munudoù"
 }

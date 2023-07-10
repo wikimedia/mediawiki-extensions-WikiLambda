@@ -29,8 +29,6 @@
 	"wikilambda-literal": "字面",
 	"wikilambda-edit": "編輯",
 	"wikilambda-show-more": "顯示更多",
-	"wikilambda-show-error": "顯示錯誤",
-	"wikilambda-hide-error": "隱藏錯誤",
 	"wikilambda-special-createzobject": "建立一個新的 ZObject",
 	"wikilambda-special-createzobject-intro": "請確定您遵循社群規範、版權和專利規則。",
 	"wikilambda-special-createzobject-nojs": "此頁面需要用到 JavaScript。",

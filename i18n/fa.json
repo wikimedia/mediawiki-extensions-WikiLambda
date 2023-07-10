@@ -7,15 +7,9 @@
 		]
 	},
 	"wikilambda-persistentzobject-contents": "محتوا",
-	"wikilambda-call-function": "فراخوانی تابع",
-	"wikilambda-orchestrated": "نتیجهٔ هماهنگ‌سازی",
-	"wikilambda-show-error": "نمایش خطا",
-	"wikilambda-hide-error": "نهفتن خطا",
-	"wikilambda-show-metrics": "نمایش معیارها",
-	"wikilambda-hide-metrics": "نهفتن معیارها",
 	"wikilambda-typeselector-label": "یک نوع را انتخاب کنید",
 	"wikilambda-argument-typeselector-label": "برای این آرگوومان، یک نوع انتخاب کنید",
-	"wikilambda-function-typeselector-label": "یک تابع را انتخاب کنید",
+	"wikilambda-function-typeselector-label": "تابع را انتخاب کنید",
 	"wikilambda-return-typeselector-label": "نوع مورد نظر برای برگداندن را انتخاب کنید",
 	"wikilambda-editor-zobject-clearitem-tooltip": "خالی‌کردن این مقدار",
 	"specialpages-group-wikilambda": "صفحه‌های ویکی‌تابع",
@@ -24,7 +18,6 @@
 	"wikilambda-implementation-selector": "یک پیاده‌سازی را انتخاب کنید",
 	"wikilambda-implementation-none-found": "پیاده‌سازی یافت نشد.",
 	"wikilambda-implementation-create-new": "ایجاد پیاده‌سازی تازه",
-	"wikilambda-functioncall-metadata-dialog-header": "فراداده",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|خطا}}",
 	"wikilambda-functioncall-metadata-errors-none": "هیچ",
 	"wikilambda-functioncall-metadata-orchestration-start-time": "زمان آغاز ارکستراسیون",
@@ -77,5 +70,7 @@
 	"wikilambda-about-widget-search-language-placeholder": "جستجوی زبان",
 	"wikilambda-function-explorer-copied-text": "کپی شد!",
 	"wikilambda-function-explorer-name-title": "نام",
-	"wikilambda-function-view-function-button-text": "مشاهدهٔ تابع"
+	"wikilambda-function-view-function-button-text": "مشاهدهٔ تابع",
+	"wikilambda-function-evaluator-title": "امتحان‌کردن یک تابع",
+	"wikilambda-function-evaluator-run-function": "راندن تابع"
 }

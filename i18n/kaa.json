@@ -36,5 +36,7 @@
 	"wikilambda-about-widget-add-language": "Til qosıw",
 	"wikilambda-about-widget-search-language-placeholder": "Tildi izlew",
 	"wikilambda-function-explorer-copied-text": "Kóshirmelendi!",
-	"wikilambda-function-explorer-name-title": "At"
+	"wikilambda-function-explorer-name-title": "At",
+	"wikilambda-function-evaluator-running": "Islep atır...",
+	"wikilambda-function-evaluator-result": "Nátiyje"
 }

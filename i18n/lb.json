@@ -11,7 +11,6 @@
 	"wikilambda-reference": "Referenz",
 	"wikilambda-edit": "Änneren",
 	"wikilambda-helplink-button": "Hëllef",
-	"wikilambda-show-error": "Feeler weisen",
 	"wikilambda-special-define-function": "Funktioun definéieren",
 	"wikilambda-special-evaluatefunctioncall-nojs": "Dës Säit brauch JavaScript fir benotzt ze ginn.",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Sprooch",
@@ -25,7 +24,7 @@
 	"wikilambda-summarylabel": "Resumé:",
 	"wikilambda-loading": "Donnéeë gi gelueden",
 	"wikilambda-typeselector-label": "Sicht en Typ eraus",
-	"wikilambda-function-typeselector-label": "Sicht eng Funktioun eraus",
+	"wikilambda-function-typeselector-label": "Funktioun eraussichen",
 	"wikilambda-zobjectselector-no-results": "Keng Resultater fonnt.",
 	"wikilambda-editor-label-addlanguage-label": "Sprooch derbäisetzen",
 	"wikilambda-editor-label-removelanguage-tooltip": "Dës Sprooch vun dëser Etikett ewechhuelen",
@@ -89,5 +88,12 @@
 	"wikilambda-about-widget-name-placeholder": "Numm aginn",
 	"wikilambda-about-widget-add-language": "Sprooch derbäisetzen",
 	"wikilambda-function-explorer-copied-text": "Kopéiert!",
-	"wikilambda-function-explorer-name-title": "Numm"
+	"wikilambda-function-explorer-name-title": "Numm",
+	"wikilambda-function-evaluator-title": "Probéiert eng Funktioun",
+	"wikilambda-function-evaluator-title-function": "Probéiert dës Funktioun",
+	"wikilambda-function-evaluator-title-implementation": "Probéiert dës Implementéierung",
+	"wikilambda-function-evaluator-running": "Leeft...",
+	"wikilambda-function-evaluator-result": "Resultat",
+	"wikilambda-function-evaluator-result-details": "Detailer",
+	"wikilambda-function-evaluator-run-function": "Funktioun ausféieren"
 }
