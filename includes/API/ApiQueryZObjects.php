@@ -13,14 +13,18 @@ namespace MediaWiki\Extension\WikiLambda\API;
 use ApiBase;
 use ApiPageSet;
 use ApiQueryGeneratorBase;
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\Languages\LanguageNameUtils;
-use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFactory;
+use stdClass;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiQueryZObjects extends ApiQueryGeneratorBase {
@@ -33,6 +37,9 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 
 	/** @var TitleFactory */
 	protected $titleFactory;
+
+	/** @var ZTypeRegistry */
+	protected $typeRegistry;
 
 	/**
 	 * @inheritDoc
@@ -50,6 +57,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 		$this->languageFallback = $languageFallback;
 		$this->languageNameUtils = $languageNameUtils;
 		$this->titleFactory = $titleFactory;
+		$this->typeRegistry = ZTypeRegistry::singleton();
 	}
 
 	/**
@@ -67,6 +75,104 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 	}
 
 	/**
+	 * @param string $zid
+	 * @param array|null $languages
+	 * @param bool $canonical
+	 * @param bool $getDependencies
+	 * @return array
+	 * @throws ZErrorException
+	 */
+	private function fetchContent( $zid, $languages, $canonical, $getDependencies ) {
+		// Check for invalid ZID and throw INVALID_TITLE exception
+		if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_INVALID_TITLE,
+					[ 'title' => $zid ]
+				)
+			);
+		}
+
+		// Check for unavailable ZObject and throw ZID_NOT_FOUND exception
+		$title = $this->titleFactory->newFromText( $zid, NS_MAIN );
+		if ( !$title || !$title->exists() ) {
+			throw new ZErrorException(
+				ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_ZID_NOT_FOUND,
+					[ "data" => $zid ]
+				)
+			);
+		}
+
+		// Fetch ZObject and die if there are unmanageable errors
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		$page = $zObjectStore->fetchZObjectByTitle( $title );
+		if ( !$page ) {
+			$this->dieWithError( [ 'apierror-query+wikilambdaload_zobjects-unloadable', $zid ] );
+		}
+		if ( !( $page instanceof ZObjectContent ) ) {
+			$this->dieWithError( [ 'apierror-query+wikilambdaload_zobjects-nonzobject', $zid ] );
+		}
+
+		// The object was successfully retrieved
+		$zobject = $page->getObject();
+		$dependencies = [];
+
+		// 1. Get the dependency types of type keys and function arguments
+		if ( $getDependencies ) {
+			$dependencies = $this->getTypeDependencies( $zobject );
+		}
+
+		// 2. Select only the requested language from all ZMultilingualStrings
+		if ( is_array( $languages ) ) {
+			$langRegistry = ZLangRegistry::singleton();
+			$languageZids = $langRegistry->getLanguageZids( $languages );
+			$zobject = ZObjectUtils::filterZMultilingualStringsToLanguage( $zobject, $languageZids );
+		}
+
+		// 3. Normalize ZObject
+		if ( !$canonical ) {
+			$zobject = ZObjectUtils::normalize( $zobject );
+		}
+
+		return [ $zobject, $dependencies ];
+	}
+
+	/**
+	 * Returns the types of type keys and function arguments
+	 *
+	 * @param stdClass $zobject
+	 * @return array
+	 */
+	private function getTypeDependencies( $zobject ) {
+		$dependencies = [];
+
+		// We need to return dependencies of those objects that build arguments of keys:
+		// Types: return the types of its keys
+		// Functions: return the types of its arguments
+		$type = $zobject->{ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE }->{ ZTypeRegistry::Z_OBJECT_TYPE };
+		if ( $type === ZTypeRegistry::Z_TYPE ) {
+			$keys = $zobject->{ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE }->{ ZTypeRegistry::Z_TYPE_KEYS };
+			foreach ( array_slice( $keys, 1 ) as $key ) {
+				$keyType = $key->{ ZTypeRegistry::Z_KEY_TYPE };
+				if ( is_string( $keyType ) && ( !$this->typeRegistry->isZTypeBuiltIn( $keyType ) ) ) {
+					array_push( $dependencies, $keyType );
+				}
+			}
+		} elseif ( $type === ZTypeRegistry::Z_FUNCTION ) {
+			$args = $zobject->{ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE }->{ ZTypeRegistry::Z_FUNCTION_ARGUMENTS };
+			foreach ( array_slice( $args, 1 ) as $arg ) {
+				$argType = $arg->{ ZTypeRegistry::Z_ARGUMENTDECLARATION_TYPE };
+				if ( is_string( $argType ) && ( !$this->typeRegistry->isZTypeBuiltIn( $argType ) ) ) {
+					array_push( $dependencies, $argType );
+				}
+			}
+		}
+
+		return array_unique( $dependencies );
+	}
+
+	/**
 	 * @param ApiPageSet|null $resultPageSet
 	 */
 	private function run( $resultPageSet = null ) {
@@ -75,9 +181,10 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 		$languages = null;
 		$pageResult = null;
 
-		$ZIDs = $params[ 'zids' ];
+		$zids = $params[ 'zids' ];
 		$language = $params[ 'language' ];
 		$canonical = $params[ 'canonical' ];
+		$getDependencies = $params[ 'get_dependencies' ];
 
 		if ( $language ) {
 			// Get language fallback chain
@@ -92,74 +199,40 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 			$pageResult = $this->getResult();
 		}
 
-		foreach ( $ZIDs as $ZID ) {
+		$fetchedZids = [];
+		while ( !empty( $zids ) ) {
+			$zid = array_shift( $zids );
+			array_push( $fetchedZids, $zid );
 
-			// Check for invalid ZID
-			if ( !ZObjectUtils::isValidZObjectReference( $ZID ) ) {
-				// FIXME (T300520): get ZError object that represents invalid ZID
-				$zobject = json_decode( '{"Z1K1": "Z5", "Z5K1": "Error: Invalid ZID"}' );
-				if ( !$resultPageSet ) {
-					$pageResult->addValue( [ 'query', $this->getModuleName() ], $ZID, [
-						'success' => false,
-						'data' => $zobject
-					] );
+			try {
+				// We try to fetch the content and transform it according to params
+				[ $fetchedContent, $dependencies ] = $this->fetchContent(
+					$zid,
+					$languages,
+					$canonical,
+					$getDependencies
+				);
+
+				// We queue the type dependencies
+				foreach ( $dependencies as $dep ) {
+					if ( !in_array( $dep, $fetchedZids ) && !in_array( $dep, $zids ) ) {
+						array_push( $zids, $dep );
+					}
 				}
-				continue;
-			}
 
-			// Check for unavailable ZObject
-			$title = $this->titleFactory->newFromText( $ZID, NS_MAIN );
-			if ( !$title || !$title->exists() ) {
-				// FIXME (T300520): get ZError object that represents ZID Not Found error
-				// FIXME (T300520): if language is defined, return ZError on the requested language
-				$zobject = json_decode( '{"Z1K1": "Z5", "Z5K1": "Error: ZID Not Found"}' );
-				if ( !$resultPageSet ) {
-					$pageResult->addValue( [ 'query', $this->getModuleName() ], $ZID, [
-						'success' => false,
-						'data' => $zobject
-					] );
-				}
-				continue;
-			}
-
-			// Fetch ZObject and handle ZMultilingualStrings
-			$zObjectStore = WikiLambdaServices::getZObjectStore();
-			$page = $zObjectStore->fetchZObjectByTitle( $title );
-			if ( !$page ) {
-				$this->dieWithError( [ 'apierror-query+wikilambdaload_zobjects-unloadable', $ZID ] );
-			}
-			if ( !( $page instanceof ZObjectContent ) ) {
-				$this->dieWithError( [ 'apierror-query+wikilambdaload_zobjects-nonzobject', $ZID ] );
-			}
-
-			$zobject = $page->getObject();
-
-			if ( is_array( $languages ) ) {
-				$langRegistry = ZLangRegistry::singleton();
-				$languageZids = $langRegistry->getLanguageZids( $languages );
-				$zobject = ZObjectUtils::filterZMultilingualStringsToLanguage( $zobject, $languageZids );
-			}
-
-			// Normalize ZObject
-			// TODO (T338252): If language parameter is present and canonical is set to false, we are
-			// walking the tree two times. It would be interesting to only walk it once, and
-			// perform all the transformations that are necessary on that same recursive walk.
-			if ( !$canonical ) {
-				$zobject = ZObjectUtils::normalize( $zobject );
-			}
-
-			$result = [
-				'success' => true,
-				'data' => $zobject
-			];
-
-			if ( $resultPageSet ) {
-				if ( $title instanceof Title ) {
-					// TODO (T338249): How to work out the result when using the generator?
-					$resultPageSet->setGeneratorData( $title, $result );
-				}
-			} else {
-				$pageResult->addValue( [ 'query', $this->getModuleName() ], $ZID, $result );
+				// We add the fetchedContent to the pageResult
+				// TODO (T338249): How to work out the result when using the generator?
+				$pageResult->addValue( [ 'query', $this->getModuleName() ], $zid, [
+					'success' => true,
+					'data' => $fetchedContent
+				] );
+			} catch ( ZErrorException $e ) {
+				// If an error was thrown while fetching, we add the value to the response
+				// with success=false and the error object as data
+				$pageResult->addValue( [ 'query', $this->getModuleName() ], $zid, [
+					'success' => false,
+					'data' => $e->getZError()
+				] );
 			}
 		}
 	}
@@ -180,6 +253,11 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 				ParamValidator::PARAM_REQUIRED => false,
 			],
 			'canonical' => [
+				ParamValidator::PARAM_TYPE => 'boolean',
+				ParamValidator::PARAM_REQUIRED => false,
+				ParamValidator::PARAM_DEFAULT => false,
+			],
+			'get_dependencies' => [
 				ParamValidator::PARAM_TYPE => 'boolean',
 				ParamValidator::PARAM_REQUIRED => false,
 				ParamValidator::PARAM_DEFAULT => false,

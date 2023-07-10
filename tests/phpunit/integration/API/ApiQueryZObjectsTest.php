@@ -35,6 +35,19 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 	private const EN = 'Z1002';
 	private const FR = 'Z1004';
 
+	private function insertBuiltinObjects( $zids ): void {
+		$dataPath = dirname( __DIR__, 4 ) . '/function-schemata/data/definitions';
+		foreach ( $zids as $zid ) {
+			$data = file_get_contents( "$dataPath/$zid.json" );
+			$this->editPage( $zid, $data, '', NS_MAIN );
+		}
+	}
+
+	private static function getTestFileContents( $fileName ): string {
+		$path = dirname( __DIR__, 2 ) . '/test_data/' . $fileName;
+		return file_get_contents( $path );
+	}
+
 	public function addDBDataOnce() {
 		// Register necessary languages
 		$langs = ZLangRegistry::singleton();
@@ -236,5 +249,45 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 
 		$this->assertEquals( 'Z111K1', $z111_canonical['Z2K2']['Z4K2'][1]['Z3K2'] );
 		$this->assertEquals( $stringZ111K1, $z111_normal['Z2K2']['Z4K2']['K1']['Z3K2'] );
+	}
+
+	public function testDependencies() {
+		$this->insertBuiltinObjects( [ 'Z8', 'Z17' ] );
+		$this->editPage( 'Z10014', self::getTestFileContents( 'type-dependencies-Z10014.json' ), '', NS_MAIN );
+		$this->editPage( 'Z10015', self::getTestFileContents( 'type-dependencies-Z10015.json' ), '', NS_MAIN );
+		$this->editPage( 'Z10016', self::getTestFileContents( 'function-dependencies-Z10016.json' ), '', NS_MAIN );
+
+		// Requesting Z10015 brings [ Z10015, Z10014 ]
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdaload_zobjects',
+			'wikilambdaload_zids' => 'Z10015',
+			'wikilambdaload_get_dependencies' => 'true',
+			'wikilambdaload_canonical' => 'true'
+		] );
+
+		$zobjects = $result[0]['query']['wikilambdaload_zobjects'];
+		$zids = array_keys( $zobjects );
+		$this->assertCount( 2, $zids );
+		$this->assertTrue( $zobjects[ 'Z10015' ][ 'success' ] );
+		$this->assertTrue( $zobjects[ 'Z10014' ][ 'success' ] );
+		$this->assertSame( [ 'Z10015', 'Z10014' ], $zids );
+
+		// Requesting Z10016 brings [ Z10016, Z10015, Z10014 ]
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdaload_zobjects',
+			'wikilambdaload_zids' => 'Z10016',
+			'wikilambdaload_get_dependencies' => 'true',
+			'wikilambdaload_canonical' => 'true'
+		] );
+
+		$zobjects = $result[0]['query']['wikilambdaload_zobjects'];
+		$zids = array_keys( $zobjects );
+		$this->assertCount( 3, $zids );
+		$this->assertTrue( $zobjects[ 'Z10016' ][ 'success' ] );
+		$this->assertTrue( $zobjects[ 'Z10015' ][ 'success' ] );
+		$this->assertTrue( $zobjects[ 'Z10014' ][ 'success' ] );
+		$this->assertSame( [ 'Z10016', 'Z10015', 'Z10014' ], $zids );
 	}
 }
