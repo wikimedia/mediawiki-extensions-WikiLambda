@@ -30,7 +30,7 @@
 	"wikilambda-languagelabel": "Lingua",
 	"wikilambda-typeselector-label": "Seleziona un tipo",
 	"wikilambda-argument-typeselector-label": "Seleziona un tipo per questo argomento",
-	"wikilambda-function-typeselector-label": "Seleziona una funzione",
+	"wikilambda-function-typeselector-label": "Seleziona funzione",
 	"wikilambda-return-typeselector-label": "Seleziona un tipo da restituire",
 	"wikilambda-zobjectselector-no-results": "Nessun risultato trovato.",
 	"wikilambda-editor-leave-edit-mode-header": "Esci dalla modalità di modifica",
@@ -122,5 +122,12 @@
 	"wikilambda-about-widget-add-language": "Aggiungi lingua",
 	"wikilambda-about-widget-search-language-placeholder": "Cerca lingua",
 	"wikilambda-function-explorer-copied-text": "Copiato!",
-	"wikilambda-function-explorer-name-title": "Nome"
+	"wikilambda-function-explorer-name-title": "Nome",
+	"wikilambda-function-evaluator-title": "Prova una funzione",
+	"wikilambda-function-evaluator-title-function": "Prova questa funzione",
+	"wikilambda-function-evaluator-title-implementation": "Prova questa implementazione",
+	"wikilambda-function-evaluator-running": "In esecuzione...",
+	"wikilambda-function-evaluator-result": "Risultato",
+	"wikilambda-function-evaluator-result-details": "Dettagli",
+	"wikilambda-function-evaluator-run-function": "Esegui funzione"
 }

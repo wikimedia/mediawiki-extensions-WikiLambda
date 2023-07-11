@@ -69,6 +69,7 @@
 	"wikilambda-editor-input-default-label": "ইনপুট",
 	"wikilambda-editor-output-title": "আউটপুট",
 	"wikilambda-optional": "ঐচ্ছিক",
+	"wikilambda-list-item-label": "আইটেম $1",
 	"wikilambda-about-widget-title": "সম্পর্কে",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1টি ভাষা}}",
 	"wikilambda-about-widget-edit-metadata-title": "তথ্য সম্পাদনা করুন",
