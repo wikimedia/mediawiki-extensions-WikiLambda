@@ -212,11 +212,11 @@ module.exports = exports = {
 	),
 	mounted: function () {
 		mw.eventLog.dispatch( 'wf.ui.defaultView.load', {
-			edit: this.edit,
-			contenttype: this.contentType,
-			isnewzobject: this.isNewZObject,
-			zobjectid: this.getCurrentZObjectId,
-			zlang: this.getUserZlangZID
+			edit: this.edit || null,
+			zobjecttype: this.contentType || null,
+			isnewzobject: this.isNewZObject || null,
+			zobjectid: this.getCurrentZObjectId || null,
+			zlang: this.getUserZlangZID || null
 		} );
 	}
 };

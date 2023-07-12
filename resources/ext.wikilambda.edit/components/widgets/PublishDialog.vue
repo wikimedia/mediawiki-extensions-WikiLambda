@@ -203,14 +203,14 @@ module.exports = exports = {
 			}.bind( this ) );
 			// Log using Metrics Platform
 			const customData = {
-				isnewzobject: this.isNewZObject,
-				zobjectid: this.getCurrentZObjectId,
-				zobjecttype: this.getCurrentZObjectType,
-				zlang: this.getUserZlangZID,
-				haserrors: this.hasErrors
+				isnewzobject: this.isNewZObject || null,
+				zobjectid: this.getCurrentZObjectId || null,
+				zobjecttype: this.getCurrentZObjectType || null,
+				zlang: this.getUserZlangZID || null,
+				haserrors: this.hasErrors || null
 			};
 			if ( this.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) {
-				customData.contenttype = this.getCurrentZImplementationContentType;
+				customData.implementationtype = this.getCurrentZImplementationContentType || null;
 			}
 			mw.eventLog.dispatch( 'wf.ui.editZObject.publish', customData );
 		}
