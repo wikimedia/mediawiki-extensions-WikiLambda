@@ -335,11 +335,11 @@ module.exports = exports = {
 		handleCancel: function () {
 			const cancelTargetUrl = this.isNewZObject ? new mw.Title( 'Wikifunctions:Main_Page' ).getUrl() : new mw.Title( this.getCurrentZObjectId ).getUrl();
 			const customData = {
-				isnewzobject: this.isNewZObject,
+				isnewzobject: this.isNewZObject || null,
 				// If not set, this will be Z0:
 				zobjectid: this.getCurrentZObjectId,
-				zlang: this.getUserZlangZID,
-				isdirty: this.isDirty
+				zlang: this.getUserZlangZID || null,
+				isdirty: this.isDirty || null
 			};
 
 			if ( this.isDirty ) {
@@ -465,9 +465,9 @@ module.exports = exports = {
 		}
 		window.addEventListener( 'click', this.handleClickAway );
 		mw.eventLog.dispatch( 'wf.ui.editFunction.load', {
-			isnewzobject: this.isNewZObject,
-			zobjectid: this.getCurrentZObjectId,
-			zlang: this.getUserZlangZID
+			isnewzobject: this.isNewZObject || null,
+			zobjectid: this.getCurrentZObjectId || null,
+			zlang: this.getUserZlangZID || null
 		} );
 	},
 	beforeUnmount: function () {

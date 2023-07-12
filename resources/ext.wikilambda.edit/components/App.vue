@@ -72,8 +72,8 @@ module.exports = exports = {
 
 				// Log using Metrics Platform
 				const customData = {
-					viewname: viewName,
-					isnewzobject: this.isNewZObject,
+					viewname: viewName || null,
+					isnewzobject: this.isNewZObject || null,
 					loadtime: Date.now() - startTime
 				};
 				mw.eventLog.dispatch( 'wf.ui.newView.mounted', customData );

@@ -378,11 +378,11 @@ module.exports = exports = {
 					this.hasResult = true;
 					// Log an event using Metrics Platform
 					const customData = {
-						selectedfunctionzid: this.selectedFunctionZid,
-						zobjectid: this.getCurrentZObjectId,
-						zobjecttype: this.getCurrentZObjectType,
-						resulthaserror: this.resultHasError,
-						zlang: this.getUserZlangZID
+						selectedfunctionzid: this.selectedFunctionZid || null,
+						zobjectid: this.getCurrentZObjectId || null,
+						zobjecttype: this.getCurrentZObjectType || null,
+						resulthaserror: this.resultHasError || null,
+						zlang: this.getUserZlangZID || null
 					};
 					mw.eventLog.dispatch( 'wf.ui.callFunction', customData );
 				} );
