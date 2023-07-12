@@ -15,6 +15,7 @@ use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Title\Title;
 
 /**
@@ -49,6 +50,7 @@ class ZLangRegistry extends ZObjectRegistry {
 		if ( array_key_exists( $zid, $this->registry ) ) {
 			return $this->registry[ $zid ];
 		}
+
 		$code = $this->fetchLanguageCodeFromZid( $zid );
 		$this->register( $zid, $code );
 		return $code;
@@ -111,8 +113,22 @@ class ZLangRegistry extends ZObjectRegistry {
 	 */
 	private function fetchLanguageCodeFromZid( $zid ): string {
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$title = Title::newFromText( $zid, NS_MAIN );
 
+		// Try the cache table, where it should be available
+		$languages = $zObjectStore->fetchAllZLanguageObjects();
+
+		if ( array_key_exists( $zid, $languages ) ) {
+			return $languages[ $zid ];
+		}
+
+		// Fallback to the database just in case it's somehow not cached.
+		$logger = LoggerFactory::getInstance( 'WikiLambda' );
+		$logger->warning(
+			'Called fetchLanguageCodeFromZid but not found in cache table: {zid}',
+			[ 'zid' => $zid ]
+		);
+
+		$title = Title::newFromText( $zid, NS_MAIN );
 		$content = $zObjectStore->fetchZObjectByTitle( $title );
 		if ( !$content ) {
 			throw new ZErrorException(
@@ -142,41 +158,26 @@ class ZLangRegistry extends ZObjectRegistry {
 	/**
 	 * Find ZLanguage in the database given a language code.
 	 *
-	 * FIXME (T283605): This is extremely slow and should be soon replaced for another
-	 * method that doesn't scan all Z60 objects. Like, for example, implement aliases
-	 * and include them in the secondary labels database (T262091) and add aliases to
-	 * all Z60s so that their aliases include all the possible language codes associated
-	 * to that given language
-	 *
 	 * @param string $code
 	 * @return string The ZLanguage Zid associated to this language code
 	 * @throws ZErrorException
 	 */
 	private function fetchLanguageZidFromCode( $code ): string {
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$zids = $zObjectStore->fetchZidsOfType( ZTypeRegistry::Z_LANGUAGE );
-		$foundZid = false;
 
-		foreach ( $zids as $zid ) {
-			$title = Title::newFromText( $zid, NS_MAIN );
-			$content = $zObjectStore->fetchZObjectByTitle( $title );
-			$foundCode = $this->getLanguageCodeFromContent( $content );
-			if ( $foundCode == $code ) {
-				$foundZid = $zid;
-				break;
-			}
+		$languages = $zObjectStore->fetchAllZLanguageObjects();
+
+		$foundZid = array_search( $code, $languages );
+		if ( $foundZid ) {
+			return $foundZid;
 		}
 
-		if ( !$foundZid ) {
-			throw new ZErrorException(
-				ZErrorFactory::createZErrorInstance(
-					ZErrorTypeRegistry::Z_ERROR_LANG_NOT_FOUND,
-					[ 'lang' => $code ]
-				)
-			);
-		}
-
-		return $foundZid;
+		throw new ZErrorException(
+			ZErrorFactory::createZErrorInstance(
+				ZErrorTypeRegistry::Z_ERROR_LANG_NOT_FOUND,
+				[ 'lang' => $code ]
+			)
+		);
 	}
 
 	/**

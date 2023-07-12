@@ -549,9 +549,10 @@ class ZObjectStore {
 	}
 
 	/**
-	 * Gets from the secondary database a list of all natural language ZIDs
+	 * Gets from the secondary database a list of all natural language ZIDs,
+	 * mapping from ZID to BCP47 (or MediaWiki) language code
 	 *
-	 * @return array[]
+	 * @return array<string,string>
 	 */
 	public function fetchAllZLanguageObjects() {
 		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
