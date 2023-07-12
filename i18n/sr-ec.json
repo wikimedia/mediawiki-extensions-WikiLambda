@@ -31,5 +31,8 @@
 	"wikilambda-about-widget-done-button": "Урађено",
 	"wikilambda-about-widget-add-language": "Додај језик",
 	"wikilambda-function-explorer-copied-text": "Копирано!",
-	"wikilambda-function-explorer-name-title": "Име"
+	"wikilambda-function-explorer-name-title": "Име",
+	"wikilambda-function-evaluator-running": "Извршава се...",
+	"wikilambda-function-evaluator-result": "Резултат",
+	"wikilambda-function-evaluator-result-details": "Детаљи"
 }
