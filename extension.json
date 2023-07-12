@@ -170,6 +170,7 @@
 		"NamespaceIsMovable": "PageEditingHandler",
 		"ParserFirstCallInit": "WikiLambdaParserHooks",
 		"HtmlPageLinkRendererEnd": "PageRenderingHandler",
+		"SkinTemplateNavigation::Universal": "PageRenderingHandler",
 		"WebRequestPathInfoRouter": "PageRenderingHandler"
 	},
 	"MessagesDirs": {
