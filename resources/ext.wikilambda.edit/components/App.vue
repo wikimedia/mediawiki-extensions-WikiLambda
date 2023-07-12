@@ -106,3 +106,9 @@ module.exports = exports = {
 	}
 };
 </script>
+
+<style lang="less">
+.ext-wikilambda-view-nojsfallback {
+	display: none;
+}
+</style>

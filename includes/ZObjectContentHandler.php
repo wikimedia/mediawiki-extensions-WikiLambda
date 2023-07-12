@@ -423,7 +423,7 @@ class ZObjectContentHandler extends ContentHandler {
 			. Html::rawElement(
 				'div',
 				[
-					'class' => [ 'ext-wikilambda-view-nojsfallback' ],
+					'class' => [ 'ext-wikilambda-view-nojsfallback', 'client-nojs' ],
 				],
 				Html::element(
 					'div',
