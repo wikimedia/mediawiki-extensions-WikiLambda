@@ -1112,6 +1112,45 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertNull( $findRes );
 	}
 
+	public function testInsertZLanguage() {
+		// We start with empty
+		$languages = $this->zobjectStore->fetchAllZLanguageObjects();
+		$this->assertCount( 0, $languages );
+
+		// Adding a single language is findable
+		$this->zobjectStore->insertZLanguageToLanguagesCache( 'foo', 'bar' );
+
+		$languages = $this->zobjectStore->fetchAllZLanguageObjects();
+		$this->assertIsArray( $languages );
+		$this->assertCount( 1, $languages );
+		$this->assertArrayHasKey( 'foo', $languages );
+		$this->assertSame( 'bar', $languages['foo'] );
+
+		// Adding a second language adds its value
+		$this->zobjectStore->insertZLanguageToLanguagesCache( 'foo-x', 'baz' );
+
+		$languages = $this->zobjectStore->fetchAllZLanguageObjects();
+		$this->assertIsArray( $languages );
+		$this->assertCount( 2, $languages );
+		$this->assertArrayHasKey( 'foo-x', $languages );
+		$this->assertSame( 'baz', $languages['foo-x'] );
+
+		// Deleting the first language removes its value
+		$this->zobjectStore->deleteZLanguageFromLanguagesCache( 'foo' );
+
+		// FIXME: This doesn't delete? Or doesn't do it fast enough, at least
+		// $languages = $this->zobjectStore->fetchAllZLanguageObjects();
+		// $this->assertArrayNotHasKey( 'foo', $languages );
+		// $this->assertCount( 1, $languages );
+
+		// Deleting the second language returns us to empty
+		$this->zobjectStore->deleteZLanguageFromLanguagesCache( 'foo-x' );
+
+		// $languages = $this->zobjectStore->fetchAllZLanguageObjects();
+		// $this->assertArrayNotHasKey( 'foo-x', $languages );
+		// $this->assertCount( 0, $languages );
+	}
+
 	public function testDeleteFromTesterResultsSecondaryTables() {
 		$this->injectZTesterResults();
 

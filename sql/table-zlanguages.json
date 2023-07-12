@@ -1,0 +1,28 @@
+[
+	{
+		"name": "wikilambda_zlanguages",
+		"comment": "Stored mapping from the ZObject ID to a BCP47 language code.",
+		"columns": [
+			{
+				"name": "wlzlangs_id",
+				"comment": "Unique ID for index purposes",
+				"type": "bigint",
+				"options": { "unsigned": true, "notnull": true, "autoincrement": true }
+			},
+			{
+				"name": "wlzlangs_zid",
+				"comment": "The ZObject's ZID",
+				"type": "binary",
+				"options": { "length": 32, "notnull": true }
+			},
+			{
+				"name": "wlzlangs_language",
+				"comment": "The BCP47 language code for the language",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			}
+		],
+		"indexes": [],
+		"pk": [ "wlzlangs_id" ]
+	}
+]

@@ -428,6 +428,22 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Insert language code into the wikilambda_zlanguages database for a given ZID
+	 *
+	 * @param string $zid
+	 * @param string $languageCode
+	 * @return void|bool
+	 */
+	public function insertZLanguageToLanguagesCache( $zid, $languageCode ) {
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+
+		return $dbw->insert(
+			'wikilambda_zlanguages',
+			[ 'wlzlangs_zid' => $zid, 'wlzlangs_language' => $languageCode ]
+		);
+	}
+
+	/**
 	 * Insert label conflicts into the wikilambda_zobject_label_conflicts database for a given ZID
 	 *
 	 * @param string $zid
@@ -530,6 +546,27 @@ class ZObjectStore {
 			}
 		}
 		return $zids;
+	}
+
+	/**
+	 * Gets from the secondary database a list of all natural language ZIDs
+	 *
+	 * @return array[]
+	 */
+	public function fetchAllZLanguageObjects() {
+		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+		$res = $dbr->newSelectQueryBuilder()
+			 ->select( [ 'wlzlangs_zid', 'wlzlangs_language' ] )
+			 ->from( 'wikilambda_zlanguages' )
+			 ->orderBy( 'wlzlangs_zid', SelectQueryBuilder::SORT_ASC )
+			 ->caller( __METHOD__ )
+			 ->fetchResultSet();
+
+		$languages = [];
+		foreach ( $res as $row ) {
+			$languages[ $row->wlzlangs_zid ] = $row->wlzlangs_language;
+		}
+		return $languages;
 	}
 
 	/**
@@ -1035,6 +1072,22 @@ class ZObjectStore {
 	}
 
 	/**
+	 * Remove a given ZNaturalLanguage's entry from the secondary languages table.
+	 *
+	 * @param string $zid the ZID of the ZNaturalLanguage you wish to delete
+	 * @return void
+	 */
+	public function deleteZLanguageFromLanguagesCache( string $zid ): void {
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+
+		$dbw->delete(
+			'wikilambda_zlanguages',
+			[ 'wlzlangs_id' => $zid ],
+			__METHOD__
+		);
+	}
+
+	/**
 	 * Delete data related to the given zids from the secondary labels table.
 	 * This method is only for its use by reloadBuiltinData with the --force flag.
 	 *
@@ -1073,6 +1126,22 @@ class ZObjectStore {
 				],
 				$dbw::LIST_OR
 			),
+			__METHOD__
+		);
+	}
+
+	/**
+	 * Delete data related to the given zids from the secondary languages table.
+	 * This method is only for its use by reloadBuiltinData with the --force flag.
+	 *
+	 * @param string[] $zids list of zids to clear
+	 * @return void
+	 */
+	public function deleteFromLanguageCacheSecondaryTables( array $zids ): void {
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw->delete(
+			/* FROM */ 'wikilambda_zlanguages',
+			/* WHERE */ [ 'wlzlangs_zid' => $zids ],
 			__METHOD__
 		);
 	}
@@ -1132,6 +1201,17 @@ class ZObjectStore {
 	public function clearTesterResultsSecondaryTables(): void {
 		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
 		$dbw->delete( 'wikilambda_ztester_results', IDatabase::ALL_ROWS, __METHOD__ );
+	}
+
+	/**
+	 * Clear all data from the secondary languages table. This method
+	 * is only for its use by reloadBuiltinData with the --force flag.
+	 *
+	 * @return void
+	 */
+	public function clearLanguageCacheSecondaryTables(): void {
+		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw->delete( 'wikilambda_zlanguages', IDatabase::ALL_ROWS, __METHOD__ );
 	}
 
 }

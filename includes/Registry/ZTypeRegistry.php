@@ -130,6 +130,7 @@ class ZTypeRegistry extends ZObjectRegistry {
 
 	public const Z_LANGUAGE = 'Z60';
 	public const Z_LANGUAGE_CODE = 'Z60K1';
+	public const Z_LANGUAGE_SECONDARYCODES = 'Z60K2';
 
 	public const Z_PROGRAMMINGLANGUAGE = 'Z61';
 

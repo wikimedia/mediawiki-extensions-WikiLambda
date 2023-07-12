@@ -38,6 +38,7 @@ abstract class WikiLambdaIntegrationTestCase extends MediaWikiIntegrationTestCas
 			$this->tablesUsed[] = 'wikilambda_zobject_labels';
 			$this->tablesUsed[] = 'wikilambda_zobject_label_conflicts';
 			$this->tablesUsed[] = 'wikilambda_zobject_function_join';
+			$this->tablesUsed[] = 'wikilambda_zlanguages';
 			$this->tablesUsed[] = 'page';
 		}
 	}

@@ -43,6 +43,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 		// 5. Saves conflicting labels in wikilambda_zobject_label_conflicts and
 		// 6. Saves non-conflicting labels in wikilambda_zobject_labels
 		// 7. If appropriate, clear wikilambda_ztester_results for this ZID
+		// 8. If appropriate, add entry to wikilambda_zlanguages for this ZID
 
 		// TODO (T300522): Only re-write the labels if they've changed.
 		// TODO (T300522): Use a single fancy upsert to remove/update/insert instead?
@@ -51,27 +52,32 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 
-		// Deletes all labels: primary ones and aliases
+		// Delete all labels: primary ones and aliases
 		$zObjectStore->deleteZObjectLabelsByZid( $zid );
 		$zObjectStore->deleteZObjectLabelConflictsByZid( $zid );
+
+		// Delete language entries, if appropriate
+		$zObjectStore->deleteZLanguageFromLanguagesCache( $zid );
 
 		$labels = $this->zObject->getLabels()->getValueAsList();
 
 		// TODO: This should write the shortform, encoded type (e.g. `Z4(Z6)`)
 		$ztype = $this->zObject->getZType();
 
+		$innerZObject = $this->zObject->getInnerZObject();
+
 		// (T262089) Save output type in labels table for function and function call
 		$returnType = null;
 		// Get Z_FUNCTION_RETURN_TYPE if the ZObject is a Z8 Function
 		if ( $ztype === ZTypeRegistry::Z_FUNCTION ) {
-			$returnRef = $this->zObject->getInnerZObject()->getValueByKey( ZTypeRegistry::Z_FUNCTION_RETURN_TYPE );
+			$returnRef = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTION_RETURN_TYPE );
 			if ( $returnRef instanceof ZReference ) {
 				$returnType = $returnRef->getZValue();
 			}
 		}
 		// Get saved Z_FUNCTION_RETURN_TYPE of the Z_FUNCTIONCALL_FUNCTION if it's a Z7
 		if ( $ztype === ZTypeRegistry::Z_FUNCTIONCALL ) {
-			$functionRef = $this->zObject->getInnerZObject()->getValueByKey( ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION );
+			$functionRef = $innerZObject->getValueByKey( ZTypeRegistry::Z_FUNCTIONCALL_FUNCTION );
 			if ( $functionRef instanceof ZReference ) {
 				$returnType = $zObjectStore->fetchZFunctionReturnType( $functionRef->getZValue() );
 			}
@@ -96,11 +102,11 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 			$zFunction = null;
 
 			if ( $ztype === ZTypeRegistry::Z_IMPLEMENTATION ) {
-				$zFunction = $this->zObject->getInnerZObject()->getValueByKey(
+				$zFunction = $innerZObject->getValueByKey(
 					ZTypeRegistry::Z_IMPLEMENTATION_FUNCTION
 				);
 			} elseif ( $ztype === ZTypeRegistry::Z_TESTER ) {
-				$zFunction = $this->zObject->getInnerZObject()->getValueByKey(
+				$zFunction = $innerZObject->getValueByKey(
 					ZTypeRegistry::Z_TESTER_FUNCTION
 				);
 			}
@@ -128,6 +134,22 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 			default:
 				// No action.
+		}
+
+		// If appropriate, add entry to wikilambda_zlanguages for this ZID
+		if ( $ztype === ZTypeRegistry::Z_LANGUAGE ) {
+			$targetLanguage = $innerZObject->getValueByKey( ZTypeRegistry::Z_LANGUAGE_CODE );
+			$zObjectStore->insertZLanguageToLanguagesCache( $zid, $targetLanguage );
+
+			$secondaryLanguagesObject = $innerZObject->getValueByKey( ZTypeRegistry::Z_LANGUAGE_SECONDARYCODES );
+			if ( $secondaryLanguagesObject !== null ) {
+				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $secondaryLanguagesObject';
+				$secondaryLanguages = $secondaryLanguagesObject->getAsArray();
+
+				foreach ( $secondaryLanguages as $key => $secondaryLanguage ) {
+					$zObjectStore->insertZLanguageToLanguagesCache( $zid, $secondaryLanguage );
+				}
+			}
 		}
 	}
 }

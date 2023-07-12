@@ -55,6 +55,7 @@ class Hooks implements \MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook 
 			'zobject_label_conflicts',
 			'zobject_function_join',
 			'ztester_results',
+			'zlanguages'
 		];
 
 		foreach ( $tables as $key => $table ) {
