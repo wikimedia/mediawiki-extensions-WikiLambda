@@ -197,11 +197,6 @@
 				"ext.wikilambda.editpage/ext.wikilambda.editpage.less"
 			]
 		},
-		"ext.wikilambda.specialpages.styles": {
-			"styles": [
-				"ext.wikilambda.specialpages/ext.wikilambda.specialpages.less"
-			]
-		},
 		"ext.wikilambda.edit": {
 			"styles": [
 				"ext.wikilambda.edit/ext.wikilambda.edit.variables.less",

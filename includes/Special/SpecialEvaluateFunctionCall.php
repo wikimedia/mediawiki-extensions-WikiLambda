@@ -45,7 +45,7 @@ class SpecialEvaluateFunctionCall extends SpecialPage {
 		$this->outputHeader( 'wikilambda-special-evaluatefunctioncall-summary' );
 
 		$output = $this->getOutput();
-		$output->addModules( [ 'ext.wikilambda.edit','ext.wikilambda.specialpages.styles', 'mediawiki.special' ] );
+		$output->addModules( [ 'ext.wikilambda.edit','mediawiki.special' ] );
 
 		$output->addWikiMsg( 'wikilambda-special-evaluatefunctioncall-intro' );
 
