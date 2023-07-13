@@ -14,7 +14,6 @@ use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Languages\LanguageFallback;
-use MediaWiki\Title\Title;
 use SpecialPage;
 
 class SpecialListZObjectsByType extends SpecialPage {
@@ -87,9 +86,8 @@ class SpecialListZObjectsByType extends SpecialPage {
 				->parse();
 			$wikitext .= " ==\n";
 			foreach ( $zobjectList as $zid => $label ) {
-				$title = Title::newFromText( $zid, NS_MAIN );
 				// Let the usual linker de-reference the label as appropriate
-				$wikitext .= "# [[$title]] ($zid)\n";
+				$wikitext .= "# [[$zid]]\n";
 			}
 
 			if ( count( $zobjectList ) === 0 ) {
