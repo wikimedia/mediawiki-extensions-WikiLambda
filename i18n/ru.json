@@ -89,7 +89,7 @@
 	"wikilambda-zobject-missing-attached-function": "Требуется функция",
 	"wikilambda-chip-remove": "Удалить элемент",
 	"wikilambda-add-list-item-button": "Добавить элемент",
-	"wikilambda-list-item-label": "Элемент",
+	"wikilambda-list-item-label": "Элемент $1",
 	"wikilambda-add-list-item": "Добавить элемент",
 	"wikilambda-delete-list-item": "Удалённый элемент",
 	"wikilambda-about-widget-done-button": "Готово",
