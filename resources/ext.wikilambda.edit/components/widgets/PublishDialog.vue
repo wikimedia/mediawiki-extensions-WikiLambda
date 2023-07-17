@@ -203,11 +203,11 @@ module.exports = exports = {
 			}.bind( this ) );
 			// Log using Metrics Platform
 			const customData = {
-				isnewzobject: this.isNewZObject || null,
+				isnewzobject: this.isNewZObject,
 				zobjectid: this.getCurrentZObjectId || null,
 				zobjecttype: this.getCurrentZObjectType || null,
 				zlang: this.getUserZlangZID || null,
-				haserrors: this.hasErrors || null
+				haserrors: this.hasErrors
 			};
 			if ( this.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) {
 				customData.implementationtype = this.getCurrentZImplementationContentType || null;

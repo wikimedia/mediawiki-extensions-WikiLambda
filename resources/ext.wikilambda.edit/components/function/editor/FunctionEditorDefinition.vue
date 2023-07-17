@@ -335,11 +335,11 @@ module.exports = exports = {
 		handleCancel: function () {
 			const cancelTargetUrl = this.isNewZObject ? new mw.Title( 'Wikifunctions:Main_Page' ).getUrl() : new mw.Title( this.getCurrentZObjectId ).getUrl();
 			const customData = {
-				isnewzobject: this.isNewZObject || null,
+				isnewzobject: this.isNewZObject,
 				// If not set, this will be Z0:
 				zobjectid: this.getCurrentZObjectId,
 				zlang: this.getUserZlangZID || null,
-				isdirty: this.isDirty || null
+				isdirty: this.isDirty
 			};
 
 			if ( this.isDirty ) {
@@ -465,7 +465,7 @@ module.exports = exports = {
 		}
 		window.addEventListener( 'click', this.handleClickAway );
 		mw.eventLog.dispatch( 'wf.ui.editFunction.load', {
-			isnewzobject: this.isNewZObject || null,
+			isnewzobject: this.isNewZObject,
 			zobjectid: this.getCurrentZObjectId || null,
 			zlang: this.getUserZlangZID || null
 		} );
