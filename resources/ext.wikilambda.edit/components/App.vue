@@ -108,7 +108,8 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-.ext-wikilambda-view-nojsfallback {
+.ext-wikilambda-view-nojsfallback,
+.ext-wikilambda-editor-nojswarning {
 	display: none;
 }
 </style>
