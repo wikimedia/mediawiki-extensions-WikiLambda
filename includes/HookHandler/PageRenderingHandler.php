@@ -6,6 +6,7 @@ use HtmlArmor;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Hook\SkinTemplateNavigation__UniversalHook;
 use MediaWiki\Hook\WebRequestPathInfoRouterHook;
 use MediaWiki\Linker\Hook\HtmlPageLinkRendererEndHook;
 use MediaWiki\Linker\LinkRenderer;
@@ -15,7 +16,26 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use RequestContext;
 
-class PageRenderingHandler implements HtmlPageLinkRendererEndHook, WebRequestPathInfoRouterHook {
+class PageRenderingHandler implements
+	HtmlPageLinkRendererEndHook,
+	SkinTemplateNavigation__UniversalHook,
+	WebRequestPathInfoRouterHook
+{
+
+	// phpcs:disable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
+
+	/**
+	 * @inheritDoc
+	 */
+	public function onSkinTemplateNavigation__Universal( $skinTemplate, &$links ): void {
+		$targetTitle = $skinTemplate->getRelevantTitle();
+		// Don't show a "View source" link, it's meaningless for our content type
+		if ( $targetTitle->hasContentModel( CONTENT_MODEL_ZOBJECT ) ) {
+			unset( $links['views']['viewsource'] );
+		}
+	}
+
+	// phpcs:enable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
 
 	/**
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/HtmlPageLinkRendererEnd
