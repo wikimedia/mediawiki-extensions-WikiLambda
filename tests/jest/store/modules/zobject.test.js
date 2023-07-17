@@ -6390,5 +6390,62 @@ describe( 'zobject Vuex module', function () {
 			} );
 		} );
 
+		describe( 'addZObjects does not do an infinite recursion', function () {
+			beforeEach( function () {
+				context.state = { zKeys: mockApiZkeys };
+				context.getters.getStoredObject = function ( key ) {
+					return context.state.zKeys[ key ];
+				};
+				Object.keys( zobjectModule.modules.addZObjects.getters ).forEach( function ( key ) {
+					context.getters[ key ] =
+						zobjectModule.modules.addZObjects.getters[ key ](
+							context.state,
+							context.getters,
+							{ zobjectModule: context.state },
+							context.getters );
+				} );
+			} );
+
+			it( 'defaults to Z9/Reference when an object has an attribute of its own type', function () {
+				const expected = {
+					Z1K1: 'Z10528',
+					Z10528K1: {
+						Z1K1: 'Z10528',
+						Z10528K1: {
+							Z1K1: 'Z9',
+							Z9K1: ''
+						}
+					}
+				};
+				const payload = { id: 1, type: 'Z10528', link: false };
+				// zobjectModule.modules.addZObjects.getters.createObjectByType( context, payload );
+				const result = context.getters.createObjectByType( payload );
+				expect( result ).toEqual( expected );
+			} );
+
+			it( 'defaults to Z9/Reference when mutual reference occurs in an object\'s attribute', function () {
+				const expected = {
+					Z1K1: 'Z20001',
+					Z20001K1: {
+						Z1K1: 'Z20002',
+						Z20002K1: {
+							Z1K1: 'Z20003',
+							Z20003K1: {
+								Z1K1: 'Z20002',
+								Z20002K1: {
+									Z1K1: 'Z9',
+									Z9K1: ''
+								}
+							}
+						}
+					}
+				};
+				const payload = { id: 1, type: 'Z20001', link: false };
+				// zobjectModule.modules.addZObjects.getters.createObjectByType( context, payload );
+				const result = context.getters.createObjectByType( payload );
+				expect( result ).toEqual( expected );
+			} );
+		} );
+
 	} );
 } );
