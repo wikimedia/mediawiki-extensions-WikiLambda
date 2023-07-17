@@ -27,6 +27,7 @@
 	"wikilambda-savenew": "সংরক্ষণ",
 	"wikilambda-publishchanges": "পরিবর্তন প্রকাশ করুন",
 	"wikilambda-savechanges": "পরিবর্তন সংরক্ষণ",
+	"wikilambda-function-typeselector-label": "ফাংশন নির্বাচন করুন",
 	"wikilambda-zobject-to-string-select-object": "$1 নির্বাচন করুন",
 	"wikilambda-editor-label-addlanguage-label": "ভাষা নির্বাচন করুন",
 	"wikilambda-editor-label-removelanguage-tooltip": "এই লেবেল থেকে ভাষাটি সরিয়ে দিন",
@@ -79,5 +80,10 @@
 	"wikilambda-about-widget-add-language": "ভাষা যোগ করুন",
 	"wikilambda-function-explorer-copied-text": "অনুলিপি হয়েছে!",
 	"wikilambda-function-explorer-name-title": "নাম",
-	"wikilambda-function-view-function-button-text": "ফাংশন দেখুন"
+	"wikilambda-function-view-function-button-text": "ফাংশন দেখুন",
+	"wikilambda-function-evaluator-title": "একটি ফাংশন চেষ্টা করুন",
+	"wikilambda-function-evaluator-running": "চলমান...",
+	"wikilambda-function-evaluator-result": "ফলাফল",
+	"wikilambda-function-evaluator-result-details": "বিস্তারিত",
+	"wikilambda-function-evaluator-run-function": "ফাংশন চালান"
 }

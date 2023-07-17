@@ -8,6 +8,7 @@
 	"wikilambda-edit": "Уреди",
 	"wikilambda-show-more": "Прикажи више",
 	"wikilambda-hide-more": "Сакриј више",
+	"wikilambda-function-typeselector-label": "Изабери функцију",
 	"wikilambda-zobject-to-string-select-object": "Изабери $1",
 	"wikilambda-zobjectselector-no-results": "Нема резултата.",
 	"wikilambda-tester-status-pending": "На чекању…",
@@ -32,7 +33,10 @@
 	"wikilambda-about-widget-add-language": "Додај језик",
 	"wikilambda-function-explorer-copied-text": "Копирано!",
 	"wikilambda-function-explorer-name-title": "Име",
+	"wikilambda-function-evaluator-title": "Пробај функцију",
+	"wikilambda-function-evaluator-title-function": "Пробај ову функцију",
 	"wikilambda-function-evaluator-running": "Извршава се...",
 	"wikilambda-function-evaluator-result": "Резултат",
-	"wikilambda-function-evaluator-result-details": "Детаљи"
+	"wikilambda-function-evaluator-result-details": "Детаљи",
+	"wikilambda-function-evaluator-run-function": "Покрени функцију"
 }
