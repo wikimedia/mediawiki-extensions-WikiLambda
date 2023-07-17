@@ -381,7 +381,7 @@ module.exports = exports = {
 						selectedfunctionzid: this.selectedFunctionZid || null,
 						zobjectid: this.getCurrentZObjectId || null,
 						zobjecttype: this.getCurrentZObjectType || null,
-						resulthaserror: this.resultHasError || null,
+						resulthaserror: this.resultHasError,
 						zlang: this.getUserZlangZID || null
 					};
 					mw.eventLog.dispatch( 'wf.ui.callFunction', customData );

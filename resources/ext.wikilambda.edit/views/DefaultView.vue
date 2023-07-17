@@ -212,9 +212,9 @@ module.exports = exports = {
 	),
 	mounted: function () {
 		mw.eventLog.dispatch( 'wf.ui.defaultView.load', {
-			edit: this.edit || null,
+			edit: this.edit,
 			zobjecttype: this.contentType || null,
-			isnewzobject: this.isNewZObject || null,
+			isnewzobject: this.isNewZObject,
 			zobjectid: this.getCurrentZObjectId || null,
 			zlang: this.getUserZlangZID || null
 		} );
