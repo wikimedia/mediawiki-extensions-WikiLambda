@@ -590,5 +590,36 @@ describe( 'ZObjectKeyValue', () => {
 			await wrapper.getComponent( TextInput ).vm.$emit( 'input', 'my string value' );
 			expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), { keyPath: [ Constants.Z_STRING_VALUE ], rowId: 2, value: 'my string value' } );
 		} );
+
+		it( 'navigates into function editor when content type is set to function', () => {
+			getters.getZObjectKeyByRowId = createFunctionsMockForId( rowId, Constants.Z_PERSISTENTOBJECT_VALUE );
+			getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, Constants.Z_OBJECT );
+
+			const mockNavigate = jest.fn();
+
+			global.store.registerModule( 'router', {
+				namespaced: true,
+				actions: { navigate: mockNavigate }
+			} );
+
+			global.store.hotUpdate( { getters: getters } );
+
+			const wrapper = shallowMount( ZObjectKeyValue, {
+				props: {
+					edit: true,
+					rowId: rowId
+				},
+				global: {
+					stubs: {
+						WlZObjectKeyValueSet: false
+					}
+				}
+			} );
+
+			const keyValueSet = wrapper.findComponent( { name: 'wl-z-object-key-value-set' } );
+			keyValueSet.vm.$emit( 'set-type', { value: Constants.Z_FUNCTION } );
+			expect( mockNavigate ).toHaveBeenCalledWith( expect.anything(), { to: Constants.VIEWS.FUNCTION_EDITOR } );
+			expect( actions.changeType ).toHaveBeenCalledTimes( 0 );
+		} );
 	} );
 } );
