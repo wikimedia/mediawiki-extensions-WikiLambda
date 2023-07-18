@@ -10,6 +10,7 @@
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
+use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Title\Title;
@@ -82,6 +83,9 @@ class ZLangRegistryTest extends WikiLambdaIntegrationTestCase {
 		// Test the isLanguageKnownGivenCode() path that caches the result
 		$this->assertTrue( $this->registry->isLanguageKnownGivenCode( 'zh' ) );
 		$this->registry->unregister( self::ZLANG['zh'] );
+		// Also drop from the DB cache layer
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
+		$zObjectStore->deleteZLanguageFromLanguagesCache( self::ZLANG['zh'] );
 
 		$zid = $this->registry->getLanguageZidFromCode( 'zh' );
 		$this->assertTrue( $this->registry->isLanguageKnownGivenCode( 'zh' ) );
