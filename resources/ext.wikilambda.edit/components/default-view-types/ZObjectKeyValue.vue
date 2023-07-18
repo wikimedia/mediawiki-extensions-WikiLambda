@@ -603,7 +603,7 @@ module.exports = exports = {
 		'setZFunctionCallArguments',
 		'setZImplementationContentType',
 		'removeItemFromTypedList'
-	] ),
+	] ), mapActions( 'router', [ 'navigate' ] ),
 	{
 		/**
 		 * Handles the modification of the ZObject when the changed key-value
@@ -619,6 +619,16 @@ module.exports = exports = {
 		 * @param {boolean} payload.append whether to append a new blank object to a list
 		 */
 		setType: function ( payload ) {
+			// If we are setting Z2K2 type to Function/Z8, redirect to function editor
+			if (
+				( this.key === Constants.Z_PERSISTENTOBJECT_VALUE ) &&
+				( payload.value === Constants.Z_FUNCTION )
+			) {
+				this.navigate( { to: Constants.VIEWS.FUNCTION_EDITOR } );
+				return;
+			}
+
+			// Else simply change type and remain in default view page
 			this.changeType( {
 				id: this.rowId,
 				type: payload.value,
