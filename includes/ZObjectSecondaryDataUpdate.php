@@ -138,7 +138,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 		// If appropriate, add entry to wikilambda_zlanguages for this ZID
 		if ( $ztype === ZTypeRegistry::Z_LANGUAGE ) {
-			$targetLanguage = $innerZObject->getValueByKey( ZTypeRegistry::Z_LANGUAGE_CODE );
+			$targetLanguage = $innerZObject->getValueByKey( ZTypeRegistry::Z_LANGUAGE_CODE )->getZValue();
 			$zObjectStore->insertZLanguageToLanguagesCache( $zid, $targetLanguage );
 
 			$secondaryLanguagesObject = $innerZObject->getValueByKey( ZTypeRegistry::Z_LANGUAGE_SECONDARYCODES );
