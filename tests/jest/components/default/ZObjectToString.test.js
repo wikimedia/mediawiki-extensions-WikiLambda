@@ -18,6 +18,7 @@ describe( 'ZObjectToString', () => {
 		getters = {
 			getLabel: createGettersWithFunctionsMock( '' ),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( 'Z6' ),
+			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z6K1' ),
 			getZStringTerminalValue: createGettersWithFunctionsMock( 'the final stringdown' ),
 			getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z6' ),
 			getZFunctionCallFunctionId: createGettersWithFunctionsMock( 'Z10001' ),
@@ -135,6 +136,28 @@ describe( 'ZObjectToString', () => {
 			it( 'renders each argument with another ZObjectToString component', () => {
 				const wrapper = shallowMount( ZObjectToString );
 				expect( wrapper.findAllComponents( ZObjectToString ) ).toHaveLength( 2 );
+			} );
+		} );
+
+		describe( 'for an argument reference', () => {
+			beforeEach( () => {
+				getters.getZObjectTypeByRowId = createGettersWithFunctionsMock( 'Z6' );
+				getters.getZObjectKeyByRowId = createGettersWithFunctionsMock( 'Z18K1' );
+				getters.getZStringTerminalValue = createGettersWithFunctionsMock( 'Z999K1' );
+				getters.getLabel = createGettersWithFunctionsMock( 'argument label' );
+				global.store.hotUpdate( { getters: getters } );
+			} );
+
+			it( 'renders without errors', () => {
+				const wrapper = shallowMount( ZObjectToString );
+				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-text]' ).exists() ).toBe( true );
+				expect( wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' ).exists() ).toBe( false );
+			} );
+
+			it( 'renders the string terminal value', () => {
+				const wrapper = shallowMount( ZObjectToString );
+				const stringElement = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-text]' );
+				expect( stringElement.text() ).toBe( 'argument label' );
 			} );
 		} );
 

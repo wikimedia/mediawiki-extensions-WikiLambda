@@ -122,7 +122,10 @@ module.exports = exports = {
 					return this.getZFunctionCallFunctionId( this.rowId );
 				}
 				if ( this.type === Constants.Z_STRING ) {
-					return this.getZStringTerminalValue( this.rowId );
+					const value = this.getZStringTerminalValue( this.rowId );
+					return ( this.key === Constants.Z_ARGUMENT_REFERENCE_KEY ) ?
+						this.getLabel( value ) :
+						value;
 				}
 				if ( this.type === Constants.Z_REFERENCE ) {
 					return this.getZReferenceTerminalValue( this.rowId );
