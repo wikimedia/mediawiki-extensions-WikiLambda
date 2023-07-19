@@ -103,28 +103,6 @@ describe( 'ZCode', () => {
 			} ] ] );
 		} );
 
-		it( 'updates programming language and initializes box for lua', async () => {
-			var wrapper = shallowMount( ZCode, {
-				props: {
-					edit: true
-				}
-			} );
-			wrapper.findComponent( { name: 'wl-select' } ).vm.$emit( 'update:selected', 'lua' );
-			await wrapper.vm.$nextTick();
-			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ {
-				keyPath: [
-					Constants.Z_CODE_LANGUAGE,
-					Constants.Z_PROGRAMMING_LANGUAGE_CODE,
-					Constants.Z_STRING_VALUE
-				],
-				value: 'lua'
-			} ],
-			[ {
-				keyPath: [ Constants.Z_CODE_CODE, Constants.Z_STRING_VALUE ],
-				value: 'function Z10001(Z10001K1, Z10001K2)\n\t\nend'
-			} ] ] );
-		} );
-
 		it( 'updates programming language and initializes box for python', async () => {
 			// Set initial value to something other than python
 			getters.getZCodeProgrammingLanguage = createGettersWithFunctionsMock( 'javascript' );

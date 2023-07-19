@@ -90,7 +90,7 @@ class Implementation extends Page {
 	/**
 	 * Get the programming language selector
 	 *
-	 * @param {string} language - "python", "javascript" or "lua"
+	 * @param {string} language - "python" or "javascript"
 	 * @return {void}
 	 */
 	getProgrammingLanguageSelector( language ) {

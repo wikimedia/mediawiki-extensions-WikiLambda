@@ -358,11 +358,6 @@ module.exports = exports = {
 							this.functionZid + '(' +
 							this.functionArgumentKeys.join( ', ' ) + '):\n\t';
 						break;
-					case 'lua':
-						updatedBoilerPlateCode = 'function ' +
-							this.functionZid + '(' +
-							this.functionArgumentKeys.join( ', ' ) + ')\n\t\nend';
-						break;
 					default:
 						break;
 				}

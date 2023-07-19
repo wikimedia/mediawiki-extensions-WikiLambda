@@ -39,13 +39,13 @@ module.exports = exports = {
 	actions: {
 		/**
 		 * Call the mediawiki api to get and store the list of Z61/Programming Languages in the state.
-		 * TODO - implement API call to backend to get list of Z61.
+		 * TODO (T296815) - implement API call to backend to get list of Z61.
 		 *
 		 * @param {Object} context
 		 * @return {Object}
 		 */
 		fetchAllZProgrammingLanguages: function ( context ) {
-			// TODO(T296815): Stop using this hard-coded list and fetch them from the API
+			// TODO (T296815): Stop using this hard-coded list and fetch them from the API
 			var zProgrammingLanguages = [
 				{
 					Z1K1: Constants.Z_PERSISTENTOBJECT,
@@ -63,15 +63,6 @@ module.exports = exports = {
 						Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
 						Z61K1: 'python',
 						Z61K2: 'Python'
-					}
-				},
-				{
-					Z1K1: Constants.Z_PERSISTENTOBJECT,
-					Z2K1: 'Z620',
-					Z2K2: {
-						Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
-						Z61K1: 'lua',
-						Z61K2: 'Lua'
 					}
 				}
 			];

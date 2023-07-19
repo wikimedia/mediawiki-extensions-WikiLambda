@@ -25,15 +25,6 @@ var programmingLanguagesModule = require( '../../../../resources/ext.wikilambda.
 				Z61K1: 'python',
 				Z61K2: 'Python'
 			}
-		},
-		{
-			Z1K1: Constants.Z_PERSISTENTOBJECT,
-			Z2K1: 'Z620',
-			Z2K2: {
-				Z1K1: Constants.Z_PROGRAMMING_LANGUAGE,
-				Z61K1: 'lua',
-				Z61K2: 'Lua'
-			}
 		}
 	],
 	state;

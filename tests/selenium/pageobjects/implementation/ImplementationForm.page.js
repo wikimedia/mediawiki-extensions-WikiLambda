@@ -113,7 +113,7 @@ class ImplementationForm extends Page {
 	 * Select the programming language
 	 *
 	 * @async
-	 * @param {string} language - "python", "javascript" or "lua"
+	 * @param {string} language - "python" or "javascript"
 	 * @return {void}
 	 */
 	async selectProgrammingLanguage( language ) {
