@@ -8,7 +8,7 @@
 	<div class="ext-wikilambda-function-definition-name">
 		<div class="ext-wikilambda-function-definition-name__label">
 			<label
-				:for="'ext-wikilambda-function-definition-name__input' + zLang"
+				:for="inputId"
 				class="ext-wikilambda-app__text-regular">
 				<!-- TODO: Instead fetch this from the Z2 via `getLabel( Constants.Z_PERSISTENTOBJECT_LABEL )` -->
 				{{ $i18n( 'wikilambda-function-definition-name-label' ).text() }}
@@ -20,7 +20,7 @@
 		</div>
 
 		<cdx-text-input
-			:id="'ext-wikilambda-function-definition-name__input' + zLang"
+			:id="inputId"
 			:model-value="zobjectLabel"
 			class="ext-wikilambda-function-definition-name__input"
 			:aria-label="$i18n( 'wikilambda-function-definition-name-label' ).text()"
@@ -80,6 +80,9 @@ module.exports = exports = {
 				Constants.Z_PERSISTENTOBJECT_LABEL,
 				Constants.Z_MULTILINGUALSTRING_VALUE
 			] ).id;
+		},
+		inputId: function () {
+			return `ext-wikilambda-function-definition-name__input${this.zLang}`;
 		},
 		getFunctionName: function () {
 			if ( this.zLang === '' ) {

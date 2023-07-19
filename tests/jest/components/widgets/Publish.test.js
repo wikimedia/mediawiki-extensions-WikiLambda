@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the z object publish component.
+ * WikiLambda unit test suite for the Publish widget.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -7,38 +7,31 @@
 
 'use strict';
 
-const configureCompat = require( 'vue' ).configureCompat,
-	mount = require( '@vue/test-utils' ).mount,
-	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
+	{ waitFor } = require( '@testing-library/vue' ),
+	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	PublishDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/PublishDialog.vue' ),
-	PublishWidget = require( '../../../../resources/ext.wikilambda.edit/components/widgets/Publish.vue' ),
-	{ CdxTextInput } = require( '@wikimedia/codex' );
+	PublishWidget = require( '../../../../resources/ext.wikilambda.edit/components/widgets/Publish.vue' );
 
-configureCompat( { MODE: 3 } );
-
-describe( 'Publish widget', function () {
+describe( 'Publish widget', () => {
 	var getters,
 		actions;
 
-	beforeEach( function () {
-		// Needed because of the Teleported component.
-		const el = document.createElement( 'div' );
-		el.id = 'ext-wikilambda-app';
-		document.body.appendChild( el );
-
+	beforeEach( () => {
+		Object.defineProperty( window, 'location', { value: { href: '' } } );
 		getters = {
-			getErrors: createGettersWithFunctionsMock( [] ),
-			getCurrentZObjectId: createGettersWithFunctionsMock( 0 ),
-			getCurrentZObjectType: createGettersWithFunctionsMock( Constants.Z_FUNCTION ),
-			isNewZObject: createGettersWithFunctionsMock( true ),
-			getUserZlangZID: createGettersWithFunctionsMock( 'Z1002' )
+			getCurrentZObjectId: createGetterMock( 'Z0' ),
+			getCurrentZObjectType: createGetterMock( Constants.Z_FUNCTION ),
+			getCurrentZImplementationType: createGetterMock( Constants.Z_IMPLEMENTATION_CODE ),
+			isNewZObject: createGetterMock( true ),
+			getUserZlangZID: createGetterMock( 'Z1002' ),
+			getZLang: createGetterMock( 'en' )
 		};
 		actions = {
-			submitZObject: jest.fn(),
-			validateZObject: jest.fn( () => true ),
-			setError: jest.fn(),
 			clearValidationErrors: jest.fn(),
+			validateZObject: jest.fn( () => true ),
+			submitZObject: jest.fn(),
+			setError: jest.fn(),
 			clearAllErrors: jest.fn()
 		};
 		global.store.hotUpdate( {
@@ -47,179 +40,159 @@ describe( 'Publish widget', function () {
 		} );
 	} );
 
-	afterEach( () => {
-		document.body.outerHTML = '';
-	} );
-
-	it( 'renders without errors', function () {
-		var wrapper = mount( PublishWidget );
-
-		expect( wrapper.find( 'div' ).exists() ).toBe( true );
-	} );
-
-	it( 'opens the publish dialog if validateZObject returns isValid true', async function () {
-		var wrapper = mount( PublishWidget );
-		await wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
-
-		const publishDialog = wrapper.findComponent( PublishDialog );
-
-		expect( publishDialog.vm.showDialog ).toBe( true );
-		const publishButton = wrapper.findComponent( '.ext-wikilambda-publishdialog__actions__button-publish' );
-		expect( publishButton.exists() ).toBeTruthy();
-	} );
-
-	it( 'does not open the publish dialog if validateZObject returns isValid false', async function () {
-		actions.validateZObject = jest.fn( function () {
-			return false;
+	it( 'renders without errors', () => {
+		const wrapper = shallowMount( PublishWidget, {
+			global: { stubs: { WlWidgetBase: false, CdxCard: false } }
 		} );
 
-		global.store.hotUpdate( {
-			actions: actions
-		} );
-
-		var wrapper = mount( PublishWidget );
-		await wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
-
-		const publishDialog = wrapper.findComponent( PublishDialog );
-		expect( publishDialog.vm.showDialog ).toBe( false );
-		const publishButton = wrapper.findComponent( '.ext-wikilambda-publishdialog__actions__button-publish' );
-		expect( publishButton.exists() ).toBeFalsy();
+		expect( wrapper.find( '.ext-wikilambda-publish-widget' ).exists() ).toBe( true );
 	} );
 
-	it( 'publish dialog triggers the "publish" event on button click and submits the input summary', async function () {
-		var wrapper = mount( PublishWidget );
-
-		// ACT: open dialog
-		await wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
-		await wrapper.vm.$nextTick();
-
-		// ACT: enter summary
-		wrapper.getComponent( CdxTextInput ).get( 'input' ).setValue( 'my changes summary' );
-
-		const publishButton = wrapper.findComponent( '.ext-wikilambda-publishdialog__actions__button-publish' );
-		expect( publishButton.exists() ).toBeTruthy();
-
-		wrapper.vm.$nextTick( function () {
-			// ACT: click publish button.
-			publishButton.trigger( 'click' );
-			expect( actions.submitZObject ).toHaveBeenCalledWith( expect.anything(), {
-				shouldUnattachImplementationAndTester: false,
-				summary: 'my changes summary' } );
+	it( 'opens the publish dialog if validateZObject returns isValid true', async () => {
+		const wrapper = shallowMount( PublishWidget, {
+			props: { isDirty: true },
+			global: { stubs: { WlWidgetBase: false, CdxCard: false, CdxButton: false } }
 		} );
+		const publishDialog = wrapper.findComponent( { name: 'wl-publish-dialog' } );
+
+		wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
+
+		await waitFor( () => expect( publishDialog.props( 'showDialog' ) ).toBe( true ) );
+		expect( wrapper.emitted( 'start-publish' ) ).toBeTruthy();
 	} );
 
-	it( 'publish dialog triggers the "close dialog" event on cancel button click', async function () {
-		var wrapper = mount( PublishWidget );
+	it( 'does not open the publish dialog if validateZObject returns isValid false', async () => {
+		actions.validateZObject = jest.fn( () => false );
+		global.store.hotUpdate( { actions: actions } );
 
-		// ACT: open dialog
-		await wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
-		await wrapper.vm.$nextTick();
-
-		const cancelButton = wrapper.findComponent( '.ext-wikilambda-publishdialog__actions__button-cancel' );
-		expect( cancelButton.exists() ).toBeTruthy();
-
-		wrapper.vm.$nextTick( function () {
-			// ACT: click cancel button.
-			cancelButton.trigger( 'click' );
-
-			const publishDialog = wrapper.findComponent( PublishDialog );
-			expect( publishDialog.emitted() ).toHaveProperty( 'close-dialog' );
+		const wrapper = shallowMount( PublishWidget, {
+			global: { stubs: { WlWidgetBase: false, CdxCard: false } }
 		} );
+
+		wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
+
+		const publishDialog = wrapper.findComponent( { name: 'wl-publish-dialog' } );
+		waitFor( () => expect( publishDialog.props( 'showDialog' ) ).toBe( false ) );
 	} );
 
-	it( 'displays received errors in the dialog box', async function () {
-		getters.getErrors = createGettersWithFunctionsMock( [ {
-			code: undefined,
-			message: 'error to be displayed',
-			type: Constants.errorTypes.ERROR
-		} ] );
-		global.store.hotUpdate( {
-			getters: getters
+	it( 'opens the leave confirmation dialog if page is dirty', async () => {
+		const wrapper = shallowMount( PublishWidget, {
+			props: { isDirty: true },
+			global: { stubs: { WlWidgetBase: false, CdxCard: false, CdxButton: false } }
 		} );
 
-		var wrapper = mount( PublishWidget );
+		wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' ).trigger( 'click' );
 
-		// ACT: open dialog
-		await wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
-		await wrapper.vm.$nextTick();
+		const leaveDialog = wrapper.findComponent( { name: 'wl-leave-editor-dialog' } );
+		await waitFor( () => expect( leaveDialog.props( 'showDialog' ) ).toBe( true ) );
 
-		const dialog = wrapper.findComponent( { name: 'cdx-dialog' } );
-
-		const errors = dialog.find( '.ext-wikilambda-publishdialog__errors' );
-		expect( errors.exists() ).toBeTruthy();
-
-		const errorMessages = errors.findAllComponents( { name: 'cdx-message' } );
-		expect( errorMessages.length ).toBe( 1 );
-
-		const errorMessage = errorMessages[ 0 ];
-		expect( errorMessage.text() ).toBe( 'error to be displayed' );
-		expect( errorMessage.props( 'type' ) ).toBe( Constants.errorTypes.ERROR );
+		expect( wrapper.emitted( 'start-cancel' ) ).toBeTruthy();
+		expect( wrapper.vm.leaveEditorCallback ).toBeDefined();
 	} );
 
-	it( 'displays warnings in the dialog box', async function () {
-		getters.getErrors = createGettersWithFunctionsMock( [ {
-			code: Constants.errorCodes.TYPED_LIST_TYPE_CHANGED,
-			message: undefined,
-			type: Constants.errorTypes.WARNING
-		}, {
-			code: undefined,
-			message: 'custom warning message',
-			type: Constants.errorTypes.WARNING
-		} ] );
-		global.store.hotUpdate( {
-			getters: getters
+	it( 'leaves immediately if page is not dirty', async () => {
+		const wrapper = shallowMount( PublishWidget, {
+			props: { isDirty: false },
+			global: { stubs: { WlWidgetBase: false, CdxCard: false, CdxButton: false } }
 		} );
 
-		var wrapper = mount( PublishWidget );
+		wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' ).trigger( 'click' );
 
-		// ACT: open dialog
-		await wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
-		await wrapper.vm.$nextTick();
-
-		const dialog = wrapper.findComponent( { name: 'cdx-dialog' } );
-
-		const warnings = dialog.find( '.ext-wikilambda-publishdialog__errors' );
-		expect( warnings.exists() ).toBeTruthy();
-
-		const warningMessages = warnings.findAllComponents( { name: 'cdx-message' } );
-		expect( warningMessages.length ).toBe( 2 );
-
-		const firstWarning = warningMessages[ 0 ];
-		expect( firstWarning.props( 'type' ) ).toBe( Constants.errorTypes.WARNING );
-		expect( firstWarning.text() ).toBe(
-			'You changed the type of one or more lists. On publish, all list items will be deleted' );
-
-		const secondWarning = warningMessages[ 1 ];
-		expect( secondWarning.props( 'type' ) ).toBe( Constants.errorTypes.WARNING );
-		expect( secondWarning.text() ).toBe( 'custom warning message' );
+		const leaveDialog = wrapper.findComponent( { name: 'wl-leave-editor-dialog' } );
+		await waitFor( () => expect( window.location.href ).not.toEqual( '' ) );
+		expect( wrapper.emitted( 'start-cancel' ) ).toBeTruthy();
+		expect( leaveDialog.props( 'showDialog' ) ).toBe( false );
+		expect( wrapper.vm.leaveEditorCallback ).toBeUndefined();
+		expect( wrapper.vm.showLeaveEditorDialog ).toBe( false );
 	} );
 
-	it( 'sets errors returned from the API to the store', async function () {
-		const mockErrorFromApi = { error: { message: 'error message from the api' } };
-		const mockSetError = jest.fn();
-		actions.setError = mockSetError;
-		actions.submitZObject = jest.fn().mockRejectedValue( mockErrorFromApi );
+	it( 'redirects to main page if we cancel from a create page', async () => {
+		getters.isNewZObject = createGetterMock( true );
+		global.store.hotUpdate( { getters: getters } );
 
-		global.store.hotUpdate( {
-			actions: actions
+		const wrapper = shallowMount( PublishWidget, {
+			props: { isDirty: false },
+			global: { stubs: { WlWidgetBase: false, CdxCard: false, CdxButton: false } }
 		} );
 
-		var wrapper = mount( PublishWidget );
+		wrapper.vm.leaveTo = jest.fn();
+		wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' ).trigger( 'click' );
 
-		// ACT: open dialog
-		await wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
-		await wrapper.vm.$nextTick();
+		const targetUrl = '/wiki/Wikifunctions:Main_Page';
+		expect( wrapper.vm.leaveTo ).toHaveBeenCalledWith( targetUrl );
+	} );
 
-		const publishButton = wrapper.findComponent( '.ext-wikilambda-publishdialog__actions__button-publish' );
+	it( 'redirects to object view page if we cancel from an edit page', () => {
+		getters.isNewZObject = createGetterMock( false );
+		getters.getCurrentZObjectId = createGetterMock( 'Z10001' );
+		global.store.hotUpdate( { getters: getters } );
 
-		// ACT: click publish button
-		await publishButton.trigger( 'click' );
-		await wrapper.vm.$nextTick();
-
-		expect( mockSetError ).toHaveBeenCalledWith( expect.anything(), {
-			rowId: 0,
-			errorMessage: 'error message from the api',
-			errorType: Constants.errorTypes.ERROR
+		const wrapper = shallowMount( PublishWidget, {
+			props: { isDirty: false },
+			global: { stubs: { WlWidgetBase: false, CdxCard: false, CdxButton: false } }
 		} );
+
+		wrapper.vm.leaveTo = jest.fn();
+		wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' ).trigger( 'click' );
+
+		const targetUrl = '/view/en/Z10001';
+		expect( wrapper.vm.leaveTo ).toHaveBeenCalledWith( targetUrl );
+	} );
+
+	describe( 'Event logging', () => {
+
+		it( 'emits cancel event when leaving a create function page', async () => {
+			getters.isNewZObject = createGetterMock( true );
+			getters.getCurrentZObjectType = createGetterMock( 'Z8' );
+			getters.getCurrentZImplementationType = createGetterMock( undefined );
+			global.store.hotUpdate( { getters: getters } );
+
+			const wrapper = shallowMount( PublishWidget, {
+				props: { isDirty: false },
+				global: { stubs: { WlWidgetBase: false, CdxCard: false, CdxButton: false } }
+			} );
+
+			wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' ).trigger( 'click' );
+
+			const eventName = 'wf.ui.editFunction.cancel';
+			const eventData = {
+				implementationtype: null,
+				isdirty: false,
+				isnewzobject: true,
+				zlang: 'Z1002',
+				zobjectid: 'Z0',
+				zobjecttype: 'Z8'
+			};
+
+			await waitFor( () => expect( mw.eventLog.dispatch ).toHaveBeenCalledWith( eventName, eventData ) );
+		} );
+
+		it( 'emits cancel event when leaving an edit code implementation page', async () => {
+			getters.isNewZObject = createGetterMock( false );
+			getters.getCurrentZObjectId = createGetterMock( 'Z10001' );
+			getters.getCurrentZObjectType = createGetterMock( 'Z14' );
+			getters.getCurrentZImplementationType = createGetterMock( 'Z14K3' );
+			global.store.hotUpdate( { getters: getters } );
+
+			const wrapper = shallowMount( PublishWidget, {
+				props: { isDirty: false },
+				global: { stubs: { WlWidgetBase: false, CdxCard: false, CdxButton: false } }
+			} );
+
+			wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' ).trigger( 'click' );
+
+			const eventName = 'wf.ui.editImplementation.cancel';
+			const eventData = {
+				implementationtype: 'Z14K3',
+				isdirty: false,
+				isnewzobject: false,
+				zlang: 'Z1002',
+				zobjectid: 'Z10001',
+				zobjecttype: 'Z14'
+			};
+
+			await waitFor( () => expect( mw.eventLog.dispatch ).toHaveBeenCalledWith( eventName, eventData ) );
+		} );
+
 	} );
 } );

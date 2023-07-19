@@ -25,7 +25,7 @@
 		<template v-else>
 			<cdx-lookup
 				:key="lookupKey"
-				v-model:selected="selectedValue"
+				:selected="selectedValue"
 				:disabled="disabled"
 				:placeholder="lookupPlaceholder"
 				:menu-items="lookupResults"
@@ -52,8 +52,7 @@
 					:type="error.type"
 					:inline="true"
 				>
-					<template v-if="error.message">{{ error.message }}</template>
-					<template v-else>{{ messageFromCode( error.code ) }}</template>
+					<div v-html="getErrorMessage( error )"></div>
 				</cdx-message>
 			</div>
 		</template>
@@ -431,14 +430,15 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Returns the translated message for a given error code
+			 * Returns the translated message for a given error code.
+			 * Error messages can have html tags.
 			 *
-			 * @param {string} code
+			 * @param {Object} error
 			 * @return {string}
 			 */
-			messageFromCode: function ( code ) {
+			getErrorMessage: function ( error ) {
 				// eslint-disable-next-line mediawiki/msg-doc
-				return this.$i18n( code ).text();
+				return error.message || this.$i18n( error.code ).text();
 			},
 
 			/**

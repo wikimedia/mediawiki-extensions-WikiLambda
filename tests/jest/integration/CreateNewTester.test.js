@@ -37,24 +37,27 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 				href: '/w/index.php?title=Special:CreateObject&zid=Z20&Z20K1=' + functionZid
 			}
 		} );
+
 		const queryParams = {
 			title: Constants.PATHS.CREATE_OBJECT_TITLE,
 			zid: Constants.Z_TESTER,
 			[ Constants.Z_TESTER_FUNCTION ]: functionZid
 		};
-		window.mw.Uri.mockImplementation( function () {
+		window.mw.Uri = jest.fn( () => {
 			return {
 				query: queryParams,
 				path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
 			};
 		} );
+
 		global.mw.config.get = ( endpoint ) => {
 			switch ( endpoint ) {
 				case 'wgWikiLambda':
 					return {
-						zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+						vieMode: false,
 						createNewPage: true,
-						zId: Constants.Z_TESTER
+						zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+						zlang: 'en'
 					};
 				case 'wgExtensionAssetsPath':
 					return '/w/extensions';
@@ -68,6 +71,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 				page: 'newPage'
 			}
 		} ) );
+
 		mw.Api = jest.fn( () => {
 			return {
 				postWithEditToken: apiPostWithEditTokenMock,
@@ -181,7 +185,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 		// ACT: Confirm publish in publish dialog that opens
 		const confirmPublishDialog = await findByTestId( 'confirm-publish-dialog' );
-		const confirmPublishButton = await within( confirmPublishDialog ).getByTestId( 'confirm-publish-button' );
+		const confirmPublishButton = await within( confirmPublishDialog ).getByText( 'Publish' );
 
 		await fireEvent.click( confirmPublishButton );
 

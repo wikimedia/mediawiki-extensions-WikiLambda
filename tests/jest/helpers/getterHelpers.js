@@ -10,4 +10,11 @@ var createGettersWithFunctionsMock = function ( returnVal ) {
 	} );
 };
 
-module.exports = { createGettersWithFunctionsMock };
+var createGetterMock = function ( returnVal ) {
+	return jest.fn().mockReturnValue( returnVal );
+};
+
+module.exports = {
+	createGettersWithFunctionsMock,
+	createGetterMock
+};

@@ -7,10 +7,13 @@
 	-->
 	<div
 		class="ext-wikilambda-implementation"
-		data-testid="z-implementation"
+		data-testid="implementation"
 	>
 		<!-- Function selection block -->
-		<div class="ext-wikilambda-implementation-function">
+		<div
+			class="ext-wikilambda-implementation-function"
+			data-testid="implementation-function"
+		>
 			<wl-z-object-key-value
 				:key="functionRowId"
 				:row-id="functionRowId"

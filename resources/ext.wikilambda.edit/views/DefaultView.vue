@@ -39,7 +39,10 @@
 
 			<div class="ext-wikilambda-col ext-wikilambda-col-6 ext-wikilambda-col-tablet-24">
 				<!-- Widget Publish Dialog -->
-				<wl-publish-widget v-if="edit"></wl-publish-widget>
+				<wl-publish-widget
+					v-if="edit"
+					:is-dirty="isDirty"
+				></wl-publish-widget>
 
 				<!-- Widget Function Report -->
 				<wl-function-report-widget
@@ -56,15 +59,6 @@
 					:content-row-id="contentRowId"
 					:for-implementation="isImplementationPage"
 				></wl-function-evaluator-widget>
-
-				<!-- Widget ZObject JSON: Leave here for development purposes.
-				<div class="ext-wikilambda-widget ext-wikilambda-widget-json">
-					<wl-z-object-json
-						:readonly="true"
-						:zobject-raw="getZObjectAsJson"
-					></wl-z-object-json>
-				</div>
-				-->
 			</div>
 		</div>
 	</div>
@@ -74,7 +68,6 @@
 
 var Constants = require( '../Constants.js' ),
 	ZObjectKeyValue = require( '../components/default-view-types/ZObjectKeyValue.vue' ),
-	// ZObjectJson = require( '../components/ZObjectJson.vue' ),
 	FunctionEvaluatorWidget = require( '../components/widgets/FunctionEvaluator.vue' ),
 	FunctionExplorerWidget = require( '../components/widgets/FunctionExplorer.vue' ),
 	AboutWidget = require( '../components/widgets/About.vue' ),
@@ -92,7 +85,6 @@ module.exports = exports = {
 		'wl-function-evaluator-widget': FunctionEvaluatorWidget,
 		'wl-function-explorer-widget': FunctionExplorerWidget,
 		'wl-function-report-widget': FunctionReportWidget,
-		// 'wl-z-object-json': ZObjectJson,
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
 	mixins: [ eventLogUtils ],
@@ -110,6 +102,7 @@ module.exports = exports = {
 			'getZReferenceTerminalValue',
 			'getZStringTerminalValue',
 			'getRowByKeyPath',
+			'isDirty',
 			'isNewZObject',
 			'getCurrentZObjectId',
 			'getUserZlangZID'
@@ -238,11 +231,13 @@ module.exports = exports = {
 		margin-bottom: @spacing-125;
 	}
 
-	> .ext-wikilambda-key-value {
-		> .ext-wikilambda-key-value-main__no-indent {
-			> .ext-wikilambda-value-block {
-				> .ext-wikilambda-key-value-set.ext-wikilambda-key-level-1 {
-					margin-left: 0;
+	> .ext-wikilambda-key-value-row {
+		> .ext-wikilambda-key-value {
+			> .ext-wikilambda-key-value-main__no-indent {
+				> .ext-wikilambda-value-block {
+					> .ext-wikilambda-key-value-set.ext-wikilambda-key-level-1 {
+						margin-left: 0;
+					}
 				}
 			}
 		}

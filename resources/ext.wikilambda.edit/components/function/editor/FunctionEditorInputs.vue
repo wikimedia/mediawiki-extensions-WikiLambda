@@ -164,7 +164,7 @@ module.exports = exports = {
 			return this.getNestedZObjectById( this.zobjectId, [
 				Constants.Z_PERSISTENTOBJECT_VALUE,
 				Constants.Z_FUNCTION_ARGUMENTS
-			] ).id || Constants.NEW_ZID_PLACEHOLDER;
+			] ).id;
 		},
 		zArgumentList: function () {
 			return this.getAllItemsFromListById( this.zArgumentId );

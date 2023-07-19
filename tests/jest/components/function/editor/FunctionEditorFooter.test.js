@@ -6,47 +6,71 @@
  */
 'use strict';
 
-var VueTestUtils = require( '@vue/test-utils' ),
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
+	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
+	Constants = require( '../../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	FunctionEditorFooter = require( '../../../../../resources/ext.wikilambda.edit/components/function/editor/FunctionEditorFooter.vue' );
 
 describe( 'FunctionEditorFooter', function () {
+	var getters,
+		actions;
+
 	beforeEach( () => {
-		var getters = {
-			getErrors: jest.fn( function () {
-				return {};
-			} )
+		getters = {
+			isNewZObject: createGetterMock( true )
+		};
+		actions = {
+			setError: jest.fn()
 		};
 		global.store.hotUpdate( {
+			actions: actions,
 			getters: getters
 		} );
-
 	} );
-	it( 'renders without errors', function () {
-		var wrapper = VueTestUtils.shallowMount( FunctionEditorFooter );
 
+	it( 'renders without errors', () => {
+		const wrapper = shallowMount( FunctionEditorFooter );
 		expect( wrapper.find( '.ext-wikilambda-function-definition-footer' ).exists() ).toBeTruthy();
 	} );
 
-	it( 'displays the PublishWidget component', function () {
-		var wrapper = VueTestUtils.mount( FunctionEditorFooter );
-
+	it( 'displays the PublishWidget component', () => {
+		const wrapper = shallowMount( FunctionEditorFooter, {
+			props: {
+				functionInputChanged: false,
+				functionOutputChanged: false,
+				isFunctionDirty: false
+			},
+			global: { stubs: { WlPublishWidget: false } }
+		} );
 		expect( wrapper.find( '.ext-wikilambda-publish-widget' ).exists() ).toBeTruthy();
 	} );
 
-	it( 'triggers the "cancel" event on cancel button click', function () {
-		var wrapper = VueTestUtils.mount( FunctionEditorFooter, {
+	it( 'raises function warnings if input or output have changed while editing', async () => {
+		getters.isNewZObject = createGetterMock( false );
+		global.store.hotUpdate( { getters: getters } );
+
+		const wrapper = shallowMount( FunctionEditorFooter, {
 			props: {
-				isEditing: true
+				functionInputChanged: true,
+				functionOutputChanged: false,
+				isFunctionDirty: false
 			},
-			global: {
-				stubs: { CdxButton: false }
-			}
+			global: { stubs: {
+				WlPublishWidget: false,
+				WlWidgetBase: false,
+				CdxCard: false,
+				CdxButton: false
+			} }
 		} );
 
-		const cancelButton = wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' );
-		expect( cancelButton.exists() ).toBeTruthy();
-		return cancelButton.trigger( 'click' ).then( function () {
-			expect( wrapper.emitted().cancel ).toBeTruthy();
-		} );
+		const publishWidget = wrapper.findComponent( { name: 'wl-publish-widget' } );
+		publishWidget.vm.$emit( 'start-publish' );
+
+		const errorPayload = {
+			rowId: 0,
+			errorType: Constants.errorTypes.WARNING,
+			errorCode: Constants.errorCodes.FUNCTION_INPUT_CHANGED
+		};
+		expect( actions.setError ).toHaveBeenCalledWith( expect.anything(), errorPayload );
 	} );
 } );

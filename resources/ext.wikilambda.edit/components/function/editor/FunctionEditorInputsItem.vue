@@ -88,7 +88,7 @@
 					{{ $i18n( 'wikilambda-function-definition-input-item-label' ).text() }}
 				</span>
 				<cdx-text-input
-					v-model="getArgumentLabel"
+					:model-value="getArgumentLabel"
 					class="
 						ext-wikilambda-editor-input-list-item__body__entry-field
 						ext-wikilambda-editor-input-list-item__label"

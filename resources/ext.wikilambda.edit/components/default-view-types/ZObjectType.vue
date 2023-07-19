@@ -9,6 +9,7 @@
 		<div
 			v-if="edit"
 			class="ext-wikilambda-type-mode__select"
+			data-testid="z-object-type-select"
 		>
 			<!-- Zero state, select a literal type -->
 			<wl-z-object-selector
@@ -24,7 +25,6 @@
 				v-model:selected="value"
 				:menu-items="typeOptions"
 				:disabled="disabled"
-				data-testid="z-object-type-select"
 				@update:selected="setValue"
 			></wl-select>
 		</div>

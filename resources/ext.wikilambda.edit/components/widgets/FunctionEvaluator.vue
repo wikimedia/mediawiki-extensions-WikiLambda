@@ -85,6 +85,7 @@ var Constants = require( '../../Constants.js' ),
 	WidgetBase = require( '../base/WidgetBase.vue' ),
 	ZReference = require( '../default-view-types/ZReference.vue' ),
 	ZObjectKeyValue = require( '../default-view-types/ZObjectKeyValue.vue' ),
+	eventLogUtils = require( '../../mixins/eventLogUtils.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -97,6 +98,7 @@ module.exports = exports = {
 		'wl-z-reference': ZReference,
 		'wl-z-object-key-value': ZObjectKeyValue
 	},
+	mixins: [ eventLogUtils ],
 	props: {
 		functionZid: {
 			type: String,
@@ -384,7 +386,7 @@ module.exports = exports = {
 						resulthaserror: this.resultHasError,
 						zlang: this.getUserZlangZID || null
 					};
-					mw.eventLog.dispatch( 'wf.ui.callFunction', customData );
+					this.dispatchEvent( 'wf.ui.callFunction', customData );
 				} );
 		},
 
@@ -478,8 +480,10 @@ module.exports = exports = {
 				}
 			}
 
-			> .ext-wikilambda-key-value {
-				margin-bottom: 0;
+			> .ext-wikilambda-key-value-row {
+				> .ext-wikilambda-key-value {
+					margin-bottom: 0;
+				}
 			}
 		}
 	}

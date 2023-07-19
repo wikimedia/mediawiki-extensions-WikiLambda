@@ -32,6 +32,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 	beforeEach( () => {
 		const setupResult = runSetup();
 		apiPostWithEditTokenMock = setupResult.apiPostWithEditTokenMock;
+
 		mw.Api = jest.fn( () => {
 			return {
 				postWithEditToken: apiPostWithEditTokenMock,
@@ -42,15 +43,28 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 				] )
 			};
 		} );
-		const queryParams = {
-			zid: Constants.Z_FUNCTION
-		};
-		window.mw.Uri.mockImplementationOnce( function () {
+
+		const queryParams = { zid: Constants.Z_FUNCTION };
+		window.mw.Uri = jest.fn( () => {
 			return {
 				query: queryParams,
 				path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
 			};
 		} );
+
+		global.mw.config.get = ( endpoint ) => {
+			switch ( endpoint ) {
+				case 'wgWikiLambda':
+					return {
+						vieMode: false,
+						createNewPage: true,
+						zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+						zlang: 'en'
+					};
+				default:
+					return {};
+			}
+		};
 	} );
 
 	afterEach( () => {
@@ -58,7 +72,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 	} );
 
 	it( 'allows creating a new function, making use of most important features', async () => {
-		const { findByLabelText, findByRole, getAllByLabelText, getByLabelText, getByText, findAllByRole } =
+		const { findByLabelText, findByRole, getAllByLabelText, getByLabelText, getByText, findAllByRole, findAllByTestId } =
 			render( App, { global: { plugins: [ store ] } } );
 
 		// ACT: Select Chinese as the natural language.
@@ -67,7 +81,11 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await clickLookupResult( languageSelector, 'Chinese' );
 
 		// ACT: Enter a name for the function in Chinese.
-		await fireEvent.update( getByLabelText( 'Name (optional)' ), 'function name, in Chinese' );
+		let languageBlocks = await findAllByTestId( 'function-editor-definition-language-block' );
+		const firstLanguageBlock = languageBlocks[ 0 ];
+		const firstNameInputBlock = within( firstLanguageBlock ).getByTestId( 'function-editor-name-input' );
+		const firstNameInput = within( firstNameInputBlock ).getByRole( 'textbox' );
+		await fireEvent.update( firstNameInput, 'function name, in Chinese' );
 
 		// ACT: Enter an alias for the function in Chinese.
 		const aliasInput = within( getByLabelText( 'Alternative names (optional)' ) ).getByRole( 'textbox' );
@@ -111,7 +129,11 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await clickLookupResult( secondLanguageSelector, 'French' );
 
 		// ACT: Enter a name in French.
-		await fireEvent.update( getAllByLabelText( 'Name (optional)' )[ 1 ], 'function name, in French' );
+		languageBlocks = await findAllByTestId( 'function-editor-definition-language-block' );
+		const secondLanguageBlock = languageBlocks[ 1 ];
+		const secondNameInputBlock = within( secondLanguageBlock ).getByTestId( 'function-editor-name-input' );
+		const secondNameInput = within( secondNameInputBlock ).getByRole( 'textbox' );
+		await fireEvent.update( secondNameInput, 'function name, in French' );
 
 		// ACT: Enter an alias in French
 		const frenchAliasInput = within( getAllByLabelText( 'Alternative names (optional)' )[ 1 ] ).getByRole( 'textbox' );

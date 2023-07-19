@@ -98,12 +98,7 @@
 					:type="error.type"
 					:inline="true"
 				>
-					<template v-if="error.message">
-						{{ error.message }}
-					</template>
-					<template v-else>
-						{{ messageFromCode( error.code ) }}
-					</template>
+					<div v-html="getErrorMessage( error )"></div>
 				</cdx-message>
 			</div>
 		</div>
@@ -652,6 +647,7 @@ module.exports = exports = {
 	methods: $.extend( mapActions( [
 		'changeType',
 		'clearErrors',
+		'setDirty',
 		'setValueByRowIdAndPath',
 		'setZFunctionCallArguments',
 		'setZImplementationContentType',
@@ -682,6 +678,7 @@ module.exports = exports = {
 			}
 
 			// Else simply change type and remain in default view page
+			this.setDirty();
 			this.changeType( {
 				id: this.rowId,
 				type: payload.value,
@@ -705,6 +702,7 @@ module.exports = exports = {
 				return;
 			}
 
+			// DELEGATE CHANGE RESPONSIBILITY TO PARENT:
 			// If we are setting a typed list, we need to transform the whole parent object
 			if ( ( this.key === Constants.Z_FUNCTION_CALL_FUNCTION ) &&
 				( payload.value === Constants.Z_TYPED_LIST ) ) {
@@ -716,10 +714,7 @@ module.exports = exports = {
 				this.$emit( 'change-event', payload );
 			}
 
-			// COMPLEX changes
-			// They affect the rest of the ZObject, not only this key-value
-
-			// 1. If the value of Z1K1 changes, tell parent key to change its type
+			// If the value of Z1K1 changes, tell parent key to change its type
 			if ( this.key === Constants.Z_OBJECT_TYPE ) {
 				if ( Array.isArray( payload.value ) ) {
 					this.$emit( 'set-value', payload );
@@ -729,14 +724,17 @@ module.exports = exports = {
 				return;
 			}
 
-			// 2. If the value of Z1K1.Z9K1 changes, pass the set value responsability
+			// If the value of Z1K1.Z9K1 changes, pass the set value responsability
 			if ( ( this.key === Constants.Z_REFERENCE_ID ) &&
 				( this.parentKey === Constants.Z_OBJECT_TYPE ) ) {
 				this.$emit( 'set-value', payload );
 				return;
 			}
 
-			// 3. If we are changing an implementation type, we need to clear
+			// CHANGES ARE RESPONSIBILITY OF THIS COMPONENT:
+			this.setDirty();
+
+			// If we are changing an implementation type, we need to clear
 			// the unselected key and fill the other one with a blank value.
 			if ( this.type === Constants.Z_IMPLEMENTATION ) {
 				const contentType = payload.keyPath[ 0 ];
@@ -747,7 +745,7 @@ module.exports = exports = {
 				return;
 			}
 
-			// 4. If the value of Z7K1 changes, we need to change all keys, which
+			// If the value of Z7K1 changes, we need to change all keys, which
 			// probably means that we need to pass up the responsability the way we
 			// have done it with Z1K1.
 			if ( this.key === Constants.Z_FUNCTION_CALL_FUNCTION ) {
@@ -759,7 +757,7 @@ module.exports = exports = {
 				} );
 			}
 
-			// SIMPLE changes
+			// Simple changes:
 			// They don't affect the rest of the ZObject, only this key-value
 			this.setValueByRowIdAndPath( {
 				rowId: this.rowId,
@@ -797,18 +795,19 @@ module.exports = exports = {
 		deleteListItem: function () {
 			// TODO(T324242): replace with new setter when it exists
 			// TODO(T331132): can we create a 'revert delete' workflow?
+			this.setDirty();
 			this.removeItemFromTypedList( { rowId: this.rowId } );
 		},
 
 		/**
-		 * Returns the translated message for a given error code
+		 * Returns the translated message for a given error code.
+		 * Error messages can have html tags.
 		 *
-		 * @param {string} code
+		 * @param {Object} error
 		 * @return {string}
 		 */
-		messageFromCode: function ( code ) {
-
-			return this.$i18n( code ).text();
+		getErrorMessage: function ( error ) {
+			return error.message || this.$i18n( error.code ).text();
 		}
 	} )
 };

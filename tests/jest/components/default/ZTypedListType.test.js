@@ -66,7 +66,8 @@ describe( 'ZTypedListType', () => {
 	it( 'sets list items for removal when type changes', () => {
 		var wrapper = shallowMount( ZTypedListType, {
 			props: {
-				edit: true
+				edit: true,
+				listItemsRowIds: [ 1, 2 ]
 			},
 			global: {
 				stubs: {

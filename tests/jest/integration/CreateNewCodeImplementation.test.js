@@ -11,6 +11,7 @@ require( '@testing-library/jest-dom' );
 const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
 	{ runSetup, runTeardown } = require( './helpers/implementationEditorTestHelpers.js' ),
+	{ clickLookupResult } = require( './helpers/interactionHelpers.js' ),
 	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
 	expectedNewCodeImplementationPostedToApi = require( './objects/expectedNewCodeImplementationPostedToApi.js' );
@@ -29,7 +30,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 			global: { plugins: [ store ], stubs: { WlFunctionEvaluatorWidget: true } }
 		} );
 
-		const zImplementationComponent = await findByTestId( 'z-implementation' );
+		const zImplementationComponent = await findByTestId( 'implementation' );
 
 		// ACT: Select a function
 		const zReferenceSelector = await getByTestId( 'z-reference-selector' );
@@ -47,18 +48,17 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 		// ACT: Select programming language
 		const programmingLanguageDropdown = await getByTestId( 'language-dropdown' );
-		// await fireEvent.select( within( languageDropdown ).getByRole( 'combobox' ), 'javascript' );
-
-		const programmingLanguageToSelect = 'javascript';
 
 		// Click the programming language dropdown
-		await fireEvent.click( within( programmingLanguageDropdown ).getByRole( 'combobox' ) );
+		const programmingLanguageDropdownField = within( programmingLanguageDropdown ).getByRole( 'combobox' );
+		await fireEvent.click( programmingLanguageDropdownField );
 
-		// Select the Javascript option
-		await fireEvent.click( within( programmingLanguageDropdown ).getByText( programmingLanguageToSelect ) );
+		// // Select the Javascript option
+		const programmingLanguageToSelect = 'javascript';
+		await clickLookupResult( programmingLanguageDropdown, programmingLanguageToSelect );
 
 		// ASSERT: Check that the language dropdown has javascript selected
-		expect( within( programmingLanguageDropdown ).getByRole( 'textbox' ).innerHTML ).toBe( programmingLanguageToSelect );
+		expect( programmingLanguageDropdownField ).toHaveTextContent( programmingLanguageToSelect );
 
 		// ASSERT: Check that the code editor is visible
 		const codeEditor = await getByTestId( 'code-editor' );
@@ -88,7 +88,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 		// ACT: Confirm publish in publish dialog that opens
 		const confirmPublishDialog = await getByTestId( 'confirm-publish-dialog' );
-		const confirmPublishButton = await within( confirmPublishDialog ).getByTestId( 'confirm-publish-button' );
+		const confirmPublishButton = await within( confirmPublishDialog ).getByText( 'Publish' );
 
 		await fireEvent.click( confirmPublishButton );
 

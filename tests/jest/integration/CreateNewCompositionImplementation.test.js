@@ -31,16 +31,15 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 			global: { plugins: [ store ], stubs: { WlFunctionEvaluatorWidget: true } }
 		} );
 
-		const zImplementationComponent = await findByTestId( 'z-implementation' );
-
 		// ACT: Select a function to add an implementation to
-		const functionToAddImplementationToSelector = await getByTestId( 'z-reference-selector' );
-		const zReferenceSelectorDropdown = await within( functionToAddImplementationToSelector ).getByRole( 'combobox' );
+		// const functionToAddImplementationToSelector = await getByTestId( 'z-reference-selector' );
+		const functionBlock = await findByTestId( 'implementation-function' );
+		const zReferenceSelectorDropdown = await within( functionBlock ).getByRole( 'combobox' );
 
 		await fireEvent.select( zReferenceSelectorDropdown, 'Z12345' );
 
 		// ACT: Click code implementation radio
-		const implementationRadioContainer = await within( zImplementationComponent ).getByTestId( 'implementation-radio' );
+		const implementationRadioContainer = await findByTestId( 'implementation-radio' );
 
 		await fireEvent.click( within( implementationRadioContainer ).getByDisplayValue( 'Z14K2' ) );
 
@@ -48,7 +47,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		expect( within( implementationRadioContainer ).getByDisplayValue( 'Z14K2' ).checked ).toBe( true );
 
 		// ACT: Click select function link button
-		const implementationContentBlock = await within( zImplementationComponent ).getByTestId( 'implementation-content-block' );
+		const implementationContentBlock = await findByTestId( 'implementation-content-block' );
 
 		const selectFunctionLinkContainer = await within( implementationContentBlock ).findByTestId( 'z-object-to-string' );
 		const selectFunctionLink = selectFunctionLinkContainer.getElementsByTagName( 'a' )[ 0 ];
@@ -75,11 +74,13 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		const compositionZObjectKeyValueSet = await within( implementationContentBlock ).getByTestId( 'z-object-key-value-set' );
 		const compositionAccordionList = await within( compositionZObjectKeyValueSet ).getAllByTestId( 'z-object-key-value' );
 
+		// console.log( compositionZObjectKeyValueSet.innerHTML );
+
 		//* -- First argument
 		// The first argument is the third accordion in the list (the first is the composition type and the second is the composition function)
 		const firstArgumentAccordion = compositionAccordionList[ 2 ];
-		const firstArgumentAccordionToggleButton = await within( firstArgumentAccordion ).getByTestId( 'expanded-toggle' );
 
+		const firstArgumentAccordionToggleButton = await within( firstArgumentAccordion ).getByTestId( 'expanded-toggle' );
 		await fireEvent.click( firstArgumentAccordionToggleButton );
 		const compositionArg1TypeSelectorContainer = await within( firstArgumentAccordion ).getByTestId( 'z-object-type-select' );
 
@@ -92,9 +93,9 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		await clickLookupResult( compositionArg1TypeSelectorContainer, 'Argument reference' );
 
 		// ASSERT: Check that the type of the first argument is now argument reference
-		expect( within( firstArgumentAccordion ).getAllByRole( 'textbox' )[ 0 ].innerHTML ).toBe( 'Argument reference' );
+		expect( within( firstArgumentAccordion ).getAllByRole( 'combobox' )[ 0 ] ).toHaveTextContent( 'Argument reference' );
 
-		//  ACT: Enter the keyID for the first argument
+		// ACT: Enter the keyID for the first argument
 		const firstArgumentInput = await within( firstArgumentAccordion ).getByTestId( 'text-input' );
 
 		const firstArgumentExpectedInput = 'Z12345K1';
@@ -111,7 +112,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		await fireEvent.click( secondArgumentAccordionToggleButton );
 		const compositionArg2TypeSelectorContainer = await within( secondArgumentAccordion ).getByTestId( 'z-object-type-select' );
 
-		// ACT: Set argument type for first argument ("Second string") to argument reference
+		// // ACT: Set argument type for first argument ("Second string") to argument reference
 		await fireEvent.click( within( compositionArg2TypeSelectorContainer ).getByRole( 'combobox' ) );
 
 		// Select the "Argument reference" option
@@ -119,8 +120,8 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		await fireEvent.update( within( compositionArg2TypeSelectorContainer ).getByRole( 'combobox' ), 'Argument reference' );
 		await clickLookupResult( compositionArg2TypeSelectorContainer, 'Argument reference' );
 
-		// ASSERT: Check that the type of the second argument is now argument reference
-		expect( within( secondArgumentAccordion ).getAllByRole( 'textbox' )[ 0 ].innerHTML ).toBe( 'Argument reference' );
+		// ASSERT: Check that the type of the first argument is now argument reference
+		expect( within( secondArgumentAccordion ).getAllByRole( 'combobox' )[ 0 ] ).toHaveTextContent( 'Argument reference' );
 
 		//  ACT: Enter the keyID for the second argument
 		const secondArgumentInput = await within( secondArgumentAccordion ).getByTestId( 'text-input' );
@@ -153,7 +154,7 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 		// ACT: Confirm publish in publish dialog that opens
 		const confirmPublishDialog = await getByTestId( 'confirm-publish-dialog' );
-		const confirmPublishButton = await within( confirmPublishDialog ).getByTestId( 'confirm-publish-button' );
+		const confirmPublishButton = await within( confirmPublishDialog ).getByText( 'Publish' );
 
 		await fireEvent.click( confirmPublishButton );
 

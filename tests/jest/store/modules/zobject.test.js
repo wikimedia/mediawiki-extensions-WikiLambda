@@ -115,6 +115,274 @@ describe( 'zobject Vuex module', function () {
 		} );
 	} );
 
+	describe( 'currentZObject module', () => {
+
+		const currentZObject = zobjectModule.modules.currentZObject;
+		var getters;
+
+		describe( 'Getters', () => {
+
+			describe( 'isNewZObject', () => {
+				it( 'returns true if the value of the current ZObject is Z0', () => {
+					state.zobject = tableDataToRowObjects( zobjectTree );
+					expect( currentZObject.getters.isNewZObject( state, { getCurrentZObjectId: 'Z0' } ) )
+						.toEqual( true );
+				} );
+
+				it( 'returns false if the value of the current ZObject is not Z0', () => {
+					state.zobject = tableDataToRowObjects( zobjectTree );
+					expect( currentZObject.getters.isNewZObject( state, { getCurrentZObjectId: 'Z4' } ) )
+						.toEqual( false );
+				} );
+			} );
+
+			describe( 'isDirty', () => {
+				it( 'returns true when page has unsaved edits', () => {
+					state.dirty = true;
+					expect( currentZObject.getters.isDirty( state ) ).toEqual( true );
+				} );
+
+				it( 'returns false when page has no unsaved edits', () => {
+					state.dirty = false;
+					expect( currentZObject.getters.isDirty( state ) ).toEqual( false );
+				} );
+			} );
+
+			describe( 'getCurrentZObjectId', () => {
+				it( 'returns current persisted Zid being edited or viewed', () => {
+					state.currentZid = 'Z10001';
+					expect( currentZObject.getters.getCurrentZObjectId( state ) ).toEqual( 'Z10001' );
+				} );
+
+				it( 'returns null Zid (Z0) if new page', () => {
+					state.currentZid = undefined;
+					expect( currentZObject.getters.getCurrentZObjectId( state ) ).toEqual( 'Z0' );
+				} );
+			} );
+
+			describe( 'getCurrentZObjectType', () => {
+				it( 'returns the type of the persisted content', () => {
+					state.zobject = zobjectToRows( { Z2K2: { Z1K1: 'Z6' } } );
+					getters = {};
+					getters.getZObjectTypeByRowId = jest.fn();
+					getters.getZPersistentContentRowId = jest.fn( () => 1 );
+
+					currentZObject.getters.getCurrentZObjectType( state, getters );
+
+					expect( getters.getZObjectTypeByRowId ).toHaveBeenCalledWith( 1 );
+				} );
+			} );
+
+			describe( 'getCurrentZImplementationType', () => {
+				it( 'returns the implementation type of the persisted content', () => {
+					state.zobject = zobjectToRows( { Z2K2: { Z1K1: 'Z6' } } );
+					getters = {};
+					getters.getZImplementationContentType = jest.fn();
+					getters.getZPersistentContentRowId = jest.fn( () => 1 );
+
+					currentZObject.getters.getCurrentZImplementationType( state, getters );
+
+					expect( getters.getZImplementationContentType ).toHaveBeenCalledWith( 1 );
+				} );
+			} );
+
+			describe( 'currentZObjectLanguages', () => {
+				it( 'Returns all languages found across name labels, argument labels and alias labels without any duplicates', () => {
+					getters = {
+						getZObjectAsJson: JSON.parse( fs.readFileSync( path.join( __dirname, './zobject/zFunctionWithMultipleLanguages.json' ) ) ),
+						getZObjectAsJsonById: zobjectModule.getters.getZObjectAsJsonById( state )
+					};
+
+					const result = [ { [ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE, [ Constants.Z_REFERENCE_ID ]: 'Z1002' },
+						{ [ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE, [ Constants.Z_REFERENCE_ID ]: 'Z1004' },
+						{ [ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE, [ Constants.Z_REFERENCE_ID ]: 'Z1005' } ];
+
+					expect( currentZObject.getters.currentZObjectLanguages( state, getters ) )
+						.toEqual( result );
+				} );
+			} );
+
+			describe( 'currentZFunctionInvalidInputs', () => {
+				beforeEach( () => {
+					state = { zobject: [] };
+					getters = {};
+					getters.getRowById = zobjectModule.getters.getRowById( state, getters );
+					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+					getters.getZFunctionInputs = zobjectModule.getters.getZFunctionInputs( state, getters );
+					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+					getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
+					getters.getZStringTerminalValue = zobjectModule.getters.getZStringTerminalValue( state, getters );
+					getters.getZMonolingualTextValue = zobjectModule.getters.getZMonolingualTextValue( state, getters );
+					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+				} );
+
+				it( 'returns empty array when no inputs', () => {
+					state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17' ] } } );
+
+					const invalidInputs = currentZObject.getters.currentZFunctionInvalidInputs( state, getters );
+					expect( invalidInputs.length ).toEqual( 0 );
+				} );
+
+				it( 'returns empty array when all inputs have set type', () => {
+					state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
+						{
+							Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z999K1',
+							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+						},
+						{
+							Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z999K2',
+							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'label' } ] }
+						}
+					] } } );
+
+					const invalidInputs = currentZObject.getters.currentZFunctionInvalidInputs( state, getters );
+					expect( invalidInputs.length ).toEqual( 0 );
+				} );
+
+				it( 'returns empty array when inputs have no type and no label', () => {
+					state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
+						{
+							Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K1',
+							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+						},
+						{
+							Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K2',
+							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+						}
+					] } } );
+
+					const invalidInputs = currentZObject.getters.currentZFunctionInvalidInputs( state, getters );
+					expect( invalidInputs.length ).toEqual( 0 );
+				} );
+
+				it( 'returns input with empty type but non empty label', () => {
+					state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
+						{
+							Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K1',
+							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'label' } ] }
+						},
+						{
+							Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K2',
+							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+						}
+					] } } );
+
+					const invalidInputs = currentZObject.getters.currentZFunctionInvalidInputs( state, getters );
+					// Expect first input to be invalid
+					expect( invalidInputs.length ).toEqual( 1 );
+					expect( invalidInputs[ 0 ].inputRow.key ).toEqual( '1' );
+				} );
+
+				it( 'returns all inputs with empty type but non empty label', () => {
+					state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
+						{
+							Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K1',
+							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'first' } ] }
+						},
+						{
+							Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K2',
+							Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: 'segunda' } ] }
+						}
+					] } } );
+
+					const invalidInputs = currentZObject.getters.currentZFunctionInvalidInputs( state, getters );
+					// Expect first and second inputs to be invalid
+					expect( invalidInputs.length ).toEqual( 2 );
+					expect( invalidInputs[ 0 ].inputRow.key ).toEqual( '1' );
+					expect( invalidInputs[ 1 ].inputRow.key ).toEqual( '2' );
+				} );
+			} );
+
+			describe( 'getMultilingualDataCopy', () => {
+				it( 'returns the multilingual data copy', () => {
+					const multilingualDataCopy = {
+						names: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] },
+						aliases: { Z1K1: 'Z32', Z12K1: [ 'Z31' ] },
+						descriptions: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
+					};
+					state.multilingualDataCopy = multilingualDataCopy;
+					expect( currentZObject.getters.getMultilingualDataCopy( state ) )
+						.toEqual( multilingualDataCopy );
+				} );
+			} );
+		} );
+
+		describe( 'Actions', () => {
+			describe( 'setDirty', () => {
+				it( 'Sets dirty to true', () => {
+					context.state = {
+						dirty: false
+					};
+					currentZObject.actions.setDirty( context );
+					expect( context.commit ).toHaveBeenCalledWith( 'setDirty', true );
+				} );
+
+				it( 'Sets dirty to false', () => {
+					context.state = {
+						dirty: false
+					};
+					currentZObject.actions.setDirty( context, false );
+					expect( context.commit ).toHaveBeenCalledWith( 'setDirty', false );
+				} );
+			} );
+
+			describe( 'resetMultilingualData', () => {
+				it( 'resets the multilingual data of the current object to the saved copy', () => {
+					const multilingualDataCopy = {
+						names: { Z1K1: 'Z12', Z12K1: [ 'Z11',
+							{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'original name' }
+						] },
+						aliases: { Z1K1: 'Z32', Z12K1: [ 'Z31',
+							{ Z1K1: 'Z31', Z31K1: 'Z1003', Z31K2: [ 'original alias' ] }
+						] },
+						descriptions: { Z1K1: 'Z12', Z12K1: [ 'Z11',
+							{ Z1K1: 'Z11', Z11K1: 'Z1004', Z11K2: 'original description' }
+						] }
+					};
+
+					context.state = {
+						multilingualDataCopy: multilingualDataCopy,
+						zobject: tableDataToRowObjects( [
+							{ id: 0, key: undefined, parent: undefined, value: 'object' },
+							{ id: 1, key: 'Z2K3', parent: 0, value: 'object' },
+							{ id: 2, key: 'Z1K1', parent: 1, value: 'Z6' },
+							{ id: 3, key: 'Z6K1', parent: 1, value: '' },
+							{ id: 4, key: 'Z2K4', parent: 0, value: 'object' },
+							{ id: 5, key: 'Z1K1', parent: 4, value: 'Z6' },
+							{ id: 6, key: 'Z6K1', parent: 4, value: '' },
+							{ id: 7, key: 'Z2K5', parent: 0, value: 'object' },
+							{ id: 8, key: 'Z1K1', parent: 7, value: 'Z6' },
+							{ id: 9, key: 'Z6K1', parent: 7, value: '' }
+						] )
+					};
+
+					context.getters = {};
+					context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
+					context.getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
+					context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( context.state, context.getters );
+					context.getters.getMultilingualDataCopy = currentZObject.getters.getMultilingualDataCopy( context.state );
+
+					currentZObject.actions.resetMultilingualData( context );
+
+					expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObjectFromRowId', {
+						rowId: 1,
+						value: multilingualDataCopy.names
+					} );
+
+					expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObjectFromRowId', {
+						rowId: 4,
+						value: multilingualDataCopy.aliases
+					} );
+
+					expect( context.dispatch ).toHaveBeenCalledWith( 'injectZObjectFromRowId', {
+						rowId: 7,
+						value: multilingualDataCopy.descriptions
+					} );
+				} );
+			} );
+		} );
+	} );
+
 	describe( 'Getters', function () {
 		describe( 'getZObjectIndexById', function () {
 			it( 'Returns current zObject by its index', function () {
@@ -141,21 +409,6 @@ describe( 'zobject Vuex module', function () {
 				state.zobject = tableDataToRowObjects( zobjectTree );
 
 				expect( zobjectModule.getters.getZObjectChildrenById( state )( 2 ) ).toEqual( result );
-			} );
-		} );
-
-		describe( 'currentZObjectLanguages', function () {
-			it( 'Returns all languages found across name labels, argument labels and alias labels without any duplicates', function () {
-				var result = [ { [ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE, [ Constants.Z_REFERENCE_ID ]: 'Z1002' },
-					{ [ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE, [ Constants.Z_REFERENCE_ID ]: 'Z1004' },
-					{ [ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE, [ Constants.Z_REFERENCE_ID ]: 'Z1005' } ];
-
-				var getters = {
-					getZObjectAsJson: JSON.parse( fs.readFileSync( path.join( __dirname, './zobject/zFunctionWithMultipleLanguages.json' ) ) ),
-					getZObjectAsJsonById: zobjectModule.getters.getZObjectAsJsonById( state )
-				};
-				expect( zobjectModule.modules.currentZObject.getters.currentZObjectLanguages( state, getters ) )
-					.toEqual( result );
 			} );
 		} );
 
@@ -229,114 +482,6 @@ describe( 'zobject Vuex module', function () {
 				const zobjectHighestId = 17;
 
 				expect( zobjectModule.getters.getNextObjectId( state ) ).toEqual( zobjectHighestId + 1 );
-			} );
-		} );
-
-		describe( 'isNewZObject', function () {
-			it( 'Returns true if the value of the current ZObject is Z0', function () {
-				state.zobject = tableDataToRowObjects( zobjectTree );
-
-				expect( zobjectModule.modules.currentZObject.getters.isNewZObject( state, { getCurrentZObjectId: 'Z0' } ) ).toEqual( true );
-			} );
-
-			it( 'Returns false if the value of the current ZObject is not Z0', function () {
-				state.zobject = tableDataToRowObjects( zobjectTree );
-
-				expect( zobjectModule.modules.currentZObject.getters.isNewZObject( state, { getCurrentZObjectId: 'Z4' } ) ).toEqual( false );
-			} );
-		} );
-
-		describe( 'currentZFunctionInvalidInputs', () => {
-			var getters;
-			var currentZObject = zobjectModule.modules.currentZObject;
-
-			beforeEach( () => {
-				state = { zobject: [] };
-				getters = {};
-				getters.getRowById = zobjectModule.getters.getRowById( state, getters );
-				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
-				getters.getZFunctionInputs = zobjectModule.getters.getZFunctionInputs( state, getters );
-				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
-				getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
-				getters.getZStringTerminalValue = zobjectModule.getters.getZStringTerminalValue( state, getters );
-				getters.getZMonolingualTextValue = zobjectModule.getters.getZMonolingualTextValue( state, getters );
-				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
-			} );
-
-			it( 'returns empty array when no inputs', () => {
-				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17' ] } } );
-
-				const invalidInputs = currentZObject.getters.currentZFunctionInvalidInputs( state, getters );
-				expect( invalidInputs.length ).toEqual( 0 );
-			} );
-
-			it( 'returns empty array when all inputs have set type', () => {
-				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
-					{
-						Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z999K1',
-						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
-					},
-					{
-						Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z999K2',
-						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'label' } ] }
-					}
-				] } } );
-
-				const invalidInputs = currentZObject.getters.currentZFunctionInvalidInputs( state, getters );
-				expect( invalidInputs.length ).toEqual( 0 );
-			} );
-
-			it( 'returns empty array when inputs have no type and no label', () => {
-				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
-					{
-						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K1',
-						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
-					},
-					{
-						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K2',
-						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
-					}
-				] } } );
-
-				const invalidInputs = currentZObject.getters.currentZFunctionInvalidInputs( state, getters );
-				expect( invalidInputs.length ).toEqual( 0 );
-			} );
-
-			it( 'returns input with empty type but non empty label', () => {
-				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
-					{
-						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K1',
-						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'label' } ] }
-					},
-					{
-						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K2',
-						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] }
-					}
-				] } } );
-
-				const invalidInputs = currentZObject.getters.currentZFunctionInvalidInputs( state, getters );
-				// Expect first input to be invalid
-				expect( invalidInputs.length ).toEqual( 1 );
-				expect( invalidInputs[ 0 ].inputRow.key ).toEqual( '1' );
-			} );
-
-			it( 'returns all inputs with empty type but non empty label', () => {
-				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
-					{
-						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K1',
-						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'first' } ] }
-					},
-					{
-						Z1K1: 'Z17', Z17K1: '', Z17K2: 'Z999K2',
-						Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11', { Z1K1: 'Z11', Z11K1: 'Z1003', Z11K2: 'segunda' } ] }
-					}
-				] } } );
-
-				const invalidInputs = currentZObject.getters.currentZFunctionInvalidInputs( state, getters );
-				// Expect first and second inputs to be invalid
-				expect( invalidInputs.length ).toEqual( 2 );
-				expect( invalidInputs[ 0 ].inputRow.key ).toEqual( '1' );
-				expect( invalidInputs[ 1 ].inputRow.key ).toEqual( '2' );
 			} );
 		} );
 
@@ -855,7 +1000,7 @@ describe( 'zobject Vuex module', function () {
 					.toEqual( expected );
 			} );
 
-			it( 'returns undefined when row does not exist', () => {
+			it( 'returns empty list when row does not exist', () => {
 				state.zobject = [];
 				const rowId = 1;
 				const expected = [];
@@ -890,6 +1035,40 @@ describe( 'zobject Vuex module', function () {
 				expect( inputs ).toHaveLength( 2 );
 				expect( inputs[ 0 ].key ).toEqual( '1' );
 				expect( inputs[ 1 ].key ).toEqual( '2' );
+			} );
+		} );
+
+		describe( 'getZFunctionOutput', () => {
+			var getters;
+			beforeEach( function () {
+				getters = {};
+				getters.getRowById = zobjectModule.getters.getRowById( state );
+				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+			} );
+
+			it( 'returns undefined when row is undefined', () => {
+				state.zobject = [];
+				const rowId = undefined;
+				const expected = undefined;
+				expect( zobjectModule.getters.getZFunctionOutput( state, getters )( rowId ) )
+					.toEqual( expected );
+			} );
+
+			it( 'returns undefined when row does not exist', () => {
+				state.zobject = [];
+				const rowId = 1;
+				const expected = undefined;
+				expect( zobjectModule.getters.getZFunctionOutput( state, getters )( rowId ) )
+					.toEqual( expected );
+			} );
+
+			it( 'returns output row', () => {
+				state.zobject = zobjectToRows( { Z2K2: { Z8K2: 'Z6' } } );
+				const rowId = 0;
+				const expected = { id: 2, key: 'Z8K2', parent: 1, value: 'object' };
+				expect( zobjectModule.getters.getZFunctionOutput( state, getters )( rowId ) )
+					.toEqual( expected );
 			} );
 		} );
 
@@ -3553,22 +3732,7 @@ describe( 'zobject Vuex module', function () {
 	} );
 
 	describe( 'Actions', function () {
-		var defaultHref = window.location.href;
-		beforeEach( function () {
-			delete window.location;
-			window.location = {
-				href: defaultHref
-			};
-		} );
-		afterAll( function () {
-			delete window.location;
-			window.location = {
-				href: defaultHref
-			};
-		} );
-
 		describe( 'initializeView', function () {
-
 			it( 'calls initializeCreateNewPage when creating new page', function () {
 				mw.config = {
 					get: jest.fn( function () {
@@ -3626,11 +3790,25 @@ describe( 'zobject Vuex module', function () {
 			} );
 
 			it( 'Initialize ZObject, create new page', function () {
-				var expectedChangeTypePayload = { id: 0, type: Constants.Z_PERSISTENTOBJECT },
-					expectedRootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
+				mw.Uri.mockImplementationOnce( () => {
+					return {
+						query: {
+							action: Constants.ACTIONS.EDIT,
+							title: 'Z0'
+						}
+					};
+				} );
 				context.state = {
 					zobject: tableDataToRowObjects( zobjectTree )
 				};
+				context.getters = {
+					getStoredObject: () => {
+						return { Z2K2: { Z1K1: 'Z4' } };
+					}
+				};
+
+				const expectedChangeTypePayload = { id: 0, type: Constants.Z_PERSISTENTOBJECT };
+				const expectedRootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
 
 				zobjectModule.actions.initializeCreateNewPage( context );
 
@@ -3641,25 +3819,30 @@ describe( 'zobject Vuex module', function () {
 				expect( context.commit ).toHaveBeenCalledWith( 'addZObject', expectedRootObject );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedChangeTypePayload );
 				expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
-				expect( context.state.zobject ).toEqual( zobjectTree );
 			} );
 
 			it( 'Initialize ZObject, create new page, initial value for Z2K2', function () {
-				var expectedChangeTypePayload = { id: 0, type: Constants.Z_PERSISTENTOBJECT },
-					expectedZ2K2ChangeTypePayload = { id: 3, type: Constants.Z_BOOLEAN },
-					expectedRootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
+				mw.Uri.mockImplementationOnce( () => {
+					return {
+						query: {
+							zid: Constants.Z_BOOLEAN,
+							action: Constants.ACTIONS.EDIT,
+							title: 'Z0'
+						}
+					};
+				} );
 				context.state = {
 					zobject: tableDataToRowObjects( zobjectTree )
 				};
-				context.rootGetters = {
+				context.getters = {
 					getStoredObject: function () {
 						return { Z2K2: { Z1K1: 'Z4' } };
 					}
 				};
-				delete window.location;
-				window.location = {
-					href: 'http://localhost:8080/wiki/Special:CreateObject?zid=Z40'
-				};
+
+				const expectedChangeTypePayload = { id: 0, type: Constants.Z_PERSISTENTOBJECT };
+				const expectedRootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
+				const expectedZ2K2ChangeTypePayload = { id: 3, type: Constants.Z_BOOLEAN };
 
 				zobjectModule.actions.initializeCreateNewPage( context );
 
@@ -3674,56 +3857,120 @@ describe( 'zobject Vuex module', function () {
 			} );
 
 			it( 'Initialize ZObject, create new page, non-ZID value as initial', function () {
-				var expectedZ2K2ChangeTypePayload = { id: 3, type: 'banana' };
+				mw.Uri.mockImplementationOnce( () => {
+					return {
+						query: {
+							zid: 'banana',
+							action: Constants.ACTIONS.EDIT,
+							title: 'Z0'
+						}
+					};
+				} );
 				context.state = {
 					zobject: tableDataToRowObjects( zobjectTree )
 				};
-				delete window.location;
-				window.location = {
-					href: 'http://localhost:8080/wiki/Special:CreateObject?zid=banana'
+				context.getters = {
+					getStoredObject: () => undefined
 				};
+
+				const expectedZ2K2ChangeTypePayload = { id: 3, type: 'banana' };
+
 				zobjectModule.actions.initializeCreateNewPage( context );
 
+				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
+				expect( context.dispatch ).not.toHaveBeenCalledWith( 'changeType', expectedZ2K2ChangeTypePayload );
+			} );
+
+			it( 'Initialize ZObject, create new page, non-type value as initial', function () {
+				mw.Uri.mockImplementationOnce( () => {
+					return {
+						query: {
+							zid: 'Z801',
+							action: Constants.ACTIONS.EDIT,
+							title: 'Z0'
+						}
+					};
+				} );
+				context.state = {
+					zobject: tableDataToRowObjects( zobjectTree )
+				};
+				context.getters = {
+					getStoredObject: function () {
+						return { Z2K2: { Z1K1: 'Z8' } };
+					}
+				};
+
+				const expectedZ2K2ChangeTypePayload = { id: 3, type: 'Z801' };
+
+				zobjectModule.actions.initializeCreateNewPage( context );
+
+				expect( context.dispatch ).toHaveBeenCalledTimes( 2 );
 				expect( context.dispatch ).not.toHaveBeenCalledWith( 'changeType', expectedZ2K2ChangeTypePayload );
 			} );
 
 			it( 'Initialize ZObject, create new page, lowercase ZID', function () {
-				var expectedZ2K2ChangeTypePayload = { id: 3, type: Constants.Z_REFERENCE };
+				mw.Uri.mockImplementationOnce( () => {
+					return {
+						query: {
+							zid: 'z8',
+							action: Constants.ACTIONS.EDIT,
+							title: 'Z0'
+						}
+					};
+				} );
 				context.state = {
 					zobject: tableDataToRowObjects( zobjectTree )
 				};
-				delete window.location;
-				window.location = {
-					href: 'http://localhost:8080/wiki/Special:CreateObject?zid=z9'
+				context.getters = {
+					getStoredObject: function () {
+						return { Z2K2: { Z1K1: 'Z8' } };
+					}
 				};
+
+				const expectedZ2K2ChangeTypePayload = { id: 3, type: Constants.Z_FUNCTION };
+
 				zobjectModule.actions.initializeCreateNewPage( context );
 
 				expect( context.dispatch ).not.toHaveBeenCalledWith( 'changeType', expectedZ2K2ChangeTypePayload );
 			} );
 
 			it( 'Initialize ZObject, create new page, ZObject key passed as initial', function () {
-				var expectedZ2K2ChangeTypePayload = { id: 3, type: Constants.Z_REFERENCE_ID };
+				mw.Uri.mockImplementationOnce( () => {
+					return {
+						query: {
+							zid: 'Z14K1',
+							action: Constants.ACTIONS.EDIT,
+							title: 'Z0'
+						}
+					};
+				} );
 				context.state = {
 					zobject: tableDataToRowObjects( zobjectTree )
 				};
-				delete window.location;
-				window.location = {
-					href: 'http://localhost:8080/wiki/Special:CreateObject?zid=Z9K1'
-				};
+
+				const expectedZ2K2ChangeTypePayload = { id: 3, type: 'Z14K1' };
+
 				zobjectModule.actions.initializeCreateNewPage( context );
 
 				expect( context.dispatch ).not.toHaveBeenCalledWith( 'changeType', expectedZ2K2ChangeTypePayload );
 			} );
 
 			it( 'Initialize ZObject, create new page, quasi-valid ZID', function () {
-				var expectedZ2K2ChangeTypePayload = { id: 3, type: 'Z9s' };
+				mw.Uri.mockImplementationOnce( () => {
+					return {
+						query: {
+							zid: 'Z8s',
+							action: Constants.ACTIONS.EDIT,
+							title: 'Z0'
+						}
+					};
+				} );
 				context.state = {
 					zobject: tableDataToRowObjects( zobjectTree )
 				};
-				delete window.location;
-				window.location = {
-					href: 'http://localhost:8080/wiki/Special:CreateObject?zid=Z9s'
-				};
+
+				const expectedZ2K2ChangeTypePayload = { id: 3, type: 'Z8s' };
+
 				zobjectModule.actions.initializeCreateNewPage( context );
 
 				expect( context.dispatch ).not.toHaveBeenCalledWith( 'changeType', expectedZ2K2ChangeTypePayload );
@@ -3745,17 +3992,31 @@ describe( 'zobject Vuex module', function () {
 								Z11K2: 'test'
 							}
 						]
+					}
+				};
+
+				const expectedZObjectJson = {
+					Z1K1: 'Z2',
+					Z2K1: 'Z1234',
+					Z2K2: 'test',
+					Z2K3: {
+						Z1K1: 'Z12',
+						Z12K1: [
+							'Z11',
+							{
+								Z1K1: 'Z11',
+								Z11K1: 'Z1002',
+								Z11K2: 'test'
+							}
+						]
 					},
 					Z2K4: {
 						Z1K1: 'Z32',
-						Z32K1: [
-							'Z31',
-							{
-								Z1K1: 'Z31',
-								Z31K1: 'Z1002',
-								Z31K2: [ 'Z6' ]
-							}
-						]
+						Z32K1: [ 'Z31' ]
+					},
+					Z2K5: {
+						Z1K1: 'Z12',
+						Z12K1: [ 'Z11' ]
 					}
 				};
 
@@ -3783,7 +4044,7 @@ describe( 'zobject Vuex module', function () {
 
 				// Expected data
 				const expectedFetchZKeysPayload = {
-					zids: [ 'Z1', 'Z2', 'Z1234', 'Z12', 'Z11', 'Z1002', 'Z32', 'Z31', 'Z6' ]
+					zids: [ 'Z1', 'Z2', 'Z1234', 'Z12', 'Z11', 'Z1002', 'Z32', 'Z31' ]
 				};
 				const expectedSetZObjectPayload = [
 					{ id: 0, key: undefined, value: 'object', parent: undefined },
@@ -3822,32 +4083,22 @@ describe( 'zobject Vuex module', function () {
 					{ id: 33, key: '0', value: 'object', parent: 32 },
 					{ id: 34, key: 'Z1K1', value: 'Z9', parent: 33 },
 					{ id: 35, key: 'Z9K1', value: 'Z31', parent: 33 },
-					{ id: 36, key: '1', value: 'object', parent: 32 },
+					{ id: 36, key: 'Z2K5', value: 'object', parent: 0 },
 					{ id: 37, key: 'Z1K1', value: 'object', parent: 36 },
 					{ id: 38, key: 'Z1K1', value: 'Z9', parent: 37 },
-					{ id: 39, key: 'Z9K1', value: 'Z31', parent: 37 },
-					{ id: 40, key: 'Z31K1', value: 'object', parent: 36 },
-					{ id: 41, key: 'Z1K1', value: 'Z9', parent: 40 },
-					{ id: 42, key: 'Z9K1', value: 'Z1002', parent: 40 },
-					{ id: 43, key: 'Z31K2', value: 'array', parent: 36 },
-					{ id: 44, key: '0', value: 'object', parent: 43 },
-					{ id: 45, key: 'Z1K1', value: 'Z9', parent: 44 },
-					{ id: 46, key: 'Z9K1', value: 'Z6', parent: 44 },
-					{ id: 47, key: 'Z2K5', value: 'object', parent: 0 },
-					{ id: 48, key: 'Z1K1', value: 'object', parent: 47 },
-					{ id: 49, key: 'Z1K1', value: 'Z9', parent: 48 },
-					{ id: 50, key: 'Z9K1', value: 'Z12', parent: 48 },
-					{ id: 51, key: 'Z12K1', value: 'array', parent: 47 },
-					{ id: 52, key: '0', value: 'object', parent: 51 },
-					{ id: 53, key: 'Z1K1', value: 'Z9', parent: 52 },
-					{ id: 54, key: 'Z9K1', value: 'Z11', parent: 52 }
+					{ id: 39, key: 'Z9K1', value: 'Z12', parent: 37 },
+					{ id: 40, key: 'Z12K1', value: 'array', parent: 36 },
+					{ id: 41, key: '0', value: 'object', parent: 40 },
+					{ id: 42, key: 'Z1K1', value: 'Z9', parent: 41 },
+					{ id: 43, key: 'Z9K1', value: 'Z11', parent: 41 }
 				];
 
 				zobjectModule.actions.initializeRootZObject( context, 'Z1234' );
 
 				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
-				expect( context.commit ).toHaveBeenCalledTimes( 3 );
+				expect( context.commit ).toHaveBeenCalledTimes( 4 );
 				expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z1234' );
+				expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
 				expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expectedSetZObjectPayload );
 				expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZKeys', expectedFetchZKeysPayload );
@@ -4311,7 +4562,7 @@ describe( 'zobject Vuex module', function () {
 				context.getters.hasInvalidListItems = false;
 				context.getters.getRowByKeyPath = jest.fn( () => undefined );
 
-				zobjectModule.actions.submitZObject( context, { summary: 'A summary', shouldUnattachImplementationAndTester: true } );
+				zobjectModule.actions.submitZObject( context, { summary: 'A summary', detachFunctionObjects: true } );
 
 				expect( mw.Api ).toHaveBeenCalledTimes( 1 );
 				zobjectFunction.ZObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_TESTERS ] =
@@ -5268,9 +5519,14 @@ describe( 'zobject Vuex module', function () {
 
 				it( 'adds a valid ZImplementation for a given function Zid', function () {
 					const payload = { id: 0, type: Constants.Z_IMPLEMENTATION };
-					window.location = {
-						href: 'http://localhost:8080/wiki/Special:CreateObject?zid=Z14&Z14K1=Z10001'
-					};
+					mw.Uri.mockImplementationOnce( () => {
+						return {
+							query: {
+								zid: Constants.Z_IMPLEMENTATION,
+								Z14K1: 'Z10001'
+							}
+						};
+					} );
 					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
 					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(
 						context.state,

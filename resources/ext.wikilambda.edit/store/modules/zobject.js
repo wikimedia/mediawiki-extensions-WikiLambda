@@ -90,10 +90,10 @@ function isFunctionToType( objectDeclaration ) {
  * -Unattaches implementations and testers, if relevant.
  *
  * @param {Object} context
- * @param {boolean} shouldUnattachImplementationAndTester
+ * @param {boolean} detachFunctionObjects
  * @return {Object} zobject
  */
-function transformZObjectForSubmission( context, shouldUnattachImplementationAndTester ) {
+function transformZObjectForSubmission( context, detachFunctionObjects ) {
 	removeEmptyMonolingualValues( context, Constants.Z_PERSISTENTOBJECT_LABEL );
 	removeEmptyMonolingualValues( context, Constants.Z_PERSISTENTOBJECT_DESCRIPTION );
 	removeEmptyAliasLabelValues( context );
@@ -108,7 +108,7 @@ function transformZObjectForSubmission( context, shouldUnattachImplementationAnd
 
 	let zobject = canonicalize( zobjectTreeUtils.convertZObjectTreetoJson( context.state.zobject ) );
 
-	if ( shouldUnattachImplementationAndTester ) {
+	if ( detachFunctionObjects ) {
 		zobject = unattachImplementationsAndTesters( zobject );
 	}
 
@@ -807,8 +807,9 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns the list of inputs for the function given
-		 * its rowId
+		 * Returns the list of input rows for the function given
+		 * given the root object rowId. If no rowId given, starts
+		 * from 0, which is safe to use.
 		 *
 		 * @param {Object} _state
 		 * @param {Object} getters
@@ -832,6 +833,30 @@ module.exports = exports = {
 				return inputs.slice( 1 );
 			}
 			return findZFunctionInputs;
+		},
+
+		/**
+		 * Returns the output type row for the function given
+		 * given the root object rowId. If no rowId given, starts
+		 * from 0, which is safe to use.
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Function}
+		 */
+		getZFunctionOutput: function ( _state, getters ) {
+			/**
+			 * @param {string} rowId
+			 * @return {Object|undefined}
+			 */
+			function findZFunctionOutput( rowId = 0 ) {
+				const outputRow = getters.getRowByKeyPath(
+					[ Constants.Z_PERSISTENTOBJECT_VALUE, Constants.Z_FUNCTION_RETURN_TYPE ],
+					rowId
+				);
+				return outputRow;
+			}
+			return findZFunctionOutput;
 		},
 
 		/**
@@ -2177,6 +2202,7 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		initializeCreateNewPage: function ( context ) {
+
 			// Set createNewPage flag to true
 			context.commit( 'setCreateNewPage', true );
 
@@ -2209,7 +2235,7 @@ module.exports = exports = {
 					.then( function () {
 						var Z2K2 =
 							typeUtils.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, context.state.zobject );
-						defaultKeys = context.rootGetters.getStoredObject( defaultType );
+						defaultKeys = context.getters.getStoredObject( defaultType );
 
 						// If `zid` is not a type, return.
 						if ( !defaultKeys ||
@@ -2274,6 +2300,11 @@ module.exports = exports = {
 						]
 					};
 				}
+
+				// Save initial multilingual data values
+				// so that About widget knows how to reset to original
+				// state in the case of a publish cancelation action.
+				context.commit( 'saveMultilingualDataCopy', zobject );
 
 				// Get all zIds within the object:
 				const listOfZIdWithinObject = extractZIDs( zobject );
@@ -2506,10 +2537,10 @@ module.exports = exports = {
 		 * @param {Object} context
 		 * @param {Object} param
 		 * @param {Object} param.summary
-		 * @param {boolean} param.shouldUnattachImplementationAndTester
+		 * @param {boolean} param.detachFunctionObjects
 		 * @return {Promise}
 		 */
-		submitZObject: function ( context, { summary, shouldUnattachImplementationAndTester } ) {
+		submitZObject: function ( context, { summary, detachFunctionObjects } ) {
 			context.commit( 'setIsSavingZObject', true );
 
 			// when a list has changed type and the items are no longer valid
@@ -2525,7 +2556,7 @@ module.exports = exports = {
 				context.dispatch( 'clearListItemsForRemoval' );
 			}
 
-			const zobject = transformZObjectForSubmission( context, shouldUnattachImplementationAndTester );
+			const zobject = transformZObjectForSubmission( context, detachFunctionObjects );
 
 			return new Promise( ( resolve, reject ) => {
 				saveZObject(

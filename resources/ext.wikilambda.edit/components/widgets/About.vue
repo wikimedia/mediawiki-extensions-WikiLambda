@@ -90,7 +90,7 @@
 			<wl-publish-dialog
 				v-if="!edit"
 				:show-dialog="showPublishDialog"
-				@close-dialog="showPublishDialog = false"
+				@close-dialog="cancelPublish"
 			></wl-publish-dialog>
 		</template>
 
@@ -118,6 +118,7 @@ const Constants = require( '../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( '../../../lib/icons.json' ),
+	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
@@ -309,7 +310,9 @@ module.exports = exports = {
 			return this.languages.length;
 		}
 	} ),
-	methods: {
+	methods: $.extend( mapActions( [
+		'resetMultilingualData'
+	] ), {
 		/**
 		 * Opens the AboutEditMetadataDialog
 		 */
@@ -337,8 +340,18 @@ module.exports = exports = {
 		openUserLanguageDialog: function () {
 			const lang = this.getUserZlangZID;
 			this.openEditLanguageDialog( lang || '' );
+		},
+		/**
+		 * Restores original view state and cancels publish
+		 * action. This only happens when we are in a view page
+		 * and after editing information, we proceed to publish
+		 * and then we cancel.
+		 */
+		cancelPublish: function () {
+			this.resetMultilingualData();
+			this.showPublishDialog = false;
 		}
-	}
+	} )
 };
 
 </script>

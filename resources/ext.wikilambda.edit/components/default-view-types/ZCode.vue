@@ -12,7 +12,10 @@
 				<div class="ext-wikilambda-key-block">
 					<label>{{ programmingLanguageLabel }}</label>
 				</div>
-				<div class="ext-wikilambda-value-block">
+				<div
+					class="ext-wikilambda-value-block"
+					data-testid="language-dropdown"
+				>
 					<span
 						v-if="!edit"
 						class="ext-wikilambda-value-text"
@@ -24,7 +27,6 @@
 						:menu-items="programmingLanguageMenuItems"
 						:default-label="$i18n( 'wikilambda-editor-label-select-programming-language-label' ).text()"
 						:status="( programmingLanguageErrors.length > 0 ) ? 'error' : 'default'"
-						data-testid="language-dropdown"
 					>
 					</wl-select>
 				</div>
@@ -35,12 +37,7 @@
 					:type="error.type"
 					:inline="true"
 				>
-					<template v-if="error.message">
-						{{ error.message }}
-					</template>
-					<template v-else>
-						{{ messageFromCode( error.code ) }}
-					</template>
+					<div v-html="getErrorMessage( error )"></div>
 				</cdx-message>
 			</div>
 		</div>
@@ -67,12 +64,7 @@
 					:type="error.type"
 					:inline="true"
 				>
-					<template v-if="error.message">
-						{{ error.message }}
-					</template>
-					<template v-else>
-						{{ messageFromCode( error.code ) }}
-					</template>
+					<div v-html="getErrorMessage( error )"></div>
 				</cdx-message>
 			</div>
 		</div>
@@ -387,14 +379,15 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Returns the translated message for a given error code
+			 * Returns the translated message for a given error code.
+			 * Error messages can have html tags.
 			 *
-			 * @param {string} code
+			 * @param {Object} error
 			 * @return {string}
 			 */
-			messageFromCode: function ( code ) {
+			getErrorMessage: function ( error ) {
 				// eslint-disable-next-line mediawiki/msg-doc
-				return this.$i18n( code ).text();
+				return error.message || this.$i18n( error.code ).text();
 			}
 		} ),
 	watch: {

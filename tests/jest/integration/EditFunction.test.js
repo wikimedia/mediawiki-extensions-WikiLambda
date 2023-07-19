@@ -38,6 +38,7 @@ const performTest =
 
 describe( 'WikiLambda frontend, editing an existing function, on function-editor view', () => {
 	let apiPostWithEditTokenMock;
+
 	beforeEach( () => {
 		const setupResult = runSetup();
 		apiPostWithEditTokenMock = setupResult.apiPostWithEditTokenMock;
@@ -55,7 +56,7 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 			};
 		} );
 
-		window.mw.Uri.mockImplementation( () => {
+		window.mw.Uri = jest.fn( () => {
 			return {
 				query: {
 					action: Constants.ACTIONS.EDIT,
@@ -66,11 +67,13 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 				} )
 			};
 		} );
+
 		global.mw.config.get = ( endpoint ) => {
 			switch ( endpoint ) {
 				case 'wgWikiLambda':
 					return {
 						zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+						zlang: 'en',
 						zId: functionZid
 					};
 				default:
@@ -84,7 +87,7 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 	} );
 
 	it( 'allows editing the function, making use of most important features', async () => {
-		const { findByRole, getAllByLabelText, getByText, findAllByRole } =
+		const { findByRole, getAllByLabelText, getByText, findAllByRole, findAllByTestId } =
 			render( App, { global: { plugins: [ store ] } } );
 
 		// ACT: Change the first argument type.
@@ -129,18 +132,26 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		// ACT: Click "Add labels in another language".
 		await fireEvent.click( getByText( 'Add labels in another language' ) );
 
+		// ASSERT: A new language block is created
+		const functionDefinitionLangBlocks = await findAllByTestId( 'function-editor-definition-language-block' );
+		expect( functionDefinitionLangBlocks.length ).toBe( 3 );
+		const thirdBlock = functionDefinitionLangBlocks[ 2 ];
+
 		// ACT: Select French as a third natural language.
-		const thirdLanguageSelector = getAllByLabelText( 'Language' )[ 2 ];
+		const thirdLanguageSelector = within( thirdBlock ).getByTestId( 'function-editor-language-selector' );
 		await fireEvent.update( within( thirdLanguageSelector ).getByRole( 'combobox' ), 'Fren' );
 		await clickLookupResult( thirdLanguageSelector, 'French' );
 
 		// ACT: Enter a name in French.
-		await fireEvent.update( getAllByLabelText( 'Name (optional)' )[ 2 ], 'function name, in French' );
+		const thirdNameInputBlock = within( thirdBlock ).getByTestId( 'function-editor-name-input' );
+		const thirdNameInput = within( thirdNameInputBlock ).getByRole( 'textbox' );
+		await fireEvent.update( thirdNameInput, 'function name, in French' );
 
 		// ACT: Enter an alias in French.
-		const frenchAliasInput = within( getAllByLabelText( 'Alternative names (optional)' )[ 2 ] ).getByRole( 'textbox' );
-		await fireEvent.update( frenchAliasInput, 'function alias, in French' );
-		await fireEvent.keyDown( frenchAliasInput, { key: 'enter' } );
+		const thirdAliasBlock = within( thirdBlock ).getByTestId( 'function-editor-alias-input' );
+		const thirdAliasInput = await within( thirdAliasBlock ).getByRole( 'textbox' );
+		await fireEvent.update( thirdAliasInput, 'function alias, in French' );
+		await fireEvent.keyDown( thirdAliasInput, { key: 'enter' } );
 
 		// TODO: Remove settimeout and use jest.useFakeTimers instead
 		setTimeout( async () => {

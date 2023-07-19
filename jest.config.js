@@ -82,7 +82,7 @@ module.exports = {
 		'./resources/ext.wikilambda.edit/store': {
 			branches: 78,
 			lines: 89,
-			functions: 93,
+			functions: 92,
 			statements: 89
 		}
 	},

@@ -5,7 +5,7 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<main class="ext-wikilambda-function-definition">
+	<main class="ext-wikilambda-function-definition" data-testid="function-editor-definition">
 		<!-- Function Definition -->
 		<div
 			ref="fnDefinitionContainer"
@@ -13,11 +13,13 @@
 			<div
 				v-for="( labelLanguage, index ) in labelLanguages"
 				:key="index"
+				data-testid="function-editor-definition-language-block"
 				class="ext-wikilambda-function-definition__container__input"
 			>
 				<div class="ext-wikilambda-function-definition__container__input__language">
 					<wl-function-editor-language
 						class="ext-wikilambda-function-definition__container__input__language__selector"
+						data-testid="function-editor-language-selector"
 						:z-language="labelLanguage.zLang"
 						@change="function ( value ) {
 							return setInputLangByIndex( value, index )
@@ -27,9 +29,10 @@
 				</div>
 				<!-- component that displays names for a language -->
 				<wl-function-editor-name
+					data-testid="function-editor-name-input"
 					:z-lang="labelLanguage.zLang"
 					:is-main-z-object="isMainZObject( labelLanguage.zLang, index )"
-					@updated-name="updatedLabel"
+					@updated-name="setHasUpdatedLabels"
 				></wl-function-editor-name>
 				<!-- component that displays the description for a language -->
 				<wl-function-editor-description
@@ -39,8 +42,9 @@
 				</wl-function-editor-description>
 				<!-- component that displays aliases for a language -->
 				<wl-function-editor-aliases
+					data-testid="function-editor-alias-input"
 					:z-lang="labelLanguage.zLang"
-					@updated-alias="updatedLabel"
+					@updated-alias="setHasUpdatedLabels"
 				></wl-function-editor-aliases>
 				<!-- component that displays list of inputs for a language -->
 				<wl-function-editor-inputs
@@ -48,15 +52,15 @@
 					:z-lang="labelLanguage.zLang"
 					:is-main-language-block="index === 0"
 					:can-edit="canEditFunction"
-					:tooltip-icon="adminTooltipIcon"
+					:tooltip-icon="icons.cdxIconLock"
 					:tooltip-message="adminTooltipMessage"
-					@updated-argument-label="updatedLabel"
+					@updated-argument-label="setHasUpdatedLabels"
 				></wl-function-editor-inputs>
 				<!-- component that displays output for a language -->
 				<template v-if="index === 0">
 					<wl-function-editor-output
 						:can-edit="canEditFunction"
-						:tooltip-icon="adminTooltipIcon"
+						:tooltip-icon="icons.cdxIconLock"
 						:tooltip-message="adminTooltipMessage"
 					></wl-function-editor-output>
 				</template>
@@ -73,17 +77,11 @@
 		</div>
 
 		<wl-function-editor-footer
-			:is-editing="isEditingExistingFunction"
-			:should-unattach-implementation-and-tester="shouldUnattachImplementationAndTester"
-			:publish-disabled="!isDirty"
-			@cancel="handleCancel"
+			:is-function-dirty="isFunctionDirty"
+			:function-input-changed="inputTypeChanged"
+			:function-output-changed="outputTypeChanged"
+			:function-signature-changed="functionSignatureChanged"
 		></wl-function-editor-footer>
-
-		<wl-leave-editor-dialog
-			:show-dialog="showLeaveEditorDialog"
-			:continue-callback="leaveEditorCallback"
-			@close-dialog="closeLeaveEditorDialog">
-		</wl-leave-editor-dialog>
 	</main>
 </template>
 
@@ -95,12 +93,11 @@ var FunctionEditorLanguage = require( './FunctionEditorLanguage.vue' ),
 	FunctionEditorInputs = require( './FunctionEditorInputs.vue' ),
 	FunctionEditorOutput = require( './FunctionEditorOutput.vue' ),
 	FunctionEditorFooter = require( './FunctionEditorFooter.vue' ),
-	LeaveEditorDialog = require( '../../base/LeaveEditorDialog.vue' ),
 	useBreakpoints = require( '../../../composables/useBreakpoints.js' ),
 	icons = require( '../../../../lib/icons.json' ),
 	Constants = require( '../../../Constants.js' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
-	eventLogger = require( '../../../mixins/eventLogUtils.js' ).methods,
+	eventLogUtils = require( '../../../mixins/eventLogUtils.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	mapGetters = require( 'vuex' ).mapGetters,
@@ -117,11 +114,10 @@ module.exports = exports = {
 		'wl-function-editor-output': FunctionEditorOutput,
 		'wl-function-editor-footer': FunctionEditorFooter,
 		'wl-function-editor-language': FunctionEditorLanguage,
-		'wl-leave-editor-dialog': LeaveEditorDialog,
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon
 	},
-	mixins: [ typeUtils ],
+	mixins: [ eventLogUtils, typeUtils ],
 	setup: function () {
 		var breakpoint = useBreakpoints( Constants.breakpoints );
 		return {
@@ -134,56 +130,71 @@ module.exports = exports = {
 			icons: icons,
 			labelLanguages: [],
 			initialInputTypes: [],
-			hasUpdatedLabels: false,
 			initialOutputType: '',
-			showLeaveEditorDialog: false,
-			leaveEditorCallback: ''
+			hasUpdatedLabels: false
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getZLang',
-		'getLabel',
+		'currentZObjectLanguages',
 		'getCurrentZLanguage',
 		'getCurrentZObjectId',
-		'currentZObjectLanguages',
-		'isNewZObject',
+		'getLabel',
+		'getRowByKeyPath',
+		'getUserZlangZID',
 		'getViewMode',
+		'getZFunctionInputs',
+		'getZFunctionOutput',
+		'getZTypeStringRepresentation',
 		'getZObjectChildrenById',
 		'getZObjectAsJsonById',
-		'getZargumentsArray',
-		'getNestedZObjectById',
-		'getUserZlangZID',
+		'isNewZObject',
 		'isUserLoggedIn'
 	] ),
 	{
-		canEditFunction: function () {
-			// TODO(T301667): restrict to only certain user roles
-			return this.isNewZObject ? true : this.isUserLoggedIn;
-		},
-		shouldUnattachImplementationAndTester: function () {
-			return this.validateInputTypeChanged() || this.validateOutputTypeChanged();
-		},
-		isDirty: function () {
-			return this.validateInputTypeChanged() || this.validateOutputTypeChanged() || this.hasUpdatedLabels;
-		},
+		/**
+		 * Returns whether the current view is mobile
+		 *
+		 * @return {boolean}
+		 */
 		isMobile: function () {
 			return this.breakpoint.current.value === Constants.breakpointsTypes.MOBILE;
 		},
 		/**
-		 * if currently editing the loaded function
+		 * Returns whether the user can edit the function
+		 *
+		 * @return {boolean}
+		 */
+		canEditFunction: function () {
+			// TODO(T301667): restrict to only certain user roles
+			return this.isNewZObject ? true : this.isUserLoggedIn;
+		},
+		/**
+		 * Returns whether there have been any changes made
+		 * in inputs or output types.
+		 *
+		 * @return {boolean}
+		 */
+		functionSignatureChanged: function () {
+			return this.inputTypeChanged || this.outputTypeChanged;
+		},
+		/**
+		 * Returns whether there have been any changes made
+		 * from the initial value of the function.
+		 *
+		 * @return {boolean}
+		 */
+		isFunctionDirty: function () {
+			return this.functionSignatureChanged || this.hasUpdatedLabels;
+		},
+		/**
+		 * Returns whether the page is an edit page
+		 * of an already persisted function.
 		 *
 		 * @return {boolean}
 		 */
 		isEditingExistingFunction: function () {
+			// TODO: why? this is always gonna be an edit page
 			return !this.isNewZObject && !this.getViewMode;
-		},
-		/**
-		 * icon for admin tooltip
-		 *
-		 * @return {Object}
-		 */
-		adminTooltipIcon: function () {
-			return icons.cdxIconLock;
 		},
 		/**
 		 * message for admin tooltip
@@ -256,27 +267,67 @@ module.exports = exports = {
 			}
 			return formattedLanguages;
 		},
-		currentInputs: function () {
-			return this.getZargumentsArray() || [];
+		/**
+		 * Returns an array with the string representation of the
+		 * currently selected input types. Filters out the undefined
+		 * values in between.
+		 *
+		 * @return {Array}
+		 */
+		currentInputTypes: function () {
+			return this.getZFunctionInputs()
+				.map( ( inputRow ) => {
+					const inputTypeRow = this.getRowByKeyPath( [
+						Constants.Z_ARGUMENT_TYPE
+					], inputRow.id );
+					return inputTypeRow ?
+						this.getZTypeStringRepresentation( inputTypeRow.id ) :
+						undefined;
+				} )
+				.filter( ( type ) => !!type );
 		},
-		currentOutput: function () {
-			return this.getNestedZObjectById( 0, [
-				Constants.Z_PERSISTENTOBJECT_VALUE,
-				Constants.Z_FUNCTION_RETURN_TYPE,
-				Constants.Z_REFERENCE_ID
-			] ) || '';
+		/**
+		 * Returns an the string representation of the
+		 * currently selected output type.
+		 *
+		 * @return {string}
+		 */
+		currentOutputType: function () {
+			const outputRow = this.getZFunctionOutput();
+			return outputRow ?
+				this.getZTypeStringRepresentation( outputRow.id ) :
+				undefined;
+		},
+		/**
+		 * Returns whether the input types have changed from the
+		 * initial value.
+		 *
+		 * @return {boolean}
+		 */
+		inputTypeChanged: function () {
+			// Return true if length is different, or if at least an item is found to be different
+			return ( this.currentInputTypes.length !== this.initialInputTypes.length ) ||
+				!!this.currentInputTypes.find( ( value, i ) => value !== this.initialInputTypes[ i ] );
+		},
+		/**
+		 * Returns whether the output type has changed from the
+		 * initial value.
+		 *
+		 * @return {boolean}
+		 */
+		outputTypeChanged: function () {
+			return ( this.currentOutputType !== this.initialOutputType );
 		}
 	} ),
 	methods: $.extend( mapActions( [
-		'setCurrentZLanguage',
-		'changeType',
-		'setError'
+		'setCurrentZLanguage'
 	] ), {
-		closeLeaveEditorDialog: function () {
-			this.showLeaveEditorDialog = false;
-		},
-		updatedLabel: function () {
-			this.hasUpdatedLabels = true;
+		/**
+		 * Saves the initial values for initialInputTypes and initialOutputType
+		 */
+		saveInitialFunctionSignature: function () {
+			this.initialInputTypes = this.currentInputTypes;
+			this.initialOutputType = this.currentOutputType;
 		},
 		/**
 		 * Gets called when user clicks on the button
@@ -303,6 +354,10 @@ module.exports = exports = {
 				}.bind( this ), 0 );
 			}
 		},
+		/**
+		 * @param {string} lang
+		 * @param {number} index
+		 */
 		setInputLangByIndex: function ( lang, index ) {
 			// If index is zero, set currentZLanguage as lang.zLang
 			if ( index === 0 ) {
@@ -314,54 +369,11 @@ module.exports = exports = {
 				readOnly: true
 			};
 		},
-		changeTypeToFunction: function () {
-			var zObject = this.getZObjectChildrenById( 0 ); // We fetch the Root object
-			var Z2K2 =
-				this.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, zObject );
-			this.changeType( {
-				id: Z2K2.id,
-				type: Constants.Z_FUNCTION
-			} );
-		},
-		validateInputTypeChanged: function () {
-			let inputTypeChanged = false;
-			if ( this.currentInputs.length === this.initialInputTypes.length ) {
-				for ( let index = 0; index < this.currentInputs.length; index++ ) {
-					const input = this.currentInputs[ index ];
-					if ( input.type.zid !== this.initialInputTypes[ index ] ) {
-						inputTypeChanged = true;
-					}
-				}
-			} else {
-				inputTypeChanged = true;
-			}
-
-			return inputTypeChanged;
-		},
-		validateOutputTypeChanged: function () {
-			return ( this.currentOutput.value !== this.initialOutputType ) && this.currentOutput.value !== '';
-		},
-		handleCancel: function () {
-			const cancelTargetUrl = this.isNewZObject ? new mw.Title( 'Wikifunctions:Main_Page' ).getUrl() : '/view/' + this.getZLang + '/' + this.getCurrentZObjectId;
-			const customData = {
-				isnewzobject: this.isNewZObject,
-				// If not set, this will be Z0:
-				zobjectid: this.getCurrentZObjectId,
-				zlang: this.getUserZlangZID || null,
-				isdirty: this.isDirty
-			};
-
-			if ( this.isDirty ) {
-				this.showLeaveEditorDialog = true;
-				this.leaveEditorCallback = function () {
-					window.location.href = cancelTargetUrl;
-					eventLogger.dispatchEvent( 'wf.ui.editFunction.cancel', customData );
-				};
-			} else {
-				// If there are no changes, go immediately without showing the dialog.
-				window.location.href = cancelTargetUrl;
-				eventLogger.dispatchEvent( 'wf.ui.editFunction.cancel', customData );
-			}
+		/**
+		 * Sets the hasUpdatedLabels flag to true
+		 */
+		setHasUpdatedLabels: function () {
+			this.hasUpdatedLabels = true;
 		},
 		/**
 		 *  The main zObject labels are displayed on the Page title.
@@ -379,46 +391,9 @@ module.exports = exports = {
 				( id ) => id[ Constants.Z_REFERENCE_ID ] === this.getUserZlangZID ) ?
 				zLang === this.getUserZlangZID :
 				index === 0;
-		},
-		handleClickAway: function ( e ) {
-			let target = e.target;
-
-			// Find if what was clicked was a link.
-			while ( target && target.tagName !== 'A' ) {
-				target = target.parentNode;
-				if ( !target ) {
-					return;
-				}
-			}
-			if ( target.href && this.isDirty ) {
-				this.showLeaveEditorDialog = true;
-				e.preventDefault();
-				this.leaveEditorCallback = function () {
-					window.removeEventListener( 'click', this.handleClickAway );
-					window.location.href = target.href;
-				}.bind( this );
-			}
 		}
 	} ),
 	watch: {
-		currentInputs: {
-			immediate: true,
-			handler: function () {
-				if ( this.initialInputTypes.length === 0 ) {
-					this.initialInputTypes = this.currentInputs.map( ( inputs ) => {
-						return inputs.type.zid || '';
-					} );
-				}
-			}
-		},
-		currentOutput: {
-			immediate: true,
-			handler: function () {
-				if ( this.initialOutputType === '' ) {
-					this.initialOutputType = this.currentOutput.value;
-				}
-			}
-		},
 		selectedLanguages: {
 			immediate: true,
 			handler: function () {
@@ -427,34 +402,10 @@ module.exports = exports = {
 					this.labelLanguages = this.selectedLanguages;
 				}
 			}
-		},
-		shouldUnattachImplementationAndTester: {
-			handler: function () {
-				if ( this.isEditingExistingFunction ) {
-					if ( this.shouldUnattachImplementationAndTester ) {
-						const inputTypeChanged = this.validateInputTypeChanged();
-						const outputTypeChanged = this.validateOutputTypeChanged();
-
-						let errorCode;
-						if ( inputTypeChanged && outputTypeChanged ) {
-							errorCode = Constants.errorCodes.FUNCTION_INPUT_OUTPUT_CHANGED;
-						} else if ( inputTypeChanged ) {
-							errorCode = Constants.errorCodes.FUNCTION_INPUT_CHANGED;
-						} else {
-							errorCode = Constants.errorCodes.FUNCTION_OUTPUT_CHANGED;
-						}
-
-						this.setError( {
-							rowId: 0,
-							errorType: Constants.errorTypes.WARNING,
-							errorCode
-						} );
-					}
-				}
-			}
 		}
 	},
 	mounted: function () {
+		// Initialize first label block with user lang if there are none
 		if ( !this.zObjectLabels ) {
 			this.labelLanguages.push( {
 				label: this.getLabel( this.getCurrentZLanguage ),
@@ -462,18 +413,16 @@ module.exports = exports = {
 				readonly: false
 			} );
 		}
-		if ( this.isNewZObject ) {
-			this.changeTypeToFunction();
-		}
-		window.addEventListener( 'click', this.handleClickAway );
-		eventLogger.dispatchEvent( 'wf.ui.editFunction.load', {
+
+		// Initialize initial state of inputs and output
+		this.saveInitialFunctionSignature();
+
+		// Dispatch an editFunction load event
+		this.dispatchEvent( 'wf.ui.editFunction.load', {
 			isnewzobject: this.isNewZObject,
 			zobjectid: this.getCurrentZObjectId || null,
 			zlang: this.getUserZlangZID || null
 		} );
-	},
-	beforeUnmount: function () {
-		window.removeEventListener( 'click', this.handleClickAway );
 	}
 };
 </script>

@@ -344,7 +344,7 @@
 	"wikilambda-editor-publish-dialog-header": "Header for the dialog shown before publishing a ZObject displaying.",
 	"wikilambda-editor-publish-dialog-summary-label": "Aria label for the input box where a user can summarize the changes they made to the ZObject before publishing.",
 	"wikilambda-editor-publish-dialog-summary-placeholder": "Placeholder text for the summary changes input box in the publish dialog",
-	"wikilambda-editor-publish-dialog-how-did-you-improve-label": "Label for the summary input on the publish changes dialog prompting users to enter their changes.",
+	"wikilambda-editor-publish-dialog-summary-help-text": "Label for the summary input on the publish changes dialog prompting users to enter their changes.",
 	"wikilambda-ztyped-pair-placeholder": "Placeholder prompt for a typed pair.\n\n{{Doc-wikilambda}}",
 	"wikilambda-ztyped-pair-key-label": "Label for the key of a typed pair.\n\n{{Doc-wikilambda}}\n\n{{identical|Key}}",
 	"wikilambda-ztyped-pair-value-label": "Label for the value of a typed pair.\n\n{{Doc-wikilambda}}\n\n{{identical|Value}}",

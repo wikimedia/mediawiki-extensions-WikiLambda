@@ -132,8 +132,6 @@ describe( 'ZTypedList', () => {
 				}
 			} );
 
-			console.log( wrapper.html() );
-
 			expect( wrapper.find( '.ext-wikilambda-ztyped-list-add-button' ).exists() ).toBe( true );
 		} );
 

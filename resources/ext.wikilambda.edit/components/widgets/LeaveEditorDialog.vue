@@ -1,0 +1,110 @@
+<template>
+	<!--
+		WikiLambda Vue component for the Leave Editor Dialog which is displayed when the user attempts to leave
+		the page before saving their changes.
+
+		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+		@license MIT
+	-->
+	<div class="ext-wikilambda-leaveeditordialog">
+		<cdx-dialog
+			:open="showDialog"
+			:title="leaveDialogTitle"
+			:close-button-label="closeLabel"
+			:primary-action="primaryAction"
+			:default-action="defaultAction"
+			@update:open="stayOnPage"
+			@primary="leavePage"
+			@default="stayOnPage"
+		>
+			<div>{{ leaveDialogText }}</div>
+		</cdx-dialog>
+	</div>
+</template>
+
+<script>
+var CdxDialog = require( '@wikimedia/codex' ).CdxDialog;
+
+// @vue/components
+module.exports = exports = {
+	name: 'wl-leave-editor-dialog',
+	components: {
+		'cdx-dialog': CdxDialog
+	},
+	props: {
+		showDialog: {
+			type: Boolean,
+			required: true,
+			default: false
+		},
+		continueCallback: {
+			type: Function,
+			required: false,
+			default: undefined
+		}
+	},
+	computed: {
+		/**
+		 * Returns the title for the Leave dialog
+		 *
+		 * @return {string}
+		 */
+		leaveDialogTitle: function () {
+			return this.$i18n( 'wikilambda-editor-leave-edit-mode-header' ).text();
+		},
+
+		/**
+		 * Returns the text of the Leave dialog
+		 *
+		 * @return {string}
+		 */
+		leaveDialogText: function () {
+			return this.$i18n( 'wikilambda-publish-lose-changes-prompt' ).text();
+		},
+
+		/**
+		 * Returns the name for the Close dialog button
+		 *
+		 * @return {string}
+		 */
+		closeLabel: function () {
+			return this.$i18n( 'wikilambda-toast-close' ).text();
+		},
+
+		/**
+		 * Returns an object of type PrimaryDialogAction that describes
+		 * the action of the primary (save or publish) dialog button.
+		 *
+		 * @return {Object}
+		 */
+		primaryAction: function () {
+			return {
+				actionType: 'destructive',
+				label: this.$i18n( 'wikilambda-discard-edits' ).text()
+			};
+		},
+
+		/**
+		 * Returns an object of type DialogAction that describes
+		 * the action of the secondary (cancel) button.
+		 *
+		 * @return {Object}
+		 */
+		defaultAction: function () {
+			return {
+				label: this.$i18n( 'wikilambda-continue-editing' ).text()
+			};
+		}
+	},
+	methods: {
+		stayOnPage: function () {
+			this.$emit( 'close-dialog' );
+		},
+		leavePage: function () {
+			if ( this.continueCallback ) {
+				this.continueCallback();
+			}
+		}
+	}
+};
+</script>

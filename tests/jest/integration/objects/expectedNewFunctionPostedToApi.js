@@ -103,5 +103,9 @@ module.exports = {
 				]
 			}
 		]
+	},
+	[ Constants.Z_PERSISTENTOBJECT_DESCRIPTION ]: {
+		[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
+		[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [ Constants.Z_MONOLINGUALSTRING ]
 	}
 };

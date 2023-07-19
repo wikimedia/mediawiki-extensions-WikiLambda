@@ -89,8 +89,11 @@ module.exports = exports = {
 			// if the type was changed to Z1, we don't need to do this
 			// TODO: we can be smarter here and check each item to know what actually needs to be deleted
 			// (instead of deleting all items)
-			if ( payload.value !== Constants.Z_OBJECT && payload.value !== this.listType ) {
-
+			if (
+				( payload.value !== Constants.Z_OBJECT ) &&
+				( payload.value !== this.listType ) &&
+				( this.listItemsRowIds.length > 0 )
+			) {
 				// TODO (T332990): Revisit how we want to display a warning to the user about deletion
 				this.setError( {
 					rowId: 0,

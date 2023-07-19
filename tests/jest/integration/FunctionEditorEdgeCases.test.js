@@ -55,6 +55,19 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 			};
 		} );
 
+		global.mw.config.get = ( endpoint ) => {
+			switch ( endpoint ) {
+				case 'wgWikiLambda':
+					return {
+						zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+						zlang: 'en',
+						createNewPage: true,
+						vieMode: false
+					};
+				default:
+					return {};
+			}
+		};
 		mw.Title = jest.fn( function ( title ) {
 			return {
 				getUrl: jest.fn( function () {

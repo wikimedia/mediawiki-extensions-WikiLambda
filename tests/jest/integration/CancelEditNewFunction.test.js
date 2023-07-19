@@ -26,6 +26,7 @@ const initializeRootZObject =
 describe( 'WikiLambda frontend, function-editor view, on a new function', () => {
 	beforeEach( () => {
 		runSetup();
+
 		mw.Api = jest.fn( () => {
 			return {
 				get: apiGetMock.createMockApi( [
@@ -34,15 +35,28 @@ describe( 'WikiLambda frontend, function-editor view, on a new function', () => 
 				] )
 			};
 		} );
-		const queryParams = {
-			zid: Constants.Z_FUNCTION
-		};
-		window.mw.Uri.mockImplementationOnce( function () {
+
+		const queryParams = { zid: Constants.Z_FUNCTION };
+		window.mw.Uri = jest.fn( () => {
 			return {
 				query: queryParams,
 				path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
 			};
 		} );
+
+		global.mw.config.get = ( endpoint ) => {
+			switch ( endpoint ) {
+				case 'wgWikiLambda':
+					return {
+						vieMode: false,
+						createNewPage: true,
+						zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+						zlang: 'en'
+					};
+				default:
+					return {};
+			}
+		};
 	} );
 
 	afterEach( () => {

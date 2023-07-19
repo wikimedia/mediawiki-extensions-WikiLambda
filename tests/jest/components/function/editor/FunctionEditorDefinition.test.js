@@ -6,8 +6,10 @@
  */
 'use strict';
 
-var VueTestUtils = require( '@vue/test-utils' ),
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
+	flushPromises = require( '@vue/test-utils' ).flushPromises,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
 	mockLabels = require( '../../../fixtures/mocks.js' ).mockLabels,
 	FunctionEditorName = require( '../../../../../resources/ext.wikilambda.edit/components/function/editor/FunctionEditorName.vue' ),
 	FunctionEditorAliases = require( '../../../../../resources/ext.wikilambda.edit/components/function/editor/FunctionEditorAliases.vue' ),
@@ -16,51 +18,49 @@ var VueTestUtils = require( '@vue/test-utils' ),
 	FunctionEditorFooter = require( '../../../../../resources/ext.wikilambda.edit/components/function/editor/FunctionEditorFooter.vue' ),
 	FunctionEditorDefinition = require( '../../../../../resources/ext.wikilambda.edit/components/function/editor/FunctionEditorDefinition.vue' );
 
-describe( 'FunctionEditorDefinition', function () {
+describe( 'FunctionEditorDefinition', () => {
 	let getters;
 	const addBtnClass = '.ext-wikilambda-function-definition__action-add-language-button';
 
-	beforeEach( function () {
+	beforeEach( () => {
 		getters = {
-			getLabel: () => ( zid ) => {
+			currentZObjectLanguages: createGetterMock( [
+				{ Z1K1: 'Z9', Z9K1: 'Z1002' },
+				{ Z1K1: 'Z9', Z9K1: 'Z1004' }
+			] ),
+			getCurrentZLanguage: createGetterMock( 'Z1002' ),
+			getCurrentZObjectId: createGetterMock( 'Z0' ),
+			getLabel: createGetterMock( ( zid ) => {
 				return ( zid === 'Z1002' ) ? 'Martian' :
 					( zid === 'Z1004' ) ? 'Whale-talk' :
 						zid;
-			},
-			getCurrentZLanguage: jest.fn().mockReturnValue( 'Z10002' ),
-			currentZFunctionHasValidInputs: () => false,
-			currentZFunctionHasOutput: () => false,
-			currentZObjectLanguages: () => [
-				{
-					Z1K1: 'Z9',
-					Z9K1: 'Z1002'
-				},
-				{
-					Z1K1: 'Z9',
-					Z9K1: 'Z1004'
-				}
-			],
-			isNewZObject: jest.fn(),
-			getViewMode: jest.fn(),
-			getZObjectChildrenById: createGettersWithFunctionsMock(),
+			} ),
+			getUserZlangZID: createGetterMock( 'Z1002' ),
+			getViewMode: createGetterMock( false ),
+			getZFunctionInputs: createGettersWithFunctionsMock( [] ),
+			getZFunctionOutput: createGettersWithFunctionsMock( { id: 2 } ),
+			getZTypeStringRepresentation: createGettersWithFunctionsMock( 'Z6' ),
+			getZObjectChildrenById: createGettersWithFunctionsMock( [] ),
 			getZObjectAsJsonById: createGettersWithFunctionsMock( mockLabels ),
-			getAllZKeyLanguageLabels: jest.fn(),
-			getZargumentsArray: createGettersWithFunctionsMock(),
-			getNestedZObjectById: createGettersWithFunctionsMock( jest.fn() ),
-			getAllItemsFromListById: createGettersWithFunctionsMock( [] )
+			isNewZObject: createGetterMock( true ),
+			isUserLoggedIn: createGetterMock( true )
+		};
+		actions = {
+			setCurrentZLanguage: jest.fn()
 		};
 		global.store.hotUpdate( {
+			actions: actions,
 			getters: getters
 		} );
 	} );
 
 	it( 'renders without errors', () => {
-		var wrapper = VueTestUtils.shallowMount( FunctionEditorDefinition );
+		var wrapper = shallowMount( FunctionEditorDefinition );
 		expect( wrapper.find( '.ext-wikilambda-function-definition' ).exists() ).toBe( true );
 	} );
 
 	it( 'loads child components', ( done ) => {
-		var wrapper = VueTestUtils.shallowMount( FunctionEditorDefinition );
+		var wrapper = shallowMount( FunctionEditorDefinition );
 		global.store.hotUpdate( { getters: getters } );
 		wrapper.vm.$nextTick( () => {
 			// Two sets of label inputs for the two languages.
@@ -75,8 +75,8 @@ describe( 'FunctionEditorDefinition', function () {
 		} );
 	} );
 
-	it( 'creates new form inputs for another language on add button click', function () {
-		var wrapper = VueTestUtils.shallowMount( FunctionEditorDefinition, {
+	it( 'creates new form inputs for another language on add button click', () => {
+		var wrapper = shallowMount( FunctionEditorDefinition, {
 			data() {
 				return {
 					labelLanguages: [
@@ -95,8 +95,8 @@ describe( 'FunctionEditorDefinition', function () {
 
 			expect( wrapper.findAllComponents( FunctionEditorOutput ).length ).toEqual( 1 );
 			expect( wrapper.findAllComponents( FunctionEditorFooter ).length ).toEqual( 1 );
-			return VueTestUtils.flushPromises();
-		} ).then( function () {
+			return flushPromises();
+		} ).then( () => {
 			const fnDefinitionContainerEl = wrapper.find( { ref: 'fnDefinitionContainer' } ).element;
 			expect( fnDefinitionContainerEl.scrollTop ).toEqual( fnDefinitionContainerEl.scrollHeight );
 		} );

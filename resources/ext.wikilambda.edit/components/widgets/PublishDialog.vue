@@ -10,99 +10,60 @@
 		data-testid="confirm-publish-dialog"
 	>
 		<cdx-dialog
-			id="publish-dialog"
-			title=""
 			:open="showDialog"
+			:title="publishDialogTitle"
+			:close-button-label="closeLabel"
+			:primary-action="primaryAction"
+			:default-action="defaultAction"
+			@default="closeDialog"
+			@primary="publishZObject"
 			@update:open="closeDialog"
 		>
-			<div class="ext-wikilambda-publishdialog__header">
-				<span class="ext-wikilambda-publishdialog__header__title">
-					{{ $i18n( 'wikilambda-editor-publish-dialog-header' ).text() }}
-				</span>
-				<cdx-button
-					weight="quiet"
-					class="ext-wikilambda-publishdialog__header__close-button"
-					@click="closeDialog"
+			<!-- Error and Warning section -->
+			<div
+				v-if="hasErrors"
+				class="ext-wikilambda-publishdialog__errors"
+			>
+				<cdx-message
+					v-for="( error, index ) in errors"
+					:key="'dialog-error-' + index"
+					class="ext-wikilambda-publishdialog__error"
+					:type="error.type"
 				>
-					<cdx-icon :icon="icons.cdxIconClose"></cdx-icon>
-				</cdx-button>
+					<div v-html="getErrorMessage( error )"></div>
+				</cdx-message>
 			</div>
-			<div class="ext-wikilambda-publishdialog__summary">
-				<!-- Error and Warning section -->
+
+			<!-- Summary section -->
+			<cdx-field>
+				<cdx-text-input
+					v-model="summary"
+					class="ext-wikilambda-publishdialog__summary-input"
+					:aria-label="summaryLabel"
+					:placeholder="summaryPlaceholder"
+				></cdx-text-input>
+				<template #label>
+					{{ summaryHelpText }}
+				</template>
+			</cdx-field>
+
+			<!-- Legal text -->
+			<template #footer-text>
 				<div
-					v-if="hasErrors"
-					class="ext-wikilambda-publishdialog__errors"
-				>
-					<cdx-message
-						v-for="( error, index ) in errors"
-						:key="'dialog-error-' + index"
-						class="ext-wikilambda-publishdialog__error"
-						:type="error.type"
-					>
-						<template v-if="error.message">
-							{{ error.message }}
-						</template>
-						<template v-else>
-							{{ messageFromCode( error.code ) }}
-						</template>
-					</cdx-message>
-				</div>
-
-				<!-- Summary section -->
-				<div class="ext-wikilambda-publishdialog__summary">
-					<div class="ext-wikilambda-publishdialog__summary-label">
-						<label
-							for="ext-wikilambda-publishdialog__summary-input"
-							class="ext-wikilambda-app__text-regular"
-						>
-							{{ $i18n( 'wikilambda-editor-publish-dialog-how-did-you-improve-label' )
-								.text() }}
-						</label>
-					</div>
-					<cdx-text-input
-						id="ext-wikilambda-publishdialog__summary-input"
-						v-model="summary"
-						class="ext-wikilambda-publishdialog__summary-input"
-						:aria-label="$i18n( 'wikilambda-editor-publish-dialog-summary-label' ).text()"
-						:placeholder="$i18n( 'wikilambda-editor-publish-dialog-summary-placeholder' ).text()"
-					></cdx-text-input>
-				</div>
-				<div class="ext-wikilambda-publishdialog__actions">
-					<!-- TODO: (T325821) replace with codex footer slot when available -->
-					<cdx-button
-						class="ext-wikilambda-publishdialog__actions__button-publish"
-						action="progressive"
-						weight="primary"
-						data-testid="confirm-publish-button"
-						@click="publishZObject"
-					>
-						{{ $i18n( 'wikilambda-publishnew' ).text() }}
-					</cdx-button>
-
-					<cdx-button
-						class="ext-wikilambda-publishdialog__actions__button-cancel"
-						@click="closeDialog"
-					>
-						{{ $i18n( 'wikilambda-cancel' ).text() }}
-					</cdx-button>
-				</div>
-				<div class="ext-wikilambda-publishdialog__divider">
-					<hr>
-					<div class="ext-wikilambda-publishdialog__legal-text" v-html="legalText"></div>
-				</div>
-			</div>
+					class="ext-wikilambda-publishdialog__legal-text"
+					v-html="legalText"
+				></div>
+			</template>
 		</cdx-dialog>
 	</div>
 </template>
 
 <script>
 const Constants = require( '../../Constants.js' ),
+	CdxField = require( '@wikimedia/codex' ).CdxField,
 	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
-	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	icons = require( '../../../lib/icons.json' ),
 	eventLogUtils = require( '../../mixins/eventLogUtils.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
@@ -111,11 +72,10 @@ const Constants = require( '../../Constants.js' ),
 module.exports = exports = {
 	name: 'wl-publish-dialog',
 	components: {
+		'cdx-field': CdxField,
 		'cdx-text-input': CdxTextInput,
 		'cdx-message': CdxMessage,
-		'cdx-dialog': CdxDialog,
-		'cdx-button': CdxButton,
-		'cdx-icon': CdxIcon
+		'cdx-dialog': CdxDialog
 	},
 	mixins: [ eventLogUtils ],
 	inject: {
@@ -127,7 +87,7 @@ module.exports = exports = {
 			required: true,
 			default: false
 		},
-		shouldUnattachImplementationAndTester: {
+		functionSignatureChanged: {
 			type: Boolean,
 			required: false,
 			default: false
@@ -135,18 +95,17 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			summary: '',
-			icons: icons
+			summary: ''
 		};
 	},
 	computed: $.extend( mapGetters( [
 		'getZLang',
 		'getCurrentZObjectId',
 		'getCurrentZObjectType',
-		'getCurrentZImplementationContentType',
+		'getCurrentZImplementationType',
 		'getErrors',
-		'isNewZObject',
-		'getUserZlangZID'
+		'getUserZlangZID',
+		'isNewZObject'
 	] ), {
 		/**
 		 * Returns the array of errors and warnings of the page
@@ -168,6 +127,76 @@ module.exports = exports = {
 		},
 
 		/**
+		 * Returns an object of type PrimaryDialogAction that describes
+		 * the action of the primary (save or publish) dialog button.
+		 *
+		 * @return {Object}
+		 */
+		primaryAction: function () {
+			return {
+				actionType: 'progressive',
+				label: this.$i18n( 'wikilambda-publishnew' ).text()
+			};
+		},
+
+		/**
+		 * Returns an object of type DialogAction that describes
+		 * the action of the secondary (cancel) button.
+		 *
+		 * @return {Object}
+		 */
+		defaultAction: function () {
+			return {
+				label: this.$i18n( 'wikilambda-cancel' ).text()
+			};
+		},
+
+		/**
+		 * Returns the title for the Publish dialog
+		 *
+		 * @return {string}
+		 */
+		publishDialogTitle: function () {
+			return this.$i18n( 'wikilambda-editor-publish-dialog-header' ).text();
+		},
+
+		/**
+		 * Returns the label for the summary text field
+		 *
+		 * @return {string}
+		 */
+		summaryLabel: function () {
+			return this.$i18n( 'wikilambda-editor-publish-dialog-summary-label' ).text();
+		},
+
+		/**
+		 * Returns the help text for the summary text field
+		 *
+		 * @return {string}
+		 */
+		summaryHelpText: function () {
+			return this.$i18n( 'wikilambda-editor-publish-dialog-summary-help-text' ).text();
+		},
+
+		/**
+		 * Returns the placeholder for the summary text field
+		 *
+		 * @return {string}
+		 */
+		summaryPlaceholder: function () {
+			return this.$i18n( 'wikilambda-editor-publish-dialog-summary-placeholder' ).text();
+		},
+
+		/**
+		 * Returns the name for the Close dialog button
+		 *
+		 * @return {string}
+		 */
+		closeLabel: function () {
+			return this.$i18n( 'wikilambda-toast-close' ).text();
+		},
+
+		/**
 		 * Returns the legal text to display in the Publish Dialog, depending
 		 * on the type of object that is being submitted:
 		 * * Special message for implementations (Apache 2.0 licence for code).
@@ -184,6 +213,7 @@ module.exports = exports = {
 	methods: $.extend( mapActions( [
 		'submitZObject',
 		'setError',
+		'setDirty',
 		'clearAllErrors'
 	] ),
 	{
@@ -208,20 +238,20 @@ module.exports = exports = {
 		 *    page.
 		 */
 		publishZObject: function () {
-			// Before sending the request we clear all error and warning notifications
-			this.clearAllErrors();
-
 			const summary = this.summary;
-			const shouldUnattachImplementationAndTester = this.shouldUnattachImplementationAndTester;
+			const detachFunctionObjects = this.functionSignatureChanged;
 
 			this.submitZObject( {
 				summary,
-				shouldUnattachImplementationAndTester
+				detachFunctionObjects
 			} ).then( ( pageTitle ) => {
+				this.setDirty( false );
+				this.closeDialog();
 				if ( pageTitle ) {
 					window.location.href = '/view/' + this.getZLang + '/' + pageTitle + '?success=true';
 				}
 			} ).catch( ( error ) => {
+				this.clearAllErrors();
 				// If error.error.message: known ZError
 				// Else, PHP error or exception captured in error.error.info
 				// Additionally, if nothing available, show generic unknown error message
@@ -237,31 +267,31 @@ module.exports = exports = {
 				};
 
 				this.setError( payload );
+			} ).finally( () => {
+				// After receiving the response, log a publish event
+				const eventNamespace = this.getNamespace( this.getCurrentZObjectType );
+				const customData = {
+					isnewzobject: this.isNewZObject,
+					zobjectid: this.getCurrentZObjectId,
+					zobjecttype: this.getCurrentZObjectType || null,
+					implementationtype: this.getCurrentZImplementationType || null,
+					zlang: this.getUserZlangZID || null,
+					haserrors: this.hasErrors
+				};
+				this.dispatchEvent( `wf.ui.${eventNamespace}.publish`, customData );
 			} );
-
-			// Log using Metrics Platform
-			const customData = {
-				isnewzobject: this.isNewZObject,
-				zobjectid: this.getCurrentZObjectId || null,
-				zobjecttype: this.getCurrentZObjectType || null,
-				zlang: this.getUserZlangZID || null,
-				haserrors: this.hasErrors
-			};
-			if ( this.getCurrentZObjectType === Constants.Z_IMPLEMENTATION ) {
-				customData.implementationtype = this.getCurrentZImplementationContentType || null;
-			}
-			this.dispatchEvent( 'wf.ui.editZObject.publish', customData );
 		},
 
 		/**
-		 * Returns the translated message for a given error code
+		 * Returns the translated message for a given error code.
+		 * Error messages can have html tags.
 		 *
-		 * @param {string} code
+		 * @param {Object} error
 		 * @return {string}
 		 */
-		messageFromCode: function ( code ) {
+		getErrorMessage: function ( error ) {
 			// eslint-disable-next-line mediawiki/msg-doc
-			return this.$i18n( code ).text();
+			return error.message || this.$i18n( error.code ).text();
 		}
 	} )
 };
@@ -270,32 +300,9 @@ module.exports = exports = {
 <style lang="less">
 @import '../../ext.wikilambda.edit.less';
 
-/* stylelint-disable selector-max-id */
-#publish-dialog .cdx-dialog__header {
-	display: none;
-}
-
-#publish-dialog .cdx-dialog__body {
-	margin: 0 @spacing-50;
-}
-
-hr {
-	color: @border-color-subtle;
-	margin-bottom: @spacing-100;
-}
-
 .ext-wikilambda-publishdialog {
 	&__errors {
-		padding: @spacing-50 0;
-	}
-
-	&__warnings {
-		padding: @spacing-50 0;
-
-		p:first-child {
-			margin-top: 0;
-			hyphens: none;
-		}
+		margin-bottom: @spacing-200;
 	}
 
 	&__summary {

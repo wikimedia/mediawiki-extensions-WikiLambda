@@ -5,7 +5,9 @@
 		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 		@license MIT
 	-->
-	<div class="ext-wikilambda-language-selector">
+	<div
+		class="ext-wikilambda-language-selector"
+		data-testid="function-editor-language-selector">
 		<div class="ext-wikilambda-language-selector__label">
 			<label
 				id="ext-wikilambda-language-selector__add-language-label"
