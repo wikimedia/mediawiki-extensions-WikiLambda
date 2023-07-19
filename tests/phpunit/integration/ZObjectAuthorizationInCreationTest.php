@@ -174,8 +174,21 @@ class ZObjectAuthorizationInCreationTest extends WikiLambdaIntegrationTestCase {
 			// TODO: User-defined (ZID > 10k) tester (Z20 instance)
 			// TODO: Pre-defined (ZID < 10k) language (Z60 instance)
 			// TODO: User-defined (ZID > 10k) language (Z60 instance)
-			// TODO: Pre-defined (ZID < 10k) programming language (Z61 instance)
-			// TODO: User-defined (ZID > 10k) programming language (Z61 instance)
+
+			'programming language (Z61 instance)' => [
+				'content' =>
+					'{ "Z1K1": "Z2", "Z2K1": { "Z1K1": "Z6", "Z6K1": "Z0" }, '
+						. '"Z2K2": { "Z1K1": "Z61", "Z61K1": "test-programming-language" }, '
+						. '"Z2K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ',
+				'rights' => [ 'wikilambda-create-programming' ],
+				'allowed' => [
+					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+				],
+				'allowedPredefined' => [
+					'basic' => false, 'functioneer' => false, 'maintainer' => true, 'sysop' => false
+				],
+			],
+
 			// TODO: User-defined (ZID > 10k) boolean (Z40 instance)
 			// TODO: Pre-defined (ZID < 10k) boolean (Z40 instance)
 			// TODO: User-defined (ZID > 10k) unit (Z21 instance)
