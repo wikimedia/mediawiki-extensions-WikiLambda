@@ -211,7 +211,6 @@
 	"wikilambda-context-menu": "Kontekstmeny",
 	"wikilambda-add-list-item": "Legg til element",
 	"wikilambda-delete-list-item": "Slett element",
-	"wikilambda-list-type-change-publish-dialog-warning": "Du endret typen til én eller flere lister. Ved publisering blir alle listeelementene slettet",
 	"wikilambda-tester-details": "Detaljer",
 	"wikilambda-about-widget-title": "Om",
 	"wikilambda-about-widget-language-count-button": "$1 {{PLURAL:$1|språk}}",
@@ -229,5 +228,6 @@
 	"wikilambda-function-inputs-title": "Inndata",
 	"wikilambda-function-explorer-copied-text": "Kopiert!",
 	"wikilambda-function-explorer-name-title": "Navn",
-	"wikilambda-function-view-function-button-text": "Vis funksjon"
+	"wikilambda-function-view-function-button-text": "Vis funksjon",
+	"wikilambda-list-type-change-warning": "Du endret typen til én eller flere lister. Ved publisering blir alle listeelementene slettet"
 }

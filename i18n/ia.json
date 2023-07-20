@@ -334,9 +334,13 @@
 	"wikilambda-function-viewer-details-table-view-less": "Vider minus",
 	"wikilambda-toast-close": "Clauder",
 	"wikilambda-missing-function-output-error-message": "Un function require un sortita",
+	"wikilambda-missing-function-input-type-error-message": "Un entrata require un typo",
 	"wikilambda-zobject-missing-attached-function": "Un function es requirite",
 	"wikilambda-zimplememntation-composition-missing": "Un composition debe esser definite",
 	"wikilambda-zimplementation-code-missing": "Codice debe esser definite",
+	"wikilambda-zimplementation-code-language-missing": "Linguage de programmation debe esser definite",
+	"wikilambda-ztester-missing-call-function": "Un testator debe haber un function de appello",
+	"wikilambda-ztester-missing-validation-function": "Un testator debe haber un function de validation",
 	"wikilambda-chip-remove": "Remover elemento",
 	"wikilambda-add-list-item-button": "Adder elemento",
 	"wikilambda-list-items-label": "Elementos de lista",
@@ -345,7 +349,6 @@
 	"wikilambda-context-menu": "Menu contextual",
 	"wikilambda-add-list-item": "Adder elemento",
 	"wikilambda-delete-list-item": "Deler elemento",
-	"wikilambda-list-type-change-publish-dialog-warning": "Tu ha cambiate le typo de un o plure listas. Al publication, tote le elementos del lista essera delite.",
 	"wikilambda-tester-details": "Detalios",
 	"wikilambda-about-widget-title": "A proposito",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 lingua|$1 linguas}}",
@@ -371,5 +374,7 @@
 	"wikilambda-function-evaluator-running": "In execution…",
 	"wikilambda-function-evaluator-result": "Resultato",
 	"wikilambda-function-evaluator-result-details": "Detalios",
-	"wikilambda-function-evaluator-run-function": "Executar function"
+	"wikilambda-function-evaluator-run-function": "Executar function",
+	"wikilambda-unknown-save-error-message": "Un error ha occurrite durante le tentativa de salveguardar tu cambiamentos.",
+	"wikilambda-list-type-change-warning": "Tu ha cambiate le typo de un o plure listas. Al publication, tote le elementos del lista essera delite."
 }

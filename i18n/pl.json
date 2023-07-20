@@ -28,7 +28,6 @@
 	"wikilambda-literal": "Literał",
 	"wikilambda-genericliteral": "Literał generyczny",
 	"wikilambda-functioncall": "Wywołanie funkcji",
-	"wikilambda-json": "JSON",
 	"wikilambda-edit": "Edytuj",
 	"wikilambda-show-more": "Pokaż więcej",
 	"wikilambda-hide-more": "Ukryj więcej",
@@ -207,6 +206,6 @@
 	"wikilambda-function-viewer-aliases-hide-language-button": "Ukryj listę",
 	"wikilambda-function-viewer-names-show-languages-button": "Pokaż nazwę w innych językach",
 	"wikilambda-function-viewer-details-input-number": "Wejście $1",
-	"wikilambda-list-type-change-publish-dialog-warning": "Zmieniłeś typ co najmniej jednej listy. Podczas publikowania wszystkie elementy listy zostaną usunięte",
-	"wikilambda-tester-details": "Szczegóły"
+	"wikilambda-tester-details": "Szczegóły",
+	"wikilambda-list-type-change-warning": "Zmieniłeś typ co najmniej jednej listy. Podczas publikowania wszystkie elementy listy zostaną usunięte"
 }

@@ -108,7 +108,6 @@
 	"wikilambda-list-item-label": "Elemento $1",
 	"wikilambda-add-list-item": "Aggiungi elemento",
 	"wikilambda-delete-list-item": "Cancella elemento",
-	"wikilambda-list-type-change-publish-dialog-warning": "Hai cambiato il tipo di uno o più elenchi. Alla pubblicazione, tutti gli elementi dell'elenco verranno cancellati",
 	"wikilambda-tester-details": "Dettagli",
 	"wikilambda-about-widget-title": "Informazioni",
 	"wikilambda-about-widget-language-count-button": "{{PLURAL:$1|$1 lingua|$1 lingue}}",
@@ -129,5 +128,6 @@
 	"wikilambda-function-evaluator-running": "In esecuzione...",
 	"wikilambda-function-evaluator-result": "Risultato",
 	"wikilambda-function-evaluator-result-details": "Dettagli",
-	"wikilambda-function-evaluator-run-function": "Esegui funzione"
+	"wikilambda-function-evaluator-run-function": "Esegui funzione",
+	"wikilambda-list-type-change-warning": "Hai cambiato il tipo di uno o più elenchi. Alla pubblicazione, tutti gli elementi dell'elenco verranno cancellati"
 }
