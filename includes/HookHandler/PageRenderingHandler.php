@@ -122,15 +122,22 @@ class PageRenderingHandler implements
 				->buildStringForLanguage( $context->getLanguage() )
 				->fallbackWithEnglish()
 				->placeholderForTitle()
-				->getString();
+				->getString() ?? '';
 		}
+
+		// (T342212) Wrap our ZID in an LTR-enforced <span> so it works OK in RTL environments
+		$bidiWrappedZid = '<span dir="ltr">' . $zid . '</span>';
 
 		// Finally, set the label of the link to the *un*escaped user-supplied label, see
 		// https://www.mediawiki.org/wiki/Manual:Hooks/HtmlPageLinkRendererEnd
 		//
 		// &$text: the contents that the <a> tag should have; either a *plain, unescaped string* or a HtmlArmor object.
 		//
-		$text = $context->msg( 'wikilambda-zobject-title', [ $label, $zid ] )->text();
+		$text = new HtmlArmor(
+			htmlspecialchars( $label )
+				. $context->msg( 'word-separator' )->escaped()
+				. $context->msg( 'parentheses', [ $bidiWrappedZid ] )
+		);
 	}
 
 	/**
