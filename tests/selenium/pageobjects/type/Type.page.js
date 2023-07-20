@@ -112,7 +112,7 @@ class Type extends Page {
 	 */
 	async getKeysBlockItemSelectors( expectedKeysBlockEntry ) {
 		const { index, valueType, keyId, textArray } = expectedKeysBlockEntry;
-		const keysBlockItem = await this.keysBlock.$$( './/label[contains(text()," Item")]/parent::div/parent::div' )[ index ];
+		const keysBlockItem = await this.keysBlock.$$( './/label[contains(text(),"Item")]/parent::div/parent::div' )[ index ];
 
 		const valueTypeBlock = ContentBlock.getSectionOfContentBlock( 'value type', keysBlockItem );
 		const valueTypeSelector = await valueTypeBlock.$( `.//a[text()="${valueType}"]` );
