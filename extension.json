@@ -474,6 +474,8 @@
 				"wikilambda-function-test-cases-table-header",
 				"wikilambda-function-implementation-state-approved",
 				"wikilambda-function-implementation-state-deactivated",
+				"wikilambda-function-tester-state-approved",
+				"wikilambda-function-tester-state-deactivated",
 				"wikilambda-function-definition-name-placeholder",
 				"wikilambda-function-definition-name-example",
 				"wikilambda-function-definition-name-description",
