@@ -99,7 +99,7 @@ class Tester extends Page {
 	 * @return {void}
 	 */
 	async toggleCallFunctionBlock() {
-		await ContentBlock.toggleSection( 'call', this.callFunctionBlock );
+		await ContentBlock.toggleSectionOnlyChild( this.callFunctionBlock );
 	}
 
 	/**
@@ -153,7 +153,7 @@ class Tester extends Page {
 	 * @return {void}
 	 */
 	async toggleValidationBlock() {
-		await ContentBlock.toggleSection( 'result validation', this.validationBlock );
+		await ContentBlock.toggleSectionOnlyChild( this.validationBlock );
 	}
 
 	/**

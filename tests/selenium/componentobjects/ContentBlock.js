@@ -63,6 +63,18 @@ class ContentBlock {
 		await ElementActions.doClick( toggleButton );
 	}
 
+	/**
+	 * Toggle the only child of the section of the content block
+	 *
+	 * @async
+	 * @param {Promise<WebdriverIOElementType>} section - Section of
+	 * the content block
+	 * @return {void}
+	 */
+	async toggleSectionOnlyChild( section ) {
+		await ElementActions.doClick( section.$( './/button[@aria-label="Toggle"]' ) );
+	}
+
 	// #endregion
 }
 
