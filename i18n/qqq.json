@@ -293,6 +293,8 @@
 	"wikilambda-function-implementation-tests-passed-label": "Label for the Tests Passed column of the implementations table",
 	"wikilambda-function-implementation-state-approved": "Label for an implementation that has been approved for a function",
 	"wikilambda-function-implementation-state-deactivated": "Label for an implementation that is not approved for a function",
+	"wikilambda-function-tester-state-approved": "Label for a tester that has been approved for a function",
+	"wikilambda-function-tester-state-deactivated": "Label for a tester that is not approved for a function",
 	"wikilambda-function-definition-name-placeholder": "Placeholder for the function name",
 	"wikilambda-function-definition-name-example": "Link to examples of function names",
 	"wikilambda-function-definition-name-description": "Description for function name input",

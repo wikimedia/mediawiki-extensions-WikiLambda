@@ -381,8 +381,8 @@ module.exports = exports = {
 						component: 'cdx-info-chip',
 						title: this.$i18n(
 							isAvailable ?
-								'wikilambda-function-implementation-state-approved' :
-								'wikilambda-function-implementation-state-deactivated'
+								'wikilambda-function-tester-state-approved' :
+								'wikilambda-function-tester-state-deactivated'
 						).text(),
 						props: {
 							status: isAvailable ? 'success' : 'warning'
