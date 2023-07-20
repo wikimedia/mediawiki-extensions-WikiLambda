@@ -369,7 +369,7 @@
 	"wikilambda-missing-function-output-error-message": "Error message for a submitted ZFunction that is missing a function output",
 	"wikilambda-zobject-missing-attached-function": "Error message for a ZObject that requires an associated function and is missing one",
 	"wikilambda-zimplememntation-composition-missing": "Error message for a ZImplementation that is missing a composition definition.\n\n{{doc-wikilambda}}",
-	"wikilambda-zimplementation-code-missing": "Error message for a ZImplementation that is missing a code definition",
+	"wikilambda-zimplementation-code-missing": "Error message for a code ZImplementation that is missing the code",
 	"wikilambda-chip-remove": "Label for a button that removes an item from a list of items",
 	"wikilambda-add-list-item-button": "Label for button to add an item to a list",
 	"wikilambda-list-items-label": "Label for items in a list",
