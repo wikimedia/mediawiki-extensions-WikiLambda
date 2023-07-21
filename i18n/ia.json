@@ -264,6 +264,8 @@
 	"wikilambda-function-implementation-tests-passed-label": "Tests passate",
 	"wikilambda-function-implementation-state-approved": "Approbate",
 	"wikilambda-function-implementation-state-deactivated": "Disactivate",
+	"wikilambda-function-tester-state-approved": "Approbate",
+	"wikilambda-function-tester-state-deactivated": "Disactivate",
 	"wikilambda-function-definition-name-placeholder": "P.ex. Conversion de Celsius a Fahrenheit",
 	"wikilambda-function-definition-name-example": "Vider exemplos de nomines.",
 	"wikilambda-function-definition-name-description": "Da al function un nomine descriptive pro adjutar alteres a comprender lo que iste function face.",

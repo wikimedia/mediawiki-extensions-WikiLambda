@@ -273,7 +273,7 @@
 	"wikilambda-function-definition-name-description": "נא להזין שם מתאר לפונקציה כדי לעזור לאחרים מה הפונקציה הזאת עושה.",
 	"wikilambda-function-definition-alias-label": "שמות חלופיים",
 	"wikilambda-function-definition-alias-label-new": "כינוי חדש",
-	"wikilambda-function-definition-alias-placeholder": "נא להזין שם חלופי לפונקציהלמשל, C ל־F, המרת מעלות חום",
+	"wikilambda-function-definition-alias-placeholder": "למשל, C ל־F, המרת מעלות חום",
 	"wikilambda-function-definition-alias-example": "ר' דוגמאות לכינויים.",
 	"wikilambda-function-definition-alias-description": "אפשר להוסיף שמות אחרים כדי שאחרים יוכלו למצוא את הפונקציה הזאת בקלות.",
 	"wikilambda-function-definition-footer-placeholder": "נא לתאר בקצרה את השינויים שלך",

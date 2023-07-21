@@ -20,6 +20,8 @@
 	"wikilambda-function-definition-name-label": "ناں",
 	"wikilambda-function-implementation-state-approved": "منظور تھی ڳیا",
 	"wikilambda-function-implementation-state-deactivated": "غیر فعال تھی ڳیا",
+	"wikilambda-function-tester-state-approved": "منظور تھی ڳیا",
+	"wikilambda-function-tester-state-deactivated": "غیر فعال تھی ڳیا",
 	"wikilambda-function-definition-alias-label-new": "نواں عرفی ناں",
 	"wikilambda-function-definition-footer-label": "تبدیلی دا خلاصہ",
 	"wikilambda-function-definition-inputs-label": "ان پُٹ",

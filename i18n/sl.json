@@ -267,6 +267,8 @@
 	"wikilambda-function-implementation-tests-passed-label": "Preizkusi opravljeni",
 	"wikilambda-function-implementation-state-approved": "Odobreno",
 	"wikilambda-function-implementation-state-deactivated": "Onemogočeno",
+	"wikilambda-function-tester-state-approved": "Odobreno",
+	"wikilambda-function-tester-state-deactivated": "Deaktivirano",
 	"wikilambda-function-definition-name-placeholder": "Npr. pretvorba Celzija v Fahrenheit",
 	"wikilambda-function-definition-name-example": "Ogled zgledov imen.",
 	"wikilambda-function-definition-name-description": "Poimenujte funkcijo opisno, da bodo drugi lažje razumeli, kaj ta funkcija počne.",

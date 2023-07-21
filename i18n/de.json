@@ -272,6 +272,8 @@
 	"wikilambda-function-implementation-tests-passed-label": "Bestandene Tests",
 	"wikilambda-function-implementation-state-approved": "Freigegeben",
 	"wikilambda-function-implementation-state-deactivated": "Deaktiviert",
+	"wikilambda-function-tester-state-approved": "Genehmigt",
+	"wikilambda-function-tester-state-deactivated": "Deaktiviert",
 	"wikilambda-function-definition-name-placeholder": "Z. B. Umrechnung von Celsius in Fahrenheit",
 	"wikilambda-function-definition-name-example": "Siehe Namensbeispiele.",
 	"wikilambda-function-definition-name-description": "Gib der Funktion einen beschreibenden Namen, damit andere verstehen, was diese Funktion tut.",

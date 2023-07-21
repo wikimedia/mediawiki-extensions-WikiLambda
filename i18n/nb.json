@@ -229,5 +229,10 @@
 	"wikilambda-function-explorer-copied-text": "Kopiert!",
 	"wikilambda-function-explorer-name-title": "Navn",
 	"wikilambda-function-view-function-button-text": "Vis funksjon",
+	"wikilambda-function-evaluator-running": "Kjører …",
+	"wikilambda-function-evaluator-result": "Resultat",
+	"wikilambda-function-evaluator-result-details": "Detaljer",
+	"wikilambda-function-evaluator-run-function": "Kjør funksjon",
+	"wikilambda-unknown-save-error-message": "En feil oppsto under forsøket på å lagre endringene dine.",
 	"wikilambda-list-type-change-warning": "Du endret typen til én eller flere lister. Ved publisering blir alle listeelementene slettet"
 }
