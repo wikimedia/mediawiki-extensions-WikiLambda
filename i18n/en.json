@@ -18,7 +18,6 @@
 	"grouppage-functionmaintainer": "Maintainers",
 	"wikilambda-updated-implementations-summary": "Updated the implementation list",
 	"wikilambda-history-title": "Revision history of \"$1\" ($2)",
-	"wikilambda-zobject-title": "$1 ($2)",
 	"wikilambda-invalidzobjecttitle": "The provided title '$1' is not valid for a ZObject.",
 	"wikilambda-invalidzobject": "The provided content is not a valid ZObject.",
 	"wikilambda-invalidcontenttype": "The provided content is not a ZObject class.",
