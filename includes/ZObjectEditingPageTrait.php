@@ -33,7 +33,7 @@ trait ZObjectEditingPageTrait {
 		$output->addHtml( Html::element(
 			'div',
 			[ 'class' => [ 'client-nojs', 'ext-wikilambda-editor-nojswarning' ] ],
-			$context->msg( 'wikilambda-special-createzobject-nojs' )->inLanguage( $userLang )->text()
+			$context->msg( 'wikilambda-special-createobject-nojs' )->inLanguage( $userLang )->text()
 		) );
 
 		$userLangCode = $userLang->getCode();

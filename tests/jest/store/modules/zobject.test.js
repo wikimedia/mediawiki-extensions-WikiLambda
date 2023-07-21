@@ -3574,7 +3574,7 @@ describe( 'zobject Vuex module', function () {
 					get: jest.fn( function () {
 						return {
 							createNewPage: true,
-							evaluateFunctionCall: false,
+							runFunction: false,
 							zId: null
 						};
 					} )
@@ -3588,7 +3588,7 @@ describe( 'zobject Vuex module', function () {
 					get: jest.fn( function () {
 						return {
 							createNewPage: false,
-							evaluateFunctionCall: true,
+							runFunction: true,
 							zId: null
 						};
 					} )
@@ -3602,7 +3602,7 @@ describe( 'zobject Vuex module', function () {
 					get: jest.fn( function () {
 						return {
 							createNewPage: false,
-							evaluateFunctionCall: false,
+							runFunction: false,
 							zId: null
 						};
 					} )
@@ -3616,7 +3616,7 @@ describe( 'zobject Vuex module', function () {
 					get: jest.fn( function () {
 						return {
 							createNewPage: false,
-							evaluateFunctionCall: false,
+							runFunction: false,
 							zId: 'Z10000'
 						};
 					} )
@@ -3658,7 +3658,7 @@ describe( 'zobject Vuex module', function () {
 				};
 				delete window.location;
 				window.location = {
-					href: 'http://localhost:8080/wiki/Special:CreateZObject?zid=Z40'
+					href: 'http://localhost:8080/wiki/Special:CreateObject?zid=Z40'
 				};
 
 				zobjectModule.actions.initializeCreateNewPage( context );
@@ -3680,7 +3680,7 @@ describe( 'zobject Vuex module', function () {
 				};
 				delete window.location;
 				window.location = {
-					href: 'http://localhost:8080/wiki/Special:CreateZObject?zid=banana'
+					href: 'http://localhost:8080/wiki/Special:CreateObject?zid=banana'
 				};
 				zobjectModule.actions.initializeCreateNewPage( context );
 
@@ -3694,7 +3694,7 @@ describe( 'zobject Vuex module', function () {
 				};
 				delete window.location;
 				window.location = {
-					href: 'http://localhost:8080/wiki/Special:CreateZObject?zid=z9'
+					href: 'http://localhost:8080/wiki/Special:CreateObject?zid=z9'
 				};
 				zobjectModule.actions.initializeCreateNewPage( context );
 
@@ -3708,7 +3708,7 @@ describe( 'zobject Vuex module', function () {
 				};
 				delete window.location;
 				window.location = {
-					href: 'http://localhost:8080/wiki/Special:CreateZObject?zid=Z9K1'
+					href: 'http://localhost:8080/wiki/Special:CreateObject?zid=Z9K1'
 				};
 				zobjectModule.actions.initializeCreateNewPage( context );
 
@@ -3722,7 +3722,7 @@ describe( 'zobject Vuex module', function () {
 				};
 				delete window.location;
 				window.location = {
-					href: 'http://localhost:8080/wiki/Special:CreateZObject?zid=Z9s'
+					href: 'http://localhost:8080/wiki/Special:CreateObject?zid=Z9s'
 				};
 				zobjectModule.actions.initializeCreateNewPage( context );
 
@@ -5269,7 +5269,7 @@ describe( 'zobject Vuex module', function () {
 				it( 'adds a valid ZImplementation for a given function Zid', function () {
 					const payload = { id: 0, type: Constants.Z_IMPLEMENTATION };
 					window.location = {
-						href: 'http://localhost:8080/wiki/Special:CreateZObject?zid=Z14&Z14K1=Z10001'
+						href: 'http://localhost:8080/wiki/Special:CreateObject?zid=Z14&Z14K1=Z10001'
 					};
 					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
 					expect( zobjectModule.modules.currentZObject.getters.getZObjectAsJson(

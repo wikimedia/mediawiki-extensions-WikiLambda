@@ -1,6 +1,6 @@
 <?php
 /**
- * WikiLambda pager for listing ZObjects with duplicate labels
+ * WikiLambda pager for listing Objects with duplicate labels
  *
  * @file
  * @ingroup Extensions
@@ -18,7 +18,7 @@ use MediaWiki\Title\Title;
 use SpecialPage;
 use TablePager;
 
-class DuplicateZObjectLabelsPager extends TablePager {
+class DuplicateObjectLabelsPager extends TablePager {
 
 	/** @var LinkBatchFactory */
 	private $linkBatchFactory;
@@ -49,9 +49,9 @@ class DuplicateZObjectLabelsPager extends TablePager {
 	 */
 	protected function getFieldNames() {
 		return [
-			'wlzlc_existing_zid' => $this->msg( 'wikilambda-speciallistduplicatezobjectlabels-existing' )->text(),
-			'wlzlc_conflicting_zid' => $this->msg( 'wikilambda-speciallistduplicatezobjectlabels-conflicting' )->text(),
-			'wlzlc_language' => $this->msg( 'wikilambda-speciallistduplicatezobjectlabels-language' )->text(),
+			'wlzlc_existing_zid' => $this->msg( 'wikilambda-special-listduplicateobjectlabels-existing' )->text(),
+			'wlzlc_conflicting_zid' => $this->msg( 'wikilambda-special-listduplicateobjectlabels-conflicting' )->text(),
+			'wlzlc_language' => $this->msg( 'wikilambda-special-listduplicateobjectlabels-language' )->text(),
 		];
 	}
 
@@ -96,7 +96,7 @@ class DuplicateZObjectLabelsPager extends TablePager {
 	 * @inheritDoc
 	 */
 	protected function getTableClass() {
-		return parent::getTableClass() . ' ext-wikilambda-speciallistduplicatezobjectlabels ';
+		return parent::getTableClass() . ' ext-wikilambda-special-listduplicateobjectlabels ';
 	}
 
 	/**

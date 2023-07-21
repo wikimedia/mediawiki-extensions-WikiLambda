@@ -1,5 +1,5 @@
 /*!
- * Special:ListZObjectsByType page object for the WikiLambda browser test suite
+ * Special:ListObjectsByType page object for the WikiLambda browser test suite
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -30,7 +30,7 @@ class ListFunctions extends Page {
 	}
 }
 
-class ListZObjectsByType extends Page {
+class ListObjectsByType extends Page {
 	get title() { return $( '#firstHeading' ); }
 
 	get types() {
@@ -40,7 +40,7 @@ class ListZObjectsByType extends Page {
 	}
 
 	open() {
-		return super.openTitle( 'Special:ListZObjectsByType' );
+		return super.openTitle( 'Special:ListObjectsByType' );
 	}
 
 	getListType( ztype ) {
@@ -59,4 +59,4 @@ class ListZObjectsByType extends Page {
 	}
 }
 
-module.exports = new ListZObjectsByType();
+module.exports = new ListObjectsByType();

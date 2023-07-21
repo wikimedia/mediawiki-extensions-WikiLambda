@@ -1,6 +1,6 @@
 <?php
 /**
- * WikiLambda Special:ListDuplicateZObjectLabels page
+ * WikiLambda Special:ListDuplicateObjectNames page
  *
  * @file
  * @ingroup Extensions
@@ -13,9 +13,9 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 use MediaWiki\MediaWikiServices;
 use SpecialPage;
 
-class SpecialListDuplicateZObjectLabels extends SpecialPage {
+class SpecialListDuplicateObjectNames extends SpecialPage {
 	public function __construct() {
-		parent::__construct( 'ListDuplicateZObjectLabels' );
+		parent::__construct( 'ListDuplicateObjectNames' );
 	}
 
 	/**
@@ -29,7 +29,7 @@ class SpecialListDuplicateZObjectLabels extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function getDescription() {
-		return $this->msg( 'wikilambda-special-listduplicatezobjectlabels' )->text();
+		return $this->msg( 'wikilambda-special-listduplicateobjectlabels' )->text();
 	}
 
 	/**
@@ -37,7 +37,7 @@ class SpecialListDuplicateZObjectLabels extends SpecialPage {
 	 */
 	public function execute( $ignoredSubPage ) {
 		$this->setHeaders();
-		$this->outputHeader( 'wikilambda-special-listduplicatezobjectlabels-summary' );
+		$this->outputHeader( 'wikilambda-special-listduplicateobjectlabels-summary' );
 
 		$output = $this->getOutput();
 
@@ -45,9 +45,9 @@ class SpecialListDuplicateZObjectLabels extends SpecialPage {
 
 		$output->addModuleStyles( [ 'mediawiki.special' ] );
 		// TODO (T300516): Make this help page.
-		$this->addHelpLink( 'Extension:WikiLambda/Duplicate ZObject labels' );
+		$this->addHelpLink( 'Extension:WikiLambda/Duplicate Object labels' );
 
-		$pager = new DuplicateZObjectLabelsPager(
+		$pager = new DuplicateObjectLabelsPager(
 			$this,
 			$this->getLinkRenderer(),
 			MediaWikiServices::getInstance()->getLinkBatchFactory(),
@@ -55,7 +55,7 @@ class SpecialListDuplicateZObjectLabels extends SpecialPage {
 		);
 
 		if ( $pager->getNumRows() === 0 ) {
-			$output->addWikiMsg( 'wikilambda-speciallistduplicatezobjectlabels-empty' );
+			$output->addWikiMsg( 'wikilambda-special-listduplicateobjectlabels-empty' );
 			return;
 		}
 

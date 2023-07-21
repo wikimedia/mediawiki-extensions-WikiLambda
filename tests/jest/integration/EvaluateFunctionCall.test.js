@@ -55,7 +55,7 @@ describe( 'Wikilambda frontend, running a function on evaluate function call vie
 
 		window.mw.Uri.mockImplementation( () => {
 			return {
-				path: new window.mw.Title( Constants.PATHS.EVALUATE_FUNCTION_CALL_TITLE ).getUrl(),
+				path: new window.mw.Title( Constants.PATHS.RUN_FUNCTION_TITLE ).getUrl(),
 				query: {}
 			};
 		} );
@@ -64,7 +64,7 @@ describe( 'Wikilambda frontend, running a function on evaluate function call vie
 			switch ( endpoint ) {
 				case 'wgWikiLambda':
 					return {
-						evaluateFunctionCall: true,
+						runFunction: true,
 						viewmode: false
 					};
 				default:

@@ -12,8 +12,8 @@ $specialPageAliases = [];
 
 /** English (English) */
 $specialPageAliases['en'] = [
-	'CreateZObject' => [ 'CreateZObject', 'NewZObject' ],
-	'EvaluateFunctionCall' => [ 'EvaluateFunctionCall' ],
-	'ListDuplicateZObjectLabels' => [ 'ListDuplicateZObjectLabels' ],
-	'ListZObjectsByType' => [ 'ListZObjectsByType', 'ObjectsByType' ],
+	'CreateObject' => [ 'CreateObject', 'CreateZObject', 'NewZObject' ],
+	'RunFunction' => [ 'RunFunction', 'EvaluateFunctionCall' ],
+	'ListDuplicateObjectNames' => [ 'ListDuplicateObjectNames', 'ListDuplicateZObjectLabels' ],
+	'ListObjectsByType' => [ 'ListObjectsByType', 'ListZObjectsByType', 'ObjectsByType' ],
 ];

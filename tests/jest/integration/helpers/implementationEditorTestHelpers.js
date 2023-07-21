@@ -24,18 +24,18 @@ const runSetup = function () {
 
 	Object.defineProperty( window, 'location', {
 		value: {
-			href: '/w/index.php?title=Special:CreateZObject&zid=Z14&Z14K1=' + functionZid
+			href: '/w/index.php?title=Special:CreateObject&zid=Z14&Z14K1=' + functionZid
 		}
 	} );
 	const queryParams = {
-		title: Constants.PATHS.CREATE_Z_OBJECT_TITLE,
+		title: Constants.PATHS.CREATE_OBJECT_TITLE,
 		zid: Constants.Z_IMPLEMENTATION,
 		[ Constants.Z_IMPLEMENTATION_FUNCTION ]: functionZid
 	};
 	window.mw.Uri.mockImplementation( function () {
 		return {
 			query: queryParams,
-			path: new window.mw.Title( Constants.PATHS.CREATE_Z_OBJECT_TITLE ).getUrl( queryParams )
+			path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
 		};
 	} );
 	global.mw.config.get = ( endpoint ) => {

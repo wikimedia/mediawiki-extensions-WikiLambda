@@ -26,7 +26,7 @@ class TypeForm extends Page {
 	 * @return {void}
 	 */
 	async open() {
-		await super.openTitle( 'Special:CreateZObject', { zid: 'Z4' } );
+		await super.openTitle( 'Special:CreateObject', { zid: 'Z4' } );
 	}
 
 	// #region About Block

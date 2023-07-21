@@ -40,7 +40,7 @@ describe( 'WikiLambda frontend, function-editor view, on a new function', () => 
 		window.mw.Uri.mockImplementationOnce( function () {
 			return {
 				query: queryParams,
-				path: new window.mw.Title( Constants.PATHS.CREATE_Z_OBJECT_TITLE ).getUrl( queryParams )
+				path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
 			};
 		} );
 	} );

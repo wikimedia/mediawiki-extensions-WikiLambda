@@ -1,6 +1,6 @@
 <?php
 /**
- * WikiLambda Special:ListZObjectsByType page
+ * WikiLambda Special:ListObjectsByType page
  *
  * @file
  * @ingroup Extensions
@@ -16,7 +16,7 @@ use MediaWiki\Extension\WikiLambda\ZObjectStore;
 use MediaWiki\Languages\LanguageFallback;
 use SpecialPage;
 
-class SpecialListZObjectsByType extends SpecialPage {
+class SpecialListObjectsByType extends SpecialPage {
 	/** @var ZObjectStore */
 	protected $zObjectStore;
 
@@ -28,7 +28,7 @@ class SpecialListZObjectsByType extends SpecialPage {
 	 * @param LanguageFallback $languageFallback
 	 */
 	public function __construct( ZObjectStore $zObjectStore, LanguageFallback $languageFallback ) {
-		parent::__construct( 'ListZObjectsByType' );
+		parent::__construct( 'ListObjectsByType' );
 		$this->zObjectStore = $zObjectStore;
 		$this->languageFallback = $languageFallback;
 	}
@@ -59,7 +59,7 @@ class SpecialListZObjectsByType extends SpecialPage {
 
 		$output->addModuleStyles( [ 'mediawiki.special' ] );
 		// TODO (T300519): Make this help page.
-		$this->addHelpLink( 'Extension:WikiLambda/ZObjects by type' );
+		$this->addHelpLink( 'Extension:WikiLambda/Objects by type' );
 
 		$langRegistry = ZLangRegistry::singleton();
 
@@ -100,7 +100,7 @@ class SpecialListZObjectsByType extends SpecialPage {
 		$wikitext .= $this->msg( 'wikilambda-special-objectsbytype-summary' );
 		$wikitext .= "\n";
 		foreach ( $typesList as $type => $label ) {
-			$wikitext .= ": [[Special:ListZObjectsByType/$type|$label]] ($type)\n";
+			$wikitext .= ": [[Special:ListObjectsByType/$type|$label]] ($type)\n";
 		}
 
 		$output->addWikiTextAsInterface( $wikitext );

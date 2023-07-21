@@ -11,7 +11,7 @@ class FunctionForm extends Page {
 	}
 
 	async open() {
-		await super.openTitle( 'Special:CreateZObject', { zid: 'Z8' } );
+		await super.openTitle( 'Special:CreateObject', { zid: 'Z8' } );
 	}
 
 	getFirstLanguageContainer() {

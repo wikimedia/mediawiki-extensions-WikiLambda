@@ -15,7 +15,7 @@ const Constants = require( '../../Constants.js' );
  * @return {boolean}
  */
 const isEvaluateFunctionCallPath = function ( uriQuery ) {
-	return ( uriQuery.title === Constants.PATHS.EVALUATE_FUNCTION_CALL_TITLE );
+	return ( uriQuery.title === Constants.PATHS.RUN_FUNCTION_TITLE );
 };
 
 /**
@@ -35,7 +35,7 @@ const isEditPath = function ( uriQuery ) {
  * @return {boolean}
  */
 const isCreatePath = function ( uriQuery ) {
-	return ( uriQuery.title === Constants.PATHS.CREATE_Z_OBJECT_TITLE );
+	return ( uriQuery.title === Constants.PATHS.CREATE_OBJECT_TITLE );
 };
 
 /**
@@ -165,7 +165,7 @@ module.exports = {
 				return;
 			}
 
-			// 2. if Special page Evaluate Function Call
+			// 2. if Special page Run Function
 			if ( isEvaluateFunctionCallPath( uri.query ) ) {
 				currentView = Constants.VIEWS.FUNCTION_EVALUATOR;
 				context.dispatch( 'changeCurrentView', currentView );

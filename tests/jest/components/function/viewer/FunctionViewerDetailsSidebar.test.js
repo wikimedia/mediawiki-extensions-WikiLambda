@@ -88,7 +88,7 @@ describe( 'FunctionViewerDetailsSidebar', function () {
 		var link = wrapper.find( '#ext-wikilambda-function-viewer-details-sidebar__link--implementation' );
 
 		expect( link.attributes( 'href' ) ).toBeTruthy();
-		expect( link.attributes().href ).toContain( Constants.PATHS.CREATE_Z_OBJECT_TITLE );
+		expect( link.attributes().href ).toContain( Constants.PATHS.CREATE_OBJECT_TITLE );
 		expect( link.attributes().href ).toContain( 'zid=' + Constants.Z_IMPLEMENTATION );
 		expect( link.attributes().href ).toContain( Constants.Z_IMPLEMENTATION_FUNCTION + '=Z12345' );
 
@@ -99,7 +99,7 @@ describe( 'FunctionViewerDetailsSidebar', function () {
 		var link = wrapper.find( '#ext-wikilambda-function-viewer-details-sidebar__link--tester' );
 
 		expect( link.attributes( 'href' ) ).toBeTruthy();
-		expect( link.attributes().href ).toContain( Constants.PATHS.CREATE_Z_OBJECT_TITLE );
+		expect( link.attributes().href ).toContain( Constants.PATHS.CREATE_OBJECT_TITLE );
 		expect( link.attributes().href ).toContain( 'zid=' + Constants.Z_TESTER );
 		expect( link.attributes().href ).toContain( Constants.Z_TESTER_FUNCTION + '=Z12345' );
 

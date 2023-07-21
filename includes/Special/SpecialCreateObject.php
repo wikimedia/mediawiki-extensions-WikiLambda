@@ -1,6 +1,6 @@
 <?php
 /**
- * WikiLambda Special:CreateZObject page
+ * WikiLambda Special:CreateObject page
  *
  * @file
  * @ingroup Extensions
@@ -13,11 +13,11 @@ namespace MediaWiki\Extension\WikiLambda\Special;
 use MediaWiki\Extension\WikiLambda\ZObjectEditingPageTrait;
 use SpecialPage;
 
-class SpecialCreateZObject extends SpecialPage {
+class SpecialCreateObject extends SpecialPage {
 	use ZObjectEditingPageTrait;
 
 	public function __construct() {
-		parent::__construct( 'CreateZObject', 'createpage' );
+		parent::__construct( 'CreateObject', 'createpage' );
 	}
 
 	/**
@@ -32,7 +32,7 @@ class SpecialCreateZObject extends SpecialPage {
 	 */
 	public function getDescription() {
 		// we do not know which object type will be created, so we need to be generic here
-		return $this->msg( 'wikilambda-special-createzobject' )->text();
+		return $this->msg( 'wikilambda-special-createobject' )->text();
 	}
 
 	/**
@@ -48,10 +48,10 @@ class SpecialCreateZObject extends SpecialPage {
 		$output = $this->getOutput();
 		$output->addModules( [ 'ext.wikilambda.edit', 'mediawiki.special' ] );
 
-		$output->addWikiMsg( 'wikilambda-special-createzobject-intro' );
+		$output->addWikiMsg( 'wikilambda-special-createobject-intro' );
 
 		// TODO (T300517): Make this help page.
-		$this->addHelpLink( 'Extension:WikiLambda/Creating ZObjects' );
+		$this->addHelpLink( 'Extension:WikiLambda/Creating Objects' );
 
 		$this->generateZObjectPayload( $output, $this->getContext(), [
 			'createNewPage' => true,

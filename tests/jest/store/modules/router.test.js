@@ -175,7 +175,7 @@ describe( 'router Vuex module', function () {
 					window.mw.Uri.mockImplementation( function () {
 						return {
 							query: {},
-							path: new window.mw.Title( Constants.PATHS.CREATE_Z_OBJECT_TITLE ).getUrl()
+							path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl()
 						};
 					} );
 				}
@@ -651,7 +651,7 @@ describe( 'router Vuex module', function () {
 						window.mw.Uri.mockImplementationOnce( function () {
 							return {
 								query: queryParams,
-								path: new window.mw.Title( Constants.PATHS.CREATE_Z_OBJECT_TITLE ).getUrl( queryParams )
+								path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
 							};
 						} );
 
@@ -671,7 +671,7 @@ describe( 'router Vuex module', function () {
 						window.mw.Uri.mockImplementationOnce( function () {
 							return {
 								query: queryParams,
-								path: new window.mw.Title( Constants.PATHS.CREATE_Z_OBJECT_TITLE ).getUrl()
+								path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl()
 							};
 						} );
 
@@ -689,10 +689,10 @@ describe( 'router Vuex module', function () {
 					window.mw.Uri.mockImplementationOnce( function () {
 						return {
 							query: {
-								title: Constants.PATHS.CREATE_Z_OBJECT_TITLE,
+								title: Constants.PATHS.CREATE_OBJECT_TITLE,
 								zid: Constants.Z_IMPLEMENTATION
 							},
-							path: new window.mw.Title( Constants.PATHS.CREATE_Z_OBJECT_TITLE )
+							path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE )
 								.getUrl( { zid: Constants.Z_IMPLEMENTATION } )
 						};
 					} );
@@ -708,7 +708,7 @@ describe( 'router Vuex module', function () {
 					window.mw.Uri.mockImplementationOnce( function () {
 						return {
 							query: {},
-							path: new window.mw.Title( Constants.PATHS.CREATE_Z_OBJECT_TITLE ).getUrl()
+							path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl()
 						};
 					} );
 
@@ -725,10 +725,10 @@ describe( 'router Vuex module', function () {
 					window.mw.Uri.mockImplementationOnce( function () {
 						return {
 							query: {
-								title: Constants.PATHS.EVALUATE_FUNCTION_CALL_TITLE
+								title: Constants.PATHS.RUN_FUNCTION_TITLE
 							},
-							path: new window.mw.Title( Constants.PATHS.EVALUATE_FUNCTION_CALL_TITLE )
-								.getUrl( { title: Constants.PATHS.EVALUATE_FUNCTION_CALL_TITLE } )
+							path: new window.mw.Title( Constants.PATHS.RUN_FUNCTION_TITLE )
+								.getUrl( { title: Constants.PATHS.RUN_FUNCTION_TITLE } )
 						};
 					} );
 
@@ -743,7 +743,7 @@ describe( 'router Vuex module', function () {
 					window.mw.Uri.mockImplementationOnce( function () {
 						return {
 							query: {},
-							path: new window.mw.Title( Constants.PATHS.EVALUATE_FUNCTION_CALL_TITLE ).getUrl()
+							path: new window.mw.Title( Constants.PATHS.RUN_FUNCTION_TITLE ).getUrl()
 						};
 					} );
 

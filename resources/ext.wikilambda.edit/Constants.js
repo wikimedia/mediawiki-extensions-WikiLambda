@@ -127,9 +127,9 @@ var Constants = {
 		DEFAULT_VIEW: 'default-view'
 	},
 	paths = {
-		CREATE_Z_OBJECT_TITLE: 'Special:CreateZObject',
-		EVALUATE_FUNCTION_CALL_TITLE: 'Special:EvaluateFunctionCall',
-		LIST_ZOBJECTS_BY_TYPE_TYPE: 'Special:ListZObjectsByType/Z4',
+		CREATE_OBJECT_TITLE: 'Special:CreateObject',
+		RUN_FUNCTION_TITLE: 'Special:RunFunction',
+		LIST_OBJECTS_BY_TYPE_TYPE: 'Special:ListObjectsByType/Z4',
 		ROUTE_FORMAT_ONE: '/w/index.php',
 		ROUTE_FORMAT_TWO: '/wiki/'
 	},

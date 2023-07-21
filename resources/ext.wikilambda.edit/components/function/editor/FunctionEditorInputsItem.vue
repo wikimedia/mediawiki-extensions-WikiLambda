@@ -320,7 +320,7 @@ module.exports = exports = {
 			this.removeItemFromTypedList( { rowId: this.zobjectId } );
 		},
 		getTypeUrl: function () {
-			return new mw.Title( Constants.PATHS.LIST_ZOBJECTS_BY_TYPE_TYPE ).getUrl();
+			return new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE ).getUrl();
 		}
 	} ),
 	watch: {

@@ -69,7 +69,7 @@ docker-compose exec mediawiki composer phpunit:entrypoint -- extensions/WikiLamb
 
 If the tests all pass, your installation has successfully called the configured function orchestrator with the calls, executed them, and got the expected results back. Congratulations!
 
-You can evaluate an arbitrary function call by navigating to `localhost:8080/wiki/Special:EvaluateFunctionCall`, and selecting a function.
+You can evaluate an arbitrary function call by navigating to `localhost:8080/wiki/Special:RunFunction`, and selecting a function.
 
 #### Local services
 

@@ -645,11 +645,11 @@
 		}
 	},
 	"SpecialPages": {
-		"CreateZObject": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialCreateZObject",
-		"EvaluateFunctionCall": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialEvaluateFunctionCall",
-		"ListDuplicateZObjectLabels": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListDuplicateZObjectLabels",
-		"ListZObjectsByType": {
-			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListZObjectsByType",
+		"CreateObject": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialCreateObject",
+		"RunFunction": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialRunFunction",
+		"ListDuplicateObjectNames": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListDuplicateObjectNames",
+		"ListObjectsByType": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListObjectsByType",
 			"services": [
 				"WikiLambdaZObjectStore",
 				"LanguageFallback"

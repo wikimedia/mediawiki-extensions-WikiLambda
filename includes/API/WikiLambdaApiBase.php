@@ -102,7 +102,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		);
 
 		if ( !$this->permissionManager->userHasRight( $this->getContext()->getUser(), 'wikilambda-execute' ) ) {
-			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EVALUATE, [] );
+			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
 			$this->dieWithZError( $zError );
 		}
 

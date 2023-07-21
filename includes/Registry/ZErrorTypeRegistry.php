@@ -63,7 +63,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 	public const Z_ERROR_UNMATCHING_ZID = 'Z555';
 	public const Z_ERROR_INVALID_TITLE = 'Z556';
 	public const Z_ERROR_USER_CANNOT_EDIT = 'Z557';
-	public const Z_ERROR_USER_CANNOT_EVALUATE = 'Z559';
+	public const Z_ERROR_USER_CANNOT_RUN = 'Z559';
 	public const Z_ERROR_ORCHESTRATOR_RATE_LIMIT = 'Z570';
 	public const Z_ERROR_EVALUATOR_RATE_LIMIT = 'Z571';
 
@@ -109,7 +109,7 @@ class ZErrorTypeRegistry extends ZObjectRegistry {
 		'Z555' => 'Z_ERROR_UNMATCHING_ZID',
 		'Z556' => 'Z_ERROR_INVALID_TITLE',
 		'Z557' => 'Z_ERROR_USER_CANNOT_EDIT',
-		'Z559' => 'Z_ERROR_USER_CANNOT_EVALUATE',
+		'Z559' => 'Z_ERROR_USER_CANNOT_RUN',
 		'Z570' => 'Z_ERROR_ORCHESTRATOR_RATE_LIMIT',
 		'Z571' => 'Z_ERROR_EVALUATOR_RATE_LIMIT',
 	];

@@ -6,27 +6,27 @@
  */
 
 'use strict';
-const CreateZObjectPage = require( '../pageobjects/special/CreateZObject.page' ),
-	EvaluateFunctionCall = require( '../pageobjects/special/EvaluateFunctionCall.page' ),
-	ListZObjectsByType = require( '../pageobjects/special/ListZObjectsByType.page' );
+const CreateObjectPage = require( '../pageobjects/special/CreateObject.page.js' ),
+	RunFunction = require( '../pageobjects/special/RunFunction.page.js' ),
+	ListObjectsByType = require( '../pageobjects/special/ListObjectsByType.page.js' );
 describe( 'Installation checks', function () {
 
-	describe( 'CreateZObject', function () {
+	describe( 'CreateObject', function () {
 		it( 'page should exist on installation', async function () {
-			await CreateZObjectPage.open();
-			await expect( await CreateZObjectPage.title ).toHaveText( 'Create a new ZObject' );
+			await CreateObjectPage.open();
+			await expect( await CreateObjectPage.title ).toHaveText( 'Create a new Object' );
 		} );
 	} );
-	describe( 'EvaluateFunctionCall', function () {
+	describe( 'RunFunction', function () {
 		it( 'page should exist on installation', async function () {
-			await EvaluateFunctionCall.open();
-			await expect( await EvaluateFunctionCall.title ).toHaveText( 'Evaluate a function call' );
+			await RunFunction.open();
+			await expect( await RunFunction.title ).toHaveText( 'Run a function' );
 		} );
 	} );
-	describe( 'ListZObjectsByType', function () {
+	describe( 'ListObjectsByType', function () {
 		it( 'page should exist on installation', async function () {
-			await ListZObjectsByType.open();
-			await expect( await ListZObjectsByType.title ).toHaveText( 'List all ZObjects of a given type' );
+			await ListObjectsByType.open();
+			await expect( await ListObjectsByType.title ).toHaveText( 'List all Objects of a given type' );
 		} );
 	} );
 } );

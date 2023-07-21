@@ -316,13 +316,13 @@ module.exports = exports = {
 			} );
 		},
 		newTesterLink: function () {
-			return new mw.Title( 'Special:CreateZObject' ).getUrl( {
+			return new mw.Title( 'Special:CreateObject' ).getUrl( {
 				zid: Constants.Z_TESTER,
 				[ Constants.Z_TESTER_FUNCTION ]: this.getCurrentZObjectId
 			} );
 		},
 		newImplementationLink: function () {
-			return new mw.Title( 'Special:CreateZObject' ).getUrl( {
+			return new mw.Title( 'Special:CreateObject' ).getUrl( {
 				zid: Constants.Z_IMPLEMENTATION,
 				[ Constants.Z_IMPLEMENTATION_FUNCTION ]: this.getCurrentZObjectId
 			} );

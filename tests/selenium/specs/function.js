@@ -7,7 +7,7 @@
 
 'use strict';
 const assert = require( 'assert' ),
-	ListZObjectsByType = require( '../pageobjects/special/ListZObjectsByType.page' ),
+	ListObjectsByType = require( '../pageobjects/special/ListObjectsByType.page.js' ),
 	FunctionForm = require( '../pageobjects/function/FunctionForm.page' ),
 	FunctionPage = require( '../pageobjects/function/Function.page' ),
 	util = require( 'wdio-mediawiki/Util' ),
@@ -17,8 +17,8 @@ describe( 'Function', function () {
 	describe( 'Function viewer (CUJ1)', function () {
 
 		it( 'should allow to evaluate a function', async function () {
-			await ListZObjectsByType.open();
-			const ListFunctions = await ListZObjectsByType.openFunctionsList();
+			await ListObjectsByType.open();
+			const ListFunctions = await ListObjectsByType.openFunctionsList();
 			await ListFunctions.openFunction( 'echo' );
 
 			await expect( await FunctionPage.functionCallBlock ).toBeDisplayed();

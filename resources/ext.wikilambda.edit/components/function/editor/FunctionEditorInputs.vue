@@ -208,7 +208,7 @@ module.exports = exports = {
 			this.activeInputIndex = index;
 		},
 		getTypeUrl: function () {
-			return new mw.Title( Constants.PATHS.LIST_ZOBJECTS_BY_TYPE_TYPE ).getUrl();
+			return new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE ).getUrl();
 		}
 	} ),
 	watch: {

@@ -696,7 +696,7 @@ class ZErrorFactory {
 				$zErrorValue[] = new ZString( $payload['message'] );
 				break;
 
-			case ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_EVALUATE:
+			case ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN:
 				// No context.
 				break;
 

@@ -2116,8 +2116,8 @@ module.exports = exports = {
 		 * Handles the initization of the pages given the wgWikiLambda config parameters.
 		 * The page can be:
 		 * 1. A Create New ZObject page, when the flag createNewPage is true-
-		 * 2. A Evaluate Function Call page, when the flag evaluateFunctionCall
-		 *    is true or the zid property is empty.
+		 * 2. A Run Function page, when the flag runFunction is true or the
+		 *    zid property is empty.
 		 * 3. A View or Edit page of a persisted ZObject given its zid.
 		 *
 		 * @param {Object} context
@@ -2126,16 +2126,16 @@ module.exports = exports = {
 		initializeView: function ( context ) {
 			var editingData = mw.config.get( 'wgWikiLambda' ),
 				createNewPage = editingData.createNewPage,
-				evaluateFunctionCall = editingData.evaluateFunctionCall,
+				runFunction = editingData.runFunction,
 				zId = editingData.zId;
 
-			// If createNewPage is true, ignore evaluateFunctionCall and any specified ZID.
+			// If createNewPage is true, ignore runFunction and any specified ZID.
 			if ( createNewPage ) {
 				return context.dispatch( 'initializeCreateNewPage' );
 
-			// If evaluateFunctionCall is true, ignore any specified ZID.
-			// If no ZID specified, assume evaluateFunctionCall is true.
-			} else if ( evaluateFunctionCall || !zId ) {
+			// If runFunction is true, ignore any specified ZID.
+			// If no ZID specified, assume runFunction is true.
+			} else if ( runFunction || !zId ) {
 				return context.dispatch( 'initializeEvaluateFunction' );
 
 			// Else, this is a view or edit page of an existing ZObject, so we

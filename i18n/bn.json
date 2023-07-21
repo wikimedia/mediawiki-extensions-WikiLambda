@@ -21,7 +21,7 @@
 	"wikilambda-helplink-button": "সাহায্য",
 	"wikilambda-special-edit-function-definition-description": "আপনি ফাংশন সংজ্ঞার পাতা সম্পাদনা করছেন। $1 ফাংশনের সংজ্ঞা পরিবর্তন করতে পারবে। অন্য সবাই লেবেলসমূহ সম্পাদনা করতে পারবেন। নিচের নীল রঙের প্রকাশ করুন বোতাম চেপে সম্পাদনা প্রকাশ করুন।",
 	"wikilambda-special-edit-function-definition-special-permission-link-label": "শুধু বিশেষ অধিকারপ্রাপ্ত ব্যবহারকারীদের জন্য অনুমোদিত",
-	"wikilambda-speciallistduplicatezobjectlabels-language": "ভাষা",
+	"wikilambda-special-listduplicateobjectlabels-language": "ভাষা",
 	"wikilambda-publishnew": "প্রকাশ করুন",
 	"wikilambda-cancel": "বাতিল",
 	"wikilambda-savenew": "সংরক্ষণ",

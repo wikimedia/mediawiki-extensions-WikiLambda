@@ -1,6 +1,6 @@
 <?php
 /**
- * WikiLambda Special:EvaluateFunctionCall page
+ * WikiLambda Special:RunFunction page
  *
  * @file
  * @ingroup Extensions
@@ -14,11 +14,10 @@ use Html;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use SpecialPage;
 
-class SpecialEvaluateFunctionCall extends SpecialPage {
+class SpecialRunFunction extends SpecialPage {
 
 	public function __construct() {
-		// TODO (T278651): Switch this restriction to a custom user right
-		parent::__construct( 'EvaluateFunctionCall', 'createpage' );
+		parent::__construct( 'RunFunction', 'wikilambda-execute' );
 	}
 
 	/**
@@ -32,7 +31,7 @@ class SpecialEvaluateFunctionCall extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function getDescription() {
-		return $this->msg( 'wikilambda-special-evaluatefunctioncall' )->text();
+		return $this->msg( 'wikilambda-special-runfunction' )->text();
 	}
 
 	/**
@@ -42,15 +41,15 @@ class SpecialEvaluateFunctionCall extends SpecialPage {
 		// TODO: Use $subPage to extract and pre-fill target Z8?
 
 		$this->setHeaders();
-		$this->outputHeader( 'wikilambda-special-evaluatefunctioncall-summary' );
+		$this->outputHeader( 'wikilambda-special-runfunction-summary' );
 
 		$output = $this->getOutput();
 		$output->addModules( [ 'ext.wikilambda.edit','mediawiki.special' ] );
 
-		$output->addWikiMsg( 'wikilambda-special-evaluatefunctioncall-intro' );
+		$output->addWikiMsg( 'wikilambda-special-runfunction-intro' );
 
 		// TODO (T300515): Make this help page.
-		$this->addHelpLink( 'Extension:WikiLambda/Evaluate function call' );
+		$this->addHelpLink( 'Extension:WikiLambda/Run function' );
 
 		// TODO: De-dupe a bit more from ZObjectEditAction?
 		$userLang = $this->getLanguage();
@@ -59,7 +58,7 @@ class SpecialEvaluateFunctionCall extends SpecialPage {
 		$output->addHtml( Html::element(
 			'div',
 			[ 'class' => [ 'client-nojs', 'ext-wikilambda-editor-nojswarning' ] ],
-			$this->msg( 'wikilambda-special-evaluatefunctioncall-nojs' )->inLanguage( $userLang )->text()
+			$this->msg( 'wikilambda-special-runfunction-nojs' )->inLanguage( $userLang )->text()
 		) );
 
 		$userLangCode = $userLang->getCode();
@@ -73,7 +72,7 @@ class SpecialEvaluateFunctionCall extends SpecialPage {
 			'zlang' => $userLangCode,
 			'zlangZid' => $userLangZid,
 			'createNewPage' => false,
-			'evaluateFunctionCall' => true,
+			'runFunction' => true,
 			'viewmode' => false
 		];
 
