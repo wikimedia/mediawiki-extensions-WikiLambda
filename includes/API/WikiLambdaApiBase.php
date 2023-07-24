@@ -10,6 +10,7 @@ use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use MediaWiki\Extension\WikiLambda\OrchestratorRequest;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
@@ -158,6 +159,22 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 
 			return $this->returnWithZError(
 				$exception->getResponse()->getReasonPhrase(),
+				$zObject->getSerialized()
+			);
+		} catch ( ZErrorException $exception ) {
+			// This is almost certainly a user-error, and not worth worrying in the middleware
+			// about, so only log as debug() not warning()
+			$this->getLogger()->debug(
+				__METHOD__ . ' failed to execute with a ZErrorException: {exception}',
+				[
+					'zObject' => $zObject,
+					'validate' => $validate,
+					'exception' => $exception,
+				]
+			);
+
+			return $this->returnWithZError(
+				$exception->getZErrorMessage(),
 				$zObject->getSerialized()
 			);
 		} catch ( \Exception $exception ) {
