@@ -296,7 +296,7 @@ class ApiPerformTestTest extends ApiTestCase {
 			'',
 			'',
 			[],
-			'Perform test error: \'Z123456789\' isn\'t a known ZObject'
+			'Perform test error: \'Z123456789\' isn\'t a known Object'
 		];
 
 		yield 'Request specifies non-existent implementation' => [
@@ -319,7 +319,7 @@ class ApiPerformTestTest extends ApiTestCase {
 			'',
 			'Z123456789',
 			[],
-			'Perform test error: \'Z123456789\' isn\'t a known ZObject'
+			'Perform test error: \'Z123456789\' isn\'t a known Object'
 		];
 
 		yield 'Request specifies non-function as function' => [
