@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for the selection of a ZNaturalLanguage object inside the Function editor.
+<!--
+	WikiLambda Vue component for the selection of a ZNaturalLanguage object inside the Function editor.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div
 		class="ext-wikilambda-language-selector"
 		data-testid="function-editor-language-selector">

@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for Z11/Monolingual String objects.
+<!--
+	WikiLambda Vue component for Z11/Monolingual String objects.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-monolingual-string">
 		<div v-if="!edit">
 			<p>

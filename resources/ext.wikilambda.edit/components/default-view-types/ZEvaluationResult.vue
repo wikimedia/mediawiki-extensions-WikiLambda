@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for Z22/Evaluation Result objects.
+<!--
+	WikiLambda Vue component for Z22/Evaluation Result objects.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-evaluation-result">
 		<div class="ext-wikilambda-evaluation-result-result">
 			<wl-z-object-key-value

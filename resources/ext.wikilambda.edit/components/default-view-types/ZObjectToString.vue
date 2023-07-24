@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component to represent ZObjects as a string.
+<!--
+	WikiLambda Vue component to represent ZObjects as a string.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div
 		v-if="hasLink"
 		class="ext-wikilambda-zobject-to-string"

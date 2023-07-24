@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for Localized Label
+<!--
+	WikiLambda Vue component for Localized Label
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<label>
 		<span
 			v-if="!isUserLang"

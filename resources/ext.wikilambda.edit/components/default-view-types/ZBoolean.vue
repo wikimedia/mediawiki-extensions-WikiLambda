@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for boolean values
+<!--
+	WikiLambda Vue component for boolean values
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-boolean">
 		<template v-if="!edit">
 			<a

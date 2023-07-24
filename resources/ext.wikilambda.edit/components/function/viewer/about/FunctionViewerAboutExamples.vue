@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for viewing a function examples.
+<!--
+	WikiLambda Vue component for viewing a function examples.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div v-if="exampleList.length > 0" class="ext-wikilambda-function-viewer-about-aliases">
 		<wl-table
 			:header="header"

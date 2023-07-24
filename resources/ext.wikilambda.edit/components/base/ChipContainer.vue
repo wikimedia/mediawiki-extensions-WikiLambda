@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for a container for "Chips" / input tags
+<!--
+	WikiLambda Vue component for a container for "Chips" / input tags
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-chip-container" @click="focusInput">
 		<wl-chip
 			v-for="chip in chips"

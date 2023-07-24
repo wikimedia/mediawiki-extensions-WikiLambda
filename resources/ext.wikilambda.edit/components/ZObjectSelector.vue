@@ -1,13 +1,14 @@
-<template>
-	<!--
-		WikiLambda Vue interface module for selecting any ZObject,
-		with lookup on name.
-		Receives an input parameter to filter the type of ZObjects that
-		it will search and display (e.g. Z4 for selecting only types)
+<!--
+	WikiLambda Vue interface module for selecting any ZObject,
+	with lookup on name.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	Receives an input parameter to filter the type of ZObjects that
+	it will search and display (e.g. Z4 for selecting only types)
+
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<span
 		class="ext-wikilambda-select-zobject"
 	>

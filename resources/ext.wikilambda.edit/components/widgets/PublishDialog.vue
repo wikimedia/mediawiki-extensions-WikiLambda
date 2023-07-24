@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for the Publish Dialog.
+<!--
+	WikiLambda Vue component for the Publish Dialog.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div
 		class="ext-wikilambda-publishdialog"
 		data-testid="confirm-publish-dialog"

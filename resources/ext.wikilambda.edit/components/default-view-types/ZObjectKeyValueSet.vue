@@ -1,12 +1,12 @@
-<template>
-	<!--
-		WikiLambda Vue component for rendering a set of ZObjectKeyValue
-		components, which is the fallback view for types that don't have
-		a custom component and for ZObjects that are viewed in expanded mode.
+<!--
+	WikiLambda Vue component for rendering a set of ZObjectKeyValue
+	components, which is the fallback view for types that don't have
+	a custom component and for ZObjects that are viewed in expanded mode.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div
 		class="ext-wikilambda-key-value-set"
 		:class="nestingDepthClass"

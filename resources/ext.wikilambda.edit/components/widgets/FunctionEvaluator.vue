@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for evaluation of ZFunction objects.
+<!--
+	WikiLambda Vue component for evaluation of ZFunction objects.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<wl-widget-base class="ext-wikilambda-function-evaluator">
 		<template #header>
 			{{ title }}

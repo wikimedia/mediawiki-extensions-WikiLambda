@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for viewing function description.
+<!--
+	WikiLambda Vue component for viewing function description.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-function-viewer-description">
 		<wl-text-component :truncate="300">
 			{{ description }}

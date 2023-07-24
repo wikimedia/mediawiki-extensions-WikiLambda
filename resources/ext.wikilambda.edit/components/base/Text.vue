@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for a textual display.
+<!--
+	WikiLambda Vue component for a textual display.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<component :is="as">
 		<span v-if="shortendText">{{ shortendText }}</span>
 		<slot v-else></slot>

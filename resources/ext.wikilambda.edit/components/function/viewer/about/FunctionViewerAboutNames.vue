@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for viewing a function name in different languages.
+<!--
+	WikiLambda Vue component for viewing a function name in different languages.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div v-if="getFunctionNames.length > 0" class="ext-wikilambda-function-viewer-names">
 		<wl-function-viewer-sidebar
 			:list="visibleFunctionNames"

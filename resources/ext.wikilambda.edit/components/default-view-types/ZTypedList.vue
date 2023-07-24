@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for a Typed List.
+<!--
+	WikiLambda Vue component for a Typed List.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div
 		class="ext-wikilambda-ztyped-list"
 		:class="nestingDepthClass"

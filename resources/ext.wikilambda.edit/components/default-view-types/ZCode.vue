@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for Z16/Code objects.
+<!--
+	WikiLambda Vue component for Z16/Code objects.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-code">
 		<!-- Programming language block -->
 		<div class="ext-wikilambda-key-value">

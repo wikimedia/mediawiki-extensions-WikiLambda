@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for the definition tab in the ZFunction Editor.
+<!--
+	WikiLambda Vue component for the definition tab in the ZFunction Editor.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<main class="ext-wikilambda-function-definition" data-testid="function-editor-definition">
 		<!-- Function Definition -->
 		<div

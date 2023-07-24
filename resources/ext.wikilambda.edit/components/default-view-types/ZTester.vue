@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for Z20/Tester objects.
+<!--
+	WikiLambda Vue component for Z20/Tester objects.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-tester">
 		<!-- Function selection block -->
 		<div

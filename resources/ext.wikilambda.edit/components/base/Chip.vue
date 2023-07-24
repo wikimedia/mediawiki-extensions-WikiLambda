@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for a "Chip" / input tag
+<!--
+	WikiLambda Vue component for a "Chip" / input tag
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div
 		class="ext-wikilambda-chip"
 		:class="'ext-wikilambda-chip_' + intent"

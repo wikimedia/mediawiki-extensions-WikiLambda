@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for Z7/Function Call objects.
+<!--
+	WikiLambda Vue component for Z7/Function Call objects.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-function-call">
 		<cdx-icon :icon="icon"></cdx-icon>
 		<wl-z-object-to-string
