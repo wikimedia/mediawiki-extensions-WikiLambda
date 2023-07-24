@@ -649,6 +649,12 @@
 		}
 	},
 	"SpecialPages": {
+		"ViewObject": {
+			"class": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialViewObject",
+			"services": [
+				"WikiLambdaZObjectStore"
+			]
+		},
 		"CreateObject": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialCreateObject",
 		"RunFunction": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialRunFunction",
 		"ListDuplicateObjectNames": "MediaWiki\\Extension\\WikiLambda\\Special\\SpecialListDuplicateObjectNames",

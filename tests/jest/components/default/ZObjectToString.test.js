@@ -16,6 +16,7 @@ describe( 'ZObjectToString', () => {
 	var getters;
 	beforeEach( () => {
 		getters = {
+			getZLang: createGettersWithFunctionsMock( 'en' ),
 			getLabel: createGettersWithFunctionsMock( '' ),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( 'Z6' ),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z6K1' ),
@@ -68,7 +69,7 @@ describe( 'ZObjectToString', () => {
 				const wrapper = shallowMount( ZObjectToString );
 				const linkWrapper = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
 				const referenceLink = linkWrapper.get( 'a' );
-				expect( referenceLink.attributes().href ).toBe( '/wiki/Z42' );
+				expect( referenceLink.attributes().href ).toBe( '/view/en/Z42' );
 				expect( referenceLink.text() ).toBe( 'False' );
 			} );
 		} );
@@ -92,7 +93,7 @@ describe( 'ZObjectToString', () => {
 				const wrapper = shallowMount( ZObjectToString );
 				const linkWrapper = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
 				const referenceLink = linkWrapper.get( 'a' );
-				expect( referenceLink.attributes().href ).toBe( '/wiki/Z10001' );
+				expect( referenceLink.attributes().href ).toBe( '/view/en/Z10001' );
 				expect( referenceLink.text() ).toBe( 'And' );
 			} );
 		} );
@@ -124,7 +125,7 @@ describe( 'ZObjectToString', () => {
 				const wrapper = shallowMount( ZObjectToString );
 				const linkWrapper = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
 				const referenceLink = linkWrapper.get( 'a' );
-				expect( referenceLink.attributes().href ).toBe( '/wiki/Z10001' );
+				expect( referenceLink.attributes().href ).toBe( '/view/en/Z10001' );
 				expect( referenceLink.text() ).toBe( 'And' );
 			} );
 
@@ -193,7 +194,7 @@ describe( 'ZObjectToString', () => {
 				const wrapper = shallowMount( ZObjectToString );
 				const linkWrapper = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
 				const referenceLink = linkWrapper.get( 'a' );
-				expect( referenceLink.attributes().href ).toBe( '/wiki/Z11' );
+				expect( referenceLink.attributes().href ).toBe( '/view/en/Z11' );
 				expect( referenceLink.text() ).toBe( 'Monolingual text' );
 			} );
 
@@ -202,7 +203,7 @@ describe( 'ZObjectToString', () => {
 				const linkWrapper = wrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
 				const argWrapper = linkWrapper.find( 'div[role=ext-wikilambda-zobject-to-string-link]' );
 				const referenceLink = argWrapper.get( 'a' );
-				expect( referenceLink.attributes().href ).toBe( '/wiki/Z1002' );
+				expect( referenceLink.attributes().href ).toBe( '/view/en/Z1002' );
 				expect( referenceLink.text() ).toBe( 'English' );
 			} );
 

@@ -26,6 +26,7 @@
 			</a>
 		</template>
 
+		<!-- TODO: Don't show this to un-priv'ed users, they can't propose new ones -->
 		<div class="ext-wikilambda-function-viewer-details-sidebar__links">
 			<div class="ext-wikilambda-function-viewer-details-sidebar__link">
 				<a
@@ -86,6 +87,7 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
+		'getZLang',
 		'getAllItemsFromListById',
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
@@ -148,7 +150,7 @@ module.exports = exports = {
 						title: this.zArgumentTypeLabel( zArgumentType ),
 						component: 'a',
 						props: {
-							href: new mw.Title( zArgumentType ).getUrl()
+							href: '/view/' + this.getZLang + '/' + zArgumentType
 						},
 						class: argumentIndex > 0 ? 'ext-wikilambda-function-viewer-details-sidebar__table-bordered-row' : 'ext-wikilambda-function-viewer-details-sidebar__table-borderless-row'
 					};
@@ -261,7 +263,7 @@ module.exports = exports = {
 					title: this.zReturnTypeLabel,
 					component: 'a',
 					props: {
-						href: new mw.Title( this.zReturnType ).getUrl()
+						href: '/view/' + this.getZLang + '/' + this.zReturnType
 					},
 					class: 'ext-wikilambda-function-viewer-details-sidebar__table-bordered-row'
 				}
@@ -312,17 +314,20 @@ module.exports = exports = {
 		},
 		editUrl: function () {
 			return new mw.Title( this.getCurrentZObjectId ).getUrl( {
+				uselang: this.getZLang,
 				action: 'edit'
 			} );
 		},
 		newTesterLink: function () {
-			return new mw.Title( 'Special:CreateObject' ).getUrl( {
+			return new mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( {
+				uselang: this.getZLang,
 				zid: Constants.Z_TESTER,
 				[ Constants.Z_TESTER_FUNCTION ]: this.getCurrentZObjectId
 			} );
 		},
 		newImplementationLink: function () {
-			return new mw.Title( 'Special:CreateObject' ).getUrl( {
+			return new mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( {
+				uselang: this.getZLang,
 				zid: Constants.Z_IMPLEMENTATION,
 				[ Constants.Z_IMPLEMENTATION_FUNCTION ]: this.getCurrentZObjectId
 			} );

@@ -25,14 +25,86 @@ class PageRenderingHandler implements
 	// phpcs:disable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
 
 	/**
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/SkinTemplateNavigation::Universal
+	 *
 	 * @inheritDoc
 	 */
 	public function onSkinTemplateNavigation__Universal( $skinTemplate, &$links ): void {
 		$targetTitle = $skinTemplate->getRelevantTitle();
-		// Don't show a "View source" link, it's meaningless for our content type
-		if ( $targetTitle->hasContentModel( CONTENT_MODEL_ZOBJECT ) ) {
-			unset( $links['views']['viewsource'] );
+		if ( !$targetTitle->hasContentModel( CONTENT_MODEL_ZOBJECT ) ) {
+			// Nothing to do, exit.
+			return;
 		}
+
+		// Don't show a "View source" link, it's meaningless for our content type
+		unset( $links['views']['viewsource'] );
+
+		// Don't show a "Variants" selector even though we're futzing with lang, we have our own control
+		$links['variants'] = [];
+
+		// Work out our ZID
+		$zid = $targetTitle->getText();
+		// Default language if not specified in the URL
+		$lang = 'en';
+
+		// Special handling if we're on our special view page
+		$title = $skinTemplate->getTitle();
+		if ( $title->isSpecial( 'ViewObject' ) ) {
+			preg_match( "/^([^\/]+)\/([^\/]+)\/(.*)$/", $title->getText(), $matches );
+			if ( $matches ) {
+				// We're on Special:ViewObject with the ZID and language set in the URL, so use them
+				$lang = $matches['2'];
+				$zid = $matches['3'];
+			}
+		}
+
+		// Allow the user to over-ride the content language if explicitly requested
+		$lang = $skinTemplate->getRequest()->getRawVal( 'uselang' ) ?? $lang;
+
+		// Add "selected" class to read tab
+		$links['views']['view']['class'] = 'selected';
+
+		// Rewrite history link to have ?uselang in it
+		$links['views']['history']['href'] = '/wiki/' . $zid . '?action=history&uselang=' . $lang;
+		// Rewrite history link to have ?uselang in it, but only if it exists (e.g. not for logged-out users)
+		if ( array_key_exists( 'edit', $links['views'] ) ) {
+			$links['views']['edit']['href'] = '/wiki/' . $zid . '?action=edit&uselang=' . $lang;
+		}
+
+		// Rewrite the 'main' namespace link to the Special page
+		// We have to set under 'namespaces' and 'associated-pages' due to a migration.
+		$contentCanonicalHref = '/view/' . $lang . '/' . $zid;
+		$links['namespaces']['main']['href'] = $contentCanonicalHref;
+		$links['associated-pages']['main']['href'] = $contentCanonicalHref;
+
+		// Re-write the 'view' link as well
+		$links['views']['view']['href'] = $contentCanonicalHref;
+
+		// Rewrite the 'talk' namespace link to have ?uselang in it
+		// Again, we have to set it twice
+		if ( strpos( $links['namespaces']['talk']['class'] ?? '', '?' ) ) {
+			$talkRewrittenHref = '/wiki/Talk:' . $zid . '?uselang=' . $lang;
+		} else {
+			// @phan-suppress-next-next-line PhanTypeArraySuspiciousNull, PhanTypeInvalidDimOffset
+			// @phan-suppress-next-line PhanTypeSuspiciousStringExpression
+			$talkRewrittenHref = $links['namespaces']['talk']['href'] . '&uselang=' . $lang;
+		}
+
+		$links['namespaces']['talk']['href'] = $talkRewrittenHref;
+		$links['associated-pages']['talk']['href'] = $talkRewrittenHref;
+
+		// Add a language control to the page, for users to change the content language
+		$ourButton = [ 'wikifunctions-language' => [
+			'button' => true,
+			'icon' => 'wikimedia-language',
+			'id' => 'ext-wikilambda-pagelanguagebutton',
+			'text' => MediaWikiServices::getInstance()->getLanguageNameUtils()->getLanguageName( $lang ),
+			'active' => false,
+			'link-class' => [ 'wikifunctions-trigger' ],
+			// Add a nonsense destination for non-JS users
+			'href' => '#'
+		] ];
+		$links['user-interface-preferences'] = $ourButton + $links['user-interface-preferences'];
 	}
 
 	// phpcs:enable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
@@ -95,7 +167,7 @@ class PageRenderingHandler implements
 		// TODO (T338190): Do we need to make an exception for 'en' so there's a primary page?
 		// (We don't want there to be linguistic primacy, but if we really have to…)
 		$currentPageContentLanguageCode = $context->getLanguage()->getCode();
-		$attribs['href'] = '/wiki/' . $currentPageContentLanguageCode . '/' . $attribs['title'];
+		$attribs['href'] = '/view/' . $currentPageContentLanguageCode . '/' . $attribs['title'];
 
 		$logger = LoggerFactory::getInstance( 'WikiLambda' );
 		$logger->warning( 'Called currentPageContentLanguageCode {attribs}', [
@@ -144,26 +216,9 @@ class PageRenderingHandler implements
 	 * @inheritDoc
 	 */
 	public function onWebRequestPathInfoRouter( $router ) {
-		$router->add(
-			'/wiki/$2/$1',
-			[],
-			// Use a callback in case we've wrongly matched a sub-page or special page
-			[ 'callback' => [ __CLASS__, 'onWebRequestPathInfoRouterCallback' ] ]
+		$router->addStrict(
+			'/view/$2/$1',
+			[ 'title' => 'Special:ViewObject/$2/$1' ]
 		);
 	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public static function onWebRequestPathInfoRouterCallback( array &$matches, array $data ): void {
-		// Only do this if there's no colon in the first part, as that's a namespace/etc. page and not a language
-		if ( !strpos( $data['$2'], ':' ) ) {
-			$matches['title'] = $data['$1'];
-			$matches['uselang'] = $data['$2'];
-		} else {
-			// Otherwise, stitch the user's requested path back together.
-			$matches['title'] = $data['$2'] . '/' . $data['$1'];
-		}
-	}
-
 }

@@ -28,6 +28,7 @@ use ParserOptions;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContentHandler
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
  * @group Database
  */
 class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
@@ -315,4 +316,34 @@ class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
 		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
 		$this->assertFalse( $handler->generateHTMLOnEdit() );
 	}
+
+	public function testCreateZObjectViewHeader() {
+		$this->registerLangs( [ 'en', 'fr' ] );
+		$this->insertZids( [ 'Z6' ] );
+
+		$testZid = 'Z401';
+		$testTitle = Title::newFromText( $testZid, NS_MAIN );
+
+		$content = new ZObjectContent(
+			'{"Z1K1":"Z2","Z2K1":"Z401","Z2K2":"",' .
+				'"Z2K3":{"Z1K1":"Z12","Z12K1":["Z11",{"Z1K1":"Z11","Z11K1":"Z1004","Z11K2":"Éxample"}]}}'
+		);
+
+		$this->assertTrue( $content->isValid() );
+
+		$enHeader = ZObjectContentHandler::createZObjectViewHeader( $content, $testTitle, self::makeLanguage( 'en' ) );
+		$this->assertStringStartsWith( '<span lang="en" class="ext-wikilambda-viewpage-header">', $enHeader );
+		$this->assertStringContainsString( '<span class="ext-wikilambda-viewpage-header-zid">Z401</span>', $enHeader );
+		$this->assertStringContainsString( 'Untitled', $enHeader );
+		$this->assertStringContainsString( 'ext-wikilambda-viewpage-header--title-untitled', $enHeader );
+		$this->assertStringContainsString(
+			'<div class="ext-wikilambda-viewpage-header-type">String (Z6)</div>', $enHeader
+		);
+
+		$frHeader = ZObjectContentHandler::createZObjectViewHeader( $content, $testTitle, self::makeLanguage( 'fr' ) );
+		$this->assertStringStartsWith( '<span lang="fr" class="ext-wikilambda-viewpage-header">', $frHeader );
+		$this->assertStringContainsString( 'Éxample', $frHeader );
+		$this->assertStringNotContainsString( 'ext-wikilambda-viewpage-header--title-untitled', $frHeader );
+	}
+
 }

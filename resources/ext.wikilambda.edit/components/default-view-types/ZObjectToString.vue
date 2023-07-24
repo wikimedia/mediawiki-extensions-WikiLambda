@@ -155,7 +155,7 @@ module.exports = exports = {
 			 * @return {string}
 			 */
 			link: function () {
-				return ( this.hasLink && !this.isBlank ) ? new mw.Title( this.value ).getUrl() : '';
+				return ( this.hasLink && !this.isBlank ) ? '/view/' + ( mw.language.getFallbackLanguageChain()[ 0 ] || 'en' ) + '/' + this.value : '';
 			},
 
 			/**

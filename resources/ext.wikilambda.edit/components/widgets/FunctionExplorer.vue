@@ -186,6 +186,7 @@ module.exports = exports = {
 	},
 	computed: $.extend(
 		mapGetters( [
+			'getZLang',
 			'getStoredObject',
 			'getInputsOfFunctionZid',
 			'getLabelData',
@@ -278,7 +279,7 @@ module.exports = exports = {
 			this.currentFunctionZid = this.functionZid;
 		},
 		getWikiUrl( zid ) {
-			return new mw.Title( zid ).getUrl();
+			return '/view/' + this.getZLang + '/' + zid;
 		},
 		navigateToFunction() {
 			window.open( this.getWikiUrl( this.currentFunctionZid ), '_blank' );

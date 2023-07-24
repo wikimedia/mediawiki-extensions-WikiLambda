@@ -107,6 +107,7 @@ module.exports = exports = {
 	},
 	computed: $.extend( {},
 		mapGetters( [
+			'getZLang',
 			'getAttachedZTesters',
 			'getLabel',
 			'getPaginatedImplementations',
@@ -238,7 +239,7 @@ module.exports = exports = {
 							title: implementationLabel,
 							component: 'a',
 							props: {
-								href: new mw.Title( visibleImplementations[ index ] ).getUrl()
+								href: '/view/' + this.getZLang + '/' + visibleImplementations[ index ]
 							},
 							class: 'ext-wikilambda-function-details-implementation-table-link ext-wikilambda-function-details-table-item'
 						},
@@ -358,7 +359,7 @@ module.exports = exports = {
 						title: testerLabel,
 						component: 'a',
 						props: {
-							href: new mw.Title( visibleTesters[ index ] ).getUrl()
+							href: '/view/' + this.getZLang + '/' + visibleTesters[ index ]
 						},
 						class: 'ext-wikilambda-function-details-table-item'
 					};

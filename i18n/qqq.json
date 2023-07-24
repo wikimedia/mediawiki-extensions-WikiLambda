@@ -125,6 +125,7 @@
 	"wikilambda-hide-more": "Label for the button to hide items from an expanded list",
 	"wikilambda-argref": "Label for button that access argument reference",
 	"wikilambda-special-createobject": "Description for Special:CreateObject.\n\n{{doc-wikilambda}}",
+	"wikilambda-special-viewobject": "Description for Special:ViewObject; generally not visible.\n\n{{doc-wikilambda}}",
 	"wikilambda-special-define-function": "Header text for defining a function",
 	"wikilambda-special-define-function-summary": "Description text for defining a function",
 	"wikilambda-special-createobject-intro": "Warning shown to editors on Special:CreateObject about following community rules.",

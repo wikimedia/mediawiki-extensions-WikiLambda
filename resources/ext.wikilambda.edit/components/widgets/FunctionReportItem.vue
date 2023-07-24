@@ -69,6 +69,7 @@ module.exports = exports = {
 		}
 	},
 	computed: $.extend( mapGetters( [
+		'getZLang',
 		'getZTesterResults',
 		'getLabel'
 	] ), {
@@ -88,7 +89,7 @@ module.exports = exports = {
 		},
 		titleLink: function () {
 			const zid = this.reportType === Constants.Z_TESTER ? this.zImplementationId : this.zTesterId;
-			return new mw.Title( zid ).getUrl();
+			return '/view/' + this.getZLang + '/' + zid;
 		},
 		status: function () {
 			if ( !( this.zImplementationId ) || !( this.zTesterId ) ) {

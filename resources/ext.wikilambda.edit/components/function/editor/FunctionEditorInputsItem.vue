@@ -186,6 +186,7 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
+		'getZLang',
 		'getNextObjectId',
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
@@ -320,7 +321,9 @@ module.exports = exports = {
 			this.removeItemFromTypedList( { rowId: this.zobjectId } );
 		},
 		getTypeUrl: function () {
-			return new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE ).getUrl();
+			return new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE ).getUrl(
+				{ uselang: this.getZLang }
+			);
 		}
 	} ),
 	watch: {

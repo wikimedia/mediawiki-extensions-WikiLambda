@@ -167,7 +167,7 @@ module.exports = exports = {
 			 */
 			valueUrl: function () {
 				if ( this.value ) {
-					return new mw.Title( this.value ).getUrl();
+					return '/view/' + ( mw.language.getFallbackLanguageChain()[ 0 ] || 'en' ) + '/' + this.value;
 				}
 			}
 		} ),

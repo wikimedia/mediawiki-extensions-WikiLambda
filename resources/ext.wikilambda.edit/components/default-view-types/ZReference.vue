@@ -92,7 +92,7 @@ module.exports = exports = {
 			 * @return {string}
 			 */
 			valueUrl: function () {
-				return new mw.Title( this.value ).getUrl();
+				return '/view/' + ( mw.language.getFallbackLanguageChain()[ 0 ] || 'en' ) + '/' + this.value;
 			},
 
 			/**

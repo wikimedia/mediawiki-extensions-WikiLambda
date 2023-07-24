@@ -46,7 +46,7 @@ trait ZObjectEditingPageTrait {
 		$jsEditingConfigVarBase = [
 			'zlang' => $userLangCode,
 			'zlangZid' => $userLangZid,
-			'viewMode' => false
+			'viewmode' => false
 		];
 		$jsEditingConfigVar = array_merge( $jsEditingConfigVarBase, $jsEditingConfigVarOverride );
 
@@ -66,7 +66,7 @@ trait ZObjectEditingPageTrait {
 	 *
 	 * @return string
 	 */
-	public function getIsoCodeIfUserLangIsDifferent(
+	public static function getIsoCodeIfUserLangIsDifferent(
 		string $langCode, string $langTitle, string $userLangCode, string $isoCodeClassName
 	): string {
 		return $langCode === $userLangCode ? '' :
