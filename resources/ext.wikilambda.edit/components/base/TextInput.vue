@@ -135,7 +135,7 @@ module.exports = exports = {
 		},
 		onUpdate: function () {
 			if ( this.maxChars ) {
-				if ( this.value.length > this.maxChars ) {
+				if ( this.value && this.value.length > this.maxChars ) {
 					this.value = this.value.slice( 0, Math.max( 0, this.maxChars ) );
 				}
 			}

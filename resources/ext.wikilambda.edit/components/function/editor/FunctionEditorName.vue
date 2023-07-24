@@ -19,14 +19,15 @@
 			</span>
 		</div>
 
-		<cdx-text-input
+		<wl-text-input
 			:id="inputId"
 			:model-value="zobjectLabel"
 			class="ext-wikilambda-function-definition-name__input"
 			:aria-label="$i18n( 'wikilambda-function-definition-name-label' ).text()"
 			:placeholder="$i18n( 'wikilambda-function-definition-name-placeholder' ).text()"
+			:max-chars="maxLabelChars"
 			@input="setZObjectLabel"
-		></cdx-text-input>
+		></wl-text-input>
 	</div>
 </template>
 
@@ -34,14 +35,14 @@
 var Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
+	TextInput = require( '../../base/TextInput.vue' ),
 	debounceSetZObjectLabelTimeout = 300;
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-function-editor-name',
 	components: {
-		'cdx-text-input': CdxTextInput
+		'wl-text-input': TextInput
 	},
 	props: {
 		zobjectId: {
@@ -64,6 +65,7 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
+			maxLabelChars: Constants.LABEL_CHARS_MAX,
 			debounceSetZObjectLabel: null
 		};
 	},
