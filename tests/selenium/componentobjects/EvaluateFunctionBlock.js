@@ -1,8 +1,12 @@
-/**
- * @file contains the Evaluate Function Block related locators and actions.
+/*!
+ * WikiLambda browser test components the Evaluate Function Block related locators and actions.
+ *
  * EvaluateFunctionBlock is a general component which is used to call the function.
  * It has input fields to pass the arguments to the function and a result block
  * where the output of the function is displayed.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';

@@ -1,8 +1,12 @@
-/**
- * @file contains the About Block related locators and actions.
+/*!
+ * WikiLambda browser test components the About block related locators and actions.
+ *
  * AboutBlock is a general component which
  * [1] Takes input of the label, description, alias in different languages
  * [2] Display the label, description, alias in different languages
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';

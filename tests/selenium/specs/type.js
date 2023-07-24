@@ -1,6 +1,7 @@
-/**
- * @file contains the tests for "Create a new type".
- * @see https://phabricator.wikimedia.org/T318943
+/*!
+ * "Create a new type" spec for the WikiLambda browser test suite
+ *
+ * @see https://phabricator.wikimedia.org/T318943.
  *
  * Test go through the following steps
  * [1] Create a new type
@@ -12,6 +13,9 @@
  * [a] Open the Type form
  * [b] Edit the details in the about block
  * [c] Publish the type and assert that entries are displayed as expected
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';

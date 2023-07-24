@@ -1,10 +1,14 @@
 /**
- * @file contains the locators and actions specific to the type form.
- * The form contains the following section
+ * Type Form page object for the WikiLambda browser test suite
+ *
+ * The page contains the following sections
  * [1] About - Input the label, description, alias in different languages for the type
  * [2] Content Block - It is further divided into
  * [a] Keys Block - Input the definition for the type
  * [b] Validator Block - Input the validator for the type
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';

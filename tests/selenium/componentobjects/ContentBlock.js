@@ -1,8 +1,12 @@
-/**
- * @file contains the Content block related locators and actions.
+/*!
+ * WikiLambda browser test components the Content block related locators and actions.
+ *
  * ContentBlock is a general component which
  * [1] Takes input about the definition/implementation related details of the ZObject
  * [2] Display the definition/implementation related details of the ZObject
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';

@@ -1,3 +1,10 @@
+/*!
+ * WikiLambda browser test components the LanguageContainer on function editing related locators and actions.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 'use strict';
 
 const ObjectSelector = require( '../ObjectSelector' );

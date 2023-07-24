@@ -1,10 +1,14 @@
 /**
- * @file contains the locators and actions specific to the Type Page.
+ * Type page object for the WikiLambda browser test suite
+ *
  * The page contains the following sections
  * [1] About - Display the label, description of the type
  * [2] Content Block - It is further divided into
  * [a] Keys Block - Display the Type definition
  * [b] Validator Block - Display the validator of the type
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';

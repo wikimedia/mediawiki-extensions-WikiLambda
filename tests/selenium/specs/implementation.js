@@ -1,5 +1,6 @@
-/**
- * @file contains the tests for "Create a new implementation".
+/*!
+ * "Create a new implementation" spec for the WikiLambda browser test suite
+ *
  * @see https://phabricator.wikimedia.org/T318939.
  *
  * Test go through the following steps
@@ -12,6 +13,9 @@
  * [a] Login and Navigate to the implementation form page
  * [b] Fill the entries in the About and Content block
  * [c] Publish the implementation and assert that entries are displayed as expected
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';

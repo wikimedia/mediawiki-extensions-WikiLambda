@@ -1,12 +1,14 @@
-/**
- * Copy the following command:
- * npm run selenium-stress-test:all
- * or
- * npm run selenium-stress-test:all -- --execution-number="<number>"
- */
-
-/**
- * @file contains the code to execute each spec file multiple times
+/*!
+ * Stress-test framework for the WikiLambda browser test suite
+ *
+ * Use via:
+ *   npm run selenium-stress-test:all
+ *
+ * or:
+ *   npm run selenium-stress-test:all -- --execution-number="<number>"
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';

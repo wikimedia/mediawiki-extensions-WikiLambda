@@ -1,3 +1,10 @@
+/*!
+ * Configuration for the WikiLambda browser jest UX unit testing suite
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 module.exports = {
 	// Vue-jest specific global options (described here: https://github.com/vuejs/vue-jest#global-jest-options)
 	globals: {
