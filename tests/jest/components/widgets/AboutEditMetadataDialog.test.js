@@ -134,11 +134,12 @@ describe( 'AboutEditMetadataDialog', () => {
 			// ASSERT: Name block renders text input component
 			const nameBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-name' );
 			expect( nameBlock.findComponent( { name: 'wl-text-input' } ).exists() ).toBe( true );
+			expect( nameBlock.find( '.ext-wikilambda-about-edit-metadata-char-counter' ).text() ).toBe( '100' );
 
 			// ASSERT: Description block renders text input component
 			const descriptionBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-description' );
 			expect( descriptionBlock.findComponent( { name: 'wl-text-input' } ).exists() ).toBe( true );
-			expect( descriptionBlock.find( '.ext-wikilambda-about-edit-metadata-field-caption' ).text() ).toBe( '100' );
+			expect( descriptionBlock.find( '.ext-wikilambda-about-edit-metadata-char-counter' ).text() ).toBe( '100' );
 
 			// ASSERT: Aliases are empty
 			const aliasBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-alias' );
@@ -194,11 +195,12 @@ describe( 'AboutEditMetadataDialog', () => {
 			// ASSERT: Name block renders text input component
 			const nameBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-name' );
 			expect( nameBlock.findComponent( { name: 'wl-text-input' } ).exists() ).toBe( true );
+			expect( nameBlock.find( '.ext-wikilambda-about-edit-metadata-char-counter' ).text() ).toBe( '96' );
 
 			// ASSERT: Description block renders text input  component
 			const descriptionBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-description' );
 			expect( descriptionBlock.findComponent( { name: 'wl-text-input' } ).exists() ).toBe( true );
-			expect( descriptionBlock.find( '.ext-wikilambda-about-edit-metadata-field-caption' ).text() ).toBe( '84' );
+			expect( descriptionBlock.find( '.ext-wikilambda-about-edit-metadata-char-counter' ).text() ).toBe( '84' );
 
 			// ASSERT: After initialization, aliases have value
 			const aliasBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-alias' );

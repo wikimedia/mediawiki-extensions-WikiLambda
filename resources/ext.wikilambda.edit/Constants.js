@@ -221,6 +221,7 @@ Constants.RESOLVER_TYPES = resolverTypes;
 Constants.LINKED_TYPES = linkedTypes;
 Constants.API_LIMIT_MAX = 100;
 Constants.ABOUT_DIALOG_MAX_ITEMS = 5;
+Constants.LABEL_CHARS_MAX = 100;
 Constants.DESCRIPTION_CHARS_MAX = 100;
 
 Constants.ROW_VALUE_OBJECT = 'object';

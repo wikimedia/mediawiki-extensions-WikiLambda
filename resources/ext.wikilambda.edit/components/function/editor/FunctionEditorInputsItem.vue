@@ -87,15 +87,17 @@
 				>
 					{{ $i18n( 'wikilambda-function-definition-input-item-label' ).text() }}
 				</span>
-				<cdx-text-input
+				<wl-text-input
 					:model-value="getArgumentLabel"
 					class="
 						ext-wikilambda-editor-input-list-item__body__entry-field
 						ext-wikilambda-editor-input-list-item__label"
 					:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
 					:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
+					:max-chars="maxLabelChars"
 					@input="handleInputChange"
-				></cdx-text-input>
+				></wl-text-input>
+				<!-- TODO: Add a character counter to tell users they can't write messages that are too long. -->
 			</div>
 			<cdx-button
 				v-if="canEditType && !isMobile"
@@ -117,7 +119,7 @@ var Constants = require( '../../../Constants.js' ),
 	mapActions = require( 'vuex' ).mapActions,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
+	TextInput = require( '../../base/TextInput.vue' ),
 	icons = require( './../../../../lib/icons.json' ),
 	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	debounceSetArgumentLabelTimeout = 300;
@@ -128,7 +130,7 @@ module.exports = exports = {
 		'wl-z-object-selector': ZObjectSelector,
 		'cdx-icon': CdxIcon,
 		'cdx-button': CdxButton,
-		'cdx-text-input': CdxTextInput
+		'wl-text-input': TextInput
 	},
 	mixins: [ typeUtils ],
 	props: {
@@ -182,6 +184,7 @@ module.exports = exports = {
 	data: function () {
 		return {
 			debounceSetArgumentLabel: null,
+			maxLabelChars: Constants.LABEL_CHARS_MAX,
 			icons: icons
 		};
 	},

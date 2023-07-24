@@ -58,7 +58,7 @@ describe( 'FunctionEditorInputsItem', function () {
 	} );
 	it( 'has an input element ', function () {
 		var wrapper = shallowMount( FunctionEditorInputsItem );
-		expect( wrapper.findComponent( { name: 'cdx-text-input' } ).exists() ).toBeTruthy();
+		expect( wrapper.findComponent( { name: 'wl-text-input' } ).exists() ).toBeTruthy();
 	} );
 	describe( 'setArgumentLabel', function () {
 		it( 'does not set argument label if there is none', function () {

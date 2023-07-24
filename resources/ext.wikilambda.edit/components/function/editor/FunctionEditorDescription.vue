@@ -18,15 +18,17 @@
 				{{ $i18n( 'wikilambda-function-definition-description-description' ).text() }}
 			</span>
 		</div>
-		<cdx-text-input
+		<wl-text-input
 			:id="descriptionInputId"
 			v-model="monolingualDescriptionString"
 			:model-value="monolingualDescriptionString"
 			class="ext-wikilambda-function-definition-description__input"
 			:aria-label="descriptionLabel"
 			:placeholder="descriptionInputPlaceholder"
+			:max-chars="maxDescriptionChars"
 			@input="persistDescription"
-		></cdx-text-input>
+		></wl-text-input>
+		<!-- TODO: Add a character counter to tell users they can't write messages that are too long. -->
 	</div>
 </template>
 
@@ -34,13 +36,13 @@
 var Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput;
+	TextInput = require( '../../base/TextInput.vue' );
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-function-editor-description',
 	components: {
-		'cdx-text-input': CdxTextInput
+		'wl-text-input': TextInput
 	},
 	props: {
 		zLang: {
@@ -51,6 +53,7 @@ module.exports = exports = {
 	data: function () {
 		return {
 			descriptionInputId: `ext-wikilambda-function-definition-description__input${this.zLang}`,
+			maxDescriptionChars: Constants.LABEL_CHARS_MAX,
 			monolingualDescriptionString: ''
 		};
 	},

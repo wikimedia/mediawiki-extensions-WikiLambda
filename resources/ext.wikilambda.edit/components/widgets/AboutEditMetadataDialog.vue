@@ -60,8 +60,12 @@
 						<wl-text-input
 							v-model="name"
 							:placeholder="namePlaceholder"
+							:max-chars="maxLabelChars"
 							data-testid="edit-label-input"
 						></wl-text-input>
+						<span class="ext-wikilambda-about-edit-metadata-char-counter">
+							{{ labelCharsLeft }}
+						</span>
 					</div>
 				</div>
 				<!-- Description field -->
@@ -77,7 +81,7 @@
 							:placeholder="descriptionPlaceholder"
 							:max-chars="maxDescriptionChars"
 						></wl-text-input>
-						<span class="ext-wikilambda-about-edit-metadata-field-caption">
+						<span class="ext-wikilambda-about-edit-metadata-char-counter">
 							{{ descriptionCharsLeft }}
 						</span>
 					</div>
@@ -147,6 +151,7 @@ module.exports = exports = {
 		return {
 			iconClose: icons.cdxIconClose,
 			languageType: Constants.Z_NATURAL_LANGUAGE,
+			maxLabelChars: Constants.LABEL_CHARS_MAX,
 			maxDescriptionChars: Constants.DESCRIPTION_CHARS_MAX,
 			name: '',
 			description: '',
@@ -309,6 +314,16 @@ module.exports = exports = {
 			return {
 				label: this.$i18n( 'wikilambda-cancel' ).text()
 			};
+		},
+
+		/**
+		 * Returns the number of characters left to reach the
+		 * label field maximum allowed.
+		 *
+		 * @return {number}
+		 */
+		labelCharsLeft: function () {
+			return this.maxLabelChars - ( this.name && this.name.length || 0 );
 		},
 
 		/**
@@ -590,10 +605,8 @@ module.exports = exports = {
 		}
 	}
 
-	.ext-wikilambda-about-edit-metadata-description {
-		.ext-wikilambda-about-edit-metadata-field-caption {
-			text-align: right;
-		}
+	.ext-wikilambda-about-edit-metadata-char-counter {
+		text-align: right;
 	}
 
 	.ext-wikilambda-about-edit-metadata-fields {
