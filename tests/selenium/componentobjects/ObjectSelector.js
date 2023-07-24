@@ -1,3 +1,10 @@
+/*!
+ * WikiLambda browser test components the ObjectSelector.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 'use strict';
 const WebdriverIO = require( 'webdriverio' );
 class ObjectSelector {

@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * WikiLambda handler for hooks which alter page editing
+ *
+ * @file
+ * @ingroup Extensions
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
 use ApiMessage;

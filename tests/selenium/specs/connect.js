@@ -1,5 +1,6 @@
-/**
- * @file contains the tests for "Connect implementation and test to the function".
+/*!
+ * "Connect implementation and test to the function" spec for the WikiLambda browser test suite
+ *
  * @see https://phabricator.wikimedia.org/T318936
  *
  * Test go through the following steps
@@ -25,6 +26,9 @@
  * [3] Connect test
  * [a] Navigate to the Details View of the Function Page
  * [b] Try to either Approve or Deactivate the test case
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';

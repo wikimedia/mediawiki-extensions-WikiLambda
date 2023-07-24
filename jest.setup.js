@@ -1,3 +1,10 @@
+/*!
+ * Rigging for the WikiLambda browser jest UX unit testing suite
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 /* eslint-disable no-implicit-globals, no-undef */
 /* global global, jest, mockLocalStorage */
 // Assign things to "global" here if you want them to be globally available during tests

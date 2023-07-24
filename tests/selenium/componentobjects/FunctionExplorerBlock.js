@@ -1,7 +1,11 @@
-/**
- * @file contains the Function Explorer related locators and actions.
+/*!
+ * WikiLambda browser test components the Function Explorer block related locators and actions.
+ *
  * FunctionExplorerBlock is a general component which display the function details
  * for which implementation/tester page is open.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';

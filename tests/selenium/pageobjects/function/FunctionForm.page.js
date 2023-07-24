@@ -1,3 +1,10 @@
+/*!
+ * Function Form page object for the WikiLambda browser test suite
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
+
 'use strict';
 const Page = require( 'wdio-mediawiki/Page' );
 const { LanguageContainerComponent, FirstLanguageContainerComponent } = require( '../../componentobjects/function-form/LanguageContainer.component' );

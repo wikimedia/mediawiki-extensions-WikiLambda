@@ -1,5 +1,6 @@
-/**
- * @file contains the tests for "create a new test".
+/*!
+ * "Create a new test" spec for the WikiLambda browser test suite
+ *
  * @see https://phabricator.wikimedia.org/T318938.
  *
  * Test go through the following steps
@@ -12,6 +13,9 @@
  * [a] Open the tester form
  * [b] Edit the details in the about block
  * [c] Publish the test and assert that entries are displayed as expected
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';

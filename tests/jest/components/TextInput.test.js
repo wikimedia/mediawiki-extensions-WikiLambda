@@ -1,3 +1,9 @@
+/*!
+ * WikiLambda unit test suite for the TextInput component and related files.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
+ */
 const mount = require( '@vue/test-utils' ).mount;
 const TextInput = require( '../../../resources/ext.wikilambda.edit/components/base/TextInput.vue' );
 

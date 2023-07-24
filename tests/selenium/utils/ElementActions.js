@@ -1,5 +1,6 @@
-/**
- * @file contains the webdriverio element related general actions.
+/*!
+ * WikiLambda browser test WebDriver.io element-related general actions.
+ *
  * General Actions includes
  * [1] Click on the element
  * [2] Set the input
@@ -7,6 +8,9 @@
  * [4] Clear the input
  * [5] Get the value from the input selector
  * [6] Scroll the element into the viewport
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';

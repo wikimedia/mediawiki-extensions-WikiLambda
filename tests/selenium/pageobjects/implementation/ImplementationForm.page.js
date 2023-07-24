@@ -1,11 +1,15 @@
-/**
- * @file contains the locators and actions specific to the implementation form.
+/*!
+ * Implementation Form page object for the WikiLambda browser test suite
+ *
  * The form contains the following section
  * [1] About - Input the label, description, alias in different languages for the implementation
  * [2] Function Explorer - Display the details about the function to which implementation belongs
  * [3] Content Block contains the two mode for implementation
  * [a] Composition - Set the function call
  * [b] Code - Select the programming language and write the code in code editor
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';

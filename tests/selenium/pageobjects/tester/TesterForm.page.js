@@ -1,11 +1,15 @@
 /**
- * @file contains the locators and actions specific to the tester form.
- * The form contains the following section
+ * Tester Form page object for the WikiLambda browser test suite
+ *
+ * The page contains the following sections
  * [1] About - Input the label, description, alias in different languages for the test
  * [2] Function Explorer - Display the details about the function to which test belongs
  * [3] Content Block - It is further divided into
  * [a] Call - Input the function, arguments for the Function call
  * [b] Result Validation - Input the function, arguments to validate the output of the Call
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';

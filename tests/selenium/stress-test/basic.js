@@ -1,22 +1,22 @@
-/**
- * Copy the following:
- * npm run selenium-stress-test -- --target-file="<spec_file>"
- * --execution-number="<number>"
+/*!
+ * Stress-test framework for the WikiLambda browser test suite
  *
- * Example command:
- * npm run selenium-stress-test -- --target-file="basic.js"
- * --execution-number="6"
- */
-
-/**
- * @file contains the code to run an individual spec file multiple times
  * This will helpful in checking the flakiness of the test
  *
  * target-file is the spec file
  * execution-number is the number of times spec file needs to be run
  *
  * WebdriverIO version 8 already introduces a option for this
- * However this can not be used as blocked by T324766
+ * However this can not yet be used as blocked by T324766
+ *
+ * Use via:
+ *   npm run selenium-stress-test -- --target-file="<spec_file>" --execution-number="<number>"
+ *
+ * Example command:
+ *   npm run selenium-stress-test -- --target-file="basic.js" --execution-number="6"
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';

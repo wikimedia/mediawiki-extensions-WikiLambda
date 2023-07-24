@@ -1,5 +1,6 @@
-/**
- * @file contains the locators and actions specific to the Implementation Page.
+/*!
+ * Implementation page object for the WikiLambda browser test suite
+ *
  * The page contains the following sections
  * [1] About - Display the label, description of the implementation
  * [2] Function Explorer - Display the details about the function to which implementation belongs
@@ -7,6 +8,9 @@
  * [a] Implementation section display the mode of implementation
  * [b] If "Code" - Display the programming language and Code Editor display the code
  * [c] If "Composition" - Display the details about the Function call
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';

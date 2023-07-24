@@ -1,7 +1,11 @@
-/**
- * @file contains the Input Dropdown related locators and actions.
+/*!
+ * WikiLambda browser test components the Input Dropdown related locators and actions.
+ *
  * InputDropdown is a general component which set the input in the input field and
  * select the item input from the dropdown.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';

@@ -1,6 +1,10 @@
-/**
- * @file contains the ZObject Publish component related locators and actions.
- * ZObjectPublish is a general component which publish the ZObject.
+/*!
+ * WikiLambda browser test components the ZObject Publish component related locators and actions.
+ *
+ * ZObjectPublish is a general component which publishes the ZObject.
+ *
+ * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+ * @license MIT
  */
 
 'use strict';
