@@ -130,7 +130,7 @@
 	"wikilambda-special-listduplicateobjectlabels-existing": "Existing Object",
 	"wikilambda-special-listduplicateobjectlabels-conflicting": "Clashing Object",
 	"wikilambda-special-listduplicateobjectlabels-language": "Language",
-	"wikilambda-special-objectsbytype": "List all ZObjects of a given type",
+	"wikilambda-special-objectsbytype": "List all Objects of a given type",
 	"wikilambda-special-objectsbytype-summary": "Click on one of the types listed below to see all ZObjects of that type.",
 	"wikilambda-special-objectsbytype-listheader": "All ZObjects of type $1 ($2)",
 	"wikilambda-special-objectsbytype-typeheader": "All Types",
