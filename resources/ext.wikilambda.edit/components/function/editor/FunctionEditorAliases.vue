@@ -13,7 +13,7 @@
 			>
 				<!-- TODO: Instead fetch this from the Z2 via `getLabel( Constants.Z_PERSISTENTOBJECT_ALIASES )` -->
 				{{ $i18n( 'wikilambda-function-definition-alias-label' ).text() }}
-				<span>({{ $i18n( 'wikilambda-optional' ).text() }})</span>
+				<span>{{ $i18n( 'parentheses', [ $i18n( 'wikilambda-optional' ).text() ] ).text() }}</span>
 			</label>
 			<span class="ext-wikilambda-function-definition-aliases__description">
 				{{ $i18n( 'wikilambda-function-definition-alias-description' ).text() }}

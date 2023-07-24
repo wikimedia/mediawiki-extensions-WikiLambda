@@ -16,7 +16,7 @@
 					aria-labelledby="wikilambda-function-definition-inputs-label"
 				>
 					{{ $i18n( 'wikilambda-function-definition-inputs-label' ).text() }}
-					<span>({{ $i18n( 'wikilambda-optional' ).text() }})</span>
+					<span>{{ $i18n( 'parentheses', [ $i18n( 'wikilambda-optional' ).text() ] ).text() }}</span>
 				</label>
 				<wl-tooltip
 					v-if="tooltipMessage && !canEdit"
