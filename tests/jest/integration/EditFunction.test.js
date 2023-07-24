@@ -111,7 +111,7 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		await clickLookupResult( chineseArgumentsArea, 'String' );
 
 		// ACT: Edit the name of the function in Chinese (the first language).
-		await fireEvent.update( getAllByLabelText( 'Name (optional)' )[ 0 ], 'edited function name, in Chinese' );
+		await fireEvent.update( getAllByLabelText( 'Name', { exact: false } )[ 0 ], 'edited function name, in Chinese' );
 
 		// ACT: Add a second alias for the function in Chinese.
 		const chineseAliasInput = getAllByLabelText( 'New alias' )[ 0 ];

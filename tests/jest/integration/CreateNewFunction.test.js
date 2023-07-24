@@ -88,7 +88,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await fireEvent.update( firstNameInput, 'function name, in Chinese' );
 
 		// ACT: Enter an alias for the function in Chinese.
-		const aliasInput = within( getByLabelText( 'Alternative names (optional)' ) ).getByRole( 'textbox' );
+		const aliasInput = within( getByLabelText( 'Alternative names', { exact: false } ) ).getByRole( 'textbox' );
 		await fireEvent.update( aliasInput, 'function alias, in Chinese' );
 		await fireEvent.keyDown( aliasInput, { key: 'enter' } );
 
@@ -136,7 +136,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await fireEvent.update( secondNameInput, 'function name, in French' );
 
 		// ACT: Enter an alias in French
-		const frenchAliasInput = within( getAllByLabelText( 'Alternative names (optional)' )[ 1 ] ).getByRole( 'textbox' );
+		const frenchAliasInput = within( getAllByLabelText( 'Alternative names', { exact: false } )[ 1 ] ).getByRole( 'textbox' );
 		await fireEvent.update( frenchAliasInput, 'function alias, in French' );
 		await fireEvent.keyDown( frenchAliasInput, { key: 'enter' } );
 

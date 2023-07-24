@@ -111,7 +111,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		await clickLookupResult( argumentsArea, 'String' );
 
 		// ACT: Enter an alias in Chinese.
-		const chineseAliasesContainer = getAllByLabelText( 'Alternative names (optional)' )[ 0 ];
+		const chineseAliasesContainer = getAllByLabelText( 'Alternative names', { exact: false } )[ 0 ];
 		const chineseAliasInput = within( chineseAliasesContainer ).getByRole( 'textbox' );
 		await fireEvent.update( chineseAliasInput, 'first function alias, in Chinese' );
 		await fireEvent.keyDown( chineseAliasInput, { key: 'enter' } );

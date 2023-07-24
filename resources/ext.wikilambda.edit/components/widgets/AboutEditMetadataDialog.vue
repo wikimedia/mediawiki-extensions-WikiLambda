@@ -54,7 +54,7 @@
 				<div class="ext-wikilambda-about-edit-metadata-name">
 					<div class="ext-wikilambda-about-edit-metadata-title">
 						{{ nameLabel }}
-						<span>({{ $i18n( 'wikilambda-optional' ).text() }})</span>
+						<span>{{ $i18n( 'parentheses', [ $i18n( 'wikilambda-optional' ).text() ] ).text() }}</span>
 					</div>
 					<div class="ext-wikilambda-about-edit-metadata-field">
 						<wl-text-input
@@ -72,7 +72,7 @@
 				<div class="ext-wikilambda-about-edit-metadata-description">
 					<div class="ext-wikilambda-about-edit-metadata-title">
 						{{ descriptionLabel }}
-						<span>({{ $i18n( 'wikilambda-optional' ).text() }})</span>
+						<span>{{ $i18n( 'parentheses', [ $i18n( 'wikilambda-optional' ).text() ] ).text() }}</span>
 					</div>
 					<div class="ext-wikilambda-about-edit-metadata-field">
 						<wl-text-input
@@ -90,7 +90,7 @@
 				<div class="ext-wikilambda-about-edit-metadata-alias">
 					<div class="ext-wikilambda-about-edit-metadata-title">
 						{{ aliasesLabel }}
-						<span>({{ $i18n( 'wikilambda-optional' ).text() }})</span>
+						<span>{{ $i18n( 'parentheses', [ $i18n( 'wikilambda-optional' ).text() ] ).text() }}</span>
 					</div>
 					<div class="ext-wikilambda-about-edit-metadata-field">
 						<wl-chip-container

@@ -12,7 +12,7 @@
 				class="ext-wikilambda-app__text-regular">
 				<!-- TODO: Instead fetch this from the Z2 via `getLabel( Constants.Z_PERSISTENTOBJECT_LABEL )` -->
 				{{ $i18n( 'wikilambda-function-definition-name-label' ).text() }}
-				<span>({{ $i18n( 'wikilambda-optional' ).text() }})</span>
+				<span>{{ $i18n( 'parentheses', [ $i18n( 'wikilambda-optional' ).text() ] ).text() }}</span>
 			</label>
 			<span class="ext-wikilambda-function-definition-name__description">
 				{{ $i18n( 'wikilambda-function-definition-name-description' ).text() }}
