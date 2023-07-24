@@ -74,6 +74,8 @@
 	"wikilambda-function-implementation-name-label": "Nome",
 	"wikilambda-function-implementation-language-label": "Lingua",
 	"wikilambda-function-implementation-state-label": "Stato",
+	"wikilambda-function-tester-state-approved": "Approvato",
+	"wikilambda-function-tester-state-deactivated": "Disattivato",
 	"wikilambda-function-definition-alias-label": "Nomi alternativi",
 	"wikilambda-function-definition-footer-placeholder": "Descrivi brevemente le tue modifiche",
 	"wikilambda-function-definition-footer-label": "Oggetto della modifica",
@@ -129,5 +131,6 @@
 	"wikilambda-function-evaluator-result": "Risultato",
 	"wikilambda-function-evaluator-result-details": "Dettagli",
 	"wikilambda-function-evaluator-run-function": "Esegui funzione",
+	"wikilambda-unknown-save-error-message": "Si sono verificati errori durante il tentativo di salvare le tue modifiche.",
 	"wikilambda-list-type-change-warning": "Hai cambiato il tipo di uno o più elenchi. Alla pubblicazione, tutti gli elementi dell'elenco verranno cancellati"
 }
