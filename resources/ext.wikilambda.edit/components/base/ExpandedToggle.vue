@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component that renders the expanded view toggle icon.
+<!--
+	WikiLambda Vue component that renders the expanded view toggle icon.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<cdx-button
 		weight="quiet"
 		aria-label="Toggle"

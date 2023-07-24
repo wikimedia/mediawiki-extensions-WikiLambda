@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for a pop-up "tooltip"
+<!--
+	WikiLambda Vue component for a pop-up "tooltip"
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div>
 		<div
 			class="ext-wikilambda-tooltip_button"

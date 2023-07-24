@@ -1,13 +1,13 @@
-<template>
-	<!--
-		WikiLambda Vue component for rendering a ZObjectKeyValue.
-		This component handles all the complex logic behind figuring out
-		what key-values can be editted, what are their bound types (if any)
-		and what kind of view will be rendered, expanded or simple.
+<!--
+	WikiLambda Vue component for rendering a ZObjectKeyValue.
+	This component handles all the complex logic behind figuring out
+	what key-values can be editted, what are their bound types (if any)
+	and what kind of view will be rendered, expanded or simple.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-key-value-row">
 		<div
 			class="ext-wikilambda-key-value"

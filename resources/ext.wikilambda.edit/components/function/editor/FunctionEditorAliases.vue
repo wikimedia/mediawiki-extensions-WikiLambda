@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for setting the aliases of a ZFunction in the Function editor.
+<!--
+	WikiLambda Vue component for setting the aliases of a ZFunction in the Function editor.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-function-definition-aliases">
 		<div class="ext-wikilambda-function-definition-aliases__label">
 			<label

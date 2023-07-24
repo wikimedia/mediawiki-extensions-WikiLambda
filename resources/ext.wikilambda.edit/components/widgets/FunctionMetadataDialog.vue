@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for the Function Metadata Dialog.
+<!--
+	WikiLambda Vue component for the Function Metadata Dialog.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<cdx-dialog
 		class="ext-wikilambda-metadata-dialog"
 		:open="open"

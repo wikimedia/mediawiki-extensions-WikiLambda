@@ -1,11 +1,11 @@
-<template>
-	<!--
-		WikiLambda Vue wrapper component for ACE CodeEditor
-		https://ace.c9.io/
+<!--
+	WikiLambda Vue wrapper component for ACE CodeEditor
+	https://ace.c9.io/
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div
 		ref="editor"
 		class="ext-wikilambda-codeEditor"

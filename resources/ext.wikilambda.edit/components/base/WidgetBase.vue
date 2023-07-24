@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue base component for Widgets
+<!--
+	WikiLambda Vue base component for Widgets
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<cdx-card class="ext-wikilambda-widget-base">
 		<template #title>
 			<div

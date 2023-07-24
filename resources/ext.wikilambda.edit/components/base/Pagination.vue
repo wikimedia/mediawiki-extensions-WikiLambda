@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for viewing a function examples.
+<!--
+	WikiLambda Vue component for viewing a function examples.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-pagination">
 		<cdx-button class="ext-wikilambda-pagination__view-all" @click="resetView">
 			{{ getButtonText }}

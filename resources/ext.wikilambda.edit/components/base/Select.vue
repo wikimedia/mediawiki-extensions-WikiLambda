@@ -1,11 +1,11 @@
-<template>
-	<!--
-		WikiLambda Vue component wrapper for Codex Select component, to make it wrap it's content
-		and animate into a full width on focus
+<!--
+	WikiLambda Vue component wrapper for Codex Select component, to make it wrap its content
+	and animate into a full width on focus
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<cdx-select
 		:id="id"
 		v-model:selected="value"

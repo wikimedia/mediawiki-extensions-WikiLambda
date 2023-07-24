@@ -1,12 +1,12 @@
-<template>
-	<!--
-		WikiLambda Vue component for displaying the results of running
-		a function's testers against its implementations or a funciton's
-		implementations against its testers.
+<!--
+	WikiLambda Vue component for displaying the results of running
+	a function's testers against its implementations or a funciton's
+	implementations against its testers.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<wl-widget-base
 		class="ext-wikilambda-function-report"
 		:has-header-action="hasItems"

@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for the special view of a ZFunction object.
+<!--
+	WikiLambda Vue component for the special view of a ZFunction object.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-function-viewer">
 		<cdx-tabs v-model:active="currentTab">
 			<cdx-tab

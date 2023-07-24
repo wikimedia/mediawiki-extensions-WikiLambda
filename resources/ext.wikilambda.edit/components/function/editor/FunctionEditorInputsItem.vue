@@ -1,9 +1,10 @@
+<!--
+	WikiLambda Vue component for an individual input to be set for a ZFunction in the Function editor.
+
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
 <template>
-	<!--
-		WikiLambda Vue component for an individual input to be set for a ZFunction in the Function editor.
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
 	<div class="ext-wikilambda-editor-input-list-item" role="inputs-item-container">
 		<div
 			v-if="isMobile"

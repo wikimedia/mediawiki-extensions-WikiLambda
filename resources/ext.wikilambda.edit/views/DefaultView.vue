@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue root component to render the Default View
+<!--
+	WikiLambda Vue root component to render the Default View
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-default-view">
 		<div class="ext-wikilambda-row">
 			<div class="ext-wikilambda-col ext-wikilambda-col-6 ext-wikilambda-col-tablet-24">

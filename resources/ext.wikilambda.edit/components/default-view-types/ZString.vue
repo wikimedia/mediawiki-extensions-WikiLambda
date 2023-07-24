@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for Z6/String objects.
+<!--
+	WikiLambda Vue component for Z6/String objects.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-string">
 		<p v-if="!edit">
 			{{ value }}

@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue root component to render the Function Evaluator Special Page
+<!--
+	WikiLambda Vue root component to render the Function Evaluator Special Page
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-function-evaluator-view">
 		<div class="ext-wikilambda-row">
 			<div class="ext-wikilambda-col">

@@ -1,11 +1,11 @@
-<template>
-	<!--
-		WikiLambda Vue component for the Leave Editor Dialog which is displayed when the user attempts to leave
-		the page before saving their changes.
+<!--
+	WikiLambda Vue component for the Leave Editor Dialog which is displayed when the user attempts to leave
+	the page before saving their changes.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-leaveeditordialog">
 		<cdx-dialog
 			:open="showDialog"

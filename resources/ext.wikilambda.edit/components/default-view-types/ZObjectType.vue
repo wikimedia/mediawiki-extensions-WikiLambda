@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for viewing and modifying a ZObject type and mode.
+<!--
+	WikiLambda Vue component for viewing and modifying a ZObject type and mode.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-type-mode">
 		<div
 			v-if="edit"
