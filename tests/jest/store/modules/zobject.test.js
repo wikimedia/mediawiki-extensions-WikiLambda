@@ -3976,6 +3976,71 @@ describe( 'zobject Vuex module', function () {
 				expect( context.dispatch ).not.toHaveBeenCalledWith( 'changeType', expectedZ2K2ChangeTypePayload );
 			} );
 
+			it( 'initialize ZObject for an old revision', () => {
+				getMock = jest.fn( function () {
+					return {
+						then: () => {},
+						catch: () => {}
+					};
+				} );
+				mw.Api = jest.fn( function () {
+					return { get: getMock };
+				} );
+				mw.Uri.mockImplementationOnce( () => {
+					return {
+						query: {
+							title: 'Z10001',
+							oldid: '10002'
+						}
+					};
+				} );
+
+				const expectedPayload = {
+					action: 'query',
+					list: 'wikilambdaload_zobjects',
+					format: 'json',
+					wikilambdaload_zids: 'Z10001',
+					wikilambdaload_canonical: 'true',
+					wikilambdaload_revisions: '10002'
+				};
+
+				zobjectModule.actions.initializeRootZObject( context, 'Z10001' );
+
+				expect( getMock ).toHaveBeenCalledWith( expectedPayload );
+			} );
+
+			it( 'initialize ZObject without revision', () => {
+				getMock = jest.fn( function () {
+					return {
+						then: () => {},
+						catch: () => {}
+					};
+				} );
+				mw.Api = jest.fn( function () {
+					return { get: getMock };
+				} );
+				mw.Uri.mockImplementationOnce( () => {
+					return {
+						query: {
+							title: 'Z10001'
+						}
+					};
+				} );
+
+				const expectedPayload = {
+					action: 'query',
+					list: 'wikilambdaload_zobjects',
+					format: 'json',
+					wikilambdaload_zids: 'Z10001',
+					wikilambdaload_canonical: 'true',
+					wikilambdaload_revisions: undefined
+				};
+
+				zobjectModule.actions.initializeRootZObject( context, 'Z10001' );
+
+				expect( getMock ).toHaveBeenCalledWith( expectedPayload );
+			} );
+
 			it( 'Initialize Root ZObject', function () {
 				// Root ZObject
 				const Z1234 = {

@@ -13,6 +13,7 @@ use ApiTestCase;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 
 /**
@@ -249,6 +250,67 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 
 		$this->assertEquals( 'Z111K1', $z111_canonical['Z2K2']['Z4K2'][1]['Z3K2'] );
 		$this->assertEquals( $stringZ111K1, $z111_normal['Z2K2']['Z4K2']['K1']['Z3K2'] );
+	}
+
+	public function testRevisions_valid() {
+		$revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
+		$this->insertBuiltinObjects( [ 'Z11', 'Z12' ] );
+
+		$titleZ11 = Title::newFromText( 'Z11', NS_MAIN );
+		$titleZ12 = Title::newFromText( 'Z12', NS_MAIN );
+		$revisionZ11 = $revisionStore->getKnownCurrentRevision( $titleZ11 );
+		$revisionZ12 = $revisionStore->getKnownCurrentRevision( $titleZ12 );
+
+		// Requesting Z11|Z12 with their correct revision numbers
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdaload_zobjects',
+			'wikilambdaload_zids' => 'Z11|Z12',
+			'wikilambdaload_revisions' => $revisionZ11->getId() . '|' . $revisionZ12->getId(),
+			'wikilambdaload_canonical' => 'true'
+		] );
+
+		$zobjects = $result[0]['query']['wikilambdaload_zobjects'];
+		$this->assertTrue( $zobjects[ 'Z11' ][ 'success' ] );
+		$this->assertTrue( $zobjects[ 'Z12' ][ 'success' ] );
+	}
+
+	public function testRevisions_invalid() {
+		$revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
+		$this->insertBuiltinObjects( [ 'Z11', 'Z12' ] );
+
+		$titleZ11 = Title::newFromText( 'Z11', NS_MAIN );
+		$revisionZ11 = $revisionStore->getKnownCurrentRevision( $titleZ11 );
+
+		$this->setExpectedApiException( [ 'apierror-query+wikilambdaload_zobjects-unloadable', 'Z12' ] );
+
+		// Requesting Z11|Z12 with wrong revision numbers
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdaload_zobjects',
+			'wikilambdaload_zids' => 'Z11|Z12',
+			'wikilambdaload_revisions' => $revisionZ11->getId() . '|999999',
+			'wikilambdaload_canonical' => 'true'
+		] );
+	}
+
+	public function testRevisions_badCount() {
+		$revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
+		$this->insertBuiltinObjects( [ 'Z11', 'Z12' ] );
+
+		$titleZ11 = Title::newFromText( 'Z11', NS_MAIN );
+		$revisionZ11 = $revisionStore->getKnownCurrentRevision( $titleZ11 );
+
+		$this->setExpectedApiException( [ 'wikilambda-zerror', 'Z500' ] );
+
+		// Requesting Z11|Z12 with wrong revision numbers
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdaload_zobjects',
+			'wikilambdaload_zids' => 'Z11|Z12',
+			'wikilambdaload_revisions' => $revisionZ11->getId(),
+			'wikilambdaload_canonical' => 'true'
+		] );
 	}
 
 	public function testDependencies() {

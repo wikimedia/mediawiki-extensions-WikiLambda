@@ -71,6 +71,39 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->assertSame( [ $zid ], $zids );
 	}
 
+	public function testFetchZObjectByTitle_revision() {
+		$revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
+		$sysopUser = $this->getTestSysop()->getUser();
+
+		$zid = $this->zobjectStore->getNextAvailableZid();
+		$title = Title::newFromText( $zid, NS_MAIN );
+
+		$input = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
+			. '"Z2K2": "hello",'
+			. '"Z2K3": {"Z1K1": "Z12", "Z12K1": [ "Z11" ] } }';
+
+		// First revision:
+		$this->zobjectStore->createNewZObject( $input, 'Create summary', $sysopUser );
+		$zobject = $this->zobjectStore->fetchZObjectByTitle( $title );
+
+		// We change the text representation of the ZObject to update it in the DB
+		$firstObjectText = $zobject->getText();
+		$secondObjectText = str_replace( "hello", "bye", $zobject->getText() );
+
+		// Second revision:
+		$page = $this->zobjectStore->updateZObject( $zid, $secondObjectText, 'Update summary', $sysopUser );
+
+		// Get revision numbers:
+		$revisions = $revisionStore->getRevisionIdsBetween( $page->getWikiPage()->getId() );
+
+		// We fetch by title and revision number
+		$firstRevision = $this->zobjectStore->fetchZObjectByTitle( $title, $revisions[0] );
+		$secondRevision = $this->zobjectStore->fetchZObjectByTitle( $title, $revisions[1] );
+
+		$this->assertEquals( $firstRevision->getText(), $firstObjectText );
+		$this->assertEquals( $secondRevision->getText(), $secondObjectText );
+	}
+
 	public function testFetchZObjectByTitle_invalid() {
 		$invalidZid = 'Z0999';
 		$title = Title::newFromText( $invalidZid, NS_MAIN );

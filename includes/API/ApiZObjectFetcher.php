@@ -37,7 +37,7 @@ class ApiZObjectFetcher extends WikiLambdaApiBase {
 			$zErrorObject = ZErrorFactory::createZErrorInstance(
 				ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
 				[
-					'message' => "You must specify a revision for each ZID"
+					'message' => "You must specify a revision for each ZID, or none at all."
 				]
 			);
 			$this->dieWithZError( $zErrorObject );
