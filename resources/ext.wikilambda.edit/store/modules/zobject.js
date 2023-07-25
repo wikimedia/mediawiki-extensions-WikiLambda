@@ -2268,6 +2268,7 @@ module.exports = exports = {
 		initializeRootZObject: function ( context, zId ) {
 			// Set current Zid
 			context.commit( 'setCurrentZid', zId );
+			const revision = getParameterByName( 'oldid' );
 
 			// Calling the API without language parameter so that we get
 			// the unfiltered multilingual object
@@ -2277,7 +2278,8 @@ module.exports = exports = {
 				list: 'wikilambdaload_zobjects',
 				format: 'json',
 				wikilambdaload_zids: zId,
-				wikilambdaload_canonical: 'true'
+				wikilambdaload_canonical: 'true',
+				wikilambdaload_revisions: revision || undefined
 			} ).then( function ( response ) {
 				const zobject = response.query.wikilambdaload_zobjects[ zId ].data;
 

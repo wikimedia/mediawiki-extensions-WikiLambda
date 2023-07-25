@@ -110,7 +110,7 @@ class ZObjectStore {
 	 */
 	public function fetchZObjectByTitle( Title $title, ?int $requestedRevision = null ) {
 		if ( $requestedRevision ) {
-			$revision = $this->revisionStore->getRevisionById( $requestedRevision, 0, $title );
+			$revision = $this->revisionStore->getRevisionByTitle( $title, $requestedRevision, 0 );
 		} else {
 			$revision = $this->revisionStore->getKnownCurrentRevision( $title );
 		}

@@ -20,6 +20,7 @@ use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\Languages\LanguageNameUtils;
@@ -75,14 +76,26 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 	}
 
 	/**
+	 * @param ZError $zerror
+	 */
+	public function dieWithZError( $zerror ) {
+		parent::dieWithError(
+			[ 'wikilambda-zerror', $zerror->getZErrorType() ],
+			null,
+			$zerror->getErrorData()
+		);
+	}
+
+	/**
 	 * @param string $zid
 	 * @param array|null $languages
 	 * @param bool $canonical
 	 * @param bool $getDependencies
+	 * @param int|null $revision
 	 * @return array
 	 * @throws ZErrorException
 	 */
-	private function fetchContent( $zid, $languages, $canonical, $getDependencies ) {
+	private function fetchContent( $zid, $languages, $canonical, $getDependencies, $revision = null ) {
 		// Check for invalid ZID and throw INVALID_TITLE exception
 		if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
 			throw new ZErrorException(
@@ -106,7 +119,8 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 
 		// Fetch ZObject and die if there are unmanageable errors
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
-		$page = $zObjectStore->fetchZObjectByTitle( $title );
+		$page = $zObjectStore->fetchZObjectByTitle( $title, $revision );
+
 		if ( !$page ) {
 			$this->dieWithError( [ 'apierror-query+wikilambdaload_zobjects-unloadable', $zid ] );
 		}
@@ -182,12 +196,28 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 		$pageResult = null;
 
 		$zids = $params[ 'zids' ];
+		$revisions = $params[ 'revisions' ];
 		$language = $params[ 'language' ];
 		$canonical = $params[ 'canonical' ];
 		$getDependencies = $params[ 'get_dependencies' ];
+		$revisionMap = [];
 
+		// Check that if we request revision, we request one per zid
+		if ( $revisions ) {
+			if ( count( $revisions ) !== count( $zids ) ) {
+				$zErrorObject = ZErrorFactory::createZErrorInstance(
+					ZErrorTypeRegistry::Z_ERROR_UNKNOWN,
+					[ 'message' => "You must specify a revision for each ZID, or none at all." ]
+				);
+				$this->dieWithZError( $zErrorObject );
+			}
+			foreach ( $zids as $index => $zid ) {
+				$revisionMap[ $zid ] = (int)$revisions[ $index ];
+			}
+		}
+
+		// Get language fallback chain if language is set
 		if ( $language ) {
-			// Get language fallback chain
 			$languages = [ $language ];
 			$languages = array_merge(
 				$languages,
@@ -210,7 +240,8 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 					$zid,
 					$languages,
 					$canonical,
-					$getDependencies
+					$getDependencies,
+					$revisions ? $revisionMap[ $zid ] : null
 				);
 
 				// We queue the type dependencies
@@ -246,6 +277,10 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 			'zids' => [
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => true,
+				ParamValidator::PARAM_ISMULTI => true,
+			],
+			'revisions' => [
+				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_ISMULTI => true,
 			],
 			'language' => [
