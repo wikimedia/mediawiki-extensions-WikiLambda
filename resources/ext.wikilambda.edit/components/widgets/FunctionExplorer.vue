@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component widget for exploring function details.
+<!--
+	WikiLambda Vue component widget for exploring function details.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<wl-widget-base
 		class="ext-wikilambda-function-explorer"
 		:has-header-action="edit"

@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for the implementation table in the ZFunction Viewer Details tab.
+<!--
+	WikiLambda Vue component for the implementation table in the ZFunction Viewer Details tab.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-function-details-table">
 		<wl-table
 			:header="header"

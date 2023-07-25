@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for the about tab in the ZFunction Viewer.
+<!--
+	WikiLambda Vue component for the about tab in the ZFunction Viewer.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<main class="ext-wikilambda-function-about">
 		<div class="ext-wikilambda-function-about__summary">
 			<wl-function-viewer-about-description></wl-function-viewer-about-description>

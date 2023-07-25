@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for Z9/Reference objects.
+<!--
+	WikiLambda Vue component for Z9/Reference objects.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-reference">
 		<template v-if="!edit">
 			<a

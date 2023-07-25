@@ -1,12 +1,12 @@
-<template>
-	<!--
-		Wikilambda Vue component for publishing a zobject.
-		Contains both the publish button and the dialog pop-up flow prior
-		to submission.
+<!--
+	Wikilambda Vue component for publishing a zobject.
+	Contains both the publish button and the dialog pop-up flow prior
+	to submission.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<wl-widget-base class="ext-wikilambda-publish-widget">
 		<template #main>
 			<cdx-button

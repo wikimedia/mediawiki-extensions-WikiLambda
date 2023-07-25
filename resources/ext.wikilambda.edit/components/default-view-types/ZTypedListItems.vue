@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for a Typed List set of items.
+<!--
+	WikiLambda Vue component for a Typed List set of items.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-ztyped-list-items ext-wikilambda-key-value">
 		<!-- if expanded, show toggle button -->
 		<div

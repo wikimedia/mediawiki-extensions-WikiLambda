@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for the AboutViewLanguages Dialog.
+<!--
+	WikiLambda Vue component for the AboutViewLanguages Dialog.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div>
 		<cdx-dialog
 			:open="open"

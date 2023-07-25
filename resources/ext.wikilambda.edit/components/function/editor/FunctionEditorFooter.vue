@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component footer for the Function Editor, including publish, cancel and implement buttons.
+<!--
+	WikiLambda Vue component footer for the Function Editor, including publish, cancel and implement buttons.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div class="ext-wikilambda-function-definition-footer">
 		<wl-publish-widget
 			:is-dirty="isFunctionDirty"

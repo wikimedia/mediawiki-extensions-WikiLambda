@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component - About Widget.
+<!--
+	WikiLambda Vue component - About Widget.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<wl-widget-base
 		class="ext-wikilambda-about"
 		:has-header-action="true"

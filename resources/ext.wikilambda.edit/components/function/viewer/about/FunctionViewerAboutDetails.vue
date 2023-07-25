@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for viewing a function name in different languages.
+<!--
+	WikiLambda Vue component for viewing a function name in different languages.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div>
 		<h2>
 			{{ $i18n( 'wikilambda-persistentobject-details-label' ).text() }}

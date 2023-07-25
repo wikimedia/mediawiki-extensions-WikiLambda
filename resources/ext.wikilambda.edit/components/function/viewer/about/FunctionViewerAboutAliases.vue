@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue component for viewing function aliases in different languages.
+<!--
+	WikiLambda Vue component for viewing function aliases in different languages.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div
 		v-if="langAliasString.length > 0"
 		class="ext-wikilambda-function-viewer-aliases"

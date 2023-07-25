@@ -1,10 +1,10 @@
-<template>
-	<!--
-		WikiLambda Vue interface module for generic ZObject manipulation.
+<!--
+	WikiLambda Vue interface module for generic ZObject manipulation.
 
-		@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
-		@license MIT
-	-->
+	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
+	@license MIT
+-->
+<template>
 	<div id="ext-wikilambda-app" class="ext-wikilambda-edit">
 		<template v-if="getZObjectInitialized && isAppSetup">
 			<!-- Append wl- prefix to the router current view, to help reference component correctly -->
