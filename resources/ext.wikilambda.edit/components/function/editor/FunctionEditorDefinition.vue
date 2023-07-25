@@ -37,9 +37,8 @@
 				<!-- component that displays the description for a language -->
 				<wl-function-editor-description
 					:z-lang="labelLanguage.zLang"
-					@updated-description="updatedLabel"
-				>
-				</wl-function-editor-description>
+					@updated-description="setHasUpdatedLabels"
+				></wl-function-editor-description>
 				<!-- component that displays aliases for a language -->
 				<wl-function-editor-aliases
 					data-testid="function-editor-alias-input"
