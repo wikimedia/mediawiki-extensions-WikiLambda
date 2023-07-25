@@ -103,4 +103,14 @@ module.exports = exports = {
 	}
 }
 
+[ dir='rtl' ] {
+	.ext-wikilambda-expand-toggle {
+		.ext-wikilambda-expand-toggle-icon {
+			&.ext-wikilambda-expand-toggle-collapsed {
+				transform: rotate( 90deg );
+			}
+		}
+	}
+}
+
 </style>
