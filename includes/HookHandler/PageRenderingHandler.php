@@ -69,8 +69,12 @@ class PageRenderingHandler implements
 		// Allow the user to over-ride the content language if explicitly requested
 		$lang = $skinTemplate->getRequest()->getRawVal( 'uselang' ) ?? $lang;
 
-		// Add "selected" class to read tab
-		$links['views']['view']['class'] = 'selected';
+		// Add "selected" class to read tab, if we're viewing the page
+		if (
+			$skinTemplate->getContext()->getActionName() === 'view'
+		) {
+			$links['views']['view']['class'] = 'selected';
+		}
 
 		// Rewrite history link to have ?uselang in it
 		$links['views']['history']['href'] = '/wiki/' . $zid . '?action=history&uselang=' . $lang;
