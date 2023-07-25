@@ -156,7 +156,7 @@
 	"wikilambda-editor-publish-dialog-header": "Zveřejnit vaše změny",
 	"wikilambda-editor-publish-dialog-summary-label": "Shrnutí editace",
 	"wikilambda-editor-publish-dialog-summary-placeholder": "Přidány aliasy v češtině",
-	"wikilambda-editor-publish-dialog-how-did-you-improve-label": "Jak jste tuto stránku vylepšili?",
+	"wikilambda-editor-publish-dialog-summary-help-text": "Jak jste tuto stránku vylepšili?",
 	"wikilambda-ztyped-pair-placeholder": "Vyberte typ",
 	"wikilambda-ztyped-pair-key-label": "Klíč",
 	"wikilambda-ztyped-pair-value-label": "Hodnota",

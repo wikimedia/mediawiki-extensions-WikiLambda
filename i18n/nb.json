@@ -184,7 +184,7 @@
 	"wikilambda-editor-publish-dialog-header": "Publiser endringene dine",
 	"wikilambda-editor-publish-dialog-summary-label": "Redigeringsforklaring",
 	"wikilambda-editor-publish-dialog-summary-placeholder": "La til aliaser på engelsk",
-	"wikilambda-editor-publish-dialog-how-did-you-improve-label": "Hvordan forbedret du denne siden?",
+	"wikilambda-editor-publish-dialog-summary-help-text": "Hvordan forbedret du denne siden?",
 	"wikilambda-ztyped-pair-placeholder": "Velg en type",
 	"wikilambda-ztyped-pair-key-label": "Nøkkel",
 	"wikilambda-ztyped-pair-value-label": "Verdi",
