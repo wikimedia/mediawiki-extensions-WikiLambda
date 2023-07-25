@@ -19,6 +19,7 @@
 				weight="quiet"
 				aria-label="Edit"
 				data-testid="open-language-dialog-button"
+				:disabled="!canEditObject"
 				@click="openUserLanguageDialog"
 			>
 				<cdx-icon :icon="icons.cdxIconEdit"></cdx-icon>
@@ -155,8 +156,19 @@ module.exports = exports = {
 		'getZMonolingualStringsetValues',
 		'getZPersistentAlias',
 		'getZPersistentDescription',
-		'getZPersistentName'
+		'getZPersistentName',
+		'isNewZObject',
+		'isUserLoggedIn'
 	] ), {
+		/**
+		 * Returns whether the user can edit the function
+		 *
+		 * @return {boolean}
+		 */
+		canEditObject: function () {
+			// TODO (T301667): restrict to only certain user roles
+			return this.isNewZObject ? true : this.isUserLoggedIn;
+		},
 		/**
 		 * Returns the best Name/Label (Z2K3) row depending
 		 * on the user preferred language.
