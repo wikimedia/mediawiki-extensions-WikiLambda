@@ -29,18 +29,21 @@
 				:show-dialog="showPublishDialog"
 				:function-signature-changed="functionSignatureChanged"
 				@close-dialog="closePublishDialog"
+				@before-exit="removeListeners"
 			></wl-publish-dialog>
 			<wl-leave-editor-dialog
 				:show-dialog="showLeaveEditorDialog"
 				:continue-callback="leaveEditorCallback"
-				@close-dialog="closeLeaveDialog">
-			</wl-leave-editor-dialog>
+				@close-dialog="closeLeaveDialog"
+				@before-exit="removeListeners"
+			></wl-leave-editor-dialog>
 		</template>
 	</wl-widget-base>
 </template>
 
 <script>
-const CdxButton = require( '@wikimedia/codex' ).CdxButton,
+const Constants = require( '../../Constants.js' ),
+	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	WidgetBase = require( '../base/WidgetBase.vue' ),
 	LeaveEditorDialog = require( './LeaveEditorDialog.vue' ),
 	PublishDialog = require( './PublishDialog.vue' ),
@@ -141,8 +144,8 @@ module.exports = exports = {
 			this.$emit( 'start-cancel' );
 			// Get redirect url
 			const cancelTargetUrl = this.isNewZObject ?
-				new mw.Title( 'Wikifunctions:Main_Page' ).getUrl() :
-				'/view/' + this.getZLang + '/' + this.getCurrentZObjectId;
+				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
+				`/view/${this.getZLang}/${this.getCurrentZObjectId}`;
 			this.leaveTo( cancelTargetUrl );
 		},
 
@@ -150,9 +153,6 @@ module.exports = exports = {
 		 * Handles navigation away from the page.
 		 * Currently only handles navigation out when
 		 * chicking a link.
-		 *
-		 * TODO: figure out how to capture back button
-		 * or direct window.location changes
 		 *
 		 * @param {Object} e the click event
 		 */
@@ -176,16 +176,37 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Abandon page after confirmation, dispatch
-		 * cancelation event and redirect to targetUrl
+		 * Handles navigation away from the page using the browser
+		 * beforeunload event. The dialog shown will be the browser
+		 * provided dialog, and when existing through this way we
+		 * won't be able to track cancel events with our event
+		 * logging system. The beforeunload event has compatibility
+		 * and performance issues.
+		 *
+		 * See:
+		 * https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
+		 * https://developer.chrome.com/blog/page-lifecycle-api/#the-beforeunload-event
+		 *
+		 * @param {Object} e the beforeunload event
+		 */
+		handleUnload: function ( e ) {
+			if ( this.isDirty ) {
+				e.preventDefault();
+			}
+		},
+
+		/**
+		 * Handle actions before leaving the edit page:
+		 * Show confirmation dialog if there are unsaved changes
+		 * and sends a cancelation event when/if we finally leave.
 		 *
 		 * @param {string} targetUrl
 		 */
 		leaveTo: function ( targetUrl ) {
 			const leaveAction = () => {
+				this.removeListeners();
 				const eventNamespace = eventLogger.getNamespace( this.getCurrentZObjectType );
 				eventLogger.dispatchEvent( `wf.ui.${eventNamespace}.cancel`, this.eventData );
-				window.removeEventListener( 'click', this.handleClickAway );
 				window.location.href = targetUrl;
 			};
 
@@ -195,10 +216,20 @@ module.exports = exports = {
 			} else {
 				leaveAction();
 			}
+		},
+
+		/**
+		 * On successfully exiting the page, remove event
+		 * listeners.
+		 */
+		removeListeners: function () {
+			window.removeEventListener( 'click', this.handleClickAway );
+			window.removeEventListener( 'beforeunload', this.handleUnload );
 		}
 	} ),
 	mounted: function () {
 		window.addEventListener( 'click', this.handleClickAway );
+		window.addEventListener( 'beforeunload', this.handleUnload );
 	}
 };
 </script>

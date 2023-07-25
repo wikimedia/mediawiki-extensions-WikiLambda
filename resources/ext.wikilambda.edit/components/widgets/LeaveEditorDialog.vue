@@ -97,10 +97,19 @@ module.exports = exports = {
 		}
 	},
 	methods: {
+		/**
+		 * On click "Continue editing" option, simply close the dialog
+		 */
 		stayOnPage: function () {
 			this.$emit( 'close-dialog' );
 		},
+
+		/**
+		 * On click "Discard edits" option, handle state and event
+		 * listeners for exit and close the dialog
+		 */
 		leavePage: function () {
+			this.$emit( 'before-exit' );
 			if ( this.continueCallback ) {
 				this.continueCallback();
 			}
