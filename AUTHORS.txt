@@ -6,8 +6,8 @@ The WikiLambda team comprises several contributors, of whom those who have commi
 * Julia Kieserman <jkieserman@wikimedia.org>
 * Dani de Waal <ddwaal-ctr@wikimedia.org>
 * Simone Cuomo <simone@thisdot.co>
-* Adesoji <temitopeadesoji23@gmail.com>
 * David Martin <dmartin@wikimedia.org>
+* Adesoji <temitopeadesoji23@gmail.com>
 * Cory Massaro <cmassaro@wikimedia.org>
 * EWright <edmund.wright@gmail.com>
 * Denny Vrandečić <dvrandecic@wikimedia.org>
@@ -27,6 +27,7 @@ The WikiLambda team comprises several contributors, of whom those who have commi
 * Mary Yang <myang-ctr@wikimedia.org>
 * Roan Kattouw <roan.kattouw@gmail.com>
 * Alexander Vorwerk <zabe@avorwerk.net>
+* Daimona Eaytoy <daimona.wiki@gmail.com>
 * Ori Livneh <ori.livneh@gmail.com>
 * sushrith <bogisushrith@gmail.com>
 * Željko Filipin <zeljko.filipin@gmail.com>
@@ -34,7 +35,7 @@ The WikiLambda team comprises several contributors, of whom those who have commi
 * Anne Tomasevich <atomasevich@wikimedia.org>
 * Bartosz Dziewoński <matma.rex@gmail.com>
 * C. Scott Ananian <cscott@cscott.net>
-* Daimona Eaytoy <daimona.wiki@gmail.com>
+* Carrie Coxwell <ccoxwell@wikimedia.org>
 * Eric Gardner <gardner.ec@gmail.com>
 * Fomafix <fomafix@googlemail.com>
 * Kosta Harlan <kharlan@wikimedia.org>
@@ -48,7 +49,7 @@ The WikiLambda team comprises several contributors, of whom those who have commi
 
 … as well as many translation contributors, whose work is represented on TranslateWiki.net.
 
-(This list was generated on 2023-06-26 with `git shortlog -sne --no-merges | grep -v '\[BOT\]'`.)
+(This list was generated on 2023-07-25 with `git shortlog -sne --no-merges | grep -v '\[BOT\]'`.)
 
 This work is based on the vision set out by Denny Vrandečić whilst working at Google Research in his initial paper[0], evolved into an architecture in his subsequent paper[1], and was pioneered in a prototype implementation, AbstractText[2].
 
