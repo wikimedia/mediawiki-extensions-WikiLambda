@@ -229,6 +229,21 @@ module.exports = exports = {
 		},
 
 		/**
+		 * Before exiting the page after successful publishing, handle
+		 * state and remove exit event listeners.
+		 *
+		 * @param {string | undefined} pageTitle
+		 */
+		successfulExit: function ( pageTitle ) {
+			this.$emit( 'before-exit' );
+			this.setDirty( false );
+			this.closeDialog();
+			window.location.href = !pageTitle ?
+				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
+				`/view/${this.getZLang}/${pageTitle}?success=true`;
+		},
+
+		/**
 		 * Submits the ZObject to the wikilambda_edit API
 		 * and handles the return value:
 		 * 1. If the response contains an error, saves the error
@@ -245,11 +260,7 @@ module.exports = exports = {
 				summary,
 				detachFunctionObjects
 			} ).then( ( pageTitle ) => {
-				this.setDirty( false );
-				this.closeDialog();
-				if ( pageTitle ) {
-					window.location.href = '/view/' + this.getZLang + '/' + pageTitle + '?success=true';
-				}
+				this.successfulExit( pageTitle );
 			} ).catch( ( error ) => {
 				this.clearAllErrors();
 				// If error.error.message: known ZError

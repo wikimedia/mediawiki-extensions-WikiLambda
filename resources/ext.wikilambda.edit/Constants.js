@@ -127,6 +127,7 @@ var Constants = {
 		DEFAULT_VIEW: 'default-view'
 	},
 	paths = {
+		MAIN_PAGE: 'Wikifunctions:Main_Page',
 		CREATE_OBJECT_TITLE: 'Special:CreateObject',
 		RUN_FUNCTION_TITLE: 'Special:RunFunction',
 		LIST_OBJECTS_BY_TYPE_TYPE: 'Special:ListObjectsByType/Z4',
