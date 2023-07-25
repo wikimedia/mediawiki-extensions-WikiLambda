@@ -92,7 +92,7 @@
 	"wikilambda-editor-implementation-title": "Implementazione",
 	"wikilambda-editor-publish-dialog-header": "Pubblica le tue modifiche",
 	"wikilambda-editor-publish-dialog-summary-label": "Oggetto della modifica",
-	"wikilambda-editor-publish-dialog-how-did-you-improve-label": "Come hai migliorato questa pagina?",
+	"wikilambda-editor-publish-dialog-summary-help-text": "Come hai migliorato questa pagina?",
 	"wikilambda-ztyped-pair-placeholder": "Seleziona un tipo",
 	"wikilambda-ztyped-pair-key-label": "Chiave",
 	"wikilambda-ztyped-pair-value-label": "Valore",

@@ -198,7 +198,6 @@
 	"wikilambda-optional": "opcjonalne",
 	"wikilambda-continue-editing": "Kontynuuj edycję",
 	"wikilambda-discard-edits": "Porzuć zmiany",
-	"wikilambda-function-about-summary": "W tym miejscu pojawi się podsumowanie opisu funkcji, kiedy tylko ta funkcjonalność oprogramowania będzie dostępna. Pozwoli wyjaśnić, dlaczego funkcja istnieje, jak się jej typowo używa i jakie alternatywy mogą działać lepiej w innych przypadkach. W trybie edycji będzie to wielojęzyczne edytowalne pole wikitekstu.",
 	"wikilambda-function-details-summary": "Każdy może zaproponować nową implementację lub test. Proponowany kod jest sprawdzany przez społeczność Wikifunkcji, zanim stanie się dostępną implementacją lub zweryfikowanym testem.",
 	"wikilambda-function-details-summary-learn-more": "Dowiedz się więcej o procesie recenzji.",
 	"wikilambda-function-viewer-aliases-header": "Inne nazwy",
