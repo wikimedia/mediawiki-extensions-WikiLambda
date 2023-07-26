@@ -594,6 +594,7 @@ describe( 'ZObjectKeyValue', () => {
 		it( 'navigates into function editor when content type is set to function', () => {
 			getters.getZObjectKeyByRowId = createFunctionsMockForId( rowId, Constants.Z_PERSISTENTOBJECT_VALUE );
 			getters.getZObjectTypeByRowId = createFunctionsMockForId( rowId, Constants.Z_OBJECT );
+			actions.changeType = jest.fn();
 
 			const mockNavigate = jest.fn();
 
@@ -602,8 +603,7 @@ describe( 'ZObjectKeyValue', () => {
 				actions: { navigate: mockNavigate }
 			} );
 
-			global.store.hotUpdate( { getters: getters } );
-
+			global.store.hotUpdate( { getters: getters, actions: actions } );
 			const wrapper = shallowMount( ZObjectKeyValue, {
 				props: {
 					edit: true,
@@ -619,7 +619,12 @@ describe( 'ZObjectKeyValue', () => {
 			const keyValueSet = wrapper.findComponent( { name: 'wl-z-object-key-value-set' } );
 			keyValueSet.vm.$emit( 'set-type', { value: Constants.Z_FUNCTION } );
 			expect( mockNavigate ).toHaveBeenCalledWith( expect.anything(), { to: Constants.VIEWS.FUNCTION_EDITOR } );
-			expect( actions.changeType ).toHaveBeenCalledTimes( 0 );
+			expect( actions.changeType ).toHaveBeenCalledTimes( 1 );
+			expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
+				id: rowId,
+				type: Constants.Z_FUNCTION,
+				append: false
+			} );
 		} );
 	} );
 } );

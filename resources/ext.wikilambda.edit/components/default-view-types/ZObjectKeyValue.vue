@@ -668,6 +668,13 @@ module.exports = exports = {
 		 * @param {boolean} payload.append whether to append a new blank object to a list
 		 */
 		setType: function ( payload ) {
+			// Set the type
+			this.changeType( {
+				id: this.rowId,
+				type: payload.value,
+				append: payload.append ? payload.append : false
+			} );
+
 			// If we are setting Z2K2 type to Function/Z8, redirect to function editor
 			if (
 				( this.key === Constants.Z_PERSISTENTOBJECT_VALUE ) &&
@@ -677,13 +684,8 @@ module.exports = exports = {
 				return;
 			}
 
-			// Else simply change type and remain in default view page
+			// Else remain in default view page and set to dirty
 			this.setDirty();
-			this.changeType( {
-				id: this.rowId,
-				type: payload.value,
-				append: payload.append ? payload.append : false
-			} );
 		},
 
 		/**
