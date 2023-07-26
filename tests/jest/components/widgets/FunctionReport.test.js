@@ -5,20 +5,20 @@
  * @license MIT
  */
 'use strict';
-var VueTestUtils = require( '@vue/test-utils' ),
+const VueTestUtils = require( '@vue/test-utils' ),
+	{ waitFor } = require( '@testing-library/vue' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	FunctionReport = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionReport.vue' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
 
 describe( 'FunctionReport', function () {
-	var fetchZKeysMock = jest.fn( function () {
-			return true;
-		} ),
-		getTestResultsMock = jest.fn(),
-		getters;
+	let getters,
+		actions;
 
 	beforeEach( function () {
 		getters = {
+			getZLang: createGetterMock( 'Z1002' ),
 			getLabel: createGettersWithFunctionsMock(),
 			getStoredObject: createGettersWithFunctionsMock( {
 				[ Constants.Z_PERSISTENTOBJECT_VALUE ]:
@@ -42,14 +42,16 @@ describe( 'FunctionReport', function () {
 				passing: 1,
 				total: 1,
 				percentage: 100
-			} )
+			} ),
+			getZTesterResults: createGettersWithFunctionsMock()
+		};
+		actions = {
+			fetchZKeys: jest.fn(),
+			getTestResults: jest.fn()
 		};
 		global.store.hotUpdate( {
 			getters: getters,
-			actions: {
-				fetchZKeys: fetchZKeysMock,
-				getTestResults: getTestResultsMock
-			}
+			actions: actions
 		} );
 	} );
 
@@ -60,28 +62,6 @@ describe( 'FunctionReport', function () {
 			}
 		} );
 		expect( wrapper.find( 'div' ).exists() ).toBeTruthy();
-	} );
-
-	it( 'triggers the tests on load', function () {
-		VueTestUtils.mount( FunctionReport, {
-			props: {
-				zFunctionId: ''
-			}
-		} );
-
-		return new Promise( function ( resolve ) {
-			setTimeout( function () {
-				expect( getTestResultsMock ).toHaveBeenCalled();
-				expect( getTestResultsMock ).toHaveBeenCalledWith( expect.anything(), {
-					zFunctionId: '',
-					zImplementations: [],
-					zTesters: [],
-					clearPreviousResults: true
-				} );
-
-				resolve();
-			}, 1500 );
-		} );
 	} );
 
 	it( 'displays no results when no implementations or testers found', function () {
@@ -95,18 +75,10 @@ describe( 'FunctionReport', function () {
 	} );
 
 	it( 'displays all available testers if a new zImplementation is being created', async function () {
-		getters.getCurrentZObjectId = jest.fn( function () {
-			return Constants.NEW_ZID_PLACEHOLDER;
-		} );
-
-		global.store.hotUpdate( {
-			getters: getters
-		} );
-
 		var wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
-				zImplementationId: Constants.NEW_ZID_PLACEHOLDER,
+				rootZid: Constants.NEW_ZID_PLACEHOLDER,
 				reportType: Constants.Z_IMPLEMENTATION
 			}
 		} );
@@ -115,22 +87,13 @@ describe( 'FunctionReport', function () {
 
 		var content = wrapper.findAll( '.ext-wikilambda-function-report__result' );
 		expect( content.length ).toBe( 2 );
-
 	} );
 
 	it( 'displays all available implementations if a new zTester is being created', async function () {
-		getters.getCurrentZObjectId = jest.fn( function () {
-			return Constants.NEW_ZID_PLACEHOLDER;
-		} );
-
-		global.store.hotUpdate( {
-			getters: getters
-		} );
-
 		var wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
-				zTesterId: Constants.NEW_ZID_PLACEHOLDER,
+				rootZid: Constants.NEW_ZID_PLACEHOLDER,
 				reportType: Constants.Z_TESTER
 			}
 		} );
@@ -140,77 +103,181 @@ describe( 'FunctionReport', function () {
 
 		var content = wrapper.findAll( '.ext-wikilambda-function-report__result' );
 		expect( content.length ).toBe( 3 );
-
 	} );
 
 	it( 'if displayed on a ZImplementation page, only shows testers', function () {
-		getters.getCurrentZObjectId = jest.fn( function () {
-			return 'Z10001';
-		} );
-
-		global.store.hotUpdate( {
-			getters: getters
-		} );
-
 		var wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
-				zImplementationId: 'Z10001',
+				rootZid: 'Z10001',
 				reportType: Constants.Z_IMPLEMENTATION
 			}
 		} );
 
 		expect( wrapper.find( '.ext-wikilambda-widget-base-header-slot' ).text() ).toEqual( 'Test cases' );
 		expect( wrapper.vm.zIds ).toEqual( [ 'Z10002', 'Z10003' ] );
-
 	} );
 
 	it( 'if displayed on a ZTester page, only shows ZImplementations', function () {
-		getters.getCurrentZObjectId = jest.fn( function () {
-			return 'Z10002';
-		} );
-
-		global.store.hotUpdate( {
-			getters: getters
-		} );
-
 		var wrapper = VueTestUtils.mount( FunctionReport, {
 			props: {
 				zFunctionId: 'Z10000',
-				zTesterId: 'Z10002',
+				rootZid: 'Z10002',
 				reportType: Constants.Z_TESTER
 			}
 		} );
 
 		expect( wrapper.find( '.ext-wikilambda-widget-base-header-slot' ).text() ).toEqual( 'Implementations' );
 		expect( wrapper.vm.zIds ).toEqual( [ 'Z10001', 'Z10004', 'Z10005' ] );
-
 	} );
 
-	// TODO (T303072): This test is skipped because overriding computed properties is no longer
-	// supported by vue-test-utils
-	it.skip( 'triggers the tests on button click', function () {
-		var expectedImplementationId = 'Z10001',
-			expectedTesterId = 'Z10002',
-			wrapper = VueTestUtils.mount( FunctionReport, {
+	describe( 'trigger button', () => {
+		it( 'tests all the implementations for a tester page', async () => {
+			actions.fetchZKeys = jest.fn();
+			actions.getTestResults = jest.fn();
+			global.store.hotUpdate( {
+				getters: getters,
+				actions: actions
+			} );
+			const wrapper = VueTestUtils.mount( FunctionReport, {
 				props: {
 					zFunctionId: 'Z10000',
-					zImplementationId: expectedImplementationId,
-					zTesterId: expectedTesterId
-				},
-				// TODO (T303072): This is not supported any more
-				computed: {
-					implementations: jest.fn().mockReturnValue( [ expectedImplementationId ] ),
-					testers: jest.fn().mockReturnValue( [ expectedTesterId ] )
+					rootZid: 'Z10002',
+					reportType: Constants.Z_TESTER
 				}
 			} );
 
-		return wrapper.find( 'button' ).trigger( 'click' ).then( function () {
-			expect( getTestResultsMock ).toHaveBeenCalledWith( expect.anything(), {
-				zFunctionId: 'Z10000',
-				zImplementations: [ 'Z10001' ],
-				zTesters: [ 'Z10002' ],
-				clearPreviousResults: true
+			wrapper.find( 'button' ).trigger( 'click' );
+
+			await waitFor( () => {
+				expect( actions.getTestResults ).toHaveBeenCalledWith( expect.anything(), {
+					zFunctionId: 'Z10000',
+					zImplementations: [ 'Z10001', 'Z10004', 'Z10005' ],
+					zTesters: [ 'Z10002' ],
+					clearPreviousResults: true
+				} );
+			} );
+		} );
+
+		it( 'tests all the testers for an implementation page', async () => {
+			actions.fetchZKeys = jest.fn();
+			actions.getTestResults = jest.fn();
+			global.store.hotUpdate( {
+				getters: getters,
+				actions: actions
+			} );
+			const wrapper = VueTestUtils.mount( FunctionReport, {
+				props: {
+					zFunctionId: 'Z10000',
+					rootZid: 'Z10004',
+					reportType: Constants.Z_IMPLEMENTATION
+				}
+			} );
+
+			wrapper.find( 'button' ).trigger( 'click' );
+
+			await waitFor( () => {
+				expect( actions.getTestResults ).toHaveBeenCalledWith( expect.anything(), {
+					zFunctionId: 'Z10000',
+					zImplementations: [ 'Z10004' ],
+					zTesters: [ 'Z10002', 'Z10003' ],
+					clearPreviousResults: true
+				} );
+			} );
+		} );
+	} );
+
+	describe( 'on mount', () => {
+		beforeEach( () => {
+			jest.useFakeTimers();
+			jest.spyOn( global, 'setTimeout' );
+		} );
+
+		it( 'does not trigger the tests if we are on new page', async () => {
+			actions.getTestResults = jest.fn();
+			actions.fetchZKeys = jest.fn( () => {
+				return { then: ( fn ) => fn() };
+			} );
+			global.store.hotUpdate( {
+				getters: getters,
+				actions: actions
+			} );
+
+			VueTestUtils.mount( FunctionReport, {
+				props: {
+					zFunctionId: 'Z10000',
+					rootZid: 'Z0',
+					reportType: Constants.Z_IMPLEMENTATION
+				}
+			} );
+
+			// Wait for fetchZKeys to be called and then run all timers
+			await waitFor( () => expect( actions.fetchZKeys ).toHaveBeenCalled() );
+			jest.runAllTimers();
+
+			await waitFor( () => expect( actions.getTestResults ).toHaveBeenCalledTimes( 0 ) );
+		} );
+
+		it( 'initially tests all the implementations for a tester page', async () => {
+			actions.getTestResults = jest.fn();
+			actions.fetchZKeys = jest.fn( () => {
+				return { then: ( fn ) => fn() };
+			} );
+			global.store.hotUpdate( {
+				getters: getters,
+				actions: actions
+			} );
+
+			VueTestUtils.mount( FunctionReport, {
+				props: {
+					zFunctionId: 'Z10000',
+					rootZid: 'Z10002',
+					reportType: Constants.Z_TESTER
+				}
+			} );
+
+			await waitFor( () => expect( actions.fetchZKeys ).toHaveBeenCalled() );
+			jest.runAllTimers();
+
+			await waitFor( () => {
+				expect( actions.getTestResults ).toHaveBeenCalledWith( expect.anything(), {
+					zFunctionId: 'Z10000',
+					zImplementations: [ 'Z10001', 'Z10004', 'Z10005' ],
+					zTesters: [ 'Z10002' ],
+					clearPreviousResults: true
+				} );
+			} );
+		} );
+
+		it( 'initially tests all the testers for an implementation page', async () => {
+			actions.getTestResults = jest.fn();
+			actions.fetchZKeys = jest.fn( () => {
+				return { then: ( fn ) => fn() };
+			} );
+			global.store.hotUpdate( {
+				getters: getters,
+				actions: actions
+			} );
+
+			VueTestUtils.mount( FunctionReport, {
+				props: {
+					zFunctionId: 'Z10000',
+					rootZid: 'Z10004',
+					reportType: Constants.Z_IMPLEMENTATION
+				}
+			} );
+
+			// Wait for fetchZKeys to be called and then run all timers
+			await waitFor( () => expect( actions.fetchZKeys ).toHaveBeenCalled() );
+			jest.runAllTimers();
+
+			await waitFor( () => {
+				expect( actions.getTestResults ).toHaveBeenCalledWith( expect.anything(), {
+					zFunctionId: 'Z10000',
+					zImplementations: [ 'Z10004' ],
+					zTesters: [ 'Z10002', 'Z10003' ],
+					clearPreviousResults: true
+				} );
 			} );
 		} );
 	} );

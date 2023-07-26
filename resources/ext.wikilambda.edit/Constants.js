@@ -175,10 +175,11 @@ var Constants = {
 		DELETE_LIST_ITEM: 'delete_list_item'
 	},
 	testerStatus = {
-		PENDING: 'pending',
+		READY: 'ready',
 		PASSED: 'passed',
 		FAILED: 'failed',
-		RUNNING: 'running'
+		RUNNING: 'running',
+		CANCELED: 'canceled'
 	},
 	builtinComponents = {
 		[ Constants.Z_FUNCTION_CALL ]: 'wl-z-function-call',

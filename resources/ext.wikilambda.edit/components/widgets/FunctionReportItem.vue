@@ -71,6 +71,7 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getZLang',
 		'getZTesterResults',
+		'getFetchingTestResults',
 		'getLabel'
 	] ), {
 		testerStatus: function () {
@@ -92,8 +93,11 @@ module.exports = exports = {
 			return '/view/' + this.getZLang + '/' + zid;
 		},
 		status: function () {
+			if ( this.getFetchingTestResults ) {
+				return Constants.testerStatus.RUNNING;
+			}
 			if ( !( this.zImplementationId ) || !( this.zTesterId ) ) {
-				return Constants.testerStatus.PENDING;
+				return Constants.testerStatus.READY;
 			}
 			if ( this.testerStatus === true ) {
 				return Constants.testerStatus.PASSED;
@@ -101,15 +105,15 @@ module.exports = exports = {
 			if ( this.testerStatus === false ) {
 				return Constants.testerStatus.FAILED;
 			}
-			return Constants.testerStatus.RUNNING;
+			return Constants.testerStatus.READY;
 		},
 		isRunning: function () {
 			return this.status === Constants.testerStatus.RUNNING;
 		},
 		statusMessage: function () {
 			switch ( this.status ) {
-				case Constants.testerStatus.PENDING:
-					return this.$i18n( 'wikilambda-tester-status-pending' ).text();
+				case Constants.testerStatus.READY:
+					return this.$i18n( 'wikilambda-tester-status-ready' ).text();
 				case Constants.testerStatus.PASSED:
 					return this.$i18n( 'wikilambda-tester-status-passed' ).text();
 				case Constants.testerStatus.FAILED:
@@ -125,17 +129,11 @@ module.exports = exports = {
 			if ( this.status === Constants.testerStatus.FAILED ) {
 				return icons.cdxIconClear;
 			}
-			// This will be used both for pending and running statuses
+			// This will be used both for ready and running statuses
 			return icons.cdxIconClock;
 		},
 		statusIconClass: function () {
-			if ( this.status === Constants.testerStatus.PASSED ) {
-				return 'ext-wikilambda-function-report-item-status--PASS';
-			}
-			if ( this.status === Constants.testerStatus.FAILED ) {
-				return 'ext-wikilambda-function-report-item-status--FAIL';
-			}
-			return 'ext-wikilambda-function-report-item-status--RUNNING';
+			return `ext-wikilambda-function-report-item-status__${this.status}`;
 		}
 	} ),
 	methods: {
@@ -175,15 +173,23 @@ module.exports = exports = {
 	}
 
 	&-status {
-		&--PASS {
+		&__ready {
+			color: @color-disabled;
+		}
+
+		&__canceled {
+			color: @color-subtle;
+		}
+
+		&__passed {
 			color: @color-success;
 		}
 
-		&--FAIL {
+		&__failed {
 			color: @color-error;
 		}
 
-		&--RUNNING {
+		&__running {
 			color: @color-warning;
 		}
 	}

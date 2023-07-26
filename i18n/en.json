@@ -240,7 +240,7 @@
 	"wikilambda-tester-selector": "Select a test",
 	"wikilambda-tester-none-found": "There are currently no test cases for this function.",
 	"wikilambda-tester-create-new": "Create a new test",
-	"wikilambda-tester-status-pending": "Pending…",
+	"wikilambda-tester-status-ready": "Ready",
 	"wikilambda-tester-status-running": "Running…",
 	"wikilambda-tester-status-run": "Run",
 	"wikilambda-tester-status-cancel": "Cancel",

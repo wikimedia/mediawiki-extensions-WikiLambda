@@ -98,7 +98,7 @@ module.exports = exports = {
 			default: ''
 		},
 		metadata: {
-			type: String,
+			type: Object,
 			required: true
 		}
 	},
@@ -116,10 +116,13 @@ module.exports = exports = {
 		 * @return {string}
 		 */
 		dialogText: function () {
-			// Ensure ZIDs appearing in metadata have been fetched
-			const metadataZIDs = this.extractZIDs( this.metadata );
-			this.fetchZKeys( { zids: metadataZIDs } );
-			return this.portrayMetadataMap( this.metadata, this.getLabel );
+			if ( this.metadata ) {
+				// Ensure ZIDs appearing in metadata have been fetched
+				const metadataZIDs = this.extractZIDs( this.metadata );
+				this.fetchZKeys( { zids: metadataZIDs } );
+				return this.portrayMetadataMap( this.metadata, this.getLabel );
+			}
+			return '';
 		},
 
 		/**

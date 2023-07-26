@@ -8,11 +8,13 @@
 
 var mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	FunctionReportItem = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionReportItem.vue' );
 
 describe( 'FunctionReportItem', function () {
-	var testStatus,
+	var getters,
+		testStatus,
 		zFunctionId,
 		zImplementationId,
 		zTesterId,
@@ -26,14 +28,14 @@ describe( 'FunctionReportItem', function () {
 		zImplementationId = 'Z10001';
 		zTesterId = 'Z10002';
 		reportType = Constants.Z_TESTER;
-
+		getters = {
+			getFetchingTestResults: createGetterMock( false ),
+			getZTesterResults: createGetterMock( returnStatus ),
+			getLabel: createGettersWithFunctionsMock(),
+			getZLang: createGetterMock( 'Z1002' )
+		};
 		global.store.hotUpdate( {
-			getters: {
-				getZTesterResults: jest.fn( function () {
-					return returnStatus;
-				} ),
-				getLabel: createGettersWithFunctionsMock()
-			}
+			getters: getters
 		} );
 	} );
 
@@ -61,8 +63,9 @@ describe( 'FunctionReportItem', function () {
 		expect( returnStatus ).toHaveBeenCalledWith( zFunctionId, zTesterId, zImplementationId );
 	} );
 
-	it( 'displays running status when no result found', function () {
-		testStatus = undefined;
+	it( 'displays running status when ongoing call', function () {
+		getters.getFetchingTestResults = createGetterMock( true );
+		global.store.hotUpdate( { getters: getters } );
 		var wrapper = mount( FunctionReportItem, {
 			props: {
 				zFunctionId: zFunctionId,
@@ -110,7 +113,7 @@ describe( 'FunctionReportItem', function () {
 				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Pending…' );
+		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Ready' );
 	} );
 
 	it( 'displays pending status when tester missing', function () {
@@ -123,6 +126,6 @@ describe( 'FunctionReportItem', function () {
 				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Pending…' );
+		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Ready' );
 	} );
 } );

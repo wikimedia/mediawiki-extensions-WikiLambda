@@ -433,7 +433,7 @@
 				"wikilambda-tester-selector",
 				"wikilambda-tester-none-found",
 				"wikilambda-tester-create-new",
-				"wikilambda-tester-status-pending",
+				"wikilambda-tester-status-ready",
 				"wikilambda-tester-status-running",
 				"wikilambda-tester-status-run",
 				"wikilambda-tester-status-cancel",

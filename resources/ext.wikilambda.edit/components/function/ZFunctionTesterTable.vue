@@ -12,7 +12,7 @@
 			:class="statusIconClass"
 		></cdx-icon>
 		<span class="ext-wikilambda-tester-table__message-status">
-			{{ status }}
+			{{ statusMessage }}
 		</span>
 		<cdx-icon
 			v-if="testerStatus !== undefined"
@@ -31,10 +31,11 @@
 </template>
 
 <script>
-var mapGetters = require( 'vuex' ).mapGetters,
+var Constants = require( '../../Constants.js' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	FunctionMetadataDialog = require( '../widgets/FunctionMetadataDialog.vue' ),
 	icons = require( '../../../../../lib/icons.json' ),
+	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
@@ -73,15 +74,27 @@ module.exports = exports = {
 		},
 		status: function () {
 			if ( !( this.zImplementationId ) || !( this.zTesterId ) ) {
-				return this.$i18n( 'wikilambda-tester-status-pending' ).text();
+				return Constants.testerStatus.READY;
 			}
 			if ( this.testerStatus === true ) {
-				return this.$i18n( 'wikilambda-tester-status-passed' ).text();
+				return Constants.testerStatus.PASSED;
 			}
 			if ( this.testerStatus === false ) {
-				return this.$i18n( 'wikilambda-tester-status-failed' ).text();
+				return Constants.testerStatus.FAILED;
 			}
-			return this.$i18n( 'wikilambda-tester-status-running' ).text();
+			return Constants.testerStatus.RUNNING;
+		},
+		statusMessage: function () {
+			switch ( this.status ) {
+				case Constants.testerStatus.READY:
+					return this.$i18n( 'wikilambda-tester-status-ready' ).text();
+				case Constants.testerStatus.PASSED:
+					return this.$i18n( 'wikilambda-tester-status-passed' ).text();
+				case Constants.testerStatus.FAILED:
+					return this.$i18n( 'wikilambda-tester-status-failed' ).text();
+				default:
+					return this.$i18n( 'wikilambda-tester-status-running' ).text();
+			}
 		},
 		statusIcon: function () {
 			if ( this.testerStatus === true ) {
@@ -90,17 +103,11 @@ module.exports = exports = {
 			if ( this.testerStatus === false ) {
 				return icons.cdxIconClose;
 			}
-			// This will be used both for pending and running statuses
+			// This will be used both for ready and running statuses
 			return icons.cdxIconAlert;
 		},
 		statusIconClass: function () {
-			if ( this.testerStatus === true ) {
-				return 'ext-wikilambda-tester-result-status--PASS';
-			}
-			if ( this.testerStatus === false ) {
-				return 'ext-wikilambda-tester-result-status--FAIL';
-			}
-			return 'ext-wikilambda-tester-result-status--RUNNING';
+			return `ext-wikilambda-function-report-item-status__${this.status}`;
 		},
 		messageIcon: function () {
 			return icons.cdxIconInfo;
@@ -165,15 +172,23 @@ module.exports = exports = {
 	}
 
 	&-status {
-		&--PASS {
+		&__ready {
+			color: @color-disabled;
+		}
+
+		&__canceled {
+			color: @color-subtle;
+		}
+
+		&__passed {
 			color: @color-success;
 		}
 
-		&--FAIL {
-			color: @color-destructive;
+		&__failed {
+			color: @color-error;
 		}
 
-		&--RUNNING {
+		&__running {
 			color: @color-warning;
 		}
 	}

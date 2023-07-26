@@ -74,8 +74,6 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 		const compositionZObjectKeyValueSet = await within( implementationContentBlock ).getByTestId( 'z-object-key-value-set' );
 		const compositionAccordionList = await within( compositionZObjectKeyValueSet ).getAllByTestId( 'z-object-key-value' );
 
-		// console.log( compositionZObjectKeyValueSet.innerHTML );
-
 		//* -- First argument
 		// The first argument is the third accordion in the list (the first is the composition type and the second is the composition function)
 		const firstArgumentAccordion = compositionAccordionList[ 2 ];

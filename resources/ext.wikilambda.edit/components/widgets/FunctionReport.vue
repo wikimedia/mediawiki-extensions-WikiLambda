@@ -36,17 +36,17 @@
 					<wl-function-report-item
 						class="ext-wikilambda-function-report__result"
 						:z-function-id="zFunctionId"
-						:z-implementation-id="reportType === Constants.Z_TESTER ? item : zImplementationId"
-						:z-tester-id="reportType === Constants.Z_TESTER ? zTesterId : item"
+						:z-implementation-id="isImplementationReport ? zImplementationId : item"
+						:z-tester-id="isTesterReport ? zTesterId : item"
 						:report-type="reportType"
-						@set-keys="setActiveTesterKeys"
+						@set-keys="openMetricsDialog"
 					></wl-function-report-item>
 					<wl-function-metadata-dialog
 						:open="showMetrics"
 						:implementation-label="activeImplementationLabel"
 						:tester-label="activeTesterLabel"
 						:metadata="metadata"
-						@close-dialog="showMetrics = false"
+						@close-dialog="closeMetricsDialog"
 					></wl-function-metadata-dialog>
 				</div>
 			</div>
@@ -86,7 +86,7 @@ module.exports = exports = {
 	props: {
 		reportType: {
 			type: String,
-			default: Constants.Z_FUNCTION
+			required: true
 		},
 		zFunctionId: {
 			type: String,
@@ -101,8 +101,7 @@ module.exports = exports = {
 		return {
 			activeZImplementationId: null,
 			activeZTesterId: null,
-			showMetrics: false,
-			Constants: Constants
+			showMetrics: false
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -112,27 +111,70 @@ module.exports = exports = {
 		'getZTesterMetadata',
 		'getFetchingTestResults'
 	] ), {
-		hasItems: function () {
-			return (
-				this.zFunctionId &&
-				this.implementations.length > 0 &&
-				this.testers.length > 0
-			);
-		},
-		zImplementationId: function () {
-			return ( this.reportType === Constants.Z_IMPLEMENTATION ) ? this.rootZid : null;
-		},
-		zTesterId: function () {
-			return ( this.reportType === Constants.Z_TESTER ) ? this.rootZid : null;
-		},
-		title: function () {
-			return this.reportType === Constants.Z_TESTER ?
-				this.$i18n( 'wikilambda-function-implementation-table-header' ).text() :
-				this.$i18n( 'wikilambda-function-test-cases-table-header' ).text();
-		},
+		/**
+		 * Returns the items that must be tested. If we are in an implementation page
+		 * returns the tester zids. If we are in a tester page, returns the implementation
+		 * zids.
+		 *
+		 * @return {Array}
+		 */
 		zIds: function () {
-			return this.reportType === Constants.Z_TESTER ? this.implementations : this.testers;
+			return this.isTesterReport ? this.implementations : this.testers;
 		},
+
+		/**
+		 * Returns whether there are any items to test.
+		 *
+		 * @return {boolean}
+		 */
+		hasItems: function () {
+			return ( this.zFunctionId && ( this.zIds.length > 0 ) );
+		},
+
+		/**
+		 * Whether it is a report for an implementation page.
+		 *
+		 * @return {boolean}
+		 */
+		isImplementationReport: function () {
+			return this.reportType === Constants.Z_IMPLEMENTATION;
+		},
+
+		/**
+		 * Whether it is a report for a tester page.
+		 *
+		 * @return {boolean}
+		 */
+		isTesterReport: function () {
+			return this.reportType === Constants.Z_TESTER;
+		},
+
+		/**
+		 * Returns the selected Implementation zid if we are in an implementation
+		 * page; else returns null.
+		 *
+		 * @return {string|null}
+		 */
+		zImplementationId: function () {
+			return this.isImplementationReport ? this.rootZid : null;
+		},
+
+		/**
+		 * Returns the selected Tester zid if we are in a tester page;
+		 * else returns null.
+		 *
+		 * @return {string|null}
+		 */
+		zTesterId: function () {
+			return this.isTesterReport ? this.rootZid : null;
+		},
+
+		/**
+		 * Returns the list of implementation zids in the persisted
+		 * selected function.
+		 *
+		 * @return {Array}
+		 */
 		implementations: function () {
 			const functionObject = this.getStoredObject( this.zFunctionId );
 			if ( !this.zFunctionId || !functionObject ) {
@@ -149,6 +191,13 @@ module.exports = exports = {
 				return Array.isArray( fetched ) ? fetched.slice( 1 ) : [];
 			}
 		},
+
+		/**
+		 * Returns the list of tester zids in the persisted
+		 * selected function.
+		 *
+		 * @return {Array}
+		 */
 		testers: function () {
 			const functionObject = this.getStoredObject( this.zFunctionId );
 			if ( !this.zFunctionId || !functionObject ) {
@@ -165,32 +214,97 @@ module.exports = exports = {
 				return Array.isArray( fetched ) ? fetched.slice( 1 ) : [];
 			}
 		},
-		resultCount: function () {
-			return this.getZTesterPercentage( this.zFunctionId );
-		},
+
+		/**
+		 * Returns the metadata object for the current open metrics dialog;
+		 * else, returns null
+		 *
+		 * @return {Object | null}
+		 */
 		metadata: function () {
-			if ( !this.activeZTesterId || !this.activeZImplementationId ) {
-				return '';
-			}
-			return this.getZTesterMetadata(
-				this.zFunctionId, this.activeZTesterId, this.activeZImplementationId );
+			return ( this.activeZTesterId && this.activeZImplementationId ) ?
+				this.getZTesterMetadata(
+					this.zFunctionId,
+					this.activeZTesterId,
+					this.activeZImplementationId ) :
+				null;
 		},
+
+		/**
+		 * Returns the label of the tester for the current open metrics dialog
+		 *
+		 * @return {string}
+		 */
 		activeTesterLabel: function () {
-			return !this.activeZTesterId ? '' : this.getLabel( this.activeZTesterId );
+			return this.activeZTesterId ? this.getLabel( this.activeZTesterId ) : '';
 		},
+
+		/**
+		 * Returns the label of the implementation for the current open metrics dialog
+		 *
+		 * @return {string}
+		 */
 		activeImplementationLabel: function () {
-			return !this.activeZImplementationId ? '' : this.getLabel( this.activeZImplementationId );
+			return this.activeZImplementationId ? this.getLabel( this.activeZImplementationId ) : '';
 		},
+
+		/**
+		 * Returns the icon for the top right corner of the widget,
+		 * depending on the running state.
+		 *
+		 * @return {string}
+		 */
 		reloadIcon: function () {
 			return this.getFetchingTestResults ? icons.cdxIconCancel : icons.cdxIconReload;
 		},
+
+		/**
+		 * Returns the title of the widget, depending on the page type
+		 *
+		 * @return {string}
+		 */
+		title: function () {
+			return this.isTesterReport ?
+				this.$i18n( 'wikilambda-function-implementation-table-header' ).text() :
+				this.$i18n( 'wikilambda-function-test-cases-table-header' ).text();
+		},
+
+		/**
+		 * Returns the label of the reload button
+		 *
+		 * @return {string}
+		 */
 		reloadLabel: function () {
 			return this.getFetchingTestResults ?
 				this.$i18n( 'wikilambda-tester-status-cancel' ).text() :
 				this.$i18n( 'wikilambda-tester-status-run' ).text();
 		}
 	} ),
-	methods: $.extend( mapActions( [ 'fetchZKeys', 'getTestResults' ] ), {
+	methods: $.extend( mapActions( [
+		'fetchZKeys',
+		'getTestResults'
+	] ), {
+		/**
+		 * Sets the target zids and opens the metrics dialog
+		 *
+		 * @param {Object} keys
+		 */
+		openMetricsDialog: function ( keys ) {
+			this.activeZImplementationId = keys.zImplementationId;
+			this.activeZTesterId = keys.zTesterId;
+			this.showMetrics = true;
+		},
+		/**
+		 * Closes the metrics dialog
+		 */
+		closeMetricsDialog: function () {
+			this.activeZImplementationId = null;
+			this.activeZTesterId = null;
+			this.showMetrics = false;
+		},
+		/**
+		 * Calls the run function API with the required tester and implementation zids.
+		 */
 		runTesters: function () {
 			this.getTestResults( {
 				zFunctionId: this.zFunctionId,
@@ -199,16 +313,34 @@ module.exports = exports = {
 				clearPreviousResults: true
 			} );
 		},
-		setActiveTesterKeys: function ( keys ) {
-			this.activeZImplementationId = keys.zImplementationId;
-			this.activeZTesterId = keys.zTesterId;
-			this.showMetrics = true;
+		/**
+		 * Run the initial call only when we are in a view or edit page
+		 * but not when we are in a new implementation or test page
+		 */
+		runInitialCall: function () {
+			if ( this.rootZid && this.rootZid !== Constants.NEW_ZID_PLACEHOLDER ) {
+				this.runTesters();
+			}
 		},
+		/**
+		 * Returns the label of the given implementation zid or
+		 * a default message if the implementation has no name.
+		 *
+		 * @param {string} implementation
+		 * @return {string}
+		 */
 		implementationLabel: function ( implementation ) {
 			return this.zImplementationId ?
 				this.$i18n( 'wikilambda-tester-results-current-implementation' ).text() :
 				this.getLabel( implementation );
 		},
+		/**
+		 * Returns the label of the given tester zid or
+		 * a default message if the tester has no name.
+		 *
+		 * @param {string} test
+		 * @return {string}
+		 */
 		testLabel: function ( test ) {
 			return this.zTesterId ?
 				this.$i18n( 'wikilambda-tester-results-current-test' ).text() :
@@ -229,9 +361,9 @@ module.exports = exports = {
 	},
 	mounted: function () {
 		this.fetchZKeys( { zids: this.implementations.concat( this.testers ) } )
-			.then( function () {
-				setTimeout( this.runTesters, 1000 );
-			}.bind( this ) );
+			.then( () => {
+				setTimeout( this.runInitialCall, 1000 );
+			} );
 	}
 };
 </script>
@@ -250,15 +382,23 @@ module.exports = exports = {
 
 	.cdx-card__text__description {
 		.ext-wikilambda-function-report-item-status {
-			&--PASS {
+			&__ready {
+				color: @color-disabled;
+			}
+
+			&__canceled {
+				color: @color-subtle;
+			}
+
+			&__passed {
 				color: @color-success;
 			}
 
-			&--FAIL {
+			&__failed {
 				color: @color-error;
 			}
 
-			&--RUNNING {
+			&__running {
 				color: @color-warning;
 			}
 		}
