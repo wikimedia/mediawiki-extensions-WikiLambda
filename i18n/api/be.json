@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Earnur97"
+		]
+	},
+	"apihelp-query+wikilambdaload_zobjects-param-revisions": "Ідэнтыфікатары версій для атрымання. Павінен быць пустым або такім жа нумарам, як колькасць запытаных ZIDs.",
+	"apihelp-query+wikilambdaload_zobjects-param-get_dependencies": "Ці вяртаць таксама ZObjects, якія з'яўляюцца залежнасцямі першапачаткова запытаных ZIDs."
+}
