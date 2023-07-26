@@ -159,7 +159,7 @@ class ReloadBuiltinData extends Maintenance {
 
 	/**
 	 * Re-inserts all the builtin ZObject available in data/definitions.
-	 * This method will make sure that the insertion ends succesffully, by
+	 * This method will make sure that the insertion ends successfully, by
 	 * taking drastic measures. It will first clear all the secondary tables
 	 * to avoid possible conflicts, and then will call the createInitialContent
 	 * hook so that the insertions happen in the right order.
