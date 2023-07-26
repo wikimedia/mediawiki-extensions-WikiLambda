@@ -33,10 +33,7 @@ class OrchestratorRequest {
 		$this->guzzleClient = $client;
 
 		$this->userAgentString = 'wikifunctions-request/' . MW_VERSION;
-		// TODO: We should fetch this dynamically rather than use a global.
-		// phpcs:ignore MediaWiki.NamingConventions.ValidGlobalName.allowedPrefix
-		global $IP;
-		$gitInfo = new GitInfo( "$IP/extensions/WikiLambda" );
+		$gitInfo = new GitInfo( MW_INSTALL_PATH . '/extensions/WikiLambda' );
 		$gitHash = $gitInfo->getHeadSHA1();
 		if ( $gitHash !== false ) {
 			$this->userAgentString .= '-WL' . substr( $gitHash, 0, 8 );
