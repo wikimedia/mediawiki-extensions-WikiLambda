@@ -15,6 +15,7 @@
 			<div
 				v-if="showFunctionSelector"
 				class="ext-wikilambda-function-evaluator-call"
+				data-testid="function-evaluator-call"
 			>
 				<div class="ext-wikilambda-key-block">
 					<label>{{ functionCallLabel }}</label>
@@ -31,6 +32,7 @@
 			<div
 				v-if="hasInputs"
 				class="ext-wikilambda-function-evaluator-inputs"
+				data-testid="function-evaluator-inputs"
 			>
 				<div class="ext-wikilambda-key-block">
 					<label>{{ functionInputsLabel }}</label>
@@ -59,6 +61,7 @@
 			<div
 				v-if="hasResult || running"
 				class="ext-wikilambda-function-evaluator-result-block"
+				data-testid="function-evaluator-result"
 			>
 				<div class="ext-wikilambda-function-evaluator-result">
 					<div class="ext-wikilambda-key-block">
