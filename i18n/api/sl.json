@@ -10,6 +10,8 @@
 	"apihelp-wikilambda_function_call-example-orchestrator-timeout": "Prikličite funkcijo, ki se poskuša predolgo izvajati v orkestratorju, zato prekorači časovno omejitev",
 	"apihelp-wikilambda_supported_programming_languages-summary": "Pridobitev programskih jezikov, ki jih podpira ocenjevalnik",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Iskalni izraz",
+	"apihelp-query+wikilambdaload_zobjects-param-revisions": "ID-ji redakcij za pridobitev. Biti mora prazno ali enako število kot število zahtevanih ZID-ov.",
+	"apihelp-query+wikilambdaload_zobjects-param-get_dependencies": "Ali naj se vrnejo tudi ZObjekti, ki so odvisnosti od prvotno zahtevanih ZID-jev.",
 	"apihelp-wikilambda_edit-example-edit-incorrect": "Poskus posodobitve ZObjekta Z010 z nepravilnimi podatki",
 	"apihelp-wikilambda_edit-param-summary": "Sprememba povzetka urejanj",
 	"apierror-wikilambda_supported_programming_languages-not-connected": "Ni bilo mogoče razrešiti gostitelja »$1«, verjetno zato, ker orkestrator ne deluje. Prosimo, preberite README, če želite dodati orkestrator vaši konfiguraciji docker-compose.",
