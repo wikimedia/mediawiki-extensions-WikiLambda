@@ -61,6 +61,13 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 	 * @param ApiPageSet|null $resultPageSet
 	 */
 	private function run( $resultPageSet = null ) {
+		// Unlike the Special pages, we don't have a helpful userCanExecute() method
+		$userAuthority = $this->getContext()->getAuthority();
+		if ( !$userAuthority->isAllowed( 'wikilambda-execute' ) ) {
+			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
+			$this->dieWithZError( $zError );
+		}
+
 		$params = $this->extractRequestParams();
 		$pageResult = $this->getResult();
 		$stringOfAZ = $params[ 'zobject' ];
