@@ -28,7 +28,6 @@
 	"wikilambda-tester-selector": "انتخاب یک آزمایش",
 	"wikilambda-tester-none-found": "در حال حاضر هیچ نمونهٔ آزمایشی برای این تابغ موجود نیست.",
 	"wikilambda-tester-create-new": "ایجاد آزمون تازه",
-	"wikilambda-tester-status-pending": "در انتظار...",
 	"wikilambda-tester-status-running": "در حال اجرا...",
 	"wikilambda-tester-status-cancel": "لغو",
 	"wikilambda-tester-status-passed": "موفق",

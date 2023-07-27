@@ -54,6 +54,7 @@
 	"wikilambda-editor-tester-list-label": "Elenco test",
 	"wikilambda-tester-selector": "Seleziona un test",
 	"wikilambda-tester-none-found": "Al momento non ci sono casi di test per questa funzione.",
+	"wikilambda-tester-status-ready": "Pronto",
 	"wikilambda-tester-status-running": "In esecuzione…",
 	"wikilambda-tester-status-run": "Esegui",
 	"wikilambda-tester-status-cancel": "Annulla",

@@ -213,7 +213,6 @@
 	"wikilambda-tester-selector": "テストを選択",
 	"wikilambda-tester-none-found": "現在、この関数のテストケースはありません。",
 	"wikilambda-tester-create-new": "新しいテストを作成する",
-	"wikilambda-tester-status-pending": "保留中...",
 	"wikilambda-tester-status-running": "実行中...",
 	"wikilambda-tester-status-run": "実行",
 	"wikilambda-tester-status-cancel": "キャンセル",

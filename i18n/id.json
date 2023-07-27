@@ -99,7 +99,6 @@
 	"wikilambda-tester-selector": "Memilih penguji",
 	"wikilambda-tester-none-found": "Saat ini tidak ada kasus pengujian pada fungsi ini.",
 	"wikilambda-tester-create-new": "Buat sebuah penguji baru",
-	"wikilambda-tester-status-pending": "Tertunda...",
 	"wikilambda-tester-status-running": "Menjalankan...",
 	"wikilambda-tester-status-passed": "Lulus",
 	"wikilambda-tester-status-failed": "Gagal",

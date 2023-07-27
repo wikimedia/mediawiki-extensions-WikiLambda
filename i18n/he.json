@@ -227,7 +227,7 @@
 	"wikilambda-tester-selector": "בחירת בדיקה",
 	"wikilambda-tester-none-found": "אין כרגע מקרי בדיקה לפונקציה הזאת.",
 	"wikilambda-tester-create-new": "יצירת בדיקה חדשה",
-	"wikilambda-tester-status-pending": "בהמתנה...",
+	"wikilambda-tester-status-ready": "מוכן",
 	"wikilambda-tester-status-running": "בהרצה...",
 	"wikilambda-tester-status-run": "הרצה",
 	"wikilambda-tester-status-cancel": "ביטול",

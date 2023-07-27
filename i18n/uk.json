@@ -104,7 +104,6 @@
 	"wikilambda-tester-selector": "Вибрати тестувальника",
 	"wikilambda-tester-none-found": "Тестерів не знайдено.",
 	"wikilambda-tester-create-new": "Створити новий тестер",
-	"wikilambda-tester-status-pending": "В ОЧІКУВАННІ...",
 	"wikilambda-tester-status-running": "ВИКОНУЄТЬСЯ...",
 	"wikilambda-tester-status-passed": "ПРОХОДИТИ",
 	"wikilambda-tester-status-failed": "НЕВДАЧА",

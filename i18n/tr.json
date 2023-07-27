@@ -97,7 +97,6 @@
 	"wikilambda-tester-selector": "Bir tester seçin",
 	"wikilambda-tester-none-found": "Tester bulunamadı.",
 	"wikilambda-tester-create-new": "Yeni bir test oluştur",
-	"wikilambda-tester-status-pending": "Bekliyor...",
 	"wikilambda-tester-status-running": "Çalışıyor…",
 	"wikilambda-tester-status-run": "Çalıştır",
 	"wikilambda-tester-status-cancel": "İptal",

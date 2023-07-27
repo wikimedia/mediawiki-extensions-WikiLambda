@@ -26,7 +26,6 @@
 	"wikilambda-return-typeselector-label": "Chọn một Loại để trả về",
 	"wikilambda-editor-label-addlanguage-label": "Thêm ngôn ngữ",
 	"wikilambda-editor-label-removelanguage-tooltip": "Xóa bỏ ngôn ngữ này ra khỏi nhãn",
-	"wikilambda-tester-status-pending": "ĐANG CHỜ…",
 	"wikilambda-tester-status-running": "ĐANG CHẠY…",
 	"wikilambda-tester-status-passed": "QUA",
 	"wikilambda-tester-results-current-test": "Bài kiểm tra hiện tại",

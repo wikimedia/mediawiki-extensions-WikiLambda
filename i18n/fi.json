@@ -27,7 +27,6 @@
 	"wikilambda-performtest-error-unknown-zid": "Suoritustestin virhe: '$1' ei ole tunnettu ZObject",
 	"wikilambda-tester-none-found": "Tällä hetkellä tälle toiminnolle ei ole testitapauksia.",
 	"wikilambda-tester-create-new": "Luo uusi testi",
-	"wikilambda-tester-status-pending": "Odottaa...",
 	"wikilambda-tester-status-cancel": "Peruuta",
 	"wikilambda-tester-results-title": "Testitulokset",
 	"wikilambda-metadata-language-column": "Kieli",

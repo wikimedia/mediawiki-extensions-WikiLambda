@@ -174,7 +174,6 @@
 	"wikilambda-tester-selector": "Seleccione una prueba",
 	"wikilambda-tester-none-found": "Actualmente no hay casos de prueba para esta función.",
 	"wikilambda-tester-create-new": "Crear una prueba nueva",
-	"wikilambda-tester-status-pending": "Pendiente...",
 	"wikilambda-tester-status-running": "Ejecutándose...",
 	"wikilambda-tester-status-run": "Comenzar",
 	"wikilambda-tester-status-cancel": "Cancelar",

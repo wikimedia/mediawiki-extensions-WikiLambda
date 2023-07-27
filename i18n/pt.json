@@ -186,7 +186,6 @@
 	"wikilambda-tester-selector": "Selecionar um teste",
 	"wikilambda-tester-none-found": "Neste momento não há casos de teste para esta função.",
 	"wikilambda-tester-create-new": "Criar um teste novo",
-	"wikilambda-tester-status-pending": "Pendente...",
 	"wikilambda-tester-status-running": "A executar...",
 	"wikilambda-tester-status-passed": "Passou",
 	"wikilambda-tester-status-failed": "Falhou",

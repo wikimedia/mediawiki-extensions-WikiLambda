@@ -123,7 +123,6 @@
 	"wikilambda-tester-selector": "Wybierz tester",
 	"wikilambda-tester-none-found": "Nie znaleziono testerów.",
 	"wikilambda-tester-create-new": "Utwórz nowy test",
-	"wikilambda-tester-status-pending": "Oczekuje...",
 	"wikilambda-tester-status-running": "Uruchomiony...",
 	"wikilambda-tester-status-run": "Uruchom",
 	"wikilambda-tester-status-cancel": "Anuluj",

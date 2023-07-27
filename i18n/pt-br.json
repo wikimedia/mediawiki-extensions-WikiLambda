@@ -101,7 +101,6 @@
 	"wikilambda-functioncall-error-invalid-zobject-category": "Páginas com chamadas Wikifunctions para ZObjects inválidos",
 	"wikilambda-functioncall-error-invalid-zobject-category-desc": "Páginas com tentativas de chamadas para funções Wiki com um ZObject inválido",
 	"wikilambda-editor-tester-list-label": "Lista de testes",
-	"wikilambda-tester-status-pending": "Pendente...",
 	"wikilambda-tester-status-running": "Executando...",
 	"wikilambda-tester-status-run": "Executar",
 	"wikilambda-tester-status-cancel": "Cancelar",

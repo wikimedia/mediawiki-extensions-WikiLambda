@@ -227,7 +227,7 @@
 	"wikilambda-tester-selector": "Velg en test",
 	"wikilambda-tester-none-found": "Dette er ingen testtilfeller for denne funksjonen.",
 	"wikilambda-tester-create-new": "Opprett en ny test",
-	"wikilambda-tester-status-pending": "Venter …",
+	"wikilambda-tester-status-ready": "Klar",
 	"wikilambda-tester-status-running": "Kjører …",
 	"wikilambda-tester-status-run": "Kjør",
 	"wikilambda-tester-status-cancel": "Avbryt",

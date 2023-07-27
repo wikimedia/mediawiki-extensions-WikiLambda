@@ -231,7 +231,7 @@
 	"wikilambda-tester-selector": "Einen Test wählen",
 	"wikilambda-tester-none-found": "Derzeit gibt es keine Tests für diese Funktion.",
 	"wikilambda-tester-create-new": "Neuen Test erstellen",
-	"wikilambda-tester-status-pending": "Unerledigt …",
+	"wikilambda-tester-status-ready": "Bereit",
 	"wikilambda-tester-status-running": "Läuft …",
 	"wikilambda-tester-status-run": "Ausführen",
 	"wikilambda-tester-status-cancel": "Abbrechen",

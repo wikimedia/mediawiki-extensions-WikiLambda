@@ -144,7 +144,6 @@
 	"wikilambda-functioncall-error-nonfunction": "Functie-aanroepfout: het item '$1' is geen geldig ZFunction en kan dus niet worden aangeroepen",
 	"wikilambda-tester-selector": "Selecteer een test",
 	"wikilambda-tester-create-new": "Nieuwe test aanmaken",
-	"wikilambda-tester-status-pending": "In behandeling...",
 	"wikilambda-tester-status-running": "Bezig met uitvoeren...",
 	"wikilambda-tester-status-run": "Uitvoeren",
 	"wikilambda-tester-status-cancel": "Annuleren",

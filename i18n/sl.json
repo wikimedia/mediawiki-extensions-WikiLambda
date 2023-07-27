@@ -226,7 +226,7 @@
 	"wikilambda-tester-selector": "Izberite preizkus",
 	"wikilambda-tester-none-found": "Trenutno za to funkcijo ni preizkusnih primerov.",
 	"wikilambda-tester-create-new": "Ustvari nov test",
-	"wikilambda-tester-status-pending": "V teku ...",
+	"wikilambda-tester-status-ready": "Pripravljen",
 	"wikilambda-tester-status-running": "Teče ...",
 	"wikilambda-tester-status-run": "Izvedi",
 	"wikilambda-tester-status-cancel": "Prekliči",

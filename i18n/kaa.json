@@ -18,7 +18,6 @@
 	"wikilambda-functioncall-metadata-validator-errors-summary": "Tastıyıqlawshınıń qáte juwmaǵı",
 	"wikilambda-performtest-error-nonfunction": "Sınaq qátesi: '$1' funkciya emes.",
 	"wikilambda-performtest-error-nonimplementation": "Sınaq qátesi: '$1' orınlanıw emes.",
-	"wikilambda-tester-status-pending": "Kútilmekte...",
 	"wikilambda-tester-status-running": "Islep atır...",
 	"wikilambda-tester-status-passed": "Ótiw",
 	"wikilambda-tester-status-failed": "Áwmetsizlik",
