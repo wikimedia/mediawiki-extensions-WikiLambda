@@ -127,19 +127,8 @@ class SpecialViewObject extends SpecialPage {
 
 		$output->addParserOutput( $parserOutput );
 
-		$languageTags = [];
-
-		// Hint that this is the canonical link for this page in this language
-		$languageTags['link-alternate-language-' . strtolower( $targetLanguage )] = Html::element(
-			'link',
-			[
-				'rel' => 'canonical',
-				'hreflang' => $targetLanguage,
-				'href' => "/view/$targetLanguage/$targetPageName",
-			]
-		);
-
 		// Add all the see-other links to versions of this page in each of the known languages.
+		$languageTags = [];
 		$languages = $this->zObjectStore->fetchAllZLanguageObjects();
 		foreach ( $languages as $zid => $bcpcode ) {
 			if ( $bcpcode === $targetLanguage ) {
@@ -154,11 +143,10 @@ class SpecialViewObject extends SpecialPage {
 				]
 			);
 		}
-
 		$output->addHeadItems( $languageTags );
 
 		// TODO: Make this help page.
-		$this->addHelpLink( 'Extension:WikiLambda/Viewing ZObjects' );
+		$this->addHelpLink( 'Extension:WikiLambda/Viewing Objects' );
 
 		$this->generateZObjectPayload( $output, $this->getContext(), [
 			'createNewPage' => false,
