@@ -214,7 +214,7 @@ class ZObjectFactory {
 	}
 
 	/**
-	 * Creates an instance of a custom or user-defined type after validating it's basic
+	 * Creates an instance of a custom or user-defined type after validating its basic
 	 * structure: the keys are valid ZObject keys and the values have the correct types
 	 *
 	 * @deprecated

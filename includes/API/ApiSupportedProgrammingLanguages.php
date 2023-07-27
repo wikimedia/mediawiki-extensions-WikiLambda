@@ -14,6 +14,7 @@ use ApiPageSet;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Status\Status;
 use PoolCounterWorkViaCallback;
@@ -71,7 +72,7 @@ class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 				"apierror-wikilambda_supported_programming_languages-not-connected",
 				$this->orchestratorHost ] );
 		} catch ( ClientException | ServerException $exception ) {
-			$zError = ApiFunctionCall::wrapMessageInZError( $exception->getResponse()->getReasonPhrase(), '' );
+			$zError = ZErrorFactory::wrapMessageInZError( $exception->getResponse()->getReasonPhrase(), '' );
 			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zError );
 			$zResponseObject = new ZResponseEnvelope( null, $zResponseMap );
 			$result = [ 'data' => $zResponseObject->getSerialized() ];
