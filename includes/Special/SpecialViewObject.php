@@ -62,7 +62,11 @@ class SpecialViewObject extends SpecialPage {
 		// doesn't try to instantiate its tabs
 		$output->getTitle()->setContentModel( CONTENT_MODEL_ZOBJECT );
 
-		if ( !$subPage || !is_string( $subPage ) ) {
+		// If there's no sub-page, or there's an ?action=foo URL, just exit.
+		if (
+			!$subPage || !is_string( $subPage ) ||
+			$this->getContext()->getRequest()->getText( 'action', 'view' ) !== 'view'
+		) {
 			$this->redirectToMain( $output );
 			return;
 		}
