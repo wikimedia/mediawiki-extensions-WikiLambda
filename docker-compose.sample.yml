@@ -8,6 +8,6 @@ services:
       WIKI_API_URL: "http://mediawiki-web:8080/w/api.php"
       FUNCTION_EVALUATOR_URL: "http://mediawiki_function-evaluator_1:6927/1/v1/evaluate/"
   function-evaluator:
-    image: docker-registry.wikimedia.org/repos/abstract-wiki/wikifunctions/function-evaluator:latest
+    image: docker-registry.wikimedia.org/repos/abstract-wiki/wikifunctions/function-evaluator/omnibus:latest
     ports:
       - 6927:6927
