@@ -361,7 +361,7 @@ class ApiPerformTestTest extends ApiTestCase {
 			'Z1000000',
 			[],
 			'Perform test error: \'{ "Z1K1": "Z14", "Z14K1": "Z813", "Z14K3": { "Z1K1": "Z16", "Z16K1": { "Z1K1": ' .
-				'"Z61", "Z61K1": "python" }, "Z16K2": "def Z813(Z813K1):\n\treturn True" } }\' isn\'t a tester.'
+				'"Z61", "Z61K1": "python" }, "Z16K2": "def Z813(Z813K1):\n\treturn True" } }\' isn\'t a test case.'
 		];
 
 		yield 'Request specifies implementation that throws an error' => [

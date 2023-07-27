@@ -16,6 +16,7 @@ use JobQueueGroup;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheTesterResultsJob;
 use MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
+use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
@@ -117,7 +118,14 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				// If not JSON, assume we have received a ZID.
 				if ( $decodedJson ) {
 					$inlineImplementation = true;
-					$implementation = ZObjectFactory::create( $decodedJson );
+					try {
+						$implementation = ZObjectFactory::create( $decodedJson );
+					} catch ( ZErrorException $e ) {
+						$this->dieWithError( [
+							'wikilambda-performtest-error-invalidimplementation',
+							$e->getZErrorMessage()
+						] );
+					}
 				} else {
 					$implementation = new ZReference( $implementation );
 				}
@@ -154,7 +162,14 @@ class ApiPerformTest extends WikiLambdaApiBase {
 					// If not JSON, assume we have received a ZID.
 					if ( $decodedJson ) {
 						$inlineTester = true;
-						$requestedTester = ZObjectFactory::create( $decodedJson );
+						try {
+							$requestedTester = ZObjectFactory::create( $decodedJson );
+						} catch ( ZErrorException $e ) {
+							$this->dieWithError( [
+								'wikilambda-performtest-error-invalidtester',
+								$e->getZErrorMessage()
+							] );
+						}
 					} else {
 						$requestedTester = new ZReference( $requestedTester );
 					}
