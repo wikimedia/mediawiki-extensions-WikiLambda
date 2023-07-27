@@ -8,11 +8,9 @@
 'use strict';
 const Page = require( 'wdio-mediawiki/Page' );
 const { LanguageContainerComponent, FirstLanguageContainerComponent } = require( '../../componentobjects/function-form/LanguageContainer.component' );
+const ZObjectPublish = require( '../../componentobjects/ZObjectPublish' );
 
 class FunctionForm extends Page {
-	get publishFunctionButton() { return $( 'button=Publish' ); }
-	get publishFunctionInValidationPopupButton() { return $( '#publish-dialog' ).$( 'button=Publish' ); }
-	get editSummaryInValidationPopupField() { return $( 'input[aria-label="Edit summary"]' ); }
 	get addLabelInAnotherLanguageBtn() {
 		return $( 'button*=Add labels in another language' );
 	}
@@ -54,14 +52,12 @@ class FunctionForm extends Page {
 		return languageContainerComp.fill( argProps );
 	}
 
-	async publishFunction( summary = 'Published function for tests' ) {
+	async publishFunction() {
 		// Dirty workaround to let the model being updated after the last debounce
 		// (see the FunctionEditorInputsItem.vue file)
 		// eslint-disable-next-line wdio/no-pause
 		await browser.pause( 300 );
-		await this.publishFunctionButton.click();
-		await this.editSummaryInValidationPopupField.setValue( summary );
-		await this.publishFunctionInValidationPopupButton.click();
+		await ZObjectPublish.publish();
 	}
 }
 
