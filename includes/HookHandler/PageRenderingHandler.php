@@ -11,16 +11,15 @@
 namespace MediaWiki\Extension\WikiLambda\HookHandler;
 
 use HtmlArmor;
-use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\Hook\BeforePageDisplayHook;
 use MediaWiki\Hook\SkinTemplateNavigation__UniversalHook;
 use MediaWiki\Hook\WebRequestPathInfoRouterHook;
 use MediaWiki\Linker\Hook\HtmlPageLinkRendererEndHook;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Linker\LinkTarget;
-use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use OutputPage;
@@ -140,57 +139,35 @@ class PageRenderingHandler implements
 	public function onHtmlPageLinkRendererEnd(
 		$linkRenderer, $linkTarget, $isKnown, &$text, &$attribs, &$ret
 	) {
-		$context = RequestContext::getMain();
-		$out = $context->getOutput();
-
-		// Do nothing if any of these apply:
-		if (
-			// … there's no title in the main context
-			!$context->hasTitle()
-			// … there's no title set for the output page
-			|| !$out->getTitle()
-			// … the request is via the API (except for test runs)
-			|| ( defined( 'MW_API' ) && MW_API !== 'TEST' )
-			// … the target isn't known
-			|| !$isKnown
-		) {
-			return;
-		}
-
 		// Convert the slimline LinkTarget into a full-fat Title so we can ask deeper questions
 		$targetTitle = Title::newFromLinkTarget( $linkTarget );
+		$zid = $targetTitle->getBaseText();
 
-		// Do nothing if any of these apply:
+		// Do nothing if the target isn't one of ours
 		if (
-			// … the target isn't one of ours
-			!$targetTitle->inNamespace( NS_MAIN ) || !$targetTitle->hasContentModel( CONTENT_MODEL_ZOBJECT )
-			// … the label is already over-ridden (e.g. for "prev" and "cur" and revision links on history pages)
-			|| ( $text !== null && $targetTitle->getFullText() !== HtmlArmor::getHtml( $text ) )
+			!$targetTitle->inNamespace( NS_MAIN )
+			|| !$targetTitle->hasContentModel( CONTENT_MODEL_ZOBJECT )
+			|| !ZObjectUtils::isValidZObjectReference( $zid )
 		) {
 			return;
 		}
 
-		$zObjectStore = WikiLambdaServices::getZObjectStore();
-
-		// Rather than (rather expensively) fetching the whole object from the ZObjectStore, see if the labels are in
-		// the labels table already, which is very much faster:
-		$zLangRegistry = ZLangRegistry::singleton();
-		$zid = $targetTitle->getBaseText();
-
-		// TODO: Inject
-		$config = MediaWikiServices::getInstance()->getMainConfig();
-
-		// Re-write our path to include the content language
-		// TODO (T338190): Do we need to make an exception for 'en' so there's a primary page?
-		// (We don't want there to be linguistic primacy, but if we really have to…)
+		// Re-write our path to include the content language ($attribs['href'])
+		$context = RequestContext::getMain();
 		$currentPageContentLanguageCode = $context->getLanguage()->getCode();
 		$attribs['href'] = '/view/' . $currentPageContentLanguageCode . '/' . $attribs['title'];
 
-		$logger = LoggerFactory::getInstance( 'WikiLambda' );
-		$logger->warning( 'Called currentPageContentLanguageCode {attribs}', [
-			'attribs' => var_export( $attribs, true ),
-		] );
+		// **After this point, the only changes we're making are to the label ($text)**
 
+		// We don't re-write the label if the label is already set (e.g. for "prev" and "cur" and revision links on
+		// history pages, or inline links like [[Z1|this]])
+		if ( $text !== null && $targetTitle->getFullText() !== HtmlArmor::getHtml( $text ) ) {
+			return;
+		}
+
+		// Rather than (rather expensively) fetching the whole object from the ZObjectStore, see if the labels are in
+		// the labels table already, which is very much faster:
+		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$label = $zObjectStore->fetchZObjectLabel(
 			$zid,
 			$currentPageContentLanguageCode,
@@ -200,7 +177,7 @@ class PageRenderingHandler implements
 		// Just in case the database has no entry (e.g. the table is a millisecond behind or so), load the full object.
 		if ( $label === null ) {
 			$targetZObject = $zObjectStore->fetchZObjectByTitle( $targetTitle );
-			// Do nothing if somehow after all that it's not loadable.
+			// Do nothing if somehow after all that it's not loadable
 			if ( !$targetZObject || !( $targetZObject instanceof ZObjectContent ) || !$targetZObject->isValid() ) {
 				return;
 			}
