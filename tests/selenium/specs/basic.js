@@ -6,13 +6,21 @@
  */
 
 'use strict';
-const CreateObjectPage = require( '../pageobjects/special/CreateObject.page.js' ),
+const LoginPage = require( 'wdio-mediawiki/LoginPage' ),
+	CreateObjectPage = require( '../pageobjects/special/CreateObject.page.js' ),
 	RunFunction = require( '../pageobjects/special/RunFunction.page.js' ),
 	ListObjectsByType = require( '../pageobjects/special/ListObjectsByType.page.js' );
 describe( 'Installation checks', function () {
 
 	describe( 'CreateObject', function () {
 		it( 'page should exist on installation', async function () {
+			await CreateObjectPage.open();
+			await expect( await CreateObjectPage.title ).toHaveText( 'Permission error' );
+
+			await LoginPage.loginAdmin();
+			await expect( browser ).toHaveUrlContaining( 'Main_Page',
+				{ message: 'Login failed' } );
+
 			await CreateObjectPage.open();
 			await expect( await CreateObjectPage.title ).toHaveText( 'Create a new Object' );
 		} );

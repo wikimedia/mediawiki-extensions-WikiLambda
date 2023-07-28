@@ -17,7 +17,7 @@ class SpecialCreateObject extends SpecialPage {
 	use ZObjectEditingPageTrait;
 
 	public function __construct() {
-		parent::__construct( 'CreateObject', 'createpage' );
+		parent::__construct( 'CreateObject', 'wikilambda-create' );
 	}
 
 	/**
@@ -39,6 +39,10 @@ class SpecialCreateObject extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function execute( $subPage ) {
+		if ( !$this->userCanExecute( $this->getUser() ) ) {
+			$this->displayRestrictionError();
+		}
+
 		// TODO: Use $subPage to extract and pre-fill type/etc.?
 
 		$this->setHeaders();
@@ -46,6 +50,7 @@ class SpecialCreateObject extends SpecialPage {
 		// $this->outputHeader( 'wikilambda-special-define-function-summary' );
 
 		$output = $this->getOutput();
+
 		$output->addModules( [ 'ext.wikilambda.edit', 'mediawiki.special' ] );
 
 		$output->addWikiMsg( 'wikilambda-special-createobject-intro' );
