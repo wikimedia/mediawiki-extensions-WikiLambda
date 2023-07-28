@@ -226,6 +226,7 @@
 	"wikilambda-tester-selector": "Selige un test",
 	"wikilambda-tester-none-found": "Il non ha ancora casos de test pro iste function",
 	"wikilambda-tester-create-new": "Crear un nove test",
+	"wikilambda-tester-status-ready": "Preste",
 	"wikilambda-tester-status-running": "In execution…",
 	"wikilambda-tester-status-run": "Executar",
 	"wikilambda-tester-status-cancel": "Cancellar",

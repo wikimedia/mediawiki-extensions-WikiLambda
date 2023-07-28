@@ -3,6 +3,7 @@
 		"authors": [
 			"Ayack",
 			"DreZhsh",
+			"Eihel",
 			"Fujimaru-kun",
 			"Gomoko",
 			"JenyxGym",
@@ -28,7 +29,7 @@
 	"wikilambda-invalidcontenttype": "Le contenu fourni n’est pas une classe de Objet.",
 	"wikilambda-typeunavailable": "Type non reconnu",
 	"wikilambda-noresult": "La recherche n’a donné aucun résultat.",
-	"wikilambda-labelclash": "Le libellé du contenu fourni est en conflit avec le Objet « $1 » pour le libellé dans « $2 ».",
+	"wikilambda-labelclash": "Le libellé du contenu fourni est en conflit avec l’Objet « $1 » pour le libellé en « $2 ».",
 	"action-wikilambda-connect-implementation": "connecter une implémentation à sa fonction afin qu’elle puisse être exécutée",
 	"action-wikilambda-connect-tester": "connecter un cas de test à sa fonction",
 	"action-wikilambda-create": "créer de nouveaux objets à tout prix",
