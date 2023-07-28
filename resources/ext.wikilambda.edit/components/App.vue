@@ -69,12 +69,9 @@ module.exports = exports = {
 			 * Instrument how long our view took to load, split by type of view
 			 */
 			newViewMounted: function () {
-				// HACK: Is there a nicer way to split this by type of view?
-				const viewName = ( window.vueInstance && window.vueInstance.getCurrentView ) || 'testComponent';
-
 				// Log using Metrics Platform
 				const customData = {
-					viewname: viewName || null,
+					viewname: this.getCurrentView || null,
 					isnewzobject: this.isNewZObject,
 					loadtime: Date.now() - startTime
 				};
