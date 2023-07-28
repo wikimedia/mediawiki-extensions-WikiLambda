@@ -11,7 +11,10 @@
 		"doc": "jsdoc -c jsdoc.json",
 		"coverage": "npm run test:unit",
 		"lint": "grunt test",
-		"lint:fix": "grunt test --fix"
+		"lint:fix": "grunt test --fix",
+		"local:setup": "bash scripts/local_setup.sh",
+		"local:reset": "bash scripts/local_reset.sh",
+		"local:selenium": "bash scripts/local_selenium.sh"
 	},
 	"devDependencies": {
 		"@babel/core": "7.16.10",

@@ -21,6 +21,20 @@ Much further functionality is to come.
 
 ## Development instructions
 
+### Quick start
+
+Install Node v16. Then from whatever directory you wish to set up your development environment, run:
+
+```bash
+git clone "https://gerrit.wikimedia.org/r/mediawiki/mediawiki"
+cd mediawiki
+git clone --recurse-submodules --remote-submodules https://gerrit.wikimedia.org/r/mediawiki/extensions/WikiLambda extensions/WikiLambda
+cd extensions/WikiLambda
+npm run local:setup
+```
+
+### Full instructions
+
 * Bring up a [development environment](https://www.mediawiki.org/wiki/How_to_become_a_MediaWiki_hacker) for MediaWiki (e.g. [Docker](https://www.mediawiki.org/wiki/MediaWiki-Docker) or [Vagrant](https://www.mediawiki.org/wiki/MediaWiki-Vagrant)). Be sure to install docker-compose v2 instead of v1.
 * In your `mediawiki/extensions/` subdirectory, clone the extension as follows:
   ```
@@ -151,9 +165,19 @@ The array data model allows us to manage the data in a more intuitive way. Each 
 
 ### Selenium Tests
 
+#### Quickstart
+
+From your `extensions/Wikilambda` directory run:
+
+```bash
+npm run local:selenium
+```
+
+#### Full instructions
+
 A set of Selenium tests, used to run end-to-end tests of the application, is available within the project. The tests require an environment with specific versions of things to run, and so it is suggested you use "fresh-node" to run them locally without the need to modify your personal environment.
 
-The tests need a specific set of environment variable to be avaialable. Please see the following list on how to set this `https://www.mediawiki.org/wiki/Selenium/How-to/Set_environment_variables`
+The tests need a specific set of environment variable to be available. Please see the following list on how to set this `https://www.mediawiki.org/wiki/Selenium/How-to/Set_environment_variables`
 
 For information on how to run fresh-node and how to get started, see the following documentation: `https://www.mediawiki.org/wiki/Selenium/Getting_Started/Run_tests_using_Fresh`
 
