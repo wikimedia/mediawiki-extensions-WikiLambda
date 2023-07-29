@@ -906,4 +906,62 @@ var mockApiZkeys = {
 	}
 };
 
-module.exports = { mockLabels, mockSidebarItems, mockApiReponse, mockApiZkeys };
+const mockLanguages = {
+	batchcomplete: true,
+	query: {
+		languageinfo: {
+			es: {
+				code: "es",
+				autonym: "español",
+				name: "Spanish"
+			},
+			en: {
+				code: "en",
+				autonym: "English",
+				name: "English"
+			},
+			el: {
+				code: "el",
+				autonym: "Ελληνικά",
+				name: "Greek"
+			},
+			it: {
+				code: "it",
+				autonym: "italiano",
+				name: "Italian"
+			},
+			nap: {
+				code: "nap",
+				autonym: "Napulitano",
+				name: "Neapolitan"
+			},
+			oc: {
+				code: "oc",
+				autonym: "occitan",
+				name: "Occitan"
+			},
+			hr: {
+				code: "hr",
+				autonym: "hrvatski",
+				name: "Croatian"
+			},
+			ca: {
+				code: "ca",
+				autonym: "català",
+				name: "Catalan"
+			},
+			ast: {
+				code: "ast",
+				autonym: "asturianu",
+				name: "Asturian"
+			},
+			eu: {
+				code: "eu",
+				autonym: "euskara",
+				name: "Basque"
+			}
+		}
+	}
+};
+
+module.exports = { mockLabels, mockSidebarItems, mockApiReponse, mockApiZkeys, mockLanguages };

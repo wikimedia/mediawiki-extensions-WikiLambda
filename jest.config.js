@@ -46,7 +46,11 @@ module.exports = {
 
 	// An array of regexp pattern strings used to skip coverage collection
 	coveragePathIgnorePatterns: [
-		'resources/lib/', // These are upstream libraries
+		// Ignore upstream libraries
+		'resources/lib/',
+		// Ignore index.js initialization scripts
+		'resources/ext.wikilambda.edit/index.js',
+		'resources/ext.wikilambda.languageselector/index.js',
 		// These are untested base components - as we add more tests, we should remove them from here
 		'resources/ext.wikilambda.edit/components/base/Chip.vue',
 		'resources/ext.wikilambda.edit/components/base/ChipContainer.vue',
@@ -70,6 +74,12 @@ module.exports = {
 		// This is our soft target, but doesn't actually affect any of our code as we over-ride below for now
 		global: {
 			branches: 90,
+			lines: 90,
+			functions: 90,
+			statements: 90
+		},
+		'./resources/ext.wikilambda.languageselector/': {
+			branches: 82,
 			lines: 90,
 			functions: 90,
 			statements: 90
