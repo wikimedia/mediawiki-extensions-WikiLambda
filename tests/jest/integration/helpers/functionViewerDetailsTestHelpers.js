@@ -64,7 +64,9 @@ const runSetup = function () {
 			case 'wgWikiLambda':
 				return {
 					zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
-					zId: functionZid
+					zId: functionZid,
+					createNewPage: false,
+					viewmode: true
 				};
 			case 'wgExtensionAssetsPath':
 				return '/w/extensions';

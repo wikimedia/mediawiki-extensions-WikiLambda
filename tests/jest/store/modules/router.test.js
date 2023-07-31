@@ -170,18 +170,22 @@ describe( 'router Vuex module', function () {
 		} );
 
 		describe( 'evaluateUri', function () {
-			beforeEach(
-				function () {
-					window.mw.Uri.mockImplementation( function () {
-						return {
-							query: {},
-							path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl()
-						};
-					} );
-				}
-			);
 
 			describe( 'Edit Function Route loads Function Editor', function () {
+				beforeEach( () => {
+					// Mock function edit config
+					window.mw.config = {
+						get: jest.fn( function () {
+							return {
+								createNewPage: false,
+								viewmode: false,
+								title: 'Z0',
+								zId: 'Z0'
+							};
+						} )
+					};
+				} );
+
 				describe( 'with URL Format One (/w/index.php)', function () {
 					it( 'When action is edit and view is not passed', function () {
 						context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
@@ -314,6 +318,20 @@ describe( 'router Vuex module', function () {
 			} );
 
 			describe( 'Edit ZObject Route loads Default View', function () {
+				beforeEach( () => {
+					// Mock non-function edit config
+					window.mw.config = {
+						get: jest.fn( function () {
+							return {
+								createNewPage: false,
+								viewmode: false,
+								title: 'Z0',
+								zId: 'Z0'
+							};
+						} )
+					};
+				} );
+
 				describe( 'with URL Format One (/w/index.php)', function () {
 					it( 'When action is edit and view is not passed', function () {
 						window.mw.Uri.mockImplementationOnce( function () {
@@ -399,6 +417,21 @@ describe( 'router Vuex module', function () {
 			} );
 
 			describe( 'View Function Route loads Function Viewer', function () {
+				beforeEach( () => {
+					// Mock function view config
+					context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
+					window.mw.config = {
+						get: jest.fn( function () {
+							return {
+								createNewPage: false,
+								viewmode: true,
+								title: 'Z0',
+								zId: 'Z0'
+							};
+						} )
+					};
+				} );
+
 				describe( 'with URL Format One (/w/index.php)', function () {
 					it( 'When zobject is a function', function () {
 						context.rootGetters.getCurrentZObjectType = Constants.Z_FUNCTION;
@@ -564,6 +597,20 @@ describe( 'router Vuex module', function () {
 			} );
 
 			describe( 'View ZObject Route loads ZObject Viewer', function () {
+				beforeEach( () => {
+					// Mock non-function view config
+					window.mw.config = {
+						get: jest.fn( function () {
+							return {
+								createNewPage: true,
+								viewmode: true,
+								title: 'Z0',
+								zId: 'Z0'
+							};
+						} )
+					};
+				} );
+
 				describe( 'with URL Format One (/w/index.php)', function () {
 					it( 'When view is not passed', function () {
 						window.mw.Uri.mockImplementationOnce( function () {
@@ -643,6 +690,20 @@ describe( 'router Vuex module', function () {
 			} );
 
 			describe( 'Create Function Route loads Function Editor', function () {
+				beforeEach( () => {
+					// Mock function create config
+					window.mw.config = {
+						get: jest.fn( function () {
+							return {
+								createNewPage: true,
+								viewmode: false,
+								title: 'Z0',
+								zId: 'Z0'
+							};
+						} )
+					};
+				} );
+
 				describe( 'with URL Format One (/w/index.php)', function () {
 					it( 'When zid is passed as Z8(Z_FUNCTION)', function () {
 						const queryParams = {
@@ -685,6 +746,20 @@ describe( 'router Vuex module', function () {
 			} );
 
 			describe( 'Create ZObject Route loads ZObject Editor', function () {
+				beforeEach( () => {
+					// Mock non-function create config
+					window.mw.config = {
+						get: jest.fn( function () {
+							return {
+								createNewPage: true,
+								viewmode: false,
+								title: 'Z0',
+								zId: 'Z0'
+							};
+						} )
+					};
+				} );
+
 				it( 'with URL Format One (/w/index.php)', function () {
 					window.mw.Uri.mockImplementationOnce( function () {
 						return {
@@ -721,6 +796,19 @@ describe( 'router Vuex module', function () {
 			} );
 
 			describe( 'Evaluate Function Route loads Function Evaluator view', function () {
+				beforeEach( () => {
+					// Mock function create config
+					window.mw.config = {
+						get: jest.fn( function () {
+							return {
+								createNewPage: false,
+								viewmode: false,
+								runFunction: true
+							};
+						} )
+					};
+				} );
+
 				it( 'with URL Format One (/w/index.php)', function () {
 					window.mw.Uri.mockImplementationOnce( function () {
 						return {

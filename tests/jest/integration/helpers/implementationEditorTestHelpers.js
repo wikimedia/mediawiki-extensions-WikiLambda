@@ -44,6 +44,7 @@ const runSetup = function () {
 				return {
 					zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
 					createNewPage: true,
+					viewmode: false,
 					zId: Constants.Z_IMPLEMENTATION
 				};
 			case 'wgExtensionAssetsPath':
