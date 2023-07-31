@@ -12,6 +12,7 @@
 namespace MediaWiki\Extension\WikiLambda\Special;
 
 use Html;
+use InvalidArgumentException;
 use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
 use MediaWiki\Extension\WikiLambda\ZObjectEditingPageTrait;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
@@ -100,7 +101,13 @@ class SpecialViewObject extends SpecialPage {
 
 		$this->setHeaders();
 
-		$targetLanguageObject = $services->getLanguageFactory()->getLanguage( $targetLanguage );
+		try {
+			$targetLanguageObject = $services->getLanguageFactory()->getLanguage( $targetLanguage );
+		} catch ( InvalidArgumentException $e ) {
+			// (T343006) Supplied language is invalid; probably a user-error, so just exit.
+			$this->redirectToMain( $output );
+			return;
+		}
 
 		// Set the page language for our own purposes.
 		$this->getContext()->setLanguage( $targetLanguageObject );
