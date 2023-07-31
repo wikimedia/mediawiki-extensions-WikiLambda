@@ -171,7 +171,8 @@
 		"ParserFirstCallInit": "WikiLambdaParserHooks",
 		"HtmlPageLinkRendererEnd": "PageRenderingHandler",
 		"SkinTemplateNavigation::Universal": "PageRenderingHandler",
-		"WebRequestPathInfoRouter": "PageRenderingHandler"
+		"WebRequestPathInfoRouter": "PageRenderingHandler",
+		"BeforePageDisplay": "PageRenderingHandler"
 	},
 	"MessagesDirs": {
 		"WikiLambda": [
@@ -196,6 +197,32 @@
 		"ext.wikilambda.editpage.styles": {
 			"styles": [
 				"ext.wikilambda.editpage/ext.wikilambda.editpage.less"
+			]
+		},
+		"ext.wikilambda.languageselector": {
+			"styles": [],
+			"es6": true,
+			"dependencies": [
+				"vue",
+				"@wikimedia/codex",
+				"mediawiki.api",
+				"mediawiki.Uri",
+				"es6-polyfills"
+			],
+			"packageFiles": [
+				"ext.wikilambda.languageselector/index.js",
+				"ext.wikilambda.languageselector/components/LanguageSelector.vue",
+				{
+					"name": "lib/icons.json",
+					"callback": "ResourceLoaderCodexModule::getIcons",
+					"callbackParam": [
+						"cdxIconLanguage",
+						"cdxIconSearch"
+					]
+				}
+			],
+			"messages": [
+				"wikilambda-about-widget-search-language-placeholder"
 			]
 		},
 		"ext.wikilambda.edit": {

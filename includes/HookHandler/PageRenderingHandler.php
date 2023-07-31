@@ -14,6 +14,7 @@ use HtmlArmor;
 use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
+use MediaWiki\Hook\BeforePageDisplayHook;
 use MediaWiki\Hook\SkinTemplateNavigation__UniversalHook;
 use MediaWiki\Hook\WebRequestPathInfoRouterHook;
 use MediaWiki\Linker\Hook\HtmlPageLinkRendererEndHook;
@@ -22,12 +23,15 @@ use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
+use OutputPage;
 use RequestContext;
+use Skin;
 
 class PageRenderingHandler implements
 	HtmlPageLinkRendererEndHook,
 	SkinTemplateNavigation__UniversalHook,
-	WebRequestPathInfoRouterHook
+	WebRequestPathInfoRouterHook,
+	BeforePageDisplayHook
 {
 
 	// phpcs:disable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
@@ -39,6 +43,20 @@ class PageRenderingHandler implements
 	 */
 	public function onSkinTemplateNavigation__Universal( $skinTemplate, &$links ): void {
 		$targetTitle = $skinTemplate->getRelevantTitle();
+
+		// For any page: Add a language control, for users to navigate to another language.
+		// TODO: this only works for browsers with Javascript. The button is invisible until
+		// the ext.wikilambda.languageselector module creates the Vue component to replace it.
+		$ourButton = [ 'wikifunctions-language' => [
+			'button' => true,
+			'id' => 'ext-wikilambda-pagelanguagebutton',
+			'text' => '',
+			'active' => false,
+			'link-class' => [ 'wikifunctions-trigger' ],
+			'href' => '#'
+		] ];
+		$links['user-interface-preferences'] = $ourButton + $links['user-interface-preferences'];
+
 		if ( !$targetTitle->hasContentModel( CONTENT_MODEL_ZOBJECT ) ) {
 			// Nothing to do, exit.
 			return;
@@ -104,19 +122,6 @@ class PageRenderingHandler implements
 
 		$links['namespaces']['talk']['href'] = $talkRewrittenHref;
 		$links['associated-pages']['talk']['href'] = $talkRewrittenHref;
-
-		// Add a language control to the page, for users to change the content language
-		$ourButton = [ 'wikifunctions-language' => [
-			'button' => true,
-			'icon' => 'wikimedia-language',
-			'id' => 'ext-wikilambda-pagelanguagebutton',
-			'text' => MediaWikiServices::getInstance()->getLanguageNameUtils()->getLanguageName( $lang ),
-			'active' => false,
-			'link-class' => [ 'wikifunctions-trigger' ],
-			// Add a nonsense destination for non-JS users
-			'href' => '#'
-		] ];
-		$links['user-interface-preferences'] = $ourButton + $links['user-interface-preferences'];
 	}
 
 	// phpcs:enable MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName
@@ -232,5 +237,23 @@ class PageRenderingHandler implements
 			'/view/$2/$1',
 			[ 'title' => 'Special:ViewObject/$2/$1' ]
 		);
+	}
+
+	/**
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/BeforePageDisplay
+	 *
+	 * @param OutputPage $out
+	 * @param Skin $skin
+	 * @return void
+	 */
+	public function onBeforePageDisplay( $out, $skin ): void {
+		// Save language name in global variables, needed for language selector module
+		$languageNameUtils = MediaWikiServices::getInstance()->getLanguageNameUtils();
+		$userLang = $out->getLanguage();
+		$userLangName = $languageNameUtils->getLanguageName( $userLang->getCode() );
+		$out->addJsConfigVars( 'wgUserLanguageName', $userLangName );
+
+		// Add language selector module to all pages
+		$out->addModules( 'ext.wikilambda.languageselector' );
 	}
 }

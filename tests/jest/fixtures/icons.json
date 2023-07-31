@@ -22,5 +22,6 @@
 	"cdxIconEdit": "<path d=\"M11 9V4H9v5H4v2h5v5h2v-5h5V9z\"/>",
 	"cdxIconHistory": "<path d=\"M11 9V4H9v5H4v2h5v5h2v-5h5V9z\"/>",
 	"cdxIconFunction": "<path d=\"M11 9V4H9v5H4v2h5v5h2v-5h5V9z\"/>",
-	"cdxIconNotBright": "<path d=\"M11 9V4H9v5H4v2h5v5h2v-5h5V9z\"/>"
+	"cdxIconNotBright": "<path d=\"M11 9V4H9v5H4v2h5v5h2v-5h5V9z\"/>",
+	"cdxIconSearch": "<path d=\"M11 9V4H9v5H4v2h5v5h2v-5h5V9z\"/>"
 }
