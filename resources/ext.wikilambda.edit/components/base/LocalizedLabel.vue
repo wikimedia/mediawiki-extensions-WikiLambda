@@ -118,6 +118,7 @@ span.ext-wikilambda-lang-chip {
 	box-sizing: border-box;
 	height: 22px;
 	min-height: 22px;
+	margin-right: @spacing-25;
 
 	&:empty {
 		width: 36px;
