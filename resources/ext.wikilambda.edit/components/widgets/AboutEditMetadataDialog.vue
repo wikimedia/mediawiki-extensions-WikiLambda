@@ -339,7 +339,8 @@ module.exports = exports = {
 	methods: $.extend( mapActions( [
 		'changeType',
 		'removeItemFromTypedList',
-		'setValueByRowIdAndPath'
+		'setValueByRowIdAndPath',
+		'setDirty'
 	] ), {
 		/**
 		 * Persist the changes in the store and finish the dialog
@@ -353,6 +354,8 @@ module.exports = exports = {
 			this.persistState();
 			if ( !this.edit ) {
 				this.$emit( 'publish' );
+			} else {
+				this.setDirty( true );
 			}
 			this.closeDialog();
 		},
