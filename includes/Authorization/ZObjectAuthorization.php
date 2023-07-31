@@ -14,30 +14,21 @@ use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectContent;
-use MediaWiki\Permissions\PermissionManager;
+use MediaWiki\Permissions\Authority;
 use MediaWiki\Title\Title;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Yaml\Yaml;
-use User;
 
 class ZObjectAuthorization implements LoggerAwareInterface {
-
-	/** @var PermissionManager */
-	protected $permissionManager;
 
 	/** @var LoggerInterface */
 	private $logger;
 
 	/**
-	 * @param PermissionManager $permissionManager
 	 * @param LoggerInterface $logger
 	 */
-	public function __construct( PermissionManager $permissionManager, LoggerInterface $logger ) {
-		// TODO (T312090): This should use the Authority concept,
-		// not the soon-to-be-legacy PermissionManager.
-		$this->permissionManager = $permissionManager;
-
+	public function __construct( LoggerInterface $logger ) {
 		$this->logger = $logger;
 	}
 
@@ -48,24 +39,24 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 	 *
 	 * @param ZObjectContent|null $oldContent
 	 * @param ZObjectContent $newContent
-	 * @param User $user
+	 * @param Authority $authority
 	 * @param Title $title
 	 * @return AuthorizationStatus
 	 */
-	public function authorize( $oldContent, $newContent, $user, $title ): AuthorizationStatus {
+	public function authorize( $oldContent, $newContent, $authority, $title ): AuthorizationStatus {
 		// If oldContent is null, we are creating a new object; else we editing
 		$creating = ( $oldContent === null );
 
 		// We get the list of required rights for the revision
-		$userRights = $creating
+		$requiredRights = $creating
 			? $this->getRequiredCreateRights( $newContent, $title )
 			: $this->getRequiredEditRights( $oldContent, $newContent, $title );
 
 		// We check that the user has the necessary rights
 		$status = new AuthorizationStatus();
-		foreach ( $userRights as $right ) {
-			$authorized = $this->permissionManager->userHasRight( $user, $right );
-			if ( !$authorized ) {
+
+		foreach ( $requiredRights as $right ) {
+			if ( !$authority->isAllowed( $right ) ) {
 				$flags = $creating ? EDIT_NEW : EDIT_UPDATE;
 				$error = ZErrorFactory::createAuthorizationZError( $right, $newContent, $flags );
 				$status->setUnauthorized( $right, $error );
@@ -82,7 +73,7 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 	 *
 	 * @param ZObjectContent $content
 	 * @param Title $title
-	 * @return array
+	 * @return string[]
 	 */
 	public function getRequiredCreateRights( $content, $title ): array {
 		// Default rights necessary for create:
@@ -135,7 +126,7 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 	 * @param ZObjectContent $fromContent
 	 * @param ZObjectContent $toContent
 	 * @param Title $title
-	 * @return array
+	 * @return string[]
 	 */
 	public function getRequiredEditRights( $fromContent, $toContent, $title ): array {
 		// Default rights necessary for edit:

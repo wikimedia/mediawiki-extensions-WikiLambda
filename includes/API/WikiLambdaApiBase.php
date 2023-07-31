@@ -18,7 +18,6 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Permissions\PermissionManager;
 use PoolCounterWorkViaCallback;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -47,9 +46,6 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	/** @var LoggerInterface */
 	protected $logger;
 
-	/** @var PermissionManager */
-	protected $permissionManager;
-
 	protected function setUp() {
 		$this->setLogger( LoggerFactory::getInstance( 'WikiLambda' ) );
 
@@ -59,8 +55,6 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		$this->orchestratorHost = $config->get( 'WikiLambdaOrchestratorLocation' );
 		$client = new Client( [ "base_uri" => $this->orchestratorHost ] );
 		$this->orchestrator = new OrchestratorRequest( $client );
-
-		$this->permissionManager = $services->getPermissionManager();
 	}
 
 	/**
@@ -113,7 +107,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		);
 
 		// Unlike the Special pages, we don't have a helpful userCanExecute() method
-		if ( !$this->permissionManager->userHasRight( $this->getContext()->getUser(), 'wikilambda-execute' ) ) {
+		if ( !$this->getContext()->getAuthority()->isAllowed( 'wikilambda-execute' ) ) {
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
 			$this->dieWithZError( $zError );
 		}
