@@ -19,13 +19,14 @@ const isEvaluateFunctionCallPath = function ( uriQuery ) {
 };
 
 /**
- * Whether the URL contains the action edit
+ * Whether the current config has viewmode=true
  *
  * @param {Object} uriQuery The contextual mw.Uri's query sub-object
  * @return {boolean}
  */
-const isEditPath = function ( uriQuery ) {
-	return ( uriQuery.action === 'edit' );
+const isViewMode = function () {
+	const editingData = mw.config.get( 'wgWikiLambda' );
+	return editingData.viewmode;
 };
 
 /**
@@ -173,9 +174,9 @@ module.exports = {
 			}
 
 			if ( isFunctionRootObject( context ) ) {
-				currentView = isEditPath( uri.query ) ?
-					Constants.VIEWS.FUNCTION_EDITOR :
-					Constants.VIEWS.FUNCTION_VIEWER;
+				currentView = isViewMode() ?
+					Constants.VIEWS.FUNCTION_VIEWER :
+					Constants.VIEWS.FUNCTION_EDITOR;
 
 				// Change view and end?
 				context.dispatch( 'changeCurrentView', currentView );
