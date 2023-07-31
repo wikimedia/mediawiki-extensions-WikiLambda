@@ -126,18 +126,16 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			);
 			$response = $work->execute();
 
-			$responsePayload = $response->getBody()->getContents();
-
 			$this->getLogger()->debug(
 				__METHOD__ . ' executed successfully',
 				[
 					'zObject' => $zObject,
 					'validate' => $validate,
-					'response' => $responsePayload,
+					'response' => $response,
 				]
 			);
 
-			$responseContents = FormatJson::decode( $responsePayload );
+			$responseContents = FormatJson::decode( $response );
 			$responseObject = ZObjectFactory::create( $responseContents );
 			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope $responseObject';
 			return $responseObject;

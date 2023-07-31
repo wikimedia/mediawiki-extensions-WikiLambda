@@ -21,6 +21,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZType;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
+use MediaWiki\Title\Title;
 use Normalizer;
 use stdClass;
 use Transliterator;
@@ -1099,4 +1100,40 @@ class ZObjectUtils {
 		// Use placeholder ZID for non-persisted objects.
 		return ZTypeRegistry::Z_NULL_REFERENCE;
 	}
+
+	/**
+	 * Walk a given input ZObject, and make a cache key constructed of its keys and values, with any
+	 * ZObject referenced being expanded to also include its revision ID.
+	 *
+	 * E.g. { "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Hey" } => 'Z1K1|Z7#1,Z7K1|Z801#2,Z801K1|Hey'
+	 *
+	 * TODO (T338245): Is this cache key too broad? Can we simplify?
+	 *
+	 * TODO (T338246): When a Z7/Function call, we also need to poison the key with the revision ID of the
+	 * relevant implementation, but we don't know which was selected, as that's the call of the
+	 * function orchestrator.
+	 *
+	 * @param \stdClass|array $query
+	 * @return string response object returned by orchestrator
+	 */
+	public static function makeCacheKeyFromZObject( $query ): string {
+		$accumulator = '';
+
+		foreach ( $query as $key => $value ) {
+			$accumulator .= $key . '|';
+			if ( is_array( $value ) || is_object( $value ) ) {
+				$accumulator .= self::makeCacheKeyFromZObject( $value );
+			} elseif ( is_scalar( $value ) ) {
+				$accumulator .= $value;
+				// Special-case: If this is a ZObject reference, also append the object's revision ID to cache-bust
+				if ( is_string( $value ) && self::isValidZObjectReference( $value ) ) {
+					$accumulator .= '#' . Title::newFromDBkey( $value )->getLatestRevID();
+				}
+			}
+			$accumulator .= ',';
+		}
+
+		return $accumulator;
+	}
+
 }

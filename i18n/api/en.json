@@ -71,6 +71,7 @@
 	"apihelp-wikilambda_edit-param-zobject": "JSON representation of the ZObject to save",
 	"apierror-wikilambda_function_call-not-connected": "Could not resolve host '$1', probably because the orchestrator is not running. Please consult the README to add the orchestrator to your docker-compose configuration.",
 	"apierror-wikilambda_function_call-concurrency-limit": "You have too many function calls executing right now.",
+	"apierror-wikilambda_function_call-general": "Something went wrong: '$1'.",
 	"apierror-wikilambda_supported_programming_languages-not-connected": "Could not resolve host '$1', probably because the orchestrator is not running. Please consult the README to add the orchestrator to your docker-compose configuration.",
 	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "You have requested programming languages too many times.",
 	"apierror-wikilambda_edit-invalidjson": "Couldn't create ZObject for given input '$1'; invalid JSON.",

@@ -35,6 +35,10 @@
 		"zobject": "MediaWiki\\Extension\\WikiLambda\\ZObjectContentHandler"
 	},
 	"config": {
+		"WikiLambdaObjectCache": {
+			"description": "If false, store function calls in the main MediaWiki cache; if set to another value, that will be used as the key of a cache in wgObjectCaches.",
+			"value": false
+		},
 		"WikiLambdaEnableParserFunction": {
 			"description": "Enable the {{#function:…}} extension.",
 			"value": false

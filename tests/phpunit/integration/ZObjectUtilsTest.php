@@ -1517,4 +1517,31 @@ class ZObjectUtilsTest extends WikiLambdaIntegrationTestCase {
 		// correctly generates iso code
 		$this->assertSame( $expected, $actual );
 	}
+
+	/**
+	 * @dataProvider provideMakeCacheKeyFromZObject
+	 */
+	public function testMakeCacheKeyFromZObject( $inputObject, $expectedString ) {
+		$this->assertEquals( $expectedString, ZObjectUtils::makeCacheKeyFromZObject( $inputObject ) );
+	}
+
+	public static function provideMakeCacheKeyFromZObject() {
+		yield 'Simple Z6' => [
+			json_decode( '{ "Z1K1": "Z6", "Z6K1": "Testing" }' ),
+			'Z1K1|Z6#0,Z6K1|Testing,'
+		];
+
+		yield 'Simple Z7' => [
+			json_decode( '{ "Z1K1": "Z7", "Z7K1": "Z801", "Z801K1": "Testing" }' ),
+			'Z1K1|Z7#0,Z7K1|Z801#0,Z801K1|Testing,'
+		];
+
+		yield 'More complex Z7' => [
+			json_decode(
+				'{ "Z1K1": "Z7", "Z7K1": "Z802", "Z802K1": { "Z1K1": "Z40", "Z40K1": "Z41" }, '
+				. '"Z802K2": { "Z1K1": "Z40", "Z40K1": "Z41" }, "Z802K3": "Fail" }'
+			),
+			'Z1K1|Z7#0,Z7K1|Z802#0,Z802K1|Z1K1|Z40#0,Z40K1|Z41#0,,Z802K2|Z1K1|Z40#0,Z40K1|Z41#0,,Z802K3|Fail,'
+		];
+	}
 }

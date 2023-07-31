@@ -67,14 +67,14 @@ class ApiHealthCheck extends WikiLambdaApiBase {
 		];
 		$work = new PoolCounterWorkViaCallback( 'WikiLambdaFunctionCall', $this->getUser()->getName(), [
 			'doWork' => function () use ( $jsonQuery ) {
-				return $this->orchestrator->orchestrate( $jsonQuery );
+				return $this->orchestrator->orchestrate( $jsonQuery, true );
 			},
 			'error' => function ( Status $status ) {
 				$this->dieWithError( [ "apierror-wikilambda_function_call-concurrency-limit" ] );
 			}
 		] );
 		$response = $work->execute();
-		$data = json_decode( $response->getBody() );
+		$data = json_decode( $response );
 		$resultField = json_encode( $data->{ 'Z22K1' } );
 		// Ensures that the expected outcome is a substring of the Z22K1 field.
 		return strpos( $resultField, $expectedOutcome ) !== false;
