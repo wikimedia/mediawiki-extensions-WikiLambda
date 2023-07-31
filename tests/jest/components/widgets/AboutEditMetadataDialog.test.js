@@ -35,7 +35,10 @@ describe( 'AboutEditMetadataDialog', () => {
 			}
 		};
 
-		actions = { fetchZKeys: jest.fn() };
+		actions = {
+			fetchZKeys: jest.fn(),
+			setDirty: jest.fn()
+		};
 		global.store.hotUpdate( { getters: getters, actions: actions } );
 	} );
 
@@ -79,6 +82,9 @@ describe( 'AboutEditMetadataDialog', () => {
 
 			// ASSERT: Event publish is not emitted
 			expect( wrapper.emitted( 'publish' ) ).toBeFalsy();
+
+			// ASSERT: isDirty called with true
+			expect( actions.setDirty ).toHaveBeenCalledWith( expect.anything(), true );
 		} );
 
 		it( 'renders publish button when in view mode', async () => {
