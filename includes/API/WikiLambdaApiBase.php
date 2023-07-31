@@ -106,15 +106,22 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	}
 
 	/**
-	 * @param ZFunctionCall $zObject
+	 * @param ZFunctionCall|\stdClass $zObject
 	 * @param bool $validate
 	 * @return ZResponseEnvelope
 	 */
 	protected function executeFunctionCall( $zObject, $validate ) {
+		$zObjectAsStdClass = ( $zObject instanceof ZFunctionCall ) ? $zObject->getSerialized() : $zObject;
+		$zObjectAsString = json_encode( $zObjectAsStdClass );
+
+		if ( $zObjectAsStdClass->Z1K1 !== 'Z7' && $zObjectAsStdClass->Z1K1->Z9K1 !== 'Z7' ) {
+			$this->dieWithError( [ "apierror-wikilambda_function_call-not-a-function" ] );
+		}
+
 		$this->getLogger()->debug(
 			__METHOD__ . ' called',
 			[
-				'zObject' => $zObject,
+				'zObject' => $zObjectAsString,
 				'validate' => $validate,
 			]
 		);
@@ -126,7 +133,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 		}
 
 		$queryArguments = [
-			'zobject' => $zObject->getSerialized(),
+			'zobject' => $zObjectAsStdClass,
 			'doValidate' => $validate
 		];
 		try {
@@ -147,7 +154,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			$this->getLogger()->debug(
 				__METHOD__ . ' executed successfully',
 				[
-					'zObject' => $zObject,
+					'zObject' => $zObjectAsString,
 					'validate' => $validate,
 					'response' => $response,
 				]
@@ -175,7 +182,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			$this->getLogger()->warning(
 				__METHOD__ . ' failed to execute with a ClientException/ServerException: {exception}',
 				[
-					'zObject' => $zObject,
+					'zObject' => $zObjectAsString,
 					'validate' => $validate,
 					'exception' => $exception,
 				]
@@ -183,7 +190,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 
 			return $this->returnWithZError(
 				$exception->getResponse()->getReasonPhrase(),
-				$zObject->getSerialized()
+				$zObjectAsString
 			);
 		} catch ( ZErrorException $exception ) {
 			// This is almost certainly a user-error, and not worth worrying in the middleware
@@ -191,7 +198,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			$this->getLogger()->debug(
 				__METHOD__ . ' failed to execute with a ZErrorException: {exception}',
 				[
-					'zObject' => $zObject,
+					'zObject' => $zObjectAsString,
 					'validate' => $validate,
 					'exception' => $exception,
 				]
@@ -199,14 +206,14 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 
 			return $this->returnWithZError(
 				$exception->getZErrorMessage(),
-				$zObject->getSerialized()
+				$zObjectAsString
 			);
 		} catch ( \Exception $exception ) {
 
 			$this->getLogger()->warning(
 				__METHOD__ . ' failed to execute with a general Exception: {exception}',
 				[
-					'zObject' => $zObject,
+					'zObject' => $zObjectAsString,
 					'validate' => $validate,
 					'exception' => $exception,
 				]
@@ -214,7 +221,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 
 			return $this->returnWithZError(
 				$exception->getMessage(),
-				$zObject->getSerialized()
+				$zObjectAsString
 			);
 		}
 	}
