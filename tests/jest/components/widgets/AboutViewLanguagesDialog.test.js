@@ -153,7 +153,7 @@ describe( 'AboutViewLanguagesDialog', () => {
 			expect( telugu.find( '.ext-wikilambda-about-language-item-untitled' ).exists() ).toBe( true );
 		} );
 
-		it( 'emits open-edit-language event when clicking on an item', () => {
+		it( 'emits change-selected-language and open-edit-language event when clicking on an item', () => {
 			const wrapper = mount( AboutViewLanguagesDialog, { props: { open: true } } );
 			const items = wrapper.findAll( '.ext-wikilambda-about-language-item' );
 
@@ -162,8 +162,9 @@ describe( 'AboutViewLanguagesDialog', () => {
 			quechua.trigger( 'click' );
 
 			// ASSERT: event open-edit-language is emitted with the right data
+			expect( wrapper.emitted( 'change-selected-language' ) ).toBeTruthy();
 			expect( wrapper.emitted( 'open-edit-language' ) ).toBeTruthy();
-			expect( wrapper.emitted() ).toHaveProperty( 'open-edit-language', [ [ 'Z1678' ] ] );
+			expect( wrapper.emitted() ).toHaveProperty( 'change-selected-language', [ [ 'Z1678' ] ] );
 		} );
 	} );
 } );
