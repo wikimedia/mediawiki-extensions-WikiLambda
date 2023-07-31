@@ -147,7 +147,15 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			);
 
 			$responseContents = FormatJson::decode( $response );
-			$responseObject = ZObjectFactory::create( $responseContents );
+
+			try {
+				$responseObject = ZObjectFactory::create( $responseContents );
+			} catch ( ZErrorException $e ) {
+				$this->dieWithError( [
+					'apierror-wikilambda_function_call-response-malformed',
+					$e->getZErrorMessage()
+				] );
+			}
 			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope $responseObject';
 			return $responseObject;
 		} catch ( ConnectException $exception ) {

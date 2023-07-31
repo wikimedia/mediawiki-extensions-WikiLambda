@@ -75,6 +75,7 @@
 	"apierror-wikilambda_function_call-not-connected": "Error message when orchestrator is not connected.\n\n{{doc-wikilambda}}",
 	"apierror-wikilambda_function_call-concurrency-limit": "Error message when user exceeds concurrency limits.\n\n{{doc-wikilambda}}",
 	"apierror-wikilambda_function_call-general": "Error message when orchestrator passes back a failure we don't specifically code.\n\n{{doc-wikilambda}}",
+	"apierror-wikilambda_function_call-response-malformed": "Error message when orchestrator passes back a failure we don't specifically code.\n\n{{doc-wikilambda}}",
 	"apierror-wikilambda_supported_programming_languages-not-connected": "Error message when orchestrator is not connected.\n\n{{doc-wikilambda}}",
 	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "Error message when user exceeds concurrency limits.\n\n{{doc-wikilambda}}",
 	"apierror-wikilambda_edit-invalidjson": "{{doc-apierror}}\n\nParameters:\n* $1 - Invalid JSON string.\n\n{{doc-wikilambda}}",
