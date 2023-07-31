@@ -174,26 +174,26 @@ module.exports = exports = {
 		/**
 		 * Returns the Name/Label (Z2K3) row for the selected language.
 		 *
-		 * @return {Object}
+		 * @return {Object|undefined}
 		 */
 		currentNameObject: function () {
-			return this.getZPersistentName( this.forLanguage );
+			return this.forLanguage ? this.getZPersistentName( this.forLanguage ) : undefined;
 		},
 		/**
 		 * Returns the Description (Z2K5) row for the selected language.
 		 *
-		 * @return {Object}
+		 * @return {Object|undefined}
 		 */
 		currentDescriptionObject: function () {
-			return this.getZPersistentDescription( this.forLanguage );
+			return this.forLanguage ? this.getZPersistentDescription( this.forLanguage ) : undefined;
 		},
 		/**
 		 * Returns the Alias (Z2K4) row for the selected language.
 		 *
-		 * @return {Object}
+		 * @return {Object|undefined}
 		 */
 		currentAliasObject: function () {
-			return this.getZPersistentAlias( this.forLanguage );
+			return this.forLanguage ? this.getZPersistentAlias( this.forLanguage ) : undefined;
 		},
 
 		/**

@@ -74,8 +74,8 @@
 			<!-- Dialogs -->
 			<wl-about-view-languages-dialog
 				:open="showViewLanguagesDialog"
-				@open-add-language="openEditLanguageDialog"
 				@open-edit-language="openEditLanguageDialog"
+				@change-selected-language="changeSelectedLanguage"
 				@close="showViewLanguagesDialog = false"
 			>
 			</wl-about-view-languages-dialog>
@@ -83,7 +83,7 @@
 				:edit="edit"
 				:for-language="selectedLanguage"
 				:open="showEditMetadataDialog"
-				@change-selected-language="openEditLanguageDialog"
+				@change-selected-language="changeSelectedLanguage"
 				@close="showEditMetadataDialog = false"
 				@publish="showPublishDialog = true"
 			>
@@ -332,16 +332,18 @@ module.exports = exports = {
 			this.showViewLanguagesDialog = true;
 		},
 		/**
-		 * Opens the AboutViewLanguagesDialog with the initial
-		 * language set to lang and the fields initialized with
-		 * the existing content.
-		 * The field is initialized to empty when lang is an
-		 * empty string.
+		 * Changes the selected language to the given value
 		 *
 		 * @param {string} lang
 		 */
-		openEditLanguageDialog: function ( lang = '' ) {
+		changeSelectedLanguage: function ( lang ) {
 			this.selectedLanguage = lang;
+		},
+		/**
+		 * Opens the AboutViewLanguagesDialog for the current
+		 * selected language.
+		 */
+		openEditLanguageDialog: function () {
 			this.showViewLanguagesDialog = false;
 			this.showEditMetadataDialog = true;
 		},
@@ -350,8 +352,8 @@ module.exports = exports = {
 		 * language, which is the one with the selected Name.
 		 */
 		openUserLanguageDialog: function () {
-			const lang = this.getUserZlangZID;
-			this.openEditLanguageDialog( lang || '' );
+			this.changeSelectedLanguage( this.getUserZlangZID );
+			this.openEditLanguageDialog();
 		},
 		/**
 		 * Restores original view state and cancels publish

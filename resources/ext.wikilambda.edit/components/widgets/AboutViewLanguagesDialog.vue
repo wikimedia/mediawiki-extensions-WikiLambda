@@ -207,7 +207,8 @@ module.exports = exports = {
 		 * @param {string} lang
 		 */
 		editLanguage: function ( lang ) {
-			this.$emit( 'open-edit-language', lang );
+			this.$emit( 'change-selected-language', lang );
+			this.$emit( 'open-edit-language' );
 		},
 
 		/**
@@ -215,7 +216,8 @@ module.exports = exports = {
 		 * edit metadata dialog for a new language.
 		 */
 		addLanguage: function () {
-			this.$emit( 'open-add-language' );
+			this.$emit( 'change-selected-language', '' );
+			this.$emit( 'open-edit-language' );
 		},
 
 		/**
