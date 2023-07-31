@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ainali",
+			"Bengtsson96",
+			"Sabelöga",
+			"Tore",
+			"WikiPhoenix"
+		]
+	},
+	"wikilambda-desc": "Förse Wikimedias wikier med en wikitext-parserfunktion för att anropa utvärdering av funktioner skrivna, hanterade och utvärderade på en central wiki."
+}
