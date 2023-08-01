@@ -152,15 +152,47 @@ class PageRenderingHandler implements
 			return;
 		}
 
-		// Re-write our path to include the content language ($attribs['href'])
 		$context = RequestContext::getMain();
 		$currentPageContentLanguageCode = $context->getLanguage()->getCode();
-		$attribs['href'] = '/view/' . $currentPageContentLanguageCode . '/' . $attribs['title'];
+
+		// Re-write our path to include the content language ($attribs['href']) where appropriate
+		// HACK: Our hook doesn't tell us properly that the target is an action, so we have to pull it from the href
+		// … we could get $query from using HtmlPageLinkRendererBefore, but then we don't have access to the href
+		$queryPos = strpos( $attribs['href'], '?' );
+		$query = $queryPos ? wfCgiToArray( substr( $attribs['href'], $queryPos + 1 ) ) : [];
+
+		$action = $query['action'] ?? 'view';
+		if ( $action !== 'view' ) {
+			$attribs['href'] = '/wiki/' . $zid . '?action=' . $action . '&uselang='
+				. $currentPageContentLanguageCode . '&';
+		} elseif ( !isset( $query[ 'diff'] ) && !isset( $query['oldid'] ) ) {
+			$attribs['href'] = '/view/' . $currentPageContentLanguageCode . '/' . $zid . '?';
+		} else {
+			$attribs['href'] = '/wiki/' . $zid . '?uselang=' . $currentPageContentLanguageCode . '&';
+		}
+
+		unset( $query['action'] );
+		unset( $query['title'] );
+
+		foreach ( $query as $key => $value ) {
+			$attribs['href'] .= $key . '=' . $value . '&';
+		}
+		$attribs['href'] = substr( $attribs['href'], 0, -1 );
 
 		// **After this point, the only changes we're making are to the label ($text)**
 
+		// (T342212) Wrap our ZID in an LTR-enforced <span> so it works OK in RTL environments
+		$bidiWrappedZid = '<span dir="ltr">' . $zid . '</span>';
+
+		// Special handling for unknown (red) links; we want to add the wrapped ZID but don't want to try to fetch
+		// the label, which will fail
+		if ( !$isKnown && $text === $zid ) {
+			$text = new HtmlArmor( $bidiWrappedZid );
+			return;
+		}
+
 		// We don't re-write the label if the label is already set (e.g. for "prev" and "cur" and revision links on
-		// history pages, or inline links like [[Z1|this]])
+		// history pages, or inline links like [[Z1|this]]); we do however continue for
 		if ( $text !== null && $targetTitle->getFullText() !== HtmlArmor::getHtml( $text ) ) {
 			return;
 		}
@@ -190,9 +222,6 @@ class PageRenderingHandler implements
 				->placeholderForTitle()
 				->getString() ?? '';
 		}
-
-		// (T342212) Wrap our ZID in an LTR-enforced <span> so it works OK in RTL environments
-		$bidiWrappedZid = '<span dir="ltr">' . $zid . '</span>';
 
 		// Finally, set the label of the link to the *un*escaped user-supplied label, see
 		// https://www.mediawiki.org/wiki/Manual:Hooks/HtmlPageLinkRendererEnd
