@@ -114,51 +114,136 @@ class HooksTest extends WikiLambdaIntegrationTestCase {
 		$this->assertStringContainsString( "&lt;&lt;&lt;&gt;&gt;&gt;", $rc1->getOutput()->getHTML() );
 	}
 
-	public function testOnHtmlPageLinkRendererEnd_changedTargetToViewUrl() {
-		$this->insertZids( [ 'Z1' ] );
-
+	/**
+	 * @dataProvider provideChangedTargetToViewUrl
+	 */
+	public function testChangedTargetToViewUrl(
+		$target, $expected, $create = true, $existing = true, $label = null, $attribs = [], $query = [], $lang = 'en'
+	) {
+		$this->setMwGlobals( 'wgArticlePath', '/wiki/$1' );
 		$linkRenderer = $this->getServiceContainer()->getLinkRenderer();
 
-		$z1Title = Title::newFromDBkey( 'Z1' );
+		$targetTitle = Title::newFromDBkey( $target );
+		$this->setUserLang( $lang );
 
-		$this->setUserLang( 'en' );
-		$z1RenderedLink = $linkRenderer->makeKnownLink( $z1Title );
+		if ( $create ) {
+			$this->insertZids( [ $target ] );
+		}
+
+		if ( $existing ) {
+			$renderedLink = $linkRenderer->makeKnownLink( $targetTitle, $label, $attribs, $query );
+		} else {
+			$renderedLink = $linkRenderer->makeBrokenLink( $targetTitle, $label, $attribs, $query );
+		}
+
 		$this->assertEquals(
-			'<a href="/view/en/Z1" title="Z1">Object (<span dir="ltr">Z1</span>)</a>',
-			$z1RenderedLink,
-			'English label, ZID, /view link'
+			$expected,
+			$renderedLink
 		);
+	}
 
-		// In general not using makeBrokenLink() as it's harder to test, but a demonstration
-		$z1RenderedLink = $linkRenderer->makeBrokenLink( $z1Title );
-		$this->assertEquals(
-			'<a href="/view/en/Z1 (page does not exist)" class="new" ' .
-				'title="Z1 (page does not exist)">Object (<span dir="ltr">Z1</span>)</a>',
-			$z1RenderedLink,
-			'English label, ZID, /view link'
-		);
+	public function provideChangedTargetToViewUrl() {
+		// Note that URLs with '&'s in them have them encoded to '&amp;' by the hook to be HTML-safe.
 
-		$z1RenderedLink = $linkRenderer->makeKnownLink( $z1Title, 'hello' );
-		$this->assertEquals(
+		yield 'English, default label, ZID, /view link' => [
+			'Z1',
+			'<a href="/view/en/Z1" title="Z1">Object (<span dir="ltr">Z1</span>)</a>'
+		];
+
+		yield 'English, fallback redlink label, ZID, /view link' => [
+			'Z2',
+			'<a href="/wiki/Z2?action=edit&amp;uselang=en&amp;redlink=1" class="new" '
+				. 'title="Z2 (page does not exist)"><span dir="ltr">Z2</span></a>',
+			false,
+			false
+		];
+
+		yield 'English, custom label, no ZID, /view link' => [
+			'Z1',
 			'<a href="/view/en/Z1" title="Z1">hello</a>',
-			$z1RenderedLink,
-			'Custom label, no ZID, /view link'
-		);
+			true,
+			true,
+			'hello'
+		];
 
-		$this->setUserLang( 'fr' );
-		$z1RenderedLink = $linkRenderer->makeKnownLink( $z1Title );
-		$this->assertEquals( '<a href="/view/fr/Z1" title="Z1">Object (<span dir="ltr">Z1</span>)</a>',
-			$z1RenderedLink,
-			'French label, ZID, /view link'
-		);
+		yield 'English, default label, ZID, action=edit link' => [
+			'Z1',
+			'<a href="/wiki/Z1?action=edit&amp;uselang=en" title="Z1">Object (<span dir="ltr">Z1</span>)</a>',
+			true,
+			true,
+			null,
+			[],
+			[ 'action' => 'edit' ]
+		];
 
-		$this->setMwGlobals( 'wgArticlePath', '/wiki/$1' );
-		$z1TalkTitle = Title::newFromDBkey( 'Talk:Z1' );
-		$z1TalkRenderedLink = $linkRenderer->makeKnownLink( $z1TalkTitle );
-		$this->assertEquals(
+		yield 'English, default label, ZID, action=edit link on oldid' => [
+			'Z1',
+			'<a href="/wiki/Z1?action=edit&amp;uselang=en&amp;oldid=1234" title="Z1">Object '
+				. '(<span dir="ltr">Z1</span>)</a>',
+			true,
+			true,
+			null,
+			[],
+			[ 'action' => 'edit', 'oldid' => '1234' ]
+		];
+
+		yield 'English, default label, ZID, action=history link' => [
+			'Z1',
+			'<a href="/wiki/Z1?action=history&amp;uselang=en" title="Z1">Object (<span dir="ltr">Z1</span>)</a>',
+			true,
+			true,
+			null,
+			[],
+			[ 'action' => 'history' ]
+		];
+
+		yield 'English, default label, ZID, diff=prev link' => [
+			'Z1',
+			'<a href="/wiki/Z1?uselang=en&amp;diff=prev" title="Z1">Object (<span dir="ltr">Z1</span>)</a>',
+			true,
+			true,
+			null,
+			[],
+			[ 'diff' => 'prev' ]
+		];
+
+		yield 'English, default label, ZID, oldid link' => [
+			'Z1',
+			'<a href="/wiki/Z1?uselang=en&amp;oldid=1234" title="Z1">Object (<span dir="ltr">Z1</span>)</a>',
+			true,
+			true,
+			null,
+			[],
+			[ 'oldid' => '1234' ]
+		];
+
+		yield 'English, default label, ZID, unknown GET param preserved' => [
+			'Z1',
+			'<a href="/view/en/Z1?foo=bar" title="Z1">Object (<span dir="ltr">Z1</span>)</a>',
+			true,
+			true,
+			null,
+			[],
+			[ 'foo' => 'bar' ]
+		];
+
+		yield 'French, fallback no label, ZID, /view link' => [
+			'Z1',
+			'<a href="/view/fr/Z1" title="Z1">Object (<span dir="ltr">Z1</span>)</a>',
+			true,
+			true,
+			null,
+			[],
+			[],
+			'fr'
+		];
+
+		yield 'Talk pages are not over-ridden' => [
+			'Talk:Z1',
 			'<a href="/wiki/Talk:Z1" title="Talk:Z1">Talk:Z1</a>',
-			$z1TalkRenderedLink,
-			'Talk pages are not over-ridden'
-		);
+			false
+		];
+
+		// …
 	}
 }
