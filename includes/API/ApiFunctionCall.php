@@ -71,6 +71,14 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		];
 
 		// TODO (T307742): Memoize the call and cache the response via WANCache getWithSetCallback too?
+
+		// Arbitrary implementation calls need more than wikilambda-execute; require wikilambda-create-implementation
+		// (To run an arbitrary implementation, you have to pass a custom function rather than a ZID string.)
+		if ( !( is_string( $zObject->Z7K1 ) ) && !$userAuthority->isAllowed( 'wikilambda-create-implementation' ) ) {
+			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
+			$this->dieWithZError( $zError );
+		}
+
 		$work = new PoolCounterWorkViaCallback( 'WikiLambdaFunctionCall', $this->getUser()->getName(), [
 			'doWork' => function () use ( $jsonQuery ) {
 				return $this->orchestrator->orchestrate( $jsonQuery );
