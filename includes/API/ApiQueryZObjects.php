@@ -79,10 +79,20 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 	 * @param ZError $zerror
 	 */
 	public function dieWithZError( $zerror ) {
+		try {
+			$errorData = $zerror->getErrorData();
+		} catch ( ZErrorException $e ) {
+			// Generating the human-readable error data itself threw. Oh dear.
+			$errorData = [
+				'zerror' => $zerror->getSerialized(),
+				'extraerror' => $e
+			];
+		}
+
 		parent::dieWithError(
 			[ 'wikilambda-zerror', $zerror->getZErrorType() ],
 			null,
-			$zerror->getErrorData()
+			$errorData
 		);
 	}
 
