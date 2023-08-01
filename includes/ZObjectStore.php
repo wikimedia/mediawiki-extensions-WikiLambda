@@ -434,7 +434,7 @@ class ZObjectStore {
 	 * @param string $languageCode
 	 * @return void|bool
 	 */
-	public function insertZLanguageToLanguagesCache( $zid, $languageCode ) {
+	public function insertZLanguageToLanguagesCache( string $zid, string $languageCode ) {
 		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 
 		return $dbw->insert(
