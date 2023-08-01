@@ -89,13 +89,12 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 	/**
 	 * @param string $zid
 	 * @param array|null $languages
-	 * @param bool $canonical
 	 * @param bool $getDependencies
 	 * @param int|null $revision
 	 * @return array
 	 * @throws ZErrorException
 	 */
-	private function fetchContent( $zid, $languages, $canonical, $getDependencies, $revision = null ) {
+	private function fetchContent( $zid, $languages, $getDependencies, $revision = null ) {
 		// Check for invalid ZID and throw INVALID_TITLE exception
 		if ( !ZObjectUtils::isValidZObjectReference( $zid ) ) {
 			throw new ZErrorException(
@@ -142,11 +141,6 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 			$langRegistry = ZLangRegistry::singleton();
 			$languageZids = $langRegistry->getLanguageZids( $languages );
 			$zobject = ZObjectUtils::filterZMultilingualStringsToLanguage( $zobject, $languageZids );
-		}
-
-		// 3. Normalize ZObject
-		if ( !$canonical ) {
-			$zobject = ZObjectUtils::normalize( $zobject );
 		}
 
 		return [ $zobject, $dependencies ];
@@ -198,7 +192,6 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 		$zids = $params[ 'zids' ];
 		$revisions = $params[ 'revisions' ];
 		$language = $params[ 'language' ];
-		$canonical = $params[ 'canonical' ];
 		$getDependencies = $params[ 'get_dependencies' ];
 		$revisionMap = [];
 
@@ -239,7 +232,6 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 				[ $fetchedContent, $dependencies ] = $this->fetchContent(
 					$zid,
 					$languages,
-					$canonical,
 					$getDependencies,
 					$revisions ? $revisionMap[ $zid ] : null
 				);
@@ -287,11 +279,6 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 				ParamValidator::PARAM_TYPE => array_keys( $this->languageNameUtils->getLanguageNames() ),
 				ParamValidator::PARAM_REQUIRED => false,
 			],
-			'canonical' => [
-				ParamValidator::PARAM_TYPE => 'boolean',
-				ParamValidator::PARAM_REQUIRED => false,
-				ParamValidator::PARAM_DEFAULT => false,
-			],
 			'get_dependencies' => [
 				ParamValidator::PARAM_TYPE => 'boolean',
 				ParamValidator::PARAM_REQUIRED => false,
@@ -314,9 +301,6 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 				=> 'apihelp-query+wikilambdaload_zobjects-example-language',
 			'action=query&format=json&list=wikilambdaload_zobjects&wikilambdaload_zids=Z0123456789%7CZ1'
 				=> 'apihelp-query+wikilambdaload_zobjects-example-error',
-			'action=query&format=json&list=wikilambdaload_zobjects&wikilambdaload_zids=Z12'
-				. '&wikilambdaload_canonical=true'
-				=> 'apihelp-query+wikilambdaload_zobjects-example-canonical',
 		];
 	}
 }

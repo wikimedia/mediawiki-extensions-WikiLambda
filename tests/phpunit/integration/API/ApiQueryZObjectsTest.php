@@ -143,7 +143,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 			'action' => 'query',
 			'list' => 'wikilambdaload_zobjects',
 			'wikilambdaload_zids' => 'Z111',
-			'wikilambdaload_canonical' => true,
 		] );
 
 		$z111 = $result[0]['query']['wikilambdaload_zobjects']['Z111']['data'];
@@ -167,7 +166,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 			'list' => 'wikilambdaload_zobjects',
 			'wikilambdaload_zids' => 'Z111',
 			'wikilambdaload_language' => 'fr',
-			'wikilambdaload_canonical' => true,
 		] );
 
 		$z111 = $result[0]['query']['wikilambdaload_zobjects']['Z111']['data'];
@@ -193,7 +191,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 			'list' => 'wikilambdaload_zobjects',
 			'wikilambdaload_zids' => 'Z111',
 			'wikilambdaload_language' => 'es',
-			'wikilambdaload_canonical' => true,
 		] );
 
 		$z111 = $result[0]['query']['wikilambdaload_zobjects']['Z111']['data'];
@@ -213,45 +210,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 		}
 	}
 
-	public function testNormalForm() {
-		$result_normal = $this->doApiRequest( [
-			'action' => 'query',
-			'list' => 'wikilambdaload_zobjects',
-			'wikilambdaload_zids' => 'Z111'
-		] );
-		$result_canonical = $this->doApiRequest( [
-			'action' => 'query',
-			'list' => 'wikilambdaload_zobjects',
-			'wikilambdaload_zids' => 'Z111',
-			'wikilambdaload_canonical' => true,
-		] );
-
-		$z111_normal = $result_normal[0]['query']['wikilambdaload_zobjects']['Z111']['data'];
-		$z111_canonical = $result_canonical[0]['query']['wikilambdaload_zobjects']['Z111']['data'];
-
-		$nullReference = [
-			'Z1K1' => 'Z9',
-			'Z9K1' => 'Z111'
-		];
-		$stringZ111K1 = [
-			'Z1K1' => 'Z6',
-			'Z6K1' => 'Z111K1'
-		];
-		$referenceZ6 = [
-			'Z1K1' => 'Z9',
-			'Z9K1' => 'Z6'
-		];
-
-		$this->assertEquals( 'Z111', $z111_canonical['Z2K2']['Z4K3'] );
-		$this->assertEquals( $nullReference, $z111_normal['Z2K2']['Z4K3'] );
-
-		$this->assertEquals( 'Z6', $z111_canonical['Z2K2']['Z4K2'][1]['Z3K1'] );
-		$this->assertEquals( $referenceZ6, $z111_normal['Z2K2']['Z4K2']['K1']['Z3K1'] );
-
-		$this->assertEquals( 'Z111K1', $z111_canonical['Z2K2']['Z4K2'][1]['Z3K2'] );
-		$this->assertEquals( $stringZ111K1, $z111_normal['Z2K2']['Z4K2']['K1']['Z3K2'] );
-	}
-
 	public function testRevisions_valid() {
 		$revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
 		$this->insertBuiltinObjects( [ 'Z11', 'Z12' ] );
@@ -267,7 +225,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 			'list' => 'wikilambdaload_zobjects',
 			'wikilambdaload_zids' => 'Z11|Z12',
 			'wikilambdaload_revisions' => $revisionZ11->getId() . '|' . $revisionZ12->getId(),
-			'wikilambdaload_canonical' => 'true'
 		] );
 
 		$zobjects = $result[0]['query']['wikilambdaload_zobjects'];
@@ -290,7 +247,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 			'list' => 'wikilambdaload_zobjects',
 			'wikilambdaload_zids' => 'Z11|Z12',
 			'wikilambdaload_revisions' => $revisionZ11->getId() . '|999999',
-			'wikilambdaload_canonical' => 'true'
 		] );
 	}
 
@@ -309,7 +265,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 			'list' => 'wikilambdaload_zobjects',
 			'wikilambdaload_zids' => 'Z11|Z12',
 			'wikilambdaload_revisions' => $revisionZ11->getId(),
-			'wikilambdaload_canonical' => 'true'
 		] );
 	}
 
@@ -325,7 +280,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 			'list' => 'wikilambdaload_zobjects',
 			'wikilambdaload_zids' => 'Z10015',
 			'wikilambdaload_get_dependencies' => 'true',
-			'wikilambdaload_canonical' => 'true'
 		] );
 
 		$zobjects = $result[0]['query']['wikilambdaload_zobjects'];
@@ -341,7 +295,6 @@ class ApiQueryZObjectsTest extends ApiTestCase {
 			'list' => 'wikilambdaload_zobjects',
 			'wikilambdaload_zids' => 'Z10016',
 			'wikilambdaload_get_dependencies' => 'true',
-			'wikilambdaload_canonical' => 'true'
 		] );
 
 		$zobjects = $result[0]['query']['wikilambdaload_zobjects'];

@@ -4000,7 +4000,6 @@ describe( 'zobject Vuex module', function () {
 					list: 'wikilambdaload_zobjects',
 					format: 'json',
 					wikilambdaload_zids: 'Z10001',
-					wikilambdaload_canonical: 'true',
 					wikilambdaload_revisions: '10002'
 				};
 
@@ -4032,7 +4031,6 @@ describe( 'zobject Vuex module', function () {
 					list: 'wikilambdaload_zobjects',
 					format: 'json',
 					wikilambdaload_zids: 'Z10001',
-					wikilambdaload_canonical: 'true',
 					wikilambdaload_revisions: undefined
 				};
 

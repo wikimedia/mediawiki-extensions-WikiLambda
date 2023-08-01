@@ -2278,7 +2278,6 @@ module.exports = exports = {
 				list: 'wikilambdaload_zobjects',
 				format: 'json',
 				wikilambdaload_zids: zId,
-				wikilambdaload_canonical: 'true',
 				wikilambdaload_revisions: revision || undefined
 			} ).then( function ( response ) {
 				const zobject = response.query.wikilambdaload_zobjects[ zId ].data;

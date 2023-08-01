@@ -333,7 +333,6 @@ module.exports = exports = {
 				format: 'json',
 				wikilambdaload_zids: payload.zids.join( '|' ),
 				wikilambdaload_language: context.getters.getZLang,
-				wikilambdaload_canonical: 'true',
 				wikilambdaload_get_dependencies: 'true'
 			} ).then( ( response ) => {
 
