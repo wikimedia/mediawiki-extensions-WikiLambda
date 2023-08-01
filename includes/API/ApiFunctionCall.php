@@ -70,6 +70,13 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			'doValidate' => false
 		];
 
+		// Arbitrary implementation calls need more than wikilambda-execute; require wikilambda-create-implementation
+		// (To run an arbitrary implementation, you have to pass a custom function rather than a ZID string.)
+		if ( !( is_string( $zObject->Z7K1 ) ) && !$userAuthority->isAllowed( 'wikilambda-create-implementation' ) ) {
+			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
+			$this->dieWithZError( $zError );
+		}
+
 		$work = new PoolCounterWorkViaCallback( 'WikiLambdaFunctionCall', $this->getUser()->getName(), [
 			'doWork' => function () use ( $jsonQuery ) {
 				return $this->orchestrator->orchestrate( $jsonQuery );
