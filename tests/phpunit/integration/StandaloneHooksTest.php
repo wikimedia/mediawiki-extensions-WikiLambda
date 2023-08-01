@@ -222,7 +222,7 @@ EOT;
 		$this->assertSame( [], DeferredUpdates::getPendingUpdates() );
 
 		// Check the alias have been inserted in the secondary table
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_label_primary' ] )
 			 ->from( 'wikilambda_zobject_labels' )

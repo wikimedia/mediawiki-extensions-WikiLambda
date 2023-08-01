@@ -77,7 +77,7 @@ class ZObjectStore {
 	 */
 	public function getNextAvailableZid(): string {
 		// Intentionally use DB_PRIMARY as we need the latest data here.
-		$dbr = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbr = $this->loadBalancer->getConnection( DB_PRIMARY );
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'page_title' ] )
 			 ->from( 'page' )
@@ -136,7 +136,7 @@ class ZObjectStore {
 	 * @return ZPersistentObject[]
 	 */
 	public function fetchBatchZObjects( $zids ) {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+		$dbr = $this->loadBalancer->getConnection( DB_REPLICA );
 		$query = WikiPage::getQueryInfo();
 		$options = [];
 
@@ -317,7 +317,7 @@ class ZObjectStore {
 	 * @param string $zid
 	 */
 	public function deleteZObjectLabelsByZid( string $zid ) {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 		$dbw->delete(
 			'wikilambda_zobject_labels',
 			[ 'wlzl_zobject_zid' => $zid ]
@@ -331,7 +331,7 @@ class ZObjectStore {
 	 * @param string $zid
 	 */
 	public function deleteZObjectLabelConflictsByZid( string $zid ) {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 		$dbw->delete(
 			'wikilambda_zobject_label_conflicts',
 			$dbw->makeList(
@@ -356,7 +356,7 @@ class ZObjectStore {
 	 * @return array Conflicts found in the wikilambda_zobject_labels database
 	 */
 	public function findZObjectLabelConflicts( $zid, $ztype, $labels ): array {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+		$dbr = $this->loadBalancer->getConnection( DB_REPLICA );
 
 		// remove labels with an undefined value
 		$labels = array_filter(
@@ -409,7 +409,7 @@ class ZObjectStore {
 	 * @return void|bool
 	 */
 	public function insertZObjectLabels( $zid, $ztype, $labels, $returnType = null ) {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 
 		$updates = [];
 		foreach ( $labels as $language => $value ) {
@@ -435,7 +435,7 @@ class ZObjectStore {
 	 * @return void|bool
 	 */
 	public function insertZLanguageToLanguagesCache( $zid, $languageCode ) {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 
 		return $dbw->insert(
 			'wikilambda_zlanguages',
@@ -452,7 +452,7 @@ class ZObjectStore {
 	 * @return void|bool
 	 */
 	public function insertZObjectLabelConflicts( $zid, $conflicts ) {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 
 		$updates = [];
 		foreach ( $conflicts as $language => $existingZid ) {
@@ -477,7 +477,7 @@ class ZObjectStore {
 	 * @return void|bool
 	 */
 	public function insertZObjectAliases( $zid, $ztype, $aliases, $returnType = null ) {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 
 		$updates = [];
 		foreach ( $aliases as $language => $stringset ) {
@@ -504,7 +504,7 @@ class ZObjectStore {
 	 * @return string[]
 	 */
 	public function fetchZidsOfType( $ztype ) {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+		$dbr = $this->loadBalancer->getConnection( DB_REPLICA );
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzl_zobject_zid' ] )
 			 ->from( 'wikilambda_zobject_labels' )
@@ -528,7 +528,7 @@ class ZObjectStore {
 	 * @return string[] All persisted Zids
 	 */
 	public function fetchAllZids() {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+		$dbr = $this->loadBalancer->getConnection( DB_REPLICA );
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'page_title' ] )
 			 ->from( 'page' )
@@ -555,7 +555,7 @@ class ZObjectStore {
 	 * @return array<string,string>
 	 */
 	public function fetchAllZLanguageObjects() {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+		$dbr = $this->loadBalancer->getConnection( DB_REPLICA );
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzlangs_zid', 'wlzlangs_language' ] )
 			 ->from( 'wikilambda_zlanguages' )
@@ -593,7 +593,7 @@ class ZObjectStore {
 		$continue,
 		$limit
 	) {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+		$dbr = $this->loadBalancer->getConnection( DB_REPLICA );
 
 		// Set language filter
 		$conditions = [ 'wlzl_language' => $languages ];
@@ -668,7 +668,7 @@ class ZObjectStore {
 	 * @return string|null
 	 */
 	public function fetchZObjectLabel( $zid, $languageCode, $fallback = true ) {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+		$dbr = $this->loadBalancer->getConnection( DB_REPLICA );
 
 		$conditions = [	'wlzl_zobject_zid' => $zid ];
 
@@ -741,7 +741,7 @@ class ZObjectStore {
 	 * @return string|null
 	 */
 	public function fetchZFunctionReturnType( $zid ) {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+		$dbr = $this->loadBalancer->getConnection( DB_REPLICA );
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzl_return_type' ] )
 			 ->from( 'wikilambda_zobject_labels' )
@@ -763,7 +763,7 @@ class ZObjectStore {
 	 * @return string
 	 */
 	public function findFirstZImplementationFunction(): string {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+		$dbr = $this->loadBalancer->getConnection( DB_REPLICA );
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzf_zfunction_zid' ] )
 			 ->from( 'wikilambda_zobject_function_join' )
@@ -812,7 +812,7 @@ class ZObjectStore {
 			$continue = null,
 			$limit = 10
 		) {
-		$dbr = $this->loadBalancer->getConnectionRef( DB_REPLICA );
+		$dbr = $this->loadBalancer->getConnection( DB_REPLICA );
 
 		$conditions = [
 			'wlzf_zfunction_zid' => $zid,
@@ -846,7 +846,7 @@ class ZObjectStore {
 	 * @return void|bool
 	 */
 	public function insertZFunctionReference( $refId, $zFunctionId, $type ) {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 
 		return $dbw->insert(
 			'wikilambda_zobject_function_join',
@@ -868,7 +868,7 @@ class ZObjectStore {
 	 * @return void
 	 */
 	public function deleteZFunctionReference( $refId ): void {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 
 		$dbw->delete(
 			'wikilambda_zobject_function_join',
@@ -992,7 +992,7 @@ class ZObjectStore {
 		bool $testerResult,
 		string $testerResponse
 	): bool {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 
 		$dbw->upsert(
 			'wikilambda_ztester_results',
@@ -1031,7 +1031,7 @@ class ZObjectStore {
 	 * @return void
 	 */
 	public function deleteZFunctionFromZTesterResultsCache( string $refId ): void {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 
 		$dbw->delete(
 			'wikilambda_ztester_results',
@@ -1047,7 +1047,7 @@ class ZObjectStore {
 	 * @return void
 	 */
 	public function deleteZImplementationFromZTesterResultsCache( string $refId ): void {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 
 		$dbw->delete(
 			'wikilambda_ztester_results',
@@ -1063,7 +1063,7 @@ class ZObjectStore {
 	 * @return void
 	 */
 	public function deleteZTesterFromZTesterResultsCache( string $refId ): void {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 
 		$dbw->delete(
 			'wikilambda_ztester_results',
@@ -1079,7 +1079,7 @@ class ZObjectStore {
 	 * @return void
 	 */
 	public function deleteZLanguageFromLanguagesCache( string $zid ): void {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 
 		$dbw->delete(
 			'wikilambda_zlanguages',
@@ -1096,7 +1096,7 @@ class ZObjectStore {
 	 * @return void
 	 */
 	public function deleteFromLabelsSecondaryTables( array $zids ): void {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 		$dbw->delete(
 			/* FROM */ 'wikilambda_zobject_labels',
 			/* WHERE */ [ 'wlzl_zobject_zid' => $zids ],
@@ -1117,7 +1117,7 @@ class ZObjectStore {
 	 * @return void
 	 */
 	public function deleteFromFunctionsSecondaryTables( array $zids ): void {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 		$dbw->delete(
 			/* FROM */ 'wikilambda_zobject_function_join',
 			/* WHERE */ $dbw->makeList(
@@ -1139,7 +1139,7 @@ class ZObjectStore {
 	 * @return void
 	 */
 	public function deleteFromLanguageCacheSecondaryTables( array $zids ): void {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 		$dbw->delete(
 			/* FROM */ 'wikilambda_zlanguages',
 			/* WHERE */ [ 'wlzlangs_zid' => $zids ],
@@ -1155,7 +1155,7 @@ class ZObjectStore {
 	 * @return void
 	 */
 	public function deleteFromTesterResultsSecondaryTables( array $zids ): void {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 		$dbw->delete(
 			/* FROM */ 'wikilambda_ztester_results',
 			/* WHERE */ $dbw->makeList(
@@ -1177,7 +1177,7 @@ class ZObjectStore {
 	 * @return void
 	 */
 	public function clearLabelsSecondaryTables(): void {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 		$dbw->delete( 'wikilambda_zobject_labels', IDatabase::ALL_ROWS, __METHOD__ );
 		$dbw->delete( 'wikilambda_zobject_label_conflicts', IDatabase::ALL_ROWS, __METHOD__ );
 	}
@@ -1189,7 +1189,7 @@ class ZObjectStore {
 	 * @return void
 	 */
 	public function clearFunctionsSecondaryTables(): void {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 		$dbw->delete( 'wikilambda_zobject_function_join', IDatabase::ALL_ROWS, __METHOD__ );
 	}
 
@@ -1200,7 +1200,7 @@ class ZObjectStore {
 	 * @return void
 	 */
 	public function clearTesterResultsSecondaryTables(): void {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 		$dbw->delete( 'wikilambda_ztester_results', IDatabase::ALL_ROWS, __METHOD__ );
 	}
 
@@ -1211,7 +1211,7 @@ class ZObjectStore {
 	 * @return void
 	 */
 	public function clearLanguageCacheSecondaryTables(): void {
-		$dbw = $this->loadBalancer->getConnectionRef( DB_PRIMARY );
+		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
 		$dbw->delete( 'wikilambda_zlanguages', IDatabase::ALL_ROWS, __METHOD__ );
 	}
 

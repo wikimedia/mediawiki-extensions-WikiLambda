@@ -535,7 +535,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$response = $this->zobjectStore->insertZObjectLabels( 'Z222', 'Z4', $labels );
 		$this->assertTrue( $response );
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzl_language', 'wlzl_label' ] )
 			 ->from( 'wikilambda_zobject_labels' )
@@ -577,7 +577,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$response = $this->zobjectStore->insertZObjectLabelConflicts( 'Z333', $conflicts );
 		$this->assertTrue( $response );
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzlc_language' ] )
 			 ->from( 'wikilambda_zobject_label_conflicts' )
@@ -601,7 +601,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$this->zobjectStore->deleteZObjectLabelsByZid( 'Z222' );
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzl_language', 'wlzl_label' ] )
 			 ->from( 'wikilambda_zobject_labels' )
@@ -619,7 +619,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$this->zobjectStore->deleteZObjectLabelConflictsByZid( 'Z333' );
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzlc_language' ] )
 			 ->from( 'wikilambda_zobject_label_conflicts' )
@@ -834,7 +834,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
 		$this->assertTrue( $response );
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzf_ref_zid' ] )
 			 ->from( 'wikilambda_zobject_function_join' )
@@ -879,7 +879,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$this->zobjectStore->deleteZFunctionReference( 'Z10030' );
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( [ 'wlzf_ref_zid' ] )
 			 ->from( 'wikilambda_zobject_function_join' )
@@ -918,7 +918,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$response = $this->zobjectStore->insertZFunctionReference( 'Z10030', 'Z10029', 'Z14' );
 		$response = $this->zobjectStore->insertZFunctionReference( 'Z10031', 'Z10029', 'Z14' );
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzf_ref_zid' ] )
 			->from( 'wikilambda_zobject_function_join' )
@@ -930,7 +930,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		// Now clear the table:
 		$this->zobjectStore->clearFunctionsSecondaryTables();
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzf_ref_zid' ] )
 			->from( 'wikilambda_zobject_function_join' )
@@ -957,7 +957,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 
 		$this->zobjectStore->insertZObjectLabelConflicts( 'Z333', $conflicts );
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 
 		$resLabels = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzl_id' ] )
@@ -998,7 +998,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$response = $this->zobjectStore->insertZFunctionReference( 'Z10031', 'Z10028', 'Z14' );
 		$response = $this->zobjectStore->insertZFunctionReference( 'Z10032', 'Z10027', 'Z20' );
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzf_ref_zid' ] )
@@ -1011,7 +1011,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		// Now clear the table:
 		$this->zobjectStore->deleteFromFunctionsSecondaryTables( [ 'Z10029', 'Z10032' ] );
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzf_ref_zid' ] )
@@ -1039,7 +1039,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		$this->zobjectStore->insertZObjectLabelConflicts( 'Z334', $conflicts2 );
 		$this->zobjectStore->insertZObjectLabelConflicts( 'Z335', $conflicts3 );
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_PRIMARY );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 
 		$resLabels = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzl_id' ] )
