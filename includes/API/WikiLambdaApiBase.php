@@ -71,9 +71,16 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 			$errorData = $zerror->getErrorData();
 		} catch ( ZErrorException $e ) {
 			// Generating the human-readable error data itself threw. Oh dear.
+			$this->getLogger()->warning(
+				__METHOD__ . ' called but an error was thrown when trying to report an error',
+				[
+					'zerror' => $zerror->getSerialized(),
+					'error' => $e,
+				]
+			);
+
 			$errorData = [
-				'zerror' => $zerror->getSerialized(),
-				'extraerror' => $e
+				'zerror' => $zerror->getSerialized()
 			];
 		}
 
