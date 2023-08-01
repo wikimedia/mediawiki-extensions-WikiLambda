@@ -75,6 +75,7 @@
 	"apihelp-wikilambda_edit-param-zobject": "JSON-Repräsentation des zu speichernden ZObjekts",
 	"apierror-wikilambda_function_call-not-connected": "Konnte Host „$1“ nicht auflösen, wahrscheinlich weil der Orchestrator nicht läuft. Bitte lies in der README nach, um den Orchestrator zu einer docker-compose-Konfiguration hinzuzufügen.",
 	"apierror-wikilambda_function_call-concurrency-limit": "Du hast zu viele Funktionsaufrufe, die im Moment ausgeführt werden.",
+	"apierror-wikilambda_function_call-general": "Es ist ein Fehler aufgetreten: „$1“.",
 	"apierror-wikilambda_supported_programming_languages-not-connected": "Host „$1“ konnte nicht aufgelöst werden, wahrscheinlich weil der Orchestrator nicht läuft. Bitte lies das README, um den Orchestrator zu deiner docker-compose-Konfiguration hinzuzufügen.",
 	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "Du hast zu oft nach Programmiersprachen angefragt.",
 	"apierror-wikilambda_edit-invalidjson": "Konnte ZObjekt für gegebene Eingabe „$1“ nicht erstellen; ungültiges JSON.",
