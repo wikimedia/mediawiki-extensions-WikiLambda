@@ -5,7 +5,8 @@
 			"Mruczek",
 			"Msz2001",
 			"Rail",
-			"Woytecr"
+			"Woytecr",
+			"WaldiSt"
 		]
 	},
 	"wikilambda-desc": "Dostarcza projektom Wikimedia funkcję parsera do wywoływania funkcji napisanych, zarządzanych i uruchamianych na centralnej wiki.",
@@ -80,6 +81,7 @@
 	"wikilambda-publishchanges": "Opublikuj zmiany",
 	"wikilambda-savechanges": "Zapisz zmiany",
 	"wikilambda-summarylabel": "Opis zmian:",
+	"wikilambda-languagelabel": "Język",
 	"wikilambda-publish-summary-prompt": "Opisz swoje zmiany",
 	"wikilambda-loading": "Ładowanie danych",
 	"wikilambda-typeselector-label": "Wybierz typ",
@@ -87,7 +89,7 @@
 	"wikilambda-function-typeselector-label": "Wybierz funkcję",
 	"wikilambda-return-typeselector-label": "Wybierz typ zwracany",
 	"wikilambda-zobjectselector-label": "ZObiekt",
-	"wikilambda-editor-label-addlanguage-label": "Dodaj język",
+	"wikilambda-editor-label-addlanguage-label": "Wybierz język",
 	"wikilambda-editor-label-removelanguage-tooltip": "Usuń ten język z tej etykiety",
 	"wikilambda-editor-zlist-additem-tooltip": "Dodaj element do tej ZListy",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Usuń ten element z tej ZListy",
@@ -105,7 +107,7 @@
 	"wikilambda-implementation-selector-built-in": "Wbudowany",
 	"wikilambda-argref-default-label": "Wybierz argument",
 	"wikilambda-implementation-selector": "Wybierz implementację",
-	"wikilambda-implementation-none-found": "Nie znaleziono implementacji.",
+	"wikilambda-implementation-none-found": "Nie istnieje żadna implementacja tej funkcji",
 	"wikilambda-implementation-create-new": "Utwórz nową implementację",
 	"wikilambda-function-are-you-sure-dialog-header": "Na pewno?",
 	"wikilambda-function-are-you-sure-dialog-description": "Czy na pewno chcesz opuścić tryb edycji bez wcześniejszego opublikowania?",
@@ -141,7 +143,7 @@
 	"wikilambda-functioncall-error-nonstringinput-category-desc": "Strony z próbami wywołania Wikifunkcji z ZFunkcją, która nie przyjmuje ciągu znaków",
 	"wikilambda-editor-tester-list-label": "Lista testerów",
 	"wikilambda-tester-selector": "Wybierz tester",
-	"wikilambda-tester-none-found": "Nie znaleziono testerów.",
+	"wikilambda-tester-none-found": "Nie ma jeszcze przypadków testowych dla tej funkcji.",
 	"wikilambda-tester-create-new": "Utwórz nowy test",
 	"wikilambda-tester-status-pending": "OCZEKUJE...",
 	"wikilambda-tester-status-running": "TRWA...",
@@ -263,10 +265,15 @@
 	"wikilambda-function-about-summary": "W tym miejscu pojawi się podsumowanie opisu funkcji, kiedy tylko ta funkcjonalność oprogramowania będzie dostępna. Pozwoli wyjaśnić, dlaczego funkcja istnieje, jak się jej typowo używa i jakie alternatywy mogą działać lepiej w innych przypadkach. W trybie edycji będzie to wielojęzyczne edytowalne pole wikitekstu.",
 	"wikilambda-function-details-summary": "Każdy może zaproponować nową implementację lub test. Proponowany kod jest sprawdzany przez społeczność Wikifunkcji, zanim stanie się dostępną implementacją lub zweryfikowanym testem.",
 	"wikilambda-function-details-summary-learn-more": "Dowiedz się więcej o procesie recenzji.",
+	"wikilambda-function-details-table-approve": "Zatwierdź",
+	"wikilambda-function-details-table-deactivate": "Dezaktywuj",
 	"wikilambda-function-viewer-aliases-header": "Inne nazwy",
 	"wikilambda-function-viewer-aliases-show-language-button": "Pokaż więcej języków",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Ukryj listę",
 	"wikilambda-function-viewer-names-show-languages-button": "Pokaż nazwę w innych językach",
 	"wikilambda-function-viewer-details-input-number": "Wejście $1",
-	"wikilambda-function-viewer-details-sidebar-summary": "Każdy może edytować etykiety, ale typ wejścia/wyjścia i liczba mogą być edytowane tylko przez użytkowników ze specjalnymi uprawnieniami."
+	"wikilambda-function-viewer-details-sidebar-summary": "Każdy może edytować etykiety, ale typ wejścia/wyjścia i liczba mogą być edytowane tylko przez użytkowników ze specjalnymi uprawnieniami.",
+	"wikilambda-function-viewer-details-table-view-all": "Pokaż wszystko",
+	"wikilambda-function-viewer-details-table-view-less": "Pokaż mniej",
+	"wikilambda-toast-close": "Zamknij"
 }
