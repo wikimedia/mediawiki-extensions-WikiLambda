@@ -144,12 +144,12 @@ module.exports = exports = {
 						title: this.$i18n( 'wikilambda-function-implementation-name-label' ),
 						class: 'ext-wikilambda-function-details-table-text'
 					},
-					language: {
-						title: this.$i18n( 'wikilambda-function-implementation-language-label' ),
-						class: 'ext-wikilambda-function-details-table-text'
-					},
 					state: {
 						title: this.$i18n( 'wikilambda-function-implementation-state-label' ),
+						class: 'ext-wikilambda-function-details-table-text'
+					},
+					language: {
+						title: this.$i18n( 'wikilambda-function-implementation-language-label' ),
 						class: 'ext-wikilambda-function-details-table-text'
 					},
 					testsPassed: {
@@ -297,6 +297,11 @@ module.exports = exports = {
 					}
 				};
 
+				headers.state = {
+					title: this.$i18n( 'wikilambda-function-implementation-state-label' ),
+					class: 'ext-wikilambda-function-details-table-text'
+				};
+
 				// create one column per implementation selected (or for all implementations if none are selected)
 				for ( const zid in this.implZidToState ) {
 					var implementationLabel = this.getLabel( zid );
@@ -310,11 +315,6 @@ module.exports = exports = {
 						};
 					}
 				}
-
-				headers.state = {
-					title: this.$i18n( 'wikilambda-function-implementation-state-label' ),
-					class: 'ext-wikilambda-function-details-table-text'
-				};
 
 				return headers;
 			},
