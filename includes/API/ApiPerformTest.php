@@ -15,8 +15,10 @@ use FormatJson;
 use JobQueueGroup;
 use MediaWiki\Extension\WikiLambda\Jobs\CacheTesterResultsJob;
 use MediaWiki\Extension\WikiLambda\Jobs\UpdateImplementationsJob;
+use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorException;
+use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
@@ -118,6 +120,15 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				// If not JSON, assume we have received a ZID.
 				if ( $decodedJson ) {
 					$inlineImplementation = true;
+
+					if ( !$this->getContext()->getAuthority()->isAllowed( 'wikilambda-create-implementation' ) ) {
+						$zError = ZErrorFactory::createZErrorInstance(
+							ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
+							[]
+						);
+						$this->dieWithZError( $zError );
+					}
+
 					try {
 						$implementation = ZObjectFactory::create( $decodedJson );
 					} catch ( ZErrorException $e ) {
@@ -162,6 +173,15 @@ class ApiPerformTest extends WikiLambdaApiBase {
 					// If not JSON, assume we have received a ZID.
 					if ( $decodedJson ) {
 						$inlineTester = true;
+
+						if ( !$this->getContext()->getAuthority()->isAllowed( 'wikilambda-create-tester' ) ) {
+							$zError = ZErrorFactory::createZErrorInstance(
+								ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN,
+								[]
+							);
+							$this->dieWithZError( $zError );
+						}
+
 						try {
 							$requestedTester = ZObjectFactory::create( $decodedJson );
 						} catch ( ZErrorException $e ) {
