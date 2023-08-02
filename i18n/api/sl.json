@@ -69,6 +69,7 @@
 	"apihelp-wikilambda_edit-param-zobject": "JSON-reprezentacija ZObjekta za shranitev",
 	"apierror-wikilambda_function_call-not-connected": "Ni bilo mogoče razrešiti gostitelja »$1«, verjetno zato, ker orkestrator ne deluje. Če želite svoji docker-compose konfiguraciji dodati orkestrator, preberite README.",
 	"apierror-wikilambda_function_call-concurrency-limit": "Trenutno se izvaja preveč klicev funkcij.",
+	"apierror-wikilambda_function_call-general": "Nekaj je šlo narobe: »$1«.",
 	"apierror-wikilambda_supported_programming_languages-not-connected": "Ni bilo mogoče razrešiti gostitelja »$1«, verjetno zato, ker orkestrator ne deluje. Prosimo, preberite README, če želite dodati orkestrator vaši konfiguraciji docker-compose.",
 	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "Programske jezike ste zshtevali prevečkrat.",
 	"apierror-wikilambda_edit-invalidjson": "ZObjekta za dani vnos »$1« ni bilo mogoče ustvariti; neveljaven JSON.",
