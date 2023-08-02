@@ -6,6 +6,10 @@
 			"Hakimi97"
 		]
 	},
+	"wikilambda-desc": "Menyediakan laman wiki Wikimedia dengan fungsi penghurai teks wiki untuk memanggil penilaian fungsi yang ditulis, diurus dan dinilai pada wiki pusat.",
+	"wikilambda-history-title": "Semakan sejarah \"$1\" ($2)",
+	"wikilambda-typeunavailable": "Jenis yang tidak dikenali",
+	"wikilambda-noresult": "Carian tidak memberikan hasil.",
 	"wikilambda-reference": "Rujukan",
 	"wikilambda-literal": "Harfiah",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Bahasa",
@@ -17,5 +21,20 @@
 	"wikilambda-publishchanges": "Terbit perubahan",
 	"wikilambda-savechanges": "Simpan perubahan",
 	"wikilambda-summarylabel": "Ringkasan:",
-	"wikilambda-implementation-selector-code": "Kod"
+	"wikilambda-typeselector-label": "Pilih Jenis",
+	"wikilambda-implementation-selector-code": "Kod",
+	"wikilambda-function-are-you-sure-dialog-header": "Adakah anda pasti?",
+	"wikilambda-create-type": "Cipta Jenis",
+	"wikilambda-metadata-language-column": "Bahasa",
+	"wikilambda-metadata-label-column": "Label",
+	"wikilambda-metadata-aka-column": "Juga dikenali sebagai",
+	"wikilambda-persistentobject-details-label": "Butiran",
+	"wikilambda-function-definition-name-label": "Nama",
+	"wikilambda-function-definition-name-example": "Lihat contoh nama.",
+	"wikilambda-function-definition-footer-label": "Ringkasan suntingan",
+	"wikilambda-function-definition-inputs-item-selector-placeholder": "Pilih jenis",
+	"wikilambda-function-definition-output-selector": "Pilih jenis",
+	"wikilambda-editor-additional-details-label": "Butiran tambahan",
+	"wikilambda-editor-implementation-title": "Pelaksanaan",
+	"wikilambda-ztyped-pair-value-label": "Nilai"
 }
