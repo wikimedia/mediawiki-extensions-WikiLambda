@@ -176,21 +176,21 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 	 * @codeCoverageIgnore
 	 */
 	private function createCurryExample(): string {
-		$curryImplementation = $this->readTestFileAsArray( 'curry-implementation-Z10088.json' );
-		$curryFunction = $this->readTestFileAsArray( 'curry-Z10087.json' );
+		$curryImplementation = $this->readTestFileAsArray( 'curry-implementation-Z409.json' );
+		$curryFunction = $this->readTestFileAsArray( 'curry-Z408.json' );
 		$curryFunction["Z8K4"][1] = $curryImplementation;
-		$curryFunctionCall = $this->readTestFileAsArray( 'curry-call-Z30086.json' );
+		$curryFunctionCall = $this->readTestFileAsArray( 'curry-call-Z410.json' );
 		$curryFunctionCall["Z8K4"][1]["Z14K2"]["Z7K1"]["Z7K1"] = $curryFunction;
-		$andFunction = $this->readTestFileAsArray( 'and-Z10007.json' );
+		$andFunction = $this->readTestFileAsArray( 'and-Z407.json' );
 		$curry = [
 			"Z1K1" => "Z7",
 			"Z7K1" => $curryFunctionCall,
-			"Z30086K1" => $andFunction,
-			"Z30086K2" => [
+			"Z410K1" => $andFunction,
+			"Z410K2" => [
 				"Z1K1" => "Z40",
 				"Z40K1" => "Z41"
 			],
-			"Z30086K3" => [
+			"Z410K3" => [
 				"Z1K1" => "Z40",
 				"Z40K1" => "Z41"
 			]
