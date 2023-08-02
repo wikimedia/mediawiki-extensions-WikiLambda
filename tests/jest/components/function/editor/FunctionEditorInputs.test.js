@@ -1,47 +1,53 @@
 /*!
- * WikiLambda unit test suite for the function-definition-name component and related files.
+ * WikiLambda unit test suite for the Function Editor inputs component.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 'use strict';
 
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
 	FunctionEditorInputs = require( '../../../../../resources/ext.wikilambda.edit/components/function/editor/FunctionEditorInputs.vue' );
 
-describe( 'FunctionEditorInputs', function () {
-	var getters,
+describe( 'FunctionEditorInputs', () => {
+	let getters,
 		actions;
 
-	beforeEach( function () {
+	beforeEach( () => {
 		getters = {
-			getNestedZObjectById: createGettersWithFunctionsMock( { id: 10 } ),
-			getZObjectTypeById: createGettersWithFunctionsMock(),
-			getAllItemsFromListById: createGettersWithFunctionsMock( [] ),
-			getNextObjectId: jest.fn()
+			getZFunctionInputs: createGettersWithFunctionsMock( [] ),
+			getRowByKeyPath: createGettersWithFunctionsMock( undefined ),
+			getZLang: createGetterMock( 'Z1002' )
 		};
+
 		actions = {
-			addZObject: jest.fn(),
-			changeType: jest.fn(),
-			setAvailableZArguments: jest.fn()
+			changeType: jest.fn()
 		};
 
 		global.store.hotUpdate( {
 			getters: getters,
-			actions
+			actions: actions
 		} );
 	} );
 
-	it( 'renders without errors', function () {
-		var wrapper = shallowMount( FunctionEditorInputs );
+	it( 'renders without errors', () => {
+		const wrapper = shallowMount( FunctionEditorInputs, { props: {
+			zLanguage: 'Z1002',
+			isMainLanguageBlock: true
+		} } );
 
 		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs' ).exists() ).toBeTruthy();
 	} );
 
-	it( 'displays the "add an input" button if the user has edit permission and there are no arguments', function () {
-		var wrapper = shallowMount( FunctionEditorInputs, {
+	it( 'displays the "add an input" button if the user has edit permissions and there are no inputs', () => {
+		getters.getZFunctionInputs = createGettersWithFunctionsMock( [] );
+		global.store.hotUpdate( { getters: getters } );
+		const wrapper = shallowMount( FunctionEditorInputs, {
 			props: {
+				zLanguage: 'Z1002',
+				isMainLanguageBlock: true,
 				canEdit: true
 			},
 			global: {
@@ -53,16 +59,15 @@ describe( 'FunctionEditorInputs', function () {
 			.toEqual( 'Add an input' );
 	} );
 
-	it( 'displays the "add another input" button if the user has edit permission and there is an existing argument', function () {
-		getters.getAllItemsFromListById = createGettersWithFunctionsMock( [
-			{ id: 6, key: '1', value: 'object', parent: 4 }
+	it( 'displays the "add another input" button if the user has edit permissions and there is an existing input', () => {
+		getters.getZFunctionInputs = createGettersWithFunctionsMock( [
+			{ id: 2, key: '1', parent: 1, value: 'object' }
 		] );
-		global.store.hotUpdate( {
-			getters: getters
-		} );
-
-		var wrapper = shallowMount( FunctionEditorInputs, {
+		global.store.hotUpdate( { getters: getters } );
+		const wrapper = shallowMount( FunctionEditorInputs, {
 			props: {
+				zLanguage: 'Z1002',
+				isMainLanguageBlock: true,
 				canEdit: true
 			},
 			global: {
@@ -74,29 +79,60 @@ describe( 'FunctionEditorInputs', function () {
 			.toEqual( 'Add another input' );
 	} );
 
-	it( 'does not display the "add input" if the user does not have edit permissions', function () {
-		var wrapper = shallowMount( FunctionEditorInputs, {
+	it( 'does not display the any add button if the user does not have edit permissions', () => {
+		const wrapper = shallowMount( FunctionEditorInputs, {
 			props: {
+				zLanguage: 'Z1002',
+				isMainLanguageBlock: true,
 				canEdit: false
 			}
 		} );
 
-		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs__add-input-button' ).exists() ).toBeFalsy();
+		expect( wrapper.findComponent( { name: 'cdx-button' } ).exists() ).toBeFalsy();
 	} );
 
-	it( 'does not display the "add another input" button if the user does not have edit permissions', function () {
-		getters.getAllItemsFromListById = createGettersWithFunctionsMock( [
-			{ id: 6, key: '1', value: 'object', parent: 4 }
+	it( 'displays as many input components as arguments are in the function', () => {
+		getters.getZFunctionInputs = createGettersWithFunctionsMock( [
+			{ id: 2, key: '1', parent: 1, value: 'object' },
+			{ id: 3, key: '2', parent: 1, value: 'object' },
+			{ id: 4, key: '3', parent: 1, value: 'object' }
 		] );
-		global.store.hotUpdate( {
-			getters: getters
-		} );
-		var wrapper = shallowMount( FunctionEditorInputs, {
+		global.store.hotUpdate( { getters: getters } );
+		const wrapper = shallowMount( FunctionEditorInputs, {
 			props: {
-				canEdit: false
+				zLanguage: 'Z1002',
+				isMainLanguageBlock: true,
+				canEdit: true
+			},
+			global: {
+				stubs: { CdxButton: false }
 			}
 		} );
 
-		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs__add-another-input-button' ).exists() ).toBeFalsy();
+		expect( wrapper.findAllComponents( { name: 'wl-function-editor-inputs-item' } ).length ).toBe( 3 );
+	} );
+
+	it( 'emits an update argument label event when an input changes its label', async () => {
+		getters.getZFunctionInputs = createGettersWithFunctionsMock( [
+			{ id: 2, key: '1', parent: 1, value: 'object' }
+		] );
+		global.store.hotUpdate( { getters: getters } );
+		const wrapper = shallowMount( FunctionEditorInputs, {
+			props: {
+				zLanguage: 'Z1002',
+				isMainLanguageBlock: true,
+				canEdit: true
+			},
+			global: {
+				stubs: { CdxButton: false }
+			}
+		} );
+
+		const inputItem = wrapper.findComponent( { name: 'wl-function-editor-inputs-item' } );
+		inputItem.vm.$emit( 'update-argument-label' );
+		await wrapper.vm.$nextTick();
+
+		// ASSERT: does not emit updated-name
+		expect( wrapper.emitted( 'updated-argument-label' ) ).toBeTruthy();
 	} );
 } );

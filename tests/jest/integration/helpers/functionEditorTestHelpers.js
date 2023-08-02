@@ -6,7 +6,42 @@
  */
 'use strict';
 
-const runSetup = function () {
+const Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
+	apiGetMock = require( './apiGetMock.js' ),
+	ApiMock = require( './apiMock.js' );
+
+const lookupZObjectTypeLabels = new ApiMock(
+	apiGetMock.typeLabelsRequest,
+	apiGetMock.labelsResponse,
+	apiGetMock.labelsMatcher
+);
+const lookupZObjectLanguageLabels = new ApiMock(
+	apiGetMock.languageLabelsRequest,
+	apiGetMock.labelsResponse,
+	apiGetMock.labelsMatcher
+);
+const initializeRootZObject = new ApiMock(
+	apiGetMock.loadZObjectsRequest,
+	apiGetMock.loadZObjectsResponse,
+	apiGetMock.loadZObjectsMatcher
+);
+const fetchZImplementations = new ApiMock(
+	apiGetMock.fetchZImplementationsRequest,
+	apiGetMock.zObjectSearchResponse,
+	apiGetMock.zObjectSearchMatcher
+);
+const fetchZTesters = new ApiMock(
+	apiGetMock.fetchZTestersRequest,
+	apiGetMock.zObjectSearchResponse,
+	apiGetMock.zObjectSearchMatcher
+);
+const performTest = new ApiMock(
+	apiGetMock.performTestRequest,
+	apiGetMock.performTestResponse,
+	apiGetMock.performTestMatcher
+);
+
+const runSetup = function ( pageConfig ) {
 	// Needed because of the Teleported component.
 	const el = document.createElement( 'div' );
 	el.id = 'ext-wikilambda-app';
@@ -20,18 +55,47 @@ const runSetup = function () {
 		}
 	} );
 
-	// This is necessary to allow FunctionDefinition to attempt to scroll to second language without crashing.
-	document.getElementById = ( selector ) => {
-		if ( selector === 'fnDefinitionContainer' ) {
-			return {};
-		}
-	};
-
 	const apiPostWithEditTokenMock = jest.fn( () => Promise.resolve( {
 		wikilambda_edit: {
 			page: 'newPage'
 		}
 	} ) );
+
+	mw.Api = jest.fn( () => {
+		return {
+			postWithEditToken: apiPostWithEditTokenMock,
+			get: apiGetMock.createMockApi( [
+				lookupZObjectLanguageLabels,
+				lookupZObjectTypeLabels,
+				initializeRootZObject,
+				fetchZImplementations,
+				fetchZTesters,
+				performTest
+			] )
+		};
+	} );
+
+	window.mw.Uri = jest.fn( () => {
+		return {
+			query: pageConfig.queryParams,
+			path: new window.mw.Title( pageConfig.title ).getUrl( pageConfig.queryParams )
+		};
+	} );
+
+	global.mw.config.get = ( endpoint ) => {
+		switch ( endpoint ) {
+			case 'wgWikiLambda':
+				return {
+					createNewPage: pageConfig.createNewPage,
+					viemode: false,
+					zlang: 'en',
+					zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+					zId: pageConfig.createNewPage ? 'Z0' : pageConfig.title
+				};
+			default:
+				return {};
+		}
+	};
 
 	return {
 		apiPostWithEditTokenMock: apiPostWithEditTokenMock

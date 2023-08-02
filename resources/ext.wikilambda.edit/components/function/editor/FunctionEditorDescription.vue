@@ -9,61 +9,56 @@
 		<div class="ext-wikilambda-function-definition-description__label">
 			<label
 				:for="descriptionInputId"
-				class="ext-wikilambda-app__text-regular">
-				<!-- TODO: Instead fetch this from the Z2 via `getLabel( Constants.Z_PERSISTENTOBJECT_DESCRIPTION )` -->
-				{{ $i18n( 'wikilambda-function-definition-description-label' ).text() }}
-				<span>{{ $i18n( 'parentheses', [ $i18n( 'wikilambda-optional' ).text() ] ).text() }}</span>
+				class="ext-wikilambda-app__text-regular"
+			>
+				{{ descriptionLabel }}
+				<span>{{ descriptionOptional }}</span>
 			</label>
 			<span class="ext-wikilambda-function-definition-description__description">
-				{{ $i18n( 'wikilambda-function-definition-description-description' ).text() }}
+				{{ descriptionFieldDescription }}
 			</span>
 		</div>
-		<wl-text-input
+		<cdx-text-input
 			:id="descriptionInputId"
-			v-model="monolingualDescriptionString"
-			:model-value="monolingualDescriptionString"
+			:model-value="description"
 			class="ext-wikilambda-function-definition-description__input"
 			:aria-label="descriptionLabel"
 			:placeholder="descriptionInputPlaceholder"
 			:max-chars="maxDescriptionChars"
-			@input="persistDescription"
-		></wl-text-input>
+			@change="persistDescription"
+		></cdx-text-input>
 		<!-- TODO: Add a character counter to tell users they can't write messages that are too long. -->
 	</div>
 </template>
 
 <script>
-var Constants = require( '../../../Constants.js' ),
+const Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	TextInput = require( '../../base/TextInput.vue' );
+	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput;
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-function-editor-description',
 	components: {
-		'wl-text-input': TextInput
+		'cdx-text-input': CdxTextInput
 	},
 	props: {
-		zLang: {
+		zLanguage: {
 			type: String,
 			required: true
 		}
 	},
 	data: function () {
 		return {
-			descriptionInputId: `ext-wikilambda-function-definition-description__input${this.zLang}`,
-			maxDescriptionChars: Constants.LABEL_CHARS_MAX,
-			monolingualDescriptionString: ''
+			maxDescriptionChars: Constants.LABEL_CHARS_MAX
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getZPersistentDescription',
+		'getRowByKeyPath',
 		'getZMonolingualTextValue',
-		'getRowByKeyPath'
-	] ),
-
-	{
+		'getZPersistentDescription'
+	] ), {
 		/**
 		 * Returns the Short Description (Z2K5) row for the
 		 * appropriate language
@@ -71,18 +66,38 @@ module.exports = exports = {
 		 * @return {Object|undefined}
 		 */
 		descriptionObject: function () {
-			if ( this.zLang === '' ) {
-				return '';
-			}
-			return this.getZPersistentDescription( this.zLang );
+			return this.zLanguage ?
+				this.getZPersistentDescription( this.zLanguage ) :
+				undefined;
 		},
 		/**
 		 * Returns true if the current zObject has a description object
 		 *
 		 * @return {boolean}
 		 */
-		hasDescriptionObject: function () {
+		hasDescription: function () {
 			return this.descriptionObject !== undefined;
+		},
+		/**
+		 * Returns the description value for the given language.
+		 * If value is not available, returns empty string
+		 *
+		 * @return {string}
+		 */
+		description: function () {
+			return this.hasDescription ?
+				this.getZMonolingualTextValue( this.descriptionObject.rowId ) :
+				'';
+		},
+		/**
+		 * Returns the label for the description field
+		 *
+		 * @return {string}
+		 */
+		descriptionLabel: function () {
+			// TODO (T335583): Replace i18n message with key label
+			// return this.getLabel( Constants.Z_PERSISTENTOBJECT_DESCRIPTION );
+			return this.$i18n( 'wikilambda-function-definition-description-label' ).text();
 		},
 		/**
 		 * Returns the i18n message for the description field placeholder
@@ -91,17 +106,45 @@ module.exports = exports = {
 		 */
 		descriptionInputPlaceholder: function () {
 			return this.$i18n( 'wikilambda-function-definition-description-placeholder' ).text();
+		},
+		/**
+		 * Returns the description for the name field
+		 *
+		 * @return {string}
+		 */
+		descriptionFieldDescription: function () {
+			return this.$i18n( 'wikilambda-function-definition-description-description' ).text();
+		},
+		/**
+		 * Returns the "optional" caption for the description field
+		 *
+		 * @return {string}
+		 */
+		descriptionOptional: function () {
+			return this.$i18n( 'parentheses', [ this.$i18n( 'wikilambda-optional' ).text() ] ).text();
+		},
+		/**
+		 * Returns the id for the input field
+		 *
+		 * @return {string}
+		 */
+		descriptionInputId: function () {
+			return `ext-wikilambda-function-definition-description__input${this.zLanguage}`;
 		}
-
 	} ),
 	methods: $.extend( mapActions( [
 		'changeType',
-		'setValueByRowIdAndPath',
-		'removeItemFromTypedList'
+		'removeItemFromTypedList',
+		'setValueByRowIdAndPath'
 	] ), {
+		/**
+		 * Persist the new name value in the globally stored object
+		 *
+		 * @param {Object} event
+		 */
 		persistDescription: function ( event ) {
-			var value = event.target.value;
-			if ( this.hasDescriptionObject ) {
+			const value = event.target.value;
+			if ( this.hasDescription ) {
 				if ( value === '' ) {
 					this.removeItemFromTypedList( { rowId: this.descriptionObject.rowId } );
 				} else {
@@ -129,19 +172,14 @@ module.exports = exports = {
 				this.changeType( {
 					id: parentRow.id,
 					type: Constants.Z_MONOLINGUALSTRING,
-					lang: this.zLang,
+					lang: this.zLanguage,
 					value,
 					append: true
 				} );
 			}
 			this.$emit( 'updated-description' );
 		}
-	} ),
-	beforeMount: function () {
-		// fetch and populate the description string before
-		// initial render
-		this.monolingualDescriptionString = this.hasDescriptionObject ? this.getZMonolingualTextValue( this.descriptionObject.rowId ) : '';
-	}
+	} )
 };
 </script>
 

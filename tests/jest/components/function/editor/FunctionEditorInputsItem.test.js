@@ -1,48 +1,35 @@
 /*!
- * WikiLambda unit test suite for the function-definition-name component and related files.
+ * WikiLambda unit test suite for the Function Editor input item component.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 'use strict';
 
-const { CdxLookup } = require( '@wikimedia/codex' );
-const Constants = require( '../../../../../resources/ext.wikilambda.edit/Constants.js' );
-var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	mount = require( '@vue/test-utils' ).mount,
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	FunctionEditorInputsItem = require( '../../../../../resources/ext.wikilambda.edit/components/function/editor/FunctionEditorInputsItem.vue' ),
-	ZObjectSelector = require( '../../../../../resources/ext.wikilambda.edit/components/ZObjectSelector.vue' ),
-	icons = require( '../../../fixtures/icons.json' );
+	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
+	FunctionEditorInputsItem = require( '../../../../../resources/ext.wikilambda.edit/components/function/editor/FunctionEditorInputsItem.vue' );
 
-describe( 'FunctionEditorInputsItem', function () {
-	var getters,
+describe( 'FunctionEditorInputsItem', () => {
+	let getters,
 		actions;
 
-	beforeEach( function () {
+	beforeEach( () => {
 		getters = {
-			getZObjectChildrenById: createGettersWithFunctionsMock(),
-			getNestedZObjectById: createGettersWithFunctionsMock( {} ),
-			getZObjectTypeById: createGettersWithFunctionsMock(),
-			getNextObjectId: jest.fn().mockReturnValue( 123 ),
-			getCurrentZLanguage: jest.fn().mockReturnValue( 'Z10002' ),
-			currentZObjectLanguages: () => [
-				{
-					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
-					[ Constants.Z_REFERENCE_ID ]: 'Z10002'
-				},
-				{
-					[ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE,
-					[ Constants.Z_REFERENCE_ID ]: 'Z10004'
-				}
-			]
+			getLabel: createGettersWithFunctionsMock( '' ),
+			getRowByKeyPath: createGettersWithFunctionsMock(),
+			getZArgumentLabelForLanguage: createGettersWithFunctionsMock(),
+			getZArgumentTypeRowId: createGettersWithFunctionsMock(),
+			getZLang: createGetterMock( 'Z1002' ),
+			getZMonolingualTextValue: createGettersWithFunctionsMock(),
+			getZTypeStringRepresentation: createGettersWithFunctionsMock()
 		};
 
 		actions = {
-			setZObjectValue: jest.fn(),
-			addZMonolingualString: jest.fn(),
 			changeType: jest.fn(),
-			setTypeOfTypedList: jest.fn()
+			setValueByRowIdAndPath: jest.fn(),
+			removeItemFromTypedList: jest.fn()
 		};
 
 		global.store.hotUpdate( {
@@ -51,86 +38,184 @@ describe( 'FunctionEditorInputsItem', function () {
 		} );
 	} );
 
-	it( 'renders without errors', function () {
-		var wrapper = shallowMount( FunctionEditorInputsItem );
+	it( 'renders without errors', () => {
+		const wrapper = shallowMount( FunctionEditorInputsItem, { props: {
+			rowId: 1,
+			index: 0,
+			isMainLanguageBlock: true,
+			canEditType: true,
+			zLanguage: 'Z1002'
+		} } );
 
 		expect( wrapper.find( '.ext-wikilambda-editor-input-list-item' ).exists() ).toBeTruthy();
 	} );
-	it( 'has an input element ', function () {
-		var wrapper = shallowMount( FunctionEditorInputsItem );
-		expect( wrapper.findComponent( { name: 'wl-text-input' } ).exists() ).toBeTruthy();
+
+	it( 'has an input element ', () => {
+		const wrapper = shallowMount( FunctionEditorInputsItem, { props: {
+			rowId: 1,
+			index: 0,
+			isMainLanguageBlock: true,
+			canEditType: true,
+			zLanguage: 'Z1002'
+		} } );
+
+		expect( wrapper.findComponent( { name: 'cdx-text-input' } ).exists() ).toBeTruthy();
 	} );
-	describe( 'setArgumentLabel', function () {
-		it( 'does not set argument label if there is none', function () {
-			var wrapper = shallowMount( FunctionEditorInputsItem );
 
-			wrapper.vm.getArgumentLabels = jest.fn().mockReturnValue( {} );
-			wrapper.vm.setArgumentLabel();
+	it( 'has an type selector if is main language block ', () => {
+		const wrapper = shallowMount( FunctionEditorInputsItem, { props: {
+			rowId: 1,
+			index: 0,
+			isMainLanguageBlock: true,
+			canEditType: true,
+			zLanguage: 'Z1002'
+		} } );
 
-			expect( actions.changeType ).not.toHaveBeenCalled();
+		expect( wrapper.findComponent( { name: 'wl-z-object-selector' } ).exists() ).toBeTruthy();
+	} );
+
+	it( 'does not have a type selector if is a secondary language block ', () => {
+		const wrapper = shallowMount( FunctionEditorInputsItem, { props: {
+			rowId: 1,
+			index: 0,
+			isMainLanguageBlock: false,
+			canEditType: true,
+			zLanguage: 'Z1002'
+		} } );
+
+		expect( wrapper.findComponent( { name: 'wl-z-object-selector' } ).exists() ).toBeFalsy();
+	} );
+
+	it( 'has one delete button if it is editable', () => {
+		const wrapper = shallowMount( FunctionEditorInputsItem, {
+			props: {
+				rowId: 1,
+				index: 0,
+				isMainLanguageBlock: true,
+				canEditType: true,
+				zLanguage: 'Z1002'
+			},
+			global: { stubs: { CdxButton: false } }
 		} );
-		it( 'adds a new language', function () {
-			var mockZLabel = {
-				id: 151,
-				key: 'Z1K1',
-				parent: 150,
-				value: 'object'
-			};
 
-			getters.getNestedZObjectById = createGettersWithFunctionsMock( mockZLabel );
-			getters.getZObjectChildrenById = createGettersWithFunctionsMock( [ mockZLabel ] );
+		expect( wrapper.findAll( '.ext-wikilambda-editor-input-list-item__header__action-delete' ).length ).toBe( 1 );
+	} );
 
-			global.store.hotUpdate( {
-				getters: getters
-			} );
-
-			var wrapper = shallowMount( FunctionEditorInputsItem, {
+	describe( 'on argument label change', () => {
+		it( 'removes the input label object if new value is empty string', async () => {
+			getters.getZArgumentLabelForLanguage = createGettersWithFunctionsMock( { id: 2 } );
+			global.store.hotUpdate( { getters: getters } );
+			const wrapper = shallowMount( FunctionEditorInputsItem, {
 				props: {
-					zLang: 'Z10002'
-				}
-			} );
-
-			wrapper.vm.setArgumentLabel();
-			expect( actions.changeType ).toHaveBeenCalled();
-			expect( actions.changeType ).toHaveBeenCalledWith(
-				expect.anything(),
-				{
-					type: Constants.Z_MONOLINGUALSTRING,
-					lang: 'Z10002',
-					id: mockZLabel.id,
-					append: true
-				}
-			);
-		} );
-		it( 'clears on focus-out if a value is typed but then not selected', function () {
-			getters.getErrors = jest.fn( function () {
-				return {};
-			} );
-			global.store.hotUpdate( {
-				getters: getters
-			} );
-			var wrapper = mount( FunctionEditorInputsItem, {
-				data() {
-					return {
-						icons: icons
-					};
-				},
-				props: {
+					rowId: 1,
+					index: 0,
 					isMainLanguageBlock: true,
-					canEditType: true
+					canEditType: true,
+					zLanguage: 'Z1002'
 				}
 			} );
 
-			var inputTypeSelector = wrapper.get( '.ext-wikilambda-editor-input-list-item__body' ).getComponent( ZObjectSelector );
+			// ACT: Change value of label
+			const input = wrapper.findComponent( { name: 'cdx-text-input' } );
+			input.vm.$emit( 'change', { target: { value: '' } } );
+			await wrapper.vm.$nextTick();
 
-			var inputTypeSelectorLookup = wrapper.get( '.ext-wikilambda-select-zobject' ).getComponent( CdxLookup );
-			inputTypeSelectorLookup.vm.$emit( 'input', 'S' );
+			// ASSERT: removeItemFromTypedList action runs correctly
+			expect( actions.removeItemFromTypedList ).toHaveBeenCalledWith( expect.anything(), {
+				rowId: 2
+			} );
 
-			inputTypeSelector.vm.clearResults = jest.fn();
+			// ASSERT: emits updated-argument-label
+			expect( wrapper.emitted( 'update-argument-label' ) ).toBeTruthy();
+		} );
 
-			inputTypeSelector.vm.$emit( 'focus-out' );
+		it( 'changes the label of an input if the language already exists', async () => {
+			getters.getZArgumentLabelForLanguage = createGettersWithFunctionsMock( { id: 2 } );
+			global.store.hotUpdate( { getters: getters } );
+			const wrapper = shallowMount( FunctionEditorInputsItem, {
+				props: {
+					rowId: 1,
+					index: 0,
+					isMainLanguageBlock: true,
+					canEditType: true,
+					zLanguage: 'Z1002'
+				}
+			} );
 
-			expect( inputTypeSelector.vm.clearResults ).toHaveBeenCalled();
+			// ACT: Change value of label
+			const input = wrapper.findComponent( { name: 'cdx-text-input' } );
+			input.vm.$emit( 'change', { target: { value: 'new input label' } } );
+			await wrapper.vm.$nextTick();
+
+			// ASSERT: setValueByRowIdAndPath action runs correctly
+			expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), {
+				rowId: 2,
+				keyPath: [ 'Z11K2', 'Z6K1' ],
+				value: 'new input label'
+			} );
+
+			// ASSERT: emits updated-argument-label
+			expect( wrapper.emitted( 'update-argument-label' ) ).toBeTruthy();
+		} );
+
+		it( 'adds a new monolingual string if there is no label object for this language', async () => {
+			getters.getZArgumentLabelForLanguage = createGettersWithFunctionsMock( undefined );
+			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
+			global.store.hotUpdate( { getters: getters } );
+			const wrapper = shallowMount( FunctionEditorInputsItem, {
+				props: {
+					rowId: 1,
+					index: 0,
+					isMainLanguageBlock: true,
+					canEditType: true,
+					zLanguage: 'Z1002'
+				}
+			} );
+
+			// ACT: Change value of label
+			const input = wrapper.findComponent( { name: 'cdx-text-input' } );
+			input.vm.$emit( 'change', { target: { value: 'new input label' } } );
+			await wrapper.vm.$nextTick();
+
+			// ASSERT: changeType action runs correctly
+			expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
+				id: 1,
+				type: 'Z11',
+				lang: 'Z1002',
+				value: 'new input label',
+				append: true
+			} );
+
+			// ASSERT: emits updated-argument-label
+			expect( wrapper.emitted( 'update-argument-label' ) ).toBeTruthy();
+		} );
+	} );
+
+	describe( 'on argument type change', () => {
+		it( 'removes the input label object if new value is empty string', async () => {
+			getters.getZArgumentTypeRowId = createGettersWithFunctionsMock( 2 );
+			global.store.hotUpdate( { getters: getters } );
+			const wrapper = shallowMount( FunctionEditorInputsItem, {
+				props: {
+					rowId: 1,
+					index: 0,
+					isMainLanguageBlock: true,
+					canEditType: true,
+					zLanguage: 'Z1002'
+				}
+			} );
+
+			// ACT: Change value of label
+			const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
+			selector.vm.$emit( 'input', 'Z6' );
+			await wrapper.vm.$nextTick();
+
+			// ASSERT: setValueByRowIdAndPath action runs correctly
+			expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), {
+				rowId: 2,
+				keyPath: [ 'Z9K1' ],
+				value: 'Z6'
+			} );
 		} );
 	} );
 } );

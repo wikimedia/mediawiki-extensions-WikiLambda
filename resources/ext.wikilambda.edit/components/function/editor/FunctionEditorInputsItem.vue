@@ -6,6 +6,7 @@
 -->
 <template>
 	<div class="ext-wikilambda-editor-input-list-item" role="inputs-item-container">
+		<!-- Per-input label if we are in mobile -->
 		<div
 			v-if="isMobile"
 			class="ext-wikilambda-editor-input-list-item__header"
@@ -19,10 +20,7 @@
 				<cdx-icon :icon="icons.cdxIconExpand"></cdx-icon>
 			</cdx-button>
 			<span class="ext-wikilambda-editor-input-list-item__header__text">
-				{{
-					$i18n( 'wikilambda-function-viewer-details-input-number', inputNumber ).text() +
-						( selectedLabel && !isActive ? ': ' + selectedLabel : '' )
-				}}
+				{{ inputFieldLabel }}
 			</span>
 			<cdx-button
 				v-if="canEditType"
@@ -33,71 +31,59 @@
 				<cdx-icon :icon="icons.cdxIconTrash"></cdx-icon>
 			</cdx-button>
 		</div>
+		<!-- Input field -->
 		<div class="ext-wikilambda-editor-input-list-item__body">
 			<span
 				v-if="isMobile"
-				class="ext-wikilambda-editor-input-list-item__body__description">
-				{{ $i18n( 'wikilambda-function-definition-inputs-description' ).text() }}
-				<a :href="getTypeUrl()"> {{ $i18n( 'wikilambda-function-definition-input-types' ).text() }} </a>
+				class="ext-wikilambda-editor-input-list-item__body__description"
+			>
+				{{ inputFieldDescription }}
+				<a :href="listObjectsUrl" target="_blank">{{ listObjectsLink }}</a>
 			</span>
 			<div
 				v-if="isMainLanguageBlock"
+				data-testid="function-editor-input-item-type"
 				class="ext-wikilambda-editor-input-list-item__body__entry"
 			>
 				<span
 					v-if="index === 0 || isMobile"
 					class="ext-wikilambda-editor-input-list-item__body__entry-text"
 				>
-					{{ $i18n( 'wikilambda-function-definition-input-item-type' ).text() }}
+					{{ inputTypeTitle }}
 				</span>
 				<wl-z-object-selector
-					v-if="( !canEditType && getTypeOfArgument ) || canEditType"
-					ref="typeSelector"
+					v-if="( !canEditType && inputType ) || canEditType"
 					class="
 						ext-wikilambda-editor-input-list-item__body__entry-field
 						ext-wikilambda-editor-input-list-item__selector"
 					:disabled="!canEditType"
-					:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text()"
-					:row-id="getZArgumentType.id"
-					:selected-zid="getTypeOfArgument"
-					:type="Constants.Z_TYPE"
-					@input="setArgumentType( $event )"
-					@focus-out="clearIfUnset"
-				></wl-z-object-selector>
-				<!--
-					TODO: This is hardcoded for now as it is the first complex input,
-					In the future we should provide an UI that will allow user to define complex types
-					automatically (for example set a function call that require x argument to be set
-					and show them automatically)
-				-->
-				<wl-z-object-selector
-					v-if="getTypeOfArgument === Constants.Z_TYPED_LIST"
-					class="
-						ext-wikilambda-editor-input-list-item__body__entry-field
-						ext-wikilambda-editor-input-list-item__selector"
-					:label="$i18n( 'wikilambda-function-definition-inputs-item-typed-list-placeholder' ).text()"
-					:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-typed-list-placeholder' ).text()"
-					@input="setListTypedList"
-					@clear="setListTypedList"
+					:placeholder="inputTypeFieldPlaceholder"
+					:row-id="inputTypeRowId"
+					:selected-zid="inputType"
+					:type="typeZid"
+					@input="persistInputType"
 				></wl-z-object-selector>
 			</div>
-			<div class="ext-wikilambda-editor-input-list-item__body__entry">
+			<div
+				data-testid="function-editor-input-item-label"
+				class="ext-wikilambda-editor-input-list-item__body__entry"
+			>
 				<span
 					v-if="index === 0 || isMobile"
 					class="ext-wikilambda-editor-input-list-item__body__entry-text"
 				>
-					{{ $i18n( 'wikilambda-function-definition-input-item-label' ).text() }}
+					{{ inputLabelTitle }}
 				</span>
-				<wl-text-input
-					:model-value="getArgumentLabel"
+				<cdx-text-input
+					:model-value="inputLabel"
 					class="
 						ext-wikilambda-editor-input-list-item__body__entry-field
 						ext-wikilambda-editor-input-list-item__label"
-					:placeholder="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
-					:aria-label="$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text()"
+					:placeholder="inputLabelFieldPlaceholder"
+					:aria-label="inputLabelFieldPlaceholder"
 					:max-chars="maxLabelChars"
-					@input="handleInputChange"
-				></wl-text-input>
+					@change="persistInputLabel"
+				></cdx-text-input>
 				<!-- TODO: Add a character counter to tell users they can't write messages that are too long. -->
 			</div>
 			<cdx-button
@@ -114,16 +100,15 @@
 </template>
 
 <script>
-var Constants = require( '../../../Constants.js' ),
+const Constants = require( '../../../Constants.js' ),
 	ZObjectSelector = require( '../../ZObjectSelector.vue' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
-	TextInput = require( '../../base/TextInput.vue' ),
-	icons = require( './../../../../lib/icons.json' ),
-	typeUtils = require( '../../../mixins/typeUtils.js' ),
-	debounceSetArgumentLabelTimeout = 300;
+	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
+	icons = require( './../../../../lib/icons.json' );
+
 // @vue/component
 module.exports = exports = {
 	name: 'wl-function-editor-inputs-item',
@@ -131,15 +116,17 @@ module.exports = exports = {
 		'wl-z-object-selector': ZObjectSelector,
 		'cdx-icon': CdxIcon,
 		'cdx-button': CdxButton,
-		'wl-text-input': TextInput
+		'cdx-text-input': CdxTextInput
 	},
-	mixins: [ typeUtils ],
 	props: {
-		index: {
+		rowId: {
 			type: Number,
 			required: true
 		},
-		zobjectId: {
+		/**
+		 * Index for this input in the list of inputs (zero-lead)
+		 */
+		index: {
 			type: Number,
 			required: true
 		},
@@ -162,7 +149,7 @@ module.exports = exports = {
 		 *
 		 * @example Z1014
 		 */
-		zLang: {
+		zLanguage: {
 			type: String,
 			required: true
 		},
@@ -171,7 +158,7 @@ module.exports = exports = {
 		 */
 		isMobile: {
 			type: Boolean,
-			required: true
+			default: false
 		},
 		isActive: {
 			type: Boolean,
@@ -184,178 +171,208 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			debounceSetArgumentLabel: null,
+			typeZid: Constants.Z_TYPE,
 			maxLabelChars: Constants.LABEL_CHARS_MAX,
 			icons: icons
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getZLang',
-		'getNextObjectId',
-		'getZObjectChildrenById',
-		'getNestedZObjectById',
-		'getCurrentZLanguage',
-		'getZObjectTypeById',
 		'getLabel',
-		'currentZObjectLanguages'
+		'getRowByKeyPath',
+		'getZArgumentLabelForLanguage',
+		'getZArgumentTypeRowId',
+		'getZLang',
+		'getZMonolingualTextValue',
+		'getZTypeStringRepresentation'
 	] ), {
-		inputNumber: function () {
-			return this.showIndex ? this.index + 1 : '';
+		/**
+		 * Returns the row Id of the current input type
+		 * or undefined if not found.
+		 *
+		 * @return {number|undefined}
+		 */
+		inputTypeRowId: function () {
+			return this.getZArgumentTypeRowId( this.rowId );
 		},
-		Constants: function () {
-			return Constants;
+		/**
+		 * Returns the string value of the current input type
+		 * or empty string if not defined.
+		 *
+		 * @return {string}
+		 */
+		inputType: function () {
+			return this.inputTypeRowId ?
+				this.getZTypeStringRepresentation( this.inputTypeRowId ) :
+				'';
 		},
-		getZArgumentType: function () {
-			return this.getNestedZObjectById( this.zobjectId, [
-				Constants.Z_ARGUMENT_TYPE
-			] );
+		/**
+		 * Returns the label of the string value of the current
+		 * input type or empty stirng if not defined
+		 *
+		 * @return {string}
+		 */
+		inputTypeLabel: function () {
+			return this.inputType ? this.getLabel( this.inputType ) : '';
 		},
-		getTypeOfArgument: function () {
-			var zArgumentTypeId = this.getNestedZObjectById( this.zobjectId, [
-				Constants.Z_ARGUMENT_TYPE
-			] ).id;
-			if ( this.getZObjectTypeById( zArgumentTypeId ) === Constants.Z_REFERENCE ) {
-				return this.getNestedZObjectById( zArgumentTypeId, [
-					Constants.Z_REFERENCE_ID
-				] ).value;
-			} else if ( this.getZObjectTypeById( zArgumentTypeId ) === Constants.Z_TYPED_LIST ) {
-				return Constants.Z_TYPED_LIST;
-			}
+		/**
+		 * Returns the row of the input label in the given language
+		 * or undefined if not found.
+		 *
+		 * @return {Object|undefined}
+		 */
+		inputLabelRow: function () {
+			return this.getZArgumentLabelForLanguage( this.rowId, this.zLanguage );
 		},
-		getArgumentLabels: function () {
-			return this.getNestedZObjectById( this.zobjectId, [
-				Constants.Z_ARGUMENT_LABEL,
-				Constants.Z_MULTILINGUALSTRING_VALUE
-			] );
+		/**
+		 * Returns the string value of the input label in the given
+		 * language or empty string if undefined.
+		 *
+		 * @return {string}
+		 */
+		inputLabel: function () {
+			return this.inputLabelRow ?
+				this.getZMonolingualTextValue( this.inputLabelRow.id ) :
+				'';
 		},
-		getArgumentLabel: function () {
-			var labels = this.getZObjectChildrenById( this.getArgumentLabels.id );
-			for ( var index in labels ) {
-				var lang = this.getNestedZObjectById( labels[ index ].id, [
-						Constants.Z_MONOLINGUALSTRING_LANGUAGE,
-						Constants.Z_REFERENCE_ID
-					] ),
-					value = this.getNestedZObjectById( labels[ index ].id, [
-						Constants.Z_MONOLINGUALSTRING_VALUE,
-						Constants.Z_STRING_VALUE
-					] );
-				if ( lang.value === this.zLang ) {
-					return value.value;
-				}
-			}
-			return null;
+		/**
+		 * Returns the title for the input type field
+		 *
+		 * @return {string}
+		 */
+		inputTypeTitle: function () {
+			return this.$i18n( 'wikilambda-function-definition-input-item-type' ).text();
 		},
-		selectedLabel: function () {
-			return this.getTypeOfArgument ? this.getLabel( this.getTypeOfArgument ) : '';
+		/**
+		 * Returns the placeholder for the input type field
+		 *
+		 * @return {string}
+		 */
+		inputTypeFieldPlaceholder: function () {
+			return this.$i18n( 'wikilambda-function-definition-inputs-item-selector-placeholder' ).text();
+		},
+		/**
+		 * Returns the label and index for the current input.
+		 * If not active, returns label, index and selected type.
+		 *
+		 * @return {string}
+		 */
+		inputFieldLabel: function () {
+			const inputNumber = this.showIndex ? this.index + 1 : '';
+			return this.$i18n( 'wikilambda-function-viewer-details-input-number', inputNumber ).text() +
+				( this.inputTypeLabel && !this.isActive ? ': ' + this.inputTypeLabel : '' );
+		},
+		/**
+		 * Returns the description for the inputs field
+		 *
+		 * @return {string}
+		 */
+		inputFieldDescription: function () {
+			return this.$i18n( 'wikilambda-function-definition-inputs-description' ).text();
+		},
+		/**
+		 * Returns the URL to the Special page List Object by Type
+		 *
+		 * @return {string}
+		 */
+		listObjectsUrl: function () {
+			return new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE )
+				.getUrl( { uselang: this.getZLang } );
+		},
+		/**
+		 * Returns the text for the link to the Special page List Object by Type
+		 *
+		 * @return {string}
+		 */
+		listObjectsLink: function () {
+			return this.$i18n( 'wikilambda-function-definition-input-types' ).text();
+		},
+		/**
+		 * Returns the title for the input label field
+		 *
+		 * @return {string}
+		 */
+		inputLabelTitle: function () {
+			return this.$i18n( 'wikilambda-function-definition-input-item-label' ).text();
+		},
+		/**
+		 * Returns the placeholder for the input label field
+		 *
+		 * @return {string}
+		 */
+		inputLabelFieldPlaceholder: function () {
+			return this.$i18n( 'wikilambda-function-definition-inputs-item-input-placeholder' ).text();
 		}
 	} ),
 	methods: $.extend( mapActions( [
-		'setZObjectValue',
 		'changeType',
-		'setTypeOfTypedList',
+		'setValueByRowIdAndPath',
 		'removeItemFromTypedList'
 	] ), {
-		setArgumentLabel: function ( input ) {
-			if ( ( !this.getArgumentLabel && !this.getArgumentLabels.id ) || !this.zLang ) {
-				return;
-			}
-			var lang = this.zLang;
-			var labels = this.getZObjectChildrenById( this.getArgumentLabels.id );
-			for ( var index in labels ) {
-				var labelLang = this.getNestedZObjectById( labels[ index ].id, [
-						Constants.Z_MONOLINGUALSTRING_LANGUAGE,
-						Constants.Z_REFERENCE_ID
-					] ),
-					value = this.getNestedZObjectById( labels[ index ].id, [
-						Constants.Z_MONOLINGUALSTRING_VALUE,
-						Constants.Z_STRING_VALUE
-					] );
-
-				if ( labelLang.value === lang ) {
-					this.setZObjectValue( {
-						id: value.id,
-						value: input
-					} );
-					this.$emit( 'update-argument-label' );
-					return;
-				}
-			}
-		},
-		handleInputChange: function ( event ) {
-			const input = event.target.value;
-			clearTimeout( this.debounceSetArgumentLabel );
-			this.debounceSetArgumentLabel = setTimeout( function () {
-				this.setArgumentLabel( input );
-			}.bind( this ), debounceSetArgumentLabelTimeout );
-		},
-		setArgumentType: function ( type ) {
-			var payload;
-			if ( type === Constants.Z_TYPED_LIST ) {
-				payload = {
-					id: this.getZArgumentType.id,
-					type: Constants.Z_TYPED_LIST,
-					unwrapped: true
-				};
-			} else {
-				payload = {
-					id: this.getZArgumentType.id,
-					type: Constants.Z_REFERENCE,
-					value: type
-				};
-			}
-			this.changeType( payload );
-		},
-		setListTypedList: function ( type ) {
-			var payload = {
-				objectId: this.getZArgumentType.id,
-				type: type
-			};
-			this.setTypeOfTypedList( payload );
-		},
-		toggleActive: function () {
-			var index = this.isActive ? -1 : this.index;
-			this.$emit( 'active-input', index );
-		},
-		clearIfUnset: function () {
-			if ( !this.getTypeOfArgument ) {
-				this.$refs.typeSelector.clearResults();
-			}
-		},
+		/**
+		 * Removes the input given by this rowId
+		 */
 		removeInput: function () {
-			this.removeItemFromTypedList( { rowId: this.zobjectId } );
+			this.removeItemFromTypedList( { rowId: this.rowId } );
 		},
-		getTypeUrl: function () {
-			return new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE ).getUrl(
-				{ uselang: this.getZLang }
-			);
-		}
-	} ),
-	watch: {
-		zLang: {
-			immediate: true,
-			handler: function ( value ) {
-				if ( value ) {
-					const labels = this.getZObjectChildrenById( this.getArgumentLabels.id );
-					for ( let index = 0; index < labels.length; index++ ) {
-						const labelLang = this.getNestedZObjectById( labels[ index ].id, [
-							Constants.Z_MONOLINGUALSTRING_LANGUAGE,
-							Constants.Z_REFERENCE_ID
-						] );
-						if ( labelLang.value === value ) {
-							return;
-						}
-					}
-					// Add monoliguanl string to zobject if it does not already exist
-					this.changeType( {
-						type: Constants.Z_MONOLINGUALSTRING,
-						lang: value,
-						id: this.getArgumentLabels.id,
-						append: true
+		/**
+		 * Persist the new input label in the globally stored object
+		 *
+		 * @param {Object} event
+		 */
+		persistInputLabel: function ( event ) {
+			const value = event.target.value;
+			if ( this.inputLabelRow ) {
+				if ( value === '' ) {
+					this.removeItemFromTypedList( { rowId: this.inputLabelRow.id } );
+				} else {
+					this.setValueByRowIdAndPath( {
+						rowId: this.inputLabelRow.id,
+						keyPath: [
+							Constants.Z_MONOLINGUALSTRING_VALUE,
+							Constants.Z_STRING_VALUE
+						],
+						value
 					} );
 				}
+			} else {
+				// If this.inputLabelRow is undefined, there's no monolingual string
+				// for the given language, so we create a new monolingual string
+				// with the new value and append to the parent list.
+				const parentRow = this.getRowByKeyPath( [
+					Constants.Z_ARGUMENT_LABEL,
+					Constants.Z_MULTILINGUALSTRING_VALUE
+				], this.rowId );
+				this.changeType( {
+					id: parentRow.id,
+					type: Constants.Z_MONOLINGUALSTRING,
+					lang: this.zLanguage,
+					value,
+					append: true
+				} );
 			}
+			this.$emit( 'update-argument-label' );
+		},
+		/**
+		 * Persist the new input type in the global store
+		 *
+		 * @param {string|null} value
+		 */
+		persistInputType: function ( value ) {
+			this.setValueByRowIdAndPath( {
+				rowId: this.inputTypeRowId,
+				keyPath: [ Constants.Z_REFERENCE_ID ],
+				value: value || ''
+			} );
+		},
+		/**
+		 * On mobile, toggles active/inactive state of the
+		 * input field group.
+		 */
+		toggleActive: function () {
+			const index = this.isActive ? -1 : this.index;
+			this.$emit( 'active-input', index );
 		}
-	}
+	} )
 };
 </script>
 

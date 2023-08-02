@@ -10,53 +10,23 @@ require( '@testing-library/jest-dom' );
 
 const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
-	{ clickLookupResult } = require( './helpers/interactionHelpers.js' ),
+	{ lookupSearchAndSelect, textInputChange } = require( './helpers/interactionHelpers.js' ),
 	{ runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
-	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
-	ApiMock = require( './helpers/apiMock.js' ),
-	apiGetMock = require( './helpers/apiGetMock.js' );
-
-const lookupZObjectLanguageLabels =
-	new ApiMock( apiGetMock.languageLabelsRequest, apiGetMock.labelsResponse, apiGetMock.labelsMatcher );
-const initializeRootZObject =
-	new ApiMock( apiGetMock.loadZObjectsRequest, apiGetMock.loadZObjectsResponse, apiGetMock.loadZObjectsMatcher );
+	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' );
 
 describe( 'WikiLambda frontend, function-editor view, on a new function', () => {
+
 	beforeEach( () => {
-		runSetup();
-
-		mw.Api = jest.fn( () => {
-			return {
-				get: apiGetMock.createMockApi( [
-					lookupZObjectLanguageLabels,
-					initializeRootZObject
-				] )
-			};
-		} );
-
-		const queryParams = { zid: Constants.Z_FUNCTION };
-		window.mw.Uri = jest.fn( () => {
-			return {
-				query: queryParams,
-				path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( queryParams )
-			};
-		} );
-
-		global.mw.config.get = ( endpoint ) => {
-			switch ( endpoint ) {
-				case 'wgWikiLambda':
-					return {
-						vieMode: false,
-						createNewPage: true,
-						zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
-						zlang: 'en'
-					};
-				default:
-					return {};
+		const pageConfig = {
+			createNewPage: true,
+			title: Constants.PATHS.CREATE_OBJECT_TITLE,
+			queryParams: {
+				zid: Constants.Z_FUNCTION
 			}
 		};
+		runSetup( pageConfig );
 	} );
 
 	afterEach( () => {
@@ -75,13 +45,19 @@ describe( 'WikiLambda frontend, function-editor view, on a new function', () => 
 	} );
 
 	it( 'allows cancelling after changes', async () => {
-		const { getByText, findByRole, findByLabelText } =
-			render( App, { global: { plugins: [ store ] } } );
+		const {
+			findByRole,
+			findByTestId,
+			getByText
+		} = render( App, { global: { plugins: [ store ] } } );
 
 		// ACT: Select Chinese as the natural language.
-		const languageSelector = await findByLabelText( 'Language' );
-		await fireEvent.update( within( languageSelector ).getByRole( 'combobox' ), 'Chin' );
-		await clickLookupResult( languageSelector, 'Chinese' );
+		const languageSelector = await findByTestId( 'function-editor-language-selector' );
+		await lookupSearchAndSelect( languageSelector, 'Chin', 'Chinese' );
+
+		// ACT: Change first language name
+		const nameInput = await findByTestId( 'function-editor-name-input' );
+		await textInputChange( nameInput, 'Edited name, in Chinese' );
 
 		// ACT: Click cancel button.
 		await fireEvent.click( getByText( 'Cancel' ) );

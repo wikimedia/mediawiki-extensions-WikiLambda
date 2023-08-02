@@ -47,7 +47,8 @@ const runSetup = function () {
 				initializeRootZObject,
 				fetchZImplementations,
 				fetchZTesters,
-				performTest ] )
+				performTest
+			] )
 		};
 	} );
 
@@ -59,14 +60,16 @@ const runSetup = function () {
 			}
 		};
 	} );
+
 	global.mw.config.get = ( endpoint ) => {
 		switch ( endpoint ) {
 			case 'wgWikiLambda':
 				return {
-					zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
-					zId: functionZid,
 					createNewPage: false,
-					viewmode: true
+					viewmode: true,
+					zId: functionZid,
+					zlang: 'en',
+					zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH
 				};
 			case 'wgExtensionAssetsPath':
 				return '/w/extensions';

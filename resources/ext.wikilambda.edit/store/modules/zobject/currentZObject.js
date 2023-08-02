@@ -6,86 +6,6 @@
  */
 var Constants = require( '../../../Constants.js' );
 
-/**
- * Adds languages found in the zObject name labels to the given langsList.
- *
- * @param {Object} getters
- * @param {Array} langsList
- */
-function addLanguagesFromNameLabels( getters, langsList ) {
-	var zObjectLabels = getters.getZObjectAsJson[ Constants.Z_PERSISTENTOBJECT_LABEL ];
-	// Don't break if the labels are set to {}
-	if ( zObjectLabels[ Constants.Z_MULTILINGUALSTRING_VALUE ] ) {
-		zObjectLabels[ Constants.Z_MULTILINGUALSTRING_VALUE ].forEach( function ( label ) {
-			if ( label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] ) {
-				var lang = label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ];
-				if ( !langsList.includes( lang ) ) {
-					langsList.push(
-						label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ]
-					);
-				}
-			}
-		} );
-	}
-}
-
-/**
- * Adds languages found in the zObject argument labels to the given langsList.
- *
- * @param {Object} getters
- * @param {Array} langsList
- */
-function addLanguagesFromArgumentLabels( getters, langsList ) {
-	if ( getters.getZObjectAsJson[ Constants.Z_PERSISTENTOBJECT_VALUE ] ) {
-		var zArguments =
-		getters.getZObjectAsJson[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_ARGUMENTS ];
-		if ( zArguments ) {
-			zArguments.forEach( function ( arg ) {
-				// Don't break if the labels are set to {}
-				if ( arg[ Constants.Z_ARGUMENT_LABEL ] &&
-						arg[ Constants.Z_ARGUMENT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ] ) {
-					arg[ Constants.Z_ARGUMENT_LABEL ][ Constants.Z_MULTILINGUALSTRING_VALUE ].forEach(
-						function ( label ) {
-							if ( label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] ) {
-								var lang =
-								label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ];
-								if ( !langsList.includes( lang ) ) {
-									langsList.push(
-										label[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ]
-									);
-								}
-							}
-						} );
-				}
-			} );
-		}
-	}
-}
-
-/**
- * Adds languages found in the zObject alias name labels to the given langsList.
- *
- * @param {Object} getters
- * @param {Array} langsList
- */
-function addLanguagesFromAliasLabels( getters, langsList ) {
-	var zAliases = getters.getZObjectAsJson[ Constants.Z_PERSISTENTOBJECT_ALIASES ];
-
-	// Don't break if the labels are set to {}
-	if ( zAliases[ Constants.Z_MULTILINGUALSTRINGSET_VALUE ] ) {
-		zAliases[ Constants.Z_MULTILINGUALSTRINGSET_VALUE ].forEach( function ( alias ) {
-			if ( alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ] ) {
-				var lang = alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ][ Constants.Z_REFERENCE_ID ];
-				if ( !langsList.includes( lang ) ) {
-					langsList.push(
-						alias[ Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE ][ Constants.Z_REFERENCE_ID ]
-					);
-				}
-			}
-		} );
-	}
-}
-
 module.exports = exports = {
 	state: {
 		currentZid: Constants.NEW_ZID_PLACEHOLDER,
@@ -325,24 +245,6 @@ module.exports = exports = {
 			return zobject &&
 				zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
 					Constants.Z_FUNCTION_IMPLEMENTATIONS ].length > 0;
-		},
-		currentZObjectLanguages: function ( state, getters ) {
-			var languageList = [];
-
-			if ( !getters.getZObjectAsJson ) {
-				return;
-			}
-
-			addLanguagesFromNameLabels( getters, languageList );
-			addLanguagesFromArgumentLabels( getters, languageList );
-			addLanguagesFromAliasLabels( getters, languageList );
-
-			return languageList.map( function ( languageCode ) {
-				return {
-					Z1K1: Constants.Z_REFERENCE,
-					[ Constants.Z_REFERENCE_ID ]: languageCode
-				};
-			} ) || [];
 		}
 	}
 };

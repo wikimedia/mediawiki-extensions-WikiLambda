@@ -7,7 +7,6 @@
 'use strict';
 
 var argumentsModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/arguments.js' ),
-	mockZArguments = { Z10024K1: { labels: [ { key: 'word: ', label: 'word', lang: 'Z1002' } ], zid: 'Z10024K1', type: 'String' } },
 	state,
 	context;
 
@@ -21,19 +20,6 @@ describe( 'arguments Vuex module', function () {
 			getters: {},
 			state: state,
 			rootGetters: [ 'en' ]
-		} );
-	} );
-
-	describe( 'Getters', function () {
-
-		describe( 'getZarguments', function () {
-			it( 'Returns empty object if no zArguments are defined in the state', function () {
-				expect( argumentsModule.getters.getZarguments( state ) ).toEqual( {} );
-			} );
-			it( 'Returns the zArguments defined in the state', function () {
-				state.zArguments = mockZArguments;
-				expect( argumentsModule.getters.getZarguments( state ) ).toEqual( mockZArguments );
-			} );
 		} );
 	} );
 

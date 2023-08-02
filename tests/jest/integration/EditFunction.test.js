@@ -10,76 +10,30 @@ require( '@testing-library/jest-dom' );
 
 const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
-	{ clickLookupResult } = require( './helpers/interactionHelpers.js' ),
+	{ lookupSearchAndSelect, textInputChange, chipInputAddChip } = require( './helpers/interactionHelpers.js' ),
 	{ runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
-	apiGetMock = require( './helpers/apiGetMock.js' ),
-	ApiMock = require( './helpers/apiMock.js' ),
 	existingFunctionFromApi = require( './objects/existingFunctionFromApi.js' ),
 	expectedEditedFunctionPostedToApi = require( './objects/expectedEditedFunctionPostedToApi.js' );
 
 const functionZid = existingFunctionFromApi[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ];
 
-const lookupZObjectTypeLabels =
-	new ApiMock( apiGetMock.typeLabelsRequest, apiGetMock.labelsResponse, apiGetMock.labelsMatcher );
-const lookupZObjectLanguageLabels =
-	new ApiMock( apiGetMock.languageLabelsRequest, apiGetMock.labelsResponse, apiGetMock.labelsMatcher );
-const initializeRootZObject =
-	new ApiMock( apiGetMock.loadZObjectsRequest, apiGetMock.loadZObjectsResponse, apiGetMock.loadZObjectsMatcher );
-const fetchZImplementations =
-	new ApiMock( apiGetMock.fetchZImplementationsRequest,
-		apiGetMock.zObjectSearchResponse, apiGetMock.zObjectSearchMatcher );
-const fetchZTesters =
-	new ApiMock( apiGetMock.fetchZTestersRequest, apiGetMock.zObjectSearchResponse, apiGetMock.zObjectSearchMatcher );
-const performTest =
-	new ApiMock( apiGetMock.performTestRequest, apiGetMock.performTestResponse, apiGetMock.performTestMatcher );
-
 describe( 'WikiLambda frontend, editing an existing function, on function-editor view', () => {
 	let apiPostWithEditTokenMock;
 
 	beforeEach( () => {
-		const setupResult = runSetup();
-		apiPostWithEditTokenMock = setupResult.apiPostWithEditTokenMock;
-
-		mw.Api = jest.fn( () => {
-			return {
-				postWithEditToken: apiPostWithEditTokenMock,
-				get: apiGetMock.createMockApi( [
-					lookupZObjectLanguageLabels,
-					lookupZObjectTypeLabels,
-					initializeRootZObject,
-					fetchZImplementations,
-					fetchZTesters,
-					performTest ] )
-			};
-		} );
-
-		window.mw.Uri = jest.fn( () => {
-			return {
-				query: {
-					action: Constants.ACTIONS.EDIT,
-					title: functionZid
-				},
-				path: new window.mw.Title( functionZid ).getUrl( {
-					title: functionZid, action: Constants.ACTIONS.EDIT
-				} )
-			};
-		} );
-
-		global.mw.config.get = ( endpoint ) => {
-			switch ( endpoint ) {
-				case 'wgWikiLambda':
-					return {
-						zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
-						zlang: 'en',
-						zId: functionZid
-					};
-				default:
-					return {};
+		const pageConfig = {
+			createNewPage: false,
+			title: functionZid,
+			queryParams: {
+				action: Constants.ACTIONS.EDIT,
+				title: functionZid
 			}
 		};
+		const setupResult = runSetup( pageConfig );
+		apiPostWithEditTokenMock = setupResult.apiPostWithEditTokenMock;
 	} );
 
 	afterEach( () => {
@@ -87,14 +41,25 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 	} );
 
 	it( 'allows editing the function, making use of most important features', async () => {
-		const { findByRole, getAllByLabelText, getByText, findAllByRole, findAllByTestId } =
-			render( App, { global: { plugins: [ store ] } } );
+		const {
+			findByRole,
+			findAllByTestId,
+			getByText
+		} = render( App, { global: { plugins: [ store ] } } );
+
+		// ACT: Get the language blocks
+		let languageBlocks = await findAllByTestId( 'function-editor-language-block' );
+
+		// ASSERT: There are two language blocks
+		expect( languageBlocks.length ).toBe( 2 );
+		const chineseLanguageBlock = languageBlocks[ 0 ];
 
 		// ACT: Change the first argument type.
-		const chineseArgumentsArea = ( await findAllByRole( 'inputs-container' ) )[ 0 ];
-		const firstArgumentTypeInput = within( chineseArgumentsArea ).getAllByDisplayValue( 'String' )[ 0 ];
-		await fireEvent.update( firstArgumentTypeInput, 'Str' );
-		await clickLookupResult( chineseArgumentsArea, 'Monolingual stringset' );
+		const chineseFirstArgumentType = within( chineseLanguageBlock ).getAllByTestId( 'function-editor-input-item-type' )[ 0 ];
+		await lookupSearchAndSelect( chineseFirstArgumentType, 'Str', 'Monolingual stringset' );
+
+		// ASSERT: Correct value is selected
+		expect( within( chineseFirstArgumentType ).getByRole( 'combobox' ).value ).toBe( 'Monolingual stringset' );
 
 		// ACT: Click publish button.
 		await fireEvent.click( getByText( 'Publish' ) );
@@ -107,51 +72,49 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		await fireEvent.click( within( publishDialog ).getByText( 'Cancel' ) );
 
 		// ACT: Change the first argument type back to the original type.
-		await fireEvent.update( firstArgumentTypeInput, 'Str' );
-		await clickLookupResult( chineseArgumentsArea, 'String' );
+		await lookupSearchAndSelect( chineseFirstArgumentType, 'Str', 'String' );
 
 		// ACT: Edit the name of the function in Chinese (the first language).
-		await fireEvent.update( getAllByLabelText( 'Name', { exact: false } )[ 0 ], 'edited function name, in Chinese' );
+		const chineseNameBlock = within( chineseLanguageBlock ).getByTestId( 'function-editor-name-input' );
+		await textInputChange( chineseNameBlock, 'edited function name, in Chinese' );
 
 		// ACT: Add a second alias for the function in Chinese.
-		const chineseAliasInput = getAllByLabelText( 'New alias' )[ 0 ];
-		await fireEvent.update( chineseAliasInput, 'second function alias, in Chinese' );
-		await fireEvent.keyDown( chineseAliasInput, { key: 'enter' } );
+		const chineseAliasInput = within( chineseLanguageBlock ).getByTestId( 'function-editor-alias-input' );
+		await chipInputAddChip( chineseAliasInput, 'second function alias, in Chinese' );
 
 		// ACT: Add a label for the first argument in Chinese.
-		await fireEvent.update(
-			within( chineseArgumentsArea ).getAllByPlaceholderText( 'E.g. Celsius' )[ 0 ],
-			'newly added first argument label, in Chinese' );
+		const chineseFirstArgumentLabel = within( chineseLanguageBlock ).getAllByTestId( 'function-editor-input-item-label' )[ 0 ];
+		await textInputChange( chineseFirstArgumentLabel, 'newly added first argument label, in Chinese' );
 
 		// ACT: Edit the label for the first argument in Afrikaans (the second language).
-		const afrikaansArgumentsArea = ( await findAllByRole( 'inputs-container' ) )[ 1 ];
-		await fireEvent.update(
-			within( afrikaansArgumentsArea ).getAllByPlaceholderText( 'E.g. Celsius' )[ 0 ],
-			'edited first argument label, in Afrikaans' );
+		const afrikaansLanguageBlock = languageBlocks[ 1 ];
+		const afrikaansFirstArgumentLabel = within( afrikaansLanguageBlock ).getAllByTestId( 'function-editor-input-item-label' )[ 0 ];
+		await textInputChange( afrikaansFirstArgumentLabel, 'edited first argument label, in Afrikaans' );
 
 		// ACT: Click "Add labels in another language".
 		await fireEvent.click( getByText( 'Add labels in another language' ) );
 
 		// ASSERT: A new language block is created
-		const functionDefinitionLangBlocks = await findAllByTestId( 'function-editor-definition-language-block' );
-		expect( functionDefinitionLangBlocks.length ).toBe( 3 );
-		const thirdBlock = functionDefinitionLangBlocks[ 2 ];
+		languageBlocks = await findAllByTestId( 'function-editor-language-block' );
+		expect( languageBlocks.length ).toBe( 3 );
+		let frenchBlock = languageBlocks[ 2 ];
 
-		// ACT: Select French as a third natural language.
-		const thirdLanguageSelector = within( thirdBlock ).getByTestId( 'function-editor-language-selector' );
-		await fireEvent.update( within( thirdLanguageSelector ).getByRole( 'combobox' ), 'Fren' );
-		await clickLookupResult( thirdLanguageSelector, 'French' );
+		// ACT: Select French as a french natural language.
+		const frenchLanguageSelector = await within( frenchBlock ).findByTestId( 'function-editor-language-selector' );
+		await lookupSearchAndSelect( frenchLanguageSelector, 'Fren', 'French' );
+
+		// ACT: Refresh language block
+		// (becaue of :key, Vue re-renders the component when selecting a language)
+		languageBlocks = await findAllByTestId( 'function-editor-language-block' );
+		frenchBlock = languageBlocks[ 2 ];
 
 		// ACT: Enter a name in French.
-		const thirdNameInputBlock = within( thirdBlock ).getByTestId( 'function-editor-name-input' );
-		const thirdNameInput = within( thirdNameInputBlock ).getByRole( 'textbox' );
-		await fireEvent.update( thirdNameInput, 'function name, in French' );
+		const frenchNameInputBlock = await within( frenchBlock ).findByTestId( 'function-editor-name-input' );
+		await textInputChange( frenchNameInputBlock, 'function name, in French' );
 
 		// ACT: Enter an alias in French.
-		const thirdAliasBlock = within( thirdBlock ).getByTestId( 'function-editor-alias-input' );
-		const thirdAliasInput = await within( thirdAliasBlock ).getByRole( 'textbox' );
-		await fireEvent.update( thirdAliasInput, 'function alias, in French' );
-		await fireEvent.keyDown( thirdAliasInput, { key: 'enter' } );
+		const frenchAliasBlock = await within( frenchBlock ).findByTestId( 'function-editor-alias-input' );
+		await chipInputAddChip( frenchAliasBlock, 'function alias, in French' );
 
 		// TODO: Remove settimeout and use jest.useFakeTimers instead
 		setTimeout( async () => {

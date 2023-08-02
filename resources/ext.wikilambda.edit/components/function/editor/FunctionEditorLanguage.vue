@@ -5,35 +5,31 @@
 	@license MIT
 -->
 <template>
-	<div
-		class="ext-wikilambda-language-selector"
-		data-testid="function-editor-language-selector">
-		<div class="ext-wikilambda-language-selector__label">
+	<div class="ext-wikilambda-function-language-selector">
+		<div class="ext-wikilambda-function-language-selector__label">
 			<label
-				id="ext-wikilambda-language-selector__add-language-label"
-				class="ext-wikilambda-app__text-regular">
-				{{ $i18n( 'wikilambda-languagelabel' ).text() }}
+				id="ext-wikilambda-function-language-selector__add-language-label"
+				class="ext-wikilambda-app__text-regular"
+			>
+				{{ languageLabel }}
 			</label>
 		</div>
 		<wl-z-object-selector
-			ref="languageSelector"
-			class="ext-wikilambda-language-selector__add-language"
-			aria-labelledby="ext-wikilambda-language-selector__add-language-label"
-			:exclude-zids="currentZObjectLanguages"
+			class="ext-wikilambda-function-language-selector__add-language"
+			aria-labelledby="ext-wikilambda-function-language-selector__add-language-label"
+			:disabled="hasLanguage"
+			:exclude-zids="functionLanguages"
 			:selected-zid="zLanguage"
-			:type="Constants.Z_NATURAL_LANGUAGE"
-			@input="addNewLang"
-			@focus-out="clearLookupToFallback"
+			:type="naturalLanguageType"
+			@input="addNewLanguage"
 		></wl-z-object-selector>
 	</div>
 </template>
 
 <script>
-var Constants = require( '../../../Constants.js' ),
+const Constants = require( '../../../Constants.js' ),
 	ZObjectSelector = require( '../../ZObjectSelector.vue' ),
-	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions,
-	mapMutations = require( 'vuex' ).mapMutations;
+	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
@@ -48,125 +44,61 @@ module.exports = exports = {
 		}
 	},
 	emits: [ 'change' ],
+	data: function () {
+		return {
+			naturalLanguageType: Constants.Z_NATURAL_LANGUAGE
+		};
+	},
 	computed: $.extend( mapGetters( [
-		'currentZObjectLanguages',
-		'getNestedZObjectById',
-		'getAllItemsFromListById'
+		'getZFunctionLanguages'
 	] ), {
-		Constants: function () {
-			return Constants;
-		}
-	} ),
-	methods: $.extend( {}, mapActions( [
-		'changeType',
-		'removeItemFromTypedList'
-	] ),
-	mapMutations( [
-		'setActiveLangSelection'
-	] ),
-	{
-		setLocalZLanguage: function ( lang ) {
-			this.resetPreviousLangForSelection( this.zLanguage );
-			this.setActiveLangSelection( lang );
-			this.$emit( 'change', lang );
-		},
-		addNewLang: function ( zId ) {
-			if ( !zId || this.isSelectedLang( zId ) ) {
-				return;
-			}
-
-			const zLabelParentId = this.getNestedZObjectById( 0, [
-				Constants.Z_PERSISTENTOBJECT_LABEL,
-				Constants.Z_MULTILINGUALSTRING_VALUE
-			] ).id;
-
-			this.changeType( {
-				type: Constants.Z_MONOLINGUALSTRING,
-				lang: zId,
-				id: zLabelParentId,
-				append: true
-			} );
-
-			this.setLocalZLanguage( zId );
-		},
-		isSelectedLang: function ( zId ) {
-			return this.currentZObjectLanguages.some( ( zObjLang ) =>
-				zObjLang[ Constants.Z_REFERENCE_ID ] === zId );
+		/**
+		 * Returns the available languages for the function definition,
+		 * which includes Name, Description, Aliases and Input labels.
+		 *
+		 * @return {Array}
+		 */
+		functionLanguages: function () {
+			return this.getZFunctionLanguages( this.rowId );
 		},
 		/**
-		 * Returns the internal Id that identifies the
-		 * Monolingual String object for a given language Zid
+		 * Returns the label for the language field
 		 *
-		 * @param {string} language
 		 * @return {string}
 		 */
-		getLanguageLabelId: function ( language ) {
-			const labels = this.getAllItemsFromListById(
-				this.getNestedZObjectById( 0, [
-					Constants.Z_PERSISTENTOBJECT_LABEL,
-					Constants.Z_MULTILINGUALSTRING_VALUE
-				] ).id
-			);
-
-			const labelFound = labels.find( ( label ) => {
-				var labelLang = this.getNestedZObjectById( label.id, [
-					Constants.Z_MONOLINGUALSTRING_LANGUAGE,
-					Constants.Z_REFERENCE_ID
-				] );
-
-				return labelLang.value === language;
-			} );
-			return labelFound && labelFound.id;
+		languageLabel: function () {
+			// TODO (T335583): Replace i18n message with key label
+			// return this.getLabel( Constants.Z_MONOLINGUALSTRING_LANGUAGE );
+			return this.$i18n( 'wikilambda-languagelabel' ).text();
 		},
-		resetArgumentListLabelsForLang: function ( language ) {
-			var argumentsList = this.getAllItemsFromListById(
-				this.getNestedZObjectById( 0, [
-					Constants.Z_PERSISTENTOBJECT_VALUE,
-					Constants.Z_FUNCTION_ARGUMENTS
-				] ).id );
-
-			argumentsList.forEach( function ( argument ) {
-				var argumentLabelArrayId = this.getNestedZObjectById( argument.id, [
-					Constants.Z_ARGUMENT_LABEL,
-					Constants.Z_MULTILINGUALSTRING_VALUE ] ).id;
-				var argumentLabelArray = this.getAllItemsFromListById( argumentLabelArrayId );
-
-				argumentLabelArray.forEach( function ( label ) {
-					var labelLang = this.getNestedZObjectById( label.id, [
-						Constants.Z_MONOLINGUALSTRING_LANGUAGE,
-						Constants.Z_REFERENCE_ID
-					] );
-
-					if ( labelLang.value === language ) {
-						this.removeItemFromTypedList( { rowId: label.id } );
-					}
-				}.bind( this ) );
-			}.bind( this ) );
-		},
-		resetNameLabelForLang: function ( zId ) {
-			var labelId = this.getLanguageLabelId( zId );
-			this.removeItemFromTypedList( { rowId: labelId } );
-		},
-		resetPreviousLangForSelection: function ( zId ) {
-			this.resetArgumentListLabelsForLang( zId );
-			this.resetNameLabelForLang( zId );
-		},
-		clearLookupToFallback: function () {
-			this.$refs.languageSelector.clearResults();
+		/**
+		 * Whether the language selector has a value or is empty
+		 *
+		 * @return {boolean}
+		 */
+		hasLanguage: function () {
+			return !!this.zLanguage;
 		}
-	}, {
-		isSelectedLang: function ( zId ) {
-			return this.currentZObjectLanguages.some( ( zObjLang ) => zObjLang[ Constants.Z_REFERENCE_ID ] === zId );
+	} ),
+	methods: {
+		/**
+		 * Emits a change event when the selector is set to a new language.
+		 *
+		 * @param {string} lang
+		 */
+		addNewLanguage: function ( lang ) {
+			this.$emit( 'change', lang );
 		}
-	} )
+	}
 };
 </script>
 
 <style lang="less">
 @import '../../../ext.wikilambda.edit.less';
 
-.ext-wikilambda-language-selector {
+.ext-wikilambda-function-language-selector {
 	display: flex;
+	margin-bottom: @spacing-150;
 
 	&__label {
 		display: flex;

@@ -12,8 +12,8 @@
 	>
 		<div
 			class="ext-wikilambda-chip_text"
+			role="group"
 			:class="hover"
-			role="textbox"
 			:contenteditable="!readonly"
 			@keydown.enter="handleEnter( $event )"
 		>
@@ -22,6 +22,7 @@
 		<div
 			v-if="editableContainer"
 			class="ext-wikilambda-chip_icon"
+			role="button"
 			:aria-label="$i18n( 'wikilambda-chip-remove' ).text()"
 			@click="handleRemove"
 		>

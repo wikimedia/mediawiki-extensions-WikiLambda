@@ -36,7 +36,7 @@
 				data-testid="z-object-selector-lookup"
 				@update:selected="onSelect"
 				@input="onInput"
-				@focusout="onFocusOut"
+				@blur="onFocusOut"
 				@focus="onFocus"
 			>
 				<template #no-results>
@@ -387,11 +387,8 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Clears the ZObjectSelector field value and menu items.
-			 * This is used from the components:
-			 * * ZLabelsBlock (TODO (T324242): soon to be removed)
-			 * * main-types/ZMultilingualString (TODO (T324242): soon to be removed)
-			 * * FunctionEditorLanguage
+			 * Clears the ZObjectSelector lookup results.
+			 * This doesn't clear the component TextInput.
 			 */
 			clearResults: function () {
 				this.lookupResults = [];

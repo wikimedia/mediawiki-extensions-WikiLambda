@@ -15,44 +15,10 @@ module.exports = exports = {
 		 */
 		zArguments: {}
 	},
-	getters: {
-		getZarguments: function ( state ) {
-			return state.zArguments;
-		},
-		// TODO(T299031): cleanup this code to be more performant
-		/**
-		 * Returns an array of objects with key and type of the available arguments.
-		 *
-		 * @param {Object} state
-		 * @param {Object} getters
-		 * @param {Object} rootState
-		 * @param {Object} rootGetters
-		 * @return {Array}
-		 */
-		getZargumentsArray: function ( state, getters, rootState, rootGetters ) {
-			/**
-			 * @param {string} zlang
-			 * @return {Array}
-			 */
-			return function ( zlang ) {
-				var lang = zlang || rootGetters.getCurrentZLanguage;
-				return Object.keys( getters.getZarguments )
-					.map( function ( key ) {
-						return {
-							zid: getters.getZarguments[ key ].zid,
-							type: getters.getZarguments[ key ].type,
-							label: ( getters.getZarguments[ key ].labels.filter( function ( label ) {
-								return label.lang === lang;
-							} )[ 0 ] || { label: '' } ).label
-						};
-					} );
-			};
-		}
-		// TODO(T299031): cleanup this code to be more performant
-	},
 	mutations: {
 		/**
 		 * Add a specific argument to the zArgument object.
+		 * FIXME remove
 		 *
 		 * @param {Object} state
 		 * @param {Object} payload
@@ -63,6 +29,7 @@ module.exports = exports = {
 		},
 		/**
 		 * Reset the zArguments object in the state
+		 * FIXME remove
 		 *
 		 * @param {Object} state
 		 */
@@ -74,6 +41,7 @@ module.exports = exports = {
 		/**
 		 * reset and repopulate the zArguments in the store. This method also
 		 * fetches any missing types.
+		 * FIXME remove
 		 *
 		 * @param {Object} context
 		 * @param {Object} zFunctionId

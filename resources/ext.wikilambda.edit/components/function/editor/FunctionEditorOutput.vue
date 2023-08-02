@@ -10,8 +10,9 @@
 			<div class="ext-wikilambda-function-definition-output__label-block">
 				<label
 					id="ext-wikilambda-function-definition-output__label-label"
-					class="ext-wikilambda-app__text-regular">
-					{{ $i18n( 'wikilambda-function-definition-output-label' ).text() }}
+					class="ext-wikilambda-app__text-regular"
+				>
+					{{ outputLabel }}
 				</label>
 				<wl-tooltip
 					v-if="tooltipMessage && !canEdit"
@@ -25,34 +26,32 @@
 				</wl-tooltip>
 			</div>
 			<span class="ext-wikilambda-function-definition-output__description">
-				{{ $i18n( 'wikilambda-function-definition-output-description' ).text() }}
-				<a :href="getTypeUrl()"> {{ $i18n( 'wikilambda-function-definition-output-types' ).text() }} </a>
+				{{ outputFieldDescription }}
+				<a :href="listObjectsUrl" target="_blank">{{ listObjectsLink }}</a>
 			</span>
 		</div>
 		<div class="ext-wikilambda-function-definition-output__body">
 			<span class="ext-wikilambda-function-definition-output__body__entry-text">
-				{{ $i18n( 'wikilambda-function-definition-output-type-label' ).text() }}
+				{{ outputTypeLabel }}
 			</span>
 			<wl-z-object-selector
-				ref="typeSelector"
 				class="
 					ext-wikilambda-function-definition-output__body__entry-field
 					ext-wikilambda-function-definition-output__selector"
 				aria-labelledby="ext-wikilambda-function-definition-output__label-label"
 				:disabled="!canEdit"
-				:placeholder="$i18n( 'wikilambda-function-definition-output-selector' ).text()"
-				:row-id="zReturnTypeId"
-				:selected-zid="zReturnType.value"
-				:type="Constants.Z_TYPE"
-				@input="setReturnType"
-				@focus-out="clearIfUnset"
+				:placeholder="outputFieldPlaceholder"
+				:row-id="outputTypeRowId"
+				:selected-zid="outputType"
+				:type="typeZid"
+				@input="persistOutputType"
 			></wl-z-object-selector>
 		</div>
 	</div>
 </template>
 
 <script>
-var Constants = require( '../../../Constants.js' ),
+const Constants = require( '../../../Constants.js' ),
 	ZObjectSelector = require( '../../ZObjectSelector.vue' ),
 	Tooltip = require( '../../base/Tooltip.vue' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
@@ -68,10 +67,6 @@ module.exports = exports = {
 		'cdx-icon': CdxIcon
 	},
 	props: {
-		zobjectId: {
-			type: Number,
-			default: 0
-		},
 		/**
 		 * if a user has permission to edit a function
 		 */
@@ -95,43 +90,109 @@ module.exports = exports = {
 			default: null
 		}
 	},
+	data: function () {
+		return {
+			typeZid: Constants.Z_TYPE
+		};
+	},
 	computed: $.extend( mapGetters( [
 		'getZLang',
-		'getNestedZObjectById'
+		'getZFunctionOutput',
+		'getZReferenceTerminalValue'
 	] ), {
-		Constants: function () {
-			return Constants;
+		/**
+		 * Returns the row object of the output type
+		 * of the function, or undefined if not found.
+		 *
+		 * @return {Object|undefined}
+		 */
+		outputTypeRow: function () {
+			return this.getZFunctionOutput();
 		},
-		zReturnTypeId: function () {
-			return this.zReturnType.id;
+		/**
+		 * Returns the row id of the output type
+		 * of the function, or undefined if not found.
+		 *
+		 * @return {number|undefined}
+		 */
+		outputTypeRowId: function () {
+			return this.outputTypeRow ? this.outputTypeRow.id : undefined;
 		},
-		zReturnType: function () {
-			return this.getNestedZObjectById( this.zobjectId, [
-				Constants.Z_PERSISTENTOBJECT_VALUE,
-				Constants.Z_FUNCTION_RETURN_TYPE,
-				Constants.Z_REFERENCE_ID
-			] );
+		/**
+		 * Returns the string value of the output type
+		 * of the function, or empty string if undefined.
+		 *
+		 * @return {string}
+		 */
+		outputType: function () {
+			return this.outputTypeRow ? this.getZReferenceTerminalValue( this.outputTypeRow.id ) : '';
+		},
+		/**
+		 * Returns the label for the output field
+		 *
+		 * @return {string}
+		 */
+		outputLabel: function () {
+			// TODO (T335583): Replace i18n message with key label
+			// return this.getLabel( Constants.Z_FUNCTION_RETURN_TYPE );
+			return this.$i18n( 'wikilambda-function-definition-output-label' ).text();
+		},
+		/**
+		 * Returns the title of the "Type" column for the output field
+		 *
+		 * @return {string}
+		 */
+		outputTypeLabel: function () {
+			return this.$i18n( 'wikilambda-function-definition-output-type-label' ).text();
+		},
+		/**
+		 * Returns the description for the output field
+		 *
+		 * @return {string}
+		 */
+		outputFieldDescription: function () {
+			return this.$i18n( 'wikilambda-function-definition-output-description' ).text();
+		},
+		/**
+		 * Returns the placeholder for the output field
+		 *
+		 * @return {string}
+		 */
+		outputFieldPlaceholder: function () {
+			return this.$i18n( 'wikilambda-function-definition-output-selector' ).text();
+		},
+		/**
+		 * Returns the URL to the Special page List Object by Type
+		 *
+		 * @return {string}
+		 */
+		listObjectsUrl: function () {
+			return new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE )
+				.getUrl( { uselang: this.getZLang } );
+		},
+		/**
+		 * Returns the text for the link to the Special page List Object by Type
+		 *
+		 * @return {string}
+		 */
+		listObjectsLink: function () {
+			return this.$i18n( 'wikilambda-function-definition-input-types' ).text();
 		}
 	} ),
 	methods: $.extend( mapActions( [
-		'setZObjectValue'
+		'setValueByRowIdAndPath'
 	] ), {
-		setReturnType: function ( type ) {
-			var payload = {
-				id: this.zReturnTypeId,
-				value: type
-			};
-			this.setZObjectValue( payload );
-		},
-		clearIfUnset: function () {
-			if ( !this.zReturnType.value ) {
-				this.$refs.typeSelector.clearResults();
-			}
-		},
-		getTypeUrl: function () {
-			return new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE ).getUrl(
-				{ uselang: this.getZLang }
-			);
+		/**
+		 * Persist the new output type in the global store
+		 *
+		 * @param {string|null} value
+		 */
+		persistOutputType: function ( value ) {
+			this.setValueByRowIdAndPath( {
+				rowId: this.outputTypeRowId,
+				keyPath: [ Constants.Z_REFERENCE_ID ],
+				value: value || ''
+			} );
 		}
 	} )
 };

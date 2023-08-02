@@ -14,6 +14,7 @@ var fs = require( 'fs' ),
 	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
 	errorModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/errors.js' ),
 	zKeyModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zKeys.js' ),
+	zFunctionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zFunction.js' ),
 	mockApiZkeys = require( '../../fixtures/mocks.js' ).mockApiZkeys,
 	zobject = {
 		Z1K1: 'Z2',
@@ -186,34 +187,18 @@ describe( 'zobject Vuex module', function () {
 				} );
 			} );
 
-			describe( 'currentZObjectLanguages', () => {
-				it( 'Returns all languages found across name labels, argument labels and alias labels without any duplicates', () => {
-					getters = {
-						getZObjectAsJson: JSON.parse( fs.readFileSync( path.join( __dirname, './zobject/zFunctionWithMultipleLanguages.json' ) ) ),
-						getZObjectAsJsonById: zobjectModule.getters.getZObjectAsJsonById( state )
-					};
-
-					const result = [ { [ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE, [ Constants.Z_REFERENCE_ID ]: 'Z1002' },
-						{ [ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE, [ Constants.Z_REFERENCE_ID ]: 'Z1004' },
-						{ [ Constants.Z_OBJECT_TYPE ]: Constants.Z_REFERENCE, [ Constants.Z_REFERENCE_ID ]: 'Z1005' } ];
-
-					expect( currentZObject.getters.currentZObjectLanguages( state, getters ) )
-						.toEqual( result );
-				} );
-			} );
-
 			describe( 'currentZFunctionInvalidInputs', () => {
 				beforeEach( () => {
 					state = { zobject: [] };
 					getters = {};
 					getters.getRowById = zobjectModule.getters.getRowById( state, getters );
 					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
-					getters.getZFunctionInputs = zobjectModule.getters.getZFunctionInputs( state, getters );
 					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
 					getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
 					getters.getZStringTerminalValue = zobjectModule.getters.getZStringTerminalValue( state, getters );
 					getters.getZMonolingualTextValue = zobjectModule.getters.getZMonolingualTextValue( state, getters );
 					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+					getters.getZFunctionInputs = zFunctionModule.getters.getZFunctionInputs( state, getters );
 				} );
 
 				it( 'returns empty array when no inputs', () => {
@@ -983,95 +968,6 @@ describe( 'zobject Vuex module', function () {
 			} );
 		} );
 
-		describe( 'getZFunctionInputs', () => {
-			var getters;
-			beforeEach( function () {
-				getters = {};
-				getters.getRowById = zobjectModule.getters.getRowById( state );
-				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
-				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
-			} );
-
-			it( 'returns empty list when row is undefined', () => {
-				state.zobject = [];
-				const rowId = undefined;
-				const expected = [];
-				expect( zobjectModule.getters.getZFunctionInputs( state, getters )( rowId ) )
-					.toEqual( expected );
-			} );
-
-			it( 'returns empty list when row does not exist', () => {
-				state.zobject = [];
-				const rowId = 1;
-				const expected = [];
-				expect( zobjectModule.getters.getZFunctionInputs( state, getters )( rowId ) )
-					.toEqual( expected );
-			} );
-
-			it( 'returns empty array when no inputs', () => {
-				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17' ] } } );
-				const rowId = 0;
-				const inputs = zobjectModule.getters.getZFunctionInputs( state, getters )( rowId );
-				expect( inputs ).toHaveLength( 0 );
-			} );
-
-			it( 'returns one function input row', () => {
-				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
-					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: '', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
-				] } } );
-				const rowId = 0;
-				const inputs = zobjectModule.getters.getZFunctionInputs( state, getters )( rowId );
-				expect( inputs ).toHaveLength( 1 );
-				expect( inputs[ 0 ].key ).toEqual( '1' );
-			} );
-
-			it( 'returns two function input rows', () => {
-				state.zobject = zobjectToRows( { Z2K2: { Z8K1: [ 'Z17',
-					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: '', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
-					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: '', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
-				] } } );
-				const rowId = 0;
-				const inputs = zobjectModule.getters.getZFunctionInputs( state, getters )( rowId );
-				expect( inputs ).toHaveLength( 2 );
-				expect( inputs[ 0 ].key ).toEqual( '1' );
-				expect( inputs[ 1 ].key ).toEqual( '2' );
-			} );
-		} );
-
-		describe( 'getZFunctionOutput', () => {
-			var getters;
-			beforeEach( function () {
-				getters = {};
-				getters.getRowById = zobjectModule.getters.getRowById( state );
-				getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
-				getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
-			} );
-
-			it( 'returns undefined when row is undefined', () => {
-				state.zobject = [];
-				const rowId = undefined;
-				const expected = undefined;
-				expect( zobjectModule.getters.getZFunctionOutput( state, getters )( rowId ) )
-					.toEqual( expected );
-			} );
-
-			it( 'returns undefined when row does not exist', () => {
-				state.zobject = [];
-				const rowId = 1;
-				const expected = undefined;
-				expect( zobjectModule.getters.getZFunctionOutput( state, getters )( rowId ) )
-					.toEqual( expected );
-			} );
-
-			it( 'returns output row', () => {
-				state.zobject = zobjectToRows( { Z2K2: { Z8K2: 'Z6' } } );
-				const rowId = 0;
-				const expected = { id: 2, key: 'Z8K2', parent: 1, value: 'object' };
-				expect( zobjectModule.getters.getZFunctionOutput( state, getters )( rowId ) )
-					.toEqual( expected );
-			} );
-		} );
-
 		describe( 'getTypedListItemType', function () {
 			var getters;
 			beforeEach( function () {
@@ -1473,13 +1369,9 @@ describe( 'zobject Vuex module', function () {
 					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
 					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
 					getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
-					getters.getZReferenceTerminalValue =
-					getters.getZObjectTerminalValue =
-					zobjectModule.getters.getZObjectTerminalValue( state, getters );
-					getters.getZReferenceTerminalValue =
-					zobjectModule.getters.getZReferenceTerminalValue( state, getters );
-					getters.getZObjectTypeByRowId =
-					zobjectModule.getters.getZObjectTypeByRowId( state, getters );
+					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+					getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue(
+						state, getters );
 				} );
 
 				it( 'gets the language value of a ZMonolingualString when the language is a Z_REFERENCE', () => {
@@ -1530,9 +1422,9 @@ describe( 'zobject Vuex module', function () {
 					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
 					getters.getZMonolingualLangValue = zobjectModule.getters.getZMonolingualLangValue( state, getters );
 					getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
-					getters.getZReferenceTerminalValue = zobjectModule.getters
-						.getZReferenceTerminalValue( state, getters );
 					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+					getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue(
+						state, getters );
 					getters.getLanguageIsoCodeOfZLang = function ( key ) {
 						return key === 'Z1002' ? 'en' : 'es';
 					};
@@ -4953,6 +4845,8 @@ describe( 'zobject Vuex module', function () {
 							{ zobjectModule: context.state },
 							context.getters );
 				} );
+				context.getters.getZFunctionInputs = zFunctionModule.getters.getZFunctionInputs(
+					context.state, context.getters );
 				Object.keys( zobjectModule.modules.currentZObject.getters ).forEach( ( key ) => {
 					context.getters[ key ] =
 						zobjectModule.modules.currentZObject.getters[ key ](

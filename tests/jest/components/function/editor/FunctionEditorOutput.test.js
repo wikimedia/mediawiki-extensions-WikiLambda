@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the function-definition-output component and related files.
+ * WikiLambda unit test suite for the Function Editor output component.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -7,23 +7,24 @@
 'use strict';
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
-	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	FunctionEditorOutput = require( '../../../../../resources/ext.wikilambda.edit/components/function/editor/FunctionEditorOutput.vue' ),
-	ZObjectSelector = require( '../../../../../resources/ext.wikilambda.edit/components/ZObjectSelector.vue' );
+	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
+	FunctionEditorOutput = require( '../../../../../resources/ext.wikilambda.edit/components/function/editor/FunctionEditorOutput.vue' );
 
-describe( 'FunctionEditorOutput', function () {
-	var getters;
+describe( 'FunctionEditorOutput', () => {
+	let getters,
+		actions;
 
-	beforeEach( function () {
+	beforeEach( () => {
 		getters = {
-			getNestedZObjectById: createGettersWithFunctionsMock( { id: 10 } ),
+			getZLang: createGetterMock( 'Z1002' ),
+			getZFunctionOutput: createGettersWithFunctionsMock(),
+			getZReferenceTerminalValue: createGettersWithFunctionsMock(),
 			getErrors: createGettersWithFunctionsMock( [] )
 		};
+
 		actions = {
-			clearErrors: jest.fn(),
-			lookupZObject: jest.fn(),
-			fetchZKeys: jest.fn()
+			setValueByRowIdAndPath: jest.fn()
 		};
 
 		global.store.hotUpdate( {
@@ -32,25 +33,73 @@ describe( 'FunctionEditorOutput', function () {
 		} );
 	} );
 
-	it( 'renders without errors', function () {
-		var wrapper = shallowMount( FunctionEditorOutput );
+	it( 'renders without errors', () => {
+		const wrapper = shallowMount( FunctionEditorOutput, { props: { canEdit: true } } );
 
 		expect( wrapper.find( '.ext-wikilambda-function-definition-output' ).exists() ).toBeTruthy();
 	} );
-	it( 'loads the z-object-selector component', function () {
-		var wrapper = shallowMount( FunctionEditorOutput );
 
-		expect( wrapper.find( '.ext-wikilambda-function-definition-output__selector' ).exists() ).toBeTruthy();
+	it( 'loads the z-object-selector component', () => {
+		const wrapper = shallowMount( FunctionEditorOutput, { props: { canEdit: true } } );
+
+		expect( wrapper.findComponent( { name: 'wl-z-object-selector' } ).exists() ).toBeTruthy();
 	} );
-	it( 'clears on focus-out if a value is typed but then not selected', function () {
-		var wrapper = mount( FunctionEditorOutput );
 
-		var outputTypeSelector = wrapper.get( '.ext-wikilambda-function-definition-output' ).getComponent( ZObjectSelector );
+	it( 'initializes the z-object-selector component with the function output type value', () => {
+		getters.getZFunctionOutput = createGettersWithFunctionsMock( { id: 1 } );
+		getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z6' );
+		global.store.hotUpdate( { getters: getters } );
+		const wrapper = shallowMount( FunctionEditorOutput, { props: { canEdit: true } } );
 
-		outputTypeSelector.vm.clearResults = jest.fn();
+		const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
+		expect( selector.exists() ).toBeTruthy();
+		expect( selector.props( 'selectedZid' ) ).toBe( 'Z6' );
+		expect( selector.props( 'disabled' ) ).toBe( false );
+	} );
 
-		outputTypeSelector.vm.$emit( 'focus-out' );
+	it( 'initializes a disabled z-object-selector component with the function output type value', () => {
+		getters.getZFunctionOutput = createGettersWithFunctionsMock( { id: 1 } );
+		getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z6' );
+		global.store.hotUpdate( { getters: getters } );
+		const wrapper = shallowMount( FunctionEditorOutput, { props: { canEdit: false } } );
 
-		expect( outputTypeSelector.vm.clearResults ).toHaveBeenCalled();
+		const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
+		expect( selector.exists() ).toBeTruthy();
+		expect( selector.props( 'selectedZid' ) ).toBe( 'Z6' );
+		expect( selector.props( 'disabled' ) ).toBe( true );
+	} );
+
+	it( 'initializes an empty z-object-selector component', () => {
+		getters.getZFunctionOutput = createGettersWithFunctionsMock( undefined );
+		getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( '' );
+		global.store.hotUpdate( { getters: getters } );
+		const wrapper = shallowMount( FunctionEditorOutput, { props: { canEdit: true } } );
+
+		const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
+		expect( selector.exists() ).toBeTruthy();
+		expect( selector.props( 'selectedZid' ) ).toBe( '' );
+	} );
+
+	it( 'persists the new type when selecting a new value', async () => {
+		getters.getZFunctionOutput = createGettersWithFunctionsMock( { id: 1 } );
+		getters.getZReferenceTerminalValue = createGettersWithFunctionsMock( 'Z6' );
+		global.store.hotUpdate( { getters: getters } );
+		const wrapper = shallowMount( FunctionEditorOutput, { props: { canEdit: true } } );
+
+		const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
+		expect( selector.exists() ).toBeTruthy();
+		expect( selector.props( 'selectedZid' ) ).toBe( 'Z6' );
+		expect( selector.props( 'disabled' ) ).toBe( false );
+
+		// ACT: select input
+		selector.vm.$emit( 'input', 'Z40' );
+		await wrapper.vm.$nextTick();
+
+		// ASSERT: output is persisted
+		expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), {
+			rowId: 1,
+			keyPath: [ 'Z9K1' ],
+			value: 'Z40'
+		} );
 	} );
 } );

@@ -10,71 +10,26 @@ require( '@testing-library/jest-dom' );
 
 const { fireEvent, render, waitFor } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' ),
-	{ clickLookupResult } = require( './helpers/interactionHelpers.js' ),
+	{ lookupSearchAndSelect, textInputChange, chipInputAddChip } = require( './helpers/interactionHelpers.js' ),
 	{ runSetup, runTeardown } = require( './helpers/functionEditorTestHelpers.js' ),
 	Constants = require( '../../../resources/ext.wikilambda.edit/Constants.js' ),
 	store = require( '../../../resources/ext.wikilambda.edit/store/index.js' ),
 	App = require( '../../../resources/ext.wikilambda.edit/components/App.vue' ),
-	ApiMock = require( './helpers/apiMock.js' ),
-	apiGetMock = require( './helpers/apiGetMock.js' ),
 	expectedNoLabelFunctionPostedToApi = require( './objects/expectedNoLabelFunctionPostedToApi.js' );
-
-const lookupZObjectTypeLabels =
-	new ApiMock( apiGetMock.typeLabelsRequest, apiGetMock.labelsResponse, apiGetMock.labelsMatcher );
-const lookupZObjectLanguageLabels =
-	new ApiMock( apiGetMock.languageLabelsRequest, apiGetMock.labelsResponse, apiGetMock.labelsMatcher );
-const initializeRootZObject =
-	new ApiMock( apiGetMock.loadZObjectsRequest, apiGetMock.loadZObjectsResponse, apiGetMock.loadZObjectsMatcher );
 
 describe( 'WikiLambda frontend, on function-editor view', () => {
 	let apiPostWithEditTokenMock;
+
 	beforeEach( () => {
-		const setupResult = runSetup();
-		apiPostWithEditTokenMock = setupResult.apiPostWithEditTokenMock;
-
-		mw.Api = jest.fn( () => {
-			return {
-				postWithEditToken: apiPostWithEditTokenMock,
-				get: apiGetMock.createMockApi( [
-					lookupZObjectLanguageLabels,
-					lookupZObjectTypeLabels,
-					initializeRootZObject
-				] )
-			};
-		} );
-
-		window.mw.Uri.mockImplementation( () => {
-			return {
-				query: {
-					title: Constants.PATHS.CREATE_OBJECT_TITLE,
-					zid: Constants.Z_FUNCTION
-				},
-				path: new window.mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( {
-					title: Constants.PATHS.CREATE_OBJECT_TITLE
-				} )
-			};
-		} );
-
-		global.mw.config.get = ( endpoint ) => {
-			switch ( endpoint ) {
-				case 'wgWikiLambda':
-					return {
-						zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
-						zlang: 'en',
-						createNewPage: true,
-						vieMode: false
-					};
-				default:
-					return {};
+		const pageConfig = {
+			createNewPage: true,
+			title: Constants.PATHS.CREATE_OBJECT_TITLE,
+			queryParams: {
+				zid: Constants.Z_FUNCTION
 			}
 		};
-		mw.Title = jest.fn( function ( title ) {
-			return {
-				getUrl: jest.fn( function () {
-					return '/wiki/' + title;
-				} )
-			};
-		} );
+		const setupResult = runSetup( pageConfig );
+		apiPostWithEditTokenMock = setupResult.apiPostWithEditTokenMock;
 	} );
 
 	afterEach( () => {
@@ -82,42 +37,46 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 	} );
 
 	it( 'handles edge cases during editing/creation, and saves a function with no labels successfully', async () => {
-		const { findByLabelText, findByRole, getAllByLabelText, getByLabelText, getByText, queryByRole } =
-			render( App, { global: { plugins: [ store ] } } );
+		const {
+			findAllByTestId,
+			findByRole,
+			findByTestId,
+			getByText,
+			queryByRole
+		} = render( App, { global: { plugins: [ store ] } } );
 
 		// ACT: Select Chinese as the natural language.
-		const languageSelector = await findByLabelText( 'Language' );
-		await fireEvent.update( within( languageSelector ).getByRole( 'combobox' ), 'Chin' );
-		await clickLookupResult( languageSelector, 'Chinese' );
+		const languageSelector = await findByTestId( 'function-editor-language-selector' );
+		await lookupSearchAndSelect( languageSelector, 'Chin', 'Chinese' );
+
+		const languageBlocks = await findAllByTestId( 'function-editor-language-block' );
+		const firstLanguageBlock = languageBlocks[ 0 ];
 
 		// ACT: Select a type for the first argument.
-		const argumentsArea = await findByRole( 'inputs-container' );
-		await fireEvent.update( within( argumentsArea ).getByPlaceholderText( 'Select a type' ), 'Str' );
-		await clickLookupResult( argumentsArea, 'String' );
+		const argumentsArea = within( firstLanguageBlock ).getByTestId( 'function-editor-inputs' );
+		let firstArgType = within( argumentsArea ).getByTestId( 'function-editor-input-item-type' );
+		await lookupSearchAndSelect( firstArgType, 'Str', 'String' );
 
 		// ACT: Delete the just-selected argument [ EDGE CASE ].
 		await fireEvent.click( within( argumentsArea ).getByLabelText( 'Remove input' ) );
 
 		// ASSERT: No arguments show.
-		expect( within( argumentsArea ).queryByPlaceholderText( 'Select a type' ) ).not.toBeInTheDocument();
+		expect( within( argumentsArea ).queryByTestId( 'function-editor-input-item-type' ) ).not.toBeInTheDocument();
 		expect( within( argumentsArea ).queryByText( 'String' ) ).not.toBeInTheDocument();
 
 		// ACT: Add an argument.
 		await fireEvent.click( getByText( 'Add an input' ) );
 
 		// ACT: Select a type for the first argument again.
-		await waitFor( () => expect( within( argumentsArea ).getAllByPlaceholderText( 'Select a type' ).length ).toEqual( 1 ) );
-		await fireEvent.update( within( argumentsArea ).getByPlaceholderText( 'Select a type' ), 'Str' );
-		await clickLookupResult( argumentsArea, 'String' );
+		firstArgType = within( argumentsArea ).getByTestId( 'function-editor-input-item-type' );
+		await lookupSearchAndSelect( firstArgType, 'Str', 'String' );
 
 		// ACT: Enter an alias in Chinese.
-		const chineseAliasesContainer = getAllByLabelText( 'Alternative names', { exact: false } )[ 0 ];
-		const chineseAliasInput = within( chineseAliasesContainer ).getByRole( 'textbox' );
-		await fireEvent.update( chineseAliasInput, 'first function alias, in Chinese' );
-		await fireEvent.keyDown( chineseAliasInput, { key: 'enter' } );
+		const chineseAliasInput = within( firstLanguageBlock ).getByTestId( 'function-editor-alias-input' );
+		await chipInputAddChip( chineseAliasInput, 'first function alias, in Chinese' );
 
 		// ACT: Delete the just-entered alias in Chinese [ EDGE CASE ].
-		await fireEvent.click( await waitFor( () => within( chineseAliasesContainer ).getByLabelText( 'Remove item' ) ) );
+		await fireEvent.click( await waitFor( () => within( chineseAliasInput ).getByLabelText( 'Remove item' ) ) );
 
 		// ACT: Attempt to click publish button,  before output is set (invalid) [ EDGE CASE ].
 		await fireEvent.click( getByText( 'Publish' ) );
@@ -126,22 +85,42 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument();
 
 		// ASSERT: The error warning exists on the zobject showing the user they have not set an output type.
-		const outputArea = getByLabelText( 'Output' );
+		const outputArea = within( firstLanguageBlock ).getByTestId( 'function-editor-output' );
 		expect( outputArea ).toHaveTextContent( 'A function requires an output' );
 
 		// ACT: Select a type for the output.
-		await fireEvent.update( within( outputArea ).getByRole( 'combobox' ), 'Str' );
-		await clickLookupResult( outputArea, 'String' );
+		await lookupSearchAndSelect( outputArea, 'Str', 'String' );
 
 		// ACT: Add another argument.
 		await fireEvent.click( getByText( 'Add another input' ) );
 
+		// ACT: Select a label for the second argument, but not a type
+		const secondArg = within( firstLanguageBlock ).getAllByTestId( 'function-editor-input-item' )[ 1 ];
+		const secondArgLabel = within( secondArg ).getByTestId( 'function-editor-input-item-label' );
+		await textInputChange( secondArgLabel, 'label for second argument, in Chinese' );
+
+		// ACT: Attempt to click publish button, before input type is set (invalid) [ EDGE CASE ].
+		await fireEvent.click( getByText( 'Publish' ) );
+
+		// ASSERT: Publish Dialog does not open.
+		expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument();
+
+		// ASSERT: The error warning exists on the zobject showing the user they have not set an output type.
+		expect( secondArg ).toHaveTextContent( 'An input requires a type' );
+
 		// ACT: Select a type for the second argument.
-		await waitFor( () => expect( within( argumentsArea ).getAllByPlaceholderText( 'Select a type' ).length ).toEqual( 2 ) );
-		await fireEvent.update( within( argumentsArea ).getAllByPlaceholderText( 'Select a type' )[ 1 ], 'Str' );
-		await clickLookupResult( within( argumentsArea ).getAllByRole( 'listbox', { hidden: true } )[ 1 ], 'String' );
+		const secondArgType = within( argumentsArea ).getAllByTestId( 'function-editor-input-item-type' )[ 1 ];
+		await lookupSearchAndSelect( secondArgType, 'Str', 'String' );
 
 		// [ACT: Don't enter a label for the second argument. [ EDGE CASE ]]
+
+		// ACT: Add another argument.
+		await fireEvent.click( getByText( 'Add another input' ) );
+
+		// ACT: Select a label for the second argument, but not a type
+		const thirdArg = within( firstLanguageBlock ).getAllByTestId( 'function-editor-input-item' )[ 2 ];
+		const thirdArgType = within( thirdArg ).getByTestId( 'function-editor-input-item-type' );
+		await lookupSearchAndSelect( thirdArgType, 'Str', 'String' );
 
 		// ACT: Click publish button.
 		await fireEvent.click( getByText( 'Publish' ) );

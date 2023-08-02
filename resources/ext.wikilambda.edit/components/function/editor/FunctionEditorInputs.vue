@@ -5,18 +5,20 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-function-definition-inputs" role="inputs-container">
+	<div class="ext-wikilambda-function-definition-inputs">
+		<!-- Global inputs label if we are in desktop -->
 		<div
 			v-if="!isMobile"
-			:id="'ext-wikilambda-function-definition-inputs__label_' + zLang"
-			class="ext-wikilambda-function-definition-inputs__label">
+			:id="inputsFieldId"
+			class="ext-wikilambda-function-definition-inputs__label"
+		>
 			<div class="ext-wikilambda-function-definition-inputs__label-block">
 				<label
 					class="ext-wikilambda-app__text-regular"
 					aria-labelledby="wikilambda-function-definition-inputs-label"
 				>
-					{{ $i18n( 'wikilambda-function-definition-inputs-label' ).text() }}
-					<span>{{ $i18n( 'parentheses', [ $i18n( 'wikilambda-optional' ).text() ] ).text() }}</span>
+					{{ inputsLabel }}
+					<span>{{ inputsOptional }}</span>
 				</label>
 				<wl-tooltip
 					v-if="tooltipMessage && !canEdit"
@@ -30,27 +32,29 @@
 				</wl-tooltip>
 			</div>
 			<span class="ext-wikilambda-function-definition-inputs__description">
-				{{ $i18n( 'wikilambda-function-definition-inputs-description' ).text() }}
-				<a :href="getTypeUrl()"> {{ $i18n( 'wikilambda-function-definition-input-types' ).text() }} </a>
+				{{ inputsFieldDescription }}
+				<a :href="listObjectsUrl" target="_blank">{{ listObjectsLink }}</a>
 			</span>
 		</div>
+		<!-- List of input fields -->
 		<div
-			:aria-labelledby="'ext-wikilambda-function-definition-inputs__label_' + zLang"
+			:aria-labelledby="inputsFieldId"
 			class="ext-wikilambda-function-definition-inputs__inputs"
 			:class="{ 'ext-wikilambda-function-definition-inputs__padded': isMainLanguageBlock }"
 		>
 			<wl-function-editor-inputs-item
-				v-for="( argument, index ) in zArgumentList"
-				:key="argument.id"
+				v-for="( input, index ) in inputs"
+				:key="'input-item-' + zLanguage + '-' + input.key"
+				data-testid="function-editor-input-item"
+				:row-id="input.id"
 				:index="index"
 				class="ext-wikilambda-function-definition-inputs__row"
-				:z-lang="zLang"
-				:zobject-id="argument.id"
-				:can-edit-type="canEditType"
+				:z-language="zLanguage"
+				:can-edit-type="canEdit"
 				:is-mobile="isMobile"
 				:is-active="activeInputIndex === index"
 				:is-main-language-block="isMainLanguageBlock"
-				:show-index="zArgumentList.length > 1"
+				:show-index="inputs.length > 1"
 				@update-argument-label="updateArgumentLabel"
 				@active-input="setActiveInput"
 			></wl-function-editor-inputs-item>
@@ -67,41 +71,39 @@
 </template>
 
 <script>
-var Constants = require( '../../../Constants.js' ),
-	mapGetters = require( 'vuex' ).mapGetters,
+const Constants = require( '../../../Constants.js' ),
 	FunctionEditorInputsItem = require( './FunctionEditorInputsItem.vue' ),
-	typeUtils = require( '../../../mixins/typeUtils.js' ),
 	Tooltip = require( '../../base/Tooltip.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
 	icons = require( './../../../../lib/icons.json' ),
+	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions;
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-function-editor-inputs',
 	components: {
-		'wl-function-editor-inputs-item': FunctionEditorInputsItem,
-		'wl-tooltip': Tooltip,
 		'cdx-button': CdxButton,
-		'cdx-icon': CdxIcon
+		'cdx-icon': CdxIcon,
+		'wl-function-editor-inputs-item': FunctionEditorInputsItem,
+		'wl-tooltip': Tooltip
 	},
-	mixins: [ typeUtils ],
 	props: {
-		zobjectId: {
+		rowId: {
 			type: Number,
 			default: 0
 		},
 		isMainLanguageBlock: {
-			type: Boolean
+			type: Boolean,
+			required: true
 		},
 		/**
 		 * zID of item label language
 		 *
 		 * @example Z1014
-		 *
 		 */
-		zLang: {
+		zLanguage: {
 			type: String,
 			default: ''
 		},
@@ -110,8 +112,7 @@ module.exports = exports = {
 		 */
 		tooltipIcon: {
 			type: [ String, Object ],
-			default: null,
-			required: false
+			default: null
 		},
 		/**
 		 * if a user has permission to edit a function
@@ -132,7 +133,7 @@ module.exports = exports = {
 		 */
 		isMobile: {
 			type: Boolean,
-			required: true
+			default: false
 		}
 	},
 	data: function () {
@@ -142,86 +143,132 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getZLang',
-		'getNextObjectId',
-		'getAllItemsFromListById',
-		'getNestedZObjectById'
+		'getZFunctionInputs',
+		'getRowByKeyPath',
+		'getZLang'
 	] ), {
-		zFunctionId: function () {
-			return this.getNestedZObjectById( this.zobjectId, [
-				Constants.Z_PERSISTENTOBJECT_VALUE,
-				Constants.Z_FUNCTION_IDENTITY,
-				Constants.Z_REFERENCE_ID
-			] ).value;
+		/**
+		 * List of inputs
+		 *
+		 * @return {Array}
+		 */
+		inputs: function () {
+			return this.getZFunctionInputs();
 		},
-		// TODO (T331979): Audit this component, it's difficult to understand why this
-		// is working at all. When the function is set, zArgumentId is the parent row id
-		// but when it isn't set, the value is Z0?
-		// This means that the "addNewItem" is calling addZObject with parent set to Z0 which
-		// should never ever happen. Either this is not properly tested or this is doing
-		// something unpredictble behind. Let's figure it out.
-		zArgumentId: function () {
-			return this.getNestedZObjectById( this.zobjectId, [
+		/**
+		 * Returns the rowId of the inputs list
+		 *
+		 * @return {number}
+		 */
+		inputsListRowId: function () {
+			return this.getRowByKeyPath( [
 				Constants.Z_PERSISTENTOBJECT_VALUE,
 				Constants.Z_FUNCTION_ARGUMENTS
-			] ).id;
+			], this.rowId ).id;
 		},
-		zArgumentList: function () {
-			return this.getAllItemsFromListById( this.zArgumentId );
+		/**
+		 * Returns the label for the inputs field
+		 *
+		 * @return {string}
+		 */
+		inputsLabel: function () {
+			// TODO (T335583): Replace i18n message with key label
+			// return this.getLabel( Constants.Z_FUNCTION_ARGUMENTS );
+			return this.$i18n( 'wikilambda-function-definition-inputs-label' ).text();
 		},
-		canEditType: function () {
-			return this.canEdit && this.isMainLanguageBlock;
+		/**
+		 * Returns the "optional" caption for the inputs field
+		 *
+		 * @return {string}
+		 */
+		inputsOptional: function () {
+			return this.$i18n( 'parentheses', [ this.$i18n( 'wikilambda-optional' ).text() ] ).text();
 		},
+		/**
+		 * Returns the id for the input field
+		 *
+		 * @return {string}
+		 */
+		inputsFieldId: function () {
+			return `ext-wikilambda-function-definition-inputs__label_${this.zLanguage}`;
+		},
+		/**
+		 * Returns the description for the inputs field
+		 *
+		 * @return {string}
+		 */
+		inputsFieldDescription: function () {
+			return this.$i18n( 'wikilambda-function-definition-inputs-description' ).text();
+		},
+		/**
+		 * Returns the URL to the Special page List Object by Type
+		 *
+		 * @return {string}
+		 */
+		listObjectsUrl: function () {
+			return new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE )
+				.getUrl( { uselang: this.getZLang } );
+		},
+		/**
+		 * Returns the text for the link to the Special page List Object by Type
+		 *
+		 * @return {string}
+		 */
+		listObjectsLink: function () {
+			return this.$i18n( 'wikilambda-function-definition-input-types' ).text();
+		},
+		/**
+		 * Returns the text of the button to add a new input
+		 *
+		 * @return {string}
+		 */
 		addNewItemText: function () {
-			return this.zArgumentList.length === 0 ?
+			return this.inputs.length === 0 ?
 				this.$i18n( 'wikilambda-function-definition-inputs-item-add-first-input-button' ).text() :
 				this.$i18n( 'wikilambda-function-definition-inputs-item-add-input-button' ).text();
 		},
+		/**
+		 * Returns the class name of the button to add a new input
+		 *
+		 * @return {string}
+		 */
 		addInputButtonClass: function () {
-			return this.zArgumentList.length === 0 ?
+			return this.inputs.length === 0 ?
 				'ext-wikilambda-function-definition-inputs__add-input-button' :
 				'ext-wikilambda-function-definition-inputs__add-another-input-button';
 		}
 	} ),
 	methods: $.extend( mapActions( [
-		'changeType',
-		'setAvailableZArguments'
+		'changeType'
 	] ), {
-		addNewItem: function ( /* event */ ) {
+		/**
+		 * Add a new input item to the function inputs list
+		 */
+		addNewItem: function () {
 			this.changeType( {
 				type: Constants.Z_ARGUMENT,
-				id: this.zArgumentId,
-				lang: this.zLang,
+				id: this.inputsListRowId,
+				lang: this.zLanguage,
 				append: true
 			} ).then( () => {
-				this.setActiveInput( this.zArgumentList.length - 1 );
+				this.setActiveInput( this.inputs.length - 1 );
 			} );
 		},
-		// We need this function otherwise the build will fail
-		showAddNewInput: function ( isMainLanguageBlock, index ) {
-			return isMainLanguageBlock && index === this.zArgumentList.length - 1;
-		},
-		updateArgumentLabel: function () {
-			this.setAvailableZArguments( this.zFunctionId );
-			this.$emit( 'updated-argument-label' );
-		},
+		/**
+		 * Sets the given input index as active
+		 *
+		 * @param {number} index
+		 */
 		setActiveInput: function ( index ) {
 			this.activeInputIndex = index;
 		},
-		getTypeUrl: function () {
-			return new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE ).getUrl(
-				{ uselang: this.getZLang }
-			);
+		/**
+		 * Emits the event updated-argument-label
+		 */
+		updateArgumentLabel: function () {
+			this.$emit( 'updated-argument-label' );
 		}
-	} ),
-	watch: {
-		zArgumentList: function () {
-			this.setAvailableZArguments( this.zFunctionId );
-		}
-	},
-	mounted: function () {
-		this.setAvailableZArguments( this.zFunctionId );
-	}
+	} )
 };
 </script>
 

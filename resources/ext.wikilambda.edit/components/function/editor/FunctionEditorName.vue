@@ -8,136 +8,199 @@
 	<div class="ext-wikilambda-function-definition-name">
 		<div class="ext-wikilambda-function-definition-name__label">
 			<label
-				:for="inputId"
-				class="ext-wikilambda-app__text-regular">
-				<!-- TODO: Instead fetch this from the Z2 via `getLabel( Constants.Z_PERSISTENTOBJECT_LABEL )` -->
-				{{ $i18n( 'wikilambda-function-definition-name-label' ).text() }}
-				<span>{{ $i18n( 'parentheses', [ $i18n( 'wikilambda-optional' ).text() ] ).text() }}</span>
+				:for="nameFieldId"
+				class="ext-wikilambda-app__text-regular"
+			>
+				{{ nameLabel }}
+				<span>{{ nameOptional }}</span>
 			</label>
 			<span class="ext-wikilambda-function-definition-name__description">
-				{{ $i18n( 'wikilambda-function-definition-name-description' ).text() }}
+				{{ nameFieldDescription }}
 			</span>
 		</div>
-
-		<wl-text-input
-			:id="inputId"
-			:model-value="zobjectLabel"
+		<cdx-text-input
+			:id="nameFieldId"
+			:model-value="name"
 			class="ext-wikilambda-function-definition-name__input"
-			:aria-label="$i18n( 'wikilambda-function-definition-name-label' ).text()"
-			:placeholder="$i18n( 'wikilambda-function-definition-name-placeholder' ).text()"
+			:aria-label="nameLabel"
+			:placeholder="nameFieldPlaceholder"
 			:max-chars="maxLabelChars"
-			@input="setZObjectLabel"
-		></wl-text-input>
+			@change="persistName"
+		></cdx-text-input>
 	</div>
 </template>
 
 <script>
-var Constants = require( '../../../Constants.js' ),
+const Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters,
 	mapActions = require( 'vuex' ).mapActions,
-	TextInput = require( '../../base/TextInput.vue' ),
-	debounceSetZObjectLabelTimeout = 300;
+	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput;
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-function-editor-name',
 	components: {
-		'wl-text-input': TextInput
+		'cdx-text-input': CdxTextInput
 	},
 	props: {
-		zobjectId: {
-			type: Number,
-			default: 0
-		},
-		isMainZObject: {
-			type: Boolean
-		},
 		/**
 		 * zID of item label language
 		 *
 		 * @example Z1014
-		 *
 		 */
-		zLang: {
+		zLanguage: {
 			type: String,
 			required: true
+		},
+		isMainLanguageBlock: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data: function () {
 		return {
-			maxLabelChars: Constants.LABEL_CHARS_MAX,
-			debounceSetZObjectLabel: null
+			maxLabelChars: Constants.LABEL_CHARS_MAX
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getZObjectChildrenById',
-		'getNestedZObjectById',
-		'getZObjectLabel'
+		'getZPersistentName',
+		'getZMonolingualTextValue',
+		'getRowByKeyPath'
 	] ), {
-		zobject: function () {
-			return this.getZObjectChildrenById( this.zobjectId );
+		/**
+		 * Returns the Name (Z2K3) row for the given language.
+		 * If the language is not set, returns undefined
+		 *
+		 * @return {Object|undefined}
+		 */
+		nameObject: function () {
+			return this.zLanguage ? this.getZPersistentName( this.zLanguage ) : undefined;
 		},
-		getFunctionNameMultilingualId: function () {
-			return this.getNestedZObjectById( this.zobjectId, [
-				Constants.Z_PERSISTENTOBJECT_LABEL,
-				Constants.Z_MULTILINGUALSTRING_VALUE
-			] ).id;
+		/**
+		 * Returns whether this function has a name object
+		 * for the given language.
+		 *
+		 * @return {boolean}
+		 */
+		hasName: function () {
+			return !!this.nameObject;
 		},
-		inputId: function () {
-			return `ext-wikilambda-function-definition-name__input${this.zLang}`;
+		/**
+		 * Returns the Name value for the given language.
+		 * If value is not available, returns empty string
+		 *
+		 * @return {string}
+		 */
+		name: function () {
+			return this.hasName ?
+				this.getZMonolingualTextValue( this.nameObject.rowId ) :
+				'';
 		},
-		getFunctionName: function () {
-			if ( this.zLang === '' ) {
-				return '';
-			}
-			return this.getZObjectLabel( this.zLang );
+		/**
+		 * Returns the label for the name field
+		 *
+		 * @return {string}
+		 */
+		nameLabel: function () {
+			// TODO (T335583): Replace i18n message with key label
+			// return this.getLabel( Constants.Z_PERSISTENTOBJECT_LABEL );
+			return this.$i18n( 'wikilambda-function-definition-name-label' ).text();
 		},
-		zobjectLabel: {
-			get: function () {
-				return this.getFunctionName ? this.getFunctionName.value : '';
-			},
-			set: function ( value ) {
-				var id = this.getFunctionName.id;
-				if ( !id ) {
-					this.changeType( {
-						type: Constants.Z_MONOLINGUALSTRING,
-						lang: this.zLang,
-						id: this.getFunctionNameMultilingualId,
-						append: true
-					} );
-				}
-				var payload = {
-					id: this.getFunctionName.id,
-					value: value,
-					isMainZObject: this.isMainZObject
-				};
-				this.setPageZObjectValue( payload );
-				this.$emit( 'updated-name' );
-			}
+		/**
+		 * Returns the i18n message for the name field placeholder
+		 *
+		 * @return {string}
+		 */
+		nameFieldPlaceholder: function () {
+			return this.$i18n( 'wikilambda-function-definition-name-placeholder' ).text();
+		},
+		/**
+		 * Returns the description for the name field
+		 *
+		 * @return {string}
+		 */
+		nameFieldDescription: function () {
+			return this.$i18n( 'wikilambda-function-definition-name-description' ).text();
+		},
+		/**
+		 * Returns the "optional" caption for the name field
+		 *
+		 * @return {string}
+		 */
+		nameOptional: function () {
+			return this.$i18n( 'parentheses', [ this.$i18n( 'wikilambda-optional' ).text() ] ).text();
+		},
+		/**
+		 * Returns the id for the input field
+		 *
+		 * @return {string}
+		 */
+		nameFieldId: function () {
+			return `ext-wikilambda-function-definition-name__input${this.zLanguage}`;
 		}
 	} ),
 	methods: $.extend( mapActions( [
-		'setPageZObjectValue',
-		'changeType'
+		'changeType',
+		'removeItemFromTypedList',
+		'setValueByRowIdAndPath'
 	] ), {
 		/**
-		 * This method debounces the change in the model for performance
+		 * Persist the new name value in the globally stored object
 		 *
-		 * @param {Event} event The input event
+		 * @param {Object} event
 		 */
-		setZObjectLabel( event ) {
-			const input = event.target.value;
-			clearTimeout( this.debounceSetZObjectLabel );
-			this.debounceSetZObjectLabel = setTimeout( function () {
-				this.zobjectLabel = input;
-			}.bind( this ), debounceSetZObjectLabelTimeout );
+		persistName: function ( event ) {
+			const value = event.target.value;
+			if ( this.hasName ) {
+				if ( value === '' ) {
+					this.removeItemFromTypedList( { rowId: this.nameObject.rowId } );
+				} else {
+					this.setValueByRowIdAndPath( {
+						rowId: this.nameObject.rowId,
+						keyPath: [
+							Constants.Z_MONOLINGUALSTRING_VALUE,
+							Constants.Z_STRING_VALUE
+						],
+						value
+					} );
+				}
+			} else {
+				// If this.nameObject is undefined, there's no monolingual string
+				// for the given language, so we create a new monolingual string
+				// with the new value and append to the parent list.
+				const parentRow = this.getRowByKeyPath( [
+					Constants.Z_PERSISTENTOBJECT_LABEL,
+					Constants.Z_MULTILINGUALSTRING_VALUE
+				] );
+				if ( !parentRow ) {
+					// This should never happen because all Z2Kn's are initialized
+					return;
+				}
+				this.changeType( {
+					id: parentRow.id,
+					type: Constants.Z_MONOLINGUALSTRING,
+					lang: this.zLanguage,
+					value,
+					append: true
+				} );
+			}
+			if ( this.isMainLanguageBlock ) {
+				this.setPageTitle( value );
+			}
+			this.$emit( 'updated-name' );
+		},
+
+		/**
+		 * If this is the main language represented in the page,
+		 * sets the page title to the new Function Name
+		 *
+		 * @param {string} name
+		 */
+		setPageTitle: function ( name ) {
+			const pageTitleSelector = '#firstHeading .ext-wikilambda-editpage-header-title--function-name';
+			$( pageTitleSelector ).first().text( name );
 		}
-	} ),
-	watch: {
-		zLang: function () {
-			this.zobjectLabel = null;
-		}
-	}
+	} )
 };
 </script>
 

@@ -1,97 +1,29 @@
 /*!
- * WikiLambda unit test suite for the function-definition-aliases component.
+ * WikiLambda unit test suite for the Function Definition aliases component.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 'use strict';
 
-var VueTestUtils = require( '@vue/test-utils' ),
-	typeUtils = require( '../../../../../resources/ext.wikilambda.edit/mixins/typeUtils.js' ),
+const shallowMount = require( '@vue/test-utils' ).shallowMount,
+	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	Constants = require( '../../../../../resources/ext.wikilambda.edit/Constants.js' ),
-	FunctionEditorAliases = require( '../../../../../resources/ext.wikilambda.edit/components/function/editor/FunctionEditorAliases.vue' ),
-	ChipContainer = require( '../../../../../resources/ext.wikilambda.edit/components/base/ChipContainer.vue' );
-
-const multilingualStringsetValueId = 1;
-const monolingualStringsetId = 2;
-const monolingualStringsetLanguageId = 3;
-const monolingualStringsetValueId = 4;
-const stringId = 5;
-const stringValueId = 6;
-const nextId = 7;
-
-const createWrapper = () => VueTestUtils.shallowMount( FunctionEditorAliases, {
-	props: {
-		zLang: Constants.Z_NATURAL_LANGUAGE_ENGLISH
-	},
-	global: {
-		mixins: [ typeUtils ]
-	}
-} );
+	FunctionEditorAliases = require( '../../../../../resources/ext.wikilambda.edit/components/function/editor/FunctionEditorAliases.vue' );
 
 describe( 'FunctionEditorAliases', () => {
-	var getters,
-		actions,
-		strings;
+	let getters,
+		actions;
 
 	beforeEach( () => {
-		strings = [];
 		getters = {
-			getZObjectChildrenById: () => ( parentId ) => {
-				if ( parentId === monolingualStringsetId ) {
-					return [
-						{ id: monolingualStringsetLanguageId, key: Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE },
-						{ id: monolingualStringsetValueId, key: Constants.Z_MONOLINGUALSTRINGSET_VALUE }
-					];
-				}
-			},
-			getNestedZObjectById: () => ( id, keys ) => {
-				if ( id === 0 && keys.length === 2 &&
-					keys[ 0 ] === Constants.Z_PERSISTENTOBJECT_ALIASES &&
-					keys[ 1 ] === Constants.Z_MULTILINGUALSTRINGSET_VALUE ) {
-					return { id: multilingualStringsetValueId };
-				} else if ( id === monolingualStringsetId && keys.length === 1 &&
-					keys[ 0 ] === Constants.Z_MONOLINGUALSTRINGSET_VALUE ) {
-					return { id: monolingualStringsetValueId };
-				} else if ( id === monolingualStringsetId && keys.length === 2 &&
-					keys[ 0 ] === Constants.Z_MONOLINGUALSTRINGSET_LANGUAGE &&
-					keys[ 1 ] === Constants.Z_REFERENCE_ID ) {
-					return { value: Constants.Z_NATURAL_LANGUAGE_ENGLISH };
-				} else if ( id === monolingualStringsetLanguageId && keys.length === 1 &&
-					keys[ 0 ] === Constants.Z_REFERENCE_ID ) {
-					return { value: Constants.Z_NATURAL_LANGUAGE_ENGLISH };
-				} else if ( id === stringId && keys.length === 1 &&
-					keys[ 0 ] === Constants.Z_STRING_VALUE ) {
-					return { id: stringValueId, value: 'existing alias' };
-				}
-			},
-			getAllItemsFromListById: () => ( parentId ) => {
-				if ( parentId === multilingualStringsetValueId ) {
-					return [ { id: monolingualStringsetId } ];
-				} else if ( parentId === monolingualStringsetValueId ) {
-					return strings;
-				}
-			},
-			getRowById: () => ( id ) => {
-				if ( id === stringValueId ) {
-					return { parent: stringId };
-				} else if ( id === stringId ) {
-					return { id: stringId, parent: monolingualStringsetValueId };
-				}
-			},
-			getParentRowId: () => ( id ) => {
-				if ( id === stringValueId ) {
-					return stringId;
-				} else if ( id === stringId ) {
-					return monolingualStringsetValueId;
-				}
-			},
-			getNextObjectId: () => nextId
+			getRowByKeyPath: createGettersWithFunctionsMock(),
+			getZPersistentAlias: createGettersWithFunctionsMock( { rowId: 2, langZid: 'Z1002', langIsoCode: 'en' } ),
+			getZMonolingualStringsetValues: createGettersWithFunctionsMock( [] )
 		};
 
 		actions = {
 			changeType: jest.fn(),
-			setZObjectValue: jest.fn(),
 			removeItemFromTypedList: jest.fn()
 		};
 
@@ -99,80 +31,104 @@ describe( 'FunctionEditorAliases', () => {
 			getters: getters,
 			actions: actions
 		} );
-
 	} );
 
 	it( 'renders without errors', () => {
-		var wrapper = createWrapper();
+		const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
 
 		expect( wrapper.find( '.ext-wikilambda-function-definition-aliases' ).exists() ).toBe( true );
 	} );
-	it( 'does not pass any chips to chip container if there are no aliases', () => {
-		var wrapper = createWrapper();
 
-		expect( wrapper.getComponent( ChipContainer ).props( 'chips' ) ).toHaveLength( 0 );
+	it( 'renders a chip container with empty aliases', () => {
+		const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
+
+		expect( wrapper.getComponent( { name: 'wl-chip-container' } ).props( 'chips' ) ).toHaveLength( 0 );
 	} );
+
 	it( 'passes chips to chip container if there are aliases', () => {
-		strings.push( { id: stringId, key: '1', value: 'object' } );
-		var wrapper = createWrapper();
+		getters.getZMonolingualStringsetValues = createGettersWithFunctionsMock( [
+			{ rowId: 1, value: 'alias 1' },
+			{ rowId: 2, value: 'alias 2' }
+		] );
+		global.store.hotUpdate( { getters: getters } );
+		const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
 
-		const chipsProp = wrapper.getComponent( ChipContainer ).props( 'chips' );
-		expect( chipsProp ).toHaveLength( 1 );
-		expect( chipsProp[ 0 ] ).toEqual( { id: stringValueId, value: 'existing alias' } );
+		const chipsProp = wrapper.getComponent( { name: 'wl-chip-container' } ).props( 'chips' );
+		expect( chipsProp ).toHaveLength( 2 );
+		expect( chipsProp[ 0 ] ).toEqual( { id: 1, value: 'alias 1' } );
+		expect( chipsProp[ 1 ] ).toEqual( { id: 2, value: 'alias 2' } );
 	} );
+
 	it( 'removes alias when chip removed from chip container', () => {
-		strings.push( { id: stringId, key: '1', value: 'object' } );
-		var wrapper = createWrapper();
+		getters.getZMonolingualStringsetValues = createGettersWithFunctionsMock( [
+			{ rowId: 1, value: 'alias 1' },
+			{ rowId: 2, value: 'alias 2' }
+		] );
+		global.store.hotUpdate( { getters: getters } );
+		const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
 
-		wrapper.getComponent( ChipContainer ).vm.$emit( 'remove-chip', stringValueId );
+		wrapper.getComponent( { name: 'wl-chip-container' } ).vm.$emit( 'remove-chip', 1 );
 
-		expect( actions.removeItemFromTypedList ).toHaveBeenCalledWith( expect.anything(), { rowId: stringId } );
+		expect( actions.removeItemFromTypedList ).toHaveBeenCalledWith( expect.anything(), { rowId: 1 } );
+
+		// ASSERT: emits updated-name
+		expect( wrapper.emitted( 'updated-alias' ) ).toBeTruthy();
 	} );
+
 	describe( 'When a new chip is added in chip container', () => {
 		it( 'for an existing language, adds new alias', () => {
-			var wrapper = createWrapper();
+			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
+			global.store.hotUpdate( { getters: getters } );
+			const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
 
-			wrapper.getComponent( ChipContainer ).vm.$emit( 'add-chip', 'new alias' );
+			wrapper.getComponent( { name: 'wl-chip-container' } ).vm.$emit( 'add-chip', 'new alias' );
 
 			expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
 				type: Constants.Z_STRING,
-				id: monolingualStringsetValueId,
+				id: 1,
 				value: 'new alias',
 				append: true
 			} );
-		} );
-		it( 'for an new language, adds new alias', () => {
-			var wrapper = VueTestUtils.shallowMount( FunctionEditorAliases, {
-				props: {
-					zLang: Constants.Z_NATURAL_LANGUAGE_CHINESE
-				},
-				global: {
-					mixins: [ typeUtils ]
-				}
-			} );
 
-			wrapper.getComponent( ChipContainer ).vm.$emit( 'add-chip', 'new alias' );
+			// ASSERT: emits updated-name
+			expect( wrapper.emitted( 'updated-alias' ) ).toBeTruthy();
+		} );
+
+		it( 'for an new language, adds new alias', () => {
+			getters.getZPersistentAlias = createGettersWithFunctionsMock( undefined );
+			getters.getRowByKeyPath = createGettersWithFunctionsMock( { id: 1 } );
+			global.store.hotUpdate( { getters: getters } );
+			const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
+
+			wrapper.getComponent( { name: 'wl-chip-container' } ).vm.$emit( 'add-chip', 'new alias' );
 
 			expect( actions.changeType ).toHaveBeenCalledWith( expect.anything(), {
 				type: Constants.Z_MONOLINGUALSTRINGSET,
-				lang: Constants.Z_NATURAL_LANGUAGE_CHINESE,
+				lang: 'Z1002',
 				value: [ 'new alias' ],
-				id: multilingualStringsetValueId,
+				id: 1,
 				append: true
 			} );
+
+			// ASSERT: emits updated-name
+			expect( wrapper.emitted( 'updated-alias' ) ).toBeTruthy();
 		} );
-		it( 'with a value that matches an existing alias in the current language, ' +
-			'error is displayed and new alias is not added', async () => {
-			strings.push( { id: stringId, key: '1', value: 'object' } );
-			var wrapper = createWrapper();
 
-			wrapper.getComponent( ChipContainer ).vm.$emit( 'add-chip', 'existing alias' );
+		it( 'for a repeated alias display an erro', async () => {
+			getters.getZMonolingualStringsetValues = createGettersWithFunctionsMock( [
+				{ rowId: 2, value: 'existing alias' }
+			] );
+			global.store.hotUpdate( { getters: getters } );
+			const wrapper = shallowMount( FunctionEditorAliases, { props: { zLanguage: 'Z1002' } } );
 
+			wrapper.getComponent( { name: 'wl-chip-container' } ).vm.$emit( 'add-chip', 'existing alias' );
 			await wrapper.vm.$nextTick();
 
 			expect( wrapper.get( '.ext-wikilambda-function-definition-aliases__error' ).exists() ).toBe( true );
-
 			expect( actions.changeType ).not.toHaveBeenCalled();
+
+			// ASSERT: does not emit updated-name
+			expect( wrapper.emitted( 'updated-alias' ) ).toBeFalsy();
 		} );
 	} );
 } );

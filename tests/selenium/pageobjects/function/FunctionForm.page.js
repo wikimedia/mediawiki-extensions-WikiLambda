@@ -20,11 +20,11 @@ class FunctionForm extends Page {
 	}
 
 	getFirstLanguageContainer() {
-		return $( '.ext-wikilambda-function-definition__container__input:first-of-type' );
+		return $( '.ext-wikilambda-function-language-block:first-of-type' );
 	}
 
 	getLastLanguageContainer() {
-		return $( '.ext-wikilambda-function-definition__container__input:last-of-type' );
+		return $( '.ext-wikilambda-function-language-block:last-of-type' );
 	}
 
 	async removeInput( inputIndex ) {

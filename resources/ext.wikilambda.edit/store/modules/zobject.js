@@ -828,59 +828,6 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns the list of input rows for the function given
-		 * given the root object rowId. If no rowId given, starts
-		 * from 0, which is safe to use.
-		 *
-		 * @param {Object} _state
-		 * @param {Object} getters
-		 * @return {Function}
-		 */
-		getZFunctionInputs: function ( _state, getters ) {
-			/**
-			 * @param {string} rowId
-			 * @return {Array}
-			 */
-			function findZFunctionInputs( rowId = 0 ) {
-				const inputsRow = getters.getRowByKeyPath(
-					[ Constants.Z_PERSISTENTOBJECT_VALUE, Constants.Z_FUNCTION_ARGUMENTS ],
-					rowId
-				);
-				if ( inputsRow === undefined ) {
-					return [];
-				}
-				const inputs = getters.getChildrenByParentRowId( inputsRow.id );
-				// Remove benjamin type item
-				return inputs.slice( 1 );
-			}
-			return findZFunctionInputs;
-		},
-
-		/**
-		 * Returns the output type row for the function given
-		 * given the root object rowId. If no rowId given, starts
-		 * from 0, which is safe to use.
-		 *
-		 * @param {Object} _state
-		 * @param {Object} getters
-		 * @return {Function}
-		 */
-		getZFunctionOutput: function ( _state, getters ) {
-			/**
-			 * @param {string} rowId
-			 * @return {Object|undefined}
-			 */
-			function findZFunctionOutput( rowId = 0 ) {
-				const outputRow = getters.getRowByKeyPath(
-					[ Constants.Z_PERSISTENTOBJECT_VALUE, Constants.Z_FUNCTION_RETURN_TYPE ],
-					rowId
-				);
-				return outputRow;
-			}
-			return findZFunctionOutput;
-		},
-
-		/**
 		 * Returns the row ID of the target function of a tester
 		 * given the tester rowId
 		 *
@@ -2365,8 +2312,7 @@ module.exports = exports = {
 					// invalid if a function doesn't have an output type
 					if ( !context.getters.currentZFunctionHasOutput ) {
 						rowId = context.getters.getRowByKeyPath( [
-							Constants.Z_FUNCTION_RETURN_TYPE,
-							Constants.Z_REFERENCE_ID
+							Constants.Z_FUNCTION_RETURN_TYPE
 						], contentRowId ).id;
 						context.dispatch( 'setError', {
 							rowId,
@@ -2597,33 +2543,6 @@ module.exports = exports = {
 			} );
 		},
 
-		/**
-		 * Set the value of the page zObject. This updates the title and set the ZObject value
-		 *
-		 * @param {Object} context
-		 * @param {Object} payload
-		 */
-		setPageZObjectValue: function ( context, payload ) {
-
-			if ( payload.id === undefined || payload.value === undefined ) {
-				return;
-			}
-
-			// Update page title
-			if ( payload.isMainZObject ) {
-				const pageTitleSelector = '#firstHeading .ext-wikilambda-editpage-header-title--function-name';
-				$( pageTitleSelector ).first().text( payload.value );
-			}
-
-			// TODO(T309723): if renaming a function that had previously had no name,
-			// we need to re-add the structure in the form of a typed list
-
-			// Update ZObject value
-			context.dispatch( 'setZObjectValue', {
-				id: payload.id,
-				value: payload.value
-			} );
-		},
 		/**
 		 * Set the value of a specific Zobject. This method is called multiple times when adding a nested object.
 		 *

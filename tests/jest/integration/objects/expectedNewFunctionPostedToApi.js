@@ -106,6 +106,18 @@ module.exports = {
 	},
 	[ Constants.Z_PERSISTENTOBJECT_DESCRIPTION ]: {
 		[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MULTILINGUALSTRING,
-		[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [ Constants.Z_MONOLINGUALSTRING ]
+		[ Constants.Z_MULTILINGUALSTRING_VALUE ]: [
+			Constants.Z_MONOLINGUALSTRING,
+			{
+				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
+				[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_CHINESE,
+				[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'function description, in Chinese'
+			},
+			{
+				[ Constants.Z_OBJECT_TYPE ]: Constants.Z_MONOLINGUALSTRING,
+				[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]: Constants.Z_NATURAL_LANGUAGE_FRENCH,
+				[ Constants.Z_MONOLINGUALSTRING_VALUE ]: 'function description, in French'
+			}
+		]
 	}
 };
