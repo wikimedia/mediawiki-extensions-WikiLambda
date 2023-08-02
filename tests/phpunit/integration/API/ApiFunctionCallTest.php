@@ -243,4 +243,53 @@ class ApiFunctionCallTest extends ApiTestCase {
 
 		// TODO (T325593): Call the example-timeout example; ensure the correct error is returned.
 	}
+
+	/**
+	 * Special tests for AppArmor;
+	 *
+	 * @group Broken
+	 * @group WikiLambdaAppArmor
+	 */
+	public function testExecuteCheckAppArmor() {
+		$compositionZ7String = '{ "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z7" }, "Z7K1": "Z802", '
+			. '"Z802K1": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z40" }, "Z40K1": { "Z1K1": "Z9", "Z9K1": "Z42" } }, '
+			. '"Z802K2": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z10" }, "Z10K1": { "Z1K1": "Z6", "Z6K1": '
+			. '"arbitrary ZObject" }, "Z10K2": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z10" } } }, '
+			. '"Z802K3": { "Z1K1": { "Z1K1": "Z9", "Z9K1": "Z40" }, "Z40K1": { "Z1K1": "Z9", "Z9K1": "Z42" } } }';
+		$compositionResult = $this->doApiRequest( [
+			'action' => 'wikilambda_function_call',
+			'wikilambda_function_call_zobject' => $compositionZ7String
+		] );
+		$this->assertTrue( $compositionResult[0]['query']['wikilambda_function_call']['success'] );
+		$this->assertNotEquals( 'Z24', $compositionResult[0]['query']['wikilambda_function_call']['data'][ 'Z22K1' ] );
+
+		$pythonZ7String = '{ "Z1K1": "Z7", "Z7K1": { "Z1K1": "Z8", "Z8K1": [ "Z17", { "Z1K1": "Z17", "Z17K1": "Z6", '
+			. '"Z17K2": { "Z1K1": "Z6", "Z6K1": "Z400K1" }, "Z17K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }, '
+			. '{ "Z1K1": "Z17", "Z17K1": "Z6", "Z17K2": { "Z1K1": "Z6", "Z6K1": "Z400K2" }, "Z17K3": '
+			. '{ "Z1K1": "Z12", "Z12K1": [ "Z11" ] } } ], "Z8K2": "Z1", "Z8K3": [ "Z20" ], "Z8K4": [ "Z14", '
+			. '{ "Z1K1": "Z14", "Z14K1": "Z400", "Z14K3": { "Z1K1": "Z16", "Z16K1": "Z610", "Z16K2": '
+			. '"def Z400(Z400K1, Z400K2):\n    return str(int(Z400K1) + int(Z400K2))" } } ], "Z8K5": "Z400" }, '
+			. '"Z400K1": "5", "Z400K2": "8" }';
+		$pythonResult = $this->doApiRequest( [
+			'action' => 'wikilambda_function_call',
+			'wikilambda_function_call_zobject' => $pythonZ7String
+		] );
+		$this->assertTrue( $pythonResult[0]['query']['wikilambda_function_call']['success'] );
+		$this->assertNotEquals( 'Z24', $pythonResult[0]['query']['wikilambda_function_call']['data']['Z22K1'] );
+
+		$disallowedPythonZ7String = '{ "Z1K1": "Z7", "Z7K1": { "Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": "Z1", '
+			. '"Z8K3": [ "Z20" ], "Z8K4": [ "Z14", { "Z1K1": "Z14", "Z14K1": "Z1000", "Z14K3": { "Z1K1": "Z16", '
+			. '"Z16K1": "Z610", "Z16K2": "def Z1000():\n    import socket\n    thatsock = socket.socket(socket.'
+			. 'AF_PACKET, socket.SOCK_DGRAM)\n    return \'i did a bad :(\'" } } ], "Z8K5": "Z1000" } }';
+		$disallowedPythonResult = $this->doApiRequest( [
+			'action' => 'wikilambda_function_call',
+			'wikilambda_function_call_zobject' => $disallowedPythonZ7String
+		] );
+		$this->assertTrue( $disallowedPythonResult[0]['query']['wikilambda_function_call']['success'] );
+		$this->assertEquals( 'Z24', $disallowedPythonResult[0]['query']['wikilambda_function_call']['data']['Z22K1'] );
+		$this->assertStringContainsString(
+			'Operation not permitted',
+			json_encode( $disallowedPythonResult[0]['query']['wikilambda_function_call']['data']['Z22K2'] )
+		);
+	}
 }
