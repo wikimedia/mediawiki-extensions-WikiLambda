@@ -38,6 +38,10 @@ class SpecialRunFunction extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function execute( $subPage ) {
+		if ( !$this->userCanExecute( $this->getUser() ) ) {
+			$this->displayRestrictionError();
+		}
+
 		// TODO: Use $subPage to extract and pre-fill target Z8?
 
 		$this->setHeaders();
