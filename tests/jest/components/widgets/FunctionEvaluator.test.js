@@ -9,6 +9,7 @@
 const shallowMount = require( '@vue/test-utils' ).shallowMount,
 	{ waitFor } = require( '@testing-library/vue' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	FunctionEvaluator = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionEvaluator.vue' );
 
 describe( 'FunctionEvaluator', () => {
@@ -73,7 +74,8 @@ describe( 'FunctionEvaluator', () => {
 			getAttachedImplementations: createGettersWithFunctionsMock( [] ),
 			getZObjectAsJsonById: createGettersWithFunctionsMock( '' ),
 			getLabel: createGettersWithFunctionsMock( 'Function' ),
-			getMapValueByKey: createGettersWithFunctionsMock( undefined )
+			getMapValueByKey: createGettersWithFunctionsMock( undefined ),
+			isUserLoggedIn: createGetterMock( true )
 		};
 		actions = {
 			callZFunction: jest.fn(),
