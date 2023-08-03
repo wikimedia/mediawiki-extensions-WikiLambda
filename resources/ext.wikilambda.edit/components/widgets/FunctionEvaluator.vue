@@ -11,6 +11,15 @@
 		</template>
 
 		<template #main>
+			<!-- Logged out user warning -->
+			<cdx-message
+				v-if="!isUserLoggedIn"
+				type="warning"
+				class="ext-wikilambda-function-evaluator-message"
+			>
+				{{ notLoggedInWarning }}
+			</cdx-message>
+
 			<!-- Function Call -->
 			<div
 				v-if="showFunctionSelector"
@@ -50,7 +59,7 @@
 				<cdx-button
 					action="progressive"
 					weight="primary"
-					:disabled="!hasImplementations"
+					:disabled="!canRunFunction"
 					@click="callFunction"
 				>
 					{{ $i18n( 'wikilambda-function-evaluator-run-function' ).text() }}
@@ -85,6 +94,7 @@
 <script>
 var Constants = require( '../../Constants.js' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
+	CdxMessage = require( '@wikimedia/codex' ).CdxMessage,
 	WidgetBase = require( '../base/WidgetBase.vue' ),
 	ZReference = require( '../default-view-types/ZReference.vue' ),
 	ZObjectKeyValue = require( '../default-view-types/ZObjectKeyValue.vue' ),
@@ -97,6 +107,7 @@ module.exports = exports = {
 	name: 'wl-function-evaluator-widget',
 	components: {
 		'cdx-button': CdxButton,
+		'cdx-message': CdxMessage,
 		'wl-widget-base': WidgetBase,
 		'wl-z-reference': ZReference,
 		'wl-z-object-key-value': ZObjectKeyValue
@@ -140,7 +151,8 @@ module.exports = exports = {
 		'getCurrentZObjectType',
 		'getUserZlangZID',
 		'getZObjectTypeByRowId',
-		'getMapValueByKey'
+		'getMapValueByKey',
+		'isUserLoggedIn'
 	] ), {
 		/**
 		 * Whether the widget has a pre-defined function
@@ -261,6 +273,16 @@ module.exports = exports = {
 		},
 
 		/**
+		 * Returns whether the function can be run, which can only happen
+		 * if the function has active implementations and the user is logged in.
+		 *
+		 * @return {boolean}
+		 */
+		canRunFunction: function () {
+			return this.hasImplementations && this.isUserLoggedIn;
+		},
+
+		/**
 		 * Returns whether the detached Function Call object is initialized
 		 *
 		 * @return {boolean}
@@ -276,6 +298,16 @@ module.exports = exports = {
 		 */
 		functionCallLabel: function () {
 			return this.getLabel( Constants.Z_FUNCTION_CALL_FUNCTION );
+		},
+
+		/**
+		 * Returns the warning messages to inform logged out users that they
+		 * don't have permission to run functions.
+		 *
+		 * @return {string}
+		 */
+		notLoggedInWarning: function () {
+			return this.$i18n( 'wikilambda-function-evaluation-restriction-warning' );
 		},
 
 		/**
@@ -450,6 +482,10 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-function-evaluator {
+	.ext-wikilambda-function-evaluator-message {
+		margin-bottom: @spacing-125;
+	}
+
 	.ext-wikilambda-function-evaluator-inputs,
 	.ext-wikilambda-function-evaluator-call {
 		margin-bottom: @spacing-125;
