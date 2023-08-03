@@ -72,6 +72,11 @@ class ZObjectContentHandler extends ContentHandler {
 			. '"' . ZTypeRegistry::Z_OBJECT_TYPE . '": "' . ZTypeRegistry::Z_MULTILINGUALSTRINGSET . '",' . "\n"
 			. '"' . ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE . '":'
 			. '["' . ZTypeRegistry::Z_MONOLINGUALSTRINGSET . '"]' . "\n"
+			. '},' . "\n"
+			. '"' . ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION . '": {' . "\n"
+			. '"' . ZTypeRegistry::Z_OBJECT_TYPE . '": "' . ZTypeRegistry::Z_MULTILINGUALSTRING . '",' . "\n"
+			. '"' . ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE . '":'
+			. '["' . ZTypeRegistry::Z_MONOLINGUALSTRING . '"]' . "\n"
 			. '}' . "\n"
 			. '}'
 		);
