@@ -413,5 +413,6 @@
 	"wikilambda-function-evaluator-result-details": "Link to open the details dialog of the function evaluation result",
 	"wikilambda-function-evaluator-run-function": "Label for button that runs a function",
 	"wikilambda-unknown-save-error-message": "String to communicate that an unknown error happened during ZObject creation or edition",
-	"wikilambda-list-type-change-warning": "Warning message when the type of a typed list is changed that list items will be removed"
+	"wikilambda-list-type-change-warning": "Warning message when the type of a typed list is changed that list items will be removed",
+	"wikilambda-function-evaluation-restriction-warning": "Warning message to inform not logged in users that they will not be able to run functions"
 }
