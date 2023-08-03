@@ -30,6 +30,12 @@
     any:
       - wikilambda-edit-object-label
 
+# Change object descriptions
+- path: '^Z2K5(\.Z12K1\.[1-9]\d*.*)?$'
+  operations:
+    any:
+      - wikilambda-edit-object-description
+
 # Change object alias
 - path: '^Z2K4(\.Z32K1\.[1-9]\d*.*)?$'
   operations:
