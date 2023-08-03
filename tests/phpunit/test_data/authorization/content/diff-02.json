@@ -1,11 +1,12 @@
 {
-	"description": "User can add aliases to an object",
+	"description": "User can add labels, descriptions and aliases to an object",
 	"authorized": true,
 	"rights": [
 		"edit",
 		"wikilambda-edit",
 		"wikilambda-edit-object-label",
-		"wikilambda-edit-object-alias"
+		"wikilambda-edit-object-alias",
+		"wikilambda-edit-object-description"
 	],
 	"groups": [],
 	"dependencies": [],
@@ -63,6 +64,17 @@
 						"Z6",
 						"SF"
 					]
+				}
+			]
+		},
+		"Z2K5": {
+			"Z1K1": "Z12",
+			"Z12K1": [
+				"Z11",
+				{
+					"Z1K1": "Z11",
+					"Z11K1": "Z1002",
+					"Z11K2": "String Figures are a type of Speculative Fabulation language"
 				}
 			]
 		}

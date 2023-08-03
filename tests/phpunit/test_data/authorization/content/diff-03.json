@@ -1,11 +1,12 @@
 {
-	"description": "User can remove labels and aliases from an object",
+	"description": "User can remove labels, descriptions and aliases from an object",
 	"authorized": true,
 	"rights": [
 		"edit",
 		"wikilambda-edit",
 		"wikilambda-edit-object-label",
-		"wikilambda-edit-object-alias"
+		"wikilambda-edit-object-alias",
+		"wikilambda-edit-object-description"
 	],
 	"groups": [],
 	"dependencies": [],
@@ -46,6 +47,17 @@
 					]
 				}
 			]
+		},
+		"Z2K5": {
+			"Z1K1": "Z12",
+			"Z12K1": [
+				"Z11",
+				{
+					"Z1K1": "Z11",
+					"Z11K1": "Z1002",
+					"Z11K2": "String Figures are a type of Speculative Fabulation language"
+				}
+			]
 		}
 	},
 	"newValue": {
@@ -69,6 +81,10 @@
 		"Z2K4": {
 			"Z1K1": "Z32",
 			"Z32K1": [ "Z31" ]
+		},
+		"Z2K5": {
+			"Z1K1": "Z12",
+			"Z12K1": [ "Z11" ]
 		}
 	}
 }
