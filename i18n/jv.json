@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sumbukompor"
+		]
+	},
+	"group-functioneer": "Narafungsi",
+	"group-functioneer-member": "{{GENDER:$1|narafungsi}}",
+	"grouppage-functioneer": "Narafungsi",
+	"group-functionmaintainer": "Pangopèn",
+	"group-functionmaintainer-member": "{{GENDER:$1|pangopèn}}",
+	"grouppage-functionmaintainer": "Pangopèn",
+	"wikilambda-history-title": "Sajarah révisi \"$1\" ($2)"
+}
