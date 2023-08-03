@@ -96,6 +96,10 @@ class ZPersistentObject extends ZObject {
 		if ( !( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES ] instanceof ZMultiLingualStringSet ) ) {
 			return false;
 		}
+		if ( ( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION ] !== null ) &&
+			!( $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION ] instanceof ZMultiLingualString ) ) {
+			return false;
+		}
 		return true;
 	}
 
@@ -174,9 +178,9 @@ class ZPersistentObject extends ZObject {
 	/**
 	 * Get the ZMultilingualString that contains the description of this ZPersistentObject.
 	 *
-	 * @return ZMultilingualString The mulilingual string object with the description
+	 * @return ?ZMultilingualString The mulilingual string object with the description
 	 */
-	public function getDescriptions(): ZMultilingualString {
+	public function getDescriptions(): ?ZMultilingualString {
 		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION ];
 	}
 
@@ -188,6 +192,9 @@ class ZPersistentObject extends ZObject {
 	 * @return ?string
 	 */
 	public function getDescription( $language, $defaultToEnglish = false ): ?string {
+		if ( !$this->getDescriptions() ) {
+			return null;
+		}
 		if ( $defaultToEnglish ) {
 			return $this->getDescriptions()
 				->buildStringForLanguage( $language )
