@@ -108,6 +108,17 @@ class ZTestType extends ZObject {
 				"Z31K2": [ "Z6", "Alias de type pour démonstration" ]
 			}
 		]
+	},
+	"Z2K5": {
+		"Z1K1": "Z12",
+		"Z12K1": [
+			"Z11",
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "Z1002",
+				"Z11K2": "Demonstration type short description"
+			}
+		]
 	}
 }
 EOT;
@@ -204,6 +215,17 @@ EOT;
                 ]
             }
         ]
+		},
+    "short descriptions": {
+        "type": "Multilingual text",
+        "texts": [
+						"Monolingual text",
+            {
+                "type": "Monolingual text",
+                "language": "English",
+                "text": "Demonstration type short description"
+            }
+        ]
     }
 }
 EOT;
@@ -295,6 +317,17 @@ EOT;
 				"Z1K1": "Z31",
 				"Z31K1": "Z1004",
 				"Z31K2": [ "Z6", "Alias de type pour démonstration" ]
+			}
+		]
+	},
+	"Z2K5": {
+		"Z1K1": "Z12",
+		"Z12K1": [
+			"Z11",
+			{
+				"Z1K1": "Z11",
+				"Z11K1": "Z1002",
+				"Z11K2": "Demonstration type short description"
 			}
 		]
 	}

@@ -26,13 +26,15 @@ class ZPersistentObject extends ZObject {
 	 * @param ZObject $value ZObject to be wrapped in this ZPersistentObject
 	 * @param ZObject $label ZMultiLingualString that contains this ZPersistentObject's label
 	 * @param ZObject|null $aliases ZMultiLingualStringSet with this ZPersistentObject's aliases or null
+	 * @param ZObject|null $description ZMultiLingualString that contains this ZPersistentObject's description
 	 */
-	public function __construct( $zid, $value, $label, $aliases = null ) {
+	public function __construct( $zid, $value, $label, $aliases = null, $description = null ) {
 		$aliases = $aliases ?? new ZMultiLingualStringSet( [] );
 		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ] = $zid;
 		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = $value;
 		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = $label;
 		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES ] = $aliases;
+		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION ] = $description;
 	}
 
 	/**
@@ -59,6 +61,10 @@ class ZPersistentObject extends ZObject {
 				],
 				ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES => [
 					'type' => ZTypeRegistry::Z_MULTILINGUALSTRINGSET,
+					'required' => false,
+				],
+				ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION => [
+					'type' => ZTypeRegistry::Z_MULTILINGUALSTRING,
 					'required' => false,
 				],
 			],
@@ -163,5 +169,31 @@ class ZPersistentObject extends ZObject {
 	 */
 	public function getAliases(): ZMultiLingualStringSet {
 		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES ];
+	}
+
+	/**
+	 * Get the ZMultilingualString that contains the description of this ZPersistentObject.
+	 *
+	 * @return ZMultilingualString The mulilingual string object with the description
+	 */
+	public function getDescriptions(): ZMultilingualString {
+		return $this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION ];
+	}
+
+	/**
+	 * Get the description for a given Language (or its fallback).
+	 *
+	 * @param Language $language Language in which to provide the description.
+	 * @param bool $defaultToEnglish
+	 * @return ?string
+	 */
+	public function getDescription( $language, $defaultToEnglish = false ): ?string {
+		if ( $defaultToEnglish ) {
+			return $this->getDescriptions()
+				->buildStringForLanguage( $language )
+				->fallbackWithEnglish()
+				->getString();
+		}
+		return $this->getDescriptions()->getStringForLanguage( $language );
 	}
 }
