@@ -153,7 +153,7 @@ class TesterPage extends Page {
 		 * Fills the entries in the condition block
 		 */
 		const conditionBlock = this.getCallFunctionBlockSection( 'condition' );
-		const conditionInputRadio = conditionBlock.$( `.//label[text()="${condition}"]` );
+		const conditionInputRadio = conditionBlock.$( `.//label[span/text()="${condition}"]` );
 		await ElementActions.doClick( conditionInputRadio );
 
 		/**

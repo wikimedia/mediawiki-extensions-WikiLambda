@@ -107,7 +107,7 @@ class ImplementationForm extends Page {
 	 */
 	async selectImplementationType( implementationType ) {
 		const implementationBlock = this.contentBlock.$( 'div.ext-wikilambda-implementation-type' );
-		const implementationTypeLabel = implementationBlock.$( `.//label[text()="${implementationType}"]` );
+		const implementationTypeLabel = implementationBlock.$( `.//label[span/text()="${implementationType}"]` );
 		await ElementActions.doClick( implementationTypeLabel );
 	}
 
@@ -121,8 +121,8 @@ class ImplementationForm extends Page {
 	 * @return {void}
 	 */
 	async selectProgrammingLanguage( language ) {
-		const languageBlock = this.contentBlock.$( './/label[text()="language"]/parent::div/parent::div' );
-		const languageInputSelector = languageBlock.$( './/div[@aria-haspopup="listbox" and @role="combobox"]' );
+		const languageBlock = this.contentBlock.$( '//*[@data-testid="language-dropdown"]' );
+		const languageInputSelector = languageBlock;
 		await InputDropdown.setInputDropdownReadOnly( languageBlock, languageInputSelector,
 			language );
 	}
@@ -215,7 +215,7 @@ class ImplementationForm extends Page {
 			const conditionBlock = ContentBlock.getSectionOfContentBlock( 'condition', this.compositionBlock );
 			await ContentBlock.toggleSection( 'condition', this.compositionBlock );
 			const conditionTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', conditionBlock );
-			const conditionTypeInputSelector = conditionTypeBlock.$( './/div[@aria-haspopup="listbox" and @role="combobox"]' );
+			const conditionTypeInputSelector = conditionTypeBlock.$( './/div[@data-testid="z-object-type-select"]' );
 			await InputDropdown.setInputDropdownReadOnly( conditionTypeBlock,
 				conditionTypeInputSelector, firstFunctionCallEntries.conditionType );
 
@@ -238,7 +238,7 @@ class ImplementationForm extends Page {
 
 			thenTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', thenBlock );
 			const thenNestedTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', thenTypeBlock );
-			const thenNestedTypeInputSelector = thenNestedTypeBlock.$( './/div[@aria-haspopup="listbox" and @role="combobox"]' );
+			const thenNestedTypeInputSelector = thenNestedTypeBlock.$( './/div[@data-testid="z-object-type-select"]' );
 			await InputDropdown.setInputDropdownReadOnly( thenNestedTypeBlock,
 				thenNestedTypeInputSelector, firstFunctionCallEntries.thenType );
 
@@ -261,7 +261,7 @@ class ImplementationForm extends Page {
 
 			elseTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', elseBlock );
 			const elseNestedTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', elseTypeBlock );
-			const elseNestedTypeInputSelector = elseNestedTypeBlock.$( './/div[@aria-haspopup="listbox" and @role="combobox"]' );
+			const elseNestedTypeInputSelector = elseNestedTypeBlock.$( './/div[@data-testid="z-object-type-select"]' );
 			await InputDropdown.setInputDropdownReadOnly( elseNestedTypeBlock,
 				elseNestedTypeInputSelector, firstFunctionCallEntries.elseType );
 
@@ -285,7 +285,7 @@ class ImplementationForm extends Page {
 			const conditionBlock = ContentBlock.getSectionOfContentBlock( 'condition', secondFunctionCallBlock );
 			await ContentBlock.toggleSection( 'condition', secondFunctionCallBlock );
 			const conditionTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', conditionBlock );
-			const conditionTypeInputSelector = conditionTypeBlock.$( './/div[@aria-haspopup="listbox" and @role="combobox"]' );
+			const conditionTypeInputSelector = conditionTypeBlock.$( './/div[@data-testid="z-object-type-select"]' );
 			await InputDropdown.setInputDropdownReadOnly( conditionTypeBlock,
 				conditionTypeInputSelector, secondFunctionCallEntries.conditionType );
 

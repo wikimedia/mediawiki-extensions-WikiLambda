@@ -7,7 +7,7 @@
 
 'use strict';
 
-const ObjectSelector = require( '../ObjectSelector' );
+const ObjectSelector = require( './ObjectSelector' );
 
 class LanguageContainerComponent {
 	get languageField() {

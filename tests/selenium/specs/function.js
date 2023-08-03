@@ -17,6 +17,7 @@ describe( 'Function', function () {
 	describe( 'Function viewer (CUJ1)', function () {
 
 		it( 'should allow to evaluate a function', async function () {
+			await LoginPage.loginAdmin();
 			await ListObjectsByType.open();
 			const ListFunctions = await ListObjectsByType.openFunctionsList();
 			await ListFunctions.openFunction( 'echo' );
@@ -48,7 +49,6 @@ describe( 'Function', function () {
 		} );
 
 		it( 'should create a function', async function () {
-			await LoginPage.loginAdmin();
 			await FunctionForm.open();
 			await FunctionForm.fillFirstLanguageContainer( {
 				language: 'English',

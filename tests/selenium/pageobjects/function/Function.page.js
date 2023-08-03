@@ -15,7 +15,7 @@ const { Element: WebdriverIOElementType } = require( 'webdriverio' );
 class FunctionPage extends Page {
 	get functionTitle() { return $( '.ext-wikilambda-viewpage-header-title--function-name' ); }
 	get functionZIdSelector() { return $( 'span.ext-wikilambda-viewpage-header-zid' ); }
-	get detailsTab() { return $( '//a[@role="tab" and text()="Details"]' ); }
+	get detailsTab() { return $( '//button[@role="tab" and span/text()="Details"]' ); }
 	get showMoreLanguageButton() { return $( 'button=Show more languages' ); }
 	get hideListButton() { return $( 'button=Hide list' ); }
 	get editSourceLink() { return $( '//nav[@aria-label="Views"]//a[contains(@title, "Edit")]/span[contains(text(),"Edit")]' ); }
