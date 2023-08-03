@@ -288,6 +288,27 @@ function selectBestLanguage( allLanguages ) {
 	return availableLang || allLanguages[ 0 ];
 }
 
+/**
+ * Returns whether the value of zobject after
+ * following the values of the nested properties given
+ * by the array of keys is truthy
+ *
+ * @param {Object} zobject
+ * @param {Array} keys
+ * @return {boolean}
+ */
+function isValueTruthy( zobject, keys = [] ) {
+	if ( keys.length === 0 ) {
+		return !!zobject;
+	}
+	const head = keys[ 0 ];
+	if ( zobject[ head ] ) {
+		const tail = keys.slice( 1 );
+		return isValueTruthy( zobject[ head ], tail );
+	}
+	return false;
+}
+
 module.exports = exports = {
 	modules: {
 		addZObjects: addZObjects,
@@ -2329,7 +2350,8 @@ module.exports = exports = {
 		validateZObject: function ( context ) {
 			const zobjectType = context.getters.getCurrentZObjectType,
 				zobject = context.getters.getZObjectAsJson,
-				contentRowId = context.getters.getZPersistentContentRowId();
+				contentRowId = context.getters.getZPersistentContentRowId(),
+				innerObject = zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 
 			var rowId,
 				invalidInputs,
@@ -2373,9 +2395,12 @@ module.exports = exports = {
 				// * Composition implementation has undefined function call (Z14K2.Z7K1)
 				// * Code implementation has undefined code string (Z14K3.Z16K2)
 				case Constants.Z_IMPLEMENTATION:
+
 					// invalid if a function hasn't been defined
-					if ( !zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-						Constants.Z_IMPLEMENTATION_FUNCTION ][ Constants.Z_REFERENCE_ID ] ) {
+					if ( !isValueTruthy( innerObject, [
+						Constants.Z_IMPLEMENTATION_FUNCTION,
+						Constants.Z_REFERENCE_ID
+					] ) ) {
 						rowId = context.getters.getZImplementationFunctionRowId( contentRowId );
 						context.dispatch( 'setError', {
 							rowId,
@@ -2386,17 +2411,31 @@ module.exports = exports = {
 					}
 
 					// if implementation type is composition
-					if ( zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_COMPOSITION ] ) {
+					if ( innerObject[ Constants.Z_IMPLEMENTATION_COMPOSITION ] ) {
 						// invalid if composition hasn't been defined
-						if ( !zobject[
-							Constants.Z_PERSISTENTOBJECT_VALUE
-						][
-							Constants.Z_IMPLEMENTATION_COMPOSITION
-						][
-							Constants.Z_FUNCTION_CALL_FUNCTION
-						][
-							Constants.Z_REFERENCE_ID
-						] ) {
+						// or if composition has an undefied Z7K1
+						// or if composition has an undefined Z18K1
+						if (
+							!isValueTruthy( innerObject, [ Constants.Z_IMPLEMENTATION_COMPOSITION ] ) ||
+							(
+								innerObject[ Constants.Z_IMPLEMENTATION_COMPOSITION ][
+									Constants.Z_FUNCTION_CALL_FUNCTION ] &&
+								!isValueTruthy( innerObject, [
+									Constants.Z_IMPLEMENTATION_COMPOSITION,
+									Constants.Z_FUNCTION_CALL_FUNCTION,
+									Constants.Z_REFERENCE_ID
+								] )
+							) ||
+							(
+								innerObject[ Constants.Z_IMPLEMENTATION_COMPOSITION ][
+									Constants.Z_ARGUMENT_REFERENCE_KEY ] &&
+								!isValueTruthy( innerObject, [
+									Constants.Z_IMPLEMENTATION_COMPOSITION,
+									Constants.Z_ARGUMENT_REFERENCE_KEY,
+									Constants.Z_STRING_VALUE
+								] )
+							)
+						) {
 							rowId = context.getters.getZImplementationContentRowId(
 								contentRowId,
 								Constants.Z_IMPLEMENTATION_COMPOSITION
@@ -2411,20 +2450,15 @@ module.exports = exports = {
 					}
 
 					// if implementation type is code
-					if ( zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_IMPLEMENTATION_CODE ] ) {
+					if ( innerObject[ Constants.Z_IMPLEMENTATION_CODE ] ) {
 
 						// invalid if no programming language is defined
-						if ( !zobject[
-							Constants.Z_PERSISTENTOBJECT_VALUE
-						][
-							Constants.Z_IMPLEMENTATION_CODE
-						][
-							Constants.Z_CODE_LANGUAGE
-						][
-							Constants.Z_PROGRAMMING_LANGUAGE_CODE
-						][
+						if ( !isValueTruthy( innerObject, [
+							Constants.Z_IMPLEMENTATION_CODE,
+							Constants.Z_CODE_LANGUAGE,
+							Constants.Z_PROGRAMMING_LANGUAGE_CODE,
 							Constants.Z_STRING_VALUE
-						] ) {
+						] ) ) {
 							rowId = context.getters.getZImplementationContentRowId(
 								contentRowId,
 								Constants.Z_IMPLEMENTATION_CODE
@@ -2443,15 +2477,11 @@ module.exports = exports = {
 						}
 
 						// invalid if no code is defined
-						if ( !zobject[
-							Constants.Z_PERSISTENTOBJECT_VALUE
-						][
-							Constants.Z_IMPLEMENTATION_CODE
-						][
-							Constants.Z_CODE_CODE
-						][
+						if ( !isValueTruthy( innerObject, [
+							Constants.Z_IMPLEMENTATION_CODE,
+							Constants.Z_CODE_CODE,
 							Constants.Z_STRING_VALUE
-						] ) {
+						] ) ) {
 							rowId = context.getters.getZImplementationContentRowId(
 								contentRowId,
 								Constants.Z_IMPLEMENTATION_CODE
@@ -2476,8 +2506,10 @@ module.exports = exports = {
 				// * Tester validation has undefined function call (Z20K3.Z7K1)
 				case Constants.Z_TESTER:
 					// invalid if no function is defined
-					if ( !zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-						Constants.Z_TESTER_FUNCTION ][ Constants.Z_REFERENCE_ID ] ) {
+					if ( !isValueTruthy( innerObject, [
+						Constants.Z_TESTER_FUNCTION,
+						Constants.Z_REFERENCE_ID
+					] ) ) {
 						rowId = context.getters.getZTesterFunctionRowId( contentRowId );
 						context.dispatch( 'setError', {
 							rowId,
@@ -2488,15 +2520,11 @@ module.exports = exports = {
 					}
 
 					// invalid if no function call is set
-					if ( !zobject[
-						Constants.Z_PERSISTENTOBJECT_VALUE
-					][
-						Constants.Z_TESTER_CALL
-					][
-						Constants.Z_FUNCTION_CALL_FUNCTION
-					][
+					if ( !isValueTruthy( innerObject, [
+						Constants.Z_TESTER_CALL,
+						Constants.Z_FUNCTION_CALL_FUNCTION,
 						Constants.Z_REFERENCE_ID
-					] ) {
+					] ) ) {
 						rowId = context.getters.getZTesterCallRowId( contentRowId );
 						context.dispatch( 'setError', {
 							rowId,
@@ -2507,16 +2535,11 @@ module.exports = exports = {
 					}
 
 					// invalid if no result validation is set
-					if ( !zobject[
-						Constants.Z_PERSISTENTOBJECT_VALUE
-					][
-						Constants.Z_TESTER_VALIDATION
-					][
-						Constants.Z_FUNCTION_CALL_FUNCTION
-					][
+					if ( !isValueTruthy( innerObject, [
+						Constants.Z_TESTER_VALIDATION,
+						Constants.Z_FUNCTION_CALL_FUNCTION,
 						Constants.Z_REFERENCE_ID
-					]
-					) {
+					] ) ) {
 						rowId = context.getters.getZTesterValidationRowId( contentRowId );
 						context.dispatch( 'setError', {
 							rowId,

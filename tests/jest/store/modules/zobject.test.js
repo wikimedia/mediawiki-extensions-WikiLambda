@@ -4331,7 +4331,7 @@ describe( 'zobject Vuex module', function () {
 					expect( isValid ).toEqual( true );
 				} );
 
-				it( 'Does not dispatch error for a valid composition implementation', () => {
+				it( 'Does not dispatch error for a valid composition implementation (function call)', () => {
 					context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
 					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 					context.getters.getZObjectAsJson = {
@@ -4341,6 +4341,45 @@ describe( 'zobject Vuex module', function () {
 							Z14K2: {
 								Z1K1: Constants.Z_FUNCTION_CALL,
 								Z7K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z888' }
+							}
+						}
+					};
+
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
+					expect( isValid ).toEqual( true );
+				} );
+
+				it( 'Does not dispatch error for a valid composition implementation (argument reference)', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+					context.getters.getZObjectAsJson = {
+						Z2K2: {
+							Z1K1: Constants.Z_IMPLEMENTATION,
+							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
+							Z14K2: {
+								Z1K1: Constants.Z_ARGUMENT_REFERENCE,
+								Z18K1: { Z1K1: Constants.Z_STRING, Z6K1: 'Z888K1' }
+							}
+						}
+					};
+
+					const isValid = zobjectModule.actions.validateZObject( context );
+					expect( context.dispatch ).toHaveBeenCalledTimes( 0 );
+					expect( isValid ).toEqual( true );
+				} );
+
+				it( 'Does not dispatch error for a valid composition implementation (type)', () => {
+					context.getters.getCurrentZObjectType = Constants.Z_IMPLEMENTATION;
+					context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+					context.getters.getZObjectAsJson = {
+						Z2K2: {
+							Z1K1: Constants.Z_IMPLEMENTATION,
+							Z14K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
+							Z14K2: {
+								Z1K1: Constants.Z_TYPE,
+								Z4K1: { Z1K1: Constants.Z_REFERENCE, Z9K1: 'Z999' },
+								Z4K2: [ Constants.Z_KEY ]
 							}
 						}
 					};
