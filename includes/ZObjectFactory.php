@@ -90,6 +90,7 @@ class ZObjectFactory {
 		$persistentId = null;
 		$persistentLabel = null;
 		$persistentAliases = null;
+		$persistentDescription = null;
 		if ( $inputTypeZObject->getZValue() === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
 			// Check that required keys exist
 			try {
@@ -105,6 +106,11 @@ class ZObjectFactory {
 
 			$persistentAliases = property_exists( $input,  ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES )
 				? self::createChild( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_ALIASES } )
+				: null;
+
+			$persistentDescription = property_exists( $input,
+				ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION )
+				? self::createChild( $input->{ ZTypeRegistry::Z_PERSISTENTOBJECT_DESCRIPTION } )
 				: null;
 		}
 
@@ -123,7 +129,8 @@ class ZObjectFactory {
 		$zObject = self::create( $object );
 
 		// 4.5. Construct ZPersistentObject()
-		$persistentObject = new ZPersistentObject( $persistentId, $zObject, $persistentLabel, $persistentAliases );
+		$persistentObject = new ZPersistentObject( $persistentId, $zObject, $persistentLabel,
+			$persistentAliases, $persistentDescription );
 
 		// 4.6. Check validity, to make sure that ID, label and aliases have the right format
 		if ( !$persistentObject->isValid() ) {

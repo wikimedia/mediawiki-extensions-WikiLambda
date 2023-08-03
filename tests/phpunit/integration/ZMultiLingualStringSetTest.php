@@ -193,6 +193,10 @@ class ZMultiLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 	"Z2K4": {
 		"Z1K1": "Z32",
 		"Z32K1": [ "Z31" ]
+	},
+	"Z2K5": {
+		"Z1K1": "Z12",
+		"Z12K1": [ "Z11" ]
 	}
 }
 EOT
@@ -230,6 +234,10 @@ EOT
 	"Z2K4": {
 		"Z1K1": "Z32",
 		"Z32K1": [ "Z31" ]
+	},
+	"Z2K5": {
+		"Z1K1": "Z12",
+		"Z12K1": [ "Z11" ]
 	}
 }
 EOT
