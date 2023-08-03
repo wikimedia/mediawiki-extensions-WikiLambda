@@ -147,7 +147,9 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 				$secondaryLanguages = $secondaryLanguagesObject->getAsArray();
 
 				foreach ( $secondaryLanguages as $key => $secondaryLanguage ) {
-					$zObjectStore->insertZLanguageToLanguagesCache( $zid, $secondaryLanguage );
+					// $secondaryLanguage is a ZString but we want the actual string
+					$secondaryLanguageString = $secondaryLanguage->getZValue();
+					$zObjectStore->insertZLanguageToLanguagesCache( $zid, $secondaryLanguageString );
 				}
 			}
 		}
