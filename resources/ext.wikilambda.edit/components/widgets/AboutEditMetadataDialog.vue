@@ -576,8 +576,12 @@ module.exports = exports = {
 		}
 	} ),
 	watch: {
-		forLanguage: function () {
-			this.initialize();
+		forLanguage: function ( newLang, oldLang ) {
+			// Do not clear the input field when the
+			// language picker is initially empty.
+			if ( oldLang ) {
+				this.initialize();
+			}
 		}
 	}
 };
