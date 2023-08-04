@@ -164,6 +164,7 @@ module.exports = exports = {
 	},
 	computed: $.extend( mapGetters( [
 		'getLabel',
+		'getMetadataLanguages',
 		'getRowByKeyPath',
 		'getZMonolingualTextValue',
 		'getZMonolingualStringsetValues',
@@ -577,11 +578,16 @@ module.exports = exports = {
 	} ),
 	watch: {
 		forLanguage: function ( newLang, oldLang ) {
-			// Do not clear the input field when the
-			// language picker is initially empty.
-			if ( oldLang ) {
-				this.initialize();
+			// Skip initialization if:
+			// * oldLang is empty and newLang is set
+			// * newLang doesn't have any labels yet
+			// * form has changes
+			const hasLabels = this.getMetadataLanguages().includes( newLang );
+			if ( !oldLang && !!newLang && !hasLabels && this.hasChanges ) {
+				return;
 			}
+
+			this.initialize();
 		}
 	}
 };
