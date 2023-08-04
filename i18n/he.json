@@ -46,6 +46,7 @@
 	"action-wikilambda-edit-key-label": "לערוך תוויות מפתח של סוג קיים",
 	"action-wikilambda-edit-language": "לערוך עצמי שפה טבעית קיימים",
 	"action-wikilambda-edit-object-alias": "לערוך כינויים של עצם קיים",
+	"action-wikilambda-edit-object-description": "לערוך תיאורים של עצם קיים",
 	"action-wikilambda-edit-object-label": "לערוך תוויות של עצם קיים",
 	"action-wikilambda-edit-object-type": "לערוך את הסוג של עצם קיים",
 	"action-wikilambda-edit-predefined": "לערוך עצמים מוגדרים מראש (מתחת ל־Z10000)",
@@ -82,6 +83,7 @@
 	"right-wikilambda-edit-key-label": "עריכת תוויות מפתח של סוג קיים",
 	"right-wikilambda-edit-language": "עריכת עצמי שפה טבעית קיימים",
 	"right-wikilambda-edit-object-alias": "עריכת כינויים של עצם קיים",
+	"right-wikilambda-edit-object-description": "עריכת תיאורים של עצם קיים",
 	"right-wikilambda-edit-object-label": "עריכת תוויות של עצם קיים",
 	"right-wikilambda-edit-object-type": "עריכת הסוג של עצם קיים",
 	"right-wikilambda-edit-predefined": "עריכת עצמים מוגדרים מראש (מתחת ל־Z10000)",
@@ -387,5 +389,6 @@
 	"wikilambda-function-evaluator-result-details": "פרטים",
 	"wikilambda-function-evaluator-run-function": "הרצת פונקציה",
 	"wikilambda-unknown-save-error-message": "אירעה שגיאה כלשהי בעת ניסיון לשמור את השינויים שלך.",
-	"wikilambda-list-type-change-warning": "שינית את הסוג של רשימה אחת או יותר. בעת פרסום, כל פריטי הרשימה יימחקו"
+	"wikilambda-list-type-change-warning": "שינית את הסוג של רשימה אחת או יותר. בעת פרסום, כל פריטי הרשימה יימחקו",
+	"wikilambda-function-evaluation-restriction-warning": "מצטערים! כרגע רק משתמשים שנכנסו לחשבון יכולים להריץ פונקציות."
 }

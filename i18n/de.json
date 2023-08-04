@@ -50,6 +50,7 @@
 	"action-wikilambda-edit-key-label": "Schlüsselbezeichnungen eines vorhandenen Typs bearbeiten",
 	"action-wikilambda-edit-language": "vorhandene Objekte für natürliche Sprachen bearbeiten",
 	"action-wikilambda-edit-object-alias": "Aliasse eines vorhandenen Objekts bearbeiten",
+	"action-wikilambda-edit-object-description": "Beschreibungen eines bestehenden Objekts zu bearbeiten",
 	"action-wikilambda-edit-object-label": "Bezeichnungen eines vorhandenen Objekts bearbeiten",
 	"action-wikilambda-edit-object-type": "den Typ eines vorhandenen Objekts bearbeiten",
 	"action-wikilambda-edit-predefined": "vorhandene „vordefinierte“ Objekte bearbeiten (unter Z10000)",
@@ -86,6 +87,7 @@
 	"right-wikilambda-edit-key-label": "Schlüsselbezeichnungen eines vorhandenen Typs bearbeiten",
 	"right-wikilambda-edit-language": "Vorhandene Objekte für natürliche Sprachen bearbeiten",
 	"right-wikilambda-edit-object-alias": "Aliasse eines vorhandenen Objekts bearbeiten",
+	"right-wikilambda-edit-object-description": "Beschreibungen eines bestehenden Objekts bearbeiten",
 	"right-wikilambda-edit-object-label": "Bezeichnungen eines vorhandenen Objekts bearbeiten",
 	"right-wikilambda-edit-object-type": "Den Typ eines vorhandenen Objekts bearbeiten",
 	"right-wikilambda-edit-predefined": "Vorhandene „vordefinierte“ Objekte bearbeiten (unter Z10000)",
@@ -226,7 +228,7 @@
 	"wikilambda-performtest-error-nonfunction": "Fehler bei der Testdurchführung: '$1' ist keine Funktion.",
 	"wikilambda-performtest-error-nonimplementation": "Fehler bei der Testdurchführung: „$1“ ist keine Implementierung.",
 	"wikilambda-performtest-error-invalidimplementation": "Fehler bei der Testdurchführung: „$1“ ist keine gültige Implementierung.",
-	"wikilambda-performtest-error-nontester": "Fehler bei der Testdurchführung: '$1' ist kein Tester.",
+	"wikilambda-performtest-error-nontester": "Fehler bei der Testdurchführung: „$1“ ist kein Testfall.",
 	"wikilambda-performtest-error-invalidtester": "Testfehler ausführen: „$1“ ist kein gültiger Testfall.",
 	"wikilambda-performtest-error-unknown-zid": "Fehler bei der Testdurchführung: „$1“ ist kein bekanntes Objekt.",
 	"wikilambda-editor-tester-list-label": "Testliste",
@@ -391,5 +393,6 @@
 	"wikilambda-function-evaluator-result-details": "Details",
 	"wikilambda-function-evaluator-run-function": "Funktion ausführen",
 	"wikilambda-unknown-save-error-message": "Beim Versuch, deine Änderungen zu speichern, ist ein Fehler aufgetreten.",
-	"wikilambda-list-type-change-warning": "Du hast den Typ einer oder mehrerer Listen geändert. Bei der Veröffentlichung werden alle Listenelemente gelöscht"
+	"wikilambda-list-type-change-warning": "Du hast den Typ einer oder mehrerer Listen geändert. Bei der Veröffentlichung werden alle Listenelemente gelöscht",
+	"wikilambda-function-evaluation-restriction-warning": "Es tut uns leid! Momentan können nur angemeldete Benutzer Funktionen ausführen."
 }

@@ -79,7 +79,7 @@
 	"wikilambda-editor-zobject-removekey-tooltip": "অবজেক্টটি থেকে এই কী/মানটি সরান",
 	"wikilambda-editor-zobject-clearitem-tooltip": "এই মানটি খালি করুন",
 	"wikilambda-editor-label-select-programming-language-label": "প্রোগ্রামিং ভাষা নির্বাচন করুন",
-	"wikilambda-publish-lose-changes-prompt": "আগে প্রকাশ না করেই চলে গেলে সম্পাদনা হারিয়ে যাবে।",
+	"wikilambda-publish-lose-changes-prompt": "আপনি যদি প্রকাশ না করেই চলে যান, তবে আপনি আপনার সম্পাদনাগুলি হারাবেন।",
 	"specialpages-group-wikilambda": "উইকিফাংশন পাতা",
 	"wikilambda-editor-boolean-selector": "সত্য/মিথ্যা নির্বাচন করুন",
 	"wikilambda-implementation-selector-code": "কোড",
@@ -99,7 +99,7 @@
 	"wikilambda-functioncall-metadata-evaluation-memory-usage": "মূল্যায়ন মেমরি ব্যবহার",
 	"wikilambda-functioncall-metadata-execution-memory-usage": "কার্যবাহন মেমরি ব্যবহার",
 	"wikilambda-functioncall-metadata-orchestration-cpu-usage": "সুসমন্বিত সিপিইউ ব্যবহার",
-	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "মূল্যায়ন CPU ব্যবহার",
+	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "মূল্যায়ন সিপিইউ ব্যবহার",
 	"wikilambda-functioncall-metadata-execution-cpu-usage": "কার্যবাহ সিপিইউ ব্যবহার",
 	"wikilambda-functioncall-metadata-expected-result": "প্রত্যাশিত ফলাফল",
 	"wikilambda-functioncall-metadata-actual-result": "প্রকৃত ফলাফল",
@@ -225,5 +225,6 @@
 	"wikilambda-function-evaluator-result": "ফলাফল",
 	"wikilambda-function-evaluator-result-details": "বিস্তারিত",
 	"wikilambda-function-evaluator-run-function": "ফাংশন চালান",
-	"wikilambda-unknown-save-error-message": "আপনার পরিবর্তনগুলি সংরক্ষণ করার সময় ত্রুটি ঘটেছে।"
+	"wikilambda-unknown-save-error-message": "আপনার পরিবর্তনগুলি সংরক্ষণ করার সময় ত্রুটি ঘটেছে।",
+	"wikilambda-function-evaluation-restriction-warning": "আমরা দুঃখিত! এই মুহুর্তে শুধুমাত্র প্রবেশকৃত ব্যবহারকারীরা ফাংশন চালাতে পারবেন।"
 }
