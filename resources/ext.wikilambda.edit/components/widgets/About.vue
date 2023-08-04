@@ -73,6 +73,7 @@
 			</div>
 			<!-- Dialogs -->
 			<wl-about-view-languages-dialog
+				:can-edit="canEditObject"
 				:open="showViewLanguagesDialog"
 				@open-edit-language="openEditLanguageDialog"
 				@change-selected-language="changeSelectedLanguage"
@@ -80,6 +81,7 @@
 			>
 			</wl-about-view-languages-dialog>
 			<wl-about-edit-metadata-dialog
+				:can-edit="canEditObject"
 				:edit="edit"
 				:for-language="selectedLanguage"
 				:open="showEditMetadataDialog"
