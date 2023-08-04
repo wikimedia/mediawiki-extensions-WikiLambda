@@ -112,7 +112,6 @@ span.ext-wikilambda-lang-chip {
 	border-radius: @border-radius-pill;
 	min-width: 36px;
 	padding: 0 5px;
-	text-transform: uppercase;
 	text-align: center;
 	display: inline-block;
 	box-sizing: border-box;

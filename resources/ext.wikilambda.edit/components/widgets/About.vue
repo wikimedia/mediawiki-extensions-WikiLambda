@@ -385,10 +385,6 @@ module.exports = exports = {
 	.ext-wikilambda-about-title {
 		color: @color-base;
 		font-weight: @font-weight-bold;
-
-		&::first-letter {
-			text-transform: uppercase;
-		}
 	}
 
 	.ext-wikilambda-about-value {

@@ -607,11 +607,9 @@ module.exports = exports = {
 
 	.ext-wikilambda-about-edit-metadata-title {
 		font-weight: @font-weight-bold;
-		text-transform: capitalize;
 		margin: 0 0 @spacing-25;
 
 		span {
-			text-transform: none;
 			font-weight: @font-weight-normal;
 			color: @color-subtle;
 			margin-left: @spacing-25;

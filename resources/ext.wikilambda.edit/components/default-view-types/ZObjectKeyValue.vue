@@ -890,10 +890,6 @@ module.exports = exports = {
 			padding: @spacing-25 0;
 			color: @color-subtle;
 
-			label {
-				text-transform: capitalize;
-			}
-
 			label.ext-wikilambda-key-unlabelled {
 				color: @color-placeholder;
 			}

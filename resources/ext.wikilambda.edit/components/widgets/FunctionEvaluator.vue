@@ -494,7 +494,6 @@ module.exports = exports = {
 			margin-bottom: @spacing-25;
 
 			label {
-				text-transform: capitalize;
 				font-weight: bold;
 				color: @color-base;
 			}
@@ -513,7 +512,6 @@ module.exports = exports = {
 				margin-bottom: @spacing-25;
 
 				label {
-					text-transform: capitalize;
 					font-weight: bold;
 					color: @color-base;
 				}
