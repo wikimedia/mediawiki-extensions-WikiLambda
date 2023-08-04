@@ -1,5 +1,5 @@
 {
-	"description": "Sysop can the object type",
+	"description": "Sysop can edit the object type",
 	"authorized": true,
 	"rights": [
 		"edit",

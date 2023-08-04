@@ -139,7 +139,7 @@ class ZObjectAuthorization implements LoggerAwareInterface {
 	 */
 	public function getRequiredEditRights( $fromContent, $toContent, $title ): array {
 		// Default rights necessary for edit:
-		$userRights = [ 'edit', 'wikilambda-edit' ];
+		$userRights = [ 'edit' ];
 		// 1. Get type of original object
 		$oldType = $fromContent->getZType();
 		$newType = $toContent->getZType();
