@@ -1090,7 +1090,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	private function getZTesterResultsFromDB( string $functionZid ): IResultWrapper {
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_REPLICA );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->getReplicaDatabase();
 		return $dbr->newSelectQueryBuilder()
 			->select( [ 'wlztr_pass', 'wlztr_returnobject' ] )
 			->from( 'wikilambda_ztester_results' )
@@ -1104,7 +1104,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	public function testInsertZTesterResult() {
 		$this->injectZTesterResults();
 
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_REPLICA );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->getReplicaDatabase();
 		$res = $this->getZTesterResultsFromDB( 'Z410' );
 
 		$this->assertSame( 3, $res->numRows() );
@@ -1249,7 +1249,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testClearTesterResultsSecondaryTables() {
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_REPLICA );
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->getReplicaDatabase();
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlztr_pass', 'wlztr_returnobject' ] )
 			->from( 'wikilambda_ztester_results' )
