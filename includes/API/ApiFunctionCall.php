@@ -12,6 +12,7 @@ namespace MediaWiki\Extension\WikiLambda\API;
 
 use ApiMain;
 use ApiPageSet;
+use ApiUsageException;
 use DerivativeContext;
 use FauxRequest;
 use GuzzleHttp\Exception\ClientException;
@@ -297,7 +298,21 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		$outerResponse = $api->getResult()->getResultData( [], [ 'Strip' => 'all' ] );
 
 		if ( isset( $outerResponse[ 'error' ] ) ) {
-			$zerror = ZObjectFactory::create( $outerResponse[ 'error' ] );
+			try {
+				$zerror = ZObjectFactory::create( $outerResponse['error'] );
+			} catch ( ZErrorException $e ) {
+				// Can't use $this->dieWithError() as we're static, so use the call indirectly
+				throw ApiUsageException::newWithMessage(
+					null,
+					[
+						'apierror-wikilambda_function_call-response-malformed',
+						$e->getZError()->getMessage()
+					],
+					null,
+					null,
+					0
+				);
+			}
 			if ( !( $zerror instanceof ZError ) ) {
 				$zerror = self::wrapMessageInZError( new ZQuote( $zerror ), $call );
 			}
