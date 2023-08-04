@@ -138,7 +138,9 @@ describe( 'About', () => {
 
 			// ASSERT: Renders comma-separated aliases
 			const aliasBlock = wrapper.find( '.ext-wikilambda-about-aliases' );
-			expect( aliasBlock.find( '.ext-wikilambda-about-value' ).text() ).toBe( 'one, two' );
+			expect( aliasBlock.find( '.ext-wikilambda-about-value' ).text() ).toContain( 'one,' );
+			expect( aliasBlock.find( '.ext-wikilambda-about-value' ).text() ).toContain( 'two' );
+			expect( aliasBlock.find( '.ext-wikilambda-about-value' ).html() ).toContain( '&nbsp;' );
 		} );
 
 		it( 'does not render view languages button', () => {
@@ -210,7 +212,9 @@ describe( 'About', () => {
 
 			// ASSERT: Renders comma-separated aliases
 			const aliasBlock = wrapper.find( '.ext-wikilambda-about-aliases' );
-			expect( aliasBlock.find( '.ext-wikilambda-about-value' ).text() ).toBe( 'one, two' );
+			expect( aliasBlock.find( '.ext-wikilambda-about-value' ).text() ).toContain( 'one,' );
+			expect( aliasBlock.find( '.ext-wikilambda-about-value' ).text() ).toContain( 'two' );
+			expect( aliasBlock.find( '.ext-wikilambda-about-value' ).html() ).toContain( '&nbsp;' );
 		} );
 
 		it( 'renders view languages button', () => {
