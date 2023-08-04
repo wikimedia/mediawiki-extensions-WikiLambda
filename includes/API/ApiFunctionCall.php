@@ -72,15 +72,29 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		$params = $this->extractRequestParams();
 		$pageResult = $this->getResult();
 		$stringOfAZ = $params[ 'zobject' ];
-		$zObject = json_decode( $stringOfAZ );
+		$zObjectAsStdClass = json_decode( $stringOfAZ );
 		$jsonQuery = [
-			'zobject' => $zObject,
+			'zobject' => $zObjectAsStdClass,
 			'doValidate' => false
 		];
 
 		// Arbitrary implementation calls need more than wikilambda-execute; require wikilambda-create-implementation
 		// (To run an arbitrary implementation, you have to pass a custom function rather than a ZID string.)
-		if ( !( is_string( $zObject->Z7K1 ) ) && !$userAuthority->isAllowed( 'wikilambda-create-implementation' ) ) {
+		if (
+			!$userAuthority->isAllowed( 'wikilambda-create-implementation' ) && (
+				!(
+					is_string( $zObjectAsStdClass->Z7K1 ) ||
+					(
+						is_object( $zObjectAsStdClass->Z7K1 ) &&
+						property_exists( $zObjectAsStdClass->Z7K1, 'Z9K1' ) &&
+						is_string( $zObjectAsStdClass->Z7K1->Z9K1 )
+					)
+				)
+				// HACK: Also check for inline code anyway ("Z16K2" set to something); this won't survive as a long-
+				// term strategy, as this prevents us doing generic functions etc., but it's a quick fix for now.
+				|| str_contains( $stringOfAZ, '"Z16K2"' )
+			)
+		 ) {
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
 			$this->dieWithZError( $zError );
 		}
@@ -102,7 +116,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		} catch ( ConnectException $exception ) {
 			$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
 		} catch ( ClientException | ServerException $exception ) {
-			$zError = self::wrapMessageInZError( $exception->getResponse()->getReasonPhrase(), $zObject );
+			$zError = self::wrapMessageInZError( $exception->getResponse()->getReasonPhrase(), $zObjectAsStdClass );
 			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zError );
 			$zResponseObject = new ZResponseEnvelope( null, $zResponseMap );
 			$result['data'] = $zResponseObject->getSerialized();
