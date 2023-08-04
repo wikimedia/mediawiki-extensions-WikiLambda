@@ -3,7 +3,6 @@
 	"authorized": true,
 	"rights": [
 		"edit",
-		"wikilambda-edit",
 		"wikilambda-edit-object-label",
 		"wikilambda-edit-object-alias",
 		"wikilambda-edit-object-description"
