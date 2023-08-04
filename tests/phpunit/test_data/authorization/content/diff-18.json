@@ -3,7 +3,6 @@
 	"authorized": false,
 	"rights": [
 		"edit",
-		"wikilambda-edit",
 		"wikilambda-edit-programming"
 	],
 	"groups": [ "functioneer" ],

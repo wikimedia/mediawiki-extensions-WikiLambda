@@ -160,7 +160,6 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 		);
 		$this->assertEquals( [
 			'edit',
-			'wikilambda-edit',
 			'wikilambda-edit-attached-implementation'
 		], $rights );
 
@@ -203,7 +202,6 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 		);
 		$this->assertEquals( [
 			'edit',
-			'wikilambda-edit',
 			'wikilambda-edit-attached-tester'
 		], $rights );
 
@@ -264,7 +262,6 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 		);
 		$this->assertEquals( [
 			'edit',
-			'wikilambda-edit',
 			'wikilambda-edit-user-function'
 		], $rights );
 
@@ -328,7 +325,6 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 		);
 		$this->assertEquals( [
 			'edit',
-			'wikilambda-edit',
 			'wikilambda-edit-argument-label',
 			'wikilambda-edit-object-label'
 		], $rights );
