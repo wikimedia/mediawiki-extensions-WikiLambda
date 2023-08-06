@@ -260,10 +260,6 @@ module.exports = exports = {
 		& > .ext-wikilambda-value-block {
 			margin-bottom: @spacing-75;
 
-			.ext-wikilambda-value-text {
-				text-transform: capitalize;
-			}
-
 			.ext-wikilambda-value-input {
 				margin-top: @spacing-25;
 			}

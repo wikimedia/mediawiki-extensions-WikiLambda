@@ -148,7 +148,6 @@ module.exports = exports = {
 
 .ext-wikilambda-tester-table {
 	display: flex;
-	text-transform: capitalize;
 
 	&__message-icon {
 		svg {

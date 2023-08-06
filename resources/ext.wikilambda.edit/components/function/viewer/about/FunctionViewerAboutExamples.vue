@@ -108,7 +108,6 @@ module.exports = exports = {
 		&-item {
 			padding-left: @spacing-100;
 			padding-right: @spacing-100;
-			text-transform: capitalize;
 		}
 	}
 }

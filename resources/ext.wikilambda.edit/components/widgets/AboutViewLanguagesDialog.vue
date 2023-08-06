@@ -331,7 +331,6 @@ module.exports = exports = {
 			}
 
 			.ext-wikilambda-about-language-item-title {
-				text-transform: capitalize;
 				margin: 0;
 			}
 
