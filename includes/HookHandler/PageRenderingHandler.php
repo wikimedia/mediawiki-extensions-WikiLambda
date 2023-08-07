@@ -111,12 +111,12 @@ class PageRenderingHandler implements
 
 		// Rewrite the 'talk' namespace link to have ?uselang in it
 		// Again, we have to set it twice
-		if ( strpos( $links['namespaces']['talk']['class'] ?? '', '?' ) ) {
-			$talkRewrittenHref = '/wiki/Talk:' . $zid . '?uselang=' . $lang;
-		} else {
+		if ( strpos( $links['namespaces']['talk']['href'] ?? '', '?' ) ) {
 			// @phan-suppress-next-next-line PhanTypeArraySuspiciousNull, PhanTypeInvalidDimOffset
 			// @phan-suppress-next-line PhanTypeSuspiciousStringExpression
 			$talkRewrittenHref = $links['namespaces']['talk']['href'] . '&uselang=' . $lang;
+		} else {
+			$talkRewrittenHref = '/wiki/Talk:' . $zid . '?uselang=' . $lang;
 		}
 
 		$links['namespaces']['talk']['href'] = $talkRewrittenHref;
