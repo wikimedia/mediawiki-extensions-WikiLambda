@@ -166,7 +166,7 @@ class ZObjectEditAction extends Action {
 				'a',
 				[
 					'class' => 'ext-wikilambda-editpage-header-description--link',
-					'href' => 'wikilambda-users-help-link'
+					'href' => $this->msg( 'wikilambda-users-help-link' )->text()
 				],
 				$this->msg( 'wikilambda-special-edit-function-definition-special-permission-link-label' )->text()
 			);
