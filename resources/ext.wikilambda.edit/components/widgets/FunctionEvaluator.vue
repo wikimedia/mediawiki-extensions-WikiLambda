@@ -20,6 +20,15 @@
 				{{ notLoggedInWarning }}
 			</cdx-message>
 
+			<!-- Not-runnable user warning -->
+			<cdx-message
+				v-if="!hasImplementations"
+				type="notice"
+				class="ext-wikilambda-function-evaluator-message"
+			>
+				{{ $i18n( 'wikilambda-function-evaluation-restriction-notrunnable' ).text() }}
+			</cdx-message>
+
 			<!-- Function Call -->
 			<div
 				v-if="showFunctionSelector"

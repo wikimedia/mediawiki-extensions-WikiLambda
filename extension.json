@@ -647,6 +647,7 @@
 				"wikilambda-function-evaluator-run-function",
 				"wikilambda-unknown-save-error-message",
 				"wikilambda-list-type-change-warning",
+				"wikilambda-function-evaluation-restriction-notrunnable",
 				"wikilambda-function-evaluation-restriction-warning"
 			]
 		}
