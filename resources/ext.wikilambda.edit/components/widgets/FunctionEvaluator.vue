@@ -17,7 +17,7 @@
 				type="warning"
 				class="ext-wikilambda-function-evaluator-message"
 			>
-				{{ notLoggedInWarning }}
+				{{ $i18n( 'wikilambda-function-evaluation-restriction-warning' ).text() }}
 			</cdx-message>
 
 			<!-- Not-runnable user warning -->
@@ -307,16 +307,6 @@ module.exports = exports = {
 		 */
 		functionCallLabel: function () {
 			return this.getLabel( Constants.Z_FUNCTION_CALL_FUNCTION );
-		},
-
-		/**
-		 * Returns the warning messages to inform logged out users that they
-		 * don't have permission to run functions.
-		 *
-		 * @return {string}
-		 */
-		notLoggedInWarning: function () {
-			return this.$i18n( 'wikilambda-function-evaluation-restriction-warning' );
 		},
 
 		/**
