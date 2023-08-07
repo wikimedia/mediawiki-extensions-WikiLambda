@@ -21,14 +21,14 @@
 				class="ext-wikilambda-evaluation-result-actions__metadata"
 				role="button"
 				@click="showMetadata = !showMetadata"
-			>{{ detailsText }}</a>
+			>{{ $i18n( 'wikilambda-function-evaluator-result-details' ).text() }}</a>
 			<a
 				v-if="hasError"
 				class="ext-wikilambda-evaluation-result-actions__error"
 				role="button"
 				@click="showError = !showError"
 			>
-				{{ errorText }}
+				{{ $i18n( 'wikilambda-functioncall-metadata-errors' ).text() }}
 			</a>
 		</div>
 
@@ -191,24 +191,6 @@ module.exports = exports = {
 		parsedMetaDataHelpLink: function () {
 			const unformattedLink = this.$i18n( 'wikilambda-metadata-help-link' ).text();
 			return mw.internalWikiUrlencode( unformattedLink );
-		},
-
-		/**
-		 * Returns the message of the "Show error" button
-		 *
-		 * @return {string}
-		 */
-		errorText: function () {
-			return this.$i18n( 'wikilambda-functioncall-metadata-errors' ).text();
-		},
-
-		/**
-		 * Returns the message of the "Show metadata" button
-		 *
-		 * @return {string}
-		 */
-		detailsText: function () {
-			return this.$i18n( 'wikilambda-function-evaluator-result-details' ).text();
 		}
 	} ),
 	beforeCreate: function () {
