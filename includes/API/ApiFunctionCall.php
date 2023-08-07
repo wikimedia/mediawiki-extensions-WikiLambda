@@ -77,6 +77,8 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			'zobject' => $zObjectAsStdClass,
 			'doValidate' => false
 		];
+		// Re-encoding to round-trip whitespace / encoded entities / etc.
+		$zObjectAsJsonStringForEvaluation = json_encode( $zObjectAsStdClass );
 
 		// Arbitrary implementation calls need more than wikilambda-execute; require wikilambda-create-implementation
 		// (To run an arbitrary implementation, you have to pass a custom function rather than a ZID string.)
@@ -92,7 +94,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 				)
 				// HACK: Also check for inline code anyway ("Z16K2" set to something); this won't survive as a long-
 				// term strategy, as this prevents us doing generic functions etc., but it's a quick fix for now.
-				|| str_contains( $stringOfAZ, '"Z16K2"' )
+				|| str_contains( $zObjectAsJsonStringForEvaluation, '"Z16K2":`' )
 			)
 		 ) {
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
