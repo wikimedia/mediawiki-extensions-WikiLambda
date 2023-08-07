@@ -33,7 +33,7 @@
 	"action-wikilambda-create-unit": "crear nove objectos de unitate",
 	"action-wikilambda-disconnect-implementation": "disconnecter un implementation de su function de maniera que illo non pote esser executate",
 	"action-wikilambda-disconnect-tester": "disconnecter un caso de test de su function",
-	"action-wikilambda-edit": "modificar alcun objecto existente",
+	"action-wikilambda-edit": "modificar le contento de un objecto existente",
 	"action-wikilambda-edit-argument-label": "modificar etiquettas de argumento de un function existente",
 	"action-wikilambda-edit-attached-implementation": "modificar le implementation que es connectite a un function",
 	"action-wikilambda-edit-attached-tester": "modificar le caso de test que es connectite a un function",
@@ -45,6 +45,7 @@
 	"action-wikilambda-edit-key-label": "modificar etiquettas clave de un typo existente",
 	"action-wikilambda-edit-language": "modificar objectos de linguage natural existente",
 	"action-wikilambda-edit-object-alias": "modificar aliases de un objecto existente",
+	"action-wikilambda-edit-object-description": "modificar le descriptiones de un objecto existente",
 	"action-wikilambda-edit-object-label": "modificar etiquettas de un objecto existente",
 	"action-wikilambda-edit-object-type": "modificar le typo de un objecto existente",
 	"action-wikilambda-edit-predefined": "modificar objectos 'pre-definite' existente (sub Z10000)",
@@ -69,7 +70,7 @@
 	"right-wikilambda-create-unit": "Crear nove objectos de unitate",
 	"right-wikilambda-disconnect-implementation": "Disconnecter un implementation de su function de maniera que illo non pote esser executate",
 	"right-wikilambda-disconnect-tester": "Disconnecter un caso de test de su function",
-	"right-wikilambda-edit": "Modificar alcun objecto existente",
+	"right-wikilambda-edit": "Modificar le contento de un objecto existente",
 	"right-wikilambda-edit-argument-label": "Modificar etiquettas de argumento de un function existente",
 	"right-wikilambda-edit-attached-implementation": "Modificar un implementation que es connectite a un function",
 	"right-wikilambda-edit-attached-tester": "Modificar le caso de test que es connectite a un function",
@@ -81,6 +82,7 @@
 	"right-wikilambda-edit-key-label": "Modificar etiquettas clave de un typo existente",
 	"right-wikilambda-edit-language": "Modificar objectos de linguage natural existente",
 	"right-wikilambda-edit-object-alias": "Modificar aliases de un objecto existente",
+	"right-wikilambda-edit-object-description": "Modificar descriptiones de un objecto existente",
 	"right-wikilambda-edit-object-label": "Modificar etiquettas de un objecto existente",
 	"right-wikilambda-edit-object-type": "Modificar le typo de un objecto existente",
 	"right-wikilambda-edit-predefined": "Modificar objectos 'pre-definite' existente (sub Z10000)",
@@ -386,5 +388,6 @@
 	"wikilambda-function-evaluator-result-details": "Detalios",
 	"wikilambda-function-evaluator-run-function": "Executar function",
 	"wikilambda-unknown-save-error-message": "Un error ha occurrite durante le tentativa de salveguardar tu cambiamentos.",
-	"wikilambda-list-type-change-warning": "Tu ha cambiate le typo de un o plure listas. Al publication, tote le elementos del lista essera delite."
+	"wikilambda-list-type-change-warning": "Tu ha cambiate le typo de un o plure listas. Al publication, tote le elementos del lista essera delite.",
+	"wikilambda-function-evaluation-restriction-warning": "Nos lo regretta! Al momento, solmente usatores que ha aperite session pote executar functiones."
 }

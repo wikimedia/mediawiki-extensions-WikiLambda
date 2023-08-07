@@ -45,6 +45,7 @@
 	"action-wikilambda-edit-key-label": "urejanje ključnih oznak obstoječega tipa",
 	"action-wikilambda-edit-language": "urejanje obstoječih objektov naravnega jezika",
 	"action-wikilambda-edit-object-alias": "urejanje vzdevkov obstoječega objekta",
+	"action-wikilambda-edit-object-description": "urejanje opisov obstoječega objekta",
 	"action-wikilambda-edit-object-label": "urejanje oznak obstoječih objektov",
 	"action-wikilambda-edit-object-type": "urejanje tipa obstoječega objekta",
 	"action-wikilambda-edit-predefined": "urejanje obstoječih »predhodno opredeljenih« Z\nobjektov (pod Z10000)",
@@ -81,6 +82,7 @@
 	"right-wikilambda-edit-key-label": "Urejanje ključnih oznak obstoječega tipa",
 	"right-wikilambda-edit-language": "Urejanje obstoječih objektov naravnega jezika",
 	"right-wikilambda-edit-object-alias": "Urejanje sopomenk obstoječega objekta",
+	"right-wikilambda-edit-object-description": "Urejanje opisov obstoječega objekta",
 	"right-wikilambda-edit-object-label": "Urejanje oznak obstoječih objektov",
 	"right-wikilambda-edit-object-type": "Urejanje tipa obstoječega objekta",
 	"right-wikilambda-edit-predefined": "Urejanje obstoječih »predhodno opredeljenih« objektov (pod Z10000)",
@@ -386,5 +388,6 @@
 	"wikilambda-function-evaluator-result-details": "Podrobnosti",
 	"wikilambda-function-evaluator-run-function": "Zaženi funkcijo",
 	"wikilambda-unknown-save-error-message": "Pri poskusu shranjevanja sprememb je prišlo do napake.",
-	"wikilambda-list-type-change-warning": "Spremenili ste vrsto enega ali več seznamov. Ob objavi bodo vsi elementi seznama izbrisani"
+	"wikilambda-list-type-change-warning": "Spremenili ste vrsto enega ali več seznamov. Ob objavi bodo vsi elementi seznama izbrisani",
+	"wikilambda-function-evaluation-restriction-warning": "Žal lahko trenutno izvajajo funkcije samo prijavljeni uporabniki."
 }

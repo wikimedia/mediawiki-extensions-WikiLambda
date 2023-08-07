@@ -48,6 +48,8 @@
 	"action-wikilambda-create-function": "crear nuevos Objetos Z de Funciones Z",
 	"action-wikilambda-create-implementation": "crear nuevas Objetos Z de Implementaciones Z",
 	"action-wikilambda-create-predefined": "crear nuevos Objetos Z «predefinidos» (por debajo Z10000)",
+	"action-wikilambda-edit-object-description": "editar descripciones de un Objeto existente",
+	"right-wikilambda-edit-object-description": "Editar descripciones de un objeto existente",
 	"wikilambda-persistentzobject": "Objeto Z",
 	"wikilambda-persistentzobject-contents": "Contenido",
 	"wikilambda-persistentzobject-description": "Comienza a crear tu Objeto Z seleccionando un tipo a continuación. Puedes crear una función haciendo clic en este enlace:",
@@ -300,5 +302,6 @@
 	"wikilambda-function-evaluator-running": "Corriendo...",
 	"wikilambda-function-evaluator-result": "Resultado",
 	"wikilambda-function-evaluator-result-details": "Detalles",
-	"wikilambda-list-type-change-warning": "Ha cambiado el tipo de una o más listas. Al publicar, todos los elementos de la lista serán eliminados"
+	"wikilambda-list-type-change-warning": "Ha cambiado el tipo de una o más listas. Al publicar, todos los elementos de la lista serán eliminados",
+	"wikilambda-function-evaluation-restriction-warning": "¡Lo sentimos! Por el momento, solo los usuarios registrados pueden ejecutar funciones."
 }

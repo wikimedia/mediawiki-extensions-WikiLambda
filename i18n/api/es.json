@@ -2,13 +2,16 @@
 	"@metadata": {
 		"authors": [
 			"JDíaz32",
-			"Jackiezelaya"
+			"Jackiezelaya",
+			"No se"
 		]
 	},
 	"apihelp-wikilambda_function_call-example-timeout": "Invocar una función que intenta ejecutarse para siempre, por lo que se agota el tiempo de espera en el evaluador",
 	"apihelp-wikilambda_function_call-example-orchestrator-timeout": "Invocar una función que intenta ejecutarse durante demasiado tiempo en el orquestador, por lo que se agota el tiempo de espera",
+	"apierror-wikilambda_function_call-response-malformed": "La respuesta a la llamada de función se interrumpió: '$1'.",
 	"apihelp-query+wikilambdafn_search-summary": "Esta lista de consultas de API busca los IDENTIFICADORES de todos los ZObjects asociados con un identificador de función Z proporcionado",
 	"apihelp-query+wikilambdafn_search-example-simple": "Buscar identificadores de ZImplementation que están asociados a un identificador de ZFunction determinado",
 	"apihelp-query+wikilambdafn_search-param-zfunction_id": "El ID de función Z para buscar",
-	"apihelp-query+wikilambdafn_search-param-type": "El tipo de ZObject referenced por el ZFunction para buscar"
+	"apihelp-query+wikilambdafn_search-param-type": "El tipo de ZObject referenced por el ZFunction para buscar",
+	"apihelp-query+wikilambdafn_search-param-limit": "El número máximo de resultados a devolver"
 }
