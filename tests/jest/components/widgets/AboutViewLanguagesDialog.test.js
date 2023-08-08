@@ -60,19 +60,38 @@ describe( 'AboutViewLanguagesDialog', () => {
 
 	describe( 'From 2 to 5 languages available', () => {
 		it( 'renders without errors', () => {
-			const wrapper = mount( AboutViewLanguagesDialog, { props: { open: true } } );
+			const wrapper = mount( AboutViewLanguagesDialog, { props: {
+				open: true,
+				canEdit: true
+			} } );
 			expect( wrapper.find( '.ext-wikilambda-about-language-list' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders without language search box', () => {
-			const wrapper = mount( AboutViewLanguagesDialog, { props: { open: true } } );
+			const wrapper = mount( AboutViewLanguagesDialog, { props: {
+				open: true,
+				canEdit: true
+			} } );
 			expect( wrapper.find( '.ext-wikilambda-about-language-list-search' ).exists() ).toBe( false );
 		} );
 
 		it( 'renders all available languages', () => {
-			const wrapper = mount( AboutViewLanguagesDialog, { props: { open: true } } );
+			const wrapper = mount( AboutViewLanguagesDialog, { props: {
+				open: true,
+				canEdit: true
+			} } );
 			const items = wrapper.findAll( '.ext-wikilambda-about-language-item' );
 			expect( items ).toHaveLength( 2 );
+		} );
+
+		it( 'renders enabled add language button', () => {
+			const wrapper = mount( AboutViewLanguagesDialog, { props: {
+				open: true,
+				canEdit: true
+			} } );
+			// ASSERT: Default action is disabled
+			const addLanguage = wrapper.find( '.cdx-dialog__footer__default-action' );
+			expect( addLanguage.attributes( 'disabled' ) ).not.toBeDefined();
 		} );
 	} );
 
@@ -120,23 +139,35 @@ describe( 'AboutViewLanguagesDialog', () => {
 		} );
 
 		it( 'renders without errors', () => {
-			const wrapper = mount( AboutViewLanguagesDialog, { props: { open: true } } );
+			const wrapper = mount( AboutViewLanguagesDialog, { props: {
+				open: true,
+				canEdit: true
+			} } );
 			expect( wrapper.find( '.ext-wikilambda-about-language-list' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders with language search box', () => {
-			const wrapper = mount( AboutViewLanguagesDialog, { props: { open: true } } );
+			const wrapper = mount( AboutViewLanguagesDialog, { props: {
+				open: true,
+				canEdit: true
+			} } );
 			expect( wrapper.find( '.ext-wikilambda-about-language-list-search' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders all available languages', () => {
-			const wrapper = mount( AboutViewLanguagesDialog, { props: { open: true } } );
+			const wrapper = mount( AboutViewLanguagesDialog, { props: {
+				open: true,
+				canEdit: true
+			} } );
 			const items = wrapper.findAll( '.ext-wikilambda-about-language-item' );
 			expect( items ).toHaveLength( 7 );
 		} );
 
 		it( 'renders items with their name or untitled', () => {
-			const wrapper = mount( AboutViewLanguagesDialog, { props: { open: true } } );
+			const wrapper = mount( AboutViewLanguagesDialog, { props: {
+				open: true,
+				canEdit: true
+			} } );
 			const items = wrapper.findAll( '.ext-wikilambda-about-language-item' );
 
 			const basque = items[ 2 ];
@@ -154,7 +185,10 @@ describe( 'AboutViewLanguagesDialog', () => {
 		} );
 
 		it( 'emits change-selected-language and open-edit-language event when clicking on an item', () => {
-			const wrapper = mount( AboutViewLanguagesDialog, { props: { open: true } } );
+			const wrapper = mount( AboutViewLanguagesDialog, { props: {
+				open: true,
+				canEdit: true
+			} } );
 			const items = wrapper.findAll( '.ext-wikilambda-about-language-item' );
 
 			// ACT: click on quechua item
@@ -165,6 +199,26 @@ describe( 'AboutViewLanguagesDialog', () => {
 			expect( wrapper.emitted( 'change-selected-language' ) ).toBeTruthy();
 			expect( wrapper.emitted( 'open-edit-language' ) ).toBeTruthy();
 			expect( wrapper.emitted() ).toHaveProperty( 'change-selected-language', [ [ 'Z1678' ] ] );
+		} );
+	} );
+
+	describe( 'No edit rights', () => {
+		it( 'renders without errors', () => {
+			const wrapper = mount( AboutViewLanguagesDialog, { props: {
+				open: true,
+				canEdit: false
+			} } );
+			expect( wrapper.find( '.ext-wikilambda-about-language-list' ).exists() ).toBe( true );
+		} );
+
+		it( 'renders disabled add language button', () => {
+			const wrapper = mount( AboutViewLanguagesDialog, { props: {
+				open: true,
+				canEdit: false
+			} } );
+			// ASSERT: Default action is disabled
+			const addLanguage = wrapper.find( '.cdx-dialog__footer__default-action' );
+			expect( addLanguage.attributes( 'disabled' ) ).toBeDefined();
 		} );
 	} );
 } );

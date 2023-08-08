@@ -59,6 +59,7 @@
 					<div class="ext-wikilambda-about-edit-metadata-field">
 						<wl-text-input
 							v-model="name"
+							:disabled="!canEdit"
 							:placeholder="namePlaceholder"
 							:max-chars="maxLabelChars"
 							data-testid="edit-label-input"
@@ -77,6 +78,7 @@
 					<div class="ext-wikilambda-about-edit-metadata-field">
 						<wl-text-input
 							v-model="description"
+							:disabled="!canEdit"
 							:model-value="description"
 							:placeholder="descriptionPlaceholder"
 							:max-chars="maxDescriptionChars"
@@ -95,6 +97,7 @@
 					<div class="ext-wikilambda-about-edit-metadata-field">
 						<wl-chip-container
 							:chips="aliases"
+							:disabled="!canEdit"
 							:input-placeholder="aliasesPlaceholder"
 							@add-chip="addAlias"
 							@remove-chip="removeAlias"
@@ -137,6 +140,10 @@ module.exports = exports = {
 			type: Boolean,
 			required: true
 		},
+		canEdit: {
+			type: Boolean,
+			required: true
+		},
 		forLanguage: {
 			type: String,
 			required: true
@@ -159,7 +166,7 @@ module.exports = exports = {
 			fakeAliasId: 0,
 			initialName: '',
 			initialDescription: '',
-			initialAliases: ''
+			initialAliases: '[]'
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -301,7 +308,7 @@ module.exports = exports = {
 				label: this.edit ?
 					this.$i18n( 'wikilambda-about-widget-done-button' ).text() :
 					this.$i18n( 'wikilambda-about-widget-publish-button' ).text(),
-				disabled: !this.hasChanges
+				disabled: !this.hasChanges || !this.canEdit
 			};
 		},
 

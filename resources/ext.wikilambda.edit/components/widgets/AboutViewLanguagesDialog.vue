@@ -87,6 +87,10 @@ module.exports = exports = {
 		'cdx-search-input': CdxSearchInput
 	},
 	props: {
+		canEdit: {
+			type: Boolean,
+			required: true
+		},
 		open: {
 			type: Boolean,
 			required: true,
@@ -172,7 +176,8 @@ module.exports = exports = {
 		 */
 		defaultAction: function () {
 			return {
-				label: this.$i18n( 'wikilambda-about-widget-add-language' ).text()
+				label: this.$i18n( 'wikilambda-about-widget-add-language' ).text(),
+				disabled: !this.canEdit
 			};
 		},
 

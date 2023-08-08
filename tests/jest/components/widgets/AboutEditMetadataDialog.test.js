@@ -46,6 +46,7 @@ describe( 'AboutEditMetadataDialog', () => {
 		it( 'renders without errors', () => {
 			const wrapper = mount( AboutEditMetadataDialog, { props: {
 				edit: true,
+				canEdit: true,
 				open: true,
 				forLanguage: 'Z1002'
 			} } );
@@ -56,6 +57,7 @@ describe( 'AboutEditMetadataDialog', () => {
 		it( 'renders done button when in edit mode', async () => {
 			const wrapper = mount( AboutEditMetadataDialog, { props: {
 				edit: true,
+				canEdit: true,
 				open: true,
 				forLanguage: 'Z1002'
 			} } );
@@ -90,6 +92,7 @@ describe( 'AboutEditMetadataDialog', () => {
 		it( 'renders publish button when in view mode', async () => {
 			const wrapper = mount( AboutEditMetadataDialog, { props: {
 				edit: false,
+				canEdit: true,
 				open: true,
 				forLanguage: 'Z1002'
 			} } );
@@ -119,6 +122,7 @@ describe( 'AboutEditMetadataDialog', () => {
 		it( 'renders empty metadata fields', async () => {
 			const wrapper = mount( AboutEditMetadataDialog, { props: {
 				edit: true,
+				canEdit: true,
 				open: true,
 				forLanguage: 'Z1002'
 			} } );
@@ -180,6 +184,7 @@ describe( 'AboutEditMetadataDialog', () => {
 		it( 'renders metadata fields and values', async () => {
 			const wrapper = mount( AboutEditMetadataDialog, { props: {
 				edit: true,
+				canEdit: true,
 				open: true,
 				forLanguage: 'Z1002'
 			} } );
@@ -201,16 +206,19 @@ describe( 'AboutEditMetadataDialog', () => {
 			// ASSERT: Name block renders text input component
 			const nameBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-name' );
 			expect( nameBlock.findComponent( { name: 'wl-text-input' } ).exists() ).toBe( true );
+			expect( nameBlock.find( 'input' ).attributes( 'disabled' ) ).not.toBeDefined();
 			expect( nameBlock.find( '.ext-wikilambda-about-edit-metadata-char-counter' ).text() ).toBe( '96' );
 
 			// ASSERT: Description block renders text input  component
 			const descriptionBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-description' );
 			expect( descriptionBlock.findComponent( { name: 'wl-text-input' } ).exists() ).toBe( true );
+			expect( descriptionBlock.find( 'input' ).attributes( 'disabled' ) ).not.toBeDefined();
 			expect( descriptionBlock.find( '.ext-wikilambda-about-edit-metadata-char-counter' ).text() ).toBe( '84' );
 
 			// ASSERT: After initialization, aliases have value
 			const aliasBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-alias' );
 			expect( aliasBlock.findComponent( { name: 'wl-chip-container' } ).vm.chips ).toHaveLength( 2 );
+			expect( aliasBlock.findComponent( { name: 'wl-chip-container' } ).props( 'disabled' ) ).toBe( false );
 
 			// ASSERT: Primary action is disabled
 			const publishButton = wrapper.find( '.cdx-dialog__footer__primary-action' );
@@ -220,6 +228,7 @@ describe( 'AboutEditMetadataDialog', () => {
 		it( 'enables publish button when making changes', async () => {
 			const wrapper = mount( AboutEditMetadataDialog, { props: {
 				edit: true,
+				canEdit: true,
 				open: true,
 				forLanguage: 'Z1002'
 			} } );
@@ -273,6 +282,83 @@ describe( 'AboutEditMetadataDialog', () => {
 			expect(
 				wrapper.find( '.cdx-dialog__footer__primary-action' ).attributes( 'disabled' )
 			).toBeUndefined();
+		} );
+	} );
+
+	describe( 'No edit rights', () => {
+
+		beforeEach( () => {
+			const name = { langIsoCode: 'en', langZid: 'Z1002', rowId: 1 };
+			const description = { langIsoCode: 'en', langZid: 'Z1002', rowId: 2 };
+			const alias = { langIsoCode: 'en', langZid: 'Z1002', rowId: 3 };
+			const aliasValues = [ { rowId: 4, value: 'one' }, { rowId: 5, value: 'two' } ];
+
+			getters = $.extend( getters, {
+				getZPersistentAlias: createGettersWithFunctionsMock( alias ),
+				getZPersistentDescription: createGettersWithFunctionsMock( description ),
+				getZPersistentName: createGettersWithFunctionsMock( name ),
+				getZMonolingualStringsetValues: createGettersWithFunctionsMock( aliasValues ),
+				getZMonolingualTextValue: () => ( rowId ) => {
+					return rowId === 1 ? 'name' : 'some description';
+				}
+			} );
+
+			global.store.hotUpdate( { getters: getters, actions: actions } );
+		} );
+
+		it( 'renders without errors', () => {
+			const wrapper = mount( AboutEditMetadataDialog, { props: {
+				edit: true,
+				canEdit: false,
+				open: true,
+				forLanguage: 'Z1002'
+			} } );
+
+			expect( wrapper.find( '.ext-wikilambda-about-edit-metadata' ).exists() ).toBe( true );
+		} );
+
+		it( 'renders disabled metadata fields and values', async () => {
+			const wrapper = mount( AboutEditMetadataDialog, { props: {
+				edit: true,
+				canEdit: false,
+				open: true,
+				forLanguage: 'Z1002'
+			} } );
+
+			// ACT: initialize and wait
+			wrapper.vm.initialize();
+			await wrapper.vm.$nextTick();
+
+			// ASSERT: Language is intiialized to user language
+			const languageBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-language' );
+			expect( languageBlock.findComponent( { name: 'cdx-lookup' } ).vm.selected ).toBe( 'Z1002' );
+			expect( languageBlock.findComponent( { name: 'cdx-lookup' } ).vm.initialInputValue ).toBe( 'English' );
+
+			// ASSERT: Values are initialized
+			expect( wrapper.vm.name ).toEqual( 'name' );
+			expect( wrapper.vm.description ).toEqual( 'some description' );
+			expect( wrapper.vm.aliases ).toEqual( [ { id: 4, value: 'one' }, { id: 5, value: 'two' } ] );
+
+			// ASSERT: Name block renders text input component
+			const nameBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-name' );
+			expect( nameBlock.findComponent( { name: 'wl-text-input' } ).exists() ).toBe( true );
+			expect( nameBlock.find( 'input' ).attributes( 'disabled' ) ).toBeDefined();
+			expect( nameBlock.find( '.ext-wikilambda-about-edit-metadata-char-counter' ).text() ).toBe( '96' );
+
+			// ASSERT: Description block renders text input  component
+			const descriptionBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-description' );
+			expect( descriptionBlock.findComponent( { name: 'wl-text-input' } ).exists() ).toBe( true );
+			expect( descriptionBlock.find( 'input' ).attributes( 'disabled' ) ).toBeDefined();
+			expect( descriptionBlock.find( '.ext-wikilambda-about-edit-metadata-char-counter' ).text() ).toBe( '84' );
+
+			// ASSERT: After initialization, aliases have value
+			const aliasBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-alias' );
+			expect( aliasBlock.findComponent( { name: 'wl-chip-container' } ).vm.chips ).toHaveLength( 2 );
+			expect( aliasBlock.findComponent( { name: 'wl-chip-container' } ).props( 'disabled' ) ).toBe( true );
+
+			// ASSERT: Primary action is disabled
+			const publishButton = wrapper.find( '.cdx-dialog__footer__primary-action' );
+			expect( publishButton.attributes( 'disabled' ) ).toBeDefined();
 		} );
 	} );
 } );

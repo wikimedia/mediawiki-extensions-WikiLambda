@@ -5,7 +5,11 @@
 	@license MIT
 -->
 <template>
-	<div class="ext-wikilambda-chip-container" @click="focusInput">
+	<div
+		class="ext-wikilambda-chip-container"
+		:class="{ 'ext-wikilambda-chip-container__disabled': disabled }"
+		@click="focusInput"
+	>
 		<wl-chip
 			v-for="chip in chips"
 			:key="chip.id"
@@ -16,10 +20,10 @@
 			@remove-chip="removeChip"
 		></wl-chip>
 		<input
-			v-if="canAdd"
 			ref="chipInput"
 			v-model="newText"
 			class="ext-wikilambda-chip-container__input"
+			:disabled="disabled"
 			:aria-label="inputAriaLabel"
 			:placeholder="!hasChips ? inputPlaceholder : ''"
 			@keydown.enter="addChip"
@@ -40,10 +44,14 @@ module.exports = exports = {
 		chips: {
 			type: Array,
 			required: true,
-
 			default: function () {
 				return [];
 			}
+		},
+		disabled: { // disabled field, no edits
+			type: Boolean,
+			required: false,
+			default: false
 		},
 		canAdd: {
 			type: Boolean, // can add a chip to the collection
@@ -89,10 +97,12 @@ module.exports = exports = {
 			}
 		},
 		removeChip: function ( id ) {
-			this.$emit( 'remove-chip', id );
+			if ( !this.disabled ) {
+				this.$emit( 'remove-chip', id );
+			}
 		},
 		focusInput: function () {
-			if ( this.canAdd ) {
+			if ( this.canAdd && !this.disabled ) {
 				this.$refs.chipInput.focus();
 			}
 		}
@@ -117,6 +127,13 @@ module.exports = exports = {
 
 	.ext-wikilambda-chip {
 		margin: 0;
+	}
+
+	&__disabled {
+		background-color: #eaecf0;
+		color: #72777d;
+		-webkit-text-fill-color: #72777d;
+		border-color: #c8ccd1;
 	}
 
 	&__input {
