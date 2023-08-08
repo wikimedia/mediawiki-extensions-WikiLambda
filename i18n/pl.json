@@ -144,7 +144,7 @@
 	"wikilambda-editor-tester-list-label": "Lista testerów",
 	"wikilambda-tester-selector": "Wybierz tester",
 	"wikilambda-tester-none-found": "Nie ma jeszcze przypadków testowych dla tej funkcji.",
-	"wikilambda-tester-create-new": "Utwórz nowy test",
+	"wikilambda-tester-create-new": "Utwórz nowy przypadek testowy",
 	"wikilambda-tester-status-pending": "OCZEKUJE...",
 	"wikilambda-tester-status-running": "TRWA...",
 	"wikilambda-tester-status-passed": "PRZESZEDŁ",
