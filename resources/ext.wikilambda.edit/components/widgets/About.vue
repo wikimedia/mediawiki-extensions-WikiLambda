@@ -66,7 +66,7 @@
 							v-for="( alias, index ) in aliases"
 							:key="'alias-' + index"
 						>
-							<span v-if="index !== 0">, </span>{{ alias.value }}
+							<span v-if="index !== 0">,&nbsp;</span>{{ alias.value }}
 						</span>
 					</div>
 				</div>
