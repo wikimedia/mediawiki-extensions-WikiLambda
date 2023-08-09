@@ -165,23 +165,6 @@ module.exports = exports = {
 	},
 	actions: {
 		/**
-		 * Reset the test results, using payload to create the required test keys
-		 *
-		 * @param {Object} context
-		 * @param {Object} payload
-		 * @param {string} payload.zFunctionId
-		 * @param {string} payload.zTesterId
-		 * @param {string} payload.zImplementationId
-		 */
-		resetTestResult: function ( context, payload ) {
-			var key = payload.zFunctionId + ':' + payload.zTesterId + ':' + payload.zImplementationId;
-
-			context.commit( 'setZTesterResult', {
-				key: key,
-				result: undefined
-			} );
-		},
-		/**
 		 * Triggers a test API call and updates the test results, handles the test pending state
 		 * and also define the error state and meessage if test returns errors
 		 *

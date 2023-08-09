@@ -139,23 +139,6 @@ describe( 'zTesterResults Vuex module', function () {
 			} );
 		} );
 
-		describe( 'resetTestResult', () => {
-			it( 'should allow for resetting a given test result', function () {
-				zTesterResultsModule.mutations.setZTesterResult( context.state, { key: 'Z10000:Z10001:Z10002', result: 'Z41' } );
-
-				expect( zTesterResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' ) ).toBe( true );
-
-				zTesterResultsModule.actions.resetTestResult( context, {
-					zFunctionId: 'Z10000',
-					zTesterId: 'Z10001',
-					zImplementationId: 'Z10002'
-				} );
-
-				expect( zTesterResultsModule.getters.getZTesterResults( context.state )( 'Z10000', 'Z10001', 'Z10002' ) ).toBe( undefined );
-			} );
-
-		} );
-
 		describe( 'getTestResults', () => {
 			it( 'should perform the provided tests (passing)', function () {
 				var zFunctionId = 'Z10000',
