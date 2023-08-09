@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Psubhashish"
+		]
+	},
+	"wikilambda-desc": "ଏକ କେନ୍ଦ୍ରୀୟ ଉଇକିରେ ଲିଖିତ, ପରିଚାଳିତ ଏବଂ ମୂଲ୍ୟାଙ୍କିତ ଫଙ୍କସନସବୁର ମୂଲ୍ୟାଙ୍କନ ପାଇବା ପାଇଁ ଉଇକିମିଡ଼ିଆ ଉଇକିଗୁଡ଼ିକୁ ୱିକିଟେକ୍ସ ପାର୍ସର ଫଙ୍କସନ ଦେବା",
+	"wikilambda-history-title": "\"$1\" ର ସଂଶୋଧନ ଇତିହାସ ($2)",
+	"wikilambda-typeunavailable": "ଅଜଣା ପ୍ରକାର",
+	"wikilambda-noresult": "ଖୋଜାରୁ କୌଣସି ଫଳାଫଳ ମିଳିଲା ନାହିଁ ।",
+	"wikilambda-reference": "ଆଧାର",
+	"wikilambda-literal": "ଆକ୍ଷରିକ",
+	"wikilambda-genericliteral": "ସାଧାରଣ ଆକ୍ଷରିକ",
+	"wikilambda-functioncall": "ଫଙ୍କସନ କଲ",
+	"wikilambda-argref": "ଯୁକ୍ତି ଆଧାର",
+	"wikilambda-special-define-function": "ଫଙ୍କସନଟିର ବ୍ୟାଖ୍ୟାକରନ୍ତୁ"
+}
