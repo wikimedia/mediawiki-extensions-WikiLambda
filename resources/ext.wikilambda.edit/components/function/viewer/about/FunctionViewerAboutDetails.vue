@@ -5,25 +5,20 @@
 	@license MIT
 -->
 <template>
-	<div>
-		<h2>
-			{{ $i18n( 'wikilambda-persistentobject-details-label' ).text() }}
-		</h2>
-		<wl-function-evaluator-widget
-			:function-zid="getCurrentZObjectId"
-		></wl-function-evaluator-widget>
-		<!-- Widget ZObject JSON: Leave here for development purposes.
-			<div>
-			<h3>
-				{{ $i18n( 'wikilambda-expert-mode-json-label' ).text() }}
-			</h3>
-			<wl-z-object-json
-				:readonly="true"
-				:zobject-raw="getZObjectAsJson"
-			></wl-z-object-json>
-		</div>
-		-->
+	<wl-function-evaluator-widget
+		:function-zid="getCurrentZObjectId"
+	></wl-function-evaluator-widget>
+	<!-- Widget ZObject JSON: Leave here for development purposes.
+		<div>
+		<h3>
+			{{ $i18n( 'wikilambda-expert-mode-json-label' ).text() }}
+		</h3>
+		<wl-z-object-json
+			:readonly="true"
+			:zobject-raw="getZObjectAsJson"
+		></wl-z-object-json>
 	</div>
+	-->
 </template>
 
 <script>

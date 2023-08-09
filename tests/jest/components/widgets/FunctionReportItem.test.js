@@ -87,7 +87,7 @@ describe( 'FunctionReportItem', function () {
 				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Pass' );
+		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Passed' );
 	} );
 
 	it( 'displays failed status when result is failed', function () {
@@ -100,7 +100,7 @@ describe( 'FunctionReportItem', function () {
 				reportType: reportType
 			}
 		} );
-		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Fail' );
+		expect( wrapper.find( '.ext-wikilambda-function-report-item__footer-status' ).text() ).toBe( 'Failed' );
 	} );
 
 	it( 'displays pending status when implementation missing', function () {

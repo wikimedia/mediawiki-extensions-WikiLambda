@@ -41,21 +41,21 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 		await fireEvent.click( await findByRole( 'tab', { name: 'Details' } ) );
 
 		// ASSERT: The "unattached" tester is shown in the table.
-		const testersTable = await findByLabelText( 'Test cases' );
+		const testersTable = await findByLabelText( 'Tests' );
 		const firstTesterRow = within( testersTable ).getAllByRole( 'row' )[ 1 ];
 		await waitFor( () => expect( firstTesterRow ).toHaveTextContent( 'Tester name, in English' ) );
 
 		// ASSERT: The "unattached" tester is shown as deactivated.
-		expect( firstTesterRow ).toHaveTextContent( 'Deactivated' );
+		expect( firstTesterRow ).toHaveTextContent( 'Disconnected' );
 
 		// ASSERT: The "unattached" tester shows as passing all implementation tests.
-		await waitFor( () => expect( within( firstTesterRow ).getAllByText( 'Pass' ) ).toHaveLength( 2 ) );
+		await waitFor( () => expect( within( firstTesterRow ).getAllByText( 'Passed' ) ).toHaveLength( 2 ) );
 
 		// ACT: Select the "unattached" implementation in the table.
 		await fireEvent.update( within( firstTesterRow ).getByRole( 'checkbox' ), true );
 
-		// ACT: Click approve button.
-		await fireEvent.click( within( testersTable ).getByText( 'Approve' ) );
+		// ACT: Click connect button.
+		await fireEvent.click( within( testersTable ).getByText( 'Connect' ) );
 
 		// ASSERT: Correct ZObject was posted to the API.
 		await waitFor( () => expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {

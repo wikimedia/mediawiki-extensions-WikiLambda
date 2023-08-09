@@ -8,24 +8,24 @@
  *
  * [1] Connect implementation
  * [a] Login and Navigate to the Details View of the Function Page
- * [b] Deactivate the Approved implementation
- * [c] Approve the Deactivated implementation
+ * [b] Disconnect the Connected implementation
+ * [c] Connect the Disconnected implementation
  *
  * [2] Connect test
  * [a] Login and Navigate to the Details View of the Function Page
- * [b] Deactivate the Approved test case
- * [c] Approve the Deactivated test case
+ * [b] Disconnect the Connected test case
+ * [c] Connect the Disconnected test case
  *
  * Normal User
  * [1] Create a new Account and login
  *
  * [2] Connect implementation
  * [a] Navigate to the Details View of the Function Page
- * [b] Try to either Approve or Deactivate the implementation
+ * [b] Try to either Connect or Disconnect the implementation
  *
  * [3] Connect test
  * [a] Navigate to the Details View of the Function Page
- * [b] Try to either Approve or Deactivate the test case
+ * [b] Try to either Connect or Disconnect the test case
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
@@ -90,41 +90,41 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 				}
 			} );
 
-			it( 'should deactivate the approved implementation', async () => {
+			it( 'should disconnect the connected implementation', async () => {
 			/**
-			 * "Approve" and "Deactivate" button should be disabled as nothing is selected
+			 * "Connect" and "Disconnect" button should be disabled as nothing is selected
 			 */
-				await expect( await FunctionPage.approveImplementationButton ).toBeDisabled( { message: 'Approve button is expected to be disabled but it is enabled' } );
-				await expect( await FunctionPage.deactivateImplementationButton ).toBeDisabled( { message: 'Deactivate button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.approveImplementationButton ).toBeDisabled( { message: 'Connect button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.deactivateImplementationButton ).toBeDisabled( { message: 'Disconnect button is expected to be disabled but it is enabled' } );
 
 				/**
-				 * Initial state of the implementation should be approved
+				 * Initial state of the implementation should be connected
 				 */
-				await expect( await FunctionPage.getImplementationsTableRowState( functionDetails.implementation.rowIndex ) ).toBe( 'Approved', { message: 'State is expected to be Approved' } );
+				await expect( await FunctionPage.getImplementationsTableRowState( functionDetails.implementation.rowIndex ) ).toBe( 'Connected', { message: 'State is expected to be Connected' } );
 				await FunctionPage.checkImplementationsTableRow(
 					functionDetails.implementation.rowIndex );
-				await expect( await FunctionPage.approveImplementationButton ).toBeDisabled( { message: 'Approve button is expected to be disabled but it is enabled' } );
-				await expect( await FunctionPage.deactivateImplementationButton ).toBeEnabled( { message: 'Deactivate button is expected to be enabled but it is disabled' } );
+				await expect( await FunctionPage.approveImplementationButton ).toBeDisabled( { message: 'Connect button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.deactivateImplementationButton ).toBeEnabled( { message: 'Disconnect button is expected to be enabled but it is disabled' } );
 
 				await FunctionPage.deactivateImplementation();
-				await expect( await FunctionPage.getImplementationsTableRowState( functionDetails.implementation.rowIndex ) ).toBe( 'Deactivated', { message: 'State is expected to be Deactivated' } );
+				await expect( await FunctionPage.getImplementationsTableRowState( functionDetails.implementation.rowIndex ) ).toBe( 'Disconnected', { message: 'State is expected to be Disconnected' } );
 			} );
 
 			it( 'should approve the deactivated implementation', async () => {
 			/**
-			 * "Approve" and "Deactivate" button should be disabled as nothing is selected
+			 * "Connect" and "Disconnect" button should be disabled as nothing is selected
 			 */
-				await expect( await FunctionPage.approveImplementationButton ).toBeDisabled( { message: 'Approve button is expected to be disabled but it is enabled' } );
-				await expect( await FunctionPage.deactivateImplementationButton ).toBeDisabled( { message: 'Deactivate button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.approveImplementationButton ).toBeDisabled( { message: 'Connect button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.deactivateImplementationButton ).toBeDisabled( { message: 'Disconnect button is expected to be disabled but it is enabled' } );
 
-				await expect( await FunctionPage.getImplementationsTableRowState( functionDetails.implementation.rowIndex ) ).toBe( 'Deactivated', { message: 'State is expected to be Deactivated' } );
+				await expect( await FunctionPage.getImplementationsTableRowState( functionDetails.implementation.rowIndex ) ).toBe( 'Disconnected', { message: 'State is expected to be Disconnected' } );
 				await FunctionPage.checkImplementationsTableRow(
 					functionDetails.implementation.rowIndex );
-				await expect( await FunctionPage.approveImplementationButton ).toBeEnabled( { message: 'Approve button is expected to be enabled but it is disabled' } );
-				await expect( await FunctionPage.deactivateImplementationButton ).toBeDisabled( { message: 'Deactivate button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.approveImplementationButton ).toBeEnabled( { message: 'Connect button is expected to be enabled but it is disabled' } );
+				await expect( await FunctionPage.deactivateImplementationButton ).toBeDisabled( { message: 'Disconnect button is expected to be disabled but it is enabled' } );
 
 				await FunctionPage.approveImplementation();
-				await expect( await FunctionPage.getImplementationsTableRowState( functionDetails.implementation.rowIndex ) ).toBe( 'Approved', { message: 'State is expected to be Approved' } );
+				await expect( await FunctionPage.getImplementationsTableRowState( functionDetails.implementation.rowIndex ) ).toBe( 'Connected', { message: 'State is expected to be Connected' } );
 			} );
 
 		} );
@@ -154,7 +154,7 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 				 * Confirm that the test cases table is displayed
 				 */
 				await expect( await FunctionPage.testCasesTable ).toBeDisplayed( {
-					message: 'Test cases table is not displayed' } );
+					message: 'Tests table is not displayed' } );
 			} );
 
 			/**
@@ -171,39 +171,39 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 				}
 			} );
 
-			it( 'should deactivate the approved test case', async () => {
+			it( 'should disconnect the connected test case', async () => {
 			/**
-			 * "Approve" and "Deactivate" button should be disabled as nothing is selected
+			 * "Connect" and "Disconnect" button should be disabled as nothing is selected
 			 */
-				await expect( await FunctionPage.approveTestCaseButton ).toBeDisabled( { message: 'Approve button is expected to be disabled but it is enabled' } );
-				await expect( await FunctionPage.deactivateTestCaseButton ).toBeDisabled( { message: 'Deactivate button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.approveTestCaseButton ).toBeDisabled( { message: 'Connect button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.deactivateTestCaseButton ).toBeDisabled( { message: 'Disconnect button is expected to be disabled but it is enabled' } );
 
-				await expect( await FunctionPage.getTestCasesTableRowState( functionDetails.testCase.rowIndex ) ).toBe( 'Approved', { message: 'State is expected to be Approved' } );
+				await expect( await FunctionPage.getTestCasesTableRowState( functionDetails.testCase.rowIndex ) ).toBe( 'Connected', { message: 'State is expected to be Connected' } );
 				await FunctionPage.checkTestCasesTableRow( functionDetails.testCase.rowIndex );
-				await expect( await FunctionPage.approveTestCaseButton ).toBeDisabled( { message: 'Approve button is expected to be disabled but it is enabled' } );
-				await expect( await FunctionPage.deactivateTestCaseButton ).toBeEnabled( { message: 'Deactivate button is expected to be enabled but it is disabled' } );
+				await expect( await FunctionPage.approveTestCaseButton ).toBeDisabled( { message: 'Connect button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.deactivateTestCaseButton ).toBeEnabled( { message: 'Disconnect button is expected to be enabled but it is disabled' } );
 
 				await FunctionPage.deactivateTestCase();
-				await expect( await FunctionPage.getTestCasesTableRowState( functionDetails.testCase.rowIndex ) ).toBe( 'Deactivated', { message: 'State is expected to be Deactivated' } );
+				await expect( await FunctionPage.getTestCasesTableRowState( functionDetails.testCase.rowIndex ) ).toBe( 'Disconnected', { message: 'State is expected to be Disconnected' } );
 			} );
 
 			it( 'should approve the deactivated test case', async () => {
 			/**
-			 * "Approve" and "Deactivate" button should be disabled as nothing is selected
+			 * "Connect" and "Disconnect" button should be disabled as nothing is selected
 			 */
-				await expect( await FunctionPage.approveTestCaseButton ).toBeDisabled( { message: 'Approve button is expected to be disabled but it is enabled' } );
-				await expect( await FunctionPage.deactivateTestCaseButton ).toBeDisabled( { message: 'Deactivate button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.approveTestCaseButton ).toBeDisabled( { message: 'Connect button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.deactivateTestCaseButton ).toBeDisabled( { message: 'Disconnect button is expected to be disabled but it is enabled' } );
 
-				await expect( await FunctionPage.getTestCasesTableRowState( functionDetails.testCase.rowIndex ) ).toBe( 'Deactivated', { message: 'State is expected to be Deactivated' } );
+				await expect( await FunctionPage.getTestCasesTableRowState( functionDetails.testCase.rowIndex ) ).toBe( 'Disconnected', { message: 'State is expected to be Disconnected' } );
 				await FunctionPage.checkTestCasesTableRow(
 					functionDetails.testCase.rowIndex );
-				await expect( await FunctionPage.approveTestCaseButton ).toBeEnabled( { message: 'Approve button is expected to be enabled but it is disabled' } );
-				await expect( await FunctionPage.deactivateTestCaseButton ).toBeDisabled( { message: 'Deactivate button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.approveTestCaseButton ).toBeEnabled( { message: 'Connect button is expected to be enabled but it is disabled' } );
+				await expect( await FunctionPage.deactivateTestCaseButton ).toBeDisabled( { message: 'Disconnect button is expected to be disabled but it is enabled' } );
 
 				await FunctionPage.approveTestCase();
-				await expect( await FunctionPage.getTestCasesTableRowState( functionDetails.testCase.rowIndex ) ).toBe( 'Approved', { message: 'State is expected to be Approved' } );
-				await expect( await FunctionPage.approveTestCaseButton ).toBeDisabled( { message: 'Approve button is expected to be disabled but it is enabled' } );
-				await expect( await FunctionPage.deactivateTestCaseButton ).toBeDisabled( { message: 'Deactivate button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.getTestCasesTableRowState( functionDetails.testCase.rowIndex ) ).toBe( 'Connected', { message: 'State is expected to be Connected' } );
+				await expect( await FunctionPage.approveTestCaseButton ).toBeDisabled( { message: 'Connect button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.deactivateTestCaseButton ).toBeDisabled( { message: 'Disconnect button is expected to be disabled but it is enabled' } );
 			} );
 
 		} );
@@ -267,12 +267,12 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 					message: 'Implementations table is not displayed' } );
 			} );
 
-			it( 'should not be able to either approve or deactivate the implementation', async () => {
+			it( 'should not be able to either connect or disconnect the implementation', async () => {
 				/**
-				 * "Approve" and "Deactivate" button should be disabled as nothing is selected
+				 * "Connect" and "Disconnect" button should be disabled as nothing is selected
 				 */
-				await expect( await FunctionPage.approveImplementationButton ).toBeDisabled( { message: 'Approve button is expected to be disabled but it is enabled' } );
-				await expect( await FunctionPage.deactivateImplementationButton ).toBeDisabled( { message: 'Deactivate button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.approveImplementationButton ).toBeDisabled( { message: 'Connect button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.deactivateImplementationButton ).toBeDisabled( { message: 'Disconnect button is expected to be disabled but it is enabled' } );
 
 				/**
 				 * Initial state of the implementation
@@ -282,7 +282,7 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 
 				await FunctionPage.checkImplementationsTableRow(
 					functionDetails.implementation.rowIndex );
-				if ( implementationState === 'Approved' ) {
+				if ( implementationState === 'Connected' ) {
 					await FunctionPage.deactivateImplementation();
 				} else {
 					await FunctionPage.approveImplementation();
@@ -318,20 +318,20 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 				 * Confirm that the test cases table is displayed
 				 */
 				await expect( await FunctionPage.testCasesTable ).toBeDisplayed( {
-					message: 'Test cases table is not displayed' } );
+					message: 'Tests table is not displayed' } );
 			} );
 
-			it( 'should not be able to approve or deactivate the test case', async () => {
+			it( 'should not be able to connect or disconnect the test case', async () => {
 				/**
-				 * "Approve" and "Deactivate" button should be disabled as nothing is selected
+				 * "Connect" and "Disconnect" button should be disabled as nothing is selected
 				 */
-				await expect( await FunctionPage.approveTestCaseButton ).toBeDisabled( { message: 'Approve button is expected to be disabled but it is enabled' } );
-				await expect( await FunctionPage.deactivateTestCaseButton ).toBeDisabled( { message: 'Deactivate button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.approveTestCaseButton ).toBeDisabled( { message: 'Connect button is expected to be disabled but it is enabled' } );
+				await expect( await FunctionPage.deactivateTestCaseButton ).toBeDisabled( { message: 'Disconnect button is expected to be disabled but it is enabled' } );
 
 				const testCaseState = await FunctionPage.getTestCasesTableRowState(
 					functionDetails.testCase.rowIndex );
 				await FunctionPage.checkTestCasesTableRow( functionDetails.testCase.rowIndex );
-				if ( testCaseState === 'Approved' ) {
+				if ( testCaseState === 'Connected' ) {
 					await FunctionPage.deactivateTestCase();
 				} else {
 					await FunctionPage.approveTestCase();

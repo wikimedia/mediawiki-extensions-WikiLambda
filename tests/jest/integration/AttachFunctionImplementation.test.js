@@ -49,13 +49,13 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 			() => expect( secondImplementationRow ).toHaveTextContent( 'Implementation in code, in English' ) );
 
 		// ASSERT: The "unattached" implementation is shown as deactivated.
-		expect( secondImplementationRow ).toHaveTextContent( 'Deactivated' );
+		expect( secondImplementationRow ).toHaveTextContent( 'Disconnected' );
 
 		// ACT: Select the "unattached" implementation in the table.
 		await fireEvent.update( within( secondImplementationRow ).getByRole( 'checkbox' ), true );
 
-		// ACT: Click approve button.
-		await fireEvent.click( within( implementationsTable ).getByText( 'Approve' ) );
+		// ACT: Click connect button.
+		await fireEvent.click( within( implementationsTable ).getByText( 'Connect' ) );
 
 		// ASSERT: Correct ZObject was posted to the API.
 		await waitFor( () => expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {

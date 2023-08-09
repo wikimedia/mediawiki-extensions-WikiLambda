@@ -17,13 +17,13 @@ class FunctionPage extends Page {
 	get functionZIdSelector() { return $( 'span.ext-wikilambda-viewpage-header-zid' ); }
 	get detailsTab() { return $( '//button[@role="tab" and span/text()="Details"]' ); }
 	get showMoreLanguageButton() { return $( 'button=Show more languages' ); }
-	get hideListButton() { return $( 'button=Hide list' ); }
+	get hideListButton() { return $( 'button=Show fewer languages' ); }
 	get editSourceLink() { return $( '//nav[@aria-label="Views"]//a[contains(@title, "Edit")]/span[contains(text(),"Edit")]' ); }
 	get showNameInOtherLanguages() { return $( 'button*=Show name in other languages' ); }
 	get showMoreAliases() { return $( 'button*=Show more languages' ); }
 	get sidebarTable() { return $( '.ext-wikilambda-function-viewer-details-sidebar' ); }
-	get createANewTestLink() { return $( 'a=Create a new test' ); }
-	get createAImplementation() { return $( 'a=Create a new implementation' ); }
+	get createANewTestLink() { return $( 'a=Add test' ); }
+	get createAImplementation() { return $( 'a=Add implementation' ); }
 	get functionCallBlock() { return EvaluateFunctionBlock.functionCallBlock; }
 
 	/**
@@ -144,7 +144,7 @@ class FunctionPage extends Page {
 	}
 
 	/**
-	 * Click on the "Create a new test" link
+	 * Click on the "Add test" link
 	 *
 	 * @async
 	 * @return {void}
@@ -154,7 +154,7 @@ class FunctionPage extends Page {
 	}
 
 	/**
-	 * Click on the "Create a new implementation" link
+	 * Click on the "Add implementation" link
 	 *
 	 * @async
 	 * @return {void}
@@ -169,11 +169,11 @@ class FunctionPage extends Page {
 	get implementationsTableBlockHeader() { return this.implementationsTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__title")]' ); }
 	get implementationProgressBar() { return this.implementationsTableBlock.$( './div[@role="progressbar"]' ); }
 	get implementationsTable() { return this.implementationsTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__body")]//table' ); }
-	get approveImplementationButton() { return this.implementationsTableBlockHeader.$( './/label[text()="Approve"]/parent::button' ); }
-	get deactivateImplementationButton() { return this.implementationsTableBlockHeader.$( './/label[text()="Deactivate"]/parent::button' ); }
+	get approveImplementationButton() { return this.implementationsTableBlockHeader.$( './/label[text()="Connect"]/parent::button' ); }
+	get deactivateImplementationButton() { return this.implementationsTableBlockHeader.$( './/label[text()="Disconnect"]/parent::button' ); }
 
 	/**
-	 * Click on the "Approve" button in the implementations table
+	 * Click on the "Connect" button in the implementations table
 	 *
 	 * @async
 	 * @return {void}
@@ -187,7 +187,7 @@ class FunctionPage extends Page {
 	}
 
 	/**
-	 * Click on the "Deactivate" button in the implementations table
+	 * Click on the "Disconnect" button in the implementations table
 	 *
 	 * @async
 	 * @return {void}
@@ -216,11 +216,11 @@ class FunctionPage extends Page {
 	 *
 	 * @async
 	 * @param {number} index - index of the row in the table body
-	 * @return {string} - "Approved" or "Deactivated"
+	 * @return {string} - "Connected" or "Disconnected"
 	 */
 	async getImplementationsTableRowState( index ) {
 		const stateColumn = this.getImplementationsTableRow( index ).$$( './td' )[ 3 ];
-		const stateSelector = stateColumn.$( './/span[text()="Approved" or text()="Deactivated"]' );
+		const stateSelector = stateColumn.$( './/span[text()="Connected" or text()="Disconnected"]' );
 		const state = await ElementActions.getText( stateSelector );
 		return state;
 	}
@@ -252,17 +252,17 @@ class FunctionPage extends Page {
 
 	// #endregion
 
-	// #region Test cases Table
+	// #region Tests Table
 
 	get testCasesTableBlock() { return $( '//div[@aria-labelledby="ext-wikilambda-function-details-table__title__text-testers"]' ); }
 	get testCasesTableBlockHeader() { return this.testCasesTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__title")]' ); }
 	get testCaseProgressBar() { return this.testCasesTableBlock.$( './div[@role="progressbar"]' ); }
 	get testCasesTable() { return this.testCasesTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__body")]//table' ); }
-	get approveTestCaseButton() { return this.testCasesTableBlockHeader.$( './/label[text()="Approve"]/parent::button' ); }
-	get deactivateTestCaseButton() { return this.testCasesTableBlockHeader.$( './/label[text()="Deactivate"]/parent::button' ); }
+	get approveTestCaseButton() { return this.testCasesTableBlockHeader.$( './/label[text()="Connect"]/parent::button' ); }
+	get deactivateTestCaseButton() { return this.testCasesTableBlockHeader.$( './/label[text()="Disconnect"]/parent::button' ); }
 
 	/**
-	 * Click on the "Approve" button in the test cases table
+	 * Click on the "Connect" button in the test cases table
 	 *
 	 * @async
 	 * @return {void}
@@ -276,7 +276,7 @@ class FunctionPage extends Page {
 	}
 
 	/**
-	 * Click on the "Deactivate" button in the test cases table
+	 * Click on the "Disconnect" button in the test cases table
 	 *
 	 * @async
 	 * @return {void}
@@ -305,11 +305,11 @@ class FunctionPage extends Page {
 	 *
 	 * @async
 	 * @param {number} index - index of the row in the table body
-	 * @return {string} - "Approved" or "Deactivated"
+	 * @return {string} - "Connected" or "Disconnected"
 	 */
 	async getTestCasesTableRowState( index ) {
 		const stateColumn = this.getTestCasesTableRow( index ).$( 'td:last-child' );
-		const stateSelector = stateColumn.$( './/span[text()="Approved" or text()="Deactivated"]' );
+		const stateSelector = stateColumn.$( './/span[text()="Connected" or text()="Disconnected"]' );
 		const state = await ElementActions.getText( stateSelector );
 		return state;
 	}

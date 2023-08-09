@@ -110,11 +110,11 @@ describe( 'FunctionViewerDetails', function () {
 		expect( implTableItems[ 0 ].checkbox.props.modelValue ).toBe( false );
 		expect( implTableItems[ 0 ].language.title.string ).toEqual( 'wikilambda-implementation-selector-built-in' );
 		expect( implTableItems[ 0 ].name.title ).toEqual( 'Z333 name' );
-		expect( implTableItems[ 0 ].state.title ).toEqual( 'Deactivated' );
+		expect( implTableItems[ 0 ].state.title ).toEqual( 'Disconnected' );
 		expect( implTableItems[ 1 ].checkbox.props.modelValue ).toBe( false );
 		expect( implTableItems[ 1 ].language.title.string ).toEqual( 'wikilambda-implementation-selector-composition' );
 		expect( implTableItems[ 1 ].name.title ).toEqual( 'Z444 name' );
-		expect( implTableItems[ 1 ].state.title ).toEqual( 'Approved' );
+		expect( implTableItems[ 1 ].state.title ).toEqual( 'Connected' );
 	} );
 
 	it( 'passes testers to table correctly', () => {
@@ -124,10 +124,10 @@ describe( 'FunctionViewerDetails', function () {
 		expect( testerTableItems ).toHaveLength( 2 );
 		expect( testerTableItems[ 0 ].checkbox.props.modelValue ).toBe( false );
 		expect( testerTableItems[ 0 ].name.title ).toEqual( 'Z111 name' );
-		expect( testerTableItems[ 0 ].state.title ).toEqual( 'Deactivated' );
+		expect( testerTableItems[ 0 ].state.title ).toEqual( 'Disconnected' );
 		expect( testerTableItems[ 1 ].checkbox.props.modelValue ).toBe( false );
 		expect( testerTableItems[ 1 ].name.title ).toEqual( 'Z222 name' );
-		expect( testerTableItems[ 1 ].state.title ).toEqual( 'Approved' );
+		expect( testerTableItems[ 1 ].state.title ).toEqual( 'Connected' );
 	} );
 
 	describe( 'Implementations without labels display the ZID', () => {
@@ -298,7 +298,7 @@ describe( 'FunctionViewerDetails', function () {
 		} );
 	} );
 
-	describe( 'approve & deactivate buttons', () => {
+	describe( 'connect & disconnect buttons', () => {
 		it( 'attach checked implementation, without error toast', ( done ) => {
 			var wrapper = shallowMount( FunctionViewerDetails, { props: { zobjectId: 123 } } );
 			const implTable = wrapper.findAllComponents( FunctionViewerDetailsTable )[ 0 ];

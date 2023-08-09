@@ -208,7 +208,7 @@ module.exports = exports = {
 
 					// for each implementation, store whether its checkbox is checked and whether it's available. We use
 					// this to determine the state of the select-all checkbox, the columns of the test table, and
-					// whether the approve and deactivate buttons should be enabled.
+					// whether the connect and disconnect buttons should be enabled.
 					if ( !this.implZidToState[ visibleImplementations[ index ] ] ) {
 						this.implZidToState[ visibleImplementations[ index ] ] = {
 							available: isAvailable,
@@ -332,7 +332,7 @@ module.exports = exports = {
 					);
 
 					// for each tester, store whether its checkbox is checked and whether it's available. We use this
-					// to determine  the state of the select-all checkbox, and whether the approve and deactivate
+					// to determine  the state of the select-all checkbox, and whether the connect and disconnect
 					// buttons should be enabled.
 					if ( !this.testerZidToState[ visibleTesters[ index ] ] ) {
 						this.testerZidToState[ visibleTesters[ index ] ] = {
@@ -447,7 +447,7 @@ module.exports = exports = {
 			this.testerShowAll = !this.testerShowAll;
 		},
 		approveImplementations: function () {
-			// TODO(T316566): ensure only those with the correct permissions can approve/deactivate
+			// TODO(T316566): ensure only those with the correct permissions can connect/disconnect
 			this.zImplementationsLoading = true;
 			const zidsToAttach = Object.keys( this.implZidToState ).filter( ( zid ) =>
 				this.implZidToState[ zid ].checked && !this.implZidToState[ zid ].available );

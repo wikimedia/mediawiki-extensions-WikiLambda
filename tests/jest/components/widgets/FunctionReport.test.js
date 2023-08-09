@@ -114,7 +114,7 @@ describe( 'FunctionReport', function () {
 			}
 		} );
 
-		expect( wrapper.find( '.ext-wikilambda-widget-base-header-slot' ).text() ).toEqual( 'Test cases' );
+		expect( wrapper.find( '.ext-wikilambda-widget-base-header-slot' ).text() ).toEqual( 'Tests' );
 		expect( wrapper.vm.zIds ).toEqual( [ 'Z10002', 'Z10003' ] );
 	} );
 

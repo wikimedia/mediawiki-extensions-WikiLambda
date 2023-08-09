@@ -38,21 +38,21 @@ describe( 'WikiLambda frontend, function viewer details tab', () => {
 		await fireEvent.click( await findByRole( 'tab', { name: 'Details' } ) );
 
 		// ASSERT: The "attached" tester is shown in the table.
-		const testersTable = await findByLabelText( 'Test cases' );
+		const testersTable = await findByLabelText( 'Tests' );
 		const secondTesterRow = within( testersTable ).getAllByRole( 'row' )[ 2 ];
 		await waitFor( () => expect( secondTesterRow ).toHaveTextContent( 'Tester name, in English' ) );
 
-		// ASSERT: The "attached" tester is shown as approved.
-		expect( secondTesterRow ).toHaveTextContent( 'Approved' );
+		// ASSERT: The "attached" tester is shown as connected.
+		expect( secondTesterRow ).toHaveTextContent( 'Connected' );
 
 		// ASSERT: The "attached" tester shows as failing all implementation tests.
-		await waitFor( () => expect( within( secondTesterRow ).getAllByText( 'Fail' ) ).toHaveLength( 2 ) );
+		await waitFor( () => expect( within( secondTesterRow ).getAllByText( 'Failed' ) ).toHaveLength( 2 ) );
 
 		// ACT: Select the "attached" implementation in the table.
 		await fireEvent.update( within( secondTesterRow ).getByRole( 'checkbox' ), true );
 
-		// ACT: Click deactivate button.
-		await fireEvent.click( within( testersTable ).getByText( 'Deactivate' ) );
+		// ACT: Click disconnect button.
+		await fireEvent.click( within( testersTable ).getByText( 'Disconnect' ) );
 
 		// ASSERT: Correct ZObject was posted to the API.
 		expect( apiPostWithEditTokenMock ).toHaveBeenCalledWith( {

@@ -2520,7 +2520,7 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Adds the given testers to the given function's list of approved testers, and submits
+		 * Adds the given testers to the given function's list of connected testers, and submits
 		 * the change to the API.
 		 *
 		 * @param {Object} context
@@ -2551,7 +2551,7 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Removes the given testers from the given function's list of approved testers, and submits the
+		 * Removes the given testers from the given function's list of connected testers, and submits the
 		 * change to the API.
 		 *
 		 * @param {Object} context
@@ -2589,7 +2589,7 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Adds the given implementations to the given function's list of approved implementations, and submits
+		 * Adds the given implementations to the given function's list of connected implementations, and submits
 		 * the change to the API.
 		 *
 		 * @param {Object} context
@@ -2620,8 +2620,8 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Removes the given implementations from the given function's list of approved implementations, and submits the
-		 * change to the API.
+		 * Removes the given implementations from the given function's list of connected implementations,
+		 * and submits the change to the API.
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload
