@@ -86,21 +86,19 @@ module.exports = exports = {
 @import '../../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-function-about {
-	padding-top: @spacing-100;
-
-	&__summary:extend(.ext-wikilambda-edit__text-regular) {
-		color: @color-placeholder;
-		grid-column: 1 ~'/' span 2;
-		margin-bottom: 32px;
-	}
-
-	&__names,
-	&__aliases {
-		margin-top: 10%;
-	}
+	padding-top: @spacing-150;
 
 	&__sidebar {
-		width: 300px;
+		padding-right: @spacing-200;
+	}
+
+	&__summary:extend(.ext-wikilambda-edit__text-regular) {
+		grid-column: 1 ~'/' span 2;
+		margin-bottom: @spacing-150;
+	}
+
+	&__names {
+		margin-bottom: @spacing-200;
 	}
 
 	@media screen and ( min-width: @width-breakpoint-tablet ) {
@@ -121,7 +119,8 @@ module.exports = exports = {
 		&__sidebar {
 			order: 2;
 			grid-column: 1;
-			margin-top: 40px;
+			margin-bottom: @spacing-200;
+			padding-right: 0;
 		}
 	}
 }

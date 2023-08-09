@@ -192,6 +192,7 @@ module.exports = exports = {
 		color: @color-base;
 		font-size: 1em;
 		font-weight: @font-weight-bold;
+		margin-bottom: @spacing-25;
 	}
 
 	&__item {

@@ -440,7 +440,7 @@ module.exports = exports = {
 @import '../../../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-function-viewer-details-sidebar {
-	width: 250px;
+	max-width: @size-2400;
 
 	&__edit-function {
 		display: block;
@@ -459,11 +459,11 @@ module.exports = exports = {
 	}
 
 	&__link {
-		padding-bottom: @spacing-100;
+		padding-bottom: @spacing-75;
 	}
 
 	&__links {
-		padding-top: @spacing-125;
+		padding-top: @spacing-75;
 	}
 
 	&__table {

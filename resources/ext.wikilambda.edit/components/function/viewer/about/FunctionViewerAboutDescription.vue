@@ -57,3 +57,11 @@ module.exports = exports = {
 };
 
 </script>
+
+<style lang="less">
+.ext-wikilambda-function-viewer-description {
+	& > p {
+		margin: 0;
+	}
+}
+</style>

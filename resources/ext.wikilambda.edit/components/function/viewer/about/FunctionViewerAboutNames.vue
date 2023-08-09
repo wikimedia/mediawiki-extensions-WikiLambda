@@ -123,3 +123,17 @@ module.exports = exports = {
 };
 
 </script>
+
+<style lang="less">
+@import '../../../../ext.wikilambda.edit.less';
+
+.ext-wikilambda-function-viewer-names {
+	&__header {
+		color: @color-base;
+		font-size: 1em;
+		font-weight: @font-weight-bold;
+		margin-bottom: @spacing-25;
+	}
+}
+
+</style>

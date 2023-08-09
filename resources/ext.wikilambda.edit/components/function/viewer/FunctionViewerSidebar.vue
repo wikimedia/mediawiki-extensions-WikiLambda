@@ -95,10 +95,11 @@ module.exports = exports = {
 	ul {
 		list-style: none;
 		margin-left: 0;
+		padding-left: 0;
 	}
 
 	&__chip {
-		margin-bottom: @spacing-100;
+		margin: 0 0 @spacing-50;
 
 		&-container {
 			display: inline-block;
@@ -107,6 +108,8 @@ module.exports = exports = {
 		&-item {
 			margin-right: @spacing-50;
 			display: inline-block;
+			min-width: @size-150;
+			text-align: center;
 		}
 	}
 
@@ -114,6 +117,7 @@ module.exports = exports = {
 		display: flex;
 		align-items: center;
 		gap: 10px;
+		margin-top: @spacing-75;
 
 		&-icon {
 			width: 12px;

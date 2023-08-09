@@ -155,7 +155,7 @@ module.exports = exports = {
 @import '../../../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-function-details-table {
-	margin-bottom: @spacing-250;
+	margin-bottom: @spacing-200;
 
 	&__body {
 		&-link {

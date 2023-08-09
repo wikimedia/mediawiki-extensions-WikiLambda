@@ -6,6 +6,7 @@
 -->
 <template>
 	<main class="ext-wikilambda-function-details">
+		<!-- TODO (T342612): hide container or display fallback message -->
 		<div class="ext-wikilambda-function-details__summary">
 			{{ $i18n( 'wikilambda-function-details-summary' ).text() }}
 			<!-- TODO(T309199): link to process page once it exists -->
@@ -549,14 +550,13 @@ module.exports = exports = {
 	display: flex;
 	-webkit-flex-flow: row wrap;
 	flex-flow: row wrap;
-	row-gap: @spacing-100;
+	row-gap: @spacing-150;
 	column-gap: @spacing-400;
 
 	&__summary:extend(.ext-wikilambda-edit__text-regular) {
 		color: @color-placeholder;
-		margin-bottom: @spacing-200;
 		width: @size-full;
-		padding-top: @spacing-100;
+		padding-top: @spacing-150;
 	}
 
 	&__tables {
