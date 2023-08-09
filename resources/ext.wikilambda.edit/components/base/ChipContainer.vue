@@ -124,6 +124,8 @@ module.exports = exports = {
 	border-style: @border-style-base;
 	border-color: @border-color-base;
 	box-shadow: @box-shadow-inset-small transparent;
+	min-width: 256px;
+	box-sizing: border-box;
 
 	.ext-wikilambda-chip {
 		margin: 0;

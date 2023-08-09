@@ -26,7 +26,7 @@
 				class="ext-wikilambda-function-definition__action-add-language-button"
 				@click="addLanguage"
 			>
-				<cdx-icon :icon="icons.cdxIconAdd"></cdx-icon>
+				<cdx-icon :icon="icons.cdxIconLanguage"></cdx-icon>
 				{{ addLanguageButtonText }}
 			</cdx-button>
 		</div>

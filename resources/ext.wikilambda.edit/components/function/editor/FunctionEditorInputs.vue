@@ -288,6 +288,7 @@ module.exports = exports = {
 			font-weight: @font-weight-bold;
 
 			& > span {
+				color: @color-subtle;
 				font-weight: @font-weight-normal;
 			}
 		}
@@ -312,10 +313,9 @@ module.exports = exports = {
 	}
 
 	&__description {
-		opacity: 0.8;
 		color: @color-subtle;
-		font-size: @wl-font-size-description;
-		line-height: @wl-line-height-description;
+		font-size: @font-size-small;
+		line-height: @line-height-small;
 		display: inline-block;
 	}
 

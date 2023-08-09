@@ -124,6 +124,7 @@ module.exports = exports = {
 		&__label {
 			& > label {
 				line-height: inherit;
+				margin-bottom: @spacing-25;
 			}
 		}
 	}

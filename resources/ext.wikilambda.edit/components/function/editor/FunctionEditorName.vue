@@ -211,6 +211,7 @@ module.exports = exports = {
 			font-weight: @font-weight-bold;
 
 			& > span {
+				color: @color-subtle;
 				font-weight: @font-weight-normal;
 			}
 		}
@@ -230,6 +231,7 @@ module.exports = exports = {
 
 				& > label {
 					line-height: inherit;
+					margin-bottom: @spacing-25;
 				}
 			}
 

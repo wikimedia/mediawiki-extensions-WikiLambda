@@ -402,6 +402,7 @@ module.exports = exports = {
 
 			&-text {
 				font-weight: @font-weight-bold;
+				min-width: @size-300;
 			}
 
 			&-field {
@@ -410,13 +411,11 @@ module.exports = exports = {
 		}
 
 		&__description {
-			opacity: 0.8;
 			color: @color-subtle;
-			font-size: @wl-font-size-description-mobile;
-			line-height: @wl-line-height-description-mobile;
-			letter-spacing: @wl-letter-spacing-description-mobile;
+			font-size: @font-size-small;
+			line-height: @line-height-small;
 			display: inline-block;
-			margin-bottom: @spacing-50;
+			margin-bottom: @spacing-25;
 		}
 	}
 

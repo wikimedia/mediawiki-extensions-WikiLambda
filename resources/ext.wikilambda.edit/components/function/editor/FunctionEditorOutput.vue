@@ -240,10 +240,9 @@ module.exports = exports = {
 	}
 
 	&__description {
-		opacity: 0.8;
 		color: @color-subtle;
-		font-size: @wl-font-size-description;
-		line-height: @wl-line-height-description;
+		font-size: @font-size-small;
+		line-height: @line-height-small;
 		display: inline-block;
 	}
 
@@ -270,6 +269,10 @@ module.exports = exports = {
 			flex-direction: row;
 			align-items: center;
 			gap: @spacing-100;
+
+			&__entry-text {
+				min-width: @size-300;
+			}
 		}
 	}
 }

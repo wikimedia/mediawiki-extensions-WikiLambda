@@ -258,16 +258,16 @@ module.exports = exports = {
 			font-weight: @font-weight-bold;
 
 			& > span {
+				color: @color-subtle;
 				font-weight: @font-weight-normal;
 			}
 		}
 	}
 
 	&__description {
-		opacity: 0.8;
 		color: @color-subtle;
-		font-size: @wl-font-size-description;
-		line-height: @wl-line-height-description;
+		font-size: @font-size-small;
+		line-height: @line-height-small;
 		display: inline-block;
 	}
 
@@ -282,6 +282,7 @@ module.exports = exports = {
 
 			&__label {
 				width: auto;
+				margin-right: 0;
 
 				& > label {
 					line-height: inherit;
@@ -289,10 +290,7 @@ module.exports = exports = {
 			}
 
 			&__description {
-				font-size: @wl-font-size-description-mobile;
-				line-height: @wl-line-height-description-mobile;
-				letter-spacing: @wl-letter-spacing-description-mobile;
-				margin-bottom: @spacing-50;
+				margin-bottom: @spacing-25;
 			}
 		}
 	}
