@@ -436,37 +436,6 @@ describe( 'tableUtils mixin', function () {
 		} );
 	} );
 
-	describe( 'getNextObjectId', function () {
-		describe( 'when the zObject table is not initialized', function () {
-			it( 'should return 0 when the zObject table is not initialized (null)', function () {
-				const zObject = null;
-
-				const nextObjectId = tableUtils.getNextObjectId( zObject );
-				expect( nextObjectId ).toBe( 0 );
-			} );
-
-			it( 'should return 0 when the zObject table has no rows (empty array)', function () {
-				const zObject = [];
-
-				const nextObjectId = tableUtils.getNextObjectId( zObject );
-				expect( nextObjectId ).toBe( 0 );
-			} );
-		} );
-
-		describe( 'when the zObject table has content', function () {
-			it( 'should return the next available id', function () {
-				const zObject = tableDataToRowObjects( [
-					{ id: 1, key: 'Z2K2', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
-					{ id: 2, key: 'Z1K1', value: 'Z6', parent: 1 },
-					{ id: 3, key: 'Z6K1', value: 'the stringy one', parent: 1 }
-				] );
-
-				const nextObjectId = tableUtils.getNextObjectId( zObject );
-				expect( nextObjectId ).toBe( 4 );
-			} );
-		} );
-	} );
-
 	describe( 'findLatestKey', function () {
 		describe( 'when a key is found for the provided zid', function () {
 

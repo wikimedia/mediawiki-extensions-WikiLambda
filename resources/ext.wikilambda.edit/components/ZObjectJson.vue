@@ -101,7 +101,7 @@ module.exports = exports = {
 	),
 	methods: $.extend(
 		mapActions( [
-			'setIsZObjectDirty'
+			'setDirty'
 		] ),
 		{
 			codeChangeHandler: function ( val ) {
@@ -125,11 +125,9 @@ module.exports = exports = {
 						// JSON parse failed, do nothing
 						return;
 					}
-					this.$store.dispatch( 'injectZObject', {
-						zobject: json,
-						key: this.zobject.key,
-						id: this.zobjectId,
-						parent: this.zobject.parent
+					this.$store.dispatch( 'injectZObjectFromRowId', {
+						rowId: this.zobjectId,
+						value: json
 					} ).then( function ( newType ) {
 						if ( self.isValidZidFormat( newType ) ) {
 							self.$emit( 'change-literal', newType );
@@ -138,7 +136,7 @@ module.exports = exports = {
 						throw error;
 					} );
 				}
-				this.setIsZObjectDirty( true );
+				this.setDirty();
 			}
 		}
 	),

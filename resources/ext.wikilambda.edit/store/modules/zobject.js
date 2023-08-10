@@ -318,14 +318,9 @@ module.exports = exports = {
 		zobject: [],
 		createNewPage: false,
 		isSavingZObject: false,
-		ZObjectInitialized: false,
-		activeLangSelection: '',
-		isZObjectDirty: false
+		ZObjectInitialized: false
 	},
 	getters: {
-
-		/* NEW GETTERS */
-
 		/***********************************************************************
 		 * INTERFACE METHODS
 		 *
@@ -1533,51 +1528,6 @@ module.exports = exports = {
 			return findBestMonolingual;
 		},
 
-		/* END NEW GETTERS */
-
-		// TODO (T329106): Delete
-		getZObjectLabels: function ( state, getters ) {
-			return getters.getZObjectChildrenById( getters.getNestedZObjectById( 0, [
-				Constants.Z_PERSISTENTOBJECT_LABEL,
-				Constants.Z_MULTILINGUALSTRING_VALUE
-			] ).id );
-		},
-
-		// TODO (T329106): Delete and replace with getZPersistentName
-		getZObjectLabel: function ( state, getters ) {
-			return function ( zLanguage ) {
-				var labelObject,
-					label = false,
-					lang = zLanguage || getters.getUserLangZid;
-
-				for ( var index in getters.getZObjectLabels ) {
-					var maybeLabel = getters.getZObjectLabels[ index ],
-						language = getters.getNestedZObjectById( maybeLabel.id, [
-							Constants.Z_MONOLINGUALSTRING_LANGUAGE,
-							Constants.Z_REFERENCE_ID
-						] );
-
-					if ( language.value === lang ) {
-						labelObject = maybeLabel;
-					}
-				}
-
-				if ( labelObject ) {
-					label = getters.getNestedZObjectById( labelObject.id, [
-						Constants.Z_MONOLINGUALSTRING_VALUE,
-						Constants.Z_STRING_VALUE
-					] );
-				}
-
-				return label;
-			};
-		},
-
-		// TODO: Consider whether we wanna use this
-		getIsSavingObject: function ( state ) {
-			return state.isSavingZObject;
-		},
-
 		/**
 		 * Returns whether we are creating a new page.
 		 *
@@ -1588,7 +1538,7 @@ module.exports = exports = {
 			return state.createNewPage;
 		},
 
-		// DELETE
+		// TODO: Deprecate
 		getNestedZObjectById: function ( state, getters ) {
 			/**
 			 * Return a specific zObject given a series of keys.
@@ -1616,25 +1566,7 @@ module.exports = exports = {
 			};
 		},
 
-		/**
-		 * Return the index of a zObject by its row ID
-		 * for internal use.
-		 *
-		 * TODO: Deprecate
-		 *
-		 * @param {Object} state
-		 * @return {Function}
-		 */
-		getZObjectIndexById: function ( state ) {
-			/**
-			 * @param {number} id
-			 * @return {number} index
-			 */
-			return function ( id ) {
-				return state.zobject.findIndex( ( item ) => item.id === id );
-			};
-		},
-
+		// TODO: Deprecate
 		getZObjectChildrenById: function ( state, getters ) {
 			/**
 			 * Return the children of a specific zObject by its ID. The return is in zObjectTree array form.
@@ -1715,41 +1647,7 @@ module.exports = exports = {
 			};
 		},
 
-		// TODO Delete
-		getZObjectChildrenByIdRecursively: function ( state ) {
-			/**
-			 * Return the children of a specific zObject by its ID.
-			 * The return is in zObjectTree array form.
-			 * This method is desinged to return just ONE level of Depth.
-			 * This will support development of small reusable components
-			 *
-			 * @param {number} parentId
-			 * @return {Array} zObjectTree
-			 */
-			return function ( parentId ) {
-				if ( parentId === undefined ) {
-					return [];
-				}
-
-				function filterObjectByParentId( items, id ) {
-					var result = items.filter( function ( item ) {
-						return item.parent === id;
-					} );
-
-					result.forEach( function ( child ) {
-						if ( child.isTerminal() ) {
-							return;
-						}
-
-						var nestedResut = filterObjectByParentId( items, child.id );
-						result = result.concat( nestedResut );
-					} );
-
-					return result;
-				}
-				return filterObjectByParentId( state.zobject, parentId );
-			};
-		},
+		// TODO: Deprecate
 		getZObjectTypeById: function ( state, getters ) {
 			/**
 			 * Return the type of a specific zObject by its ID.
@@ -1856,17 +1754,6 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Return the nextId within the Zobject tree. This is required when adding
-		 * complex (nested) object within the tree
-		 *
-		 * @param {Object} state
-		 * @return {string} nextId
-		 */
-		getNextObjectId: function ( state ) {
-			return zobjectTreeUtils.getNextObjectId( state.zobject );
-		},
-
-		/**
 		 * Returns whether the root ZObject is initialized
 		 *
 		 * @param {Object} state
@@ -1874,6 +1761,23 @@ module.exports = exports = {
 		 */
 		getZObjectInitialized: function ( state ) {
 			return state.ZObjectInitialized;
+		},
+
+		/**
+		 * Return the index of a zObject by its row ID
+		 * for internal use.
+		 *
+		 * @param {Object} state
+		 * @return {Function}
+		 */
+		getRowIndexById: function ( state ) {
+			/**
+			 * @param {number} id
+			 * @return {number} index
+			 */
+			return function ( id ) {
+				return state.zobject.findIndex( ( item ) => item.id === id );
+			};
 		},
 
 		/**
@@ -1955,9 +1859,15 @@ module.exports = exports = {
 				return attachedImplementations;
 			};
 		},
-
-		getIsZObjectDirty: function ( state ) {
-			return state.isZObjectDirty;
+		/**
+		 * Return a deep copy of the current zobject table
+		 *
+		 * @param {Object} state
+		 * @return {Object}
+		 */
+		getZObjectCopy: function ( state ) {
+			// const copy = JSON.parse( JSON.stringify( context.state.zobject ) );
+			return state.zobject.map( ( row ) => new Row( row.id, row.key, row.value, row.parent ) );
 		}
 	},
 	mutations: {
@@ -1967,15 +1877,32 @@ module.exports = exports = {
 		 *
 		 * @param {Object} state
 		 * @param {Object} payload
-		 * @param {number} payload.rowIndex
+		 * @param {number} payload.index
 		 * @param {string|undefined} payload.value
 		 */
 		setValueByRowIndex: function ( state, payload ) {
-			const item = state.zobject[ payload.rowIndex ];
+			const item = state.zobject[ payload.index ];
 			item.value = payload.value;
 			// Modification of an array item cannot be detected
 			// so it's not reactive. That's why we must run splice
-			state.zobject.splice( payload.rowIndex, 1, item );
+			state.zobject.splice( payload.index, 1, item );
+		},
+
+		/**
+		 * This is the most atomic setter. It sets the key of
+		 * a given row, given the rowIndex and the key value.
+		 *
+		 * @param {Object} state
+		 * @param {Object} payload
+		 * @param {number} payload.index
+		 * @param {string|undefined} payload.key
+		 */
+		setKeyByRowIndex: function ( state, payload ) {
+			const item = state.zobject[ payload.index ];
+			item.key = payload.key;
+			// Modification of an array item cannot be detected
+			// so it's not reactive. That's why we must run splice
+			state.zobject.splice( payload.index, 1, item );
 		},
 
 		/**
@@ -1988,7 +1915,12 @@ module.exports = exports = {
 		 * @param {Row} row
 		 */
 		pushRow: function ( state, row ) {
-			state.zobject.push( row );
+			// Make sure that all the rows pushed into the state are instances of Row
+			if ( row instanceof Row ) {
+				state.zobject.push( row );
+			} else {
+				state.zobject.push( new Row( row.id, row.key, row.value, row.parent ) );
+			}
 		},
 
 		/**
@@ -2007,78 +1939,13 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Sets the key field of a Row given by the
-		 * rowId in payload.index with the value given
-		 * in payload.value
-		 *
-		 * @param {Object} state
-		 * @param {Object} payload
-		 * @param {number} payload.id
-		 * @param {string} payload.value
-		 */
-		setZObjectValue: function ( state, payload ) {
-			var item = state.zobject[ payload.index ];
-			item.value = payload.value;
-
-			state.zobject.splice( payload.index, 1, item );
-		},
-
-		/**
-		 * Sets the key field of a Row given by the
-		 * rowId in payload.index with the value given
-		 * in payload.key
-		 *
-		 * @param {Object} state
-		 * @param {Object} payload
-		 * @param {number} payload.id
-		 * @param {string} payload.key
-		 */
-		setZObjectKey: function ( state, payload ) {
-			var item = state.zobject[ payload.index ];
-			item.key = payload.key;
-
-			state.zobject.splice( payload.index, 1, item );
-		},
-
-		/**
-		 * Sets the key field of a Row given by the
-		 * rowId in payload.index with the value given
-		 * in payload.parent
-		 *
-		 * @param {Object} state
-		 * @param {Object} payload
-		 * @param {number} payload.id
-		 * @param {number} payload.parent
-		 */
-		setZObjectParent: function ( state, payload ) {
-			var item = state.zobject[ payload.index ];
-			item.parent = payload.parent;
-
-			state.zobject.splice( payload.index, 1, item );
-		},
-
-		/**
 		 * Removes the Row at the given index of the state zobject
 		 *
 		 * @param {Object} state
 		 * @param {number} index
 		 */
-		removeZObject: function ( state, index ) {
+		removeRowByIndex: function ( state, index ) {
 			state.zobject.splice( index, 1 );
-		},
-
-		/**
-		 * Pushes a new Row into the state zobject
-		 *
-		 * @param {Object} state
-		 * @param {Object} payload
-		 */
-		addZObject: function ( state, payload ) {
-			if ( payload instanceof Row ) {
-				state.zobject.push( payload );
-			} else {
-				state.zobject.push( new Row( payload.id, payload.key, payload.value, payload.parent ) );
-			}
 		},
 
 		/**
@@ -2091,17 +1958,16 @@ module.exports = exports = {
 		setCreateNewPage: function ( state, payload ) {
 			state.createNewPage = payload;
 		},
+
+		/**
+		 * Sets the flag ZObjectInitialized once the
+		 * root zobject state has been initialized.
+		 *
+		 * @param {Object} state
+		 * @param {boolean} value
+		 */
 		setZObjectInitialized: function ( state, value ) {
 			state.ZObjectInitialized = value;
-		},
-		setIsSavingZObject: function ( state, payload ) {
-			state.isSavingZObject = payload;
-		},
-		setActiveLangSelection: function ( state, payload ) {
-			state.activeLangSelection = payload;
-		},
-		setIsZObjectDirty: function ( state, value ) {
-			state.isZObjectDirty = value;
 		}
 	},
 	actions: {
@@ -2150,8 +2016,8 @@ module.exports = exports = {
 			context.commit( 'setCurrentZid', Constants.NEW_ZID_PLACEHOLDER );
 
 			// Create root row for the blank object
-			const rootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
-			context.commit( 'addZObject', rootObject );
+			const rootRow = new Row( 0, undefined, Constants.ROW_VALUE_OBJECT, undefined );
+			context.commit( 'pushRow', rootRow );
 
 			// Set the blank ZObject as a new ZFunctionCall
 			context.dispatch( 'changeType', {
@@ -2170,7 +2036,6 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		initializeCreateNewPage: function ( context ) {
-
 			// Set createNewPage flag to true
 			context.commit( 'setCreateNewPage', true );
 
@@ -2178,8 +2043,8 @@ module.exports = exports = {
 			context.commit( 'setCurrentZid', Constants.NEW_ZID_PLACEHOLDER );
 
 			// Create root row for the blank object
-			const rootObject = { id: 0, key: undefined, parent: undefined, value: 'object' };
-			context.commit( 'addZObject', rootObject );
+			const rootRow = new Row( 0, undefined, Constants.ROW_VALUE_OBJECT, undefined );
+			context.commit( 'pushRow', rootRow );
 
 			// Set the blank ZObject as a new ZPersistentObject
 			return context.dispatch( 'changeType', {
@@ -2287,6 +2152,7 @@ module.exports = exports = {
 				context.commit( 'setZObjectInitialized', true );
 			} );
 		},
+
 		/**
 		 * Return a boolean indicating if the current Z Object is valid based on type requirements
 		 * Update error store with any errors found while validating
@@ -2499,6 +2365,7 @@ module.exports = exports = {
 					return isValid;
 			}
 		},
+
 		/**
 		 * Submit a zObject to the api.
 		 * The request is handled differently if new or existing object.
@@ -2511,8 +2378,6 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		submitZObject: function ( context, { summary, detachFunctionObjects } ) {
-			context.commit( 'setIsSavingZObject', true );
-
 			// when a list has changed type and the items are no longer valid
 			if ( context.getters.hasInvalidListItems ) {
 				const invalidLists = context.getters.getInvalidListItems;
@@ -2534,64 +2399,13 @@ module.exports = exports = {
 					context.getters.isCreateNewPage ? undefined : context.getters.getCurrentZObjectId,
 					summary
 				).then( function ( result ) {
-					context.commit( 'setIsSavingZObject', false );
 					return resolve( result.page );
 				} ).catch( function ( error ) {
-					context.commit( 'setIsSavingZObject', false );
 					return reject( error );
 				} );
 			} );
 		},
 
-		/**
-		 * Set the value of a specific Zobject. This method is called multiple times when adding a nested object.
-		 *
-		 * @param {Object} context
-		 * @param {Object} payload
-		 */
-		setZObjectValue: function ( context, payload ) {
-			var objectIndex;
-
-			if ( payload.id === undefined || payload.value === undefined ) {
-				return;
-			}
-
-			objectIndex = context.getters.getZObjectIndexById( payload.id );
-			payload.index = objectIndex;
-			context.commit( 'setZObjectValue', payload );
-		},
-		/**
-		 * Set the parent of a specific Zobject.
-		 *
-		 * @param {Object} context
-		 * @param {Object} payload
-		 */
-		setZObjectParent: function ( context, payload ) {
-			var objectIndex;
-			if ( payload.id === undefined || payload.parent === undefined ) {
-				return;
-			}
-			objectIndex = context.getters.getZObjectIndexById( payload.id );
-			payload.index = objectIndex;
-			context.commit( 'setZObjectParent', payload );
-		},
-		/**
-		 * Handles the conversion and initization of a zObject.
-		 * The Object received by the server is in JSON format, so we convert it
-		 * to our Tree structure.
-		 *
-		 * TODO: Deprecate in favor of injectZObjectFromRowId
-		 *
-		 * @param {Object} context
-		 * @param {Object} payload
-		 * @return {Promise} type
-		 */
-		injectZObject: function ( context, payload ) {
-			context.dispatch( 'injectZObjectFromRowId', {
-				rowId: payload.id,
-				value: payload.zobject
-			} );
-		},
 		/**
 		 * Recalculate the internal keys of a ZList in its zobject table representation.
 		 * This should be used when an item is removed from a ZList.
@@ -2603,8 +2417,8 @@ module.exports = exports = {
 			const children = context.getters.getChildrenByParentRowId( listRowId );
 
 			children.forEach( function ( itemRow, index ) {
-				context.commit( 'setZObjectKey', {
-					index: context.getters.getZObjectIndexById( itemRow.id ),
+				context.commit( 'setKeyByRowIndex', {
+					index: context.getters.getRowIndexById( itemRow.id ),
 					key: `${index}`
 				} );
 			} );
@@ -2625,8 +2439,8 @@ module.exports = exports = {
 					Constants.Z_ARGUMENT_KEY,
 					Constants.Z_STRING_VALUE
 				], argRow.id );
-				context.commit( 'setZObjectValue', {
-					index: context.getters.getZObjectIndexById( argKeyRow.id ),
+				context.commit( 'setValueByRowIndex', {
+					index: context.getters.getRowIndexById( argKeyRow.id ),
 					value: `${context.getters.getCurrentZObjectId}K${index + 1}`
 				} );
 			} );
@@ -2643,8 +2457,8 @@ module.exports = exports = {
 			if ( objectId === null || objectId === undefined ) {
 				return;
 			}
-			const objectIndex = context.getters.getZObjectIndexById( objectId );
-			context.commit( 'removeZObject', objectIndex );
+			const objectIndex = context.getters.getRowIndexById( objectId );
+			context.commit( 'removeRowByIndex', objectIndex );
 			context.commit( 'clearErrorsForId', objectId );
 		},
 
@@ -2668,27 +2482,6 @@ module.exports = exports = {
 				// Then remove child
 				context.dispatch( 'removeZObject', child.id );
 			} );
-		},
-
-		/**
-		 * Add a single entry in the zObject tree.
-		 *
-		 * @param {Object} context
-		 * @param {Object} payload
-		 * @return {number} newObjectId
-		 */
-		addZObject: function ( context, payload ) {
-			if ( payload.key === undefined || isNaN( payload.parent ) ) {
-				return;
-			}
-			// we add the value property if not passed in the payload
-			if ( !payload.value ) {
-				payload.value = undefined;
-			}
-
-			payload.id = zobjectTreeUtils.getNextObjectId( context.state.zobject );
-			context.commit( 'addZObject', payload );
-			return payload.id;
 		},
 
 		/**
@@ -2725,6 +2518,7 @@ module.exports = exports = {
 				}, DEBOUNCE_ZOBJECT_LOOKUP_TIMEOUT );
 			} );
 		},
+
 		/**
 		 * Adds the given testers to the given function's list of approved testers, and submits
 		 * the change to the API.
@@ -2737,7 +2531,7 @@ module.exports = exports = {
 		 */
 		attachZTesters: function ( context, payload ) {
 			// Save a copy of the pre-submission ZObject in case the submission returns an error
-			const zObjectCopy = JSON.parse( JSON.stringify( context.state.zobject ) );
+			const zobjectCopy = context.getters.getZObjectCopy;
 
 			// Get tester list (Z8K3) row following the appropriate keyPath Z2K2.Z8K3 from the root
 			const listRow = context.getters.getRowByKeyPath( [
@@ -2750,12 +2544,12 @@ module.exports = exports = {
 				.then( () => {
 					return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
 						// Reset old ZObject if something failed
-						// FIXME zObjectCopy is an array of objects and not an array of Rows
-						context.commit( 'setZObject', zObjectCopy );
+						context.commit( 'setZObject', zobjectCopy );
 						throw e;
 					} );
 				} );
 		},
+
 		/**
 		 * Removes the given testers from the given function's list of approved testers, and submits the
 		 * change to the API.
@@ -2767,7 +2561,8 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		detachZTesters: function ( context, payload ) {
-			const zObjectCopy = JSON.parse( JSON.stringify( context.state.zobject ) );
+			const zobjectCopy = context.getters.getZObjectCopy;
+
 			const listId = context.getters.getNestedZObjectById(
 				payload.functionId, [
 					Constants.Z_PERSISTENTOBJECT_VALUE,
@@ -2787,11 +2582,12 @@ module.exports = exports = {
 			}
 			context.dispatch( 'recalculateTypedListKeys', listId );
 			return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
-				// FIXME zObjectCopy is an array of objects and not an array of Rows
-				context.commit( 'setZObject', zObjectCopy );
+				// Reset old ZObject if something failed
+				context.commit( 'setZObject', zobjectCopy );
 				throw e;
 			} );
 		},
+
 		/**
 		 * Adds the given implementations to the given function's list of approved implementations, and submits
 		 * the change to the API.
@@ -2804,7 +2600,7 @@ module.exports = exports = {
 		 */
 		attachZImplementations: function ( context, payload ) {
 			// Save a copy of the pre-submission ZObject in case the submission returns an error
-			const zObjectCopy = JSON.parse( JSON.stringify( context.state.zobject ) );
+			const zobjectCopy = context.getters.getZObjectCopy;
 
 			// Get implementation list (Z8K4) row following the appropriate keyPath Z2K2.Z8K4 from the root
 			const listRow = context.getters.getRowByKeyPath( [
@@ -2817,12 +2613,12 @@ module.exports = exports = {
 				.then( () => {
 					return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
 						// Reset old ZObject if something failed
-						// FIXME zObjectCopy is an array of objects and not an array of Rows
-						context.commit( 'setZObject', zObjectCopy );
+						context.commit( 'setZObject', zobjectCopy );
 						throw e;
 					} );
 				} );
 		},
+
 		/**
 		 * Removes the given implementations from the given function's list of approved implementations, and submits the
 		 * change to the API.
@@ -2834,7 +2630,8 @@ module.exports = exports = {
 		 * @return {Promise}
 		 */
 		detachZImplementations: function ( context, payload ) {
-			const zObjectCopy = JSON.parse( JSON.stringify( context.state.zobject ) );
+			const zobjectCopy = context.getters.getZObjectCopy;
+
 			const listId = context.getters.getNestedZObjectById(
 				payload.functionId, [
 					Constants.Z_PERSISTENTOBJECT_VALUE,
@@ -2854,13 +2651,10 @@ module.exports = exports = {
 			}
 			context.dispatch( 'recalculateTypedListKeys', listId );
 			return context.dispatch( 'submitZObject', '' ).catch( function ( e ) {
-				// FIXME zObjectCopy is an array of objects and not an array of Rows
-				context.commit( 'setZObject', zObjectCopy );
+				// Reset old ZObject if something failed
+				context.commit( 'setZObject', zobjectCopy );
 				throw e;
 			} );
-		},
-		setIsZObjectDirty: function ( context, value ) {
-			context.commit( 'setIsZObjectDirty', value );
 		},
 
 		/**
@@ -3024,26 +2818,13 @@ module.exports = exports = {
 		 * @param {Object|Array|string} payload.value
 		 */
 		setValueByRowId: function ( context, payload ) {
-			// FIXME make sure that the getIndex getters is only used in here.
-			// Because setValueByRowId is the most atomic of all actions, the
-			// following method should not be called from anywhere else. All more
-			// complex actions should instead use rowId so that the rowIndex remains
-			// a concept only internal to this method. We can then move the
-			// getRowIndexByRowId to be an internal function in here so that the
-			// index concepts stops being accessible from other modules and components
-			function getRowIndexByRowId( rowId ) {
-				let index;
-				for ( const i in context.state.zobject ) {
-					if ( context.state.zobject[ i ].id === rowId ) {
-						index = i;
-						break;
-					}
-				}
-				return index;
+			if ( payload.rowId === undefined || payload.rowId === null ) {
+				return;
 			}
-
-			const rowIndex = getRowIndexByRowId( payload.rowId );
-			context.commit( 'setValueByRowIndex', { rowIndex, value: payload.value } );
+			context.commit( 'setValueByRowIndex', {
+				index: context.getters.getRowIndexById( payload.rowId ),
+				value: payload.value
+			} );
 		},
 
 		/**
@@ -3110,7 +2891,7 @@ module.exports = exports = {
 		 * Given a key and a JSON object value, transforms into rows and inserts it
 		 * under the given parent ID. This method is used to add new keys into an
 		 * existing parent object, generally used for function call.
-		 * Assumes that the key doesn't exist.
+		 * Assumes that the key doesn't exist yet in the zobject table.
 		 *
 		 * @param {Object} context
 		 * @param {Object} payload

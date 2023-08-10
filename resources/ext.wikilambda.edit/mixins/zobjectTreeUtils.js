@@ -151,16 +151,6 @@ module.exports = exports = {
 			}
 			return reconstructJson( zObjectTree, parentId, rootIsArray );
 		},
-		getNextObjectId: function ( zObject ) {
-			if ( !zObject || zObject.length === 0 ) {
-				return 0;
-			}
-
-			const highestObjectId = Math.max(
-				...zObject.map( ( item ) => item.id )
-			);
-			return highestObjectId + 1;
-		},
 		findLatestKey: function ( zObject, zid ) {
 			const keyRegex = new RegExp( '^' + zid + 'K([0-9]+)$' );
 			const defaultKey = 0;

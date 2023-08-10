@@ -71,7 +71,7 @@ describe( 'callZFunction Vuex module', function () {
 				const rowId = callZFunctionModule.actions.initializeResultId( context, payload );
 				expect( rowId ).toBe( 3 );
 				expect( context.commit ).toHaveBeenCalledTimes( 1 );
-				expect( context.commit ).toHaveBeenCalledWith( 'addZObject', {
+				expect( context.commit ).toHaveBeenCalledWith( 'pushRow', {
 					id: 3,
 					key: undefined,
 					parent: undefined,

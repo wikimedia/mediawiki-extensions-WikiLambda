@@ -369,12 +369,12 @@ describe( 'zobject Vuex module', function () {
 	} );
 
 	describe( 'Getters', function () {
-		describe( 'getZObjectIndexById', function () {
+		describe( 'getRowIndexById', function () {
 			it( 'Returns current zObject by its index', function () {
 				var result = 10;
 				state.zobject = tableDataToRowObjects( zobjectTree );
 
-				expect( zobjectModule.getters.getZObjectIndexById( state )( 10 ) ).toEqual( result );
+				expect( zobjectModule.getters.getRowIndexById( state )( 10 ) ).toEqual( result );
 			} );
 		} );
 
@@ -449,27 +449,6 @@ describe( 'zobject Vuex module', function () {
 			} );
 		} );
 
-		describe( 'getNextObjectId', function () {
-			it( 'Returns 0 if ZObject does not exist', function () {
-				state.zobject = null;
-
-				expect( zobjectModule.getters.getNextObjectId( state ) ).toEqual( 0 );
-			} );
-
-			it( 'Returns 0 if ZObject is an empty array', function () {
-				state.zobject = [];
-
-				expect( zobjectModule.getters.getNextObjectId( state ) ).toEqual( 0 );
-			} );
-
-			it( 'Returns the increment of the hightest object id', function () {
-				state.zobject = tableDataToRowObjects( zobjectTree );
-				const zobjectHighestId = 17;
-
-				expect( zobjectModule.getters.getNextObjectId( state ) ).toEqual( zobjectHighestId + 1 );
-			} );
-		} );
-
 		describe( 'getAttachedZTesters and getAttachedZImplementations', function () {
 			var getters;
 			beforeEach( function () {
@@ -500,20 +479,6 @@ describe( 'zobject Vuex module', function () {
 			it( 'return attached ZImplementations', function () {
 				expect( zobjectModule.getters.getAttachedZImplementations( state, getters )( 0 ) )
 					.toEqual( [ 'Z333', 'Z444' ] );
-			} );
-		} );
-
-		describe( 'getIsZObjectDirty', function () {
-			it( 'returns the default isZObjectDirty false', function () {
-				expect( zobjectModule.getters.getIsZObjectDirty( state ) )
-					.toEqual( false );
-			} );
-
-			it( 'returns isZObjectDirty from the updated state', function () {
-				state.isZObjectDirty = true;
-
-				expect( zobjectModule.getters.getIsZObjectDirty( state ) )
-					.toEqual( true );
 			} );
 		} );
 
@@ -3613,14 +3578,6 @@ describe( 'zobject Vuex module', function () {
 				expect( state.createNewPage ).toBe( true );
 			} );
 		} );
-
-		describe( 'setIsZObjectDirty', function () {
-			it( 'Updates the isZObjectDirty value', function () {
-				zobjectModule.mutations.setIsZObjectDirty( state, true );
-
-				expect( state.isZObjectDirty ).toEqual( true );
-			} );
-		} );
 	} );
 
 	describe( 'Actions', function () {
@@ -3708,7 +3665,7 @@ describe( 'zobject Vuex module', function () {
 				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
 				expect( context.commit ).toHaveBeenCalledWith( 'setCreateNewPage', true );
 				expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z0' );
-				expect( context.commit ).toHaveBeenCalledWith( 'addZObject', expectedRootObject );
+				expect( context.commit ).toHaveBeenCalledWith( 'pushRow', expectedRootObject );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedChangeTypePayload );
 				expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
 			} );
@@ -3742,7 +3699,7 @@ describe( 'zobject Vuex module', function () {
 				expect( context.dispatch ).toHaveBeenCalledTimes( 3 );
 				expect( context.commit ).toHaveBeenCalledWith( 'setCreateNewPage', true );
 				expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z0' );
-				expect( context.commit ).toHaveBeenCalledWith( 'addZObject', expectedRootObject );
+				expect( context.commit ).toHaveBeenCalledWith( 'pushRow', expectedRootObject );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedChangeTypePayload );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedZ2K2ChangeTypePayload );
 				expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
@@ -4073,18 +4030,10 @@ describe( 'zobject Vuex module', function () {
 				expect( context.commit ).toHaveBeenCalledTimes( 3 );
 				expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
 				expect( context.commit ).toHaveBeenCalledWith( 'setCurrentZid', 'Z0' );
-				expect( context.commit ).toHaveBeenCalledWith( 'addZObject', expectedRootObject );
+				expect( context.commit ).toHaveBeenCalledWith( 'pushRow', expectedRootObject );
 				expect( context.dispatch ).toHaveBeenCalledWith( 'changeType', expectedChangeTypePayload );
 				expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
 			} );
-		} );
-
-		it( 'Dispatches isZObjectDirty', function () {
-			const isZObjectDirty = true;
-			zobjectModule.actions.setIsZObjectDirty( context, isZObjectDirty );
-
-			expect( context.commit ).toHaveBeenCalledTimes( 1 );
-			expect( context.commit ).toHaveBeenCalledWith( 'setIsZObjectDirty', isZObjectDirty );
 		} );
 
 		describe( 'validateZObject', () => {
@@ -4522,7 +4471,6 @@ describe( 'zobject Vuex module', function () {
 					zid: undefined,
 					zobject: JSON.stringify( zobject )
 				} );
-				expect( context.commit ).toHaveBeenCalledTimes( 1 );
 			} );
 
 			it( 'submits an existing zobject to edit', () => {
@@ -4543,7 +4491,6 @@ describe( 'zobject Vuex module', function () {
 					zid: 'Z0',
 					zobject: JSON.stringify( zobject )
 				} );
-				expect( context.commit ).toHaveBeenCalledTimes( 1 );
 			} );
 
 			it( 'submits a function after detaching implementations and tester if needed', () => {
@@ -4570,7 +4517,6 @@ describe( 'zobject Vuex module', function () {
 					zid: 'Z0',
 					zobject: JSON.stringify( zobjectFunction.ZObject )
 				} );
-				expect( context.commit ).toHaveBeenCalledTimes( 1 );
 			} );
 
 			it( 'removes empty name label values', () => {
@@ -4717,7 +4663,7 @@ describe( 'zobject Vuex module', function () {
 					{ id: 10, key: 'Z6K1', parent: 8, value: 'two' }
 				];
 				context.state = { zobject: tableDataToRowObjects( initialList ) };
-				context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
+				context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
 				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId(
 					context.state );
 				context.commit = jest.fn( ( mutationType, payload ) => {
@@ -4744,7 +4690,7 @@ describe( 'zobject Vuex module', function () {
 				];
 
 				context.state = { zobject: tableDataToRowObjects( initialList ) };
-				context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
+				context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
 				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId(
 					context.state );
 				context.commit = jest.fn( ( mutationType, payload ) => {
@@ -4779,7 +4725,7 @@ describe( 'zobject Vuex module', function () {
 				context.getters.getCurrentZObjectId = 'Z999';
 				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
 				context.getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
-				context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
+				context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
 				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId(
 					context.state );
 				context.commit = jest.fn( ( mutationType, payload ) => {
@@ -4811,7 +4757,7 @@ describe( 'zobject Vuex module', function () {
 				context.getters.getCurrentZObjectId = 'Z999';
 				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
 				context.getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
-				context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
+				context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
 				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId(
 					context.state );
 				context.commit = jest.fn( ( mutationType, payload ) => {
@@ -6126,6 +6072,7 @@ describe( 'zobject Vuex module', function () {
 					{ key: Constants.Z_REFERENCE_ID, value: 'Z555', parent: 26, id: 34 }, // existing impl 2
 					{ key: Constants.Z_REFERENCE_ID, value: 'Z666', parent: 27, id: 35 } // existing impl 3
 				] ) );
+
 				beforeEach( function () {
 					context.state = {
 						zobject: initialZObject
@@ -6214,7 +6161,7 @@ describe( 'zobject Vuex module', function () {
 				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
 				context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
 				context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
-				context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
+				context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
 				// Mutations
 				context.commit = jest.fn( ( mutationType, payload ) => {
 					if ( mutationType in zobjectModule.mutations ) {
@@ -6466,7 +6413,7 @@ describe( 'zobject Vuex module', function () {
 				};
 				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
 				context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
-				context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
+				context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
 				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( context.state );
 				context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
 				context.getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( context.state, context.getters );
@@ -6651,7 +6598,7 @@ describe( 'zobject Vuex module', function () {
 				// Getters
 				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
 				context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
-				context.getters.getZObjectIndexById = zobjectModule.getters.getZObjectIndexById( context.state );
+				context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
 				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( context.state );
 				context.getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
 				context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
@@ -6812,18 +6759,12 @@ describe( 'zobject Vuex module', function () {
 					{ id: 10, key: Constants.Z_STRING_VALUE, value: 'Foo', parent: 8 }
 				] );
 
-				context.getters.getRowById = zobjectModule.getters
-					.getRowById( context.state );
-				context.getters.getChildrenByParentRowId = zobjectModule.getters
-					.getChildrenByParentRowId( context.state );
-				context.getters.getRowByKeyPath = zobjectModule.getters
-					.getRowByKeyPath( context.state, context.getters );
-				context.getters.getChildrenByParentRowId = zobjectModule.getters
-					.getChildrenByParentRowId( context.state );
-				context.getters.getNextArrayIndex = zobjectModule.getters
-					.getNextArrayIndex( context.state, context.getters );
-				context.getters.getNextRowId = zobjectModule.getters
-					.getNextRowId( context.state, context.getters );
+				context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
+				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
+				context.getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
+				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( context.state );
+				context.getters.getNextArrayIndex = zobjectModule.getters.getNextArrayIndex( context.state, context.getters );
+				context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state, context.getters );
 				context.dispatch = jest.fn( function ( actionType, payload ) {
 					zobjectModule.actions[ actionType ]( context, payload );
 					return {
@@ -6942,6 +6883,8 @@ describe( 'zobject Vuex module', function () {
 					{ id: 9, key: Constants.Z_OBJECT_TYPE, value: Constants.Z_STRING, parent: 8 },
 					{ id: 10, key: Constants.Z_STRING_VALUE, value: 'Foo', parent: 8 }
 				] );
+
+				context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
 			} );
 
 			describe( 'when rowId is valid', function () {
@@ -6954,12 +6897,12 @@ describe( 'zobject Vuex module', function () {
 
 					zobjectModule.actions.setValueByRowId( context, payload );
 
-					expect( context.commit ).toHaveBeenCalledWith( 'setValueByRowIndex', { rowIndex: '10', value: expectedStringValue } );
+					expect( context.commit ).toHaveBeenCalledWith( 'setValueByRowIndex', { index: 10, value: expectedStringValue } );
 				} );
 			} );
 
 			describe( 'when rowId is invalid', function () {
-				it( 'should call the setValueByRowIndex mutation with rowIndex set to undefined', function () {
+				it( 'should not call setValueByRowIndex mutation', function () {
 					const expectedStringValue = 'Test String';
 					const payload = {
 						rowId: null,
@@ -6968,7 +6911,7 @@ describe( 'zobject Vuex module', function () {
 
 					zobjectModule.actions.setValueByRowId( context, payload );
 
-					expect( context.commit ).toHaveBeenCalledWith( 'setValueByRowIndex', { rowIndex: undefined, value: expectedStringValue } );
+					expect( context.commit ).not.toHaveBeenCalledWith( 'setValueByRowIndex' );
 				} );
 			} );
 		} );

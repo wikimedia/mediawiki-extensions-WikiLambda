@@ -6,6 +6,7 @@
  */
 
 var Constants = require( '../../Constants.js' ),
+	Row = require( '../classes/Row.js' ),
 	extractZIDs = require( '../../mixins/schemata.js' ).methods.extractZIDs,
 	performFunctionCall = require( '../../mixins/api.js' ).methods.performFunctionCall;
 
@@ -30,12 +31,8 @@ module.exports = exports = {
 			} else {
 				// payload is not a row ID, add new rowId
 				rowId = context.getters.getNextRowId;
-				context.commit( 'addZObject', {
-					id: rowId,
-					key: undefined,
-					parent: undefined,
-					value: Constants.ROW_VALUE_OBJECT
-				} );
+				const rootRow = new Row( rowId, undefined, Constants.ROW_VALUE_OBJECT, undefined );
+				context.commit( 'pushRow', rootRow );
 			}
 			return rowId;
 		},
