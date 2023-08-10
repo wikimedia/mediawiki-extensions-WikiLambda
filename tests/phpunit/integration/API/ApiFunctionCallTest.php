@@ -263,7 +263,8 @@ class ApiFunctionCallTest extends ApiTestCase {
 			'wikilambda_function_call_zobject' => $compositionZ7String
 		] );
 		$this->assertTrue( $compositionResult[0]['query']['wikilambda_function_call']['success'] );
-		$this->assertNotEquals( 'Z24', $compositionResult[0]['query']['wikilambda_function_call']['data'][ 'Z22K1' ] );
+		$compositionData = json_decode( $compositionResult[0]['query']['wikilambda_function_call']['data'], true );
+		$this->assertNotEquals( 'Z24', $compositionData[ 'Z22K1' ] );
 
 		$pythonZ7String = '{ "Z1K1": "Z7", "Z7K1": { "Z1K1": "Z8", "Z8K1": [ "Z17", { "Z1K1": "Z17", "Z17K1": "Z6", '
 			. '"Z17K2": { "Z1K1": "Z6", "Z6K1": "Z400K1" }, "Z17K3": { "Z1K1": "Z12", "Z12K1": [ "Z11" ] } }, '
@@ -277,7 +278,8 @@ class ApiFunctionCallTest extends ApiTestCase {
 			'wikilambda_function_call_zobject' => $pythonZ7String
 		] );
 		$this->assertTrue( $pythonResult[0]['query']['wikilambda_function_call']['success'] );
-		$this->assertNotEquals( 'Z24', $pythonResult[0]['query']['wikilambda_function_call']['data']['Z22K1'] );
+		$pythonData = json_decode( $pythonResult[0]['query']['wikilambda_function_call']['data'], true );
+		$this->assertNotEquals( 'Z24', $pythonData['Z22K1'] );
 
 		$disallowedPythonZ7String = '{ "Z1K1": "Z7", "Z7K1": { "Z1K1": "Z8", "Z8K1": [ "Z17" ], "Z8K2": "Z1", '
 			. '"Z8K3": [ "Z20" ], "Z8K4": [ "Z14", { "Z1K1": "Z14", "Z14K1": "Z1000", "Z14K3": { "Z1K1": "Z16", '
@@ -288,10 +290,14 @@ class ApiFunctionCallTest extends ApiTestCase {
 			'wikilambda_function_call_zobject' => $disallowedPythonZ7String
 		] );
 		$this->assertTrue( $disallowedPythonResult[0]['query']['wikilambda_function_call']['success'] );
-		$this->assertEquals( 'Z24', $disallowedPythonResult[0]['query']['wikilambda_function_call']['data']['Z22K1'] );
+		$disallowedPythonData = json_decode(
+			$disallowedPythonResult[0]['query']['wikilambda_function_call']['data'],
+			true
+		);
+		$this->assertEquals( 'Z24', $disallowedPythonData['Z22K1'] );
 		$this->assertStringContainsString(
 			'Operation not permitted',
-			json_encode( $disallowedPythonResult[0]['query']['wikilambda_function_call']['data']['Z22K2'] )
+			$disallowedPythonResult[0]['query']['wikilambda_function_call']['data']
 		);
 	}
 }
