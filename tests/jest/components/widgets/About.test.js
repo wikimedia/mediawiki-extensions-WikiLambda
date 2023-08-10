@@ -29,7 +29,7 @@ describe( 'About', () => {
 			getZPersistentDescription: createGettersWithFunctionsMock( undefined ),
 			getZPersistentName: createGettersWithFunctionsMock( undefined ),
 			getErrors: createGettersWithFunctionsMock( {} ),
-			getUserZlangZID: jest.fn().mockReturnValue( 'Z1002' ),
+			getUserLangZid: jest.fn().mockReturnValue( 'Z1002' ),
 			getLabel: () => ( key ) => {
 				const labels = {
 					Z2K3: 'name',

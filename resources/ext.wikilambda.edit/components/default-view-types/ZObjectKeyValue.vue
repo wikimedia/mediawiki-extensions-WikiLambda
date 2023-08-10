@@ -197,7 +197,7 @@ module.exports = exports = {
 	},
 	computed: $.extend(
 		mapGetters( [
-			'getUserZlangZID',
+			'getUserLangZid',
 			'getLabelData',
 			'getExpectedTypeOfKey',
 			'getDepthByRowId',
@@ -314,14 +314,14 @@ module.exports = exports = {
 					return new LabelData(
 						null,
 						this.$i18n( 'wikilambda-list-item-label', this.key ).text(),
-						this.getUserZlangZID
+						this.getUserLangZid
 					);
 				}
 				if ( this.isKeyTypedListType( this.key ) ) {
 					return new LabelData(
 						null,
 						this.$i18n( 'wikilambda-list-items-type-label' ).text(),
-						this.getUserZlangZID
+						this.getUserLangZid
 					);
 				}
 				return this.getLabelData( this.key );

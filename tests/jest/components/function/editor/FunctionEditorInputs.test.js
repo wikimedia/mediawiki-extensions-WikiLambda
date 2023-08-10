@@ -19,7 +19,7 @@ describe( 'FunctionEditorInputs', () => {
 		getters = {
 			getZFunctionInputs: createGettersWithFunctionsMock( [] ),
 			getRowByKeyPath: createGettersWithFunctionsMock( undefined ),
-			getZLang: createGetterMock( 'Z1002' )
+			getUserLangCode: createGetterMock( 'en' )
 		};
 
 		actions = {

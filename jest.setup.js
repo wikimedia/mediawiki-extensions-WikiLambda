@@ -72,7 +72,8 @@ global.mw = {
 						createNewPage: true,
 						viewmode: true,
 						zobject: { Z1K1: 'Z2', Z2K1: 'Z0' },
-						zlangZid: 'Z1002'
+						zlangZid: 'Z1002',
+						zlang: 'en'
 					};
 				default:
 					return {};

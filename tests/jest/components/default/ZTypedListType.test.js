@@ -29,7 +29,7 @@ describe( 'ZTypedListType', () => {
 			getParentRowId: () => () => { return 2; },
 			getZObjectValueByRowId: createGettersWithFunctionsMock(),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( Constants.Z_STRING ),
-			getUserZlangZID: createGettersWithFunctionsMock( 'Z1002' )
+			getUserLangZid: createGettersWithFunctionsMock( 'Z1002' )
 		};
 
 		actions = {

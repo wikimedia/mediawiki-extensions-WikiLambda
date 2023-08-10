@@ -18,7 +18,7 @@ describe( 'FunctionEditorDefinition', () => {
 		getters = {
 			getCurrentZObjectId: createGetterMock( 'Z0' ),
 			getRowByKeyPath: createGettersWithFunctionsMock(),
-			getUserZlangZID: createGetterMock( 'Z1002' ),
+			getUserLangZid: createGetterMock( 'Z1002' ),
 			getZFunctionInputs: createGettersWithFunctionsMock( [] ),
 			getZFunctionLanguages: createGettersWithFunctionsMock( [ 'Z1002', 'Z1004' ] ),
 			getZFunctionOutput: createGettersWithFunctionsMock( { id: 2 } ),
@@ -64,7 +64,7 @@ describe( 'FunctionEditorDefinition', () => {
 			getters = {
 				getCurrentZObjectId: createGetterMock( 'Z0' ),
 				getRowByKeyPath: createGettersWithFunctionsMock(),
-				getUserZlangZID: createGetterMock( 'Z1002' ),
+				getUserLangZid: createGetterMock( 'Z1002' ),
 				getZFunctionInputs: createGettersWithFunctionsMock( [] ),
 				getZFunctionLanguages: createGettersWithFunctionsMock( [] ),
 				getZFunctionOutput: createGettersWithFunctionsMock( undefined ),

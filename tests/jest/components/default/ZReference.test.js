@@ -8,6 +8,7 @@
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ZReference = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZReference.vue' ),
 	ZObjectSelector = require( '../../../../resources/ext.wikilambda.edit/components/ZObjectSelector.vue' );
@@ -16,7 +17,7 @@ describe( 'ZReference', () => {
 	var getters;
 	beforeEach( () => {
 		getters = {
-			getZLang: createGettersWithFunctionsMock( 'en' ),
+			getUserLangCode: createGetterMock( 'en' ),
 			getLabel: createGettersWithFunctionsMock( 'String' ),
 			getLabelData: createGettersWithFunctionsMock( { zid: 'Z6', label: 'String', lang: 'Z1002' } ),
 			getZReferenceTerminalValue: createGettersWithFunctionsMock( 'Z6' ),

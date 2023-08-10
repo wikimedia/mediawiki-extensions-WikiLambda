@@ -25,7 +25,7 @@ describe( 'FunctionViewerAliases', function () {
 				value: 'Z1002',
 				parent: 1
 			} ),
-			getUserZlangZID: jest.fn(),
+			getUserLangZid: jest.fn(),
 			getLabel: createGettersWithFunctionsMock(),
 			getStoredObject: createGettersWithFunctionsMock( { Z2K2: { Z60K1: 'en' } } ),
 			getAllItemsFromListById: createGettersWithFunctionsMock( [

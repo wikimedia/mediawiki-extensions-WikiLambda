@@ -50,7 +50,9 @@ const runSetup = function () {
 			case 'wgWikiLambda':
 				return {
 					runFunction: true,
-					viewmode: false
+					viewmode: false,
+					zlang: 'en',
+					zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH
 				};
 			default:
 				return {};

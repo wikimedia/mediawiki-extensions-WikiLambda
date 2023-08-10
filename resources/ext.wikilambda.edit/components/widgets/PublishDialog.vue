@@ -99,12 +99,12 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getZLang',
+		'getUserLangCode',
 		'getCurrentZObjectId',
 		'getCurrentZObjectType',
 		'getCurrentZImplementationType',
 		'getErrors',
-		'getUserZlangZID',
+		'getUserLangZid',
 		'isNewZObject'
 	] ), {
 		/**
@@ -240,7 +240,7 @@ module.exports = exports = {
 			this.closeDialog();
 			window.location.href = !pageTitle ?
 				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
-				`/view/${this.getZLang}/${pageTitle}?success=true`;
+				`/view/${this.getUserLangCode}/${pageTitle}?success=true`;
 		},
 
 		/**
@@ -286,7 +286,7 @@ module.exports = exports = {
 					zobjectid: this.getCurrentZObjectId,
 					zobjecttype: this.getCurrentZObjectType || null,
 					implementationtype: this.getCurrentZImplementationType || null,
-					zlang: this.getUserZlangZID || null,
+					zlang: this.getUserLangZid || null,
 					haserrors: this.hasErrors
 				};
 				this.dispatchEvent( `wf.ui.${eventNamespace}.publish`, customData );

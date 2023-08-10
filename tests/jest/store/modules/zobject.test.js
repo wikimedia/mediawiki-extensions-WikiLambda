@@ -4870,7 +4870,7 @@ describe( 'zobject Vuex module', function () {
 					context.getters
 				);
 				context.getters.getStoredObject = ( zid ) => context.state.objects[ zid ];
-				context.getters.getUserZlangZID = 'Z1003';
+				context.getters.getUserLangZid = 'Z1003';
 				// Mutations
 				context.commit = jest.fn( ( mutationType, payload ) => {
 					if ( mutationType in zobjectModule.mutations ) {

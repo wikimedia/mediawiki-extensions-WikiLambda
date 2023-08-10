@@ -25,7 +25,8 @@ describe( 'Publish Dialog', () => {
 			getCurrentZObjectType: createGetterMock( Constants.Z_FUNCTION ),
 			getCurrentZImplementationType: createGetterMock( undefined ),
 			isNewZObject: createGetterMock( true ),
-			getUserZlangZID: createGetterMock( 'Z1002' )
+			getUserLangZid: createGetterMock( 'Z1002' ),
+			getUserLangCode: createGetterMock( 'en' )
 		};
 		actions = {
 			submitZObject: jest.fn(),

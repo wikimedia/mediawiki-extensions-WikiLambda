@@ -13,8 +13,8 @@
 			{{ $i18n( 'wikilambda-function-viewer-aliases-header' ) }}
 		</div>
 		<wl-function-viewer-sidebar
-			:list="getSelectedAliases( getUserZlangZID )"
-			:z-lang="getUserZlangZID"
+			:list="getSelectedAliases( getUserLangZid )"
+			:z-lang="getUserLangZid"
 			:button-weight="buttonWeight"
 			:button-text="buttonText"
 			:button-icon="buttonIcon"
@@ -58,7 +58,7 @@ module.exports = exports = {
 		'getStoredObject',
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
-		'getUserZlangZID',
+		'getUserLangZid',
 		'getLabel'
 	] ), {
 		zobject: function () {
@@ -147,7 +147,7 @@ module.exports = exports = {
 
 				// if this language is not the users AND
 				// it is the first time we have encountered a language that is not the users
-				if ( language !== this.getUserZlangZID && !this.multipleAliasLang ) {
+				if ( language !== this.getUserLangZid && !this.multipleAliasLang ) {
 					this.multipleAliasLang = true;
 				}
 

@@ -17,7 +17,7 @@ describe( 'FunctionEditorOutput', () => {
 
 	beforeEach( () => {
 		getters = {
-			getZLang: createGetterMock( 'Z1002' ),
+			getUserLangCode: createGetterMock( 'en' ),
 			getZFunctionOutput: createGettersWithFunctionsMock(),
 			getZReferenceTerminalValue: createGettersWithFunctionsMock(),
 			getErrors: createGettersWithFunctionsMock( [] )

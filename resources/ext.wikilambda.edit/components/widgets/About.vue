@@ -153,7 +153,7 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getLabel',
 		'getMetadataLanguages',
-		'getUserZlangZID',
+		'getUserLangZid',
 		'getZMonolingualTextValue',
 		'getZMonolingualStringsetValues',
 		'getZPersistentAlias',
@@ -354,7 +354,7 @@ module.exports = exports = {
 		 * language, which is the one with the selected Name.
 		 */
 		openUserLanguageDialog: function () {
-			this.changeSelectedLanguage( this.getUserZlangZID );
+			this.changeSelectedLanguage( this.getUserLangZid );
 			this.openEditLanguageDialog();
 		},
 		/**

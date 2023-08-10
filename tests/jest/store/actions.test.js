@@ -14,7 +14,7 @@ describe( 'Vuex root actions', function () {
 			commit: jest.fn(),
 			dispatch: jest.fn(),
 			getters: {
-				getUserZlangZID: jest.fn().mockReturnValue( 'Z1002' )
+				getUserLangZid: jest.fn().mockReturnValue( 'Z1002' )
 			}
 		};
 

@@ -10,6 +10,7 @@
 var VueTestUtils = require( '@vue/test-utils' ),
 	Constants = require( '../../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	createGettersWithFunctionsMock = require( '../../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createGetterMock = require( '../../../helpers/getterHelpers.js' ).createGetterMock,
 	FunctionViewerSidebar = require( '../../../../../resources/ext.wikilambda.edit/components/function/viewer/details/FunctionViewerDetailsSidebar.vue' );
 
 describe( 'FunctionViewerDetailsSidebar', function () {
@@ -68,7 +69,7 @@ describe( 'FunctionViewerDetailsSidebar', function () {
 			} ),
 			getNestedZObjectById: createGettersWithFunctionsMock( { id: idLangOne, value: Constants.Z_STRING } ),
 			getLabel: createGettersWithFunctionsMock(),
-			getCurrentZLanguage: jest.fn(),
+			getUserLangZid: createGetterMock( 'en' ),
 			getZObjectTypeById: createGettersWithFunctionsMock( Constants.Z_REFERENCE )
 		};
 

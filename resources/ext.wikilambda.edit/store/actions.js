@@ -30,7 +30,7 @@ module.exports = exports = {
 			Constants.Z_BOOLEAN_TRUE,
 			Constants.Z_BOOLEAN_FALSE,
 			Constants.Z_IMPLEMENTATION,
-			context.getters.getUserZlangZID,
+			context.getters.getUserLangZid,
 			Constants.Z_TYPED_LIST,
 			Constants.Z_ARGUMENT_REFERENCE
 		];

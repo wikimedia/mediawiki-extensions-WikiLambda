@@ -21,7 +21,7 @@ describe( 'FunctionEditorInputsItem', () => {
 			getRowByKeyPath: createGettersWithFunctionsMock(),
 			getZArgumentLabelForLanguage: createGettersWithFunctionsMock(),
 			getZArgumentTypeRowId: createGettersWithFunctionsMock(),
-			getZLang: createGetterMock( 'Z1002' ),
+			getUserLangCode: createGetterMock( 'en' ),
 			getZMonolingualTextValue: createGettersWithFunctionsMock(),
 			getZTypeStringRepresentation: createGettersWithFunctionsMock()
 		};

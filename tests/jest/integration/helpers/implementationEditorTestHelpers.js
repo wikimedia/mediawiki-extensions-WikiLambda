@@ -43,6 +43,7 @@ const runSetup = function () {
 			case 'wgWikiLambda':
 				return {
 					zlangZid: Constants.Z_NATURAL_LANGUAGE_ENGLISH,
+					zlang: 'en',
 					createNewPage: true,
 					viewmode: false,
 					zId: Constants.Z_IMPLEMENTATION

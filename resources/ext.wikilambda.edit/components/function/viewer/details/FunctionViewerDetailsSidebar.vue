@@ -87,12 +87,12 @@ module.exports = exports = {
 		};
 	},
 	computed: $.extend( mapGetters( [
-		'getZLang',
+		'getUserLangCode',
 		'getAllItemsFromListById',
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
 		'getLabel',
-		'getCurrentZLanguage',
+		'getUserLangZid',
 		'getZObjectTypeById',
 		'getCurrentZObjectId',
 		'getStoredObject'
@@ -150,7 +150,7 @@ module.exports = exports = {
 						title: this.zArgumentTypeLabel( zArgumentType ),
 						component: 'a',
 						props: {
-							href: '/view/' + this.getZLang + '/' + zArgumentType
+							href: '/view/' + this.getUserLangCode + '/' + zArgumentType
 						},
 						class: argumentIndex > 0 ? 'ext-wikilambda-function-viewer-details-sidebar__table-bordered-row' : 'ext-wikilambda-function-viewer-details-sidebar__table-borderless-row'
 					};
@@ -185,7 +185,7 @@ module.exports = exports = {
 					var monolingualStringValue = this.monolingualStringValue( multilingualObject );
 
 					// if the label is not in the users current language
-					if ( monolingualStringLanguage === this.getCurrentZLanguage ) {
+					if ( monolingualStringLanguage === this.getUserLangZid ) {
 						// Corresponding to a "LABEL" row that has a language label chip
 						return {
 							label: {
@@ -263,7 +263,7 @@ module.exports = exports = {
 					title: this.zReturnTypeLabel,
 					component: 'a',
 					props: {
-						href: '/view/' + this.getZLang + '/' + this.zReturnType
+						href: '/view/' + this.getUserLangCode + '/' + this.zReturnType
 					},
 					class: 'ext-wikilambda-function-viewer-details-sidebar__table-bordered-row'
 				}
@@ -314,20 +314,20 @@ module.exports = exports = {
 		},
 		editUrl: function () {
 			return new mw.Title( this.getCurrentZObjectId ).getUrl( {
-				uselang: this.getZLang,
+				uselang: this.getUserLangCode,
 				action: 'edit'
 			} );
 		},
 		newTesterLink: function () {
 			return new mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( {
-				uselang: this.getZLang,
+				uselang: this.getUserLangCode,
 				zid: Constants.Z_TESTER,
 				[ Constants.Z_TESTER_FUNCTION ]: this.getCurrentZObjectId
 			} );
 		},
 		newImplementationLink: function () {
 			return new mw.Title( Constants.PATHS.CREATE_OBJECT_TITLE ).getUrl( {
-				uselang: this.getZLang,
+				uselang: this.getUserLangCode,
 				zid: Constants.Z_IMPLEMENTATION,
 				[ Constants.Z_IMPLEMENTATION_FUNCTION ]: this.getCurrentZObjectId
 			} );

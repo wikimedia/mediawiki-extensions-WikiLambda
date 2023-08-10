@@ -32,7 +32,7 @@ describe( 'FunctionReportItem', function () {
 			getFetchingTestResults: createGetterMock( false ),
 			getZTesterResults: createGetterMock( returnStatus ),
 			getLabel: createGettersWithFunctionsMock(),
-			getZLang: createGetterMock( 'Z1002' )
+			getUserLangCode: createGetterMock( 'en' )
 		};
 		global.store.hotUpdate( {
 			getters: getters

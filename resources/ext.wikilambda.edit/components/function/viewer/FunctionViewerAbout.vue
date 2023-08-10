@@ -46,7 +46,7 @@ module.exports = exports = {
 		'wl-function-viewer-about-description': FunctionViewerAboutDescription
 	},
 	computed: $.extend( {},
-		mapGetters( [ 'getUserZlangZID', 'getNestedZObjectById', 'getAllItemsFromListById' ] ),
+		mapGetters( [ 'getUserLangZid', 'getNestedZObjectById', 'getAllItemsFromListById' ] ),
 		{
 			hideNames: function () {
 				var namesListId = this.getNestedZObjectById( 0, [
@@ -61,7 +61,7 @@ module.exports = exports = {
 						Constants.Z_REFERENCE_ID
 					] ).value;
 
-					return language !== this.getUserZlangZID;
+					return language !== this.getUserLangZid;
 				}.bind( this ) );
 			},
 			hideAliases: function () {

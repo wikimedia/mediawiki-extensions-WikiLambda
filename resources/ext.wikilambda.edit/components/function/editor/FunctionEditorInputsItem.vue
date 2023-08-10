@@ -181,7 +181,7 @@ module.exports = exports = {
 		'getRowByKeyPath',
 		'getZArgumentLabelForLanguage',
 		'getZArgumentTypeRowId',
-		'getZLang',
+		'getUserLangCode',
 		'getZMonolingualTextValue',
 		'getZTypeStringRepresentation'
 	] ), {
@@ -276,7 +276,7 @@ module.exports = exports = {
 		 */
 		listObjectsUrl: function () {
 			return new mw.Title( Constants.PATHS.LIST_OBJECTS_BY_TYPE_TYPE )
-				.getUrl( { uselang: this.getZLang } );
+				.getUrl( { uselang: this.getUserLangCode } );
 		},
 		/**
 		 * Returns the text for the link to the Special page List Object by Type

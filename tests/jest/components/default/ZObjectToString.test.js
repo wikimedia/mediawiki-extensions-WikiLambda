@@ -9,6 +9,7 @@
 const { waitFor } = require( '@testing-library/vue' ),
 	shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
+	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	ZObjectToString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectToString.vue' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
 
@@ -16,7 +17,7 @@ describe( 'ZObjectToString', () => {
 	var getters;
 	beforeEach( () => {
 		getters = {
-			getZLang: createGettersWithFunctionsMock( 'en' ),
+			getUserLangCode: createGetterMock( 'en' ),
 			getLabel: createGettersWithFunctionsMock( '' ),
 			getZObjectTypeByRowId: createGettersWithFunctionsMock( 'Z6' ),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( 'Z6K1' ),

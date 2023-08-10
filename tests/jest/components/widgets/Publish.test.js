@@ -24,8 +24,8 @@ describe( 'Publish widget', () => {
 			getCurrentZObjectType: createGetterMock( Constants.Z_FUNCTION ),
 			getCurrentZImplementationType: createGetterMock( Constants.Z_IMPLEMENTATION_CODE ),
 			isNewZObject: createGetterMock( true ),
-			getUserZlangZID: createGetterMock( 'Z1002' ),
-			getZLang: createGetterMock( 'en' )
+			getUserLangZid: createGetterMock( 'Z1002' ),
+			getUserLangCode: createGetterMock( 'en' )
 		};
 		actions = {
 			clearValidationErrors: jest.fn(),

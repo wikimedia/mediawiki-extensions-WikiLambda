@@ -33,7 +33,7 @@ describe( 'ZObjectSelector', function () {
 			getLabelData: jest.fn( function () {
 				return {};
 			} ),
-			getZLang: jest.fn( function () {
+			getUserLangCode: jest.fn( function () {
 				return 'en';
 			} ),
 			getViewMode: jest.fn( function () {

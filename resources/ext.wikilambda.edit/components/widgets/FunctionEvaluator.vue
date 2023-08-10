@@ -149,7 +149,7 @@ module.exports = exports = {
 		'getZObjectAsJsonById',
 		'getCurrentZObjectId',
 		'getCurrentZObjectType',
-		'getUserZlangZID',
+		'getUserLangZid',
 		'getZObjectTypeByRowId',
 		'getMapValueByKey',
 		'isUserLoggedIn'
@@ -419,7 +419,7 @@ module.exports = exports = {
 						zobjectid: this.getCurrentZObjectId || null,
 						zobjecttype: this.getCurrentZObjectType || null,
 						resulthaserror: this.resultHasError,
-						zlang: this.getUserZlangZID || null
+						zlang: this.getUserLangZid || null
 					};
 					this.dispatchEvent( 'wf.ui.callFunction', customData );
 				} );

@@ -18,7 +18,7 @@ describe( 'FunctionReport', function () {
 
 	beforeEach( function () {
 		getters = {
-			getZLang: createGetterMock( 'Z1002' ),
+			getUserLangCode: createGetterMock( 'en' ),
 			getLabel: createGettersWithFunctionsMock(),
 			getStoredObject: createGettersWithFunctionsMock( {
 				[ Constants.Z_PERSISTENTOBJECT_VALUE ]:

@@ -83,8 +83,8 @@ module.exports = exports = {
 		'getCurrentZObjectId',
 		'getCurrentZObjectType',
 		'getCurrentZImplementationType',
-		'getUserZlangZID',
-		'getZLang',
+		'getUserLangZid',
+		'getUserLangCode',
 		'isNewZObject'
 	] ), {
 		/**
@@ -98,7 +98,7 @@ module.exports = exports = {
 				zobjectid: this.getCurrentZObjectId,
 				zobjecttype: this.getCurrentZObjectType || null,
 				implementationtype: this.getCurrentZImplementationType || null,
-				zlang: this.getUserZlangZID || null,
+				zlang: this.getUserLangZid || null,
 				isdirty: this.isDirty
 			};
 		}
@@ -145,7 +145,7 @@ module.exports = exports = {
 			// Get redirect url
 			const cancelTargetUrl = this.isNewZObject ?
 				new mw.Title( Constants.PATHS.MAIN_PAGE ).getUrl() :
-				`/view/${this.getZLang}/${this.getCurrentZObjectId}`;
+				`/view/${this.getUserLangCode}/${this.getCurrentZObjectId}`;
 			this.leaveTo( cancelTargetUrl );
 		},
 

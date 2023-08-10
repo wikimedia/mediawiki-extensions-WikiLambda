@@ -186,11 +186,10 @@ module.exports = exports = {
 	},
 	computed: $.extend(
 		mapGetters( [
-			'getZLang',
+			'getUserLangCode',
 			'getStoredObject',
 			'getInputsOfFunctionZid',
 			'getLabelData',
-			'getCurrentZLanguage',
 			'getZImplementationContentType'
 		] ),
 		{
@@ -279,7 +278,7 @@ module.exports = exports = {
 			this.currentFunctionZid = this.functionZid;
 		},
 		getWikiUrl( zid ) {
-			return '/view/' + this.getZLang + '/' + zid;
+			return '/view/' + this.getUserLangCode + '/' + zid;
 		},
 		navigateToFunction() {
 			window.open( this.getWikiUrl( this.currentFunctionZid ), '_blank' );

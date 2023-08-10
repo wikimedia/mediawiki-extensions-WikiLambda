@@ -74,7 +74,7 @@ module.exports = exports = {
 	computed: $.extend( mapGetters( [
 		'getCurrentZObjectId',
 		'getRowByKeyPath',
-		'getUserZlangZID',
+		'getUserLangZid',
 		'getZFunctionInputs',
 		'getZFunctionLanguages',
 		'getZFunctionOutput',
@@ -199,7 +199,7 @@ module.exports = exports = {
 		// and initialize first label block with user lang if there are none.
 		this.functionLanguages = this.getZFunctionLanguages( this.rowId );
 		if ( this.functionLanguages.length === 0 ) {
-			this.functionLanguages.push( this.getUserZlangZID );
+			this.functionLanguages.push( this.getUserLangZid );
 		}
 
 		// Initialize initial state of inputs and output
@@ -209,7 +209,7 @@ module.exports = exports = {
 		this.dispatchEvent( 'wf.ui.editFunction.load', {
 			isnewzobject: this.isNewZObject,
 			zobjectid: this.getCurrentZObjectId || null,
-			zlang: this.getUserZlangZID || null
+			zlang: this.getUserLangZid || null
 		} );
 	}
 };

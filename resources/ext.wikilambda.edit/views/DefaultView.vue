@@ -105,7 +105,7 @@ module.exports = exports = {
 			'isDirty',
 			'isNewZObject',
 			'getCurrentZObjectId',
-			'getUserZlangZID'
+			'getUserLangZid'
 		] ), {
 			/**
 			 * Returns whether we are in an edit page according
@@ -210,7 +210,7 @@ module.exports = exports = {
 			zobjecttype: this.contentType || null,
 			isnewzobject: this.isNewZObject,
 			zobjectid: this.getCurrentZObjectId || null,
-			zlang: this.getUserZlangZID || null
+			zlang: this.getUserLangZid || null
 		} );
 	}
 };

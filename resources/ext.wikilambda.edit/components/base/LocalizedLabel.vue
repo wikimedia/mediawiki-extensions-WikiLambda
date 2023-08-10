@@ -30,7 +30,7 @@ module.exports = exports = {
 		mapGetters( [
 			'getLabel',
 			'getLanguageIsoCodeOfZLang',
-			'getUserZlangZID'
+			'getUserLangZid'
 		] ),
 		{
 			/**
@@ -70,7 +70,7 @@ module.exports = exports = {
 			 * @return {boolean}
 			 */
 			isUserLang: function () {
-				return this.getUserZlangZID === this.labelData.lang;
+				return this.getUserLangZid === this.labelData.lang;
 			}
 		}
 	)

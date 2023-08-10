@@ -8,7 +8,7 @@
 	<div v-if="getFunctionNames.length > 0" class="ext-wikilambda-function-viewer-names">
 		<wl-function-viewer-sidebar
 			:list="visibleFunctionNames"
-			:z-lang="getUserZlangZID"
+			:z-lang="getUserLangZid"
 			:button-weight="buttonWeight"
 			:button-text="buttonText"
 			:button-icon="buttonIcon"
@@ -46,7 +46,7 @@ module.exports = exports = {
 		'getAllItemsFromListById',
 		'getZObjectChildrenById',
 		'getNestedZObjectById',
-		'getUserZlangZID',
+		'getUserLangZid',
 		'getLabel',
 		'getStoredObject'
 	] ), {
@@ -72,7 +72,7 @@ module.exports = exports = {
 						Constants.Z_REFERENCE_ID
 					] ).value;
 
-				if ( language !== this.getUserZlangZID ) {
+				if ( language !== this.getUserLangZid ) {
 					var label = this.getNestedZObjectById( labelObject.id, [
 						Constants.Z_MONOLINGUALSTRING_VALUE,
 						Constants.Z_STRING_VALUE

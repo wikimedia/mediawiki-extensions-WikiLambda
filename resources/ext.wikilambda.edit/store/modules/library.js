@@ -343,7 +343,7 @@ module.exports = exports = {
 				list: 'wikilambdaload_zobjects',
 				format: 'json',
 				wikilambdaload_zids: payload.zids.join( '|' ),
-				wikilambdaload_language: context.getters.getZLang,
+				wikilambdaload_language: context.getters.getUserLangCode,
 				wikilambdaload_get_dependencies: 'true'
 			} ).then( ( response ) => {
 				const requestedZids = payload.zids;

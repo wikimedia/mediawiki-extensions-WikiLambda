@@ -1548,7 +1548,7 @@ module.exports = exports = {
 			return function ( zLanguage ) {
 				var labelObject,
 					label = false,
-					lang = zLanguage || getters.getCurrentZLanguage;
+					lang = zLanguage || getters.getUserLangZid;
 
 				for ( var index in getters.getZObjectLabels ) {
 					var maybeLabel = getters.getZObjectLabels[ index ],
@@ -2714,7 +2714,7 @@ module.exports = exports = {
 						wikilambdasearch_search: payload.input,
 						wikilambdasearch_type: payload.type,
 						wikilambdasearch_return_type: payload.returnType,
-						wikilambdasearch_language: context.getters.getZLang
+						wikilambdasearch_language: context.getters.getUserLangCode
 					} ).then( function ( data ) {
 						var lookupResults = [];
 						if ( ( 'query' in data ) && ( queryType in data.query ) ) {

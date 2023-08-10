@@ -185,11 +185,11 @@ module.exports = exports = {
 				// Initialize persistent zid and blank label
 				const zid = getters.getCurrentZObjectId || Constants.NEW_ZID_PLACEHOLDER;
 				value[ Constants.Z_PERSISTENTOBJECT_ID ][ Constants.Z_STRING_VALUE ] = zid;
-				if ( getters.getUserZlangZID ) {
+				if ( getters.getUserLangZid ) {
 					const mono = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRING );
 					mono[ Constants.Z_MONOLINGUALSTRING_VALUE ] = '';
 					mono[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][
-						Constants.Z_REFERENCE_ID ] = getters.getUserZlangZID;
+						Constants.Z_REFERENCE_ID ] = getters.getUserLangZid;
 					value[ Constants.Z_PERSISTENTOBJECT_LABEL ][
 						Constants.Z_MULTILINGUALSTRING_VALUE ].push( mono );
 				}
@@ -300,7 +300,7 @@ module.exports = exports = {
 				// Initialize first monolingual string if there's any lang or value
 				if ( ( 'lang' in payload ) || ( 'value' in payload ) ) {
 					const mono = typeUtils.getScaffolding( Constants.Z_MONOLINGUALSTRING );
-					const lang = payload.lang || getters.getUserZlangZID;
+					const lang = payload.lang || getters.getUserLangZid;
 					mono[ Constants.Z_MONOLINGUALSTRING_VALUE ] = payload.value || '';
 					mono[ Constants.Z_MONOLINGUALSTRING_LANGUAGE ][ Constants.Z_REFERENCE_ID ] = lang;
 					value[ Constants.Z_MULTILINGUALSTRING_VALUE ].push( mono );

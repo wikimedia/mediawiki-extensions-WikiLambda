@@ -96,7 +96,7 @@ module.exports = exports = {
 	},
 	computed: $.extend(
 		mapGetters( [
-			'getUserZlangZID',
+			'getUserLangZid',
 			'getChildrenByParentRowId'
 		] ),
 		{
@@ -129,7 +129,7 @@ module.exports = exports = {
 				return new LabelData(
 					null,
 					this.$i18n( 'wikilambda-list-items-label' ).text(),
-					this.getUserZlangZID
+					this.getUserLangZid
 				);
 			}
 		}

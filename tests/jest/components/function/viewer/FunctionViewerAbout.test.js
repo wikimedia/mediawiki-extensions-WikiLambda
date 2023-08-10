@@ -24,7 +24,7 @@ describe( 'FunctionViewerAbout', function () {
 
 	beforeEach( function () {
 		getters = {
-			getUserZlangZID: jest.fn().mockReturnValue( Constants.Z_NATURAL_LANGUAGE_ENGLISH ),
+			getUserLangZid: jest.fn().mockReturnValue( Constants.Z_NATURAL_LANGUAGE_ENGLISH ),
 			getNestedZObjectById: createGettersWithFunctionsMock( { id: otherId } ),
 			getAllItemsFromListById: createGettersWithFunctionsMock( [] )
 		};

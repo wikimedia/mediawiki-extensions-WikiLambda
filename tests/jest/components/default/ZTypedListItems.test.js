@@ -21,7 +21,7 @@ describe( 'ZTypedListItems', () => {
 				{ id: 39, key: '1', parent: 27, value: 'object' },
 				{ id: 41, key: '2', parent: 27, value: 'object' }
 			] ),
-			getUserZlangZID: createGettersWithFunctionsMock( 'Z1003' )
+			getUserLangZid: createGettersWithFunctionsMock( 'Z1003' )
 		};
 		global.store.hotUpdate( {
 			getters: getters
