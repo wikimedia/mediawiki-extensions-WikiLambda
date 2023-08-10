@@ -9,10 +9,18 @@
 			"McDutchie",
 			"Noretta93",
 			"Sofia Stecchi",
-			"Stefano"
+			"Stefano",
+			"Sabas88"
 		]
 	},
+	"wikilambda-desc": "Fornire alle wiki di Wikimedia una funzione di parsing del wikitesto che permetta di eseguire funzioni scritte, gestite ed eseguite su una wiki centralizzata.",
+	"group-functioneer": "Funzionisti",
+	"group-functioneer-member": "{{GENDER:$1|funzionista}}",
+	"group-functionmaintainer": "Manutentori",
+	"group-functionmaintainer-member": "{{GENDER:$1|manutentore}}",
+	"wikilambda-history-title": "Storico delle revisioni di \"$1\" ($2)",
 	"wikilambda-invalidzobjecttitle": "Il titolo '$1' mostrato non è valido per uno ZObject.",
+	"wikilambda-typeunavailable": "Tipo non riconosciuto",
 	"wikilambda-noresult": "La ricerca non ha fornito risultati.",
 	"wikilambda-persistentzobject-contents": "Contenuti",
 	"wikilambda-viewmode-nojs": "Questa pagina viene visualizzata in modo limitato senza JavaScript.",

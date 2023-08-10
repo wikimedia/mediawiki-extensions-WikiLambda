@@ -13,7 +13,8 @@
 			"Raymond",
 			"Robby",
 			"Umherirrender",
-			"Verdy p"
+			"Verdy p",
+			"Joseph"
 		]
 	},
 	"wikilambda-metadata-help-link": "External link to the help page for the function metadata. {{Optional}}",
@@ -362,7 +363,7 @@
 	"wikilambda-function-viewer-aliases-show-language-button": "Show language button for rendering aliases in other languages",
 	"wikilambda-function-viewer-aliases-hide-language-button": "Hide language button for rendering aliases in other languages",
 	"wikilambda-function-viewer-names-show-languages-button": "Show language button for rendering function name in other languages",
-	"wikilambda-function-viewer-details-input-number": "Text for a function input. Paramters: \n* $1 - input number in list",
+	"wikilambda-function-viewer-details-input-number": "Text for a function input. Parameters: \n* $1 - input number in list",
 	"wikilambda-function-viewer-details-table-view-all": "Label for button to view all rows in a table",
 	"wikilambda-function-viewer-details-table-view-less": "Label for button to view less rows in a table",
 	"wikilambda-toast-close": "Label for button that closes a toast (that shows an error or success message).",
