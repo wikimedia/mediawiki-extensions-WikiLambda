@@ -46,7 +46,7 @@
 	"action-wikilambda-create-unit": "Unit型オブジェクトの新規作成",
 	"action-wikilambda-disconnect-implementation": "実装を関数から切断して実行できないようにする",
 	"action-wikilambda-disconnect-tester": "テストケースをその関数から切断",
-	"action-wikilambda-edit": "既存の全てのオブジェクトを編集",
+	"action-wikilambda-edit": "既存の特定のオブジェクトを編集",
 	"action-wikilambda-edit-argument-label": "既存の関数の引数ラベルの編集",
 	"action-wikilambda-edit-attached-implementation": "関数に接続されている実装の編集",
 	"action-wikilambda-edit-attached-tester": "関数に接続されているテストケースの編集",

@@ -29,6 +29,7 @@
 	"wikilambda-noresult": "La ricerca non ha fornito risultati.",
 	"wikilambda-labelclash": "L'etichetta del contenuto fornito è in conflitto con l'oggetto '$1' per l'etichetta in '$2'.",
 	"action-wikilambda-connect-implementation": "collegare un'implementazione alla sua funzione in modo che possa essere eseguita",
+	"action-wikilambda-connect-tester": "connetti un Caso di Test alla sua Funzione",
 	"action-wikilambda-create-boolean": "creare nuovi Oggetti Booleani",
 	"action-wikilambda-create-function": "creare nuovi Oggetti Funzione",
 	"wikilambda-persistentzobject-contents": "Contenuti",
