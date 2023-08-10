@@ -34,6 +34,6 @@ module.exports = exports = {
 			Constants.Z_TYPED_LIST,
 			Constants.Z_ARGUMENT_REFERENCE
 		];
-		context.dispatch( 'fetchZKeys', { zids: zids } );
+		context.dispatch( 'fetchZids', { zids: zids } );
 	}
 };

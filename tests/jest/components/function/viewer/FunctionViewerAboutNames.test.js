@@ -17,7 +17,7 @@ describe( 'FunctionViewerAliases', function () {
 	var getters;
 	beforeEach( function () {
 		getters = {
-			getZObjectAsJsonById: createGettersWithFunctionsMock( mocks.mockLabels ),
+			getZObjectAsJsonById: createGettersWithFunctionsMock( mocks.mockFunction ),
 			getZObjectChildrenById: createGettersWithFunctionsMock( [ 'Z123123' ] ),
 			getNestedZObjectById: createGettersWithFunctionsMock( {
 				id: 2,

@@ -42,7 +42,7 @@ describe( 'About', () => {
 			}
 		};
 
-		actions = { fetchZKeys: jest.fn() };
+		actions = { fetchZids: jest.fn() };
 		global.store.hotUpdate( { getters: getters, actions: actions } );
 	} );
 

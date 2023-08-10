@@ -191,7 +191,7 @@ module.exports = exports = {
 		}
 	} ),
 	methods: $.extend( mapActions( [
-		'fetchZKeys',
+		'fetchZids',
 		'lookupZObject'
 	] ), {
 		/**
@@ -298,7 +298,7 @@ module.exports = exports = {
 						return 0;
 					} );
 				// Fetch the result zid information (labels)
-				this.fetchZKeys( { zids: allZids } );
+				this.fetchZids( { zids: allZids } );
 			} );
 		}
 	} )

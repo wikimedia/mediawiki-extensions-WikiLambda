@@ -51,7 +51,7 @@ module.exports = exports = {
 					return zidItem.zid;
 				} );
 				context.commit( 'setZImplementations', zidList );
-				return context.dispatch( 'fetchZKeys', { zids: zidList } );
+				return context.dispatch( 'fetchZids', { zids: zidList } );
 			} );
 		}
 	}

@@ -31,7 +31,7 @@ describe( 'ZCode', () => {
 		};
 		actions = {
 			fetchAllZProgrammingLanguages: createGettersWithFunctionsMock(),
-			fetchZKeys: jest.fn(),
+			fetchZids: jest.fn(),
 			clearErrors: jest.fn()
 		};
 		global.store.hotUpdate( {

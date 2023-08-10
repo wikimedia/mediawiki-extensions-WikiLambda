@@ -129,7 +129,7 @@ module.exports = exports = {
 			return this.$i18n( 'wikilambda-helplink-tooltip' ).text();
 		}
 	} ),
-	methods: $.extend( mapActions( [ 'fetchZKeys' ] ), {
+	methods: $.extend( mapActions( [ 'fetchZids' ] ), {
 		handleMessageIconClick: function () {
 			// TODO(T315607): See if the metadata dialog behavior can be improved further.
 			// TODO(T316567): Check if results are ready before showing metadata dialog

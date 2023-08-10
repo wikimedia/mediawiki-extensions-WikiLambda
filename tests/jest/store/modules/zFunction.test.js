@@ -82,7 +82,7 @@ describe( 'zFunction Vuex module', () => {
 				getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
 				getters.getZMultilingualLanguageList = zobjectModule.getters.getZMultilingualLanguageList(
 					state, getters );
-				/* From zKeys module */
+				/* From library module */
 				getters.getLanguageIsoCodeOfZLang = ( key ) => ( key === 'Z1002' ? 'en' : 'es' );
 				/* From zFunction module */
 				getters.getZFunctionInputs = zFunctionModule.getters.getZFunctionInputs( state, getters );

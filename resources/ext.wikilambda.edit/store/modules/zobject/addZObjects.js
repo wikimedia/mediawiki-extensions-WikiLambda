@@ -735,7 +735,7 @@ module.exports = exports = {
 			// Asynchronously fetch the necessary zids. We don't need to wait
 			// to the fetch call because these will only be needed for labels.
 			const zids = extractZIDs( value );
-			context.dispatch( 'fetchZKeys', { zids } );
+			context.dispatch( 'fetchZids', { zids } );
 
 			// Inject (replace or append) the value from a given row ID
 			return context.dispatch( 'injectZObjectFromRowId', {

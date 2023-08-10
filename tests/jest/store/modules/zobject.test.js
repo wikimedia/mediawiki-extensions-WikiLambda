@@ -13,9 +13,9 @@ var fs = require( 'fs' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	zobjectModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zobject.js' ),
 	errorModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/errors.js' ),
-	zKeyModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zKeys.js' ),
+	libraryModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/library.js' ),
 	zFunctionModule = require( '../../../../resources/ext.wikilambda.edit/store/modules/zFunction.js' ),
-	mockApiZkeys = require( '../../fixtures/mocks.js' ).mockApiZkeys,
+	mockApiZids = require( '../../fixtures/mocks.js' ).mockApiZids,
 	zobject = {
 		Z1K1: 'Z2',
 		Z2K1: 'Z0',
@@ -3998,7 +3998,7 @@ describe( 'zobject Vuex module', function () {
 				} );
 
 				// Expected data
-				const expectedFetchZKeysPayload = {
+				const expectedFetchZidsPayload = {
 					zids: [ 'Z1', 'Z2', 'Z1234', 'Z12', 'Z11', 'Z1002', 'Z32', 'Z31' ]
 				};
 				const expectedSetZObjectPayload = [
@@ -4056,7 +4056,7 @@ describe( 'zobject Vuex module', function () {
 				expect( context.commit ).toHaveBeenCalledWith( 'saveMultilingualDataCopy', expectedZObjectJson );
 				expect( context.commit ).toHaveBeenCalledWith( 'setZObject', expectedSetZObjectPayload );
 				expect( context.commit ).toHaveBeenCalledWith( 'setZObjectInitialized', true );
-				expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZKeys', expectedFetchZKeysPayload );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', expectedFetchZidsPayload );
 			} );
 
 			it( 'Initialize evaluate function call page', function () {
@@ -4831,7 +4831,7 @@ describe( 'zobject Vuex module', function () {
 				// State
 				context.state = {
 					zobject: tableDataToRowObjects( [ { id: 0, value: Constants.ROW_VALUE_OBJECT } ] ),
-					zKeys: mockApiZkeys,
+					objects: mockApiZids,
 					errors: {}
 				};
 				context.rootState = {
@@ -4869,7 +4869,7 @@ describe( 'zobject Vuex module', function () {
 					{ zobjectModule: context.state },
 					context.getters
 				);
-				context.getters.getStoredObject = ( zid ) => context.state.zKeys[ zid ];
+				context.getters.getStoredObject = ( zid ) => context.state.objects[ zid ];
 				context.getters.getUserZlangZID = 'Z1003';
 				// Mutations
 				context.commit = jest.fn( ( mutationType, payload ) => {
@@ -6440,7 +6440,7 @@ describe( 'zobject Vuex module', function () {
 		describe( 'setZFunctionCallArguments', function () {
 			beforeEach( function () {
 				context.state = {
-					zKeys: mockApiZkeys,
+					objects: mockApiZids,
 					zobject: tableDataToRowObjects( [
 						{ id: 0, value: Constants.ROW_VALUE_OBJECT },
 						{ id: 1, key: 'Z1K1', value: Constants.ROW_VALUE_OBJECT, parent: 0 },
@@ -6470,9 +6470,9 @@ describe( 'zobject Vuex module', function () {
 				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( context.state );
 				context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
 				context.getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( context.state, context.getters );
-				// Getters: zKey module
-				context.getters.getInputsOfFunctionZid = zKeyModule.getters.getInputsOfFunctionZid( context.state );
-				context.getters.getStoredObject = zKeyModule.getters.getStoredObject( context.state );
+				// Getters: library module
+				context.getters.getInputsOfFunctionZid = libraryModule.getters.getInputsOfFunctionZid( context.state );
+				context.getters.getStoredObject = libraryModule.getters.getStoredObject( context.state );
 				// Getters: addZObject module
 				Object.keys( zobjectModule.modules.addZObjects.getters ).forEach( function ( key ) {
 					context.getters[ key ] =
@@ -6647,7 +6647,7 @@ describe( 'zobject Vuex module', function () {
 
 		describe( 'setZImplementationContentType', function () {
 			beforeEach( function () {
-				context.state = { zobject: [], zKeys: [], errors: {} };
+				context.state = { zobject: [], objects: [], errors: {} };
 				// Getters
 				context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
 				context.getters.getNextRowId = zobjectModule.getters.getNextRowId( context.state );
@@ -6655,8 +6655,8 @@ describe( 'zobject Vuex module', function () {
 				context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( context.state );
 				context.getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( context.state, context.getters );
 				context.getters.getZObjectChildrenById = zobjectModule.getters.getZObjectChildrenById( context.state );
-				// Getters: zKey module
-				context.getters.getStoredObject = zKeyModule.getters.getStoredObject( context.state );
+				// Getters: library module
+				context.getters.getStoredObject = libraryModule.getters.getStoredObject( context.state );
 				// Getters: addZObject module
 				Object.keys( zobjectModule.modules.addZObjects.getters ).forEach( function ( key ) {
 					context.getters[ key ] =
@@ -7040,9 +7040,9 @@ describe( 'zobject Vuex module', function () {
 
 		describe( 'addZObjects does not do an infinite recursion', function () {
 			beforeEach( function () {
-				context.state = { zKeys: mockApiZkeys };
+				context.state = { objects: mockApiZids };
 				context.getters.getStoredObject = function ( key ) {
-					return context.state.zKeys[ key ];
+					return context.state.objects[ key ];
 				};
 				Object.keys( zobjectModule.modules.addZObjects.getters ).forEach( function ( key ) {
 					context.getters[ key ] =

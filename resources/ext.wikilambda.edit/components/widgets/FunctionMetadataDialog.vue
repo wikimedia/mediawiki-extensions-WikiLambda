@@ -119,7 +119,7 @@ module.exports = exports = {
 			if ( this.metadata ) {
 				// Ensure ZIDs appearing in metadata have been fetched
 				const metadataZIDs = this.extractZIDs( this.metadata );
-				this.fetchZKeys( { zids: metadataZIDs } );
+				this.fetchZids( { zids: metadataZIDs } );
 				return this.portrayMetadataMap( this.metadata, this.getLabel );
 			}
 			return '';
@@ -145,7 +145,7 @@ module.exports = exports = {
 		}
 	} ),
 	methods: $.extend( mapActions( [
-		'fetchZKeys'
+		'fetchZids'
 	] ), {
 		/**
 		 * Close the dialog.

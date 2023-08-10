@@ -79,7 +79,7 @@ module.exports = exports = {
 					return zidItem.zid;
 				} );
 				context.commit( 'setZTesters', zidList );
-				return context.dispatch( 'fetchZKeys', { zids: zidList } );
+				return context.dispatch( 'fetchZids', { zids: zidList } );
 			} );
 		}
 	}

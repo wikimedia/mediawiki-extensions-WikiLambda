@@ -235,7 +235,7 @@ module.exports = exports = {
 	methods: $.extend( {},
 		mapActions( [
 			'lookupZObject',
-			'fetchZKeys'
+			'fetchZids'
 		] ),
 		{
 			/**
@@ -316,8 +316,8 @@ module.exports = exports = {
 							zids.push( value );
 						} );
 						// Once lookupResults are gathered, fetch and collect all the data;
-						// fetchZKeys makes sure that only the missing zids are requested
-						this.fetchZKeys( { zids } );
+						// fetchZids makes sure that only the missing zids are requested
+						this.fetchZids( { zids } );
 					} else {
 						this.setLocalError( { code: 'wikilambda-noresult' } );
 					}
@@ -344,7 +344,7 @@ module.exports = exports = {
 				if ( fetchedObject ) {
 					this.validateAndSelectZid( zid );
 				} else {
-					this.fetchZKeys( { zids: [ zid ] } ).then( () => {
+					this.fetchZids( { zids: [ zid ] } ).then( () => {
 						this.validateAndSelectZid( zid );
 					} );
 				}
@@ -483,7 +483,7 @@ module.exports = exports = {
 		}
 	},
 	mounted: function () {
-		this.fetchZKeys( { zids: [
+		this.fetchZids( { zids: [
 			Constants.Z_STRING,
 			Constants.Z_REFERENCE,
 			Constants.Z_BOOLEAN,

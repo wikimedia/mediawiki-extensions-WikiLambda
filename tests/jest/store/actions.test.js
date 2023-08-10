@@ -22,6 +22,6 @@ describe( 'Vuex root actions', function () {
 
 		expect( context.dispatch ).toHaveBeenCalledTimes( 1 );
 		// No need to check specific prefetched keys, just that keys are being fetched
-		expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZKeys', expect.anything() );
+		expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', expect.anything() );
 	} );
 } );

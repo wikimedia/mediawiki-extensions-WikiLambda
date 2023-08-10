@@ -2199,7 +2199,7 @@ module.exports = exports = {
 				}
 
 				// Else, fetch `zid` and make sure it's a type
-				return context.dispatch( 'fetchZKeys', { zids: [ defaultType ] } )
+				return context.dispatch( 'fetchZids', { zids: [ defaultType ] } )
 					.then( function () {
 						var Z2K2 =
 							typeUtils.findKeyInArray( Constants.Z_PERSISTENTOBJECT_VALUE, context.state.zobject );
@@ -2226,7 +2226,7 @@ module.exports = exports = {
 		 * Initializes a view or edit page of a given zid from a persisted ZObject.
 		 * Calls to the wikilambdaload_zobjects API to fetch the root Zobject of the page
 		 * with all its unfiltered content (all language labels, etc). This call is done
-		 * only once and the method is separate from fetchZKeys because the logic to
+		 * only once and the method is separate from fetchZids because the logic to
 		 * treat the result is extremely different.
 		 *
 		 * @param {Object} context
@@ -2277,7 +2277,7 @@ module.exports = exports = {
 
 				// Get all zIds within the object:
 				const listOfZIdWithinObject = extractZIDs( zobject );
-				context.dispatch( 'fetchZKeys', { zids: listOfZIdWithinObject } );
+				context.dispatch( 'fetchZids', { zids: listOfZIdWithinObject } );
 
 				// Convert to rows and set store:
 				const zobjectRows = zobjectTreeUtils.convertZObjectToRows( zobject );
@@ -2969,7 +2969,7 @@ module.exports = exports = {
 
 			// 4.c. Make sure that all the newly added referenced zids are fetched
 			zids = [ ...new Set( zids ) ];
-			context.dispatch( 'fetchZKeys', { zids } );
+			context.dispatch( 'fetchZids', { zids } );
 
 			return Promise.all( allActions );
 		},

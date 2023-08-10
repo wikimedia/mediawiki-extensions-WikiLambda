@@ -310,7 +310,7 @@ module.exports = exports = {
 	),
 	methods: $.extend(
 		mapActions( [
-			'fetchZKeys',
+			'fetchZids',
 			'fetchAllZProgrammingLanguages',
 			'clearErrors'
 		] ),
@@ -405,7 +405,7 @@ module.exports = exports = {
 		}
 	},
 	mounted: function () {
-		this.fetchZKeys( { zids: [ Constants.Z_CODE ] } );
+		this.fetchZids( { zids: [ Constants.Z_CODE ] } );
 		if ( this.getAllProgrammingLangs.length <= 0 ) {
 			this.fetchAllZProgrammingLanguages();
 		}

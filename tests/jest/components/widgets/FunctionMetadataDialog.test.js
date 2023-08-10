@@ -65,7 +65,7 @@ describe( 'FunctionMetadataDialog', () => {
 			getLabel: createGettersWithFunctionsMock()
 		};
 		actions = {
-			fetchZKeys: jest.fn()
+			fetchZids: jest.fn()
 		};
 		mw.internalWikiUrlencode = jest.fn( ( url ) => url );
 		global.store.hotUpdate( { getters: getters, actions: actions } );

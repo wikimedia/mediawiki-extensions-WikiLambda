@@ -36,7 +36,7 @@ describe( 'AboutEditMetadataDialog', () => {
 		};
 
 		actions = {
-			fetchZKeys: jest.fn(),
+			fetchZids: jest.fn(),
 			setDirty: jest.fn()
 		};
 		global.store.hotUpdate( { getters: getters, actions: actions } );

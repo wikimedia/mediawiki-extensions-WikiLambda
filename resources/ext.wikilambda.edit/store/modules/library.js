@@ -1,26 +1,27 @@
 /*!
- * WikiLambda Vue editor: zKeys Vuex module to fetch, store and
- * provide auxiliary data from other ZObejcts (labels, keys, etc.)
+ * WikiLambda Vue editor:  Vuex library module: fetch, store and
+ * provide auxiliary data from other ZObejcts (labels, keys, etc.).
+ * It also contains other helper getters to retrieve details of other
+ * stored auxiliary objects such as functions, languages, etc.
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 
-var Constants = require( '../../Constants.js' ),
+const Constants = require( '../../Constants.js' ),
 	typeUtils = require( '../../mixins/typeUtils.js' ).methods,
 	LabelData = require( '../classes/LabelData.js' ),
-	resolvePromiseList = {},
-	zKeystoFetch = [];
+	resolvePromiseList = {};
+
+let zidsToFetch = [];
 
 module.exports = exports = {
 	state: {
 		/**
 		 * Collection of ZPersistent objects fetched
 		 * and indexed by their ZID.
-		 *
-		 * TODO (T329105): rename to fetchedZObjects, persistedZObjects...
 		 */
-		zKeys: {},
+		objects: {},
 		/**
 		 * Collection of LabelData object indexed by the identifier of
 		 * the ZKey, ZPersistentObject or ZArgumentDeclaration.
@@ -42,8 +43,8 @@ module.exports = exports = {
 			 * @return {string}
 			 */
 			function findLanguageCode( zid ) {
-				if ( state.zKeys[ zid ] ) {
-					const zobject = state.zKeys[ zid ][ Constants.Z_PERSISTENTOBJECT_VALUE ];
+				if ( state.objects[ zid ] ) {
+					const zobject = state.objects[ zid ][ Constants.Z_PERSISTENTOBJECT_VALUE ];
 					const ztype = zobject[ Constants.Z_OBJECT_TYPE ];
 					if ( ztype === Constants.Z_NATURAL_LANGUAGE ) {
 						return zobject[ Constants.Z_NATURAL_LANGUAGE_ISO_CODE ];
@@ -53,7 +54,6 @@ module.exports = exports = {
 			}
 			return findLanguageCode;
 		},
-
 		/**
 		 * Given a global ZKey (ZnKm) it returns a string that reflects
 		 * its expected value type (if any). Else it returns Z1.
@@ -80,8 +80,8 @@ module.exports = exports = {
 					let type;
 					const zid = typeUtils.getZidOfGlobalKey( key );
 
-					if ( state.zKeys[ zid ] ) {
-						const zobject = state.zKeys[ zid ][ Constants.Z_PERSISTENTOBJECT_VALUE ];
+					if ( state.objects[ zid ] ) {
+						const zobject = state.objects[ zid ][ Constants.Z_PERSISTENTOBJECT_VALUE ];
 						const ztype = zobject[ Constants.Z_OBJECT_TYPE ];
 
 						switch ( ztype ) {
@@ -112,7 +112,6 @@ module.exports = exports = {
 				return Constants.Z_OBJECT;
 			};
 		},
-
 		/**
 		 * Returns the persisted object for a given ZID if that was
 		 * fetched from the DB and saved in the state. Else returns undefined
@@ -126,11 +125,10 @@ module.exports = exports = {
 			 * @return {Object|undefined} persisted ZObject
 			 */
 			function findPersistedObject( zid ) {
-				return state.zKeys[ zid ];
+				return state.objects[ zid ];
 			}
 			return findPersistedObject;
 		},
-
 		/**
 		 * Returns the LabelData of the ID of a ZKey, ZPersistentObject or ZArgumentDeclaration.
 		 * The label is in the user selected language, if available, or else in the closest fallback.
@@ -149,7 +147,6 @@ module.exports = exports = {
 			}
 			return findLabelData;
 		},
-
 		/**
 		 * Returns the string label of the ID of a ZKey, ZPersistentObject or ZArgumentDeclaration
 		 * or the string ID if the label is not available.
@@ -169,7 +166,6 @@ module.exports = exports = {
 			}
 			return findLabel;
 		},
-
 		/**
 		 * Returns the array of implementations of a persisted Function
 		 * stored in the global state, given its Function Zid
@@ -183,7 +179,7 @@ module.exports = exports = {
 			 * @return {Array}
 			 */
 			function findImplementations( zid ) {
-				const func = state.zKeys[ zid ];
+				const func = state.objects[ zid ];
 				if ( func ) {
 					const imps = func[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_FUNCTION_IMPLEMENTATIONS ];
 					return imps ? imps.slice( 1 ) : [];
@@ -192,7 +188,6 @@ module.exports = exports = {
 			}
 			return findImplementations;
 		},
-
 		/**
 		 * Given a function Zid, it inspects its function definition
 		 * stored in the state and returns an array of its arguments.
@@ -208,7 +203,7 @@ module.exports = exports = {
 			 * @return {Array}
 			 */
 			function findInputs( zid ) {
-				const func = state.zKeys[ zid ];
+				const func = state.objects[ zid ];
 				if ( func === undefined ) {
 					return [];
 				}
@@ -230,7 +225,7 @@ module.exports = exports = {
 		 * @param {Object} payload
 		 */
 		setStoredObject: function ( state, payload ) {
-			state.zKeys[ payload.zid ] = payload.info;
+			state.objects[ payload.zid ] = payload.info;
 		},
 		/**
 		 * Save the LabelData object for a given ID
@@ -250,43 +245,38 @@ module.exports = exports = {
 		 * in the state.
 		 *
 		 * @param {Object} context
-		 * @param {Object} payload with the keys 'zids'
+		 * @param {Object} payload
+		 * @param {Array} payload.zids array of zids to fetch
 		 * @return {Promise}
 		 */
-		fetchZKeys: function ( context, payload ) {
+		fetchZids: function ( context, payload ) {
 			const {
 				zids = []
 			} = payload;
 
-			zids.forEach( function ( zId ) {
-				// Zid has already been fetched or
-				// Zid is in the process of being fetched
-				if ( zId &&
-					zId !== Constants.NEW_ZID_PLACEHOLDER &&
-					!( zId in context.state.zKeys ) &&
-					( !zKeystoFetch.includes( zId ) )
-				) {
-					zKeystoFetch.push( zId );
-				}
-			} );
-
-			if ( zKeystoFetch.length === 0 ) {
-				return Promise.resolve();
-			}
-
-			function generateRequestName( keysList ) {
-				const sortedKeys = keysList.sort();
+			/**
+			 * Generates a request name for the fetch promise
+			 *
+			 * @param {Array} zidsList
+			 * @return {string}
+			 */
+			function generateRequestName( zidsList ) {
+				const sortedKeys = zidsList.sort();
 				return sortedKeys.join( '-' );
 			}
 
-			function dispatchPerformZKeyFetch( fetchZids ) {
-				zKeystoFetch = [];
+			/**
+			 * Dispatch the fetch promise
+			 *
+			 * @param {Array} fetchZids
+			 * @return {Promise}
+			 */
+			function dispatchFetchZids( fetchZids ) {
+				zidsToFetch = [];
 				return context.dispatch(
-					'performZKeyFetch',
-					{
-						zids: fetchZids
-					}
-				).then( function ( fetchedZids ) {
+					'performFetchZids',
+					{ zids: fetchZids }
+				).then( ( fetchedZids ) => {
 					if ( !fetchedZids || fetchedZids.length === 0 ) {
 						return;
 					}
@@ -297,8 +287,24 @@ module.exports = exports = {
 				} );
 			}
 
+			zids.forEach( ( zid ) => {
+				// Zid has already been fetched or
+				// Zid is in the process of being fetched
+				if ( zid &&
+					zid !== Constants.NEW_ZID_PLACEHOLDER &&
+					!( zid in context.state.objects ) &&
+					( !zidsToFetch.includes( zid ) )
+				) {
+					zidsToFetch.push( zid );
+				}
+			} );
+
+			if ( zidsToFetch.length === 0 ) {
+				return Promise.resolve();
+			}
+
 			// we provide an unique name to the promise, to be able to resolve the correct one later.
-			var promiseName = generateRequestName( zKeystoFetch );
+			const promiseName = generateRequestName( zidsToFetch );
 
 			// if a promise with the same name already exist, do not fetch again
 			if ( resolvePromiseList[ promiseName ] ) {
@@ -307,9 +313,9 @@ module.exports = exports = {
 				resolvePromiseList[ promiseName ] = {};
 			}
 
-			resolvePromiseList[ promiseName ].promise = new Promise( function ( resolve ) {
+			resolvePromiseList[ promiseName ].promise = new Promise( ( resolve ) => {
 				resolvePromiseList[ promiseName ].resolve = resolve;
-				dispatchPerformZKeyFetch( zKeystoFetch );
+				dispatchFetchZids( zidsToFetch );
 			} );
 
 			return resolvePromiseList[ promiseName ].promise;
@@ -321,11 +327,16 @@ module.exports = exports = {
 		 * logic. The only moment in wich we will not specify a language
 		 * property is when requesting the root ZObject on initialization
 		 *
+		 * Once received the response, stores the full object in the objects
+		 * array and the labels for the Zids, ZKey and ZArgument ids in the
+		 * labels store object. The labels returned are already in the
+		 * preferred language (or closest fallback available).
+		 *
 		 * @param {Object} context
 		 * @param {Object} payload
 		 * @return {Promise}
 		 */
-		performZKeyFetch: function ( context, payload ) {
+		performFetchZids: function ( context, payload ) {
 			const api = new mw.Api();
 			return api.get( {
 				action: 'query',
@@ -335,18 +346,17 @@ module.exports = exports = {
 				wikilambdaload_language: context.getters.getZLang,
 				wikilambdaload_get_dependencies: 'true'
 			} ).then( ( response ) => {
-
 				const requestedZids = payload.zids;
-				const zIds = Object.keys( response.query.wikilambdaload_zobjects );
-				zIds.forEach( function ( zid ) {
+				const returnedZids = Object.keys( response.query.wikilambdaload_zobjects );
 
+				returnedZids.forEach( ( zid ) => {
+					// If the requested zid returned error, do nothing
 					if ( !( 'success' in response.query.wikilambdaload_zobjects[ zid ] ) ) {
-						// TODO (T337457) add error into error global state module
 						return;
 					}
 
 					// 1. State mutation:
-					// Add filtered zObject to zKeys state object
+					// Add zObject to the state objects array
 					const fetchedObject = response.query.wikilambdaload_zobjects[ zid ].data;
 					context.commit( 'setStoredObject', {
 						zid: zid,
@@ -373,7 +383,7 @@ module.exports = exports = {
 
 					// 3. State mutation:
 					// Add the key or argument labels from the selected language to the store
-					let zKeys;
+					let objects;
 					const zType = ( typeof fetchedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ] === 'object' ) ?
 						fetchedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ] :
 						undefined;
@@ -383,11 +393,11 @@ module.exports = exports = {
 						case Constants.Z_TYPE:
 							// If the zObject is a type, get all key labels
 							// and commit to the store
-							zKeys = fetchedObject[
+							objects = fetchedObject[
 								Constants.Z_PERSISTENTOBJECT_VALUE
 							][ Constants.Z_TYPE_KEYS ].slice( 1 );
 
-							zKeys.forEach( function ( key ) {
+							objects.forEach( function ( key ) {
 								const keyLabels = key[
 									Constants.Z_KEY_LABEL
 								][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
@@ -407,11 +417,11 @@ module.exports = exports = {
 						case Constants.Z_FUNCTION:
 							// If the zObject is a function, get all argument
 							// declaration labels and commit to the store
-							zKeys = fetchedObject[
+							objects = fetchedObject[
 								Constants.Z_PERSISTENTOBJECT_VALUE
 							][ Constants.Z_FUNCTION_ARGUMENTS ].slice( 1 );
 
-							zKeys.forEach( function ( arg ) {
+							objects.forEach( function ( arg ) {
 								const argLabels = arg[
 									Constants.Z_ARGUMENT_LABEL
 								][ Constants.Z_MULTILINGUALSTRING_VALUE ].slice( 1 );
@@ -433,7 +443,7 @@ module.exports = exports = {
 					}
 				} );
 
-				// performFetch resolves to the list of zIds requested.
+				// performFetch must resolve to the list of requested zids
 				return requestedZids;
 			} );
 		}

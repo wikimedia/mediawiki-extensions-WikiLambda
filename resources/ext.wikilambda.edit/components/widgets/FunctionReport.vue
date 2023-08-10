@@ -281,7 +281,7 @@ module.exports = exports = {
 		}
 	} ),
 	methods: $.extend( mapActions( [
-		'fetchZKeys',
+		'fetchZids',
 		'getTestResults'
 	] ), {
 		/**
@@ -350,17 +350,17 @@ module.exports = exports = {
 	watch: {
 		implementations: function ( newValue, oldValue ) {
 			if ( newValue.length !== oldValue.length ) {
-				this.fetchZKeys( { zids: this.implementations } );
+				this.fetchZids( { zids: this.implementations } );
 			}
 		},
 		testers: function ( newValue, oldValue ) {
 			if ( newValue.length !== oldValue.length ) {
-				this.fetchZKeys( { zids: this.testers } );
+				this.fetchZids( { zids: this.testers } );
 			}
 		}
 	},
 	mounted: function () {
-		this.fetchZKeys( { zids: this.implementations.concat( this.testers ) } )
+		this.fetchZids( { zids: this.implementations.concat( this.testers ) } )
 			.then( () => {
 				setTimeout( this.runInitialCall, 1000 );
 			} );

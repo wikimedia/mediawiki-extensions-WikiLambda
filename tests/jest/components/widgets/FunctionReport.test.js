@@ -46,7 +46,7 @@ describe( 'FunctionReport', function () {
 			getZTesterResults: createGettersWithFunctionsMock()
 		};
 		actions = {
-			fetchZKeys: jest.fn(),
+			fetchZids: jest.fn(),
 			getTestResults: jest.fn()
 		};
 		global.store.hotUpdate( {
@@ -133,7 +133,7 @@ describe( 'FunctionReport', function () {
 
 	describe( 'trigger button', () => {
 		it( 'tests all the implementations for a tester page', async () => {
-			actions.fetchZKeys = jest.fn();
+			actions.fetchZids = jest.fn();
 			actions.getTestResults = jest.fn();
 			global.store.hotUpdate( {
 				getters: getters,
@@ -160,7 +160,7 @@ describe( 'FunctionReport', function () {
 		} );
 
 		it( 'tests all the testers for an implementation page', async () => {
-			actions.fetchZKeys = jest.fn();
+			actions.fetchZids = jest.fn();
 			actions.getTestResults = jest.fn();
 			global.store.hotUpdate( {
 				getters: getters,
@@ -195,7 +195,7 @@ describe( 'FunctionReport', function () {
 
 		it( 'does not trigger the tests if we are on new page', async () => {
 			actions.getTestResults = jest.fn();
-			actions.fetchZKeys = jest.fn( () => {
+			actions.fetchZids = jest.fn( () => {
 				return { then: ( fn ) => fn() };
 			} );
 			global.store.hotUpdate( {
@@ -211,8 +211,8 @@ describe( 'FunctionReport', function () {
 				}
 			} );
 
-			// Wait for fetchZKeys to be called and then run all timers
-			await waitFor( () => expect( actions.fetchZKeys ).toHaveBeenCalled() );
+			// Wait for fetchZids to be called and then run all timers
+			await waitFor( () => expect( actions.fetchZids ).toHaveBeenCalled() );
 			jest.runAllTimers();
 
 			await waitFor( () => expect( actions.getTestResults ).toHaveBeenCalledTimes( 0 ) );
@@ -220,7 +220,7 @@ describe( 'FunctionReport', function () {
 
 		it( 'initially tests all the implementations for a tester page', async () => {
 			actions.getTestResults = jest.fn();
-			actions.fetchZKeys = jest.fn( () => {
+			actions.fetchZids = jest.fn( () => {
 				return { then: ( fn ) => fn() };
 			} );
 			global.store.hotUpdate( {
@@ -236,7 +236,7 @@ describe( 'FunctionReport', function () {
 				}
 			} );
 
-			await waitFor( () => expect( actions.fetchZKeys ).toHaveBeenCalled() );
+			await waitFor( () => expect( actions.fetchZids ).toHaveBeenCalled() );
 			jest.runAllTimers();
 
 			await waitFor( () => {
@@ -251,7 +251,7 @@ describe( 'FunctionReport', function () {
 
 		it( 'initially tests all the testers for an implementation page', async () => {
 			actions.getTestResults = jest.fn();
-			actions.fetchZKeys = jest.fn( () => {
+			actions.fetchZids = jest.fn( () => {
 				return { then: ( fn ) => fn() };
 			} );
 			global.store.hotUpdate( {
@@ -267,8 +267,8 @@ describe( 'FunctionReport', function () {
 				}
 			} );
 
-			// Wait for fetchZKeys to be called and then run all timers
-			await waitFor( () => expect( actions.fetchZKeys ).toHaveBeenCalled() );
+			// Wait for fetchZids to be called and then run all timers
+			await waitFor( () => expect( actions.fetchZids ).toHaveBeenCalled() );
 			jest.runAllTimers();
 
 			await waitFor( () => {

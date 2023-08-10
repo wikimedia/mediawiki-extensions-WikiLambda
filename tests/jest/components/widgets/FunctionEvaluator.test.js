@@ -80,7 +80,7 @@ describe( 'FunctionEvaluator', () => {
 		actions = {
 			callZFunction: jest.fn(),
 			changeType: jest.fn(),
-			fetchZKeys: jest.fn(),
+			fetchZids: jest.fn(),
 			initializeResultId: jest.fn(),
 			setValueByRowIdAndPath: jest.fn(),
 			setZFunctionCallArguments: jest.fn()
@@ -337,8 +337,8 @@ describe( 'FunctionEvaluator', () => {
 
 			shallowMount( FunctionEvaluator, { props: { functionZid: 'Z10000' } } );
 
-			await waitFor( () => expect( actions.fetchZKeys ).toHaveBeenCalledTimes( 1 ) );
-			await waitFor( () => expect( actions.fetchZKeys ).toHaveBeenCalledWith( expect.anything(),
+			await waitFor( () => expect( actions.fetchZids ).toHaveBeenCalledTimes( 1 ) );
+			await waitFor( () => expect( actions.fetchZids ).toHaveBeenCalledWith( expect.anything(),
 				{ zids: [ 'Z10000' ] }
 			) );
 			await waitFor( () => expect( actions.setZFunctionCallArguments ).toHaveBeenCalledWith( expect.anything(),
@@ -396,8 +396,8 @@ describe( 'FunctionEvaluator', () => {
 				props: { functionZid: 'Z10000', forImplementation: true }
 			} );
 
-			await waitFor( () => expect( actions.fetchZKeys ).toHaveBeenCalledTimes( 1 ) );
-			await waitFor( () => expect( actions.fetchZKeys ).toHaveBeenCalledWith( expect.anything(),
+			await waitFor( () => expect( actions.fetchZids ).toHaveBeenCalledTimes( 1 ) );
+			await waitFor( () => expect( actions.fetchZids ).toHaveBeenCalledWith( expect.anything(),
 				{ zids: [ 'Z10000' ] }
 			) );
 			await waitFor( () => expect( actions.setZFunctionCallArguments ).toHaveBeenCalledWith( expect.anything(),

@@ -16,19 +16,21 @@ describe( 'ZObjectSelector', function () {
 	var state,
 		getters,
 		actions,
-		mutations,
 		lookupMock = jest.fn( function () {
 			return [];
 		} );
 	beforeEach( function () {
 		state = {
-			zKeys: {},
-			zKeyLabels: {},
-			fetchingZKeys: [],
+			objects: {},
+			labels: {},
 			errors: {}
 		};
 		getters = {
 			getStoredObject: jest.fn( function () {
+				return {};
+			} ),
+			getLabel: jest.fn( () => '' ),
+			getLabelData: jest.fn( function () {
 				return {};
 			} ),
 			getZLang: jest.fn( function () {
@@ -43,7 +45,7 @@ describe( 'ZObjectSelector', function () {
 		};
 		actions = {
 			// eslint-disable-next-line no-unused-vars
-			fetchZKeys: jest.fn( function ( context, payload ) {
+			fetchZids: jest.fn( function ( context, payload ) {
 				return true;
 			} ),
 			lookupZObject: lookupMock,
@@ -52,17 +54,11 @@ describe( 'ZObjectSelector', function () {
 				return true;
 			} )
 		};
-		mutations = {
-			addZKeyLabel: jest.fn( function ( s, payload ) {
-				s.zKeyLabels[ payload.key ] = payload.label;
-			} )
-		};
 
 		global.store.hotUpdate( {
 			state: state,
 			getters: getters,
-			actions: actions,
-			mutations: mutations
+			actions: actions
 		} );
 	} );
 	it( 'renders without errors', function () {

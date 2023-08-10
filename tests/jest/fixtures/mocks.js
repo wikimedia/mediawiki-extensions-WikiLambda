@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-var mockLabels = {
+const mockFunction = {
 	Z1K1: {
 		Z1K1: 'Z9',
 		Z9K1: 'Z2'
@@ -65,20 +65,10 @@ var mockLabels = {
 	}
 };
 
-var mockSidebarItems = [
-	{
-		label: "dummy",
-		language: "Z1002",
-		languageLabel: "English"
-	},
-	{
-		label: "dummy2",
-		language: "Z1003",
-		languageLabel: "español"
-	}
-];
-
-var mockApiReponse = {
+/**
+ * Returns builtin objects Z1, Z2, Z6
+ */
+const mockApiReponse = {
 	batchcomplete: '',
 	query: {
 		wikilambdaload_zobjects: {
@@ -253,7 +243,11 @@ var mockApiReponse = {
 	}
 };
 
-var mockApiZkeys = {
+/**
+ * Returns builtin objects Z1, Z3, Z6, Z31, Z32, Z802, Z881, Z882, Z1003
+ * And custom objects Z10001, Z10528, Z20001, Z20002, Z20003
+ */
+const mockApiZids = {
 	Z1: {
 		Z1K1: 'Z2',
 		Z2K1: {
@@ -964,4 +958,9 @@ const mockLanguages = {
 	}
 };
 
-module.exports = { mockLabels, mockSidebarItems, mockApiReponse, mockApiZkeys, mockLanguages };
+module.exports = {
+	mockFunction,
+	mockApiReponse,
+	mockApiZids,
+	mockLanguages
+};

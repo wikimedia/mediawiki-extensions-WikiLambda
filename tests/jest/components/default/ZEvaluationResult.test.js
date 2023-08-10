@@ -21,7 +21,7 @@ describe( 'ZEvaluationResult', () => {
 			getZObjectAsJsonById: createGettersWithFunctionsMock( {} )
 		};
 		actions = {
-			fetchZKeys: jest.fn()
+			fetchZids: jest.fn()
 		};
 		global.store.hotUpdate( {
 			actions: actions,

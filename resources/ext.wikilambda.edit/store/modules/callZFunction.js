@@ -52,7 +52,7 @@ module.exports = exports = {
 			return performFunctionCall( payload.functionCall ).then( ( data ) => {
 				// Asynchronously collect the necessary labels
 				const zids = extractZIDs( data.response );
-				context.dispatch( 'fetchZKeys', { zids } );
+				context.dispatch( 'fetchZids', { zids } );
 
 				// Success, we inject the response object in the resultRowId
 				context.dispatch( 'injectZObjectFromRowId', {

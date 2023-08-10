@@ -51,7 +51,7 @@ describe( 'AboutViewLanguagesDialog', () => {
 		} );
 
 		actions = {
-			fetchZKeys: jest.fn(),
+			fetchZids: jest.fn(),
 			lookupZObject: lookupMock
 		};
 

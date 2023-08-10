@@ -345,7 +345,7 @@ module.exports = exports = {
 	methods: $.extend( mapActions( [
 		'initializeResultId',
 		'changeType',
-		'fetchZKeys',
+		'fetchZids',
 		'callZFunction',
 		'setValueByRowIdAndPath',
 		'setZFunctionCallArguments'
@@ -447,7 +447,7 @@ module.exports = exports = {
 					// If we are initializing the evaluator with an initialFunctionZid
 					// we fetch the function data and then we set the arguments
 					if ( initialFunctionZid ) {
-						this.fetchZKeys( { zids: [ initialFunctionZid ] } ).then( () => {
+						this.fetchZids( { zids: [ initialFunctionZid ] } ).then( () => {
 							this.setZFunctionCallArguments( {
 								parentId: rowId,
 								functionZid: initialFunctionZid
