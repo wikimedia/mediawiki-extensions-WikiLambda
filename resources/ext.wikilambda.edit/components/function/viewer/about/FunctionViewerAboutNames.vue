@@ -5,7 +5,13 @@
 	@license MIT
 -->
 <template>
-	<div v-if="getFunctionNames.length > 0" class="ext-wikilambda-function-viewer-names">
+	<div
+		v-if="getFunctionNames.length > 0"
+		class="ext-wikilambda-function-viewer-names"
+	>
+		<div class="ext-wikilambda-function-viewer-names__header">
+			{{ $i18n( 'wikilambda-function-definition-name-label' ) }}
+		</div>
 		<wl-function-viewer-sidebar
 			:list="visibleFunctionNames"
 			:z-lang="getUserLangZid"

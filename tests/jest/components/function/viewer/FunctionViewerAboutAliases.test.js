@@ -31,12 +31,12 @@ describe( 'FunctionViewerAliases', function () {
 				const objects = {
 					[ Constants.Z_NATURAL_LANGUAGE_AFRIKAANS ]: {
 						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
-							[ Constants.Z_NATURAL_LANGUAGE_ISO_CODE ]: Constants.Z_NATURAL_LANGUAGE_ISO_CODE
+							[ Constants.Z_NATURAL_LANGUAGE_ISO_CODE ]: 'af'
 						}
 					},
 					[ Constants.Z_NATURAL_LANGUAGE_ENGLISH ]: {
 						[ Constants.Z_PERSISTENTOBJECT_VALUE ]: {
-							[ Constants.Z_NATURAL_LANGUAGE_ISO_CODE ]: Constants.Z_NATURAL_LANGUAGE_ISO_CODE
+							[ Constants.Z_NATURAL_LANGUAGE_ISO_CODE ]: 'en'
 						}
 					}
 				};
@@ -44,8 +44,8 @@ describe( 'FunctionViewerAliases', function () {
 			} ),
 			getLabel: () => ( zid ) => {
 				const labels = {
-					[ Constants.Z_NATURAL_LANGUAGE_AFRIKAANS ]: 'AF',
-					[ Constants.Z_NATURAL_LANGUAGE_ENGLISH ]: 'EN'
+					[ Constants.Z_NATURAL_LANGUAGE_AFRIKAANS ]: 'Afrikaans',
+					[ Constants.Z_NATURAL_LANGUAGE_ENGLISH ]: 'English'
 				};
 				return labels[ zid ];
 			},
@@ -172,14 +172,15 @@ describe( 'FunctionViewerAliases', function () {
 		var wrapper = VueTestUtils.shallowMount( FunctionViewerAliases );
 		var selectedFunctionAliases = wrapper.vm.getSelectedAliases( 'Z1002' );
 
-		expect( selectedFunctionAliases ).toEqual( [ { isoCode: 'Z60K1', label: 'english alias', language: 'Z1002', languageLabel: 'EN' } ] );
+		expect( selectedFunctionAliases ).toEqual( [ { isoCode: 'en', label: 'english alias', language: 'Z1002', languageLabel: 'English' } ] );
 	} );
 
 	it( 'displays an alias chip for every alias in current language', async function () {
 		var wrapper = VueTestUtils.mount( FunctionViewerAliases );
 
-		expect( wrapper.findAll( '.ext-wikilambda-function-viewer-sidebar__chip-item' ).length ).toBe( 1 );
-		expect( wrapper.findAll( '.ext-wikilambda-function-viewer-sidebar__chip-container' )[ 0 ].text() ).toBe( 'Z60K1 english alias' );
+		expect( wrapper.findAll( '.ext-wikilambda-function-viewer-sidebar__chip-container' ).length ).toBe( 1 );
+		expect( wrapper.findAll( '.ext-wikilambda-function-viewer-sidebar__chip-item' )[ 0 ].text() ).toBe( 'EN' );
+		expect( wrapper.findAll( '.ext-wikilambda-function-viewer-sidebar__chip-text' )[ 0 ].text() ).toBe( 'english alias' );
 	} );
 
 	it( 'displays an alias chip for all languages when show more languages expansion button is clicked', async function () {
@@ -188,7 +189,8 @@ describe( 'FunctionViewerAliases', function () {
 		await wrapper.findComponent( '.ext-wikilambda-function-viewer-sidebar__button' ).trigger( 'click' );
 		await wrapper.vm.$nextTick();
 
-		expect( wrapper.findAll( '.ext-wikilambda-function-viewer-sidebar__chip-item' ).length ).toBe( 2 );
-		expect( wrapper.findAll( '.ext-wikilambda-function-viewer-sidebar__chip-container' )[ 1 ].text() ).toBe( 'Z60K1 afrikaans alias' );
+		expect( wrapper.findAll( '.ext-wikilambda-function-viewer-sidebar__chip-container' ).length ).toBe( 2 );
+		expect( wrapper.findAll( '.ext-wikilambda-function-viewer-sidebar__chip-item' )[ 1 ].text() ).toBe( 'AF' );
+		expect( wrapper.findAll( '.ext-wikilambda-function-viewer-sidebar__chip-text' )[ 1 ].text() ).toBe( 'afrikaans alias' );
 	} );
 } );
