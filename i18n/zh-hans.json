@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"CrownedWharf566",
 			"GraceL",
 			"GuoPC",
 			"Hehua",
@@ -43,7 +44,7 @@
 	"wikilambda-tester-run-tester": "运行测试",
 	"wikilambda-enable-expert-mode": "开启专家模式",
 	"wikilambda-disable-expert-mode": "关闭专家模式",
-	"wikilambda-expert-mode-json-label": "当前的Z项目",
+	"wikilambda-expert-mode-json-label": "当前项目",
 	"wikilambda-metadata-language-column": "语言",
 	"wikilambda-metadata-label-column": "标签",
 	"wikilambda-metadata-aka-column": "别名",

@@ -57,6 +57,7 @@
 	"action-wikilambda-edit-key-label": "modifier les libellés clés d’un type existant",
 	"action-wikilambda-edit-language": "modifier les objets langage naturel existants",
 	"action-wikilambda-edit-object-alias": "modifier les alias d’un objet existant",
+	"action-wikilambda-edit-object-description": "modifier les descriptions d’un objet existant",
 	"action-wikilambda-edit-object-label": "modifier les libellés d’un objet existant",
 	"action-wikilambda-edit-object-type": "modifier le type d’un objet existant",
 	"action-wikilambda-edit-predefined": "modifier les objets 'prédéfinis' existants (sous Z10000)",
@@ -93,6 +94,7 @@
 	"right-wikilambda-edit-key-label": "Modifier les libellés des clés d’un type existant",
 	"right-wikilambda-edit-language": "Modifier les objets langage naturel existants",
 	"right-wikilambda-edit-object-alias": "Modifier les alias d’un objet existant",
+	"right-wikilambda-edit-object-description": "Modifier les descriptions d’un objet existant",
 	"right-wikilambda-edit-object-label": "Modifier les libellés d’un objet existant",
 	"right-wikilambda-edit-object-type": "Modifier le type d’un objet existant",
 	"right-wikilambda-edit-predefined": "Modifier les objets 'prédéfinis' existants (sous Z10000)",
@@ -398,5 +400,6 @@
 	"wikilambda-function-evaluator-result-details": "Détails",
 	"wikilambda-function-evaluator-run-function": "Exécuter la fonction",
 	"wikilambda-unknown-save-error-message": "Une erreur s’est produire en tentant d’enregistrer vos modifications.",
-	"wikilambda-list-type-change-warning": "Vous avez modifié le type d’une ou plusieurs listes. Lors de la publication, tous les éléments de la liste seront supprimés."
+	"wikilambda-list-type-change-warning": "Vous avez modifié le type d’une ou plusieurs listes. Lors de la publication, tous les éléments de la liste seront supprimés.",
+	"wikilambda-function-evaluation-restriction-warning": "Nous sommes désolés ! Pour le moment, seuls les utilisateurs connectés peuvent exécuter des fonctions."
 }

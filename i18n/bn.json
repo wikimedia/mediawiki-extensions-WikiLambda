@@ -23,7 +23,7 @@
 	"grouppage-functioneer": "{{ns:project}}:ফাংশনার",
 	"group-functionmaintainer": "রক্ষণাবেক্ষণকারী",
 	"group-functionmaintainer-member": "{{GENDER:$1| রক্ষণাবেক্ষণকারী}}",
-	"grouppage-functionmaintainer": "{{ns:project}}:রক্ষণাবেক্ষণকারীগণ",
+	"grouppage-functionmaintainer": "{{ns:project}}:রক্ষণাবেক্ষণকারী",
 	"wikilambda-history-title": "\"$1\" ($2)-এর সংশোধনের ইতিহাস",
 	"wikilambda-typeunavailable": "ধরন অপরিচিত",
 	"wikilambda-noresult": "অনুসন্ধানে কোনো ফলাফল পাওয়া যায়নি।",
