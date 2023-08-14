@@ -65,7 +65,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		expect( within( argumentsArea ).queryByText( 'String' ) ).not.toBeInTheDocument();
 
 		// ACT: Add an argument.
-		await fireEvent.click( getByText( 'Add an input' ) );
+		await fireEvent.click( getByText( 'Add input' ) );
 
 		// ACT: Select a type for the first argument again.
 		firstArgType = within( argumentsArea ).getByTestId( 'function-editor-input-item-type' );
@@ -86,7 +86,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 
 		// ASSERT: The error warning exists on the zobject showing the user they have not set an output type.
 		const outputArea = within( firstLanguageBlock ).getByTestId( 'function-editor-output' );
-		expect( outputArea ).toHaveTextContent( 'A function requires an output' );
+		expect( outputArea ).toHaveTextContent( 'Output type is empty. Please select one.' );
 
 		// ACT: Select a type for the output.
 		await lookupSearchAndSelect( outputArea, 'Str', 'String' );
@@ -106,7 +106,7 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument();
 
 		// ASSERT: The error warning exists on the zobject showing the user they have not set an output type.
-		expect( secondArg ).toHaveTextContent( 'An input requires a type' );
+		expect( secondArg ).toHaveTextContent( 'Input type is empty. Please select one.' );
 
 		// ACT: Select a type for the second argument.
 		const secondArgType = within( argumentsArea ).getAllByTestId( 'function-editor-input-item-type' )[ 1 ];

@@ -51,8 +51,8 @@ describe( 'WikiLambda frontend, function-editor view, on a new function', () => 
 		const { getByText, findByRole, findByText, getAllByTestId } =
 			render( App, { global: { plugins: [ store ] } } );
 
-		// ACT: Click "Add labels in another language".
-		await fireEvent.click( await findByText( 'Add labels in another language' ) );
+		// ACT: Click "Add language".
+		await fireEvent.click( await findByText( 'Add language' ) );
 
 		// ACT: Select French as a third natural language.
 		const thirdLanguageSelector = getAllByTestId( 'function-editor-language-selector' )[ 2 ];

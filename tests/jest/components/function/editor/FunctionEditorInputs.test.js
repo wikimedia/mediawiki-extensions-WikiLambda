@@ -41,7 +41,7 @@ describe( 'FunctionEditorInputs', () => {
 		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs' ).exists() ).toBeTruthy();
 	} );
 
-	it( 'displays the "add an input" button if the user has edit permissions and there are no inputs', () => {
+	it( 'displays the "add input" button if the user has edit permission and there are no arguments', function () {
 		getters.getZFunctionInputs = createGettersWithFunctionsMock( [] );
 		global.store.hotUpdate( { getters: getters } );
 		const wrapper = shallowMount( FunctionEditorInputs, {
@@ -56,7 +56,7 @@ describe( 'FunctionEditorInputs', () => {
 		} );
 
 		expect( wrapper.find( '.ext-wikilambda-function-definition-inputs__add-input-button' ).text() )
-			.toEqual( 'Add an input' );
+			.toEqual( 'Add input' );
 	} );
 
 	it( 'displays the "add another input" button if the user has edit permissions and there is an existing input', () => {

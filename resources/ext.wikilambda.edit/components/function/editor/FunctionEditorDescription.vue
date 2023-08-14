@@ -14,9 +14,6 @@
 				{{ descriptionLabel }}
 				<span>{{ descriptionOptional }}</span>
 			</label>
-			<span class="ext-wikilambda-function-definition-description__description">
-				{{ descriptionFieldDescription }}
-			</span>
 		</div>
 		<cdx-text-input
 			:id="descriptionInputId"
@@ -108,14 +105,6 @@ module.exports = exports = {
 			return this.$i18n( 'wikilambda-function-definition-description-placeholder' ).text();
 		},
 		/**
-		 * Returns the description for the name field
-		 *
-		 * @return {string}
-		 */
-		descriptionFieldDescription: function () {
-			return this.$i18n( 'wikilambda-function-definition-description-description' ).text();
-		},
-		/**
 		 * Returns the "optional" caption for the description field
 		 *
 		 * @return {string}
@@ -204,14 +193,6 @@ module.exports = exports = {
 				font-weight: @font-weight-normal;
 			}
 		}
-	}
-
-	&__description {
-		opacity: 0.8;
-		color: @color-subtle;
-		font-size: @wl-font-size-description;
-		line-height: @wl-line-height-description;
-		display: inline-block;
 	}
 
 	/* MOBILE styles */

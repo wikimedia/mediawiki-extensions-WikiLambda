@@ -91,8 +91,8 @@ describe( 'WikiLambda frontend, editing an existing function, on function-editor
 		const afrikaansFirstArgumentLabel = within( afrikaansLanguageBlock ).getAllByTestId( 'function-editor-input-item-label' )[ 0 ];
 		await textInputChange( afrikaansFirstArgumentLabel, 'edited first argument label, in Afrikaans' );
 
-		// ACT: Click "Add labels in another language".
-		await fireEvent.click( getByText( 'Add labels in another language' ) );
+		// ACT: Click "Add language".
+		await fireEvent.click( getByText( 'Add language' ) );
 
 		// ASSERT: A new language block is created
 		languageBlocks = await findAllByTestId( 'function-editor-language-block' );

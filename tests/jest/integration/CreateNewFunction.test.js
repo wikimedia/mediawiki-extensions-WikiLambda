@@ -95,8 +95,8 @@ describe( 'WikiLambda frontend, on function-editor view', () => {
 		const outputArea = within( firstLanguageBlock ).getByTestId( 'function-editor-output' );
 		await lookupSearchAndSelect( outputArea, 'Str', 'String' );
 
-		// ACT: Click "Add labels in another language".
-		await fireEvent.click( getByText( 'Add labels in another language' ) );
+		// ACT: Click "Add language".
+		await fireEvent.click( getByText( 'Add language' ) );
 
 		// ACT: Select French as the second natural language.
 		const secondLanguageSelector = getAllByTestId( 'function-editor-language-selector' )[ 1 ];

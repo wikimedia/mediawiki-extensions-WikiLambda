@@ -15,15 +15,15 @@ class LanguageContainerComponent {
 	}
 
 	get nameField() {
-		return this.languageContext.$( "input[placeholder*='E.g. Convert Celsius to Fahrenheit']" );
+		return this.languageContext.$( "input[placeholder*='Enter name']" );
 	}
 
 	get aliasField() {
-		return this.languageContext.$( "input[placeholder='E.g. C to F, Temperature conversion']" );
+		return this.languageContext.$( "input[placeholder='Enter aliases']" );
 	}
 
 	get inputLabelsField() {
-		return this.languageContext.$$( ".ext-wikilambda-function-definition-inputs input[placeholder='E.g. Celsius']" );
+		return this.languageContext.$$( ".ext-wikilambda-function-definition-inputs input[placeholder='Enter label']" );
 	}
 
 	constructor( languageContext ) {
@@ -59,7 +59,7 @@ class LanguageContainerComponent {
 
 class FirstLanguageContainerComponent extends LanguageContainerComponent {
 	get outputTypeField() {
-		return this.languageContext.$( ".ext-wikilambda-function-definition-output input[placeholder='Select a type']" );
+		return this.languageContext.$( ".ext-wikilambda-function-definition-output input[placeholder='Select type']" );
 	}
 
 	get anotherInputBtn() {
@@ -75,7 +75,7 @@ class FirstLanguageContainerComponent extends LanguageContainerComponent {
 	}
 
 	async getInputTypeField( index ) {
-		return this.getInput( index ).$( "input[placeholder='Select a type']" );
+		return this.getInput( index ).$( "input[placeholder='Select type']" );
 	}
 
 	getDeleteButtonForInput( inputIndex ) {

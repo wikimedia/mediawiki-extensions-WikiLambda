@@ -12,7 +12,7 @@ const ZObjectPublish = require( '../../componentobjects/ZObjectPublish' );
 
 class FunctionForm extends Page {
 	get addLabelInAnotherLanguageBtn() {
-		return $( 'button*=Add labels in another language' );
+		return $( 'button*=Add language' );
 	}
 
 	async open() {
