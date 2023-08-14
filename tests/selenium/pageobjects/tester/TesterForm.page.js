@@ -1,6 +1,8 @@
 /**
  * Tester Form page object for the WikiLambda browser test suite
  *
+ * Contains the locators and actions specific to the Tester Form.
+ *
  * The page contains the following sections
  * [1] About - Input the label, description, alias in different languages for the test
  * [2] Function Explorer - Display the details about the function to which test belongs

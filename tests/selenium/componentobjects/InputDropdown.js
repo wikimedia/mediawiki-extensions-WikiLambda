@@ -1,5 +1,7 @@
 /*!
- * WikiLambda browser test components the Input Dropdown related locators and actions.
+ * InputDropdown Component Object for WikiLambda browser test suite
+ *
+ * Contains the Input Dropdown related locators and actions.
  *
  * InputDropdown is a general component which set the input in the input field and
  * select the item input from the dropdown.

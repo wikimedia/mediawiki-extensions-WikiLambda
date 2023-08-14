@@ -1,5 +1,7 @@
 /*!
- * WikiLambda browser test components the About block related locators and actions.
+ * AboutBlock Component Object for WikiLambda browser test suite
+ *
+ * Contains About Block related locators and actions.
  *
  * AboutBlock is a general component which
  * [1] Takes input of the label, description, alias in different languages

@@ -1,5 +1,7 @@
 /*!
- * WikiLambda browser test components the Content block related locators and actions.
+ * ContentBlock Component Object for WikiLambda browser test suite
+ *
+ * Contains the Content block related locators and actions.
  *
  * ContentBlock is a general component which
  * [1] Takes input about the definition/implementation related details of the ZObject

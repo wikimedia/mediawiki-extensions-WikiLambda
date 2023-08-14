@@ -1,6 +1,8 @@
 /*!
  * Implementation page object for the WikiLambda browser test suite
  *
+ * Contains the locators and actions specific to the Implementation Page.
+ *
  * The page contains the following sections
  * [1] About - Display the label, description of the implementation
  * [2] Function Explorer - Display the details about the function to which implementation belongs

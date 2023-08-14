@@ -1,5 +1,5 @@
 /*!
- * "Create a new implementation" spec for the WikiLambda browser test suite
+ * WikiLambda browser test suite for "Create a new implementation"
  *
  * @see https://phabricator.wikimedia.org/T318939.
  *

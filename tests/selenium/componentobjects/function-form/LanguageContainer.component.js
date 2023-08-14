@@ -1,5 +1,5 @@
 /*!
- * WikiLambda browser test components the LanguageContainer on function editing related locators and actions.
+ * LanguageContainer Component Object for WikiLambda browser test suite
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

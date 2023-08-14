@@ -1,6 +1,8 @@
 /**
  * Type Form page object for the WikiLambda browser test suite
  *
+ * Contains the locators and actions specific to the Type Form.
+ *
  * The page contains the following sections
  * [1] About - Input the label, description, alias in different languages for the type
  * [2] Content Block - It is further divided into

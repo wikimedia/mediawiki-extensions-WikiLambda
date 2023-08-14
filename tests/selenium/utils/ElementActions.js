@@ -1,5 +1,7 @@
 /*!
- * WikiLambda browser test WebDriver.io element-related general actions.
+ * ElementActions utility object for WikiLambda browser test suite
+ *
+ * Contains general actions that are performed on the browser elements
  *
  * General Actions includes
  * [1] Click on the element

@@ -1,5 +1,28 @@
-/*!
+/*
  * WikiLambda browser test suite for functions
+ *
+ * @file contains the tests for the following
+ * Evaluate a Function
+ * @see https://phabricator.wikimedia.org/T318922
+ * Create a Function definition
+ * @see https://phabricator.wikimedia.org/T318930
+ * Edit the Function definition
+ * @see https://phabricator.wikimedia.org/T318933
+ *
+ * Test go through the following steps
+ * [1] Evaluate a Function
+ * [a] Open the Function page
+ * [b] Call the Function
+ *
+ * [2] Create a Function definition
+ * [a] Login and Navigate to the Function Form page
+ * [b] Fill the entries
+ * [c] Publish the Function and assert that entries are displayed as expected
+ *
+ * [3] Edit the Function definition
+ * [a] Open the Function Form
+ * [b] Edit the entries
+ * [c] Publish the Function and assert that entries are displayed as expected
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

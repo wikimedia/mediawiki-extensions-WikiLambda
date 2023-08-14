@@ -1,5 +1,5 @@
 /*!
- * "Connect implementation and test to the function" spec for the WikiLambda browser test suite
+ * WikiLambda browser test suite for "Connect implementation and test to the function"
  *
  * @see https://phabricator.wikimedia.org/T318936
  *
