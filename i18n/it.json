@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ajeje Brazorf",
+			"Beta16",
+			"GpieroMW",
+			"Lorem Ipsum",
+			"Luca.favorido",
+			"McDutchie",
+			"Noretta93",
+			"Sabas88",
+			"Sofia Stecchi",
+			"Stefano"
+		]
+	},
+	"wikilambda-desc": "Fornire alle wiki di Wikimedia una funzione di parsing del wikitesto che permetta di eseguire funzioni scritte, gestite ed eseguite su una wiki centralizzata."
+}
