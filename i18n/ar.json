@@ -4,6 +4,7 @@
 			"Asma",
 			"Dr. Mohammed",
 			"FiberAhmed",
+			"Karim185.3",
 			"NancyMilad",
 			"أَحمد",
 			"محمد أحمد عبد الفتاح"
@@ -21,7 +22,7 @@
 	"wikilambda-function-are-you-sure-dialog-header": "هل أنت متأكد؟",
 	"wikilambda-function-are-you-sure-dialog-description": "هل انت متاكد انك تريد ترك وضع التحرير من دون النشر اولا",
 	"wikilambda-functioncall-metadata-errors-summary": "ملخص الخطأ",
-	"wikilambda-tester-create-new": "قم بإنشاء اختبار جديد",
+	"wikilambda-tester-create-new": "أنشئ اختبارًا جديدًا",
 	"wikilambda-metadata-duplicate-alias-error": "$1 موجود بالفعل.",
 	"wikilambda-function-definition-edit": "عدل التعريف",
 	"wikilambda-function-implementation-state-approved": "مقبول",
