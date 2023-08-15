@@ -10,7 +10,8 @@
 			"YuriNikolai",
 			"Fúlvio",
 			"LeFaith",
-			"Mello25"
+			"Mello25",
+			"Re demz"
 		]
 	},
 	"wikilambda-desc": "Fornecer wikis da Wikimedia com uma função de analisador de wikitexto para chamar a avaliação de funções escritas, gerenciadas e avaliadas em uma wiki central.",
@@ -94,6 +95,7 @@
 	"wikilambda-metadata-fewer-languages": "Mostrar menos idiomas",
 	"wikilambda-persistentobject-details-label": "Detalhes",
 	"wikilambda-persistentobject-function-signature-label": "Assinatura de função",
+	"wikilambda-function-definition-alias-label": "Nomes alternativos",
 	"wikilambda-function-definition-footer-placeholder": "Descreva resumidamente suas mudanças",
 	"wikilambda-editor-go-back-button": "Voltar",
 	"wikilambda-editor-next-button": "Próximo passo",

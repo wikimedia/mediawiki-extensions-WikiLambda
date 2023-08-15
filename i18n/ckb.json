@@ -1,8 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"GoRaN"
+			"GoRaN",
+			"Aram",
+			"Sarchia"
 		]
 	},
-	"wikilambda-persistentzobject-contents": "ناوەڕۆکەکان"
+	"wikilambda-persistentzobject-contents": "ناوەڕۆکەکان",
+	"wikilambda-function-definition-alias-label": "ناوە جێگرەوەکان"
 }

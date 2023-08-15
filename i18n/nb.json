@@ -121,6 +121,7 @@
 	"wikilambda-function-implementation-state-label": "Status",
 	"wikilambda-function-implementation-tests-passed-label": "Beståtte tester",
 	"wikilambda-function-definition-name-example": "Se navneeksempler.",
+	"wikilambda-function-definition-alias-label": "Alternative navn",
 	"wikilambda-function-definition-alias-example": "Se aliaseksempler.",
 	"wikilambda-function-definition-footer-placeholder": "Beskriv endringene dine kort",
 	"wikilambda-function-definition-footer-label": "Redigeringsforklaring",
