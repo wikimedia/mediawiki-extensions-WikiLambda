@@ -118,6 +118,35 @@ module.exports = exports = {
 			return state.dirty;
 		},
 		/**
+		 * Whether the given rowId is part of the main
+		 * page object or is a detached object. If the
+		 * oldest ancestor is row Id 0, then this is the
+		 * main object.
+		 *
+		 * @param {Object} state
+		 * @param {Object} getters
+		 * @return {boolean}
+		 */
+		isMainObject: function ( state, getters ) {
+			/**
+			 * @param {string} rowId
+			 * @return {boolean}
+			 */
+			function findOldestAncestor( rowId ) {
+				const row = getters.getRowById( rowId );
+				// Row doesn't exist, return false
+				if ( row === undefined ) {
+					return false;
+				}
+				// Row is oldest ancestor, return true if id is 0
+				if ( row.parent === undefined ) {
+					return ( row.id === 0 );
+				}
+				return findOldestAncestor( row.parent );
+			}
+			return findOldestAncestor;
+		},
+		/**
 		 * Returns the multilingual data initial copy
 		 * saved on initialization
 		 *

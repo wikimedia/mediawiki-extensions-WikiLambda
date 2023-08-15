@@ -149,6 +149,55 @@ describe( 'zobject Vuex module', function () {
 				} );
 			} );
 
+			describe( 'isMainObject', () => {
+				beforeEach( () => {
+					getters = {};
+					getters.getRowById = zobjectModule.getters.getRowById( state );
+				} );
+
+				it( 'returns false if rowId does not exist', () => {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, parent: undefined, key: 'foo', value: 'bar' }
+					] );
+					expect( currentZObject.getters.isMainObject( state, getters )( 1 ) ).toBe( false );
+				} );
+
+				it( 'return true if rowId is the main oldest ancestor', () => {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, parent: undefined, key: 'foo', value: 'bar' }
+					] );
+					expect( currentZObject.getters.isMainObject( state, getters )( 0 ) ).toBe( true );
+				} );
+
+				it( 'return false if rowId is a detached oldest ancestor', () => {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, parent: undefined, key: 'foo', value: 'bar' },
+						{ id: 2, parent: undefined, key: 'foo', value: 'bar' }
+					] );
+					expect( currentZObject.getters.isMainObject( state, getters )( 2 ) ).toBe( false );
+				} );
+
+				it( 'return true if rowId is child of the main oldest ancestor', () => {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, parent: undefined, key: 'foo', value: 'bar' },
+						{ id: 1, parent: 0, key: 'foo', value: 'bar' },
+						{ id: 2, parent: 1, key: 'foo', value: 'bar' }
+					] );
+					expect( currentZObject.getters.isMainObject( state, getters )( 2 ) ).toBe( true );
+				} );
+
+				it( 'return false if rowId is child of a detached oldest ancestor', () => {
+					state.zobject = tableDataToRowObjects( [
+						{ id: 0, parent: undefined, key: 'foo', value: 'bar' },
+						{ id: 1, parent: 0, key: 'foo', value: 'bar' },
+						{ id: 2, parent: undefined, key: 'foo', value: 'bar' },
+						{ id: 3, parent: 2, key: 'foo', value: 'bar' },
+						{ id: 4, parent: 3, key: 'foo', value: 'bar' }
+					] );
+					expect( currentZObject.getters.isMainObject( state, getters )( 4 ) ).toBe( false );
+				} );
+			} );
+
 			describe( 'getCurrentZObjectId', () => {
 				it( 'returns current persisted Zid being edited or viewed', () => {
 					state.currentZid = 'Z10001';
