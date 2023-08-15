@@ -403,5 +403,6 @@
 	"wikilambda-function-evaluator-run-function": "Run function",
 	"wikilambda-unknown-save-error-message": "Some error happened while attempting to save your changes.",
 	"wikilambda-list-type-change-warning": "You changed the type of one or more lists. On publish, all list items will be deleted",
+	"wikilambda-function-evaluation-restriction-notrunnable": "This function has no approved implementations.",
 	"wikilambda-function-evaluation-restriction-warning": "We are sorry! At the moment only logged-in users can run functions."
 }
