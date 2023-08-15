@@ -11,7 +11,6 @@
 	"wikilambda-function-implementation-state-approved": "Расланган",
 	"wikilambda-function-implementation-state-deactivated": "Эштән чыгарылган",
 	"wikilambda-function-definition-name-placeholder": "Мәсәлән, Цельсийны Фаренгейтка әйләндерегез",
-	"wikilambda-function-definition-name-description": "Башкаларга бу функциянең нәрсә эшләгәнен аңларга булышу өчен, функциягә тасвирлау исеме бирегез.",
 	"wikilambda-function-definition-alias-label": "Альтернатив исемнәр",
 	"wikilambda-function-definition-alias-placeholder": "Мәсәлән, температураны Цельсийдан Фаренгейтка күчерү",
 	"wikilambda-function-definition-alias-description": "Башкалар бу функцияне җиңел таба алсын өчен өстәмә исемнәр өстәгез.",

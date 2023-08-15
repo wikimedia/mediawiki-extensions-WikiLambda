@@ -123,7 +123,6 @@
 	"wikilambda-metadata-add-alias": "Tambahkan Alias",
 	"wikilambda-metadata-all-languages": "Tampilkan semua bahasa yang dimasukkan",
 	"wikilambda-metadata-fewer-languages": "Tampilkan lebih sedikit bahasa",
-	"wikilambda-persistentobject-details-label": "Rincian",
 	"wikilambda-implementation-selector-none": "Ini adalah implementasi bawaan. Kodenya merupakan bagian dari inti perangkat lunak, dan tidak ditampilkan di sini.",
 	"wikilambda-function-is-approved": "Objek ini disetujui untuk fungsi ini.",
 	"wikilambda-function-is-not-approved": "Objek ini tidak disetujui untuk fungsi ini.",

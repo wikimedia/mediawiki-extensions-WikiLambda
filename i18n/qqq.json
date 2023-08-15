@@ -254,7 +254,7 @@
 	"wikilambda-performtest-error-unknown-zid": "Error shown when a test is requested to be performed but a ZID in the request doesn't exist.\n\nParams:\n* $1 - The requested ZID",
 	"wikilambda-editor-tester-list-label": "Label for a list of testers associated with a function.\n\n{{doc-wikilambda}}",
 	"wikilambda-tester-selector": "Label for selecting a tester",
-	"wikilambda-tester-none-found": "Label for when no testers are found for a function",
+	"wikilambda-tester-none-found": "Label for when no testers are found for a function.\n\n{{doc-wikilambda}}",
 	"wikilambda-tester-create-new": "Label for adding a new test to a function",
 	"wikilambda-tester-status-ready": "Label for a ready test runner",
 	"wikilambda-tester-status-running": "Label for a running test runner",

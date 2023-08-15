@@ -15,7 +15,6 @@
 	"wikilambda-tester-status-run": "Покрени",
 	"wikilambda-tester-status-cancel": "Откажи",
 	"wikilambda-metadata-all-languages": "Прикажи све унесене језике",
-	"wikilambda-persistentobject-details-label": "Детаљи",
 	"wikilambda-function-is-approved": "Објекат је одобрен за ову функцију.",
 	"wikilambda-function-implementation-state-approved": "Одобрено",
 	"wikilambda-function-implementation-state-deactivated": "Деактивирано",
