@@ -254,13 +254,13 @@ module.exports = exports = {
 		 */
 		publishZObject: function () {
 			const summary = this.summary;
-			const detachFunctionObjects = this.functionSignatureChanged;
+			const disconnectFunctionObjects = this.functionSignatureChanged;
 
 			this.submitZObject( {
 				summary,
-				detachFunctionObjects
-			} ).then( ( pageTitle ) => {
-				this.successfulExit( pageTitle );
+				disconnectFunctionObjects
+			} ).then( ( response ) => {
+				this.successfulExit( response.page );
 			} ).catch( ( error ) => {
 				this.clearAllErrors();
 				// If error.error.message: known ZError
