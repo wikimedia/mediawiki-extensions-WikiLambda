@@ -7,7 +7,9 @@
 			"Nieuwsgierige Gebruiker",
 			"Robin van der Vliet",
 			"Romaine",
-			"Mainframe98"
+			"Mainframe98",
+			"HanV",
+			"Sjoerddebruin"
 		]
 	},
 	"wikilambda-invalidzobjecttitle": "De opgegeven titel '$1' is niet geldig voor een ZObject.",
@@ -63,6 +65,7 @@
 	"wikilambda-metadata-fewer-languages": "Toon minder talen",
 	"wikilambda-persistentobject-details-label": "Details",
 	"wikilambda-function-definition-name-label": "Naam",
+	"wikilambda-function-definition-alias-label": "Alternatieve namen",
 	"wikilambda-function-definition-footer-label": "Bewerkingssamenvatting",
 	"wikilambda-function-definition-inputs-item-selector-placeholder": "Selecteer een type",
 	"wikilambda-function-definition-output-selector": "Selecteer een type",

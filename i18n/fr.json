@@ -164,7 +164,7 @@
 	"wikilambda-function-definition-name-label": "Nom",
 	"wikilambda-function-definition-name-placeholder": "Saisir un nom de fonction descriptif",
 	"wikilambda-function-definition-name-example": "Voir les exemples de noms.",
-	"wikilambda-function-definition-alias-label": "Alias",
+	"wikilambda-function-definition-alias-label": "Autres noms",
 	"wikilambda-function-definition-alias-placeholder": "Saisir des synonymes pour le nom de fonction",
 	"wikilambda-function-definition-alias-example": "Voir les exemples d’alias.",
 	"wikilambda-function-definition-footer-placeholder": "Décrivez brièvement vos modifications",

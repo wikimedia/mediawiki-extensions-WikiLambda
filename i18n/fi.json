@@ -35,7 +35,7 @@
 	"wikilambda-function-definition-name-label": "Nimi",
 	"wikilambda-function-definition-name-placeholder": "Anna kuvaavan funktion nimi",
 	"wikilambda-function-definition-name-example": "Katso nimiesimerkit.",
-	"wikilambda-function-definition-alias-label": "Aliakset",
+	"wikilambda-function-definition-alias-label": "Vaihtoehtoiset nimet",
 	"wikilambda-function-definition-alias-example": "Katso esimerkit aliaksista.",
 	"wikilambda-function-definition-footer-label": "Muokkausyhteenveto",
 	"wikilambda-function-definition-inputs-label": "Syötetyyppi",

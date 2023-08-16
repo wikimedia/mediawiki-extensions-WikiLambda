@@ -94,6 +94,7 @@
 	"wikilambda-implementation-selector-none": "Dette er enn innebygd implementering. Koden er del av kjerneprogramvaren, og vises ikke her.",
 	"wikilambda-function-definition-name-label": "Navn",
 	"wikilambda-function-definition-name-example": "Se navneeksempler.",
+	"wikilambda-function-definition-alias-label": "Alternative navn",
 	"wikilambda-function-definition-alias-example": "Se aliaseksempler.",
 	"wikilambda-function-definition-footer-placeholder": "Beskriv endringene dine kort",
 	"wikilambda-function-definition-footer-label": "Redigeringsforklaring",

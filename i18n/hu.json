@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Hanna Tardos",
-			"Máté"
+			"Máté",
+			"Eukarióta"
 		]
 	},
 	"wikilambda-invalidcontenttype": "A megadott tartalom nem sorolható be egyetlen ZObject osztályba sem.",
@@ -30,5 +31,6 @@
 	"wikilambda-editor-zlist-additem-tooltip": "Elem hozzáadása a ZListhez",
 	"wikilambda-editor-zlist-removeitem-tooltip": "Elem eltávolítása a ZListről",
 	"wikilambda-editor-zobject-addkey": "Kulcs hozzáadása:",
-	"wikilambda-editor-zobject-removekey-tooltip": "Kulcs/érték eltávolítása a Zobjectről"
+	"wikilambda-editor-zobject-removekey-tooltip": "Kulcs/érték eltávolítása a Zobjectről",
+	"wikilambda-function-definition-alias-label": "További nevek"
 }

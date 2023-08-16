@@ -115,6 +115,7 @@
 	"wikilambda-implementation-selector-none": "To je vgrajena izvedba. Koda je del jedrne programske opreme in tukaj ni prikazana.",
 	"wikilambda-function-definition-name-label": "Ime",
 	"wikilambda-function-definition-name-example": "Ogled zgledov imen.",
+	"wikilambda-function-definition-alias-label": "Druga imena",
 	"wikilambda-function-definition-alias-example": "Ogled zgledov sopomenk.",
 	"wikilambda-function-definition-footer-placeholder": "Na kratko opišite opravljene spremembe",
 	"wikilambda-function-definition-footer-label": "Povzetek urejanja",

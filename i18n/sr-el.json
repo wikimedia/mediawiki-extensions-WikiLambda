@@ -3,5 +3,6 @@
 		"authors": []
 	},
 	"wikilambda-metadata-all-languages": "Prikaži sve unesene jezike",
-	"wikilambda-persistentobject-details-label": "Detalji"
+	"wikilambda-persistentobject-details-label": "Detalji",
+	"wikilambda-function-definition-alias-label": "Druga imena"
 }
