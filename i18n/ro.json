@@ -12,5 +12,6 @@
 	"wikilambda-function-evaluator-running": "Rulează...",
 	"wikilambda-function-evaluator-result": "Nu sunt rezultate conforme interogării",
 	"wikilambda-function-evaluator-result-details": "Detalii",
-	"wikilambda-function-evaluator-run-function": "Funcția de rulare"
+	"wikilambda-function-evaluator-run-function": "Funcția de rulare",
+	"wikilambda-function-evaluation-restriction-notrunnable": "Această funcție nu are implementări aprobate."
 }

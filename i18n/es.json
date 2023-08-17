@@ -24,14 +24,15 @@
 			"Raos10",
 			"Reverse88",
 			"Soylacarli",
-			"SpikeShroom"
+			"SpikeShroom",
+			"Tmv"
 		]
 	},
 	"wikilambda-desc": "Proporcionar wikis de Wikimedia con una función de analizador gramático de wikitexto para llamar a la evaluación de funciones escritas, administradas y evaluadas en un wiki central.",
 	"content-model-zobject": "Objeto WikiLambda",
 	"group-functioneer": "Editores de funciones",
 	"group-functioneer-member": "{{GENDER:$1|editor|editora}} de funciones",
-	"grouppage-functioneer": "Editores de funciones",
+	"grouppage-functioneer": "{{ns:project}}:Editores de funciones",
 	"group-functionmaintainer": "Mantenedores",
 	"group-functionmaintainer-member": "{{GENDER:$1|mantenedor|mantenedora}} de funciones",
 	"grouppage-functionmaintainer": "Mantenedores",
