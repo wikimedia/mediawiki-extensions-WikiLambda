@@ -145,9 +145,18 @@ class ApiPerformTest extends WikiLambdaApiBase {
 			$implementationListEntry = $this->getImplementationListEntry( $implementation );
 
 			// Note that the Implementation ZID can be non-Z0 if it's being run on an unsaved edit.
-			$implementationRevision = $inlineImplementation
-				? null
-				: Title::newFromText( $implementationZid, NS_MAIN )->getLatestRevID();
+			$implementationRevision = null;
+			if ( !$inlineImplementation ) {
+				$title = Title::newFromText( $implementationZid, NS_MAIN );
+				if ( $title ) {
+					$implementationRevision = $title->getLatestRevID();
+				} else {
+					$this->dieWithError( [
+						'wikilambda-performtest-error-invalidimplementation',
+						$implementationZid
+					] );
+				}
+			}
 
 			// Re-use our copy of the target function, setting the implementations to just the one
 			// we're testing now
@@ -200,9 +209,18 @@ class ApiPerformTest extends WikiLambdaApiBase {
 				$testerObject = $this->getTesterObject( $requestedTester );
 
 				// Note that the Tester ZID can be non-Z0 if it's being run on an unsaved edit.
-				$testerRevision = $inlineTester
-					? null
-					: Title::newFromText( $testerZid, NS_MAIN )->getLatestRevID();
+				$testerRevision = null;
+				if ( !$inlineTester ) {
+					$title = Title::newFromText( $testerZid, NS_MAIN );
+					if ( $title ) {
+						$testerRevision = $title->getLatestRevID();
+					} else {
+						$this->dieWithError( [
+							'wikilambda-performtest-error-invalidtester',
+							$testerZid
+						] );
+					}
+				}
 
 				// (T297707): Work out if this has been cached before (checking revisions of objects),
 				// and if so reply with that instead of executing.
@@ -392,9 +410,10 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		if ( $zobject->getZType() === ZTypeRegistry::Z_REFERENCE ) {
 			$zid = ZObjectUtils::getZid( $zobject );
 			$title = Title::newFromText( $zid, NS_MAIN );
-			if ( !( $title->exists() ) ) {
+			if ( !( $title instanceof Title ) || !$title->exists() ) {
 				$this->dieWithError( [ "wikilambda-performtest-error-unknown-zid", $zid ] );
 			}
+			// @phan-suppress-next-line PhanTypeMismatchArgumentNullable
 			return $this->getTesterObject( $this->zObjectStore->fetchZObjectByTitle( $title )->getInnerZObject() );
 		} elseif ( $zobject->getZType() === ZTypeRegistry::Z_PERSISTENTOBJECT ) {
 			return $this->getTesterObject( $zobject->getValueByKey( ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ) );
