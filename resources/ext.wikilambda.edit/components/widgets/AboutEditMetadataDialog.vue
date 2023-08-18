@@ -308,7 +308,7 @@ module.exports = exports = {
 				label: this.edit ?
 					this.$i18n( 'wikilambda-about-widget-done-button' ).text() :
 					this.$i18n( 'wikilambda-about-widget-publish-button' ).text(),
-				disabled: !this.hasChanges || !this.canEdit
+				disabled: !this.hasChanges || !this.canEdit || !this.forLanguage
 			};
 		},
 
@@ -359,6 +359,10 @@ module.exports = exports = {
 		 *   the store and show the publish dialog to save the changes.
 		 */
 		saveChanges: function () {
+			if ( !this.forLanguage ) {
+				return;
+			}
+
 			this.persistState();
 			if ( !this.edit ) {
 				this.$emit( 'publish' );

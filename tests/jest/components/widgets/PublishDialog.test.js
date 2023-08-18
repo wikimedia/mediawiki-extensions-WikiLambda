@@ -109,7 +109,7 @@ describe( 'Publish Dialog', () => {
 		wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
 		expect( actions.submitZObject ).toHaveBeenCalledWith( expect.anything(), {
 			summary: 'mock summary',
-			detachFunctionObjects: false
+			disconnectFunctionObjects: false
 		} );
 	} );
 

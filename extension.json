@@ -261,6 +261,7 @@
 				"ext.wikilambda.edit/store/modules/zFunction.js",
 				"ext.wikilambda.edit/store/modules/zobject/addZObjects.js",
 				"ext.wikilambda.edit/store/modules/zobject/currentZObject.js",
+				"ext.wikilambda.edit/store/modules/zobject/submission.js",
 				"ext.wikilambda.edit/store/modules/library.js",
 				"ext.wikilambda.edit/store/modules/callZFunction.js",
 				"ext.wikilambda.edit/store/modules/errors.js",
