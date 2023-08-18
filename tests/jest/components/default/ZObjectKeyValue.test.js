@@ -43,6 +43,7 @@ describe( 'ZObjectKeyValue', () => {
 		actions;
 	beforeEach( () => {
 		getters = {
+			isMainObject: createGettersWithFunctionsMock( true ),
 			getLabelData: createGettersWithFunctionsMock( { zid: Constants.Z_PERSISTENTOBJECT_ID, label: 'id', lang: Constants.Z_NATURAL_LANGUAGE_ENGLISH } ),
 			getZReferenceTerminalValue: jest.fn(),
 			getZObjectKeyByRowId: createGettersWithFunctionsMock( keyId ),

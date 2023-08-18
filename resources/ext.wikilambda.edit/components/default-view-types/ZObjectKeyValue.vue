@@ -206,7 +206,8 @@ module.exports = exports = {
 			'getZObjectValueByRowId',
 			'getZObjectTypeByRowId',
 			'getTypedListItemType',
-			'getErrors'
+			'getErrors',
+			'isMainObject'
 		] ),
 		{
 			/**
@@ -685,7 +686,7 @@ module.exports = exports = {
 			}
 
 			// Else remain in default view page and set to dirty
-			this.setDirty();
+			this.setDirtyIfMainObject();
 		},
 
 		/**
@@ -734,7 +735,7 @@ module.exports = exports = {
 			}
 
 			// CHANGES ARE RESPONSIBILITY OF THIS COMPONENT:
-			this.setDirty();
+			this.setDirtyIfMainObject();
 
 			// If we are changing an implementation type, we need to clear
 			// the unselected key and fill the other one with a blank value.
@@ -797,8 +798,18 @@ module.exports = exports = {
 		deleteListItem: function () {
 			// TODO(T324242): replace with new setter when it exists
 			// TODO(T331132): can we create a 'revert delete' workflow?
-			this.setDirty();
+			this.setDirtyIfMainObject();
 			this.removeItemFromTypedList( { rowId: this.rowId } );
+		},
+
+		/**
+		 * Sets object isDirty flag as true only if the changes
+		 * are made in the main page object.
+		 */
+		setDirtyIfMainObject: function () {
+			if ( this.isMainObject( this.rowId ) ) {
+				this.setDirty();
+			}
 		},
 
 		/**
