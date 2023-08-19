@@ -9,8 +9,8 @@
 
 namespace MediaWiki\Extension\WikiLambda\Tests\Integration;
 
-use FauxRequest;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Request\FauxRequest;
 use MediaWiki\Title\Title;
 use RequestContext;
 use SpecialRecentChanges;
