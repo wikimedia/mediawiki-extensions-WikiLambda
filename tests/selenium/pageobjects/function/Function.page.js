@@ -13,17 +13,102 @@ const InputDropdown = require( '../../componentobjects/InputDropdown' );
 const { Element: WebdriverIOElementType } = require( 'webdriverio' );
 
 class FunctionPage extends Page {
+
+	/**
+	 * Open the Function page
+	 *
+	 * @async
+	 * @param {string} ZId - ZObject of type Z4
+	 */
+	async open( ZId ) {
+		await super.openTitle( ZId );
+	}
+
+	// #region Header Section
+
 	get functionTitle() { return $( '.ext-wikilambda-viewpage-header-title--function-name' ); }
 	get functionZIdSelector() { return $( 'span.ext-wikilambda-viewpage-header-zid' ); }
 	get detailsTab() { return $( '//button[@role="tab" and span/text()="Details"]' ); }
-	get showMoreLanguageButton() { return $( 'button=Show more languages' ); }
-	get hideListButton() { return $( 'button=Show fewer languages' ); }
 	get editSourceLink() { return $( '//nav[@aria-label="Views"]//a[contains(@title, "Edit")]/span[contains(text(),"Edit")]' ); }
-	get showNameInOtherLanguages() { return $( 'button*=Show name in other languages' ); }
-	get showMoreAliases() { return $( 'button*=Show more languages' ); }
-	get sidebarTable() { return $( '.ext-wikilambda-function-viewer-details-sidebar' ); }
-	get createANewTestLink() { return $( 'a=Add test' ); }
-	get createAImplementation() { return $( 'a=Add implementation' ); }
+
+	/**
+	 * Get the ZId of the function page
+	 *
+	 * @async
+	 * @return {string}
+	 */
+	async getFunctionZId() {
+		const text = await ElementActions.getText( this.functionZIdSelector );
+		return text;
+	}
+
+	/**
+	 * Click on the "edit" link
+	 *
+	 * @async
+	 * @return {void}
+	 */
+	async clickOnEditSourceLink() {
+		/**
+		 * Temporary workaround to open the edit form.
+		 * Clicking on "edit" link sometimes do not open the edit form.
+		 */
+		const ZId = await this.getFunctionZId();
+		super.openTitle( ZId, { action: 'edit' } );
+	}
+
+	/**
+	 * Click on the detials tab
+	 *
+	 * @async
+	 * @return {void}
+	 */
+	async switchToDetailsTab() {
+		await ElementActions.doClick( this.detailsTab );
+	}
+
+	// #endregion Header Section
+
+	// #region About Section
+
+	// #region About Sidebar
+
+	/**
+	 * Click on the "Show name in other languages" button.
+	 * This displays the list of the "name of the function" in different languages.
+	 *
+	 * @async
+	 * @return {void}
+	 */
+	async showNameInOtherLanguages() {
+		const button = $( 'button*=Show name in other languages' );
+		await ElementActions.doClick( button );
+	}
+
+	/**
+	 * Click on the "Show more languages" button.
+	 * This displays the list of the "alias of the function" in different languages.
+	 *
+	 * @async
+	 * @return {void}
+	 */
+	async showMoreAliases() {
+		const button = $( 'button*=Show more languages' );
+		await ElementActions.doClick( button );
+	}
+
+	getNameInOtherLanguage( name ) {
+		return $( '.ext-wikilambda-function-viewer-names' ).$( `div*=${name}` );
+	}
+
+	getAliasLabel( label ) {
+		return $( '.ext-wikilambda-function-about__aliases' ).$( `div*=${label}` );
+	}
+
+	// #endregion About Sidebar
+
+	// #region Evaluate Function Block
+
 	get functionCallBlock() { return EvaluateFunctionBlock.functionCallBlock; }
 
 	/**
@@ -73,6 +158,30 @@ class FunctionPage extends Page {
 		return EvaluateFunctionBlock.orchestrationResultBlock.$( `.//p[text()="${result}"]` );
 	}
 
+	// #endregion Evaluate Function Block
+
+	// #endregion About Section
+
+	// #region Details Section
+
+	// #region Details Sidebar
+
+	get sidebarTable() { return $( '.ext-wikilambda-function-viewer-details-sidebar' ); }
+
+	/**
+	 * Click on the "Show more languages" button.
+	 * This displays the "arguments" in different languages
+	 *
+	 * @async
+	 * @return {void}
+	 */
+	async showArgumentsInOtherLanguages() {
+		const button = $( 'button=Show more languages' );
+		await ElementActions.doClick( button );
+		const hideListButton = $( 'button=Show fewer languages' );
+		await hideListButton.waitForDisplayed();
+	}
+
 	getArgumentLabel( label ) {
 		return $( `td=${label}` );
 	}
@@ -89,60 +198,6 @@ class FunctionPage extends Page {
 		return type;
 	}
 
-	getNameInOtherLanguage( name ) {
-		return $( '.ext-wikilambda-function-viewer-names' ).$( `div*=${name}` );
-	}
-
-	getAliasLabel( label ) {
-		return $( '.ext-wikilambda-function-about__aliases' ).$( `div*=${label}` );
-	}
-
-	/**
-	 * Get the ZId of the function page
-	 *
-	 * @async
-	 * @return {string}
-	 */
-	async getFunctionZId() {
-		const text = await ElementActions.getText( this.functionZIdSelector );
-		return text;
-	}
-
-	/**
-	 * Click on the "edit" link
-	 *
-	 * @async
-	 * @return {void}
-	 */
-	async clickOnEditSourceLink() {
-		/**
-		 * Temporary workaround to open the edit form.
-		 * Clicking on "edit" link sometimes do not open the edit form.
-		 */
-		const ZId = await this.getFunctionZId();
-		super.openTitle( ZId, { action: 'edit' } );
-	}
-
-	/**
-	 * Open the Function page
-	 *
-	 * @async
-	 * @param {string} ZId - ZObject of type Z4
-	 */
-	async open( ZId ) {
-		await super.openTitle( ZId );
-	}
-
-	/**
-	 * Click on the detials tab
-	 *
-	 * @async
-	 * @return {void}
-	 */
-	async switchToDetailsTab() {
-		await ElementActions.doClick( this.detailsTab );
-	}
-
 	/**
 	 * Click on the "Add test" link
 	 *
@@ -150,7 +205,8 @@ class FunctionPage extends Page {
 	 * @return {void}
 	 */
 	async goToCreateNewTestLink() {
-		await ElementActions.doClick( this.createANewTestLink );
+		const createANewTestLink = $( 'a=Add test' );
+		await ElementActions.doClick( createANewTestLink );
 	}
 
 	/**
@@ -160,8 +216,11 @@ class FunctionPage extends Page {
 	 * @return {void}
 	 */
 	async goToCreateImplementationLink() {
-		await ElementActions.doClick( this.createAImplementation );
+		const createAImplementation = $( 'a=Add implementation' );
+		await ElementActions.doClick( createAImplementation );
 	}
+
+	// #endregion Details Sidebar
 
 	// #region Implementations Table
 
@@ -250,7 +309,7 @@ class FunctionPage extends Page {
 		await ElementActions.doClick( checkBox );
 	}
 
-	// #endregion
+	// #endregion Implementations Table
 
 	// #region Tests Table
 
@@ -339,7 +398,9 @@ class FunctionPage extends Page {
 		await ElementActions.doClick( checkBox );
 	}
 
-	// #endregion
+	// #endregion Tests Table
+
+	// #endregion Details Section
 }
 
 module.exports = new FunctionPage();

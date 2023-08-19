@@ -76,14 +76,14 @@ describe( 'Function', function () {
 		} );
 
 		it( 'should display the function name', async function () {
-			await FunctionPage.showNameInOtherLanguages.click();
+			await FunctionPage.showNameInOtherLanguages();
 			assert.strictEqual( await FunctionPage.functionTitle.getText(), functionTitle );
 			assert.strictEqual( await FunctionPage.getNameInOtherLanguage( functionTitle + '-French' ).isExisting(), true, 'Should display function name in French' );
 			assert.strictEqual( await FunctionPage.getNameInOtherLanguage( functionTitle + '-German' ).isExisting(), true, 'Should display function name in German' );
 		} );
 
 		it( 'should display the function aliases', async function () {
-			await FunctionPage.showMoreAliases.click();
+			await FunctionPage.showMoreAliases();
 			assert.strictEqual( await FunctionPage.getAliasLabel( ALIASES.ENGLISH ).isExisting(), true, `Alias ${ALIASES.ENGLISH} should be displayed in alias list` );
 			assert.strictEqual( await FunctionPage.getAliasLabel( ALIASES.FRENCH ).isExisting(), true, `Alias ${ALIASES.FRENCH} should be displayed in alias list` );
 			assert.strictEqual( await FunctionPage.getAliasLabel( ALIASES.GERMAN ).isExisting(), true, `Alias ${ALIASES.GERMAN} should be displayed in alias list` );
@@ -91,8 +91,7 @@ describe( 'Function', function () {
 
 		it( 'should display the function arguments', async function () {
 			await FunctionPage.detailsTab.click();
-			await FunctionPage.showMoreLanguageButton.click();
-			await FunctionPage.hideListButton.waitForDisplayed();
+			await FunctionPage.showArgumentsInOtherLanguages();
 			// FIXME: EcmaScript 2019, we can use Array.prototype.flat(). Chrome supports that.
 			// But Eslint seems to be unhappy, so let's use this trick:
 			const labelValues = [].concat( ...Object.values( ARGUMENT_LABELS ) );
@@ -119,7 +118,7 @@ describe( 'Function', function () {
 
 		it( 'should display the function details without the removed label', async function () {
 			await FunctionPage.detailsTab.click();
-			await FunctionPage.showMoreLanguageButton.click();
+			await FunctionPage.showArgumentsInOtherLanguages();
 			assert.strictEqual( await FunctionPage.getArgumentLabel( ARGUMENT_LABELS.FRENCH[ 0 ] ).isExisting(), true, 'French first argument should exist' );
 			assert.strictEqual( await FunctionPage.getArgumentLabel( ARGUMENT_LABELS.FRENCH[ 1 ] ).isExisting(), false, 'French second argument should NOT exist anymore' );
 		} );
