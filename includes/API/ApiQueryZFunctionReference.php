@@ -14,6 +14,7 @@ use ApiBase;
 use ApiPageSet;
 use ApiQueryGeneratorBase;
 use MediaWiki\Extension\WikiLambda\ZObjectStore;
+use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\ParamValidator\TypeDef\IntegerDef;
 
@@ -92,7 +93,7 @@ class ApiQueryZFunctionReference extends ApiQueryGeneratorBase {
 		if ( $resultPageSet ) {
 			foreach ( $zids as $index => $entry ) {
 				$resultPageSet->setGeneratorData(
-					\Title::makeTitle( $entry['page_namespace'], $entry['zid'] ),
+					Title::makeTitle( $entry['page_namespace'], $entry['zid'] ),
 					[ 'index' => $index + $continue + 1 ]
 				);
 			}

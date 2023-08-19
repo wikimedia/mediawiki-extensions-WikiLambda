@@ -17,6 +17,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\ParamValidator\TypeDef\IntegerDef;
 
@@ -121,7 +122,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 			// $resultPageSet->populateFromQueryResult( $dbr, $suggestions );
 			foreach ( $suggestions as $index => $entry ) {
 				$resultPageSet->setGeneratorData(
-					\Title::makeTitle( $entry['page_namespace'], $entry['page_title'] ),
+					Title::makeTitle( $entry['page_namespace'], $entry['page_title'] ),
 					[ 'index' => $index + $continue + 1 ]
 				);
 			}
