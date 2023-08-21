@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"CrownedWharf566",
+			"GraceL",
+			"GuoPC",
+			"Hehua",
+			"Hmgrmb",
+			"John Smith Ri",
+			"Lantianjialiang",
+			"LittlePaw365",
+			"NACHOgao3",
+			"Qeqo",
+			"SkyEye FAST",
+			"StarrySky",
+			"Stevenliuyi",
+			"TsuyaMarisa",
+			"Willy1018",
+			"Wzl19371",
+			"Yining Chen",
+			"Zhang8569",
+			"落花有意12138"
+		]
+	},
+	"wikilambda-desc": "为维基媒体的wiki提供wikitext解析器函数，以调用在中央wiki上编写、管理和运行的函数。"
+}
