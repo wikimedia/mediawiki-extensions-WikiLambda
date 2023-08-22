@@ -152,7 +152,7 @@
 	"wikilambda-function-implementation-state-proposed": "Proponite",
 	"wikilambda-function-definition-name-placeholder": "Insere un nomine de function descriptive",
 	"wikilambda-function-definition-name-example": "Vider exemplos de nomines.",
-	"wikilambda-function-definition-alias-label": "Nomines alternative",
+	"wikilambda-function-definition-alias-label": "Aliases",
 	"wikilambda-function-definition-alias-placeholder": "Insere un nomine de function alternative",
 	"wikilambda-function-definition-alias-example": "Vider exemplos de aliases.",
 	"wikilambda-function-definition-footer-placeholder": "Describe brevemente tu cambiamentos",

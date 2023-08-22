@@ -189,7 +189,7 @@
 	"wikilambda-function-implementation-state-proposed": "Vorgeschlagen",
 	"wikilambda-function-definition-name-placeholder": "Gib einen beschreibenden Funktionsnamen ein",
 	"wikilambda-function-definition-name-example": "Siehe Namensbeispiele.",
-	"wikilambda-function-definition-alias-label": "Alternative Namen",
+	"wikilambda-function-definition-alias-label": "Aliasse",
 	"wikilambda-function-definition-alias-placeholder": "Gib einen alternativen Funktionsnamen ein",
 	"wikilambda-function-definition-alias-example": "Siehe Beispiele für Alias.",
 	"wikilambda-function-definition-footer-placeholder": "Beschreibe deine Änderungen kurz",

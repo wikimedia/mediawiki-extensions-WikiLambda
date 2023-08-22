@@ -61,6 +61,7 @@
 	"wikilambda-function-implementation-name-label": "名稱",
 	"wikilambda-function-implementation-language-label": "語言",
 	"wikilambda-function-implementation-state-label": "狀態",
+	"wikilambda-function-definition-alias-label": "別名",
 	"wikilambda-editor-fn-step-tests": "測試",
 	"wikilambda-function-implementation-table-header": "實現",
 	"wikilambda-editor-fn-step-function-about": "關於",
