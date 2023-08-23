@@ -36,7 +36,7 @@
 		"jest": "27.4.7",
 		"jquery": "3.6.1",
 		"jsdoc": "3.6.10",
-		"jsdoc-wmf-theme": "0.0.5",
+		"jsdoc-wmf-theme": "0.0.8",
 		"stylelint-config-wikimedia": "0.15.0",
 		"vue": "3.2.37",
 		"vue-template-compiler": "2.6.11",
