@@ -130,5 +130,4 @@ span.ext-wikilambda-lang-chip {
 		font-size: 0.875em;
 	}
 }
-
 </style>
