@@ -55,7 +55,7 @@
 	"wikilambda-function-is-attached": "Questo oggetto è associato alla sua funzione.",
 	"wikilambda-function-is-not-attached": "Questo oggetto non è associato alla sua funzione.",
 	"wikilambda-function-definition-name-label": "Nome",
-	"wikilambda-function-definition-alias-label": "Nomi alternativi",
+	"wikilambda-function-definition-alias-label": "Alias",
 	"wikilambda-function-definition-footer-placeholder": "Descrivi brevemente le tue modifiche",
 	"wikilambda-function-definition-footer-label": "Oggetto della modifica",
 	"wikilambda-function-definition-footer-implementation-button": "Scrivi implementazione",

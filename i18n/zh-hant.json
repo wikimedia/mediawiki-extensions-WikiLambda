@@ -53,6 +53,7 @@
 	"wikilambda-editor-zobject-addkey": "增加鍵：",
 	"wikilambda-editor-zobject-removekey-tooltip": "從這個 ZList 移除此鍵/值",
 	"wikilambda-function-are-you-sure-dialog-header": "您確定嗎？",
+	"wikilambda-function-definition-alias-label": "別名",
 	"wikilambda-editor-fn-step-tests": "測試",
 	"wikilambda-continue-editing": "繼續編輯"
 }

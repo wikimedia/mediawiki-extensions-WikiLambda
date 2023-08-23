@@ -76,7 +76,7 @@
 	"wikilambda-implementation-selector-none": "এটি একটি অন্তর্নির্মিত বাস্তবায়ন। কোডটি মূল সফটওয়্যারের অংশ এবং এখানে প্রদর্শিত হয় না।",
 	"wikilambda-function-definition-name-label": "নাম",
 	"wikilambda-function-definition-name-example": "নামের উদাহরণ দেখুন।",
-	"wikilambda-function-definition-alias-label": "বিকল্প নাম",
+	"wikilambda-function-definition-alias-label": "উপনাম",
 	"wikilambda-function-definition-alias-example": "উপনামের উদাহরণ দেখুন।",
 	"wikilambda-function-definition-footer-placeholder": "সংক্ষেপে আপনার পরিবর্তনগুলি সম্পর্কে বলুন",
 	"wikilambda-function-definition-footer-label": "সম্পাদনা সারাংশ",

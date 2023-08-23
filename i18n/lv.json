@@ -4,7 +4,12 @@
 			"Papuass"
 		]
 	},
+	"wikilambda-history-title": "\"$1\" ($2) versiju hronoloģija",
+	"wikilambda-typeunavailable": "Neatpazīts tips",
+	"wikilambda-persistentzobject-contents": "Saturs",
+	"wikilambda-functioncall": "Funkcijas izsaukums",
 	"wikilambda-speciallistduplicatezobjectlabels-language": "Valoda",
+	"wikilambda-special-objectsbytype-typeheader": "Visi tipi",
 	"wikilambda-publishnew": "Publicēt",
 	"wikilambda-cancel": "Atcelt",
 	"wikilambda-confirm": "Apstiprināt",
@@ -15,11 +20,20 @@
 	"wikilambda-publish-summary-prompt": "Apraksti savas izmaiņas",
 	"wikilambda-loading": "Notiek datu ielāde",
 	"wikilambda-editor-label-addlanguage-label": "Pievienot valodu",
+	"wikilambda-editor-argument-list-label": "Argumentu saraksts",
+	"wikilambda-editor-implementation-list-label": "Implementāciju saraksts",
+	"wikilambda-editor-boolean-selector": "Izvēlies patiesu/nepatiesu",
+	"wikilambda-implementation-selector-code": "Kods",
+	"wikilambda-implementation-selector-composition": "Kompozīcija",
+	"wikilambda-functioncall-error": "Funkcijas izsaukuma kļūda: $1",
 	"wikilambda-metadata-language-column": "Valoda",
-	"wikilambda-metadata-all-languages": "Visas ievadītās valodas",
+	"wikilambda-metadata-aka-column": "Zināms arī kā",
+	"wikilambda-metadata-all-languages": "Rādīt visas ievadītās valodas",
 	"wikilambda-metadata-fewer-languages": "Rādīt mazāk valodas",
 	"wikilambda-function-definition-name-label": "Nosaukums",
 	"wikilambda-function-definition-name-placeholder": "Ievadi aprakstošu funkcijas nosaukumu",
 	"wikilambda-function-definition-name-example": "Skatīt nosaukumu piemērus.",
-	"wikilambda-editor-fn-step-tests": "Testi"
+	"wikilambda-function-definition-footer-label": "Izmaiņu kopsavilkums",
+	"wikilambda-editor-fn-step-tests": "Testi",
+	"wikilambda-editor-implementation-title": "Implementācija"
 }
