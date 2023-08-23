@@ -1,9 +1,43 @@
 {
 	"@metadata": {
 		"authors": [
+			"Nokeoo",
 			"Pavel1513"
 		]
 	},
+	"wikilambda-implementation-none-found": "Čia bus rodomi jūsų sukurti įgyvendinimai.",
+	"wikilambda-implementation-create-new": "Pridėti įgyvendinimą",
 	"wikilambda-functioncall-metadata-orchestration-hostname": "\"Orkestravimo\" serveris",
-	"wikilambda-functioncall-metadata-evaluation-hostname": "Įvertinimo serveris"
+	"wikilambda-functioncall-metadata-evaluation-hostname": "Įvertinimo serveris",
+	"wikilambda-tester-none-found": "Čia bus rodomi jūsų sukurti testai.",
+	"wikilambda-tester-create-new": "Pridėti testą",
+	"wikilambda-tester-status-passed": "Pavyko",
+	"wikilambda-tester-status-failed": "Nepavyko",
+	"wikilambda-function-definition-add-other-label-languages-title": "Pridėti kalbą",
+	"wikilambda-function-implementation-state-label": "Būsena",
+	"wikilambda-function-implementation-tests-passed-label": "Išlaikyti testai",
+	"wikilambda-function-implementation-state-approved": "Prijungta",
+	"wikilambda-function-implementation-state-deactivated": "Atjungta",
+	"wikilambda-function-tester-state-approved": "Prijungta",
+	"wikilambda-function-tester-state-deactivated": "Atjungta",
+	"wikilambda-function-definition-name-placeholder": "Įveskite pavadinimą",
+	"wikilambda-function-definition-description-label": "Aprašymas",
+	"wikilambda-function-definition-description-placeholder": "Įveskite aprašymą",
+	"wikilambda-function-definition-alias-label": "Alternatyvūs vardai",
+	"wikilambda-function-definition-alias-placeholder": "Įveskite kitus pavadinimus",
+	"wikilambda-function-definition-alias-description": "Alternatyvūs pavadinimai padeda kitiems lengvai rasti funkciją.",
+	"wikilambda-function-definition-inputs-label": "Įvestys",
+	"wikilambda-function-definition-inputs-item-selector-placeholder": "Pasirinkite tipą",
+	"wikilambda-function-definition-inputs-item-add-first-input-button": "Pridėti įvestį",
+	"wikilambda-function-definition-output-description": "Kokius duomenis grąžina funkcija?",
+	"wikilambda-function-definition-output-selector": "Pasirinkite tipą",
+	"wikilambda-function-test-cases-table-header": "Testai",
+	"wikilambda-editor-fn-step-function-definition": "Funkcijos apibrėžimas",
+	"wikilambda-function-details-table-approve": "Prijungti",
+	"wikilambda-function-details-table-deactivate": "Atjungti",
+	"wikilambda-function-viewer-aliases-header": "Alternatyvūs vardai",
+	"wikilambda-function-viewer-aliases-hide-language-button": "Rodyti mažiau kalbų",
+	"wikilambda-missing-function-output-error-message": "Išvesties tipas tuščias. Pasirinkite vieną.",
+	"wikilambda-missing-function-input-type-error-message": "Įvesties tipas tuščias. Pasirinkite vieną.",
+	"wikilambda-function-evaluation-restriction-notrunnable": "Ši funkcija neturi patvirtintų diegimų."
 }
