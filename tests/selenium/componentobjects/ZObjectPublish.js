@@ -1,5 +1,7 @@
 /*!
- * WikiLambda browser test components the ZObject Publish component related locators and actions.
+ * ZObjectPublish Component Object for WikiLambda browser test suite
+ *
+ * Contains the ZObject Publish component related locators and actions.
  *
  * ZObjectPublish is a general component which publishes the ZObject.
  *

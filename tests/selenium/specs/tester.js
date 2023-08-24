@@ -1,5 +1,5 @@
 /*!
- * "Create a new test" spec for the WikiLambda browser test suite
+ * WikiLambda browser test suite for "Create a new test"
  *
  * @see https://phabricator.wikimedia.org/T318938.
  *

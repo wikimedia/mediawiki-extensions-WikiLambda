@@ -1,5 +1,5 @@
 /*!
- * WikiLambda browser test components the ObjectSelector.
+ * ObjectSelector Component Object for WikiLambda browser test suite
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

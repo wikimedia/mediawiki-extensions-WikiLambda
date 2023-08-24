@@ -1,5 +1,5 @@
 /*!
- * "Create a new type" spec for the WikiLambda browser test suite
+ * WikiLambda browser test suite for "Create a new type"
  *
  * @see https://phabricator.wikimedia.org/T318943.
  *

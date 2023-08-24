@@ -1,6 +1,8 @@
 /*!
  * Implementation Form page object for the WikiLambda browser test suite
  *
+ * Contains the locators and actions specific to the implementation form.
+ *
  * The form contains the following section
  * [1] About - Input the label, description, alias in different languages for the implementation
  * [2] Function Explorer - Display the details about the function to which implementation belongs

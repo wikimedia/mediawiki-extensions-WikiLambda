@@ -1,5 +1,7 @@
 /*!
- * WikiLambda browser test components the Evaluate Function Block related locators and actions.
+ * EvaluateFunctionBlock Component Object for WikiLambda browser test suite
+ *
+ * Contains the Evaluate Function Block related locators and actions.
  *
  * EvaluateFunctionBlock is a general component which is used to call the function.
  * It has input fields to pass the arguments to the function and a result block

@@ -1,16 +1,18 @@
-/*!
+/**
  * Stress-test framework for the WikiLambda browser test suite
  *
- * Use via:
- *   npm run selenium-stress-test:all
- *
- * or:
- *   npm run selenium-stress-test:all -- --execution-number="<number>"
+ * Copy the following command:
+ * npm run selenium-stress-test:all
+ * or
+ * npm run selenium-stress-test:all -- --execution-number="<number>"
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
 
+/**
+ * @file contains the code to execute each spec file multiple times
+ */
 'use strict';
 const { execSync } = require( 'child_process' );
 

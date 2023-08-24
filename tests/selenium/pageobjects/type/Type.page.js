@@ -1,6 +1,8 @@
 /**
  * Type page object for the WikiLambda browser test suite
  *
+ * Contains the locators and actions specific to the Type Page.
+ *
  * The page contains the following sections
  * [1] About - Display the label, description of the type
  * [2] Content Block - It is further divided into
