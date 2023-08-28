@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Aranka",
+			"Daanboven",
+			"HanV",
+			"Mainframe98",
+			"McDutchie",
+			"Nieuwsgierige Gebruiker",
+			"Robin van der Vliet",
+			"Romaine",
+			"Sjoerddebruin"
+		]
+	},
+	"wikilambda-desc": "Wikimedia-wiki's voorzien van een wikitext-parserfunctie om evaluatie van functies aan te roepen die zijn geschreven, beheerd en geëvalueerd op een centrale wiki."
+}

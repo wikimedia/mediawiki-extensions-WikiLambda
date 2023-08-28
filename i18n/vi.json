@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Minh Nguyen",
+			"NguyenHung",
+			"Nguyenphutrong2",
+			"Nguyễn Mạnh An",
+			"Thingofme",
+			"Yosari101"
+		]
+	},
+	"wikilambda-desc": "Cung cấp cho các wiki thuộc Wikimedia một bộ phân tích mã wiki để gọi các hàm số được soạn thảo, quản lý, và đánh giá tại một wiki dùng chung."
+}
