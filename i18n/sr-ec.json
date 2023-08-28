@@ -24,6 +24,7 @@
 	"wikilambda-function-tester-state-approved": "Повезано",
 	"wikilambda-function-tester-state-deactivated": "Дисконектовано",
 	"wikilambda-function-definition-description-label": "Опис",
+	"wikilambda-function-definition-description-placeholder": "Унесите опис",
 	"wikilambda-function-definition-alias-label": "Друга имена",
 	"wikilambda-function-definition-alias-placeholder": "Унеси псеудониме",
 	"wikilambda-function-definition-inputs-label": "Улази",
