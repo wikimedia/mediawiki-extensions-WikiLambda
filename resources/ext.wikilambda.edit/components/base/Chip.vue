@@ -152,5 +152,4 @@ module.exports = exports = {
 		border-color: @border-color-success;
 	}
 }
-
 </style>

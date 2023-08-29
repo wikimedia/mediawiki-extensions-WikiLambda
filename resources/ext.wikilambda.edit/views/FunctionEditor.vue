@@ -30,7 +30,6 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-
 .ext-wikilambda-function-editor {
 	&__main {
 		&__content {

@@ -115,5 +115,4 @@ module.exports = exports = {
 		margin-left: -11px;
 	}
 }
-
 </style>

@@ -112,5 +112,4 @@ module.exports = exports = {
 		}
 	}
 }
-
 </style>

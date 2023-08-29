@@ -141,5 +141,4 @@ module.exports = exports = {
 		margin-bottom: @spacing-25;
 	}
 }
-
 </style>

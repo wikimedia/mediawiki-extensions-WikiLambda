@@ -142,5 +142,4 @@ module.exports = exports = {
 		position: relative;
 	}
 }
-
 </style>

@@ -82,7 +82,6 @@ module.exports = exports = {
 </script>
 
 <style lang="less">
-
 .ext-wikilambda-function-viewer {
 	&__message {
 		display: flex;
@@ -98,5 +97,4 @@ module.exports = exports = {
 		}
 	}
 }
-
 </style>
