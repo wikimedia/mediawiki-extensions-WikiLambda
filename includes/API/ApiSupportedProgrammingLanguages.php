@@ -18,8 +18,8 @@ use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
+use MediaWiki\Status\Status;
 use PoolCounterWorkViaCallback;
-use Status;
 
 class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 

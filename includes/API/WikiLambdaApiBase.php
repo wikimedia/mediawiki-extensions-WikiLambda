@@ -18,10 +18,10 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZFunctionCall;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Status\Status;
 use PoolCounterWorkViaCallback;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
-use Status;
 
 /**
  * WikiLambda Base API util

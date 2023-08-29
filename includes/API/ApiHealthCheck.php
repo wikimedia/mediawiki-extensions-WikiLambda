@@ -18,8 +18,8 @@ use ApiPageSet;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
+use MediaWiki\Status\Status;
 use PoolCounterWorkViaCallback;
-use Status;
 
 class ApiHealthCheck extends WikiLambdaApiBase {
 

@@ -20,11 +20,11 @@ use MediaWiki\Hook\NamespaceIsMovableHook;
 use MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook;
 use MediaWiki\Revision\RenderedRevision;
 use MediaWiki\Revision\SlotRecord;
+use MediaWiki\Status\Status;
 use MediaWiki\Storage\Hook\MultiContentSaveHook;
 use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentity;
 use MessageSpecifier;
-use Status;
 use User;
 
 class PageEditingHandler implements NamespaceIsMovableHook, MultiContentSaveHook, GetUserPermissionsErrorsHook {

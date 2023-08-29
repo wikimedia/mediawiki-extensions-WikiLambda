@@ -26,9 +26,9 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Request\FauxRequest;
+use MediaWiki\Status\Status;
 use PoolCounterWorkViaCallback;
 use RequestContext;
-use Status;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiFunctionCall extends WikiLambdaApiBase {
