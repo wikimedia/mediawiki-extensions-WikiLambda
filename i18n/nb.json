@@ -108,7 +108,7 @@
 	"wikilambda-show-more": "Vis mer",
 	"wikilambda-hide-more": "Skjul mer",
 	"wikilambda-argref": "Argumentreferanse",
-	"wikilambda-special-createobject": "Opprett et nytt ZObject",
+	"wikilambda-special-createobject": "Opprett et nytt objekt",
 	"wikilambda-special-viewobject": "Vis et objekt",
 	"wikilambda-special-define-function": "Definer funksjon",
 	"wikilambda-special-define-function-summary": "En funksjon inneholder en definisjon, opptil flere implementeringer, og krever tester for validering. Fanen «Funksjonsdefinisjon» nedenfor er for å definere inndataene, utdataene og etikettene til funksjonen; «Implementering» er for å redigere og lagre implementeringer; og «Test» er for å sørge for at funksjonen oppfører seg som den skal.",
