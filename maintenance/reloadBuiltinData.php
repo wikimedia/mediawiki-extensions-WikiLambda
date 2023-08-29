@@ -88,6 +88,7 @@ class ReloadBuiltinData extends Maintenance {
 			$services->getTitleFactory(),
 			$services->getWikiPageFactory(),
 			$services->getRevisionStore(),
+			$services->getUserGroupManager(),
 			LoggerFactory::getInstance( 'WikiLambda' )
 		);
 

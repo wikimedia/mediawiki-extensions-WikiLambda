@@ -24,6 +24,7 @@ use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleArray;
 use MediaWiki\Title\TitleFactory;
+use MediaWiki\User\UserGroupManager;
 use Psr\Log\LoggerInterface;
 use User;
 use Wikimedia\Rdbms\IDatabase;
@@ -46,6 +47,9 @@ class ZObjectStore {
 	/** @var RevisionStore */
 	protected $revisionStore;
 
+	/** @var UserGroupManager */
+	protected $userGroupManager;
+
 	/** @var LoggerInterface */
 	private $logger;
 
@@ -54,6 +58,7 @@ class ZObjectStore {
 	 * @param TitleFactory $titleFactory
 	 * @param WikiPageFactory $wikiPageFactory
 	 * @param RevisionStore $revisionStore
+	 * @param UserGroupManager $userGroupManager
 	 * @param LoggerInterface $logger
 	 */
 	public function __construct(
@@ -61,12 +66,14 @@ class ZObjectStore {
 		TitleFactory $titleFactory,
 		WikiPageFactory $wikiPageFactory,
 		RevisionStore $revisionStore,
+		UserGroupManager $userGroupManager,
 		LoggerInterface $logger
 	) {
 		$this->loadBalancer = $loadBalancer;
 		$this->titleFactory = $titleFactory;
 		$this->wikiPageFactory = $wikiPageFactory;
 		$this->revisionStore = $revisionStore;
+		$this->userGroupManager = $userGroupManager;
 		$this->logger = $logger;
 	}
 
@@ -304,9 +311,9 @@ class ZObjectStore {
 		// System user must belong to all privileged groups in order to
 		// perform all zobject creation and editing actions:
 		$user = User::newSystemUser( $creatingUserName, [ 'steal' => true ] );
-		$user->addGroup( 'sysop' );
-		$user->addGroup( 'functionmaintainer' );
-		$user->addGroup( 'functioneer' );
+		$this->userGroupManager->addUserToGroup( $user, 'sysop' );
+		$this->userGroupManager->addUserToGroup( $user, 'functionmaintainer' );
+		$this->userGroupManager->addUserToGroup( $user, 'functioneer' );
 		return $this->updateZObject( $zid, $data, $summary, $user, $flags );
 	}
 
