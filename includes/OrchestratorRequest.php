@@ -88,13 +88,4 @@ class OrchestratorRequest {
 		// TODO (T338242): Use getAsync here.
 		return $this->guzzleClient->get( '/1/v1/supported-programming-languages/' );
 	}
-
-	/**
-	 * @param string $query
-	 * @return ResponseInterface response object returned by orchestrator
-	 */
-	public function performTest( string $query ): ResponseInterface {
-		// TODO (T338242): Use getAsync here.
-		return $this->guzzleClient->get( '/1/v1/evaluate/test/' . $query );
-	}
 }
