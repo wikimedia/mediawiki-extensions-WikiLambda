@@ -22,9 +22,10 @@
 			:aria-label="descriptionLabel"
 			:placeholder="descriptionInputPlaceholder"
 			:max-chars="maxDescriptionChars"
+			@input="updateRemainingChars"
 			@change="persistDescription"
 		></cdx-text-input>
-		<!-- TODO: Add a character counter to tell users they can't write messages that are too long. -->
+		<div class="ext-wikilambda-function-definition-description__counter">{{ remainingChars }}</div>
 	</div>
 </template>
 
@@ -48,7 +49,8 @@ module.exports = exports = {
 	},
 	data: function () {
 		return {
-			maxDescriptionChars: Constants.LABEL_CHARS_MAX
+			maxDescriptionChars: Constants.LABEL_CHARS_MAX,
+			remainingChars: Constants.LABEL_CHARS_MAX
 		};
 	},
 	computed: $.extend( mapGetters( [
@@ -127,6 +129,15 @@ module.exports = exports = {
 		'setValueByRowIdAndPath'
 	] ), {
 		/**
+		 * Updates the remainingChars data property as the user types into the Z2K5 field
+		 *
+		 * @param {Event} event - the event object that is automatically passed in on input
+		 */
+		updateRemainingChars: function ( event ) {
+			const { length } = event.target.value;
+			this.remainingChars = this.maxDescriptionChars - length;
+		},
+		/**
 		 * Persist the new name value in the globally stored object
 		 *
 		 * @param {Object} event
@@ -168,7 +179,12 @@ module.exports = exports = {
 			}
 			this.$emit( 'updated-description' );
 		}
-	} )
+	} ),
+	mounted: function () {
+		this.$nextTick( function () {
+			this.remainingChars = this.maxDescriptionChars - this.description.length;
+		} );
+	}
 };
 </script>
 
@@ -196,6 +212,12 @@ module.exports = exports = {
 		}
 	}
 
+	&__counter {
+		color: @color-subtle;
+		margin-left: @spacing-50;
+		align-self: center;
+	}
+
 	/* MOBILE styles */
 	@media screen and ( max-width: @width-breakpoint-tablet ) {
 		& {
@@ -212,6 +234,11 @@ module.exports = exports = {
 					margin-bottom: @spacing-25;
 					line-height: inherit;
 				}
+			}
+
+			&__counter {
+				align-self: start;
+				margin-left: @spacing-0;
 			}
 
 			&__description {
