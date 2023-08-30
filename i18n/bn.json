@@ -97,6 +97,7 @@
 	"wikilambda-editor-default-name": "শিরোনামহীন",
 	"wikilambda-editor-implementation-title": "বাস্তবায়ন",
 	"wikilambda-editor-input-type-placeholder": "ইনপুটের ধরন",
+	"wikilambda-editor-input-label-placeholder": "এই ইনপুটটির নাম কি?",
 	"wikilambda-editor-input-typed-list-placeholder": "তালিকার ধরন",
 	"wikilambda-editor-input-add-button": "ইনপুট যোগ করুন",
 	"wikilambda-editor-input-default-label": "ইনপুট",
