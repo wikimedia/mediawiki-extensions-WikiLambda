@@ -17,12 +17,12 @@ const InputDropdown = require( './InputDropdown' );
 
 class AboutBlock {
 	get aboutBlock() { return $( 'span.ext-wikilambda-about' ); }
-	get editButton() { return this.aboutBlock.$( '//button[@aria-label="Edit"]' ); }
-	get detailsInputDialogBox() { return this.aboutBlock.$( '//div[@role="dialog"]' ); }
-	get languageInputSelector() { return this.detailsInputDialogBox.$( '//input[@placeholder="Select language"]' ); }
-	get labelInputSelector() { return this.detailsInputDialogBox.$( '//input[@placeholder="Enter name"]' ); }
-	get descriptionInputSelector() { return this.detailsInputDialogBox.$( '//input[@placeholder="Enter description"]' ); }
-	get aliasInputSelector() { return this.detailsInputDialogBox.$( '//input[@placeholder="Enter aliases" or @placeholder=""]' ); }
+	get editButton() { return this.aboutBlock.$( './/button[@aria-label="Edit"]' ); }
+	get detailsInputDialogBox() { return $( '//*[@data-testid="edit-label-dialog" and @aria-modal="true"]' ); }
+	get languageInputSelector() { return this.detailsInputDialogBox.$( './/input[@placeholder="Select language"]' ); }
+	get labelInputSelector() { return this.detailsInputDialogBox.$( './/input[@placeholder="Enter name"]' ); }
+	get descriptionInputSelector() { return this.detailsInputDialogBox.$( './/input[@placeholder="Enter description"]' ); }
+	get aliasInputSelector() { return this.detailsInputDialogBox.$( './/input[@placeholder="Enter aliases" or @placeholder=""]' ); }
 	get doneButton() { return this.detailsInputDialogBox.$( 'button=Done' ); }
 	get cancelButton() { return this.detailsInputDialogBox.$( 'button=Cancel' ); }
 	get showLanguagesButton() { return this.aboutBlock.$( './/button[contains(text(),"languages")]' ); }

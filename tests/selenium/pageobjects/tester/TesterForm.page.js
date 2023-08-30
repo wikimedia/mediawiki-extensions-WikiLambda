@@ -27,8 +27,8 @@ const FunctionExplorerBlock = require( '../../componentobjects/FunctionExplorerB
 class TesterPage extends Page {
 	get aboutBlockDialogBox() { return AboutBlock.detailsInputDialogBox; }
 	get contentBlock() { return ContentBlock.contentBlock; }
-	get callFunctionBlock() { return this.contentBlock.$( '//div[@role="ext-wikilambda-tester-call"]' ); }
-	get validationBlock() { return this.contentBlock.$( '//div[@role="ext-wikilambda-tester-validation"]' ); }
+	get callFunctionBlock() { return this.contentBlock.$( './/div[@role="ext-wikilambda-tester-call"]' ); }
+	get validationBlock() { return this.contentBlock.$( './/div[@role="ext-wikilambda-tester-validation"]' ); }
 
 	// #region About Block
 
@@ -162,7 +162,7 @@ class TesterPage extends Page {
 		 * Fills the entries in the then block
 		 */
 		const thenBlock = this.getCallFunctionBlockSection( 'then' );
-		const thenBlockInputTypeSelector = thenBlock.$( '//input[@placeholder="Select a Type"]' );
+		const thenBlockInputTypeSelector = thenBlock.$( './/input[@placeholder="Select a Type"]' );
 		await InputDropdown.setInputDropdown(
 			thenBlock, thenBlockInputTypeSelector, thenBlockInputType );
 		const thenBlockInputSelector = thenBlock.$( 'input' );
@@ -172,7 +172,7 @@ class TesterPage extends Page {
 		 * Fills the entries in the else block
 		 */
 		const elseBlock = this.getCallFunctionBlockSection( 'else' );
-		const elseBlockInputTypeSelector = elseBlock.$( '//input[@placeholder="Select a Type"]' );
+		const elseBlockInputTypeSelector = elseBlock.$( './/input[@placeholder="Select a Type"]' );
 		await InputDropdown.setInputDropdown(
 			elseBlock, elseBlockInputTypeSelector, elseBlockInputType );
 		const elseBlockInputSelector = elseBlock.$( 'input' );
