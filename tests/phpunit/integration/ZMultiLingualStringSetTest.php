@@ -23,6 +23,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
+ * @group Database
  */
 class ZMultiLingualStringSetTest extends WikiLambdaIntegrationTestCase {
 

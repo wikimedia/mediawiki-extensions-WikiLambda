@@ -23,6 +23,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectUtils
+ * @group Database
  */
 class ZTypedListTest extends WikiLambdaIntegrationTestCase {
 

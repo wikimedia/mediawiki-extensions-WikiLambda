@@ -17,6 +17,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Validation\ZObjectStructureValidator
  * @covers \MediaWiki\Extension\WikiLambda\Validation\ValidationStatus
+ * @group Database
  */
 class ZObjectStructureValidatorTest extends WikiLambdaIntegrationTestCase {
 

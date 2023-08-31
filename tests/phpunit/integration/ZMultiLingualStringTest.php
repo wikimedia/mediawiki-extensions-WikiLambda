@@ -24,6 +24,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
  * @covers \MediaWiki\Extension\WikiLambda\StringForLanguageBuilder
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectFactory
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
+ * @group Database
  */
 class ZMultiLingualStringTest extends WikiLambdaIntegrationTestCase {
 

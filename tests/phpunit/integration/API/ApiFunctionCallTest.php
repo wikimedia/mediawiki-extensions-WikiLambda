@@ -16,7 +16,7 @@ use ApiTestCase;
  * @covers \MediaWiki\Extension\WikiLambda\API\WikiLambdaApiBase
  * @group API
  * @group Standalone
- * @group medium
+ * @group Database
  */
 class ApiFunctionCallTest extends ApiTestCase {
 

@@ -23,7 +23,6 @@ use MediaWiki\Title\Title;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction
  * @group API
  * @group Database
- * @group medium
  */
 class UpdateImplementationsJobTest extends WikiLambdaIntegrationTestCase {
 

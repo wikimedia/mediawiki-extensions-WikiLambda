@@ -23,6 +23,7 @@ use MediaWiki\MediaWikiServices;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZType
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
+ * @group Database
  */
 class ZTypeTest extends WikiLambdaIntegrationTestCase {
 

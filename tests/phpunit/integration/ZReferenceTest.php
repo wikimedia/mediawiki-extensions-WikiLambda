@@ -17,6 +17,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZReference;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZReference
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
+ * @group Database
  */
 class ZReferenceTest extends WikiLambdaIntegrationTestCase {
 

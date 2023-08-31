@@ -22,6 +22,7 @@ use MediaWiki\Extension\WikiLambda\ZObjects\ZString;
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZKey
  * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZPersistentObject
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
+ * @group Database
  */
 class ZKeyTest extends WikiLambdaIntegrationTestCase {
 
