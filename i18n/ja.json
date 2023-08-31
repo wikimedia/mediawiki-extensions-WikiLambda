@@ -17,10 +17,13 @@
 			"春春眠眠",
 			"背番号4のエース",
 			"MagicAho",
-			"Omotecho"
+			"Omotecho",
+			"Tmv"
 		]
 	},
 	"wikilambda-desc": "ウィキメディアのウィキにウィキテキストのパーサー関数を指定して、中央のウィキで記述、管理、評価された関数の評価を呼び出します。",
+	"group-functioneer": "関数編集者",
+	"group-functioneer-member": "{{GENDER:$1|関数編集者}}",
 	"group-functionmaintainer": "保守員",
 	"group-functionmaintainer-member": "{{GENDER:$1|保守員}}",
 	"grouppage-functionmaintainer": "保守員",

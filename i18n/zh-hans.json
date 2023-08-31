@@ -62,7 +62,7 @@
 	"wikilambda-publish-input-changed-impact-prompt": "<p>您更改了该函数的输入字段。<strong>所有现有的实现和测试都将与当前函数分离。</strong>您确定要继续吗？</p>",
 	"wikilambda-publish-output-changed-impact-prompt": "<p>您更改了该函数的输出类型。<strong>所有现有的实现和测试都将与当前函数分离。</strong>您确定要继续吗？</p>",
 	"wikilambda-publish-input-and-output-changed-impact-prompt": "<p>您更改了该函数的输入字段与输出类型。<strong>所有现有的实现和测试都将与当前函数分离。</strong>您确定要继续吗？</p>",
-	"wikilambda-loading": "数据加载中……",
+	"wikilambda-loading": "正在加载数据",
 	"wikilambda-typeselector-label": "选择类型",
 	"wikilambda-argument-typeselector-label": "为此参数选择类型",
 	"wikilambda-return-typeselector-label": "选择要返回的类型",
