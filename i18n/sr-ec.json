@@ -33,6 +33,8 @@
 	"wikilambda-function-definition-output-selector": "Изаберите врсту",
 	"wikilambda-editor-publish-dialog-summary-placeholder": "Укратко опис измене",
 	"wikilambda-function-viewer-aliases-header": "Псеудоними",
+	"wikilambda-zimplementation-code-missing": "Нема кода. Молимо унесите код.",
+	"wikilambda-zimplementation-code-language-missing": "Изаберите програмски језик.",
 	"wikilambda-chip-remove": "Уклони ставку",
 	"wikilambda-list-items-label": "Списак ставки",
 	"wikilambda-list-item-label": "Ставка $1",
