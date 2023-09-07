@@ -19,13 +19,14 @@
 			"CrownedWharf566",
 			"John Smith Ri",
 			"Stevenliuyi",
-			"落花有意12138"
+			"落花有意12138",
+			"SunAfterRain"
 		]
 	},
 	"wikilambda-desc": "为维基媒体的wiki提供wikitext解析器函数，以调用在中央wiki上编写、管理和运行的函数。",
 	"content-model-zobject": "ZObject",
-	"group-functioneer": "函数员",
-	"group-functioneer-member": "{{GENDER:$1|函数员}}",
+	"group-functioneer": "函数开发人员",
+	"group-functioneer-member": "{{GENDER:$1|函数开发人员}}",
 	"group-functionmaintainer": "维护员",
 	"group-functionmaintainer-member": "{{GENDER:$1|维护员}}",
 	"wikilambda-history-title": "“$1”（$2）的版本历史",
@@ -184,7 +185,7 @@
 	"wikilambda-function-viewer-names-show-languages-button": "显示其他语言的名称",
 	"wikilambda-function-viewer-details-input-number": "输入$1",
 	"wikilambda-function-viewer-details-table-view-all": "查看全部",
-	"wikilambda-function-viewer-details-table-view-less": "查看更少",
+	"wikilambda-function-viewer-details-table-view-less": "查看较少",
 	"wikilambda-toast-close": "关闭",
 	"wikilambda-zobject-missing-attached-function": "需要一个函数",
 	"wikilambda-zimplememntation-composition-missing": "必须定义组合",
