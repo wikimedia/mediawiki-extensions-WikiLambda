@@ -155,6 +155,10 @@
 			"functionmaintainer"
 		]
 	},
+	"PrivilegedGroups": [
+		"functioneer",
+		"functionmaintainer"
+	],
 	"HookHandlers": {
 		"WikiLambdaHooks": {
 			"class": "MediaWiki\\Extension\\WikiLambda\\Hooks"
