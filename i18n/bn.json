@@ -233,7 +233,7 @@
 	"wikilambda-missing-function-output-error-message": "আউটপুটের ধরন খালি। অনুগ্রহপূর্বক একটি নির্বাচন করুন।",
 	"wikilambda-missing-function-input-type-error-message": "ইনপুটের ধরন খালি। অনুগ্রহপূর্বক একটি নির্বাচন করুন।",
 	"wikilambda-zimplementation-code-missing": "কোড সংজ্ঞায়িত করা আবশ্যক",
-	"wikilambda-zimplementation-code-language-missing": "প্রোগ্রামিং ভাষা সংজ্ঞায়িত করা আবশ্যক",
+	"wikilambda-zimplementation-code-language-missing": "একটি প্রোগ্রামিং ভাষা নির্বাচন করুন।",
 	"wikilambda-chip-remove": "আইটেম সরান",
 	"wikilambda-add-list-item-button": "আইটেম যোগ করুন",
 	"wikilambda-list-item-label": "আইটেম $1",

@@ -23,6 +23,7 @@
 			"No se",
 			"Raos10",
 			"Reverse88",
+			"Samthony",
 			"Soylacarli",
 			"SpikeShroom",
 			"Tmv"
@@ -284,6 +285,7 @@
 	"wikilambda-zobject-missing-attached-function": "Se requiere una función",
 	"wikilambda-zimplememntation-composition-missing": "Una composición debe ser definida",
 	"wikilambda-zimplementation-code-missing": "El código debe ser definido",
+	"wikilambda-ztester-missing-call-function": "La llamada está vacía. Por favor seleccione una función.",
 	"wikilambda-chip-remove": "Eliminar elemento",
 	"wikilambda-add-list-item-button": "Añadir elemento",
 	"wikilambda-list-items-label": "Elementos de la lista",
