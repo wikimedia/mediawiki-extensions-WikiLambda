@@ -23,6 +23,9 @@ module.exports = exports = {
 	name: 'wl-function-evaluator',
 	components: {
 		'wl-function-evaluator-widget': FunctionEvaluatorWidget
+	},
+	mounted: function () {
+		this.$emit( 'mounted' );
 	}
 };
 </script>

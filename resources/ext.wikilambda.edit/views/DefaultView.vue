@@ -212,6 +212,7 @@ module.exports = exports = {
 			zobjectid: this.getCurrentZObjectId || null,
 			zlang: this.getUserLangZid || null
 		} );
+		this.$emit( 'mounted' );
 	}
 };
 </script>
