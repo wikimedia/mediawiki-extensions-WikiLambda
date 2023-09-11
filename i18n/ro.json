@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Alesaru",
+			"Strainu"
+		]
+	},
+	"wikilambda-desc": "Furnizarea pe wikiurile Wikimedia a unei funcții parser care rulează funcțiile scrise, gestionate și evaluate pe un wiki central."
+}
