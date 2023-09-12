@@ -20,7 +20,8 @@
 			"Lantianjialiang",
 			"Stevenliuyi",
 			"落花有意12138",
-			"SunAfterRain"
+			"SunAfterRain",
+			"U.T."
 		]
 	},
 	"wikilambda-desc": "为维基媒体的wiki提供wikitext解析器函数，以调用在中央wiki上编写、管理和运行的函数。",
@@ -93,6 +94,7 @@
 	"wikilambda-functioncall-metadata-orchestration-cpu-usage": "编排CPU使用",
 	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "运算CPU使用",
 	"wikilambda-functioncall-metadata-execution-cpu-usage": "执行CPU使用",
+	"wikilambda-functioncall-error": "函数调用错误： $1",
 	"wikilambda-tester-results-current-implementation": "当前实现",
 	"wikilambda-tester-run-tester": "运行测试",
 	"wikilambda-enable-expert-mode": "开启专家模式",
