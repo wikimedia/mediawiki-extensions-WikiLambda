@@ -19,7 +19,9 @@
 			"Qeqo",
 			"Stevenliuyi",
 			"Wzl19371",
-			"落花有意12138"
+			"落花有意12138",
+			"SunAfterRain",
+			"U.T."
 		]
 	},
 	"wikilambda-desc": "为维基媒体的wiki提供wikitext解析器函数，以调用在中央wiki上编写、管理和运行的函数。",
@@ -70,6 +72,7 @@
 	"wikilambda-implementation-create-new": "创建一个新的实现",
 	"wikilambda-function-are-you-sure-dialog-header": "您确定吗？",
 	"wikilambda-function-are-you-sure-dialog-description": "您确定要退出编辑模式而不先发布吗？",
+	"wikilambda-functioncall-error": "函数调用错误： $1",
 	"wikilambda-tester-results-current-implementation": "当前实现",
 	"wikilambda-tester-run-tester": "运行测试",
 	"wikilambda-enable-expert-mode": "开启专家模式",
