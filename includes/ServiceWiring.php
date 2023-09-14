@@ -55,7 +55,6 @@ return [
 			);
 		}
 
-		$store = ObjectCache::newFromParams( $cacheParameters, $services );
-		return $store;
+		return ObjectCache::newFromParams( $cacheParameters );
 	},
 ];
