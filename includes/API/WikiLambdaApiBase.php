@@ -3,6 +3,7 @@
 namespace MediaWiki\Extension\WikiLambda\API;
 
 use ApiBase;
+use ApiUsageException;
 use FormatJson;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -184,6 +185,22 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 
 			return $this->returnWithZError(
 				$exception->getResponse()->getReasonPhrase(),
+				$zObjectAsString
+			);
+		} catch ( ApiUsageException $exception ) {
+			// This is almost certainly a user-limit-error, and not worth worrying in the middleware
+			// about, so only log as debug() not warning()
+			$this->getLogger()->debug(
+				__METHOD__ . ' failed to execute with a ApiUsageException: {exception}',
+				[
+					'zObject' => $zObjectAsString,
+					'validate' => $validate,
+					'exception' => $exception,
+				]
+			);
+
+			return $this->returnWithZError(
+				$exception->getMessage(),
 				$zObjectAsString
 			);
 		} catch ( ZErrorException $exception ) {
