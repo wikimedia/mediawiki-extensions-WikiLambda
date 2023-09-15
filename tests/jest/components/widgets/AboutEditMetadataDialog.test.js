@@ -149,13 +149,13 @@ describe( 'AboutEditMetadataDialog', () => {
 
 			// ASSERT: Name block renders text input component
 			const nameBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-name' );
-			expect( nameBlock.findComponent( { name: 'wl-text-input' } ).exists() ).toBe( true );
-			expect( nameBlock.find( '.ext-wikilambda-about-edit-metadata-char-counter' ).text() ).toBe( '100' );
+			expect( nameBlock.findComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
+			expect( nameBlock.find( '.cdx-field__help-text' ).text() ).toBe( '100' );
 
 			// ASSERT: Description block renders text input component
 			const descriptionBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-description' );
-			expect( descriptionBlock.findComponent( { name: 'wl-text-input' } ).exists() ).toBe( true );
-			expect( descriptionBlock.find( '.ext-wikilambda-about-edit-metadata-char-counter' ).text() ).toBe( '100' );
+			expect( descriptionBlock.findComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
+			expect( descriptionBlock.find( '.cdx-field__help-text' ).text() ).toBe( '100' );
 
 			// ASSERT: Aliases are empty
 			const aliasBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-alias' );
@@ -211,15 +211,15 @@ describe( 'AboutEditMetadataDialog', () => {
 
 			// ASSERT: Name block renders text input component
 			const nameBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-name' );
-			expect( nameBlock.findComponent( { name: 'wl-text-input' } ).exists() ).toBe( true );
+			expect( nameBlock.findComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
 			expect( nameBlock.find( 'input' ).attributes( 'disabled' ) ).not.toBeDefined();
-			expect( nameBlock.find( '.ext-wikilambda-about-edit-metadata-char-counter' ).text() ).toBe( '96' );
+			expect( nameBlock.find( '.cdx-field__help-text' ).text() ).toBe( '96' );
 
 			// ASSERT: Description block renders text input  component
 			const descriptionBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-description' );
-			expect( descriptionBlock.findComponent( { name: 'wl-text-input' } ).exists() ).toBe( true );
+			expect( descriptionBlock.findComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
 			expect( descriptionBlock.find( 'input' ).attributes( 'disabled' ) ).not.toBeDefined();
-			expect( descriptionBlock.find( '.ext-wikilambda-about-edit-metadata-char-counter' ).text() ).toBe( '84' );
+			expect( descriptionBlock.find( '.cdx-field__help-text' ).text() ).toBe( '84' );
 
 			// ASSERT: After initialization, aliases have value
 			const aliasBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-alias' );
@@ -347,15 +347,15 @@ describe( 'AboutEditMetadataDialog', () => {
 
 			// ASSERT: Name block renders text input component
 			const nameBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-name' );
-			expect( nameBlock.findComponent( { name: 'wl-text-input' } ).exists() ).toBe( true );
+			expect( nameBlock.findComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
 			expect( nameBlock.find( 'input' ).attributes( 'disabled' ) ).toBeDefined();
-			expect( nameBlock.find( '.ext-wikilambda-about-edit-metadata-char-counter' ).text() ).toBe( '96' );
+			expect( nameBlock.find( '.cdx-field__help-text' ).text() ).toBe( '96' );
 
 			// ASSERT: Description block renders text input  component
 			const descriptionBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-description' );
-			expect( descriptionBlock.findComponent( { name: 'wl-text-input' } ).exists() ).toBe( true );
+			expect( descriptionBlock.findComponent( { name: 'cdx-text-input' } ).exists() ).toBe( true );
 			expect( descriptionBlock.find( 'input' ).attributes( 'disabled' ) ).toBeDefined();
-			expect( descriptionBlock.find( '.ext-wikilambda-about-edit-metadata-char-counter' ).text() ).toBe( '84' );
+			expect( descriptionBlock.find( '.cdx-field__help-text' ).text() ).toBe( '84' );
 
 			// ASSERT: After initialization, aliases have value
 			const aliasBlock = wrapper.find( '.ext-wikilambda-about-edit-metadata-alias' );

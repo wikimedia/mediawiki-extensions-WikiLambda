@@ -6,30 +6,44 @@
 -->
 <template>
 	<div class="ext-wikilambda-monolingual-string">
-		<div v-if="!edit">
-			<p>
-				<cdx-info-chip class="ext-wikilambda-lang-chip">
-					{{ langIso.toUpperCase() }}
-				</cdx-info-chip>
-				{{ text }}
-			</p>
+		<!-- Monolingual string on view mode -->
+		<div
+			v-if="!edit"
+			class="ext-wikilambda-monolingual-string__view-mode"
+		>
+			<cdx-info-chip
+				class="ext-wikilambda-lang-chip"
+				:class="{ 'ext-wikilambda-lang-chip__empty': hasEmptyLang }"
+			>
+				{{ langIso.toUpperCase() }}
+			</cdx-info-chip>
+			{{ text }}
 		</div>
+		<!-- Monolingual string on edit mode -->
 		<div
 			v-else
-			class="ext-wikilambda-monolingual-string__edit-mode">
-			<wl-text-input
+			class="ext-wikilambda-monolingual-string__edit-mode"
+			:style="inputCssVariablesStyle"
+		>
+			<cdx-info-chip
+				ref="chipComponent"
+				class="ext-wikilambda-lang-chip"
+				:class="{ 'ext-wikilambda-lang-chip__empty': hasEmptyLang }"
+			>
+				{{ langIso.toUpperCase() }}
+			</cdx-info-chip>
+			<cdx-text-input
 				v-model="text"
-				:chip="langIso"
 				placeholder="Enter text"
-				class="ext-wikilambda-monolingual-string__input">
-			</wl-text-input>
+			>
+			</cdx-text-input>
 		</div>
 	</div>
 </template>
 
 <script>
-var TextInput = require( '../base/TextInput.vue' ),
-	CdxInfoChip = require( '@wikimedia/codex' ).CdxInfoChip,
+var CdxInfoChip = require( '@wikimedia/codex' ).CdxInfoChip,
+	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -37,7 +51,7 @@ var TextInput = require( '../base/TextInput.vue' ),
 module.exports = exports = {
 	name: 'wl-z-monolingual-string',
 	components: {
-		'wl-text-input': TextInput,
+		'cdx-text-input': CdxTextInput,
 		'cdx-info-chip': CdxInfoChip
 	},
 	props: {
@@ -50,6 +64,12 @@ module.exports = exports = {
 			type: Boolean,
 			required: true
 		}
+	},
+	data: function () {
+		return {
+			chipComponent: null,
+			chipWidth: 72
+		};
 	},
 	computed: $.extend(
 		mapGetters( [
@@ -115,9 +135,48 @@ module.exports = exports = {
 			 */
 			langIso: function () {
 				return this.getLanguageIsoCodeOfZLang( this.lang ) || '';
+			},
+			/**
+			 * Returns the dynamically calculated width of the inner language chip
+			 *
+			 * @return {string}
+			 */
+			inputCssVariablesStyle: function () {
+				return {
+					'--chipWidthPx': `${this.chipWidth}px`
+				};
+			},
+			/**
+			 * Whether the language is still not defined, so langIso is an empty string
+			 *
+			 * @return {boolean}
+			 */
+			hasEmptyLang: function () {
+				return ( this.langIso === '' );
 			}
 		}
-	)
+	),
+	methods: {
+		getAndStoreChipWidth() {
+			if ( !this.chipComponent ) {
+				return;
+			}
+			this.chipWidth = this.chipComponent.$el.offsetWidth;
+		}
+	},
+	watch: {
+		langIso: {
+			handler: function () {
+				this.getAndStoreChipWidth();
+			},
+			immediate: true,
+			flush: 'post'
+		}
+	},
+	mounted() {
+		this.chipComponent = this.$refs.chipComponent;
+		this.getAndStoreChipWidth();
+	}
 };
 
 </script>
@@ -126,7 +185,22 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-monolingual-string {
-	p {
+	.ext-wikilambda-lang-chip {
+		.cdx-info-chip--text {
+			font-size: ~'14px';
+		}
+
+		&__empty {
+			border: 1px dashed @border-color-base;
+
+			.cdx-info-chip--text {
+				height: 22px;
+				min-width: 22px;
+			}
+		}
+	}
+
+	&__view-mode {
 		margin: 0;
 		color: @color-base;
 		display: flex;
@@ -139,7 +213,25 @@ module.exports = exports = {
 	}
 
 	&__edit-mode {
+		min-height: @min-size-interactive-pointer;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
 		position: relative;
+		z-index: 3;
+		min-width: calc( 36px - 16px );
+
+		.cdx-text-input__input {
+			--spacing-50: @spacing-50;
+			padding-left: ~'calc( var(--spacing-50) + var(--chipWidthPx) + var(--spacing-50) )';
+		}
+
+		.ext-wikilambda-lang-chip {
+			position: absolute;
+			z-index: 3;
+			min-width: calc( 36px - 16px );
+			left: @spacing-50;
+		}
 	}
 }
 </style>

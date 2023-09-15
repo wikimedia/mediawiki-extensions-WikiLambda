@@ -9,17 +9,18 @@
 		<p v-if="!edit">
 			{{ value }}
 		</p>
-		<wl-text-input
+		<cdx-text-input
 			v-else
 			v-model="value"
 			aria-label=""
 			placeholder=""
-		></wl-text-input>
+			data-testid="text-input"
+		></cdx-text-input>
 	</div>
 </template>
 
 <script>
-var TextInput = require( '../base/TextInput.vue' ),
+var CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	Constants = require( '../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
@@ -27,7 +28,7 @@ var TextInput = require( '../base/TextInput.vue' ),
 module.exports = exports = {
 	name: 'wl-z-string',
 	components: {
-		'wl-text-input': TextInput
+		'cdx-text-input': CdxTextInput
 	},
 	props: {
 		rowId: {
@@ -102,6 +103,8 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-string {
+	display: inline-block;
+
 	p {
 		margin: 0;
 		color: @color-base;

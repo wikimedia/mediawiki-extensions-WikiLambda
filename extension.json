@@ -303,7 +303,6 @@
 				"ext.wikilambda.edit/components/base/Select.vue",
 				"ext.wikilambda.edit/components/base/Table.vue",
 				"ext.wikilambda.edit/components/base/Text.vue",
-				"ext.wikilambda.edit/components/base/TextInput.vue",
 				"ext.wikilambda.edit/components/base/Tooltip.vue",
 				"ext.wikilambda.edit/components/base/WidgetBase.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZArgumentReference.vue",
