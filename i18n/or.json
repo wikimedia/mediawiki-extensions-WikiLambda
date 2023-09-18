@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Amire80",
 			"Psubhashish"
 		]
 	},
@@ -27,7 +28,7 @@
 	"action-wikilambda-create-implementation": "ନୂଆ ଇମ୍ପ୍ଲିମେଣ୍ଟେସନ ଅବଜେକ୍ଟ ତିଆରି କରନ୍ତୁ",
 	"action-wikilambda-create-language": "ନୂଆ ପ୍ରାକୃତିକ ଭାଷା ଅବଜେକ୍ଟ ତିଆରି କରନ୍ତୁ",
 	"action-wikilambda-create-predefined": "ନୂଆ 'ପୂର୍ବ-ଦତ୍ତ' ଅବଜେକ୍ଟସବୁ (Z10000 ଅଧୀନରେ) ତିଆରି କରନ୍ତୁ",
-	"action-wikilambda-create-programming": "ନୂଆ  ପ୍ରୋଗ୍ରାମିଂ ଭାଷା ଅବଜେକ୍ଟ ତିଆରି କରନ୍ତୁ",
+	"action-wikilambda-create-programming": "ନୂଆ ପ୍ରୋଗ୍ରାମିଂ ଭାଷା ଅବଜେକ୍ଟ ତିଆରି କରନ୍ତୁ",
 	"action-wikilambda-create-tester": "ନୂଆ ପରୀକ୍ଷାମୂଳକ କେସ ଅବଜେକ୍ଟ ତିଆରି କରନ୍ତୁ",
 	"action-wikilambda-create-type": "ନୂଆ ପ୍ରକାର ଅବଜେକ୍ଟ ତିଆରି କରନ୍ତୁ",
 	"action-wikilambda-create-unit": "ନୂଆ ୟୁନିଟ ଅବଜେକ୍ଟ ତିଆରି କରନ୍ତୁ",
@@ -35,8 +36,8 @@
 	"action-wikilambda-disconnect-tester": "ଏହାର ଫଙ୍କସନରୁ ସହ ଏକ ଟେଷ୍ଟ କେସ କାଢ଼ନ୍ତୁ",
 	"action-wikilambda-edit": "ଆଗରୁ ଥିବା ଏକ ଅବଜେକ୍ଟର ବିଷୟବସ୍ତୁ ସମ୍ପାଦନା କରନ୍ତୁ",
 	"action-wikilambda-edit-argument-label": "ଆଗରୁ ଥିବା ଏକ ଫଙ୍କସନର ଯୁକ୍ତି ନାମସବୁ ସମ୍ପାଦନା କରନ୍ତୁ",
-	"action-wikilambda-edit-attached-implementation": "ଫଙ୍କସନଟିଏ  ସହ ଯୋଡ଼ା ଇମ୍ପ୍ଲିମେଣ୍ଟେସନଟି ସମ୍ପାଦନା କରନ୍ତୁ",
-	"action-wikilambda-edit-attached-tester": "ଫଙ୍କସନଟିଏ  ସହ ଯୋଡ଼ା ଟେଷ୍ଟ କେସଟି ସମ୍ପାଦନା କରନ୍ତୁ",
+	"action-wikilambda-edit-attached-implementation": "ଫଙ୍କସନଟିଏ ସହ ଯୋଡ଼ା ଇମ୍ପ୍ଲିମେଣ୍ଟେସନଟି ସମ୍ପାଦନା କରନ୍ତୁ",
+	"action-wikilambda-edit-attached-tester": "ଫଙ୍କସନଟିଏ ସହ ଯୋଡ଼ା ଟେଷ୍ଟ କେସଟି ସମ୍ପାଦନା କରନ୍ତୁ",
 	"action-wikilambda-edit-builtin-function": "ସିଷ୍ଟମ ଦିଆ ଫଙ୍କସନ ସମ୍ପାଦନା କରନ୍ତୁ",
 	"action-wikilambda-edit-boolean": "ଆଗରୁ ଥିବା ବୁଲିଆନ ଅବଜେକ୍ଟସବୁ ସମ୍ପାଦନା କରନ୍ତୁ",
 	"action-wikilambda-edit-function": "ଆଗରୁ ଥିବା ଫଙ୍କସନ ଅବଜେକ୍ଟସବୁ ସମ୍ପାଦନା କରନ୍ତୁ",

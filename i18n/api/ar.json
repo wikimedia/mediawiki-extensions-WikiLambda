@@ -1,11 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
+			"Amire80",
 			"Asma"
 		]
 	},
 	"apihelp-wikilambda_supported_programming_languages-summary": "استرجع لغات البرمجة التي يدعمها المقيم",
 	"apierror-wikilambda_supported_programming_languages-not-connected": "تعذر حل المضيف ' $1 ' ، ربما بسبب عدم تشغيل المنسق. يرجى الرجوع إلى README لإضافة المنسق إلى تكوين تكوين عامل الإرساء الخاص بك.",
 	"apierror-wikilambda_supported_programming_languages-concurrency-limit": "لقد طلبت لغات برمجة عدة مرات.",
-	"apihelp-wikilambda_perform_test-z801-implementation": "قم بإجراء جميع اختبارات من أجل  ZImplementation Z901/Built-in of ZFunction Z801/Echo"
+	"apihelp-wikilambda_perform_test-z801-implementation": "قم بإجراء جميع اختبارات من أجل ZImplementation Z901/Built-in of ZFunction Z801/Echo"
 }
