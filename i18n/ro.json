@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Alesaru",
+			"NGC 54",
 			"Strainu"
 		]
 	},
@@ -233,7 +234,7 @@
 	"wikilambda-about-widget-publish-button": "Continuați să publicați",
 	"wikilambda-about-widget-view-languages-title": "Informații în alte limbi",
 	"wikilambda-about-widget-add-language": "Adaugă limbă",
-	"wikilambda-about-widget-search-language-placeholder": "Caută limbile",
+	"wikilambda-about-widget-search-language-placeholder": "Căutare limbă",
 	"wikilambda-function-explorer-title": "Explorator de funcții",
 	"wikilambda-function-inputs-title": "Date de intrare",
 	"wikilambda-function-explorer-copied-text": "Copiat cu succes!",
