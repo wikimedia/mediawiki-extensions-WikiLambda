@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Bjankuloski06",
-			"Vlad5250"
+			"Vlad5250",
+			"Amire80"
 		]
 	},
 	"apihelp-wikilambda_fetch-summary": "Дај го JSON-моделот на ZObjects.",
@@ -14,7 +15,7 @@
 	"apihelp-wikilambda_function_call-param-zobject": "ZObject за повик на функција",
 	"apihelp-wikilambda_function_call-example-if": "Повикајте го вградениот Z802 (If) со лажен прирок",
 	"apihelp-wikilambda_function_call-example-native-js-code": "Повикајте го кориснички напишаниот JavaScript-код",
-	"apihelp-wikilambda_function_call-example-native-python-code": "Повикајте го кориснички напишаниот  Python 3-код",
+	"apihelp-wikilambda_function_call-example-native-python-code": "Повикајте го кориснички напишаниот Python 3-код",
 	"apihelp-wikilambda_function_call-summary": "Повикајте функција со оркестратор",
 	"apihelp-query+wikilambdasearch_labels-summary": "Создавачот на списоци за барања до приложникот ви овозможува пребарување на ZObjects за натписи на даден јазик. Има главна цел да пружа поддршка на системот за предвидувачко пребарување.",
 	"apihelp-query+wikilambdasearch_labels-param-search": "Поимот за пребарување",
