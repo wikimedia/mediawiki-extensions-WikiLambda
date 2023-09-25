@@ -177,7 +177,7 @@ module.exports = exports = {
 	&__title {
 		font-weight: @font-weight-bold;
 		color: @color-base;
-		word-break: break-all;
+		overflow-wrap: break-word;
 		background: @background-color-interactive;
 		padding: 0 @spacing-100;
 		height: 50px;
@@ -204,7 +204,7 @@ module.exports = exports = {
 		padding-right: @spacing-200;
 		font-weight: @font-weight-bold;
 		color: @color-base;
-		word-break: break-all;
+		overflow-wrap: break-word;
 
 		&:first-child {
 			width: @size-125;
@@ -230,7 +230,7 @@ module.exports = exports = {
 			max-height: 44.78px; /* Fallback for non-webkit */
 			-webkit-line-clamp: 2;
 			-webkit-box-orient: vertical;
-			word-break: break-all;
+			overflow-wrap: break-word;
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
