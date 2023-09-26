@@ -41,8 +41,7 @@ class ZObjectHistoryAction extends HistoryAction {
 			->getString();
 
 		return $this->msg( 'wikilambda-history-title' )
-			->rawParams( htmlspecialchars( $label ?? '' ), $this->getTitle()->getText() )
-			->text();
+			->rawParams( htmlspecialchars( $label ?? '' ), $this->getTitle()->getText() );
 	}
 
 }
