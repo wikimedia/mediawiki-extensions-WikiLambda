@@ -44,7 +44,7 @@ class SpecialListObjectsByType extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function getDescription() {
-		return $this->msg( 'wikilambda-special-objectsbytype' )->text();
+		return $this->msg( 'wikilambda-special-objectsbytype' );
 	}
 
 	/**

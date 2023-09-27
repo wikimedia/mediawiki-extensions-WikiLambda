@@ -29,7 +29,7 @@ class SpecialListDuplicateObjectNames extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function getDescription() {
-		return $this->msg( 'wikilambda-special-listduplicateobjectlabels' )->text();
+		return $this->msg( 'wikilambda-special-listduplicateobjectlabels' );
 	}
 
 	/**
