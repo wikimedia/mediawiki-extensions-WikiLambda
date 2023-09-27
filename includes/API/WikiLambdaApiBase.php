@@ -23,6 +23,7 @@ use MediaWiki\Status\Status;
 use PoolCounterWorkViaCallback;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Wikimedia\RequestTimeout\RequestTimeoutException;
 
 /**
  * WikiLambda Base API util
@@ -185,6 +186,20 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 
 			return $this->returnWithZError(
 				$exception->getResponse()->getReasonPhrase(),
+				$zObjectAsString
+			);
+		} catch ( RequestTimeoutException $exception ) {
+			$this->getLogger()->warning(
+				__METHOD__ . ' failed to execute with a RequestTimeoutException: {exception}',
+				[
+					'zObject' => $zObjectAsString,
+					'validate' => $validate,
+					'exception' => $exception,
+				]
+			);
+
+			return $this->returnWithZError(
+				$exception->getMessage(),
 				$zObjectAsString
 			);
 		} catch ( ApiUsageException $exception ) {
