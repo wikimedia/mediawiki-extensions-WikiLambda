@@ -48,7 +48,7 @@ class SpecialViewObject extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function getDescription() {
-		return $this->msg( 'wikilambda-special-viewobject' )->text();
+		return $this->msg( 'wikilambda-special-viewobject' );
 	}
 
 	/**

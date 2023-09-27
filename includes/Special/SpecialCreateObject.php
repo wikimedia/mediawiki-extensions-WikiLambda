@@ -32,7 +32,7 @@ class SpecialCreateObject extends SpecialPage {
 	 */
 	public function getDescription() {
 		// we do not know which object type will be created, so we need to be generic here
-		return $this->msg( 'wikilambda-special-createobject' )->text();
+		return $this->msg( 'wikilambda-special-createobject' );
 	}
 
 	/**

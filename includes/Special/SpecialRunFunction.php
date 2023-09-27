@@ -31,7 +31,7 @@ class SpecialRunFunction extends SpecialPage {
 	 * @inheritDoc
 	 */
 	public function getDescription() {
-		return $this->msg( 'wikilambda-special-runfunction' )->text();
+		return $this->msg( 'wikilambda-special-runfunction' );
 	}
 
 	/**
