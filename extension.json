@@ -305,6 +305,7 @@
 				"ext.wikilambda.edit/components/base/TextInput.vue",
 				"ext.wikilambda.edit/components/base/Tooltip.vue",
 				"ext.wikilambda.edit/components/base/WidgetBase.vue",
+				"ext.wikilambda.edit/components/default-view-types/ZArgumentReference.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZBoolean.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZCode.vue",
 				"ext.wikilambda.edit/components/default-view-types/ZEvaluationResult.vue",
@@ -651,7 +652,8 @@
 				"wikilambda-unknown-save-error-message",
 				"wikilambda-list-type-change-warning",
 				"wikilambda-function-evaluation-restriction-notrunnable",
-				"wikilambda-function-evaluation-restriction-warning"
+				"wikilambda-function-evaluation-restriction-warning",
+				"wikilambda-argument-reference-selector-placeholder"
 			]
 		}
 	},

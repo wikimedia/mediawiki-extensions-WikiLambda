@@ -1126,7 +1126,7 @@ module.exports = exports = {
 			/**
 			 * @param {Array} path sequence of keys that specify a path to follow down the ZObject
 			 * @param {number} rowId starting row Id
-			 * @return {Row} resulting row
+			 * @return {Row|undefined} resulting row or undefined if not found
 			 */
 			function followPath( path = [], rowId = 0 ) {
 				// End condition, if the path is empty, return the row by rowId
