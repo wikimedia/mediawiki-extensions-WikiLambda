@@ -182,6 +182,7 @@ var Constants = {
 		CANCELED: 'canceled'
 	},
 	builtinComponents = {
+		[ Constants.Z_ARGUMENT_REFERENCE ]: 'wl-z-argument-reference',
 		[ Constants.Z_FUNCTION_CALL ]: 'wl-z-function-call',
 		[ Constants.Z_RESPONSEENVELOPE ]: 'wl-z-evaluation-result',
 		[ Constants.Z_IMPLEMENTATION ]: 'wl-z-implementation',

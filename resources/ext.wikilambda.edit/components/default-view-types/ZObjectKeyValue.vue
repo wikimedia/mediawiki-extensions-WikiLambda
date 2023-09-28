@@ -112,6 +112,7 @@ var CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	Constants = require( '../../Constants.js' ),
 	ExpandedToggle = require( '../base/ExpandedToggle.vue' ),
 	LocalizedLabel = require( '../base/LocalizedLabel.vue' ),
+	ZArgumentReference = require( './ZArgumentReference.vue' ),
 	ZMonolingualString = require( './ZMonolingualString.vue' ),
 	ZObjectKeyValueSet = require( './ZObjectKeyValueSet.vue' ),
 	ZObjectType = require( './ZObjectType.vue' ),
@@ -139,6 +140,7 @@ module.exports = exports = {
 		'cdx-message': CdxMessage,
 		'wl-expanded-toggle': ExpandedToggle,
 		'wl-localized-label': LocalizedLabel,
+		'wl-z-argument-reference': ZArgumentReference,
 		'wl-z-code': ZCode,
 		'wl-z-evaluation-result': ZEvaluationResult,
 		'wl-z-function-call': ZFunctionCall,
@@ -500,6 +502,11 @@ module.exports = exports = {
 					return ( this.parentExpectedType === Constants.Z_OBJECT );
 				}
 
+				// TERMINAL rule for argument reference key:
+				if ( this.key === Constants.Z_ARGUMENT_REFERENCE_KEY ) {
+					return false;
+				}
+
 				// TERMINAL rules for implementation:
 				// * no expansion allowed for implementation component
 				// * no expansion allowed for target function reference
@@ -573,6 +580,11 @@ module.exports = exports = {
 				if ( ( this.key === Constants.Z_OBJECT_TYPE ) && !this.expanded ) {
 					return 'wl-z-object-type';
 				}
+				// Argument Reference Key/Z18K1 should be rendered with the same component
+				// as the parent Argument Reference/Z18 object when this is expanded.
+				if ( this.key === Constants.Z_ARGUMENT_REFERENCE_KEY ) {
+					return 'wl-z-argument-reference';
+				}
 
 				// BY TYPE
 				// The typed list is a component that should not be shown with
@@ -600,6 +612,9 @@ module.exports = exports = {
 					return 'wl-z-evaluation-result';
 				}
 
+				if ( ( this.type === Constants.Z_ARGUMENT_REFERENCE ) && !this.expanded ) {
+					return 'wl-z-argument-reference';
+				}
 				if ( ( this.type === Constants.Z_FUNCTION_CALL ) && !this.expanded ) {
 					return 'wl-z-function-call';
 				}
