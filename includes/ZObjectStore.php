@@ -22,7 +22,7 @@ use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\Title;
-use MediaWiki\Title\TitleArray;
+use MediaWiki\Title\TitleArrayFromResult;
 use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\UserGroupManager;
 use Psr\Log\LoggerInterface;
@@ -145,7 +145,6 @@ class ZObjectStore {
 	public function fetchBatchZObjects( $zids ) {
 		$dbr = $this->loadBalancer->getConnection( DB_REPLICA );
 		$query = WikiPage::getQueryInfo();
-		$options = [];
 
 		$res = $dbr->newSelectQueryBuilder()
 			 ->select( $query['fields'] )
@@ -157,7 +156,7 @@ class ZObjectStore {
 			 ->caller( __METHOD__ )
 			 ->fetchResultSet();
 
-		$titleArray = TitleArray::newFromResult( $res );
+		$titleArray = new TitleArrayFromResult( $res );
 
 		$dataArray = [];
 		foreach ( $titleArray as $title ) {
