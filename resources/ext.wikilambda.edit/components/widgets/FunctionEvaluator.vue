@@ -53,7 +53,7 @@
 				data-testid="function-evaluator-inputs"
 			>
 				<div class="ext-wikilambda-key-block">
-					<label>{{ functionInputsLabel }}</label>
+					<label>{{ $i18n( 'wikilambda-function-evaluator-enter-inputs' ).text() }}</label>
 				</div>
 				<wl-z-object-key-value
 					v-for="inputRowId in inputRowIds"
@@ -86,7 +86,7 @@
 						<label>{{ $i18n( 'wikilambda-function-evaluator-result' ).text() }}</label>
 					</div>
 					<div v-if="running">
-						{{ runningMessage }}
+						{{ $i18n( 'wikilambda-function-evaluator-running' ).text() }}
 					</div>
 					<wl-z-object-key-value
 						v-else
@@ -320,25 +320,6 @@ module.exports = exports = {
 				this.forFunction ?
 					this.$i18n( 'wikilambda-function-evaluator-title-function' ).text() :
 					this.$i18n( 'wikilambda-function-evaluator-title' ).text();
-		},
-
-		/**
-		 * Returns the human readable lable for the function call inputs block
-		 *
-		 * @return {string}
-		 */
-		functionInputsLabel: function () {
-			return this.$i18n( 'wikilambda-function-evaluator-enter-inputs' ).text();
-		},
-
-		/**
-		 * Returns message for the Orchestration result section
-		 * when there's a function call being called.
-		 *
-		 * @return {string}
-		 */
-		runningMessage: function () {
-			return this.$i18n( 'wikilambda-function-evaluator-running' ).text();
 		}
 	} ),
 	methods: $.extend( mapActions( [

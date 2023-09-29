@@ -43,7 +43,7 @@
 					:placeholder="summaryPlaceholder"
 				></cdx-text-input>
 				<template #label>
-					{{ summaryHelpText }}
+					{{ $i18n( 'wikilambda-editor-publish-dialog-summary-help-text' ).text() }}
 				</template>
 			</cdx-field>
 
@@ -167,15 +167,6 @@ module.exports = exports = {
 		 */
 		summaryLabel: function () {
 			return this.$i18n( 'wikilambda-editor-publish-dialog-summary-label' ).text();
-		},
-
-		/**
-		 * Returns the help text for the summary text field
-		 *
-		 * @return {string}
-		 */
-		summaryHelpText: function () {
-			return this.$i18n( 'wikilambda-editor-publish-dialog-summary-help-text' ).text();
 		},
 
 		/**

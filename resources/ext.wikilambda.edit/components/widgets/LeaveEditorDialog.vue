@@ -17,7 +17,7 @@
 			@primary="leavePage"
 			@default="stayOnPage"
 		>
-			<div>{{ leaveDialogText }}</div>
+			<div>{{ $i18n( 'wikilambda-publish-lose-changes-prompt' ).text() }}</div>
 		</cdx-dialog>
 	</div>
 </template>
@@ -51,15 +51,6 @@ module.exports = exports = {
 		 */
 		leaveDialogTitle: function () {
 			return this.$i18n( 'wikilambda-editor-leave-edit-mode-header' ).text();
-		},
-
-		/**
-		 * Returns the text of the Leave dialog
-		 *
-		 * @return {string}
-		 */
-		leaveDialogText: function () {
-			return this.$i18n( 'wikilambda-publish-lose-changes-prompt' ).text();
 		},
 
 		/**
