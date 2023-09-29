@@ -25,7 +25,9 @@
 			@input="updateRemainingChars"
 			@change="persistDescription"
 		></cdx-text-input>
-		<div class="ext-wikilambda-function-definition-description__counter">{{ remainingChars }}</div>
+		<div class="ext-wikilambda-function-definition-description__counter">
+			{{ remainingChars }}
+		</div>
 	</div>
 </template>
 
