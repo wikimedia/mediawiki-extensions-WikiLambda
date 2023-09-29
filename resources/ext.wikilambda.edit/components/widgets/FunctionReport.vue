@@ -41,14 +41,14 @@
 						:report-type="reportType"
 						@set-keys="openMetricsDialog"
 					></wl-function-report-item>
-					<wl-function-metadata-dialog
-						:open="showMetrics"
-						:implementation-label="activeImplementationLabel"
-						:tester-label="activeTesterLabel"
-						:metadata="metadata"
-						@close-dialog="closeMetricsDialog"
-					></wl-function-metadata-dialog>
 				</div>
+				<wl-function-metadata-dialog
+					:open="showMetrics"
+					:implementation-label="activeImplementationLabel"
+					:tester-label="activeTesterLabel"
+					:metadata="metadata"
+					@close-dialog="closeMetricsDialog"
+				></wl-function-metadata-dialog>
 			</div>
 			<div v-else>
 				<p> {{ $i18n( 'wikilambda-tester-no-results' ).text() }} </p>
