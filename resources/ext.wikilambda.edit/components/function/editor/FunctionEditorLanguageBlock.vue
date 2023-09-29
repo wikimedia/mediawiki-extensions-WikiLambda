@@ -44,7 +44,7 @@
 			:can-edit="canEditFunction"
 			:tooltip-icon="icons.cdxIconLock"
 			:tooltip-message="adminTooltipMessage"
-			@updated-argument-label="setHasUpdatedLabels"
+			@updated-argument-label="updatedLabels"
 		></wl-function-editor-inputs>
 		<!-- component that displays output for a language -->
 		<wl-function-editor-output
