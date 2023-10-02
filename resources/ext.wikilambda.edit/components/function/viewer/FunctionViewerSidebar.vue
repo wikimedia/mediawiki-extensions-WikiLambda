@@ -20,7 +20,9 @@
 					<cdx-info-chip
 						class="ext-wikilambda-function-viewer-sidebar__chip-item"
 						:title="item.languageLabel"
-					>{{ item.isoCode.toUpperCase() }}</cdx-info-chip>
+					>
+						{{ item.isoCode.toUpperCase() }}
+					</cdx-info-chip>
 					<span
 						class="ext-wikilambda-function-viewer-sidebar__chip-text"
 					>{{ item.label }}</span>
