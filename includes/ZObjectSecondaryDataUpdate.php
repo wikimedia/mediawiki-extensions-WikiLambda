@@ -139,9 +139,14 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 		// If appropriate, add entry to wikilambda_zlanguages for this ZID
 		if ( $ztype === ZTypeRegistry::Z_LANGUAGE ) {
+			// Clear old values, if any
+			$zObjectStore->deleteZLanguageFromLanguagesCache( $zid );
+
+			// Set primary language code
 			$targetLanguage = $innerZObject->getValueByKey( ZTypeRegistry::Z_LANGUAGE_CODE )->getZValue();
 			$zObjectStore->insertZLanguageToLanguagesCache( $zid, $targetLanguage );
 
+			// Set secondary language codes, if any
 			$secondaryLanguagesObject = $innerZObject->getValueByKey( ZTypeRegistry::Z_LANGUAGE_SECONDARYCODES );
 			if ( $secondaryLanguagesObject !== null ) {
 				'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $secondaryLanguagesObject';
