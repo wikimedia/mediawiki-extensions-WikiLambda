@@ -390,6 +390,6 @@
 	"wikilambda-function-evaluator-run-function": "Kör funktion",
 	"wikilambda-unknown-save-error-message": "Några fel uppstod när dina ändringar skulle sparas.",
 	"wikilambda-list-type-change-warning": "Du ändrade typen hos en eller fler listor. Alla listobjekt kommer raderas när du publicerar",
-	"wikilambda-function-evaluation-restriction-notrunnable": "Funktionen har inga godkände implementeringar.",
+	"wikilambda-function-evaluation-restriction-notrunnable": "Funktionen har inga godkända implementeringar.",
 	"wikilambda-function-evaluation-restriction-warning": "Tyvärr! För tillfället kan bara inloggade användare köra funktioner."
 }

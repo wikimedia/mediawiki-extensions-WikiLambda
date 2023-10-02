@@ -10,6 +10,7 @@
 			"Okras",
 			"Pacha Tchernof",
 			"Rivka Silinsky",
+			"Stjn",
 			"Tanzun",
 			"UniCollab",
 			"WindEwriX",
@@ -123,5 +124,6 @@
 	"wikilambda-function-explorer-name-title": "Имя",
 	"wikilambda-function-evaluator-running": "Выполняется…",
 	"wikilambda-function-evaluator-result": "Результат",
-	"wikilambda-function-evaluator-result-details": "Подробности"
+	"wikilambda-function-evaluator-result-details": "Подробности",
+	"wikilambda-argument-reference-selector-placeholder": "Выберите аргумент"
 }

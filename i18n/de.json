@@ -392,5 +392,6 @@
 	"wikilambda-unknown-save-error-message": "Beim Versuch, deine Änderungen zu speichern, ist ein Fehler aufgetreten.",
 	"wikilambda-list-type-change-warning": "Du hast den Typ einer oder mehrerer Listen geändert. Bei der Veröffentlichung werden alle Listenelemente gelöscht",
 	"wikilambda-function-evaluation-restriction-notrunnable": "Für diese Funktion gibt es keine genehmigten Implementierungen.",
-	"wikilambda-function-evaluation-restriction-warning": "Es tut uns leid! Momentan können nur angemeldete Benutzer Funktionen ausführen."
+	"wikilambda-function-evaluation-restriction-warning": "Es tut uns leid! Momentan können nur angemeldete Benutzer Funktionen ausführen.",
+	"wikilambda-argument-reference-selector-placeholder": "Argument auswählen"
 }

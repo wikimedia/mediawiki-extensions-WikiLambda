@@ -387,5 +387,6 @@
 	"wikilambda-unknown-save-error-message": "Un error ha occurrite durante le tentativa de salveguardar tu cambiamentos.",
 	"wikilambda-list-type-change-warning": "Tu ha cambiate le typo de un o plure listas. Al publication, tote le elementos del lista essera delite.",
 	"wikilambda-function-evaluation-restriction-notrunnable": "Iste function non ha implementationes approbate.",
-	"wikilambda-function-evaluation-restriction-warning": "Nos lo regretta! Al momento, solmente usatores que ha aperite session pote executar functiones."
+	"wikilambda-function-evaluation-restriction-warning": "Nos lo regretta! Al momento, solmente usatores que ha aperite session pote executar functiones.",
+	"wikilambda-argument-reference-selector-placeholder": "Selige argumento"
 }

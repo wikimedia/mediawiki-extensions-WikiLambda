@@ -113,5 +113,6 @@
 	"wikilambda-function-evaluator-running": "Leeft...",
 	"wikilambda-function-evaluator-result": "Resultat",
 	"wikilambda-function-evaluator-result-details": "Detailer",
-	"wikilambda-function-evaluator-run-function": "Funktioun ausféieren"
+	"wikilambda-function-evaluator-run-function": "Funktioun ausféieren",
+	"wikilambda-argument-reference-selector-placeholder": "Argument auswielen"
 }
