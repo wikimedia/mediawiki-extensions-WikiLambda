@@ -10,5 +10,6 @@
 	"wikilambda-ztester-missing-call-function": "ಕರೆ ಖಾಲಿಯಾಗಿದೆ. ದಯವಿಟ್ಟು ಕಾರ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
 	"wikilambda-ztester-missing-validation-function": "ಫಲಿತಾಂಶದ ಮೌಲ್ಯೀಕರಣವು ಖಾಲಿಯಾಗಿದೆ. ದಯವಿಟ್ಟು ಕಾರ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
 	"wikilambda-about-widget-aliases-caption": "ಪ್ರತಿ ಅಲಿಯಾಸ್ ನಂತರ ರಿಟರ್ನ್ ↵ ಒತ್ತಿರಿ.",
-	"wikilambda-about-widget-view-languages-title": "ಇತರ ಭಾಷೆಗಳಲ್ಲಿ ಮಾಹಿತಿ"
+	"wikilambda-about-widget-view-languages-title": "ಇತರ ಭಾಷೆಗಳಲ್ಲಿ ಮಾಹಿತಿ",
+	"wikilambda-argument-reference-selector-placeholder": "ವಾದವನ್ನು ಆಯ್ಕೆಮಾಡಿ"
 }
