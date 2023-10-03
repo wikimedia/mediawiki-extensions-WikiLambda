@@ -20,6 +20,7 @@ use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 class ApiQueryZObjectLabelsTest extends ApiTestCase {
 
 	private const EN = 'Z1002';
+	private const ES = 'Z1003';
 	private const IT = 'Z1787';
 	private const EGL = 'Z1726';
 
@@ -27,88 +28,152 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 	 * @var array
 	 */
 	private $testData = [
-		// TODO: Expand this test data to cover aliases
-		// (wlzl_label_primary set to 0 and more than one result per language)
-		'Z490' => [
+		[
 			'wlzl_zobject_zid' => 'Z490',
-			'wlzl_type' => 'birdtype',
-			'wlzl_language' => self::IT,
-			'wlzl_label' => 'CHEEP',
-			'wlzl_label_normalised' => 'cheep',
+			'wlzl_type' => 'Z4',
+			'wlzl_language' => self::EN,
+			'wlzl_label' => 'Text',
+			'wlzl_label_normalised' => 'text',
 			'wlzl_label_primary' => 1,
 			'wlzl_return_type' => null,
-		],
-		'Z492' => [
+		], [
+			'wlzl_zobject_zid' => 'Z490',
+			'wlzl_type' => 'Z4',
+			'wlzl_language' => self::ES,
+			'wlzl_label' => 'Texto',
+			'wlzl_label_normalised' => 'texto',
+			'wlzl_label_primary' => 1,
+			'wlzl_return_type' => null,
+		], [
+			'wlzl_zobject_zid' => 'Z490',
+			'wlzl_type' => 'Z4',
+			'wlzl_language' => self::EN,
+			'wlzl_label' => 'Long text',
+			'wlzl_label_normalised' => 'long text',
+			'wlzl_label_primary' => 0,
+			'wlzl_return_type' => null,
+		], [
+			'wlzl_zobject_zid' => 'Z490',
+			'wlzl_type' => 'Z4',
+			'wlzl_language' => self::EN,
+			'wlzl_label' => 'Paragraph',
+			'wlzl_label_normalised' => 'paragraph',
+			'wlzl_label_primary' => 0,
+			'wlzl_return_type' => null,
+		], [
 			'wlzl_zobject_zid' => 'Z492',
-			'wlzl_type' => 'fruittype',
-			'wlzl_language' => self::EGL,
-			'wlzl_label' => 'CHOP',
-			'wlzl_label_normalised' => 'chop',
-			'wlzl_label_primary' => 1,
-			'wlzl_return_type' => null,
-		],
-		'Z493' => [
-			'wlzl_zobject_zid' => 'Z493',
-			'wlzl_type' => 'badtype',
+			'wlzl_type' => 'Z4',
 			'wlzl_language' => self::EN,
-			'wlzl_label' => 'CHAP',
-			'wlzl_label_normalised' => 'chap',
+			'wlzl_label' => 'Word',
+			'wlzl_label_normalised' => 'word',
 			'wlzl_label_primary' => 1,
 			'wlzl_return_type' => null,
-		],
-		'Z491' => [
+		], [
+			'wlzl_zobject_zid' => 'Z492',
+			'wlzl_type' => 'Z4',
+			'wlzl_language' => self::ES,
+			'wlzl_label' => 'Palabra',
+			'wlzl_label_normalised' => 'palabra',
+			'wlzl_label_primary' => 1,
+			'wlzl_return_type' => null,
+		], [
+			'wlzl_zobject_zid' => 'Z492',
+			'wlzl_type' => 'Z4',
+			'wlzl_language' => self::EN,
+			'wlzl_label' => 'Short tiny text',
+			'wlzl_label_normalised' => 'short tiny text',
+			'wlzl_label_primary' => 0,
+			'wlzl_return_type' => null,
+		], [
+			'wlzl_zobject_zid' => 'Z492',
+			'wlzl_type' => 'Z4',
+			'wlzl_language' => self::ES,
+			'wlzl_label' => 'Textitos',
+			'wlzl_label_normalised' => 'textito',
+			'wlzl_label_primary' => 0,
+			'wlzl_return_type' => null,
+		], [
 			'wlzl_zobject_zid' => 'Z491',
-			'wlzl_type' => 'birdtype',
-			'wlzl_language' => self::IT,
-			'wlzl_label' => 'CHORP',
-			'wlzl_label_normalised' => 'chorp',
-			'wlzl_label_primary' => 1,
-			'wlzl_return_type' => null,
-		],
-		'Z494' => [
-			'wlzl_zobject_zid' => 'Z494',
-			'wlzl_type' => 'function',
+			'wlzl_type' => 'Z8',
 			'wlzl_language' => self::EN,
-			'wlzl_label' => 'CHOOP',
-			'wlzl_label_normalised' => 'choop',
+			'wlzl_label' => 'Text of a given length',
+			'wlzl_label_normalised' => 'text of a given length',
 			'wlzl_label_primary' => 1,
-			'wlzl_return_type' => 'birdtype',
-		],
-		'Z495' => [
-			'wlzl_zobject_zid' => 'Z495',
-			'wlzl_type' => 'function',
+			'wlzl_return_type' => 'Z4',
+		], [
+			'wlzl_zobject_zid' => 'Z491',
+			'wlzl_type' => 'Z8',
 			'wlzl_language' => self::EN,
-			'wlzl_label' => 'CHOORP',
-			'wlzl_label_normalised' => 'choorp',
+			'wlzl_label' => 'Generic text',
+			'wlzl_label_normalised' => 'generic text',
+			'wlzl_label_primary' => 0,
+			'wlzl_return_type' => 'Z4',
+		], [
+			'wlzl_zobject_zid' => 'Z480',
+			'wlzl_type' => 'Z8',
+			'wlzl_language' => self::EN,
+			'wlzl_label' => 'Make pangolin',
+			'wlzl_label_normalised' => 'make pangolin',
+			'wlzl_label_primary' => 1,
+			'wlzl_return_type' => 'Z10000',
+		], [
+			'wlzl_zobject_zid' => 'Z481',
+			'wlzl_type' => 'Z8',
+			'wlzl_language' => self::EN,
+			'wlzl_label' => 'Return anything',
+			'wlzl_label_normalised' => 'return anything',
 			'wlzl_label_primary' => 1,
 			'wlzl_return_type' => 'Z1',
-		],
+		], [
+			'wlzl_zobject_zid' => 'Z482',
+			'wlzl_type' => 'Z10001',
+			'wlzl_language' => self::EN,
+			'wlzl_label' => 'Anything',
+			'wlzl_label_normalised' => 'anything',
+			'wlzl_label_primary' => 1,
+			'wlzl_return_type' => null,
+		]
 	];
 
 	public function addDBDataOnce(): void {
 		$langs = ZLangRegistry::singleton();
 		$langs->register( self::EN, 'en' );
-		$langs->register( self::IT, 'it' );
-		$langs->register( self::EGL, 'egl' );
+		$langs->register( self::ES, 'es' );
 
 		foreach ( $this->testData as $key => $testdatum ) {
 			$this->db->insert( 'wikilambda_zobject_labels', $testdatum );
 		}
 	}
 
-	private function resultFor( $zid ) {
-		$db_item = $this->testData[ $zid ];
-		return [
-			'page_namespace' => NS_MAIN,
-			'page_title' => $db_item['wlzl_zobject_zid'],
-			'page_type' => $db_item['wlzl_type'],
-			'return_type' => $db_item['wlzl_return_type'],
-			'label' => $db_item['wlzl_label'],
+	private function resultFor( $zid, $resultTerm, $matchTerm = null ) {
+		$resultRow = null;
+		$matchRow = null;
+
+		foreach ( $this->testData as $row ) {
+			if ( $row[ 'wlzl_zobject_zid' ] === $zid ) {
+				if ( ( $row[ 'wlzl_label' ] === $matchTerm ) || ( $row[ 'wlzl_zobject_zid' ] === $matchTerm ) ) {
+					$matchRow = $row;
+				}
+				if ( $row[ 'wlzl_label' ] === $resultTerm ) {
+					$resultRow = $row;
+				}
+			}
+		}
+
+		return $resultRow === null ? null : [
 			'page_id' => 0,
 			'page_is_redirect' => false,
+			'page_namespace' => NS_MAIN,
 			'page_content_model' => CONTENT_MODEL_ZOBJECT,
-			'page_lang' => $db_item['wlzl_language'],
-			'is_primary' => $db_item['wlzl_label_primary'],
+			'page_title' => $zid,
+			'page_type' => $resultRow['wlzl_type'],
+			'return_type' => $resultRow['wlzl_return_type'],
+			'match_label' => ( $matchRow !== null ) ? $matchTerm : null,
+			'match_is_primary' => ( $matchRow !== null ) ? strval( $matchRow[ 'wlzl_label_primary' ] ) : null,
+			'match_lang' => ( $matchRow !== null ) ? $matchRow[ 'wlzl_language' ] : null,
+			'match_rate' => 0,
+			'label' => $resultRow[ 'wlzl_label' ],
+			'type_label' => null
 		];
 	}
 
@@ -116,9 +181,9 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
 			'list' => 'wikilambdasearch_labels',
-			'wikilambdasearch_search' => 'chip',
+			'wikilambdasearch_search' => 'boolean',
 			'wikilambdasearch_language' => 'en',
-			'wikilambdasearch_type' => 'theforbiddentype',
+			'wikilambdasearch_type' => 'Z1',
 		] );
 		$this->assertEquals( [ 'batchcomplete' => true ], $result[0] );
 	}
@@ -127,15 +192,16 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
 			'list' => 'wikilambdasearch_labels',
-			'wikilambdasearch_language' => 'it',
-			'wikilambdasearch_type' => 'birdtype',
+			'wikilambdasearch_language' => 'en',
+			'wikilambdasearch_type' => 'Z8',
 		] );
 		$expected = [
 			'batchcomplete' => true,
 			'query' => [
 				'wikilambdasearch_labels' => [
-					$this->resultFor( 'Z490' ),
-					$this->resultFor( 'Z491' ),
+					$this->resultFor( 'Z491', 'Text of a given length' ),
+					$this->resultFor( 'Z480', 'Make pangolin' ),
+					$this->resultFor( 'Z481', 'Return anything' ),
 				]
 			]
 		];
@@ -147,14 +213,14 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'action' => 'query',
 			'list' => 'wikilambdasearch_labels',
 			'wikilambdasearch_language' => 'en',
-			'wikilambdasearch_return_type' => 'birdtype',
+			'wikilambdasearch_return_type' => 'Z4',
 		] );
 		$expected = [
 			'batchcomplete' => true,
 			'query' => [
 				'wikilambdasearch_labels' => [
-					$this->resultFor( 'Z494' ),
-					$this->resultFor( 'Z495' ),
+					$this->resultFor( 'Z491', 'Text of a given length' ),
+					$this->resultFor( 'Z481', 'Return anything' ),
 				]
 			]
 		];
@@ -166,14 +232,14 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			'action' => 'query',
 			'list' => 'wikilambdasearch_labels',
 			'wikilambdasearch_language' => 'en',
-			'wikilambdasearch_return_type' => 'birdtype',
+			'wikilambdasearch_return_type' => 'Z4',
 			'wikilambdasearch_strict_return_type' => true,
 		] );
 		$expected = [
 			'batchcomplete' => true,
 			'query' => [
 				'wikilambdasearch_labels' => [
-					$this->resultFor( 'Z494' ),
+					$this->resultFor( 'Z491', 'Text of a given length' ),
 				]
 			]
 		];
@@ -184,18 +250,16 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
 			'list' => 'wikilambdasearch_labels',
-			'wikilambdasearch_language' => 'it',
-			'wikilambdasearch_type' => 'birdtype',
-			'wikilambdasearch_return_type' => 'birdtype',
+			'wikilambdasearch_language' => 'en',
+			'wikilambdasearch_type' => 'Z10000',
+			'wikilambdasearch_return_type' => 'Z10000',
 		] );
 		$expected = [
 			'batchcomplete' => true,
 			'query' => [
 				'wikilambdasearch_labels' => [
-					$this->resultFor( 'Z490' ),
-					$this->resultFor( 'Z491' ),
-					$this->resultFor( 'Z494' ),
-					$this->resultFor( 'Z495' ),
+					$this->resultFor( 'Z480', 'Make pangolin' ),
+					$this->resultFor( 'Z481', 'Return anything' ),
 				]
 			]
 		];
@@ -206,43 +270,46 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
 			'list' => 'wikilambdasearch_labels',
-			'wikilambdasearch_language' => 'it',
-			'wikilambdasearch_type' => 'birdtype',
-			'wikilambdasearch_return_type' => 'birdtype',
+			'wikilambdasearch_language' => 'en',
+			'wikilambdasearch_type' => 'Z10000',
+			'wikilambdasearch_return_type' => 'Z10000',
 			'wikilambdasearch_strict_return_type' => true,
 		] );
 		$expected = [
 			'batchcomplete' => true,
 			'query' => [
 				'wikilambdasearch_labels' => [
-					$this->resultFor( 'Z490' ),
-					$this->resultFor( 'Z491' ),
-					$this->resultFor( 'Z494' ),
+					$this->resultFor( 'Z480', 'Make pangolin' )
 				]
 			]
 		];
 		$this->assertEquals( $expected, $result[0] );
 	}
 
-	/**
-	 * TODO: Test setContinueEnumParameter when numRows() > limit.
-	 */
 	public function testLimit() {
 		$precondition_result = $this->doApiRequest( [
 			'action' => 'query',
 			'list' => 'wikilambdasearch_labels',
-			'wikilambdasearch_language' => 'it',
-			'wikilambdasearch_type' => 'birdtype',
+			'wikilambdasearch_language' => 'es',
+			'wikilambdasearch_type' => 'Z4'
 		] );
-		$this->assertCount( 2, $precondition_result[0]['query']['wikilambdasearch_labels'] );
+		$precondition_expected = [
+			'batchcomplete' => true,
+			'query' => [
+				'wikilambdasearch_labels' => [
+					$this->resultFor( 'Z490', 'Texto' ),
+					$this->resultFor( 'Z492', 'Palabra' )
+				]
+			]
+		];
+		$this->assertEquals( $precondition_expected, $precondition_result[0] );
 
 		$result = $this->doApiRequest( [
 			'action' => 'query',
 			'list' => 'wikilambdasearch_labels',
-			'wikilambdasearch_language' => 'it',
-			'wikilambdasearch_type' => 'birdtype',
-			// Limit is off by one?
-			'wikilambdasearch_limit' => 1,
+			'wikilambdasearch_language' => 'es',
+			'wikilambdasearch_type' => 'Z4',
+			'wikilambdasearch_limit' => 1
 		] );
 		$expected = [
 			'batchcomplete' => true,
@@ -252,104 +319,7 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 			],
 			'query' => [
 				'wikilambdasearch_labels' => [
-					$this->resultFor( 'Z490' ),
-				]
-			]
-		];
-	}
-
-	/**
-	 */
-	public function testSearchByLanguageNoFallback() {
-		$result = $this->doApiRequest( [
-			'action' => 'query',
-			'list' => 'wikilambdasearch_labels',
-			'wikilambdasearch_language' => 'it',
-			// Not setting the default, 'wikilambdasearch_nofallback' => true
-		] );
-		$expected = [
-			'batchcomplete' => true,
-			'query' => [
-				'wikilambdasearch_labels' => [
-					$this->resultFor( 'Z490' ),
-					// en is always included because of History
-					$this->resultFor( 'Z493' ),
-					$this->resultFor( 'Z491' ),
-					$this->resultFor( 'Z494' ),
-					$this->resultFor( 'Z495' ),
-				]
-			]
-		];
-		$this->assertEquals( $expected, $result[0] );
-	}
-
-	/**
-	 * @group Broken
-	 */
-	public function testSearchByLanguageNotNoFallback() {
-		// TODO: Remove Broken annotation once Boolean parameters can be false.
-		$result = $this->doApiRequest( [
-			'action' => 'query',
-			'list' => 'wikilambdasearch_labels',
-			'wikilambdasearch_language' => 'egl',
-			'wikilambdasearch_nofallback' => false,
-		] );
-		$expected = [
-			'batchcomplete' => true,
-			'query' => [
-				'wikilambdasearch_labels' => [
-					// egl falls back to it
-					$this->resultFor( 'Z490' ),
-					// egl falls back to it
-					$this->resultFor( 'Z491' ),
-					$this->resultFor( 'Z492' ),
-					// all languages fall back to en
-					$this->resultFor( 'Z493' ),
-				]
-			]
-		];
-		$this->assertEquals( $expected, $result[0] );
-	}
-
-	/**
-	 * @group Broken
-	 */
-	public function testSearchByLabelInexact() {
-		// TODO: Remove Broken annotation once Boolean parameters can be false.
-		$result = $this->doApiRequest( [
-			'action' => 'query',
-			'list' => 'wikilambdasearch_labels',
-			'wikilambdasearch_language' => 'it',
-			'wikilambdasearch_search' => 'CHEEP',
-			// 'wikilambdasearch_exact' => false,  // default
-		] );
-		$expected = [
-			'batchcomplete' => true,
-			'query' => [
-				'wikilambdasearch_labels' => [
-					[
-						$this->resultFor( 'Z490' ),
-						$this->resultFor( 'Z491' ),
-					]
-				]
-			]
-		];
-		$this->assertEquals( $expected, $result[0] );
-	}
-
-	public function testSearchByLabelExact() {
-		$result = $this->doApiRequest( [
-			'action' => 'query',
-			'list' => 'wikilambdasearch_labels',
-			'wikilambdasearch_exact' => true,
-			'wikilambdasearch_language' => 'it',
-			'wikilambdasearch_search' => 'CHORP',
-		] );
-		$expected = [
-			'batchcomplete' => true,
-			'query' => [
-				'wikilambdasearch_labels' => [
-					$this->resultFor( 'Z491' ),
+					$this->resultFor( 'Z490', 'Texto' ),
 				]
 			]
 		];
@@ -360,19 +330,141 @@ class ApiQueryZObjectLabelsTest extends ApiTestCase {
 		$result = $this->doApiRequest( [
 			'action' => 'query',
 			'list' => 'wikilambdasearch_labels',
-			'wikilambdasearch_language' => 'it',
-			'wikilambdasearch_nofallback' => false,
-			'wikilambdasearch_continue' => 2,
+			'wikilambdasearch_language' => 'es',
+			'wikilambdasearch_type' => 'Z4',
+			'wikilambdasearch_limit' => 1,
+			'wikilambdasearch_continue' => 1,
 		] );
 		$expected = [
 			'batchcomplete' => true,
 			'query' => [
 				'wikilambdasearch_labels' => [
-					$this->resultFor( 'Z491' ),
+					$this->resultFor( 'Z492', 'Palabra' ),
 				]
 			]
 		];
 		$this->assertEquals( $expected, $result[0] );
 	}
 
+	public function testSearchByLanguageWithFallback() {
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_language' => 'es'
+		] );
+		$expected = [
+			'batchcomplete' => true,
+			'query' => [
+				'wikilambdasearch_labels' => [
+					$this->resultFor( 'Z490', 'Texto' ),
+					$this->resultFor( 'Z492', 'Palabra' ),
+					$this->resultFor( 'Z491', 'Text of a given length' ),
+					$this->resultFor( 'Z480', 'Make pangolin' ),
+					$this->resultFor( 'Z481', 'Return anything' ),
+					$this->resultFor( 'Z482', 'Anything' )
+				]
+			]
+		];
+		$this->assertEquals( $expected, $result[0] );
+	}
+
+	public function testSearchByLabelExact() {
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_language' => 'en',
+			'wikilambdasearch_search' => 'TEXT',
+			'wikilambdasearch_exact' => true
+		] );
+		$expected = [
+			'batchcomplete' => true
+		];
+		$this->assertEquals( $expected, $result[0] );
+	}
+
+	public function testSearchByZid() {
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_language' => 'en',
+			'wikilambdasearch_search' => 'Z48'
+		] );
+
+		$matches = [];
+		foreach ( $result[0][ 'query' ][ 'wikilambdasearch_labels' ] as &$item ) {
+			$matches[] = $item[ 'match_rate' ];
+			$item[ 'match_rate' ] = 0.0;
+		}
+
+		$expected = [
+			'batchcomplete' => true,
+			'query' => [
+				'wikilambdasearch_labels' => [
+					$this->resultFor( 'Z480', 'Make pangolin', 'Z480' ),
+					$this->resultFor( 'Z481', 'Return anything', 'Z481' ),
+					$this->resultFor( 'Z482', 'Anything', 'Z482' ),
+				]
+			]
+		];
+
+		$this->assertEquals( $expected, $result[0] );
+		$this->assertEquals( [ 0.75, 0.75, 0.75 ], $matches );
+	}
+
+	public function testSearchByLabel_order() {
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_language' => 'en',
+			'wikilambdasearch_search' => 'Any'
+		] );
+
+		$matches = [];
+		foreach ( $result[0][ 'query' ][ 'wikilambdasearch_labels' ] as &$item ) {
+			$matches[] = $item[ 'match_rate' ];
+			$item[ 'match_rate' ] = 0.0;
+		}
+
+		$expected = [
+			'batchcomplete' => true,
+			'query' => [
+				'wikilambdasearch_labels' => [
+					$this->resultFor( 'Z482', 'Anything', 'Anything' ),
+					$this->resultFor( 'Z481', 'Return anything', 'Return anything' )
+				]
+			]
+		];
+
+		$this->assertEquals( $expected, $result[0] );
+		$this->assertEquals( [ 0.375, 0.13333333333333333 ], $matches );
+	}
+
+	public function testSearchByLabel() {
+		$result = $this->doApiRequest( [
+			'action' => 'query',
+			'list' => 'wikilambdasearch_labels',
+			'wikilambdasearch_language' => 'en',
+			'wikilambdasearch_search' => 'Text'
+		] );
+
+		$matches = [];
+		foreach ( $result[0][ 'query' ][ 'wikilambdasearch_labels' ] as &$item ) {
+			$matches[] = $item[ 'match_rate' ];
+			$item[ 'match_rate' ] = 0.0;
+		}
+
+		$expected = [
+			'batchcomplete' => true,
+			'query' => [
+				'wikilambdasearch_labels' => [
+					$this->resultFor( 'Z490', 'Text', 'Text' ),
+					$this->resultFor( 'Z492', 'Word', 'Textitos' ),
+					$this->resultFor( 'Z491', 'Text of a given length', 'Generic text' ),
+				]
+			]
+		];
+
+		$this->assertEquals( $expected, $result[0] );
+		$this->assertEquals( [ 1, 0.5, 0.25 ], $matches );
+	}
 }

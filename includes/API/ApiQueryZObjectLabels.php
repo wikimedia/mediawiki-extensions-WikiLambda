@@ -13,9 +13,8 @@ namespace MediaWiki\Extension\WikiLambda\API;
 use ApiBase;
 use ApiPageSet;
 use ApiQueryGeneratorBase;
-use MediaWiki\Extension\WikiLambda\Registry\ZLangRegistry;
 use MediaWiki\Extension\WikiLambda\WikiLambdaServices;
-use MediaWiki\Languages\LanguageFallback;
+use MediaWiki\Extension\WikiLambda\ZObjectUtils;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
@@ -51,76 +50,90 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 	private function run( $resultPageSet = null ) {
 		[
 			'search' => $searchTerm,
-			'language' => $language,
-			'nofallback' => $nofallback,
-			'exact' => $exact,
 			'type' => $type,
+			'exact' => $exact,
+			'language' => $language,
 			'return_type' => $returnType,
 			'strict_return_type' => $strictReturnType,
 			'limit' => $limit,
 			'continue' => $continue,
 		] = $this->extractRequestParams();
 
-		// Make list of language Zids
-		$languages = [ $language ];
-		if ( !$nofallback ) {
-			$languages = array_merge(
-				$languages,
-				MediaWikiServices::getInstance()->getLanguageFallback()->getAll(
-					$language,
-					/* Try for en, even if it's not an explicit fallback. */ LanguageFallback::MESSAGES
-				)
-			);
-		}
-		$langRegistry = ZLangRegistry::singleton();
-		$languageZids = $langRegistry->getLanguageZids( $languages );
+		// FIXME (T348545): We can reduce this control limit to 100 when we have
+		// have a system to return results already pre-ranked from the DB.
+		$controlLimit = 5000;
 
 		$zObjectStore = WikiLambdaServices::getZObjectStore();
 		$res = $zObjectStore->searchZObjectLabels(
 			$searchTerm,
 			$exact,
-			$languageZids,
+			[],
 			$type,
 			$returnType,
 			$strictReturnType,
-			$continue,
-			$limit + 1
+			null,
+			$controlLimit
 		);
 
-		$suggestions = [];
-		$i = 0;
-		$lastId = 0;
-		foreach ( $res as $row ) {
-			if ( $i >= $limit ) {
-				break;
-			}
-			$suggestions[] = [
-				'page_namespace' => NS_MAIN,
-				'page_title' => $row->wlzl_zobject_zid,
-				'page_type' => $row->wlzl_type,
-				'return_type' => $row->wlzl_return_type,
-				'label' => $row->wlzl_label,
-				'is_primary' => $row->wlzl_label_primary,
-				// TODO (T338248): Implement, otherwise the generator won't work.
-				'page_id' => 0,
-				// TODO (T258915): When we support redirects, implement.
-				'page_is_redirect' => false,
-				'page_content_model' => CONTENT_MODEL_ZOBJECT,
-				'page_lang' => $row->wlzl_language,
-			];
-			$lastId = $row->wlzl_id;
-			$i++;
-		}
-		unset( $i );
+		// 1. Set match_rate for every entry and eliminate duplicates with lower match rates
+		// TODO: should we prioritize matches with primary labels?
+		$matches = [];
+		$hasSearchTerm = ( $searchTerm !== '' );
+		$matchField = ZObjectUtils::isValidZObjectReference( $searchTerm ) ? 'wlzl_zobject_zid' : 'wlzl_label';
 
-		if ( $res->numRows() > $limit ) {
-			$this->setContinueEnumParameter( 'continue', strval( $lastId + 1 ) );
+		foreach ( $res as $row ) {
+			$matchRate = $hasSearchTerm ? self::getMatchRate( $searchTerm, $row->{ $matchField } ) : 0;
+
+			// If the current row is new or a better match, keep. Else, ignore.
+			if ( !array_key_exists( $row->wlzl_zobject_zid, $matches ) ||
+				( $matches[ $row->wlzl_zobject_zid ][ 'match_rate' ] < $matchRate ) ) {
+				$matches[ $row->wlzl_zobject_zid ] = [
+					// TODO (T338248): Implement, otherwise the generator won't work.
+					'page_id' => 0,
+					// TODO (T258915): When we support redirects, implement.
+					'page_is_redirect' => false,
+					'page_namespace' => NS_MAIN,
+					'page_content_model' => CONTENT_MODEL_ZOBJECT,
+					'page_title' => $row->wlzl_zobject_zid,
+					'page_type' => $row->wlzl_type,
+					'return_type' => $row->wlzl_return_type,
+					'match_label' => $hasSearchTerm ? $row->{ $matchField } : null,
+					'match_is_primary' => $hasSearchTerm ? $row->wlzl_label_primary : null,
+					'match_lang' => $hasSearchTerm ? $row->wlzl_language : null,
+					'match_rate' => $matchRate,
+					// Labels in the user language will be set after selecting the page
+					'label' => null,
+					'type_label' => null,
+ ];
+			}
+		}
+
+		// 2. Sort all results by match_rate to get best hits
+		usort( $matches, static function ( $a, $b ) {
+			return $b[ 'match_rate' ] <=> $a[ 'match_rate' ];
+		} );
+
+		// 3. Prune the result set to the limit, slice to requested page, and set continue
+		$continue = $continue === null ? 0 : intval( $continue );
+		$hits = array_slice( $matches, $continue * $limit, $limit );
+		$pageSize = count( $matches ) - ( $continue * $limit );
+		if ( $pageSize > $limit ) {
+			$this->setContinueEnumParameter( 'continue', strval( $continue + 1 ) );
+		}
+
+		// 4. Add relevant user language labels to each hit: This will be the main
+		// name shown in the selector, while the match_label set above will be used
+		// as supporting text when the search text has matched an alias or a label in
+		// a different language.
+		foreach ( $hits as $index => $hit ) {
+			$hits[ $index ][ 'label' ] = $zObjectStore->fetchZObjectLabel( $hit[ 'page_title' ], $language );
+			$hits[ $index ][ 'type_label' ] = $zObjectStore->fetchZObjectLabel( $hit[ 'page_type' ], $language );
 		}
 
 		if ( $resultPageSet ) {
 			// FIXME: This needs to be an IResultWrapper, not an array of assoc. objects, irritatingly.
-			// $resultPageSet->populateFromQueryResult( $dbr, $suggestions );
-			foreach ( $suggestions as $index => $entry ) {
+			// $resultPageSet->populateFromQueryResult( $dbr, $hits );
+			foreach ( $hits as $index => $entry ) {
 				$resultPageSet->setGeneratorData(
 					Title::makeTitle( $entry['page_namespace'], $entry['page_title'] ),
 					[ 'index' => $index + $continue + 1 ]
@@ -128,7 +141,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 			}
 		} else {
 			$result = $this->getResult();
-			foreach ( $suggestions as $entry ) {
+			foreach ( $hits as $entry ) {
 				$result->addValue( [ 'query', $this->getModuleName() ], null, $entry );
 			}
 		}
@@ -181,6 +194,18 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 				ApiBase::PARAM_HELP_MSG => 'api-help-param-continue',
 			],
 		];
+	}
+
+	/**
+	 * @param string $substring
+	 * @param string $hit
+	 * @return float
+	 */
+	private static function getMatchRate( $substring, $hit ) {
+		$distance = levenshtein( $substring, $hit );
+		$max = max( strlen( $substring ), strlen( $hit ) );
+		$percentage = ( $max - $distance ) / $max;
+		return $percentage;
 	}
 
 	/**

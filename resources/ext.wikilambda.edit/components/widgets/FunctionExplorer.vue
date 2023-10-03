@@ -46,7 +46,6 @@
 				<template v-if="edit">
 					<wl-z-object-selector
 						:type="Constants.Z_FUNCTION"
-						:return-type="Constants.Z_FUNCTION"
 						:placeholder="$i18n( 'wikilambda-function-typeselector-label' ).text()"
 						:selected-zid="currentFunctionZid"
 						data-testid="function-selector"

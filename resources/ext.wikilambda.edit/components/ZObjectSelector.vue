@@ -12,51 +12,40 @@
 	<span
 		class="ext-wikilambda-select-zobject"
 	>
-		<!-- Show link when we are in view mode -->
-		<div
-			v-if="isViewMode"
-			class="ext-wikilambda-select-zobject__link"
-		>
-			<a
-				:href="selectedUrl"
-				target="_blank"
-			>{{ selectedLabel }}</a>
-		</div>
 		<!-- Show fields when edit is false -->
-		<template v-else>
-			<cdx-lookup
-				:key="lookupKey"
-				:selected="selectedValue"
-				:disabled="disabled"
-				:placeholder="lookupPlaceholder"
-				:menu-items="lookupResults"
-				:end-icon="lookupIcon"
-				:initial-input-value="selectedLabel"
-				:status="errorLookupStatus"
-				data-testid="z-object-selector-lookup"
-				@update:selected="onSelect"
-				@input="onInput"
-				@blur="onFocusOut"
-				@focus="onFocus"
+		<cdx-lookup
+			:key="lookupKey"
+			:selected="selectedValue"
+			:disabled="disabled"
+			:placeholder="lookupPlaceholder"
+			:menu-items="lookupResults"
+			:menu-config="lookupConfig"
+			:end-icon="lookupIcon"
+			:initial-input-value="selectedLabel"
+			:status="errorLookupStatus"
+			data-testid="z-object-selector-lookup"
+			@update:selected="onSelect"
+			@input="onInput"
+			@blur="onFocusOut"
+			@focus="onFocus"
+		>
+			<template #no-results>
+				{{ $i18n( 'wikilambda-zobjectselector-no-results' ).text() }}
+			</template>
+		</cdx-lookup>
+		<div
+			v-if="hasFieldErrors"
+			class="ext-wikilambda-select-zobject__errors"
+		>
+			<cdx-message
+				v-for="( error, index ) in fieldErrors"
+				:key="'field-error-' + rowId + '-' + index"
+				:type="error.type"
+				:inline="true"
 			>
-				<template #no-results>
-					{{ $i18n( 'wikilambda-zobjectselector-no-results' ).text() }}
-				</template>
-			</cdx-lookup>
-			<div
-				v-if="hasFieldErrors"
-				class="ext-wikilambda-select-zobject__errors"
-			>
-				<cdx-message
-					v-for="( error, index ) in fieldErrors"
-					:key="'field-error-' + rowId + '-' + index"
-					:type="error.type"
-					:inline="true"
-				>
-					<div v-html="getErrorMessage( error )"></div>
-				</cdx-message>
-			</div>
-		</template>
+				<div v-html="getErrorMessage( error )"></div>
+			</cdx-message>
+		</div>
 	</span>
 </template>
 
@@ -78,9 +67,6 @@ module.exports = exports = {
 		'cdx-lookup': CdxLookup
 	},
 	mixins: [ errorUtils, typeUtils ],
-	inject: {
-		viewmode: { default: false }
-	},
 	props: {
 		rowId: {
 			type: Number,
@@ -89,11 +75,6 @@ module.exports = exports = {
 		selectedZid: {
 			type: String,
 			default: ''
-		},
-		edit: {
-			type: [ Boolean, undefined ],
-			required: false,
-			default: undefined
 		},
 		disabled: {
 			type: Boolean,
@@ -130,6 +111,10 @@ module.exports = exports = {
 			active: false,
 			lookupKey: 1,
 			lookupResults: [],
+			lookupConfig: {
+				boldLabel: true,
+				searchQuery: ''
+			},
 			lookupDelayTimer: null,
 			lookupDelayMs: 300,
 			inputValue: ''
@@ -142,20 +127,6 @@ module.exports = exports = {
 	] ), {
 
 		/**
-		 * Returns edit mode depending on the global viewmode
-		 * injected property and the edit property. Edit property
-		 * overwrites the global viewmode prop.
-		 *
-		 * @return {boolean}
-		 */
-		isViewMode: function () {
-			if ( this.edit !== undefined ) {
-				return !this.edit;
-			}
-			return !!this.viewmode;
-		},
-
-		/**
 		 * Value model for the internal codex lookup component. It
 		 * must be null or the value (Zid) of the selected MenuItem.
 		 *
@@ -163,17 +134,6 @@ module.exports = exports = {
 		 */
 		selectedValue: function () {
 			return this.selectedZid || null;
-		},
-
-		/**
-		 * URL of the selected Zid. Will only be shown when edit is false.
-		 *
-		 * @return {string}
-		 */
-		selectedUrl: function () {
-			return this.selectedZid ?
-				'/view/en' + this.selectedZid :
-				'';
 		},
 
 		/**
@@ -268,24 +228,6 @@ module.exports = exports = {
 			},
 
 			/**
-			 * Whether the selected zid fits the type restrictions according
-			 * to the type set as prop. If there's no type set, returns true
-			 *
-			 * @param {string} zid
-			 * @return {boolean}
-			 */
-			hasValidType: function ( zid ) {
-				// If the input property type is not set, accept any zid:
-				if ( !this.type ) {
-					return true;
-				}
-				// Else, check that the selected zid has a matching type:
-				const fetchedObject = this.getStoredObject( zid );
-				const zidType = fetchedObject[ Constants.Z_PERSISTENTOBJECT_VALUE ][ Constants.Z_OBJECT_TYPE ];
-				return ( this.type === zidType );
-			},
-
-			/**
 			 * Handle get zObject lookup.
 			 * update lookup results with label and update  in store.
 			 *
@@ -302,88 +244,45 @@ module.exports = exports = {
 						return;
 					}
 					const zids = [];
+					this.lookupConfig.searchQuery = input;
 					this.lookupResults = [];
 					// Update lookupResults list
 					if ( payload && payload.length > 0 ) {
 						payload.forEach( ( result ) => {
+
+							// Set up codex MenuItem options
+							// https://doc.wikimedia.org/codex/latest/components/demos/menu-item.html
 							const value = result.page_title;
 							const label = result.label;
+							const description = result.type_label;
+							const supportingText = ( result.label !== result.match_label ) ? `(${result.match_label})` : '';
+							// If return type is set, reflect mode with icon
+							let icon;
+							if ( this.returnType ) {
+								icon = ( result.page_type === this.type ) ?
+									icons.cdxIconInstance :
+									icons.cdxIconFunction;
+							}
+
 							// Exclude everything in the exclude Zids and disallowed types lists
 							if ( !this.isExcludedZid( value ) ) {
-								this.lookupResults.push( { value, label } );
+								this.lookupResults.push( {
+									value,
+									label,
+									description,
+									supportingText,
+									icon
+								} );
 							}
+
 							// Gather all zids to request them for the data store
 							zids.push( value );
 						} );
 						// Once lookupResults are gathered, fetch and collect all the data;
 						// fetchZids makes sure that only the missing zids are requested
 						this.fetchZids( { zids } );
-					} else {
-						this.setLocalError( { code: 'wikilambda-noresult' } );
 					}
 				} );
-			},
-
-			/**
-			 * Allow the field to receive a Zid instead of a label and,
-			 * if valid and it exists, select and submit it.
-			 * If the selector restricts the type, check that the ZObject
-			 * type fits this restriction.
-			 *
-			 * @param {string} zid string that is already a valid Zid
-			 */
-			validateZidInput: function ( zid ) {
-				// The input Zid is in the excluded list: do nothing
-				if ( this.isExcludedZid( zid ) ) {
-					return;
-				}
-
-				// I the Zid has the correct format, validate and select.
-				// If the object is not yet saved in the store, fetch and then validate.
-				const fetchedObject = this.getStoredObject( zid );
-				if ( fetchedObject ) {
-					this.validateAndSelectZid( zid );
-				} else {
-					this.fetchZids( { zids: [ zid ] } ).then( () => {
-						this.validateAndSelectZid( zid );
-					} );
-				}
-			},
-
-			/**
-			 * Validate the selected Zid by checking that the selected Zid
-			 * passes all the type restrictions, and if there's no error,
-			 * select. This method is called when the object is already fetched
-			 * and saved in the store. If it's not found, the store will
-			 * return empty.
-			 *
-			 * @param {string} zid string of a fetched and valid Zid
-			 */
-			validateAndSelectZid: function ( zid ) {
-				const fetchedObject = this.getStoredObject( zid );
-
-				// If not stored, it has been requested and nothing
-				// was returned, which means the Zid is invalid:
-				if ( !fetchedObject ) {
-					this.clearResults();
-					this.setLocalError( { code: 'wikilambda-invalidzobject' } );
-					return;
-				}
-
-				// If it's stored but its type doesn't fit the requested
-				// type restrictions, the Zid is invalid:
-				if ( !this.hasValidType( zid ) ) {
-					this.clearResults();
-					this.setLocalError( { code: 'wikilambda-invalidzobject' } );
-					return;
-				}
-
-				// Add the selected Zid into the lookupResults
-				const label = this.getLabel( zid );
-				this.lookupResults = [ {
-					value: zid,
-					label: `${label} (${zid})`
-				} ];
 			},
 
 			/**
@@ -419,11 +318,7 @@ module.exports = exports = {
 				// Search after 300 ms
 				clearTimeout( this.lookupDelayTimer );
 				this.lookupDelayTimer = setTimeout( () => {
-					if ( this.isValidZidFormat( input.toUpperCase() ) ) {
-						this.validateZidInput( input.toUpperCase() );
-					} else {
-						this.getLookupResults( input );
-					}
+					this.getLookupResults( input );
 				}, this.lookupDelayMs );
 			},
 

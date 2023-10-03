@@ -586,7 +586,7 @@ class ZObjectStore {
 	 * @param string|null $returnType Zid of the return type to filter by. If null, don't filter by return type.
 	 * @param bool $strictReturnType Whether to exclude Z1s as return type.
 	 * @param string|null $continue Id to start. If null, start from the first result.
-	 * @param int $limit Maximum number of results to return.
+	 * @param int|null $limit Maximum number of results to return.
 	 * @return IResultWrapper
 	 */
 	public function searchZObjectLabels(
@@ -601,12 +601,10 @@ class ZObjectStore {
 	) {
 		$dbr = $this->dbProvider->getReplicaDatabase();
 
-		// Set language filter
-		$conditions = [ 'wlzl_language' => $languages ];
-
-		// Set primary labels only, no aliases.
-		// TODO (T323930): Include alias labels again once FE styling is implemented.
-		$conditions[ 'wlzl_label_primary' ] = '1';
+		// Set language filter if any
+		if ( count( $languages ) > 0 ) {
+			$conditions = [ 'wlzl_language' => $languages ];
+		}
 
 		// Set type filter
 		$typeConditions = [];
@@ -632,19 +630,23 @@ class ZObjectStore {
 			$conditions[] = "wlzl_id >= $continue";
 		}
 
-		// Set search Term
-		if ( $exact ) {
+		// Set search Term and column
+		if ( ZObjectUtils::isValidZObjectReference( $label ) ) {
+			$searchedColumn = 'wlzl_zobject_zid';
+			$searchTerm = $label;
+		} elseif ( $exact ) {
 			$searchedColumn = 'wlzl_label';
 			$searchTerm = $label;
 		} else {
 			$searchedColumn = 'wlzl_label_normalised';
 			$searchTerm = ZObjectUtils::comparableString( $label );
 		}
+
 		$conditions[] = $searchedColumn . $dbr->buildLike( $dbr->anyString(), $searchTerm, $dbr->anyString() );
 
-		// $dbr->addOption( 'LIMIT', $limit + 1 );
-		return $dbr->newSelectQueryBuilder()
-			 ->select( [
+		// Create query builder
+		$queryBuilder = $dbr->newSelectQueryBuilder();
+		$queryBuilder->select( [
 				 'wlzl_zobject_zid',
 				 'wlzl_type',
 				 'wlzl_return_type',
@@ -655,8 +657,15 @@ class ZObjectStore {
 			 ] )
 			 ->from( 'wikilambda_zobject_labels' )
 			 ->where( $conditions )
-			 ->orderBy( 'wlzl_id', SelectQueryBuilder::SORT_ASC )
-			 ->limit( $limit )
+		   ->orderBy( 'wlzl_id', SelectQueryBuilder::SORT_ASC )
+		   ->orderBy( 'wlzl_label_primary', SelectQueryBuilder::SORT_DESC );
+
+		// Set limit if not null
+		if ( $limit ) {
+			$queryBuilder->limit( $limit );
+		}
+
+		return $queryBuilder
 			 ->caller( __METHOD__ )
 			 ->fetchResultSet();
 	}
@@ -809,7 +818,7 @@ class ZObjectStore {
 	 * @param string $zid the ZID of the ZFunction
 	 * @param string $type the type of the ZFunction reference
 	 * @param string|null $continue Id to start. If null (the default), start from the first result.
-	 * @param int $limit Maximum number of results to return. Defaults to 10
+	 * @param int|null $limit Maximum number of results to return. Defaults to 10
 	 * @return IResultWrapper
 	 */
 	public function findReferencedZObjectsByZFunctionId(

@@ -14,10 +14,12 @@ const clickLookupResult = async ( parentWrapper, itemText ) =>
 	await fireEvent.click( await within( parentWrapper )
 		.findByRole( 'option', { name: itemText, hidden: true } ) );
 
-const lookupSearchAndSelect = async ( parentWrapper, searchText, selectText ) => {
+const lookupSearchAndSelect = async ( parentWrapper, searchText, selectText, selectType = '' ) => {
 	const combobox = await within( parentWrapper ).findByRole( 'combobox' );
 	await fireEvent.update( combobox, searchText );
-	const option = await within( parentWrapper ).findByRole( 'option', { name: selectText, hidden: true } );
+	const options = await within( parentWrapper ).findAllByRole( 'option', { hidden: true } );
+	const option = options.find( ( e ) => e.textContent === `${selectText}${selectType}` );
+
 	return await fireEvent.click( option );
 };
 

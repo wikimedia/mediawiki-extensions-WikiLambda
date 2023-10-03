@@ -94,26 +94,30 @@ const zObjectApiResponseBuilder = ( zids, language ) => {
 const chineseLabelLookupApiResponse = {
 	wikilambdasearch_labels: [
 		{
-			page_namespace: 0,
-			page_title: Constants.Z_NATURAL_LANGUAGE_CHINESE,
-			page_type: Constants.Z_NATURAL_LANGUAGE,
-			return_type: null,
-			label: 'Chinese',
-			is_primary: '1',
 			page_id: 0,
+			page_namespace: 0,
 			page_content_model: 'zobject',
-			page_lang: Constants.Z_NATURAL_LANGUAGE_ENGLISH
+			page_title: 'Z1006',
+			page_type: 'Z60',
+			return_type: null,
+			match_label: 'Chinese',
+			match_is_primary: '1',
+			match_rate: 1,
+			label: 'Chinese',
+			type_label: ''
 		},
 		{
-			page_namespace: 0,
-			page_title: Constants.Z_NATURAL_LANGUAGE_CHINESE_TAIWAN,
-			page_type: Constants.Z_NATURAL_LANGUAGE,
-			return_type: null,
-			label: 'Chinese (Taiwan)',
-			is_primary: '1',
 			page_id: 0,
+			page_namespace: 0,
 			page_content_model: 'zobject',
-			page_lang: Constants.Z_NATURAL_LANGUAGE_ENGLISH
+			page_title: 'Z1107',
+			page_type: 'Z60',
+			return_type: null,
+			match_label: 'Chinese (Taiwan)',
+			match_is_primary: '1',
+			match_rate: 0.4375,
+			label: 'Chinese (Taiwan)',
+			type_label: ''
 		}
 	]
 };
@@ -121,26 +125,32 @@ const chineseLabelLookupApiResponse = {
 const frenchLabelLookupApiResponse = {
 	wikilambdasearch_labels: [
 		{
-			page_namespace: 0,
-			page_title: Constants.Z_NATURAL_LANGUAGE_FRENCH,
-			page_type: Constants.Z_NATURAL_LANGUAGE,
-			return_type: null,
-			label: 'French',
-			is_primary: '1',
 			page_id: 0,
+			page_namespace: 0,
 			page_content_model: 'zobject',
-			page_lang: Constants.Z_NATURAL_LANGUAGE_ENGLISH
+			page_title: 'Z1004',
+			page_type: 'Z60',
+			return_type: null,
+			match_label: 'French',
+			match_is_primary: '1',
+			match_lang: 'Z1002',
+			match_rate: 0.8333333333333334,
+			label: 'French',
+			type_label: ''
 		},
 		{
-			page_namespace: 0,
-			page_title: Constants.Z_NATURAL_LANGUAGE_CANADIAN_FRENCH,
-			page_type: Constants.Z_NATURAL_LANGUAGE,
-			return_type: null,
-			label: 'Canadian French',
-			is_primary: '1',
 			page_id: 0,
+			page_namespace: 0,
 			page_content_model: 'zobject',
-			page_lang: Constants.Z_NATURAL_LANGUAGE_ENGLISH
+			page_title: 'Z1640',
+			page_type: 'Z60',
+			return_type: null,
+			match_label: 'Canadian French',
+			match_is_primary: '1',
+			match_lang: 'Z1002',
+			match_rate: 0.3333333333333333,
+			label: 'Canadian French',
+			type_label: ''
 		}
 	]
 };
@@ -148,26 +158,32 @@ const frenchLabelLookupApiResponse = {
 const stringLabelLookupApiResponse = {
 	wikilambdasearch_labels: [
 		{
-			page_namespace: 0,
-			page_title: Constants.Z_STRING,
-			page_type: Constants.Z_TYPE,
-			return_type: null,
-			label: 'String',
-			is_primary: '1',
 			page_id: 0,
+			page_namespace: 0,
 			page_content_model: 'zobject',
-			page_lang: Constants.Z_NATURAL_LANGUAGE_ENGLISH
+			page_title: 'Z6',
+			page_type: 'Z4',
+			return_type: null,
+			match_label: 'String',
+			match_is_primary: '1',
+			match_lang: 'Z1002',
+			match_rate: 1,
+			label: 'String',
+			type_label: ''
 		},
 		{
-			page_namespace: 0,
-			page_title: Constants.Z_MONOLINGUALSTRINGSET,
-			page_type: Constants.Z_TYPE,
-			return_type: null,
-			label: 'Monolingual stringset',
-			is_primary: '1',
 			page_id: 0,
+			page_namespace: 0,
 			page_content_model: 'zobject',
-			page_lang: Constants.Z_NATURAL_LANGUAGE_ENGLISH
+			page_title: 'Z31',
+			page_type: 'Z4',
+			return_type: null,
+			match_label: 'Monolingual stringset',
+			match_is_primary: '1',
+			match_lang: 'Z1002',
+			match_rate: 0.09523809523809523,
+			label: 'Monolingual stringset',
+			type_label: ''
 		}
 	]
 };
@@ -175,15 +191,18 @@ const stringLabelLookupApiResponse = {
 const stringEqualityLabelLookupApiResponse = {
 	wikilambdasearch_labels: [
 		{
-			page_namespace: 0,
-			page_title: 'Z866',
-			page_type: Constants.Z_FUNCTION,
-			return_type: Constants.Z_BOOLEAN,
-			label: 'String equality',
-			is_primary: '1',
 			page_id: 0,
+			page_namespace: 0,
 			page_content_model: 'zobject',
-			page_lang: Constants.Z_NATURAL_LANGUAGE_ENGLISH
+			page_title: 'Z866',
+			page_type: 'Z8',
+			return_type: 'Z40',
+			match_label: 'String equality',
+			match_is_primary: '1',
+			match_lang: 'Z1002',
+			match_rate: 0.4666666666666667,
+			label: 'String equality',
+			type_label: ''
 		}
 	]
 };
@@ -191,15 +210,18 @@ const stringEqualityLabelLookupApiResponse = {
 const functionLabelLookupApiResponse = {
 	wikilambdasearch_labels: [
 		{
-			page_namespace: 0,
-			page_title: existingFunctionZid,
-			page_type: Constants.Z_FUNCTION,
-			return_type: Constants.Z_BOOLEAN,
-			label: 'function name, in Chinese',
-			is_primary: '1',
 			page_id: 0,
+			page_namespace: 0,
 			page_content_model: 'zobject',
-			page_lang: Constants.Z_NATURAL_LANGUAGE_ENGLISH
+			page_title: existingFunctionZid,
+			page_type: 'Z8',
+			return_type: 'Z40',
+			match_label: 'function name, in Chinese',
+			match_is_primary: '1',
+			match_lang: 'Z1002',
+			match_rate: 1,
+			label: 'function name, in Chinese',
+			type_label: ''
 		}
 	]
 };
