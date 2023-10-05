@@ -80,7 +80,7 @@ class LoadPreDefinedObject extends Maintenance {
 		$services = MediaWikiServices::getInstance();
 		$titleFactory = $services->getTitleFactory();
 		$zObjectStore = new ZObjectStore(
-			$services->getDBLoadBalancer(),
+			$services->getDBLoadBalancerFactory(),
 			$services->getTitleFactory(),
 			$services->getWikiPageFactory(),
 			$services->getRevisionStore(),

@@ -23,7 +23,7 @@ use ObjectCache;
 return [
 	'WikiLambdaZObjectStore' => static function ( MediaWikiServices $services ) {
 		return new ZObjectStore(
-			$services->getDBLoadBalancer(),
+			$services->getDBLoadBalancerFactory(),
 			$services->getTitleFactory(),
 			$services->getWikiPageFactory(),
 			$services->getRevisionStore(),

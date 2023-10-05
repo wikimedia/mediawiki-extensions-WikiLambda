@@ -84,7 +84,7 @@ class ReloadBuiltinData extends Maintenance {
 		$this->wikiPageFactory = $services->getWikiPageFactory();
 		$this->deletePageFactory = $services->getDeletePageFactory();
 		$this->zObjectStore = new ZObjectStore(
-			$services->getDBLoadBalancer(),
+			$services->getDBLoadBalancerFactory(),
 			$services->getTitleFactory(),
 			$services->getWikiPageFactory(),
 			$services->getRevisionStore(),
