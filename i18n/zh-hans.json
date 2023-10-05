@@ -19,6 +19,7 @@
 			"U.T.",
 			"Willy1018",
 			"Wzl19371",
+			"Xyb",
 			"Yining Chen",
 			"Zhang8569",
 			"落花有意12138"
@@ -370,5 +371,6 @@
 	"wikilambda-function-evaluator-run-function": "运行函数",
 	"wikilambda-unknown-save-error-message": "尝试保存更改时发生错误。",
 	"wikilambda-list-type-change-warning": "您更改了一个或多个列表的类型。发布时，所有列表项将被删除。",
-	"wikilambda-function-evaluation-restriction-warning": "很抱歉！目前只有登录用户才能运行函数。"
+	"wikilambda-function-evaluation-restriction-warning": "很抱歉！目前只有登录用户才能运行函数。",
+	"wikilambda-argument-reference-selector-placeholder": "选择参数"
 }
