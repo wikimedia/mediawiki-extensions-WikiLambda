@@ -350,7 +350,7 @@
 	"wikilambda-about-widget-name-placeholder": "输入名称",
 	"wikilambda-about-widget-description-placeholder": "输入描述",
 	"wikilambda-about-widget-aliases-placeholder": "输入别名",
-	"wikilambda-about-widget-aliases-caption": "输入每个别名后按回车键",
+	"wikilambda-about-widget-aliases-caption": "在每个别名后按 Return ↵。",
 	"wikilambda-about-widget-done-button": "完成",
 	"wikilambda-about-widget-publish-button": "继续发布",
 	"wikilambda-about-widget-view-languages-title": "其他语言的信息",
