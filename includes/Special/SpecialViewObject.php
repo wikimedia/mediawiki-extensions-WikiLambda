@@ -151,6 +151,7 @@ class SpecialViewObject extends SpecialPage {
 				]
 			);
 		}
+		// @phan-suppress-next-line SecurityCheck-XSS
 		$output->addHeadItems( $languageTags );
 
 		// TODO: Make this help page.
