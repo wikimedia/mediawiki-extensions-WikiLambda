@@ -39,7 +39,8 @@ const knownKeys = new Map( [
 	[ 'evaluationMemoryUsage', { i18nId: 'wikilambda-functioncall-metadata-evaluation-memory-usage' } ],
 	[ 'evaluationHostname', { i18nId: 'wikilambda-functioncall-metadata-evaluation-hostname' } ],
 	[ 'executionCpuUsage', { i18nId: 'wikilambda-functioncall-metadata-execution-cpu-usage' } ],
-	[ 'executionMemoryUsage', { i18nId: 'wikilambda-functioncall-metadata-execution-memory-usage' } ]
+	[ 'executionMemoryUsage', { i18nId: 'wikilambda-functioncall-metadata-execution-memory-usage' } ],
+	[ 'programmingLanguageVersion', { i18nId: 'wikilambda-functioncall-metadata-execution-programming-language-version' } ]
 ] );
 
 // A list of keys to hide.
@@ -90,6 +91,7 @@ module.exports = exports = {
 			html = html + this.keyAndStringValue( zMap, 'evaluationHostname', keysUsed );
 			html = html + this.keyAndStringValue( zMap, 'executionCpuUsage', keysUsed );
 			html = html + this.keyAndStringValue( zMap, 'executionMemoryUsage', keysUsed );
+			html = html + this.keyAndStringValue( zMap, 'programmingLanguageVersion', keysUsed );
 
 			// Now portray any top-level zMap entries that weren't already used above
 			const k1Array = zMap[ Constants.Z_TYPED_OBJECT_ELEMENT_1 ];
