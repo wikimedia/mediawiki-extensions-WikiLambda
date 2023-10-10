@@ -13,6 +13,9 @@ use MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Diff\ZObjectDiffer
+ * @covers \MediaWiki\Extension\WikiLambda\Diff\DiffMatrix
+ * @covers \MediaWiki\Extension\WikiLambda\Diff\ZObjectListDiffer
+ * @covers \MediaWiki\Extension\WikiLambda\Diff\ZObjectMapDiffer
  */
 class ZObjectDifferTest extends WikiLambdaIntegrationTestCase {
 
