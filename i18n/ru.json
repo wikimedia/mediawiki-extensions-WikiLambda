@@ -51,6 +51,7 @@
 	"wikilambda-implementation-create-new": "Создать новую реализацию",
 	"wikilambda-function-are-you-sure-dialog-header": "Вы уверены?",
 	"wikilambda-functioncall-metadata-errors": "{{PLURAL:$1|Ошибка|Ошибки|Ошибок}}",
+	"wikilambda-functioncall-metadata-execution-programming-language-version": "Версия языка программирования",
 	"wikilambda-functioncall-metadata-orchestration-hostname": "Оркестрационный сервер",
 	"wikilambda-functioncall-metadata-evaluation-hostname": "Пробный сервер",
 	"wikilambda-functioncall-metadata-expected-result": "Ожидаемый результат",

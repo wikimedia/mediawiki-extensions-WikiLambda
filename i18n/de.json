@@ -198,6 +198,7 @@
 	"wikilambda-functioncall-metadata-orchestration-memory-usage": "Speichernutzung der Orchestrierung",
 	"wikilambda-functioncall-metadata-evaluation-memory-usage": "Auswertung der Speichernutzung",
 	"wikilambda-functioncall-metadata-execution-memory-usage": "Auslastung des Speichers",
+	"wikilambda-functioncall-metadata-execution-programming-language-version": "Version der Programmiersprache",
 	"wikilambda-functioncall-metadata-orchestration-cpu-usage": "CPU-Auslastung der Orchestrierung",
 	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "CPU-Auslastung der Auswertung",
 	"wikilambda-functioncall-metadata-orchestration-hostname": "Orchestrierungsserver",

@@ -36,6 +36,7 @@
 	"wikilambda-implementation-create-new": "Implementéierung derbäisetzen",
 	"wikilambda-function-are-you-sure-dialog-header": "Sidd Dir sécher?",
 	"wikilambda-functioncall-metadata-errors-none": "Keen",
+	"wikilambda-functioncall-metadata-execution-programming-language-version": "Versioun vun der Programméiersprooch",
 	"wikilambda-functioncall-metadata-expected-result": "Erwaart Resultat",
 	"wikilambda-functioncall-metadata-actual-result": "Wierklecht Resultat",
 	"wikilambda-editor-tester-list-label": "Lëscht vun den Tester",
