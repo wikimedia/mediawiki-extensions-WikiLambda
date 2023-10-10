@@ -89,13 +89,13 @@ class ApiPerformTest extends WikiLambdaApiBase {
 		$targetFunction = $targetObject->getInnerZObject();
 		'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZFunction $targetFunction';
 
-		if ( empty( $requestedImplementations ) ) {
+		if ( !count( $requestedImplementations ) ) {
 			$targetFunctionImplementions = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_IMPLEMENTATIONS );
 			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionImplementions';
 			$requestedImplementations = $targetFunctionImplementions->getAsArray();
 		}
 
-		if ( empty( $requestedTesters ) ) {
+		if ( !count( $requestedTesters ) ) {
 			$targetFunctionTesters = $targetFunction->getValueByKey( ZTypeRegistry::Z_FUNCTION_TESTERS );
 			'@phan-var \MediaWiki\Extension\WikiLambda\ZObjects\ZTypedList $targetFunctionTesters';
 			$requestedTesters = $targetFunctionTesters->getAsArray();

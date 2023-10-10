@@ -233,7 +233,7 @@ class ApiQueryZObjects extends ApiQueryGeneratorBase {
 		}
 
 		$fetchedZids = [];
-		while ( !empty( $zids ) ) {
+		while ( count( $zids ) > 0 ) {
 			$zid = array_shift( $zids );
 			array_push( $fetchedZids, $zid );
 

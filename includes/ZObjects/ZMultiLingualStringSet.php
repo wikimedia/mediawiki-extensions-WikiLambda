@@ -150,7 +150,7 @@ class ZMultiLingualStringSet extends ZObject {
 			return false;
 		}
 		$aliases = $this->data[ ZTypeRegistry::Z_MULTILINGUALSTRINGSET_VALUE ][ $languageZid ] ?? [];
-		return !empty( $aliases );
+		return ( $aliases !== [] );
 	}
 
 	/**

@@ -211,7 +211,7 @@ class ZTypedList extends ZObject {
 	 * @return bool Whether it's an empty list
 	 */
 	public function isEmpty(): bool {
-		return empty( $this->data );
+		return !count( $this->data );
 	}
 
 	/**
