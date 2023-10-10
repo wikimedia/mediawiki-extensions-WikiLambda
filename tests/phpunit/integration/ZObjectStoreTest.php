@@ -23,6 +23,7 @@ use Wikimedia\Rdbms\IResultWrapper;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectPage
  * @group Database
  */
 class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
