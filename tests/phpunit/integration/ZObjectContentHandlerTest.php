@@ -29,6 +29,8 @@ use ParserOptions;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContentHandler
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectContent
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataRemoval
  * @group Database
  */
 class ZObjectContentHandlerTest extends WikiLambdaIntegrationTestCase {
