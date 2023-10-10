@@ -438,7 +438,8 @@ class ZObjectFactory {
 		if ( array_key_exists( 'additionalKeys', $targetDefinition ) && $targetDefinition[ 'additionalKeys' ] ) {
 			$args = [];
 			foreach ( $objectVars as $key => $value ) {
-				if ( $key === ZTypeRegistry::Z_OBJECT_TYPE ) { continue;
+				if ( $key === ZTypeRegistry::Z_OBJECT_TYPE ) {
+					continue;
 				}
 				try {
 					$args[ $key ] = self::createChild( $value );

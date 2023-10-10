@@ -130,14 +130,14 @@ class ApiZObjectEditorTest extends ApiTestCase {
 	 * current schemata implementation of typed lists. When fixed, uncomment
 	 * this test.
 	 */
-	 public function testCreateFailed_invalidLabel() {
+	public function testCreateFailed_invalidLabel() {
 		$sysopUser = $this->getTestSysop()->getUser();
 		$firstZid = $this->store->getNextAvailableZid();
 
 		// Create the first Zobject
 		$data = '{ "Z1K1": "Z2", "Z2K1": "Z0",'
-			. ' "Z2K2": "string",'
-			. ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"en", "Z11K2":"wrong language" }]}}';
+		   . ' "Z2K2": "string",'
+		   . ' "Z2K3":{ "Z1K1":"Z12", "Z12K1":[ "Z11", { "Z1K1":"Z11", "Z11K1":"en", "Z11K2":"wrong language" }]}}';
 
 		// Try to create the second Zobject with the same label
 		$this->expectException( ApiUsageException::class );
@@ -146,11 +146,11 @@ class ApiZObjectEditorTest extends ApiTestCase {
 
 		// Try to create the second Zobject with the same label
 		$result = $this->doApiRequestWithToken( [
-			'action' => 'wikilambda_edit',
-			'summary' => 'Summary message',
-			'zobject' => $data
+		   'action' => 'wikilambda_edit',
+		   'summary' => 'Summary message',
+		   'zobject' => $data
 		] );
-	 }
+	}
 
 	public function testUpdateFailed_invalidTitle() {
 		$invalidZid = 'ZID';

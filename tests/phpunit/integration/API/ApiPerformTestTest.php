@@ -90,7 +90,7 @@ class ApiPerformTestTest extends ApiTestCase {
 			return;
 		}
 
-		$this->assertEquals( count( $expectedResults ), count( $results ) );
+		$this->assertSameSize( $expectedResults, $results );
 
 		for ( $i = 0; $i < count( $expectedResults ); $i++ ) {
 			$this->assertNotNull(

@@ -87,7 +87,7 @@ class DuplicateObjectLabelsPager extends TablePager {
 	public function getQueryInfo() {
 		return [
 			'tables' => 'wikilambda_zobject_label_conflicts',
-			'fields' => [ 'wlzlc_id', 'wlzlc_existing_zid', 'wlzlc_conflicting_zid','wlzlc_language' ],
+			'fields' => [ 'wlzlc_id', 'wlzlc_existing_zid', 'wlzlc_conflicting_zid', 'wlzlc_language' ],
 			'conds' => []
 		];
 	}

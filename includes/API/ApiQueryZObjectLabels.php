@@ -104,7 +104,7 @@ class ApiQueryZObjectLabels extends ApiQueryGeneratorBase {
 					// Labels in the user language will be set after selecting the page
 					'label' => null,
 					'type_label' => null,
- ];
+				];
 			}
 		}
 

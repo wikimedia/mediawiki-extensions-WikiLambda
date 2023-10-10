@@ -41,8 +41,8 @@ class ZObjectSlotDiffRenderer extends SlotDiffRenderer {
 	 * @param Content $content
 	 * @return array
 	 */
-  private function toDiffArray( Content $content ): array {
+	private function toDiffArray( Content $content ): array {
 		'@phan-var ZObjectContent $content';
 		return json_decode( json_encode( $content->getObject() ), true );
-  }
+	}
 }

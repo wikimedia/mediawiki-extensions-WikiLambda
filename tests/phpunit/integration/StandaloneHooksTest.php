@@ -99,7 +99,7 @@ class StandaloneHooksTest extends WikiLambdaIntegrationTestCase {
 		sort( $zidsToLoad );
 		sort( $loadedZids );
 
-		$this->assertCount( count( $zidsToLoad ), $loadedZids );
+		$this->assertSameSize( $zidsToLoad, $loadedZids );
 		$this->assertSame( json_encode( $zidsToLoad ), json_encode( $loadedZids ) );
 	}
 

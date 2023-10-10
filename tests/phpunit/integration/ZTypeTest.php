@@ -104,7 +104,7 @@ class ZTypeTest extends WikiLambdaIntegrationTestCase {
 			'empty keys' => [ 'Z4', [], 'Z4', true ],
 			'non-ZKey keys' => [ 'Z4', [ 'This is not a ZKey!' ], 'Z4', false ],
 			'one ZKey keys' => [ 'Z4', [ $validZ4Key ], 'Z4', true ],
-			'multiple ZKeys keys' => [ 'Z1234', [ $validZ1234Key1,$validZ1234Key2 ], 'Z4', true ],
+			'multiple ZKeys keys' => [ 'Z1234', [ $validZ1234Key1, $validZ1234Key2 ], 'Z4', true ],
 
 			'empty typed list of keys' => [ 'Z4', new ZTypedList( $listOfKeys, [] ), 'Z4', true ],
 			'non-ZKey typed list of keys' => [ 'Z4', new ZTypedList( $listOfKeys, [ 'String!' ] ), 'Z4', false ],
