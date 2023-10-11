@@ -6,31 +6,36 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
+const { config, mount } = require( '@vue/test-utils' ),
 	LeaveEditorDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/LeaveEditorDialog.vue' );
+
+// Ignore all "teleport" behavior for the purpose of testing Dialog;
+// see https://test-utils.vuejs.org/guide/advanced/teleport.html
+config.global.stubs = {
+	teleport: true
+};
 
 describe( 'LeaveEditorDialog', () => {
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( LeaveEditorDialog );
+		const wrapper = mount( LeaveEditorDialog );
 		expect( wrapper.find( '.ext-wikilambda-leaveeditordialog' ).exists() ).toBe( true );
 	} );
 
 	it( 'runs the given continue callback on "discard edits" button click', () => {
 		const mockCallback = jest.fn();
-		const wrapper = shallowMount( LeaveEditorDialog, {
-			props: { continueCallback: mockCallback, showDialog: true },
-			global: { stubs: { CdxDialog: false, CdxButton: false } }
-		} );
+		const wrapper = mount( LeaveEditorDialog, { props: {
+			continueCallback: mockCallback,
+			showDialog: true
+		} } );
 
 		wrapper.findComponent( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
 		expect( mockCallback ).toHaveBeenCalled();
 	} );
 
 	it( 'triggers the "close dialog" event on "continue editing" button click', async () => {
-		const wrapper = shallowMount( LeaveEditorDialog, {
-			props: { showDialog: true },
-			global: { stubs: { CdxDialog: false, CdxButton: false } }
-		} );
+		const wrapper = mount( LeaveEditorDialog, { props: {
+			showDialog: true
+		} } );
 
 		wrapper.findComponent( '.cdx-dialog__footer__default-action' ).trigger( 'click' );
 		expect( wrapper.emitted() ).toHaveProperty( 'close-dialog' );

@@ -10,9 +10,11 @@
 const { fireEvent } = require( '@testing-library/vue' ),
 	{ within } = require( '@testing-library/dom' );
 
-const clickLookupResult = async ( parentWrapper, itemText ) =>
-	await fireEvent.click( await within( parentWrapper )
-		.findByRole( 'option', { name: itemText, hidden: true } ) );
+const clickLookupResult = async ( parentWrapper, itemText ) => {
+	const options = await within( parentWrapper ).findAllByRole( 'option', { hidden: true } );
+	const option = options.find( ( e ) => e.textContent === itemText );
+	await fireEvent.click( option );
+};
 
 const lookupSearchAndSelect = async ( parentWrapper, searchText, selectText, selectType = '' ) => {
 	const combobox = await within( parentWrapper ).findByRole( 'combobox' );

@@ -6,9 +6,15 @@
  */
 'use strict';
 
-const mount = require( '@vue/test-utils' ).mount,
+const { config, mount } = require( '@vue/test-utils' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	AboutViewLanguagesDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/AboutViewLanguagesDialog.vue' );
+
+// Ignore all "teleport" behavior for the purpose of testing Dialog;
+// see https://test-utils.vuejs.org/guide/advanced/teleport.html
+config.global.stubs = {
+	teleport: true
+};
 
 describe( 'AboutViewLanguagesDialog', () => {
 
@@ -64,6 +70,7 @@ describe( 'AboutViewLanguagesDialog', () => {
 				open: true,
 				canEdit: true
 			} } );
+
 			expect( wrapper.find( '.ext-wikilambda-about-language-list' ).exists() ).toBe( true );
 		} );
 

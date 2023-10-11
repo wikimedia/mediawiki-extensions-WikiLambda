@@ -7,12 +7,18 @@
 
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
+const { config, mount } = require( '@vue/test-utils' ),
 	{ waitFor } = require( '@testing-library/vue' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	createGetterMock = require( '../../helpers/getterHelpers.js' ).createGetterMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	PublishDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/PublishDialog.vue' );
+
+// Ignore all "teleport" behavior for the purpose of testing Dialog;
+// see https://test-utils.vuejs.org/guide/advanced/teleport.html
+config.global.stubs = {
+	teleport: true
+};
 
 describe( 'Publish Dialog', () => {
 	var getters,
@@ -31,6 +37,7 @@ describe( 'Publish Dialog', () => {
 		actions = {
 			submitZObject: jest.fn(),
 			setError: jest.fn(),
+			setDirty: jest.fn(),
 			clearAllErrors: jest.fn()
 		};
 		global.store.hotUpdate( {
@@ -40,25 +47,22 @@ describe( 'Publish Dialog', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( PublishDialog, {
-			props: { showDialog: true },
-			global: { stubs: { CdxDialog: false } }
+		const wrapper = mount( PublishDialog, {
+			props: { showDialog: true }
 		} );
 		expect( wrapper.find( '.ext-wikilambda-publishdialog' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders summary input field', () => {
-		const wrapper = shallowMount( PublishDialog, {
-			props: { showDialog: true },
-			global: { stubs: { CdxDialog: false, CdxField: false } }
+		const wrapper = mount( PublishDialog, {
+			props: { showDialog: true }
 		} );
 		expect( wrapper.find( '.ext-wikilambda-publishdialog__summary-input' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders conditional legal text', () => {
-		const wrapper = shallowMount( PublishDialog, {
-			props: { showDialog: true },
-			global: { stubs: { CdxDialog: false } }
+		const wrapper = mount( PublishDialog, {
+			props: { showDialog: true }
 		} );
 		expect( wrapper.find( '.ext-wikilambda-publishdialog__legal-text' ).exists() ).toBe( true );
 	} );
@@ -76,9 +80,8 @@ describe( 'Publish Dialog', () => {
 		getters.getErrors = createGettersWithFunctionsMock( errors );
 		global.store.hotUpdate( { getters: getters } );
 
-		const wrapper = shallowMount( PublishDialog, {
-			props: { showDialog: true },
-			global: { stubs: { CdxDialog: false, CdxMessage: false } }
+		const wrapper = mount( PublishDialog, {
+			props: { showDialog: true }
 		} );
 
 		const messages = wrapper.findAllComponents( { name: 'cdx-message' } );
@@ -90,9 +93,8 @@ describe( 'Publish Dialog', () => {
 	} );
 
 	it( 'closes the dialog when click cancel button', () => {
-		const wrapper = shallowMount( PublishDialog, {
-			props: { showDialog: true },
-			global: { stubs: { CdxDialog: false, CdxButton: false } }
+		const wrapper = mount( PublishDialog, {
+			props: { showDialog: true }
 		} );
 
 		wrapper.find( '.cdx-dialog__footer__default-action' ).trigger( 'click' );
@@ -100,9 +102,8 @@ describe( 'Publish Dialog', () => {
 	} );
 
 	it( 'proceeds to publish when click publish button', () => {
-		const wrapper = shallowMount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false },
-			global: { stubs: { CdxDialog: false, CdxButton: false } }
+		const wrapper = mount( PublishDialog, {
+			props: { showDialog: true, functionSignatureChanged: false }
 		} );
 		wrapper.vm.summary = 'mock summary';
 
@@ -117,9 +118,8 @@ describe( 'Publish Dialog', () => {
 		actions.submitZObject = jest.fn( () => Promise.resolve( 'Z10001' ) );
 		global.store.hotUpdate( { actions: actions } );
 
-		const wrapper = shallowMount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false },
-			global: { stubs: { CdxDialog: false, CdxButton: false } }
+		const wrapper = mount( PublishDialog, {
+			props: { showDialog: true, functionSignatureChanged: false }
 		} );
 
 		wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
@@ -135,9 +135,8 @@ describe( 'Publish Dialog', () => {
 		actions.submitZObject = jest.fn( () => Promise.reject( error ) );
 		global.store.hotUpdate( { actions: actions } );
 
-		const wrapper = shallowMount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false },
-			global: { stubs: { CdxDialog: false, CdxButton: false, CdxMessage: false } }
+		const wrapper = mount( PublishDialog, {
+			props: { showDialog: true, functionSignatureChanged: false }
 		} );
 
 		wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
@@ -152,9 +151,8 @@ describe( 'Publish Dialog', () => {
 		actions.submitZObject = jest.fn( () => Promise.reject( 'some unstructured error response' ) );
 		global.store.hotUpdate( { actions: actions } );
 
-		const wrapper = shallowMount( PublishDialog, {
-			props: { showDialog: true, functionSignatureChanged: false },
-			global: { stubs: { CdxDialog: false, CdxButton: false, CdxMessage: false } }
+		const wrapper = mount( PublishDialog, {
+			props: { showDialog: true, functionSignatureChanged: false }
 		} );
 
 		wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
@@ -178,9 +176,8 @@ describe( 'Publish Dialog', () => {
 				actions: actions
 			} );
 
-			const wrapper = shallowMount( PublishDialog, {
-				props: { showDialog: true, functionSignatureChanged: false },
-				global: { stubs: { CdxDialog: false, CdxButton: false } }
+			const wrapper = mount( PublishDialog, {
+				props: { showDialog: true, functionSignatureChanged: false }
 			} );
 
 			wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
@@ -210,9 +207,8 @@ describe( 'Publish Dialog', () => {
 				actions: actions
 			} );
 
-			const wrapper = shallowMount( PublishDialog, {
-				props: { showDialog: true, functionSignatureChanged: false },
-				global: { stubs: { CdxDialog: false, CdxButton: false } }
+			const wrapper = mount( PublishDialog, {
+				props: { showDialog: true, functionSignatureChanged: false }
 			} );
 
 			wrapper.find( '.cdx-dialog__footer__primary-action' ).trigger( 'click' );
