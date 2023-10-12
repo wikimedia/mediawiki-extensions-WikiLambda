@@ -6,7 +6,7 @@
  */
 'use strict';
 
-const shallowMount = require( '@vue/test-utils' ).shallowMount,
+const { config, mount } = require( '@vue/test-utils' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	FunctionMetadataDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/FunctionMetadataDialog.vue' ),
 	metadataJson = {
@@ -56,6 +56,12 @@ const shallowMount = require( '@vue/test-utils' ).shallowMount,
 		]
 	};
 
+// Ignore all "teleport" behavior for the purpose of testing Dialog;
+// see https://test-utils.vuejs.org/guide/advanced/teleport.html
+config.global.stubs = {
+	teleport: true
+};
+
 describe( 'FunctionMetadataDialog', () => {
 	let getters,
 		actions;
@@ -72,18 +78,16 @@ describe( 'FunctionMetadataDialog', () => {
 	} );
 
 	it( 'renders without errors', () => {
-		const wrapper = shallowMount( FunctionMetadataDialog, {
-			props: { open: true, metadata: metadataJson },
-			global: { stubs: { CdxDialog: false } }
+		const wrapper = mount( FunctionMetadataDialog, {
+			props: { open: true, metadata: metadataJson }
 		} );
 
 		expect( wrapper.find( '.ext-wikilambda-metadata-dialog' ).exists() ).toBe( true );
 	} );
 
 	it( 'renders metadata text', () => {
-		const wrapper = shallowMount( FunctionMetadataDialog, {
-			props: { open: true, metadata: metadataJson },
-			global: { stubs: { CdxDialog: false } }
+		const wrapper = mount( FunctionMetadataDialog, {
+			props: { open: true, metadata: metadataJson }
 		} );
 
 		const body = wrapper.find( '.ext-wikilambda-metadata-dialog-body' );
@@ -97,13 +101,12 @@ describe( 'FunctionMetadataDialog', () => {
 	} );
 
 	it( 'renders implementation label', () => {
-		const wrapper = shallowMount( FunctionMetadataDialog, {
+		const wrapper = mount( FunctionMetadataDialog, {
 			props: {
 				open: true,
 				metadata: metadataJson,
 				implementationLabel: 'this implementation'
-			},
-			global: { stubs: { CdxDialog: false } }
+			}
 		} );
 
 		const body = wrapper.find( '.ext-wikilambda-metadata-dialog-body' );
@@ -113,13 +116,12 @@ describe( 'FunctionMetadataDialog', () => {
 	} );
 
 	it( 'renders tester label', () => {
-		const wrapper = shallowMount( FunctionMetadataDialog, {
+		const wrapper = mount( FunctionMetadataDialog, {
 			props: {
 				open: true,
 				metadata: metadataJson,
 				testerLabel: 'this tester'
-			},
-			global: { stubs: { CdxDialog: false } }
+			}
 		} );
 
 		const body = wrapper.find( '.ext-wikilambda-metadata-dialog-body' );

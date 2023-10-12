@@ -91,7 +91,10 @@ describe( 'WikiLambda frontend, on zobject-editor view', () => {
 
 	it.only( 'allows creating a new tester', async () => {
 		const { findByRole, findByTestId } = render( App, {
-			global: { plugins: [ store ], stubs: { WlFunctionEvaluatorWidget: true } }
+			global: { plugins: [ store ], stubs: {
+				teleport: true,
+				WlFunctionEvaluatorWidget: true
+			} }
 		} );
 
 		//* -- Function call section

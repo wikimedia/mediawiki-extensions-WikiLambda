@@ -6,9 +6,15 @@
  */
 'use strict';
 
-const mount = require( '@vue/test-utils' ).mount,
+const { config, mount } = require( '@vue/test-utils' ),
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	AboutEditMetadataDialog = require( '../../../../resources/ext.wikilambda.edit/components/widgets/AboutEditMetadataDialog.vue' );
+
+// Ignore all "teleport" behavior for the purpose of testing Dialog;
+// see https://test-utils.vuejs.org/guide/advanced/teleport.html
+config.global.stubs = {
+	teleport: true
+};
 
 describe( 'AboutEditMetadataDialog', () => {
 	var getters,
