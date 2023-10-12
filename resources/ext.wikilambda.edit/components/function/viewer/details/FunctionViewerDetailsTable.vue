@@ -20,7 +20,7 @@
 						class="ext-wikilambda-function-details-table__title__text">
 						{{ title }}
 					</span>
-					<!-- TODO (T310164): replace with button group -->
+					<!-- TODO (T306026): Replace with a button group -->
 					<div class="ext-wikilambda-function-details-table__title__buttons">
 						<cdx-button
 							v-if="!( isMobile && !canApprove )"
