@@ -136,23 +136,24 @@ class SpecialViewObject extends SpecialPage {
 		$output->addParserOutput( $parserOutput );
 
 		// Add all the see-other links to versions of this page in each of the known languages.
-		$languageTags = [];
 		$languages = $this->zObjectStore->fetchAllZLanguageObjects();
 		foreach ( $languages as $zid => $bcpcode ) {
 			if ( $bcpcode === $targetLanguage ) {
 				continue;
 			}
-			$languageTags['link-alternate-language-' . strtolower( $bcpcode )] = Html::element(
-				'link',
-				[
-					'rel' => 'alternate',
-					'hreflang' => $bcpcode,
-					'href' => "/view/$bcpcode/$targetPageName",
-				]
+			// Add each item individually to help phan understand the taint better, even though it's slower
+			$output->addHeadItem(
+				'link-alternate-language-' . strtolower( $bcpcode ),
+				Html::element(
+					'link',
+					[
+						'rel' => 'alternate',
+						'hreflang' => $bcpcode,
+						'href' => "/view/$bcpcode/$targetPageName",
+					]
+				)
 			);
 		}
-		// @phan-suppress-next-line SecurityCheck-XSS
-		$output->addHeadItems( $languageTags );
 
 		// TODO: Make this help page.
 		$this->addHelpLink( 'Extension:WikiLambda/Viewing Objects' );
