@@ -64,6 +64,7 @@
 	"wikilambda-functioncall-metadata-errors-none": "Nessuno",
 	"wikilambda-functioncall-metadata-implementation-id": "ID implementazione",
 	"wikilambda-functioncall-metadata-implementation-type": "Tipo implementazione",
+	"wikilambda-functioncall-metadata-execution-programming-language-version": "Versione del linguaggio di programmazione",
 	"wikilambda-functioncall-metadata-expected-result": "Risultato atteso",
 	"wikilambda-functioncall-error-invalid-zobject": "Errore di chiamata alla funzione: l'elemento '$1' non è un oggetto valido, quindi non può essere chiamato",
 	"wikilambda-functioncall-error-invalid-zobject-category": "Pagine con chiamate di Wikifuzioni a oggetti non validi",
