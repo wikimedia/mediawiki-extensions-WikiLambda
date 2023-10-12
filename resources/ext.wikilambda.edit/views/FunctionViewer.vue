@@ -6,12 +6,13 @@
 -->
 <template>
 	<div class="ext-wikilambda-function-viewer">
-		<cdx-tabs v-model:active="currentTab">
+		<cdx-tabs v-model:active="currentTab" data-testid="function-viewer-tabs">
 			<cdx-tab
 				v-for="( tab, index ) in tabsData"
 				:key="index"
 				:name="tab.name"
 				:label="tab.label"
+				:data-testid="`function-viewer-tab-${index}`"
 			>
 				<!-- Keep alive helps keeps the local state of the component so that it is not remounted -->
 				<keep-alive>

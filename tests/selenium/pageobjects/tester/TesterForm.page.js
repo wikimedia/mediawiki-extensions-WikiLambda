@@ -99,7 +99,7 @@ class TesterPage extends Page {
 	 * @return {void}
 	 */
 	async expandCallFunctionBlock() {
-		const selectFunctionLink = this.callFunctionBlock.$( './/a[text()="Select Function"]' );
+		const selectFunctionLink = await this.callFunctionBlock.$( './/a[text()="Select Function"]' );
 		await ElementActions.doClick( selectFunctionLink );
 	}
 
@@ -124,8 +124,8 @@ class TesterPage extends Page {
 		/**
 		 * Function section of call function block
 		 */
-		const parentSelector = this.getCallFunctionBlockSection( 'function' );
-		const callFunctionBlockInputSelector = parentSelector.$( './/input[@placeholder="Select function"]' );
+		const parentSelector = await this.getCallFunctionBlockSection( 'function' );
+		const callFunctionBlockInputSelector = await parentSelector.$( './/input[@placeholder="Select function"]' );
 		await InputDropdown.setInputDropdown(
 			parentSelector, callFunctionBlockInputSelector, ZObjectLabel );
 	}
@@ -154,28 +154,28 @@ class TesterPage extends Page {
 		/**
 		 * Fills the entries in the condition block
 		 */
-		const conditionBlock = this.getCallFunctionBlockSection( 'condition' );
-		const conditionInputRadio = conditionBlock.$( `.//label[span/text()="${condition}"]` );
+		const conditionBlock = await this.getCallFunctionBlockSection( 'condition' );
+		const conditionInputRadio = await conditionBlock.$( `.//label[span/text()="${condition}"]` );
 		await ElementActions.doClick( conditionInputRadio );
 
 		/**
 		 * Fills the entries in the then block
 		 */
-		const thenBlock = this.getCallFunctionBlockSection( 'then' );
-		const thenBlockInputTypeSelector = thenBlock.$( './/input[@placeholder="Select a Type"]' );
+		const thenBlock = await this.getCallFunctionBlockSection( 'then' );
+		const thenBlockInputTypeSelector = await thenBlock.$( './/input[@placeholder="Select a Type"]' );
 		await InputDropdown.setInputDropdown(
 			thenBlock, thenBlockInputTypeSelector, thenBlockInputType );
-		const thenBlockInputSelector = thenBlock.$( 'input' );
+		const thenBlockInputSelector = await thenBlock.$( 'input' );
 		await ElementActions.setInput( thenBlockInputSelector, thenBlockInput );
 
 		/**
 		 * Fills the entries in the else block
 		 */
-		const elseBlock = this.getCallFunctionBlockSection( 'else' );
-		const elseBlockInputTypeSelector = elseBlock.$( './/input[@placeholder="Select a Type"]' );
+		const elseBlock = await this.getCallFunctionBlockSection( 'else' );
+		const elseBlockInputTypeSelector = await elseBlock.$( './/input[@placeholder="Select a Type"]' );
 		await InputDropdown.setInputDropdown(
 			elseBlock, elseBlockInputTypeSelector, elseBlockInputType );
-		const elseBlockInputSelector = elseBlock.$( 'input' );
+		const elseBlockInputSelector = await elseBlock.$( 'input' );
 		await ElementActions.setInput( elseBlockInputSelector, elseBlockInput );
 	}
 
@@ -190,7 +190,7 @@ class TesterPage extends Page {
 	 * @return {void}
 	 */
 	async expandValidationBlock() {
-		const selectFunctionLink = this.validationBlock.$( './/a[text()="Select Function"]' );
+		const selectFunctionLink = await this.validationBlock.$( './/a[text()="Select Function"]' );
 		await ElementActions.doClick( selectFunctionLink );
 	}
 
@@ -216,8 +216,8 @@ class TesterPage extends Page {
 		/**
 		 * Function section of validation block
 		 */
-		const parentSelector = this.getValidationBlockSection( 'function' );
-		const validationInputSelector = parentSelector.$( './/input[@placeholder="Select function"]' );
+		const parentSelector = await this.getValidationBlockSection( 'function' );
+		const validationInputSelector = await parentSelector.$( './/input[@placeholder="Select function"]' );
 		await InputDropdown.setInputDropdown(
 			parentSelector, validationInputSelector, ZObjectLabel );
 	}
@@ -230,8 +230,8 @@ class TesterPage extends Page {
 	 * @return {void}
 	 */
 	async setValidationBlockParameters( equalityText ) {
-		const resultValidationKeyValueBlock = this.getValidationBlockSection( 'second string' );
-		const inputSelector = resultValidationKeyValueBlock.$( 'input' );
+		const resultValidationKeyValueBlock = await this.getValidationBlockSection( 'second string' );
+		const inputSelector = await resultValidationKeyValueBlock.$( 'input' );
 		await ElementActions.setInput( inputSelector, equalityText );
 	}
 

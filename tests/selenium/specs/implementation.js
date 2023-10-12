@@ -118,7 +118,7 @@ describe( 'Implementation (CUJ 5)', () => {
 				await expect( await FunctionPage.functionTitle )
 					.toHaveText( functionDetails.ZObjectLabel, { message: 'Function Page is not open' } );
 				await FunctionPage.switchToDetailsTab();
-				await expect( await FunctionPage.detailsTab ).toHaveAttribute( 'aria-selected', 'true',
+				await expect( await FunctionPage.getDetailsTabButton() ).toHaveAttribute( 'aria-selected', 'true',
 					{ message: 'Not able to switch to details view' } );
 				await FunctionPage.goToCreateImplementationLink();
 
@@ -244,16 +244,16 @@ describe( 'Implementation (CUJ 5)', () => {
 				firstFunctionCallEntries: {
 					functionCallLabel: 'If',
 					conditionType: 'Argument reference',
-					conditionValue: 'Z844K1',
+					conditionValue: 'first Boolean',
 					thenType: 'Argument reference',
-					thenValue: 'Z844K2',
+					thenValue: 'second Boolean',
 					elseType: 'Function call',
 					elseValue: 'If'
 				},
 				secondFunctionCallEntries: {
 					functionCallLabel: 'If',
 					conditionType: 'Argument reference',
-					conditionValue: 'Z844K2',
+					conditionValue: 'second Boolean',
 					thenType: 'Boolean',
 					thenValue: 'false',
 					elseType: 'Boolean',
@@ -301,7 +301,8 @@ describe( 'Implementation (CUJ 5)', () => {
 				await expect( await FunctionPage.functionTitle )
 					.toHaveText( functionDetails.ZObjectLabel, { message: 'Function Page is not open' } );
 				await FunctionPage.switchToDetailsTab();
-				await expect( await FunctionPage.detailsTab ).toHaveAttribute( 'aria-selected', 'true',
+				const detailsTab = await FunctionPage.getDetailsTabButton();
+				await expect( await detailsTab ).toHaveAttribute( 'aria-selected', 'true',
 					{ message: 'Not able to switch to details view' } );
 				await FunctionPage.goToCreateImplementationLink();
 

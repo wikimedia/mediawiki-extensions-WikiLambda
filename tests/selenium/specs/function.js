@@ -45,11 +45,11 @@ describe( 'Function', function () {
 			const ListFunctions = await ListObjectsByType.openFunctionsList();
 			await ListFunctions.openFunction( 'echo' );
 
-			await expect( await FunctionPage.functionCallBlock ).toBeDisplayed();
 			await FunctionPage.callFunctionWithString( 'foobar' );
 			await expect( await FunctionPage.getEvaluateFunctionResultSelector( 'foobar' ) )
 				.toBeExisting( { message: 'The response "foobar" is not displayed' } );
 		} );
+
 	} );
 	describe( 'Function editor (CUJ2)', function () {
 		let functionTitle;
@@ -113,7 +113,8 @@ describe( 'Function', function () {
 		} );
 
 		it( 'should display the function arguments', async function () {
-			await FunctionPage.detailsTab.click();
+			const detailsButton = await FunctionPage.getDetailsTabButton();
+			await detailsButton.click();
 			await FunctionPage.showArgumentsInOtherLanguages();
 			// FIXME: EcmaScript 2019, we can use Array.prototype.flat(). Chrome supports that.
 			// But Eslint seems to be unhappy, so let's use this trick:
@@ -140,7 +141,8 @@ describe( 'Function', function () {
 		} );
 
 		it( 'should display the function details without the removed label', async function () {
-			await FunctionPage.detailsTab.click();
+			const detailsButton = await FunctionPage.getDetailsTabButton();
+			await detailsButton.click();
 			await FunctionPage.showArgumentsInOtherLanguages();
 			assert.strictEqual( await FunctionPage.getArgumentLabel( ARGUMENT_LABELS.FRENCH[ 0 ] ).isExisting(), true, 'French first argument should exist' );
 			assert.strictEqual( await FunctionPage.getArgumentLabel( ARGUMENT_LABELS.FRENCH[ 1 ] ).isExisting(), false, 'French second argument should NOT exist anymore' );

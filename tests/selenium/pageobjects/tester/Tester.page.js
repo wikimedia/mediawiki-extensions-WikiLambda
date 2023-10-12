@@ -124,8 +124,9 @@ class Tester extends Page {
 	 * @param {string} condition
 	 * @return {WebdriverIOElementType}
 	 */
-	getCallFunctionConditionParameter( condition ) {
-		return this.getCallFunctionBlockSection( 'condition' ).$( `a=${condition}` );
+	async getCallFunctionConditionParameter( condition ) {
+		const conditionParameterBlock = await this.getCallFunctionBlockSection( 'condition' );
+		return await conditionParameterBlock.$( `a=${condition}` );
 	}
 
 	/**
@@ -134,8 +135,9 @@ class Tester extends Page {
 	 * @param {string} thenInput
 	 * @return {WebdriverIOElementType}
 	 */
-	getCallFunctionThenParameter( thenInput ) {
-		return this.getCallFunctionBlockSection( 'then' ).$( `p=${thenInput}` );
+	async getCallFunctionThenParameter( thenInput ) {
+		const thenParameterBlock = await this.getCallFunctionBlockSection( 'then' );
+		return await thenParameterBlock.$( `p=${thenInput}` );
 	}
 
 	/**
@@ -144,8 +146,9 @@ class Tester extends Page {
 	 * @param {string} elseInput
 	 * @return {WebdriverIOElementType}
 	 */
-	getCallFunctionElseParameter( elseInput ) {
-		return this.getCallFunctionBlockSection( 'else' ).$( `p=${elseInput}` );
+	async getCallFunctionElseParameter( elseInput ) {
+		const elseParameterBlock = await this.getCallFunctionBlockSection( 'else' );
+		return await elseParameterBlock.$( `p=${elseInput}` );
 	}
 
 	// #endregion
@@ -178,8 +181,9 @@ class Tester extends Page {
 	 * @param {string} secondStringTrue
 	 * @return {WebdriverIOElementType}
 	 */
-	getValidationParameter( secondStringTrue ) {
-		return this.getValidationBlockSection( 'second string' ).$( `p=${secondStringTrue}` );
+	async getValidationParameter( secondStringTrue ) {
+		const validationParameterBlock = await this.getValidationBlockSection( 'second string' );
+		return await validationParameterBlock.$( `p=${secondStringTrue}` );
 	}
 
 	/**
@@ -188,8 +192,9 @@ class Tester extends Page {
 	 * @param {string} ZObjectLabel
 	 * @return {WebdriverIOElementType}
 	 */
-	getValidationBlockFunction( ZObjectLabel ) {
-		return this.getValidationBlockSection( 'function' ).$( `a=${ZObjectLabel}` );
+	async getValidationBlockFunction( ZObjectLabel ) {
+		const validationBlockFunction = await this.getValidationBlockSection( 'function' );
+		return await validationBlockFunction.$( `a=${ZObjectLabel}` );
 	}
 
 	// #endregion

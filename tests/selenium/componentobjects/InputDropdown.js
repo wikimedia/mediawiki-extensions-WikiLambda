@@ -26,9 +26,12 @@ class InputDropdown {
 	 * @return {void}
 	 */
 	async setInputDropdown( parentSelector, inputSelector, inputText ) {
-		await ElementActions.setInput( inputSelector, inputText );
-		const cdxMenu = parentSelector.$( 'div.cdx-menu' );
-		const optionSelector = cdxMenu.$( `bdi=${inputText}` );
+		const resolvedParentSelector = await parentSelector;
+		const resolvedInputSelector = await inputSelector;
+		await inputSelector.waitForDisplayed();
+		await ElementActions.setInput( resolvedInputSelector, inputText );
+		const cdxMenu = await resolvedParentSelector.$( 'div.cdx-menu' );
+		const optionSelector = await cdxMenu.$( `bdi=${inputText}` );
 		await ElementActions.doClick( optionSelector );
 	}
 

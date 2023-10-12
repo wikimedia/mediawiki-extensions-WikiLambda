@@ -28,7 +28,7 @@ class FunctionPage extends Page {
 
 	get functionTitle() { return $( '.ext-wikilambda-viewpage-header-title--function-name' ); }
 	get functionZIdSelector() { return $( 'span.ext-wikilambda-viewpage-header-zid' ); }
-	get detailsTab() { return $( '//button[@role="tab" and span/text()="Details"]' ); }
+	get functionPageTabs() { return $( '[data-testid="function-viewer-tabs"]' ); }
 	get editSourceLink() { return $( '//nav[@aria-label="Views"]//a[contains(@title, "Edit")]/span[contains(text(),"Edit")]' ); }
 
 	/**
@@ -58,13 +58,23 @@ class FunctionPage extends Page {
 	}
 
 	/**
-	 * Click on the detials tab
+	 * Click on the details tab
 	 *
 	 * @async
 	 * @return {void}
 	 */
+
+	async getDetailsTabButton() {
+		const pageTabs = await this.functionPageTabs;
+		await pageTabs.waitForExist( { timeout: 10000 } );
+		const tabButtons = await pageTabs.$$( 'button[role="tab"]' );
+		return await tabButtons[ 1 ];
+	}
+
 	async switchToDetailsTab() {
-		await ElementActions.doClick( this.detailsTab );
+		// await browser.debug();
+		const detailsTabButton = await this.getDetailsTabButton();
+		await ElementActions.doClick( detailsTabButton );
 	}
 
 	// #endregion Header Section
@@ -110,6 +120,13 @@ class FunctionPage extends Page {
 	// #region Evaluate Function Block
 
 	get functionCallBlock() { return EvaluateFunctionBlock.functionCallBlock; }
+	get functionResultBlock() { return EvaluateFunctionBlock.orchestrationResultBlock; }
+
+	async getValueBlock() {
+		const typeLabel = await $( ".//label[text()='type']" ).parentElement();
+		const valueBlock = await typeLabel.nextElement();
+		return valueBlock;
+	}
 
 	/**
 	 * Call the function with only one parameter which is of type string.
@@ -119,18 +136,22 @@ class FunctionPage extends Page {
 	 * @return {void}
 	 */
 	async callFunctionWithString( param ) {
+
 		/**
 		 * Input the type "String"
 		 */
-		const typeBlock = this.functionCallBlock.$( './/label[text()="type"]/parent::div/following-sibling::div' );
-		await InputDropdown.setInputDropdown( typeBlock, typeBlock.$( './/input[@placeholder="Select a Type"]' ), 'String' );
 
+		const functionCallBlock = await this.functionCallBlock;
+		const typeBlock = await functionCallBlock.$( './/label[text()="type"]/parent::div/following-sibling::div' );
+
+		const typeInput = await typeBlock.$( 'input' );
+		await InputDropdown.setInputDropdown( typeBlock, typeInput, 'String' );
 		/**
 		 * Input the param
 		 */
-		const valueBlock = this.functionCallBlock.$( './/label[text()="value"]/parent::div/following-sibling::div' );
-		await ElementActions.setInput( valueBlock.$( './/input' ), param );
-
+		const valueBlock = await functionCallBlock.$( './/label[text()="value"]/parent::div/following-sibling::div' );
+		const valueInput = await valueBlock.$( './/input' );
+		await ElementActions.setInput( valueInput, param );
 		/**
 		 * call function
 		 */
@@ -216,7 +237,7 @@ class FunctionPage extends Page {
 	 * @return {void}
 	 */
 	async goToCreateImplementationLink() {
-		const createAImplementation = $( 'a=Add implementation' );
+		const createAImplementation = await $( 'a=Add implementation' );
 		await ElementActions.doClick( createAImplementation );
 	}
 
@@ -224,12 +245,11 @@ class FunctionPage extends Page {
 
 	// #region Implementations Table
 
-	get implementationsTableBlock() { return $( '//div[@aria-labelledby="ext-wikilambda-function-details-table__title__text-implementations"]' ); }
-	get implementationsTableBlockHeader() { return this.implementationsTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__title")]' ); }
+	get implementationsTableBlock() { return $( '[data-testid="function-implementations-table"]' ); }
 	get implementationProgressBar() { return this.implementationsTableBlock.$( './div[@role="progressbar"]' ); }
-	get implementationsTable() { return this.implementationsTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__body")]//table' ); }
-	get approveImplementationButton() { return this.implementationsTableBlockHeader.$( './/label[text()="Connect"]/parent::button' ); }
-	get deactivateImplementationButton() { return this.implementationsTableBlockHeader.$( './/label[text()="Disconnect"]/parent::button' ); }
+	get implementationsTable() { return this.implementationsTableBlock.$( 'table' ); }
+	get approveImplementationButton() { return this.implementationsTableBlock.$( 'button[data-testid="approve"]' ); }
+	get deactivateImplementationButton() { return this.implementationsTableBlock.$( 'button[data-testid="deactivate"]' ); }
 
 	/**
 	 * Click on the "Connect" button in the implementations table
@@ -278,7 +298,7 @@ class FunctionPage extends Page {
 	 * @return {string} - "Connected" or "Disconnected"
 	 */
 	async getImplementationsTableRowState( index ) {
-		const stateColumn = this.getImplementationsTableRow( index ).$$( './td' )[ 3 ];
+		const stateColumn = await this.getImplementationsTableRow( index ).$$( './td' )[ 2 ];
 		const stateSelector = stateColumn.$( './/span[text()="Connected" or text()="Disconnected"]' );
 		const state = await ElementActions.getText( stateSelector );
 		return state;
@@ -293,7 +313,7 @@ class FunctionPage extends Page {
 	 */
 	async checkImplementationsTableRow( index ) {
 		const checkBox = this.getImplementationsTableRow( index ).$$( './td' )[ 0 ].$( './/input/following-sibling::span' );
-		await ElementActions.doClick( checkBox );
+		return await ElementActions.doClick( checkBox );
 	}
 
 	/**
@@ -313,12 +333,12 @@ class FunctionPage extends Page {
 
 	// #region Tests Table
 
-	get testCasesTableBlock() { return $( '//div[@aria-labelledby="ext-wikilambda-function-details-table__title__text-testers"]' ); }
+	get testCasesTableBlock() { return $( '[data-testid="function-testers-table"]' ); }
 	get testCasesTableBlockHeader() { return this.testCasesTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__title")]' ); }
 	get testCaseProgressBar() { return this.testCasesTableBlock.$( './div[@role="progressbar"]' ); }
-	get testCasesTable() { return this.testCasesTableBlock.$( './/div[contains(@class,"ext-wikilambda-table__body")]//table' ); }
-	get approveTestCaseButton() { return this.testCasesTableBlockHeader.$( './/label[text()="Connect"]/parent::button' ); }
-	get deactivateTestCaseButton() { return this.testCasesTableBlockHeader.$( './/label[text()="Disconnect"]/parent::button' ); }
+	get testCasesTable() { return this.testCasesTableBlock.$( "[data-testid='function-testers-table'] table" ); }
+	get approveTestCaseButton() { return this.testCasesTableBlock.$( 'button[data-testid="approve"]' ); }
+	get deactivateTestCaseButton() { return this.testCasesTableBlock.$( 'button[data-testid="deactivate"]' ); }
 
 	/**
 	 * Click on the "Connect" button in the test cases table
@@ -367,7 +387,7 @@ class FunctionPage extends Page {
 	 * @return {string} - "Connected" or "Disconnected"
 	 */
 	async getTestCasesTableRowState( index ) {
-		const stateColumn = this.getTestCasesTableRow( index ).$( 'td:last-child' );
+		const stateColumn = this.getTestCasesTableRow( index ).$$( 'td' )[ 2 ];
 		const stateSelector = stateColumn.$( './/span[text()="Connected" or text()="Disconnected"]' );
 		const state = await ElementActions.getText( stateSelector );
 		return state;

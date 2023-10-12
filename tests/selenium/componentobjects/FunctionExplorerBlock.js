@@ -29,6 +29,15 @@ class FunctionExplorerBlock {
 		return name;
 	}
 
+	async getFunctionExplorerZObjectLookup() {
+		const functionExplorer = await this.functionExplorerBlock;
+		await functionExplorer.waitForDisplayed( { timeout: 20000 } );
+		const lookup = await functionExplorer.$( '[data-testid="z-object-selector-lookup"]' );
+		const name = await ElementActions.getValue( lookup );
+		return await name;
+
+	}
+
 	/**
 	 * Set the name of the function for which the page is open
 	 *

@@ -26,6 +26,7 @@
 							v-if="!( isMobile && !canApprove )"
 							class="ext-wikilambda-function-details-table__title__buttons__approve-button"
 							:disabled="!canApprove"
+							data-testid="approve"
 							@click="approve">
 							<label> {{ $i18n( 'wikilambda-function-details-table-approve' ).text() }} </label>
 						</cdx-button>
@@ -33,6 +34,7 @@
 							v-if="!( isMobile && !canDeactivate )"
 							class="ext-wikilambda-function-details-table__title__buttons__deactivate-button"
 							:disabled="!canDeactivate"
+							data-testid="deactivate"
 							@click="deactivate"
 						>
 							<label> {{ $i18n( 'wikilambda-function-details-table-deactivate' ).text() }} </label>

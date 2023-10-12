@@ -104,7 +104,8 @@ class TypeForm extends Page {
 	 * @return {void}
 	 */
 	async addKey() {
-		const button = await this.keysBlock.$$( 'button.ext-wikilambda-ztyped-list-add-button' );
+		const keysBlock = await this.keysBlock;
+		const button = await keysBlock.$$( 'button.ext-wikilambda-ztyped-list-add-button' );
 		const length = button.length;
 		await ElementActions.doClick( button[ length - 1 ] );
 	}
@@ -134,29 +135,31 @@ class TypeForm extends Page {
 	 */
 	async setKey( keysBlockEntry ) {
 		const { selectorIndex, valueType, keyId, textArray } = keysBlockEntry;
-		const keysBlockItem = await this.keysBlock.$$( './/label[contains(text(),"Item")]/parent::div/parent::div' )[ selectorIndex ];
+		const keysBlock = await this.keysBlock;
+		const keysBlockItem = await keysBlock.$$( './/label[contains(text(),"Item")]/parent::div/parent::div' )[ selectorIndex ];
 
 		/**
 		 * Set the Value type input
 		 */
-		const valueTypeBlock = ContentBlock.getSectionOfContentBlock( 'value type', keysBlockItem );
-		await InputDropdown.setInputDropdown( valueTypeBlock, valueTypeBlock.$( './/input[@placeholder="Select a Type"]' ),
-			valueType );
+		const valueTypeBlock = await ContentBlock.getSectionOfContentBlock( 'value type', keysBlockItem );
+		const selectTypeInput = await valueTypeBlock.$( './/input[@placeholder="Select a Type"]' );
+		await InputDropdown.setInputDropdown( valueTypeBlock, selectTypeInput, valueType );
 
 		/**
 		 * Set the KeyId input
 		 */
-		const keyIdBlock = ContentBlock.getSectionOfContentBlock( 'key id', keysBlockItem );
-		await ElementActions.setInput( keyIdBlock.$( './/input' ), keyId );
+		const keyIdBlock = await ContentBlock.getSectionOfContentBlock( 'key id', keysBlockItem );
+		const keyIdInput = await keyIdBlock.$( './/input' );
+		await ElementActions.setInput( keyIdInput, keyId );
 
-		const labelBlock = ContentBlock.getSectionOfContentBlock( 'label', keysBlockItem );
-		const textsBlock = ContentBlock.getSectionOfContentBlock( 'texts', labelBlock );
+		const labelBlock = await ContentBlock.getSectionOfContentBlock( 'label', keysBlockItem );
+		const textsBlock = await ContentBlock.getSectionOfContentBlock( 'texts', labelBlock );
 
 		for ( const i in textArray ) {
 			/**
 			 * Add text item
 			 */
-			const button = textsBlock.$( 'button.ext-wikilambda-ztyped-list-add-button' );
+			const button = await textsBlock.$( 'button.ext-wikilambda-ztyped-list-add-button' );
 			await ElementActions.doClick( button );
 
 			const textItem = await ContentBlock.getSectionOfContentBlock( `Item ${parseInt( i ) + 1}`, textsBlock );
@@ -164,14 +167,16 @@ class TypeForm extends Page {
 			/**
 			 * Set the language input
 			 */
-			const languageBlock = ContentBlock.getSectionOfContentBlock( 'language', textItem );
-			await InputDropdown.setInputDropdown( languageBlock, languageBlock.$( './/input[@placeholder="Select language"]' ), textArray[ i ].language );
+			const languageBlock = await ContentBlock.getSectionOfContentBlock( 'language', textItem );
+			const languageInput = await languageBlock.$( './/input[@placeholder="Select language"]' );
+			await InputDropdown.setInputDropdown( languageBlock, languageInput, textArray[ i ].language );
 
 			/**
 			 * Set the text input
 			 */
-			const textBlock = ContentBlock.getSectionOfContentBlock( 'text', textItem );
-			await ElementActions.setInput( textBlock.$( './/input' ), textArray[ i ].text );
+			const textBlock = await ContentBlock.getSectionOfContentBlock( 'text', textItem );
+			const textInput = await textBlock.$( './/input' );
+			await ElementActions.setInput( textInput, textArray[ i ].text );
 		}
 	}
 
@@ -195,7 +200,8 @@ class TypeForm extends Page {
 	 * @return {void}
 	 */
 	async setValidator( validator ) {
-		const input = this.validatorBlock.$( './/input' );
+		const validatorBlock = await this.validatorBlock;
+		const input = await validatorBlock.$( './/input' );
 		await InputDropdown.setInputDropdown( this.validatorBlock, input, validator );
 	}
 

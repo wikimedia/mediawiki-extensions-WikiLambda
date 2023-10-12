@@ -52,8 +52,8 @@ class ObjectSelector {
 	async select( itemName ) {
 		await this.inputField.click();
 		await this.inputField.setValue( itemName );
-		await this.menu.waitForDisplayed();
-		return this.getMenuOptionByTextContent( itemName ).click();
+		await this.menu.waitForDisplayed( { timeout: 10000 } );
+		return await this.getMenuOptionByTextContent( itemName ).click();
 	}
 }
 
