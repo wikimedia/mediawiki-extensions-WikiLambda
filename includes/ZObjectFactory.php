@@ -116,8 +116,8 @@ class ZObjectFactory {
 
 		// Build empty values if we are creating a new ZPersistentObject wrapper
 		// TODO: Looks like this case is never really used: contemplate removing it
-		$persistentId = $persistentId ?? self::createChild( ZTypeRegistry::Z_NULL_REFERENCE );
-		$persistentLabel = $persistentLabel ?? self::createChild( (object)[
+		$persistentId ??= self::createChild( ZTypeRegistry::Z_NULL_REFERENCE );
+		$persistentLabel ??= self::createChild( (object)[
 			ZTypeRegistry::Z_OBJECT_TYPE => ZTypeRegistry::Z_MULTILINGUALSTRING,
 			ZTypeRegistry::Z_MULTILINGUALSTRING_VALUE => [ ZTypeRegistry::Z_MONOLINGUALSTRING ]
 		] );

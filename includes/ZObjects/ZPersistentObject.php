@@ -29,7 +29,7 @@ class ZPersistentObject extends ZObject {
 	 * @param ZObject|null $description ZMultiLingualString that contains this ZPersistentObject's description
 	 */
 	public function __construct( $zid, $value, $label, $aliases = null, $description = null ) {
-		$aliases = $aliases ?? new ZMultiLingualStringSet( [] );
+		$aliases ??= new ZMultiLingualStringSet( [] );
 		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_ID ] = $zid;
 		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_VALUE ] = $value;
 		$this->data[ ZTypeRegistry::Z_PERSISTENTOBJECT_LABEL ] = $label;

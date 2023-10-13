@@ -622,7 +622,7 @@ class ApiPerformTest extends WikiLambdaApiBase {
 					+ self::getNumericMetadataValue( $metadataMap, 'evaluationCpuUsage' )
 					+ self::getNumericMetadataValue( $metadataMap, 'executionCpuUsage' ) );
 			}
-			$averageTime = $averageTime / count( $testerMap );
+			$averageTime /= count( $testerMap );
 			$implementationMap[ $implementationZid ][ 'numFailed' ] = $numFailed;
 			$implementationMap[ $implementationZid ][ 'averageTime' ] = $averageTime;
 		}
