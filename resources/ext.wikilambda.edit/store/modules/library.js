@@ -348,6 +348,7 @@ module.exports = exports = {
 			} ).then( ( response ) => {
 				const requestedZids = payload.zids;
 				const returnedZids = Object.keys( response.query.wikilambdaload_zobjects );
+				const languageZids = [];
 
 				returnedZids.forEach( ( zid ) => {
 					// If the requested zid returned error, do nothing
@@ -378,6 +379,7 @@ module.exports = exports = {
 							multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
 							multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
 						);
+						languageZids.push( multiStr[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
 						context.commit( 'setLabel', labelData );
 					}
 
@@ -409,6 +411,7 @@ module.exports = exports = {
 										keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
 										keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
 									);
+									languageZids.push( keyLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
 									context.commit( 'setLabel', labelData );
 								}
 							} );
@@ -433,6 +436,7 @@ module.exports = exports = {
 										argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_VALUE ],
 										argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ]
 									);
+									languageZids.push( argLabels[ 0 ][ Constants.Z_MONOLINGUALSTRING_LANGUAGE ] );
 									context.commit( 'setLabel', labelData );
 								}
 							} );
@@ -441,6 +445,9 @@ module.exports = exports = {
 						default:
 							// Do nothing
 					}
+
+					// Make sure that we fetch all languages stored in the labels library
+					context.dispatch( 'fetchZids', { zids: [ ...new Set( languageZids ) ] } );
 				} );
 
 				// performFetch must resolve to the list of requested zids

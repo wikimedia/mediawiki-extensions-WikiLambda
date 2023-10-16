@@ -183,10 +183,13 @@ describe( 'library module', function () {
 		describe( 'fetchZids', function () {
 			beforeEach( function () {
 				context.dispatch = jest.fn( function ( key, payload ) {
-					return new Promise( function ( resolve ) {
-						libraryModule.actions.performFetchZids( context, payload );
-						resolve( payload.zids );
-					} );
+					// Run performFetchZids action
+					if ( key === 'performFetchZids' ) {
+						return new Promise( function ( resolve ) {
+							libraryModule.actions.performFetchZids( context, payload );
+							resolve( payload.zids );
+						} );
+					}
 				} );
 			} );
 
@@ -267,6 +270,12 @@ describe( 'library module', function () {
 				expect( getResolveMock ).toHaveBeenCalledTimes( 1 );
 				expect( context.commit ).toHaveBeenCalledTimes( 11 );
 				expect( context.commit ).toHaveBeenCalledWith( 'setStoredObject', expectedAddZKeyInfoCall );
+			} );
+
+			it( 'Will request the language Zids of the returned labels', function () {
+				const zids = [ 'Z1' ];
+				libraryModule.actions.performFetchZids( context, { zids } );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'fetchZids', { zids: [ 'Z1002' ] } );
 			} );
 		} );
 	} );
