@@ -55,7 +55,7 @@ Done! Navigate to the newly created `Z1` page on your wiki to verify that the ex
 
 ### Back-end services
 
-WikiLambda uses two back-end services for running user-defined and built-in functions in a secure, scalable environment; an "evaluator" that runs user-defined native code, and an "orchestrator" that receives execution requests and determines what to run.
+WikiLambda uses two back-end services for running user-defined and built-in functions in a secure, scalable environment; a set of "evaluators" that run user-defined native code, and an "orchestrator" that receives execution requests and determines what to run.
 
 #### Default experience using Beta Wikifunctions
 
@@ -84,19 +84,19 @@ If you would like to use your own installation of the function orchestrator and 
 
 * If your wiki is not called 'mediawiki-web', e.g. because your checkout of MediaWiki is not in a directory called 'mediawiki', you will need to set `$wgWikiLambdaOrchestratorLocation` in your `LocalSettings.php` and make similar edits to the `environment` variables you have set in your `mediawiki/docker-compose.override.yml` file.
 
-This will provide you with your own orchestrator and evaluator service, pointed at your wiki. You can now use this for local content as well as built-in content.
+This will provide you with your own orchestrator and evaluator services, pointed at your wiki. You can now use this for local content as well as built-in content.
 
 #### Locally-built services for development
 
-If you would instead like to develop changes to the function orchestrator or evaluator, you will need to use a locally-built version of the services. To do this for the orchestrator:
+If you would instead like to develop changes to the function orchestrator or evaluators, you will need to use a locally-built version of the services. To do this for the orchestrator:
 
 * [Get Blubber](https://wikitech.wikimedia.org/wiki/Blubber/Download#Blubber_as_a_(micro)Service) so you can build the service images
 * In a directory outside of your MediaWiki checkout, clone the services via `git clone --recurse-submodules --remote-submodules https://gitlab.wikimedia.org/repos/abstract-wiki/wikifunctions/function-orchestrator`.
 * From the root of your function-orchestrator installation, run
   `blubber .pipeline/blubber.yaml development | docker build -t local-orchestrator -f - .`
-* Alter `mediawiki/docker-compose.override.yaml` to replace `image: docker-registry...` in the `function-orchestrator` service stanza to read `image: local-orchestrator:latest`.
+* Alter `mediawiki/docker-compose.override.yaml` to comment out `image: docker-registry...` in the `function-orchestrator` service stanza and uncomment the  `image: local-orchestrator:latest` line instead.
 
-If changing the evaluator, follow the same steps but for the evaluator image and directory.
+If changing one or more of the evaluators, follow the same steps but for the evaluator's images and directory.
 
 ### Front-end data model (Vuex)
 

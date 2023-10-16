@@ -2,12 +2,57 @@ version: "3.7"
 services:
   function-orchestrator:
     image: docker-registry.wikimedia.org/repos/abstract-wiki/wikifunctions/function-orchestrator:latest
+    # Un-comment this if you're using a local build, by running this in your check-out of the orchestrator:
+    #   blubber .pipeline/blubber.yaml development | docker build -t local-orchestrator -f - .
+    # image: local-orchestrator:latest
     ports:
       - 6254:6254
     environment:
       WIKI_API_URL: "http://mediawiki-web:8080/w/api.php"
-      FUNCTION_EVALUATOR_URL: "http://mediawiki_function-evaluator_1:6927/1/v1/evaluate/"
-  function-evaluator:
-    image: docker-registry.wikimedia.org/repos/abstract-wiki/wikifunctions/function-evaluator/omnibus:latest
+      ORCHESTRATOR_CONFIG: |
+        {
+          "evaluatorConfigs": [
+            {
+              "programmingLanguages": [
+                "python-3-9",
+                "python-3-8",
+                "python-3-7",
+                "python-3",
+                "python"
+              ],
+              "evaluatorUri": "http://mw-function-evaluator-python_∂1:6928/1/v1/evaluate/",
+              "evaluatorWs": "",
+              "useReentrance": false
+            },
+            {
+              "programmingLanguages": [
+                "javascript-es2020",
+                "javascript-es2019",
+                "javascript-es2018",
+                "javascript-es2017",
+                "javascript-es2016",
+                "javascript-es2015",
+                "javascript"
+              ],
+              "evaluatorUri": "http://mw-function-evaluator-javascript_1:6929/1/v1/evaluate/",
+              "evaluatorWs": "",
+              "useReentrance": false
+            }
+          ]
+        }
+
+  function-evaluator-python:
+    image: docker-registry.wikimedia.org/repos/abstract-wiki/wikifunctions/function-evaluator/python3-all:latest
+    # Un-comment this if you're using a local build, by running this in your check-out of the evaluator:
+    #   blubber .pipeline/blubber.yaml development-python3-all-wasm | docker build -t local-evaluator-py -f - .
+    # image: local-evaluator-py:latest
     ports:
-      - 6927:6927
+      - 6928:6927
+
+  function-evaluator-javascript:
+    # Un-comment this if you're using a local build, by running this in your check-out of the evaluator:
+    #   blubber .pipeline/blubber.yaml development-javascript-all-wasm | docker build -t local-evaluator-js -f - .
+    # image: local-evaluator-js:latest
+    image: docker-registry.wikimedia.org/repos/abstract-wiki/wikifunctions/function-evaluator/javascript-all:latest
+    ports:
+      - 6929:6927
