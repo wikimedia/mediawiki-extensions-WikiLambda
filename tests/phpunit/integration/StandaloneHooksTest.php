@@ -17,13 +17,19 @@ use FormatJson;
 use MediaWiki\Extension\WikiLambda\Tests\HooksDataPathMock;
 use MediaWiki\Extension\WikiLambda\Tests\HooksInsertMock;
 use MediaWiki\Extension\WikiLambda\Tests\ZTestType;
+use MediaWiki\Extension\WikiLambda\ZObjectContentHandler;
+use MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\SelectQueryBuilder;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Hooks
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectContentHandler
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjects\ZObject
  * @group Database
  * @group Standalone
  */
@@ -305,6 +311,63 @@ EOT;
 
 		$this->assertSame( $expectedLabels, $labels );
 		$this->assertSame( $expectedAliases, $aliases );
+	}
+
+	public function testOnMultiContentSave_languageLabels() {
+		$this->insertZids( [ 'Z12', 'Z60' ] );
+
+		$selectedLanguages = [ "Z1001", "Z1002", "Z1003", "Z1004", "Z1005", "Z1006" ];
+
+		$services = MediaWikiServices::getInstance();
+		$dbLoadFactory = $services->getDBLoadBalancerFactory();
+		$revisionRenderer = $services->getRevisionRenderer();
+		$wikiPageFactory = $services->getWikiPageFactory();
+
+		$handler = new ZObjectContentHandler( CONTENT_MODEL_ZOBJECT );
+		$dataPath = dirname( __DIR__, 3 ) . '/function-schemata/data/definitions';
+
+		foreach ( $selectedLanguages as $key => $languageZid ) {
+			// Duplicated logic from insertZids() because to trigger the SecondaryDataUpdate we need the content.
+
+			$contentString = file_get_contents( "$dataPath/$languageZid.json" );
+
+			$status = $this->editPage(
+				$languageZid,
+				$contentString,
+				'Test ZNaturalLanguage creation and label insertion',
+				NS_MAIN
+			);
+			$this->assertTrue( $status->isOK(), "Edit to create $languageZid went through" );
+
+			DeferredUpdates::doUpdates();
+			$dbLoadFactory->waitForReplication();
+
+			$title = Title::newFromText( $languageZid, NS_MAIN );
+			$content = $handler::makeContent( $contentString, $title );
+
+			$this->assertTrue( $title->exists( Title::READ_LATEST ), "$languageZid should now exist" );
+
+			$slotOutput = $revisionRenderer->getRenderedRevision(
+				$wikiPageFactory->newFromTitle( $title )->getRevisionRecord()
+			);
+
+			$updates = $handler->getSecondaryDataUpdates( $title, $content, SlotRecord::MAIN, $slotOutput );
+
+			$zobjectUpdates = array_filter( $updates, static function ( $u ) {
+				return $u instanceof ZObjectSecondaryDataUpdate;
+			} );
+			$zobjectUpdates[0]->doUpdate();
+		}
+
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->getPrimaryDatabase();
+
+		// Expect 11 labels – a label in English for all six, and an autonum in the five non-English languages
+		$labels = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_label_primary' ] )
+			->from( 'wikilambda_zobject_labels' )
+			->where( [ 'wlzl_type' => 'Z60', 'wlzl_label_primary' => true ] )
+			->fetchResultSet();
+		$this->assertEquals( 11, $labels->numRows() );
 	}
 
 	// TODO: Test the uncaught behaviour of MultiContentSave when a clash happens too late for us to stop it.
