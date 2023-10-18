@@ -194,6 +194,7 @@
 	"wikilambda-functioncall-metadata-orchestration-memory-usage": "שימוש בזיכרון של תזמור",
 	"wikilambda-functioncall-metadata-evaluation-memory-usage": "שימוש בזיכרון של הערכה",
 	"wikilambda-functioncall-metadata-execution-memory-usage": "שימוש בזיכרון של ביצוע",
+	"wikilambda-functioncall-metadata-execution-programming-language-version": "גרסת שפת תכנות",
 	"wikilambda-functioncall-metadata-orchestration-cpu-usage": "שימוש בכוח עיבוד של תזמור",
 	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "שימוש בכוח עיבוד של הערכה",
 	"wikilambda-functioncall-metadata-orchestration-hostname": "שרת תזמור",

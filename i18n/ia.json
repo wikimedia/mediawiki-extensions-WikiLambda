@@ -193,6 +193,7 @@
 	"wikilambda-functioncall-metadata-orchestration-memory-usage": "Uso de memoria del orchestration",
 	"wikilambda-functioncall-metadata-evaluation-memory-usage": "Uso de memoria del evalutation",
 	"wikilambda-functioncall-metadata-execution-memory-usage": "Uso de memoria del execution",
+	"wikilambda-functioncall-metadata-execution-programming-language-version": "Version del linguage de programmation",
 	"wikilambda-functioncall-metadata-orchestration-cpu-usage": "Uso del processator pro le orchestration",
 	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "Uso del processator pro le evalutation",
 	"wikilambda-functioncall-metadata-orchestration-hostname": "Servitor de orchestration",

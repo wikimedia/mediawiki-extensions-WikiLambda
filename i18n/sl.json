@@ -193,6 +193,7 @@
 	"wikilambda-functioncall-metadata-orchestration-memory-usage": "Uporaba pomnilnika za orkestracijo",
 	"wikilambda-functioncall-metadata-evaluation-memory-usage": "Uporaba pomnilnika za ovrednotenje",
 	"wikilambda-functioncall-metadata-execution-memory-usage": "Uporaba pomnilnika za izvedbo",
+	"wikilambda-functioncall-metadata-execution-programming-language-version": "Različica programskega jezika",
 	"wikilambda-functioncall-metadata-orchestration-cpu-usage": "Uporaba procesorja za orkestracijo",
 	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "Ovrednotenje uporabe procesorja",
 	"wikilambda-functioncall-metadata-orchestration-hostname": "Orkestracijski strežnik",
