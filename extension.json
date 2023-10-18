@@ -88,13 +88,15 @@
 		"wikilambda-edit-type",
 		"wikilambda-edit-unit",
 		"wikilambda-edit-user-function",
-		"wikilambda-execute"
+		"wikilambda-execute",
+		"wikilambda-execute-unsaved-code"
 	],
 	"GroupPermissions": {
 		"*": {
 			"wikilambda-execute": true
 		},
 		"user": {
+			"wikilambda-execute-unsaved-code": true,
 			"wikilambda-create": true,
 			"wikilambda-create-function": true,
 			"wikilambda-create-implementation": true,
@@ -269,6 +271,7 @@
 				"ext.wikilambda.edit/store/modules/library.js",
 				"ext.wikilambda.edit/store/modules/callZFunction.js",
 				"ext.wikilambda.edit/store/modules/errors.js",
+				"ext.wikilambda.edit/store/modules/user.js",
 				"ext.wikilambda.edit/store/modules/languages.js",
 				"ext.wikilambda.edit/store/modules/programmingLanguages.js",
 				"ext.wikilambda.edit/store/modules/zTesterResults.js",

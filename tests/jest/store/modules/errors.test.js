@@ -1,5 +1,5 @@
 /*!
- * WikiLambda unit test suite for the callZFunction Vuex module
+ * WikiLambda unit test suite for the errors Vuex module
  *
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT

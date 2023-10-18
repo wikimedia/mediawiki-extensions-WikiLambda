@@ -61,7 +61,8 @@ module.exports = exports = {
 	methods: $.extend(
 		mapActions( [
 			'initializeView',
-			'prefetchZids'
+			'prefetchZids',
+			'fetchUserRights'
 		] ),
 		mapActions( 'router', [ 'evaluateUri' ] ),
 		{
@@ -83,6 +84,7 @@ module.exports = exports = {
 		// Set zobject
 		this.initializeView().then(
 			function () {
+				this.fetchUserRights();
 				this.prefetchZids();
 				this.evaluateUri();
 				this.isAppSetup = true;

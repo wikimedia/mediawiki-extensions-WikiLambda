@@ -13,7 +13,7 @@
 		<template #main>
 			<!-- Logged out user warning -->
 			<cdx-message
-				v-if="!isUserLoggedIn"
+				v-if="userCanRunFunction === false"
 				type="warning"
 				class="ext-wikilambda-function-evaluator-message"
 			>
@@ -161,7 +161,8 @@ module.exports = exports = {
 		'getUserLangZid',
 		'getZObjectTypeByRowId',
 		'getMapValueByKey',
-		'isUserLoggedIn'
+		'userCanRunFunction',
+		'userCanRunUnsavedCode'
 	] ), {
 		/**
 		 * Whether the widget has a pre-defined function
@@ -288,7 +289,7 @@ module.exports = exports = {
 		 * @return {boolean}
 		 */
 		canRunFunction: function () {
-			return this.hasImplementations && this.isUserLoggedIn;
+			return this.hasImplementations && this.userCanRunFunction;
 		},
 
 		/**
@@ -364,13 +365,16 @@ module.exports = exports = {
 		 */
 		callFunction: function () {
 			const functionCallJson = this.getZObjectAsJsonById( this.functionCallRowId );
-
 			// If we are in an implementation page, we build raw function call with raw implementation:
 			// 1. Replace Z7K1 with the whole Z8 object: we assume it's in the store
 			// 2. Replace te Z8K4 with [ Z14, implementation ]
 			if ( this.forImplementation ) {
 				const storedFunction = this.getStoredObject( this.functionZid );
-				const implementation = this.getZObjectAsJsonById( this.contentRowId );
+				// If user can run unsaved code, we get the raw implementation,
+				// else, we use the current persisted version by using its Zid
+				const implementation = this.userCanRunUnsavedCode ?
+					this.getZObjectAsJsonById( this.contentRowId ) :
+					this.getCurrentZObjectId;
 				if ( storedFunction && implementation ) {
 					const functionObject = storedFunction[ Constants.Z_PERSISTENTOBJECT_VALUE ];
 					functionObject[ Constants.Z_FUNCTION_IMPLEMENTATIONS ] = [

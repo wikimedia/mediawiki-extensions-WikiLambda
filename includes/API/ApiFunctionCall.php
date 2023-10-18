@@ -80,23 +80,22 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		// Re-encoding to round-trip whitespace / encoded entities / etc.
 		$zObjectAsJsonStringForEvaluation = json_encode( $zObjectAsStdClass );
 
-		// Arbitrary implementation calls need more than wikilambda-execute; require wikilambda-create-implementation
-		// (To run an arbitrary implementation, you have to pass a custom function rather than a ZID string.)
+		// Arbitrary implementation calls need more than wikilambda-execute;
+		// require wikilambda-execute-unsaved-code, so that it can be independently
+		// activated/deactivated (to run an arbitrary implementation, you have to
+		// pass a custom function with the raw implementation rather than a ZID string.)
+		$isUnsavedCode = false;
 		if (
-			!$userAuthority->isAllowed( 'wikilambda-create-implementation' ) && (
-				!(
-					is_string( $zObjectAsStdClass->Z7K1 ) ||
-					(
-						is_object( $zObjectAsStdClass->Z7K1 ) &&
-						property_exists( $zObjectAsStdClass->Z7K1, 'Z9K1' ) &&
-						is_string( $zObjectAsStdClass->Z7K1->Z9K1 )
-					)
-				)
-				// HACK: Also check for inline code anyway ("Z16K2" set to something); this won't survive as a long-
-				// term strategy, as this prevents us doing generic functions etc., but it's a quick fix for now.
-				|| str_contains( $zObjectAsJsonStringForEvaluation, '"Z16K2":`' )
-			)
-		 ) {
+			is_object( $zObjectAsStdClass->Z7K1 ) &&
+			property_exists( $zObjectAsStdClass->Z7K1, 'Z8K4' ) &&
+			count( $zObjectAsStdClass->Z7K1->Z8K4 ) > 1
+		) {
+			$implementation = $zObjectAsStdClass->Z7K1->Z8K4[ 1 ];
+			if ( is_object( $implementation ) && property_exists( $implementation, 'Z14K1' ) ) {
+				$isUnsavedCode = true;
+			}
+		}
+		if ( $isUnsavedCode && !$userAuthority->isAllowed( 'wikilambda-execute-unsaved-code' ) ) {
 			$zError = ZErrorFactory::createZErrorInstance( ZErrorTypeRegistry::Z_ERROR_USER_CANNOT_RUN, [] );
 			$this->dieWithZError( $zError );
 		}
