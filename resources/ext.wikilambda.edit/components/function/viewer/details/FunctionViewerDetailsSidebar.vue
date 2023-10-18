@@ -512,7 +512,7 @@ module.exports = exports = {
 		}
 
 		&-small {
-			word-break: break-word;
+			overflow-wrap: break-word;
 		}
 
 		&-toggle {
