@@ -184,6 +184,15 @@ class ZObjectEditAction extends Action {
 		] );
 	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function getRestriction() {
+		// This is a very basic check; proper type-specific checking depends on the attemped
+		// edit/creation content, which isn't available yet
+		return 'wikilambda-create';
+	}
+
 	public function doesWrites() {
 		return true;
 	}
