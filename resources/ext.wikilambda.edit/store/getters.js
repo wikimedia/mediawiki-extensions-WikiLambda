@@ -32,8 +32,5 @@ module.exports = exports = {
 	},
 	isExpertMode: function ( state ) {
 		return state.expertMode;
-	},
-	isUserLoggedIn: function () {
-		return !!mw.config.values.wgUserName;
 	}
 };

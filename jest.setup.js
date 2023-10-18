@@ -84,7 +84,10 @@ global.mw = {
 		}
 	},
 	user: {
-		isAnon: jest.fn().mockReturnValue( true )
+		isAnon: jest.fn().mockReturnValue( true ),
+		getRights: jest.fn().mockReturnValue( {
+			then: jest.fn().mockReturnValue( [] )
+		} )
 	},
 	language: {
 		getFallbackLanguageChain: function () {

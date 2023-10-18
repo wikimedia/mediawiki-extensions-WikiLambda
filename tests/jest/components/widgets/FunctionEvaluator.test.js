@@ -67,6 +67,8 @@ describe( 'FunctionEvaluator', () => {
 
 	beforeEach( () => {
 		getters = {
+			getCurrentZObjectId: createGettersWithFunctionsMock( 'Z12345' ),
+			getCurrentZObjectType: createGettersWithFunctionsMock( 'Z14' ),
 			getStoredObject: createGettersWithFunctionsMock( undefined ),
 			getChildrenByParentRowId: createGettersWithFunctionsMock( [] ),
 			getRowByKeyPath: createGettersWithFunctionsMock( undefined ),
@@ -75,7 +77,9 @@ describe( 'FunctionEvaluator', () => {
 			getZObjectAsJsonById: createGettersWithFunctionsMock( '' ),
 			getLabel: createGettersWithFunctionsMock( 'Function' ),
 			getMapValueByKey: createGettersWithFunctionsMock( undefined ),
-			isUserLoggedIn: createGetterMock( true )
+			getUserLangZid: createGettersWithFunctionsMock( 'Z1002' ),
+			userCanRunFunction: createGetterMock( true ),
+			userCanRunUnsavedCode: createGetterMock( true )
 		};
 		actions = {
 			callZFunction: jest.fn(),
