@@ -24,7 +24,7 @@ class ParserHooksTest extends WikiLambdaIntegrationTestCase {
 		] );
 
 		$parser = $this->createMock( Parser::class );
-		$parser->expects( $this->exactly( 1 ) )
+		$parser->expects( $this->once() )
 			->method( 'setFunctionHook' )
 			->withConsecutive(
 				[ 'function', $this->isType( 'callable' ) ]

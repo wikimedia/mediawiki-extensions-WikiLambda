@@ -24,8 +24,8 @@ final class SchemaFactoryTest extends TestCase {
 	public function testNormal(): void {
 		$mockLoader = $this->createMock( YumYumYamlLoader::class );
 		$mockLoader->expects( $this->once() )->method( 'registerPath' )->with(
-			$this->equalTo( SchemataUtils::joinPath( SchemataUtils::dataDirectory(), "NORMAL" ) ),
-			$this->equalTo( "NORMAL" )
+			SchemataUtils::joinPath( SchemataUtils::dataDirectory(), "NORMAL" ),
+			"NORMAL"
 		);
 		'@phan-var YumYumYamlLoader $mockLoader';
 		$factory = SchemaFactory::getNormalFormFactory( $mockLoader );

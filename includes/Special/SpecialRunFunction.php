@@ -48,7 +48,7 @@ class SpecialRunFunction extends SpecialPage {
 		$this->outputHeader( 'wikilambda-special-runfunction-summary' );
 
 		$output = $this->getOutput();
-		$output->addModules( [ 'ext.wikilambda.edit','mediawiki.special' ] );
+		$output->addModules( [ 'ext.wikilambda.edit', 'mediawiki.special' ] );
 
 		$output->addWikiMsg( 'wikilambda-special-runfunction-intro' );
 

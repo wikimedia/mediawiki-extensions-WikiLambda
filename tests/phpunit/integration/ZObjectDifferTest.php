@@ -32,8 +32,8 @@ class ZObjectDifferTest extends WikiLambdaIntegrationTestCase {
 		$flats = ZObjectDiffer::flattenDiff( $diffOps );
 
 		// Assert that the number of diffOps is the expected one
-		$this->assertCount(
-			count( $expectedDiffs ),
+		$this->assertSameSize(
+			$expectedDiffs,
 			$flats,
 			'The number of detected DiffOps is correct'
 		);

@@ -226,7 +226,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 		$loggedout = User::newFromId( 0 );
 		$user = $this->getTestUser()->getUser();
 		$functioneer = $this->getTestUser( [ 'functioneer' ] )->getUser();
-		$maintainer = $this->getTestUser( [ 'functioneer','functionmaintainer' ] )->getUser();
+		$maintainer = $this->getTestUser( [ 'functioneer', 'functionmaintainer' ] )->getUser();
 
 		// SETUP:
 		$this->insertZids( [ 'Z17', 'Z14', 'Z16', 'Z20' ] );
@@ -384,7 +384,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 	public function testPersistedEdits( $dependencies, $zid, $newValue, $description, $authorized ) {
 		// Setup dependencies and Lang Registry
 		$this->insertZids( $dependencies );
-		$this->registerLangs( [ 'en','es' ] );
+		$this->registerLangs( [ 'en', 'es' ] );
 
 		// Get user
 		// FIXME: different type of user to come in the test file

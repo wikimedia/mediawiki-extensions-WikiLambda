@@ -468,11 +468,13 @@ class ZObjectUtils {
 	 */
 	public static function isTypeEqualTo( $type1, $type2 ) {
 		// Not the same type
-		if ( gettype( $type1 ) !== gettype( $type2 ) ) { return false;
+		if ( gettype( $type1 ) !== gettype( $type2 ) ) {
+			return false;
 		}
 
 		// If they are both strings, return identity
-		if ( is_string( $type1 ) ) { return $type1 === $type2;
+		if ( is_string( $type1 ) ) {
+			return $type1 === $type2;
 		}
 
 		// If they are both objects, compare their keys
@@ -482,9 +484,11 @@ class ZObjectUtils {
 			return false;
 		}
 		foreach ( $typeArr1 as $key => $value ) {
-			if ( !array_key_exists( $key, $typeArr2 ) ) { return false;
+			if ( !array_key_exists( $key, $typeArr2 ) ) {
+				return false;
 			}
-			if ( !self::isTypeEqualTo( $value, $typeArr2[ $key ] ) ) { return false;
+			if ( !self::isTypeEqualTo( $value, $typeArr2[ $key ] ) ) {
+				return false;
 			}
 		}
 		return true;

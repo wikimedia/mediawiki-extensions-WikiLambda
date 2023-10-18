@@ -801,7 +801,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 		);
 
 		// Register the languages we'll use
-		$this->registerLangs( [ 'en','es','fr','de' ] );
+		$this->registerLangs( [ 'en', 'es', 'fr', 'de' ] );
 
 		$this->assertSame(
 			'txt-en',
