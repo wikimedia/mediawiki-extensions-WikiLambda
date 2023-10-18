@@ -96,6 +96,9 @@ class SpecialViewObject extends SpecialPage {
 
 		$this->getSkin()->setRelevantTitle( $targetTitle );
 
+		// (T345453) Have the standard copyright stuff show up.
+		$this->getContext()->getOutput()->setCopyright( true );
+
 		$this->setHeaders();
 
 		try {
