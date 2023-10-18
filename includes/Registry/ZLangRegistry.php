@@ -152,6 +152,9 @@ class ZLangRegistry extends ZObjectRegistry {
 			);
 		}
 
+		// Re-insert into the languages cache so we don't have this expensive miss again.
+		$zObjectStore->insertZLanguageToLanguagesCache( $zid, $code );
+
 		return $code;
 	}
 
