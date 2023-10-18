@@ -39,14 +39,9 @@ use Wikimedia\RequestTimeout\RequestTimeoutException;
  */
 abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface {
 
-	/** @var OrchestratorRequest */
-	protected $orchestrator;
-
-	/** @var string */
-	protected $orchestratorHost;
-
-	/** @var LoggerInterface */
-	protected $logger;
+	protected OrchestratorRequest $orchestrator;
+	protected string $orchestratorHost;
+	protected LoggerInterface $logger;
 
 	protected function setUp() {
 		$this->setLogger( LoggerFactory::getInstance( 'WikiLambda' ) );
@@ -258,7 +253,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	}
 
 	/** @inheritDoc */
-	public function getLogger() {
+	public function getLogger(): LoggerInterface {
 		return $this->logger;
 	}
 }
