@@ -145,6 +145,13 @@
     any:
       - wikilambda-edit-key-label
 
+# Change key labels of error types
+- path: '^.*\.Z3K3\.Z12K1\.[1-9]\d*(\..*)?$'
+  type: Z50
+  operations:
+    any:
+      - wikilambda-edit-error-key-label
+
 # Change implementation of tester that's attached to a function
 - path: '^Z2K2\.(.*)?$'
   type: Z14

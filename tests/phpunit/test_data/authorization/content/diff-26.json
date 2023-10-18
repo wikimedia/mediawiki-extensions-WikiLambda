@@ -1,0 +1,82 @@
+{
+	"description": "User can add key labels to an error type",
+	"authorized": true,
+	"rights": [
+		"edit",
+		"wikilambda-edit-error-key-label"
+	],
+	"groups": [],
+	"dependencies": [ "Z50" ],
+	"zid": "Z9026",
+	"oldValue": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z9026"
+		},
+		"Z2K2": {
+			"Z1K1": "Z50",
+			"Z50K1": [
+				"Z3",
+				{
+					"Z1K1": "Z3",
+					"Z3K1": "Z1",
+					"Z3K2": "Z9026K1",
+					"Z3K3": {
+						"Z1K1": "Z12",
+						"Z12K1": [
+							"Z11",
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1002",
+								"Z11K2": "error information"
+							}
+						]
+					}
+				}
+			]
+		},
+		"Z2K3": {
+			"Z1K1": "Z12",
+			"Z12K1": [ "Z11" ]
+		}
+	},
+	"newValue": {
+		"Z1K1": "Z2",
+		"Z2K1": {
+			"Z1K1": "Z6",
+			"Z6K1": "Z9026"
+		},
+		"Z2K2": {
+			"Z1K1": "Z50",
+			"Z50K1": [
+				"Z3",
+				{
+					"Z1K1": "Z3",
+					"Z3K1": "Z1",
+					"Z3K2": "Z9026K1",
+					"Z3K3": {
+						"Z1K1": "Z12",
+						"Z12K1": [
+							"Z11",
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1002",
+								"Z11K2": "error information"
+							},
+							{
+								"Z1K1": "Z11",
+								"Z11K1": "Z1003",
+								"Z11K2": "información del error"
+							}
+						]
+					}
+				}
+			]
+		},
+		"Z2K3": {
+			"Z1K1": "Z12",
+			"Z12K1": [ "Z11" ]
+		}
+	}
+}
