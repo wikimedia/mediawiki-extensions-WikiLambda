@@ -24,6 +24,17 @@
 # Allow rules for all objects
 # ===========================
 
+# Change object type
+- path: '^Z2K2(\.Z1K1.*)?$'
+  filter: [ ZObjectFilterTypeChanged ]
+  operations:
+    any:
+      - wikilambda-edit-object-type
+
+# =======================================
+# Multilingual info rules for all objects
+# =======================================
+
 # Change object labels
 - path: '^Z2K3\.Z12K1\.[1-9]\d*(\..*)?$'
   operations:
@@ -42,101 +53,9 @@
     any:
       - wikilambda-edit-object-alias
 
-# Change object type
-- path: '^Z2K2(\.Z1K1.*)?$'
-  filter: [ ZObjectFilterTypeChanged ]
-  operations:
-    any:
-      - wikilambda-edit-object-type
-
-# =======================
-# Specific rules per type
-# =======================
-
-# Change argument labels
-- path: '^.*\.Z17K3\.Z12K1\.[1-9]\d*(\..*)?$'
-  type: Z8
-  operations:
-    any:
-      - wikilambda-edit-argument-label
-
-# Connect and disconnect tester from user provided function
-- path: '^Z2K2\.Z8K3\.[1-9]\d*(\..*)?$'
-  type: Z8
-  filter: [ ZObjectFilterInRange, Z10001, null ]
-  operations:
-    any:
-      - wikilambda-edit-user-function
-    add:
-      - wikilambda-connect-tester
-    remove:
-      - wikilambda-disconnect-tester
-    change:
-      - wikilambda-connect-tester
-      - wikilambda-disconnect-tester
-
-# Connect and disconnect tester from builtin function
-- path: '^Z2K2\.Z8K3\.[1-9]\d*(\..*)?$'
-  type: Z8
-  filter: [ ZObjectFilterInRange, null, Z10000 ]
-  operations:
-    any:
-      - wikilambda-edit-builtin-function
-    add:
-      - wikilambda-connect-tester
-    remove:
-      - wikilambda-disconnect-tester
-    change:
-      - wikilambda-connect-tester
-      - wikilambda-disconnect-tester
-
-# Connect and disconnect implementation from user provided function
-- path: '^Z2K2\.Z8K4\.[1-9]\d*(\..*)?$'
-  type: Z8
-  filter: [ ZObjectFilterInRange, Z10001, null ]
-  operations:
-    any:
-      - wikilambda-edit-user-function
-    add:
-      - wikilambda-connect-implementation
-    remove:
-      - wikilambda-disconnect-implementation
-    change:
-      - wikilambda-connect-implementation
-      - wikilambda-disconnect-implementation
-
-# Connect and disconnect implementation from builtin function
-- path: '^Z2K2\.Z8K4\.[1-9]\d*(\..*)?$'
-  type: Z8
-  filter: [ ZObjectFilterInRange, null, Z10000 ]
-  operations:
-    any:
-      - wikilambda-edit-builtin-function
-    add:
-      - wikilambda-connect-implementation
-    remove:
-      - wikilambda-disconnect-implementation
-    change:
-      - wikilambda-connect-implementation
-      - wikilambda-disconnect-implementation
-
-# Change the function definition for a running function
-- path: '^Z2K2\.Z8K1(\..*)?$'
-  type: Z8
-  filter: [ ZObjectFilterIsRunnable ]
-  operations:
-    any:
-      - wikilambda-edit-function-definition
-      - wikilambda-edit-running-function
-
-# Change the function definition for a running function
-- path: '^Z2K2\.Z8K2(\..*)?$'
-  type: Z8
-  filter: [ ZObjectFilterIsRunnable ]
-  operations:
-    any:
-      - wikilambda-edit-function-definition
-      - wikilambda-edit-running-function
+# ============================================
+# Multilingual info rules for particular types
+# ============================================
 
 # Change key labels of types
 - path: '^.*\.Z3K3\.Z12K1\.[1-9]\d*(\..*)?$'
@@ -151,6 +70,170 @@
   operations:
     any:
       - wikilambda-edit-error-key-label
+
+# Change input labels of functions
+- path: '^.*\.Z17K3\.Z12K1\.[1-9]\d*(\..*)?$'
+  type: Z8
+  operations:
+    any:
+      - wikilambda-edit-argument-label
+
+# =================================
+# Rights for super-restricted types
+# =================================
+
+# Change boolean
+- path: '^Z2K2\.(.*)?$'
+  type: Z40
+  operations:
+    any:
+      - wikilambda-edit-boolean
+
+# Change unit
+- path: '^Z2K2\.(.*)?$'
+  type: Z21
+  operations:
+    any:
+      - wikilambda-edit-unit
+
+# ===========================
+# Rights for restricted types
+# ===========================
+
+# Change language
+- path: '^Z2K2\.(.*)?$'
+  type: Z60
+  operations:
+    any:
+      - wikilambda-edit-language
+
+# Change programming language
+- path: '^Z2K2\.(.*)?$'
+  type: Z61
+  operations:
+    any:
+      - wikilambda-edit-programming
+
+# =======================================
+# Rights for all other predefined objects
+#
+# These rights are terminal, so from now
+# on, all following rules will be only
+# applicable to user-contributed objects.
+# =======================================
+
+# Change any predefined object
+- path: '^Z2K2(\..*)?$'
+  filter: [ ZObjectFilterInRange, null, Z10000 ]
+  operations:
+    any:
+      - wikilambda-edit-predefined
+
+# =================================
+# Rights for user-contributed types
+# =================================
+
+# Change type
+- path: '^Z2K2\.(.*)?$'
+  type: Z4
+  operations:
+    any:
+      - wikilambda-edit-type
+
+# =====================================
+# Rights for user-contributed functions
+# =====================================
+
+# Change the inputs of a running user-function
+- path: '^Z2K2\.Z8K1(\..*)?$'
+  type: Z8
+  filter: [ ZObjectFilterIsRunnable ]
+  operations:
+    any:
+      - wikilambda-edit-user-function
+      - wikilambda-edit-running-function
+      - wikilambda-edit-running-function-definition
+
+# Change the output type of a running user-function
+- path: '^Z2K2\.Z8K2(\..*)?$'
+  type: Z8
+  filter: [ ZObjectFilterIsRunnable ]
+  operations:
+    any:
+      - wikilambda-edit-user-function
+      - wikilambda-edit-running-function
+      - wikilambda-edit-running-function-definition
+
+# Connect and disconnect tests from a running user-function
+- path: '^Z2K2\.Z8K3\.[1-9]\d*(\..*)?$'
+  type: Z8
+  filter: [ ZObjectFilterIsRunnable ]
+  operations:
+    any:
+      - wikilambda-edit-user-function
+      - wikilambda-edit-running-function
+    add:
+      - wikilambda-connect-tester
+    remove:
+      - wikilambda-disconnect-tester
+    change:
+      - wikilambda-connect-tester
+      - wikilambda-disconnect-tester
+
+# Connect and disconnect implementations from a running user-function
+- path: '^Z2K2\.Z8K4\.[1-9]\d*(\..*)?$'
+  type: Z8
+  filter: [ ZObjectFilterIsRunnable ]
+  operations:
+    any:
+      - wikilambda-edit-user-function
+      - wikilambda-edit-running-function
+    add:
+      - wikilambda-connect-implementation
+    remove:
+      - wikilambda-disconnect-implementation
+    change:
+      - wikilambda-connect-implementation
+      - wikilambda-disconnect-implementation
+
+# Connect and disconnect tests from a non-running user-function
+- path: '^Z2K2\.Z8K3\.[1-9]\d*(\..*)?$'
+  type: Z8
+  operations:
+    any:
+      - wikilambda-edit-user-function
+    add:
+      - wikilambda-connect-tester
+    remove:
+      - wikilambda-disconnect-tester
+    change:
+      - wikilambda-connect-tester
+      - wikilambda-disconnect-tester
+
+# Connect and disconnect implementations from a non-running user-function
+- path: '^Z2K2\.Z8K4\.[1-9]\d*(\..*)?$'
+  type: Z8
+  operations:
+    any:
+      - wikilambda-edit-user-function
+    add:
+      - wikilambda-connect-implementation
+    remove:
+      - wikilambda-disconnect-implementation
+    change:
+      - wikilambda-connect-implementation
+      - wikilambda-disconnect-implementation
+
+# Fallback: all other changes on user-function
+- path: '^Z2K2\.(.*)?$'
+  type: Z8
+  operations:
+    any:
+      - wikilambda-edit-user-function
+
+# =============================
+# Fallback rules for edit types
+# =============================
 
 # Change implementation of tester that's attached to a function
 - path: '^Z2K2\.(.*)?$'
@@ -167,75 +250,6 @@
   operations:
     any:
       - wikilambda-edit-attached-tester
-
-# =============================
-# Fallback rules for edit types
-# =============================
-
-# Change builtin function
-- path: '^Z2K2\.(.*)?$'
-  filter: [ ZObjectFilterInRange, null, Z10000 ]
-  type: Z8
-  operations:
-    any:
-      - wikilambda-edit-builtin-function
-
-# Change any builtin object
-- path: '^Z2K2(\..*)?$'
-  filter: [ ZObjectFilterInRange, null, Z10000 ]
-  operations:
-    any:
-      - wikilambda-edit-predefined
-
-# Change running function
-- path: '^Z2K2\.(.*)?$'
-  filter: [ ZObjectFilterIsRunnable ]
-  type: Z8
-  operations:
-    any:
-      - wikilambda-edit-running-function
-
-# Change remaining functions (not running user functions)
-- path: '^Z2K2\.(.*)?$'
-  type: Z8
-  operations:
-    any:
-      - wikilambda-edit-user-function
-
-# Change type
-- path: '^Z2K2\.(.*)?$'
-  type: Z4
-  operations:
-    any:
-      - wikilambda-edit-type
-
-# Change language
-- path: '^Z2K2\.(.*)?$'
-  type: Z60
-  operations:
-    any:
-      - wikilambda-edit-language
-
-# Change programming language
-- path: '^Z2K2\.(.*)?$'
-  type: Z61
-  operations:
-    any:
-      - wikilambda-edit-programming
-
-# Change boolean
-- path: '^Z2K2\.(.*)?$'
-  type: Z40
-  operations:
-    any:
-      - wikilambda-edit-boolean
-
-# Change unit
-- path: '^Z2K2\.(.*)?$'
-  type: Z21
-  operations:
-    any:
-      - wikilambda-edit-unit
 
 # Change zobject
 - path: '^Z2K2(\..*)?$'

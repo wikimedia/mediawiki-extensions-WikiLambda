@@ -70,11 +70,8 @@
 		"wikilambda-edit-argument-label",
 		"wikilambda-edit-attached-implementation",
 		"wikilambda-edit-attached-tester",
-		"wikilambda-edit-builtin-function",
 		"wikilambda-edit-boolean",
 		"wikilambda-edit-error-key-label",
-		"wikilambda-edit-function",
-		"wikilambda-edit-function-definition",
 		"wikilambda-edit-implementation",
 		"wikilambda-edit-key-label",
 		"wikilambda-edit-language",
@@ -85,6 +82,7 @@
 		"wikilambda-edit-predefined",
 		"wikilambda-edit-programming",
 		"wikilambda-edit-running-function",
+		"wikilambda-edit-running-function-definition",
 		"wikilambda-edit-tester",
 		"wikilambda-edit-type",
 		"wikilambda-edit-unit",
@@ -105,7 +103,6 @@
 			"wikilambda-edit": true,
 			"wikilambda-edit-argument-label": true,
 			"wikilambda-edit-error-key-label": true,
-			"wikilambda-edit-function": true,
 			"wikilambda-edit-implementation": true,
 			"wikilambda-edit-key-label": true,
 			"wikilambda-edit-object-alias": true,
@@ -122,17 +119,16 @@
 			"wikilambda-disconnect-tester": true,
 			"wikilambda-edit-attached-implementation": true,
 			"wikilambda-edit-attached-tester": true,
-			"wikilambda-edit-function-definition": true
+			"wikilambda-edit-running-function": true
 		},
 		"functionmaintainer": {
 			"wikilambda-create-language": true,
 			"wikilambda-create-predefined": true,
 			"wikilambda-create-programming": true,
-			"wikilambda-edit-builtin-function": true,
 			"wikilambda-edit-language": true,
 			"wikilambda-edit-predefined": true,
 			"wikilambda-edit-programming": true,
-			"wikilambda-edit-running-function": true,
+			"wikilambda-edit-running-function-definition": true,
 			"wikilambda-edit-type": true
 		},
 		"sysop": {

@@ -3,11 +3,7 @@
 	"authorized": true,
 	"rights": [
 		"edit",
-		"wikilambda-edit-builtin-function",
-		"wikilambda-connect-tester",
-		"wikilambda-connect-implementation",
-		"wikilambda-disconnect-tester",
-		"wikilambda-disconnect-implementation"
+		"wikilambda-edit-predefined"
 	],
 	"groups": [ "functioneer", "functionmaintainer" ],
 	"dependencies": [ "Z17" ],

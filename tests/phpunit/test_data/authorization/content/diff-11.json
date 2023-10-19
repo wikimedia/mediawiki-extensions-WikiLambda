@@ -3,8 +3,9 @@
 	"authorized": true,
 	"rights": [
 		"edit",
-		"wikilambda-edit-function-definition",
-		"wikilambda-edit-running-function"
+		"wikilambda-edit-user-function",
+		"wikilambda-edit-running-function",
+		"wikilambda-edit-running-function-definition"
 	],
 	"groups": [ "functioneer", "functionmaintainer" ],
 	"dependencies": [ "Z17" ],

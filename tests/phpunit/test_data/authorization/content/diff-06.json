@@ -4,6 +4,7 @@
 	"rights": [
 		"edit",
 		"wikilambda-edit-user-function",
+		"wikilambda-edit-running-function",
 		"wikilambda-connect-tester",
 		"wikilambda-connect-implementation",
 		"wikilambda-disconnect-tester",
