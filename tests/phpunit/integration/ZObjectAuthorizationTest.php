@@ -115,7 +115,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 		return $testData;
 	}
 
-	public function testAttached() {
+	public function testAttachedImplementationAndTest() {
 		$user = $this->getTestUser()->getUser();
 		$functioneer = $this->getTestUser( [ "functioneer" ] )->getUser();
 
@@ -222,7 +222,100 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 		$this->assertTrue( $status->isValid(), 'Functioneer is authorized to edit attached tester' );
 	}
 
-	public function testUnattached() {
+	public function testDetachedImplementationAndTest() {
+		$user = $this->getTestUser()->getUser();
+		$functioneer = $this->getTestUser( [ "functioneer" ] )->getUser();
+
+		// SETUP:
+		// Insert function Echo
+		$this->insertZids( [ 'Z17', 'Z14', 'Z16', 'Z20' ] );
+
+		// Get implementation and tester JSONs
+		$filePath = dirname( __DIR__, 1 ) . '/test_data/authorization/function-implementation-tester.json';
+		$fileData = json_decode( file_get_contents( $filePath ) );
+		$function = $fileData->function;
+
+		// Insert new function
+		$functionPage = $this->zobjectStore->createNewZObject(
+			FormatJson::encode( $function ),
+			'Insert function',
+			$user
+		);
+		$this->assertTrue( $functionPage->isOK() );
+		$functionZid = $functionPage->getTitle()->getBaseText();
+
+		// TEST IMPLEMENTATION:
+		// Replace function Zid and create title
+		$implementation = json_decode( str_replace(
+			'FUNCTIONZID',
+			$functionZid,
+			json_encode( $fileData->implementation_detached )
+		) );
+		$title = Title::newFromText( $implementation->zid, NS_MAIN );
+
+		// Create and validate ZObjectContent objects
+		$oldContent = new ZObjectContent( FormatJson::encode( $implementation->oldValue ) );
+		$newContent = new ZObjectContent( FormatJson::encode( $implementation->newValue ) );
+		$this->assertTrue( $oldContent->isValid() );
+		$this->assertTrue( $newContent->isValid() );
+
+		// Assert that the correct rights are detected
+		$rights = $this->zobjectAuthorization->getRequiredEditRights(
+			$oldContent,
+			$newContent,
+			$title
+		);
+		$this->assertEquals( [
+			'edit',
+			'wikilambda-edit-implementation'
+		], $rights );
+
+		// Request authorization finally goes through
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$user,
+			$title
+		);
+		$this->assertTrue( $status->isValid(), 'User is authorized to edit a datached implementation' );
+
+		// TESTER:
+		// Create title
+		$tester = json_decode( str_replace(
+			'FUNCTIONZID',
+			$functionZid,
+			json_encode( $fileData->tester_detached )
+		) );
+		$title = Title::newFromText( $tester->zid, NS_MAIN );
+
+		// Create and validate ZObjectContent objects
+		$oldContent = new ZObjectContent( FormatJson::encode( $tester->oldValue ) );
+		$newContent = new ZObjectContent( FormatJson::encode( $tester->newValue ) );
+		$this->assertTrue( $oldContent->isValid() );
+		$this->assertTrue( $newContent->isValid() );
+
+		// Assert that the correct rights are detected
+		$rights = $this->zobjectAuthorization->getRequiredEditRights(
+			$oldContent,
+			$newContent,
+			$title
+		);
+		$this->assertEquals( [
+			'edit',
+			'wikilambda-edit-tester'
+		], $rights );
+
+		// Request authorization finally goes through
+		$status = $this->zobjectAuthorization->authorize(
+			$oldContent,
+			$newContent,
+			$user,
+			$title
+		);
+		$this->assertTrue( $status->isValid(), 'User is authorized to edit a detached tester' );
+	}
+
+	public function testNotRunningFunction() {
 		$loggedout = User::newFromId( 0 );
 		$user = $this->getTestUser()->getUser();
 		$functioneer = $this->getTestUser( [ 'functioneer' ] )->getUser();
@@ -274,7 +367,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 		);
 		$this->assertFalse(
 			$status->isValid(),
-			'Logged-out user not is authorized to edit the type of an unattached function'
+			'Logged-out user not is authorized to edit the definition of a not-running function'
 		);
 		$status = $this->zobjectAuthorization->authorize(
 			$oldContent,
@@ -284,7 +377,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 		);
 		$this->assertTrue(
 			$status->isValid(),
-			'User is authorized to edit the type of an unattached function'
+			'User is authorized to edit the definition of a not-running function'
 		);
 		$status = $this->zobjectAuthorization->authorize(
 			$oldContent,
@@ -294,7 +387,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 		);
 		$this->assertTrue(
 			$status->isValid(),
-			'Functioneer is authorized to edit the type of an unattached function'
+			'Functioneer is authorized to edit the definition of a not-running function'
 		);
 		$status = $this->zobjectAuthorization->authorize(
 			$oldContent,
@@ -304,7 +397,7 @@ class ZObjectAuthorizationTest extends WikiLambdaIntegrationTestCase {
 		);
 		$this->assertTrue(
 			$status->isValid(),
-			'Maintainer is authorized to edit the type of an unattached function'
+			'Maintainer is authorized to edit the definition of an not-running function'
 		);
 
 		// Label change: Attempt to add a label (to both the argument and the object)

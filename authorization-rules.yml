@@ -231,11 +231,11 @@
     any:
       - wikilambda-edit-user-function
 
-# =============================
-# Fallback rules for edit types
-# =============================
+# =========================
+# Rules for implementations
+# =========================
 
-# Change implementation of tester that's attached to a function
+# Change implementation that's connected to a function
 - path: '^Z2K2\.(.*)?$'
   type: Z14
   filter: [ ZObjectFilterIsAttached ]
@@ -243,13 +243,35 @@
     any:
       - wikilambda-edit-attached-implementation
 
-# Change implementation of tester that's attached to a function
+# Change implementation that's not connected
+- path: '^Z2K2\.(.*)?$'
+  type: Z14
+  operations:
+    any:
+      - wikilambda-edit-implementation
+
+# ===============
+# Rules for tests
+# ===============
+
+# Change test that's connected to a function
 - path: '^Z2K2\.(.*)?$'
   type: Z20
   filter: [ ZObjectFilterIsAttached ]
   operations:
     any:
       - wikilambda-edit-attached-tester
+
+# Change test that's not connected to a function
+- path: '^Z2K2\.(.*)?$'
+  type: Z20
+  operations:
+    any:
+      - wikilambda-edit-tester
+
+# =============================
+# Fallback rules for edit types
+# =============================
 
 # Change zobject
 - path: '^Z2K2(\..*)?$'

@@ -124,5 +124,101 @@
 				"Z12K1": [ "Z11" ]
 			}
 		}
+	},
+	"implementation_detached": {
+		"zid": "Z10031",
+		"oldValue": {
+			"Z1K1": "Z2",
+			"Z2K1": {
+				"Z1K1": "Z6",
+				"Z6K1": "Z10031"
+			},
+			"Z2K2": {
+				"Z1K1": "Z14",
+				"Z14K1": "FUNCTIONZID",
+				"Z14K3": {
+					"Z1K1": "Z16",
+					"Z16K1": "Z600",
+					"Z16K2": "function Z10031( FUNCTIONZIDK1 ) {\n\treturn FUNCTIONZIDK1;\n}"
+				}
+			},
+			"Z2K3": {
+				"Z1K1": "Z12",
+				"Z12K1": [ "Z11" ]
+			}
+		},
+		"newValue": {
+			"Z1K1": "Z2",
+			"Z2K1": {
+				"Z1K1": "Z6",
+				"Z6K1": "Z10031"
+			},
+			"Z2K2": {
+				"Z1K1": "Z14",
+				"Z14K1": "FUNCTIONZID",
+				"Z14K3": {
+					"Z1K1": "Z16",
+					"Z16K1": "Z600",
+					"Z16K2": "function Z10031( FUNCTIONZIDK1 ) {\n\treturn 'h4k3d ' + FUNCTIONZIDK1;\n}"
+				}
+			},
+			"Z2K3": {
+				"Z1K1": "Z12",
+				"Z12K1": [ "Z11" ]
+			}
+		}
+	},
+	"tester_detached": {
+		"zid": "Z10032",
+		"oldValue": {
+			"Z1K1": "Z2",
+			"Z2K1": {
+				"Z1K1": "Z6",
+				"Z6K1": "Z10032"
+			},
+			"Z2K2": {
+				"Z1K1": "Z20",
+				"Z20K1": "FUNCTIONZID",
+				"Z20K2": {
+					"Z1K1": "Z7",
+					"Z7K1": "FUNCTIONZID",
+					"FUNCTIONZIDK1": "testing Test"
+				},
+				"Z20K3": {
+					"Z1K1": "Z7",
+					"Z7K1": "Z866",
+					"Z866K2": "testing Test"
+				}
+			},
+			"Z2K3": {
+				"Z1K1": "Z12",
+				"Z12K1": [ "Z11" ]
+			}
+		},
+		"newValue": {
+			"Z1K1": "Z2",
+			"Z2K1": {
+				"Z1K1": "Z6",
+				"Z6K1": "Z10032"
+			},
+			"Z2K2": {
+				"Z1K1": "Z20",
+				"Z20K1": "FUNCTIONZID",
+				"Z20K2": {
+					"Z1K1": "Z7",
+					"Z7K1": "FUNCTIONZID",
+					"FUNCTIONZIDK1": "testing Test"
+				},
+				"Z20K3": {
+					"Z1K1": "Z7",
+					"Z7K1": "Z866",
+					"Z866K2": "h4k3d testing Test"
+				}
+			},
+			"Z2K3": {
+				"Z1K1": "Z12",
+				"Z12K1": [ "Z11" ]
+			}
+		}
 	}
 }
