@@ -107,6 +107,7 @@
 	"wikilambda-tester-results-caption": "বাস্তবায়নের বিরুদ্ধে ফাংশন পরীক্ষার ফলাফল",
 	"wikilambda-tester-results-current-implementation": "বর্তমান বাস্তবায়ন",
 	"wikilambda-tester-results-current-test": "বর্তমান পরীক্ষা",
+	"wikilambda-tester-results-percentage-label": "মোট পরীক্ষায় উত্তীর্ণ",
 	"wikilambda-tester-run-testers": "সমস্ত পরীক্ষা চালান",
 	"wikilambda-tester-run-tester": "পরীক্ষা চালান",
 	"wikilambda-enable-expert-mode": "বিশেষজ্ঞ মোড সক্রিয় করুন",
@@ -198,6 +199,8 @@
 	"wikilambda-zimplementation-code-missing": "কোড সংজ্ঞায়িত করা আবশ্যক",
 	"wikilambda-chip-remove": "আইটেম সরান",
 	"wikilambda-add-list-item-button": "আইটেম যোগ করুন",
+	"wikilambda-list-items-label": "আইটেম তালিকা",
+	"wikilambda-list-items-type-label": "আইটেম তালিকার ধরন",
 	"wikilambda-add-list-item": "আইটেম যোগ করুন",
 	"wikilambda-delete-list-item": "আইটেম মুছুন"
 }
