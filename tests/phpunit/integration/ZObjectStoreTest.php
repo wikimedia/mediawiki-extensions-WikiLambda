@@ -24,6 +24,8 @@ use Wikimedia\Rdbms\IResultWrapper;
 /**
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectStore
  * @covers \MediaWiki\Extension\WikiLambda\ZObjectPage
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataRemoval
  * @group Database
  */
 class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {

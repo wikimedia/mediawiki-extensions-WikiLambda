@@ -23,6 +23,7 @@ use Wikimedia\Rdbms\SelectQueryBuilder;
 
 /**
  * @covers \MediaWiki\Extension\WikiLambda\Hooks
+ * @covers \MediaWiki\Extension\WikiLambda\ZObjectSecondaryDataUpdate
  * @group Database
  * @group Standalone
  */
