@@ -3,7 +3,7 @@
 	"authorized": true,
 	"rights": [
 		"edit",
-		"wikilambda-edit-predefined"
+		"wikilambda-edit-builtin-function"
 	],
 	"groups": [ "functioneer", "functionmaintainer" ],
 	"dependencies": [ "Z17" ],

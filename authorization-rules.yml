@@ -122,6 +122,14 @@
 # applicable to user-contributed objects.
 # =======================================
 
+# Change any predefined function
+- path: '^Z2K2(\..*)?$'
+  type: Z8
+  filter: [ ZObjectFilterInRange, null, Z10000 ]
+  operations:
+    any:
+      - wikilambda-edit-builtin-function
+
 # Change any predefined object
 - path: '^Z2K2(\..*)?$'
   filter: [ ZObjectFilterInRange, null, Z10000 ]
