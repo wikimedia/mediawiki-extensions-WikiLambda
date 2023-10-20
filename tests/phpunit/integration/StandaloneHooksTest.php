@@ -368,6 +368,23 @@ EOT;
 			->where( [ 'wlzl_type' => 'Z60', 'wlzl_label_primary' => true ] )
 			->fetchResultSet();
 		$this->assertEquals( 11, $labels->numRows() );
+
+		// Expect 6 aliases – each language should have its code inserted
+		$aliasCodes = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_label_primary' ] )
+			->from( 'wikilambda_zobject_labels' )
+			->where( [ 'wlzl_type' => 'Z60', 'wlzl_language' => 'Z1360', 'wlzl_label_primary' => false ] )
+			->fetchResultSet();
+		$this->assertEquals( 6, $aliasCodes->numRows() );
+
+		// Expect that there's exactly one MUL alias for 'en', and it points to Z1002
+		$aliasCodes = $dbr->newSelectQueryBuilder()
+			->select( [ 'wlzl_zobject_zid', 'wlzl_type', 'wlzl_language', 'wlzl_label', 'wlzl_label_primary' ] )
+			->from( 'wikilambda_zobject_labels' )
+			->where( [ 'wlzl_zobject_zid' => 'Z1002', 'wlzl_language' => 'Z1360', 'wlzl_label_primary' => false ] )
+			->fetchResultSet();
+		$this->assertSame( 1, $aliasCodes->numRows() );
+		$this->assertEquals( 'en', $aliasCodes->current()->wlzl_label );
 	}
 
 	// TODO: Test the uncaught behaviour of MultiContentSave when a clash happens too late for us to stop it.

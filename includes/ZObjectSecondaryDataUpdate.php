@@ -144,6 +144,7 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 
 			// Set primary language code
 			$targetLanguage = $innerZObject->getValueByKey( ZTypeRegistry::Z_LANGUAGE_CODE )->getZValue();
+			$languageCodes = [ $targetLanguage ];
 			$zObjectStore->insertZLanguageToLanguagesCache( $zid, $targetLanguage );
 
 			// Set secondary language codes, if any
@@ -155,9 +156,18 @@ class ZObjectSecondaryDataUpdate extends DataUpdate {
 				foreach ( $secondaryLanguages as $key => $secondaryLanguage ) {
 					// $secondaryLanguage is a ZString but we want the actual string
 					$secondaryLanguageString = $secondaryLanguage->getZValue();
+					$languageCodes[] = $secondaryLanguageString;
 					$zObjectStore->insertZLanguageToLanguagesCache( $zid, $secondaryLanguageString );
 				}
 			}
+
+			// (T343465) Add the language codes as fake aliases under Z1360/MUL (multi-lingual value)
+			$zObjectStore->insertZObjectAliases(
+				$zid,
+				$ztype,
+				[ 'Z1360' => $languageCodes ],
+				$returnType
+			);
 		}
 	}
 }
