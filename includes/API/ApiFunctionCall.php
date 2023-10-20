@@ -22,7 +22,6 @@ use MediaWiki\Extension\WikiLambda\ZErrorException;
 use MediaWiki\Extension\WikiLambda\ZErrorFactory;
 use MediaWiki\Extension\WikiLambda\ZObjectFactory;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZObject;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZQuote;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Request\FauxRequest;
@@ -118,7 +117,10 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		} catch ( ConnectException $exception ) {
 			$this->dieWithError( [ "apierror-wikilambda_function_call-not-connected", $this->orchestratorHost ] );
 		} catch ( ClientException | ServerException $exception ) {
-			$zError = self::wrapMessageInZError( $exception->getResponse()->getReasonPhrase(), $zObjectAsStdClass );
+			$zError = ZErrorFactory::wrapMessageInZError(
+				$exception->getResponse()->getReasonPhrase(),
+				$zObjectAsStdClass
+			);
 			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zError );
 			$zResponseObject = new ZResponseEnvelope( null, $zResponseMap );
 			$result['data'] = $zResponseObject->getSerialized();
@@ -330,7 +332,7 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 				);
 			}
 			if ( !( $zerror instanceof ZError ) ) {
-				$zerror = self::wrapMessageInZError( new ZQuote( $zerror ), $call );
+				$zerror = ZErrorFactory::wrapMessageInZError( new ZQuote( $zerror ), $call );
 			}
 			throw new ZErrorException( $zerror );
 		}
@@ -344,7 +346,10 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 		if ( !( $response instanceof ZResponseEnvelope ) ) {
 			// The server's not given us a result!
 			$responseType = $response->getZType();
-			$zerror = self::wrapMessageInZError( "Server returned a non-result of type '$responseType'!", $call );
+			$zerror = ZErrorFactory::wrapMessageInZError(
+				"Server returned a non-result of type '$responseType'!",
+				$call
+			);
 			throw new ZErrorException( $zerror );
 		}
 
@@ -352,35 +357,11 @@ class ApiFunctionCall extends WikiLambdaApiBase {
 			// If the server has responsed with a Z5/Error, show that properly.
 			$zerror = $response->getErrors();
 			if ( !( $zerror instanceof ZError ) ) {
-				$zerror = self::wrapMessageInZError( new ZQuote( $zerror ), $call );
+				$zerror = ZErrorFactory::wrapMessageInZError( new ZQuote( $zerror ), $call );
 			}
 			throw new ZErrorException( $zerror );
 		}
 
 		return trim( $response->getZValue() );
-	}
-
-	/**
-	 * Convenience method to wrap a non-error in a Z507/Evaluation ZError
-	 *
-	 * TODO (T311480): This is used by two different APIs. Move to the ZErrorFactory,
-	 * which is where all the error creating convenience methods are right now.
-	 *
-	 * @param string|ZObject $message The non-error to wrap.
-	 * @param string $call The functional call context.
-	 * @return ZError
-	 */
-	public static function wrapMessageInZError( $message, $call ): ZError {
-		$wrappedError = ZErrorFactory::createZErrorInstance(
-			ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [ 'message' => $message ]
-		);
-		$zerror = ZErrorFactory::createZErrorInstance(
-			ZErrorTypeRegistry::Z_ERROR_EVALUATION,
-			[
-				'functionCall' => $call,
-				'error' => $wrappedError
-			]
-		);
-		return $zerror;
 	}
 }

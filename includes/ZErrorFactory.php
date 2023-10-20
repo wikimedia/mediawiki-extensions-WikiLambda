@@ -735,4 +735,24 @@ class ZErrorFactory {
 		return self::createValidationZError( $zError );
 	}
 
+	/**
+	 * Convenience method to wrap a non-error in a Z507/Evaluation ZError
+	 *
+	 * @param string|ZObject $message The non-error to wrap.
+	 * @param string $call The functional call context.
+	 * @return ZError
+	 */
+	public static function wrapMessageInZError( $message, $call ): ZError {
+		$wrappedError = self::createZErrorInstance(
+			ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [ 'message' => $message ]
+		);
+		$zerror = self::createZErrorInstance(
+			ZErrorTypeRegistry::Z_ERROR_EVALUATION,
+			[
+				'functionCall' => $call,
+				'error' => $wrappedError
+			]
+		);
+		return $zerror;
+	}
 }

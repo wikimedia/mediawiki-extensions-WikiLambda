@@ -88,7 +88,7 @@ abstract class WikiLambdaApiBase extends ApiBase implements LoggerAwareInterface
 	 * @return ZResponseEnvelope
 	 */
 	private function returnWithZError( $errorMessage, $zFunctionCallString ): ZResponseEnvelope {
-		$zErrorObject = ApiFunctionCall::wrapMessageInZError(
+		$zErrorObject = ZErrorFactory::wrapMessageInZError(
 			$errorMessage,
 			$zFunctionCallString
 		);
