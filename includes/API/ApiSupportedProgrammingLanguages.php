@@ -14,9 +14,6 @@ use ApiPageSet;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
-use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
-use MediaWiki\Extension\WikiLambda\ZErrorFactory;
-use MediaWiki\Extension\WikiLambda\ZObjects\ZError;
 use MediaWiki\Extension\WikiLambda\ZObjects\ZResponseEnvelope;
 use MediaWiki\Status\Status;
 use PoolCounterWorkViaCallback;
@@ -47,14 +44,14 @@ class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 	}
 
 	/**
-	 * TODO (T338251): Use WikiLambdaApiBase::executeFunctionCall() rather than rolling our own.
+	 * TODO (T338251): Factor out some commonality with WikiLambdaApiBase::executeFunctionCall()
+	 * rather than rolling our own. (But note different end-point and error messages.)
 	 *
 	 * @param ApiPageSet|null $resultPageSet
 	 */
 	private function run( $resultPageSet = null ) {
 		$pageResult = $this->getResult();
 
-		// TODO (T307742): Memoize the call and cache the response via WANCache getWithSetCallback too?
 		$work = new PoolCounterWorkViaCallback(
 			'WikiLambdaSupportedProgrammingLanguages',
 			$this->getUser()->getName(),
@@ -74,7 +71,7 @@ class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 				"apierror-wikilambda_supported_programming_languages-not-connected",
 				$this->orchestratorHost ] );
 		} catch ( ClientException | ServerException $exception ) {
-			$zError = self::wrapMessageInZError( $exception->getResponse()->getReasonPhrase(), '' );
+			$zError = ApiFunctionCall::wrapMessageInZError( $exception->getResponse()->getReasonPhrase(), '' );
 			$zResponseMap = ZResponseEnvelope::wrapErrorInResponseMap( $zError );
 			$zResponseObject = new ZResponseEnvelope( null, $zResponseMap );
 			$result = [ 'data' => $zResponseObject->getSerialized() ];
@@ -98,27 +95,4 @@ class ApiSupportedProgrammingLanguages extends WikiLambdaApiBase {
 		return true;
 	}
 
-	/**
-	 * Convenience method to wrap a non-error in a Z507/Evaluation ZError
-	 *
-	 * TODO (T311480): This is used by two different APIs. Move to the ZErrorFactory,
-	 * which is where all the error creating convenience methods are right now.
-	 *
-	 * @param string $message The non-error to wrap.
-	 * @param string $call The functional call context.
-	 * @return ZError
-	 */
-	public static function wrapMessageInZError( $message, $call ): ZError {
-		$wrappedError = ZErrorFactory::createZErrorInstance(
-			ZErrorTypeRegistry::Z_ERROR_UNKNOWN, [ 'message' => $message ]
-		);
-		$zerror = ZErrorFactory::createZErrorInstance(
-			ZErrorTypeRegistry::Z_ERROR_EVALUATION,
-			[
-				'functionCall' => $call,
-				'error' => $wrappedError
-			]
-		);
-		return $zerror;
-	}
 }
