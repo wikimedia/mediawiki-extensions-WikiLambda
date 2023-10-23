@@ -30,8 +30,6 @@
 	"action-wikilambda-edit-attached-implementation": "editați implementarea care este conectată la o funcție",
 	"action-wikilambda-edit-attached-tester": "editați testul care este conectat la o funcție",
 	"action-wikilambda-edit-boolean": "editați obiectele booleene existente",
-	"action-wikilambda-edit-function": "editați obiectele de tip funcție existente",
-	"action-wikilambda-edit-function-definition": "editați definiția unei funcții existente",
 	"action-wikilambda-execute": "rulați funcții",
 	"wikilambda-persistentzobject": "Obiect",
 	"wikilambda-persistentzobject-contents": "Conținut",
