@@ -43,6 +43,9 @@
 				<cdx-button
 					v-if="edit"
 					class="ext-wikilambda-ztyped-list-add-button"
+
+					:title="$i18n( 'wikilambda-editor-zlist-additem-tooltip' ).text()"
+					:aria-label="$i18n( 'wikilambda-editor-zlist-additem-tooltip' ).text()"
 					@click="addListItem"
 				>
 					<cdx-icon :icon="icons.cdxIconAdd"></cdx-icon>
