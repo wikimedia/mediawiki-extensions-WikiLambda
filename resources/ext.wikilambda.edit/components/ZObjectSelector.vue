@@ -89,8 +89,13 @@ module.exports = exports = {
 			type: String,
 			default: ''
 		},
+		strictType: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
 		placeholder: {
-			type: [ String, Object ],
+			type: String,
 			default: ''
 		},
 		/**
@@ -237,7 +242,8 @@ module.exports = exports = {
 				this.lookupZObject( {
 					input,
 					type: this.type,
-					returnType: this.returnType
+					returnType: this.returnType,
+					strictType: this.strictType
 				} ).then( ( payload ) => {
 					// If the string searched has changed, do not show the search result
 					if ( !this.inputValue.includes( input ) ) {

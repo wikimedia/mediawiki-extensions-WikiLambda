@@ -6,64 +6,54 @@
 -->
 <template>
 	<div class="ext-wikilambda-function-definition-output">
-		<div class="ext-wikilambda-function-definition-output__label">
-			<div class="ext-wikilambda-function-definition-output__label-block">
-				<label
-					id="ext-wikilambda-function-definition-output__label-label"
-					class="ext-wikilambda-app__text-regular"
-				>
-					{{ outputLabel }}
-				</label>
-				<wl-tooltip
-					v-if="tooltipMessage && !canEdit"
-					:content="tooltipMessage"
-				>
-					<cdx-icon
-						v-if="tooltipIcon"
-						class="ext-wikilambda-function-definition-output__tooltip-icon"
-						:icon="tooltipIcon">
-					</cdx-icon>
-				</wl-tooltip>
-			</div>
-			<span class="ext-wikilambda-function-definition-output__description">
+		<div class="ext-wikilambda-function-block__label">
+			<label id="ext-wikilambda-function-definition-output__label-id">
+				{{ outputLabel }}
+			</label>
+			<wl-tooltip
+				v-if="tooltipMessage && !canEdit"
+				:content="tooltipMessage"
+			>
+				<cdx-icon
+					v-if="tooltipIcon"
+					class="ext-wikilambda-function-block__label__tooltip-icon"
+					:icon="tooltipIcon">
+				</cdx-icon>
+			</wl-tooltip>
+			<span class="ext-wikilambda-function-block__label__description">
 				{{ outputFieldDescription }}
 				<a :href="listObjectsUrl" target="_blank">{{ listObjectsLink }}</a>
 			</span>
 		</div>
-		<div class="ext-wikilambda-function-definition-output__body">
-			<span class="ext-wikilambda-function-definition-output__body__entry-text">
-				{{ outputTypeLabel }}
-			</span>
-			<wl-z-object-selector
-				class="
-					ext-wikilambda-function-definition-output__body__entry-field
-					ext-wikilambda-function-definition-output__selector"
-				aria-labelledby="ext-wikilambda-function-definition-output__label-label"
-				:disabled="!canEdit"
-				:placeholder="outputFieldPlaceholder"
+		<div class="ext-wikilambda-function-block__body">
+			<wl-type-selector
+				v-if="!!outputTypeRowId"
+				class="ext-wikilambda-function-definition-output__field"
+				data-testid="function-editor-output-type"
+				aria-labelledby="ext-wikilambda-function-definition-output__label-id"
 				:row-id="outputTypeRowId"
-				:selected-zid="outputType"
+				:disabled="!canEdit"
+				:label="outputTypeLabel"
+				:placeholder="outputFieldPlaceholder"
 				:type="typeZid"
-				@input="persistOutputType"
-			></wl-z-object-selector>
+			></wl-type-selector>
 		</div>
 	</div>
 </template>
 
 <script>
 const Constants = require( '../../../Constants.js' ),
-	ZObjectSelector = require( '../../ZObjectSelector.vue' ),
+	TypeSelector = require( '../../base/TypeSelector.vue' ),
 	Tooltip = require( '../../base/Tooltip.vue' ),
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
-	mapGetters = require( 'vuex' ).mapGetters,
-	mapActions = require( 'vuex' ).mapActions;
+	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-function-editor-output',
 	components: {
-		'wl-z-object-selector': ZObjectSelector,
 		'wl-tooltip': Tooltip,
+		'wl-type-selector': TypeSelector,
 		'cdx-icon': CdxIcon
 	},
 	props: {
@@ -97,8 +87,7 @@ module.exports = exports = {
 	},
 	computed: $.extend( mapGetters( [
 		'getUserLangCode',
-		'getZFunctionOutput',
-		'getZReferenceTerminalValue'
+		'getZFunctionOutput'
 	] ), {
 		/**
 		 * Returns the row object of the output type
@@ -119,15 +108,6 @@ module.exports = exports = {
 			return this.outputTypeRow ? this.outputTypeRow.id : undefined;
 		},
 		/**
-		 * Returns the string value of the output type
-		 * of the function, or empty string if undefined.
-		 *
-		 * @return {string}
-		 */
-		outputType: function () {
-			return this.outputTypeRow ? this.getZReferenceTerminalValue( this.outputTypeRow.id ) : '';
-		},
-		/**
 		 * Returns the label for the output field
 		 *
 		 * @return {string}
@@ -144,6 +124,14 @@ module.exports = exports = {
 		 */
 		outputTypeLabel: function () {
 			return this.$i18n( 'wikilambda-function-definition-output-type-label' ).text();
+		},
+		/**
+		 * Returns the id for the output field
+		 *
+		 * @return {string}
+		 */
+		outputFieldId: function () {
+			return 'ext-wikilambda-function-definition-output__label-id';
 		},
 		/**
 		 * Returns the description for the output field
@@ -178,22 +166,6 @@ module.exports = exports = {
 		listObjectsLink: function () {
 			return this.$i18n( 'wikilambda-function-definition-input-types' ).text();
 		}
-	} ),
-	methods: $.extend( mapActions( [
-		'setValueByRowIdAndPath'
-	] ), {
-		/**
-		 * Persist the new output type in the global store
-		 *
-		 * @param {string|null} value
-		 */
-		persistOutputType: function ( value ) {
-			this.setValueByRowIdAndPath( {
-				rowId: this.outputTypeRowId,
-				keyPath: [ Constants.Z_REFERENCE_ID ],
-				value: value || ''
-			} );
-		}
 	} )
 };
 </script>
@@ -202,77 +174,13 @@ module.exports = exports = {
 @import '../../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-function-definition-output {
-	display: flex;
-	margin-bottom: @spacing-150;
+	&__field {
+		border-radius: @border-radius-base;
+		border: @border-subtle;
+		padding: @spacing-75;
 
-	&__body {
-		display: flex;
-		flex-direction: column;
-
-		&__entry-text {
-			display: block;
-			line-height: @size-200;
-			font-weight: @font-weight-bold;
-		}
-	}
-
-	&__label-block {
-		display: flex;
-		align-items: center;
-
-		& > label {
-			line-height: @size-200;
-			font-weight: @font-weight-bold;
-		}
-	}
-
-	&__label {
-		display: flex;
-		flex-direction: column;
-		width: @wl-field-label-width;
-		margin-right: @spacing-150;
-	}
-
-	&__tooltip-icon {
-		margin-left: @spacing-50;
-		width: @size-100;
-		height: @size-100;
-	}
-
-	&__description {
-		color: @color-subtle;
-		font-size: @font-size-small;
-		line-height: @line-height-small;
-		display: inline-block;
-	}
-
-	/* MOBILE styles */
-	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
-		flex-direction: column;
-
-		&__label {
-			width: auto;
-
-			& > label {
-				line-height: inherit;
-			}
-		}
-
-		&__description {
-			font-size: @wl-font-size-description-mobile;
-			line-height: @wl-line-height-description-mobile;
-			letter-spacing: @wl-letter-spacing-description-mobile;
-			margin-bottom: @spacing-50;
-		}
-
-		&__body {
-			flex-direction: row;
-			align-items: center;
-			gap: @spacing-100;
-
-			&__entry-text {
-				min-width: @size-300;
-			}
+		.cdx-label__label__text {
+			font-weight: @font-weight-normal;
 		}
 	}
 }

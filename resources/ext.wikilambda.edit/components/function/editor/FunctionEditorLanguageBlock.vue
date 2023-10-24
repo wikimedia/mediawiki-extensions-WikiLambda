@@ -7,17 +7,19 @@
 -->
 <template>
 	<div
-		class="ext-wikilambda-function-language-block"
+		class="ext-wikilambda-function-block"
 		data-testid="function-editor-language-block"
 	>
 		<!-- component that displays the language selector -->
 		<wl-function-editor-language
+			class="ext-wikilambda-function-block__row"
 			data-testid="function-editor-language-selector"
 			:z-language="zLanguage"
 			@change="changeLanguage"
 		></wl-function-editor-language>
 		<!-- component that displays name for a language -->
 		<wl-function-editor-name
+			class="ext-wikilambda-function-block__row"
 			data-testid="function-editor-name-input"
 			:z-language="zLanguage"
 			:is-main-language-block="isMainLanguageBlock"
@@ -25,20 +27,22 @@
 		></wl-function-editor-name>
 		<!-- component that displays the description for a language -->
 		<wl-function-editor-description
+			class="ext-wikilambda-function-block__row"
 			data-testid="function-editor-description-input"
 			:z-language="zLanguage"
 			@updated-description="updatedLabels"
 		></wl-function-editor-description>
 		<!-- component that displays aliases for a language -->
 		<wl-function-editor-aliases
+			class="ext-wikilambda-function-block__row"
 			data-testid="function-editor-alias-input"
 			:z-language="zLanguage"
 			@updated-alias="updatedLabels"
 		></wl-function-editor-aliases>
 		<!-- component that displays list of inputs for a language -->
 		<wl-function-editor-inputs
+			class="ext-wikilambda-function-block__row"
 			data-testid="function-editor-inputs"
-			:is-mobile="isMobile"
 			:z-language="zLanguage"
 			:is-main-language-block="isMainLanguageBlock"
 			:can-edit="canEditFunction"
@@ -49,6 +53,7 @@
 		<!-- component that displays output for a language -->
 		<wl-function-editor-output
 			v-if="isMainLanguageBlock"
+			class="ext-wikilambda-function-block__row"
 			data-testid="function-editor-output"
 			:can-edit="canEditFunction"
 			:tooltip-icon="icons.cdxIconLock"
@@ -64,9 +69,7 @@ const FunctionEditorLanguage = require( './FunctionEditorLanguage.vue' ),
 	FunctionEditorAliases = require( './FunctionEditorAliases.vue' ),
 	FunctionEditorInputs = require( './FunctionEditorInputs.vue' ),
 	FunctionEditorOutput = require( './FunctionEditorOutput.vue' ),
-	useBreakpoints = require( '../../../composables/useBreakpoints.js' ),
 	icons = require( '../../../../lib/icons.json' ),
-	Constants = require( '../../../Constants.js' ),
 	mapGetters = require( 'vuex' ).mapGetters;
 
 // @vue/component
@@ -90,12 +93,6 @@ module.exports = exports = {
 			default: 0
 		}
 	},
-	setup: function () {
-		const breakpoint = useBreakpoints( Constants.breakpoints );
-		return {
-			breakpoint
-		};
-	},
 	data: function () {
 		return {
 			icons: icons
@@ -113,15 +110,6 @@ module.exports = exports = {
 		 */
 		isMainLanguageBlock: function () {
 			return this.index === 0;
-		},
-		/**
-		 * Returns whether the current view is mobile
-		 *
-		 * @return {boolean}
-		 */
-		isMobile: function () {
-			// FIXME: figure out why not to take this into the actual component
-			return this.breakpoint.current.value === Constants.breakpointsTypes.MOBILE;
 		},
 		/**
 		 * Returns whether the user can edit the function
@@ -179,12 +167,67 @@ module.exports = exports = {
 <style lang="less">
 @import '../../../ext.wikilambda.edit.less';
 
-.ext-wikilambda-function-language-block {
+.ext-wikilambda-function-block {
 	padding-top: @spacing-150;
 	border-bottom: 1px solid @border-color-subtle;
 
 	&:first-child {
 		border-top: 1px solid @border-color-subtle;
+	}
+
+	&__row {
+		display: flex;
+		margin-bottom: @spacing-150;
+		gap: @spacing-100;
+
+		@media screen and ( max-width: @max-width-breakpoint-mobile ) {
+			& {
+				flex-direction: column;
+			}
+		}
+	}
+
+	&__label {
+		width: @wl-field-label-width;
+		display: flex;
+		flex-direction: column;
+
+		& > label {
+			line-height: @size-200;
+			font-weight: @font-weight-bold;
+
+			& > span {
+				font-weight: @font-weight-normal;
+			}
+		}
+
+		&__description {
+			color: @color-subtle;
+			font-size: @font-size-small;
+			line-height: @line-height-small;
+			display: inline-block;
+		}
+
+		&__tooltip-icon {
+			margin-left: @spacing-50;
+			width: @size-100;
+			height: @size-100;
+		}
+
+		@media screen and ( max-width: @max-width-breakpoint-mobile ) {
+			& > label {
+				line-height: inherit;
+				margin-bottom: @spacing-25;
+			}
+
+			&__description {
+				margin-bottom: @spacing-25;
+			}
+		}
+	}
+
+	&__body {
+		width: @wl-field-body-width;
 	}
 }
 </style>

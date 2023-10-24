@@ -49,6 +49,7 @@ module.exports = exports = {
 
 			var rowId,
 				invalidInputs,
+				invalidOutputs,
 				isValid = true;
 
 			switch ( zobjectType ) {
@@ -57,15 +58,15 @@ module.exports = exports = {
 				// * Input type not set
 				case Constants.Z_FUNCTION:
 					// invalid if a function doesn't have an output type
-					if ( !context.getters.currentZFunctionHasOutput ) {
-						rowId = context.getters.getRowByKeyPath( [
-							Constants.Z_FUNCTION_RETURN_TYPE
-						], contentRowId ).id;
-						context.dispatch( 'setError', {
-							rowId,
-							errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT,
-							errorType: Constants.errorTypes.ERROR
-						} );
+					invalidOutputs = context.getters.currentZFunctionInvalidOutput;
+					if ( invalidOutputs.length > 0 ) {
+						for ( const invalidRow of invalidOutputs ) {
+							context.dispatch( 'setError', {
+								rowId: invalidRow,
+								errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT,
+								errorType: Constants.errorTypes.ERROR
+							} );
+						}
 						isValid = false;
 					}
 
@@ -74,7 +75,7 @@ module.exports = exports = {
 					if ( invalidInputs.length > 0 ) {
 						for ( const invalidRow of invalidInputs ) {
 							context.dispatch( 'setError', {
-								rowId: invalidRow.typeRow.id,
+								rowId: invalidRow,
 								errorCode: Constants.errorCodes.MISSING_FUNCTION_INPUT_TYPE,
 								errorType: Constants.errorTypes.ERROR
 							} );
@@ -409,7 +410,10 @@ module.exports = exports = {
 			for ( const inputRow of inputs ) {
 				// Get the value of the input type
 				const inputTypeRow = context.getters.getRowByKeyPath( [ Constants.Z_ARGUMENT_TYPE ], inputRow.id );
-				const inputTypeValue = context.getters.getZReferenceTerminalValue( inputTypeRow.id );
+				const inputTypeMode = context.getters.getZObjectTypeByRowId( inputTypeRow.id );
+				const inputTypeValue = ( inputTypeMode === Constants.Z_REFERENCE ) ?
+					context.getters.getZReferenceTerminalValue( inputTypeRow.id ) :
+					context.getters.getZFunctionCallFunctionId( inputTypeRow.id );
 
 				// Get the input labels
 				const inputLabelsRow = context.getters.getRowByKeyPath( [

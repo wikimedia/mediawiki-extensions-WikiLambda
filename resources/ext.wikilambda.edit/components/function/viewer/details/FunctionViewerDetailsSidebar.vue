@@ -6,11 +6,14 @@
 -->
 <template>
 	<div class="ext-wikilambda-function-viewer-details-sidebar">
+		<!-- Function signature table -->
 		<wl-table
 			class="ext-wikilambda-function-viewer-details-sidebar__table"
 			:header="formattedHeaderData"
 			:body="formattedBodyData"
 		></wl-table>
+
+		<!-- Show input labels in all languages button -->
 		<template v-if="showFunctionDefinitionItems && hasMultiLangs">
 			<cdx-button
 				class="ext-wikilambda-function-viewer-details-sidebar__button"
@@ -20,6 +23,7 @@
 				{{ buttonText }}
 			</cdx-button>
 		</template>
+
 		<template v-if="isMobile">
 			<a class="ext-wikilambda-function-viewer-details-sidebar__edit-function" :href="editUrl">
 				{{ $i18n( 'wikilambda-function-definition-edit' ).text() }}
@@ -27,6 +31,7 @@
 		</template>
 
 		<!-- TODO: Don't show this to un-priv'ed users, they can't propose new ones -->
+		<!-- Add implementation and test links -->
 		<div class="ext-wikilambda-function-viewer-details-sidebar__links">
 			<div class="ext-wikilambda-function-viewer-details-sidebar__link">
 				<a
@@ -95,7 +100,9 @@ module.exports = exports = {
 		'getUserLangZid',
 		'getZObjectTypeById',
 		'getCurrentZObjectId',
-		'getStoredObject'
+		'getStoredObject',
+		'getZArgumentTypeRowId',
+		'getZFunctionOutput'
 	] ), {
 		// format inputs/output header to pass to the table in expected format
 		formattedHeaderData: function () {
@@ -143,18 +150,14 @@ module.exports = exports = {
 			for ( var argumentIndex in this.zArgumentList ) {
 				// set the global argument ID to look up type and label
 				var argumentId = this.zArgumentList[ argumentIndex ].id;
-				var zArgumentType = this.zArgumentType( argumentId );
-				var text = '';
-				if ( this.zArgumentTypeLabel( zArgumentType ) ) {
-					text = {
-						title: this.zArgumentTypeLabel( zArgumentType ),
-						component: 'a',
-						props: {
-							href: '/view/' + this.getUserLangCode + '/' + zArgumentType
-						},
-						class: argumentIndex > 0 ? 'ext-wikilambda-function-viewer-details-sidebar__table-bordered-row' : 'ext-wikilambda-function-viewer-details-sidebar__table-borderless-row'
-					};
-				}
+				var argumentTypeId = this.getZArgumentTypeRowId( argumentId );
+				var text = {
+					component: 'wl-z-object-to-string',
+					props: {
+						rowId: argumentTypeId
+					},
+					class: argumentIndex > 0 ? 'ext-wikilambda-function-viewer-details-sidebar__table-bordered-row' : 'ext-wikilambda-function-viewer-details-sidebar__table-borderless-row'
+				};
 
 				// Corresponding to "INPUT X" in a row
 				tableData.push( {
@@ -246,6 +249,7 @@ module.exports = exports = {
 			}
 
 			// create a row for the function output
+			const output = this.getZFunctionOutput();
 			tableData.push( {
 				label: {
 					title: this.$i18n( 'wikilambda-editor-output-title' ).text(),
@@ -260,10 +264,9 @@ module.exports = exports = {
 					class: 'ext-wikilambda-function-viewer-details-sidebar__table-bordered-row'
 				},
 				text: {
-					title: this.zReturnTypeLabel,
-					component: 'a',
+					component: 'wl-z-object-to-string',
 					props: {
-						href: '/view/' + this.getUserLangCode + '/' + this.zReturnType
+						rowId: output.id
 					},
 					class: 'ext-wikilambda-function-viewer-details-sidebar__table-bordered-row'
 				}
@@ -283,19 +286,6 @@ module.exports = exports = {
 			] ).id || Constants.NEW_ZID_PLACEHOLDER;
 		},
 		// END OF ARGUMENTS HELPER FUNCTIONS //
-
-		/* get the ZID of the return type of the output */
-		zReturnType: function () {
-			return this.getNestedZObjectById( this.zobjectId, [
-				Constants.Z_PERSISTENTOBJECT_VALUE,
-				Constants.Z_FUNCTION_RETURN_TYPE,
-				Constants.Z_REFERENCE_ID
-			] ).value;
-		},
-		/* get the plaintext label of the return type of the output */
-		zReturnTypeLabel: function () {
-			return this.getLabel( this.zReturnType );
-		},
 		// functions for correct icon/text for language button
 		buttonText: function () {
 			if ( this.showAllLangs ) {

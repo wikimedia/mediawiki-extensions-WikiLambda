@@ -36,11 +36,8 @@ describe( 'zobject submission Vuex module', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 				context.getters.getZObjectAsJson = {};
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
-				context.getters.getRowByKeyPath = jest.fn( () => {
-					return { id: 2 };
-				} );
 
-				context.getters.currentZFunctionHasOutput = true;
+				context.getters.currentZFunctionInvalidOutput = [];
 				context.getters.currentZFunctionInvalidInputs = [];
 
 				const isValid = submissionModule.actions.validateZObject( context );
@@ -48,15 +45,12 @@ describe( 'zobject submission Vuex module', () => {
 				expect( isValid ).toEqual( true );
 			} );
 
-			it( 'Dispatches errors for a function without output', () => {
+			it( 'Dispatches errors for a function with one invalid output field', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 				context.getters.getZObjectAsJson = {};
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
-				context.getters.getRowByKeyPath = jest.fn( () => {
-					return { id: 2 };
-				} );
 
-				context.getters.currentZFunctionHasOutput = false;
+				context.getters.currentZFunctionInvalidOutput = [ 2 ];
 				context.getters.currentZFunctionInvalidInputs = [];
 
 				const mockError = {
@@ -71,13 +65,38 @@ describe( 'zobject submission Vuex module', () => {
 				expect( isValid ).toEqual( false );
 			} );
 
-			it( 'Dispatches errors for a function with one invalid input', () => {
+			it( 'Dispatches errors for a function with many invalid output fields', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 				context.getters.getZObjectAsJson = {};
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 
-				context.getters.currentZFunctionHasOutput = true;
-				context.getters.currentZFunctionInvalidInputs = [ { typeRow: { id: 3 } } ];
+				context.getters.currentZFunctionInvalidOutput = [ 2, 3 ];
+				context.getters.currentZFunctionInvalidInputs = [];
+
+				const mockErrors = [ {
+					rowId: 2,
+					errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT,
+					errorType: Constants.errorTypes.ERROR
+				}, {
+					rowId: 3,
+					errorCode: Constants.errorCodes.MISSING_FUNCTION_OUTPUT,
+					errorType: Constants.errorTypes.ERROR
+				} ];
+
+				const isValid = submissionModule.actions.validateZObject( context );
+				expect( context.dispatch ).toHaveBeenCalledTimes( 2 );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockErrors[ 0 ] );
+				expect( context.dispatch ).toHaveBeenCalledWith( 'setError', mockErrors[ 1 ] );
+				expect( isValid ).toEqual( false );
+			} );
+
+			it( 'Dispatches errors for a function with one invalid input field', () => {
+				context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
+				context.getters.getZObjectAsJson = {};
+				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
+
+				context.getters.currentZFunctionInvalidOutput = [];
+				context.getters.currentZFunctionInvalidInputs = [ 3 ];
 
 				const mockError = {
 					rowId: 3,
@@ -91,13 +110,13 @@ describe( 'zobject submission Vuex module', () => {
 				expect( isValid ).toEqual( false );
 			} );
 
-			it( 'Dispatches errors for a function with many invalid inputs', () => {
+			it( 'Dispatches errors for a function with many invalid input fields', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 				context.getters.getZObjectAsJson = {};
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
 
-				context.getters.currentZFunctionHasOutput = true;
-				context.getters.currentZFunctionInvalidInputs = [ { typeRow: { id: 3 } }, { typeRow: { id: 4 } } ];
+				context.getters.currentZFunctionInvalidOutput = [];
+				context.getters.currentZFunctionInvalidInputs = [ 3, 4 ];
 
 				const mockErrors = [ {
 					rowId: 3,
@@ -116,16 +135,13 @@ describe( 'zobject submission Vuex module', () => {
 				expect( isValid ).toEqual( false );
 			} );
 
-			it( 'Dispatches errors for a function with invalid output and input', () => {
+			it( 'Dispatches errors for a function with invalid output and input fields', () => {
 				context.getters.getCurrentZObjectType = Constants.Z_FUNCTION;
 				context.getters.getZObjectAsJson = {};
 				context.getters.getZPersistentContentRowId = jest.fn( () => 1 );
-				context.getters.getRowByKeyPath = jest.fn( () => {
-					return { id: 2 };
-				} );
 
-				context.getters.currentZFunctionHasOutput = false;
-				context.getters.currentZFunctionInvalidInputs = [ { typeRow: { id: 3 } } ];
+				context.getters.currentZFunctionInvalidOutput = [ 2 ];
+				context.getters.currentZFunctionInvalidInputs = [ 3 ];
 
 				const mockErrors = [ {
 					rowId: 2,
@@ -1001,6 +1017,7 @@ describe( 'zobject submission Vuex module', () => {
 			// run zobject module getters
 			context.getters.getCurrentZObjectId = 'Z12345';
 			context.getters.getZFunctionInputs = zfunctionModule.getters.getZFunctionInputs( context.state, context.getters );
+			context.getters.getZFunctionCallFunctionId = zobjectModule.getters.getZFunctionCallFunctionId( context.state, context.getters );
 			context.getters.getRowById = zobjectModule.getters.getRowById( context.state );
 			context.getters.getRowIndexById = zobjectModule.getters.getRowIndexById( context.state );
 			context.getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( context.state );
@@ -1011,6 +1028,7 @@ describe( 'zobject submission Vuex module', () => {
 			context.getters.getZMonolingualTextValue = zobjectModule.getters.getZMonolingualTextValue( context.state, context.getters );
 			context.getters.getZMonolingualLangValue = zobjectModule.getters.getZMonolingualLangValue( context.state, context.getters );
 			context.getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( context.state, context.getters );
+			context.getters.getZTypeStringRepresentation = zobjectModule.getters.getZTypeStringRepresentation( context.state, context.getters );
 
 			// run zobject module actions
 			context.dispatch = jest.fn( ( actionType, payload ) => {
@@ -1090,6 +1108,33 @@ describe( 'zobject submission Vuex module', () => {
 					{ Z1K1: 'Z17', Z17K1: 'Z6', Z17K2: 'Z12345K2', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11',
 						{ Z1K1: 'Z11', Z11K1: 'Z1002', Z11K2: 'input two' }
 					] } }
+				] }
+			} );
+		} );
+
+		it( 'does not remove arguments with empty labels and generic type', () => {
+			const zobject = {
+				Z2K2: { Z8K1: [ 'Z17',
+					{ Z1K1: 'Z17',
+						Z17K1: { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' },
+						Z17K2: 'Z12345K1', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
+					{ Z1K1: 'Z17',
+						Z17K1: { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' },
+						Z17K2: 'Z12345K2', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
+				] }
+			};
+			context.state.zobject = zobjectToRows( zobject );
+			submissionModule.actions.removeEmptyArguments( context );
+
+			const transformed = zobjectModule.getters.getZObjectAsJsonById( context.state )( 0, false );
+			expect( canonicalize( transformed ) ).toEqual( {
+				Z2K2: { Z8K1: [ 'Z17',
+					{ Z1K1: 'Z17',
+						Z17K1: { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' },
+						Z17K2: 'Z12345K1', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } },
+					{ Z1K1: 'Z17',
+						Z17K1: { Z1K1: 'Z7', Z7K1: 'Z881', Z881K1: 'Z6' },
+						Z17K2: 'Z12345K2', Z17K3: { Z1K1: 'Z12', Z12K1: [ 'Z11' ] } }
 				] }
 			} );
 		} );

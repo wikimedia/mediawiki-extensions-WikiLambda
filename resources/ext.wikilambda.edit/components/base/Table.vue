@@ -80,6 +80,7 @@
 <script>
 var CdxProgressBar = require( '@wikimedia/codex' ).CdxProgressBar,
 	CdxCheckbox = require( '@wikimedia/codex' ).CdxCheckbox,
+	ZObjectToString = require( '../default-view-types/ZObjectToString.vue' ),
 	ZFunctionTesterTable = require( '../function/ZFunctionTesterTable.vue' ),
 	CdxInfoChip = require( '@wikimedia/codex' ).CdxInfoChip,
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
@@ -94,6 +95,7 @@ module.exports = exports = {
 		'cdx-button': CdxButton,
 		'cdx-icon': CdxIcon,
 		'cdx-info-chip': CdxInfoChip,
+		'wl-z-object-to-string': ZObjectToString,
 		'wl-z-function-tester-table': ZFunctionTesterTable
 	},
 	props: {

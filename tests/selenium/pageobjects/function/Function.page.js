@@ -136,11 +136,9 @@ class FunctionPage extends Page {
 	 * @return {void}
 	 */
 	async callFunctionWithString( param ) {
-
 		/**
 		 * Input the type "String"
 		 */
-
 		const functionCallBlock = await this.functionCallBlock;
 		const typeBlock = await functionCallBlock.$( './/label[text()="type"]/parent::div/following-sibling::div' );
 
@@ -262,7 +260,7 @@ class FunctionPage extends Page {
 		await browser.waitUntil( async () => {
 			const progressBar = await this.implementationProgressBar;
 			return ( await progressBar.isExisting() ) === false;
-		}, { timeoutMssg: 'Approving the implementation taking too long' } );
+		}, { timeoutMsg: 'Approving the implementation taking too long' } );
 	}
 
 	/**
@@ -276,7 +274,7 @@ class FunctionPage extends Page {
 		await browser.waitUntil( async () => {
 			const progressBar = await this.implementationProgressBar;
 			return ( await progressBar.isExisting() ) === false;
-		}, { timeoutMssg: 'Deactivating the implementation taking too long' } );
+		}, { timeoutMsg: 'Deactivating the implementation taking too long' } );
 	}
 
 	/**
@@ -351,7 +349,7 @@ class FunctionPage extends Page {
 		await browser.waitUntil( async () => {
 			const progressBar = await this.testCaseProgressBar;
 			return ( await progressBar.isExisting() ) === false;
-		}, { timeoutMssg: 'Approving the test case taking too long' } );
+		}, { timeoutMsg: 'Approving the test case taking too long' } );
 	}
 
 	/**
@@ -365,7 +363,7 @@ class FunctionPage extends Page {
 		await browser.waitUntil( async () => {
 			const progressBar = await this.testCaseProgressBar;
 			return ( await progressBar.isExisting() ) === false;
-		}, { timeoutMssg: 'Deactivating the test case taking too long' } );
+		}, { timeoutMsg: 'Deactivating the test case taking too long' } );
 	}
 
 	/**

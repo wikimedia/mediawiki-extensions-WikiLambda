@@ -15,7 +15,7 @@ const ElementActions = require( '../utils/ElementActions' );
 const InputDropdown = require( './InputDropdown' );
 
 class FunctionExplorerBlock {
-	get functionExplorerBlock() { return $( 'span.ext-wikilambda-function-explorer' ); }
+	get functionExplorerBlock() { return $( 'div.ext-wikilambda-function-explorer' ); }
 	get functionNameInputSelector() { return this.functionExplorerBlock.$( './/section//input[@placeholder="Select function"]' ); }
 
 	/**

@@ -17,13 +17,11 @@ describe( 'FunctionEditorInputsItem', () => {
 
 	beforeEach( () => {
 		getters = {
-			getLabel: createGettersWithFunctionsMock( '' ),
 			getRowByKeyPath: createGettersWithFunctionsMock(),
 			getZArgumentLabelForLanguage: createGettersWithFunctionsMock(),
 			getZArgumentTypeRowId: createGettersWithFunctionsMock(),
 			getUserLangCode: createGetterMock( 'en' ),
-			getZMonolingualTextValue: createGettersWithFunctionsMock(),
-			getZTypeStringRepresentation: createGettersWithFunctionsMock()
+			getZMonolingualTextValue: createGettersWithFunctionsMock()
 		};
 
 		actions = {
@@ -51,37 +49,46 @@ describe( 'FunctionEditorInputsItem', () => {
 	} );
 
 	it( 'has an input element ', () => {
-		const wrapper = shallowMount( FunctionEditorInputsItem, { props: {
-			rowId: 1,
-			index: 0,
-			isMainLanguageBlock: true,
-			canEditType: true,
-			zLanguage: 'Z1002'
-		} } );
+		const wrapper = shallowMount( FunctionEditorInputsItem, {
+			props: {
+				rowId: 1,
+				index: 0,
+				isMainLanguageBlock: true,
+				canEditType: true,
+				zLanguage: 'Z1002'
+			},
+			global: { stubs: { CdxField: false } }
+		} );
 
 		expect( wrapper.findComponent( { name: 'cdx-text-input' } ).exists() ).toBeTruthy();
 	} );
 
 	it( 'has an type selector if is main language block ', () => {
-		const wrapper = shallowMount( FunctionEditorInputsItem, { props: {
-			rowId: 1,
-			index: 0,
-			isMainLanguageBlock: true,
-			canEditType: true,
-			zLanguage: 'Z1002'
-		} } );
+		const wrapper = shallowMount( FunctionEditorInputsItem, {
+			props: {
+				rowId: 1,
+				index: 0,
+				isMainLanguageBlock: true,
+				canEditType: true,
+				zLanguage: 'Z1002'
+			},
+			global: { stubs: { CdxField: false } }
+		} );
 
-		expect( wrapper.findComponent( { name: 'wl-z-object-selector' } ).exists() ).toBeTruthy();
+		expect( wrapper.findComponent( { name: 'wl-type-selector' } ).exists() ).toBeTruthy();
 	} );
 
 	it( 'does not have a type selector if is a secondary language block ', () => {
-		const wrapper = shallowMount( FunctionEditorInputsItem, { props: {
-			rowId: 1,
-			index: 0,
-			isMainLanguageBlock: false,
-			canEditType: true,
-			zLanguage: 'Z1002'
-		} } );
+		const wrapper = shallowMount( FunctionEditorInputsItem, {
+			props: {
+				rowId: 1,
+				index: 0,
+				isMainLanguageBlock: false,
+				canEditType: true,
+				zLanguage: 'Z1002'
+			},
+			global: { stubs: { CdxField: false } }
+		} );
 
 		expect( wrapper.findComponent( { name: 'wl-z-object-selector' } ).exists() ).toBeFalsy();
 	} );
@@ -112,7 +119,8 @@ describe( 'FunctionEditorInputsItem', () => {
 					isMainLanguageBlock: true,
 					canEditType: true,
 					zLanguage: 'Z1002'
-				}
+				},
+				global: { stubs: { CdxField: false } }
 			} );
 
 			// ACT: Change value of label
@@ -139,7 +147,8 @@ describe( 'FunctionEditorInputsItem', () => {
 					isMainLanguageBlock: true,
 					canEditType: true,
 					zLanguage: 'Z1002'
-				}
+				},
+				global: { stubs: { CdxField: false } }
 			} );
 
 			// ACT: Change value of label
@@ -169,7 +178,8 @@ describe( 'FunctionEditorInputsItem', () => {
 					isMainLanguageBlock: true,
 					canEditType: true,
 					zLanguage: 'Z1002'
-				}
+				},
+				global: { stubs: { CdxField: false } }
 			} );
 
 			// ACT: Change value of label
@@ -188,34 +198,6 @@ describe( 'FunctionEditorInputsItem', () => {
 
 			// ASSERT: emits updated-argument-label
 			expect( wrapper.emitted( 'update-argument-label' ) ).toBeTruthy();
-		} );
-	} );
-
-	describe( 'on argument type change', () => {
-		it( 'removes the input label object if new value is empty string', async () => {
-			getters.getZArgumentTypeRowId = createGettersWithFunctionsMock( 2 );
-			global.store.hotUpdate( { getters: getters } );
-			const wrapper = shallowMount( FunctionEditorInputsItem, {
-				props: {
-					rowId: 1,
-					index: 0,
-					isMainLanguageBlock: true,
-					canEditType: true,
-					zLanguage: 'Z1002'
-				}
-			} );
-
-			// ACT: Change value of label
-			const selector = wrapper.findComponent( { name: 'wl-z-object-selector' } );
-			selector.vm.$emit( 'input', 'Z6' );
-			await wrapper.vm.$nextTick();
-
-			// ASSERT: setValueByRowIdAndPath action runs correctly
-			expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), {
-				rowId: 2,
-				keyPath: [ 'Z9K1' ],
-				value: 'Z6'
-			} );
 		} );
 	} );
 } );

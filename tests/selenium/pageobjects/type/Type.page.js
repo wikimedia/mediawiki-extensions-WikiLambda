@@ -133,7 +133,7 @@ class Type extends Page {
 		for ( const i in textArray ) {
 			const item = await textsBlock.$$( './/div[@data-testid="z-object-key-value"]' )[ i ];
 			const languageSelector = await item.$( `.//span[text()="${textArray[ i ].languageShortName}"]` );
-			const textSelector = await item.$( `.//p[contains(text(),"${textArray[ i ].text}")]` );
+			const textSelector = await item.$( `.//div[contains(text(),"${textArray[ i ].text}")]` );
 
 			textItemArray.push(
 				{

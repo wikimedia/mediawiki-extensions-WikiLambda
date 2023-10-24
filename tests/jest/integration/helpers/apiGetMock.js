@@ -155,6 +155,53 @@ const frenchLabelLookupApiResponse = {
 	]
 };
 
+const genericTypesLookupApiResponse = {
+	wikilambdasearch_labels: [
+		{
+			page_id: 0,
+			page_namespace: 0,
+			page_content_model: 'zobject',
+			page_title: 'Z883',
+			page_type: 'Z8',
+			return_type: 'Z4',
+			match_label: 'Typed Map',
+			match_is_primary: '1',
+			match_lang: 'Z1002',
+			match_rate: 0.3333333333333333,
+			label: 'Typed Map',
+			type_label: ''
+		},
+		{
+			page_id: 0,
+			page_namespace: 0,
+			page_content_model: 'zobject',
+			page_title: 'Z881',
+			page_type: 'Z8',
+			return_type: 'Z4',
+			match_label: 'Typed list',
+			match_is_primary: '1',
+			match_lang: 'Z1002',
+			match_rate: 0.3,
+			label: 'Typed list',
+			type_label: ''
+		},
+		{
+			page_id: 0,
+			page_namespace: 0,
+			page_content_model: 'zobject',
+			page_title: 'Z882',
+			page_type: 'Z8',
+			return_type: 'Z4',
+			match_label: 'Typed pair',
+			match_is_primary: '1',
+			match_lang: 'Z1002',
+			match_rate: 0.3,
+			label: 'Typed pair',
+			type_label: ''
+		}
+	]
+};
+
 const stringLabelLookupApiResponse = {
 	wikilambdasearch_labels: [
 		{
@@ -270,6 +317,8 @@ const labelsApiResponseBuilder = ( type, search ) => {
 		return frenchLabelLookupApiResponse;
 	} else if ( type === Constants.Z_TYPE && 'String'.includes( search ) ) {
 		return stringLabelLookupApiResponse;
+	} else if ( type === Constants.Z_TYPE && 'Typed'.includes( search ) ) {
+		return genericTypesLookupApiResponse;
 	} else if ( type === Constants.Z_FUNCTION && 'String equality'.includes( search ) ) {
 		return stringEqualityLabelLookupApiResponse;
 	} else if ( type === Constants.Z_FUNCTION && 'function name, in Chinese'.includes( search ) ) {

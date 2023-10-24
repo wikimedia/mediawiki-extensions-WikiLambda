@@ -16,7 +16,7 @@ const ElementActions = require( '../utils/ElementActions' );
 const InputDropdown = require( './InputDropdown' );
 
 class AboutBlock {
-	get aboutBlock() { return $( 'span.ext-wikilambda-about' ); }
+	get aboutBlock() { return $( 'div.ext-wikilambda-about' ); }
 	get editButton() { return this.aboutBlock.$( './/button[@aria-label="Edit"]' ); }
 	get detailsInputDialogBox() { return $( '//*[@data-testid="edit-label-dialog" and @aria-modal="true"]' ); }
 	get languageInputSelector() { return this.detailsInputDialogBox.$( './/input[@placeholder="Select language"]' ); }

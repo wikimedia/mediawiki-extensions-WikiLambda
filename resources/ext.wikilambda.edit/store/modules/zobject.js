@@ -2083,6 +2083,7 @@ module.exports = exports = {
 						wikilambdasearch_search: payload.input,
 						wikilambdasearch_type: payload.type,
 						wikilambdasearch_return_type: payload.returnType,
+						wikilambdasearch_strict_return_type: payload.strictType,
 						wikilambdasearch_language: context.getters.getUserLangCode
 					} ).then( function ( data ) {
 						var lookupResults = [];

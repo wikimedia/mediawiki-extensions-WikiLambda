@@ -70,7 +70,7 @@ describe( 'FunctionEvaluator', () => {
 			getCurrentZObjectId: createGettersWithFunctionsMock( 'Z12345' ),
 			getCurrentZObjectType: createGettersWithFunctionsMock( 'Z14' ),
 			getStoredObject: createGettersWithFunctionsMock( undefined ),
-			getChildrenByParentRowId: createGettersWithFunctionsMock( [] ),
+			getZFunctionCallArguments: createGettersWithFunctionsMock( [] ),
 			getRowByKeyPath: createGettersWithFunctionsMock( undefined ),
 			getZFunctionCallFunctionId: createGettersWithFunctionsMock( undefined ),
 			getAttachedImplementations: createGettersWithFunctionsMock( [] ),
@@ -190,9 +190,7 @@ describe( 'FunctionEvaluator', () => {
 			} );
 
 			wrapper.vm.functionCallRowId = 1;
-			getters.getChildrenByParentRowId = createGettersWithFunctionsMock( [
-				{ key: 'Z1K1', id: 2, parent: 1 },
-				{ key: 'Z7K1', id: 3, parent: 1 },
+			getters.getZFunctionCallArguments = createGettersWithFunctionsMock( [
 				{ key: 'Z10000K1', id: 4, parent: 1 },
 				{ key: 'Z10000K2', id: 5, parent: 1 }
 			] );

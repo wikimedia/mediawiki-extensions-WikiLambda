@@ -6,27 +6,26 @@
 -->
 <template>
 	<div class="ext-wikilambda-function-definition-description">
-		<div class="ext-wikilambda-function-definition-description__label">
-			<label
-				:for="descriptionInputId"
-				class="ext-wikilambda-app__text-regular"
-			>
+		<div class="ext-wikilambda-function-block__label">
+			<label :for="descriptionInputId">
 				{{ descriptionLabel }}
 				<span>{{ descriptionOptional }}</span>
 			</label>
 		</div>
-		<cdx-text-input
-			:id="descriptionInputId"
-			:model-value="description"
-			class="ext-wikilambda-function-definition-description__input"
-			:aria-label="descriptionLabel"
-			:placeholder="descriptionInputPlaceholder"
-			:max-chars="maxDescriptionChars"
-			@input="updateRemainingChars"
-			@change="persistDescription"
-		></cdx-text-input>
-		<div class="ext-wikilambda-function-definition-description__counter">
-			{{ remainingChars }}
+		<div class="ext-wikilambda-function-block__body">
+			<cdx-text-input
+				:id="descriptionInputId"
+				:model-value="description"
+				class="ext-wikilambda-function-definition-description__input"
+				:aria-label="descriptionLabel"
+				:placeholder="descriptionInputPlaceholder"
+				:max-chars="maxDescriptionChars"
+				@input="updateRemainingChars"
+				@change="persistDescription"
+			></cdx-text-input>
+			<div class="ext-wikilambda-function-definition-description__counter">
+				{{ remainingChars }}
+			</div>
 		</div>
 	</div>
 </template>
@@ -194,62 +193,10 @@ module.exports = exports = {
 @import '../../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-function-definition-description {
-	display: flex;
-	margin-bottom: @spacing-150;
-
-	&__label {
-		display: flex;
-		flex-direction: column;
-		width: @wl-field-label-width;
-		margin-right: @spacing-150;
-
-		& > label {
-			line-height: @size-200;
-			font-weight: @font-weight-bold;
-
-			& > span {
-				color: @color-subtle;
-				font-weight: @font-weight-normal;
-			}
-		}
-	}
-
 	&__counter {
 		color: @color-subtle;
 		margin-left: @spacing-50;
 		align-self: center;
-	}
-
-	/* MOBILE styles */
-	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
-		& {
-			flex-direction: column;
-
-			&__input {
-				width: 100%;
-			}
-
-			&__label {
-				width: auto;
-
-				& > label {
-					margin-bottom: @spacing-25;
-					line-height: inherit;
-				}
-			}
-
-			&__counter {
-				align-self: start;
-				margin-left: @spacing-0;
-			}
-
-			&__description {
-				font-size: @wl-font-size-description-mobile;
-				line-height: @wl-line-height-description-mobile;
-				letter-spacing: @wl-letter-spacing-description-mobile;
-				margin-bottom: @spacing-50;
-			}
-		}
 	}
 }
 </style>

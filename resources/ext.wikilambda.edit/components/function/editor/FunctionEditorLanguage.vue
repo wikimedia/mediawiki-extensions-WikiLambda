@@ -6,23 +6,22 @@
 -->
 <template>
 	<div class="ext-wikilambda-function-language-selector">
-		<div class="ext-wikilambda-function-language-selector__label">
-			<label
-				id="ext-wikilambda-function-language-selector__add-language-label"
-				class="ext-wikilambda-app__text-regular"
-			>
+		<div class="ext-wikilambda-function-block__label">
+			<label :id="languageFieldId">
 				{{ languageLabel }}
 			</label>
 		</div>
-		<wl-z-object-selector
-			class="ext-wikilambda-function-language-selector__add-language"
-			aria-labelledby="ext-wikilambda-function-language-selector__add-language-label"
-			:disabled="hasLanguage"
-			:exclude-zids="functionLanguages"
-			:selected-zid="zLanguage"
-			:type="naturalLanguageType"
-			@input="addNewLanguage"
-		></wl-z-object-selector>
+		<div class="ext-wikilambda-function-block__body">
+			<wl-z-object-selector
+				class="ext-wikilambda-function-language-selector__add-language"
+				:aria-labelledby="languageFieldId"
+				:disabled="hasLanguage"
+				:exclude-zids="functionLanguages"
+				:selected-zid="zLanguage"
+				:type="naturalLanguageType"
+				@input="addNewLanguage"
+			></wl-z-object-selector>
+		</div>
 	</div>
 </template>
 
@@ -62,6 +61,14 @@ module.exports = exports = {
 			return this.getZFunctionLanguages( this.rowId );
 		},
 		/**
+		 * Returns the id for the language field
+		 *
+		 * @return {string}
+		 */
+		languageFieldId: function () {
+			return 'ext-wikilambda-function-language-selector__label-id';
+		},
+		/**
 		 * Returns the label for the language field
 		 *
 		 * @return {string}
@@ -92,41 +99,3 @@ module.exports = exports = {
 	}
 };
 </script>
-
-<style lang="less">
-@import '../../../ext.wikilambda.edit.less';
-
-.ext-wikilambda-function-language-selector {
-	display: flex;
-	margin-bottom: @spacing-150;
-
-	&__label {
-		display: flex;
-		flex-direction: column;
-		width: @wl-field-label-width;
-		margin-right: @spacing-150;
-
-		& > label {
-			line-height: @size-200;
-			font-weight: @font-weight-bold;
-
-			& > span {
-				font-weight: @font-weight-normal;
-			}
-		}
-	}
-
-	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
-		& {
-			flex-direction: column;
-		}
-
-		&__label {
-			& > label {
-				line-height: inherit;
-				margin-bottom: @spacing-25;
-			}
-		}
-	}
-}
-</style>

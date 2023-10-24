@@ -6,24 +6,23 @@
 -->
 <template>
 	<div class="ext-wikilambda-function-definition-name">
-		<div class="ext-wikilambda-function-definition-name__label">
-			<label
-				:for="nameFieldId"
-				class="ext-wikilambda-app__text-regular"
-			>
+		<div class="ext-wikilambda-function-block__label">
+			<label :for="nameFieldId">
 				{{ nameLabel }}
 				<span>{{ nameOptional }}</span>
 			</label>
 		</div>
-		<cdx-text-input
-			:id="nameFieldId"
-			:model-value="name"
-			class="ext-wikilambda-function-definition-name__input"
-			:aria-label="nameLabel"
-			:placeholder="nameFieldPlaceholder"
-			:max-chars="maxLabelChars"
-			@change="persistName"
-		></cdx-text-input>
+		<div class="ext-wikilambda-function-block__body">
+			<cdx-text-input
+				:id="nameFieldId"
+				:model-value="name"
+				class="ext-wikilambda-function-definition-name__input"
+				:aria-label="nameLabel"
+				:placeholder="nameFieldPlaceholder"
+				:max-chars="maxLabelChars"
+				@change="persistName"
+			></cdx-text-input>
+		</div>
 	</div>
 </template>
 
@@ -192,56 +191,3 @@ module.exports = exports = {
 	} )
 };
 </script>
-
-<style lang="less">
-@import '../../../ext.wikilambda.edit.less';
-
-.ext-wikilambda-function-definition-name {
-	display: flex;
-	margin-bottom: @spacing-150;
-
-	&__label {
-		display: flex;
-		flex-direction: column;
-		width: @wl-field-label-width;
-		margin-right: @spacing-150;
-
-		& > label {
-			line-height: @size-200;
-			font-weight: @font-weight-bold;
-
-			& > span {
-				color: @color-subtle;
-				font-weight: @font-weight-normal;
-			}
-		}
-	}
-
-	/* MOBILE styles */
-	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
-		& {
-			flex-direction: column;
-
-			&__input {
-				width: 100%;
-			}
-
-			&__label {
-				width: auto;
-
-				& > label {
-					line-height: inherit;
-					margin-bottom: @spacing-25;
-				}
-			}
-
-			&__description {
-				font-size: @wl-font-size-description-mobile;
-				line-height: @wl-line-height-description-mobile;
-				letter-spacing: @wl-letter-spacing-description-mobile;
-				margin-bottom: @spacing-50;
-			}
-		}
-	}
-}
-</style>

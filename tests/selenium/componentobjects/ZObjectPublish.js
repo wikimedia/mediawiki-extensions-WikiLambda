@@ -13,7 +13,7 @@
 const ElementActions = require( '../utils/ElementActions' );
 
 class ZObjectPublish {
-	get publishBlock() { return $( 'span.ext-wikilambda-publish-widget' ); }
+	get publishBlock() { return $( 'div.ext-wikilambda-publish-widget' ); }
 	get publishButton() { return this.publishBlock.$( 'button=Publish' ); }
 	get publishDialogBlock() { return $( '//*[@role="dialog" and @aria-modal="true"]' ); }
 	get confirmPublishButton() { return this.publishDialogBlock.$( 'button=Publish' ); }

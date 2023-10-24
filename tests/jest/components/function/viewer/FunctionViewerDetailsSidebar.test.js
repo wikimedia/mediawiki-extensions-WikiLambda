@@ -70,7 +70,9 @@ describe( 'FunctionViewerDetailsSidebar', function () {
 			getNestedZObjectById: createGettersWithFunctionsMock( { id: idLangOne, value: Constants.Z_STRING } ),
 			getLabel: createGettersWithFunctionsMock(),
 			getUserLangZid: createGetterMock( 'en' ),
-			getZObjectTypeById: createGettersWithFunctionsMock( Constants.Z_REFERENCE )
+			getZObjectTypeById: createGettersWithFunctionsMock( Constants.Z_REFERENCE ),
+			getZArgumentTypeRowId: createGettersWithFunctionsMock(),
+			getZFunctionOutput: createGettersWithFunctionsMock( { id: 1 } )
 		};
 
 		global.store.hotUpdate( {

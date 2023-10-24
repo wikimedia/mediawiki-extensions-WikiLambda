@@ -150,7 +150,7 @@ module.exports = exports = {
 	},
 	computed: $.extend( mapGetters( [
 		'getAttachedImplementations',
-		'getChildrenByParentRowId',
+		'getZFunctionCallArguments',
 		'getLabel',
 		'getRowByKeyPath',
 		'getStoredObject',
@@ -211,20 +211,12 @@ module.exports = exports = {
 		},
 
 		/**
-		 * Returns the inputs of a function call, excluding the keys Z1K1 and Z7K1
+		 * Returns the rowIds of the inputs of a function call
 		 *
 		 * @return {Array}
 		 */
 		inputRowIds: function () {
-			return this.getChildrenByParentRowId( this.functionCallRowId )
-				// We exclude Z1K1 and Z7K1...
-				.filter( ( row ) => {
-					return (
-						( row.key !== Constants.Z_OBJECT_TYPE ) &&
-						( row.key !== Constants.Z_FUNCTION_CALL_FUNCTION )
-					);
-				} )
-				// ... and we return only the row IDs
+			return this.getZFunctionCallArguments( this.functionCallRowId )
 				.map( function ( row ) { return row.id; } );
 		},
 

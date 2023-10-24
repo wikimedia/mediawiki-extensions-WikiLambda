@@ -1,37 +1,27 @@
 <!--
-	WikiLambda Vue component for setting the inputs of a ZFunction in the Function editor.
+	WikiLambda Vue component for setting the list of inputs of a ZFunction in the Function editor.
 
 	@copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
 	@license MIT
 -->
 <template>
 	<div class="ext-wikilambda-function-definition-inputs">
-		<!-- Global inputs label if we are in desktop -->
-		<div
-			v-if="!isMobile"
-			:id="inputsFieldId"
-			class="ext-wikilambda-function-definition-inputs__label"
-		>
-			<div class="ext-wikilambda-function-definition-inputs__label-block">
-				<label
-					class="ext-wikilambda-app__text-regular"
-					aria-labelledby="wikilambda-function-definition-inputs-label"
-				>
-					{{ inputsLabel }}
-					<span>{{ inputsOptional }}</span>
-				</label>
-				<wl-tooltip
-					v-if="tooltipMessage && !canEdit"
-					:content="tooltipMessage"
-				>
-					<cdx-icon
-						v-if="tooltipIcon"
-						class="ext-wikilambda-function-definition-inputs__tooltip-icon"
-						:icon="tooltipIcon">
-					</cdx-icon>
-				</wl-tooltip>
-			</div>
-			<span class="ext-wikilambda-function-definition-inputs__description">
+		<div class="ext-wikilambda-function-block__label">
+			<label :id="inputsFieldId">
+				{{ inputsLabel }}
+				<span>{{ inputsOptional }}</span>
+			</label>
+			<wl-tooltip
+				v-if="tooltipMessage && !canEdit"
+				:content="tooltipMessage"
+			>
+				<cdx-icon
+					v-if="tooltipIcon"
+					class="ext-wikilambda-function-block__label__tooltip-icon"
+					:icon="tooltipIcon">
+				</cdx-icon>
+			</wl-tooltip>
+			<span class="ext-wikilambda-function-block__label__description">
 				{{ inputsFieldDescription }}
 				<a :href="listObjectsUrl" target="_blank">{{ listObjectsLink }}</a>
 			</span>
@@ -39,24 +29,19 @@
 		<!-- List of input fields -->
 		<div
 			:aria-labelledby="inputsFieldId"
-			class="ext-wikilambda-function-definition-inputs__inputs"
-			:class="{ 'ext-wikilambda-function-definition-inputs__padded': isMainLanguageBlock }"
+			class="ext-wikilambda-function-block__body"
 		>
 			<wl-function-editor-inputs-item
 				v-for="( input, index ) in inputs"
-				:key="'input-item-' + zLanguage + '-' + input.key"
+				:key="'input-' + input.id + '-lang-' + zLanguage"
 				data-testid="function-editor-input-item"
 				:row-id="input.id"
 				:index="index"
-				class="ext-wikilambda-function-definition-inputs__row"
 				:z-language="zLanguage"
 				:can-edit-type="canEdit"
-				:is-mobile="isMobile"
-				:is-active="activeInputIndex === index"
 				:is-main-language-block="isMainLanguageBlock"
-				:show-index="inputs.length > 1"
+				@remove="removeItem"
 				@update-argument-label="updateArgumentLabel"
-				@active-input="setActiveInput"
 			></wl-function-editor-inputs-item>
 			<cdx-button
 				v-if="canEdit"
@@ -127,25 +112,18 @@ module.exports = exports = {
 		tooltipMessage: {
 			type: String,
 			default: null
-		},
-		/**
-		 * device screensize is mobile
-		 */
-		isMobile: {
-			type: Boolean,
-			default: false
 		}
 	},
 	data: function () {
 		return {
-			icons: icons,
-			activeInputIndex: this.isMainLanguageBlock ? 0 : -1
+			icons: icons
 		};
 	},
 	computed: $.extend( mapGetters( [
 		'getZFunctionInputs',
 		'getRowByKeyPath',
-		'getUserLangCode'
+		'getUserLangCode',
+		'getZObjectAsJsonById'
 	] ), {
 		/**
 		 * List of inputs
@@ -239,7 +217,8 @@ module.exports = exports = {
 		}
 	} ),
 	methods: $.extend( mapActions( [
-		'changeType'
+		'changeType',
+		'removeItemFromTypedList'
 	] ), {
 		/**
 		 * Add a new input item to the function inputs list
@@ -250,17 +229,15 @@ module.exports = exports = {
 				id: this.inputsListRowId,
 				lang: this.zLanguage,
 				append: true
-			} ).then( () => {
-				this.setActiveInput( this.inputs.length - 1 );
 			} );
 		},
 		/**
-		 * Sets the given input index as active
+		 * Removes an item from the list of inputs
 		 *
-		 * @param {number} index
+		 * @param {number} rowId
 		 */
-		setActiveInput: function ( index ) {
-			this.activeInputIndex = index;
+		removeItem: function ( rowId ) {
+			this.removeItemFromTypedList( { rowId } );
 		},
 		/**
 		 * Emits the event updated-argument-label
@@ -271,93 +248,3 @@ module.exports = exports = {
 	} )
 };
 </script>
-
-<style lang="less">
-@import '../../../ext.wikilambda.edit.less';
-
-.ext-wikilambda-function-definition-inputs {
-	display: flex;
-	margin-bottom: @spacing-150;
-
-	&__label-block {
-		display: flex;
-		align-items: center;
-
-		& > label {
-			line-height: @spacing-200;
-			font-weight: @font-weight-bold;
-
-			& > span {
-				color: @color-subtle;
-				font-weight: @font-weight-normal;
-			}
-		}
-	}
-
-	&__label {
-		display: flex;
-		flex-direction: column;
-		width: @wl-field-label-width;
-		margin-right: @spacing-150;
-	}
-
-	& > div:first-of-type {
-		width: @wl-field-label-width;
-		flex-direction: column;
-	}
-
-	&__tooltip-icon {
-		margin-left: @spacing-50;
-		width: @size-100;
-		height: @size-100;
-	}
-
-	&__description {
-		color: @color-subtle;
-		font-size: @font-size-small;
-		line-height: @line-height-small;
-		display: inline-block;
-	}
-
-	&__row {
-		display: flex;
-		gap: @spacing-50;
-	}
-
-	/* DESKTOP styles */
-	@media screen and ( min-width: @min-width-breakpoint-tablet ) {
-		&__row:last-of-type {
-			margin-bottom: @spacing-50;
-		}
-
-		&__row:first-of-type {
-			.ext-wikilambda-editor-input-list-item__header__action-delete {
-				margin-top: @spacing-200;
-			}
-		}
-	}
-
-	/* MOBILE styles */
-	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
-		display: block;
-
-		&__row {
-			display: block;
-		}
-
-		&__label {
-			& > label {
-				line-height: inherit;
-			}
-		}
-
-		&__description {
-			margin-bottom: @spacing-50;
-		}
-
-		& > div:first-of-type {
-			width: auto;
-		}
-	}
-}
-</style>

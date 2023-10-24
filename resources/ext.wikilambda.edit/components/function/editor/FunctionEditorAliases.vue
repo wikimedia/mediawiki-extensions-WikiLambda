@@ -6,19 +6,16 @@
 -->
 <template>
 	<div class="ext-wikilambda-function-definition-aliases">
-		<div class="ext-wikilambda-function-definition-aliases__label">
-			<label
-				:for="aliasFieldId"
-				class="ext-wikilambda-app__text-regular"
-			>
+		<div class="ext-wikilambda-function-block__label">
+			<label :for="aliasFieldId">
 				{{ aliasLabel }}
 				<span>{{ aliasOptional }}</span>
 			</label>
-			<span class="ext-wikilambda-function-definition-aliases__description">
+			<span class="ext-wikilambda-function-block__label__description">
 				{{ aliasFieldDescription }}
 			</span>
 		</div>
-		<div class="ext-wikilambda-function-definition-aliases__inputs">
+		<div class="ext-wikilambda-function-block__body">
 			<wl-chip-container
 				:id="aliasFieldId"
 				:chips="aliases"
@@ -240,59 +237,8 @@ module.exports = exports = {
 @import '../../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-function-definition-aliases {
-	display: flex;
-	margin-bottom: @spacing-150;
-
 	&__error {
 		color: @color-error;
-	}
-
-	&__label {
-		display: flex;
-		flex-direction: column;
-		width: @wl-field-label-width;
-		margin-right: @spacing-150;
-
-		& > label {
-			line-height: @size-200;
-			font-weight: @font-weight-bold;
-
-			& > span {
-				color: @color-subtle;
-				font-weight: @font-weight-normal;
-			}
-		}
-	}
-
-	&__description {
-		color: @color-subtle;
-		font-size: @font-size-small;
-		line-height: @line-height-small;
-		display: inline-block;
-	}
-
-	/* MOBILE styles */
-	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
-		& {
-			flex-direction: column;
-
-			&__inputs {
-				width: 100%;
-			}
-
-			&__label {
-				width: auto;
-				margin-right: 0;
-
-				& > label {
-					line-height: inherit;
-				}
-			}
-
-			&__description {
-				margin-bottom: @spacing-25;
-			}
-		}
 	}
 }
 </style>

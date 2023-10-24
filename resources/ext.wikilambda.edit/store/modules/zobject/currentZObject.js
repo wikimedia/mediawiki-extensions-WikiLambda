@@ -4,7 +4,7 @@
  * @copyright 2020– Abstract Wikipedia team; see AUTHORS.txt
  * @license MIT
  */
-var Constants = require( '../../../Constants.js' );
+const Constants = require( '../../../Constants.js' );
 
 module.exports = exports = {
 	state: {
@@ -204,55 +204,93 @@ module.exports = exports = {
 			);
 		},
 		/**
-		 * Returns the array of inputs that are invalid. An invalid
-		 * input has set labels but unset type
+		 * Recursively waks a nested generic type and returns
+		 * the field IDs and whether they are valid or not.
 		 *
 		 * @param {Object} state
 		 * @param {Object} getters
-		 * @return {Array}
+		 * @return {Function}
 		 */
-		currentZFunctionInvalidInputs: function ( state, getters ) {
-			const inputs = getters.getZFunctionInputs();
-			const invalidRows = [];
-			for ( const inputRow of inputs ) {
-				// Get the value of the input type
-				const inputTypeRow = getters.getRowByKeyPath( [ Constants.Z_ARGUMENT_TYPE ], inputRow.id );
-				const inputTypeValue = getters.getZReferenceTerminalValue( inputTypeRow.id );
+		validateGenericType: function ( state, getters ) {
+			/**
+			 * @param {number} rowId
+			 * @param {Object} fields
+			 * @return {Object} fields
+			 */
+			function validate( rowId, fields = [] ) {
+				const mode = getters.getZObjectTypeByRowId( rowId );
+				const value = ( mode === Constants.Z_REFERENCE ) ?
+					getters.getZReferenceTerminalValue( rowId ) :
+					getters.getZFunctionCallFunctionId( rowId );
 
-				// If the type is unset
-				if ( inputTypeValue === undefined ) {
-					// Get the value of input labels
-					const inputLabelsRow = getters.getRowByKeyPath( [
-						Constants.Z_ARGUMENT_LABEL,
-						Constants.Z_MULTILINGUALSTRING_VALUE
-					], inputRow.id );
-					const inputLabelRows = getters.getChildrenByParentRowId( inputLabelsRow.id ).slice( 1 );
-					const inputLabelValues = inputLabelRows
-						.map( ( row ) => getters.getZMonolingualTextValue( row.id ) )
-						.filter( ( text ) => !!text );
+				fields.push( {
+					rowId,
+					isValid: !!value
+				} );
 
-					// If the type is unset but the labels are set, mark as invalid
-					if ( inputLabelValues.length > 0 ) {
-						invalidRows.push( {
-							inputRow: inputRow,
-							typeRow: inputTypeRow
-						} );
+				if ( mode === Constants.Z_FUNCTION_CALL ) {
+					const args = getters.getZFunctionCallArguments( rowId );
+					for ( const arg of args ) {
+						getters.validateGenericType( arg.id, fields );
 					}
 				}
+				return fields;
 			}
-			return invalidRows;
+			return validate;
+		},
+		/**
+		 * Returns the array of input-related field ids that are invalid.
+		 * Ignores those inputs that have no label and fully empty type
+		 * because it will be deleted before submission.
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Array}
+		 */
+		currentZFunctionInvalidInputs: function ( _state, getters ) {
+			const inputs = getters.getZFunctionInputs();
+			let invalidRowIds = [];
+			for ( const inputRow of inputs ) {
+				// Get the validity state of all the type fields
+				const inputTypeRow = getters.getRowByKeyPath( [ Constants.Z_ARGUMENT_TYPE ], inputRow.id );
+				const inputTypeFields = getters.validateGenericType( inputTypeRow.id );
+
+				// Get the values of the input labels
+				const inputLabelsRow = getters.getRowByKeyPath( [
+					Constants.Z_ARGUMENT_LABEL,
+					Constants.Z_MULTILINGUALSTRING_VALUE
+				], inputRow.id );
+				const inputLabelRows = getters.getChildrenByParentRowId( inputLabelsRow.id ).slice( 1 );
+				const inputLabelValues = inputLabelRows
+					.map( ( row ) => getters.getZMonolingualTextValue( row.id ) )
+					.filter( ( text ) => !!text );
+
+				// If type value is empty and fields are empty, ignore this input:
+				// because it's totally empty, the input will be erased before submission.
+				const inputTypeIsEmpty = ( inputTypeFields.filter( ( e ) => e.isValid ).length === 0 );
+				if ( inputTypeIsEmpty && inputLabelValues.length === 0 ) {
+					continue;
+				}
+
+				// Return errors to report
+				const invalidInputRowIds = inputTypeFields.filter( ( e ) => !e.isValid ).map( ( e ) => e.rowId );
+				invalidRowIds = invalidRowIds.concat( invalidInputRowIds );
+			}
+			return invalidRowIds;
+		},
+		/**
+		 * Returns the array of output-related field ids that are invalid.
+		 *
+		 * @param {Object} _state
+		 * @param {Object} getters
+		 * @return {Array}
+		 */
+		currentZFunctionInvalidOutput: function ( _state, getters ) {
+			const outputTypeRow = getters.getZFunctionOutput();
+			const outputTypeFields = getters.validateGenericType( outputTypeRow.id );
+			return outputTypeFields.filter( ( e ) => !e.isValid ).map( ( e ) => e.rowId );
 		},
 
-		currentZFunctionHasOutput: function ( state, getters ) {
-			if ( getters.getCurrentZObjectType !== Constants.Z_FUNCTION ) {
-				return false;
-			}
-
-			var zobject = getters.getZObjectAsJson;
-			return zobject &&
-				!!zobject[ Constants.Z_PERSISTENTOBJECT_VALUE ][
-					Constants.Z_FUNCTION_RETURN_TYPE ][ Constants.Z_REFERENCE_ID ];
-		},
 		currentZFunctionHasTesters: function ( state, getters ) {
 			if ( getters.getCurrentZObjectType !== Constants.Z_FUNCTION ) {
 				return false;

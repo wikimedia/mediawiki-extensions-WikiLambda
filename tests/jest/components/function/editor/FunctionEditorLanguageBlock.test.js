@@ -31,7 +31,7 @@ describe( 'FunctionEditorDefinitionLanguageBlock', () => {
 				index: 0,
 				zLanguage: 'Z1002'
 			} } );
-			expect( wrapper.find( '.ext-wikilambda-function-language-block' ).exists() ).toBe( true );
+			expect( wrapper.find( '.ext-wikilambda-function-block' ).exists() ).toBe( true );
 		} );
 
 		it( 'renders all fields for main language', async () => {

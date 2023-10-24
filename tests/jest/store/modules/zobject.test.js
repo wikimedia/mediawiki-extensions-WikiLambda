@@ -234,17 +234,220 @@ describe( 'zobject Vuex module', function () {
 				} );
 			} );
 
+			describe( 'validateGenericType', () => {
+				beforeEach( () => {
+					state = { zobject: [] };
+					getters = {};
+					getters.getRowById = zobjectModule.getters.getRowById( state, getters );
+					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+					getters.getZTypeStringRepresentation = zobjectModule.getters.getZTypeStringRepresentation( state, getters );
+					getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
+					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+					getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
+					getters.getZFunctionCallFunctionId = zobjectModule.getters.getZFunctionCallFunctionId( state, getters );
+					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+					getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( state, getters );
+					getters.validateGenericType = currentZObject.getters.validateGenericType( state, getters );
+				} );
+
+				it( 'unset reference is not valid', () => {
+					state.zobject = zobjectToRows( {
+						Z1K1: 'Z9',
+						Z9K1: ''
+					} );
+
+					const actual = getters.validateGenericType( 0 );
+					const expected = [ { rowId: 0, isValid: false } ];
+
+					expect( actual ).toEqual( expected );
+				} );
+
+				it( 'set reference is valid', () => {
+					state.zobject = zobjectToRows( {
+						Z1K1: 'Z9',
+						Z9K1: 'Z6'
+					} );
+
+					const actual = getters.validateGenericType( 0 );
+					const expected = [ { rowId: 0, isValid: true } ];
+
+					expect( actual ).toEqual( expected );
+				} );
+
+				it( 'unset function call is not valid', () => {
+					state.zobject = zobjectToRows( {
+						Z1K1: 'Z7',
+						Z7K1: ''
+					} );
+
+					const actual = getters.validateGenericType( 0 );
+					const expected = [ { rowId: 0, isValid: false } ];
+
+					expect( actual ).toEqual( expected );
+				} );
+
+				it( 'unset function call argument is not valid', () => {
+					state.zobject = zobjectToRows( {
+						Z1K1: 'Z7',
+						Z7K1: 'Z881', // rowId 0
+						Z881K1: '' // rowId 7
+					} );
+
+					const actual = getters.validateGenericType( 0 );
+					const expected = [ { rowId: 0, isValid: true }, { rowId: 7, isValid: false } ];
+
+					expect( actual ).toEqual( expected );
+				} );
+
+				it( 'nested function call argument is not valid', () => {
+					state.zobject = zobjectToRows( {
+						Z1K1: 'Z7',
+						Z7K1: 'Z881', // rowId 0
+						Z881K1: { // rowId 7
+							Z1K1: 'Z7',
+							Z7K1: 'Z881',
+							Z881K1: { // rowId 14
+								Z1K1: 'Z9',
+								Z9K1: ''
+							}
+						}
+					} );
+
+					const actual = getters.validateGenericType( 0 );
+					const expected = [
+						{ rowId: 0, isValid: true },
+						{ rowId: 7, isValid: true },
+						{ rowId: 14, isValid: false }
+					];
+
+					expect( actual ).toEqual( expected );
+				} );
+			} );
+
+			describe( 'currentZFunctionInvalidOutput', () => {
+				beforeEach( () => {
+					state = { zobject: [] };
+					getters = {};
+					getters.getRowById = zobjectModule.getters.getRowById( state, getters );
+					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+
+					getters.getZTypeStringRepresentation = zobjectModule.getters.getZTypeStringRepresentation( state, getters );
+					getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
+					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
+					getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
+					getters.getZFunctionCallFunctionId = zobjectModule.getters.getZFunctionCallFunctionId( state, getters );
+					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+					getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( state, getters );
+					getters.validateGenericType = currentZObject.getters.validateGenericType( state, getters );
+
+					getters.getZFunctionOutput = zFunctionModule.getters.getZFunctionOutput( state, getters );
+				} );
+
+				it( 'returns empty array when output is filled reference', () => {
+					state.zobject = zobjectToRows( { Z2K2: {
+						Z8K2: 'Z6'
+					} } );
+
+					const invalidOutput = currentZObject.getters.currentZFunctionInvalidOutput( state, getters );
+					const expected = [];
+					expect( invalidOutput ).toEqual( expected );
+				} );
+
+				it( 'returns empty array when output is filled function call', () => {
+					state.zobject = zobjectToRows( { Z2K2: {
+						Z8K2: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z881',
+							Z881K1: 'Z6'
+						}
+					} } );
+
+					const invalidOutput = currentZObject.getters.currentZFunctionInvalidOutput( state, getters );
+					const expected = [];
+					expect( invalidOutput ).toEqual( expected );
+				} );
+
+				it( 'returns empty array when output is filled nested function call', () => {
+					state.zobject = zobjectToRows( { Z2K2: {
+						Z8K2: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z882',
+							Z882K1: 'Z6',
+							Z882K2: {
+								Z1K1: 'Z7',
+								Z7K1: 'Z881',
+								Z881K1: 'Z6'
+							}
+						}
+					} } );
+
+					const invalidOutput = currentZObject.getters.currentZFunctionInvalidOutput( state, getters );
+					const expected = [];
+					expect( invalidOutput ).toEqual( expected );
+				} );
+
+				it( 'returns error when output is empty reference', () => {
+					state.zobject = zobjectToRows( { Z2K2: {
+						Z8K2: '' // rowId 2
+					} } );
+
+					const invalidOutput = currentZObject.getters.currentZFunctionInvalidOutput( state, getters );
+					const expected = [ 2 ];
+					expect( invalidOutput ).toEqual( expected );
+				} );
+
+				it( 'returns error when output is empty function call', () => {
+					state.zobject = zobjectToRows( { Z2K2: {
+						Z8K2: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z881',
+							Z881K1: '' // rowId 9
+						}
+					} } );
+
+					const invalidOutput = currentZObject.getters.currentZFunctionInvalidOutput( state, getters );
+					const expected = [ 9 ];
+					expect( invalidOutput ).toEqual( expected );
+				} );
+
+				it( 'returns all errors when output is empty nested function call', () => {
+					state.zobject = zobjectToRows( { Z2K2: {
+						Z8K2: {
+							Z1K1: 'Z7',
+							Z7K1: 'Z882',
+							Z882K1: '', // rowId 9
+							Z882K2: {
+								Z1K1: 'Z7',
+								Z7K1: 'Z881',
+								Z881K1: '' // rowId 19
+							}
+						}
+					} } );
+
+					const invalidOutput = currentZObject.getters.currentZFunctionInvalidOutput( state, getters );
+					const expected = [ 9, 19 ];
+					expect( invalidOutput ).toEqual( expected );
+				} );
+			} );
+
 			describe( 'currentZFunctionInvalidInputs', () => {
 				beforeEach( () => {
 					state = { zobject: [] };
 					getters = {};
 					getters.getRowById = zobjectModule.getters.getRowById( state, getters );
 					getters.getRowByKeyPath = zobjectModule.getters.getRowByKeyPath( state, getters );
+
+					getters.getZTypeStringRepresentation = zobjectModule.getters.getZTypeStringRepresentation( state, getters );
+					getters.getZObjectTypeByRowId = zobjectModule.getters.getZObjectTypeByRowId( state, getters );
 					getters.getZObjectTerminalValue = zobjectModule.getters.getZObjectTerminalValue( state, getters );
 					getters.getZReferenceTerminalValue = zobjectModule.getters.getZReferenceTerminalValue( state, getters );
+					getters.getZFunctionCallFunctionId = zobjectModule.getters.getZFunctionCallFunctionId( state, getters );
+					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
+					getters.getZFunctionCallArguments = zobjectModule.getters.getZFunctionCallArguments( state, getters );
+					getters.validateGenericType = currentZObject.getters.validateGenericType( state, getters );
+
 					getters.getZStringTerminalValue = zobjectModule.getters.getZStringTerminalValue( state, getters );
 					getters.getZMonolingualTextValue = zobjectModule.getters.getZMonolingualTextValue( state, getters );
-					getters.getChildrenByParentRowId = zobjectModule.getters.getChildrenByParentRowId( state );
 					getters.getZFunctionInputs = zFunctionModule.getters.getZFunctionInputs( state, getters );
 				} );
 
@@ -301,8 +504,8 @@ describe( 'zobject Vuex module', function () {
 
 					const invalidInputs = currentZObject.getters.currentZFunctionInvalidInputs( state, getters );
 					// Expect first input to be invalid
-					expect( invalidInputs.length ).toEqual( 1 );
-					expect( invalidInputs[ 0 ].inputRow.key ).toEqual( '1' );
+					const expected = [ 10 ];
+					expect( invalidInputs ).toEqual( expected );
 				} );
 
 				it( 'returns all inputs with empty type but non empty label', () => {
@@ -319,9 +522,8 @@ describe( 'zobject Vuex module', function () {
 
 					const invalidInputs = currentZObject.getters.currentZFunctionInvalidInputs( state, getters );
 					// Expect first and second inputs to be invalid
-					expect( invalidInputs.length ).toEqual( 2 );
-					expect( invalidInputs[ 0 ].inputRow.key ).toEqual( '1' );
-					expect( invalidInputs[ 1 ].inputRow.key ).toEqual( '2' );
+					const expected = [ 10, 38 ];
+					expect( invalidInputs ).toEqual( expected );
 				} );
 			} );
 
@@ -4221,21 +4423,14 @@ describe( 'zobject Vuex module', function () {
 				context.rootState = {
 					zobjectModule: context.state
 				};
+				context.getters.getCurrentZObjectId = 'Z0';
+				context.getters.getUserLangZid = 'Z1003';
+				context.getters.getStoredObject = ( zid ) => context.state.objects[ zid ];
 				// Getters
 				Object.keys( zobjectModule.getters ).forEach( ( key ) => {
 					context.getters[ key ] =
 						zobjectModule.getters[ key ](
 							context.state, context.getters,
-							{ zobjectModule: context.state },
-							context.getters );
-				} );
-				context.getters.getZFunctionInputs = zFunctionModule.getters.getZFunctionInputs(
-					context.state, context.getters );
-				Object.keys( zobjectModule.modules.currentZObject.getters ).forEach( ( key ) => {
-					context.getters[ key ] =
-						zobjectModule.modules.currentZObject.getters[ key ](
-							context.state,
-							context.getters,
 							{ zobjectModule: context.state },
 							context.getters );
 				} );
@@ -4253,8 +4448,6 @@ describe( 'zobject Vuex module', function () {
 					{ zobjectModule: context.state },
 					context.getters
 				);
-				context.getters.getStoredObject = ( zid ) => context.state.objects[ zid ];
-				context.getters.getUserLangZid = 'Z1003';
 				// Mutations
 				context.commit = jest.fn( ( mutationType, payload ) => {
 					if ( mutationType in zobjectModule.mutations ) {
@@ -4744,6 +4937,9 @@ describe( 'zobject Vuex module', function () {
 			} );
 
 			describe( 'add ZArgument', function () {
+				beforeEach( () => {
+				} );
+
 				it( 'adds a valid ZArgument', function () {
 					const payload = { id: 0, type: Constants.Z_ARGUMENT };
 					zobjectModule.modules.addZObjects.actions.changeType( context, payload );
