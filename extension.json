@@ -218,8 +218,7 @@
 				"vue",
 				"@wikimedia/codex",
 				"mediawiki.api",
-				"mediawiki.Uri",
-				"es6-polyfills"
+				"mediawiki.Uri"
 			],
 			"packageFiles": [
 				"ext.wikilambda.languageselector/index.js",
@@ -252,7 +251,6 @@
 				"mediawiki.router",
 				"mediawiki.storage",
 				"mediawiki.Uri",
-				"es6-polyfills",
 				"oojs"
 			],
 			"packageFiles": [
