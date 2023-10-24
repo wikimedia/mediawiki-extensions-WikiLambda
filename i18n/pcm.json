@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Confidence"
+		]
+	},
+	"action-wikilambda-edit-error-key-label": "For error type wey dey exist, edit the key labels",
+	"action-wikilambda-execute-unsaved-code": "run implementation code wey them never save",
+	"right-wikilambda-edit-error-key-label": "Edit key labels of the error type wey dey exist",
+	"right-wikilambda-execute-unsaved-code": "run implementation code wey them no save"
+}

@@ -1,11 +1,17 @@
 {
 	"@metadata": {
 		"authors": [
+			"Stacy Lavuha",
 			"Wangombe"
 		]
 	},
+	"action-wikilambda-edit-error-key-label": "Hariri lebo muhimu ya aina ya itilafu iliyopo.",
+	"action-wikilambda-edit-running-function-definition": "Hariri pembejeo/matokeo ya Kazi ambayo ina utekelezaji ulionganishwa",
 	"action-wikilambda-execute": "endesha ZFunctions",
+	"action-wikilambda-execute-unsaved-code": "Endesha msimbo wa utekelezaji ambao haujahifadhiwa.",
 	"right-wikilambda-create-type": "Unda ZObles mpya za ZType",
+	"right-wikilambda-edit-error-key-label": "Hariri lebo muhimu ya aina ya hitilafu iliyopo.",
+	"right-wikilambda-execute-unsaved-code": "Endesha msimbo wa utekelezaji ambao haujahifadhiwa.",
 	"wikilambda-show-more": "Onyesha zaidi",
 	"wikilambda-hide-more": "Ficha Zaidi",
 	"wikilambda-editor-fn-step-function-about": "Kuhusu",

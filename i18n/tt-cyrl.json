@@ -1,9 +1,16 @@
 {
 	"@metadata": {
 		"authors": [
+			"Mansur",
 			"Ильгиз"
 		]
 	},
+	"action-wikilambda-edit-error-key-label": "хаталарның гамәлдәге төре төймәләренең тамгаларын үзгәртергә",
+	"action-wikilambda-edit-running-function-definition": "гамәлгә ашыру тоташтырылган функциянең керү/чыгуын үзгәртергә",
+	"action-wikilambda-execute-unsaved-code": "гамәлгә ашыруның сакланмаган кодын эшләтеп җибәрергә",
+	"right-wikilambda-edit-error-key-label": "Хаталарның гамәлдәге төре төймәләренең тамгаларын үзгәртергә",
+	"right-wikilambda-edit-running-function-definition": "Гамәлгә ашыру тоташтырылган функциянең керү/чыгуын үзгәртергә",
+	"right-wikilambda-execute-unsaved-code": "Гамәлгә ашыруның сакланмаган кодын эшләтеп җибәрергә",
 	"wikilambda-code-editor-label": "Кодны төзуче",
 	"wikilambda-metadata-labels-table-label": "Билгеләр",
 	"wikilambda-function-is-approved": "Бу объект бу функция өчен расланган.",
