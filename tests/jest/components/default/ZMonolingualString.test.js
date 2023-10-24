@@ -10,7 +10,7 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	mount = require( '@vue/test-utils' ).mount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	ZMonolingualString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZMonolingualString.vue' ),
-	TextInput = require( '../../../../resources/ext.wikilambda.edit/components/base/TextInput.vue' ),
+	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
 
 describe( 'ZMonolingualString', () => {
@@ -56,7 +56,7 @@ describe( 'ZMonolingualString', () => {
 				}
 			} );
 
-			expect( wrapper.find( 'p' ).text() ).toContain( 'my label' );
+			expect( wrapper.find( '.ext-wikilambda-monolingual-string__view-mode' ).text() ).toContain( 'my label' );
 		} );
 	} );
 
@@ -89,7 +89,7 @@ describe( 'ZMonolingualString', () => {
 				}
 			} );
 
-			await wrapper.getComponent( TextInput ).vm.$emit( 'input', 'my new label' );
+			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'input', 'my new label' );
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ Constants.Z_MONOLINGUALSTRING_VALUE,
 				Constants.Z_STRING_VALUE ], value: 'my new label' } ] ] );

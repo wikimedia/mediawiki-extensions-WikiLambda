@@ -10,7 +10,7 @@ var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' ),
 	ExpandedToggle = require( '../../../../resources/ext.wikilambda.edit/components/base/ExpandedToggle.vue' ),
-	TextInput = require( '../../../../resources/ext.wikilambda.edit/components/base/TextInput.vue' ),
+	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	ZObjectKeyValue = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZObjectKeyValue.vue' ),
 	ZMonolingualString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZMonolingualString.vue' ),
 	ZString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZString.vue' ),
@@ -526,7 +526,7 @@ describe( 'ZObjectKeyValue', () => {
 				}
 			} );
 
-			await wrapper.getComponent( TextInput ).vm.$emit( 'input', 'my string value' );
+			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'input', 'my string value' );
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ Constants.Z_STRING_VALUE ], value: 'my string value' } ] ] );
 		} );
 
@@ -588,7 +588,7 @@ describe( 'ZObjectKeyValue', () => {
 				}
 			} );
 
-			await wrapper.getComponent( TextInput ).vm.$emit( 'input', 'my string value' );
+			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'input', 'my string value' );
 			expect( actions.setValueByRowIdAndPath ).toHaveBeenCalledWith( expect.anything(), { keyPath: [ Constants.Z_STRING_VALUE ], rowId: 2, value: 'my string value' } );
 		} );
 

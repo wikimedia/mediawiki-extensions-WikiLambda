@@ -50,44 +50,43 @@
 			</template>
 			<!-- Dialog Body -->
 			<div class="ext-wikilambda-about-edit-metadata-fields">
-				<!-- Name field -->
-				<div class="ext-wikilambda-about-edit-metadata-name">
-					<div class="ext-wikilambda-about-edit-metadata-title">
+				<cdx-field
+					class="ext-wikilambda-about-edit-metadata-name
+					ext-wikilambda-about-edit-metadata-field"
+					:optional-flag="optionalText"
+				>
+					<cdx-text-input
+						v-model="name"
+						:disabled="!canEdit"
+						:placeholder="namePlaceholder"
+						data-testid="text-input"
+					></cdx-text-input>
+					<template #label>
 						{{ nameLabel }}
-						<span>{{ $i18n( 'parentheses', [ $i18n( 'wikilambda-optional' ).text() ] ).text() }}</span>
-					</div>
-					<div class="ext-wikilambda-about-edit-metadata-field">
-						<wl-text-input
-							v-model="name"
-							:disabled="!canEdit"
-							:placeholder="namePlaceholder"
-							:max-chars="maxLabelChars"
-							data-testid="edit-label-input"
-						></wl-text-input>
-						<span class="ext-wikilambda-about-edit-metadata-char-counter">
-							{{ labelCharsLeft }}
-						</span>
-					</div>
-				</div>
+					</template>
+					<template #help-text>
+						{{ labelCharsLeft }}
+					</template>
+				</cdx-field>
 				<!-- Description field -->
-				<div class="ext-wikilambda-about-edit-metadata-description">
-					<div class="ext-wikilambda-about-edit-metadata-title">
+				<cdx-field
+					:optional-flag="optionalText"
+					class="ext-wikilambda-about-edit-metadata-field
+					ext-wikilambda-about-edit-metadata-description"
+				>
+					<cdx-text-input
+						v-model="description"
+						:disabled="!canEdit"
+						:placeholder="descriptionPlaceholder"
+						data-testid="text-input"
+					></cdx-text-input>
+					<template #label>
 						{{ descriptionLabel }}
-						<span>{{ $i18n( 'parentheses', [ $i18n( 'wikilambda-optional' ).text() ] ).text() }}</span>
-					</div>
-					<div class="ext-wikilambda-about-edit-metadata-field">
-						<wl-text-input
-							v-model="description"
-							:disabled="!canEdit"
-							:model-value="description"
-							:placeholder="descriptionPlaceholder"
-							:max-chars="maxDescriptionChars"
-						></wl-text-input>
-						<span class="ext-wikilambda-about-edit-metadata-char-counter">
-							{{ descriptionCharsLeft }}
-						</span>
-					</div>
-				</div>
+					</template>
+					<template #help-text>
+						{{ descriptionCharsLeft }}
+					</template>
+				</cdx-field>
 				<!-- Aliases field -->
 				<div class="ext-wikilambda-about-edit-metadata-alias">
 					<div class="ext-wikilambda-about-edit-metadata-title">
@@ -113,13 +112,15 @@
 </template>
 
 <script>
+
 const Constants = require( '../../Constants.js' ),
 	ChipContainer = require( '../base/ChipContainer.vue' ),
-	TextInput = require( '../base/TextInput.vue' ),
 	ZObjectSelector = require( './../ZObjectSelector.vue' ),
 	CdxButton = require( '@wikimedia/codex' ).CdxButton,
 	CdxDialog = require( '@wikimedia/codex' ).CdxDialog,
 	CdxIcon = require( '@wikimedia/codex' ).CdxIcon,
+	CdxField = require( '@wikimedia/codex' ).CdxField,
+	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	icons = require( '../../../lib/icons.json' ),
 	mapActions = require( 'vuex' ).mapActions,
 	mapGetters = require( 'vuex' ).mapGetters;
@@ -131,8 +132,9 @@ module.exports = exports = {
 		'cdx-button': CdxButton,
 		'cdx-dialog': CdxDialog,
 		'cdx-icon': CdxIcon,
+		'cdx-text-input': CdxTextInput,
+		'cdx-field': CdxField,
 		'wl-chip-container': ChipContainer,
-		'wl-text-input': TextInput,
 		'wl-z-object-selector': ZObjectSelector
 	},
 	props: {
@@ -228,7 +230,14 @@ module.exports = exports = {
 		aliasesPlaceholder: function () {
 			return this.$i18n( 'wikilambda-about-widget-aliases-placeholder' ).text();
 		},
-
+		/**
+		 * Returns the i18n message for wikilambda-optional text
+		 *
+		 * @return {string}
+		 */
+		optionalText: function () {
+			return this.$i18n( 'parentheses', [ this.$i18n( 'wikilambda-optional' ).text() ] ).text();
+		},
 		/**
 		 * Returns the label for the selected language
 		 *

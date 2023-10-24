@@ -8,7 +8,7 @@
 
 var shallowMount = require( '@vue/test-utils' ).shallowMount,
 	createGettersWithFunctionsMock = require( '../../helpers/getterHelpers.js' ).createGettersWithFunctionsMock,
-	TextInput = require( '../../../../resources/ext.wikilambda.edit/components/base/TextInput.vue' ),
+	CdxTextInput = require( '@wikimedia/codex' ).CdxTextInput,
 	ZString = require( '../../../../resources/ext.wikilambda.edit/components/default-view-types/ZString.vue' ),
 	Constants = require( '../../../../resources/ext.wikilambda.edit/Constants.js' );
 
@@ -55,7 +55,7 @@ describe( 'ZString', () => {
 					}
 				} );
 
-				await wrapper.getComponent( TextInput ).vm.$emit( 'input', 'my string value' );
+				await wrapper.getComponent( CdxTextInput ).vm.$emit( 'input', 'my string value' );
 
 				expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [ 'Z6K1' ], value: 'my string value' } ] ] );
 			} );
@@ -76,7 +76,7 @@ describe( 'ZString', () => {
 				}
 			} );
 
-			await wrapper.getComponent( TextInput ).vm.$emit( 'input', 'my string value' );
+			await wrapper.getComponent( CdxTextInput ).vm.$emit( 'input', 'my string value' );
 
 			expect( wrapper.emitted() ).toHaveProperty( 'set-value', [ [ { keyPath: [], value: 'my string value' } ] ] );
 		} );
