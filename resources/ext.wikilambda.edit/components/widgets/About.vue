@@ -5,11 +5,7 @@
 	@license MIT
 -->
 <template>
-	<wl-widget-base
-		class="ext-wikilambda-about"
-		:has-header-action="true"
-		:has-footer-action="languageCount > 1"
-	>
+	<wl-widget-base class="ext-wikilambda-about">
 		<!-- Widget header -->
 		<template #header>
 			{{ $i18n( 'wikilambda-about-widget-title' ).text() }}

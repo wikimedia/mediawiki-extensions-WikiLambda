@@ -103,8 +103,6 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-string {
-	display: inline-block;
-
 	p {
 		margin: 0;
 		color: @color-base;

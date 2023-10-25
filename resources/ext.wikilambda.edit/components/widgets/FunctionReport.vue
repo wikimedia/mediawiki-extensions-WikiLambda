@@ -7,15 +7,12 @@
 	@license MIT
 -->
 <template>
-	<wl-widget-base
-		class="ext-wikilambda-function-report"
-		:has-header-action="hasItems"
-	>
+	<wl-widget-base class="ext-wikilambda-function-report">
 		<!-- Widget header -->
 		<template #header>
 			{{ title }}
 		</template>
-		<template #header-action>
+		<template v-if="hasItems" #header-action>
 			<cdx-button
 				weight="quiet"
 				:aria-label="reloadLabel"

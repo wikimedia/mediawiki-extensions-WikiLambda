@@ -108,7 +108,7 @@ describe( 'FunctionEvaluator', () => {
 
 		it( 'renders special page title', () => {
 			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+				global: { stubs: { WlWidgetBase: false } }
 			} );
 
 			expect( wrapper.find( '.ext-wikilambda-widget-base-header' ).text() ).toBe( 'Try a function' );
@@ -116,7 +116,7 @@ describe( 'FunctionEvaluator', () => {
 
 		it( 'renders function call block', async () => {
 			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+				global: { stubs: { WlWidgetBase: false } }
 			} );
 
 			wrapper.vm.functionCallRowId = 1;
@@ -134,7 +134,7 @@ describe( 'FunctionEvaluator', () => {
 
 		it( 'renders disabled function call button', () => {
 			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+				global: { stubs: { WlWidgetBase: false } }
 			} );
 
 			const block = wrapper.find( '.ext-wikilambda-function-evaluator-run-button' );
@@ -145,7 +145,7 @@ describe( 'FunctionEvaluator', () => {
 
 		it( 'does not render inputs block', () => {
 			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+				global: { stubs: { WlWidgetBase: false } }
 			} );
 
 			expect( wrapper.find( '.ext-wikilambda-function-evaluator-inputs' ).exists() ).toBe( false );
@@ -153,7 +153,7 @@ describe( 'FunctionEvaluator', () => {
 
 		it( 'does not render orchestration result block', () => {
 			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+				global: { stubs: { WlWidgetBase: false } }
 			} );
 
 			expect( wrapper.find( '.ext-wikilambda-function-evaluator-result' ).exists() ).toBe( false );
@@ -161,7 +161,7 @@ describe( 'FunctionEvaluator', () => {
 
 		it( 'renders arguments when function is selected', async () => {
 			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+				global: { stubs: { WlWidgetBase: false } }
 			} );
 
 			wrapper.vm.functionCallRowId = 1;
@@ -186,7 +186,7 @@ describe( 'FunctionEvaluator', () => {
 
 		it( 'renders inputs block when there are inputs to enter', async () => {
 			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+				global: { stubs: { WlWidgetBase: false } }
 			} );
 
 			wrapper.vm.functionCallRowId = 1;
@@ -211,7 +211,7 @@ describe( 'FunctionEvaluator', () => {
 
 		it( 'renders disabled call function button when function has no implementations', async () => {
 			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+				global: { stubs: { WlWidgetBase: false } }
 			} );
 
 			wrapper.vm.functionCallRowId = 1;
@@ -232,7 +232,7 @@ describe( 'FunctionEvaluator', () => {
 
 		it( 'enables call function button when selected function has implementations', async () => {
 			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+				global: { stubs: { WlWidgetBase: false } }
 			} );
 
 			// returns selectedFunctionRowId = 2
@@ -253,7 +253,7 @@ describe( 'FunctionEvaluator', () => {
 
 		it( 'renders orchestration result block when there are results', async () => {
 			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+				global: { stubs: { WlWidgetBase: false } }
 			} );
 
 			wrapper.vm.resultRowId = 1;
@@ -269,7 +269,7 @@ describe( 'FunctionEvaluator', () => {
 
 		it( 'clears result when selected function changes', async () => {
 			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+				global: { stubs: { WlWidgetBase: false } }
 			} );
 
 			wrapper.vm.functionCallRowId = 1;
@@ -291,7 +291,7 @@ describe( 'FunctionEvaluator', () => {
 
 		it( 'calls function call when click button', async () => {
 			const wrapper = shallowMount( FunctionEvaluator, {
-				global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+				global: { stubs: { WlWidgetBase: false } }
 			} );
 
 			wrapper.vm.functionCallRowId = 1;
@@ -353,7 +353,7 @@ describe( 'FunctionEvaluator', () => {
 		it( 'renders function page title', () => {
 			const wrapper = shallowMount( FunctionEvaluator, {
 				props: { functionZid: 'Z10000' },
-				global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+				global: { stubs: { WlWidgetBase: false } }
 			} );
 
 			expect( wrapper.find( '.ext-wikilambda-widget-base-header' ).text() ).toBe( 'Try this function' );
@@ -362,7 +362,7 @@ describe( 'FunctionEvaluator', () => {
 		it( 'does not render function call block', async () => {
 			const wrapper = shallowMount( FunctionEvaluator, {
 				props: { functionZid: 'Z10000' },
-				global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+				global: { stubs: { WlWidgetBase: false } }
 			} );
 
 			wrapper.vm.functionCallRowId = 1;
@@ -412,7 +412,7 @@ describe( 'FunctionEvaluator', () => {
 		it( 'renders implementation page title', () => {
 			const wrapper = shallowMount( FunctionEvaluator, {
 				props: { functionZid: 'Z10000', forImplementation: true },
-				global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+				global: { stubs: { WlWidgetBase: false } }
 			} );
 
 			expect( wrapper.find( '.ext-wikilambda-widget-base-header' ).text() ).toBe( 'Try this implementation' );
@@ -421,7 +421,7 @@ describe( 'FunctionEvaluator', () => {
 		it( 'does not render function call block', async () => {
 			const wrapper = shallowMount( FunctionEvaluator, {
 				props: { functionZid: 'Z10000', forImplementation: true },
-				global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+				global: { stubs: { WlWidgetBase: false } }
 			} );
 
 			wrapper.vm.functionCallRowId = 1;
@@ -434,7 +434,7 @@ describe( 'FunctionEvaluator', () => {
 		it( 'calls implementation when click button', async () => {
 			const wrapper = shallowMount( FunctionEvaluator, {
 				props: { functionZid: 'Z10000', forImplementation: true, contentRowId: 0 },
-				global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+				global: { stubs: { WlWidgetBase: false } }
 			} );
 
 			wrapper.vm.functionCallRowId = 1;

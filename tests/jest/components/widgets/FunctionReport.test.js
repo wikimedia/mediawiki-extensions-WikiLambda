@@ -99,7 +99,7 @@ describe( 'FunctionReport', function () {
 		} );
 
 		expect( wrapper.vm.zIds ).toEqual( [ 'Z10001', 'Z10004', 'Z10005' ] );
-		expect( wrapper.find( '.ext-wikilambda-widget-base-header-slot' ).text() ).toEqual( 'Implementations' );
+		expect( wrapper.find( '.ext-wikilambda-widget-base-header-title' ).text() ).toEqual( 'Implementations' );
 
 		var content = wrapper.findAll( '.ext-wikilambda-function-report__result' );
 		expect( content.length ).toBe( 3 );
@@ -114,7 +114,7 @@ describe( 'FunctionReport', function () {
 			}
 		} );
 
-		expect( wrapper.find( '.ext-wikilambda-widget-base-header-slot' ).text() ).toEqual( 'Tests' );
+		expect( wrapper.find( '.ext-wikilambda-widget-base-header-title' ).text() ).toEqual( 'Tests' );
 		expect( wrapper.vm.zIds ).toEqual( [ 'Z10002', 'Z10003' ] );
 	} );
 
@@ -127,7 +127,7 @@ describe( 'FunctionReport', function () {
 			}
 		} );
 
-		expect( wrapper.find( '.ext-wikilambda-widget-base-header-slot' ).text() ).toEqual( 'Implementations' );
+		expect( wrapper.find( '.ext-wikilambda-widget-base-header-title' ).text() ).toEqual( 'Implementations' );
 		expect( wrapper.vm.zIds ).toEqual( [ 'Z10001', 'Z10004', 'Z10005' ] );
 	} );
 
