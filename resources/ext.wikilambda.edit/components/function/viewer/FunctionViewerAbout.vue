@@ -101,14 +101,14 @@ module.exports = exports = {
 		margin-bottom: @spacing-200;
 	}
 
-	@media screen and ( min-width: @width-breakpoint-tablet ) {
+	@media screen and ( min-width: @min-width-breakpoint-tablet ) {
 		min-height: 450px;
 		overflow-y: auto;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 	}
 
-	@media ( max-width: @width-breakpoint-tablet ) {
+	@media ( max-width: @max-width-breakpoint-mobile ) {
 		grid-template-columns: 1fr;
 
 		&__details {

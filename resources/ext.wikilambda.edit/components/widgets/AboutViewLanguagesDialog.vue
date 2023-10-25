@@ -317,7 +317,7 @@ module.exports = exports = {
 		border-bottom: 1px solid @border-color-subtle;
 		border-top: 1px solid @border-color-subtle;
 
-		@media screen and ( max-width: @width-breakpoint-tablet ) {
+		@media screen and ( max-width: @max-width-breakpoint-mobile ) {
 			max-height: 344px;
 		}
 	}

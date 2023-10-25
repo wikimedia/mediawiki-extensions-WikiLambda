@@ -565,7 +565,7 @@ module.exports = exports = {
 		width: calc( 100% - 400px );
 	}
 
-	@media screen and ( max-width: @width-breakpoint-tablet ) {
+	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
 		flex-flow: column wrap;
 
 		&__tables {

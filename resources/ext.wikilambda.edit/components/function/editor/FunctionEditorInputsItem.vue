@@ -472,7 +472,7 @@ module.exports = exports = {
 	}
 
 	/* DESKTOP styles */
-	@media screen and ( min-width: @width-breakpoint-tablet ) {
+	@media screen and ( min-width: @min-width-breakpoint-tablet ) {
 		padding: 0;
 		flex-direction: row;
 		border-bottom: 0;

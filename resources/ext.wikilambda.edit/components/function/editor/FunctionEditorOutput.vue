@@ -247,7 +247,7 @@ module.exports = exports = {
 	}
 
 	/* MOBILE styles */
-	@media screen and ( max-width: @width-breakpoint-tablet ) {
+	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
 		flex-direction: column;
 
 		&__label {

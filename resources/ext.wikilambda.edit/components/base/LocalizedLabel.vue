@@ -126,7 +126,7 @@ span.ext-wikilambda-lang-chip {
 		border: 1px dashed @border-color-base;
 	}
 
-	@media screen and ( max-width: @width-breakpoint-tablet ) {
+	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
 		font-size: 0.875em;
 	}
 }

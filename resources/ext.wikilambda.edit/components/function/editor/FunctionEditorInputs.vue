@@ -325,7 +325,7 @@ module.exports = exports = {
 	}
 
 	/* DESKTOP styles */
-	@media screen and ( min-width: @width-breakpoint-tablet ) {
+	@media screen and ( min-width: @min-width-breakpoint-tablet ) {
 		&__row:last-of-type {
 			margin-bottom: @spacing-50;
 		}
@@ -338,7 +338,7 @@ module.exports = exports = {
 	}
 
 	/* MOBILE styles */
-	@media screen and ( max-width: @width-breakpoint-tablet ) {
+	@media screen and ( max-width: @max-width-breakpoint-mobile ) {
 		display: block;
 
 		&__row {
