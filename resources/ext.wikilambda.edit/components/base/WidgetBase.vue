@@ -5,48 +5,50 @@
 	@license MIT
 -->
 <template>
-	<cdx-card class="ext-wikilambda-widget-base">
-		<template #title>
-			<div
-				class="ext-wikilambda-widget-base-header"
-				:class="`${hasHeaderAction ? 'ext-wikilambda-widget-base-header-with-action' : ''}`"
-			>
-				<div class="ext-wikilambda-widget-base-header-slot">
-					<slot name="header"></slot>
-				</div>
-				<div v-if="hasHeaderAction" class="ext-wikilambda-widget-base-header-action">
-					<slot name="header-action"></slot>
-				</div>
+	<div class="ext-wikilambda-widget-base">
+		<div
+			v-if="hasHeaderSlot || hasHeaderAction"
+			class="ext-wikilambda-widget-base-header"
+			:class="`${ hasHeaderAction ? 'ext-wikilambda-widget-base-header-with-action' : '' }`"
+		>
+			<!-- Header title slot -->
+			<div v-if="hasHeaderSlot" class="ext-wikilambda-widget-base-header-title">
+				<slot name="header"></slot>
 			</div>
-		</template>
-		<template #description>
+			<!-- Header action slot -->
+			<div v-if="hasHeaderAction" class="ext-wikilambda-widget-base-header-action">
+				<slot name="header-action"></slot>
+			</div>
+		</div>
+		<!-- Main slot -->
+		<div
+			class="
+			ext-wikilambda-widget-base-main
+			ext-wikilambda-field-overrides
+		">
 			<slot name="main"></slot>
-		</template>
-		<template v-if="hasFooterAction" #supporting-text>
-			<div class="ext-wikilambda-widget-base-footer-slot">
-				<slot name="footer"></slot>
-			</div>
-		</template>
-	</cdx-card>
+		</div>
+		<!-- Footer action slot -->
+		<div v-if="hasFooterSlot" class="ext-wikilambda-widget-base-footer">
+			<slot name="footer"></slot>
+		</div>
+	</div>
 </template>
 
 <script>
-const CdxCard = require( '@wikimedia/codex' ).CdxCard;
 
 // @vue/component
 module.exports = exports = {
 	name: 'wl-widget-base',
-	components: {
-		'cdx-card': CdxCard
-	},
-	props: {
-		hasHeaderAction: {
-			type: Boolean,
-			default: false
+	computed: {
+		hasHeaderSlot() {
+			return !!this.$slots.header;
 		},
-		hasFooterAction: {
-			type: Boolean,
-			default: false
+		hasHeaderAction() {
+			return !!this.$slots[ 'header-action' ];
+		},
+		hasFooterSlot() {
+			return !!this.$slots.footer;
 		}
 	}
 };
@@ -56,93 +58,40 @@ module.exports = exports = {
 @import '../../ext.wikilambda.edit.less';
 
 .ext-wikilambda-widget-base {
-	border-color: @border-color-subtle;
+	border: @border-subtle;
+	border-radius: @border-radius-base;
 	margin-bottom: @spacing-125;
+	padding: @spacing-75;
 
-	.cdx-card__text {
-		width: 100%;
-	}
+	.ext-wikilambda-widget-base-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		margin-bottom: @spacing-125;
 
-	.cdx-card__text__description {
-		color: @color-base;
-		margin-top: 0;
+		&.ext-wikilambda-widget-base-header-with-action {
+			margin-bottom: @spacing-50;
+		}
 
-		.cdx-button {
-			.cdx-icon {
-				color: @color-base;
-			}
+		.ext-wikilambda-widget-base-header-title {
+			flex-grow: 1;
+			flex-basis: 0;
+			color: @color-base;
+			font-weight: @font-weight-bold;
+			line-height: @line-height-x-small;
+		}
+
+		.ext-wikilambda-widget-base-header-action {
+			display: flex;
+			align-items: center;
+			margin-right: -@spacing-35;
+			margin-top: -@spacing-35;
 		}
 	}
 
-	.cdx-card__text__supporting-text {
-		color: @color-base;
-		margin-top: 0;
+	.ext-wikilambda-widget-base-footer {
+		margin-top: @spacing-50;
+		font-size: @font-size-small;
 	}
-
-	.cdx-select,
-	.cdx-select-vue {
-		min-width: auto;
-		max-width: @size-1600;
-		width: 100%;
-
-		&__handle {
-			min-width: auto;
-		}
-	}
-
-	.cdx-lookup {
-		min-width: auto;
-		max-width: @size-1600;
-		width: 100%;
-	}
-
-	.cdx-text-input {
-		min-width: auto;
-		max-width: @size-1600;
-		width: 100%;
-
-		&__input {
-			min-width: auto;
-		}
-	}
-
-	.cdx-dialog {
-		.cdx-text-input {
-			min-width: initial;
-			max-width: initial;
-			width: initial;
-
-			&__input {
-				min-width: initial;
-			}
-		}
-	}
-}
-
-.ext-wikilambda-widget-base-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
-	margin-bottom: @spacing-125;
-
-	&.ext-wikilambda-widget-base-header-with-action {
-		margin-bottom: @spacing-50;
-	}
-}
-
-.ext-wikilambda-widget-base-header-slot {
-	flex-grow: 1;
-	flex-basis: 0;
-}
-
-.ext-wikilambda-widget-base-footer-slot {
-	margin-top: @spacing-125;
-}
-
-.ext-wikilambda-widget-base-header-action {
-	display: flex;
-	align-items: center;
-	margin-right: -@spacing-35;
-	margin-top: -@spacing-35;
 }
 </style>

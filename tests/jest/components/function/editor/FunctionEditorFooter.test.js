@@ -58,7 +58,6 @@ describe( 'FunctionEditorFooter', function () {
 			global: { stubs: {
 				WlPublishWidget: false,
 				WlWidgetBase: false,
-				CdxCard: false,
 				CdxButton: false
 			} }
 		} );

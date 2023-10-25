@@ -5,11 +5,7 @@
 	@license MIT
 -->
 <template>
-	<wl-widget-base
-		class="ext-wikilambda-function-explorer"
-		:has-header-action="edit"
-		:has-footer-action="edit"
-	>
+	<wl-widget-base class="ext-wikilambda-function-explorer">
 		<template #header>
 			{{ $i18n( 'wikilambda-function-explorer-title' ).text() }}
 		</template>

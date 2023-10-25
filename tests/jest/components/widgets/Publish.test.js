@@ -42,7 +42,7 @@ describe( 'Publish widget', () => {
 
 	it( 'renders without errors', () => {
 		const wrapper = shallowMount( PublishWidget, {
-			global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+			global: { stubs: { WlWidgetBase: false } }
 		} );
 
 		expect( wrapper.find( '.ext-wikilambda-publish-widget' ).exists() ).toBe( true );
@@ -51,7 +51,7 @@ describe( 'Publish widget', () => {
 	it( 'opens the publish dialog if validateZObject returns isValid true', async () => {
 		const wrapper = shallowMount( PublishWidget, {
 			props: { isDirty: true },
-			global: { stubs: { WlWidgetBase: false, CdxCard: false, CdxButton: false } }
+			global: { stubs: { WlWidgetBase: false, CdxButton: false } }
 		} );
 		const publishDialog = wrapper.findComponent( { name: 'wl-publish-dialog' } );
 
@@ -66,7 +66,7 @@ describe( 'Publish widget', () => {
 		global.store.hotUpdate( { actions: actions } );
 
 		const wrapper = shallowMount( PublishWidget, {
-			global: { stubs: { WlWidgetBase: false, CdxCard: false } }
+			global: { stubs: { WlWidgetBase: false } }
 		} );
 
 		wrapper.find( '.ext-wikilambda-publish-widget__publish-button' ).trigger( 'click' );
@@ -78,7 +78,7 @@ describe( 'Publish widget', () => {
 	it( 'opens the leave confirmation dialog if page is dirty', async () => {
 		const wrapper = shallowMount( PublishWidget, {
 			props: { isDirty: true },
-			global: { stubs: { WlWidgetBase: false, CdxCard: false, CdxButton: false } }
+			global: { stubs: { WlWidgetBase: false, CdxButton: false } }
 		} );
 
 		wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' ).trigger( 'click' );
@@ -93,7 +93,7 @@ describe( 'Publish widget', () => {
 	it( 'leaves immediately if page is not dirty', async () => {
 		const wrapper = shallowMount( PublishWidget, {
 			props: { isDirty: false },
-			global: { stubs: { WlWidgetBase: false, CdxCard: false, CdxButton: false } }
+			global: { stubs: { WlWidgetBase: false, CdxButton: false } }
 		} );
 
 		wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' ).trigger( 'click' );
@@ -112,7 +112,7 @@ describe( 'Publish widget', () => {
 
 		const wrapper = shallowMount( PublishWidget, {
 			props: { isDirty: false },
-			global: { stubs: { WlWidgetBase: false, CdxCard: false, CdxButton: false } }
+			global: { stubs: { WlWidgetBase: false, CdxButton: false } }
 		} );
 
 		wrapper.vm.leaveTo = jest.fn();
@@ -129,7 +129,7 @@ describe( 'Publish widget', () => {
 
 		const wrapper = shallowMount( PublishWidget, {
 			props: { isDirty: false },
-			global: { stubs: { WlWidgetBase: false, CdxCard: false, CdxButton: false } }
+			global: { stubs: { WlWidgetBase: false, CdxButton: false } }
 		} );
 
 		wrapper.vm.leaveTo = jest.fn();
@@ -149,7 +149,7 @@ describe( 'Publish widget', () => {
 
 			const wrapper = shallowMount( PublishWidget, {
 				props: { isDirty: false },
-				global: { stubs: { WlWidgetBase: false, CdxCard: false, CdxButton: false } }
+				global: { stubs: { WlWidgetBase: false, CdxButton: false } }
 			} );
 
 			wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' ).trigger( 'click' );
@@ -176,7 +176,7 @@ describe( 'Publish widget', () => {
 
 			const wrapper = shallowMount( PublishWidget, {
 				props: { isDirty: false },
-				global: { stubs: { WlWidgetBase: false, CdxCard: false, CdxButton: false } }
+				global: { stubs: { WlWidgetBase: false, CdxButton: false } }
 			} );
 
 			wrapper.find( '.ext-wikilambda-publish-widget__cancel-button' ).trigger( 'click' );

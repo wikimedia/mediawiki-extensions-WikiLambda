@@ -38,3 +38,22 @@
 		color: @color-progressive--focus;
 	}
 }
+
+.ext-wikilambda-field-overrides {
+	.cdx-text-input,
+	.cdx-select,
+	.cdx-select-vue,
+	.cdx-lookup {
+		width: 100%;
+		min-width: auto;
+		max-width: @min-width-medium;
+
+		&__handle {
+			min-width: auto;
+		}
+
+		&__input {
+			min-width: initial;
+		}
+	}
+}

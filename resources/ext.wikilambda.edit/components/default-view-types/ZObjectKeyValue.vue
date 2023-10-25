@@ -52,7 +52,11 @@
 					>{{ undefinedKeyLabel }}</label>
 				</div>
 				<!-- Value: will always be rendered -->
-				<div class="ext-wikilambda-value-block">
+				<div
+					class="
+					ext-wikilambda-value-block
+					ext-wikilambda-field-overrides
+				">
 					<component
 						:is="zobjectComponent"
 						:class="shiftLeft"

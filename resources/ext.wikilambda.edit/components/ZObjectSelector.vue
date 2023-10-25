@@ -392,11 +392,6 @@ module.exports = exports = {
 @import '../ext.wikilambda.edit.less';
 
 .ext-wikilambda-select-zobject {
-	.cdx-lookup {
-		width: fit-content;
-		min-width: 256px;
-	}
-
 	.cdx-text-input__end-icon {
 		width: @size-icon-x-small;
 		height: @size-icon-x-small;
