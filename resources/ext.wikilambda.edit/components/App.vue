@@ -31,12 +31,14 @@ var configureCompat = require( 'vue' ).configureCompat,
 
 const startTime = Date.now();
 
-configureCompat( {
-	MODE: 3,
-	compilerOptions: {
-		whitespace: 'condense'
-	}
-} );
+if ( configureCompat ) {
+	configureCompat( {
+		MODE: 3,
+		compilerOptions: {
+			whitespace: 'condense'
+		}
+	} );
+}
 
 // @vue/component
 module.exports = exports = {
