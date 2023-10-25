@@ -433,7 +433,15 @@ class ZObjectStore {
 			];
 		}
 
-		return $dbw->insert( 'wikilambda_zobject_labels', $updates );
+		// Exit early if there are no updates to make.
+		if ( count( $updates ) === 0 ) {
+			return;
+		}
+
+		$dbw->newInsertQueryBuilder()
+			->insertInto( 'wikilambda_zobject_labels' )
+			->rows( $updates )
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -446,10 +454,10 @@ class ZObjectStore {
 	public function insertZLanguageToLanguagesCache( string $zid, string $languageCode ) {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
 
-		return $dbw->insert(
-			'wikilambda_zlanguages',
-			[ 'wlzlangs_zid' => $zid, 'wlzlangs_language' => $languageCode ]
-		);
+		$dbw->newInsertQueryBuilder()
+			->insertInto( 'wikilambda_zlanguages' )
+			->rows( [ 'wlzlangs_zid' => $zid, 'wlzlangs_language' => $languageCode ] )
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -472,7 +480,15 @@ class ZObjectStore {
 			];
 		}
 
-		return $dbw->insert( 'wikilambda_zobject_label_conflicts', $updates );
+		// Exit early if there are no updates to make.
+		if ( count( $updates ) === 0 ) {
+			return;
+		}
+
+		$dbw->newInsertQueryBuilder()
+			->insertInto( 'wikilambda_zobject_label_conflicts' )
+			->rows( $updates )
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -503,7 +519,14 @@ class ZObjectStore {
 			}
 		}
 
-		return $dbw->insert( 'wikilambda_zobject_labels', $updates );
+		if ( count( $updates ) === 0 ) {
+			return;
+		}
+
+		$dbw->newInsertQueryBuilder()
+			->insertInto( 'wikilambda_zobject_labels' )
+			->rows( $updates )
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -864,17 +887,16 @@ class ZObjectStore {
 	public function insertZFunctionReference( $refId, $zFunctionId, $type ) {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
 
-		return $dbw->insert(
-			'wikilambda_zobject_function_join',
-			[
+		$dbw->newInsertQueryBuilder()
+			->insertInto( 'wikilambda_zobject_function_join' )
+			->rows( [
 				[
 					'wlzf_ref_zid' => $refId,
 					'wlzf_zfunction_zid' => $zFunctionId,
 					'wlzf_type' => $type
 				]
-			],
-			__METHOD__
-		);
+			] )
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
