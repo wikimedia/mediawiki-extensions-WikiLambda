@@ -43,7 +43,12 @@ const configureCompat = require( 'vue' ).configureCompat,
 	CdxLookup = require( '@wikimedia/codex' ).CdxLookup,
 	icons = require( '../../lib/icons.json' );
 
-configureCompat( { MODE: 3 } );
+configureCompat( {
+	MODE: 3,
+	compilerOptions: {
+		whitespace: 'condense'
+	}
+} );
 
 // @vue/component
 module.exports = exports = {
