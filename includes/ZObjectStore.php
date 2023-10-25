@@ -324,10 +324,11 @@ class ZObjectStore {
 	 */
 	public function deleteZObjectLabelsByZid( string $zid ) {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
-		$dbw->delete(
-			'wikilambda_zobject_labels',
-			[ 'wlzl_zobject_zid' => $zid ]
-		);
+
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_zobject_labels' )
+			->where( [ 'wlzl_zobject_zid' => $zid ] )
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -338,16 +339,18 @@ class ZObjectStore {
 	 */
 	public function deleteZObjectLabelConflictsByZid( string $zid ) {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
-		$dbw->delete(
-			'wikilambda_zobject_label_conflicts',
-			$dbw->makeList(
-				[
-					'wlzlc_existing_zid' => $zid,
-					'wlzlc_conflicting_zid' => $zid
-				],
-				$dbw::LIST_OR
+
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_zobject_label_conflicts' )
+			->where( $dbw->makeList(
+					[
+						'wlzlc_existing_zid' => $zid,
+						'wlzlc_conflicting_zid' => $zid
+					],
+					$dbw::LIST_OR
+				)
 			)
-		);
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -883,11 +886,10 @@ class ZObjectStore {
 	public function deleteZFunctionReference( $refId ): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
 
-		$dbw->delete(
-			'wikilambda_zobject_function_join',
-			[ 'wlzf_ref_zid' => $refId ],
-			__METHOD__
-		);
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_zobject_function_join' )
+			->where( [ 'wlzf_ref_zid' => $refId ] )
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -1044,11 +1046,10 @@ class ZObjectStore {
 	public function deleteZFunctionFromZTesterResultsCache( string $refId ): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
 
-		$dbw->delete(
-			'wikilambda_ztester_results',
-			[ 'wlztr_zfunction_zid' => $refId ],
-			__METHOD__
-		);
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_ztester_results' )
+			->where( [ 'wlztr_zfunction_zid' => $refId ] )
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -1060,11 +1061,10 @@ class ZObjectStore {
 	public function deleteZImplementationFromZTesterResultsCache( string $refId ): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
 
-		$dbw->delete(
-			'wikilambda_ztester_results',
-			[ 'wlztr_zimplementation_zid' => $refId ],
-			__METHOD__
-		);
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_ztester_results' )
+			->where( [ 'wlztr_zimplementation_zid' => $refId ] )
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -1076,11 +1076,10 @@ class ZObjectStore {
 	public function deleteZTesterFromZTesterResultsCache( string $refId ): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
 
-		$dbw->delete(
-			'wikilambda_ztester_results',
-			[ 'wlztr_ztester_zid' => $refId ],
-			__METHOD__
-		);
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_ztester_results' )
+			->where( [ 'wlztr_ztester_zid' => $refId ] )
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -1092,11 +1091,10 @@ class ZObjectStore {
 	public function deleteZLanguageFromLanguagesCache( string $zid ): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
 
-		$dbw->delete(
-			'wikilambda_zlanguages',
-			[ 'wlzlangs_id' => $zid ],
-			__METHOD__
-		);
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_zlanguages' )
+			->where( [ 'wlzlangs_id' => $zid ] )
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -1108,16 +1106,16 @@ class ZObjectStore {
 	 */
 	public function deleteFromLabelsSecondaryTables( array $zids ): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
-		$dbw->delete(
-			/* FROM */ 'wikilambda_zobject_labels',
-			/* WHERE */ [ 'wlzl_zobject_zid' => $zids ],
-			__METHOD__
-		);
-		$dbw->delete(
-			/* FROM */'wikilambda_zobject_label_conflicts',
-			/* WHERE */ [ 'wlzlc_existing_zid' => $zids ],
-			__METHOD__
-		);
+
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_zobject_labels' )
+			->where( [ 'wlzl_zobject_zid' => $zids ] )
+			->caller( __METHOD__ )->execute();
+
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_zobject_label_conflicts' )
+			->where( [ 'wlzlc_existing_zid' => $zids ] )
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -1129,17 +1127,18 @@ class ZObjectStore {
 	 */
 	public function deleteFromFunctionsSecondaryTables( array $zids ): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
-		$dbw->delete(
-			/* FROM */ 'wikilambda_zobject_function_join',
-			/* WHERE */ $dbw->makeList(
-				[
-					'wlzf_zfunction_zid' => $zids,
-					'wlzf_ref_zid' => $zids
-				],
-				$dbw::LIST_OR
-			),
-			__METHOD__
-		);
+
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_zobject_function_join' )
+			->where( $dbw->makeList(
+					[
+						'wlzf_zfunction_zid' => $zids,
+						'wlzf_ref_zid' => $zids
+					],
+					$dbw::LIST_OR
+				)
+			)
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -1151,11 +1150,11 @@ class ZObjectStore {
 	 */
 	public function deleteFromLanguageCacheSecondaryTables( array $zids ): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
-		$dbw->delete(
-			/* FROM */ 'wikilambda_zlanguages',
-			/* WHERE */ [ 'wlzlangs_zid' => $zids ],
-			__METHOD__
-		);
+
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_zlanguages' )
+			->where( [ 'wlzlangs_zid' => $zids ] )
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -1167,18 +1166,20 @@ class ZObjectStore {
 	 */
 	public function deleteFromTesterResultsSecondaryTables( array $zids ): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
-		$dbw->delete(
-			/* FROM */ 'wikilambda_ztester_results',
-			/* WHERE */ $dbw->makeList(
-				[
-					'wlztr_zfunction_zid' => $zids,
-					'wlztr_zimplementation_zid' => $zids,
-					'wlztr_ztester_zid' => $zids
-				],
-				$dbw::LIST_OR
-			),
-			__METHOD__
-		);
+
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_ztester_results' )
+			->where(
+				$dbw->makeList(
+					[
+						'wlztr_zfunction_zid' => $zids,
+						'wlztr_zimplementation_zid' => $zids,
+						'wlztr_ztester_zid' => $zids
+					],
+					$dbw::LIST_OR
+				)
+			)
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -1189,8 +1190,16 @@ class ZObjectStore {
 	 */
 	public function clearLabelsSecondaryTables(): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
-		$dbw->delete( 'wikilambda_zobject_labels', IDatabase::ALL_ROWS, __METHOD__ );
-		$dbw->delete( 'wikilambda_zobject_label_conflicts', IDatabase::ALL_ROWS, __METHOD__ );
+
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_zobject_labels' )
+			->where( IDatabase::ALL_ROWS )
+			->caller( __METHOD__ )->execute();
+
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_zobject_label_conflicts' )
+			->where( IDatabase::ALL_ROWS )
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -1201,7 +1210,11 @@ class ZObjectStore {
 	 */
 	public function clearFunctionsSecondaryTables(): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
-		$dbw->delete( 'wikilambda_zobject_function_join', IDatabase::ALL_ROWS, __METHOD__ );
+
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_zobject_function_join' )
+			->where( IDatabase::ALL_ROWS )
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -1212,7 +1225,11 @@ class ZObjectStore {
 	 */
 	public function clearTesterResultsSecondaryTables(): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
-		$dbw->delete( 'wikilambda_ztester_results', IDatabase::ALL_ROWS, __METHOD__ );
+
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_ztester_results' )
+			->where( IDatabase::ALL_ROWS )
+			->caller( __METHOD__ )->execute();
 	}
 
 	/**
@@ -1223,7 +1240,11 @@ class ZObjectStore {
 	 */
 	public function clearLanguageCacheSecondaryTables(): void {
 		$dbw = $this->dbProvider->getPrimaryDatabase();
-		$dbw->delete( 'wikilambda_zlanguages', IDatabase::ALL_ROWS, __METHOD__ );
+
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'wikilambda_zlanguages' )
+			->where( IDatabase::ALL_ROWS )
+			->caller( __METHOD__ )->execute();
 	}
 
 }
