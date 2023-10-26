@@ -118,16 +118,17 @@ class Type extends Page {
 	 */
 	async getKeysBlockItemSelectors( expectedKeysBlockEntry ) {
 		const { index, valueType, keyId, textArray } = expectedKeysBlockEntry;
-		const keysBlockItem = await this.keysBlock.$$( './/label[contains(text(),"Item")]/parent::div/parent::div' )[ index ];
+		const keysBlock = await this.keysBlock;
+		const keysBlockItem = await keysBlock.$$( './/label[contains(text(),"Item")]/parent::div/parent::div' )[ index ];
 
-		const valueTypeBlock = ContentBlock.getSectionOfContentBlock( 'value type', keysBlockItem );
+		const valueTypeBlock = await ContentBlock.getSectionOfContentBlock( 'value type', keysBlockItem );
 		const valueTypeSelector = await valueTypeBlock.$( `.//a[text()="${valueType}"]` );
 
-		const keyIdBlock = ContentBlock.getSectionOfContentBlock( 'key id', keysBlockItem );
+		const keyIdBlock = await ContentBlock.getSectionOfContentBlock( 'key id', keysBlockItem );
 		const keyIdSelector = await keyIdBlock.$( `.//p[text()="${keyId}"]` );
 
-		const labelBlock = ContentBlock.getSectionOfContentBlock( 'label', keysBlockItem );
-		const textsBlock = ContentBlock.getSectionOfContentBlock( 'texts', labelBlock );
+		const labelBlock = await ContentBlock.getSectionOfContentBlock( 'label', keysBlockItem );
+		const textsBlock = await ContentBlock.getSectionOfContentBlock( 'texts', labelBlock );
 		const textItemArray = [];
 		for ( const i in textArray ) {
 			const item = await textsBlock.$$( './/div[@data-testid="z-object-key-value"]' )[ i ];
@@ -158,8 +159,9 @@ class Type extends Page {
 	 * @param {string} validator
 	 * @return {WebdriverIOElementType}
 	 */
-	getValidatorSelector( validator ) {
-		return this.validatorBlock.$( `.//a[text()="${validator}"]` );
+	async getValidatorSelector( validator ) {
+		const validatorBlock = await this.validatorBlock;
+		return validatorBlock.$( `.//a[text()="${validator}"]` );
 	}
 
 	// #endregion

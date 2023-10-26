@@ -33,11 +33,14 @@ class ContentBlock {
 	 * the content block which is parent for other section of the content block - Optional param
 	 * @return {Promise<WebdriverIOElementType>}
 	 */
-	getSectionOfContentBlock( label, parentSection ) {
-		if ( !parentSection ) {
-			return this.contentBlock.$( `.//label[text()="${label}"]/parent::div/parent::div` );
+	async getSectionOfContentBlock( label, parentSection ) {
+		const resolvedParentSection = await parentSection;
+		if ( !resolvedParentSection ) {
+			// setting this because the getter returns a Promise
+			const contentBlock = await this.contentBlock;
+			return await contentBlock.$( `.//label[text()="${label}"]/parent::div/parent::div` );
 		}
-		return parentSection.$( `.//label[text()="${label}"]/parent::div/parent::div` );
+		return await resolvedParentSection.$( `.//label[text()="${label}"]/parent::div/parent::div` );
 	}
 
 	/**
@@ -48,11 +51,15 @@ class ContentBlock {
 	 * the content block which is parent for other section of the content block - Optional param
 	 * @return {Promise<WebdriverIOElementType>}
 	 */
-	getSectionToggleButton( label, parentSection ) {
-		if ( !parentSection ) {
-			return this.getSectionOfContentBlock( label ).$( './preceding-sibling::div[contains(@class,"ext-wikilambda-key-value-pre")]' );
+	async getSectionToggleButton( label, parentSection ) {
+		const resolvedParentSection = await parentSection;
+		let contentBlock;
+		if ( !resolvedParentSection ) {
+			contentBlock = await this.getSectionOfContentBlock( label );
+			return contentBlock.$( './preceding-sibling::div[contains(@class,"ext-wikilambda-key-value-pre")]' );
 		}
-		return this.getSectionOfContentBlock( label, parentSection ).$( './preceding-sibling::div[contains(@class,"ext-wikilambda-key-value-pre")]' );
+		contentBlock = await this.getSectionOfContentBlock( label, parentSection );
+		return contentBlock.$( './preceding-sibling::div[contains(@class,"ext-wikilambda-key-value-pre")]' );
 	}
 
 	/**
@@ -65,7 +72,7 @@ class ContentBlock {
 	 * @return {void}
 	 */
 	async toggleSection( label, parentSection ) {
-		const toggleButton = this.getSectionToggleButton( label, parentSection );
+		const toggleButton = await this.getSectionToggleButton( label, parentSection );
 		await ElementActions.doClick( toggleButton );
 	}
 

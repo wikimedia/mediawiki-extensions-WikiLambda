@@ -81,7 +81,7 @@ class ImplementationForm extends Page {
 	 * @return {string} - Name of the function
 	 */
 	async getFunctionExplorerName() {
-		const text = await FunctionExplorerBlock.getFunctionExplorerInputName();
+		const text = await FunctionExplorerBlock.getFunctionExplorerZObjectLookup();
 		return text;
 	}
 
@@ -108,7 +108,8 @@ class ImplementationForm extends Page {
 	 * @return {void}
 	 */
 	async selectImplementationType( implementationType ) {
-		const implementationBlock = this.contentBlock.$( 'div.ext-wikilambda-implementation-type' );
+		const contentBlock = await this.contentBlock;
+		const implementationBlock = contentBlock.$( 'div.ext-wikilambda-implementation-type' );
 		const implementationTypeLabel = implementationBlock.$( `.//label[span/text()="${implementationType}"]` );
 		await ElementActions.doClick( implementationTypeLabel );
 	}
@@ -156,7 +157,8 @@ class ImplementationForm extends Page {
 	 * @return {void}
 	 */
 	async toggleCompositionBlock() {
-		const button = this.compositionBlock.$( './/a[text()="Select Function"]' );
+		const compositionBlock = await this.compositionBlock;
+		const button = await compositionBlock.$( './/a[text()="Select Function"]' );
 		await ElementActions.doClick( button );
 	}
 
@@ -202,8 +204,8 @@ class ImplementationForm extends Page {
 		/**
 		 * Set the Function Call Block to "If"
 		 */
-		const functionBlock = ContentBlock.getSectionOfContentBlock( 'function', this.compositionBlock );
-		await InputDropdown.setInputDropdown( functionBlock, functionBlock.$( './/input[@placeholder="Select function"]' ),
+		const functionBlock = await ContentBlock.getSectionOfContentBlock( 'function', this.compositionBlock );
+		await InputDropdown.setInputDropdown( functionBlock, await functionBlock.$( './/input[@placeholder="Select function"]' ),
 			firstFunctionCallEntries.functionCallLabel );
 
 		let secondFunctionCallBlock;
@@ -216,7 +218,7 @@ class ImplementationForm extends Page {
 			 */
 			const conditionBlock = ContentBlock.getSectionOfContentBlock( 'condition', this.compositionBlock );
 			await ContentBlock.toggleSection( 'condition', this.compositionBlock );
-			const conditionTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', conditionBlock );
+			const conditionTypeBlock = await ContentBlock.getSectionOfContentBlock( 'type', conditionBlock );
 			const conditionTypeInputSelector = conditionTypeBlock.$( './/div[@data-testid="z-object-type-select"]' );
 			await InputDropdown.setInputDropdownReadOnly( conditionTypeBlock,
 				conditionTypeInputSelector, firstFunctionCallEntries.conditionType );
@@ -224,8 +226,9 @@ class ImplementationForm extends Page {
 			/**
 			 * Set the condition value to "Z844K1"
 			 */
-			const conditionValueInputBlock = ContentBlock.getSectionOfContentBlock( 'key id', conditionBlock );
-			await ElementActions.setInput( conditionValueInputBlock.$( 'input' ), firstFunctionCallEntries.conditionValue );
+			const conditionValueInputBlock = await ContentBlock.getSectionOfContentBlock( 'key id', conditionBlock );
+			const conditionValueInput = await conditionValueInputBlock.$( '[role="combobox"]' );
+			await InputDropdown.setInputDropdownReadOnly( conditionValueInputBlock, conditionValueInput, firstFunctionCallEntries.conditionValue );
 
 			/**
 			 * Set the then type to "Argument reference"
@@ -235,42 +238,44 @@ class ImplementationForm extends Page {
 			/**
 			 * Workaround against the Bug: T338011
 			 */
-			let thenTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', thenBlock );
-			await InputDropdown.setInputDropdown( thenTypeBlock, thenTypeBlock.$( 'input' ), 'Boolean' );
+			let thenTypeBlock = await ContentBlock.getSectionOfContentBlock( 'type', thenBlock );
+			const thenInput = await thenTypeBlock.$( 'input' );
+			await InputDropdown.setInputDropdown( thenTypeBlock, thenInput, 'Boolean' );
 
-			thenTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', thenBlock );
-			const thenNestedTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', thenTypeBlock );
-			const thenNestedTypeInputSelector = thenNestedTypeBlock.$( './/div[@data-testid="z-object-type-select"]' );
+			thenTypeBlock = await ContentBlock.getSectionOfContentBlock( 'type', thenBlock );
+			const thenNestedTypeBlock = await ContentBlock.getSectionOfContentBlock( 'type', thenTypeBlock );
+			const thenNestedTypeInputSelector = await thenNestedTypeBlock.$( './/div[@data-testid="z-object-type-select"]' );
 			await InputDropdown.setInputDropdownReadOnly( thenNestedTypeBlock,
 				thenNestedTypeInputSelector, firstFunctionCallEntries.thenType );
 
 			/**
-			 * Set the then value to "Z844K2"
+			 * Set the then value to "first Boolean"
 			 */
-			const thenValueInputBlock = ContentBlock.getSectionOfContentBlock( 'key id', thenBlock );
-			await ElementActions.setInput( thenValueInputBlock.$( 'input' ), firstFunctionCallEntries.thenValue );
+			const thenValueInputBlock = await ContentBlock.getSectionOfContentBlock( 'key id', thenBlock );
+			const thenValueInput = await thenValueInputBlock.$( '[role="combobox"]' );
+			await ElementActions.setInput( thenValueInput, firstFunctionCallEntries.thenValue );
 
 			/**
 			 * Set the else type to "Function call"
 			 */
-			const elseBlock = ContentBlock.getSectionOfContentBlock( 'else', this.compositionBlock );
+			const elseBlock = await ContentBlock.getSectionOfContentBlock( 'else', this.compositionBlock );
 
 			/**
 			 * Workaround against the Bug: T338011
 			 */
-			let elseTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', elseBlock );
+			let elseTypeBlock = await ContentBlock.getSectionOfContentBlock( 'type', elseBlock );
 			await InputDropdown.setInputDropdown( elseTypeBlock, elseTypeBlock.$( 'input' ), 'Boolean' );
 
-			elseTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', elseBlock );
-			const elseNestedTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', elseTypeBlock );
-			const elseNestedTypeInputSelector = elseNestedTypeBlock.$( './/div[@data-testid="z-object-type-select"]' );
+			elseTypeBlock = await ContentBlock.getSectionOfContentBlock( 'type', elseBlock );
+			const elseNestedTypeBlock = await ContentBlock.getSectionOfContentBlock( 'type', elseTypeBlock );
+			const elseNestedTypeInputSelector = await elseNestedTypeBlock.$( './/div[@data-testid="z-object-type-select"]' );
 			await InputDropdown.setInputDropdownReadOnly( elseNestedTypeBlock,
 				elseNestedTypeInputSelector, firstFunctionCallEntries.elseType );
 
 			/**
 			 * Set the else value to "If"
 			 */
-			const elseValueInputBlock = ContentBlock.getSectionOfContentBlock( 'function', elseBlock );
+			const elseValueInputBlock = await ContentBlock.getSectionOfContentBlock( 'function', elseBlock );
 			await InputDropdown.setInputDropdown( elseValueInputBlock, elseValueInputBlock.$( 'input' ), firstFunctionCallEntries.elseValue );
 
 			secondFunctionCallBlock = elseBlock;
@@ -286,46 +291,49 @@ class ImplementationForm extends Page {
 			 */
 			const conditionBlock = ContentBlock.getSectionOfContentBlock( 'condition', secondFunctionCallBlock );
 			await ContentBlock.toggleSection( 'condition', secondFunctionCallBlock );
-			const conditionTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', conditionBlock );
-			const conditionTypeInputSelector = conditionTypeBlock.$( './/div[@data-testid="z-object-type-select"]' );
+			const conditionTypeBlock = await ContentBlock.getSectionOfContentBlock( 'type', conditionBlock );
+			const conditionTypeInputSelector = await conditionTypeBlock.$( './/div[@data-testid="z-object-type-select"]' );
 			await InputDropdown.setInputDropdownReadOnly( conditionTypeBlock,
 				conditionTypeInputSelector, secondFunctionCallEntries.conditionType );
 
 			/**
-			 * Set the condition value to "Z844K2"
+			 * Set the condition value to "second Boolean"
 			 */
-			const conditionValueInputBlock = ContentBlock.getSectionOfContentBlock( 'key id', conditionBlock );
-			await ElementActions.setInput( conditionValueInputBlock.$( 'input' ), secondFunctionCallEntries.conditionValue );
+			const conditionValueInputBlock = await ContentBlock.getSectionOfContentBlock( 'key id', conditionBlock );
+			const conditionValueInput = await conditionValueInputBlock.$( '[role="combobox"]' );
+			await InputDropdown.setInputDropdownReadOnly( conditionValueInputBlock, conditionValueInput, secondFunctionCallEntries.conditionValue );
 
 			/**
 			 * Set the then type to "Boolean"
 			 */
 			const thenBlock = ContentBlock.getSectionOfContentBlock( 'then', secondFunctionCallBlock );
 			await ContentBlock.toggleSection( 'type', thenBlock );
-			const thenTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', thenBlock );
-			const thenTypeInputBlock = ContentBlock.getSectionOfContentBlock( 'reference id', thenTypeBlock );
+			const thenTypeBlock = await ContentBlock.getSectionOfContentBlock( 'type', thenBlock );
+			const thenTypeInputBlock = await ContentBlock.getSectionOfContentBlock( 'reference id', thenTypeBlock );
 			await InputDropdown.setInputDropdown( thenTypeInputBlock, thenTypeInputBlock.$( 'input' ), secondFunctionCallEntries.thenType );
 
 			/**
 			 * Set the then value to "false"
 			 */
-			const thenValueInputBlock = ContentBlock.getSectionOfContentBlock( 'identity', thenBlock );
+			const thenValueInputBlock = await ContentBlock.getSectionOfContentBlock( 'identity', thenBlock );
 			await InputDropdown.setInputDropdown( thenValueInputBlock, thenValueInputBlock.$( 'input' ), secondFunctionCallEntries.thenValue );
 
 			/**
 			 * Set the else type to "Boolean"
 			 */
-			const elseBlock = ContentBlock.getSectionOfContentBlock( 'else', secondFunctionCallBlock.$( './div[2]' ) );
+			const elseBlock = await ContentBlock.getSectionOfContentBlock( 'else', secondFunctionCallBlock.$( './div[2]' ) );
 			await ContentBlock.toggleSection( 'type', elseBlock );
-			const elseTypeBlock = ContentBlock.getSectionOfContentBlock( 'type', elseBlock );
-			const elseTypeInputBlock = ContentBlock.getSectionOfContentBlock( 'reference id', elseTypeBlock );
-			await InputDropdown.setInputDropdown( elseTypeInputBlock, elseTypeInputBlock.$( 'input' ), secondFunctionCallEntries.elseType );
+			const elseTypeBlock = await ContentBlock.getSectionOfContentBlock( 'type', elseBlock );
+			const elseTypeInputBlock = await ContentBlock.getSectionOfContentBlock( 'reference id', elseTypeBlock );
+			const elseTypeInput = await elseTypeInputBlock.$( 'input' );
+			await InputDropdown.setInputDropdown( elseTypeInputBlock, elseTypeInput, secondFunctionCallEntries.elseType );
 
 			/**
 			 * Set the else value to "true"
 			 */
-			const elseValueInputBlock = ContentBlock.getSectionOfContentBlock( 'identity', elseBlock );
-			await InputDropdown.setInputDropdown( elseValueInputBlock, elseValueInputBlock.$( 'input' ), secondFunctionCallEntries.elseValue );
+			const elseValueInputBlock = await ContentBlock.getSectionOfContentBlock( 'identity', elseBlock );
+			const elseValueInput = await elseValueInputBlock.$( 'input' );
+			await InputDropdown.setInputDropdown( elseValueInputBlock, elseValueInput, secondFunctionCallEntries.elseValue );
 		}
 
 		// #endregion
@@ -342,7 +350,12 @@ class ImplementationForm extends Page {
 	 * @return {void}
 	 */
 	async publishImplementation() {
+		const url = await browser.getUrl();
 		await ZObjectPublish.publish();
+		await browser.waitUntil( async () => {
+			const newUrl = await browser.getUrl();
+			return url !== newUrl;
+		}, { timeout: 10000, timeoutMsg: 'the url has not changed' } );
 	}
 }
 

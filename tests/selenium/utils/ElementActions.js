@@ -27,7 +27,7 @@ class ElementActions {
 	 * @return {void}
 	 */
 	async doClick( selector ) {
-		await selector.waitForDisplayed();
+		await selector.waitForDisplayed( { timeout: 15000 } );
 		await selector.click();
 	}
 

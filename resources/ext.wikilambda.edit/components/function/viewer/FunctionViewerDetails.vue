@@ -31,6 +31,7 @@
 				:empty-text="zImplementationsFetched ?
 					$i18n( 'wikilambda-implementation-none-found' ) : $i18n( 'wikilambda-loading' )"
 				:is-loading="zImplementationsLoading"
+				data-testid="function-implementations-table"
 				@update-page="updateImplementationPage"
 				@reset-view="resetImplementationView"
 				@approve="approveImplementations"
@@ -49,6 +50,7 @@
 				:empty-text="zTestersFetched ?
 					$i18n( 'wikilambda-tester-none-found' ) : $i18n( 'wikilambda-loading' )"
 				:is-loading="zTestersLoading"
+				data-testid="function-testers-table"
 				@update-page="updateTestersPage"
 				@reset-view="resetTestersView"
 				@approve="approveTesters"

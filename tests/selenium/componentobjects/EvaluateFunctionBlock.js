@@ -29,7 +29,8 @@ class EvaluateFunctionBlock {
 	 * @return {void}
 	 */
 	async callFunction() {
-		const button = this.evaluateFunctionBlock.$( './/button[text()="Run function"]' );
+		const evaluateFunctionBlock = await this.evaluateFunctionBlock;
+		const button = await evaluateFunctionBlock.$( './/button[text()="Run function"]' );
 		await ElementActions.doClick( button );
 	}
 
@@ -44,9 +45,10 @@ class EvaluateFunctionBlock {
 	 * @return {void}
 	 */
 	async waitForResult() {
-		await this.orchestrationResultBlock.waitForDisplayed( { message: 'Result Block not displayed' } );
+		const orchestrationResultBlock = await this.orchestrationResultBlock;
+		await orchestrationResultBlock.waitForDisplayed( { message: 'Result Block not displayed' } );
 		await browser.waitUntil( async () => {
-			return ( await this.resultStatus ).isExisting() === false;
+			return ( this.resultStatus ).isExisting() === false;
 		}, { timeoutMsg: 'The output of the function is not displayed' } );
 	}
 

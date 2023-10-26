@@ -66,7 +66,7 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 				await expect( await FunctionPage.functionTitle )
 					.toHaveText( functionDetails.ZObjectLabel );
 				await FunctionPage.switchToDetailsTab();
-				await expect( await FunctionPage.detailsTab ).toHaveAttribute( 'aria-selected', 'true',
+				await expect( await FunctionPage.getDetailsTabButton() ).toHaveAttribute( 'aria-selected', 'true',
 					{ message: 'Not able to switch to details view' } );
 
 				/**
@@ -100,11 +100,20 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 				/**
 				 * Initial state of the implementation should be connected
 				 */
-				await expect( await FunctionPage.getImplementationsTableRowState( functionDetails.implementation.rowIndex ) ).toBe( 'Connected', { message: 'State is expected to be Connected' } );
+				const tableRowState = await FunctionPage.getImplementationsTableRowState( functionDetails.implementation.rowIndex );
+
+				await expect( tableRowState ).toBe( 'Connected', { message: 'State is expected to be Connected' } );
 				await FunctionPage.checkImplementationsTableRow(
 					functionDetails.implementation.rowIndex );
-				await expect( await FunctionPage.approveImplementationButton ).toBeDisabled( { message: 'Connect button is expected to be disabled but it is enabled' } );
-				await expect( await FunctionPage.deactivateImplementationButton ).toBeEnabled( { message: 'Disconnect button is expected to be enabled but it is disabled' } );
+				const approveButton = await FunctionPage.approveImplementationButton;
+				const deactivateButton = await FunctionPage.deactivateImplementationButton;
+				await approveButton.waitUntil( async () => {
+					const disabledValue = await approveButton.getAttribute( 'disabled' );
+					return disabledValue !== null;
+				}, { timeoutMsg: 'approveButton is not disabled after 5000 ms' } );
+				await deactivateButton.isEnabled();
+				await expect( await approveButton ).toBeDisabled( { message: 'Connect button is expected to be disabled but it is enabled' } );
+				await expect( await deactivateButton ).toBeEnabled( { message: 'Disconnect button is expected to be enabled but it is disabled' } );
 
 				await FunctionPage.deactivateImplementation();
 				await expect( await FunctionPage.getImplementationsTableRowState( functionDetails.implementation.rowIndex ) ).toBe( 'Disconnected', { message: 'State is expected to be Disconnected' } );
@@ -114,8 +123,18 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 			/**
 			 * "Connect" and "Disconnect" button should be disabled as nothing is selected
 			 */
-				await expect( await FunctionPage.approveImplementationButton ).toBeDisabled( { message: 'Connect button is expected to be disabled but it is enabled' } );
-				await expect( await FunctionPage.deactivateImplementationButton ).toBeDisabled( { message: 'Disconnect button is expected to be disabled but it is enabled' } );
+				const approveButton = await FunctionPage.approveImplementationButton;
+				const deactivateButton = await FunctionPage.deactivateImplementationButton;
+				await approveButton.waitUntil( async () => {
+					const disabledValue = await approveButton.getAttribute( 'disabled' );
+					return disabledValue !== null;
+				}, { timeoutMsg: 'approveButton is not disabled after 5000 ms' } );
+				await deactivateButton.waitUntil( async () => {
+					const disabledValue = await deactivateButton.getAttribute( 'disabled' );
+					return disabledValue !== null;
+				}, { timeoutMsg: 'deactivateButton is not disabled after 5000 ms' } );
+				await expect( approveButton ).toBeDisabled( { message: 'Connect button is expected to be disabled but it is enabled' } );
+				await expect( deactivateButton ).toBeDisabled( { message: 'Disconnect button is expected to be disabled but it is enabled' } );
 
 				await expect( await FunctionPage.getImplementationsTableRowState( functionDetails.implementation.rowIndex ) ).toBe( 'Disconnected', { message: 'State is expected to be Disconnected' } );
 				await FunctionPage.checkImplementationsTableRow(
@@ -147,7 +166,7 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 				await expect( await FunctionPage.functionTitle )
 					.toHaveText( functionDetails.ZObjectLabel );
 				await FunctionPage.switchToDetailsTab();
-				await expect( await FunctionPage.detailsTab ).toHaveAttribute( 'aria-selected', 'true',
+				await expect( await FunctionPage.getDetailsTabButton() ).toHaveAttribute( 'aria-selected', 'true',
 					{ message: 'Not able to switch to details view' } );
 
 				/**
@@ -175,8 +194,18 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 			/**
 			 * "Connect" and "Disconnect" button should be disabled as nothing is selected
 			 */
-				await expect( await FunctionPage.approveTestCaseButton ).toBeDisabled( { message: 'Connect button is expected to be disabled but it is enabled' } );
-				await expect( await FunctionPage.deactivateTestCaseButton ).toBeDisabled( { message: 'Disconnect button is expected to be disabled but it is enabled' } );
+				const approveButton = await FunctionPage.approveTestCaseButton;
+				const deactivateButton = await FunctionPage.approveTestCaseButton;
+				await approveButton.waitUntil( async () => {
+					const disabledValue = await approveButton.getAttribute( 'disabled' );
+					return disabledValue !== null;
+				}, { timeoutMsg: 'approveButton is not disabled after 5000 ms' } );
+				await deactivateButton.waitUntil( async () => {
+					const disabledValue = await deactivateButton.getAttribute( 'disabled' );
+					return disabledValue !== null;
+				}, { timeoutMsg: 'deactivateButton is not disabled after 5000 ms' } );
+				await expect( await approveButton ).toBeDisabled( { message: 'Connect button is expected to be disabled but it is enabled' } );
+				await expect( await deactivateButton ).toBeDisabled( { message: 'Disconnect button is expected to be disabled but it is enabled' } );
 
 				await expect( await FunctionPage.getTestCasesTableRowState( functionDetails.testCase.rowIndex ) ).toBe( 'Connected', { message: 'State is expected to be Connected' } );
 				await FunctionPage.checkTestCasesTableRow( functionDetails.testCase.rowIndex );
@@ -257,7 +286,7 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 				await expect( await FunctionPage.functionTitle )
 					.toHaveText( functionDetails.ZObjectLabel );
 				await FunctionPage.switchToDetailsTab();
-				await expect( await FunctionPage.detailsTab ).toHaveAttribute( 'aria-selected', 'true',
+				await expect( await FunctionPage.getDetailsTabButton() ).toHaveAttribute( 'aria-selected', 'true',
 					{ message: 'Not able to switch to details view' } );
 
 				/**
@@ -311,7 +340,7 @@ describe( 'Connect implementation and test to the function (CUJ 6)', () => {
 				await expect( await FunctionPage.functionTitle )
 					.toHaveText( functionDetails.ZObjectLabel );
 				await FunctionPage.switchToDetailsTab();
-				await expect( await FunctionPage.detailsTab ).toHaveAttribute( 'aria-selected', 'true',
+				await expect( await FunctionPage.getDetailsTabButton() ).toHaveAttribute( 'aria-selected', 'true',
 					{ message: 'Not able to switch to details view' } );
 
 				/**

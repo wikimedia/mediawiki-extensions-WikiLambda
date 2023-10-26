@@ -106,7 +106,8 @@ describe( 'Tester', () => {
 			await expect( await FunctionPage.functionTitle )
 				.toHaveText( functionDetails.ZObjectLabel );
 			await FunctionPage.switchToDetailsTab();
-			await expect( await FunctionPage.detailsTab ).toHaveAttribute( 'aria-selected', 'true',
+			const detailsTab = await FunctionPage.getDetailsTabButton();
+			await expect( await detailsTab ).toHaveAttribute( 'aria-selected', 'true',
 				{ message: 'Not able to switch to details view' } );
 			await FunctionPage.goToCreateNewTestLink();
 

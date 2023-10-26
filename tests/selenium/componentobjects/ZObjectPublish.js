@@ -25,8 +25,11 @@ class ZObjectPublish {
 	 * @return {void}
 	 */
 	async publish() {
-		await ElementActions.doClick( this.publishButton );
-		await ElementActions.doClick( this.confirmPublishButton );
+		const pubButton = await $( 'button=Publish' );
+		await ElementActions.doClick( await pubButton );
+		const confirmDialog = await this.publishDialogBlock;
+		const confirmPubButton = await confirmDialog.$( 'button=Publish' );
+		await ElementActions.doClick( await confirmPubButton );
 	}
 }
 
