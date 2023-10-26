@@ -844,7 +844,7 @@ class ZObjectStore {
 		$res = $dbr->newSelectQueryBuilder()
 			->select( [ 'wlzf_ref_zid', 'wlzf_id' ] )
 			->from( 'wikilambda_zobject_function_join' )
-			->where( $dbr->makeList( $conditions, $dbr::LIST_AND ) )
+			->where( $conditions )
 			->orderBy( 'wlzf_id', SelectQueryBuilder::SORT_ASC )
 			->limit( $limit )
 			->caller( __METHOD__ )
@@ -948,7 +948,7 @@ class ZObjectStore {
 				'wlztr_returnobject'
 			] )
 			->from( 'wikilambda_ztester_results' )
-			->where( $dbr->makeList( $conditions, $dbr::LIST_AND ) )
+			->where( $conditions )
 			->orderBy( 'wlztr_id', SelectQueryBuilder::SORT_DESC )
 			->limit( 1 )
 			->caller( __METHOD__ )
