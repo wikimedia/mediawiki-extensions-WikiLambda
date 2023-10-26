@@ -11,6 +11,7 @@
 namespace MediaWiki\Extension\WikiLambda;
 
 use Html;
+use JsonException;
 use Language;
 use MediaWiki\Extension\WikiLambda\Registry\ZErrorTypeRegistry;
 use MediaWiki\Extension\WikiLambda\Registry\ZTypeRegistry;
@@ -59,11 +60,12 @@ class ZObjectUtils {
 
 		// Encoded inputs which don't start with {, or [, are instead read as strings.
 		if ( $input !== '' && ( $input[0] === '{' || $input[0] === '[' ) ) {
-			$evaluatedInput = json_decode( $input );
-			// Compatibility with PHP 7.2; JSON_THROW_ON_ERROR is PHP 7.3+
-			if ( $evaluatedInput === null ) {
+			try {
+				$evaluatedInput = json_decode( $input, false, 512, JSON_THROW_ON_ERROR );
+			} catch ( JsonException $e ) {
 				return false;
 			}
+
 			try {
 				$status = self::isValidZObject( $evaluatedInput );
 			} catch ( ZErrorException $e ) {
@@ -71,7 +73,6 @@ class ZObjectUtils {
 			}
 		}
 
-		// An actual string, not an encoded item.
 		return $status;
 	}
 
