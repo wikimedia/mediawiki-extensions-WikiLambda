@@ -202,6 +202,7 @@
 	"wikilambda-functioncall-metadata-orchestration-memory-usage": "Düzenleme bellek kullanımı",
 	"wikilambda-functioncall-metadata-evaluation-memory-usage": "Değerlendirme bellek kullanımı",
 	"wikilambda-functioncall-metadata-execution-memory-usage": "Çalıştırma bellek kullanımı",
+	"wikilambda-functioncall-metadata-execution-programming-language-version": "Programlama dili sürümü",
 	"wikilambda-functioncall-metadata-orchestration-cpu-usage": "Düzenleme CPU kullanımı",
 	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "Değerlendirme CPU kullanımı",
 	"wikilambda-functioncall-metadata-orchestration-hostname": "Düzenleme sunucusu",
@@ -396,5 +397,6 @@
 	"wikilambda-unknown-save-error-message": "Değişikliklerinizi saklamaya çalışırken bazı hatalar oluştu.",
 	"wikilambda-list-type-change-warning": "Bir veya daha fazla listenin türünü değiştirdiniz. Yayımlandığında, tüm liste ögeleri silinecek",
 	"wikilambda-function-evaluation-restriction-notrunnable": "Bu işlevin onaylanmış uygulaması yoktur.",
-	"wikilambda-function-evaluation-restriction-warning": "Üzgünüz! Şu anda yalnızca oturum açmış kullanıcılar işlevleri çalıştırabilir."
+	"wikilambda-function-evaluation-restriction-warning": "Üzgünüz! Şu anda yalnızca oturum açmış kullanıcılar işlevleri çalıştırabilir.",
+	"wikilambda-argument-reference-selector-placeholder": "Bir argüman seç"
 }
