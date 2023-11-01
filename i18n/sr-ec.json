@@ -12,6 +12,7 @@
 	"wikilambda-zobject-to-string-select-object": "Изабери $1",
 	"wikilambda-zobjectselector-label": "Објекат",
 	"wikilambda-zobjectselector-no-results": "Нема резултата.",
+	"wikilambda-functioncall-metadata-execution-programming-language-version": "Верзија програмског језика",
 	"wikilambda-tester-status-run": "Покрени",
 	"wikilambda-tester-status-cancel": "Откажи",
 	"wikilambda-tester-status-passed": "Успело",
