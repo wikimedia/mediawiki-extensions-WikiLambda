@@ -21,7 +21,8 @@
 			"Stevenliuyi",
 			"落花有意12138",
 			"SunAfterRain",
-			"U.T."
+			"U.T.",
+			"Xyb"
 		]
 	},
 	"wikilambda-desc": "为维基媒体的wiki提供wikitext解析器函数，以调用在中央wiki上编写、管理和运行的函数。",
@@ -95,6 +96,7 @@
 	"wikilambda-functioncall-metadata-evaluation-cpu-usage": "运算CPU使用",
 	"wikilambda-functioncall-metadata-execution-cpu-usage": "执行CPU使用",
 	"wikilambda-functioncall-error": "函数调用错误： $1",
+	"wikilambda-functioncall-error-category": "Wikifunctions调用出错的页面",
 	"wikilambda-tester-results-current-implementation": "当前实现",
 	"wikilambda-tester-run-tester": "运行测试",
 	"wikilambda-enable-expert-mode": "开启专家模式",
@@ -124,6 +126,7 @@
 	"wikilambda-function-definition-footer-implementation-button": "补充描写",
 	"wikilambda-function-definition-example-title": "使用该函数的示例",
 	"wikilambda-function-definition-can-publish-message": "您已完成定义！点击下面的“发布”保存您的贡献",
+	"wikilambda-editor-additional-details-label": "其他详细信息",
 	"wikilambda-function-implementation-table-header": "实现",
 	"wikilambda-editor-fn-step-function-about": "关于",
 	"wikilambda-editor-fn-step-function-details": "详情",
