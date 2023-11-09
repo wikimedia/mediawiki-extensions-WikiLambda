@@ -21,7 +21,8 @@
 			"Stevenliuyi",
 			"落花有意12138",
 			"SunAfterRain",
-			"U.T."
+			"U.T.",
+			"Xyb"
 		]
 	},
 	"wikilambda-desc": "为维基媒体的wiki提供wikitext解析器函数，以调用在中央wiki上编写、管理和运行的函数。",
@@ -74,6 +75,7 @@
 	"wikilambda-editor-zobject-addkey": "添加键：",
 	"wikilambda-editor-zobject-clearitem-tooltip": "将此值留空",
 	"wikilambda-editor-label-select-programming-language-label": "选择编程语言：",
+	"wikilambda-publish-lose-changes-prompt": "如果您没有发布就离开，您将丢失所做的编辑。",
 	"specialpages-group-wikilambda": "Wikifunctions页面",
 	"wikilambda-editor-argument-list-label": "参数列表",
 	"wikilambda-editor-implementation-list-label": "履行列表",
@@ -113,6 +115,7 @@
 	"wikilambda-functioncall-metadata-validator-errors": "验证{{PLURAL:$1|错误}}",
 	"wikilambda-functioncall-metadata-validator-errors-summary": "验证错误摘要",
 	"wikilambda-functioncall-error": "函数调用错误： $1",
+	"wikilambda-functioncall-error-category": "Wikifunctions调用出错的页面",
 	"wikilambda-editor-tester-list-label": "测试列表",
 	"wikilambda-tester-selector": "选择测试",
 	"wikilambda-tester-status-running": "正在运行……",
@@ -161,6 +164,7 @@
 	"wikilambda-function-definition-output-type-label": "类型",
 	"wikilambda-function-definition-example-title": "使用该函数的示例",
 	"wikilambda-function-definition-can-publish-message": "您已完成定义！点击下面的“发布”保存您的贡献",
+	"wikilambda-editor-additional-details-label": "其他详细信息",
 	"wikilambda-function-implementation-table-header": "实现",
 	"wikilambda-editor-fn-step-function-about": "关于",
 	"wikilambda-editor-fn-step-function-details": "详情",
