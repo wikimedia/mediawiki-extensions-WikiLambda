@@ -578,8 +578,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			self::ZLANG['fr'] => 'Z222'
 		];
 
-		$response = $this->zobjectStore->insertZObjectLabelConflicts( 'Z333', $conflicts );
-		$this->assertTrue( $response );
+		$this->zobjectStore->insertZObjectLabelConflicts( 'Z333', $conflicts );
 
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->getPrimaryDatabase();
 		$res = $dbr->newSelectQueryBuilder()
