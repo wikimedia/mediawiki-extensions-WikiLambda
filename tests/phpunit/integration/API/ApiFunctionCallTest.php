@@ -146,12 +146,15 @@ class ApiFunctionCallTest extends ApiTestCase {
 			"{\"Z1K1\":\"Z40\",\"Z40K1\":\"Z41\"}"
 		];
 
+		/*
+		 * FIXME (T350887) Make sure that the function evaluator returns serialized maps and pairs in normal form
 		// @phpcs:ignore Generic.Files.LineLength.TooLong
 		yield 'Invoke a function that maps the element of a typed Map at a given key to a string version of its value' => [
 			self::readTestFile( 'example-generic-map.json' ),
 			// @phpcs:ignore Generic.Files.LineLength.TooLong
 			'{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z883","Z883K1":"Z6","Z883K2":"Z6"},"K1":[{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},{"Z1K1":{"Z1K1":"Z7","Z7K1":"Z882","Z882K1":"Z6","Z882K2":"Z6"},"K1":"true?","K2":"True"}]}'
 		];
+		*/
 
 		yield 'Invoke Python function using a user-defined type' => [
 			self::readTestFile( 'example-user-defined-python.json' ),
