@@ -55,7 +55,6 @@ class SpecialCreateObject extends SpecialPage {
 
 		$output->addWikiMsg( 'wikilambda-special-createobject-intro' );
 
-		// TODO (T300517): Make this help page.
 		$this->addHelpLink( 'Extension:WikiLambda/Creating Objects' );
 
 		$this->generateZObjectPayload( $output, $this->getContext(), [
