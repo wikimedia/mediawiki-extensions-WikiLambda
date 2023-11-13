@@ -538,8 +538,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			self::ZLANG['fr'] => 'marque'
 		];
 
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z222', 'Z4', $labels );
-		$this->assertTrue( $response );
+		$this->zobjectStore->insertZObjectLabels( 'Z222', 'Z4', $labels );
 
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancerFactory()->getPrimaryDatabase();
 		$res = $dbr->newSelectQueryBuilder()
@@ -563,8 +562,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			self::ZLANG['fr'] => 'marque'
 		];
 
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z222', 'Z4', $labels );
-		$this->assertTrue( $response );
+		$this->zobjectStore->insertZObjectLabels( 'Z222', 'Z4', $labels );
 
 		$conflicts = $this->zobjectStore->findZObjectLabelConflicts( 'Z333', 'Z4', $labels );
 		$this->assertCount( 3, $conflicts );
@@ -602,8 +600,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 			self::ZLANG['fr'] => 'marque'
 		];
 
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z222', 'Z4', $labels );
-		$this->assertTrue( $response );
+		$this->zobjectStore->insertZObjectLabels( 'Z222', 'Z4', $labels );
 
 		$this->zobjectStore->deleteZObjectLabelsByZid( 'Z222' );
 
@@ -638,19 +635,19 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testFetchZidsOfType() {
-		$response = $this->zobjectStore->insertZObjectLabels(
+		$this->zobjectStore->insertZObjectLabels(
 			'Z444', 'Z7', [ self::ZLANG['en'] => 'label for Z7' ]
 		);
-		$response = $this->zobjectStore->insertZObjectLabels(
+		$this->zobjectStore->insertZObjectLabels(
 			'Z445', 'Z7', [ self::ZLANG['en'] => 'other label for Z7' ]
 		);
-		$response = $this->zobjectStore->insertZObjectLabels(
+		$this->zobjectStore->insertZObjectLabels(
 			'Z446', 'Z7', [ self::ZLANG['en'] => 'one more label for Z7' ]
 		);
-		$response = $this->zobjectStore->insertZObjectLabels(
+		$this->zobjectStore->insertZObjectLabels(
 			'Z447', 'Z8', [ self::ZLANG['en'] => 'label for Z8' ]
 		);
-		$response = $this->zobjectStore->insertZObjectLabels(
+		$this->zobjectStore->insertZObjectLabels(
 			'Z449', 'Z9', [ self::ZLANG['en'] => 'label for Z9' ]
 		);
 
@@ -663,13 +660,13 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testSearchZObjectLabels_exactMatch() {
-		$response = $this->zobjectStore->insertZObjectLabels(
+		$this->zobjectStore->insertZObjectLabels(
 			'Z450', 'Z7', [ self::ZLANG['en'] => 'example' ]
 		);
-		$response = $this->zobjectStore->insertZObjectLabels(
+		$this->zobjectStore->insertZObjectLabels(
 			'Z451', 'Z7', [ self::ZLANG['en'] => 'Example label' ]
 		);
-		$response = $this->zobjectStore->insertZObjectLabels(
+		$this->zobjectStore->insertZObjectLabels(
 			'Z452', 'Z7', [ self::ZLANG['en'] => 'Some more examples' ]
 		);
 
@@ -687,13 +684,13 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testSearchZObjectLabels_type() {
-		$response = $this->zobjectStore->insertZObjectLabels(
+		$this->zobjectStore->insertZObjectLabels(
 			'Z453', 'Z7', [ self::ZLANG['en'] => 'example' ]
 		);
-		$response = $this->zobjectStore->insertZObjectLabels(
+		$this->zobjectStore->insertZObjectLabels(
 			'Z454', 'Z7', [ self::ZLANG['en'] => 'Example label' ]
 		);
-		$response = $this->zobjectStore->insertZObjectLabels(
+		$this->zobjectStore->insertZObjectLabels(
 			'Z455', 'Z6', [ self::ZLANG['en'] => 'Some more examples' ]
 		);
 
@@ -711,9 +708,9 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testSearchZObjectLabels_languages() {
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z456', 'Z6', [ self::ZLANG['en'] => 'txt' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z457', 'Z6', [ self::ZLANG['es'] => 'txt' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z458', 'Z6', [ self::ZLANG['fr'] => 'txt' ] );
+		$this->zobjectStore->insertZObjectLabels( 'Z456', 'Z6', [ self::ZLANG['en'] => 'txt' ] );
+		$this->zobjectStore->insertZObjectLabels( 'Z457', 'Z6', [ self::ZLANG['es'] => 'txt' ] );
+		$this->zobjectStore->insertZObjectLabels( 'Z458', 'Z6', [ self::ZLANG['fr'] => 'txt' ] );
 
 		$res = $this->zobjectStore->searchZObjectLabels(
 			'txt', false, [ self::ZLANG['en'], self::ZLANG['fr'] ], null, null, false, null, 5000
@@ -726,11 +723,11 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testSearchZObjectLabels_pagination() {
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z459', 'Z6', [ self::ZLANG['en'] => 'label one' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z460', 'Z6', [ self::ZLANG['en'] => 'label two' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z461', 'Z6', [ self::ZLANG['en'] => 'label three' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z462', 'Z6', [ self::ZLANG['en'] => 'label four' ] );
-		$response = $this->zobjectStore->insertZObjectLabels( 'Z463', 'Z6', [ self::ZLANG['en'] => 'label five' ] );
+		$this->zobjectStore->insertZObjectLabels( 'Z459', 'Z6', [ self::ZLANG['en'] => 'label one' ] );
+		$this->zobjectStore->insertZObjectLabels( 'Z460', 'Z6', [ self::ZLANG['en'] => 'label two' ] );
+		$this->zobjectStore->insertZObjectLabels( 'Z461', 'Z6', [ self::ZLANG['en'] => 'label three' ] );
+		$this->zobjectStore->insertZObjectLabels( 'Z462', 'Z6', [ self::ZLANG['en'] => 'label four' ] );
+		$this->zobjectStore->insertZObjectLabels( 'Z463', 'Z6', [ self::ZLANG['en'] => 'label five' ] );
 
 		// First page
 		$res = $this->zobjectStore->searchZObjectLabels(
@@ -792,7 +789,7 @@ class ZObjectStoreTest extends WikiLambdaIntegrationTestCase {
 	}
 
 	public function testFetchZObjectLabel() {
-		$response = $this->zobjectStore->insertZObjectLabels(
+		$this->zobjectStore->insertZObjectLabels(
 			'Z464',
 			'Z6',
 			[
